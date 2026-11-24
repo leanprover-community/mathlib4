@@ -13,17 +13,8 @@ open Topology Metric Set RelCWComplex
 
 variable {X : Type*} [TopologicalSpace X] {C D : Set X}
 
-@[simps_proj (self := c) (name := openCell)]
-abbrev simpsopenCell [c : RelCWComplex C D] (n : ℕ) (i : cell C n) : Set X :=
-  openCell n i
-
-@[simps_proj (self := c) (name := closedCell)]
-abbrev simpsclosedCell [c : RelCWComplex C D] (n : ℕ) (i : cell C n) : Set X :=
-  closedCell n i
-
-@[simps_proj (self := c) (name := cellFrontier)]
-abbrev simpscellFrontier [c : RelCWComplex C D] (n : ℕ) (i : cell C n) : Set X :=
-  cellFrontier n i
+-- the self argument is the instance `[RelCWComplex C D]`, the fifth argument
+attribute [local simps_proj (self := 5)] openCell closedCell cellFrontier
 
 @[simps!! -isSimp, instance_reducible]
 noncomputable def subcx [T2Space X] [RelCWComplex C D] (E : Subcomplex C) : RelCWComplex E D :=
@@ -79,12 +70,9 @@ def ChosenCorepr.Simps.coreprObj (F : C ⥤ Type*) [c : ChosenCorepr F] : C :=
 initialize_simps_projections ChosenCorepr (obj → coreprObj)
 
 /-- The universal element of the chosen corepresentation. -/
+@[simps_proj]
 abbrev coreprElem (F : C ⥤ Type*) [c : ChosenCorepr F] : F.obj (coreprObj F) :=
   c.corepBy.homEquiv (𝟙 _)
-
-@[simps_proj]
-abbrev ChosenCorepr.Simps.coreprElem (F : C ⥤ Type*) [ChosenCorepr F] : F.obj (coreprObj F) :=
-  SimpsGenCorepr.coreprElem F
 
 @[simps!! -isSimp]
 instance instTop : ChosenCorepr (forget TopCat) where

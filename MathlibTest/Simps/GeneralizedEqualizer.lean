@@ -5,21 +5,23 @@ import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 
 How the attributes fit together, for `equalizer f g`. There are four kinds of registrations:
 
-1. `simps_proj` on a *field-like* function, here `h ↦ h ≫ equalizer.ι f g` on morphisms
+1. `simps_proj comp` on a *field-like* morphism, here `equalizer.ι f g : equalizer f g ⟶ X`. This
+   registers `h ↦ h ≫ equalizer.ι f g` as a generalized projection of morphisms
    `h : W ⟶ equalizer f g`. Every term of that type that `simps!!` meets, whether the definition
    itself or one of its fields (like `e.hom` for an iso `e`), gets a lemma `h ≫ ι = …`. These are
    *recursive*: their right-hand sides are themselves inspected for further generalized
    projections (although for `ι` there are none, `X` being an arbitrary object).
-2. `simps_proj … precomp noRecurse` on the *universal property*, here
-   `h ↦ equalizer.lift k w ≫ h` on morphisms `h : equalizer f g ⟶ V`. `precomp` puts its name
+2. `simps_proj precomp noRecurse` on the *universal property*, here `equalizer.lift`, which
+   registers `h ↦ equalizer.lift k w ≫ h` on morphisms `h : equalizer f g ⟶ V`. Its name goes
    before the last component of the lemma name (`e_lift_hom`, not `e_hom_lift`), and `noRecurse`
    stops it from being applied to terms that already came out of another generalized projection
    (`lift ≫ e.hom ≫ ι` follows from `e_hom_ι` and `lift_ι`).
 3. `simps_eta` on the η-rule `h = equalizer.lift (h ≫ ι) _`. The right-hand side of a lemma from a
    `noRecurse` projection is computed by rewriting the left-hand side with it and simplifying, so
    that `lift k w ≫ e.hom` comes out as `lift k' w'` when the target is an equalizer too.
-4. `simps_proj (hide := …)` on custom projections of the structures involved: `Fork.ι` instead of
-   `π.app`, and `Fork.IsLimit.lift` instead of `IsLimit.lift`.
+4. `simps_proj` on functions out of the structures involved, `Fork.ι` and `Fork.IsLimit.lift`,
+   which are generalized projections as they are; `initialize_simps_projections!!` declares that
+   they replace the genuine projections `Cone.π` and `IsLimit.lift`.
 
 The `rules` of a projection are added to the simp set used for the right-hand sides of its
 lemmas, and `attr` is applied to those lemmas.
@@ -33,32 +35,26 @@ variable {C : Type*} [Category* C] {X Y : C} {f g : X ⟶ Y}
 
 /-! ### Registration -/
 
-/-- 1. A field-like projection: composing a morphism into an equalizer with `equalizer.ι`. -/
-@[simps_proj (name := ι) (rules := equalizer.lift_ι) (attr := reassoc (attr := simp))]
-noncomputable abbrev equalizerι [HasEqualizer f g] {W : C} (h : W ⟶ equalizer f g) : W ⟶ X :=
-  h ≫ equalizer.ι f g
+-- 1. A field-like projection: composing a morphism into an equalizer with `equalizer.ι`.
+attribute [local simps_proj comp (rules := equalizer.lift_ι) (attr := reassoc (attr := simp))]
+  equalizer.ι
 
-/-- 2. The universal property: precomposing a morphism out of an equalizer with a `lift`. -/
-@[simps_proj (name := lift) precomp noRecurse (rules := equalizer.lift_ι)
-  (attr := reassoc (attr := simp))]
-noncomputable abbrev equalizerLiftComp [HasEqualizer f g] {V : C} (h : equalizer f g ⟶ V)
-    {W : C} (k : W ⟶ X) (w : k ≫ f = k ≫ g) : W ⟶ V :=
-  equalizer.lift k w ≫ h
+-- 2. The universal property: precomposing a morphism out of an equalizer with a `lift`.
+attribute [local simps_proj precomp noRecurse (rules := equalizer.lift_ι)
+  (attr := reassoc (attr := simp))] equalizer.lift
 
 /-- 3. The η-rule. -/
 @[simps_eta]
 theorem equalizer_eta [HasEqualizer f g] {W : C} (h : W ⟶ equalizer f g) :
-    h = equalizer.lift (h ≫ equalizer.ι f g) (by rw [Category.assoc, Category.assoc, equalizer.condition]) := by
+    h = equalizer.lift (h ≫ equalizer.ι f g)
+      (by rw [Category.assoc, Category.assoc, equalizer.condition]) := by
   ext; simp
 
-/-- 4. Custom projections of forks and of limit forks. -/
-@[simps_proj (hide := π)]
-abbrev Fork.Simps.ι (c : Fork f g) : c.pt ⟶ X := c.ι
+-- 4. Custom projections of forks and of limit forks.
+attribute [local simps_proj] Fork.ι Fork.IsLimit.lift
 
-@[simps_proj (name := lift) (hide := lift)]
-abbrev Fork.IsLimit.Simps.lift {c : Fork f g} (hc : IsLimit c) {W : C} (k : W ⟶ X)
-    (hk : k ≫ f = k ≫ g) : W ⟶ c.pt :=
-  Fork.IsLimit.lift hc k hk
+initialize_simps_projections!! Fork (π → ι)
+initialize_simps_projections!! Fork.IsLimit (lift → lift)
 
 /-! ### Definitions -/
 
@@ -109,15 +105,15 @@ info: SimpsGenEqualizerTest.eqSwap_hom_ι.{v_1, u_1} {C : Type u_1} [Category.{v
 
 /--
 info: SimpsGenEqualizerTest.eqSwap_lift_hom.{v_1, u_1} {C : Type u_1} [Category.{v_1, u_1} C] {X Y : C} {f g : X ⟶ Y}
-  [HasEqualizer f g] [HasEqualizer g f] {W : C} (k : W ⟶ X) (w : k ≫ f = k ≫ g) :
-  equalizer.lift k w ≫ eqSwap.hom = equalizer.lift k ⋯
+  [HasEqualizer f g] [HasEqualizer g f] {W : C} (k : W ⟶ X) (h : k ≫ f = k ≫ g) :
+  equalizer.lift k h ≫ eqSwap.hom = equalizer.lift k ⋯
 -/
 #guard_msgs in #check eqSwap_lift_hom
 
 /--
 info: SimpsGenEqualizerTest.eqSwap_lift_hom_assoc.{v_1, u_1} {C : Type u_1} [Category.{v_1, u_1} C] {X Y : C} {f g : X ⟶ Y}
-  [HasEqualizer f g] [HasEqualizer g f] {W : C} (k : W ⟶ X) (w : k ≫ f = k ≫ g) {Z : C} (h : equalizer g f ⟶ Z) :
-  equalizer.lift k w ≫ eqSwap.hom ≫ h = equalizer.lift k ⋯ ≫ h
+  [HasEqualizer f g] [HasEqualizer g f] {W : C} (k : W ⟶ X) (h : k ≫ f = k ≫ g) {Z : C} (h✝ : equalizer g f ⟶ Z) :
+  equalizer.lift k h ≫ eqSwap.hom ≫ h✝ = equalizer.lift k ⋯ ≫ h✝
 -/
 #guard_msgs in #check eqSwap_lift_hom_assoc
 
@@ -166,15 +162,9 @@ section Kernel
 
 variable [HasZeroMorphisms C]
 
-@[simps_proj (name := ι) (rules := kernel.lift_ι) (attr := reassoc (attr := simp))]
-noncomputable abbrev kernelι (f : X ⟶ Y) [HasKernel f] {W : C} (h : W ⟶ kernel f) : W ⟶ X :=
-  h ≫ kernel.ι f
+attribute [local simps_proj comp (attr := reassoc (attr := simp))] kernel.ι
 
-@[simps_proj (name := lift) precomp noRecurse (rules := kernel.lift_ι)
-  (attr := reassoc (attr := simp))]
-noncomputable abbrev kernelLiftComp (f : X ⟶ Y) [HasKernel f] {V : C} (h : kernel f ⟶ V) {W : C}
-    (k : W ⟶ X) (w : k ≫ f = 0) : W ⟶ V :=
-  kernel.lift f k w ≫ h
+attribute [local simps_proj precomp noRecurse (attr := reassoc (attr := simp))] kernel.lift
 
 @[simps_eta]
 theorem kernel_eta (f : X ⟶ Y) [HasKernel f] {W : C} (h : W ⟶ kernel f) :
@@ -195,8 +185,8 @@ info: SimpsGenEqualizerTest.kIso_hom_ι.{v_1, u_1} {C : Type u_1} [Category.{v_1
 
 /--
 info: SimpsGenEqualizerTest.kIso_lift_hom.{v_1, u_1} {C : Type u_1} [Category.{v_1, u_1} C] {X Y : C} [HasZeroMorphisms C]
-  {Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [HasKernel f] [Mono g] [HasKernel (f ≫ g)] {W : C} (k : W ⟶ X) (w : k ≫ f ≫ g = 0) :
-  kernel.lift (f ≫ g) k w ≫ (kIso f g).hom = kernel.lift f k ⋯
+  {Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [HasKernel f] [Mono g] [HasKernel (f ≫ g)] {W : C} (k : W ⟶ X) (h : k ≫ f ≫ g = 0) :
+  kernel.lift (f ≫ g) k h ≫ (kIso f g).hom = kernel.lift f k ⋯
 -/
 #guard_msgs in #check kIso_lift_hom
 

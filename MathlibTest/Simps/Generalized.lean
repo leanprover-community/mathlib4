@@ -12,10 +12,8 @@ structure Pointed (α : Type) where
   extra : Bool
 
 /-- The element of `α` corresponding to `false`. -/
+@[simps_proj]
 abbrev Pointed.pt {α : Type} (p : Pointed α) : α := p.e.symm false
-
-@[simps_proj (name := pt)]
-abbrev Pointed.Simps.pt {α : Type} (p : Pointed α) : α := p.pt
 
 @[simps!!]
 def foo : Pointed Bool where
@@ -28,30 +26,34 @@ example (a : Bool) : foo.e a = !a := foo_e_apply a
 
 end Toy
 
-/-! ### The unused custom projections linter -/
+/-! ### Errors -/
 
 namespace Toy
 
-structure Pointed' (α : Type) where
-  e : α ≃ Bool
+/-- A function that is not a morphism. -/
+def notAMorphism (n : Nat) : Nat := n
 
-@[simps_proj (name := pt)]
-abbrev Pointed'.Simps.pt {α : Type} (p : Pointed' α) : α := p.e.symm false
-
-/-- A misspelled custom projection. -/
-def Pointed'.Simps.ee {α : Type} (p : Pointed' α) : α ≃ Bool := p.e
-
--- `Pointed'.Simps.pt` is not reported as unused, but `Pointed'.Simps.ee` is
 /--
-warning: Not all of the custom declarations [Toy.Pointed'.Simps.ee] are used. Double check the spelling, and use `?` to get more information.
-
-Note: This linter can be disabled with `set_option linter.simpsUnusedCustomDeclarations false`
+error: `simps_proj`: with `comp` or `precomp`, notAMorphism must be a morphism, but its type is
+  Nat
 -/
 #guard_msgs in
-@[simps!!]
-def bar : Pointed' Bool where
-  e := { toFun := not, invFun := not, left_inv := Bool.not_not, right_inv := Bool.not_not }
+attribute [simps_proj comp] notAMorphism
 
-example : bar.e.symm false = true := bar_pt
+/-- error: `simps_proj`: notAMorphism has no argument m -/
+#guard_msgs in
+attribute [simps_proj (self := m)] notAMorphism
+
+/-- error: `simps_proj`: notAMorphism has 1 arguments -/
+#guard_msgs in
+attribute [simps_proj (self := 2)] notAMorphism
+
+/-- error: Pointed.extra is not a generalized projection (registered with `@[simps_proj]`) -/
+#guard_msgs in
+initialize_simps_projections!! Pointed (e → extra)
+
+/-- error: f is not a projection of the structure Pointed -/
+#guard_msgs in
+initialize_simps_projections!! Pointed (f → pt)
 
 end Toy

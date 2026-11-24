@@ -6,6 +6,7 @@ Authors: Robert Maxton
 module
 
 public meta import Mathlib.Tactic.Simps.Basic
+public meta import Mathlib.Tactic.Translate.ToDual
 
 /-!
 # `simps!!`: `simps` with generalized projections
@@ -14,31 +15,41 @@ public meta import Mathlib.Tactic.Simps.Basic
 projections*: arbitrary functions out of the type of the definition, registered with
 `@[simps_proj]`. For example, after
 ```
-@[simps_proj (hide := π)] abbrev PullbackCone.Simps.fst (c : PullbackCone f g) := c.fst
-@[simps_proj (hide := π)] abbrev PullbackCone.Simps.snd (c : PullbackCone f g) := c.snd
+attribute [simps_proj] PullbackCone.fst PullbackCone.snd
+initialize_simps_projections!! PullbackCone (π → fst snd)
 ```
 a definition `@[simps!!] def c : PullbackCone f g := PullbackCone.mk a b w` gets the lemmas
 `c_pt : c.pt = W`, `c_fst : c.fst = a` and `c_snd : c.snd = b`, instead of `c_pt` and `c_π_app`.
 
-A generalized projection need not be a projection at all, nor be keyed on a structure: after
+A generalized projection need not be a function out of a structure: after
 ```
-@[simps_proj (name := fst) (rules := pullback.lift_fst) (attr := reassoc (attr := simp))]
-noncomputable abbrev pullbackFst {W} (h : W ⟶ pullback f g) : W ⟶ X := h ≫ pullback.fst f g
+attribute [simps_proj comp (attr := reassoc (attr := simp))] pullback.fst
 ```
-every morphism into a pullback gets a lemma for its composite with `pullback.fst`, wherever it
-appears: as the definition itself, or as a field of it, like the `hom` of an isomorphism.
+every morphism `h` into a pullback gets a lemma for `h ≫ pullback.fst f g`, wherever it appears:
+as the definition itself, or as a field of it, like the `hom` of an isomorphism.
 
 ## Generalized projections
 
-A generalized projection is a definition `p : ∀ params (x : S) extras, R`. Its *self argument*
-`x` is the last argument whose type depends (transitively) on all the arguments before it; the
-`params` are found by unifying `S` with the type of the definition (or of the field) at hand, and
-the `extras` become arguments of the generated lemma. Generalized projections are looked up by
-the type `S`, up to reducible unfolding, so a projection registered for `PullbackCone f g` also
-applies to a definition of type `Cone (cospan f g)`.
+A generalized projection is a function `p : ∀ params (x : S) extras, R`. The `params` are found by
+unifying `S` with the type of the definition (or of the field) at hand, and the `extras` become
+arguments of the generated lemma. Generalized projections are looked up by the type `S`, up to
+reducible unfolding, so a projection registered for `PullbackCone f g` also applies to a
+definition of type `Cone (cospan f g)`.
 
-For a term `t` of type `S` with value `v`, the generated lemma is `p params t extras = rhs`, where
-`p` is unfolded (so the statement uses its body), and `rhs` is computed from `p params v extras`:
+`@[simps_proj]` on a declaration `p` registers:
+* `p` itself, by default. Its *self argument* `x` is the last argument whose type depends
+  (transitively) on all the arguments before it, unless the option `(self := x)` says otherwise.
+* with `comp`, for a morphism `p : ∀ args, A ⟶ B`: `fun (h : W ⟶ A) ↦ h ≫ p args`. Here `S` is
+  `W ⟶ A`, the `params` are the arguments that `A` depends on, and the `extras` are the other
+  arguments of `p`. This is how `pullback.fst` is registered.
+* with `precomp`, for a morphism `p : ∀ args, A ⟶ B`: `fun (h : B ⟶ W) ↦ p args ≫ h`, keyed on
+  `B ⟶ W`. This is how `pushout.inl` is registered, and also `pullback.lift`, whose `extras` are
+  then the two morphisms and the proof that they form a cone.
+
+A declaration can only be registered once (and an η-rule too).
+
+For a term `t` of type `S` with value `v`, the generated lemma is `p params t extras = rhs`, and
+`rhs` is computed from `p params v extras`:
 1. definitions applied to structure instances (`PullbackCone.fst ⟨W, π⟩`, say) are unfolded, as
    are class projections applied to them (`⇑(Equiv.mk f g l r) x`), and then projections of
    structure instances, `match`es on constructors and β-redexes are reduced. This is what makes
@@ -59,25 +70,33 @@ into the genuine projections of its type, if it is a structure, and into the gen
 projections that apply to it.
 
 Options of `@[simps_proj]`:
+* `comp`, `precomp`: see above. The name of a `precomp` projection is added *before* the last
+  component of the lemma name: the lemma for `pullback.lift a b w ≫ e.hom` is `e_lift_hom`.
 * `(name := n)`: the name used for this projection in generated lemma names. The default is the
   last component of the name of the declaration.
-* `(self := x)`: the self argument is the argument named `x`. This is needed when an extra
-  argument also depends on all the arguments before it, as `i` does in
-  `(c : RelCWComplex C D) (n : ℕ) (i : cell C n)`.
-* `(hide := p₁, …)`: don't generate lemmas for the genuine projections `pᵢ` of the structure
-  when this projection applies (e.g. `π` for a `PullbackCone`, in favor of `fst` and `snd`).
+* `(self := x)`: the self argument is the argument named `x`, or the `x`-th argument if `x` is a
+  number. This is needed when an extra argument also depends on all the arguments before it, as
+  `i` does in `RelCWComplex.openCell [RelCWComplex C D] (n : ℕ) (i : cell C n)`.
 * `(rules := l₁, …)`: lemmas to simplify with when computing right-hand sides.
 * `(attr := …)`: attributes to add to the lemmas generated for this projection.
 * `as_prefix`: the name of the projection is added at the start of the lemma name.
-* `precomp`: the name of the projection is added *before* the last component of the lemma name,
-  which reads well for projections that precompose, like `fun h ↦ pullback.lift a b w ≫ h`:
-  the lemma for `e.hom` is `e_lift_hom`.
 * `noRecurse`: don't recurse into the result. The right-hand side is instead expanded by an
   η-rule of its type, if one is registered (see below). Such projections only apply to the
   declaration and its genuine projections, not to the results of other generalized projections:
   `pullback.lift a b w ≫ (e.hom ≫ pullback.fst _ _)` would follow from the lemma for
   `e.hom ≫ pullback.fst _ _`.
 * `nonDefault`: only generate lemmas for this projection if it is asked for explicitly.
+
+## Replacing genuine projections
+
+`initialize_simps_projections!! N (p → q₁ … qₙ)` declares that the generalized projections
+`N.q₁`, …, `N.qₙ` replace the genuine projection `p` of a structure: when one of them applies,
+`simps!!` generates no lemmas for `p`. For instance, `PullbackCone.fst` and `PullbackCone.snd`
+replace `Cone.π`, and `PullbackCone.IsLimit.lift` replaces `IsLimit.lift`:
+```
+initialize_simps_projections!! PullbackCone (π → fst snd)
+initialize_simps_projections!! PullbackCone.IsLimit (lift → lift)
+```
 
 ## η-rules
 
@@ -88,6 +107,21 @@ generalized projection, the lemma is stated as `p t extras = c rhs₁ … rhsₙ
 how `simps!!` states the universal property of a limit `L` in terms of a limit `R`, for an
 isomorphism `e : L ≅ R`:
 `pullback.lift a b w ≫ e.hom = R.lift (…) (…)`.
+
+## `to_dual`
+
+* `@[to_dual (attr := simps_proj opts)]` registers both the declaration and its dual: for the
+  dual, `comp` and `precomp` are exchanged, and the `rules` are replaced by their duals. So
+  `@[to_dual (attr := simps_proj comp)]` on `pullback.fst` registers `pushout.inl` with
+  `precomp`.
+* `@[to_dual (attr := simps_eta)]` registers both η-rules.
+* `initialize_simps_projections!!` also declares the dual replacements, when the generalized
+  projections and the projection `p` have `to_dual` translations: after
+  `initialize_simps_projections!! PullbackCone (π → fst snd)`, `PushoutCocone.inl` and
+  `PushoutCocone.inr` replace `Cocone.ι`.
+* `@[to_dual (attr := simps!!)]` generates the lemmas of the declaration and of its dual, and
+  adds the translations between them. Their `reassoc` versions get `to_dual none`, as with
+  `@[to_dual (attr := reassoc)]`.
 
 ## Overlapping registrations
 
@@ -102,12 +136,10 @@ lemmas about `kernel.ι` and `kernel.lift` only.
 
 * Only fully applied lemmas are generated (`-fullyApplied` is ignored for generalized
   projections).
-* The declarations registered with `@[simps_proj]` and `@[simps_eta]` must have their bodies
-  exposed (e.g. be `abbrev`s or `@[expose]`), so that they can be unfolded in other modules.
-* A generalized projection may live in the namespace `S.Simps` of a structure `S`: `simps!!`
-  doesn't count it as an unused custom projection (`linter.simpsUnusedCustomDeclarations`). But
-  `@[simps]` and `initialize_simps_projections` do, if they are the first to initialize the
-  projections of `S` in the same file.
+* `comp` and `precomp` are for morphisms in a category (`CategoryTheory.CategoryStruct.comp`).
+* Generalized projections that are definitions applied to structure instances are unfolded to
+  compute right-hand sides, so their bodies must be exposed (e.g. be `abbrev`s or `@[expose]`) to
+  be unfolded in other modules.
 -/
 
 public meta section
@@ -118,25 +150,29 @@ namespace Lean.Parser.Attr
 
 /-- `(name := n)` option of `@[simps_proj]`. -/
 syntax simpsProjName := atomic(" (" &"name" " := ") ident ")"
-/-- `(hide := p₁, …)` option of `@[simps_proj]`. -/
-syntax simpsProjHide := atomic(" (" &"hide" " := ") ident,+ ")"
 /-- `(rules := l₁, …)` option of `@[simps_proj]`. -/
 syntax simpsProjRules := atomic(" (" &"rules" " := ") ident,+ ")"
 /-- `(attr := …)` option of `@[simps_proj]`. -/
 syntax simpsProjAttrs := atomic(" (" &"attr" " := ") Parser.Term.attrInstance,* ")"
-/-- `(self := x)` option of `@[simps_proj]`. -/
-syntax simpsProjSelf := atomic(" (" &"self" " := ") ident ")"
+/-- `(self := x)` option of `@[simps_proj]`: `x` is the name of an argument, or its position
+(starting at `1`). -/
+syntax simpsProjSelf := atomic(" (" &"self" " := ") (ident <|> num) ")"
 /-- Flags of `@[simps_proj]`. -/
-syntax simpsProjFlag := &" as_prefix" <|> &" precomp" <|> &" noRecurse" <|> &" nonDefault"
+syntax simpsProjFlag :=
+  &" comp" <|> &" precomp" <|> &" as_prefix" <|> &" noRecurse" <|> &" nonDefault"
 /-- An option of `@[simps_proj]`. See `Mathlib.Tactic.Simps.Generalized` for their meanings. -/
 syntax simpsProjOpt :=
-  simpsProjName <|> simpsProjSelf <|> simpsProjHide <|> simpsProjRules <|> simpsProjAttrs <|>
-  simpsProjFlag
+  simpsProjName <|> simpsProjSelf <|> simpsProjRules <|> simpsProjAttrs <|> simpsProjFlag
 
-/-- `@[simps_proj]` registers a definition `p : ∀ params (x : S) extras, R` as a generalized
+/-- `@[simps_proj]` registers a function `p : ∀ params (x : S) extras, R` as a generalized
 projection for `simps!!`: every definition (or field of a definition) of type `S` tagged
-`@[simps!!]` gets a lemma `p params t extras = rhs`. See the module documentation of
-`Mathlib.Tactic.Simps.Generalized` for details and options. -/
+`@[simps!!]` gets a lemma `p params t extras = rhs`.
+
+`@[simps_proj comp]` on a morphism `p : ∀ args, A ⟶ B` registers `fun h ↦ h ≫ p args` as a
+generalized projection of morphisms `h : W ⟶ A`, and `@[simps_proj precomp]` registers
+`fun h ↦ p args ≫ h` for morphisms `h : B ⟶ W`.
+
+See the module documentation of `Mathlib.Tactic.Simps.Generalized` for details and options. -/
 syntax (name := simpsProj) "simps_proj" (simpsProjOpt)* : attr
 
 /-- `@[simps_eta]` registers a theorem `∀ params (x : T), x = c (p₁ x) … (pₙ x)` as an η-rule for
@@ -153,7 +189,29 @@ syntax (name := simpsGen) "simps!!" "?"? simpsArgsRest : attr
 
 end Lean.Parser.Attr
 
+namespace Lean.Parser.Command
+
+/-- `(p → q₁ … qₙ)`: the generalized projections `qᵢ` replace the projection `p`. -/
+syntax simpsGenReplace := " (" ident " → " ident+ ")"
+
+/-- `initialize_simps_projections!! N (p → q₁ … qₙ)` declares that `simps!!` doesn't generate
+lemmas for the (genuine) projection `p` of a structure when one of the generalized projections
+`N.qᵢ` (registered with `@[simps_proj]`) applies. For instance,
+```
+initialize_simps_projections!! PullbackCone (π → fst snd)
+```
+gives definitions of pullback cones lemmas about `PullbackCone.fst` and `PullbackCone.snd`
+instead of `Cone.π`.
+
+If the `qᵢ` and `p` have `to_dual` translations, the same is declared for those. -/
+syntax (name := initializeSimpsProjectionsGen)
+  "initialize_simps_projections!!" ident (simpsGenReplace)* : command
+
+end Lean.Parser.Command
+
 namespace Simps.Gen
+
+open Mathlib.Tactic
 
 /-- Where the name of a generalized projection goes in the name of a generated lemma. -/
 inductive NamePos where
@@ -165,20 +223,42 @@ inductive NamePos where
   | precomp
   deriving Inhabited, BEq, Repr
 
+/-- How a registered declaration `p` gives a generalized projection. -/
+inductive ProjKind where
+  /-- `p` itself is the generalized projection. -/
+  | direct
+  /-- `p` is a morphism, and the generalized projection is `fun h ↦ h ≫ p`. -/
+  | comp
+  /-- `p` is a morphism, and the generalized projection is `fun h ↦ p ≫ h`. -/
+  | precomp
+  deriving Inhabited, BEq, Repr
+
+/-- The kind of the `to_dual` translation of a generalized projection. -/
+def ProjKind.dual : ProjKind → ProjKind
+  | .direct => .direct
+  | .comp => .precomp
+  | .precomp => .comp
+
 /-- A generalized projection, registered with `@[simps_proj]`. -/
 structure GenProj where
   /-- The registered declaration. -/
   declName : Name
   /-- The name of the projection, used in the names of generated lemmas. -/
   name : String
-  /-- The index of the self argument of `declName`. -/
+  /-- How `declName` gives the generalized projection. -/
+  kind : ProjKind := .direct
+  /-- The universe parameters of `type` and `value` (those of `declName`). -/
+  levelParams : List Name
+  /-- The type of the generalized projection, `∀ params (x : S) extras, R`. -/
+  type : Expr
+  /-- The generalized projection: `declName` itself, or a composition with it. -/
+  value : Expr
+  /-- The index of the self argument in `type`. -/
   selfIdx : Nat
   /-- The discrimination tree keys of the type of the self argument. -/
   keys : Array DiscrTree.Key
   /-- Where the name goes in generated lemma names. -/
   pos : NamePos := .suffix
-  /-- Genuine projections not to generate lemmas for when this projection applies. -/
-  hides : Array Name := #[]
   /-- Extra lemmas to simplify with when computing right-hand sides. -/
   rules : Array Name := #[]
   /-- Extra attributes for the generated lemmas (`attrInstance` syntax). -/
@@ -187,6 +267,9 @@ structure GenProj where
   recurse : Bool := true
   /-- Whether lemmas are generated for this projection by default. -/
   isDefault : Bool := true
+  /-- The options of the `@[simps_proj]` attribute, to recognize its application by `to_dual` to
+  the dual declaration. -/
+  opts : Array Syntax := #[]
   deriving Inhabited
 
 instance : BEq GenProj := ⟨(·.declName == ·.declName)⟩
@@ -203,18 +286,28 @@ structure EtaRule where
 
 instance : BEq EtaRule := ⟨(·.declName == ·.declName)⟩
 
-/-- The generalized projections, keyed by the type of their self argument, and the set of their
-names. -/
-initialize projExt : SimpleScopedEnvExtension GenProj (DiscrTree GenProj × NameSet) ←
+/-- The generalized projections, keyed by the type of their self argument, and by the name of
+the registered declaration. -/
+initialize projExt : SimpleScopedEnvExtension GenProj (DiscrTree GenProj × NameMap GenProj) ←
+  registerSimpleScopedEnvExtension {
+    initial := ({}, {})
+    addEntry := fun (d, m) e => (d.insertKeyValue e.keys e, m.insert e.declName e) }
+
+/-- The η-rules, keyed by the type of their self argument, and the set of their names. -/
+initialize etaExt : SimpleScopedEnvExtension EtaRule (DiscrTree EtaRule × NameSet) ←
   registerSimpleScopedEnvExtension {
     initial := ({}, {})
     addEntry := fun (d, s) e => (d.insertKeyValue e.keys e, s.insert e.declName) }
 
-/-- The η-rules, keyed by the type of their self argument. -/
-initialize etaExt : SimpleScopedEnvExtension EtaRule (DiscrTree EtaRule) ←
+/-- For each generalized projection (by the name of its declaration), the genuine projections
+that `simps!!` doesn't generate lemmas for when it applies, declared with
+`initialize_simps_projections!!`. -/
+initialize hideExt : SimpleScopedEnvExtension (Name × Name) (NameMap (Array Name)) ←
   registerSimpleScopedEnvExtension {
     initial := {}
-    addEntry := fun d e => d.insertKeyValue e.keys e }
+    addEntry := fun m (g, p) =>
+      let ps := m.getD g #[]
+      if ps.contains p then m else m.insert g (ps.push p) }
 
 initialize registerTraceClass `simps.gen
 
@@ -254,59 +347,199 @@ partial def firstAtom : Syntax → String
   | .node _ _ args => (args.map firstAtom).find? (· != "") |>.getD ""
   | _ => ""
 
+/-- The `to_dual` translation of the declaration `n`, if there is one. -/
+def dualName? (n : Name) : CoreM (Option Name) :=
+  return Translate.findTranslationName? (← getEnv) ToDual.data n
+
+/-- The type and the value of the generalized projection given by the declaration `decl`,
+of kind `.comp` or `.precomp`, and the index of its self argument.
+
+For `p : ∀ args, A ⟶ B` and `.comp`, this is `fun params {W} (h : W ⟶ A) extras ↦ h ≫ p args`,
+where `params` are the arguments that `A` depends on and `extras` are the others. -/
+def mkCompProj (decl : Name) (kind : ProjKind) : MetaM (Expr × Expr × Nat) := do
+  let info ← getConstInfo decl
+  let lvls := info.levelParams.map Level.param
+  forallTelescope info.type fun xs body => do
+    let body ← whnfR body
+    let .const `Quiver.Hom us := body.getAppFn | throwError "`simps_proj`: with `comp` or \
+      `precomp`, {.ofConstName decl} must be a morphism, but its type is{indentExpr body}"
+    let #[obj, q, a, b] := body.getAppArgs |
+      throwError "`simps_proj`: unexpected type{indentExpr body}"
+    -- the arguments that the type of the self argument depends on (apart from `W`)
+    let deps ← depClosure (mkApp3 body.getAppFn obj q (if kind == .comp then a else b))
+    let params := xs.filter (deps.contains ·.fvarId!)
+    let extras := xs.filter (!deps.contains ·.fvarId!)
+    withLocalDecl `W .implicit obj fun w => do
+    let selfTy := mkAppN (.const `Quiver.Hom us) <|
+      if kind == .comp then #[obj, q, w, a] else #[obj, q, b, w]
+    withLocalDeclD `h selfTy fun h => do
+    let p := mkAppN (.const decl lvls) xs
+    let val ← mkAppM `CategoryTheory.CategoryStruct.comp <|
+      if kind == .comp then #[h, p] else #[p, h]
+    let binders := params ++ #[w, h] ++ extras
+    return (← mkForallFVars binders (← inferType val), ← mkLambdaFVars binders val,
+      params.size + 1)
+
+/-- The type and the value of the generalized projection given by the declaration `decl` itself,
+with self argument the `selfIdx`-th one, and the index of its self argument.
+
+This is `decl`, unless some arguments before the self argument don't occur in its type (like `W`
+in `BinaryFan.IsLimit.lift {W : C} {s : BinaryFan X Y} (h : IsLimit s) (f : W ⟶ X) …`): those
+are moved after the self argument, as they can't be found by unifying its type. -/
+def mkDirectProj (decl : Name) (selfIdx : Nat) : MetaM (Expr × Expr × Nat) := do
+  let info ← getConstInfo decl
+  let c := Expr.const decl (info.levelParams.map .param)
+  forallTelescope info.type fun xs _ => do
+    let some self := xs[selfIdx]? | throwError "`simps_proj`: not enough arguments"
+    let deps ← depClosure (← inferType self)
+    let params := (xs.extract 0 selfIdx).filter (deps.contains ·.fvarId!)
+    if params.size == selfIdx then return (info.type, c, selfIdx)
+    let extras := xs.filter fun x => x != self && !params.contains x
+    let binders := params.push self ++ extras
+    let val := mkAppN c xs
+    return (← mkForallFVars binders (← inferType val), ← mkLambdaFVars binders val, params.size)
+
 open Lean.Parser.Attr in
-/-- Elaborates the options of `@[simps_proj]` into `g`. -/
-def elabProjOpts (g : GenProj) (opts : Array Syntax) : CoreM GenProj := do
-  let mut g := g
+/-- The generalized projection registered by `@[simps_proj opts]` on `decl`. If `dual`, this is
+the application of the attribute to the `to_dual` translation of a declaration registered with
+the same options: then `comp` and `precomp` are exchanged, and the `rules` are translated. -/
+def mkGenProj (decl : Name) (opts : Array Syntax) (dual : Option Name) : MetaM GenProj := do
+  let info ← getConstInfo decl
+  unless info.hasValue (allowOpaque := false) && !info.isTheorem do
+    throwError "`simps_proj`: {.ofConstName decl} must be a definition"
+  let mut name := decl.lastComponentAsString
+  let mut kind := ProjKind.direct
+  let mut asPrefix := false
+  let mut self? : Option Syntax := none
+  let mut rules := #[]
+  let mut attrs := #[]
+  let mut recurse := true
+  let mut isDefault := true
   for opt in opts do
     let opt := opt[0]
     match opt with
-    | `(simpsProjName| (name := $n:ident)) => g := { g with name := n.getId.toString }
-    | `(simpsProjSelf| (self := $_:ident)) => pure ()
-    | `(simpsProjHide| (hide := $ns:ident,*)) =>
-      g := { g with hides := g.hides ++ ns.getElems.map (·.getId) }
+    | `(simpsProjName| (name := $n:ident)) => name := n.getId.toString
     | `(simpsProjRules| (rules := $ns:ident,*)) =>
-      let ns ← ns.getElems.mapM fun n => realizeGlobalConstNoOverloadWithInfo n
-      g := { g with rules := g.rules ++ ns }
-    | `(simpsProjAttrs| (attr := $as:attrInstance,*)) =>
-      g := { g with attrs := g.attrs ++ as.getElems.map (·.raw) }
+      rules := rules ++ (← ns.getElems.mapM fun n => realizeGlobalConstNoOverloadWithInfo n)
+    | `(simpsProjAttrs| (attr := $as:attrInstance,*)) => attrs := attrs ++ as.getElems.map (·.raw)
     | _ =>
-      match (firstAtom opt).trimAscii.toString with
-      | "as_prefix" => g := { g with pos := .prefix }
-      | "precomp" => g := { g with pos := .precomp }
-      | "noRecurse" => g := { g with recurse := false }
-      | "nonDefault" => g := { g with isDefault := false }
-      | _ => throwErrorAt opt "unknown `simps_proj` option"
-  return g
+      if opt.getKind == ``simpsProjSelf then
+        self? := opt.getArgs.find? fun a => a.isIdent || a.isNatLit?.isSome
+      else match (firstAtom opt).trimAscii.toString with
+        | "comp" => kind := .comp
+        | "precomp" => kind := .precomp
+        | "as_prefix" => asPrefix := true
+        | "noRecurse" => recurse := false
+        | "nonDefault" => isDefault := false
+        | _ => throwErrorAt opt "unknown `simps_proj` option"
+  if dual.isSome then
+    kind := kind.dual
+    rules ← rules.mapM fun r => do
+      let some r' ← dualName? r | throwError "`simps_proj`: the rule {.ofConstName r} has no \
+        `to_dual` translation. Register {.ofConstName decl} separately."
+      pure r'
+  let (type, value, selfIdx) ← match kind with
+    | .direct =>
+      let selfIdx ← match self? with
+        | none => findSelfIdx info.type
+        | some x => forallTelescope info.type fun xs _ => do
+          if let some n := x.isNatLit? then
+            unless 0 < n && n ≤ xs.size do
+              throwErrorAt x "`simps_proj`: {.ofConstName decl} has {xs.size} arguments"
+            return n - 1
+          let some i ← xs.findIdxM? fun x' => return (← x'.fvarId!.getUserName) == x.getId |
+            throwErrorAt x "`simps_proj`: {.ofConstName decl} has no argument {x.getId}"
+          return i
+      mkDirectProj decl selfIdx
+    | _ =>
+      if let some x := self? then
+        throwErrorAt x "`simps_proj`: `self` can't be used with `comp` or `precomp`"
+      mkCompProj decl kind
+  let keys ← selfKeys type selfIdx
+  let pos := if asPrefix then .prefix else if kind == .precomp then .precomp else .suffix
+  return {
+    declName := decl
+    levelParams := info.levelParams
+    name := name
+    kind := kind
+    type := type
+    value := value
+    selfIdx := selfIdx
+    keys := keys
+    pos := pos
+    rules := rules
+    attrs := attrs
+    recurse := recurse
+    isDefault := isDefault
+    opts := opts }
 
 initialize registerBuiltinAttribute {
   name := `simpsProj
   descr := "register a generalized projection for `simps!!`"
   applicationTime := .afterCompilation
   add := fun decl stx kind => do
-    let info ← getConstInfo decl
-    unless info.hasValue (allowOpaque := false) && !info.isTheorem do
-      throwError "`simps_proj`: {.ofConstName decl} must be a definition"
-    let self? := stx[1].getArgs.findSome? fun opt =>
-      if opt[0].getKind == ``Lean.Parser.Attr.simpsProjSelf then
-        opt[0].getArgs.find? (·.isIdent) |>.map (·.getId)
-      else none
-    let (selfIdx, keys) ← MetaM.run' do
-      let selfIdx ← match self? with
-        | none => findSelfIdx info.type
-        | some x => forallTelescope info.type fun xs _ => do
-          let some i ← xs.findIdxM? fun x' => return (← x'.fvarId!.getUserName) == x |
-            throwError "`simps_proj`: {.ofConstName decl} has no argument {x}"
-          return i
-      return (selfIdx, ← selfKeys info.type selfIdx)
-    let g ← elabProjOpts
-      { declName := decl, name := decl.lastComponentAsString, selfIdx, keys } stx[1].getArgs
+    let opts := stx[1].getArgs
+    let projs := (projExt.getState (← getEnv)).2
+    if projs.contains decl then
+      throwError "`simps_proj`: {.ofConstName decl} is already registered"
+    -- `@[to_dual (attr := simps_proj opts)]` applies `simps_proj opts` to both declarations: the
+    -- second application is to the dual of a declaration registered with the same options
+    let dual ← do
+      let some src ← dualName? decl | pure none
+      let some g := projs.find? src | pure none
+      let sameOpts := g.opts.size == opts.size && (g.opts.zip opts).all fun (a, b) => a.structEq b
+      pure <| if sameOpts then some src else none
+    let g ← MetaM.run' <| mkGenProj decl opts dual
+    trace[simps.gen] "registering {decl} as a generalized projection {g.name} \
+      (to_dual translation of: {dual}), keyed on {g.keys}"
     projExt.add g kind }
+
+/-- The structure that the self argument of `g` is an instance of. -/
+def selfStructure (g : GenProj) : MetaM Name := do
+  let (xs, _, _) ← forallMetaBoundedTelescope
+    (g.type.instantiateLevelParams g.levelParams (g.levelParams.map fun _ => Level.zero))
+    (g.selfIdx + 1)
+  let some x := xs[g.selfIdx]? | throwError "not enough arguments in{indentExpr g.type}"
+  let tgt ← whnfD (← inferType x)
+  let some str := tgt.getAppFn.constName? | throwError "{.ofConstName g.declName} is not a \
+    generalized projection of a structure"
+  unless isStructure (← getEnv) str do throwError "{.ofConstName g.declName} is not a \
+    generalized projection of a structure"
+  return str
+
+/-- The names of the projections of the structure `str` that `simps` uses: its fields, and its
+custom projections. -/
+def projNames (str : Name) : CoreM (Array Name) := do
+  let env ← getEnv
+  let custom := (Simps.structureExt.find? env str).elim #[] (·.2.map (·.name))
+  return getStructureFields env str ++ custom
+
+open Lean.Parser.Command Command in
+elab_rules : command
+  | `(initialize_simps_projections!! $ns:ident $[$groups:simpsGenReplace]*) => liftTermElabM do
+    for group in groups do
+      let `(simpsGenReplace| ($p:ident → $qs:ident*)) := group | throwUnsupportedSyntax
+      for q in qs do
+        let decl ← try realizeGlobalConstNoOverloadWithInfo (mkIdentFrom q (ns.getId ++ q.getId))
+          catch _ => realizeGlobalConstNoOverloadWithInfo q
+        let some g := (projExt.getState (← getEnv)).2.find? decl | throwErrorAt q
+          "{.ofConstName decl} is not a generalized projection (registered with `@[simps_proj]`)"
+        let str ← withRef q <| selfStructure g
+        unless (← projNames str).contains p.getId do
+          throwErrorAt p "{p.getId} is not a projection of the structure {.ofConstName str}"
+        hideExt.add (decl, p.getId)
+        -- the `to_dual` translation
+        let some decl' ← dualName? decl | continue
+        let some pDecl' ← dualName? (str ++ p.getId) | continue
+        trace[simps.gen] "{decl'} replaces {pDecl'}"
+        hideExt.add (decl', .mkSimple pDecl'.lastComponentAsString)
 
 initialize registerBuiltinAttribute {
   name := `simpsEta
   descr := "register an η-rule for `simps!!`"
   add := fun decl _ kind => do
+    if (etaExt.getState (← getEnv)).2.contains decl then
+      throwError "`simps_eta`: {.ofConstName decl} is already registered"
     let info ← getConstInfo decl
     let (selfIdx, keys) ← MetaM.run' <| forallTelescope info.type fun xs concl => do
       let some (_, lhs, _) := concl.eq? |
@@ -397,13 +630,12 @@ def simpRhs (e : Expr) (rules : Array Name) : MetaM (Expr × Option Expr) := do
   let (r, _) ← Meta.simp e ctx simprocs
   return (r.expr, r.proof?)
 
-/-- Instantiates the generalized projection `g` for a self argument of type `tgt`: returns the
-body of `g.declName` applied to its parameters (a function of the self argument and the extra
-arguments), or `none` if `g` doesn't apply. -/
+/-- Instantiates the generalized projection `g` for a self argument of type `tgt`: returns
+`g.value` applied to its parameters (a function of the self argument and the extra arguments), or
+`none` if `g` doesn't apply. -/
 def instGenProj (g : GenProj) (tgt : Expr) : MetaM (Option Expr) := do
-  let info ← getConstInfo g.declName
-  let lvls ← mkFreshLevelMVarsFor info
-  let (xs, bis, _) ← forallMetaBoundedTelescope (info.instantiateTypeLevelParams lvls)
+  let lvls ← g.levelParams.mapM fun _ => mkFreshLevelMVar
+  let (xs, bis, _) ← forallMetaBoundedTelescope (g.type.instantiateLevelParams g.levelParams lvls)
     (g.selfIdx + 1)
   let some x := xs[g.selfIdx]? | return none
   unless ← isDefEq (← inferType x) tgt do return none
@@ -414,10 +646,8 @@ def instGenProj (g : GenProj) (tgt : Expr) : MetaM (Option Expr) := do
       unless ← isDefEq p inst do return none
   let params ← params.mapM instantiateMVars
   if params.any (·.hasMVar) then return none
-  let some val := info.value? (allowOpaque := false)
-    | throwError "`simps!!`: the body of {.ofConstName g.declName} is not available"
   let lvls ← lvls.mapM instantiateLevelMVars
-  return (val.instantiateLevelParams info.levelParams lvls).beta params
+  return (g.value.instantiateLevelParams g.levelParams lvls).beta params
 
 /-- How specific the discrimination tree keys `keys` are: the number of keys that aren't `*`. -/
 def specificity (keys : Array DiscrTree.Key) : Nat :=
@@ -441,7 +671,7 @@ def genProjsFor (tgt : Expr) : MetaM (Array (GenProj × Expr)) := do
 several: returns `x'` and a proof of `x = x'`. -/
 def applyEta? (x : Expr) : MetaM (Option (Expr × Expr)) := do
   let tgt ← inferType x
-  let rules ← withReducible <| (etaExt.getState (← getEnv)).getMatch tgt
+  let rules ← withReducible <| (etaExt.getState (← getEnv)).1.getMatch tgt
   -- the most specific rule first (e.g. the one for `kernel f` rather than `equalizer f g`)
   for rule in rules.qsort (specificity ·.keys > specificity ·.keys) do
     let info ← getConstInfo rule.declName
@@ -459,26 +689,6 @@ def applyEta? (x : Expr) : MetaM (Option (Expr × Expr)) := do
     let some (_, _, rhs) := concl.eq? | continue
     return some (rhs, prf)
   return none
-
-/-! ### The unused custom projections linter -/
-
-/-- Initializes the `simps` projections of the structure `str`, as `Simps.getRawProjections`
-does, but without counting generalized projections in the namespace `str.Simps` as unused custom
-projections in `linter.simpsUnusedCustomDeclarations`. -/
-def initProjections (stx : Syntax) (str : Name) : CoreM Unit := do
-  let env ← getEnv
-  if (Simps.structureExt.find? env str).isSome then return
-  let (_, projs) ← withOptions (Lean.Parser.linter.simpsUnusedCustomDeclarations.set · false) <|
-    Simps.getRawProjections stx str
-  let genProjs := (projExt.getState env).2
-  let used := projs.map (str ++ `Simps ++ ·.name)
-  let unused := env.constants.map₂.foldl (init := #[]) fun xs nm _ =>
-    if (str ++ `Simps).isPrefixOf nm && !nm.isInternalDetail && !isReservedName env nm &&
-      !genProjs.contains nm && !used.contains nm then xs.push nm else xs
-  unless unused.isEmpty do
-    Linter.logLintIf Lean.Parser.linter.simpsUnusedCustomDeclarations stx m!"\
-      Not all of the custom declarations {unused} are used. Double check the spelling, and use \
-      `?` to get more information."
 
 /-! ### Generating the lemmas -/
 
@@ -640,14 +850,14 @@ partial def addLemmas (c : Ctx) (n : Node) : MetaM (Array Name) := do
     -- after a generalized projection would be redundant
     (g.recurse || !n.viaGen) &&
     (todo.isEmpty || todoNext.any fun (x, _) => (dropPrefixIfNotNumber? x (g.name ++ "_")).isSome)
-  let hides := gens.flatMap (·.1.hides)
+  let hideMap := hideExt.getState (← getEnv)
+  let hides := gens.flatMap fun (g, _) => hideMap.getD g.declName #[]
   -- the genuine projections
   let str := tgtWhnf.getAppFn.constName?.getD .anonymous
   let env ← getEnv
   let isStr := (getStructureInfo? env str).isSome && !n.eta &&
     !(todo.isEmpty && str ∈ cfg.notRecursive && !n.mustBeStr && n.toApply.isEmpty)
   let rhsEta ← Simps.headStructureEtaReduce rhsAp
-  if isStr then initProjections c.ref str
   let rhsWhnf? ← if isStr then do
       let rhsWhnf ← withTransparency cfg.rhsMd <| whnf rhsEta
       if rhsWhnf.getAppFn.isConstOf (getStructureCtor env str).name then pure (some rhsWhnf)
@@ -734,17 +944,46 @@ def simpsGenTac (ref : Syntax) (declName : Name) (cfg : Simps.Config)
   withoutExporting <| MetaM.run' <| addLemmas { ref, univs := d.levelParams, cfg, rootHead? }
     { nm, type := d.type, lhs, rhs := body, folded := body, args := #[], mustBeStr := true, todo }
 
+/-- The implementation of the `simps!!` attribute: returns the generated lemmas. -/
+def simpsGenImpl (decl : Name) (stx : Syntax) : AttrM (Array Name) := do
+  match stx with
+  | `(attr| simps!! $[?%$trc]? $c:simpsConfig $[$ids]*) =>
+    let cfg ← Simps.elabSimpsConfig c
+    let cfg := { cfg with rhsMd := .default, simpRhs := true }
+    let ids := ids.map fun x => (x.getId.eraseMacroScopes.lastComponentAsString, x.raw)
+    simpsGenTac stx decl cfg ids.toList trc.isSome
+  | _ => throwUnsupportedSyntax
+
 initialize registerBuiltinAttribute {
   name := `simpsGen
   descr := "`simps!` with generalized projections"
   applicationTime := .afterCompilation
-  add := fun decl stx _ => do
-    match stx with
-    | `(attr| simps!! $[?%$trc]? $c:simpsConfig $[$ids]*) =>
-      let cfg ← Simps.elabSimpsConfig c
-      let cfg := { cfg with rhsMd := .default, simpRhs := true }
-      let ids := ids.map fun x => (x.getId.eraseMacroScopes.lastComponentAsString, x.raw)
-      discard <| simpsGenTac stx decl cfg ids.toList trc.isSome
-    | _ => throwUnsupportedSyntax }
+  add := fun decl stx _ => discard <| simpsGenImpl decl stx }
+
+/-- The lemmas generated by `to_dual (attr := simps!!)` for the declarations it was applied to
+first (`simps!!` is applied to a declaration first, and then to its dual). -/
+initialize toDualLemmasRef : IO.Ref (NameMap (Array Name)) ← IO.mkRef {}
+
+/- With `@[to_dual (attr := simps!!)]`, the lemmas generated for the declaration and for its dual
+are translations of each other.
+
+Their `reassoc` versions (added by the attributes of generalized projections) aren't: as `reassoc`
+does for lemmas with a `to_dual` translation, we tag them `to_dual none`. This needs the
+translations of the lemmas themselves, so we add those here, when `simps!!` is applied to the
+dual declaration, rather than leaving them to `to_dual`. -/
+initialize registerGeneratingAttr `simpsGen fun decl stx _ => do
+  let lemmas ← simpsGenImpl decl stx
+  let some src ← dualName? decl | return lemmas
+  let some srcLemmas := (← toDualLemmasRef.get).find? src |
+    toDualLemmasRef.modify (·.insert decl lemmas)
+    return lemmas
+  toDualLemmasRef.modify (·.erase src)
+  Translate.insertTranslationsChecked ToDual.data srcLemmas lemmas { ref := stx }
+  for nm in srcLemmas ++ lemmas do
+    let nmAssoc := nm.appendAfter "_assoc"
+    if (← getEnv).contains nmAssoc then
+      liftCommandElabM <| Command.elabCommand <| ←
+        `(command| attribute [to_dual none] $(mkIdent nmAssoc))
+  return lemmas
 
 end Simps.Gen

@@ -5,10 +5,10 @@ import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 /-! # Tests for `simps!!` with colimits
 
 The dual of `GeneralizedLimits.lean`. The shape of the registrations is reversed: the
-field-like projections (`inl ≫ h`, `π ≫ h`) are *precompositions*, keyed on morphisms out of the
-colimit, and named before the last component (`e_inl_hom`, after the skill's naming); the
-universal property (`h ≫ desc a b w`) is a *postcomposition*, keyed on morphisms into the
-colimit (`e_hom_desc`).
+field-like projections (`inl ≫ h`, `π ≫ h`) are *precompositions* (`precomp`), keyed on morphisms
+out of the colimit, and named before the last component (`e_inl_hom`); the universal property
+(`h ≫ desc a b w`) is a *postcomposition* (`comp`), keyed on morphisms into the colimit
+(`e_hom_desc`).
 -/
 
 open CategoryTheory Limits
@@ -25,25 +25,13 @@ variable {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z}
 
 /-! ### Registration -/
 
-@[simps_proj (hide := ι)]
-abbrev PushoutCocone.Simps.inl (c : PushoutCocone f g) : Y ⟶ c.pt := c.inl
+attribute [local simps_proj] PushoutCocone.inl PushoutCocone.inr
 
-@[simps_proj (hide := ι)]
-abbrev PushoutCocone.Simps.inr (c : PushoutCocone f g) : Z ⟶ c.pt := c.inr
+initialize_simps_projections!! PushoutCocone (ι → inl inr)
 
-@[simps_proj (name := inl) precomp (rules := pushout.inl_desc) (attr := reassoc (attr := simp))]
-noncomputable abbrev pushoutInl [HasPushout f g] {W : C} (h : pushout f g ⟶ W) : Y ⟶ W :=
-  pushout.inl f g ≫ h
+attribute [local simps_proj precomp (attr := reassoc (attr := simp))] pushout.inl pushout.inr
 
-@[simps_proj (name := inr) precomp (rules := pushout.inr_desc) (attr := reassoc (attr := simp))]
-noncomputable abbrev pushoutInr [HasPushout f g] {W : C} (h : pushout f g ⟶ W) : Z ⟶ W :=
-  pushout.inr f g ≫ h
-
-@[simps_proj (name := desc) noRecurse (rules := pushout.inl_desc, pushout.inr_desc)
-  (attr := reassoc (attr := simp))]
-noncomputable abbrev pushoutCompDesc [HasPushout f g] {V : C} (h : V ⟶ pushout f g) {W : C}
-    (a : Y ⟶ W) (b : Z ⟶ W) (w : f ≫ a = g ≫ b) : V ⟶ W :=
-  h ≫ pushout.desc a b w
+attribute [local simps_proj comp noRecurse (attr := reassoc (attr := simp))] pushout.desc
 
 @[simps_eta]
 theorem pushout_eta [HasPushout f g] {W : C} (h : pushout f g ⟶ W) :
@@ -133,19 +121,15 @@ section Coequalizer
 
 variable {X Y : C} {f g : X ⟶ Y}
 
-@[simps_proj (hide := ι)]
-abbrev Cofork.Simps.π (c : Cofork f g) : Y ⟶ c.pt := c.π
+attribute [local simps_proj] Cofork.π
 
-@[simps_proj (name := π) precomp (rules := coequalizer.π_desc) (attr := reassoc (attr := simp))]
-noncomputable abbrev coequalizerπ [HasCoequalizer f g] {W : C} (h : coequalizer f g ⟶ W) :
-    Y ⟶ W :=
-  coequalizer.π f g ≫ h
+initialize_simps_projections!! Cofork (ι → π)
 
-@[simps_proj (name := desc) noRecurse (rules := coequalizer.π_desc)
-  (attr := reassoc (attr := simp))]
-noncomputable abbrev compCoequalizerDesc [HasCoequalizer f g] {V : C} (h : V ⟶ coequalizer f g)
-    {W : C} (k : Y ⟶ W) (w : f ≫ k = g ≫ k) : V ⟶ W :=
-  h ≫ coequalizer.desc k w
+attribute [local simps_proj precomp (rules := coequalizer.π_desc)
+  (attr := reassoc (attr := simp))] coequalizer.π
+
+attribute [local simps_proj comp noRecurse (rules := coequalizer.π_desc)
+  (attr := reassoc (attr := simp))] coequalizer.desc
 
 @[simps_eta]
 theorem coequalizer_eta [HasCoequalizer f g] {W : C} (h : coequalizer f g ⟶ W) :
@@ -153,10 +137,9 @@ theorem coequalizer_eta [HasCoequalizer f g] {W : C} (h : coequalizer f g ⟶ W)
       (by rw [← Category.assoc, ← Category.assoc, coequalizer.condition]) := by
   ext; simp
 
-@[simps_proj (name := desc) (hide := desc)]
-abbrev Cofork.IsColimit.Simps.desc {c : Cofork f g} (hc : IsColimit c) {W : C} (k : Y ⟶ W)
-    (hk : f ≫ k = g ≫ k) : c.pt ⟶ W :=
-  Cofork.IsColimit.desc hc k hk
+attribute [local simps_proj] Cofork.IsColimit.desc
+
+initialize_simps_projections!! Cofork.IsColimit (desc → desc)
 
 @[simps!!]
 def cofork {P : C} (π : Y ⟶ P) (w : f ≫ π = g ≫ π) : Cofork f g := Cofork.ofπ π w
@@ -202,19 +185,9 @@ section Coprod
 
 variable {X Y : C}
 
-@[simps_proj (name := inl) precomp (rules := coprod.inl_desc) (attr := reassoc (attr := simp))]
-noncomputable abbrev coprodInl [HasBinaryCoproduct X Y] {W : C} (h : X ⨿ Y ⟶ W) : X ⟶ W :=
-  coprod.inl ≫ h
+attribute [local simps_proj precomp (attr := reassoc (attr := simp))] coprod.inl coprod.inr
 
-@[simps_proj (name := inr) precomp (rules := coprod.inr_desc) (attr := reassoc (attr := simp))]
-noncomputable abbrev coprodInr [HasBinaryCoproduct X Y] {W : C} (h : X ⨿ Y ⟶ W) : Y ⟶ W :=
-  coprod.inr ≫ h
-
-@[simps_proj (name := desc) noRecurse (rules := coprod.inl_desc, coprod.inr_desc)
-  (attr := reassoc (attr := simp))]
-noncomputable abbrev compCoprodDesc [HasBinaryCoproduct X Y] {V : C} (h : V ⟶ X ⨿ Y) {W : C}
-    (a : X ⟶ W) (b : Y ⟶ W) : V ⟶ W :=
-  h ≫ coprod.desc a b
+attribute [local simps_proj comp noRecurse (attr := reassoc (attr := simp))] coprod.desc
 
 @[simps_eta]
 theorem coprod_eta [HasBinaryCoproduct X Y] {W : C} (h : X ⨿ Y ⟶ W) :

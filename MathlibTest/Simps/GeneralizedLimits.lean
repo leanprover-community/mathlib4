@@ -13,25 +13,13 @@ variable {C : Type*} [Category* C] {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z}
 
 /-! ### Registration -/
 
-@[simps_proj (hide := π)]
-abbrev PullbackCone.Simps.fst (c : PullbackCone f g) : c.pt ⟶ X := c.fst
+attribute [local simps_proj] PullbackCone.fst PullbackCone.snd
 
-@[simps_proj (hide := π)]
-abbrev PullbackCone.Simps.snd (c : PullbackCone f g) : c.pt ⟶ Y := c.snd
+initialize_simps_projections!! PullbackCone (π → fst snd)
 
-@[simps_proj (name := fst) (rules := pullback.lift_fst) (attr := reassoc (attr := simp))]
-noncomputable abbrev pullbackFst [HasPullback f g] {W : C} (h : W ⟶ pullback f g) : W ⟶ X :=
-  h ≫ pullback.fst f g
+attribute [local simps_proj comp (attr := reassoc (attr := simp))] pullback.fst pullback.snd
 
-@[simps_proj (name := snd) (rules := pullback.lift_snd) (attr := reassoc (attr := simp))]
-noncomputable abbrev pullbackSnd [HasPullback f g] {W : C} (h : W ⟶ pullback f g) : W ⟶ Y :=
-  h ≫ pullback.snd f g
-
-@[simps_proj (name := lift) precomp noRecurse (rules := pullback.lift_fst, pullback.lift_snd)
-  (attr := reassoc (attr := simp))]
-noncomputable abbrev pullbackLiftComp [HasPullback f g] {V : C} (h : pullback f g ⟶ V) {W : C}
-    (a : W ⟶ X) (b : W ⟶ Y) (w : a ≫ f = b ≫ g) : W ⟶ V :=
-  pullback.lift a b w ≫ h
+attribute [local simps_proj precomp noRecurse (attr := reassoc (attr := simp))] pullback.lift
 
 @[simps_eta]
 theorem pullback_eta [HasPullback f g] {W : C} (h : W ⟶ pullback f g) :
@@ -75,16 +63,16 @@ noncomputable def idPb [HasPullback (𝟙 Z) g] : pullback (𝟙 Z) g ≅ Y wher
 
 variable {f' g' : X ⟶ Y}
 
-@[simps_proj (hide := π)]
-abbrev Fork.Simps.ι (c : Fork f' g') : c.pt ⟶ X := c.ι
+attribute [local simps_proj] Fork.ι
+
+initialize_simps_projections!! Fork (π → ι)
 
 @[simps!!]
 def fork {P : C} (ι : P ⟶ X) (w : ι ≫ f' = ι ≫ g') : Fork f' g' := Fork.ofι ι w
 
-@[simps_proj (name := lift) (hide := lift)]
-abbrev Fork.IsLimit.Simps.lift {c : Fork f' g'} (hc : IsLimit c) {W : C} (k : W ⟶ X)
-    (hk : k ≫ f' = k ≫ g') : W ⟶ c.pt :=
-  Fork.IsLimit.lift hc k hk
+attribute [local simps_proj] Fork.IsLimit.lift
+
+initialize_simps_projections!! Fork.IsLimit (lift → lift)
 
 @[simps!!]
 def forkIsLimit {P : C} (ι : P ⟶ X) (w : ι ≫ f' = ι ≫ g') [Mono ι]
@@ -152,6 +140,29 @@ example {W : C} (k : W ⟶ X) (hk : k ≫ f' = k ≫ g') :
     Fork.IsLimit.lift (forkIsLimit ι w lift fac) k hk = lift k hk := by
   simp
 
+end
+
+/-! ### Arguments that the self argument doesn't determine
+
+In `BinaryFan.IsLimit.lift {W : C} {s : BinaryFan X Y} (h : IsLimit s) (f : W ⟶ X) (g : W ⟶ Y)`,
+`W` comes before the self argument `h`, but its type doesn't determine it: `W` is moved after `h`,
+with `f` and `g`. -/
+
+attribute [local simps_proj (self := h)] BinaryFan.IsLimit.lift
+
+initialize_simps_projections!! BinaryFan.IsLimit (lift → lift)
+
+section
+variable [HasBinaryProduct X Y]
+
+@[simps!!]
+noncomputable def fanIsLimit : IsLimit (BinaryFan.mk (prod.fst : X ⨯ Y ⟶ X) prod.snd) :=
+  prodIsProd X Y
+
+example {W : C} (a : W ⟶ X) (b : W ⟶ Y) :
+    BinaryFan.IsLimit.lift fanIsLimit a b = prod.lift a b :=
+  fanIsLimit_lift a b
+#guard_msgs (drop error) in #check fanIsLimit_lift_1
 end
 
 end SimpsGenTest
