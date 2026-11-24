@@ -720,6 +720,10 @@ namespace Quaternion
 
 variable {S T R : Type*} [CommRing R] (r x y : R) (a b : ℍ[R])
 
+/-- Coercion `R → ℍ[R]`. -/
+@[deprecated "use the automatic coercion `↑` instead" (since := "2026-11-24")]
+def coe : R → ℍ[R] := QuaternionAlgebra.coe
+
 @[ext]
 theorem ext : a.re = b.re → a.imI = b.imI → a.imJ = b.imJ → a.imK = b.imK → a = b :=
   QuaternionAlgebra.ext
