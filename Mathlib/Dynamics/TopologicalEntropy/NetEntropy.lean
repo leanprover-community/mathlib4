@@ -47,6 +47,7 @@ we chose the `limsup` definition as the default.
   defined with covers and with nets. Has a variant for `coverEntropyInf`.
 
 ## Tags
+
 net, entropy
 
 ## TODO

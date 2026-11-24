@@ -26,6 +26,7 @@ in the extended reals `EReal`, with `log 0 = ⊥` and `log ⊤ = ⊤`.
   (with either `y ∈ ℕ` or `y ∈ ℝ`).
 
 ## Tags
+
 ENNReal, EReal, logarithm
 -/
 

@@ -42,6 +42,7 @@ provides a tautological morphism `B i ⟶ functorObj f πX`
 (see `SmallObject.ιFunctorObj_extension`).
 
 ## References
+
 - https://ncatlab.org/nlab/show/small+object+argument
 -/
 

@@ -37,6 +37,7 @@ general, the constructions of fiber bundles we will make will be of this form.
   fiber bundle.
 
 ## References
+
 - https://en.wikipedia.org/wiki/Bundle_(mathematics)
 -/
 

@@ -81,6 +81,7 @@ together.
   one about `skeletonLT`.
 
 ## References
+
 * [A. Hatcher, *Algebraic Topology*][hatcher02]
 -/
 

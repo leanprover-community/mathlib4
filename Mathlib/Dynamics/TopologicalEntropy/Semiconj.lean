@@ -52,6 +52,7 @@ We use only the definition of the topological entropy using covers; the simplest
   `coverEntropy S F`.
 
 ## Tags
+
 entropy, semiconjugacy
 -/
 

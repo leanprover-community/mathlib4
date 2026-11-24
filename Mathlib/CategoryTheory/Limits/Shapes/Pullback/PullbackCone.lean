@@ -65,6 +65,7 @@ Interaction with `CommSq`:
   cocone associated with a commuting square
 
 ## References
+
 * [Stacks: Fibre products](https://stacks.math.columbia.edu/tag/001U)
 * [Stacks: Pushouts](https://stacks.math.columbia.edu/tag/0025)
 -/
