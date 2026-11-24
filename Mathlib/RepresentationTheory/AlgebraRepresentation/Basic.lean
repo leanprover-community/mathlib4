@@ -9,6 +9,9 @@ public import Mathlib.FieldTheory.IsAlgClosed.Basic
 
 import Mathlib.RingTheory.SimpleModule.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic facts about algebra representations
 

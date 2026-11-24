@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 public import Mathlib.CategoryTheory.Limits.Types.Filtered
 public import Mathlib.Order.Category.PartOrd
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Category of partial orders, with order embeddings as morphisms
 

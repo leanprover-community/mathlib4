@@ -37,6 +37,7 @@ import Mathlib.CategoryTheory.Limits.Types.Pullbacks
   finitary extensive category are van Kampen.
 
 ## References
+
 - https://ncatlab.org/nlab/show/extensive+category
 - [Carboni et al, Introduction to extensive and distributive categories][CARBONI1993145]
 -/

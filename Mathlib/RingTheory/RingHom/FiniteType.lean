@@ -11,6 +11,9 @@ import Mathlib.RingTheory.FiniteStability
 import Mathlib.RingTheory.Finiteness.FiniteTypeLocal
 import Mathlib.RingTheory.Localization.InvSubmonoid
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The meta properties of finite-type ring homomorphisms.
 

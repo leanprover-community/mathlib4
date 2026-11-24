@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.Hom.Basic
 public import Mathlib.Tactic.Tauto
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Turning a preorder into a partial order
 

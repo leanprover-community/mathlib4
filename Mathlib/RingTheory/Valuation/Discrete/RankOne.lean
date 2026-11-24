@@ -18,6 +18,7 @@ public import Mathlib.RingTheory.Valuation.RankOne
 * `Valuation.IsRankOneDiscrete.rankOne` : a discrete valuation has rank one.
 
 ## Tags
+
 valuation, discrete, rank one
 -/
 

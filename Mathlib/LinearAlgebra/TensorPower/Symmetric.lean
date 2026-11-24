@@ -9,6 +9,9 @@ public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
 
 import Mathlib.Tactic.SuppressCompilation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Symmetric tensor power of a semimodule over a commutative semiring
 
