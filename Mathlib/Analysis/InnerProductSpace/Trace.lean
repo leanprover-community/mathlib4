@@ -163,7 +163,7 @@ variable [FiniteDimensional ℂ E]
 instance : Finite (traceBasisIndex E) :=
   (traceBasis E).orthonormal.linearIndependent.finite
 
-theorem toLinearMap_trace : A.toLinearMap.trace ℂ E = A.trace := by
+theorem trace_toLinearMap : A.toLinearMap.trace ℂ E = A.trace := by
   have := Fintype.ofFinite (traceBasisIndex E)
   simp [trace_def, traceOfBasis_def,
     LinearMap.trace_eq_sum_inner _ (traceBasis E).toOrthonormalBasis]
