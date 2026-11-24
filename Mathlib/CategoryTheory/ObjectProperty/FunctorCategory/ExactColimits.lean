@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory.PreservesLim
 
 import Mathlib.CategoryTheory.Limits.ColimitLimit
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Exact colimits and preservation of limits
 

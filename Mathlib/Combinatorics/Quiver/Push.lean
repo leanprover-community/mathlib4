@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Combinatorics.Quiver.Prefunctor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pushing a quiver structure along a map
 

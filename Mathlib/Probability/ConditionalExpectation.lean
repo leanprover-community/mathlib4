@@ -8,6 +8,9 @@ module
 public import Mathlib.Probability.Independence.Basic
 public import Mathlib.Probability.Notation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Probabilistic properties of the conditional expectation
 

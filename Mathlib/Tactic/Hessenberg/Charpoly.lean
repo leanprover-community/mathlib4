@@ -45,7 +45,7 @@ The theorem `ofCoeffList_coeffHessCharpoly` interprets the result as `hessCharpo
 - `charpoly_eq_hessCharpoly`: `hessCharpoly` computes the characteristic polynomial of an upper
   Hessenberg matrix.
 
-## Implementation details
+## Implementation notes
 
 The derivation of the recurrence formula for an `n x n` upper Hessenberg matrix `H` follows by
 Laplace expansion of the determinant of the characteristic matrix, `CH`, for `H` along its last
