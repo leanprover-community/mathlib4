@@ -131,11 +131,11 @@ end
 theorem exists_mul_mod_eq_gcd {k n : ℕ} (hk : gcd n k < k) : ∃ m < k, n * m % k = gcd n k := by
   have hk' := Int.ofNat_ne_zero.2 (Nat.zero_lt_of_lt hk).ne'
   have key := congr(($(gcd_eq_gcd_ab n k) % k).toNat)
-  rw [Int.add_mul_emod_self_left, ← Int.natCast_mod, Int.toNat_natCast, mod_eq_of_lt hk] at key
+  rw [Int.add_mul_emod_self_left, ← Int.natCast_emod, Int.toNat_natCast, mod_eq_of_lt hk] at key
   refine ⟨(n.gcdA k % k).toNat, ?_, (Int.ofNat_inj.1 ?_).trans key.symm⟩
   · rw [Int.toNat_lt (Int.emod_nonneg _ hk')]
     exact Int.emod_lt _ hk'
-  rw [Int.natCast_mod, Int.natCast_mul, Int.toNat_of_nonneg (Int.emod_nonneg _ hk'),
+  rw [Int.natCast_emod, Int.natCast_mul, Int.toNat_of_nonneg (Int.emod_nonneg _ hk'),
     Int.toNat_of_nonneg (Int.emod_nonneg _ hk'), Int.mul_emod, Int.emod_emod, ← Int.mul_emod]
 
 theorem exists_mul_mod_eq_one_of_coprime {k n : ℕ} (hkn : Coprime n k) (hk : 1 < k) :
