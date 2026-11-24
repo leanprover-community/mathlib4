@@ -165,6 +165,10 @@ theorem isField (h₁U : IsPreconnected U) (h₂U : U.Nontrivial) : IsField (fun
 /--
 The field of meromorphic functions on a preconnected set with at least two points: field instance
 for the ring of meromorphic functions, with the pointwise inverse.
+
+The rational casts and the scalar multiplications by rational numbers are defined pointwise on
+representatives. This ensures that they agree definitionally with the structures that
+`functionRing 𝕜 𝕜' U` inherits from the algebra of germs.
 -/
 noncomputable instance instField [h₁U : Fact (IsPreconnected U)] [h₂U : Fact U.Nontrivial] :
     Field (functionRing 𝕜 𝕜' U) where
@@ -172,8 +176,32 @@ noncomputable instance instField [h₁U : Fact (IsPreconnected U)] [h₂U : Fact
   exists_pair_ne := exists_pair_ne _
   mul_inv_cancel _ ha := FunctionRing.mul_inv_cancel h₁U.out ha
   inv_zero := FunctionRing.inv_zero
-  nnqsmul := _
-  qsmul := _
+  nnratCast q := ⟨((fun _ ↦ (q : 𝕜') : 𝕜 → 𝕜') : Germ (codiscreteWithin U) 𝕜'),
+    coe_mem_functionRing (const _)⟩
+  nnratCast_def q := Subtype.ext <| congrArg Germ.ofFun <| funext fun _ ↦
+    (NNRat.cast_def q).trans (div_eq_mul_inv _ _)
+  nnqsmul q a := ⟨q • (a : Germ (codiscreteWithin U) 𝕜'), by
+    obtain ⟨f, hf, hfa⟩ := mem_functionRing_iff.1 a.property
+    refine mem_functionRing_iff.2 ⟨fun z ↦ (q : 𝕜') * f z, (const _).mul hf, ?_⟩
+    rw [← hfa]
+    exact congrArg Germ.ofFun (funext fun z ↦ (NNRat.smul_def q (f z)).symm)⟩
+  nnqsmul_def q a := by
+    obtain ⟨a, ha⟩ := a
+    induction a using Germ.inductionOn with | _ f =>
+    exact Subtype.ext (congrArg Germ.ofFun (funext fun z ↦ NNRat.smul_def q (f z)))
+  ratCast q := ⟨((fun _ ↦ (q : 𝕜') : 𝕜 → 𝕜') : Germ (codiscreteWithin U) 𝕜'),
+    coe_mem_functionRing (const _)⟩
+  ratCast_def q := Subtype.ext <| congrArg Germ.ofFun <| funext fun _ ↦
+    (Rat.cast_def q).trans (div_eq_mul_inv _ _)
+  qsmul q a := ⟨q • (a : Germ (codiscreteWithin U) 𝕜'), by
+    obtain ⟨f, hf, hfa⟩ := mem_functionRing_iff.1 a.property
+    refine mem_functionRing_iff.2 ⟨fun z ↦ (q : 𝕜') * f z, (const _).mul hf, ?_⟩
+    rw [← hfa]
+    exact congrArg Germ.ofFun (funext fun z ↦ (Rat.smul_def q (f z)).symm)⟩
+  qsmul_def q a := by
+    obtain ⟨a, ha⟩ := a
+    induction a using Germ.inductionOn with | _ f =>
+    exact Subtype.ext (congrArg Germ.ofFun (funext fun z ↦ Rat.smul_def q (f z)))
 
 /--
 On a preconnected set with at least two points, the ring of meromorphic functions is a domain.
