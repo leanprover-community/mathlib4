@@ -106,7 +106,7 @@ theorem of_eq_zero_of_mul_self_of_eq_zero_of_add [AddCommMonoid R] [Mul R]
     intro x hx
     induction hx with
     | sq ha => grind
-    | @sq_add b s hb hs ih => grind [ha (IsSumSq.mul_self b) hs.isSumSq]
+    | @sq_add b s hb hs ih => grind [ha (.mul_self b) hs.isSumSq]
 
 theorem of_eq_zero_of_mul_self_add [NonUnitalNonAssocSemiring R]
     (h : ∀ {s a : R}, IsSumSq s → a * a + s = 0 → a = 0) : IsFormallyReal R where
@@ -114,7 +114,7 @@ theorem of_eq_zero_of_mul_self_add [NonUnitalNonAssocSemiring R]
     suffices ∀ (x : R), IsSumNonzeroSq x → x ≠ 0 by grind
     intro x hx
     induction hx with
-    | sq ha => exact fun hc ↦ ha (h IsSumSq.zero (by simpa using hc))
+    | sq ha => exact fun hc ↦ ha (h .zero (by simpa using hc))
     | sq_add ha hs ih => grind [hs.isSumSq]
 
 @[deprecated (since := "2026-11-24")]
