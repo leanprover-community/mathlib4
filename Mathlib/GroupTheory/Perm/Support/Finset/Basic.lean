@@ -141,7 +141,7 @@ theorem isInvariant_of_supportFinset_subset {c : Perm α} {s : Finset α} (hcs :
 
 /-- A permutation c is the extension of a restriction of g to s
   iff its support is contained in s and its restriction is that of g -/
-lemma ofSubtype_eq_iff_supportFinset_subset {g c : Equiv.Perm α} {s : Finset α}
+lemma ofSubtype_subtypePerm_eq_iff_supportFinset_subset {g c : Equiv.Perm α} {s : Finset α}
     (hg : ∀ x, g x ∈ s ↔ x ∈ s) :
     ofSubtype (g.subtypePerm hg) = c ↔
       c.supportFinset ⊆ s ∧
@@ -164,7 +164,7 @@ lemma ofSubtype_eq_iff_supportFinset_subset {g c : Equiv.Perm α} {s : Finset α
       exact Finset.notMem_mono hc ha
 
 @[deprecated (since := "2026-11-16")] alias ofSubtype_eq_iff :=
-    ofSubtype_eq_iff_supportFinset_subset
+    ofSubtype_subtypePerm_eq_iff_supportFinset_subset
 
 theorem supportFinset_ofSubtype {p : α → Prop} [DecidablePred p] (u : Perm (Subtype p)) :
     (ofSubtype u).supportFinset = u.supportFinset.map (Function.Embedding.subtype p) := by
