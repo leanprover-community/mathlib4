@@ -7,8 +7,6 @@ public import Mathlib.Tactic.TacticAnalysis.Declarations
 
 @[expose] public section
 
-set_option linter.unusedTactic false
-
 section terminalReplacement
 
 section omega
@@ -335,6 +333,8 @@ example : 1 + 1 = 2 := by
   #adaptation_note /-- -/
   grind
 
+set_option linter.unusedTactic false
+
 /--
 info: 'skip; grind' can be replaced with 'grind'
 
@@ -351,6 +351,8 @@ example : 0 = 0 := by
   intros
   skip
   grind
+
+set_option linter.unusedTactic true
 
 -- This is a false positive. Before `convert_to`, there is an mvar for the `DecidableEq` instance
 -- used with `Finset.instInsert` that is not properly handled
@@ -589,6 +591,10 @@ example : 1 + 1 = 2 := by
   rfl
 
 /--
+warning: Unused tactic linter: `skip` does not change the goal.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+---
 info: `skip` (+1 later steps) can be replaced with `grind`
 
 Note: This linter can be disabled with `set_option linter.tacticAnalysis.tryAtEachStepGrind false`
@@ -688,6 +694,7 @@ section laterSteps
 
 set_option linter.tacticAnalysis.tryAtEachStep.showTiming false
 set_option linter.tacticAnalysis.tryAtEachStepGrind true
+set_option linter.unusedTactic false
 
 -- Test that later steps are counted correctly
 /--
@@ -735,6 +742,8 @@ example : x = y := by
 
 set_option linter.unusedVariables false in
 theorem create_a_few_goals (h1 : 1 + 1 = 2) (h2 : y = z) : x = y := rfl
+
+set_option linter.unusedTactic false
 
 -- We should not complain about `omega` (and others) failing in an `any_goals` context.
 example : x = y := by
