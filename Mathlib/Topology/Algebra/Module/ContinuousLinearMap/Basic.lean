@@ -162,13 +162,19 @@ theorem coe_inj {f g : M₁ →SL[σ₁₂] M₂} : (f : M₁ →ₛₗ[σ₁₂
 theorem coeFn_injective : @Function.Injective (M₁ →SL[σ₁₂] M₂) (M₁ → M₂) (↑) :=
   DFunLike.coe_injective
 
+def toContinuousAddMonoidHom (f : M₁ →SL[σ₁₂] M₂) : M₁ →ₜ+ M₂ := .ofClass f
+
+@[simp]
+lemma coe_toContinuousAddMonoidHom (f : M₁ →SL[σ₁₂] M₂) : ⇑f.toContinuousAddMonoidHom = f := rfl
+
 theorem toContinuousAddMonoidHom_injective :
-    Function.Injective ((↑) : (M₁ →SL[σ₁₂] M₂) → ContinuousAddMonoidHom M₁ M₂) :=
+    Function.Injective
+      (toContinuousAddMonoidHom : (M₁ →SL[σ₁₂] M₂) → ContinuousAddMonoidHom M₁ M₂) :=
   (DFunLike.coe_injective.of_comp_iff _).1 DFunLike.coe_injective
 
-@[simp, norm_cast]
+@[simp]
 theorem toContinuousAddMonoidHom_inj {f g : M₁ →SL[σ₁₂] M₂} :
-    (f : ContinuousAddMonoidHom M₁ M₂) = g ↔ f = g :=
+    f.toContinuousAddMonoidHom = g.toContinuousAddMonoidHom ↔ f = g :=
   toContinuousAddMonoidHom_injective.eq_iff
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
@@ -346,9 +352,9 @@ theorem toLinearMap_zero : ((0 : M₁ →SL[σ₁₂] M₂) : M₁ →ₛₗ[σ�
 
 @[deprecated (since := "2026-05-20")] alias coe_zero' := FunLike.coe_zero
 
-@[simp, norm_cast]
+@[simp]
 theorem toContinuousAddMonoidHom_zero :
-    ((0 : M₁ →SL[σ₁₂] M₂) : ContinuousAddMonoidHom M₁ M₂) = 0 := rfl
+    (0 : M₁ →SL[σ₁₂] M₂).toContinuousAddMonoidHom = 0 := rfl
 
 instance uniqueOfLeft [Subsingleton M₁] : Unique (M₁ →SL[σ₁₂] M₂) :=
   coe_injective.unique
@@ -397,9 +403,9 @@ theorem toLinearMap_one : ((1 : M₁ →L[R₁] M₁) : M₁ →ₗ[R₁] M₁) 
 @[simp] lemma mk_id : mk (.id : M₁ →ₗ[R₁] M₁) continuous_id = .id _ _ := rfl
 @[simp] lemma mk_one : mk (1 : M₁ →ₗ[R₁] M₁) continuous_id = 1 := rfl
 
-@[simp, norm_cast]
+@[simp]
 theorem toContinuousAddMonoidHom_id :
-    (ContinuousLinearMap.id R₁ M₁ : ContinuousAddMonoidHom M₁ M₁) = .id _ := rfl
+    (ContinuousLinearMap.id R₁ M₁).toContinuousAddMonoidHom = .id _ := rfl
 
 @[simp, norm_cast]
 theorem coe_eq_id {f : M₁ →L[R₁] M₁} : (f : M₁ →ₗ[R₁] M₁) = LinearMap.id ↔ f = .id _ _ := by
@@ -430,9 +436,10 @@ theorem toLinearMap_add (f g : M₁ →SL[σ₁₂] M₂) : (↑(f + g) : M₁ �
 
 @[deprecated (since := "2026-05-20")] alias coe_add' := FunLike.coe_add
 
-@[simp, norm_cast]
+@[simp]
 theorem toContinuousAddMonoidHom_add (f g : M₁ →SL[σ₁₂] M₂) :
-    ↑(f + g) = (f + g : ContinuousAddMonoidHom M₁ M₂) := rfl
+    (f + g).toContinuousAddMonoidHom =
+      f.toContinuousAddMonoidHom + g.toContinuousAddMonoidHom := rfl
 
 -- The `AddMonoid` instance exists to help speedup unification
 instance : AddMonoid (M₁ →SL[σ₁₂] M₂) := fast_instance% FunLike.addMonoid
@@ -478,9 +485,10 @@ theorem coe_comp (h : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂)
 
 @[deprecated (since := "2026-05-20")] alias coe_comp' := coe_comp
 
-@[simp, norm_cast]
+@[simp]
 theorem toContinuousAddMonoidHom_comp (h : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂) :
-    (↑(h ∘SL f) : ContinuousAddMonoidHom M₁ M₃) = (h : ContinuousAddMonoidHom M₂ M₃).comp f := rfl
+    (h ∘SL f).toContinuousAddMonoidHom =
+      h.toContinuousAddMonoidHom.comp f.toContinuousAddMonoidHom := rfl
 
 @[simp, grind =]
 theorem comp_apply (g : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂) (x : M₁) : (g ∘SL f) x = g (f x) :=
@@ -841,9 +849,9 @@ theorem toLinearMap_neg (f : M →SL[σ₁₂] M₂) : (↑(-f) : M →ₛₗ[σ
 
 @[deprecated (since := "2026-05-20")] alias coe_neg' := FunLike.coe_neg
 
-@[simp, norm_cast]
+@[simp]
 theorem toContinuousAddMonoidHom_neg (f : M →SL[σ₁₂] M₂) :
-    ↑(-f) = -(f : ContinuousAddMonoidHom M M₂) := rfl
+    (-f).toContinuousAddMonoidHom = -f.toContinuousAddMonoidHom := rfl
 
 instance sub : Sub (M →SL[σ₁₂] M₂) :=
   ⟨fun f g => ⟨f - g, f.cont.sub g.cont⟩⟩
@@ -862,9 +870,10 @@ theorem toLinearMap_sub (f g : M →SL[σ₁₂] M₂) : (↑(f - g) : M →ₛ�
 
 @[deprecated (since := "2026-05-20")] alias coe_sub' := FunLike.coe_sub
 
-@[simp, norm_cast]
+@[simp]
 theorem toContinuousAddMonoidHom_sub (f g : M →SL[σ₁₂] M₂) :
-    ↑(f - g) = (f - g : ContinuousAddMonoidHom M M₂) := rfl
+    (f - g).toContinuousAddMonoidHom =
+      f.toContinuousAddMonoidHom - g.toContinuousAddMonoidHom := rfl
 
 end
 
