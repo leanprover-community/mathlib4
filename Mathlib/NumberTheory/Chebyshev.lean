@@ -906,9 +906,8 @@ meta def evalTheta : PositivityExt where eval {u α} _zα pα? e :=
   match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@Chebyshev.theta $a) =>
-    catchNone do
-      assertInstancesCommute
-      pure (.nonnegative q(Chebyshev.theta_nonneg $a))
+    assertInstancesCommute
+    pure (.nonnegative q(Chebyshev.theta_nonneg $a))
   | _, _, _ => throwError "not theta"
 
 /-- Extension for the `positivity` tactic: the second Chebyshev function is nonnegative. -/
@@ -917,9 +916,8 @@ meta def evalPsi : PositivityExt where eval {u α} _zα pα? e :=
   match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@Chebyshev.psi $a) =>
-    catchNone do
-      assertInstancesCommute
-      pure (.nonnegative q(Chebyshev.psi_nonneg $a))
+    assertInstancesCommute
+    pure (.nonnegative q(Chebyshev.psi_nonneg $a))
   | _, _, _ => throwError "not psi"
 
 end Mathlib.Meta.Positivity

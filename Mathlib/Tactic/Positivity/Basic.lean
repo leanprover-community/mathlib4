@@ -113,7 +113,7 @@ is nonnegative, strictly positive if at least one is positive, and nonzero if bo
   let _e_eq : $e =Q $f $a $b := ⟨⟩
   let _a ← synthInstanceQ q(LinearOrder $α)
   let ⟨_f_eq⟩ ← withNewMCtxDepth <| assertDefEqQ q($f) q(max)
-  let result : Strictness zα e pα? ← do
+  let result : Strictness zα e pα? ← catchNone do
     let ra ← core zα pα? a
     match (dependent := true) ra with
     | .positive pa =>
@@ -151,21 +151,20 @@ such that `positivity` successfully recognises both `a` and `b`. -/
   assumeInstancesCommute
   let ⟨_f_eq⟩ ← withNewMCtxDepth <| assertDefEqQ q($f) q(HAdd.hAdd)
   let ra ← core zα pα a; let rb ← core zα pα b
-  catchNone do
-    match ra, rb with
-    | .positive pa, .positive pb =>
-      let _a ← synthInstanceQ q(AddLeftMono $α)
-      pure (.positive q(add_pos' $pa $pb))
-    | .positive pa, .nonnegative pb =>
-      let _a ← synthInstanceQ q(AddLeftMono $α)
-      pure (.positive q(add_pos_of_pos_of_nonneg $pa $pb))
-    | .nonnegative pa, .positive pb =>
-      let _a ← synthInstanceQ q(AddRightMono $α)
-      pure (.positive q(Right.add_pos_of_nonneg_of_pos $pa $pb))
-    | .nonnegative pa, .nonnegative pb =>
-      let _a ← synthInstanceQ q(AddLeftMono $α)
-      pure (.nonnegative q(add_nonneg $pa $pb))
-    | _, _ => pure .none
+  match ra, rb with
+  | .positive pa, .positive pb =>
+    let _a ← synthInstanceQ q(AddLeftMono $α)
+    pure (.positive q(add_pos' $pa $pb))
+  | .positive pa, .nonnegative pb =>
+    let _a ← synthInstanceQ q(AddLeftMono $α)
+    pure (.positive q(add_pos_of_pos_of_nonneg $pa $pb))
+  | .nonnegative pa, .positive pb =>
+    let _a ← synthInstanceQ q(AddRightMono $α)
+    pure (.positive q(Right.add_pos_of_nonneg_of_pos $pa $pb))
+  | .nonnegative pa, .nonnegative pb =>
+    let _a ← synthInstanceQ q(AddLeftMono $α)
+    pure (.nonnegative q(add_nonneg $pa $pb))
+  | _, _ => failure
 
 /-- The `positivity` extension which identifies expressions of the form `a - b`,
 such that there is a local hypothesis `b < a`, `b ≤ a`, `a ≠ b` or `b ≠ a`. -/
@@ -256,22 +255,21 @@ where `a` and `b` are integers. -/
   | 0, ~q(ℤ), ~q($a / $b) =>
     let ra ← core q(inferInstance) (some q(inferInstance)) a
     let rb ← core q(inferInstance) (some q(inferInstance)) b
-    catchNone do
-      assertInstancesCommute
-      match ra, rb with
-      | .positive (pa : Q(0 < $a)), .positive (pb : Q(0 < $b)) =>
-        -- Only attempts to prove `0 < a / a`, otherwise falls back to `0 ≤ a / b`
-        let _ := q(int_div_self_pos $pa)
-        match ← isDefEqQ a b with
-        | .defEq _ => pure (.positive q(int_div_self_pos $pa))
-        | .notDefEq => pure (.nonnegative q(int_div_nonneg_of_pos_of_pos $pa $pb))
-      | .positive (pa : Q(0 < $a)), .nonnegative (pb : Q(0 ≤ $b)) =>
-        pure (.nonnegative q(int_div_nonneg_of_pos_of_nonneg $pa $pb))
-      | .nonnegative (pa : Q(0 ≤ $a)), .positive (pb : Q(0 < $b)) =>
-        pure (.nonnegative q(int_div_nonneg_of_nonneg_of_pos $pa $pb))
-      | .nonnegative (pa : Q(0 ≤ $a)), .nonnegative (pb : Q(0 ≤ $b)) =>
-        pure (.nonnegative q(Int.ediv_nonneg $pa $pb))
-      | _, _ => pure .none
+    assertInstancesCommute
+    match ra, rb with
+    | .positive (pa : Q(0 < $a)), .positive (pb : Q(0 < $b)) =>
+      -- Only attempts to prove `0 < a / a`, otherwise falls back to `0 ≤ a / b`
+      let _ := q(int_div_self_pos $pa)
+      match ← isDefEqQ a b with
+      | .defEq _ => pure (.positive q(int_div_self_pos $pa))
+      | .notDefEq => pure (.nonnegative q(int_div_nonneg_of_pos_of_pos $pa $pb))
+    | .positive (pa : Q(0 < $a)), .nonnegative (pb : Q(0 ≤ $b)) =>
+      pure (.nonnegative q(int_div_nonneg_of_pos_of_nonneg $pa $pb))
+    | .nonnegative (pa : Q(0 ≤ $a)), .positive (pb : Q(0 < $b)) =>
+      pure (.nonnegative q(int_div_nonneg_of_nonneg_of_pos $pa $pb))
+    | .nonnegative (pa : Q(0 ≤ $a)), .nonnegative (pb : Q(0 ≤ $b)) =>
+      pure (.nonnegative q(Int.ediv_nonneg $pa $pb))
+    | _, _ => pure .none
   | _, _, _ => throwError "not /"
 
 theorem pow_zero_pos [Semiring α] [PartialOrder α] [IsOrderedRing α] [Nontrivial α]

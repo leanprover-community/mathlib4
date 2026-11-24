@@ -94,9 +94,8 @@ meta def evalRadical : PositivityExt where eval {u α} _ _ e := do
   match e with
   | ~q(@radical _ $inst $inst' $inst'' $n) =>
     have _ := ← synthInstanceQ q(Nontrivial $α)
-    catchNone do
-      assertInstancesCommute
-      return .nonzero q(radical_ne_zero)
+    assertInstancesCommute
+    return .nonzero q(radical_ne_zero)
   | _ => throwError "not radical"
 
 example : 0 < radical 100 := by positivity
