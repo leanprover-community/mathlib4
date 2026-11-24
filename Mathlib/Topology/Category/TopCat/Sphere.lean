@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Topology.Category.TopCat.EpiMono
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Euclidean spheres
 

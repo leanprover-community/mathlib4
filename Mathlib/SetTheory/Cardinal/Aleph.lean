@@ -82,11 +82,11 @@ theorem isInitial_ord (c : Cardinal) : IsInitial c.ord := by
 theorem isInitial_natCast (n : ℕ) : IsInitial n := by
   rw [IsInitial, card_nat, ord_natCast]
 
-theorem isInitial_zero : IsInitial 0 := by
-  exact mod_cast isInitial_natCast 0
+theorem isInitial_zero : IsInitial 0 :=
+  mod_cast isInitial_natCast 0
 
-theorem isInitial_one : IsInitial 1 := by
-  exact mod_cast isInitial_natCast 1
+theorem isInitial_one : IsInitial 1 :=
+  mod_cast isInitial_natCast 1
 
 theorem isInitial_omega0 : IsInitial ω := by
   rw [IsInitial, card_omega0, ord_aleph0]
@@ -109,11 +109,11 @@ theorem not_bddAbove_isInitial : ¬ BddAbove {x | IsInitial x} :=
 /-- Initial ordinals are order-isomorphic to the cardinals. -/
 @[simps!]
 def isInitialIso : {x // IsInitial x} ≃o Cardinal where
-  toFun x := x.1.card
+  toFun x := x.val.card
   invFun x := ⟨x.ord, isInitial_ord _⟩
-  left_inv x := Subtype.ext x.2.ord_card
+  left_inv x := Subtype.ext x.property.ord_card
   right_inv x := card_ord x
-  map_rel_iff' {a _} := a.2.card_le_card
+  map_rel_iff' {a _} := a.property.card_le_card
 
 /-- The "pre-omega" function gives the initial ordinals listed by their ordinal index.
 `preOmega n = n`, `preOmega ω = ω`, `preOmega (ω + 1) = ω₁`, etc.
@@ -557,7 +557,7 @@ For the usual function starting at `ℵ₀`, see `Cardinal.beth`. -/
 def preBeth (o : Ordinal.{u}) : Cardinal.{u} :=
   ⨆ a : Iio o, 2 ^ preBeth a
 termination_by o
-decreasing_by exact a.2
+decreasing_by exact a.property
 
 theorem preBeth_strictMono : StrictMono preBeth := by
   intro a b h
@@ -604,7 +604,7 @@ theorem preBeth_limit {o : Ordinal} (ho : IsSuccPrelimit o) :
   rw [ciSup_le_iff' bddAbove_of_small]
   intro a
   rw [← preBeth_add_one]
-  exact le_ciSup bddAbove_of_small (⟨_, ho.succ_lt a.2⟩ : Iio o)
+  exact le_ciSup bddAbove_of_small (⟨_, ho.succ_lt a.property⟩ : Iio o)
 
 theorem isNormal_preBeth : Order.IsNormal preBeth := by
   rw [isNormal_iff]
@@ -657,7 +657,7 @@ theorem isStrongPrelimit_preBeth {o : Ordinal} :
     · simp
   · rw [preBeth_limit ho] at hx
     obtain ⟨a, ha⟩ := exists_lt_of_lt_ciSup' hx
-    apply (preBeth_strictMono (ho.add_one_lt a.2)).trans_le'
+    apply (preBeth_strictMono (ho.add_one_lt a.property)).trans_le'
     simpa using power_le_power_left two_ne_zero ha.le
 
 @[simp]

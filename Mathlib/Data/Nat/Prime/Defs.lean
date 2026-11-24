@@ -8,8 +8,9 @@ module
 public import Mathlib.Algebra.Group.Nat.Units
 public import Mathlib.Algebra.GroupWithZero.Nat
 public import Mathlib.Algebra.Prime.Defs
-public import Mathlib.Data.Nat.Sqrt
 public import Mathlib.Order.Basic
+
+import Mathlib.Data.Nat.Sqrt
 
 /-!
 # Prime numbers
@@ -79,7 +80,7 @@ theorem Prime.one_lt {p : ℕ} : Prime p → 1 < p :=
 lemma Prime.one_le {p : ℕ} (hp : p.Prime) : 1 ≤ p := hp.one_lt.le
 
 instance Prime.one_lt' (p : ℕ) [hp : Fact p.Prime] : Fact (1 < p) :=
-  ⟨hp.1.one_lt⟩
+  ⟨hp.out.one_lt⟩
 
 theorem Prime.ne_one {p : ℕ} (hp : p.Prime) : p ≠ 1 :=
   hp.one_lt.ne'

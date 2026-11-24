@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Category.TopCat.Monoidal
 public import Mathlib.Topology.Path
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Paths between points of an object of `TopCat`
 

@@ -5,10 +5,14 @@ Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
 module
 
-public import Mathlib.GroupTheory.GroupAction.Ring
 public import Mathlib.LinearAlgebra.Basis.Submodule
 public import Mathlib.LinearAlgebra.Matrix.Reindex
 public import Mathlib.LinearAlgebra.Matrix.ToLin
+
+import Mathlib.GroupTheory.GroupAction.Ring
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Bases and matrices
@@ -65,7 +69,7 @@ theorem toMatrix_eq_toMatrix_constr [Fintype ι] [DecidableEq ι] (v : ι → M)
 
 -- TODO (maybe) Adjust the definition of `Basis.toMatrix` to eliminate the transpose.
 theorem coePiBasisFun.toMatrix_eq_transpose [Finite ι] :
-    ((Pi.basisFun R ι).toMatrix : Matrix ι ι R → Matrix ι ι R) = Matrix.transpose := by
+    ((Pi.basisFun R ι).toMatrix : Matrix ι' ι R → Matrix ι ι' R) = Matrix.transpose := by
   ext M i j
   rfl
 
@@ -105,7 +109,7 @@ theorem sum_toMatrix_smul_self [Fintype ι] : ∑ i : ι, e.toMatrix v i j • e
   simp_rw [e.toMatrix_apply, e.sum_repr]
 
 theorem toMatrix_smul {R₁ S : Type*} [CommSemiring R₁] [Semiring S] [Algebra R₁ S] [Fintype ι]
-    [DecidableEq ι] (x : S) (b : Basis ι R₁ S) (w : ι → S) :
+    [DecidableEq ι] (x : S) (b : Basis ι R₁ S) (w : ι' → S) :
     (b.toMatrix (x • w)) = (Algebra.leftMulMatrix b x) * (b.toMatrix w) := by
   ext
   rw [Basis.toMatrix_apply, Pi.smul_apply, smul_eq_mul, ← Algebra.leftMulMatrix_mulVec_repr]
@@ -211,20 +215,20 @@ theorem mul_basis_toMatrix [DecidableEq ι] [DecidableEq ι'] (b₁ : Basis ι R
   have := linearMap_toMatrix_mul_basis_toMatrix b₂ b₁ b₃ (Matrix.toLin b₁ b₃ A)
   rwa [LinearMap.toMatrix_toLin] at this
 
-theorem basis_toMatrix_basisFun_mul (b : Basis ι R (ι → R)) (A : Matrix ι ι R) :
+omit [Fintype ι'] [Finite κ] in
+theorem basis_toMatrix_basisFun_mul (b : Basis ι' R (ι → R)) (A : Matrix ι κ R) :
     b.toMatrix (Pi.basisFun R ι) * A = of fun i j => b.repr (A.col j) i := by
   classical
-  simp only [basis_toMatrix_mul _ _ (Pi.basisFun R ι), Matrix.toLin_eq_toLin']
   ext i j
-  rw [LinearMap.toMatrix_apply, Matrix.toLin'_apply, Pi.basisFun_apply,
-    Matrix.mulVec_single_one, Matrix.of_apply]
+  rw [Matrix.mul_apply, of_apply]
+  conv_rhs => rw [← (Pi.basisFun R ι).sum_repr (A.col j)]
+  simp [Basis.toMatrix_apply, mul_comm]
 
 namespace Module.Basis
 
 /-- See also `Basis.toMatrix_reindex` which gives the `simp` normal form of this result. -/
-theorem toMatrix_reindex' [DecidableEq ι] [DecidableEq ι'] (b : Basis ι R M) (v : ι' → M)
-    (e : ι ≃ ι') : (b.reindex e).toMatrix v =
-    Matrix.reindexAlgEquiv R R e (b.toMatrix (v ∘ e)) := by
+theorem toMatrix_reindex' (b : Basis ι R M) (v : ι' → M) (e : ι ≃ ι') :
+    (b.reindex e).toMatrix v = Matrix.reindexAlgEquiv R R e (b.toMatrix (v ∘ e)) := by
   ext
   simp [Basis.toMatrix_apply]
 
@@ -261,13 +265,13 @@ def invertibleToMatrix [DecidableEq ι] [Fintype ι] (b b' : Basis ι R₂ M₂)
   ⟨b'.toMatrix b, toMatrix_mul_toMatrix_flip _ _, toMatrix_mul_toMatrix_flip _ _⟩
 
 @[simp]
-theorem toMatrix_reindex (b : Basis ι R M) (v : ι' → M) (e : ι ≃ ι') :
+theorem toMatrix_reindex (b : Basis ι R M) (v : κ → M) (e : ι ≃ ι') :
     (b.reindex e).toMatrix v = (b.toMatrix v).submatrix e.symm _root_.id := by
   ext
   simp [toMatrix_apply]
 
 @[simp]
-theorem toMatrix_map (b : Basis ι R M) (f : M ≃ₗ[R] N) (v : ι → N) :
+theorem toMatrix_map (b : Basis ι R M) (f : M ≃ₗ[R] N) (v : ι' → N) :
     (b.map f).toMatrix v = b.toMatrix (f.symm ∘ v) := by
   ext
   simp only [toMatrix_apply, Basis.map, LinearEquiv.trans_apply, (· ∘ ·)]

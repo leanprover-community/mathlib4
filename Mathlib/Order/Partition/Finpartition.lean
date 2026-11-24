@@ -257,8 +257,8 @@ abbrev _root_.IsAtom.uniqueFinpartition (ha : IsAtom a) : Unique (Finpartition a
 
 instance [Fintype α] [DecidableEq α] (a : α) : Fintype (Finpartition a) :=
   @Fintype.ofSurjective { p : Finset α // p.SupIndep id ∧ p.sup id = a ∧ ⊥ ∉ p } (Finpartition a) _
-    (Subtype.fintype _) (fun i ↦ ⟨i.1, i.2.1, i.2.2.1, i.2.2.2⟩) fun ⟨_, y, z, w⟩ ↦
-    ⟨⟨_, y, z, w⟩, rfl⟩
+    (Subtype.fintype _) (fun i ↦ ⟨i.val, i.property.1, i.property.2.1, i.property.2.2⟩)
+    fun ⟨_, y, z, w⟩ ↦ ⟨⟨_, y, z, w⟩, rfl⟩
 
 /-! ### Refinement order -/
 
@@ -330,11 +330,13 @@ theorem card_mono {a : α} {P Q : Finpartition a} (h : P ≤ Q) : #Q.parts ≤ #
   have : ∀ b ∈ Q.parts, ∃ c ∈ P.parts, c ≤ b := fun b ↦ exists_le_of_le h
   choose f hP hf using this
   rw [← card_attach]
-  refine card_le_card_of_injOn (fun b ↦ f _ b.2) (fun b _ ↦ hP _ b.2) fun b _ c _ h ↦ ?_
+  refine card_le_card_of_injOn (fun b ↦ f _ b.property) (fun b _ ↦ hP _ b.property)
+    fun b _ c _ h ↦ ?_
   exact
     Subtype.coe_injective
-      (Q.disjoint.elim b.2 c.2 fun H ↦
-        P.ne_bot (hP _ b.2) <| disjoint_self.1 <| H.mono (hf _ b.2) <| h.le.trans <| hf _ c.2)
+      (Q.disjoint.elim b.property c.property fun H ↦
+        P.ne_bot (hP _ b.property) <| disjoint_self.1 <|
+          H.mono (hf _ b.property) <| h.le.trans <| hf _ c.property)
 
 end Order
 
@@ -552,7 +554,7 @@ variable {P : Finpartition a} {Q : ∀ i ∈ P.parts, Finpartition i}
 finpartition of `a` obtained by juxtaposing all the subpartitions. -/
 @[simps! parts]
 def bind (P : Finpartition a) (Q : ∀ i ∈ P.parts, Finpartition i) : Finpartition a :=
-  (combine (fun i : P.parts => Q i.1 i.2) P.supIndep.attach).copy <| by
+  (combine (fun i : P.parts => Q i.val i.property) P.supIndep.attach).copy <| by
     rw [Finset.sup_attach (f := fun x => x), ← Function.id_def, P.sup_parts]
 
 theorem mem_bind : b ∈ (P.bind Q).parts ↔ ∃ A hA, b ∈ (Q A hA).parts := by
@@ -564,7 +566,7 @@ theorem mem_bind : b ∈ (P.bind Q).parts ↔ ∃ A hA, b ∈ (Q A hA).parts := 
     exact ⟨⟨A, hA⟩, mem_attach _ ⟨A, hA⟩, h⟩
 
 theorem card_bind (Q : ∀ i ∈ P.parts, Finpartition i) :
-    #(P.bind Q).parts = ∑ A ∈ P.parts.attach, #(Q _ A.2).parts := by
+    #(P.bind Q).parts = ∑ A ∈ P.parts.attach, #(Q _ A.property).parts := by
   apply card_biUnion
   rintro ⟨b, hb⟩ - ⟨c, hc⟩ - hbc
   rw [Function.onFun, Finset.disjoint_left]
@@ -653,7 +655,7 @@ variable [DecidableEq α] {s t u : Finset α} (P : Finpartition s) {a : α}
 lemma subset {a : Finset α} (ha : a ∈ P.parts) : a ⊆ s := P.le ha
 
 theorem nonempty_of_mem_parts {a : Finset α} (ha : a ∈ P.parts) : a.Nonempty :=
-  nonempty_iff_ne_empty.2 <| P.ne_bot ha
+  ne_empty_iff_nonempty.1 <| P.ne_bot ha
 
 @[simp]
 theorem empty_notMem_parts : ∅ ∉ P.parts := P.bot_notMem
@@ -765,9 +767,9 @@ theorem mem_part_iff_exists {b} : a ∈ P.part b ↔ ∃ p ∈ P.parts, a ∈ p 
     exact hap
 
 /-- Equivalence between a finpartition's parts as a dependent sum and the partitioned set. -/
-def equivSigmaParts : s ≃ Σ t : P.parts, t.1 where
-  toFun x := ⟨⟨P.part x.1, P.part_mem.2 x.2⟩, ⟨x, P.mem_part x.2⟩⟩
-  invFun x := ⟨x.2, mem_of_subset (P.le x.1.2) x.2.2⟩
+def equivSigmaParts : s ≃ Σ t : P.parts, t.val where
+  toFun x := ⟨⟨P.part x.val, P.part_mem.2 x.property⟩, ⟨x, P.mem_part x.property⟩⟩
+  invFun x := ⟨x.2, mem_of_subset (P.le x.1.property) x.2.property⟩
   left_inv x := by simp
   right_inv x := by
     ext e
@@ -776,9 +778,9 @@ def equivSigmaParts : s ≃ Σ t : P.parts, t.1 where
       rw [P.part_eq_of_mem mp mf]
     · simp
 
-lemma exists_enumeration : ∃ f : s ≃ Σ t : P.parts, Fin #t.1,
+lemma exists_enumeration : ∃ f : s ≃ Σ t : P.parts, Fin #t.val,
     ∀ a b : s, P.part a = P.part b ↔ (f a).1 = (f b).1 := by
-  use P.equivSigmaParts.trans ((Equiv.refl _).sigmaCongr (fun t ↦ t.1.equivFin))
+  use P.equivSigmaParts.trans ((Equiv.refl _).sigmaCongr (fun t ↦ t.val.equivFin))
   simp [equivSigmaParts, Equiv.sigmaCongr, Equiv.sigmaCongrLeft]
 
 theorem sum_card_parts : ∑ i ∈ P.parts, #i = #s := by
@@ -916,7 +918,7 @@ variable {F : Finset (Finset α)}
 theorem mem_atomise :
     t ∈ (atomise s F).parts ↔
       t.Nonempty ∧ ∃ Q ⊆ F, {i ∈ s | ∀ u ∈ F, u ∈ Q ↔ i ∈ u} = t := by
-  simp only [atomise, ofErase, bot_eq_empty, mem_erase, mem_image, nonempty_iff_ne_empty,
+  simp only [atomise, ofErase, bot_eq_empty, mem_erase, mem_image, ← ne_empty_iff_nonempty,
     mem_powerset]
 
 theorem atomise_empty (hs : s.Nonempty) : (atomise s ∅).parts = {s} := by

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.DualNumber
 public import Mathlib.Analysis.Normed.Algebra.TrivSqZeroExt
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Results on `DualNumber R` related to the norm
 

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Ends.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of the ends of graphs
 

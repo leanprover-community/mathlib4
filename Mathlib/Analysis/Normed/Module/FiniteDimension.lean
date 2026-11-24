@@ -17,6 +17,9 @@ import Mathlib.Analysis.Normed.Module.Ball.Pointwise
 import Mathlib.Topology.Algebra.InfiniteSum.Module
 
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite-dimensional normed spaces over complete fields
 
@@ -720,9 +723,8 @@ theorem continuous_coe_repr : Continuous (fun m : M => ⇑(B.repr m)) :=
 
 -- Note: this could be generalized if we had some typeclass to indicate "each of the projections
 -- into the basis is continuous".
-theorem continuous_toMatrix : Continuous fun (v : ι → M) => B.toMatrix v :=
-  let _ := Fintype.ofFinite ι
-  have := Finite.of_basis B
-  LinearMap.continuous_of_finiteDimensional B.toMatrixEquiv.toLinearMap
+theorem continuous_toMatrix {ι' : Type*} : Continuous fun (v : ι' → M) => B.toMatrix v :=
+  continuous_matrix fun i j =>
+    (continuous_apply i).comp (B.continuous_coe_repr.comp (continuous_apply j))
 
 end Module.Basis

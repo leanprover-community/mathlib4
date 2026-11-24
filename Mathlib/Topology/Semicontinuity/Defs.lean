@@ -150,7 +150,7 @@ theorem semicontinuousOn_univ_iff : SemicontinuousOn r univ ↔ Semicontinuous r
     Semicontinuous (s.domRestrict r) ↔ SemicontinuousOn r s := by
   rw [SemicontinuousOn, Semicontinuous, SetCoe.forall]
   refine forall₂_congr fun a ha ↦ forall₂_congr fun b _ ↦ ?_
-  simp only [nhdsWithin_eq_map_subtype_coe ha, eventually_map, domRestrict]
+  simp only [nhdsWithin_eq_map_subtypeVal ha, eventually_map, domRestrict]
 
 theorem Semicontinuous.semicontinuousAt (h : Semicontinuous r) (x : α) :
     SemicontinuousAt r x :=
@@ -163,8 +163,8 @@ theorem Semicontinuous.semicontinuousWithinAt (h : Semicontinuous r) (s : Set α
 theorem Semicontinuous.semicontinuousOn (h : Semicontinuous r) (s : Set α) :
     SemicontinuousOn r s := fun x _hx => h.semicontinuousWithinAt s x
 
-theorem semicontinuous_iff_isOpen : Semicontinuous r ↔ ∀ b, IsOpen {x | r x b} := by
-  exact ⟨fun h b ↦ by simpa [isOpen_iff_mem_nhds, Filter.Eventually] using fun x hx ↦ h x b hx,
+theorem semicontinuous_iff_isOpen : Semicontinuous r ↔ ∀ b, IsOpen {x | r x b} :=
+  ⟨fun h b ↦ by simpa [isOpen_iff_mem_nhds, Filter.Eventually] using fun x hx ↦ h x b hx,
     fun h x b hbx ↦ (h b).mem_nhds hbx⟩
 
 theorem Semicontinuous.isOpen (h : Semicontinuous r) (b : β) : IsOpen {x | r x b} :=

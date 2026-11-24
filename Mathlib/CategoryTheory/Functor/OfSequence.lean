@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Category.Preorder
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functors from the category of the ordered set `ℕ`
 
@@ -99,7 +102,7 @@ end OfSequence
 
 /-- The functor `ℕ ⥤ C` constructed from a sequence of
 morphisms `f : X n ⟶ X (n + 1)` for all `n : ℕ`. -/
-@[simps obj]
+@[simps obj, implicit_reducible]
 def ofSequence : ℕ ⥤ C where
   obj := X
   map {i j} φ := OfSequence.map f i j (leOfHom φ)
@@ -158,7 +161,6 @@ example : (ofOpSequence f).map (homOfLE (show 0 ≤ 3 by lia)).op = (f 2 ≫ f 1
 example : (ofOpSequence f).map (homOfLE (show 3 ≤ 7 by lia)).op =
     ((f 6 ≫ f 5) ≫ f 4) ≫ f 3 := rfl
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma ofOpSequence_map_homOfLE_succ (n : ℕ) :
     (ofOpSequence f).map (homOfLE (Nat.le_add_right n 1)).op = f n := by

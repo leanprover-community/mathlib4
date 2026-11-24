@@ -5,9 +5,10 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Order.Lattice
+
+import Mathlib.Algebra.Group.Basic
 
 /-!
 # Algebraic order homomorphism classes

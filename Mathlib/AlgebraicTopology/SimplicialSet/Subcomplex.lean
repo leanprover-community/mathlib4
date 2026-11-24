@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.Basic
 public import Mathlib.CategoryTheory.Subfunctor.OfSection
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subcomplexes of a simplicial set
 
@@ -225,7 +228,7 @@ lemma lift_ι : lift f hf ≫ B.ι = f := rfl
 
 @[simp]
 lemma lift_app_coe {n : SimplexCategoryᵒᵖ} (x : X.obj n) :
-    dsimp% ((lift f hf).app _ x).1 = f.app _ x := rfl
+    dsimp% ((lift f hf).app _ x).val = f.app _ x := rfl
 
 end
 

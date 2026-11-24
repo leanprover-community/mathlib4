@@ -156,7 +156,7 @@ theorem LinearIsometryEquiv.reflections_generate_dim_aux [FiniteDimensional ℝ 
   | zero => -- Base case: `n = 0`, the fixed subspace is the whole space, so `φ = id`
     refine ⟨[], rfl.le, show φ = 1 from ?_⟩
     have : (ContinuousLinearMap.id ℝ F - φ).ker = ⊤ := by
-      rwa [le_zero_iff, finrank_eq_zero, orthogonal_eq_bot_iff] at hn
+      rwa [nonpos_iff_eq_zero, finrank_eq_zero, orthogonal_eq_bot_iff] at hn
     symm
     ext x
     have := congr($(LinearMap.ker_eq_top.mp this) x)
@@ -208,7 +208,7 @@ theorem LinearIsometryEquiv.reflections_generate_dim_aux [FiniteDimensional ℝ 
     have : finrank ℝ Vᗮ ≤ n := by
       change finrank ℝ Wᗮ ≤ n + 1 at hn
       have : finrank ℝ W + 1 ≤ finrank ℝ V :=
-        finrank_lt_finrank_of_lt ((IsConcreteLE.lt_iff_le_and_exists (B := F)).2 ⟨H₂V, v, H₁V, hv'⟩)
+        finrank_lt_finrank_of_lt ((lt_iff_le_and_exists_mem_notMem (B := F)).2 ⟨H₂V, v, H₁V, hv'⟩)
       have : finrank ℝ V + finrank ℝ Vᗮ = finrank ℝ F := V.finrank_add_finrank_orthogonal
       have : finrank ℝ W + finrank ℝ Wᗮ = finrank ℝ F := W.finrank_add_finrank_orthogonal
       lia

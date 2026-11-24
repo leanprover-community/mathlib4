@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Structured arrows when the target category is discrete
 

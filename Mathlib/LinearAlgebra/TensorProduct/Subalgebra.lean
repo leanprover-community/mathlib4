@@ -58,9 +58,9 @@ This is the `Subalgebra` version of `Submodule.lTensorOne` -/
 def lTensorBot : (⊥ : Subalgebra R S) ⊗[R] A ≃ₐ[R] A := by
   refine Algebra.TensorProduct.algEquivOfLinearEquivTensorProduct (toSubmodule A).lTensorOne ?_ ?_
   · rintro x y a b
-    obtain ⟨x', hx⟩ := Algebra.mem_bot.1 x.2
+    obtain ⟨x', hx⟩ := Algebra.mem_bot.1 x.property
     replace hx : algebraMap R _ x' = x := Subtype.val_injective hx
-    obtain ⟨y', hy⟩ := Algebra.mem_bot.1 y.2
+    obtain ⟨y', hy⟩ := Algebra.mem_bot.1 y.property
     replace hy : algebraMap R _ y' = y := Subtype.val_injective hy
     rw [← hx, ← hy, ← map_mul, (toSubmodule A).lTensorOne_tmul x' a,
       (toSubmodule A).lTensorOne_tmul y' b, (toSubmodule A).lTensorOne_tmul (x' * y') (a * b),
@@ -89,9 +89,9 @@ This is the `Subalgebra` version of `Submodule.rTensorOne` -/
 def rTensorBot : A ⊗[R] (⊥ : Subalgebra R S) ≃ₐ[R] A := by
   refine Algebra.TensorProduct.algEquivOfLinearEquivTensorProduct (toSubmodule A).rTensorOne ?_ ?_
   · rintro a b x y
-    obtain ⟨x', hx⟩ := Algebra.mem_bot.1 x.2
+    obtain ⟨x', hx⟩ := Algebra.mem_bot.1 x.property
     replace hx : algebraMap R _ x' = x := Subtype.val_injective hx
-    obtain ⟨y', hy⟩ := Algebra.mem_bot.1 y.2
+    obtain ⟨y', hy⟩ := Algebra.mem_bot.1 y.property
     replace hy : algebraMap R _ y' = y := Subtype.val_injective hy
     rw [← hx, ← hy, ← map_mul, (toSubmodule A).rTensorOne_tmul x' a,
       (toSubmodule A).rTensorOne_tmul y' b, (toSubmodule A).rTensorOne_tmul (x' * y') (a * b),
@@ -166,7 +166,7 @@ theorem linearEquivIncludeRange_tmul (x y) :
 
 @[simp]
 theorem linearEquivIncludeRange_symm_tmul (x y) :
-    (linearEquivIncludeRange R S T).symm (x ⊗ₜ[R] y) = x.1 * y.1 := rfl
+    (linearEquivIncludeRange R S T).symm (x ⊗ₜ[R] y) = x.val * y.val := rfl
 
 /-- Given `R`-algebras `S,T`, there is a natural `R`-algebra isomorphism from `S ⊗[R] T` to
 `S' ⊗[R] T'` where `S',T'` are the images of `S,T` in `S ⊗[R] T` respectively. -/
@@ -187,7 +187,7 @@ theorem algEquivIncludeRange_tmul (x y) :
 
 @[simp]
 theorem algEquivIncludeRange_symm_tmul (x y) :
-    (algEquivIncludeRange R S T).symm (x ⊗ₜ[R] y) = x.1 * y.1 := rfl
+    (algEquivIncludeRange R S T).symm (x ⊗ₜ[R] y) = x.val * y.val := rfl
 
 end Algebra.TensorProduct
 
@@ -212,7 +212,7 @@ theorem Algebra.TensorProduct.algEquivIncludeRange_symm_toAlgHom :
 namespace Subalgebra
 
 @[simp]
-theorem mulMap_tmul (a : A) (b : B) : mulMap A B (a ⊗ₜ[R] b) = a.1 * b.1 := rfl
+theorem mulMap_tmul (a : A) (b : B) : mulMap A B (a ⊗ₜ[R] b) = a.val * b.val := rfl
 
 theorem mulMap_map_comp_eq (f : S →ₐ[R] T) :
     (mulMap (A.map f) (B.map f)).comp
@@ -244,7 +244,7 @@ def mulMap' : A ⊗[R] B →ₐ[R] ↥(A ⊔ B) :=
 
 variable {A B} in
 @[simp]
-theorem val_mulMap'_tmul (a : A) (b : B) : (mulMap' A B (a ⊗ₜ[R] b) : S) = a.1 * b.1 := rfl
+theorem val_mulMap'_tmul (a : A) (b : B) : (mulMap' A B (a ⊗ₜ[R] b) : S) = a.val * b.val := rfl
 
 theorem mulMap'_surjective : Function.Surjective (mulMap' A B) := by
   simp_rw [mulMap', AlgHom.coe_comp, AlgEquiv.coe_toAlgHom,

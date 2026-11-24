@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.DoldKan.Homotopies
 public import Mathlib.Tactic.Ring
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Study of face maps for the Dold-Kan correspondence
 
