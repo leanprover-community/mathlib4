@@ -569,7 +569,8 @@ theorem exists_isTwoBlockDiagonal_and_last_eq_of_isUnit (hM : IsUnit (M (inr uni
   refine ⟨L, L', ?_⟩
   have A : L.map toMatrix = listTransvecCol M := by simp [L, listTransvecCol, Function.comp_def]
   have B : L'.map toMatrix = listTransvecRow M := by simp [L', listTransvecRow, Function.comp_def]
-  exact A ▸ B ▸ ⟨isTwoBlockDiagonal_listTransvecCol_mul_mul_listTransvecRow M hM,
+  rw [A, B]
+  exact ⟨isTwoBlockDiagonal_listTransvecCol_mul_mul_listTransvecRow M hM,
     listTransvecCol_mul_mul_listTransvecRow_last_diag M⟩
 
 /-- There exist two lists of `TransvectionStruct` such that multiplying by them on the left and
