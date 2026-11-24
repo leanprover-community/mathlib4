@@ -103,7 +103,7 @@ theorem of_eq_zero_of_mul_self_of_eq_zero_of_add [AddCommMonoid R] [Mul R]
     (ha : ∀ {s₁ s₂ : R}, IsSumSq s₁ → IsSumSq s₂ → s₁ + s₂ = 0 → s₁ = 0) : IsFormallyReal R where
   not_isSumNonzeroSq_zero := by
     suffices ∀ (x : R), IsSumNonzeroSq x → x ≠ 0 by grind
-    intro _ hx
+    intro x hx
     induction hx with
     | sq => grind
     | @sq_add b => grind [ha (s₁ := b * b)]
