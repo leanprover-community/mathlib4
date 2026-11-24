@@ -31,7 +31,8 @@ stones towards proving that the canonical functor
 * [Kerodon Tag 04FQ](https://kerodon.net/tag/04FQ)
 * [Kerodon Tag 04FT](https://kerodon.net/tag/04FT)
 
-## TODOs:
+## TODO
+
 - Show that every `P_δ` admits a unique normal form.
 -/
 
