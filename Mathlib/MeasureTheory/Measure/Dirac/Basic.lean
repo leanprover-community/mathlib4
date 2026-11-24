@@ -171,13 +171,6 @@ theorem mem_ae_dirac_iff {a : α} (hs : MeasurableSet s) : s ∈ ae (dirac a) �
     (∀ᵐ x ∂dirac a, p x) ↔ p a :=
   mem_ae_dirac_iff hp
 
-/-- An almost-everywhere property for a Dirac measure holds at its point, without any
-measurability assumption on the property or the singleton. -/
-lemma of_ae_dirac {p : α → Prop} (h : ∀ᵐ x ∂dirac a, p x) : p a := by
-  by_contra ha
-  have h_one : dirac a {x | ¬p x} = 1 := dirac_apply_of_mem ha
-  exact one_ne_zero (h_one.symm.trans h)
-
 @[simp]
 theorem ae_dirac_eq₀ (ha : MeasurableSet {a}) : ae (dirac a) = pure a := by
   rw [Filter.NeBot.eq_pure_iff (by simp)]
