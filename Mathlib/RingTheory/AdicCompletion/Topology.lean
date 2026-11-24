@@ -80,8 +80,7 @@ section congrRingEquiv
 
 variable {R S : Type*} [CommRing R] [CommRing S] (I : Ideal R) (e : R ≃+* S)
 
-theorem IsPrecomplete.congr_ringEquiv :
-    IsPrecomplete (I.map e) S ↔ IsPrecomplete I R := by
+theorem IsPrecomplete.congr_ringEquiv : IsPrecomplete (I.map e) S ↔ IsPrecomplete I R := by
   let : WithIdeal R := ⟨I⟩
   let : WithIdeal S := ⟨I.map e⟩
   rw [iff_comm, IsAdic.isPrecomplete_iff (by rfl), IsAdic.isPrecomplete_iff (by rfl)]
@@ -95,8 +94,7 @@ theorem IsHausdorff.congr_ringEquiv : IsHausdorff (I.map e) S ↔ IsHausdorff I 
   exact ⟨fun _ ↦ (WithIdeal.uniformEquiv e rfl).toHomeomorph.t2Space, fun _ ↦
     (WithIdeal.uniformEquiv e rfl).toHomeomorph.symm.t2Space⟩
 
-theorem IsAdicComplete.congr_ringEquiv :
-    IsAdicComplete (I.map e) S ↔ IsAdicComplete I R := by
+theorem IsAdicComplete.congr_ringEquiv : IsAdicComplete (I.map e) S ↔ IsAdicComplete I R := by
   simp [isAdicComplete_iff, IsHausdorff.congr_ringEquiv, IsPrecomplete.congr_ringEquiv]
 
 end congrRingEquiv
