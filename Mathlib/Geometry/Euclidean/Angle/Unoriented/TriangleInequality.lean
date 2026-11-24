@@ -9,6 +9,9 @@ public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
 
 import Mathlib.Geometry.Euclidean.Triangle
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Triangle Inequality for Angles
 

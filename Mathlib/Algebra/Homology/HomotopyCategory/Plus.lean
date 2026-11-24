@@ -12,6 +12,9 @@ public import Mathlib.CategoryTheory.Shift.SingleFunctorsLift
 
 import Mathlib.CategoryTheory.Localization.OfQuotient
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The triangulated subcategory of bounded below cochain complexes up to homotopy
 

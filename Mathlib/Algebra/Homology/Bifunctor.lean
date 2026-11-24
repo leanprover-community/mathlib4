@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Homology.TotalComplex
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The action of a bifunctor on homological complexes
 

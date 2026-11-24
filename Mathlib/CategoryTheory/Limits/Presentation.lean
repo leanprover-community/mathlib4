@@ -17,7 +17,7 @@ the data of objects `Dⱼ` and natural maps `sⱼ : Dⱼ ⟶ X` that make `X` th
 (See `Mathlib/CategoryTheory/Presentable/ColimitPresentation.lean` for the construction of a
 presentation of a colimit of objects that are equipped with presentations.)
 
-## Main definitions:
+## Main definitions
 
 - `CategoryTheory.Limits.ColimitPresentation`: A colimit presentation of `X` over `J` is a diagram
   `{Dᵢ}` in `C` and natural maps `sᵢ : Dᵢ ⟶ X` making `X` into the colimit of the `Dᵢ`.

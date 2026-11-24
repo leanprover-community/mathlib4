@@ -26,7 +26,7 @@ where the structural morphism satisfies `P` and where the horizontal morphisms s
 Common examples of the latter are e.g. the category of schemes étale (finite, affine, etc.)
 over a base `X`. Here `Q = ⊤`.
 
-## Implementation details
+## Implementation notes
 
 - We provide the general constructor `P.Comma L R Q W` to obtain `Over X` and `Under X` as
   special cases of the more general setup.

@@ -8,7 +8,8 @@ module
 public import Mathlib.Algebra.Squarefree.Basic
 public import Mathlib.RingTheory.Localization.FractionRing
 public import Mathlib.RingTheory.Localization.Integer
-public import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
+
+import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
 
 /-!
 # Numerator and denominator in a localization
@@ -18,6 +19,7 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
 See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
 
 ## Tags
+
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
 -/

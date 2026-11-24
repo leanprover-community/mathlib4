@@ -10,6 +10,9 @@ public import Mathlib.Topology.MetricSpace.Bounded
 
 import Mathlib.Data.EReal.Operations
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The standard simplex is compact
 -/

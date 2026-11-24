@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.ZMod.IntUnitsPower
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integer powers of (-1)
 

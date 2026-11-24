@@ -8,9 +8,10 @@ module
 public import Mathlib.Algebra.Group.AddChar
 public import Mathlib.Algebra.MonoidAlgebra.Module
 public import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
-public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Algebra.Ring.Action.Rat
 public import Mathlib.Data.Finset.Sort
+
+import Mathlib.Algebra.Order.Group.Nat
 
 
 /-!

@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Ring.Subring.Basic
 
 import Mathlib.Algebra.Group.Submonoid.Units
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Unit subgroups of a ring
 -/

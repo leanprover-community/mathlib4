@@ -11,6 +11,9 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.Basic
 public import Mathlib.AlgebraicTopology.SimplicialSet.Splitting
 public import Mathlib.CategoryTheory.Limits.Preserves.SigmaConst
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Computing homology using nondegenerate simplices
 

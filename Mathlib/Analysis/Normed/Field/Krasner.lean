@@ -37,6 +37,7 @@ For the classical statement of Krasner's lemma, please see the
 [wikipedia page](https://en.wikipedia.org/wiki/Krasner%27s_lemma).
 
 ## Tags
+
 Krasner's lemma, normed field
 -/
 

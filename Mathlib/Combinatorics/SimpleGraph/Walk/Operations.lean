@@ -26,6 +26,7 @@ Operations on walks that produce a new walk in the same graph.
 * `SimpleGraph.Walk.dropLast`: Remove the last dart of a walk
 
 ## Tags
+
 walks
 -/
 

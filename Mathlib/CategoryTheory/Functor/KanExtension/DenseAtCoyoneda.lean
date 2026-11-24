@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Functor.KanExtension.DenseAtYoneda
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The co-Yoneda embedding is dense
 

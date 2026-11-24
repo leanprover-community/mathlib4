@@ -78,7 +78,7 @@ theorem mem_stabilizer_submodule_of_le_fixedSubmodule
   rw [mem_stabilizer_submodule_iff_map_eq]
   apply le_antisymm
   · rintro _ ⟨x, hx : x ∈ W, rfl⟩
-    suffices e x = x by simpa [this, coe_coe]
+    suffices e x = x by simpa [this, coe_toLinearMap]
     rw [← coe_toLinearMap, ← mem_fixedSubmodule_iff]
     exact hW hx
   · intro x hx
@@ -97,7 +97,7 @@ theorem map_eq_of_mem_fixingSubgroup (W : Submodule R V)
   ext v
   simp only [mem_fixingSubgroup_iff, carrier_eq_coe, SetLike.mem_coe, LinearEquiv.smul_def] at he
   refine ⟨fun ⟨w, hv, hv'⟩ ↦ ?_, fun hv ↦ ?_⟩
-  · simp only [SetLike.mem_coe, coe_coe] at hv hv'
+  · simp only [SetLike.mem_coe, coe_toLinearMap] at hv hv'
     rwa [← hv', he w hv]
   · refine ⟨v, hv, he v hv⟩
 

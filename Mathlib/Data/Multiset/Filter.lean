@@ -6,8 +6,9 @@ Authors: Mario Carneiro, Rudy Peterson
 module
 
 public import Mathlib.Data.Multiset.MapFold
-public import Mathlib.Data.Set.Function
 public import Mathlib.Order.Hom.Basic
+
+import Mathlib.Data.Set.Function
 
 /-!
 # Filtering multisets by a predicate
