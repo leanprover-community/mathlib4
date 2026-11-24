@@ -153,7 +153,7 @@ noncomputable def monoidHomMonoidHomEquiv :
   have : HasEnoughRootsOfUnity M (Monoid.exponent (G →* Mˣ)) := by
     rwa [Monoid.exponent_eq_of_mulEquiv (monoidHom_mulEquiv_of_hasEnoughRootsOfUnity G M).some]
   (MulEquiv.mk' (Equiv.ofBijective
-    (fun g ↦ MonoidHom.mk ⟨fun φ ↦ φ g, one_apply _⟩ (by simp))
+    (fun g ↦ MonoidHom.mk ⟨fun φ ↦ φ g, MonoidHom.one_apply _⟩ (by simp))
     (by
       refine (Nat.bijective_iff_injective_and_card _).mpr ⟨fun _ _ h ↦ ?_, ?_⟩
       · rwa [mk.injEq, OneHom.mk.injEq, funext_iff, forall_apply_eq_apply_iff] at h
@@ -178,7 +178,7 @@ noncomputable def subgroupOrderIsoSubgroupMonoidHom : Subgroup G ≃o (Subgroup 
   invFun Φ := (monoidHomMonoidHomEquiv G M).mapSubgroup (domRestrictHom Φ.ofDual Mˣ).ker
   map_rel_iff' {H₁} {H₂} := by
     simp_rw [Equiv.coe_fn_mk, OrderDual.toDual_le_toDual,
-      IsConcreteLE.le_iff, mem_ker, domRestrictHom_apply, domRestrict_eq_one_iff]
+      le_iff_mem_imp_mem, mem_ker, domRestrictHom_apply, domRestrict_eq_one_iff]
     grind [forall_monoidHom_apply_eq_one_iff M H₂]
   left_inv H := by
     ext x

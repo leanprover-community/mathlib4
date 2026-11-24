@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Algebra.Equiv
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
 public import Mathlib.RingTheory.Ideal.Span
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Quotients of semirings
 
@@ -63,7 +66,7 @@ theorem Rel.smul {r : A → A → Prop} (k : S) ⦃a b : A⦄ (h : Rel r a b) : 
 /-- `EqvGen (RingQuot.Rel r)` is a ring congruence. -/
 def ringCon (r : R → R → Prop) : RingCon R where
   r := Relation.EqvGen (Rel r)
-  iseqv := Relation.EqvGen.is_equivalence _
+  iseqv := Relation.EqvGen.equivalence _
   add' {a b c d} hab hcd := by
     induction hab generalizing c d with
     | rel _ _ hab =>
@@ -548,8 +551,7 @@ then their quotients are also equivalent.
 case of the third isomorphism theorem.) -/
 def equivQuotEquiv (f : A ≃+* B) (rel : A → A → Prop) :
     RingQuot rel ≃+* RingQuot (rel on f.symm) :=
-  let f_alg : A ≃ₐ[ℕ] B :=
-    AlgEquiv.ofRingEquiv (f := f) (fun n ↦ by simp)
+  let f_alg : A ≃ₐ[ℕ] B := { f with map_smul' n := by simp }
   algEquivQuotAlgEquiv f_alg rel |>.toRingEquiv
 
 end Algebra

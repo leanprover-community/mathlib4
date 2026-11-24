@@ -9,9 +9,9 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Lemmas
 public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
 public import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 public import Mathlib.Algebra.Group.Action.Pi
-public import Mathlib.Algebra.Group.IsApply
 public import Mathlib.Algebra.Ring.Pi
 
+import Mathlib.Algebra.Group.IsApply
 import Mathlib.Data.Fintype.Basic
 
 /-!
@@ -192,8 +192,7 @@ def Pi.monoidHomMulEquiv {ι : Type*} [Fintype ι] [DecidableEq ι] (M : ι → 
     exact Fintype.prod_pi_mulSingle' ..
   map_mul' φ ψ := by
     ext
-    simp only [MonoidHom.coe_comp, Function.comp_apply, MonoidHom.mulSingle_apply,
-      MonoidHom.mul_apply, mul_apply]
+    simp
 
 end MulEquiv
 

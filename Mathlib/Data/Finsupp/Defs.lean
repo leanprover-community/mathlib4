@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Kim Morrison
 -/
 module
 
+public meta import Mathlib.Util.Qq
 public import Mathlib.Algebra.FiniteSupport.Defs
 public import Mathlib.Data.Multiset.Find
 
@@ -30,7 +31,7 @@ Some other constructions are naturally equivalent to `α →₀ M` with some `α
 in a different way in the library:
 
 * `Multiset α ≃+ α →₀ ℕ`;
-* `FreeAbelianGroup α ≃+ α →₀ ℤ`.
+* `FreeAddCommGroup α ≃+ α →₀ ℤ`.
 
 Most of the theory assumes that the range is a commutative additive monoid. This gives us the big
 sum operator as a powerful way to construct `Finsupp` elements, which is defined in
@@ -70,7 +71,6 @@ This file is a `noncomputable theory` and uses classical logic throughout.
 ## TODO
 
 * Expand the list of definitions and important lemmas to the module docstring.
-
 -/
 
 @[expose] public section
@@ -418,7 +418,7 @@ def embDomain (f : α ↪ β) (v : α →₀ M) : β →₀ M where
   support := v.support.map f
   toFun b :=
     haveI := Classical.decEq β
-    match v.support.1.find? (fun a => f a = b) (by intro x; grind) with
+    match v.support.val.find? (fun a => f a = b) (by intro x; grind) with
     | some a => v a
     | none => 0
   mem_support_toFun a₂ := by grind
@@ -500,3 +500,31 @@ theorem support_zipWith [D : DecidableEq α] {f : M → N → O} {hf : f 0 0 = 0
 end ZipWith
 
 end Finsupp
+
+namespace Qq
+open Lean Meta
+
+/-- Match a type `α : Type u` against `X →₀ R`, returning `X` and `R` along with proofs that
+`u = max uX uR` and `α = (X →₀ R)`.
+
+Qq cannot match `α` against `~q($X →₀ $R)` directly, since that needs solving the universe
+constraint `u =?= max ?uX ?uR`, so we introduce the level metavariables by hand. -/
+meta def matchFinsupp {u : Level} (α : Q(Type u)) : MetaM <| Option <|
+    (uX uR : Level) × (X : Q(Type uX)) × (R : Q(Type uR)) × (instZero : Q(Zero $R)) ×'
+      (_ : u =QL max uX uR) ×' ($α =Q @Finsupp $X $R $instZero) :=
+  withNewMCtxDepth do
+    let uX ← mkFreshLevelMVar
+    let uR ← mkFreshLevelMVar
+    let X ← mkFreshExprMVarQ q(Type uX)
+    let R ← mkFreshExprMVarQ q(Type uR)
+    let instZero ← mkFreshExprMVarQ q(Zero $R)
+    let .defEq _ ← isLevelDefEqQ ql(u) ql(max uX uR) | pure none
+    let .defEq _ ← isDefEqQ q($α) q(@Finsupp $X $R $instZero) | pure none
+    let ⟨uX, _⟩ ← instantiateLevelMVarsQ uX
+    let ⟨uR, _⟩ ← instantiateLevelMVarsQ uR
+    let ⟨X, _⟩ ← instantiateMVarsQ' X
+    let ⟨R, _⟩ ← instantiateMVarsQ' R
+    let ⟨instZero, _⟩ ← instantiateMVarsQ' instZero
+    return some ⟨uX, uR, X, R, instZero, ⟨⟩, ⟨⟩⟩
+
+end Qq

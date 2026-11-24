@@ -7,13 +7,15 @@ module
 
 public import Mathlib.CategoryTheory.GradedObject
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The graded object in a single degree
 
 In this file, we define the functor `GradedObject.single j : C ⥤ GradedObject J C`
 which sends an object `X : C` to the graded object which is `X` in degree `j` and
 the initial object of `C` in other degrees.
-
 -/
 
 @[expose] public section

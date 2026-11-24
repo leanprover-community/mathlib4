@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Probability.Kernel.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Measurability of the integral against a kernel
 
@@ -17,7 +20,6 @@ The Lebesgue integral of a measurable function against a kernel is measurable.
 * `Measurable.lintegral_kernel_prod_right`: the function `a ↦ ∫⁻ b, f a b ∂(κ a)` is measurable,
   for an s-finite kernel `κ : Kernel α β` and a function `f : α → β → ℝ≥0∞` such that `uncurry f`
   is measurable.
-
 -/
 
 public section

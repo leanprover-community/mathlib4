@@ -8,11 +8,11 @@ module
 public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Basic.Countable.Basic
 public import Mathlib.Data.Fintype.Pigeonhole
-public import Mathlib.Logic.Encodable.Basic
 public import Mathlib.Order.Interval.Finset.Defs
 public import Mathlib.Order.SuccPred.Archimedean
 
 import Mathlib.Data.Finset.Max
+import Mathlib.Logic.Encodable.Basic
 
 /-!
 # Linear locally finite orders
@@ -53,7 +53,6 @@ About `toZ`:
   `OrderIso` between `ι` and `ℤ`.
 * `orderIsoRangeOfLinearSuccPredArch`: if the order has both a bot and a top, `toZ` gives an
   `OrderIso` between `ι` and `Finset.range ((toZ ⊥ ⊤).toNat + 1)`.
-
 -/
 
 public section

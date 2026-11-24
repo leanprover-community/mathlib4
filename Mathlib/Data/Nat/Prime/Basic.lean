@@ -5,16 +5,19 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Associated
 public import Mathlib.Algebra.Ring.Parity
 public import Mathlib.Data.Nat.Prime.Defs
+
+import Mathlib.Algebra.GroupWithZero.Associated
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Prime numbers
 
 This file develops the theory of prime numbers: natural numbers `p ≥ 2` whose only divisors are
 `p` and `1`.
-
 -/
 
 public section

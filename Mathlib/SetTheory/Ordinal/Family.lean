@@ -131,7 +131,7 @@ theorem iSup_ord {ι} (f : ι → Cardinal) : (⨆ i, f i).ord = ⨆ i, (f i).or
 
 theorem lift_card_sInf_compl_le (s : Set Ordinal.{u}) :
     Cardinal.lift.{u + 1} (sInf sᶜ).card ≤ #s := by
-  rw [← Cardinal.mk_Iio_ordinal]
+  rw [← cardinalMk_Iio]
   refine mk_le_mk_of_subset fun x (hx : x < _) ↦ ?_
   rw [← not_notMem]
   exact notMem_of_lt_csInf' hx
@@ -196,10 +196,6 @@ theorem iSup_Iio_add_one {a : Ordinal.{u}} {f : Iio a → Ordinal.{u}}
     (hf : StrictMono f) (ha : IsSuccPrelimit a) : ⨆ i : Iio a, f i + 1 = ⨆ i : Iio a, f i := by
   have := ha.noMaxOrder_Iio
   exact iSup_add_one hf
-
-section bsup
-
-end bsup
 
 end Ordinal
 

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Triangulated.Functor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Right derived functors are triangulated
 
@@ -17,7 +20,6 @@ shifts, `F` and `L` are triangulated, and for any morphism `f` in `H`,
 there exists a distinguished triangle `T` in `C` such that
 `Arrow.mk (L.map T.mor₁) ≅ Arrow.mk f`, and `α.app T.obj₁`, `α.app T.obj₂`,
 and `α.app T.obj₃` are isomorphisms.
-
 -/
 
 namespace CategoryTheory.Functor

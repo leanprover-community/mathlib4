@@ -52,7 +52,8 @@ def Simps.coe (L : Sublattice α) : Set α := L
 initialize_simps_projections Sublattice (carrier → coe, as_prefix coe)
 
 /-- Turn a set closed under supremum and infimum into a sublattice. -/
-abbrev ofIsSublattice (s : Set α) (hs : IsSublattice s) : Sublattice α := ⟨s, hs.1, hs.2⟩
+abbrev ofIsSublattice (s : Set α) (hs : IsSublattice s) : Sublattice α :=
+  ⟨s, hs.supClosed, hs.infClosed⟩
 
 lemma coe_inj : (L : Set α) = M ↔ L = M := SetLike.coe_set_eq
 
@@ -87,11 +88,11 @@ lemma ext : (∀ a, a ∈ L ↔ a ∈ M) → L = M := SetLike.ext
 
 /-- A sublattice of a lattice inherits a supremum. -/
 instance instSupCoe : Max L where
-  max a b := ⟨a ⊔ b, L.supClosed a.2 b.2⟩
+  max a b := ⟨a ⊔ b, L.supClosed a.property b.property⟩
 
 /-- A sublattice of a lattice inherits an infimum. -/
 instance instInfCoe : Min L where
-  min a b := ⟨a ⊓ b, L.infClosed a.2 b.2⟩
+  min a b := ⟨a ⊓ b, L.infClosed a.property b.property⟩
 
 @[simp, norm_cast] lemma coe_sup (a b : L) : a ⊔ b = (a : α) ⊔ b := rfl
 @[simp, norm_cast] lemma coe_inf (a b : L) : a ⊓ b = (a : α) ⊓ b := rfl
@@ -345,7 +346,7 @@ lemma top_prod (L : Sublattice β) : (⊤ : Sublattice α).prod L = L.comap Latt
 
 lemma le_prod_iff {M : Sublattice β} {N : Sublattice (α × β)} :
     N ≤ L.prod M ↔ N ≤ comap LatticeHom.fst L ∧ N ≤ comap LatticeHom.snd M := by
-  simp [IsConcreteLE.le_iff, forall_and]
+  simp [le_iff_mem_imp_mem, forall_and]
 
 @[simp] lemma prod_eq_bot {M : Sublattice β} : L.prod M = ⊥ ↔ L = ⊥ ∨ M = ⊥ := by
   simpa only [← coe_inj] using! Set.prod_eq_empty_iff
@@ -388,7 +389,7 @@ lemma pi_univ_bot [Nonempty κ] : (pi univ fun _ ↦ ⊥ : Sublattice (∀ i, π
 
 lemma le_pi {s : Set κ} {L : ∀ i, Sublattice (π i)} {M : Sublattice (∀ i, π i)} :
     M ≤ pi s L ↔ ∀ i ∈ s, M ≤ comap (Pi.evalLatticeHom i) (L i) := by
-  simp [IsConcreteLE.le_iff]
+  simp [le_iff_mem_imp_mem]
   grind
 
 @[simp] lemma pi_univ_eq_bot_iff {L : ∀ i, Sublattice (π i)} : pi univ L = ⊥ ↔ ∃ i, L i = ⊥ := by

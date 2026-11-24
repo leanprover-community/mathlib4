@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.ObjectProperty.Local
 public import Mathlib.CategoryTheory.ObjectProperty.Orthogonal
 public import Mathlib.CategoryTheory.Triangulated.Subcategory
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Orthogonal of triangulated subcategories
 
@@ -16,7 +19,6 @@ Let `P` be a triangulated subcategory of a pretriangulated category `C`. We show
 that `P.rightOrthogonal` (which consists of objects `Y` with no nonzero
 map `X ⟶ Y` with `X` satisfying `P`) is a triangulated subcategory. The dual result
 for `P.leftOrthogonal` is also obtained.
-
 -/
 
 public section
@@ -36,13 +38,11 @@ section
 
 variable {M : Type*} [AddGroup M] [HasShift C M] [HasZeroMorphisms C]
 
-set_option backward.isDefEq.respectTransparency false in
 instance [P.IsStableUnderShift M] : P.rightOrthogonal.IsStableUnderShift M where
   isStableUnderShiftBy n := ⟨fun Y hY X f hX ↦ by
     obtain ⟨g, rfl⟩ := ((shiftEquiv C n).symm.toAdjunction.homEquiv _ _).surjective f
     simp [hY g (P.le_shift (-n) _ hX), Adjunction.homEquiv_unit]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance [P.IsStableUnderShift M] : P.leftOrthogonal.IsStableUnderShift M where
   isStableUnderShiftBy n := ⟨fun X hX Y f hY ↦ by
     obtain ⟨g, rfl⟩ := ((shiftEquiv C n).toAdjunction.homEquiv _ _).symm.surjective f

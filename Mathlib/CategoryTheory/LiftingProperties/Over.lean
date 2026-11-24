@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Comma.Over.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lifting properties in Over categories
 
@@ -17,7 +20,6 @@ in the category `C`. It follows that if `i` and `p` are
 morphisms in `Over S`, then `i` has the left lifting
 property with respect to `p` when `i.left` has
 the left lifting property with respect to `p.left`.
-
 -/
 
 public section

@@ -10,13 +10,15 @@ public import Mathlib.CategoryTheory.Center.Localization
 public import Mathlib.CategoryTheory.Linear.LinearFunctor
 public import Mathlib.CategoryTheory.Localization.HasLocalization
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Localization of linear categories
 
 If `L : C ⥤ D` is an additive localization functor between preadditive categories,
 and `C` is `R`-linear, we show that `D` can also be equipped with an `R`-linear
 structure such that `L` is an `R`-linear functor.
-
 -/
 
 @[expose] public section

@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Center.Basic
 public import Mathlib.CategoryTheory.Shift.CommShift
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Twisting a shift
 
@@ -17,7 +20,6 @@ invertible elements in the center of the category `C` (typically, `C` will
 be preadditive, and these will be signs), which allow to introduce a type
 synonym category `t.Category` with identical shift functors as `C` but where
 the isomorphisms `shiftFunctorAdd` have been modified.
-
 -/
 
 @[expose] public section
@@ -100,12 +102,12 @@ lemma shiftFunctor_map {X Y : t.Category} (f : X ⟶ Y) (m : A) :
 
 lemma shiftFunctorZero_hom_app (X : t.Category) :
     (shiftFunctorZero t.Category A).hom.app X =
-      (shiftIso t (0 : A)).hom.app X ≫ (shiftFunctorZero C A).hom.app X :=
+      (shiftIso t 0).hom.app X ≫ (shiftFunctorZero C A).hom.app X :=
   (Category.id_comp _).symm
 
 lemma shiftFunctorZero_inv_app (X : t.Category) :
     (shiftFunctorZero t.Category A).inv.app X =
-      (shiftFunctorZero C A).inv.app X ≫ (shiftIso t (0 : A)).inv.app X :=
+      (shiftFunctorZero C A).inv.app X ≫ (shiftIso t 0).inv.app X :=
   (Category.comp_id _).symm
 
 set_option backward.isDefEq.respectTransparency false in

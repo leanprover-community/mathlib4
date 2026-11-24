@@ -12,7 +12,6 @@ public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Order.Defs.LinearOrder
 
 /-!
-
 # `move_add` a tactic for moving summands in expressions
 
 The tactic `move_add` rearranges summands in expressions.

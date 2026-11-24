@@ -25,7 +25,6 @@ Assume that there exists a degreewise lifting `B.X n ⟶ X.X n` for any `n : ℤ
 that `Q` is a cokernel of `i`, and `K` is a kernel of `p`. In this situation,
 we construct a cocycle in `Cocycle Q K 1` and show that there exists
 a lifting `B ⟶ X` if this cocycle is a coboundary.
-
 -/
 
 @[expose] public section
@@ -59,7 +58,7 @@ def cocycle₁' : Cocycle B X 1 :=
 
 @[reassoc (attr := simp)]
 lemma coe_cocycle₁'_v_comp_eq_zero (n m : ℤ) (hnm : n + 1 = m := by lia) :
-    (cocycle₁' sq hsq).1.v n m hnm ≫ p.f m = 0 := by
+    (cocycle₁' sq hsq).val.v n m hnm ≫ p.f m = 0 := by
   have fac_right (k : ℤ) := (hsq k).fac_right
   dsimp at fac_right
   simp [cocycle₁', -HomologicalComplex.Hom.comm,
@@ -67,7 +66,7 @@ lemma coe_cocycle₁'_v_comp_eq_zero (n m : ℤ) (hnm : n + 1 = m := by lia) :
 
 @[reassoc (attr := simp)]
 lemma comp_coe_cocycle₁'_v_eq_zero (n m : ℤ) (hnm : n + 1 = m := by lia) :
-    i.f n ≫ (cocycle₁' sq hsq).1.v n m hnm = 0 := by
+    i.f n ≫ (cocycle₁' sq hsq).val.v n m hnm = 0 := by
   have fac_left (k : ℤ) := (hsq k).fac_left
   dsimp at fac_left
   simp [cocycle₁', fac_left, reassoc_of% fac_left]
@@ -80,14 +79,14 @@ alias comp_coe_cocyle₁'_v_eq_zero_assoc := comp_coe_cocycle₁'_v_eq_zero_asso
 
 include hQ hK in
 lemma exists_hom (n m : ℤ) (hnm : n + 1 = m := by lia) :
-    ∃ (φ : Q.X n ⟶ K.X m), π.f n ≫ φ ≫ ι.f m = (cocycle₁' sq hsq).1.v n m hnm := by
+    ∃ (φ : Q.X n ⟶ K.X m), π.f n ≫ φ ≫ ι.f m = (cocycle₁' sq hsq).val.v n m hnm := by
   have : Epi π := Cofork.IsColimit.epi hQ
   obtain ⟨l, hl⟩ := CokernelCofork.IsColimit.desc'
-    ((CokernelCofork.isColimitMapCoconeEquiv _ _).1
+    ((CokernelCofork.isColimitMapCoconeEquiv _ _).toFun
     (isColimitOfPreserves (HomologicalComplex.eval _ _ n) hQ))
-    ((cocycle₁' sq hsq).1.v n m hnm) (by simp)
+    ((cocycle₁' sq hsq).val.v n m hnm) (by simp)
   dsimp [CokernelCofork.map] at l hl
-  obtain ⟨l', hl'⟩ := KernelFork.IsLimit.lift' ((KernelFork.isLimitMapConeEquiv _ _).1
+  obtain ⟨l', hl'⟩ := KernelFork.IsLimit.lift' ((KernelFork.isLimitMapConeEquiv _ _).toFun
     (isLimitOfPreserves (HomologicalComplex.eval _ _ m) hK)) l (by
       simp [← cancel_epi (π.f n), reassoc_of% hl])
   exact ⟨l', by cat_disch⟩
@@ -98,7 +97,7 @@ noncomputable def cochain₁ : Cochain Q K 1 :=
 
 @[reassoc (attr := simp)]
 lemma π_f_cochain₁_v_ι_f (n m : ℤ) (hnm : n + 1 = m) :
-    π.f n ≫ (cochain₁ sq hsq hQ hK).v n m hnm ≫ ι.f m = (cocycle₁' sq hsq).1.v n m hnm :=
+    π.f n ≫ (cochain₁ sq hsq hQ hK).v n m hnm ≫ ι.f m = (cocycle₁' sq hsq).val.v n m hnm :=
   (exists_hom sq hsq hQ hK n m hnm).choose_spec
 
 /-- A `1`-cocycle from a cokernel `Q` of `i : A ⟶ B` to a kernel `K` of
@@ -119,9 +118,9 @@ noncomputable def cocycle₁ : Cocycle Q K 1 :=
       π_f_cochain₁_v_ι_f_assoc])
 
 lemma comp_coe_cocycle₁_comp :
-    (Cochain.ofHom π).comp ((cocycle₁ sq hsq hQ hK).1.comp (.ofHom ι)
+    (Cochain.ofHom π).comp ((cocycle₁ sq hsq hQ hK).val.comp (.ofHom ι)
         (add_zero 1)) (zero_add 1) =
-      (cocycle₁' sq hsq).1 := by
+      (cocycle₁' sq hsq).val := by
   ext n m hnm
   simp [cocycle₁]
 
@@ -140,11 +139,11 @@ Assume that there exists a degreewise lifting `B.X n ⟶ X.X n` for any `n : ℤ
 that `Q` is a cokernel of `i`, and `K` is a kernel of `p`.
 If the cocycle `cocycle₁ sq hsq hQ hK : Cocycle Q K 1` is a coboundary,
 we show that the square admits a lifting `B ⟶ X`. -/
-lemma hasLift (α : Cochain Q K 0) (hα : δ 0 1 α = (cocycle₁ sq hsq hQ hK).1) :
+lemma hasLift (α : Cochain Q K 0) (hα : δ 0 1 α = (cocycle₁ sq hsq hQ hK).val) :
     sq.HasLift where
   exists_lift := by
     replace hα : (Cochain.ofHom π).comp ((δ 0 1 α).comp (.ofHom ι) (add_zero 1)) (zero_add 1) =
-        (cocycle₁' sq hsq).1 := by
+        (cocycle₁' sq hsq).val := by
       rw [← comp_coe_cocycle₁_comp sq hsq hQ hK, hα]
     let l : Cocycle B X 0 :=
       Cocycle.mk (cochain₀ sq hsq -

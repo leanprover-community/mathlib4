@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.Polynomial.Nilpotent
 import Mathlib.Algebra.Polynomial.Eval.Irreducible
 
 /-!
-
 # Polynomials over an irreducible ring
 
 This file contains results about the polynomials over an irreducible ring (i.e. a ring with only
@@ -25,12 +24,11 @@ one minimal prime ideal, equivalently, whose spectrum is an irreducible topologi
 ## Tags
 
 polynomial, irreducible ring, nilradical, prime ideal
-
 -/
 
 public section
 
-open Polynomial
+open AddMonoidAlgebra Polynomial
 
 /-- A polynomial over an irreducible ring `R` is irreducible if it is monic and irreducible after
 mapping into an integral domain `S` (https://math.stackexchange.com/a/4843432/235999).
@@ -44,10 +42,10 @@ theorem Polynomial.Monic.irreducible_of_irreducible_map_of_isPrime_nilradical
   let ι := algebraMap R R'
   rw [show φ = ψ.comp ι from rfl, ← map_map] at hi
   replace hi := hm.map ι |>.irreducible_of_irreducible_map _ _ hi
-  refine ⟨fun h ↦ hi.1 <| (mapRingHom ι).isUnit_map h, fun a b h ↦ ?_⟩
+  refine ⟨fun h ↦ hi.not_isUnit <| (mapRingHom ι).isUnit_map h, fun a b h ↦ ?_⟩
   wlog hb : IsUnit (b.map ι) generalizing a b
   · exact (this b a (mul_comm a b ▸ h)
-      (hi.2 (by rw [h, Polynomial.map_mul]) |>.resolve_right hb)).symm
+      (hi.isUnit_or_isUnit (by rw [h, Polynomial.map_mul]) |>.resolve_right hb)).symm
   have hn (i : ℕ) (hi : i ≠ 0) : IsNilpotent (b.coeff i) := by
     obtain ⟨_, _, h⟩ := Polynomial.isUnit_iff.1 hb
     simpa only [coeff_map, coeff_C, hi, ite_false, ← RingHom.mem_ker,

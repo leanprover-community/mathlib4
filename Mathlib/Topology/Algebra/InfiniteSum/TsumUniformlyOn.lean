@@ -11,6 +11,9 @@ public import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
 
 import Mathlib.Analysis.Normed.Group.FunctionSeries
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Differentiability of sum of functions
 
@@ -20,7 +23,6 @@ We prove some `HasSumUniformlyOn` versions of theorems from
 Alongside this we prove `derivWithin_tsum` which states that the derivative of a series of functions
 is the sum of the derivatives, under suitable conditions we also prove an `iteratedDerivWithin`
 version.
-
 -/
 
 public section

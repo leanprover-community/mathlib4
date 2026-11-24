@@ -7,9 +7,13 @@ module
 
 public import Mathlib.Algebra.GCDMonoid.Finset
 public import Mathlib.Data.Nat.Prime.Basic
-public import Mathlib.Data.PNat.Basic
 public import Mathlib.Dynamics.PeriodicPts.Defs
 public import Mathlib.Order.Lattice.Nat
+
+import Mathlib.Data.PNat.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Extra lemmas about periodic points

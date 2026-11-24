@@ -8,17 +8,18 @@ module
 public import Mathlib.LinearAlgebra.ExteriorPower.Basic
 public import Mathlib.RingTheory.TensorProduct.Maps
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Base change of exterior algebra
 
-In this file, we proved that Exterior algebra behaves well with respect to base change.
+In this file, we prove that the exterior algebra commutes with base change.
 
-# Main Results
+## Main results
 
-* `ExteriorAlgebra.baseChangeEquiv`: for `R`-algebra `S`, the base change isomorphism
-  `S ⊗[R] (⋀[R]^i M) ≃ₗ[S] ⋀[S]^i (S ⊗[R] M)`
-
+* `ExteriorAlgebra.baseChangeEquiv`: for an `R`-algebra `S`, the base change isomorphism
+  `S ⊗[R] ExteriorAlgebra R M ≃ₐ[S] ExteriorAlgebra S (S ⊗[R] M)`.
 -/
 
 noncomputable section
@@ -99,5 +100,15 @@ public lemma baseChangeEquiv_apply (s : S) (m : M) :
 public lemma baseChangeEquiv_symm_apply (s : S) (m : M) :
     (baseChangeEquiv R M S).symm (ι S (s ⊗ₜ[R] m)) = (s ⊗ₜ[R] ι R m) := by
   simp [baseChangeEquiv, baseChangeExteriorAlgebraToTensor]
+
+public lemma baseChangeEquiv_symm_ιMulti_tmul {i : ℕ} (s : Fin i → S) (m : Fin i → M) :
+    (baseChangeEquiv R M S).symm (ιMulti S i fun j ↦ s j ⊗ₜ[R] m j) =
+      (∏ j, s j) ⊗ₜ[R] ιMulti R i m := by
+  simp only [ιMulti_apply]
+  induction i with
+  | zero => simp [Algebra.TensorProduct.one_def]
+  | succ i ih =>
+    simp_rw [List.ofFn_succ, List.prod_cons, map_mul, baseChangeEquiv_symm_apply, ih,
+      Algebra.TensorProduct.tmul_mul_tmul, Fin.prod_univ_succAbove s 0, Fin.zero_succAbove]
 
 end ExteriorAlgebra
