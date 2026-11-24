@@ -5,14 +5,17 @@ Authors: Violeta Hernández Palacios, Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Algebra.Field.Rat
 public import Mathlib.Algebra.Order.Ring.Rat
-public import Mathlib.Data.Prod.Lex
+public import Mathlib.Order.Completion
+public import Mathlib.Order.Prod.Lex.Basic
 public import Mathlib.Order.SuccPred.Limit
 public import Mathlib.Topology.Order.Basic
-public import Mathlib.Order.Completion
 
+import Mathlib.Algebra.Field.Rat
 import Mathlib.Algebra.Order.Field.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Dense and continuous completion of a linear order

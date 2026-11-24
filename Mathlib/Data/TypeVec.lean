@@ -6,11 +6,11 @@ Authors: Jeremy Avigad, Mario Carneiro, Simon Hudon
 module
 
 public import Mathlib.Data.Fin.Fin2
-public import Mathlib.Logic.Function.Basic
-public import Mathlib.Tactic.Common
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
-
 # Tuples of types, and their categorical structure.
 
 ## Features
@@ -169,11 +169,11 @@ theorem dropFun_splitFun {α α' : TypeVec (n + 1)} (f : drop α ⟹ drop α') (
 
 /-- turn an equality into an arrow -/
 def Arrow.mp {α β : TypeVec n} (h : α = β) : α ⟹ β
-  | _ => Eq.mp (congr_fun h _)
+  | _ => Eq.mp congr($h _)
 
 /-- turn an equality into an arrow, with reverse direction -/
 def Arrow.mpr {α β : TypeVec n} (h : α = β) : β ⟹ α
-  | _ => Eq.mpr (congr_fun h _)
+  | _ => Eq.mpr congr($h _)
 
 /-- decompose a vector into its prefix appended with its last element -/
 def toAppend1DropLast {α : TypeVec (n + 1)} : α ⟹ (drop α ::: last α) :=
@@ -454,7 +454,6 @@ def prod.mk : ∀ {n} {α β : TypeVec.{u} n} (i : Fin2 n), α i → β i → (�
 end
 
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem prod_fst_mk {α β : TypeVec n} (i : Fin2 n) (a : α i) (b : β i) :
     TypeVec.prod.fst i (prod.mk i a b) = a := by
@@ -462,7 +461,6 @@ theorem prod_fst_mk {α β : TypeVec n} (i : Fin2 n) (a : α i) (b : β i) :
   | fz => simp_all only [prod.fst, prod.mk]
   | fs _ i_ih => apply i_ih
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem prod_snd_mk {α β : TypeVec n} (i : Fin2 n) (a : α i) (b : β i) :
     TypeVec.prod.snd i (prod.mk i a b) = b := by
@@ -679,7 +677,7 @@ theorem toSubtype'_of_subtype' {α : TypeVec n} (r : α ⊗ α ⟹ «repeat» n 
 
 set_option backward.isDefEq.respectTransparency false in
 theorem subtypeVal_toSubtype' {α : TypeVec n} (r : α ⊗ α ⟹ «repeat» n Prop) :
-    subtypeVal r ⊚ toSubtype' r = fun i x => prod.mk i x.1.fst x.1.snd := by
+    subtypeVal r ⊚ toSubtype' r = fun i x => prod.mk i x.val.fst x.val.snd := by
   ext i x
   induction i <;> simp only [toSubtype', comp, subtypeVal, prod.mk] at *
   simp [*]

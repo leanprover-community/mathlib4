@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Functor.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Unbundled functors, as a typeclass decorating the object-level function.
 -/

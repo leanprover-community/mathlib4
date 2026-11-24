@@ -6,8 +6,9 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Algebra.Order.Ring.Cast
-public import Mathlib.Data.Int.Cast.Lemmas
 public import Mathlib.Data.Num.Lemmas
+
+import Mathlib.Data.Int.Cast.Lemmas
 
 /-!
 # Properties of the `ZNum` representation of integers
@@ -77,7 +78,7 @@ theorem zneg_pred (n : ZNum) : -n.pred = (-n).succ := by
 @[simp]
 theorem abs_to_nat : ∀ n, (abs n : ℕ) = Int.natAbs n
   | 0 => rfl
-  | pos p => congr_arg Int.natAbs p.to_nat_to_int
+  | pos p => congr($(p.to_nat_to_int).natAbs)
   | neg p => show Int.natAbs ((p : ℕ) : ℤ) = Int.natAbs (-p) by rw [p.to_nat_to_int, Int.natAbs_neg]
 
 @[simp]
@@ -93,12 +94,12 @@ theorem cast_to_int [AddGroupWithOne α] : ∀ n : ZNum, ((n : ℤ) : α) = n
 
 theorem bit0_of_bit0 : ∀ n : ZNum, n + n = n.bit0
   | 0 => rfl
-  | pos a => congr_arg pos a.bit0_of_bit0
-  | neg a => congr_arg neg a.bit0_of_bit0
+  | pos a => congr(pos $a.bit0_of_bit0)
+  | neg a => congr(neg $a.bit0_of_bit0)
 
 theorem bit1_of_bit1 : ∀ n : ZNum, n + n + 1 = n.bit1
   | 0 => rfl
-  | pos a => congr_arg pos a.bit1_of_bit1
+  | pos a => congr(pos $a.bit1_of_bit1)
   | neg a => show PosNum.sub' 1 (a + a) = _ by rw [PosNum.one_sub', a.bit0_of_bit0]; rfl
 
 @[simp, norm_cast]
@@ -115,7 +116,7 @@ theorem cast_bit1 [AddGroupWithOne α] : ∀ n : ZNum, (n.bit1 : α) = ((n : α)
   | neg p => by
     rw [ZNum.bit1, cast_neg, cast_neg]
     rcases e : pred' p with - | a <;>
-      have ep : p = _ := (succ'_pred' p).symm.trans (congr_arg Num.succ' e)
+      have ep : p = _ := (succ'_pred' p).symm.trans congr(Num.succ' $e)
     · conv at ep => change p = 1
       subst p
       simp
@@ -139,7 +140,7 @@ theorem zero_add (n : ZNum) : 0 + n = n := by cases n <;> rfl
 
 theorem add_one : ∀ n : ZNum, n + 1 = succ n
   | 0 => rfl
-  | pos p => congr_arg pos p.add_one
+  | pos p => congr(pos $p.add_one)
   | neg p => by cases p <;> rfl
 
 end ZNum
@@ -151,10 +152,10 @@ variable {α : Type*}
 theorem cast_to_znum : ∀ n : PosNum, (n : ZNum) = ZNum.pos n
   | 1 => rfl
   | bit0 p => by
-      have := congr_arg ZNum.bit0 (cast_to_znum p)
+      have := congr(ZNum.bit0 $(cast_to_znum p))
       rwa [← ZNum.bit0_of_bit0] at this
   | bit1 p => by
-      have := congr_arg ZNum.bit1 (cast_to_znum p)
+      have := congr(ZNum.bit1 $(cast_to_znum p))
       rwa [← ZNum.bit1_of_bit1] at this
 
 theorem cast_sub' [AddGroupWithOne α] : ∀ m n : PosNum, (sub' m n : α) = m - n
@@ -242,7 +243,7 @@ theorem mem_ofZNum' : ∀ {m : Num} {n : ZNum}, m ∈ ofZNum' n ↔ n = toZNum m
   | 0, 0 => ⟨fun _ => rfl, fun _ => rfl⟩
   | pos _, 0 => ⟨nofun, nofun⟩
   | m, ZNum.pos p =>
-    Option.some_inj.trans <| by cases m <;> constructor <;> intro h <;> try cases h <;> rfl
+    Option.some_inj.trans <| by cases m <;> constructor <;> intro h <;> cases h <;> rfl
   | m, ZNum.neg p => ⟨nofun, fun h => by cases m <;> cases h⟩
 
 theorem ofZNum'_toNat : ∀ n : ZNum, (↑) <$> ofZNum' n = Int.toNat? n

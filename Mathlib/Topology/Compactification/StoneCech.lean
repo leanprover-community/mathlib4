@@ -5,9 +5,9 @@ Authors: Reid Barton
 -/
 module
 
-public import Mathlib.Topology.Bases
 public import Mathlib.Topology.DenseEmbedding
-public import Mathlib.Topology.Connected.TotallyDisconnected
+
+import Mathlib.Topology.Connected.TotallyDisconnected
 
 /-! # Stone-Čech compactification
 
@@ -63,7 +63,7 @@ theorem ultrafilterBasis_is_basis : TopologicalSpace.IsTopologicalBasis (ultrafi
   ⟨by
     rintro _ ⟨a, rfl⟩ _ ⟨b, rfl⟩ u ⟨ua, ub⟩
     refine ⟨_, ⟨a ∩ b, rfl⟩, inter_mem ua ub, fun v hv ↦ ⟨?_, ?_⟩⟩ <;> apply mem_of_superset hv <;>
-      simp [inter_subset_right],
+      simp,
     eq_univ_of_univ_subset <| subset_sUnion_of_mem ⟨univ, eq_univ_of_forall fun _ ↦ univ_mem⟩,
     rfl⟩
 
@@ -74,7 +74,7 @@ theorem ultrafilter_isOpen_basic (s : Set α) : IsOpen { u : Ultrafilter α | s 
 /-- The basic open sets for the topology on ultrafilters are also closed. -/
 theorem ultrafilter_isClosed_basic (s : Set α) : IsClosed { u : Ultrafilter α | s ∈ u } := by
   rw [← isOpen_compl_iff]
-  convert! ultrafilter_isOpen_basic sᶜ using 1
+  convert ultrafilter_isOpen_basic sᶜ using 1
   ext u
   exact Ultrafilter.compl_mem_iff_notMem.symm
 
@@ -184,7 +184,7 @@ lemma ultrafilter_extend_extends (f : α → γ) : Ultrafilter.extend f ∘ pure
 
 @[simp]
 lemma ultrafilter_extend_pure (f : α → γ) (a : α) : Ultrafilter.extend f (pure a) = f a :=
-  congr_fun (ultrafilter_extend_extends f) a
+  congr($(ultrafilter_extend_extends f) a)
 
 variable [CompactSpace γ]
 
@@ -292,13 +292,13 @@ lemma preStoneCechExtend_extends : preStoneCechExtend hg ∘ preStoneCechUnit = 
 @[simp]
 lemma preStoneCechExtend_preStoneCechUnit (a : α) :
     preStoneCechExtend hg (preStoneCechUnit a) = g a :=
-  congr_fun (preStoneCechExtend_extends hg) a
+  congr($(preStoneCechExtend_extends hg) a)
 
 set_option backward.isDefEq.respectTransparency false in
 lemma eq_if_preStoneCechUnit_eq {a b : α} (h : preStoneCechUnit a = preStoneCechUnit b) :
     g a = g b := by
   have e := ultrafilter_extend_extends g
-  rw [← congrFun e a, ← congrFun e b, Function.comp_apply, Function.comp_apply]
+  rw [← congr($e a), ← congr($e b), Function.comp_apply, Function.comp_apply]
   rw [preStoneCechUnit, preStoneCechUnit, Quot.eq] at h
   generalize (pure a : Ultrafilter α) = F at h
   generalize (pure b : Ultrafilter α) = G at h
@@ -348,8 +348,8 @@ theorem continuous_stoneCechUnit : Continuous (stoneCechUnit : α → StoneCech 
   not be an embedding, for example if the original space is not Hausdorff.) -/
 theorem denseRange_stoneCechUnit : DenseRange (stoneCechUnit : α → StoneCech α) := by
   unfold stoneCechUnit T2Quotient.mk
-  have : Function.Surjective (T2Quotient.mk : PreStoneCech α → StoneCech α) := by
-    exact Quot.mk_surjective
+  have : Function.Surjective (T2Quotient.mk : PreStoneCech α → StoneCech α) :=
+    Quot.mk_surjective
   exact this.denseRange.comp denseRange_preStoneCechUnit continuous_coinduced_rng
 
 section Extension
@@ -361,7 +361,7 @@ theorem stoneCech_hom_ext {g₁ g₂ : StoneCech α → β} (h₁ : Continuous g
     (h : g₁ ∘ stoneCechUnit = g₂ ∘ stoneCechUnit) : g₁ = g₂ := by
   apply h₁.ext_on denseRange_stoneCechUnit h₂
   rintro _ ⟨x, rfl⟩
-  exact congr_fun h x
+  congrm $h x
 
 variable [CompactSpace β]
 
@@ -380,7 +380,7 @@ lemma stoneCechExtend_extends : stoneCechExtend hg ∘ stoneCechUnit = g := by
 
 @[simp]
 lemma stoneCechExtend_stoneCechUnit (a : α) : stoneCechExtend hg (stoneCechUnit a) = g a :=
-  congr_fun (stoneCechExtend_extends hg) a
+  congr($(stoneCechExtend_extends hg) a)
 
 theorem continuous_stoneCechExtend : Continuous (stoneCechExtend hg) :=
   continuous_coinduced_dom.mpr (continuous_preStoneCechExtend hg)

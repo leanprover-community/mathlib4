@@ -5,7 +5,7 @@ Authors: Kenny Lau
 -/
 module
 
-public import Mathlib.Data.FunLike.Graded
+public import Mathlib.Algebra.GradedFunLike
 public import Mathlib.RingTheory.GradedAlgebra.Basic
 
 /-!
@@ -129,10 +129,10 @@ section
 variable (f : 𝒜 →+*ᵍ ℬ)
 
 protected theorem congr_fun {f g : 𝒜 →+*ᵍ ℬ} (h : f = g) (x : A) : f x = g x :=
-  DFunLike.congr_fun h x
+  congr($h x)
 
 protected theorem congr_arg (f : 𝒜 →+*ᵍ ℬ) {x y : A} (h : x = y) : f x = f y :=
-  DFunLike.congr_arg f h
+  congr(f $h)
 
 theorem coe_inj ⦃f g : 𝒜 →+*ᵍ ℬ⦄ (h : (f : A → B) = g) : f = g :=
   DFunLike.coe_injective h
@@ -261,7 +261,7 @@ theorem cancel_left {g : ℬ →+*ᵍ 𝒞} {f₁ f₂ : 𝒜 →+*ᵍ ℬ} (hg 
 /-- A graded ring homomorphism descends to an additive homomorphism on each indexed component. -/
 @[simps!] def gradedAddHom [AddSubmonoidClass σ A] [AddSubmonoidClass τ B]
     (f : 𝒜 →+*ᵍ ℬ) (i : ι) : 𝒜 i →+ ℬ i where
-  toFun x := ⟨f x, map_mem f x.2⟩
+  toFun x := ⟨f x, map_mem f x.property⟩
   map_zero' := by ext; simp
   map_add' x y := by ext; simp
 

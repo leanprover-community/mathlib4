@@ -104,13 +104,11 @@ theorem π_app_left (c : PullbackCone f g) : c.π.app WalkingCospan.left = c.fst
 
 theorem π_app_right (c : PullbackCone f g) : c.π.app WalkingCospan.right = c.snd := rfl
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem condition_one (t : PullbackCone f g) : t.π.app WalkingCospan.one = t.fst ≫ f := by
   have w := t.π.naturality WalkingCospan.Hom.inl
   dsimp at w; simpa using w
 
-set_option backward.defeqAttrib.useBackward true in
 /-- A pullback cone on `f` and `g` is determined by morphisms `fst : W ⟶ X` and `snd : W ⟶ Y`
 such that `fst ≫ f = snd ≫ g`. -/
 @[implicit_reducible, simps]
@@ -158,7 +156,6 @@ def ext {s t : PullbackCone f g} (i : s.pt ≅ t.pt) (w₁ : s.fst = i.hom ≫ t
     (w₂ : s.snd = i.hom ≫ t.snd := by cat_disch) : s ≅ t :=
   WalkingCospan.ext i w₁ w₂
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The natural isomorphism between a pullback cone and the corresponding pullback cone
 reconstructed using `PullbackCone.mk`. -/
 @[simps!]
@@ -190,9 +187,9 @@ def isLimitAux' (t : PullbackCone f g)
           l ≫ t.fst = s.fst ∧
             l ≫ t.snd = s.snd ∧ ∀ {m}, m ≫ t.fst = s.fst → m ≫ t.snd = s.snd → m = l }) :
     Limits.IsLimit t :=
-  PullbackCone.isLimitAux t (fun s => (create s).1) (fun s => (create s).2.1)
-    (fun s => (create s).2.2.1) fun s _ w =>
-    (create s).2.2.2 (w WalkingCospan.left) (w WalkingCospan.right)
+  PullbackCone.isLimitAux t (fun s => (create s).val) (fun s => (create s).property.1)
+    (fun s => (create s).property.2.1) fun s _ w =>
+    (create s).property.2.2 (w WalkingCospan.left) (w WalkingCospan.right)
 
 /-- This is a more convenient formulation to show that a `PullbackCone` constructed using
 `PullbackCone.mk` is a limit cone.
@@ -290,7 +287,6 @@ def PullbackCone.ofCone {F : WalkingCospan ⥤ C} (t : Cone F) :
   pt := t.pt
   π := t.π ≫ (diagramIsoCospan F).hom
 
-set_option backward.defeqAttrib.useBackward true in
 /-- A diagram `WalkingCospan ⥤ C` is isomorphic to some `PullbackCone.mk` after
 composing with `diagramIsoCospan`. -/
 @[simps!]
@@ -324,13 +320,11 @@ theorem ι_app_left (c : PushoutCocone f g) : c.ι.app WalkingSpan.left = c.inl 
 -- This cannot be `@[simp]` because `c.inr` is reducibly defeq to the LHS.
 theorem ι_app_right (c : PushoutCocone f g) : c.ι.app WalkingSpan.right = c.inr := rfl
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem condition_zero (t : PushoutCocone f g) : t.ι.app WalkingSpan.zero = f ≫ t.inl := by
   have w := t.ι.naturality WalkingSpan.Hom.fst
   dsimp at w; simpa using w.symm
 
-set_option backward.defeqAttrib.useBackward true in
 /-- A pushout cocone on `f` and `g` is determined by morphisms `inl : Y ⟶ W` and `inr : Z ⟶ W` such
 that `f ≫ inl = g ↠ inr`. -/
 @[implicit_reducible, simps]
@@ -379,14 +373,12 @@ def ext {s t : PushoutCocone f g} (i : s.pt ≅ t.pt) (w₁ : s.inl ≫ i.hom = 
     (w₂ : s.inr ≫ i.hom = t.inr := by cat_disch) : s ≅ t :=
   WalkingSpan.ext i w₁ w₂
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The natural isomorphism between a pushout cocone and the corresponding pushout cocone
 reconstructed using `PushoutCocone.mk`. -/
 @[simps!]
 def eta (t : PushoutCocone f g) : t ≅ mk t.inl t.inr t.condition :=
   PushoutCocone.ext (Iso.refl _)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- This is a slightly more convenient method to verify that a pushout cocone is a colimit cocone.
 It only asks for a proof of facts that carry any mathematical content -/
 def isColimitAux (t : PushoutCocone f g) (desc : ∀ s : PushoutCocone f g, t.pt ⟶ s.pt)
@@ -410,8 +402,9 @@ def isColimitAux' (t : PushoutCocone f g)
           t.inl ≫ l = s.inl ∧
             t.inr ≫ l = s.inr ∧ ∀ {m}, t.inl ≫ m = s.inl → t.inr ≫ m = s.inr → m = l }) :
     IsColimit t :=
-  isColimitAux t (fun s => (create s).1) (fun s => (create s).2.1) (fun s => (create s).2.2.1)
-    fun s _ w => (create s).2.2.2 (w WalkingCospan.left) (w WalkingCospan.right)
+  isColimitAux t (fun s => (create s).val) (fun s => (create s).property.1)
+    (fun s => (create s).property.2.1)
+    fun s _ w => (create s).property.2.2 (w WalkingCospan.left) (w WalkingCospan.right)
 
 
 theorem IsColimit.hom_ext {t : PushoutCocone f g} (ht : IsColimit t) {W : C} {k l : t.pt ⟶ W}
@@ -512,7 +505,6 @@ def PushoutCocone.ofCocone {F : WalkingSpan ⥤ C} (t : Cocone F) :
   pt := t.pt
   ι := (diagramIsoSpan F).inv ≫ t.ι
 
-set_option backward.defeqAttrib.useBackward true in
 /-- A diagram `WalkingSpan ⥤ C` is isomorphic to some `PushoutCocone.mk` after composing with
 `diagramIsoSpan`. -/
 @[simps!]

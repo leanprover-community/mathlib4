@@ -5,10 +5,11 @@ Authors: Jon Bannon, Jack Cheverton, Samyak Dhar Tuladhar
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Spectrum
-public import Mathlib.LinearAlgebra.Eigenspace.Pi
-public import Mathlib.LinearAlgebra.Eigenspace.Semisimple
 public import Mathlib.Analysis.InnerProductSpace.Semisimple
+public import Mathlib.LinearAlgebra.Eigenspace.Semisimple
+
+import Mathlib.Analysis.InnerProductSpace.Spectrum
+import Mathlib.LinearAlgebra.Eigenspace.Pi
 
 /-! # Joint eigenspaces of commuting symmetric operators
 
@@ -36,7 +37,6 @@ and a proof obligation that the basis vectors are eigenvectors.
 ## Tags
 
 symmetric operator, simultaneous eigenspaces, joint eigenspaces
-
 -/
 
 public section
@@ -77,8 +77,8 @@ theorem orthogonalFamily_iInf_eigenspaces (hT : ∀ i, (T i).IsSymmetric) :
   have H := orthogonalFamily_eigenspaces (hT a) ha
   simp only [Submodule.coe_subtypeₗᵢ, Submodule.coe_subtype, Subtype.forall] at H
   apply H
-  · exact (Submodule.mem_iInf <| fun _ ↦ eigenspace (T _) (f _)).mp Ef.2 _
-  · exact (Submodule.mem_iInf <| fun _ ↦ eigenspace (T _) (g _)).mp Eg.2 _
+  · exact (Submodule.mem_iInf <| fun _ ↦ eigenspace (T _) (f _)).mp Ef.property _
+  · exact (Submodule.mem_iInf <| fun _ ↦ eigenspace (T _) (g _)).mp Eg.property _
 
 variable [FiniteDimensional 𝕜 E]
 

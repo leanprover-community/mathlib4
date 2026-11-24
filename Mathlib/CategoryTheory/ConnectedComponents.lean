@@ -5,10 +5,13 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.Data.List.Chain
 public import Mathlib.CategoryTheory.IsConnected
 public import Mathlib.CategoryTheory.Sigma.Basic
-public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
+
+import Mathlib.Data.List.Chain
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Connected components of a category

@@ -20,7 +20,6 @@ functions, started in `Mathlib/MeasureTheory/Function/StronglyMeasurable/Basic.l
 
 * [Hytönen, Tuomas, Jan Van Neerven, Mark Veraar, and Lutz Weis. Analysis in Banach spaces.
   Springer, 2016.][Hytonen_VanNeerven_Veraar_Wies_2016]
-
 -/
 
 public section

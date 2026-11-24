@@ -5,10 +5,10 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.Data.Prod.Lex
-public import Mathlib.Data.Sum.Order
 public import Mathlib.Order.Hom.Set
+public import Mathlib.Order.Prod.Lex.Basic
 public import Mathlib.Order.RelIso.Set
+public import Mathlib.Order.Sum.Order
 
 /-!
 # Lexicographic order and order isomorphisms
@@ -106,11 +106,11 @@ theorem sumLexIioIci_symm_apply_of_ge {y : α} (h : x ≤ y) :
 
 @[simp]
 theorem sumLexIioIci_symm_apply_Iio (a : Iio x) : (sumLexIioIci x).symm a = toLex (Sum.inl a) :=
-  sumLexIioIci_symm_apply_of_lt a.2
+  sumLexIioIci_symm_apply_of_lt a.property
 
 @[simp]
 theorem sumLexIioIci_symm_apply_Ici (a : Ici x) : (sumLexIioIci x).symm a = toLex (Sum.inr a) :=
-  sumLexIioIci_symm_apply_of_ge a.2
+  sumLexIioIci_symm_apply_of_ge a.property
 
 variable (x) in
 /-- A linear order is isomorphic to the lexicographic sum of elements less or equal to `x` and
@@ -137,11 +137,11 @@ theorem sumLexIicIoi_symm_apply_of_lt {y : α} (h : x < y) :
 
 @[simp]
 theorem sumLexIicIoi_symm_apply_Iic (a : Iic x) : (sumLexIicIoi x).symm a = Sum.inl a :=
-  sumLexIicIoi_symm_apply_of_le a.2
+  sumLexIicIoi_symm_apply_of_le a.property
 
 @[simp]
 theorem sumLexIicIoi_symm_apply_Ioi (a : Ioi x) : (sumLexIicIoi x).symm a = Sum.inr a :=
-  sumLexIicIoi_symm_apply_of_lt a.2
+  sumLexIicIoi_symm_apply_of_lt a.property
 
 end OrderIso
 

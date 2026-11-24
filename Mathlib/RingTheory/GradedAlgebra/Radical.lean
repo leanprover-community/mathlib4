@@ -7,9 +7,13 @@ module
 
 public import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
-This file contains a proof that the radical of any homogeneous ideal is a homogeneous ideal
+/-!
+# Radicals of homogeneous ideals
+
+This file contains a proof that the radical of any homogeneous ideal is a homogeneous ideal.
 
 ## Main statements
 
@@ -104,7 +108,7 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
         simp only [antidiag, mem_erase, Prod.mk_inj, Ne, mem_filter, mem_product] at H
         rcases H with ⟨H₁, ⟨H₂, H₃⟩, H₄⟩
         have max_lt : max₁ < i ∨ max₂ < j := by
-          convert! le_or_lt_of_add_le_add H₄.ge using 1
+          convert le_or_lt_of_add_le_add H₄.ge using 1
           rw [Ne.le_iff_lt]
           rintro rfl
           cases H₁ ⟨rfl, add_left_cancel H₄⟩

@@ -6,8 +6,12 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.DerivabilityStructureInjectives
-public import Mathlib.CategoryTheory.Functor.Derived.RightDerivedCommShift
-public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.DerivesTriangulated
+
+import Mathlib.CategoryTheory.Functor.Derived.RightDerivedCommShift
+import Mathlib.CategoryTheory.Localization.DerivabilityStructure.DerivesTriangulated
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The right derived functor on the bounded below derived category
@@ -25,7 +29,6 @@ as a derived functor of the functor `F.mapCochainComplexPlus`
 that `F` induces on the categories of bounded below cochain complexes.
 
 TODO(@joelriou): refactor the definition of `Functor.rightDerived`
-
 -/
 
 @[expose] public section

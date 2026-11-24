@@ -5,7 +5,6 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.Notation.Indicator
 public import Mathlib.Order.Filter.EventuallyConst
 public import Mathlib.Topology.Connected.LocallyConnected
 public import Mathlib.Topology.Sets.Closeds
@@ -22,6 +21,11 @@ This file sets up the theory of locally constant function from a topological spa
 * `LocallyConstant X Y` : the type of locally constant maps from `X` to `Y`
 * `LocallyConstant.map` : push-forward of locally constant maps
 * `LocallyConstant.comap` : pull-back of locally constant maps
+
+## TODO
+
+Link `IsLocallyConstant` to `Function.IsConst(On)`.
+
 -/
 
 @[expose] public section
@@ -240,10 +244,10 @@ theorem coe_mk (f : X → Y) (h) : ⇑(⟨f, h⟩ : LocallyConstant X Y) = f :=
   rfl
 
 protected theorem congr_fun {f g : LocallyConstant X Y} (h : f = g) (x : X) : f x = g x :=
-  DFunLike.congr_fun h x
+  congr($h x)
 
 protected theorem congr_arg (f : LocallyConstant X Y) {x y : X} (h : x = y) : f x = f y :=
-  DFunLike.congr_arg f h
+  congr(f $h)
 
 theorem coe_injective : @Function.Injective (LocallyConstant X Y) (X → Y) (↑) := fun _ _ =>
   DFunLike.ext'
@@ -300,13 +304,13 @@ def ofIsClopen {X : Type*} [TopologicalSpace X] {U : Set X} [∀ x, Decidable (x
   toFun x := if x ∈ U then 0 else 1
   isLocallyConstant := by
     refine IsLocallyConstant.iff_isOpen_fiber.2 <| Fin.forall_fin_two.2 ⟨?_, ?_⟩
-    · convert! hU.2 using 1
+    · convert hU.2 using 1
       ext
       simp only [mem_singleton_iff, Fin.one_eq_zero_iff, mem_preimage, ite_eq_left_iff,
         Nat.succ_succ_ne_one]
       tauto
     · rw [← isClosed_compl_iff]
-      convert! hU.1
+      convert hU.1
       ext
       simp
 
@@ -419,12 +423,12 @@ theorem comap_const (f : C(X, Y)) (y : Y) (h : ∀ x, f x = y) :
     (comap f : LocallyConstant Y Z → LocallyConstant X Z) = fun g => const X (g y) := by
   ext; simp [h]
 
-lemma comap_injective (f : C(X, Y)) (hfs : f.1.Surjective) :
+lemma comap_injective (f : C(X, Y)) (hfs : f.toFun.Surjective) :
     (comap (Z := Z) f).Injective := by
   intro a b h
   ext y
   obtain ⟨x, hx⟩ := hfs y
-  simpa [← hx] using LocallyConstant.congr_fun h x
+  simpa [← hx] using congr($h x)
 
 end Comap
 
@@ -458,7 +462,8 @@ noncomputable def mulIndicator (hU : IsClopen U) : LocallyConstant X R where
   toFun := Set.mulIndicator U f
   isLocallyConstant := fun s => by
     rw [mulIndicator_preimage, Set.ite, Set.sdiff_eq]
-    exact ((f.2 s).inter hU.isOpen).union ((IsLocallyConstant.const 1 s).inter hU.compl.isOpen)
+    exact ((f.isLocallyConstant s).inter hU.isOpen).union
+      ((IsLocallyConstant.const 1 s).inter hU.compl.isOpen)
 
 variable (a : X)
 
@@ -515,8 +520,8 @@ a two-element set
 -/
 def equivClopens [∀ (s : Set X) x, Decidable (x ∈ s)] :
     LocallyConstant X (Fin 2) ≃ TopologicalSpace.Clopens X where
-  toFun f := ⟨f ⁻¹' {0}, f.2.isClopen_fiber _⟩
-  invFun s := ofIsClopen s.2
+  toFun f := ⟨f ⁻¹' {0}, f.isLocallyConstant.isClopen_fiber _⟩
+  invFun s := ofIsClopen s.isClopen'
   left_inv _ := locallyConstant_eq_of_fiber_zero_eq _ _ (by simp)
   right_inv _ := by simp
 
@@ -582,10 +587,10 @@ def piecewise' {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ C₂) (h₁ : 
     [DecidablePred (· ∈ C₁)] (hf : ∀ x (hx : x ∈ C₁ ∩ C₂), f₁ ⟨x, hx.1⟩ = f₂ ⟨x, hx.2⟩) :
     LocallyConstant C₀ Z :=
   letI : ∀ j : C₀, Decidable (j ∈ Subtype.val ⁻¹' C₁) := fun j ↦ decidable_of_iff (↑j ∈ C₁) Iff.rfl
-  piecewise (h₁.preimage continuous_subtype_val) (h₂.preimage continuous_subtype_val)
+  piecewise (h₁.preimage continuous_subtypeVal) (h₂.preimage continuous_subtypeVal)
     (by simpa [eq_univ_iff_forall] using! h₀)
-    (f₁.comap ⟨(restrictPreimage C₁ ((↑) : C₀ → X)), continuous_subtype_val.restrictPreimage⟩)
-    (f₂.comap ⟨(restrictPreimage C₂ ((↑) : C₀ → X)), continuous_subtype_val.restrictPreimage⟩) <| by
+    (f₁.comap ⟨(restrictPreimage C₁ ((↑) : C₀ → X)), continuous_subtypeVal.restrictPreimage⟩)
+    (f₂.comap ⟨(restrictPreimage C₂ ((↑) : C₀ → X)), continuous_subtypeVal.restrictPreimage⟩) <| by
       rintro ⟨x, hx₀⟩ ⟨hx₁ : x ∈ C₁, hx₂ : x ∈ C₂⟩
       simpa using hf x ⟨hx₁, hx₂⟩
 
@@ -597,7 +602,7 @@ lemma piecewise'_apply_left {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ C
     piecewise' h₀ h₁ h₂ f₁ f₂ hf x = f₁ ⟨x.val, hx⟩ := by
   let : ∀ j : C₀, Decidable (j ∈ Subtype.val ⁻¹' C₁) := fun j ↦ decidable_of_iff (↑j ∈ C₁) Iff.rfl
   rw [piecewise', piecewise_apply_left (f := (f₁.comap
-    ⟨(restrictPreimage C₁ ((↑) : C₀ → X)), continuous_subtype_val.restrictPreimage⟩))
+    ⟨(restrictPreimage C₁ ((↑) : C₀ → X)), continuous_subtypeVal.restrictPreimage⟩))
     (hx := hx)]
   rfl
 
@@ -609,7 +614,7 @@ lemma piecewise'_apply_right {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ 
     piecewise' h₀ h₁ h₂ f₁ f₂ hf x = f₂ ⟨x.val, hx⟩ := by
   let : ∀ j : C₀, Decidable (j ∈ Subtype.val ⁻¹' C₁) := fun j ↦ decidable_of_iff (↑j ∈ C₁) Iff.rfl
   rw [piecewise', piecewise_apply_right (f := (f₁.comap
-    ⟨(restrictPreimage C₁ ((↑) : C₀ → X)), continuous_subtype_val.restrictPreimage⟩))
+    ⟨(restrictPreimage C₁ ((↑) : C₀ → X)), continuous_subtypeVal.restrictPreimage⟩))
     (hx := hx)]
   rfl
 

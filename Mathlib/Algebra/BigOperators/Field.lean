@@ -6,8 +6,10 @@ Authors: Bhavik Mehta, Daniel Weber
 module
 
 public import Mathlib.Algebra.BigOperators.Ring.Finset
-public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Data.Finset.Density
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Results about big operators with values in a field

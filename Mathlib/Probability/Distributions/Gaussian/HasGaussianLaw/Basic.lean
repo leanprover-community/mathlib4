@@ -6,9 +6,11 @@ Authors: Etienne Marion
 module
 
 public import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Def
-public import Mathlib.Probability.HasLaw
 
 import Mathlib.Probability.Distributions.Gaussian.Fernique
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Gaussian random variables
@@ -231,7 +233,7 @@ lemma sum {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpac
     [BorelSpace E] [SecondCountableTopology E]
     {X : ι → Ω → E} (hX : HasGaussianLaw (fun ω ↦ (X · ω)) P) :
     HasGaussianLaw (∑ i, X i) P := by
-  convert! hX.map (∑ i, .proj i)
+  convert hX.map (∑ i, .proj i)
   ext; simp
 
 lemma fun_sum {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E]

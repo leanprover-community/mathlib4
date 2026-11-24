@@ -6,8 +6,9 @@ Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 module
 
 public import Mathlib.Data.Set.Finite.Lemmas
-public import Mathlib.Order.Filter.Bases.Finite
 public import Mathlib.Order.Filter.AtTopBot.Basic
+
+import Mathlib.Order.Filter.Bases.Finite
 
 /-!
 # Finiteness and `Filter.atTop` and `Filter.atBot` filters
@@ -29,7 +30,7 @@ theorem eventually_forall_ge_atTop [Preorder α] {p : α → Prop} :
     (∀ᶠ x in atTop, ∀ y, x ≤ y → p y) ↔ ∀ᶠ x in atTop, p x := by
   refine ⟨fun h ↦ h.mono fun x hx ↦ hx x le_rfl, fun h ↦ ?_⟩
   rcases (hasBasis_iInf_principal_finite _).eventually_iff.1 h with ⟨S, hSf, hS⟩
-  refine mem_iInf_of_iInter hSf (V := fun x ↦ Ici x.1) (fun _ ↦ Subset.rfl) fun x hx y hy ↦ ?_
+  refine mem_iInf_of_iInter hSf (V := fun x ↦ Ici x.val) (fun _ ↦ Subset.rfl) fun x hx y hy ↦ ?_
   simp only [mem_iInter] at hS hx
   exact hS fun z hz ↦ le_trans (hx ⟨z, hz⟩) hy
 

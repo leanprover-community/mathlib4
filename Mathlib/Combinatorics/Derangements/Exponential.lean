@@ -5,10 +5,14 @@ Authors: Henry Swanson, Patrick Massot
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Field
 public import Mathlib.Analysis.SpecialFunctions.Exponential
 public import Mathlib.Combinatorics.Derangements.Finite
-public import Mathlib.Data.Nat.Cast.Field
+
+import Mathlib.Algebra.BigOperators.Field
+import Mathlib.Data.Nat.Cast.Field
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Derangement exponential series

@@ -7,8 +7,12 @@ module
 
 public import Mathlib.Algebra.TrivSqZeroExt.Basic
 public import Mathlib.Topology.Algebra.InfiniteSum.Basic
-public import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
+
+import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Topology on `TrivSqZeroExt R M`
@@ -24,7 +28,6 @@ one value.
 ## Main results
 
 * `TrivSqZeroExt.topologicalRing`: the ring operations are continuous
-
 -/
 
 @[expose] public section

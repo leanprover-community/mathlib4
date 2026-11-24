@@ -41,7 +41,7 @@ for every `m` in `Π i, Eᵢ` is bounded above by the projective seminorm.
   `E = Π i, Eᵢ` and `x` is in `⨂[𝕜] i, Eᵢ`, then `‖f.lift x‖ ≤ projectiveSeminorm x * ‖f‖`.
 * `PiTensorProduct.mapL_opNorm`: If `f` is a family of continuous linear maps
   `fᵢ : Eᵢ →L[𝕜] Fᵢ`, then `‖PiTensorProduct.mapL f‖ ≤ ∏ i, ‖fᵢ‖`.
-* `PiTensorProduct.opNorm_mapLMultilinear_le` : If `F` is a normed vecteor space, then
+* `PiTensorProduct.opNorm_mapLMultilinear_le` : If `F` is a normed vector space, then
   `‖mapLMultilinear 𝕜 E F‖ ≤ 1`.
 
 ## TODO
@@ -50,7 +50,6 @@ for every `m` in `Π i, Eᵢ` is bounded above by the projective seminorm.
 * If all `Eᵢ` are separated and satisfy `SeparatingDual`, then the seminorm on
   `⨂[𝕜] i, Eᵢ` is a norm.
 * Adapt the remaining functoriality constructions/properties from `PiTensorProduct`.
-
 -/
 
 @[expose] public section
@@ -91,7 +90,7 @@ theorem projectiveSeminormAux_smul (p : FreeAddMonoid (𝕜 × Π i, E i)) (a : 
 variable [∀ i, NormedSpace 𝕜 (E i)]
 
 theorem bddBelow_projectiveSemiNormAux (x : ⨂[𝕜] i, E i) :
-    BddBelow (Set.range (fun (p : lifts x) ↦ projectiveSeminormAux p.1)) :=
+    BddBelow (Set.range (fun (p : lifts x) ↦ projectiveSeminormAux p.val)) :=
   ⟨0, by simp [mem_lowerBounds, projectiveSeminormAux_nonneg]⟩
 
 noncomputable instance : Norm (⨂[𝕜] i, E i) :=
@@ -108,13 +107,13 @@ theorem projectiveSeminorm_zero : ‖(0 : ⨂[𝕜] i, E i)‖ = 0 :=
 
 theorem projectiveSeminorm_add_le (x y : ⨂[𝕜] i, E i) : ‖x + y‖ ≤ ‖x‖ + ‖y‖ :=
   le_ciInf_add_ciInf (fun p q ↦ ciInf_le_of_le (bddBelow_projectiveSemiNormAux _)
-    ⟨p.1 + q.1, lifts_add p.2 q.2⟩ (projectiveSeminormAux_add_le p.1 q.1))
+    ⟨p.val + q.val, lifts_add p.property q.property⟩ (projectiveSeminormAux_add_le p.val q.val))
 
 theorem projectiveSeminorm_smul_le (a : 𝕜) (x : ⨂[𝕜] i, E i) : ‖a • x‖ ≤ ‖a‖ * ‖x‖ := by
   simp only [norm_def, Real.mul_iInf_of_nonneg (norm_nonneg _)]
   refine le_ciInf fun p ↦ ?_
   simpa [projectiveSeminormAux_smul] using
-    ciInf_le_of_le (bddBelow_projectiveSemiNormAux _) ⟨_, lifts_smul p.2 a⟩ (le_refl _)
+    ciInf_le_of_le (bddBelow_projectiveSemiNormAux _) ⟨_, lifts_smul p.property a⟩ (le_refl _)
 
 /-- The projective seminorm on `⨂[𝕜] i, Eᵢ`. It sends an element `x` of `⨂[𝕜] i, Eᵢ` to the
 infimum over all expressions of `x` as `∑ j, ⨂ₜ[𝕜] mⱼ i` (with the `mⱼ` ∈ `Π i, Eᵢ`)
@@ -129,7 +128,7 @@ noncomputable instance : NormedSpace 𝕜 (⨂[𝕜] i, E i) := ⟨projectiveSem
 
 @[deprecated norm_def +typeChanged (since := "2026-06-10")]
 theorem projectiveSeminorm_apply (x : ⨂[𝕜] i, E i) :
-    projectiveSeminorm x = iInf (fun (p : lifts x) ↦ projectiveSeminormAux p.1) := rfl
+    projectiveSeminorm x = iInf (fun (p : lifts x) ↦ projectiveSeminormAux p.val) := rfl
 
 theorem projectiveSeminorm_tprod_le (m : Π i, E i) :
     ‖(⨂ₜ[𝕜] i, m i)‖ ≤ ∏ i, ‖m i‖ := by

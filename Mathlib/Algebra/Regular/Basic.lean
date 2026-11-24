@@ -6,9 +6,10 @@ Authors: Damiano Testa
 module
 
 public import Mathlib.Algebra.Group.Basic
-public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Algebra.Group.Units.Defs
-public import Mathlib.Algebra.Regular.Defs
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Regular elements

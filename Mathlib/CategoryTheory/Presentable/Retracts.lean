@@ -6,11 +6,12 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Presentable.Basic
-public import Mathlib.CategoryTheory.ObjectProperty.Retract
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Presentable objects are stable under retracts
-
 -/
 
 public section
@@ -23,7 +24,6 @@ open Limits
 
 variable {C : Type u} [Category.{v} C]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma Retract.isCardinalPresentable
     {X Y : C} (h : Retract Y X) (κ : Cardinal.{w}) [Fact κ.IsRegular]
     [IsCardinalPresentable X κ] :

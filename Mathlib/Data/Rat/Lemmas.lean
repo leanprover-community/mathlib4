@@ -5,14 +5,14 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Divisibility
-public import Mathlib.Algebra.Ring.Rat
 public import Mathlib.Algebra.Ring.Int.Parity
+public import Mathlib.Algebra.Ring.Rat
 public import Mathlib.Data.PNat.Defs
+
+import Mathlib.Algebra.GroupWithZero.Divisibility
 
 /-!
 # Further lemmas for the Rational Numbers
-
 -/
 
 @[expose] public section
@@ -28,7 +28,7 @@ theorem num_dvd (a) {b : ℤ} (b0 : b ≠ 0) : (a /. b).num ∣ a := by
   rw [Rat.mk_eq_divInt, divInt_eq_divInt_iff b0 (mod_cast h)] at e
   refine Int.natAbs_dvd.1 <| Int.dvd_natAbs.1 <| Int.natCast_dvd_natCast.2 <|
     c.dvd_of_dvd_mul_right ?_
-  have := congr_arg Int.natAbs e
+  have := congr($(e).natAbs)
   simp only [Int.natAbs_mul, Int.natAbs_natCast] at this; simp [this]
 
 theorem den_dvd (a b : ℤ) : ((a /. b).den : ℤ) ∣ b := by
@@ -176,8 +176,10 @@ theorem isSquare_ofNat_iff {n : ℕ} :
     IsSquare (ofNat(n) : ℚ) ↔ IsSquare (OfNat.ofNat n : ℕ) :=
   isSquare_natCast_iff
 
-theorem mkRat_add_mkRat_of_den (n₁ n₂ : Int) {d : Nat} (h : d ≠ 0) :
+theorem mkRat_add_mkRat_of_den (n₁ n₂ : Int) (d : Nat) :
     mkRat n₁ d + mkRat n₂ d = mkRat (n₁ + n₂) d := by
+  rcases eq_or_ne d 0 with rfl | h
+  · simp
   rw [mkRat_add_mkRat _ _ h h, ← add_mul, mkRat_mul_right h]
 
 section Casts

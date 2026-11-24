@@ -7,7 +7,11 @@ module
 
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsClosure
 public import Mathlib.CategoryTheory.SmallRepresentatives
-public import Mathlib.CategoryTheory.Comma.CardinalArrow
+
+import Mathlib.CategoryTheory.Comma.CardinalArrow
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Closure of a property of objects under colimits of bounded cardinality
@@ -20,7 +24,6 @@ that `Arrow J` is of cardinality `< κ`.
 If `C` is locally `w`-small and `P` is essentially `w`-small,
 we show that this closure `P.colimitsCardinalClosure κ` is
 also essentially `w`-small.
-
 -/
 
 @[expose] public section

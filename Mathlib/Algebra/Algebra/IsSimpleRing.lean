@@ -5,8 +5,10 @@ Authors: Paul Lezeau, Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Basic
 public import Mathlib.RingTheory.SimpleRing.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Facts about algebras when the coefficient ring is a simple ring

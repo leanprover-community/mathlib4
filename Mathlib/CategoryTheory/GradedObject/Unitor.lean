@@ -7,6 +7,10 @@ module
 
 public import Mathlib.CategoryTheory.GradedObject.Associator
 public import Mathlib.CategoryTheory.GradedObject.Single
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The left and right unitors
 
@@ -18,7 +22,6 @@ Under similar assumptions, we also obtain a right unitor isomorphism
 `mapBifunctorMapObj F p X ((single₀ I).obj Y) ≅ X`. Finally,
 the lemma `mapBifunctor_triangle` promotes a triangle identity involving functors
 to a triangle identity for the induced functors on graded objects.
-
 -/
 
 @[expose] public section
@@ -65,8 +68,6 @@ noncomputable def mapBifunctorLeftUnitorCofan (hp : ∀ (j : J), p ⟨0, j⟩ = 
     else
       (mapBifunctorObjSingle₀ObjIsInitial F X Y a ha).to _)
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 @[simp, reassoc]
 lemma mapBifunctorLeftUnitorCofan_inj (j : J) :
     (mapBifunctorLeftUnitorCofan F X e p hp Y j).inj ⟨⟨0, j⟩, hp j⟩ =
@@ -182,8 +183,6 @@ noncomputable def mapBifunctorRightUnitorCofan (hp : ∀ (j : J), p ⟨j, 0⟩ =
     else
       (mapBifunctorObjObjSingle₀IsInitial F Y X a ha).to _)
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 @[simp, reassoc]
 lemma mapBifunctorRightUnitorCofan_inj (j : J) :
     (mapBifunctorRightUnitorCofan F Y e p hp X j).inj ⟨⟨j, 0⟩, hp j⟩ =

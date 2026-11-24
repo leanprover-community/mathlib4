@@ -5,10 +5,11 @@ Authors: Michael Geißer, Michael Stoll
 -/
 module
 
-public import Mathlib.Data.ZMod.Basic
-public import Mathlib.NumberTheory.DiophantineApproximation.Basic
 public import Mathlib.NumberTheory.Zsqrtd.Basic
-public import Mathlib.Tactic.Qify
+
+import Mathlib.Data.ZMod.Basic
+import Mathlib.NumberTheory.DiophantineApproximation.Basic
+import Mathlib.Tactic.Qify
 
 /-!
 # Pell's Equation
@@ -40,8 +41,8 @@ if and only if it is fundamental, see `Pell.pos_generator_iff_fundamental`.
 
 ## References
 
-* [K. Ireland, M. Rosen, *A classical introduction to modern number theory* (Section 17.5)]
-  [IrelandRosen1990]
+* [K. Ireland, M. Rosen, *A classical introduction to modern number theory*
+  (Section 17.5)][IrelandRosen1990]
 
 ## Tags
 
@@ -329,9 +330,9 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     refine hd ⟨x, @Int.cast_injective ℝ _ _ d (x * x) ?_⟩
     rw [← sq_sqrt <| Int.cast_nonneg h₀.le, Int.cast_mul, ← hx, sq]
   obtain ⟨M, hM₁⟩ := exists_int_gt (2 * |ξ| + 1)
-  have hM : {q : ℚ | |q.1 ^ 2 - d * (q.2 : ℤ) ^ 2| < M}.Infinite := by
+  have hM : {q : ℚ | |q.num ^ 2 - d * (q.den : ℤ) ^ 2| < M}.Infinite := by
     refine Infinite.mono (fun q h => ?_) (infinite_rat_abs_sub_lt_one_div_den_sq_of_irrational hξ)
-    have h0 : 0 < (q.2 : ℝ) ^ 2 := pow_pos (Nat.cast_pos.mpr q.pos) 2
+    have h0 : 0 < (q.den : ℝ) ^ 2 := pow_pos (Nat.cast_pos.mpr q.pos) 2
     have h1 : (q.num : ℝ) / (q.den : ℝ) = q := mod_cast q.num_div_den
     rw [mem_ofPred, abs_sub_comm, ← @Int.cast_lt ℝ,
       ← div_lt_div_iff_of_pos_right (abs_pos_of_pos h0)]
@@ -344,7 +345,7 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     refine (abs_sub_abs_le_abs_sub (q : ℝ) ξ).trans (h.le.trans ?_)
     rw [div_le_one h0, one_le_sq_iff_one_le_abs, Nat.abs_cast, Nat.one_le_cast]
     exact q.pos
-  obtain ⟨m, hm⟩ : ∃ m : ℤ, {q : ℚ | q.1 ^ 2 - d * (q.den : ℤ) ^ 2 = m}.Infinite := by
+  obtain ⟨m, hm⟩ : ∃ m : ℤ, {q : ℚ | q.num ^ 2 - d * (q.den : ℤ) ^ 2 = m}.Infinite := by
     contrapose! hM
     refine (congr_arg _ (ext fun x => ?_)).mp (Finite.biUnion (finite_Ioo (-M) M) fun m _ => hM m)
     simp only [abs_lt, mem_ofPred, mem_Ioo, mem_iUnion, exists_prop, exists_eq_right']
@@ -509,7 +510,7 @@ theorem zpow_y_lt_iff_lt {a : Solution₁ d} (h : IsFundamental a) (m n : ℤ) :
 /-- The `n`th power of a fundamental solution is trivial if and only if `n = 0`. -/
 theorem zpow_eq_one_iff {a : Solution₁ d} (h : IsFundamental a) (n : ℤ) : a ^ n = 1 ↔ n = 0 := by
   rw [← zpow_zero a]
-  exact ⟨fun H => h.y_strictMono.injective (congr_arg Solution₁.y H), fun H => H ▸ rfl⟩
+  exact ⟨fun H => h.y_strictMono.injective congr(Solution₁.y $H), fun H => H ▸ rfl⟩
 
 /-- A power of a fundamental solution is never equal to the negative of a power of this
 fundamental solution. -/
@@ -575,7 +576,7 @@ theorem mul_inv_x_lt_x {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solu
     _ = a.x * a₁.y * a₁.x := by ring
     _ ≤ a.y * a₁.x * a₁.x := by have := h.1; have := x_mul_y_le_y_mul_x h hax hay; gcongr
   rw [mul_assoc, ← sq, a₁.prop_x, ← sub_neg]
-  suffices a.y - a.x * a₁.y < 0 by convert! this using 1; ring
+  suffices a.y - a.x * a₁.y < 0 by convert this using 1; ring
   rw [sub_neg, ← abs_of_pos hay, ← abs_of_pos h.2.1, ← abs_of_pos <| zero_lt_one.trans hax, ←
     abs_mul, ← sq_lt_sq, mul_pow, a.prop_x]
   calc
@@ -590,7 +591,7 @@ theorem mul_inv_x_lt_x {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solu
 theorem eq_pow_of_nonneg {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solution₁ d} (hax : 0 < a.x)
     (hay : 0 ≤ a.y) : ∃ n : ℕ, a = a₁ ^ n := by
   lift a.x to ℕ using hax.le with ax hax'
-  induction ax using Nat.strong_induction_on generalizing a with | h x ih =>
+  induction ax using Nat.strong_induction_on generalizing a with | ind x ih
   rcases hay.eq_or_lt with hy | hy
   · -- case 1: `a = 1`
     refine ⟨0, ?_⟩

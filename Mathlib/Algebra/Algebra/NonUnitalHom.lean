@@ -6,7 +6,6 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.Algebra.Hom
-public import Mathlib.Algebra.GroupWithZero.Action.Prod
 
 /-!
 # Morphisms of non-unital algebras
@@ -31,8 +30,6 @@ For a plausible future application, one could take the non-unital algebra of com
 functions on a non-compact topological space. A proper map between a pair of such spaces
 (contravariantly) induces a morphism between their algebras of compactly-supported functions which
 will be a `NonUnitalAlgHom`.
-
-TODO: add `NonUnitalAlgEquiv` when needed.
 
 ## Main definitions
 
@@ -131,8 +128,8 @@ instance {F R S A B : Type*} [Monoid R] [Monoid S] {φ : R →* S}
   ⟨toNonUnitalAlgSemiHom⟩
 
 /-- Turn an element of a type `F` satisfying `NonUnitalAlgHomClass F R A B` into an actual
-@[coe]
 `NonUnitalAlgHom`. This is declared as the default coercion from `F` to `A →ₛₙₐ[R] B`. -/
+@[coe]
 def toNonUnitalAlgHom {F R : Type*} [Monoid R] {A B : Type*}
     [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
     [NonUnitalNonAssocSemiring B] [DistribMulAction R B]
@@ -182,10 +179,6 @@ protected theorem coe_coe {F : Type*} [FunLike F A B]
 
 theorem coe_injective : @Function.Injective (A →ₛₙₐ[φ] B) (A → B) (↑) := by
   rintro ⟨⟨⟨f, _⟩, _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
-@[macro_inline]
-instance : FunLike (A →ₛₙₐ[φ] B) A B where
-  coe f := f.toFun
-  coe_injective := coe_injective
 
 instance : NonUnitalAlgSemiHomClass (A →ₛₙₐ[φ] B) φ A B where
   map_add f := f.map_add'
@@ -229,11 +222,11 @@ theorem coe_to_mulHom (f : A →ₛₙₐ[φ] B) : ⇑(f : A →ₙ* B) = f :=
 theorem to_distribMulActionHom_injective {f g : A →ₛₙₐ[φ] B}
     (h : (f : A →ₑ+[φ] B) = (g : A →ₑ+[φ] B)) : f = g := by
   ext a
-  exact DistribMulActionHom.congr_fun h a
+  congrm $h a
 
 theorem to_mulHom_injective {f g : A →ₛₙₐ[φ] B} (h : (f : A →ₙ* B) = (g : A →ₙ* B)) : f = g := by
   ext a
-  exact DFunLike.congr_fun h a
+  congrm $h a
 
 @[norm_cast]
 theorem coe_distribMulActionHom_mk (f : A →ₛₙₐ[φ] B) (h₁ h₂ h₃ h₄) :
@@ -453,6 +446,10 @@ instance NonUnitalAlgHom.hasCoe : CoeOut (A →ₐ[R] B) (A →ₙₐ[R] B) :=
 
 @[simp]
 theorem toNonUnitalAlgHom_eq_coe (f : A →ₐ[R] B) : f.toNonUnitalAlgHom = f :=
+  rfl
+
+@[simp, norm_cast]
+theorem coe_toNonUnitalAlgHom (f : A →ₐ[R] B) : ⇑(f : A →ₙₐ[R] B) = f :=
   rfl
 
 end AlgHom
