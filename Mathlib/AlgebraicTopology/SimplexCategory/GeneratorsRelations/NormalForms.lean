@@ -27,7 +27,8 @@ The results in this file are to be treated as implementation-only, and they only
 stones towards proving that the canonical functor
 `toSimplexCategory : SimplexCategoryGenRel ⥤ SimplexCategory` is an equivalence.
 
-## References:
+## References
+
 * [Kerodon Tag 04FQ](https://kerodon.net/tag/04FQ)
 * [Kerodon Tag 04FT](https://kerodon.net/tag/04FT)
 
