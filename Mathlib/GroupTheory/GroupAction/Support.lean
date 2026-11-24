@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Action.Basic
 public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Support of an element under an action
 

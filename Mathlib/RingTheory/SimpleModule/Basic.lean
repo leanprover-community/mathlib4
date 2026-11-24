@@ -9,7 +9,6 @@ public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 public import Mathlib.LinearAlgebra.DFinsupp
 public import Mathlib.LinearAlgebra.Projection
 public import Mathlib.Order.Atoms.Finite
-public import Mathlib.Order.CompactlyGenerated.Intervals
 public import Mathlib.Order.JordanHolder
 public import Mathlib.RingTheory.Ideal.Colon
 public import Mathlib.RingTheory.Noetherian.Defs
@@ -17,6 +16,7 @@ public import Mathlib.RingTheory.Noetherian.Defs
 import Mathlib.Algebra.DirectSum.Module
 import Mathlib.LinearAlgebra.Finsupp.Span
 import Mathlib.LinearAlgebra.Isomorphisms
+import Mathlib.Order.CompactlyGenerated.Intervals
 import Mathlib.SetTheory.Cardinal.NatCard
 
 /-!
@@ -264,7 +264,7 @@ theorem lifting_property {P} [AddCommGroup P] [Module R P] (f : M →ₗ[R] N)
   let e := (Submodule.quotientEquivOfIsCompl _ m compl).symm ≪≫ₗ f.quotKerEquivOfSurjective hf
   refine ⟨Submodule.subtype _ ∘ₗ e.symm.toLinearMap ∘ₗ g, LinearMap.ext fun x ↦ ?_⟩
   obtain ⟨z, eq⟩ := e.surjective (g x)
-  simp only [LinearMap.comp_apply, ← eq, LinearEquiv.coe_coe, e.symm_apply_apply]
+  simp only [LinearMap.comp_apply, ← eq, LinearEquiv.coe_toLinearMap, e.symm_apply_apply]
   simp [e]
 
 theorem sSup_simples_le (N : Submodule R M) :

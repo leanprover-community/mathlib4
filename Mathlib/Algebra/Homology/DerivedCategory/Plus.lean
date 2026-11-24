@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Homology.HomotopyCategory.Plus
 public import Mathlib.CategoryTheory.Triangulated.LocalizingSubcategory
 public import Mathlib.CategoryTheory.Triangulated.TStructure.Induced
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The bounded below derived category
 

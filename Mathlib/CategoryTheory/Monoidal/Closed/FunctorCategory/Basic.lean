@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Enriched.FunctorCategory
 public import Mathlib.CategoryTheory.Monoidal.Closed.Enrichment
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functor categories are monoidal closed
 

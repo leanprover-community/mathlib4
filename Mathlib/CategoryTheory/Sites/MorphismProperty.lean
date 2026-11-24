@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 public import Mathlib.CategoryTheory.Sites.Coverage
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The site induced by a morphism property
 

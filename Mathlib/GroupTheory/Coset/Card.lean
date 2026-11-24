@@ -8,6 +8,9 @@ module
 public import Mathlib.GroupTheory.Coset.Basic
 public import Mathlib.SetTheory.Cardinal.Finite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lagrange's theorem: the order of a subgroup divides the order of the group.
 

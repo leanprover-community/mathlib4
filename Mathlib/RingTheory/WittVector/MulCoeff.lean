@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.WittVector.Truncated
 
 import Mathlib.Algebra.MvPolynomial.Supported
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Leading terms of Witt vector multiplication
 

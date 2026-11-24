@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Compactness.CompactlyGeneratedSpace
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Compactly generated topological spaces
 

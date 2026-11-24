@@ -5,12 +5,13 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Rat  -- shake: keep (used in `example` only)
 public import Mathlib.Algebra.Algebra.Subalgebra.Tower
 public import Mathlib.Algebra.Field.IsField
 public import Mathlib.Algebra.Field.Subfield.Basic
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.RingTheory.LocalRing.Basic
+
+import Mathlib.Algebra.Algebra.Rat  -- shake: keep (used in `example` only)
 
 /-!
 # Intermediate fields
@@ -717,7 +718,7 @@ def liftAlgEquiv {E : IntermediateField K L} (F : IntermediateField K E) : ↥F 
   right_inv := congrFun rfl
   map_mul' _ _ := rfl
   map_add' _ _ := rfl
-  commutes' _ := rfl
+  map_smul' _ _ := rfl
 
 lemma liftAlgEquiv_apply {E : IntermediateField K L} (F : IntermediateField K E) (x : F) :
     (liftAlgEquiv F x).val = x := rfl

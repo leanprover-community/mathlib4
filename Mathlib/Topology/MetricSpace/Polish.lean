@@ -5,10 +5,11 @@ Authors: Sébastien Gouëzel, Justin Palumbo
 -/
 module
 
-public import Mathlib.Topology.GDelta.Basic
 public import Mathlib.Topology.MetricSpace.PiNat
 public import Mathlib.Topology.Metrizable.CompletelyMetrizable
 public import Mathlib.Topology.Sets.Opens
+
+import Mathlib.Topology.GDelta.Basic
 
 /-!
 # Polish spaces

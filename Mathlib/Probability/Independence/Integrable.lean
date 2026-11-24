@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Function.L1Space.Integrable
 public import Mathlib.Probability.Independence.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Independence of functions implies that the measure is a probability measure
 

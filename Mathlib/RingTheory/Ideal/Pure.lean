@@ -50,7 +50,7 @@ lemma injective_lTensor_quotient_iff_inf_eq_mul (I J : Ideal R) :
     ext
     simp [f, ← Ideal.Quotient.algebraMap_eq, Algebra.TensorProduct.tmul_one_eq_one_tmul]
   rw [this]
-  simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, EmbeddingLike.comp_injective,
+  simp only [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, EmbeddingLike.comp_injective,
     EquivLike.injective_comp, ← LinearMap.ker_eq_bot, f, Submodule.ker_mapQ,
     ← LinearMap.le_ker_iff_map, Submodule.ker_mkQ,
     ← (Submodule.map_le_map_iff_of_injective J.injective_subtype)]
