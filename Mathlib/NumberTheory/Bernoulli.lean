@@ -1185,9 +1185,9 @@ theorem not_dvd_num_bernoulli (hk : 0 < k) (hpk : p - 1 ∣ 2 * k) :
   exact fun hnum ↦ Nat.not_coprime_of_dvd_of_dvd (Fact.out : p.Prime).one_lt hnum
     (dvd_den_bernoulli hk hpk) (bernoulli (2 * k)).reduced
 
-/-- If `p` is prime, `0 < k`, and `p - 1 ∣ 2 * k`, then `p ^ 2` does not divide the denominator of
-the Bernoulli number `B₂ₖ`: each prime occurs in the denominator with multiplicity one. -/
-theorem not_sq_dvd_den_bernoulli (_hk : 0 < k) (_hpk : p - 1 ∣ 2 * k) :
+/-- If `p` is prime, then `p ^ 2` does not divide the denominator of the Bernoulli number `B₂ₖ`:
+each prime occurs in the denominator with multiplicity one. -/
+theorem not_sq_dvd_den_bernoulli :
     ¬ p ^ 2 ∣ (bernoulli (2 * k)).den := by
   rw [pow_two]
   exact fun h => absurd (Nat.isUnit_iff.mp (squarefree_den_bernoulli (k := 2 * k) p h))
