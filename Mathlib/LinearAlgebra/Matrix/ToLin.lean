@@ -921,15 +921,20 @@ variable {m' n' M₁' M₂' : Type*} [Finite n'] [Finite m'] [AddCommMonoid M₁
 
 /-- This statement is about `LinearMap.prod`. For the statement about maps between product modules
 see `LinearMap.toMatrix_prod_eq_fromBlocks`. -/
-lemma LinearMap.toMatrix_prod_eq_fromCols (φ : M₁ →ₗ[R] M₁') (φ' : M₁ →ₗ[R] M₂') :
-    toMatrix v₁ (v₁'.prod v₂') (LinearMap.prod φ φ') =
-      .fromRows (toMatrix v₁ v₁' φ) (toMatrix v₁ v₂' φ') := by
+lemma LinearMap.toMatrix_prod_eq_fromRows (φ : M₁ →ₗ[R] M₁') (φ₂ : M₁ →ₗ[R] M₂') :
+    toMatrix v₁ (v₁'.prod v₂') (φ.prod φ₂) =
+      .fromRows (toMatrix v₁ v₁' φ) (toMatrix v₁ v₂' φ₂) := by
   ext (i | i) j <;> simp [toMatrix_apply]
 
 variable [DecidableEq m]
 
+lemma LinearMap.toMatrix_coprod_eq_fromCols (φ : M₁ →ₗ[R] M₁') (φ₂ : M₂ →ₗ[R] M₁') :
+    toMatrix (v₁.prod v₂) v₁' (φ.coprod φ₂) =
+      .fromCols (toMatrix v₁ v₁' φ) (toMatrix v₂ v₁' φ₂) := by
+  ext i (j | j) <;> simp [toMatrix_apply]
+
 /-- This statement is about maps between product modules. For the statement about `LinearMap.prod`
-see `LinearMap.toMatrix_prod_eq_fromCols`. -/
+see `LinearMap.toMatrix_prod_eq_fromRows`. -/
 lemma LinearMap.toMatrix_prod_eq_fromBlocks (φ : M₁ × M₂ →ₗ[R] M₁' × M₂') :
     toMatrix (v₁.prod v₂) (v₁'.prod v₂') φ =
       .fromBlocks (toMatrix v₁ v₁' (fst R M₁' M₂' ∘ₗ φ ∘ₗ inl R M₁ M₂))
