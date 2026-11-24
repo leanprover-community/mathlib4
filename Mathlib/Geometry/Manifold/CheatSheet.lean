@@ -65,10 +65,11 @@ leaving room for a potential Riemannian norm for instance.
 
 /-
 The tangent space is a dependent type, so `TangentSpace% x = TangentSpace% y` only when `x` is
-*definitionally* equal to `y`. Otherwise, one need to explictly use an isomorphism coming from
-an equality proof.
+*definitionally* equal to `y`. Otherwise, one need to explictly use an isomorphism. Due to
+implementation details, this isomorphism doesn’t actually asks for an equality proof, but
+its value when `x ≠ y` should be considered a junk value.
 -/
-variable (y : M) (hxy : x = y) in
+variable (y : M) in
 #check (tangentSpaceCast I x y : TangentSpace% x ≃L[𝕜] TangentSpace% y)
 
 /-
@@ -261,11 +262,19 @@ variable
 example (hf : MDiffAt f x) (hg : MDiffAt g (f x)) : MDiffAt (g ∘ f) x :=
   hg.comp x hf
 
+example (hf : MDiffAt f x) (hg : MDiffAt g (f x)) :
+    mfderiv% (g ∘ f) x = mfderiv% g (f x) ∘L (mfderiv% f x) :=
+  mfderiv_comp x hg  hf
 
--- The following “generalization” is mathematically empty, but technically convenient when
+
+-- The following “generalizations” are mathematically empty, but technically convenient when
 -- `f x = y` is not definitional
 example (hf : MDiffAt f x) {y : M'} (hy : f x = y) (hg : MDiffAt g y) : MDiffAt (g ∘ f) x :=
   hg.comp_of_eq x hf hy
+
+example (hf : MDiffAt f x) {y : M'} (hy : f x = y) (hg : MDiffAt g y) :
+    mfderiv% (g ∘ f) x = mfderiv% g (f x) ∘L (mfderiv% f x) :=
+  mfderiv_comp_of_eq hg hf hy
 
 end
 
