@@ -133,10 +133,6 @@ structure State where
 /-- The monad in which `positivity` and its extensions run: `MetaM` together with a cache of the
 results of `Positivity.core`.
 
-The state is a `StateRefT` rather than a `StateT`, so that entries added before an exception is
-thrown are still there after it is caught. Extensions throw to signal that they do not apply, so
-a `StateT` would lose most of the cache.
-
 The cache does not record the local context. An extension that calls `core` in an extended local
 context may add new variables (as the extensions for `∑` and `∫` do), but it must not add
 hypotheses that `core` could use, such as `0 < x`: a result found before the hypothesis was added
