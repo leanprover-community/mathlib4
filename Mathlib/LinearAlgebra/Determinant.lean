@@ -370,7 +370,7 @@ lemma det_mulLeft (a : R) : (mulLeft R a).det = a := by simp
 lemma det_mulRight (a : R) : (mulRight R a).det = a := by simp
 
 theorem det_prodMap [Module.Free R M] [Module.Free R M'] [Module.Finite R M] [Module.Finite R M']
-    (f : Module.End R M) (f' : Module.End R M') :
+    {f : M →ₗ[R] M} {f' : M' →ₗ[R] M'} :
     (prodMap f f').det = f.det * f'.det := by
   let b := Module.Free.chooseBasis R M
   let b' := Module.Free.chooseBasis R M'
@@ -381,7 +381,7 @@ theorem det_prodMap [Module.Free R M] [Module.Free R M'] [Module.Finite R M] [Mo
 product of the determinants of its restrictions. -/
 theorem det_eq_det_restrict_mul_of_isCompl {p q : Submodule R M} (h : IsCompl p q)
     [Module.Free R p] [Module.Finite R p] [Module.Free R q] [Module.Finite R q]
-    {f : Module.End R M} (hp : p ∈ f.invtSubmodule) (hq : q ∈ f.invtSubmodule) :
+    {f : M →ₗ[R] M} (hp : p ∈ Module.End.invtSubmodule f) (hq : q ∈ Module.End.invtSubmodule f) :
     f.det = (f.restrict hp).det * (f.restrict hq).det := by
   rw [← det_prodMap, ← Submodule.conj_symm_prodEquivOfIsCompl_eq_prodMap_restrict h hp hq,
     LinearEquiv.conj_apply, comp_assoc, LinearMap.det_conj]
