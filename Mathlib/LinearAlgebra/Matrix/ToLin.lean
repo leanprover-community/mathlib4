@@ -923,30 +923,42 @@ variable {m' n' M₁' M₂' : Type*} [Finite n'] [Finite m'] [AddCommMonoid M₁
 product modules see `LinearMap.toMatrix_prod_eq_fromBlocks`. -/
 lemma LinearMap.toMatrix_prod_eq_fromRows (φ : M₁ →ₗ[R] M₁') (φ₂ : M₁ →ₗ[R] M₂') :
     toMatrix v₁ (v₁'.prod v₂') (φ.prod φ₂) =
-      .fromRows (toMatrix v₁ v₁' φ) (toMatrix v₁ v₂' φ₂) := by
+      fromRows (toMatrix v₁ v₁' φ) (toMatrix v₁ v₂' φ₂) := by
   ext (i | i) j <;> simp [toMatrix_apply]
-
-variable [DecidableEq m]
 
 lemma Matrix.toLin_fromRows (A : Matrix n' n R) (B : Matrix m' n R) :
     toLin v₁ (v₁'.prod v₂') (A.fromRows B) = (toLin v₁ v₁' A).prod (toLin v₁ v₂' B) := by
   apply (toMatrix v₁ (v₁'.prod v₂')).injective
   simp [toMatrix_prod_eq_fromRows]
 
+variable [DecidableEq m]
+
 lemma LinearMap.toMatrix_coprod (φ : M₁ →ₗ[R] M₁') (φ₂ : M₂ →ₗ[R] M₁') :
     toMatrix (v₁.prod v₂) v₁' (φ.coprod φ₂) =
-      .fromCols (toMatrix v₁ v₁' φ) (toMatrix v₂ v₁' φ₂) := by
+      fromCols (toMatrix v₁ v₁' φ) (toMatrix v₂ v₁' φ₂) := by
   ext i (j | j) <;> simp [toMatrix_apply]
+
+lemma Matrix.toLin_fromCols (A : Matrix n' n R) (B : Matrix n' m R) :
+    toLin (v₁.prod v₂) v₁' (A.fromCols B) = (toLin v₁ v₁' A).coprod (toLin v₂ v₁' B) := by
+  apply (toMatrix (v₁.prod v₂) v₁').injective
+  simp [toMatrix_coprod]
 
 /-- Disambiguation: This statement is about maps between product modules. For the statement about
 `LinearMap.prod` see `LinearMap.toMatrix_prod_eq_fromRows`. -/
 lemma LinearMap.toMatrix_prod_eq_fromBlocks (φ : M₁ × M₂ →ₗ[R] M₁' × M₂') :
     toMatrix (v₁.prod v₂) (v₁'.prod v₂') φ =
-      .fromBlocks (toMatrix v₁ v₁' (fst R M₁' M₂' ∘ₗ φ ∘ₗ inl R M₁ M₂))
+      fromBlocks (toMatrix v₁ v₁' (fst R M₁' M₂' ∘ₗ φ ∘ₗ inl R M₁ M₂))
         (toMatrix v₂ v₁' (fst R M₁' M₂' ∘ₗ φ ∘ₗ inr R M₁ M₂))
         (toMatrix v₁ v₂' (snd R M₁' M₂' ∘ₗ φ ∘ₗ inl R M₁ M₂))
         (toMatrix v₂ v₂' (snd R M₁' M₂' ∘ₗ φ ∘ₗ inr R M₁ M₂)) := by
   ext (i | i) (j | j) <;> simp [toMatrix_apply]
+
+lemma Matrix.toLin_fromBlocks (A : Matrix n' n R) (B : Matrix n' m R) (C : Matrix m' n R)
+    (D : Matrix m' m R) : toLin (v₁.prod v₂) (v₁'.prod v₂') (fromBlocks A B C D) =
+      LinearMap.coprod (LinearMap.prod (toLin v₁ v₁' A) (toLin v₁ v₂' C))
+        (LinearMap.prod (toLin v₂ v₁' B) (toLin v₂ v₂' D)) := by
+  apply (toMatrix (v₁.prod v₂) (v₁'.prod v₂')).injective
+  simp [toMatrix_prod_eq_fromBlocks]
 
 lemma LinearMap.toMatrix_prodMap (φ₁ : M₁ →ₗ[R] M₁') (φ₂ : M₂ →ₗ[R] M₂') :
     toMatrix (v₁.prod v₂) (v₁'.prod v₂') (φ₁.prodMap φ₂) =
