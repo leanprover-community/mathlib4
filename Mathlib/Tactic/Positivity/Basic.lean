@@ -126,7 +126,7 @@ is nonnegative, strictly positive if at least one is positive, and nonzero if bo
   let _e_eq : $e =Q $f $a $b := ⟨⟩
   let _a ← synthInstanceQ q(LinearOrder $α)
   let ⟨_f_eq⟩ ← withNewMCtxDepth <| assertDefEqQ q($f) q(max)
-  let result : Strictness zα e pα? ← do
+  let result : Strictness zα e pα? ← catchNone do
     let ra ← core zα pα? a
     match (dependent := true) ra with
     | .positive pa =>
@@ -164,21 +164,20 @@ such that `positivity` successfully recognises both `a` and `b`. -/
   assumeInstancesCommute
   let ⟨_f_eq⟩ ← withNewMCtxDepth <| assertDefEqQ q($f) q(HAdd.hAdd)
   let ra ← core zα pα a; let rb ← core zα pα b
-  catchNone do
-    match ra, rb with
-    | .positive pa, .positive pb =>
-      let _a ← synthInstanceQ q(AddLeftMono $α)
-      pure (.positive q(add_pos' $pa $pb))
-    | .positive pa, .nonnegative pb =>
-      let _a ← synthInstanceQ q(AddLeftMono $α)
-      pure (.positive q(add_pos_of_pos_of_nonneg $pa $pb))
-    | .nonnegative pa, .positive pb =>
-      let _a ← synthInstanceQ q(AddRightMono $α)
-      pure (.positive q(Right.add_pos_of_nonneg_of_pos $pa $pb))
-    | .nonnegative pa, .nonnegative pb =>
-      let _a ← synthInstanceQ q(AddLeftMono $α)
-      pure (.nonnegative q(add_nonneg $pa $pb))
-    | _, _ => pure .none
+  match ra, rb with
+  | .positive pa, .positive pb =>
+    let _a ← synthInstanceQ q(AddLeftMono $α)
+    pure (.positive q(add_pos' $pa $pb))
+  | .positive pa, .nonnegative pb =>
+    let _a ← synthInstanceQ q(AddLeftMono $α)
+    pure (.positive q(add_pos_of_pos_of_nonneg $pa $pb))
+  | .nonnegative pa, .positive pb =>
+    let _a ← synthInstanceQ q(AddRightMono $α)
+    pure (.positive q(Right.add_pos_of_nonneg_of_pos $pa $pb))
+  | .nonnegative pa, .nonnegative pb =>
+    let _a ← synthInstanceQ q(AddLeftMono $α)
+    pure (.nonnegative q(add_nonneg $pa $pb))
+  | _, _ => failure
 
 /-- The `positivity` extension which identifies expressions of the form `a - b`,
 such that there is a local hypothesis `b < a`, `b ≤ a`, `a ≠ b` or `b ≠ a`. -/
@@ -283,7 +282,7 @@ such that `positivity` successfully recognises both `a` and `b`. -/
     result ← orElse result (tryProveNonzero pα ra.toNonzero rb.toNonzero)
     return result
   | none =>
-    catchNone <| tryProveNonzero .none ra.toNonzero rb.toNonzero
+    return ← catchNone <| tryProveNonzero .none ra.toNonzero rb.toNonzero
 
 lemma int_div_self_pos {a : ℤ} (ha : 0 < a) : 0 < a / a := by
   rw [Int.ediv_self ha.ne']; exact zero_lt_one
@@ -305,22 +304,21 @@ where `a` and `b` are integers. -/
   | 0, ~q(ℤ), ~q($a / $b) =>
     let ra ← core q(inferInstance) (some q(inferInstance)) a
     let rb ← core q(inferInstance) (some q(inferInstance)) b
-    catchNone do
-      assertInstancesCommute
-      match ra, rb with
-      | .positive (pa : Q(0 < $a)), .positive (pb : Q(0 < $b)) =>
-        -- Only attempts to prove `0 < a / a`, otherwise falls back to `0 ≤ a / b`
-        let _ := q(int_div_self_pos $pa)
-        match ← isDefEqQ a b with
-        | .defEq _ => pure (.positive q(int_div_self_pos $pa))
-        | .notDefEq => pure (.nonnegative q(int_div_nonneg_of_pos_of_pos $pa $pb))
-      | .positive (pa : Q(0 < $a)), .nonnegative (pb : Q(0 ≤ $b)) =>
-        pure (.nonnegative q(int_div_nonneg_of_pos_of_nonneg $pa $pb))
-      | .nonnegative (pa : Q(0 ≤ $a)), .positive (pb : Q(0 < $b)) =>
-        pure (.nonnegative q(int_div_nonneg_of_nonneg_of_pos $pa $pb))
-      | .nonnegative (pa : Q(0 ≤ $a)), .nonnegative (pb : Q(0 ≤ $b)) =>
-        pure (.nonnegative q(Int.ediv_nonneg $pa $pb))
-      | _, _ => pure .none
+    assertInstancesCommute
+    match ra, rb with
+    | .positive (pa : Q(0 < $a)), .positive (pb : Q(0 < $b)) =>
+      -- Only attempts to prove `0 < a / a`, otherwise falls back to `0 ≤ a / b`
+      let _ := q(int_div_self_pos $pa)
+      match ← isDefEqQ a b with
+      | .defEq _ => pure (.positive q(int_div_self_pos $pa))
+      | .notDefEq => pure (.nonnegative q(int_div_nonneg_of_pos_of_pos $pa $pb))
+    | .positive (pa : Q(0 < $a)), .nonnegative (pb : Q(0 ≤ $b)) =>
+      pure (.nonnegative q(int_div_nonneg_of_pos_of_nonneg $pa $pb))
+    | .nonnegative (pa : Q(0 ≤ $a)), .positive (pb : Q(0 < $b)) =>
+      pure (.nonnegative q(int_div_nonneg_of_nonneg_of_pos $pa $pb))
+    | .nonnegative (pa : Q(0 ≤ $a)), .nonnegative (pb : Q(0 ≤ $b)) =>
+      pure (.nonnegative q(Int.ediv_nonneg $pa $pb))
+    | _, _ => pure .none
   | _, _, _ => throwError "not /"
 
 theorem pow_zero_pos [Semiring α] [PartialOrder α] [IsOrderedRing α] [Nontrivial α]
@@ -442,18 +440,17 @@ meta def evalNatAbs : PositivityExt where eval {u α} _zα pα? e :=
   | 0, ~q(ℕ), ~q(Int.natAbs $a) =>
     let zα' : Q(Zero Int) := q(inferInstance)
     let pα' : Q(PartialOrder Int) := q(inferInstance)
+    assertInstancesCommute
     let ra ← core zα' pα' a
-    catchNone do
-      assertInstancesCommute
-      match ra with
-      | .positive pa =>
-        pure (.positive q(int_natAbs_pos $pa))
-      | .nonzero pa =>
-        pure (.positive q(Int.natAbs_pos.mpr $pa))
-      | .nonnegative _pa =>
-        pure .none
-      | .none =>
-        pure .none
+    match ra with
+    | .positive pa =>
+      pure (.positive q(int_natAbs_pos $pa))
+    | .nonzero pa =>
+      pure (.positive q(Int.natAbs_pos.mpr $pa))
+    | .nonnegative _pa =>
+      pure .none
+    | .none =>
+      pure .none
   | _, _, _ => throwError "not Int.natAbs"
 
 /-- Extension for the `positivity` tactic: `Nat.cast` is always non-negative,
@@ -520,9 +517,8 @@ meta def evalNatSucc : PositivityExt where eval {u α} _zα pα? e :=
   match pα? with | none => throwError "not PartialOrder ℕ" | some _ => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Nat.succ $a) =>
-    catchNone do
-      assertInstancesCommute
-      pure (.positive q(Nat.succ_pos $a))
+    assertInstancesCommute
+    pure (.positive q(Nat.succ_pos $a))
   | _, _, _ => throwError "not Nat.succ"
 
 /-- Extension for `PNat.val`. -/
@@ -531,9 +527,8 @@ meta def evalPNatVal : PositivityExt where eval {u α} _zα pα? e :=
   match pα? with | none => throwError "not PartialOrder ℕ" | some _ => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(PNat.val $a) =>
-    catchNone do
-      assertInstancesCommute
-      pure (.positive q(PNat.pos $a))
+    assertInstancesCommute
+    pure (.positive q(PNat.pos $a))
   | _, _, _ => throwError "not PNat.val"
 
 /-- Extension for `Nat.factorial`. -/
@@ -542,9 +537,8 @@ meta def evalFactorial : PositivityExt where eval {u α} _ pα? e :=
   match pα? with | none => throwError "not PartialOrder ℕ" | some _ => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Nat.factorial $a) =>
-    catchNone do
-      assertInstancesCommute
-      pure (.positive q(Nat.factorial_pos $a))
+    assertInstancesCommute
+    pure (.positive q(Nat.factorial_pos $a))
   | _, _, _ => throwError "failed to match Nat.factorial"
 
 /-- Extension for `Nat.ascFactorial`. -/
@@ -553,9 +547,8 @@ meta def evalAscFactorial : PositivityExt where eval {u α} _ pα? e :=
   match pα? with | none => throwError "not PartialOrder ℕ" | some _ => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Nat.ascFactorial ($n + 1) $k) =>
-    catchNone do
-      assertInstancesCommute
-      pure (.positive q(Nat.ascFactorial_pos $n $k))
+    assertInstancesCommute
+    pure (.positive q(Nat.ascFactorial_pos $n $k))
   | _, _, _ => throwError "failed to match Nat.ascFactorial"
 
 /-- Extension for `Nat.gcd`.
@@ -567,16 +560,17 @@ meta def evalNatGCD : PositivityExt where eval {u α} z p e :=
   match p with | none => throwError "not PartialOrder ℕ" | some p => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Nat.gcd $a $b) =>
+    assertInstancesCommute
     match ← core z p a with
-    | .positive pa => catchNone do
+    | .positive pa =>
       assertInstancesCommute
       return .positive q(Nat.gcd_pos_of_pos_left $b $pa)
     | _ =>
       match ← core z p b with
-      | .positive pb => catchNone do
+      | .positive pb =>
         assertInstancesCommute
         return .positive q(Nat.gcd_pos_of_pos_right $a $pb)
-      | _ => pure .none
+      | _ => failure
   | _, _, _ => throwError "not Nat.gcd"
 
 /-- Extension for `Nat.lcm`. -/
@@ -587,12 +581,13 @@ meta def evalNatLCM : PositivityExt where eval {u α} z p e :=
   | 0, ~q(ℕ), ~q(Nat.lcm $a $b) =>
     match ← core z p a with
     | .positive pa =>
+      assertInstancesCommute
       match ← core z p b with
-      | .positive pb => catchNone do
+      | .positive pb =>
         assertInstancesCommute
         return .positive q(Nat.lcm_pos $pa $pb)
-      | _ => pure .none
-    | _ => pure .none
+      | _ => failure
+    | _ => failure
   | _, _, _ => throwError "not Nat.lcm"
 
 /-- Extension for `Nat.sqrt`. -/
@@ -605,7 +600,7 @@ meta def evalNatSqrt : PositivityExt where eval {u α} z p e :=
     | .positive pa =>
       assumeInstancesCommute
       return .positive q(Nat.sqrt_pos.mpr $pa)
-    | _ => pure .none
+    | _ => failure
   | _, _, _ => throwError "not Nat.sqrt"
 
 /-- Extension for `Int.gcd`.
@@ -617,18 +612,13 @@ meta def evalIntGCD : PositivityExt where eval {u α} _ pα? e :=
   | 0, ~q(ℕ), ~q(Int.gcd $a $b) =>
     let z ← synthInstanceQ (q(Zero ℤ) : Q(Type))
     let p ← synthInstanceQ (q(PartialOrder ℤ) : Q(Type))
-    let ra ← core z (some p) a
-    match ra.toNonzero z with
-    | some na => liftM <| catchNone do
-      assertInstancesCommute
-      return .positive q(Int.gcd_pos_of_ne_zero_left $b $na)
+    assertInstancesCommute
+    match (← catchNone (core z (some p) a)).toNonzero z with
+    | some na => return .positive q(Int.gcd_pos_of_ne_zero_left $b $na)
     | none =>
-      let rb ← core z (some p) b
-      match rb.toNonzero z with
-      | some nb => liftM <| catchNone do
-        assertInstancesCommute
-        return .positive q(Int.gcd_pos_of_ne_zero_right $a $nb)
-      | none => pure .none
+      match (← core z (some p) b).toNonzero z with
+      | some nb => return .positive q(Int.gcd_pos_of_ne_zero_right $a $nb)
+      | none => failure
   | _, _, _ => throwError "not Int.gcd"
 
 /-- Extension for `Int.lcm`. -/
@@ -639,14 +629,13 @@ meta def evalIntLCM : PositivityExt where eval {u α} _ pα? e :=
   | 0, ~q(ℕ), ~q(Int.lcm $a $b) =>
     let z ← synthInstanceQ (q(Zero ℤ) : Q(Type))
     let p ← synthInstanceQ (q(PartialOrder ℤ) : Q(Type))
+    assertInstancesCommute
     match (← core z (some p) a).toNonzero z with
     | some na =>
       match (← core z (some p) b).toNonzero z with
-      | some nb => liftM <| catchNone do
-        assertInstancesCommute
-        return .positive q(Int.lcm_pos $na $nb)
-      | none => pure .none
-    | none => pure .none
+      | some nb => return .positive q(Int.lcm_pos $na $nb)
+      | _ => failure
+    | _ => failure
   | _, _, _ => throwError "not Int.lcm"
 
 section NNRat
@@ -734,14 +723,14 @@ meta def evalPosPart : PositivityExt where eval {u α} zα pα? e :=
   | ~q(@posPart _ $instαpospart $a) =>
     let _instαlat ← synthInstanceQ q(Lattice $α)
     let _instαgrp ← synthInstanceQ q(AddGroup $α)
-    let ra ← core zα pα a
-    catchNone do
-      assertInstancesCommute
-      match ra with
-      | .positive pf =>
-        return .positive q(posPart_pos $pf)
-      | _ =>
-        return .nonnegative q(posPart_nonneg $a)
+    assertInstancesCommute
+    -- FIXME: There seems to be a bug in `Positivity.core` that makes it fail (instead of returning
+    -- `.none`) here sometimes. See e.g. the first test for `posPart`. This is why we need
+    -- `catchNone`
+    match ← catchNone (core zα pα a) with
+    | .positive pf =>
+      return .positive q(posPart_pos $pf)
+    | _ => return .nonnegative q(posPart_nonneg $a)
   | _ => throwError "not `posPart`"
 
 /-- Extension for `negPart`. `a⁻` is always nonnegative. -/
@@ -752,9 +741,8 @@ meta def evalNegPart : PositivityExt where eval {u α} _ pα? e :=
   | ~q(@negPart _ $instαnegpart $a) =>
     let _instαlat ← synthInstanceQ q(Lattice $α)
     let _instαgrp ← synthInstanceQ q(AddGroup $α)
-    catchNone do
-      assertInstancesCommute
-      return .nonnegative q(negPart_nonneg $a)
+    assertInstancesCommute
+    return .nonnegative q(negPart_nonneg $a)
   | _ => throwError "not `negPart`"
 
 /-- Extension for the `positivity` tactic: nonnegative maps take nonnegative values. -/

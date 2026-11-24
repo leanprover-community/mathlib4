@@ -459,7 +459,7 @@ meta def evalNatTotient : PositivityExt where eval {u α} z p e :=
     | .positive pa =>
       assumeInstancesCommute
       return .positive q(Nat.totient_pos.mpr $pa)
-    | _ => pure .none
+    | _ => failure
   | _, _, _ => throwError "not Nat.totient"
 
 end Mathlib.Meta.Positivity

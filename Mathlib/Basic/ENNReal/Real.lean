@@ -398,11 +398,10 @@ meta def evalENNRealOfReal : PositivityExt where eval {u α} _zα pα? e :=
   match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ≥0∞), ~q(ENNReal.ofReal $a) =>
+    assertInstancesCommute
     let ra ← core q(inferInstance) (some q(inferInstance)) a
-    liftM <| catchNone do
-      assertInstancesCommute
-      match ra with
-      | .positive pa => pure (.positive q(Iff.mpr (@ENNReal.ofReal_pos $a) $pa))
-      | _ => pure .none
+    match ra with
+    | .positive pa => pure (.positive q(Iff.mpr (@ENNReal.ofReal_pos $a) $pa))
+    | _ => pure .none
   | _, _, _ => throwError "not ENNReal.ofReal"
 end Mathlib.Meta.Positivity
