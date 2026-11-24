@@ -52,7 +52,7 @@ instance (J : Type w) [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT 
           let c : Cocone ((Set.principalSegIio j).monotone.functor ⋙ hf.F) :=
             { pt := Z
               ι.app k := s.val (op k)
-              ι.naturality _ _ g := (s.property g.op).trans (Category.comp_id _).symm }
+              ι.naturality _ _ g := by simpa using s.property g.op }
           exact ⟨(hf.F.isColimitOfIsWellOrderContinuous j hj).desc c, fun k hk ↦
             by simpa using! (hf.F.isColimitOfIsWellOrderContinuous j hj).fac c ⟨k, hk⟩⟩)
       let σ := d.sectionsMk (hf.isoBot.hom ≫ g)

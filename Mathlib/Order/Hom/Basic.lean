@@ -482,7 +482,7 @@ def piIso : (α →o ∀ i, π i) ≃o ∀ i, α →o π i where
   map_rel_iff' := forall_comm
 
 /-- `Subtype.val` as a bundled monotone function. -/
-@[simps -fullyApplied]
+@[simps -fullyApplied, implicit_reducible]
 def Subtype.val (p : α → Prop) : Subtype p →o α :=
   ⟨_root_.Subtype.val, fun _ _ h => h⟩
 
