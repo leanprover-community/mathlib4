@@ -63,6 +63,17 @@ class CompactlySupportedContinuousMapClass (F : Type*) (α β : outParam Type*)
   /-- Each member of the class has compact support. -/
   hasCompactSupport (f : F) : HasCompactSupport f
 
+export CompactlySupportedContinuousMapClass (hasCompactSupport)
+
+/-- Coerce a bundled morphism with a `CompactlySupportedContinuousMapClass` instance
+to a `CompactlySupportedContinuousMap`. -/
+def CompactlySupportedContinuousMap.ofClass {F α β : Type*} [TopologicalSpace α] [Zero β]
+    [TopologicalSpace β] [FunLike F α β] [CompactlySupportedContinuousMapClass F α β] (f : F) :
+    C_c(α, β) where
+  toFun := f
+  continuous_toFun := map_continuous f
+  hasCompactSupport' := hasCompactSupport f
+
 end
 
 namespace CompactlySupportedContinuousMap
@@ -78,6 +89,11 @@ instance : FunLike C_c(α, β) α β where
     obtain ⟨⟨_, _⟩, _⟩ := f
     obtain ⟨⟨_, _⟩, _⟩ := g
     congr
+
+@[simp]
+protected lemma coe_ofClass {F α β : Type*} [TopologicalSpace α] [Zero β] [TopologicalSpace β]
+    [FunLike F α β] [CompactlySupportedContinuousMapClass F α β] (f : F) :
+    ⇑(ofClass f) = f := rfl
 
 protected lemma hasCompactSupport (f : C_c(α, β)) : HasCompactSupport f := f.hasCompactSupport'
 
@@ -624,12 +640,6 @@ namespace CompactlySupportedContinuousMapClass
 section Basic
 
 variable [Zero β] [TopologicalSpace β] [FunLike F α β] [CompactlySupportedContinuousMapClass F α β]
-
-instance : CoeTC F (CompactlySupportedContinuousMap α β) :=
-  ⟨fun f =>
-    { toFun := f
-      continuous_toFun := map_continuous f
-      hasCompactSupport' := hasCompactSupport f }⟩
 
 /-- A continuous function on a compact space has automatically compact support. This is not an
 instance to avoid type class loops. -/
