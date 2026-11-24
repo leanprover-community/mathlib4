@@ -127,7 +127,7 @@ theorem map_top {f : V → W} (hf : f.Surjective) : SimpleGraph.map f ⊤ = ⊤ 
   exact ⟨And.left, fun h ↦ ⟨h, Relation.le_map_of_onFun_le hf (fun _ _ ↦ ne_of_apply_ne f) u v h⟩⟩
 
 @[simp]
-theorem map_bot (f : V → W) : (emptyGraph V).map f = emptyGraph W := by
+theorem map_bot (f : V → W) : SimpleGraph.map f ⊥ = ⊥ := by
   ext
   simp [map_adj']
 
