@@ -7,12 +7,14 @@ module
 
 public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pseudofunctors to Cat
 
 In this file, we state naturality properties of `mapId'` and `mapComp'`
 for pseudofunctors to `Cat`.
-
 -/
 
 public section

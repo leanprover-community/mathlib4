@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.IndYoneda
 public import Mathlib.CategoryTheory.Limits.Indization.IndObject
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # There are only `v`-many natural transformations between Ind-objects
 
@@ -52,7 +55,6 @@ noncomputable def colimitYonedaHomEquiv :
 
 attribute [elementwise] HasLimit.isoOfNatIso_hom_π
 
-set_option backward.defeqAttrib.useBackward true in
 unif_hint {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D) (G : D ⥤ Type*) (X X' : C)
   where X ≟ X'⊢ (F ⋙ G).obj X ≟ (G.obj (F.obj X)) in
 @[simp]
@@ -77,8 +79,8 @@ end
 
 instance : LocallySmall.{v} (ObjectProperty.FullSubcategory (IsIndObject (C := C))) where
   hom_small X Y := by
-    obtain ⟨⟨P⟩⟩ := X.2
-    obtain ⟨⟨Q⟩⟩ := Y.2
+    obtain ⟨⟨P⟩⟩ := X.property
+    obtain ⟨⟨Q⟩⟩ := Y.property
     let e₁ := IsColimit.coconePointUniqueUpToIso (P.isColimit) (colimit.isColimit _)
     let e₂ := IsColimit.coconePointUniqueUpToIso (Q.isColimit) (colimit.isColimit _)
     let e₃ := Iso.homCongr e₁ e₂

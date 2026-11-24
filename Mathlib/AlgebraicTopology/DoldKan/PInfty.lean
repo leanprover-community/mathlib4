@@ -8,8 +8,10 @@ module
 public import Mathlib.AlgebraicTopology.DoldKan.Projections
 public import Mathlib.CategoryTheory.Idempotents.FunctorExtension
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Construction of the projection `PInfty` for the Dold-Kan correspondence
 
 In this file, we construct the projection `PInfty : K[X] ⟶ K[X]` by passing
@@ -19,7 +21,6 @@ because in the case of abelian categories, `PInfty` corresponds to the
 projection on the normalized Moore subcomplex, with kernel the degenerate subcomplex.
 
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
-
 -/
 
 @[expose] public section

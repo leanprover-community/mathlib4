@@ -23,6 +23,7 @@ satisfies the same condition (i.e. its "underlying" lax functor is strictly
 unitary).
 
 ## References
+
 - [Kerodon, section 2.2.2.4](https://kerodon.net/tag/008G)
 
 ## TODOs
@@ -33,7 +34,6 @@ unitary).
   bicategories, strictly unitary pseudofunctors and icons.
 * Construct the Duskin nerve of a bicategory using lax-composable arrows
 * Construct the 2-nerve of a bicategory using pseudo-composable arrows
-
 -/
 
 @[expose] public section

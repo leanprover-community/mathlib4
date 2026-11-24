@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 public import Mathlib.RingTheory.Spectrum.Prime.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functoriality of the prime spectrum
 
@@ -17,7 +20,6 @@ In this file we define the induced map on prime spectra induced by a ring homomo
 
 * `PrimeSpectrum.comap`: The induced map on prime spectra by a ring homomorphism. The proof that
   it is continuous is in `Mathlib/RingTheory/Spectrum/Prime/Topology.lean`.
-
 -/
 
 @[expose] public section
@@ -115,15 +117,12 @@ lemma sigmaToPi_apply (i : ι) (p : PrimeSpectrum (R i)) :
     sigmaToPi R ⟨i, p⟩ = comap (Pi.evalRingHom R i) p :=
   rfl
 
-@[deprecated (since := "2026-04-17")]
-alias coe_sigmaToPi_asIdeal := sigmaToPi_apply
-
 theorem sigmaToPi_injective : (sigmaToPi R).Injective := fun ⟨i, p⟩ ⟨j, q⟩ eq ↦ by
   classical
   obtain rfl | ne := eq_or_ne i j
   · congr; ext x
     simpa using congr(Function.update (0 : ∀ i, R i) i x ∈ $(eq).asIdeal)
-  · refine (p.1.ne_top_iff_one.mp p.2.ne_top ?_).elim
+  · refine (p.asIdeal.ne_top_iff_one.mp p.isPrime.ne_top ?_).elim
     have : Function.update (1 : ∀ i, R i) j 0 ∈ (sigmaToPi R ⟨j, q⟩).asIdeal := by simp
     simpa [← eq, Function.update_of_ne ne]
 
@@ -152,7 +151,7 @@ theorem exists_maximal_notMem_range_sigmaToPi_of_infinite :
   refine ⟨I, max, fun ⟨⟨i, p⟩, eq⟩ ↦ ?_⟩
   -- then I is not in the range of `sigmaToPi`
   have : ⇑(DFinsupp.single i 1) ∉ (sigmaToPi R ⟨i, p⟩).asIdeal := by
-    simpa using p.1.ne_top_iff_one.mp p.2.ne_top
+    simpa using p.asIdeal.ne_top_iff_one.mp p.isPrime.ne_top
   rw [eq] at this
   exact this (le ⟨.single i 1, rfl⟩)
 

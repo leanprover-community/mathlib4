@@ -647,8 +647,8 @@ set_option backward.isDefEq.respectTransparency.types false in
 `subalgebraMap` is the induced equivalence between `S` and `S.map e` -/
 @[simps!]
 def subalgebraMap (e : A ≃ₐ[R] B) (S : Subalgebra R A) : S ≃ₐ[R] S.map (e : A →ₐ[R] B) :=
-  { e.toRingEquiv.subsemiringMap S.toSubsemiring with
-    commutes' := fun r => by ext; exact e.commutes r }
+  .ofCommutes (e.toRingEquiv.subsemiringMap S.toSubsemiring)
+    fun r => by ext; exact e.commutes r
 
 end AlgEquiv
 
@@ -737,10 +737,9 @@ This is the `Subalgebra` version of `LinearEquiv.ofEq` and `Set.equivOfEq`. -/
 @[simps apply]
 def equivOfEq (S T : Subalgebra R A) (h : S = T) : S ≃ₐ[R] T where
   __ := LinearEquiv.ofEq S.toSubmodule T.toSubmodule congr(toSubmodule $h)
-  toFun x := ⟨x, h ▸ x.2⟩
-  invFun x := ⟨x, h.symm ▸ x.2⟩
+  toFun x := ⟨x, h ▸ x.property⟩
+  invFun x := ⟨x, h.symm ▸ x.property⟩
   map_mul' _ _ := rfl
-  commutes' _ := rfl
 
 @[simp]
 theorem equivOfEq_symm (S T : Subalgebra R A) (h : S = T) :
@@ -763,7 +762,7 @@ theorem range_comp_val : (f.comp S.val).range = S.map f := by
 /-- An `AlgHom` between two rings restricts to an `AlgHom` from any subalgebra of the
 domain onto the image of that subalgebra. -/
 def _root_.AlgHom.subalgebraMap : S →ₐ[R] S.map f :=
-  (f.comp S.val).codRestrict _ fun x ↦ ⟨_, x.2, rfl⟩
+  (f.comp S.val).codRestrict _ fun x ↦ ⟨_, x.property, rfl⟩
 
 variable {S} in
 @[simp]
@@ -817,12 +816,12 @@ instance isScalarTower_left [SMul α β] [SMul A α] [SMul A β] [IsScalarTower 
 instance (priority := low) isScalarTower_mid [SMul α R] [SMul α A]
     [IsScalarTower α R A] [SMul A β] [SMul α β] [IsScalarTower α A β] :
     IsScalarTower α S β :=
-  ⟨fun a b c ↦ smul_assoc a b.1 c⟩
+  ⟨fun a b c ↦ smul_assoc a b.val c⟩
 
 instance (priority := low) isScalarTower_right [SMul α R] [SMul α A] [IsScalarTower α R A]
     [SMul β R] [SMul β A] [IsScalarTower β R A] [SMul α β] [IsScalarTower α β A] :
     IsScalarTower α β S :=
-  ⟨fun a b c ↦ Subtype.ext (smul_assoc a b c.1)⟩
+  ⟨fun a b c ↦ Subtype.ext (smul_assoc a b c.val)⟩
 
 instance [SMul A α] [FaithfulSMul A α] (S : Subalgebra R A) : FaithfulSMul S α :=
   inferInstanceAs (FaithfulSMul S.toSubsemiring α)
@@ -933,6 +932,27 @@ theorem comap_center_le_center {f : A →ₐ[R] B} (hf : Function.Injective f) :
 @[simp]
 theorem map_center_eq (f : A ≃ₐ[R] B) : map f (center R A) = center R B :=
   SetLike.coe_injective (Set.image_center_eq f)
+
+/-- An isomorphism of `R`-algebras induces an `R`-algebra isomorphism between their centers. -/
+@[simps! apply_coe]
+def centerCongr (e : A ≃ₐ[R] B) :
+    center R A ≃ₐ[R] center R B where
+  toRingEquiv := Subsemiring.centerCongr e.toRingEquiv
+  map_smul' _ _ := Subtype.ext <| e.map_smul' _ _
+
+@[simp] lemma toRingEquiv_centerCongr (e : A ≃ₐ[R] B) :
+    (centerCongr e).toRingEquiv = Subsemiring.centerCongr e.toRingEquiv := rfl
+
+@[simp] lemma symm_centerCongr (e : A ≃ₐ[R] B) : (centerCongr e).symm = centerCongr e.symm := rfl
+
+@[simp] lemma centerCongr_refl : centerCongr (.refl (R := R) (A₁ := A)) = .refl := rfl
+
+@[simp] lemma centerCongr_trans_centerCongr {C : Type*} [Semiring C] [Algebra R C]
+    (e : A ≃ₐ[R] B) (f : B ≃ₐ[R] C) :
+    (centerCongr e).trans (centerCongr f) = centerCongr (e.trans f) := rfl
+
+@[simp] lemma centerCongr_symm_apply_coe (e : A ≃ₐ[R] B) (a : center R B) :
+    centerCongr e.symm a = e.symm a := rfl
 
 end Center
 

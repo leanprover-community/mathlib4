@@ -8,8 +8,10 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
 public import Mathlib.Topology.Category.CompHausLike.Limits
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # The sigma-comparison map
 
 This file defines the map `CompHausLike.sigmaComparison` associated to a presheaf `X` on

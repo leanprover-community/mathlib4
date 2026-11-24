@@ -16,6 +16,7 @@ coefficients, degree, and evaluation of `Polynomial.int`.
 This is useful when dealing with integral elements in an extension of fields.
 
 ## Main Definitions
+
 * `Polynomial.int` : given a polynomial `P` in `K[X]` whose coefficients all belong to a subring `R`
   of the field `K`, `P.int R` is the corresponding polynomial in `R[X]`.
 -/
@@ -29,9 +30,9 @@ open scoped Polynomial
 /-- Given a polynomial in `K[X]` such that all coefficients belong to the subring `R`,
   `Polynomial.int` is the corresponding polynomial in `R[X]`. -/
 def Polynomial.int (P : K[X]) (hP : ∀ n : ℕ, P.coeff n ∈ R) : R[X] where
-  toFinsupp.coeff.toFun n := ⟨P.coeff n, hP n⟩
-  toFinsupp.coeff.support := P.support
-  toFinsupp.coeff.mem_support_toFun n := by rw [ne_eq, ← Subring.coe_eq_zero_iff, mem_support_iff]
+  coeff.toFun n := ⟨P.coeff n, hP n⟩
+  coeff.support := P.support
+  coeff.mem_support_toFun n := by rw [ne_eq, ← Subring.coe_eq_zero_iff, mem_support_iff]
 
 namespace Polynomial
 

@@ -7,9 +7,9 @@ module
 
 public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.Finiteness.Ideal
-public import Mathlib.RingTheory.MvPolynomial.Tower
 
 import Mathlib.Basic.Finite.Sum
+import Mathlib.RingTheory.MvPolynomial.Tower
 
 /-!
 # Finiteness conditions in commutative algebra
@@ -24,7 +24,6 @@ In this file we define several notions of finiteness that are common in commutat
   all of these express that some object is finitely generated *as algebra* over some base ring.
 - `Algebra.FinitePresentation`, `RingHom.FinitePresentation`, `AlgHom.FinitePresentation`
   all of these express that some object is finitely presented *as algebra* over some base ring.
-
 -/
 
 @[expose] public section

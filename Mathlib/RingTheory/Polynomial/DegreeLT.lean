@@ -31,7 +31,6 @@ This file contains the properties of the submodule of polynomials of degree less
 
 * `taylorLinear r n`: The linear automorphism induced by `taylor r` on `R[X]_n` which sends `X` to
   `X + r` and preserves degrees.
-
 -/
 
 @[expose] public section
@@ -184,7 +183,7 @@ noncomputable def taylorLinearEquiv (r : R) (n : ℕ) : R[X]_n ≃ₗ[R] R[X]_n 
     change (taylor r (degreeLT.basis R n i)).coeff _ = 1
     rw [degreeLT.basis_val, coeff_taylor_natDegree, leadingCoeff_X_pow]
   · intro i j hji
-    rw [LinearMap.toMatrix_apply, LinearEquiv.coe_coe, degreeLT.basis_repr]
+    rw [LinearMap.toMatrix_apply, LinearEquiv.coe_toLinearMap, degreeLT.basis_repr]
     change (taylor r (degreeLT.basis R n j)).coeff i = 0
     rw [degreeLT.basis_val, coeff_eq_zero_of_degree_lt (by simpa [-taylor_X_pow, -taylor_pow])]
 

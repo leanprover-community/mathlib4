@@ -183,7 +183,7 @@ lemma isMonicOfDegree_X_add_one (r : R) : IsMonicOfDegree (X + C r) 1 :=
 lemma isMonicOfDegree_one_iff {f : R[X]} : IsMonicOfDegree f 1 ↔ ∃ r : R, f = X + C r := by
   refine ⟨fun H ↦ ?_, fun ⟨r, H⟩ ↦ H ▸ isMonicOfDegree_X_add_one r⟩
   refine ⟨f.coeff 0, ?_⟩
-  ext1 n
+  ext n
   rcases n.eq_zero_or_pos with rfl | hn
   · simp
   · exact H.coeff_eq (isMonicOfDegree_X_add_one _) (by lia)
@@ -199,7 +199,8 @@ lemma isMonicOfDegree_add_add_two (a b : R) : IsMonicOfDegree (X ^ 2 + C a * X +
 lemma isMonicOfDegree_two_iff {f : R[X]} :
     IsMonicOfDegree f 2 ↔ ∃ a b : R, f = X ^ 2 + C a * X + C b := by
   refine ⟨fun H ↦ ?_, fun ⟨a, b, h⟩ ↦ h ▸ isMonicOfDegree_add_add_two a b⟩
-  refine ⟨f.coeff 1, f.coeff 0, ext fun n ↦ ?_⟩
+  refine ⟨f.coeff 1, f.coeff 0, ?_⟩
+  ext n
   rcases lt_trichotomy n 1 with hn | rfl | hn
   · obtain rfl : n = 0 := Nat.lt_one_iff.mp hn
     simp
@@ -238,7 +239,7 @@ lemma isMonicOfDegree_X_sub_one (r : R) : IsMonicOfDegree (X - C r) 1 :=
   (isMonicOfDegree_X R).sub (by rw [natDegree_C]; exact zero_lt_one)
 
 lemma isMonicOfDegree_sub_add_two (a b : R) : IsMonicOfDegree (X ^ 2 - C a * X + C b) 2 := by
-  rw [sub_add]
+  rw [sub_add, sub_eq_add_neg]
   exact (isMonicOfDegree_X_pow R 2).add_right <| by
     rw [natDegree_neg]
     calc
@@ -271,7 +272,7 @@ lemma IsMonicOfDegree.of_dvd_add {a b r : R[X]} {m n : ℕ} (hmn : n ≤ m) (ha 
 lemma IsMonicOfDegree.of_dvd_sub {a b r : R[X]} {m n : ℕ} (hmn : n ≤ m) (ha : IsMonicOfDegree a m)
     (hb : IsMonicOfDegree b n) (hr : r.natDegree < m) (h : b ∣ a - r) :
     ∃ q : R[X], IsMonicOfDegree q (m - n) ∧ a = q * b + r := by
-  convert ha.of_dvd_add hmn hb ?_ h with q
+  convert ha.of_dvd_add hmn hb ?_ (sub_eq_add_neg a r ▸ h) with q
   · rw [sub_neg_eq_add]
   · rwa [natDegree_neg]
 

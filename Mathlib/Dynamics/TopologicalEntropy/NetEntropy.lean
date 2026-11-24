@@ -31,24 +31,29 @@ Instead of defining a new notion of topological entropy, we prove that
 `coverEntropy` coincides with `⨆ U ∈ 𝓤 X, netEntropyEntourage T F U`.
 
 ## Main definitions
+
 - `IsDynNetIn`: property that dynamical balls centered on a subset `s` of `F` are disjoint.
 - `netMaxcard`: maximal cardinality of a dynamical net. Takes values in `ℕ∞`.
 - `netEntropyInfEntourage`/`netEntropyEntourage`: exponential growth of `netMaxcard`. The former is
   defined with a `liminf`, the latter with a `limsup`. Take values in `EReal`.
 
 ## Implementation notes
+
 As when using covers, there are two competing definitions `netEntropyInfEntourage` and
 `netEntropyEntourage` in this file: one uses a `liminf`, the other a `limsup`. When using covers,
 we chose the `limsup` definition as the default.
 
 ## Main results
+
 - `coverEntropy_eq_iSup_netEntropyEntourage`: equality between the notions of topological entropy
   defined with covers and with nets. Has a variant for `coverEntropyInf`.
 
 ## Tags
+
 net, entropy
 
 ## TODO
+
 Get versions of the topological entropy on (pseudo-e)metric spaces.
 -/
 
@@ -171,8 +176,7 @@ lemma netMaxcard_eq_zero_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ
 
 lemma one_le_netMaxcard_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ) :
     1 ≤ netMaxcard T F U n ↔ F.Nonempty := by
-  rw [Order.one_le_iff_ne_zero, nonempty_iff_ne_empty]
-  exact not_iff_not.2 (netMaxcard_eq_zero_iff T F U n)
+  simp [Order.one_le_iff_ne_zero, netMaxcard_eq_zero_iff]
 
 lemma netMaxcard_zero (T : X → X) (h : F.Nonempty) (U : SetRel X X) : netMaxcard T F U 0 = 1 := by
   apply (iSup₂_le _).antisymm ((one_le_netMaxcard_iff T F U 0).2 h)

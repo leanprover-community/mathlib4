@@ -86,6 +86,7 @@ This shortens the overall argument, as the definition of submersions has the sam
   `IsImmersion(At)OfComplement.small` and `IsImmersion(At)OfComplement.smallEquiv`.
 
 ## TODO
+
 * The converse to `IsImmersionAtOfComplement.congr_F` also holds: any two complements are
   isomorphic, as they are isomorphic to the cokernel of the differential `mfderiv I J f x`.
 * If `f` is an immersion at `x`, its differential splits, hence is injective.
@@ -104,7 +105,6 @@ This shortens the overall argument, as the definition of submersions has the sam
 ## References
 
 * [Juan Margalef-Roig and Enrique Outerelo Dominguez, *Differential topology*][roigdomingues1992]
-
 -/
 
 open scoped Topology ContDiff

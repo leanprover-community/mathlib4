@@ -5,10 +5,14 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.Algebra.Homology.ShortComplex.Exact
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 import Mathlib.CategoryTheory.Filtered.Final
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Exactness of colimits
@@ -21,7 +25,6 @@ given by the colimit API. We also show that when an inductive system
 involves only monomorphisms, then the "inclusion" morphism
 into the colimit is also a monomorphism (assuming `J`
 is filtered and `C` satisfies AB5).
-
 -/
 
 @[expose] public section

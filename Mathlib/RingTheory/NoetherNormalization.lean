@@ -16,6 +16,7 @@ import Mathlib.Data.List.Indexes
 This file contains a proof by Nagata of the Noether normalization lemma.
 
 ## Main Results
+
 Let `A` be a finitely generated algebra over a field `k`.
 Then there exists a natural number `s` and an injective homomorphism
 from `k[X_0, X_1, ..., X_(s-1)]` to `A` such that `A` is integral over `k[X_0, X_1, ..., X_(s-1)]`.
@@ -52,6 +53,7 @@ Composing `φ` and `g` we get the desired map since both `φ` and `g` are inject
 * <https://stacks.math.columbia.edu/tag/00OW>
 
 ## TODO
+
 * In the final theorems, consider setting `s` equal to the Krull dimension of `R`.
 -/
 
@@ -73,7 +75,7 @@ private lemma lt_up (vlt : ∀ i, v i < up) : ∀ l ∈ ofFn v, l < up := by
   grind
 
 /-- `r` maps `(i : Fin (n + 1))` to `up ^ i`. -/
-local notation3 "r" => fun (i : Fin (n + 1)) ↦ up ^ i.1
+local notation3 "r" => fun (i : Fin (n + 1)) ↦ up ^ i.val
 
 /-- We construct an algebra map `T1 f c` which maps `X_i` into `X_i + c • X_0 ^ r_i` when `i ≠ 0`
 and `X_0` to `X_0`. -/
@@ -138,7 +140,7 @@ private lemma leadingCoeff_finSuccEquiv_varChange :
     have : ∀ j, ((finSuccEquiv k n) ((T1 f) 1 (X j))).leadingCoeff = 1 := fun j ↦ by
       by_cases h : j = 0
       · simp [h, finSuccEquiv_apply]
-      · simp only [aeval_eq_bind₁, bind₁_X_right, ite_eq_right h, one_smul, map_add, map_pow]
+      · simp only [MvPolynomial.aeval_X, ite_eq_right h, one_smul, map_add, map_pow]
         obtain ⟨i, rfl⟩ := Fin.exists_succ_eq.mpr h
         simp [finSuccEquiv_X_succ, finSuccEquiv_X_zero, add_comm]
     simp only [this, one_pow, Finset.prod_const_one, mul_one]

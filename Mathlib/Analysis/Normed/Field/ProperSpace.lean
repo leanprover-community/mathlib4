@@ -20,7 +20,7 @@ Nontrivially normed fields are `ProperSpaces` when they are `WeaklyLocallyCompac
 
 * `ProperSpace.of_nontriviallyNormedField_of_weaklyLocallyCompactSpace`
 
-## Implementation details
+## Implementation notes
 
 This is a special case of `ProperSpace.of_locallyCompactSpace` from
 `Mathlib/Analysis/Normed/Module/FiniteDimension.lean`, specialized to be on the field itself

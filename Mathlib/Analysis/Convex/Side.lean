@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Convex.Between
 public import Mathlib.Analysis.Normed.Group.AddTorsor
 public import Mathlib.Analysis.Normed.Module.Convex
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sides of affine subspaces
 
@@ -24,7 +27,6 @@ This file defines notions of two points being on the same or opposite sides of a
   subspace `s`.
 * `s.SOppSide x y`: The points `x` and `y` are strictly on opposite sides of the affine
   subspace `s`.
-
 -/
 
 @[expose] public section

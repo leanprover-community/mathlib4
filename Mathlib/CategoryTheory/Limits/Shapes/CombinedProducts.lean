@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.BinaryFan
 public import Mathlib.CategoryTheory.Limits.Shapes.Products
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Constructors for combining (co)fans
 
@@ -16,7 +19,6 @@ We provide constructors for combining (co)fans and show their (co)limit properti
 ## TODO
 
 * Combine (co)fans on sigma types
-
 -/
 
 @[expose] public section

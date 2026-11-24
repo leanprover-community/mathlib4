@@ -23,7 +23,6 @@ In particular, localization of modules commutes with binary and finite products.
 * `IsBaseChange.directSum`: base change for direct sums
 
 * Homomorphism modules
-
 -/
 
 public section

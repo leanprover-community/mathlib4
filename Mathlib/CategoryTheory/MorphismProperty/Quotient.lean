@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Quotient
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Classes of morphisms induced on quotient categories
 
@@ -17,7 +20,6 @@ morphisms on the quotient category, i.e. `W f ↔ W g` when `homRel f g` holds.
 We denote `W.quotient homRel : MorphismProperty (Quotient homRel)` the
 induced property of morphisms: a morphism in `C` satisfies `W` iff
 `(Quotient.functor homRel).map f` does.
-
 -/
 
 @[expose] public section

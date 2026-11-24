@@ -90,7 +90,7 @@ def toModuleMonoidAlgebraMap {V W : Rep.{w} k G} (f : V ⟶ W) :
   ModuleCat.ofHom
     { f.hom.toLinearMap with
       map_smul' := fun r x => to_Module_monoidAlgebra_map_aux V.V W.V V.ρ W.ρ
-        f.hom.toLinearMap f.hom.2 r x }
+        f.hom.toLinearMap f.hom.isIntertwining' r x }
 
 /-- Functorially convert a representation of `G` into a module over `k[G]`. -/
 def toModuleMonoidAlgebra : Rep.{w} k G ⥤ ModuleCat k[G] where
@@ -184,8 +184,8 @@ section
 variable {G : Type u} [Group G] {n : ℕ}
 
 instance diagonal_succ_projective :
-    Projective (diagonal k G (n + 1)) := by
-  exact Projective.of_iso (diagonalSuccIsoFree k G n).symm inferInstance
+    Projective (diagonal k G (n + 1)) :=
+  Projective.of_iso (diagonalSuccIsoFree k G n).symm inferInstance
 
 instance leftRegular_projective :
     Projective (leftRegular k G) :=
