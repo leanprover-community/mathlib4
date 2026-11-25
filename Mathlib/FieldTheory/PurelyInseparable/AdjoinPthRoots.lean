@@ -8,6 +8,9 @@ module
 
 public import Mathlib.FieldTheory.PurelyInseparable.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The extension adjoining all `p`-th roots to a field of characteristic `p`
 

@@ -17,6 +17,7 @@ are prime and do not contain the irrelevant ideal.
 It is naturally endowed with a topology: the Zariski topology.
 
 ## Notation
+
 - `A` is a commutative ring
 - `σ` is a class of additive submonoids of `A`
 - `𝒜 : ℕ → σ` is the grading of `A`;
@@ -284,12 +285,12 @@ instance zariskiTopology : TopologicalSpace (ProjectiveSpectrum 𝒜) :=
     (by
       intro Zs h
       rw [Set.sInter_eq_iInter]
-      let f : Zs → Set _ := fun i => Classical.choose (h i.2)
+      let f : Zs → Set _ := fun i => Classical.choose (h i.property)
       have H : (Set.iInter fun i ↦ zeroLocus 𝒜 (f i)) ∈ Set.range (zeroLocus 𝒜) :=
         ⟨_, zeroLocus_iUnion 𝒜 _⟩
       convert H using 2
       funext i
-      exact (Classical.choose_spec (h i.2)).symm)
+      exact (Classical.choose_spec (h i.property)).symm)
     (by
       rintro _ ⟨s, rfl⟩ _ ⟨t, rfl⟩
       exact ⟨_, (union_zeroLocus 𝒜 s t).symm⟩)
@@ -385,7 +386,7 @@ theorem basicOpen_eq_union_of_projection (f : A) :
           apply Ideal.sum_mem _ fun i _ => H i with ⟨i, hi⟩
         exact ⟨basicOpen 𝒜 (GradedRing.proj 𝒜 i f), ⟨i, rfl⟩, by rwa [mem_basicOpen]⟩
       · obtain ⟨_, ⟨i, rfl⟩, hz⟩ := hz
-        exact fun rid => hz (z.1.2 i rid)
+        exact fun rid => hz (z.asHomogeneousIdeal.is_homogeneous' i rid)
 
 theorem isTopologicalBasis_basic_opens :
     TopologicalSpace.IsTopologicalBasis

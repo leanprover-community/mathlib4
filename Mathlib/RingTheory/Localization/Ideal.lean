@@ -9,16 +9,19 @@ public import Mathlib.Algebra.Module.LocalizedModule.Submodule
 public import Mathlib.GroupTheory.MonoidLocalization.Away
 public import Mathlib.RingTheory.Ideal.IsPrimary
 public import Mathlib.RingTheory.Ideal.Over
-public import Mathlib.RingTheory.Localization.Defs
 public import Mathlib.RingTheory.Spectrum.Prime.Defs
+
+import Mathlib.RingTheory.Localization.Defs
 
 /-!
 # Ideals in localizations of commutative rings
 
 ## Implementation notes
+
 See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
 
 ## Tags
+
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
 -/
@@ -73,8 +76,8 @@ lemma mk'_mem_map_algebraMap_iff (I : Ideal R) (x : R) (s : M) :
   rw [← Ideal.unit_mul_mem_iff_mem _ (IsLocalization.map_units S s), IsLocalization.mk'_spec',
     IsLocalization.mem_map_algebraMap_iff M]
   simp_rw [← map_mul, IsLocalization.eq_iff_exists M, mul_comm x, ← mul_assoc, ← Submonoid.coe_mul]
-  exact ⟨fun ⟨⟨y, t⟩, c, h⟩ ↦ ⟨_, (c * t).2, h ▸ I.mul_mem_left c.1 y.2⟩, fun ⟨s, hs, h⟩ ↦
-    ⟨⟨⟨_, h⟩, ⟨s, hs⟩⟩, 1, by simp⟩⟩
+  exact ⟨fun ⟨⟨y, t⟩, c, h⟩ ↦ ⟨_, (c * t).property, h ▸ I.mul_mem_left c.val y.property⟩,
+    fun ⟨s, hs, h⟩ ↦ ⟨⟨⟨_, h⟩, ⟨s, hs⟩⟩, 1, by simp⟩⟩
 
 lemma algebraMap_mem_map_algebraMap_iff (I : Ideal R) (x : R) :
     algebraMap R S x ∈ I.map (algebraMap R S) ↔
@@ -139,8 +142,9 @@ theorem under_map_of_isPrimary_disjoint
   obtain ⟨c, hc⟩ := (IsLocalization.eq_iff_exists M S).1 h
   have : a * (c * s : M) ∈ I := by
     rw [mul_comm, Submonoid.coe_mul, mul_assoc, hc]
-    exact I.mul_mem_left c b.2
-  exact ((Ideal.isPrimary_iff.mp hI).2 this).resolve_right (Set.disjoint_left.mp key (c * s).2)
+    exact I.mul_mem_left c b.property
+  exact ((Ideal.isPrimary_iff.mp hI).2 this).resolve_right
+    (Set.disjoint_left.mp key (c * s).property)
 
 theorem under_map_of_isPrime_disjoint {I : Ideal R} (hI : I.IsPrime) (hM : Disjoint (M : Set R) I) :
     (Ideal.map (algebraMap R S) I).under R = I :=
@@ -163,8 +167,8 @@ def orderEmbedding : Ideal S ↪o Ideal R where
 
 include M in
 theorem under_le_under_iff {I J : Ideal S} :
-    I.under R ≤ J.under R ↔ I ≤ J := by
-  exact (IsLocalization.orderEmbedding M S).le_iff_le
+    I.under R ≤ J.under R ↔ I ≤ J :=
+  (IsLocalization.orderEmbedding M S).le_iff_le
 
 /-- If `R` is a ring, then prime ideals in the localization at `M`
 correspond to prime ideals in the original ring `R` that are disjoint from `M`.
@@ -204,8 +208,8 @@ theorem isPrime_of_isPrime_disjoint (I : Ideal R) (hp : I.IsPrime) (hd : Disjoin
   exact ⟨hp, hd⟩
 
 include M S in
-lemma isMaximal_of_isMaximal_under (I : Ideal S) [hI : (I.under R).IsMaximal] : I.IsMaximal := by
-  exact ⟨(orderEmbedding M S).isCoatom_of_map_top_of_image Ideal.comap_top hI.out⟩
+lemma isMaximal_of_isMaximal_under (I : Ideal S) [hI : (I.under R).IsMaximal] : I.IsMaximal :=
+  ⟨(orderEmbedding M S).isCoatom_of_map_top_of_image Ideal.comap_top hI.out⟩
 
 theorem isMaximal_of_isMaximal_disjoint (I : Ideal R) [hI : I.IsMaximal]
     (h : Disjoint (M : Set R) (I : Set R)) : (I.map (algebraMap R S)).IsMaximal := by
@@ -225,10 +229,11 @@ theorem disjoint_under_iff (J : Ideal S) :
 correspond to prime ideals in the original ring `R` that are disjoint from `M` -/
 @[simps] def orderIsoOfPrime :
     { p : Ideal S // p.IsPrime } ≃o { p : Ideal R // p.IsPrime ∧ Disjoint (M : Set R) ↑p } where
-  toFun p := ⟨p.1.under R, (isPrime_iff_isPrime_disjoint M S p.1).1 p.2⟩
-  invFun p := ⟨Ideal.map (algebraMap R S) p.1, isPrime_of_isPrime_disjoint M S p.1 p.2.1 p.2.2⟩
+  toFun p := ⟨p.val.under R, (isPrime_iff_isPrime_disjoint M S p.val).1 p.property⟩
+  invFun p := ⟨Ideal.map (algebraMap R S) p.val,
+    isPrime_of_isPrime_disjoint M S p.val p.property.1 p.property.2⟩
   left_inv J := Subtype.ext (map_under M S J)
-  right_inv I := Subtype.ext (under_map_of_isPrime_disjoint M S I.2.1 I.2.2)
+  right_inv I := Subtype.ext (under_map_of_isPrime_disjoint M S I.property.1 I.property.2)
   map_rel_iff' {I I'} := by
     constructor
     · exact fun h => show I.val ≤ I'.val from map_under M S I.val ▸
@@ -241,7 +246,8 @@ prime ideals disjoint from `M`. -/
 @[simps!] def primeSpectrumOrderIso :
     PrimeSpectrum S ≃o {p : PrimeSpectrum R // Disjoint (M : Set R) p.asIdeal} :=
   (PrimeSpectrum.equivSubtype S).trans <| (orderIsoOfPrime M S).trans
-    ⟨⟨fun p ↦ ⟨⟨p, p.2.1⟩, p.2.2⟩, fun p ↦ ⟨p.1.1, p.1.2, p.2⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩, .rfl⟩
+    ⟨⟨fun p ↦ ⟨⟨p, p.property.1⟩, p.property.2⟩, fun p ↦ ⟨p.val.asIdeal, p.val.isPrime, p.property⟩,
+      fun _ ↦ rfl, fun _ ↦ rfl⟩, .rfl⟩
 
 include M in
 lemma map_radical (I : Ideal R) :
@@ -269,7 +275,7 @@ theorem ideal_eq_iInf_under_map_away {S : Finset R} (hS : Ideal.span (α := R) S
     use m + n
     dsimp at e ⊢
     rw [pow_add, mul_assoc, ← mul_comm x, e]
-    exact I.mul_mem_left _ y.2
+    exact I.mul_mem_left _ y.property
 
 lemma map_eq_top_of_not_subset {I : Ideal R} (hle : ¬ (I : Set R) ⊆ Mᶜ) :
     Ideal.map (algebraMap R S) I = ⊤ := by
@@ -304,7 +310,7 @@ theorem surjective_quotientMap_of_maximal_of_localization {I : Ideal S} [I.IsPri
       rw [← mk'_eq_mul_mk'_one, mk'_self]
     exact ⟨0, eq_comm.1 (by simp [Ideal.Quotient.eq_zero_iff_mem, this])⟩
   · rw [Ideal.Quotient.maximal_ideal_iff_isField_quotient] at hI
-    obtain ⟨n, hn⟩ := hI.3 hM
+    obtain ⟨n, hn⟩ := hI.mul_inv_cancel hM
     obtain ⟨rn, rfl⟩ := Ideal.Quotient.mk_surjective n
     refine ⟨(Ideal.Quotient.mk J) (r * rn), ?_⟩
     -- The rest of the proof is essentially just algebraic manipulations to prove the equality
@@ -371,7 +377,7 @@ lemma of_surjective {R' S' : Type*} [CommRing R'] [CommRing S'] [Algebra R' S']
     intro z
     obtain ⟨z, rfl⟩ := hg z
     obtain ⟨⟨r, s⟩, e⟩ := IsLocalization.surj M z
-    refine ⟨⟨f r, _, s.1, s.2, rfl⟩, ?_⟩
+    refine ⟨⟨f r, _, s.val, s.property, rfl⟩, ?_⟩
     simpa only [map_mul, ← RingHom.comp_apply, H] using congr(g $e)
   exists_of_eq := by
     intro x y e

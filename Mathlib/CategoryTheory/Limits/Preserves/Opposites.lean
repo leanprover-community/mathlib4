@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.Opposites
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Limit preservation properties of `Functor.op` and related constructions
 

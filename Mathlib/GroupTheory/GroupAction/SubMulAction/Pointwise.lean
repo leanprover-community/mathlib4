@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.GroupTheory.GroupAction.SubMulAction
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pointwise monoid structures on SubMulAction
 

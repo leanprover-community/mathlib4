@@ -8,7 +8,11 @@ module
 public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.LinearAlgebra.Charpoly.ToMatrix
 public import Mathlib.LinearAlgebra.Eigenspace.Minpoly
-public import Mathlib.RingTheory.Artinian.Module
+
+import Mathlib.RingTheory.Artinian.Module
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Results on the eigenvalue 0
@@ -166,8 +170,9 @@ lemma finrank_maxGenEigenspace_zero_eq (φ : Module.End K M) :
   have hψ : ψ = e.symm.conj φ := by
     apply b.ext
     simp only [Basis.prod_apply, coe_inl, coe_inr, prodMap_apply, LinearEquiv.conj_apply,
-      LinearEquiv.symm_symm, Submodule.coe_prodEquivOfIsCompl, coe_comp, LinearEquiv.coe_coe,
-      Function.comp_apply, coprod_apply, Submodule.coe_subtype, map_add, Sum.forall, Sum.elim_inl,
+      LinearEquiv.symm_symm, Submodule.coe_prodEquivOfIsCompl, coe_comp,
+      LinearEquiv.coe_toLinearMap, Function.comp_apply, coprod_apply, Submodule.coe_subtype,
+      map_add, Sum.forall, Sum.elim_inl,
       map_zero, ZeroMemClass.coe_zero, add_zero, LinearEquiv.eq_symm_apply, and_self,
       Submodule.coe_prodEquivOfIsCompl', coe_restrict_apply, implies_true, Sum.elim_inr, zero_add,
       e, V, W, ψ, F, G, b]
@@ -178,8 +183,8 @@ lemma finrank_maxGenEigenspace_zero_eq (φ : Module.End K M) :
     apply ((not_hasEigenvalue_zero_tfae G).out 3 6).mpr
     intro x hx
     apply Subtype.ext
-    suffices x.1 ∈ V ⊓ W by rwa [hVW.inf_eq_bot, Submodule.mem_bot] at this
-    suffices x.1 ∈ V from ⟨this, x.2⟩
+    suffices x.val ∈ V ⊓ W by rwa [hVW.inf_eq_bot, Submodule.mem_bot] at this
+    suffices x.val ∈ V from ⟨this, x.property⟩
     simp only [Module.End.mem_maxGenEigenspace, zero_smul, sub_zero, V]
     use 1
     rw [pow_one]

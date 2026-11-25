@@ -5,11 +5,11 @@ Authors: Attila Gáspár
 -/
 module
 
-public import Mathlib.Algebra.Module.TransferInstance
 public import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 public import Mathlib.RingTheory.Finiteness.Defs
 
 import Mathlib.Algebra.Module.Submodule.EqLocus
+import Mathlib.Algebra.Module.TransferInstance
 import Mathlib.RingTheory.Finiteness.Basic
 import Mathlib.RingTheory.Finiteness.Prod
 import Mathlib.Tactic.Module

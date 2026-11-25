@@ -21,7 +21,7 @@ result is of the form "if `IsGLB 𝓕 s`, then there is a countable `𝓕' ⊆ �
 
 Of course we also provide the dual statements for lower semicontinuous functions.
 
-## Implementation Notes
+## Implementation notes
 
 There is currently no way to state the hypothesis "`E` admits a countable order-dense subset"
 which would be inferrable by typeclass inference. Instead, we assume
@@ -67,7 +67,8 @@ theorem exists_countable_upperSemicontinuous_isGLB {s : X → E} {𝓕 : Set (X 
     simp [U, isGLB_lt_iff (h𝓕 x)]
   have (d : E) : ∃ A ⊆ 𝓕, A.Countable ∧ {x | s x < d} = ⋃ f ∈ A, U f d := by
     simp_rw [this d]
-    rcases eq_open_union_countable (fun f : 𝓕 ↦ U f d) (fun f ↦ U_open f.2 d) with ⟨t, t_count, ht⟩
+    rcases eq_open_union_countable (fun f : 𝓕 ↦ U f d) (fun f ↦ U_open f.property d) with
+      ⟨t, t_count, ht⟩
     use (↑) '' t, image_val_subset, t_count.image _
     rw [← ht, biUnion_image]
   choose A A_sub A_count hA using this

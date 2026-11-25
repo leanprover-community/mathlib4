@@ -6,9 +6,10 @@ Authors: Christian Merten, Yi Song, Sihan Su
 module
 
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
-public import Mathlib.RingTheory.Flat.Localization
 public import Mathlib.RingTheory.Ideal.GoingUp
 public import Mathlib.RingTheory.Spectrum.Prime.RingHom
+
+import Mathlib.RingTheory.Flat.Localization
 
 /-!
 # Properties of faithfully flat algebras
@@ -78,7 +79,7 @@ instance Module.FaithfullyFlat.of_isIntegral_of_isDomain [IsDomain B] [Module.Fl
     [Algebra.IsIntegral A B] [FaithfulSMul A B] :
     Module.FaithfullyFlat A B := by
   refine Module.FaithfullyFlat.of_comap_surjective fun P ↦ ?_
-  obtain ⟨P, hP₁, hP₂⟩ := Ideal.exists_ideal_over_prime_of_isIntegral_of_isDomain P.1 (S := B)
+  obtain ⟨P, hP₁, hP₂⟩ := Ideal.exists_ideal_over_prime_of_isIntegral_of_isDomain P.asIdeal (S := B)
     (by simp [(RingHom.injective_iff_ker_eq_bot _).mp (FaithfulSMul.algebraMap_injective A B)])
   exact ⟨⟨P, hP₁⟩, PrimeSpectrum.ext_iff.mpr hP₂⟩
 
@@ -96,7 +97,7 @@ lemma Module.FaithfullyFlat.tensorProduct_mk_injective (M : Type*) [AddCommGroup
     apply TensorProduct.ext'
     intro x y
     simp
-  rw [this, coe_comp, LinearEquiv.coe_coe, EmbeddingLike.comp_injective]
+  rw [this, coe_comp, LinearEquiv.coe_toLinearMap, EmbeddingLike.comp_injective]
   exact Algebra.TensorProduct.mk_one_injective_of_isScalarTower _
 
 instance Module.FaithfullyFlat.faithfulSMul : FaithfulSMul A B := by
@@ -126,7 +127,7 @@ lemma Ideal.comap_map_eq_self_of_faithfullyFlat (I : Ideal A) :
   have : ((quotIdealMapEquivTensorQuot B I).symm.toLinearEquiv.toLinearMap.restrictScalars _ ∘ₗ
       TensorProduct.mk A B (A ⧸ I) 1) x = 0 := by
     simp [← Algebra.algebraMap_eq_smul_one, hx]
-  simp [this]
+  simpa using this
 
 /-- If `B` is a faithfully-flat `A`-algebra, every ideal in `A` is the preimage of some ideal
 in `B`. -/

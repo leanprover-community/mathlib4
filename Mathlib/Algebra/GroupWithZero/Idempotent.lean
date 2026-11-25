@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Idempotent
 public import Mathlib.Algebra.GroupWithZero.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Idempotent elements of a group with zero
 -/

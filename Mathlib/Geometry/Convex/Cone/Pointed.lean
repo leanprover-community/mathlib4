@@ -196,7 +196,8 @@ lemma mem_hull_set {s : Set E} : x ∈ hull R s ↔
   rw [mem_span_set]
   constructor
   · rintro ⟨c, hc, rfl⟩
-    exact ⟨⟨c.support, Subtype.val ∘ c, by simp [← Subtype.val_inj]⟩, hc, fun y ↦ (c y).2, rfl⟩
+    exact ⟨⟨c.support, Subtype.val ∘ c, by simp [← Subtype.val_inj]⟩, hc,
+      fun y ↦ (c y).property, rfl⟩
   · rintro ⟨c, hc, hc₀, rfl⟩
     exact ⟨⟨c.support, fun y ↦ ⟨c y, hc₀ _⟩, by simp⟩, hc, rfl⟩
 
@@ -217,11 +218,11 @@ meta def hull.unexpander : Lean.PrettyPrinter.Unexpander
 lemma mem_hull_singleton {x y : E} :
     y ∈ R ∙₊ x ↔ ∃ r : R, 0 ≤ r ∧ r • x = y := by
   rw [mem_span_singleton]
-  exact ⟨fun ⟨r, hr⟩ ↦ ⟨r.1, r.2, hr⟩, fun ⟨r, hr0, hr⟩ ↦ ⟨⟨r, hr0⟩, hr⟩⟩
+  exact ⟨fun ⟨r, hr⟩ ↦ ⟨r.val, r.property, hr⟩, fun ⟨r, hr0, hr⟩ ↦ ⟨⟨r, hr0⟩, hr⟩⟩
 
 theorem le_hull_singleton_iff {C : PointedCone R E} {x : E} :
     C ≤ R ∙₊ x ↔ ∀ y ∈ C, ∃ r : R, 0 ≤ r ∧ r • x = y := by
-  simp_rw [IsConcreteLE.le_iff, mem_hull_singleton]
+  simp_rw [le_iff_mem_imp_mem, mem_hull_singleton]
 
 end Definitions
 

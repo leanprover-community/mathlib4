@@ -89,7 +89,8 @@ set_option backward.privateInPublic true in
 /-- The contribution to `Finpartition.energy` of a pair of distinct parts of a `Finpartition`. -/
 private noncomputable def distinctPairs (x : {x // x ∈ P.parts.offDiag}) :
     Finset (Finset α × Finset α) :=
-  (chunk hP G ε (mem_offDiag.1 x.2).1).parts ×ˢ (chunk hP G ε (mem_offDiag.1 x.2).2.1).parts
+  (chunk hP G ε (mem_offDiag.1 x.property).1).parts ×ˢ
+    (chunk hP G ε (mem_offDiag.1 x.property).2.1).parts
 
 variable {hP G ε}
 
@@ -126,14 +127,14 @@ set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 lemma le_sum_distinctPairs_edgeDensity_sq (x : {i // i ∈ P.parts.offDiag}) (hε₁ : ε ≤ 1)
     (hPα : #P.parts * 16 ^ #P.parts ≤ card α) (hPε : ↑100 ≤ ↑4 ^ #P.parts * ε ^ 5) :
-    (G.edgeDensity x.1.1 x.1.2 : ℝ) ^ 2 +
-      ((if G.IsUniform ε x.1.1 x.1.2 then 0 else ε ^ 4 / 3) - ε ^ 5 / 25) ≤
+    (G.edgeDensity x.val.1 x.val.2 : ℝ) ^ 2 +
+      ((if G.IsUniform ε x.val.1 x.val.2 then 0 else ε ^ 4 / 3) - ε ^ 5 / 25) ≤
     (∑ i ∈ distinctPairs hP G ε x, G.edgeDensity i.1 i.2 ^ 2 : ℝ) / 16 ^ #P.parts := by
   rw [distinctPairs, ← add_sub_assoc, add_sub_right_comm]
   split_ifs with h
   · rw [add_zero]
     exact edgeDensity_chunk_uniform hPα hPε _ _
-  · exact edgeDensity_chunk_not_uniform hPα hPε hε₁ (mem_offDiag.1 x.2).2.2 h
+  · exact edgeDensity_chunk_not_uniform hPα hPε hε₁ (mem_offDiag.1 x.property).2.2 h
 
 /-- The increment partition has energy greater than the original one by a known fixed amount. -/
 theorem energy_increment (hP : P.IsEquipartition) (hP₇ : 7 ≤ #P.parts)

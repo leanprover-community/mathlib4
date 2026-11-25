@@ -7,13 +7,13 @@ module
 
 public import Mathlib.Algebra.Colimit.TensorProduct
 public import Mathlib.Algebra.Module.Projective
-public import Mathlib.LinearAlgebra.DirectSum.Finsupp
 public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 public import Mathlib.RingTheory.Adjoin.FGBaseChange
 public import Mathlib.RingTheory.Finiteness.Small
 public import Mathlib.RingTheory.IsTensorProduct
 public import Mathlib.RingTheory.TensorProduct.Finite
 
+import Mathlib.LinearAlgebra.DirectSum.Finsupp
 import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
@@ -101,7 +101,7 @@ lemma _root_.LinearMap.rTensor_injective_iff_subtype {f : N →ₗ[R] P} (hf : F
       Function.Injective ((range <| e.toLinearMap ∘ₗ f).subtype.rTensor M) := by
   simp_rw [← EquivLike.injective_comp <| (LinearEquiv.ofInjective (e.toLinearMap ∘ₗ f)
     (e.injective.comp hf)).rTensor M, ← EquivLike.comp_injective _ (e.rTensor M),
-    ← LinearEquiv.coe_coe, ← coe_comp, LinearEquiv.coe_rTensor, ← rTensor_comp]
+    ← LinearEquiv.coe_toLinearMap, ← coe_comp, LinearEquiv.coe_rTensor, ← rTensor_comp]
   rfl
 
 variable (R M) in
@@ -208,8 +208,8 @@ variable {ι : Type v} {M : ι → Type w} [Π i, AddCommMonoid (M i)] [Π i, Mo
 theorem directSum_iff : Flat R (⨁ i, M i) ↔ ∀ i, Flat R (M i) := by
   classical
   simp_rw [iff_rTensor_injectiveₛ, ← EquivLike.comp_injective _ (directSumRight R R _ _),
-    ← LinearEquiv.coe_coe, ← coe_comp, directSumRight_comp_rTensor, coe_comp, LinearEquiv.coe_coe,
-    EquivLike.injective_comp, lmap_injective]
+    ← LinearEquiv.coe_toLinearMap, ← coe_comp, directSumRight_comp_rTensor, coe_comp,
+    LinearEquiv.coe_toLinearMap, EquivLike.injective_comp, lmap_injective]
   constructor <;> (intro h; intros; apply h)
 
 theorem dfinsupp_iff : Flat R (Π₀ i, M i) ↔ ∀ i, Flat R (M i) := directSum_iff ..
@@ -269,6 +269,13 @@ lemma _root_.LinearMap.baseChangeHom_injective [FaithfulSMul R S] [Flat R N] :
   intro f g h
   ext m
   simpa using Flat.tensorProduct_mk_injective R N S congr($h (1 ⊗ₜ[R] m))
+
+@[simp] lemma _root_.LinearMap.baseChange_inj [FaithfulSMul R S] [Flat R N] {f g : M →ₗ[R] N} :
+    f.baseChange S = g.baseChange S ↔ f = g := (baseChangeHom_injective ..).eq_iff
+
+@[simp] lemma _root_.LinearMap.isIdempotentElem_baseChange_iff [FaithfulSMul R S] [Flat R M]
+    {f : M →ₗ[R] M} : IsIdempotentElem (f.baseChange S) ↔ IsIdempotentElem f := by
+  simp [IsIdempotentElem, ← baseChange_mul]
 
 end Algebra
 
@@ -440,7 +447,7 @@ noncomputable def toBaseChange.toLinearEquiv : A ⊗[R] ↥p ≃ₗ[A] baseChang
 @[simp]
 theorem toBaseChange.toLinearEquiv_symm_apply (a : A) (m : p) :
     (toBaseChange.toLinearEquiv A p).symm
-      ⟨a ⊗ₜ[R] m, tmul_mem_baseChange_of_mem a m.2⟩ = a ⊗ₜ[R] m :=
+      ⟨a ⊗ₜ[R] m, tmul_mem_baseChange_of_mem a m.property⟩ = a ⊗ₜ[R] m :=
   (toBaseChange.toLinearEquiv A p).symm_apply_apply (a ⊗ₜ[R] m)
 
 end Submodule

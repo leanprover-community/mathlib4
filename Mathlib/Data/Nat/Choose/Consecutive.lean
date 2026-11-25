@@ -11,6 +11,9 @@ public import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Data.Nat.Factorial.BigOperators
 import Mathlib.Data.Nat.Prime.Factorial
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Binomial coefficients and consecutive products
 

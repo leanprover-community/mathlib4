@@ -52,7 +52,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem HasFiniteFPowerSeriesOnBall.add (hf : HasFiniteFPowerSeriesOnBall f pf x n r)
     (hg : HasFiniteFPowerSeriesOnBall g pg x m r) :
     HasFiniteFPowerSeriesOnBall (f + g) (pf + pg) x (max n m) r :=
-  ⟨hf.1.add hg.1, fun N hN ↦ by
+  ⟨hf.toHasFPowerSeriesOnBall.add hg.toHasFPowerSeriesOnBall, fun N hN ↦ by
     rw [Pi.add_apply, hf.finite _ ((le_max_left n m).trans hN),
         hg.finite _ ((le_max_right n m).trans hN), zero_add]⟩
 
@@ -72,7 +72,7 @@ theorem CPolynomialAt.add (hf : CPolynomialAt 𝕜 f x) (hg : CPolynomialAt 𝕜
 set_option backward.isDefEq.respectTransparency false in
 theorem HasFiniteFPowerSeriesOnBall.neg (hf : HasFiniteFPowerSeriesOnBall f pf x n r) :
     HasFiniteFPowerSeriesOnBall (-f) (-pf) x n r :=
-  ⟨hf.1.neg, fun m hm ↦ by rw [Pi.neg_apply, hf.finite m hm, neg_zero]⟩
+  ⟨hf.toHasFPowerSeriesOnBall.neg, fun m hm ↦ by rw [Pi.neg_apply, hf.finite m hm, neg_zero]⟩
 
 theorem HasFiniteFPowerSeriesAt.neg (hf : HasFiniteFPowerSeriesAt f pf x n) :
     HasFiniteFPowerSeriesAt (-f) (-pf) x n :=
@@ -120,8 +120,9 @@ theorem CPolynomialOn.smul (hf : CPolynomialOn 𝕜 f s) (c : 𝕜) : CPolynomia
 lemma HasFiniteFPowerSeriesOnBall.prodMk {g : E → G} {pg : FormalMultilinearSeries 𝕜 E G}
     (hf : HasFiniteFPowerSeriesOnBall f pf x n r) (hg : HasFiniteFPowerSeriesOnBall g pg x m r) :
     HasFiniteFPowerSeriesOnBall (fun x ↦ (f x, g x)) (pf.prod pg) x (max n m) r :=
-  ⟨by simpa using hf.1.prod hg.1, fun N hN ↦ by simp [FormalMultilinearSeries.prod,
-    hf.finite _ ((le_max_left n m).trans hN), hg.finite _ ((le_max_right n m).trans hN)]⟩
+  ⟨by simpa using hf.toHasFPowerSeriesOnBall.prod hg.toHasFPowerSeriesOnBall,
+    fun N hN ↦ by simp [FormalMultilinearSeries.prod,
+      hf.finite _ ((le_max_left n m).trans hN), hg.finite _ ((le_max_right n m).trans hN)]⟩
 
 theorem HasFiniteFPowerSeriesAt.prodMk {g : E → G} {pg : FormalMultilinearSeries 𝕜 E G}
     (hf : HasFiniteFPowerSeriesAt f pf x n) (hg : HasFiniteFPowerSeriesAt g pg x m) :

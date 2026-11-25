@@ -10,6 +10,9 @@ public import Mathlib.GroupTheory.Coprod.Basic
 public import Mathlib.GroupTheory.FreeGroup.Basic
 public import Mathlib.GroupTheory.QuotientGroup.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Defining a group given by generators and relations
 
@@ -121,7 +124,7 @@ theorem closure_range_of (rels : Set (FreeGroup α)) :
 @[induction_eliminator, to_additive (attr := induction_eliminator)]
 theorem induction_on {rels : Set (FreeGroup α)} {C : PresentedGroup rels → Prop}
     (x : PresentedGroup rels) (H : ∀ z, C (mk rels z)) : C x :=
-  Quotient.inductionOn' x H
+  Quotient.inductionOn x H
 
 @[to_additive]
 theorem generated_by (rels : Set (FreeGroup α)) (H : Subgroup (PresentedGroup rels))

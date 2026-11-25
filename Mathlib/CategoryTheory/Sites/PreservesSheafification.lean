@@ -35,6 +35,7 @@ functors between such concrete categories which commute both with
 suitable limits and colimits.
 
 ## TODO
+
 * construct an isomorphism `Sheaf.composeAndSheafify J F ≅ sheafCompose J F`
 -/
 
@@ -168,7 +169,6 @@ def sheafComposeNatTrans :
     dsimp at this ⊢
     grind
 
-set_option backward.isDefEq.respectTransparency false in
 lemma sheafComposeNatTrans_fac (P : Cᵒᵖ ⥤ A) :
     adj₂.unit.app (P ⋙ F) ≫
       (sheafToPresheaf J B).map ((sheafComposeNatTrans J F adj₁ adj₂).app P) =

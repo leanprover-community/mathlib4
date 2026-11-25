@@ -15,7 +15,8 @@ import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
 
 We construct the subscheme associated to an ideal sheaf.
 
-## Main definition
+## Main definitions
+
 * `AlgebraicGeometry.Scheme.IdealSheafData.subscheme`: The subscheme associated to an ideal sheaf.
 * `AlgebraicGeometry.Scheme.IdealSheafData.subschemeι`: The inclusion from the subscheme.
 * `AlgebraicGeometry.Scheme.Hom.image`: The scheme-theoretic image of a morphism.
@@ -47,8 +48,8 @@ def glueDataObj (U : X.affineOpens) : Scheme :=
 
 /-- `Spec (𝒪ₓ(U)/I(U)) ⟶ Spec (𝒪ₓ(U)) = U`, the closed immersion into `U`. -/
 noncomputable
-def glueDataObjι (U : X.affineOpens) : I.glueDataObj U ⟶ U.1 :=
-  Spec.map (CommRingCat.ofHom (Ideal.Quotient.mk _)) ≫ U.2.isoSpec.inv
+def glueDataObjι (U : X.affineOpens) : I.glueDataObj U ⟶ U.val :=
+  Spec.map (CommRingCat.ofHom (Ideal.Quotient.mk _)) ≫ U.property.isoSpec.inv
 
 set_option backward.isDefEq.respectTransparency false in
 instance (U : X.affineOpens) : IsPreimmersion (I.glueDataObjι U) :=
@@ -59,13 +60,13 @@ instance (U : X.affineOpens) : IsPreimmersion (I.glueDataObjι U) :=
   .comp _ _
 
 set_option backward.isDefEq.respectTransparency.types false in
-lemma glueDataObjι_ι (U : X.affineOpens) : I.glueDataObjι U ≫ U.1.ι =
-    Spec.map (CommRingCat.ofHom (Ideal.Quotient.mk _)) ≫ U.2.fromSpec := by
+lemma glueDataObjι_ι (U : X.affineOpens) : I.glueDataObjι U ≫ U.val.ι =
+    Spec.map (CommRingCat.ofHom (Ideal.Quotient.mk _)) ≫ U.property.fromSpec := by
   rw [glueDataObjι, Category.assoc]; rfl
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma ker_glueDataObjι_appTop (U : X.affineOpens) :
-    RingHom.ker (I.glueDataObjι U).appTop.hom = (I.ideal U).comap U.1.topIso.hom.hom := by
+    RingHom.ker (I.glueDataObjι U).appTop.hom = (I.ideal U).comap U.val.topIso.hom.hom := by
   let φ : Γ(X, U) ⟶ ↧(Γ(X, U) ⧸ I.ideal U) :=
     CommRingCat.ofHom (Ideal.Quotient.mk (I.ideal U))
   rw [← Ideal.mk_ker (I := I.ideal _)]
@@ -76,14 +77,14 @@ lemma ker_glueDataObjι_appTop (U : X.affineOpens) :
   congr 2
   simp only [Scheme.Hom.comp_app, TopologicalSpace.Opens.map_top, Category.assoc,
     Scheme.ΓSpecIso_naturality, Scheme.Opens.topIso_hom]
-  rw [← Scheme.Hom.appTop, U.2.isoSpec_inv_appTop, Category.assoc, Iso.inv_hom_id_assoc]
+  rw [← Scheme.Hom.appTop, U.property.isoSpec_inv_appTop, Category.assoc, Iso.inv_hom_id_assoc]
   simp only [Scheme.Opens.topIso_hom]
 
 set_option backward.isDefEq.respectTransparency.types false in
 open scoped Set.Notation in
 lemma range_glueDataObjι (U : X.affineOpens) :
     Set.range (I.glueDataObjι U) =
-      U.2.isoSpec.inv '' PrimeSpectrum.zeroLocus (I.ideal U) := by
+      U.property.isoSpec.inv '' PrimeSpectrum.zeroLocus (I.ideal U) := by
   simp only [glueDataObjι, Scheme.Hom.comp_base, TopCat.coe_comp, Set.range_comp]
   erw [range_comap_of_surjective]
   swap; · exact Ideal.Quotient.mk_surjective
@@ -92,7 +93,7 @@ lemma range_glueDataObjι (U : X.affineOpens) :
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma range_glueDataObjι_ι (U : X.affineOpens) :
-    Set.range (I.glueDataObjι U ≫ U.1.ι) = X.zeroLocus (U := U) (I.ideal U) ∩ U := by
+    Set.range (I.glueDataObjι U ≫ U.val.ι) = X.zeroLocus (U := U) (I.ideal U) ∩ U := by
   simp only [Scheme.Hom.comp_base, TopCat.coe_comp, Set.range_comp, range_glueDataObjι]
   rw [← Set.image_comp, ← TopCat.coe_comp, ← Scheme.Hom.comp_base, IsAffineOpen.isoSpec_inv_ι,
     IsAffineOpen.fromSpec_image_zeroLocus]
@@ -101,7 +102,7 @@ lemma range_glueDataObjι_ι (U : X.affineOpens) :
 noncomputable
 def glueDataObjCarrierIso (U : X.affineOpens) :
     (I.glueDataObj U).carrier ≅ ↧↑(X.zeroLocus (U := U) (I.ideal U) ∩ U) :=
-  TopCat.isoOfHomeo ((I.glueDataObjι U ≫ U.1.ι).isEmbedding.toHomeomorph.trans
+  TopCat.isoOfHomeo ((I.glueDataObjι U ≫ U.val.ι).isEmbedding.toHomeomorph.trans
     (.setCongr (I.range_glueDataObjι_ι U)))
 
 /-- The open immersion `Spec Γ(𝒪ₓ/I, U) ⟶ Spec Γ(𝒪ₓ/I, V)` if `U ≤ V`. -/
@@ -110,34 +111,34 @@ def glueDataObjMap {U V : X.affineOpens} (h : U ≤ V) : I.glueDataObj U ⟶ I.g
   Spec.map (CommRingCat.ofHom (Ideal.quotientMap _ _ (I.ideal_le_comap_ideal h)))
 
 lemma isLocalization_away {U V : X.affineOpens}
-    (h : U ≤ V) (f : Γ(X, V.1)) (hU : U = X.affineBasicOpen f) :
+    (h : U ≤ V) (f : Γ(X, V.val)) (hU : U = X.affineBasicOpen f) :
       letI := (Ideal.quotientMap _ _ (I.ideal_le_comap_ideal h)).toAlgebra
       IsLocalization.Away (Ideal.Quotient.mk (I.ideal V) f) (Γ(X, U) ⧸ (I.ideal U)) := by
   let := (Ideal.quotientMap _ _ (I.ideal_le_comap_ideal h)).toAlgebra
   let := (X.presheaf.map (homOfLE (X := X.Opens) h).op).hom.toAlgebra
   have : IsLocalization.Away f Γ(X, U) := by
-    subst hU; exact V.2.isLocalization_of_eq_basicOpen _ _ rfl
+    subst hU; exact V.property.isLocalization_of_eq_basicOpen _ _ rfl
   simp only [IsLocalization.Away, ← Submonoid.map_powers]
   refine IsLocalization.of_surjective _ _ _ Ideal.Quotient.mk_surjective _
     Ideal.Quotient.mk_surjective ?_ ?_
   · simp [RingHom.algebraMap_toAlgebra, Ideal.quotientMap_comp_mk]; rfl
   · simp only [Ideal.mk_ker, RingHom.algebraMap_toAlgebra, I.map_ideal', le_refl]
 
-instance isOpenImmersion_glueDataObjMap {V : X.affineOpens} (f : Γ(X, V.1)) :
+instance isOpenImmersion_glueDataObjMap {V : X.affineOpens} (f : Γ(X, V.val)) :
     IsOpenImmersion (I.glueDataObjMap (X.affineBasicOpen_le f)) := by
   let := (Ideal.quotientMap _ _ (I.ideal_le_comap_ideal (X.affineBasicOpen_le f))).toAlgebra
   have := I.isLocalization_away (X.affineBasicOpen_le f) f rfl
   exact IsOpenImmersion.of_isLocalization (Ideal.Quotient.mk _ f)
 
-lemma opensRange_glueDataObjMap {V : X.affineOpens} (f : Γ(X, V.1)) :
+lemma opensRange_glueDataObjMap {V : X.affineOpens} (f : Γ(X, V.val)) :
       (I.glueDataObjMap (X.affineBasicOpen_le f)).opensRange =
-        (I.glueDataObjι V) ⁻¹ᵁ (V.1.ι ⁻¹ᵁ X.basicOpen f) := by
+        (I.glueDataObjι V) ⁻¹ᵁ (V.val.ι ⁻¹ᵁ X.basicOpen f) := by
   let := (Ideal.quotientMap _ _ (I.ideal_le_comap_ideal (X.affineBasicOpen_le f))).toAlgebra
   let f' : Γ(X, V) ⧸ I.ideal V := Ideal.Quotient.mk _ f
   have := I.isLocalization_away (X.affineBasicOpen_le f) f rfl
   ext1
   refine (localization_away_comap_range _ f').trans ?_
-  rw [← comap_basicOpen, ← V.2.fromSpec_preimage_basicOpen,
+  rw [← comap_basicOpen, ← V.property.fromSpec_preimage_basicOpen,
     ← Scheme.Hom.comp_preimage, glueDataObjι_ι]
   rfl
 
@@ -150,30 +151,30 @@ lemma glueDataObjMap_glueDataObjι {U V : X.affineOpens} (h : U ≤ V) :
     Category.assoc]
   congr 1
   rw [Iso.eq_inv_comp, IsAffineOpen.isoSpec_hom, CommRingCat.ofHom_hom]
-  erw [Scheme.Opens.toSpecΓ_SpecMap_presheaf_map_assoc U.1 V.1 h]
-  rw [← IsAffineOpen.isoSpec_hom V.2, Iso.hom_inv_id, Category.comp_id]
+  erw [Scheme.Opens.toSpecΓ_SpecMap_presheaf_map_assoc U.val V.val h]
+  rw [← IsAffineOpen.isoSpec_hom V.property, Iso.hom_inv_id, Category.comp_id]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma ideal_le_ker_glueDataObjι (U V : X.affineOpens) :
-    I.ideal V ≤ RingHom.ker (U.1.ι.app V.1 ≫ (I.glueDataObjι U).app _).hom := by
+    I.ideal V ≤ RingHom.ker (U.val.ι.app V.val ≫ (I.glueDataObjι U).app _).hom := by
   intro x hx
   apply (I.glueDataObj U).IsSheaf.section_ext
   intro p hp
-  obtain ⟨f, g, hfg, hf⟩ := exists_basicOpen_le_affine_inter U.2 V.2 (I.glueDataObjι U p).1
-      ⟨(I.glueDataObjι U p).2, hp⟩
-  refine ⟨(I.glueDataObjι U ⁻¹ᵁ U.1.ι ⁻¹ᵁ X.basicOpen f),
+  obtain ⟨f, g, hfg, hf⟩ := exists_basicOpen_le_affine_inter U.property V.property
+      (I.glueDataObjι U p).val ⟨(I.glueDataObjι U p).property, hp⟩
+  refine ⟨(I.glueDataObjι U ⁻¹ᵁ U.val.ι ⁻¹ᵁ X.basicOpen f),
     fun x hx ↦ X.basicOpen_le g (hfg ▸ hx), hf, ?_⟩
   have := Hom.isIso_app (I.glueDataObjMap (X.affineBasicOpen_le f))
-    (I.glueDataObjι U ⁻¹ᵁ U.1.ι ⁻¹ᵁ X.basicOpen f) (by rw [opensRange_glueDataObjMap])
+    (I.glueDataObjι U ⁻¹ᵁ U.val.ι ⁻¹ᵁ X.basicOpen f) (by rw [opensRange_glueDataObjMap])
   apply ((ConcreteCategory.isIso_iff_bijective _).mp this).1
   simp only [map_zero, ← RingHom.comp_apply,
     ← CommRingCat.hom_comp, Category.assoc]
   simp only [Scheme.Hom.app_eq_appLE, homOfLE_leOfHom, Scheme.Hom.map_appLE,
     Scheme.Hom.appLE_comp_appLE, Category.assoc, glueDataObjMap_glueDataObjι_assoc]
   rw [Scheme.Hom.appLE]
-  have H : (X.homOfLE (X.basicOpen_le f) ≫ U.1.ι) ⁻¹ᵁ V.1 = ⊤ := by
+  have H : (X.homOfLE (X.basicOpen_le f) ≫ U.val.ι) ⁻¹ᵁ V.val = ⊤ := by
     simp only [Scheme.homOfLE_ι, ← top_le_iff]
-    exact fun x _ ↦ (hfg.trans_le (X.basicOpen_le g)) x.2
+    exact fun x _ ↦ (hfg.trans_le (X.basicOpen_le g)) x.property
   simp only [Scheme.Hom.comp_app, Scheme.Opens.ι_app, Scheme.homOfLE_app, ← Functor.map_comp_assoc,
     Scheme.Hom.app_eq _ H, Scheme.Opens.toScheme_presheaf_map, ← Functor.map_comp, Category.assoc]
   simp only [CommRingCat.hom_comp, RingHom.comp_apply]
@@ -189,31 +190,31 @@ lemma ideal_le_ker_glueDataObjι (U V : X.affineOpens) :
 /-- (Implementation) The intersections `Spec Γ(𝒪ₓ/I, U) ∩ V` useful for gluing. -/
 noncomputable
 abbrev glueDataObjPullback (U V : X.affineOpens) : Scheme :=
-  pullback (I.glueDataObjι U) (X.homOfLE (U := U.1 ⊓ V.1) inf_le_left)
+  pullback (I.glueDataObjι U) (X.homOfLE (U := U.val ⊓ V.val) inf_le_left)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation) Transition maps in the glue data for `𝒪ₓ/I`. -/
 noncomputable def glueDataT (U V : X.affineOpens) :
     I.glueDataObjPullback U V ⟶ I.glueDataObjPullback V U := by
-  letI F := pullback.snd (I.glueDataObjι U) (X.homOfLE (inf_le_left (b := V.1)))
+  letI F := pullback.snd (I.glueDataObjι U) (X.homOfLE (inf_le_left (b := V.val)))
   refine pullback.lift ((F ≫ X.homOfLE inf_le_right ≫
-    V.2.isoSpec.hom).liftQuotient _ ?_) (F ≫ X.homOfLE (by simp)) ?_
+    V.property.isoSpec.hom).liftQuotient _ ?_) (F ≫ X.homOfLE (by simp)) ?_
   · intro x hx
     simp only [Hom.comp_app, Hom.comp_base, TopologicalSpace.Opens.map_comp_obj,
       TopologicalSpace.Opens.map_top, homOfLE_app, homOfLE_leOfHom, Category.assoc, RingHom.mem_ker]
-    convert_to (U.1.ι.app V.1 ≫ (F ≫ X.homOfLE inf_le_left).appLE (U.1.ι ⁻¹ᵁ V.1) ⊤
+    convert_to (U.val.ι.app V.val ≫ (F ≫ X.homOfLE inf_le_left).appLE (U.val.ι ⁻¹ᵁ V.val) ⊤
       (by rw [← Scheme.Hom.comp_preimage, Category.assoc, X.homOfLE_ι]
-          exact fun x _ ↦ by simpa using (F x).2.2)).hom x = 0 using 3
+          exact fun x _ ↦ by simpa using (F x).property.2)).hom x = 0 using 3
     · simp only [homOfLE_leOfHom, Opens.ι_app, Hom.comp_appLE, homOfLE_app]
-      have H : ⊤ ≤ X.homOfLE (inf_le_left (b := V.1)) ⁻¹ᵁ U.1.ι ⁻¹ᵁ V.1 := by
-        rw [← Scheme.Hom.comp_preimage, X.homOfLE_ι]; exact fun x _ ↦ by simpa using x.2.2
+      have H : ⊤ ≤ X.homOfLE (inf_le_left (b := V.val)) ⁻¹ᵁ U.val.ι ⁻¹ᵁ V.val := by
+        rw [← Scheme.Hom.comp_preimage, X.homOfLE_ι]; exact fun x _ ↦ by simpa using x.property.2
       rw [← F.map_appLE (show ⊤ ≤ F ⁻¹ᵁ ⊤ from le_rfl) (homOfLE H).op]
       simp only [homOfLE_leOfHom, Opens.toScheme_presheaf_map, Quiver.Hom.unop_op,
         Hom.opensFunctor_map_homOfLE, ← Functor.map_comp_assoc, IsAffineOpen.isoSpec_hom_appTop,
         Opens.topIso_inv, eqToHom_op, homOfLE_leOfHom, Category.assoc,
         Iso.inv_hom_id_assoc, F.app_eq_appLE]
       rfl
-    · have : (U.1.ι.app V.1 ≫ (I.glueDataObjι U).app (U.1.ι ⁻¹ᵁ V.1)).hom x = 0 :=
+    · have : (U.val.ι.app V.val ≫ (I.glueDataObjι U).app (U.val.ι ⁻¹ᵁ V.val)).hom x = 0 :=
         I.ideal_le_ker_glueDataObjι U V hx
       simp_rw [F, ← pullback.condition]
       simp only [Scheme.Opens.ι_app, CommRingCat.hom_comp, RingHom.coe_comp,
@@ -240,14 +241,14 @@ private lemma glueDataT_fst (U V : X.affineOpens) :
 
 /-- (Implementation) `t'` in the glue data for `𝒪ₓ/I`. -/
 noncomputable
-def glueDataT'Aux (U V W U₀ : X.affineOpens) (hU₀ : U.1 ⊓ W ≤ U₀) :
+def glueDataT'Aux (U V W U₀ : X.affineOpens) (hU₀ : U.val ⊓ W ≤ U₀) :
     pullback
       (pullback.fst _ _ : I.glueDataObjPullback U V ⟶ _)
       (pullback.fst _ _ : I.glueDataObjPullback U W ⟶ _) ⟶ I.glueDataObjPullback V U₀ :=
   pullback.lift
     (pullback.fst _ _ ≫ I.glueDataT U V ≫ pullback.fst _ _)
-    (IsOpenImmersion.lift (V.1 ⊓ U₀.1).ι
-      (pullback.fst _ _ ≫ pullback.fst _ _ ≫ I.glueDataObjι U ≫ U.1.ι) (by
+    (IsOpenImmersion.lift (V.val ⊓ U₀.val).ι
+      (pullback.fst _ _ ≫ pullback.fst _ _ ≫ I.glueDataObjι U ≫ U.val.ι) (by
       simp only [Scheme.Opens.range_ι, TopologicalSpace.Opens.coe_inf, Set.subset_inter_iff]
       constructor
       · rw [pullback.condition_assoc (f := I.glueDataObjι U), X.homOfLE_ι,
@@ -260,14 +261,14 @@ def glueDataT'Aux (U V W U₀ : X.affineOpens) (hU₀ : U.1 ⊓ W ≤ U₀) :
       simp [pullback.condition_assoc])
 
 @[reassoc (attr := simp)]
-private lemma glueDataT'Aux_fst (U V W U₀ : X.affineOpens) (hU₀ : U.1 ⊓ W ≤ U₀) :
+private lemma glueDataT'Aux_fst (U V W U₀ : X.affineOpens) (hU₀ : U.val ⊓ W ≤ U₀) :
     I.glueDataT'Aux U V W U₀ hU₀ ≫ pullback.fst _ _ =
       pullback.fst _ _ ≫ I.glueDataT U V ≫ pullback.fst _ _ := pullback.lift_fst _ _ _
 
 @[reassoc (attr := simp)]
-private lemma glueDataT'Aux_snd_ι (U V W U₀ : X.affineOpens) (hU₀ : U.1 ⊓ W ≤ U₀) :
-    I.glueDataT'Aux U V W U₀ hU₀ ≫ pullback.snd _ _ ≫ (V.1 ⊓ U₀.1).ι =
-      pullback.fst _ _ ≫ pullback.fst _ _ ≫ I.glueDataObjι U ≫ U.1.ι :=
+private lemma glueDataT'Aux_snd_ι (U V W U₀ : X.affineOpens) (hU₀ : U.val ⊓ W ≤ U₀) :
+    I.glueDataT'Aux U V W U₀ hU₀ ≫ pullback.snd _ _ ≫ (V.val ⊓ U₀.val).ι =
+      pullback.fst _ _ ≫ pullback.fst _ _ ≫ I.glueDataObjι U ≫ U.val.ι :=
   (pullback.lift_snd_assoc _ _ _ _).trans (IsOpenImmersion.lift_fac _ _ _)
 
 /-- (Implementation) The glue data for `𝒪ₓ/I`. -/
@@ -279,7 +280,7 @@ def glueData : Scheme.GlueData where
   V ij := I.glueDataObjPullback ij.1 ij.2
   f i j := pullback.fst _ _
   f_id i :=
-    have : IsIso (X.homOfLE (inf_le_left (a := i.1) (b := i.1))) :=
+    have : IsIso (X.homOfLE (inf_le_left (a := i.val) (b := i.val))) :=
       ⟨X.homOfLE (by simp), by simp, by simp⟩
     inferInstance
   t i j := I.glueDataT i j
@@ -326,12 +327,12 @@ set_option backward.defeqAttrib.useBackward true in
 /-- (Implementation) The map from `Spec(𝒪ₓ/I)` to `X`. See `IdealSheafData.subschemeι` instead. -/
 noncomputable
 def gluedTo : I.glueData.glued ⟶ X :=
-  Multicoequalizer.desc _ _ (fun i ↦ I.glueDataObjι i ≫ i.1.ι)
+  Multicoequalizer.desc _ _ (fun i ↦ I.glueDataObjι i ≫ i.val.ι)
     (by simp [GlueData.diagram, pullback.condition_assoc])
 
 @[reassoc (attr := simp)]
 private lemma ι_gluedTo (U : X.affineOpens) :
-    I.glueData.ι U ≫ I.gluedTo = I.glueDataObjι U ≫ U.1.ι :=
+    I.glueData.ι U ≫ I.gluedTo = I.glueDataObjι U ≫ U.val.ι :=
   Multicoequalizer.π_desc _ _ _ _ _
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -339,9 +340,9 @@ set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 private lemma glueDataObjMap_ι (U V : X.affineOpens) (h : U ≤ V) :
     I.glueDataObjMap h ≫ I.glueData.ι V = I.glueData.ι U := by
-  have : IsIso (X.homOfLE inf_le_left : (U.1 ⊓ V.1).toScheme ⟶ U) :=
+  have : IsIso (X.homOfLE inf_le_left : (U.val ⊓ V.val).toScheme ⟶ U) :=
     ⟨X.homOfLE (by simpa), by simp, by simp⟩
-  have H : inv (X.homOfLE inf_le_left : (U.1 ⊓ V.1).toScheme ⟶ U) = X.homOfLE (by simpa) := by
+  have H : inv (X.homOfLE inf_le_left : (U.val ⊓ V.val).toScheme ⟶ U) = X.homOfLE (by simpa) := by
     rw [eq_comm, ← hom_comp_eq_id]; simp
   have := I.glueData.glue_condition U V
   simp only [glueData_J, glueData_V, glueData_t, glueData_U, glueData_f] at this
@@ -362,17 +363,17 @@ private lemma gluedTo_injective :
   obtain ⟨ib, b : I.glueDataObj ib, rfl⟩ :=
     I.glueData.toGlueData.ι_jointly_surjective forget b
   change I.glueData.ι ia a = I.glueData.ι ib b
-  have : (I.glueDataObjι ia a).1 = (I.glueDataObjι ib b).1 := by
+  have : (I.glueDataObjι ia a).val = (I.glueDataObjι ib b).val := by
     have : (I.glueData.ι ia ≫ I.gluedTo) a = (I.glueData.ι ib ≫ I.gluedTo) b := e
     rwa [ι_gluedTo, ι_gluedTo] at this
-  obtain ⟨f, g, hfg, H⟩ := exists_basicOpen_le_affine_inter ia.2 ib.2
-    (I.glueDataObjι ia a).1
-      ⟨(I.glueDataObjι ia a).2, this ▸ (I.glueDataObjι ib b).2⟩
+  obtain ⟨f, g, hfg, H⟩ := exists_basicOpen_le_affine_inter ia.property ib.property
+    (I.glueDataObjι ia a).val
+      ⟨(I.glueDataObjι ia a).property, this ▸ (I.glueDataObjι ib b).property⟩
   have hmem (W) (hW : W = X.affineBasicOpen g) :
       b ∈ Set.range (I.glueDataObjMap (hW.trans_le (X.affineBasicOpen_le g))) := by
     subst hW
     refine (I.opensRange_glueDataObjMap g).ge ?_
-    change (I.glueDataObjι ib b).1 ∈ X.basicOpen g
+    change (I.glueDataObjι ib b).val ∈ X.basicOpen g
     rwa [← this, ← hfg]
   obtain ⟨a, rfl⟩ := (I.opensRange_glueDataObjMap f).ge H
   obtain ⟨b, rfl⟩ := hmem (X.affineBasicOpen f) (Subtype.ext hfg)
@@ -383,7 +384,7 @@ private lemma gluedTo_injective :
   simp only [glueDataObjMap_ι]
 
 lemma range_glueDataObjι_ι_eq_support_inter (U : X.affineOpens) :
-    Set.range (I.glueDataObjι U ≫ U.1.ι) = (I.support : Set X) ∩ U :=
+    Set.range (I.glueDataObjι U ≫ U.val.ι) = (I.support : Set X) ∩ U :=
   (I.range_glueDataObjι_ι U).trans (I.coe_support_inter U).symm
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -428,7 +429,7 @@ private lemma glueDataObjIso_hom_ι (U : X.affineOpens) :
 set_option backward.isDefEq.respectTransparency false in
 private lemma glueDataObjIso_hom_restrict (U : X.affineOpens) :
     (I.glueDataObjIso U).hom ≫ I.gluedTo ∣_ ↑U = I.glueDataObjι U := by
-  rw [← cancel_mono U.1.ι]; simp
+  rw [← cancel_mono U.val.ι]; simp
 
 set_option backward.isDefEq.respectTransparency.types false in
 instance : IsPreimmersion I.gluedTo := by
@@ -469,10 +470,10 @@ noncomputable
 def subschemeι : I.subscheme ⟶ X :=
   (I.subschemeIso.hom ≫ I.gluedTo).copyBase Subtype.val <| by
     ext x
-    change (I.gluedHomeo (I.gluedHomeo.symm x)).1 = x.1
+    change (I.gluedHomeo (I.gluedHomeo.symm x)).val = x.val
     rw [I.gluedHomeo.apply_symm_apply]
 
-lemma subschemeι_apply (x : I.subscheme) : I.subschemeι x = x.1 := rfl
+lemma subschemeι_apply (x : I.subscheme) : I.subschemeι x = x.val := rfl
 
 private lemma subschemeι_def : I.subschemeι = I.subschemeIso.hom ≫ I.gluedTo :=
   Scheme.Hom.copyBase_eq _ _ _
@@ -505,11 +506,11 @@ def subschemeCover : I.subscheme.AffineOpenCover where
   I₀ := X.affineOpens
   X U := ↧(Γ(X, U) ⧸ I.ideal U)
   f U := I.glueData.ι U ≫ I.subschemeIso.inv
-  idx x := (X.openCoverOfIsOpenCover _ (iSup_affineOpens_eq_top X)).idx x.1
+  idx x := (X.openCoverOfIsOpenCover _ (iSup_affineOpens_eq_top X)).idx x.val
   covers x := by
-    let U := (X.openCoverOfIsOpenCover _ (iSup_affineOpens_eq_top X)).idx x.1
-    obtain ⟨⟨y, hy : y ∈ U.1⟩, rfl : y = x.1⟩ :=
-      (X.openCoverOfIsOpenCover _ (iSup_affineOpens_eq_top X)).covers x.1
+    let U := (X.openCoverOfIsOpenCover _ (iSup_affineOpens_eq_top X)).idx x.val
+    obtain ⟨⟨y, hy : y ∈ U.val⟩, rfl : y = x.val⟩ :=
+      (X.openCoverOfIsOpenCover _ (iSup_affineOpens_eq_top X)).covers x.val
     exact (I.opensRange_glueData_ι_subschemeIso_inv U).ge hy
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -521,7 +522,7 @@ lemma opensRange_subschemeCover_map (U : X.affineOpens) :
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma subschemeCover_map_subschemeι (U : X.affineOpens) :
-    I.subschemeCover.f U ≫ I.subschemeι = I.glueDataObjι U ≫ U.1.ι := by
+    I.subschemeCover.f U ≫ I.subschemeι = I.glueDataObjι U ≫ U.val.ι := by
   simp [subschemeCover, subschemeι_def]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -662,13 +663,13 @@ abbrev Hom.imageι : f.image ⟶ Y := f.ker.subschemeι
 set_option backward.isDefEq.respectTransparency false in
 lemma ideal_ker_le_ker_ΓSpecIso_inv_comp :
     f.ker.ideal U ≤ RingHom.ker ((ΓSpecIso Γ(Y, ↑U)).inv ≫
-      (pullback.snd f U.1.ι ≫ U.1.toSpecΓ).appTop).hom := by
-  let e : Γ(X, f ⁻¹ᵁ ↑U) ≅ Γ(Limits.pullback (C := Scheme) f U.1.ι, ⊤) :=
+      (pullback.snd f U.val.ι ≫ U.val.toSpecΓ).appTop).hom := by
+  let e : Γ(X, f ⁻¹ᵁ ↑U) ≅ Γ(Limits.pullback (C := Scheme) f U.val.ι, ⊤) :=
     X.presheaf.mapIso (eqToIso (by simp [Scheme.Hom.opensRange_pullbackFst])).op
-      ≪≫ (Limits.pullback.fst (C := Scheme) f U.1.ι).appIso ⊤
+      ≪≫ (Limits.pullback.fst (C := Scheme) f U.val.ι).appIso ⊤
   have he : f.app U ≫ e.hom =
-      (ΓSpecIso Γ(Y, ↑U)).inv ≫ (pullback.snd f U.1.ι ≫ U.1.toSpecΓ).appTop := by
-    rw [← (Iso.inv_comp_eq _).mpr U.2.isoSpec_inv_appTop, Category.assoc, Iso.eq_inv_comp]
+      (ΓSpecIso Γ(Y, ↑U)).inv ≫ (pullback.snd f U.val.ι ≫ U.val.toSpecΓ).appTop := by
+    rw [← (Iso.inv_comp_eq _).mpr U.property.isoSpec_inv_appTop, Category.assoc, Iso.eq_inv_comp]
     simp only [Opens.topIso_hom, eqToHom_op, Hom.app_eq_appLE, Iso.trans_hom, Functor.mapIso_hom,
       Iso.op_hom, eqToIso.hom, Hom.appIso_hom, Hom.appLE_map, Hom.map_appLE, Hom.appLE_comp_appLE,
       Opens.map_top, e, pullback.condition, IsAffineOpen.toSpecΓ_isoSpec_inv, Category.assoc]
@@ -684,7 +685,7 @@ set_option backward.isDefEq.respectTransparency false in
 noncomputable
 def Hom.toImageAux : X ⟶ f.image :=
   Cover.glueMorphisms ((Y.openCoverOfIsOpenCover _ (iSup_affineOpens_eq_top Y)).pullback₁ f)
-    (fun U ↦ (pullback.snd f U.1.ι ≫ U.1.toSpecΓ).liftQuotient _
+    (fun U ↦ (pullback.snd f U.val.ι ≫ U.val.toSpecΓ).liftQuotient _
       (by exact ideal_ker_le_ker_ΓSpecIso_inv_comp f U) ≫ f.ker.subschemeCover.f U) (by
     intro U V
     rw [← cancel_mono f.imageι]
@@ -734,7 +735,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma Hom.toImage_app :
     f.toImage.app (f.imageι ⁻¹ᵁ U) =
       (f.ker.subschemeObjIso U).hom ≫ CommRingCat.ofHom
-        (Ideal.Quotient.lift _ (f.app U.1).hom (IdealSheafData.ideal_ofIdeals_le _ _)) := by
+        (Ideal.Quotient.lift _ (f.app U.val).hom (IdealSheafData.ideal_ofIdeals_le _ _)) := by
   have := ConcreteCategory.epi_of_surjective _ (f.ker.subschemeι_app_surjective U)
   rw [← cancel_epi (f.ker.subschemeι.app U), ← Scheme.Hom.comp_app,
     Scheme.Hom.congr_app f.toImage_imageι, f.ker.subschemeι_app,

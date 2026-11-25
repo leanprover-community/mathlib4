@@ -6,10 +6,11 @@ Authors: Markus Himmel, Andrew Yang
 module
 
 public import Mathlib.Algebra.Category.MonCat.Limits
-public import Mathlib.Algebra.Group.IsCommutative
 public import Mathlib.CategoryTheory.ConcreteCategory.Representable
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 public import Mathlib.CategoryTheory.Monoidal.Mon
+
+import Mathlib.Algebra.Group.IsCommutative
 
 /-!
 # Yoneda embedding of `Mon C`
@@ -475,7 +476,7 @@ open scoped IsMulCommutative in
 /-- An additive monoid object `M` is commutative if and only if `X ⟶ M` is commutative for all
 `X`. -/]
 lemma isCommMonObj_iff_isMulCommutative (M : C) [MonObj M] [BraidedCategory C] :
-    IsCommMonObj M ↔ ∀ (X : C), IsMulCommutative (X ⟶ M) := by
-  exact ⟨fun h X ↦ ⟨⟨by simp [mul_comm]⟩⟩, fun h ↦ ⟨by simp [mul_eq_mul, comp_mul, mul_comm]⟩⟩
+    IsCommMonObj M ↔ ∀ (X : C), IsMulCommutative (X ⟶ M) :=
+  ⟨fun h X ↦ ⟨⟨by simp [mul_comm]⟩⟩, fun h ↦ ⟨by simp [mul_eq_mul, comp_mul, mul_comm]⟩⟩
 
 end CategoryTheory

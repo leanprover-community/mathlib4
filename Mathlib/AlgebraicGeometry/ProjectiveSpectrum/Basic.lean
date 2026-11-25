@@ -17,6 +17,7 @@ The scheme `Proj 𝒜` for a graded ring `𝒜` is constructed in
 In this file we provide basic properties of the scheme.
 
 ## Main results
+
 - `AlgebraicGeometry.Proj.toSpecZero`: The structure map `Proj A ⟶ Spec (A 0)`.
 - `AlgebraicGeometry.Proj.basicOpenIsoSpec`:
   The canonical isomorphism `Proj A |_ D₊(f) ≅ Spec (A_f)₀`
@@ -116,7 +117,7 @@ lemma iSup_basicOpen_eq_top' {ι : Type*} (f : ι → A)
   | algebraMap r =>
     convert zero_mem (Ideal.span _)
     rw [sub_eq_zero]
-    exact (DirectSum.decompose_of_mem_same 𝒜 r.2).symm
+    exact (DirectSum.decompose_of_mem_same 𝒜 r.property).symm
   | add x y hx hy _ _ =>
     rw [map_add, add_sub_add_comm]
     exact add_mem ‹_› ‹_›
@@ -256,7 +257,8 @@ def pullbackAwayιIso :
     IsOpenImmersion.isoOfRangeEq (Limits.pullback.fst _ _ ≫ awayι 𝒜 f f_deg hm)
       (awayι 𝒜 x (hx ▸ SetLike.mul_mem_graded f_deg g_deg) (hm.trans_le (m.le_add_right m'))) <| by
   rw [IsOpenImmersion.range_pullback_to_base_of_left]
-  change ((awayι 𝒜 f _ _).opensRange ⊓ (awayι 𝒜 g _ _).opensRange).1 = (awayι 𝒜 _ _ _).opensRange.1
+  change ((awayι 𝒜 f _ _).opensRange ⊓ (awayι 𝒜 g _ _).opensRange).carrier =
+    (awayι 𝒜 _ _ _).opensRange.carrier
   rw [opensRange_awayι, opensRange_awayι, opensRange_awayι, ← basicOpen_mul, hx]
 
 @[reassoc (attr := simp)]
@@ -333,7 +335,8 @@ def affineOpenCoverOfIrrelevantLESpan {ι : Type*} (f : ι → A) {m : ι → �
 @[simps! f] noncomputable
 def affineOpenCover : (Proj 𝒜).AffineOpenCover :=
   affineOpenCoverOfIrrelevantLESpan 𝒜
-    (ι := Σ i : PNat, 𝒜 i) (m := fun i ↦ i.1) (fun i ↦ i.2) (fun i ↦ i.2.2) (fun i ↦ i.1.2) <| by
+    (ι := Σ i : PNat, 𝒜 i) (m := fun i ↦ i.1) (fun i ↦ i.2) (fun i ↦ i.2.property)
+    (fun i ↦ i.1.property) <| by
   classical
   intro z hz
   rw [← DirectSum.sum_support_decompose 𝒜 z]

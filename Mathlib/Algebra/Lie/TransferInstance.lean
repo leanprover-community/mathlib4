@@ -12,7 +12,8 @@ public import Mathlib.Algebra.Lie.Basic
 /-!
 # Transfer Lie brackets along AddEquiv, LinearEquiv and Equiv
 
-Main definitions:
+## Main definitions
+
 * `AddEquiv.lieRing` transferring a LieRing structure along an additive equivalence.
 * `LinearEquiv.lieAlgebra` transferring a Lie algebra structure along a linear equivalence.
 -/

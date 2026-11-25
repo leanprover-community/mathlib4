@@ -14,7 +14,8 @@ public import Mathlib.Topology.Category.TopCat.Basic
 This file defines the bundled category `ModelWithCorners.MfldCat.{u} I n` of `C^n` manifolds modeled
 on a fixed `I : ModelWithCorners 𝕜 E H`, along with the forgetful functor to `TopCat`.
 
-## Future work
+## TODO
+
 * Show that `ModelWithCorners.MfldCat I n` has coproducts given by disjoint unions.
 -/
 

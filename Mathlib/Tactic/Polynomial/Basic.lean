@@ -80,6 +80,21 @@ def preprocess (e : Expr) : MetaM Simp.Result := do
 
 open Tactic
 
+/-- Attempt to close a goal `g` assuming it is an equation of polynomials. -/
+def proveEq (g : MVarId) : AtomM Unit := do
+  let some (α, _, _) := (← whnfR <|← instantiateMVars <|← g.getType).eq?
+    | throwError "polynomial failed: not an equality"
+  let mut β : Expr := default
+  try
+    β ← Polynomial.inferBase α
+  catch _ =>
+    throwError "polynomial failed: not an equality of (mv)polynomials"
+  let some g ← transformAtTarget (fun e _ ↦ Polynomial.preprocess e) "polynomial" .silent g
+    default | return
+  let some g ← transformAtTarget (fun e _ ↦ Algebra.preprocess e) "polynomial" .silent g
+    default | return
+  Algebra.proveEq (some (← getLevelQ' β)) g
+
 /-- `polynomial` solves equalities of `Polynomial`s and similar types.
 
 Given a goal which is an equality in `Polynomial R` with a commutative ring `R`, `polynomial`
@@ -109,22 +124,8 @@ example {P : ℚ[X] → Prop} (h : P (X ^ 2 + X + C 4⁻¹)) : P ((X + C 2⁻¹)
   exact h
 ```
 -/
-elab (name := polynomial) "polynomial" tk:"!"? : tactic =>
-  withMainContext do
-    let g ← getMainGoal
-    let some (α, _, _) := (← whnfR <|← instantiateMVars <|← g.getType).eq?
-      | throwError "polynomial failed: not an equality"
-    let mut β : Expr := default
-    try
-      β ← Polynomial.inferBase α
-    catch _ =>
-      throwError "polynomial failed: not an equality of (mv)polynomials"
-    let some g ← transformAtTarget (fun e _ ↦ Polynomial.preprocess e) "polynomial" .silent g
-      default | done
-    let some g ← transformAtTarget (fun e _ ↦ Algebra.preprocess e) "polynomial" .silent g
-      default | done
-    AtomM.run (if tk.isSome then .default else .reducible)
-      (Algebra.proveEq (some (← getLevelQ' β)) g)
+elab (name := polynomial) "polynomial" tk:"!"? : tactic => liftMetaMAtMain fun g ↦ do
+  AtomM.run (if tk.isSome then .default else .reducible) (proveEq g)
 
 @[tactic_alt polynomial]
 macro "polynomial!" : tactic => `(tactic| polynomial !)

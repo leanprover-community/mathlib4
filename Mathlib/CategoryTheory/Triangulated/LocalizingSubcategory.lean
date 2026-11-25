@@ -21,6 +21,7 @@ the functor from the Verdier quotient `A/(A ⊓ B)` to `C/B` is fully
 faithful.
 
 ## References
+
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*,
   Proposition 2.3.5, Chapitre II][verdier1996]
 -/
@@ -186,9 +187,8 @@ lemma trW_inverseImage_ι_iff [A.IsTriangulated] {X Y : A.FullSubcategory} (f : 
       (Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) ?_ ?_ ?_)
     · cat_disch
     · cat_disch
-    · simp [dsimp% (A.ι.commShiftIso (1 : ℤ)).inv_hom_id_app X]
+    · simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma inverseImage_opEquivalence_inverse_trW_inverseImage_ι_op [A.IsTriangulated]
     [B.IsTriangulated] [B.IsClosedUnderIsomorphisms] :
     (B.op.inverseImage A.op.ι).trW.inverseImage A.opEquivalence.inverse =

@@ -94,7 +94,7 @@ lemma z_mem_Icc_one_succ : T.z ∈ Icc 1 k := T.swap.y_mem_Icc_one_succ
 
 instance : Fintype (Triple k) :=
   .ofSurjective (fun (t : {t : Icc 1 (k + 1) × Icc 1 k × Icc 1 k //
-    t.1.1 * t.1.1 + 4 * t.2.1 * t.2.2 = 4 * k + 1}) ↦ ⟨_, _, _, t.2⟩) <| fun T ↦ by
+    t.1.val * t.1.val + 4 * t.2.1 * t.2.2 = 4 * k + 1}) ↦ ⟨_, _, _, t.property⟩) <| fun T ↦ by
     use ⟨(⟨_, T.x_mem_Icc_one_succ⟩, ⟨_, T.y_mem_Icc_one_succ⟩, ⟨_, T.z_mem_Icc_one_succ⟩), T.eqn⟩
 
 /-- The complicated involution, defined piecewise according to how `x` compares with

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Homology.LeftResolution.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Transport left resolutions along equivalences
 
