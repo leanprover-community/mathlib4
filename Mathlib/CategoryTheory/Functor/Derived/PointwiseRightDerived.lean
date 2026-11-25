@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Functor.Derived.RightDerived
 public import Mathlib.CategoryTheory.Localization.StructuredArrow
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pointwise right derived functors
 

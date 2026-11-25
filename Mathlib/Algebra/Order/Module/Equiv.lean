@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Module.Equiv.Basic
 public import Mathlib.Algebra.Order.Group.Equiv
 public import Mathlib.Algebra.Order.Module.Synonym
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Linear equivalence for order type synonyms
 -/

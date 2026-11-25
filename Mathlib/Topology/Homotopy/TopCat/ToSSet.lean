@@ -9,6 +9,9 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.Homotopy
 public import Mathlib.AlgebraicTopology.SimplicialSet.TopAdj
 public import Mathlib.Topology.Homotopy.TopCat.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The singular simplicial set functor preserves homotopies
 

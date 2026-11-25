@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.Single
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Homology is an additive functor
 

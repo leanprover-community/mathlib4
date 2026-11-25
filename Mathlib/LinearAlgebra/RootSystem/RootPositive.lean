@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.RootSystem.IsValuedIn
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Invariant and root-positive bilinear forms on root pairings
 

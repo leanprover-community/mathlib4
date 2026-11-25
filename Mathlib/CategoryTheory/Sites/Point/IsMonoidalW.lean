@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Sites.Point.Conservative
 public import Mathlib.CategoryTheory.Sites.Point.Monoidal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Monoidal structure on sheaves using enough points
 

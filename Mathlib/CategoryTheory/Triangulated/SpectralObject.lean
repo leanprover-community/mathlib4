@@ -19,6 +19,7 @@ objects in a pretriangulated category `C` indexed by the category `ι`.
  (the spectral sequence is already constructed: it remains to study convergence)
 
 ## References
+
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*, II.4][verdier1996]
 -/
 

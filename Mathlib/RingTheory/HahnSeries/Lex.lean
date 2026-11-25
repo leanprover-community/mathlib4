@@ -12,6 +12,9 @@ public import Mathlib.RingTheory.HahnSeries.Multiplication
 
 import Mathlib.Algebra.Order.GroupWithZero.Synonym
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lexicographical order on Hahn series
 

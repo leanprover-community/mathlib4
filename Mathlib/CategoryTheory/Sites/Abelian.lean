@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Abelian.FunctorCategory
 public import Mathlib.CategoryTheory.Abelian.Transfer
 public import Mathlib.CategoryTheory.Sites.ConstantSheaf
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Category of sheaves is abelian
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.IsPrimePow
 public import Mathlib.SetTheory.Cardinal.Arithmetic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cardinal Divisibility
 

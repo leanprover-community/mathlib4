@@ -20,9 +20,11 @@ here allows us to consider composites and scalar-multiply by multivariable Laure
 * Composition of heterogeneous vertex operators - values are Hahn series on lex order product.
 
 ## Main results
+
 * Ext
 
 ## TODO
+
 * curry for tensor product inputs
 * more API to make ext comparisons easier.
 * formal variable API, e.g., like the `T` function for Laurent polynomials.

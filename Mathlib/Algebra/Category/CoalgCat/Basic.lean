@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.RingTheory.Coalgebra.Equiv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of coalgebras over a commutative ring
 

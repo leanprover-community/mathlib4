@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.Int.Basic
 import Mathlib.Algebra.Squarefree.Basic
 import Mathlib.Data.Rat.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Squarefree rationals
 

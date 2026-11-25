@@ -18,7 +18,8 @@ Let `K` be a field, `n` be an integer such that `K` contains a primitive `n`-th 
 Kummer theory is about the classification of finite extensions of `L` whose Galois group is cyclic
 of order `n`.
 
-## Main result
+## Main results
+
 - `isCyclic_tfae`:
   Suppose `L/K` is a finite extension of dimension `n`
   Then `L/K` is cyclic iff
@@ -37,6 +38,7 @@ of order `n`.
   `i ↦ (α ↦ ζⁱ • α)`.
 
 ## Other results
+
 Criteria for `X ^ n - C a` to be irreducible is given:
 - `X_pow_sub_C_irreducible_iff_of_prime_pow_of_ne_two`:
   For `n = p ^ k` an odd prime power, `X ^ n - C a` is irreducible iff `a` is not a `p`-th power.

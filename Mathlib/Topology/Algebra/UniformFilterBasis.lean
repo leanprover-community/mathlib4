@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Algebra.FilterBasis
 public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Uniform properties of neighborhood bases in topological algebra
 
