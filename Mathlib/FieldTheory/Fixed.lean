@@ -80,13 +80,13 @@ variable (S : Subfield F)
 
 instance IsInvariantSubfield.toMulSemiringAction [IsInvariantSubfield M S] :
     MulSemiringAction M S where
-  smul m x := ⟨m • x.1, IsInvariantSubfield.smul_mem m x.2⟩
-  one_smul s := Subtype.ext <| one_smul M s.1
-  mul_smul m₁ m₂ s := Subtype.ext <| mul_smul m₁ m₂ s.1
-  smul_add m s₁ s₂ := Subtype.ext <| smul_add m s₁.1 s₂.1
+  smul m x := ⟨m • x.val, IsInvariantSubfield.smul_mem m x.property⟩
+  one_smul s := Subtype.ext <| one_smul M s.val
+  mul_smul m₁ m₂ s := Subtype.ext <| mul_smul m₁ m₂ s.val
+  smul_add m s₁ s₂ := Subtype.ext <| smul_add m s₁.val s₂.val
   smul_zero m := Subtype.ext <| smul_zero m
   smul_one m := Subtype.ext <| smul_one m
-  smul_mul m s₁ s₂ := Subtype.ext <| smul_mul' m s₁.1 s₂.1
+  smul_mul m s₁ s₂ := Subtype.ext <| smul_mul' m s₁.val s₂.val
 
 instance [IsInvariantSubfield M S] : IsInvariantSubring M S.toSubring where
   smul_mem := IsInvariantSubfield.smul_mem
@@ -115,7 +115,7 @@ instance smulCommClass' : SMulCommClass (FixedPoints.subfield M F) M F :=
 
 @[simp]
 theorem smul (m : M) (x : FixedPoints.subfield M F) : m • x = x :=
-  Subtype.ext <| x.2 m
+  Subtype.ext <| x.property m
 
 -- Why is this so slow?
 @[simp]
@@ -157,16 +157,12 @@ theorem linearIndependent_smul_of_linearIndependent {s : Finset F} :
   ext g'
   conv_lhs =>
     rw [Finset.sum_apply]
-    congr
-    · skip
-    · ext
-      rw [Pi.smul_apply, sub_smul, smul_eq_mul]
+    enter [2, _]
+    rw [Pi.smul_apply, sub_smul, smul_eq_mul]
   rw [sum_sub_distrib, Pi.zero_apply, sub_eq_zero]
   conv_lhs =>
-    congr
-    · skip
-    · ext x
-      rw [toFun_apply, ← mul_inv_cancel_left g g', mul_smul, ← smul_mul', ← toFun_apply _ x]
+    enter [2, x]
+    rw [toFun_apply, ← mul_inv_cancel_left g g', mul_smul, ← smul_mul', ← toFun_apply _ x]
   change
     (∑ x ∈ s, g • (fun y => l y • MulAction.toFun G F y) x (g⁻¹ * g')) =
       ∑ x ∈ s, (fun y => l y • MulAction.toFun G F y) x g'
@@ -392,7 +388,7 @@ theorem toAlgAut_surjective [Finite G] :
     rwa [QuotientGroup.eq, MonoidHom.mem_ker, map_mul, map_inv, inv_mul_eq_one, AlgEquiv.ext_iff]⟩
   intro f
   obtain ⟨q, hq⟩ := (toAlgAut_bijective Q F).surjective
-    (AlgEquiv.ofRingEquiv (f := f) (fun ⟨x, hx⟩ ↦ f.commutes' ⟨x, fun g ↦ hx g⟩))
+    (AlgEquiv.ofCommutes (e := f) (fun ⟨x, hx⟩ ↦ f.commutes ⟨x, fun g ↦ hx g⟩))
   revert hq
   refine QuotientGroup.induction_on q (fun g hg ↦ ⟨g, ?_⟩)
   rw [AlgEquiv.ext_iff] at hg ⊢

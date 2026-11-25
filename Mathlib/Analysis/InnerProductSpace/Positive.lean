@@ -8,9 +8,9 @@ module
 public import Mathlib.Algebra.Order.Module.PositiveLinearMap
 public import Mathlib.Analysis.InnerProductSpace.Spectrum
 public import Mathlib.Analysis.SpecialFunctions.Bernstein
-public import Mathlib.LinearAlgebra.Matrix.PosDef
 
 import Mathlib.Analysis.Matrix.Hermitian
+import Mathlib.LinearAlgebra.Matrix.PosDef
 
 /-!
 # Positive operators
@@ -203,7 +203,7 @@ theorem IsIdempotentElem.isPositive_iff_isSymmetric {T : E →ₗ[𝕜] E} (hT :
 theorem isPositive_linearIsometryEquiv_conj_iff {T : E →ₗ[𝕜] E} (f : E ≃ₗᵢ[𝕜] F) :
     IsPositive (f.toLinearMap ∘ₗ T ∘ₗ f.symm.toLinearMap) ↔ IsPositive T := by
   simp_rw [IsPositive, isSymmetric_linearIsometryEquiv_conj_iff, and_congr_right_iff,
-    LinearIsometryEquiv.toLinearEquiv_symm, coe_comp, LinearEquiv.coe_coe,
+    LinearIsometryEquiv.toLinearEquiv_symm, coe_comp, LinearEquiv.coe_toLinearMap,
     LinearIsometryEquiv.coe_toLinearEquiv, LinearIsometryEquiv.coe_symm_toLinearEquiv,
     Function.comp_apply, LinearIsometryEquiv.inner_map_eq_flip]
   exact fun _ => ⟨fun h x => by simpa using h (f x), fun h x => h _⟩
@@ -366,6 +366,7 @@ theorem IsPositive.conj_adjoint [CompleteSpace E] [CompleteSpace F] {T : E →L[
   rw [reApplyInnerSelf, comp_apply, ← adjoint_inner_right]
   exact hT.re_inner_nonneg_left _
 
+@[simp]
 theorem isPositive_self_comp_adjoint [CompleteSpace E] [CompleteSpace F] (S : E →L[𝕜] F) :
     (S ∘L S†).IsPositive := by
   simpa using! isPositive_one.conj_adjoint S
@@ -376,6 +377,7 @@ theorem IsPositive.adjoint_conj [CompleteSpace E] [CompleteSpace F] {T : E →L[
   convert hT.conj_adjoint (S†)
   rw [adjoint_adjoint]
 
+@[simp]
 theorem isPositive_adjoint_comp_self [CompleteSpace E] [CompleteSpace F] (S : E →L[𝕜] F) :
     (S† ∘L S).IsPositive := by
   simpa using! isPositive_one.adjoint_conj S
@@ -483,6 +485,9 @@ lemma coe_le_coe_iff {f g : E →L[𝕜] E} :
 lemma nonneg_iff_isPositive {f : E →L[𝕜] E} : 0 ≤ f ↔ f.IsPositive := by
   simpa using le_def (f:=0) (g:=f)
 
+@[aesop safe (rule_sets := [CStarAlgebra])]
+alias ⟨_, IsPositive.nonneg⟩ := nonneg_iff_isPositive
+
 instance : IsOrderedAddMonoid (E →L[𝕜] E) where add_le_add_left a b hab c := by simpa [le_def]
 
 instance instIsOrderedModule : IsOrderedModule 𝕜 (E →L[𝕜] E) where
@@ -499,6 +504,19 @@ theorem IsIdempotentElem.isPositive_iff_isSelfAdjoint [CompleteSpace E]
     {p : E →L[𝕜] E} (hp : IsIdempotentElem p) : p.IsPositive ↔ IsSelfAdjoint p := by
   rw [← isPositive_toLinearMap_iff, IsIdempotentElem.isPositive_iff_isSymmetric hp.toLinearMap]
   exact isSelfAdjoint_iff_isSymmetric.symm
+
+theorem norm_map_le_norm_map_iff_le {G : Type*}
+    [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
+    [CompleteSpace E] [CompleteSpace F] [CompleteSpace G]
+    (p : E →L[𝕜] F) (q : E →L[𝕜] G) :
+    (∀ x : E, ‖p x‖ ≤ ‖q x‖) ↔ adjoint p ∘L p ≤ adjoint q ∘L q := by
+  simp [le_def, isPositive_iff', isSelfAdjoint_iff, star_eq_adjoint, inner_sub_left,
+    adjoint_inner_left, ← RCLike.ofReal_pow, -map_pow, sq_le_sq₀]
+
+theorem norm_map_le_norm_iff_le [CompleteSpace E] [CompleteSpace F]
+    (p : E →L[𝕜] F) :
+    (∀ x : E, ‖p x‖ ≤ ‖x‖) ↔ adjoint p ∘L p ≤ .id 𝕜 E := by
+  simpa [adjoint_id] using norm_map_le_norm_map_iff_le p (.id 𝕜 E)
 
 /-- A star projection operator is positive.
 

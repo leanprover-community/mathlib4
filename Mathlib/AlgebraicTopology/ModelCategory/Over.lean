@@ -23,8 +23,8 @@ from `Mathlib.CategoryTheory.Limits.Constructions.Over.Basic`, the verification
 of the axioms is straightforward.)
 
 ## TODO
-* Proceed to the dual construction for `Under S`.
 
+* Proceed to the dual construction for `Under S`.
 -/
 
 public section

@@ -5,8 +5,9 @@ Authors: Judith Ludwig, Christian Merten
 -/
 module
 
-public import Mathlib.LinearAlgebra.SModEq.Pointwise
 public import Mathlib.RingTheory.AdicCompletion.Algebra
+
+import Mathlib.LinearAlgebra.SModEq.Pointwise
 
 /-!
 # Functoriality of adic completions
@@ -22,7 +23,6 @@ In this file we establish functorial properties of the adic completion.
 
 - `sumEquivOfFintype`: adic completion commutes with finite sums
 - `piEquivOfFintype`: adic completion commutes with finite products
-
 -/
 
 @[expose] public section
@@ -215,7 +215,6 @@ the formal properties of adic completions we obtain two canonical maps
 If `ι` is finite, both are isomorphisms and, modulo
 the equivalence `⨁ j, (AdicCompletion I (M j)` and `∀ j, AdicCompletion I (M j)`,
 inverse to each other.
-
 -/
 
 variable {ι : Type*} (M : ι → Type*) [∀ i, AddCommGroup (M i)]
@@ -433,10 +432,10 @@ theorem map_surjective_of_mkQ_comp_surjective {f : M →ₗ[R] N}
       exact Subsingleton.elim _ _
     | succ n xn =>
       choose z hz using exists_smodEq_pow_smul_top_and_mkQ_eq h
-          (y' := eval _ _ (n + 1) y) (by simp) xn.2
+          (y' := eval _ _ (n + 1) y) (by simp) xn.property
       exact ⟨z, hz.2⟩
   exact ⟨fun n ↦ (x n).val, fun n ↦ ⟨(Classical.choose_spec (exists_smodEq_pow_smul_top_and_mkQ_eq
-      h (y' := eval I _ (n + 1) y) (by simp) (x n).2)).1, (x n).property⟩⟩
+      h (y' := eval I _ (n + 1) y) (by simp) (x n).property)).1, (x n).property⟩⟩
 
 end AdicCompletion
 

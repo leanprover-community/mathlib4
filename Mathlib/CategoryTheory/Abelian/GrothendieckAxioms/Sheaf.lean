@@ -12,13 +12,15 @@ public import Mathlib.CategoryTheory.Sites.Equivalence
 import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.FunctorCategory
 import Mathlib.CategoryTheory.Generator.Sheaf
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # AB axioms in sheaf categories
 
 If `J` is a Grothendieck topology on a small category `C : Type v`,
 and `A : Type u₁` (with `Category.{v} A`) is a Grothendieck abelian category,
 then `Sheaf J A` is a Grothendieck abelian category.
-
 -/
 
 public section

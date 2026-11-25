@@ -20,11 +20,12 @@ with the full subcategory defined by `t.heart`, we introduce a typeclass
 the full subcategory `t.heart`.
 
 ## TODO (@joelriou)
+
 * Show that the heart is an abelian category.
 
 ## References
-* [Beilinson, Bernstein, Deligne, Gabber, *Faisceaux pervers*][bbd-1982]
 
+* [Beilinson, Bernstein, Deligne, Gabber, *Faisceaux pervers*][bbd-1982]
 -/
 
 @[expose] public section

@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.Sites.Sheaf
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Whiskering sheaves by a functor
 
@@ -21,7 +24,6 @@ sheaf condition.
 The functor between sheaf categories is called `sheafCompose J F`.
 Given a natural transformation `η : F ⟶ G`, we obtain a natural transformation
 `sheafCompose J F ⟶ sheafCompose J G`, which we call `sheafCompose_map J η`.
-
 -/
 
 @[expose] public section
@@ -47,7 +49,7 @@ class GrothendieckTopology.HasSheafCompose : Prop where
 variable [J.HasSheafCompose F] [J.HasSheafCompose G] [J.HasSheafCompose H]
 
 /-- Composing a functor which `HasSheafCompose`, yields a functor between sheaf categories. -/
-@[simps! obj_obj map_hom]
+@[implicit_reducible, simps! obj_obj map_hom]
 def sheafCompose : Sheaf J A ⥤ Sheaf J B :=
   ObjectProperty.lift _
     (sheafToPresheaf _ _ ⋙ (Functor.whiskeringRight _ _ _).obj F)
@@ -87,7 +89,6 @@ instance [F.ReflectsIsomorphisms] : (sheafCompose J F).ReflectsIsomorphisms wher
 
 variable {F G}
 
-set_option backward.defeqAttrib.useBackward true in
 /--
 If `η : F ⟶ G` is a natural transformation then we obtain a morphism of functors
 `sheafCompose J F ⟶ sheafCompose J G` by whiskering with `η` on the level of presheaves.
@@ -167,7 +168,7 @@ lemma Sheaf.isSeparated {FA : A → A → Type*} {CA : A → Type*}
     (F : Sheaf J A) : Presheaf.IsSeparated J F.obj := by
   rintro X S hS x y h
   exact (((isSheaf_iff_isSheaf_of_type _ _).1
-    ((sheafCompose J (forget A)).obj F).2).isSeparated S hS).ext (fun _ _ hf => h _ _ hf)
+    ((sheafCompose J (forget A)).obj F).property).isSeparated S hS).ext (fun _ _ hf => h _ _ hf)
 
 lemma Presheaf.IsSheaf.isSeparated {F : Cᵒᵖ ⥤ A} {FA : A → A → Type*} {CA : A → Type*}
     [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory A FA]

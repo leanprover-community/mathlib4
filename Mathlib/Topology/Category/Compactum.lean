@@ -65,7 +65,6 @@ We also add wrappers around structures which already exist. Here are the main on
 
 - E. Manes, Algebraic Theories, Graduate Texts in Mathematics 26, Springer-Verlag, 1976.
 - https://ncatlab.org/nlab/show/ultrafilter
-
 -/
 
 @[expose] public section
@@ -425,7 +424,7 @@ namespace compactumToCompHaus
 
 /-- The functor `compactumToCompHaus` is full. -/
 instance full : compactumToCompHaus.{u}.Full where
-  map_surjective f := ⟨Compactum.homOfContinuous f.1 (map_continuous f.hom.hom), rfl⟩
+  map_surjective f := ⟨Compactum.homOfContinuous f.hom (map_continuous f.hom.hom), rfl⟩
 
 /-- The functor `compactumToCompHaus` is faithful. -/
 instance faithful : compactumToCompHaus.Faithful where

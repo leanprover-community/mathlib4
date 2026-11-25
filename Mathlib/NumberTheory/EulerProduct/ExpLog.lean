@@ -11,6 +11,9 @@ public import Mathlib.NumberTheory.EulerProduct.Basic
 import Mathlib.Analysis.Normed.Module.FiniteDimension
 import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Logarithms of Euler Products
 

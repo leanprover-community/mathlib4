@@ -5,8 +5,9 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.Order.SuccPred.LinearLocallyFinite
 public import Mathlib.Topology.Order.Basic
+
+import Mathlib.Order.SuccPred.LinearLocallyFinite
 
 /-!
 # Instances related to the discrete topology
@@ -19,7 +20,6 @@ We prove that the discrete topology is
 
 When importing this file and `Order.SuccPred.Nat`, the instances `SecondCountableTopology ℕ`
 and `OrderTopology ℕ` become available.
-
 -/
 
 public section

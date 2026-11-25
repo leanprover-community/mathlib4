@@ -64,7 +64,7 @@ theorem of_iso_pullback (h : CommSq fst snd f g) [HasPullback f g] (i : P ≅ pu
       IsPullback fst snd f g :=
   of_isLimit' h
     (Limits.IsLimit.ofIsoLimit (limit.isLimit _)
-      (@PullbackCone.ext _ _ _ _ _ _ _ (PullbackCone.mk _ _ _) _ i w₁.symm w₂.symm).symm)
+      (PullbackCone.ext i w₁.symm w₂.symm).symm)
 
 theorem of_horiz_isIso_mono [IsIso fst] [Mono g] (sq : CommSq fst snd f g) :
     IsPullback fst snd f g :=
@@ -92,7 +92,7 @@ lemma of_iso (h : IsPullback fst snd f g)
       ← reassoc_of% commsnd, ← commg, h.w_assoc]
   isLimit' :=
     ⟨(IsLimit.postcomposeInvEquiv
-        (cospanExt e₂ e₃ e₄ commf.symm commg.symm) _).1
+        (cospanExt e₂ e₃ e₄ commf.symm commg.symm) _).toFun
           (IsLimit.ofIsoLimit h.isLimit (by
             refine PullbackCone.ext e₁ ?_ ?_
             · change fst = e₁.hom ≫ fst' ≫ e₂.inv
@@ -453,7 +453,7 @@ theorem of_iso_pushout (h : CommSq f g inl inr) [HasPushout f g] (i : P ≅ push
       IsPushout f g inl inr :=
   of_isColimit' h
     (Limits.IsColimit.ofIsoColimit (colimit.isColimit _)
-      (PushoutCocone.ext (s := PushoutCocone.mk ..) i w₁ w₂).symm)
+      (PushoutCocone.ext i w₁ w₂).symm)
 
 lemma of_iso (h : IsPushout f g inl inr)
     {Z' X' Y' P' : C} {f' : Z' ⟶ X'} {g' : Z' ⟶ Y'} {inl' : X' ⟶ P'} {inr' : Y' ⟶ P'}
@@ -468,7 +468,7 @@ lemma of_iso (h : IsPushout f g inl inr)
       ← reassoc_of% commg, ← comminr, h.w_assoc]
   isColimit' :=
     ⟨(IsColimit.precomposeHomEquiv
-        (spanExt e₁ e₂ e₃ commf.symm commg.symm) _).1
+        (spanExt e₁ e₂ e₃ commf.symm commg.symm) _).toFun
           (IsColimit.ofIsoColimit h.isColimit
             (PushoutCocone.ext e₄ comminl comminr))⟩
 

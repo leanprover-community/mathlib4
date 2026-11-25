@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Fin.Fin2
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tuples of types, and their categorical structure.
 
@@ -451,7 +454,6 @@ def prod.mk : ∀ {n} {α β : TypeVec.{u} n} (i : Fin2 n), α i → β i → (�
 end
 
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem prod_fst_mk {α β : TypeVec n} (i : Fin2 n) (a : α i) (b : β i) :
     TypeVec.prod.fst i (prod.mk i a b) = a := by
@@ -459,7 +461,6 @@ theorem prod_fst_mk {α β : TypeVec n} (i : Fin2 n) (a : α i) (b : β i) :
   | fz => simp_all only [prod.fst, prod.mk]
   | fs _ i_ih => apply i_ih
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem prod_snd_mk {α β : TypeVec n} (i : Fin2 n) (a : α i) (b : β i) :
     TypeVec.prod.snd i (prod.mk i a b) = b := by
@@ -676,7 +677,7 @@ theorem toSubtype'_of_subtype' {α : TypeVec n} (r : α ⊗ α ⟹ «repeat» n 
 
 set_option backward.isDefEq.respectTransparency false in
 theorem subtypeVal_toSubtype' {α : TypeVec n} (r : α ⊗ α ⟹ «repeat» n Prop) :
-    subtypeVal r ⊚ toSubtype' r = fun i x => prod.mk i x.1.fst x.1.snd := by
+    subtypeVal r ⊚ toSubtype' r = fun i x => prod.mk i x.val.fst x.val.snd := by
   ext i x
   induction i <;> simp only [toSubtype', comp, subtypeVal, prod.mk] at *
   simp [*]

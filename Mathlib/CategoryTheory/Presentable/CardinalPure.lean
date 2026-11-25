@@ -21,8 +21,8 @@ We show that in a locally `κ`-presentable category, `κ`-pure morphisms
 are `κ`-filtered colimits of split monomorphisms.
 
 ## References
-* [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 
+* [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 -/
 
 public section

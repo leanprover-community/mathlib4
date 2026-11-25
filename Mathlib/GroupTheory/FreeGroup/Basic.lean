@@ -16,9 +16,8 @@ import Mathlib.GroupTheory.SpecificGroups.Cyclic.Basic
 /-!
 # Free groups
 
-This file defines free groups over a type. Furthermore, it is shown that the free group construction
-is an instance of a monad. For the result that `FreeGroup` is the left adjoint to the forgetful
-functor from groups to types, see `Mathlib/Algebra/Category/Grp/Adjunctions.lean`.
+This file defines free groups over a type. For the result that `FreeGroup` is the left adjoint to
+the forgetful functor from groups to types, see `Mathlib/Algebra/Category/Grp/Adjunctions.lean`.
 
 ## Main definitions
 
@@ -35,9 +34,8 @@ functor from groups to types, see `Mathlib/Algebra/Category/Grp/Adjunctions.lean
   reduction (also known as Newman's diamond lemma).
 * `FreeGroup.freeGroupUnitEquivInt`: The free group over the one-point type
   is isomorphic to the integers.
-* The free group construction is an instance of a monad.
 
-## Implementation details
+## Implementation notes
 
 First we introduce the one step reduction relation `FreeGroup.Red.Step`:
 `w * x * x⁻¹ * v   ~>   w * v`, its reflexive transitive closure `FreeGroup.Red.trans`
@@ -362,8 +360,8 @@ theorem eqvGen_step_iff_join_red : EqvGen Red.Step L₁ L₂ ↔ Join Red L₁ L
     (fun h =>
       have : EqvGen (Join Red) L₁ L₂ := h.mono fun _ _ => join_red_of_step
       equivalence_join_red.eqvGen_iff.1 this)
-    (join_le_of_equivalence_of_le (Relation.EqvGen.is_equivalence _)
-      (reflTransGen_le_of_equivalence_of_le (Relation.EqvGen.is_equivalence _) EqvGen.rel) L₁ L₂)
+    (join_le_of_equivalence_of_le (Relation.EqvGen.equivalence _)
+      (reflTransGen_le_of_equivalence_of_le (Relation.EqvGen.equivalence _) EqvGen.rel) L₁ L₂)
 
 /-! ### Reduced words -/
 
@@ -643,6 +641,12 @@ theorem of_injective : Function.Injective (@of α) := fun _ _ H => by
   let ⟨L₁, hx, hy⟩ := Red.exact.1 H
   simp [Red.singleton_iff] at hx hy; simp_all
 
+@[to_additive]
+theorem mk_eq_of (x : α) : mk [(x, true)] = of x := rfl
+
+@[to_additive]
+theorem mk_eq_inv_of (x : α) : mk [(x, false)] = (of x)⁻¹ := rfl
+
 section lift
 
 variable {β : Type v} [Group β] (f : α → β) {x : FreeGroup α}
@@ -811,8 +815,8 @@ theorem map_injective (hf : Function.Injective f) : Function.Injective (map f) :
 then the induced map on their free groups is also bijective. -/
 @[to_additive /-- If `α` and `β` are arbitrary types and there is a bijection between them,
 then the induced map on their additive free groups is also bijective. -/]
-theorem map_bijective (hf : Function.Bijective f) : Function.Bijective (map f) := by
-  exact ⟨map_injective hf.injective, map_surjective hf.surjective⟩
+theorem map_bijective (hf : Function.Bijective f) : Function.Bijective (map f) :=
+  ⟨map_injective hf.injective, map_surjective hf.surjective⟩
 
 /-- Equivalent types give rise to multiplicatively equivalent free groups.
 
@@ -1001,46 +1005,46 @@ def _root_.FreeAddGroup.freeAddGroupEquivAdditive : FreeAddGroup α ≃+ Additiv
 section Category
 
 variable {β : Type u}
-
-@[to_additive]
+@[to_additive (attr := deprecated "Use `of`, `map`, and `lift` instead." (since := "2026-11-17"))]
 instance : Monad FreeGroup.{u} where
   pure {_α} := of
   map {_α _β f} := map f
   bind {_α _β x f} := lift f x
 
-@[to_additive]
+@[to_additive (attr := deprecated "Use `of`, `map`, and `lift` instead." (since := "2026-11-17"))]
 theorem map_pure (f : α → β) (x : α) : f <$> (pure x : FreeGroup α) = pure (f x) :=
   map.of
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := deprecated "Use `of`, `map`, and `lift` instead." (since := "2026-11-17"))]
 theorem map_one (f : α → β) : f <$> (1 : FreeGroup α) = 1 :=
   (map f).map_one
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := deprecated "Use `of`, `map`, and `lift` instead." (since := "2026-11-17"))]
 theorem map_mul (f : α → β) (x y : FreeGroup α) : f <$> (x * y) = f <$> x * f <$> y :=
   (map f).map_mul x y
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := deprecated "Use `of`, `map`, and `lift` instead." (since := "2026-11-17"))]
 theorem map_inv (f : α → β) (x : FreeGroup α) : f <$> x⁻¹ = (f <$> x)⁻¹ :=
   (map f).map_inv x
 
-@[to_additive]
+@[to_additive (attr := deprecated "Use `of`, `map`, and `lift` instead." (since := "2026-11-17"))]
 theorem pure_bind (f : α → FreeGroup β) (x) : pure x >>= f = f x :=
   lift_apply_of
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := deprecated "Use `of`, `map`, and `lift` instead." (since := "2026-11-17"))]
 theorem one_bind (f : α → FreeGroup β) : 1 >>= f = 1 :=
   (lift f).map_one
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := deprecated "Use `of`, `map`, and `lift` instead." (since := "2026-11-17"))]
 theorem mul_bind (f : α → FreeGroup β) (x y : FreeGroup α) : x * y >>= f = (x >>= f) * (y >>= f) :=
   (lift f).map_mul _ _
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := deprecated "Use `of`, `map`, and `lift` instead." (since := "2026-11-17"))]
 theorem inv_bind (f : α → FreeGroup β) (x : FreeGroup α) : x⁻¹ >>= f = (x >>= f)⁻¹ :=
   (lift f).map_inv _
 
-@[to_additive]
+set_option linter.deprecated false in
+@[to_additive (attr := deprecated "Use `of`, `map`, and `lift` instead." (since := "2026-11-17"))]
 instance : LawfulMonad FreeGroup.{u} := LawfulMonad.mk'
   (id_map := fun x =>
     FreeGroup.induction_on x (map_one id) (fun x => map_pure id x) (fun x ih => by rw [map_inv, ih])

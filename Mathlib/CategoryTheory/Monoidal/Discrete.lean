@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Monoids as discrete monoidal categories
 
@@ -45,7 +48,7 @@ variable {M} {N : Type u'} [Monoid N]
 /-- A multiplicative morphism between monoids gives a monoidal functor between the corresponding
 discrete monoidal categories.
 -/
-@[to_additive Discrete.addMonoidalFunctor /--
+@[to_additive (attr := implicit_reducible) Discrete.addMonoidalFunctor /--
 An additive morphism between `AddMonoid`s gives a
 monoidal functor between the corresponding discrete monoidal categories. -/]
 def Discrete.monoidalFunctor (F : M →* N) : Discrete M ⥤ Discrete N :=
@@ -91,7 +94,6 @@ def Discrete.monoidalFunctorComp (F : M →* N) (G : N →* K) :
     Discrete.monoidalFunctor F ⋙ Discrete.monoidalFunctor G ≅
       Discrete.monoidalFunctor (G.comp F) := Iso.refl _
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive Discrete.addMonoidalFunctorComp_isMonoidal]
 instance Discrete.monoidalFunctorComp_isMonoidal (F : M →* N) (G : N →* K) :
     NatTrans.IsMonoidal (Discrete.monoidalFunctorComp F G).hom where

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bifibrant objects
 
@@ -14,7 +17,6 @@ In this file, we introduce the full subcategories `CofibrantObject C`,
 `FibrantObject C` and `BifibrantObject C` of a model category `C` which
 respectively consist of cofibrant objects, fibrant objects,
 and bifibrant objects, where "bifibrant" means both cofibrant and fibrant.
-
 -/
 
 @[expose] public section
@@ -77,8 +79,8 @@ lemma homMk_homMk {X Y Z : C} [IsCofibrant X] [IsCofibrant Y] [IsCofibrant Z]
 /-- The inclusion functor `CofibrantObject C ⥤ C`. -/
 abbrev ι : CofibrantObject C ⥤ C := (cofibrantObjects C).ι
 
-instance (X : CofibrantObject C) : IsCofibrant X.1 := X.2
-instance (X : CofibrantObject C) : IsCofibrant (CofibrantObject.ι.obj X) := X.2
+instance (X : CofibrantObject C) : IsCofibrant X.obj := X.property
+instance (X : CofibrantObject C) : IsCofibrant (CofibrantObject.ι.obj X) := X.property
 
 end CofibrantObject
 
@@ -134,8 +136,8 @@ lemma homMk_homMk {X Y Z : C} [IsFibrant X] [IsFibrant Y] [IsFibrant Z]
 /-- The inclusion functor `FibrantObject C ⥤ C`. -/
 abbrev ι : FibrantObject C ⥤ C := (fibrantObjects C).ι
 
-instance (X : FibrantObject C) : IsFibrant X.1 := X.2
-instance (X : FibrantObject C) : IsFibrant (FibrantObject.ι.obj X) := X.2
+instance (X : FibrantObject C) : IsFibrant X.obj := X.property
+instance (X : FibrantObject C) : IsFibrant (FibrantObject.ι.obj X) := X.property
 
 end FibrantObject
 

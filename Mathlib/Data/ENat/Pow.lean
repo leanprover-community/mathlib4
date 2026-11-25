@@ -5,10 +5,13 @@ Authors: Damien Thomine
 -/
 module
 
-public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 public import Mathlib.Order.SuccPred.ENat
 
+import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 import Mathlib.Data.Nat.Cast.Order.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Powers of extended natural numbers

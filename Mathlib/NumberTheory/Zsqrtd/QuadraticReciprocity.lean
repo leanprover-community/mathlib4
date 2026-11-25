@@ -8,6 +8,9 @@ module
 public import Mathlib.NumberTheory.LegendreSymbol.Basic
 public import Mathlib.NumberTheory.Zsqrtd.GaussianInt
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Facts about the Gaussian integers relying on quadratic reciprocity.
 
@@ -15,7 +18,6 @@ public import Mathlib.NumberTheory.Zsqrtd.GaussianInt
 
 `prime_iff_mod_four_eq_three_of_nat_prime`
 A prime natural number is prime in `ℤ[i]` if and only if it is `3` mod `4`
-
 -/
 
 public section
@@ -33,15 +35,15 @@ open PrincipalIdealRing
 
 theorem mod_four_eq_three_of_nat_prime_of_prime (p : ℕ) [hp : Fact p.Prime]
     (hpi : Prime (p : ℤ[i])) : p % 4 = 3 :=
-  hp.1.eq_two_or_odd.elim
+  hp.out.eq_two_or_odd.elim
     (fun hp2 => by
       have := hpi.irreducible.isUnit_or_isUnit (a := ⟨1, 1⟩) (b := ⟨1, -1⟩)
       simp [hp2, Zsqrtd.ext_iff, ← norm_eq_one_iff, norm_def] at this)
     fun hp1 =>
     by_contradiction fun hp3 : p % 4 ≠ 3 => by
       let ⟨k, hk⟩ := (ZMod.exists_sq_eq_neg_one_iff (p := p)).2 hp3
-      obtain ⟨k, k_lt_p, rfl⟩ : ∃ (k' : ℕ) (_ : k' < p), (k' : ZMod p) = k := by
-        exact ⟨k.val, k.val_lt, ZMod.natCast_zmod_val k⟩
+      obtain ⟨k, k_lt_p, rfl⟩ : ∃ (k' : ℕ) (_ : k' < p), (k' : ZMod p) = k :=
+        ⟨k.val, k.val_lt, ZMod.natCast_zmod_val k⟩
       have hpk : p ∣ k ^ 2 + 1 := by
         rw [pow_two, ← CharP.cast_eq_zero_iff (ZMod p) p, Nat.cast_add, Nat.cast_mul, Nat.cast_one,
           ← hk, neg_add_cancel]

@@ -12,6 +12,9 @@ public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.RadonNikodym
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondJensen
 import Mathlib.MeasureTheory.Function.LpSeminorm.LpNorm
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Conditional expectation of real-valued functions
 
@@ -23,7 +26,6 @@ This file proves some results regarding the conditional expectation of real-valu
   Radon-Nikodym derivative of `fμ` restricted on `m` with respect to `μ` restricted on `m`.
 * `MeasureTheory.Integrable.uniformIntegrable_condExp`: the conditional expectation of a function
   form a uniformly integrable class.
-
 -/
 
 public section

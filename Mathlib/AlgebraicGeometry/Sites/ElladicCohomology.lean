@@ -27,7 +27,7 @@ Its cohomology groups are the `ℓ`-adic cohomology groups of `X`.
 - `AlgebraicGeometry.Scheme.ellAdicSheaf`: The sheaf `U ↦ C(U, ℤ_[ℓ])`.
 - `AlgebraicGeometry.Scheme.EllAdicCohomology`: The pro-étale cohomology groups `Hⁱ(X, ℤ_[ℓ])`.
 
-## Notes
+## Implementation notes
 
 The `ℓ`-adic cohomology groups of `X : Scheme.{u}` are in `Type (u + 1)`, because
 the pro-étale site of `X` has no essentially small subcategory with the same category of sheaves.
@@ -37,7 +37,6 @@ definition using étale cohomology. This will show that the groups defined here 
 ## References
 
 - [Bhatt, Bhargav and Scholze, Peter, The pro-étale topology for schemes][proetale2015]
-
 -/
 
 @[expose] public section

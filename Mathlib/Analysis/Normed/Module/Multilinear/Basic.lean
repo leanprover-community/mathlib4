@@ -6,9 +6,10 @@ Authors: Sébastien Gouëzel, Sophie Morel, Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Normed.Operator.Bilinear
-public import Mathlib.Data.Fintype.CardEmbedding
 public import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
 public import Mathlib.Topology.Algebra.Module.Multilinear.Topology
+
+import Mathlib.Data.Fintype.CardEmbedding
 
 /-!
 # Operator norm on the space of continuous multilinear maps
@@ -334,7 +335,7 @@ variable [Fintype ι]
 
 theorem bound (f : ContinuousMultilinearMap 𝕜 E G) :
     ∃ C : ℝ, 0 < C ∧ ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖ :=
-  f.toMultilinearMap.exists_bound_of_continuous f.2
+  f.toMultilinearMap.exists_bound_of_continuous f.cont
 
 open Real
 
@@ -465,7 +466,8 @@ lemma uniformity_eq_seminorm :
       simpa [NormedSpace.isVonNBounded_closedBall, closedBall_mem_nhds, Set.subset_def, Set.MapsTo]
     intro f hf
     refine opNorm_le_bound (by positivity) <|
-      f.1.bound_of_shell_of_continuous f.2 (fun _ ↦ hc₀) (fun _ ↦ hc) fun x hcx hx ↦ ?_
+      f.toMultilinearMap.bound_of_shell_of_continuous f.cont (fun _ ↦ hc₀) (fun _ ↦ hc)
+        fun x hcx hx ↦ ?_
     calc
       ‖f x‖ ≤ 1 := hf _ <| (pi_norm_le_iff_of_nonneg (norm_nonneg c)).2 fun i ↦ (hx i).le
       _ = ∏ i : ι, 1 := by simp
@@ -1176,10 +1178,10 @@ noncomputable def iteratedFDerivComponent {α : Type*} [Fintype α]
       have : ∀ x, x ∈ s.toFinsetᶜ ↔ (fun x ↦ x ∉ s) x := by simp
       rw [prod_subtype _ this]
       congr with i
-      simp [i.2]
+      simp [i.property]
     · rw [prod_subtype _ (fun _ ↦ s.mem_toFinset), ← Equiv.prod_comp e.symm]
       gcongr with i
-      simpa only [i.2, ↓reduceDIte, Subtype.coe_eta] using norm_le_pi_norm (m (e.symm i)) ↑i
+      simpa only [i.property, ↓reduceDIte, Subtype.coe_eta] using norm_le_pi_norm (m (e.symm i)) ↑i
 
 @[simp] lemma iteratedFDerivComponent_apply {α : Type*} [Fintype α]
     (f : ContinuousMultilinearMap 𝕜 E₁ G) {s : Set ι} (e : α ≃ s) [DecidablePred (· ∈ s)]

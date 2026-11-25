@@ -19,8 +19,8 @@ Another functor `connectedComponents : Cat ⥤ Type` maps a category to the set 
 components and functors to functions between those sets.
 
 ## Notes
-All this could be made with 2-functors
 
+All this could be made with 2-functors
 -/
 
 @[expose] public section
