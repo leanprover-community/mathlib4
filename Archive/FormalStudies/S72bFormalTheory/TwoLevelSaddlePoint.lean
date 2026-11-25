@@ -4,6 +4,8 @@
 -- Stratified Quad-Interleaving (Sort-into-Quads o Snake-Across-Balls) for all alpha, beta > 0.
 -- Zero imports, zero Mathlib.
 
+module
+
 namespace S72bFormalTheory.TwoLevelSaddlePoint
 
 def quadSum (a b c d : Int) : Int := a + b + c + d

@@ -4,6 +4,8 @@
 -- witnesses anchored read-only to rtx3080_s72_empirical_results.json (a7c35c64...).
 -- Zero imports, zero Mathlib.
 
+module
+
 namespace S73bFormalTheory.LowBitrateAmplificationAndPareto
 
 -- Theorem 15: Universal Low-Bitrate Exponential Distortion-Ratio Amplification Law

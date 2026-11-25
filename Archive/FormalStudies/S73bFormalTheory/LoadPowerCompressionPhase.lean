@@ -5,6 +5,8 @@
 -- quad_snake, and exact cross-model empirical witness anchored read-only to a7c35c64...
 -- Zero imports, zero Mathlib.
 
+module
+
 namespace S73bFormalTheory.LoadPowerCompressionPhase
 
 def sumList : List Int → Int

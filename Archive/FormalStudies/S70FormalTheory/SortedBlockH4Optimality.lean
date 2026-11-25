@@ -3,6 +3,8 @@
 -- and global optimality of monotone-quad sorting for outlier-spill elimination.
 -- Zero imports, zero Mathlib.
 
+module
+
 namespace S70FormalTheory.SortedBlockH4Optimality
 
 def sumFin : (n : Nat) → (Fin n → Int) → Int

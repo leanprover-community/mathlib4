@@ -5,6 +5,8 @@
 -- and exact empirical witnesses anchored read-only to a7c35c64...
 -- Zero imports, zero Mathlib.
 
+module
+
 namespace S73bFormalTheory.HeavyTailLPTStarvation
 
 def sumList : List Int → Int

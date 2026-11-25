@@ -2,6 +2,8 @@
 -- universal greedy-layerwise suboptimality, coupled-coherence sufficiency,
 -- and exact rational Qwen2.5-3B non-additivity witnesses. Zero imports, zero Mathlib.
 
+module
+
 namespace S70FormalTheory.CrossLayerNonAdditivity
 
 def vecAdd : List Int → List Int → List Int

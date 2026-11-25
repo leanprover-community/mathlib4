@@ -3,6 +3,8 @@
 -- dominance, Construction-A Extended Hamming turnover, and exact rational minimax-regret
 -- optimality of A_16 across all 5 bitrate x model cells. Zero imports, zero Mathlib.
 
+module
+
 namespace S70FormalTheory.RegimeTriangleMinimax
 
 -- Theorem 15: Universal 3-vertex simplex obstruction for 2-term (MSE, E_05) scoring rules.

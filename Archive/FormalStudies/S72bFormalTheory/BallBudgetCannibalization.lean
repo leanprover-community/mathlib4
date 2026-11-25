@@ -4,6 +4,8 @@
 -- 4-quad pairing ordering, and exact 4-model empirical witness.
 -- Zero imports, zero Mathlib.
 
+module
+
 namespace S72bFormalTheory.BallBudgetCannibalization
 
 def sumList : List Int → Int

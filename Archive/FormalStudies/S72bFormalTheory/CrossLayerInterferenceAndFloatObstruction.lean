@@ -3,6 +3,8 @@
 -- Non-Associativity Obstruction in SwiGLU offline column folding.
 -- Zero imports, zero Mathlib.
 
+module
+
 namespace S72bFormalTheory.CrossLayerInterferenceAndFloatObstruction
 
 -- Exact integer model of finite-precision quantum-truncating addition (ULP quantum q >= 2)

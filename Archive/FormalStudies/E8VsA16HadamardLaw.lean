@@ -3,6 +3,8 @@ Exact Pure-Z/Q Kernel-Checked Theory of the Opposite-Sign E_8 vs. A_16 Hadamard 
 Zero imports (pure Lean 4 Init), zero sorry, zero native_decide, zero custom axioms.
 -/
 
+module
+
 namespace Aletheia.E8VsA16HadamardLaw
 
 /-- Binary parity of bitwise popcount over 4-bit indices (Sylvester Walsh-Hadamard sign). -/
