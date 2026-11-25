@@ -60,7 +60,10 @@ syntax (name := positivity) "positivity " term,+ : attr
 /-- A theorem tagged with `@[positivity_lemma]` is used by `positivity` to
 prove `f x₁ ... xₙ > 0`, `f x₁ ... xₙ ≥ 0`, or `f x₁ ... xₙ ≠ 0`
 (or the forms `0 < f x₁ ... xₙ`, `0 ≤ f x₁ ... xₙ`, and `0 ≠ f x₁ ... xₙ`).
-The head `f` must be a constant.
+The head `f` must be a constant. For example:
+```lean
+attribute [positivity_lemma] mul_pos mul_nonneg mul_ne_zero
+```
 
 Each non-typeclass propositional premise must also have one of these positivity forms
 for a direct argument `xᵢ`, and the conclusion must not depend on it.
@@ -70,7 +73,9 @@ All other arguments, except for typeclass arguments, must appear in the conclusi
 these premises recursively and may use a matching local hypothesis.
 
 Lemmas are tried in order of priority, then in the order `<`, `≤`, `≠`,
-then in the order in which they were tagged.
+then in the order in which they were tagged, until `0 < f x₁ ... xₙ` is proved.
+Their results are combined: for example `0 ≤ f x` and `f x ≠ 0` give `0 < f x`.
+Without a `PartialOrder`, only the lemmas proving `≠` are used.
 
 Other propositional premises are not yet supported.
 -/
@@ -938,11 +943,14 @@ goal or fails.
 For each subexpression `e`, `positivity` will try to:
 * try `@[positivity]`-tagged extensions to recursively prove `e` is positive/nonnegative/nonzero
   based on its subexpressions (see the `positivity` attribute for more details), or
+* apply `@[positivity_lemma]`-tagged lemmas such as `mul_pos`, proving their premises recursively
+  (see the `positivity_lemma` attribute for more details), or
 * try the `norm_num` tactic to prove `e` is positive/nonnegative/nonzero, or
 * try showing `e : t` is nonnegative because there is a `CanonicallyOrderedAdd t` instance, or
 * use a local hypothesis of the form `0 ≤ e`, `0 < e` or `e ≠ 0`.
 
-This tactic is extensible. See the `positivity` attribute documentation for more details.
+This tactic is extensible. See the `positivity_lemma` and `positivity` attribute documentation
+for more details.
 
 * `positivity [t₁, …, tₙ]` first executes `have := t₁; …; have := tₙ` in the current goal,
   then runs `positivity`. This is useful when `positivity` needs derived premises such as `0 < y`
