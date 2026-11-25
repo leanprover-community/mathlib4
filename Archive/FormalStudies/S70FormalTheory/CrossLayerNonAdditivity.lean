@@ -251,4 +251,3 @@ theorem qwen3b_wiki_nonadditivity_exact_witness :
   decide
 
 end S70FormalTheory.CrossLayerNonAdditivity
-

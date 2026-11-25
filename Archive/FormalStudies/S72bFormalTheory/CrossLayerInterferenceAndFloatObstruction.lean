@@ -186,4 +186,3 @@ theorem s69_bf16_36layer_down_fold_obstruction_witness :
   decide
 
 end S72bFormalTheory.CrossLayerInterferenceAndFloatObstruction
-

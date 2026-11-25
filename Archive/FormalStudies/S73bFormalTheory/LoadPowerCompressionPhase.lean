@@ -295,4 +295,3 @@ theorem load_power_trichotomy_exact_witness :
   decide
 
 end S73bFormalTheory.LoadPowerCompressionPhase
-

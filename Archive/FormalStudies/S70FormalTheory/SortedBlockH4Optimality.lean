@@ -394,4 +394,3 @@ theorem h4_int8_butterfly_and_spill_witness :
   decide
 
 end S70FormalTheory.SortedBlockH4Optimality
-

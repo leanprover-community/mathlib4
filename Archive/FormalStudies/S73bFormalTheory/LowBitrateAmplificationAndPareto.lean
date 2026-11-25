@@ -164,4 +164,3 @@ theorem s72_three_qwen_blockh2_shatter_and_zerotext_witness :
   decide
 
 end S73bFormalTheory.LowBitrateAmplificationAndPareto
-

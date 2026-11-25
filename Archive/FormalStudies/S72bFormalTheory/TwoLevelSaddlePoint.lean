@@ -257,4 +257,3 @@ theorem two_level_16channel_exact_witness :
   decide
 
 end S72bFormalTheory.TwoLevelSaddlePoint
-

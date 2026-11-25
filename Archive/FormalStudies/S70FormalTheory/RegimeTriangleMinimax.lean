@@ -153,4 +153,3 @@ theorem a16_unique_minimax_regret_all5_cells_witness :
   decide
 
 end S70FormalTheory.RegimeTriangleMinimax
-

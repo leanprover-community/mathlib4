@@ -270,4 +270,3 @@ theorem s69_four_model_global_sort_cannibalization_witness :
   decide
 
 end S72bFormalTheory.BallBudgetCannibalization
-

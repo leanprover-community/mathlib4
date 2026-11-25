@@ -260,4 +260,3 @@ theorem s72_qwen3b_lpt_starvation_and_cure_witness :
   decide
 
 end S73bFormalTheory.HeavyTailLPTStarvation
-
