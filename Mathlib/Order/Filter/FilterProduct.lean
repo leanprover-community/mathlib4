@@ -96,7 +96,7 @@ theorem _root_.Filter.Germ.const_lt [Preorder β] {x y : β} : x < y → (↑x :
   coe_lt.mpr ∘ Germ.liftRel_const
 
 @[simp, norm_cast]
-theorem const_lt_iff [Preorder β] {x y : β} : (↑x : β*) < ↑y ↔ x < y :=
+theorem _root_.Filter.Germ.const_lt_iff [Preorder β] {x y : β} : (↑x : β*) < ↑y ↔ x < y :=
   coe_lt.trans Germ.liftRel_const_iff
 
 theorem lt_def [∀ i, Preorder (ε i)] : (LT.lt : ε* → ε* → Prop) = LiftRel fun _ x y => x < y := by
