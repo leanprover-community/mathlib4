@@ -126,7 +126,8 @@ protected lemma _root_.LinearEquiv.isSemisimple_iff {M₂ : Type*} [AddCommGroup
 lemma eq_zero_of_isNilpotent_isSemisimple (hn : IsNilpotent f) (hs : f.IsSemisimple) : f = 0 := by
   have ⟨n, h0⟩ := hn
   rw [← aeval_X (R := R) f]; rw [← aeval_X_pow (R := R) f] at h0
-  -- Todo: this is a `rw` as soon as `RingHomClass.toRingHom` is not an automatic coercion anymore
+  -- TODO: this can be a `rw` as soon as `RingHomClass.toRingHom` is not an automatic coercion
+  -- anymore
   erw [← RingHom.coe_coe, ← RingHom.mem_ker, ← AEval.annihilator_eq_ker_aeval (M := M) f] at h0 ⊢
   exact hs.annihilator_isRadical _ _ ⟨n, h0⟩
 
@@ -217,7 +218,8 @@ lemma IsSemisimple_smul (t : K) (h : f.IsSemisimple) :
 
 theorem isSemisimple_of_squarefree_aeval_eq_zero {p : K[X]}
     (hp : Squarefree p) (hpf : aeval f p = 0) : f.IsSemisimple := by
-  -- Todo: this is a `rw` as soon as `RingHomClass.toRingHom` is not an automatic coercion anymore
+  -- TODO: this can be a `rw` as soon as `RingHomClass.toRingHom` is not an automatic coercion
+  -- anymore
   erw [← RingHom.coe_coe, ← RingHom.mem_ker, ← AEval.annihilator_eq_ker_aeval (M := M),
     mem_annihilator, ← IsTorsionBy, ← isTorsionBySet_singleton_iff,
     isTorsionBySet_iff_is_torsion_by_span] at hpf

@@ -620,7 +620,6 @@ theorem Algebra.TensorProduct.map_ker (hf : Function.Surjective f) (hg : Functio
   have : map f g = (map f (AlgHom.id R D)).comp (map (AlgHom.id S A) g) := ext rfl rfl
   rw [this]
   -- this needs some rewriting to RingHom
-  -- TODO: can `RingHom.comap_ker` take an arbitrary `RingHomClass`, rather than just `RingHom`?
   simp only [AlgHom.comp_toRingHom]
   rw [← RingHom.comap_ker]
   -- apply one step of exactness
