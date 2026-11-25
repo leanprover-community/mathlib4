@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplexCategory.Truncated
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of morphisms in the simplex category
 

@@ -63,7 +63,7 @@ This is a separate definition because `α` and `β` can live in different
 universes (the universe is fixed in `Monad`).
 -/
 def bind {α β} (a : Erased α) (f : α → Erased β) : Erased β :=
-  ⟨fun b => (f a.out).1 b, (f a.out).2⟩
+  ⟨fun b => (f a.out).val b, (f a.out).property⟩
 
 @[simp]
 theorem bind_eq_out {α β} (a f) : @bind α β a f = f a.out := rfl

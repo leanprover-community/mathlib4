@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Notation.Pi.Defs
 public import Mathlib.Logic.Function.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Very basic algebraic operations on pi types
 

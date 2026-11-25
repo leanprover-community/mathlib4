@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicGeometry.Morphisms.SurjectiveOnStalks
 public import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Preimmersions of schemes
 
@@ -102,7 +105,7 @@ instance : IsStableUnderBaseChange @IsPreimmersion := by
   let L (x : (pullback f g :)) : { x : X × Y | f x.1 = g x.2 } :=
     ⟨⟨pullback.fst f g x, pullback.snd f g x⟩,
     by simp only [Set.mem_ofPred, ← Scheme.Hom.comp_apply, pullback.condition]⟩
-  have : IsEmbedding L := IsEmbedding.of_comp (by fun_prop) continuous_subtype_val
+  have : IsEmbedding L := IsEmbedding.of_comp (by fun_prop) continuous_subtypeVal
     (SurjectiveOnStalks.isEmbedding_pullback f g)
   exact IsEmbedding.subtypeVal.comp ((TopCat.pullbackHomeoPreimage _ f.continuous _
     g.isEmbedding).isEmbedding.comp this)

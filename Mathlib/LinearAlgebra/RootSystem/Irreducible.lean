@@ -14,7 +14,8 @@ import Mathlib.RepresentationTheory.Submodule
 
 This file contains basic definitions and results about irreducible root systems.
 
-## Main definitions / results:
+## Main definitions and statements
+
 * `RootPairing.isSimpleModule_weylGroupRootRep_iff`: a criterion for the representation of the Weyl
   group on root space to be irreducible.
 * `RootPairing.IsIrreducible`: a typeclass encoding the fact that a root pairing is irreducible.
@@ -280,7 +281,7 @@ lemma span_root_image_eq_top_of_forall_orthogonal (s : Set ι)
     by_cases hj : P.root j ∈ span R (P.root '' s)
     · exact Submodule.mem_invtSubmodule_reflection_of_mem _ _ hj
     · refine (Module.End.mem_invtSubmodule _).mpr fun x hx ↦ ?_
-      rwa [Submodule.mem_comap, LinearEquiv.coe_coe,
+      rwa [Submodule.mem_comap, LinearEquiv.coe_toLinearMap,
         (isFixedPt_reflection_of_isOrthogonal (h _ hj) hx).eq]
   apply IsIrreducible.eq_top_of_invtSubmodule_reflection _ hq
   simpa using ⟨hne.choose, hne.choose_spec, P.ne_zero _⟩

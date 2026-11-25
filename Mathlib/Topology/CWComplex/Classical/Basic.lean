@@ -19,6 +19,7 @@ A CW complex is a topological space that is made by gluing closed disks of diffe
 together.
 
 ## Main definitions
+
 * `RelCWComplex C D`: the class of CW structures on a subspace `C` relative to a base set
   `D` of a topological space `X`.
 * `CWComplex C`: an abbreviation for `RelCWComplex C ∅`. The class of CW structures on a
@@ -29,11 +30,13 @@ together.
 * `skeleton C n`: the `n`-skeleton of the (relative) CW complex `C`.
 
 ## Main statements
+
 * `iUnion_openCell_eq_skeleton`: the skeletons can also be seen as a union of open cells.
 * `cellFrontier_subset_finite_openCell`: the edge of a cell is contained in a finite union of
   open cells of a lower dimension.
 
 ## Implementation notes
+
 * We use the historical definition of CW complexes, due to Whitehead: a CW complex is a collection
   of cells with attaching maps - all cells are subspaces of one ambient topological space.
   This way, we avoid having to work with a lot of different topological spaces.
@@ -80,6 +83,7 @@ together.
   one about `skeletonLT`.
 
 ## References
+
 * [A. Hatcher, *Algebraic Topology*][hatcher02]
 -/
 
@@ -550,7 +554,7 @@ lemma RelCWComplex.isClosed_inter_cellFrontier_succ_of_le_isClosed_inter_closedC
   apply hD.union
   apply isClosed_iUnion_of_finite
   intro ⟨m, mlt⟩
-  rw [← iUnion_subtype (fun i ↦ i ∈ I m) (fun i ↦ A ∩ closedCell m i.1)]
+  rw [← iUnion_subtype (fun i ↦ i ∈ I m) (fun i ↦ A ∩ closedCell m i.val)]
   exact isClosed_iUnion_of_finite (fun ⟨j, _⟩ ↦ hn m (Nat.le_of_lt_succ mlt) j)
 
 lemma CWComplex.isClosed_inter_cellFrontier_succ_of_le_isClosed_inter_closedCell
@@ -718,7 +722,7 @@ lemma copy_eq (E : Subcomplex C) (F : Set X) (hF : F = E) (J : (n : ℕ) → Set
   SetLike.coe_injective hF
 
 lemma union (E : Subcomplex C) :
-    D ∪ ⋃ (n : ℕ) (j : E.I n), openCell (C := C) n j.1 = E := by
+    D ∪ ⋃ (n : ℕ) (j : E.I n), openCell (C := C) n j.val = E := by
   rw [E.union']
   rfl
 

@@ -6,7 +6,11 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.ObjectProperty.FiniteLimits
-public import Mathlib.CategoryTheory.ObjectProperty.Retract
+
+import Mathlib.CategoryTheory.ObjectProperty.Retract
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Preservation of limits, as a property of objects in the functor category

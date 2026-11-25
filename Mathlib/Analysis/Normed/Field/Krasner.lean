@@ -37,6 +37,7 @@ For the classical statement of Krasner's lemma, please see the
 [wikipedia page](https://en.wikipedia.org/wiki/Krasner%27s_lemma).
 
 ## Tags
+
 Krasner's lemma, normed field
 -/
 
@@ -79,7 +80,7 @@ theorem of_completeSpace_of_normal [Normal K L] : IsKrasner K L where
     have zsep : IsSeparable K⟮y⟯ z :=
       Field.isSeparable_sub (IsSeparable.tower_top K⟮y⟯ xsep) (isSeparable_algebraMap y')
     -- It suffices to show that `z = x - y ∈ K⟮y⟯`.
-    suffices z ∈ K⟮y⟯ by simpa [z, y'] using add_mem this y'.2
+    suffices z ∈ K⟮y⟯ by simpa [z, y'] using add_mem this y'.property
     have : z ∈ K⟮y⟯ ↔ z ∈ (⊥ : Subalgebra K⟮y⟯ L) := by simp [Algebra.mem_bot]
     rw [this]
     -- Suppose not, then there exists nontrivial Galois conjugates `z'` of `z` over `K⟮y⟯` in `L`.

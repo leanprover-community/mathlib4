@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functoriality of group cohomology
 
@@ -381,8 +384,8 @@ instance : Mono (H1InfRes A S).f := by
   rcases (H1π_eq_zero_iff _).1 hx with ⟨y, hy⟩
   refine (H1π_eq_zero_iff _).2 ⟨⟨y, fun s => ?_⟩, funext fun g => QuotientGroup.induction_on g
     fun g => Subtype.ext <| by simpa [-SetLike.coe_eq_coe] using! congr($hy g)⟩
-  simpa [coe_mapCocycles₁ (x := x), sub_eq_zero, (QuotientGroup.eq_one_iff s.1).2 s.2] using!
-    congr($hy s.1)
+  simpa [coe_mapCocycles₁ (x := x), sub_eq_zero, (QuotientGroup.eq_one_iff s.val).2 s.property]
+    using! congr($hy s.val)
 
 /-- Given a `G`-representation `A` and a normal subgroup `S ≤ G`, the short complex
 `H¹(G ⧸ S, A^S) ⟶ H¹(G, A) ⟶ H¹(S, A)` is exact. -/
@@ -393,21 +396,21 @@ lemma H1InfRes_exact : (H1InfRes A S).Exact := by
   simp_all only [HInfRes_X₂, HInfRes_X₃, HInfRes_g, HInfRes_X₁, LinearMap.mem_ker,
     H1π_comp_map_apply S.subtype, HInfRes_f]
   rcases (H1π_eq_zero_iff _).1 hx with ⟨(y : A), hy⟩
-  have h1 := (mem_cocycles₁_iff x).1 x.2
+  have h1 := (mem_cocycles₁_iff x).1 x.property
   have h2 : ∀ s ∈ S, x s = A.ρ s y - y :=
     fun s hs => funext_iff.1 hy.symm ⟨s, hs⟩
-  refine ⟨H1π _ ⟨fun g => Quotient.liftOn' g (fun g => ⟨x.1 g - A.ρ g y + y, ?_⟩) ?_, ?_⟩, ?_⟩
+  refine ⟨H1π _ ⟨fun g => Quotient.liftOn' g (fun g => ⟨x.val g - A.ρ g y + y, ?_⟩) ?_, ?_⟩, ?_⟩
   · intro s
     calc
       _ = x (s * g) - x s - A.ρ s (A.ρ g y) + (x s + y) := by
-        simp [add_eq_of_eq_sub (h2 s s.2), sub_eq_of_eq_add (h1 s g)]
+        simp [add_eq_of_eq_sub (h2 s s.property), sub_eq_of_eq_add (h1 s g)]
       _ = x (g * (g⁻¹ * s * g)) - A.ρ g (A.ρ (g⁻¹ * s * g) y - y) - A.ρ g y + y := by
         simp only [mul_assoc, mul_inv_cancel_left, map_mul, mul_apply_eq_comp, map_sub,
           Representation.self_inv_apply]
         abel
       _ = x g - A.ρ g y + y := by
         simp [eq_sub_of_add_eq' (h1 g (g⁻¹ * s * g)).symm,
-          h2 (g⁻¹ * s * g) (Subgroup.Normal.conj_mem' ‹_› _ s.2 _)]
+          h2 (g⁻¹ * s * g) (Subgroup.Normal.conj_mem' ‹_› _ s.property _)]
   · intro g h hgh
     have := congr(A.ρ g $(h2 (g⁻¹ * h) <| QuotientGroup.leftRel_apply.1 hgh))
     simp_all [← sub_eq_add_neg, sub_eq_sub_iff_sub_eq_sub]

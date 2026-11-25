@@ -55,7 +55,7 @@ lemma set_smul_eq_map [SMulCommClass R R N] :
     · rintro r hr
       rw [mem_set_smul_def, Submodule.mem_sInf]
       rintro p hp
-      exact hp (hc hr) (c r).2
+      exact hp (hc hr) (c r).property
     · ext x : 1
       simp only [Set.mem_iInter, SetLike.mem_coe]
       fconstructor
@@ -74,7 +74,7 @@ lemma mem_set_smul (x : M) [SMulCommClass R R N] :
   · rw [mem_set_smul_def, Submodule.mem_sInf]
     rintro ⟨c, hc1, rfl⟩ p hp
     rw [Finsupp.sum, AddSubmonoid.coe_finsetSum]
-    exact Submodule.sum_mem _ fun r hr ↦ hp (hc1 hr) (c _).2
+    exact Submodule.sum_mem _ fun r hr ↦ hp (hc1 hr) (c _).property
 
 -- Note that this can't be generalized to `Set S`, because even though `SMulCommClass R R M` implies
 -- `SMulComm R R N` for all `R`-submodules `N`, `SMulCommClass R S N` for all `R`-submodules `N`
@@ -95,7 +95,7 @@ protected noncomputable def pointwiseSetMulAction [SMulCommClass R R M] :
       rw [Finsupp.sum, AddSubmonoid.coe_finsetSum]
       simp only [SetLike.val_smul, Finset.smul_sum, smul_smul]
       exact Submodule.sum_mem _ fun r' hr' ↦
-        mem_set_smul_of_mem_mem (Set.mul_mem_mul hr (hc1 hr')) (c _).2)
+        mem_set_smul_of_mem_mem (Set.mul_mem_mul hr (hc1 hr')) (c _).property)
 
 scoped[Pointwise] attribute [instance] Submodule.pointwiseSetMulAction
 

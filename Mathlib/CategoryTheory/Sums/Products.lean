@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Products.Associator
 public import Mathlib.CategoryTheory.Sums.Associator
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functors out of sums of categories.
 

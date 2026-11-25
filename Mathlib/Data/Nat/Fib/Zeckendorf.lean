@@ -176,6 +176,6 @@ def zeckendorfEquiv : ℕ ≃ {l // IsZeckendorfRep l} where
   toFun n := ⟨zeckendorf n, isZeckendorfRep_zeckendorf _⟩
   invFun l := (map fib l).sum
   left_inv := sum_zeckendorf_fib
-  right_inv l := Subtype.ext <| zeckendorf_sum_fib l.2
+  right_inv l := Subtype.ext <| zeckendorf_sum_fib l.property
 
 end Nat

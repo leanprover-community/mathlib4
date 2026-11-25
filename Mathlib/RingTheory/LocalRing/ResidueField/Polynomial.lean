@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
 # Residue field of primes in polynomial algebras
 
 ## Main results
+
 - `Polynomial.residueFieldMapCAlgEquiv`: `κ(I[X]) ≃ₐ[κ(I)] κ(I)(X)`
 - `Polynomial.fiberEquivQuotient`: `κ(p) ⊗[R] (R[X] ⧸ I) = κ(p)[X] / I`
 -/
@@ -47,7 +48,7 @@ def residueFieldMapCAlgEquiv (hJ : J = I.map C) :
   haveI hf : f.comp (algebraMap I.ResidueField _) = algebraMap _ _ := by
     ext
     simp [f, ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply R R[X] J.ResidueField]
-  refine .ofAlgHom ⟨f, fun r ↦ congr($hf r)⟩
+  refine .ofAlgHom { f with commutes' r := congr($hf r) }
       (RatFunc.liftAlgHom (aeval (algebraMap R[X] _ X)) fun x ↦ ?_) ?_ ?_
   · suffices Function.Injective (aeval (R := I.ResidueField) (algebraMap R[X] J.ResidueField X)) by
       simp [← this.eq_iff]

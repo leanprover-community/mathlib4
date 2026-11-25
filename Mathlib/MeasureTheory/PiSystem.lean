@@ -51,7 +51,7 @@ import Mathlib.Logic.Encodable.Lattice
   set of indices `S : Set ι`. `piiUnionInter π S` is the set of sets that can be written
   as `⋂ x ∈ t, f x` for some finset `t ∈ S` and sets `f x ∈ π x`.
 
-## Implementation details
+## Implementation notes
 
 * `IsPiSystem` is a predicate, not a type. Thus, we don't explicitly define the Galois
   insertion, nor do we define a complete lattice. In theory, we could define a complete

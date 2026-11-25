@@ -9,6 +9,9 @@ public import Mathlib.Order.SuccPred.Basic
 
 import Mathlib.Order.LatticeIntervals
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Successors in intervals
 
@@ -25,14 +28,14 @@ variable {J : Type*} [PartialOrder J]
 
 lemma Iic.coe_succ_of_not_isMax
     [SuccOrder J] {j : J} {i : Set.Iic j} (hi : ¬ IsMax i) :
-    (Order.succ i).1 = Order.succ i.1 := by
+    (Order.succ i).val = Order.succ i.val := by
   rw [coe_succ_of_mem]
   apply Order.succ_le_of_lt
   exact lt_of_le_of_ne (α := Set.Iic j) le_top (by simpa using hi)
 
 lemma Iic.succ_eq_of_not_isMax
     [SuccOrder J] {j : J} {i : Set.Iic j} (hi : ¬ IsMax i) :
-    Order.succ i = ⟨Order.succ i.1, by
+    Order.succ i = ⟨Order.succ i.val, by
       rw [← coe_succ_of_not_isMax hi]
       apply Subtype.coe_prop⟩ := by
   ext
@@ -40,14 +43,14 @@ lemma Iic.succ_eq_of_not_isMax
 
 lemma Ici.coe_pred_of_not_isMin
     [PredOrder J] {j : J} {i : Set.Ici j} (hi : ¬ IsMin i) :
-    (Order.pred i).1 = Order.pred i.1 := by
+    (Order.pred i).val = Order.pred i.val := by
   rw [coe_pred_of_mem]
   apply Order.le_pred_of_lt
   exact lt_of_le_of_ne (α := Set.Ici j) bot_le (Ne.symm (by simpa using hi))
 
 lemma Ici.pred_eq_of_not_isMin
     [PredOrder J] {j : J} {i : Set.Ici j} (hi : ¬ IsMin i) :
-    Order.pred i = ⟨Order.pred i.1, by
+    Order.pred i = ⟨Order.pred i.val, by
       rw [← coe_pred_of_not_isMin hi]
       apply Subtype.coe_prop⟩ := by
   ext

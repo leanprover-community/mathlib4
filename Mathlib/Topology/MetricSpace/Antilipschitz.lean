@@ -9,6 +9,9 @@ public import Mathlib.Topology.EMetricSpace.Lipschitz
 public import Mathlib.Topology.MetricSpace.Bounded
 public import Mathlib.Topology.UniformSpace.CompleteSeparated
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Antilipschitz functions
 
@@ -182,8 +185,10 @@ theorem isClosedEmbedding {α : Type*} {β : Type*} [EMetricSpace α] [EMetricSp
     IsClosedEmbedding f :=
   { (hf.isUniformEmbedding hfc).isEmbedding with isClosed_range := hf.isClosed_range hfc }
 
-theorem subtype_coe (s : Set α) : AntilipschitzWith 1 ((↑) : s → α) :=
+theorem subtypeVal (s : Set α) : AntilipschitzWith 1 ((↑) : s → α) :=
   AntilipschitzWith.id.domRestrict s
+
+@[deprecated (since := "2026-11-10")] alias subtype_coe := subtypeVal
 
 @[nontriviality]
 theorem of_subsingleton [Subsingleton α] {K : ℝ≥0} : AntilipschitzWith K f := fun x y => by

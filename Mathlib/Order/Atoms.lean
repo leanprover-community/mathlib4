@@ -5,10 +5,11 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.Order.ConditionallyCompletePartialOrder.Indexed
 public import Mathlib.Order.ModularLattice
 public import Mathlib.Order.SuccPred.Basic
 public import Mathlib.Tactic.Nontriviality.Core
+
+import Mathlib.Order.ConditionallyCompletePartialOrder.Indexed
 
 /-!
 # Atoms, Coatoms, and Simple Lattices
@@ -41,6 +42,7 @@ which are lattices with only two elements, and related ideas.
   * `IsSimpleOrder.completeBooleanAlgebra`
 
 ## Main results
+
 * `isAtom_dual_iff_isCoatom` and `isCoatom_dual_iff_isAtom` express the (definitional) duality
   of `IsAtom` and `IsCoatom`.
 * `isSimpleOrder_iff_isAtom_top` and `isSimpleOrder_iff_isCoatom_bot` express the
@@ -172,16 +174,16 @@ section PartialOrder
 
 namespace SetLike
 
-variable {A B : Type*} [PartialOrder A] [SetLike A B] [IsConcreteLE A B]
+variable {A B : Type*} [PartialOrder A] [SetLike A B] [IsMemLE A B]
 
 theorem isAtom_iff [OrderBot A] {K : A} :
     IsAtom K ↔ K ≠ ⊥ ∧ ∀ H g, H ≤ K → g ∉ H → g ∈ K → H = ⊥ := by
-  simp_rw [IsAtom, lt_iff_le_not_ge, IsConcreteLE.not_le_iff_exists,
+  simp_rw [IsAtom, lt_iff_le_not_ge, not_le_iff_exists_mem_notMem,
     and_comm (a := _ ≤ _), and_imp, exists_imp, ← and_imp, and_comm]
 
 theorem isCoatom_iff [OrderTop A] {K : A} :
     IsCoatom K ↔ K ≠ ⊤ ∧ ∀ H g, K ≤ H → g ∉ K → g ∈ H → H = ⊤ := by
-  simp_rw [IsCoatom, lt_iff_le_not_ge, IsConcreteLE.not_le_iff_exists,
+  simp_rw [IsCoatom, lt_iff_le_not_ge, not_le_iff_exists_mem_notMem,
     and_comm (a := _ ≤ _), and_imp, exists_imp, ← and_imp, and_comm]
 
 theorem covBy_iff {K L : A} :
@@ -190,7 +192,7 @@ theorem covBy_iff {K L : A} :
   contrapose!
   rw [lt_iff_le_not_ge, lt_iff_le_and_ne, and_and_and_comm]
   simp_rw [exists_and_left, and_assoc, and_congr_right_iff, ← and_assoc, and_comm, exists_and_left,
-    IsConcreteLE.not_le_iff_exists, and_comm, implies_true]
+    not_le_iff_exists_mem_notMem, and_comm, implies_true]
 
 /-- Dual variant of `SetLike.covBy_iff` -/
 theorem covBy_iff' {K L : A} :
@@ -199,7 +201,7 @@ theorem covBy_iff' {K L : A} :
   push Not
   rw [lt_iff_le_and_ne, lt_iff_le_not_ge, and_and_and_comm]
   simp_rw [exists_and_left, and_assoc, and_congr_right_iff, ← and_assoc, and_comm, exists_and_left,
-    IsConcreteLE.not_le_iff_exists, ne_comm, implies_true]
+    not_le_iff_exists_mem_notMem, ne_comm, implies_true]
 
 end SetLike
 

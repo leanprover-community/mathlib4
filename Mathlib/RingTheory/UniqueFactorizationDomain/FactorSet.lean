@@ -12,10 +12,12 @@ public import Mathlib.Tactic.Ring
 # Set of factors
 
 ## Main definitions
+
 * `Associates.FactorSet`: multiset of factors of an element, unique up to propositional equality.
 * `Associates.factors`: determine the `FactorSet` for a given element.
 
 ## TODO
+
 * set up the complete lattice structure on `FactorSet`.
 -/
 
@@ -189,9 +191,11 @@ noncomputable def factors' (a : α) : Multiset { a : Associates α // Irreducibl
   (factors a).pmap (fun a ha => ⟨Associates.mk a, irreducible_mk.2 ha⟩) irreducible_of_factor
 
 @[simp]
-theorem map_subtype_coe_factors' {a : α} :
+theorem map_subtypeVal_factors' {a : α} :
     (factors' a).map (↑) = (factors a).map Associates.mk := by
   simp [factors', Multiset.map_pmap, Multiset.pmap_eq_map]
+
+@[deprecated (since := "2026-11-10")] alias map_subtype_coe_factors' := map_subtypeVal_factors'
 
 theorem factors'_cong {a b : α} (h : a ~ᵤ b) : factors' a = factors' b := by
   obtain rfl | hb := eq_or_ne b 0
@@ -201,8 +205,8 @@ theorem factors'_cong {a b : α} (h : a ~ᵤ b) : factors' a = factors' b := by
     contrapose hb with ha
     rw [← associated_zero_iff_eq_zero, ← ha]
     exact h.symm
-  rw [← Multiset.map_eq_map Subtype.coe_injective, map_subtype_coe_factors',
-    map_subtype_coe_factors', ← rel_associated_iff_map_eq_map]
+  rw [← Multiset.map_eq_map Subtype.coe_injective, map_subtypeVal_factors',
+    map_subtypeVal_factors', ← rel_associated_iff_map_eq_map]
   exact
     factors_unique irreducible_of_factor irreducible_of_factor
       ((factors_prod ha).trans <| h.trans (factors_prod hb).symm)
@@ -559,9 +563,9 @@ theorem is_pow_of_dvd_count {a : Associates α}
   rw [factors_mk a0 hz] at hk
   have hk' : ∀ p, p ∈ factors' a0 → k ∣ (factors' a0).count p := by
     rintro p -
-    have pp : p = ⟨p.val, p.2⟩ := by simp only [Subtype.coe_eta]
-    rw [pp, ← count_some p.2]
-    exact hk p.val p.2
+    have pp : p = ⟨p.val, p.property⟩ := by simp only [Subtype.coe_eta]
+    rw [pp, ← count_some p.property]
+    exact hk p.val p.property
   obtain ⟨u, hu⟩ := Multiset.exists_smul_of_dvd_count _ hk'
   use FactorSet.prod (u : FactorSet α)
   apply eq_of_factors_eq_factors

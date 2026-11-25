@@ -59,15 +59,15 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω} {E : Type*
   `C^n` on its source. -/
 theorem contDiffOn_fderiv_coord_change [IsManifold I (n + 1) M]
     (i j : atlas H M) :
-    ContDiffOn 𝕜 n (fderivWithin 𝕜 (j.1.extend I ∘ (i.1.extend I).symm) (range I))
-      ((i.1.extend I).symm ≫ j.1.extend I).source := by
-  have h : ((i.1.extend I).symm ≫ j.1.extend I).source ⊆ range I := by
+    ContDiffOn 𝕜 n (fderivWithin 𝕜 (j.val.extend I ∘ (i.val.extend I).symm) (range I))
+      ((i.val.extend I).symm ≫ j.val.extend I).source := by
+  have h : ((i.val.extend I).symm ≫ j.val.extend I).source ⊆ range I := by
     refine I.extendCoordChange_source.trans_subset ?_; apply image_subset_range
   intro x hx
   refine (ContDiffWithinAt.fderivWithin_right ?_ I.uniqueDiffOn le_rfl
     <| h hx).mono h
-  refine (I.contDiffOn_extendCoordChange (subset_maximalAtlas i.2)
-    (subset_maximalAtlas j.2) x hx).mono_of_mem_nhdsWithin ?_
+  refine (I.contDiffOn_extendCoordChange (subset_maximalAtlas i.property)
+    (subset_maximalAtlas j.property) x hx).mono_of_mem_nhdsWithin ?_
   exact I.extendCoordChange_source_mem_nhdsWithin hx
 
 open IsManifold
@@ -86,46 +86,47 @@ E -----> H -----> M --> H --> E
 within the set `range I ⊆ E` at `I (i x) : E`. -/
 @[simps indexAt coordChange]
 def tangentBundleCore : VectorBundleCore 𝕜 M E (atlas H M) where
-  baseSet i := i.1.source
-  isOpen_baseSet i := i.1.open_source
+  baseSet i := i.val.source
+  isOpen_baseSet i := i.val.open_source
   indexAt := achart H
   mem_baseSet_at := mem_chart_source H
   coordChange i j x :=
-    fderivWithin 𝕜 (j.1.extend I ∘ (i.1.extend I).symm) (range I) (i.1.extend I x)
+    fderivWithin 𝕜 (j.val.extend I ∘ (i.val.extend I).symm) (range I) (i.val.extend I x)
   coordChange_self i x hx v := by
     rw [Filter.EventuallyEq.fderivWithin_eq, fderivWithin_fun_id, ContinuousLinearMap.id_apply]
     · exact I.uniqueDiffWithinAt_image
-    · filter_upwards [i.1.extend_target_mem_nhdsWithin hx] with y hy
-      exact (i.1.extend I).right_inv hy
-    · simp_rw [Function.comp_apply, i.1.extend_left_inv hx]
+    · filter_upwards [i.val.extend_target_mem_nhdsWithin hx] with y hy
+      exact (i.val.extend I).right_inv hy
+    · simp_rw [Function.comp_apply, i.val.extend_left_inv hx]
   continuousOn_coordChange i j := by
     have : IsManifold I (0 + 1) M := by simpa
     refine (contDiffOn_fderiv_coord_change (n := 0) i j).continuousOn.comp
-      (i.1.continuousOn_extend.mono ?_) ?_
-    · rw [i.1.extend_source]; exact inter_subset_left
-    exact mapsTo_iff_image_subset.2 (i.1.extend_image_source_inter j.1).subset
+      (i.val.continuousOn_extend.mono ?_) ?_
+    · rw [i.val.extend_source]; exact inter_subset_left
+    exact mapsTo_iff_image_subset.2 (i.val.extend_image_source_inter j.val).subset
   coordChange_comp := by
     have : IsManifold I (0 + 1) M := by simpa
     rintro i j k x ⟨⟨hxi, hxj⟩, hxk⟩ v
     rw [fderivWithin_fderivWithin, Filter.EventuallyEq.fderivWithin_eq]
-    · have := i.1.extend_preimage_mem_nhds (I := I) hxi (j.1.extend_source_mem_nhds (I := I) hxj)
+    · have := i.val.extend_preimage_mem_nhds (I := I) hxi
+        (j.val.extend_source_mem_nhds (I := I) hxj)
       filter_upwards [nhdsWithin_le_nhds this] with y hy
-      simp_rw [Function.comp_apply, (j.1.extend I).left_inv hy]
-    · simp_rw [Function.comp_apply, i.1.extend_left_inv hxi, j.1.extend_left_inv hxj]
-    · exact (I.contDiffWithinAt_extendCoordChange' (subset_maximalAtlas j.2)
-        (subset_maximalAtlas k.2) hxj hxk).differentiableWithinAt one_ne_zero
-    · exact (I.contDiffWithinAt_extendCoordChange' (subset_maximalAtlas i.2)
-        (subset_maximalAtlas j.2) hxi hxj).differentiableWithinAt one_ne_zero
+      simp_rw [Function.comp_apply, (j.val.extend I).left_inv hy]
+    · simp_rw [Function.comp_apply, i.val.extend_left_inv hxi, j.val.extend_left_inv hxj]
+    · exact (I.contDiffWithinAt_extendCoordChange' (subset_maximalAtlas j.property)
+        (subset_maximalAtlas k.property) hxj hxk).differentiableWithinAt one_ne_zero
+    · exact (I.contDiffWithinAt_extendCoordChange' (subset_maximalAtlas i.property)
+        (subset_maximalAtlas j.property) hxi hxj).differentiableWithinAt one_ne_zero
     · intro x _; exact mem_range_self _
     · exact I.uniqueDiffWithinAt_image
-    · rw [Function.comp_apply, i.1.extend_left_inv hxi]
+    · rw [Function.comp_apply, i.val.extend_left_inv hxi]
 
 /-- `simp`-normal form is `tangentBundleCore_localTriv_baseSet`. -/
-theorem tangentBundleCore_baseSet (i) : (tangentBundleCore I M).baseSet i = i.1.source := rfl
+theorem tangentBundleCore_baseSet (i) : (tangentBundleCore I M).baseSet i = i.val.source := rfl
 
 @[simp]
 theorem tangentBundleCore_localTriv_baseSet (i) :
-    ((tangentBundleCore I M).localTriv i).baseSet = i.1.source := rfl
+    ((tangentBundleCore I M).localTriv i).baseSet = i.val.source := rfl
 
 theorem tangentBundleCore_coordChange_achart (x x' z : M) :
     (tangentBundleCore I M).coordChange (achart H x) (achart H x') z =
@@ -311,12 +312,12 @@ lemma tangentBundleCore.isContMDiff [h : IsManifold I (n + 1) M] :
     (tangentBundleCore I M).IsContMDiff I n := by
   have : IsManifold I n M := .of_le (n := n + 1) (le_self_add)
   refine ⟨fun i j => ?_⟩
-  rw [contMDiffOn_iff_source_of_mem_maximalAtlas (subset_maximalAtlas i.2),
+  rw [contMDiffOn_iff_source_of_mem_maximalAtlas (subset_maximalAtlas i.property),
     contMDiffOn_iff_contDiffOn]
   · refine ((contDiffOn_fderiv_coord_change (I := I) i j).congr fun x hx => ?_).mono ?_
     · rw [PartialEquiv.trans_source'] at hx
-      simp_rw [Function.comp_apply, tangentBundleCore_coordChange, (i.1.extend I).right_inv hx.1]
-    · exact (i.1.extend_image_source_inter j.1).subset
+      simp_rw [Function.comp_apply, tangentBundleCore_coordChange, (i.val.extend I).right_inv hx.1]
+    · exact (i.val.extend_image_source_inter j.val).subset
   · apply inter_subset_left
 
 omit [IsManifold I 1 M] in

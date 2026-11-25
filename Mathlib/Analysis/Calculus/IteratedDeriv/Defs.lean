@@ -30,7 +30,7 @@ Let `𝕜` be a nontrivially normed field, and `F` a normed vector space over `�
   obtained by starting from `f` and differentiating it `n` times within `s`. This only holds when
   `s` has the unique derivative property.
 
-## Implementation details
+## Implementation notes
 
 The results are deduced from the corresponding results for the more general (multilinear) iterated
 Fréchet derivative. For this, we write `iteratedDeriv n f` as the composition of

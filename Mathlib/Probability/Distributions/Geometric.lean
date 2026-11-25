@@ -6,9 +6,9 @@ Authors: Josha Dekker, Etienne Marion
 module
 
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
-public import Mathlib.Probability.ProbabilityMassFunction.Basic
 
 import Mathlib.MeasureTheory.Integral.Bochner.SumMeasure
+import Mathlib.Probability.ProbabilityMassFunction.Basic
 
 /-! # Geometric distributions
 
@@ -63,7 +63,7 @@ lemma geometricMeasure_eq (hp : p ≠ 0) :
 /-- The `positivity` tactic does not work for this goal. Use this lemma to rewrite
 `(ENNReal.ofReal ((1 - p) ^ n * p)).toReal = (1 - p) ^ n * p`. -/
 lemma geometricMeasure_nonneg (p : unitInterval) n :
-    0 ≤ (1 - p : ℝ) ^ n * p := mul_nonneg (pow_nonneg (by grind) n) p.2.1
+    0 ≤ (1 - p : ℝ) ^ n * p := mul_nonneg (pow_nonneg (by grind) n) p.property.1
 
 lemma geometricMeasure_pos (h1 : p ≠ 0) (h2 : p ≠ 1) n :
     0 < (1 - p : ℝ) ^ n * p := mul_pos (pow_pos (by grind) n) (by grind)

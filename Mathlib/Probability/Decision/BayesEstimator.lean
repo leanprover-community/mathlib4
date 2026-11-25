@@ -10,6 +10,9 @@ public import Mathlib.Probability.Kernel.Posterior
 
 import Mathlib.Probability.Decision.Risk.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bayes estimator
 

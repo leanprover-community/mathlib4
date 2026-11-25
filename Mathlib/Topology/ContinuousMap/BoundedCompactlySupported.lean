@@ -102,10 +102,10 @@ lemma ofCompactSupport_mem (g : α → γ) (hg₁ : Continuous g) (hg₂ : HasCo
 instance : SMul C(α, γ) C_cb(α, γ) where
   smul := fun (g : C(α, γ)) => (fun (f : C_cb(α, γ)) =>
     ⟨ofCompactSupport (g * (f : α →ᵇ γ) : α → γ) (by fun_prop)
-    (HasCompactSupport.mul_left (mem_compactlySupported.mp f.2)), by
+    (HasCompactSupport.mul_left (mem_compactlySupported.mp f.property)), by
       apply mem_compactlySupported.mpr
       rw [ofCompactSupport]
-      exact HasCompactSupport.mul_left <| mem_compactlySupported.mp f.2
+      exact HasCompactSupport.mul_left <| mem_compactlySupported.mp f.property
     ⟩)
 
 end CompactlySupported

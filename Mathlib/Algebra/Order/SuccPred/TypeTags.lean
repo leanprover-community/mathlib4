@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.Monoid.Unbundled.TypeTags
 public import Mathlib.Order.SuccPred.Archimedean
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Successor and predecessor on type tags
 
