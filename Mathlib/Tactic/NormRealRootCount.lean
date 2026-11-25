@@ -42,6 +42,7 @@ namespace Mathlib.Tactic.RealRootCount
 
 open Lean Meta Elab Qq
 
+-- `toExpr` is used to translate the computed certificate into the term that the kernel evaluates
 deriving instance ToExpr for SturmStep
 deriving instance ToExpr for SturmCertificate
 
