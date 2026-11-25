@@ -30,7 +30,9 @@ lake build Archive.FormalStudies.E8VsA16HadamardLaw   # a single module
 lake build Archive                                    # the whole archive, incl. these
 ```
 
-Each theorem is accompanied by `#print axioms <name>` at the end of its module.
+The standalone copy of these modules (see the companion core-repo request) ends each
+theorem with `#print axioms <name>`; those audit lines are omitted here because
+mathlib CI treats build stdout as noise.
 
 ## Provenance
 
