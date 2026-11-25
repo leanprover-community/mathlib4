@@ -315,18 +315,10 @@ lemma sum_strongDual_eval_single_le_norm [DecidableEq ι]
   rw [h₁, ← this, RCLike.ofReal_le_ofReal, ← mul_one ‖φ‖]
   refine φ.le_opNorm_of_le ?_
   simp only [AddSubgroup.coe_norm, AddSubgroup.val_finsetSum, coe_smul, coe_single]
-  refine lp.norm_le_of_forall_le (by positivity) fun i ↦ ?_
-  rw [FunLike.coe_sum, Finset.sum_apply]
-  simp only [FunLike.coe_smul, Pi.smul_apply, lp.coeFn_single, Pi.single_apply, smul_eq_mul]
-  by_cases! hi : i ∈ s
-  · rw [s.sum_eq_single_of_mem i hi fun b _ hb ↦ by simp [hb.symm]]
-    obtain (h | h) := eq_or_ne (φ (single i 1)) 0
-    all_goals simp [h]
-  · rw [s.sum_eq_zero]
-    · simp
-    · intro j hj
-      have hij : i ≠ j := fun h ↦ hi (h ▸ hj)
-      simp [hij]
+  refine lp.norm_le_of_forall_le zero_le_one fun i ↦ ?_
+  by_cases hi : i ∈ s
+  · obtain (h | h) := eq_or_ne (φ (single i 1)) 0 <;> simp [hi, h, Pi.single_apply]
+  · simp [hi, Pi.single_apply]
 
 lemma strongDual_eval_single_memℓp_one [DecidableEq ι]
     (φ : StrongDual 𝕜 c₀(ι, 𝕜)) :
