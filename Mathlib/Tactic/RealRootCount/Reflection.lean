@@ -14,15 +14,17 @@ import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Positivity
 
 /-!
-# `realRootCount?` computes the number of real roots of a polynomial
+# `realRootCount?` and `realRootCountIoo?` compute the number of distinct real roots of a polynomial
 
-This file proves that when `realRootCount?` on `Mathlib.Tactic.RealRootCount.SturmCertificate`
-computes a number, it is equal to the number of distinct real roots of the input polynomial.
+This file proves that when `realRootCount?` computes a number from a
+`Mathlib.Tactic.RealRootCount.SturmCertificate`, it is the number of distinct real roots of the
+certificate's polynomial, and that when `realRootCountIoo?` computes a number, it is the number of
+those roots in the given open interval.
 
 ## Main results
 
 - `card_rootSet_of_realRootCount?`: If `realRootCount? d = some n` and `d` is a `SturmCertificate`
-  of a polynomial `f` then `f` has `n` distinct roots.
+  of a polynomial `f` then `f` has `n` distinct real roots.
 - `card_rootsIoo_of_realRootCountIoo?`: If `realRootCountIoo? d an ad bn bd = some n` and `d` is a
   `SturmCertificate` of a polynomial `f` then `f` has `n` distinct real roots in the open interval
   from `an / ad` to `bn / bd`.
