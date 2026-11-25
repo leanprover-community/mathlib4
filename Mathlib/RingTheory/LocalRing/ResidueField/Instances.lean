@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 
 import Mathlib.RingTheory.Finiteness.Quotient
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-! # Instances on residue fields -/
 
 public section

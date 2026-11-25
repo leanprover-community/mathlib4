@@ -12,6 +12,9 @@ public import Mathlib.RingTheory.Valuation.Archimedean
 public import Mathlib.Topology.Algebra.Valued.NormedValued
 public import Mathlib.Topology.Algebra.Valued.ValuedField
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Necessary and sufficient conditions for a locally compact valued field
 

@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.IdealFilter.Basic
 public import Mathlib.Topology.Algebra.FilterBasis
 public import Mathlib.Topology.Algebra.LinearTopology
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topologies associated to ideal filters
 

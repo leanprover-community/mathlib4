@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.Localization.Integer
 
 import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Numerator and denominator in a localization
 

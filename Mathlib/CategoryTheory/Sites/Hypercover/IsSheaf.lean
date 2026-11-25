@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Sites.Hypercover.One
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Characterization of sheaves using 1-hypercovers
 
