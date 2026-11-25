@@ -8,14 +8,13 @@ module
 public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Module.Equiv.Basic
 public import Mathlib.Algebra.Module.Submodule.Ker
-public import Mathlib.Algebra.Module.Submodule.RestrictScalars
 public import Mathlib.Algebra.Module.ULift
 public import Mathlib.Algebra.Ring.CharZero
 public import Mathlib.Algebra.Ring.Subring.Basic
-public import Mathlib.Data.Nat.Cast.Order.Basic
-public import Mathlib.Data.Int.CharZero
 
 import Mathlib.Algebra.Ring.Hom.InjSurj
+import Mathlib.Data.Int.CharZero
+import Mathlib.Data.Nat.Cast.Order.Basic
 
 /-!
 # Further basic results about `Algebra`.
@@ -117,16 +116,6 @@ theorem algebraMap_ofSubring {R : Type*} [CommRing R] (S : Subring R) :
     (algebraMap S R : S →+* R) = S.subtype :=
   rfl
 
-@[deprecated coe_algebraMap_ofSubsemiring (since := "2025-11-23")]
-theorem coe_algebraMap_ofSubring {R : Type*} [CommRing R] (S : Subring R) :
-    (algebraMap S R : S → R) = Subtype.val :=
-  rfl
-
-@[deprecated algebraMap_ofSubsemiring_apply (since := "2025-11-23")]
-theorem algebraMap_ofSubring_apply {R : Type*} [CommRing R] (S : Subring R) (x : S) :
-    algebraMap S R x = x :=
-  rfl
-
 end SubsemiringAlgebra
 
 /-- Explicit characterization of the submonoid map in the case of an algebra.
@@ -138,7 +127,7 @@ variable {S : Type*} [Semiring S] [Algebra R S]
 
 theorem mem_algebraMapSubmonoid_of_mem {M : Submonoid R}
     (x : M) : algebraMap R S x ∈ algebraMapSubmonoid S M :=
-  Set.mem_image_of_mem (algebraMap R S) x.2
+  Set.mem_image_of_mem (algebraMap R S) x.property
 
 @[simp]
 lemma algebraMapSubmonoid_self (M : Submonoid R) : Algebra.algebraMapSubmonoid R M = M :=
@@ -197,7 +186,7 @@ instance {R : Type*} [Ring R] : Algebra (Subring.center R) R where
     map_mul' _ _ := rfl
     map_zero' := rfl
     map_add' _ _ := rfl }
-  commutes' r x := (Subring.mem_center_iff.1 r.2 x).symm
+  commutes' r x := (Subring.mem_center_iff.1 r.property x).symm
   smul_def' _ _ := rfl
 
 end Ring
@@ -497,12 +486,6 @@ lemma isTorsionFree_iff_algebraMap_injective : IsTorsionFree R A ↔ Injective (
   rw [isTorsionFree_iff_faithfulSMul, faithfulSMul_iff_algebraMap_injective]
 
 end Module
-
-@[deprecated (since := "2026-01-21")]
-alias NoZeroSMulDivisors.iff_algebraMap_injective := isTorsionFree_iff_algebraMap_injective
-
-@[deprecated (since := "2026-01-21")]
-alias NoZeroSMulDivisors.iff_faithfulSMul := isTorsionFree_iff_faithfulSMul
 
 example {R A} [CommSemiring R] [Semiring A] [Module R A] [SMulCommClass R A A]
     [IsScalarTower R A A] : Algebra R A :=

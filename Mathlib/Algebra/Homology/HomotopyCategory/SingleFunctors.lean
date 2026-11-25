@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.HomotopyCategory.Shift
 public import Mathlib.CategoryTheory.Shift.SingleFunctors
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Single functors from the homotopy category
 
@@ -17,7 +20,6 @@ along with their compatibilities with shifts into the definition
 `CochainComplex.singleFunctors C : SingleFunctors C (CochainComplex C ℤ) ℤ`.
 Similarly, we define
 `HomotopyCategory.singleFunctors C : SingleFunctors C (HomotopyCategory C (ComplexShape.up ℤ)) ℤ`.
-
 -/
 
 @[expose] public section
@@ -34,11 +36,10 @@ namespace CochainComplex
 
 open HomologicalComplex
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The collection of all single functors `C ⥤ CochainComplex C ℤ` along with
 their compatibilities with shifts. (This definition has purposely no `simps`
 attribute, as the generated lemmas would not be very useful.) -/
-noncomputable def singleFunctors : SingleFunctors C (CochainComplex C ℤ) ℤ where
+noncomputable abbrev singleFunctors : SingleFunctors C (CochainComplex C ℤ) ℤ where
   functor n := single _ _ n
   shiftIso n a a' ha' := NatIso.ofComponents
     (fun X => Hom.isoOfComponents
@@ -48,7 +49,7 @@ noncomputable def singleFunctors : SingleFunctors C (CochainComplex C ℤ) ℤ w
         · subst h
           simp only [Functor.comp_obj, shiftFunctor_obj_X', single_obj_X_self]
         · dsimp [single]
-          rw [if_neg h, if_neg (fun h' => h (by lia))])))
+          rw [ite_eq_right h, ite_eq_right (fun h' => h (by lia))])))
     (fun {X Y} f => by
       obtain rfl : a' = a + n := by lia
       ext
@@ -68,7 +69,6 @@ instance (n : ℤ) : ((singleFunctors C).functor n).Additive := by
   dsimp only [singleFunctors]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 instance (R : Type*) [Ring R] (n : ℤ) [Linear R C] :
     Functor.Linear R ((singleFunctors C).functor n) where
   map_smul f r := by

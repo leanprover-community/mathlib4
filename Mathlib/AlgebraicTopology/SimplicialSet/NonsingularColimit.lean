@@ -6,8 +6,11 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplexCategory.SemiSimplexCategory
-public import Mathlib.AlgebraicTopology.SimplicialSet.Nonsingular
 public import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplicesColimit
+public import Mathlib.AlgebraicTopology.SimplicialSet.Nonsingular
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Nonsingular simplicial sets, as colimits of standard simplices
@@ -19,14 +22,15 @@ of nondegenerate simplices) of its monogenous subcomplexes.
 In this file, we assume that `X` is nonsingular, in which case its monogenous subcomplexes
 identify to standard simplices. This allows to show that `X` is the colimit
 of `Δ[x.dim]` for `x : X.N`.
-
 -/
 
 @[expose] public section
 
 universe u
 
-open CategoryTheory Simplicial Limits
+open CategoryTheory Limits
+
+open scoped Simplicial
 
 namespace SSet
 
@@ -37,7 +41,7 @@ namespace N
 set_option backward.isDefEq.respectTransparency false in
 /-- If `X` is a nonsingular simplicial set, this is the functor
 `X.N ⥤ SemiSimplexCategory` which sends a nondegenerate
-simplex `s : X : N` to `⦋s.dim⦌ₛ` -/
+simplex `s : X.N` to `⦋s.dim⦌ₛ`. -/
 @[simps obj map]
 noncomputable def toSemiSimplexCategory : X.N ⥤ SemiSimplexCategory where
   obj s := ⦋s.dim⦌ₛ
@@ -51,6 +55,7 @@ end N
 noncomputable abbrev functorN' : X.N ⥤ SSet.{u} :=
     N.toSemiSimplexCategory X ⋙ SemiSimplexCategory.toSimplexCategory ⋙ SSet.stdSimplex
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The isomorphism `X.functorN' ≅ X.functorN` for a nonsingular simplicial set `X`. -/
 noncomputable def functorN'Iso : X.functorN' ≅ X.functorN :=
@@ -69,6 +74,6 @@ noncomputable def coconeN' : Cocone X.functorN' where
 for all nondegenerate simplices `x : X.N`. -/
 noncomputable def isColimitCoconeN' : IsColimit X.coconeN' :=
   (IsColimit.equivOfNatIsoOfIso
-    X.functorN'Iso.symm _ _ (Cocone.ext (Iso.refl _))).1 X.isColimitCoconeN
+    X.functorN'Iso.symm _ _ (Cocone.ext (Iso.refl _))).toFun X.isColimitCoconeN
 
 end SSet

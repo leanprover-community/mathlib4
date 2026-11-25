@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Functor.Category
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Thin categories
 
@@ -36,7 +39,7 @@ variable [CategoryStruct.{v₁} C] [Quiver.IsThin C]
 
 /-- Construct a category instance from a `CategoryStruct`, using the fact that
     hom spaces are subsingletons to prove the axioms. -/
-@[implicit_reducible]
+@[instance_reducible]
 def thin_category : Category C where
 
 end

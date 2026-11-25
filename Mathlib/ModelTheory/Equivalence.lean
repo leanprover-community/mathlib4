@@ -11,20 +11,19 @@ public import Mathlib.ModelTheory.Satisfiability
 # Equivalence of Formulas
 
 ## Main Definitions
+
 - `FirstOrder.Language.Theory.Imp`: `φ ⟹[T] ψ` indicates that `φ` implies `ψ` in models of `T`.
 - `FirstOrder.Language.Theory.Iff`: `φ ⇔[T] ψ` indicates that `φ` and `ψ` are equivalent formulas or
   sentences in models of `T`.
 
 ## TODO
-- Define the quotient of `L.Formula α` modulo `⇔[T]` and its Boolean Algebra structure.
 
+- Define the quotient of `L.Formula α` modulo `⇔[T]` and its Boolean Algebra structure.
 -/
 
 @[expose] public section
 
 universe u v w w'
-
-open Cardinal CategoryTheory
 
 open FirstOrder
 
@@ -201,7 +200,7 @@ protected theorem imp {φ ψ φ' ψ' : L.BoundedFormula α n} (h : φ ⇔[T] ψ)
 end Iff
 
 /-- Semantic equivalence forms an equivalence relation on formulas. -/
-@[implicit_reducible]
+@[instance_reducible]
 def iffSetoid (T : L.Theory) : Setoid (L.BoundedFormula α n) where
   r := T.Iff
   iseqv := ⟨fun _ => refl _, fun {_ _} h => h.symm, fun {_ _ _} h1 h2 => h1.trans h2⟩

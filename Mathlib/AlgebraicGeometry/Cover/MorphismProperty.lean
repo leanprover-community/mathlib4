@@ -6,7 +6,9 @@ Authors: Christian Merten, Andrew Yang
 module
 
 public import Mathlib.AlgebraicGeometry.Sites.MorphismProperty
-public import Mathlib.CategoryTheory.MorphismProperty.Limits
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Covers of schemes
@@ -15,14 +17,13 @@ This file provides the basic API for covers of schemes. A cover of a scheme `X` 
 a morphism property `P` is a jointly surjective indexed family of scheme morphisms with
 target `X` all satisfying `P`.
 
-## Implementation details
+## Implementation notes
 
 The definition on the pullback of a cover along a morphism depends on results that
 are developed later in the import tree. Hence in this file, they have additional assumptions
 that will be automatically satisfied in later files. The motivation here is that we already
 know that these assumptions are satisfied for open immersions and hence the cover API for open
 immersions can be used to deduce these assumptions in the general case.
-
 -/
 
 @[expose] public section
@@ -30,7 +31,7 @@ immersions can be used to deduce these assumptions in the general case.
 
 noncomputable section
 
-open TopologicalSpace CategoryTheory Opposite CategoryTheory.Limits
+open CategoryTheory CategoryTheory.Limits
 
 universe v v₁ v₂ u
 
@@ -102,7 +103,7 @@ def Cover.mkOfCovers (J : Type*) (obj : J → Scheme.{u}) (map : (j : J) → obj
   f := map
   mem₀ := by
     simp_rw [presieve₀_mem_precoverage_iff, Set.mem_range]
-    grind
+    exact ⟨covers, map_prop⟩
 
 /-- An isomorphism `X ⟶ Y` is a `P`-cover of `Y`. -/
 @[simps! I₀ X f]
@@ -151,8 +152,12 @@ def Cover.copy [P.RespectsIso] {X : Scheme.{u}} (𝒰 : X.Cover (precoverage P))
       intro i
       exact 𝒰.map_prop _
 
+-- `respectTransparency false` is needed for `simps!`.
+-- Consider making implicit-reducible:
+-- `Precoverage.ZeroHypercover.bind`, `Cover.mkOfCovers`, `coverOfIso`
+set_option backward.isDefEq.respectTransparency false in
 /-- The pushforward of a cover along an isomorphism. -/
-@[simps! I₀ X f]
+@[simps! I₀ X f, implicit_reducible]
 def Cover.pushforwardIso [P.RespectsIso] [P.ContainsIdentities] [P.IsStableUnderComposition]
     {X Y : Scheme.{u}} (𝒰 : Cover.{v} (precoverage P) X) (f : X ⟶ Y) [IsIso f] :
     Cover.{v} (precoverage P) Y :=
@@ -240,24 +245,6 @@ This is implemented as an `abbrev` for `CategoryTheory.Precoverage.ZeroHypercove
 -/
 abbrev Cover.Hom {X : Scheme.{u}} (𝒰 𝒱 : Cover.{v} K X) :=
   Precoverage.ZeroHypercover.Hom K 𝒰 𝒱
-
-@[deprecated (since := "2026-01-13")] alias Cover.Hom.idx := PreZeroHypercover.Hom.s₀
-
-@[deprecated (since := "2026-01-13")] alias Cover.Hom.app := PreZeroHypercover.Hom.h₀
-
-@[deprecated (since := "2026-01-13")] alias Cover.Hom.w := PreZeroHypercover.Hom.w₀
-
-@[deprecated (since := "2026-01-13")] alias Cover.Hom.id := PreZeroHypercover.Hom.id
-
-@[deprecated (since := "2026-01-13")] alias Cover.Hom.comp := PreZeroHypercover.Hom.comp
-
-@[deprecated (since := "2026-01-13")] alias Cover.id_idx_apply := PreZeroHypercover.id_s₀
-
-@[deprecated (since := "2026-01-13")] alias Cover.id_app := PreZeroHypercover.id_h₀
-
-@[deprecated (since := "2026-01-13")] alias Cover.comp_idx_apply := PreZeroHypercover.comp_s₀
-
-@[deprecated (since := "2026-01-13")] alias Cover.comp_app := PreZeroHypercover.comp_h₀
 
 end category
 

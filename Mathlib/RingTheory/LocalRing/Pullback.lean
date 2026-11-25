@@ -6,8 +6,10 @@ Authors: Bingyu Xia
 
 module
 
-public import Mathlib.Algebra.Torsor.Defs
-public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+public import Mathlib.Algebra.Algebra.Prod
+public import Mathlib.Algebra.Algebra.Subalgebra.Basic
+public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.RingTheory.LocalRing.Defs
 
 import Mathlib.Algebra.Ring.Subring.Units
 import Mathlib.RingTheory.LocalRing.RingHom.Basic
@@ -34,10 +36,9 @@ suitable conditions.
 
 * `RingHom.isLocalRing_pullback`: The pullback of `f : R →+* T` and `g : S →+* T` is a
   local ring, provided that `R` is a local ring and `g` is a local homomorphism.
-
 -/
 
-@[expose] public section
+public section
 
 namespace RingHom
 
@@ -63,6 +64,7 @@ theorem pullback_comm_sq (f : R →+* T) (g : S →+* T) :
     f.comp (f.pullbackFst g) = g.comp (f.pullbackSnd g) :=
   ext fun x ↦ x.prop
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem isUnit_pullback_mk_iff (f : R →+* T) (g : S →+* T) {a : R × S} (a_in : a ∈ f.pullback g) :
     IsUnit (⟨a, a_in⟩ : f.pullback g) ↔ IsUnit a.1 ∧ IsUnit a.2 := by
   rw [isUnit_eqLocus_mk_iff, Prod.isUnit_iff]

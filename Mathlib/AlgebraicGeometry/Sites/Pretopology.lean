@@ -5,8 +5,10 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Sites.MorphismProperty
 public import Mathlib.AlgebraicGeometry.PullbackCarrier
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Grothendieck topology defined by a morphism property
@@ -15,7 +17,7 @@ Given a multiplicative morphism property `P` that is stable under base change, w
 associated (pre)topology on the category of schemes, where coverings are given
 by jointly surjective families of morphisms satisfying `P`.
 
-## Implementation details
+## Implementation notes
 
 The pretopology is obtained from the precoverage `AlgebraicGeometry.Scheme.precoverage` defined in
 `Mathlib.AlgebraicGeometry.Sites.MorphismProperty`. The definition is postponed to this file,
@@ -26,7 +28,7 @@ because the former does not have `HasPullbacks Scheme`.
 
 universe v u
 
-open CategoryTheory Limits
+open CategoryTheory
 
 namespace AlgebraicGeometry.Scheme
 

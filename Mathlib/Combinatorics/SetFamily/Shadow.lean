@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.Finset.Grade
 public import Mathlib.Data.Finset.Sups
-public import Mathlib.Logic.Function.Iterate
 
 /-!
 # Shadows
@@ -64,7 +63,7 @@ def shadow (𝒜 : Finset (Finset α)) : Finset (Finset α) :=
 
 @[inherit_doc] scoped[FinsetFamily] notation:max "∂" => Finset.shadow
 
-open FinsetFamily
+open scoped FinsetFamily
 
 /-- The shadow of the empty set is empty. -/
 @[simp]
@@ -165,7 +164,7 @@ lemma _root_.Set.Sized.shadow_iterate (h𝒜 : (𝒜 : Set (Finset α)).Sized r)
 theorem sized_shadow_iff (h : ∅ ∉ 𝒜) :
     (∂ 𝒜 : Set (Finset α)).Sized r ↔ (𝒜 : Set (Finset α)).Sized (r + 1) := by
   refine ⟨fun h𝒜 s hs => ?_, Set.Sized.shadow⟩
-  obtain ⟨a, ha⟩ := nonempty_iff_ne_empty.2 (ne_of_mem_of_not_mem hs h)
+  obtain ⟨a, ha⟩ := ne_empty_iff_nonempty.1 (ne_of_mem_of_not_mem hs h)
   rw [← h𝒜 (erase_mem_shadow hs ha), card_erase_add_one ha]
 
 /-- Being in the shadow of `𝒜` means we have a superset in `𝒜`. -/
@@ -175,7 +174,7 @@ lemma exists_subset_of_mem_shadow (hs : t ∈ ∂ 𝒜) : ∃ s ∈ 𝒜, t ⊆ 
 
 end Shadow
 
-open FinsetFamily
+open scoped FinsetFamily
 
 section UpShadow
 

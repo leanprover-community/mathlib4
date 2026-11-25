@@ -5,9 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.Shift
-public import Mathlib.CategoryTheory.Triangulated.Subcategory
 public import Mathlib.CategoryTheory.Triangulated.TStructure.TruncLEGT
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Induced t-structures
@@ -20,7 +21,6 @@ If `P` is a triangulated subcategory of `C`, we introduce a typeclass
 In particular, we show that the triangulated subcategory `t.plus`
 of `t`-bounded above objects can be endowed with a t-structure `t.onPlus`,
 and the same applies to `t.minus` and `t.bounded`.
-
 -/
 
 @[expose] public section
@@ -41,13 +41,11 @@ equipped with a t-structure can be endowed with an induced t-structure. -/
 class HasInducedTStructure [P.IsTriangulated] : Prop where
   exists_triangle_zero_one (A : C) (hA : P A) :
     ∃ (X Y : C) (_ : t.IsLE X 0) (_ : t.IsGE Y 1)
-      (f : X ⟶ A) (g : A ⟶ Y) (h : Y ⟶ X⟦(1 : ℤ)⟧) (_ : Triangle.mk f g h ∈ distTriang C),
+      (f : X ⟶ A) (g : A ⟶ Y) (h : Y ⟶ X⟦1⟧) (_ : Triangle.mk f g h ∈ distTriang C),
     P.isoClosure X ∧ P.isoClosure Y
 
 variable [P.IsTriangulated] [h : P.HasInducedTStructure t]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The t-structure induced on a full subcategory. -/
 noncomputable def tStructure : TStructure P.FullSubcategory where
   le n X := t.le n X.obj
@@ -65,22 +63,22 @@ noncomputable def tStructure : TStructure P.FullSubcategory where
   ge_one_le X hX := t.ge_one_le _ hX
   exists_triangle_zero_one A := by
     obtain ⟨X, Y, hX, hY, f, g, h, hT, ⟨X', hX', ⟨e⟩⟩, ⟨Y', hY', ⟨e'⟩⟩⟩ :=
-      h.exists_triangle_zero_one A.1 A.2
+      h.exists_triangle_zero_one A.obj A.property
     exact ⟨⟨X', hX'⟩, ⟨Y', hY'⟩, (t.le 0).prop_of_iso e hX.le,
       (t.ge 1).prop_of_iso e' hY.ge,
       P.fullyFaithfulι.preimage (e.inv ≫ f),
       P.fullyFaithfulι.preimage (g ≫ e'.hom),
-      P.fullyFaithfulι.preimage (e'.inv ≫ h ≫ e.hom⟦(1 : ℤ)⟧' ≫
-          (P.ι.commShiftIso (1 : ℤ)).inv.app ⟨X', hX'⟩),
+      P.fullyFaithfulι.preimage (e'.inv ≫ h ≫ e.hom⟦1⟧' ≫
+          (P.ι.commShiftIso 1).inv.app ⟨X', hX'⟩),
       isomorphic_distinguished _ hT _ (Triangle.isoMk _ _ e.symm (Iso.refl _) e'.symm)⟩
 
 lemma tStructure_isLE_iff (X : P.FullSubcategory) (n : ℤ) :
     (P.tStructure t).IsLE X n ↔ t.IsLE X.obj n :=
-  ⟨fun h => ⟨h.1⟩, fun h => ⟨h.1⟩⟩
+  ⟨fun h => ⟨h.le⟩, fun h => ⟨h.le⟩⟩
 
 lemma tStructure_isGE_iff (X : P.FullSubcategory) (n : ℤ) :
     (P.tStructure t).IsGE X n ↔ t.IsGE X.obj n :=
-  ⟨fun h => ⟨h.1⟩, fun h => ⟨h.1⟩⟩
+  ⟨fun h => ⟨h.ge⟩, fun h => ⟨h.ge⟩⟩
 
 /-- Constructor for `HasInducedTStructure`. -/
 lemma HasInducedTStructure.mk' {P : ObjectProperty C} [P.IsTriangulated] {t : TStructure C}
@@ -91,8 +89,7 @@ lemma HasInducedTStructure.mk' {P : ObjectProperty C} [P.IsTriangulated] {t : TS
       t.triangleLEGE_distinguished 0 1 (by lia) X,
         P.le_isoClosure _ ((h X hX _).1), P.le_isoClosure _ ((h X hX _).2)⟩
 
-set_option backward.defeqAttrib.useBackward true in
-lemma mem_of_hasInductedTStructure (P : ObjectProperty C) [P.IsTriangulated] (t : TStructure C)
+lemma mem_of_hasInducedTStructure (P : ObjectProperty C) [P.IsTriangulated] (t : TStructure C)
     [P.IsClosedUnderIsomorphisms] [P.HasInducedTStructure t]
     (T : Triangle C) (hT : T ∈ distTriang C)
     (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (h₁ : t.IsLE T.obj₁ n₀) (h₂ : P T.obj₂)
@@ -106,7 +103,9 @@ lemma mem_of_hasInductedTStructure (P : ObjectProperty C) [P.IsTriangulated] (t 
   exact ⟨(P.prop_iff_of_iso (Triangle.π₁.mapIso e)).2 (P.prop_ι_obj _),
     (P.prop_iff_of_iso (Triangle.π₃.mapIso e)).2 (P.prop_ι_obj _)⟩
 
-set_option backward.defeqAttrib.useBackward true in
+@[deprecated (since := "2026-10-13")]
+alias mem_of_hasInductedTStructure := mem_of_hasInducedTStructure
+
 instance (P P' : ObjectProperty C) [P.IsTriangulated] [P'.IsTriangulated] (t : TStructure C)
     [P.HasInducedTStructure t] [P'.HasInducedTStructure t]
     [P.IsClosedUnderIsomorphisms] [P'.IsClosedUnderIsomorphisms] :
@@ -114,13 +113,13 @@ instance (P P' : ObjectProperty C) [P.IsTriangulated] [P'.IsTriangulated] (t : T
   .mk' (by
     rintro X ⟨hX, hX'⟩ n
     exact
-      ⟨⟨(P.mem_of_hasInductedTStructure t _ (t.triangleLEGE_distinguished n _ rfl X) n _ rfl
+      ⟨⟨(P.mem_of_hasInducedTStructure t _ (t.triangleLEGE_distinguished n _ rfl X) n _ rfl
           (by dsimp; infer_instance) hX (by dsimp; infer_instance)).1,
-        (P'.mem_of_hasInductedTStructure t _ (t.triangleLEGE_distinguished n _ rfl X) n _ rfl
+        (P'.mem_of_hasInducedTStructure t _ (t.triangleLEGE_distinguished n _ rfl X) n _ rfl
           (by dsimp; infer_instance) hX' (by dsimp; infer_instance)).1⟩,
-          ⟨(P.mem_of_hasInductedTStructure t _ (t.triangleLEGE_distinguished (n - 1) n (by lia) X)
+          ⟨(P.mem_of_hasInducedTStructure t _ (t.triangleLEGE_distinguished (n - 1) n (by lia) X)
           (n - 1) n (by lia) (by dsimp; infer_instance) hX (by dsimp; infer_instance)).2,
-        (P'.mem_of_hasInductedTStructure t _ (t.triangleLEGE_distinguished (n - 1) n (by lia) X)
+        (P'.mem_of_hasInducedTStructure t _ (t.triangleLEGE_distinguished (n - 1) n (by lia) X)
           (n - 1) n (by lia) (by dsimp; infer_instance) hX' (by dsimp; infer_instance)).2⟩⟩)
 
 end ObjectProperty

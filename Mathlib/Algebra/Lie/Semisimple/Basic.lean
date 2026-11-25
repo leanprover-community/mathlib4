@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Lie.Semisimple.Defs
 public import Mathlib.Order.BooleanGenerators
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Semisimple Lie algebras
 
@@ -30,6 +33,8 @@ about simple and semisimple Lie algebras.
 
 lie algebra, radical, simple, semisimple
 -/
+
+open scoped Finset
 
 public section
 
@@ -87,6 +92,13 @@ instance : LieModule.IsIrreducible R L L := by
   contrapose _i
   infer_instance
 
+include R in
+/-- A simple lie algebra is non-trivial. -/
+lemma nontrivial : Nontrivial L := by
+  have := IsSimple.non_abelian R (L := L)
+  contrapose! this
+  infer_instance
+
 protected lemma isAtom_top : IsAtom (⊤ : LieIdeal R L) := isAtom_top
 
 variable {R L} in
@@ -139,7 +151,7 @@ lemma isSimple_of_isAtom (I : LieIdeal R L) (hI : IsAtom I) : IsSimple R I where
           rw [← sSup_union, Set.union_sdiff_self, Set.union_eq_self_of_subset_left,
             IsSemisimple.sSup_atoms_eq_top]
           · apply LieSubmodule.mem_top
-          · simp only [Set.singleton_subset_iff, Set.mem_setOf_eq, hI]
+          · simp only [Set.singleton_subset_iff, Set.mem_ofPred_eq, hI]
         -- Hence we can write `x` as `a + b` with `a ∈ I`
         -- and `b` in the supremum of the atoms not equal to `I`.
         rw [LieSubmodule.mem_sup] at hx
@@ -156,7 +168,7 @@ lemma isSimple_of_isAtom (I : LieIdeal R L) (hI : IsAtom I) : IsSimple R I where
         · suffices ⁅b, y.val⁆ = 0 by erw [this]; simp only [zero_mem]
           rw [← LieSubmodule.mem_bot (R := R) (L := L),
               ← (IsSemisimple.sSupIndep_isAtom hI).eq_bot]
-          exact ⟨lie_mem_right R L I b y y.2, lie_mem_left _ _ _ _ _ hb⟩ }
+          exact ⟨lie_mem_right R L I b y y.property, lie_mem_left _ _ _ _ _ hb⟩ }
     -- Now that we know that `J` is an ideal of `L`,
     -- we start with the proof that `I` is a simple Lie algebra.
     -- Assume that `J ≠ ⊤`.
@@ -166,7 +178,7 @@ lemma isSimple_of_isAtom (I : LieIdeal R L) (hI : IsAtom I) : IsSimple R I where
       rw [eq_bot_iff] at this ⊢
       intro x hx
       suffices x ∈ J → x = 0 from this hx
-      have := @this x.1
+      have := @this x.val
       simp only [LieIdeal.incl_coe, LieIdeal.toLieSubalgebra_toSubmodule,
         LieSubmodule.mem_mk_iff', Submodule.mem_map, LieSubmodule.mem_toSubmodule, Subtype.exists,
         LieSubmodule.mem_bot, ZeroMemClass.coe_eq_zero, forall_exists_index, and_imp, J'] at this
@@ -179,7 +191,7 @@ lemma isSimple_of_isAtom (I : LieIdeal R L) (hI : IsAtom I) : IsSimple R I where
     constructor
     -- We know that `J ≤ I` since `J` is an ideal of `I`.
     · rintro _ ⟨x, -, rfl⟩
-      exact x.2
+      exact x.property
     -- So we need to show `J ≠ I` as ideals of `L`.
     -- This follows from our assumption that `J ≠ ⊤` as ideals of `I`.
     contrapose hJ
@@ -189,7 +201,6 @@ lemma isSimple_of_isAtom (I : LieIdeal R L) (hI : IsAtom I) : IsSimple R I where
     rcases hx with ⟨y, hy, rfl⟩
     exact hy
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 In a semisimple Lie algebra,
 Lie ideals that are contained in the supremum of a finite collection of atoms
@@ -248,20 +259,20 @@ lemma finitelyAtomistic : ∀ s : Finset (LieIdeal R L), ↑s ⊆ {I : LieIdeal 
   -- and `J ⊓ K = ⊥` by the independence of the atoms.
   · apply (sSupIndep_isAtom.disjoint_sSup (hs hJs) hs'S (Finset.notMem_erase _ _)).le_bot
     apply LieSubmodule.lie_le_inf
-    apply LieSubmodule.lie_mem_lie j.2
+    apply LieSubmodule.lie_mem_lie j.property
     simpa only [K, Finset.sup_id_eq_sSup] using hz
   -- By similar reasoning, `j` brackets to `0` with `x = y + z ∈ I`, if we show `J ⊓ I = ⊥`.
   suffices J ⊓ I = ⊥ by
     apply this.le
     apply LieSubmodule.lie_le_inf
-    exact LieSubmodule.lie_mem_lie j.2 hx
+    exact LieSubmodule.lie_mem_lie j.property hx
   -- Indeed `J ⊓ I = ⊥`, since `J` is an atom that is not contained in `I`.
   apply ((hs hJs).le_iff.mp _).resolve_right
   · contrapose hJI
     rw [← hJI]
     exact inf_le_right
   exact inf_le_left
-termination_by s => s.card
+termination_by s => #s
 decreasing_by exact Finset.card_lt_card hs'
 
 variable (R L) in
@@ -270,11 +281,11 @@ lemma booleanGenerators : BooleanGenerators {I : LieIdeal R L | IsAtom I} where
   finitelyAtomistic _ _ hs _ hIs := finitelyAtomistic _ hs _ hIs
 
 instance (priority := 100) instDistribLattice : DistribLattice (LieIdeal R L) :=
-  (booleanGenerators R L).distribLattice_of_sSup_eq_top sSup_atoms_eq_top
+  (booleanGenerators R L).distribLatticeOfSSupEqTop sSup_atoms_eq_top
 
 noncomputable
 instance (priority := 100) instBooleanAlgebra : BooleanAlgebra (LieIdeal R L) :=
-  (booleanGenerators R L).booleanAlgebra_of_sSup_eq_top sSup_atoms_eq_top
+  (booleanGenerators R L).booleanAlgebraOfSSupEqTop sSup_atoms_eq_top
 
 /-- A semisimple Lie algebra has trivial radical. -/
 instance (priority := 100) instHasTrivialRadical : HasTrivialRadical R L := by
@@ -287,7 +298,7 @@ instance (priority := 100) instHasTrivialRadical : HasTrivialRadical R L := by
   intro x y
   ext
   simp only [LieIdeal.coe_bracket_of_module, LieSubmodule.coe_bracket, ZeroMemClass.coe_zero]
-  have : (⁅(⟨x, hJ' x.2⟩ : I), ⟨y, hJ' y.2⟩⁆ : I) = 0 := trivial_lie_zero _ _ _ _
+  have : (⁅(⟨x, hJ' x.property⟩ : I), ⟨y, hJ' y.property⟩⁆ : I) = 0 := trivial_lie_zero _ _ _ _
   apply_fun Subtype.val at this
   exact this
 

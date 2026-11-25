@@ -8,12 +8,14 @@ module
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The pointwise monoidal structure on the product of families of monoidal categories
 
 Given a family of monoidal categories `C i`, we define a monoidal structure on
 `Π i, C i` where the tensor product is defined pointwise.
-
 -/
 
 @[expose] public section
@@ -151,7 +153,6 @@ def closedCounit (X : ∀ i, C i) : ihom X ⋙ tensorLeft X ⟶ 𝟭 (∀ i, C i
   app Y := fun i ↦ (ihom.ev (X i)).app (Y i)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Equips the product of a family of closed monoidal categories with
 a pointwise closed monoidal structure. -/
 @[simps]
@@ -174,6 +175,7 @@ instance (i : I) : (Pi.eval C i).Monoidal where
 set_option backward.defeqAttrib.useBackward true in
 instance [∀ i, BraidedCategory (C i)] (i : I) : (Pi.eval C i).Braided where
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simps]
 instance laxMonoidalPi' {D : Type*} [Category* D] [MonoidalCategory D] (F : ∀ i : I, D ⥤ C i)
@@ -182,6 +184,7 @@ instance laxMonoidalPi' {D : Type*} [Category* D] [MonoidalCategory D] (F : ∀ 
   ε := fun i ↦ Functor.LaxMonoidal.ε (F i)
   μ X Y := fun i ↦ Functor.LaxMonoidal.μ (F i) X Y
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simps]
 instance opLaxMonoidalPi' {D : Type*} [Category* D] [MonoidalCategory D]
@@ -210,6 +213,7 @@ instance [∀ i, BraidedCategory (C i)]
     (F : ∀ i : I, D ⥤ C i) [∀ i, (F i).Braided] :
     (Functor.pi' F).Braided where
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simps]
 instance laxMonoidalPi {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
@@ -219,6 +223,7 @@ instance laxMonoidalPi {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
   ε := fun i ↦ Functor.LaxMonoidal.ε (F i)
   μ X Y := fun i ↦ Functor.LaxMonoidal.μ (F i) (X i) (Y i)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simps]
 instance opLaxMonoidalPi {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]

@@ -5,7 +5,7 @@ Authors: Yury G. Kudryashov, Edison Xie
 -/
 module
 
-public import Mathlib.Data.Sign.Basic
+public import Mathlib.Basic.Sign.Basic
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
 public import Mathlib.LinearAlgebra.Matrix.ProjectiveSpecialLinearGroup
@@ -27,7 +27,6 @@ If `n` is a number, then `PGL(n, R)` is interpreted as `PGL(Fin n, R)`.
 
 * `Matrix.ProjectiveSpecialLinearGroup.isoPSLOfAlgClosed` is an isomorphism between
   `PGL(n, F)` and `PSL(n, F)` in the case of an algebraically closed field.
-
 -/
 
 open scoped MatrixGroups
@@ -121,6 +120,7 @@ lemma toPGL_injective :
     Function.Injective (ProjectiveSpecialLinearGroup.toPGL (n := n) (R := R)) :=
   QuotientGroup.injective_lift_iff _ _ _ |>.2 toPGL_ker.symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma toPGL_surj_of_roots
     (hR : ∀ r : Rˣ, ∃ k : Rˣ, k ^ Fintype.card n = r) :
     Function.Surjective (ProjectiveSpecialLinearGroup.toPGL (n := n) (R := R)) := fun g ↦ by
@@ -129,8 +129,8 @@ lemma toPGL_surj_of_roots
     obtain ⟨r, hr⟩ := hR g.det⁻¹
     exact ⟨r, by simpa [mul_eq_one_iff_eq_inv] using hr⟩
   simp only [Units.ext_iff, Units.val_mul, Units.val_pow_eq_pow_val,
-    GeneralLinearGroup.val_det_apply, ← Matrix.det_smul g.1 r.1, Units.val_one] at hr
-  use QuotientGroup.mk ⟨r.1 • g.1, hr⟩
+    GeneralLinearGroup.val_det_apply, ← Matrix.det_smul g.val r.val, Units.val_one] at hr
+  use QuotientGroup.mk ⟨r.val • g.val, hr⟩
   simp only [ProjectiveSpecialLinearGroup.toPGL_mk, mk_eq_mk_iff]
   refine ⟨r⁻¹, Units.ext ?_⟩
   simp only [Units.val_mul, coe_GL_coe_matrix, GeneralLinearGroup.coe_scalar]
@@ -155,7 +155,7 @@ noncomputable def isoPSLOfAlgClosedOfNonempty [Nonempty n] {F : Type*} [Field F]
   MulEquiv.symm (MulEquiv.ofBijective Matrix.ProjectiveSpecialLinearGroup.toPGL
     ⟨Matrix.ProjectiveSpecialLinearGroup.toPGL_injective,
     Matrix.ProjectiveSpecialLinearGroup.toPGL_surj_of_roots fun r => by
-  obtain ⟨x, hx⟩ := IsAlgClosed.exists_root (X ^ Fintype.card n - C r.1 : F[X]) (by
+  obtain ⟨x, hx⟩ := IsAlgClosed.exists_root (X ^ Fintype.card n - C r.val : F[X]) (by
     simp [Polynomial.degree_X_pow_sub_C Fintype.card_pos])
   have hx' : x ≠ 0 := by aesop
   exact ⟨⟨x, x⁻¹, mul_inv_cancel₀ hx', inv_mul_cancel₀ hx'⟩, by
@@ -197,7 +197,7 @@ theorem lift_comp_mk {f : GL n R →* M} (hf) : (lift f hf).comp mk = f := by
 
 /-- Given an action of `GL n R` such that the scalar matrices act trivially,
 define an action of `PGL n R`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def mulActionOfGL {α : Type*} [MulAction (GL n R) α]
     (h : ∀ (u : Rˣ) (a : α), GeneralLinearGroup.scalar n u • a = a) :
     MulAction (PGL(n, R)) α :=

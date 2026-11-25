@@ -5,7 +5,6 @@ Authors: Scott Carnahan
 -/
 module
 
-public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.Algebra.Lie.Cochain
 
 /-!
@@ -19,6 +18,7 @@ Because our sign convention for differentials is opposite that of Chevalley-Eile
 change of signs in the "action" part of the Lie bracket.
 
 ## Main definitions
+
 * `LieAlgebra.IsExtension`: A `Prop`-valued class characterizing an extension of Lie algebras.
 * `LieAlgebra.Extension`: A bundled structure giving an extension of Lie algebras.
 * `LieAlgebra.IsExtension.extension`: A function that builds the bundled structure from the class.
@@ -32,14 +32,15 @@ change of signs in the "action" part of the Lie bracket.
   of an extension.
 
 ## TODO
+
 * `IsCentral` - central extensions
 * `Equiv` - equivalence of extensions
 
 ## References
-* [Chevalley, Eilenberg, *Cohomology Theory of Lie Groups and Lie
-  Algebras*](chevalley_eilenberg_1948)
-* [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 1--3*](bourbaki1975)
 
+* [Chevalley, Eilenberg, *Cohomology Theory of Lie Groups and Lie
+  Algebras*][chevalley_eilenberg_1948]
+* [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 1--3*][bourbaki1975]
 -/
 
 @[expose] public section
@@ -151,7 +152,8 @@ def ofProd : L × M ≃ ofTwoCocycle c where
 
 -- transport instances along the equivalence
 instance : AddCommGroup (ofTwoCocycle c) := (ofProd c).symm.addCommGroup
-instance : Module R (ofTwoCocycle c) := (ofProd c).symm.module R
+instance : Module R (ofTwoCocycle c) :=
+  ({ (ofProd c).symm with map_add' _ _ := rfl : ofTwoCocycle c ≃+ L × M}).module R
 
 @[simp] lemma of_zero : ofProd c (0 : L × M) = 0 := rfl
 @[simp] lemma of_add (x y : L × M) : ofProd c (x + y) = ofProd c x + ofProd c y := rfl
@@ -182,14 +184,14 @@ instance : LieRing (ofTwoCocycle c) where
     rw [← of_add]
     exact Equiv.congr_arg (by simp; abel)
   lie_self x := by
-    rw [← of_zero, c.1.2]
+    rw [← of_zero, c.val.property]
     exact Equiv.congr_arg (by simp)
   leibniz_lie x y z := by
     rw [← of_add]
     refine Equiv.congr_arg ?_
     simp only [twoCochain_val_apply, Equiv.symm_apply_apply, lie_lie, Prod.mk_add_mk,
       sub_add_cancel, Prod.mk.injEq, true_and, lie_add, lie_sub]
-    have hc := c.2
+    have hc := c.property
     rw [mem_twoCocycle_iff] at hc
     have := d₂₃_apply R L M c ((ofProd c).symm x).1 ((ofProd c).symm y).1 ((ofProd c).symm z).1
     simp only [hc, LinearMap.zero_apply] at this
@@ -223,7 +225,7 @@ def LieEquiv.ofCoboundary (c' : twoCocycle R L M) (x : oneCochain R L M)
     ofProd c (y.1, y.2 + x y.1)
   map_add' _ _ := by simp [← of_add]; abel
   map_smul' := by simp [← of_smul, smul_sub]
-  map_lie' := ((ofProd c').apply_eq_iff_eq_symm_apply).2 <| by simp [bracket_ofTwoCocycle, h]; abel
+  map_lie' := ((ofProd c').eq_symm_apply).1 <| by simp [bracket_ofTwoCocycle, h]; abel
   left_inv y := by simp
   right_inv z := by simp
 
@@ -299,6 +301,7 @@ lemma lie_incl_mem_ker {E : Extension R M L} (x : E.L) (y : M) :
     ⁅x, E.incl y⁆ ∈ E.proj.ker := by
   rw [LieHom.mem_ker, LieHom.map_lie, proj_incl, lie_zero]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The Lie algebra isomorphism from the kernel of an extension to the kernel of the projection. -/
 noncomputable def toKer (E : Extension R M L) :
     M ≃ₗ⁅R⁆ E.proj.ker where
@@ -322,7 +325,7 @@ instance [IsLieAbelian M] (E : Extension R M L) : IsLieAbelian E.proj.ker :=
 /-- Given an extension of `L` by `M` whose kernel `M` is abelian, the kernel `M` gets an `L`-module
 structure. We do not make this an instance, because we may have to work with more than one
 extension. -/
-@[simps, implicit_reducible]
+@[simps, instance_reducible]
 noncomputable def ringModuleOf [IsLieAbelian M] (E : Extension R M L) : LieRingModule L M where
   bracket x y := E.toKer.symm ⁅E.proj_surjective.hasRightInverse.choose x, E.toKer y⁆
   add_lie x y m := by
@@ -355,7 +358,7 @@ one extension. -/
 lemma lieModuleOf [IsLieAbelian M] (E : Extension R M L) :
     letI := E.ringModuleOf
     LieModule R L M := by
-  letI := E.ringModuleOf
+  let := E.ringModuleOf
   set h := E.proj_surjective.hasRightInverse
   exact
     { smul_lie r x m := by
@@ -411,9 +414,9 @@ noncomputable def twoCocycleOf [IsLieAbelian M] (E : Extension R M L) {s : L →
       simpa [← map_sub, ← map_add, ← twoCochain_val_apply, Subtype.ext_iff, twoCocycleAux, aux]
     have hjac := lie_lie (s x) (s y) (s z)
     rw [← lie_skew, neg_eq_iff_eq_neg] at hjac
-    have hja := congr_arg s (lie_lie x y z)
+    have hja := congr(s $(lie_lie x y z))
     rw [← lie_skew, map_neg, neg_eq_iff_eq_neg] at hja
-    have hj := congr_arg s (lie_lie y x z)
+    have hj := congr(s $(lie_lie y x z))
     rw [← lie_skew, map_neg, neg_eq_iff_eq_neg] at hj
     rw [hjac, hj, hja, ← lie_skew y z, ← lie_skew _ (s (-⁅z, y⁆)), ← lie_skew (s ⁅x, z⁆),
       ← lie_skew (s ⁅x, y⁆), ← lie_skew x z]
@@ -451,9 +454,9 @@ lemma d₁₂_oneCochainOfTwoSplitting [IsLieAbelian M] (E : Extension R M L) {s
   replace this {s' : L → E.L} (h : LeftInverse E.proj s') :
       ⁅s x, s' y⁆ = ⁅s' x, s' y⁆ + (⁅s x, s y⁆ - ⁅s' x, s y⁆) := by
     simpa [sub_sub, sub_eq_zero] using this h
-  simp only [d₁₂_apply_coe_apply_apply, oneCochainOfTwoSplitting_apply, AddSubgroupClass.coe_sub,
-    twoCocycleOf_coe_coe, LinearMap.sub_apply, LinearMap.compr₂_apply, LinearMap.coe_mk,
-    AddHom.coe_mk, LinearEquiv.coe_coe, LieEquiv.coe_toLinearEquiv]
+  simp only [twoCochain_val_apply, d₁₂_apply_apply, oneCochainOfTwoSplitting_apply,
+    AddSubgroupClass.coe_sub, twoCocycleOf_coe_coe, LinearMap.sub_apply, LinearMap.compr₂_apply,
+    LinearMap.coe_mk, AddHom.coe_mk, LinearEquiv.coe_toLinearMap, LieEquiv.coe_toLinearEquiv]
   nth_rw 1 [← hs x]
   nth_rw 4 [← hs y]
   simp only [← EmbeddingLike.apply_eq_iff_eq E.toKer, ringModuleOf_bracket_proj,

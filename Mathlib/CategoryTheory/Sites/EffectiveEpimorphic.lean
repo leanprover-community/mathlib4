@@ -5,11 +5,13 @@ Authors: Adam Topaz
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.SheafOfTypes
 public import Mathlib.CategoryTheory.EffectiveEpi.Basic
+public import Mathlib.CategoryTheory.Sites.SheafOfTypes
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
-
 # Effective epimorphic sieves
 
 We define the notion of effective epimorphic (pre)sieves and provide some API for relating the
@@ -19,7 +21,6 @@ More precisely, if `f` is a morphism, then `f` is an effective epi if and only i
 it generates is effective epimorphic; see `CategoryTheory.Sieve.effectiveEpimorphic_singleton`.
 The analogous statement for a family of morphisms is in the theorem
 `CategoryTheory.Sieve.effectiveEpimorphic_family`.
-
 -/
 
 universe w v u
@@ -70,7 +71,6 @@ lemma Presieve.EffectiveEpimorphic.iff_forall_isSheafFor_yoneda {X : C} (R : Pre
   simp_rw [Presieve.isSheafFor_iff_generate R,
     Presieve.EffectiveEpimorphic, Sieve.EffectiveEpimorphic.iff_forall_isSheafFor_yoneda]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma Presieve.EffectiveEpimorphic.isSheafFor_of_isRepresentable {X : C} {R : Presieve X}
     (hR : R.EffectiveEpimorphic) (F : Cᵒᵖ ⥤ Type w) [F.IsRepresentable] :
     R.IsSheafFor F := by
@@ -81,6 +81,7 @@ lemma Presieve.EffectiveEpimorphic.isSheafFor_of_isRepresentable {X : C} {R : Pr
   rw [isSheafFor_comp_uliftFunctor_iff]
   exact hR _
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /--
 Implementation: This is a construction which will be used in the proof that
@@ -195,6 +196,7 @@ lemma Sieve.generateFamily_eq {B : C} {α : Type*} (X : α → C) (π : (a : α)
   · rintro ⟨a, g, rfl⟩
     exact ⟨_, g, π a, ⟨a⟩, rfl⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /--
 Implementation: This is a construction which will be used in the proof that

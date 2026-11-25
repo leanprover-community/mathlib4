@@ -6,8 +6,12 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Dynamics.Ergodic.Action.OfMinimal
-public import Mathlib.Topology.Instances.AddCircle.DenseSubgroup
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
+
+import Mathlib.Topology.Instances.AddCircle.DenseSubgroup
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Ergodicity of an irrational rotation
@@ -18,7 +22,7 @@ if and only if `a` has infinite order (in other words, if `a / p` is irrational)
 
 public section
 
-open Metric MeasureTheory AddSubgroup
+open MeasureTheory AddSubgroup
 open scoped Pointwise
 
 namespace AddCircle

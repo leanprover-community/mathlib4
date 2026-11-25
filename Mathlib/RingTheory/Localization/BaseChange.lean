@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.IsTensorProduct
 public import Mathlib.RingTheory.Localization.Away.Basic
 public import Mathlib.RingTheory.Localization.Module
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Localized Module
 
@@ -38,6 +41,11 @@ theorem IsLocalizedModule.isBaseChange [IsLocalizedModule S f] : IsBaseChange A 
     refine ⟨ℓ.extendScalarsOfIsLocalization S A, by simp, fun g'' h ↦ ?_⟩
     cases h₂ (LinearMap.restrictScalars R g'') h; rfl
 
+variable (M) in
+lemma LocalizedModule.isBaseChange :
+    IsBaseChange (Localization S) (LocalizedModule.mkLinearMap S M) :=
+  IsLocalizedModule.isBaseChange S (Localization S) (LocalizedModule.mkLinearMap S M)
+
 /-- The map `(f : M →ₗ[R] M')` is a localization of modules iff the map
 `(Localization S) × M → N, (s, m) ↦ s • f m` is the tensor product (insomuch as it is the universal
 bilinear map).
@@ -46,12 +54,12 @@ given by `m/s ↦ (1/s) ⊗ₜ m`.
 -/
 theorem isLocalizedModule_iff_isBaseChange : IsLocalizedModule S f ↔ IsBaseChange A f := by
   refine ⟨fun _ ↦ IsLocalizedModule.isBaseChange S A f, fun h ↦ ?_⟩
-  letI : Module A (LocalizedModule S M) := LocalizedModule.moduleOfIsLocalization ..
+  let : Module A (LocalizedModule S M) := LocalizedModule.moduleOfIsLocalization ..
   have : IsBaseChange A (LocalizedModule.mkLinearMap S M) := IsLocalizedModule.isBaseChange S A _
   let e := (this.equiv.symm.trans h.equiv).restrictScalars R
-  convert! IsLocalizedModule.of_linearEquiv S (LocalizedModule.mkLinearMap S M) e
+  convert IsLocalizedModule.of_linearEquiv S (LocalizedModule.mkLinearMap S M) e
   ext
-  rw [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+  rw [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply,
     LinearEquiv.restrictScalars_apply, LinearEquiv.trans_apply, IsBaseChange.equiv_symm_apply,
     IsBaseChange.equiv_tmul, one_smul]
 
@@ -62,8 +70,7 @@ variable (M) in
 an `S⁻¹R`-module. -/
 noncomputable def LocalizedModule.equivTensorProduct :
     LocalizedModule S M ≃ₗ[Localization S] Localization S ⊗[R] M :=
-  IsLocalizedModule.isBaseChange S (Localization S)
-    (LocalizedModule.mkLinearMap S M) |>.equiv.symm
+  (LocalizedModule.isBaseChange S M).equiv.symm
 
 @[simp]
 lemma LocalizedModule.equivTensorProduct_symm_apply_tmul (x : M) (r : R) (s : S) :
@@ -117,7 +124,7 @@ instance (N N') [AddCommMonoid N] [Module R N] [AddCommMonoid N'] [Module R N'] 
     IsLocalizedModule S (TensorProduct.map f g) := by
   let eM := IsLocalizedModule.linearEquiv S f (TensorProduct.mk R (Localization S) M 1)
   let eN := IsLocalizedModule.linearEquiv S g (TensorProduct.mk R (Localization S) N 1)
-  convert!
+  convert
     IsLocalizedModule.of_linearEquiv S (TensorProduct.mk R (Localization S) (M ⊗[R] N) 1) <|
       (AlgebraTensorModule.distribBaseChange R (Localization S) ..).restrictScalars R ≪≫ₗ
         (congr eM eN ≪≫ₗ TensorProduct.equivOfCompatibleSMul ..).symm
@@ -207,11 +214,11 @@ instance {α} [IsLocalizedModule S f] :
   let e' : Localization S ⊗[R] (α →₀ M) ≃ₗ[R] (α →₀ M') :=
     finsuppRight R R (Localization S) M α ≪≫ₗ Finsupp.mapRange.linearEquiv e
   suffices IsLocalizedModule S (e'.symm.toLinearMap ∘ₗ Finsupp.mapRange.linearMap f) by
-    convert! this.of_linearEquiv (e := e')
+    convert this.of_linearEquiv (e := e')
     ext
     simp
   rw [isLocalizedModule_iff_isBaseChange S (Localization S)]
-  convert! TensorProduct.isBaseChange R (α →₀ M) (Localization S) using 1
+  convert TensorProduct.isBaseChange R (α →₀ M) (Localization S) using 1
   ext a m
   apply (finsuppRight R R (Localization S) M α).injective
   ext b
@@ -240,9 +247,9 @@ open TensorProduct
 instance IsLocalizedModule.rTensor (g : M →ₗ[A] M') [h : IsLocalizedModule S g] :
     IsLocalizedModule S (AlgebraTensorModule.rTensor R N g) := by
   let Aₚ := Localization S
-  letI : Module Aₚ M' := (IsLocalizedModule.iso S g).symm.toAddEquiv.module Aₚ
-  haveI : IsScalarTower A Aₚ M' := (IsLocalizedModule.iso S g).symm.isScalarTower Aₚ
-  haveI : IsScalarTower R Aₚ M' :=
+  let : Module Aₚ M' := (IsLocalizedModule.iso S g).symm.toAddEquiv.module Aₚ
+  have : IsScalarTower A Aₚ M' := (IsLocalizedModule.iso S g).symm.isScalarTower Aₚ
+  have : IsScalarTower R Aₚ M' :=
     IsScalarTower.of_algebraMap_smul <| fun r x ↦ by simp [IsScalarTower.algebraMap_apply R A Aₚ]
   rw [isLocalizedModule_iff_isBaseChange (S := S) (A := Aₚ)] at h ⊢
   exact isBaseChange_tensorProduct_map _ h
@@ -280,7 +287,7 @@ open Algebra.TensorProduct in
 lemma IsLocalization.tmul_mk' (M : Submonoid R) [IsLocalization M A] (s : S) (x : R) (y : M) :
     s ⊗ₜ IsLocalization.mk' A x y =
       IsLocalization.mk' (S ⊗[R] A) (algebraMap R S x * s)
-        ⟨algebraMap R S y.1, Algebra.mem_algebraMapSubmonoid_of_mem _⟩ := by
+        ⟨algebraMap R S y.val, Algebra.mem_algebraMapSubmonoid_of_mem _⟩ := by
   rw [IsLocalization.eq_mk'_iff_mul_eq, algebraMap_apply, Algebra.algebraMap_self,
     RingHomCompTriple.comp_apply, tmul_one_eq_one_tmul, tmul_mul_tmul, mul_one, mul_comm,
     IsLocalization.mk'_spec', algebraMap_apply, Algebra.algebraMap_self, RingHom.id_apply,
@@ -291,7 +298,7 @@ open Algebra.TensorProduct in
 lemma IsLocalization.mk'_tmul (M : Submonoid R) [IsLocalization M A] (s : S) (x : R) (y : M) :
     IsLocalization.mk' A x y ⊗ₜ s =
       IsLocalization.mk' (A ⊗[R] S) (algebraMap R S x * s)
-        ⟨algebraMap R S y.1, Algebra.mem_algebraMapSubmonoid_of_mem _⟩ := by
+        ⟨algebraMap R S y.val, Algebra.mem_algebraMapSubmonoid_of_mem _⟩ := by
   simp [IsLocalization.eq_mk'_iff_mul_eq, map_mul,
     RingHom.algebraMap_toAlgebra]
 
@@ -312,13 +319,14 @@ theorem tensorLeftAlgEquiv_apply_tmul_one (x : S) :
     tensorLeftAlgEquiv M S (x ⊗ₜ[R] 1) = algebraMap _ _ x :=
   (tensorLeftAlgEquiv M S).commutes x
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem tensorLeftAlgEquiv_apply_one_tmul (x : Localization M) :
     tensorLeftAlgEquiv M S (1 ⊗ₜ[R] x) = algebraMap _ _ x := by
   let Rₘ := Localization M
   let Sₘ := Localization (Algebra.algebraMapSubmonoid S M)
   obtain ⟨x, y, rfl⟩ := IsLocalization.exists_mk'_eq M x
-  letI : Algebra Rₘ (S ⊗[R] Rₘ) := Algebra.TensorProduct.rightAlgebra
+  let : Algebra Rₘ (S ⊗[R] Rₘ) := Algebra.TensorProduct.rightAlgebra
   have h1 : (1 : S) ⊗ₜ[R] IsLocalization.mk' Rₘ x y = algebraMap _ _ (IsLocalization.mk' Rₘ x y) :=
     rfl
   rw [h1, tensorLeftAlgEquiv, algEquiv_symm_apply,
@@ -330,10 +338,10 @@ theorem tensorLeftAlgEquiv_apply_one_tmul (x : Localization M) :
 
 /-- The isomorphism `Rₘ ⊗[R] S ≃ₐ[Rₘ] Sₘ`. -/
 noncomputable def tensorRightAlgEquiv :
-    Localization M ⊗[R] S ≃ₐ[Localization M] Localization (Algebra.algebraMapSubmonoid S M) where
-  __ := (Algebra.TensorProduct.comm R (Localization M) S).toRingEquiv.trans
-    (tensorLeftAlgEquiv M S).toRingEquiv
-  commutes' := tensorLeftAlgEquiv_apply_one_tmul M S
+    Localization M ⊗[R] S ≃ₐ[Localization M] Localization (Algebra.algebraMapSubmonoid S M) :=
+  .ofCommutes ((Algebra.TensorProduct.comm R (Localization M) S).toRingEquiv.trans
+      (tensorLeftAlgEquiv M S).toRingEquiv)
+    (tensorLeftAlgEquiv_apply_one_tmul M S)
 
 @[simp]
 theorem tensorRightAlgEquiv_apply_tmul_one (x : Localization M) :
@@ -411,7 +419,7 @@ lemma IsLocalization.tensorProductEquivOfMapIncludeRight_tmul (M : Submonoid A)
     (x : S) (a : A) :
     IsLocalization.tensorProductEquivOfMapIncludeRight R S M B C (x ⊗ₜ algebraMap A B a) =
       algebraMap _ _ (x ⊗ₜ[R] a) := by
-  letI : Algebra (S ⊗[R] A) (S ⊗[R] B) :=
+  let : Algebra (S ⊗[R] A) (S ⊗[R] B) :=
     (Algebra.TensorProduct.map (AlgHom.id R S) (IsScalarTower.toAlgHom R _ _)).toAlgebra
   have heq : x ⊗ₜ[R] (algebraMap A B) a = algebraMap _ _ (x ⊗ₜ[R] a) := rfl
   simp [heq, IsLocalization.tensorProductEquivOfMapIncludeRight]

@@ -22,14 +22,13 @@ Then to check the sheaf condition it suffices
 to check it on the underlying sheaf of types.
 
 ## References
+
 * https://stacks.math.columbia.edu/tag/0073
 -/
 
 public section
 
 universe v v₁ v₂ u₁ u₂
-
-noncomputable section
 
 open CategoryTheory Limits
 

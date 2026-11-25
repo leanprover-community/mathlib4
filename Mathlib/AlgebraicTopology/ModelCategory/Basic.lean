@@ -5,12 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-public import Mathlib.CategoryTheory.MorphismProperty.Composition
-public import Mathlib.CategoryTheory.MorphismProperty.Factorization
-public import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
-public import Mathlib.CategoryTheory.MorphismProperty.WeakFactorizationSystem
 public import Mathlib.AlgebraicTopology.ModelCategory.Instances
 
 /-!
@@ -27,10 +21,10 @@ As a given category `C` may have several model category structures, it is advisa
 to define only local instances of `ModelCategory`, or to set these instances on type synonyms.
 
 ## References
+
 * [Daniel G. Quillen, Homotopical algebra][Quillen1967]
 * [Paul G. Goerss, John F. Jardine, Simplicial Homotopy Theory][goerss-jardine-2009]
 * https://ncatlab.org/nlab/show/model+category
-
 -/
 
 @[expose] public section
@@ -96,7 +90,6 @@ section mk'
 
 open MorphismProperty
 
-set_option backward.isDefEq.respectTransparency false in
 variable {C} in
 private lemma mk'.cm3a_aux [CategoryWithFibrations C] [CategoryWithCofibrations C]
     [CategoryWithWeakEquivalences C]
@@ -119,11 +112,9 @@ private lemma mk'.cm3a_aux [CategoryWithFibrations C] [CategoryWithCofibrations 
     ⟨hw.hp, (weakEquivalence_iff _).1 (weakEquivalence_of_precomp_of_fac hw.fac)⟩
   simpa only [weakEquivalence_iff] using (of_retract this h').2
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Constructor for `ModelCategory C` which assumes a formulation of axioms
 using weak factorization systems. -/
-@[implicit_reducible]
+@[instance_reducible]
 def mk' [CategoryWithFibrations C] [CategoryWithCofibrations C]
     [CategoryWithWeakEquivalences C] [HasFiniteLimits C] [HasFiniteColimits C]
     [(weakEquivalences C).HasTwoOutOfThreeProperty]

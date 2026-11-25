@@ -12,7 +12,6 @@ public import Mathlib.Data.PNat.Basic
 # Explicit least witnesses to existentials on positive natural numbers
 
 Implemented via calling out to `Nat.find`.
-
 -/
 
 @[expose] public section
@@ -22,6 +21,7 @@ namespace PNat
 
 variable {p q : ℕ+ → Prop} [DecidablePred p] [DecidablePred q] (h : ∃ n, p n)
 
+set_option backward.isDefEq.respectTransparency false in
 instance decidablePredExistsNat : DecidablePred fun n' : ℕ => ∃ (n : ℕ+) (_ : n' = n), p n :=
   fun n' =>
   decidable_of_iff' (∃ h : 0 < n', p ⟨n', h⟩) <|

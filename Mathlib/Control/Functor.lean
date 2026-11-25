@@ -9,6 +9,9 @@ public import Mathlib.Data.Set.Defs
 
 import Mathlib.Tactic.Attr.Register
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functors
 
@@ -143,6 +146,14 @@ def Comp.mk {F : Type u → Type w} {G : Type v → Type u} {α : Type v} (x : F
 def Comp.run {F : Type u → Type w} {G : Type v → Type u} {α : Type v} (x : Comp F G α) : F (G α) :=
   x
 
+@[simp]
+theorem Comp.run_mk {F : Type u → Type w} {G : Type v → Type u} {α : Type v}
+    (x : F (G α)) : (mk x).run = x := rfl
+
+@[simp]
+theorem Comp.mk_run {F : Type u → Type w} {G : Type v → Type u} {α : Type v}
+    (x : Comp F G α) : mk (x.run) = x := rfl
+
 namespace Comp
 
 variable {F : Type u → Type w} {G : Type v → Type u}
@@ -173,9 +184,11 @@ protected theorem run_map {α β} (h : α → β) (x : Comp F G α) :
 variable [LawfulFunctor F] [LawfulFunctor G]
 variable {α β γ : Type v}
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem id_map : ∀ x : Comp F G α, Comp.map id x = x
   | Comp.mk x => by simp only [Comp.map, id_map, id_map']; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem comp_map (g' : α → β) (h : β → γ) :
     ∀ x : Comp F G α, Comp.map (h ∘ g') x = Comp.map h (Comp.map g' x)
   | Comp.mk x => by simp [Comp.map, Comp.mk, functor_norm, Function.comp_def]

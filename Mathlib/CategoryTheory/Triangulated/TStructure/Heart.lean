@@ -5,14 +5,13 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Abelian.Basic
 public import Mathlib.CategoryTheory.Triangulated.TStructure.Basic
 
 /-!
 # The heart of a t-structure
 
 Let `t` be a t-structure on a triangulated category `C`. We define
-the heart of `t` as a property `t.heart : ObjectProperty C`. As the
+the heart of `t` as a property `t.heart : ObjectProperty C`. As
 the heart is usually identified to a particular category in the applications
 (e.g. the heart of the canonical t-structure on the derived category of
 an abelian category `A` identifies to `A`), instead of working
@@ -21,11 +20,12 @@ with the full subcategory defined by `t.heart`, we introduce a typeclass
 the full subcategory `t.heart`.
 
 ## TODO (@joelriou)
+
 * Show that the heart is an abelian category.
 
 ## References
-* [Beilinson, Bernstein, Deligne, Gabber, *Faisceaux pervers*][bbd-1982]
 
+* [Beilinson, Bernstein, Deligne, Gabber, *Faisceaux pervers*][bbd-1982]
 -/
 
 @[expose] public section
@@ -65,7 +65,7 @@ class Heart where
 
 /-- Unless a better candidate category is available, the full subcategory
 of objects satisfying `t.heart` can be chosen as the heart of a t-structure `t`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def hasHeartFullSubcategory : t.Heart t.heart.FullSubcategory where
   ι := t.heart.ι
   essImage_eq_heart := by

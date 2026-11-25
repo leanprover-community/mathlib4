@@ -5,18 +5,18 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.AffineScheme
 public import Mathlib.AlgebraicGeometry.Limits
+public import Mathlib.RingTheory.Ideal.Height
 public import Mathlib.RingTheory.KrullDimension.Zero
 public import Mathlib.RingTheory.LocalProperties.Reduced
-public import Mathlib.RingTheory.Ideal.Height
 
 /-!
 # Basic properties of schemes
 
 We provide some basic properties of schemes
 
-## Main definition
+## Main definitions
+
 * `AlgebraicGeometry.IsIntegral`: A scheme is integral if it is nontrivial and all nontrivial
   components of the structure sheaf are integral domains.
 * `AlgebraicGeometry.IsReduced`: A scheme is reduced if all the components of the structure sheaf
@@ -37,12 +37,12 @@ variable (X : Scheme)
 
 instance : T0Space X :=
   T0Space.of_open_cover fun x => ⟨_, X.affineCover.covers x,
-    (X.affineCover.f _).opensRange.2, IsEmbedding.t0Space (Y := PrimeSpectrum _)
+    (X.affineCover.f _).opensRange.is_open', IsEmbedding.t0Space (Y := PrimeSpectrum _)
     (isAffineOpen_opensRange (X.affineCover.f _)).isoSpec.schemeIsoToHomeo.isEmbedding⟩
 
 instance : QuasiSober X := by
   apply +allowSynthFailures
-    quasiSober_of_open_cover (Set.range fun x => Set.range <| (X.affineCover.f x))
+    quasiSober_of_open_cover (Set.range fun x => Set.range (X.affineCover.f x))
   · rintro ⟨_, i, rfl⟩; exact (X.affineCover.f i).isOpenEmbedding.isOpen_range
   · rintro ⟨_, i, rfl⟩
     exact @IsOpenEmbedding.quasiSober _ _ _ _ _
@@ -55,7 +55,7 @@ instance {X : Scheme.{u}} : PrespectralSpace X :=
   have (Y : Scheme.{u}) (_ : IsAffine Y) : PrespectralSpace Y :=
     .of_isClosedEmbedding (Y := PrimeSpectrum _) _
       Y.isoSpec.hom.homeomorph.isClosedEmbedding
-  have (i : _) : PrespectralSpace (X.affineCover.f i).opensRange.1 :=
+  have (i : _) : PrespectralSpace (X.affineCover.f i).opensRange.carrier :=
     this (X.affineCover.f i).opensRange (isAffineOpen_opensRange (X.affineCover.f i))
   .of_isOpenCover X.affineCover.isOpenCover_opensRange
 
@@ -110,6 +110,7 @@ instance {𝒰 : X.OpenCover} [IsReduced X] (i : 𝒰.I₀) : IsReduced (𝒰.X 
 instance : ObjectProperty.IsClosedUnderIsomorphisms (C := Scheme) (IsReduced ·) :=
   ⟨fun e _ ↦ isReduced_of_isOpenImmersion e.inv⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance {R : CommRingCat.{u}} [H : _root_.IsReduced R] : IsReduced (Spec R) := by
   apply +allowSynthFailures isReduced_of_isReduced_stalk
   intro x
@@ -149,7 +150,7 @@ theorem IsReduced.iff_of_openCover (𝒰 : X.OpenCover) : IsReduced X ↔ ∀ i,
 theorem reduce_to_affine_global (P : ∀ {X : Scheme} (_ : X.Opens), Prop)
     {X : Scheme} (U : X.Opens)
     (h₁ : ∀ (X : Scheme) (U : X.Opens),
-      (∀ x : U, ∃ (V : _) (_ : x.1 ∈ V) (_ : V ⟶ U), P V) → P U)
+      (∀ x : U, ∃ (V : _) (_ : x.val ∈ V) (_ : V ⟶ U), P V) → P U)
     (h₂ : ∀ (X Y) (f : X ⟶ Y) [IsOpenImmersion f],
       ∃ (U : X.Opens) (V : Y.Opens), U = ⊤ ∧ V = f.opensRange ∧ (P U → P V))
     (h₃ : ∀ R : CommRingCat, P (X := Spec R) ⊤) : P U := by
@@ -170,7 +171,7 @@ theorem reduce_to_affine_nbhd (P : ∀ (X : Scheme) (_ : X), Prop)
     ∀ (X : Scheme) (x : X), P X x := by
   intro X x
   obtain ⟨y, e⟩ := X.affineCover.covers x
-  convert! h₂ (X.affineCover.f (X.affineCover.idx x)) y _
+  convert h₂ (X.affineCover.f (X.affineCover.idx x)) y _
   · rw [e]
   apply h₁
 
@@ -192,7 +193,7 @@ theorem eq_zero_of_basicOpen_eq_bot {X : Scheme} [hX : IsReduced X] {U : X.Opens
   | h₂ X Y f =>
     refine ⟨f ⁻¹ᵁ f.opensRange, f.opensRange, by simp, rfl, ?_⟩
     rintro H hX s hs _ ⟨x, rfl⟩
-    haveI := isReduced_of_isOpenImmersion f
+    have := isReduced_of_isOpenImmersion f
     specialize H (f.app _ s) _ x ⟨x, rfl⟩
     · rw [← Scheme.preimage_basicOpen, hs]; ext1; simp [Opens.map]
     · have H : (X.presheaf.germ _ x _).hom _ = 0 := H
@@ -213,6 +214,7 @@ theorem basicOpen_eq_bot_iff {X : Scheme} [IsReduced X] {U : X.Opens}
   rintro rfl
   simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `X` is reduced and has finitely many irreducible components, then the stalks at the generic
 points of the irreducible components are fields. -/
 lemma isField_stalk_of_closure_mem_irreducibleComponents
@@ -247,12 +249,12 @@ instance [IsIntegral X] : IsDomain Γ(X, ⊤) :=
 instance (priority := 900) isReduced_of_isIntegral [IsIntegral X] : IsReduced X := by
   constructor
   intro U
-  rcases U.1.eq_empty_or_nonempty with h | h
+  rcases U.carrier.eq_empty_or_nonempty with h | h
   · have : U = ⊥ := SetLike.ext' h
-    haveI : Subsingleton Γ(X, U) :=
+    have : Subsingleton Γ(X, U) :=
       CommRingCat.subsingleton_of_isTerminal (X.sheaf.isTerminalOfEqEmpty this)
     infer_instance
-  · haveI : Nonempty U := by simpa
+  · have : Nonempty U := by simpa
     infer_instance
 
 instance Scheme.component_nontrivial (X : Scheme.{u}) (U : X.Opens) [Nonempty U] :
@@ -267,15 +269,17 @@ instance irreducibleSpace_of_isIntegral [IsIntegral X] : IrreducibleSpace X := b
   simp_rw [isPreirreducible_iff_isClosed_union_isClosed, not_forall, not_or] at H
   rcases H with ⟨S, T, hS, hT, h₁, h₂, h₃⟩
   rw [Set.not_univ_subset] at h₂ h₃
-  haveI : Nonempty (⟨Sᶜ, hS.1⟩ : X.Opens) := ⟨⟨_, h₂.choose_spec⟩⟩
-  haveI : Nonempty (⟨Tᶜ, hT.1⟩ : X.Opens) := ⟨⟨_, h₃.choose_spec⟩⟩
-  haveI : Nonempty (⟨Sᶜ, hS.1⟩ ⊔ ⟨Tᶜ, hT.1⟩ : X.Opens) := ⟨⟨_, Or.inl h₂.choose_spec⟩⟩
-  let e : Γ(X, _) ≅ CommRingCat.of _ :=
-    (X.sheaf.isProductOfDisjoint ⟨_, hS.1⟩ ⟨_, hT.1⟩ ?_).conePointUniqueUpToIso
-      (CommRingCat.prodFanIsLimit _ _)
-  · have : IsDomain (Γ(X, ⟨Sᶜ, hS.1⟩) × Γ(X, ⟨Tᶜ, hT.1⟩)) :=
+  have : Nonempty (⟨Sᶜ, hS.isOpen_compl⟩ : X.Opens) := ⟨⟨_, h₂.choose_spec⟩⟩
+  have : Nonempty (⟨Tᶜ, hT.isOpen_compl⟩ : X.Opens) := ⟨⟨_, h₃.choose_spec⟩⟩
+  have : Nonempty (⟨Sᶜ, hS.isOpen_compl⟩ ⊔ ⟨Tᶜ, hT.isOpen_compl⟩ : X.Opens) :=
+    ⟨⟨_, Or.inl h₂.choose_spec⟩⟩
+  let e : Γ(X, _) ≅ ↧_ :=
+    (X.sheaf.isProductOfDisjoint ⟨_, hS.isOpen_compl⟩ ⟨_, hT.isOpen_compl⟩
+      ?_).conePointUniqueUpToIso (CommRingCat.prodFanIsLimit _ _)
+  · have : IsDomain (Γ(X, ⟨Sᶜ, hS.isOpen_compl⟩) × Γ(X, ⟨Tᶜ, hT.isOpen_compl⟩)) :=
       e.symm.commRingCatIsoToRingEquiv.toMulEquiv.isDomain _
-    exact false_of_nontrivial_of_product_domain Γ(X, ⟨Sᶜ, hS.1⟩) Γ(X, ⟨Tᶜ, hT.1⟩)
+    exact false_of_nontrivial_of_product_domain Γ(X, ⟨Sᶜ, hS.isOpen_compl⟩)
+      Γ(X, ⟨Tᶜ, hT.isOpen_compl⟩)
   · ext x
     constructor
     · rintro ⟨hS, hT⟩
@@ -287,18 +291,18 @@ theorem isIntegral_of_irreducibleSpace_of_isReduced [IsReduced X] [H : Irreducib
     IsIntegral X := by
   constructor; · infer_instance
   intro U hU
-  haveI := (@LocallyRingedSpace.component_nontrivial X.toLocallyRingedSpace U hU).1
+  have := (@LocallyRingedSpace.component_nontrivial X.toLocallyRingedSpace U hU).exists_pair_ne
   have : NoZeroDivisors
       (X.toLocallyRingedSpace.toSheafedSpace.toPresheafedSpace.presheaf.obj (op U)) := by
     refine ⟨fun {a b} e => ?_⟩
     simp_rw [← basicOpen_eq_bot_iff, ← Opens.not_nonempty_iff_eq_bot]
     by_contra! h
     obtain ⟨x, ⟨hxU, hx₁⟩, _, hx₂⟩ :=
-      nonempty_preirreducible_inter (X.basicOpen a).2 (X.basicOpen b).2 h.1 h.2
-    replace e := congr_arg (X.presheaf.germ U x hxU) e
+      nonempty_preirreducible_inter (X.basicOpen a).is_open' (X.basicOpen b).is_open' h.1 h.2
+    replace e := congr(X.presheaf.germ U x hxU $e)
     rw [map_mul, map_zero] at e
     refine zero_ne_one' (X.presheaf.stalk x) (isUnit_zero_iff.1 ?_)
-    convert! hx₁.mul hx₂
+    convert hx₁.mul hx₂
     exact e.symm
   exact NoZeroDivisors.to_isDomain _
 
@@ -360,6 +364,7 @@ open IrreducibleCloseds Set in
 lemma coheight_eq_of_isOpenImmersion {U X : Scheme} {x : U} (f : U ⟶ X) [IsOpenImmersion f] :
     Order.coheight (f.base x) = Order.coheight x := f.isOpenEmbedding.coheight_eq
 
+set_option backward.isDefEq.respectTransparency.types false in
 open Order in
 lemma idealHeight_eq_coheight (R : CommRingCat) (x : Spec R) :
     x.asIdeal.height = coheight x := by
@@ -367,6 +372,7 @@ lemma idealHeight_eq_coheight (R : CommRingCat) (x : Spec R) :
     ← Order.coheight_orderIso (specOrderIsoPrimeSpectrum R), ← height_ofDual,
     specOrderIsoPrimeSpectrum_apply, OrderDual.ofDual_toDual]
 
+set_option backward.isDefEq.respectTransparency.types false in
 open Order in
 @[stacks 02IZ]
 lemma ringKrullDim_stalk_eq_coheight {X : Scheme} (x : X) :
@@ -391,7 +397,7 @@ variable {X} in
 lemma krullDimLE_of_coheight_le
     {z : X} {n : ℕ} (hz : coheight z ≤ n) : Ring.KrullDimLE n (X.presheaf.stalk z) := by
   rw [Ring.krullDimLE_iff, ringKrullDim_stalk_eq_coheight z]
-  exact_mod_cast hz
+  exact mod_cast hz
 
 lemma isField_of_isIntegral_of_subsingleton (X : Scheme.{u}) [IsIntegral X] [Subsingleton X] :
     IsField Γ(X, ⊤) := by

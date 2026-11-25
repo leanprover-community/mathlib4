@@ -10,13 +10,16 @@ public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Algebra.Ring.Pi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pi instances for ordered groups and monoids
 
 This file defines instances for ordered group, monoid, and related structures on Pi types.
 -/
 
-@[expose] public section
+public section
 
 variable {I α β γ : Type*}
 

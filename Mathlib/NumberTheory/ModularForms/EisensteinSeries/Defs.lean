@@ -5,10 +5,8 @@ Authors: Chris Birkbeck, David Loeffler
 -/
 module
 
-public import Mathlib.Algebra.EuclideanDomain.Int
-public import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
-public import Mathlib.RingTheory.EuclideanDomain
 public import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
+public import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
 
 /-!
 # Eisenstein Series
@@ -24,6 +22,7 @@ public import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
 * We show that they define a slash invariant form of level `Γ(N)` and weight `k`.
 
 ## References
+
 * [F. Diamond and J. Shurman, *A First Course in Modular Forms*][diamondshurman2005]
 -/
 
@@ -31,7 +30,8 @@ public import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
 
 noncomputable section
 
-open ModularForm UpperHalfPlane Complex Matrix CongruenceSubgroup Set
+open ModularForm UpperHalfPlane Complex CongruenceSubgroup Set
+open Matrix hiding zpow_neg
 
 open scoped MatrixGroups
 
@@ -58,14 +58,14 @@ lemma gammaSet_one_const (a a' : Fin 2 → ZMod 1) : gammaSet 1 r a = gammaSet 1
 /-- For level `N = 1`, the gamma sets simplify to only a `gcd` condition. -/
 lemma gammaSet_one_eq (a : Fin 2 → ZMod 1) :
     gammaSet 1 r a = {v : Fin 2 → ℤ | (v 0).gcd (v 1) = r} := by
-  simp [gammaSet, Subsingleton.eq_zero]
+  simp [gammaSet, Subsingleton.eq_zero (α := Fin 2 → ZMod 1)]
 
 lemma gammaSet_one_mem_iff (v : Fin 2 → ℤ) : v ∈ gammaSet 1 r 0 ↔ (v 0).gcd (v 1) = r := by
-  simp [gammaSet, Subsingleton.eq_zero]
+  simp [gammaSet, Subsingleton.eq_zero (α := Fin 2 → ZMod 1)]
 
 /-- For level `N = 1`, the gamma sets are all equivalent; this is the equivalence. -/
 def gammaSet_one_equiv (a a' : Fin 2 → ZMod 1) : gammaSet 1 r a ≃ gammaSet 1 r a' :=
-  Equiv.setCongr (gammaSet_one_const r a a')
+  Set.equivOfEq (gammaSet_one_const r a a')
 
 /-- The map from `Fin 2 → ℤ` sending `![a,b]` to `a.gcd b`. -/
 abbrev finGcdMap (v : Fin 2 → ℤ) : ℕ := (v 0).gcd (v 1)
@@ -99,8 +99,7 @@ lemma gammaSet_div_gcd_to_gammaSet10_bijection (r : ℕ) [NeZero r] :
     exact finGcdMap_div _ hx.2
   · intro x hx v hv hv2
     ext i
-    exact (Int.ediv_left_inj (gammaSet_div_gcd hx i) (gammaSet_div_gcd hv i)).mp
-      (congr_fun hv2 i)
+    exact (Int.ediv_left_inj (gammaSet_div_gcd hx i) (gammaSet_div_gcd hv i)).mp congr($hv2 i)
   · intro x hx
     use r • x
     simp only [nsmul_eq_mul, divIntMap, Int.cast_natCast]
@@ -126,9 +125,9 @@ def gammaSetDivGcdEquiv (r : ℕ) [NeZero r] : gammaSet 1 r 0 ≃ gammaSet 1 1 0
 
 @[simp]
 lemma gammaSetDivGcdEquiv_eq (r : ℕ) [NeZero r] (v : gammaSet 1 r 0) :
-    (gammaSetDivGcdEquiv r) v = divIntMap r v.1 := rfl
+    (gammaSetDivGcdEquiv r) v = divIntMap r v.val := rfl
 
-/-- The equivalence between `(Fin 2 → ℤ)` and `Σ n : ℕ, gammaSet 1 n 0)` . -/
+/-- The equivalence between `(Fin 2 → ℤ)` and `Σ n : ℕ, gammaSet 1 n 0` . -/
 def gammaSetDivGcdSigmaEquiv : (Fin 2 → ℤ) ≃ (Σ r : ℕ, gammaSet 1 r 0) := by
   apply (Equiv.sigmaFiberEquiv finGcdMap).symm.trans
   refine Equiv.sigmaCongrRight fun b => ?_
@@ -147,7 +146,7 @@ section gamma_action
 
 /-- Right-multiplying a vector by a matrix in `SL(2, ℤ)` doesn't change its gcd. -/
 lemma vecMulSL_gcd {v : Fin 2 → ℤ} (hab : finGcdMap v = r) (A : SL(2, ℤ)) :
-    finGcdMap (v ᵥ* A.1) = r := by
+    finGcdMap (v ᵥ* A.val) = r := by
   have hvr : v = r • (v / r) := by
     ext i
     refine Eq.symm (Int.mul_ediv_cancel' ?_)
@@ -167,12 +166,11 @@ lemma vecMul_SL2_mem_gammaSet {v : Fin 2 → ℤ} (hv : v ∈ gammaSet N r a)
 variable (a) in
 /-- The bijection between `GammaSets` given by multiplying by an element of `SL(2, ℤ)`. -/
 def gammaSetEquiv (γ : SL(2, ℤ)) : gammaSet N r a ≃ gammaSet N r (a ᵥ* γ) where
-  toFun v := ⟨v.1 ᵥ* γ, vecMul_SL2_mem_gammaSet v.2 γ⟩
-  invFun v := ⟨v.1 ᵥ* ↑(γ⁻¹), by
-      have := vecMul_SL2_mem_gammaSet v.2 γ⁻¹
+  toFun v := ⟨v.val ᵥ* γ, vecMul_SL2_mem_gammaSet v.property γ⟩
+  invFun v := ⟨v.val ᵥ* ↑(γ⁻¹), by
+      have := vecMul_SL2_mem_gammaSet v.property γ⁻¹
       rw [vecMul_vecMul, ← SpecialLinearGroup.coe_mul] at this
-      simpa only [SpecialLinearGroup.map_apply_coe, RingHom.mapMatrix_apply, Int.coe_castRingHom,
-        map_inv, mul_inv_cancel, SpecialLinearGroup.coe_one, vecMul_one]⟩
+      simpa⟩
   left_inv v := by simp_rw [vecMul_vecMul, ← SpecialLinearGroup.coe_mul, mul_inv_cancel,
     SpecialLinearGroup.coe_one, vecMul_one]
   right_inv v := by simp_rw [vecMul_vecMul, ← SpecialLinearGroup.coe_mul, inv_mul_cancel,
@@ -191,7 +189,7 @@ theorem eisSummand_SL2_apply (k : ℤ) (i : (Fin 2 → ℤ)) (A : SL(2, ℤ)) (z
   simp only [eisSummand, vecMul, vec2_dotProduct, denom, UpperHalfPlane.specialLinearGroup_apply]
   have h (a b c d u v : ℂ) (hc : c * z + d ≠ 0) : (u * ((a * z + b) / (c * z + d)) + v) ^ (-k) =
       (c * z + d) ^ k * ((u * a + v * c) * z + (u * b + v * d)) ^ (-k) := by
-    replace hc : z * c + d ≠ 0 := by convert! hc using 1; ring
+    replace hc : z * c + d ≠ 0 := by convert hc using 1; ring
     field_simp
     simp [div_zpow]
     ring_nf
@@ -221,12 +219,7 @@ def eisensteinSeriesSIF (k : ℤ) : SlashInvariantForm (Gamma N) k where
     obtain ⟨A, (hA : A ∈ Γ(N)), rfl⟩ := hA
     simp [SpecialLinearGroup.mapGL, ← SL_slash, eisensteinSeries_slash_apply, Gamma_mem'.mp hA]
 
-@[deprecated (since := "2026-02-10")]
-noncomputable alias eisensteinSeries_SIF := eisensteinSeriesSIF
-
 lemma eisensteinSeriesSIF_apply (k : ℤ) (z : ℍ) :
     eisensteinSeriesSIF a k z = eisensteinSeries a k z := rfl
-
-@[deprecated (since := "2026-02-10")] alias eisensteinSeries_SIF_apply := eisensteinSeriesSIF_apply
 
 end EisensteinSeries

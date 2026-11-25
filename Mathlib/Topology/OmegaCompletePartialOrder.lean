@@ -8,16 +8,18 @@ module
 public import Mathlib.Order.BourbakiWitt
 public import Mathlib.Topology.Order.ScottTopology
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Scott Topological Spaces
 
 A type of topological spaces whose notion
 of continuity is equivalent to continuity in ωCPOs.
 
-## Reference
+## References
 
 * https://ncatlab.org/nlab/show/Scott+topology
-
 -/
 
 @[expose] public section
@@ -54,11 +56,13 @@ def IsOpen (s : Set α) : Prop :=
 theorem isOpen_univ : IsOpen α univ := @CompleteLattice.ωScottContinuous.top α Prop _ _
 
 theorem IsOpen.inter (s t : Set α) : IsOpen α s → IsOpen α t → IsOpen α (s ∩ t) :=
+  let := Prop.completeLinearOrder
   CompleteLattice.ωScottContinuous.inf
 
 theorem isOpen_sUnion (s : Set (Set α)) (hs : ∀ t ∈ s, IsOpen α t) : IsOpen α (⋃₀ s) := by
   simp only [IsOpen] at hs ⊢
-  convert! CompleteLattice.ωScottContinuous.sSup hs
+  convert CompleteLattice.ωScottContinuous.sSup (s := (fun t x => x ∈ t) '' s)
+    (fun f hf => by obtain ⟨t, ht, rfl⟩ := hf; exact hs t ht)
   aesop
 
 theorem IsOpen.isUpperSet {s : Set α} (hs : IsOpen α s) : IsUpperSet s := hs.monotone

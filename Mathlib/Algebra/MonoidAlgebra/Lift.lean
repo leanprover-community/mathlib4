@@ -14,6 +14,7 @@ This file defines `liftNC`. For the definition of `MonoidAlgebra.lift`, see
 `Mathlib/Algebra/MonoidAlgebra/Basic.lean`.
 
 ## Main results
+
 * `MonoidAlgebra.liftNC`, `AddMonoidAlgebra.liftNC`: lift a homomorphism `f : k →+ R` and a
   function `g : G → R` to a homomorphism `k[G] →+ R`.
 -/
@@ -28,7 +29,7 @@ open Finsupp hiding single
 
 universe u₁ u₂ u₃ u₄
 
-variable (k : Type u₁) (G : Type u₂) (H : Type*) {R S T M : Type*}
+variable (k : Type u₁) (G : Type u₂) {R : Type*}
 
 /-! ### Multiplicative monoids -/
 
@@ -85,7 +86,7 @@ end One
 /-! #### Semiring structure -/
 section Semiring
 
-variable [Semiring k] [Monoid G] [Semiring R] [Semiring S] [Semiring T] [Monoid M]
+variable [Semiring k] [Monoid G] [Semiring R]
 
 /-- `liftNC` as a `RingHom`, for when `f x` and `g y` commute -/
 def liftNCRingHom (f : k →+* R) (g : G →* R) (h_comm : ∀ x y, Commute (f x) (g y)) : k[G] →+* R :=
@@ -159,7 +160,7 @@ end One
 /-! #### Semiring structure -/
 section Semiring
 
-variable [Semiring k] [AddMonoid G] [Semiring R] [Semiring S] [Semiring T] [AddMonoid M]
+variable [Semiring k] [AddMonoid G] [Semiring R]
 
 /-- `liftNC` as a `RingHom`, for when `f` and `g` commute -/
 def liftNCRingHom (f : k →+* R) (g : Multiplicative G →* R) (h_comm : ∀ x y, Commute (f x) (g y)) :

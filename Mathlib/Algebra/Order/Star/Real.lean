@@ -7,7 +7,10 @@ module
 
 public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Analysis.Real.Sqrt
-public import Mathlib.Data.NNReal.Star
+public import Mathlib.Basic.NNReal.Star
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-! # `ℝ` and `ℝ≥0` are \*-ordered rings. -/
 

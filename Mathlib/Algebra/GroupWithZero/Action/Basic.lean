@@ -6,8 +6,8 @@ Authors: Chris Hughes, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Group.Action.End
-public import Mathlib.Algebra.GroupWithZero.Action.Defs
 public import Mathlib.Algebra.Group.Action.Prod
+public import Mathlib.Algebra.GroupWithZero.Action.Defs
 public import Mathlib.Algebra.GroupWithZero.Prod
 
 /-!
@@ -36,7 +36,7 @@ interaction of different group actions,
 - `a • b` is used as notation for `SMul.smul a b`.
 - `a +ᵥ b` is used as notation for `VAdd.vadd a b`.
 
-## Implementation details
+## Implementation notes
 
 This file should avoid depending on other parts of `GroupTheory`, to avoid import cycles.
 More sophisticated lemmas belong in `GroupTheory.GroupAction`.
@@ -52,7 +52,7 @@ assert_not_exists Ring
 
 open Function
 
-variable {G G₀ A M M₀ N₀ R α : Type*}
+variable {G G₀ A M₀ N₀ R α : Type*}
 
 section GroupWithZero
 variable [GroupWithZero G₀] [MulAction G₀ α] {a : G₀}
@@ -69,7 +69,7 @@ protected lemma MulAction.surjective₀ (ha : a ≠ 0) : Surjective (a • · : 
 end GroupWithZero
 
 section DistribMulAction
-variable [Group G] [Monoid M] [AddMonoid A]
+variable [Group G] [AddMonoid A]
 variable (A)
 
 /-- Each element of the group defines an additive monoid isomorphism.

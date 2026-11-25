@@ -5,9 +5,13 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Generator.Type
 public import Mathlib.CategoryTheory.Presentable.StrongGenerator
 public import Mathlib.CategoryTheory.Types.Set
+
+import Mathlib.CategoryTheory.Generator.Type
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Presentable objects in Type
@@ -15,7 +19,6 @@ public import Mathlib.CategoryTheory.Types.Set
 In this file, we show that if `κ : Cardinal.{u}` is a regular cardinal,
 then `X : Type u` is `κ`-presentable in the category of types iff
 `HasCardinalLT X κ` holds, i.e. the cardinal number of `X` is less than `κ`.
-
 -/
 
 @[expose] public section
@@ -28,8 +31,6 @@ namespace HasCardinalLT
 
 variable (X : Type u) (κ : Cardinal.{u})
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 variable {X κ} in
 lemma isCardinalPresentable (hX : HasCardinalLT X κ) [Fact κ.IsRegular] :
     IsCardinalPresentable X κ where
@@ -72,7 +73,7 @@ instance [Fact κ.IsRegular] :
     (fun ι A hι ↦ ⟨⟨⋃ (i : ι), (A i).val,
       hasCardinalLT_iUnion _
         (by rwa [hasCardinalLT_iff_cardinal_mk_lt]) (fun i ↦ (A i).prop)⟩,
-      le_iSup (fun i ↦ (A i).1)⟩)
+      le_iSup (fun i ↦ (A i).val)⟩)
 
 instance [Fact κ.IsRegular] :
     IsFiltered (HasCardinalLT.Set X κ) :=
@@ -99,6 +100,7 @@ def cocone : Cocone (Set.functor X κ) where
   pt := X
   ι.app _ := ↾(Subtype.val)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Any type `X` is the (filtered) colimit of its subsets of cardinality `< κ`
 when `κ` is an infinite cardinal. (This colimit is `κ`-filtered when `κ` is
@@ -149,11 +151,11 @@ lemma isStrongGenerator_punit :
     (ObjectProperty.singleton (PUnit.{u + 1})).IsStrongGenerator  := by
   rw [ObjectProperty.isStrongGenerator_iff]
   refine ⟨isSeparator_punit, fun _ _ i hi₁ hi₂ ↦ ?_⟩
-  · rw [mono_iff_injective] at hi₁
-    rw [isIso_iff_bijective]
-    refine ⟨hi₁, fun y ↦ ?_⟩
-    obtain ⟨f, hf⟩ := hi₂ PUnit ⟨.unit⟩ (↾fun _ ↦ y)
-    exact ⟨f .unit, ConcreteCategory.congr_hom hf .unit⟩
+  rw [mono_iff_injective] at hi₁
+  rw [isIso_iff_bijective]
+  refine ⟨hi₁, fun y ↦ ?_⟩
+  obtain ⟨f, hf⟩ := hi₂ PUnit ⟨.unit⟩ (↾fun _ ↦ y)
+  exact ⟨f .unit, ConcreteCategory.congr_hom hf .unit⟩
 
 instance (κ : Cardinal.{u}) [Fact κ.IsRegular] :
     IsCardinalLocallyPresentable (Type u) κ := by

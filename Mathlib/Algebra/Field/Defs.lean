@@ -26,7 +26,7 @@ statements about them. For a more extensive theory of fields, see the `FieldTheo
   to an element of the field its multiplicative inverse, this predicate only assumes the existence
   and can therefore more easily be used to e.g. transfer along ring isomorphisms.
 
-## Implementation details
+## Implementation notes
 
 By convention `0⁻¹ = 0` in a field or division ring. This is due to the fact that working with total
 functions has the advantage of not constantly having to check that `x ≠ 0` when writing `x⁻¹`. With
@@ -53,8 +53,6 @@ assert_not_imported Mathlib.Tactic.Common
 assert_not_imported Mathlib.Algebra.NeZero
 
 assert_not_exists MonoidHom Set
-
-open Function
 
 universe u
 
@@ -102,6 +100,8 @@ class DivisionSemiring (K : Type*) extends Semiring K, GroupWithZero K, NNRatCas
 
   Do not use this lemma directly. Use `NNRat.smul_def` instead. -/
   protected nnqsmul_def (q : ℚ≥0) (a : K) : nnqsmul q a = NNRat.cast q * a := by intros; rfl
+
+attribute [instance 500] DivisionSemiring.toSemiring
 
 /-- A `DivisionRing` is a `Ring` with multiplicative inverses for nonzero elements.
 

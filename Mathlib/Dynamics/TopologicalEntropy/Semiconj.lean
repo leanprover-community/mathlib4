@@ -39,10 +39,12 @@ definition of the topological entropy of a subset, so as to avoid working with s
 `coverEntropy_restrict` shows that this choice is coherent with the literature.
 
 ## Implementation notes
+
 We use only the definition of the topological entropy using covers; the simplest version of
 `IsDynCoverOf.image` for nets fails.
 
 ## Main results
+
 - `coverEntropy_image_of_comap`/`coverEntropyInf_image_of_comap`: the entropy of `φ '' F` equals
   the entropy of `F` if `X` is endowed with the pullback by `φ` of the uniform structure of `Y`.
 - `coverEntropy_image_le_of_uniformContinuous`/`coverEntropyInf_image_le_of_uniformContinuous`:
@@ -51,12 +53,13 @@ We use only the definition of the topological entropy using covers; the simplest
   `coverEntropy S F`.
 
 ## Tags
+
 entropy, semiconjugacy
 -/
 
 public section
 
-open Function Prod Set Uniformity UniformSpace
+open Function Prod Set UniformSpace
 open scoped SetRel
 
 namespace Dynamics
@@ -89,7 +92,7 @@ lemma IsDynCoverOf.preimage (h : Semiconj φ S T) [V.IsSymm] {t : Finset Y}
   obtain ⟨y, hy, hxy⟩ := s_cover (Set.mem_image_of_mem _ hx)
   refine ⟨y, hy, dynEntourage_comp_subset _ _ _ _ ⟨_, hxy, ?_⟩⟩
   rw [φ_f _ (g_mem _ hy)]
-  exact g_rel _ hy
+  exact (dynEntourage T V n).symm (g_rel _ hy)
 
 lemma le_coverMincard_image (h : Semiconj φ S T) (F : Set X) [V.IsSymm] (n : ℕ) :
     coverMincard S F ((map φ φ) ⁻¹' (V ○ V)) n ≤ coverMincard T (φ '' F) V n := by
@@ -111,7 +114,7 @@ lemma coverMincard_image_le (h : Semiconj φ S T) (F : Set X) (V : SetRel Y Y) (
   rw [← s.coe_image] at this
   exact this.coverMincard_le_card.trans (WithTop.coe_le_coe.2 s.card_image_le)
 
-open ENNReal EReal ExpGrowth Filter
+open EReal ExpGrowth Filter
 
 lemma le_coverEntropyEntourage_image (h : Semiconj φ S T) (F : Set X) [V.IsSymm] :
     coverEntropyEntourage S F ((map φ φ) ⁻¹' (V ○ V)) ≤ coverEntropyEntourage T (φ '' F) V :=
@@ -211,23 +214,23 @@ lemma coverEntropy_image_le_of_uniformContinuousOn_invariant [UniformSpace X] [U
     (h' : UniformContinuousOn φ G) (hF : F ⊆ G) (hG : MapsTo S G G) :
     coverEntropy T (φ '' F) ≤ coverEntropy S F := by
   rw [← coverEntropy_restrict_subset hF hG]
-  have hφ : Semiconj (G.restrict φ) (hG.restrict S G G) T := by
+  have hφ : Semiconj (G.domRestrict φ) (hG.restrict S G G) T := by
     intro x
-    rw [G.restrict_apply, G.restrict_apply, hG.val_restrict_apply, h.eq x]
+    rw [G.domRestrict_apply, G.domRestrict_apply, hG.val_restrict_apply, h.eq x]
   apply (coverEntropy_image_le_of_uniformContinuous hφ
     (uniformContinuousOn_iff_restrict.1 h') (val ⁻¹' F)).trans_eq'
-  rw [← image_image_val_eq_restrict_image, image_preimage_coe G F, inter_eq_right.2 hF]
+  rw [← image_image_val_eq_domRestrict_image, image_preimage_coe G F, inter_eq_right.2 hF]
 
 lemma coverEntropyInf_image_le_of_uniformContinuousOn_invariant [UniformSpace X] [UniformSpace Y]
     {S : X → X} {T : Y → Y} {φ : X → Y} (h : Semiconj φ S T) {F G : Set X}
     (h' : UniformContinuousOn φ G) (hF : F ⊆ G) (hG : MapsTo S G G) :
     coverEntropyInf T (φ '' F) ≤ coverEntropyInf S F := by
   rw [← coverEntropyInf_restrict_subset hF hG]
-  have hφ : Semiconj (G.restrict φ) (hG.restrict S G G) T := by
+  have hφ : Semiconj (G.domRestrict φ) (hG.restrict S G G) T := by
     intro a
-    rw [G.restrict_apply, G.restrict_apply, hG.val_restrict_apply, h.eq a]
+    rw [G.domRestrict_apply, G.domRestrict_apply, hG.val_restrict_apply, h.eq a]
   apply (coverEntropyInf_image_le_of_uniformContinuous hφ
     (uniformContinuousOn_iff_restrict.1 h') (val ⁻¹' F)).trans_eq'
-  rw [← image_image_val_eq_restrict_image, image_preimage_coe G F, inter_eq_right.2 hF]
+  rw [← image_image_val_eq_domRestrict_image, image_preimage_coe G F, inter_eq_right.2 hF]
 
 end Dynamics

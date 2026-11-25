@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.CofilteredSystem
 public import Mathlib.Combinatorics.SimpleGraph.Subgraph
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Homomorphisms from finite subgraphs
 
@@ -60,13 +63,13 @@ instance : OrderBot G.Finsubgraph where
   bot_le _ := bot_le (α := G.Subgraph)
 
 instance : Max G.Finsubgraph :=
-  ⟨fun G₁ G₂ => ⟨G₁ ⊔ G₂, G₁.2.union G₂.2⟩⟩
+  ⟨fun G₁ G₂ => ⟨G₁ ⊔ G₂, G₁.property.union G₂.property⟩⟩
 
 instance : Min G.Finsubgraph :=
-  ⟨fun G₁ G₂ => ⟨G₁ ⊓ G₂, G₁.2.subset inter_subset_left⟩⟩
+  ⟨fun G₁ G₂ => ⟨G₁ ⊓ G₂, G₁.property.subset inter_subset_left⟩⟩
 
 instance instSDiff : SDiff G.Finsubgraph where
-  sdiff G₁ G₂ := ⟨G₁ \ G₂, G₁.2.subset (Subgraph.verts_mono sdiff_le)⟩
+  sdiff G₁ G₂ := ⟨G₁ \ G₂, G₁.property.subset (Subgraph.verts_mono sdiff_le)⟩
 
 @[simp, norm_cast] lemma coe_bot : (⊥ : G.Finsubgraph) = (⊥ : G.Subgraph) := rfl
 
@@ -156,9 +159,9 @@ theorem nonempty_hom_of_forall_finite_subgraph_hom [Finite W]
   -- Obtain a `Fintype` instance for `W`.
   cases nonempty_fintype W
   -- Establish the required interface instances.
-  haveI : ∀ G' : G.Finsubgraphᵒᵖ, Nonempty ((finsubgraphHomFunctor G F).obj G') := fun G' =>
+  have : ∀ G' : G.Finsubgraphᵒᵖ, Nonempty ((finsubgraphHomFunctor G F).obj G') := fun G' =>
     ⟨h G'.unop G'.unop.property⟩
-  haveI : ∀ G' : G.Finsubgraphᵒᵖ, Fintype ((finsubgraphHomFunctor G F).obj G') := by
+  have : ∀ G' : G.Finsubgraphᵒᵖ, Fintype ((finsubgraphHomFunctor G F).obj G') := by
     intro G'
     haveI : Fintype (G'.unop.val.verts : Type u) := G'.unop.property.fintype
     haveI : Fintype (↥G'.unop.val.verts → W) := by classical exact Pi.instFintype

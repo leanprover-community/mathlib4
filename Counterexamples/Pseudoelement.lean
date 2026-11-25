@@ -3,8 +3,10 @@ Copyright (c) 2022 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.CategoryTheory.Abelian.Pseudoelements
-import Mathlib.Algebra.Category.ModuleCat.Biproducts
+module
+
+public import Mathlib.CategoryTheory.Abelian.Pseudoelements
+public import Mathlib.Algebra.Category.ModuleCat.Biproducts
 
 /-!
 # Pseudoelements and pullbacks
@@ -14,27 +16,29 @@ Borceux claims in Proposition 1.9.5 that the pseudoelement constructed in
 false. This means in particular that we cannot have an extensionality principle for pullbacks in
 terms of pseudoelements.
 
-## Implementation details
+## Implementation notes
+
 The construction, suggested in https://mathoverflow.net/a/419951/7845, is the following.
 We work in the category of `ModuleCat ℤ` and we consider the special case of `ℚ ⊞ ℚ` (that is the
 pullback over the terminal object). We consider the pseudoelements associated to `x : ℚ ⟶ ℚ ⊞ ℚ`
 given by `t ↦ (t, 2 * t)` and `y : ℚ ⟶ ℚ ⊞ ℚ` given by `t ↦ (t, t)`.
 
 ## Main results
+
 * `Counterexample.exist_ne_and_fst_eq_fst_and_snd_eq_snd` : there are two
   pseudoelements `x y : ℚ ⊞ ℚ` such that `x ≠ y`, `biprod.fst x = biprod.fst y` and
   `biprod.snd x = biprod.snd y`.
 
 ## References
+
 * [F. Borceux, *Handbook of Categorical Algebra 2*][borceux-vol2]
 -/
 
+@[expose] public noncomputable section
 
 open CategoryTheory.Abelian CategoryTheory CategoryTheory.Limits ModuleCat LinearMap
 
 namespace Counterexample
-
-noncomputable section
 
 open CategoryTheory.Abelian.Pseudoelement
 
@@ -65,8 +69,6 @@ theorem snd_x_pseudo_eq_snd_y : PseudoEqual _ (app biprod.snd x) (app biprod.snd
     simp_rw [biprod.lift_snd]; rfl
 
 set_option backward.isDefEq.respectTransparency false in
--- Porting note: locally disable instance to avoid inferred/synthesized clash
-attribute [-instance] AddCommGroup.toIntModule in
 /-- `x` is not pseudoequal to `y`. -/
 theorem x_not_pseudo_eq : ¬PseudoEqual _ x y := by
   intro h
@@ -79,13 +81,13 @@ theorem x_not_pseudo_eq : ¬PseudoEqual _ x y := by
   rw [← ModuleCat.id_apply _ (φ (1 : ℚ)), ← biprod.total, ← LinearMap.comp_apply,
     ← ModuleCat.hom_comp, Preadditive.comp_add] at ha
   let π₁ := (biprod.fst : of ℤ ℚ ⊞ of ℤ ℚ ⟶ _)
-  have ha₁ := congr_arg π₁ ha
+  have ha₁ := congr(π₁ $ha)
   rw [← ModuleCat.comp_apply, ← ModuleCat.comp_apply] at ha₁
   simp only [π₁, φ, biprod.lift_fst, biprod.lift_fst_assoc, Category.id_comp,
     biprod.lift_snd_assoc, Linear.smul_comp, Preadditive.add_comp, BinaryBicone.inl_fst,
     BinaryBicone.inr_fst, smul_zero, add_zero] at ha₁
   let π₂ := (biprod.snd : of ℤ ℚ ⊞ of ℤ ℚ ⟶ _)
-  have ha₂ := congr_arg π₂ ha
+  have ha₂ := congr(π₂ $ha)
   rw [← ModuleCat.comp_apply, ← ModuleCat.comp_apply] at ha₂
   simp_all [π₂, φ]
 
@@ -119,7 +121,5 @@ theorem exist_ne_and_fst_eq_fst_and_snd_eq_snd :
         pseudoApply (biprod.fst : of ℤ ℚ ⊞ of ℤ ℚ ⟶ _) x = pseudoApply biprod.fst y ∧
           pseudoApply biprod.snd x = pseudoApply biprod.snd y :=
   ⟨⟦x⟧, ⟦y⟧, mk'_x_ne_mk'_y, fst_mk'_x_eq_fst_mk'_y, snd_mk'_x_eq_snd_mk'_y⟩
-
-end
 
 end Counterexample

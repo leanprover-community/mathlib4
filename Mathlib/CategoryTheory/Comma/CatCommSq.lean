@@ -8,12 +8,14 @@ module
 public import Mathlib.CategoryTheory.CatCommSq
 public import Mathlib.CategoryTheory.Comma.Arrow
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # 2-commutative squares of categories of arrows
-
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.Arrow
 

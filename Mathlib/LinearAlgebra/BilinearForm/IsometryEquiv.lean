@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.BilinearForm.Hom
 public import Mathlib.LinearAlgebra.BilinearForm.Isometry
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Isometric equivalences with respect to bilinear forms
 
@@ -23,7 +26,7 @@ corresponding file for quadratic maps, namely
 -/
 @[expose] public section
 
-variable {R M M₁ M₂ M₃ M₄ N : Type*}
+variable {R M M₁ M₂ M₃ : Type*}
 
 namespace LinearMap
 
@@ -31,9 +34,8 @@ namespace BilinForm
 
 variable [CommSemiring R]
 variable [AddCommMonoid M]
-variable [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃] [AddCommMonoid M₄]
-variable [AddCommMonoid N]
-variable [Module R M] [Module R M₁] [Module R M₂] [Module R M₃] [Module R M₄] [Module R N]
+variable [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
+variable [Module R M] [Module R M₁] [Module R M₂] [Module R M₃]
 
 /-- An isometric equivalence between two bilinear spaces `M₁, B₁` and `M₂, B₂` over a ring `R`,
 is a linear equivalence between `M₁` and `M₂` that commutes with the bilinear forms. -/
@@ -53,6 +55,7 @@ namespace IsometryEquiv
 variable {B₁ : LinearMap.BilinForm R M₁} {B₂ : LinearMap.BilinForm R M₂}
   {B₃ : LinearMap.BilinForm R M₃}
 
+@[macro_inline]
 instance : EquivLike (B₁.IsometryEquiv B₂) M₁ M₂ where
   coe f := f.toLinearEquiv
   inv f := f.toLinearEquiv.symm
@@ -86,7 +89,7 @@ def symm (f : B₁.IsometryEquiv B₂) : B₂.IsometryEquiv B₁ :=
   { (f : M₁ ≃ₗ[R] M₂).symm with
     map_app' := by
       intro _ _; rw [← f.map_app]; congr
-      repeat exact f.toLinearEquiv.apply_symm_apply _ }
+      all_goals exact f.toLinearEquiv.apply_symm_apply _ }
 
 /-- The composition of two isometric equivalences between bilinear forms. -/
 @[trans]
@@ -127,7 +130,7 @@ def isometryEquivOfCompLinearEquiv (B : LinearMap.BilinForm R M) (f : M₁ ≃�
   { f.symm with
     map_app' := by
       intro _ _
-      simp only [comp_apply, LinearEquiv.coe_coe, LinearEquiv.toFun_eq_coe,
+      simp only [comp_apply, LinearEquiv.coe_toLinearMap, LinearEquiv.toFun_eq_coe,
         f.apply_symm_apply] }
 
 end LinearMap.BilinForm

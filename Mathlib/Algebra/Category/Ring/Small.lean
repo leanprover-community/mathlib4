@@ -6,12 +6,14 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Algebra.Category.CommAlgCat.FiniteType
-public import Mathlib.CategoryTheory.ObjectProperty.Small
 
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-! # Smallness results on the category of `CommRing` -/
 
-@[expose] public section
+public section
 
 universe u
 
@@ -25,7 +27,7 @@ lemma essentiallySmall_of_finiteType [ObjectProperty.EssentiallySmall.{u} Q]
     (hPQ : ∀ S, P S → ∃ R, Q R ∧ ∃ (f : R ⟶ S), f.hom.FiniteType) :
     ObjectProperty.EssentiallySmall.{u} P := by
   obtain ⟨Q', _, hQ'Q, hQQ'⟩ := ObjectProperty.EssentiallySmall.exists_small_le Q
-  let f (S : Σ R : Subtype Q', FGAlgCatSkeleton R) : CommRingCat := .of S.2.eval.obj
+  let f (S : Σ R : Subtype Q', FGAlgCatSkeleton R) : CommRingCat := ↧S.2.eval.obj
   refine ⟨.ofObj f, inferInstance, fun S hS ↦ ?_⟩
   obtain ⟨R, hR, φ, hφ⟩ := hPQ S hS
   wlog hR' : Q' R generalizing R
@@ -36,16 +38,16 @@ lemma essentiallySmall_of_finiteType [ObjectProperty.EssentiallySmall.{u} Q]
   exact ⟨_, ⟨⟨_, hR'⟩, T⟩, ⟨RingEquiv.toCommRingCatIso e.symm⟩⟩
 
 lemma essentiallySmall_of_localizationAway [ObjectProperty.EssentiallySmall.{u} Q]
-    (hPQ : ∀ S, P S → ∃ s : Set S, Ideal.span s = ⊤ ∧ ∀ f ∈ s, Q (.of (Localization.Away f))) :
+    (hPQ : ∀ S, P S → ∃ s : Set S, Ideal.span s = ⊤ ∧ ∀ f ∈ s, Q ↧(Localization.Away f)) :
     ObjectProperty.EssentiallySmall.{u} P := by
   obtain ⟨Q', _, hQ'Q, hQQ'⟩ := ObjectProperty.EssentiallySmall.exists_small_le Q
-  let f (S : Σ (n : ℕ) (R : Fin n → Subtype Q'), Subring (Π i, (R i).1)) : CommRingCat := .of S.2.2
+  let f (S : Σ (n : ℕ) (R : Fin n → Subtype Q'), Subring (Π i, (R i).val)) : CommRingCat := ↧S.2.2
   refine ⟨.ofObj f, inferInstance, fun S hS ↦ ?_⟩
   obtain ⟨s, hs, H⟩ := hPQ S hS
   wlog hs' : s.Finite generalizing s
   · obtain ⟨s', hs's, hs'⟩ := (Ideal.span_eq_top_iff_finite _).mp hs
     exact this s' hs' (fun f hf ↦ H f (hs's hf)) s'.finite_toSet
-  choose S' hS' e using fun (f : s) ↦ hQQ' _ (H _ f.2)
+  choose S' hS' e using fun (f : s) ↦ hQQ' _ (H _ f.property)
   let φ : S →+* Π i, S' (hs'.equivFin.symm i) :=
     ((RingEquiv.piCongrRight fun i ↦ (e i).some.commRingCatIsoToRingEquiv).trans
       (RingEquiv.piCongrLeft (S' ·) hs'.equivFin.symm).symm).toRingHom.comp (algebraMap _ _)

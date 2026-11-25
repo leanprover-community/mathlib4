@@ -7,10 +7,13 @@ module
 
 public import Mathlib.Algebra.Category.Ring.Small
 public import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
-public import Mathlib.CategoryTheory.MorphismProperty.Comma
-public import Mathlib.RingTheory.RingHom.EssFiniteType
 public import Mathlib.RingTheory.RingHom.FiniteType
 public import Mathlib.RingTheory.Spectrum.Prime.Jacobson
+
+import Mathlib.RingTheory.RingHom.EssFiniteType
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Morphisms of finite type
@@ -21,7 +24,6 @@ A morphism of schemes `f : X ⟶ Y` is locally of finite type if for each affine
 A morphism of schemes is of finite type if it is both locally of finite type and quasi-compact.
 
 We show that these properties are local, and are stable under compositions and base change.
-
 -/
 
 public section
@@ -46,10 +48,6 @@ class LocallyOfFiniteType (f : X ⟶ Y) : Prop where
       (f.appLE U V e).hom.FiniteType
 
 alias Scheme.Hom.finiteType_appLE := LocallyOfFiniteType.finiteType_appLE
-
-@[deprecated (since := "2026-01-20")]
-alias LocallyOfFiniteType.finiteType_of_affine_subset :=
-  Scheme.Hom.finiteType_appLE
 
 instance : HasRingHomProperty @LocallyOfFiniteType RingHom.FiniteType where
   isLocal_ringHomProperty := RingHom.finiteType_isLocal
@@ -81,14 +79,17 @@ instance locallyOfFiniteType_isStableUnderBaseChange :
     MorphismProperty.IsStableUnderBaseChange @LocallyOfFiniteType :=
   HasRingHomProperty.isStableUnderBaseChange RingHom.finiteType_isStableUnderBaseChange
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [LocallyOfFiniteType g] :
     LocallyOfFiniteType (pullback.fst f g) :=
   MorphismProperty.pullback_fst f g inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [LocallyOfFiniteType f] :
     LocallyOfFiniteType (pullback.snd f g) :=
   MorphismProperty.pullback_snd f g inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (f : X ⟶ Y) (V : Y.Opens) [LocallyOfFiniteType f] : LocallyOfFiniteType (f ∣_ V) :=
   IsZariskiLocalAtTarget.restrict ‹_› V
 
@@ -110,6 +111,7 @@ instance {R} [CommRing R] [IsJacobsonRing R] : JacobsonSpace <| Spec <| .of R :=
 instance {R : CommRingCat} [IsJacobsonRing R] : JacobsonSpace (Spec R) :=
   inferInstanceAs (JacobsonSpace (PrimeSpectrum R))
 
+set_option backward.isDefEq.respectTransparency.types false in
 nonrec lemma LocallyOfFiniteType.jacobsonSpace
     (f : X ⟶ Y) [LocallyOfFiniteType f] [JacobsonSpace Y] : JacobsonSpace X := by
   wlog hY : ∃ S, Y = Spec S
@@ -174,7 +176,8 @@ lemma essentiallySmall_costructuredArrow_Spec
       exact fun q ↦ ⟨_, hf q, ⟨(IsLocalization.algEquiv (.powers (f q)) _
         ((Spec.structureSheaf _).obj.obj (op _))).toRingEquiv.toCommRingCatIso⟩⟩
   · intro R
-    refine ⟨.ofObj fun f : { f : Spec R.unop ⟶ X // P f } ↦ .mk _ f.1 f.2, inferInstance, ?_⟩
+    refine ⟨.ofObj fun f : { f : Spec R.unop ⟶ X // P f } ↦ .mk _ f.val f.property,
+      inferInstance, ?_⟩
     refine fun S ⟨e⟩ ↦ ⟨_, .mk ⟨Spec.map e.inv.unop ≫ S.hom, ?_⟩,
       ⟨MorphismProperty.CostructuredArrow.isoMk e trivial trivial ?_⟩⟩
     · simp [← Spec.map_comp_assoc, F]

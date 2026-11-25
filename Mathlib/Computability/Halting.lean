@@ -6,7 +6,6 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Computability.RE
-public import Mathlib.Data.Set.Subsingleton
 
 /-!
 # Computability theory and the halting problem
@@ -20,7 +19,7 @@ A universal partial recursive function, Rice's theorem, and the halting problem.
 
 public section
 
-open Encodable Denumerable
+open Denumerable
 open Computable Part
 open Nat.Partrec (Code)
 open Nat.Partrec.Code
@@ -42,13 +41,13 @@ theorem rice (C : Set (ℕ →. ℕ)) (h : ComputablePred fun c => eval c ∈ C)
 
 theorem rice₂ (C : Set Code) (H : ∀ cf cg, eval cf = eval cg → (cf ∈ C ↔ cg ∈ C)) :
     (ComputablePred fun c => c ∈ C) ↔ C = ∅ ∨ C = Set.univ := by
-  classical exact
+  exact
       have hC : ∀ f, f ∈ C ↔ eval f ∈ eval '' C := fun f =>
         ⟨Set.mem_image_of_mem _, fun ⟨g, hg, e⟩ => (H _ _ e).1 hg⟩
       ⟨fun h =>
         or_iff_not_imp_left.2 fun C0 =>
           Set.eq_univ_of_forall fun cg =>
-            let ⟨cf, fC⟩ := Set.nonempty_iff_ne_empty.2 C0
+            let ⟨cf, fC⟩ := Set.ne_empty_iff_nonempty.1 C0
             (hC _).2 <|
               rice (eval '' C) (h.of_eq hC)
                 (Partrec.nat_iff.1 <| eval_part.comp (const cf) Computable.id)

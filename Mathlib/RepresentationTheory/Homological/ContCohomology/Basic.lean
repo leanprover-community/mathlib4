@@ -6,17 +6,23 @@ Authors: Richard Hill, Andrew Yang, Edison Xie
 
 module
 
-public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 public import Mathlib.Algebra.Category.ModuleCat.Topology.Homology
+public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 public import Mathlib.RepresentationTheory.Continuous.TopRep
 
 /-!
-
 # Continuous cohomology
 
 We define continuous cohomology as the homology of the homogeneous cochain complex.
 
-## Implementation details
+## Main definitions
+
+- `TopRep.homogeneousCochains`:
+  The functor taking an `R`-linear `G`-representation to the complex of homogeneous cochains.
+- `continuousCohomology`:
+  The functor taking an `R`-linear `G`-representation to its `n`-th continuous cohomology.
+
+## Implementation notes
 
 We define homogeneous cochains as `g`-invariant continuous function in `C(G, C(G,...,C(G, M)))`
 instead of the usual `C(Gⁿ, M)` to allow more general topological groups other than locally compact
@@ -29,13 +35,8 @@ For the differential map, instead of a finite sum we use the inductive definitio
 `dₙ₊₁ : C(G, _) → C(G, C(G, _)) := const - C(G, dₙ) : f ↦ g ↦ f - dₙ (f (g))`
 See `TopRep.d`.
 
-## Main definition
-- `TopRep.homogeneousCochains`:
-  The functor taking an `R`-linear `G`-representation to the complex of homogeneous cochains.
-- `continuousCohomology`:
-  The functor taking an `R`-linear `G`-representation to its `n`-th continuous cohomology.
-
 ## TODO
+
 - Show that it coincides with `groupCohomology` for discrete groups.
 - Give the usual description of cochains in terms of `n`-ary functions for locally compact groups.
 - Show that short exact sequences induce long exact sequences in certain scenarios.
@@ -46,7 +47,7 @@ See `TopRep.d`.
 variable {k G : Type*} [Ring k] [Group G] [TopologicalSpace k]
   [TopologicalSpace G] [IsTopologicalGroup G]
 
-open CategoryTheory ContRepresentation Limits
+open CategoryTheory ContRepresentation
 
 namespace TopRep
 

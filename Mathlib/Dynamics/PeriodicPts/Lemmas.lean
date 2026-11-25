@@ -7,9 +7,13 @@ module
 
 public import Mathlib.Algebra.GCDMonoid.Finset
 public import Mathlib.Data.Nat.Prime.Basic
-public import Mathlib.Data.PNat.Basic
 public import Mathlib.Dynamics.PeriodicPts.Defs
 public import Mathlib.Order.Lattice.Nat
+
+import Mathlib.Data.PNat.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Extra lemmas about periodic points
@@ -20,7 +24,7 @@ public section
 open Nat Set
 
 namespace Function
-variable {α : Type*} {f : α → α} {x y : α}
+variable {α : Type*} {f : α → α} {x : α}
 
 open Function (Commute)
 
@@ -42,7 +46,14 @@ theorem minimalPeriod_eq_prime_iff {p : ℕ} [hp : Fact p.Prime] :
 theorem minimalPeriod_eq_sInf_n_pos_IsPeriodicPt :
     minimalPeriod f x = sInf { n > 0 | IsPeriodicPt f n x } := by
   dsimp +instances [minimalPeriod, periodicPts, sInf]
-  grind
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/14727 (replacing
+  grind's `ToInt` machinery with homomorphism-based translation), `grind` closed this.
+  Both sides are the same `dite`, differing only in the `DecidablePred` instance fed to
+  `Nat.find`: `instDecidableAnd .. (IsPeriodicPt.instDecidableOfDecidableEq ..)` on the
+  left, `Classical.propDecidable` on the right. `grind` cannot do that subsingleton
+  reasoning on its own — an opaque analogue fails on nightly-2026-08-12 too — so it was
+  only ever discharged as a side effect of cutsat internalizing the `Nat.find` term. -/
+  congr!
 
 /-- The backward direction of `minimalPeriod_eq_prime_iff`. -/
 theorem minimalPeriod_eq_prime {p : ℕ} [hp : Fact p.Prime] (hper : IsPeriodicPt f p x)
@@ -71,6 +82,29 @@ theorem Commute.minimalPeriod_of_comp_eq_mul_of_coprime {g : α → α} (h : Com
   refine hco.dvd_of_dvd_mul_left (IsPeriodicPt.left_of_comp h ?_ ?_).minimalPeriod_dvd
   · exact (isPeriodicPt_minimalPeriod _ _).const_mul _
   · exact (isPeriodicPt_minimalPeriod _ _).mul_const _
+
+theorem not_monotone_of_mem_periodicPts [PartialOrder α]
+    (hx : x ∈ periodicPts f) (hnfix : ¬IsFixedPt f x) :
+    ¬Monotone (f^[·] x) := by
+  intro h
+  obtain ⟨n, hn, (hp : f^[n] x = x)⟩ := hx
+  refine hnfix <| le_antisymm ?_ (h (Nat.zero_le 1))
+  simpa [hp] using h hn
+
+theorem exists_apply_lt_of_mem_periodicPts [LinearOrder α]
+    (hx : x ∈ periodicPts f) (hnfix : ¬IsFixedPt f x) :
+    ∃ b ∈ periodicOrbit f x, f b < b := by
+  have h := not_monotone_of_mem_periodicPts hx hnfix
+  rw [monotone_nat_iff] at h
+  push Not at h
+  obtain ⟨n, hn⟩ := h
+  refine ⟨f^[n] x, iterate_mem_periodicOrbit hx n, ?_⟩
+  rwa [iterate_succ'] at hn
+
+theorem exists_lt_apply_of_mem_periodicPts [LinearOrder α]
+    (hx : x ∈ periodicPts f) (hnfix : ¬IsFixedPt f x) :
+    ∃ b ∈ periodicOrbit f x, b < f b :=
+  exists_apply_lt_of_mem_periodicPts (α := αᵒᵈ) hx hnfix
 
 section Fintype
 
@@ -116,7 +150,7 @@ namespace Function
 
 section Prod
 
-variable {α β : Type*} {f : α → α} {g : β → β} {x : α × β} {a : α} {b : β} {m n : ℕ}
+variable {α β : Type*} {f : α → α} {g : β → β} {x : α × β} {m n : ℕ}
 
 theorem minimalPeriod_prodMap (f : α → α) (g : β → β) (x : α × β) :
     minimalPeriod (Prod.map f g) x = (minimalPeriod f x.1).lcm (minimalPeriod g x.2) :=

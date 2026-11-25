@@ -27,10 +27,11 @@ and uniform continuity.
 
 ## Main results
 
-* `dist_eq_zero`, `dist_pos`, `eq_of_forall_dist_le`, `eq_of_nndist_eq_zero`: core
+* `dist_eq_zero`, `dist_pos`, `eq_of_forall_dist_le`, `eq_of_nnDist_eq_zero`: core
   characterizations of equality via distance.
 
 ## Implementation notes
+
 A lot of elementary properties don't require `eq_of_dist_eq_zero`, hence are stated and proven
 for `PseudoMetricSpace`s in `Mathlib/Topology/MetricSpace/Pseudo/Defs.lean`.
 
@@ -48,7 +49,7 @@ open scoped NNReal Uniformity
 
 universe u v w
 
-variable {α : Type u} {β : Type v} {X ι : Type*}
+variable {α : Type u} {β : Type v} {X : Type*}
 variable [PseudoMetricSpace α]
 
 /-- A metric space is a type endowed with a `ℝ`-valued distance `dist` satisfying
@@ -79,7 +80,7 @@ theorem MetricSpace.ext {α : Type*} {m m' : MetricSpace α} (h : m.toDist = m'.
 /-- Construct a metric space structure whose underlying topological space structure
 (definitionally) agrees which a pre-existing topology which is compatible with a given distance
 function. -/
-@[implicit_reducible]
+@[instance_reducible]
 def MetricSpace.ofDistTopology {α : Type u} [TopologicalSpace α] (dist : α → α → ℝ)
     (dist_self : ∀ x : α, dist x x = 0) (dist_comm : ∀ x y : α, dist x y = dist y x)
     (dist_triangle : ∀ x y z : α, dist x z ≤ dist x y + dist y z)
@@ -115,21 +116,27 @@ theorem eq_of_forall_dist_le {x y : γ} (h : ∀ ε > 0, dist x y ≤ ε) : x = 
   eq_of_dist_eq_zero (eq_of_le_of_forall_lt_imp_le_of_dense dist_nonneg h)
 
 /-- Deduce the equality of points from the vanishing of the nonnegative distance -/
-theorem eq_of_nndist_eq_zero {x y : γ} : nndist x y = 0 → x = y := by
-  simp only [NNReal.eq_iff, ← dist_nndist, imp_self, NNReal.coe_zero, dist_eq_zero]
+theorem eq_of_nnDist_eq_zero {x y : γ} : nnDist x y = 0 → x = y := by
+  simp only [NNReal.eq_iff, ← dist_nnDist, imp_self, NNReal.coe_zero, dist_eq_zero]
+
+@[deprecated (since := "2026-11-07")] alias eq_of_nndist_eq_zero := eq_of_nnDist_eq_zero
 
 /-- Characterize the equality of points as the vanishing of the nonnegative distance -/
 @[simp]
-theorem nndist_eq_zero {x y : γ} : nndist x y = 0 ↔ x = y := by
-  simp only [NNReal.eq_iff, ← dist_nndist, NNReal.coe_zero, dist_eq_zero]
+theorem nnDist_eq_zero {x y : γ} : nnDist x y = 0 ↔ x = y := by
+  simp only [NNReal.eq_iff, ← dist_nnDist, NNReal.coe_zero, dist_eq_zero]
+
+@[deprecated (since := "2026-11-07")] alias nndist_eq_zero := nnDist_eq_zero
 
 @[simp]
-theorem zero_eq_nndist {x y : γ} : 0 = nndist x y ↔ x = y := by
-  simp only [NNReal.eq_iff, ← dist_nndist, NNReal.coe_zero, zero_eq_dist]
+theorem zero_eq_nnDist {x y : γ} : 0 = nnDist x y ↔ x = y := by
+  simp only [NNReal.eq_iff, ← dist_nnDist, NNReal.coe_zero, zero_eq_dist]
+
+@[deprecated (since := "2026-11-07")] alias zero_eq_nndist := zero_eq_nnDist
 
 namespace Metric
 
-variable {x : γ} {s : Set γ}
+variable {x : γ}
 
 @[simp] theorem closedBall_zero : closedBall x 0 = {x} := Set.ext fun _ => dist_le_zero
 
@@ -148,7 +155,7 @@ theorem subsingleton_sphere (x : γ) {r : ℝ} (hr : r ≤ 0) : (sphere x r).Sub
 end Metric
 
 /-- Build a new metric space from an old one where the bundled uniform structure is provably
-(but typically non-definitionaly) equal to some given uniform structure.
+(but typically non-definitionally) equal to some given uniform structure.
 See Note [forgetful inheritance].
 See Note [reducible non-instances].
 -/
@@ -162,7 +169,7 @@ theorem MetricSpace.replaceUniformity_eq {γ} [U : UniformSpace γ] (m : MetricS
   ext; rfl
 
 /-- Build a new metric space from an old one where the bundled topological structure is provably
-(but typically non-definitionaly) equal to some given topological structure.
+(but typically non-definitionally) equal to some given topological structure.
 See Note [forgetful inheritance].
 See Note [reducible non-instances].
 -/
@@ -176,7 +183,7 @@ theorem MetricSpace.replaceTopology_eq {γ} [U : TopologicalSpace γ] (m : Metri
   ext; rfl
 
 /-- Build a new metric space from an old one where the bundled bornology structure is provably
-(but typically non-definitionaly) equal to some given bornology structure.
+(but typically non-definitionally) equal to some given bornology structure.
 See Note [forgetful inheritance].
 See Note [reducible non-instances].
 -/

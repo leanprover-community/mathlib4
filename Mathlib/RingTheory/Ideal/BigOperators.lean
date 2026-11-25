@@ -8,8 +8,10 @@ module
 public import Mathlib.Algebra.Module.Submodule.Basic
 public import Mathlib.RingTheory.Ideal.Defs
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Big operators for ideals
 
 This contains some results on the big operators `∑` and `∏` interacting with the `Ideal` type.
@@ -20,11 +22,11 @@ public section
 
 universe u v w
 
-variable {α : Type u} {β : Type v} {F : Type w}
+variable {α : Type u}
 
 namespace Ideal
 
-variable [Semiring α] (I : Ideal α) {a b : α}
+variable [Semiring α] (I : Ideal α) {a : α}
 
 theorem sum_mem (I : Ideal α) {ι : Type*} {t : Finset ι} {f : ι → α} :
     (∀ c ∈ t, f c ∈ I) → (∑ i ∈ t, f i) ∈ I :=

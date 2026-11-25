@@ -6,11 +6,12 @@ Authors: Fox Thomson, Martin Dvorak, Rudy Peterson
 module
 
 public import Mathlib.Algebra.Order.Kleene
-public import Mathlib.Algebra.Ring.Hom.Defs
-public import Mathlib.Data.Set.Lattice
-public import Mathlib.Tactic.DeriveFintype
 public import Mathlib.Data.Fintype.Sum
 public import Mathlib.Data.Set.Lattice.Image
+public import Mathlib.Tactic.DeriveFintype
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Languages
@@ -49,13 +50,14 @@ with respect to other language operations.
 * `Language.self_eq_mul_add_iff`: Arden's lemma – if a language `l` satisfies the equation
   `l = m * l + n`, and `m` doesn't contain the empty string,
   then `l` is the language `m∗ * n`
-
 -/
 
 @[expose] public section
 
 
-open List Set Computability
+open List Set
+
+open scoped Computability
 
 universe v
 
@@ -157,6 +159,7 @@ theorem nil_mem_kstar (l : Language α) : [] ∈ l∗ :=
 instance : OrderedSub (Language α) where
   tsub_le_iff_right _ _ _ := sdiff_le_iff'
 
+set_option backward.isDefEq.respectTransparency false in
 instance instSemiring : Semiring (Language α) where
   add_assoc := union_assoc
   zero_add := empty_union
@@ -186,9 +189,11 @@ def map (f : α → β) : Language α →+* Language β where
   map_add' := image_union _
   map_mul' _ _ := image_image2_distrib <| fun _ _ => map_append
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_id (l : Language α) : map id l = l := by simp [map]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_map (g : β → γ) (f : α → β) (l : Language α) : map g (map f l) = map (g ∘ f) l := by
   simp [map, image_image]
@@ -363,6 +368,7 @@ lemma reverse_reverse (l : Language α) : l.reverse.reverse = l := reverse_invol
 @[simp]
 lemma reverse_add (l m : Language α) : (l + m).reverse = l.reverse + m.reverse := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma reverse_mul (l m : Language α) : (l * m).reverse = m.reverse * l.reverse := by
   simp only [mul_def, reverse_eq_image, image2_image_left, image2_image_right, image_image2,
@@ -404,14 +410,3 @@ lemma compl_compl (l : Language α) : lᶜᶜ = l :=
   _root_.compl_compl l
 
 end Language
-
-/-- Symbols for use by all kinds of grammars. -/
-inductive Symbol (T N : Type*)
-  /-- Terminal symbols (of the same type as the language) -/
-  | terminal (t : T) : Symbol T N
-  /-- Nonterminal symbols (must not be present when the word being generated is finalized) -/
-  | nonterminal (n : N) : Symbol T N
-deriving
-  DecidableEq, Repr, Fintype
-
-attribute [nolint docBlame] Symbol.proxyType Symbol.proxyTypeEquiv

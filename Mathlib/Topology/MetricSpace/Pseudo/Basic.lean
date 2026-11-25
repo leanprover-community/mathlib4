@@ -5,22 +5,23 @@ Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébas
 -/
 module
 
-public import Mathlib.Data.ENNReal.Real
-public import Mathlib.Tactic.Bound.Attribute
 public import Mathlib.Topology.EMetricSpace.Basic
 public import Mathlib.Topology.MetricSpace.Pseudo.Defs
-public import Mathlib.Topology.Metrizable.Basic
+
+import Mathlib.Topology.Metrizable.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
-## Pseudo-metric spaces
+# Pseudo-metric spaces
 
 Further results about pseudo-metric spaces.
-
 -/
 
 public section
 
-open Set Filter TopologicalSpace Bornology
+open Set Filter TopologicalSpace
 open scoped ENNReal NNReal Uniformity Topology
 
 universe u v
@@ -70,7 +71,7 @@ nonrec theorem isUniformInducing_iff [PseudoMetricSpace β] {f : α → β} :
       ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, dist (f a) (f b) < ε → dist a b < δ :=
   isUniformInducing_iff'.trans <| Iff.rfl.and <|
     ((uniformity_basis_dist.comap _).le_basis_iff uniformity_basis_dist).trans <| by
-      simp only [subset_def, Prod.forall, gt_iff_lt, preimage_setOf_eq, Prod.map_apply, mem_setOf]
+      simp only [subset_def, Prod.forall, gt_iff_lt, preimage_ofPred_eq, Prod.map_apply, mem_ofPred]
 
 nonrec theorem isUniformEmbedding_iff [PseudoMetricSpace β] {f : α → β} :
     IsUniformEmbedding f ↔ Function.Injective f ∧ UniformContinuous f ∧
@@ -84,13 +85,6 @@ theorem controlled_of_isUniformInducing [PseudoMetricSpace β] {f : α → β}
     (∀ ε > 0, ∃ δ > 0, ∀ {a b : α}, dist a b < δ → dist (f a) (f b) < ε) ∧
       ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, dist (f a) (f b) < ε → dist a b < δ :=
   ⟨uniformContinuous_iff.1 h.uniformContinuous, (isUniformInducing_iff.1 h).2⟩
-
-@[deprecated controlled_of_isUniformInducing (since := "2026-04-01")]
-theorem controlled_of_isUniformEmbedding [PseudoMetricSpace β] {f : α → β}
-    (h : IsUniformEmbedding f) :
-    (∀ ε > 0, ∃ δ > 0, ∀ {a b : α}, dist a b < δ → dist (f a) (f b) < ε) ∧
-      ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, dist (f a) (f b) < ε → dist a b < δ :=
-  controlled_of_isUniformInducing h.toIsUniformInducing
 
 theorem totallyBounded_iff {s : Set α} :
     TotallyBounded s ↔ ∀ ε > 0, ∃ t : Set α, t.Finite ∧ s ⊆ ⋃ y ∈ t, ball y ε :=
@@ -106,7 +100,7 @@ theorem totallyBounded_of_finite_discretization {s : Set α}
   · rw [hs]
     exact totallyBounded_empty
   rcases hs with ⟨x0, hx0⟩
-  haveI : Inhabited s := ⟨⟨x0, hx0⟩⟩
+  have : Inhabited s := ⟨⟨x0, hx0⟩⟩
   refine totallyBounded_iff.2 fun ε ε0 => ?_
   rcases H ε ε0 with ⟨β, fβ, F, hF⟩
   let Finv := Function.invFun F
@@ -183,13 +177,18 @@ end Metric
 
 open Metric
 
-theorem Metric.inseparable_iff_nndist {x y : α} : Inseparable x y ↔ nndist x y = 0 := by
-  rw [EMetric.inseparable_iff, edist_nndist, ENNReal.coe_eq_zero]
+theorem Metric.inseparable_iff_nnDist {x y : α} : Inseparable x y ↔ nnDist x y = 0 := by
+  rw [EMetric.inseparable_iff, eDist_nnDist, ENNReal.coe_eq_zero]
 
-alias ⟨Inseparable.nndist_eq_zero, _⟩ := Metric.inseparable_iff_nndist
+@[deprecated (since := "2026-11-07")]
+alias Metric.inseparable_iff_nndist := Metric.inseparable_iff_nnDist
+
+alias ⟨Inseparable.nnDist_eq_zero, _⟩ := Metric.inseparable_iff_nnDist
+
+@[deprecated (since := "2026-11-07")] alias Inseparable.nndist_eq_zero := Inseparable.nnDist_eq_zero
 
 theorem Metric.inseparable_iff {x y : α} : Inseparable x y ↔ dist x y = 0 := by
-  rw [Metric.inseparable_iff_nndist, dist_nndist, NNReal.coe_eq_zero]
+  rw [Metric.inseparable_iff_nnDist, dist_nnDist, NNReal.coe_eq_zero]
 
 alias ⟨Inseparable.dist_eq_zero, _⟩ := Metric.inseparable_iff
 
@@ -214,7 +213,7 @@ namespace Topology
 protected lemma IsInducing.isSeparable_preimage {α : Type*} [TopologicalSpace α]
     [PseudoMetrizableSpace α] {f : β → α} [TopologicalSpace β]
     (hf : IsInducing f) {s : Set α} (hs : IsSeparable s) : IsSeparable (f ⁻¹' s) := by
-  letI : UniformSpace α := TopologicalSpace.pseudoMetrizableSpaceUniformity α
+  let : UniformSpace α := TopologicalSpace.pseudoMetrizableSpaceUniformity α
   have := pseudoMetrizableSpaceUniformity_countably_generated
   have : SeparableSpace s := hs.separableSpace
   have : SecondCountableTopology s := UniformSpace.secondCountable_of_separable _
@@ -230,17 +229,9 @@ protected theorem IsEmbedding.isSeparable_preimage {α : Type*} [TopologicalSpac
 
 end Topology
 
-/-- A compact set is separable. -/
-theorem IsCompact.isSeparable {α : Type*} [TopologicalSpace α] [PseudoMetrizableSpace α]
-    {s : Set α} (hs : IsCompact s) : IsSeparable s :=
-  haveI : CompactSpace s := isCompact_iff_compactSpace.mp hs
-  .of_subtype s
-
 namespace Metric
 
 section SecondCountable
-
-open TopologicalSpace
 
 /-- A pseudometric space is second countable if, for every `ε > 0`, there is a countable set which
 is `ε`-dense. -/
@@ -285,4 +276,4 @@ theorem ContinuousOn.isSeparable_image {α : Type*} [TopologicalSpace α] [Pseud
     [TopologicalSpace β] {f : α → β} {s : Set α}
     (hf : ContinuousOn f s) (hs : IsSeparable s) : IsSeparable (f '' s) := by
   rw [image_eq_range, ← image_univ]
-  exact (isSeparable_univ_iff.2 hs.separableSpace).image hf.restrict
+  exact (isSeparable_univ_iff.2 hs.separableSpace).image hf.domRestrict

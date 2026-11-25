@@ -5,9 +5,13 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Degree.Support
 public import Mathlib.Algebra.Polynomial.Eval.Coeff
 public import Mathlib.Algebra.Ring.Subring.Basic
+
+import Mathlib.Algebra.Polynomial.Degree.Support
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Evaluation of polynomials in subrings
@@ -16,7 +20,6 @@ public import Mathlib.Algebra.Ring.Subring.Basic
 
 * `mem_map_rangeS`, `mem_map_range`: the range of `mapRingHom f` consists of
   polynomials with coefficients in the range of `f`
-
 -/
 
 public section
@@ -25,9 +28,9 @@ namespace Polynomial
 
 universe u v w y
 
-variable {R : Type u} {S : Type v} {T : Type w} {ι : Type y} {a b : R} {m n : ℕ}
+variable {R : Type u} {S : Type v} {n : ℕ}
 
-variable [Semiring R] {p q r : R[X]} [Semiring S]
+variable [Semiring R] {p : R[X]} [Semiring S]
 variable (f : R →+* S)
 
 theorem mem_map_rangeS {p : S[X]} : p ∈ (mapRingHom f).rangeS ↔ ∀ n, p.coeff n ∈ f.rangeS := by

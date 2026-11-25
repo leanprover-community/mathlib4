@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 public import Mathlib.CategoryTheory.Monoidal.Category
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pullbacks and pushouts in a monoidal category
 
@@ -17,6 +20,7 @@ For numerous simp lemmas of the form `f ≫ g = h`, we add accompanying simp lem
 structure in `Mathlib.CategoryTheory.Monoidal.Arrow`.
 
 ## TODO
+
 An attribute should be developed to automatically generate lemmas of this form.
 -/
 
@@ -112,7 +116,7 @@ section Pushout
 
 variable [HasPushouts C]
   {W X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z}
-  (h : Y ⟶ W) (k : Z ⟶ W) (w : f ≫ h = g ≫ k) {Q : C}
+  (h : Y ⟶ W) {Q : C}
 
 @[reassoc]
 lemma Limits.pushout.whiskerLeft_condition :

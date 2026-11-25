@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Group.Action.Faithful
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sum instances for additive and multiplicative actions
 
@@ -20,7 +23,7 @@ This file defines instances for additive and multiplicative actions on the binar
 * `Mathlib/Algebra/Group/Action/Sigma.lean`
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero
 

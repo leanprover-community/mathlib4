@@ -6,8 +6,11 @@ Authors: Blake Farman
 module
 
 public import Mathlib.RingTheory.IdealFilter.Basic
-public import Mathlib.Topology.Algebra.LinearTopology
 public import Mathlib.Topology.Algebra.FilterBasis
+public import Mathlib.Topology.Algebra.LinearTopology
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Topologies associated to ideal filters
@@ -16,6 +19,7 @@ This file constructs topological structures on a ring from an `IdealFilter` and 
 uniform ideal filters in terms of ring filter bases.
 
 ## Main definitions
+
 * `WithIdealFilter`: Type synonym for a ring that depends on a choice of ideal filter. This can be
   used to assign and infer instances on a ring that depend on an ideal filter.
 * `IdealFilter.addGroupFilterBasis`: the `AddGroupFilterBasis` with sets the ideals of `F`.
@@ -43,7 +47,7 @@ open scoped Pointwise Topology
 namespace IdealFilter
 
 /-- The additive-group filter basis whose sets are the ideals belonging to the ideal filter `F`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def addGroupFilterBasis {A : Type*} [Ring A] (F : IdealFilter A) : AddGroupFilterBasis A where
   sets := {(I : Set A) | I ∈ F}
   nonempty := ⟨_, ⟨_, F.nonempty.choose_spec, rfl⟩⟩
@@ -56,7 +60,7 @@ def addGroupFilterBasis {A : Type*} [Ring A] (F : IdealFilter A) : AddGroupFilte
   conj' := by aesop
 
 /-- Under `[F.IsUniform]`, the ring filter basis obtained from `addGroupFilterBasis`. -/
-@[simps! -isSimp sets, implicit_reducible]
+@[simps! -isSimp sets, instance_reducible]
 def ringFilterBasis {A : Type*} [Ring A] {F : IdealFilter A} [F.IsUniform] :
     RingFilterBasis A where
   __ := F.addGroupFilterBasis

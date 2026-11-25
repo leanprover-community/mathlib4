@@ -5,9 +5,10 @@ Authors: Bhavik Mehta, Robin Carlier
 -/
 module
 
-public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
-public import Mathlib.CategoryTheory.Balanced
 public import Mathlib.CategoryTheory.Functor.EpiMono
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Balanced categories and functors reflecting isomorphisms
@@ -16,7 +17,6 @@ If a category is `C`, and a functor out of `C` reflects epimorphisms and monomor
 then the functor reflects isomorphisms.
 Furthermore, categories that admit a functor that `ReflectsIsomorphisms`, `PreservesEpimorphisms`
 and `PreservesMonomorphisms` are balanced.
-
 -/
 
 public section
@@ -32,8 +32,8 @@ instance (priority := 100) reflectsIsomorphisms_of_reflectsMonomorphisms_of_refl
     [Balanced C] (F : C ⥤ D) [ReflectsMonomorphisms F] [ReflectsEpimorphisms F] :
     F.ReflectsIsomorphisms where
   reflects f hf := by
-    haveI : Epi f := epi_of_epi_map F inferInstance
-    haveI : Mono f := mono_of_mono_map F inferInstance
+    have : Epi f := epi_of_epi_map F inferInstance
+    have : Mono f := mono_of_mono_map F inferInstance
     exact isIso_of_mono_of_epi f
 
 lemma Functor.balanced_of_preserves (F : C ⥤ D)

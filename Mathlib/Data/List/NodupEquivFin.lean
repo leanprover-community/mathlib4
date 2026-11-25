@@ -24,7 +24,6 @@ Given a list `l`,
 
 * if `l` is sorted w.r.t. `(<)`, then `List.SortedLT.getIso` is the same bijection reinterpreted
   as an `OrderIso`.
-
 -/
 
 @[expose] public section
@@ -54,7 +53,7 @@ the set of elements of `l`. -/
 @[simps]
 def getEquiv (l : List α) (H : Nodup l) : Fin (length l) ≃ { x // x ∈ l } where
   toFun i := ⟨get l i, get_mem _ _⟩
-  invFun x := ⟨idxOf (↑x) l, idxOf_lt_length_iff.2 x.2⟩
+  invFun x := ⟨idxOf (↑x) l, idxOf_lt_length_iff.2 x.property⟩
   left_inv i := by simp only [List.get_idxOf, Fin.eta, H]
   right_inv x := by simp
 
@@ -133,6 +132,7 @@ theorem sublist_of_orderEmbedding_getElem?_eq {l l' : List α} (f : ℕ ↪o ℕ
   rw [List.singleton_sublist, ← h, l'.getElem_take' _ (Nat.lt_succ_self _)]
   exact List.getElem_mem _
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A `l : List α` is `Sublist l l'` for `l' : List α` iff
 there is `f`, an order-preserving embedding of `ℕ` into `ℕ` such that
 any element of `l` found at index `ix` can be found at index `f ix` in `l'`.
@@ -179,7 +179,7 @@ theorem sublist_iff_exists_fin_orderEmbedding_get_eq {l l' : List α} :
     · simp
     · intro i
       apply Option.some_injective
-      simpa [getElem?_eq_getElem i.2, getElem?_eq_getElem (h i.2)] using hf i
+      simpa [getElem?_eq_getElem i.isLt, getElem?_eq_getElem (h i.isLt)] using hf i
   · rintro ⟨f, hf⟩
     refine
       ⟨OrderEmbedding.ofStrictMono (fun i => if hi : i < l.length then f ⟨i, hi⟩ else i + l'.length)
@@ -194,7 +194,6 @@ theorem sublist_iff_exists_fin_orderEmbedding_get_eq {l l' : List α} :
       · simpa using h
     · grind
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An element `x : α` of `l : List α` is a duplicate iff it can be found
 at two distinct indices `n m : ℕ` inside the list `l`.
 -/

@@ -6,7 +6,9 @@ Authors: Jakob von Raumer
 module
 
 public import Mathlib.CategoryTheory.Enriched.Basic
-public import Mathlib.CategoryTheory.Bicategory.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The bicategory of `V`-enriched categories
@@ -14,13 +16,11 @@ public import Mathlib.CategoryTheory.Bicategory.Basic
 We define the bicategory `EnrichedCat V` of (bundled) `V`-enriched categories for a fixed monoidal
 category `V`.
 
-## Future work
+## TODO
 
 * Define change of base and `ForgetEnrichment` as 2-functors.
 * Define the bicategory of enriched ordinary categories.
 -/
-
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -28,8 +28,6 @@ set_option backward.defeqAttrib.useBackward true
 universe w v u u₁ u₂ u₃
 
 namespace CategoryTheory
-
-open MonoidalCategory
 
 variable (V : Type v) [Category.{w} V] [MonoidalCategory V]
 
@@ -47,8 +45,6 @@ instance str (C : EnrichedCat.{w, v, u} V) : EnrichedCategory.{w, v, u} V C :=
 /-- Construct a bundled `EnrichedCat` from the underlying type and the typeclass. -/
 def of (C : Type u) [EnrichedCategory.{w} V C] : EnrichedCat.{w, v, u} V :=
   Bundled.of C
-
-open EnrichedCategory ForgetEnrichment
 
 variable {V} {C : Type u} [EnrichedCategory V C] {D : Type u₁} [EnrichedCategory V D]
   {E : Type u₂} [EnrichedCategory V E] {E' : Type u₃} [EnrichedCategory V E']
@@ -93,6 +89,7 @@ def associator (F : EnrichedFunctor V C D) (G : EnrichedFunctor V D E)
     Functor.isoWhiskerLeft _ (G.forgetComp H).symm ≪≫
     (F.forgetComp _).symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma comp_whiskerRight {F G H : EnrichedFunctor V C D} (α : F ⟶ G)
     (β : G ⟶ H) (I : EnrichedFunctor V D E) :
@@ -102,15 +99,18 @@ lemma comp_whiskerRight {F G H : EnrichedFunctor V C D} (α : F ⟶ G)
     EnrichedFunctor.forget, EnrichedFunctor.comp_obj, EnrichedFunctor.comp_map]
   simp [← ForgetEnrichment.homOf_comp]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma whisker_exchange {F G : EnrichedFunctor V C D} {H I : EnrichedFunctor V D E}
     (α : F ⟶ G) (β : H ⟶ I) :
     whiskerLeft F β ≫ whiskerRight α I = whiskerRight α H ≫ whiskerLeft G β := by
   ext X
-  simp only [EnrichedFunctor.forget_obj, EnrichedFunctor.comp_obj,
+  simp only [EnrichedFunctor.forget_obj,
     EnrichedFunctor.category_comp_out, NatTrans.comp_app, whiskerLeft_out_app,
     whiskerRight_out_app]
   exact (β.out.naturality (α.out.app (ForgetEnrichment.of V X))).symm
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The bicategory structure on `EnrichedCat V` for a monoidal category `V`. -/
 instance bicategory : Bicategory (EnrichedCat.{w, v, u} V) where
   Hom C D := EnrichedFunctor V C D

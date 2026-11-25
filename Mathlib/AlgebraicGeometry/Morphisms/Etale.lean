@@ -5,14 +5,11 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Morphisms.Smooth
 public import Mathlib.AlgebraicGeometry.Morphisms.FormallyUnramified
-public import Mathlib.CategoryTheory.MorphismProperty.Comma
-public import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
+public import Mathlib.AlgebraicGeometry.Morphisms.Smooth
 public import Mathlib.CategoryTheory.Limits.MorphismProperty
 
 /-!
-
 # Étale morphisms
 
 A morphism of schemes `f : X ⟶ Y` is étale if for each affine `U ⊆ Y`
@@ -22,7 +19,6 @@ and `V ⊆ f ⁻¹' U`, the induced map `Γ(Y, U) ⟶ Γ(X, V)` is étale.
 
 - `AlgebraicGeometry.Etale.iff_smoothOfRelativeDimension_zero`: Etale is equivalent to
   smooth of relative dimension `0`.
-
 -/
 
 @[expose] public section
@@ -45,8 +41,6 @@ class Etale {X Y : Scheme.{u}} (f : X ⟶ Y) : Prop where
 
 alias Scheme.Hom.etale_appLE := Etale.etale_appLE
 
-@[deprecated (since := "2026-02-09")] alias IsEtale := Etale
-
 namespace Etale
 
 variable {X Y : Scheme.{u}} (f : X ⟶ Y)
@@ -64,6 +58,7 @@ instance : MorphismProperty.IsMultiplicative @Etale :=
   HasRingHomProperty.isMultiplicative RingHom.Etale.stableUnderComposition
     RingHom.Etale.containsIdentities
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The composition of étale morphisms is étale. -/
 instance etale_comp {Z : Scheme.{u}} (g : Y ⟶ Z) [Etale f] [Etale g] :
     Etale (f ≫ g) :=
@@ -77,14 +72,17 @@ instance etale_isStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChang
 instance (priority := 900) [IsOpenImmersion f] : Etale f :=
   HasRingHomProperty.of_isOpenImmersion RingHom.Etale.containsIdentities
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [Etale g] :
     Etale (pullback.fst f g) :=
   MorphismProperty.pullback_fst f g inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [Etale f] :
     Etale (pullback.snd f g) :=
   MorphismProperty.pullback_snd f g inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (f : X ⟶ Y) (V : Y.Opens) [Etale f] : Etale (f ∣_ V) :=
   IsZariskiLocalAtTarget.restrict ‹_› V
 
@@ -115,6 +113,7 @@ instance (priority := 900) [Etale f] : FormallyUnramified f where
   formallyUnramified_appLE {_} hU {_} hV e :=
     (f.etale_appLE hU hV e).formallyUnramified
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : MorphismProperty.HasOfPostcompProperty
     @Etale (@LocallyOfFiniteType ⊓ @FormallyUnramified) := by
   rw [MorphismProperty.hasOfPostcompProperty_iff_le_diagonal]
@@ -147,13 +146,13 @@ end Etale
 
 namespace Scheme
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The category `Etale X` is the category of schemes étale over `X`. -/
 protected def Etale (X : Scheme.{u}) : Type _ := MorphismProperty.Over @Etale ⊤ X
 deriving Category, HasPullbacks, HasFiniteLimits
 
 variable (X : Scheme.{u})
 
-set_option backward.defeqAttrib.useBackward true in
 instance (Y : X.Etale) : dsimp% Etale Y.hom := Y.prop
 
 instance {X : Scheme.{u}} {Z Y : X.Etale} (f : Z ⟶ Y) : Etale f.left := by
@@ -205,6 +204,7 @@ def Etale.rec {motive : X.Etale → Sort*}
     motive T :=
   mk _ _ T.prop
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : PreservesFiniteLimits (Etale.forget X) :=
   inferInstanceAs (PreservesFiniteLimits (MorphismProperty.Over.forget _ ⊤ X))
 

@@ -5,6 +5,8 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 module
 
+public import Mathlib.Algebra.Order.Star.Basic
+public import Mathlib.Algebra.Star.Pointwise
 public import Mathlib.Analysis.Convex.Hull
 
 /-!
@@ -43,7 +45,7 @@ Prove lemmas relating extreme sets and points to the intrinsic frontier.
 @[expose] public section
 
 
-open Function Module Set Affine
+open Function Module Set
 
 variable {𝕜 E F ι : Type*} {M : ι → Type*}
 
@@ -90,7 +92,7 @@ protected theorem IsExtreme.trans (hAB : IsExtreme 𝕜 A B) (hBC : IsExtreme �
     (hAB.right_mem_of_mem_openSegment hx₁A hx₂A (hBC.subset hxC) hx) hxC hx
 
 protected theorem IsExtreme.antisymm : Std.Antisymm (IsExtreme 𝕜 : Set E → Set E → Prop) :=
-  ⟨fun _ _ hAB hBA ↦ Subset.antisymm hBA.1 hAB.1⟩
+  ⟨fun _ _ hAB hBA ↦ Subset.antisymm hBA.subset hAB.subset⟩
 
 instance : IsPartialOrder (Set E) (IsExtreme 𝕜) where
   refl := IsExtreme.refl 𝕜
@@ -99,26 +101,26 @@ instance : IsPartialOrder (Set E) (IsExtreme 𝕜) where
 
 theorem IsExtreme.inter (hAB : IsExtreme 𝕜 A B) (hAC : IsExtreme 𝕜 A C) :
     IsExtreme 𝕜 A (B ∩ C) := by
-  use Subset.trans inter_subset_left hAB.1
+  use Subset.trans inter_subset_left hAB.subset
   rintro x₁ hx₁A x₂ hx₂A x ⟨hxB, hxC⟩ hx
   exact ⟨hAB.left_mem_of_mem_openSegment hx₁A hx₂A hxB hx,
     hAC.left_mem_of_mem_openSegment hx₁A hx₂A hxC hx⟩
 
 protected theorem IsExtreme.mono (hAC : IsExtreme 𝕜 A C) (hBA : B ⊆ A) (hCB : C ⊆ B) :
     IsExtreme 𝕜 B C :=
-  ⟨hCB, fun _ hx₁B _ hx₂B _ hxC hx ↦ hAC.2 (hBA hx₁B) (hBA hx₂B) hxC hx⟩
+  ⟨hCB, fun _ hx₁B _ hx₂B _ hxC hx ↦ hAC.left_mem_of_mem_openSegment (hBA hx₁B) (hBA hx₂B) hxC hx⟩
 
 theorem isExtreme_iInter {ι : Sort*} [Nonempty ι] {F : ι → Set E}
     (hAF : ∀ i : ι, IsExtreme 𝕜 A (F i)) : IsExtreme 𝕜 A (⋂ i : ι, F i) := by
   inhabit ι
-  refine ⟨iInter_subset_of_subset default (hAF default).1, fun x₁ hx₁A x₂ hx₂A x hxF hx ↦ ?_⟩
+  refine ⟨iInter_subset_of_subset default (hAF default).subset, fun x₁ hx₁A x₂ hx₂A x hxF hx ↦ ?_⟩
   rw [mem_iInter] at hxF ⊢
-  exact fun i ↦ (hAF i).2 hx₁A hx₂A (hxF i) hx
+  exact fun i ↦ (hAF i).left_mem_of_mem_openSegment hx₁A hx₂A (hxF i) hx
 
 theorem isExtreme_biInter {F : Set (Set E)} (hF : F.Nonempty) (hA : ∀ B ∈ F, IsExtreme 𝕜 A B) :
     IsExtreme 𝕜 A (⋂ B ∈ F, B) := by
-  haveI := hF.to_subtype
-  simpa only [iInter_subtype] using isExtreme_iInter fun i : F ↦ hA _ i.2
+  have := hF.to_subtype
+  simpa only [iInter_subtype] using isExtreme_iInter fun i : F ↦ hA _ i.property
 
 theorem isExtreme_sInter {F : Set (Set E)} (hF : F.Nonempty) (hAF : ∀ B ∈ F, IsExtreme 𝕜 A B) :
     IsExtreme 𝕜 A (⋂₀ F) := by simpa [sInter_eq_biInter] using isExtreme_biInter hF hAF
@@ -131,7 +133,7 @@ We used to use the RHS as the definition of `extremePoints`.
 However, the conclusion `x₂ = x` is redundant,
 so we changed the definition to the RHS of `mem_extremePoints_iff_left`. -/
 theorem mem_extremePoints : x ∈ A.extremePoints 𝕜 ↔
-    x ∈ A ∧ ∀ᵉ (x₁ ∈ A) (x₂ ∈ A), x ∈ openSegment 𝕜 x₁ x₂ → x₁ = x ∧ x₂ = x := by
+    x ∈ A ∧ ∀ x₁ ∈ A, ∀ x₂ ∈ A, x ∈ openSegment 𝕜 x₁ x₂ → x₁ = x ∧ x₂ = x := by
   refine ⟨fun h ↦ ⟨h.1, fun x₁ hx₁ x₂ hx₂ hx ↦ ⟨h.2 hx₁ hx₂ hx, ?_⟩⟩,
     fun h ↦ ⟨h.1, fun x₁ hx₁ x₂ hx₂ hx ↦ (h.2 x₁ hx₁ x₂ hx₂ hx).1⟩⟩
   apply h.2 hx₂ hx₁
@@ -172,7 +174,7 @@ theorem IsExtreme.extremePoints_subset_extremePoints (hAB : IsExtreme 𝕜 A B) 
 theorem IsExtreme.extremePoints_eq (hAB : IsExtreme 𝕜 A B) :
     B.extremePoints 𝕜 = B ∩ A.extremePoints 𝕜 :=
   Subset.antisymm (fun _ hx ↦ ⟨hx.1, hAB.extremePoints_subset_extremePoints hx⟩)
-    (inter_extremePoints_subset_extremePoints_of_subset hAB.1)
+    (inter_extremePoints_subset_extremePoints_of_subset hAB.subset)
 
 @[nontriviality]
 lemma Set.extremePoints_eq_self [Subsingleton E] (A : Set E) : Set.extremePoints 𝕜 A = A :=
@@ -188,7 +190,8 @@ variable [Semiring 𝕜] [PartialOrder 𝕜] [AddCommGroup E] [AddCommGroup F] [
 theorem IsExtreme.convex_sdiff [IsOrderedRing 𝕜] (hA : Convex 𝕜 A) (hAB : IsExtreme 𝕜 A B) :
     Convex 𝕜 (A \ B) :=
   convex_iff_openSegment_subset.2 fun _ ⟨hx₁A, hx₁B⟩ _ ⟨hx₂A, _⟩ _ hx ↦
-    ⟨hA.openSegment_subset hx₁A hx₂A hx, fun hxB ↦ hx₁B (hAB.2 hx₁A hx₂A hxB hx)⟩
+    ⟨hA.openSegment_subset hx₁A hx₂A hx,
+      fun hxB ↦ hx₁B (hAB.left_mem_of_mem_openSegment hx₁A hx₂A hxB hx)⟩
 
 @[deprecated (since := "2026-06-03")] alias IsExtreme.convex_diff := IsExtreme.convex_sdiff
 
@@ -241,7 +244,7 @@ lemma image_extremePoints (f : L) (s : Set E) :
   ext b
   obtain ⟨a, rfl⟩ := EquivLike.surjective f b
   have : ∀ x y, f '' openSegment 𝕜 x y = openSegment 𝕜 (f x) (f y) :=
-    image_openSegment _ (LinearMapClass.linearMap f).toAffineMap
+    image_openSegment _ (LinearMap.ofClass f).toAffineMap
   simp only [mem_extremePoints, (EquivLike.surjective f).forall,
     (EquivLike.injective f).mem_set_image, (EquivLike.injective f).eq_iff, ← this]
 
@@ -255,13 +258,13 @@ variable [DenselyOrdered 𝕜] [IsTorsionFree 𝕜 E] {A : Set E} {x : E}
 /-- A useful restatement using `segment`: `x` is an extreme point iff the only (closed) segments
 that contain it are those with `x` as one of their endpoints. -/
 theorem mem_extremePoints_iff_forall_segment : x ∈ A.extremePoints 𝕜 ↔
-    x ∈ A ∧ ∀ᵉ (x₁ ∈ A) (x₂ ∈ A), x ∈ segment 𝕜 x₁ x₂ → x₁ = x ∨ x₂ = x := by
+    x ∈ A ∧ ∀ x₁ ∈ A, ∀ x₂ ∈ A, x ∈ segment 𝕜 x₁ x₂ → x₁ = x ∨ x₂ = x := by
   rw [mem_extremePoints]
   refine and_congr_right fun hxA ↦ forall₄_congr fun x₁ h₁ x₂ h₂ ↦ ?_
   constructor
   · rw [← insert_endpoints_openSegment]
     rintro H (rfl | rfl | hx)
-    exacts [Or.inl rfl, Or.inr rfl, Or.inl <| (H hx).1]
+    exacts [Or.inl rfl, Or.inr rfl, Or.inl (H hx).1]
   · intro H hx
     rcases H (openSegment_subset_segment _ _ _ hx) with (rfl | rfl)
     exacts [⟨rfl, (left_mem_openSegment_iff.1 hx).symm⟩, ⟨right_mem_openSegment_iff.1 hx, rfl⟩]
@@ -296,3 +299,29 @@ theorem extremePoints_convexHull_subset : (convexHull 𝕜 A).extremePoints 𝕜
     hx.1).2 rfl
 
 end LinearOrderedRing
+
+section star
+variable {𝕜 E : Type*} [Semiring 𝕜] [StarRing 𝕜] [PartialOrder 𝕜] [StarOrderedRing 𝕜]
+  [AddCommMonoid E] [StarAddMonoid E] [SMul 𝕜 E] [StarModule 𝕜 E]
+
+open scoped Pointwise
+
+@[simp] lemma star_segment (x y : E) : star (segment 𝕜 x y) = segment 𝕜 (star x) (star y) := by
+  suffices ∀ x y : E, segment 𝕜 x y ⊆ star (segment 𝕜 (star x) (star y)) from
+    le_antisymm (by simpa [star_subset] using this x y) (by simpa using this (star x) (star y))
+  exact fun x y a ⟨b, c, hb, hc, hbc, ha⟩ ↦ ⟨star b, star c, by grind [star_one]⟩
+
+@[simp] lemma star_openSegment (x y : E) :
+    star (openSegment 𝕜 x y) = openSegment 𝕜 (star x) (star y) := by
+  suffices ∀ x y : E, openSegment 𝕜 x y ⊆ star (openSegment 𝕜 (star x) (star y)) from
+    le_antisymm (by simpa [star_subset] using this x y) (by simpa using this (star x) (star y))
+  exact fun x y a ⟨b, c, hb, hc, hbc, ha⟩ ↦ ⟨star b, star c, by grind [star_one]⟩
+
+@[simp] lemma star_extremePoints (s : Set E) :
+    star (extremePoints 𝕜 s) = extremePoints 𝕜 (star s) := by
+  ext
+  simp only [mem_star, mem_extremePoints_iff_left]
+  conv_lhs => simp +singlePass only [star_involutive.surjective.forall]
+  simp [← star_openSegment]
+
+end star

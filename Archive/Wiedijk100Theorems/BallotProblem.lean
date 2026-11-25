@@ -3,7 +3,9 @@ Copyright (c) 2022 Bhavik Mehta, Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Kexing Ying
 -/
-import Mathlib.Probability.UniformOn
+module
+
+public import Mathlib.Probability.UniformOn
 
 /-!
 # Ballot problem
@@ -26,9 +28,9 @@ throughout the count. The probability of this is `(p - q) / (p + q)`.
 ## Main result
 
 * `ballot_problem`: the ballot problem.
-
 -/
 
+@[expose] public section
 
 open Set ProbabilityTheory MeasureTheory
 open scoped ENNReal
@@ -74,7 +76,7 @@ open scoped List in
 theorem mem_countedSequence_iff_perm {p q l} :
     l ∈ countedSequence p q ↔ l ~ List.replicate p (1 : ℤ) ++ List.replicate q (-1) := by
   rw [List.perm_replicate_append_replicate]
-  · simp only [countedSequence, List.subset_def, mem_setOf_eq, List.mem_cons (b := (1 : ℤ)),
+  · simp only [countedSequence, List.subset_def, mem_ofPred_eq, List.mem_cons (b := (1 : ℤ)),
       List.mem_singleton]
   · norm_num1
 
@@ -115,28 +117,28 @@ theorem counted_succ_succ (p q : ℕ) :
     obtain hlast | hlast := hl₂ (l.head hlnil) (List.head_mem hlnil)
     · refine Or.inl ⟨l.tail, ⟨?_, ?_, ?_⟩, ?_⟩
       · rw [List.count_tail, hl₀, List.head?_eq_some_head hlnil, hlast, beq_self_eq_true,
-          if_pos rfl, Nat.add_sub_cancel]
-      · rw [List.count_tail, hl₁, List.head?_eq_some_head hlnil, hlast, if_neg (by decide),
+          ite_eq_left rfl, Nat.add_sub_cancel]
+      · rw [List.count_tail, hl₁, List.head?_eq_some_head hlnil, hlast, ite_eq_right (by decide),
           Nat.sub_zero]
       · exact fun x hx => hl₂ x (List.mem_of_mem_tail hx)
       · rw [← hlast, List.cons_head_tail]
     · refine Or.inr ⟨l.tail, ⟨?_, ?_, ?_⟩, ?_⟩
-      · rw [List.count_tail, hl₀, List.head?_eq_some_head hlnil, hlast, if_neg (by decide),
+      · rw [List.count_tail, hl₀, List.head?_eq_some_head hlnil, hlast, ite_eq_right (by decide),
           Nat.sub_zero]
       · rw [List.count_tail, hl₁, List.head?_eq_some_head hlnil, hlast, beq_self_eq_true,
-          if_pos rfl, Nat.add_sub_cancel]
+          ite_eq_left rfl, Nat.add_sub_cancel]
       · exact fun x hx => hl₂ x (List.mem_of_mem_tail hx)
       · rw [← hlast, List.cons_head_tail]
   · rintro (⟨t, ⟨ht₀, ht₁, ht₂⟩, rfl⟩ | ⟨t, ⟨ht₀, ht₁, ht₂⟩, rfl⟩)
     · refine ⟨?_, ?_, ?_⟩
-      · rw [List.count_cons, beq_self_eq_true, if_pos rfl, ht₀]
-      · rw [List.count_cons, if_neg, ht₁]
+      · rw [List.count_cons, beq_self_eq_true, ite_eq_left rfl, ht₀]
+      · rw [List.count_cons, ite_eq_right, ht₁]
         norm_num
       · simpa
     · refine ⟨?_, ?_, ?_⟩
-      · rw [List.count_cons, if_neg, ht₀]
+      · rw [List.count_cons, ite_eq_right, ht₀]
         norm_num
-      · rw [List.count_cons, beq_self_eq_true, if_pos rfl, ht₁]
+      · rw [List.count_cons, beq_self_eq_true, ite_eq_left rfl, ht₁]
       · simpa
 
 theorem countedSequence_finite : ∀ p q : ℕ, (countedSequence p q).Finite
@@ -165,7 +167,8 @@ theorem disjoint_bits (p q : ℕ) :
 
 open MeasureTheory.Measure
 
-private local instance measurableSpace_list_int : MeasurableSpace (List ℤ) := ⊤
+-- This instance needs to be public, for (public) theorem statements to make sense.
+local instance measurableSpace_list_int : MeasurableSpace (List ℤ) := ⊤
 
 private local instance measurableSingletonClass_list_int : MeasurableSingletonClass (List ℤ) :=
   { measurableSet_singleton := fun _ => trivial }
@@ -200,7 +203,7 @@ theorem first_vote_pos :
         ((countedSequence_nonempty _ _).image _)]
     · have : List.cons (-1) '' countedSequence (p + 1) q ∩ {l : List ℤ | l.headI = 1} = ∅ := by
         ext
-        simp only [mem_inter_iff, mem_image, mem_setOf_eq, mem_empty_iff_false, iff_false,
+        simp only [mem_inter_iff, mem_image, mem_ofPred_eq, mem_empty_iff_false, iff_false,
           not_and, forall_exists_index, and_imp]
         rintro l _ rfl
         norm_num
@@ -231,7 +234,7 @@ theorem first_vote_neg (p q : ℕ) (h : 0 < p + q) :
   rw [compl_compl, first_vote_pos _ _ h] at this
   rw [ENNReal.eq_sub_of_add_eq _ this, ENNReal.eq_div_iff, ENNReal.mul_sub, mul_one,
     ENNReal.mul_div_cancel, ENNReal.add_sub_cancel_left]
-  all_goals simp_all [ENNReal.div_eq_top]
+  all_goals simp_all
 
 theorem ballot_same (p : ℕ) : uniformOn (countedSequence (p + 1) (p + 1)) staysPositive = 0 := by
   rw [uniformOn_eq_zero_iff (countedSequence_finite _ _), eq_empty_iff_forall_notMem]
@@ -255,7 +258,7 @@ theorem countedSequence_int_pos_counted_succ_succ (p q : ℕ) :
   rw [counted_succ_succ, union_inter_distrib_right,
       (_ : List.cons (-1) '' countedSequence (p + 1) q ∩ {l | l.headI = 1} = ∅), union_empty] <;>
     · ext
-      simp only [mem_inter_iff, mem_image, mem_setOf_eq, and_iff_left_iff_imp, mem_empty_iff_false,
+      simp only [mem_inter_iff, mem_image, mem_ofPred_eq, and_iff_left_iff_imp, mem_empty_iff_false,
         iff_false, not_and, forall_exists_index, and_imp]
       rintro y _ rfl
       norm_num
@@ -305,7 +308,6 @@ theorem ballot_neg (p q : ℕ) (qp : q < p) :
 
 theorem ballot_problem' :
     ∀ q p, q < p → (uniformOn (countedSequence p q) staysPositive).toReal = (p - q) / (p + q) := by
-  classical
   apply Nat.diag_induction
   · intro p
     rw [ballot_same]
@@ -316,9 +318,9 @@ theorem ballot_problem' :
     rw [div_self]
     exact Nat.cast_add_one_ne_zero p
   · intro q p qp h₁ h₂
-    haveI := isProbabilityMeasure_uniformOn
+    have := isProbabilityMeasure_uniformOn
       (countedSequence_finite p (q + 1)) (countedSequence_nonempty _ _)
-    haveI := isProbabilityMeasure_uniformOn
+    have := isProbabilityMeasure_uniformOn
       (countedSequence_finite (p + 1) q) (countedSequence_nonempty _ _)
     have h₃ : 0 < p + 1 + (q + 1) := Nat.add_pos_left (Nat.succ_pos _) _
     rw [← uniformOn_add_compl_eq {l : List ℤ | l.headI = 1} _ (countedSequence_finite _ _),
@@ -339,13 +341,13 @@ theorem ballot_problem' :
         linarith
       simp [field, h₄, h₅, h₆] at *
       ring
-    all_goals exact ENNReal.mul_ne_top (by finiteness) (by simp [Ne, ENNReal.div_eq_top])
+    all_goals exact ENNReal.mul_ne_top (by finiteness) (by simp [Ne])
 
 /-- The ballot problem. -/
 theorem ballot_problem :
     ∀ q p, q < p → uniformOn (countedSequence p q) staysPositive = (p - q) / (p + q) := by
   intro q p qp
-  haveI :=
+  have :=
     isProbabilityMeasure_uniformOn (countedSequence_finite p q) (countedSequence_nonempty _ _)
   have :
     (uniformOn (countedSequence p q) staysPositive).toReal =
@@ -355,7 +357,7 @@ theorem ballot_problem :
       ENNReal.toReal_sub_of_le, ENNReal.toReal_natCast, ENNReal.toReal_natCast]
     exacts [Nat.cast_le.2 qp.le, ENNReal.natCast_ne_top _]
   rwa [ENNReal.toReal_eq_toReal_iff' (measure_lt_top _ _).ne] at this
-  simp only [Ne, ENNReal.div_eq_top, tsub_eq_zero_iff_le, Nat.cast_le, not_le,
+  simp only [Ne, ENNReal.div_eq_top_iff, tsub_eq_zero_iff_le, Nat.cast_le, not_le,
     add_eq_zero, Nat.cast_eq_zero, ENNReal.add_eq_top, ENNReal.natCast_ne_top, or_self_iff,
     not_false_iff, and_true]
   push Not

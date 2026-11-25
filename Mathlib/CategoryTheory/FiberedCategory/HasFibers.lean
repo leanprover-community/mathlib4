@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.FiberedCategory.Fiber
 public import Mathlib.CategoryTheory.FiberedCategory.Fibered
 
 /-!
-
 # Fibers of functors
 
 In this file we introduce a typeclass `HasFibers` for a functor `p : 𝒳 ⥤ 𝒮`, consisting of:
@@ -33,7 +32,8 @@ is an element of `F(S)`. The fiber category `Fiber p S` is then equivalent to th
 `Fib S` with objects `a` in `F(S)`. In this case, the `HasFibers` instance is given by the
 categories `F(S)` and the functor `ι` sends `a : F(S)` to `(S, a)` in the fibered category.
 
-## Main API
+## Main definitions and statements
+
 The following API is developed so that the fibers from a `HasFibers` instance can be used
 analogously to the standard fibers.
 
@@ -47,7 +47,6 @@ analogously to the standard fibers.
   morphism in the fiber category.
 - `fiber_factorization` is the statement that any morphism in `𝒳` can be factored as a morphism in
   some fiber followed by a pullback.
-
 -/
 
 @[expose] public section
@@ -58,7 +57,6 @@ open CategoryTheory Functor Category IsCartesian IsHomLift Fiber
 
 variable {𝒮 : Type u₁} {𝒳 : Type u₂} [Category.{v₁} 𝒮] [Category.{v₂} 𝒳]
 
-set_option linter.checkUnivs false in
 /-- HasFibers is an extrinsic notion of fibers on a functor `p : 𝒳 ⥤ 𝒮`. It is given by a
 collection of categories `Fib S` for every `S : 𝒮` (the fiber categories), each equipped with a
 functors `ι : Fib S ⥤ 𝒳` which map constantly to `S` on the base such that the induced functor
@@ -78,7 +76,7 @@ class HasFibers (p : 𝒳 ⥤ 𝒮) where
 namespace HasFibers
 
 /-- The `HasFibers` on `p : 𝒳 ⥤ 𝒮` given by the fibers of `p` -/
-@[implicit_reducible]
+@[instance_reducible]
 def canonical (p : 𝒳 ⥤ 𝒮) : HasFibers p where
   Fib := Fiber p
   ι S := fiberInclusion
@@ -124,7 +122,6 @@ def projMap {R S : 𝒮} {a : Fib p R} {b : Fib p S}
     (φ : (ι R).obj a ⟶ (ι S).obj b) : R ⟶ S :=
   eqToHom (proj_eq a).symm ≫ (p.map φ) ≫ eqToHom (proj_eq b)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- For any homomorphism `φ` in a fiber `Fib S`, its image under `ι S` lies over `𝟙 S`. -/
 instance homLift {S : 𝒮} {a b : Fib p S} (φ : a ⟶ b) : IsHomLift p (𝟙 S) ((ι S).map φ) := by
   apply of_fac p _ _ (proj_eq a) (proj_eq b)
@@ -167,7 +164,7 @@ noncomputable def Fib.mkIsoSelf {S : 𝒮} {a : 𝒳} (ha : p.obj a = S) :
 
 instance Fib.mkIsoSelfIsHomLift {S : 𝒮} {a : 𝒳} (ha : p.obj a = S) :
     IsHomLift p (𝟙 S) (Fib.mkIsoSelf ha).hom :=
-  (Functor.objObjPreimageIso (inducedFunctor p S) (Fiber.mk ha)).hom.2
+  (Functor.objObjPreimageIso (inducedFunctor p S) (Fiber.mk ha)).hom.property
 
 section
 

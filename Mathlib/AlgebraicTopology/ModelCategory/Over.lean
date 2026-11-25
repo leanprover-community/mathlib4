@@ -6,9 +6,12 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.ModelCategory.Basic
-public import Mathlib.CategoryTheory.MorphismProperty.Comma
 public import Mathlib.CategoryTheory.LiftingProperties.Over
 public import Mathlib.CategoryTheory.Limits.Constructions.Over.Basic
+public import Mathlib.CategoryTheory.MorphismProperty.Comma
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The model category structure on Over categories
@@ -23,11 +26,11 @@ from `Mathlib.CategoryTheory.Limits.Constructions.Over.Basic`, the verification
 of the axioms is straightforward.)
 
 ## TODO
-* Proceed to the dual construction for `Under S`.
 
+* Proceed to the dual construction for `Under S`.
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

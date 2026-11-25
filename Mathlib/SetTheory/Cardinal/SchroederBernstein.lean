@@ -5,9 +5,10 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Set.Piecewise
 public import Mathlib.Order.FixedPoints
 public import Mathlib.Order.Zorn
+
+import Mathlib.Data.Set.Piecewise
 
 /-!
 # Schröder-Bernstein theorem, well-ordering of cardinals
@@ -135,7 +136,7 @@ theorem min_injective [I : Nonempty ι] : ∃ i, Nonempty (∀ j, β i ↪ β j)
           hs.eq_of_subset this (subset_insert _ _) ▸ mem_insert ..
         let ⟨i⟩ := I
         hf i f this rfl
-  ⟨i, ⟨fun j => ⟨s.restrict (fun x => x j) ∘ surjInv e,
+  ⟨i, ⟨fun j => ⟨s.domRestrict (fun x => x j) ∘ surjInv e,
     ((hs.1 j).injective).comp (injective_surjInv _)⟩⟩⟩
 
 end Wo

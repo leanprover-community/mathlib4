@@ -7,10 +7,14 @@ module
 
 public import Mathlib.Algebra.Algebra.Rat
 public import Mathlib.Algebra.Module.Rat
-public import Mathlib.Data.NNRat.Order
 public import Mathlib.Topology.Algebra.Order.Archimedean
 public import Mathlib.Topology.Algebra.Ring.Real
 public import Mathlib.Topology.Instances.Nat
+
+import Mathlib.Algebra.Order.Ring.NNRat
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Topology on the rational numbers
@@ -117,7 +121,9 @@ lemma dist_eq (p q : ℚ≥0) : dist p q = dist (p : ℚ) (q : ℚ) := rfl
 
 set_option linter.style.whitespace false in -- linter false positive
 @[simp ←, push_cast]
-lemma nndist_eq (p q : ℚ≥0) : nndist p q = nndist (p : ℚ) (q : ℚ) := rfl
+lemma nnDist_eq (p q : ℚ≥0) : nnDist p q = nnDist (p : ℚ) (q : ℚ) := rfl
+
+@[deprecated (since := "2026-11-07")] alias nndist_eq := nnDist_eq
 
 instance : IsTopologicalSemiring ℚ≥0 where
   toContinuousAdd := continuousAdd_induced Nonneg.coeRingHom

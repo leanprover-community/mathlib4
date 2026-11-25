@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RepresentationTheory.Homological.ContCohomology.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functoriality of continuous cohomology
 
@@ -59,6 +62,7 @@ lemma resolutionMap_zero (φ : H →ₜ* G) (f : res φ X ⟶ Y) :
 lemma resolutionMap_succ (φ : H →ₜ* G) (f : res φ X ⟶ Y) (i : ℕ) :
     resolutionMap φ f (i + 1) = ofHom (coind₁ResMap φ (resolutionMap φ f i).hom) := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma resolutionMap_id (X : TopRep k G) (i : ℕ) :
     resolutionMap (ContinuousMonoidHom.id G) (𝟙 X) i = 𝟙 (resolutionX X i) := by
@@ -107,6 +111,7 @@ def cochainsMap (φ : H →ₜ* G) (f : res φ X ⟶ Y) :
     rw [homogeneousCochains.d_eq, homogeneousCochains.d_eq, ← invariantsResMap_comp,
       resolutionMap_comp_d, invariantsResMap_map_comp]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma cochainsMap_id (X : TopRep k G) :
     cochainsMap (ContinuousMonoidHom.id G) (𝟙 X) = 𝟙 (homogeneousCochains X) := by
@@ -120,7 +125,7 @@ lemma cochainsMap_comp (φ : H →ₜ* G) (ψ : K →ₜ* H) (f : res φ X ⟶ Y
     cochainsMap (φ.comp ψ) (X := X) ((resFunctor (ψ : K →* H)).map f ≫ g) =
       cochainsMap φ f ≫ cochainsMap ψ g := by
   ext i v x
-  exact congr($(resolutionMap_comp φ ψ f g (i + 1)).hom v.1 x)
+  congrm $(resolutionMap_comp φ ψ f g (i + 1)).hom v.val x
 
 /-- The map `Zⁿ(G, X) ⟶ Zⁿ(H, Y)` on cocycles induced by a continuous group homomorphism
 `φ : H →ₜ* G` and a morphism of topological `H`-representations `f : res φ X ⟶ Y`. -/

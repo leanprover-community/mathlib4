@@ -74,7 +74,7 @@ theorem mem_map_iff_exists_image : t ∈ map m f ↔ ∃ s ∈ f, m '' s ⊆ t :
 
 @[simp]
 theorem map_id : Filter.map id f = f :=
-  filter_eq <| rfl
+  filter_eq rfl
 
 @[simp]
 theorem map_id' : Filter.map (fun x => x) f = f :=
@@ -82,7 +82,7 @@ theorem map_id' : Filter.map (fun x => x) f = f :=
 
 @[simp]
 theorem map_compose : Filter.map m' ∘ Filter.map m = Filter.map (m' ∘ m) :=
-  funext fun _ => filter_eq <| rfl
+  funext fun _ => filter_eq rfl
 
 @[simp]
 theorem map_map : Filter.map m' (Filter.map m f) = Filter.map (m' ∘ m) f :=
@@ -224,7 +224,7 @@ theorem bind_def {α β} (f : Filter α) (m : α → Filter β) : f >>= m = bind
 
 section Map
 
-variable {f f₁ f₂ : Filter α} {g g₁ g₂ : Filter β} {m : α → β} {m' : β → γ} {s : Set α} {t : Set β}
+variable {f f₁ f₂ : Filter α} {g g₁ g₂ : Filter β} {m : α → β} {s : Set α} {t : Set β}
 
 @[simp] theorem mem_comap : s ∈ comap m g ↔ ∃ t ∈ g, m ⁻¹' t ⊆ s := Iff.rfl
 
@@ -494,8 +494,10 @@ theorem comap_injective {f : α → β} (hf : Surjective f) : Injective (comap f
 theorem _root_.Function.Surjective.filter_map_top {f : α → β} (hf : Surjective f) : map f ⊤ = ⊤ :=
   (congr_arg _ comap_top).symm.trans <| map_comap_of_surjective hf ⊤
 
-theorem subtype_coe_map_comap (s : Set α) (f : Filter α) :
+theorem subtypeVal_map_comap (s : Set α) (f : Filter α) :
     map ((↑) : s → α) (comap ((↑) : s → α) f) = f ⊓ 𝓟 s := by rw [map_comap, Subtype.range_coe]
+
+@[deprecated (since := "2026-11-10")] alias subtype_coe_map_comap := subtypeVal_map_comap
 
 theorem image_mem_of_mem_comap {f : Filter α} {c : β → α} (h : range c ∈ f) {W : Set β}
     (W_in : W ∈ comap c f) : c '' W ∈ f := by
@@ -715,7 +717,7 @@ theorem map_iInf_eq {f : ι → Filter α} {m : α → β} (hf : Directed (· �
 theorem map_biInf_eq {ι : Type w} {f : ι → Filter α} {m : α → β} {p : ι → Prop}
     (h : DirectedOn (f ⁻¹'o (· ≥ ·)) { x | p x }) (ne : ∃ i, p i) :
     map m (⨅ (i) (_ : p i), f i) = ⨅ (i) (_ : p i), map m (f i) := by
-  haveI := nonempty_subtype.2 ne
+  have := nonempty_subtype.2 ne
   simp only [iInf_subtype']
   exact map_iInf_eq h.directed_val
 

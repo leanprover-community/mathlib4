@@ -5,8 +5,11 @@ Authors: Daniel Weber
 -/
 module
 
-public import Mathlib.RingTheory.Derivation.MapCoeffs
 public import Mathlib.FieldTheory.PrimitiveElement
+public import Mathlib.RingTheory.Derivation.MapCoeffs
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Differential Fields
@@ -92,7 +95,6 @@ lemma _root_.algebraMap.coe_logDeriv {F K : Type*} [Field F] [Field K] [Differen
 
 variable {F : Type*} [Field F] [Differential F] [CharZero F]
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance (p : F[X]) [Fact (Irreducible p)] [Fact p.Monic] :
     Differential (AdjoinRoot p) where
   deriv := Derivation.liftOfSurjective (f := (AdjoinRoot.mk p).toIntAlgHom) AdjoinRoot.mk_surjective
@@ -106,9 +108,8 @@ noncomputable instance (p : F[X]) [Fact (Irreducible p)] [Fact p.Monic] :
       apply dvd_mul_of_dvd_right
       rw [← AdjoinRoot.mk_eq_zero]
       unfold implicitDeriv
-      simp only [AdjoinRoot.aeval_eq, Derivation.coe_add, Derivation.coe_smul, Pi.add_apply,
-        Pi.smul_apply, Derivation.restrictScalars_apply, derivative'_apply, smul_eq_mul, map_add,
-        map_mul, AdjoinRoot.mk_leftInverse Fact.out _]
+      simp only [AdjoinRoot.aeval_eq, add_apply, smul_apply, Derivation.restrictScalars_apply,
+        derivative'_apply, smul_eq_mul, map_add, map_mul, AdjoinRoot.mk_leftInverse Fact.out _]
       rw [div_mul_cancel₀, add_neg_cancel]
       simp only [ne_eq, AdjoinRoot.mk_eq_zero]
       have : 0 < p.natDegree := Irreducible.natDegree_pos (Fact.out)
@@ -148,9 +149,9 @@ lemma differentialAlgebraFiniteDimensional [FiniteDimensional F K] :
     letI := differentialFiniteDimensional F K
     DifferentialAlgebra F K := by
   let k := (Field.exists_primitive_element F K).choose
-  haveI h : F⟮k⟯ = ⊤ := (Field.exists_primitive_element F K).choose_spec
-  haveI : Fact (minpoly F k).Monic := ⟨minpoly.monic (IsAlgebraic.of_finite ..).isIntegral⟩
-  haveI : Fact (Irreducible (minpoly F k)) :=
+  have h : F⟮k⟯ = ⊤ := (Field.exists_primitive_element F K).choose_spec
+  have : Fact (minpoly F k).Monic := ⟨minpoly.monic (IsAlgebraic.of_finite ..).isIntegral⟩
+  have : Fact (Irreducible (minpoly F k)) :=
     ⟨minpoly.irreducible (IsAlgebraic.of_finite ..).isIntegral⟩
   apply DifferentialAlgebra.equiv
 
@@ -158,7 +159,7 @@ lemma differentialAlgebraFiniteDimensional [FiniteDimensional F K] :
 A finite extension of a differential field has a unique derivation which agrees with the one on the
 base field.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def uniqueDifferentialAlgebraFiniteDimensional [FiniteDimensional F K] :
     Unique {_a : Differential K // DifferentialAlgebra F K} := by
   let default : {_a : Differential K // DifferentialAlgebra F K} :=
@@ -167,7 +168,7 @@ noncomputable def uniqueDifferentialAlgebraFiniteDimensional [FiniteDimensional 
   ext x
   apply_fun (aeval x (mapCoeffs (minpoly F x)) + aeval x (derivative (minpoly F x)) * ·)
   · conv_lhs => apply (deriv_aeval_eq ..).symm
-    conv_rhs => apply (@deriv_aeval_eq _ _ _ _ _ default.1 _ default.2 _ _).symm
+    conv_rhs => apply (@deriv_aeval_eq _ _ _ _ _ default.val _ default.property _ _).symm
     simp
   · apply (add_right_injective _).comp
     apply mul_right_injective₀

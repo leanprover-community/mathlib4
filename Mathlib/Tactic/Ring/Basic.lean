@@ -5,8 +5,9 @@ Authors: Mario Carneiro, Aurélien Saue, Anne Baanen
 -/
 module
 
-public import Mathlib.Tactic.Ring.Common
 public meta import Mathlib.Algebra.Order.Ring.Unbundled.Rat -- for the `Ord Rat` instance
+public meta import Mathlib.Tactic.Ring.Common
+public import Mathlib.Tactic.Ring.Common
 
 /-!
 # `ring` tactic
@@ -33,7 +34,7 @@ even though it is not strictly speaking an equation in the language of commutati
 The basic approach to prove equalities is to normalise both sides and check for equality.
 We use `Mathlib.Tactic.Ring.Common` to implement the normal forms and normalization procedure.
 
-This file defines the evaluation of basic operations such as addition and multipication of the
+This file defines the evaluation of basic operations such as addition and multiplication of the
 rational coefficients as embedded inside the (semi)ring. This is done using `norm_num`.
 
 It further implements the core `ring1` tactic.
@@ -479,7 +480,7 @@ partial def isOne {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
   else
     failure
 
-/-- The comarisons on the basetype used to compare normalized ring expressions. -/
+/-- The comparisons on the basetype used to compare normalized ring expressions. -/
 partial def _root_.Mathlib.Tactic.Ring.ringCompare {u : Lean.Level} {α : Q(Type u)} :
     Common.RingCompare (α := α) RatCoeff where
   eq zx zy := zx.value == zy.value
@@ -530,7 +531,7 @@ instance (priority := low) {α β} [CSLift α β] (a : α) : CSLiftVal a (CSLift
 
 theorem of_lift {α β} [inst : CSLift α β] {a b : α} {a' b' : β}
     [h1 : CSLiftVal a a'] [h2 : CSLiftVal b b'] (h : a' = b') : a = b :=
-  inst.2 <| by rwa [← h1.1, ← h2.1]
+  inst.inj <| by rwa [← h1.eq, ← h2.eq]
 
 open Lean Parser.Tactic Elab Command Elab.Tactic
 

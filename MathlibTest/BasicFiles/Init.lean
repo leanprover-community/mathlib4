@@ -24,6 +24,12 @@ import Mathlib.Init
 #min_imports in
 #min_imports
 
+-- The bare `#min_imports` above only records a request. A module linter reports the request at
+-- the end of the file, where `#guard_msgs` cannot capture the warning: report it here and clear it.
+/-- warning: Imports can be reduced -/
+#guard_msgs (substring := true) in
+run_cmd ImportGraph.Shake.logAllMinImports #[]; ImportGraph.Shake.resetMinImports
+
 #guard_msgs (substring := true) in
 #find_home Nat
 
@@ -40,5 +46,7 @@ run_elab Lean.logInfo m!"{(← Lean.MonadEnv.getEnv).imports}"
 theorem test_type_star (α : Type*) : α = α := rfl
 
 lemma test_lemma : True := trivial
+
+alias test2 := test_lemma
 
 #adaptation_note /-- This ensures that adaptation_note is available. -/

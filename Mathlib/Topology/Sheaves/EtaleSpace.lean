@@ -66,7 +66,7 @@ then a neighborhood of `g` consists of germs of `s` at points `x ∈ U`. -/
 protected theorem eventually_nhds (g : EtaleSpace F) {U : Opens X} (h : g.base ∈ U)
     (s : ToType (F.obj (op U))) (hs : F.germ U g.base h s = g.germ) :
     ∀ᶠ g' : EtaleSpace F in 𝓝 g, ∃ hgU : g'.base ∈ U, g'.germ = F.germ U g'.base hgU s := by
-  simp only [nhds_generateFrom, Filter.Eventually, mem_setOf_eq, iInf_and, iInf_exists]
+  simp only [nhds_generateFrom, Filter.Eventually, mem_ofPred_eq, iInf_and, iInf_exists]
   refine mem_iInf_of_mem _ <| mem_iInf_of_mem ?_ <| mem_iInf_of_mem U <| mem_iInf_of_mem s <|
     mem_iInf_of_mem rfl <| mem_principal_self _
   simp [*]
@@ -105,8 +105,8 @@ noncomputable def homeomorph (U : Opens X)
     (hF_bij : ∀ (x : X) (hx : x ∈ U), Bijective (F.germ U x hx))
     (x : X) (hx : x ∈ U) :
     (base (F := F) ⁻¹' U) ≃ₜ U × WithDiscreteTopology (ToType (F.stalk x)) where
-  toFun s := (⟨s.1.base, s.2⟩,
-    .toTopology ⊥ <| F.germ U x hx <| surjInv (hF_bij s.1.base s.2).surjective s.1.germ)
+  toFun s := (⟨s.val.base, s.property⟩,
+    .toTopology ⊥ <| F.germ U x hx <| surjInv (hF_bij s.val.base s.property).surjective s.val.germ)
   invFun
   | (⟨y, hy⟩, .toTopology _ g) => ⟨⟨y, F.germ U y hy <| surjInv (hF_bij x hx).surjective g⟩, hy⟩
   left_inv := by
@@ -133,12 +133,12 @@ noncomputable def homeomorph (U : Opens X)
     simp_rw [continuous_iff_continuousAt, continuousAt_prod_of_discrete_right]
     rintro ⟨y, ⟨g⟩⟩
     simp only [ContinuousAt, nhds_subtype_eq_comap, tendsto_comap_iff, comp_def,
-      nhds_generateFrom, tendsto_iInf, mem_setOf_eq, tendsto_principal]
+      nhds_generateFrom, tendsto_iInf, mem_ofPred_eq, tendsto_principal]
     rintro _ ⟨hmem, V, f, rfl⟩
-    simp only [mem_setOf_eq] at hmem
+    simp only [mem_ofPred_eq] at hmem
     rcases hmem with ⟨hyV, hgf⟩
     rcases F.germ_eq _ _ _ _ _ hgf with ⟨W, hyW, ιWU, ιWV, hW⟩
-    filter_upwards [W.isOpen.preimage continuous_subtype_val |>.mem_nhds hyW] with z hz
+    filter_upwards [W.isOpen.preimage continuous_subtypeVal |>.mem_nhds hyW] with z hz
     use ιWV.le hz
     rw [← F.germ_res_apply ιWU z hz, hW, F.germ_res_apply]
 

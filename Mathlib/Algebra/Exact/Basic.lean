@@ -5,8 +5,6 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Algebra.Module.Submodule.Range
-public import Mathlib.LinearAlgebra.Prod
 public import Mathlib.LinearAlgebra.Quotient.Basic
 
 /-! # Exactness of a pair
@@ -75,7 +73,7 @@ lemma comp_injective [One P] [One P'] (mulExact : MulExact f g)
 lemma of_comp_eq_one_of_ker_in_range [One P] (hc : g.comp f = 1)
     (hr : ∀ y, g y = 1 → y ∈ Set.range f) :
     MulExact f g :=
-  fun y ↦ ⟨hr y, fun ⟨x, hx⟩ ↦ hx ▸ congrFun hc x⟩
+  fun y ↦ ⟨hr y, fun ⟨x, hx⟩ ↦ hx ▸ congr($hc x)⟩
 
 /-- Two maps `f : M → N` and `g : N → P` are exact if and only if the induced maps
 `Set.range f → N → Set.range g` are exact.
@@ -90,7 +88,7 @@ may not apply if the zero of `Set.range g` is not definitionally equal to `⟨0,
 lemma iff_rangeFactorization [One P] (hg : 1 ∈ Set.range g) :
     letI : One (Set.range g) := ⟨⟨1, hg⟩⟩
     MulExact f g ↔ MulExact ((↑) : Set.range f → N) (Set.rangeFactorization g) := by
-  letI : One (Set.range g) := ⟨⟨1, hg⟩⟩
+  let : One (Set.range g) := ⟨⟨1, hg⟩⟩
   have : ((1 : Set.range g) : P) = 1 := rfl
   simp [MulExact, Subtype.ext_iff, this]
 
@@ -273,7 +271,7 @@ lemma exact_map_mkQ_range (f : M →ₗ[R] N) :
 
 lemma exact_subtype_ker_map (g : N →ₗ[R] P) :
     Exact (Submodule.subtype (ker g)) g :=
-  exact_iff.mpr <| (Submodule.range_subtype _).symm
+  exact_iff.mpr (Submodule.range_subtype _).symm
 
 @[simp]
 lemma exact_zero_iff_injective {M N : Type*} (P : Type*)
@@ -343,7 +341,7 @@ lemma iff_of_ladder_linearEquiv
     Exact g₁₂ g₂₃ ↔ Exact f₁₂ f₂₃ :=
   iff_of_ladder_addEquiv e₁.toAddEquiv e₂.toAddEquiv e₃.toAddEquiv
     (f₁₂ := f₁₂) (f₂₃ := f₂₃) (g₁₂ := g₁₂) (g₂₃ := g₂₃)
-    (congr_arg LinearMap.toAddMonoidHom h₁₂) (congr_arg LinearMap.toAddMonoidHom h₂₃)
+    congr($(h₁₂).toAddMonoidHom) congr($(h₂₃).toAddMonoidHom)
 
 lemma of_ladder_linearEquiv_of_exact
     (h₁₂ : g₁₂ ∘ₗ e₁ = e₂ ∘ₗ f₁₂) (h₂₃ : g₂₃ ∘ₗ e₂ = e₃ ∘ₗ f₂₃)
@@ -374,6 +372,7 @@ variable {f : M →ₗ[R] N} {g : N →ₗ[R] P}
 
 open LinearMap
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given an exact sequence `0 → M → N → P`, giving a section `P → N` is equivalent to giving a
 splitting `N ≃ M × P`. -/
 noncomputable
@@ -381,27 +380,27 @@ def Exact.splitSurjectiveEquiv (h : Function.Exact f g) (hf : Function.Injective
     { l // g ∘ₗ l = .id } ≃
       { e : N ≃ₗ[R] M × P // f = e.symm ∘ₗ inl R M P ∧ g = snd R M P ∘ₗ e } := by
   refine
-  { toFun := fun l ↦ ⟨(LinearEquiv.ofBijective (f ∘ₗ fst R M P + l.1 ∘ₗ snd R M P) ?_).symm, ?_⟩
-    invFun := fun e ↦ ⟨e.1.symm ∘ₗ inr R M P, ?_⟩
+  { toFun := fun l ↦ ⟨(LinearEquiv.ofBijective (f ∘ₗ fst R M P + l.val ∘ₗ snd R M P) ?_).symm, ?_⟩
+    invFun := fun e ↦ ⟨e.val.symm ∘ₗ inr R M P, ?_⟩
     left_inv := ?_
     right_inv := ?_ }
-  · have h₁ : ∀ x, g (l.1 x) = x := LinearMap.congr_fun l.2
+  · have h₁ : ∀ x, g (l.val x) = x := LinearMap.congr_fun l.property
     have h₂ : ∀ x, g (f x) = 0 := congr_fun h.comp_eq_zero
     constructor
     · intro x y e
-      simp only [add_apply, coe_comp, comp_apply, fst_apply, snd_apply] at e
+      simp only [LinearMap.add_apply, coe_comp, comp_apply, fst_apply, snd_apply] at e
       suffices x.2 = y.2 from Prod.ext (hf (by rwa [this, add_left_inj] at e)) this
-      simpa [h₁, h₂] using DFunLike.congr_arg g e
+      simpa [h₁, h₂] using congr(g $e)
     · intro x
-      obtain ⟨y, hy⟩ := (h (x - l.1 (g x))).mp (by simp [h₁, g.map_sub])
+      obtain ⟨y, hy⟩ := (h (x - l.val (g x))).mp (by simp [h₁, g.map_sub])
       exact ⟨⟨y, g x⟩, by simp [hy]⟩
-  · have h₁ : ∀ x, g (l.1 x) = x := LinearMap.congr_fun l.2
+  · have h₁ : ∀ x, g (l.val x) = x := LinearMap.congr_fun l.property
     have h₂ : ∀ x, g (f x) = 0 := congr_fun h.comp_eq_zero
     constructor
     · ext; simp
     · rw [LinearEquiv.eq_comp_toLinearMap_symm]
       ext <;> simp [h₁, h₂]
-  · rw [← LinearMap.comp_assoc, (LinearEquiv.eq_comp_toLinearMap_symm _ _).mp e.2.2]; rfl
+  · rw [← LinearMap.comp_assoc, (LinearEquiv.eq_comp_toLinearMap_symm _ _).mp e.property.2]; rfl
   · intro; ext; simp
   · rintro ⟨e, rfl, rfl⟩
     ext1
@@ -410,6 +409,7 @@ def Exact.splitSurjectiveEquiv (h : Function.Exact f g) (hf : Function.Injective
     apply e.injective
     ext <;> simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given an exact sequence `M → N → P → 0`, giving a retraction `N → M` is equivalent to giving a
 splitting `N ≃ M × P`. -/
 noncomputable
@@ -420,11 +420,11 @@ def Exact.splitInjectiveEquiv
     { l // l ∘ₗ f = .id } ≃
       { e : N ≃ₗ[R] M × P // f = e.symm ∘ₗ inl R M P ∧ g = snd R M P ∘ₗ e } := by
   refine
-  { toFun := fun l ↦ ⟨(LinearEquiv.ofBijective (l.1.prod g) ?_), ?_⟩
-    invFun := fun e ↦ ⟨fst R M P ∘ₗ e.1, ?_⟩
+  { toFun := fun l ↦ ⟨(LinearEquiv.ofBijective (l.val.prod g) ?_), ?_⟩
+    invFun := fun e ↦ ⟨fst R M P ∘ₗ e.val, ?_⟩
     left_inv := ?_
     right_inv := ?_ }
-  · have h₁ : ∀ x, l.1 (f x) = x := LinearMap.congr_fun l.2
+  · have h₁ : ∀ x, l.val (f x) = x := LinearMap.congr_fun l.property
     have h₂ : ∀ x, g (f x) = 0 := congr_fun h.comp_eq_zero
     constructor
     · intro x y e
@@ -433,14 +433,14 @@ def Exact.splitInjectiveEquiv
       rw [← sub_eq_zero, ← hz, ← h₁ z, hz, map_sub, e.1, sub_self, map_zero]
     · rintro ⟨x, y⟩
       obtain ⟨y, rfl⟩ := hg y
-      refine ⟨f x + y - f (l.1 y), by ext <;> simp [h₁, h₂]⟩
-  · have h₁ : ∀ x, l.1 (f x) = x := LinearMap.congr_fun l.2
+      refine ⟨f x + y - f (l.val y), by ext <;> simp [h₁, h₂]⟩
+  · have h₁ : ∀ x, l.val (f x) = x := LinearMap.congr_fun l.property
     have h₂ : ∀ x, g (f x) = 0 := congr_fun h.comp_eq_zero
     constructor
     · rw [LinearEquiv.eq_toLinearMap_symm_comp]
       ext <;> simp [h₁, h₂]
     · ext; simp
-  · rw [LinearMap.comp_assoc, (LinearEquiv.eq_toLinearMap_symm_comp _ _).mp e.2.1]; rfl
+  · rw [LinearMap.comp_assoc, (LinearEquiv.eq_toLinearMap_symm_comp _ _).mp e.property.1]; rfl
   · intro; ext; simp
   · rintro ⟨e, rfl, rfl⟩
     ext x <;> simp
@@ -451,17 +451,17 @@ theorem Exact.split_tfae' (h : Function.Exact f g) :
       Function.Surjective g ∧ ∃ l, l ∘ₗ f = LinearMap.id,
       ∃ e : N ≃ₗ[R] M × P, f = e.symm ∘ₗ LinearMap.inl R M P ∧ g = LinearMap.snd R M P ∘ₗ e] := by
   tfae_have 1 → 3
-  | ⟨hf, l, hl⟩ => ⟨_, (h.splitSurjectiveEquiv hf ⟨l, hl⟩).2⟩
+  | ⟨hf, l, hl⟩ => ⟨_, (h.splitSurjectiveEquiv hf ⟨l, hl⟩).property⟩
   tfae_have 2 → 3
-  | ⟨hg, l, hl⟩ => ⟨_, (h.splitInjectiveEquiv hg ⟨l, hl⟩).2⟩
+  | ⟨hg, l, hl⟩ => ⟨_, (h.splitInjectiveEquiv hg ⟨l, hl⟩).property⟩
   tfae_have 3 → 1
   | ⟨e, e₁, e₂⟩ => by
     have : Function.Injective f := e₁ ▸ e.symm.injective.comp LinearMap.inl_injective
-    exact ⟨this, ⟨_, ((h.splitSurjectiveEquiv this).symm ⟨e, e₁, e₂⟩).2⟩⟩
+    exact ⟨this, ⟨_, ((h.splitSurjectiveEquiv this).symm ⟨e, e₁, e₂⟩).property⟩⟩
   tfae_have 3 → 2
   | ⟨e, e₁, e₂⟩ => by
     have : Function.Surjective g := e₂ ▸ Prod.snd_surjective.comp e.surjective
-    exact ⟨this, ⟨_, ((h.splitInjectiveEquiv this).symm ⟨e, e₁, e₂⟩).2⟩⟩
+    exact ⟨this, ⟨_, ((h.splitInjectiveEquiv this).symm ⟨e, e₁, e₂⟩).property⟩⟩
   tfae_finish
 
 /-- Equivalent characterizations of split exact sequences. Also known as the **Splitting lemma**. -/
@@ -560,6 +560,7 @@ lemma ker_eq_bot_range_liftQ_iff (h : range f ≤ ker g) :
     obtain ⟨x, rfl⟩ := Submodule.Quotient.mk_surjective _ x
     simpa using hfg x
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma injective_range_liftQ_of_exact (h : Function.Exact f g) :
     Function.Injective ((range f).liftQ g (h · |>.mpr)) := by
   simpa only [← LinearMap.ker_eq_bot, ker_eq_bot_range_liftQ_iff, exact_iff] using h
@@ -582,6 +583,7 @@ noncomputable def Function.Exact.linearEquivOfSurjective (h : Function.Exact f g
   LinearEquiv.ofBijective ((LinearMap.range f).liftQ g (h · |>.mpr))
     ⟨LinearMap.injective_range_liftQ_of_exact h, LinearMap.surjective_range_liftQ _ hg⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma Function.Exact.linearEquivOfSurjective_symm_apply (h : Function.Exact f g)
     (hg : Function.Surjective g) (x : N) :

@@ -9,6 +9,9 @@ public import Mathlib.MeasureTheory.Constructions.Projective
 public import Mathlib.MeasureTheory.Measure.AddContent
 public import Mathlib.MeasureTheory.SetAlgebra
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Additive content built from a projective family of measures
 
@@ -31,7 +34,6 @@ the Kolmogorov extension theorem.
 
 * `projectiveFamilyContent`: additive content on the measurable cylinders, defined from a projective
   family of measures.
-
 -/
 
 @[expose] public section
@@ -64,7 +66,7 @@ end MeasurableCylinders
 
 section ProjectiveFamilyFun
 
-open Classical in
+open scoped Classical in
 /-- For `P` a family of measures, with `P J` a measure on `Π j : J, α j`, we define a function
 `projectiveFamilyFun P s` by setting it to `P I S` if `s = cylinder I S` for a measurable `S` and
 to 0 if `s` is not a measurable cylinder. -/
@@ -76,7 +78,7 @@ noncomputable def projectiveFamilyFun (P : ∀ J : Finset ι, Measure (Π j : J,
 lemma projectiveFamilyFun_congr (hP : IsProjectiveMeasureFamily P)
     (hs : s ∈ measurableCylinders α) (hs_eq : s = cylinder I S) (hS : MeasurableSet S) :
     projectiveFamilyFun P s = P I S := by
-  rw [projectiveFamilyFun, dif_pos hs]
+  rw [projectiveFamilyFun, dite_eq_left hs]
   exact hP.congr_cylinder (measurableCylinders.measurableSet hs) hS
     ((measurableCylinders.eq_cylinder hs).symm.trans hs_eq)
 

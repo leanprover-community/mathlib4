@@ -8,6 +8,9 @@ module
 public import Mathlib.Combinatorics.SimpleGraph.Basic
 public import Mathlib.MeasureTheory.MeasurableSpace.Embedding
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sigma-algebra on simple graphs
 
@@ -17,7 +20,6 @@ In this file, we pull back the sigma-algebra on `V → V → Prop` to a sigma-al
 
 public section
 
-open MeasureTheory
 open scoped Finset
 
 namespace SimpleGraph

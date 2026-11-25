@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Finset.Card
 public import Mathlib.Data.Finset.Lattice.Union
 public import Mathlib.Data.Multiset.Powerset
 public import Mathlib.Data.Set.Pairwise.Lattice
@@ -30,7 +29,7 @@ section Powerset
 
 /-- When `s` is a finset, `s.powerset` is the finset of all subsets of `s` (seen as finsets). -/
 def powerset (s : Finset α) : Finset (Finset α) :=
-  ⟨(s.1.powerset.pmap Finset.mk) fun _t h => nodup_of_le (mem_powerset.1 h) s.nodup,
+  ⟨(s.val.powerset.pmap Finset.mk) fun _t h => nodup_of_le (mem_powerset.1 h) s.nodup,
     s.nodup.powerset.pmap fun _a _ha _b _hb => congr_arg Finset.val⟩
 
 @[simp, grind =]
@@ -101,7 +100,7 @@ theorem powerset_image {β : Type*} [DecidableEq β] {f : α → β} :
 /-- **Number of Subsets of a Set** -/
 @[simp]
 theorem card_powerset (s : Finset α) : card (powerset s) = 2 ^ card s :=
-  (card_pmap _ _ _).trans (Multiset.card_powerset s.1)
+  (card_pmap _ _ _).trans (Multiset.card_powerset s.val)
 
 theorem notMem_of_mem_powerset_of_notMem {s t : Finset α} {a : α} (ht : t ∈ s.powerset)
     (h : a ∉ s) : a ∉ t := by
@@ -196,13 +195,13 @@ variable {n} {s t : Finset α}
 /-- Given an integer `n` and a finset `s`, then `powersetCard n s` is the finset of subsets of `s`
 of cardinality `n`. -/
 def powersetCard (n : ℕ) (s : Finset α) : Finset (Finset α) :=
-  ⟨((s.1.powersetCard n).pmap Finset.mk) fun _t h => nodup_of_le (mem_powersetCard.1 h).1 s.2,
-    s.2.powersetCard.pmap fun _a _ha _b _hb => congr_arg Finset.val⟩
+  ⟨((s.val.powersetCard n).pmap Finset.mk) fun _t h => nodup_of_le (mem_powersetCard.1 h).1 s.nodup,
+    s.nodup.powersetCard.pmap fun _a _ha _b _hb => congr_arg Finset.val⟩
 
 @[simp, grind =] lemma mem_powersetCard : s ∈ powersetCard n t ↔ s ⊆ t ∧ card s = n := by
   cases s; simp [powersetCard, val_le_iff.symm]
 
-@[simp]
+@[simp, gcongr]
 theorem powersetCard_mono {n} {s t : Finset α} (h : s ⊆ t) : powersetCard n s ⊆ powersetCard n t :=
   fun _u h' => mem_powersetCard.2 <|
     And.imp (fun h₂ => Subset.trans h₂ h) id (mem_powersetCard.1 h')
@@ -211,7 +210,7 @@ theorem powersetCard_mono {n} {s t : Finset α} (h : s ⊆ t) : powersetCard n s
 @[simp]
 theorem card_powersetCard (n : ℕ) (s : Finset α) :
     card (powersetCard n s) = Nat.choose (card s) n :=
-  (card_pmap _ _ _).trans (Multiset.card_powersetCard n s.1)
+  (card_pmap _ _ _).trans (Multiset.card_powersetCard n s.val)
 
 /-- The `n`-element subsets of `t` containing `s` are exactly the `(n - s.card)`-element
 subsets of `t \ s`, unioned with `s`. -/
@@ -253,7 +252,7 @@ lemma powersetCard_empty_subsingleton (n : ℕ) :
 
 @[simp]
 theorem map_val_val_powersetCard (s : Finset α) (i : ℕ) :
-    (s.powersetCard i).val.map Finset.val = s.1.powersetCard i := by
+    (s.powersetCard i).val.map Finset.val = s.val.powersetCard i := by
   simp [Finset.powersetCard, map_pmap, pmap_eq_map, map_id']
 
 theorem powersetCard_one (s : Finset α) :
@@ -268,6 +267,14 @@ lemma powersetCard_eq_empty : powersetCard n s = ∅ ↔ s.card < n := by
 
 @[simp] lemma powersetCard_card_add (s : Finset α) (hn : 0 < n) :
     s.powersetCard (s.card + n) = ∅ := by simpa
+
+lemma powersetCard_inter [DecidableEq α] (s t : Finset α) (n : ℕ) :
+    powersetCard n (s ∩ t) = powersetCard n s ∩ powersetCard n t := by
+  ext; simpa [subset_inter_iff] using and_and_right
+
+@[simp] lemma disjoint_powersetCard_powersetCard [DecidableEq α] (s t : Finset α) (n : ℕ) :
+    Disjoint (powersetCard n s) (powersetCard n t) ↔ #(s ∩ t) < n := by
+  simp [disjoint_iff_inter_eq_empty, ← powersetCard_inter]
 
 theorem powersetCard_eq_filter {n} {s : Finset α} :
     powersetCard n s = (powerset s).filter fun x => x.card = n := by
@@ -296,11 +303,20 @@ theorem powersetCard_self (s : Finset α) : powersetCard s.card s = {s} := by
   · rintro rfl
     simp
 
-theorem pairwise_disjoint_powersetCard (s : Finset α) :
-    Pairwise fun i j => Disjoint (s.powersetCard i) (s.powersetCard j) := fun _i _j hij =>
-  Finset.disjoint_left.mpr fun _x hi hj =>
-    hij <| (mem_powersetCard.mp hi).2.symm.trans (mem_powersetCard.mp hj).2
+lemma _root_.Disjoint.powersetCard_powersetCard_finset {s t : Finset α}
+    (h : Disjoint s t) {m : ℕ} (hn : n ≠ 0 ∨ m ≠ 0) :
+    Disjoint (powersetCard n s) (powersetCard m t) := by
+  grind [disjoint_left]
 
+lemma disjoint_powersetCard_of_ne {m n : ℕ} (h : m ≠ n) (s t : Finset α) :
+    Disjoint (powersetCard m s) (powersetCard n t) := by
+  grind [disjoint_left]
+
+theorem pairwise_disjoint_powersetCard (s : Finset α) :
+    Pairwise fun i j => Disjoint (s.powersetCard i) (s.powersetCard j) :=
+  fun _i _j hij => disjoint_powersetCard_of_ne hij s s
+
+set_option backward.isDefEq.respectTransparency false in
 theorem powerset_card_disjiUnion (s : Finset α) :
     Finset.powerset s =
       (range (s.card + 1)).disjiUnion (fun i => powersetCard i s)
@@ -313,6 +329,7 @@ theorem powerset_card_disjiUnion (s : Finset α) :
   · rcases mem_disjiUnion.mp ha with ⟨i, _hi, ha⟩
     exact mem_powerset.mpr (mem_powersetCard.mp ha).1
 
+set_option backward.isDefEq.respectTransparency false in
 theorem powerset_card_biUnion [DecidableEq (Finset α)] (s : Finset α) :
     Finset.powerset s = (range (s.card + 1)).biUnion fun i => powersetCard i s := by
   simpa only [disjiUnion_eq_biUnion] using powerset_card_disjiUnion s
@@ -323,7 +340,7 @@ theorem powersetCard_sup [DecidableEq α] (u : Finset α) (n : ℕ) (hn : n < u.
   · simp_rw [Finset.sup_le_iff, mem_powersetCard]
     rintro x ⟨h, -⟩
     exact h
-  · rw [sup_eq_biUnion, le_iff_subset, subset_iff]
+  · rw [sup_eq_biUnion, subset_iff]
     intro x hx
     simp only [mem_biUnion, id]
     obtain ⟨t, ht⟩ : ∃ t, t ∈ powersetCard n (u.erase x) := powersetCard_nonempty.2
@@ -355,9 +372,7 @@ lemma powersetCard_injOn {q r : ℕ} (hr₀ : r ≠ 0) (hrq : r ≤ q) :
 theorem powersetCard_map {β : Type*} (f : α ↪ β) (n : ℕ) (s : Finset α) :
     powersetCard n (s.map f) = (powersetCard n s).map (mapEmbedding f).toEmbedding :=
   ext fun t => by
-    -- `le_eq_subset` is a dangerous lemma since it turns the type `↪o` into `(· ⊆ ·) ↪r (· ⊆ ·)`,
-    -- which makes `simp` have trouble working with `mapEmbedding_apply`.
-    simp only [mem_powersetCard, mem_map, RelEmbedding.coe_toEmbedding, mapEmbedding_apply]
+    simp only [mem_powersetCard, mem_map]
     constructor
     · classical
       intro h
@@ -365,7 +380,7 @@ theorem powersetCard_map {β : Type*} (f : α ↪ β) (n : ℕ) (s : Finset α) 
       refine ⟨_, ?_, this⟩
       rw [← card_map f, this, h.2]; simp
     · rintro ⟨a, ⟨has, rfl⟩, rfl⟩
-      simp only [map_subset_map, has, card_map, and_self]
+      simp [has]
 
 end powersetCard
 

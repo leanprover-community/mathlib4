@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Algebra.Module.Submodule.Lattice
 public import Mathlib.RingTheory.Ideal.Defs
-public import Mathlib.Tactic.NormNum.Inv
-public import Mathlib.Tactic.NormNum.Pow
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The lattice of ideals in a ring
@@ -25,9 +26,9 @@ public section
 
 universe u v w
 
-variable {α : Type u} {β : Type v} {F : Type w}
+variable {α : Type u}
 
-open Set Function
+open Set
 
 open scoped Pointwise
 
@@ -35,7 +36,7 @@ section Semiring
 
 namespace Ideal
 
-variable [Semiring α] (I : Ideal α) {a b : α}
+variable [Semiring α] (I : Ideal α) {a : α}
 
 instance (priority := low) : IsTwoSided (⊥ : Ideal α) :=
   ⟨fun _ h ↦ by rw [h, zero_mul]; exact zero_mem _⟩

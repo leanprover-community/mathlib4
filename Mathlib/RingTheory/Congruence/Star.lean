@@ -5,8 +5,13 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.RingTheory.Congruence.Basic
 public import Mathlib.Algebra.Star.Basic
+public import Mathlib.RingTheory.Congruence.Defs
+
+import Mathlib.Data.Finset.Attr
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Helpers for working with star operators on quotients.
@@ -14,7 +19,7 @@ public import Mathlib.Algebra.Star.Basic
 TODO: consider defining `Star` versions of `RingCon`.
 -/
 
-@[expose] public section
+public section
 
 section Ring
 variable {R : Type*} [NonUnitalNonAssocSemiring R] [StarRing R] {r : R → R → Prop}

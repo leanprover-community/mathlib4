@@ -5,17 +5,20 @@ Authors: Xavier Généreux, Patrick Massot
 -/
 module
 
-public import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.Analysis.RCLike.Basic
+
+import Mathlib.Data.EReal.Inv
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # A collection of specific limit computations for `RCLike`
-
 -/
 
 public section
 
-open Set Algebra Filter
+open Filter
 open scoped Topology
 
 namespace RCLike

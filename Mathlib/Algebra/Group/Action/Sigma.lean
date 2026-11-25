@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Action.Faithful
 public import Mathlib.Data.Sigma.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sigma instances for additive and multiplicative actions
 
@@ -21,7 +24,7 @@ This file defines instances for arbitrary sum of additive and multiplicative act
 * `Mathlib/Algebra/Group/Action/Sum.lean`
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero
 

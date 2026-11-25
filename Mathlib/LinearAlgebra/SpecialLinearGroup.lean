@@ -5,10 +5,6 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.LinearAlgebra.Determinant
-public import Mathlib.LinearAlgebra.Dual.Basis
-public import Mathlib.LinearAlgebra.Matrix.Dual
-public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
 public import Mathlib.LinearAlgebra.Charpoly.BaseChange
 
 /-!
@@ -37,7 +33,6 @@ and its variant
 `Matrix.SpecialLinearGroup.toLin_equiv`,
 from `Matrix.SpecialLinearGroup n R` to `SpecialLinearGroup R V`,
 associated with a finite basis of `V`.
-
 -/
 
 @[expose] public section
@@ -79,7 +74,7 @@ theorem subsingleton_of_finrank_eq_one [Module.Free R V] (d1 : Module.finrank R 
     by_cases hx : x = 0
     · simp [hx]
     suffices ∀ (u : SpecialLinearGroup R V), (u : V →ₗ[R] V) = LinearMap.id by
-      simp only [LinearMap.ext_iff, LinearEquiv.coe_coe, LinearMap.id_coe, id_eq] at this
+      simp only [LinearMap.ext_iff, LinearEquiv.coe_toLinearMap, LinearMap.id_coe, id_eq] at this
       simp [this u, this v]
     intro u
     ext x
@@ -419,7 +414,7 @@ noncomputable def centerEquivRootsOfUnity_invFun
       simpa [← Subtype.val_inj, ← Units.val_inj]⟩
 
 set_option backward.isDefEq.respectTransparency false in
-open Classical in
+open scoped Classical in
 /-- The isomorphism between the roots of unity and the center of the special linear group. -/
 noncomputable def centerEquivRootsOfUnity :
     (Subgroup.center (SpecialLinearGroup R V)) ≃*
@@ -534,7 +529,7 @@ section
 
 open Subgroup Matrix Matrix.SpecialLinearGroup
 
-variable {n : Type*} [Fintype n] [DecidableEq n] {R : Type*} [CommRing R]
+variable {R : Type*} [CommRing R]
 
 variable {V : Type*} [AddCommGroup V] [Module R V] [Module.Free R V] [Module.Finite R V]
 variable {ι : Type*} [Fintype ι] [DecidableEq ι] (b : Module.Basis ι R V)
@@ -546,7 +541,7 @@ theorem centerCongr_toLin_equiv_trans_centerEquivRootsOfUnity_eq (g) :
       Matrix.SpecialLinearGroup.center_equiv_rootsOfUnity g := by
   nontriviality R
   by_cases hV : Subsingleton V
-  · convert! Eq.refl (1 : Rˣ) <;>
+  · convert Eq.refl (1 : Rˣ) <;>
     · apply rootsOfUnity.eq_one
       rw [← Module.finrank_eq_zero_iff_of_free (R := R)] at hV
       simp only [hV, sup_eq_right, zero_le_one, ← Module.finrank_eq_card_basis b]
