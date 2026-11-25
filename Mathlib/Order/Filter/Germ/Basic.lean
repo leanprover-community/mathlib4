@@ -481,7 +481,8 @@ theorem coe_smul [∀ i, SMul M' (G i)] (n : M') (f : (x : α) → G x) :
   rfl
 
 @[to_additive (attr := simp, norm_cast)]
-theorem const_smul [SMul M' G'] (n : M') (a : G') : (↑(n • a) : Germ l G') = n • (↑a : Germ l G') :=
+theorem _root_.Filter.Germ.const_smul [SMul M' G'] (n : M') (a : G') :
+    (↑(n • a) : Germ l G') = n • (↑a : Germ l G') :=
   rfl
 
 @[to_additive existing coe_smul]
@@ -490,7 +491,8 @@ theorem coe_pow [∀ i, Pow (G i) M'] (f : (x : α) → G x) (n : M') :
   rfl
 
 @[to_additive existing const_smul]
-theorem const_pow [Pow G' M'] (a : G') (n : M') : (↑(a ^ n) : Germ l G') = (↑a : Germ l G') ^ n :=
+theorem _root_.Filter.Germ.const_pow [Pow G' M'] (a : G') (n : M') :
+    (↑(a ^ n) : Germ l G') = (↑a : Germ l G') ^ n :=
   rfl
 
 @[to_additive]
@@ -520,7 +522,7 @@ theorem natCast_def [∀ i, NatCast (M i)] (n : ℕ) :
     ((fun _ ↦ n : (x : α) → M x) : Product l M) = n := rfl
 
 @[simp, norm_cast]
-theorem const_nat [NatCast M'] (n : ℕ) : ((n : M') : Germ l M') = n := rfl
+theorem _root_.Filter.Germ.const_nat [NatCast M'] (n : ℕ) : ((n : M') : Germ l M') = n := rfl
 
 @[simp, norm_cast]
 theorem coe_ofNat [∀ i, NatCast (M i)] (n : ℕ) [n.AtLeastTwo] :
@@ -528,7 +530,7 @@ theorem coe_ofNat [∀ i, NatCast (M i)] (n : ℕ) [n.AtLeastTwo] :
   rfl
 
 @[simp, norm_cast]
-theorem const_ofNat [NatCast M'] (n : ℕ) [n.AtLeastTwo] :
+theorem _root_.Filter.Germ.const_ofNat [NatCast M'] (n : ℕ) [n.AtLeastTwo] :
     ((ofNat(n) : M') : Germ l M') = ofNat(n) :=
   rfl
 
@@ -554,7 +556,7 @@ theorem coe_inv [∀ i, Inv (G i)] (f : (x : α) → G x) : ↑f⁻¹ = (f⁻¹ 
   rfl
 
 @[to_additive (attr := simp, norm_cast)]
-theorem const_inv [Inv G'] (a : G') : (↑(a⁻¹) : Germ l G') = (↑a)⁻¹ :=
+theorem _root_.Filter.Germ.const_inv [Inv G'] (a : G') : (↑(a⁻¹) : Germ l G') = (↑a)⁻¹ :=
   rfl
 
 @[to_additive] instance instDiv [∀ i, Div (M i)] : Div (Product l M) where
@@ -565,7 +567,7 @@ theorem coe_div [∀ i, Div (M i)] (f g : (x : α) → M x) : ↑(f / g) = (f / 
   rfl
 
 @[to_additive (attr := simp, norm_cast)]
-theorem const_div [Div M'] (a b : M') : (↑(a / b) : Germ l M') = ↑a / ↑b :=
+theorem _root_.Filter.Germ.const_div [Div M'] (a b : M') : (↑(a / b) : Germ l M') = ↑a / ↑b :=
   rfl
 
 @[to_additive]
@@ -757,11 +759,11 @@ theorem coe_le [∀ i, LE (ε i)] : (f : Product l ε) ≤ g ↔ ∀ᶠ x in l, 
 theorem coe_nonneg [∀ i, LE (ε i)] [∀ i, Zero (ε i)] : 0 ≤ (f : Product l ε) ↔ ∀ᶠ x in l, 0 ≤ f x :=
   Iff.rfl
 
-theorem const_le [LE β] {x y : β} : x ≤ y → (↑x : Germ l β) ≤ ↑y :=
+theorem _root_.Filter.Germ.const_le [LE β] {x y : β} : x ≤ y → (↑x : Germ l β) ≤ ↑y :=
   Germ.liftRel_const
 
 @[simp, norm_cast]
-theorem const_le_iff [LE β] [NeBot l] {x y : β} : (↑x : Germ l β) ≤ ↑y ↔ x ≤ y :=
+theorem _root_.Filter.Germ.const_le_iff [LE β] [NeBot l] {x y : β} : (↑x : Germ l β) ≤ ↑y ↔ x ≤ y :=
   Germ.liftRel_const_iff
 
 instance instPreorder [∀ i, Preorder (ε i)] : Preorder (Product l ε) where
@@ -793,11 +795,11 @@ theorem coe_top [∀ i, Top (ε i)] : (↑(⊤ : (x : α) → ε x) : Product l 
   rfl
 
 @[simp, norm_cast]
-theorem const_bot [Bot β] : (↑(⊥ : β) : Germ l β) = ⊥ :=
+theorem _root_.Filter.Germ.const_bot [Bot β] : (↑(⊥ : β) : Germ l β) = ⊥ :=
   rfl
 
 @[simp, norm_cast]
-theorem const_top [Top β] : (↑(⊤ : β) : Germ l β) = ⊤ :=
+theorem _root_.Filter.Germ.const_top [Top β] : (↑(⊤ : β) : Germ l β) = ⊤ :=
   rfl
 
 instance instOrderBot [LE β] [OrderBot β] : OrderBot (Germ l β) where
@@ -822,11 +824,11 @@ theorem coe_inf [∀ i, Min (ε i)] (a b : (x : α) → ε x) : ↑(a ⊓ b) = (
   rfl
 
 @[simp, norm_cast]
-theorem const_sup [Max β] (a b : β) : ↑(a ⊔ b) = (↑a ⊔ ↑b : Germ l β) :=
+theorem _root_.Filter.Germ.const_sup [Max β] (a b : β) : ↑(a ⊔ b) = (↑a ⊔ ↑b : Germ l β) :=
   rfl
 
 @[simp, norm_cast]
-theorem const_inf [Min β] (a b : β) : ↑(a ⊓ b) = (↑a ⊓ ↑b : Germ l β) :=
+theorem _root_.Filter.Germ.const_inf [Min β] (a b : β) : ↑(a ⊓ b) = (↑a ⊓ ↑b : Germ l β) :=
   rfl
 
 instance instSemilatticeSup [∀ i, SemilatticeSup (ε i)] : SemilatticeSup (Product l ε) where
