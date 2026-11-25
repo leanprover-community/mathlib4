@@ -5,9 +5,13 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Functor.KanExtension.Dense
 public import Mathlib.CategoryTheory.Presentable.Finite
 public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
+
+import Mathlib.CategoryTheory.Functor.KanExtension.Dense
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # `κ`-presentable objects form a dense subcategory
@@ -58,7 +62,7 @@ instance [IsCardinalAccessibleCategory C κ] :
   isDenseAt X := by
     obtain ⟨J, _, _, ⟨p⟩⟩ :=
       (isCardinalFilteredGenerator_isCardinalPresentable C κ).exists_colimitsOfShape X
-    exact ⟨(Functor.Final.isColimitWhiskerEquiv (F := p.toCostructuredArrow) _).1
+    exact ⟨(Functor.Final.isColimitWhiskerEquiv (F := p.toCostructuredArrow) _).toFun
       (IsColimit.ofIsoColimit p.isColimit (Cocone.ext (Iso.refl _)))⟩
 
 instance [IsCardinalAccessibleCategory C κ] (X : C) :

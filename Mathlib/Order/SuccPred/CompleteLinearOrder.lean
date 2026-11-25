@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 public import Mathlib.Order.SuccPred.Limit
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Relation between `IsSuccPrelimit` and `iSup` in (conditionally) complete linear orders.
 -/
@@ -80,10 +83,10 @@ theorem Order.IsSuccPrelimit.sSup_Iio (h : IsSuccPrelimit x) : sSup (Iio x) = x 
   · simp
   · exact h.isLUB_Iio.csSup_eq ⟨⊥, hx⟩
 
-theorem Order.IsSuccPrelimit.iSup_Iio (h : IsSuccPrelimit x) : ⨆ a : Iio x, a.1 = x := by
+theorem Order.IsSuccPrelimit.iSup_Iio (h : IsSuccPrelimit x) : ⨆ a : Iio x, a.val = x := by
   rw [← sSup_eq_iSup', h.sSup_Iio]
 
-theorem Order.IsSuccLimit.iSup_Iio (h : IsSuccLimit x) : ⨆ a : Iio x, a.1 = x :=
+theorem Order.IsSuccLimit.iSup_Iio (h : IsSuccLimit x) : ⨆ a : Iio x, a.val = x :=
   h.isSuccPrelimit.iSup_Iio
 
 theorem sSup_Iio_eq_self_iff_isSuccPrelimit : sSup (Iio x) = x ↔ IsSuccPrelimit x := by
@@ -92,15 +95,15 @@ theorem sSup_Iio_eq_self_iff_isSuccPrelimit : sSup (Iio x) = x ↔ IsSuccPrelimi
   rw [← h] at hx
   simpa [h] using csSup_mem_of_not_isSuccPrelimit hx
 
-theorem iSup_Iio_eq_self_iff_isSuccPrelimit : ⨆ a : Iio x, a.1 = x ↔ IsSuccPrelimit x := by
+theorem iSup_Iio_eq_self_iff_isSuccPrelimit : ⨆ a : Iio x, a.val = x ↔ IsSuccPrelimit x := by
   rw [← sSup_eq_iSup', sSup_Iio_eq_self_iff_isSuccPrelimit]
 
-theorem iSup_succ [SuccOrder α] (x : α) : ⨆ a : Iio x, succ a.1 = x := by
-  have H : BddAbove (range fun a : Iio x ↦ succ a.1) :=
+theorem iSup_succ [SuccOrder α] (x : α) : ⨆ a : Iio x, succ a.val = x := by
+  have H : BddAbove (range fun a : Iio x ↦ succ a.val) :=
     ⟨succ x, by simp +contextual [upperBounds, succ_le_succ, le_of_lt]⟩
   apply le_antisymm _ (le_of_forall_lt fun y hy ↦ ?_)
   · rw [ciSup_le_iff' H]
-    exact fun a ↦ succ_le_of_lt a.2
+    exact fun a ↦ succ_le_of_lt a.property
   · rw [lt_ciSup_iff' H]
     exact ⟨⟨y, hy⟩, lt_succ_of_not_isMax hy.not_isMax⟩
 

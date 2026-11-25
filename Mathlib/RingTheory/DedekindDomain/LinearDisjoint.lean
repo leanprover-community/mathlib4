@@ -8,6 +8,9 @@ module
 public import Mathlib.FieldTheory.LinearDisjoint
 public import Mathlib.RingTheory.DedekindDomain.Different
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Disjoint extensions with coprime different ideals
 

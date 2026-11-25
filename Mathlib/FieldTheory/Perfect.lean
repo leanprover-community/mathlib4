@@ -14,7 +14,8 @@ public import Mathlib.FieldTheory.Separable
 In this file we define perfect fields, together with a generalisation to (commutative) rings in
 prime characteristic.
 
-## Main definitions / statements:
+## Main definitions / results
+
 * `PerfectRing`: a ring of characteristic `p` (prime) is said to be perfect in the sense of Serre,
   if its absolute Frobenius map `x ↦ xᵖ` is bijective.
 * `PerfectField`: a field `K` is said to be perfect if every irreducible polynomial over `K` is
@@ -328,7 +329,7 @@ theorem separable_iff_squarefree {g : K[X]} : g.Separable ↔ Squarefree g := by
   replace dvd : p ∣ q := by
     rw [derivative_mul, dvd_add_left (dvd_mul_right p _)] at dvd
     exact (separable_of_irreducible h).dvd_of_dvd_mul_left dvd
-  exact (h.1 : ¬ IsUnit p) (sqf _ <| mul_dvd_mul_left _ dvd)
+  exact (h.not_isUnit : ¬ IsUnit p) (sqf _ <| mul_dvd_mul_left _ dvd)
 
 end PerfectField
 
@@ -446,7 +447,7 @@ variable [DecidableEq R]
 a map from the set of roots of `Polynomial.expand R p f` to the set of roots of `f`.
 It's given by `x ↦ x ^ p`, see `rootsExpandToRoots_apply`. -/
 noncomputable def rootsExpandToRoots : (expand R p f).roots.toFinset ↪ f.roots.toFinset where
-  toFun x := ⟨x ^ p, roots_expand_image_frobenius_subset p f (Finset.mem_image_of_mem _ x.2)⟩
+  toFun x := ⟨x ^ p, roots_expand_image_frobenius_subset p f (Finset.mem_image_of_mem _ x.property)⟩
   inj' _ _ h := Subtype.ext (frobenius_inj R p <| Subtype.ext_iff.1 h)
 
 @[simp]
@@ -458,7 +459,7 @@ It's given by `x ↦ x ^ (p ^ n)`, see `rootsExpandPowToRoots_apply`. -/
 noncomputable def rootsExpandPowToRoots :
     (expand R (p ^ n) f).roots.toFinset ↪ f.roots.toFinset where
   toFun x := ⟨x ^ p ^ n,
-    roots_expand_pow_image_iterateFrobenius_subset p n f (Finset.mem_image_of_mem _ x.2)⟩
+    roots_expand_pow_image_iterateFrobenius_subset p n f (Finset.mem_image_of_mem _ x.property)⟩
   inj' _ _ h := Subtype.ext (iterateFrobenius_inj R p n <| Subtype.ext_iff.1 h)
 
 @[simp]

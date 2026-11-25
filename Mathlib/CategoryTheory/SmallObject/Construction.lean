@@ -42,6 +42,7 @@ provides a tautological morphism `B i ⟶ functorObj f πX`
 (see `SmallObject.ιFunctorObj_extension`).
 
 ## References
+
 - https://ncatlab.org/nlab/show/small+object+argument
 -/
 
@@ -252,7 +253,7 @@ variable [HasPushout (functorObjTop f πX) (functorObjLeft f πX)]
 the small object argument for a family of morphisms `f`, on morphisms. -/
 noncomputable def functorMap : functorObj f πX ⟶ functorObj f πY :=
   pushout.map _ _ _ _ τ.left (functorMapTgt f τ) (functorMapSrc f τ) (by simp)
-    (functorMap_comm f τ)
+    (functorMap_comm f τ).symm
 
 @[reassoc (attr := simp)]
 lemma functorMap_π : functorMap f τ ≫ πFunctorObj f πY = πFunctorObj f πX ≫ τ.right := by

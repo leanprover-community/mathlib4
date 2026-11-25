@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Algebra.Constructions
 public import Mathlib.Topology.EMetricSpace.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extended metric spaces on multiplicative opposites
 
@@ -29,7 +32,7 @@ weak pseudoemetric space. -/
 /-- Weak pseudoemetric space instance on the additive opposite of a weak pseudoemetric space. -/]
 instance {α : Type*} [TopologicalSpace α] [WeakPseudoEMetricSpace α] :
     WeakPseudoEMetricSpace αᵐᵒᵖ :=
-  WeakPseudoEMetricSpace.IsInducing MulOpposite.opHomeomorph.symm.isInducing ‹_›
+  WeakPseudoEMetricSpace.IsInducing (f := unop) MulOpposite.opHomeomorph.symm.isInducing ‹_›
 
 /-- Pseudoemetric space instance on the multiplicative opposite of a pseudoemetric space. -/
 @[to_additive

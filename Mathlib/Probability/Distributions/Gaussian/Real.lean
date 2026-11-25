@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Gaussian.FourierTransform
 public import Mathlib.Probability.Moments.MGFAnalytic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Gaussian distributions over ℝ
 

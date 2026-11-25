@@ -5,9 +5,10 @@ Authors: Eric Wieser, Zhangir Azerbayev
 -/
 module
 
-public import Mathlib.Algebra.Group.Action.FunLike
 public import Mathlib.GroupTheory.Perm.Sign
 public import Mathlib.LinearAlgebra.Multilinear.Basis
+
+import Mathlib.Algebra.Group.Action.FunLike
 
 
 /-!
@@ -17,6 +18,7 @@ We construct the bundled function `AlternatingMap`, which extends `MultilinearMa
 arguments of the same type.
 
 ## Main definitions
+
 * `AlternatingMap R M N ι` is the space of `R`-linear alternating maps from `ι → M` to `N`.
 * `f.map_eq_zero_of_eq` expresses that `f` is zero when two inputs are equal.
 * `f.map_swap` expresses that `f` is negated when two inputs are swapped.
@@ -29,6 +31,7 @@ arguments of the same type.
   by `Fin n.succ`.
 
 ## Implementation notes
+
 `AlternatingMap` is defined in terms of `map_eq_zero_of_eq`, as this is easier to work with than
 using `map_swap` as a definition, and does not require `Neg N`.
 
@@ -303,7 +306,7 @@ theorem toMultilinearMap_zero : ((0 : M [⋀^ι]→ₗ[R] N) : (ι → M) →ₘ
 @[deprecated (since := "2026-07-27")] alias coe_zero := toMultilinearMap_zero
 
 @[simp]
-theorem mk_zero : mk (0 : (ι → M) →ₘₗ[R] N) (0 : M [⋀^ι]→ₗ[R] N).2 = 0 :=
+theorem mk_zero : mk (0 : (ι → M) →ₘₗ[R] N) (0 : M [⋀^ι]→ₗ[R] N).map_eq_zero_of_eq' = 0 :=
   rfl
 
 instance instInhabited : Inhabited (M [⋀^ι]→ₗ[R] N) :=

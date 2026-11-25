@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.ProdStdSimplex
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # A binary product of finite simplicial sets is finite
 

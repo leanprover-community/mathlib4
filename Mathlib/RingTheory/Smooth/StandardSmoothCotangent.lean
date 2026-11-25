@@ -56,8 +56,8 @@ set_option backward.isDefEq.respectTransparency false in
 lemma cotangentComplexAux_apply [Finite σ] (P : PreSubmersivePresentation R S ι σ)
     (x : P.ker) (i : σ) :
     P.cotangentComplexAux (Cotangent.mk x) i = (aeval P.val) (pderiv (P.map i) x.val) := by
-  dsimp only [cotangentComplexAux, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
-    cotangentComplex_mk]
+  dsimp only [cotangentComplexAux, LinearMap.coe_comp, LinearEquiv.coe_toLinearMap,
+    Function.comp_apply, cotangentComplex_mk]
   simp only [Generators.toExtension_Ring, Finsupp.lcomapDomain_apply,
     Finsupp.linearEquivFunOnFinite_apply, Finsupp.comapDomain_apply,
     Generators.cotangentSpaceBasis_repr_tmul, one_mul]
@@ -130,7 +130,7 @@ noncomputable def cotangentEquiv : P.toExtension.Cotangent ≃ₗ[S] σ → S :=
 lemma cotangentComplex_injective : Function.Injective P.toExtension.cotangentComplex := by
   have := P.cotangentComplexAux_injective
   simp only [PreSubmersivePresentation.cotangentComplexAux, LinearMap.coe_comp,
-    LinearEquiv.coe_coe] at this
+    LinearEquiv.coe_toLinearMap] at this
   exact Function.Injective.of_comp (Function.Injective.of_comp <| Function.Injective.of_comp this)
 
 /-- If `P` is a submersive presentation, `H¹` of the associated cotangent complex vanishes. -/
@@ -169,7 +169,7 @@ noncomputable def sectionCotangent : P.toExtension.CotangentSpace →ₗ[S] P.to
 lemma sectionCotangent_eq_iff (x : P.toExtension.CotangentSpace) (y : P.toExtension.Cotangent) :
     sectionCotangent P x = y ↔
       ∀ i : σ, P.cotangentSpaceBasis.repr x (P.map i) = (P.cotangentComplexAux y) i := by
-  simp only [sectionCotangent, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply]
+  simp only [sectionCotangent, LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply]
   rw [← (cotangentEquiv P).injective.eq_iff, funext_iff, LinearEquiv.apply_symm_apply]
   simp
 
@@ -202,7 +202,8 @@ noncomputable def basisKaehlerOfIsCompl {κ : Type*} {f : κ → ι}
   · intro i
     apply sectionCotangent_zero_of_notMem_range _ _
     simp [← hcompl.compl_eq]
-  · simp only [sectionCotangent, LinearMap.coe_comp, Function.comp_assoc, LinearEquiv.coe_coe]
+  · simp only [sectionCotangent, LinearMap.coe_comp, Function.comp_assoc,
+      LinearEquiv.coe_toLinearMap]
     apply LinearIndependent.map' _ _ P.cotangentEquiv.symm.ker
     convert (Pi.basisFun S σ).linearIndependent
     classical
@@ -210,7 +211,7 @@ noncomputable def basisKaehlerOfIsCompl {κ : Type*} {f : κ → ι}
     simp only [Function.comp_apply, Basis.repr_self, Finsupp.linearEquivFunOnFinite_apply,
       Pi.basisFun_apply]
     simp [Finsupp.single_eq_pi_single]
-  · exact hcompl.2
+  · exact hcompl.codisjoint
 
 @[simp]
 lemma basisKaehlerOfIsCompl_apply {κ : Type*} {f : κ → ι}

@@ -15,6 +15,7 @@ The pretriangulated structure on `Cᵒᵖ` was constructed in the file
 that `Cᵒᵖ` is triangulated if `C` is triangulated.
 
 ## References
+
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
 -/
 
@@ -31,7 +32,6 @@ variable (C : Type*) [Category* C] [HasShift C ℤ] [HasZeroObject C] [Preadditi
 
 namespace Opposite
 
-set_option backward.defeqAttrib.useBackward true in
 scoped instance [IsTriangulated C] : IsTriangulated Cᵒᵖ where
   octahedron_axiom := by
     intro X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ u₁₂ u₂₃ u₁₃ comm v₁₂ w₁₂ h₁₂ v₂₃ w₂₃ h₂₃ v₁₃ w₁₃ h₁₃

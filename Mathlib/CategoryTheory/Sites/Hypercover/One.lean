@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
 public import Mathlib.CategoryTheory.Sites.PrecoverageToGrothendieck
 public import Mathlib.CategoryTheory.Sites.Sheaf
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # 1-hypercovers
 
@@ -399,8 +402,8 @@ instance : Category (PreOneHypercover S) where
 /-- The forgetful functor from pre-`1`-hypercovers to pre-`0`-hypercovers. -/
 @[simps]
 def oneToZero : PreOneHypercover.{w} S ⥤ PreZeroHypercover.{w} S where
-  obj f := f.1
-  map f := f.1
+  obj f := f.toPreZeroHypercover
+  map f := f.toHom
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
@@ -958,7 +961,7 @@ end
 /-- If `E : J.OneHypercover S` and `F : Sheaf J A`, then `F.obj (op S)` is
 a multiequalizer of suitable maps `F.obj (op (E.X i)) ⟶ F.obj (op (E.Y j))`
 induced by `E.p₁ j` and `E.p₂ j`. -/
-noncomputable def isLimitMultifork : IsLimit (E.multifork F.1) :=
+noncomputable def isLimitMultifork : IsLimit (E.multifork F.obj) :=
   Multifork.IsLimit.mk _ (fun c => multiforkLift c) (fun c => multiforkLift_map c) (by
     intro c m hm
     apply F.property.hom_ext_ofArrows _ E.mem₀
@@ -1057,11 +1060,11 @@ def preOneHypercover : PreOneHypercover.{max u v} X where
   w _ _ r := r.w
 
 @[simp]
-lemma preOneHypercover_sieve₀ : S.preOneHypercover.sieve₀ = S.1 := by
+lemma preOneHypercover_sieve₀ : S.preOneHypercover.sieve₀ = S.val := by
   ext Y f
   constructor
   · rintro ⟨_, _, _, ⟨g⟩, rfl⟩
-    exact S.1.downward_closed g.hf _
+    exact S.val.downward_closed g.hf _
   · intro hf
     exact Sieve.ofArrows_mk _ _ ({ hf := hf, .. } : S.Arrow)
 

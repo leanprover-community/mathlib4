@@ -27,6 +27,7 @@ Note that there also exists a typeclass `CardinalInterFilter`, and thus an alter
 preferred spelling; it has the advantage of not requiring the user to import the theory of ordinals.
 
 ## Tags
+
 filter, countable
 -/
 
@@ -89,7 +90,7 @@ theorem EventuallySubset.countable_bUnion {ι : Type*} {S : Set ι} (hS : S.Coun
     ⋃ i ∈ S, s i ‹_› ≤ᶠ[l] ⋃ i ∈ S, t i ‹_› := by
   simp only [biUnion_eq_iUnion]
   have := hS.toEncodable
-  exact EventuallySubset.countable_iUnion fun i => h i i.2
+  exact EventuallySubset.countable_iUnion fun i => h i i.property
 
 theorem EventuallyEqSet.countable_bUnion {ι : Type*} {S : Set ι} (hS : S.Countable)
     {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi =ᶠ[l] t i hi) :
@@ -112,7 +113,7 @@ theorem EventuallySubset.countable_bInter {ι : Type*} {S : Set ι} (hS : S.Coun
     ⋂ i ∈ S, s i ‹_› ≤ᶠ[l] ⋂ i ∈ S, t i ‹_› := by
   simp only [biInter_eq_iInter]
   have := hS.toEncodable
-  exact EventuallySubset.countable_iInter fun i => h i i.2
+  exact EventuallySubset.countable_iInter fun i => h i i.property
 
 theorem EventuallyEqSet.countable_bInter {ι : Type*} {S : Set ι} (hS : S.Countable)
     {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi =ᶠ[l] t i hi) :

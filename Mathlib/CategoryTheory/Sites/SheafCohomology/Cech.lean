@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
 public import Mathlib.CategoryTheory.Limits.FormalCoproducts.Cech
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cech cohomology
 

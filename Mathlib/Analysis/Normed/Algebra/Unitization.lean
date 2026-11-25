@@ -50,7 +50,7 @@ is then also a C⋆-norm.
   is an isometry, or in mathematical parlance, the norm on `A` extends to a norm on
   `Unitization 𝕜 A`.
 
-## Implementation details
+## Implementation notes
 
 We ensure that the uniform structure, and hence also the topological structure, is definitionally
 equal to the pullback of `instUniformSpaceProd` along `Unitization.addEquiv` (this is essentially
@@ -261,10 +261,6 @@ lemma nnNorm_inr (a : A) : ‖(a : Unitization 𝕜 A)‖₊ = ‖a‖₊ :=
 lemma isometry_inr : Isometry ((↑) : A → Unitization 𝕜 A) :=
   AddMonoidHomClass.isometry_of_norm (inrNonUnitalAlgHom 𝕜 A) norm_inr
 
-@[fun_prop]
-theorem continuous_inr : Continuous (inr : A → Unitization 𝕜 A) :=
-  isometry_inr.continuous
-
 lemma dist_inr (a b : A) : dist (a : Unitization 𝕜 A) (b : Unitization 𝕜 A) = dist a b :=
   isometry_inr.dist_eq a b
 
@@ -281,19 +277,61 @@ section
 
 variable {𝕜 A : Type*} [NontriviallyNormedField 𝕜] [NonUnitalNormedRing A]
 
-protected theorem uniformContinuous_fst : UniformContinuous (fun x : Unitization 𝕜 A ↦ x.fst) :=
-  uniformContinuous_fst.comp Unitization.uniformEquivProd.uniformContinuous
-
-protected theorem uniformContinuous_snd : UniformContinuous (fun x : Unitization 𝕜 A ↦ x.snd) :=
-  uniformContinuous_snd.comp Unitization.uniformEquivProd.uniformContinuous
+@[fun_prop]
+protected theorem uniformContinuous_mk :
+    UniformContinuous (mk : 𝕜 × A → Unitization 𝕜 A) :=
+  Unitization.uniformEquivProd.symm.uniformContinuous
 
 @[fun_prop]
+protected theorem uniformContinuous_toProd :
+    UniformContinuous (fun x : Unitization 𝕜 A ↦ x.toProd) :=
+  Unitization.uniformEquivProd.uniformContinuous
+
+protected theorem uniformContinuous_fst : UniformContinuous (fun x : Unitization 𝕜 A ↦ x.fst) :=
+  uniformContinuous_fst.comp Unitization.uniformContinuous_toProd
+
+protected theorem uniformContinuous_snd : UniformContinuous (fun x : Unitization 𝕜 A ↦ x.snd) :=
+  uniformContinuous_snd.comp Unitization.uniformContinuous_toProd
+
+protected theorem uniformContinuous_iff {X : Type*} [UniformSpace X] {f : X → Unitization 𝕜 A} :
+    UniformContinuous f ↔
+      (UniformContinuous fun x ↦ (f x).fst) ∧ UniformContinuous fun x ↦ (f x).snd :=
+  uniformEquivProd.comp_uniformContinuous_iff.symm.trans uniformContinuous_prodMk
+
+protected theorem uniformContinuous_inl : UniformContinuous (inl : 𝕜 → Unitization 𝕜 A) :=
+  Unitization.uniformContinuous_iff.mpr
+    ⟨uniformContinuous_id, by simpa using uniformContinuous_const⟩
+
+protected theorem uniformContinuous_inr : UniformContinuous (inr : A → Unitization 𝕜 A) :=
+  Unitization.uniformContinuous_iff.mpr
+    ⟨by simpa using uniformContinuous_const, uniformContinuous_id⟩
+
+@[fun_prop]
+protected theorem continuous_mk :
+    Continuous (mk : 𝕜 × A → Unitization 𝕜 A) :=
+  Unitization.uniformContinuous_mk.continuous
+
+@[fun_prop]
+protected theorem continuous_toProd : Continuous (fun x : Unitization 𝕜 A ↦ x.toProd) :=
+  Unitization.uniformContinuous_toProd.continuous
+
 protected theorem continuous_fst : Continuous (fun x : Unitization 𝕜 A ↦ x.fst) :=
   Unitization.uniformContinuous_fst.continuous
 
-@[fun_prop]
 protected theorem continuous_snd : Continuous (fun x : Unitization 𝕜 A ↦ x.snd) :=
   Unitization.uniformContinuous_snd.continuous
+
+protected theorem continuous_iff {X : Type*} [TopologicalSpace X] {f : X → Unitization 𝕜 A} :
+    Continuous f ↔ (Continuous fun x ↦ (f x).fst) ∧ Continuous fun x ↦ (f x).snd :=
+  uniformEquivProd.toHomeomorph.comp_continuous_iff.symm.trans continuous_prodMk
+
+@[fun_prop]
+protected theorem continuous_inl : Continuous (inl : 𝕜 → Unitization 𝕜 A) :=
+  Unitization.uniformContinuous_inl.continuous
+
+@[fun_prop]
+protected theorem continuous_inr : Continuous (inr : A → Unitization 𝕜 A) :=
+  Unitization.uniformContinuous_inr.continuous
 
 end
 

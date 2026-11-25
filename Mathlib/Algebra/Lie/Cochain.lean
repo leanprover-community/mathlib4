@@ -15,6 +15,7 @@ useful in the construction of central extensions, so we treat these easier cases
 general theory of Lie algebra cohomology.
 
 ## Main definitions
+
 * `LieAlgebra.oneCochain`: an abbreviation for a linear map.
 * `LieAlgebra.twoCochain`: a submodule of bilinear maps, giving 2-cochains.
 * `LieAlgebra.d₁₂`: The coboundary map taking 1-cochains to 2-cochains.
@@ -22,11 +23,13 @@ general theory of Lie algebra cohomology.
 * `LieAlgebra.twoCocycle`: The submodule of 2-cocycles.
 
 ## TODO
+
 * coboundaries, cohomology
 * comparison to the Chevalley-Eilenberg complex.
 * construction and classification of central extensions
 
 ## References
+
 * [H. Cartan, S. Eilenberg, *Homological Algebra*][cartan-eilenberg-1956]
 -/
 
@@ -54,14 +57,14 @@ variable {R L M}
 
 @[macro_inline]
 instance : FunLike (twoCochain R L M) L (L →ₗ[R] M) where
-  coe := fun a x ↦ a.1 x
+  coe := fun a x ↦ a.val x
   coe_injective _ _ h := by
     ext
     congrm $h _ _
 
 instance : LinearMapClass (twoCochain R L M) R L (L →ₗ[R] M) where
-  map_add a := a.1.map_add
-  map_smulₛₗ a := a.1.map_smul
+  map_add a := a.val.map_add
+  map_smulₛₗ a := a.val.map_smul
 
 @[simp]
 lemma mem_twoCochain_iff {c : L →ₗ[R] L →ₗ[R] M} : c ∈ twoCochain R L M ↔ ∀ x, c x x = 0 := Iff.rfl
@@ -69,7 +72,7 @@ lemma mem_twoCochain_iff {c : L →ₗ[R] L →ₗ[R] M} : c ∈ twoCochain R L 
 @[simp]
 lemma twoCochain_alt (a : twoCochain R L M) (x : L) :
     a x x = 0 :=
-  a.2 x
+  a.property x
 
 lemma twoCochain_skew (a : twoCochain R L M) (x y : L) : - a x y = a y x := by
   rw [neg_eq_iff_add_eq_zero, add_comm]
@@ -96,7 +99,6 @@ end
 variable [LieRingModule L M] [LieModule R L M]
 
 /-- The coboundary operator taking degree 1 cochains to degree 2 cochains. -/
-@[simps]
 def d₁₂ : oneCochain R L M →ₗ[R] twoCochain R L M where
   toFun f :=
     { val :=
@@ -113,6 +115,10 @@ def d₁₂ : oneCochain R L M →ₗ[R] twoCochain R L M where
 @[simp]
 lemma d₁₂_apply_apply (f : oneCochain R L M) (x y : L) :
     d₁₂ R L M f x y = ⁅x, f y⁆ - ⁅y, f x⁆ - f ⁅x, y⁆ := rfl
+
+@[deprecated d₁₂_apply_apply +typeChanged (since := "2026-10-06")]
+lemma d₁₂_apply_coe_apply_apply (f : oneCochain R L M) (x y : L) :
+    (d₁₂ R L M f).val x y = ⁅x, f y⁆ - ⁅y, f x⁆ - f ⁅x, y⁆ := rfl
 
 lemma d₁₂_apply_apply_ofTrivial [LieModule.IsTrivial L M] (f : oneCochain R L M) (x y : L) :
     d₁₂ R L M f x y = - f ⁅x, y⁆ := by
@@ -141,9 +147,8 @@ lemma d₂₃_apply (a : twoCochain R L M) (x y z : L) :
 
 lemma d₂₃_comp_d₁₂ : (d₂₃ R L M) ∘ₗ (d₁₂ R L M) = 0 := by
   ext a x y z
-  have (a : oneCochain R L M) (x : L) : d₁₂ R L M a x = (d₁₂ R L M a).val x := rfl
-  simp only [LinearMap.comp_apply, d₂₃_apply, LinearMap.zero_apply, this,
-    d₁₂_apply_coe_apply_apply R L M, lie_sub, lie_lie]
+  simp only [LinearMap.comp_apply, d₂₃_apply, LinearMap.zero_apply,
+    d₁₂_apply_apply R L M, lie_sub, lie_lie]
   rw [leibniz_lie y x, leibniz_lie z x, leibniz_lie z y]
   have : a ⁅y, ⁅z, x⁆⁆ = a ⁅x, ⁅z, y⁆⁆ + a ⁅z, ⁅y, x⁆⁆ := by
     rw [congr(a $(leibniz_lie y z x)), ← lie_skew, ← lie_skew z y, lie_neg, map_add]

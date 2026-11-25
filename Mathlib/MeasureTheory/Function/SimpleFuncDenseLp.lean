@@ -7,6 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.Function.L1Space.AEEqFun
 public import Mathlib.MeasureTheory.Function.LpSpace.Indicator
+public import Mathlib.MeasureTheory.Function.SimpleFuncDense
 
 /-!
 # Density of simple functions
@@ -524,7 +525,7 @@ section ToSimpleFunc
 
 /-- Find a representative of a `Lp.simpleFunc`. -/
 def toSimpleFunc (f : Lp.simpleFunc E p μ) : α →ₛ E :=
-  Classical.choose f.2
+  Classical.choose f.property
 
 /-- `(toSimpleFunc f)` is measurable. -/
 @[fun_prop]
@@ -548,18 +549,18 @@ protected theorem aestronglyMeasurable (f : Lp.simpleFunc E p μ) :
 theorem toSimpleFunc_eq_toFun (f : Lp.simpleFunc E p μ) : toSimpleFunc f =ᵐ[μ] f :=
   show ⇑(toSimpleFunc f) =ᵐ[μ] ⇑(f : α →ₘ[μ] E) by
     convert (AEEqFun.coeFn_mk (toSimpleFunc f) (toSimpleFunc f).aestronglyMeasurable).symm using 2
-    exact (Classical.choose_spec f.2).symm
+    exact (Classical.choose_spec f.property).symm
 
 /-- `toSimpleFunc f` satisfies the predicate `MemLp`. -/
 protected theorem memLp (f : Lp.simpleFunc E p μ) : MemLp (toSimpleFunc f) p μ :=
-  MemLp.ae_eq (toSimpleFunc_eq_toFun f).symm <| mem_Lp_iff_memLp.mp (f : Lp E p μ).2
+  MemLp.ae_eq (toSimpleFunc_eq_toFun f).symm <| mem_Lp_iff_memLp.mp (f : Lp E p μ).property
 
 theorem toLp_toSimpleFunc (f : Lp.simpleFunc E p μ) :
     toLp (toSimpleFunc f) (simpleFunc.memLp f) = f :=
-  simpleFunc.eq' (Classical.choose_spec f.2)
+  simpleFunc.eq' (Classical.choose_spec f.property)
 
 theorem toSimpleFunc_toLp (f : α →ₛ E) (hfi : MemLp f p μ) : toSimpleFunc (toLp f hfi) =ᵐ[μ] f := by
-  rw [← AEEqFun.mk_eq_mk]; exact Classical.choose_spec (toLp f hfi).2
+  rw [← AEEqFun.mk_eq_mk]; exact Classical.choose_spec (toLp f hfi).property
 
 variable (E μ)
 
@@ -701,7 +702,7 @@ protected theorem denseRange (hp_ne_top : p ≠ ∞) :
   (simpleFunc.isDenseInducing hp_ne_top).dense
 
 protected theorem dense (hp_ne_top : p ≠ ∞) : Dense (Lp.simpleFunc E p μ : Set (Lp E p μ)) := by
-  simpa only [denseRange_subtype_val] using! simpleFunc.denseRange (E := E) (μ := μ) hp_ne_top
+  simpa only [denseRange_subtypeVal] using! simpleFunc.denseRange (E := E) (μ := μ) hp_ne_top
 
 variable [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 variable (α E 𝕜)
@@ -746,7 +747,7 @@ variable (p μ G)
 
 /-- Coercion from nonnegative simple functions of Lp to nonnegative functions of Lp. -/
 def coeSimpleFuncNonnegToLpNonneg :
-    Nonneg (Lp.simpleFunc G p μ) → Nonneg (Lp G p μ) := fun g => ⟨g, g.2⟩
+    Nonneg (Lp.simpleFunc G p μ) → Nonneg (Lp G p μ) := fun g => ⟨g, g.property⟩
 
 theorem denseRange_coeSimpleFuncNonnegToLpNonneg [hp : Fact (1 ≤ p)] (hp_ne_top : p ≠ ∞) :
     DenseRange (coeSimpleFuncNonnegToLpNonneg p μ G) := fun g ↦ by
@@ -784,7 +785,7 @@ theorem denseRange_coeSimpleFuncNonnegToLpNonneg [hp : Fact (1 ≤ p)] (hp_ne_to
   have hx_tendsto :
       Tendsto (fun n : ℕ => eLpNorm ((x n : α → G) - (g : α → G)) p μ) atTop (𝓝 0) := by
     apply SimpleFunc.tendsto_approxOn_Lp_eLpNorm g_meas zero_mem hp_ne_top
-    · have hg_nonneg : (0 : α → G) ≤ᵐ[μ] g := (Lp.coeFn_nonneg _).mpr g.2
+    · have hg_nonneg : (0 : α → G) ≤ᵐ[μ] g := (Lp.coeFn_nonneg _).mpr g.property
       refine hg_nonneg.mono fun a ha => subset_closure ?_
       simpa using ha
     · simp_rw [sub_zero]; finiteness

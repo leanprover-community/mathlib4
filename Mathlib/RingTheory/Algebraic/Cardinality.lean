@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.Algebraic.Defs
 
 import Mathlib.Algebra.Polynomial.Cardinal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cardinality of algebraic extensions
 
@@ -34,11 +37,11 @@ theorem lift_cardinalMk_le_sigma_polynomial :
   have := @lift_mk_le_lift_mk_of_injective L (Σ p : R[X], {x : L | x ∈ p.aroots L})
     (fun x : L =>
       let p := Classical.indefiniteDescription _ (Algebra.IsAlgebraic.isAlgebraic x)
-      ⟨p.1, x, by
+      ⟨p.val, x, by
         dsimp
-        have := (Polynomial.map_ne_zero_iff (FaithfulSMul.algebraMap_injective R L)).2 p.2.1
+        have := (Polynomial.map_ne_zero_iff (FaithfulSMul.algebraMap_injective R L)).2 p.property.1
         rw [Polynomial.mem_roots this, Polynomial.IsRoot, Polynomial.eval_map,
-          ← Polynomial.aeval_def, p.2.2]⟩)
+          ← Polynomial.aeval_def, p.property.2]⟩)
     fun x y => by
       intro h
       simp only [Set.coe_ofPred, ne_eq, Set.mem_ofPred_eq, Sigma.mk.inj_iff] at h
@@ -56,7 +59,7 @@ theorem lift_cardinalMk_le_max : lift.{u} #L ≤ lift.{v} #R ⊔ ℵ₀ :=
       (sum_le_sum _ _ fun _ => (Multiset.finite_toSet _).lt_aleph0.le)
     _ = lift.{v} #(R[X]) * ℵ₀ := by rw [sum_const, lift_aleph0]
     _ ≤ lift.{v} (#R ⊔ ℵ₀) ⊔ ℵ₀ ⊔ ℵ₀ := (mul_le_max _ _).trans <| by
-      gcongr; simp only [lift_le, Polynomial.cardinalMk_le_max]
+      grw [Polynomial.cardinalMk_le_max]
     _ = _ := by simp
 
 variable (L : Type u) [CommRing L] [IsDomain L] [Algebra R L]

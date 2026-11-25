@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Category.BialgCat.Basic
 public import Mathlib.Algebra.Category.CoalgCat.Monoidal
 public import Mathlib.RingTheory.Bialgebra.TensorProduct
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The monoidal structure on the category of bialgebras
 

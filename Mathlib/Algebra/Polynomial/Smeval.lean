@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.NatPowAssoc
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Algebra.Polynomial.Eval.SMul
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Scalar-multiple polynomial evaluation
 

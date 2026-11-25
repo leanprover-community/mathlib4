@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Sites.Plus
 public import Mathlib.CategoryTheory.Sites.Whiskering
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Compatibility of the plus construction with functors
 

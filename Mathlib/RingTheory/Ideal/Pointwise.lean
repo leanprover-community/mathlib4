@@ -184,7 +184,7 @@ theorem inertia_le_stabilizer {R : Type*} [Ring R] (P : Ideal R) [MulSemiringAct
 instance {R : Type*} [Ring R] (P : Ideal R) [MulSemiringAction M R] :
     (P.inertia (MulAction.stabilizer M P)).Normal := by
   simp_rw [Subgroup.normal_iff_map_conj_eq, ← inertia_smul]
-  exact fun g ↦ congrArg (inertia _) g.2
+  exact fun g ↦ congrArg (inertia _) g.property
 
 variable {N : Type*} [Group N] [MulSemiringAction N R]
 

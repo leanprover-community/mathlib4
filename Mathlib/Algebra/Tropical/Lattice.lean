@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Tropical.Basic
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Order on tropical algebraic structure
 

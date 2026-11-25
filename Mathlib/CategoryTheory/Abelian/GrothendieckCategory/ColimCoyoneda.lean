@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 
 import Mathlib.CategoryTheory.Abelian.FunctorCategory
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Morphisms to a colimit in a Grothendieck abelian category
 
@@ -86,8 +89,8 @@ lemma hf (j : Under j₀) :
 
 variable {y} in
 include hc hy in
-lemma epi_f [IsFiltered J] : Epi (f y) := by
-  exact (colim.exact_mapShortComplex
+lemma epi_f [IsFiltered J] : Epi (f y) :=
+  (colim.exact_mapShortComplex
     ((ShortComplex.mk _ _ (kernel.condition (g y))).exact_of_f_is_kernel
       (kernelIsKernel (g y)))
     (colimit.isColimit _) (isColimitConstCocone _ _)

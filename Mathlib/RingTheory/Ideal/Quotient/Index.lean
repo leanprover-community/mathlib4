@@ -19,7 +19,8 @@ import Mathlib.RingTheory.Finiteness.Cardinality
 /-!
 # Indices of ideals
 
-## Main result
+## Main results
+
 - `Submodule.finite_quotient_smul`:
   Let `N` be a finite index f.g. `R`-submodule, and `I` be a finite index ideal.
   Then `I • N` also has finite index.
@@ -79,7 +80,7 @@ lemma Submodule.index_smul_le [Finite (R ⧸ I)]
   let f : (s →₀ R) →ₗ[R] N := (Finsupp.linearCombination R (↑)).codRestrict _
     (fun c => by rw [← H, LinearMap.mem_range]; exact exists_apply_eq_apply _ _)
   have hf : Function.Surjective f := fun x ↦ by
-    obtain ⟨y, hy⟩ := H.ge x.2; exact ⟨y, Subtype.ext hy⟩
+    obtain ⟨y, hy⟩ := H.ge x.property; exact ⟨y, Subtype.ext hy⟩
   have : Function.Surjective
       (f.lTensor (R ⧸ I) ∘ₗ (finsuppScalarRight R R (R ⧸ I) s).symm.toLinearMap) :=
     (LinearMap.lTensor_surjective (R ⧸ I) hf).comp (LinearEquiv.surjective _)

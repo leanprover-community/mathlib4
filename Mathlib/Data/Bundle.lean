@@ -25,7 +25,7 @@ general, the constructions of fiber bundles we will make will be of this form.
 * `Bundle.TotalSpace.proj` the projection from the total space to the base space.
 * `Bundle.TotalSpace.mk` the constructor for the total space.
 
-## Implementation Notes
+## Implementation notes
 
 - We use a custom structure for the total space of a bundle instead of using a type synonym for the
   canonical disjoint union `Σ x, E x` because the total space usually has a different topology and
@@ -37,6 +37,7 @@ general, the constructions of fiber bundles we will make will be of this form.
   fiber bundle.
 
 ## References
+
 - https://en.wikipedia.org/wiki/Bundle_(mathematics)
 -/
 
@@ -83,11 +84,11 @@ theorem TotalSpace.mk_injective (b : B) : Injective (mk b : E b → TotalSpace F
 instance {x : B} : CoeTC (E x) (TotalSpace F E) :=
   ⟨TotalSpace.mk x⟩
 
-theorem TotalSpace.eta (z : TotalSpace F E) : TotalSpace.mk z.proj z.2 = z := rfl
+theorem TotalSpace.eta (z : TotalSpace F E) : TotalSpace.mk z.proj z.snd = z := rfl
 
 @[simp]
 theorem TotalSpace.exists {p : TotalSpace F E → Prop} : (∃ x, p x) ↔ ∃ b y, p ⟨b, y⟩ :=
-  ⟨fun ⟨x, hx⟩ ↦ ⟨x.1, x.2, hx⟩, fun ⟨b, y, h⟩ ↦ ⟨⟨b, y⟩, h⟩⟩
+  ⟨fun ⟨x, hx⟩ ↦ ⟨x.proj, x.snd, hx⟩, fun ⟨b, y, h⟩ ↦ ⟨⟨b, y⟩, h⟩⟩
 
 @[simp]
 theorem TotalSpace.range_mk (b : B) : range ((↑) : E b → TotalSpace F E) = π F E ⁻¹' {b} := by
@@ -111,7 +112,7 @@ def TotalSpace.trivialSnd (B : Type*) (F : Type*) : TotalSpace F (Bundle.Trivial
 /-- A trivial bundle is equivalent to the product `B × F`. -/
 @[simps (attr := mfld_simps)]
 def TotalSpace.toProd (B F : Type*) : (TotalSpace F fun _ : B => F) ≃ B × F where
-  toFun x := (x.1, x.2)
+  toFun x := (x.proj, x.snd)
   invFun x := ⟨x.1, x.2⟩
 
 section Pullback
@@ -131,11 +132,12 @@ instance {f : B' → B} {x : B'} [Nonempty (E (f x))] : Nonempty ((f *ᵖ E) x) 
 /-- Natural embedding of the total space of `f *ᵖ E` into `B' × TotalSpace F E`. -/
 @[simp]
 def pullbackTotalSpaceEmbedding (f : B' → B) : TotalSpace F (f *ᵖ E) → B' × TotalSpace F E :=
-  fun z => (z.proj, TotalSpace.mk (f z.proj) z.2)
+  fun z => (z.proj, TotalSpace.mk (f z.proj) z.snd)
 
 /-- The base map `f : B' → B` lifts to a canonical map on the total spaces. -/
 @[simps (attr := mfld_simps)]
-def Pullback.lift (f : B' → B) : TotalSpace F (f *ᵖ E) → TotalSpace F E := fun z => ⟨f z.proj, z.2⟩
+def Pullback.lift (f : B' → B) : TotalSpace F (f *ᵖ E) → TotalSpace F E :=
+  fun z => ⟨f z.proj, z.snd⟩
 
 @[simp, mfld_simps]
 theorem Pullback.lift_mk (f : B' → B) (x : B') (y : E (f x)) :
