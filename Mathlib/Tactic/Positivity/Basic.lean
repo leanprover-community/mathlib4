@@ -59,7 +59,7 @@ lemma ite_ne_zero_of_ne_zero_of_pos [Preorder α] (ha : a ≠ 0) (hb : 0 < b) :
 
 end ite
 
-attribute [positivity_lemma] ite_ne_zero ite_nonneg ite_pos
+attribute [positivity_lemma] ite_pos ite_nonneg ite_ne_zero
 
 section LinearOrder
 variable {R : Type*} [LinearOrder R] {a b c : R}
@@ -231,9 +231,9 @@ such that there is a local hypothesis `b < a`, `b ≤ a`, `a ≠ b` or `b ≠ a`
     return result
 
 attribute [positivity_lemma]
-  mul_ne_zero
-  mul_nonneg
   mul_pos
+  mul_nonneg
+  mul_ne_zero
 
 lemma int_div_self_pos {a : ℤ} (ha : 0 < a) : 0 < a / a := by
   rw [Int.ediv_self ha.ne']; exact zero_lt_one
@@ -450,8 +450,8 @@ attribute [positivity_lemma]
   Nat.factorial_pos
   Nat.ascFactorial_pos
 
-  Nat.gcd_pos_of_pos_right
   Nat.gcd_pos_of_pos_left
+  Nat.gcd_pos_of_pos_right
   Nat.lcm_pos
 
 /-- The square root of a positive natural number is positive. -/
@@ -460,8 +460,8 @@ theorem nat_sqrt_pos_of_pos {n : ℕ} (hn : 0 < n) : 0 < n.sqrt :=
   Nat.sqrt_pos.mpr hn
 
 attribute [positivity_lemma]
-  Int.gcd_pos_of_ne_zero_right
   Int.gcd_pos_of_ne_zero_left
+  Int.gcd_pos_of_ne_zero_right
   Int.lcm_pos
 
 section NNRat
@@ -495,8 +495,8 @@ attribute [positivity_lemma]
   num_ne_zero_of_ne_zero
   Rat.den_pos
 
-  posPart_nonneg
   posPart_pos
+  posPart_nonneg
   negPart_nonneg
 
   NonnegHomClass.apply_nonneg

@@ -68,6 +68,9 @@ All other arguments, except for typeclass arguments, must appear in the conclusi
 `positivity` tries to prove
 these premises recursively and may use a matching local hypothesis.
 
+Lemmas are tried in order of priority, then in the order `<`, `≤`, `≠`,
+then in the order in which they were tagged.
+
 Other propositional premises are not yet supported.
 -/
 syntax (name := positivityLemma) "positivity_lemma" (ppSpace prio)? : attr
@@ -261,15 +264,23 @@ structure PositivityLemma where
 abbrev PositivityLemmas : Type :=
   Std.TreeMap PositivityKey (List PositivityLemma)
 
-/-- Return `true` if the priority of `a` is less than or equal to the priority of `b`. -/
-def PositivityLemma.prioLE (a b : PositivityLemma) : Bool :=
-  (compare a.prio b.prio).isLE
+/-- Lemmas with the same priority are tried in the order `<`, `≤`, `≠`. -/
+def OrderRel.rank : OrderRel → Nat
+  | .lt => 0
+  | .le => 1
+  | .ne | .ne' => 2
 
-/-- Insert a positivity lemma in a collection of lemmas. -/
+/-- Return `true` if `a` should be tried before `b`: it has a higher priority, or the same priority
+and a stronger conclusion. -/
+def PositivityLemma.before (a b : PositivityLemma) : Bool :=
+  a.prio > b.prio || a.prio == b.prio && a.kind.rank < b.kind.rank
+
+/-- Insert a positivity lemma in a collection of lemmas, after the lemmas that are tried before it
+or in the same place. So lemmas that are otherwise equal are tried in the order they were tagged. -/
 def addPositivityLemmaEntry (m : PositivityLemmas) (l : PositivityLemma) : PositivityLemmas :=
   m.alter l.key fun
   | none    => [l]
-  | some ls => ls.insertP (·.prioLE l) l
+  | some ls => ls.insertP (l.before ·) l
 
 /-- Each `positivity` extension is labelled with a collection of patterns
 which determine the expressions to which it should be applied. -/

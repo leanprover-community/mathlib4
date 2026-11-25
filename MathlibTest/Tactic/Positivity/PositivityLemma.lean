@@ -187,6 +187,28 @@ example {x : α} (hx : 0 < x) : 0 < f x := by positivity
 
 end Priority
 
+namespace Order
+
+/-! Lemmas with the same priority are tried in the order `<`, `≤`, `≠`,
+and then in the order in which they were tagged. -/
+
+@[local positivity_lemma] axiom f_ne_zero {x : α} : x ≠ 0 → f x ≠ 0
+@[local positivity_lemma] axiom f_nonneg {x : α} : 0 ≤ x → 0 ≤ f x
+@[local positivity_lemma] axiom f_pos {x : α} : 0 < x → 0 < f x
+@[local positivity_lemma] axiom f_pos' {x : α} : 0 < x → 0 < f x
+
+/--
+trace: [Tactic.positivity.lemma] f_pos: f x => none
+[Tactic.positivity.lemma] f_pos': f x => none
+[Tactic.positivity.lemma] f_nonneg: f x => nonnegative
+[Tactic.positivity.lemma] f_ne_zero: f x => none
+-/
+#guard_msgs in
+set_option trace.Tactic.positivity.lemma true in
+example {x : α} (hx : 0 ≤ x) : 0 ≤ f x := by positivity
+
+end Order
+
 namespace PremiseWithoutZero
 
 /-! If the argument of a premise has a type without `Zero`, the lemma is skipped,
