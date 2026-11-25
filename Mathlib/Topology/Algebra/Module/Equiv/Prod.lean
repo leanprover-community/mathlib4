@@ -11,6 +11,7 @@ public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 # Continuous linear equivalences on products of topological modules
 
 ## Main Definitions
+
 * `prodCongr`: `Equiv.prodCongr` as a continuous linear equivalence.
 * `prodComm`: `LinearEquiv.prodComm` as a continuous linear equivalence.
 * `prodAssoc`: `LinearEquiv.prodAssoc` as a continuous linear equivalence.

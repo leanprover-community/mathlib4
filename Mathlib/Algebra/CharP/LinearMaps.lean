@@ -26,7 +26,7 @@ The characteristic of the ring of linear maps is determined by its base ring.
 - `R` is a commutative semiring
 - `M` is an `R`-module
 
-## Implementation Notes
+## Implementation notes
 
 One can also deduce similar result via `charP_of_injective_ringHom` and
   `R → (M →ₗ[R] M) : r ↦ (fun (x : M) ↦ r • x)`. But this will require stronger condition

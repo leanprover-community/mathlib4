@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.Adjoin.Field
 
 import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Splitting fields
 
@@ -168,7 +171,7 @@ theorem IntermediateField.splits_iff_mem (h : (p.map (algebraMap K L)).Splits) :
   refine ⟨?_, IntermediateField.splits_of_splits h⟩
   intro hF
   rw [← hF.image_rootSet F.val, Set.forall_mem_image]
-  exact fun x _ ↦ x.2
+  exact fun x _ ↦ x.property
 
 theorem IsIntegral.mem_intermediateField_of_minpoly_splits {x : L} (int : IsIntegral K x)
     {F : IntermediateField K L} (h : Splits ((minpoly K x).map (algebraMap K F))) : x ∈ F := by
@@ -185,7 +188,8 @@ theorem isSplittingField_iff_intermediateField : p.IsSplittingField K L ↔
 theorem IntermediateField.isSplittingField_iff :
     p.IsSplittingField K F ↔ (p.map (algebraMap K F)).Splits ∧ F = adjoin K (p.rootSet L) := by
   suffices _ → (Algebra.adjoin K (p.rootSet F) = ⊤ ↔ F = adjoin K (p.rootSet L)) by
-    exact ⟨fun h ↦ ⟨h.1, (this h.1).mp h.2⟩, fun h ↦ ⟨h.1, (this h.1).mpr h.2⟩⟩
+    exact ⟨fun h ↦ ⟨h.splits', (this h.splits').mp h.adjoin_rootSet'⟩,
+      fun h ↦ ⟨h.1, (this h.1).mpr h.2⟩⟩
   rw [← toSubalgebra_injective.eq_iff,
       adjoin_toSubalgebra_of_isAlgebraic fun x ↦ isAlgebraic_of_mem_rootSet]
   refine fun hp ↦ (hp.adjoin_rootSet_eq_range F.val).symm.trans ?_

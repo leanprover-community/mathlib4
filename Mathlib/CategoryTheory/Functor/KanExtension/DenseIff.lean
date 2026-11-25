@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Functor.KanExtension.Dense
 public import Mathlib.CategoryTheory.RestrictedYoneda
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Characterization of dense functors
 

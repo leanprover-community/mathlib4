@@ -33,7 +33,7 @@ section AddBasic
 variable [AddMonoid M] [Preorder M] [AddLeftStrictMono M]
 
 instance : Add { x : M // 0 < x } :=
-  ⟨fun x y => ⟨x + y, add_pos x.2 y.2⟩⟩
+  ⟨fun x y => ⟨x + y, add_pos x.property y.property⟩⟩
 
 @[simp, norm_cast]
 theorem coe_add (x y : { x : M // 0 < x }) : ↑(x + y) = (x + y : M) :=
@@ -83,14 +83,14 @@ section Mul
 variable [Semiring R] [PartialOrder R] [IsStrictOrderedRing R]
 
 instance : Mul { x : R // 0 < x } :=
-  ⟨fun x y => ⟨x * y, mul_pos x.2 y.2⟩⟩
+  ⟨fun x y => ⟨x * y, mul_pos x.property y.property⟩⟩
 
 @[simp]
 theorem val_mul (x y : { x : R // 0 < x }) : ↑(x * y) = (x * y : R) :=
   rfl
 
 instance : Pow { x : R // 0 < x } ℕ :=
-  ⟨fun x n => ⟨(x : R) ^ n, pow_pos x.2 n⟩⟩
+  ⟨fun x n => ⟨(x : R) ^ n, pow_pos x.property n⟩⟩
 
 @[simp]
 theorem val_pow (x : { x : R // 0 < x }) (n : ℕ) :
@@ -123,13 +123,13 @@ instance commMonoid [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R] :
 
 instance isOrderedMonoid [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R] :
     IsOrderedMonoid { x : R // 0 < x } where
-  mul_le_mul_left _ _ hxy c := Subtype.coe_le_coe.1 <| mul_le_mul_of_nonneg_right hxy c.2.le
+  mul_le_mul_left _ _ hxy c := Subtype.coe_le_coe.1 <| mul_le_mul_of_nonneg_right hxy c.property.le
 
 /-- If `R` is a nontrivial linear ordered commutative semiring, then `{x : R // 0 < x}` is a linear
 ordered cancellative commutative monoid. -/
 instance isOrderedCancelMonoid [CommSemiring R] [LinearOrder R] [IsStrictOrderedRing R] :
     IsOrderedCancelMonoid { x : R // 0 < x } where
-  le_of_mul_le_mul_left a _ _ := (mul_le_mul_iff_right₀ a.2).1
+  le_of_mul_le_mul_left a _ _ := (mul_le_mul_iff_right₀ a.property).1
 
 end mul_comm
 

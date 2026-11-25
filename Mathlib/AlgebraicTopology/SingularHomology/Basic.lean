@@ -12,6 +12,9 @@ public import Mathlib.CategoryTheory.Adjunction.Whiskering
 
 import Mathlib.CategoryTheory.Limits.MonoCoprod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Singular homology
 

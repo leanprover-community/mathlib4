@@ -113,6 +113,12 @@ protected theorem id_map (x : P α) : P.map id x = x := rfl
 protected theorem map_map (f : α → β) (g : β → γ) (x : P α) :
     P.map g (P.map f x) = P.map (g ∘ f) x := rfl
 
+variable (α) in
+@[simp]
+theorem map_id : P.map (@id α) = id := rfl
+
+theorem map_comp_map (f : α → β) (g : β → γ) : P.map g ∘ P.map f = P.map (g ∘ f) := rfl
+
 instance : LawfulFunctor (Obj.{v} P) where
   map_const := rfl
   id_map x := P.id_map x
@@ -233,7 +239,7 @@ theorem liftr_iff {α : Type u} (r : α → α → Prop) (x y : P α) :
   constructor
   · rintro ⟨u, rfl, rfl⟩
     cases u with | mk a f
-    exact ⟨a, fun i => (f i).1.1, fun i => (f i).1.2, rfl, rfl, fun i => (f i).2⟩
+    exact ⟨a, fun i => (f i).val.1, fun i => (f i).val.2, rfl, rfl, fun i => (f i).property⟩
   · rintro ⟨a, f₀, f₁, rfl, rfl, h⟩
     exact ⟨.mk a fun i => ⟨(f₀ i, f₁ i), h i⟩, rfl, rfl⟩
 

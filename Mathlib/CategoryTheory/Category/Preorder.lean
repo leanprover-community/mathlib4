@@ -82,7 +82,6 @@ theorem leOfHom {x y : X} (h : x ⟶ y) : x ≤ y :=
 
 alias _root_.Quiver.Hom.le := leOfHom
 
-@[simp]
 theorem homOfLE_leOfHom {x y : X} (h : x ⟶ y) : h.le.hom = h :=
   rfl
 
@@ -158,6 +157,11 @@ def Monotone.functor {f : X → Y} (h : Monotone f) : X ⥤ Y where
 
 @[simp]
 theorem Monotone.functor_obj {f : X → Y} (h : Monotone f) : h.functor.obj = f :=
+  rfl
+
+@[simp]
+lemma Monotone.functor_map_homOfLE {f : X → Y} (hf : Monotone f) {a b : X} (h : a ≤ b) :
+    hf.functor.map (homOfLE h) = homOfLE (hf h) :=
   rfl
 
 -- Faithfulness is automatic because preorder categories are thin

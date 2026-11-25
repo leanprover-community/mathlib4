@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.RingHom.Locally
 public import Mathlib.RingTheory.RingHom.StandardSmooth
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Smooth is locally standard smooth
 

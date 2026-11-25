@@ -20,6 +20,7 @@ import Mathlib.Algebra.Regular.Basic
 This file defines vector and matrix multiplication
 
 ## Main definitions
+
 * `dotProduct`: the dot product between two vectors
 * `Matrix.mul`: multiplication of two matrices
 * `Matrix.mulVec`: multiplication of a matrix with a vector
@@ -147,6 +148,18 @@ theorem dotProduct_comp_equiv_symm (e : n ≃ m) : u ⬝ᵥ x ∘ e.symm = u ∘
 @[simp]
 theorem comp_equiv_dotProduct_comp_equiv (e : m ≃ n) : x ∘ e ⬝ᵥ y ∘ e = x ⬝ᵥ y := by
   simp [← dotProduct_comp_equiv_symm, Function.comp_def _ e.symm]
+
+/-- Extending the left argument with zeros is the same as slicing the right argument. -/
+@[simp]
+theorem extend_zero_dotProduct {s : m → n} (hs : Function.Injective s) (u : m → α) (x : n → α) :
+    s.extend u 0 ⬝ᵥ x = u ⬝ᵥ (x ∘ s) :=
+  (Fintype.sum_of_injective s hs _ _ (by simp +contextual) (by simp [hs.extend_apply])).symm
+
+/-- Extending the right argument with zeros is the same as slicing the left argument. -/
+@[simp]
+theorem dotProduct_extend_zero {s : n → m} (hs : Function.Injective s) (u : m → α) (x : n → α) :
+    u ⬝ᵥ s.extend x 0 = (u ∘ s) ⬝ᵥ x :=
+  (Fintype.sum_of_injective s hs _ _ (by simp +contextual) (by simp [hs.extend_apply])).symm
 
 theorem dotProduct_sum {ι : Type*} (u : m → α) (s : Finset ι) (v : ι → (m → α)) :
     u ⬝ᵥ ∑ i ∈ s, v i = ∑ i ∈ s, u ⬝ᵥ v i := by
@@ -611,7 +624,7 @@ theorem IsStablyFiniteRing.of_injective [FunLike F R S] [RingHomClass F R S] (f 
 
 theorem RingEquiv.isStablyFiniteRing_iff [EquivLike F R S] [RingEquivClass F R S] (f : F) :
     IsStablyFiniteRing R ↔ IsStablyFiniteRing S where
-  mp _ := .of_injective _ (RingEquivClass.toRingEquiv f).symm.injective
+  mp _ := .of_injective _ (ofClass f).symm.injective
   mpr _ := .of_injective f (EquivLike.injective f)
 
 instance (priority := low) [SetLike F R] [SubsemiringClass F R] (S : F) [IsStablyFiniteRing R] :
@@ -857,6 +870,16 @@ theorem vecMul_smul [Fintype m] [DistribSMul R α] [SMulCommClass R α α]
     v ᵥ* (b • M) = b • v ᵥ* M := by
   ext
   exact dotProduct_smul _ _ _
+
+@[simp]
+theorem mulVec_extend_zero [Fintype n] [Fintype o] {c : o → n} (hc : Function.Injective c)
+    (M : Matrix m n α) (w : o → α) : M *ᵥ c.extend w 0 = M.submatrix id c *ᵥ w :=
+  funext fun _ ↦ dotProduct_extend_zero hc _ _
+
+@[simp]
+theorem extend_zero_vecMul [Fintype m] [Fintype o] {r : o → m} (hr : Function.Injective r)
+    (v : o → α) (M : Matrix m n α) : r.extend v 0 ᵥ* M = v ᵥ* M.submatrix r id :=
+  funext fun _ ↦ extend_zero_dotProduct hr _ _
 
 @[simp]
 theorem mulVec_single [Fintype n] [DecidableEq n] [NonUnitalNonAssocSemiring R] (M : Matrix m n R)

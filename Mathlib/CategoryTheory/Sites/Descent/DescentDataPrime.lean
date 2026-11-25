@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.ChosenPullback
 public import Mathlib.CategoryTheory.Sites.Descent.DescentData
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Descent data when we have pullbacks
 

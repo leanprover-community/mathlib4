@@ -7,10 +7,11 @@ module
 
 public import Mathlib.CategoryTheory.Adjunction.Opposites
 public import Mathlib.CategoryTheory.Adjunction.Whiskering
-public import Mathlib.CategoryTheory.Functor.KanExtension.Preserves
 public import Mathlib.CategoryTheory.Sites.Coverage
 public import Mathlib.CategoryTheory.Sites.Hypercover.IsSheaf
 public import Mathlib.CategoryTheory.Sites.PreservesSheafification
+
+import Mathlib.CategoryTheory.Functor.KanExtension.Preserves
 
 /-!
 # Continuous functors between sites.
@@ -41,6 +42,7 @@ category).
   This is an instance for `w = max u₁ v₁` when `C : Type u₁` and `[Category.{v₁} C]`
 
 ## References
+
 * https://stacks.math.columbia.edu/tag/00WU
 -/
 
@@ -280,7 +282,7 @@ lemma isContinuous_of_iso {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂)
       (F₁.op_comp_isSheaf_of_types J K G)
 
 instance isContinuous_id : Functor.IsContinuous (𝟭 C) J J where
-  op_comp_isSheaf_of_types G := (isSheaf_iff_isSheaf_of_type _ _).1 G.2
+  op_comp_isSheaf_of_types G := (isSheaf_iff_isSheaf_of_type _ _).1 G.property
 
 lemma isContinuous_comp (F₁ : C ⥤ D) (F₂ : D ⥤ E) (J : GrothendieckTopology C)
     (K : GrothendieckTopology D) (L : GrothendieckTopology E)

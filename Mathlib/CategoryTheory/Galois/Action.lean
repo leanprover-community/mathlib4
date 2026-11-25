@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Galois.Examples
 public import Mathlib.CategoryTheory.Galois.Prorepresentability
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Induced functor to finite `Aut F`-sets
 

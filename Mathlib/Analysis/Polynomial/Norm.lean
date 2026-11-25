@@ -30,7 +30,7 @@ In the literature, the sup norm is often called the _(naive) height_ of a polyno
 `l^1` norm is often called the _length_ of the polynomial. Unfortunately, these terms are
 extremely overloaded and Mathlib defines _height_ differently.
 
-### TODOs
+### TODO
 
 All other `l^p` norms can be defined on Polynomials as well. In the literature, the `l^1` norm is
 sometimes called the polynomial's _length_. The `l^2` norm sometimes arises due to Parseval's

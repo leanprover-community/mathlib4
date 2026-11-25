@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
 public import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Measures as real-valued functions
 
@@ -66,7 +69,7 @@ theorem ofReal_measureReal (h : μ s ≠ ∞ := by finiteness) : ENNReal.ofReal 
   simp [measureReal_def, h]
 
 theorem nonempty_of_measureReal_ne_zero (h : μ.real s ≠ 0) : s.Nonempty :=
-  nonempty_iff_ne_empty.2 fun h' ↦ h <| h'.symm ▸ measureReal_empty
+  ne_empty_iff_nonempty.1 fun h' ↦ h <| h'.symm ▸ measureReal_empty
 
 @[simp] theorem measureReal_ennreal_smul_apply (c : ℝ≥0∞) :
     (c • μ).real s = c.toReal * μ.real s := by

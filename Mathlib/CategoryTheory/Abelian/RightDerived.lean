@@ -28,6 +28,7 @@ natural transformations between the original additive functors,
 and show how to compute the components.
 
 ## Main results
+
 * `Functor.isZero_rightDerived_obj_injective_succ`: injective objects have no higher
   right derived functor.
 * `NatTrans.rightDerived`: the natural transformation between right derived functors
@@ -115,8 +116,6 @@ noncomputable def InjectiveResolution.isoRightDerivedObj {X : C} (I : InjectiveR
     (I.isoRightDerivedToHomotopyCategoryObj F) ≪≫
     (HomotopyCategory.homologyFunctorFactors D (ComplexShape.up ℕ) n).app _
 
-set_option backward.isDefEq.respectTransparency false in
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma InjectiveResolution.isoRightDerivedObj_hom_naturality
     {X Y : C} (f : X ⟶ Y) (I : InjectiveResolution X) (J : InjectiveResolution Y)
@@ -152,7 +151,6 @@ lemma Functor.isZero_rightDerived_obj_injective_succ
   erw [← HomologicalComplex.exactAt_iff_isZero_homology]
   exact ShortComplex.exact_of_isZero_X₂ _ (F.map_isZero (by apply isZero_zero))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- We can compute a right derived functor on a morphism using a descent of that morphism
 to a cochain map between chosen injective resolutions.
 -/
@@ -248,7 +246,6 @@ lemma rightDerived_app_eq
     ((NatTrans.mapHomologicalComplex α (ComplexShape.up ℕ)).app P.cocomplex)]
   simp only [Functor.comp_map, Iso.hom_inv_id_app_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `P : InjectiveResolution X` and `F` is an additive functor, this is
 the canonical morphism from `F.obj X` to the cycles in degree `0` of
 `(F.mapHomologicalComplex _).obj P.cocomplex`. -/
@@ -267,7 +264,6 @@ lemma toRightDerivedZero'_comp_iCycles {C} [Category* C] [Abelian C] {X : C}
       HomologicalComplex.iCycles _ _ = F.map (P.ι.f 0) := by
   simp [toRightDerivedZero']
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma toRightDerivedZero'_naturality {C} [Category* C] [Abelian C] {X Y : C} (f : X ⟶ Y)
     (P : InjectiveResolution X) (Q : InjectiveResolution Y)
@@ -334,7 +330,6 @@ lemma InjectiveResolution.toRightDerivedZero_eq
   erw [← NatTrans.naturality]
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance (F : C ⥤ D) [F.Additive] (X : C) [Injective X] :
     IsIso (F.toRightDerivedZero.app X) := by
   rw [(InjectiveResolution.self X).toRightDerivedZero_eq F]

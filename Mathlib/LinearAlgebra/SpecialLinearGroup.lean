@@ -74,7 +74,7 @@ theorem subsingleton_of_finrank_eq_one [Module.Free R V] (d1 : Module.finrank R 
     by_cases hx : x = 0
     · simp [hx]
     suffices ∀ (u : SpecialLinearGroup R V), (u : V →ₗ[R] V) = LinearMap.id by
-      simp only [LinearMap.ext_iff, LinearEquiv.coe_coe, LinearMap.id_coe, id_eq] at this
+      simp only [LinearMap.ext_iff, LinearEquiv.coe_toLinearMap, LinearMap.id_coe, id_eq] at this
       simp [this u, this v]
     intro u
     ext x

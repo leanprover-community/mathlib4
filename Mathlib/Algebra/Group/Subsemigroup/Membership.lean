@@ -26,6 +26,7 @@ stub and only provides rudimentary support.
   semigroup) of the `FreeMonoid` consisting of non-identity elements.
 
 ## Tags
+
 subsemigroup
 -/
 

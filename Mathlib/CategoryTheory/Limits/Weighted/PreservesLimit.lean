@@ -12,6 +12,9 @@ import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Limits.Opposites
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Weighted limits preserve limits on the weight variable
 -/
@@ -82,7 +85,7 @@ public lemma preservesLimit
     [PreservesColimit G.leftOp (hasWeightedLimit.{w} F).ι] :
     PreservesLimit G (weightedLimFlipObj'.{w} F) where
   preserves {c} hc := ⟨by
-    refine (IsLimit.equivOfNatIsoOfIso (Iso.refl _) _ _ ?_).1
+    refine (IsLimit.equivOfNatIsoOfIso (Iso.refl _) _ _ ?_).toFun
       ((preservesLimit' (coconeLeftOpOfCone c)
         (isColimitOfPreserves (hasWeightedLimit.{w} F).ι
           (isColimitCoconeLeftOpOfCone _ hc))).whiskerEquivalence

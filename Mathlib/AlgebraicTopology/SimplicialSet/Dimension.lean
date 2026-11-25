@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.Degenerate
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Dimension of a simplicial set
 
