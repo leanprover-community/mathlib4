@@ -420,7 +420,7 @@ theorem two_mul_cauchyIndex_inv_algebraMap {p : ℝ[X]} {a b : ℝ} (hab : a ≤
   have hdeg : g.natDegree < n := by
     rw [← hn, natDegree_mul (pow_ne_zero _ (X_sub_C_ne_zero r)) hg0, natDegree_pow,
       natDegree_X_sub_C]
-    omega
+    lia
   -- the sign of `(x - r) ^ m` on each side of `r`
   have hlt {x : ℝ} (hx : x < r) :
       sign (((X - C r) ^ m).eval x) = if Odd m then -1 else 1 := by
