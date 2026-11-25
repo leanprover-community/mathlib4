@@ -129,12 +129,8 @@ theorem iter_deriv_pow' (n k : ℕ) :
 
 /-- The iterated derivative of a negative integer power, expressed using an ascending factorial. -/
 theorem iter_deriv_zpow_neg_natCast (m k : ℕ) (x : 𝕜) :
-    deriv^[k] (fun y => y ^ (-(m : ℤ))) x =
-      (-1) ^ k * (m.ascFactorial k : 𝕜) * x ^ (-(m : ℤ) - k) := by
-  rw [iter_deriv_zpow, Nat.ascFactorial_eq_prod_range, Nat.cast_prod]
-  congr 1
-  simp only [Int.cast_neg, Int.cast_natCast, Nat.cast_add, sub_eq_add_neg, ← neg_add,
-    Finset.prod_neg, Finset.card_range]
+    deriv^[k] (· ^ (-(m : ℤ))) x = (-1) ^ k * (m.ascFactorial k : 𝕜) * x ^ (-(m : ℤ) - k) := by
+  grind [iter_deriv_zpow, Nat.ascFactorial_eq_prod_range, Nat.cast_prod, Finset.prod_neg]
 
 theorem iter_deriv_inv (k : ℕ) (x : 𝕜) :
     deriv^[k] Inv.inv x = (-1) ^ k * k ! * x ^ (-1 - k : ℤ) := calc
