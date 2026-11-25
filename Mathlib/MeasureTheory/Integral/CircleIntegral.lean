@@ -100,6 +100,7 @@ theorem hasDerivAt_circleMap (c : ℂ) (R : ℝ) (θ : ℝ) :
   simpa only [mul_assoc, one_mul, ofRealCLM_apply, circleMap, ofReal_one, zero_add]
     using! (((ofRealCLM.hasDerivAt (x := θ)).mul_const I).cexp.const_mul (R : ℂ)).const_add c
 
+@[fun_prop]
 theorem differentiable_circleMap (c : ℂ) (R : ℝ) : Differentiable ℝ (circleMap c R) := fun θ =>
   (hasDerivAt_circleMap c R θ).differentiableAt
 
