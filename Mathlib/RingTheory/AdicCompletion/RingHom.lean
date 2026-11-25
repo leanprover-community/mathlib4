@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.AdicCompletion.Algebra
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lift of ring homomorphisms to adic completions
 
@@ -18,7 +21,7 @@ lifted to a ring homomorphism `R →+* S`.
 
 ## Main definitions
 
-- `IsAdicComplete.liftRingHom`: if `R` is
+* `IsAdicComplete.liftRingHom`: if `R` is
   `I`-adically complete, then a compatible family of
   ring maps `S →+* R ⧸ I ^ n` can be lifted to a unique ring map `S →+* R`.
   Together with `mk_liftRingHom_apply` and `eq_liftRingHom`, it gives the universal property
@@ -80,6 +83,7 @@ theorem mk_comp_liftRingHom (n : ℕ) :
 Uniqueness of the lift.
 Given a compatible family of linear maps `f n : R →ₗ[R] S ⧸ (I ^ n)`.
 If `F : R →+* S` makes the following diagram commute
+
 ```
   R
   | \
@@ -88,6 +92,7 @@ If `F : R →+* S` makes the following diagram commute
   v    v
   S --> S ⧸ (I ^ n)
 ```
+
 Then it is the map `IsAdicComplete.lift`.
 -/
 theorem eq_liftRingHom (F : R →+* S)

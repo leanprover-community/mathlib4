@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.MvPolynomial.Basic
 public import Mathlib.RingTheory.AlgebraTower
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Invertible polynomials
 
@@ -24,10 +27,12 @@ noncomputable instance MvPolynomial.invertibleC (σ : Type*) {R : Type*} [CommSe
     [Invertible r] : Invertible (C r : MvPolynomial σ R) :=
   Invertible.map (C : R →+* MvPolynomial σ R) _
 
-/-- A natural number that is invertible when coerced to a commutative semiring `R`
+/--
+A natural number that is invertible when coerced to a commutative semiring `R`
 is also invertible when coerced to any polynomial ring with rational coefficients.
 
-Short-cut for typeclass resolution. -/
+Short-cut for typeclass resolution.
+-/
 noncomputable instance MvPolynomial.invertibleCoeNat (σ R : Type*) (p : ℕ) [CommSemiring R]
     [Invertible (p : R)] : Invertible (p : MvPolynomial σ R) :=
   IsScalarTower.invertibleAlgebraCoeNat R _ _

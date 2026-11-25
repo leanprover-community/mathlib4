@@ -7,19 +7,22 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Dart
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Walks
 
-In a simple graph, a *walk* is a finite sequence of adjacent vertices, and can be
+In a simple graph, a _walk_ is a finite sequence of adjacent vertices, and can be
 thought of equally well as a sequence of directed edges.
 
-**Warning:** graph theorists mean something different by "path" than
+*Warning:* graph theorists mean something different by "path" than
 do homotopy theorists.  A "walk" in graph theory is a "path" in
 homotopy theory.  Another warning: some graph theorists use "path" and
 "simple path" for "walk" and "path."
 
 Some definitions and theorems have inspiration from multigraph
-counterparts in [Chou1994].
+counterparts in \[Chou1994\].
 
 ## Main definitions
 
@@ -33,6 +36,7 @@ counterparts in [Chou1994].
 * `SimpleGraph.Walk.edgeSet`: The set of edges of a walk visits
 
 ## Tags
+
 walks
 -/
 
@@ -43,14 +47,16 @@ namespace SimpleGraph
 universe u
 variable {V : Type u} (G : SimpleGraph V) {u v w : V}
 
-/-- A walk is a sequence of adjacent vertices.  For vertices `u v : V`,
+/--
+A walk is a sequence of adjacent vertices.  For vertices `u v : V`,
 the type `walk u v` consists of all walks starting at `u` and ending at `v`.
 
-We say that a walk *visits* the vertices it contains.  The set of vertices a
+We say that a walk _visits_ the vertices it contains.  The set of vertices a
 walk visits is `SimpleGraph.Walk.support`.
 
 See `SimpleGraph.Walk.nil'` and `SimpleGraph.Walk.cons'` for patterns that
-can be useful in definitions since they make the vertices explicit. -/
+can be useful in definitions since they make the vertices explicit.
+-/
 inductive Walk : V → V → Type u
   | nil {u : V} : Walk u u
   | cons {u v w : V} (h : G.Adj u v) (p : Walk v w) : Walk u w
@@ -377,10 +383,12 @@ theorem finite_edgeSet (p : G.Walk v w) : p.edgeSet.Finite :=
 def fintypeEdgeSet [DecidableEq V] (p : G.Walk v w) : Fintype p.edgeSet :=
   List.Subtype.fintype p.edges
 
-/-- Predicate for the empty walk.
+/--
+Predicate for the empty walk.
 
 Solves the dependent type problem where `p = G.Walk.nil` typechecks
-only if `p` has defeq endpoints. -/
+only if `p` has defeq endpoints.
+-/
 inductive Nil : {v w : V} → G.Walk v w → Prop
   | nil {u : V} : Nil (nil : G.Walk u u)
 

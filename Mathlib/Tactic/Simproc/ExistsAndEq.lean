@@ -10,6 +10,9 @@ public import Mathlib.Init
 
 meta import Qq.Typ
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Simproc for `∃ a', ... ∧ a' = a ∧ ...`
 
@@ -130,17 +133,20 @@ partial def proveFromHoisted {T T' : Q(Prop)} (h : Q($T')) (exs : List VarQ) (pa
       let f : Q(∀ k, $c' k → @Exists $S $c) ← mkLambdaFVars #[k, hc] inner
       return q(Exists.elim $h $f)
 
-/-- Given `P : Prop` and `a : α`, traverses the expression `P` to find a subexpression of
+/--
+Given `P : Prop` and `a : α`, traverses the expression `P` to find a subexpression of
 the form `a = a'` or `a' = a` for some `a'`. It branches at each `And` and walks into
 existential quantifiers.
 
 Returns a tuple `(fvars, lctx, P', a')`, where:
+
 * `fvars` is a list of all variables bound by existential quantifiers along the path.
 * `lctx` is the local context containing all these free variables.
 * `P'` is `P` with all existential quantifiers along the path removed, and corresponding bound
   variables replaced with `fvars`.
 * `a'` is the expression found that must be equal to `a`.
-  It may contain free variables from `fvars`. -/
+  It may contain free variables from `fvars`.
+-/
 partial def findEq {u : Level} {α : Q(Sort u)} (a : Q($α)) (P : Q(Prop)) (path : Path) :
     MetaM (List VarQ × LocalContext × Q(Prop) × Q($α)) := do
    go a P path
@@ -201,12 +207,14 @@ def Path.forResult (path : Path) : Path :=
   let (quantifiers, conjunctions) := path.partition (· == .existsBody)
   quantifiers ++ conjunctions
 
-/-- Destructs `h : P` following `path`, as the chain of `refine h.elim fun … ↦ ?_` in the docstring
+/--
+Destructs `h : P` following `path`, as the chain of `refine h.elim fun … ↦ ?_` in the docstring
 of `mkBeforeToAfter` does: at an `existsBody` step the quantifier is unpacked with `Exists.elim`,
 using the next variable of `exs` as the bound variable; at an `andLeft`/`andRight` step the
-conjunction is split with `And.elim`, and the part outside the path becomes a *leaf*. The
+conjunction is split with `And.elim`, and the part outside the path becomes a _leaf_. The
 continuation `k` receives the leaves (in path order, after those in `acc`) and the hypothesis at
-the end of the path, i.e. the equation. All of them are local hypotheses. -/
+the end of the path, i.e. the equation. All of them are local hypotheses.
+-/
 partial def destruct {P goal : Q(Prop)} (h : Q($P)) (exs : List VarQ) (path : Path)
     (acc : List HypQ) (k : List HypQ → HypQ → MetaM Q($goal)) : MetaM Q($goal) := do
   match path with
@@ -297,10 +305,12 @@ partial def construct {goal : Q(Prop)} (exs : List VarQ) (path : Path) (leaves :
     have leaf : Q($pb $w) := leaf
     return q(Exists.intro $w $leaf)
 
-/-- Generates a proof of `(∃ a, p a) → P'`. We assume that `fvars = [f₁, ..., fₙ]` are free
+/--
+Generates a proof of `(∃ a, p a) → P'`. We assume that `fvars = [f₁, ..., fₙ]` are free
 variables and `P' = ∃ f₁ ... fₙ, newBody`, and `path` leads to `a = a'` in `∃ a, p a`.
 
 The proof follows the following structure:
+
 ```
 example (f : β → α) {P Q : β → Prop} :
     (∃ x b, P b ∧ (∃ c, f c = x ∧ Q c) ∧ Q b) → ∃ b c, P b ∧ (f c = f c ∧ Q c) ∧ Q b := by
@@ -325,7 +335,8 @@ example (f : β → α) {P Q : β → Prop} :
   refine And.intro ?_ a2          -- andLeft
   refine And.intro ?_ a3          -- andLeft
   exact rfl
-``` -/
+```
+-/
 def mkBeforeToAfter {u : Level} {α : Q(Sort u)} {p : Q($α → Prop)}
     {P' : Q(Prop)} (fvars : List VarQ) (path : Path) :
     MetaM <| Q((∃ a, $p a) → $P') := do
@@ -348,10 +359,12 @@ def mkBeforeToAfter {u : Level} {α : Q(Sort u)} {p : Q($α → Prop)}
     let pf3 : Q($P') := q(Exists.elim $h $pf2)
     mkLambdaFVars #[h] pf3
 
-/-- Generates a proof of `P' → ∃ a, p a`. We assume that `fvars = [f₁, ..., fₙ]` are free variables
+/--
+Generates a proof of `P' → ∃ a, p a`. We assume that `fvars = [f₁, ..., fₙ]` are free variables
 and `P' = ∃ f₁ ... fₙ, newBody`, and `path` leads to `a = a'` in `∃ a, p a`.
 
 The proof follows the following structure:
+
 ```
 example (f : β → α) {P Q : β → Prop} :
     (∃ b c, P b ∧ (f c = f c ∧ Q c) ∧ Q b) → ∃ x b, P b ∧ (∃ c, f c = x ∧ Q c) ∧ Q b := by
@@ -374,7 +387,8 @@ example (f : β → α) {P Q : β → Prop} :
   refine Exists.intro e2 ?_       -- existsBody
   refine And.intro ?_ a3          -- andLeft
   exact rfl
-``` -/
+```
+-/
 def mkAfterToBefore {u : Level} {α : Q(Sort u)} {p : Q($α → Prop)}
     {P' : Q(Prop)} (a' : Q($α)) (fvars : List VarQ) (path : Path) :
     MetaM <| Q($P' → (∃ a, $p a)) := do
@@ -384,7 +398,8 @@ def mkAfterToBefore {u : Level} {α : Q(Sort u)} {p : Q($α → Prop)}
       return q(Exists.intro $a' $pf1)
     mkLambdaFVars #[h] pf
 
-/-- Runs `k` on `e` with the metavariables occurring in `e` replaced by local variables, and
+/--
+Runs `k` on `e` with the metavariables occurring in `e` replaced by local variables, and
 substitutes the metavariables back into the resulting `Simp.Step`. In some cases (e.g. under
 `aesop`) the goal contains metavariables, and this is needed to handle them properly: the proof
 built by `substCore` can only be instantiated when the goal contains none.
@@ -426,11 +441,13 @@ def existsAndEqCore (e : Expr) : MetaM Simp.Step := do
       let pf := q(propext ⟨$pfBeforeAfter, $pfAfterBefore⟩)
       return .visit <| Simp.ResultQ.mk _ <| some q($pf)
 
-/-- Triggers at goals of the form `∃ a, body` and checks if `body` allows a single value `a'`
+/--
+Triggers at goals of the form `∃ a, body` and checks if `body` allows a single value `a'`
 for `a`. If so, replaces `a` with `a'` and removes quantifier.
 
 It looks through nested quantifiers and conjunctions searching for a `a = a'`
-or `a' = a` subexpression. -/
+or `a' = a` subexpression.
+-/
 simproc ↓ existsAndEq (Exists _) := fun e => withAbstractMVars e existsAndEqCore
 
 end ExistsAndEq

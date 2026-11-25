@@ -9,13 +9,17 @@ public import Mathlib.RingTheory.Etale.Basic
 public import Mathlib.RingTheory.Flat.Localization
 public import Mathlib.RingTheory.Kaehler.JacobiZariski
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The differential module and étale algebras
 
 ## Main results
-- `KaehlerDifferential.tensorKaehlerEquivOfFormallyEtale`:
+
+* `KaehlerDifferential.tensorKaehlerEquivOfFormallyEtale`:
   The canonical isomorphism `T ⊗[S] Ω[S⁄R] ≃ₗ[T] Ω[T⁄R]` for `T` a formally étale `S`-algebra.
-- `Algebra.tensorH1CotangentOfIsLocalization`:
+* `Algebra.tensorH1CotangentOfIsLocalization`:
   The canonical isomorphism `T ⊗[S] H¹(L_{S⁄R}) ≃ₗ[T] H¹(L_{T⁄R})` for `T` a localization of `S`.
 -/
 
@@ -81,6 +85,7 @@ variable {R S T}
 
 /-!
 Suppose we have a morphism of extensions of `R`-algebras
+
 ```
 0 → J → Q → T → 0
     ↑   ↑   ↑

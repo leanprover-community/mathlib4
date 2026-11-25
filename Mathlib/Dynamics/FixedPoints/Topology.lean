@@ -8,13 +8,16 @@ module
 public import Mathlib.Dynamics.FixedPoints.Defs
 public import Mathlib.Topology.Separation.Hausdorff
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topological properties of fixed points
 
 Currently this file contains two lemmas:
 
-- `isFixedPt_of_tendsto_iterate`: if `f^n(x) → y` and `f` is continuous at `y`, then `f y = y`;
-- `isClosed_fixedPoints`: the set of fixed points of a continuous map is a closed set.
+* `isFixedPt_of_tendsto_iterate`: if `f^n(x) → y` and `f` is continuous at `y`, then `f y = y`;
+* `isClosed_fixedPoints`: the set of fixed points of a continuous map is a closed set.
 
 ## TODO
 

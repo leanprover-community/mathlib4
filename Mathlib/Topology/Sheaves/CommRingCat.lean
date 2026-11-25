@@ -12,19 +12,24 @@ public import Mathlib.Topology.Sheaves.Stalks
 
 import Mathlib.Algebra.Category.Ring.FilteredColimits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sheaves of (commutative) rings.
 
 Results specific to sheaves of commutative rings including sheaves of continuous functions
 `TopCat.continuousFunctions` with natural operations of  `pullback` and `map` and
 sub, quotient, and localization operations on sheaves of rings with
-- `SubmonoidPresheaf` : A subpresheaf with a submonoid structure on each of the components.
-- `LocalizationPresheaf` : The localization of a presheaf of commrings at a `SubmonoidPresheaf`.
-- `TotalQuotientPresheaf` : The presheaf of total quotient rings.
+
+* `SubmonoidPresheaf` : A subpresheaf with a submonoid structure on each of the components.
+* `LocalizationPresheaf` : The localization of a presheaf of commrings at a `SubmonoidPresheaf`.
+* `TotalQuotientPresheaf` : The presheaf of total quotient rings.
 
 As more results accumulate, please consider splitting this file.
 
 ## References
+
 * https://stacks.math.columbia.edu/tag/0073
 -/
 
@@ -52,7 +57,8 @@ example (X : TopCat.{u₁}) (F : Presheaf CommRingCat.{u₁} X)
 (isSheaf_iff_isSheaf_comp (forget CommRingCat) F).mpr h
 
 open AlgebraicGeometry in
-/-- Unfold `restrictOpen` in the category of commutative rings (with the correct carrier type).
+/--
+Unfold `restrictOpen` in the category of commutative rings (with the correct carrier type).
 
 Although unification hints help with applying `TopCat.Presheaf.restrictOpenCommRingCat`,
 so it can be safely de-specialized, this lemma needs to be kept to ensure rewrites go right.
@@ -250,13 +256,16 @@ def commRingYoneda : TopCommRingCat.{u} ⥤ TopCat.{u}ᵒᵖ ⥤ CommRingCat.{u}
     rfl
   map_comp {_ _ _} _ _ := rfl
 
-/-- The presheaf (of commutative rings), consisting of functions on an open set `U ⊆ X` with
+/--
+The presheaf (of commutative rings), consisting of functions on an open set `U ⊆ X` with
 values in some topological commutative ring `T`.
 
 For example, we could construct the presheaf of continuous complex-valued functions of `X` as
+
 ```
 presheafToTopCommRing X (TopCommRingCat.of ℂ)
 ```
+
 (this requires `import Topology.Instances.Complex`).
 -/
 def presheafToTopCommRing (T : TopCommRingCat.{v}) : X.Presheaf CommRingCat.{v} :=

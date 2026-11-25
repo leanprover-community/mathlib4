@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.DerivHyp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Inverse of the sinh function
 
@@ -16,19 +19,16 @@ inverse, arsinh.
 
 ## Main definitions
 
-- `Real.arsinh`: The inverse function of `Real.sinh`.
-
-- `Real.sinhEquiv`, `Real.sinhOrderIso`, `Real.sinhHomeomorph`: `Real.sinh` as an `Equiv`,
+* `Real.arsinh`: The inverse function of `Real.sinh`.
+* `Real.sinhEquiv`, `Real.sinhOrderIso`, `Real.sinhHomeomorph`: `Real.sinh` as an `Equiv`,
   `OrderIso`, and `Homeomorph`, respectively.
 
 ## Main Results
 
-- `Real.sinh_surjective`, `Real.sinh_bijective`: `Real.sinh` is surjective and bijective;
-
-- `Real.arsinh_injective`, `Real.arsinh_surjective`, `Real.arsinh_bijective`: `Real.arsinh` is
+* `Real.sinh_surjective`, `Real.sinh_bijective`: `Real.sinh` is surjective and bijective;
+* `Real.arsinh_injective`, `Real.arsinh_surjective`, `Real.arsinh_bijective`: `Real.arsinh` is
   injective, surjective, and bijective;
-
-- `Real.continuous_arsinh`, `Real.differentiable_arsinh`, `Real.contDiff_arsinh`: `Real.arsinh` is
+* `Real.continuous_arsinh`, `Real.differentiable_arsinh`, `Real.contDiff_arsinh`: `Real.arsinh` is
   continuous, differentiable, and continuously differentiable; we also provide dot notation
   convenience lemmas like `Filter.Tendsto.arsinh` and `ContDiffAt.arsinh`.
 

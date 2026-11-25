@@ -7,22 +7,25 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Deligne's archimedean Gamma-factors
 
 In the theory of L-series one frequently encounters the following functions (of a complex variable
-`s`) introduced in Deligne's landmark paper *Valeurs de fonctions L et périodes d'intégrales*:
+`s`) introduced in Deligne's landmark paper _Valeurs de fonctions L et périodes d'intégrales_:
 
-$$ \Gamma_{\mathbb{R}}(s) = \pi ^ {-s / 2} \Gamma (s / 2) $$
+$$`  \Gamma_{\mathbb{R}}(s) = \pi ^ {-s / 2} \Gamma (s / 2)  `
 
 and
 
-$$ \Gamma_{\mathbb{C}}(s) = 2 (2 \pi) ^ {-s} \Gamma (s). $$
+$$`  \Gamma_{\mathbb{C}}(s) = 2 (2 \pi) ^ {-s} \Gamma (s).  `
 
 These are the factors that need to be included in the Dedekind zeta function of a number field
 for each real, resp. complex, infinite place.
 
-(Note that these are *not* the same as Mathlib's `Real.Gamma` vs. `Complex.Gamma`; Deligne's
+(Note that these are _not_ the same as Mathlib's `Real.Gamma` vs. `Complex.Gamma`; Deligne's
 functions both take a complex variable as input.)
 
 This file defines these functions, and proves some elementary properties, including a reflection
@@ -39,18 +42,22 @@ open scoped Topology
 
 namespace Complex
 
-/-- Deligne's archimedean Gamma factor for a real infinite place.
+/--
+Deligne's archimedean Gamma factor for a real infinite place.
 
 See "Valeurs de fonctions L et périodes d'intégrales" § 5.3. Note that this is not the same as
-`Real.Gamma`; in particular it is a function `ℂ → ℂ`. -/
+`Real.Gamma`; in particular it is a function `ℂ → ℂ`.
+-/
 noncomputable def Gammaℝ (s : ℂ) := π ^ (-s / 2) * Gamma (s / 2)
 
 lemma Gammaℝ_def (s : ℂ) : Gammaℝ s = π ^ (-s / 2) * Gamma (s / 2) := rfl
 
-/-- Deligne's archimedean Gamma factor for a complex infinite place.
+/--
+Deligne's archimedean Gamma factor for a complex infinite place.
 
 See "Valeurs de fonctions L et périodes d'intégrales" § 5.3. (Some authors omit the factor of 2).
-Note that this is not the same as `Complex.Gamma`. -/
+Note that this is not the same as `Complex.Gamma`.
+-/
 noncomputable def Gammaℂ (s : ℂ) := 2 * (2 * π) ^ (-s) * Gamma s
 
 lemma Gammaℂ_def (s : ℂ) : Gammaℂ s = 2 * (2 * π) ^ (-s) * Gamma s := rfl
@@ -137,10 +144,12 @@ lemma Gammaℝ_residue_zero : Tendsto (fun s ↦ s * Gammaℝ s) (𝓝[≠] 0) (
   rw [Gammaℝ]
   ring_nf
 
-/-- `Gammaℂ` has a simple pole at `s = 0` with residue `2`.
+/--
+`Gammaℂ` has a simple pole at `s = 0` with residue `2`.
 
 This is the complex-place analogue of `Gammaℝ_residue_zero` (whose residue at `0` is also `2`), and
-is twice the residue of `Complex.Gamma` itself (`Complex.tendsto_self_mul_Gamma_nhds_zero`). -/
+is twice the residue of `Complex.Gamma` itself (`Complex.tendsto_self_mul_Gamma_nhds_zero`).
+-/
 lemma Gammaℂ_residue_zero : Tendsto (fun s ↦ s * Gammaℂ s) (𝓝[≠] 0) (𝓝 2) := by
   -- `s * Gammaℂ s = 2 * (2 * π) ^ (-s) * (s * Gamma s)`, and `s * Gamma s → 1`
   refine .congr (fun s ↦ mul_left_comm ..) ?_

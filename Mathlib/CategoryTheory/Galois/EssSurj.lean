@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Galois.Full
 public import Mathlib.CategoryTheory.Galois.Topology
 public import Mathlib.Topology.Algebra.OpenSubgroup
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Essential surjectivity of fiber functors
 
@@ -20,10 +23,10 @@ the `Aut F` action is continuous.
 
 ## Main results
 
-- `exists_lift_of_quotient_openSubgroup`: If `U` is an open subgroup of `Aut F`, then
+* `exists_lift_of_quotient_openSubgroup`: If `U` is an open subgroup of `Aut F`, then
   there exists an object `X` such that `F.obj X` is isomorphic to `Aut F ⧸ U` as
   `Aut F`-sets.
-- `exists_lift_of_continuous`: If `X` is a finite, discrete `Aut F`-set, then
+* `exists_lift_of_continuous`: If `X` is a finite, discrete `Aut F`-set, then
   there exists an object `A` such that `F.obj A` is isomorphic to `X` as
   `Aut F`-sets.
 

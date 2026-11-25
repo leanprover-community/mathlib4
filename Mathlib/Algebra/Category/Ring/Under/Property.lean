@@ -11,6 +11,9 @@ public import Mathlib.CategoryTheory.ObjectProperty.FiniteProducts
 
 import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of `P.Under ⊤ R` for `R : CommRingCat`
 
@@ -19,9 +22,9 @@ In this file we translate ring theoretic properties of a property of ring homomo
 
 ## Main results
 
-- `CommRingCat.Under.hasFiniteLimits`: If `P` is stable under finite products and equalizers,
+* `CommRingCat.Under.hasFiniteLimits`: If `P` is stable under finite products and equalizers,
   `P.Under ⊤ R` has finite limits.
-- `RingHom.HasStableEqualizers.preservesFiniteLimits_pushout`: If `P` has stable equalizers,
+* `RingHom.HasStableEqualizers.preservesFiniteLimits_pushout`: If `P` has stable equalizers,
   base change along arbitrary morphisms preserve finite limits.
 -/
 

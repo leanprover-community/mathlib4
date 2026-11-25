@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Category.CommAlgCat.Basic
 public import Mathlib.CategoryTheory.FintypeCat
 public import Mathlib.RingTheory.TotallySplit
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Category of finite étale `R`-algebras
 
@@ -18,13 +21,13 @@ geometric point `Ω` of `R`, we define a fiber functor sending a finite étale `
 
 ## Main definitions
 
-- `CommAlgCat.FiniteEtale`: The category of finite étale `R`-algebras.
-- `CommAlgCat.FiniteEtale.fiber`: For a geometric point `Ω` of `R`, the fiber functor
+* `CommAlgCat.FiniteEtale`: The category of finite étale `R`-algebras.
+* `CommAlgCat.FiniteEtale.fiber`: For a geometric point `Ω` of `R`, the fiber functor
   `S ↦ (S →ₐ[R] Ω)`.
 
 ## Main results
 
-- `CommAlgCat.FiniteEtale.equivOfIsSepClosed`: If `R = Ω` is separably closed,
+* `CommAlgCat.FiniteEtale.equivOfIsSepClosed`: If `R = Ω` is separably closed,
   the category of finite étale `Ω`-algebras is anti-equivalent to `FintypeCat`.
   In particular, the functor `CommAlgCat.FiniteEtale.fiber` is an equivalence
   of categories in this case.

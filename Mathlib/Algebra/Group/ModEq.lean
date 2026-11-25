@@ -11,6 +11,9 @@ import Mathlib.Algebra.Group.Torsion
 import Mathlib.Tactic.TermCongr
 import Mathlib.Tactic.Use
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equality modulo an element
 
@@ -30,8 +33,8 @@ and it is given with the use case of natural numbers in mind.
 
 ## TODO
 
-- Delete `Nat.ModEq` and `Int.ModEq` in favour of `AddCommGroup.ModEq`.
-- Relate to `SModEq`.
+* Delete `Nat.ModEq` and `Int.ModEq` in favour of `AddCommGroup.ModEq`.
+* Relate to `SModEq`.
 -/
 
 public section
@@ -43,7 +46,8 @@ namespace AddCommGroup
 section AddCommMonoid
 variable {M : Type*} [AddCommMonoid M] {a b c d p : M}
 
-/-- `a ≡ b [PMOD p]` means that `b` is congruent to `a` modulo `p`.
+/--
+`a ≡ b [PMOD p]` means that `b` is congruent to `a` modulo `p`.
 
 If `a`, `b` are elements of an additive group,
 then `a ≡ b [PMOD p]` iff `m • p = b - a` for some `m : ℤ`, see `modEq_iff_zsmul` below.
@@ -51,7 +55,8 @@ For additive commutative monoid, the definition is given by `modEq_iff_nsmul`.
 
 Equivalently (as shown in `Algebra.Order.ToIntervalMod`), `b` does not lie in the open interval
 `(a, a + p)` modulo `p`, or `toIcoMod hp a` disagrees with `toIocMod hp a` at `b`, or
-`toIcoDiv hp a` disagrees with `toIocDiv hp a` at `b`. -/
+`toIcoDiv hp a` disagrees with `toIocDiv hp a` at `b`.
+-/
 def ModEq (p a b : M) : Prop :=
   ∃ m n : ℕ, m • p + a = n • p + b
 

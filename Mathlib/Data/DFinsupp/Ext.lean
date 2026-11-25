@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Submonoid.Basic
 public import Mathlib.Data.DFinsupp.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extensionality principles for `DFinsupp`
 
@@ -52,10 +55,12 @@ theorem addHom_ext {γ : Type w} [AddZeroClass γ] ⦃f g : (Π₀ i, β i) →+
   rcases hf with ⟨x, y, rfl⟩
   apply H
 
-/-- If two additive homomorphisms from `Π₀ i, β i` are equal on each `single a b`, then
+/--
+If two additive homomorphisms from `Π₀ i, β i` are equal on each `single a b`, then
 they are equal.
 
-See note [partially-applied ext lemmas]. -/
+See note \[partially-applied ext lemmas\].
+-/
 @[ext]
 theorem addHom_ext' {γ : Type w} [AddZeroClass γ] ⦃f g : (Π₀ i, β i) →+ γ⦄
     (H : ∀ x, f.comp (singleAddHom β x) = g.comp (singleAddHom β x)) : f = g :=

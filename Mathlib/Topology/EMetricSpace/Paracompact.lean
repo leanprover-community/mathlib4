@@ -9,13 +9,16 @@ public import Mathlib.SetTheory.Cardinal.Order
 public import Mathlib.Topology.Compactness.Paracompact
 public import Mathlib.Topology.EMetricSpace.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # (Extended) metric spaces are paracompact
 
 In this file we provide two instances:
 
 * `EMetric.instParacompactSpace`: a `PseudoEMetricSpace` is paracompact; formalization is based
-  on [MR0236876];
+  on \[MR0236876\];
 * `EMetric.instNormalSpace`: an `EMetricSpace` is a normal topological space.
 
 ## TODO
@@ -38,8 +41,10 @@ open scoped Topology
 namespace Metric
 
 -- See note [lower instance priority]
-/-- A `PseudoEMetricSpace` is always a paracompact space.
-Formalization is based on [MR0236876]. -/
+/--
+A `PseudoEMetricSpace` is always a paracompact space.
+Formalization is based on \[MR0236876\].
+-/
 instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : ParacompactSpace α := by
   /- We start with trivial observations about `1 / 2 ^ k`. Here and below we use `1 / 2 ^ k` in
     the comments and `2⁻¹ ^ k` in the code. -/

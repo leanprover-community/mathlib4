@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Bicategory.Functor.StrictPseudofunctor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Induced bicategories
 
@@ -68,10 +71,12 @@ abbrev mkHom {X Y : InducedBicategory C F} (f : F X ⟶ F Y) : X ⟶ Y :=
 lemma hom_ext {X Y : InducedBicategory C F} {f g : X ⟶ Y} (h : f.hom = g.hom) : f = g :=
   Hom.ext h
 
-/-- `InducedBicategory.Hom₂ f g` is a type-alias for 2-morphisms between `f g : X ⟶ Y`, where
+/--
+`InducedBicategory.Hom₂ f g` is a type-alias for 2-morphisms between `f g : X ⟶ Y`, where
 `f` and `g` are 1-morphisms for the induced bicategory structure on `B`.
 
-This is given a `Category` instance below, induced from the corresponding one in `C`. -/
+This is given a `Category` instance below, induced from the corresponding one in `C`.
+-/
 @[ext]
 structure Hom₂ {X Y : InducedBicategory C F} (f g : X ⟶ Y) where
   /-- The 2-morphism in `C` underlying the 2-morphism in `InducedBicategory C F`. -/

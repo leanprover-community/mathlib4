@@ -12,6 +12,9 @@ public import Mathlib.CategoryTheory.Endomorphism
 public import Mathlib.CategoryTheory.FinCategory.Basic
 public import Mathlib.Combinatorics.Quiver.SingleObj
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Single-object category
 
@@ -32,10 +35,9 @@ An element `x : M` can be reinterpreted as an element of `End (SingleObj.star M)
 
 ## Implementation notes
 
-- `categoryStruct.comp` on `End (SingleObj.star M)` is `flip (*)`, not `(*)`. This way
+* `categoryStruct.comp` on `End (SingleObj.star M)` is `flip (*)`, not `(*)`. This way
   multiplication on `End` agrees with the multiplication on `M`.
-
-- By default, Lean puts instances into `CategoryTheory` namespace instead of
+* By default, Lean puts instances into `CategoryTheory` namespace instead of
   `CategoryTheory.SingleObj`, so we give all names explicitly.
 -/
 

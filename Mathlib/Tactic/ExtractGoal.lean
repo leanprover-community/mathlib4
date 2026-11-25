@@ -14,6 +14,10 @@ public import Mathlib.Tactic.MinImports
 
 meta import Lean.Elab.Command
 
+set_option doc.verso true
+set_option doc.verso.module false
+set_option doc.verso.suggestions false
+
 /-!
 # `extract_goal`: Format the current goal as a stand-alone example
 
@@ -119,7 +123,7 @@ syntax config := star <|> (colGt ppSpace ident)*
 `extract_goal` formats the current goal as a stand-alone theorem or definition after
 cleaning up the local context of irrelevant variables.
 
-A variable is *relevant* if (1) it occurs in the target type, (2) there is a relevant variable
+A variable is _relevant_ if (1) it occurs in the target type, (2) there is a relevant variable
 that depends on it, or (3) the type of the variable is a proposition that depends on a
 relevant variable.
 If the target is `False`, then for convenience `extract_goal` includes all variables.
@@ -138,11 +142,13 @@ For example, `set_option pp.all true in extract_goal` gives the `pp.all` form.
 -/
 syntax (name := extractGoal) "extract_goal" config (" using " ident)? : tactic
 
-/-- Format a goal into a type signature for a declaration named `name`.
+/--
+Format a goal into a type signature for a declaration named `name`.
 
 Example output: `myTheorem (a b : Nat) : a + b = b + a`.
 
 The return values are:
+
 * A formatted piece of `MessageData`, like `m!"myTheorem (a b : Nat) : a + b = b + a"`.
 * The full type of the declaration, like `∀ a b, a + b = b + a`.
 * The imports needed to state this declaration, as an array of module names.

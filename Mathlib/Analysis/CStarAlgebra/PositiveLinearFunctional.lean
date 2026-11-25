@@ -10,11 +10,16 @@ public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Positive
 
 import Mathlib.Analysis.CStarAlgebra.GelfandNaimarkSegal
 
-/-! # Characterization of positive continuous linear functionals on C⋆-algebras
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Characterization of positive continuous linear functionals on C⋆-algebras
 
 In this file we show that a continuous linear functional `f` on a non-unital C⋆-algebra is
 monotone if `f` tendsto `‖f‖` along any/some approximate unit. Therefore, when
-the algebra is unital, `f` is monotone if and only if `‖f‖ = f 1`. -/
+the algebra is unital, `f` is monotone if and only if `‖f‖ = f 1`.
+-/
 
 public section
 

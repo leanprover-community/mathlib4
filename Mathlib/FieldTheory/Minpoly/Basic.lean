@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Minimal polynomials
 
@@ -27,7 +30,8 @@ section MinPolyDef
 variable (A) [CommRing A] [Ring B] [Algebra A B]
 
 open scoped Classical in
-/-- Suppose `x : B`, where `B` is an `A`-algebra.
+/--
+Suppose `x : B`, where `B` is an `A`-algebra.
 
 The minimal polynomial `minpoly A x` of `x`
 is a monic polynomial with coefficients in `A` of smallest degree that has `x` as its root,

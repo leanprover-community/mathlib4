@@ -17,6 +17,9 @@ import Mathlib.CategoryTheory.Category.Init
 import Mathlib.Data.EReal.Inv
 import Mathlib.Tactic.ContinuousFunctionalCalculus
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Riemann mapping theorem
 
@@ -36,14 +39,15 @@ open scoped Pointwise Topology
 
 namespace Complex
 
-/-- Proof of the Riemann Mapping Theorem, step 1.
+/--
+Proof of the Riemann Mapping Theorem, step 1.
 
 If `U` is an open simply connected subset of `ℂ` that is not the whole `ℂ`,
 then there exists a function `f : ℂ → ℂ` such that
 
-- `f` is injective;
-- the image `f '' U` isn't dense in `ℂ`;
-- `f` is complex differentiable on `U` with nonzero derivative.
+* `f` is injective;
+* the image `f '' U` isn't dense in `ℂ`;
+* `f` is complex differentiable on `U` with nonzero derivative.
 
 E.g., one can choose `a ∉ U`, then take `f z` to be the square root of `z - a`.
 -/
@@ -104,14 +108,15 @@ theorem exists_injective_not_dense_image_deriv_ne_zero {U : Set ℂ} (hUo : IsOp
     linear_combination hab / 2
   · simpa [(hdf z hz).hasDerivAt.deriv] using hf₀ z hz
 
-/-- Proof of the Riemann Mapping Theorem, step 2.
+/--
+Proof of the Riemann Mapping Theorem, step 2.
 
 If `U` is an open simply connected subset of `ℂ` which is not the whole field,
 then there exists a map `f : ℂ → ℂ` such that
 
-- `f` maps `U` to the unit disk;
-- `f` is injective on `U`;
-- `f` is differentiable on `U` with nonzero derivative.
+* `f` maps `U` to the unit disk;
+* `f` is injective on `U`;
+* `f` is differentiable on `U` with nonzero derivative.
 
 Once the proof of the Riemann Mapping Theorem gets merged into Mathlib,
 this lemma will be made private.

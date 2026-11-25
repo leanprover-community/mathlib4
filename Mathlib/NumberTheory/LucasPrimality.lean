@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.IntegralDomain
 
 import Mathlib.Algebra.Field.ZMod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Lucas test for primes
 
@@ -19,7 +22,8 @@ and `a^d ≠ 1 (mod n)` for any divisor `d | n - 1`. This test is the basis of t
 certificate.
 
 ## TODO
-- Integrate Pratt primality certificates into the `norm_num` primality verifier
+
+* Integrate Pratt primality certificates into the `norm_num` primality verifier
 
 ## Implementation notes
 

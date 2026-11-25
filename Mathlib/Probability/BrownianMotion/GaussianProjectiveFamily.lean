@@ -11,6 +11,9 @@ public import Mathlib.Probability.Distributions.Gaussian.Multivariate
 import Mathlib.Probability.Distributions.Gaussian.Fernique
 import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite dimensional distributions of Brownian motion
 
@@ -72,12 +75,14 @@ lemma posSemidef_covMatrix (I : Finset ℝ≥0) :
   exact posSemidef_matrix_measure_inter (fun _ ↦ measurableSet_Icc)
     (fun _ ↦ isCompact_Icc.measure_ne_top)
 
-/-- Each `projectiveFamily I` is the centered Gaussian measure with covariance matrix given
+/--
+Each `projectiveFamily I` is the centered Gaussian measure with covariance matrix given
 by `covMatrix I s t := min s t`.
 
 Note that we build a measure over `I → ℝ` rather than `EuclideanSpace I ℝ`. This is because
 we want to extend this family to a measure over `ℝ≥0 → ℝ` through the Kolmogorov's extension
-theorem, which is phrased in this language. -/
+theorem, which is phrased in this language.
+-/
 noncomputable def projectiveFamily (I : Finset ℝ≥0) : Measure (I → ℝ) :=
   multivariateGaussian 0 (covMatrix I) |>.map (MeasurableEquiv.toLp 2 (I → ℝ)).symm
 

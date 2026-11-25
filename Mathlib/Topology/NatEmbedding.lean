@@ -7,15 +7,18 @@ module
 
 public import Mathlib.Topology.Homeomorph.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Infinite Hausdorff topological spaces
 
 In this file we prove several properties of infinite Hausdorff topological spaces.
 
-- `exists_seq_infinite_isOpen_pairwise_disjoint`: there exists a sequence
+* `exists_seq_infinite_isOpen_pairwise_disjoint`: there exists a sequence
   of pairwise disjoint infinite open sets;
-- `exists_topology_isEmbedding_nat`: there exists a topological embedding of `ℕ` into the space;
-- `exists_infinite_discreteTopology`: there exists an infinite subset with discrete topology.
+* `exists_topology_isEmbedding_nat`: there exists a topological embedding of `ℕ` into the space;
+* `exists_infinite_discreteTopology`: there exists an infinite subset with discrete topology.
 -/
 
 public section
@@ -61,10 +64,12 @@ theorem exists_seq_infinite_isOpen_pairwise_disjoint :
       exact disjoint_left.1 hVW hzV hzW
     · exact disjoint_left.2 fun z hzU ⟨_, hzU'⟩ ↦ interior_subset (mem_iInter₂.1 hzU' U hU) hzU
 
-/-- If `X` is an infinite Hausdorff topological space, then there exists a topological embedding
+/--
+If `X` is an infinite Hausdorff topological space, then there exists a topological embedding
 `f : ℕ → X`.
 
-Note: this theorem is true for an infinite KC-space but the proof in that case is different. -/
+Note: this theorem is true for an infinite KC-space but the proof in that case is different.
+-/
 theorem exists_topology_isEmbedding_nat : ∃ f : ℕ → X, IsEmbedding f := by
   rcases exists_seq_infinite_isOpen_pairwise_disjoint X with ⟨U, hUi, hUo, hd⟩
   choose f hf using fun n ↦ (hUi n).nonempty

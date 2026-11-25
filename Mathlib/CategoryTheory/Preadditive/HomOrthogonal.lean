@@ -10,6 +10,9 @@ public import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
 
 import Mathlib.CategoryTheory.Preadditive.Biproducts
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Hom orthogonal families.
 
@@ -29,6 +32,7 @@ If every object in the hom orthogonal family has an endomorphism ring with invar
 or otherwise if each endomorphism ring is commutative),
 then decompositions of an object as a biproduct of the family have uniquely defined multiplicities.
 We state this as:
+
 ```
 theorem HomOrthogonal.equiv_of_iso (o : HomOrthogonal s) {f : α → ι} {g : β → ι}
     (i : (⨁ fun a => s (f a)) ≅ ⨁ fun b => s (g b)) : ∃ e : α ≃ β, ∀ a, g (e a) = f a
@@ -48,10 +52,12 @@ namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C]
 
-/-- A family of objects is "hom orthogonal" if
+/--
+A family of objects is "hom orthogonal" if
 there is at most one morphism between distinct objects.
 
-(In a category with zero morphisms, that must be the zero morphism.) -/
+(In a category with zero morphisms, that must be the zero morphism.)
+-/
 def HomOrthogonal {ι : Type*} (s : ι → C) : Prop :=
   Pairwise fun i j => Subsingleton (s i ⟶ s j)
 

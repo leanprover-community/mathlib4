@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Yoneda
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `IsRepresentedBy` predicate
 
@@ -16,9 +19,9 @@ by `x` is an isomorphism.
 
 For other declarations expressing a functor is representable, see also:
 
-- `CategoryTheory.Functor.RepresentableBy`:
+* `CategoryTheory.Functor.RepresentableBy`:
   Structure bundling an explicit natural isomorphism `yoneda.obj X ⟶ F`.
-- `CategoryTheory.Functor.IsRepresentable`:
+* `CategoryTheory.Functor.IsRepresentable`:
   Predicate asserting the existence of a representing object.
 
 The relations to these other notions are given as
@@ -27,7 +30,7 @@ The relations to these other notions are given as
 
 ## TODOs
 
-- Dualize to `IsCorepresentedBy`.
+* Dualize to `IsCorepresentedBy`.
 -/
 
 @[expose] public section

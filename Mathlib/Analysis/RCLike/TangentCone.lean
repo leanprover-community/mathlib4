@@ -9,7 +9,11 @@ public import Mathlib.Analysis.Calculus.TangentCone.Real
 public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Topology.Instances.RealVectorSpace
 
-/-! # Relationships between unique differentiability over `ℝ` and `ℂ`
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Relationships between unique differentiability over `ℝ` and `ℂ`
 
 A set of unique differentiability for `ℝ` is also a set of unique differentiability for `ℂ`
 (or for a general field satisfying `IsRCLikeNormedField 𝕜`).

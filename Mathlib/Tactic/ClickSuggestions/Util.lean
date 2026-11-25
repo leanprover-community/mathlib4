@@ -16,9 +16,10 @@ public import Mathlib.Tactic.GRewrite
 public import Mathlib.Tactic.NthRewrite
 public import Mathlib.Tactic.SimpRw
 
-/-!
-# Various utilities used in `#click_suggestions`
--/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-! # Various utilities used in `#click_suggestions` -/
 
 public meta section
 
@@ -74,7 +75,8 @@ def formatToHtmlWithDoc (fmt : Format) (n : Name) : MetaM ProofWidgets.Html := d
   return jsx%{<InteractiveCode fmt={← tagCodeInfos ctx infos tt} />}
 
 
-/-- Pretty print a tactic with its docstring as hover info.
+/--
+Pretty print a tactic with its docstring as hover info.
 
 I would love to print `tac` with another colour, e.g. the keyword highlighting used by the editor,
 but I have no idea how to do this.
@@ -424,7 +426,8 @@ def kabstractFindsPositions (e p : Expr) (targetPos : SubExpr.Pos) : MetaM Bool 
   catch _ =>
     return false
 
-/-- Determine which metavariables count as "unhelpful", given the old and new metavariables.
+/--
+Determine which metavariables count as "unhelpful", given the old and new metavariables.
 This is used in suggestions of e.g. `apply`, to filter out suggestions with unhelpful metavariables.
 
 A metavariable is unhelpful if it was freshly introduced, and is not used in the assignment

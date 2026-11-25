@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
 public import Mathlib.Algebra.Order.Star.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Strictly positive elements of an algebra
 
@@ -24,15 +27,17 @@ Thus, it is best to avoid unfolding the definition and only use the API provided
 
 ## TODO
 
-+ Generalize the definition to non-unital algebras.
+* Generalize the definition to non-unital algebras.
 -/
 
 @[expose] public section
 
-/-- An element of an ordered algebra is *strictly positive* if it is nonnegative and invertible.
+/--
+An element of an ordered algebra is _strictly positive_ if it is nonnegative and invertible.
 
 NOTE: This definition will be generalized to the non-unital case in the future; do not unfold
-the definition and use the API provided instead to avoid breakage when the refactor happens. -/
+the definition and use the API provided instead to avoid breakage when the refactor happens.
+-/
 def IsStrictlyPositive {A : Type*} [LE A] [Monoid A] [Zero A] (a : A) : Prop :=
   0 ≤ a ∧ IsUnit a
 

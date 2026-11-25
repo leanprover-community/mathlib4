@@ -8,8 +8,10 @@ module
 public import Mathlib.Algebra.Group.IsApply
 public import Mathlib.Algebra.Group.Monoid
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Powers on monoid of functions
 
 If `F` is a type of functions from `α` onto itself equipped with a monoid structure such that

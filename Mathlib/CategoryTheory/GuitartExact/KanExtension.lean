@@ -8,10 +8,14 @@ module
 public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 public import Mathlib.CategoryTheory.GuitartExact.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Guitart exact squares and Kan extensions
 
 Given a Guitart exact square `w : T ⋙ R ⟶ L ⋙ B`,
+
 ```
      T
   C₁ ⥤ C₂
@@ -20,6 +24,7 @@ L |     | R
   C₃ ⥤ C₄
      B
 ```
+
 we show that an extension `F' : C₄ ⥤ D` of `F : C₂ ⥤ D` along `R`
 is a pointwise left Kan extension at `B.obj X₃` iff
 the composition `T ⋙ F'` is a pointwise left Kan extension at `X₃`

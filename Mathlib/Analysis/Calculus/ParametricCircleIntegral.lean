@@ -9,7 +9,11 @@ public import Mathlib.MeasureTheory.Integral.CircleIntegral
 
 import Mathlib.Analysis.Calculus.ParametricIntervalIntegral
 
-/-!  # Derivatives of parametric circle integrals
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Derivatives of parametric circle integrals
 
 In this file we restate theorems about derivatives of integrals depending on parameters for circle
 integrals `∮ z in C(c, R), F x z`. These are direct analogues of the corresponding results for

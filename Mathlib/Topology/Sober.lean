@@ -8,13 +8,16 @@ module
 public import Mathlib.Topology.Sets.Closeds
 public import Mathlib.Topology.Sets.OpenCover
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sober spaces
 
 A quasi-sober space is a topological space where every irreducible closed subset has a generic
 point.
 A sober space is a quasi-sober space where every irreducible closed subset
-has a *unique* generic point. This is if and only if the space is T0, and thus sober spaces can be
+has a _unique_ generic point. This is if and only if the space is T0, and thus sober spaces can be
 stated via `[QuasiSober α] [T0Space α]`.
 
 ## Main definition

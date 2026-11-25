@@ -10,6 +10,9 @@ public meta import Lean.Elab.Tactic.Simp
 public meta import Lean.Meta.Tactic.SplitIf
 public import Mathlib.Tactic.Core
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 Tactic to split if-then-else expressions.
 -/
@@ -136,7 +139,8 @@ private partial def splitIfsCore
     andThenOnSubgoals (splitIf1 cond hName loc) ((splitIfsCore loc hNames (cond::done)) <|>
       pure ())
 
-/-- `split_ifs` splits the main goal in two goals for every if-then-else expression it contains,
+/--
+`split_ifs` splits the main goal in two goals for every if-then-else expression it contains,
 by applying excluded middle to the condition. If the goal has the form `g (if p then x else y)`,
 `split_ifs` will result in two goals `h✝ : p ⊢ g x` and `h✝ : ¬p ⊢ g y`. If there are multiple
 if-then-else expressions, then `split_ifs` will split them all, starting with a top-most one whose

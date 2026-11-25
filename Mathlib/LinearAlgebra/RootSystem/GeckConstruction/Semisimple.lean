@@ -11,6 +11,9 @@ public import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Basic
 import Mathlib.Algebra.Lie.Weights.Linear
 import Mathlib.RingTheory.Finiteness.Nilpotent
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Geck's construction of a Lie algebra associated to a root system yields semisimple algebras
 
@@ -163,7 +166,7 @@ omit [P.IsReduced] [IsDomain R] [DecidableEq ι] in
 attribute [local instance 100] LieRing.ofAssociativeRing
 
 open LinearMap LieModule in
-/-- This is the main result of lemma 4.1 from [Geck][Geck2017]. -/
+/-- This is the main result of lemma 4.1 from \[Geck\]\[Geck2017\]. -/
 lemma trace_toEnd_eq_zero (x : lieAlgebra b) :
     trace R _ (toEnd R _ (b.support ⊕ ι → R) x) = 0 := by
   obtain ⟨x, hx⟩ := x
@@ -355,7 +358,7 @@ lemma coe_genWeightSpace_zero_eq_span_range_u :
 
 variable [P.IsReduced] [P.IsIrreducible]
 
-/-- Lemma 4.2 from [Geck][Geck2017]. -/
+/-- Lemma 4.2 from \[Geck\]\[Geck2017\]. -/
 instance instIsIrreducible [Nonempty ι] :
     LieModule.IsIrreducible K (lieAlgebra b) (b.support ⊕ ι → K) := by
   refine LieModule.IsIrreducible.mk fun U hU ↦ ?_
@@ -388,7 +391,7 @@ instance instIsIrreducible [Nonempty ι] :
   have : v b j ∉ U := fun hj ↦ by simpa [v] using apply_inr_eq_zero_of_mem_span_range_u b j (hU hj)
   contradiction
 
-/-- Lemma 4.3 from [Geck][Geck2017]. -/
+/-- Lemma 4.3 from \[Geck\]\[Geck2017\]. -/
 instance instHasTrivialRadical [IsAlgClosed K] : LieAlgebra.HasTrivialRadical K (lieAlgebra b) := by
   cases isEmpty_or_nonempty ι
   · infer_instance

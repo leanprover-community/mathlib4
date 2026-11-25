@@ -7,11 +7,14 @@ module
 
 public import Mathlib.Analysis.Analytic.ChangeOrigin
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuously polynomial functions
 
 We specialize the theory of analytic functions to the case of functions that admit a
-development given by a *finite* formal multilinear series. We call them "continuously polynomial",
+development given by a _finite_ formal multilinear series. We call them "continuously polynomial",
 which is abbreviated to `CPolynomial`. One reason to do that is that we no longer need a
 completeness assumption on the target space `F` to make the series converge, so some of the results
 are more general. The class of continuously polynomial functions includes functions defined by
@@ -31,6 +34,7 @@ for `n : ℕ`, and let `f` be a function from `E` to `F`.
 * `CPolynomialOn 𝕜 f s`: the function `f` is analytic at every point of `s`.
 
 In this file, we develop the basic properties of these notions, notably:
+
 * If a function is continuously polynomial, then it is analytic, see
   `HasFiniteFPowerSeriesOnBall.hasFPowerSeriesOnBall`, `HasFiniteFPowerSeriesAt.hasFPowerSeriesAt`,
   `CPolynomialAt.analyticAt` and `CPolynomialOn.analyticOnNhd`.

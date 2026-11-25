@@ -9,6 +9,9 @@ public import Batteries.Tactic.GeneralizeProofs
 public import Mathlib.Basic.Rel
 public import Mathlib.Data.Part
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Partial functions
 
@@ -37,6 +40,7 @@ This file defines partial functions. Partial functions are like functions, excep
 ### Partial functions as relations
 
 Partial functions can be considered as relations, so we specialize some `Rel` definitions to `PFun`:
+
 * `PFun.image`: Image of a set under a partial function.
 * `PFun.ran`: Range of a partial function.
 * `PFun.preimage`: Preimage of a set under a partial function.
@@ -47,6 +51,7 @@ Partial functions can be considered as relations, so we specialize some `Rel` de
 ### `PFun α` as a monad
 
 Monad operations:
+
 * `PFun.pure`: The monad `pure` function, the constant `x` function.
 * `PFun.bind`: The monad `bind` function, pointwise `Part.bind`
 * `PFun.map`: The monad `map` function, pointwise `Part.map`.

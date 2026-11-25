@@ -7,6 +7,9 @@ module
 
 public import Mathlib.FieldTheory.Finite.GaloisField
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extensions of finite fields
 
@@ -17,7 +20,6 @@ non-unique isomorphism) extension `l` of `k` of any given degree `n > 0`.
 
 This extension is Galois with cyclic Galois group of degree `n`, and the (arithmetic) Frobenius map
 `x ↦ x ^ q` is a generator.
-
 
 ## Main definition
 

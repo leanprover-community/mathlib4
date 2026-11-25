@@ -12,6 +12,9 @@ public import Mathlib.Order.SupClosed
 
 import Mathlib.Data.Int.Cast.Pi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Measurable spaces and measurable functions
 
@@ -35,9 +38,9 @@ Galois connection induced by `f`.
 
 ## References
 
-* <https://en.wikipedia.org/wiki/Measurable_space>
-* <https://en.wikipedia.org/wiki/Sigma-algebra>
-* <https://en.wikipedia.org/wiki/Dynkin_system>
+* [https://en.wikipedia.org/wiki/Measurable\_space](https://en.wikipedia.org/wiki/Measurable_space)
+* [https://en.wikipedia.org/wiki/Sigma-algebra](https://en.wikipedia.org/wiki/Sigma-algebra)
+* [https://en.wikipedia.org/wiki/Dynkin\_system](https://en.wikipedia.org/wiki/Dynkin_system)
 
 ## Tags
 

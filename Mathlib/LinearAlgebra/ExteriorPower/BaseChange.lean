@@ -9,6 +9,9 @@ public import Mathlib.LinearAlgebra.ExteriorAlgebra.BaseChange
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.Grading
 public import Mathlib.LinearAlgebra.ExteriorPower.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Base change of exterior powers
 
@@ -31,9 +34,11 @@ namespace exteriorPower
 
 section Auxiliary
 
-/-- The alternating map `(m₁, m₂, …, mᵢ) ↦ (1 ⊗ m₁) ∧ (1 ⊗ m₂) ∧ ⋯ ∧ (1 ⊗ mᵢ)`.
+/--
+The alternating map `(m₁, m₂, …, mᵢ) ↦ (1 ⊗ m₁) ∧ (1 ⊗ m₂) ∧ ⋯ ∧ (1 ⊗ mᵢ)`.
 
-This is an auxiliary definition used only to construct `baseChangeEquivForwardAux` below. -/
+This is an auxiliary definition used only to construct `baseChangeEquivForwardAux` below.
+-/
 def baseChangeGenerator : M [⋀^Fin i]→ₗ[R] ExteriorAlgebra S (S ⊗[R] M) where
   toFun m := ExteriorAlgebra.ιMulti S i (mk R S M 1 ∘ m)
   map_update_add' _ := by simp [comp_update, map_add]

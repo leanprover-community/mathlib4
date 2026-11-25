@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Homotopy.Path
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Product of homotopies
 
@@ -21,29 +24,27 @@ of products.
 ## Definitions
 
 ### General homotopies
-- `ContinuousMap.Homotopy.pi homotopies`: Let f and g be a family of functions
+
+* `ContinuousMap.Homotopy.pi homotopies`: Let f and g be a family of functions
   indexed on I, such that for each i ∈ I, fᵢ and gᵢ are maps from A to Xᵢ.
   Let `homotopies` be a family of homotopies from fᵢ to gᵢ for each i.
   Then `Homotopy.pi homotopies` is the canonical homotopy
   from ∏ f to ∏ g, where ∏ f is the product map from A to Πi, Xᵢ,
   and similarly for ∏ g.
-
-- `ContinuousMap.HomotopyRel.pi homotopies`: Same as `ContinuousMap.Homotopy.pi`, but
+* `ContinuousMap.HomotopyRel.pi homotopies`: Same as `ContinuousMap.Homotopy.pi`, but
   all homotopies are done relative to some set S ⊆ A.
-
-- `ContinuousMap.Homotopy.prod F G` is the product of homotopies F and G,
+* `ContinuousMap.Homotopy.prod F G` is the product of homotopies F and G,
   where F is a homotopy between f₀ and f₁, G is a homotopy between g₀ and g₁.
   The result F × G is a homotopy between (f₀ × g₀) and (f₁ × g₁).
   Again, all homotopies are done relative to S.
-
-- `ContinuousMap.HomotopyRel.prod F G`: Same as `ContinuousMap.Homotopy.prod`, but
+* `ContinuousMap.HomotopyRel.prod F G`: Same as `ContinuousMap.Homotopy.prod`, but
   all homotopies are done relative to some set S ⊆ A.
 
 ### Path products
-- `Path.Homotopic.pi` The product of a family of path classes, where a path class is an equivalence
-  class of paths up to path homotopy.
 
-- `Path.Homotopic.prod` The product of two path classes.
+* `Path.Homotopic.pi` The product of a family of path classes, where a path class is an equivalence
+  class of paths up to path homotopy.
+* `Path.Homotopic.prod` The product of two path classes.
 -/
 
 @[expose] public section

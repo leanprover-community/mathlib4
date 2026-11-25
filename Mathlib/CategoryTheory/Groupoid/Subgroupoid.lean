@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Groupoid.Basic
 public import Mathlib.CategoryTheory.Groupoid.VertexGroup
 public import Mathlib.Data.Set.Lattice.Indexed
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subgroupoid
 
@@ -22,7 +25,6 @@ Also defined are:
 * the notion of normality of subgroupoids and its stability under intersection and preimage;
 * compatibility of the above with `CategoryTheory.Groupoid.vertexGroup`.
 
-
 ## Main definitions
 
 Given a type `C` with associated `groupoid C` instance.
@@ -33,7 +35,7 @@ Given a type `C` with associated `groupoid C` instance.
 * `CategoryTheory.Subgroupoid.comap` is the "preimage" map of subgroupoids along a functor.
 * `CategoryTheory.Subgroupoid.map` is the "image" map of subgroupoids along a functor _injective on
   objects_.
-* `CategoryTheory.Subgroupoid.vertexSubgroup` is the subgroup of the *vertex group* at a given
+* `CategoryTheory.Subgroupoid.vertexSubgroup` is the subgroup of the _vertex group_ at a given
   vertex `v`, assuming `v` is contained in the `CategoryTheory.Subgroupoid` (meaning, by definition,
   that the arrow `𝟙 v` is contained in the subgroupoid).
 

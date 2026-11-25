@@ -8,6 +8,9 @@ module
 public meta import Lean.Meta.DiscrTree
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Discrimination-tree-indexed environment extensions
 
@@ -58,7 +61,8 @@ variable {α : Type}
 /-- Return the declaration values whose `DiscrTree` keys match `e`. -/
 def State.getMatch (state : State α) (e : Expr) : MetaM (Array α) := state.tree.getMatch e
 
-/-- When the current module registers an attribute, record for `shake` that modules importing
+/--
+When the current module registers an attribute, record for `shake` that modules importing
 the current one should continue to do so.
 
 `kind` indicates the scope at which the attribute is registered.
@@ -87,10 +91,12 @@ def initializeEnvExt (typeName : Name)
       { tree := insert kss ext state.tree }
   }
 
-/-- Register `entry` in `ext`, recording the current module as one `shake` should preserve.
+/--
+Register `entry` in `ext`, recording the current module as one `shake` should preserve.
 
 Prefer this over `ScopedEnvExtension.add` when adding an entry from an attribute handler, so that
-the registration and the `shake` bookkeeping cannot drift apart. -/
+the registration and the `shake` bookkeeping cannot drift apart.
+-/
 def EnvExt.register (ext : EnvExt α) (entry : Entry × α) (kind : AttributeKind) :
     CoreM Unit := do
   ext.add entry kind

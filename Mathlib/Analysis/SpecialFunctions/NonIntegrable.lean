@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Non-integrable functions
 
@@ -22,14 +25,11 @@ latter lemma to prove that the function `fun x => x⁻¹` is integrable on `a..b
 * `not_intervalIntegrable_of_tendsto_norm_atTop_of_deriv_isBigO_punctured`: if `f` tends to infinity
   along `𝓝[≠] c` and `f' = O(g)` along the same filter, then `g` is not interval integrable on any
   nontrivial integral `a..b`, `c ∈ [a, b]`.
-
 * `not_intervalIntegrable_of_tendsto_norm_atTop_of_deriv_isBigO_filter`: a version of
   `not_intervalIntegrable_of_tendsto_norm_atTop_of_deriv_isBigO_punctured` that works for one-sided
   neighborhoods;
-
 * `not_intervalIntegrable_of_sub_inv_isBigO_punctured`: if `1 / (x - c) = O(f)` as `x → c`, `x ≠ c`,
   then `f` is not interval integrable on any nontrivial interval `a..b`, `c ∈ [a, b]`;
-
 * `intervalIntegrable_sub_inv_iff`, `intervalIntegrable_inv_iff`: integrability conditions for
   `(x - c)⁻¹` and `x⁻¹`.
 

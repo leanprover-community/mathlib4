@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The opposite category of an enriched category
 
@@ -15,6 +18,7 @@ When a monoidal category `V` is braided, we may define the opposite `V`-category
 
 This file constructs the opposite `V`-category as an instance on the type `Cᵒᵖ` and constructs an
 equivalence between
+
 * `ForgetEnrichment V (Cᵒᵖ)`, the underlying category of the `V`-category `Cᵒᵖ`; and
 * `(ForgetEnrichment V C)ᵒᵖ`, the opposite category of the underlying category of `C`.
 

@@ -10,6 +10,9 @@ public import Mathlib.Tactic.Attr.Core
 
 import Mathlib.Basic.Nontrivial.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Matrices
 
@@ -74,7 +77,8 @@ theorem ext : (∀ i j, M i j = N i j) → M = N :=
 
 end Ext
 
-/-- Cast a function into a matrix.
+/--
+Cast a function into a matrix.
 
 The two sides of the equivalence are definitionally equal types. We want to use an explicit cast
 to distinguish the types because `Matrix` has different instances to pi types (such as `Pi.mul`,
@@ -85,6 +89,7 @@ purpose of this approach is to ensure that terms of the form `(fun i j ↦ _) * 
 appear, as the type of `*` can be misleading.
 
 This is available in bundled forms as:
+
 * `Matrix.ofAddEquiv`
 * `Matrix.ofLinearEquiv`
 -/
@@ -99,9 +104,11 @@ theorem of_apply (f : m → n → α) (i j) : of f i j = f i j :=
 theorem of_symm_apply (f : Matrix m n α) (i j) : of.symm f i j = f i j :=
   rfl
 
-/-- `M.map f` is the matrix obtained by applying `f` to each entry of the matrix `M`.
+/--
+`M.map f` is the matrix obtained by applying `f` to each entry of the matrix `M`.
 
 This is available in bundled forms as:
+
 * `AddMonoidHom.mapMatrix`
 * `LinearMap.mapMatrix`
 * `LinearMap.mapMatrixLinear`
@@ -141,9 +148,11 @@ theorem map_injective {f : α → β} (hf : Function.Injective f) :
 theorem map_involutive {f : α → α} (hf : Function.Involutive f) :
     Function.Involutive fun M : Matrix m n α ↦ M.map f := by intro; simp [hf]
 
-/-- The transpose of a matrix.
+/--
+The transpose of a matrix.
 
 This is available in bundled forms as:
+
 * `Matrix.transposeAddEquiv`
 * `Matrix.transposeLinearEquiv`
 * `Matrix.transposeRingEquiv`
@@ -512,10 +521,12 @@ theorem submatrix_injective {r : l → m} {c : o → n} (hr : r.Surjective) (hc 
     obtain ⟨j', rfl⟩ := hc j
     exact congr($hAB i' j')
 
-/-- The natural map that reindexes a matrix's rows and columns with equivalent types is an
+/--
+The natural map that reindexes a matrix's rows and columns with equivalent types is an
 equivalence.
 
 This is available in bundled forms as:
+
 * `Matrix.reindexAddEquiv`
 * `Matrix.reindexLinearEquiv`
 * `Matrix.reindexRingEquiv`
@@ -593,7 +604,8 @@ abbrev subDownLeft {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
 
 section RowCol
 
-/-- For an `m × n` `α`-matrix `A`, `A.row i` is the `i`th row of `A` as a vector in `n → α`.
+/--
+For an `m × n` `α`-matrix `A`, `A.row i` is the `i`th row of `A` as a vector in `n → α`.
 `A.row` is defeq to `A`, but explicitly refers to the 'row function' of `A`
 while avoiding defeq abuse and noisy eta-expansions,
 such as in expressions like `Set.Injective A.row` and `Set.range A.row`.
@@ -601,13 +613,15 @@ such as in expressions like `Set.Injective A.row` and `Set.range A.row`.
 this is now called `Matrix.replicateRow`)
 
 This is available in bundled forms as:
+
 * `Matrix.rowEquiv`
 * `Matrix.rowAddEquiv`
 * `Matrix.rowLinearEquiv`
 -/
 def row (A : Matrix m n α) : m → n → α := A
 
-/-- For an `m × n` `α`-matrix `A`, `A.col j` is the `j`th column of `A` as a vector in `m → α`.
+/--
+For an `m × n` `α`-matrix `A`, `A.col j` is the `j`th column of `A` as a vector in `m → α`.
 `A.col` is defeq to `Aᵀ`, but refers to the 'column function' of `A`
 while avoiding defeq abuse and noisy eta-expansions
 (and without the simplifier unfolding transposes) in expressions like `Set.Injective A.col`
@@ -616,6 +630,7 @@ and `Set.range A.col`.
 this is now called `Matrix.replicateCol`)
 
 This is available in bundled forms as:
+
 * `Matrix.colEquiv`
 * `Matrix.colAddEquiv`
 * `Matrix.colLinearEquiv`

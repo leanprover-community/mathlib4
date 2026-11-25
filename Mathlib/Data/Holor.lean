@@ -9,6 +9,9 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Data.Nat.Find
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic properties of holors
 
@@ -26,11 +29,13 @@ rank at most 1" if it is a tensor product of one-dimensional holors.
 The CP rank of a holor `x` is the smallest N such that `x` is the sum
 of N holors of rank at most 1.
 
-Based on the tensor library found in <https://www.isa-afp.org/entries/Deep_Learning.html>
+Based on the tensor library found in [
+https://www.isa-afp.org/entries/Deep\_Learning.html](https://www.isa-afp.org/entries/Deep_Learning.html)
 
 ## References
 
-* <https://en.wikipedia.org/wiki/Tensor_rank_decomposition>
+* [
+  https://en.wikipedia.org/wiki/Tensor\_rank\_decomposition](https://en.wikipedia.org/wiki/Tensor_rank_decomposition)
 -/
 
 @[expose] public section

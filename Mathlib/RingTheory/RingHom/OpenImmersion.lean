@@ -7,7 +7,11 @@ module
 
 public import Mathlib.RingTheory.LocalProperties.Basic
 
-/-! # Standard Open Immersion
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Standard Open Immersion
 
 We define the property `RingHom.IsStandardOpenImmersion` on ring homomorphisms: it means that the
 morphism is a localization map away from some element. We also define the equivalent

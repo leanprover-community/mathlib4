@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.GradedMulAction
 public import Mathlib.RingTheory.GradedAlgebra.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Homogeneous submodules of a graded module
 
@@ -17,13 +20,14 @@ operations on them.
 ## Main definitions
 
 For any `p : Submodule A M`:
+
 * `Submodule.IsHomogeneous ℳ p`: The property that a submodule is closed under `GradedModule.proj`.
 * `HomogeneousSubmodule 𝒜 ℳ`: The structure extending submodules which satisfy
   `Submodule.IsHomogeneous`.
 
 ## Implementation notes
 
-The **notion** of homogeneous submodule does not rely on a graded ring, only a decomposition of the
+The *notion* of homogeneous submodule does not rely on a graded ring, only a decomposition of the
 module. However, most interesting properties of homogeneous submodules do rely on the base ring
 being a graded ring. For technical reasons, we make `HomogeneousSubmodule` depend on a graded ring.
 For example, if the definition of a homogeneous submodule does not depend on a graded ring, the

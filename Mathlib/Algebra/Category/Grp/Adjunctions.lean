@@ -11,6 +11,9 @@ public import Mathlib.GroupTheory.FreeAbelianGroup
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Limits.Types.Coproducts
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Adjunctions regarding the category of (abelian) groups
 
@@ -89,7 +92,8 @@ instance : free.{u}.IsLeftAdjoint :=
 instance : (forget AddCommGrpCat.{u}).IsRightAdjoint :=
   ⟨_, ⟨adj⟩⟩
 
-/-- As an example, we now give a high-powered proof that
+/--
+As an example, we now give a high-powered proof that
 the monomorphisms in `AddCommGroup` are just the injective functions.
 
 (This proof works in all universes.)

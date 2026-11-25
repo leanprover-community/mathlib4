@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.VectorMeasure.Operations
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Order structure on vector measures
 
@@ -45,9 +48,11 @@ section
 
 variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [PartialOrder M]
 
-/-- Vector measures over a partially ordered monoid is partially ordered.
+/--
+Vector measures over a partially ordered monoid is partially ordered.
 
-This definition is consistent with `Measure.instPartialOrder`. -/
+This definition is consistent with `Measure.instPartialOrder`.
+-/
 instance instPartialOrder : PartialOrder (VectorMeasure α M) where
   le v w := ∀ i, MeasurableSet i → v i ≤ w i
   le_refl _ _ _ := le_rfl

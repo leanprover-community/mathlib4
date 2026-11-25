@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.PolynomialAlgebra
 
 import Mathlib.RingTheory.Localization.Ideal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Localization of algebra maps
 
@@ -175,10 +178,12 @@ end Algebra
 namespace Polynomial
 
 attribute [local instance] Polynomial.algebra in
-/-- If `A` is the localization of `R` at a submonoid `S`, then `A[X]` is the localization of
+/--
+If `A` is the localization of `R` at a submonoid `S`, then `A[X]` is the localization of
 `R[X]` at `S.map Polynomial.C`.
 
-See also `MvPolynomial.isLocalization` for the multivariate case. -/
+See also `MvPolynomial.isLocalization` for the multivariate case.
+-/
 lemma isLocalization {R} [CommSemiring R] (S : Submonoid R) (A) [CommSemiring A] [Algebra R A]
     [IsLocalization S A] : IsLocalization (S.map C) A[X] :=
   isLocalizedModule_iff_isLocalization.mp <| (isLocalizedModule_iff_isBaseChange S A _).mpr <|

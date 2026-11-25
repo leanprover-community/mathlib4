@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Nat.Factorial.BigOperators
 public import Mathlib.Data.ZMod.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Facts about factorials in ZMod
 
@@ -21,6 +24,7 @@ We collect facts about factorials in context of modular arithmetic.
 ## See also
 
 For the prime case and involving `factorial` rather than `descFactorial`, see Wilson's theorem:
+
 * `Nat.prime_iff_fac_equiv_neg_one`
 -/
 

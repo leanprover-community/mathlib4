@@ -11,7 +11,11 @@ public import Mathlib.GroupTheory.GroupAction.Embedding
 public import Mathlib.GroupTheory.GroupAction.SubMulAction
 public import Mathlib.SetTheory.Cardinal.Finite
 
-/-! # The SubMulAction of the stabilizer of a point on the complement of that point
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# The SubMulAction of the stabilizer of a point on the complement of that point
 
 When a group `G` acts on a type `α`, the stabilizer of a point `a : α`
 acts naturally on the complement of that point.
@@ -27,7 +31,6 @@ We define equivariant maps that relate various of these `SubMulAction`s
 and permit to manipulate them in a relatively smooth way.
 
 * `SubMulAction.ofStabilizer a` : the action of `stabilizer G a` on `{a}ᶜ`
-
 * `SubMulAction.ENat_card_ofStabilizer_add_one_eq` and `SubMulAction.nat_card_ofStabilizer_eq`
   compute the cardinality of the `carrier` of that action.
 

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Continuous
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Linear maps on inner product spaces
 
@@ -14,9 +17,9 @@ This file studies linear maps on inner product spaces.
 
 ## Main results
 
-- We define `innerSL` as the inner product bundled as a continuous sesquilinear map
-- We prove a general polarization identity for linear maps (`inner_map_polarization`)
-- We show that a linear map preserving the inner product is an isometry
+* We define `innerSL` as the inner product bundled as a continuous sesquilinear map
+* We prove a general polarization identity for linear maps (`inner_map_polarization`)
+* We show that a linear map preserving the inner product is an isometry
   (`LinearMap.isometryOfInner`) and conversely an isometry preserves the inner product
   (`LinearIsometry.inner_map_map`).
 
@@ -293,12 +296,14 @@ variable {𝕜 E F G : Type*} [RCLike 𝕜] [SeminormedAddCommGroup E] [NormedSp
 open ContinuousLinearMap
 
 variable (𝕜) in
-/-- A rank-one operator on an inner product space is given by `x ↦ y ↦ z ↦ ⟪y, z⟫ • x`.
+/--
+A rank-one operator on an inner product space is given by `x ↦ y ↦ z ↦ ⟪y, z⟫ • x`.
 
 This is also sometimes referred to as an outer product of vectors on a Hilbert space.
 This corresponds to the matrix outer product `Matrix.vecMulVec`, see
 `InnerProductSpace.toMatrix_rankOne` and `InnerProductSpace.symm_toEuclideanLin_rankOne` in
-`Mathlib/Analysis/InnerProductSpace/PiL2.lean`. -/
+`Mathlib/Analysis/InnerProductSpace/PiL2.lean`.
+-/
 noncomputable def rankOne : E →L[𝕜] F →L⋆[𝕜] F →L[𝕜] E :=
   .flip <| .comp (StrongDual.smulRightL 𝕜 _ _) (innerSL 𝕜)
 

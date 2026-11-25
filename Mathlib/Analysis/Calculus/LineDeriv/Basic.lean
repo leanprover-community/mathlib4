@@ -11,6 +11,9 @@ public import Mathlib.Analysis.Calculus.Deriv.Slope
 import Mathlib.Analysis.Calculus.Deriv.Comp
 import Mathlib.Analysis.Calculus.Deriv.Pow
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Line derivatives
 
@@ -44,6 +47,7 @@ and develop about them a basic API inspired by the one for the Fréchet derivati
 
 We depart from the Fréchet derivative in two places, as the dependence of the following predicates
 on the direction would make them barely usable:
+
 * We do not define an analogue of the predicate `UniqueDiffOn`;
 * We do not define `LineDifferentiableOn` nor `LineDifferentiable`.
 -/
@@ -92,7 +96,8 @@ exists `f'` such that `f (x + t v) = f x + t • f' + o (t)` when `t` tends to `
 def LineDifferentiableAt (f : E → F) (x : E) (v : E) : Prop :=
   DifferentiableAt 𝕜 (fun t ↦ f (x + t • v)) (0 : 𝕜)
 
-/-- Line derivative of `f` at the point `x` in the direction `v` within the set `s`, if it exists.
+/--
+Line derivative of `f` at the point `x` in the direction `v` within the set `s`, if it exists.
 Zero otherwise.
 
 If the line derivative exists (i.e., `∃ f', HasLineDerivWithinAt 𝕜 f f' s x v`), then
@@ -101,7 +106,8 @@ If the line derivative exists (i.e., `∃ f', HasLineDerivWithinAt 𝕜 f f' s x
 def lineDerivWithin (f : E → F) (s : Set E) (x : E) (v : E) : F :=
   derivWithin (fun t ↦ f (x + t • v)) ((fun t ↦ x + t • v) ⁻¹' s) (0 : 𝕜)
 
-/-- Line derivative of `f` at the point `x` in the direction `v`, if it exists.  Zero otherwise.
+/--
+Line derivative of `f` at the point `x` in the direction `v`, if it exists.  Zero otherwise.
 
 If the line derivative exists (i.e., `∃ f', HasLineDerivAt 𝕜 f f' x v`), then
 `f (x + t v) = f x + t lineDeriv 𝕜 f x v + o (t)` when `t` tends to `0`.
@@ -277,7 +283,8 @@ lemma HasFDerivAt.hasLineDerivAt (hf : HasFDerivAt f L x) (v : E) :
   rw [← hasLineDerivWithinAt_univ]
   exact hf.hasFDerivWithinAt.hasLineDerivWithinAt v
 
-/-- A local, vector-valued version of Euler's theorem on homogeneous functions.
+/--
+A local, vector-valued version of Euler's theorem on homogeneous functions.
 
 If `f (t • x) = w t • f x` for `t` in a neighborhood of `1`, then the derivative of `f` at
 `x`, applied to `x`, is `w' • f x`, where `w'` is the derivative of `w` at `1`.
@@ -291,7 +298,8 @@ theorem HasFDerivAt.apply_self_eq_smul_of_eventuallyEq {w : 𝕜 → 𝕜} {w' :
     simpa
   exact (hfx.congr_of_eventuallyEq hhom.symm).unique (hw.smul_const (f x))
 
-/-- A vector-valued version of Euler's theorem for a homogeneous function.
+/--
+A vector-valued version of Euler's theorem for a homogeneous function.
 
 If `f (t • y) = w t • f y` for all scalars `t` and points `y`, then the derivative of `f` at
 `x`, applied to `x`, is `w' • f x`, where `w'` is the derivative of `w` at `1`.
@@ -301,7 +309,8 @@ theorem HasFDerivAt.apply_self_eq_smul_of_homogeneous {w : 𝕜 → 𝕜} {w' : 
     (hhom : ∀ t y, f (t • y) = w t • f y) : L x = w' • f x :=
   hf.apply_self_eq_smul_of_eventuallyEq hw <| .of_forall fun t ↦ hhom t x
 
-/-- A vector-valued version of Euler's theorem for a homogeneous function of natural degree.
+/--
+A vector-valued version of Euler's theorem for a homogeneous function of natural degree.
 
 If `f (t • y) = t ^ k • f y` for all scalars `t` and points `y`, then the derivative of `f` at
 `x`, applied to `x`, is `k • f x`.

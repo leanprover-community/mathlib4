@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Set.Lattice.Bounded
 public import Mathlib.Order.Preorder.Chain
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Hausdorff's maximality principle
 
@@ -100,10 +103,12 @@ lemma ChainClosure.isChain (hc : ChainClosure r c) : IsChain r c := by
       ((hs _ ht₁).total <| hs _ ht₂).elim (fun ht => h t₂ ht₂ (ht hc₁) hc₂ hneq) fun ht =>
         h t₁ ht₁ hc₁ (ht hc₂) hneq
 
-/-- **Hausdorff's maximality principle**
+/--
+*Hausdorff's maximality principle*
 
 There exists a maximal totally ordered set of `α`.
-Note that we do not require `α` to be partially ordered by `r`. -/
+Note that we do not require `α` to be partially ordered by `r`.
+-/
 theorem maxChain_spec : IsMaxChain r (maxChain r) :=
   by_contradiction fun h =>
     let ⟨_, H⟩ := chainClosure_maxChain.isChain.superChain_succChain h

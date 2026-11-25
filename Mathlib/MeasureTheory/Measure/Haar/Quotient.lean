@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Group.FundamentalDomain
 public import Mathlib.MeasureTheory.Integral.DominatedConvergence
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Haar quotient measure
 
@@ -25,7 +28,6 @@ right-invariant measure.
 
 * `MeasureTheory.QuotientMeasureEqMeasurePreimage.mulInvariantMeasure_quotient`: If `μ` satisfies
   `QuotientMeasureEqMeasurePreimage`, then `μ` is a left-invariant measure.
-
 * `MeasureTheory.leftInvariantIsQuotientMeasureEqMeasurePreimage`: If `μ` is left-invariant, and
   the action of `Γ` on `G` has finite covolume, and `μ` satisfies the right scaling condition, then
   it satisfies `QuotientMeasureEqMeasurePreimage`. This is a converse to
@@ -40,7 +42,7 @@ is equipped with a sigma-finite Haar measure.
   `MeasureTheory.QuotientMeasureEqMeasurePreimage.mulInvariantMeasure_quotient`.
 
 Note that a group `G` with Haar measure that is both left and right invariant is called
-**unimodular**.
+*unimodular*.
 -/
 
 public section

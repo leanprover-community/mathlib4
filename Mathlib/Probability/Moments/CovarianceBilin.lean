@@ -12,6 +12,9 @@ public import Mathlib.Probability.Moments.CovarianceBilinDual
 
 import Mathlib.Probability.Moments.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Covariance in Hilbert spaces
 
@@ -182,14 +185,16 @@ section covarianceOperator
 
 variable [CompleteSpace E]
 
-/-- The covariance operator of the measure `μ`. This is the bounded operator `F : E →L[ℝ] E`
+/--
+The covariance operator of the measure `μ`. This is the bounded operator `F : E →L[ℝ] E`
 associated to the continuous bilinear form `B : E →L[ℝ] E →L[ℝ] ℝ` such that
 `B x y = ∫ z, ⟪x, z⟫ * ⟪y, z⟫ ∂μ` (see `covarianceOperator_inner`). Namely we have
 `B x y = ⟪F x, y⟫`.
 
 Note that the bilinear form `B` is the _uncentered_ covariance bilinear form associated to the
 measure `µ`, which is not to be confused with the covariance bilinear form defined earlier in this
-file as `covarianceBilin μ`. -/
+file as `covarianceBilin μ`.
+-/
 noncomputable def covarianceOperator (μ : Measure E) : E →L[ℝ] E :=
   continuousLinearMapOfBilin <| ContinuousLinearMap.bilinearComp (uncenteredCovarianceBilinDual μ)
     (toDualMap ℝ E).toContinuousLinearMap (toDualMap ℝ E).toContinuousLinearMap

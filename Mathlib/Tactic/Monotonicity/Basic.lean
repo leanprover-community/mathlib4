@@ -8,7 +8,11 @@ module
 public meta import Lean.Elab.Tactic.SolveByElim
 public import Mathlib.Tactic.Monotonicity.Attr
 
-/-! # Monotonicity tactic
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Monotonicity tactic
 
 The tactic `mono` applies monotonicity rules (collected through the library by being tagged
 `@[mono]`).
@@ -32,6 +36,8 @@ open Tactic SolveByElim
 
 namespace Mathlib.Tactic.Monotonicity
 
+
+set_option doc.verso false
 /--
 `mono` applies monotonicity rules and local hypotheses repetitively.  For example,
 ```lean
@@ -45,6 +51,8 @@ example (x y z k : ℤ)
 syntax (name := mono) "mono" "*"? (ppSpace mono.side)?
   (" with " (colGt term),+)? (" using " (colGt simpArg),+)? : tactic
 
+
+set_option doc.verso true
 elab_rules : tactic
 | `(tactic| mono $[*]? $[$h:mono.side]? $[ with%$w $a:term,*]? $[ using%$u $s,*]? ) => do
   let msg (s : String) := s ++ " syntax is not yet supported in 'mono'"

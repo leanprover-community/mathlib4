@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.MvPolynomial.Equiv
 public import Mathlib.RingTheory.TensorProduct.MonoidAlgebra
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tensor Product of (multivariate) polynomial rings
 
@@ -21,7 +24,6 @@ Let `Semiring R`, `Algebra R S` and `Module R N`.
   `MvPolynomial σ R ⊗[R] N ≃ₗ[R] (σ →₀ ℕ) →₀ N`
   such that `MvPolynomial.scalarRTensor (p ⊗ₜ[R] n) d = coeff d p • n`
   for `p : MvPolynomial σ R`, `n : N` and `d : σ →₀ ℕ`, by
-
 * `MvPolynomial.rTensorAlgHom`, the algebra morphism from the tensor product
   of a polynomial algebra by an algebra to a polynomial algebra
 * `MvPolynomial.rTensorAlgEquiv`, `MvPolynomial.scalarRTensorAlgEquiv`,

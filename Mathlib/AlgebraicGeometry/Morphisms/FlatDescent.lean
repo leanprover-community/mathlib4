@@ -12,20 +12,23 @@ public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyOpen
 
 import Mathlib.RingTheory.Flat.FaithfullyFlat.Descent
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of morphisms satisfying fpqc descent
 
 In this file we show some global properties satisfy fpqc descent.
 
-- universally closed
+* universally closed
   (`AlgebraicGeometry.descendsAlong_universallyClosed_surjective_inf_flat_inf_quasicompact`)
-- universally open
+* universally open
   (`AlgebraicGeometry.descendsAlong_universallyOpen_surjective_inf_flat_inf_quasicompact`)
-- universally injective
+* universally injective
   (`AlgebraicGeometry.descendsAlong_universallyInjective_surjective_inf_flat_inf_quasicompact`)
-- being an isomorphism
+* being an isomorphism
   (`AlgebraicGeometry.descendsAlong_isomorphisms_surjective_inf_flat_inf_quasicompact`)
-- being an open immersion
+* being an open immersion
   (`AlgebraicGeometry.descendsAlong_isOpenImmersion_surjective_inf_flat_inf_quasicompact`)
 -/
 

@@ -8,9 +8,10 @@ module
 public import Mathlib.Data.Finset.Sort
 public import Mathlib.Logic.Equiv.Multiset
 
-/-!
-# `Encodable` and `Denumerable` instances for `Finset`
--/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-! # `Encodable` and `Denumerable` instances for `Finset` -/
 
 @[expose] public section
 
@@ -104,8 +105,10 @@ theorem raise'_sorted (l n) : List.SortedLT (raise' l n) := (isChain_raise' _ _)
 def raise'Finset (l : List ℕ) (n : ℕ) : Finset ℕ :=
   ⟨raise' l n, (raise'_sorted _ _).nodup⟩
 
-/-- If `α` is denumerable, then so is `Finset α`. Warning: this is *not* the same encoding as used
-in `Finset.encodable`. -/
+/--
+If `α` is denumerable, then so is `Finset α`. Warning: this is _not_ the same encoding as used
+in `Finset.encodable`.
+-/
 instance finset : Denumerable (Finset α) :=
   mk'
     ⟨fun s : Finset α => encode <| lower' (s.map (eqv α).toEmbedding).sort 0, fun n =>

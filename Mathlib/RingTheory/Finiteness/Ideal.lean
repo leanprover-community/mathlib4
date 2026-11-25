@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.Ideal.Maps
 
 import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finitely generated ideals
 
@@ -22,9 +25,11 @@ namespace Ideal
 
 variable {R : Type*} {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
 
-/-- The image of a finitely generated ideal is finitely generated.
+/--
+The image of a finitely generated ideal is finitely generated.
 
-This is the `Ideal` version of `Submodule.FG.map`. -/
+This is the `Ideal` version of `Submodule.FG.map`.
+-/
 theorem FG.map {R S : Type*} [Semiring R] [Semiring S] {I : Ideal R} (h : I.FG) (f : R →+* S) :
     (I.map f).FG := by
   classical

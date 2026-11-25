@@ -8,12 +8,16 @@ module
 public import Mathlib.RingTheory.Bialgebra.TensorProduct
 public import Mathlib.RingTheory.Coalgebra.Convolution
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Convolution product on bialgebra homs
 
 This file constructs the ring structure on algebra homs `C → A` where `C` is a bialgebra and `A` an
 algebra, and also the ring structure on bialgebra homs `C → A` where `C` and `A` are bialgebras.
 Both multiplications are given by
+
 ```
          |
          μ
@@ -23,6 +27,7 @@ f * g = f g
          δ
          |
 ```
+
 diagrammatically, where `μ` stands for multiplication and `δ` for comultiplication.
 -/
 

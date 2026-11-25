@@ -13,6 +13,9 @@ public import Mathlib.Topology.Algebra.Valued.ValuedField
 import Mathlib.Algebra.Order.Hom.Units
 import Mathlib.Topology.Algebra.ValuativeRel.ValuativeTopology
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ring topologised by a valuation
 
@@ -28,9 +31,10 @@ The `WithVal` type synonym is used to define the completion of `R` with respect 
 fractions of a Dedekind domain with respect to a height-one prime ideal of the domain.
 
 ## Main definitions
-- `WithVal` : type synonym for a ring equipped with the topology coming from a valuation.
-- `WithVal.equiv` : the canonical ring equivalence between `WithValuation v` and `R`.
-- `Valuation.Completion` : the uniform space completion of a field `K` according to the
+
+* `WithVal` : type synonym for a ring equipped with the topology coming from a valuation.
+* `WithVal.equiv` : the canonical ring equivalence between `WithValuation v` and `R`.
+* `Valuation.Completion` : the uniform space completion of a field `K` according to the
   uniform structure defined by the specified valuation.
 -/
 

@@ -8,12 +8,15 @@ module
 public import Mathlib.RingTheory.Noetherian.Defs
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Ideal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Noetherian domains have unique factorization
 
 ## Main results
 
-- IsNoetherianRing.wfDvdMonoid
+* IsNoetherianRing.wfDvdMonoid
 -/
 
 public section

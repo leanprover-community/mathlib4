@@ -10,10 +10,13 @@ public import Mathlib.Topology.Sheaves.SheafCondition.UniqueGluing
 
 import Mathlib.CategoryTheory.Limits.ConcreteCategory.Filtered
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Stalks
 
-For a presheaf `F` on a topological space `X`, valued in some category `C`, the *stalk* of `F`
+For a presheaf `F` on a topological space `X`, valued in some category `C`, the _stalk_ of `F`
 at the point `x : X` is defined as the colimit of the composition of the inclusion of categories
 `(OpenNhds x)ᵒᵖ ⥤ (Opens X)ᵒᵖ` and the functor `F : (Opens X)ᵒᵖ ⥤ C`.
 For an open neighborhood `U` of `x`, we define the map `F.germ x : F.obj (op U) ⟶ F.stalk x` as the
@@ -575,10 +578,12 @@ theorem mono_iff_stalk_mono {F G : Sheaf C X} (f : F ⟶ G) :
     Mono f ↔ ∀ x, Mono ((stalkFunctor C x).map f.hom) :=
   ⟨fun _ => stalk_mono_of_mono _, fun _ => mono_of_stalk_mono _⟩
 
-/-- For surjectivity, we are given an arbitrary section `t` and need to find a preimage for it.
-We claim that it suffices to find preimages *locally*. That is, for each `x : U` we construct
+/--
+For surjectivity, we are given an arbitrary section `t` and need to find a preimage for it.
+We claim that it suffices to find preimages _locally_. That is, for each `x : U` we construct
 a neighborhood `V ≤ U` and a section `s : F.obj (op V)` such that `f.app (op V) s` and `t`
-agree on `V`. -/
+agree on `V`.
+-/
 theorem app_surjective_of_injective_of_locally_surjective {F G : Sheaf C X} (f : F ⟶ G)
     (U : Opens X) (hinj : ∀ x ∈ U, Function.Injective ((stalkFunctor C x).map f.hom))
     (hsurj : ∀ (t x) (_ : x ∈ U), ∃ (V : Opens X) (_ : x ∈ V) (iVU : V ⟶ U)

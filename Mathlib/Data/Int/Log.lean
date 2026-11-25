@@ -9,6 +9,10 @@ public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.Order.Floor.Semiring
 public import Mathlib.Data.Nat.Log
 
+set_option doc.verso true
+set_option doc.verso.module false
+set_option doc.verso.suggestions false
+
 /-!
 # Integer logarithms in a field with respect to a natural base
 

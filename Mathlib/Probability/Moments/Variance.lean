@@ -10,6 +10,9 @@ public import Mathlib.Probability.Moments.Covariance
 import Mathlib.MeasureTheory.Function.LpSeminorm.Prod
 import Mathlib.Probability.Independence.Integrable
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Variance of random variables
 
@@ -26,7 +29,7 @@ We define the variance of a real-valued random variable as `Var[X] = 𝔼[(X - �
 
 * `ProbabilityTheory.variance_le_expectation_sq`: the inequality `Var[X] ≤ 𝔼[X^2]`.
 * `ProbabilityTheory.meas_ge_le_variance_div_sq`: Chebyshev's inequality, i.e.,
-      `ℙ {ω | c ≤ |X ω - 𝔼[X]|} ≤ ENNReal.ofReal (Var[X] / c ^ 2)`.
+  `ℙ {ω | c ≤ |X ω - 𝔼[X]|} ≤ ENNReal.ofReal (Var[X] / c ^ 2)`.
 * `ProbabilityTheory.meas_ge_le_evariance_div_sq`: Chebyshev's inequality formulated with
   `evariance` without requiring the random variables to be L².
 * `ProbabilityTheory.IndepFun.variance_add`: the variance of the sum of two independent
@@ -63,25 +66,33 @@ to `evariance`. -/
 @[wikidata Q175199]
 def variance : ℝ := (evariance X μ).toReal
 
-/-- The `ℝ≥0∞`-valued variance of the real-valued random variable `X` according to the measure `μ`.
+/--
+The `ℝ≥0∞`-valued variance of the real-valued random variable `X` according to the measure `μ`.
 
-This is defined as the Lebesgue integral of `(X - 𝔼[X])^2`. -/
+This is defined as the Lebesgue integral of `(X - 𝔼[X])^2`.
+-/
 scoped notation "eVar[" X "; " μ "]" => ProbabilityTheory.evariance X μ
 
-/-- The `ℝ≥0∞`-valued variance of the real-valued random variable `X` according to the volume
+/--
+The `ℝ≥0∞`-valued variance of the real-valued random variable `X` according to the volume
 measure.
 
-This is defined as the Lebesgue integral of `(X - 𝔼[X])^2`. -/
+This is defined as the Lebesgue integral of `(X - 𝔼[X])^2`.
+-/
 scoped notation "eVar[" X "]" => eVar[X; MeasureTheory.MeasureSpace.volume]
 
-/-- The `ℝ`-valued variance of the real-valued random variable `X` according to the measure `μ`.
+/--
+The `ℝ`-valued variance of the real-valued random variable `X` according to the measure `μ`.
 
-It is set to `0` if `X` has infinite variance. -/
+It is set to `0` if `X` has infinite variance.
+-/
 scoped notation "Var[" X "; " μ "]" => ProbabilityTheory.variance X μ
 
-/-- The `ℝ`-valued variance of the real-valued random variable `X` according to the volume measure.
+/--
+The `ℝ`-valued variance of the real-valued random variable `X` according to the volume measure.
 
-It is set to `0` if `X` has infinite variance. -/
+It is set to `0` if `X` has infinite variance.
+-/
 scoped notation "Var[" X "]" => Var[X; MeasureTheory.MeasureSpace.volume]
 
 theorem evariance_congr (h : X =ᵐ[μ] Y) : eVar[X; μ] = eVar[Y; μ] := by
@@ -461,10 +472,12 @@ lemma variance_sum_pi [Fintype ι] {Ω : ι → Type*} {mΩ : ∀ i, MeasurableS
   · exact fun i _ j _ hij ↦
       (iIndepFun_pi fun i ↦ (h i).aestronglyMeasurable.aemeasurable).indepFun hij
 
-/-- **The Bhatia-Davis inequality on variance**
+/--
+*The Bhatia-Davis inequality on variance*
 
 The variance of a random variable `X` satisfying `a ≤ X ≤ b` almost everywhere is at most
-`(b - 𝔼 X) * (𝔼 X - a)`. -/
+`(b - 𝔼 X) * (𝔼 X - a)`.
+-/
 lemma variance_le_sub_mul_sub [IsProbabilityMeasure μ] {a b : ℝ} {X : Ω → ℝ}
     (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) (hX : AEMeasurable X μ) :
     variance X μ ≤ (b - μ[X]) * (μ[X] - a) := by
@@ -494,10 +507,12 @@ lemma variance_le_sub_mul_sub [IsProbabilityMeasure μ] {a b : ℝ} {X : Ω → 
       linarith
     _ = (b - μ[X]) * (μ[X] - a) := by ring
 
-/-- **Popoviciu's inequality on variances**
+/--
+*Popoviciu's inequality on variances*
 
 The variance of a random variable `X` satisfying `a ≤ X ≤ b` almost everywhere is at most
-`((b - a) / 2) ^ 2`. -/
+`((b - a) / 2) ^ 2`.
+-/
 lemma variance_le_sq_of_bounded [IsProbabilityMeasure μ] {a b : ℝ} {X : Ω → ℝ}
     (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) (hX : AEMeasurable X μ) :
     variance X μ ≤ ((b - a) / 2) ^ 2 :=

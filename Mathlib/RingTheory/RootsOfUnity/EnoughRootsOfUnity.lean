@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Commutative monoids with enough roots of unity
 
@@ -19,11 +22,13 @@ the homomorphisms can then be used to separate elements of the source group.
 
 public section
 
-/-- This is a type class recording that a commutative monoid `M` contains primitive `n`th
+/--
+This is a type class recording that a commutative monoid `M` contains primitive `n`th
 roots of unity and such that the group of `n`th roots of unity is cyclic.
 
 Such monoids are suitable targets in the context of duality statements for groups
-of exponent `n`. -/
+of exponent `n`.
+-/
 class HasEnoughRootsOfUnity (M : Type*) [CommMonoid M] (n : ℕ) where
   prim : ∃ m : M, IsPrimitiveRoot m n
   cyc : IsCyclic <| rootsOfUnity n M

@@ -12,6 +12,9 @@ import Mathlib.LinearAlgebra.Matrix.Action
 import Mathlib.LinearAlgebra.Matrix.SchurComplement
 import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Symplectic Group
 
@@ -25,20 +28,20 @@ This file defines the symplectic group and proves elementary properties.
 ## Implementation Notes
 
 * `SymplecticGroup.det_eq_one`: Symplectic matrices have determinant 1. The proof strategy
-comes in two steps:
+  comes in two steps:
 
 1. Consider a symplectic matrix `M` over a local ring, we can construct a matrix of the
-form `fromBlocks 1 X 0 1` s.t. the upper-left block of `(fromBlocks 1 X 0 1) * M` is invertible.
-From this we can calculate the determinant.
-
+   form `fromBlocks 1 X 0 1` s.t. the upper-left block of `(fromBlocks 1 X 0 1) * M` is invertible.
+   From this we can calculate the determinant.
 2. For a symplectic matrix `M` over general commutative ring `R`, we note that by step 1,
-`M.det - 1 = 0` in any localization at a maximal ideal in `R`. Therefore `M.det = 1` in `R`.
+   `M.det - 1 = 0` in any localization at a maximal ideal in `R`. Therefore `M.det = 1` in `R`.
 
 Developing the proof in two steps is helpful, since the local ring hypothesis allows us to
 construct the desired `X` in step 1 at the residue field level, and lift back to the ring while
 keeping the upper-left block invertible.
 
 ## TODO
+
 * For `n = 1` the symplectic group coincides with the special linear group.
 -/
 
@@ -247,12 +250,14 @@ private lemma det_one_if_fromBlocks_invertible [Invertible A]
     mul_sub, ← mul_assoc, ← mul_assoc, h_block.1, mul_assoc Cᵀ,
     mul_inv_of_invertible, mul_one, h_block.2.2, det_one]
 
-/-- Given square matrices `A` and `C` over a field, if the only vector annihilated by both of
+/--
+Given square matrices `A` and `C` over a field, if the only vector annihilated by both of
 them is 0, and `Aᵀ * C = Cᵀ * A`, then one can construct a symmetric matrix `X` such that
 `A + X * C` is invertible.
 
 This lemma, together with the one after, is used to turn the upper-left block into invertible
-matrix in the main proof, so that we can use the previous lemma to calculate the determinant. -/
+matrix in the main proof, so that we can use the previous lemma to calculate the determinant.
+-/
 private lemma exists_symmetric_X_invertible_add_mul_of_ker_inter_eq_bot {R : Type*} [Field R]
     {A C : Matrix l l R} (hker : ∀ (x : l → R), (A • x = 0) → (C • x = 0) → x = 0)
     (hsymm : Aᵀ * C = Cᵀ * A) :
@@ -316,12 +321,14 @@ private lemma exists_symmetric_X_invertible_add_mul_of_ker_inter_eq_bot {R : Typ
       simpa [hf, fromBlocks_multiply, fromBlocks_add]
     · exact f_unit <| isUnit_nonsing_inv_iff.2 hU
 
-/-- For any symplectic matrix `fromBlocks A B C D` over a local ring `R`, we can construct
+/--
+For any symplectic matrix `fromBlocks A B C D` over a local ring `R`, we can construct
 a symmetric `X` s.t. `A + X * C` is invertible.
 
 Introducing local ring hypothesis enables us to transport the construction of `X`
 (from the previous lemma, which works only over fields) back to `R` while keeping
-`A + X * C` invertible. -/
+`A + X * C` invertible.
+-/
 private lemma exists_symmetric_X_isUnit_det_add_mul_of_symplectic [IsLocalRing R]
     (hA : fromBlocks A B C D ∈ symplecticGroup l R) :
     ∃ (X : Matrix l l R), X.IsSymm ∧ IsUnit (A + X * C).det := by
@@ -374,15 +381,17 @@ private lemma det_eq_one_of_isLocalRing [IsLocalRing R] {M : Matrix (l ⊕ l) (l
     rw [Lx_mul, det_one_if_fromBlocks_invertible h_fromBlocks_in]
   rwa [det_mul, det_fromBlocks_zero₂₁, det_one, one_mul, one_mul] at h_main
 
-/-- Symplectic matrices have determinant 1.
+/--
+Symplectic matrices have determinant 1.
 
 The proof strategy comes in two steps:
-1. Consider a symplectic matrix `M` over a local ring, we can construct a matrix of the
-form `fromBlocks 1 X 0 1` s.t. the upper-left block of `(fromBlocks 1 X 0 1) * M` is invertible.
-From this we can calculate the determinant.
 
+1. Consider a symplectic matrix `M` over a local ring, we can construct a matrix of the
+   form `fromBlocks 1 X 0 1` s.t. the upper-left block of `(fromBlocks 1 X 0 1) * M` is invertible.
+   From this we can calculate the determinant.
 2. For a symplectic matrix `M` over general commutative ring `R`, we note that by step 1,
-`M.det - 1 = 0` in any localization at a maximal ideal in `R`. Therefore `M.det = 1` in `R`. -/
+   `M.det - 1 = 0` in any localization at a maximal ideal in `R`. Therefore `M.det = 1` in `R`.
+-/
 theorem det_eq_one {M : Matrix (l ⊕ l) (l ⊕ l) R} (hM : M ∈ symplecticGroup l R) :
     M.det = 1 := by
   refine sub_eq_zero.1 <| eq_zero_of_localization _ fun _ _ ↦ ?_

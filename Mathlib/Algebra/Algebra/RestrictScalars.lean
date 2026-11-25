@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Algebra.Tower
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The `RestrictScalars` type alias
 
@@ -17,7 +20,7 @@ typeclass instead.
 ## Main definitions
 
 * `RestrictScalars R S M`: the `S`-module `M` viewed as an `R` module when `S` is an `R`-algebra.
-  Note that by default we do *not* have a `Module S (RestrictScalars R S M)` instance
+  Note that by default we do _not_ have a `Module S (RestrictScalars R S M)` instance
   for the original action.
   This is available as a def `RestrictScalars.moduleOrig` if really needed.
 * `RestrictScalars.addEquiv : RestrictScalars R S M ≃+ M`: the additive equivalence
@@ -46,6 +49,8 @@ refer to restricting the scalar type in a bundled type, such as from `A →ₗ[R
 
 variable (R S M A : Type*)
 
+
+set_option doc.verso false
 /-- If we put an `R`-algebra structure on a semiring `S`, we get a natural equivalence from the
 category of `S`-modules to the category of representations of the algebra `S` (over `R`). The type
 synonym `RestrictScalars` is essentially this equivalence.
@@ -80,6 +85,8 @@ over a field of characteristic zero and wishes to make use of the `ℚ`-algebra 
 @[nolint unusedArguments]
 def RestrictScalars (_R _S M : Type*) : Type _ := M
 
+
+set_option doc.verso true
 instance [I : Inhabited M] : Inhabited (RestrictScalars R S M) := I
 
 instance [I : AddCommMonoid M] : AddCommMonoid (RestrictScalars R S M) := I
@@ -102,7 +109,8 @@ section
 
 attribute [local instance] RestrictScalars.moduleOrig
 
-/-- When `M` is a module over a ring `S`, and `S` is an algebra over `R`, then `M` inherits a
+/--
+When `M` is a module over a ring `S`, and `S` is an algebra over `R`, then `M` inherits a
 module structure over `R`. Not an instance because `S` cannot be inferred.
 
 The preferred way of setting this up is `[Module R M] [Module S M] [IsScalarTower R S M]`.
@@ -110,7 +118,8 @@ The preferred way of setting this up is `[Module R M] [Module S M] [IsScalarTowe
 abbrev Module.restrictScalars [Module S M] : Module R M :=
   Module.compHom M (algebraMap R S)
 
-/-- When `M` is a module over a ring `S`, and `S` is an algebra over `R`, then `M` inherits a
+/--
+When `M` is a module over a ring `S`, and `S` is an algebra over `R`, then `M` inherits a
 module structure over `R`.
 
 The preferred way of setting this up is `[Module R M] [Module S M] [IsScalarTower R S M]`.

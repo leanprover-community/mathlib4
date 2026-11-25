@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Action.Basic
 public import Mathlib.Algebra.GroupWithZero.Action.End
 public import Mathlib.Algebra.Ring.Hom.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Group action on rings
 
@@ -39,13 +42,14 @@ assert_not_exists Equiv.Perm.equivUnitsEnd Prod.fst_mul
 
 universe u v
 
-/-- Typeclass for multiplicative actions by monoids on semirings.
+/--
+Typeclass for multiplicative actions by monoids on semirings.
 
 This combines `DistribMulAction` with `MulDistribMulAction`: it expresses
 the interplay between the action and both addition and multiplication on the target.
 Two key axioms are `g • (x + y) = (g • x) + (g • y)` and `g • (x * y) = (g • x) * (g • y)`.
 
-A typical use case is the action of a Galois group $Gal(L/K)$ on the field `L`.
+A typical use case is the action of a Galois group $`Gal(L/K)` on the field `L`.
 -/
 class MulSemiringAction (M : Type u) (R : Type v) [Monoid M] [Semiring R] extends
   DistribMulAction M R, MulDistribMulAction M R where
@@ -66,9 +70,11 @@ theorem toRingHom_injective [MulSemiringAction M R] [FaithfulSMul M R] :
     Function.Injective (MulSemiringAction.toRingHom M R) := fun _ _ h =>
   eq_of_smul_eq_smul fun r => RingHom.ext_iff.1 h r
 
-/-- The tautological action by `R →+* R` on `R`.
+/--
+The tautological action by `R →+* R` on `R`.
 
-This generalizes `Function.End.applyMulAction`. -/
+This generalizes `Function.End.applyMulAction`.
+-/
 instance RingHom.applyMulSemiringAction : MulSemiringAction (R →+* R) R where
   smul := (· ·)
   smul_one := map_one
@@ -90,8 +96,10 @@ section
 
 variable {M N}
 
-/-- Compose a `MulSemiringAction` with a `MonoidHom`, with action `f r' • m`.
-See note [reducible non-instances]. -/
+/--
+Compose a `MulSemiringAction` with a `MonoidHom`, with action `f r' • m`.
+See note \[reducible non-instances\].
+-/
 abbrev MulSemiringAction.compHom (f : N →* M) [MulSemiringAction M R] : MulSemiringAction N R :=
   { DistribMulAction.compHom R f, MulDistribMulAction.compHom R f with }
 
