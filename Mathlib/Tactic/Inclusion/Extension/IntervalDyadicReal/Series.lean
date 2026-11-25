@@ -49,72 +49,80 @@ open Finset
 
 namespace Inclusion.IntervalDyadicReal
 
-/-- The partial sum `∑ i ∈ Ico a (a + k), ∏ j ∈ Ico a i, p j / q j` by binary splitting, as
-`(P, Q, T)` with `P` and `Q` the products of `p j` and `q j` over `Ico a (a + k)`. The quotient
-`T / Q` equals the partial sum once mapped into a field of characteristic zero, provided no `q j`
-is zero. The `q j` are natural numbers so that `Q` can serve as the denominator of `ratBall`. -/
+/-- The sum of a block of consecutive terms of a series with term ratios `p j / q j` and first
+term `1`, and the term following the block, as fractions over the common denominator `den`. -/
+structure HypergeomSum (R : Type*) where
+  /-- The product of the `p j` over the block, so that `termNum / den` is the term following the
+  block. -/
+  termNum : R
+  /-- The product of the `q j` over the block. It is a natural number so that it can serve as the
+  denominator of `ratBall`. -/
+  den : ℕ
+  /-- The numerator of the sum of the block over `den`. -/
+  sumNum : R
+
+/-- The sum of the first `k` terms of the series starting with `1` where each later term is
+the previous one multiplied by `p j / q j` for `j ∈ [a, a + k - 1)`, computed by binary splitting.
+If no `q j` is zero, `sumNum / den` is the sum (`hypergeomPartialSum_div` states this precisely).
+The recursion needs `termNum` to append a term or to join two blocks of terms, since every term
+of the later block is scaled by `termNum / den`. -/
 @[expose]
 def hypergeomPartialSum {R : Type*} [Semiring R] (p : ℕ → R) (q : ℕ → ℕ) (a k : ℕ) :
-    R × ℕ × R :=
+    HypergeomSum R :=
   match k with
-  | 0 => (1, 1, 0)
+  | 0 => ⟨1, 1, 0⟩
   | k@(m + 1) =>
     if k ≤ 32 then
-      let (Pl, Ql, Tl) := hypergeomPartialSum p q a m
+      let X := hypergeomPartialSum p q a m
       let b := a + m
-      (Pl * p b, Ql * q b, q b * (Tl + Pl))
+      ⟨X.termNum * p b, X.den * q b, q b * (X.sumNum + X.termNum)⟩
     else
-      let (Pl, Ql, Tl) := hypergeomPartialSum p q a (k / 2)
-      let (Pr, Qr, Tr) := hypergeomPartialSum p q (a + k / 2) ((k + 1) / 2)
-      (Pl * Pr, Ql * Qr, Qr * Tl + Pl * Tr)
+      let X := hypergeomPartialSum p q a (k / 2)
+      let Y := hypergeomPartialSum p q (a + k / 2) ((k + 1) / 2)
+      ⟨X.termNum * Y.termNum, X.den * Y.den, Y.den * X.sumNum + X.termNum * Y.sumNum⟩
 
 theorem hypergeomPartialSum_spec {R : Type*} [CommSemiring R] (p : ℕ → R) (q : ℕ → ℕ)
     (a k : ℕ) :
     letI X := hypergeomPartialSum p q a k
-    X.1 = ∏ i ∈ Ico a (a + k), p i ∧ X.2.1 = ∏ i ∈ Ico a (a + k), q i ∧
-    X.2.2 = ∑ i ∈ Ico a (a + k), (∏ j ∈ Ico a i, p j) * ∏ j ∈ Ico i (a + k), (q j : R) := by
-  let T (a b : ℕ) : R := ∑ i ∈ Ico a b, (∏ j ∈ Ico a i, p j) * ∏ j ∈ Ico i b, (q j : R)
-  have hT {a m b : ℕ} (ham : a ≤ m) (hmb : m ≤ b) :
-      T a b = (∏ j ∈ Ico m b, (q j : R)) * T a m + (∏ j ∈ Ico a m, p j) * T m b := by
-    simp only [T]
+    X.termNum = ∏ i ∈ Ico a (a + k), p i ∧ X.den = ∏ i ∈ Ico a (a + k), q i ∧
+    X.sumNum = ∑ i ∈ Ico a (a + k), (∏ j ∈ Ico a i, p j) * ∏ j ∈ Ico i (a + k), (q j : R) := by
+  let S (a b : ℕ) : R := ∑ i ∈ Ico a b, (∏ j ∈ Ico a i, p j) * ∏ j ∈ Ico i b, (q j : R)
+  have hS {a m b : ℕ} (ham : a ≤ m) (hmb : m ≤ b) :
+      S a b = (∏ j ∈ Ico m b, (q j : R)) * S a m + (∏ j ∈ Ico a m, p j) * S m b := by
+    simp only [S]
     rw [mul_sum, mul_sum, ← sum_Ico_consecutive _ ham hmb]
     congr 1 <;> refine sum_congr rfl fun i hi ↦ ?_
     · rw [← prod_Ico_consecutive _ (Finset.mem_Ico.mp hi).2.le hmb]
       ring
     · rw [← prod_Ico_consecutive _ ham (Finset.mem_Ico.mp hi).1]
       ring
-  change _ ∧ _ ∧ _ = T a (a + k)
+  change _ ∧ _ ∧ _ = S a (a + k)
   fun_induction hypergeomPartialSum p q a k with
-  | case1 a => simp [T]
-  | case2 a m _ Pl Ql Tl hl b ih =>
-    rw [hl] at ih
-    obtain ⟨rfl, rfl, rfl⟩ := ih
+  | case1 a => simp [S]
+  | case2 a m _ X b ih =>
     have hab : a ≤ a + m := by lia
     rw [Nat.succ_eq_add_one, ← add_assoc, prod_Ico_succ_top hab, prod_Ico_succ_top hab,
-      hT hab (a + m).le_succ]
-    simp [T, b, mul_add, mul_comm]
-  | case3 a m _ Pl Ql Tl hl Pr Qr Tr hr ihl ihr =>
+      hS hab (a + m).le_succ]
+    simp [X, b, ih, S, mul_add, mul_comm]
+  | case3 a m _ X Y ihl ihr =>
     have hk : a + (m + 1) / 2 + (m + 1 + 1) / 2 = a + (m + 1) := by lia
-    rw [hl] at ihl
-    rw [hr, hk] at ihr
-    obtain ⟨rfl, rfl, rfl⟩ := ihl
-    obtain ⟨rfl, rfl, rfl⟩ := ihr
+    rw [hk] at ihr
     have ham : a ≤ a + (m + 1) / 2 := by lia
     have hmb : a + (m + 1) / 2 ≤ a + (m + 1) := by lia
-    simp only [prod_Ico_consecutive _ ham hmb, hT ham hmb, Nat.cast_prod, and_self]
+    simp only [X, Y, ihl, ihr, prod_Ico_consecutive _ ham hmb, hS ham hmb, Nat.cast_prod, and_self]
 
 /-- `hypergeomPartialSum` sums a series whose term ratios are `t (j + 1) / t j = p j / q j`. -/
 theorem hypergeomPartialSum_div {R K : Type*} [CommSemiring R] [Semifield K] [CharZero K]
     (f : R →+* K) (p : ℕ → R) (q : ℕ → ℕ) (hq : ∀ j, q j ≠ 0) (t : ℕ → K)
     (ht : ∀ j, t (j + 1) = t j * (f (p j) / q j)) (n : ℕ) :
-    t 0 * f (hypergeomPartialSum p q 0 n).2.2 / (hypergeomPartialSum p q 0 n).2.1 =
+    t 0 * f (hypergeomPartialSum p q 0 n).sumNum / (hypergeomPartialSum p q 0 n).den =
       ∑ m ∈ range n, t m := by
   have key (m : ℕ) : t 0 * ∏ j ∈ range m, f (p j) / q j = t m := by
     induction m with
     | zero => simp
     | succ m ih => rw [prod_range_succ, ← mul_assoc, ih, ht]
-  obtain ⟨-, hQ, hT⟩ := hypergeomPartialSum_spec p q 0 n
-  simp only [hQ, hT, map_sum, map_mul, map_prod, map_natCast, Nat.cast_prod, mul_sum, sum_div,
+  obtain ⟨-, hden, hsum⟩ := hypergeomPartialSum_spec p q 0 n
+  simp only [hden, hsum, map_sum, map_mul, map_prod, map_natCast, Nat.cast_prod, mul_sum, sum_div,
     zero_add, Nat.Ico_zero_eq_range]
   refine sum_congr rfl fun i hi ↦ ?_
   rw [mul_div_assoc, ← prod_range_mul_prod_Ico (fun j ↦ (q j : K)) (mem_range.mp hi).le,

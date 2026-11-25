@@ -52,7 +52,7 @@ when `| a / b | ≤ 1`. -/
 @[expose]
 def expRatTaylor (a : ℤ) (b n prec : ℕ) : Interval Dyadic :=
   let X := hypergeomPartialSum (fun _ ↦ a) (fun j ↦ b * (j + 1)) 0 n
-  ratBall (n * X.2.2) ((n + 1) * |X.1|) (n * X.2.1) prec
+  ratBall (n * X.sumNum) ((n + 1) * |X.termNum|) (n * X.den) prec
 
 theorem expRatTaylor_mem (a : ℤ) {b : ℕ} (hb : b ≠ 0) (hab : a.natAbs ≤ b) {n : ℕ} (hn : 0 < n)
     (prec : ℕ) : Real.exp (a / b) ∈ expRatTaylor a b n prec := by
@@ -63,13 +63,13 @@ theorem expRatTaylor_mem (a : ℤ) {b : ℕ} (hb : b ≠ 0) (hab : a.natAbs ≤ 
   rw [← hypergeomPartialSum_div (Int.castRingHom ℝ) (fun _ ↦ a) (fun j ↦ b * (j + 1))
     (fun j ↦ by positivity) (fun m ↦ ((a : ℝ) / b) ^ m / m !)
     (fun j ↦ by push_cast [eq_intCast, pow_succ, Nat.factorial_succ]; field)] at h
-  obtain ⟨hP, hQ, -⟩ := hypergeomPartialSum_spec (fun _ ↦ a) (fun j ↦ b * (j + 1)) 0 n
+  obtain ⟨hterm, hden, -⟩ := hypergeomPartialSum_spec (fun _ ↦ a) (fun j ↦ b * (j + 1)) 0 n
   rw [expRatTaylor]
-  generalize hypergeomPartialSum (R := ℤ) _ _ 0 n = X at h hP hQ ⊢
+  generalize hypergeomPartialSum (R := ℤ) _ _ 0 n = X at h hterm hden ⊢
   simp only [zero_add, Nat.Ico_zero_eq_range, prod_const, card_range, prod_mul_distrib,
-    prod_range_add_one_eq_factorial] at hP hQ
+    prod_range_add_one_eq_factorial] at hterm hden
   refine ratBall_mem ?_ prec
-  convert h using 1 <;> push_cast [hP, hQ, eq_intCast, Nat.factorial_zero]
+  convert h using 1 <;> push_cast [hterm, hden, eq_intCast, Nat.factorial_zero]
   · field_simp
   · rw [abs_div, Nat.abs_cast, abs_pow, div_pow]
     field

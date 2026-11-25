@@ -48,7 +48,7 @@ Note that the series converges slowly when the input is close to `1`. -/
 def smallArtanh (num den : ℕ) (n : ℕ) : ℕ × ℕ :=
   let r := hypergeomPartialSum (fun j ↦ (2 * j + 1) * num ^ 2) (fun j ↦ (2 * j + 3) * den ^ 2)
     0 n
-  (num * r.2.2, den * r.2.1)
+  (num * r.sumNum, den * r.den)
 
 namespace smallArtanh
 
