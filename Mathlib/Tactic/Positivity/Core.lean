@@ -45,12 +45,13 @@ freely: this does not discard the cache.
 
 Example:
 ```lean
-@[positivity ite _ _ _] def evalIte : PositivityExt where eval {u α} zα pα e := do
-  let .app (.app (.app (.app f (p : Q(Prop))) (_ : Q(Decidable $p))) (a : Q($α))) (b : Q($α))
-    ← withReducible (whnf e) | throwError "not ite"
-  haveI' : $e =Q ite $p $a $b := ⟨⟩
-  guard <| ← withNewMCtxDepth <| isDefEq f q(ite (α := $α))
-  let ra ← core zα pα a; let rb ← core zα pα b
+@[positivity min _ _] def evalMin : PositivityExt where eval {u α} zα pα? e := do
+  let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← withReducible (whnf e)
+    | throwError "not min"
+  let _e_eq : $e =Q $f $a $b := ⟨⟩
+  let _a ← synthInstanceQ q(LinearOrder $α)
+  let ⟨_f_eq⟩ ← withNewMCtxDepth <| assertDefEqQ q($f) q(min)
+  match ← core zα pα? a, ← core zα pα? b with
   ...
 ```
 -/
@@ -310,7 +311,7 @@ initialize positivityLemmaExt : SimpleScopedEnvExtension PositivityLemma Positiv
   }
 
 /-- Given an application `f a₁ .. aₙ`, return the name of `f`, and the array of arguments `aᵢ`. -/
-def getAppFnArgs (e : Expr) : Option (Name × Array Expr) :=
+def getConstHeadAndArgs? (e : Expr) : Option (Name × Array Expr) :=
   e.cleanupAnnotations.withApp fun f args => f.constName?.map (·, args)
 
 /-- Try to construct the `PositivityLemma` for a lemma with hypotheses `hyps` and
@@ -318,7 +319,7 @@ conclusion `target`. This is used by `@[positivity_lemma]`. -/
 def makePositivityLemma (hyps : Array Expr) (target : Expr) (declName : Name) (prio : Nat) :
     MetaM PositivityLemma := do
   let fail {α} (m : MessageData) : MetaM α := throwError "\
-    @[positivity_lemma] attribute only applies to lemmas
+    @[positivity_lemma] attribute only applies to lemmas \
     proving 0 [</≤/≠] f x₁ ... xₙ or f x₁ ... xₙ [>/≥/≠] 0.\n\
     {m}"
   let findArg? (args : Array Expr) (arg : Expr) : MetaM (Option Nat) := do
@@ -328,7 +329,7 @@ def makePositivityLemma (hyps : Array Expr) (target : Expr) (declName : Name) (p
     return none
   let some (targetVal, kind) ← getPositivity target
     | fail m!"The conclusion {target} is not a positivity proposition"
-  let some (head, args) := getAppFnArgs targetVal
+  let some (head, args) := getConstHeadAndArgs? targetVal
     | fail m!"The conclusion {target} does not have a constant head"
   let key := { head, arity := args.size }
   let mut premises := #[]
@@ -356,6 +357,8 @@ initialize registerBuiltinAttribute {
     let cinfo ← getConstInfo declName
     forallTelescope cinfo.type fun xs type => do
       positivityLemmaExt.add (← makePositivityLemma xs type declName prio) kind
+    -- TODO: track what `[positivity_lemma]` decls are actually used at use sites
+    unless kind == .local do recordExtraRevUseOfCurrentModule
 }
 
 initialize registerBuiltinAttribute {
@@ -739,11 +742,11 @@ partial def applyPositivityLemmas {u : Level} {α : Q(Type u)} (zα : Q(Zero $α
   let mut result := .none
   let lemMap := positivityLemmaExt.getState (← getEnv)
   let hasLemma? (v : Expr) : Bool :=
-    (getAppFnArgs v).any fun (head, args) =>
+    (getConstHeadAndArgs? v).any fun (head, args) =>
       lemMap.contains { head, arity := args.size }
   let e' ← if hasLemma? e then pure e else
     withReducible <| whnfHeadPred e fun v => pure !(hasLemma? v)
-  let some (head, args) := getAppFnArgs e' | return .none
+  let some (head, args) := getConstHeadAndArgs? e' | return .none
   let key := { head, arity := args.size }
   let some lems := lemMap.get? key | return .none
   let provePremise (i : Nat) (kind : OrderRel) : PositivityM (Option Expr) := do

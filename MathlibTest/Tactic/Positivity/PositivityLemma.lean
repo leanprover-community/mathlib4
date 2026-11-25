@@ -249,8 +249,7 @@ end Cache
 namespace Validation
 
 /--
-error: @[positivity_lemma] attribute only applies to lemmas
-    proving 0 [</≤/≠] f x₁ ... xₙ or f x₁ ... xₙ [>/≥/≠] 0.
+error: @[positivity_lemma] attribute only applies to lemmas proving 0 [</≤/≠] f x₁ ... xₙ or f x₁ ... xₙ [>/≥/≠] 0.
 The premise P x is not a positivity proposition
 -/
 #guard_msgs in
@@ -258,8 +257,7 @@ The premise P x is not a positivity proposition
 axiom f_pos {x : α} : P x → 0 < x → 0 < f x
 
 /--
-error: @[positivity_lemma] attribute only applies to lemmas
-    proving 0 [</≤/≠] f x₁ ... xₙ or f x₁ ... xₙ [>/≥/≠] 0.
+error: @[positivity_lemma] attribute only applies to lemmas proving 0 [</≤/≠] f x₁ ... xₙ or f x₁ ... xₙ [>/≥/≠] 0.
 The conclusion a < 0 is not a positivity proposition
 -/
 #guard_msgs in
@@ -267,8 +265,7 @@ The conclusion a < 0 is not a positivity proposition
 theorem neg_pos' {a : ℤ} : 0 < -a → a < 0 := Int.neg_pos.mp
 
 /--
-error: @[positivity_lemma] attribute only applies to lemmas
-    proving 0 [</≤/≠] f x₁ ... xₙ or f x₁ ... xₙ [>/≥/≠] 0.
+error: @[positivity_lemma] attribute only applies to lemmas proving 0 [</≤/≠] f x₁ ... xₙ or f x₁ ... xₙ [>/≥/≠] 0.
 The premise a < 0 is not a positivity proposition
 -/
 #guard_msgs in
@@ -276,8 +273,7 @@ The premise a < 0 is not a positivity proposition
 theorem neg_pos'' {a : ℤ} : a < 0 → 0 < -a := Int.neg_pos_of_neg
 
 /--
-error: @[positivity_lemma] attribute only applies to lemmas
-    proving 0 [</≤/≠] f x₁ ... xₙ or f x₁ ... xₙ [>/≥/≠] 0.
+error: @[positivity_lemma] attribute only applies to lemmas proving 0 [</≤/≠] f x₁ ... xₙ or f x₁ ... xₙ [>/≥/≠] 0.
 The conclusion a < 0 ↔ 0 < -a is not a positivity proposition
 -/
 #guard_msgs in
@@ -285,8 +281,7 @@ The conclusion a < 0 ↔ 0 < -a is not a positivity proposition
 theorem neg_pos''' {a : ℤ} : a < 0 ↔ 0 < -a := Int.neg_pos.symm
 
 /--
-error: @[positivity_lemma] attribute only applies to lemmas
-    proving 0 [</≤/≠] f x₁ ... xₙ or f x₁ ... xₙ [>/≥/≠] 0.
+error: @[positivity_lemma] attribute only applies to lemmas proving 0 [</≤/≠] f x₁ ... xₙ or f x₁ ... xₙ [>/≥/≠] 0.
 The premise 0 < a does not refer to a direct argument of the conclusion 0 < - -a
 -/
 #guard_msgs in
@@ -297,8 +292,7 @@ axiom not_direct_arg {a : ℤ} : 0 < a → 0 < -(-a)
 -/
 
 /--
-error: @[positivity_lemma] attribute only applies to lemmas
-    proving 0 [</≤/≠] f x₁ ... xₙ or f x₁ ... xₙ [>/≥/≠] 0.
+error: @[positivity_lemma] attribute only applies to lemmas proving 0 [</≤/≠] f x₁ ... xₙ or f x₁ ... xₙ [>/≥/≠] 0.
 The argument y does not appear in the conclusion 0 ≤ g x x
 -/
 #guard_msgs in
@@ -311,8 +305,7 @@ axiom g_nonneg {x y : α} : 0 ≤ x → 0 ≤ g x x
 axiom d (x : α) (hx : 0 < x) : α
 
 /--
-error: @[positivity_lemma] attribute only applies to lemmas
-    proving 0 [</≤/≠] f x₁ ... xₙ or f x₁ ... xₙ [>/≥/≠] 0.
+error: @[positivity_lemma] attribute only applies to lemmas proving 0 [</≤/≠] f x₁ ... xₙ or f x₁ ... xₙ [>/≥/≠] 0.
 The conclusion 0 < d x hx depends on the premise hx
 -/
 #guard_msgs in
