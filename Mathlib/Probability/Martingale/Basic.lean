@@ -267,7 +267,7 @@ theorem sub_martingale [Preorder E] [AddLeftMono E] (hf : Submartingale f ℱ μ
   hf.sub_supermartingale hg.supermartingale
 
 protected theorem sup [Lattice E] [HasSolidNorm E] [IsOrderedAddMonoid E]
-    [PosSMulMono ℝ E] {f g : ι → Ω → E} (hf : Submartingale f ℱ μ)
+    [IsOrderedModule ℝ E] {f g : ι → Ω → E} (hf : Submartingale f ℱ μ)
     (hg : Submartingale g ℱ μ) :
     Submartingale (f ⊔ g) ℱ μ := by
   refine ⟨fun i =>
@@ -282,7 +282,7 @@ protected theorem sup [Lattice E] [HasSolidNorm E] [IsOrderedAddMonoid E]
         (Eventually.of_forall fun x => le_sup_right))
 
 protected theorem pos [Lattice E] [HasSolidNorm E] [IsOrderedAddMonoid E]
-    [PosSMulMono ℝ E] {f : ι → Ω → E} (hf : Submartingale f ℱ μ) :
+    [IsOrderedModule ℝ E] {f : ι → Ω → E} (hf : Submartingale f ℱ μ) :
     Submartingale (f⁺) ℱ μ :=
   hf.sup (martingale_zero _ _ _).submartingale
 
@@ -419,7 +419,7 @@ end OfSetIntegral
 section OfSucc
 
 variable [CompleteSpace E] [PartialOrder E] [IsOrderedAddMonoid E] [ClosedIciTopology E]
-  [PosSMulMono ℝ E]
+  [IsOrderedModule ℝ E]
 
 theorem submartingale_nat [IsFiniteMeasure μ] {f : ℕ → Ω → E} (hadp : StronglyAdapted 𝒢 f)
     (hint : ∀ i, Integrable (f i) μ) (hf : ∀ i, f i ≤ᵐ[μ] μ[f (i + 1) | 𝒢 i]) :
@@ -559,7 +559,7 @@ end Submartingale
 
 section SumSMul
 
-variable [CompleteSpace E] [PartialOrder E] [PosSMulMono ℝ E] [ClosedIciTopology E]
+variable [CompleteSpace E] [PartialOrder E] [IsOrderedModule ℝ E] [ClosedIciTopology E]
   [IsOrderedAddMonoid E]
 
 theorem Submartingale.sum_smul_sub [IsFiniteMeasure μ] {R : ℝ}
