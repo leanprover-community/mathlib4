@@ -69,17 +69,17 @@ of the later block is scaled by `termNum / den`. -/
 @[expose]
 def hypergeomPartialSum {R : Type*} [Semiring R] (p : ℕ → R) (q : ℕ → ℕ) (a k : ℕ) :
     HypergeomSum R :=
-  match k with
-  | 0 => ⟨1, 1, 0⟩
-  | k@(m + 1) =>
-    if k ≤ 32 then
+  if k ≤ 32 then
+    match k with
+    | 0 => ⟨1, 1, 0⟩
+    | m + 1 =>
       let X := hypergeomPartialSum p q a m
       let b := a + m
       ⟨X.termNum * p b, X.den * q b, q b * (X.sumNum + X.termNum)⟩
-    else
-      let X := hypergeomPartialSum p q a (k / 2)
-      let Y := hypergeomPartialSum p q (a + k / 2) ((k + 1) / 2)
-      ⟨X.termNum * Y.termNum, X.den * Y.den, Y.den * X.sumNum + X.termNum * Y.sumNum⟩
+  else
+    let X := hypergeomPartialSum p q a (k / 2)
+    let Y := hypergeomPartialSum p q (a + k / 2) ((k + 1) / 2)
+    ⟨X.termNum * Y.termNum, X.den * Y.den, Y.den * X.sumNum + X.termNum * Y.sumNum⟩
 
 theorem hypergeomPartialSum_spec {R : Type*} [CommSemiring R] (p : ℕ → R) (q : ℕ → ℕ)
     (a k : ℕ) :
@@ -99,16 +99,16 @@ theorem hypergeomPartialSum_spec {R : Type*} [CommSemiring R] (p : ℕ → R) (q
   change _ ∧ _ ∧ _ = S a (a + k)
   fun_induction hypergeomPartialSum p q a k with
   | case1 a => simp [S]
-  | case2 a m _ X b ih =>
+  | case2 a m X b _ ih =>
     have hab : a ≤ a + m := by lia
     rw [Nat.succ_eq_add_one, ← add_assoc, prod_Ico_succ_top hab, prod_Ico_succ_top hab,
       hS hab (a + m).le_succ]
     simp [X, b, ih, S, mul_add, mul_comm]
-  | case3 a m _ X Y ihl ihr =>
-    have hk : a + (m + 1) / 2 + (m + 1 + 1) / 2 = a + (m + 1) := by lia
+  | case3 a k _ X Y ihl ihr =>
+    have hk : a + k / 2 + (k + 1) / 2 = a + k := by lia
     rw [hk] at ihr
-    have ham : a ≤ a + (m + 1) / 2 := by lia
-    have hmb : a + (m + 1) / 2 ≤ a + (m + 1) := by lia
+    have ham : a ≤ a + k / 2 := by lia
+    have hmb : a + k / 2 ≤ a + k := by lia
     simp only [X, Y, ihl, ihr, prod_Ico_consecutive _ ham hmb, hS ham hmb, Nat.cast_prod, and_self]
 
 /-- `hypergeomPartialSum` sums a series whose term ratios are `t (j + 1) / t j = p j / q j`. -/
