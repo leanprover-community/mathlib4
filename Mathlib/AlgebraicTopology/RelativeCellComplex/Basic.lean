@@ -24,8 +24,8 @@ formalization of the small object argument,
 see the file `Mathlib/CategoryTheory/SmallObject/IsCardinalForSmallObjectArgument.lean`.
 
 ## References
-* https://ncatlab.org/nlab/show/small+object+argument
 
+* https://ncatlab.org/nlab/show/small+object+argument
 -/
 
 @[expose] public section

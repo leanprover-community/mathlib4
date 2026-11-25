@@ -22,7 +22,7 @@ In this file we define the filter and prove some basic theorems about it.
 - `f =ᵐ[μ] g`: `f x = g x` for `μ`-a.e. all `x`;
 - `f ≤ᵐ[μ] g`: `f x ≤ g x` for `μ`-a.e. all `x`.
 
-## Implementation details
+## Implementation notes
 
 All notation introduced in this file
 reducibly unfolds to the corresponding definitions about filters,

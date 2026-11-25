@@ -8,6 +8,9 @@ module
 public meta import Mathlib.Tactic.Inclusion.Core.Expr
 public meta import Mathlib.Tactic.Inclusion.Core.Extensions
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Constructing inclusions
 
@@ -17,7 +20,6 @@ Given an expression `e`, `mkExprInclusionBody` recursively applies `InclusionExt
 `ExprInclusionBody` for `e`. Then `toExprInclusion` applies `HypothesisExt`s to the local context to
 construct inclusion hypotheses for the body's inclusion variables and closes the body into an
 `ExprInclusion`.
-
 -/
 
 namespace Inclusion

@@ -5,10 +5,11 @@ Authors: Salvatore Mercuri
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Algebra.Algebra.TransferInstance
 public import Mathlib.Algebra.Module.TransferInstance
 public import Mathlib.Analysis.Normed.Ring.TransferInstance
+
+import Mathlib.Algebra.Algebra.Tower
 
 /-!
 # `WithAbs` type synonym
@@ -17,6 +18,7 @@ public import Mathlib.Analysis.Normed.Ring.TransferInstance
 `v`-dependent instances (such as `NormedRing`) where `v` is an absolute value on `R`.
 
 ## Main definitions
+
 - `WithAbs` : type synonym for a semiring which depends on an absolute value. This is
   a function that takes an absolute value on a semiring and returns the semiring. This can be used
   to assign and infer instances on a semiring that depend on absolute values.
@@ -328,6 +330,10 @@ theorem under_liesOver_iff {w : AbsoluteValue L S} {v : AbsoluteValue K S} :
 theorem LiesOver.trans (v : AbsoluteValue K S) (u : AbsoluteValue M S) (w : AbsoluteValue L S)
     [w.LiesOver u] [u.LiesOver v] : w.LiesOver v := by
   rwa [← under_liesOver_iff M, ← over_def w u]
+
+instance instLiesOver_of_liesOver (v : AbsoluteValue M S) (w : AbsoluteValue L S) [w.LiesOver v] :
+    w.LiesOver (v.under K) :=
+  LiesOver.trans (v.under K) v w
 
 end tower
 

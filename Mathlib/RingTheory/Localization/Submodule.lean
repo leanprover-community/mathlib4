@@ -6,8 +6,9 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 module
 
 public import Mathlib.RingTheory.EssentialFiniteness
-public import Mathlib.RingTheory.Localization.FractionRing
 public import Mathlib.RingTheory.Localization.Ideal
+
+import Mathlib.RingTheory.Localization.FractionRing
 
 /-!
 # Submodules in localizations of commutative rings
@@ -17,6 +18,7 @@ public import Mathlib.RingTheory.Localization.Ideal
 See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
 
 ## Tags
+
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
 -/
@@ -88,8 +90,8 @@ instance {R} [CommRing R] [IsNoetherianRing R] (S : Submonoid R) :
 
 lemma _root_.Algebra.EssFiniteType.isNoetherianRing
     (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
-    [Algebra.EssFiniteType R S] [IsNoetherianRing R] : IsNoetherianRing S := by
-  exact IsLocalization.isNoetherianRing (Algebra.EssFiniteType.submonoid R S) _
+    [Algebra.EssFiniteType R S] [IsNoetherianRing R] : IsNoetherianRing S :=
+  IsLocalization.isNoetherianRing (Algebra.EssFiniteType.submonoid R S) _
     (Algebra.FiniteType.isNoetherianRing R _)
 section NonZeroDivisors
 

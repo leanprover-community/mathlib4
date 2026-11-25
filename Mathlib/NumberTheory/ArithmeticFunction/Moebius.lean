@@ -9,6 +9,9 @@ public import Mathlib.NumberTheory.ArithmeticFunction.Misc
 
 import Mathlib.Algebra.Order.Ring.Abs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Möbius function and Möbius inversion
 
@@ -34,7 +37,6 @@ import Mathlib.Algebra.Order.Ring.Abs
 ## Tags
 
 arithmetic functions, dirichlet convolution, divisors
-
 -/
 
 @[expose] public section

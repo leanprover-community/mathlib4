@@ -8,9 +8,11 @@ module
 public import Mathlib.CategoryTheory.Abelian.Basic
 public import Mathlib.CategoryTheory.Subobject.Limits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equivalence between subobjects and quotients in an abelian category
-
 -/
 
 @[expose] public section

@@ -6,7 +6,11 @@ Authors: Stepan Nesterov
 module
 
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
-public import Mathlib.RingTheory.SimpleModule.Basic
+
+import Mathlib.RingTheory.SimpleModule.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Basic facts about algebra representations
@@ -14,7 +18,6 @@ public import Mathlib.RingTheory.SimpleModule.Basic
 This file collects basic general facts about algebra representations. The purpose of this file is
 to have general results so that when we prove a corresponding fact about group representations
 (or Lie algebra representations etc), we can deduce them as special cases of facts from this file.
-
 -/
 
 public section

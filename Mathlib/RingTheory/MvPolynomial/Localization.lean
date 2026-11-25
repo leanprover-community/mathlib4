@@ -19,7 +19,6 @@ In this file we show some results connecting multivariate polynomial rings and l
 - `MvPolynomial.isLocalization`: If `S` is the localization of `R` at a submonoid `M`, then
   `MvPolynomial σ S` is the localization of `MvPolynomial σ R` at the image of `M` in
   `MvPolynomial σ R`.
-
 -/
 
 @[expose] public section
@@ -120,7 +119,7 @@ noncomputable def mvPolynomialQuotientEquiv :
     simpa using congr($(auxHom_auxInv S r) s)
   map_mul' := by simp
   map_add' := by simp
-  commutes' := by simp
+  map_smul' := by simp
 
 @[simp]
 lemma mvPolynomialQuotientEquiv_apply (p : MvPolynomial Unit R) :

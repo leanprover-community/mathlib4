@@ -9,6 +9,9 @@ public import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.NumberTheory.ArithmeticFunction.Misc
 
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas on infinite sums over the antidiagonal of the divisors function
 
@@ -19,7 +22,6 @@ We then prove some identities about the infinite sums over this antidiagonal, su
 `∑' n : ℕ+, n ^ k * r ^ n / (1 - r ^ n) = ∑' n : ℕ+, σ k n * r ^ n`
 which are used for Eisenstein series and their q-expansions. This is also a special case of
 Lambert series.
-
 -/
 
 @[expose] public section
@@ -31,17 +33,17 @@ open scoped Topology
 /-- The map from `Nat.divisorsAntidiagonal n` to `ℕ+ × ℕ+` given by sending `n = a * b`
 to `(a, b)`. -/
 def divisorsAntidiagonalFactors (n : ℕ+) : Nat.divisorsAntidiagonal n → ℕ+ × ℕ+ := fun x ↦
-  ⟨⟨x.1.1, Nat.pos_of_mem_divisors (Nat.fst_mem_divisors_of_mem_antidiagonal x.2)⟩,
-    (⟨x.1.2, Nat.pos_of_mem_divisors (Nat.snd_mem_divisors_of_mem_antidiagonal x.2)⟩ : ℕ+),
-    Nat.pos_of_mem_divisors (Nat.snd_mem_divisors_of_mem_antidiagonal x.2)⟩
+  ⟨⟨x.val.1, Nat.pos_of_mem_divisors (Nat.fst_mem_divisors_of_mem_antidiagonal x.property)⟩,
+    (⟨x.val.2, Nat.pos_of_mem_divisors (Nat.snd_mem_divisors_of_mem_antidiagonal x.property)⟩ : ℕ+),
+    Nat.pos_of_mem_divisors (Nat.snd_mem_divisors_of_mem_antidiagonal x.property)⟩
 
 lemma divisorsAntidiagonalFactors_eq {n : ℕ+} (x : Nat.divisorsAntidiagonal n) :
-    (divisorsAntidiagonalFactors n x).1.1 * (divisorsAntidiagonalFactors n x).2.1 = n := by
-  simp [divisorsAntidiagonalFactors, (Nat.mem_divisorsAntidiagonal.mp x.2).1]
+    (divisorsAntidiagonalFactors n x).1.val * (divisorsAntidiagonalFactors n x).2.val = n := by
+  simp [divisorsAntidiagonalFactors, (Nat.mem_divisorsAntidiagonal.mp x.property).1]
 
 lemma divisorsAntidiagonalFactors_one (x : Nat.divisorsAntidiagonal 1) :
     (divisorsAntidiagonalFactors 1 x) = (1, 1) := by
-  have h := Nat.mem_divisorsAntidiagonal.mp x.2
+  have h := Nat.mem_divisorsAntidiagonal.mp x.property
   simp only [mul_eq_one, ne_eq, one_ne_zero, not_false_eq_true, and_true] at h
   simp [divisorsAntidiagonalFactors, h.1, h.2]
 
@@ -51,7 +53,8 @@ given by sending `n = a * b` to `(a, b)`. -/
 def sigmaAntidiagonalEquivProd : (Σ n : ℕ+, Nat.divisorsAntidiagonal n) ≃ ℕ+ × ℕ+ where
   toFun x := divisorsAntidiagonalFactors x.1 x.2
   invFun x :=
-    ⟨⟨x.1.val * x.2.val, mul_pos x.1.2 x.2.2⟩, ⟨x.1, x.2⟩, by simp [Nat.mem_divisorsAntidiagonal]⟩
+    ⟨⟨x.1.val * x.2.val, mul_pos x.1.property x.2.property⟩, ⟨x.1, x.2⟩,
+      by simp [Nat.mem_divisorsAntidiagonal]⟩
   left_inv := by
     rintro ⟨n, ⟨k, l⟩, h⟩
     rw [Nat.mem_divisorsAntidiagonal] at h
@@ -59,10 +62,10 @@ def sigmaAntidiagonalEquivProd : (Σ n : ℕ+, Nat.divisorsAntidiagonal n) ≃ �
   right_inv _ := rfl
 
 lemma sigmaAntidiagonalEquivProd_symm_apply_fst (x : ℕ+ × ℕ+) :
-    (sigmaAntidiagonalEquivProd.symm x).1 = x.1.1 * x.2.1 := rfl
+    (sigmaAntidiagonalEquivProd.symm x).1 = x.1.val * x.2.val := rfl
 
 lemma sigmaAntidiagonalEquivProd_symm_apply_snd (x : ℕ+ × ℕ+) :
-    (sigmaAntidiagonalEquivProd.symm x).2 = (x.1.1, x.2.1) := rfl
+    (sigmaAntidiagonalEquivProd.symm x).2 = (x.1.val, x.2.val) := rfl
 
 section tsum
 
@@ -79,7 +82,7 @@ lemma summable_norm_pow_mul_geometric_div_one_sub (k : ℕ) {r : 𝕜} (hr : ‖
 
 private lemma summable_divisorsAntidiagonal_aux (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
     Summable fun c : (n : ℕ+) × {x // x ∈ (n : ℕ).divisorsAntidiagonal} ↦
-    (c.2.1.2) ^ k * (r ^ (c.2.1.1 * c.2.1.2)) := by
+    (c.2.val.2) ^ k * (r ^ (c.2.val.1 * c.2.val.2)) := by
   apply Summable.of_norm
   rw [summable_sigma_of_nonneg (fun a ↦ by positivity)]
   constructor
@@ -92,7 +95,7 @@ private lemma summable_divisorsAntidiagonal_aux (k : ℕ) {r : 𝕜} (hr : ‖r�
     · rw [(b : ℕ).divisorsAntidiagonal.sum_attach (fun x ↦ ‖(x.2 : 𝕜)‖ ^ _ * _ ^ (x.1 * x.2)),
           sum_divisorsAntidiagonal ((fun x y ↦ ‖(y : 𝕜)‖ ^ k * _ ^ (x * y)))]
       gcongr with i hi
-      · simpa using! le_of_dvd b.2 (div_dvd_of_dvd (dvd_of_mem_divisors hi))
+      · simpa using! le_of_dvd b.property (div_dvd_of_dvd (dvd_of_mem_divisors hi))
       · rw [norm_pow, mul_comm, Nat.div_mul_cancel (dvd_of_mem_divisors hi)]
     · simp only [norm_pow, Finset.sum_const, nsmul_eq_mul, ← mul_assoc, add_comm k 1, pow_add,
         pow_one, norm_mul]

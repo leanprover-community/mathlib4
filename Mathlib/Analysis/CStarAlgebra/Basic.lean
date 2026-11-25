@@ -5,7 +5,6 @@ Authors: Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Algebra.Star.Pi
 public import Mathlib.Algebra.Star.Subalgebra
 public import Mathlib.Algebra.Star.Unitary
 public import Mathlib.Analysis.Normed.Group.Hom
@@ -13,6 +12,8 @@ public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Analysis.Normed.Operator.LinearIsometry
 public import Mathlib.Basic.Real.Star
 public import Mathlib.Topology.Algebra.Module.Star
+
+import Mathlib.Algebra.Star.Pi
 
 /-!
 # Normed star rings and algebras
@@ -30,7 +31,6 @@ Note that the type classes corresponding to C⋆-algebras are defined in
 
 - Show that `‖x⋆ * x‖ = ‖x‖^2` is equivalent to `‖x⋆ * x‖ = ‖x⋆‖ * ‖x‖`, which is used as the
   definition of C⋆-algebras in some sources (e.g. Wikipedia).
-
 -/
 
 @[expose] public section
@@ -77,6 +77,8 @@ instance [NormedField 𝕜] [NormedSpace 𝕜 E] [Star 𝕜] [TrivialStar 𝕜] 
   norm_smul_le _ _ := norm_smul_le _ (_ : E)
 
 variable (x : E) (r : ℝ)
+
+open scoped Pointwise
 
 @[simp] lemma Metric.star_ball : star (ball x r) = ball (star x) r := by
   simpa using star_isometry.preimage_ball (star x) r

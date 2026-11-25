@@ -22,8 +22,8 @@ be a rank function. We show that the inclusion `A.ι` is a relative
 cell complex with basic cells given by horn inclusions.
 
 ## References
-* [Sean Moss, *Another approach to the Kan-Quillen model structure*][moss-2020]
 
+* [Sean Moss, *Another approach to the Kan-Quillen model structure*][moss-2020]
 -/
 
 @[expose] public section
@@ -254,7 +254,6 @@ which states that there is a pushout square:
 ```
 The map on the left is a coproduct of horn inclusions (the source and target
 of the morphism `f.m j` are denoted `f.sigmaHorn j` and `f.sigmaStdSimplex j`).
-
 -/
 
 /-- Given a rank function for a proper pairing of a subcomplex of a

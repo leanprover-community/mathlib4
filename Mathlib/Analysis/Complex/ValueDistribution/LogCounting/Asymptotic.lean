@@ -18,7 +18,7 @@ discussion.
 Analogously, characterize meromorphic functions with finite set of poles, as functions whose
 logarithmic counting function is big-O of `log`.
 
-## Implementation Notes
+## Implementation notes
 
 We establish the result first for the logarithmic counting function for functions with locally
 finite support on `𝕜` and then specialize to the setting where the function with locally finite

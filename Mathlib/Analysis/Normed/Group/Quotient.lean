@@ -66,7 +66,7 @@ All the following definitions are in the `AddSubgroup` namespace. Hence we can a
      `n : N` and positive `ε`, there exists `m` such that `f m = n ∧ ‖m‖ < ‖n‖ + ε`.
 
 
-## Implementation details
+## Implementation notes
 
 For any `SeminormedAddCommGroup M` and any `S : AddSubgroup M` we define a norm on `M ⧸ S` by
 `‖x‖ = sInf (norm '' {m | mk' S m = x})`. This formula is really an implementation detail, it
@@ -91,7 +91,6 @@ which uses the topological structure and the group structure to build the unifor
 uniform structure induces the correct topological structure by construction, but the fact that it
 is compatible with the norm is not obvious; this is where the mathematical content explained in
 the previous paragraph kicks in.
-
 -/
 
 @[expose] public section

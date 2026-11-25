@@ -32,7 +32,7 @@ and provides lemmas that deal with this function and its connection to `Nat.coun
 * `Nat.nth_eq_orderIsoOfNat`: For an infinitely-often true predicate, `nth` agrees with the
   order-isomorphism of the subtype to the natural numbers.
 
-## Implementation details
+## Implementation notes
 
 Much of the below was written before `Set.encard` existed and partly for this reason uses the
 pattern `∀ hf : Set.Finite (Set.ofPred p), n < hf.toFinset.card` rather than `n < {x | p x}.encard`.
@@ -42,7 +42,6 @@ There has been some discussion on the subject of whether both of `nth` and
 `Nat.Subtype.orderIsoOfNat` should exist. See discussion
 [here](https://github.com/leanprover-community/mathlib/pull/9457#pullrequestreview-767221180).
 Future work should address how lemmas that use these should be written.
-
 -/
 
 @[expose] public section

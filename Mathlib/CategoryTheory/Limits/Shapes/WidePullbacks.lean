@@ -41,7 +41,7 @@ variable (J : Type w)
 to_dual_name_hint Init Term
 
 /-- A wide pullback shape for any type `J` can be written simply as `Option J`. -/
-@[to_dual (attr := implicit_reducible)
+@[to_dual (attr := implicit_reducible) (relevant_arg := _)
 /-- A wide pushout shape for any type `J` can be written simply as `Option J`. -/]
 def WidePullbackShape := Option J
 
@@ -64,7 +64,7 @@ namespace WidePullbackShape
 -- Don't generate unnecessary `sizeOf_spec` lemma which the `simpNF` linter will complain about.
 set_option genSizeOfSpec false in
 /-- The type of arrows for the shape indexing a wide pullback. -/
-@[to_dual (reorder := 2 3)]
+@[to_dual (reorder := 2 3) (relevant_arg := _)]
 inductive Hom : WidePullbackShape J → WidePullbackShape J → Type w
   | id : ∀ X, Hom X X
   | term : ∀ j : J, Hom (some j) none

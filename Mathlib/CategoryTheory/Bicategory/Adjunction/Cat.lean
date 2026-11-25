@@ -8,12 +8,14 @@ module
 public import Mathlib.CategoryTheory.Adjunction.Mates
 public import Mathlib.CategoryTheory.Bicategory.Adjunction.Adj
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Adjunctions in `Cat`
 
 We show that adjunctions in the bicategory `Cat` correspond to
 adjunctions between functors in the usual categorical sense.
-
 -/
 
 @[expose] public section

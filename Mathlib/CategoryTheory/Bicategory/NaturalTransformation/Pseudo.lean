@@ -30,8 +30,8 @@ strong transformations. To access this instance, run `open scoped Pseudofunctor.
 See `Pseudofunctor.StrongTrans.categoryStruct`.
 
 ## References
-* [Niles Johnson, Donald Yau, *2-Dimensional Categories*](https://arxiv.org/abs/2002.06055)
 
+* [Niles Johnson, Donald Yau, *2-Dimensional Categories*](https://arxiv.org/abs/2002.06055)
 -/
 
 @[expose] public section

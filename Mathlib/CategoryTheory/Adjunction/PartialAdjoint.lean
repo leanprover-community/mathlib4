@@ -27,8 +27,8 @@ When colimits indexed by a category `J` exist in `D`, we show that
 the predicate `F.leftAdjointObjIsDefined` is stable under colimits indexed by `J`.
 
 ## TODO
-* consider dualizing the results to right adjoints
 
+* consider dualizing the results to right adjoints
 -/
 
 @[expose] public section
