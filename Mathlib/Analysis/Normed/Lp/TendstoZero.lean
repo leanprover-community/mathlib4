@@ -285,18 +285,15 @@ lemma lpOneToStrongDual_apply_apply (x : ℓ¹(ι, 𝕜)) (y : c₀(ι, 𝕜)) :
     lpOneToStrongDual ι 𝕜 x y = ∑' i, (y : ℓ^∞(ι, 𝕜)) i * x i :=
   rfl
 
+lemma norm_lpOneToStrongDual_le : ‖lpOneToStrongDual ι 𝕜‖ ≤ 1 := by
+  rw [lpOneToStrongDual, ContinuousLinearMap.opNorm_flip]
+  refine ContinuousLinearMap.opNorm_comp_le _ _ |>.trans <| mul_le_mul
+    lp.norm_scalarDualPairing_le (LinearIsometry.norm_toContinuousLinearMap_le _) (by positivity)
+    zero_le_one |>.trans_eq (one_mul 1)
+
 lemma norm_lpOneToStrongDual_apply_le (x : ℓ¹(ι, 𝕜)) :
     ‖lpOneToStrongDual ι 𝕜 x‖ ≤ ‖x‖ := by
-  refine (lpOneToStrongDual ι 𝕜 x).opNorm_le_bound (by positivity) fun φ ↦ ?_
-  rw [mul_comm, ← one_mul ‖φ‖]
-  apply lp.scalarDualPairing ι 𝕜 ∞ 1 |>.le_opNorm₂ .. |>.trans
-  gcongr
-  · exact lp.norm_scalarDualPairing_le
-  · exact le_rfl
-
-lemma norm_lpOneToStrongDual_le : ‖lpOneToStrongDual ι 𝕜‖ ≤ 1 :=
-  lpOneToStrongDual ι 𝕜 |>.opNorm_le_bound (by positivity) fun x ↦ by
-    simpa only [one_mul] using norm_lpOneToStrongDual_apply_le x
+  simpa using (lpOneToStrongDual ι 𝕜).le_of_opNorm_le norm_lpOneToStrongDual_le x
 
 open ComplexOrder in
 lemma sum_strongDual_eval_single_le_norm [DecidableEq ι]
