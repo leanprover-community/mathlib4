@@ -72,10 +72,10 @@ theorem index_comap_of_surjective {f : G' →* G} (hf : Function.Surjective f) :
     exact fun x y => iff_of_eq congr($(by rw [f.map_mul, f.map_inv]) ∈ H)
   refine Nat.card_congr (Equiv.ofBijective (Quotient.map' f fun x y => (key x y).mp) ⟨?_, ?_⟩)
   · simp_rw [← Quotient.eq''] at key
-    refine Quotient.ind' fun x => ?_
-    refine Quotient.ind' fun y => ?_
+    refine Quotient.ind fun x => ?_
+    refine Quotient.ind fun y => ?_
     exact (key x y).mpr
-  · refine Quotient.ind' fun x => ?_
+  · refine Quotient.ind fun x => ?_
     obtain ⟨y, hy⟩ := hf x
     exact ⟨y, (Quotient.map'_mk'' f _ y).trans congr(Quotient.mk'' $hy)⟩
 
