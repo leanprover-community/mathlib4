@@ -52,8 +52,7 @@ public instance (X : Inserter F G)
     [IsCardinalPresentable X.obj κ] [HasCardinalFilteredColimits K κ]
     [F.IsCardinalAccessible κ] [G.IsCardinalAccessible κ] [F.PreservesCardinalPresentable κ] :
     IsCardinalPresentable X κ := by
-  apply IsCardinalPresentable.mk
-  intro I _ _ B b hb
+  refine IsCardinalPresentable.mk fun I _ _ B b hb ↦ ?_
   have : HasColimitsOfShape I K := HasCardinalFilteredColimits.hasColimitsOfShape _ κ I
   have : PreservesColimitsOfShape I F := F.preservesColimitsOfShape_of_isCardinalAccessible κ I
   have : PreservesColimitsOfShape I G := G.preservesColimitsOfShape_of_isCardinalAccessible κ I
