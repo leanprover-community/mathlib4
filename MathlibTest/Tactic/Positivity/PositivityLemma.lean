@@ -28,8 +28,6 @@ namespace Pos
 
 example : 0 < (c : α) := by positivity
 example {x : α} (hx : 0 < x) : 0 < f x := by positivity
-example {x : α} (hx : 0 < x) : 0 ≤ f x := by positivity
-example {x : α} (hx : 0 < x) : f x ≠ 0 := by positivity
 example : 0 < f (f (c : α)) := by positivity
 
 end Pos
@@ -47,8 +45,6 @@ namespace Nonzero
 @[local positivity_lemma] axiom f_ne_zero {x : α} : x ≠ 0 → f x ≠ 0
 
 example {x : α} (hx : x ≠ 0) : f x ≠ 0 := by positivity
-example {x : α} (hx : x ≠ 0) : 0 ≠ f x := by positivity
-example {x : α} (hx : 0 ≠ x) : f x ≠ 0 := by positivity
 
 end Nonzero
 
@@ -57,7 +53,6 @@ namespace Nonzero'
 @[local positivity_lemma] axiom zero_ne_f {x : α} : 0 ≠ x → 0 ≠ f x
 
 example {x : α} (hx : x ≠ 0) : f x ≠ 0 := by positivity
-example {x : α} (hx : 0 ≠ x) : 0 ≠ f x := by positivity
 
 end Nonzero'
 

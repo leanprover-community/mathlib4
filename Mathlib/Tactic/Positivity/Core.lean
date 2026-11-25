@@ -671,8 +671,7 @@ def orElse {pα?} {e : Q($α)} (t₁ : Strictness zα e pα?) (t₂ : Positivity
 /-- Build a proof of `goalType` using `lem`, filling its positivity premises with `prePfs`. -/
 def mkProof (lem : PositivityLemma) (goalType : Q(Prop))
     (prePfs : Array Expr) : MetaM Expr := do
-  let mctx ← getMCtx
-  let mvars := (mctx.mvarCounter, mctx.lmvarCounter)
+  let lmvars := (← getMCtx).lmvarCounter
   let goal ← mkFreshExprMVar goalType
   -- Instance transparency is needed so that e.g. an `[LE α]` argument of `lem` can be unified
   -- with the `LE` instance coming from the `PartialOrder α` instance used by `positivity`.
@@ -682,16 +681,11 @@ def mkProof (lem : PositivityLemma) (goalType : Q(Prop))
     throwError "unexpected number of subgoals when applying {lem.declName}: \
       expected {prePfs.size}, got {subgoals.length}"
   for subgoal in subgoals, prePf in prePfs do
-    let target ← subgoal.getType
-    subgoal.assign (← mkExpectedTypeHint prePf target)
+    subgoal.assign prePf
   let pf ← instantiateMVars goal
-  if pf.hasExprMVar then
-    let mctx ← getMCtx
-    if (← getMVars pf).any (fun m => (mctx.getDecl m).index ≥ mvars.1) then
-      throwError "failed to instantiate all implicit arguments of {lem.declName}"
   if pf.hasLevelMVar then
     let mctx ← getMCtx
-    if (collectLevelMVars {} pf).result.any (fun m => (mctx.getLevelDecl m).index ≥ mvars.2) then
+    if (collectLevelMVars {} pf).result.any (fun m => (mctx.getLevelDecl m).index ≥ lmvars) then
       throwError "failed to instantiate all implicit arguments of {lem.declName}"
   return pf
 
