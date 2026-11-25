@@ -20,7 +20,6 @@ tests for these can be found in `MathlibTest/Linter/Flexible/ImportHeavy.lean`
 TODO: make output message appear only once for wildcard
 -/
 
-
 def n : Nat := 1
 def m : Nat := 1
 

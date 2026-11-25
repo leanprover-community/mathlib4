@@ -5,7 +5,6 @@ import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Module
 
-
 set_option autoImplicit true
 
 private axiom test_sorry : ∀ {α}, α

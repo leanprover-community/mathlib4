@@ -8,7 +8,6 @@ import all MathlibTest.Linter.DeprecatedModule.ImportBase -- deprecated_module: 
 This file imports a deprecated module with `import all`.
 -/
 
-
 /--
 info: Deprecated modules
 

@@ -192,7 +192,6 @@ example : Matrix.rank (R := Zsqrtd 5)
 
 end Binet
 
-
 /-! ## Mixed element types -/
 
 -- mixed element types in one goal: both literals are rewritten, the ℝ one by building the

@@ -26,7 +26,6 @@ example : ContinuousOn foo {0}ᶜ := by
 example (y : ℝ) (hy : y ≠ 0) : ContinuousAt (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) y := by
   fun_prop (disch := aesop)
 
-
 example : DifferentiableOn ℝ foo {0}ᶜ := by
   fun_prop (disch := aesop) [foo] -- equivalent to `unfold foo; fun_prop (disch := aesop)`
 
@@ -57,8 +56,6 @@ example : Measurable (fun x ↦ x * (Real.log x) ^ 2 - Real.exp x / x) := by
 example : AEMeasurable (fun x ↦ x * (Real.log x) ^ 2 - Real.exp x / x) := by
   fun_prop (maxTransitionDepth := 2)
 
-
-
 private noncomputable def S (a b c d : ℝ) : ℝ :=
     a / (a + b + d) + b / (a + b + c) +
     c / (b + c + d) + d / (a + c + d)
@@ -68,7 +65,6 @@ private noncomputable def T (t : ℝ) : ℝ := S 1 (1 - t) t (t * (1 - t))
 example : ContinuousOn T (Set.Icc 0 1) := by
   unfold T S
   fun_prop (disch := (rintro x ⟨a,b⟩; nlinarith))
-
 
 example : DifferentiableOn ℝ T (Set.Icc 0 1) := by
   unfold T S

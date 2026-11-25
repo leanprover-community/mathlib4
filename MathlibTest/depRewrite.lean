@@ -323,7 +323,6 @@ example (f : Nat → Nat → Nat) : P (f (id n) (id n)) := by
   guard_target =ₐ P (f (id n) (id m))
   exact test_sorry
 
-
 /-! ## Tests for `rw!` -/
 
 -- Test basic functionality

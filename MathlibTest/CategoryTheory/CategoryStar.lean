@@ -57,8 +57,6 @@ info: foo.{v_1, u_1, u_2} (C : Type u_1) (D : Type u_2) [Category.{v_1, max u_2 
 #guard_msgs (info) in
 #check foo
 
-
-
 universe u₁ u₂
 
 variable (E : Sort (imax (u₁ + 1) (u₂ + 1))) [Category* E]

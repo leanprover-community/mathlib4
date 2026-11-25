@@ -170,7 +170,6 @@ Continuous[induced g inferInstance, inferInstance] : (β → α) → Prop -/
 #guard_msgs(info) in
 #check [Continuous[instTopologicalSpaceNat, σ₁], Continuous[instTopologicalSpaceNat, σ₂]]
 
-
 -- TODO should be `Continuous[_, coinduced h inferInstance]`.
 -- When `(try)SynthInstance` in `#check` is fixed, the delab should no longer trigger on the left.
 /-- info:

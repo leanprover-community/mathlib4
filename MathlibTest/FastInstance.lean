@@ -83,7 +83,6 @@ fun {α} [inst : CommSemigroup α] =>
 set_option pp.explicit true in
 #print instCommSemigroup
 
-
 /-!
 Non-defeq error
 -/
@@ -108,7 +107,6 @@ info: { mul := fun x y => y * x } : Mul Nat
 -/
 #guard_msgs in
 #check fast_instance% { mul := fun x y => y * x : Mul Nat }
-
 
 /-!
 Checking handling of non-structure classes.

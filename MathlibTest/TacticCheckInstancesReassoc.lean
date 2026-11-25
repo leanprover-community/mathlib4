@@ -19,7 +19,6 @@ variable {C : Type u} [Category.{v} C]
 lemma clean_lem {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : X ⟶ Z) (w : f ≫ g = h) :
     f ≫ g = h := w
 
-
 /-! a semireducible alias used for `.implicit`-ill-typed equation -/
 
 def MyHom (X Y : C) : Type v := X ⟶ Y

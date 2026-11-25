@@ -4,7 +4,6 @@ module --deprecated_module: ignore
 
 public import MathlibTest.Linter.DeprecatedModule.ImportBase
 
-
 /-!
 This file imports a deprecated module with `public import`.
 -/

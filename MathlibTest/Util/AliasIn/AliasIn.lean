@@ -19,7 +19,6 @@ Use `@[alias_in Baz.Qux 2]` instead.
 #guard_msgs in
 @[alias_in Baz.Qux 3] def Foo.Bar.baz3 : Nat := 2
 
-
 /-- error: The `alias_in` attribute cannot be used for private declarations. -/
 #guard_msgs in
 @[alias_in Baz] private def Foo.Bar.baz4 : Nat := 2

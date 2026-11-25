@@ -305,11 +305,9 @@ def mul_foo {α} [Monoid α] (a : α) : ℕ → α
   | 1 => 1
   | (_ + 2) => a
 
-
 -- cannot apply `@[to_additive]` to `some_def` if `some_def.in_namespace` doesn't have the attribute
 run_cmd liftCoreM <| successIfFail <|
   transformDeclRec ToAdditive.data { ref := ← getRef} `Test.some_def `Test.add_some_def `Test.some_def
-
 
 attribute [to_additive some_other_name] some_def.in_namespace
 attribute [to_additive add_some_def] some_def
@@ -320,7 +318,6 @@ set_option linter.defProp false in
 set_option linter.unusedVariables false in
 def foo_mul {I J K : Type} (n : ℕ) {f : I → Type} (L : Type) [∀ i, One (f i)]
   [Add I] [Mul L] : true := by trivial
-
 
 @[to_additive]
 instance pi.has_one {I : Type} {f : I → Type} [(i : I) → One <| f i] : One ((i : I) → f i) :=
@@ -454,11 +451,9 @@ example : True := trivial
 
 example {α : Type _} [Add α] (x y z : α) : reorderAddThree z x y = x + y + z := rfl
 
-
 def Ones : ℕ → Q(Nat)
   | 0     => q(1)
   | (n + 1) => q($(Ones n) + $(Ones n))
-
 
 -- This test just exists to see if this finishes in finite time. It should take <100ms.
 -- #time
@@ -474,7 +469,6 @@ run_meta do
   guard !(← shouldTranslate ToAdditive.data q(Semigroup MonoidEnd) |>.run #[] #[]).1
   guard !(← shouldTranslate ToAdditive.data q(Semigroup Unit') |>.run #[] #[]).1
   guard (← shouldTranslate ToAdditive.data q(Semigroup Unit'') |>.run #[] #[]).1
-
 
 @[to_additive instSemiGroupAddMonoidEnd]
 instance : Semigroup MonoidEnd where
@@ -593,7 +587,6 @@ error: `to_additive` validation failed:
 #guard_msgs in
 @[to_additive existing Nat.le_trans]
 lemma one_eq_one'' {α : Type*} [One α] : (1 : α) = 1 := rfl
-
 
 /--
 error: `to_additive` validation failed: expected
@@ -862,7 +855,6 @@ lemma simplePowZero_x'' {β} : (simplePowZero Nat β).x = 0 := by
 /-- info: simpleNSMulZero_x'' {β : Type 1} : (simpleNSMulZero β ℕ).x = 0 -/
 #guard_msgs in
 #check simpleNSMulZero_x''
-
 
 structure AddMonoidAlgebra (k G : Type) where
   x : G → k

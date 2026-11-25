@@ -223,7 +223,6 @@ example (α : Type u) : Embedding α α × Unit := by
   · simp
   constructor
 
-
 -- FIXME Failing tests ported from mathlib3
 
 -- Note(kmill): mathlib3 `use` would try to rewrite any lingering existentials with

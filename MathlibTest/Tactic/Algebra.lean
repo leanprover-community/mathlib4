@@ -117,7 +117,6 @@ example {A : Type*} [CommRing A] [Algebra ℚ A] (x : A) :
     (3/4 : ℚ) • x + (1/4 : ℚ) • x = x := by
   algebra with ℚ
 
-
 /- This test exists to record the fact that `algebra` might infer the wrong ring
 if there are multiple incomparable rings. -/
 /--

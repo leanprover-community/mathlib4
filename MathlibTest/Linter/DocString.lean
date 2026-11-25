@@ -146,7 +146,6 @@ def extractAttrs (stx : TSyntax ``Command.declModifiers) :
   | _ => return #[]
 end
 
-
 /-! ## Tests for Verso-compatible docstrings -/
 
 set_option linter.style.docStringVerso true

@@ -117,7 +117,6 @@ run_meta
   let some doc  ← findDocString? (← getEnv) ``fun_foo | throwError "no docstring found"
   logInfo doc
 
-
 -- Test that it also works when the generated proof is not a `rfl` proof:
 
 @[to_additive (attr := push ← high)]
