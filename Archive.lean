@@ -8,6 +8,16 @@ public import Archive.Examples.IfNormalization.WithoutAesop
 public import Archive.Examples.Kuratowski
 public import Archive.Examples.MersennePrimes
 public import Archive.Examples.PropEncodable
+public import Archive.FormalStudies.E8VsA16HadamardLaw
+public import Archive.FormalStudies.S70FormalTheory.CrossLayerNonAdditivity
+public import Archive.FormalStudies.S70FormalTheory.RegimeTriangleMinimax
+public import Archive.FormalStudies.S70FormalTheory.SortedBlockH4Optimality
+public import Archive.FormalStudies.S72bFormalTheory.BallBudgetCannibalization
+public import Archive.FormalStudies.S72bFormalTheory.CrossLayerInterferenceAndFloatObstruction
+public import Archive.FormalStudies.S72bFormalTheory.TwoLevelSaddlePoint
+public import Archive.FormalStudies.S73bFormalTheory.HeavyTailLPTStarvation
+public import Archive.FormalStudies.S73bFormalTheory.LoadPowerCompressionPhase
+public import Archive.FormalStudies.S73bFormalTheory.LowBitrateAmplificationAndPareto
 public import Archive.Hairer
 public import Archive.Imo.Imo1959Q1
 public import Archive.Imo.Imo1959Q2
