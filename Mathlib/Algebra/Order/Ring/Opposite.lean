@@ -29,6 +29,11 @@ instance [Semiring R] [PartialOrder R] [IsOrderedRing R] : IsOrderedRing Rᵐᵒ
   mul_le_mul_of_nonneg_left _a ha _b _c hbc := mul_le_mul_of_nonneg_right (α := R) hbc ha
   mul_le_mul_of_nonneg_right _a ha _b _c hbc := mul_le_mul_of_nonneg_left (α := R) hbc ha
 
+instance [Semiring R] [PartialOrder R] [IsStrictOrderedRing R] : IsStrictOrderedRing Rᵐᵒᵖ where
+  zero_le_one := zero_le_one (α := R)
+  mul_lt_mul_of_pos_left _a ha _b _c hbc := mul_lt_mul_of_pos_right (α := R) hbc ha
+  mul_lt_mul_of_pos_right _a ha _b _c hbc := mul_lt_mul_of_pos_left (α := R) hbc ha
+
 end MulOpposite
 
 namespace AddOpposite
@@ -37,5 +42,10 @@ instance [Semiring R] [PartialOrder R] [IsOrderedRing R] : IsOrderedRing Rᵃᵒ
   zero_le_one := zero_le_one (α := R)
   mul_le_mul_of_nonneg_left _a ha _b _c hbc := mul_le_mul_of_nonneg_left (α := R) hbc ha
   mul_le_mul_of_nonneg_right _a ha _b _c hbc := mul_le_mul_of_nonneg_right (α := R) hbc ha
+
+instance [Semiring R] [PartialOrder R] [IsStrictOrderedRing R] : IsStrictOrderedRing Rᵃᵒᵖ where
+  zero_le_one := zero_le_one (α := R)
+  mul_lt_mul_of_pos_left _a ha _b _c hbc := mul_lt_mul_of_pos_left (α := R) hbc ha
+  mul_lt_mul_of_pos_right _a ha _b _c hbc := mul_lt_mul_of_pos_right (α := R) hbc ha
 
 end AddOpposite
