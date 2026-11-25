@@ -641,7 +641,7 @@ lemma Scheme.exists_hom_comp_eq_comp_of_locallyOfFiniteType
     simp [O]
   obtain ⟨l, hl1, hl2⟩ := IsCofiltered.inf_exists O
     (Finset.univ.image (fun i : 𝒰Df.I₀ ↦
-      ⟨k <| A.𝒰D.idx i.val, A.i', by simp [O], by simp [O], hki' <| A.𝒰D.idx i.val⟩))
+      ⟨A.i', k <| A.𝒰D.idx i.val, by simp [O], by simp [O], hki' <| A.𝒰D.idx i.val⟩))
   have (w v : 𝒰Df.I₀) :
       hl1 (by simp [O]) ≫ hki' (A.𝒰D.idx w.val) = hl1 (by simp [O]) ≫ hki' (A.𝒰D.idx v.val) := by
     trans hl1 (show A.i' ∈ O by simp [O])
@@ -752,8 +752,8 @@ lemma exists_appTop_map_eq_zero_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom
   choose U hU hxU j f H using this
   obtain ⟨t, ht⟩ := CompactSpace.elim_nhds_subcover (U ·) (fun x ↦ (U x).is_open'.mem_nhds (hxU x))
   obtain ⟨k, fk, hk⟩ := IsCofiltered.inf_exists (insert i <| t.image j) (by
-    exact t.attach.image fun x ↦ ⟨j x.val, i, Finset.mem_insert_of_mem
-      (Finset.mem_image_of_mem _ x.property), by simp, f x.val⟩)
+    exact t.attach.image fun x ↦ ⟨i, j x.val, by simp, Finset.mem_insert_of_mem
+      (Finset.mem_image_of_mem _ x.property), f x.val⟩)
   refine ⟨k, fk (by simp), ?_⟩
   apply (D.obj k).IsSheaf.section_ext
   rintro x -
@@ -762,7 +762,7 @@ lemma exists_appTop_map_eq_zero_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom
   dsimp
   simp only [homOfLE_leOfHom, map_zero]
   have h₁ : fk (by simp) = fk (Finset.mem_insert_of_mem (Finset.mem_image_of_mem _ hl)) ≫ f l :=
-    (hk _ (by simp) (Finset.mem_image.mpr ⟨⟨l, hl⟩, by simp, by simp⟩)).symm
+    (hk (by simp) _ (Finset.mem_image.mpr ⟨⟨l, hl⟩, by simp, by simp⟩)).symm
   have h₂ : D.map (fk (Finset.mem_insert_self _ _)) ⁻¹ᵁ U l ≤ D.map (fk (Finset.mem_insert_of_mem
       (Finset.mem_image_of_mem _ hl))) ⁻¹ᵁ D.map (f l) ⁻¹ᵁ U l := by
     rw [← Scheme.Hom.comp_preimage, ← D.map_comp, h₁]
@@ -884,12 +884,12 @@ lemma exists_appTop_π_eq_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom (D.ma
     Finset.subset_union_right (Finset.mem_image₂_of_mem hx hy)
   obtain ⟨k, fk, hk⟩ := IsCofiltered.inf_exists S
     (σ.attach.image₂ (fun (x y : σ) ↦
-      ⟨j x.val y.val, i x.val, hjS x.property y.property, hiS x.property, fjx x y⟩) σ.attach ∪
+      ⟨i x.val, j x.val y.val, hiS x.property, hjS x.property y.property, fjx x y⟩) σ.attach ∪
     σ.attach.image₂ (fun (x y : σ) ↦
-      ⟨j x.val y.val, i y.val, hjS x.property y.property, hiS y.property, fjy x y⟩) σ.attach)
-  have hk₁ {x y} (hx : x ∈ σ) (hy : y ∈ σ) := hk (hjS hx hy) (hiS hx) (f := fjx x y)
+      ⟨i y.val, j x.val y.val, hiS y.property, hjS x.property y.property, fjy x y⟩) σ.attach)
+  have hk₁ {x y} (hx : x ∈ σ) (hy : y ∈ σ) := hk (hiS hx) (hjS hx hy) (f := fjx x y)
     (Finset.subset_union_left (Finset.mem_image₂.mpr ⟨⟨x, hx⟩, by simp, ⟨y, hy⟩, by simp, rfl⟩))
-  have hk₂ {x y} (hx : x ∈ σ) (hy : y ∈ σ) := hk (hjS hx hy) (hiS hy) (f := fjy x y)
+  have hk₂ {x y} (hx : x ∈ σ) (hy : y ∈ σ) := hk (hiS hy) (hjS hx hy) (f := fjy x y)
     (Finset.subset_union_right (Finset.mem_image₂.mpr ⟨⟨x, hx⟩, by simp, ⟨y, hy⟩, by simp, rfl⟩))
   obtain ⟨k', fk'k, hk'⟩ := exists_map_eq_top D c hc
     (⨆ (x : _) (hx : x ∈ σ), D.map (fk (hiS hx)) ⁻¹ᵁ U x) (by

@@ -86,7 +86,7 @@ lemma isFiltered_of_aleph0_le (hκ : Cardinal.aleph0 ≤ κ) :
     have : IsDirectedOrder (HasCardinalLT.Set X κ) :=
       ⟨fun A B ↦ ⟨⟨A.val ∪ B.val, hasCardinalLT_union hκ A.prop B.prop⟩,
         Set.subset_union_left, Set.subset_union_right⟩⟩
-    exact isFilteredOrEmpty_of_directed_le _
+    infer_instance
 
 /-- The functor `HasCardinalLT.Set X κ ⥤ Type u` which sends a subset of `X`
 of cardinality `κ` to the corresponding subtype. -/

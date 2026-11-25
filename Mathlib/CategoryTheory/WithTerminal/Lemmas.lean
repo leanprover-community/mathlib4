@@ -19,13 +19,12 @@ These lemmas and instances need more imports.
 
 public section
 
-namespace CategoryTheory
+namespace CategoryTheory.WithTerminal
 
 variable {C : Type*} [Category* C]
 
-namespace WithTerminal
-
 open IsCofiltered in
+@[to_dual]
 instance [IsCofilteredOrEmpty C] : IsCofiltered (WithTerminal C) where
   cone_objs x y :=
     match x, y with
@@ -38,14 +37,4 @@ instance [IsCofilteredOrEmpty C] : IsCofiltered (WithTerminal C) where
     | x, star => ⟨x, 𝟙 _, Subsingleton.elim _ _⟩
     | of _, of _ => ⟨.of <| eq f g, eqHom _ _, eq_condition _ _⟩
 
-end WithTerminal
-
-namespace WithInitial
-
-instance [IsFilteredOrEmpty C] : IsFiltered (WithInitial C) :=
-  have := IsCofiltered.of_equivalence (opEquiv C).symm
-  isFiltered_of_isCofiltered_op _
-
-end WithInitial
-
-end CategoryTheory
+end CategoryTheory.WithTerminal

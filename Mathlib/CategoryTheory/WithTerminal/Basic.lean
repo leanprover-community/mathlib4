@@ -61,6 +61,8 @@ inductive WithInitial : Type u
   | star : WithInitial
   deriving Inhabited
 
+attribute [to_dual existing] instInhabitedWithTerminal
+
 namespace WithTerminal
 
 variable {C}

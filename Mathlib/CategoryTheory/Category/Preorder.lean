@@ -48,6 +48,7 @@ instance (priority := 100) smallCategory (α : Type u) [Preorder α] : SmallCate
   id X := ⟨⟨le_refl X⟩⟩
   comp f g := ⟨⟨le_trans f.down.down g.down.down⟩⟩
 
+@[to_dual self]
 instance subsingleton_hom {α : Type u} [Preorder α] (U V : α) : Subsingleton (U ⟶ V) :=
   ⟨fun _ _ => ULift.ext (Subsingleton.elim _ _ )⟩
 
@@ -77,6 +78,7 @@ theorem homOfLE_comp {x y z : X} (h : x ≤ y) (k : y ≤ z) :
   rfl
 
 /-- Extract the underlying inequality from a morphism in a preorder category. -/
+@[to_dual self]
 theorem leOfHom {x y : X} (h : x ⟶ y) : x ≤ y :=
   h.down.down
 
