@@ -17,7 +17,7 @@ set_option doc.verso.suggestions false
 This file contains basic results on Galois connections, insertions and coinsertions in various
 order structures, and provides constructions that lift order structures from one type to another.
 
-## Implementation details
+## Implementation notes
 
 Galois insertions can be used to lift order structures from one type to another.
 For example, if `α` is a complete lattice, and `l : α → β` and `u : β → α` form a Galois insertion,

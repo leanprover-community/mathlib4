@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 public import Mathlib.Algebra.Ring.Action.Pointwise.Set
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pointwise actions on sets in a ring
 

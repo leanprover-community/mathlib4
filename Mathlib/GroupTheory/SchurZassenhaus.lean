@@ -74,10 +74,10 @@ noncomputable instance : MulAction G H.QuotientDiff where
           rwa [smul_diff_smul', coe_mk, coe_one, mul_eq_one_iff_eq_inv, mul_eq_left, ←
             coe_one, ← Subtype.ext_iff])
   mul_smul g₁ g₂ q :=
-    Quotient.inductionOn' q fun T =>
+    Quotient.inductionOn q fun T =>
       congr(Quotient.mk'' $(by rw [mul_inv_rev]; exact mul_smul (op g₁⁻¹) (op g₂⁻¹) T))
   one_smul q :=
-    Quotient.inductionOn' q fun T =>
+    Quotient.inductionOn q fun T =>
       congr(Quotient.mk'' $(by rw [inv_one]; apply one_smul Gᵐᵒᵖ T))
 
 theorem smul_diff' (h : H) :
@@ -89,11 +89,11 @@ theorem smul_diff' (h : H) :
   simp_rw [Subtype.ext_iff, MonoidHom.id_apply, coe_mul, mul_assoc, mul_right_inj]
   rw [smul_apply_eq_smul_apply_inv_smul, smul_eq_mul_unop, MulOpposite.unop_op, mul_left_inj,
     ← Subtype.ext_iff, Equiv.apply_eq_iff_eq, inv_smul_eq_iff]
-  exact left_eq_mul.mpr ((QuotientGroup.eq_one_iff _).mpr h.2)
+  exact left_eq_mul.mpr ((QuotientGroup.eq_one_iff _).mpr h.property)
 
 theorem eq_one_of_smul_eq_one (hH : Nat.Coprime (Nat.card H) H.index) (α : H.QuotientDiff)
     (h : H) : h • α = α → h = 1 :=
-  Quotient.inductionOn' α fun α hα =>
+  Quotient.inductionOn α fun α hα =>
     (powCoprime hH).injective <|
       calc
         h ^ H.index = diff (MonoidHom.id H) (op ((h⁻¹ : H) : G) • α) α := by
@@ -102,8 +102,8 @@ theorem eq_one_of_smul_eq_one (hH : Nat.Coprime (Nat.card H) H.index) (α : H.Qu
 
 theorem exists_smul_eq (hH : Nat.Coprime (Nat.card H) H.index) (α β : H.QuotientDiff) :
     ∃ h : H, h • α = β :=
-  Quotient.inductionOn' α
-    (Quotient.inductionOn' β fun β α =>
+  Quotient.inductionOn α
+    (Quotient.inductionOn β fun β α =>
       Exists.imp (fun _ => Quotient.sound')
         ⟨(powCoprime hH).symm (diff (MonoidHom.id H) β α),
           (diff_inv _ _ _).symm.trans

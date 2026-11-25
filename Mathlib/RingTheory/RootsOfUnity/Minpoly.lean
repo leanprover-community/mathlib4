@@ -12,6 +12,9 @@ public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 
 import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Minimal polynomial of roots of unity
 

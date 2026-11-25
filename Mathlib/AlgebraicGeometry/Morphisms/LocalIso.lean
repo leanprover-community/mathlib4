@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.LocalClosure
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Local isomorphisms
 

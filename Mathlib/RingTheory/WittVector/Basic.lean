@@ -31,7 +31,7 @@ satisfy the axioms of a commutative ring.
 
 We use notation `𝕎 R`, entered `\bbW`, for the Witt vectors over `R`.
 
-## Implementation details
+## Implementation notes
 
 As we prove that the ghost components respect the ring operations, we face a number of repetitive
 proofs. To avoid duplicating code we factor these proofs into a custom tactic, only slightly more

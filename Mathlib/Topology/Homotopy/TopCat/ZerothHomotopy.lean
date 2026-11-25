@@ -9,6 +9,9 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.PiZero
 public import Mathlib.AlgebraicTopology.SimplicialSet.TopAdj
 public import Mathlib.Topology.Homotopy.TopCat.Path
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `ZerothHomotopy` and connected components of `TopCat.toSSet.obj X`
 

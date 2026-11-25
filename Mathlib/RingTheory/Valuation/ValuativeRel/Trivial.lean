@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Trivial Valuative Relations
 

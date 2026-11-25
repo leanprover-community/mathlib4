@@ -12,6 +12,9 @@ public import Mathlib.Algebra.Field.ZMod
 import Mathlib.Tactic.NormNum.Inv
 import Mathlib.Tactic.NormNum.Pow
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Prime fields
 

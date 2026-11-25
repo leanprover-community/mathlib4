@@ -9,6 +9,9 @@ public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
 
 import Mathlib.MeasureTheory.Function.SpecialFunctions.Sinc
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integrals of characteristic functions
 

@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Limits.Constructions.ZeroObjects -- shake: 
 -- This import adds an instance which, despite failing to trigger,
 -- is necessary for some typeclass syntheses in this file to succeed.
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # (Co)Limits of Schemes
 
@@ -664,7 +667,7 @@ lemma IsAffineOpen.biSup_of_disjoint {s : Set σ} (hs : s.Finite)
     IsAffineOpen (⨆ i ∈ s, U i) := by
   rw [← iSup_subtype'']
   have := hs.to_subtype
-  exact .iSup_of_disjoint (by simpa) fun i j e ↦ hU' i.2 j.2 (by aesop)
+  exact .iSup_of_disjoint (by simpa) fun i j e ↦ hU' i.property j.property (by aesop)
 
 lemma IsAffineOpen.sup_of_disjoint {U V : X.Opens} (hU : IsAffineOpen U) (hV : IsAffineOpen V)
     (H : Disjoint U V) :

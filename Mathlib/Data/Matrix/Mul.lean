@@ -20,6 +20,7 @@ import Mathlib.Algebra.Regular.Basic
 This file defines vector and matrix multiplication
 
 ## Main definitions
+
 * `dotProduct`: the dot product between two vectors
 * `Matrix.mul`: multiplication of two matrices
 * `Matrix.mulVec`: multiplication of a matrix with a vector
@@ -623,7 +624,7 @@ theorem IsStablyFiniteRing.of_injective [FunLike F R S] [RingHomClass F R S] (f 
 
 theorem RingEquiv.isStablyFiniteRing_iff [EquivLike F R S] [RingEquivClass F R S] (f : F) :
     IsStablyFiniteRing R ↔ IsStablyFiniteRing S where
-  mp _ := .of_injective _ (RingEquivClass.toRingEquiv f).symm.injective
+  mp _ := .of_injective _ (ofClass f).symm.injective
   mpr _ := .of_injective f (EquivLike.injective f)
 
 instance (priority := low) [SetLike F R] [SubsemiringClass F R] (S : F) [IsStablyFiniteRing R] :

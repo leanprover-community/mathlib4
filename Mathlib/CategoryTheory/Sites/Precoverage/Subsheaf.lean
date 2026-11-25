@@ -22,7 +22,7 @@ the smallest subsheaf of `F` containing `𝒮`.
 - `CategoryTheory.Precoverage.small_subsheafify_of_small`: If all the sets in the family `𝒮`
   are small, then the `K`-sheafification is again small.
 
-## TODOs
+## TODO
 
 - Relate `Precoverage.subsheafify K` with `Subfunctor.sheafify` for the Grothendieck topology
   `Precoverage.toGrothendieck K`.

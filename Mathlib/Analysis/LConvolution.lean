@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Group.LIntegral
 public import Mathlib.MeasureTheory.Group.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Convolution of functions using the Lebesgue integral
 

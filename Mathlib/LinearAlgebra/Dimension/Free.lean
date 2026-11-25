@@ -7,13 +7,15 @@ module
 
 public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-public import Mathlib.RingTheory.AlgebraTower
 public import Mathlib.SetTheory.Cardinal.Finsupp
+
+import Mathlib.RingTheory.AlgebraTower
 
 /-!
 # Rank of free modules
 
-## Main result
+## Main statements
+
 - `Module.nonempty_linearEquiv_iff_lift_rank_eq`:
   Two free modules are isomorphic iff they have the same dimension.
 - `Module.finBasis`:

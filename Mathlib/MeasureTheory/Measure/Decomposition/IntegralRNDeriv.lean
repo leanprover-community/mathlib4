@@ -13,6 +13,9 @@ import Mathlib.Analysis.Convex.Approximation
 import Mathlib.Probability.Kernel.Composition.IntegralCompProd
 import Mathlib.Probability.Kernel.Composition.RadonNikodym
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integrals of functions of Radon-Nikodym derivatives
 

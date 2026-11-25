@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
 public import Mathlib.Condensed.Light.Module
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The explicit sheaf condition for light condensed sets
 

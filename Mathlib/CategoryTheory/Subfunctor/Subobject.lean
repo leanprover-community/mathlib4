@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Subfunctor.Image
 public import Mathlib.CategoryTheory.Subobject.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Comparison between `Subfunctor`, `MonoOver` and `Subobject`
 

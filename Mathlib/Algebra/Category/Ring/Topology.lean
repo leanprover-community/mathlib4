@@ -19,6 +19,7 @@ Alternatively, given a presentation `A = ℤ[xᵢ]/I`,
 this is the subspace topology `Hom(A, R) ↪ Hom(ℤ[xᵢ], R) = Rᶥ`.
 
 ## Main results
+
 - `CommRingCat.HomTopology.isClosedEmbedding_precomp_of_surjective`:
   `Hom(A/I, R)` is a closed subspace of `Hom(A, R)` if `R` is Hausdorff.
 - `CommRingCat.HomTopology.mvPolynomialHomeomorph`:
@@ -94,7 +95,7 @@ lemma isClosedEmbedding_precomp_of_surjective
     Topology.IsClosedEmbedding ((f ≫ ·) : (B ⟶ R) → (A ⟶ R)) := by
   refine ⟨isEmbedding_precomp_of_surjective f hf, ?_⟩
   have : IsClosed (⋂ i : RingHom.ker f.hom, { f : A ⟶ R | f i = 0 }) :=
-    isClosed_iInter fun x ↦ (isClosed_singleton (x := 0)).preimage (continuous_apply (R := R) x.1)
+    isClosed_iInter fun x ↦ (isClosed_singleton (x := 0)).preimage (continuous_apply (R := R) x.val)
   convert this
   ext x
   simp only [Set.mem_range, Set.mem_iInter, Set.mem_ofPred_eq, Subtype.forall, RingHom.mem_ker]

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.Contraction
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The coevaluation map on finite-dimensional vector spaces
 
@@ -17,7 +20,7 @@ from `K` to `V ⊗ Dual K V` which corresponds to the identity function on `V`.
 
 coevaluation, dual module, tensor product
 
-## Future work
+## TODO
 
 * Prove that this is independent of the choice of basis on `V`.
 -/

@@ -9,6 +9,9 @@ public meta import Mathlib.Tactic.CategoryTheory.Bicategory.Datatypes
 public import Mathlib.Tactic.CategoryTheory.Bicategory.Datatypes
 public import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Normalization of 2-morphisms in bicategories
 

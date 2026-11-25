@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Polynomial.Degree.Operations
 public import Mathlib.Data.Nat.WithBot
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Results on polynomials of specific small degrees
 -/
