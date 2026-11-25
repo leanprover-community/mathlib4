@@ -107,7 +107,7 @@ attribute [local instance] ComonObj.instTensorUnit in
 variable (C) in
 /-- The trivial comonoid object. We later show this is terminal in `Comon C`.
 -/
-@[simps!, implicit_reducible]
+@[simps!, instance_reducible]
 def trivial : Comon C := mk (𝟙_ C)
 
 instance : Inhabited (Comon C) :=

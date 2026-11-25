@@ -219,8 +219,6 @@ def toComon : Comon (Mon C) ⥤ Comon C := (Mon.forget C).mapComon
 @[simp]
 theorem toComon_forget : toComon C ⋙ Comon.forget C = forget C := rfl
 
-section ComonMonEquivMonComon
-
 variable {C} in
 /-- The object level part of the forward direction of `Comon (Mon C) ≌ Mon (Comon C)` -/
 @[simps, implicit_reducible]
@@ -333,16 +331,11 @@ def equivMonComonCounitIsoApp (M : Mon (Comon C)) :
   Mon.mkIso (equivMonComonCounitIsoAppX M)
 
 /-- The equivalence `Comon (Mon C) ≌ Mon (Comon C)` -/
-@[implicit_reducible]
 def equivMonComon : Comon (Mon C) ≌ Mon (Comon C) where
   functor := toMonComon C
   inverse := ofMonComon C
   unitIso := NatIso.ofComponents equivMonComonUnitIsoApp
   counitIso := NatIso.ofComponents equivMonComonCounitIsoApp
-
-end ComonMonEquivMonComon
-
-variable {C}
 
 /-! ### Additional lemmas -/
 
