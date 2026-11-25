@@ -180,6 +180,10 @@ theorem swap_surjective : Function.Surjective (@swap α β) :=
 theorem swap_bijective : Function.Bijective (@swap α β) :=
   ⟨swap_injective, swap_surjective⟩
 
+@[simp]
+theorem swap_inj {x y : α ⊕ β} : swap x = swap y ↔ x = y :=
+  swap_injective.eq_iff
+
 mk_iff_of_inductive_prop Sum.LiftRel Sum.liftRel_iff
 
 namespace LiftRel
