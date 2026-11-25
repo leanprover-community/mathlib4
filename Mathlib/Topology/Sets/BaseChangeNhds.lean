@@ -46,7 +46,7 @@ lemma baseChangeCompactsInside_comp {U V W : Opens α} (h : U ⟶ V) (k : V ⟶ 
   := by rfl
 
 @[simp]
-lemma baseChangeOpenNhds_id {U : Opens α} (K : U.compactsInside) :
+lemma baseChangeCompactsInside_id {U : Opens α} (K : U.compactsInside) :
   baseChangeCompactsInside (𝟙 U) K = K := by rfl
 
 end Opens
