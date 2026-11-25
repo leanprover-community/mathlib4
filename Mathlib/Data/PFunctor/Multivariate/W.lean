@@ -39,7 +39,7 @@ Specifically, we define the polynomial functor `wp` as:
 As a result `wp α` is made of a dataless tree and a function from
 its valid paths to values of `α`
 
-## Reference
+## References
 
 * Jeremy Avigad, Mario M. Carneiro and Simon Hudon.
   [*Data Types as Quotients of Polynomial Functors*][avigad-carneiro-hudon2019]

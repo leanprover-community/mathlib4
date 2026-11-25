@@ -38,7 +38,7 @@ Ext into `M`.  One can, of course, take the collection to simply be the integral
 
 local cohomology, local cohomology modules
 
-## Future work
+## TODO
 
 * Prove that this definition is equivalent to:
     * the right-derived functor definition

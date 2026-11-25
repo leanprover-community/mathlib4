@@ -25,7 +25,7 @@ When `W` has a left calculus of fractions, we generalize the lemmas
 `Localization.exists_leftFraction₃`, and
 `LeftFraction.map_eq_iff` as `LeftFraction₂.map_eq_iff`.
 
-## Implementation note
+## Implementation notes
 
 The lemmas in this file are phrased with data that is bundled into structures like
 `LeftFraction₂` or `LeftFraction₃`. It could have been possible to phrase them

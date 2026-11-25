@@ -33,7 +33,7 @@ We define the relation `Mcongr` and take its quotient as the definition of `Cofi
 `Mcongr` is taken as the weakest bisimulation on M-type. See
 [avigad-carneiro-hudon2019] for more details.
 
-## Reference
+## References
 
 * Jeremy Avigad, Mario M. Carneiro and Simon Hudon.
   [*Data Types as Quotients of Polynomial Functors*][avigad-carneiro-hudon2019]

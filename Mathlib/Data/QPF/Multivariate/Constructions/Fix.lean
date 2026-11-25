@@ -33,7 +33,7 @@ We define the relation `WEquiv` and take its quotient as the definition of `Fix 
 
 See [avigad-carneiro-hudon2019] for more details.
 
-## Reference
+## References
 
 * Jeremy Avigad, Mario M. Carneiro and Simon Hudon.
   [*Data Types as Quotients of Polynomial Functors*][avigad-carneiro-hudon2019]

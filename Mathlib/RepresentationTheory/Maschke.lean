@@ -27,7 +27,8 @@ taking the average over `G` of the conjugates of `π`.
 * These results assume `IsUnit (Fintype.card G : k)` which is equivalent to the more
   familiar `¬(ringChar k ∣ Fintype.card G)`.
 
-## Future work
+## TODO
+
 It's not so far to give the usual statement, that every finite-dimensional representation
 of a finite group is semisimple (i.e. a direct sum of irreducibles).
 -/

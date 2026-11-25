@@ -56,7 +56,8 @@ indicating duality, but rather indicating the sense of "along with".
 In `CategoryTheory.Filtered.Final` we give additional equivalent conditions in the case that
 `C` is filtered.
 
-## Future work
+## TODO
+
 Dualise condition 3 above and the implications 2 ⇒ 3 and 3 ⇒ 1 to initial functors.
 
 ## References

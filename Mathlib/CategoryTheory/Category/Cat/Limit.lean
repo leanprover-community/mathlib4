@@ -16,7 +16,8 @@ which are carried to one another by the functors in the diagram.
 A morphism between two such objects is a family of morphisms between the corresponding objects,
 which are carried to one another by the action on morphisms of the functors in the diagram.
 
-## Future work
+## TODO
+
 Can the indexing category live in a lower universe?
 -/
 

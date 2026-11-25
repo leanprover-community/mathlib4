@@ -15,12 +15,12 @@ public import Mathlib.Tactic.CategoryTheory.Monoidal.Basic
 The basic definitions of braided monoidal categories, and symmetric monoidal categories,
 as well as braided functors.
 
-## Implementation note
+## Implementation notes
 
 We make `BraidedCategory` another typeclass, but then have `SymmetricCategory` extend this.
 The rationale is that we are not carrying any additional data, just requiring a property.
 
-## Future work
+## TODO
 
 * Construct the Drinfeld center of a monoidal category as a braided monoidal category.
 * Say something about pseudo-natural transformations.

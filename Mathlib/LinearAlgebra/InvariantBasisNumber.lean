@@ -70,7 +70,7 @@ The following examples can be found in the book of Lam [lam_1999]
   two-sided ideal `(ac − 1, bd − 1, ab, cd)` satisfies the invariant basis number property
   but not the rank condition.
 
-## Future work
+## TODO
 
 So far, there is no API at all for the `InvariantBasisNumber` class. There are several natural
 ways to formulate that a module `M` is finitely generated and free, for example

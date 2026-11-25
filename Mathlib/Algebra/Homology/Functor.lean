@@ -18,7 +18,8 @@ When `V` is abelian, a morphism of short complexes or homological
 complexes in the category `T ⥤ V` is a quasi-isomorphism iff
 it is so after evaluation at any `t : T`.
 
-## Future work
+## TODO
+
 In fact there is an equivalence of categories
 `HomologicalComplex (T ⥤ V) c ≌ T ⥤ HomologicalComplex V c`.
 -/

@@ -18,7 +18,8 @@ This file defines the type of discrete quotients of a topological space,
 denoted `DiscreteQuotient X`. To avoid quantifying over types, we model such
 quotients as setoids whose equivalence classes are clopen.
 
-## Definitions
+## Main definitions
+
 1. `DiscreteQuotient X` is the type of discrete quotients of `X`.
   It is endowed with a coercion to `Type`, which is defined as the
   quotient associated to the setoid in question, and each such quotient
@@ -46,7 +47,7 @@ Given `f : C(X, Y)`, we define a predicate `DiscreteQuotient.LEComap f A B` for
 `cond : DiscreteQuotient.LEComap h A B`, the function `A → B` is obtained by
 `DiscreteQuotient.map f cond`.
 
-## Theorems
+## Main theorems
 
 The two main results proved in this file are:
 

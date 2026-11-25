@@ -25,7 +25,7 @@ None.
 * `ContinuousLinearMap.opNorm_bound_of_ball_bound`: A bound on the norms of values of a linear
   map in a ball yields a bound on the operator norm.
 
-## Notes
+## Implementation notes
 
 This file exists mainly to avoid importing `RCLike` in the main normed space theory files.
 -/
