@@ -15,7 +15,8 @@ import Mathlib.LinearAlgebra.ExteriorPower.Orientation
 
 This file contains a definition of the Hodge star on exterior powers.
 
-## Main definitions / results:
+## Main definitions and statements
+
  * `exteriorPower.hodgeStar`: the Hodge star on exterior powers associated to a choice of bilinear
    form and volume element.
  * `exteriorPower.hodgeStarOfOrientation`: the Hodge star associated to a bilinear form and a
