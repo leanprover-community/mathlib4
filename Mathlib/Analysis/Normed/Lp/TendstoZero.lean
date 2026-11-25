@@ -50,13 +50,34 @@ lemma lp.mem_tendstoZero_iff (x : lp E ∞) :
 
 namespace lp.tendstoZero
 
+instance instDFunLike : DFunLike (c₀ E) ι E where
+  coe x := ⇑(x : lp E ∞)
+  coe_injective := DFunLike.coe_injective.comp Subtype.coe_injective
+
+@[simp, norm_cast]
+lemma coeFn_coe (x : c₀ E) : ⇑(x : lp E ∞) = ⇑x :=
+  rfl
+
+@[simp]
+lemma coeFn_subtype_mk (x : lp E ∞) (hx : x ∈ c₀ E) : ⇑(⟨x, hx⟩ : c₀ E) = ⇑x :=
+  rfl
+
+@[ext]
+lemma ext {x y : c₀ E} (h : ∀ i, x i = y i) : x = y :=
+  DFunLike.ext x y h
+
+instance : IsZeroApply (c₀ E) where
+instance : IsAddApply (c₀ E) where
+instance : IsNegApply (c₀ E) where
+instance : IsSubApply (c₀ E) where
+
 /-- Constructor for a term of `c₀ E` which doesn't force the user to pass through `lp E ∞`. -/
 def mk (f : (i : ι) → E i) (h : Tendsto (fun i ↦ ‖f i‖) cofinite (𝓝 0)) : c₀ E :=
   ⟨lp.mk f (memℓp_infty h.bddAbove_range_of_cofinite), h⟩
 
 @[simp]
-lemma coe_mk (f : (i : ι) → E i) (h : Tendsto (fun i ↦ ‖f i‖) cofinite (𝓝 0)) :
-    ⇑(mk f h : lp E ∞) = f :=
+lemma coeFn_mk (f : (i : ι) → E i) (h : Tendsto (fun i ↦ ‖f i‖) cofinite (𝓝 0)) :
+    ⇑(mk f h) = f :=
   rfl
 
 instance isClosed : IsClosed (c₀ E : Set (lp E ∞)) :=
@@ -71,10 +92,12 @@ noncomputable instance : NormedAddCommGroup (c₀ E) := AddSubgroup.normedAddCom
 
 noncomputable instance : SMul 𝕜 (c₀ E) where
   smul k x := ⟨k • x, squeeze_zero (fun _ ↦ by positivity)
-    (fun i ↦ norm_smul_le k ((x : lp E ∞) i)) <| by simpa using Tendsto.const_mul ‖k‖ x.property⟩
+    (fun i ↦ norm_smul_le k (x i)) <| by simpa using Tendsto.const_mul ‖k‖ x.property⟩
 
 @[simp]
 lemma coe_smul (k : 𝕜) (x : c₀ E) : ↑(k • x) = k • (x : lp E ∞) := rfl
+
+instance : IsSMulApply 𝕜 (c₀ E) where
 
 noncomputable instance : Module 𝕜 (c₀ E) := fast_instance%
   Subtype.val_injective.module 𝕜 (c₀ E).subtype fun _ _ ↦ rfl
@@ -173,12 +196,16 @@ lemma coe_single (i : ι) (c : E i) :
     (tendstoZero.single i c : lp E ∞) = lp.single ∞ i c :=
   rfl
 
+@[simp]
+lemma coeFn_single (i : ι) (c : E i) : ⇑(single i c) = Pi.single i c :=
+  lp.coeFn_single ∞ i c
+
 lemma smul_single (i : ι) (c : 𝕜) (x : E i) :
     c • single i x = single i (c • x) := by
   ext; simp [single]
 
 lemma hasSum_single (x : c₀ E) :
-    HasSum (fun i ↦ single i ((x : lp E ∞) i)) x := by
+    HasSum (fun i ↦ single i (x i)) x := by
   have hx := mem_tendstoZero_iff _ |>.mp x.property
   rw [HasSum]
   rw [Metric.nhds_basis_closedBall.tendsto_right_iff] at hx ⊢
