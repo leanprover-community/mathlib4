@@ -393,6 +393,11 @@ lemma toContinuousMonoidHom_injective :
     Function.Injective (toContinuousMonoidHom : (M ≃ₜ* N) → M →ₜ* N) :=
   fun _ _ h ↦ by ext; simp [h, ← coe_toContinuousMonoidHom]
 
+@[to_additive (attr := simp)]
+lemma toContinuousMonoidHom_inj {e f : M ≃ₜ* N} :
+    e.toContinuousMonoidHom = f.toContinuousMonoidHom ↔ e = f :=
+  toContinuousMonoidHom_injective.eq_iff
+
 end toContinuousMonoidHom
 
 end coe
