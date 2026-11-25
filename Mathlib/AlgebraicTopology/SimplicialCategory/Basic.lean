@@ -69,29 +69,25 @@ variable (C) in
 /-- The bifunctor `Cᵒᵖ ⥤ C ⥤ SSet.{v}` which sends `K : Cᵒᵖ` and `L : C` to `sHom K.unop L`. -/
 noncomputable abbrev sHomFunctor : Cᵒᵖ ⥤ C ⥤ SSet.{v} := eHomFunctor _ _
 
-variable {m : SimplexCategoryᵒᵖ}
+variable {m : SimplexCategoryᵒᵖ} {K L M N : C}
 
 /-- The identity `m`-simplex of `sHom K K`. -/
 def idS (m : SimplexCategoryᵒᵖ) (K : C) : (sHom K K).obj m :=
   (eId SSet K).app m PUnit.unit
 
 /-- Composition of `m`-simplices of the simplicial homs. -/
-def comp {K L M : C} (s : (sHom K L).obj m) (t : (sHom L M).obj m) :
-    (sHom K M).obj m :=
+def comp (s : (sHom K L).obj m) (t : (sHom L M).obj m) : (sHom K M).obj m :=
   (sHomComp K L M).app m (s, t)
 
 @[simp]
-lemma idS_comp {K L : C} (s : (sHom K L).obj m) :
-    comp (idS m K) s = s :=
+lemma idS_comp (s : (sHom K L).obj m) : comp (idS m K) s = s :=
   ConcreteCategory.congr_hom (congr_app (e_id_comp SSet K L) m) s
 
 @[simp]
-lemma comp_idS {K L : C} (s : (sHom K L).obj m) :
-    comp s (idS m L) = s :=
+lemma comp_idS (s : (sHom K L).obj m) : comp s (idS m L) = s :=
   ConcreteCategory.congr_hom (congr_app (e_comp_id SSet K L) m) s
 
-lemma comp_assoc {K L M N : C} (s : (sHom K L).obj m) (t : (sHom L M).obj m)
-    (r : (sHom M N).obj m) :
+lemma comp_assoc (s : (sHom K L).obj m) (t : (sHom L M).obj m) (r : (sHom M N).obj m) :
     comp (comp s t) r = comp s (comp t r) :=
   ConcreteCategory.congr_hom (congr_app (e_assoc SSet K L M N) m)
     ((s, (t, r)) : (sHom K L ⊗ (sHom L M ⊗ sHom M N)).obj m)
