@@ -26,6 +26,7 @@ equivalence relation, and defines Turing degrees as the quotient under this rela
 - `f ≡ᵀ g` : `f` is Turing equivalent to `g`.
 
 ## References
+
 * [Odifreddi, Piergiorgio, *Classical Recursion Theory: The Theory of Functions and Sets of
   Natural Numbers*][odifreddi1989]
 

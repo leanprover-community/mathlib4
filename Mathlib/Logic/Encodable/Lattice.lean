@@ -15,7 +15,7 @@ set_option doc.verso.suggestions false
 
 Lemmas about lattice and set operations on encodable types
 
-## Implementation Notes
+## Implementation notes
 
 This is a separate file, to avoid unnecessary imports in basic files.
 

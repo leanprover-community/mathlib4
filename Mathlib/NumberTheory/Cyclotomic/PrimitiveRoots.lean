@@ -13,6 +13,9 @@ import Mathlib.Data.PNat.Prime
 import Mathlib.RingTheory.Norm.Transitivity
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Primitive roots in cyclotomic fields
 
@@ -22,6 +25,7 @@ more general assumption of just being a primitive root, for reasons described in
 details section.
 
 ## Main definitions
+
 * `IsCyclotomicExtension.zeta n A B`: if `IsCyclotomicExtension {n} A B`, then `zeta n A B`
   is a primitive `n`-th root of unity in `B`.
 * `IsPrimitiveRoot.powerBasis`: if `K` and `L` are fields such that
@@ -31,6 +35,7 @@ details section.
   and `primitiveRoots n A` given by the choice of `ζ`.
 
 ## Main results
+
 * `IsCyclotomicExtension.zeta_spec`: `zeta n A B` is a primitive `n`-th root of unity.
 * `IsCyclotomicExtension.finrank`: if `Irreducible (cyclotomic n K)` (in particular for
   `K = ℚ`), then the `finrank` of a cyclotomic extension is `n.totient`.
@@ -49,7 +54,8 @@ details section.
 * `IsPrimitiveRoot.embeddingsEquivPrimitiveRoots`: the equivalence between `L →ₐ[K] A`
   and `primitiveRoots n A` given by the choice of `ζ`.
 
-## Implementation details
+## Implementation notes
+
 `zeta n A B` is defined as any primitive root of unity in `B`, - this must exist, by definition of
 `IsCyclotomicExtension`. It is not true in general that it is a root of `cyclotomic n B`,
 but this holds if `isDomain B` and `NeZero (n : B)`.

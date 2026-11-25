@@ -15,6 +15,7 @@ This file defines an equivalent notion of a Dedekind domain (or Dedekind ring),
 namely a Noetherian integral domain where the localization at every nonzero prime ideal is a DVR.
 
 ## Main results
+
 - `IsLocalization.AtPrime.isDiscreteValuationRing_of_dedekind_domain` shows that
   `IsDedekindDomain` implies the localization at each nonzero prime ideal is a DVR.
 - `isDedekindDomain_iff_isDiscreteValuationRing_atPrime` proves the equivalence of

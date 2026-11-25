@@ -19,6 +19,7 @@ Let `M, N` be `R`-modules, `m ≤ M` and `n ≤ N` be an `R`-submodules and `I �
 the following isomorphisms:
 
 ## Main results
+
 - `TensorProduct.quotientTensorQuotientEquiv`:
   `(M ⧸ m) ⊗[R] (N ⧸ n) ≃ₗ[R] (M ⊗[R] N) ⧸ (m ⊗ N ⊔ M ⊗ n)`
 - `TensorProduct.quotientTensorEquiv`:

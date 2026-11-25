@@ -17,7 +17,7 @@ In this file we prove that $\lim_{x\to\infty}\frac{P(x)}{e^x}=0$ for any polynom
 
 Add more similar lemmas: limit at `-∞`, versions with $e^{cx}$ etc.
 
-## Keywords
+## Tags
 
 polynomial, limit, exponential
 -/
