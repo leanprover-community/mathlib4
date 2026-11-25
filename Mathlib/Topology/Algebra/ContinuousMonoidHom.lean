@@ -35,12 +35,20 @@ variable [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C] [Topolog
 
 /-- The type of continuous additive monoid homomorphisms from `A` to `B`.
 
+When possible, instead of parametrizing results over `(f : ContinuousAddMonoidHom A B)`,
+you should parametrize
+over `(F : Type*) [FunLike F A B] [ContinuousMapClass F A B] [AddMonoidHomClass F A B] (f : F)`.
+
 When you extend this structure,
 make sure to extend `ContinuousMapClass` and/or `AddMonoidHomClass`, if needed. -/
 structure ContinuousAddMonoidHom (A B : Type*) [AddMonoid A] [AddMonoid B] [TopologicalSpace A]
   [TopologicalSpace B] extends A →+ B, C(A, B)
 
 /-- The type of continuous monoid homomorphisms from `A` to `B`.
+
+When possible, instead of parametrizing results over `(f : ContinuousMonoidHom A B)`,
+you should parametrize
+over `(F : Type*) [FunLike F A B] [ContinuousMapClass F A B] [MonoidHomClass F A B] (f : F)`.
 
 When you extend this structure,
 make sure to extend `ContinuousMapClass` and/or `MonoidHomClass`, if needed. -/
@@ -371,8 +379,14 @@ theorem toMulEquiv_eq_coe (f : M ≃ₜ* N) : f.toMulEquiv = f :=
   rfl
 
 @[to_additive]
-theorem toHomeomorph_eq_coe (f : M ≃ₜ* N) : f.toHomeomorph = f :=
+theorem toHomeomorph_eq_ofClass (f : M ≃ₜ* N) : f.toHomeomorph = .ofClass f :=
   rfl
+
+@[deprecated (since := "2026-11-24")] alias _root_.ContinuousAddEquiv.toHomeomorph_eq_coe :=
+  ContinuousAddEquiv.toHomeomorph_eq_ofClass
+
+@[to_additive existing, deprecated (since := "2026-11-24")] alias toHomeomorph_eq_coe :=
+  toHomeomorph_eq_ofClass
 
 /-- Makes a continuous multiplicative isomorphism from
 a homeomorphism which preserves multiplication. -/
@@ -470,7 +484,13 @@ initialize_simps_projections ContinuousAddEquiv (toFun → apply, invFun → sym
 theorem invFun_eq_symm {f : M ≃ₜ* N} : f.invFun = f.symm := rfl
 
 @[to_additive (attr := simp)]
-theorem coe_toHomeomorph_symm (f : M ≃ₜ* N) : (f : M ≃ₜ N).symm = (f.symm : N ≃ₜ M) := rfl
+theorem symm_toHomeomorph (f : M ≃ₜ* N) : f.toHomeomorph.symm = f.symm.toHomeomorph := rfl
+
+@[deprecated (since := "2026-11-24")] alias _root_.ContinuousAddEquiv.coe_toHomeomorph_symm :=
+  ContinuousAddEquiv.symm_toHomeomorph
+
+@[to_additive existing, deprecated (since := "2026-11-24")] alias coe_toHomeomorph_symm :=
+  symm_toHomeomorph
 
 @[to_additive (attr := simp)]
 theorem equivLike_inv_eq_symm (f : M ≃ₜ* N) : EquivLike.inv f = f.symm := rfl
@@ -608,7 +628,7 @@ lemma toMulEquiv_toContinuousMulEquiv : (e.toContinuousMulEquiv he : G ≃* H) =
   rfl
 
 @[to_additive, simp] lemma toHomeomorph_toContinuousMulEquiv :
-    (e.toContinuousMulEquiv he : G ≃ₜ H) = e.toHomeomorph he :=
+    (e.toContinuousMulEquiv he).toHomeomorph = e.toHomeomorph he :=
   rfl
 
 @[to_additive]
