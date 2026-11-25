@@ -65,7 +65,7 @@ instance (priority := 100) toBialgHomClass : BialgHomClass F R A B where
 
 /-- Reinterpret an element of a type of bialgebra equivalences as a bialgebra equivalence. -/
 def _root_.BialgEquiv.ofClass (f : F) : A ≃ₐc[R] B :=
-  { (.ofClass f : A ≃ₗc[R] B), (.ofClass f : A →ₐc[R] B) with }
+  { CoalgEquiv.ofClass f, BialgHom.ofClass f with }
 
 @[deprecated (since := "2026-11-22")] alias toBialgEquiv := BialgEquiv.ofClass
 

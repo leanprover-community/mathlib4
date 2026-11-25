@@ -127,10 +127,10 @@ variable (e e' : A ≃ₗc[R] B)
 protected theorem coe_ofClass {F : Type*} [EquivLike F A B] [CoalgEquivClass F R A B] (f : F) :
     ⇑(ofClass f) = f := rfl
 
-@[deprecated CoalgEquiv.coe_ofClass +typeChanged (since := "2026-11-22")]
+@[deprecated CoalgHom.coe_ofClass +typeChanged (since := "2026-11-22")]
 theorem coe_coalgHomOfClass : ⇑(CoalgHom.ofClass e) = e := rfl
 
-@[deprecated (since := "2026-09-09")] alias coe_coe := CoalgEquiv.coe_ofClass
+@[deprecated (since := "2026-09-09")] alias coe_coe := CoalgHom.coe_ofClass
 
 @[simp]
 theorem toCoalgHom_eq_ofClass (f : A ≃ₗc[R] B) : f.toCoalgHom = f :=
@@ -142,7 +142,7 @@ theorem toCoalgHom_eq_ofClass (f : A ≃ₗc[R] B) : f.toCoalgHom = f :=
 theorem coe_toLinearEquiv : ⇑(e : A ≃ₗ[R] B) = e :=
   rfl
 
-@[deprecated (since := "2026-09-09")] alias coe_toCoalgHom := CoalgEquiv.coe_ofClass
+@[deprecated (since := "2026-09-09")] alias coe_toCoalgHom := CoalgHom.coe_ofClass
 
 theorem toLinearEquiv_toLinearMap : ((e : A ≃ₗ[R] B) : A →ₗ[R] B) = (e : A →ₗc[R] B) :=
   rfl
