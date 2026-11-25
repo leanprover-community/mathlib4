@@ -331,7 +331,6 @@ section NonnegSpectrumClass
 
 variable [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
-alias CStarAlgebra.instNonnegSpectrumClass := NonnegSpectrumClass.of_starOrderedRing
 
 open ComplexOrder in
 instance CStarAlgebra.instNonnegSpectrumClassComplexUnital : NonnegSpectrumClass ℂ A where
@@ -411,7 +410,6 @@ section NonnegSpectrumClass
 
 variable [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
-alias CStarAlgebra.instNonnegSpectrumClass' := NonnegSpectrumClass.of_starOrderedRing
 
 end NonnegSpectrumClass
 
