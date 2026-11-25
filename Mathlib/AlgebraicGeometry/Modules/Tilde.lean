@@ -658,7 +658,7 @@ set_option backward.isDefEq.respectTransparency false in
 /--
 This is the key computation for the proof of
 `Scheme.Modules.isQuasicoherent_iff_isIso_fromTildeΓ`.
-‍\[Lemme 1.4.1.1\]\[grothendieck-1971\]
+\[Lemme 1.4.1.1\]\[grothendieck-1971\]
 -/
 private lemma Aux.of_eq_iSup_basicOpen {M : (Spec R).Modules} (V : (Spec R).Opens)
     {ι : Type*} [Finite ι] (g : ι → R) (hg : V = ⨆ i, basicOpen (g i))
