@@ -677,7 +677,7 @@ theorem toPartition_injective : Function.Injective (toPartition (a := a)) :=
 
 @[gcongr]
 theorem strictMono_toPartition : StrictMono (toPartition (a := a)) :=
-  Monotone.strictMono_of_injective (fun _ _ ↦ toPartition_le_toPartition.mpr) toPartition_injective
+  strictMono_of_le_iff_le fun _ _ ↦ toPartition_le_toPartition.symm
 
 instance : CanLift (Partition a) (Finpartition a) toPartition (fun P ↦ (P : Set α).Finite) where
   prf := by
