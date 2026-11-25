@@ -459,8 +459,8 @@ protected theorem isometric_cfc (f : C(S, R)) (halg : Isometry (algebraMap R S))
     · simpa [halg.dist_eq] using! ContinuousMap.dist_apply_le_dist _
     · let x' : σₙ S a := Subtype.map (algebraMap R S) (fun _ ↦ quasispectrum.algebraMap_mem S) x
       apply le_of_eq_of_le ?_ <| ContinuousMap.dist_apply_le_dist x'
-      simp only [ContinuousMapZero.comp_apply, ContinuousMapZero.coe_mk,
-        ContinuousMap.coe_mk, StarAlgHom.ofId_apply, halg.dist_eq, x']
+      simp only [ContinuousMapZero.coe_toContinuousMap, ContinuousMapZero.comp_apply,
+        ContinuousMapZero.coe_mk, ContinuousMap.coe_mk, StarAlgHom.ofId_apply, halg.dist_eq, x']
       congr! 2
       all_goals ext; exact haf.left_inv _ |>.symm
 
@@ -712,16 +712,16 @@ instance toNonUnital : NonUnitalIsometricContinuousFunctionalCalculus 𝕜 A p w
     simp only [MulHom.coe_coe, NonUnitalStarAlgHom.coe_toNonUnitalAlgHom]
     refine AddMonoidHomClass.isometry_of_norm _ fun f ↦ ?_
     let ι : C(σ 𝕜 a, σₙ 𝕜 a) := ⟨_, continuous_inclusion <| spectrum_subset_quasispectrum 𝕜 a⟩
-    change ‖(f : C(σₙ 𝕜 a, 𝕜)).comp ι‖ = ‖(f : C(σₙ 𝕜 a, 𝕜))‖
+    change ‖f.toContinuousMap.comp ι‖ = ‖f.toContinuousMap‖
     apply le_antisymm (ContinuousMap.norm_le _ (by positivity) |>.mpr ?_)
       (ContinuousMap.norm_le _ (by positivity) |>.mpr ?_)
     · rintro ⟨x, hx⟩
-      exact (f : C(σₙ 𝕜 a, 𝕜)).norm_coe_le_norm ⟨x, spectrum_subset_quasispectrum 𝕜 a hx⟩
+      exact f.toContinuousMap.norm_coe_le_norm ⟨x, spectrum_subset_quasispectrum 𝕜 a hx⟩
     · rintro ⟨x, hx⟩
       obtain (rfl | hx') : x = 0 ∨ x ∈ σ 𝕜 a := by
         simpa [quasispectrum_eq_spectrum_union_zero] using hx
       · change ‖f 0‖ ≤ _
         simp
-      · exact (f : C(σₙ 𝕜 a, 𝕜)).comp ι |>.norm_coe_le_norm ⟨x, hx'⟩
+      · exact f.toContinuousMap.comp ι |>.norm_coe_le_norm ⟨x, hx'⟩
 
 end IsometricContinuousFunctionalCalculus
