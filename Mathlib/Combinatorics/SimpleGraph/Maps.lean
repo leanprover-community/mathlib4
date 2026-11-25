@@ -37,6 +37,11 @@ since its image is an induced subgraph.
 Morphisms of graphs are abbreviations for `RelHom`, `RelEmbedding` and `RelIso`.
 To make use of pre-existing simp lemmas, definitions involving morphisms are
 abbreviations as well.
+
+## TODO
+
+- Add `SimpleGraph.EmbeddingClass` analogous to `SimpleGraph.HomClass`.
+
 -/
 
 @[expose] public section

@@ -240,6 +240,10 @@ theorem Embedding.isClique_image {G' : SimpleGraph β} {f : G ↪g G'} :
     G'.IsClique (f '' s) ↔ G.IsClique s :=
   ⟨(f.map_adj_iff.mp <| · ⟨·, ·, rfl⟩ ⟨·, ·, rfl⟩ <| f.injective.ne ·), .image f.toHom⟩
 
+theorem Iso.isClique_image {G' : SimpleGraph β} {f : G ≃g G'} :
+    G'.IsClique (f '' s) ↔ G.IsClique s :=
+  f.toEmbedding.isClique_image
+
 end Clique
 
 /-! ### `n`-cliques -/
