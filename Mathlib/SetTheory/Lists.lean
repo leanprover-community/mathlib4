@@ -29,7 +29,7 @@ We distinguish two kinds of ZFA lists:
 
 For example, `Lists ℕ` contains stuff like `23`, `[]`, `[37]`, `[1, [[2], 3], 4]`.
 
-## Implementation note
+## Implementation notes
 
 As we want to be able to append both atoms and proper ZFA lists to proper ZFA lists, it's handy that
 atoms and proper ZFA lists belong to the same type, even though atoms of `α` could be modelled as

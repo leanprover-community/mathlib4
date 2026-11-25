@@ -31,7 +31,7 @@ in the literature only for the Gaussian case, it is implicit in the definition o
 function (`p = 0` and `q = 1`).
 To recover the usual hypergeometric function, simply multiply by `∏ i, Gamma (b i)`.
 
-## Definitions
+## Main definitions
 
 For the general case we have
 
@@ -44,7 +44,7 @@ For the Gaussian case (`p = 2` and `q = 1`), we define
 * `Complex.regularizedGaussHGFunSeries`: the formal multilinear series
 * `Complex.regularizedGaussHGFun`: the function
 
-## Results
+## Main statements
 
 Convergence:
 

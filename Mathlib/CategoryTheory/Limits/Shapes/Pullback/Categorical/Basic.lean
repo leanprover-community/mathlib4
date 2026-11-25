@@ -46,7 +46,7 @@ equivalent to `CatCommSqOver F G X`.
 * [Niles Johnson, Donald Yau, _2-Dimensional Categories_](https://arxiv.org/abs/2002.06055),
   example 5.3.9, although we take a slightly different (equivalent) model of the object.
 
-## TODOs:
+## TODO
 
 * 2-functoriality of the construction with respect to "transformation of categorical
   cospans".

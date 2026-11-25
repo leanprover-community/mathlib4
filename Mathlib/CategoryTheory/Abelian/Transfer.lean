@@ -27,7 +27,7 @@ see `ShrinkHoms.abelian`. In this case, we also transfer the `Preadditive` struc
 
 See [https://stacks.math.columbia.edu/tag/03A3](https://stacks.math.columbia.edu/tag/03A3)
 
-## Notes
+## Implementation notes
 
 The hypotheses, following the statement from the Stacks project,
 may appear surprising: we don't ask that the counit of the adjunction is an isomorphism,

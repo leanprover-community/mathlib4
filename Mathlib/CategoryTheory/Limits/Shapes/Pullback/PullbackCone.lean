@@ -47,7 +47,7 @@ This file provides API for interacting with cones (resp. cocones) in the case of
   Similar to `PullbackCone`, `PushoutCone f g` is implemented as an abbreviation for
   `Cocone (span f g)`, so general results about cocones are also available for `PushoutCone f g`.
 
-## API
+## Main statements
 
 We summarize the most important parts of the API for pullback cones here. The dual notions for
 pushout cones are also available in this file.

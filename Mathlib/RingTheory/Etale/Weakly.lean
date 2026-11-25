@@ -16,7 +16,7 @@ set_option doc.verso.suggestions false
 In this file we define weakly étale algebras. An `R`-algebra `S` is weakly étale if
 `S` is `R`-flat and the multiplication map `S ⊗[R] S → S` is flat.
 
-## TODOs
+## TODO
 
 * Show that a weakly étale algebra is formally unramified and in particular that
   a weakly étale algebra of finite presentation is étale (@chrisflav).

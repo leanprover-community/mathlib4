@@ -34,7 +34,7 @@ In this file, we prove Krasner's lemma.
   algebraic extension `L` over `K`. This implies the classical Krasner's lemma by taking `L` as the
   separable closure of `K`.
 
-## Reference
+## References
 
 For the classical statement of Krasner's lemma, please see the
 [wikipedia page](https://en.wikipedia.org/wiki/Krasner%27s_lemma).

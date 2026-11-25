@@ -25,7 +25,7 @@ via `stalkToFiber` which evaluates a germ of a dependent function at a point.
 We construct a morphism `toSheafify` from a presheaf to (the underlying presheaf of)
 its sheafification, given by sending a section to its collection of germs.
 
-## Future work
+## TODO
 
 Show that the map induced on stalks by `toSheafify` is the inverse of `stalkToFiber`.
 

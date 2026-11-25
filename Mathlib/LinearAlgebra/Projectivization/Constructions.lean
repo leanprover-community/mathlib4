@@ -18,7 +18,7 @@ set_option doc.verso.suggestions false
 
 This file defines the dot product and cross product on projective spaces.
 
-## Definitions
+## Main definitions
 
 * `Projectivization.orthogonal v w` is defined as vanishing of the dot product.
 * `Projectivization.cross v w` for `v w : ℙ F (Fin 3 → F)` is defined as the cross product of

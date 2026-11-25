@@ -16,7 +16,7 @@ set_option doc.verso.suggestions false
 
 We study the exterior powers of a module `M` over a commutative ring `R`.
 
-## Definitions
+## Main definitions
 
 * `exteriorPower.ιMulti` is the canonical alternating map on `M` with values in `⋀[R]^n M`.
 * `exteriorPower.presentation R n M` is the standard presentation of the `R`-module `⋀[R]^n M`.
@@ -25,7 +25,7 @@ We study the exterior powers of a module `M` over a commutative ring `R`.
   `Mathlib/Algebra/Category/ModuleCat/ExteriorPower.lean` for the corresponding functor
   `ModuleCat R ⥤ ModuleCat R`.)
 
-## Theorems
+## Main statements
 
 * `exteriorPower.ιMulti_span`: The image of `exteriorPower.ιMulti` spans `⋀[R]^n M`.
 * We construct `exteriorPower.alternatingMapLinearEquiv` which

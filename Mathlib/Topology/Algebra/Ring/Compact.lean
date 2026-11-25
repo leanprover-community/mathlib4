@@ -32,7 +32,7 @@ set_option doc.verso.suggestions false
 * `IsDedekindDomain.isOpen_iff`:
   An ideal in a compact Hausdorff Dedekind domain (that is not a field) is open iff it is non-zero.
 
-## Future projects
+## TODO
 
 Show that compact Hausdorff rings are totally disconnected and linearly topologized.
 See https://ncatlab.org/nlab/show/compact+Hausdorff+rings+are+profinite

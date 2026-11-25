@@ -28,7 +28,7 @@ Given an object property `P`, we define an object property `ind P` that is satis
 * `CategoryTheory.ObjectProperty.ind_ind`: If `P` implies finitely presentable, then
   `P.ind.ind = P.ind`.
 
-## TODOs:
+## TODO
 
 * Dualise to obtain `CategoryTheory.ObjectProperty.pro`.
 -/

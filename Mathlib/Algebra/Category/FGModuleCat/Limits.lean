@@ -20,7 +20,7 @@ set_option doc.verso.suggestions false
 
 And hence `FGModuleCat K` has all finite limits.
 
-## Future work
+## TODO
 
 After generalising `FGModuleCat` to allow the ring and the module to live in different universes,
 generalize this construction so we can take limits over smaller diagrams,

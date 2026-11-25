@@ -27,7 +27,7 @@ presentation of a colimit of objects that are equipped with presentations.)
 * `CategoryTheory.Limits.LimitPresentation`: A limit presentation of `X` over `J` is a diagram
   `{Dᵢ}` in `C` and natural maps `sᵢ : X ⟶ Dᵢ` making `X` into the limit of the `Dᵢ`.
 
-## TODOs:
+## TODO
 
 * Refactor `TransfiniteCompositionOfShape` so that it extends `ColimitPresentation`.
 -/

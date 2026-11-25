@@ -31,7 +31,7 @@ building block for bicategorical limits of categories.
 
 * [nLab, _inserter_](https://ncatlab.org/nlab/show/inserter).
 
-## Future work
+## TODO
 
 * Link `Inserter F (𝟭 C)` with `Endofunctor.Algebra F` when `F` is an endofunctor.
 * Link `Inserter (𝟭 C) F` with `Endofunctor.Coalgebra F` when `F` is an endofunctor.

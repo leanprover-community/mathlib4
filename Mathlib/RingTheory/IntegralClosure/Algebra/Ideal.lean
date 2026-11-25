@@ -20,7 +20,7 @@ set_option doc.verso.suggestions false
   then any `x ∈ IS` is integral over `I`, i.e. it is a root
   of some monic polynomial in `R[X]` whose non-leading coefficients are in `I`.
 
-## Note
+## Implementation notes
 
 We actually prove something stronger, namely that the `Xⁿ⁻ⁱ`-th coefficient lives in `Iⁿ`.
 This is the definition that `x` is integral over `I` in https://stacks.math.columbia.edu/tag/00H2.

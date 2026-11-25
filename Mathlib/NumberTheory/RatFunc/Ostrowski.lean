@@ -22,7 +22,7 @@ valuation at infinity `FunctionField.inftyValuation K`.
 
 * `RatFunc.valuation_isEquiv_infty_or_adic`: Ostrowski's theorem for `K(X)`.
 
-### TODO
+## TODO
 
 * Show that a nontrivial valuation `v`, trivial on `K`, is a rank one discrete valuation. (\*)
 -/

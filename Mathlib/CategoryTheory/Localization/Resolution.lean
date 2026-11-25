@@ -25,7 +25,7 @@ structure.
 
 Similar definitions are done for left resolutions.
 
-## Future work
+## TODO
 
 * show that if `C` is an abelian category with enough injectives, there is a derivability
   structure associated to the inclusion of the full subcategory of complexes of injective

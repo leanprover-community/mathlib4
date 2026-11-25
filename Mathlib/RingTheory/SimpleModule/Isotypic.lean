@@ -34,7 +34,7 @@ set_option doc.verso.suggestions false
   submodules `Nᵢ`, then `End R M` is isomorphic to `Πᵢ End R Nᵢ`. This can be applied to
   the isotypic components of a semisimple module `M`, yielding `IsSemisimpleModule.endAlgEquiv`.
 
-## Keywords
+## Tags
 
 isotypic component, fully invariant submodule
 -/
