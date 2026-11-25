@@ -48,7 +48,7 @@ namespace Filter.Germ
 /-- The value associated to a germ at a point. This is the common value
 shared by all representatives at the given point. -/
 def value {X α : Type*} [TopologicalSpace X] {x : X} (φ : Germ (𝓝 x) α) : α :=
-  Quotient.liftOn' φ (fun f ↦ f x) fun f g h ↦ by rw [Eventually.self_of_nhds h]
+  liftOn φ (Function.eval x) fun _ _ hfg => hfg.eq_of_nhds
 
 @[simp]
 theorem value_ofFun (f : X → Y) (x : X) : value (f : Germ (𝓝 x) Y) = f x := rfl
@@ -186,4 +186,4 @@ lemma eq_of_germ_isConstant_on {s : Set X} (h : ∀ x ∈ s, (f : Germ (𝓝 x) 
 @[to_additive (attr := simp)]
 theorem Germ.coe_prod {α : Type*} (l : Filter α) (R : Type*) [CommMonoid R] {ι} (f : ι → α → R)
     (s : Finset ι) : ((∏ i ∈ s, f i : α → R) : Germ l R) = ∏ i ∈ s, (f i : Germ l R) :=
-  map_prod (Germ.coeMulHom l : (α → R) →* Germ l R) f s
+  map_prod (Product.coeMulHom l : (α → R) →* Germ l R) f s
