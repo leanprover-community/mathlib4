@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Pseudo
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of objects in target categories of a pseudofunctor to `Cat`
 

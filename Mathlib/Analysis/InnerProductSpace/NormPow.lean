@@ -9,6 +9,9 @@ public import Mathlib.Analysis.InnerProductSpace.Calculus
 
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties about the powers of the norm
 
