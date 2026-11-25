@@ -51,9 +51,13 @@ in the closed `r`-thickening of a proper affine subspace `A`,
 then `infDist x A + ρ ≤ r`:
 move `x` by `ρ` away from `A` along a unit vector orthogonal to `A`. -/
 lemma infDist_add_le_of_closedBall_subset_cthickening
-    {A : AffineSubspace ℝ P} [Nonempty A] [A.direction.HasOrthogonalProjection]
+    {A : AffineSubspace ℝ P} [A.direction.HasOrthogonalProjection]
     (hA : A.direction ≠ ⊤) {x : P} {ρ r : ℝ≥0}
     (h : closedBall x ρ ⊆ cthickening r A) : infDist x A + ρ ≤ r := by
+  have : Nonempty A := by
+    by_contra! hAe
+    simpa [Set.eq_empty_iff_forall_notMem.2 fun y hy ↦ hAe.false ⟨y, hy⟩] using
+      h (mem_closedBall_self ρ.coe_nonneg)
   have hA' : A.directionᗮ ≠ ⊥ := by rwa [Ne, Submodule.orthogonal_eq_bot_iff]
   set w : V := x -ᵥ orthogonalProjection A x with hw
   have hwA : w ∈ A.directionᗮ := vsub_orthogonalProjection_mem_direction_orthogonal A x
@@ -80,10 +84,7 @@ theorem le_ethickness_cthickening {s : Set P} (hs : s.Nonempty) (ρ : ℝ≥0) {
     ethickness ℝ s n + ρ ≤ ethickness ℝ (cthickening ρ s) n := by
   rw [le_ethickness_iff]
   intro r A hA hsub
-  have hA' : A.direction ≠ ⊤ := by
-    rintro h
-    rw [h, rank_top] at hA
-    exact (hA.trans_lt hn).false
+  have hA' : A.direction ≠ ⊤ := fun h ↦ (hA.trans_lt hn).ne (h ▸ rank_top ..)
   have : FiniteDimensional ℝ A.direction :=
     Module.rank_lt_aleph0_iff.1 (hA.trans_lt Cardinal.natCast_lt_aleph0)
   obtain ⟨x₀, hx₀⟩ := hs
@@ -94,10 +95,8 @@ theorem le_ethickness_cthickening {s : Set P} (hs : s.Nonempty) (ρ : ℝ≥0) {
   have hdist (x) (hx : x ∈ s) : infDist x A + ρ ≤ r :=
     infDist_add_le_of_closedBall_subset_cthickening hA'
       ((closedBall_subset_cthickening hx ρ).trans hsub)
-  have hρr : ρ ≤ r := by
-    have := hdist x₀ hx₀
-    have := infDist_nonneg (x := x₀) (s := (A : Set P))
-    exact_mod_cast (by linarith : (ρ : ℝ) ≤ r)
+  have hρr : ρ ≤ r :=
+    NNReal.coe_le_coe.1 <| (le_add_of_nonneg_left infDist_nonneg).trans (hdist x₀ hx₀)
   have : ethickness ℝ s n ≤ (r - ρ : ℝ≥0) := by
     refine ethickness_le_of_cthickening _ hA fun x hx ↦ mem_cthickening_of_dist_le x
       (orthogonalProjection A x) _ _ (orthogonalProjection_mem x) ?_
