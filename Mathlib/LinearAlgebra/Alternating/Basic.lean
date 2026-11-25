@@ -18,6 +18,7 @@ We construct the bundled function `AlternatingMap`, which extends `MultilinearMa
 arguments of the same type.
 
 ## Main definitions
+
 * `AlternatingMap R M N ι` is the space of `R`-linear alternating maps from `ι → M` to `N`.
 * `f.map_eq_zero_of_eq` expresses that `f` is zero when two inputs are equal.
 * `f.map_swap` expresses that `f` is negated when two inputs are swapped.

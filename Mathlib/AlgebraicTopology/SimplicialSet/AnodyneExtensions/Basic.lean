@@ -37,6 +37,7 @@ in terms of such regular pairings, and using the main result of the file
 we show that a strong anodyne extension is an anodyne extension.
 
 ## TODO
+
 * introduce inner variants of these definitions
 * show that strong anodyne extensions are indeed stable under coproducts,
   transfinite compositions and pushouts (the proof should reduce to the

@@ -34,6 +34,7 @@ an ordered field.
 * IsOrderedCancelVAdd : inequalities are preserved and reflected by translation.
 
 ## Instances
+
 * `IsOrderedMonoid.toIsOrderedSMul`
 * `IsOrderedAddMonoid.toIsOrderedVAdd`
 * `IsOrderedSMul.toCovariantClassLeft`
@@ -46,6 +47,7 @@ an ordered field.
 * `IsOrderedCancelVAdd.toContravariantClassLeft`
 
 ## TODO
+
 * (lex) prod instances
 * Pi instances
 * WithTop (in a different file?)
