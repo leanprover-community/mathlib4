@@ -256,13 +256,12 @@ theorem Nondegenerate.mul_iff_left {l m : Type*} [Finite l] [Fintype m] [Finite 
     Nondegenerate.mul_iff_right h.transpose, nondegenerate_transpose_iff]
 
 omit [Fintype n] in
+@[deprecated nondegenerate_smul_iff +typeChanged (since := "2026-11-24")]
 theorem Nondegenerate.smul_iff
     {A : Type*} [CommRing A] [IsDomain A] [Finite n] {t : A} (h : t ≠ 0)
     {M : Matrix n n A} :
-    (t • M).Nondegenerate ↔ M.Nondegenerate := by
-  have := Fintype.ofFinite
-  rw [nondegenerate_def, nondegenerate_def]
-  simp [smul_mulVec, mul_eq_zero_iff_left h]
+    (t • M).Nondegenerate ↔ M.Nondegenerate :=
+  nondegenerate_smul_iff <| .of_ne_zero h
 
 end Nondegenerate
 

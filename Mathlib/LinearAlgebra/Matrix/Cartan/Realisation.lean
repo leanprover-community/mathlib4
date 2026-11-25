@@ -26,13 +26,14 @@ propositions are equivalent:
 The definition `RootPairing` formalises item 1 above. Here we introduce `CartanMatrix.Realisation`
 to formalise item 2.
 
-## Main definitions / results:
- * `CartanMatrix.Realisation`: the definition of a realisation of a Cartan matrix.
- * `CartanMatrix.Realisation.toRootPairing`: the root pairing defined by a realisation of a Cartan
-   matrix.
- * `Matrix.IsFiniteCartan.toRealisation`: a realisation associated to an invertible Cartan matrix.
- * `Matrix.IsFiniteCartan.toRootPairing`: a reduced, irreducible, crystallographic root system
-   associated to a Cartan matrix, with coefficients in any field of characteristic zero.
+## Main definitions and statements
+
+* `CartanMatrix.Realisation`: the definition of a realisation of a Cartan matrix.
+* `CartanMatrix.Realisation.toRootPairing`: the root pairing defined by a realisation of a Cartan
+  matrix.
+* `Matrix.IsFiniteCartan.toRealisation`: a realisation associated to an invertible Cartan matrix.
+* `Matrix.IsFiniteCartan.toRootPairing`: a reduced, irreducible, crystallographic root system
+  associated to a Cartan matrix, with coefficients in any field of characteristic zero.
 -/
 
 public noncomputable section

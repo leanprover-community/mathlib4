@@ -78,7 +78,7 @@ is given by the definition `Monoid.Coprod.lift` and the lemma `Monoid.Coprod.lif
 We also prove a slightly more general extensionality lemma `Monoid.Coprod.hom_ext`
 for homomorphisms `M ∗ N →* P` and prove lots of basic lemmas like `Monoid.Coprod.fst_comp_inl`.
 
-## Implementation details
+## Implementation notes
 
 The definition of the coproduct of an indexed family of monoids is formalized in `Monoid.CoprodI`.
 While mathematically `M ∗ N` is a particular case
