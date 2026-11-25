@@ -15,7 +15,7 @@ public import Mathlib.Util.AtomM.Recurse
 
 Evaluate expressions in the language of additive, commutative monoids and groups.
 
-## Future work
+## TODO
 
 * In mathlib 3, `abel` accepted additional optional arguments:
   ```

@@ -52,6 +52,12 @@ abbrev KPresheaf : Type max u v w := (Compacts X)ᵒᵖ ⥤ A
 
 namespace KPresheaf
 
+/-- The pushforward by a proper map as a functor over K-presheaves -/
+@[simps!, implicit_reducible]
+def pushforward {Y : TopCat.{w}} (f : X ⟶ Y) (pf : IsProperMap f) :
+    KPresheaf A X ⥤ KPresheaf A Y :=
+  (Functor.whiskeringLeft _ _ _).obj (Compacts.properPreimage_mono pf).functor.op
+
 /-- If `P` is a K-presheaf, and `K` a compact subset then `P.obj (op K)` is equipped with a
 structure of cocone over the diagram defined by the `P.obj (op L)` for `L` a compact
 neighbourhood of `K` -/
@@ -134,7 +140,7 @@ instance : (KPresheaf.isKSheaf A X).IsClosedUnderIsomorphisms where
     { nonempty_isTerminal := ⟨h.nonempty_isTerminal.some.ofIso (e.app _)⟩
       isPullback sq :=
         (h.isPullback sq).of_iso (e.app _) (e.app _) (e.app _) (e.app _)
-          (by cat_disch)  (by cat_disch) (by cat_disch) (by cat_disch)
+          (by cat_disch) (by cat_disch) (by cat_disch) (by cat_disch)
       nonempty_isColimit_coconeOfCompacts K :=
         ⟨(IsColimit.equivOfNatIsoOfIso (Functor.isoWhiskerLeft _ e) _ _
             (by exact Cocone.ext (e.app _)))
@@ -163,6 +169,43 @@ lemma hom_ext_of_compacts (P : KSheaf A X) {K : Compacts X} {W : A} {f f' : P.ob
     (w : ∀ V, dsimp% (P.obj.coconeOfClosureOfOpens K).ι.app V ≫ f =
     (P.obj.coconeOfClosureOfOpens K).ι.app V ≫ f') : f = f' :=
   KPresheaf.hom_ext_of_isColimit_coconeOfCompacts _ (P.isColimit K) w
+
+open Compacts KPresheaf
+
+variable {Y : TopCat.{w}} [T2Space Y] [LocallyCompactSpace Y] {f : X ⟶ Y}
+    (pf : IsProperMap f) (F : KSheaf A X)
+
+lemma isKSheaf_pushforward_obj : ((pushforward f pf).obj F.obj).IsKSheaf where
+  nonempty_isTerminal := F.property.nonempty_isTerminal
+  isPullback h :=
+    F.property.isPullback <|
+    Lattice.BicartSq.map h <| {
+      toFun := properPreimage pf
+      map_sup' := by aesop
+      map_inf' := by aesop }
+  nonempty_isColimit_coconeOfCompacts K :=
+    ⟨(Functor.Final.isColimitWhiskerEquiv ((baseChangeCompactNhdsByProperPreimage_mono
+       pf K).functor.op) _).symm (F.isColimit (properPreimage pf K))⟩
+
+variable {Y : TopCat.{w}} [T2Space Y] [LocallyCompactSpace Y] (f : X ⟶ Y)
+    (pf : IsProperMap f)
+
+/-- The pushforward of a K-presheaf as a functor -/
+@[simps!, implicit_reducible]
+def pushforward : KSheaf A X ⥤ KSheaf A Y :=
+  ObjectProperty.lift _
+    (ObjectProperty.ι KPresheaf.IsKSheaf ⋙ (KPresheaf.pushforward f pf))
+    (fun F ↦ F.isKSheaf_pushforward_obj pf)
+
+/-- The isomorphism between the pushforwad of identity and the identity functor -/
+def pushforwardId [LocallyCompactSpace X] :
+    pushforward (𝟙 X) isProperMap_id ≅ 𝟭 (KSheaf A X) := Iso.refl _
+
+/-- The isomorphism between the pushforwad of a composition and the composition of pushforwards -/
+def pushforwardComp {Z : TopCat.{w}} [T2Space Z] [LocallyCompactSpace Z] {g : Y ⟶ Z}
+    (pg : IsProperMap g) :
+    pushforward (A := A) f pf ⋙ pushforward g pg ≅
+    pushforward (f ≫ g) (pg.comp pf) := Iso.refl _
 
 end KSheaf
 

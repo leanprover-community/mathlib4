@@ -100,7 +100,7 @@ differentiability at all but countably many points of the set mentioned below.
   in a disc in terms of circle integrals of `f z / (z - w) ^ (n + 1)` around the boundary circle,
   together with the specialization to the centre of the disc.
 
-## Implementation details
+## Implementation notes
 
 The proof of the Cauchy integral formula in this file is based on a very general version of the
 divergence theorem, see `MeasureTheory.integral_divergence_of_hasFDerivAt_off_countable`

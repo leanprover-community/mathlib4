@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
 
 import Mathlib.CategoryTheory.Limits.ConeCategory
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Reflexive coequalizers
 
@@ -43,6 +46,7 @@ reflexive.
   has all colimits of shape `WalkingReflexivePair`.
 
 ## TODO
+
 * If `C` has binary coproducts and reflexive coequalizers, then it has all coequalizers.
 * If `T` is a monad on cocomplete category `C`, then `Algebra T` is cocomplete iff it has reflexive
   coequalizers.

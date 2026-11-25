@@ -14,7 +14,8 @@ import Mathlib.RingTheory.AlgebraTower
 /-!
 # Rank of free modules
 
-## Main result
+## Main statements
+
 - `Module.nonempty_linearEquiv_iff_lift_rank_eq`:
   Two free modules are isomorphic iff they have the same dimension.
 - `Module.finBasis`:

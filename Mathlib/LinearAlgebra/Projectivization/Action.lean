@@ -143,7 +143,7 @@ instance specialLinearGroup_is_two_pretransitive :
     · simp [← Units.val_inj, coe_det, LinearMap.transvection.det]
     · rw [smul_mk, mk_eq_mk_iff, LinearEquiv.smul_def]
       use a
-      rw [← coe_coe, dilatransvection.coe_toLinearMap,
+      rw [← coe_toLinearMap, dilatransvection.coe_toLinearMap,
         LinearMap.transvection.apply, Module.Basis.coord_apply]
       suffices (b.repr D.rep) ⟨D.rep, hD_mem⟩ = 1 by
         rw [this, Module.Basis.extend_apply_self, Units.smul_def]
@@ -153,7 +153,7 @@ instance specialLinearGroup_is_two_pretransitive :
       simp
     · rw [smul_mk, mk_eq_mk_iff, LinearEquiv.smul_def]
       use 1
-      rw [one_smul, ← coe_coe, dilatransvection.coe_toLinearMap,
+      rw [one_smul, ← coe_toLinearMap, dilatransvection.coe_toLinearMap,
         LinearMap.transvection.apply, Module.Basis.coord_apply]
       suffices (b.repr D'.rep) ⟨D.rep, hD_mem⟩ = 0 by
         rw [Module.Basis.extend_apply_self]

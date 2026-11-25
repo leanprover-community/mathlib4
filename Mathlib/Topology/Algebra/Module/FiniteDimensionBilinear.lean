@@ -10,6 +10,9 @@ public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Building continuous bilinear maps in finite dimensions over complete fields
 

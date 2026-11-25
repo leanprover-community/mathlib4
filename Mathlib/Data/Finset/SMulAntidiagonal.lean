@@ -15,7 +15,8 @@ Given sets `G` and `P`, with an action of `G` on `P`, we construct, for any elem
 the `Finset` of all pairs of an element in `s` and an element in `t` that scalar-multiply to `a`,
 assuming that set is finite.
 
-## Definitions
+## Main definitions
+
 * Finset.SMulAntidiagonal : Finset antidiagonal for PWO inputs.
 * Finset.VAddAntidiagonal : Finset antidiagonal for PWO inputs.
 -/

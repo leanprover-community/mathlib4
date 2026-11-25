@@ -23,6 +23,7 @@ See also `CategoryTheory.Limits.HasLimits` which further builds:
 * `HasLimit F`, asserting the mere existence of some limit cone for `F`.
 
 ## References
+
 * [Stacks: Limits and colimits](https://stacks.math.columbia.edu/tag/002D)
 -/
 
