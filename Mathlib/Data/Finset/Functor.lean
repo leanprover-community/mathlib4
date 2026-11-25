@@ -5,9 +5,10 @@ Authors: Yaël Dillies, Kim Morrison
 -/
 module
 
-import Mathlib.Data.Finset.Lattice.Union
 public import Mathlib.Data.Finset.NAry
 public import Mathlib.Data.Multiset.Functor
+
+import Mathlib.Data.Finset.Lattice.Union
 
 /-!
 # Functoriality of `Finset`
@@ -195,7 +196,7 @@ variable {α β γ : Type u} {F G : Type u → Type u} [Applicative F] [Applicat
 
 /-- Traverse function for `Finset`. -/
 def traverse [DecidableEq β] (f : α → F β) (s : Finset α) : F (Finset β) :=
-  Multiset.toFinset <$> Multiset.traverse f s.1
+  Multiset.toFinset <$> Multiset.traverse f s.val
 
 @[simp]
 theorem id_traverse [DecidableEq α] (s : Finset α) : traverse (pure : α → Id α) s = pure s := by

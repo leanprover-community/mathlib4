@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Algebra.Order.Group.Multiset
 public import Mathlib.Algebra.Order.Sub.Unbundled.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sums and products over multisets
 
@@ -231,7 +234,7 @@ theorem sum_map_tsub [AddCommMonoid M] [PartialOrder M] [ExistsAddOfLE M]
 
 end OrderedSub
 
-instance {M : Type*} : IsAddTorsionFree (Multiset M) :=
+instance {M : Type*} : HasUniqueDiv (Multiset M) :=
   ⟨fun n hn x y h ↦ open scoped Classical in Multiset.ext' fun _ ↦
     (Nat.mul_right_inj hn).mp <| by simp only [← Multiset.count_nsmul, h]⟩
 

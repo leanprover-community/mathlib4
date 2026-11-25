@@ -5,8 +5,9 @@ Authors: Amelia Livingston, Bryan Gin-ge Chen, Patrick Massot, Wen Yang, Johan C
 -/
 module
 
-import Mathlib.Data.Set.Finite.Range
 public import Mathlib.Order.Partition.Finpartition
+
+import Mathlib.Data.Set.Finite.Range
 
 /-!
 # Equivalence relations: partitions
@@ -195,7 +196,7 @@ def IsPartition (c : Set (Set α)) := ∅ ∉ c ∧ ∀ a, ∃! b ∈ c, a ∈ b
 /-- A partition of `α` does not contain the empty set. -/
 theorem nonempty_of_mem_partition {c : Set (Set α)} (hc : IsPartition c) {s} (h : s ∈ c) :
     s.Nonempty :=
-  Set.nonempty_iff_ne_empty.2 fun hs0 => hc.1 <| hs0 ▸ h
+  Set.ne_empty_iff_nonempty.1 fun hs0 => hc.1 <| hs0 ▸ h
 
 theorem isPartition_classes (r : Setoid α) : IsPartition r.classes :=
   ⟨empty_notMem_classes, classes_eqv_classes⟩
@@ -248,7 +249,7 @@ def Partitions.toSet (p : Partitions α) : Set (Set α) :=
 lemma Partitions.ext_iff (p q : Partitions α) : p = q ↔ p.toSet = q.toSet :=
   Subtype.ext_iff
 
-lemma Partitions.isPartition (p : Partitions α) : IsPartition p.toSet := p.2
+lemma Partitions.isPartition (p : Partitions α) : IsPartition p.toSet := p.property
 
 /-- Defining `≤` on partitions as the `≤` defined on their induced equivalence relations. -/
 instance Partition.le : LE (Partitions α) :=
@@ -272,7 +273,7 @@ variable (α) in
 partitions of `α` into subsets. -/
 protected def Partition.orderIso : Setoid α ≃o Partitions α where
   toFun r := ⟨r.classes, empty_notMem_classes, classes_eqv_classes⟩
-  invFun C := mkClasses C.1 C.2.2
+  invFun C := mkClasses C.val C.property.2
   left_inv := mkClasses_classes
   right_inv C := by
     rw [Partitions.ext_iff, ← classes_mkClasses C.toSet C.isPartition]
@@ -435,18 +436,18 @@ theorem out_proj (x : α) : hs.out (hs.proj x) = hs.some (hs.index x) :=
 
 /-- The indices of `Quotient.out` and `IndexedPartition.out` are equal. -/
 theorem index_out (x : hs.Quotient) : hs.index x.out = hs.index (hs.out x) :=
-  Quotient.inductionOn' x fun x => (Setoid.ker_apply_mk_out x).trans (hs.index_some _).symm
+  Quotient.inductionOn x fun x => (Setoid.ker_apply_mk_out x).trans (hs.index_some _).symm
 
 /-- This lemma is analogous to `Quotient.out_eq'`. -/
 @[simp]
 theorem proj_out (x : hs.Quotient) : hs.proj (hs.out x) = x :=
-  Quotient.inductionOn' x fun x => Quotient.sound' <| hs.some_index x
+  Quotient.inductionOn x fun x => Quotient.sound' <| hs.some_index x
 
 theorem class_of {x : α} : Set.ofPred (hs.setoid x) = s (hs.index x) :=
   Set.ext fun _y => eq_comm.trans hs.mem_iff_index_eq.symm
 
 theorem proj_fiber (x : hs.Quotient) : hs.proj ⁻¹' {x} = s (hs.equivQuotient.symm x) :=
-  Quotient.inductionOn' x fun x => by
+  Quotient.inductionOn x fun x => by
     ext y
     simp only [Set.mem_preimage, hs.mem_iff_index_eq]
     exact Quotient.eq''

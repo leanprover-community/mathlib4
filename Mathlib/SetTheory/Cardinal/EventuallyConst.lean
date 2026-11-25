@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.Filter.EventuallyConst
 public import Mathlib.SetTheory.Cardinal.Aleph
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Eventually constant monotone functions
 

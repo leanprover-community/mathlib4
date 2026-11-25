@@ -6,10 +6,14 @@ Authors: Kenny Lau, Ken Lee, Chris Hughes
 module
 
 public import Mathlib.Algebra.Group.Action.Units
-import Mathlib.Algebra.Group.Nat.Units
 public import Mathlib.Algebra.GroupWithZero.Associated
-import Mathlib.Algebra.Ring.Divisibility.Basic
 public import Mathlib.Tactic.Ring
+
+import Mathlib.Algebra.Group.Nat.Units
+import Mathlib.Algebra.Ring.Divisibility.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Coprime elements of a ring or monoid
@@ -248,7 +252,7 @@ end CommSemiring
 
 section ScalarTower
 
-variable {R G : Type*} [CommSemiring R] [Group G] [MulAction G R] [SMulCommClass G R R]
+variable {R G : Type*} [CommSemiring R] [Group G] [MulAction G R]
   [IsScalarTower G R R] (x : G) (y z : R)
 
 theorem isCoprime_group_smul_left : IsCoprime (x • y) z ↔ IsCoprime y z :=

@@ -29,7 +29,7 @@ equivalence between `Unitization R C₀(X, R)` and `C(OnePoint X, R)`.
 ## Implementation notes
 
 The simp normal form of each bundled morphism is the unbundled map, so the unbundled maps
-have their own simp lemmas for various operatoins.
+have their own simp lemmas for various operations.
 -/
 
 @[expose] public section
@@ -385,7 +385,7 @@ variable (X R S) in
 /-- `ZeroAtInftyContinuousMap.unitizationEquiv` as an `AlgEquiv`. -/
 def unitizationAlgEquiv : Unitization R C₀(X, R) ≃ₐ[S] C(OnePoint X, R) where
   toRingEquiv := unitizationRingEquiv X R
-  commutes' := unitizationEquiv_algebraMap
+  map_smul' := by simp
 
 @[simp]
 lemma coe_unitizationAlgEquiv : ⇑(unitizationAlgEquiv X R S) = unitizationEquiv X R := rfl

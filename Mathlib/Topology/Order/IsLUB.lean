@@ -5,9 +5,10 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 module
 
-import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Order.Filter.CountableInter
 public import Mathlib.Topology.Order.LeftRightNhds
+
+import Mathlib.Algebra.Order.Group.Nat
 
 /-!
 # Properties of LUB and GLB in an order topology
@@ -279,7 +280,7 @@ protected lemma IsClosed.upperClosure {s : Set α} (hs : IsClosed s) :
   · exact upperClosure_eq_bot h₂ ▸ isClosed_univ
 
 protected lemma IsClosed.lowerClosure {s : Set α} (hs : IsClosed s) :
-    IsClosed (lowerClosure s).1 :=
+    IsClosed (lowerClosure s).carrier :=
   IsClosed.upperClosure (α := αᵒᵈ) hs
 
 end ConditionallyCompleteLinearOrder

@@ -9,9 +9,10 @@ public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Algebra.CharP.Basic
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Group.Submonoid.Defs
-import Mathlib.Algebra.Order.BigOperators.Group.Multiset
 public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Data.ZMod.Defs
+
+import Mathlib.Algebra.Order.BigOperators.Group.Multiset
 
 /-!
 # Freiman homomorphisms
@@ -310,12 +311,6 @@ lemma isMulFreimanIso_empty : IsMulFreimanIso n (∅ : Set α) (∅ : Set β) f 
   | n + 1 => IsMulFreimanHom.mk hfAB fun s t hsA htA hs ht h => by
     rw [← map_multiset_ne_zero_prod _ (by grind [Multiset.card_eq_zero]),
         h, map_multiset_ne_zero_prod _ (by grind [Multiset.card_eq_zero])]
-
-@[deprecated (since := "2026-04-29")]
-alias MonoidHomClass.isMulFreimanHom := MulHomClass.isMulFreimanHom
-
-@[deprecated (since := "2026-04-29")]
-alias AddMonoidHomClass.isAddFreimanHom := AddHomClass.isAddFreimanHom
 
 @[to_additive] lemma MulEquivClass.isMulFreimanIso [EquivLike F α β] [MulEquivClass F α β] (f : F)
     (hfAB : BijOn f A B) : IsMulFreimanIso n A B f where

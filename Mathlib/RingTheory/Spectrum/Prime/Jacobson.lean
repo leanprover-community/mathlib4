@@ -13,6 +13,7 @@ public import Mathlib.Topology.JacobsonSpace
 # The prime spectrum of a Jacobson ring
 
 ## Main results
+
 - `PrimeSpectrum.exists_isClosed_singleton_of_isJacobson`:
   The spectrum of a Jacobson ring is a Jacobson space.
 - `PrimeSpectrum.isOpen_singleton_tfae_of_isNoetherian_of_isJacobson`:
@@ -51,7 +52,7 @@ instance [IsJacobsonRing R] : JacobsonSpace (PrimeSpectrum R) := by
   rintro S hS ⟨U, Z, hU, hZ, rfl⟩
   simp only [← isClosed_compl_iff, isClosed_iff_zeroLocus_ideal, @compl_eq_comm _ U] at hU hZ
   obtain ⟨⟨I, rfl⟩, ⟨J, rfl⟩⟩ := And.intro hU hZ
-  simp only [Set.nonempty_iff_ne_empty, ne_eq, Set.inter_assoc,
+  simp only [← Set.ne_empty_iff_nonempty, ne_eq, Set.inter_assoc,
     ← Set.disjoint_iff_inter_eq_empty, Set.disjoint_compl_left_iff_subset,
     zeroLocus_subset_zeroLocus_iff, Ideal.radical_eq_jacobson, Ideal.jacobson, le_sInf_iff] at hS ⊢
   contrapose hS
@@ -65,7 +66,8 @@ lemma isJacobsonRing_iff_jacobsonSpace :
   conv_rhs => rw [← hI.radical]
   simp_rw [← vanishingIdeal_zeroLocus_eq_radical]
   apply vanishingIdeal_anti_mono
-  rw [← H.1 (isClosed_zeroLocus I), (isClosed_zeroLocus _).closure_subset_iff]
+  rw [← H.closure_inter_closedPoints (isClosed_zeroLocus I),
+    (isClosed_zeroLocus _).closure_subset_iff]
   rintro x ⟨hx : I ≤ x.asIdeal, hx'⟩
   change jacobson I ≤ x.asIdeal
   exact sInf_le ⟨hx, (isClosed_singleton_iff_isMaximal _).mp hx'⟩

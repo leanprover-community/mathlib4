@@ -8,8 +8,8 @@
 # about the download/verification fails, so this action can never make CI worse
 # than building from source.
 #
-# Requires (fast path only): `actions: read` permission. The `gh` CLI is provided
-# by the Hoskinson runner image. Any lookup/download failure falls through to the
+# Requires (fast path only): `actions: read` permission and the `gh` CLI, which the
+# self-hosted runner image provides. Any lookup/download failure falls through to the
 # source build, so the fast path can never make CI worse.
 name: Get CI tools
 description: Download prebuilt CI tools from master, or build them from source.

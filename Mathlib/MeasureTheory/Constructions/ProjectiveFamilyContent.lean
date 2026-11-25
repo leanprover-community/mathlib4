@@ -9,6 +9,9 @@ public import Mathlib.MeasureTheory.Constructions.Projective
 public import Mathlib.MeasureTheory.Measure.AddContent
 public import Mathlib.MeasureTheory.SetAlgebra
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Additive content built from a projective family of measures
 
@@ -31,7 +34,6 @@ the Kolmogorov extension theorem.
 
 * `projectiveFamilyContent`: additive content on the measurable cylinders, defined from a projective
   family of measures.
-
 -/
 
 @[expose] public section

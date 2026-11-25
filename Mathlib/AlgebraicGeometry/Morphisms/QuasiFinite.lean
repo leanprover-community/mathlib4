@@ -10,6 +10,7 @@ public import Mathlib.AlgebraicGeometry.Fiber
 public import Mathlib.AlgebraicGeometry.Morphisms.Finite
 public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyInjective
 public import Mathlib.RingTheory.RingHom.QuasiFinite
+
 import Mathlib.RingTheory.ZariskisMainTheorem
 
 /-!
@@ -24,6 +25,7 @@ Note that this does not require `f` to be quasi-compact nor locally of finite ty
 We prove that this is stable under composition and base change, and is right cancellative.
 
 ## Main results
+
 - `AlgebraicGeometry.LocallyQuasiFinite` : The class of locally quasi-finite morphisms.
 - `AlgebraicGeometry.Scheme.Hom.isDiscrete_preimage_singleton`:
   Locally quasi-finite morphisms have discrete fibers.
@@ -335,7 +337,7 @@ variable {f} in
 set_option backward.isDefEq.respectTransparency.types false in
 lemma Scheme.Hom.QuasiFiniteAt.quasiFiniteAt
     {x : X} (hx : f.QuasiFiniteAt x) {V : X.Opens} (hV : IsAffineOpen V) {U : Y.Opens}
-    (hU : IsAffineOpen U) (hVU : V ≤ f ⁻¹ᵁ U) (hxV : x ∈ V.1) :
+    (hU : IsAffineOpen U) (hVU : V ≤ f ⁻¹ᵁ U) (hxV : x ∈ V.carrier) :
     (f.appLE U V hVU).hom.QuasiFiniteAt (hV.primeIdealOf ⟨x, hxV⟩).asIdeal := by
   algebraize [(f.appLE U V hVU).hom]
   have H : (Y.presheaf.germ U _ (hVU hxV)).hom.QuasiFinite := by
@@ -347,7 +349,8 @@ lemma Scheme.Hom.QuasiFiniteAt.quasiFiniteAt
   algebraize [(X.presheaf.germ V x hxV).hom]
   have := hV.isLocalization_stalk ⟨x, hxV⟩
   let e := IsLocalization.algEquiv (hV.primeIdealOf ⟨x, hxV⟩).asIdeal.primeCompl
-    (X.presheaf.stalk (⟨x, hxV⟩ : V.1)) (Localization.AtPrime (hV.primeIdealOf ⟨x, hxV⟩).asIdeal)
+    (X.presheaf.stalk (⟨x, hxV⟩ : V.carrier))
+    (Localization.AtPrime (hV.primeIdealOf ⟨x, hxV⟩).asIdeal)
   rw [RingHom.QuasiFiniteAt, Algebra.QuasiFiniteAt, ← RingHom.quasiFinite_algebraMap]
   convert (RingHom.QuasiFinite.of_finite e.finite).comp (hx.comp H)
   rw [← CommRingCat.hom_comp, f.germ_stalkMap, ← X.presheaf.germ_res (homOfLE hVU) _ hxV,

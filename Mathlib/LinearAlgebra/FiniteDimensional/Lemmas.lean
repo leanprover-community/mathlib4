@@ -84,7 +84,7 @@ theorem eq_top_of_disjoint [FiniteDimensional K V] (s t : Submodule K V)
 theorem isCompl_iff_disjoint [FiniteDimensional K V] (s t : Submodule K V)
     (hdim : finrank K V ≤ finrank K s + finrank K t) :
     IsCompl s t ↔ Disjoint s t :=
-  ⟨fun h ↦ h.1, fun h ↦ ⟨h, codisjoint_iff.mpr <| eq_top_of_disjoint s t hdim h⟩⟩
+  ⟨fun h ↦ h.disjoint, fun h ↦ ⟨h, codisjoint_iff.mpr <| eq_top_of_disjoint s t hdim h⟩⟩
 
 theorem sup_span_singleton_eq_top_iff [Module.Finite K V] {W : Submodule K V} {v : V} (hv : v ∉ W) :
     W ⊔ span K {v} = ⊤ ↔ finrank K (V ⧸ W) = 1 := by
@@ -163,17 +163,24 @@ namespace LinearMap
 
 open Module
 
+section Ring
+
+variable [Ring K] [HasRankNullity.{v} K] [StrongRankCondition K] [AddCommGroup V] [Module K V]
+  {V₂ : Type v'} [AddCommGroup V₂] [Module K V₂]
+
+/-- Rank-nullity theorem: the dimensions of the kernel and the range of a linear map add up to
+the dimension of the source space. -/
+theorem finrank_range_add_finrank_ker [Module.Finite K V] (f : V →ₗ[K] V₂) :
+    finrank K (LinearMap.range f) + finrank K (LinearMap.ker f) = finrank K V := by
+  rw [← f.quotKerEquivRange.finrank_eq]
+  exact Submodule.finrank_quotient_add_finrank _
+
+end Ring
+
 section DivisionRing
 
 variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCommGroup V₂]
   [Module K V₂]
-
-/-- rank-nullity theorem : the dimensions of the kernel and the range of a linear map add up to
-the dimension of the source space. -/
-theorem finrank_range_add_finrank_ker [FiniteDimensional K V] (f : V →ₗ[K] V₂) :
-    finrank K (LinearMap.range f) + finrank K (LinearMap.ker f) = finrank K V := by
-  rw [← f.quotKerEquivRange.finrank_eq]
-  exact Submodule.finrank_quotient_add_finrank _
 
 lemma ker_ne_bot_of_finrank_lt [FiniteDimensional K V] [FiniteDimensional K V₂] {f : V →ₗ[K] V₂}
     (h : finrank K V₂ < finrank K V) :

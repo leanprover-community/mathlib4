@@ -7,6 +7,9 @@ module
 
 public import Mathlib.GroupTheory.MonoidLocalization.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Mapping properties of monoid localizations
 
@@ -204,8 +207,8 @@ the induced map `k.lift` for `l` is equal to the induced map `f.lift` for `l` -/
 theorem lift_comp_lift {T : Submonoid M} (hST : S ≤ T) {Q : Type*} [CommMonoid Q]
     (k : LocalizationMap T Q) {A : Type*} [CommMonoid A] {l : M →* A}
     (hl : ∀ w : T, IsUnit (l w)) :
-    (k.lift hl).comp (f.lift (map_units k ⟨_, hST ·.2⟩)) =
-    f.lift (hl ⟨_, hST ·.2⟩) := .symm <|
+    (k.lift hl).comp (f.lift (map_units k ⟨_, hST ·.property⟩)) =
+    f.lift (hl ⟨_, hST ·.property⟩) := .symm <|
   lift_unique _ _ fun x ↦ by rw [← toMonoidHom_apply, ← MonoidHom.comp_apply,
     MonoidHom.comp_assoc, lift_comp, lift_comp]
 
@@ -326,7 +329,7 @@ theorem map_mul_left (z) : k (g (f.sec z).2) * f.map hy k z = k (g (f.sec z).1) 
   rw [mul_comm, f.map_mul_right]
 
 @[to_additive (attr := simp)]
-theorem map_id (z : N) : f.map (fun y ↦ show MonoidHom.id M y ∈ S from y.2) f z = z :=
+theorem map_id (z : N) : f.map (fun y ↦ show MonoidHom.id M y ∈ S from y.property) f z = z :=
   f.lift_id z
 
 /-- If `CommMonoid` homs `g : M →* P, l : P →* A` induce maps of localizations, the composition
@@ -510,16 +513,16 @@ Localization map for `S` and `k : P ≃+ M` is an isomorphism of `AddCommMonoid`
 `k(T) = S`, `f ∘ k` is a Localization map for `T`. -/]
 def ofMulEquivOfDom {k : P ≃* M} (H : T.map k.toMonoidHom = S) : LocalizationMap T N :=
   have H' : S.comap k.toMonoidHom = T :=
-    H ▸ (SetLike.coe_injective <| T.1.1.preimage_image_eq k.toEquiv.injective)
+    H ▸ (SetLike.coe_injective <| T.toSubsemigroup.carrier.preimage_image_eq k.toEquiv.injective)
   (f.toMonoidHom.comp k.toMonoidHom).toLocalizationMap
     (fun y ↦
-      let ⟨z, hz⟩ := f.map_units ⟨k y, H ▸ Set.mem_image_of_mem k y.2⟩
+      let ⟨z, hz⟩ := f.map_units ⟨k y, H ▸ Set.mem_image_of_mem k y.property⟩
       ⟨z, hz⟩)
     (fun z ↦
       let ⟨x, hx⟩ := f.surj z
       let ⟨v, hv⟩ := k.surjective x.1
       let ⟨w, hw⟩ := k.surjective x.2
-      ⟨(v, ⟨w, H' ▸ show k w ∈ S from hw.symm ▸ x.2.2⟩), by
+      ⟨(v, ⟨w, H' ▸ show k w ∈ S from hw.symm ▸ x.2.property⟩), by
         simp_rw [MonoidHom.comp_apply, MulEquiv.toMonoidHom_eq_coe, MonoidHom.coe_ofClass, hv, hw]
         dsimp
         rw [hx]⟩)
@@ -528,7 +531,7 @@ def ofMulEquivOfDom {k : P ≃* M} (H : T.map k.toMonoidHom = S) : LocalizationM
         MonoidHom.coe_ofClass, toMonoidHom_apply, toMonoidHom_apply, f.eq_iff_exists]
       rintro ⟨c, hc⟩
       let ⟨d, hd⟩ := k.surjective c
-      refine ⟨⟨d, H' ▸ show k d ∈ S from hd.symm ▸ c.2⟩, ?_⟩
+      refine ⟨⟨d, H' ▸ show k d ∈ S from hd.symm ▸ c.property⟩, ?_⟩
       rw [← hd, ← map_mul k, ← map_mul k] at hc; exact k.injective hc
 
 @[to_additive (attr := simp)]
@@ -569,25 +572,28 @@ noncomputable def mulEquivOfMulEquiv (k : LocalizationMap T Q) {j : M ≃* P}
 theorem mulEquivOfMulEquiv_eq_map_apply {k : LocalizationMap T Q} {j : M ≃* P}
     (H : S.map j.toMonoidHom = T) (x) :
     f.mulEquivOfMulEquiv k H x =
-      f.map (fun y : S ↦ show j.toMonoidHom y ∈ T from H ▸ Set.mem_image_of_mem j y.2) k x := rfl
+      f.map (fun y : S ↦ show j.toMonoidHom y ∈ T from H ▸ Set.mem_image_of_mem j y.property)
+        k x := rfl
 
 @[to_additive]
 theorem mulEquivOfMulEquiv_eq_map {k : LocalizationMap T Q} {j : M ≃* P}
     (H : S.map j.toMonoidHom = T) :
     (f.mulEquivOfMulEquiv k H).toMonoidHom =
-      f.map (fun y : S ↦ show j.toMonoidHom y ∈ T from H ▸ Set.mem_image_of_mem j y.2) k := rfl
+      f.map (fun y : S ↦ show j.toMonoidHom y ∈ T from H ▸ Set.mem_image_of_mem j y.property)
+        k := rfl
 
 @[to_additive]
 theorem mulEquivOfMulEquiv_eq {k : LocalizationMap T Q} {j : M ≃* P} (H : S.map j.toMonoidHom = T)
     (x) :
     f.mulEquivOfMulEquiv k H (f x) = k (j x) :=
-  f.map_eq (fun y : S ↦ H ▸ Set.mem_image_of_mem j y.2) _
+  f.map_eq (fun y : S ↦ H ▸ Set.mem_image_of_mem j y.property) _
 
 @[to_additive]
 theorem mulEquivOfMulEquiv_mk' {k : LocalizationMap T Q} {j : M ≃* P} (H : S.map j.toMonoidHom = T)
     (x y) :
-    f.mulEquivOfMulEquiv k H (f.mk' x y) = k.mk' (j x) ⟨j y, H ▸ Set.mem_image_of_mem j y.2⟩ :=
-  f.map_mk' (fun y : S ↦ H ▸ Set.mem_image_of_mem j y.2) _ _
+    f.mulEquivOfMulEquiv k H (f.mk' x y) =
+      k.mk' (j x) ⟨j y, H ▸ Set.mem_image_of_mem j y.property⟩ :=
+  f.map_mk' (fun y : S ↦ H ▸ Set.mem_image_of_mem j y.property) _ _
 
 @[to_additive]
 theorem of_mulEquivOfMulEquiv_apply {k : LocalizationMap T Q} {j : M ≃* P}

@@ -11,13 +11,13 @@ public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 # Continuous linear equivalences on products of topological modules
 
 ## Main Definitions
+
 * `prodCongr`: `Equiv.prodCongr` as a continuous linear equivalence.
 * `prodComm`: `LinearEquiv.prodComm` as a continuous linear equivalence.
 * `prodAssoc`: `LinearEquiv.prodAssoc` as a continuous linear equivalence.
 * `prodProdProdComm`: `LinearEquiv.prodProdProdComm` as a continuous linear equivalence.
 * `prodUnique`: `Equiv.prodUnique` as a continuous linear equivalence.
 * `uniqueProd`: `Equiv.uniqueProd` as a continuous linear equivalence.
-
 -/
 
 @[expose] public section
@@ -115,6 +115,7 @@ section prodProdProdComm
 
 variable (R M₁ M₂ M₃ M₄)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The product of topological modules is four-way commutative up to continuous linear isomorphism.
 This is `LinearEquiv.prodProdProdComm` prodAssoc as a continuous linear equivalence. -/
 def prodProdProdComm : ((M₁ × M₂) × M₃ × M₄) ≃L[R] (M₁ × M₃) × M₂ × M₄ where

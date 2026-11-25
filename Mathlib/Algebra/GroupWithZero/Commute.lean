@@ -5,12 +5,14 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Semiconj
 public import Mathlib.Algebra.Group.Commute.Units
+public import Mathlib.Algebra.GroupWithZero.Semiconj
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Lemmas about commuting elements in a `MonoidWithZero` or a `GroupWithZero`.
-
 -/
 
 public section

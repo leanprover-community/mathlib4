@@ -5,10 +5,11 @@ Authors: Markus Himmel
 -/
 module
 
-import Mathlib.CategoryTheory.Abelian.Subobject
-public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
-public import Mathlib.CategoryTheory.Generator.Preadditive
 public import Mathlib.CategoryTheory.Abelian.Opposite
+public import Mathlib.CategoryTheory.Generator.Preadditive
+public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
+
+import Mathlib.CategoryTheory.Abelian.Subobject
 
 /-!
 # A complete abelian category with enough injectives and a separator has an injective coseparator
@@ -18,8 +19,8 @@ public import Mathlib.CategoryTheory.Abelian.Opposite
   that Grothendieck categories have an injective coseparator.
 
 ## References
-* [Peter J Freyd, *Abelian Categories* (Theorem 3.37)][freyd1964abelian]
 
+* [Peter J Freyd, *Abelian Categories* (Theorem 3.37)][freyd1964abelian]
 -/
 
 public section

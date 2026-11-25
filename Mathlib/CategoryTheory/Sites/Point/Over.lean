@@ -6,10 +6,14 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Functor.TypeValuedFlat
-import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
-import Mathlib.CategoryTheory.Comma.LocallySmall
 public import Mathlib.CategoryTheory.Sites.Over
 public import Mathlib.CategoryTheory.Sites.Point.Conservative
+
+import Mathlib.CategoryTheory.Comma.LocallySmall
+import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Points of `Over` sites
@@ -18,7 +22,6 @@ Given a point `Φ` of a site `(C, J)`, an object `X : C`, and `x : Φ.fiber.obj 
 we define a point `Φ.over x` of the site `(Over X, J.over X)`.
 
 We show that if `(C, J)` has enough points, then so does `(Over X, J.over X)`.
-
 -/
 
 @[expose] public section

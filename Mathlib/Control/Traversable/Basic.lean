@@ -5,10 +5,10 @@ Authors: Simon Hudon
 -/
 module
 
-public import Mathlib.Data.Option.Defs
-public import Mathlib.Control.Functor
 public import Batteries.Data.List.Basic
 public import Mathlib.Control.Basic
+public import Mathlib.Control.Functor
+public import Mathlib.Data.Option.Defs
 
 import Mathlib.Tactic.Attr.Register
 
@@ -36,6 +36,7 @@ For more on how to use traversable, consider the Haskell tutorial:
 <https://en.wikibooks.org/wiki/Haskell/Traversable>
 
 ## Main definitions
+
 * `Traversable` type class - exposes the `traverse` function
 * `sequence` - based on `traverse`,
   turns a collection of effects into an effect returning a collection

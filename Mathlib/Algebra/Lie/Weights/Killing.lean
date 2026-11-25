@@ -5,10 +5,11 @@ Authors: Oliver Nash
 -/
 module
 
-import Mathlib.Algebra.Lie.Derivation.Killing
 public import Mathlib.Algebra.Lie.Killing
 public import Mathlib.Algebra.Lie.Sl2
 public import Mathlib.Algebra.Lie.Weights.Chain
+
+import Mathlib.Algebra.Lie.Derivation.Killing
 import Mathlib.LinearAlgebra.Eigenspace.Semisimple
 import Mathlib.LinearAlgebra.JordanChevalley
 
@@ -19,6 +20,7 @@ The file contains definitions and results about roots of Lie algebras with non-d
 forms.
 
 ## Main definitions
+
 * `LieAlgebra.IsKilling.ker_restrict_eq_bot_of_isCartanSubalgebra`: if the Killing form of
   a Lie algebra is non-singular, it remains non-singular when restricted to a Cartan subalgebra.
 * `LieAlgebra.IsKilling.instIsLieAbelianOfIsCartanSubalgebra`: if the Killing form of a Lie
@@ -35,7 +37,6 @@ forms.
 * `LieAlgebra.IsKilling.finrank_rootSpace_eq_one`: root spaces are one-dimensional.
 * `LieAlgebra.IsKilling.lieIdeal_eq_inf_cartan_sup_biSup_rootSpace`: a Lie ideal decomposes as its
   intersection with the Cartan subalgebra plus a sum of root spaces.
-
 -/
 
 @[expose] public section
@@ -494,8 +495,7 @@ lemma isCompl_ker_weight_span_coroot (α : Weight K H L) :
       using isCompl_top_bot
   else
     rw [← coe_corootSpace_eq_span_singleton]
-    apply Module.Dual.isCompl_ker_of_disjoint_of_ne_bot (by simp_all)
-      (disjoint_ker_weight_corootSpace α)
+    apply Module.Dual.isCompl_ker_of_disjoint_of_ne_bot (disjoint_ker_weight_corootSpace α)
     replace hα : corootSpace α ≠ ⊥ := by simpa using hα
     rwa [ne_eq, ← LieSubmodule.toSubmodule_inj] at hα
 
@@ -573,7 +573,7 @@ lemma exists_isSl2Triple_of_weight_isNonZero {α : Weight K H L} (hα : α.IsNon
       mul_one, two_smul, two_smul]
   refine ⟨⁅e, f⁆, e, f, ⟨fun contra ↦ ?_, rfl, hef, ?_⟩, heα, Submodule.smul_mem _ _ hfα⟩
   · rw [contra] at hef
-    have : IsAddTorsionFree L := .of_isTorsionFree K L
+    have : HasUniqueDiv L := .of_isTorsionFree K L
     simp only [zero_lie, eq_comm (a := (0 : L)), smul_eq_zero, OfNat.ofNat_ne_zero, false_or] at hef
     contradiction
   · have : ⁅⁅e, f'⁆, f'⁆ = - α h • f' := lie_eq_smul_of_mem_rootSpace hfα h
@@ -632,7 +632,7 @@ lemma finrank_rootSpace_eq_one (α : Weight K H L) (hα : α.IsNonZero) :
 lemma toSubmodule_rootSpace_eq_span (α : Weight K H L) (hα : α.IsNonZero) (x : L)
     (hx₀ : x ≠ 0) (hx : x ∈ rootSpace H α) :
     (rootSpace H α).toSubmodule = K ∙ x := by
-  have := (finrank_eq_one_iff_of_nonzero' ⟨x, hx⟩ (by simpa)).mp (finrank_rootSpace_eq_one α hα)
+  have := (finrank_eq_one_iff_of_ne_zero' ⟨x, hx⟩ (by simpa)).mp (finrank_rootSpace_eq_one α hα)
   ext y
   rw [Submodule.mem_span_singleton]
   refine ⟨fun hy ↦ ?_, ?_⟩
@@ -654,11 +654,11 @@ lemma mem_sl2SubalgebraOfRoot_iff {α : Weight K H L} (hα : α.IsNonZero) {h e 
   simp only [sl2SubalgebraOfRoot, IsSl2Triple.mem_toLieSubalgebra_iff]
   generalize_proofs _ _ _ he hf
   obtain ⟨ce, hce⟩ : ∃ c : K, he.choose = c • e := by
-    obtain ⟨c, hc⟩ := (finrank_eq_one_iff_of_nonzero' ⟨e, hte⟩ (by simpa using t.e_ne_zero)).mp
+    obtain ⟨c, hc⟩ := (finrank_eq_one_iff_of_ne_zero' ⟨e, hte⟩ (by simpa using t.e_ne_zero)).mp
       (finrank_rootSpace_eq_one α hα) ⟨_, he.choose_spec.choose_spec.2.1⟩
     exact ⟨c, by simpa using hc.symm⟩
   obtain ⟨cf, hcf⟩ : ∃ c : K, hf.choose = c • f := by
-    obtain ⟨c, hc⟩ := (finrank_eq_one_iff_of_nonzero' ⟨f, htf⟩ (by simpa using t.f_ne_zero)).mp
+    obtain ⟨c, hc⟩ := (finrank_eq_one_iff_of_ne_zero' ⟨f, htf⟩ (by simpa using t.f_ne_zero)).mp
       (finrank_rootSpace_eq_one (-α) (by simpa)) ⟨_, hf.choose_spec.2.2⟩
     exact ⟨c, by simpa using hc.symm⟩
   have hce₀ : ce ≠ 0 := by
@@ -725,7 +725,7 @@ lemma sl2SubmoduleOfRoot_eq_sup (α : Weight K H L) (hα : α.IsNonZero) :
   · have aux {β : Weight K H L} (hβ : β.IsNonZero) {y g : L}
         (hy : y ∈ genWeightSpace L β) (hg : g ∈ rootSpace H β) (hg_ne_zero : g ≠ 0) :
         ∃ c : K, y = c • g := by
-      obtain ⟨c, hc⟩ := (finrank_eq_one_iff_of_nonzero' ⟨g, hg⟩
+      obtain ⟨c, hc⟩ := (finrank_eq_one_iff_of_ne_zero' ⟨g, hg⟩
         (by rwa [ne_eq, LieSubmodule.mk_eq_zero])).mp (finrank_rootSpace_eq_one β hβ) ⟨y, hy⟩
       exact ⟨c, by simpa using hc.symm⟩
     obtain ⟨x_αneg, hx_αneg, x_h, ⟨y, hy_coroot, rfl⟩, rfl⟩ := mem_sup.mp hx

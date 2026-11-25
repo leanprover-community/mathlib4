@@ -6,8 +6,9 @@ Authors: Yunzhou Xie, Jujian Zhang
 module
 
 public import Mathlib.Algebra.Azumaya.Defs
-import Mathlib.Algebra.Central.End
 public import Mathlib.Algebra.Central.TensorProduct
+
+import Mathlib.Algebra.Central.End
 
 /-!
 # Basic properties of Azumaya algebras
@@ -23,8 +24,8 @@ over itself where `R` is a commutative ring.
   as an `R`-algebra, then `B` is an Azumaya algebra over `R`.
 
 ## Tags
-Noncommutative algebra, Azumaya algebra, Brauer Group
 
+Noncommutative algebra, Azumaya algebra, Brauer Group
 -/
 
 public section

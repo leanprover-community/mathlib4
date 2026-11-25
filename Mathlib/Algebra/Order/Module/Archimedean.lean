@@ -5,14 +5,15 @@ Authors: Weiyi Wang
 -/
 module
 
+public import Mathlib.Algebra.Module.Submodule.Defs
 public import Mathlib.Algebra.Order.Archimedean.Class
 public import Mathlib.Algebra.Order.Module.Basic
-public import Mathlib.Algebra.Module.Submodule.Defs
 
 /-!
 # Archimedean classes for ordered module
 
 ## Main definitions
+
 * `ArchimedeanClass.ball` are `ArchimedeanClass.ballAddSubgroup` as a submodules.
 * `ArchimedeanClass.closedBall` are `ArchimedeanClass.closedBallAddSubgroup` as a submodules.
 -/

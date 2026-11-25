@@ -6,7 +6,11 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.Probability.IdentDistrib
+
 import Mathlib.Probability.Independence.Integration
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Moments and moment-generating function

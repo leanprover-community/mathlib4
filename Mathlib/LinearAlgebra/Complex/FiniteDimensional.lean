@@ -8,7 +8,11 @@ module
 public import Mathlib.Analysis.Complex.Cardinality
 public import Mathlib.LinearAlgebra.Complex.Module
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+
 import Mathlib.Order.Interval.Set.Infinite
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Complex number as a finite-dimensional vector space over `ℝ`

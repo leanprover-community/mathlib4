@@ -5,8 +5,12 @@ Authors: Mario Carneiro
 -/
 module
 
-import Mathlib.Init
 public meta import Lean.Meta.Tactic.TryThis
+
+import Mathlib.Init
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # 'Try this' tactic macro

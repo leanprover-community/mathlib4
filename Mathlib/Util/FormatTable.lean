@@ -6,7 +6,11 @@ Authors: Bolton Bailey
 module
 
 public meta import Mathlib.Data.String.Defs
+
 import Mathlib.Init
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Format Table

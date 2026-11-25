@@ -219,7 +219,7 @@ theorem mk_mem_target {x : B} {y : F} : (x, y) ∈ e'.target ↔ x ∈ e'.baseSe
 
 @[simp, mfld_simps]
 theorem symm_coe_proj {x : B} {y : F} (e' : Pretrivialization F (π F E)) (h : x ∈ e'.baseSet) :
-    (e'.toPartialEquiv.symm (x, y)).1 = x :=
+    (e'.toPartialEquiv.symm (x, y)).proj = x :=
   e'.proj_symm_apply' h
 
 section Nonempty
@@ -232,11 +232,11 @@ open scoped Classical in
 chosen junk values. -/
 protected noncomputable def symm (e : Pretrivialization F (π F E)) (b : B) (y : F) : E b :=
   if hb : b ∈ e.baseSet then
-    cast (congr_arg E (e.proj_symm_apply' hb)) (e.toPartialEquiv.symm (b, y)).2
+    cast (congr_arg E (e.proj_symm_apply' hb)) (e.toPartialEquiv.symm (b, y)).snd
   else Classical.arbitrary _
 
 theorem symm_apply (e : Pretrivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet) (y : F) :
-    e.symm b y = cast (congr_arg E (e.symm_coe_proj hb)) (e.toPartialEquiv.symm (b, y)).2 :=
+    e.symm b y = cast (congr_arg E (e.symm_coe_proj hb)) (e.toPartialEquiv.symm (b, y)).snd :=
   dite_eq_left hb
 
 @[deprecated "The junk values of `Pretrivialization.symm` were changed from `0` to
@@ -261,7 +261,7 @@ theorem mk_symm (e : Pretrivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet
 
 @[simp, mfld_simps]
 theorem symm_proj_apply (e : Pretrivialization F (π F E)) (z : TotalSpace F E)
-    (hz : z.proj ∈ e.baseSet) : e.symm z.proj (e z).2 = z.2 := by
+    (hz : z.proj ∈ e.baseSet) : e.symm z.proj (e z).2 = z.snd := by
   rw [e.symm_apply hz, cast_eq_iff_heq, e.mk_proj_snd' hz, e.symm_apply_apply (e.mem_source.mpr hz)]
 
 @[simp, mfld_simps]
@@ -280,9 +280,10 @@ end Nonempty
 @[simps toFun source target baseSet]
 noncomputable def restrictPreimage' (e : Pretrivialization F proj) (s : Set B)
     [Nonempty (s → F → proj ⁻¹' s)] : Pretrivialization F (s.restrictPreimage proj) where
-  toFun z := (⟨proj z, z.2⟩, (e z).2)
-  invFun x := by classical exact if h : (x.1.1, x.2) ∈ e.target then ⟨e.invFun (x.1, x.2), by
-      simpa only [mem_preimage, ← e.proj_toFun _ (e.map_target' h), e.right_inv' h] using! x.1.2⟩
+  toFun z := (⟨proj z, z.property⟩, (e z).2)
+  invFun x := by classical exact if h : (x.1.val, x.2) ∈ e.target then ⟨e.invFun (x.1, x.2), by
+      simpa only [mem_preimage, ← e.proj_toFun _ (e.map_target' h),
+        e.right_inv' h] using! x.1.property⟩
     else Classical.arbitrary (s → F → _) x.1 x.2
   source := Subtype.val ⁻¹' e.source
   target := (Prod.map Subtype.val id) ⁻¹' e.target
@@ -292,7 +293,7 @@ noncomputable def restrictPreimage' (e : Pretrivialization F proj) (s : Set B)
     simp only [mem_preimage, (Prod.map_apply), id_eq] at hx
     rw [dite_eq_left hx]; exact e.map_target' hx
   left_inv' z hz := by
-    dsimp only; rw [dite_eq_left] <;> all_goals simp_rw [← e.proj_toFun _ hz]
+    dsimp only; rw [dite_eq_left] <;> simp_rw [← e.proj_toFun _ hz]
     exacts [Subtype.ext (e.left_inv' hz), e.map_source' hz]
   right_inv' x hx := Subtype.val_injective.prodMap injective_id <| by
     simp only [mem_preimage, (Prod.map_apply), id_eq] at hx
@@ -300,7 +301,7 @@ noncomputable def restrictPreimage' (e : Pretrivialization F proj) (s : Set B)
     convert! ← e.right_inv' hx; exact e.proj_toFun _ (e.map_target' hx)
   open_target := e.open_target.preimage <| by fun_prop
   baseSet := Subtype.val ⁻¹' e.baseSet
-  open_baseSet := e.open_baseSet.preimage continuous_subtype_val
+  open_baseSet := e.open_baseSet.preimage continuous_subtypeVal
   source_eq := Set.ext fun _ ↦ Set.ext_iff.mp e.source_eq _
   target_eq := Set.ext fun _ ↦ Set.ext_iff.mp e.target_eq _
   proj_toFun _ _ := rfl
@@ -325,14 +326,14 @@ noncomputable def domExtend {s : Set B} (e : Pretrivialization F fun z : proj �
   map_source' _ := by
     rintro ⟨⟨z, hzp : proj z ∈ s⟩, hze, rfl⟩
     simpa [hzp, e.coe_fst hze] using e.map_source hze
-  map_target' x hx := by simpa using ⟨(e.invFun x).2, e.map_target hx⟩
+  map_target' x hx := by simpa using ⟨(e.invFun x).property, e.map_target hx⟩
   left_inv' _ := by rintro ⟨⟨z, hzp : proj z ∈ s⟩, hze, rfl⟩; simp [hzp, e.symm_apply_apply hze]
-  right_inv' x hx := (dite_eq_left (e.invFun x).2).trans (e.right_inv hx)
+  right_inv' x hx := (dite_eq_left (e.invFun x).property).trans (e.right_inv hx)
   open_target := e.open_target
   baseSet := e.baseSet
   open_baseSet := e.open_baseSet
   source_eq := by ext z; simpa [e.source_eq] using
-    (e.proj_symm_apply' · ▸ (e.invFun (proj z, Classical.arbitrary (Z → F) z)).2)
+    (e.proj_symm_apply' · ▸ (e.invFun (proj z, Classical.arbitrary (Z → F) z)).property)
   target_eq := by ext; simp [e.target_eq]
   proj_toFun _ := by rintro ⟨⟨z, hzp : proj z ∈ s⟩, hze, rfl⟩; simp [hzp, e.coe_fst hze]
 
@@ -350,9 +351,9 @@ noncomputable def codExtend' {s : Set B} (hs : IsOpen s) {proj : Z → s}
   map_target' _ := by rintro ⟨x, hx, rfl⟩; simpa using e.map_target hx
   left_inv' z hz := by simpa using e.left_inv hz
   right_inv' _ := by rintro ⟨x, hx, rfl⟩; ext <;> simp [e.apply_symm_apply hx]
-  open_target := hs.isOpenMap_subtype_val.prodMap .id _ e.open_target
+  open_target := hs.isOpenMap_subtypeVal.prodMap .id _ e.open_target
   baseSet := Subtype.val '' e.baseSet
-  open_baseSet := hs.isOpenMap_subtype_val _ e.open_baseSet
+  open_baseSet := hs.isOpenMap_subtypeVal _ e.open_baseSet
   source_eq := by ext; simp [e.source_eq]
   target_eq := by rw [e.target_eq, prodMap_image_prod, image_id]
   proj_toFun _ h := by simp [e.coe_fst h]
@@ -543,8 +544,8 @@ def preimageHomeomorph {s : Set B} (hb : s ⊆ e.baseSet) : proj ⁻¹' s ≃ₜ
 
 @[simp]
 theorem preimageHomeomorph_apply {s : Set B} (hb : s ⊆ e.baseSet) (p : proj ⁻¹' s) :
-    e.preimageHomeomorph hb p = (⟨proj p, p.2⟩, (e p).2) :=
-  Prod.ext (Subtype.ext (e.proj_toFun p (e.mem_source.mpr (hb p.2)))) rfl
+    e.preimageHomeomorph hb p = (⟨proj p, p.property⟩, (e p).2) :=
+  Prod.ext (Subtype.ext (e.proj_toFun p (e.mem_source.mpr (hb p.property)))) rfl
 
 /-- Auxiliary definition to avoid looping in `dsimp`
 with `Bundle.Trivialization.preimageHomeomorph_symm_apply`. -/
@@ -554,7 +555,7 @@ protected def preimageHomeomorph_symm_apply.aux {s : Set B} (hb : s ⊆ e.baseSe
 @[simp]
 theorem preimageHomeomorph_symm_apply {s : Set B} (hb : s ⊆ e.baseSet) (p : s × F) :
     (e.preimageHomeomorph hb).symm p =
-      ⟨e.symm (p.1, p.2), ((preimageHomeomorph_symm_apply.aux e hb) p).2⟩ :=
+      ⟨e.symm (p.1, p.2), ((preimageHomeomorph_symm_apply.aux e hb) p).property⟩ :=
   rfl
 
 /-- The source is homeomorphic to the product of the base set with the fiber. -/
@@ -563,8 +564,8 @@ def sourceHomeomorphBaseSetProd : e.source ≃ₜ e.baseSet × F :=
 
 @[simp]
 theorem sourceHomeomorphBaseSetProd_apply (p : e.source) :
-    e.sourceHomeomorphBaseSetProd p = (⟨proj p, e.mem_source.mp p.2⟩, (e p).2) :=
-  e.preimageHomeomorph_apply subset_rfl ⟨p, e.mem_source.mp p.2⟩
+    e.sourceHomeomorphBaseSetProd p = (⟨proj p, e.mem_source.mp p.property⟩, (e p).2) :=
+  e.preimageHomeomorph_apply subset_rfl ⟨p, e.mem_source.mp p.property⟩
 
 /-- Auxiliary definition to avoid looping in `dsimp`
 with `Bundle.Trivialization.sourceHomeomorphBaseSetProd_symm_apply`. -/
@@ -573,7 +574,7 @@ protected def sourceHomeomorphBaseSetProd_symm_apply.aux := e.sourceHomeomorphBa
 @[simp]
 theorem sourceHomeomorphBaseSetProd_symm_apply (p : e.baseSet × F) :
     e.sourceHomeomorphBaseSetProd.symm p =
-      ⟨e.symm (p.1, p.2), (sourceHomeomorphBaseSetProd_symm_apply.aux e p).2⟩ :=
+      ⟨e.symm (p.1, p.2), (sourceHomeomorphBaseSetProd_symm_apply.aux e p).property⟩ :=
   rfl
 
 /-- Each fiber of a trivialization is homeomorphic to the specified fiber. -/
@@ -673,7 +674,7 @@ theorem symm_apply_apply {x : TotalSpace F E} (hx : x ∈ e'.source) :
 
 @[simp, mfld_simps]
 theorem symm_coe_proj {x : B} {y : F} (e : Trivialization F (π F E)) (h : x ∈ e.baseSet) :
-    (e.toOpenPartialHomeomorph.symm (x, y)).1 = x :=
+    (e.toOpenPartialHomeomorph.symm (x, y)).proj = x :=
   e.proj_symm_apply' h
 
 section Nonempty
@@ -688,7 +689,7 @@ protected noncomputable def symm (e : Trivialization F (π F E)) (b : B) (y : F)
 
 theorem symm_apply (e : Trivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet) (y : F) :
     e.symm b y =
-      cast (congr_arg E (e.symm_coe_proj hb)) (e.toOpenPartialHomeomorph.symm (b, y)).2 :=
+      cast (congr_arg E (e.symm_coe_proj hb)) (e.toOpenPartialHomeomorph.symm (b, y)).snd :=
   dite_eq_left hb
 
 @[deprecated "The junk values of `Trivialization.symm` were changed from `0` to
@@ -705,7 +706,7 @@ theorem mk_symm (e : Trivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet) (
 
 @[simp, mfld_simps]
 theorem symm_proj_apply (e : Trivialization F (π F E)) (z : TotalSpace F E)
-    (hz : z.proj ∈ e.baseSet) : e.symm z.proj (e z).2 = z.2 :=
+    (hz : z.proj ∈ e.baseSet) : e.symm z.proj (e z).2 = z.snd :=
   e.toPretrivialization.symm_proj_apply z hz
 
 @[simp, mfld_simps]
@@ -826,10 +827,10 @@ noncomputable def restrictPreimage' (e : Trivialization F proj) (s : Set B)
   __ := e.toPretrivialization.restrictPreimage' s
   open_source := e.open_source.preimage <| by fun_prop
   continuousOn_toFun := (Topology.IsInducing.subtypeVal.prodMap .id).continuousOn_iff.mpr <|
-    (e.continuousOn_toFun.comp continuous_subtype_val.continuousOn fun _ ↦ id).congr
+    (e.continuousOn_toFun.comp continuous_subtypeVal.continuousOn fun _ ↦ id).congr
       fun z hz ↦ by ext; exacts [(e.proj_toFun _ hz).symm, rfl]
   continuousOn_invFun := Topology.IsInducing.subtypeVal.continuousOn_iff.mpr <|
-    (e.continuousOn_invFun.comp (continuous_subtype_val.prodMap continuous_id).continuousOn
+    (e.continuousOn_invFun.comp (continuous_subtypeVal.prodMap continuous_id).continuousOn
       fun _ ↦ id).congr fun x hx ↦ congr_arg Subtype.val (dite_eq_left hx)
 
 /-- The restriction of a trivialization to a set with nonempty intersection with the base set. -/
@@ -846,12 +847,12 @@ noncomputable def domExtend {s : Set B} (hps : IsOpen (proj ⁻¹' s))
     (e : Trivialization F fun z : proj ⁻¹' s ↦ proj z) [Nonempty (Z → F)] :
     Trivialization F proj where
   __ := e.toPretrivialization.domExtend
-  open_source := hps.isOpenMap_subtype_val _ e.open_source
+  open_source := hps.isOpenMap_subtypeVal _ e.open_source
   continuousOn_toFun := Topology.IsInducing.subtypeVal.continuousOn_image_iff.mpr <| by
     convert! e.continuousOn_toFun
     ext1 ⟨x, (hx : proj x ∈ s)⟩
     simpa [Pretrivialization.domExtend] using! dite_eq_left hx
-  continuousOn_invFun := continuous_subtype_val.comp_continuousOn <| by
+  continuousOn_invFun := continuous_subtypeVal.comp_continuousOn <| by
     convert! e.continuousOn_invFun
 
 /-- Extend the base of a trivialization from a set to the whole space. -/
@@ -861,7 +862,7 @@ noncomputable def codExtend' {s : Set B} (hs : IsOpen s) {proj : Z → s} (e : T
   __ := e.toPretrivialization.codExtend' hs
   open_source := e.open_source
   continuousOn_toFun :=
-    (continuous_subtype_val.prodMap continuous_id).comp_continuousOn e.continuousOn_toFun
+    (continuous_subtypeVal.prodMap continuous_id).comp_continuousOn e.continuousOn_toFun
   continuousOn_invFun := (Topology.IsInducing.subtypeVal.prodMap .id).continuousOn_image_iff.2 <| by
     convert! e.continuousOn_invFun; ext; simp [Pretrivialization.codExtend']; rfl
 
@@ -994,7 +995,7 @@ def clift (T : Trivialization F proj) [LocallyCompactPair ι T.baseSet] :
   simpa using ⟨by fun_prop, ContinuousEval.continuous_eval.comp Ψ.continuous⟩
 
 @[simp]
-theorem clift_self (h : proj e.1 = γ i) :
+theorem clift_self (h : proj e.val = γ i) :
     T.clift (e, γ) i = e := by
   have : proj e ∈ T.baseSet := by simp [h]
   simp [clift, liftCM, ← h, lift_self, this]

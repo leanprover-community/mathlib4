@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Monoidal.Category
 
 /-!
-
 # Actions from a monoidal category on a category
 
 Given a monoidal category `C`, and a category `D`, we define a left action of
@@ -23,6 +22,7 @@ on `d` is `d ⊙ᵣ c`, and the structure isomorphisms are of the form
 
 
 ## References
+
 * [Janelidze, G, and Kelly, G.M., *A note on actions of a monoidal category*][JanelidzeKelly2001]
 
 ## TODOs/Projects
@@ -34,7 +34,6 @@ on `d` is `d ⊙ᵣ c`, and the structure isomorphisms are of the form
   on `M.toMon : Mon (C ⥤ C)`.
 * Canonical left action of `Type u` on `u`-small cocomplete categories via the
   copower.
-
 -/
 
 @[expose] public section

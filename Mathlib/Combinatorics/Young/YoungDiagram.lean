@@ -5,10 +5,11 @@ Authors: Jake Levinson
 -/
 module
 
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Data.Finset.Preimage
 public import Mathlib.Data.Finset.Prod
 public import Mathlib.Order.UpperLower.Basic
+
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Young diagrams
@@ -48,7 +49,6 @@ Young diagram
 ## References
 
 <https://en.wikipedia.org/wiki/Young_tableau>
-
 -/
 
 @[expose] public section
@@ -360,7 +360,6 @@ section RowLens
 This section defines `μ.rowLens : List ℕ`, the list of row lengths of a Young diagram `μ`.
   1. `YoungDiagram.rowLens_sorted` : It is weakly decreasing (`List.SortedGE`).
   2. `YoungDiagram.rowLens_pos` : It is strictly positive.
-
 -/
 
 
@@ -409,7 +408,6 @@ of positive natural numbers, corresponding to row lengths of the diagram:
   `YoungDiagram ≃ {w : List ℕ // w.SortedGE ∧ ∀ x ∈ w, 0 < x}`
 
 The two directions are `YoungDiagram.rowLens` (defined above) and `YoungDiagram.ofRowLens`.
-
 -/
 
 
@@ -476,7 +474,7 @@ A Young diagram `μ` is equivalent to a list of row lengths. -/
 @[simps]
 def equivListRowLens : YoungDiagram ≃ { w : List ℕ // w.SortedGE ∧ ∀ x ∈ w, 0 < x } where
   toFun μ := ⟨μ.rowLens, μ.rowLens_sorted, μ.pos_of_mem_rowLens⟩
-  invFun ww := ofRowLens ww.1 ww.2.1
+  invFun ww := ofRowLens ww.val ww.property.1
   left_inv _ := ofRowLens_to_rowLens_eq_self
   right_inv := fun ⟨_, hw⟩ => Subtype.mk_eq_mk.mpr (rowLens_ofRowLens_eq_self hw.2)
 

@@ -5,13 +5,14 @@ Authors: Bjørn Kjos-Hanssen, Oliver Nash
 -/
 module
 
-public import Mathlib.Topology.Compactification.OnePoint.Basic
 public import Mathlib.Geometry.Manifold.Instances.Sphere
+public import Mathlib.Topology.Compactification.OnePoint.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
-
 # One-point compactification of Euclidean space is homeomorphic to the sphere.
-
 -/
 
 @[expose] public section

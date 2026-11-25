@@ -12,6 +12,9 @@ public import Mathlib.Topology.Instances.Nat
 public import Mathlib.Topology.Order.Real
 public import Mathlib.Topology.Order.WithTop
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas around weak (pseudo) extended metric spaces.
 
@@ -30,7 +33,6 @@ In this file we show that whenever `some : α → Option α` is an open embeddin
 
 TODO: Some lemmas around order topologies can likely be generalised from linear orders to pre-
 or partial orders.
-
 -/
 
 @[expose] public section

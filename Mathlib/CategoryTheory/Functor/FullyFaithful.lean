@@ -16,6 +16,7 @@ contains the data of the inverse map `(F.obj X ⟶ F.obj Y) ⟶ (X ⟶ Y)` of th
 map induced on morphisms by a functor `F`.
 
 ## Main definitions and results
+
 * Use `F.map_injective` to retrieve the fact that `F.map` is injective when `[Faithful F]`.
 * Similarly, `F.map_surjective` states that `F.map` is surjective when `[Full F]`.
 * Use `F.preimage` to obtain preimages of morphisms when `[Full F]`.
@@ -24,7 +25,6 @@ map induced on morphisms by a functor `F`.
 
 See `CategoryTheory.Equivalence.of_fullyFaithful_ess_surj` for the fact that a functor is an
 equivalence if and only if it is fully faithful and essentially surjective.
-
 -/
 
 @[expose] public section
@@ -335,7 +335,7 @@ protected def Faithful.div (F : C ⥤ E) (G : D ⥤ E) [G.Faithful] (obj : C →
 -- but importing `CategoryTheory.EqToHom` causes an import loop:
 -- CategoryTheory.EqToHom → CategoryTheory.Opposites →
 -- CategoryTheory.Equivalence → CategoryTheory.FullyFaithful
-theorem Faithful.div_comp (F : C ⥤ E) [F.Faithful] (G : D ⥤ E) [G.Faithful] (obj : C → D)
+theorem Faithful.div_comp (F : C ⥤ E) (G : D ⥤ E) [G.Faithful] (obj : C → D)
     (h_obj : ∀ X, G.obj (obj X) = F.obj X) (map : ∀ {X Y}, (X ⟶ Y) → (obj X ⟶ obj Y))
     (h_map : ∀ {X Y} {f : X ⟶ Y}, G.map (map f) ≍ F.map f) :
     Faithful.div F G obj @h_obj @map @h_map ⋙ G = F := by

@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Abelian.SerreClass.MorphismProperty
 public import Mathlib.CategoryTheory.Localization.Bousfield
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bousfield localizations with respect to Serre classes
 
@@ -19,7 +22,6 @@ is the localization of `C` with respect to the Serre class
 `G.kernel` consisting of the objects in `D`
 that are sent to a zero object by `G`.
 (We also translate this in terms of a left Bousfield localization.)
-
 -/
 
 public section

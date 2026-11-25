@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.BilinearForm.Hom
 public import Mathlib.LinearAlgebra.BilinearForm.Isometry
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Isometric equivalences with respect to bilinear forms
 
@@ -86,7 +89,7 @@ def symm (f : B₁.IsometryEquiv B₂) : B₂.IsometryEquiv B₁ :=
   { (f : M₁ ≃ₗ[R] M₂).symm with
     map_app' := by
       intro _ _; rw [← f.map_app]; congr
-      repeat exact f.toLinearEquiv.apply_symm_apply _ }
+      all_goals exact f.toLinearEquiv.apply_symm_apply _ }
 
 /-- The composition of two isometric equivalences between bilinear forms. -/
 @[trans]
@@ -127,7 +130,7 @@ def isometryEquivOfCompLinearEquiv (B : LinearMap.BilinForm R M) (f : M₁ ≃�
   { f.symm with
     map_app' := by
       intro _ _
-      simp only [comp_apply, LinearEquiv.coe_coe, LinearEquiv.toFun_eq_coe,
+      simp only [comp_apply, LinearEquiv.coe_toLinearMap, LinearEquiv.toFun_eq_coe,
         f.apply_symm_apply] }
 
 end LinearMap.BilinForm

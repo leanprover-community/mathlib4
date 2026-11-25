@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Sites.Sieves.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functoriality of presieves and sieves
 
@@ -87,7 +90,6 @@ noncomputable def getFunctorPushforwardStructure {F : C ⥤ D} {S : Presieve X} 
   choose Z f' g h₁ h using h
   exact ⟨Z, f', g, h₁, h⟩
 
-set_option backward.defeqAttrib.useBackward true in
 theorem functorPushforward_comp (R : Presieve X) :
     R.functorPushforward (F ⋙ G) = (R.functorPushforward F).functorPushforward G := by
   funext x
@@ -371,7 +373,6 @@ lemma functorPullback_functorPushforward_eq {X : C} {S : Sieve X} [F.Full] [F.Fa
     Sieve.functorPullback F (Sieve.functorPushforward F S) = S :=
   (Sieve.fullyFaithfulFunctorGaloisCoinsertion _ _).u_l_eq _
 
-set_option backward.defeqAttrib.useBackward true in
 lemma functorPushforward_functor (S : Sieve X) (e : C ≌ D) :
     S.functorPushforward e.functor = (S.pullback (e.unitInv.app X)).functorPullback e.inverse := by
   ext Y iYX

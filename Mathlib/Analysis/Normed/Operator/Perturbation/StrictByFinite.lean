@@ -5,10 +5,11 @@ Authors: Anatole Dedecker
 -/
 module
 
-public import Mathlib.Topology.Maps.Strict.Module
-import Mathlib.Topology.LocalAtTarget
-public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Algebra.Module.LinearMap.FiniteRange
+public import Mathlib.Topology.Algebra.Module.FiniteDimension
+public import Mathlib.Topology.Maps.Strict.Module
+
+import Mathlib.Topology.LocalAtTarget
 
 /-!
 # Strict linear maps with closed range are closed under finite-rank perturbation
@@ -33,7 +34,7 @@ These three results show up crucially when developing the theory of Fredholm ope
 between topological vector spaces. Note that none of the results here use the Hahn-Banach
 theorem, so there is no significant restriction on the field.
 
-## Implementation details
+## Implementation notes
 
 This file covers almost exactly the content of
 [N. Bourbaki, *Théories Spectrales*, Chapitre III, § 3, n° 1][bourbaki2023]. However,
@@ -52,7 +53,6 @@ with Bourbaki's proof.
 ## References
 
 * [N. Bourbaki, *Théories Spectrales*, Chapitre III, § 3, n° 1][bourbaki2023]
-
 -/
 
 open Topology Set Submodule Function ContinuousLinearMap

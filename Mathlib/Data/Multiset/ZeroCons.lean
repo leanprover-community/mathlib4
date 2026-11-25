@@ -181,7 +181,7 @@ theorem mem_cons_self (a : α) (s : Multiset α) : a ∈ a ::ₘ s :=
 
 theorem forall_mem_cons {p : α → Prop} {a : α} {s : Multiset α} :
     (∀ x ∈ a ::ₘ s, p x) ↔ p a ∧ ∀ x ∈ s, p x :=
-  Quotient.inductionOn' s fun _ => List.forall_mem_cons
+  Quotient.inductionOn s fun _ => List.forall_mem_cons
 
 theorem exists_cons_of_mem {s : Multiset α} {a : α} : a ∈ s → ∃ t, s = a ::ₘ t :=
   Quot.inductionOn s fun l (h : a ∈ l) =>
@@ -198,11 +198,11 @@ theorem eq_zero_of_forall_notMem {s : Multiset α} : (∀ x, x ∉ s) → s = 0 
 theorem eq_zero_iff_forall_notMem {s : Multiset α} : s = 0 ↔ ∀ a, a ∉ s :=
   ⟨fun h => h.symm ▸ fun _ => notMem_zero _, eq_zero_of_forall_notMem⟩
 
-theorem exists_mem_of_ne_zero {s : Multiset α} : s ≠ 0 → ∃ a : α, a ∈ s :=
-  Quot.inductionOn s fun l hl =>
-    match l, hl with
-    | [], h => False.elim <| h rfl
-    | a :: l, _ => ⟨a, by simp⟩
+theorem ne_zero_iff_exists_mem {s : Multiset α} : s ≠ 0 ↔ ∃ a, a ∈ s := by
+  contrapose!
+  exact eq_zero_iff_forall_notMem
+
+alias ⟨exists_mem_of_ne_zero, _⟩ := ne_zero_iff_exists_mem
 
 theorem empty_or_exists_mem (s : Multiset α) : s = 0 ∨ ∃ a, a ∈ s :=
   or_iff_not_imp_left.mpr Multiset.exists_mem_of_ne_zero

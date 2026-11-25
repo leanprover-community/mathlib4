@@ -9,15 +9,14 @@ public import Mathlib.RingTheory.AdicCompletion.Basic
 public import Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology
 
 /-!
-
 # Connection between adic properties and topological properties
 
 ## Main results
+
 - `IsAdic.isPrecomplete_iff`:
   `IsPrecomplete I R` is equivalent to `CompleteSpace R` in the adic topology.
 - `IsAdic.isAdicComplete_iff`:
   `IsAdicComplete I R` is equivalent to `CompleteSpace R` and `T2Space R` in the adic topology.
-
 -/
 
 public section

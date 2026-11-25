@@ -6,6 +6,7 @@ Authors: Raghuram Sundararajan
 module
 
 public import Mathlib.Algebra.Ring.Defs
+
 import Mathlib.Algebra.Group.Ext
 
 /-!
@@ -16,7 +17,7 @@ In this file we prove extensionality lemmas for the ring-like structures defined
 extensionality lemmas take the form of asserting that two algebraic structures on a type are equal
 whenever the addition and multiplication defined by them are both the same.
 
-## Implementation details
+## Implementation notes
 
 We follow `Mathlib/Algebra/Group/Ext.lean` in using the term `(letI := i; HMul.hMul : R → R → R)` to
 refer to the multiplication specified by a typeclass instance `i` on a type `R` (and similarly for
@@ -26,6 +27,7 @@ Since `Mathlib/Algebra/Group/Ext.lean` proved several injectivity lemmas, we do 
 sometimes we don't need them to prove extensionality.
 
 ## Tags
+
 semiring, ring, extensionality
 -/
 
@@ -259,7 +261,7 @@ namespace NonAssocRing
   have h₃ : inst₁.toAddCommGroupWithOne = inst₂.toAddCommGroupWithOne :=
     AddCommGroupWithOne.ext h_add (congrArg (·.toOne.one) h₂)
   cases inst₁; cases inst₂
-  congr <;> solve | injection h₁ | injection h₂ | injection h₃
+  injection h₃; congr
 
 theorem toNonAssocSemiring_injective :
     Function.Injective (@toNonAssocSemiring R) := by
@@ -287,7 +289,7 @@ namespace Semiring
     inst₁ = inst₂ := by
   -- Show that enough substructures are equal.
   have h₀ : inst₁.toAddCommMonoid = inst₂.toAddCommMonoid := by
-    ext : 1 <;> assumption
+    ext : 1; assumption
   have h₁ : inst₁.toNonUnitalSemiring = inst₂.toNonUnitalSemiring := by
     ext : 1 <;> assumption
   have h₂ : inst₁.toNonAssocSemiring = inst₂.toNonAssocSemiring := by
@@ -296,7 +298,7 @@ namespace Semiring
     ext : 1; exact h_mul
   -- Split into fields and prove they are equal using the above.
   cases inst₁; cases inst₂
-  congr <;> solve | injection h₁ | injection h₂
+  congr; solve | injection h₁ | injection h₂
 
 theorem toNonUnitalSemiring_injective :
     Function.Injective (@toNonUnitalSemiring R) := by

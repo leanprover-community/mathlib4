@@ -5,9 +5,9 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Subobject.WellPowered
 public import Mathlib.CategoryTheory.Comma.LocallySmall
 public import Mathlib.CategoryTheory.Limits.Comma
+public import Mathlib.CategoryTheory.Subobject.WellPowered
 
 /-!
 # Subobjects in the category of structured arrows
@@ -17,17 +17,18 @@ and `S : D` as a subtype of the subobjects of `A.right`. We deduce that `Structu
 well-powered if `C` is.
 
 ## Main declarations
+
 * `StructuredArrow.subobjectEquiv`: the order-equivalence between `Subobject A` and a subtype of
   `Subobject A.right`.
 
 ## Implementation notes
+
 Our computation requires that `C` has all limits and `T` preserves all limits. Furthermore, we
 require that the morphisms of `C` and `D` are in the same universe. It is possible that both of
 these requirements can be relaxed by refining the results about limits in comma categories.
 
 We also provide the dual results. As usual, we use `Subobject (op A)` for the quotient objects of
 `A`.
-
 -/
 
 @[expose] public section
@@ -169,11 +170,10 @@ theorem unop_left_comp_underlyingIso_hom_unop {A : CostructuredArrow S T}
     f.unop.left ≫ (Subobject.underlyingIso f.unop.left.op).hom.unop =
       (Subobject.mk f.unop.left.op).arrow.unop := by
   conv_lhs =>
-    congr
+    enter [1]
     rw [← Quiver.Hom.unop_op f.unop.left]
   rw [← unop_comp, Subobject.underlyingIso_hom_comp_eq_mk]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Projecting and then lifting a quotient recovers the original quotient, because there is at most
     one morphism making the projected quotient into a costructured arrow. -/
@@ -197,7 +197,7 @@ theorem unop_left_comp_ofMkLEMk_unop {A : CostructuredArrow S T} {P Q : (Costruc
     (h : Subobject.mk f.unop.left.op ≤ Subobject.mk g.unop.left.op) :
     g.unop.left ≫ (Subobject.ofMkLEMk f.unop.left.op g.unop.left.op h).unop = f.unop.left := by
   conv_lhs =>
-    congr
+    enter [1]
     rw [← Quiver.Hom.unop_op g.unop.left]
   rw [← unop_comp]
   simp only [Subobject.ofMkLEMk_comp, Quiver.Hom.unop_op]

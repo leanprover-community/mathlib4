@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.DFinsupp.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Locus of unequal values of finitely supported dependent functions
 
@@ -57,8 +60,8 @@ theorem neLocus_eq_empty {f g : Π₀ a, N a} : f.neLocus g = ∅ ↔ f = g :=
     fun h ↦ h ▸ by simp only [neLocus, Ne, not_true, Finset.filter_false]⟩
 
 @[simp]
-theorem nonempty_neLocus_iff {f g : Π₀ a, N a} : (f.neLocus g).Nonempty ↔ f ≠ g :=
-  Finset.nonempty_iff_ne_empty.trans neLocus_eq_empty.not
+theorem nonempty_neLocus_iff {f g : Π₀ a, N a} : (f.neLocus g).Nonempty ↔ f ≠ g := by
+  simp [← Finset.ne_empty_iff_nonempty]
 
 theorem neLocus_comm : f.neLocus g = g.neLocus f := by
   simp_rw [neLocus, Finset.union_comm, ne_comm]

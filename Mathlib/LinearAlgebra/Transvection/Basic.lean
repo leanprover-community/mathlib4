@@ -38,7 +38,6 @@ called “dilations” (especially if `f v ≠ -1`).
 
 The definition is almost the same as that of `Module.preReflection f v`,
 up to a sign change, which are interesting when `f v = 2`, because they give “reflections”.
-
 -/
 
 @[expose] public section
@@ -301,7 +300,7 @@ theorem symm_mem_dilatransvections_iff {e : V ≃ₗ[R] V} :
   ext x
   suffices x = e x - f x • v by
     simpa [LinearMap.transvection.apply, ← sub_eq_add_neg, symm_apply_eq]
-  rw [eq_comm, sub_eq_iff_eq_add, ← coe_coe, he, LinearMap.transvection.apply]
+  rw [eq_comm, sub_eq_iff_eq_add, ← coe_toLinearMap, he, LinearMap.transvection.apply]
 
 @[simp]
 theorem inv_mem_dilatransvections_iff {e : V ≃ₗ[R] V} :
@@ -470,7 +469,7 @@ theorem mem_transvections_iff_mem_dilatransvections_and_fixedReduce_eq_one
         ← sub_eq_zero, ← LinearMap.ker_eq_top, eq_top_iff, ← eq_top]
       simp only [LinearEquiv.transvection.coe_toLinearMap,
         sup_le_iff, Submodule.span_singleton_le_iff_mem, LinearMap.mem_ker, LinearMap.sub_apply,
-        LinearEquiv.coe_coe]
+        coe_toLinearMap]
       constructor
       · intro x hx
         suffices f x = 0 by
@@ -600,7 +599,7 @@ private theorem det_ofField [FiniteDimensional K V] (f : Dual K V) (v : V) :
     simp only [map_add, Basis.repr_self, map_smul, Finsupp.coe_add, Finsupp.coe_smul,
       Pi.add_apply, Pi.smul_apply, smul_eq_mul, Matrix.of_apply]
     rw [hv, Function.update_apply, Basis.repr_self, Pi.one_apply, hf]
-    simp only [smul_apply, Basis.coord_apply, Basis.repr_self, smul_eq_mul,
+    simp only [LinearMap.smul_apply, Basis.coord_apply, Basis.repr_self, smul_eq_mul,
       Finsupp.single_eq_same, mul_one]
     split_ifs with hxy hxi
     · simp [← hxy, hxi]

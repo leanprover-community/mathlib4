@@ -9,6 +9,9 @@ public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Data.Int.GCD
 public import Mathlib.RingTheory.Coprime.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Additional lemmas about elements of a ring satisfying `IsCoprime`
 
@@ -19,7 +22,6 @@ as they require more imports.
 
 Notably, this includes lemmas about `Finset.prod` as this requires importing BigOperators, and
 lemmas about `Pow` since these are easiest to prove via `Finset.prod`.
-
 -/
 
 public section

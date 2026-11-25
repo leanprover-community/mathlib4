@@ -6,11 +6,15 @@ Authors: Weiyi Wang
 module
 
 public import Mathlib.Algebra.Module.LocalizedModule.Basic
-import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.Algebra.Order.Module.Archimedean
 public import Mathlib.Algebra.Order.Monoid.PNat
 public import Mathlib.Basic.Sign.Defs
 public import Mathlib.RingTheory.Localization.FractionRing
+
+import Mathlib.Algebra.Order.Archimedean.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Divisible Hull of an abelian group
@@ -36,7 +40,6 @@ it.
 * `DivisibleHull M` is the divisible hull of an abelian group.
 * `DivisibleHull.archimedeanClassOrderIso M` is the equivalence between `ArchimedeanClass M` and
   `ArchimedeanClass (DivisibleHull M)`.
-
 -/
 
 @[expose] public section
@@ -148,7 +151,7 @@ theorem nnqsmul_mk (a : ℚ≥0) (m : M) (s : ℕ+) :
   simp [IsLocalization.eq_mk'_iff_mul_eq]
 
 section TorsionFree
-variable [IsAddTorsionFree M]
+variable [HasUniqueDiv M]
 
 theorem mk_eq_mk_iff_smul_eq_smul {m m' : M} {s s' : ℕ+} :
     mk m s = mk m' s' ↔ s'.val • m = s.val • m' := by

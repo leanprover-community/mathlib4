@@ -5,8 +5,8 @@ Authors: Kenny Lau, Yury Kudryashov, Amelia Livingston
 -/
 module
 
-public import Mathlib.RingTheory.Coalgebra.Hom
 public import Mathlib.RingTheory.Bialgebra.Basic
+public import Mathlib.RingTheory.Coalgebra.Hom
 
 /-!
 # Homomorphisms of `R`-bialgebras
@@ -23,7 +23,6 @@ This file defines bundled homomorphisms of `R`-bialgebras. We simply mimic
 ## Notation
 
 * `A →ₐc[R] B` : `R`-bialgebra homomorphism from `A` to `B`.
-
 -/
 
 @[expose] public section
@@ -73,16 +72,12 @@ instance (priority := 100) toAlgHomClass : AlgHomClass F R A B where
   commutes := fun c r => by
     simp only [Algebra.algebraMap_eq_smul_one, map_smul, map_one]
 
-/-- Turn an element of a type `F` satisfying `BialgHomClass F R A B` into an actual
-`BialgHom`. This is declared as the default coercion from `F` to `A →ₐc[R] B`. -/
-@[coe]
-def toBialgHom (f : F) : A →ₐc[R] B :=
+/-- Turn an element of a type `F` satisfying `BialgHomClass F R A B` into an actual `BialgHom`. -/
+def _root_.BialgHom.ofClass (f : F) : A →ₐc[R] B :=
   { CoalgHom.ofClass f, AlgHom.ofClass f with
     toFun := f }
 
-instance instCoeToBialgHom :
-    CoeHead F (A →ₐc[R] B) :=
-  ⟨BialgHomClass.toBialgHom⟩
+@[deprecated (since := "2026-11-22")] alias toBialgHom := BialgHom.ofClass
 
 end
 section
@@ -137,9 +132,11 @@ def Simps.apply {R α β : Type*} [CommSemiring R]
 initialize_simps_projections BialgHom (toFun → apply, as_prefix toCoalgHom)
 
 @[simp]
-protected theorem coe_coe {F : Type*} [FunLike F A B] [BialgHomClass F R A B] (f : F) :
-    ⇑(f : A →ₐc[R] B) = f :=
+protected theorem coe_ofClass {F : Type*} [FunLike F A B] [BialgHomClass F R A B] (f : F) :
+    ⇑(BialgHom.ofClass f) = f :=
   rfl
+
+@[deprecated (since := "2026-11-22")] protected alias coe_coe := BialgHom.coe_ofClass
 
 @[simp]
 theorem coe_mk {f : A →ₗc[R] B} (h h₁) : ((⟨f, h, h₁⟩ : A →ₐc[R] B) : A → B) = f :=
@@ -215,8 +212,8 @@ theorem ext {φ₁ φ₂ : A →ₐc[R] B} (H : ∀ x, φ₁ x = φ₂ x) : φ�
   DFunLike.ext _ _ H
 
 @[ext high]
-theorem ext_of_ring {f g : R →ₐc[R] A} (h : f 1 = g 1) : f = g :=
-  coe_linearMap_injective (by ext; assumption)
+theorem ext_of_ring {f g : R →ₐc[R] A} : f = g :=
+  coe_linearMap_injective (by ext; exact (map_one f).trans (map_one g).symm)
 
 @[simp]
 theorem mk_coe {f : A →ₐc[R] B} (h₀ h₁ h₂ h₃ h₄ h₅) :

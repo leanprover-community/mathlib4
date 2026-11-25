@@ -5,8 +5,11 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Completion
 public import Mathlib.Analysis.Asymptotics.Defs
+public import Mathlib.Analysis.Normed.Group.Completion
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Asymptotics in the completion of a normed space

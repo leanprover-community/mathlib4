@@ -8,15 +8,17 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.NumberTheory.Real.Irrational
 public import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Qify
 public import Mathlib.Tactic.Rify
+
+import Mathlib.Tactic.Qify
 
 /-! # `norm_num` extension for `Irrational`
 
 This module defines a `norm_num` extension for `Irrational x ^ y` for rational `x` and `y`. It also
 supports `Irrational √x` expressions.
 
-## Implementation details
+## Implementation notes
+
 To prove that `(a / b) ^ (p / q)` is irrational, we reduce the problem to showing that `(a / b) ^ p`
 is not a `q`-th power of any rational number. This, in turn, reduces to proving that either `a` or
 `b` is not a `q`-th power of a natural number, assuming `p` and `q` are coprime.
@@ -24,8 +26,8 @@ To show that a given `n : ℕ` is not a `q`-th power, we find a natural number `
 such that `k ^ q < n < (k + 1) ^ q`, using binary search.
 
 ## TODO
-Disprove `Irrational x` for rational `x`.
 
+Disprove `Irrational x` for rational `x`.
 -/
 
 public meta section

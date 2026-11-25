@@ -5,12 +5,11 @@ Authors: Paul Cadman
 -/
 module
 
-public import Mathlib.Order.Interval.Finset.Fin
-public import Mathlib.LinearAlgebra.Matrix.Defs
 public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.LinearAlgebra.Matrix.Defs
+public import Mathlib.Order.Interval.Finset.Fin
 
 /-!
-
 # A division-free determinant algorithm
 
 This file defines `birdDet`and `Spec.birdDet`, implementations of an
@@ -31,7 +30,6 @@ This determinant algorithm comes from
 ## Main lemmas
 
 The lemmas in this file are unfolding equations.
-
 -/
 
 public section

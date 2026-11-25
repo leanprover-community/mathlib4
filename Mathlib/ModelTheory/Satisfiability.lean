@@ -5,9 +5,10 @@ Authors: Aaron Anderson
 -/
 module
 
-import Mathlib.ModelTheory.Ultraproducts
 public import Mathlib.ModelTheory.Bundled
+
 import Mathlib.ModelTheory.Skolem
+import Mathlib.ModelTheory.Ultraproducts
 import Mathlib.Order.Filter.AtTopBot.Basic
 
 /-!
@@ -37,7 +38,7 @@ This file deals with the satisfiability of first-order theories, as well as equi
   Theorem: If `κ` is a cardinal greater than the cardinalities of `L` and an infinite `L`-structure
   `M`, then `M` has an elementary extension of cardinality `κ`.
 
-## Implementation Details
+## Implementation notes
 
 - Satisfiability of an `L.Theory` `T` is defined in the minimal universe containing all the symbols
   of `L`. By Löwenheim-Skolem, this is equivalent to satisfiability in any universe.

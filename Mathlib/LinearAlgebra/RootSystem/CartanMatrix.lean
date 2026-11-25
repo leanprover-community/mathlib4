@@ -6,13 +6,13 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.Order.Star.Int
-public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.LinearAlgebra.Matrix.Cartan.Basic
 public import Mathlib.LinearAlgebra.RootSystem.Base
 
 import Mathlib.Algebra.CharZero.Infinite
 import Mathlib.Algebra.Module.Submodule.Union
 import Mathlib.LinearAlgebra.Determinant
+import Mathlib.LinearAlgebra.Matrix.Block
 import Mathlib.LinearAlgebra.Matrix.ZMatrix
 
 /-!
@@ -20,14 +20,14 @@ import Mathlib.LinearAlgebra.Matrix.ZMatrix
 
 This file contains definitions and basic results about Cartan matrices of root pairings / systems.
 
-## Main definitions:
+## Main definitions
+
 * `RootPairing.Base.cartanMatrix`: the Cartan matrix of a crystallographic root pairing, with
   respect to a base `b`.
 * `RootPairing.Base.cartanMatrix_nondegenerate`: the Cartan matrix is non-degenerate.
 * `RootPairing.Base.induction_on_cartanMatrix`: an induction principle expressing the connectedness
   of the Dynkin diagram of an irreducible root pairing.
 * `RootPairing.Base.equivOfCartanMatrixEq`: a root system is determined by its Cartan matrix.
-
 -/
 
 @[expose] public section
@@ -188,7 +188,7 @@ lemma cartanMatrix_mul_diagonal_eq [Fintype ι] [DecidableEq ι] [P.IsRootSystem
   simpa [← algebraMap_pairingIn P ℤ i j] using
     congr($(cartanMatrixIn_mul_diagonal_eq ℤ P.toInvariantForm b) i j)
 
-lemma exists_cartanMatrix_mul_diagaonal_posDef [DecidableEq ι] [P.IsRootSystem] :
+lemma exists_cartanMatrix_mul_diagonal_posDef [DecidableEq ι] [P.IsRootSystem] :
     ∃ d : b.support → ℤ, (∀ i, 0 < d i) ∧ (b.cartanMatrix * diagonal d).PosDef := by
   have _i : Fintype ι := Fintype.ofFinite ι
   set d : b.support → ℤ := fun i ↦ P.RootFormIn ℤ (P.rootSpanMem ℤ i) (P.rootSpanMem ℤ i) with hd
@@ -202,12 +202,18 @@ lemma exists_cartanMatrix_mul_diagaonal_posDef [DecidableEq ι] [P.IsRootSystem]
     rw [← LinearMap.BilinForm.posDef_toQuadraticMap_iff_matrix _ _ aux]
     simpa using P.posRootForm_rootFormIn_posDef ℤ
 
-lemma exists_cartanMatrix_diagaonal_mul_posDef [DecidableEq ι] [P.IsRootSystem] :
+@[deprecated (since := "2026-10-13")]
+alias exists_cartanMatrix_mul_diagaonal_posDef := exists_cartanMatrix_mul_diagonal_posDef
+
+lemma exists_cartanMatrix_diagonal_mul_posDef [DecidableEq ι] [P.IsRootSystem] :
     ∃ d : b.support → ℤ, (∀ i, 0 < d i) ∧ (diagonal d * b.cartanMatrix).PosDef := by
-  obtain ⟨d, hd, hd'⟩ := b.flip.exists_cartanMatrix_mul_diagaonal_posDef
+  obtain ⟨d, hd, hd'⟩ := b.flip.exists_cartanMatrix_mul_diagonal_posDef
   refine ⟨d, hd, ?_⟩
   rw [← PosDef.transpose_iff] at hd'
   aesop
+
+@[deprecated (since := "2026-10-13")]
+alias exists_cartanMatrix_diagaonal_mul_posDef := exists_cartanMatrix_diagonal_mul_posDef
 
 open LinearMap Module.End in
 lemma det_four_sub_cartanMatrix_ne_zero [DecidableEq ι] [P.IsRootSystem] :
@@ -216,7 +222,7 @@ lemma det_four_sub_cartanMatrix_ne_zero [DecidableEq ι] [P.IsRootSystem] :
     have aux : (4 - b.cartanMatrix).toLin' = - (b.cartanMatrix.toLin' - (4 : ℤ) • 1) := by ext; simp
     rwa [ne_eq, ← det_toLin', det_eq_zero_iff_ker_ne_bot, aux, ker_neg, ← eigenspace_def,
       ← hasEigenvalue_iff]
-  obtain ⟨d, hd, hdS⟩ := b.exists_cartanMatrix_diagaonal_mul_posDef
+  obtain ⟨d, hd, hdS⟩ := b.exists_cartanMatrix_diagonal_mul_posDef
   have aux (i j : b.support) : b.cartanMatrix i j ≤ if i = j then 2 else 0 := by
     rcases eq_or_ne i j with rfl | hij
     · simp
@@ -253,7 +259,7 @@ lemma induction_on_cartanMatrix [P.IsReduced] [P.IsIrreducible]
   have hq : ∀ k, q ∈ invtSubmodule (P.reflection k) := by
     rw [← b.forall_mem_support_invtSubmodule_iff]
     refine fun k hkb ↦ (mem_invtSubmodule _).mpr fun x hx ↦ ?_
-    rw [Submodule.mem_comap, LinearEquiv.coe_coe, reflection_apply]
+    rw [Submodule.mem_comap, LinearEquiv.coe_toLinearMap, reflection_apply]
     apply q.sub_mem hx
     by_cases hk : P.root k ∈ q
     · exact q.smul_mem _ hk
@@ -304,8 +310,8 @@ lemma exists_mem_span_pairingIn_ne_zero_and_pairwise_ne
     ∃ d ∈ span K (range fun (i : b.support) j ↦ (P.pairingIn ℤ j i : K)),
       (∀ i, d i ≠ 0) ∧ Pairwise ((· ≠ ·) on d) := by
   set p := span K (range fun (i : b.support) j ↦ (P.pairingIn ℤ j i : K))
-  let f : ι ⊕ {(i, j) : ι × ι | i ≠ j} → Module.Dual K (ι → K) := Sum.elim
-    LinearMap.proj (fun x ↦ LinearMap.proj (R := K) (φ := fun _ ↦ K) x.1.1 - LinearMap.proj x.1.2)
+  let f : ι ⊕ {(i, j) : ι × ι | i ≠ j} → Module.Dual K (ι → K) := Sum.elim LinearMap.proj
+    (fun x ↦ LinearMap.proj (R := K) (φ := fun _ ↦ K) x.val.1 - LinearMap.proj x.val.2)
   suffices ∃ d ∈ p, ∀ i, f i d ≠ 0 by
     obtain ⟨d, hp, hf⟩ := this
     refine ⟨d, hp, fun i ↦ hf (Sum.inl i), fun i j h ↦ ?_⟩
@@ -408,10 +414,12 @@ lemma cartanMatrix_isIndecomposable [P.IsReduced] [P.IsIrreducible] :
 
 lemma cartanMatrix_isFiniteCartan [DecidableEq ι] [P.IsRootSystem] :
     b.cartanMatrix.IsFiniteCartan where
-  diag i := b.cartanMatrix_apply_same i
-  offDiag_nonpos i j hij := b.cartanMatrix_le_zero_of_ne i j hij
+  diag := b.cartanMatrix_apply_same
+  offDiag_nonpos := b.cartanMatrix_le_zero_of_ne
   zero_comm _ _ := b.cartanMatrix_apply_eq_zero_iff_symm
-  exists_posDef := b.exists_cartanMatrix_diagaonal_mul_posDef
+  exists_posDef' := by
+    obtain ⟨d, hd, hd'⟩ := b.exists_cartanMatrix_diagonal_mul_posDef
+    exact ⟨d, hd, fun x hx ↦ by simpa using hd'.dotProduct_mulVec_pos hx⟩
 
 end IsCrystallographic
 

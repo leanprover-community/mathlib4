@@ -5,9 +5,10 @@ Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 -/
 module
 
-import Mathlib.Algebra.QuadraticDiscriminant
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 public import Mathlib.Analysis.RCLike.Basic
+
+import Mathlib.Algebra.QuadraticDiscriminant
 import Mathlib.Basic.Complex.Basic
 
 /-!
@@ -58,6 +59,7 @@ in the second.
 inner product space, Hilbert space, norm
 
 ## References
+
 * [Clément & Martin, *The Lax-Milgram Theorem. A detailed proof to be formalized in Coq*]
 * [Clément & Martin, *A Coq formal proof of the Lax–Milgram theorem*]
 

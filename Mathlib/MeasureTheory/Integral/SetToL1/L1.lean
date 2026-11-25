@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Normed.Operator.Extend
 public import Mathlib.MeasureTheory.Integral.SetToL1.SimpleFunc
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extension of set functions to L¹
 
@@ -55,7 +58,7 @@ theorem setToL1'_eq_setToL1SCLM (hT : DominatedFinMeasAdditive μ T C)
     (h_smul : ∀ c : 𝕜, ∀ s x, T s (c • x) = c • T s x) (f : α →₁ₛ[μ] E) :
     setToL1' 𝕜 hT h_smul f = setToL1SCLM α E μ hT f := by
   apply ContinuousLinearMap.extend_eq _ _ simpleFunc.isUniformInducing
-  · exact simpleFunc.denseRange one_ne_top
+  exact simpleFunc.denseRange one_ne_top
 
 @[simp]
 theorem setToL1'_apply_coeToLp (hT : DominatedFinMeasAdditive μ T C)
@@ -213,7 +216,7 @@ theorem setToL1_nonneg [ClosedIciTopology G''] {T : Set α → G' →L[ℝ] G''}
   · intro g
     have : (coeSimpleFuncNonnegToLpNonneg 1 μ G' g : α →₁[μ] G') = (g : α →₁ₛ[μ] G') := rfl
     rw [this, setToL1_eq_setToL1SCLM]
-    exact setToL1S_nonneg (fun s => hT.eq_zero_of_measure_zero) hT.1 hT_nonneg g.2
+    exact setToL1S_nonneg (fun s => hT.eq_zero_of_measure_zero) hT.1 hT_nonneg g.property
 
 theorem setToL1_mono [ClosedIciTopology G''] [IsOrderedAddMonoid G']
     {T : Set α → G' →L[ℝ] G''} {C : ℝ} (hT : DominatedFinMeasAdditive μ T C)

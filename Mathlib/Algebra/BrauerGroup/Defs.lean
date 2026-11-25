@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Category.AlgCat.Basic
 public import Mathlib.Algebra.Central.Defs
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+
 import Mathlib.LinearAlgebra.Matrix.Reindex
 
 /-!
@@ -18,16 +19,19 @@ all finite-dimensional central simple algebras over K modulo the Brauer Equivale
 central simple algebras `A` and `B` are Brauer Equivalent if there exist `n, m ∈ ℕ+` such
 that `Mₙ(A) ≃ₐ[K] Mₘ(B)`.
 
-## TODOs
+## TODO
+
 1. Prove that the Brauer group is an abelian group where multiplication is defined as tensor
    product.
 2. Prove that the Brauer group is a functor from the category of fields to the category of groups.
 3. Prove that over a field, being Brauer equivalent is the same as being Morita equivalent.
 
 ## References
+
 * [Algebraic Number Theory, *J.W.S Cassels*][cassels1967algebraic]
 
 ## Tags
+
 Brauer group, Central simple algebra, Galois Cohomology
 -/
 

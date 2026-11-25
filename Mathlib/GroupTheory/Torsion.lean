@@ -393,7 +393,7 @@ lemma torsion_eq_top_iff : torsion G = ⊤ ↔ IsMulTorsion G :=
 
 @[to_additive]
 lemma isMulTorsionFree_iff_torsion_eq_bot : IsMulTorsionFree G ↔ CommGroup.torsion G = ⊥ := by
-  rw [isMulTorsionFree_iff_not_isOfFinOrder, eq_bot_iff, IsConcreteLE.le_iff]
+  rw [isMulTorsionFree_iff_not_isOfFinOrder, eq_bot_iff, le_iff_mem_imp_mem]
   simp [not_imp_not, CommGroup.mem_torsion]
 
 @[to_additive]
@@ -511,11 +511,13 @@ end CommGroup
 
 open CommGroup (torsion)
 
-/-- Quotienting a group by its torsion subgroup yields a torsion-free group. -/
-@[to_additive
-/-- Quotienting an additive group by its torsion additive subgroup yields a torsion-free additive
-group. -/]
-instance _root_.QuotientGroup.instIsMulTorsionFree : IsMulTorsionFree <| G ⧸ torsion G := by
+/-- Quotienting a group by its torsion subgroup yields a group with unique roots. In particular,
+it is torsion-free. -/
+@[to_additive _root_.QuotientAddGroup.instHasUniqueDiv
+/-- Quotienting an additive group by its torsion additive subgroup yields an additive group with
+unique divisibility. In particular, it is torsion-free. -/]
+instance _root_.QuotientGroup.instHasUniqueRoots : HasUniqueRoots <| G ⧸ torsion G := by
+  suffices IsMulTorsionFree (G ⧸ torsion G) from IsMulTorsionFree.hasUniqueRoots
   refine .of_not_isOfFinOrder fun g hne hfin ↦ hne ?_
   obtain ⟨g⟩ := g
   obtain ⟨m, mpos, hm⟩ := hfin.exists_pow_eq_one

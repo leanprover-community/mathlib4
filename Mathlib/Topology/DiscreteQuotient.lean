@@ -12,7 +12,6 @@ public import Mathlib.Topology.LocallyConstant.Basic
 import Mathlib.Topology.Separation.Regular
 
 /-!
-
 # Discrete quotients of a topological space.
 
 This file defines the type of discrete quotients of a topological space,
@@ -60,6 +59,7 @@ The two main results proved in this file are:
   respect to `DiscreteQuotient.ofLE`, must arise from some element of `X`.
 
 ## Remarks
+
 The constructions in this file will be used to show that any profinite space is a limit
 of finite discrete spaces.
 -/
@@ -147,7 +147,8 @@ theorem isClopen_setOfPred_rel (x : X) : IsClopen (Set.ofPred (S.toSetoid x)) :=
 alias isClopen_setOf_rel := isClopen_setOfPred_rel
 
 instance : Min (DiscreteQuotient X) :=
-  ⟨fun S₁ S₂ => ⟨S₁.1 ⊓ S₂.1, fun x => (S₁.2 x).inter (S₂.2 x)⟩⟩
+  ⟨fun S₁ S₂ => ⟨S₁.toSetoid ⊓ S₂.toSetoid,
+    fun x => (S₁.isOpen_setOfPred_rel x).inter (S₂.isOpen_setOfPred_rel x)⟩⟩
 
 instance : PartialOrder (DiscreteQuotient X) :=
   PartialOrder.lift _ toSetoid_injective
@@ -160,8 +161,6 @@ instance : OrderTop (DiscreteQuotient X) where
   le_top a := by tauto
 
 instance : Inhabited (DiscreteQuotient X) := ⟨⊤⟩
-
-instance inhabitedQuotient [Inhabited X] : Inhabited S := ⟨S.proj default⟩
 
 -- TODO: add instances about `Nonempty (Quot _)`/`Nonempty (Quotient _)`
 instance [Nonempty X] : Nonempty S := Nonempty.map S.proj ‹_›
@@ -176,8 +175,8 @@ variable (g : C(Y, Z)) (f : C(X, Y))
 
 /-- Comap a discrete quotient along a continuous map. -/
 def comap (S : DiscreteQuotient Y) : DiscreteQuotient X where
-  toSetoid := Setoid.comap f S.1
-  isOpen_setOfPred_rel _ := (S.2 _).preimage f.continuous
+  toSetoid := Setoid.comap f S.toSetoid
+  isOpen_setOfPred_rel _ := (S.isOpen_setOfPred_rel _).preimage f.continuous
 
 @[simp]
 theorem comap_id : S.comap (ContinuousMap.id X) = S := rfl
@@ -238,7 +237,7 @@ instance [LocallyConnectedSpace X] : OrderBot (DiscreteQuotient X) where
       isOpen_setOfPred_rel := fun x => by
         convert isOpen_connectedComponent (x := x)
         ext y
-        simpa only [connectedComponentSetoid, ← connectedComponent_eq_iff_mem] using! eq_comm }
+        simpa [connectedComponentSetoid, ← connectedComponent_eq_iff_mem] using eq_comm }
   bot_le S := fun x y (h : connectedComponent x = connectedComponent y) =>
     (S.isClopen_setOfPred_rel x).connectedComponent_subset (S.refl _) <|
       h.symm ▸ mem_connectedComponent
@@ -412,7 +411,7 @@ variable (f : LocallyConstant X α)
 /-- Any locally constant function induces a discrete quotient. -/
 def discreteQuotient : DiscreteQuotient X where
   toSetoid := .comap f ⊥
-  isOpen_setOfPred_rel _ := f.isLocallyConstant _
+  isOpen_setOfPred_rel x := f.isLocallyConstant {y | f x = y}
 
 /-- The (locally constant) function from the discrete quotient associated to a locally constant
 function. -/

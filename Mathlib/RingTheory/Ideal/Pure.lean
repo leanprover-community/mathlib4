@@ -6,10 +6,11 @@ Authors: Christian Merten
 module
 
 public import Mathlib.RingTheory.Flat.Tensor
+public import Mathlib.RingTheory.LocalProperties.Basic
+public import Mathlib.RingTheory.Spectrum.Prime.Basic
+
 import Mathlib.RingTheory.Ideal.IdempotentFG
 import Mathlib.RingTheory.Idempotents
-public import Mathlib.RingTheory.Spectrum.Prime.Basic
-public import Mathlib.RingTheory.LocalProperties.Basic
 
 /-!
 # Pure ideals
@@ -49,7 +50,7 @@ lemma injective_lTensor_quotient_iff_inf_eq_mul (I J : Ideal R) :
     ext
     simp [f, ← Ideal.Quotient.algebraMap_eq, Algebra.TensorProduct.tmul_one_eq_one_tmul]
   rw [this]
-  simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, EmbeddingLike.comp_injective,
+  simp only [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, EmbeddingLike.comp_injective,
     EquivLike.injective_comp, ← LinearMap.ker_eq_bot, f, Submodule.ker_mapQ,
     ← LinearMap.le_ker_iff_map, Submodule.ker_mkQ,
     ← (Submodule.map_le_map_iff_of_injective J.injective_subtype)]
@@ -121,7 +122,7 @@ lemma Ideal.ker_piRingHom_atPrime_eq_of_pure (I : Ideal R) [I.Pure] :
     ext p
     rw [RingHom.pi_apply, Pi.zero_apply]
     exact Ideal.le_ker_atPrime_of_forall_exists_eq_mul
-      (fun x hx ↦ Ideal.exists_eq_mul_of_pure hx) p.2 hx
+      (fun x hx ↦ Ideal.exists_eq_mul_of_pure hx) p.property hx
 
 @[stacks 04PT]
 lemma Ideal.zeroLocus_inj_of_pure {I J : Ideal R} [I.Pure] [J.Pure] :

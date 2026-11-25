@@ -5,9 +5,13 @@ Authors: Mario Carneiro, Emily Riehl
 -/
 module
 
-import Mathlib.AlgebraicTopology.SimplicialSet.NerveAdjunction
 public import Mathlib.CategoryTheory.Monad.Limits
 
+import Mathlib.AlgebraicTopology.SimplicialSet.NerveAdjunction
+
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The category of small categories has all small colimits.

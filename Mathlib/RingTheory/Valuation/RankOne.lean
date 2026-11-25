@@ -6,12 +6,13 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Basic.Real.Embedding
 public import Mathlib.Combinatorics.Matroid.Init
 public import Mathlib.Data.Sym.Sym2
 public import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
 public import Mathlib.Tactic.NormNum.GCD
 public import Mathlib.Tactic.Positivity
+
+import Mathlib.Basic.Real.Embedding
 
 /-!
 # Rank one valuations
@@ -19,6 +20,7 @@ public import Mathlib.Tactic.Positivity
 We define rank one valuations.
 
 ## Main Definitions
+
 * `RankOne` : A valuation has rank one if it is nontrivial and its image (defined as
   `MonoidWithZeroHom.valueGroup₀ v`) is contained in `ℝ≥0`. Note that this class includes the data
   of an inclusion morphism `MonoidWithZeroHom.valueGroup₀ v → ℝ≥0`.

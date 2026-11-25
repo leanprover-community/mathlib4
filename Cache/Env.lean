@@ -29,7 +29,7 @@ def nonEmptyEnvValue (value? : Option String) : Option String :=
   (value?.map (·.trimAscii.copy)).filter (!·.isEmpty)
 
 /-- Reads `name` from the environment through `nonEmptyEnvValue`. -/
-def getEnvNonEmpty (name : String) : IO (Option String) := do
+def getEnvNonEmpty (name : String) : BaseIO (Option String) := do
   return nonEmptyEnvValue (← IO.getEnv name)
 
 /--

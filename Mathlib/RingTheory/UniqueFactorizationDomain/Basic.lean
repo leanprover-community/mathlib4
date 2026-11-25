@@ -7,14 +7,16 @@ module
 
 public import Mathlib.Algebra.BigOperators.Associated
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
+public import Mathlib.Tactic.Bound.Init
+
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Data.ENat.Basic
-public import Mathlib.Tactic.Bound.Init
 
 /-!
 # Basic results on unique factorization monoids
 
 ## Main results
+
 * `prime_factors_unique`: the prime factors of an element in a cancellative
   commutative monoid with zero (e.g. an integral domain) are unique up to associates
 * `UniqueFactorizationMonoid.factors_unique`: the irreducible factors of an element
@@ -154,7 +156,7 @@ theorem irreducible_iff_prime_of_existsUnique_irreducible_factors [CommMonoidWit
     (p : α) : Irreducible p ↔ Prime p :=
   letI := Classical.decEq α
   ⟨ fun hpi =>
-    ⟨hpi.ne_zero, hpi.1, fun a b ⟨x, hx⟩ =>
+    ⟨hpi.ne_zero, hpi.not_isUnit, fun a b ⟨x, hx⟩ =>
       if hab0 : a * b = 0 then
         (eq_zero_or_eq_zero_of_mul_eq_zero hab0).elim (fun ha0 => by simp [ha0]) fun hb0 => by
           simp [hb0]
