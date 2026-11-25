@@ -69,6 +69,49 @@ variable (C) in
 /-- The bifunctor `Cᵒᵖ ⥤ C ⥤ SSet.{v}` which sends `K : Cᵒᵖ` and `L : C` to `sHom K.unop L`. -/
 noncomputable abbrev sHomFunctor : Cᵒᵖ ⥤ C ⥤ SSet.{v} := eHomFunctor _ _
 
+variable {m : SimplexCategoryᵒᵖ}
+
+/-- The identity `m`-simplex of `sHom K K`. -/
+def idS (m : SimplexCategoryᵒᵖ) (K : C) : (sHom K K).obj m :=
+  (eId SSet K).app m PUnit.unit
+
+/-- Composition of `m`-simplices of the simplicial homs. -/
+def comp {K L M : C} (s : (sHom K L).obj m) (t : (sHom L M).obj m) :
+    (sHom K M).obj m :=
+  (sHomComp K L M).app m (s, t)
+
+@[simp]
+lemma idS_comp {K L : C} (s : (sHom K L).obj m) :
+    comp (idS m K) s = s :=
+  ConcreteCategory.congr_hom (congr_app (e_id_comp SSet K L) m) s
+
+@[simp]
+lemma comp_idS {K L : C} (s : (sHom K L).obj m) :
+    comp s (idS m L) = s :=
+  ConcreteCategory.congr_hom (congr_app (e_comp_id SSet K L) m) s
+
+lemma comp_assoc {K L M N : C} (s : (sHom K L).obj m) (t : (sHom L M).obj m)
+    (r : (sHom M N).obj m) :
+    comp (comp s t) r = comp s (comp t r) :=
+  ConcreteCategory.congr_hom (congr_app (e_assoc SSet K L M N) m)
+    ((s, (t, r)) : (sHom K L ⊗ (sHom L M ⊗ sHom M N)).obj m)
+
+/-- The category of `m`-simplices of a simplicial category `C`: the objects of `C`, and the
+`m`-simplices of `sHom A B` as morphisms `A ⟶ B`. -/
+@[kerodon 00JT]
+structure Level (C : Type u) [Category.{v} C] [SimplicialCategory C]
+    (m : SimplexCategoryᵒᵖ) : Type u where
+  /-- The underlying object of `C`. -/
+  as : C
+
+instance : Category.{v} (Level C m) where
+  Hom A B := (sHom A.as B.as).obj m
+  id A := idS m A.as
+  comp s t := comp s t
+  id_comp := idS_comp
+  comp_id := comp_idS
+  assoc := comp_assoc
+
 end SimplicialCategory
 
 end CategoryTheory
