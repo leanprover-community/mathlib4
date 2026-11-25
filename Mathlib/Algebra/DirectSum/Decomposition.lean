@@ -21,7 +21,7 @@ public import Mathlib.Algebra.DirectSum.Module
 
 * `DirectSum.Decomposition.isInternal`: The link to `DirectSum.IsInternal`.
 
-## Implementation details
+## Implementation notes
 
 As we want to talk about different types of decomposition (additive monoids, modules, rings, ...),
 we choose to avoid heavily bundling `DirectSum.decompose`, instead making copies for the

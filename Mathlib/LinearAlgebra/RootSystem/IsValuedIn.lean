@@ -20,7 +20,7 @@ This file lays out the basic theory of root pairings over a commutative ring `R`
 `S`-algebra, and the pairing between roots and coroots takes values in `S`. The main application
 of this theory is the theory of crystallographic root systems, where `S = ℤ`.
 
-## Main definitions:
+## Main definitions
 
 * `RootPairing.IsValuedIn`: Given a commutative ring `S` and an `S`-algebra `R`, a root pairing
   over `R` is valued in `S` if all root-coroot pairings lie in the image of `algebraMap S R`.

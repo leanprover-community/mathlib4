@@ -24,6 +24,7 @@ import Mathlib.Algebra.Group.Pi.Units
 See `Mathlib/RingTheory/Localization/Defs.lean` for a design overview.
 
 ## Tags
+
 localization, commutative ring
 -/
 

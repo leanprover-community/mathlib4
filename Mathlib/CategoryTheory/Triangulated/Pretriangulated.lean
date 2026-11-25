@@ -16,7 +16,7 @@ import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProduct
 This file contains the definition of pretriangulated categories and triangulated functors
 between them.
 
-## Implementation Notes
+## Implementation notes
 
 We work under the assumption that pretriangulated categories are preadditive categories,
 but not necessarily additive categories, as is assumed in some sources.

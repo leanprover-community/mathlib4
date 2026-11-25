@@ -36,7 +36,7 @@ provided.
 
 Analogous results are also provided for `SheafedSpace` and `LocallyRingedSpace`.
 
-## Implementation details
+## Implementation notes
 
 Almost the whole file is dedicated to showing that `ι i` is an open immersion. The fact that
 this is an open embedding of topological spaces follows from `Mathlib/Topology/Gluing.lean`, and it
