@@ -30,7 +30,7 @@ isometric decomposition.
 On the other hand, choosing a base point breaks the affine invariance so the norm fails to be
 submultiplicative: for a composition of maps, we have only `‖f.comp g‖ ≤ ‖f‖ * ‖g‖ + ‖f 0‖`.
 
-## Main definitions:
+## Main definitions
 
 * `ContinuousAffineMap.hasNorm`
 * `ContinuousAffineMap.norm_comp_le`

@@ -15,7 +15,7 @@ public import Mathlib.Order.WellFounded
 This file proves basic facts about minimality and maximality
 of an element with respect to a predicate `P` on an ordered type `α`.
 
-## Implementation Details
+## Implementation notes
 
 This file underwent a refactor from a version where minimality and maximality were defined using
 sets rather than predicates, and with an unbundled order relation rather than a `LE` instance.

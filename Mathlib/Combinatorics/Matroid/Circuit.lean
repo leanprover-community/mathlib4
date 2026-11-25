@@ -38,7 +38,7 @@ In matroids arising from graphs, circuits correspond to graphical cycles.
 * `Matroid.IsBase.mem_fundCocircuit_iff_mem_fundCircuit` : `e` is in the fundamental circuit
   for `B` and `f` iff `f` is in the fundamental cocircuit for `B` and `e`.
 
-## Implementation Details
+## Implementation notes
 
 Since `Matroid.fundCircuit M e I` is only sensible if `I` is independent and `e ∈ M.closure I \ I`,
 to avoid hypotheses being explicitly included in the definition,

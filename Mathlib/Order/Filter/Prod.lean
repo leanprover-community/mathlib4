@@ -14,7 +14,7 @@ In this file we prove some basic properties of `f ×ˢ g` and `Filter.coprod f g
 of two filters is the largest filter `l` such that `Filter.Tendsto Prod.fst l f` and
 `Filter.Tendsto Prod.snd l g`.
 
-## Implementation details
+## Implementation notes
 
 The product filter cannot be defined using the monad structure on filters. For example:
 

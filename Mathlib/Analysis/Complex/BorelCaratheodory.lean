@@ -20,7 +20,7 @@ open ball `|z| < R` such that `Re(f z) < M` for all `|z| < R`, we have
 * `Complex.borelCaratheodory_zero`: The theorem under the assumption `f 0 = 0`
 * `Complex.borelCaratheodory`: The general version of the theorem
 
-## Implementation Notes
+## Implementation notes
 
 The proof applies the Schwarz lemma to the transformed function `w z := f z / (2 * M - f z)`,
 which maps the ball `|z| < R` into the unit disk provided that `(f z).re ≤ M` for all `|z| < R`.

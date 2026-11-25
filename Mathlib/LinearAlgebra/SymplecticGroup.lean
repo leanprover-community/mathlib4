@@ -22,7 +22,7 @@ This file defines the symplectic group and proves elementary properties.
 * `Matrix.J`: the canonical `2n × 2n` skew-symmetric matrix
 * `symplecticGroup`: the group of symplectic matrices
 
-## Implementation Notes
+## Implementation notes
 
 * `SymplecticGroup.det_eq_one`: Symplectic matrices have determinant 1. The proof strategy
 comes in two steps:
@@ -39,6 +39,7 @@ construct the desired `X` in step 1 at the residue field level, and lift back to
 keeping the upper-left block invertible.
 
 ## TODO
+
 * For `n = 1` the symplectic group coincides with the special linear group.
 -/
 

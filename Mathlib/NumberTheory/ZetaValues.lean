@@ -18,7 +18,7 @@ import Mathlib.Analysis.PSeries
 In this file we prove formulae for the critical values of `ζ(s)`, and more generally of Hurwitz
 zeta functions, in terms of Bernoulli polynomials.
 
-## Main results:
+## Main results
 
 * `hasSum_zeta_nat`: the final formula for zeta values,
   $$\zeta(2k) = \frac{(-1)^{(k + 1)} 2 ^ {2k - 1} \pi^{2k} B_{2 k}}{(2 k)!}.$$

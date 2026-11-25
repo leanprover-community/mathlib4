@@ -37,7 +37,7 @@ We also prove Tonelli's theorem.
   The lemma `Measurable.lintegral_prod_right'` states that the inner integral of the right-hand side
   is measurable.
 
-## Implementation Notes
+## Implementation notes
 
 Many results are proven twice, once for functions in curried form (`α → β → γ`) and one for
 functions in uncurried form (`α × β → γ`). The former often has an assumption

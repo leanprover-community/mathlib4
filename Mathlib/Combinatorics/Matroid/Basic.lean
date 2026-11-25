@@ -51,7 +51,7 @@ Given `M : Matroid α` ...
 
 * `aesop_mat` : a tactic designed to prove `X ⊆ M.E` for some set `X` and matroid `M`.
 
-## Implementation details
+## Implementation notes
 
 There are a few design decisions worth discussing.
 

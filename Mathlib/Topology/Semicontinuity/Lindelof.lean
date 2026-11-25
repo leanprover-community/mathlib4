@@ -21,7 +21,7 @@ result is of the form "if `IsGLB 𝓕 s`, then there is a countable `𝓕' ⊆ �
 
 Of course we also provide the dual statements for lower semicontinuous functions.
 
-## Implementation Notes
+## Implementation notes
 
 There is currently no way to state the hypothesis "`E` admits a countable order-dense subset"
 which would be inferrable by typeclass inference. Instead, we assume

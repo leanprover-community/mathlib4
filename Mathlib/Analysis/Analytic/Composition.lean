@@ -45,7 +45,7 @@ summability of the norms, this implies the overall convergence.
 * `FormalMultilinearSeries.comp_assoc` states that composition is associative on formal
   multilinear series.
 
-## Implementation details
+## Implementation notes
 
 The main technical difficulty is to write down things. In particular, we need to define precisely
 `q.compAlongComposition p c` and to show that it is indeed a continuous multilinear

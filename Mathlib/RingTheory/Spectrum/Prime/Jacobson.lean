@@ -13,6 +13,7 @@ public import Mathlib.Topology.JacobsonSpace
 # The prime spectrum of a Jacobson ring
 
 ## Main results
+
 - `PrimeSpectrum.exists_isClosed_singleton_of_isJacobson`:
   The spectrum of a Jacobson ring is a Jacobson space.
 - `PrimeSpectrum.isOpen_singleton_tfae_of_isNoetherian_of_isJacobson`:

@@ -32,7 +32,7 @@ for `n : ℕ`.
 * `p.partialSum n x`: the sum `∑_{i = 0}^{n-1} pᵢ xⁱ`.
 * `p.sum x`: the sum `∑'_{i = 0}^{∞} pᵢ xⁱ`.
 
-## Implementation details
+## Implementation notes
 
 We only introduce the radius of convergence of a power series, as `p.radius`.
 For a power series in finitely many dimensions, there is a finer (directional, coordinate-dependent)

@@ -133,7 +133,7 @@ Then we define four filters on `BoxIntegral.TaggedPrepartition I`.
   `π₀ = ⊤` is the one-box partition of `I`) used in the definition of the integral of a function
   over a box.
 
-## Implementation details
+## Implementation notes
 
 * Later we define the integral of a function over a rectangular box as the limit (if it exists) of
   the integral sums along `BoxIntegral.IntegrationParams.toFilteriUnion l I ⊤`. While it is

@@ -316,7 +316,7 @@ def of (p : Set α) : ManyOneDegree :=
 @[elab_as_elim]
 protected theorem ind_on {C : ManyOneDegree → Prop} (d : ManyOneDegree)
     (h : ∀ p : Set ℕ, C (of p)) : C d :=
-  Quotient.inductionOn' d fun p => by rw [← toNat_nat p]; exact h p
+  Quotient.inductionOn d fun p => by rw [← toNat_nat p]; exact h p
 
 /-- Lifts a function on sets of natural numbers to many-one degrees. -/
 protected abbrev liftOn {φ} (d : ManyOneDegree) (f : Set ℕ → φ)

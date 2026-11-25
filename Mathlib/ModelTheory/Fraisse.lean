@@ -50,7 +50,7 @@ Fraïssé limit - the countable ultrahomogeneous structure with that age.
 - `FirstOrder.Language.empty.isFraisse_finite` shows that the class of finite structures in the
   empty language is Fraïssé.
 
-## Implementation Notes
+## Implementation notes
 
 - Classes of structures are formalized with `Set (Bundled L.Structure)`.
 - Some results pertain to countable limit structures, others to countably-generated limit

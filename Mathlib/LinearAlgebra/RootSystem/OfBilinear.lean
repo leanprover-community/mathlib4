@@ -15,12 +15,14 @@ lattice for which reflection yields an automorphism of the lattice.  In this fil
 this construction, replacing the ring of integers with an arbitrary commutative ring and the
 integral lattice with an arbitrary reflexive module equipped with a bilinear form.
 
-## Main definitions:
+## Main statements
+
 * `LinearMap.IsReflective`: Length is a regular value of `R`, and reflection is definable.
 * `LinearMap.IsReflective.coroot`: The coroot corresponding to a reflective vector.
 * `RootPairing.of_Bilinear`: The root pairing whose roots are reflective vectors.
 
 ## TODO
+
 * properties
 -/
 

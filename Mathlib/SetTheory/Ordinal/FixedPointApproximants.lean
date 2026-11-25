@@ -24,13 +24,15 @@ ordinals from mathlib. It still allows an approximation scheme indexed over the 
 * `OrdinalApprox.gfpApprox`: The ordinal-indexed approximation of the greatest fixed point
   less or equal than an initial value of a bundled monotone function.
 
-## Main theorems
+## Main results
+
 * `OrdinalApprox.lfp_mem_range_lfpApprox`: The ordinal-indexed approximation of
   the least fixed point eventually reaches the least fixed point
 * `OrdinalApprox.gfp_mem_range_gfpApprox`: The ordinal-indexed approximation of
   the greatest fixed point eventually reaches the greatest fixed point
 
 ## References
+
 * [F. Echenique, *A short and constructive proof of Tarski’s fixed-point theorem*][Echenique2005]
 * [P. Cousot & R. Cousot, *Constructive Versions of Tarski's Fixed Point Theorems*][Cousot1979]
 

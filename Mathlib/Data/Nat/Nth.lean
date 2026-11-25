@@ -32,7 +32,7 @@ and provides lemmas that deal with this function and its connection to `Nat.coun
 * `Nat.nth_eq_orderIsoOfNat`: For an infinitely-often true predicate, `nth` agrees with the
   order-isomorphism of the subtype to the natural numbers.
 
-## Implementation details
+## Implementation notes
 
 Much of the below was written before `Set.encard` existed and partly for this reason uses the
 pattern `∀ hf : Set.Finite (Set.ofPred p), n < hf.toFinset.card` rather than `n < {x | p x}.encard`.

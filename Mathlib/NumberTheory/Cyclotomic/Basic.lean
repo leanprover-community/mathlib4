@@ -48,7 +48,7 @@ primitive roots of unity, for all nonzero `n ∈ S`.
 * `IsCyclotomicExtension.splitting_field_cyclotomic` : if `IsCyclotomicExtension {n} K L`,
   then `L` is the splitting field of `cyclotomic n K`.
 
-## Implementation details
+## Implementation notes
 
 Our definition of `IsCyclotomicExtension` is very general, to allow rings of any characteristic
 and infinite extensions, but it will mainly be used in the case `S = {n}` and for integral domains.

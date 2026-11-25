@@ -17,21 +17,25 @@ import Mathlib.Algebra.Algebra.Rat
 This file defines a number field and the ring of integers corresponding to it.
 
 ## Main definitions
+
 - `NumberField` defines a number field as a field which has characteristic zero and is finite
   dimensional over ℚ.
 - `RingOfIntegers` defines the ring of integers (or number ring) corresponding to a number field
   as the integral closure of ℤ in the number field.
 
 ## Implementation notes
+
 The definitions that involve a field of fractions choose a canonical field of fractions,
 but are independent of that choice.
 
 ## References
+
 * [D. Marcus, *Number Fields*][marcus1977number]
 * [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
 * [P. Samuel, *Algebraic Theory of Numbers*][samuel1967]
 
 ## Tags
+
 number field, ring of integers
 -/
 
@@ -86,7 +90,7 @@ theorem of_ringEquiv (e : K ≃+* L) [NumberField K] : NumberField L :=
   letI := CharZero.of_addMonoidHom e.toAddMonoidHom (by simp) e.injective
   {
     to_charZero := inferInstance
-    to_finiteDimensional := (SemilinearEquivClass.semilinearEquiv e : K ≃ₗ[ℚ] L).finiteDimensional
+    to_finiteDimensional := (.ofClass e : K ≃ₗ[ℚ] L).finiteDimensional
   }
 
 /-- The ring of integers (or number ring) corresponding to a number field
