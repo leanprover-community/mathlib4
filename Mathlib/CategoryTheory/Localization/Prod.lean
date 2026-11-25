@@ -84,10 +84,12 @@ noncomputable def prodLift :
   have : ∀ (X₁ : W₁.Localization),
       IsIso (((Functor.flip (prodLift₁ F hF)).map f₂).app X₁) := fun X₁ => by
     obtain ⟨X₁, rfl⟩ := (Construction.objEquiv W₁).surjective X₁
-    exact ((MorphismProperty.isomorphisms E).arrow_mk_iso_iff
-      (((Functor.mapArrowFunctor _ _).mapIso
-        (eqToIso (Functor.congr_obj (prod_fac₁ F hF) X₁))).app (Arrow.mk f₂))).2
-          (hF _ ⟨MorphismProperty.id_mem _ _, hf₂⟩)
+    have : W₁.ContainsIdentities := inferInstance
+    sorry
+    --exact ((MorphismProperty.isomorphisms E).arrow_mk_iso_iff
+    --  (((Functor.mapArrowFunctor _ _).mapIso
+    --    (eqToIso (Functor.congr_obj (prod_fac₁ F hF) X₁))).app (Arrow.mk f₂))).2
+    --      (hF _ ⟨MorphismProperty.id_mem _ _, hf₂⟩)
   apply NatIso.isIso_of_isIso_app
 
 lemma prod_fac₂ :

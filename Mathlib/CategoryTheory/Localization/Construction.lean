@@ -34,7 +34,7 @@ uniqueness is expressed by `uniq`.
 * [P. Gabriel, M. Zisman, *Calculus of fractions and homotopy theory*][gabriel-zisman-1967]
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -180,7 +180,7 @@ theorem uniq (G₁ G₂ : W.Localization ⥤ D) (h : W.Q ⋙ G₁ = W.Q ⋙ G₂
 variable (W) in
 /-- The canonical bijection between objects in a category and its
 localization with respect to a `MorphismProperty` `W` -/
-@[simps, implicit_reducible]
+@[local implicit_reducible]
 def objEquiv : C ≃ W.Localization where
   toFun := W.Q.obj
   invFun X := X.as.obj
@@ -251,7 +251,6 @@ end NatTransExtension
 
 /-- If `F₁` and `F₂` are functors `W.Localization ⥤ D`, a natural transformation `F₁ ⟶ F₂`
 can be obtained from a natural transformation `W.Q ⋙ F₁ ⟶ W.Q ⋙ F₂`. -/
-@[simps]
 def natTransExtension {F₁ F₂ : W.Localization ⥤ D} (τ : W.Q ⋙ F₁ ⟶ W.Q ⋙ F₂) : F₁ ⟶ F₂ where
   app := NatTransExtension.app τ
   naturality := by
@@ -267,7 +266,9 @@ def natTransExtension {F₁ F₂ : W.Localization ⥤ D} (τ : W.Q ⋙ F₁ ⟶ 
 
 @[simp]
 theorem whiskerLeft_natTransExtension {F G : W.Localization ⥤ D} (τ : W.Q ⋙ F ⟶ W.Q ⋙ G) :
-    whiskerLeft W.Q (natTransExtension τ) = τ := by cat_disch
+    whiskerLeft W.Q (natTransExtension τ) = τ := by
+  dsimp [natTransExtension]
+  cat_disch
 
 -- This is not a simp lemma, because the simp norm form of the left-hand side uses `whiskerLeft`.
 theorem natTransExtension_hcomp {F G : W.Localization ⥤ D} (τ : W.Q ⋙ F ⟶ W.Q ⋙ G) :
@@ -286,76 +287,41 @@ namespace WhiskeringLeftEquivalence
 
 /-- The functor `(W.Localization ⥤ D) ⥤ (W.FunctorsInverting D)` induced by the
 composition with `W.Q : C ⥤ W.Localization`. -/
-@[simps!, implicit_reducible]
+@[local implicit_reducible, local simp]
 def functor : (W.Localization ⥤ D) ⥤ W.FunctorsInverting D :=
   ObjectProperty.lift _ ((whiskeringLeft _ _ D).obj W.Q) fun _ =>
     MorphismProperty.IsInvertedBy.of_comp W W.Q W.Q_inverts _
 
 /-- The function `(W.FunctorsInverting D) ⥤ (W.Localization ⥤ D)` induced by
 `Construction.lift`. -/
-@[simps!, implicit_reducible]
+@[local implicit_reducible, local simp]
 def inverse : W.FunctorsInverting D ⥤ W.Localization ⥤ D where
   obj G := lift G.obj G.property
   map τ := natTransExtension (eqToHom (by rw [fac]) ≫ τ.hom ≫ eqToHom (by rw [fac]))
-  map_id G :=
-    natTrans_hcomp_injective
-      (by
-        rw [natTransExtension_hcomp]
-        ext X
-        simp only [NatTrans.comp_app, eqToHom_app, eqToHom_refl, comp_id, id_comp,
-          NatTrans.hcomp_id_app, NatTrans.id_app, Functor.map_id]
-        rfl)
-  map_comp τ₁ τ₂ :=
-    natTrans_hcomp_injective
-      (by
-        ext X
-        simp only [natTransExtension_hcomp, NatTrans.comp_app, eqToHom_app, eqToHom_refl,
-          id_comp, comp_id, NatTrans.hcomp_app, NatTrans.id_app, Functor.map_id,
-          natTransExtension_app, NatTransExtension.app_eq]
-        rfl)
+  map_id _ := natTrans_hcomp_injective (by cat_disch)
+  map_comp _ _ := natTrans_hcomp_injective (by cat_disch)
 
 /-- The unit isomorphism of the equivalence of categories `whiskeringLeftEquivalence W D`. -/
-@[simps!]
 def unitIso : 𝟭 (W.Localization ⥤ D) ≅ functor W D ⋙ inverse W D :=
-  eqToIso
-    (by
-      refine Functor.ext (fun G => ?_) fun G₁ G₂ τ => ?_
-      · apply uniq
-        simp [functor, inverse, fac]
-      · apply natTrans_hcomp_injective
-        ext X
-        simp)
+  eqToIso (Functor.ext (fun _ ↦ uniq _ _ (by simp))
+    fun _ _ _ ↦ natTrans_hcomp_injective (by cat_disch))
 
 /-- The counit isomorphism of the equivalence of categories `WhiskeringLeftEquivalence W D`. -/
-@[simps!]
 def counitIso : inverse W D ⋙ functor W D ≅ 𝟭 (W.FunctorsInverting D) :=
-  eqToIso
-    (by
-      refine Functor.ext ?_ ?_
-      · rintro ⟨G, hG⟩
-        ext
-        exact fac G hG
-      · rintro ⟨G₁, hG₁⟩ ⟨G₂, hG₂⟩ f
-        ext
-        dsimp
-        rw [inverse_map_app, NatTransExtension.app_eq, InducedCategory.eqToHom_hom,
-          InducedCategory.eqToHom_hom]
-        simp)
+  eqToIso (Functor.ext (by cat_disch) (by cat_disch))
 
 end WhiskeringLeftEquivalence
 
+open WhiskeringLeftEquivalence in
+attribute [local simp, local implicit_reducible] functor inverse unitIso counitIso in
 /-- The equivalence of categories `(W.Localization ⥤ D) ≌ (W.FunctorsInverting D)`
 induced by the composition with `W.Q : C ⥤ W.Localization`. -/
 @[implicit_reducible]
 def whiskeringLeftEquivalence : W.Localization ⥤ D ≌ W.FunctorsInverting D where
-  functor := WhiskeringLeftEquivalence.functor W D
-  inverse := WhiskeringLeftEquivalence.inverse W D
-  unitIso := WhiskeringLeftEquivalence.unitIso W D
-  counitIso := WhiskeringLeftEquivalence.counitIso W D
-  functor_unitIso_comp F := by
-    ext
-    simp only [WhiskeringLeftEquivalence.unitIso_hom, eqToHom_app, eqToHom_refl,
-      WhiskeringLeftEquivalence.counitIso_hom, eqToHom_map, eqToHom_trans]
+  functor := functor W D
+  inverse := inverse W D
+  unitIso := unitIso W D
+  counitIso := counitIso W D
 
 end Construction
 

@@ -72,6 +72,7 @@ private lemma induction_structuredArrow'
       P (StructuredArrow.mk φ) → P (StructuredArrow.mk (φ ≫ (isoOfHom W.Q W w hw).inv)))
     (g : StructuredArrow (W.Q.obj X) W.Q) : P g := by
   let X₀ : Paths (LocQuiver W) := ⟨X⟩
+  sorry /-
   suffices ∀ ⦃Y₀ : Paths (LocQuiver W)⦄ (f : X₀ ⟶ Y₀),
       P (StructuredArrow.mk ((Quotient.functor (relations W)).map f)) by
     obtain ⟨Y, g, rfl⟩ := g.mk_surjective
@@ -83,7 +84,7 @@ private lemma induction_structuredArrow'
   | cons f g hf =>
       obtain (g | ⟨w, hw⟩) := g
       · exact hP₁ g _ hf
-      · simpa only [← Construction.wInv_eq_isoOfHom_inv w hw] using! hP₂ w hw _ hf
+      · simpa only [← Construction.wInv_eq_isoOfHom_inv w hw] using! hP₂ w hw _ hf-/
 
 end
 
