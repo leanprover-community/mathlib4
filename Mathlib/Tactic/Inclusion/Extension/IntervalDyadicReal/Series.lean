@@ -21,6 +21,9 @@ This file computes partial sums of series with given term ratios by binary split
 
 ## Implementation notes
 
+Binary splitting here is the summation technique of Haible and Papanikolaou. It is unrelated to
+the `binarySplit` cover, which bisects intervals.
+
 In a normal evaluator, this divide-and-conquer based approach is faster than linear computation
 since it reduces the number of computations on larger numerals. However, the performance gain
 is limited for kernel checks, since GMP arithmetic is still not the bottleneck even at ~10k bits,
