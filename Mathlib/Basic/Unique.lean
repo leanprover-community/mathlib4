@@ -34,7 +34,7 @@ In other words, a type that is `Inhabited` and a `Subsingleton`.
 * `Function.Injective.unique`: if the codomain of an injective function is `Subsingleton` and its
   domain is `Inhabited`, then its domain is `Unique`.
 
-## Implementation details
+## Implementation notes
 
 The typeclass `Unique α` is implemented as a type,
 rather than a `Prop`-valued predicate,

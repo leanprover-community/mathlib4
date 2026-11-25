@@ -27,7 +27,7 @@ This allows to still have a well-defined product over `s`.
 * `Finset.noncommProd`, requiring a proof of commutativity of held terms
 * `Multiset.noncommProd`, requiring a proof of commutativity of held terms
 
-## Implementation details
+## Implementation notes
 
 While `List.prod` is defined via `List.foldl`, `noncommProd` is defined via
 `Multiset.foldr` for neater proofs and definitions. By the commutativity assumption,

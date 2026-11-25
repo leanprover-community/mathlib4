@@ -42,7 +42,7 @@ Here we use the following variables: `(α β : Type*) (A : Type*) [CommGroup A]`
 * `instance [Monoid α] : Semigroup (FreeCommGroup α)`
 * `instance [CommMonoid α] : CommRing (FreeCommGroup α)`
 
-## Implementation details
+## Implementation notes
 
 The definitions are
 `def FreeCommGroup : Type u := Group.Abelianization (FreeGroup α)` and

@@ -21,7 +21,7 @@ set_option doc.verso.suggestions false
 This module defines a `norm_num` extension for `Irrational x ^ y` for rational `x` and `y`. It also
 supports `Irrational √x` expressions.
 
-## Implementation details
+## Implementation notes
 
 To prove that `(a / b) ^ (p / q)` is irrational, we reduce the problem to showing that `(a / b) ^ p`
 is not a `q`-th power of any rational number. This, in turn, reduces to proving that either `a` or

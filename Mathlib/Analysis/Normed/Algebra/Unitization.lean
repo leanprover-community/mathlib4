@@ -53,7 +53,7 @@ is then also a C⋆-norm.
   is an isometry, or in mathematical parlance, the norm on `A` extends to a norm on
   `Unitization 𝕜 A`.
 
-## Implementation details
+## Implementation notes
 
 We ensure that the uniform structure, and hence also the topological structure, is definitionally
 equal to the pullback of `instUniformSpaceProd` along `Unitization.addEquiv` (this is essentially

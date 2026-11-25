@@ -39,7 +39,7 @@ We also define a predicate `Spanning`, to describe a set whose closure is the en
 * For `M : Matroid α` and `S ⊆ M.E`, `M.Spanning S` means that `S` has closure equal to `M.E`,
   or equivalently that `S` contains an isBase of `M`.
 
-## Implementation details
+## Implementation notes
 
 If `X : Set α` satisfies `X ⊆ M.E`, then it is clear how `M.closure X` should be defined.
 But `M.closure X` also needs to be defined for all `X : Set α`,

@@ -36,7 +36,8 @@ relations with prime and perfect numbers.
 * `Nat.infinite_deficient`: There are infinitely many deficient numbers.
 * `Nat.Prime.deficient_pow`: Any natural number power of a prime is deficient.
 
-## Implementation Notes
+## Implementation notes
+
 * Zero is not included in any of the definitions and these definitions only apply to natural
   numbers greater than zero.
 

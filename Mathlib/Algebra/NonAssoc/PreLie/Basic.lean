@@ -32,6 +32,7 @@ Everything holds for the algebra versions where `L` is also an `R`-Module over a
   * Every `LeftPreLieRing` is a `RightPreLieRing` with the opposite multiplication.
 
 ## Implementation notes
+
 There are left and right versions of the structures, equivalent via `ᵐᵒᵖ`.
 Perhaps one could be favored but there is no real reason to.
 

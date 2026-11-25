@@ -29,7 +29,7 @@ This transports the operator norm on `EuclideanSpace 𝕜 n →L[𝕜] Euclidean
 
 * `entry_norm_bound_of_unitary`: the entries of a unitary matrix are uniformly bound by `1`.
 
-## Implementation details
+## Implementation notes
 
 We take care to ensure the topology and uniformity induced by `Matrix.instMetricSpaceL2Op`
 coincide with the existing topology and uniformity on matrices.

@@ -20,7 +20,7 @@ set_option doc.verso.suggestions false
 This file defines the absolute value `|T| = √(T†∘T)` for continuous linear maps `T : E →L[ℂ] F`
 between (potentially distinct) Hilbert spaces `E` and `F`.
 
-## Implementation details
+## Implementation notes
 
 The absolute value `ContinuousLinearMap.abs T` is similar to `CFC.abs T` for a continuous linear
 map `T : E →L[ℂ] E` acting on a Hilbert space `E`. They agree when `E = F`, see the theorem

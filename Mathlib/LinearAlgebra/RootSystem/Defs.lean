@@ -28,7 +28,7 @@ This file contains basic definitions for root systems and root data.
   finitely-generated free Abelian groups.
 * `RootSystem`: A root system is a root pairing for which the roots span their ambient module.
 
-## Implementation details
+## Implementation notes
 
 A root datum is sometimes defined as two subsets: roots and coroots, together with a bijection
 between them, subject to hypotheses. However the hypotheses ensure that the bijection is unique and

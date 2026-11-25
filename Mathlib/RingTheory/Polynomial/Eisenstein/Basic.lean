@@ -29,7 +29,7 @@ _Eisenstein at `𝓟`_ if `f.leadingCoeff ∉ 𝓟`, `∀ n, n < f.natDegree →
 * `Polynomial.IsEisensteinAt.irreducible`: if a primitive `f` satisfies `f.IsEisensteinAt 𝓟`,
   where `𝓟.IsPrime`, then `f` is irreducible.
 
-## Implementation details
+## Implementation notes
 
 We also define a notion `IsWeaklyEisensteinAt` requiring only that
 `∀ n < f.natDegree → f.coeff n ∈ 𝓟`. This makes certain results slightly more general and it is

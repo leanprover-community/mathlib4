@@ -22,7 +22,7 @@ This file contains basic definitions and results related to reduced root pairing
 * `RootPairing.linearIndependent_iff_coxeterWeight_ne_four`: for a finite root pairing, two
   roots are linearly independent iff their Coxeter weight is not four.
 
-## Implementation details:
+## Implementation notes
 
 For convenience we provide two versions of many lemmas, according to whether we know that the root
 pairing is valued in a smaller ring (in the sense of `RootPairing.IsValuedIn`). For example we

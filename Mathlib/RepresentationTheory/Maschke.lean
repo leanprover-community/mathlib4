@@ -25,7 +25,7 @@ and a `k[G]`-linear map `i : V → W` which admits a `k`-linear retraction `π`,
 we produce a `k[G]`-linear retraction by
 taking the average over `G` of the conjugates of `π`.
 
-## Implementation Notes
+## Implementation notes
 
 * These results assume `IsUnit (Fintype.card G : k)` which is equivalent to the more
   familiar `¬(ringChar k ∣ Fintype.card G)`.

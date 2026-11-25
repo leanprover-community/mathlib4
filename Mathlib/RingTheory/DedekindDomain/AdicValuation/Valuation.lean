@@ -44,6 +44,7 @@ We prove several properties of this valuation, including the existence of unifor
   `v`-adic valuation `WithZero.exp (-1)`.
 
 ## Implementation notes
+
 We are only interested in Dedekind domains with Krull dimension 1.
 
 ## References

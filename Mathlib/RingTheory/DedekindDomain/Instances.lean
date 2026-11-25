@@ -26,7 +26,7 @@ structures and various properties of the rings involved. Another situation is wh
 tower extension `R ⊆ S ⊆ T` and thus we work with `Rₚ ⊆ Sₚ ⊆ Tₚ` where
 `Tₚ` is the localization of `T` at `P`. This file contains a collection of such instances.
 
-## Implementation details
+## Implementation notes
 
 In general one wants all the results below for any algebra satisfying `IsLocalization`, but those
 cannot be instances (since Lean has no way of guessing the submonoid). Having the instances in the

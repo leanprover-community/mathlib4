@@ -25,7 +25,7 @@ set_option doc.verso.suggestions false
   for roots but not for coroots.
 * `RootPairing.nonempty_base`: base existence proof for reduced crystallographic root systems.
 
-## Implementation details
+## Implementation notes
 
 The proof needs a set of ordered coefficients, even though the ultimate existence statement does
 not. There are at least two ways to deal with this:

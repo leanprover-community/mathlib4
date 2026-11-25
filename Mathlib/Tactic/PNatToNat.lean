@@ -17,7 +17,7 @@ set_option doc.verso.suggestions false
 
 This file implements the `pnat_to_nat` tactic that shifts `PNat`s in the context to `Nat`.
 
-## Implementation details
+## Implementation notes
 
 The implementation follows these steps:
 

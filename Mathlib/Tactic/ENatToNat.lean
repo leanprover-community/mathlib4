@@ -16,7 +16,7 @@ set_option doc.verso.suggestions false
 
 This file implements the `enat_to_nat` tactic that shifts `ENat`s in the context to `Nat`.
 
-## Implementation details
+## Implementation notes
 
 The implementation follows these steps:
 

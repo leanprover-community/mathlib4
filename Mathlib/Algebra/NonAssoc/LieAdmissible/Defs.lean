@@ -31,7 +31,8 @@ associator x y z + associator z x y + associator y z x =
   * `LeftPreLieAlgebra.instLieAdmissibleAlgebra`: a left pre-Lie ring as a Lie admissible algebra
   * `RightPreLieAlgebra.instLieAdmissibleAlgebra`: a right pre-Lie ring as a Lie admissible algebra
 
-## Implementation Notes
+## Implementation notes
+
 Algebras are implemented as extending `Module`, `IsScalarTower` and `SMulCommClass` following the
 documentation of `Algebra`.
 
