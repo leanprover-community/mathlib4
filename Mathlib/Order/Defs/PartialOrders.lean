@@ -26,37 +26,28 @@ instance : PartialOrder (PartialOrder α) :=
 theorem le_def {p q : PartialOrder α} : p ≤ q ↔ ∀ x y, p.le x y → q.le x y :=
   Iff.rfl
 
-/-- Discrete order is the partial order in which `a ≤ b` means `a = b`. -/
-@[instance_reducible]
-def discreteOrder (α : Type*) : PartialOrder α where
-  le := Eq
-  le_refl := Eq.refl
-  le_trans _ _ _ := Eq.trans
-  le_antisymm _ _ h _ := h
-
-theorem discreteOrder_le (p : PartialOrder α) : discreteOrder α ≤ p := by
-  rw [le_def]
-  intro x y h
-  obtain h' : x = y := h
-  exact le_of_eq h
-
 /-- The bottom partial order is the discrete order. -/
-instance : Bot (PartialOrder α) where
-  bot := discreteOrder α
+instance : OrderBot (PartialOrder α) where
+  bot :=
+    { le := Eq
+      le_refl := Eq.refl
+      le_trans _ _ _ := Eq.trans
+      le_antisymm _ _ h _ := h }
+  bot_le p := by
+    rw [le_def]
+    intro x y h
+    exact le_of_eq h
 
 @[simp] theorem bot_le_iff_eq {x y : α} : (⊥ : PartialOrder α).le x y ↔ x = y :=
   Iff.rfl
-
-instance : OrderBot (PartialOrder α) where
-  bot_le p := discreteOrder_le p
 
 /-- This typeclass allows automatic deduction of order properties
 for types equipped with the discrete order. -/
 class DiscreteOrder (α : Type*) [p : PartialOrder α] : Prop where
   eq_bot : p = ⊥
 
-instance (α : Type*) : @DiscreteOrder α (discreteOrder α) :=
-  @DiscreteOrder.mk α (discreteOrder α) rfl
+instance (α : Type*) : @DiscreteOrder α ⊥ :=
+  @DiscreteOrder.mk α ⊥ rfl
 
 namespace DiscreteOrder
 
