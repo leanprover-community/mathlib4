@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Tactic.ComputeDegree
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cancel the leading terms of two polynomials
 
