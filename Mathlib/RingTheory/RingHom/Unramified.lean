@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.Unramified.Locus
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The meta properties of unramified ring homomorphisms.
 -/

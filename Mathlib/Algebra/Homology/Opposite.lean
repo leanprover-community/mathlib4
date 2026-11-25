@@ -20,10 +20,12 @@ We then show that when `V` is abelian, if `C` is a homological complex, then the
 `op(C)` is isomorphic to `op` of the homology of `C` (and the analogous result for `unop`).
 
 ## Implementation notes
+
 It is convenient to define both `op` and `opSymm`; this is because given a complex shape `c`,
 `c.symm.symm` is not defeq to `c`.
 
 ## Tags
+
 opposite, chain complex, cochain complex, homology, cohomology, homological complex
 -/
 
@@ -140,7 +142,7 @@ def opCounitIso : opInverse V c ⋙ opFunctor V c ≅ 𝟭 (HomologicalComplex V
 
 /-- Given a category of complexes with objects in `V`, there is a natural equivalence between its
 opposite category and a category of complexes with objects in `Vᵒᵖ`. -/
-@[simps]
+@[simps, implicit_reducible]
 def opEquivalence : (HomologicalComplex V c)ᵒᵖ ≌ HomologicalComplex Vᵒᵖ c.symm where
   functor := opFunctor V c
   inverse := opInverse V c

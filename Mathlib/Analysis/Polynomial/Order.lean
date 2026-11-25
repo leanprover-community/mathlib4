@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Polynomial.Basic
 
 import Mathlib.Topology.Algebra.Polynomial
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Eventual sign of polynomials
 
@@ -29,6 +32,9 @@ This file proves that a polynomial has a fixed sign beyond its largest or smalle
   `negOnePow_mul_eval_lt_zero_of_lt_roots_of_leadingCoeff_nonpos`,
   `negOnePow_mul_eval_le_zero_of_le_roots_of_leadingCoeff_nonpos`:
   Analogous results for `x` which is smaller than (or at least as small as) all roots.
+* `sign_eval_eq_of_forall_ne_zero`:
+  A polynomial with no root between `a` and `b`, endpoints included, has the same sign at `a`
+  and `b`.
 
 ## TODO
 
@@ -130,6 +136,13 @@ theorem negOnePow_mul_eval_le_zero_of_le_roots_of_leadingCoeff_nonpos
   refine zero_le_negOnePow_mul_eval_of_le_roots_of_leadingCoeff_nonneg (fun y hy => hroots y ?_) ?_
   · rwa [IsRoot, ← neg_zero, ← neg_eq_iff_eq_neg, ← eval_neg]
   · rwa [leadingCoeff_neg, neg_nonneg]
+
+/-- A polynomial with no root between `a` and `b`, endpoints included, has the same sign at `a`
+and `b`. -/
+theorem sign_eval_eq_of_forall_ne_zero {a b : ℝ} (h : ∀ x ∈ Set.uIcc a b, ¬ P.IsRoot x) :
+    SignType.sign (P.eval a) = SignType.sign (P.eval b) :=
+  isPreconnected_uIcc.sign_eq_of_continuousOn P.continuousOn h
+    Set.left_mem_uIcc Set.right_mem_uIcc
 
 end PolynomialSign
 

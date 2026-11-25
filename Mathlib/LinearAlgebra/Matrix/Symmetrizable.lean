@@ -34,7 +34,11 @@ def IsSymmetrizable [MonoidWithZero R] (M : Matrix ι ι R) : Prop :=
 
 section IsSymmetrizable
 
-lemma IsSymm.IsSymmetrizable [MonoidWithZero R] (h : M.IsSymm) :
+lemma IsSymmetrizable.of_isEmpty [Semiring R] [IsEmpty ι] :
+    M.IsSymmetrizable :=
+  ⟨1, isEmptyElim, isEmptyElim⟩
+
+lemma IsSymm.isSymmetrizable [MonoidWithZero R] (h : M.IsSymm) :
     M.IsSymmetrizable := by
   use 1
   simp [h.apply]
@@ -99,7 +103,7 @@ lemma isSymmetrizable_iff_of_pairwise_eq [MonoidWithZero R] (h : Pairwise fun i 
     · rw [h hij, hM, h hij.symm]
 
 @[simp]
-lemma isSymmetrizable_iff_add_diagonal [DecidableEq ι] [Semiring R] (d : ι → R) :
+lemma isSymmetrizable_add_diagonal_iff [DecidableEq ι] [Semiring R] (d : ι → R) :
     (M + diagonal d).IsSymmetrizable ↔ M.IsSymmetrizable := by
   rw [isSymmetrizable_iff_of_pairwise_eq]
   intro _ _ h
@@ -115,12 +119,16 @@ def IsPosSymmetrizable [Semiring R] [LT R]
 
 section IsPosSymmetrizable
 
+lemma IsPosSymmetrizable.of_isEmpty [Semiring R] [LT R] [IsEmpty ι] :
+    M.IsPosSymmetrizable :=
+  ⟨1, isEmptyElim, isEmptyElim⟩
+
 lemma IsPosSymmetrizable.isSymmetrizable [Semiring R] [IsDomain R] [Preorder R]
     (h : M.IsPosSymmetrizable) : M.IsSymmetrizable := by
   obtain ⟨d, hd, h⟩ := h
   exact ⟨d, fun i ↦ mem_nonZeroDivisors_iff_ne_zero.mpr (hd i).ne.symm, h⟩
 
-lemma IsSymm.IsPosSymmetrizable [Semiring R] [IsDomain R] [PartialOrder R] [ZeroLEOneClass R]
+lemma IsSymm.isPosSymmetrizable [Semiring R] [IsDomain R] [PartialOrder R] [ZeroLEOneClass R]
     (h : M.IsSymm) :
     IsPosSymmetrizable M := by
   use 1
@@ -174,7 +182,7 @@ lemma isPosSymmetrizable_iff_of_pairwise_eq [Semiring R] [LT R]
     · rw [h hij, hM, h hij.symm]
 
 @[simp]
-lemma isPosSymmetrizable_iff_add_diagonal [DecidableEq ι] [Semiring R] [LT R] (d : ι → R) :
+lemma isPosSymmetrizable_add_diagonal_iff [DecidableEq ι] [Semiring R] [LT R] (d : ι → R) :
     (M + diagonal d).IsPosSymmetrizable ↔ M.IsPosSymmetrizable := by
   rw [isPosSymmetrizable_iff_of_pairwise_eq]
   intro _ _ h

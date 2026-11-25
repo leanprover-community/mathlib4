@@ -45,7 +45,7 @@ summability of the norms, this implies the overall convergence.
 * `FormalMultilinearSeries.comp_assoc` states that composition is associative on formal
   multilinear series.
 
-## Implementation details
+## Implementation notes
 
 The main technical difficulty is to write down things. In particular, we need to define precisely
 `q.compAlongComposition p c` and to show that it is indeed a continuous multilinear
@@ -472,7 +472,7 @@ theorem comp_summable_nnreal (q : FormalMultilinearSeries 𝕜 F G) (p : FormalM
     rintro ⟨n, c⟩
     have A := calc
       ‖q c.length‖₊ * rq ^ n ≤ ‖q c.length‖₊ * rq ^ c.length :=
-        mul_le_mul' le_rfl (pow_le_pow_of_le_one rq.2 hrq.1.le c.length_le)
+        mul_le_mul' le_rfl (pow_le_pow_of_le_one rq.property hrq.1.le c.length_le)
       _ ≤ Cq := hCq _
     have B := calc
       (∏ i, ‖p (c.blocksFun i)‖₊) * rp ^ n = ∏ i, ‖p (c.blocksFun i)‖₊ * rp ^ c.blocksFun i := by
@@ -569,7 +569,7 @@ theorem compChangeOfVariables_length (m M N : ℕ) {i : Σ n, Fin n → ℕ}
 theorem compChangeOfVariables_blocksFun (m M N : ℕ) {i : Σ n, Fin n → ℕ}
     (hi : i ∈ compPartialSumSource m M N) (j : Fin i.1) :
     (compChangeOfVariables m M N i hi).2.blocksFun
-        ⟨j, (compChangeOfVariables_length m M N hi).symm ▸ j.2⟩ =
+        ⟨j, (compChangeOfVariables_length m M N hi).symm ▸ j.isLt⟩ =
       i.2 j := by
   rcases i with ⟨n, f⟩
   dsimp [Composition.blocksFun, Composition.blocks, compChangeOfVariables]
@@ -920,7 +920,7 @@ theorem HasFiniteFPowerSeriesAt.comp {m n : ℕ} {g : F → G} {f : E → F}
     rcases eq_zero_or_pos c.length with h'c | h'c
     · have : ∑ j : Fin c.length, c.blocksFun j = 0 := by
         apply Finset.sum_eq_zero (fun j hj ↦ ?_)
-        have := j.2
+        have := j.isLt
         grind
       rw [this]
       exact mul_pos (by grind) hn
@@ -1094,7 +1094,7 @@ def sigmaCompositionAux (a : Composition n) (b : Composition a.length)
     (i : Fin (a.gather b).length) : Composition ((a.gather b).blocksFun i) where
   blocks :=
     (a.blocks.splitWrtComposition b)[i.val]'(by
-      rw [length_splitWrtComposition, ← length_gather]; exact i.2)
+      rw [length_splitWrtComposition, ← length_gather]; exact i.isLt)
   blocks_pos {i} hi :=
     a.blocks_pos
       (by
@@ -1104,16 +1104,17 @@ def sigmaCompositionAux (a : Composition n) (b : Composition a.length)
 
 theorem length_sigmaCompositionAux (a : Composition n) (b : Composition a.length)
     (i : Fin b.length) :
-    Composition.length (Composition.sigmaCompositionAux a b ⟨i, (length_gather a b).symm ▸ i.2⟩) =
+    Composition.length
+        (Composition.sigmaCompositionAux a b ⟨i, (length_gather a b).symm ▸ i.isLt⟩) =
       Composition.blocksFun b i :=
-  show List.length ((splitWrtComposition a.blocks b)[i.1]) = blocksFun b i by
+  show List.length ((splitWrtComposition a.blocks b)[i.val]) = blocksFun b i by
     rw [getElem_map_rev List.length, getElem_of_eq (map_length_splitWrtComposition _ _), blocksFun,
       get_eq_getElem]
 
 theorem blocksFun_sigmaCompositionAux (a : Composition n) (b : Composition a.length)
     (i : Fin b.length) (j : Fin (blocksFun b i)) :
-    blocksFun (sigmaCompositionAux a b ⟨i, (length_gather a b).symm ▸ i.2⟩)
-        ⟨j, (length_sigmaCompositionAux a b i).symm ▸ j.2⟩ =
+    blocksFun (sigmaCompositionAux a b ⟨i, (length_gather a b).symm ▸ i.isLt⟩)
+        ⟨j, (length_sigmaCompositionAux a b i).symm ▸ j.isLt⟩ =
       blocksFun a (embedding b i j) := by
   unfold sigmaCompositionAux
   rw [blocksFun, get_eq_getElem, getElem_of_eq (getElem_splitWrtComposition _ _ _ _),

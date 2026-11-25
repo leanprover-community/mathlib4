@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Module.LocalizedModule.AtPrime
 public import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
 public import Mathlib.RingTheory.Support
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Associated primes of localized module
 
@@ -53,9 +56,9 @@ lemma mem_associatedPrimes_of_comap_mem_associatedPrimes_of_isLocalizedModule
     refine ⟨fun h ↦ exists_comm.mp ⟨1, ?_⟩, fun ⟨n, t, ht⟩ ↦ ?_⟩
     · simp only [← mem_colon_singleton, one_smul, ← mem_bot R, ← hx, ← Ideal.mem_radical_iff]
       exact hSR'.mk'_mem_iff.mp h
-    · have : hSR'.mk' R' r s = hSR'.mk' R' (t.1 * r) 1 * hSR'.mk' R' 1 (t * s) := by
+    · have : hSR'.mk' R' r s = hSR'.mk' R' (t.val * r) 1 * hSR'.mk' R' 1 (t * s) := by
         rw [← hSR'.mk'_mul, mul_one, one_mul, ← sub_eq_zero, ← hSR'.mk'_sub, Submonoid.coe_mul]
-        simp [← mul_assoc, mul_comm r t.1, IsLocalization.mk'_zero]
+        simp [← mul_assoc, mul_comm r t.val, IsLocalization.mk'_zero]
       rw [this]
       apply Ideal.IsTwoSided.mul_mem_of_left
       rw [IsLocalization.mk'_one, ← Ideal.mem_comap, hx]
@@ -83,11 +86,11 @@ lemma comap_mem_associatedPrimes_of_mem_associatedPrimes_of_isLocalizedModule_of
   rcases IsLocalizedModule.mk'_surjective S f x with ⟨⟨m, s⟩, rfl⟩
   simp only [Function.uncurry_apply_pair] at hx
   have mem (a : T) : algebraMap R R' a ∈ p := by
-    simpa [← Ideal.mem_comap, ← hT] using Ideal.subset_span a.2
+    simpa [← Ideal.mem_comap, ← hT] using Ideal.subset_span a.property
   simp only [hx, Ideal.mem_radical_iff, mem_bot, mem_colon_singleton, ← map_pow, algebraMap_smul,
     ← IsLocalizedModule.mk'_smul, IsLocalizedModule.mk'_eq_zero' f] at mem
   choose e g hg using mem
-  refine ⟨.under R p, (∏ a, g a).1 • m, le_antisymm ?_ fun r hr ↦ ?_⟩
+  refine ⟨.under R p, (∏ a, g a).val • m, le_antisymm ?_ fun r hr ↦ ?_⟩
   · rw [← hT, Ideal.span_le]
     intro a ha
     simp only [SetLike.mem_coe, Ideal.mem_radical_iff, mem_bot, mem_colon_singleton]
@@ -95,10 +98,10 @@ lemma comap_mem_associatedPrimes_of_mem_associatedPrimes_of_isLocalizedModule_of
       apply Finset.dvd_prod_of_mem g (Finset.mem_univ ⟨a, ha⟩)
     use e ⟨a, ha⟩
     rw [hu, Submonoid.coe_mul, smul_smul, ← mul_assoc, mul_comm, ← smul_smul, mul_comm, ← smul_smul]
-    exact smul_eq_zero_of_right u.1 (hg ⟨a, ha⟩)
+    exact smul_eq_zero_of_right u.val (hg ⟨a, ha⟩)
   · simp only [Ideal.mem_radical_iff, mem_bot, mem_colon_singleton, smul_smul] at hr
     obtain ⟨k, hk⟩ := hr
-    have mem : r ^ k * (∏ a, g a).1 ∈ Ideal.comap (algebraMap R R') p := by
+    have mem : r ^ k * (∏ a, g a).val ∈ Ideal.comap (algebraMap R R') p := by
       rw [hx]
       use 1
       simp_rw [pow_one, mem_colon_singleton, algebraMap_smul, ← IsLocalizedModule.mk'_smul,
@@ -106,7 +109,8 @@ lemma comap_mem_associatedPrimes_of_mem_associatedPrimes_of_isLocalizedModule_of
     apply hp.mem_of_pow_mem k
     rw [← map_pow]
     exact ((hp.under R).mul_mem_iff_mem_or_mem.mp mem).resolve_right
-      (Set.disjoint_left.mp ((IsLocalization.disjoint_under_iff S R' p).mpr hp.1) (∏ a, g a).2)
+      (Set.disjoint_left.mp ((IsLocalization.disjoint_under_iff S R' p).mpr hp.ne_top')
+        (∏ a, g a).property)
 
 variable (R')
 

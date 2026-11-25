@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.Filter.Lift
 public import Mathlib.Topology.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Interior, closure and frontier of a set
 
@@ -281,7 +284,7 @@ theorem closure_empty_iff (s : Set X) : closure s = ∅ ↔ s = ∅ :=
 
 @[simp]
 theorem closure_nonempty_iff : (closure s).Nonempty ↔ s.Nonempty := by
-  simp only [nonempty_iff_ne_empty, Ne, closure_empty_iff]
+  simp [← ne_empty_iff_nonempty]
 
 alias ⟨Set.Nonempty.of_closure, Set.Nonempty.closure⟩ := closure_nonempty_iff
 

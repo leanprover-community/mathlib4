@@ -6,6 +6,7 @@ Authors: Yaël Dillies, Michał Mrugała, Andrew Yang
 module
 
 public import Mathlib.Algebra.Category.CommAlgCat.Monoidal
+public import Mathlib.CategoryTheory.Monoidal.Braided.Opposite
 public import Mathlib.CategoryTheory.Monoidal.Mon
 public import Mathlib.RingTheory.Bialgebra.Equiv
 
@@ -152,8 +153,8 @@ def ofIsoSelf (M : CommBialgCat.{v} R) : of R M ≅ M where
 @[simps]
 def isoMk {X Y : Type v} {_ : CommRing X} {_ : CommRing Y} {_ : Bialgebra R X}
     {_ : Bialgebra R Y} (e : X ≃ₐc[R] Y) : of R X ≅ of R Y where
-  hom := ofHom (e : X →ₐc[R] Y)
-  inv := ofHom (e.symm : Y →ₐc[R] X)
+  hom := ofHom e.toBialgHom
+  inv := ofHom e.symm.toBialgHom
 
 /-- Build a `BialgEquiv` from an isomorphism in the category `CommBialgCat R`. -/
 @[simps apply, simps -isSimp symm_apply]

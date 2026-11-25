@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.WithBot
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Adding both `⊥` and `⊤` to a type
 
@@ -24,6 +27,7 @@ variable (ι) in
 abbrev WithBotTop := WithBot (WithTop ι)
 
 /-- The canonical inclusion `ι → WithBotTop ι`. Registered as a coercion. -/
+@[implicit_reducible]
 def WithBotTop.coe : ι → WithBotTop ι :=
   WithBot.some ∘ WithTop.some
 
@@ -43,7 +47,7 @@ variable {motive : (WithBotTop ι) → Sort*}
   (bot : motive ⊥) (coe : ∀ a : ι, motive a) (top : motive ⊤)
 
 /-- A recursor for `WithBotTop` in terms of the coercion. -/
-@[elab_as_elim]
+@[elab_as_elim, implicit_reducible]
 protected def rec : ∀ a, motive a
   | ⊥ => bot
   | (a : ι) => coe a

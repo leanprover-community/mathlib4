@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.Projective
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # HasExt instance for Module Category
 

@@ -14,6 +14,7 @@ This file collects results about eigenvectors, eigenvalues and spectrum specific
 over a nontrivial commutative ring, nontrivial commutative ring without zero divisors, or field.
 
 ## Tags
+
 eigenspace, eigenvector, eigenvalue, spectrum, matrix
 -/
 

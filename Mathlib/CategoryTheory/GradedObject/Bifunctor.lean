@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.GradedObject
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The action of bifunctors on graded objects
 
@@ -34,7 +37,7 @@ namespace GradedObject
 
 /-- Given a bifunctor `F : C₁ ⥤ C₂ ⥤ C₃` and types `I` and `J`, this is the obvious
 functor `GradedObject I C₁ ⥤ GradedObject J C₂ ⥤ GradedObject (I × J) C₃`. -/
-@[simps]
+@[simps, implicit_reducible]
 def mapBifunctor (I J : Type*) :
     GradedObject I C₁ ⥤ GradedObject J C₂ ⥤ GradedObject (I × J) C₃ where
   obj X :=
@@ -50,6 +53,7 @@ variable {I J K : Type*} (p : I × J → K)
 /-- Given a bifunctor `F : C₁ ⥤ C₂ ⥤ C₃`, graded objects `X : GradedObject I C₁` and
 `Y : GradedObject J C₂` and a map `p : I × J → K`, this is the `K`-graded object sending
 `k` to the coproduct of `(F.obj (X i)).obj (Y j)` for `p ⟨i, j⟩ = k`. -/
+@[implicit_reducible]
 noncomputable def mapBifunctorMapObj (X : GradedObject I C₁) (Y : GradedObject J C₂)
     [HasMap (((mapBifunctor F I J).obj X).obj Y) p] : GradedObject K C₃ :=
   (((mapBifunctor F I J).obj X).obj Y).mapObj p
@@ -73,7 +77,6 @@ noncomputable def mapBifunctorMapMap {X₁ X₂ : GradedObject I C₁} (f : X₁
   GradedObject.mapMap (((mapBifunctor F I J).map f).app Y₁ ≫
     ((mapBifunctor F I J).obj X₂).map g) p
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ι_mapBifunctorMapMap {X₁ X₂ : GradedObject I C₁} (f : X₁ ⟶ X₂)
     {Y₁ Y₂ : GradedObject J C₂} (g : Y₁ ⟶ Y₂)
@@ -137,7 +140,6 @@ end
 
 attribute [local simp] mapBifunctorMapMap
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a bifunctor `F : C₁ ⥤ C₂ ⥤ C₃` and a map `p : I × J → K`, this is the
 functor `GradedObject I C₁ ⥤ GradedObject J C₂ ⥤ GradedObject K C₃` sending
 `X : GradedObject I C₁` and `Y : GradedObject J C₂` to the `K`-graded object sending

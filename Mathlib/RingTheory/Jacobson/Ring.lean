@@ -5,9 +5,10 @@ Authors: Devon Tuma
 -/
 module
 
-public import Mathlib.RingTheory.Artinian.Module
 public import Mathlib.RingTheory.Ideal.GoingUp
 public import Mathlib.RingTheory.Jacobson.Polynomial
+
+import Mathlib.RingTheory.Artinian.Module
 
 /-!
 # Jacobson Rings
@@ -26,11 +27,13 @@ Some particular examples of Jacobson rings are also proven.
   form a Jacobson ring.
 
 ## Main definitions
+
 Let `R` be a commutative ring. Jacobson rings are defined using the first of the above conditions
 * `IsJacobsonRing R` is the proposition that `R` is a Jacobson ring. It is a class,
   implemented as the predicate that for any ideal, `I.isRadical` implies `I.jacobson = I`.
 
 ## Main statements
+
 * `isJacobsonRing_iff_prime_eq` is the equivalence between conditions 1 and 3 above.
 * `isJacobsonRing_iff_sInf_maximal` is the equivalence between conditions 1 and 2 above.
 * `isJacobsonRing_of_surjective` says that if `R` is a Jacobson ring and
@@ -39,6 +42,7 @@ Let `R` be a commutative ring. Jacobson rings are defined using the first of the
   over a Jacobson ring are Jacobson.
 
 ## Tags
+
 Jacobson, Jacobson Ring
 -/
 
@@ -62,7 +66,7 @@ class IsJacobsonRing (R : Type*) [CommRing R] : Prop where
 
 theorem isJacobsonRing_iff {R} [CommRing R] :
     IsJacobsonRing R ↔ ∀ I : Ideal R, I.IsRadical → I.jacobson = I :=
-  ⟨fun h => h.1, fun h => ⟨h⟩⟩
+  ⟨fun h => h.out', fun h => ⟨h⟩⟩
 
 theorem IsJacobsonRing.out {R} [CommRing R] :
     IsJacobsonRing R → ∀ {I : Ideal R}, I.IsRadical → I.jacobson = I :=
@@ -170,7 +174,7 @@ theorem IsLocalization.isMaximal_iff_isMaximal_disjoint [H : IsJacobsonRing R] (
       h.ne_top (Ideal.eq_top_of_isUnit_mem _ hy (map_units _ ⟨y, Submonoid.mem_powers _⟩))⟩
     have hJ : J.IsPrime := IsMaximal.isPrime h
     rw [isPrime_iff_isPrime_disjoint (Submonoid.powers y)] at hJ
-    have : y ∉ (J.under R).1 := Set.disjoint_left.1 hJ.right (Submonoid.mem_powers _)
+    have : y ∉ (J.under R).toAddSubmonoid := Set.disjoint_left.1 hJ.right (Submonoid.mem_powers _)
     rw [← H.out hJ.left.isRadical, jacobson, Submodule.mem_toAddSubmonoid, Ideal.mem_sInf] at this
     push Not at this
     rcases this with ⟨I, ⟨hJI, hIm⟩, hI'⟩
@@ -182,7 +186,7 @@ theorem IsLocalization.isMaximal_iff_isMaximal_disjoint [H : IsJacobsonRing R] (
         refine isPrime_of_isPrime_disjoint (powers y) _ I hIm.isPrime ?_
         rwa [disjoint_powers_iff_notMem_of_isPrime]
       have : J ≤ I.map (algebraMap R S) := map_under (Submonoid.powers y) S J ▸ map_mono hJI
-      exact absurd (h.1.2 _ (lt_of_le_of_ne this hJ)) hI_p.1
+      exact absurd (h.out.2 _ (lt_of_le_of_ne this hJ)) hI_p.ne_top'
   · simp only [Ideal.mem_comap, and_imp]
     exact (fun _ _ ↦ isMaximal_of_isMaximal_under (powers y) S J)
 
@@ -200,9 +204,10 @@ theorem IsLocalization.isMaximal_of_isMaximal_notMem
 correspond to maximal ideals in the original ring `R` that don't contain `y` -/
 def IsLocalization.orderIsoOfMaximal [IsJacobsonRing R] :
     { p : Ideal S // p.IsMaximal } ≃o { p : Ideal R // p.IsMaximal ∧ y ∉ p } where
-  toFun p := ⟨Ideal.comap (algebraMap R S) p.1, (isMaximal_iff_isMaximal_disjoint S y p.1).1 p.2⟩
-  invFun p := ⟨Ideal.map (algebraMap R S) p.1,
-    isMaximal_of_isMaximal_notMem y p.1 p.2.1 p.2.2⟩
+  toFun p := ⟨Ideal.comap (algebraMap R S) p.val,
+    (isMaximal_iff_isMaximal_disjoint S y p.val).1 p.property⟩
+  invFun p := ⟨Ideal.map (algebraMap R S) p.val,
+    isMaximal_of_isMaximal_notMem y p.val p.property.1 p.property.2⟩
   left_inv J := Subtype.ext (map_under (powers y) S J)
   right_inv := fun ⟨_, hIm, hI⟩ ↦ Subtype.ext <| under_map_of_isPrime_disjoint _ S hIm.isPrime
     ((disjoint_powers_iff_notMem_of_isPrime y).2 hI)
@@ -674,7 +679,7 @@ theorem comp_C_integral_of_surjective_of_isJacobsonRing {R : Type*} [CommRing R]
   rw [RingHom.comp_assoc] at this
   convert this
   refine RingHom.ext fun x => ?_
-  exact ((renameEquiv R e).commutes' x).symm
+  exact ((renameEquiv R e).commutes x).symm
 
 end MvPolynomial
 
@@ -731,4 +736,4 @@ nonrec theorem RingHom.finite_of_algHom_finiteType_of_isJacobsonRing
     (f : K →+* L) (g : L →+* A) (hfg : (g.comp f).FiniteType) :
     f.Finite := by
   algebraize [f, (g.comp f)]
-  exact finite_of_algHom_finiteType_of_isJacobsonRing ⟨g, fun _ ↦ rfl⟩
+  exact finite_of_algHom_finiteType_of_isJacobsonRing { toRingHom := g, commutes' _ := rfl }

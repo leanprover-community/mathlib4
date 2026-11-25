@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Localization.Equivalence
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Localization of the opposite category
 

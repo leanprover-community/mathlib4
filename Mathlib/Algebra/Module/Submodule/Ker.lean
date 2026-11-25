@@ -24,6 +24,7 @@ This file defines the kernel of a linear map.
   (resp. linear) maps from `M` to `M₂` over the ring homomorphism `σ` (resp. over the ring `R`).
 
 ## Tags
+
 linear algebra, vector space, module
 -/
 
@@ -68,17 +69,17 @@ theorem ker_id : ker (LinearMap.id : M →ₗ[R] M) = ⊥ :=
 
 @[simp]
 theorem map_coe_ker (f : M →ₛₗ[τ₁₂] M₂) (x : ker f) : f x = 0 :=
-  mem_ker.1 x.2
+  mem_ker.1 x.property
 
 theorem ker_toAddSubmonoid (f : M →ₛₗ[τ₁₂] M₂) : (ker f).toAddSubmonoid = (AddMonoidHom.mker f) :=
   rfl
 
 theorem le_ker_iff_comp_subtype_eq_zero {N : Submodule R M} {f : M →ₛₗ[τ₁₂] M₂} :
     N ≤ ker f ↔ f ∘ₛₗ N.subtype = 0 := by
-  rw [IsConcreteLE.le_iff, LinearMap.ext_iff, Subtype.forall]; rfl
+  rw [le_iff_mem_imp_mem, LinearMap.ext_iff, Subtype.forall]; rfl
 
 theorem comp_ker_subtype (f : M →ₛₗ[τ₁₂] M₂) : f.comp (ker f).subtype = 0 :=
-  LinearMap.ext fun x => mem_ker.1 x.2
+  LinearMap.ext fun x => mem_ker.1 x.property
 
 theorem ker_comp (f : M →ₛₗ[τ₁₂] M₂) (g : M₂ →ₛₗ[τ₂₃] M₃) :
     ker (g.comp f : M →ₛₗ[τ₁₃] M₃) = comap f (ker g) :=

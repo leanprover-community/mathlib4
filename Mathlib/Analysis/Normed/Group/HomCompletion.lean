@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Normed.Group.Completion
 public import Mathlib.Analysis.Normed.Group.Hom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Completion of normed group homs
 

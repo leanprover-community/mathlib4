@@ -58,8 +58,8 @@ variable [HasShift D M] [L.CommShift M]
 
 /-- The `shiftIso` field of the induced shift sequence. -/
 noncomputable def shiftIso (n a a' : M) (ha' : n + a = a') :
-    shiftFunctor D n ⋙ F' a ≅ F' a' := by
-  exact ((whiskeringLeft C D A).obj L).preimageIso ((Functor.associator _ _ _).symm ≪≫
+    shiftFunctor D n ⋙ F' a ≅ F' a' :=
+  ((whiskeringLeft C D A).obj L).preimageIso ((Functor.associator _ _ _).symm ≪≫
     isoWhiskerRight (L.commShiftIso n).symm _ ≪≫
     Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ (e' a) ≪≫
     G.shiftIso n a a' ha' ≪≫ (e' a').symm)
@@ -125,7 +125,6 @@ lemma induced_shiftIso_hom_app_obj (n a a' : M) (ha' : n + a = a') (X : C) :
         (G.shiftIso n a a' ha').hom.app X ≫ (e' a').inv.app X := by
   apply induced.shiftIso_hom_app_obj
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma induced_shiftMap {n : M} {X Y : C} (f : X ⟶ Y⟦n⟧) (a a' : M) (h : n + a = a') :
     letI := induced e M F' e'

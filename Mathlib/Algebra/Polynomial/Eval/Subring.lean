@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Ring.Subring.Basic
 
 import Mathlib.Algebra.Polynomial.Degree.Support
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Evaluation of polynomials in subrings
 

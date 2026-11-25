@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.MetricSpace.Holder
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Hölder norm
 
@@ -171,8 +174,8 @@ lemma HolderOnWith.exists_holderOnWith_of_le' {D s : ℝ≥0} {A : Set X}
     ∃ C, HolderOnWith C s f A := by
   simp_rw [← HolderWith.restrict_iff] at *
   let := PseudoEMetricSpace.toPseudoMetricSpace
-    fun x y : A ↦ ne_top_of_le_ne_top ENNReal.coe_ne_top (hA x.2 y.2)
-  have : BoundedSpace A := Metric.boundedSpace_iff_edist.2 ⟨D, fun x y ↦ hA x.2 y.2⟩
+    fun x y : A ↦ ne_top_of_le_ne_top ENNReal.coe_ne_top (hA x.property y.property)
+  have : BoundedSpace A := Metric.boundedSpace_iff_edist.2 ⟨D, fun x y ↦ hA x.property y.property⟩
   exact MemHolder.of_le hf hs
 
 /-- If a function is locally `r`-Hölder and locally `t`-Hölder,

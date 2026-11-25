@@ -14,7 +14,8 @@ The Lie algebra `sl₂` is the unique simple Lie algebra of minimal rank, 1, and
 distinguished position in the general theory. This file provides some basic definitions and results
 about `sl₂`.
 
-## Main definitions:
+## Main definitions
+
 * `IsSl2Triple`: a structure representing a triple of elements in a Lie algebra which satisfy the
   standard relations for `sl₂`.
 * `IsSl2Triple.HasPrimitiveVectorWith`: a structure representing a primitive vector in a

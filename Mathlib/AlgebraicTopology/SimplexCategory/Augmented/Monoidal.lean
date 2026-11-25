@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.SimplexCategory.Augmented.Basic
 public import Mathlib.CategoryTheory.Monoidal.Category
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Monoidal structure on the augmented simplex category
 
