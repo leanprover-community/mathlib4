@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Measure.Dirac.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Probability mass functions
 
@@ -49,7 +52,7 @@ namespace PMF
 
 @[macro_inline]
 instance instFunLike : FunLike (PMF α) α ℝ≥0∞ where
-  coe p a := p.1 a
+  coe p a := p.val a
   coe_injective _ _ h := Subtype.ext h
 
 @[ext]
@@ -57,7 +60,7 @@ protected theorem ext {p q : PMF α} (h : ∀ x, p x = q x) : p = q :=
   DFunLike.ext p q h
 
 theorem hasSum_coe_one (p : PMF α) : HasSum p 1 :=
-  p.2
+  p.property
 
 @[simp]
 theorem tsum_coe (p : PMF α) : ∑' a, p a = 1 :=

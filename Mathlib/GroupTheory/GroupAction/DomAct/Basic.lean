@@ -33,7 +33,7 @@ We also define actions of `Mᵈᵐᵃ` on:
 - `A →* B` provided that `M` acts on `A` by a `MulDistribMulAction`;
 - `A →+ B` provided that `M` acts on `A` by a `DistribMulAction`.
 
-## Implementation details
+## Implementation notes
 
 ### Motivation
 
@@ -78,7 +78,7 @@ The left action can be written in terms of `DomMulAct` as `(DomMulAct.mk c)⁻¹
 level dynamics objects (orbits, invariant functions etc), they coincide for the left and for the
 right action, so lemmas can be formulated in terms of `DomMulAct`.
 
-## Keywords
+## Tags
 
 group action, function, domain
 -/

@@ -71,7 +71,7 @@ from a `CompositionAsSet` and called `compositionAsSetEquiv n`), we deduce that
 `CompositionAsSet n` and `Composition n` are both fintypes of cardinality `2^(n - 1)`
 (see `compositionAsSet_card` and `composition_card`).
 
-## Implementation details
+## Implementation notes
 
 The main motivation for this structure and its API is in the construction of the composition of
 formal multilinear series, and the proof that the composition of analytic functions is analytic.
@@ -240,7 +240,7 @@ theorem sizeUpTo_succ {i : ℕ} (h : i < c.length) :
 
 theorem sizeUpTo_succ' (i : Fin c.length) :
     c.sizeUpTo ((i : ℕ) + 1) = c.sizeUpTo i + c.blocksFun i :=
-  c.sizeUpTo_succ i.2
+  c.sizeUpTo_succ i.isLt
 
 theorem sizeUpTo_strict_mono {i : ℕ} (h : i < c.length) : c.sizeUpTo i < c.sizeUpTo (i + 1) := by
   rw [c.sizeUpTo_succ h]
@@ -294,8 +294,8 @@ theorem orderEmbOfFin_boundaries :
 def embedding (i : Fin c.length) : Fin (c.blocksFun i) ↪o Fin n :=
   (Fin.natAddOrderEmb <| c.sizeUpTo i).trans <| Fin.castLEOrderEmb <|
     calc
-      c.sizeUpTo i + c.blocksFun i = c.sizeUpTo (i + 1) := (c.sizeUpTo_succ i.2).symm
-      _ ≤ c.sizeUpTo c.length := monotone_sum_take _ i.2
+      c.sizeUpTo i + c.blocksFun i = c.sizeUpTo (i + 1) := (c.sizeUpTo_succ i.isLt).symm
+      _ ≤ c.sizeUpTo c.length := monotone_sum_take _ i.isLt
       _ = n := c.sizeUpTo_length
 
 @[simp]
@@ -314,10 +314,10 @@ theorem index_exists {j : ℕ} (h : j < n) : ∃ i : ℕ, j < c.sizeUpTo (i + 1)
 
 /-- `c.index j` is the index of the block in the composition `c` containing `j`. -/
 def index (j : Fin n) : Fin c.length :=
-  ⟨Nat.find (c.index_exists j.2), (Nat.find_spec (c.index_exists j.2)).2⟩
+  ⟨Nat.find (c.index_exists j.isLt), (Nat.find_spec (c.index_exists j.isLt)).2⟩
 
 theorem lt_sizeUpTo_index_succ (j : Fin n) : (j : ℕ) < c.sizeUpTo (c.index j).succ :=
-  (Nat.find_spec (c.index_exists j.2)).1
+  (Nat.find_spec (c.index_exists j.isLt)).1
 
 theorem sizeUpTo_index_le (j : Fin n) : c.sizeUpTo (c.index j) ≤ j := by
   by_contra! H
@@ -329,8 +329,8 @@ theorem sizeUpTo_index_le (j : Fin n) : c.sizeUpTo (c.index j) ≤ j := by
   let i₁ := (i : ℕ).pred
   have i₁_lt_i : i₁ < i := Nat.pred_lt (ne_of_gt i_pos)
   have i₁_succ : i₁ + 1 = i := Nat.succ_pred_eq_of_pos i_pos
-  have := Nat.find_min (c.index_exists j.2) i₁_lt_i
-  simp_all [lt_trans i₁_lt_i (c.index j).2]
+  have := Nat.find_min (c.index_exists j.isLt) i₁_lt_i
+  simp_all [lt_trans i₁_lt_i (c.index j).isLt]
 
 /-- Mapping an element `j` of `Fin n` to the element in the block containing it, identified with
 `Fin (c.blocksFun (c.index j))` through the canonical increasing bijection. -/
@@ -479,9 +479,9 @@ theorem ones_sizeUpTo (n : ℕ) (i : ℕ) : (ones n).sizeUpTo i = min i n := by
 
 @[simp]
 theorem ones_embedding (i : Fin (ones n).length) (h : 0 < (ones n).blocksFun i) :
-    (ones n).embedding i ⟨0, h⟩ = ⟨i, lt_of_lt_of_le i.2 (ones n).length_le⟩ := by
+    (ones n).embedding i ⟨0, h⟩ = ⟨i, lt_of_lt_of_le i.isLt (ones n).length_le⟩ := by
   ext
-  simpa using i.2.le
+  simpa using i.isLt.le
 
 theorem eq_ones_iff {c : Composition n} : c = ones n ↔ ∀ i ∈ c.blocks, i = 1 := by
   constructor
@@ -880,7 +880,7 @@ theorem length_lt_card_boundaries : c.length < c.boundaries.card := by
   exact Nat.lt_add_one _
 
 theorem lt_length (i : Fin c.length) : (i : ℕ) + 1 < c.boundaries.card :=
-  lt_tsub_iff_right.mp i.2
+  lt_tsub_iff_right.mp i.isLt
 
 theorem lt_length' (i : Fin c.length) : (i : ℕ) < c.boundaries.card :=
   lt_of_le_of_lt (Nat.le_succ i) (c.lt_length i)
@@ -935,12 +935,12 @@ theorem mem_boundaries_iff_exists_blocks_sum_take_eq {j : Fin (n + 1)} :
   · intro hj
     rcases (c.boundaries.orderIsoOfFin rfl).surjective ⟨j, hj⟩ with ⟨i, hi⟩
     rw [Subtype.ext_iff, Subtype.coe_mk] at hi
-    refine ⟨i.1, i.2, ?_⟩
+    refine ⟨i.val, i.isLt, ?_⟩
     dsimp at hi
-    rw [← hi, c.blocks_partial_sum i.2]
+    rw [← hi, c.blocks_partial_sum i.isLt]
     rfl
   · rintro ⟨i, hi, H⟩
-    convert (c.boundaries.orderIsoOfFin rfl ⟨i, hi⟩).2
+    convert (c.boundaries.orderIsoOfFin rfl ⟨i, hi⟩).property
     have : c.boundary ⟨i, hi⟩ = j := by rwa [Fin.ext_iff, ← c.blocks_partial_sum hi]
     exact this.symm
 

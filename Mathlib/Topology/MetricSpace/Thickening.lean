@@ -11,11 +11,13 @@ public import Mathlib.Topology.MetricSpace.HausdorffDistance
 # Thickenings in pseudo-metric spaces
 
 ## Main definitions
+
 * `Metric.thickening δ s`, the open thickening by radius `δ` of a set `s` in a pseudo emetric space.
 * `Metric.cthickening δ s`, the closed thickening by radius `δ` of a set `s` in a pseudo emetric
   space.
 
 ## Main results
+
 * `Disjoint.exists_thickenings`: two disjoint sets admit disjoint thickenings
 * `Disjoint.exists_cthickenings`: two disjoint sets admit disjoint closed thickenings
 * `IsCompact.exists_cthickening_subset_open`: if `s` is compact, `t` is open and `s ⊆ t`,
@@ -381,11 +383,11 @@ theorem cthickening_closure : cthickening δ (closure s) = cthickening δ s := b
 
 lemma thickening_eq_empty_iff_of_pos (hε : 0 < ε) :
     thickening ε s = ∅ ↔ s = ∅ :=
-  ⟨fun h ↦ subset_eq_empty (self_subset_thickening hε _) h, by simp +contextual⟩
+  ⟨by gcongr; apply self_subset_thickening hε, by simp +contextual⟩
 
 lemma thickening_nonempty_iff_of_pos (hε : 0 < ε) :
     (thickening ε s).Nonempty ↔ s.Nonempty := by
-  simp [nonempty_iff_ne_empty, thickening_eq_empty_iff_of_pos hε]
+  simp [← ne_empty_iff_nonempty, thickening_eq_empty_iff_of_pos hε]
 
 @[simp] lemma thickening_eq_empty_iff : thickening ε s = ∅ ↔ ε ≤ 0 ∨ s = ∅ := by
   obtain hε | hε := lt_or_ge 0 ε
@@ -393,7 +395,7 @@ lemma thickening_nonempty_iff_of_pos (hε : 0 < ε) :
   · simp [hε, thickening_of_nonpos hε]
 
 @[simp] lemma thickening_nonempty_iff : (thickening ε s).Nonempty ↔ 0 < ε ∧ s.Nonempty := by
-  simp [nonempty_iff_ne_empty]
+  simp [← ne_empty_iff_nonempty]
 
 open ENNReal
 

@@ -5,10 +5,11 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.Order.ConditionallyCompletePartialOrder.Indexed
 public import Mathlib.Order.ModularLattice
 public import Mathlib.Order.SuccPred.Basic
 public import Mathlib.Tactic.Nontriviality.Core
+
+import Mathlib.Order.ConditionallyCompletePartialOrder.Indexed
 
 /-!
 # Atoms, Coatoms, and Simple Lattices
@@ -41,6 +42,7 @@ which are lattices with only two elements, and related ideas.
   * `IsSimpleOrder.completeBooleanAlgebra`
 
 ## Main results
+
 * `isAtom_dual_iff_isCoatom` and `isCoatom_dual_iff_isAtom` express the (definitional) duality
   of `IsAtom` and `IsCoatom`.
 * `isSimpleOrder_iff_isAtom_top` and `isSimpleOrder_iff_isCoatom_bot` express the
@@ -172,16 +174,16 @@ section PartialOrder
 
 namespace SetLike
 
-variable {A B : Type*} [PartialOrder A] [SetLike A B] [IsConcreteLE A B]
+variable {A B : Type*} [PartialOrder A] [SetLike A B] [IsMemLE A B]
 
 theorem isAtom_iff [OrderBot A] {K : A} :
     IsAtom K ↔ K ≠ ⊥ ∧ ∀ H g, H ≤ K → g ∉ H → g ∈ K → H = ⊥ := by
-  simp_rw [IsAtom, lt_iff_le_not_ge, IsConcreteLE.not_le_iff_exists,
+  simp_rw [IsAtom, lt_iff_le_not_ge, not_le_iff_exists_mem_notMem,
     and_comm (a := _ ≤ _), and_imp, exists_imp, ← and_imp, and_comm]
 
 theorem isCoatom_iff [OrderTop A] {K : A} :
     IsCoatom K ↔ K ≠ ⊤ ∧ ∀ H g, K ≤ H → g ∉ K → g ∈ H → H = ⊤ := by
-  simp_rw [IsCoatom, lt_iff_le_not_ge, IsConcreteLE.not_le_iff_exists,
+  simp_rw [IsCoatom, lt_iff_le_not_ge, not_le_iff_exists_mem_notMem,
     and_comm (a := _ ≤ _), and_imp, exists_imp, ← and_imp, and_comm]
 
 theorem covBy_iff {K L : A} :
@@ -190,7 +192,7 @@ theorem covBy_iff {K L : A} :
   contrapose!
   rw [lt_iff_le_not_ge, lt_iff_le_and_ne, and_and_and_comm]
   simp_rw [exists_and_left, and_assoc, and_congr_right_iff, ← and_assoc, and_comm, exists_and_left,
-    IsConcreteLE.not_le_iff_exists, and_comm, implies_true]
+    not_le_iff_exists_mem_notMem, and_comm, implies_true]
 
 /-- Dual variant of `SetLike.covBy_iff` -/
 theorem covBy_iff' {K L : A} :
@@ -199,7 +201,7 @@ theorem covBy_iff' {K L : A} :
   push Not
   rw [lt_iff_le_and_ne, lt_iff_le_not_ge, and_and_and_comm]
   simp_rw [exists_and_left, and_assoc, and_congr_right_iff, ← and_assoc, and_comm, exists_and_left,
-    IsConcreteLE.not_le_iff_exists, ne_comm, implies_true]
+    not_le_iff_exists_mem_notMem, ne_comm, implies_true]
 
 end SetLike
 
@@ -1000,7 +1002,6 @@ theorem isAtomic_iff_isCoatomic : IsAtomic α ↔ IsCoatomic α :=
   ⟨fun _ => isCoatomic_of_isAtomic_of_complementedLattice_of_isModular,
    fun _ => isAtomic_of_isCoatomic_of_complementedLattice_of_isModular⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A complemented modular atomic lattice is strongly atomic.
 Not an instance to prevent loops. -/
 theorem ComplementedLattice.isStronglyAtomic [IsAtomic α] : IsStronglyAtomic α where
@@ -1112,18 +1113,19 @@ end BooleanAlgebra
 namespace Set
 
 theorem isAtom_singleton (x : α) : IsAtom ({x} : Set α) :=
-  ⟨singleton_ne_empty _, fun _ hs => ssubset_singleton_iff.mp hs⟩
+  ⟨(singleton_nonempty _).ne_empty, fun _ hs => ssubset_singleton_iff.mp hs⟩
 
 theorem isAtom_iff {s : Set α} : IsAtom s ↔ ∃ x, s = {x} := by
   refine
     ⟨?_, by
       rintro ⟨x, rfl⟩
       exact isAtom_singleton x⟩
-  rw [isAtom_iff_le_of_ge, bot_eq_empty, ← nonempty_iff_ne_empty]
+  rw [isAtom_iff_le_of_ge, bot_eq_empty, ne_empty_iff_nonempty]
   rintro ⟨⟨x, hx⟩, hs⟩
   exact
     ⟨x, eq_singleton_iff_unique_mem.2
-        ⟨hx, fun y hy => (hs {y} (singleton_ne_empty _) (singleton_subset_iff.2 hy) hx).symm⟩⟩
+        ⟨hx, fun y hy =>
+          (hs {y} (singleton_nonempty _).ne_empty (singleton_subset_iff.2 hy) hx).symm⟩⟩
 
 theorem isCoatom_iff (s : Set α) : IsCoatom s ↔ ∃ x, s = {x}ᶜ := by
   rw [isCompl_compl.isCoatom_iff_isAtom, isAtom_iff]

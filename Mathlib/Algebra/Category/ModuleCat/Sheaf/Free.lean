@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Colimits
 
 import Mathlib.CategoryTheory.Limits.Preserves.SigmaConst
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Free sheaves of modules
 

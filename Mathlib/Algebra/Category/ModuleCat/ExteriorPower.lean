@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.LinearAlgebra.ExteriorPower.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The exterior powers as functors on the category of modules
 

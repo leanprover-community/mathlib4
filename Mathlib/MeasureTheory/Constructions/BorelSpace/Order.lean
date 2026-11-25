@@ -9,7 +9,11 @@ public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 public import Mathlib.MeasureTheory.Function.AEMeasurableSequence
 public import Mathlib.MeasureTheory.Measure.Interval
 public import Mathlib.MeasureTheory.Order.Lattice
+public import Mathlib.Topology.Order.Cadlag
 public import Mathlib.Topology.Order.Lattice
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Borel sigma algebras on spaces with orders
@@ -297,7 +301,8 @@ section OrderTopology
 
 variable [OrderTopology α]
 
-theorem MeasurableSet.of_mem_nhdsGT_aux {s : Set α} (h : ∀ x ∈ s, s ∈ 𝓝[>] x)
+@[to_dual]
+private theorem MeasurableSet.of_mem_nhdsGT_aux {s : Set α} (h : ∀ x ∈ s, s ∈ 𝓝[>] x)
     (h' : ∀ x ∈ s, ∃ y, x < y) : MeasurableSet s := by
   choose! M hM using h'
   suffices H : (s \ interior s).Countable by
@@ -321,6 +326,7 @@ theorem MeasurableSet.of_mem_nhdsGT_aux {s : Set α} (h : ∀ x ∈ s, s ∈ �
   exact B.countable_of_Ioo fun x hx => hy x hx.1
 
 /-- If a set is a right-neighborhood of all of its points, then it is measurable. -/
+@[to_dual /-- If a set is a left-neighborhood of all of its points, then it is measurable. -/]
 theorem MeasurableSet.of_mem_nhdsGT {s : Set α} (h : ∀ x ∈ s, s ∈ 𝓝[>] x) : MeasurableSet s := by
   by_cases H : ∃ x ∈ s, IsTop x
   · rcases H with ⟨x₀, x₀s, h₀⟩
@@ -337,6 +343,12 @@ theorem MeasurableSet.of_mem_nhdsGT {s : Set α} (h : ∀ x ∈ s, s ∈ 𝓝[>]
     simp only [IsTop] at H
     push Not at H
     exact H
+
+/-- A right-continuous function on a second-countable linear order is measurable. -/
+@[to_dual /-- A left-continuous function on a second-countable linear order is measurable. -/]
+theorem IsRightContinuous.measurable [TopologicalSpace β] [MeasurableSpace β] [BorelSpace β]
+    {f : α → β} (hf : IsRightContinuous f) : Measurable f :=
+  measurable_of_isOpen fun _ hu ↦ .of_mem_nhdsGT fun x hx ↦ hf x (hu.mem_nhds hx)
 
 end OrderTopology
 
@@ -986,7 +998,7 @@ protected theorem Measurable.sSup {ι} {f : ι → δ → α} {s : Set ι} (hs :
     Measurable fun x => sSup ((fun i => f i x) '' s) := by
   simp_rw [image_eq_range]
   have : Countable s := hs.to_subtype
-  exact .iSup fun i ↦ hf i i.2
+  exact .iSup fun i ↦ hf i i.property
 
 protected theorem Measurable.sInf {ι} {f : ι → δ → α} {s : Set ι} (hs : s.Countable)
     (hf : ∀ i ∈ s, Measurable (f i)) :
@@ -1000,12 +1012,12 @@ theorem Measurable.biSup {ι} (s : Set ι) {f : ι → δ → α} (hs : s.Counta
   · have : ∀ b, ⨆ i ∈ s, f i b = ⨆ (i : s), f i b :=
       fun b ↦ cbiSup_eq_of_forall (f := fun i ↦ f i b) H
     simp only [this]
-    exact .iSup (fun (i : s) ↦ hf i i.2)
+    exact .iSup (fun (i : s) ↦ hf i i.property)
   · have : ∀ b, ⨆ i ∈ s, f i b = (⨆ (i : s), f i b) ⊔ sSup ∅ :=
       fun b ↦ cbiSup_eq_of_not_forall (f := fun i ↦ f i b) H
     simp only [this]
     apply Measurable.sup _ measurable_const
-    exact .iSup (fun (i : s) ↦ hf i i.2)
+    exact .iSup (fun (i : s) ↦ hf i i.property)
 
 theorem AEMeasurable.biSup {ι} {μ : Measure δ} (s : Set ι) {f : ι → δ → α} (hs : s.Countable)
     (hf : ∀ i ∈ s, AEMeasurable (f i) μ) : AEMeasurable (fun b => ⨆ i ∈ s, f i b) μ := by

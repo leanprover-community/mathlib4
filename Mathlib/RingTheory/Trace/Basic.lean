@@ -62,7 +62,7 @@ open Matrix
 open scoped Matrix
 
 theorem Algebra.traceForm_toMatrix_powerBasis (h : PowerBasis R S) :
-    (traceForm R S).toMatrix h.basis = of fun i j => trace R S (h.gen ^ (i.1 + j.1)) := by
+    (traceForm R S).toMatrix h.basis = of fun i j => trace R S (h.gen ^ (i.val + j.val)) := by
   ext; rw [traceForm_toMatrix, of_apply, pow_add, h.basis_eq_pow, h.basis_eq_pow]
 
 section EqSumRoots
@@ -199,7 +199,7 @@ lemma Algebra.trace_eq_of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [CommRing A�
     (he : RingHom.comp (algebraMap A₂ B₂) ↑e₁ = RingHom.comp ↑e₂ (algebraMap A₁ B₁)) (x) :
     Algebra.trace A₁ B₁ x = e₁.symm (Algebra.trace A₂ B₂ (e₂ x)) := by
   let := (RingHom.comp (e₂ : B₁ →+* B₂) (algebraMap A₁ B₁)).toAlgebra
-  let e' : B₁ ≃ₐ[A₁] B₂ := { e₂ with commutes' := fun _ ↦ rfl }
+  let e' : B₁ ≃ₐ[A₁] B₂ := .ofCommutes e₂ fun _ ↦ rfl
   rw [← Algebra.trace_eq_of_ringEquiv e₁ he, ← Algebra.trace_eq_of_algEquiv e',
     RingEquiv.symm_apply_apply]
   rfl
@@ -348,7 +348,7 @@ theorem traceMatrix_reindex {κ' : Type*} (b : Basis κ A B) (f : κ ≃ κ') :
 
 variable {A}
 
-theorem traceMatrix_of_matrix_vecMul [Fintype κ] (b : κ → B) (P : Matrix κ κ A) :
+theorem traceMatrix_of_matrix_vecMul {κ' : Type*} [Fintype κ] (b : κ → B) (P : Matrix κ κ' A) :
     traceMatrix A (b ᵥ* P.map (algebraMap A B)) = Pᵀ * traceMatrix A b * P := by
   ext (α β)
   rw [traceMatrix_apply, vecMul, dotProduct, vecMul, dotProduct, Matrix.mul_apply,
@@ -368,9 +368,9 @@ theorem traceMatrix_of_matrix_vecMul [Fintype κ] (b : κ → B) (P : Matrix κ 
   rw [mul_assoc]
   simp [mul_comm]
 
-theorem traceMatrix_of_matrix_mulVec [Fintype κ] (b : κ → B) (P : Matrix κ κ A) :
+theorem traceMatrix_of_matrix_mulVec {κ' : Type*} [Fintype κ] (b : κ → B) (P : Matrix κ' κ A) :
     traceMatrix A (P.map (algebraMap A B) *ᵥ b) = P * traceMatrix A b * Pᵀ := by
-  refine AddEquiv.injective (transposeAddEquiv κ κ A) ?_
+  refine AddEquiv.injective (transposeAddEquiv κ' κ' A) ?_
   rw [transposeAddEquiv_apply, transposeAddEquiv_apply, ← vecMul_transpose, ← transpose_map,
     traceMatrix_of_matrix_vecMul, transpose_transpose]
 
@@ -442,7 +442,8 @@ theorem traceMatrix_eq_embeddingsMatrixReindex_mul_trans [Fintype κ] (e : κ �
     (traceMatrix K b).map (algebraMap K E) =
       embeddingsMatrixReindex K E b e * (embeddingsMatrixReindex K E b e)ᵀ := by
   rw [traceMatrix_eq_embeddingsMatrix_mul_trans, embeddingsMatrixReindex, reindex_apply,
-    transpose_submatrix, ← submatrix_mul_transpose_submatrix, ← Equiv.coe_refl, Equiv.refl_symm]
+    transpose_submatrix, Equiv.refl_symm, Equiv.coe_refl, Equiv.symm_symm,
+    submatrix_mul_transpose_submatrix]
 
 end Field
 
@@ -496,8 +497,7 @@ then `traceForm` is nondegenerate. -/
 @[stacks 0BIL "(1) => (3)"]
 theorem traceForm_nondegenerate [FiniteDimensional K L] [Algebra.IsSeparable K L] :
     (traceForm K L).Nondegenerate :=
-  BilinForm.nondegenerate_of_det_ne_zero (traceForm K L) _
-    (det_traceForm_ne_zero (Module.finBasis K L))
+  .of_det_ne_zero (traceForm K L) _ (det_traceForm_ne_zero (Module.finBasis K L))
 
 @[stacks 0BIL]
 theorem traceForm_nondegenerate_tfae [FiniteDimensional K L] :

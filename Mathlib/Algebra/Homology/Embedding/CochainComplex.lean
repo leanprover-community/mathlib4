@@ -6,8 +6,12 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.Embedding.AreComplementary
+public import Mathlib.Algebra.Homology.Embedding.StupidTrunc
 public import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
 public import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Truncations on cochain complexes indexed by the integers.
@@ -219,6 +223,22 @@ lemma isGE_of_iso (n : ℤ) [K.IsGE n] : L.IsGE n := by
 
 end
 
+@[simp]
+lemma isStrictlySupported_embeddingUpNat_iff_isStrictlyGE_zero :
+    K.IsStrictlySupported embeddingUpNat ↔ K.IsStrictlyGE 0 := by
+  rw [← embeddingUpIntGE_zero]
+
+@[simp]
+lemma isStrictlySupported_embeddingDownNat_iff_isStrictlyLE_zero :
+    K.IsStrictlySupported embeddingDownNat ↔ K.IsStrictlyLE 0 := by
+  rw [← embeddingUpIntLE_zero]
+
+instance [K.IsStrictlyGE 0] : K.IsStrictlySupported embeddingUpNat := by
+  rwa [isStrictlySupported_embeddingUpNat_iff_isStrictlyGE_zero]
+
+instance [K.IsStrictlyLE 0] : K.IsStrictlySupported embeddingDownNat := by
+  rwa [isStrictlySupported_embeddingDownNat_iff_isStrictlyLE_zero]
+
 section
 
 variable [HasZeroObject C]
@@ -231,7 +251,6 @@ instance (X : ChainComplex C ℕ) :
     CochainComplex.IsStrictlyLE (X.extend embeddingDownNat) 0 where
   isZero _ _ := isZero_extend_X _ _ _ (by aesop)
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- A cochain complex that is both strictly `≤ n` and `≥ n` is isomorphic to
 a complex `(single _ _ n).obj M` for some object `M`. -/
 lemma exists_iso_single (n : ℤ) [K.IsStrictlyGE n] [K.IsStrictlyLE n] :
@@ -289,7 +308,6 @@ instance [K.IsLE n] : QuasiIso (K.ιTruncLE n) := by
 
 variable {K L}
 
-set_option backward.defeqAttrib.useBackward true in
 lemma quasiIso_truncGEMap_iff :
     QuasiIso (truncGEMap φ n) ↔ ∀ (i : ℤ) (_ : n ≤ i), QuasiIsoAt φ i := by
   rw [HomologicalComplex.quasiIso_truncGEMap_iff]
@@ -300,7 +318,6 @@ lemma quasiIso_truncGEMap_iff :
   · rintro h i i' rfl
     exact h _ (by dsimp; lia)
 
-set_option backward.defeqAttrib.useBackward true in
 lemma quasiIso_truncLEMap_iff :
     QuasiIso (truncLEMap φ n) ↔ ∀ (i : ℤ) (_ : i ≤ n), QuasiIsoAt φ i := by
   rw [HomologicalComplex.quasiIso_truncLEMap_iff]
@@ -310,6 +327,16 @@ lemma quasiIso_truncLEMap_iff :
     exact h k _ (by dsimp; lia)
   · rintro h i i' rfl
     exact h _ (by dsimp; lia)
+
+instance [K.IsStrictlyGE 0] : IsIso (K.ιStupidTrunc embeddingUpNat) := by
+  have : K.IsStrictlySupported embeddingUpNat := by
+    rwa [isStrictlySupported_embeddingUpNat_iff_isStrictlyGE_zero]
+  infer_instance
+
+instance [K.IsStrictlyLE 0] : IsIso (K.πStupidTrunc embeddingDownNat) := by
+  have : K.IsStrictlySupported embeddingDownNat := by
+    rwa [isStrictlySupported_embeddingDownNat_iff_isStrictlyLE_zero]
+  infer_instance
 
 end
 
@@ -385,7 +412,6 @@ variable {C : Type*} [Category C] [HasZeroMorphisms C] [HasZeroObject C]
   (K L : CochainComplex C ℤ) (φ : K ⟶ L) (e : K ≅ L)
   [∀ (i : ℤ), K.HasHomology i] [∀ (i : ℤ), L.HasHomology i] (n : ℤ)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- When `K` is a cochain complex indexed by `ℤ` and `n < i`, this is
 the isomorphism `(K.truncGE n).X i ≅ K.X i`. -/
 noncomputable def truncGEXIso (n i : ℤ) (hi : n < i := by lia) :
@@ -397,7 +423,6 @@ noncomputable def truncGEXIso (n i : ℤ) (hi : n < i := by lia) :
       rw [boundaryGE_embeddingUpIntGE_iff, Int.natAbs_eq_zero] at h
       lia)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- When `K` is a cochain complex indexed by `ℤ` and `i < n`, this is
 the isomorphism `(K.truncLE n).X i ≅ K.X i`. -/
 noncomputable def truncLEXIso (n i : ℤ) (hi : i < n := by lia) :

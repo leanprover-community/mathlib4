@@ -5,6 +5,7 @@ Authors: Anne Baanen
 -/
 module
 
+public import Mathlib.GroupTheory.Torsion
 public import Mathlib.RingTheory.DedekindDomain.Ideal.Basic
 
 /-!
@@ -20,12 +21,13 @@ inside its field of fractions.
 - `ClassGroup.mk0` sends a nonzero integral ideal in a Dedekind domain to its class
 
 ## Main results
+
 - `ClassGroup.mk0_eq_mk0_iff` shows the equivalence with the "classical" definition,
   where `I ~ J` iff `x I = y J` for `x y ≠ (0 : R)`
 - `ClassGroup.mk0_eq_quotientMk` identifies `ClassGroup.mk0` with the canonical quotient
   projection on `(FractionalIdeal R⁰ (FractionRing R))ˣ`
 
-## Implementation details
+## Implementation notes
 
 The definition of `ClassGroup R` involves `FractionRing R`. However, the API should be completely
 identical no matter the choice of field of fractions for `R`.
@@ -230,7 +232,7 @@ set_option linter.overlappingInstances false
 /-- Send a nonzero integral ideal to an invertible fractional ideal. -/
 def FractionalIdeal.mk0 [IsDedekindDomain R] :
     (Ideal R)⁰ →* (FractionalIdeal R⁰ K)ˣ where
-  toFun I := Units.mk0 I (coeIdeal_ne_zero.mpr <| mem_nonZeroDivisors_iff_ne_zero.mp I.2)
+  toFun I := Units.mk0 I (coeIdeal_ne_zero.mpr <| mem_nonZeroDivisors_iff_ne_zero.mp I.property)
   map_one' := by simp
   map_mul' x y := by simp
 
@@ -337,9 +339,9 @@ theorem ClassGroup.mk0_integralRep [IsDedekindDomain R]
     ClassGroup.mk0 ⟨ClassGroup.integralRep I, ClassGroup.integralRep_mem_nonZeroDivisors I.ne_zero⟩
       = ClassGroup.mk (FractionRing R) I := by
   rw [← ClassGroup.mk_mk0 (FractionRing R), eq_comm, ClassGroup.mk_eq_mk]
-  have fd_ne_zero : (algebraMap R (FractionRing R)) I.1.den ≠ 0 := by
-    exact IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors (SetLike.coe_mem _)
-  refine ⟨Units.mk0 (algebraMap R _ I.1.den) fd_ne_zero, ?_⟩
+  have fd_ne_zero : (algebraMap R (FractionRing R)) I.val.den ≠ 0 :=
+    IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors (SetLike.coe_mem _)
+  refine ⟨Units.mk0 (algebraMap R _ I.val.den) fd_ne_zero, ?_⟩
   apply Units.ext
   rw [mul_comm, val_mul, coe_toPrincipalIdeal, val_mk0]
   exact FractionalIdeal.den_mul_self_eq_num' R⁰ (FractionRing R) I
@@ -347,7 +349,7 @@ theorem ClassGroup.mk0_integralRep [IsDedekindDomain R]
 theorem ClassGroup.mk0_surjective [IsDedekindDomain R] :
     Function.Surjective (ClassGroup.mk0 : (Ideal R)⁰ → ClassGroup R) := by
   rintro ⟨I⟩
-  refine ⟨⟨ClassGroup.integralRep I.1, ClassGroup.integralRep_mem_nonZeroDivisors I.ne_zero⟩, ?_⟩
+  refine ⟨⟨ClassGroup.integralRep I.val, ClassGroup.integralRep_mem_nonZeroDivisors I.ne_zero⟩, ?_⟩
   rw [ClassGroup.mk0_integralRep, ClassGroup.Quot_mk_eq_mk]
 
 theorem ClassGroup.mk_eq_one_iff {I : (FractionalIdeal R⁰ K)ˣ} :
@@ -401,6 +403,13 @@ theorem ClassGroup.mk0_eq_one_iff [IsDedekindDomain R] {I : Ideal R} (hI : I ∈
     ClassGroup.mk0 ⟨I, hI⟩ = 1 ↔ I.IsPrincipal :=
   ClassGroup.mk_eq_one_iff.trans (coeSubmodule_isPrincipal R _)
 
+/-- A power of the class of an ideal is trivial if and only if that power of the ideal is
+principal. -/
+theorem ClassGroup.mk0_pow_eq_one_iff [IsDedekindDomain R] {I : Ideal R}
+    (hI : I ∈ (Ideal R)⁰) (n : ℕ) :
+    ClassGroup.mk0 ⟨I, hI⟩ ^ n = 1 ↔ (I ^ n).IsPrincipal := by
+  rw [← ClassGroup.mk0_eq_one_iff (pow_mem hI n), ← SubmonoidClass.mk_pow, map_pow]
+
 /-- An ideal is principal if a power coprime to the class number is principal. -/
 theorem Ideal.IsPrincipal.of_isPrincipal_pow_of_coprime [IsDedekindDomain R]
     [Fintype (ClassGroup R)] {n : ℕ} (hn : n.Coprime (Fintype.card (ClassGroup R)))
@@ -453,6 +462,27 @@ theorem card_classGroup_eq_one_iff [IsDedekindDomain R] [Fintype (ClassGroup R)]
   by_cases hI : I = ⊥
   · rw [hI]; exact bot_isPrincipal
   · exact (ClassGroup.mk0_eq_one_iff (mem_nonZeroDivisors_iff_ne_zero.mpr hI)).mp (eq_one _)
+
+/-- If the class group is a torsion group, then every ideal has a nonzero power that is
+principal. -/
+theorem ClassGroup.exists_pow_isPrincipal [IsDedekindDomain R] (hR : IsMulTorsion (ClassGroup R))
+    (I : Ideal R) : ∃ n ≠ 0, (I ^ n).IsPrincipal := by
+  rcases eq_or_ne I 0 with rfl | hI
+  · exact ⟨1, one_ne_zero, 0, by simp⟩
+  have hI' : I ∈ (Ideal R)⁰ := mem_nonZeroDivisors_iff_ne_zero.mpr hI
+  obtain ⟨n, hn, hpow⟩ := isOfFinOrder_iff_pow_eq_one.1 (hR (ClassGroup.mk0 ⟨I, hI'⟩))
+  exact ⟨n, hn.ne', (ClassGroup.mk0_pow_eq_one_iff hI' n).mp hpow⟩
+
+/-- Every ideal raised to the power of the class number is principal.
+If the class group is infinite, its `Nat.card` is zero, so the result is trivial. -/
+theorem ClassGroup.isPrincipal_pow_card [IsDedekindDomain R] (I : Ideal R) :
+    (I ^ Nat.card (ClassGroup R)).IsPrincipal := by
+  by_cases h : Finite (ClassGroup R)
+  · by_cases hI : I = ⊥
+    · simp [hI, Ideal.bot_pow Nat.card_pos.ne', bot_isPrincipal]
+    have hI' : I ∈ (Ideal R)⁰ := mem_nonZeroDivisors_iff_ne_zero.2 hI
+    exact (ClassGroup.mk0_pow_eq_one_iff hI' _).mp pow_card_eq_one'
+  · simp [not_finite_iff_infinite.mp h, top_isPrincipal]
 
 section MulEquiv
 

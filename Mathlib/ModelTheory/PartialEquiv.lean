@@ -14,6 +14,7 @@ public import Mathlib.Order.Ideal
 This file defines partial isomorphisms between first-order structures.
 
 ## Main Definitions
+
 - `FirstOrder.Language.PartialEquiv` is defined so that `L.PartialEquiv M N`, annotated
   `M ≃ₚ[L] N`, is the type of equivalences between substructures of `M` and `N`. These can be
   ordered, with an order that is defined here in terms of a commutative square, but could also be
@@ -26,6 +27,7 @@ This file defines partial isomorphisms between first-order structures.
   element `m : M` in its domain.
 
 ## Main Results
+
 - `FirstOrder.Language.embedding_from_cg` shows that if structures `M` and `N` form an equivalence
   pair with `M` countably-generated, then any finite-generated partial equivalence between them
   can be extended to an embedding `M ↪[L] N`.
@@ -376,7 +378,7 @@ abbrev FGEquiv := {f : M ≃ₚ[L] N // f.dom.FG}
 
 /-- Two structures `M` and `N` form an extension pair if the domain of any finitely-generated map
 from `M` to `N` can be extended to include any element of `M`. -/
-def IsExtensionPair : Prop := ∀ (f : L.FGEquiv M N) (m : M), ∃ g, m ∈ g.1.dom ∧ f ≤ g
+def IsExtensionPair : Prop := ∀ (f : L.FGEquiv M N) (m : M), ∃ g, m ∈ g.val.dom ∧ f ≤ g
 
 variable {M N L}
 
@@ -417,10 +419,11 @@ instance inhabited_FGEquiv_of_IsEmpty_Constants_and_Relations
 
 /-- Maps to the symmetric finitely-generated partial equivalence. -/
 @[simps]
-def FGEquiv.symm (f : L.FGEquiv M N) : L.FGEquiv N M := ⟨f.1.symm, f.1.dom_fg_iff_cod_fg.1 f.2⟩
+def FGEquiv.symm (f : L.FGEquiv M N) : L.FGEquiv N M :=
+  ⟨f.val.symm, f.val.dom_fg_iff_cod_fg.1 f.property⟩
 
 lemma isExtensionPair_iff_cod : L.IsExtensionPair M N ↔
-    ∀ (f : L.FGEquiv N M) (m : M), ∃ g, m ∈ g.1.cod ∧ f ≤ g := by
+    ∀ (f : L.FGEquiv N M) (m : M), ∃ g, m ∈ g.val.cod ∧ f ≤ g := by
   refine Iff.intro ?_ ?_ <;>
   · intro h f m
     obtain ⟨g, h1, h2⟩ := h f.symm m

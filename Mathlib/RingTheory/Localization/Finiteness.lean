@@ -5,10 +5,11 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.Algebra.Module.LocalizedModule.Int
-public import Mathlib.Algebra.Module.LocalizedModule.Submodule
 public import Mathlib.RingTheory.Localization.Algebra
 public import Mathlib.RingTheory.Localization.AtPrime.Basic
+
+import Mathlib.Algebra.Module.LocalizedModule.Int
+import Mathlib.Algebra.Module.LocalizedModule.Submodule
 
 /-!
 # Finiteness properties under localization
@@ -198,7 +199,7 @@ theorem of_localizationSpan_finite' (t : Finset R) (ht : Ideal.span (t : Set R) 
     Module.Finite R M := by
   classical
   constructor
-  choose s₁ s₂ using (fun g ↦ (H g).1)
+  choose s₁ s₂ using (fun g ↦ (H g).fg_top)
   let sf := fun x : t ↦
     IsLocalizedModule.finsetIntegerMultiple (Submonoid.powers x.val) (f x) (s₁ x)
   use t.attach.biUnion sf
@@ -280,15 +281,15 @@ lemma of_localizationSpan' (s : Set R) (hs : Ideal.span (s : Set R) = ⊤)
     [∀ (g : s), IsLocalization.Away g.val (Rₚ g)]
     [∀ (g : s), Module (Rₚ g) (Mₚ g)] [∀ (g : s), IsScalarTower R (Rₚ g) (Mₚ g)]
     (ϕ : ∀ (g : s), M →ₗ[R] Mₚ g) [∀ (g : s), IsLocalizedModule (Submonoid.powers g.val) (ϕ g)]
-    (H : ∀ (g : s), (N.localized' (Rₚ g) (Submonoid.powers g.1) (ϕ g)).FG) :
+    (H : ∀ (g : s), (N.localized' (Rₚ g) (Submonoid.powers g.val) (ϕ g)).FG) :
     N.FG := by
   simp [← Module.Finite.iff_fg, Module.Finite.of_localizationSpan' s hs
-    (fun g ↦ N.toLocalized' (Rₚ g) (Submonoid.powers g.1) (ϕ g))
+    (fun g ↦ N.toLocalized' (Rₚ g) (Submonoid.powers g.val) (ϕ g))
     (fun g ↦ Module.Finite.iff_fg.mpr (H g))]
 
 lemma of_localizationSpan (s : Set R) (hs : Ideal.span (s : Set R) = ⊤)
-    (H : ∀ (g : s), (localized (Submonoid.powers g.1) N).FG) : N.FG :=
-  N.of_localizationSpan' s hs (fun g ↦ LocalizedModule.mkLinearMap (Submonoid.powers g.1) M) H
+    (H : ∀ (g : s), (localized (Submonoid.powers g.val) N).FG) : N.FG :=
+  N.of_localizationSpan' s hs (fun g ↦ LocalizedModule.mkLinearMap (Submonoid.powers g.val) M) H
 
 variable (R' : Type*) [CommSemiring R'] [Algebra R R']
   {M' : Type*} [AddCommMonoid M'] [Module R M'] [Module R' M'] [IsScalarTower R R' M']

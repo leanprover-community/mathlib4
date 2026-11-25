@@ -8,6 +8,9 @@ module
 public import Mathlib.FieldTheory.Galois.Abelian
 public import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cyclotomic extensions
 
@@ -45,7 +48,7 @@ primitive roots of unity, for all nonzero `n ∈ S`.
 * `IsCyclotomicExtension.splitting_field_cyclotomic` : if `IsCyclotomicExtension {n} K L`,
   then `L` is the splitting field of `cyclotomic n K`.
 
-## Implementation details
+## Implementation notes
 
 Our definition of `IsCyclotomicExtension` is very general, to allow rings of any characteristic
 and infinite extensions, but it will mainly be used in the case `S = {n}` and for integral domains.
@@ -320,7 +323,7 @@ theorem _root_.Algebra.isCyclotomicExtension_adjoin_of_exists_isPrimitiveRoot
   exists_isPrimitiveRoot {n} hn1 hn2 := by
     obtain ⟨r, hr1, hr2⟩ := h n hn1 hn2
     exact ⟨⟨r, subset_adjoin ⟨n, hn1, hn2, hr1⟩⟩, Subtype.val_injective hr1,
-      fun l hl ↦ hr2 l congr($hl.1)⟩
+      fun l hl ↦ hr2 l congr(($hl).val)⟩
   adjoin_roots := by
     rintro ⟨x, hx⟩
     induction hx using adjoin_induction with
@@ -356,8 +359,10 @@ theorem isMulCommutative [IsCyclotomicExtension S A B] [IsDomain B] :
   use r, hr
   simp only [AlgEquiv.mul_apply]
   have := NeZero.mk h1
-  obtain ⟨mf, -, hf⟩ := hr.eq_pow_of_pow_eq_one (show f r ^ n = 1 by rw [← map_pow, hr.1, map_one])
-  obtain ⟨mg, -, hg⟩ := hr.eq_pow_of_pow_eq_one (show g r ^ n = 1 by rw [← map_pow, hr.1, map_one])
+  obtain ⟨mf, -, hf⟩ := hr.eq_pow_of_pow_eq_one
+    (show f r ^ n = 1 by rw [← map_pow, hr.pow_eq_one, map_one])
+  obtain ⟨mg, -, hg⟩ := hr.eq_pow_of_pow_eq_one
+    (show g r ^ n = 1 by rw [← map_pow, hr.pow_eq_one, map_one])
   simp [← hf, ← hg, ← pow_mul, mul_comm mf mg]
 
 end Basic
@@ -485,10 +490,11 @@ theorem _root_.IsPrimitiveRoot.adjoin_isCyclotomicExtension {ζ : B} {n : ℕ} [
 
 variable {L} in
 theorem _root_.IsPrimitiveRoot.intermediateField_adjoin_isCyclotomicExtension
-    [Algebra.IsIntegral K L] {n : ℕ} [NeZero n] {ζ : L} (hζ : IsPrimitiveRoot ζ n) :
+    {n : ℕ} [NeZero n] {ζ : L} (hζ : IsPrimitiveRoot ζ n) :
     IsCyclotomicExtension {n} K (IntermediateField.adjoin K {ζ}) := by
   change IsCyclotomicExtension {n} K (IntermediateField.adjoin K {ζ}).toSubalgebra
-  rw [IntermediateField.adjoin_simple_toSubalgebra_of_isAlgebraic (IsAlgebraic.isAlgebraic ζ)]
+  rw [IntermediateField.adjoin_simple_toSubalgebra_of_isAlgebraic
+    (hζ.isIntegral (NeZero.pos n)).tower_top.isAlgebraic]
   exact hζ.adjoin_isCyclotomicExtension K
 
 end
@@ -807,19 +813,20 @@ instance [IsFractionRing A K] [IsDomain A] [NeZero (n : A)] :
       replace := this.surj
       obtain ⟨⟨z, w⟩, hw⟩ := this k
       refine ⟨⟨algebraMap A (CyclotomicRing n A K) z, algebraMap A (CyclotomicRing n A K) w,
-        map_mem_nonZeroDivisors _ (algebraBase_injective n A K) w.2⟩, ?_⟩
+        map_mem_nonZeroDivisors _ (algebraBase_injective n A K) w.property⟩, ?_⟩
       let : IsScalarTower A K (CyclotomicField n K) :=
         IsScalarTower.of_algebraMap_eq (congr_fun rfl)
       rw [← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply,
         @IsScalarTower.algebraMap_apply A K _ _ _ _ _ (_root_.CyclotomicField.algebra n K) _ _ w,
         ← map_mul, hw, ← IsScalarTower.algebraMap_apply]
     · rintro y z - - ⟨a, ha⟩ ⟨b, hb⟩
-      refine ⟨⟨a.1 * b.2 + b.1 * a.2, a.2 * b.2, mul_mem_nonZeroDivisors.2 ⟨a.2.2, b.2.2⟩⟩, ?_⟩
+      refine ⟨⟨a.1 * b.2 + b.1 * a.2, a.2 * b.2,
+        mul_mem_nonZeroDivisors.2 ⟨a.2.property, b.2.property⟩⟩, ?_⟩
       rw [map_mul, add_mul, ← mul_assoc, ha,
         mul_comm ((algebraMap (CyclotomicRing n A K) _) ↑a.2), ← mul_assoc, hb]
       simp only [map_add, map_mul]
     · rintro y z - - ⟨a, ha⟩ ⟨b, hb⟩
-      refine ⟨⟨a.1 * b.1, a.2 * b.2, mul_mem_nonZeroDivisors.2 ⟨a.2.2, b.2.2⟩⟩, ?_⟩
+      refine ⟨⟨a.1 * b.1, a.2 * b.2, mul_mem_nonZeroDivisors.2 ⟨a.2.property, b.2.property⟩⟩, ?_⟩
       rw [map_mul, mul_comm ((algebraMap (CyclotomicRing n A K) _) ↑a.2), mul_assoc, ←
         mul_assoc z, hb, ← mul_comm ((algebraMap (CyclotomicRing n A K) _) ↑a.2), ← mul_assoc, ha]
       simp only [map_mul]
@@ -865,7 +872,7 @@ variable {A B} [IsDomain B]
 theorem IsCyclotomicExtension.mem_of_pow_eq_one (C : Subalgebra A B)
     [h : IsCyclotomicExtension S A C] {m : ℕ} {ζ : B} (h₁ : m ∈ S) (h₂ : m ≠ 0)
     (hζ : ζ ^ m = 1) : ζ ∈ C := by
-  obtain ⟨η, hη⟩ := h.1 h₁ h₂
+  obtain ⟨η, hη⟩ := h.exists_isPrimitiveRoot h₁ h₂
   replace hη := hη.map_of_injective (FaithfulSMul.algebraMap_injective C B)
   have : NeZero m := ⟨h₂⟩
   obtain ⟨k, _, rfl⟩ := hη.eq_pow_of_pow_eq_one hζ
@@ -900,7 +907,7 @@ theorem isCyclotomicExtension_singleton_iff_eq_adjoin (C : Subalgebra A B) {ζ :
 theorem IsCyclotomicExtension.eq (C₁ C₂ : Subalgebra A B) [h₁ : IsCyclotomicExtension S A C₁]
     [h₂ : IsCyclotomicExtension S A C₂] : C₁ = C₂ := by
   have hC (n) (hn₁ : n ∈ S) (hn₂ : n ≠ 0) : ∃ x : B, IsPrimitiveRoot x n := by
-    obtain ⟨ζ, hζ⟩ := h₁.1 hn₁ hn₂
+    obtain ⟨ζ, hζ⟩ := h₁.exists_isPrimitiveRoot hn₁ hn₂
     exact ⟨ζ, IsPrimitiveRoot.coe_submonoidClass_iff.mpr hζ⟩
   rw [(isCyclotomicExtension_iff_eq_adjoin S C₁ hC).mp h₁,
     (isCyclotomicExtension_iff_eq_adjoin S C₂ hC).mp h₂]
@@ -913,7 +920,7 @@ theorem IsCyclotomicExtension.le_of_dvd [NeZero n₂] (h : n₁ ∣ n₂) : C₁
     constructor
     rintro rfl
     exact NeZero.ne n₂ <| eq_zero_of_zero_dvd h
-  obtain ⟨ζ₂, hζ₂⟩ := h₂.1 rfl (NeZero.ne n₂)
+  obtain ⟨ζ₂, hζ₂⟩ := h₂.exists_isPrimitiveRoot rfl (NeZero.ne n₂)
   replace hζ₂ := hζ₂.map_of_injective (FaithfulSMul.algebraMap_injective C₂ B)
   obtain ⟨d, hd⟩ := h
   have hζ₁ := IsPrimitiveRoot.pow n₂.pos_of_neZero hζ₂ (by rwa [mul_comm])
@@ -924,8 +931,8 @@ theorem IsCyclotomicExtension.le_of_dvd [NeZero n₂] (h : n₁ ∣ n₂) : C₁
 
 theorem IsCyclotomicExtension.lcm_sup [NeZero n₁] [NeZero n₂] :
     IsCyclotomicExtension {n₁.lcm n₂} A (C₁ ⊔ C₂ : Subalgebra A B) := by
-  obtain ⟨ζ₁, hζ₁⟩ := h₁.1 rfl (NeZero.ne n₁)
-  obtain ⟨ζ₂, hζ₂⟩ := h₂.1 rfl (NeZero.ne n₂)
+  obtain ⟨ζ₁, hζ₁⟩ := h₁.exists_isPrimitiveRoot rfl (NeZero.ne n₁)
+  obtain ⟨ζ₂, hζ₂⟩ := h₂.exists_isPrimitiveRoot rfl (NeZero.ne n₂)
   replace hζ₁ := hζ₁.map_of_injective (FaithfulSMul.algebraMap_injective C₁ B)
   replace hζ₂ := hζ₂.map_of_injective (FaithfulSMul.algebraMap_injective C₂ B)
   have hζ := hζ₁.pow_mul_pow_lcm hζ₂ (NeZero.ne n₁) (NeZero.ne n₂)
@@ -950,8 +957,8 @@ theorem IntermediateField.isCyclotomicExtension_eq (F₁ F₂ : IntermediateFiel
 variable (F₁ F₂ : IntermediateField K L) [h₁ : IsCyclotomicExtension {n₁} K F₁]
   [h₂ : IsCyclotomicExtension {n₂} K F₂]
 
-theorem IntermediateField.isCyclotomicExtension_le_of_dvd [NeZero n₂] (h : n₁ ∣ n₂) : F₁ ≤ F₂ := by
-  exact toSubalgebra_le_toSubalgebra.mp <|
+theorem IntermediateField.isCyclotomicExtension_le_of_dvd [NeZero n₂] (h : n₁ ∣ n₂) : F₁ ≤ F₂ :=
+  toSubalgebra_le_toSubalgebra.mp <|
     IsCyclotomicExtension.le_of_dvd n₁ n₂ F₁.toSubalgebra F₂.toSubalgebra h
 
 theorem IntermediateField.isCyclotomicExtension_lcm_sup [NeZero n₁] [NeZero n₂] :

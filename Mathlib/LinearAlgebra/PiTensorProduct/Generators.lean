@@ -14,6 +14,9 @@ import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 import Mathlib.LinearAlgebra.Quotient.Basic
 import Mathlib.SetTheory.Cardinal.Finite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Generators of multiple tensor products
 

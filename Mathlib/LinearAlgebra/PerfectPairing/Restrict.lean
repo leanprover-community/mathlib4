@@ -16,6 +16,7 @@ import Mathlib.LinearAlgebra.Matrix.Basis
 We provide API for restricting perfect pairings to submodules and for restricting their scalars.
 
 ## Main definitions
+
 * `PerfectPairing.restrict`: restriction of a perfect pairing to submodules.
 * `PerfectPairing.restrictScalars`: restriction of scalars for a perfect pairing taking values in a
   subring.
@@ -189,14 +190,16 @@ lemma exists_basis_basis_of_span_eq_top_of_mem_algebraMap
     ← Module.finrank_eq_card_basis bN, Module.finrank_of_isPerfPair p]
   let bM := bN.dualBasis.map p.toPerfPair.symm
   have hbM (j : w) (x : M) (hx : x ∈ M') : bM.repr x j = p x (j : N) := by simp [bM, bN]
-  have hj (j : w) : bM.repr m j ∈ (algebraMap K L).range := (hbM _ _ hm) ▸ hp m hm j (hw₁ j.2)
+  have hj (j : w) : bM.repr m j ∈ (algebraMap K L).range :=
+    (hbM _ _ hm) ▸ hp m hm j (hw₁ j.property)
   replace hp (i : w) (j : v) :
       (bN.dualBasis.map p.toPerfPair.symm).toMatrix b i j ∈ (algebraMap K L).fieldRange := by
     simp only [Basis.toMatrix, Basis.map_repr, LinearEquiv.symm_symm, LinearEquiv.trans_apply,
       Basis.dualBasis_repr]
-    exact hp (b j) (by simpa [b] using hv₁ j.2) (bN i) (by simpa [bN] using hw₁ i.2)
+    exact hp (b j) (by simpa [b] using hv₁ j.property) (bN i) (by simpa [bN] using hw₁ i.property)
   have hA (i j) : b.toMatrix bM i j ∈ (algebraMap K L).range :=
-    Matrix.mem_subfield_of_mul_eq_one_of_mem_subfield_left e _ (by simp [bM]) hp i j
+    Matrix.mem_subfield_of_mul_eq_one_of_mem_subfield_left e _
+      (b.toMatrix_mul_toMatrix_flip bM) hp i j
   have h_span : span K v = span K (Set.range b) := by simp [b]
   rw [h_span, Basis.mem_span_iff_repr_mem, ← Basis.toMatrix_mulVec_repr bM b m]
   exact fun i ↦ Subring.sum_mem _ fun j _ ↦ Subring.mul_mem _ (hA i j) (hj j)

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.WSeq.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Relations between and equivalence of weak sequences
 
@@ -571,7 +574,7 @@ theorem bind_assoc_comp (s : WSeq α) (f : α → WSeq β) (g : β → WSeq γ) 
 
 @[simp]
 theorem bind_assoc (s : WSeq α) (f : α → WSeq β) (g : β → WSeq γ) :
-    bind (bind s f) g ~ʷ bind s fun x : α => bind (f x) g := by
-  exact bind_assoc_comp s f g
+    bind (bind s f) g ~ʷ bind s fun x : α => bind (f x) g :=
+  bind_assoc_comp s f g
 
 end Stream'.WSeq

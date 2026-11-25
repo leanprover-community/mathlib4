@@ -17,7 +17,8 @@ irreducible component is not already reduced. Instead, we take the closed subsch
 the kernel of the restriction to the complement of the union of the other irreducible components.
 For example, if `X` is irreducible then this will give back the original scheme `X`.
 
-## Main definition
+## Main definitions
+
 * `AlgebraicGeometry.Scheme.irreducibleComponentIdeal`: The ideal sheaf data associated to an
   irreducible component of a Noetherian scheme.
 * `AlgebraicGeometry.Scheme.irreducibleComponent`: The subscheme structure on an irreducible
@@ -67,7 +68,7 @@ noncomputable def irreducibleComponentι : X.irreducibleComponent Z hZ ⟶ X :=
   (X.irreducibleComponentIdeal Z hZ).subschemeι
 
 lemma irreducibleComponentι_apply (x : X.irreducibleComponent Z hZ) :
-    X.irreducibleComponentι Z hZ x = x.1 :=
+    X.irreducibleComponentι Z hZ x = x.val :=
   rfl
 
 instance : IsClosedImmersion (X.irreducibleComponentι Z hZ) :=

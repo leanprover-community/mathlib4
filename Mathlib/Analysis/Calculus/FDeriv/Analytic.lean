@@ -14,6 +14,7 @@ public import Mathlib.Analysis.Calculus.FDeriv.Prod
 public import Mathlib.Analysis.Normed.Module.Completion
 
 import Mathlib.Analysis.Analytic.Within
+import Mathlib.Topology.Algebra.InfiniteSum.ContinuousEval
 
 /-!
 # Fréchet derivatives of analytic functions.
@@ -343,7 +344,7 @@ theorem HasFPowerSeriesWithinOnBall.hasSum_derivSeries_of_hasFDerivWithinAt
   have Z := (this.fderivWithin hu).hasSum h'y (by simpa [edist_zero_right] using! hy)
   have : fderivWithin 𝕜 (a ∘ f) (insert x s) (x + y) = a ∘L f' := by
     apply HasFDerivWithinAt.fderivWithin _ (hu _ h'y)
-    exact a.hasFDerivAt.comp_hasFDerivWithinAt (x + y) hf'
+    exact a.comp_hasFDerivWithinAt hf'
   rw [this] at Z
   convert! Z with n
   ext v
@@ -826,6 +827,19 @@ theorem derivSeries_apply_diag (n : ℕ) (x : E) :
 lemma derivSeries_coeff_one (p : FormalMultilinearSeries 𝕜 𝕜 F) (n : ℕ) :
     p.derivSeries.coeff n 1 = (n + 1) • p.coeff (n + 1) :=
   p.derivSeries_apply_diag _ _
+
+protected theorem hasDerivAt_sum [CompleteSpace F] (p : FormalMultilinearSeries 𝕜 𝕜 F) {x : 𝕜}
+    (h : ‖x‖ₑ < p.radius) :
+    HasDerivAt p.sum (∑' n, x ^ n • (n + 1) • p.coeff (n + 1)) x := by
+  have hs : Summable fun n ↦ x ^ n • p.derivSeries.coeff n := by
+    simpa using p.derivSeries.summable <|
+      Metric.eball_subset_eball p.radius_le_radius_derivSeries <| by simpa using h
+  simpa [FormalMultilinearSeries.sum, tsum_apply hs] using (p.hasFDerivAt_sum h).hasDerivAt
+
+protected theorem deriv_sum [CompleteSpace F] (p : FormalMultilinearSeries 𝕜 𝕜 F) {x : 𝕜}
+    (h : ‖x‖ₑ < p.radius) :
+    deriv p.sum x = ∑' n, x ^ n • (n + 1) • p.coeff (n + 1) :=
+  (p.hasDerivAt_sum h).deriv
 
 end FormalMultilinearSeries
 

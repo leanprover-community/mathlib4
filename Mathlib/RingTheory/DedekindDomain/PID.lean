@@ -105,12 +105,12 @@ theorem FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type*} [CommR
   have : ∀ M ∈ s, ∃ a ∈ I, ∃ b ∈ I', a * b ∉ IsLocalization.coeSubmodule A M := by
     intro M hM; by_contra! h
     obtain ⟨x, hx, hxM⟩ :=
-      IsConcreteLE.exists_of_lt
+      exists_mem_notMem_of_lt
         ((IsLocalization.coeSubmodule_strictMono hS (hf.mem_toFinset.1 hM).lt_top).trans_eq
           hinv.symm)
     exact hxM (Submodule.mul_le.2 h hx)
   choose! a ha b hb hm using this
-  choose! u hu hum using fun M hM => IsConcreteLE.not_le_iff_exists.1 (nle M hM)
+  choose! u hu hum using fun M hM => not_le_iff_exists_mem_notMem.1 (nle M hM)
   let v := ∑ M ∈ s, u M • b M
   have hv : v ∈ I' := Submodule.sum_mem _ fun M hM => Submodule.smul_mem _ _ <| hb M hM
   refine
@@ -161,7 +161,7 @@ theorem IsPrincipalIdealRing.of_finite_maximals [IsDedekindDomain R]
     obtain rfl | hI := eq_or_ne I ⊥
     · exact bot_isPrincipal
     apply Ideal.IsPrincipal.of_finite_maximals_of_isUnit h
-    exact .of_mul_eq_one _ (FractionalIdeal.coe_ideal_mul_inv I hI)⟩
+    exact .of_mul_eq_one _ (FractionalIdeal.coeIdeal_mul_inv I hI)⟩
 
 /-- A Dedekind domain is a PID if its set of primes is finite. -/
 theorem IsPrincipalIdealRing.of_finite_primes [IsDedekindDomain R]

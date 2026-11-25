@@ -10,6 +10,9 @@ public import Mathlib.Order.ConditionallyCompleteLattice.WithTop
 public import Mathlib.Order.Lattice.Nat
 public import Mathlib.Order.SuccPred.ENat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extended natural numbers form a complete linear order
 
@@ -55,7 +58,7 @@ lemma natCast_sSup : BddAbove s → ↑(sSup s) = ⨆ a ∈ s, (a : ℕ∞) := W
 @[deprecated (since := "2026-07-17")] alias coe_sSup := natCast_sSup
 
 lemma natCast_sInf (hs : s.Nonempty) : ↑(sInf s) = ⨅ a ∈ s, (a : ℕ∞) :=
-  WithTop.coe_sInf hs (OrderBot.bddBelow s)
+  WithTop.coe_sInf hs
 
 @[deprecated (since := "2026-07-17")] alias coe_sInf := natCast_sInf
 

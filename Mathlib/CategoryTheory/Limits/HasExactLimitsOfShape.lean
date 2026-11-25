@@ -25,6 +25,7 @@ See the file `Mathlib/CategoryTheory/Abelian/GrothendieckAxioms/Basic.lean` for
 the applications to the `AB` axioms in abelian categories.
 
 ## References
+
 * [Stacks: Grothendieck's AB conditions](https://stacks.math.columbia.edu/tag/079A)
 -/
 

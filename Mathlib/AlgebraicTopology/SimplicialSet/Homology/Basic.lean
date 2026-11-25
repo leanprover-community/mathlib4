@@ -11,6 +11,9 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.Nonempty
 
 import Mathlib.CategoryTheory.Linear.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Simplicial homology
 

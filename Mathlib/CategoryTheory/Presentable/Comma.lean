@@ -42,6 +42,7 @@ and similarly the colimit of those `g.right` for `g ⟶ f` in `J κ f`
 identify to `f.right`.
 
 ## References
+
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 -/
 
@@ -412,9 +413,9 @@ private instance : (π₂ κ f).Final := by
 instance : (Comma.isCardinalPresentable F₁ F₂ κ).ι.IsDense where
   isDenseAt f :=
     ⟨Comma.fstSndJointlyReflectColimit
-      ((Functor.Final.isColimitWhiskerEquiv (π₁ κ f) _).2
+      ((Functor.Final.isColimitWhiskerEquiv (π₁ κ f) _).invFun
         ((isCardinalPresentable C₁ κ).ι.denseAt f.left))
-      ((Functor.Final.isColimitWhiskerEquiv (π₂ κ f) _).2
+      ((Functor.Final.isColimitWhiskerEquiv (π₂ κ f) _).invFun
         ((isCardinalPresentable C₂ κ).ι.denseAt f.right))⟩
 
 end isCardinalAccessibleCategory

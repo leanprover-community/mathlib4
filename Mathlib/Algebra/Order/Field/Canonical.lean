@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.Order.GroupWithZero.Canonical
 public import Mathlib.Algebra.Order.Ring.Canonical
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Canonically ordered semifields
 -/

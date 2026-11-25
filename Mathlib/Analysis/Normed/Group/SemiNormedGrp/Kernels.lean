@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Normed.Group.Quotient
 public import Mathlib.Analysis.Normed.Group.SemiNormedGrp
 public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Kernels and cokernels in SemiNormedGrp₁ and SemiNormedGrp
 
@@ -39,13 +42,13 @@ set_option backward.isDefEq.respectTransparency.types false in
 /-- Auxiliary definition for `HasCokernels SemiNormedGrp₁`. -/
 def cokernelCocone {X Y : SemiNormedGrp₁.{u}} (f : X ⟶ Y) : Cofork f 0 :=
   Cofork.ofπ
-    (@SemiNormedGrp₁.mkHom _ (Y ⧸ NormedAddGroupHom.range f.1) _ _
-      f.hom.1.range.normedMk (NormedAddGroupHom.isQuotientQuotient _).norm_le)
+    (@SemiNormedGrp₁.mkHom _ (Y ⧸ NormedAddGroupHom.range f.hom') _ _
+      f.hom.val.range.normedMk (NormedAddGroupHom.isQuotientQuotient _).norm_le)
     (by
       ext x
       rw [Limits.zero_comp, comp_apply, SemiNormedGrp₁.mkHom_apply,
-        SemiNormedGrp₁.zero_apply, ← NormedAddGroupHom.mem_ker, f.hom.1.range.ker_normedMk,
-        f.hom.1.mem_range]
+        SemiNormedGrp₁.zero_apply, ← NormedAddGroupHom.mem_ker, f.hom.val.range.ker_normedMk,
+        f.hom.val.mem_range]
       use x)
 
 /-- Auxiliary definition for `HasCokernels SemiNormedGrp₁`. -/
@@ -53,12 +56,12 @@ def cokernelLift {X Y : SemiNormedGrp₁.{u}} (f : X ⟶ Y) (s : CokernelCofork 
     (cokernelCocone f).pt ⟶ s.pt := by
   fconstructor
   -- The lift itself:
-  · apply NormedAddGroupHom.lift _ s.π.1
+  · apply NormedAddGroupHom.lift _ s.π.hom'
     rintro _ ⟨b, rfl⟩
     change (f ≫ s.π) b = 0
     simp
   -- The lift has norm at most one:
-  exact NormedAddGroupHom.lift_normNoninc _ _ _ s.π.2
+  exact NormedAddGroupHom.lift_normNoninc _ _ _ s.π.normNoninc
 
 instance : HasCokernels SemiNormedGrp₁.{u} where
   has_colimit f :=
@@ -68,13 +71,13 @@ instance : HasCokernels SemiNormedGrp₁.{u} where
           isColimitAux _ (cokernelLift f)
             (fun s => by
               ext
-              apply NormedAddGroupHom.lift_mk f.1.range
+              apply NormedAddGroupHom.lift_mk f.hom'.range
               rintro _ ⟨b, rfl⟩
               change (f ≫ s.π) b = 0
               simp)
             fun _ _ w =>
             SemiNormedGrp₁.hom_ext <| Subtype.ext
-              (NormedAddGroupHom.lift_unique f.1.range _ _ _ congr($(w).hom.val)) }
+              (NormedAddGroupHom.lift_unique f.hom'.range _ _ _ congr($(w).hom.val)) }
 
 -- Sanity check
 example : HasCokernels SemiNormedGrp₁ := by infer_instance
@@ -97,7 +100,7 @@ noncomputable def fork {V W : SemiNormedGrp.{u}} (f g : V ⟶ W) : Fork f g :=
   @Fork.ofι _ _ _ _ _ _ (of (f - g).hom.ker)
     (ofHom (NormedAddGroupHom.incl (f - g).hom.ker)) <| by
     ext v
-    have : v.1 ∈ (f - g).hom.ker := v.2
+    have : v.val ∈ (f - g).hom.ker := v.property
     simpa [-SetLike.coe_mem, NormedAddGroupHom.mem_ker, sub_eq_zero] using this
 
 instance hasLimit_parallelPair {V W : SemiNormedGrp.{u}} (f g : V ⟶ W) :

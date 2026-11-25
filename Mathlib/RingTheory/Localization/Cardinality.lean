@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.OreLocalization.Cardinality
 
 import Mathlib.GroupTheory.MonoidLocalization.Cardinality
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cardinality of localizations
 

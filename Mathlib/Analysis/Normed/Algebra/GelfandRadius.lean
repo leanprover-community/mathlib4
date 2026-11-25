@@ -5,9 +5,9 @@ Authors: Thomas Browning
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.DenselyOrdered
 public import Mathlib.Analysis.Subadditive
 
+import Mathlib.Algebra.Order.Group.DenselyOrdered
 import Mathlib.Data.Fintype.Order
 
 /-!
