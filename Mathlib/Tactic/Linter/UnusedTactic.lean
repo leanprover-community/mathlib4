@@ -39,7 +39,7 @@ Possible reason for whitelisting are
   If there are no goals, then these could in principle not be redundant,
   but we lint against such cases as well.
   We also warn if `any_goals` can be replaced with `all_goals`, or with `on_goal n =>`.
-- `t <;> [t1, t2, ...]`: each subtactic is linted individually.
+- `t <;> [t1; t2; ...]`: each subtactic is linted individually.
   A padding `skip` (to match the number of goals) is never reported as unused.
 
 ## Notable exclusions
@@ -48,10 +48,6 @@ Possible reason for whitelisting are
   but checks `linear_combination` itself.
   The main reason is that `skip` is a common discharger tactic and the linter would
   then always fail whenever the user explicitly chose to pass `skip` as a discharger tactic.
-
-## TODO
-
-* The linter seems to be silenced by `set_option ... in`: maybe it should enter `in`s?
 
 ## Implementation notes
 
@@ -312,7 +308,7 @@ def eraseUsedTactics (exceptions : Std.HashSet SyntaxNodeKind)
         if getNames i.mctxBefore == getNames i.mctxAfter then
           return withMsg m!"`swap_var` does not change the variable names in the goal"
       | `Batteries.Tactic.seq_focus =>
-        -- In `t <;> (t1 ; t2 ; ...)`, lint subtactics, but ignore padding `skip`s
+        -- In `t <;> [t1; t2; ...]`, lint subtactics, but ignore padding `skip`s
         let inBrackets (r': Syntax.Range) : Bool := r.start <= r'.start && r'.stop <= r.stop
         return (ranges.erase r).filter fun r' ⟨stx', _⟩ =>
           !(inBrackets r' && stx'.getKind == ``Lean.Parser.Tactic.skip)

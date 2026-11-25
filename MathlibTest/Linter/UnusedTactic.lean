@@ -335,7 +335,6 @@ Note: This linter can be disabled with `set_option linter.unusedTactic false`
 
 end ignore_tactic_kind
 
-
 -- Lint subtactics in `t <;> [t1, ...]`, ignore padding `skip`s
 /--
 warning: Unused tactic linter: `all_goals` can be removed.
@@ -346,3 +345,15 @@ Note: This linter can be disabled with `set_option linter.unusedTactic false`
 example : True ∧ True := by
   constructor <;> [skip; all_goals trivial]
   trivial
+
+-- The linter is not silenced by `set_option ... in`.
+/--
+warning: Unused tactic linter: `change 1 = 1` does not change the goal.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+-/
+#guard_msgs in
+set_option maxHeartbeats 1000 in
+example : 1 = 1 := by
+  change 1 = 1
+  rfl
