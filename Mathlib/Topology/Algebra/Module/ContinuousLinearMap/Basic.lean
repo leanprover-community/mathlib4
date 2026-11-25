@@ -162,7 +162,6 @@ theorem coe_inj {f g : M₁ →SL[σ₁₂] M₂} : (f : M₁ →ₛₗ[σ₁₂
 theorem coeFn_injective : @Function.Injective (M₁ →SL[σ₁₂] M₂) (M₁ → M₂) (↑) :=
   DFunLike.coe_injective
 
-
 /-- Reinterpret a continuous linear map `M₁ →SL[σ₁₂] M₂` as
 a continuous morphism of additive monoids `M₁ →ₜ+ M₂`. -/
 def toContinuousAddMonoidHom (f : M₁ →SL[σ₁₂] M₂) : M₁ →ₜ+ M₂ := .ofClass f
@@ -179,6 +178,13 @@ theorem toContinuousAddMonoidHom_injective :
 theorem toContinuousAddMonoidHom_inj {f g : M₁ →SL[σ₁₂] M₂} :
     f.toContinuousAddMonoidHom = g.toContinuousAddMonoidHom ↔ f = g :=
   toContinuousAddMonoidHom_injective.eq_iff
+
+/-- Reinterpret a continuous linear map `M₁ →SL[σ₁₂] M₂` as
+a continuous morphism of additive monoids `M₁ →ₜ+ M₂`. -/
+def toContinuousMap (f : M₁ →SL[σ₁₂] M₂) : C(M₁, M₂) := .ofClass f
+
+@[simp]
+lemma coe_toContinuousMap (f : M₁ →SL[σ₁₂] M₂) : ⇑f.toContinuousMap = f := rfl
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
   because it is a composition of multiple projections. -/
