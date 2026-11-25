@@ -15,7 +15,7 @@ example : 3.14159 < Real.pi := by dyadic_interval [prec := 20]
 
 example : Real.pi < 3.1416 := by dyadic_interval [prec := 20]
 
--- More than 32 terms of the series of `arctan (1 / 5)`, so its sum splits in halves.
+-- Tests the path of `hypergeomPartialSum` that requires the binary split (more than 32 terms)
 example : |Real.pi - 3.14159265358979323846264338327950288| < 1e-35 := by
   dyadic_interval [prec := 130]
 

@@ -9,7 +9,7 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Rational
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Series
 
-import Mathlib.Analysis.SpecialFunctions.Complex.Arctan
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.ArctanDeriv
 
 /-!
 # `Real.pi` for interval_dyadic_real
@@ -33,13 +33,14 @@ def arctanInvTaylor (k n prec : ℕ) : Interval Dyadic :=
   ratBall (X.sumNum * ((2 * n + 1) * k ^ (2 * n) : ℕ)) X.den
     (X.den * k * ((2 * n + 1) * k ^ (2 * n))) prec
 
-theorem arctanInvTaylor_mem {k : ℕ} (hk : 1 < k) (n prec : ℕ) :
+theorem arctanInvTaylor_mem (k n prec : ℕ) :
     Real.arctan (k : ℝ)⁻¹ ∈ arctanInvTaylor k n prec := by
-  have h := Real.abs_arctan_sub_sum_range_le (x := (k : ℝ)⁻¹) (by positivity)
-    (inv_lt_one_of_one_lt₀ (mod_cast hk)) n
+  rcases eq_or_ne k 0 with rfl | hk
+  · exact ratBall_mem (by simp) prec
+  have h := Real.abs_arctan_sub_sum_range_le (x := (k : ℝ)⁻¹) (by positivity) n
   rw [← hypergeomPartialSum_div (Int.castRingHom ℝ) (fun j ↦ -((2 * j + 1 : ℕ) : ℤ))
     (fun j ↦ (2 * j + 3) * k ^ 2) (fun j ↦ by positivity)
-    (fun m ↦ (-1) ^ m * (k : ℝ)⁻¹ ^ (2 * m + 1) / ↑(2 * m + 1))
+    (fun m ↦ (-1) ^ m * (k : ℝ)⁻¹ ^ (2 * m + 1) / (2 * m + 1))
     (fun j ↦ by push_cast [eq_intCast, inv_pow]; field)] at h
   have hden := (hypergeomPartialSum_spec (fun j ↦ -((2 * j + 1 : ℕ) : ℤ))
     (fun j ↦ (2 * j + 3) * k ^ 2) 0 n).2.1
@@ -49,7 +50,7 @@ theorem arctanInvTaylor_mem {k : ℕ} (hk : 1 < k) (n prec : ℕ) :
     rw [hden]
     positivity
   refine ratBall_mem ?_ prec
-  convert h using 1 <;> push_cast [eq_intCast, inv_pow]
+  convert h using 1 <;> push_cast [eq_intCast, inv_pow, mul_zero, zero_add]
   · field_simp
   · field
 
@@ -68,7 +69,7 @@ theorem pi_mem (prec : ℕ) : Real.pi ∈ pi prec := by
   have h : Real.pi = 16 * Real.arctan ((5 : ℕ) : ℝ)⁻¹ - 4 * Real.arctan ((239 : ℕ) : ℝ)⁻¹ := by
     linarith [Real.four_mul_arctan_inv_5_sub_arctan_inv_239]
   rw [h]
-  refine roundOut_mem (sub_mem (mul_mem (ofNat_mem 16) ?_) (mul_mem (ofNat_mem 4) ?_)) _ <;>
-    exact arctanInvTaylor_mem (by norm_num) _ _
+  exact roundOut_mem (sub_mem (mul_mem (ofNat_mem 16) (arctanInvTaylor_mem _ _ _))
+    (mul_mem (ofNat_mem 4) (arctanInvTaylor_mem _ _ _))) _
 
 end Inclusion.IntervalDyadicReal
