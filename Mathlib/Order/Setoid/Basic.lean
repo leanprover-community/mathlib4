@@ -5,8 +5,10 @@ Authors: Amelia Livingston, Bryan Gin-ge Chen
 -/
 module
 
+public import Mathlib.Logic.Function.Const
 public import Mathlib.Order.CompleteLattice.Basic
-public import Mathlib.Order.GaloisConnection.Basic
+
+import Mathlib.Order.GaloisConnection.Basic
 
 /-!
 # Equivalence relations
@@ -119,9 +121,9 @@ def prodQuotientEquiv (r : Setoid α) (s : Setoid β) :
     fun x y hxy ↦ Prod.ext (by simpa [Quotient.eq] using hxy.1) (by simpa [Quotient.eq] using hxy.2)
   left_inv q := by
     rcases q with ⟨qa, qb⟩
-    induction qa, qb using Quotient.inductionOn₂'
+    induction qa, qb using Quotient.inductionOn₂
     rfl
-  right_inv q := by induction q using Quotient.inductionOn'; rfl
+  right_inv q := by induction q using Quotient.inductionOn; rfl
 
 /-- A bijection between an indexed product of quotients and the quotient by the product of the
 equivalence relations. -/
@@ -136,7 +138,7 @@ noncomputable def piQuotientEquiv {ι : Sort*} {α : ι → Sort*} (r : ∀ i, S
     ext i
     simp
   right_inv q := by
-    induction q using Quotient.inductionOn'
+    induction q using Quotient.inductionOn
     simp only [Quotient.liftOn'_mk'', Quotient.eq'']
     intro i
     change Setoid.r _ _
@@ -191,7 +193,7 @@ instance completeLattice : CompleteLattice (Setoid α) :=
     top := ⟨fun _ _ => True, ⟨fun _ => trivial, fun h => h, fun h1 _ => h1⟩⟩
     le_top := fun _ _ _ _ => trivial
     bot := ⟨(· = ·), ⟨fun _ => rfl, fun h => h.symm, fun h1 h2 => h1.trans h2⟩⟩
-    bot_le := fun r x _ h => h ▸ r.2.1 x }
+    bot_le := fun r x _ h => h ▸ r.iseqv.refl x }
 
 @[simp, grind =]
 theorem top_def : ⇑(⊤ : Setoid α) = ⊤ :=
@@ -214,6 +216,11 @@ theorem eq_top_iff {s : Setoid α} : s = (⊤ : Setoid α) ↔ ∀ x y : α, s x
 @[simp]
 theorem ker_eq_bot_iff {f : α → β} : ker f = ⊥ ↔ f.Injective := le_bot_iff.symm
 
+@[simp]
+theorem ker_eq_top_iff {f : α → β} : ker f = ⊤ ↔ f.IsConst := eq_top_iff
+
+@[deprecated (since := "2026-11-10")] alias ker_eq_top := ker_eq_top_iff
+
 lemma sInf_equiv {S : Set (Setoid α)} {x y : α} :
     letI := sInf S
     x ≈ y ↔ ∀ s ∈ S, s x y := Iff.rfl
@@ -235,13 +242,26 @@ def map_sInf {S : Set (Setoid α)} {s : Setoid α} (h : s ∈ S) :
     Quotient (sInf S) → Quotient s :=
   Setoid.map_of_le fun _ _ a ↦ a s h
 
-/-- The quotient by the trivial relation is equivalent to the original space. -/
-def quotientBotEquiv :
-    Quotient (⊥ : Setoid α) ≃ α where
-  toFun := Quotient.lift id (fun _ _ ↦ id)
-  invFun := Quotient.mk''
+/-- The quotient by the trivial equivalence relation is equivalent to the original space. -/
+def quotientTrivialEquiv (s : Setoid α) (h : ∀ ⦃x y⦄, s x y → x = y) : Quotient s ≃ α where
+  toFun := Quotient.lift id h
+  invFun := Quotient.mk s
   left_inv := Quotient.ind fun _ ↦ rfl
-  right_inv := fun _ ↦ rfl
+
+@[simp] lemma coe_quotientTrivialEquiv (s : Setoid α) (h) :
+    ⇑(quotientTrivialEquiv s h) = Quotient.lift id h := rfl
+
+@[simp] lemma coe_symm_quotientTrivialEquiv (s : Setoid α) (h) :
+    ⇑(quotientTrivialEquiv s h).symm = Quotient.mk s := rfl
+
+/-- The quotient by the trivial relation is equivalent to the original space. -/
+def quotientBotEquiv : Quotient (⊥ : Setoid α) ≃ α := quotientTrivialEquiv _ <| by simp
+
+@[simp]
+lemma coe_quotientBotEquiv : ⇑(quotientBotEquiv (α := α)) = Quotient.lift id (by simp) := rfl
+
+@[simp]
+lemma coe_symm_quotientBotEquiv : ⇑(quotientBotEquiv (α := α)).symm = Quotient.mk ⊥ := rfl
 
 section EqvGen
 
@@ -309,10 +329,10 @@ theorem eqvGen_mono {r s : α → α → Prop} (h : ∀ x y, r x y → s x y) :
 /-- There is a Galois insertion of equivalence relations on α into binary relations
 on α, with equivalence closure the lower adjoint. -/
 def gi : @GaloisInsertion (α → α → Prop) (Setoid α) _ _ EqvGen.setoid (⇑) where
-  choice r _ := EqvGen.setoid r
+  choice r hr := { r, iseqv := le_antisymm hr EqvGen.rel ▸ (EqvGen.setoid r).iseqv }
   gc _ s := ⟨fun H _ _ h => H <| EqvGen.rel _ _ h, fun H => eqvGen_of_setoid s ▸ eqvGen_mono H⟩
   le_l_u x := (eqvGen_of_setoid x).symm ▸ le_refl x
-  choice_eq _ _ := rfl
+  choice_eq _ _ := (eqvGen_of_setoid _).symm
 
 end EqvGen
 
@@ -330,9 +350,9 @@ theorem ker_iff_mem_preimage {f : α → β} {x y} : ker f x y ↔ x ∈ f ⁻¹
 /-- Equivalence between functions `α → β` such that `r x y → f x = f y` and functions
 `quotient r → β`. -/
 def liftEquiv (r : Setoid α) : { f : α → β // r ≤ ker f } ≃ (Quotient r → β) where
-  toFun f := Quotient.lift (f : α → β) f.2
+  toFun f := Quotient.lift (f : α → β) f.property
   invFun f := ⟨f ∘ Quotient.mk'', fun x y h => by simp [ker_def, Quotient.sound' h]⟩
-  right_inv _ := funext fun x => Quotient.inductionOn' x fun _ => rfl
+  right_inv _ := funext fun x => Quotient.inductionOn x fun _ => rfl
 
 /-- The uniqueness part of the universal property for quotients of an arbitrary type. -/
 theorem lift_unique {r : Setoid α} {f : α → β} (H : r ≤ ker f) (g : Quotient r → β)
@@ -351,7 +371,7 @@ theorem kerLift_mk (f : α → β) (x : α) : kerLift f ⟦x⟧ = f x :=
 /-- Given a map f from α to β, the natural map from the quotient of α by the kernel of f is
 injective. -/
 theorem kerLift_injective (f : α → β) : Injective <| kerLift f :=
-  fun x y => Quotient.inductionOn₂' x y fun _ _ h => Quotient.sound' h
+  fun x y => Quotient.inductionOn₂ x y fun _ _ h => Quotient.sound' h
 
 /-- Given a map f from α to β, the kernel of f is the unique equivalence relation on α whose
 induced map from the quotient of α to β is injective. -/
@@ -389,7 +409,7 @@ def quotientKerEquivOfRightInverse (g : β → α) (hf : Function.RightInverse g
     Quotient (ker f) ≃ β where
   toFun := kerLift f
   invFun b := Quotient.mk'' (g b)
-  left_inv a := Quotient.inductionOn' a fun a => Quotient.sound' <| hf (f a)
+  left_inv a := Quotient.inductionOn a fun a => Quotient.sound' <| hf (f a)
   right_inv := hf
 
 /-- The quotient of α by the kernel of a surjective function f bijects with f's codomain.
@@ -546,13 +566,13 @@ def quotientQuotientEquivQuotient (s : Setoid α) (h : r ≤ s) :
   toFun x :=
     (Quotient.liftOn' x fun w =>
         (Quotient.liftOn' w (@Quotient.mk'' _ s)) fun _ _ H => Quotient.sound <| h H)
-      fun x y => Quotient.inductionOn₂' x y fun _ _ H => show @Quot.mk _ _ _ = @Quot.mk _ _ _ from H
+      fun x y => Quotient.inductionOn₂ x y fun _ _ H => show @Quot.mk _ _ _ = @Quot.mk _ _ _ from H
   invFun x :=
     (Quotient.liftOn' x fun w => @Quotient.mk'' _ (ker <| Quot.mapRight h) <| @Quotient.mk'' _ r w)
       fun _ _ H => Quotient.sound' <| show @Quot.mk _ _ _ = @Quot.mk _ _ _ from Quotient.sound H
   left_inv x :=
-    Quotient.inductionOn' x fun y => Quotient.inductionOn' y fun w => by change ⟦_⟧ = _; rfl
-  right_inv x := Quotient.inductionOn' x fun y => by change ⟦_⟧ = _; rfl
+    Quotient.inductionOn x fun y => Quotient.inductionOn y fun w => by change ⟦_⟧ = _; rfl
+  right_inv x := Quotient.inductionOn x fun y => by change ⟦_⟧ = _; rfl
 
 variable {r f}
 
@@ -561,11 +581,12 @@ open Quotient
 /-- Given an equivalence relation `r` on `α`, the order-preserving bijection between the set of
 equivalence relations containing `r` and the equivalence relations on the quotient of `α` by `r`. -/
 def correspondence (r : Setoid α) : { s // r ≤ s } ≃o Setoid (Quotient r) where
-  toFun s := ⟨Quotient.lift₂ s.1.1 fun _ _ _ _ h₁ h₂ ↦ Eq.propIntro
-      (fun h ↦ s.1.trans' (s.1.trans' (s.1.symm' (s.2 h₁)) h) (s.2 h₂))
-      (fun h ↦ s.1.trans' (s.1.trans' (s.2 h₁) h) (s.1.symm' (s.2 h₂))),
-    ⟨Quotient.ind s.1.2.1, fun {x y} ↦ Quotient.inductionOn₂ x y fun _ _ ↦ s.1.2.2,
-      fun {x y z} ↦ Quotient.inductionOn₃ x y z fun _ _ _ ↦ s.1.2.3⟩⟩
+  toFun s := ⟨Quotient.lift₂ s.val.r fun _ _ _ _ h₁ h₂ ↦ Eq.propIntro
+      (fun h ↦ s.val.trans' (s.val.trans' (s.val.symm' (s.property h₁)) h) (s.property h₂))
+      (fun h ↦ s.val.trans' (s.val.trans' (s.property h₁) h) (s.val.symm' (s.property h₂))),
+    ⟨Quotient.ind s.val.iseqv.refl,
+      fun {x y} ↦ Quotient.inductionOn₂ x y fun _ _ ↦ s.val.iseqv.symm,
+      fun {x y z} ↦ Quotient.inductionOn₃ x y z fun _ _ _ ↦ s.val.iseqv.trans⟩⟩
   invFun s := ⟨comap Quotient.mk' s, fun x y h => by rw [comap_rel, Quotient.eq'.2 h]⟩
   right_inv _ := ext fun x y ↦ Quotient.inductionOn₂ x y fun _ _ ↦ Iff.rfl
   map_rel_iff' :=

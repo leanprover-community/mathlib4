@@ -15,13 +15,13 @@ to the symmetric equivalence defines an equivalence between `C ≌ D` and `(D �
 and provides the definition of the functor that takes an equivalence to its inverse.
 
 ## Main definitions
+
 - `Equivalence.symmEquiv C D`: the equivalence `(C ≌ D) ≌ (D ≌ C)ᵒᵖ` obtained by
   taking `Equivalence.symm` on objects, and `conjugateEquiv` on maps.
 - `Equivalence.inverseFunctor C D`: The functor `(C ≌ D) ⥤ (D ⥤ C)ᵒᵖ` sending an equivalence
   `e` to the functor `e.inverse`.
 - `congrLeftFunctor C D E`: the functor (C ≌ D) ⥤ ((C ⥤ E) ≌ (D ⥤ E))ᵒᵖ that applies
   `Equivalence.congrLeft` on objects, and whiskers left by `conjugateEquiv` on maps.
-
 -/
 
 @[expose] public section
@@ -34,7 +34,6 @@ namespace Equivalence
 
 variable (C : Type*) [Category* C] (D : Type*) [Category* D]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The forward functor of the equivalence `(C ≌ D) ≌ (D ≌ C)ᵒᵖ`. -/
 @[simps]
 def symmEquivFunctor : (C ≌ D) ⥤ (D ≌ C)ᵒᵖ where
@@ -42,7 +41,6 @@ def symmEquivFunctor : (C ≌ D) ⥤ (D ≌ C)ᵒᵖ where
   map {e f} α := (mkHom <| conjugateEquiv f.toAdjunction e.toAdjunction <| asNatTrans α).op
   map_comp _ _ := Quiver.Hom.unop_inj (by cat_disch)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The inverse functor of the equivalence `(C ≌ D) ≌ (D ≌ C)ᵒᵖ`. -/
 @[simps!]
 def symmEquivInverse : (D ≌ C)ᵒᵖ ⥤ (C ≌ D) :=

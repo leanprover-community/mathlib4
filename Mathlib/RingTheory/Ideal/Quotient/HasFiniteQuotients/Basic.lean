@@ -16,11 +16,11 @@ A commutative ring is said to have finite quotients if, for any nonzero ideal `I
 quotient `R ⧸ I` is finite.
 
 ## Main results
+
 - `Ring.HasFiniteQuotients.instDimensionLEOne`: A ring with finite quotients has dimension `≤ 1`.
 - `Ring.HasFiniteQuotients.instIsNoetherianRing` : A ring with finite quotients is noetherian.
 - `Ring.HasFiniteQuotients.of_module_finite`: Assume that `R` has finite quotients and that `S` is
   a domain and a finite `R`-module. Then `S` has finite quotients.
-
 -/
 
 public section
@@ -109,14 +109,16 @@ namespace Ideal
 
 variable {S : Type*} [CommRing S] [Ring.HasFiniteQuotients S]
 
-/-- A version of `finiteIndex` for a ring with finite quotients. -/
-lemma finiteIndex' {I : Ideal S} (hI : I ≠ ⊥) : I.toAddSubgroup.FiniteIndex :=
+lemma finiteIndex {I : Ideal S} (hI : I ≠ ⊥) : I.toAddSubgroup.FiniteIndex :=
   AddSubgroup.finiteIndex_iff_finite_quotient.mpr (Ring.HasFiniteQuotients.finiteQuotient hI)
 
-/-- A version of `isFiniteRelIndex` for a ring with finite quotients. -/
-lemma isFiniteRelIndex' {I : Ideal S} (hI : I ≠ ⊥) (J : Ideal S) :
+@[deprecated (since := "2026-10-23")] alias finiteIndex' := finiteIndex
+
+lemma isFiniteRelIndex {I : Ideal S} (hI : I ≠ ⊥) (J : Ideal S) :
     I.toAddSubgroup.IsFiniteRelIndex J.toAddSubgroup :=
-  have := finiteIndex' hI
+  have := finiteIndex hI
   AddSubgroup.isFiniteRelIndex_of_finiteIndex
+
+@[deprecated (since := "2026-10-23")] alias isFiniteRelIndex' := isFiniteRelIndex
 
 end Ideal

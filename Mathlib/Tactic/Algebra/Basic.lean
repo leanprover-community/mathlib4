@@ -20,24 +20,25 @@ Based largely on the implementation of `ring`. The `algebra` normal form mirrors
 except that the constants are expressions in the base ring that are kept in ring normal form.
 
 ## Organization
+
 This tactic is implemented using the machinery of `Ring.Common`
 
 * Normalized expressions are stored as an `Common.ExSum`, with a custom type for
 representing coefficients in `R`.
 * While `ring` stores coefficients as rational numbers normalized by `norm_num`, `algebra` stores
-coefficients as experssions in the base ring `R`, normalized by `ring`.
+coefficients as expressions in the base ring `R`, normalized by `ring`.
 * These coefficients are sums, not products. The normal form of `a • x + b • x` is `(a + b) • x`.
 
 This tactic is used internally to implement the `polynomial` tactic.
 
 ## Limitations
+
 The main limitation of the current implementation is that it does not handle rational constants
 when the algebra `A` is a field but the base ring `R` is not. This is never an issue when working
 with polynomials, but would be an issue when working with a number field over its ring of integers.
 
 When inferring the base ring, we assume that any two rings `R` and `S` that appear are comparable,
 in the sense that either `R` is an `S`-algebra or `S` is an `R`-algebra.
-
 -/
 
 open Lean hiding Module

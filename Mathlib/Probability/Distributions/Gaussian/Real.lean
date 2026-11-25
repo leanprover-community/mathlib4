@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Gaussian.FourierTransform
 public import Mathlib.Probability.Moments.MGFAnalytic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Gaussian distributions over ℝ
 
@@ -29,7 +32,6 @@ We define a Gaussian measure over the reals.
   variance `v`, then `X + y` is Gaussian with mean `μ + y` and variance `v`.
 * `gaussianReal_const_mul`: if `X` is a random variable with Gaussian distribution with mean `μ` and
   variance `v`, then `c * X` is Gaussian with mean `c * μ` and variance `c ^ 2 * v`.
-
 -/
 
 @[expose] public section

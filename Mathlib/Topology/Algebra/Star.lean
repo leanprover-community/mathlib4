@@ -5,9 +5,13 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.Star.Basic
 public import Mathlib.Algebra.Star.Pi
 public import Mathlib.Topology.Algebra.Constructions
+
+import Mathlib.Algebra.Star.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Continuity of `star`

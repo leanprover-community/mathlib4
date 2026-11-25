@@ -12,8 +12,10 @@ public import Mathlib.CategoryTheory.Abelian.Injective.Dimension
 
 import Mathlib.CategoryTheory.Abelian.Injective.Resolution
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Baer's criterion for injective dimension
 
 Baer's criterion says that an `R`-module `M` is injective iff every `R`-linear map
@@ -39,7 +41,6 @@ universe than `ModuleCat.{v} R`.
   ideals `I`, then `M` has injective dimension `< n`.
 * `ModuleCat.hasInjectiveDimensionLT_iff_quotients`: if and only if version of
   `ModuleCat.hasInjectiveDimensionLT_of_quotients`
-
 -/
 
 @[expose] public section

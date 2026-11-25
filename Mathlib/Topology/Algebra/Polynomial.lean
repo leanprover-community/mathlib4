@@ -8,7 +8,11 @@ module
 public import Mathlib.Analysis.Normed.Field.Basic
 public import Mathlib.Analysis.Normed.Ring.Lemmas
 public import Mathlib.RingTheory.Polynomial.Vieta
-public import Mathlib.Topology.Maps.Proper.CompactlyGenerated
+
+import Mathlib.Topology.Maps.Proper.CompactlyGenerated
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Polynomials and limits
@@ -169,7 +173,7 @@ theorem eq_one_of_roots_le {p : F[X]} {f : F →+* K} {B : ℝ} (hB : B < 0) (h1
   h1.natDegree_eq_zero.mp (by
     contrapose! hB
     rw [← h1.natDegree_map f, Splits.natDegree_eq_card_roots h2] at hB
-    obtain ⟨z, hz⟩ := card_pos_iff_exists_mem.mp (zero_lt_iff.mpr hB)
+    obtain ⟨z, hz⟩ := card_pos_iff_exists_mem.mp hB.pos
     exact le_trans (norm_nonneg _) (h3 z hz))
 
 theorem coeff_le_of_roots_le {p : F[X]} {f : F →+* K} {B : ℝ} (i : ℕ) (h1 : p.Monic)
@@ -193,7 +197,7 @@ theorem coeff_le_of_roots_le {p : F[X]} {f : F →+* K} {B : ℝ} (i : ℕ) (h1 
   obtain ⟨_, ⟨s, hs, rfl⟩, rfl⟩ := hr
   rw [mem_powersetCard] at hs
   lift B to ℝ≥0 using hB
-  rw [← coe_nnnorm, ← NNReal.coe_pow, NNReal.coe_le_coe, ← nnnormHom_apply, ← MonoidHom.coe_ofClass,
+  rw [← coe_nnNorm, ← NNReal.coe_pow, NNReal.coe_le_coe, ← nnNormHom_apply, ← MonoidHom.coe_ofClass,
     MonoidHom.map_multiset_prod]
   refine (prod_le_pow_card _ B fun x hx => ?_).trans_eq (by rw [card_map, hs.2])
   obtain ⟨z, hz, rfl⟩ := Multiset.mem_map.1 hx

@@ -34,6 +34,7 @@ The dual notion (strict terminal objects) occurs much less frequently in practic
 * Show Cartesian closed categories have strict initials
 
 ## References
+
 * https://ncatlab.org/nlab/show/strict+initial+object
 -/
 
@@ -200,7 +201,6 @@ theorem IsTerminal.subsingleton_to (hI : IsTerminal I) {A : C} : Subsingleton (I
 
 variable {J : Type v} [SmallCategory J]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If all but one object in a diagram is strict terminal, then the limit is isomorphic to the
 said object via `limit.π`. -/
 theorem limit_π_isIso_of_is_strict_terminal (F : J ⥤ C) [HasLimit F] (i : J)

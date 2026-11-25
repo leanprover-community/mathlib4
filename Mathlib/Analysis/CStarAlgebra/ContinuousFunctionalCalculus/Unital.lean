@@ -114,7 +114,7 @@ b = cfc id b = cfc (NNReal.sqrt ∘ (· ^ 2)) b =
 + `cfc_comp : cfc (x ↦ g (f x)) a = cfc g (cfc f a)`
 + `cfc_polynomial`: the continuous functional calculus extends the polynomial functional calculus.
 
-## Implementation details
+## Implementation notes
 
 Instead of defining a class depending on a term `a : A`, we register it for an `outParam` predicate
 `p : A → Prop`, and then any element of `A` satisfying this predicate has the associated star
@@ -244,6 +244,7 @@ lemma cfcHom_continuous : Continuous (cfcHom ha : C(spectrum R a, R) →⋆ₐ[R
 lemma cfcHom_injective : Function.Injective (cfcHom ha : C(spectrum R a, R) →⋆ₐ[R] A) :=
   (ContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose_spec.2.1
 
+@[simp]
 lemma cfcHom_id :
     cfcHom ha ((ContinuousMap.id R).restrict <| spectrum R a) = a :=
   (ContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose_spec.2.2.1
@@ -302,7 +303,8 @@ not continuous on the spectrum of `a`, then `cfc f a` returns the junk value `0`
 This is the primary declaration intended for widespread use of the continuous functional calculus,
 and all the API applies to this declaration. For more information, see the module documentation
 for `Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital`. -/
-noncomputable irreducible_def cfc (f : R → R) (a : A) : A :=
+@[no_expose]
+noncomputable def cfc (f : R → R) (a : A) : A :=
   if h : p a ∧ ContinuousOn f (spectrum R a)
     then cfcHom h.1 ⟨_, h.2.domRestrict⟩
     else 0
@@ -313,7 +315,7 @@ variable (hg : ContinuousOn g (spectrum R a) := by cfc_cont_tac)
 
 set_option backward.privateInPublic true in
 lemma cfc_apply : cfc f a = cfcHom (a := a) ha ⟨_, hf.domRestrict⟩ := by
-  rw [cfc_def, dite_eq_left ⟨ha, hf⟩]
+  rw [cfc, dite_eq_left ⟨ha, hf⟩]
 
 lemma cfc_apply_pi {ι : Type*} (f : ι → R → R) (a : A) (ha : p a := by cfc_tac)
     (hf : ∀ i, ContinuousOn (f i) (spectrum R a) := by cfc_cont_tac) :
@@ -323,18 +325,18 @@ lemma cfc_apply_pi {ι : Type*} (f : ι → R → R) (a : A) (ha : p a := by cfc
 
 lemma cfc_apply_of_not_and {f : R → R} (a : A) (ha : ¬ (p a ∧ ContinuousOn f (spectrum R a))) :
     cfc f a = 0 := by
-  rw [cfc_def, dite_eq_right ha]
+  rw [cfc, dite_eq_right ha]
 
 lemma cfc_apply_of_not_predicate {f : R → R} (a : A) (ha : ¬ p a) :
     cfc f a = 0 := by
-  rw [cfc_def, dite_eq_right (not_and_of_not_left _ ha)]
+  rw [cfc, dite_eq_right (not_and_of_not_left _ ha)]
 
 grind_pattern cfc_apply_of_not_predicate => cfc f a where
   guard ¬ p a
 
 lemma cfc_apply_of_not_continuousOn {f : R → R} (a : A) (hf : ¬ ContinuousOn f (spectrum R a)) :
     cfc f a = 0 := by
-  rw [cfc_def, dite_eq_right (not_and_of_not_right _ hf)]
+  rw [cfc, dite_eq_right (not_and_of_not_right _ hf)]
 
 grind_pattern cfc_apply_of_not_continuousOn => cfc f a where
   guard ¬ ContinuousOn f (spectrum R a)
@@ -350,7 +352,7 @@ lemma cfcHom_eq_cfc_extend {a : A} (g : R → R) (ha : p a) (f : C(spectrum R a,
 
 lemma cfc_eq_cfcL {a : A} {f : R → R} (ha : p a) (hf : ContinuousOn f (spectrum R a)) :
     cfc f a = cfcL ha ⟨_, hf.domRestrict⟩ := by
-  rw [cfc_def, dite_eq_left ⟨ha, hf⟩, cfcL_apply]
+  rw [cfc, dite_eq_left ⟨ha, hf⟩, cfcL_apply]
 
 set_option backward.privateInPublic true in
 /-- A version of `cfc_apply` in terms of `ContinuousMap.mkD` -/
@@ -613,7 +615,7 @@ lemma cfc_comp (g f : R → R) (a : A) (ha : p a := by cfc_tac)
   rw [cfc_apply .., cfc_apply f a,
     cfc_apply _ _ (cfcHom_predicate (show p a from ha) _) (by convert hg), ← cfcHom_comp _ _]
   swap
-  · exact ContinuousMap.mk _ <| hf.domRestrict.codRestrict fun x ↦ by rw [sp_eq]; use x.1; simp
+  · exact ContinuousMap.mk _ <| hf.domRestrict.codRestrict fun x ↦ by rw [sp_eq]; use x.val; simp
   · congr
   · exact fun _ ↦ rfl
 
@@ -928,7 +930,7 @@ lemma cfc_mono {f g : R → R} {a : A} (h : ∀ x ∈ spectrum R a, f x ≤ g x)
     cfc f a ≤ cfc g a := by
   by_cases ha : p a
   · rw [cfc_apply f a, cfc_apply g a]
-    exact cfcHom_mono ha fun x ↦ h x.1 x.2
+    exact cfcHom_mono ha fun x ↦ h x.val x.property
   · grind
 
 lemma cfc_nonneg_iff [NonnegSpectrumClass R A] (f : R → R) (a : A)

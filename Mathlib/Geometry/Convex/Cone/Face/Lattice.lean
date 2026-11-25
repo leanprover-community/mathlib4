@@ -25,7 +25,6 @@ structure on the collection of all faces of such a cone.
 This is separate from faces of general convex sets in affine spaces, since the empty set is not a
 face of a convex cone, but of the corresponding convex set. The notion we use here allows a clean
 correspondence between the face lattice of convex sets and their homogenization cones.
-
 -/
 
 public section
@@ -36,7 +35,7 @@ variable {R M N : Type*}
 
 section Semiring
 
-variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup M] [Module R M]
+variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommMonoid M] [Module R M]
 
 /-- The face lattice of a pointed cone `C`. -/
 structure Face (C : PointedCone R M) extends PointedCone R M where
@@ -46,7 +45,7 @@ namespace Face
 
 variable {C C₁ C₂ : PointedCone R M} {F F₁ F₂ : Face C}
 
--- TODO: This whould not be required if Lean allowed us to write:
+-- TODO: This would not be required if Lean allowed us to write:
 -- `structure Face (C : PointedCone R M) extends toPointedCone : PointedCone R M where`
 -- but as of August 2026 it does not. See:
 -- see https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/Structure.20extensions.20vs.20abbrev.20difference.20in.20dot.20notation/with/581169071
@@ -86,7 +85,7 @@ instance : Min (Face C) where
 
 instance : InfSet (Face C) where
   sInf S :=
-    { toSubmodule := C ⊓ sInf {s.1 | s ∈ S}
+    { toSubmodule := C ⊓ sInf {(s.toSubmodule) | s ∈ S}
       isFaceOf := IsFaceOf.sInf _ (fun F Fs ↦ by obtain ⟨F, Fss, rfl⟩ := Fs; exact F.isFaceOf) }
 
 instance : SemilatticeInf (Face C) where

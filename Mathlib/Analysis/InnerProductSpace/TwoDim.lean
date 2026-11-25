@@ -5,11 +5,12 @@ Authors: Heather Macbeth
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Dual
 public import Mathlib.Analysis.InnerProductSpace.Orientation
-public import Mathlib.LinearAlgebra.Alternating.Curry
 public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 public import Mathlib.LinearAlgebra.Complex.Orientation
+
+import Mathlib.Analysis.InnerProductSpace.Dual
+import Mathlib.LinearAlgebra.Alternating.Curry
 
 /-!
 # Oriented two-dimensional real inner product spaces
@@ -65,7 +66,6 @@ notation which mentions the orientation explicitly (something like `ω[o]`). Wri
 local notation "ω" => o.areaForm
 local notation "J" => o.rightAngleRotation
 ```
-
 -/
 
 @[expose] public section
@@ -87,7 +87,7 @@ namespace Orientation
 /-- An antisymmetric bilinear form on an oriented real inner product space of dimension 2 (usual
 notation `ω`). When evaluated on two vectors, it gives the oriented area of the parallelogram they
 span. -/
-irreducible_def areaForm : E →ₗ[ℝ] E →ₗ[ℝ] ℝ := by
+@[no_expose] def areaForm : E →ₗ[ℝ] E →ₗ[ℝ] ℝ := by
   let z : E [⋀^Fin 0]→ₗ[ℝ] ℝ ≃ₗ[ℝ] ℝ :=
     AlternatingMap.constLinearEquivOfIsEmpty.symm
   let y : E [⋀^Fin 1]→ₗ[ℝ] ℝ →ₗ[ℝ] E →ₗ[ℝ] ℝ :=
@@ -165,7 +165,7 @@ theorem areaForm_comp_linearIsometryEquiv (φ : E ≃ₗᵢ[ℝ] E)
 
 /-- Auxiliary construction for `Orientation.rightAngleRotation`, rotation by 90 degrees in an
 oriented real inner product space of dimension 2. -/
-irreducible_def rightAngleRotationAux₁ : E →ₗ[ℝ] E :=
+@[no_expose] def rightAngleRotationAux₁ : E →ₗ[ℝ] E :=
   let to_dual : E ≃ₗ[ℝ] E →ₗ[ℝ] ℝ :=
     (InnerProductSpace.toDual ℝ E).toLinearEquiv ≪≫ₗ LinearMap.toContinuousLinearMap.symm
   ↑to_dual.symm ∘ₗ ω
@@ -173,7 +173,7 @@ irreducible_def rightAngleRotationAux₁ : E →ₗ[ℝ] E :=
 @[simp]
 theorem inner_rightAngleRotationAux₁_left (x y : E) : ⟪o.rightAngleRotationAux₁ x, y⟫ = ω x y := by
   simp only [rightAngleRotationAux₁, LinearEquiv.trans_symm, LinearEquiv.symm_symm,
-    LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, LinearEquiv.trans_apply,
+    LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply, LinearEquiv.trans_apply,
     LinearIsometryEquiv.coe_symm_toLinearEquiv]
   rw [InnerProductSpace.toDual_symm_apply]
   norm_cast
@@ -207,7 +207,8 @@ def rightAngleRotationAux₂ : E →ₗᵢ[ℝ] E :=
           have : finrank ℝ E = 2 := Fact.out
           lia
         obtain ⟨w, hw₀⟩ : ∃ w : Kᗮ, w ≠ 0 := exists_ne 0
-        have hw' : ⟪x, (w : E)⟫ = 0 := Submodule.mem_orthogonal_singleton_iff_inner_right.mp w.2
+        have hw' : ⟪x, (w : E)⟫ = 0 :=
+          Submodule.mem_orthogonal_singleton_iff_inner_right.mp w.property
         have hw : (w : E) ≠ 0 := fun h => hw₀ (Submodule.coe_eq_zero.mp h)
         refine le_of_mul_le_mul_right ?_ (by rwa [norm_pos_iff] : 0 < ‖(w : E)‖)
         rw [← o.abs_areaForm_of_orthogonal hw']
@@ -227,7 +228,7 @@ theorem rightAngleRotationAux₁_rightAngleRotationAux₁ (x : E) :
 /-- An isometric automorphism of an oriented real inner product space of dimension 2 (usual notation
 `J`). This automorphism squares to -1. We will define rotations in such a way that this
 automorphism is equal to rotation by 90 degrees. -/
-irreducible_def rightAngleRotation : E ≃ₗᵢ[ℝ] E :=
+@[no_expose] def rightAngleRotation : E ≃ₗᵢ[ℝ] E :=
   LinearIsometryEquiv.ofLinearIsometry o.rightAngleRotationAux₂ (-o.rightAngleRotationAux₁)
     (by ext; simp [rightAngleRotationAux₂]) (by ext; simp [rightAngleRotationAux₂])
 

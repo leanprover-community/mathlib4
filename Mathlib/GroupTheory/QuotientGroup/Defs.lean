@@ -151,7 +151,7 @@ theorem eq_iff_div_mem {N : Subgroup G} [nN : N.Normal] {x y : G} :
 -- for commutative groups we don't need normality assumption
 @[to_additive]
 instance Quotient.commGroup {G : Type*} [CommGroup G] (N : Subgroup G) : CommGroup (G ⧸ N) where
-  mul_comm := fun a b => Quotient.inductionOn₂' a b fun a b => congr(mk $(mul_comm a b))
+  mul_comm := fun a b => Quotient.inductionOn₂ a b fun a b => congr(mk $(mul_comm a b))
 
 local notation " Q" => G ⧸ N
 
@@ -334,6 +334,11 @@ theorem ker_map (M : Subgroup H) [M.Normal] (f : G →* H) (h : N ≤ Subgroup.c
     (map N M f h).ker = Subgroup.map (mk' N) (M.comap f) := by
   simp_rw [← ker_mk' M, MonoidHom.comap_ker]
   exact QuotientGroup.ker_lift _ _ _
+
+@[to_additive]
+theorem map_injective_iff (M : Subgroup H) [M.Normal] (f : G →* H) (h : N ≤ M.comap f) :
+    Function.Injective (map N M f h) ↔ M.comap f ≤ N := by
+  rw [← MonoidHom.ker_eq_bot_iff, ker_map, Subgroup.map_eq_bot_iff, ker_mk']
 
 @[to_additive]
 theorem map_id_apply (h : N ≤ Subgroup.comap (MonoidHom.id _) N := (Subgroup.comap_id N).le) (x) :

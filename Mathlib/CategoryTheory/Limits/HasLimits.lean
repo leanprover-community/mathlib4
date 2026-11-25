@@ -46,8 +46,8 @@ At this point, however, this is far from uniformly achieved in mathlib ---
 often statements are only written in terms of `HasLimit`.
 
 ## References
-* [Stacks: Limits and colimits](https://stacks.math.columbia.edu/tag/002D)
 
+* [Stacks: Limits and colimits](https://stacks.math.columbia.edu/tag/002D)
 -/
 
 @[expose] public section
@@ -187,14 +187,9 @@ def limit (F : J ⥤ C) [HasLimit F] :=
 def limit.π (F : J ⥤ C) [HasLimit F] (j : J) : limit F ⟶ F.obj j :=
   (limit.cone F).π.app j
 
+@[to_dual (attr := reassoc) eqToHom_comp_ι]
 theorem limit.π_comp_eqToHom (F : J ⥤ C) [HasLimit F] {j j' : J} (hj : j = j') :
     limit.π F j ≫ eqToHom (by subst hj; rfl) = limit.π F j' := by
-  subst hj
-  simp
-
-@[to_dual existing (attr := reassoc) π_comp_eqToHom]
-theorem colimit.eqToHom_comp_ι (F : J ⥤ C) [HasColimit F] {j j' : J} (hj : j = j') :
-    eqToHom (by subst hj; rfl) ≫ colimit.ι F j = colimit.ι F j' := by
   subst hj
   simp
 
@@ -803,7 +798,6 @@ end Colimit
 
 section Opposite
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `t : Cone F` is a limit cone, then `t.op : Cocone F.op` is a colimit cocone. -/
 @[to_dual
 /-- If `t : Cocone F` is a colimit cocone, then `t.op : Cone F.op` is a limit cone. -/]
@@ -819,7 +813,6 @@ def IsLimit.op {t : Cone F} (P : IsLimit t) : IsColimit t.op where
       rw [← w]
       rfl
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `t : Cone F.op` is a limit cone, then `t.unop : Cocone F` is a colimit cocone. -/
 @[to_dual
 /-- If `t : Cocone F.op` is a colimit cocone, then `t.unop : Cone F` is a limit cone. -/]

@@ -305,7 +305,7 @@ theorem norm_iteratedFDerivWithin_prod_le [DecidableEq ι] [NormOneClass A'] {u 
     rw [← Finset.univ_sigma_univ, Finset.sum_sigma, Finset.sum_range]
     simp +instances only [comp_apply, Finset.symInsertEquiv_symm_apply_coe]
     gcongr with m _
-    specialize IH hf.2 (n := n - m) (le_trans (by exact_mod_cast n.sub_le m) hn)
+    specialize IH hf.2 (n := n - m) (le_trans (mod_cast n.sub_le m) hn)
     grw [IH]
     rw [Finset.mul_sum, ← Finset.sum_coe_sort]
     refine Finset.sum_le_sum ?_
@@ -356,10 +356,10 @@ theorem norm_iteratedFDerivWithin_comp_le_aux {Fu Gu : Type u} [NormedAddCommGro
     `ContinuousLinearMap.norm_iteratedFDeriv_le_of_bilinear_of_le_one` to get from these a bound
     on `D^n (g ' ∘ f ⬝ f')`. -/
   induction n using Nat.case_strong_induction_on generalizing Gu with
-  | hz =>
+  | zero =>
     simpa [norm_iteratedFDerivWithin_zero, Nat.factorial_zero, algebraMap.coe_one, one_mul,
       pow_zero, mul_one, comp_apply] using! hC 0 le_rfl
-  | hi n IH =>
+  | succ n IH
   have M : (n : ℕ∞ω) < n.succ := Nat.cast_lt.2 n.lt_succ_self
   have Cnonneg : 0 ≤ C := (norm_nonneg _).trans (hC 0 bot_le)
   have Dnonneg : 0 ≤ D := by
@@ -406,8 +406,8 @@ theorem norm_iteratedFDerivWithin_comp_le_aux {Fu Gu : Type u} [NormedAddCommGro
     -- for which we have bounds for the`n`-th derivative.
     _ ≤ ∑ i ∈ Finset.range (n + 1),
         (n.choose i : ℝ) * ‖iteratedFDerivWithin 𝕜 i (fderivWithin 𝕜 g t ∘ f) s x‖ *
-          ‖iteratedFDerivWithin 𝕜 (n - i) (fderivWithin 𝕜 f s) s x‖ := by
-      exact (ContinuousLinearMap.compL 𝕜 E Fu Gu).norm_iteratedFDerivWithin_le_of_bilinear_of_le_one
+          ‖iteratedFDerivWithin 𝕜 (n - i) (fderivWithin 𝕜 f s) s x‖ :=
+      (ContinuousLinearMap.compL 𝕜 E Fu Gu).norm_iteratedFDerivWithin_le_of_bilinear_of_le_one
         ((hg.fderivWithin ht (by simp)).comp (hf.of_le M.le) hst) (hf.fderivWithin hs (by simp))
         hs hx le_rfl (ContinuousLinearMap.norm_compL_le 𝕜 E Fu Gu)
     -- bound each of the terms using the estimates on previous derivatives (that use the inductive

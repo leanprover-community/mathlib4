@@ -7,12 +7,14 @@ module
 
 public import Mathlib.Geometry.Convex.ConvexSpace.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bundled affine maps between convex spaces
 
 If `X` and `Y` are convex spaces (over `R`), we introduce the type
 `ConvexSpace.AffineMap R X Y` of bundled affine maps from `X` to `Y`.
-
 -/
 
 @[expose] public section

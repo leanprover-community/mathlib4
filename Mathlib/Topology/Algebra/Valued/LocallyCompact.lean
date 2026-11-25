@@ -16,6 +16,7 @@ public import Mathlib.Topology.Algebra.Valued.ValuedField
 # Necessary and sufficient conditions for a locally compact valued field
 
 ## Main Definitions
+
 * `totallyBounded_iff_finite_residueField`: when the valuation ring is a DVR,
   it is totally bounded iff the residue field is finite.
 
@@ -92,8 +93,10 @@ lemma exists_norm_lt_one : ∃ x : 𝒪[K], 0 < ‖x‖ ∧ ‖x‖ < 1 :=
   exists_norm_coe_lt_one K
 
 variable (K) in
-lemma exists_nnnorm_lt_one : ∃ x : 𝒪[K], 0 < ‖x‖₊ ∧ ‖x‖₊ < 1 :=
+lemma exists_nnNorm_lt_one : ∃ x : 𝒪[K], 0 < ‖x‖₊ ∧ ‖x‖₊ < 1 :=
   exists_norm_coe_lt_one K
+
+@[deprecated (since := "2026-10-31")] alias exists_nnnorm_lt_one := exists_nnNorm_lt_one
 
 end Valued.integer
 
@@ -159,7 +162,7 @@ lemma totallyBounded_iff_finite_residueField [(Valued.v : Valuation K Γ₀).Ran
       this, AddSubgroupClass.coe_norm, Set.image_univ, Set.mem_range, Set.iUnion_exists,
       Set.iUnion_iUnion_eq', Set.iUnion_subset_iff, Metric.vadd_closedBall, vadd_eq_add, add_zero]
     intro
-    exact (Metric.closedBall_subset_ball hn).trans (Set.subset_iUnion_of_subset _ le_rfl)
+    grw [hn, ← Set.subset_iUnion]
 
 end FiniteResidueField
 
@@ -223,7 +226,7 @@ lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X :=
   · intro w
     simp only [U]
     split_ifs with hw
-    · obtain ⟨b, hb⟩ := MonoidHom.mem_mrange.mp z.1.2
+    · obtain ⟨b, hb⟩ := MonoidHom.mem_mrange.mp z.val.property
       rw [← hb] at z0 ⊢
       simp only [← v.restrict_le_iff]
       refine Valued.isOpen_closedBall _ ?_
@@ -292,7 +295,7 @@ lemma isPrincipalIdealRing_of_compactSpace [hc : CompactSpace 𝒪[K]] :
 theorem _root_.Valuation.isNontrivial_iff_not_a_field {K Γ : Type*} [Field K]
     [LinearOrderedCommGroupWithZero Γ] (v : Valuation K Γ) :
     v.IsNontrivial ↔ IsLocalRing.maximalIdeal v.integer ≠ ⊥ := by
-  simp_rw [ne_eq, eq_bot_iff, v.isNontrivial_iff_exists_lt_one, IsConcreteLE.le_iff, Ideal.mem_bot,
+  simp_rw [ne_eq, eq_bot_iff, v.isNontrivial_iff_exists_lt_one, le_iff_mem_imp_mem, Ideal.mem_bot,
     not_forall, exists_prop, IsLocalRing.notMem_maximalIdeal.not_right,
     Valuation.Integer.not_isUnit_iff_valuation_lt_one]
   exact ⟨fun ⟨x, hx0, hx1⟩ ↦ ⟨⟨x, hx1.le⟩, by simp [Subtype.ext_iff, *]⟩,

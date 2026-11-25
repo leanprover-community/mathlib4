@@ -30,7 +30,7 @@ bijection `f : A ≃ B` such that for some `S : Finset G`, `f a ∈ S • a` for
 We take this as our definition as it is easier to work with. It is implemented as an element
 `PartialEquiv X X` with source `A` and target `B`.
 
-## Implementation Notes
+## Implementation notes
 
 * Equidecompositions are implemented as elements of `PartialEquiv X X` together with a
   `Finset` of elements of the acting group and a proof that every point in the source is moved
@@ -49,7 +49,6 @@ We take this as our definition as it is easier to work with. It is implemented a
   prove that its induced equivalence relation is equidecomposability.
 * Prove the definition of equidecomposition used here is equivalent to the more familiar one
   using partitions.
-
 -/
 
 @[expose] public section
@@ -111,7 +110,7 @@ theorem IsDecompOn.mono {f f' : X → X} {A A' : Set X} {S : Finset G} (h : IsDe
   exact h a (hA' ha)
 
 /-- The restriction of an equidecomposition as an equidecomposition. -/
-@[simps!]
+@[simps! -isSimp]
 def restr (f : Equidecomp X G) (A : Set X) : Equidecomp X G where
   toPartialEquiv := f.toPartialEquiv.restr A
   isDecompOn' := ⟨f.witness,

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Whiskering
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functors which reflect isomorphisms
 
@@ -65,7 +68,6 @@ instance reflectsIsomorphisms_comp (F : C ⥤ D) (G : D ⥤ E)
     have := isIso_of_reflects_iso (F.map f) G
     exact isIso_of_reflects_iso f F⟩
 
-set_option backward.defeqAttrib.useBackward true in
 lemma reflectsIsomorphisms_of_comp (F : C ⥤ D) (G : D ⥤ E)
     [(F ⋙ G).ReflectsIsomorphisms] : F.ReflectsIsomorphisms where
   reflects f _ := by

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Vector.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The `zipWith` operation on vectors.
 -/
@@ -22,7 +25,8 @@ section ZipWith
 variable {α β γ : Type*} {n : ℕ} (f : α → β → γ)
 
 /-- Apply the function `f : α → β → γ` to each corresponding pair of elements from two vectors. -/
-def zipWith : Vector α n → Vector β n → Vector γ n := fun x y => ⟨List.zipWith f x.1 y.1, by simp⟩
+def zipWith : Vector α n → Vector β n → Vector γ n := fun x y =>
+  ⟨List.zipWith f x.val y.val, by simp⟩
 
 @[simp]
 theorem zipWith_toList (x : Vector α n) (y : Vector β n) :

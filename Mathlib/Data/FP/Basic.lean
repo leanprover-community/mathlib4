@@ -13,6 +13,9 @@ public import Mathlib.Data.Semiquot
 
 import Mathlib.Algebra.Ring.Int.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Implementation of floating-point numbers (experimental).
 -/
@@ -137,11 +140,11 @@ def divNatLtTwoPow (n d : ℕ) : ℤ → Bool
 -- TODO(Mario): Prove these and drop 'unsafe'
 @[nolint docBlame, deprecated "no replacement" (since := "2026-10-02")]
 unsafe def ofPosRatDn (n : ℕ+) (d : ℕ+) : Float × Bool := by
-  let e₁ : ℤ := n.1.size - d.1.size - prec
-  obtain ⟨d₁, n₁⟩ := Int.shift2 d.1 n.1 (e₁ + prec)
+  let e₁ : ℤ := n.val.size - d.val.size - prec
+  obtain ⟨d₁, n₁⟩ := Int.shift2 d.val n.val (e₁ + prec)
   let e₂ := if n₁ < d₁ then e₁ - 1 else e₁
   let e₃ := max e₂ emin
-  obtain ⟨d₂, n₂⟩ := Int.shift2 d.1 n.1 (e₃ + prec)
+  obtain ⟨d₂, n₂⟩ := Int.shift2 d.val n.val (e₃ + prec)
   let r := mkRat n₂ d₂
   let m := r.floor
   refine (Float.finite Bool.false e₃ (Int.toNat m) ?_, r.den = 1)

@@ -9,11 +9,13 @@ public import Mathlib.Probability.Kernel.Composition.CompNotation
 public import Mathlib.Probability.Kernel.Composition.KernelLemmas
 public import Mathlib.Probability.Kernel.Composition.MeasureCompProd
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about the composition of a measure and a kernel
 
 Basic lemmas about the composition `κ ∘ₘ μ` of a kernel `κ` and a measure `μ`.
-
 -/
 
 public section

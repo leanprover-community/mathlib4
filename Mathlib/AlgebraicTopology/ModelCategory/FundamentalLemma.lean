@@ -18,8 +18,8 @@ to the quotient of `X ⟶ Y` by the homotopy relation (in this case,
 the left and right homotopy relations coincide).
 
 ## References
-* [Daniel G. Quillen, Homotopical algebra, I.1][Quillen1967]
 
+* [Daniel G. Quillen, Homotopical algebra, I.1][Quillen1967]
 -/
 
 @[expose] public section

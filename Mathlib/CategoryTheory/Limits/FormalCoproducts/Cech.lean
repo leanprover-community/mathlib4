@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 public import Mathlib.CategoryTheory.Limits.FormalCoproducts.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Cech object for formal coproducts
 
@@ -16,7 +19,6 @@ functor `cechFunctor : FormalCoproduct C ⥤ SimplicialObject (FormalCoproduct C
 which sends a formal coproduct of objects `U j` (for `j : ι`) to the simplicial object
 which sends `⦋n⦌` to the formal coproduct, indexed by `i : Fin (n + 1) → ι`,
 of the products of the objects `U (i a)` for all `a : Fin (n + 1)`.
-
 -/
 
 @[expose] public section
@@ -192,7 +194,6 @@ noncomputable def cech (U : FormalCoproduct.{w} C) :
   obj n := U.power (ToType n.unop)
   map f := U.mapPower f.unop.toOrderHom.toFun
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The functor `FormalCoproduct C ⥤ SimplicialObject (FormalCoproduct C)`
 which sends a formal coproduct to its Cech object. -/
 @[simps]

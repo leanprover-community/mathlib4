@@ -16,7 +16,7 @@ Let `R` be a commutative monoid with zero. A Dirichlet character `χ` of level `
 multiplicative character from `ZMod n` to `R` sending non-units to 0. We then obtain some properties
 of `toUnitHom χ`, the restriction of `χ` to a group homomorphism `(ZMod n)ˣ →* Rˣ`.
 
-Main definitions:
+Main definitions
 
 - `DirichletCharacter`: The type representing a Dirichlet character.
 - `changeLevel`: Extend the Dirichlet character χ of level `n` to level `m`, where `n` divides `m`.
@@ -51,7 +51,7 @@ lemma toUnitHom_inj (ψ : DirichletCharacter R n) : toUnitHom χ = toUnitHom ψ 
 lemma eval_modulus_sub (x : ZMod n) : χ (n - x) = χ (-x) := by simp
 
 lemma apply_ne_zero_iff [Nontrivial R] (a : ℤ) : χ a ≠ 0 ↔ IsCoprime a n := by
-  rw [MulChar.apply_ne_zero_iff, ZMod.coe_int_isUnit_iff_isCoprime, isCoprime_comm]
+  rw [MulChar.apply_ne_zero_iff, ZMod.isUnit_intCast_iff_isCoprime, isCoprime_comm]
 
 lemma apply_eq_zero_iff [Nontrivial R] (a : ℤ) : χ a = 0 ↔ ¬ IsCoprime a n := by
   rw [← (apply_ne_zero_iff χ a).not, ne_eq, not_not]

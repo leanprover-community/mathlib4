@@ -32,6 +32,7 @@ The prototypical example, proved in `CategoryTheory.Limits.FilteredColimitCommut
 is that when `C = Type`, filtered colimits commute with finite limits.
 
 ## References
+
 * [F. Borceux, *Handbook of Categorical Algebra 1*][borceux-vol1], Section 2.13
 * [Stacks: Filtered colimits](https://stacks.math.columbia.edu/tag/002W)
 -/
@@ -65,7 +66,6 @@ theorem map_id_right_eq_curry_swap_map {j j' : J} {f : j ⟶ j'} {k : K} :
 variable [HasLimitsOfShape J C]
 variable [HasColimitsOfShape K C]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The universal morphism
 $\colim_k \lim_j F(j,k) → \lim_j \colim_k F(j, k)$.
 -/
@@ -107,7 +107,6 @@ theorem ι_colimitLimitToLimitColimit_π (j) (k) :
   dsimp [colimitLimitToLimitColimit]
   simp
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The map `colimit_limit_to_limit_colimit` realized as a map of cones. -/
 @[simps]
 noncomputable def colimitLimitToLimitColimitCone (G : J ⥤ K ⥤ C) [HasLimit G] :

@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anne Baanen, Wen Yang
+Authors: Anne Baanen, Wen Yang, Nicola Falciola
 -/
 module
 
@@ -32,6 +32,7 @@ For `m : ℕ`, we introduce the notation `SL(m,R)` for the special linear group 
 `n = Fin m`, in the scope `MatrixGroups`.
 
 ## Implementation notes
+
 The inverse operation in the `SpecialLinearGroup` is defined to be the adjugate
 matrix, so that `SpecialLinearGroup n R` has a group structure for all `CommRing R`.
 
@@ -134,7 +135,7 @@ instance [Finite R] : Finite (SpecialLinearGroup n R) := Subtype.finite
 
 /-- The transpose of a matrix in `SL(n, R)` -/
 def transpose (A : SpecialLinearGroup n R) : SpecialLinearGroup n R :=
-  ⟨A.1.transpose, A.1.det_transpose ▸ A.2⟩
+  ⟨A.val.transpose, A.val.det_transpose ▸ A.property⟩
 
 @[inherit_doc]
 scoped postfix:1024 "ᵀ" => SpecialLinearGroup.transpose
@@ -143,8 +144,19 @@ section CoeLemmas
 
 variable (A B : SpecialLinearGroup n R)
 
-theorem coe_mk (A : Matrix n n R) (h : det A = 1) : ↑(⟨A, h⟩ : SpecialLinearGroup n R) = A :=
+/-- Make a `A : SpecialLinearGroup n R` from `A : Matrix n n R ` such that `det A = 1`.
+
+Use this definition instead of `(⟨A, h⟩ : SpecialLinearGroup n R)`. -/
+protected def mk (A : Matrix n n R) (h : det A = 1) : SpecialLinearGroup n R := ⟨A, h⟩
+
+@[simp]
+theorem coe_mk {A : Matrix n n R} (h : det A = 1) : SpecialLinearGroup.mk A h = A :=
   rfl
+
+@[simp]
+theorem mk_inj {A B : Matrix n n R} (hA : det A = 1) (hB : det B = 1) :
+    SpecialLinearGroup.mk A hA = .mk B hB ↔ A = B :=
+  Subtype.mk_eq_mk
 
 @[simp]
 theorem coe_inv : ↑ₘ(A⁻¹) = adjugate A :=
@@ -160,7 +172,10 @@ theorem coe_one : (1 : SpecialLinearGroup n R) = (1 : Matrix n n R) :=
 
 @[simp]
 theorem det_coe : det ↑ₘA = 1 :=
-  A.2
+  A.property
+
+@[simp]
+theorem mk_coe : .mk A A.det_coe = A := rfl
 
 @[simp]
 theorem coe_pow (m : ℕ) : ↑ₘ(A ^ m) = ↑ₘA ^ m :=
@@ -217,18 +232,117 @@ theorem toLin'_injective :
     Function.Injective ↑(toLin' : SpecialLinearGroup n R →* (n → R) ≃ₗ[R] n → R) := fun _ _ h =>
   Subtype.coe_injective <| Matrix.toLin'.injective <| LinearEquiv.toLinearMap_injective.eq_iff.mpr h
 
-variable {S : Type*} [CommRing S]
+variable {S T : Type*} [CommRing S] [CommRing T]
 
 /-- A ring homomorphism from `R` to `S` induces a group homomorphism from
 `SpecialLinearGroup n R` to `SpecialLinearGroup n S`. -/
-@[simps]
+@[simps!]
 def map (f : R →+* S) : SpecialLinearGroup n R →* SpecialLinearGroup n S where
-  toFun g :=
-    ⟨f.mapMatrix ↑ₘg, by
-      rw [← f.map_det]
-      simp [g.prop]⟩
+  toFun g := .mk (f.mapMatrix ↑ₘg)
+    (by rw [← f.map_det]; simp [g.prop])
   map_one' := Subtype.ext f.mapMatrix.map_one
   map_mul' x y := Subtype.ext <| f.mapMatrix.map_mul ↑ₘx ↑ₘy
+
+@[simp] lemma map_comp_map (f : R →+* S) (g : S →+* T) :
+    (map (n := n) g).comp (map f) = map (g.comp f) := rfl
+
+@[simp] lemma map_id : map (.id R) = .id (SpecialLinearGroup n R) := rfl
+
+section Equiv
+
+variable (n) (e : R ≃+* S) (g : S ≃+* T)
+
+/-- The equivalence between `SL n R` and `SL n S` given by `f : R ≃+* S`. -/
+def mapEquiv : SpecialLinearGroup n R ≃* SpecialLinearGroup n S where
+  toFun := map e
+  invFun := map e.symm
+  left_inv A := by ext; simp
+  right_inv A := by ext; simp
+  map_mul' := map_mul _
+
+@[simp] lemma coe_mapEquiv_apply (a : SpecialLinearGroup n R) :
+    (mapEquiv n e a : Matrix n n S) = e.mapMatrix (a : Matrix n n R) := rfl
+
+@[simp] lemma mapEquiv_refl : mapEquiv n (.refl R) = .refl (SpecialLinearGroup n R) := rfl
+
+@[simp] lemma symm_mapEquiv :
+    (mapEquiv n e).symm = mapEquiv n e.symm := rfl
+
+@[simp] lemma mapEquiv_trans_mapEquiv :
+    .trans (mapEquiv n e) (mapEquiv n g) = mapEquiv n (e.trans g) := rfl
+
+@[simp] lemma toMonoidHom_mapEquiv :
+    (mapEquiv n e : SpecialLinearGroup n R →* SpecialLinearGroup n S) = map e := rfl
+
+end Equiv
+
+section Reindex
+
+variable (R) {m o : Type*} [DecidableEq m] [Fintype m] [DecidableEq o] [Fintype o]
+
+/-- The equivalence between `SL m R` and `SL n R` given by an equivalence `e : m ≃ n`. -/
+@[simps! apply_coe]
+def reindex (e : m ≃ n) : SpecialLinearGroup m R ≃* SpecialLinearGroup n R where
+  toEquiv := (Matrix.reindex e e).subtypeEquiv fun _ ↦ by rw [det_reindex_self]
+  map_mul' A B := Subtype.ext (map_mul (reindexRingEquiv ..) A.val B.val)
+
+@[simp]
+theorem symm_reindex (e : m ≃ n) :
+    (reindex R e).symm = reindex R e.symm :=
+  rfl
+
+@[simp]
+theorem reindex_trans_reindex (e : m ≃ n) (e' : n ≃ o) :
+    .trans (reindex R e) (reindex R e') = reindex R (.trans e e') :=
+  rfl
+
+@[simp]
+theorem reindex_refl : reindex R (.refl n) = .refl (SpecialLinearGroup n R) :=
+  rfl
+
+theorem reindex_map (e : m ≃ n) (f : R →+* S) (A : SpecialLinearGroup m R) :
+    reindex S e (map f A) = map f (reindex R e A) :=
+  rfl
+
+theorem reindex_comp_map (e : m ≃ n) (f : R →+* S) :
+    (reindex S e : SpecialLinearGroup m S →* SpecialLinearGroup n S).comp (map f) =
+      (map f).comp (reindex R e) :=
+  rfl
+
+theorem reindex_trans_mapEquiv (e : m ≃ n) (f : R ≃+* S) :
+    (reindex R e).trans (mapEquiv n f) = (mapEquiv m f).trans (reindex S e) :=
+  rfl
+
+end Reindex
+
+section Prod
+
+variable (n R S)
+
+/-- The equivalence between `SL n (R × S)` and `SL n R × SL n S`. -/
+@[simps! apply symm_apply]
+def prodEquiv :
+    SpecialLinearGroup n (R × S) ≃* SpecialLinearGroup n R × SpecialLinearGroup n S where
+  __ := (map (RingHom.fst R S)).prod (map (RingHom.snd R S))
+  invFun A := ⟨(Matrix.prodRingEquiv n R S).symm ⟨A.fst, A.snd⟩, by
+    rw [det_prodRingEquiv_symm, A.fst.property, A.snd.property, Prod.mk_one_one]⟩
+
+end Prod
+
+section Pi
+
+variable (n) {ι : Type*} (R : ι → Type*) [Π i, CommRing (R i)]
+
+/-- The monoid equivalence between `SL n` of a product of rings,
+and the product of the `SL n` of each ring. -/
+@[simps!]
+def piEquiv : SpecialLinearGroup n (Π i, R i) ≃* Π i, SpecialLinearGroup n (R i) where
+  toFun A i := map (Pi.evalRingHom R i) A
+  invFun A := ⟨of fun a b i ↦ A i a b, funext fun i ↦
+    (RingHom.map_det (Pi.evalRingHom R i) (of fun a b i ↦ A i a b)).trans (A i).det_coe⟩
+  map_mul' A B := by ext; simp
+
+end Pi
 
 section center
 
@@ -263,7 +377,6 @@ theorem mem_center_iff {A : SpecialLinearGroup n R} :
   · suffices ↑ₘ(B * A) = ↑ₘ(A * B) from Subtype.val_injective this
     simpa only [coe_mul, ← hr] using! (scalar_commute (n := n) r (Commute.all r) B).symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An equivalence of groups, from the center of the special linear group to the roots of unity. -/
 @[simps]
 def center_equiv_rootsOfUnity' (i : n) :
@@ -275,14 +388,16 @@ def center_equiv_rootsOfUnity' (i : n) :
       replace hr' : A.val i i = r := by simp only [← hr', scalar_apply, diagonal_apply_eq]
       simp only [hr', hr]
   invFun a := ⟨⟨a • (1 : Matrix n n R), by aesop⟩,
-    Subgroup.mem_center_iff.mpr fun B ↦ Subtype.val_injective <| by simp [coe_mul]⟩
+    Subgroup.mem_center_iff.mpr fun _ ↦ Subtype.val_injective <|
+      ((coe_mul ..).trans (by simp)).trans (coe_mul ..).symm⟩
   left_inv A := by
     refine Subtype.ext <| Subtype.ext ?_
     obtain ⟨r, _, hr⟩ := mem_center_iff.mp A.property
     simpa [← hr, Submonoid.smul_def, Units.smul_def] using! smul_one_eq_diagonal r
   right_inv a := by
     obtain ⟨⟨a, _⟩, ha⟩ := a
-    exact SetCoe.ext <| Units.ext <| by simp
+    ext
+    simp
   map_mul' A B := by
     dsimp
     ext
@@ -328,13 +443,11 @@ instance : Coe (SpecialLinearGroup n ℤ) (SpecialLinearGroup n R) :=
 
 theorem coe_matrix_coe (g : SpecialLinearGroup n ℤ) :
     ↑(g : SpecialLinearGroup n R) = (↑g : Matrix n n ℤ).map (Int.castRingHom R) :=
-  map_apply_coe (Int.castRingHom R) g
+  rfl
 
 lemma map_intCast_injective [CharZero R] :
     Function.Injective ((↑) : SpecialLinearGroup n ℤ → SpecialLinearGroup n R) := fun g h ↦ by
-  simp_rw [ext_iff, map_apply_coe, RingHom.mapMatrix_apply, Int.coe_castRingHom,
-    Matrix.map_apply, Int.cast_inj]
-  tauto
+  simp [ext_iff]
 
 @[simp]
 lemma map_intCast_inj [CharZero R] {x y : SpecialLinearGroup n ℤ} :
@@ -371,30 +484,28 @@ section SpecialCases
 
 open scoped MatrixGroups
 
-set_option backward.isDefEq.respectTransparency false in
 theorem SL2_inv_expl_det (A : SL(2, R)) :
-    det ![![A.1 1 1, -A.1 0 1], ![-A.1 1 0, A.1 0 0]] = 1 := by
-  simpa [-det_coe, Matrix.det_fin_two, mul_comm] using A.2
+    det !![A.val 1 1, -A.val 0 1; -A.val 1 0, A.val 0 0] = 1 := by
+  simpa [-det_coe, det_fin_two, mul_comm] using A.property
 
 theorem SL2_inv_expl (A : SL(2, R)) :
-    A⁻¹ = ⟨![![A.1 1 1, -A.1 0 1], ![-A.1 1 0, A.1 0 0]], SL2_inv_expl_det A⟩ := by
+    A⁻¹ = .mk !![A.val 1 1, -A.val 0 1; -A.val 1 0, A.val 0 0] (SL2_inv_expl_det A) := by
   ext
-  have := Matrix.adjugate_fin_two A.1
-  rw [coe_inv, this]
-  simp
+  simp [adjugate_fin_two]
 
-set_option backward.isDefEq.respectTransparency false in
+protected theorem eta_fin_two (g : SL(2, R)) :
+    g = .mk !![g 0 0, g 0 1; g 1 0, g 1 1] (by simp [← Matrix.eta_fin_two]) :=
+  Subtype.ext (Matrix.eta_fin_two g.val)
+
 theorem fin_two_induction (P : SL(2, R) → Prop)
-    (h : ∀ (a b c d : R) (hdet : a * d - b * c = 1), P ⟨!![a, b; c, d], by rwa [det_fin_two_of]⟩)
-    (g : SL(2, R)) : P g := by
-  obtain ⟨m, hm⟩ := g
-  convert h (m 0 0) (m 0 1) (m 1 0) (m 1 1) (by rwa [det_fin_two] at hm)
-  ext i j; fin_cases i <;> fin_cases j <;> rfl
+    (h : ∀ (a b c d : R) (hdet : a * d - b * c = 1),
+    P (.mk !![a, b; c, d] (by rwa [det_fin_two_of]))) (g : SL(2, R)) : P g := by
+  rw [SpecialLinearGroup.eta_fin_two g]
+  exact h _ _ _ _ ((det_fin_two _).symm.trans g.property)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem fin_two_exists_eq_mk_of_apply_zero_one_eq_zero {R : Type*} [Field R] (g : SL(2, R))
     (hg : g 1 0 = 0) :
-    ∃ (a b : R) (h : a ≠ 0), g = (⟨!![a, b; 0, a⁻¹], by simp [h]⟩ : SL(2, R)) := by
+    ∃ (a b : R) (h : a ≠ 0), g = .mk !![a, b; 0, a⁻¹] (by simp [h]) := by
   induction g using Matrix.SpecialLinearGroup.fin_two_induction with | h a b c d h_det =>
   replace hg : c = 0 := by simpa using hg
   have had : a * d = 1 := by rwa [hg, mul_zero, sub_zero] at h_det
@@ -405,14 +516,14 @@ lemma isCoprime_row (A : SL(2, R)) (i : Fin 2) : IsCoprime (A i 0) (A i 1) := by
   refine match i with
   | 0 => ⟨A 1 1, -(A 1 0), ?_⟩
   | 1 => ⟨-(A 0 1), A 0 0, ?_⟩ <;>
-  · simp_rw [det_coe A ▸ det_fin_two A.1]
+  · simp_rw [det_coe A ▸ det_fin_two A.val]
     ring
 
 lemma isCoprime_col (A : SL(2, R)) (j : Fin 2) : IsCoprime (A 0 j) (A 1 j) := by
   refine match j with
   | 0 => ⟨A 1 1, -(A 0 1), ?_⟩
   | 1 => ⟨-(A 1 0), A 0 0, ?_⟩ <;>
-  · simp_rw [det_coe A ▸ det_fin_two A.1]
+  · simp_rw [det_coe A ▸ det_fin_two A.val]
     ring
 
 end SpecialCases
@@ -454,7 +565,7 @@ lemma exists_SL2_row {a b : R} (hab : IsCoprime a b) (i : Fin 2) :
 /-- A vector with coprime entries, right-multiplied by a matrix in `SL(2, R)`, has
 coprime entries. -/
 lemma vecMulSL {v : Fin 2 → R} (hab : IsCoprime (v 0) (v 1)) (A : SL(2, R)) :
-    IsCoprime ((v ᵥ* A.1) 0) ((v ᵥ* A.1) 1) := by
+    IsCoprime ((v ᵥ* A.val) 0) ((v ᵥ* A.val) 1) := by
   obtain ⟨g, hg⟩ := hab.exists_SL2_row 0
   have : v = g 0 := funext fun t ↦ by { fin_cases t <;> tauto }
   simpa only [this] using! isCoprime_row (g * A) 0
@@ -462,7 +573,7 @@ lemma vecMulSL {v : Fin 2 → R} (hab : IsCoprime (v 0) (v 1)) (A : SL(2, R)) :
 /-- A vector with coprime entries, left-multiplied by a matrix in `SL(2, R)`, has
 coprime entries. -/
 lemma mulVecSL {v : Fin 2 → R} (hab : IsCoprime (v 0) (v 1)) (A : SL(2, R)) :
-    IsCoprime ((A.1 *ᵥ v) 0) ((A.1 *ᵥ v) 1) := by
+    IsCoprime ((A.val *ᵥ v) 0) ((A.val *ᵥ v) 1) := by
   simpa only [← vecMul_transpose] using! hab.vecMulSL A.transpose
 
 end IsCoprime
@@ -474,18 +585,18 @@ section Action
 variable {F : Type*} [CommRing F] {ι : Type*} [DecidableEq ι] [Fintype ι]
 
 instance : DistribMulAction (Matrix.SpecialLinearGroup ι F) (ι → F) where
-  smul m v := m.1 • v
+  smul m v := m.val • v
   smul_zero _ := smul_zero (M := Matrix ι ι F) _
   smul_add _ := smul_add (M := Matrix ι ι F) _
   one_smul _ := one_smul (M := Matrix ι ι F) _
   mul_smul _ _ _ := SemigroupAction.mul_smul (α := Matrix ι ι F) _ _ _
 
 instance : SMulCommClass (Matrix.SpecialLinearGroup ι F) F (ι → F) where
-  smul_comm m k v := show m.1 • k • v = k • m.1 • v from smul_comm _ _ _
+  smul_comm m k v := show m.val • k • v = k • m.val • v from smul_comm _ _ _
 
 protected lemma SpecialLinearGroup.smul_def
     (m : Matrix.SpecialLinearGroup ι F) (v : ι → F) :
-    m • v = m.1 • v := rfl
+    m • v = m.val • v := rfl
 
 end Action
 
@@ -516,7 +627,7 @@ lemma transvection_smul_single_fst {i j : ι} (hij : i ≠ j) (b : F) :
 
 @[deprecated transvection_smul_single_fst +typeChanged (since := "2026-06-22")]
 lemma transvection_mulVec_single_self {i j : ι} (hij : i ≠ j) (b : F) :
-    (transvection hij b).1 *ᵥ (Pi.single i (1 : F)) = Pi.single i 1 := by
+    (transvection hij b).val *ᵥ (Pi.single i (1 : F)) = Pi.single i 1 := by
   rw [transvection_coe]
   simp [-mulVec_single, add_mulVec, single_mulVec_eq, hij]
 
@@ -528,7 +639,7 @@ lemma transvection_smul_single_snd {i j : ι} (hij : i ≠ j) (b : F) :
 
 @[deprecated transvection_smul_single_snd +typeChanged (since := "2026-06-22")]
 lemma transvection_mulVec_single_other {i j : ι} (hij : i ≠ j) (b : F) :
-    (transvection hij b).1 *ᵥ (Pi.single j (1 : F)) = Pi.single j 1 + b • Pi.single i 1 := by
+    (transvection hij b).val *ᵥ (Pi.single j (1 : F)) = Pi.single j 1 + b • Pi.single i 1 := by
   rw [transvection_coe]
   simp [-mulVec_single, add_mulVec, single_mulVec_eq]
 
@@ -590,29 +701,29 @@ open scoped MatrixGroups
 namespace SpecialLinearGroup
 
 /-- An element in SLₙ(F) induced by a diagonal matrix `1` on any other entries and `a`, `a⁻¹` on
-  positition `i` and `j` respectively where `i ≠ j`. -/
+  positions `i` and `j` respectively where `i ≠ j`. -/
 noncomputable def diag2n {ι : Type*} [Fintype ι] [DecidableEq ι] {i j : ι} (hij : i ≠ j) (a : F)
     (ha : a ≠ 0) : SpecialLinearGroup ι F :=
-  ⟨diagonal (fun k ↦ if k = i then a else if k = j then a⁻¹ else 1), by
+  .mk (diagonal (fun k ↦ if k = i then a else if k = j then a⁻¹ else 1)) (by
     simp [Finset.prod_ite, hij.symm, Finset.card_eq_one (s := {x : ι | x = i}).2 ⟨i, by grind⟩,
-      mul_inv_cancel₀ ha]⟩
+      mul_inv_cancel₀ ha])
 
 lemma diag2n_coe {ι : Type*} [Fintype ι] [DecidableEq ι] {i j : ι} (hij : i ≠ j) (a : F)
-    (ha : a ≠ 0) : (diag2n hij a ha).1 = diagonal (fun k ↦
+    (ha : a ≠ 0) : ↑(diag2n hij a ha) = diagonal (fun k ↦
       if k = i then a else if k = j then a⁻¹ else 1) := rfl
 
 /-- An element in SL₂(F) induced by a diagonal matrix with `a`, `a⁻¹` on
-  positition `0` and `1` respectively. -/
+  positions `0` and `1` respectively. -/
 noncomputable abbrev diag2 (a : F) (ha : a ≠ 0) : SL(2, F) :=
   diag2n zero_ne_one a ha
 
 lemma diag2_def {a : F} (ha : a ≠ 0) : diag2 a ha = diag2n zero_ne_one a ha := rfl
 
 lemma diag2_coe (a : F) (ha : a ≠ 0) :
-    (diag2 a ha).1 = diagonal (fun i ↦ match i with | 0 => a|1 => a⁻¹) := by simp [diag2n_coe]
+    (diag2 a ha).val = diagonal (fun i ↦ match i with | 0 => a|1 => a⁻¹) := by simp [diag2n_coe]
 
 lemma diag2_coe' {a : F} (ha : a ≠ 0) :
-    (diag2 a ha).1 = !![a, 0; 0, a⁻¹] := by
+    (diag2 a ha).val = !![a, 0; 0, a⁻¹] := by
   ext i j
   fin_cases i <;> fin_cases j <;> simp [diag2n_coe]
 
@@ -666,44 +777,41 @@ lemma diagonal_neZero (D : ι → F) (hD : det (diagonal D) = 1) (j : ι) :
     Finset.prod_insert (by grind), h, zero_mul] at hD
   exact zero_ne_one hD
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma diag_commute (i₀ : ι) (D : ι → F) (hD : det (diagonal D) = 1) :
     (({i | i ≠ i₀} : Finset ι) : Set ι).Pairwise (Function.onFun Commute fun i ↦
       if hi : i ≠ i₀ then diag2n hi (D i) (diagonal_neZero D hD i) else 1) := by
-  intro i1 hi1 i2 hi2 hi12
-  ext i j
-  simp [apply_dite, diag2n_coe]
-  split_ifs <;> simp [diagonal_apply]; grind
+  intro _ hi1 _ hi2 _
+  rw [Finset.mem_coe, Finset.mem_filter_univ] at hi1 hi2
+  ext
+  simp [hi1, hi2, diag2n_coe, diagonal_mul_diagonal, mul_comm,
+    -diagonal_mul, -mul_diagonal]
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma diag_eq_diag2n_prod (i₀ : ι) (D : ι → F) (hD : det (diagonal D) = 1) :
-    (⟨diagonal D, hD⟩ : SpecialLinearGroup ι F) =
-      Finset.noncommProd {i : ι | i ≠ i₀} (fun i ↦ if hi : i ≠ i₀ then
+    .mk (diagonal D) hD = Finset.noncommProd {i : ι | i ≠ i₀} (fun i ↦ if hi : i ≠ i₀ then
       diag2n hi (D i) (diagonal_neZero D hD i) else 1) (diag_commute i₀ D hD) := by
   set g : ι → ι → F := fun i k ↦ if k = i then D i else if k = i₀ then (D i)⁻¹ else 1 with hg_def
   apply coeMonoidHom_injective
   rw [Finset.map_noncommProd]
-  simp_rw [coeMonoidHom_apply, apply_dite, coe_one]
+  simp only [coeMonoidHom_apply, coe_mk, ne_eq, apply_dite]
   rw [Finset.noncommProd_congr (s₂ := {i | i ≠ i₀}) rfl (fun i hi ↦
-      (dite_eq_left (Finset.mem_filter.1 hi).2 : _ = (diag2n (Finset.mem_filter.1 hi).2 _ _).1))]
+      (dite_eq_left (Finset.mem_filter.1 hi).2 : _ = (diag2n (Finset.mem_filter.1 hi).2 _ _).val))]
   convert_to! _ = Finset.noncommProd {i | i ≠ i₀} (fun x ↦ diagonal (g x)) _
   simp_rw [← diagonalRingHom_apply]
-  rw [← Finset.map_noncommProd _ _ (fun _ _ _ _ _ ↦ Commute.all _ _), Finset.noncommProd_eq_prod]
-  rw [diag_decompose i₀ D hD]
+  rw [← Finset.map_noncommProd _ _ (fun _ _ _ _ _ ↦ Commute.all _ _), Finset.noncommProd_eq_prod,
+    diag_decompose i₀ D hD]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The `SpecialLinearGroup` analogue of
   `Matrix.Pivot.exists_list_transvec_mul_diagonal_mul_list_transvec`:
   every element of `SL(ι, F)` is a product of transvections,
   a diagonal matrix of determinant `1`, and transvections. -/
 theorem exists_list_transvec_mul_diagonal_mul_list_transvec (M : SpecialLinearGroup ι F) :
     ∃ (L L' : List (TransvectionStruct ι F)) (D : ι → F) (hD : det (diagonal D) = 1),
-      M = (L.map TransvectionStruct.toSpecialLinearGroup).prod * ⟨diagonal D, hD⟩ *
-        (L'.map TransvectionStruct.toSpecialLinearGroup).prod := by
-  obtain ⟨L, L', D, hM⟩ := Pivot.exists_list_transvec_mul_diagonal_mul_list_transvec M.1
-  refine ⟨L, L', D, by simpa [hM] using M.2, Subtype.ext <| ?_⟩
-  simp_rw [coe_mul, ← coeMonoidHom_apply, map_list_prod, List.map_map, Function.comp_def,
-    coeMonoidHom_apply, TransvectionStruct.toSpecialLinearGroup_coe, hM]
+      M = (L.map TransvectionStruct.toSpecialLinearGroup).prod *
+        .mk (diagonal D) hD * (L'.map TransvectionStruct.toSpecialLinearGroup).prod := by
+  obtain ⟨L, L', D, hM⟩ := Pivot.exists_list_transvec_mul_diagonal_mul_list_transvec M.val
+  refine ⟨L, L', D, by simpa [hM] using M.property, Subtype.ext <| ?_⟩
+  simp_rw [coe_mul, ← coeMonoidHom_apply, map_list_prod]
+  simp [Function.comp_def, hM]
 
 theorem diagonal_transvection_induction' [Nontrivial ι] (P : SpecialLinearGroup ι F → Prop)
     (M : SpecialLinearGroup ι F)
@@ -712,7 +820,7 @@ theorem diagonal_transvection_induction' [Nontrivial ι] (P : SpecialLinearGroup
     (hmul : ∀ A B, P A → P B → P (A * B)) : P M := by
   obtain ⟨i₀, j₀, hij₀⟩ := exists_pair_ne ι
   have hP1 : P 1 := transvection_coeff_zero (F := F) hij₀ ▸ htransvec i₀ j₀ hij₀ 0
-  have hdiagonal (D : ι → F) (hD : det (diagonal D) = 1) : P ⟨diagonal D, hD⟩ := by
+  have hdiagonal (D : ι → F) (hD : det (diagonal D) = 1) : P (.mk (diagonal D) hD) := by
     rw [diag_eq_diag2n_prod i₀ D hD]
     refine Finset.noncommProd_induction _ _ _ P hmul hP1 fun i hi => ?_
     simp [(Finset.mem_filter.1 hi).2, hdiag]
@@ -821,13 +929,11 @@ open Matrix Matrix.SpecialLinearGroup
 This element acts naturally on the Euclidean plane as a rotation about the origin by `π / 2`.
 
 This element also acts naturally on the hyperbolic plane as rotation about `i` by `π`. It
-represents the Mobiüs transformation `z ↦ -1/z` and is an involutive elliptic isometry. -/
-def S : SL(2, ℤ) :=
-  ⟨!![0, -1; 1, 0], by simp [Matrix.det_fin_two_of]⟩
+represents the Möbius transformation `z ↦ -1/z` and is an involutive elliptic isometry. -/
+def S : SL(2, ℤ) := .mk !![0, -1; 1, 0] (by simp [det_fin_two_of])
 
 /-- The matrix `T = [[1, 1], [0, 1]]` as an element of `SL(2, ℤ)`. -/
-def T : SL(2, ℤ) :=
-  ⟨!![1, 1; 0, 1], by simp [Matrix.det_fin_two_of]⟩
+def T : SL(2, ℤ) := .mk !![1, 1; 0, 1] (by simp [det_fin_two_of])
 
 @[simp]
 theorem coe_S : ↑S = !![0, -1; 1, 0] :=
@@ -839,18 +945,17 @@ lemma S_inv : S⁻¹ = -S := by decide
 theorem coe_T : ↑T = (!![1, 1; 0, 1] : Matrix _ _ ℤ) :=
   rfl
 
-theorem coe_T_inv : ↑(T⁻¹) = !![1, -1; 0, 1] := by simp [coe_inv, coe_T, adjugate_fin_two]
+theorem coe_T_inv : ↑(T⁻¹) = !![1, -1; 0, 1] := by simp [adjugate_fin_two]
 
-theorem coe_T_zpow (n : ℤ) : (T ^ n).1 = !![1, n; 0, 1] := by
+theorem coe_T_zpow (n : ℤ) : (T ^ n : SL(2, ℤ)) = !![1, n; 0, 1] := by
   induction n with
   | zero => rw [zpow_zero, coe_one, Matrix.one_fin_two]
   | succ n h =>
     simp_rw [zpow_add, zpow_one, coe_mul, h, coe_T, Matrix.mul_fin_two]
-    congrm !![_, ?_; _, _]
-    rw [mul_one, mul_one, add_comm]
+    grind only
   | pred n h =>
     simp_rw [zpow_sub, zpow_one, coe_mul, h, coe_T_inv, Matrix.mul_fin_two]
-    congrm !![?_, ?_; _, _] <;> ring
+    grind only
 
 @[simp]
 theorem T_pow_mul_apply_one (n : ℤ) (g : SL(2, ℤ)) : (T ^ n * g) 1 = g 1 := by
@@ -858,18 +963,16 @@ theorem T_pow_mul_apply_one (n : ℤ) (g : SL(2, ℤ)) : (T ^ n * g) 1 = g 1 := 
   simp [coe_T_zpow, Matrix.vecMul, dotProduct, Fin.sum_univ_succ]
 
 @[simp]
-theorem T_mul_apply_one (g : SL(2, ℤ)) : (T * g) 1 = g 1 := by
-  simpa using T_pow_mul_apply_one 1 g
+theorem T_mul_apply_one (g : SL(2, ℤ)) : (T * g) 1 = g 1 :=
+  T_pow_mul_apply_one 1 _
 
 @[simp]
 theorem T_inv_mul_apply_one (g : SL(2, ℤ)) : (T⁻¹ * g) 1 = g 1 := by
   simpa using T_pow_mul_apply_one (-1) g
 
-lemma S_mul_S_eq : (S : Matrix (Fin 2) (Fin 2) ℤ) * S = -1 := by
-  simp only [S, Int.reduceNeg, cons_mul, Nat.succ_eq_add_one, Nat.reduceAdd,
-    vecMul_cons, head_cons, zero_smul, tail_cons, neg_smul, one_smul, neg_cons, neg_zero, neg_empty,
-    empty_vecMul, add_zero, zero_add, empty_mul, Equiv.symm_apply_apply]
-  exact Eq.symm (eta_fin_two (-1))
+lemma S_mul_S_eq : S * S = -1 := by
+  ext i j
+  fin_cases i <;> fin_cases j <;> rfl
 
 lemma T_S_rel : S • S • S • T • S • T • S = T⁻¹ := by
   ext i j

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Hom.End
 public import Mathlib.Algebra.MonoidAlgebra.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Division of `AddMonoidAlgebra` by monomials
 
@@ -34,7 +37,6 @@ In order to apply in maximal generality (such as for `LaurentPolynomial`s), this
 the definition of `semigroupDvd`. The results in this file could be duplicated for
 `MonoidAlgebra` by using `g ∣ g'`, but this can't be done automatically, and in any case is not
 likely to be very useful.
-
 -/
 
 @[expose] public section

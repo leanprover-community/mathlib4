@@ -5,13 +5,14 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Indicator
 public import Mathlib.Analysis.Normed.Affine.AddTorsor
 public import Mathlib.Analysis.Normed.Group.FunctionSeries
 public import Mathlib.Analysis.SpecificLimits.Basic
-public import Mathlib.LinearAlgebra.AffineSpace.Ordered
-public import Mathlib.Topology.Algebra.Affine
 public import Mathlib.Topology.ContinuousMap.Algebra
+
+import Mathlib.Algebra.Order.Group.Indicator
+import Mathlib.LinearAlgebra.AffineSpace.Ordered
+import Mathlib.Topology.Algebra.Affine
 
 /-!
 # Urysohn's lemma
@@ -450,9 +451,9 @@ theorem exists_continuous_one_zero_of_isCompact_of_isGδ [RegularSpace X] [Local
   have hgmc : EqOn g 0 mᶜ := by
     intro x hx
     have B n : f n x = 0 := by
-      have : mᶜ ⊆ (U n ∩ interior m)ᶜ := by
-        simpa using inter_subset_right.trans interior_subset
-      exact fm n (this hx)
+      apply fm n
+      grw [inter_subset_right, interior_subset]
+      exact hx
     simp [g, B]
   have I n x : u n * f n x ≤ u n := mul_le_of_le_one_right (u_pos n).le (f_range n x).2
   have S x : Summable (fun n ↦ u n * f n x) := Summable.of_nonneg_of_le

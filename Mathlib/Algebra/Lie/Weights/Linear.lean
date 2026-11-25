@@ -27,6 +27,7 @@ have linear weights and provide typeclass instances in the two important cases t
 or `R` has characteristic zero.
 
 ## Main definitions
+
 * `LieModule.LinearWeights`: a typeclass encoding the fact that a given Lie module has linear
   weights, and furthermore that the weights vanish on the derived ideal.
 * `LieModule.instLinearWeightsOfCharZero`: a typeclass instance encoding the fact that for an
@@ -36,7 +37,6 @@ or `R` has characteristic zero.
 * `LieModule.exists_forall_lie_eq_smul`: existence of simultaneous
   eigenvectors from existence of simultaneous generalized eigenvectors for Noetherian Lie modules
   with linear weights.
-
 -/
 
 @[expose] public section

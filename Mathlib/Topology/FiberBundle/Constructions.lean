@@ -24,7 +24,6 @@ This file contains several standard constructions on fiber bundles:
 ## Tags
 
 fiber bundle, fibre bundle, fiberwise product, pullback
-
 -/
 
 @[expose] public section
@@ -55,7 +54,7 @@ def homeomorphProd : TotalSpace F (Trivial B F) ≃ₜ B × F :=
   (TotalSpace.toProd _ _).toHomeomorphOfIsInducing (isInducing_toProd B F)
 
 /-- Local trivialization for trivial bundle. -/
-@[simps!]
+@[simps! baseSet apply source target]
 def trivialization : Trivialization F (π F (Bundle.Trivial B F)) where
   toOpenPartialHomeomorph := (homeomorphProd B F).toOpenPartialHomeomorph
   baseSet := univ
@@ -106,13 +105,13 @@ variable [TopologicalSpace (TotalSpace F₁ E₁)] [TopologicalSpace (TotalSpace
 the induced topology from the diagonal embedding into `TotalSpace F₁ E₁ × TotalSpace F₂ E₂`. -/
 instance FiberBundle.Prod.topologicalSpace : TopologicalSpace (TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂)) :=
   TopologicalSpace.induced
-    (fun p ↦ ((⟨p.1, p.2.1⟩ : TotalSpace F₁ E₁), (⟨p.1, p.2.2⟩ : TotalSpace F₂ E₂)))
+    (fun p ↦ ((⟨p.proj, p.snd.1⟩ : TotalSpace F₁ E₁), (⟨p.proj, p.snd.2⟩ : TotalSpace F₂ E₂)))
     inferInstance
 
 /-- The diagonal map from the total space of the fiberwise product of two fiber bundles
 `E₁`, `E₂` into `TotalSpace F₁ E₁ × TotalSpace F₂ E₂` is an inducing map. -/
 theorem FiberBundle.Prod.isInducing_diag :
-    IsInducing (fun p ↦ (⟨p.1, p.2.1⟩, ⟨p.1, p.2.2⟩) :
+    IsInducing (fun p ↦ (⟨p.proj, p.snd.1⟩, ⟨p.proj, p.snd.2⟩) :
       TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂) → TotalSpace F₁ E₁ × TotalSpace F₂ E₂) :=
   ⟨rfl⟩
 
@@ -133,14 +132,14 @@ variable (e₁ : Trivialization F₁ (π F₁ E₁)) (e₂ : Trivialization F₂
 function for the construction `Trivialization.prod`, the induced
 trivialization for the fiberwise product of `E₁` and `E₂`. -/
 def Prod.toFun' : TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂) → B × F₁ × F₂ :=
-  fun p ↦ ⟨p.1, (e₁ ⟨p.1, p.2.1⟩).2, (e₂ ⟨p.1, p.2.2⟩).2⟩
+  fun p ↦ ⟨p.proj, (e₁ ⟨p.proj, p.snd.1⟩).2, (e₂ ⟨p.proj, p.snd.2⟩).2⟩
 
 variable {e₁ e₂}
 
 theorem Prod.continuous_to_fun : ContinuousOn (Prod.toFun' e₁ e₂)
     (π (F₁ × F₂) (E₁ ×ᵇ E₂) ⁻¹' (e₁.baseSet ∩ e₂.baseSet)) := by
   let f₁ : TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂) → TotalSpace F₁ E₁ × TotalSpace F₂ E₂ :=
-    fun p ↦ ((⟨p.1, p.2.1⟩ : TotalSpace F₁ E₁), (⟨p.1, p.2.2⟩ : TotalSpace F₂ E₂))
+    fun p ↦ ((⟨p.proj, p.snd.1⟩ : TotalSpace F₁ E₁), (⟨p.proj, p.snd.2⟩ : TotalSpace F₂ E₂))
   let f₂ : TotalSpace F₁ E₁ × TotalSpace F₂ E₂ → (B × F₁) × B × F₂ := fun p ↦ ⟨e₁ p.1, e₂ p.2⟩
   let f₃ : (B × F₁) × B × F₂ → B × F₁ × F₂ := fun p ↦ ⟨p.1.1, p.1.2, p.2.2⟩
   have hf₁ : Continuous f₁ := (Prod.isInducing_diag F₁ E₁ F₂ E₂).continuous
@@ -264,31 +263,26 @@ instance [∀ x : B, TopologicalSpace (E x)] : ∀ x : B', TopologicalSpace ((f 
 
 variable [TopologicalSpace B'] [TopologicalSpace (TotalSpace F E)]
 
--- adding `@[instance_reducible]` causes downstream breakage
-set_option warn.classDefReducibility false in
-/-- Definition of `Pullback.TotalSpace.topologicalSpace`, which we make irreducible. -/
-irreducible_def pullbackTopology : TopologicalSpace (TotalSpace F (f *ᵖ E)) :=
+/-- The topology on the total space of a pullback bundle is the coarsest topology for which both
+the projections to the base and the map to the original bundle are continuous. -/
+@[no_expose]
+instance Pullback.TotalSpace.topologicalSpace : TopologicalSpace (TotalSpace F (f *ᵖ E)) :=
   induced TotalSpace.proj ‹TopologicalSpace B'› ⊓
     induced (Pullback.lift f) ‹TopologicalSpace (TotalSpace F E)›
 
-/-- The topology on the total space of a pullback bundle is the coarsest topology for which both
-the projections to the base and the map to the original bundle are continuous. -/
-instance Pullback.TotalSpace.topologicalSpace : TopologicalSpace (TotalSpace F (f *ᵖ E)) :=
-  pullbackTopology F E f
-
 theorem Pullback.continuous_proj (f : B' → B) : Continuous (π F (f *ᵖ E)) := by
-  rw [continuous_iff_le_induced, Pullback.TotalSpace.topologicalSpace, pullbackTopology_def]
+  rw [continuous_iff_le_induced, Pullback.TotalSpace.topologicalSpace]
   exact inf_le_left
 
 theorem Pullback.continuous_lift (f : B' → B) : Continuous (@Pullback.lift B F E B' f) := by
-  rw [continuous_iff_le_induced, Pullback.TotalSpace.topologicalSpace, pullbackTopology_def]
+  rw [continuous_iff_le_induced, Pullback.TotalSpace.topologicalSpace]
   exact inf_le_right
 
 theorem inducing_pullbackTotalSpaceEmbedding (f : B' → B) :
     IsInducing (@pullbackTotalSpaceEmbedding B F E B' f) := by
   constructor
   simp_rw [instTopologicalSpaceProd, induced_inf, induced_compose,
-    Pullback.TotalSpace.topologicalSpace, pullbackTopology_def]
+    Pullback.TotalSpace.topologicalSpace]
   rfl
 
 section FiberBundle
@@ -298,7 +292,7 @@ variable [TopologicalSpace F] [TopologicalSpace B]
 theorem Pullback.continuous_totalSpaceMk [∀ x, TopologicalSpace (E x)] [FiberBundle F E]
     {f : B' → B} {x : B'} : Continuous (@TotalSpace.mk _ F (f *ᵖ E) x) := by
   simp only [continuous_iff_le_induced, Pullback.TotalSpace.topologicalSpace, induced_compose,
-    induced_inf, Function.comp_def, induced_const, top_inf_eq, pullbackTopology_def]
+    induced_inf, Function.comp_def, induced_const, top_inf_eq]
   exact (FiberBundle.totalSpaceMk_isInducing F E (f x)).eq_induced.le
 
 variable {E F}

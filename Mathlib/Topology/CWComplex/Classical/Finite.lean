@@ -15,6 +15,7 @@ finite. We define constructors with relaxed conditions for CW complexes of finit
 finite CW complexes.
 
 ## Main definitions
+
 * `RelCWComplex.FiniteDimensional`: a CW complex is finite dimensional if it has only finitely many
   nonempty indexing types for the cells.
 * `RelCWComplex.FiniteType`: a CW complex is of finite type if it has only finitely many cells in
@@ -22,6 +23,7 @@ finite CW complexes.
 * `RelCWComplex.Finite`: a CW complex is finite if it is finite dimensional and of finite type.
 
 ## Main statements
+
 * `RelCWComplex.mkFiniteType`: if we want to construct a CW complex of finite type, we can relax the
   condition `mapsTo`.
 * `RelCWComplex.mkFinite`: if we want to construct a finite CW complex, we can relax the condition
@@ -229,7 +231,7 @@ def RelCWComplex.mkFinite.{u} {X : Type u} [TopologicalSpace X] (C : Set X)
       have : n < N := Decidable.byContradiction fun h ↦ (hN n (Nat.ge_of_not_lt h)).false i
       exact subset_iUnion₂ (s := fun _ i ↦ (map n i) '' closedBall 0 1) this i
     simp_rw [inter_union_distrib_left, inter_iUnion]
-    exact h.2.union (isClosed_iUnion_of_finite (fun n ↦ isClosed_iUnion_of_finite (h.1 n.1)))
+    exact h.2.union (isClosed_iUnion_of_finite (fun n ↦ isClosed_iUnion_of_finite (h.1 n.val)))
   isClosedBase := isClosedBase
   union' := union'
 

@@ -19,8 +19,8 @@ import Mathlib.CategoryTheory.Abelian.Subobject
   that Grothendieck categories have an injective coseparator.
 
 ## References
-* [Peter J Freyd, *Abelian Categories* (Theorem 3.37)][freyd1964abelian]
 
+* [Peter J Freyd, *Abelian Categories* (Theorem 3.37)][freyd1964abelian]
 -/
 
 public section

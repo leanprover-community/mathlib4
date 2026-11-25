@@ -634,7 +634,6 @@ end IndepSet
 section IndepFun
 
 /-! ### Independence of random variables
-
 -/
 
 
@@ -840,7 +839,7 @@ lemma iIndepFun_iff_finset : iIndepFun f μ ↔ ∀ s : Finset ι, iIndepFun (s.
     intro s f hs
     have : ⋂ i ∈ s, f i = ⋂ i : s, f i := by ext; simp
     rw [← Finset.prod_coe_sort, this]
-    exact (h s).meas_iInter fun i ↦ hs i i.2
+    exact (h s).meas_iInter fun i ↦ hs i i.property
 
 alias ⟨iIndepFun.restrict, _⟩ := iIndepFun_iff_finset
 
