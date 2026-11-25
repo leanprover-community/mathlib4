@@ -79,6 +79,7 @@ theorem funMap_cast {n : ℕ} (f : L.Functions n) (x : Fin n → ∀ a, M a) :
       (fun a => funMap f fun i => x i a : (u : Filter α).Product M) := by
   apply funMap_quotient_mk'
 
+set_option backward.isDefEq.respectTransparency false in
 theorem term_realize_cast {β : Type*} (x : β → ∀ a, M a) (t : L.Term β) :
     (t.realize fun i => (x i : (u : Filter α).Product M)) =
       (fun a => t.realize fun i => x i a : (u : Filter α).Product M) := by
