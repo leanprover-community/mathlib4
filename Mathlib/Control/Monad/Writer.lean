@@ -20,9 +20,9 @@ computation progresses.
 
 ## References
 
-* https://hackage.haskell.org/package/mtl-2.2.1/docs/Control-Monad-Writer-Class.html
+* {url}`https://hackage.haskell.org/package/mtl-2.2.1/docs/Control-Monad-Writer-Class.html`
 * [Original Mark P Jones article introducing
-  `Writer`](https://web.cecs.pdx.edu/~mpj/pubs/springschool.html)
+`Writer`](https://web.cecs.pdx.edu/~mpj/pubs/springschool.html)
 -/
 
 @[expose] public section

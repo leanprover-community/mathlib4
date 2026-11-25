@@ -28,6 +28,7 @@ specific points as desired.
   three altitude feet of the triangle.
 
 ## References
+
 * Małgorzata Buba-Brzozowa, [The Monge Point and the 3(n+1) Point Sphere of an
   n-Simplex](https://pdfs.semanticscholar.org/6f8b/0f623459c76dac2e49255737f8f0f4725d16.pdf)
 -/

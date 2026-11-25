@@ -24,7 +24,7 @@ set_option doc.verso.suggestions false
 
 ## References
 
-* https://stacks.math.columbia.edu/tag/005T
+* {url}`https://stacks.math.columbia.edu/tag/005T`
 -/
 
 @[expose] public section

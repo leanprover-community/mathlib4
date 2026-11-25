@@ -23,6 +23,7 @@ in the extended nonnegative reals `ℝ≥0∞`, with `exp ⊥ = 0` and `exp ⊤ 
   the identities `exp (-x) = (exp x)⁻¹` and `exp (x + y) = exp x * exp y`.
 
 ## Tags
+
 ENNReal, EReal, exponential
 -/
 

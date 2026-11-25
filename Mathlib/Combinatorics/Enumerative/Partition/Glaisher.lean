@@ -35,7 +35,7 @@ $$`\prod_{i=1,i\nmid m}^\infty\frac{1}{1-X^i}=\prod_{i=0}^\infty (1+X^{i+1}+\cdo
 
 ## References
 
-https://en.wikipedia.org/wiki/Glaisher%27s\_theorem
+{url}`https://en.wikipedia.org/wiki/Glaisher%27s_theorem`
 -/
 
 public section

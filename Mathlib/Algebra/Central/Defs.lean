@@ -56,6 +56,7 @@ where `FiniteDimensional k D` is almost always assumed in most references, but s
 need this assumption.
 
 ## Tags
+
 central algebra, center, simple ring, central simple algebra
 -/
 

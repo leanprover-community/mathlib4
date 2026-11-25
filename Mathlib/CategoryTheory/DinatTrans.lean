@@ -25,8 +25,7 @@ ordinary natural transformations.
 
 ## References
 
-* [
-  https://ncatlab.org/nlab/show/dinatural+transformation](https://ncatlab.org/nlab/show/dinatural+transformation)
+* {url}`https://ncatlab.org/nlab/show/dinatural+transformation`
 -/
 
 @[expose] public section

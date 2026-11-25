@@ -20,6 +20,7 @@ This file proves results on the localization of rings (monoids with zeros) over 
 
 
 ## Tags
+
 localization, Ore, non-commutative
 -/
 

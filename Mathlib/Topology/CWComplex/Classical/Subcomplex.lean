@@ -18,6 +18,7 @@ The definition of subcomplexes is in the file `Mathlib/Topology/CWComplex/Classi
   (relative) CW complex.
 
 ## References
+
 * [K. Jänich, *Topology*][Janich1984]
 -/
 

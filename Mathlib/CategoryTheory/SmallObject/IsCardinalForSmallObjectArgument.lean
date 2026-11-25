@@ -56,7 +56,7 @@ pushouts of coproducts of morphisms in `I`.
 
 ## References
 
-* https://ncatlab.org/nlab/show/small+object+argument
+* {url}`https://ncatlab.org/nlab/show/small+object+argument`
 -/
 
 @[expose] public section

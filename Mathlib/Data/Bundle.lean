@@ -40,7 +40,7 @@ general, the constructions of fiber bundles we will make will be of this form.
 
 ## References
 
-* https://en.wikipedia.org/wiki/Bundle\_(mathematics)
+* {url}`https://en.wikipedia.org/wiki/Bundle_(mathematics)`
 -/
 
 @[expose] public section

@@ -33,7 +33,7 @@ like `pairwise_intersections` and `equalizer_products`.
 
 ## References
 
-* This is the definition Lurie uses in \[Spectral Algebraic Geometry\]\[LurieSAG\].
+* This is the definition Lurie uses in [Spectral Algebraic Geometry][LurieSAG].
 -/
 
 @[expose] public section
