@@ -9,6 +9,9 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.HomotopyCat
 public import Mathlib.CategoryTheory.Functor.CurryingThree
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Cat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The homotopy category functor is monoidal
 

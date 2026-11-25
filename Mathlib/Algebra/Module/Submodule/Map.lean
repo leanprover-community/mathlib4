@@ -582,7 +582,7 @@ theorem mem_map_equiv {e : M ≃ₛₗ[τ₁₂] M₂} {x : M₂} :
 
 theorem map_equiv_eq_comap_symm (e : M ≃ₛₗ[τ₁₂] M₂) (K : Submodule R M) :
     K.map (e : M →ₛₗ[τ₁₂] M₂) = K.comap (e.symm : M₂ →ₛₗ[τ₂₁] M) :=
-  Submodule.ext fun _ => by rw [mem_map_equiv, mem_comap, LinearEquiv.coe_coe]
+  Submodule.ext fun _ => by rw [mem_map_equiv, mem_comap, LinearEquiv.coe_toLinearMap]
 
 theorem comap_equiv_eq_map_symm (e : M ≃ₛₗ[τ₁₂] M₂) (K : Submodule R₂ M₂) :
     K.comap (e : M →ₛₗ[τ₁₂] M₂) = K.map (e.symm : M₂ →ₛₗ[τ₂₁] M) :=
@@ -605,7 +605,7 @@ theorem orderIsoMapComap_symm_apply' (e : M ≃ₛₗ[τ₁₂] M₂) (p : Submo
 
 theorem inf_comap_le_comap_add (f₁ f₂ : M →ₛₗ[τ₁₂] M₂) :
     comap f₁ q ⊓ comap f₂ q ≤ comap (f₁ + f₂) q := by
-  simp only [IsConcreteLE.le_iff, mem_comap, mem_inf, LinearMap.add_apply]
+  simp only [le_iff_mem_imp_mem, mem_comap, mem_inf, LinearMap.add_apply]
   exact fun _ h ↦ add_mem h.1 h.2
 
 lemma surjOn_iff_le_map [RingHomSurjective τ₁₂] {f : M →ₛₗ[τ₁₂] M₂} {p : Submodule R M}
@@ -626,7 +626,7 @@ variable (p : Submodule R M) (q : Submodule R₂ M₂)
 variable (pₗ : Submodule S N) (qₗ : Submodule S N₂)
 
 theorem comap_le_comap_smul (f : M →ₛₗ[τ₁₂] M₂) (c : R₂) : comap f q ≤ comap (c • f) q := by
-  simp only [IsConcreteLE.le_iff, mem_comap, LinearMap.smul_apply]
+  simp only [le_iff_mem_imp_mem, mem_comap, LinearMap.smul_apply]
   exact fun _ h ↦ smul_mem _ _ h
 
 theorem map_smul_le_map [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) (c : R₂) :
@@ -776,14 +776,14 @@ def submoduleMap (p : Submodule R M) : p ≃ₛₗ[σ₁₂] ↥(p.map (e : M �
         rw [Submodule.mem_map] at hy
         rcases hy with ⟨x, hx, hxy⟩
         subst hxy
-        simp only [symm_apply_apply, coe_coe, hx]⟩
+        simp only [symm_apply_apply, coe_toLinearMap, hx]⟩
     left_inv := fun x => by
       simp only [LinearMap.domRestrict_apply, LinearMap.codRestrict_apply, LinearMap.toFun_eq_coe,
-        LinearEquiv.coe_coe, LinearEquiv.symm_apply_apply, SetLike.eta]
+        coe_toLinearMap, LinearEquiv.symm_apply_apply, SetLike.eta]
     right_inv := fun y => by
       apply SetCoe.ext
       simp only [LinearMap.domRestrict_apply, LinearMap.codRestrict_apply, LinearMap.toFun_eq_coe,
-        LinearEquiv.coe_coe, LinearEquiv.apply_symm_apply] }
+        coe_toLinearMap, LinearEquiv.apply_symm_apply] }
 
 @[simp]
 theorem submoduleMap_apply (p : Submodule R M) (x : p) : ↑(e.submoduleMap p x) = e x :=

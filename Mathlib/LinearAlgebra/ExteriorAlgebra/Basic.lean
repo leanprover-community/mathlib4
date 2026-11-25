@@ -41,7 +41,7 @@ of the exterior algebra.
 
 * `ιMulti` is the `AlternatingMap` corresponding to the wedge product of `ι R m` terms.
 
-## Implementation details
+## Implementation notes
 
 The exterior algebra of `M` is constructed as simply `CliffordAlgebra (0 : QuadraticForm R M)`,
 as this avoids us having to duplicate API.

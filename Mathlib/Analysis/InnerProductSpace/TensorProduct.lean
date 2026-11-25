@@ -20,7 +20,7 @@ This file provides the inner product space structure on tensor product spaces.
 We define the inner product on `E ⊗ F` by `⟪a ⊗ₜ b, c ⊗ₜ d⟫ = ⟪a, c⟫ * ⟪b, d⟫`, when `E` and `F` are
 inner product spaces.
 
-## Main definitions:
+## Main definitions
 
 * `TensorProduct.instNormedAddCommGroup`: the normed additive group structure on tensor products,
   where `‖x ⊗ₜ y‖ = ‖x‖ * ‖y‖`.
@@ -40,7 +40,7 @@ inner product spaces.
 * `OrthonormalBasis.tensorProduct`: the orthonormal basis of the tensor product of two orthonormal
   bases.
 
-## TODO:
+## TODO
 
 * Define the normed space without needing inner products, this should be analogous to
   `Mathlib/Analysis/NormedSpace/PiTensorProduct/InjectiveSeminorm.lean`.

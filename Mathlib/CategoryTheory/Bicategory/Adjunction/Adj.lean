@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Bicategory.Adjunction.Mate
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The bicategory of adjunctions in a bicategory
 

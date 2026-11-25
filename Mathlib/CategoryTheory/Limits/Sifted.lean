@@ -10,9 +10,9 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Bifunctor
 public import Mathlib.CategoryTheory.Monoidal.Closed.Types
 public import Mathlib.CategoryTheory.Monoidal.ExternalProduct.Basic
 public import Mathlib.CategoryTheory.Monoidal.Limits.Preserves
-public import Mathlib.CategoryTheory.Products.Associator
 
 import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
+import Mathlib.CategoryTheory.Products.Associator
 
 /-!
 # Sifted categories
@@ -22,6 +22,7 @@ Sifted categories can be characterized as those such that the colimit functor `(
 preserves finite products. We achieve this characterization in this file.
 
 ## Main results
+
 - `isSifted_of_hasBinaryCoproducts_and_nonempty`: A nonempty category with binary coproducts is
   sifted.
 - `IsSifted.colimPreservesFiniteProductsOfIsSifted`: The `Type`-valued colimit functor for sifted
@@ -32,6 +33,7 @@ preserves finite products. We achieve this characterization in this file.
   category is itself sifted.
 
 ## References
+
 - [nLab, *Sifted category*](https://ncatlab.org/nlab/show/sifted+category)
 - [*Algebraic Theories*, Chapter 2.][Adamek_Rosicky_Vitale_2010]
 -/

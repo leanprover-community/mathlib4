@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
 public import Mathlib.Algebra.Homology.DerivedCategory.SingleTriangle
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Ext class of a short exact sequence
 

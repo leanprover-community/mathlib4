@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory.PreservesLimits
 public import Mathlib.CategoryTheory.ObjectProperty.Local
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Presheaves of types which preserves a limit
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.ShortComplex.Homology
 public import Mathlib.CategoryTheory.Preadditive.Opposite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Homology of preadditive categories
 

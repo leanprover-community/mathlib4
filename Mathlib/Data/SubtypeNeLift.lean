@@ -9,6 +9,9 @@ public import Mathlib.Data.Subtype
 
 import Mathlib.Util.CompileInductive
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extending a function from the complement of a singleton
 

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.GradedMulAction
 public import Mathlib.Algebra.Module.BigOperators
 public import Mathlib.RingTheory.GradedAlgebra.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Graded Module
 

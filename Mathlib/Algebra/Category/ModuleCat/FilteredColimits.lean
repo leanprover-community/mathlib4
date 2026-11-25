@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Category.Grp.FilteredColimits
 public import Mathlib.Algebra.Category.ModuleCat.Colimits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The forgetful functor from `R`-modules preserves filtered colimits.
 

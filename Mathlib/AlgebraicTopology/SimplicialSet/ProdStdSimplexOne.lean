@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.ProdStdSimplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplexOne
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Binary products `Δ[n] ⊗ Δ[1]`
 

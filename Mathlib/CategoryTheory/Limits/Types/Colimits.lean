@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 public import Mathlib.CategoryTheory.Limits.Types.ColimitType
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Colimits in the category of types
 

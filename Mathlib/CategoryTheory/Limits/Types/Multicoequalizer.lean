@@ -12,6 +12,9 @@ public import Mathlib.CategoryTheory.Types.Set
 public import Mathlib.Data.Set.BooleanAlgebra
 public import Mathlib.Order.CompleteLattice.MulticoequalizerDiagram
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Multicoequalizers in the category of types
 

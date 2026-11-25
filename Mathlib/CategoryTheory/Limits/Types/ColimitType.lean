@@ -27,6 +27,7 @@ that when `w₁ = w₀`, it is equivalent to saying that the corresponding cocon
 in a categorical sense is a colimit.
 
 ## TODO
+
 * refactor `DirectedSystem` and the construction of colimits in `Type`
   by using `Functor.ColimitType`.
 * add a similar API for limits in `Type`?

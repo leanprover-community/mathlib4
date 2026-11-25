@@ -116,7 +116,7 @@ theorem of_fintype_basis [Fintype ι] :
         Module.Basis.span_eq, b.linearIndependent]
   · intro x
     -- simp? [Fintype.linearCombination_apply] says:
-    simp only [LinearEquiv.ofBijective_apply, LinearMap.coe_comp, LinearEquiv.coe_coe,
+    simp only [LinearEquiv.ofBijective_apply, LinearMap.coe_comp, LinearEquiv.coe_toLinearMap,
       Function.comp_apply, Fintype.linearCombination_apply]
     congr
     ext i

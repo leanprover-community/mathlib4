@@ -17,14 +17,14 @@ the data of objects `Dⱼ` and natural maps `sⱼ : Dⱼ ⟶ X` that make `X` th
 (See `Mathlib/CategoryTheory/Presentable/ColimitPresentation.lean` for the construction of a
 presentation of a colimit of objects that are equipped with presentations.)
 
-## Main definitions:
+## Main definitions
 
 - `CategoryTheory.Limits.ColimitPresentation`: A colimit presentation of `X` over `J` is a diagram
   `{Dᵢ}` in `C` and natural maps `sᵢ : Dᵢ ⟶ X` making `X` into the colimit of the `Dᵢ`.
 - `CategoryTheory.Limits.LimitPresentation`: A limit presentation of `X` over `J` is a diagram
   `{Dᵢ}` in `C` and natural maps `sᵢ : X ⟶ Dᵢ` making `X` into the limit of the `Dᵢ`.
 
-## TODOs:
+## TODO
 
 - Refactor `TransfiniteCompositionOfShape` so that it extends `ColimitPresentation`.
 -/
