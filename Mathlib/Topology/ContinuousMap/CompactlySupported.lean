@@ -65,8 +65,8 @@ class CompactlySupportedContinuousMapClass (F : Type*) (α β : outParam Type*)
 
 export CompactlySupportedContinuousMapClass (hasCompactSupport)
 
-/-- Coerce a bundled morphism with a `CompactlySupportedContinuousMapClass` instance
-to a `CompactlySupportedContinuousMap`. -/
+/-- Turn a bundled morphism with a `CompactlySupportedContinuousMapClass` instance
+into a `CompactlySupportedContinuousMap`. -/
 def CompactlySupportedContinuousMap.ofClass [Zero β] [TopologicalSpace β] [FunLike F α β]
     [CompactlySupportedContinuousMapClass F α β] (f : F) :
     C_c(α, β) where
