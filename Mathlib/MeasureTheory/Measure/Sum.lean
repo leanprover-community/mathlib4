@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.Filter
+public import Mathlib.MeasureTheory.Measure.CompleteLattice
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
@@ -152,9 +152,5 @@ theorem sum_add_sum (μ ν : ι → Measure α) : sum μ + sum ν = sum fun n =>
     sum (Function.extend f μ 0) = sum μ := by
   ext s hs
   simp [*, Function.apply_extend (fun μ : Measure α ↦ μ s)]
-
-lemma _root_.MeasureTheory.NullMeasurableSet.of_sum_measure
-    (hs : NullMeasurableSet s (sum μ)) (i : ι) : NullMeasurableSet s (μ i) :=
-  hs.mono (le_sum μ i)
 
 end MeasureTheory.Measure
