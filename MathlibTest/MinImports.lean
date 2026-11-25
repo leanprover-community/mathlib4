@@ -132,6 +132,7 @@ warning: Imports increased to
 
 New imports: [Mathlib.Data.Int.Notation]
 
+
 Note: This linter can be disabled with `set_option linter.minImports false`
 -/
 #guard_msgs in
@@ -150,6 +151,7 @@ warning: Imports increased to
 
 New imports: [Mathlib.Data.Int.Notation]
 
+
 Note: This linter can be disabled with `set_option linter.minImports false`
 -/
 #guard_msgs in
@@ -161,6 +163,7 @@ warning: Imports increased to
 [Mathlib.Tactic.Linter.MinImports]
 
 New imports: [Mathlib.Tactic.Linter.MinImports]
+
 
 Note: This linter can be disabled with `set_option linter.minImports false`
 -/
@@ -174,6 +177,7 @@ warning: Imports increased to
 New imports: [Mathlib.Tactic.NormNum.Basic]
 
 Now redundant: [Mathlib.Tactic.Linter.MinImports]
+
 
 Note: This linter can be disabled with `set_option linter.minImports false`
 -/
