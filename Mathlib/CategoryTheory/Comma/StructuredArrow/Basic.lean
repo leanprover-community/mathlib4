@@ -237,6 +237,13 @@ lemma mk_surjective (f : StructuredArrow S T) :
     ∃ (Y : C) (g : S ⟶ T.obj Y), f = mk g :=
   ⟨_, _, eq_mk f⟩
 
+@[simp, grind =]
+lemma _root_.CategoryTheory.ObjectProperty.StructuredArrow.hom_comp_right_hom
+    {K : Type*} [Category* K] {P : ObjectProperty K} {X : K}
+    {x y : StructuredArrow X P.ι} (f : x ⟶ y) :
+    x.hom ≫ f.right.hom = y.hom := by
+  simpa using f.w
+
 /-- A morphism between source objects `S ⟶ S'`
 contravariantly induces a functor between structured arrows,
 `StructuredArrow S' T ⥤ StructuredArrow S T`.
@@ -681,6 +688,13 @@ def eta (f : CostructuredArrow S T) : f ≅ mk f.hom :=
 lemma mk_surjective (f : CostructuredArrow S T) :
     ∃ (Y : C) (g : S.obj Y ⟶ T), f = mk g :=
   ⟨_, _, eq_mk f⟩
+
+@[simp, grind =]
+lemma _root_.CategoryTheory.ObjectProperty.CostructuredArrow.left_hom_comp_hom
+    {K : Type*} [Category* K] {P : ObjectProperty K} {X : K}
+    {x y : CostructuredArrow P.ι X} (f : x ⟶ y) :
+    f.left.hom ≫ y.hom = x.hom := by
+  simpa using f.w
 
 /-- A morphism between target objects `T ⟶ T'`
 covariantly induces a functor between costructured arrows,

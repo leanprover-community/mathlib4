@@ -65,10 +65,8 @@ public instance (X : Inserter F G)
     obtain ⟨j, u, h⟩ := IsCardinalPresentable.exists_eq_of_isColimit' κ hcolimG
       (f₁ := F.map f' ≫ (B.obj i).hom) (f₂ := X.hom ≫ G.map f') (by dsimp; grind)
     refine ⟨j, ⟨f' ≫ (B.map u).hom, by grind⟩, ?_⟩
-    · ext
-      have := congr($(b.ι.naturality u).hom)
-      dsimp at this ⊢
-      grind
+    ext
+    simp [dsimp% congr($(b.ι.naturality u).hom), hf']
   · obtain ⟨j, u, hu⟩ := IsCardinalPresentable.exists_eq_of_isColimit' κ hcolim
       (f₁ := f₁.hom) (f₂ := f₂.hom) congr($(h).hom)
     exact ⟨j, u, by grind⟩
@@ -161,13 +159,6 @@ structure PartialChainUpTo (Λ : Type*) [Preorder Λ] [SuccOrder Λ]
     ψ j l = F.map (ξ.map (homOfLE hjk)).left.hom ≫ ψ k l
   t₂ (j k l : Λ) (hjk : j < k := by valid) (hkl : k ≤ l := by valid) (hl : l ≤ i := by valid) :
     ψ j l = ψ j k ≫ G.map (ξ.map (homOfLE hkl)).left.hom
-
-/-- A small helper that powers up some `simp` and `grind` calls troughout the file -/
-@[simp, grind =]
-lemma helper {K : Type*} [Category* K] {P : ObjectProperty K} {X : K}
-    {x y : CostructuredArrow P.ι X} (f : x ⟶ y) :
-    f.left.hom ≫ y.hom = x.hom := by
-  simpa using f.w
 
 variable (Λ : Type*)
 
