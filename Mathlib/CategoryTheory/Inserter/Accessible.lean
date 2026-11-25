@@ -119,47 +119,6 @@ the strategy is to encode the partial stages of the induction as a presheaf of t
 steps as a `Functor.WellOrderInductionData`, which will let us extract a section
 of the presheaf from which we can extract the desired chain. -/
 
-/-- A structure that encodes the chain to be constructed
-Lemma 4.5 of [positselski2024].
-
-To realize the induction, we transform `j ↦ PartialChainUpTo … j` into a
-presheaf on `j` so that we can use `Functor.WellOrderInductionData`.
-From a section of the presheaf, we can extract the chain out of `Λ` that we are looking for. -/
-@[ext]
-structure PartialChainUpTo (Λ : Type*) [Preorder Λ] [SuccOrder Λ]
-    (E : Inserter F G) (i : Λ) where
-  /-- Corresponds to all the previously constructed ξᵢ's -/
-  ξ : Set.Iic i ⥤ CostructuredArrow (isCardinalPresentable K κ).ι E.obj
-  /-- A structure map ψⱼ : F.obj ξⱼ ⟶ G.obj ξₖ for all j < k ≤ i.
-  In particular, this bundles a map F.obj ξᵢ₋₁ ⟶ G.obj ξᵢ when indices
-  allow it. -/
-  ψ (j k : Λ) (hj : j < k) (hk : k ≤ i) :
-    F.obj (ξ.obj ⟨j, Set.mem_Iic.mpr <| hj.le.trans hk⟩).left.obj ⟶
-      G.obj (ξ.obj ⟨k, Set.mem_Iic.mpr hk⟩).left.obj
-  sq₁ (j : Λ) (hj : j < i) :
-    ψ j i hj le_rfl ≫ G.map (ξ.obj ⟨i, Set.mem_Iic.mpr le_rfl⟩).hom =
-    F.map (ξ.obj ⟨j, Set.mem_Iic.mpr hj.le⟩).hom ≫ E.hom
-  t₁ (j k l : Λ) (hjk : j ≤ k) (hkl : k < l) (hl : l ≤ i) :
-    ψ j l (by grind) hl =
-      F.map (ξ.map (homOfLE hjk)).left.hom ≫ ψ k l hkl (by grind)
-  t₂ (j k l : Λ) (hjk : j < k) (hkl : k ≤ l) (hl : l ≤ i) :
-    ψ j l (by grind) hl =
-      ψ j k hjk (by grind) ≫ G.map (ξ.map (homOfLE hkl)).left.hom
-
-
-/-- A small helper that powers up some `simp` and `grind` calls troughout the file -/
-@[simp, grind =]
-lemma helper {K : Type*} [Category* K] {P : ObjectProperty K} {X : K}
-    {x y : CostructuredArrow P.ι X} (f : x ⟶ y) :
-    f.left.hom ≫ y.hom = x.hom := by
-  simpa using f.w
-
-variable (Λ : Type*)
-
-namespace PartialChainUpTo
-
-open Order (succ)
-
 /- In the following, we are going to move very frequently between `Λ`, `Set.Iio _` and `Set.Iic _`.
 Most of the time, this requires term annotations and rather boring grind-able proof obligations
 so we provide a small discharge tactic that handle all of these and
@@ -182,6 +141,43 @@ local macro "iio% " i:term:max j:term:max : term => `((⟨$i, by valid⟩ : Set.
 /-- `iic% i j` builds i as a term of `Set.Iic j` using `valid` to discharge the side goal. -/
 local macro "iic% " i:term:max j:term:max : term => `((⟨$i, by valid⟩ : Set.Iic $j))
 
+/-- A structure that encodes the chain to be constructed
+Lemma 4.5 of [positselski2024].
+
+To realize the induction, we transform `j ↦ PartialChainUpTo … j` into a
+presheaf on `j` so that we can use `Functor.WellOrderInductionData`.
+From a section of the presheaf, we can extract the chain out of `Λ` that we are looking for. -/
+@[ext]
+structure PartialChainUpTo (Λ : Type*) [Preorder Λ] [SuccOrder Λ]
+    (E : Inserter F G) (i : Λ) where
+  /-- Corresponds to all the previously constructed ξᵢ's -/
+  ξ : Set.Iic i ⥤ CostructuredArrow (isCardinalPresentable K κ).ι E.obj
+  /-- A structure map ψⱼ : F.obj ξⱼ ⟶ G.obj ξₖ for all j < k ≤ i.
+  In particular, this bundles a map F.obj ξᵢ₋₁ ⟶ G.obj ξᵢ when indices
+  allow it. -/
+  ψ (j k : Λ) (hj : j < k := by valid) (hk : k ≤ i := by valid) :
+    F.obj (ξ.obj (iic% j i)).left.obj ⟶ G.obj (ξ.obj (iic% k i)).left.obj
+  sq₁ (j : Λ) (hj : j < i := by valid) :
+    ψ j i ≫ G.map (ξ.obj (iic% i i)).hom = F.map (ξ.obj (iic% j i)).hom ≫ E.hom
+  t₁ (j k l : Λ) (hjk : j ≤ k := by valid) (hkl : k < l := by valid) (hl : l ≤ i := by valid) :
+    ψ j l = F.map (ξ.map (homOfLE hjk)).left.hom ≫ ψ k l
+  t₂ (j k l : Λ) (hjk : j < k := by valid) (hkl : k ≤ l := by valid) (hl : l ≤ i := by valid) :
+    ψ j l = ψ j k ≫ G.map (ξ.map (homOfLE hkl)).left.hom
+
+
+/-- A small helper that powers up some `simp` and `grind` calls troughout the file -/
+@[simp, grind =]
+lemma helper {K : Type*} [Category* K] {P : ObjectProperty K} {X : K}
+    {x y : CostructuredArrow P.ι X} (f : x ⟶ y) :
+    f.left.hom ≫ y.hom = x.hom := by
+  simpa using f.w
+
+variable (Λ : Type*)
+
+namespace PartialChainUpTo
+
+open Order (succ)
+
 variable [LinearOrder Λ] [SuccOrder Λ]
 
 lemma eqToHom_ext {E : Inserter F G} {i : Λ} {b b' : PartialChainUpTo κ Λ E i}
@@ -190,7 +186,7 @@ lemma eqToHom_ext {E : Inserter F G} {i : Λ} {b b' : PartialChainUpTo κ Λ E i
       b.ξ.map (homOfLE hjk : iic% j i ⟶ iic% k i) =
       eqToHom (h_obj _) ≫ b'.ξ.map (homOfLE hjk) ≫ eqToHom (h_obj _).symm)
     (h_ψ : ∀ (j k : Λ) (hjk : j < k) (hki : k ≤ i),
-      b.ψ j k hjk hki = F.map (eqToHom (congr($(h_obj _).left.obj))) ≫ b'.ψ j k hjk hki ≫
+      b.ψ j k = F.map (eqToHom (congr($(h_obj _).left.obj))) ≫ b'.ψ j k ≫
         G.map (eqToHom (congr($(h_obj _).left.obj)).symm)):
     b = b' := by
   ext
@@ -204,21 +200,22 @@ lemma eqToHom_ext {E : Inserter F G} {i : Λ} {b b' : PartialChainUpTo κ Λ E i
     rw [heq_iff_eq] at haa' hbb'
     subst haa' hbb'
     refine Function.hfunext rfl fun _ _ _ ↦ Function.hfunext rfl fun _ _ _ ↦ ?_
-    simp [h_ψ, eqToHom_map]
+    simp (discharger := valid) [h_ψ, eqToHom_map]
 
 lemma congr_ψ {E : Inserter F G} {i : Λ} {b b' : PartialChainUpTo κ Λ E i}
-    (h : b = b') (j k : Λ) (hjk : j < k) (hki : k ≤ i) :
-    b.ψ j k hjk hki = F.map (eqToHom congr((($h).ξ.obj _).left.obj)) ≫ b'.ψ j k hjk hki ≫
+    (h : b = b') (j k : Λ) (hjk : j < k := by valid) (hki : k ≤ i := by valid) :
+    b.ψ j k = F.map (eqToHom congr((($h).ξ.obj _).left.obj)) ≫ b'.ψ j k hjk hki ≫
       G.map (eqToHom congr((($h).ξ.obj _).left.obj).symm) := by
   subst h
   simp
 
 lemma sq₂ {i : Λ} {E : Inserter F G} (d : PartialChainUpTo κ Λ E i)
-    (j k l m : Λ) (hjk : j < k) (hkm : k ≤ m) (hjl : j ≤ l) (hlm : l < m) (hm : m ≤ i) :
-    F.map (d.ξ.map (homOfLE hjl)).left.hom ≫ d.ψ l m hlm (by valid) =
-    d.ψ j k hjk (by valid) ≫ G.map (d.ξ.map (homOfLE hkm)).left.hom := by
-  rw [← d.t₂, ← d.t₁]
-  grind
+    (j k l m : Λ)
+    (hjk : j < k := by valid) (hkm : k ≤ m := by valid) (hjl : j ≤ l := by valid)
+    (hlm : l < m := by valid) (hm : m ≤ i := by valid) :
+    F.map (d.ξ.map (homOfLE hjl)).left.hom ≫ d.ψ l m =
+    d.ψ j k ≫ G.map (d.ξ.map (homOfLE hkm)).left.hom := by
+  rw [← d.t₂ j k m, ← d.t₁ j l m]
 
 /-- Restricts a PartialChainUpTo to a lower index, turning PartialChainUpTo into a presheaf. -/
 @[implicit_reducible]
@@ -226,16 +223,16 @@ def trunc (E : Inserter F G)
     {i i' : Λ} (hii' : i ≤ i') (d : PartialChainUpTo κ Λ E i') :
     PartialChainUpTo κ Λ E i where
   ξ := SmallObject.restrictionLE d.ξ hii'
-  ψ j k hjk hk := d.ψ j k hjk (hk.trans hii')
+  ψ j k hjk hk := d.ψ j k
   sq₁ j hj := by
-    have := d.sq₁ j (by valid) |>.symm
+    have := d.sq₁ j |>.symm
     obtain rfl | hii' := hii'.eq_or_lt
     · exact this.symm
-    dsimp
-    rw [this]
-    grind [→ d.t₂]
-  t₁ j k l hjk hkl hl := d.t₁ j k l hjk hkl (hl.trans hii')
-  t₂ j k l hjk hkl hl := d.t₂ j k l hjk hkl (hl.trans hii')
+    · dsimp
+      rw [this]
+      grind [→ @d.t₂]
+  t₁ j k l hjk hkl hl := d.t₁ j k l
+  t₂ j k l hjk hkl hl := d.t₂ j k l
 
 /-- Turning `i ↦ PartialChainUpTo κ Λ E i` into a functor. A section of this functor bundles an
 extension of the ξ and ψ fields to all indices in Λ. -/
