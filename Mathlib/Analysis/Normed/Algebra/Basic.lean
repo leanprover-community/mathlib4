@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Normed.Algebra.Spectrum
 
 import Mathlib.Analysis.Normed.Module.WeakDual
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Normed algebras
 

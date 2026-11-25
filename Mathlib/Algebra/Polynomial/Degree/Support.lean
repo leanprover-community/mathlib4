@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Polynomial.Degree.Operations
 # Degree and support of univariate polynomials
 
 ## Main results
+
 * `Polynomial.as_sum_support`: write `p : R[X]` as a sum over its support
 * `Polynomial.as_sum_range`: write `p : R[X]` as a sum over `{0, ..., natDegree p}`
 * `Polynomial.natDegree_mem_support_of_ne_zero`: `natDegree p ∈ support p` if `p ≠ 0`

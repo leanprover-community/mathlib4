@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Ring.Basic
 
 import Mathlib.Algebra.Regular.Opposite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Non-zero divisors in a ring
 -/
@@ -81,11 +84,11 @@ lemma isRegular_iff_mem_nonZeroDivisors : IsRegular r ↔ r ∈ R⁰ := isRegula
 
 lemma le_nonZeroDivisorsLeft_iff_isLeftRegular {S : Submonoid R} :
     S ≤ nonZeroDivisorsLeft R ↔ ∀ s : S, IsLeftRegular (s : R) := by
-  simp_rw [IsConcreteLE.le_iff, isLeftRegular_iff_mem_nonZeroDivisorsLeft, Subtype.forall]
+  simp_rw [le_iff_mem_imp_mem, isLeftRegular_iff_mem_nonZeroDivisorsLeft, Subtype.forall]
 
 lemma le_nonZeroDivisorsRight_iff_isRightRegular {S : Submonoid R} :
     S ≤ nonZeroDivisorsRight R ↔ ∀ s : S, IsRightRegular (s : R) := by
-  simp_rw [IsConcreteLE.le_iff, isRightRegular_iff_mem_nonZeroDivisorsRight, Subtype.forall]
+  simp_rw [le_iff_mem_imp_mem, isRightRegular_iff_mem_nonZeroDivisorsRight, Subtype.forall]
 
 lemma le_nonZeroDivisors_iff_isRegular {S : Submonoid R} :
     S ≤ R⁰ ↔ ∀ s : S, IsRegular (s : R) := by

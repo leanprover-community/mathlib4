@@ -7,6 +7,9 @@ module
 
 public import Mathlib.FieldTheory.Galois.Infinite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Abelian extensions
 

@@ -22,7 +22,7 @@ import Mathlib.Tactic.Bound
 * `balancedCore_eq_iInter`: Characterization of the balanced core as an intersection over subsets.
 * `nhds_basis_closed_balanced`: The closed balanced sets form a basis of the neighborhood filter.
 
-## Implementation details
+## Implementation notes
 
 The `balancedHull` is defined as the `ClosureOperator` associated to the predicate `Balanced 𝕜`,
 i.e., as the intersection over all balanced sets containing `s`. The `ClosureOperator` API then

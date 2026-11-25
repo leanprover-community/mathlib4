@@ -20,7 +20,7 @@ sides of the equivalence are `Fintype`s.
 - `Equiv.Perm.viaFintypeEmbedding : Perm α → (α ↪ β) → Perm β` extends the domain of
   a permutation, fixing everything outside the range of the embedding
 
-## Implementation details
+## Implementation notes
 
 - `Function.Embedding.toEquivRange` uses a computable inverse, but one that has poor
   computational performance, since it operates by exhaustive search over the input `Fintype`s.

@@ -11,7 +11,8 @@ public import Mathlib.Analysis.Normed.Group.Submodule
 public import Mathlib.Analysis.Normed.Group.Uniform
 public import Mathlib.LinearAlgebra.Basis.Defs
 public import Mathlib.LinearAlgebra.DFinsupp
-public import Mathlib.Topology.Algebra.Module.Equiv.Basic
+
+import Mathlib.Topology.Algebra.Module.Equiv.Basic
 
 /-!
 # (Semi-)linear isometries

@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Convex.Side
 public import Mathlib.Geometry.Euclidean.Angle.Oriented.Rotation
 public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Oriented angles.
 

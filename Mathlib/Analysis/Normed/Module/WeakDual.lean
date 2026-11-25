@@ -91,11 +91,13 @@ the weak-\* topology on (its type synonym) `WeakDual 𝕜 E`:
   with the topology of pointwise convergence.
 
 ## TODO
+
 * Add that in finite dimensions, the weak-\* topology and the dual norm topology coincide.
 * Add that in infinite dimensions, the weak-\* topology is strictly coarser than the dual norm
   topology.
 
 ## References
+
 * https://en.wikipedia.org/wiki/Weak_topology#Weak-*_topology
 * https://en.wikipedia.org/wiki/Banach%E2%80%93Alaoglu_theorem
 

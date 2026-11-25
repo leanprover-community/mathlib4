@@ -8,9 +8,12 @@ module
 public import Mathlib.Analysis.Complex.Asymptotics
 public import Mathlib.Analysis.Complex.Trigonometric
 public import Mathlib.Analysis.SpecificLimits.Normed
-public import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
 
+import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
 import Mathlib.Topology.Order.AtTopBotIxx
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Complex and real exponential

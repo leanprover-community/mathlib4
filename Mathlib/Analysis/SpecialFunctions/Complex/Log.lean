@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Complex.Arg
 public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The complex `log` function
 

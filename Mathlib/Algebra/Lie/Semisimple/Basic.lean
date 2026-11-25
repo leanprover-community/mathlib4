@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Lie.Semisimple.Defs
 public import Mathlib.Order.BooleanGenerators
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Semisimple Lie algebras
 
