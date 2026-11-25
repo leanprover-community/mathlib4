@@ -13,3 +13,9 @@ scripts/.rm_set_option_progress.jsonl
 
 # Output of scripts/export_crossrefs.lean
 /crossrefs.json
+
+# lean-ai — generated workspace files (do not commit)
+.lean_ai/
+.lean_ai/scratchpads/
+.lean_ai_index/
+.lean_ai_reference_index/
