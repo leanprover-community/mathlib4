@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Analysis.Normed.Module.RCLike.Real
 public import Mathlib.Logic.Equiv.PartialEquiv
-public import Mathlib.Util.AliasIn
 public import Mathlib.Tactic.Simps.Generalized
+public import Mathlib.Util.AliasIn
+
 
 /-!
 # CW complexes
