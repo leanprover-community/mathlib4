@@ -18,10 +18,6 @@ and its right adjoint `ex`.
 ## TODO (@joelriou)
 
 * define another functor `SSet.B : SSet ⥤ SSet` by sending `X` to
-the nerve of the partially ordered type `X.N` of nondegenerate
-simplices in `X`, define a natural transformation `sd ⟶ B`,
-and show that on suitable simplicial sets `X`, this natural
-* define another functor `SSet.B : SSet ⥤ SSet` by sending `X` to
   the nerve of the partially ordered type `X.N` of nondegenerate
   simplices in `X`, define a natural transformation `sd ⟶ B`,
   and show that on suitable simplicial sets `X`, this natural

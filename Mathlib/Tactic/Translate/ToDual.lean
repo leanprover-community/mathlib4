@@ -220,6 +220,8 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("monomorphisms", ["Epimorphisms"]),
   ("terminal", ["Initial"]),
   ("initial", ["Terminal"]),
+  ("precomp", ["Postcomp"]),
+  ("postcomp", ["Precomp"]),
   ("precompose", ["Postcompose"]),
   ("postcompose", ["Precompose"]),
   ("cone", ["Cocone"]),
@@ -272,6 +274,8 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("ofι", ["Ofπ"]),
   ("functorπ", ["Functorι"]),
   ("functorι", ["Functorπ"]),
+  ("structured", ["Costructured"]),
+  ("costructured", ["Structured"]),
 ]
 
 @[inherit_doc GuessName.GuessNameData.abbreviationDict]

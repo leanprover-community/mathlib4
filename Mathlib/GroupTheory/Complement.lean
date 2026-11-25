@@ -625,7 +625,7 @@ theorem smul_toLeftFun (f : F) (S : H.LeftTransversal) (g : G) :
 @[to_additive]
 theorem smul_leftQuotientEquiv (f : F) (S : H.LeftTransversal) (q : G ⧸ H) :
     f • (S.property.leftQuotientEquiv q : G) = (f • S).property.leftQuotientEquiv (f • q) :=
-  Quotient.inductionOn' q fun g => smul_toLeftFun f S g
+  Quotient.inductionOn q fun g => smul_toLeftFun f S g
 
 @[to_additive]
 theorem smul_apply_eq_smul_apply_inv_smul (f : F) (S : H.LeftTransversal) (q : G ⧸ H) :

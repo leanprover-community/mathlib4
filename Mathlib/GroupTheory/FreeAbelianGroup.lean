@@ -245,7 +245,7 @@ protected theorem induction_on
     {motive : FreeCommGroup α → Prop} (z : FreeCommGroup α) (one : motive 1)
     (of : ∀ x, motive (of x)) (inv : ∀ x, motive (.of x) → motive (.of x)⁻¹)
     (mul : ∀ x y, motive x → motive y → motive (x * y)) : motive z :=
-  Quotient.inductionOn' z fun x ↦ Quot.inductionOn x fun L ↦
+  Quotient.inductionOn z fun x ↦ Quot.inductionOn x fun L ↦
     List.recOn L one fun ⟨x, b⟩ _ ih ↦ Bool.recOn b (mul _ _ (inv _ (of x)) ih) (mul _ _ (of x) ih)
 
 @[to_additive]
