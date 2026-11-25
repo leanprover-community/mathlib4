@@ -5,12 +5,14 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov, Yaël Dillies
 -/
 module
 
-public import Mathlib.Order.Filter.CountableInter
 public import Mathlib.Order.LiminfLimsup
 public import Mathlib.Topology.Order.Monotone
 
 import Mathlib.Data.Fintype.Order
 import Mathlib.Topology.Order.MonotoneConvergence
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Lemmas about liminf and limsup in an order topology.

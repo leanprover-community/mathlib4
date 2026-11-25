@@ -3,9 +3,11 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.Fintype.Perm
-import Mathlib.Dynamics.FixedPoints.Basic
+module
+
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Data.Fintype.Perm
+public import Mathlib.Dynamics.FixedPoints.Basic
 
 /-!
 # Formalization of IMO 1987, Q1
@@ -20,6 +22,8 @@ by `x` for the right-hand side.
 The original problem assumes `n ≥ 1`. It turns out that a version with `n * (n - 1)!` in the RHS
 holds true for `n = 0` as well, so we first prove it, then deduce the original version in the case
 `n ≥ 1`. -/
+
+@[expose] public section
 
 variable (α : Type*) [Fintype α] [DecidableEq α]
 
@@ -36,7 +40,7 @@ namespace Imo1987Q1
 def fixedPointsEquiv : { σx : α × Perm α // σx.2 σx.1 = σx.1 } ≃ Σ x : α, Perm ({x}ᶜ : Set α) :=
   calc
     { σx : α × Perm α // σx.2 σx.1 = σx.1 } ≃ Σ x : α, { σ : Perm α // σ x = x } :=
-      setProdEquivSigma _
+      setProdEquivSigma {σx : α × Perm α | σx.2 σx.1 = σx.1}
     _ ≃ Σ x : α, { σ : Perm α // ∀ y : ({x} : Set α), σ y = Equiv.refl (↥({x} : Set α)) y } :=
       sigmaCongrRight fun x => Equiv.subtypeEquivRight (by simp)
     _ ≃ Σ x : α, Perm ({x}ᶜ : Set α) := sigmaCongrRight fun x => by apply Equiv.Set.compl
@@ -71,12 +75,11 @@ to the set of pairs `(x : α, σ : Perm α)` such that `σ x = x`. The equivalen
 It is easy to see that the cardinality of the LHS is given by
 `∑ k : Fin (card α + 1), k * p α k`. -/
 def fixedPointsEquiv' :
-    (Σ (k : Fin (card α + 1)) (σ : fiber α k), fixedPoints σ.1) ≃
+    (Σ (k : Fin (card α + 1)) (σ : fiber α k), fixedPoints σ.val) ≃
       { σx : α × Perm α // σx.2 σx.1 = σx.1 } where
-  toFun p := ⟨⟨p.2.2, p.2.1⟩, p.2.2.2⟩
-  invFun p :=
-    ⟨⟨card (fixedPoints p.1.2), (card_subtype_le _).trans_lt (Nat.lt_succ_self _)⟩, ⟨p.1.2, rfl⟩,
-      ⟨p.1.1, p.2⟩⟩
+  toFun p := ⟨⟨p.2.2, p.2.1⟩, p.2.2.property⟩
+  invFun p := ⟨⟨card (fixedPoints p.val.2), (card_subtype_le _).trans_lt (Nat.lt_succ_self _)⟩,
+    ⟨p.val.2, rfl⟩, ⟨p.val.1, p.property⟩⟩
   left_inv := fun ⟨⟨k, hk⟩, ⟨σ, hσ⟩, ⟨x, hx⟩⟩ => by
     simp only [mem_fiber] at hσ
     subst k; rfl
@@ -84,7 +87,7 @@ def fixedPointsEquiv' :
 
 /-- Main statement for any `(α : Type*) [Fintype α]`. -/
 theorem main_fintype : ∑ k ∈ range (card α + 1), k * p α k = card α * (card α - 1)! := by
-  have A : ∀ (k) (σ : fiber α k), card (fixedPoints (↑σ : Perm α)) = k := fun k σ => σ.2
+  have A : ∀ (k) (σ : fiber α k), card (fixedPoints (↑σ : Perm α)) = k := fun k σ => σ.property
   simpa [A, ← Fin.sum_univ_eq_sum_range, -card_ofFinset, Finset.card_univ, card_fixed_points,
     mul_comm] using! card_congr (fixedPointsEquiv' α)
 

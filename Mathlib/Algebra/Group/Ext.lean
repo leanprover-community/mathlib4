@@ -14,7 +14,7 @@ In this file we prove extensionality lemmas for `Monoid` and higher algebraic st
 binary operation. Extensionality lemmas for structures that are lower in the hierarchy can be found
 in `Algebra.Group.Defs`.
 
-## Implementation details
+## Implementation notes
 
 To get equality of `npow` etc, we define a monoid homomorphism between two monoid structures on the
 same type, then apply lemmas like `MonoidHom.map_div`, `MonoidHom.map_pow` etc.
@@ -24,6 +24,7 @@ To refer to the `*` operator of a particular instance `i`, we use
 former uses `HMul.hMul` which is the canonical spelling.
 
 ## Tags
+
 monoid, group, extensionality
 -/
 
@@ -47,7 +48,7 @@ theorem Monoid.ext {M : Type u} ⦃m₁ m₂ : Monoid M⦄
   have : m₁.npow = m₂.npow := by
     ext n x
     exact @MonoidHom.map_pow M M m₁ m₂ f x n
-  rcases m₁ with @⟨@⟨⟨_⟩⟩, ⟨_⟩, _, _, ⟨_⟩⟩
+  rcases m₁ with @⟨⟨_⟩, ⟨_⟩, _, _, _, ⟨_⟩⟩
   congr
 
 @[to_additive]

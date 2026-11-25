@@ -5,8 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.LiftingProperties.Basic
 public import Mathlib.CategoryTheory.Comma.Over.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Lifting properties in Over categories
@@ -18,7 +20,6 @@ in the category `C`. It follows that if `i` and `p` are
 morphisms in `Over S`, then `i` has the left lifting
 property with respect to `p` when `i.left` has
 the left lifting property with respect to `p.left`.
-
 -/
 
 public section
@@ -47,7 +48,6 @@ end CommSq.HasLift
 
 namespace HasLiftingProperty
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma over {A B X Y : Over S}
     (i : A ⟶ B) (p : X ⟶ Y) [HasLiftingProperty i.left p.left] :
     HasLiftingProperty i p := ⟨fun _ ↦ .over⟩

@@ -33,6 +33,7 @@ Each of these has a dual.
 * `wideEqualizer.ι_mono` states that every wideEqualizer map is a monomorphism
 
 ## Implementation notes
+
 As with the other special shapes in the limits library, all the definitions here are given as
 `abbrev`s of the general statements for limits, so all the `simp` lemmas and theorems about
 general limits can be used.
@@ -178,7 +179,6 @@ def diagramIsoParallelFamily (F : WalkingParallelFamily J ⥤ C) :
   NatIso.ofComponents (fun j => eqToIso <| by cases j <;> cat_disch) <| by
     rintro _ _ (_ | _) <;> cat_disch
 
-set_option backward.defeqAttrib.useBackward true in
 /-- `WalkingParallelPair` as a category is equivalent to a special case of
 `WalkingParallelFamily`. -/
 @[simps!]
@@ -233,7 +233,6 @@ set_option backward.isDefEq.respectTransparency false in
 theorem Cotrident.app_one (s : Cotrident f) (j : J) : f j ≫ s.ι.app one = s.ι.app zero := by
   rw [← s.w (line j), parallelFamily_map_left]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- A trident on `f : J → (X ⟶ Y)` is determined by the morphism `ι : P ⟶ X` satisfying
 `∀ j₁ j₂, ι ≫ f j₁ = ι ≫ f j₂`.
 -/
@@ -248,7 +247,6 @@ def Trident.ofι [Nonempty J] {P : C} (ι : P ⟶ X) (w : ∀ j₁ j₂, ι ≫ 
         · simp
         · simp [w (Classical.arbitrary J) k] }
 
-set_option backward.defeqAttrib.useBackward true in
 /-- A cotrident on `f : J → (X ⟶ Y)` is determined by the morphism `π : Y ⟶ P` satisfying
 `∀ j₁ j₂, f j₁ ≫ π = f j₂ ≫ π`.
 -/
@@ -343,8 +341,8 @@ def Trident.IsLimit.mk [Nonempty J] (t : Trident f) (lift : ∀ s : Trident f, s
 def Trident.IsLimit.mk' [Nonempty J] (t : Trident f)
     (create : ∀ s : Trident f, { l // l ≫ t.ι = s.ι ∧ ∀ {m}, m ≫ t.ι = s.ι → m = l }) :
     IsLimit t :=
-  Trident.IsLimit.mk t (fun s => (create s).1) (fun s => (create s).2.1) fun s _ w =>
-    (create s).2.2 (w zero)
+  Trident.IsLimit.mk t (fun s => (create s).val) (fun s => (create s).property.1) fun s _ w =>
+    (create s).property.2 (w zero)
 
 /-- This is a slightly more convenient method to verify that a cotrident is a colimit cocone. It
     only asks for a proof of facts that carry any mathematical content -/
@@ -367,8 +365,8 @@ def Cotrident.IsColimit.mk' [Nonempty J] (t : Cotrident f)
     (create :
       ∀ s : Cotrident f, { l : t.pt ⟶ s.pt // t.π ≫ l = s.π ∧ ∀ {m}, t.π ≫ m = s.π → m = l }) :
     IsColimit t :=
-  Cotrident.IsColimit.mk t (fun s => (create s).1) (fun s => (create s).2.1) fun s _ w =>
-    (create s).2.2 (w one)
+  Cotrident.IsColimit.mk t (fun s => (create s).val) (fun s => (create s).property.1) fun s _ w =>
+    (create s).property.2 (w one)
 
 set_option backward.isDefEq.respectTransparency false in
 /--
@@ -380,7 +378,7 @@ Further, this bijection is natural in `Z`: see `Trident.Limits.homIso_natural`.
 def Trident.IsLimit.homIso [Nonempty J] {t : Trident f} (ht : IsLimit t) (Z : C) :
     (Z ⟶ t.pt) ≃ { h : Z ⟶ X // ∀ j₁ j₂, h ≫ f j₁ = h ≫ f j₂ } where
   toFun k := ⟨k ≫ t.ι, by simp⟩
-  invFun h := (Trident.IsLimit.lift' ht _ h.prop).1
+  invFun h := (Trident.IsLimit.lift' ht _ h.prop).val
   left_inv _ := Trident.IsLimit.hom_ext ht (Trident.IsLimit.lift' _ _ _).prop
   right_inv _ := Subtype.ext (Trident.IsLimit.lift' ht _ _).prop
 
@@ -400,7 +398,7 @@ point to `Z` are in bijection with morphisms `h : Z ⟶ X` such that
 def Cotrident.IsColimit.homIso [Nonempty J] {t : Cotrident f} (ht : IsColimit t) (Z : C) :
     (t.pt ⟶ Z) ≃ { h : Y ⟶ Z // ∀ j₁ j₂, f j₁ ≫ h = f j₂ ≫ h } where
   toFun k := ⟨t.π ≫ k, by simp⟩
-  invFun h := (Cotrident.IsColimit.desc' ht _ h.prop).1
+  invFun h := (Cotrident.IsColimit.desc' ht _ h.prop).val
   left_inv _ := Cotrident.IsColimit.hom_ext ht (Cotrident.IsColimit.desc' _ _ _).prop
   right_inv _ := Subtype.ext (Cotrident.IsColimit.desc' ht _ _).prop
 
@@ -411,7 +409,6 @@ theorem Cotrident.IsColimit.homIso_natural [Nonempty J] {t : Cotrident f} {Z Z' 
       (Cotrident.IsColimit.homIso ht _ k : Y ⟶ Z) ≫ q :=
   (Category.assoc _ _ _).symm
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- This is a helper construction that can be useful when verifying that a category has certain wide
     equalizers. Given `F : WalkingParallelFamily ⥤ C`, which is really the same as
@@ -428,7 +425,6 @@ def Cone.ofTrident {F : WalkingParallelFamily J ⥤ C} (t : Trident fun j => F.m
     { app := fun X => t.π.app X ≫ eqToHom (by cases X <;> cat_disch)
       naturality := fun j j' g => by cases g <;> cat_disch }
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- This is a helper construction that can be useful when verifying that a category has all
     coequalizers. Given `F : WalkingParallelFamily ⥤ C`, which is really the same as
@@ -456,7 +452,6 @@ theorem Cocone.ofCotrident_ι {F : WalkingParallelFamily J ⥤ C}
     (Cocone.ofCotrident t).ι.app j = eqToHom (by cases j <;> cat_disch) ≫ t.ι.app j :=
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given `F : WalkingParallelFamily ⥤ C`, which is really the same as
     `parallelFamily (fun j ↦ F.map (line j))` and a cone on `F`, we get a trident on
     `fun j ↦ F.map (line j)`. -/
@@ -468,7 +463,6 @@ def Trident.ofCone {F : WalkingParallelFamily J ⥤ C} (t : Cone F) :
       naturality := by rintro _ _ (_ | _) <;> cat_disch }
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- Given `F : WalkingParallelFamily ⥤ C`, which is really the same as
     `parallelFamily (F.map left) (F.map right)` and a cocone on `F`, we get a cotrident on
     `fun j ↦ F.map (line j)`. -/

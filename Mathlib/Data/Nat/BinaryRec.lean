@@ -5,7 +5,7 @@ Authors: Mario Carneiro, Praneeth Kolichala, Yuyang Zhao
 -/
 module
 
-public import Mathlib.Init
+import Mathlib.Init
 
 /-!
 # Binary recursion on `Nat`
@@ -13,6 +13,7 @@ public import Mathlib.Init
 This file defines binary recursion on `Nat`.
 
 ## Main results
+
 * `Nat.binaryRec`: A recursion principle for `bit` representations of natural numbers.
 * `Nat.binaryRec'`: The same as `binaryRec`, but the induction step can assume that if `n=0`,
   the bit being appended is `true`.

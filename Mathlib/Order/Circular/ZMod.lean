@@ -5,9 +5,11 @@ Authors: Paul Lezeau, Oliver Nash, Yaël Dillies
 -/
 module
 
-public import Mathlib.Order.Circular
-public import Mathlib.Order.Fin.Basic
 public import Mathlib.Data.ZMod.Defs
+public import Mathlib.Order.Circular
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The circular order on `ZMod n`

@@ -5,10 +5,12 @@ Authors: Jujian Zhang
 -/
 module
 
-public import Mathlib.RingTheory.GradedAlgebra.Basic
 public import Mathlib.Algebra.GradedMulAction
-public import Mathlib.Algebra.DirectSum.Decomposition
 public import Mathlib.Algebra.Module.BigOperators
+public import Mathlib.RingTheory.GradedAlgebra.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Graded Module
@@ -107,7 +109,7 @@ open AddMonoidHom
 private theorem one_smul' [DecidableEq ιA] [DecidableEq ιB] [GMonoid A] [Gmodule A M]
     (x : ⨁ i, M i) :
     (1 : ⨁ i, A i) • x = x := by
-  suffices smulAddMonoidHom A M 1 = AddMonoidHom.id (⨁ i, M i) from DFunLike.congr_fun this x
+  suffices smulAddMonoidHom A M 1 = AddMonoidHom.id (⨁ i, M i) from congr($this x)
   apply DirectSum.addHom_ext; intro i xi
   rw [show (1 : DirectSum ιA fun i => A i) = (of A 0) GOne.one by rfl]
   rw [smulAddMonoidHom_apply_of_of]
@@ -126,7 +128,7 @@ private theorem mul_smul' [DecidableEq ιA] [DecidableEq ιB] [GSemiring A] [Gmo
       (AddMonoidHom.compHom AddMonoidHom.flipHom <|
           (smulAddMonoidHom A M).flip.compHom.comp <| smulAddMonoidHom A M).flip
     from -- `fun a b c ↦ a • (b • c)` as a bundled hom
-      DFunLike.congr_fun (DFunLike.congr_fun (DFunLike.congr_fun this a) b) c
+      congr($this a b c)
   ext ai ax bi bx ci cx : 6
   dsimp only [coe_comp, Function.comp_apply, compHom_apply_apply, flip_apply, flipHom_apply]
   rw [smulAddMonoidHom_apply_of_of, smulAddMonoidHom_apply_of_of, DirectSum.mulHom_of_of,
@@ -183,7 +185,7 @@ variable [AddCommMonoid M] [Module A M] [SetLike σ M] [AddSubmonoidClass σ' A]
   module, the internal version can be translated into the external version `gmodule`. -/
 instance gmodule : DirectSum.Gmodule (fun i => 𝓐 i) fun i => 𝓜 i :=
   { SetLike.gdistribMulAction 𝓐 𝓜 with
-    smul := fun x y => ⟨(x : A) • (y : M), SetLike.GradedSMul.smul_mem x.2 y.2⟩
+    smul := fun x y => ⟨(x : A) • (y : M), SetLike.GradedSMul.smul_mem x.property y.property⟩
     add_smul := fun _a _a' _b => Subtype.ext <| add_smul _ _ _
     zero_smul := fun _b => Subtype.ext <| zero_smul _ _ }
 

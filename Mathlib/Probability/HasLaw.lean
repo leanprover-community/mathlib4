@@ -8,6 +8,9 @@ module
 public import Mathlib.Probability.Density
 public import Mathlib.Probability.Moments.Variance
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Law of a random variable
 
@@ -41,6 +44,9 @@ structure HasLaw (P : Measure Ω := by volume_tac) : Prop where
   protected map_eq : P.map X = μ
 
 attribute [fun_prop] HasLaw.aemeasurable
+
+lemma hasLaw_map (hX : AEMeasurable X P) : HasLaw X (P.map X) P where
+  map_eq := rfl
 
 lemma HasLaw.measure_eq (hX : HasLaw X μ P) {p : 𝓧 → Prop} (hp : MeasurableSet {x | p x}) :
     P {ω | p (X ω)} = μ {x | p x} := by
@@ -83,6 +89,7 @@ lemma HasLaw.measurePreserving (h₁ : HasLaw X μ P) (h₂ : Measurable X) :
   measurable := h₂
   map_eq := h₁.map_eq
 
+@[to_fun (attr := simp)]
 protected lemma HasLaw.id : HasLaw id μ μ where
   map_eq := map_id
 
@@ -142,6 +149,27 @@ lemma IndepFun.hasLaw_fun_mul {M : Type*} [Monoid M] {mM : MeasurableSpace M} [M
     {μ ν : Measure M} [SigmaFinite μ] [SigmaFinite ν] {X Y : Ω → M}
     (hX : HasLaw X μ P) (hY : HasLaw Y ν P) (hXY : X ⟂ᵢ[P] Y) :
     HasLaw (fun ω ↦ X ω * Y ω) (μ ∗ₘ ν) P := hXY.hasLaw_mul hX hY
+
+@[to_fun memLp_fun_comp]
+lemma HasLaw.memLp_comp {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε] (hX : HasLaw X μ P)
+    {f : 𝓧 → ε} {p : ℝ≥0∞} (hf : MemLp f p μ) :
+    MemLp (f ∘ X) p P := by
+  rw [← hX.map_eq] at hf
+  exact hf.comp_of_map hX.aemeasurable
+
+lemma HasLaw.memLp [TopologicalSpace 𝓧] [ContinuousENorm 𝓧] (hX : HasLaw X μ P) {p : ℝ≥0∞}
+    (hμ : MemLp id p μ) :
+    MemLp X p P := hX.memLp_comp hμ
+
+@[to_fun integrable_fun_comp]
+lemma HasLaw.integrable_comp {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
+    (hX : HasLaw X μ P) {f : 𝓧 → ε} (hf : Integrable f μ) :
+    Integrable (f ∘ X) P :=
+  memLp_one_iff_integrable.1 (hX.memLp_comp (memLp_one_iff_integrable.2 hf))
+
+lemma HasLaw.integrable [TopologicalSpace 𝓧] [ContinuousENorm 𝓧] (hX : HasLaw X μ P)
+    (hμ : Integrable id μ) :
+    Integrable X P := hX.integrable_comp hμ
 
 lemma HasLaw.integral_comp {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     {X : Ω → 𝓧} (hX : HasLaw X μ P) {f : 𝓧 → E} (hf : AEStronglyMeasurable f μ) :

@@ -5,12 +5,13 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
-public import Mathlib.Algebra.Module.LocalizedModule.Submodule
-public import Mathlib.LinearAlgebra.Dimension.DivisionRing
-public import Mathlib.LinearAlgebra.LinearIndependent.Algebra
+public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.RingTheory.Localization.BaseChange
 public import Mathlib.RingTheory.OreLocalization.OreSet
+
+import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
+import Mathlib.Algebra.Module.LocalizedModule.Submodule
+import Mathlib.LinearAlgebra.LinearIndependent.Algebra
 
 /-!
 # Rank of localization
@@ -54,7 +55,7 @@ lemma IsLocalizedModule.lift_rank_eq :
       |>.cardinal_lift_le_rank]
 
 lemma IsLocalizedModule.finrank_eq : finrank R N = finrank R M := by
-  simpa using! congr_arg toNat (lift_rank_eq p f hp)
+  simpa using! congr(toNat $(lift_rank_eq p f hp))
 
 end
 
@@ -66,7 +67,7 @@ lemma IsLocalization.rank_eq : Module.rank S N = Module.rank R N := by
   cases subsingleton_or_nontrivial R
   · have := (algebraMap R S).codomain_trivial; simp only [rank_subsingleton]
   have inj := IsLocalization.injective S hp
-  apply le_antisymm <;> (rw [Module.rank]; apply ciSup_le'; intro ⟨s, hs⟩)
+  apply le_antisymm <;> (rw [Module.rank_def]; apply ciSup_le'; intro ⟨s, hs⟩)
   · have := (faithfulSMul_iff_algebraMap_injective R S).mpr inj
     exact (hs.restrict_scalars' R).cardinal_le_rank
   · have := inj.nontrivial
@@ -210,7 +211,7 @@ theorem lift_rank_eq_of_le_nonZeroDivisors :
     AlgebraTensorModule.congr (.refl ..) ((isLocalizedModule_iff_isBaseChange p S f).mp ‹_›).equiv
 
 theorem finrank_eq_of_le_nonZeroDivisors : finrank T P = finrank R M := by
-  simpa using! congr_arg toNat (lift_rank_eq_of_le_nonZeroDivisors S f hp hpT bc)
+  simpa using! congr(toNat $(lift_rank_eq_of_le_nonZeroDivisors S f hp hpT bc))
 
 omit bc
 theorem rank_eq_of_le_nonZeroDivisors {P : Type uM} [AddCommGroup P] [Module R P] [Module T P]
@@ -250,7 +251,7 @@ theorem lift_rank_eq :
     lift_rank_eq_of_le_nonZeroDivisors FR (LocalizedModule.mkLinearMap R⁰ M) le_rfl
       (map_le_nonZeroDivisors_of_injective _ inj le_rfl) this, lift_lift]
 
-theorem finrank_eq : finrank T P = finrank R M := by simpa using! congr_arg toNat bc.lift_rank_eq
+theorem finrank_eq : finrank T P = finrank R M := by simpa using! congr(toNat $bc.lift_rank_eq)
 
 omit bc
 theorem rank_eq {P : Type uM} [AddCommGroup P] [Module R P] [Module T P] [IsScalarTower R T P]
@@ -303,3 +304,20 @@ lemma nonempty_oreSet_of_strongRankCondition [StrongRankCondition R] :
   exact this.not_gt one_lt_aleph0
 
 end Ring
+
+section FractionRing
+
+universe u
+
+variable {R K : Type*} [CommRing R] [Field K] [Algebra R K]
+
+lemma Submodule.span_range_eq_top_of_injective_of_rank_le {M N : Type u} [IsDomain R]
+    [IsFractionRing R K] [AddCommGroup M] [Module R M]
+    [AddCommGroup N] [Module R N] [Module K N] [IsScalarTower R K N] [Module.Finite K N]
+    {f : M →ₗ[R] N} (hf : Function.Injective f) (h : Module.rank K N ≤ Module.rank R M) :
+    Submodule.span K (LinearMap.range f : Set N) = ⊤ := by
+  rw [← rank_range_of_injective f hf, ← rank_span_eq_rank_of_linearIndepOn (K := K)] at h
+  · exact eq_top_of_finrank_eq congr(Cardinal.toNat $(le_antisymm (rank_le _) h))
+  · exact fun _ _ ↦ (LinearIndependent.iff_fractionRing R K).mp
+
+end FractionRing

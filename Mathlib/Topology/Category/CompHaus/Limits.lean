@@ -7,8 +7,11 @@ module
 
 public import Mathlib.Topology.Category.CompHaus.Basic
 public import Mathlib.Topology.Category.CompHausLike.Limits
-/-!
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
 # Explicit limits and colimits
 
 This file applies the general API for explicit limits and colimits in `CompHausLike P` (see
@@ -35,7 +38,7 @@ example : FinitaryExtensive CompHaus.{u} := inferInstance
 abbrev isTerminalPUnit : IsTerminal (CompHaus.of PUnit.{u + 1}) := CompHausLike.isTerminalPUnit
 
 /-- The isomorphism from an arbitrary terminal object of `CompHaus` to a one-element space. -/
-noncomputable def terminalIsoPUnit : ⊤_ CompHaus.{u} ≅ CompHaus.of PUnit :=
+noncomputable def terminalIsoPUnit : ⊤_ CompHaus.{u} ≅ ↧PUnit :=
   terminalIsTerminal.uniqueUpToIso CompHaus.isTerminalPUnit
 
 noncomputable example : PreservesFiniteCoproducts compHausToTop := inferInstance

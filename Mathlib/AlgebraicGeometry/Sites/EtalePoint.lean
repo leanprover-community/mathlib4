@@ -7,19 +7,19 @@ module
 
 public import Mathlib.AlgebraicGeometry.Fiber
 public import Mathlib.AlgebraicGeometry.Sites.AffineEtale
-public import Mathlib.CategoryTheory.Functor.TypeValuedFlat
-public import Mathlib.CategoryTheory.Limits.Elements
 public import Mathlib.CategoryTheory.Sites.Point.Conservative
-public import Mathlib.FieldTheory.SeparableClosure
+
+import Mathlib.CategoryTheory.Functor.TypeValuedFlat
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
-
 # Points of the étale site
 
 In this file, we show that a morphism `Spec (.of Ω) ⟶ S` where `Ω` is
 a separably closed field defines a point on the small étale site of `S`.
 We show that these points form a conservative family.
-
 -/
 
 @[expose] public section
@@ -66,8 +66,8 @@ noncomputable def pointSmallEtale : (smallEtaleTopology S).Point where
   initiallySmall :=
     initiallySmall_of_essentiallySmall_weakly_initial_objectProperty
       (Functor.Elements.precomp (AffineEtale.Spec S)
-        (Etale.forget S ⋙ coyoneda.obj (op (Over.mk s)))).essImage (by
-      rintro ⟨X, x⟩
+        (Etale.forget S ⋙ coyoneda.obj (op (Over.mk s)))).essImage (fun x ↦ by
+      induction x with | @mk X x
       cases X with | _ Y f
       obtain ⟨y, hy, rfl⟩ := Over.homMk_surjective x
       dsimp at y hy
@@ -143,11 +143,11 @@ lemma isConservative_pointSmallEtale
     simp only [Functor.id_obj, pointSmallEtaleFiberObjToPreimage_coe, Etale.forget_obj_left] at hx'
     subst hx'
     obtain ⟨W, g, ⟨Z, p, _, ⟨a⟩, rfl⟩, y, rfl⟩ := hR ⟨_, ⟨i⟩⟩ x'
-    exact ⟨a, (pointSmallEtaleFiberObjToPreimage (s i) hi (y ≫ p.hom)).1, rfl⟩)
+    exact ⟨a, (pointSmallEtaleFiberObjToPreimage (s i) hi (y ≫ p.hom)).val, rfl⟩)
 
 lemma isConservativeFamilyOfPoints_pointSmallEtale' (S : Scheme.{u}) :
     (ObjectProperty.ofObj (fun (s : S) ↦ pointSmallEtale
-      ((SpecToEquivOfField (SeparableClosure (S.residueField s)) _).2
+      ((SpecToEquivOfField (SeparableClosure (S.residueField s)) _).invFun
         ⟨s, CommRingCat.ofHom
           (algebraMap (S.residueField s) _)⟩))).IsConservativeFamilyOfPoints :=
   isConservative_pointSmallEtale _ (by

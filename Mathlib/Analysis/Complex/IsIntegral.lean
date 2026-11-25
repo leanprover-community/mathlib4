@@ -5,10 +5,13 @@ Authors: Yuyang Zhao, Snir Broshi
 -/
 module
 
-public import Mathlib.Data.Complex.Basic
+public import Mathlib.Basic.Complex.Basic
 public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
 
 import Mathlib.Algebra.Polynomial.Monic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Integral elements of ℂ

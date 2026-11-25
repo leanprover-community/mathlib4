@@ -7,8 +7,10 @@ module
 
 public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Algebra.Order.Hom.Monoid
-public import Mathlib.Data.Prod.Lex
 public import Mathlib.Order.Prod.Lex.Hom
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Order homomorphisms for products of ordered monoids
@@ -22,7 +24,6 @@ and projections, making it the coproduct as well.
 ## TODO
 
 Create the "OrdCommMon" category.
-
 -/
 
 @[expose] public section

@@ -5,8 +5,9 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
+public import Mathlib.MeasureTheory.Measure.AbsolutelyContinuous
 public import Mathlib.MeasureTheory.Measure.Comap
-public import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
+public import Mathlib.MeasureTheory.Measure.Continuity
 
 /-!
 # Restricting a measure to a subset or a subtype
@@ -24,7 +25,7 @@ pullback under `Subtype.val`) and the restriction to a set as above.
 @[expose] public section
 
 open scoped ENNReal NNReal Topology
-open Set MeasureTheory Measure Filter MeasurableSpace ENNReal Function
+open Set MeasureTheory Measure Filter MeasurableSpace ENNReal Function CompleteLattice
 
 variable {R α β δ ι : Type*}
 
@@ -101,7 +102,7 @@ theorem restrict_mono_ae (h : s ≤ᵐ[μ] t) : μ.restrict s ≤ μ.restrict t 
   restrict_mono' h (le_refl μ)
 
 theorem restrict_congr_set (h : s =ᵐ[μ] t) : μ.restrict s = μ.restrict t :=
-  le_antisymm (restrict_mono_ae h.le) (restrict_mono_ae h.symm.le)
+  le_antisymm (restrict_mono_ae h.subset) (restrict_mono_ae h.symm.subset)
 
 /-- If `s` is a measurable set, then the outer measure of `t` with respect to the restriction of
 the measure to `s` equals the outer measure of `t ∩ s`. This is an alternate version of
@@ -135,7 +136,7 @@ theorem _root_.IsCountablySpanning.null_of_forall_restrict_null {C : Set (Set α
 theorem restrict_apply₀' (hs : NullMeasurableSet s μ) : μ.restrict s t = μ (t ∩ s) := by
   rw [← restrict_congr_set hs.toMeasurable_ae_eq,
     restrict_apply' (measurableSet_toMeasurable _ _),
-    measure_congr ((ae_eq_refl t).inter hs.toMeasurable_ae_eq)]
+    measure_congr (.inter .rfl hs.toMeasurable_ae_eq)]
 
 theorem restrict_le_self : μ.restrict s ≤ μ :=
   Measure.le_iff.2 fun t ht => calc
@@ -221,14 +222,16 @@ theorem restrict_comm (hs : MeasurableSet s) :
     (μ.restrict t).restrict s = (μ.restrict s).restrict t := by
   rw [restrict_restrict hs, restrict_restrict' hs, inter_comm]
 
-theorem restrict_apply_eq_zero (ht : MeasurableSet t) : μ.restrict s t = 0 ↔ μ (t ∩ s) = 0 := by
-  rw [restrict_apply ht]
+theorem restrict_apply_eq_zero (ht : NullMeasurableSet t μ) :
+    μ.restrict s t = 0 ↔ μ (t ∩ s) = 0 := by
+  rw [restrict_apply₀ (ht.mono restrict_le_self)]
 
 theorem measure_inter_eq_zero_of_restrict (h : μ.restrict s t = 0) : μ (t ∩ s) = 0 :=
   nonpos_iff_eq_zero.1 (h ▸ le_restrict_apply _ _)
 
-theorem restrict_apply_eq_zero' (hs : MeasurableSet s) : μ.restrict s t = 0 ↔ μ (t ∩ s) = 0 := by
-  rw [restrict_apply' hs]
+theorem restrict_apply_eq_zero' (hs : NullMeasurableSet s μ) :
+    μ.restrict s t = 0 ↔ μ (t ∩ s) = 0 := by
+  rw [restrict_apply₀' hs]
 
 @[simp]
 theorem restrict_eq_zero : μ.restrict s = 0 ↔ μ s = 0 := by
@@ -288,11 +291,14 @@ theorem restrict_union' (h : Disjoint s t) (hs : MeasurableSet s) :
     μ.restrict (s ∪ t) = μ.restrict s + μ.restrict t := by
   rw [union_comm, restrict_union h.symm hs, add_comm]
 
+theorem restrict_add_restrict_compl₀ (hs : NullMeasurableSet s μ) :
+    μ.restrict s + μ.restrict sᶜ = μ := by
+  rw [← restrict_union₀ aedisjoint_compl_right hs.compl, union_compl_self, restrict_univ]
+
 @[simp]
 theorem restrict_add_restrict_compl (hs : MeasurableSet s) :
-    μ.restrict s + μ.restrict sᶜ = μ := by
-  rw [← restrict_union (@disjoint_compl_right (Set α) _ _) hs.compl, union_compl_self,
-    restrict_univ]
+    μ.restrict s + μ.restrict sᶜ = μ :=
+  restrict_add_restrict_compl₀ hs.nullMeasurableSet
 
 @[simp]
 theorem restrict_compl_add_restrict (hs : MeasurableSet s) : μ.restrict sᶜ + μ.restrict s = μ := by
@@ -341,7 +347,7 @@ theorem restrict_toMeasurable (h : μ s ≠ ∞) : μ.restrict (toMeasurable μ 
 theorem restrict_eq_self_of_ae_mem {_m0 : MeasurableSpace α} ⦃s : Set α⦄ ⦃μ : Measure α⦄
     (hs : ∀ᵐ x ∂μ, x ∈ s) : μ.restrict s = μ :=
   calc
-    μ.restrict s = μ.restrict univ := restrict_congr_set (eventuallyEq_univ.mpr hs)
+    μ.restrict s = μ.restrict univ := restrict_congr_set (eventuallyEqSet_univ.mpr hs)
     _ = μ := restrict_univ
 
 theorem restrict_congr_meas (hs : MeasurableSet s) :
@@ -422,20 +428,6 @@ theorem exists_mem_of_measure_ne_zero_of_ae (hs : μ s ≠ 0) {p : α → Prop}
   rw [← μ.restrict_apply_self, ← frequently_ae_mem_iff] at hs
   exact (hs.and_eventually hp).exists
 
-/-- If a quasi-measure-preserving map `f` maps a set `s` to a set `t`,
-then it is quasi-measure-preserving with respect to the restrictions of the measures. -/
-theorem QuasiMeasurePreserving.restrict {ν : Measure β} {f : α → β}
-    (hf : QuasiMeasurePreserving f μ ν) {t : Set β} (hmaps : MapsTo f s t) :
-    QuasiMeasurePreserving f (μ.restrict s) (ν.restrict t) where
-  measurable := hf.measurable
-  absolutelyContinuous := by
-    refine AbsolutelyContinuous.mk fun u hum ↦ ?_
-    suffices ν (u ∩ t) = 0 → μ (f ⁻¹' u ∩ s) = 0 by simpa [hum, hf.measurable, hf.measurable hum]
-    refine fun hu ↦ measure_mono_null ?_ (hf.preimage_null hu)
-    rw [preimage_inter]
-    gcongr
-    assumption
-
 /-! ### Extensionality results -/
 
 /-- Two measures are equal if they have equal restrictions on a spanning collection of sets
@@ -508,13 +500,13 @@ theorem ext_of_generateFrom_of_iUnion (C : Set (Set α)) (B : ℕ → Set α) (h
 @[simp]
 theorem restrict_sum (μ : ι → Measure α) {s : Set α} (hs : MeasurableSet s) :
     (sum μ).restrict s = sum fun i => (μ i).restrict s :=
-  ext fun t ht => by simp only [sum_apply, restrict_apply, ht, ht.inter hs]
+  ext fun t ht => by simp [ht.inter hs, ht]
 
 @[simp]
 theorem restrict_sum_of_countable [Countable ι] (μ : ι → Measure α) (s : Set α) :
     (sum μ).restrict s = sum fun i => (μ i).restrict s := by
   ext t ht
-  simp_rw [sum_apply _ ht, restrict_apply ht, sum_apply_of_countable]
+  simp_rw [Measure.sum_apply _ ht, restrict_apply ht, sum_apply_of_countable]
 
 lemma AbsolutelyContinuous.restrict (h : μ ≪ ν) (s : Set α) : μ.restrict s ≪ ν.restrict s := by
   refine Measure.AbsolutelyContinuous.mk (fun t ht htν ↦ ?_)
@@ -523,7 +515,7 @@ lemma AbsolutelyContinuous.restrict (h : μ ≪ ν) (s : Set α) : μ.restrict s
 
 theorem restrict_iUnion_ae [Countable ι] {s : ι → Set α} (hd : Pairwise (AEDisjoint μ on s))
     (hm : ∀ i, NullMeasurableSet (s i) μ) : μ.restrict (⋃ i, s i) = sum fun i => μ.restrict (s i) :=
-  ext fun t ht => by simp only [sum_apply _ ht, restrict_iUnion_apply_ae hd hm ht]
+  ext fun t ht => by simp only [Measure.sum_apply _ ht, restrict_iUnion_apply_ae hd hm ht]
 
 theorem restrict_iUnion [Countable ι] {s : ι → Set α} (hd : Pairwise (Disjoint on s))
     (hm : ∀ i, MeasurableSet (s i)) : μ.restrict (⋃ i, s i) = sum fun i => μ.restrict (s i) :=
@@ -603,6 +595,12 @@ theorem ae_restrict_uIoc_eq [LinearOrder α] (a b : α) :
   simp only [uIoc_eq_union, ae_restrict_union_eq]
 
 open scoped Interval in
+/-- See also `ae_restrict_uIoc_iff`. -/
+theorem ae_uIoc_iff [LinearOrder α] {a b : α} {P : α → Prop} :
+    (∀ᵐ x ∂μ, x ∈ Ι a b → P x) ↔ (∀ᵐ x ∂μ, x ∈ Ioc a b → P x) ∧ ∀ᵐ x ∂μ, x ∈ Ioc b a → P x := by
+  simp only [uIoc_eq_union, mem_union, or_imp, eventually_and]
+
+open scoped Interval in
 /-- See also `MeasureTheory.ae_uIoc_iff`. -/
 theorem ae_restrict_uIoc_iff [LinearOrder α] {a b : α} {P : α → Prop} :
     (∀ᵐ x ∂μ.restrict (Ι a b), P x) ↔
@@ -621,7 +619,9 @@ theorem ae_restrict_iff {p : α → Prop} (hp : MeasurableSet { x | p x }) :
 theorem ae_imp_of_ae_restrict {s : Set α} {p : α → Prop} (h : ∀ᵐ x ∂μ.restrict s, p x) :
     ∀ᵐ x ∂μ, x ∈ s → p x := by
   simp only [ae_iff] at h ⊢
-  simpa [ofPred_and, inter_comm] using measure_inter_eq_zero_of_restrict h
+  convert measure_inter_eq_zero_of_restrict h using 2
+  ext a
+  simp [and_comm]
 
 theorem ae_restrict_iff'₀ {p : α → Prop} (hs : NullMeasurableSet s μ) :
     (∀ᵐ x ∂μ.restrict s, p x) ↔ ∀ᵐ x ∂μ, x ∈ s → p x := by
@@ -696,12 +696,15 @@ lemma one_le_div_ae {β : Type*} [Group β] [LE β] [MulRightMono β] (f g : α 
 theorem le_ae_restrict : ae μ ⊓ 𝓟 s ≤ ae (μ.restrict s) := fun _s hs =>
   eventually_inf_principal.2 (ae_imp_of_ae_restrict hs)
 
-@[simp]
-theorem ae_restrict_eq (hs : MeasurableSet s) : ae (μ.restrict s) = ae μ ⊓ 𝓟 s := by
+theorem ae_restrict_eq₀ (hs : NullMeasurableSet s μ) : ae (μ.restrict s) = ae μ ⊓ 𝓟 s := by
   ext t
   simp only [mem_inf_principal, mem_ae_iff, restrict_apply_eq_zero' hs, compl_ofPred,
     Classical.not_imp, fun a => and_comm (a := a ∈ s) (b := a ∉ t)]
   rfl
+
+@[simp]
+theorem ae_restrict_eq (hs : MeasurableSet s) : ae (μ.restrict s) = ae μ ⊓ 𝓟 s :=
+  ae_restrict_eq₀ hs.nullMeasurableSet
 
 theorem ae_restrict_eq_bot {s} : ae (μ.restrict s) = ⊥ ↔ μ s = 0 :=
   ae_eq_bot.trans restrict_eq_zero
@@ -715,12 +718,12 @@ theorem self_mem_ae_restrict {s} (hs : MeasurableSet s) : s ∈ ae (μ.restrict 
 
 /-- If two measurable sets are `ae_eq` then any proposition that is almost everywhere true on one
 is almost everywhere true on the other -/
-theorem ae_restrict_of_ae_eq_of_ae_restrict {s t} (hst : s =ᵐ[μ] t) {p : α → Prop} :
+theorem ae_restrict_of_ae_eq_of_ae_restrict {s t : Set α} (hst : s =ᵐ[μ] t) {p : α → Prop} :
     (∀ᵐ x ∂μ.restrict s, p x) → ∀ᵐ x ∂μ.restrict t, p x := by simp [Measure.restrict_congr_set hst]
 
 /-- If two measurable sets are `ae_eq` then any proposition that is almost everywhere true on one
 is almost everywhere true on the other -/
-theorem ae_restrict_congr_set {s t} (hst : s =ᵐ[μ] t) {p : α → Prop} :
+theorem ae_restrict_congr_set {s t : Set α} (hst : s =ᵐ[μ] t) {p : α → Prop} :
     (∀ᵐ x ∂μ.restrict s, p x) ↔ ∀ᵐ x ∂μ.restrict t, p x :=
   ⟨ae_restrict_of_ae_eq_of_ae_restrict hst, ae_restrict_of_ae_eq_of_ae_restrict hst.symm⟩
 
@@ -745,16 +748,15 @@ lemma nullMeasurableSet_restrict (hs : NullMeasurableSet s μ) {t : Set α} :
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · obtain ⟨t', -, ht', t't⟩ : ∃ t' ⊇ t, MeasurableSet t' ∧ t' =ᵐ[μ.restrict s] t :=
       h.exists_measurable_superset_ae_eq
-    have A : (t' ∩ s : Set α) =ᵐ[μ] (t ∩ s : Set α) := by
-      have : ∀ᵐ x ∂μ, x ∈ s → (x ∈ t') = (x ∈ t) :=
+    have A : t' ∩ s =ᵐ[μ] t ∩ s := by
+      have : ∀ᵐ x ∂μ, x ∈ s → (x ∈ t' ↔ x ∈ t) :=
         (ae_restrict_iff'₀ hs).1 t't
       filter_upwards [this] with y hy
-      change (y ∈ t' ∩ s) = (y ∈ t ∩ s)
       simpa only [eq_iff_iff, mem_inter_iff, and_congr_left_iff] using hy
     obtain ⟨s', -, hs', s's⟩ : ∃ s' ⊇ s, MeasurableSet s' ∧ s' =ᵐ[μ] s :=
       hs.exists_measurable_superset_ae_eq
-    have B : (t' ∩ s' : Set α) =ᵐ[μ] (t' ∩ s : Set α) :=
-      ae_eq_set_inter (EventuallyEq.refl _ _) s's
+    have B : t' ∩ s' =ᵐ[μ] t' ∩ s :=
+      ae_eq_set_inter .rfl s's
     exact (ht'.inter hs').nullMeasurableSet.congr (B.trans A)
   · have A : NullMeasurableSet (t \ s) (μ.restrict s) := by
       apply NullMeasurableSet.of_null
@@ -774,8 +776,6 @@ lemma nullMeasurableSet_restrict_of_subset {t : Set α} (ht : t ⊆ s) :
     filter_upwards [t't] with x hx using by simpa using! hx
   have : t' =ᵐ[μ] t := by
     filter_upwards [this] with x hx
-    change (x ∈ t') = (x ∈ t)
-    simp only [eq_iff_iff]
     tauto
   exact ht'.nullMeasurableSet.congr this
 
@@ -787,7 +787,7 @@ section Subtype
 
 section ComapAnyMeasure
 
-theorem MeasurableSet.nullMeasurableSet_subtype_coe {t : Set s} (hs : NullMeasurableSet s μ)
+theorem MeasurableSet.nullMeasurableSet_subtypeVal {t : Set s} (hs : NullMeasurableSet s μ)
     (ht : MeasurableSet t) : NullMeasurableSet ((↑) '' t) μ := by
   rw [Subtype.instMeasurableSpace, comap_eq_generateFrom] at ht
   induction t, ht using generateFrom_induction with
@@ -803,19 +803,31 @@ theorem MeasurableSet.nullMeasurableSet_subtype_coe {t : Set s} (hs : NullMeasur
     rw [image_iUnion]
     exact .iUnion hf
 
-theorem NullMeasurableSet.subtype_coe {t : Set s} (hs : NullMeasurableSet s μ)
+@[deprecated (since := "2026-11-10")]
+alias MeasurableSet.nullMeasurableSet_subtype_coe := MeasurableSet.nullMeasurableSet_subtypeVal
+
+theorem NullMeasurableSet.subtypeVal {t : Set s} (hs : NullMeasurableSet s μ)
     (ht : NullMeasurableSet t (μ.comap Subtype.val)) : NullMeasurableSet (((↑) : s → α) '' t) μ :=
   NullMeasurableSet.image _ μ Subtype.coe_injective
-    (fun _ => MeasurableSet.nullMeasurableSet_subtype_coe hs) ht
+    (fun _ => MeasurableSet.nullMeasurableSet_subtypeVal hs) ht
 
-theorem measure_subtype_coe_le_comap (hs : NullMeasurableSet s μ) (t : Set s) :
+@[deprecated (since := "2026-11-10")]
+alias NullMeasurableSet.subtype_coe := NullMeasurableSet.subtypeVal
+
+theorem measure_subtypeVal_le_comap (hs : NullMeasurableSet s μ) (t : Set s) :
     μ (((↑) : s → α) '' t) ≤ μ.comap Subtype.val t :=
   le_comap_apply _ _ Subtype.coe_injective (fun _ =>
-    MeasurableSet.nullMeasurableSet_subtype_coe hs) _
+    MeasurableSet.nullMeasurableSet_subtypeVal hs) _
 
-theorem measure_subtype_coe_eq_zero_of_comap_eq_zero (hs : NullMeasurableSet s μ) {t : Set s}
+@[deprecated (since := "2026-11-10")]
+alias measure_subtype_coe_le_comap := measure_subtypeVal_le_comap
+
+theorem measure_subtypeVal_eq_zero_of_comap_eq_zero (hs : NullMeasurableSet s μ) {t : Set s}
     (ht : μ.comap Subtype.val t = 0) : μ (((↑) : s → α) '' t) = 0 :=
-  eq_bot_iff.mpr <| (measure_subtype_coe_le_comap hs t).trans ht.le
+  eq_bot_iff.mpr <| (measure_subtypeVal_le_comap hs t).trans ht.le
+
+@[deprecated (since := "2026-11-10")]
+alias measure_subtype_coe_eq_zero_of_comap_eq_zero := measure_subtypeVal_eq_zero_of_comap_eq_zero
 
 end ComapAnyMeasure
 
@@ -840,15 +852,21 @@ theorem Subtype.volume_univ (hu : NullMeasurableSet u) : volume (univ : Set u) =
   rw [Subtype.volume_def, comap_apply₀ _ _ _ _ MeasurableSet.univ.nullMeasurableSet]
   · simp only [image_univ, Subtype.range_coe_subtype, ofPred_mem_eq]
   · exact Subtype.coe_injective
-  · exact fun t => MeasurableSet.nullMeasurableSet_subtype_coe hu
+  · exact fun t => MeasurableSet.nullMeasurableSet_subtypeVal hu
 
-theorem volume_subtype_coe_le_volume (hu : NullMeasurableSet u) (t : Set u) :
+theorem volume_subtypeVal_le_volume (hu : NullMeasurableSet u) (t : Set u) :
     volume (((↑) : u → δ) '' t) ≤ volume t :=
-  measure_subtype_coe_le_comap hu t
+  measure_subtypeVal_le_comap hu t
 
-theorem volume_subtype_coe_eq_zero_of_volume_eq_zero (hu : NullMeasurableSet u) {t : Set u}
+@[deprecated (since := "2026-11-10")]
+alias volume_subtype_coe_le_volume := volume_subtypeVal_le_volume
+
+theorem volume_subtypeVal_eq_zero_of_volume_eq_zero (hu : NullMeasurableSet u) {t : Set u}
     (ht : volume t = 0) : volume (((↑) : u → δ) '' t) = 0 :=
-  measure_subtype_coe_eq_zero_of_comap_eq_zero hu ht
+  measure_subtypeVal_eq_zero_of_comap_eq_zero hu ht
+
+@[deprecated (since := "2026-11-10")]
+alias volume_subtype_coe_eq_zero_of_volume_eq_zero := volume_subtypeVal_eq_zero_of_volume_eq_zero
 
 end MeasureSpace
 
@@ -924,23 +942,27 @@ lemma MeasureTheory.Measure.map_eq_comap {_ : MeasurableSpace α} {_ : Measurabl
   ext s hs
   rw [map_apply hf hs, hg.comap_apply, ← measure_sdiff_null hμg]
   congr
-  simp
   grind
 
 section Subtype
 
-theorem comap_subtype_coe_apply {_m0 : MeasurableSpace α} {s : Set α} (hs : MeasurableSet s)
+theorem comap_subtypeVal_apply {_m0 : MeasurableSpace α} {s : Set α} (hs : MeasurableSet s)
     (μ : Measure α) (t : Set s) : comap (↑) μ t = μ ((↑) '' t) :=
-  (MeasurableEmbedding.subtype_coe hs).comap_apply _ _
+  (MeasurableEmbedding.subtypeVal hs).comap_apply _ _
 
-theorem map_comap_subtype_coe {m0 : MeasurableSpace α} {s : Set α} (hs : MeasurableSet s)
+@[deprecated (since := "2026-11-10")] alias comap_subtype_coe_apply := comap_subtypeVal_apply
+
+theorem map_comap_subtypeVal {m0 : MeasurableSpace α} {s : Set α} (hs : MeasurableSet s)
     (μ : Measure α) : (comap (↑) μ).map ((↑) : s → α) = μ.restrict s := by
-  rw [(MeasurableEmbedding.subtype_coe hs).map_comap, Subtype.range_coe]
+  rw [(MeasurableEmbedding.subtypeVal hs).map_comap, Subtype.range_coe]
 
+@[deprecated (since := "2026-11-10")] alias map_comap_subtype_coe := map_comap_subtypeVal
+
+-- XXX: should this be named subtypeVal instead?
 theorem ae_restrict_iff_subtype {m0 : MeasurableSpace α} {μ : Measure α} {s : Set α}
     (hs : MeasurableSet s) {p : α → Prop} :
     (∀ᵐ x ∂μ.restrict s, p x) ↔ ∀ᵐ (x : s) ∂comap ((↑) : s → α) μ, p x := by
-  rw [← map_comap_subtype_coe hs, (MeasurableEmbedding.subtype_coe hs).ae_map_iff]
+  rw [← map_comap_subtypeVal hs, (MeasurableEmbedding.subtypeVal hs).ae_map_iff]
 
 variable [MeasureSpace α] {s t : Set α}
 
@@ -951,24 +973,31 @@ Note the instance is provided earlier as `Subtype.measureSpace`.
 -/
 attribute [local instance] Subtype.measureSpace
 
-theorem volume_set_coe_def (s : Set α) : (volume : Measure s) = comap ((↑) : s → α) volume :=
+theorem volume_set_subtypeVal_def (s : Set α) : (volume : Measure s) = comap ((↑) : s → α) volume :=
   rfl
 
-theorem MeasurableSet.map_coe_volume {s : Set α} (hs : MeasurableSet s) :
+theorem MeasurableSet.map_subtypeVal_volume {s : Set α} (hs : MeasurableSet s) :
     volume.map ((↑) : s → α) = restrict volume s := by
-  rw [volume_set_coe_def, (MeasurableEmbedding.subtype_coe hs).map_comap volume, Subtype.range_coe]
+  rw [volume_set_subtypeVal_def, (MeasurableEmbedding.subtypeVal hs).map_comap volume,
+    Subtype.range_coe]
 
-theorem volume_image_subtype_coe {s : Set α} (hs : MeasurableSet s) (t : Set s) :
+@[deprecated (since := "2026-11-10")] alias volume_set_coe_def := volume_set_subtypeVal_def
+@[deprecated (since := "2026-11-10")]
+alias MeasurableSet.map_coe_volume := MeasurableSet.map_subtypeVal_volume
+
+theorem volume_image_subtypeVal {s : Set α} (hs : MeasurableSet s) (t : Set s) :
     volume ((↑) '' t : Set α) = volume t :=
-  (comap_subtype_coe_apply hs volume t).symm
+  (comap_subtypeVal_apply hs volume t).symm
+
+@[deprecated (since := "2026-11-10")] alias volume_image_subtype_coe := volume_image_subtypeVal
 
 @[simp]
 theorem volume_preimage_coe (hs : NullMeasurableSet s) (ht : MeasurableSet t) :
     volume (((↑) : s → α) ⁻¹' t) = volume (t ∩ s) := by
-  rw [volume_set_coe_def,
+  rw [volume_set_subtypeVal_def,
     comap_apply₀ _ _ Subtype.coe_injective
-      (fun h => MeasurableSet.nullMeasurableSet_subtype_coe hs)
-      (measurable_subtype_coe ht).nullMeasurableSet,
+      (fun h => MeasurableSet.nullMeasurableSet_subtypeVal hs)
+      (measurable_subtypeVal ht).nullMeasurableSet,
     image_preimage_eq_inter_range, Subtype.range_coe]
 
 end Subtype
@@ -977,14 +1006,14 @@ section Piecewise
 
 variable [MeasurableSpace α] {μ : Measure α} {s t : Set α} {f g : α → β}
 
-theorem piecewise_ae_eq_restrict [DecidablePred (· ∈ s)] (hs : MeasurableSet s) :
+theorem piecewise_ae_eq_restrict [DecidablePred (· ∈ s)] (hs : NullMeasurableSet s μ) :
     piecewise s f g =ᵐ[μ.restrict s] f := by
-  rw [ae_restrict_eq hs]
+  rw [ae_restrict_eq₀ hs]
   exact (piecewise_eqOn s f g).eventuallyEq.filter_mono inf_le_right
 
-theorem piecewise_ae_eq_restrict_compl [DecidablePred (· ∈ s)] (hs : MeasurableSet s) :
+theorem piecewise_ae_eq_restrict_compl [DecidablePred (· ∈ s)] (hs : NullMeasurableSet s μ) :
     piecewise s f g =ᵐ[μ.restrict sᶜ] g := by
-  rw [ae_restrict_eq hs.compl]
+  rw [ae_restrict_eq₀ hs.compl]
   exact (piecewise_eqOn_compl s f g).eventuallyEq.filter_mono inf_le_right
 
 theorem piecewise_ae_eq_of_ae_eq_set [DecidablePred (· ∈ s)] [DecidablePred (· ∈ t)]
@@ -1027,10 +1056,11 @@ theorem map_restrict_ae_le_map_indicator_ae [Zero β] (hs : MeasurableSet s) :
 
 variable [Zero β]
 
-theorem indicator_ae_eq_restrict (hs : MeasurableSet s) : indicator s f =ᵐ[μ.restrict s] f := by
+theorem indicator_ae_eq_restrict (hs : NullMeasurableSet s μ) :
+    indicator s f =ᵐ[μ.restrict s] f := by
   classical exact piecewise_ae_eq_restrict hs
 
-theorem indicator_ae_eq_restrict_compl (hs : MeasurableSet s) :
+theorem indicator_ae_eq_restrict_compl (hs : NullMeasurableSet s μ) :
     indicator s f =ᵐ[μ.restrict sᶜ] 0 := by
   classical exact piecewise_ae_eq_restrict_compl hs
 
@@ -1078,8 +1108,8 @@ lemma MeasureTheory.Measure.sum_restrict_le {_ : MeasurableSpace α}
     (hs : ∀ y, {i | y ∈ s i}.encard ≤ M) :
     Measure.sum (fun i ↦ μ.restrict (s i)) ≤ M • μ.restrict (⋃ i, s i) := by
   classical
-  refine le_iff.mpr (fun t ht ↦ le_of_eq_of_le (sum_apply _ ht) ?_)
-  refine ENNReal.summable.tsum_le_of_sum_le (fun F ↦ ?_)
+  refine le_iff.mpr (fun t ht ↦ le_of_eq_of_le (Measure.sum_apply _ ht) ?_)
+  refine summable.tsum_le_of_sum_le (fun F ↦ ?_)
   -- `P` is a partition of `⋃ i ∈ F, s i` indexed by `C ∈ Cs` (nonempty subsets of `F`).
   -- `P` is a partition of `s i` when restricted to `C ∈ G i` (subsets of `F` containing `i`).
   let P (C : Finset ι) := (⋂ i ∈ C, s i) ∩ (⋂ i ∈ (F \ C), (s i)ᶜ)
@@ -1096,7 +1126,7 @@ lemma MeasureTheory.Measure.sum_restrict_le {_ : MeasurableSpace α}
     intro x hx
     simp_rw [Cs, Finset.mem_sdiff, mem_iUnion] at hx
     have ⟨C, ⟨_, C_nonempty⟩, hxC⟩ := hx
-    have ⟨i, hi⟩ := Finset.nonempty_iff_ne_empty.mpr <| Finset.notMem_singleton.mp C_nonempty
+    have ⟨i, hi⟩ := Finset.ne_empty_iff_nonempty.mp <| Finset.notMem_singleton.mp C_nonempty
     exact ⟨s i, ⟨i, rfl⟩, hxC.1 (s i) ⟨i, by simp [hi]⟩⟩
   have P_subset_s {i : ι} {C : Finset ι} (hiC : i ∈ C) : P C ⊆ s i := by
     intro x hx
@@ -1113,7 +1143,7 @@ lemma MeasureTheory.Measure.sum_restrict_le {_ : MeasurableSpace α}
         restrict_biUnion_le ((finite_toSet F.powerset).subset (sep_subset _ _)).countable t
     _ = ∑ i ∈ F, ∑' (C : G i), μ.restrict (P C) t := by simp_rw [Measure.sum_apply _ ht]
     _ = ∑' C, ∑ i ∈ F, (G i).indicator (fun C ↦ μ.restrict (P C) t) C := by
-      rw [Summable.tsum_finsetSum (fun _ _ ↦ ENNReal.summable)]
+      rw [Summable.tsum_finsetSum (fun _ _ ↦ summable)]
       congr with i
       rw [tsum_subtype (G i) (fun C ↦ (μ.restrict (P C)) t)]
     _ = ∑ C ∈ Cs, ∑ i ∈ F, (C : Set ι).indicator (fun _ ↦ (μ.restrict (P C)) t) i := by
@@ -1127,8 +1157,8 @@ lemma MeasureTheory.Measure.sum_restrict_le {_ : MeasurableSpace α}
       by_cases hPC : P C = ∅
       · simp [hPC]
       have hCM : (C : Set ι).encard ≤ M :=
-        have ⟨x, hx⟩ := Set.nonempty_iff_ne_empty.mpr hPC
-        (encard_mono (mem_iInter₂.mp hx.1)).trans (hs x)
+        have ⟨x, hx⟩ := Set.ne_empty_iff_nonempty.mp hPC
+        (encard_mono (b := {i | x ∈ s i}) (mem_iInter₂.mp hx.1)).trans (hs x)
       exact nsmul_le_nsmul_left zero_le <| calc {a ∈ F | a ∈ C}.card
         _ ≤ C.card := card_mono <| fun i hi ↦ (F.mem_filter.mp hi).2
         _ = (C : Set ι).ncard := (ncard_coe_finset C).symm
@@ -1138,7 +1168,7 @@ lemma MeasureTheory.Measure.sum_restrict_le {_ : MeasurableSpace α}
       refine fun C₁ hC₁ C₂ hC₂ hC ↦ Set.disjoint_iff.mpr fun x hx ↦ hC <| ?_
       exact subset_antisymm (C_subset_C hC₁ hx) (C_subset_C hC₂ (Set.inter_comm _ _ ▸ hx))
     _ ≤ (M • μ.restrict (⋃ i, s i)) t := by
-      rw [Measure.smul_apply]
+      rw [smul_apply]
       exact nsmul_le_nsmul_right (μ.restrict_mono_set iUnion_P t) M
 
 end Sum

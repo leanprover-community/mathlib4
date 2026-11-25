@@ -50,10 +50,12 @@ group.
 * `Rack.oppositeRack` gives the rack with the action replaced by its inverse.
 
 ## Main statements
+
 * `Rack.EnvelGroup` is left adjoint to `Quandle.Conj` (`toEnvelGroup.map`).
   The universality statements are `toEnvelGroup.univ` and `toEnvelGroup.univ_uniq`.
 
 ## Implementation notes
+
 "Unital racks" are uninteresting (see `Rack.assoc_iff_id`, `UnitalShelf.assoc`), so we do not
 define them.
 
@@ -144,7 +146,7 @@ scoped[Quandles] infixr:65 " ◃⁻¹ " => Rack.invAct
 /-- Shelf Homomorphism -/
 scoped[Quandles] infixr:25 " →◃ " => ShelfHom
 
-open Quandles
+open scoped Quandles
 
 namespace UnitalShelf
 open Shelf
@@ -324,6 +326,7 @@ namespace ShelfHom
 
 variable {S₁ : Type*} {S₂ : Type*} {S₃ : Type*} [Shelf S₁] [Shelf S₂] [Shelf S₃]
 
+@[macro_inline]
 instance : FunLike (S₁ →◃ S₂) S₁ S₂ where
   coe := toFun
   coe_injective | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl

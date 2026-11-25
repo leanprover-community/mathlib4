@@ -5,6 +5,7 @@ Authors: Eric Wieser, Yi Yuan
 -/
 module
 
+public import Mathlib.Data.Finite.Perm
 public import Mathlib.GroupTheory.Perm.Cycle.Type
 public import Mathlib.GroupTheory.Perm.Option
 public import Mathlib.Logic.Equiv.Fin.Rotate
@@ -21,7 +22,8 @@ open Equiv
 
 /-- Permutations of `Fin (n + 1)` are equivalent to fixing a single
 `Fin (n + 1)` and permuting the remaining with a `Perm (Fin n)`.
-The fixed `Fin (n + 1)` is swapped with `0`. -/
+The fixed `Fin (n + 1)` is swapped with `0`.
+(See also `Equiv.Perm.decomposeFin'` for a slightly different bijection.) -/
 def Equiv.Perm.decomposeFin {n : ℕ} : Perm (Fin n.succ) ≃ Fin n.succ × Perm (Fin n) :=
   ((Equiv.permCongr <| finSuccEquiv n).trans Equiv.Perm.decomposeOption).trans
     (Equiv.prodCongr (finSuccEquiv n).symm (Equiv.refl _))
@@ -163,8 +165,8 @@ theorem cycleRange_of_le [NeZero n] (h : i ≤ j) :
       simpa only [coe_castLEEmb, ← this, symm_apply_apply] using eq_of_val_eq (by simp [ch])
     rw [this, finRotate_last]
     rfl
-  · have hj1 : (i + 1).1 = i.1 + 1 := val_add_one_of_lt' (by lia)
-    have hj2 : (i.castLT (by lia) + 1 : Fin (j + 1)).1 =
+  · have hj1 : (i + 1).val = i.val + 1 := val_add_one_of_lt' (by lia)
+    have hj2 : (i.castLT (by lia) + 1 : Fin (j + 1)).val =
       (i.castLT (by lia) : Fin (j + 1)) + 1 := val_add_one_of_lt' (by simp; lia)
     exact eq_of_val_eq (by simp [← this, hj1, hj2])
 
@@ -179,7 +181,7 @@ theorem coe_cycleRange_of_le (h : i ≤ j) :
     val_add_one_of_lt
       (calc
         (i : ℕ) < j := Fin.lt_def.mp (lt_of_le_of_ne h h')
-        _ ≤ n := Nat.lt_succ_iff.mp j.2)
+        _ ≤ n := Nat.lt_succ_iff.mp j.isLt)
 
 theorem cycleRange_of_lt [NeZero n] (h : i < j) : cycleRange j i = i + 1 := by
   rw [cycleRange_of_le h.le, ite_eq_right h.ne]
@@ -238,8 +240,8 @@ theorem succAbove_cycleRange (i j : Fin n) :
     · rw [Fin.lt_def]
       simpa [this] using hlt
   · rw [heq, Fin.cycleRange_self, Fin.succAbove_of_castSucc_lt, swap_apply_right, Fin.castSucc_zero]
-    · rw [Fin.castSucc_zero]
-      apply Fin.succ_pos
+    rw [Fin.castSucc_zero]
+    apply Fin.succ_pos
   · rw [Fin.cycleRange_of_gt hgt, Fin.succAbove_of_le_castSucc, swap_apply_of_ne_of_ne]
     · apply Fin.succ_ne_zero
     · apply (Fin.succ_injective _).ne hgt.ne.symm
@@ -373,9 +375,9 @@ theorem cycleIcc_of_gt (h : j < k) : (cycleIcc i j) k = k := by
   by_cases hij : i ≤ j
   · have kin : k ∈ Set.range (natAdd_castLEEmb (Nat.sub_le n i)) := by
       simp [range_natAdd_castLEEmb]; lia
-    have : (((addNatEmb (n - (n - i.1))).trans (finCongr _).toEmbedding).toEquivRange.symm ⟨k, kin⟩)
-      = subNat i.1 (k.cast (by lia)) (by simp; lia) := by
-      simpa [symm_apply_eq] using eq_of_val_eq (by simp; lia)
+    have : (((addNatEmb (n - (n - i.val))).trans (finCongr _).toEmbedding).toEquivRange.symm
+        ⟨k, kin⟩) = subNat i.val (k.cast (by lia)) (by simp; lia) := by
+      simpa [-Function.Embedding.coe_trans, symm_apply_eq] using eq_of_val_eq (by simp; lia)
     simp only [cycleIcc_to_cycleRange hij kin, natAdd_castLEEmb, this,
       Function.Embedding.trans_apply, addNatEmb_apply, coe_toEmbedding, finCongr_apply]
     rw [cycleRange_of_gt]
@@ -390,17 +392,18 @@ theorem cycleIcc_of_le_of_le (hik : i ≤ k) (hkj : k ≤ j) [NeZero n] :
   have hij : i ≤ j := le_trans hik hkj
   have kin : k ∈ Set.range (natAdd_castLEEmb (Nat.sub_le n i)) := by
     simp [range_natAdd_castLEEmb]; lia
-  have : (((addNatEmb (n - (n - i.1))).trans (finCongr _).toEmbedding).toEquivRange.symm ⟨k, kin⟩)
-      = subNat i.1 (k.cast (by lia)) (by simp; lia) := by
-    simpa [symm_apply_eq] using eq_of_val_eq (by simp; lia)
+  have : (((addNatEmb (n - (n - i.val))).trans (finCongr _).toEmbedding).toEquivRange.symm ⟨k, kin⟩)
+      = subNat i.val (k.cast (by lia)) (by simp; lia) := by
+    simpa [-Function.Embedding.coe_trans, symm_apply_eq] using eq_of_val_eq (by simp; lia)
   simp only [cycleIcc_to_cycleRange hij kin, natAdd_castLEEmb, this, Function.Embedding.trans_apply,
     addNatEmb_apply, coe_toEmbedding, finCongr_apply]
   refine eq_of_val_eq ?_
   split_ifs with ch
-  · have : subNat i.1 (j.cast (by lia)) (by simp [hij]) = (j - i).castLT (sub_val_lt_sub hij) :=
+  · have : subNat i.val (j.cast (by lia)) (by simp [hij]) = (j - i).castLT (sub_val_lt_sub hij) :=
       eq_of_val_eq (by simp [sub_val_of_le hij])
     simp [ch, cycleRange_of_eq this]; lia
-  · have : subNat i.1 (k.cast (by lia)) (by simp [hik]) < (j - i).castLT (sub_val_lt_sub hij) := by
+  · have : subNat i.val (k.cast (by lia)) (by simp [hik]) <
+        (j - i).castLT (sub_val_lt_sub hij) := by
       simp [lt_def, sub_val_of_le hij]; lia
     rw [cycleRange_of_lt this, subNat]
     simp only [val_cast, add_def, val_one', Nat.add_mod_mod, addNat_mk, cast_mk]
@@ -471,8 +474,7 @@ theorem cycleIcc.trans [NeZero n] (hij : i ≤ j) (hjk : j ≤ k) :
   · simp [cycleIcc_of_gt (lt_of_le_of_lt hjk ch), cycleIcc_of_gt ch]
   rcases lt_or_ge x j with ch2 | ch2
   · simp [cycleIcc_of_lt ch2, cycleIcc_of_le_of_le ch ch1, cycleIcc_of_le_of_le ch (le_of_lt ch2)]
-    split_ifs
-    repeat lia
+    split_ifs <;> lia
   · simp only [Function.comp_apply, cycleIcc_of_le_of_le ch2 ch1, cycleIcc_of_le_of_le ch ch1]
     split_ifs with h
     · exact val_eq_of_eq (cycleIcc_of_last hij)
@@ -536,9 +538,86 @@ theorem Equiv.Perm.prod_Iio_comp_eq_sign_mul_prod {R : Type*} [CommRing R]
 theorem Equiv.Perm.prod_Ioi_comp_eq_sign_mul_prod {R : Type*} [CommRing R]
     (σ : Equiv.Perm (Fin n)) {f : Fin n → Fin n → R} (hf : ∀ i j, f i j = -f j i) :
     ∏ i, ∏ j ∈ Finset.Ioi i, f (σ i) (σ j) = σ.sign * ∏ i, ∏ j ∈ Finset.Ioi i, f i j := by
-  convert! σ.prod_Iio_comp_eq_sign_mul_prod hf using 1
+  convert σ.prod_Iio_comp_eq_sign_mul_prod hf using 1
   · apply Finset.prod_comm' (by simp)
-  convert! rfl using 2
+  convert rfl using 2
   apply Finset.prod_comm' (by simp)
 
 end Sign
+
+namespace Equiv.Perm
+
+variable {n : ℕ}
+
+/-- Given `i : Fin (n + 2)` and `σ : Perm (Fin (n + 1)`, this is the permutation
+of `Fin (n + 2)` which sends `0` to `i` and `j.succ` to `i.succAbove (σ j)`. -/
+noncomputable def decomposeFin'Symm (i : Fin (n + 2)) (σ : Perm (Fin (n + 1))) :
+    Perm (Fin (n + 2)) :=
+  Equiv.ofBijective
+    (Fin.cases i (Fin.succAbove i ∘ σ)) (by
+      rw [Nat.bijective_iff_injective_and_card]
+      refine ⟨fun j k h ↦ ?_, rfl⟩
+      induction j using Fin.cases <;> induction k using Fin.cases <;> aesop)
+
+@[simp]
+lemma decomposeFin'Symm_zero (i : Fin (n + 2)) (σ : Perm (Fin (n + 1))) :
+    decomposeFin'Symm i σ 0 = i := rfl
+
+@[simp]
+lemma decomposeFin'Symm_succ (i : Fin (n + 2)) (σ : Perm (Fin (n + 1))) (j : Fin (n + 1)) :
+    decomposeFin'Symm i σ j.succ = i.succAbove (σ j) := rfl
+
+@[simp]
+lemma decomposeFin'Symm_symm_eq_zero (i : Fin (n + 2)) (σ : Perm (Fin (n + 1))) :
+    (decomposeFin'Symm i σ).symm i = 0 :=
+  (decomposeFin'Symm i σ).injective (by simp)
+
+@[simp]
+lemma decomposeFin'Symm_symm_succAbove
+    (i : Fin (n + 2)) (σ : Perm (Fin (n + 1))) (j : Fin (n + 1)) :
+    (decomposeFin'Symm i σ).symm (i.succAbove (σ j)) = j.succ :=
+  (decomposeFin'Symm i σ).injective (by simp)
+
+variable (n) in
+lemma decomposeFin'Symm_uncurry_bijective :
+    Function.Bijective (decomposeFin'Symm (n := n)).uncurry := by
+  rw [Nat.bijective_iff_injective_and_card]
+  refine ⟨fun ⟨i, σ⟩ ⟨i', σ'⟩ h ↦ ?_, ?_⟩
+  · obtain rfl : i = i' := by simpa using congr($h 0)
+    obtain rfl : σ = σ' := by
+      ext j : 1
+      simpa using congr($h j.succ)
+    rfl
+  · rw [Nat.card_prod, Nat.card_perm, Nat.card_perm, Nat.card_eq_fintype_card,
+      Nat.card_eq_fintype_card, Fintype.card_fin, Fintype.card_fin,
+      Nat.factorial_succ (n + 1)]
+
+/-- A bijection between `Perm (Fin (n + 2))` and `Fin (n + 2) × Perm (Fin (n + 1))`.
+The inverse map sends `⟨i, σ⟩` (with `i : Fin (n + 2)` and `σ : Perm (Fin (n + 1)`)
+to `decomposeFin'Symm i σ` which sends `0` to `i` and `j.succ` to `i.succAbove (σ j)`.
+(This bijection is slightly different from `Equiv.Perm.decomposeFin`.) -/
+noncomputable def decomposeFin' : Perm (Fin (n + 2)) ≃ Fin (n + 2) × Perm (Fin (n + 1)) :=
+  (Equiv.ofBijective _ (decomposeFin'Symm_uncurry_bijective n)).symm
+
+@[simp]
+lemma decomposeFin'_symm (i : Fin (n + 2)) (σ : Perm (Fin (n + 1))) :
+    decomposeFin'.symm ⟨i, σ⟩ = decomposeFin'Symm i σ := rfl
+
+@[simp]
+lemma sign_decomposeFin'Symm (i : Fin (n + 2)) (σ : Perm (Fin (n + 1))) :
+    (decomposeFin'Symm i σ).sign = (-1) ^ i.val * σ.sign := by
+  rw [Equiv.Perm.sign_eq_prod_prod_Ioi, Fin.prod_univ_succ]
+  congr
+  · let S : Finset (Fin (n + 1)) := { x | i.succAbove (σ x) ≤ i }
+    have : S = Finset.image σ.symm { x | x.castSucc < i } := by aesop
+    have hS : S.card = i.val := by
+      simp only [this, Finset.card_image_of_injective _ (Equiv.injective _)]
+      exact Finset.card_eq_of_bijective (fun j hj ↦ ⟨j, by grind⟩) (by grind) (by grind) (by simp)
+    simp only [← hS, Fin.Ioi_zero_eq_map, decomposeFin'Symm_zero, Finset.prod_map, Fin.coe_succEmb,
+      decomposeFin'Symm_succ, ← S.prod_mul_prod_compl, ← Finset.prod_const]
+    nth_rw 2 [Finset.prod_eq_one (by simp [S]; grind [Fin.succAbove])]
+    rw [mul_one]
+    exact Finset.prod_congr rfl (by grind)
+  · simp [Equiv.Perm.sign_eq_prod_prod_Ioi]
+
+end Equiv.Perm

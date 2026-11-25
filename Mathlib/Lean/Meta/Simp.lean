@@ -5,9 +5,9 @@ Authors: Kim Morrison, Gabriel Ebner, Floris van Doorn
 -/
 module
 
-public import Mathlib.Init
 public import Lean.Elab.Tactic.Simp
 public import Lean.Meta.DiscrTree
+public import Mathlib.Init
 
 /-!
 # Helper functions for using the simplifier.
@@ -15,12 +15,12 @@ public import Lean.Meta.DiscrTree
 [TODO] Needs documentation, cleanup, and possibly reunification of `mkSimpContext'` with core.
 -/
 
-@[expose] public section
+public section
 
 open Lean Elab.Tactic
 
 def Lean.PHashSet.toList.{u} {α : Type u} [BEq α] [Hashable α] (s : Lean.PHashSet α) : List α :=
-  s.1.toList.map (·.1)
+  s.set.toList.map (·.1)
 
 namespace Lean
 

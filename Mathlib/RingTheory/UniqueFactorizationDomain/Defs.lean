@@ -5,16 +5,16 @@ Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
 public import Mathlib.Algebra.Group.Submonoid.BigOperators
 public import Mathlib.Algebra.GroupWithZero.Associated
-public import Mathlib.Algebra.GroupWithZero.Submonoid.Primal
-public import Mathlib.Order.WellFounded
+
+import Mathlib.Algebra.GroupWithZero.Submonoid.Primal
 
 /-!
 # Unique factorization
 
 ## Main Definitions
+
 * `WfDvdMonoid` holds for `Monoid`s for which a strict divisibility relation is
   well-founded.
 * `UniqueFactorizationMonoid` holds for `WfDvdMonoid`s where
@@ -34,11 +34,11 @@ condition on divisibility and to the ascending chain condition on
 principal ideals in an integral domain.
 -/
 abbrev WfDvdMonoid (α : Type*) [CommMonoidWithZero α] : Prop :=
-  IsWellFounded α DvdNotUnit
+  @WellFounded α DvdNotUnit
 
 theorem wellFounded_dvdNotUnit {α : Type*} [CommMonoidWithZero α] [h : WfDvdMonoid α] :
-    WellFounded (DvdNotUnit (α := α)) :=
-  h.wf
+    @WellFounded α DvdNotUnit :=
+  h
 
 namespace WfDvdMonoid
 
@@ -69,7 +69,7 @@ theorem induction_on_irreducible {motive : α → Prop} (a : α)
         else
           let ⟨i, i_irred, b, hb⟩ := exists_irreducible_factor hau ha0
           let hb0 : b ≠ 0 := ne_zero_of_dvd_ne_zero ha0 ⟨i, mul_comm i b ▸ hb⟩
-          hb.symm ▸ mul b i hb0 i_irred <| ih b ⟨hb0, i, i_irred.1, mul_comm i b ▸ hb⟩)
+          hb.symm ▸ mul b i hb0 i_irred <| ih b ⟨hb0, i, i_irred.not_isUnit, mul_comm i b ▸ hb⟩)
     a
 
 theorem exists_factors (a : α) :
@@ -131,10 +131,12 @@ of prime factors, use the definition `of_exists_prime_factors`
 @[wikidata Q1052579 "This Mathlib declaration captures 'unique factorization'.
 Use in conjunction with `IsDomain` to capture unique factorization domain."]
 class UniqueFactorizationMonoid (α : Type*) [CommMonoidWithZero α] : Prop
-    extends IsCancelMulZero α, IsWellFounded α DvdNotUnit where
+    extends IsCancelMulZero α where
+  [toWellFounded : @WellFounded α DvdNotUnit]
   protected irreducible_iff_prime : ∀ {a : α}, Irreducible a ↔ Prime a
 
 attribute [instance 100] UniqueFactorizationMonoid.toIsCancelMulZero
+attribute [instance] UniqueFactorizationMonoid.toWellFounded
 
 instance (priority := 100) ufm_of_decomposition_of_wfDvdMonoid
     [CommMonoidWithZero α] [IsCancelMulZero α] [WfDvdMonoid α] [DecompositionMonoid α] :
@@ -176,11 +178,13 @@ namespace UniqueFactorizationMonoid
 
 variable [CommMonoidWithZero α]
 
+instance [Subsingleton α] : WfDvdMonoid α :=
+  ⟨fun a ↦ Acc.intro a fun b ⟨hb, _⟩ ↦ (hb (Subsingleton.elim b 0)).elim⟩
+
 variable (α) in
 theorem of_subsingleton [Subsingleton α] : UniqueFactorizationMonoid α where
   mul_left_cancel_of_ne_zero _ a b _ := Subsingleton.elim a b
   mul_right_cancel_of_ne_zero _ a b _ := Subsingleton.elim a b
-  wf := ⟨fun a ↦ Acc.intro a fun b ⟨hb, _⟩ ↦ (hb (Subsingleton.elim b 0)).elim⟩
   irreducible_iff_prime {a} := by simp [Subsingleton.elim a 0]
 
 variable [UniqueFactorizationMonoid α]

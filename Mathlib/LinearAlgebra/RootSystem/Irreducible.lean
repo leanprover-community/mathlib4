@@ -5,22 +5,22 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.LinearAlgebra.RootSystem.RootPositive
 public import Mathlib.LinearAlgebra.RootSystem.WeylGroup
-public import Mathlib.RepresentationTheory.Submodule
+
+import Mathlib.RepresentationTheory.Submodule
 
 /-!
 # Irreducible root pairings
 
 This file contains basic definitions and results about irreducible root systems.
 
-## Main definitions / results:
+## Main definitions and statements
+
 * `RootPairing.isSimpleModule_weylGroupRootRep_iff`: a criterion for the representation of the Weyl
   group on root space to be irreducible.
 * `RootPairing.IsIrreducible`: a typeclass encoding the fact that a root pairing is irreducible.
 * `RootPairing.IsIrreducible.mk'`: an alternative constructor for irreducibility when the
   coefficients are a field.
-
 -/
 
 @[expose] public section
@@ -169,6 +169,36 @@ lemma not_isIrreducible_of_subsingleton [Subsingleton M] :
     ¬ P.IsIrreducible :=
   fun contra ↦ not_nontrivial _ contra.nontrivial
 
+variable {P} in
+lemma Equiv.isIrreducible {ι₂ M₂ N₂ : Type*}
+    [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
+    {P₂ : RootPairing ι₂ R M₂ N₂} (e : P.Equiv P₂) [P.IsIrreducible] :
+    P₂.IsIrreducible where
+  nontrivial := by
+    have := IsIrreducible.nontrivial P
+    exact e.weightEquiv.symm.nontrivial
+  nontrivial' := by
+    have := IsIrreducible.nontrivial' P
+    exact e.coweightEquiv.nontrivial
+  eq_top_of_invtSubmodule_reflection q h₁ h₂ := by
+    set q' := q.map e.weightEquiv.symm.toLinearMap with hq'
+    replace h₂ : q' ≠ ⊥ := by simpa [hq'] using h₂
+    suffices q' = ⊤ by rwa [eq_comm, this, Submodule.map_eq_top_iff] at hq'
+    suffices ∀ i, q' ∈ invtSubmodule (P.reflection i) from
+      IsIrreducible.eq_top_of_invtSubmodule_reflection q' this h₂
+    intro i
+    rw [hq', ← e.weightEquiv_symm_conj_reflection, LinearEquiv.map_mem_invtSubmodule_conj_iff]
+    exact h₁ (e.indexEquiv i)
+  eq_top_of_invtSubmodule_coreflection q h₁ h₂ := by
+    set q' := q.map e.coweightEquiv.toLinearMap with hq'
+    replace h₂ : q' ≠ ⊥ := by simpa [hq'] using h₂
+    suffices q' = ⊤ by rwa [eq_comm, this, Submodule.map_eq_top_iff] at hq'
+    suffices ∀ i, q' ∈ invtSubmodule (P.coreflection i) from
+      IsIrreducible.eq_top_of_invtSubmodule_coreflection q' this h₂
+    intro i
+    rw [hq', ← e.coweightEquiv_conj_coreflection, LinearEquiv.map_mem_invtSubmodule_conj_iff]
+    exact h₁ (e.indexEquiv i)
+
 /-- A nonempty irreducible root pairing is a root system. -/
 instance [Nonempty ι] [NeZero (2 : R)] [P.IsIrreducible] : P.IsRootSystem where
   span_root_eq_top := IsIrreducible.eq_top_of_invtSubmodule_reflection
@@ -251,7 +281,7 @@ lemma span_root_image_eq_top_of_forall_orthogonal (s : Set ι)
     by_cases hj : P.root j ∈ span R (P.root '' s)
     · exact Submodule.mem_invtSubmodule_reflection_of_mem _ _ hj
     · refine (Module.End.mem_invtSubmodule _).mpr fun x hx ↦ ?_
-      rwa [Submodule.mem_comap, LinearEquiv.coe_coe,
+      rwa [Submodule.mem_comap, LinearEquiv.coe_toLinearMap,
         (isFixedPt_reflection_of_isOrthogonal (h _ hj) hx).eq]
   apply IsIrreducible.eq_top_of_invtSubmodule_reflection _ hq
   simpa using ⟨hne.choose, hne.choose_spec, P.ne_zero _⟩

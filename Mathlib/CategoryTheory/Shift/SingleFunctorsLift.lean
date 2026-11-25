@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 public import Mathlib.CategoryTheory.Shift.SingleFunctors
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lift of a "single functor" to a full subcategory
 
@@ -17,7 +20,6 @@ a fully faithful functor `G : D ⥤ A` which commutes with shifts.
 Given `F : SingleFunctors C E A`, and a family of functors
 `Φ a : C ⥤ D` with isomorphisms `Φ a ⋙ G ≅ F.functor a` for all `a : A`,
 we lift `F` in `SingleFunctor C D A`.
-
 -/
 
 @[expose] public section
@@ -46,7 +48,6 @@ noncomputable def shiftIso (n a a' : A) (h : n + a = a') :
       isoWhiskerLeft _ (G.commShiftIso n) ≪≫ (Functor.associator _ _ _).symm ≪≫
       isoWhiskerRight (hΦ a') _ ≪≫ F.shiftIso n a a' h ≪≫ (hΦ a).symm)
 
-set_option backward.defeqAttrib.useBackward true in
 private lemma map_shiftIso_hom_app (n a a' : A) (h : n + a = a') (X : C) :
     dsimp% G.map ((lift.shiftIso hΦ n a a' h).hom.app X) =
       (G.commShiftIso n).hom.app _ ≫ (shiftFunctor E n).map ((hΦ a').hom.app X) ≫
@@ -55,7 +56,6 @@ private lemma map_shiftIso_hom_app (n a a' : A) (h : n + a = a') (X : C) :
 
 end lift
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Let `C`, `D` and `E` be categories. Let `A` be an additive monoid.
 Assume that `D` and `E` have shifts by `A` and that we have
 a fully faithful functor `G : D ⥤ A` which commutes with shifts.

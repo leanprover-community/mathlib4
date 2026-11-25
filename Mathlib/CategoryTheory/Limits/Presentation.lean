@@ -17,7 +17,7 @@ the data of objects `Dⱼ` and natural maps `sⱼ : Dⱼ ⟶ X` that make `X` th
 (See `Mathlib/CategoryTheory/Presentable/ColimitPresentation.lean` for the construction of a
 presentation of a colimit of objects that are equipped with presentations.)
 
-## Main definitions:
+## Main definitions
 
 - `CategoryTheory.Limits.ColimitPresentation`: A colimit presentation of `X` over `J` is a diagram
   `{Dᵢ}` in `C` and natural maps `sᵢ : Dᵢ ⟶ X` making `X` into the colimit of the `Dᵢ`.
@@ -53,7 +53,6 @@ namespace ColimitPresentation
 
 initialize_simps_projections ColimitPresentation (-isColimit)
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma w (pres : ColimitPresentation J X) {i j : J} (f : i ⟶ j) :
     pres.diag.map f ≫ pres.ι.app j = pres.ι.app i := by
@@ -82,7 +81,6 @@ noncomputable def colimit (F : J ⥤ C) [HasColimit F] :
   ι := _
   isColimit := colimit.isColimit _
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `F` preserves colimits of shape `J`, it maps colimit presentations of `X` to
 colimit presentations of `F(X)`. -/
 @[simps]
@@ -100,7 +98,7 @@ def changeDiag (P : ColimitPresentation J X) {F : J ⥤ C} (e : F ≅ P.diag) :
     ColimitPresentation J X where
   diag := F
   ι := e.hom ≫ P.ι
-  isColimit := (IsColimit.precomposeHomEquiv e _).2 P.isColimit
+  isColimit := (IsColimit.precomposeHomEquiv e _).invFun P.isColimit
 
 /-- Map a colimit presentation under an isomorphism. -/
 @[simps]
@@ -136,7 +134,6 @@ namespace LimitPresentation
 
 initialize_simps_projections LimitPresentation (-isLimit)
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma w (pres : LimitPresentation J X) {i j : J} (f : i ⟶ j) :
     pres.π.app i ≫ pres.diag.map f = pres.π.app j := by
@@ -165,7 +162,6 @@ noncomputable def limit (F : J ⥤ C) [HasLimit F] :
   π := _
   isLimit := limit.isLimit _
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `F` preserves limits of shape `J`, it maps limit presentations of `X` to
 limit presentations of `F(X)`. -/
 @[simps]
@@ -183,9 +179,8 @@ def changeDiag (P : LimitPresentation J X) {F : J ⥤ C} (e : F ≅ P.diag) :
     LimitPresentation J X where
   diag := F
   π := P.π ≫ e.inv
-  isLimit := (IsLimit.postcomposeHomEquiv e.symm _).2 P.isLimit
+  isLimit := (IsLimit.postcomposeHomEquiv e.symm _).invFun P.isLimit
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Map a limit presentation under an isomorphism. -/
 @[simps]
 def ofIso (P : LimitPresentation J X) {Y : C} (e : X ≅ Y) : LimitPresentation J Y where

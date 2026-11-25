@@ -8,7 +8,8 @@ module
 public import Mathlib.Algebra.Category.AlgCat.Basic
 public import Mathlib.Algebra.Central.Defs
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-public import Mathlib.LinearAlgebra.Matrix.Reindex
+
+import Mathlib.LinearAlgebra.Matrix.Reindex
 
 /-!
 # Definition of Brauer group of a field K
@@ -25,9 +26,11 @@ that `Mₙ(A) ≃ₐ[K] Mₘ(B)`.
 3. Prove that over a field, being Brauer equivalent is the same as being Morita equivalent.
 
 ## References
+
 * [Algebraic Number Theory, *J.W.S Cassels*][cassels1967algebraic]
 
 ## Tags
+
 Brauer group, Central simple algebra, Galois Cohomology
 -/
 

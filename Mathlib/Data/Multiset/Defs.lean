@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.List.Perm.Subperm
 public import Mathlib.Data.Nat.Basic
-public import Mathlib.Data.Quot
 public import Mathlib.Order.Monotone.Defs
 public import Mathlib.Order.RelClasses
 public import Mathlib.Tactic.Monotonicity.Attr
@@ -116,7 +115,7 @@ section Mem
 
 /-- `a ∈ s` means that `a` has nonzero multiplicity in `s`. -/
 def Mem (s : Multiset α) (a : α) : Prop :=
-  Quot.liftOn s (fun l => a ∈ l) fun l₁ l₂ (e : l₁ ~ l₂) => propext <| e.mem_iff
+  Quot.liftOn s (fun l => a ∈ l) fun l₁ l₂ (e : l₁ ~ l₂) => propext e.mem_iff
 
 instance : Membership α (Multiset α) :=
   ⟨Mem⟩
@@ -242,7 +241,7 @@ lemma card_strictMono : StrictMono (@card α) := fun _ _ ↦ card_lt_card
 
 /-- Another way of expressing `strongInductionOn`: the `(<)` relation is well-founded. -/
 instance instWellFoundedLT : WellFoundedLT (Multiset α) :=
-  ⟨Subrelation.wf Multiset.card_lt_card (measure Multiset.card).2⟩
+  Subrelation.wf Multiset.card_lt_card (measure Multiset.card).wf
 
 @[simp]
 theorem coe_reverse (l : List α) : (reverse l : Multiset α) = l :=
@@ -310,7 +309,7 @@ instance decidableDforallMultiset {p : ∀ a ∈ m, Prop} [_hp : ∀ (a) (h : a 
     Decidable (∀ (a) (h : a ∈ m), p a h) :=
   @decidable_of_iff _ _
     (Iff.intro (fun h a ha => h ⟨a, ha⟩ (mem_attach _ _)) fun h ⟨_a, _ha⟩ _ => h _ _)
-    (@Multiset.decidableForallMultiset _ m.attach (fun a => p a.1 a.2) _)
+    (@Multiset.decidableForallMultiset _ m.attach (fun a => p a.val a.property) _)
 
 /-- decidable equality for functions whose domain is bounded by multisets -/
 instance decidableEqPiMultiset {β : α → Type*} [∀ a, DecidableEq (β a)] :
@@ -327,7 +326,7 @@ instance decidableDexistsMultiset {p : ∀ a ∈ m, Prop} [_hp : ∀ (a) (h : a 
   @decidable_of_iff _ _
     (Iff.intro (fun ⟨⟨a, ha₁⟩, _, ha₂⟩ => ⟨a, ha₁, ha₂⟩) fun ⟨a, ha₁, ha₂⟩ =>
       ⟨⟨a, ha₁⟩, mem_attach _ _, ha₂⟩)
-    (@Multiset.decidableExistsMultiset { a // a ∈ m } m.attach (fun a => p a.1 a.2) _)
+    (@Multiset.decidableExistsMultiset { a // a ∈ m } m.attach (fun a => p a.val a.property) _)
 
 end Decidable
 

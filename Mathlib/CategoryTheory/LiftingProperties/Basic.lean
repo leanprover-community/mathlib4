@@ -5,7 +5,6 @@ Authors: Jakob Scholbach, Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.CommSq
 public import Mathlib.CategoryTheory.Retract
 
 /-!
@@ -15,14 +14,16 @@ This file defines the lifting property of two morphisms in a category and
 shows basic properties of this notion.
 
 ## Main results
+
 - `HasLiftingProperty`: the definition of the lifting property
 
 ## Tags
+
 lifting property
 
 ## TODO
-1) direct/inverse images, adjunctions
 
+1) direct/inverse images, adjunctions
 -/
 
 @[expose] public section
@@ -47,7 +48,6 @@ class HasLiftingProperty : Prop where
   /-- Unique field expressing that any commutative square built from `f` and `g` has a lift -/
   sq_hasLift : ∀ {f : A ⟶ X} {g : B ⟶ Y} (sq : CommSq f i p g), sq.HasLift
 
-attribute [to_dual self] HasLiftingProperty.sq_hasLift
 attribute [to_dual self (reorder := A Y, B X, i p, sq_hasLift (f g))] HasLiftingProperty.mk
 
 @[to_dual self]

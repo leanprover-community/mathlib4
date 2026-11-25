@@ -19,6 +19,7 @@ in coding theory, in which it is fundamental for defining the minimum distance o
 code.
 
 ## Main definitions
+
 * `hammingDist x y`: the Hamming distance between `x` and `y`, the number of entries which differ.
 * `hammingNorm x`: the Hamming norm of `x`, the number of non-zero entries.
 * `Hamming β`: a type synonym for `Π i, β i` with `dist` and `norm` provided by the above.
@@ -405,8 +406,10 @@ instance [∀ i, AddCommGroup (β i)] : NormedAddCommGroup (Hamming β) where
   dist_eq := fun x y => NormedAddGroup.dist_eq x y
 
 @[simp, push_cast]
-theorem nnnorm_eq_hammingNorm [∀ i, AddGroup (β i)] (x : Hamming β) :
+theorem nnNorm_eq_hammingNorm [∀ i, AddGroup (β i)] (x : Hamming β) :
     ‖x‖₊ = hammingNorm (ofHamming x) := rfl
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_eq_hammingNorm := nnNorm_eq_hammingNorm
 
 end
 

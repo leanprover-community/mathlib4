@@ -6,9 +6,7 @@ Amelia Livingston, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Group.Subsemigroup.Defs
-public import Mathlib.Tactic.FastInstance
 public import Mathlib.Data.Set.Insert
 
 /-!
@@ -45,6 +43,7 @@ This file is designed to have very few dependencies. In particular, it should no
 numbers. `Submonoid` is implemented by extending `Subsemigroup` requiring `one_mem'`.
 
 ## Tags
+
 submonoid, submonoids
 -/
 
@@ -74,7 +73,7 @@ export ZeroMemClass (zero_mem)
 
 attribute [to_additive] OneMemClass
 
-attribute [simp, aesop safe (rule_sets := [SetLike])] one_mem zero_mem
+attribute [simp, aesop safe (rule_sets := [SetLike]), membership .] one_mem zero_mem
 
 /-- The underlying set of a term of a `OneMemClass` is nonempty. -/
 @[to_additive (attr := simp)
@@ -121,7 +120,7 @@ class AddSubmonoidClass (S : Type*) (M : outParam Type*) [AddZeroClass M] [SetLi
 
 attribute [to_additive] Submonoid SubmonoidClass
 
-@[to_additive (attr := aesop 90% (rule_sets := [SetLike]))]
+@[to_additive (attr := aesop 90% (rule_sets := [SetLike]), membership .)]
 theorem pow_mem {M A} [Monoid M] [SetLike A M] [SubmonoidClass A M] {S : A} {x : M}
     (hx : x ∈ S) : ∀ n : ℕ, x ^ n ∈ S
   | 0 => by
@@ -146,7 +145,7 @@ instance : SetLike (Submonoid M) M where
   coe s := s.carrier
   coe_injective := SetLike.coe_injective.comp toSubsemigroup_injective
 
-@[to_additive] instance : PartialOrder (Submonoid M) := .ofSetLike (Submonoid M) M
+@[to_additive] instance : PartialOrder (Submonoid M) := .ofSetLike (Submonoid M)
 
 initialize_simps_projections Submonoid (carrier → coe, as_prefix coe)
 initialize_simps_projections AddSubmonoid (carrier → coe, as_prefix coe)
@@ -348,6 +347,10 @@ instance one : One S' :=
 theorem coe_one : ((1 : S') : M₁) = 1 :=
   rfl
 
+@[to_additive]
+instance {M : Type*} [MulOneClass M] : Unique (⊥ : Submonoid M) :=
+  ⟨⟨1⟩, fun g ↦ Subtype.ext g.property⟩
+
 variable {S'}
 
 @[to_additive (attr := simp, norm_cast)]
@@ -369,7 +372,7 @@ namespace SubmonoidClass
 /-- A submonoid of a monoid inherits a power operator. -/
 @[to_additive /-- An `AddSubmonoid` of an `AddMonoid` inherits a scalar multiplication. -/]
 instance instPow {M} [Monoid M] {A : Type*} [SetLike A M] [SubmonoidClass A M] (S : A) : Pow S ℕ :=
-  ⟨fun a n => ⟨a.1 ^ n, pow_mem a.2 n⟩⟩
+  ⟨fun a n => ⟨a.val ^ n, pow_mem a.property n⟩⟩
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_pow {M} [Monoid M] {A : Type*} [SetLike A M] [SubmonoidClass A M] {S : A} (x : S)
@@ -385,24 +388,24 @@ theorem mk_pow {M} [Monoid M] {A : Type*} [SetLike A M] [SubmonoidClass A M] {S 
 /-- A submonoid of a unital magma inherits a unital magma structure. -/
 @[to_additive
   /-- An `AddSubmonoid` of a unital additive magma inherits a unital additive magma structure. -/]
-instance (priority := 75) toMulOneClass {M : Type*} [MulOneClass M] {A : Type*} [SetLike A M]
+instance toMulOneClass {M : Type*} [MulOneClass M] {A : Type*} [SetLike A M]
     [SubmonoidClass A M] (S : A) : MulOneClass S := fast_instance%
   Subtype.coe_injective.mulOneClass Subtype.val rfl (fun _ _ => rfl)
 
 instance (S : A) [IsDedekindFiniteMonoid M] : IsDedekindFiniteMonoid S where
-  mul_eq_one_symm eq := Subtype.ext (mul_eq_one_symm <| congr_arg (·.1) eq)
+  mul_eq_one_symm eq := Subtype.ext (mul_eq_one_symm <| congr_arg (·.val) eq)
 
 -- Prefer subclasses of `Monoid` over subclasses of `SubmonoidClass`.
 /-- A submonoid of a monoid inherits a monoid structure. -/
 @[to_additive /-- An `AddSubmonoid` of an `AddMonoid` inherits an `AddMonoid` structure. -/]
-instance (priority := 75) toMonoid {M : Type*} [Monoid M] {A : Type*} [SetLike A M]
+instance toMonoid {M : Type*} [Monoid M] {A : Type*} [SetLike A M]
     [SubmonoidClass A M] (S : A) : Monoid S := fast_instance%
   Subtype.coe_injective.monoid Subtype.val rfl (fun _ _ => rfl) (fun _ _ => rfl)
 
 -- Prefer subclasses of `Monoid` over subclasses of `SubmonoidClass`.
 /-- A submonoid of a `CommMonoid` is a `CommMonoid`. -/
 @[to_additive /-- An `AddSubmonoid` of an `AddCommMonoid` is an `AddCommMonoid`. -/]
-instance (priority := 75) toCommMonoid {M} [CommMonoid M] {A : Type*} [SetLike A M]
+instance toCommMonoid {M} [CommMonoid M] {A : Type*} [SetLike A M]
     [SubmonoidClass A M] (S : A) : CommMonoid S := fast_instance%
   Subtype.coe_injective.commMonoid Subtype.val rfl (fun _ _ => rfl) fun _ _ => rfl
 
@@ -434,7 +437,7 @@ variable {M : Type*} [MulOneClass M] (S : Submonoid M)
 /-- A submonoid of a monoid inherits a multiplication. -/
 @[to_additive /-- An `AddSubmonoid` of an `AddMonoid` inherits an addition. -/]
 instance mul : Mul S :=
-  ⟨fun a b => ⟨a.1 * b.1, S.mul_mem a.2 b.2⟩⟩
+  ⟨fun a b => ⟨a.val * b.val, S.mul_mem a.property b.property⟩⟩
 
 /-- A submonoid of a monoid inherits a 1. -/
 @[to_additive /-- An `AddSubmonoid` of an `AddMonoid` inherits a zero. -/]
@@ -458,7 +461,7 @@ theorem mk_mul_mk (x y : M) (hx : x ∈ S) (hy : y ∈ S) :
   rfl
 
 @[to_additive]
-theorem mul_def (x y : S) : x * y = ⟨x * y, S.mul_mem x.2 y.2⟩ :=
+theorem mul_def (x y : S) : x * y = ⟨x * y, S.mul_mem x.property y.property⟩ :=
   rfl
 
 @[to_additive]

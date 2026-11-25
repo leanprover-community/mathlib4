@@ -5,16 +5,15 @@ Authors: Yaël Dillies, Patrick Luo
 -/
 module
 
-public import Mathlib.GroupTheory.Finiteness
-public import Mathlib.GroupTheory.FreeAbelianGroup
 public import Mathlib.GroupTheory.MonoidLocalization.GrothendieckGroup
-public import Mathlib.LinearAlgebra.Dimension.Finrank
+public import Mathlib.LinearAlgebra.Dimension.Free
 
 import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.GroupTheory.MonoidLocalization.Finite
-import Mathlib.LinearAlgebra.Dimension.Free
 import Mathlib.LinearAlgebra.FreeModule.PID
-public import Mathlib.LinearAlgebra.Dimension.Free
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Affine monoids embed into `ℤⁿ`
@@ -27,7 +26,7 @@ public section
 
 open Algebra AddLocalization Function
 
-variable {M : Type*} [AddCancelCommMonoid M] [AddMonoid.FG M] [IsAddTorsionFree M]
+variable {M : Type*} [AddCancelCommMonoid M] [AddMonoid.FG M] [HasUniqueDiv M]
 
 namespace AffineAddMonoid
 
@@ -37,8 +36,8 @@ noncomputable abbrev dim := Module.finrank ℤ <| GrothendieckAddGroup M
 
 variable (M) in
 /-- An arbitrary embedding of an affine monoid `M` into `ℤ ^ dim M`. -/
-noncomputable def embedding : M →+ FreeAbelianGroup (Fin (dim M)) :=
-  .comp (FreeAbelianGroup.equivFinsupp _).symm.toAddMonoidHom <|
+noncomputable def embedding : M →+ FreeAddCommGroup (Fin (dim M)) :=
+  .comp (FreeAddCommGroup.equivFinsupp _).symm.toAddMonoidHom <|
     .comp (Module.finBasis ℤ _).repr.toAddMonoidHom
       (addMonoidOf ⊤).toAddMonoidHom
 

@@ -5,11 +5,12 @@ Authors: William Coram
 -/
 module
 
-public import Mathlib.RingTheory.MvPowerSeries.Basic
-public import Mathlib.Algebra.Order.Ring.IsNonarchimedean
 public import Mathlib.Analysis.Normed.Group.Basic
 public import Mathlib.Algebra.Order.Archimedean.Real.Basic
 public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
+public import Mathlib.RingTheory.MvPowerSeries.Basic
+
+import Mathlib.Algebra.Order.Ring.IsNonarchimedean
 
 /-!
 # Gauss norm for multivariate power series
@@ -40,7 +41,6 @@ the set of all values of `v (coeff t f) * ∏ i : t.support, c i` for all `t : �
 
 * `MvPowerSeries.gaussNorm_neg`: if `v` has the property that `∀ i, v i = v (-i)` then
   `gaussNorm v c (-f) = gaussNorm v c f `.
-
 -/
 
 @[expose] public section
@@ -94,7 +94,6 @@ lemma gaussNorm_eq_zero_iff (vZero : v 0 = 0) (vNonneg : ∀ a, v a ≥ 0)
   calc
   0 < v (f.coeff n) * ∏ i ∈ n.support, (c i) ^ (n i) := by
     apply mul_pos _ (by exact Finset.prod_pos fun i a ↦ (fun i ↦ pow_pos (hc i) (n i)) i)
-    specialize h_eq_zero (f.coeff n)
     grind
   _ ≤ _ := le_gaussNorm v c f hbd n
 
@@ -277,7 +276,7 @@ lemma Finset.Nonempty.map_sum_le_sup'_map
       simp only [Finset.sum_cons, Finset.mem_cons, exists_eq_or_imp]
       refine (le_total (g (∑ i ∈ s, f i)) (g (f j))).imp ?_ ?_ <;> intro h
       · exact (na _ _).trans (max_eq_left h).le
-      · exact ⟨_, IH.choose_spec.left, (na _ _).trans <|
+      · exact ⟨_, IH.choose_spec.left, (na _ _).trans
           ((max_eq_right h).le.trans IH.choose_spec.right)⟩
 
 variable [DecidableEq σ] (f g : MvPowerSeries σ R)

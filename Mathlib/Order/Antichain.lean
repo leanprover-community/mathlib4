@@ -5,8 +5,9 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Order.Bounds.Basic
 public import Mathlib.Order.Preorder.Chain
+
+import Mathlib.Order.Bounds.Basic
 
 /-!
 # Antichains
@@ -289,7 +290,7 @@ end Preorder
 
 section PartialOrder
 
-variable [PartialOrder α] [PartialOrder β] {f : α → β} {s : Set α}
+variable [PartialOrder α] [Preorder β] {f : α → β} {s : Set α}
 
 lemma IsAntichain.of_strictMonoOn_antitoneOn (hf : StrictMonoOn f s) (hf' : AntitoneOn f s) :
     IsAntichain (· ≤ ·) s :=
@@ -402,7 +403,7 @@ protected theorem isEmpty_iff (h : IsMaxAntichain r s) : IsEmpty α ↔ s = ∅ 
   constructor
   intro x
   simp only [IsMaxAntichain, h', IsAntichain.empty, empty_subset, forall_const, true_and] at h
-  exact singleton_ne_empty x (h IsAntichain.singleton).symm
+  exact (singleton_nonempty x).ne_empty (h IsAntichain.singleton).symm
 
 protected theorem nonempty_iff (h : IsMaxAntichain r s) : Nonempty α ↔ s.Nonempty :=
   not_iff_not.mp <| by simpa [Set.not_nonempty_iff_eq_empty] using h.isEmpty_iff
@@ -411,6 +412,12 @@ protected theorem symm (h : IsMaxAntichain r s) : IsMaxAntichain (flip r) s :=
   ⟨h.isAntichain.flip, fun _ ht₁ ht₂ ↦ h.2 ht₁.flip ht₂⟩
 
 end IsMaxAntichain
+
+theorem maximal_isAntichain_iff : Maximal (IsAntichain r) s ↔ IsMaxAntichain r s where
+  mp h := ⟨h.prop, fun _ ht hst ↦ hst.antisymm <| h.le_of_ge ht hst⟩
+  mpr h := ⟨h.isAntichain, fun _ ht hst ↦ h.right ht hst |>.ge⟩
+
+alias ⟨_, IsMaxAntichain.maximal_isAntichain⟩ := maximal_isAntichain_iff
 
 end General
 

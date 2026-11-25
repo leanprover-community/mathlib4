@@ -6,7 +6,8 @@ Authors: Weiyi Wang
 module
 
 public import Mathlib.Combinatorics.Enumerative.Partition.GenFun
-public import Mathlib.RingTheory.PowerSeries.NoZeroDivisors
+
+import Mathlib.RingTheory.PowerSeries.NoZeroDivisors
 
 /-!
 # Glaisher's theorem
@@ -16,6 +17,7 @@ divisible by $d$ is equal to the number of partitions in which no part is repeat
 times.
 
 ## Main declarations
+
 * `Nat.Partition.card_restricted_eq_card_countRestricted`: Glaisher's theorem.
 * `Nat.Partition.card_odds_eq_card_distincts`: Euler's partition theorem, a special case
   of Glaisher's theorem when `m = 2`. This is also Theorem 45 from the
@@ -29,6 +31,7 @@ which turn out to be equal:
 $$\prod_{i=1,i\nmid m}^\infty\frac{1}{1-X^i}=\prod_{i=0}^\infty (1+X^{i+1}+\cdots+X^{(m-1)(i+1)})$$
 
 ## References
+
 https://en.wikipedia.org/wiki/Glaisher%27s_theorem
 -/
 
@@ -50,7 +53,7 @@ theorem hasProd_powerSeriesMk_card_restricted [IsTopologicalSemiring R]
     (p : ℕ → Prop) [DecidablePred p] :
     HasProd (fun i ↦ if p (i + 1) then ∑' j : ℕ, X ^ ((i + 1) * j) else 1)
     (PowerSeries.mk fun n ↦ (#(restricted n p) : R)) := by
-  convert! hasProd_genFun (fun i c ↦ if p i then (1 : R) else 0) using 1
+  convert hasProd_genFun (fun i c ↦ if p i then (1 : R) else 0) using 1
   · ext1 i
     split_ifs
     · rw [tsum_eq_zero_add' ?_]
@@ -81,7 +84,7 @@ theorem hasProd_powerSeriesMk_card_countRestricted {m : ℕ} (hm : 0 < m) :
     HasProd (fun i ↦ ∑ j ∈ range m, X ^ ((i + 1) * j))
     (PowerSeries.mk fun n ↦ (#(countRestricted n m) : R)) := by
   nontriviality R using Subsingleton.eq_one (α := R⟦X⟧)
-  convert! hasProd_genFun (fun i c ↦ if c < m then (1 : R) else 0) using 1
+  convert hasProd_genFun (fun i c ↦ if c < m then (1 : R) else 0) using 1
   · ext1 i
     rw [sum_range_eq_add_Ico _ hm, sum_Ico_eq_sum_range]
     congrm $(by simp) + ?_
@@ -157,6 +160,6 @@ theorem card_restricted_eq_card_countRestricted (n : ℕ) {m : ℕ} (hm : 0 < m)
 
 theorem card_odds_eq_card_distincts (n : ℕ) : #(odds n) = #(distincts n) := by
   simp_rw [← countRestricted_two, odds, even_iff_two_dvd]
-  exact card_restricted_eq_card_countRestricted n (by norm_num)
+  exact card_restricted_eq_card_countRestricted n (by simp)
 
 end Nat.Partition

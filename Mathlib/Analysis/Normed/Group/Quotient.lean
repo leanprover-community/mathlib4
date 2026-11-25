@@ -5,8 +5,8 @@ Authors: Patrick Massot, Riccardo Brasca
 -/
 module
 
-public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Analysis.Normed.Group.Hom
+public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Analysis.Normed.Operator.LinearIsometry
 public import Mathlib.LinearAlgebra.Isomorphisms
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
@@ -66,7 +66,7 @@ All the following definitions are in the `AddSubgroup` namespace. Hence we can a
      `n : N` and positive `ε`, there exists `m` such that `f m = n ∧ ‖m‖ < ‖n‖ + ε`.
 
 
-## Implementation details
+## Implementation notes
 
 For any `SeminormedAddCommGroup M` and any `S : AddSubgroup M` we define a norm on `M ⧸ S` by
 `‖x‖ = sInf (norm '' {m | mk' S m = x})`. This formula is really an implementation detail, it
@@ -91,7 +91,6 @@ which uses the topological structure and the group structure to build the unifor
 uniform structure induces the correct topological structure by construction, but the fact that it
 is compatible with the norm is not obvious; this is where the mathematical content explained in
 the previous paragraph kicks in.
-
 -/
 
 @[expose] public section
@@ -99,7 +98,9 @@ the previous paragraph kicks in.
 
 noncomputable section
 
-open Metric Set Topology NNReal
+open Metric Set NNReal
+
+open scoped Topology
 
 namespace QuotientGroup
 variable {M : Type*} [SeminormedCommGroup M] {S T : Subgroup M} {x : M ⧸ S} {m : M} {r ε : ℝ}
@@ -152,7 +153,8 @@ lemma norm_lt_iff : ‖x‖ < r ↔ ∃ m : M, ↑m = x ∧ ‖m‖ < r := by
 lemma nhds_one_hasBasis : (𝓝 (1 : M ⧸ S)).HasBasis (fun ε ↦ 0 < ε) fun ε ↦ {x | ‖x‖ < ε} := by
   have : ∀ ε : ℝ, mk '' ball (1 : M) ε = {x : M ⧸ S | ‖x‖ < ε} := by
     refine fun ε ↦ Set.ext <| forall_mk.2 fun x ↦ ?_
-    rw [ball_one_eq, mem_ofPred_eq, norm_lt_iff, mem_image]
+    rw [ball_one_eq]
+    simp only [mem_image, mem_ofPred_eq, norm_lt_iff]
     exact exists_congr fun _ ↦ and_comm
   rw [← mk_one, nhds_eq, ← funext this]
   exact .map _ Metric.nhds_basis_ball

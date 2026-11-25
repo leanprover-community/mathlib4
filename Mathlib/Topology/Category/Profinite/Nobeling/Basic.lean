@@ -179,14 +179,14 @@ def iso_map : C(π C J, (IndexFunctor.obj C J)) :=
     ext ⟨i, hi⟩
     simp [precomp, Proj, hi]⟩, by
     refine Continuous.subtype_mk (continuous_pi fun i ↦ ?_) _
-    exact (continuous_apply i.val).comp continuous_subtype_val⟩
+    exact (continuous_apply i.val).comp continuous_subtypeVal⟩
 
 lemma iso_map_bijective : Function.Bijective (iso_map C J) := by
   refine ⟨fun a b h ↦ ?_, fun a ↦ ?_⟩
   · ext i
     rw [Subtype.ext_iff] at h
     by_cases hi : J i
-    · exact congr_fun h ⟨i, hi⟩
+    · congrm $h ⟨i, hi⟩
     · rcases a with ⟨_, c, hc, rfl⟩
       rcases b with ⟨_, d, hd, rfl⟩
       simp only [Proj, ite_eq_right hi]
@@ -239,7 +239,7 @@ noncomputable def spanFunctorIsoIndexFunctor
         have : iso_map C (· ∈ t) ∘ ProjRestricts C f =
             IndexFunctor.map C f ∘ iso_map C (· ∈ s) := by
           ext _ i; exact dite_eq_left i.prop
-        exact congr_fun this x)
+        congrm $this x)
 
 /-- `spanCone` is a limit cone. -/
 noncomputable
@@ -250,7 +250,7 @@ def spanCone_isLimit [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] (hC : IsC
       ext
       have : iso_map C (· ∈ s) ∘ ProjRestrict C (· ∈ s) = IndexFunctor.π_app C (· ∈ s) := by
         ext _ i; exact dite_eq_left i.prop
-      exact congr_fun this.symm _)))
+      congrm $this.symm _)))
 
 end Projections
 
@@ -294,7 +294,7 @@ def e (i : I) : LocallyConstant C ℤ where
   isLocallyConstant := by
     rw [IsLocallyConstant.iff_continuous]
     exact (continuous_of_discreteTopology (f := fun (a : Bool) ↦ (if a then (1 : ℤ) else 0))).comp
-      ((continuous_apply i).comp continuous_subtype_val)
+      ((continuous_apply i).comp continuous_subtypeVal)
 
 variable [LinearOrder I]
 
@@ -327,7 +327,7 @@ instance [WellFoundedLT I] : WellFoundedLT (Products I) := by
   infer_instance
 
 /-- The evaluation `e C i₁ ··· e C iᵣ : C → ℤ` of a formal product `[i₁, i₂, ..., iᵣ]`. -/
-def eval (l : Products I) := (l.1.map (e C)).prod
+def eval (l : Products I) := (l.val.map (e C)).prod
 
 /--
 The predicate on products which we prove picks out a basis of `LocallyConstant C ℤ`. We call such a
@@ -338,7 +338,7 @@ def isGood (l : Products I) : Prop :=
 
 theorem rel_head!_of_mem [Inhabited I] {i : I} {l : Products I} (hi : i ∈ l.val) :
     i ≤ l.val.head! :=
-  List.Pairwise.head!_le l.2.sortedGT.sortedGE.pairwise hi
+  List.Pairwise.head!_le l.property.sortedGT.sortedGE.pairwise hi
 
 theorem head!_le_of_lt [Inhabited I] {q l : Products I} (h : q < l) (hq : q.val ≠ []) :
     q.val.head! ≤ l.val.head! :=
@@ -353,7 +353,7 @@ namespace GoodProducts
 
 /-- Evaluation of good products. -/
 def eval (l : {l : Products I // l.isGood C}) : LocallyConstant C ℤ :=
-  Products.eval C l.1
+  Products.eval C l.val
 
 theorem injective : Function.Injective (eval C) := by
   intro ⟨a, ha⟩ ⟨b, hb⟩ h
@@ -374,7 +374,7 @@ def equiv_range : GoodProducts C ≃ range C :=
 theorem equiv_toFun_eq_eval : (equiv_range C).toFun = Set.rangeFactorization (eval C) := rfl
 
 theorem linearIndependent_iff_range : LinearIndependent ℤ (GoodProducts.eval C) ↔
-    LinearIndependent ℤ (fun (p : range C) ↦ p.1) := by
+    LinearIndependent ℤ (fun (p : range C) ↦ p.val) := by
   rw [← @Set.rangeFactorization_eq _ _ (GoodProducts.eval C), ← equiv_toFun_eq_eval C]
   exact linearIndependent_equiv (equiv_range C)
 
@@ -440,7 +440,7 @@ theorem GoodProducts.span_iff_products [WellFoundedLT I] :
   rintro f ⟨l, rfl⟩
   let L : Products I → Prop := fun m ↦ m.eval C ∈ span ℤ (Set.range (GoodProducts.eval C))
   suffices L l by assumption
-  apply IsWellFounded.induction (· < · : Products I → Products I → Prop)
+  apply WellFounded.induction' (· < · : Products I → Products I → Prop)
   intro l h
   by_cases hl : l.isGood C
   · apply subset_span
@@ -596,7 +596,7 @@ namespace Products
 
 theorem lt_ord_of_lt {l m : Products I} {o : Ordinal} (h₁ : m < l)
     (h₂ : ∀ i ∈ l.val, ord I i < o) : ∀ i ∈ m.val, ord I i < o :=
-  List.SortedGT.lt_ord_of_lt l.2.sortedGT m.2.sortedGT h₁ h₂
+  List.SortedGT.lt_ord_of_lt m.property.sortedGT h₁ h₂
 
 theorem eval_πs {l : Products I} {o : Ordinal} (hlt : ∀ i ∈ l.val, ord I i < o) :
     πs C o (l.eval (π C (ord I · < o))) = l.eval C := by

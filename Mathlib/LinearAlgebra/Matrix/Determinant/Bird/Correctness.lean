@@ -5,8 +5,10 @@ Authors: Paul Cadman
 -/
 module
 
+public import Mathlib.LinearAlgebra.Matrix.Array
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Bird.Defs
+
 import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
 import Mathlib.Data.Fintype.Order
 import Mathlib.Order.Preorder.Finite
@@ -223,8 +225,8 @@ theorem paper_eq5 (i j : Fin n) :
       ∑ α ∈ S (p + 1) i, pminor A α * A i j -
       ∑ α ∈ S (p + 1) i, ∑ t : Fin (p + 1), bminor A i (α t) (t.removeNth α) * A (α t) j := calc
   _ = ∑ α ∈ S (p + 1) i, (pminor A α * A i j -
-        ∑ t : Fin (p + 1), bminor A i (α t) (t.removeNth α) * A (α t) j) := by
-      exact Finset.sum_congr rfl <| by simp [det_bordered_expand]
+        ∑ t : Fin (p + 1), bminor A i (α t) (t.removeNth α) * A (α t) j) :=
+      Finset.sum_congr rfl <| by simp [det_bordered_expand]
   _ = ∑ α ∈ S (p + 1) i, pminor A α * A i j -
         ∑ α ∈ S (p + 1) i, ∑ t : Fin (p + 1), bminor A i (α t) (t.removeNth α) * A (α t) j := by
     rw [Finset.sum_sub_distrib]
@@ -248,7 +250,7 @@ theorem paper_eq3_eq5_off_diag (i j : Fin n) :
       and_true, Finset.mem_coe, Prod.mk.injEq, and_imp, Prod.forall, mem_S_iff, Fin.strictMono_cons]
     intros α k hi hiα α' k' hj hiα' hremove hvalue
     suffices hrange : Set.range α = Set.range α' by
-      rw [hiα.range_inj hiα'] at hrange
+      rw [hiα.range_inj_of_wellFoundedLT hiα'] at hrange
       subst α'
       exact ⟨rfl, hiα.injective hvalue⟩
     calc

@@ -5,11 +5,10 @@ Authors: Yaël Dillies, Christopher Hoskin
 -/
 module
 
-public import Mathlib.Data.Finset.Lattice.Prod
-public import Mathlib.Data.Finset.Powerset
-public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.Order.Closure
 public import Mathlib.Order.ConditionallyCompleteLattice.Finset
+
+import Mathlib.Data.Finset.Lattice.Prod
 
 /-!
 # Sets closed under join/meet
@@ -67,6 +66,16 @@ lemma supClosed_iInter (hf : ∀ i, SupClosed (f i)) : SupClosed (⋂ i, f i) :=
 @[to_dual InfClosed.codirectedOn]
 lemma SupClosed.directedOn (hs : SupClosed s) : DirectedOn (· ≤ ·) s :=
   fun _a ha _b hb ↦ ⟨_, hs ha hb, le_sup_left, le_sup_right⟩
+
+@[to_dual]
+theorem IsLowerSet.supClosed_iff_directedOn (h : IsLowerSet s) :
+    SupClosed s ↔ DirectedOn (· ≤ ·) s := by
+  refine ⟨SupClosed.directedOn, fun hd a ha b hb ↦ ?_⟩
+  have ⟨c, hcs, hac, hbc⟩ := hd a ha b hb
+  exact h (sup_le hac hbc) hcs
+
+@[to_dual]
+alias ⟨_, DirectedOn.supClosed_of_isLowerSet⟩ := IsLowerSet.supClosed_iff_directedOn
 
 @[to_dual]
 lemma IsUpperSet.supClosed (hs : IsUpperSet s) : SupClosed s := fun _a _ _b ↦ hs le_sup_right
@@ -153,31 +162,32 @@ attribute [to_dual self (reorder := supClosed infClosed)] IsSublattice.mk
   ⟨supClosed_univ, infClosed_univ⟩
 
 lemma IsSublattice.inter (hs : IsSublattice s) (ht : IsSublattice t) : IsSublattice (s ∩ t) :=
-  ⟨hs.1.inter ht.1, hs.2.inter ht.2⟩
+  ⟨hs.supClosed.inter ht.supClosed, hs.infClosed.inter ht.infClosed⟩
 
 lemma isSublattice_sInter (hS : ∀ s ∈ S, IsSublattice s) : IsSublattice (⋂₀ S) :=
-  ⟨supClosed_sInter fun _s hs ↦ (hS _ hs).1, infClosed_sInter fun _s hs ↦ (hS _ hs).2⟩
+  ⟨supClosed_sInter fun _s hs ↦ (hS _ hs).supClosed,
+    infClosed_sInter fun _s hs ↦ (hS _ hs).infClosed⟩
 
 lemma isSublattice_iInter (hf : ∀ i, IsSublattice (f i)) : IsSublattice (⋂ i, f i) :=
-  ⟨supClosed_iInter fun _i ↦ (hf _).1, infClosed_iInter fun _i ↦ (hf _).2⟩
+  ⟨supClosed_iInter fun _i ↦ (hf _).supClosed, infClosed_iInter fun _i ↦ (hf _).infClosed⟩
 
 lemma IsSublattice.preimage [FunLike F β α] [LatticeHomClass F β α]
     (hs : IsSublattice s) (f : F) :
-    IsSublattice (f ⁻¹' s) := ⟨hs.1.preimage _, hs.2.preimage _⟩
+    IsSublattice (f ⁻¹' s) := ⟨hs.supClosed.preimage _, hs.infClosed.preimage _⟩
 
 lemma IsSublattice.image [FunLike F α β] [LatticeHomClass F α β] (hs : IsSublattice s) (f : F) :
-    IsSublattice (f '' s) := ⟨hs.1.image _, hs.2.image _⟩
+    IsSublattice (f '' s) := ⟨hs.supClosed.image _, hs.infClosed.image _⟩
 
 lemma IsSublattice_range [FunLike F α β] [LatticeHomClass F α β] (f : F) :
     IsSublattice (Set.range f) :=
   ⟨supClosed_range _, infClosed_range _⟩
 
 lemma IsSublattice.prod {t : Set β} (hs : IsSublattice s) (ht : IsSublattice t) :
-    IsSublattice (s ×ˢ t) := ⟨hs.1.prod ht.1, hs.2.prod ht.2⟩
+    IsSublattice (s ×ˢ t) := ⟨hs.supClosed.prod ht.supClosed, hs.infClosed.prod ht.infClosed⟩
 
 lemma isSublattice_pi {ι : Type*} {α : ι → Type*} [∀ i, Lattice (α i)] {s : Set ι}
     {t : ∀ i, Set (α i)} (ht : ∀ i ∈ s, IsSublattice (t i)) : IsSublattice (s.pi t) :=
-  ⟨supClosed_pi fun _i hi ↦ (ht _ hi).1, infClosed_pi fun _i hi ↦ (ht _ hi).2⟩
+  ⟨supClosed_pi fun _i hi ↦ (ht _ hi).supClosed, infClosed_pi fun _i hi ↦ (ht _ hi).infClosed⟩
 
 @[to_dual (attr := simp)] lemma supClosed_preimage_toDual {s : Set αᵒᵈ} :
     SupClosed (toDual ⁻¹' s) ↔ InfClosed s := Iff.rfl
@@ -186,10 +196,12 @@ lemma isSublattice_pi {ι : Type*} {α : ι → Type*} [∀ i, Lattice (α i)] {
     SupClosed (ofDual ⁻¹' s) ↔ InfClosed s := Iff.rfl
 
 @[simp] lemma isSublattice_preimage_toDual {s : Set αᵒᵈ} :
-    IsSublattice (toDual ⁻¹' s) ↔ IsSublattice s := ⟨fun h ↦ ⟨h.2, h.1⟩, fun h ↦ ⟨h.2, h.1⟩⟩
+    IsSublattice (toDual ⁻¹' s) ↔ IsSublattice s :=
+  ⟨fun h ↦ ⟨h.infClosed, h.supClosed⟩, fun h ↦ ⟨h.infClosed, h.supClosed⟩⟩
 
 @[simp] lemma isSublattice_preimage_ofDual :
-    IsSublattice (ofDual ⁻¹' s) ↔ IsSublattice s := ⟨fun h ↦ ⟨h.2, h.1⟩, fun h ↦ ⟨h.2, h.1⟩⟩
+    IsSublattice (ofDual ⁻¹' s) ↔ IsSublattice s :=
+  ⟨fun h ↦ ⟨h.infClosed, h.supClosed⟩, fun h ↦ ⟨h.infClosed, h.supClosed⟩⟩
 
 @[to_dual] alias ⟨_, InfClosed.dual⟩ := supClosed_preimage_ofDual
 alias ⟨_, IsSublattice.dual⟩ := isSublattice_preimage_ofDual
@@ -278,7 +290,7 @@ protected lemma Set.Finite.supClosure (hs : s.Finite) : (supClosure s).Finite :=
   lift s to Finset α using hs
   classical
   refine ({t ∈ s.powerset | t.Nonempty}.attach.image
-    fun t ↦ t.1.sup' (mem_filter.1 t.2).2 id).finite_toSet.subset ?_
+    fun t ↦ t.val.sup' (mem_filter.1 t.property).2 id).finite_toSet.subset ?_
   rintro _ ⟨t, ht, hts, rfl⟩
   simp only [id_eq, coe_image, mem_image, mem_coe, mem_attach, true_and, Subtype.exists,
     Finset.mem_powerset, mem_filter]
@@ -363,7 +375,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma ofDual_preimage_latticeClosure (s : Set α) :
     ofDual ⁻¹' latticeClosure s = latticeClosure (ofDual ⁻¹' s) := by
   ext
-  simp [latticeClosure, (Equiv.Set.congr toDual).surjective.forall, Equiv.image_eq_preimage_symm]
+  simp [latticeClosure, (Equiv.setCongr toDual).surjective.forall, Equiv.image_eq_preimage_symm]
 
 @[to_dual self (reorder := map_sup map_inf)]
 lemma image_latticeClosure' (s : Set α) (f : α → β)
@@ -386,8 +398,10 @@ protected lemma SupClosed.infClosure (hs : SupClosed s) : SupClosed (infClosure 
 
 @[to_dual (attr := simp)]
 lemma supClosure_infClosure (s : Set α) : supClosure (infClosure s) = latticeClosure s :=
-  le_antisymm (supClosure_min (infClosure_min subset_latticeClosure isSublattice_latticeClosure.2)
-    isSublattice_latticeClosure.1) <| latticeClosure_min (subset_infClosure.trans subset_supClosure)
+  le_antisymm (supClosure_min
+    (infClosure_min subset_latticeClosure isSublattice_latticeClosure.infClosed)
+    isSublattice_latticeClosure.supClosed) <|
+    latticeClosure_min (subset_infClosure.trans subset_supClosure)
       ⟨supClosed_supClosure, infClosed_infClosure.supClosure⟩
 
 lemma Set.Finite.latticeClosure (hs : s.Finite) : (latticeClosure s).Finite := by

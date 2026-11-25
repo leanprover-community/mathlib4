@@ -24,7 +24,7 @@ We gather miscellaneous results about units given by sums of powers of roots of 
   where `2 ≤ n`, we have that `ζ - 1` and `ζ ^ (i + j) - ζ ^ i` are associated for all and `j`
   coprime with `n` and all `i`.
 
-## Implementation details
+## Implementation notes
 
 We sometimes state series of results of the form `a = u * b`, `IsUnit u` and `Associated a b`.
 Often, `Associated a b` is everything one needs, and it is more convenient to use, we include the
@@ -100,7 +100,7 @@ theorem associated_map_sub_one_map_sub_one {n : ℕ} [NeZero n] (hζ : IsPrimiti
 theorem geom_sum_isUnit (hζ : IsPrimitiveRoot ζ n) (hn : 2 ≤ n) (hj : j.Coprime n) :
     IsUnit (∑ i ∈ range j, ζ ^ i) := by
   obtain ⟨u, hu⟩ := hζ.associated_pow_sub_one_pow_of_coprime hj (coprime_one_left n)
-  convert! u.isUnit
+  convert u.isUnit
   apply mul_right_injective₀ (show 1 - ζ ≠ 0 by grind [sub_one_ne_zero])
   grind [mul_neg_geom_sum]
 

@@ -9,8 +9,11 @@ public import Mathlib.CategoryTheory.Sites.ConstantSheaf
 public import Mathlib.Condensed.Basic
 public import Mathlib.Condensed.Light.Basic
 public import Mathlib.Condensed.Light.Instances
-/-!
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
 # Discrete-underlying adjunction
 
 Given a category `C` with sheafification with respect to the coherent topology on compact Hausdorff
@@ -49,7 +52,7 @@ This can be viewed as a sort of forgetful functor from `Condensed C` to `C`
 -/
 @[simps!]
 noncomputable def underlying : Condensed.{u} C ⥤ C :=
-  (sheafSections _ _).obj ⟨CompHaus.of PUnit.{u + 1}⟩
+  (sheafSections _ _).obj ⟨↧PUnit.{u + 1}⟩
 
 /--
 Discreteness is left adjoint to the forgetful functor. When `C` is `Type*`, this is analogous to
@@ -77,7 +80,7 @@ point. This can be viewed as a sort of forgetful functor from `LightCondensed C`
 -/
 @[simps!]
 noncomputable def underlying : LightCondensed.{u} C ⥤ C :=
-  (sheafSections _ _).obj (op (LightProfinite.of PUnit))
+  (sheafSections _ _).obj (op ↧PUnit)
 
 /--
 Discreteness is left adjoint to the forgetful functor. When `C` is `Type*`, this is analogous to

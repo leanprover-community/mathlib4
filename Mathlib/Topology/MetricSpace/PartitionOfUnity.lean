@@ -5,9 +5,12 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.EMetricSpace.Paracompact
-public import Mathlib.Topology.Instances.ENNReal.Lemmas
 public import Mathlib.Analysis.Convex.PartitionOfUnity
+
+import Mathlib.Topology.EMetricSpace.Paracompact
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Lemmas about (e)metric spaces that need partition of unity
@@ -29,7 +32,9 @@ metric space, partition of unity, locally finite
 
 public section
 
-open Topology ENNReal NNReal Filter Set TopologicalSpace Metric
+open ENNReal NNReal Filter Set TopologicalSpace Metric
+
+open scoped Topology
 
 variable {ι X : Type*}
 

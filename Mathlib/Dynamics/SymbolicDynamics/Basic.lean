@@ -460,7 +460,7 @@ lemma mapsTo_mulShift_mulForbidden {A G : Type*} [Inhabited A] [Monoid G]
   -- unfold `MapsTo`
   intro x hx p hp g
   specialize hx p hp (h * g)
-  contrapose! hx
+  contrapose hx
   simpa [mulOccursInAt_mulShift] using hx
 
 end Pattern
@@ -581,7 +581,7 @@ end DefSubshiftByForbidden
 
 section Language
 
-variable {A : Type*} [Fintype A] [Inhabited A]
+variable {A : Type*} [Inhabited A]
 variable {G : Type*}
 
 /-- Patterns with support exactly `U` form a finite set. -/
@@ -594,7 +594,7 @@ lemma finite_setOfPred_pattern_support_eq
   classical
   -- Patterns with support U biject with (U → A) via restriction/extension
   let e : { p : Pattern A G // p.support = U } ≃ (U → A) :=
-  { toFun := fun p i => p.1.config i.1
+  { toFun := fun p i => p.val.config i.val
     invFun := fun f => ⟨{ config := fun g => if h : g ∈ U then f ⟨g, h⟩ else default,
                            support := U,
                            condition := fun g hg => by simp [hg] }, rfl⟩
@@ -607,7 +607,7 @@ lemma finite_setOfPred_pattern_support_eq
       by_cases hg : g ∈ dom
       · simp [hg]
       · simp [hg, cond g hg]
-    right_inv := fun f => by ext i; simp [i.2] }
+    right_inv := fun f => by ext i; simp [i.property] }
   let : Fintype { p : Pattern A G | p.support = U } := Fintype.ofEquiv (U → A) e.symm
   apply toFinite
 
@@ -620,6 +620,30 @@ This is the set of all finite patterns obtained by restricting some configuratio
 `x ∈ X` to `U`. -/
 def LanguageOn (X : Set (G → A)) (U : Finset G) : Set (Pattern A G) :=
   { p | ∃ x ∈ X, Pattern.fromConfig x U = p }
+
+/-- Considering two sets of configurations `X` and `Y` such that `X ⊆ Y`, the language
+of `X` on (finite) shape `U` is included in the language of `Y` on shape `U`. -/
+lemma languageOn_mono {X Y : Set (G → A)} (h : X ⊆ Y) (U : Finset G) :
+    LanguageOn X U ⊆ LanguageOn Y U := by
+  intro p hp
+  rcases hp with ⟨x, hxX, rfl⟩
+  exact ⟨x, h hxX, rfl⟩
+
+/-- The language of a union of two sets of configurations on a finite shape `U` is the union
+of their languages on `U`. -/
+lemma languageOn_union {X Y : Set (G → A)} (U : Finset G) :
+    LanguageOn (X ∪ Y) U = LanguageOn X U ∪ LanguageOn Y U := by
+  ext p
+  simp only [LanguageOn, mem_union, mem_ofPred_eq]
+  grind
+
+/-- The language of an intersection is contained in the intersection of the languages.
+Equality does not hold in general: a pattern may arise from distinct configurations
+`x ∈ X` and `y ∈ Y` with no common configuration in `X ∩ Y` realising it. -/
+lemma languageOn_inter_subset (X Y : Set (G → A)) (U : Finset G) :
+    LanguageOn (X ∩ Y) U ⊆ LanguageOn X U ∩ LanguageOn Y U := by
+  rintro p ⟨x, ⟨hxX, hxY⟩, hp⟩
+  exact ⟨⟨x, hxX, hp⟩, ⟨x, hxY, hp⟩⟩
 
 /-- The language of a subshift `Y` on a finite shape `U`. -/
 def MulSubshift.languageOn {A G} [TopologicalSpace A] [Inhabited A] [Monoid G]

@@ -5,8 +5,12 @@ Authors: Kalle Kytölä
 -/
 module
 
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
 public import Mathlib.MeasureTheory.Integral.Lebesgue.DominatedConvergence
+
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Results about indicator functions, their integrals, and measures
@@ -34,7 +38,9 @@ namespace MeasureTheory
 
 section TendstoIndicator
 
-open Set Filter ENNReal Topology
+open Set Filter ENNReal
+
+open scoped Topology
 
 variable {α : Type*} [MeasurableSpace α] {A : Set α}
 variable {ι : Type*} (L : Filter ι) [IsCountablyGenerated L] {As : ι → Set α}

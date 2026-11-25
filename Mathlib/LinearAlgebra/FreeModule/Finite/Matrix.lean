@@ -5,8 +5,12 @@ Authors: Riccardo Brasca
 -/
 module
 
-public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 public import Mathlib.LinearAlgebra.Dimension.Finite
+
+import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Finite and free modules using matrices
@@ -82,7 +86,7 @@ instance Finite.algHom : Finite (M →ₐ[K] L) :=
 open Cardinal
 
 theorem cardinalMk_algHom_le_rank : #(M →ₐ[K] L) ≤ lift.{v} (Module.rank K M) := by
-  convert! (linearIndependent_algHom_toLinearMap K M L).cardinal_lift_le_rank
+  convert (linearIndependent_algHom_toLinearMap K M L).cardinal_lift_le_rank
   · rw [lift_id]
   · have := Module.nontrivial K L
     rw [lift_id, Module.rank_linearMap_self]

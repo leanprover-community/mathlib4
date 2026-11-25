@@ -10,6 +10,9 @@ public import Mathlib.Probability.HasLaw
 
 import Mathlib.Probability.Kernel.Composition.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # A predicate for having a specified conditional distribution
 
@@ -23,7 +26,6 @@ The use of `HasLaw` also implies that `Y` and `X` are a.e. measurable.
 
 * `HasCondDistrib Y X κ P` : predicate stating that the conditional distribution of `Y` given `X`
   under the measure `P` is equal to the kernel `κ`.
-
 -/
 
 @[expose] public section
@@ -60,7 +62,7 @@ lemma HasCondDistrib.hasLaw_of_const [IsProbabilityMeasure P] {Q : Measure 𝓨}
     have h_snd : (P.map (fun ω ↦ (X ω, Y ω))).snd = Q := by
       rw [h.map_eq, Measure.snd_compProd]
       simp [Measure.map_apply_of_aemeasurable h.aemeasurable_fst]
-    rwa [Measure.snd_map_prodMk₀ h.aemeasurable_fst] at h_snd
+    rwa [Measure.snd_map_prodMk₀ h.aemeasurable_fst (by fun_prop)] at h_snd
 
 variable [SFinite P] [IsSFiniteKernel κ]
 

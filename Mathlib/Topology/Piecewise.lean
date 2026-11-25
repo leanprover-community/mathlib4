@@ -7,13 +7,18 @@ module
 
 public import Mathlib.Topology.ContinuousOn
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-### Continuity of piecewise defined functions
+# Continuity of piecewise defined functions
 -/
 
 public section
 
-open Set Filter Function Topology Filter
+open Set Filter Function Filter
+
+open scoped Topology
 
 variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
   {f g : α → β} {s s' t : Set α} {x : α}

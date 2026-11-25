@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 public import Mathlib.CategoryTheory.ObjectProperty.Retract
 
 /-!
-
 # Internal projectivity
 
 This file defines internal projectivity of objects `P` in a category `C` as a class

@@ -8,8 +8,10 @@ module
 public import Mathlib.Algebra.Module.Submodule.Defs
 public import Mathlib.Tactic.Abel
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Ideals over a ring
 
 This file defines `Ideal R`, the type of (left) ideals over a ring `R`.
@@ -160,6 +162,11 @@ theorem mem_inertia {σ : G} : σ ∈ I.inertia G ↔ ∀ x, σ • x - x ∈ I 
 variable {I G} in
 theorem coe_mem_inertia {H : Subgroup G} {σ : H} : ↑σ ∈ I.inertia G ↔ σ ∈ I.inertia H :=
   I.toAddSubgroup.coe_mem_inertia
+
+variable {I G} in
+@[simp]
+theorem inertia_eq_top_iff {H : Subgroup G} : I.inertia H = ⊤ ↔ H ≤ I.inertia G := by
+  simp [← Subgroup.map_subtype_inj, ← MonoidHom.range_eq_map]
 
 end inertia
 
