@@ -372,7 +372,7 @@ theorem cauchyIndex_div_algebraMap [IsStrictOrderedRing K] {g : K[X]} {s : SignT
     cauchyIndex (f / algebraMap _ _ g) a b = s * cauchyIndex f a b := by
   rcases (Ioo a b).eq_empty_or_nonempty with he | ⟨y, hy⟩
   · simp [cauchyIndex, he]
-  have hgx {x : ℝ} (hx : x ∈ Ioo a b) : g.eval x ≠ 0 := by
+  have hgx {x : K} (hx : x ∈ Ioo a b) : g.eval x ≠ 0 := by
     rw [← sign_ne_zero, hg x hx]
     exact hs
   have hp : f.denom * g ≠ 0 :=
