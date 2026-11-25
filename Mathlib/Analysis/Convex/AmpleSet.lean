@@ -19,6 +19,7 @@ component have full convex hull. Ample sets are an important ingredient for defi
 differential relations.
 
 ## Main results
+
 - `ampleSet_empty` and `ampleSet_univ`: the empty set and `univ` are ample
 - `AmpleSet.union`: the union of two ample sets is ample
 - `AmpleSet.{pre}image`: being ample is invariant under continuous affine equivalences;

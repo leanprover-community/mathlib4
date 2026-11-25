@@ -18,7 +18,7 @@ set_option doc.verso.suggestions false
 When the coefficients are a field, root pairings behave well with respect to restriction and
 extension of scalars.
 
-## Main results:
+## Main results
 
 * `RootPairing.restrict`: if `RootPairing.pairing` takes values in a subfield, we may restrict to
   get a root _system_ with coefficients in the subfield. Of particular interest is the case when

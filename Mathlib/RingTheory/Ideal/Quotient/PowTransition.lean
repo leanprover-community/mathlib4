@@ -30,6 +30,7 @@ ideals here.
   to `R ⧸ I ^ n` induced by the natural inclusion `I ^ n → I ^ m`.
 
 ## Main results
+
 -/
 
 @[expose] public section

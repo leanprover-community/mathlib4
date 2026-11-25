@@ -19,7 +19,7 @@ set_option doc.verso.suggestions false
 /-!
 # Existence of bases for crystallographic root systems
 
-## Main results:
+## Main results
 
 * `RootPairing.Base.mk'`: an alternate constructor for `RootPairing.Base` which demands the axioms
   for roots but not for coroots.

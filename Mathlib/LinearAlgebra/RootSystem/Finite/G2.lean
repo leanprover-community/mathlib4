@@ -21,7 +21,7 @@ is two-dimensional). This result is usually proved only for pairs of roots belon
 corollary of the fact that no node can have degree greater than three) and moreover usually requires
 stronger assumptions on the coefficients than here.
 
-## Main results:
+## Main results
 
 * `RootPairing.EmbeddedG2`: a data-bearing typeclass which distinguishes a pair of roots whose
   pairing is `-3` (equivalently, with a distinguished choice of base). This is a sufficient

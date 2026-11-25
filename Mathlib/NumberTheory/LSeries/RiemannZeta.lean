@@ -24,7 +24,7 @@ Note that mathematically `ζ(s)` is undefined at `s = 1`, while `Λ(s)` is undef
 and `s = 1`. Our construction assigns some values at these points; exact formulae involving the
 Euler-Mascheroni constant will follow in a subsequent PR.
 
-## Main results:
+## Main results
 
 * `differentiable_completedZeta₀` : the function `Λ₀(s)` is entire.
 * `differentiableAt_completedZeta` : the function `Λ(s)` is differentiable away from `s = 0` and

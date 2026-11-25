@@ -13,7 +13,7 @@ public import Mathlib.MeasureTheory.Covering.DensityTheorem
 This file is a place to collect lemmas about liminf and limsup for subsets of a metric space
 carrying a uniformly locally doubling measure.
 
-## Main results:
+## Main results
 
 * `blimsup_cthickening_mul_ae_eq`: the limsup of the closed thickening of a sequence of subsets
   of a metric space is unchanged almost everywhere for a uniformly locally doubling measure if the

@@ -66,6 +66,7 @@ machinery, e.g., `simp only [true_and_iff]` or `simp only [forall_const]` can he
 `p = fun _ ↦ True`.
 
 ## Main statements
+
 -/
 
 @[expose] public section

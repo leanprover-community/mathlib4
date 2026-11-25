@@ -24,6 +24,7 @@ associator x y z + associator z x y + associator y z x =
   * `LieAdmissibleAlgebra`
 
 ## Main results
+
   * `LieAdmissibleRing.instLieRing`: a Lie-admissible ring as a Lie ring
   * `LeftPreLieRing.instLieAdmissibleRing`: a left pre-Lie ring as a Lie admissible ring
   * `RightPreLieRing.instLieAdmissibleRing`: a right pre-Lie ring as a Lie admissible ring
