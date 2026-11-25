@@ -752,6 +752,55 @@ theorem IsTrail.isPath_iff_isSubwalk_imp_not_isCycle {u v} {p : G.Walk u v} (ht 
     · refine cons_isCycle_iff .. |>.mpr ⟨hp.takeUntil hup, fun he ↦ ?_⟩
       exact ht.edges_nodup.notMem <| p.edges_takeUntil_subset_edges hup he
 
+/-- Every walk from `v` to `u` either admits a path from `v` to `u` of the same length parity,
+or the graph contains an odd cycle. -/
+theorem exists_isPath_even_length_iff_or_exists_isCycle_odd_length {v u : V} (p : G.Walk v u) :
+    (∃ q : G.Walk v u, q.IsPath ∧ (Even q.length ↔ Even p.length)) ∨
+      ∃ (x : V) (c : G.Walk x x), c.IsCycle ∧ Odd c.length := by
+  classical
+  induction p with
+  | nil => exact Or.inl ⟨.nil, by simp⟩
+  | @cons v w u h' p₀ ih =>
+    rcases ih with ⟨r₀, hr₀, hpar⟩ | hodd
+    · by_cases hv : v ∈ r₀.support
+      · set a := r₀.takeUntil v hv
+        set b := r₀.dropUntil v hv
+        have hlen : a.length + b.length = r₀.length := by
+          rw [← length_append, r₀.take_spec hv]
+        have ha : a.IsPath := hr₀.takeUntil hv
+        have hb : b.IsPath := hr₀.dropUntil hv
+        have ha0 : a.length ≠ 0 := fun h0 ↦ h'.ne (eq_of_length_eq_zero h0).symm
+        by_cases hae : Even a.length
+        · right
+          refine ⟨v, .cons h' a, ?_, ?_⟩
+          · rw [isCycle_iff_isPath_tail_and_le_length]
+            refine ⟨by simpa using ha, ?_⟩
+            obtain ⟨k, hk⟩ := hae
+            simp only [length_cons]
+            omega
+          · simpa only [length_cons] using hae.add_one
+        · left
+          refine ⟨b, hb, ?_⟩
+          have ha_odd : Odd a.length := Nat.not_even_iff_odd.mp hae
+          simp only [length_cons, Nat.even_add_one, ← hpar, ← hlen, Nat.even_add,
+            Nat.not_even_iff_odd.mpr ha_odd, false_iff, not_not]
+      · left
+        refine ⟨.cons h' r₀, hr₀.cons hv, ?_⟩
+        simp only [length_cons, Nat.even_add_one, hpar]
+    · exact Or.inr hodd
+
+/-- Every closed walk of odd length implies the existence of an odd cycle. -/
+theorem exists_isCycle_odd_length {u : V} {p : G.Walk u u} (hp : Odd p.length) :
+    ∃ (x : V) (c : G.Walk x x), c.IsCycle ∧ Odd c.length := by
+  rcases p.exists_isPath_even_length_iff_or_exists_isCycle_odd_length with ⟨r, hr, hpar⟩ | h
+  · cases r with
+    | nil =>
+      simp only [length_nil, Even.zero, true_iff] at hpar
+      exact absurd hpar (Nat.not_even_iff_odd.mpr hp)
+    | cons _ _ =>
+      exact absurd (isPath_iff_nil.mp hr) (by simp)
+  · exact h
+
 end Walk
 
 /-! ### Type of paths -/

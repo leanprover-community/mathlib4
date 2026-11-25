@@ -172,4 +172,33 @@ lemma isBipartite_iff_forall_walk_even_length {V : Type*} {G : SimpleGraph V} :
 @[deprecated (since := "2026-08-12")]
 alias two_colorable_iff_forall_loop_even := isBipartite_iff_forall_walk_even_length
 
+/-- A simple graph is bipartite if and only if every cycle has even length. -/
+theorem isBipartite_iff_forall_isCycle_even_length {V : Type*} {G : SimpleGraph V} :
+    G.IsBipartite ↔ ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length := by
+  rw [isBipartite_iff_forall_walk_even_length]
+  refine ⟨fun h v c _ ↦ h v c, fun h v p ↦ ?_⟩
+  by_contra hp
+  obtain ⟨x, c, hc, hodd⟩ := p.exists_isCycle_odd_length (Nat.not_even_iff_odd.mp hp)
+  exact Nat.not_even_iff_odd.mpr hodd (h x c hc)
+
+/-- A simple graph is bipartite if and only if it is free of odd cycle graphs `cycleGraph n`
+for all `n ≥ 3`. -/
+theorem isBipartite_iff_forall_odd_free_cycleGraph {V : Type*} {G : SimpleGraph V} :
+    G.IsBipartite ↔ ∀ n ≥ 3, Odd n → (cycleGraph n).Free G := by
+  rw [isBipartite_iff_forall_isCycle_even_length]
+  refine ⟨fun h n hn hodd hle ↦ ?_, fun h v c hc ↦ ?_⟩
+  · obtain ⟨v, c, hc, rfl⟩ := (cycleGraph_isContained_iff hn).mp hle
+    exact Nat.not_even_iff_odd.mpr hodd (h v c hc)
+  · by_contra heven
+    exact h c.length hc.three_le_length (Nat.not_even_iff_odd.mp heven)
+      ((cycleGraph_isContained_iff hc.three_le_length).mpr ⟨v, c, hc, rfl⟩)
+
+/-- A simple graph is bipartite if and only if it is `(cycleGraph (2 * n + 3)).Free` for all `n`. -/
+theorem isBipartite_iff_free_cycleGraph_two_mul_add_three {V : Type*} {G : SimpleGraph V} :
+    G.IsBipartite ↔ ∀ n : ℕ, (cycleGraph (2 * n + 3)).Free G := by
+  rw [isBipartite_iff_forall_odd_free_cycleGraph]
+  refine ⟨fun h n ↦ h (2 * n + 3) (by lia) ⟨n + 1, by lia⟩, fun h n hn ⟨k, hk⟩ ↦ ?_⟩
+  have heq : n = 2 * (k - 1) + 3 := by lia
+  exact heq ▸ h (k - 1)
+
 end SimpleGraph
