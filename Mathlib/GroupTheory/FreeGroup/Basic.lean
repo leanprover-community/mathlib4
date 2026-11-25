@@ -35,7 +35,7 @@ the forgetful functor from groups to types, see `Mathlib/Algebra/Category/Grp/Ad
 * `FreeGroup.freeGroupUnitEquivInt`: The free group over the one-point type
   is isomorphic to the integers.
 
-## Implementation details
+## Implementation notes
 
 First we introduce the one step reduction relation `FreeGroup.Red.Step`:
 `w * x * x⁻¹ * v   ~>   w * v`, its reflexive transitive closure `FreeGroup.Red.trans`

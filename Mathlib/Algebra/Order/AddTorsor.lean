@@ -19,6 +19,7 @@ series.  In the multiplicative case, a standard example is the action of non-neg
 an ordered field.
 
 ## Implementation notes
+
 * Because these classes mix the algebra and order hierarchies, we write them as `Prop`-valued
   mixins.
 * Despite the file name, Ordered AddTorsors are not defined as a separate class.  To implement them,
@@ -33,6 +34,7 @@ an ordered field.
 * IsOrderedCancelVAdd : inequalities are preserved and reflected by translation.
 
 ## Instances
+
 * `IsOrderedMonoid.toIsOrderedSMul`
 * `IsOrderedAddMonoid.toIsOrderedVAdd`
 * `IsOrderedSMul.toCovariantClassLeft`
@@ -45,6 +47,7 @@ an ordered field.
 * `IsOrderedCancelVAdd.toContravariantClassLeft`
 
 ## TODO
+
 * (lex) prod instances
 * Pi instances
 * WithTop (in a different file?)

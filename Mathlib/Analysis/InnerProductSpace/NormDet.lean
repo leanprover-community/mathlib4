@@ -32,9 +32,11 @@ definition and show that it is a generalization of `‖(f : LinearMap 𝕜 U U).
 spaces instead of matrices, and allow the codomain to have infinite dimension.
 
 ## Main definition
+
 * `LinearMap.normDet` : the norm determinant of a linear map.
 
-## Main result
+## Main results
+
 * `ContinuousLinearMap.normDet_sq` and `LinearMap.normDet_sq`: The square of `f.normDet`
   equals to the determinant of `f.adjoint ∘ₗ f`.
 * `LinearMap.normDet_sq_eq_det_gram`: The square of `LinearMap.normDet` equals to the determinant of

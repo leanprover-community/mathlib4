@@ -117,10 +117,11 @@ instance (priority := 100) [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
 variable {F}
 
 /-- Reinterpret an element of a type of semilinear equivalences as a semilinear equivalence. -/
-@[coe]
-def semilinearEquiv [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
+def _root_.LinearEquiv.ofClass [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
     [EquivLike F M M₂] [SemilinearEquivClass F σ M M₂] (f : F) : M ≃ₛₗ[σ] M₂ :=
   { (f : M ≃+ M₂), (f : M →ₛₗ[σ] M₂) with }
+
+@[deprecated (since := "2026-11-22")] alias semilinearEquiv := LinearEquiv.ofClass
 
 end SemilinearEquivClass
 
@@ -187,6 +188,11 @@ theorem coe_injective : @Injective (M ≃ₛₗ[σ] M₂) (M → M₂) DFunLike.
   DFunLike.coe_injective
 
 @[simp]
+protected lemma coe_ofClass {F : Type*} [EquivLike F M M₂]
+    [SemilinearEquivClass F σ M M₂] (f : F) :
+    ⇑(.ofClass f : M ≃ₛₗ[σ] M₂) = f := rfl
+
+@[deprecated LinearEquiv.coe_ofClass +typeChanged (since := "2026-11-22")]
 lemma _root_.SemilinearEquivClass.semilinearEquiv_apply {F : Type*} [EquivLike F M M₂]
     [SemilinearEquivClass F σ M M₂] (f : F) (x : M) :
     SemilinearEquivClass.semilinearEquiv (M₂ := M₂) f x = f x := rfl

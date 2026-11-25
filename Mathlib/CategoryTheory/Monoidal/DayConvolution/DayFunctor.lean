@@ -17,7 +17,8 @@ from Day convolution. Such a setup is necessary as by default,
 the `MonoidalCategory` instance on `C ⥤ V` is the "pointwise" one,
 where the tensor product of `F` and `G` is the functor `x ↦ F.obj x ⊗ G.obj x`.
 
-## TODOs
+## TODO
+
 - Given a `LawfulDayConvolutionMonoidalCategoryStruct C V D`, show that
   ι induces a monoidal functor `D ⥤ (C ⊛⥤ V)`.
 - Specialize to the case `V := Type _`, and prove a universal property stating
