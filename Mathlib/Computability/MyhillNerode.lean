@@ -33,7 +33,7 @@ namespace Language
 
 variable (L) in
 /-- The *left quotient* of `x` is the set of suffixes `y` such that `x ++ y` is in `L`. -/
-def leftQuotient (x : List α) : Language α := ofSet {y | x ++ y ∈ L}
+def leftQuotient (x : List α) : Language α := ofSetList {y | x ++ y ∈ L}
 
 variable (L) in
 @[simp]
@@ -88,7 +88,7 @@ variable (L) in
 @[simp]
 theorem accepts_toDFA : L.toDFA.accepts = L := by
   ext x
-  simp_rw [Language.mem_toSet, DFA.mem_accepts]
+  simp_rw [Language.mem_toSetList, DFA.mem_accepts]
   suffices L.toDFA.eval x = L.leftQuotient x by simp [this]
   induction x using List.reverseRecOn with
   | nil => simp
