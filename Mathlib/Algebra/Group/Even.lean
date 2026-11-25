@@ -120,6 +120,11 @@ variable [MulOneClass α] [MulOneClass β] [FunLike F α β] [MonoidHomClass F �
 lemma IsSquare.map {a : α} (f : F) : IsSquare a → IsSquare (f a) :=
   fun ⟨r, _⟩ => ⟨f r, by simp [*]⟩
 
+@[simp]
+theorem IsSquare.map_iff {F : Type*} [EquivLike F α β] [MulEquivClass F α β] {a : α} (f : F) :
+    IsSquare (f a) ↔ IsSquare a :=
+  ⟨fun h ↦ by simpa using h.map (f : α ≃* β).symm, .map f⟩
+
 @[to_additive]
 lemma isSquare_subset_image_isSquare {f : F} (hf : Function.Surjective f) :
     {b | IsSquare b} ⊆ f '' {a | IsSquare a} := fun b ⟨s, _⟩ => by

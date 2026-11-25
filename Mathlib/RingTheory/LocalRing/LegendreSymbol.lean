@@ -7,6 +7,7 @@ Authors: Nirvana Coppola, María Inés de Frutos-Fernández, Catherine Hsu
 module
 
 public import Mathlib.Algebra.CharP.CharAndCard
+public import Mathlib.FieldTheory.Finite.GaloisField
 public import Mathlib.NumberTheory.LegendreSymbol.Basic
 public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 
@@ -69,11 +70,8 @@ theorem sq_one (ha : IsUnit a) : legendreSym a ^ 2 = 1 := by
 lemma isSquare_residue_iff {p : ℕ} [Fact (Nat.Prime p)]
     (hp : Fintype.card (ResidueField R) = p) {z : ℤ} :
     IsSquare (residue R z) ↔ IsSquare (z : ZMod p) := by
-  subst hp
-  have : CharP (ResidueField R) (Fintype.card (ResidueField R)) := charP_of_card_eq_prime rfl
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · simp_rw [show z = (ZMod.ringEquiv _ rfl).symm (residue R z) by simp, IsSquare.map _ h]
-  · simp_rw [show residue R z = ZMod.ringEquiv _ rfl z by simp, IsSquare.map _ h]
+  rw [← ZMod.card p] at hp
+  rw [map_intCast, ← IsSquare.map_iff (FiniteField.ringEquivOfCardEq hp), map_intCast]
 
 /-- The Legendre symbol for local rings with finite residue fields agrees with the classical
 Legendre symbol on ℤ. -/
