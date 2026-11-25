@@ -42,10 +42,6 @@ open intervalIntegral MeasureTheory Real Set
 
 variable {a c : ℂ} {r p θ : ℝ}
 
-/-!
-## The Majorant
--/
-
 -- Pointwise majorization of the rotated integrand, by the chord bound and Jordan's inequality.
 private lemma norm_circleMap_sub_rpow_le (hr : 0 < r) (hp : p ≤ 0) (hθ : θ ∈ Ioo 0 (2 * π)) :
     ‖circleMap c r (θ + (a - c).arg) - a‖ ^ p ≤ (r / π * min θ (2 * π - θ)) ^ p := by
