@@ -125,4 +125,19 @@ def toInnerProductSpace (M : Matrix n n 𝕜) (hM : M.PosSemidef) :
     @InnerProductSpace 𝕜 (n → 𝕜) _ (M.toSeminormedAddCommGroup hM) :=
   InnerProductSpace.ofCore _
 
+section Complex
+
+omit [Fintype n] in
+lemma posSemidef_iff_complex {A : Matrix n n ℂ} :
+    A.PosSemidef ↔ ∀ x : n →₀ ℂ, 0 ≤ x.sum fun i xi ↦ x.sum fun j xj ↦ star xi * A i j * xj := by
+  refine ⟨fun h ↦ h.2, fun h ↦ ⟨?_, h⟩⟩
+  exact isHermitian_iff_complex.mpr fun _ ↦ Complex.nonneg_iff.mp (h _) |>.2.symm
+
+lemma posSemidef_iff_dotProduct_mulVec_complex {A : Matrix n n ℂ} :
+    A.PosSemidef ↔ ∀ x : n → ℂ, 0 ≤ star x ⬝ᵥ A *ᵥ x := by
+  rw [posSemidef_iff_dotProduct_mulVec, isHermitian_iff_im_dotProduct_mulVec_eq_zero_complex]
+  exact ⟨fun h ↦ h.2, fun h ↦ ⟨fun _ ↦ Complex.nonneg_iff.mp (h _) |>.2.symm, h⟩⟩
+
+end Complex
+
 end Matrix
