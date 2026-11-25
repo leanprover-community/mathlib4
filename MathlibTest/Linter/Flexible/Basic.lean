@@ -36,7 +36,7 @@ warning: `simp at h` is a flexible tactic modifying `h`. Try `simp?` and use the
 Note: This linter can be disabled with `set_option linter.flexible false`
 ---
 info: `exact h`
-uses `h`, which was modified by the flexible tactic `simp` on line 44!
+uses `h`, which was modified by the flexible tactic `simp` on line 43!
 -/
 #guard_msgs in
 example (h : 0 + 0 = 0) : True := by
@@ -81,7 +81,7 @@ info: Try this:
   [apply] simp only [Nat.add_zero] at *
 ---
 info: `exact Nat.le_succ_of_le h`
-uses a rigid tactic. Previously, the flexible tactic `simp`, which potentially modified all hypotheses and the goal with a wildcard `*`, was used on line 99.
+uses a rigid tactic. Previously, the flexible tactic `simp`, which potentially modified all hypotheses and the goal with a wildcard `*`, was used on line 98.
 ---
 warning: `simp at *` is a flexible tactic that potentially modifies all hypotheses and the current goal with a wildcard `*`. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
 
@@ -91,7 +91,7 @@ info: Try this:
   [apply] simp only [Nat.add_zero] at *
 ---
 info: `exact Nat.le_succ_of_le h`
-uses a rigid tactic. Previously, the flexible tactic `simp`, which potentially modified all hypotheses and the goal with a wildcard `*`, was used on line 99.
+uses a rigid tactic. Previously, the flexible tactic `simp`, which potentially modified all hypotheses and the goal with a wildcard `*`, was used on line 98.
 -/
 #guard_msgs (substring := true) in
 example {a b : Nat} (h : a ≤ b) : a + 0 ≤ b + 1 := by
@@ -104,14 +104,14 @@ warning: `simp at *` is a flexible tactic that potentially modifies all hypothes
 Note: This linter can be disabled with `set_option linter.flexible false`
 ---
 info: `exact h2`
-uses a rigid tactic. Previously, the flexible tactic `simp`, which potentially modified all hypotheses and the goal with a wildcard `*`, was used on line 119.
+uses a rigid tactic. Previously, the flexible tactic `simp`, which potentially modified all hypotheses and the goal with a wildcard `*`, was used on line 118.
 ---
 warning: `simp at *` is a flexible tactic that potentially modifies all hypotheses and the current goal with a wildcard `*`. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
 
 Note: This linter can be disabled with `set_option linter.flexible false`
 ---
 info: `exact h2`
-uses a rigid tactic. Previously, the flexible tactic `simp`, which potentially modified all hypotheses and the goal with a wildcard `*`, was used on line 119.
+uses a rigid tactic. Previously, the flexible tactic `simp`, which potentially modified all hypotheses and the goal with a wildcard `*`, was used on line 118.
 -/
 #guard_msgs (substring := true) in
 example {a b : Nat} (h1 : 0 + 0 = 0) (h2 : a ≤ b) : a ≤ b := by
@@ -124,14 +124,14 @@ warning: `simp at *` is a flexible tactic that potentially modifies all hypothes
 Note: This linter can be disabled with `set_option linter.flexible false`
 ---
 info: `exact h2`
-uses a rigid tactic. Previously, the flexible tactic `simp`, which potentially modified all hypotheses and the goal with a wildcard `*`, was used on line 139.
+uses a rigid tactic. Previously, the flexible tactic `simp`, which potentially modified all hypotheses and the goal with a wildcard `*`, was used on line 138.
 ---
 warning: `simp at *` is a flexible tactic that potentially modifies all hypotheses and the current goal with a wildcard `*`. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
 
 Note: This linter can be disabled with `set_option linter.flexible false`
 ---
 info: `exact h2`
-uses a rigid tactic. Previously, the flexible tactic `simp`, which potentially modified all hypotheses and the goal with a wildcard `*`, was used on line 139.
+uses a rigid tactic. Previously, the flexible tactic `simp`, which potentially modified all hypotheses and the goal with a wildcard `*`, was used on line 138.
 -/
 #guard_msgs (substring := true) in
 example {a b : Nat} (h1 : 0 + 0 = 0) (h2 : a ≤ b) : a ≤ b := by
@@ -147,7 +147,7 @@ info: Try this:
   [apply] simp only [Nat.add_zero] at *
 ---
 info: `exact h`
-uses a rigid tactic. Previously, the flexible tactic `simp`, which potentially modified all hypotheses and the goal with a wildcard `*`, was used on line 165.
+uses a rigid tactic. Previously, the flexible tactic `simp`, which potentially modified all hypotheses and the goal with a wildcard `*`, was used on line 164.
 ---
 warning: `simp at *` is a flexible tactic that potentially modifies all hypotheses and the current goal with a wildcard `*`. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
 
@@ -157,7 +157,7 @@ info: Try this:
   [apply] simp only [Nat.add_zero] at *
 ---
 info: `exact h`
-uses a rigid tactic. Previously, the flexible tactic `simp`, which potentially modified all hypotheses and the goal with a wildcard `*`, was used on line 165.
+uses a rigid tactic. Previously, the flexible tactic `simp`, which potentially modified all hypotheses and the goal with a wildcard `*`, was used on line 164.
 -/
 #guard_msgs (substring := true) in
 example {a b : Nat} (h : a = b) : a + 0 = b := by
@@ -189,7 +189,7 @@ info: Try this:
   [apply] simp only [Nat.add_zero]
 ---
 info: `assumption`
-modifies the current goal, which was modified by the flexible tactic `simp` on line 207!
+modifies the current goal, which was modified by the flexible tactic `simp` on line 206!
 ---
 warning: `simp` is a flexible tactic modifying `⊢`. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
 
@@ -199,7 +199,7 @@ info: Try this:
   [apply] simp only [Nat.add_zero]
 ---
 info: `assumption`
-modifies the current goal, which was modified by the flexible tactic `simp` on line 207!
+modifies the current goal, which was modified by the flexible tactic `simp` on line 206!
 -/
 #guard_msgs (substring := true) in
 example {a b : Nat} (h : a = b) : a + 0 = b := by
@@ -231,7 +231,7 @@ info: Try this:
   [apply] simp only [Nat.zero_ne_one, and_self]
 ---
 info: `on_goal 2 => · contradiction`
-modifies the current goal, which was modified by the flexible tactic `simp` on line 249!
+modifies the current goal, which was modified by the flexible tactic `simp` on line 248!
 ---
 warning: `simp` is a flexible tactic modifying `⊢`. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
 
@@ -241,7 +241,7 @@ info: Try this:
   [apply] simp only [Nat.zero_ne_one, and_self]
 ---
 info: `contradiction`
-modifies the current goal, which was modified by the flexible tactic `simp` on line 249!
+modifies the current goal, which was modified by the flexible tactic `simp` on line 248!
 -/
 #guard_msgs (substring := true) in
 example (h : 0 = 1 ∨ 0 = 1) : 0 = 1 ∧ 0 = 1 := by
@@ -262,7 +262,7 @@ info: Try this:
   [apply] simp only [Nat.zero_ne_one, and_self]
 ---
 info: `contradiction`
-modifies the current goal, which was modified by the flexible tactic `simp` on line 280!
+modifies the current goal, which was modified by the flexible tactic `simp` on line 279!
 ---
 warning: `simp` is a flexible tactic modifying `⊢`. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
 
@@ -272,7 +272,7 @@ info: Try this:
   [apply] simp only [Nat.zero_ne_one, and_self]
 ---
 info: `contradiction`
-modifies the current goal, which was modified by the flexible tactic `simp` on line 280!
+modifies the current goal, which was modified by the flexible tactic `simp` on line 279!
 -/
 #guard_msgs (substring := true) in
 example (h : 0 = 1 ∨ 0 = 1) : 0 = 1 ∧ 0 = 1 := by
@@ -286,14 +286,14 @@ warning: `simp at h k` is a flexible tactic modifying `k`. Try `simp?` and use t
 Note: This linter can be disabled with `set_option linter.flexible false`
 ---
 info: `rw [← Classical.not_not (a := True)] at k`
-uses `k`, which was modified by the flexible tactic `simp` on line 302!
+uses `k`, which was modified by the flexible tactic `simp` on line 301!
 ---
 warning: `simp at h k` is a flexible tactic modifying `h`. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
 
 Note: This linter can be disabled with `set_option linter.flexible false`
 ---
 info: `rw [← Classical.not_not (a := True)] at h`
-uses `h`, which was modified by the flexible tactic `simp` on line
+uses `h`, which was modified by the flexible tactic `simp` on line 301!
 -/
 #guard_msgs (substring := true) in
 -- `simp at h` stains `h` but not other locations
@@ -417,14 +417,14 @@ warning: `simp at h k` is a flexible tactic modifying `k`. Try `simp?` and use t
 Note: This linter can be disabled with `set_option linter.flexible false`
 ---
 info: `rw [← Classical.not_not (a := True)] at k`
-uses `k`, which was modified by the flexible tactic `simp` on line 433!
+uses `k`, which was modified by the flexible tactic `simp` on line 432!
 ---
 warning: `simp at h k` is a flexible tactic modifying `h`. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
 
 Note: This linter can be disabled with `set_option linter.flexible false`
 ---
 info: `rw [← Classical.not_not (a := True)] at h`
-uses `h`, which was modified by the flexible tactic `simp` on line
+uses `h`, which was modified by the flexible tactic `simp` on line 432!
 -/
 #guard_msgs (substring := true) in
 -- `simp at h` stains `h` but not other locations
