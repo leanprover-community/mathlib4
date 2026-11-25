@@ -4989,11 +4989,9 @@ public import Mathlib.GroupTheory.Coset.Defs
 public import Mathlib.GroupTheory.CosetCover
 public import Mathlib.GroupTheory.Coxeter.Basic
 public import Mathlib.GroupTheory.Coxeter.Deletion
-public import Mathlib.GroupTheory.Coxeter.FiniteReduction
 public import Mathlib.GroupTheory.Coxeter.Inversion
 public import Mathlib.GroupTheory.Coxeter.Length
 public import Mathlib.GroupTheory.Coxeter.Matrix
-public import Mathlib.GroupTheory.Coxeter.ReflectionSystem
 public import Mathlib.GroupTheory.DedekindFinite
 public import Mathlib.GroupTheory.Descent
 public import Mathlib.GroupTheory.Divisible
