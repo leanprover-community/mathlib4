@@ -182,7 +182,7 @@ lemma isKSheaf_pushforward_obj : ((pushforward f pf).obj F.obj).IsKSheaf where
     Lattice.BicartSq.map h <| {
       toFun := properPreimage pf
       map_sup' := by aesop
-      map_inf' := by aesop}
+      map_inf' := by aesop }
   nonempty_isColimit_coconeOfCompacts K :=
     ⟨(Functor.Final.isColimitWhiskerEquiv ((baseChangeCompactNhdsByProperPreimage_mono
        pf K).functor.op) _).symm (F.isColimit (properPreimage pf K))⟩
