@@ -208,7 +208,6 @@ theorem reduce_flatten_replicate (h : IsReduced L) (n : ℕ) :
 
 end reduceCyclically
 
-section IsMulTorsionFree
 open reduceCyclically
 
 /-- Free groups are torsion-free, i.e., taking powers is injective. Our proof idea is as follows:
@@ -249,5 +248,4 @@ instance {G : Type*} [Group G] [IsFreeGroup G] : HasUniqueRoots G :=
   Function.Injective.hasUniqueRoots (IsFreeGroup.basis G).repr.toMonoidHom
     (IsFreeGroup.basis G).repr.injective
 
-end IsMulTorsionFree
 end FreeGroup
