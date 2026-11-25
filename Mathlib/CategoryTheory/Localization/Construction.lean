@@ -92,13 +92,11 @@ open Localization.Construction
 
 /-- The localized category obtained by formally inverting the morphisms
 in `W : MorphismProperty C` -/
-@[implicit_reducible]
 def Localization :=
   CategoryTheory.Quotient (Localization.Construction.relations W)
 deriving Category
 
 /-- The obvious functor `C ⥤ W.Localization` -/
-@[implicit_reducible]
 def Q : C ⥤ W.Localization where
   obj X := (Quotient.functor _).obj ((Paths.of _).obj ⟨X⟩)
   map f := (Quotient.functor _).map (ψ₁ W f)
@@ -106,6 +104,8 @@ def Q : C ⥤ W.Localization where
   map_comp f g := Quotient.sound _ (relations.comp f g)
 
 end MorphismProperty
+
+attribute [local implicit_reducible] MorphismProperty.Q
 
 namespace Localization
 

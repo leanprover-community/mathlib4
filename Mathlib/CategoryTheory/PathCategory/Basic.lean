@@ -27,6 +27,7 @@ namespace CategoryTheory
 
 section
 
+-- TODO: Make `Paths` a one-field structure
 /-- A type synonym for the category of paths in a quiver.
 -/
 @[implicit_reducible]

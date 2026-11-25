@@ -166,8 +166,7 @@ lemma isoOfHom_id_inv (X : C) (hX : W (𝟙 X)) :
 variable {W}
 
 lemma Construction.wIso_eq_isoOfHom {X Y : C} (f : X ⟶ Y) (hf : W f) :
-    Construction.wIso f hf = isoOfHom W.Q W f hf := by
-  cat_disch
+    Construction.wIso f hf = isoOfHom W.Q W f hf := by cat_disch
 
 lemma Construction.wInv_eq_isoOfHom_inv {X Y : C} (f : X ⟶ Y) (hf : W f) :
     Construction.wInv f hf = (isoOfHom W.Q W f hf).inv :=
