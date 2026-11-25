@@ -38,6 +38,18 @@ instance (R : Type*) [Zero R] [Preorder R] [SMul R α] : PosSMulMono R α := by
   congr
   rwa [← hd.le_iff_eq _ _]
 
+instance (R : Type*) [Preorder R] [Monoid R] [AddMonoid α] [DistribMulAction R α] :
+    SMulPosMono R α := by
+  constructor
+  intro b hb a1 a2 ha
+  rw [le_iff_eq] at hb
+  rw [← hb, smul_zero, smul_zero]
+
+instance (R : Type*) [Zero R] [Preorder R] [Monoid R] [AddMonoid α] [DistribMulAction R α] :
+    IsOrderedModule R α where
+  toPosSMulMono := inferInstance
+  toSMulPosMono := inferInstance
+
 /-- Principal upper sets in the discrete order are singletons. -/
 theorem Ici_eq_singleton (a : α) : Set.Ici a = {a} := by
   ext x
