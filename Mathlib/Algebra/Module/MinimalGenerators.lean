@@ -8,9 +8,11 @@ module
 public import Mathlib.Algebra.Module.SpanRankOperations
 public import Mathlib.RingTheory.Regular.RegularSequence
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equivalence between two set of minimal generators over local ring
-
 -/
 
 public section

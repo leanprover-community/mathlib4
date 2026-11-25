@@ -605,7 +605,7 @@ theorem isSeparable_of_hausdorffMeasure_ne_top {d : ℝ} {s : Set X} (h : μH[d]
   rw [hausdorffMeasure_apply] at h
   obtain ⟨c, -, hcc, hsc⟩ := EMetric.subset_countable_closure_of_almost_dense_set s fun ε hε ↦ by
     obtain ⟨t, htd, hst, -⟩ := by simpa [iInf_lt_iff] using (le_iSup₂ ε hε).trans_lt h.lt_top
-    refine ⟨range fun m : {n // (t n).Nonempty} ↦ m.2.some, countable_range _, fun x hx ↦ ?_⟩
+    refine ⟨range fun m : {n // (t n).Nonempty} ↦ m.property.some, countable_range _, fun x hx ↦ ?_⟩
     obtain ⟨n, hn⟩ := mem_iUnion.1 (hst hx)
     exact mem_biUnion (mem_range_self ⟨n, x, hn⟩)
       (mem_closedEBall.2 ((edist_le_ediam_of_mem hn (Nonempty.some_mem _)).trans (htd n)))
@@ -985,7 +985,7 @@ instance isAddHaarMeasure_hausdorffMeasure {E : Type*}
       rw [← e.symm_image_image K]
       apply lt_of_le_of_lt <| e.symm.lipschitzWith.hausdorffMeasure_image_le (by simp) (e '' K)
       rw [ENNReal.rpow_natCast]
-      exact ENNReal.mul_lt_top (ENNReal.pow_lt_top ENNReal.coe_lt_top) this
+      finiteness
     conv_lhs => congr; congr; rw [← Fintype.card_fin (finrank ℝ E)]
     rw [hausdorffMeasure_pi_real]
     exact (hK.image e.continuous).measure_lt_top
@@ -1091,8 +1091,8 @@ variable [MetricSpace P] [NormedAddTorsor E P] [BorelSpace P]
 
 This is an auxiliary result used to prove `hausdorffMeasure_affineSegment`. -/
 theorem hausdorffMeasure_lineMap_image (x y : P) (s : Set ℝ) :
-    μH[1] (AffineMap.lineMap x y '' s) = nndist x y • μH[1] s := by
-  suffices μH[1] (IsometryEquiv.vaddConst x '' (· • (y -ᵥ x)) '' s) = nndist x y • μH[1] s by
+    μH[1] (AffineMap.lineMap x y '' s) = nnDist x y • μH[1] s := by
+  suffices μH[1] (IsometryEquiv.vaddConst x '' (· • (y -ᵥ x)) '' s) = nnDist x y • μH[1] s by
     simpa only [Set.image_image]
   borelize E
   rw [IsometryEquiv.hausdorffMeasure_image, hausdorffMeasure_smul_right_image,
@@ -1103,7 +1103,7 @@ theorem hausdorffMeasure_lineMap_image (x y : P) (s : Set ℝ) :
 theorem hausdorffMeasure_affineSegment (x y : P) : μH[1] (affineSegment ℝ x y) = edist x y := by
   rw [affineSegment, hausdorffMeasure_lineMap_image, hausdorffMeasure_real, Real.volume_Icc,
     sub_zero, ENNReal.ofReal_one, ← Algebra.algebraMap_eq_smul_one]
-  exact (edist_nndist _ _).symm
+  exact (eDist_nnDist _ _).symm
 
 end RealAffine
 

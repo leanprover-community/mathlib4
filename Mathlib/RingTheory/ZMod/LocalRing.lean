@@ -5,15 +5,18 @@ Authors: Nicola Falciola
 -/
 module
 
-public import Mathlib.Algebra.Field.ZMod
 public import Mathlib.RingTheory.LocalRing.RingHom.Basic
+
+import Mathlib.Algebra.Field.ZMod
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # `ZMod (p ^ r)` is a local ring
 
 For a prime `p` and `r ≠ 0`, the reduction map `ZMod (p ^ r) →+* ZMod p` is a local ring
 homomorphism into a field, hence `ZMod (p ^ r)` is a local ring.
-
 -/
 
 public section

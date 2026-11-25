@@ -35,6 +35,7 @@ Each of these has a dual.
   equalizer of `f` and `f`.
 
 ## Implementation notes
+
 As with the other special shapes in the limits library, all the definitions here are given as
 `abbrev`s of the general statements for limits, so all the `simp` lemmas and theorems about
 general limits can be used.
@@ -296,7 +297,7 @@ theorem parallelPairHom_app_one {X' Y' : C} (f g : X ⟶ Y) (f' g' : X' ⟶ Y') 
 
 /-- Construct a natural isomorphism between functors out of the walking parallel pair from
 its components. -/
-@[simps!, to_dual none]
+@[to_dual none, simps! (attr := to_dual none)]
 def parallelPair.ext {F G : WalkingParallelPair ⥤ C} (zero : F.obj zero ≅ G.obj zero)
     (one : F.obj one ≅ G.obj one)
     (left : F.map left ≫ one.hom = zero.hom ≫ G.map left := by cat_disch)
@@ -446,7 +447,8 @@ only asks for a proof of facts that carry any mathematical content, and allows a
 same `s` for all parts. -/]
 def Fork.IsLimit.mk' {X Y : C} {f g : X ⟶ Y} (t : Fork f g)
     (create : ∀ s : Fork f g, { l // l ≫ t.ι = s.ι ∧ ∀ {m}, m ≫ t.ι = s.ι → m = l }) : IsLimit t :=
-  Fork.IsLimit.mk t (fun s => (create s).1) (fun s => (create s).2.1) fun s _ w => (create s).2.2 w
+  Fork.IsLimit.mk t (fun s => (create s).val) (fun s => (create s).property.1)
+    fun s _ w => (create s).property.2 w
 
 /-- Noncomputably make a limit cone from the existence of unique factorizations. -/
 @[no_expose, to_dual
@@ -470,7 +472,7 @@ This is a special case of `IsColimit.homIso'`, often useful to construct adjunct
 def Fork.IsLimit.homIso {X Y : C} {f g : X ⟶ Y} {t : Fork f g} (ht : IsLimit t) (Z : C) :
     (Z ⟶ t.pt) ≃ { h : Z ⟶ X // h ≫ f = h ≫ g } where
   toFun k := ⟨k ≫ t.ι, by simp only [Category.assoc, t.condition]⟩
-  invFun h := (Fork.IsLimit.lift' ht _ h.prop).1
+  invFun h := (Fork.IsLimit.lift' ht _ h.prop).val
   left_inv _ := Fork.IsLimit.hom_ext ht (Fork.IsLimit.lift' _ _ _).prop
   right_inv _ := Subtype.ext (Fork.IsLimit.lift' ht _ _).prop
 
@@ -1025,8 +1027,8 @@ def isEqualizerCompMono {c : Fork f g} (i : IsLimit c) {Z : C} (h : Y ⟶ Z) [hm
   Fork.IsLimit.mk' _ fun s =>
     let s' : Fork f g := Fork.ofι s.ι (by apply hm.right_cancellation; simp [s.condition])
     let l := Fork.IsLimit.lift' i s'.ι s'.condition
-    ⟨l.1, l.2, fun hm => by
-      apply Fork.IsLimit.hom_ext i; rw [Fork.ι_ofι] at hm; rw [hm]; exact l.2.symm⟩
+    ⟨l.val, l.property, fun hm => by
+      apply Fork.IsLimit.hom_ext i; rw [Fork.ι_ofι] at hm; rw [hm]; exact l.property.symm⟩
 
 variable (C f g)
 

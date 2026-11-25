@@ -6,7 +6,6 @@ Authors: Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Functor.KanExtension.Yoneda
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 
@@ -25,7 +24,6 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 ## References
 
 https://ncatlab.org/nlab/show/commutativity+of+limits+and+colimits#preservation_by_functor_categories_and_localizations
-
 -/
 
 @[expose] public section

@@ -16,6 +16,7 @@ This file collects various results related to the Lebesgue dominated convergence
 for the Bochner integral.
 
 ## Main results
+
 - `MeasureTheory.tendsto_integral_of_dominated_convergence`:
   the Lebesgue dominated convergence theorem for the Bochner integral
 - `MeasureTheory.hasSum_integral_of_dominated_convergence`:
@@ -28,7 +29,6 @@ for the Bochner integral.
   w.r.t. a parameter
 - `intervalIntegral.continuous_primitive` and friends: primitives of interval integrable
   measurable functions are continuous
-
 -/
 
 public section

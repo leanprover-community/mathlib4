@@ -22,7 +22,7 @@ This file defines the symplectic group and proves elementary properties.
 * `Matrix.J`: the canonical `2n × 2n` skew-symmetric matrix
 * `symplecticGroup`: the group of symplectic matrices
 
-## Implementation Notes
+## Implementation notes
 
 * `SymplecticGroup.det_eq_one`: Symplectic matrices have determinant 1. The proof strategy
 comes in two steps:
@@ -39,6 +39,7 @@ construct the desired `X` in step 1 at the residue field level, and lift back to
 keeping the upper-left block invertible.
 
 ## TODO
+
 * For `n = 1` the symplectic group coincides with the special linear group.
 -/
 
@@ -188,7 +189,7 @@ theorem mem_iff' : A ∈ symplecticGroup l R ↔ Aᵀ * J l R * A = J l R := by
 
 instance hasInv : Inv (symplecticGroup l R) where
   inv A := ⟨(-J l R) * (A : Matrix (l ⊕ l) (l ⊕ l) R)ᵀ * J l R,
-      mul_mem (mul_mem (neg_mem <| J_mem _ _) <| transpose_mem A.2) <| J_mem _ _⟩
+      mul_mem (mul_mem (neg_mem <| J_mem _ _) <| transpose_mem A.property) <| J_mem _ _⟩
 
 theorem coe_inv (A : symplecticGroup l R) : (↑A⁻¹ : Matrix _ _ _) = (-J l R) * (↑A)ᵀ * J l R := rfl
 
@@ -216,7 +217,7 @@ instance : Group (symplecticGroup l R) :=
     inv_mul_cancel := fun A => by
       apply Subtype.ext
       simp only [Submonoid.coe_one, Submonoid.coe_mul, Matrix.neg_mul, coe_inv]
-      exact inv_left_mul_aux A.2 }
+      exact inv_left_mul_aux A.property }
 
 section Determinant
 

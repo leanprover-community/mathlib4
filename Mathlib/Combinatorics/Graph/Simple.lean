@@ -14,6 +14,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Maps
 This file defines two type classes for graphs `Graph α β`: `Loopless` and `Simple`.
 
 ## Main definitions
+
 - `Loopless`: a graph is loopless if it has no loops
 - `Simple`: a graph is simple if it has no multiple edges between the same pair of vertices
 - `toSimpleGraph`: a function that constructs a `SimpleGraph V(G)` from a Graph `G`

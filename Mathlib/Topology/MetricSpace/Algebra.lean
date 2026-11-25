@@ -24,7 +24,6 @@ properties shared by normed groups and by `R≥0`.
 We deduce a `ContinuousMul` instance from `LipschitzMul`, etc.  In principle there should
 be an intermediate typeclass for uniform spaces, but the algebraic hierarchy there (see
 `IsUniformGroup`) is structured differently.
-
 -/
 
 @[expose] public section
@@ -156,7 +155,7 @@ instance (priority := 100) IsBoundedSMul.continuousSMul : ContinuousSMul α β w
 
 instance (priority := 100) IsBoundedSMul.toUniformContinuousConstSMul :
     UniformContinuousConstSMul α β :=
-  ⟨fun c => ((lipschitzWith_iff_dist_le_mul (K := nndist c 0)).2 fun _ _ =>
+  ⟨fun c => ((lipschitzWith_iff_dist_le_mul (K := nnDist c 0)).2 fun _ _ =>
     dist_smul_pair c _ _).uniformContinuous⟩
 
 @[to_fun]

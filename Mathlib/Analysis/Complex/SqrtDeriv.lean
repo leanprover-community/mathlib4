@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.RCLike.Sqrt
 public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Derivatives of `Complex.sqrt`
 
@@ -27,8 +30,8 @@ public section
 namespace Complex
 
 lemma hasStrictDerivAt_sqrt {z : ℂ} (hz : z ∈ slitPlane) :
-    HasStrictDerivAt sqrt (z ^ (-1 / 2 : ℂ) / 2) z := by
-  exact (Complex.hasStrictDerivAt_cpow_const (c := 2⁻¹) hz).congr_deriv (by
+    HasStrictDerivAt sqrt (z ^ (-1 / 2 : ℂ) / 2) z :=
+  (Complex.hasStrictDerivAt_cpow_const (c := 2⁻¹) hz).congr_deriv (by
     rw [show (2 : ℂ)⁻¹ - 1 = -1 / 2 by norm_num, mul_comm, ← div_eq_mul_inv])
 
 lemma hasDerivAt_sqrt {z : ℂ} (hz : z ∈ slitPlane) : HasDerivAt sqrt (z ^ (-1 / 2 : ℂ) / 2) z :=

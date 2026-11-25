@@ -20,8 +20,8 @@ The categories of bundled ring objects and bundled commutative ring objects are
 denoted `RingObjCat C` and `CommRingObjCat C` respectively.
 
 ## TODO
-* develop the theory of bimonoidal categories and relate this with `Rig`-objects
 
+* develop the theory of bimonoidal categories and relate this with `Rig`-objects
 -/
 
 @[expose] public section

@@ -30,7 +30,6 @@ This determinant algorithm comes from
 ## Main lemmas
 
 The lemmas in this file are unfolding equations.
-
 -/
 
 public section

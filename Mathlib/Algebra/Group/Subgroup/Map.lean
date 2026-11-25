@@ -44,6 +44,7 @@ Subgroup inclusion is denoted `≤` rather than `⊆`, although `∈` is defined
 membership of a subgroup's underlying set.
 
 ## Tags
+
 subgroup, subgroups
 -/
 
@@ -289,8 +290,8 @@ def subgroupOf (H K : Subgroup G) : Subgroup K :=
 /-- If `H ≤ K`, then `H` as a subgroup of `K` is isomorphic to `H`. -/]
 def subgroupOfEquivOfLe {G : Type*} [Group G] {H K : Subgroup G} (h : H ≤ K) :
     H.subgroupOf K ≃* H where
-  toFun g := ⟨g.1, g.2⟩
-  invFun g := ⟨⟨g.1, h g.2⟩, g.2⟩
+  toFun g := ⟨g.val, g.property⟩
+  invFun g := ⟨⟨g.val, h g.property⟩, g.property⟩
   map_mul' _g _h := rfl
 
 @[to_additive]
@@ -343,7 +344,7 @@ theorem subgroupOf_bot_eq_top : H.subgroupOf ⊥ = ⊤ :=
 
 @[to_additive (attr := simp)]
 theorem subgroupOf_self : H.subgroupOf H = ⊤ :=
-  top_unique fun g _hg => g.2
+  top_unique fun g _hg => g.property
 
 @[to_additive (attr := simp)]
 theorem subgroupOf_inj {H₁ H₂ K : Subgroup G} :
@@ -561,7 +562,7 @@ theorem coe_subgroupMap_apply (e : G ≃* G') (H : Subgroup G) (g : H) :
 
 @[to_additive (attr := simp)]
 theorem subgroupMap_symm_apply (e : G ≃* G') (H : Subgroup G) (g : H.map (e : G →* G')) :
-    (e.subgroupMap H).symm g = ⟨e.symm g, SetLike.mem_coe.1 <| Set.mem_image_equiv.1 g.2⟩ :=
+    (e.subgroupMap H).symm g = ⟨e.symm g, SetLike.mem_coe.1 <| Set.mem_image_equiv.1 g.property⟩ :=
   rfl
 
 end MulEquiv

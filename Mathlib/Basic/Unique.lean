@@ -34,7 +34,7 @@ In other words, a type that is `Inhabited` and a `Subsingleton`.
 * `Function.Injective.unique`: if the codomain of an injective function is `Subsingleton` and its
   domain is `Inhabited`, then its domain is `Unique`.
 
-## Implementation details
+## Implementation notes
 
 The typeclass `Unique α` is implemented as a type,
 rather than a `Prop`-valued predicate,
@@ -51,7 +51,6 @@ set_option genInjectivity false in
 
 This is implemented as a type, rather than a `Prop`-valued predicate,
 for good definitional properties of the default term. -/
-@[ext]
 structure Unique (α : Sort u) extends Inhabited α where
   /-- In a `Unique` type, every term is equal to the default element (from `Inhabited`). -/
   uniq : ∀ a : α, a = default
@@ -64,7 +63,7 @@ theorem unique_iff_existsUnique (α : Sort u) : Nonempty (Unique α) ↔ ∃! _ 
 
 theorem unique_subtype_iff_existsUnique {α} (p : α → Prop) :
     Nonempty (Unique (Subtype p)) ↔ ∃! a, p a :=
-  ⟨fun ⟨u⟩ ↦ ⟨u.default.1, u.default.2, fun a h ↦ congr_arg Subtype.val (u.uniq ⟨a, h⟩)⟩,
+  ⟨fun ⟨u⟩ ↦ ⟨u.default.val, u.default.property, fun a h ↦ congr_arg Subtype.val (u.uniq ⟨a, h⟩)⟩,
    fun ⟨a, ha, he⟩ ↦ ⟨⟨⟨⟨a, ha⟩⟩, fun ⟨b, hb⟩ ↦ by
       congr
       exact he b hb⟩⟩⟩
@@ -266,6 +265,12 @@ instance Unique.subtypeEq (y : α) : Unique { x // x = y } where
 instance Unique.subtypeEq' (y : α) : Unique { x // y = x } where
   default := ⟨y, rfl⟩
   uniq := fun ⟨x, hx⟩ ↦ by subst hx; congr
+
+@[simp]
+theorem Subtype.coe_default_eq (y : α) : ↑(default : { x : α // x = y }) = y := rfl
+
+@[simp]
+theorem Subtype.coe_default_eq' (y : α) : ↑(default : { x : α // y = x }) = y := rfl
 
 end Subtype
 

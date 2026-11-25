@@ -9,6 +9,9 @@ public import Mathlib.LinearAlgebra.Basis.Defs
 public import Mathlib.LinearAlgebra.LinearIndependent.Basic
 public import Mathlib.LinearAlgebra.Span.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic results on bases
 

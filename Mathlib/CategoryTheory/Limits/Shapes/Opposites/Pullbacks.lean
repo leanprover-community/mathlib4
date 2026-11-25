@@ -7,11 +7,13 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Opposites
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pullbacks and pushouts in `C` and `Cᵒᵖ`
 
 We construct pullbacks and pushouts in the opposite categories.
-
 -/
 
 @[expose] public section
@@ -400,8 +402,8 @@ lemma op_pullbackMap {W X Y Z S T : C} (f₁ : W ⟶ S) (f₂ : X ⟶ S) [HasPul
 
 lemma op_pushoutMap {W X Y Z S T : C} (f₁ : S ⟶ W) (f₂ : S ⟶ X) [HasPushout f₁ f₂]
     (g₁ : T ⟶ Y) (g₂ : T ⟶ Z) [HasPushout g₁ g₂]
-    (i₁ : W ⟶ Y) (i₂ : X ⟶ Z) (i₃ : S ⟶ T) (eq₁ : f₁ ≫ i₁ = i₃ ≫ g₁)
-    (eq₂ : f₂ ≫ i₂ = i₃ ≫ g₂) :
+    (i₁ : W ⟶ Y) (i₂ : X ⟶ Z) (i₃ : S ⟶ T) (eq₁ : i₃ ≫ g₁ = f₁ ≫ i₁)
+    (eq₂ : i₃ ≫ g₂ = f₂ ≫ i₂) :
     (pushout.map f₁ f₂ g₁ g₂ i₁ i₂ i₃ eq₁ eq₂).op =
       (pullbackIsoOpPushout _ _).inv ≫
         pullback.map g₁.op g₂.op f₁.op f₂.op i₁.op i₂.op i₃.op

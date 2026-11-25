@@ -8,12 +8,14 @@ module
 public import Mathlib.Combinatorics.SimpleGraph.Acyclic
 public import Mathlib.Combinatorics.SimpleGraph.Diam
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Girth of a simple graph
 
 This file defines the girth and the extended girth of a simple graph as the length of its smallest
 cycle, they give `0` or `∞` respectively if the graph is acyclic.
-
 -/
 
 @[expose] public section
@@ -74,17 +76,11 @@ lemma three_le_egirth : 3 ≤ G.egirth := by
 @[simp] lemma egirth_bot : egirth (⊥ : SimpleGraph α) = ⊤ := by simp
 
 theorem egirth_top (h : 3 ≤ ENat.card α) : egirth (⊤ : SimpleGraph α) = 3 := by
-  classical
-  refine le_antisymm ?_ three_le_egirth
-  obtain ⟨s, hcard⟩ := Cardinal.exists_finset_eq_card <| Cardinal.ofNat_le_toENat.mp h
-  obtain ⟨x, y, z, hxy, hxz, hyz, -⟩ := s.card_eq_three.mp hcard.symm
-  set w : Walk ⊤ x x := .cons hxy <| .cons hyz <| .cons hxz.symm .nil with hw
-  have : w.IsCycle :=
-    { edges_nodup := by aesop
-      ne_nil := by aesop
-      support_nodup := by aesop }
-  grw [this.egirth_le_length]
-  simp [hw]
+  apply three_le_egirth.antisymm'
+  have : Nonempty (Fin 3 ↪ α) := by simpa [← Cardinal.lift_mk_le', ← Cardinal.ofNat_le_toENat]
+  have : cycleGraph 3 ⊑ ⊤ := isContained_top_iff.mpr this
+  have ⟨v, p, hcyc, hlen⟩ := (cycleGraph_isContained_iff <| by simp).mp this
+  grw [hcyc.egirth_le_length, hlen, Nat.cast_ofNat]
 
 open Walk in
 lemma egirth_le_two_mul_ediam_add_one (h : ¬ G.IsAcyclic) : G.egirth ≤ 2 * G.ediam + 1 := by
@@ -121,19 +117,49 @@ acyclic.
 noncomputable def girth (G : SimpleGraph α) : ℕ :=
   G.egirth.toNat
 
+variable (G) in
+theorem girth_eq_toNat_egirth : G.girth = G.egirth.toNat :=
+  rfl
+
+theorem natCast_girth_le_egirth : G.girth ≤ G.egirth :=
+  G.egirth.natCast_toNat_le_self
+
+theorem natCast_girth_eq_egirth_iff : G.girth = G.egirth ↔ ¬G.IsAcyclic :=
+  G.egirth.natCast_toNat_eq_self.trans G.egirth_eq_top.not
+
+theorem girth_eq_iff_egirth_eq {n : ℕ} : G.girth = n ↔ G.egirth = n ∨ n = 0 ∧ G.IsAcyclic := by
+  rcases eq_or_ne n 0 with rfl | hn
+  · simp [girth_eq_toNat_egirth, (three_pos.trans_le <| G.three_le_egirth).ne']
+  · simp [girth_eq_toNat_egirth, ENat.toNat_eq_iff, hn]
+
+theorem girth_eq_iff_egirth_eq_of_ne_zero {n : ℕ} (hn : n ≠ 0) : G.girth = n ↔ G.egirth = n :=
+  ENat.toNat_eq_iff hn
+
+theorem girth_eq_iff_of_not_isAcyclic {n : ℕ} (h : ¬G.IsAcyclic) : G.girth = n ↔ G.egirth = n := by
+  simp [girth_eq_iff_egirth_eq, h]
+
+@[simp]
+theorem le_girth_iff_natCast_le_egirth {n : ℕ} :
+    n ≤ G.girth ↔ n ≤ G.egirth ∧ (n = 0 ∨ ¬G.IsAcyclic) := by
+  rcases eq_or_ne G.egirth ⊤ with h | h
+  · simp [girth_eq_toNat_egirth, egirth_eq_top.mp, h]
+  rw [← ENat.natCast_toNat h]
+  simp [girth_eq_toNat_egirth, egirth_eq_top.not.mp h]
+
+theorem le_girth {n : ℕ} :
+    n ≤ G.girth ↔ (n = 0 ∨ ¬G.IsAcyclic) ∧ ∀ a (w : G.Walk a a), w.IsCycle → n ≤ w.length := by
+  simp [and_comm]
+
 lemma Walk.IsCycle.girth_le_length {a} {w : G.Walk a a} (h : w.IsCycle) : G.girth ≤ w.length :=
-  ENat.natCast_le_natCast.mp <| G.egirth.natCast_toNat_le_self.trans h.egirth_le_length
+  ENat.natCast_le_natCast.mp <| natCast_girth_le_egirth.trans h.egirth_le_length
 
 @[deprecated (since := "2026-07-05")] alias girth_le_length := Walk.IsCycle.girth_le_length
-
-lemma natCast_girth_le_egirth : G.girth ≤ G.egirth :=
-  ENat.natCast_toNat_le_self _
 
 lemma three_le_girth (hG : ¬ G.IsAcyclic) : 3 ≤ G.girth :=
   ENat.toNat_le_toNat three_le_egirth <| egirth_eq_top.not.mpr hG
 
-lemma girth_eq_zero : G.girth = 0 ↔ G.IsAcyclic :=
-  ⟨fun h ↦ not_not.mp <| three_le_girth.mt <| by lia, fun h ↦ by simp [girth, h]⟩
+lemma girth_eq_zero : G.girth = 0 ↔ G.IsAcyclic := by
+  simp [girth_eq_toNat_egirth, (three_pos.trans_le <| G.three_le_egirth).ne']
 
 protected alias ⟨_, IsAcyclic.girth_eq_zero⟩ := girth_eq_zero
 
@@ -142,7 +168,7 @@ lemma girth_anti {G' : SimpleGraph α} (hab : G ≤ G') (h : ¬ G.IsAcyclic) : G
 
 lemma Walk.IsCircuit.girth_le_length {a} {w : G.Walk a a} (hwc : w.IsCircuit) :
     G.girth ≤ w.length :=
-  ENat.natCast_le_natCast.mp <| G.egirth.natCast_toNat_le_self.trans hwc.egirth_le_length
+  ENat.natCast_le_natCast.mp <| natCast_girth_le_egirth.trans hwc.egirth_le_length
 
 lemma exists_girth_eq_length :
     (∃ (a : α) (w : G.Walk a a), w.IsCycle ∧ G.girth = w.length) ↔ ¬ G.IsAcyclic := by

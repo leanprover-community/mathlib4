@@ -19,7 +19,6 @@ public import Mathlib.RingTheory.TensorProduct.Finite
   applying `B₁` on `M₁` and `B₂` on `M₂`.
 * `LinearMap.BilinMap.tensorDistribEquiv`: `BilinForm.tensorDistrib` as an equivalence on finite
   free modules.
-
 -/
 
 @[expose] public section

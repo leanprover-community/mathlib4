@@ -32,7 +32,8 @@ is an element of `F(S)`. The fiber category `Fiber p S` is then equivalent to th
 `Fib S` with objects `a` in `F(S)`. In this case, the `HasFibers` instance is given by the
 categories `F(S)` and the functor `ι` sends `a : F(S)` to `(S, a)` in the fibered category.
 
-## Main API
+## Main definitions and statements
+
 The following API is developed so that the fibers from a `HasFibers` instance can be used
 analogously to the standard fibers.
 
@@ -46,7 +47,6 @@ analogously to the standard fibers.
   morphism in the fiber category.
 - `fiber_factorization` is the statement that any morphism in `𝒳` can be factored as a morphism in
   some fiber followed by a pullback.
-
 -/
 
 @[expose] public section
@@ -164,7 +164,7 @@ noncomputable def Fib.mkIsoSelf {S : 𝒮} {a : 𝒳} (ha : p.obj a = S) :
 
 instance Fib.mkIsoSelfIsHomLift {S : 𝒮} {a : 𝒳} (ha : p.obj a = S) :
     IsHomLift p (𝟙 S) (Fib.mkIsoSelf ha).hom :=
-  (Functor.objObjPreimageIso (inducedFunctor p S) (Fiber.mk ha)).hom.2
+  (Functor.objObjPreimageIso (inducedFunctor p S) (Fiber.mk ha)).hom.property
 
 section
 

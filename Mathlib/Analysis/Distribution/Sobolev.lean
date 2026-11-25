@@ -44,9 +44,9 @@ The bundled variant of `TemperedDistribution.MemSobolev` is called `BesselPotent
 
 
 ## References
+
 * [M. Taylor, *Partial Differential Equations 1*][taylorPDE1]
 * [W. McLean, *Strongly Elliptic Systems and Boundary Integral Equations*][mclean2000]
-
 -/
 
 @[expose] public noncomputable section

@@ -12,6 +12,9 @@ import Mathlib.Algebra.Ring.Hom.InjSurj
 import Mathlib.RingTheory.Ideal.Quotient.Noetherian
 import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Order of vanishing
 
@@ -326,14 +329,16 @@ def ordFrac : K →*₀ ℤᵐ⁰ :=
   (toLocalizationMap (nonZeroDivisors R) K).lift₀ (ordMonoidWithZeroHom R) <|
   ordMonoidWithZeroHom_isUnit R
 
-lemma ordFrac_eq_ord {x : R} (hx : x ≠ 0) :
+lemma ordFrac_eq_ord {x : R} :
     ordFrac R (algebraMap R K x) = ordMonoidWithZeroHom R x := by
+  rcases eq_or_ne x 0 with rfl | hx
+  · simp
   have := (FaithfulSMul.algebraMap_injective R K).isDomain
   refine (Submonoid.LocalizationMap.lift_eq ..).trans ?_
   simp [ordMonoidWithZeroHom, mem_nonZeroDivisors_iff_ne_zero.mpr hx]
 
 lemma ordFrac_eq_div (a : nonZeroDivisors R) (b : nonZeroDivisors R) :
-    ordFrac R (IsLocalization.mk' K a.1 b) =
+    ordFrac R (IsLocalization.mk' K a.val b) =
       ordMonoidWithZeroHom R a / ordMonoidWithZeroHom R b := by
   simp [ordFrac_eq_ord]
 

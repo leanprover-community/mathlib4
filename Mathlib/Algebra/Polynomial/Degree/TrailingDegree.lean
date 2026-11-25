@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Polynomial.Degree.Support
 public import Mathlib.Data.ENat.Monoid
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Trailing degree of univariate polynomials
 
@@ -392,6 +395,10 @@ theorem natTrailingDegree_neg (p : R[X]) : natTrailingDegree (-p) = natTrailingD
   simp [natTrailingDegree]
 
 @[simp]
+theorem trailingCoeff_neg (p : R[X]) : (-p).trailingCoeff = -p.trailingCoeff := by
+  rw [trailingCoeff, natTrailingDegree_neg, coeff_neg, trailingCoeff]
+
+@[simp]
 theorem natTrailingDegree_intCast (n : ℤ) : natTrailingDegree (n : R[X]) = 0 := by
   simp only [← C_eq_intCast, natTrailingDegree_C]
 
@@ -400,6 +407,12 @@ end Ring
 section Semiring
 
 variable [Semiring R]
+
+@[simp]
+theorem trailingCoeff_X_pow (n : ℕ) :
+    (X ^ n : R[X]).trailingCoeff = 1 := by
+  nontriviality R
+  rw [trailingCoeff, natTrailingDegree_X_pow, coeff_X_pow_self]
 
 /-- The second-lowest coefficient, or 0 for constants -/
 def nextCoeffUp (p : R[X]) : R :=

@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.PowerSeries.Order
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Power series over rings with no zero divisors
 
@@ -19,7 +22,6 @@ We then state various results about `R⟦X⟧` with `R` an integral domain.
 ## Instance
 
 If `R` has `NoZeroDivisors`, then so does `R⟦X⟧`.
-
 -/
 
 public section

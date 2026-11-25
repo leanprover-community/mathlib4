@@ -5,14 +5,17 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.RingHom.FinitePresentation
 public import Mathlib.RingTheory.Smooth.Locus
+
+import Mathlib.RingTheory.RingHom.FinitePresentation
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Smooth ring homomorphisms
 
 In this file we define smooth ring homomorphisms and show their meta properties.
-
 -/
 
 @[expose] public section
@@ -138,7 +141,7 @@ lemma ofLocalizationSpanTarget : OfLocalizationSpanTarget Smooth := by
     ← PrimeSpectrum.iSup_basicOpen_eq_top_iff'.mpr hs]
   simp only [TopologicalSpace.Opens.coe_iSup, Set.iUnion_subset_iff,
     Algebra.basicOpen_subset_smoothLocus_iff, ← formallySmooth_algebraMap]
-  exact fun r hr ↦ (hf ⟨r, hr⟩).1
+  exact fun r hr ↦ (hf ⟨r, hr⟩).formallySmooth
 
 /-- Smoothness is a local property of ring homomorphisms. -/
 lemma propertyIsLocal : PropertyIsLocal Smooth where

@@ -11,11 +11,13 @@ public import Mathlib.LinearAlgebra.Isomorphisms
 public import Mathlib.LinearAlgebra.StdBasis
 public import Mathlib.RingTheory.Finiteness.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite modules and types with finitely many elements
 
 This file relates `Module.Finite` and `_root_.Finite`.
-
 -/
 
 @[expose] public section
