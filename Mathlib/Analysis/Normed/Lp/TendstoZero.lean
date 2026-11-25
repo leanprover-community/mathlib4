@@ -59,18 +59,10 @@ lemma coe_mk (f : (i : ι) → E i) (h : Tendsto (fun i ↦ ‖f i‖) cofinite 
     ⇑(mk f h : lp E ∞) = f :=
   rfl
 
-instance isClosed : IsClosed (c₀ E : Set (lp E ∞)) := by
-  classical
-  have : (c₀ E : Set (lp E ∞)) =
-      {x : lp E ∞ | Tendsto (fun i ↦ (lp.single (E := E) ∞ i) (x i)) cofinite (𝓝 0)} := by
-    ext x
-    rw [SetLike.mem_coe, mem_tendstoZero_iff, Set.mem_ofPred_eq,
-      tendsto_zero_iff_norm_tendsto_zero (f := fun i ↦ lp.single (E := E) ∞ i (x i))]
-    simp
-  rw [this]
-  refine LipschitzWith.uniformEquicontinuous _ 1 (fun i ↦ ?_)
+instance isClosed : IsClosed (c₀ E : Set (lp E ∞)) :=
+  LipschitzWith.uniformEquicontinuous (fun i (x : lp E ∞) ↦ ‖x i‖) 1 (fun i ↦ by
+    simpa [Function.comp_def] using lipschitzWith_one_norm.comp (lp.lipschitzWith_one_eval ∞ i))
     |>.equicontinuous.isClosed_setOfPred_tendsto continuous_const
-  simpa using! lp.isometry_single i |>.lipschitzWith.comp <| lp.lipschitzWith_one_eval ∞ i
 
 instance [∀ i, CompleteSpace (E i)] : CompleteSpace (c₀ E) :=
   completeSpace_coe_iff_isComplete.mpr isClosed.isComplete
