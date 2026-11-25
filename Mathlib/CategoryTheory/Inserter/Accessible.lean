@@ -55,10 +55,8 @@ public instance (X : Inserter F G)
   apply IsCardinalPresentable.mk
   intro I _ _ B b hb
   have : HasColimitsOfShape I K := HasCardinalFilteredColimits.hasColimitsOfShape _ κ I
-  have : PreservesColimitsOfShape I F :=
-    Functor.IsCardinalAccessible.preservesColimitOfShape κ I
-  have : PreservesColimitsOfShape I G :=
-    Functor.IsCardinalAccessible.preservesColimitOfShape κ I
+  have : PreservesColimitsOfShape I F := F.preservesColimitsOfShape_of_isCardinalAccessible κ I
+  have : PreservesColimitsOfShape I G := G.preservesColimitsOfShape_of_isCardinalAccessible κ I
   let hcolimG := isColimitOfPreserves (proj F G ⋙ G) hb
   let hcolim := isColimitOfPreserves (proj F G) hb
   refine ⟨fun f ↦ ?_, fun i f₁ f₂ h ↦ ?_⟩
@@ -163,7 +161,6 @@ structure PartialChainUpTo (Λ : Type*) [Preorder Λ] [SuccOrder Λ]
     ψ j l = F.map (ξ.map (homOfLE hjk)).left.hom ≫ ψ k l
   t₂ (j k l : Λ) (hjk : j < k := by valid) (hkl : k ≤ l := by valid) (hl : l ≤ i := by valid) :
     ψ j l = ψ j k ≫ G.map (ξ.map (homOfLE hkl)).left.hom
-
 
 /-- A small helper that powers up some `simp` and `grind` calls troughout the file -/
 @[simp, grind =]
