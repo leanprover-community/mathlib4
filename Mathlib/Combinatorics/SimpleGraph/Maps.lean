@@ -692,9 +692,16 @@ def induceEmb {s : Set V} {t : Set W} (f : G ↪g G') (hfst : s.MapsTo f t) :
   map_rel_iff' {u v} := by
     simp [Set.MapsTo.restrict, Subtype.map]
 
+
+end Embedding
+
+section induceIso
+
+variable {G G'}
+
 /-- A graph embedding maps an induced subgraph of the domain to an isomorphic induced subgraph of
 the codomain. -/
-noncomputable def induceIso (s : Set V) (t : Set W) (f : G →g G') (g : G' →g G)
+noncomputable def Hom.induceIso (s : Set V) (t : Set W) (f : G →g G') (g : G' →g G)
     (hf : Set.MapsTo f s t) (hg : Set.MapsTo g t s) (hfg : Set.InvOn g f s t) :
     G.induce s ≃g G'.induce t where
   __ : s ≃ t := Set.BijOn.equiv f (Set.InvOn.bijOn hfg hf hg)
@@ -706,14 +713,22 @@ noncomputable def induceIso (s : Set V) (t : Set W) (f : G →g G') (g : G' →g
     · exact f.map_adj
 
 @[simp]
-theorem induceIso_symm (s : Set V) (t : Set W) (f : G →g G') (g : G' →g G)
+theorem Hom.induceIso_symm (s : Set V) (t : Set W) (f : G →g G') (g : G' →g G)
     (hf : Set.MapsTo f s t) (hg : Set.MapsTo g t s) (hfg : Set.InvOn g f s t) :
     (induceIso t s g f hg hf hfg.symm).symm = induceIso s t f g hf hg hfg := by
   ext u
   apply congrArg
   simp [induceIso, Equiv.symm_apply_eq, Set.BijOn.equiv_apply, hfg.left u.property]
 
-end Embedding
+noncomputable def Embedding.induceIso (s : Set V) (t : Set W) (f : G ↪g G') (hfst : s.BijOn f t) :
+    G.induce s ≃g G'.induce t where
+  __ := Set.BijOn.equiv f hfst
+  map_rel_iff' := by
+    intro u v
+    simp only [induce_adj, Set.BijOn.equiv_apply]
+    exact f.map_adj_iff
+
+end induceIso
 
 section induceHom
 
