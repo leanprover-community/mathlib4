@@ -32,7 +32,7 @@ In the following, `{α : Type*} [Fintype α] [DecidableEq α]`.
 * `Equiv.Perm.IsCycle.existsUnique_cycle`: there is only one nontrivial `Cycle α`
   corresponding to each cyclic `f : Perm α`
 
-## Implementation details
+## Implementation notes
 
 The forward direction of `Equiv.Perm.isoCycle'` uses `Fintype.choose` of the uniqueness
 result, relying on the `Fintype` instance of a `Cycle.Nodup` subtype.
@@ -178,7 +178,7 @@ nonrec theorem formPerm_eq_formPerm_iff {α : Type*} [DecidableEq α] {s s' : Cy
     {hs' : s'.Nodup} :
     s.formPerm hs = s'.formPerm hs' ↔ s = s' ∨ s.Subsingleton ∧ s'.Subsingleton := by
   rw [Cycle.length_subsingleton_iff, Cycle.length_subsingleton_iff]
-  induction s, s' using Quotient.inductionOn₂'
+  induction s, s' using Quotient.inductionOn₂
   simpa using formPerm_eq_formPerm_iff hs hs'
 
 end Cycle

@@ -30,7 +30,7 @@ triangulations of convex polygons.
 * `catalan_eq_centralBinom_div`: The explicit formula for the Catalan number using the central
   binomial coefficient, `catalan n = Nat.centralBinom n / (n + 1)`.
 
-## Implementation details
+## Implementation notes
 
 The proof of `catalan_eq_centralBinom_div` follows https://math.stackexchange.com/questions/3304415
 

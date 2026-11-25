@@ -34,6 +34,7 @@ difference between the two is that the latter is more flexible with respect to n
 equalities.
 
 ## References
+
 * [A. Grothendieck, M. Raynaud, *SGA 1*](https://arxiv.org/abs/math/0206203)
 * [Stacks: Fibred Categories](https://stacks.math.columbia.edu/tag/02XJ)
 -/

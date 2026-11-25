@@ -17,7 +17,7 @@ set_option doc.verso.suggestions false
 This file defines constructions that upgrade `Add(Comm)Group` to `(Semi)NormedAdd(Comm)Group`
 using an `AddGroup(Semi)normClass` when the codomain is the reals and the hom is nonarchimedean.
 
-## Implementation details
+## Implementation notes
 
 The lemmas need to assume `[Dist α]` to be able to be stated, so they take an extra argument
 that shows that this distance instance is propositionally equal to the one that comes from the
