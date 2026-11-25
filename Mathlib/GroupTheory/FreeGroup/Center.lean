@@ -138,6 +138,7 @@ theorem commute_iff_exists_zpow {a b : G} :
 
 /-- A nontrivial element of a free group is a positive power of a generator of its own
 centralizer: there are `r ≠ 1` and `n > 0` with `centralizer {v} = zpowers r` and `v = r ^ n`. -/
+@[to_additive]
 theorem exists_zpowers_eq_centralizer_singleton {G : Type*} [Group G] [IsFreeGroup G] {v : G}
     (hv : v ≠ 1) :
     ∃ (r : G) (n : ℕ), r ≠ 1 ∧ 0 < n ∧ centralizer {v} = zpowers r ∧
