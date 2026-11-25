@@ -145,13 +145,18 @@ namespace TopCat
 
 variable {C}
 
-/-- The singular chain complex of a topological space with coefficients in `R`. -/
+/-- The singular chain complex of a topological space `X` with coefficients in `R`.
+For any degree `n : ℕ`, the singular `n`-chains of `X` are defined as the
+coproduct of copies of `R` indexed by continuous maps from the standard
+topological `n`-simplex to `X`. -/
 noncomputable abbrev singularChainComplex (X : TopCat.{w}) (R : C) :
     ChainComplex C ℕ :=
   ((singularChainComplexFunctor C).obj R).obj X
 
-/-- Inclusion of a summand of an object in the singular chain complex of
-a topological space. -/
+/-- If `X` is a topological space and `x : (toSSet.obj X) _⦋n⦌` (i.e. `x` identifies
+to a continuous map from the standard topological `n`-simplex to `X`,
+see `TopCat.toSSetObjEquiv`), this is the inclusion `R ⟶ (X.singularChainComplex R).X n`
+of a summand in the singular `n`-chains of `X` with coefficients in `R`. -/
 noncomputable abbrev ιSingularChainComplex
     (X : TopCat.{w}) {R : C} {n : ℕ} (x : (toSSet.obj X) _⦋n⦌) :
     R ⟶ (X.singularChainComplex R).X n :=
@@ -185,7 +190,8 @@ lemma ι_singularChainComplexMap
   simp [singularChainComplexFunctor, singularChainComplexMap, ιSingularChainComplex,
     SSet.chainComplexFunctor]
 
-/-- The universal element in `(toSSet.obj (SimplexCategory.toTop ^⦋n⦌)) _⦋n⦌`. -/
+/-- The universal element in `(toSSet.obj (SimplexCategory.toTop ^⦋n⦌)) _⦋n⦌`
+which corresponds to the identify of the standard topological `n`-simplex. -/
 @[simps]
 noncomputable def toSSet.univObj (n : ℕ) :
     (toSSet.{w}.obj (SimplexCategory.toTop ^⦋n⦌)) _⦋n⦌ :=

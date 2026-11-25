@@ -33,7 +33,13 @@ namespace singularChainComplexFunctor
 
 variable {R : C} {n : ℕ} {F : TopCat.{w} ⥤ C}
 
-/-- Constructor for natural transformations from the functor of singular `n`-chains. -/
+/-- Let `F : TopCat ⥤ C` be a functor. A natural transformation from the singular
+`n`-chains functor (with coefficients in an object `R : C`, e.g. the abelian group `ℤ`) to `F`
+can be constructed from the sole data of a morphism `R ⟶ F.obj (SimplexCategory.toTop ^⦋n⦌)`
+in `C` (which in the case `R` is the abelian group `ℤ` could be reduced to the
+information of an element in the image by the functor `F` of the standard
+topological `n`-simplex). See also `natTransEquiv` for the bijection that is
+induced by `natTransMk`. -/
 noncomputable def natTransMk (f : R ⟶ F.obj (SimplexCategory.toTop.{w} ^⦋n⦌)) :
     (singularChainComplexFunctor C).obj R ⋙ HomologicalComplex.eval _ _ n ⟶ F where
   app X := Sigma.desc (fun s ↦ f ≫ F.map s.down)
@@ -63,8 +69,11 @@ lemma natTransMk_zero :
     natTransMk (0 : R ⟶ F.obj (SimplexCategory.toTop.{w} ^⦋n⦌)) = 0 :=
   natTrans_ext (by simp)
 
-/-- Natural transformations from the singular `n`-chains functor to a
-functor `F : TopCat ⥤ C` identify to morphisms `R ⟶ F.obj (SimplexCategory.toTop.{w} ^⦋n⦌)`. -/
+/-- Let `F : TopCat ⥤ C` be a functor. This bijection shows that natural transformations
+from the singular `n`-chains functor (with coefficients in an object `R : C`, e.g. the
+abelian group `ℤ`) to `F` are uniquely determined by the data of a morphism
+`R ⟶ F.obj (SimplexCategory.toTop ^⦋n⦌)` in `C` that is obtained by considering the action
+of the natural transformation on the identity of the standard topological `n`-simplex. -/
 @[expose, simps]
 noncomputable def natTransEquiv :
     ((singularChainComplexFunctor C).obj R ⋙ HomologicalComplex.eval _ _ n ⟶ F) ≃
