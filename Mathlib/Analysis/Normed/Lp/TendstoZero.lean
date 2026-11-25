@@ -154,36 +154,6 @@ lemma range_linearMapOfLE_le_tendstoZero (hp : p < ∞) :
   simpa [← Submodule.toAddSubgroup_le, LinearMap.range_toAddSubgroup]
     using range_inclusion_le_tendstoZero E hp
 
-lemma topologicalClosure_range_inclusion_eq_tendstoZero (hp : p < ∞) :
-    (AddSubgroup.inclusion (lp.monotone hp.le)).range.topologicalClosure = c₀ E := by
-  apply le_antisymm
-    (AddSubgroup.topologicalClosure_minimal _ (range_inclusion_le_tendstoZero E hp)
-      tendstoZero.isClosed)
-  suffices c₀ E ≤ (AddSubgroup.inclusion (lp.monotone zero_le)).range.topologicalClosure by
-    apply this.trans <| AddSubgroup.topologicalClosure_mono ?_
-    rw [← AddSubgroup.inclusion_comp_inclusion (lp.monotone zero_le) (lp.monotone hp.le),
-      AddMonoidHom.range_comp]
-    exact AddSubgroup.map_le_range ..
-  intro x hx
-  rw [mem_tendstoZero_iff] at hx
-  rw [← SetLike.mem_coe, AddSubgroup.topologicalClosure_coe, AddMonoidHom.coe_range,
-    mem_closure_iff_nhds_basis Metric.nhds_basis_closedBall]
-  simp only [Set.exists_range_iff, Metric.mem_closedBall]
-  intro ε hε
-  rw [Metric.nhds_basis_closedBall.tendsto_right_iff] at hx
-  specialize hx ε hε
-  rw [Filter.eventually_cofinite] at hx
-  classical
-  let y : lp E 0 :=
-    lp.mk (fun i ↦ if ε < ‖x i‖ then x i else 0) <| memℓp_zero_iff.mpr <| hx.subset <| by aesop
-  refine ⟨y, ?_⟩
-  rw [dist_eq_norm]
-  refine lp.norm_le_of_forall_le hε.le fun i ↦ ?_
-  rw [FunLike.coe_sub, Pi.sub_apply, lp.coeFn_inclusion]
-  by_cases! hi : ‖x i‖ ≤ ε
-  · simpa [y, hi.not_gt]
-  · simpa [y, hi] using hε.le
-
 end lp
 
 namespace lp.tendstoZero
@@ -226,6 +196,16 @@ lemma hasSum_single (x : c₀ E) :
   · simpa using Set.notMem_subset hs hi
 
 end lp.tendstoZero
+
+lemma lp.topologicalClosure_range_inclusion_eq_tendstoZero {p : ℝ≥0∞} (hp : p < ∞) :
+    (AddSubgroup.inclusion (lp.monotone hp.le)).range.topologicalClosure = c₀ E := by
+  classical
+  refine le_antisymm (AddSubgroup.topologicalClosure_minimal _
+    (range_inclusion_le_tendstoZero E hp) tendstoZero.isClosed) fun x hx ↦ ?_
+  rw [← SetLike.mem_coe, AddSubgroup.topologicalClosure_coe]
+  refine mem_closure_of_tendsto ((tendstoZero.hasSum_single ⟨x, hx⟩).map (c₀ E).subtype
+    continuous_subtypeVal) <| .of_forall fun s ↦ sum_mem fun i _ ↦ ?_
+  exact ⟨lp.single p i (x i), by ext; simp⟩
 
 end NormedRing
 
