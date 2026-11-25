@@ -112,7 +112,7 @@ public theorem map_ofCoeffList_cons {R : Type*} [Ring R] (c : ℤ) (p : List ℤ
 
 end ofCoeffList
 
-variable {p q : List ℤ} {st : SturmStep} {steps : List SturmStep} {L : List (List ℤ)}
+variable {p q : List ℤ} {st : SturmStep ℤ} {steps : List (SturmStep ℤ)} {L : List (List ℤ)}
 
 /-- The real polynomial that `p` represents. -/
 noncomputable def toReal (p : List ℤ) : ℝ[X] := (ofCoeffList p).map (Int.castRingHom ℝ)
@@ -209,13 +209,13 @@ theorem isScaledSturmSeq_of_sturmEntries? {u v : ℝ[X]} {x y : ℝ}
     rw [hq] at hv
     exact .cons ⟨x, hx, hp⟩ (ih hy hz hq hr (right_ne_zero_of_mul hv) hsteps)
 
-theorem SturmCertificate.entries?_eq_some_iff {d : SturmCertificate} :
+theorem SturmCertificate.entries?_eq_some_iff {d : SturmCertificate ℤ} :
     d.entries? = some L ↔
-      coeffLead d.s ≠ 0 ∧ sturmEntries? d.s (coeffDerivative d.s) d.steps = some L := by
+      coeffLead d.p ≠ 0 ∧ sturmEntries? d.p (coeffDerivative d.p) d.steps = some L := by
   simp [SturmCertificate.entries?]
 
-theorem isScaledSturmSeq_of_entries? {d : SturmCertificate} (h : d.entries? = some L) :
-    IsScaledSturmSeq (toReal d.s) (derivative (toReal d.s)) (L.map toReal) := by
+theorem isScaledSturmSeq_of_entries? {d : SturmCertificate ℤ} (h : d.entries? = some L) :
+    IsScaledSturmSeq (toReal d.p) (derivative (toReal d.p)) (L.map toReal) := by
   obtain ⟨hlead, hsteps⟩ := SturmCertificate.entries?_eq_some_iff.mp h
   refine isScaledSturmSeq_of_sturmEntries? one_pos one_pos ?_ ?_ (toReal_ne_zero hlead) hsteps
   · simp
@@ -233,7 +233,7 @@ theorem coeffLead_ne_zero_of_sturmEntries? (hp : coeffLead p ≠ 0)
     rw [List.forall_mem_cons]
     exact ⟨hp, ih hlead hsteps⟩
 
-theorem coeffLead_ne_zero_of_entries? {d : SturmCertificate} (h : d.entries? = some L) :
+theorem coeffLead_ne_zero_of_entries? {d : SturmCertificate ℤ} (h : d.entries? = some L) :
     ∀ e ∈ L, coeffLead e ≠ 0 := by
   obtain ⟨hlead, hsteps⟩ := SturmCertificate.entries?_eq_some_iff.mp h
   exact coeffLead_ne_zero_of_sturmEntries? hlead hsteps
@@ -293,15 +293,15 @@ theorem roots_toReal {R : Type*} [CommRing R] [Algebra R ℝ] {f : R[X]} {k : �
   exact roots_C_mul _ (Nat.cast_ne_zero.mpr hk)
 
 public theorem card_rootSet_of_realRootCount? {R : Type*} [CommRing R] [Algebra R ℝ] {f : R[X]}
-    {d : SturmCertificate} {k n : ℕ} [Fintype (f.rootSet ℝ)]
-    (hf : (k : R[X]) * f = (ofCoeffList d.s).map (Int.castRingHom R))
+    {d : SturmCertificate ℤ} {k n : ℕ} [Fintype (f.rootSet ℝ)]
+    (hf : (k : R[X]) * f = (ofCoeffList d.p).map (Int.castRingHom R))
     (h : realRootCount? d = some n) :
     Fintype.card (f.rootSet ℝ) = n := by
   rw [realRootCount?, Option.map_eq_some_iff] at h
   obtain ⟨L, hL, rfl⟩ := h
   obtain ⟨hlead, _⟩ := SturmCertificate.entries?_eq_some_iff.mp hL
   calc Fintype.card (f.rootSet ℝ)
-    _ = (toReal d.s).roots.toFinset.card := by
+    _ = (toReal d.p).roots.toFinset.card := by
       rw [roots_toReal hf hlead]
       simp [rootSet_def]
     _ = (signVariationsLine (L.map toReal)).toNat := by
@@ -314,7 +314,7 @@ theorem eval_toReal_cons (c : ℤ) (p : List ℤ) (x : ℝ) :
     (toReal (c :: p)).eval x = c + x * (toReal p).eval x := by
   simp [toReal, map_ofCoeffList_cons]
 
-theorem cast_evalScaled (n : ℤ) (d : ℕ) (p : List ℤ) {x : ℝ} (hx : d * x = n) :
+theorem cast_evalScaled (n d : ℤ) (p : List ℤ) {x : ℝ} (hx : d * x = n) :
     (d : ℝ) * evalScaled n d p = d ^ p.length * (toReal p).eval x := by
   induction p with
   | nil => simp [evalScaled, toReal]
@@ -326,20 +326,20 @@ theorem cast_evalScaled (n : ℤ) (d : ℕ) (p : List ℤ) {x : ℝ} (hx : d * x
       _ = c * d ^ (p.length + 1) + d * x * (d ^ p.length * (toReal p).eval x) := by rw [ih, hx]
       _ = d ^ (p.length + 1) * (c + x * (toReal p).eval x) := by ring
 
-theorem sign_evalScaled (n : ℤ) {d : ℕ} (hd : 0 < d) (p : List ℤ) :
+theorem sign_evalScaled (n : ℤ) {d : ℤ} (hd : 0 < d) (p : List ℤ) :
     sign (evalScaled n d p) = sign ((toReal p).eval ((n : ℝ) / d)) := by
-  have hd' : (0 : ℝ) < d := Nat.cast_pos.mpr hd
+  have hd' : (0 : ℝ) < d := Int.cast_pos.mpr hd
   calc sign (evalScaled n d p)
     _ = sign ((d : ℝ) * evalScaled n d p) := by simp [sign_mul, sign_pos hd']
     _ = sign ((d : ℝ) ^ p.length * (toReal p).eval ((n : ℝ) / d)) := by
       rw [cast_evalScaled n d p (mul_div_cancel₀ _ hd'.ne')]
     _ = sign ((toReal p).eval ((n : ℝ) / d)) := by simp [sign_mul, sign_pow, sign_pos hd']
 
-theorem eval_toReal_ne_zero {n : ℤ} {d : ℕ} (hd : 0 < d) (h : evalScaled n d p ≠ 0) :
+theorem eval_toReal_ne_zero {n d : ℤ} (hd : 0 < d) (h : evalScaled n d p ≠ 0) :
     (toReal p).eval ((n : ℝ) / d) ≠ 0 := by
   rwa [← sign_ne_zero, ← sign_evalScaled n hd, sign_ne_zero]
 
-theorem signVariations_map_evalScaled (n : ℤ) {d : ℕ} (hd : 0 < d) (L : List (List ℤ)) :
+theorem signVariations_map_evalScaled (n : ℤ) {d : ℤ} (hd : 0 < d) (L : List (List ℤ)) :
     (L.map (evalScaled n d)).signVariations =
       ((L.map toReal).map (sign ∘ eval ((n : ℝ) / d))).signVariations := by
   rw [← List.signVariations_map_sign, List.map_map, List.map_map]
@@ -362,8 +362,8 @@ theorem sturm_Ioo_of_isScaledSturmSeq {f : ℝ[X]} {L : List ℝ[X]} {a b : ℝ}
     simp [sign_mul, sign_pos hc]
 
 public theorem card_rootsIoo_of_realRootCountIoo? {R : Type*} [CommRing R] [Algebra R ℝ] {f : R[X]}
-    {d : SturmCertificate} {an bn : ℤ} {ad bd k n : ℕ}
-    (hf : (k : R[X]) * f = (ofCoeffList d.s).map (Int.castRingHom R))
+    {d : SturmCertificate ℤ} {an ad bn bd : ℤ} {k n : ℕ}
+    (hf : (k : R[X]) * f = (ofCoeffList d.p).map (Int.castRingHom R))
     (h : realRootCountIoo? d an ad bn bd = some n) :
     (f.rootsIoo ℝ ((an : ℝ) / ad) (bn / bd)).card = n := by
   simp only [realRootCountIoo?, Option.ite_none_right_eq_some, Option.map_eq_some_iff,
@@ -371,10 +371,10 @@ public theorem card_rootsIoo_of_realRootCountIoo? {R : Type*} [CommRing R] [Alge
   obtain ⟨had, hbd, hab, ha, hb, L, hL, rfl⟩ := h
   obtain ⟨hlead, _⟩ := SturmCertificate.entries?_eq_some_iff.mp hL
   have hab' : (an : ℝ) / ad < bn / bd := by
-    rw [div_lt_div_iff₀ (Nat.cast_pos.mpr had) (Nat.cast_pos.mpr hbd)]
+    rw [div_lt_div_iff₀ (Int.cast_pos.mpr had) (Int.cast_pos.mpr hbd)]
     exact_mod_cast hab
   calc (f.rootsIoo ℝ ((an : ℝ) / ad) (bn / bd)).card
-    _ = ((toReal d.s).rootsIoo ℝ ((an : ℝ) / ad) (bn / bd)).card := by
+    _ = ((toReal d.p).rootsIoo ℝ ((an : ℝ) / ad) (bn / bd)).card := by
       rw [rootsIoo_def, rootsIoo_def, ← roots_toReal hf hlead]
       simp [aroots_def]
     _ = (((L.map toReal).map (sign ∘ eval ((an : ℝ) / ad))).signVariations -

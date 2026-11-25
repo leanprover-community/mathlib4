@@ -7,7 +7,7 @@ module
 
 public meta import Mathlib.Tactic.NormNum.Core
 public meta import Mathlib.Tactic.Polynomial.Basic
-public meta import Mathlib.Tactic.RealRootCount.Core
+public meta import Mathlib.Tactic.RealRootCount.SturmCertificate
 public meta import Mathlib.Util.Qq
 public import Mathlib.Algebra.Algebra.Rat
 public import Mathlib.Tactic.Polynomial.Basic
@@ -79,20 +79,19 @@ def proveEq (goal : Q(Prop)) : MetaM Expr := do
   instantiateMVars g
 
 /-- Compute `k > 0` and the Sturm certificate `d` of `k • f`, for an explicit nonzero polynomial `f`
-over `R`, and construct a proof that `d.s` is the coefficient list of `k • f`. -/
+over `R`, and construct a proof that `d.p` is the coefficient list of `k • f`. -/
 def certificateOf {u : Level} {R : Q(Type u)} (_ : Q(CommRing $R)) (f : Q(Polynomial $R)) :
-    MetaM (SturmCertificate × ((kE : Q(ℕ)) × (dE : Q(SturmCertificate)) × Q(($kE : Polynomial $R) *
-      $f = (Polynomial.ofCoeffList ($dE).s).map (Int.castRingHom $R)))) := do
+    MetaM (SturmCertificate ℤ × ((kE : Q(ℕ)) × (dE : Q(SturmCertificate ℤ)) ×
+      Q(($kE : Polynomial $R) * $f =
+        (Polynomial.ofCoeffList ($dE).p).map (Int.castRingHom $R)))) := do
   let p ← try coeffsOf f catch _ => throwError
     "could not parse{indentExpr f}\nas an explicit polynomial with rational coefficients"
-  -- the coefficients `p` of `f`, without trailing zeros
-  let p := (p.reverse.dropWhile (· == 0)).reverse
-  if p.isEmpty then throwError "expected a nonzero polynomial"
   let (k, d) := SturmCertificate.fromCoeffList p
+  if d.p.isEmpty then throwError "expected a nonzero polynomial"
   have kE : Q(ℕ) := toExpr k
-  have sE : Q(List ℤ) := toExpr d.s
+  have pE : Q(List ℤ) := toExpr d.p
   return ⟨d, kE, toExpr d, ← proveEq
-    q(($kE : Polynomial $R) * $f = (Polynomial.ofCoeffList $sE).map (Int.castRingHom $R))⟩
+    q(($kE : Polynomial $R) * $f = (Polynomial.ofCoeffList $pE).map (Int.castRingHom $R))⟩
 
 /-- For an input expression `e = Fintype.card (f.rootSet ℝ)` compute the number `n` of distinct real
 roots of `f` and construct a proof of `e = n`. -/
@@ -146,14 +145,14 @@ def proveCardRootsIoo (e : Expr) : MetaM (Q(ℕ) × Expr) := do
       unless qa < qb do
         throwError "expected an interval from `a` to `b` with `a < b`"
       for (x, q) in [(a, qa), (b, qb)] do
-        if evalScaled q.num q.den d.s == 0 then
+        if evalScaled q.num q.den d.p == 0 then
           throwError "the endpoint {x} is a root of the polynomial"
       throwError "the computed Sturm sequence is invalid"
   have nE : Q(ℕ) := toExpr n
   have anE : Q(ℤ) := toExpr qa.num
-  have adE : Q(ℕ) := toExpr qa.den
+  have adE : Q(ℤ) := toExpr (qa.den : ℤ)
   have bnE : Q(ℤ) := toExpr qb.num
-  have bdE : Q(ℕ) := toExpr qb.den
+  have bdE : Q(ℤ) := toExpr (qb.den : ℤ)
   -- the kernel checks `h` by evaluating `realRootCountIoo?`
   have h : Q(realRootCountIoo? $dE $anE $adE $bnE $bdE = some $nE) :=
     (q(Eq.refl (some $nE)) : Expr)
