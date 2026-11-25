@@ -331,7 +331,6 @@ section NonnegSpectrumClass
 
 variable [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
-@[deprecated NonnegSpectrumClass.of_starOrderedRing (since := "2026-11-24")]
 alias CStarAlgebra.instNonnegSpectrumClass := NonnegSpectrumClass.of_starOrderedRing
 
 open ComplexOrder in
@@ -412,7 +411,6 @@ section NonnegSpectrumClass
 
 variable [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
-@[deprecated NonnegSpectrumClass.of_starOrderedRing (since := "2026-11-24")]
 alias CStarAlgebra.instNonnegSpectrumClass' := NonnegSpectrumClass.of_starOrderedRing
 
 end NonnegSpectrumClass
