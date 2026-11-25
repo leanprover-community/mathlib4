@@ -201,13 +201,12 @@ theorem mem_def : x ∈ s ↔ x ∈ Set.range s := Iff.rfl
 @[simp] theorem mem_toList : x ∈ s.toList ↔ x ∈ s := by
   rw [RelSeries.toList, List.mem_ofFn', RelSeries.mem_def]
 
-/-- Every relation series gives a finite set -/
+/-- Every relation series gives a finite set. -/
 noncomputable def toFinset (s : RelSeries r) : Finset α :=
   letI := Classical.decEq α; Finset.univ.image s
 
 theorem toFinset_def (s : RelSeries r) [DecidableEq α] : s.toFinset = Finset.univ.image s := by
-  unfold toFinset
-  congr!
+  grind [toFinset]
 
 @[simp] theorem mem_toFinset_iff_mem : x ∈ s.toFinset ↔ x ∈ s := by classical simp [toFinset_def]
 
