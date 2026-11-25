@@ -6,7 +6,8 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Data.Finset.Lattice.Fold
-public import Mathlib.Data.Set.Pairwise.List
+
+import Mathlib.Data.Set.Pairwise.List
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
@@ -53,7 +54,7 @@ theorem PairwiseDisjoint.image_finset_of_le [DecidableEq ι] {s : Finset ι} {f 
 
 theorem PairwiseDisjoint.attach (hs : (s : Set ι).PairwiseDisjoint f) :
     (s.attach : Set { x // x ∈ s }).PairwiseDisjoint (f ∘ Subtype.val) := fun i _ j _ hij =>
-  hs i.2 j.2 <| mt Subtype.ext hij
+  hs i.property j.property <| mt Subtype.ext hij
 
 end PartialOrder
 

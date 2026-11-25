@@ -234,8 +234,8 @@ lemma rnDeriv_def' (κ η : Kernel α γ) :
 
 @[fun_prop]
 lemma measurable_rnDeriv (κ η : Kernel α γ) :
-    Measurable (fun p : α × γ ↦ rnDeriv κ η p.1 p.2) := by
-  exact (measurable_rnDerivAux κ _).ennreal_ofReal.div
+    Measurable (fun p : α × γ ↦ rnDeriv κ η p.1 p.2) :=
+  (measurable_rnDerivAux κ _).ennreal_ofReal.div
     (measurable_const.sub (measurable_rnDerivAux κ _)).ennreal_ofReal
 
 @[fun_prop]
@@ -244,7 +244,7 @@ lemma measurable_rnDeriv_right (κ η : Kernel α γ) (a : α) :
 
 lemma rnDeriv_eq_top_iff (κ η : Kernel α γ) (a : α) (x : γ) :
     rnDeriv κ η a x = ∞ ↔ (a, x) ∈ mutuallySingularSet κ η := by
-  simp only [rnDeriv, ENNReal.div_eq_top, ne_eq, ENNReal.ofReal_eq_zero, not_le,
+  simp only [rnDeriv, ENNReal.div_eq_top_iff, ne_eq, ENNReal.ofReal_eq_zero, not_le,
     tsub_le_iff_right, zero_add, ENNReal.ofReal_ne_top, not_false_eq_true, and_true, or_false,
     mutuallySingularSet, mem_ofPred_eq, and_iff_right_iff_imp]
   exact fun h ↦ zero_lt_one.trans_le h

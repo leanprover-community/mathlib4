@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Algebra.GCDMonoid.Finset
 public import Mathlib.Data.Nat.Prime.Basic
-public import Mathlib.Data.PNat.Basic
 public import Mathlib.Dynamics.PeriodicPts.Defs
 public import Mathlib.Order.Lattice.Nat
+
+import Mathlib.Data.PNat.Basic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
@@ -81,6 +82,29 @@ theorem Commute.minimalPeriod_of_comp_eq_mul_of_coprime {g : α → α} (h : Com
   refine hco.dvd_of_dvd_mul_left (IsPeriodicPt.left_of_comp h ?_ ?_).minimalPeriod_dvd
   · exact (isPeriodicPt_minimalPeriod _ _).const_mul _
   · exact (isPeriodicPt_minimalPeriod _ _).mul_const _
+
+theorem not_monotone_of_mem_periodicPts [PartialOrder α]
+    (hx : x ∈ periodicPts f) (hnfix : ¬IsFixedPt f x) :
+    ¬Monotone (f^[·] x) := by
+  intro h
+  obtain ⟨n, hn, (hp : f^[n] x = x)⟩ := hx
+  refine hnfix <| le_antisymm ?_ (h (Nat.zero_le 1))
+  simpa [hp] using h hn
+
+theorem exists_apply_lt_of_mem_periodicPts [LinearOrder α]
+    (hx : x ∈ periodicPts f) (hnfix : ¬IsFixedPt f x) :
+    ∃ b ∈ periodicOrbit f x, f b < b := by
+  have h := not_monotone_of_mem_periodicPts hx hnfix
+  rw [monotone_nat_iff] at h
+  push Not at h
+  obtain ⟨n, hn⟩ := h
+  refine ⟨f^[n] x, iterate_mem_periodicOrbit hx n, ?_⟩
+  rwa [iterate_succ'] at hn
+
+theorem exists_lt_apply_of_mem_periodicPts [LinearOrder α]
+    (hx : x ∈ periodicPts f) (hnfix : ¬IsFixedPt f x) :
+    ∃ b ∈ periodicOrbit f x, b < f b :=
+  exists_apply_lt_of_mem_periodicPts (α := αᵒᵈ) hx hnfix
 
 section Fintype
 

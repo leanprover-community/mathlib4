@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
 import Mathlib.CategoryTheory.Abelian.Refinements
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Refinements
 

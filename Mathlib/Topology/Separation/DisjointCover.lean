@@ -63,10 +63,10 @@ lemma exists_finite_nonempty_disjoint_clopen_cover (hU : IsOpenCover U) :
   simp only [← SetLike.coe_set_eq, Clopens.coe_finset_sup, Finset.mem_univ, iUnion_true] at hWun
   let t : Finset (Fin n) := {j | W j ≠ ⊥}
   refine ⟨#t, fun k ↦ W (t.equivFin.symm k), fun k ↦ ⟨?_, ?_⟩, fun x hx ↦ ?_, ?_⟩
-  · exact (Finset.mem_filter.mp (t.equivFin.symm k).2).2
+  · exact (Finset.mem_filter.mp (t.equivFin.symm k).property).2
   · exact match hVle (t.equivFin.symm k) with | ⟨i, hi⟩ => ⟨i, subset_trans (hWle _) hi⟩
   · obtain ⟨j, hj⟩ := mem_iUnion.mp <| (hWun ▸ hVun) hx
-    have : W j ≠ ⊥ := by simpa [← SetLike.coe_ne_coe, ← Set.nonempty_iff_ne_empty] using ⟨x, hj⟩
+    have : W j ≠ ⊥ := by simpa [← SetLike.coe_ne_coe] using ⟨x, hj⟩
     exact mem_iUnion.mpr ⟨t.equivFin ⟨j, Finset.mem_filter.mpr ⟨Finset.mem_univ _, this⟩⟩, by simpa⟩
   · exact hWd.comp_of_injective <| Subtype.val_injective.comp t.equivFin.symm.injective
 
@@ -148,7 +148,7 @@ lemma exists_finite_approximation_of_mem_nhds_diagonal (hS : S ∈ nhdsSet (diag
     simpa [← Clopens.coe_disjoint, not_disjoint_iff] using! ⟨x, hj, hi⟩
   choose g hg hg' using h_uniq -- for each `x`, `g x` is the unique `i` such that `x ∈ E i`
   have h_ex (i) : ∃ x, x ∈ E i := by
-    simpa [← SetLike.coe_set_eq, ← nonempty_iff_ne_empty] using! hEne i
+    simpa [← SetLike.coe_set_eq] using! hEne i
   choose r hr using h_ex -- for each `i`, choose an `r i ∈ E i`
   refine ⟨n, g, f ∘ r, continuous_discrete_rng.mpr fun j ↦ ?_, fun x ↦ (hES _) _ (hg _) _ (hr _)⟩
   convert (E j).isOpen

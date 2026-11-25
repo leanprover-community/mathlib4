@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Algebra.Order.Group.Cyclic
 public import Mathlib.RingTheory.DiscreteValuationRing.Basic
-public import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
 public import Mathlib.RingTheory.Valuation.ValuationSubring
+
+import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
 
 /-!
 # Discrete Valuations
@@ -25,6 +26,7 @@ is commonly assumed in number theory. To avoid potential confusion with other de
 discrete, we use the name `IsRankOneDiscrete` to refer to discrete valuations in this setting.
 
 ## Main Definitions
+
 * `Valuation.IsRankOneDiscrete`: We define a `Γ`-valued valuation `v` to be discrete if there is
   an element `γ : Γˣ` that is `< 1` and generates the range of `v`.
 * `Valuation.IsUniformizer`: Given a `Γ`-valued valuation `v` on a ring `R`, an element `π : R` is
@@ -33,6 +35,7 @@ discrete, we use the name `IsRankOneDiscrete` to refer to discrete valuations in
   uniformizer.
 
 ## Main Results
+
 * `Valuation.IsUniformizer.of_associated`: An element associated to a uniformizer is itself a
   uniformizer.
 * `Valuation.associated_of_isUniformizer`: If two elements are uniformizers, they are associated.
@@ -51,6 +54,7 @@ discrete, we use the name `IsRankOneDiscrete` to refer to discrete valuations in
 
 
 ## TODO
+
 * Relate discrete valuations and discrete valuation rings (contained in the project
   <https://github.com/mariainesdff/LocalClassFieldTheory>)
 -/
@@ -211,8 +215,8 @@ lemma val_ne_zero (hπ : v.IsUniformizer π) : v π ≠ 0 := by
   simp only [IsUniformizer, h0] at hπ
   exact (Units.ne_zero _).symm hπ
 
-theorem val_pos (hπ : IsUniformizer v π) : 0 < v π := by
-  rw [IsUniformizer.iff] at hπ; simp [zero_lt_iff, ne_eq, hπ]
+theorem val_pos (hπ : IsUniformizer v π) : 0 < v π :=
+  hπ.val_ne_zero.pos
 
 lemma zpowers_eq_valueGroup (hπ : v.IsUniformizer π) :
     v.valueGroup = zpowers (Units.mk0 (v π) hπ.val_ne_zero) := by
@@ -242,7 +246,7 @@ def mk' {x : A} (hx : v.IsUniformizer x) : v.Uniformizer where
 @[simp]
 instance : Coe v.Uniformizer v.integer := ⟨fun π ↦ π.val⟩
 
-theorem ne_zero (π : Uniformizer v) : π.1.1 ≠ 0 := π.2.ne_zero
+theorem ne_zero (π : Uniformizer v) : π.val.val ≠ 0 := π.valuation_gt_one.ne_zero
 
 end Uniformizer
 
@@ -288,7 +292,7 @@ variable [IsCyclic v.valueGroup] [Nontrivial v.valueGroup]
 theorem exists_isUniformizer_of_isCyclic_of_nontrivial : ∃ π : K₀, IsUniformizer v (π : K) := by
   simp only [IsUniformizer.iff, Subtype.exists, mem_valuationSubring_iff, exists_prop]
   set g := v.valueGroup.genLTOne with hg
-  obtain ⟨⟨π, hπ⟩, hγ0⟩ : g.1 ∈ range (v : K →*₀ Γ) \ {0} := by
+  obtain ⟨⟨π, hπ⟩, hγ0⟩ : g.val ∈ range (v : K →*₀ Γ) \ {0} := by
     rw [← valueGroup_eq_range, hg]
     exact mem_image_of_mem Units.val v.valueGroup.genLTOne_mem
   use π
@@ -312,7 +316,8 @@ variable {v} [hv : v.IsRankOneDiscrete]
 theorem IsUniformizer.of_associated {π₁ π₂ : K₀} (h1 : IsUniformizer v π₁)
     (H : Associated π₁ π₂) : IsUniformizer v π₂ := by
   obtain ⟨u, hu⟩ := H
-  have : v (u.1 : K) = 1 := (Integers.isUnit_iff_valuation_eq_one <| integer.integers v).mp u.isUnit
+  have : v (u.val : K) = 1 :=
+    (Integers.isUnit_iff_valuation_eq_one <| integer.integers v).mp u.isUnit
   rwa [IsUniformizer.iff, ← hu, Subring.coe_mul, map_mul, this, mul_one, ← IsUniformizer.iff]
 
 /-- If two elements of `K₀` are uniformizers, then they are associated. -/
@@ -320,33 +325,34 @@ theorem associated_of_isUniformizer {π₁ π₂ : K₀} (h1 : IsUniformizer v �
     (h2 : IsUniformizer v π₂) : Associated π₁ π₂ := by
   have hval : v ((π₁ : K)⁻¹ * π₂) = 1 := by
     simp [IsUniformizer.iff.mp h1, IsUniformizer.iff.mp h2]
-  set p : v.integer := ⟨(π₁.1 : K)⁻¹ * π₂.1, (v.mem_integer_iff _).mpr (le_of_eq hval)⟩ with hp
+  set p : v.integer := ⟨(π₁.val : K)⁻¹ * π₂.val, (v.mem_integer_iff _).mpr (le_of_eq hval)⟩ with hp
   use ((Integers.isUnit_iff_valuation_eq_one (x := p) <| integer.integers v).mpr hval).unit
   apply_fun ((↑) : K₀ → K) using Subtype.val_injective
   simp [hp, ← mul_assoc, mul_inv_cancel₀ h1.ne_zero]
 
 theorem exists_pow_Uniformizer {r : K₀} (hr : r ≠ 0) (π : Uniformizer v) :
-    ∃ n : ℕ, ∃ u : K₀ˣ, r = (π.1 ^ n).1 * u.1 := by
+    ∃ n : ℕ, ∃ u : K₀ˣ, r = (π.val ^ n).val * u.val := by
   have hr₀ : v r ≠ 0 := by rw [ne_eq, zero_iff, Subring.coe_eq_zero_iff]; exact hr
   set vr : Γˣ := Units.mk0 (v r) hr₀ with hvr_def
   have hvr : vr ∈ v.valueGroup := by
     apply mem_valueGroup
     rw [hvr_def, Units.val_mk0 hr₀]
     exact mem_range_self _
-  rw [π.2.zpowers_eq_valueGroup, mem_zpowers_iff] at hvr
+  rw [π.valuation_gt_one.zpowers_eq_valueGroup, mem_zpowers_iff] at hvr
   obtain ⟨m, hm⟩ := hvr
   have hm' : v π.val ^ m = v r := by
     rw [hvr_def] at hm
     rw [← Units.val_mk0 hr₀, ← hm]
     simp [Units.val_zpow_eq_zpow_val, Units.val_mk0]
   have hm₀ : 0 ≤ m := by
-    rw [← zpow_le_one_iff_right_of_lt_one₀ π.2.val_pos π.2.val_lt_one, hm']
-    exact r.2
+    rw [← zpow_le_one_iff_right_of_lt_one₀ π.valuation_gt_one.val_pos
+      π.valuation_gt_one.val_lt_one, hm']
+    exact r.property
   obtain ⟨n, hn⟩ := Int.eq_ofNat_of_zero_le hm₀
   use n
-  have hpow : v (π.1.1 ^ (-m) * r) = 1 := by
+  have hpow : v (π.val.val ^ (-m) * r) = 1 := by
     rw [map_mul, map_zpow₀, ← hm', zpow_neg, hm', inv_mul_cancel₀ hr₀]
-  set a : K₀ := ⟨π.1.1 ^ (-m) * r, by apply le_of_eq hpow⟩ with ha
+  set a : K₀ := ⟨π.val.val ^ (-m) * r, by apply le_of_eq hpow⟩ with ha
   have ha₀ : (↑a : K) ≠ 0 := by
     simp only [zpow_neg, ne_eq, mul_eq_zero, inv_eq_zero, ZeroMemClass.coe_eq_zero, not_or, ha]
     refine ⟨?_, hr⟩
@@ -359,11 +365,11 @@ theorem exists_pow_Uniformizer {r : K₀} (hr : r ≠ 0) (π : Uniformizer v) :
     mul_inv_cancel₀ (pow_ne_zero _ π.ne_zero), one_mul]
 
 theorem Uniformizer.is_generator (π : Uniformizer v) :
-    maximalIdeal v.valuationSubring = Ideal.span {π.1} := by
+    maximalIdeal v.valuationSubring = Ideal.span {π.val} := by
   apply (maximalIdeal.isMaximal _).eq_of_le
   · intro h
     rw [Ideal.span_singleton_eq_top] at h
-    apply π.2.not_isUnit h
+    apply π.valuation_gt_one.not_isUnit h
   · intro x hx
     by_cases hx₀ : x = 0
     · simp [hx₀]
@@ -380,7 +386,7 @@ theorem IsUniformizer.is_generator {π : v.valuationSubring} (hπ : IsUniformize
   Uniformizer.is_generator ⟨π, hπ⟩
 
 theorem pow_Uniformizer_is_pow_generator (π : Uniformizer v) (n : ℕ) :
-    maximalIdeal v.valuationSubring ^ n = Ideal.span {π.1 ^ n} := by
+    maximalIdeal v.valuationSubring ^ n = Ideal.span {π.val ^ n} := by
   rw [← Ideal.span_singleton_pow, Uniformizer.is_generator]
 
 end Uniformizer
@@ -430,7 +436,7 @@ theorem ideal_isPrincipal [IsCyclic v.valueGroup]
         ← Ideal.span_singleton_le_iff_mem] at hx_mem
       replace hx_mem := π.is_generator ▸ hx_mem
       rw [← Ideal.IsMaximal.eq_of_le (IsLocalRing.maximalIdeal.isMaximal K₀) hP.ne_top hx_mem]
-      exact ⟨π.1, π.is_generator⟩
+      exact ⟨π.val, π.is_generator⟩
 
 theorem valuationSubring_isPrincipalIdealRing [IsCyclic v.valueGroup]
     [Nontrivial v.valueGroup] : IsPrincipalIdealRing K₀ :=

@@ -10,6 +10,9 @@ public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 public import Mathlib.Topology.Algebra.Ring.Ideal
 public import Mathlib.Topology.Algebra.SeparationQuotient.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Completion of topological rings:
 
@@ -288,5 +291,17 @@ noncomputable def IsDenseInducing.extendRingHom {i : α →+* β} {f : α →+* 
     · exact isClosed_eq (by fun_prop) (by fun_prop)
     · simp_rw [← i.map_mul, IsDenseInducing.extend_eq (ue.isDenseInducing dr) hf.continuous _,
         ← f.map_mul]
+
+@[fun_prop]
+theorem IsDenseInducing.continuous_extendRingHom {i : α →+* β} {f : α →+* γ}
+    (ue : IsUniformInducing i) (dr : DenseRange i) (hf : UniformContinuous f) :
+    Continuous (extendRingHom ue dr hf) :=
+  (uniformContinuous_uniformly_extend ue dr hf).continuous
+
+@[simp]
+theorem IsDenseInducing.extendRingHom_eq {i : α →+* β} {f : α →+* γ}
+    (ue : IsUniformInducing i) (dr : DenseRange i) (hf : UniformContinuous f) (a : α) :
+    extendRingHom ue dr hf (i a) = f a :=
+  (ue.isDenseInducing dr).extend_eq hf.continuous a
 
 end UniformExtension

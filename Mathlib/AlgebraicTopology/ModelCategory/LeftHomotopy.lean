@@ -21,6 +21,7 @@ object in a model category, then `LeftHomotopyRel` is an equivalence
 relation on `X ⟶ Y`.
 
 ## References
+
 * [Daniel G. Quillen, Homotopical algebra, section I.1][Quillen1967]
 -/
 
@@ -58,14 +59,12 @@ def refl (f : X ⟶ Y) : P.LeftHomotopy f f where
 
 variable {P}
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `f` and `g` are homotopic relative to a precylinder `P`, then `g` and `f`
 are homotopic relative to `P.symm` -/
 @[simps]
 def symm {f g : X ⟶ Y} (h : P.LeftHomotopy f g) : P.symm.LeftHomotopy g f where
   h := h.h
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f₀` is homotopic to `f₁` relative to a precylinder `P`,
 and `f₁` is homotopic to `f₂` relative to `P'`, then
 `f₀` is homotopic to `f₂` relative to `P.trans P'`. -/
@@ -82,7 +81,6 @@ def postcomp {f g : X ⟶ Y} (h : P.LeftHomotopy f g) {Z : C} (p : Y ⟶ Z) :
     P.LeftHomotopy (f ≫ p) (g ≫ p) where
   h := h.h ≫ p
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Left homotopies in a full subcategory identify to left homotopies in the
 ambient category. -/
 noncomputable def fullSubcategoryEquiv {P : ObjectProperty C} {X Y : P.FullSubcategory}

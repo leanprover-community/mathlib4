@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
 public import Mathlib.RingTheory.Smooth.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Étale morphisms
 
@@ -262,12 +265,6 @@ instance (S : Type*) [CommRing S] :
     Algebra.Etale (R × S) R := by
   algebraize [RingHom.fst R S]
   exact Algebra.Etale.of_isLocalizationAway (1, 0)
-
-instance (S : Type*) [CommRing S] :
-    letI : Algebra (R × S) S := (RingHom.snd R S).toAlgebra
-    Algebra.Etale (R × S) S := by
-  algebraize [RingHom.snd R S]
-  exact Algebra.Etale.of_isLocalizationAway (0, 1)
 
 end Etale
 

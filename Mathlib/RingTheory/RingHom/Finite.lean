@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.Localization.Finiteness
 
 import Mathlib.RingTheory.TensorProduct.Finite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The meta properties of finite ring homomorphisms.
 
@@ -99,7 +102,7 @@ theorem RingHom.finite_ofLocalizationSpan : RingHom.OfLocalizationSpan @RingHom.
   -- lifted into `R` by multiplying a sufficiently large power of `r`. I claim that the union of
   -- these generates `S`.
   constructor
-  replace H := fun r => (H r).1
+  replace H := fun r => (H r).fg_top
   choose s₁ s₂ using H
   let sf := fun x : s => IsLocalization.finsetIntegerMultiple (Submonoid.powers (f x)) (s₁ x)
   use s.attach.biUnion sf

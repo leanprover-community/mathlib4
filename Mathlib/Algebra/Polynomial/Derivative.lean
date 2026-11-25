@@ -5,16 +5,18 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Degree.Support
+public import Mathlib.Algebra.Polynomial.Degree.TrailingDegree
 public import Mathlib.Algebra.Polynomial.Eval.Coeff
 public import Mathlib.GroupTheory.GroupAction.Ring
 
 import Mathlib.Algebra.Polynomial.Degree.Domain
+import Mathlib.Algebra.Polynomial.Degree.Support
 
 /-!
 # The derivative map on polynomials
 
 ## Main definitions
+
 * `Polynomial.derivative`: The formal derivative of polynomials, expressed as a linear map.
 * `Polynomial.derivativeFinsupp`: Iterated derivatives as a finite support function.
 -/
@@ -449,6 +451,27 @@ lemma derivative_ne_zero : p.derivative ≠ 0 ↔ p.natDegree ≠ 0 := derivativ
   rw [leadingCoeff, leadingCoeff, coeff_derivative, natDegree_derivative]
   norm_cast
   congr <;> lia
+
+lemma natTrailingDegree_derivative' (hp : p.natTrailingDegree ≠ 0) :
+    (derivative p).natTrailingDegree + 1 = p.natTrailingDegree := by
+  obtain ⟨n, hn⟩ := Nat.exists_eq_add_one_of_ne_zero hp
+  have hmem : n ∈ (derivative p).support := by
+    rw [mem_support_derivative, ← hn]
+    exact natTrailingDegree_mem_support_of_ne_zero (by aesop)
+  rw [hn, add_left_inj]
+  refine le_antisymm (natTrailingDegree_le_of_mem_supp _ hmem)
+    (le_natTrailingDegree (fun h ↦ by aesop) fun j hj ↦ ?_)
+  rw [coeff_derivative, coeff_eq_zero_of_lt_natTrailingDegree (by lia), zero_mul]
+
+lemma natTrailingDegree_derivative (hp : p.natTrailingDegree ≠ 0) :
+    (derivative p).natTrailingDegree = p.natTrailingDegree - 1 := by
+  rw [← natTrailingDegree_derivative' hp]
+  lia
+
+lemma trailingCoeff_derivative (hp : p.natTrailingDegree ≠ 0) :
+    (derivative p).trailingCoeff = p.trailingCoeff * p.natTrailingDegree := by
+  simp only [trailingCoeff, ← natTrailingDegree_derivative' hp, coeff_derivative]
+  norm_cast
 
 @[deprecated derivative_eq_zero +typeChanged (since := "2026-06-03")]
 alias ⟨natDegree_eq_zero_of_derivative_eq_zero, _⟩ := derivative_eq_zero

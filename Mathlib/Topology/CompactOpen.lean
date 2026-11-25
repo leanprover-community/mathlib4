@@ -161,7 +161,7 @@ theorem isInducing_postcomp (g : C(Y, Z)) (hg : IsInducing g) :
 then the composition `ContinuousMap.comp g : C(X, Y) → C(X, Z)` is an embedding too. -/
 theorem isEmbedding_postcomp (g : C(Y, Z)) (hg : IsEmbedding g) :
     IsEmbedding (g.comp : C(X, Y) → C(X, Z)) :=
-  ⟨isInducing_postcomp g hg.1, postcomp_injective g hg.2⟩
+  ⟨isInducing_postcomp g hg.toIsInducing, postcomp_injective g hg.injective⟩
 
 /-- `C(·, Z)` is a functor. -/
 @[continuity, fun_prop]
@@ -499,7 +499,8 @@ theorem continuous_of_continuous_uncurry (f : X → C(Y, Z))
 theorem continuousOn_of_continuousOn_uncurry {s : Set X} (f : X → C(Y, Z))
     (h : ContinuousOn (Function.uncurry fun x y => f x y) (s ×ˢ univ)) : ContinuousOn f s :=
   continuousOn_iff_continuous_domRestrict.mpr <| continuous_of_continuous_uncurry _ <|
-    h.comp_continuous (continuous_subtype_val.prodMap continuous_id) (fun x ↦ ⟨x.1.2, trivial⟩)
+    h.comp_continuous (continuous_subtypeVal.prodMap continuous_id)
+      (fun x ↦ ⟨x.1.property, trivial⟩)
 
 /-- The currying process is a continuous map between function spaces. -/
 theorem continuous_curry [LocallyCompactSpace (X × Y)] :
@@ -564,9 +565,9 @@ lemma continuousOn_mkD_of_uncurry {s : Set T}
     (Continuous.prodMk_right x) fun _ ↦ ⟨hx, trivial⟩
   simp_rw [continuousOn_iff_continuous_domRestrict, s.domRestrict_def]
   refine continuous_of_continuous_uncurry _ ?_
-  conv in mkD _ _ => rw [mkD_of_continuous (this x x.2)]
-  exact f_cont.comp_continuous (.prodMap continuous_subtype_val continuous_id)
-    fun xz ↦ ⟨xz.1.2, trivial⟩
+  conv in mkD _ _ => rw [mkD_of_continuous (this x x.property)]
+  exact f_cont.comp_continuous (.prodMap continuous_subtypeVal continuous_id)
+    fun xz ↦ ⟨xz.1.property, trivial⟩
 
 open Set in
 lemma continuous_mkD_restrict_of_uncurry {t : Set X}
@@ -576,8 +577,8 @@ lemma continuous_mkD_restrict_of_uncurry {t : Set X}
     f_cont.comp (Continuous.prodMk_right x).continuousOn fun _ hz ↦ ⟨trivial, hz⟩
   refine continuous_of_continuous_uncurry _ ?_
   conv in mkD _ _ => rw [mkD_of_continuousOn (this x)]
-  exact f_cont.comp_continuous (.prodMap continuous_id continuous_subtype_val)
-    fun xz ↦ ⟨trivial, xz.2.2⟩
+  exact f_cont.comp_continuous (.prodMap continuous_id continuous_subtypeVal)
+    fun xz ↦ ⟨trivial, xz.2.property⟩
 
 open Set in
 lemma continuousOn_mkD_restrict_of_uncurry {s : Set T} {t : Set X}
@@ -588,9 +589,9 @@ lemma continuousOn_mkD_restrict_of_uncurry {s : Set T} {t : Set X}
     f_cont.comp (Continuous.prodMk_right x).continuousOn fun _ hz ↦ ⟨hx, hz⟩
   simp_rw [continuousOn_iff_continuous_domRestrict, s.domRestrict_def]
   refine continuous_of_continuous_uncurry _ ?_
-  conv in mkD _ _ => rw [mkD_of_continuousOn (this x x.2)]
-  exact f_cont.comp_continuous (.prodMap continuous_subtype_val continuous_subtype_val)
-    fun xz ↦ ⟨xz.1.2, xz.2.2⟩
+  conv in mkD _ _ => rw [mkD_of_continuousOn (this x x.property)]
+  exact f_cont.comp_continuous (.prodMap continuous_subtypeVal continuous_subtypeVal)
+    fun xz ↦ ⟨xz.1.property, xz.2.property⟩
 
 end mkD
 

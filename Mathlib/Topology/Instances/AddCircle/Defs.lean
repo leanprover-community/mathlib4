@@ -234,7 +234,8 @@ section Torsion
 open QuotientAddGroup Cardinal in
 theorem card_torsion_le_of_isSMulRegular (n : ℕ) (h0 : n ≠ 0) (hn : IsSMulRegular 𝕜 n) :
     {x : AddCircle p | n • x = 0}.encard ≤ n := by
-  have (x : {x : AddCircle p | n • x = 0}) : ∃ (k : Fin n) (y : 𝕜), y = x.1 ∧ n • y = k.1 • p := by
+  have (x : {x : AddCircle p | n • x = 0}) :
+      ∃ (k : Fin n) (y : 𝕜), y = x.val ∧ n • y = k.val • p := by
     obtain ⟨x, hx⟩ := x
     obtain ⟨y, rfl⟩ := mk_surjective x
     rw [Set.mem_ofPred, ← mk_nsmul, eq_zero_iff] at hx
@@ -399,13 +400,13 @@ lemma liftIoc_comp_apply {α β : Type*} {f : 𝕜 → α} {g : α → β} {a : 
 
 lemma eq_coe_Ico (a : AddCircle p) : ∃ b ∈ Ico 0 p, ↑b = a := by
   let b := QuotientAddGroup.equivIcoMod hp.out 0 a
-  exact ⟨b.1, by simpa only [zero_add] using b.2,
+  exact ⟨b.val, by simpa only [zero_add] using b.property,
     (QuotientAddGroup.equivIcoMod hp.out 0).symm_apply_apply a⟩
 
 /-- `Ioc` version of `eq_coe_Ico`. -/
 lemma eq_coe_Ioc (a : AddCircle p) : ∃ b ∈ Ioc 0 p, ↑b = a := by
   let b := QuotientAddGroup.equivIocMod hp.out 0 a
-  exact ⟨b.1, by simpa only [zero_add] using b.2,
+  exact ⟨b.val, by simpa only [zero_add] using b.property,
     (QuotientAddGroup.equivIocMod hp.out 0).symm_apply_apply a⟩
 
 lemma coe_eq_zero_iff_of_mem_Ico (ha : a ∈ Ico 0 p) :
@@ -422,11 +423,11 @@ variable [TopologicalSpace 𝕜]
 
 @[continuity]
 theorem continuous_equivIco_symm : Continuous (equivIco p a).symm :=
-  continuous_quotient_mk'.comp continuous_subtype_val
+  continuous_quotient_mk'.comp continuous_subtypeVal
 
 @[continuity]
 theorem continuous_equivIoc_symm : Continuous (equivIoc p a).symm :=
-  continuous_quotient_mk'.comp continuous_subtype_val
+  continuous_quotient_mk'.comp continuous_subtypeVal
 
 variable [OrderTopology 𝕜] {x : AddCircle p}
 
@@ -453,7 +454,7 @@ theorem continuousAt_equivIoc (hx : x ≠ a) : ContinuousAt (equivIoc p a) x := 
       (left_mem_Ico.mpr (lt_add_of_pos_right a hp.out))).mp hx')
   map_target' := by
     intro x hx
-    exact (eq_left_or_mem_Ioo_of_mem_Ico (equivIco p a x).2).resolve_left
+    exact (eq_left_or_mem_Ioo_of_mem_Ico (equivIco p a x).property).resolve_left
       (hx ∘ ((equivIco p a).symm_apply_apply x).symm.trans ∘ congrArg _)
   left_inv' :=
     fun x hx ↦ congrArg _ ((equivIco p a).apply_symm_apply ⟨x, Ioo_subset_Ico_self hx⟩)
@@ -461,9 +462,9 @@ theorem continuousAt_equivIoc (hx : x ≠ a) : ContinuousAt (equivIoc p a) x := 
   open_source := isOpen_Ioo
   open_target := isOpen_compl_singleton
   continuousOn_toFun := (AddCircle.continuous_mk' p).continuousOn
-  continuousOn_invFun := by
-    exact continuousOn_of_forall_continuousAt
-      (fun _ ↦ continuousAt_subtype_val.comp ∘ continuousAt_equivIco p a)
+  continuousOn_invFun :=
+    continuousOn_of_forall_continuousAt
+      (fun _ ↦ continuousAt_subtypeVal.comp ∘ continuousAt_equivIco p a)
 
 end Continuity
 
@@ -692,8 +693,8 @@ def setAddOrderOfEquiv {n : ℕ} (hn : 0 < n) :
         refine ⟨fun m₁ m₂ h => Subtype.ext ?_, fun u => ?_⟩
         · simp_rw [Subtype.mk_eq_mk, natCast_div_mul_eq_nsmul] at h
           refine nsmul_injOn_Iio_addOrderOf ?_ ?_ h <;> rw [addOrderOf_period_div hn]
-          exacts [m₁.2.1, m₂.2.1]
-        · obtain ⟨m, hmn, hg, he⟩ := (addOrderOf_eq_pos_iff hn).mp u.2
+          exacts [m₁.property.1, m₂.property.1]
+        · obtain ⟨m, hmn, hg, he⟩ := (addOrderOf_eq_pos_iff hn).mp u.property
           exact ⟨⟨m, hmn, hg⟩, Subtype.ext he⟩)
 
 @[simp]
@@ -796,7 +797,7 @@ def homeoIccQuot [TopologicalSpace 𝕜] [OrderTopology 𝕜] : 𝕋 ≃ₜ Quot
     · apply continuousWithinAt_toIocMod_Iic
     · apply continuousWithinAt_toIcoMod_Ici
   continuous_invFun :=
-    continuous_quot_lift _ ((AddCircle.continuous_mk' p).comp continuous_subtype_val)
+    continuous_quot_lift _ ((AddCircle.continuous_mk' p).comp continuous_subtypeVal)
 
 /-! We now show that a continuous function on `[a, a + p]` satisfying `f a = f (a + p)` is the
 pullback of a continuous function on `AddCircle p`, by first showing that

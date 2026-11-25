@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The functor from `Set.Iic j` deduced from a cocone
 
@@ -89,10 +92,10 @@ end ofCocone
 where `j : J` and `J` is linearly ordered, this is the functor
 `Set.Iic j ⥤ C` which extends `F` and sends the top element to `c.pt`. -/
 def ofCocone : Set.Iic j ⥤ C where
-  obj i := ofCocone.obj c i.1
-  map {_ j} f := ofCocone.map c _ _ (leOfHom f) j.2
-  map_id i := ofCocone.map_id _ _ i.2
-  map_comp {_ _ i₃} _ _ := ofCocone.map_comp _ _ _ _ _ _ i₃.2
+  obj i := ofCocone.obj c i.val
+  map {_ j} f := ofCocone.map c _ _ (leOfHom f) j.property
+  map_id i := ofCocone.map_id _ _ i.property
+  map_comp {_ _ i₃} _ _ := ofCocone.map_comp _ _ _ _ _ _ i₃.property
 
 lemma ofCocone_obj_eq (i : J) (hi : i < j) :
     (ofCocone c).obj ⟨i, hi.le⟩ = F.obj ⟨i, hi⟩ :=
@@ -147,7 +150,7 @@ variable {c} in
 /-- If `c` is a colimit cocone, then so is `coconeOfLE (ofCocone c) (le_refl j)`. -/
 def isColimitCoconeOfLEOfCocone (hc : IsColimit c) :
     IsColimit (coconeOfLE (ofCocone c) (le_refl j)) :=
-  (IsColimit.precomposeInvEquiv (restrictionLTOfCoconeIso c) _).1
+  (IsColimit.precomposeInvEquiv (restrictionLTOfCoconeIso c) _).toFun
     (IsColimit.ofIsoColimit hc
       (Cocone.ext (ofCoconeObjIsoPt c).symm (fun ⟨i, hi⟩ ↦ by
         dsimp

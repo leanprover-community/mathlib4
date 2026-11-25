@@ -8,6 +8,9 @@ module
 public import Mathlib.GroupTheory.Abelianization.Defs
 public import Mathlib.GroupTheory.Coset.Card
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The abelianization of a finite group is finite
 -/

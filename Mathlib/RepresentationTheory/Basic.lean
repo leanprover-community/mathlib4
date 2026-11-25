@@ -731,7 +731,7 @@ variable (k G) (α : Type*)
 noncomputable def finsuppLEquivFreeAsModule : (α →₀ k[G]) ≃ₗ[k[G]] (free k G α).asModule where
   toAddEquiv := (asModuleEquiv _).symm.toAddEquiv
   map_smul' x y := by
-    simp only [AddHom.toFun_eq_coe, coe_toAddHom, LinearEquiv.coe_coe, RingHom.id_apply,
+    simp only [AddHom.toFun_eq_coe, coe_toAddHom, LinearEquiv.coe_toLinearMap, RingHom.id_apply,
       (free k G α).asModuleEquiv.symm_apply_eq, asModuleEquiv_map_smul,
       LinearEquiv.apply_symm_apply]
     induction x using MonoidAlgebra.induction_linear with

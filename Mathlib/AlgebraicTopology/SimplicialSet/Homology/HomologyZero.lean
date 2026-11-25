@@ -9,6 +9,9 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.Basic
 public import Mathlib.AlgebraicTopology.SimplicialSet.PiZero
 public import Mathlib.CategoryTheory.Limits.Preserves.SigmaConst
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Homology of simplicial sets in degree 0
 
@@ -58,9 +61,9 @@ of the chain complex of `X` with coefficients in `R` identifies
 to the coproduct of copies of `R` indexed by `π₀ X`. -/
 noncomputable def isColimitCokernelCoforkChainComplexDOneZero :
     IsColimit (CokernelCofork.ofπ _ (π₀.d_fromChainComplexXZero X R 1)) := by
-  refine (IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_).1
+  refine (IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_).toFun
     (Preadditive.isColimitCokernelCoforkOfCofork
-      ((isColimitMapCoconeCoforkEquiv _ _).1
+      ((isColimitMapCoconeCoforkEquiv _ _).toFun
         (isColimitOfPreserves (sigmaConst.obj R) X.isColimitCoforkπ₀)))
   · refine parallelPair.ext (-Iso.refl _) (Iso.refl _) ?_ (by simp)
     simp [chainComplex, SSet.chainComplexFunctor, sub_eq_neg_add]

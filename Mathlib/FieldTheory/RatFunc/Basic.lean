@@ -14,6 +14,7 @@ import Mathlib.Algebra.CharP.Algebra
 # The field structure of rational functions
 
 ## Main definitions
+
 Working with rational functions as polynomials:
 - `RatFunc.instField` provides a field structure
 
@@ -337,7 +338,7 @@ theorem map_apply_ofFractionRing_mk [MonoidHomClass F R[X] S[X]] (φ : F)
     map φ hφ (ofFractionRing (Localization.mk n d)) =
       ofFractionRing (Localization.mk (φ n) ⟨φ d, hφ d.prop⟩) := by
   simp only [map, MonoidHom.coe_mk, OneHom.coe_mk, liftOn_ofFractionRing_mk,
-    Submonoid.mem_comap.mp (hφ d.2), ↓reduceDIte]
+    Submonoid.mem_comap.mp (hφ d.property), ↓reduceDIte]
 
 theorem map_injective [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap φ)
     (hf : Function.Injective φ) : Function.Injective (map φ hφ) := by
@@ -517,9 +518,8 @@ The equivalence between `K⟮X⟯` and the field of fractions of `K[X]`
 -/
 @[simps! apply]
 def toFractionRingAlgEquiv (R : Type*) [CommSemiring R] [Algebra R K[X]] :
-    K⟮X⟯ ≃ₐ[R] FractionRing K[X] where
-  __ := RatFunc.toFractionRingRingEquiv K
-  commutes' r := by
+    K⟮X⟯ ≃ₐ[R] FractionRing K[X] :=
+  .ofCommutes (RatFunc.toFractionRingRingEquiv K) fun r ↦ by
     change (RatFunc.mk (algebraMap R K[X] r) 1).toFractionRing = _
     rw [mk_one']; rfl
 

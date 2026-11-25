@@ -9,6 +9,9 @@ public import Mathlib.AlgebraicGeometry.FunctionField
 public import Mathlib.AlgebraicGeometry.Morphisms.Separated
 public import Mathlib.AlgebraicGeometry.SpreadingOut
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Rational maps between schemes
 
@@ -169,7 +172,6 @@ lemma _root_.AlgebraicGeometry.Scheme.Hom.isOver_toPartialMap
 instance (f : X.PartialMap Y) (sX : X ⟶ ⊤_ Scheme) (sY : Y ⟶ ⊤_ Scheme) : f.IsOver sX sY :=
   ⟨Limits.terminal.hom_ext _ _⟩
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isOver_iff {f : X.PartialMap Y} {sX : X ⟶ S} {sY : Y ⟶ S} :
     f.IsOver sX sY ↔ (f.compHom sY).hom = f.domain.ι ≫ sX :=
   ⟨fun h ↦ h.over, fun h ↦ ⟨h⟩⟩
@@ -191,7 +193,7 @@ noncomputable
 abbrev fromFunctionField [IrreducibleSpace X] (f : X.PartialMap Y) :
     Spec X.functionField ⟶ Y :=
   f.fromSpecStalkOfMem
-    ((genericPoint_specializes _).mem_open f.domain.2 f.dense_domain.nonempty.choose_spec)
+    ((genericPoint_specializes _).mem_open f.domain.is_open' f.dense_domain.nonempty.choose_spec)
 
 set_option backward.isDefEq.respectTransparency false in
 lemma fromSpecStalkOfMem_restrict (f : X.PartialMap Y)
@@ -227,7 +229,7 @@ def ofFromSpecStalk (sX : X ⟶ S) (sY : Y ⟶ S) [IrreducibleSpace X] [LocallyO
     (h : φ ≫ sY = X.fromSpecStalk x ≫ sX) : X.PartialMap Y where
   hom := (spread_out_of_isGermInjective' sX sY φ h).choose_spec.choose_spec.choose
   domain := (spread_out_of_isGermInjective' sX sY φ h).choose
-  dense_domain := (spread_out_of_isGermInjective' sX sY φ h).choose.2.dense
+  dense_domain := (spread_out_of_isGermInjective' sX sY φ h).choose.is_open'.dense
     ⟨_, (spread_out_of_isGermInjective' sX sY φ h).choose_spec.choose⟩
 
 variable (sX sY) in
@@ -289,7 +291,7 @@ set_option backward.defeqAttrib.useBackward true in
 @[trans]
 lemma equiv.trans {f g h : X.PartialMap Y} : f.equiv g → g.equiv h → f.equiv h := by
   intro ⟨W₁, hW₁, hW₁l, hW₁r, e₁⟩ ⟨W₂, hW₂, hW₂l, hW₂r, e₂⟩
-  refine ⟨W₁ ⊓ W₂, hW₁.inter_of_isOpen_left hW₂ W₁.2, inf_le_left.trans hW₁l,
+  refine ⟨W₁ ⊓ W₂, hW₁.inter_of_isOpen_left hW₂ W₁.is_open', inf_le_left.trans hW₁l,
     inf_le_right.trans hW₂r, ?_⟩
   dsimp at e₁ e₂
   simp only [restrict_domain, restrict_hom, ← X.homOfLE_homOfLE (U := W₁ ⊓ W₂) inf_le_left hW₁l,
@@ -316,13 +318,13 @@ lemma equiv_of_fromSpecStalkOfMem_eq [IrreducibleSpace X]
     (hxf : x ∈ f.domain) (hxg : x ∈ g.domain)
     (H : f.fromSpecStalkOfMem hxf = g.fromSpecStalkOfMem hxg) : f.equiv g := by
   have hdense : Dense ((f.domain ⊓ g.domain) : Set X) :=
-    f.dense_domain.inter_of_isOpen_left g.dense_domain f.domain.2
+    f.dense_domain.inter_of_isOpen_left g.dense_domain f.domain.is_open'
   have := (isGermInjectiveAt_iff_of_isOpenImmersion (f := (f.domain ⊓ g.domain).ι)
     (x := ⟨x, hxf, hxg⟩)).mp ‹_›
   have := spread_out_unique_of_isGermInjective' (X := (f.domain ⊓ g.domain).toScheme)
     (X.homOfLE inf_le_left ≫ f.hom) (X.homOfLE inf_le_right ≫ g.hom) (x := ⟨x, hxf, hxg⟩) ?_
   · obtain ⟨U, hxU, e⟩ := this
-    refine ⟨(f.domain ⊓ g.domain).ι ''ᵁ U, ((f.domain ⊓ g.domain).ι ''ᵁ U).2.dense
+    refine ⟨(f.domain ⊓ g.domain).ι ''ᵁ U, ((f.domain ⊓ g.domain).ι ''ᵁ U).is_open'.dense
       ⟨_, ⟨_, hxU, rfl⟩⟩,
       ((Set.image_subset_range _ _).trans_eq (Subtype.range_val)).trans inf_le_left,
       ((Set.image_subset_range _ _).trans_eq (Subtype.range_val)).trans inf_le_right, ?_⟩
@@ -343,7 +345,7 @@ lemma equiv_iff_of_isSeparated_of_le (sX : X ⟶ S) (sY : Y ⟶ S) [IsReduced X]
       (f.restrict W hW hWl).hom = (g.restrict W hW hWr).hom := by
   refine ⟨fun ⟨V, hV, hVl, hVr, e⟩ ↦ ?_, fun e ↦ ⟨_, _, _, _, e⟩⟩
   have : IsDominant (X.homOfLE (inf_le_left : W ⊓ V ≤ W)) :=
-    Opens.isDominant_homOfLE (hW.inter_of_isOpen_left hV W.2) _
+    Opens.isDominant_homOfLE (hW.inter_of_isOpen_left hV W.is_open') _
   apply ext_of_isDominant_of_isSeparated sY
     (((f.restrict W hW hWl).over sX sY).trans ((g.restrict W hW hWr).over sX sY).symm)
     (X.homOfLE (inf_le_left : W ⊓ V ≤ W))
@@ -354,8 +356,10 @@ they are equal on the intersection of the domains. -/
 lemma equiv_iff_of_isSeparated (sX : X ⟶ S) (sY : Y ⟶ S) [IsReduced X] [IsSeparated sY]
     {f g : X.PartialMap Y} [f.IsOver sX sY] [g.IsOver sX sY] :
     f.equiv g ↔
-      (f.restrict _ (f.2.inter_of_isOpen_left g.2 f.domain.2) inf_le_left).hom =
-      (g.restrict _ (f.2.inter_of_isOpen_left g.2 f.domain.2) inf_le_right).hom :=
+      (f.restrict _ (f.dense_domain.inter_of_isOpen_left g.dense_domain f.domain.is_open')
+        inf_le_left).hom =
+      (g.restrict _ (f.dense_domain.inter_of_isOpen_left g.dense_domain f.domain.is_open')
+        inf_le_right).hom :=
   equiv_iff_of_isSeparated_of_le sX sY _ _ _
 
 set_option backward.defeqAttrib.useBackward true in
@@ -502,7 +506,7 @@ lemma PartialMap.isOver_toRationalMap_iff_of_isSeparated {sX : X ⟶ S} {sY : Y 
   obtain ⟨U, hU, hU', H⟩ := f.exists_restrict_isOver sX sY
   rw [isOver_iff]
   have : IsDominant (X.homOfLE hU') := Opens.isDominant_homOfLE hU _
-  exact ext_of_isDominant (ι := X.homOfLE hU') (by simpa using H.1)
+  exact ext_of_isDominant (ι := X.homOfLE hU') (by simpa using H.over)
 
 section functionField
 
@@ -555,15 +559,15 @@ noncomputable def RationalMap.equivFunctionField
     (sX : X ⟶ S) (sY : Y ⟶ S) [IsIntegral X] [LocallyOfFiniteType sY] :
     { f : Spec X.functionField ⟶ Y // f ≫ sY = X.fromSpecStalk _ ≫ sX } ≃
       { f : X ⤏ Y // f.compHom sY = sX.toRationalMap } where
-  toFun f := ⟨.ofFunctionField sX sY f f.2, PartialMap.toRationalMap_eq_iff.mpr
+  toFun f := ⟨.ofFunctionField sX sY f f.property, PartialMap.toRationalMap_eq_iff.mpr
       ⟨_, PartialMap.dense_domain _, le_rfl, le_top, by simp [PartialMap.ofFromSpecStalk_comp]⟩⟩
-  invFun f := ⟨f.1.fromFunctionField, by
+  invFun f := ⟨f.val.fromFunctionField, by
     obtain ⟨f, hf⟩ := f
     obtain ⟨f, rfl⟩ := f.exists_rep
     simpa [fromFunctionField_toRationalMap] using! congr(RationalMap.fromFunctionField $hf)⟩
   left_inv f := Subtype.ext (RationalMap.fromFunctionField_ofFunctionField _ _ _ _)
   right_inv f := Subtype.ext (RationalMap.eq_of_fromFunctionField_eq
-      (ofFunctionField sX sY f.1.fromFunctionField _) f
+      (ofFunctionField sX sY f.val.fromFunctionField _) f
       (RationalMap.fromFunctionField_ofFunctionField _ _ _ _))
 
 /--
@@ -603,13 +607,14 @@ consisting of all the domains of the partial maps in the equivalence class. -/
 noncomputable
 def RationalMap.openCoverDomain (f : X ⤏ Y) : f.domain.toScheme.OpenCover where
   I₀ := { PartialMap.domain g | (g) (_ : g.toRationalMap = f) }
-  X U := U.1.toScheme
-  f U := X.homOfLE (le_sSup U.2)
+  X U := U.val.toScheme
+  f U := X.homOfLE (le_sSup U.property)
   mem₀ := by
     rw [presieve₀_mem_precoverage_iff]
     refine ⟨fun x ↦ ?_, inferInstance⟩
-    use ⟨_, (TopologicalSpace.Opens.mem_sSup.mp x.2).choose_spec.1⟩
-    exact ⟨⟨x.1, (TopologicalSpace.Opens.mem_sSup.mp x.2).choose_spec.2⟩, Subtype.ext (by simp)⟩
+    use ⟨_, (TopologicalSpace.Opens.mem_sSup.mp x.property).choose_spec.1⟩
+    exact ⟨⟨x.val, (TopologicalSpace.Opens.mem_sSup.mp x.property).choose_spec.2⟩,
+      Subtype.ext (by simp)⟩
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `f : X ⤏ Y` is a rational map from a reduced scheme to a separated scheme,
@@ -618,12 +623,13 @@ then `f` can be represented as a partial map on its domain of definition. -/
 noncomputable
 def RationalMap.toPartialMap [IsReduced X] [Y.IsSeparated] (f : X ⤏ Y) : X.PartialMap Y := by
   refine ⟨f.domain, f.dense_domain, f.openCoverDomain.glueMorphisms
-    (fun x ↦ (X.isoOfEq x.2.choose_spec.2).inv ≫ x.2.choose.hom) ?_⟩
+    (fun x ↦ (X.isoOfEq x.property.choose_spec.2).inv ≫ x.property.choose.hom) ?_⟩
   intro x y
-  let g (x : f.openCoverDomain.I₀) := x.2.choose
-  have hg₁ (x) : (g x).toRationalMap = f := x.2.choose_spec.1
-  have hg₂ (x) : (g x).domain = x.1 := x.2.choose_spec.2
-  refine (cancel_epi (isPullback_opens_inf_le (le_sSup x.2) (le_sSup y.2)).isoPullback.hom).mp ?_
+  let g (x : f.openCoverDomain.I₀) := x.property.choose
+  have hg₁ (x) : (g x).toRationalMap = f := x.property.choose_spec.1
+  have hg₂ (x) : (g x).domain = x.val := x.property.choose_spec.2
+  refine (cancel_epi
+    (isPullback_opens_inf_le (le_sSup x.property) (le_sSup y.property)).isoPullback.hom).mp ?_
   simp only [openCoverDomain, IsPullback.isoPullback_hom_fst_assoc,
     IsPullback.isoPullback_hom_snd_assoc]
   change _ ≫ _ ≫ (g x).hom = _ ≫ _ ≫ (g y).hom

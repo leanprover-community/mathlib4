@@ -48,7 +48,7 @@ Schwartz space into a locally convex topological vector space.
 * `SchwartzMap.one_add_le_sup_seminorm_apply`: For a Schwartz function `f` there is a uniform bound
   on `(1 + ‖x‖) ^ k * ‖iteratedFDeriv ℝ n f x‖`.
 
-## Implementation details
+## Implementation notes
 
 The implementation of the seminorms is taken almost literally from `ContinuousLinearMap.opNorm`.
 
@@ -641,7 +641,7 @@ where finally
   · intros; rfl
   · intros; rfl
   · intro f
-    exact f.2.clm_apply contDiff_const
+    exact f.smooth'.clm_apply contDiff_const
   · intro ⟨k, n⟩
     use {(k, n)}, ‖m‖, norm_nonneg _
     intro f x
@@ -866,7 +866,7 @@ where finally
       _ ≤ ‖x‖ ^ k * ∑ i ∈ Finset.range (n + 1), (n.choose i) *
           ‖iteratedFDeriv ℝ i L x‖ * ‖iteratedFDeriv ℝ (n - i) f x‖ := by
         gcongr 1
-        exact norm_iteratedFDeriv_le_of_bilinear_of_le_one (smulRightL ℝ G F)
+        exact norm_iteratedFDeriv_le_of_bilinear_of_le_one (StrongDual.smulRightL ℝ G F)
           (by fun_prop) (f.smooth ⊤) x (mod_cast le_top) norm_smulRightL_le
       _ ≤ ‖x‖ ^ k *
           (‖L x‖ * ‖iteratedFDeriv ℝ n f x‖ + n * ‖L‖ * ‖iteratedFDeriv ℝ (n - 1) f x‖) := by
