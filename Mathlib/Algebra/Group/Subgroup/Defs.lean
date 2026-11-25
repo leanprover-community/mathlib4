@@ -597,11 +597,6 @@ theorem subtype_comp_inclusion {H K : Subgroup G} (hH : H ≤ K) :
     K.subtype.comp (inclusion hH) = H.subtype :=
   rfl
 
-@[to_additive (attr := simp)]
-theorem inclusion_comp_inclusion {H K L : Subgroup G} (hHK : H ≤ K) (hKL : K ≤ L) :
-    (inclusion hKL).comp (inclusion hHK) = inclusion (hHK.trans hKL) :=
-  rfl
-
 /-- A subgroup `H` is normal if whenever `n ∈ H`, then `g * n * g⁻¹ ∈ H` for every `g : G` -/
 class Normal : Prop where
   /-- `H` is closed under conjugation -/
