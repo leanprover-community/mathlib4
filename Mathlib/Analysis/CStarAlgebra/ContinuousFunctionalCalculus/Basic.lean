@@ -45,8 +45,6 @@ relevant instances on C⋆-algebra can be found in the `Instances` file.
   are compact Hausdorff, it is a homeomorphism.
 * `IsStarNormal.instContinuousFunctionalCalculus`: the continuous functional calculus for normal
   elements in a unital C⋆-algebra over `ℂ`.
-* `CStarAlgebra.instNonnegSpectrumClass`: In a unital C⋆-algebra over `ℂ` which is also a
-  `StarOrderedRing`, the spectrum of a nonnegative element is nonnegative.
 -/
 
 @[expose] public section
@@ -282,9 +280,7 @@ lemma SpectrumRestricts.smul_of_nonneg {A : Type*} [Ring A] [Algebra ℝ A] {a :
     refine le_of_smul_le_smul_left ?_ (inv_pos.mpr <| lt_of_le_of_ne hr <| ne_comm.mpr hr')
     simpa [Units.smul_def] using ha _ hx
 
-/-- The `ℝ`-spectrum of an element of the form `star b * b` in a C⋆-algebra is nonnegative.
-
-This is the key result used to establish `CStarAlgebra.instNonnegSpectrumClass`. -/
+/-- The `ℝ`-spectrum of an element of the form `star b * b` in a C⋆-algebra is nonnegative. -/
 lemma spectrum_star_mul_self_nonneg {b : A} : ∀ x ∈ spectrum ℝ (star b * b), 0 ≤ x := by
   -- for convenience we'll work with `a := star b * b`, which is selfadjoint.
   set a := star b * b with a_def
@@ -335,8 +331,8 @@ section NonnegSpectrumClass
 
 variable [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
-instance CStarAlgebra.instNonnegSpectrumClass : NonnegSpectrumClass ℝ A :=
-  .of_starOrderedRing
+@[deprecated NonnegSpectrumClass.of_starOrderedRing (since := "2026-11-24")]
+alias CStarAlgebra.instNonnegSpectrumClass := NonnegSpectrumClass.of_starOrderedRing
 
 open ComplexOrder in
 instance CStarAlgebra.instNonnegSpectrumClassComplexUnital : NonnegSpectrumClass ℂ A where
@@ -416,8 +412,8 @@ section NonnegSpectrumClass
 
 variable [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
-instance CStarAlgebra.instNonnegSpectrumClass' : NonnegSpectrumClass ℝ A :=
-  .of_starOrderedRing
+@[deprecated NonnegSpectrumClass.of_starOrderedRing (since := "2026-11-24")]
+alias CStarAlgebra.instNonnegSpectrumClass' := NonnegSpectrumClass.of_starOrderedRing
 
 end NonnegSpectrumClass
 
