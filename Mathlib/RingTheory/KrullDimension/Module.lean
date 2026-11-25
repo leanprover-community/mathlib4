@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 public import Mathlib.RingTheory.Spectrum.Prime.Module
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Krull Dimension of Module
 

@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 import Mathlib.CategoryTheory.Limits.Opposites
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Products and coproducts in `C` and `Cᵒᵖ`
 

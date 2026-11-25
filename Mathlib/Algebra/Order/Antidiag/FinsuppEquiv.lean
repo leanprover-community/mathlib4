@@ -18,6 +18,7 @@ This file collects further results about equivalence and cardinality related to
 `Mathlib.Algebra.Order.Antidiag.Finsupp` to reduce imports.
 
 ## Main declarations
+
 * `Finset.finsuppAntidiagonalEquivSubtype`: `Finset.finsuppAntidiagonal s n` is equivalent to
   subtype of `s →₀ μ` whose sum is `n`.
 * `Finset.finsuppAntidiagonalEquiv`: `Finset.finsuppAntidiagonal s n` is equivalent to `Sym s n` for

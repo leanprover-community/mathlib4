@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Probability.Kernel.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic kernels
 
@@ -35,6 +38,7 @@ kernels.
   on the measurable set `s` and to `η` on its complement.
 
 ## Main statements
+
 -/
 
 @[expose] public section

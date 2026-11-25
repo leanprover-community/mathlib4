@@ -19,6 +19,7 @@ in coding theory, in which it is fundamental for defining the minimum distance o
 code.
 
 ## Main definitions
+
 * `hammingDist x y`: the Hamming distance between `x` and `y`, the number of entries which differ.
 * `hammingNorm x`: the Hamming norm of `x`, the number of non-zero entries.
 * `Hamming β`: a type synonym for `Π i, β i` with `dist` and `norm` provided by the above.

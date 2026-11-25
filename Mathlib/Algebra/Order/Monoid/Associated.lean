@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.GroupWithZero.Associated
 public import Mathlib.Algebra.Order.IsBotOne
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Order on associates of a monoid
 

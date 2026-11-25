@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Sifted
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tensor product of colimits
 

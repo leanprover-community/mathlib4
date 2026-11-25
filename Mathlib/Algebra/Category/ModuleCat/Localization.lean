@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.Localization.Module
 
 import Mathlib.Algebra.Module.LocalizedModule.Exact
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Localized Module in ModuleCat
 

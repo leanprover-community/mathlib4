@@ -25,7 +25,7 @@ general, the constructions of fiber bundles we will make will be of this form.
 * `Bundle.TotalSpace.proj` the projection from the total space to the base space.
 * `Bundle.TotalSpace.mk` the constructor for the total space.
 
-## Implementation Notes
+## Implementation notes
 
 - We use a custom structure for the total space of a bundle instead of using a type synonym for the
   canonical disjoint union `Σ x, E x` because the total space usually has a different topology and
@@ -37,6 +37,7 @@ general, the constructions of fiber bundles we will make will be of this form.
   fiber bundle.
 
 ## References
+
 - https://en.wikipedia.org/wiki/Bundle_(mathematics)
 -/
 

@@ -28,7 +28,7 @@ This file defines extra structures on `CommMonoidWithZero`s.
 
 For the `NormalizedGCDMonoid` instances on `ℕ` and `ℤ`, see `Mathlib/Algebra/GCDMonoid/Nat.lean`.
 
-## Implementation Notes
+## Implementation notes
 
 * `NormalizationMonoid` is defined by assigning to each element a `normUnit` such that multiplying
   by that unit normalizes the monoid, and `normalize` is an idempotent function. This

@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.Quasicategory.Basic
 public import Mathlib.AlgebraicTopology.SimplicialSet.StrictSegal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Strict Segal simplicial sets are quasicategories
 

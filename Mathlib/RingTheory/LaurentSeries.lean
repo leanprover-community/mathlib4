@@ -65,7 +65,7 @@ type with a zero. They are denoted `R⸨X⸩`.
 * `LaurentSeries.powerSeriesAlgEquiv` is the `K`-algebra isomorphism between `K⟦X⟧`
   and the unit ball inside the `X`-adic completion of `K⟮X⟯`.
 
-## Implementation details
+## Implementation notes
 
 * Since `LaurentSeries` is just an abbreviation of `HahnSeries ℤ`, the definition of the
   coefficients is given in terms of `HahnSeries.coeff` and this forces sometimes to go
@@ -1070,9 +1070,11 @@ instance : Algebra K (RatFuncAdicCompl K) :=
   RingHom.toAlgebra ((LaurentSeriesRingEquiv K).toRingHom.comp HahnSeries.C)
 
 /-- The algebra equivalence between `K⸨X⸩` and the `X`-adic completion of `RatFunc X` -/
-def LaurentSeriesAlgEquiv : K⸨X⸩ ≃ₐ[K] RatFuncAdicCompl K :=
-  AlgEquiv.ofRingEquiv (f := LaurentSeriesRingEquiv K)
-    (fun a ↦ by simp [RingHom.algebraMap_toAlgebra])
+def LaurentSeriesAlgEquiv : K⸨X⸩ ≃ₐ[K] RatFuncAdicCompl K where
+  __ := LaurentSeriesRingEquiv K
+  map_smul' r x := show LaurentSeriesRingEquiv K (r • x) = r • LaurentSeriesRingEquiv K x by
+    rw [← HahnSeries.C_mul_eq_smul (r := r) (x := x), map_mul, Algebra.smul_def]
+    rfl
 
 open Filter WithZero
 
@@ -1224,7 +1226,7 @@ instance : Algebra K ((idealX K).adicCompletionIntegers K⟮X⟯) :=
 /-- The algebra isomorphism between `K⟦X⟧` and the unit ball inside the `X`-adic completion of
 `K⟮X⟯`. -/
 def powerSeriesAlgEquiv : K⟦X⟧ ≃ₐ[K] (idealX K).adicCompletionIntegers K⟮X⟯ := by
-  apply AlgEquiv.ofRingEquiv (f := powerSeriesRingEquiv K)
+  apply AlgEquiv.ofCommutes (e := powerSeriesRingEquiv K)
   intro a
   rw [PowerSeries.algebraMap_eq, RingHom.algebraMap_toAlgebra, ← Subtype.coe_inj,
     powerSeriesRingEquiv_coe_apply,

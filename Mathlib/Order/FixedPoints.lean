@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.End
 public import Mathlib.Order.BourbakiWitt
 public import Mathlib.Order.Hom.Order
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fixed point construction on complete lattices
 

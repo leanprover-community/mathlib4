@@ -9,6 +9,9 @@ module
 public import Mathlib.Algebra.BigOperators.Finsupp.Basic
 public import Mathlib.Algebra.Order.Antidiag.Pi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Antidiagonal of finitely supported functions as finsets
 

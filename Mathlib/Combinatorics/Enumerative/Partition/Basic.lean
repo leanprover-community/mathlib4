@@ -22,7 +22,7 @@ A summand of the partition is called a part.
 * `p : Partition n` is a structure, made of a multiset of integers which are all positive and
   add up to `n`.
 
-## Implementation details
+## Implementation notes
 
 The main motivation for this structure and its API is to show Euler's partition theorem, and
 related results.

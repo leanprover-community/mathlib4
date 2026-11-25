@@ -10,6 +10,9 @@ public import Mathlib.Data.Sym.Sym2
 
 import Mathlib.Data.Sym.Card
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Nat.card` versions of `Fintype.card` lemmas on `Sym`
 

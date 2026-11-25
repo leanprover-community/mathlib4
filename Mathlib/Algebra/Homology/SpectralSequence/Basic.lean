@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 public import Mathlib.Algebra.Homology.SpectralSequence.ComplexShape
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Spectral sequences
 

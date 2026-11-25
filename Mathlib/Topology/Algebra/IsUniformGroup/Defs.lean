@@ -36,7 +36,7 @@ coincides with **both** the left and right uniform structures.
 
 See `Mathlib/Topology/Algebra/IsUniformGroup/Basic.lean` for further results.
 
-## Implementation Notes
+## Implementation notes
 
 Since the most frequent use case is `G` being a commutative additive groups, `Mathlib` originally
 did essentially all the theory under the assumption `IsUniformGroup G`.

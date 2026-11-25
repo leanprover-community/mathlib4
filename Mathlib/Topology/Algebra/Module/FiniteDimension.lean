@@ -6,20 +6,21 @@ Authors: Sébastien Gouëzel, Anatole Dedecker
 module
 
 public meta import Lean.Meta.Tactic.Rfl
-public import Mathlib.Analysis.LocallyConvex.Bounded
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
-public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Analysis.SpecificLimits.Normed
-public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.RingTheory.Finiteness.Cofinite
-public import Mathlib.RingTheory.Finiteness.Projective
 public import Mathlib.RingTheory.LocalRing.Basic
 public import Mathlib.Topology.Algebra.Module.Complement
 public import Mathlib.Topology.Algebra.Module.Determinant
 public import Mathlib.Topology.Algebra.Module.ModuleTopology
-public import Mathlib.Topology.Algebra.Module.Simple
-public import Mathlib.Topology.Algebra.SeparationQuotient.FiniteDimensional
 public import Mathlib.Topology.Maps.Strict.Basic
+
+import Mathlib.Analysis.LocallyConvex.Bounded
+import Mathlib.Analysis.Normed.Module.Basic
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+import Mathlib.RingTheory.Finiteness.Projective
+import Mathlib.Topology.Algebra.Module.Simple
+import Mathlib.Topology.Algebra.SeparationQuotient.FiniteDimensional
 
 /-!
 # Finite-dimensional topological vector spaces over complete fields
@@ -319,8 +320,8 @@ space. -/
 def _root_.Module.End.toContinuousLinearMap (E : Type v) [NormedAddCommGroup E]
     [NormedSpace 𝕜 E] [FiniteDimensional 𝕜 E] : (E →ₗ[𝕜] E) ≃ₐ[𝕜] (E →L[𝕜] E) :=
   { LinearMap.toContinuousLinearMap with
-    map_mul' := fun _ _ ↦ rfl
-    commutes' := fun _ ↦ rfl }
+    map_mul' _ _ := rfl
+    map_smul' _ _ := rfl }
 
 @[simp]
 theorem coe_toContinuousLinearMap' (f : E →ₗ[𝕜] F') : ⇑(LinearMap.toContinuousLinearMap f) = f :=

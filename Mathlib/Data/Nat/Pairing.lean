@@ -5,8 +5,9 @@ Authors: Leonardo de Moura, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Nat.Sqrt
 public import Mathlib.Data.Set.Lattice.Image
+
+import Mathlib.Data.Nat.Sqrt
 
 /-!
 # Naturals pairing function

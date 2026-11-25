@@ -32,6 +32,7 @@ The existence of very good path objects in model categories is stated
 in the lemma `PathObject.exists_very_good`.
 
 ## References
+
 * [Daniel G. Quillen, Homotopical algebra][Quillen1967]
 * https://ncatlab.org/nlab/show/path+space+object
 -/
@@ -213,7 +214,6 @@ variable [CategoryWithFibrations C] [CategoryWithCofibrations C]
 instance [HasBinaryProduct A A] [HasInitial C] [IsCofibrant A] [P.IsVeryGood] : IsCofibrant P.P :=
   isCofibrant_of_cofibration P.ι
 
-set_option backward.defeqAttrib.useBackward true in
 instance [(fibrations C).RespectsIso] [HasBinaryProducts C] [P.IsVeryGood] :
     P.symm.IsVeryGood where
   cofibration_ι := by dsimp; infer_instance

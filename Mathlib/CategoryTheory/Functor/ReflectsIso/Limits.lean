@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Jointly
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Exactness of families of functors which jointly reflect isomorphisms
 

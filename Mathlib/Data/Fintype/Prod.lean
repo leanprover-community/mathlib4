@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Finset.Prod
 public import Mathlib.Data.Fintype.EquivFin
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # fintype instance for the product of two fintypes.
 -/

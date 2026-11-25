@@ -17,6 +17,7 @@ These notions agree on Hausdorff spaces. They are both referred to as compactly 
 the literature while the compact coherentification is often called the k-ification.
 
 ## Main definitions
+
 * `CompactlyCoherentSpace`: A compactly coherent space is a topological space in which a set `A` is
   open iff for every compact set `B`, the intersection `A ∩ B` is open in `B`.
 * `CompactCoherentification`: For a topological space `X` one can define
@@ -24,6 +25,7 @@ the literature while the compact coherentification is often called the k-ificati
   `A ∩ B` is open in `B`.
 
 ## Main results
+
 * `CompactlyCoherentSpace.of_weaklyLocallyCompactSpace`: every weakly locally compact space is a
   compactly coherent space.
 * `CompactlyCoherentSpace.of_sequentialSpace`: every sequential space is a compactly coherent space.
@@ -38,6 +40,7 @@ the literature while the compact coherentification is often called the k-ificati
   `CompactCoherentification X` to `CompactCoherentification Y`.
 
 ## References
+
 * [J. Munkres, *Topology*][Munkres2000]
 * <https://en.wikipedia.org/wiki/Compactly_generated_space>
 -/

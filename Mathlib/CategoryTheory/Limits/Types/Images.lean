@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.Images
 public import Mathlib.CategoryTheory.Limits.Types.Limits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Images in the category of types
 
