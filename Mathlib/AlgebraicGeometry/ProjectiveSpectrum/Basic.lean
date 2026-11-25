@@ -17,6 +17,7 @@ The scheme `Proj 𝒜` for a graded ring `𝒜` is constructed in
 In this file we provide basic properties of the scheme.
 
 ## Main results
+
 - `AlgebraicGeometry.Proj.toSpecZero`: The structure map `Proj A ⟶ Spec (A 0)`.
 - `AlgebraicGeometry.Proj.basicOpenIsoSpec`:
   The canonical isomorphism `Proj A |_ D₊(f) ≅ Spec (A_f)₀`

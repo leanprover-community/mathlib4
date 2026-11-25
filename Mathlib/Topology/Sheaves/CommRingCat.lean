@@ -25,6 +25,7 @@ sub, quotient, and localization operations on sheaves of rings with
 As more results accumulate, please consider splitting this file.
 
 ## References
+
 * https://stacks.math.columbia.edu/tag/0073
 -/
 

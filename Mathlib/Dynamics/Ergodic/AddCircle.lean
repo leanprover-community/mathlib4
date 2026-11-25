@@ -20,7 +20,7 @@ set_option doc.verso.suggestions false
 
 This file contains proofs of ergodicity for maps of the additive circle.
 
-## Main definitions:
+## Main definitions
 
 * `AddCircle.ergodic_zsmul`: given `n : ℤ` such that `1 < |n|`, the self map `y ↦ n • y` on
   the additive circle is ergodic (w.r.t. the Haar measure).

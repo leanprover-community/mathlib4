@@ -50,7 +50,7 @@ theorem exists_linearIndependent_algEquiv_apply_of_finite [Finite L] :
   ext i
   simp_rw [Equiv.coe_trans, Function.comp_apply, finCongr_apply, Equiv.ofBijective_apply,
     AlgEquiv.coe_pow, AdjoinRoot.powerBasis, AdjoinRoot.powerBasisAux, Basis.coe_mk,
-    coe_comp, LinearEquiv.coe_coe, LinearMap.coe_restrictScalars]
+    coe_comp, LinearEquiv.coe_toLinearMap, LinearMap.coe_restrictScalars]
   refine (LinearEquiv.eq_symm_apply _).mpr (.symm <| (liftQ_apply ..).trans ?_)
   rw [toSpanSingleton_apply, AEval'.X_pow_smul_of, End.smul_def, FunLike.coe_pow_eq_iterate]
   rfl

@@ -23,6 +23,7 @@ colimit (over `K`) of the limits (over `J`) with the limit of the colimits is an
 (In fact, to prove that it is injective only requires that `J` has finitely many objects.)
 
 ## References
+
 * [F. Borceux, *Handbook of Categorical Algebra 1*][borceux-vol1], Theorem 2.13.4
 * [Stacks: Filtered colimits](https://stacks.math.columbia.edu/tag/002W)
 -/
