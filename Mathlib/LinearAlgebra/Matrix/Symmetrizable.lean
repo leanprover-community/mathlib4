@@ -12,13 +12,15 @@ import Mathlib.Algebra.Group.Pi.Units
 import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Symmetrizable Matrices
 
 A matrix `M` is symmetrizable if there exists a diagonal matrix `D` such that `D * M` is symmetric.
 If furthermore the diagonal entries of `D` are positive, `M` is said to be positively
 symmetrizable.
-
 -/
 
 public section
