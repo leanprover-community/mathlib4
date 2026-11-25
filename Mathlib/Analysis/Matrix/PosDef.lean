@@ -138,6 +138,20 @@ lemma posSemidef_iff_dotProduct_mulVec_complex {A : Matrix n n ℂ} :
   rw [posSemidef_iff_dotProduct_mulVec, isHermitian_iff_im_dotProduct_mulVec_eq_zero_complex]
   exact ⟨fun h ↦ h.2, fun h ↦ ⟨fun _ ↦ Complex.nonneg_iff.mp (h _) |>.2.symm, h⟩⟩
 
+omit [Fintype n] in
+lemma posDef_iff_complex {A : Matrix n n ℂ} :
+    A.PosDef ↔ ∀ x : n →₀ ℂ, x ≠ 0 →
+      0 < x.sum fun i xi ↦ x.sum fun j xj ↦ star xi * A i j * xj := by
+  simp only [PosDef, isHermitian_iff_complex, RCLike.star_def, ne_eq, lt_iff_le_and_ne',
+    Complex.nonneg_iff, eq_comm (a := (0 : ℝ)), and_iff_right_iff_imp]
+  intro h x
+  if hx : x = 0 then simp [hx] else simp [h hx]
+
+lemma posDef_iff_star_dotProduct_mulVec_complex {A : Matrix n n ℂ} :
+    A.PosDef ↔ ∀ x : n → ℂ, x ≠ 0 → 0 < star x ⬝ᵥ A *ᵥ x := by
+  simp [posDef_iff_complex, ← Finsupp.equivFunOnFinite.forall_congr_right, funext_iff,
+    Finsupp.sum_fintype, dotProduct, mulVec, Finset.mul_sum, mul_assoc, Finsupp.ext_iff]
+
 end Complex
 
 end Matrix
