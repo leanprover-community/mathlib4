@@ -178,11 +178,7 @@ lemma eqToHom_ext {E : Inserter F G} {i : Λ} {b b' : PartialChainUpTo κ Λ E i
         G.map (eqToHom (congr($(h_obj _).left.obj)).symm)):
     b = b' := by
   ext
-  · fapply Functor.ext
-    · intro i
-      exact h_obj i
-    · intro j k f
-      exact h_map j.1 k.1 (leOfHom f) k.property
+  · exact Functor.ext h_obj (fun j k f ↦ h_map j.val k.val (leOfHom f) k.property)
   · refine Function.hfunext rfl fun a a' haa' ↦
       Function.hfunext rfl fun b b' hbb' ↦  ?_
     rw [heq_iff_eq] at haa' hbb'
