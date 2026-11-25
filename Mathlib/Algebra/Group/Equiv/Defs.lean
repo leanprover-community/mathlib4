@@ -15,6 +15,7 @@ In this file we define two extensions of `Equiv` called `AddEquiv` and `MulEquiv
 datatypes representing isomorphisms of `AddMonoid`s/`AddGroup`s and `Monoid`s/`Group`s.
 
 ## Main definitions
+
 * `≃*` (`MulEquiv`), `≃+` (`AddEquiv`): bundled equivalences that preserve multiplication/addition
   (and are therefore monoid and group isomorphisms).
 * `MulEquivClass`, `AddEquivClass`: classes for types containing bundled equivalences that

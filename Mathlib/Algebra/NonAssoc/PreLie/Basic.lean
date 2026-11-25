@@ -22,6 +22,7 @@ Everything holds for the algebra versions where `L` is also an `R`-Module over a
 `R`.
 
 ## Main definitions
+
   All are a defined as a `NonUnitalNonAssocRing` whose `associator` satisfies an identity.
   * `LeftPreLieRing`
   * `RightPreLieRing`
@@ -29,6 +30,7 @@ Everything holds for the algebra versions where `L` is also an `R`-Module over a
   * `RightPreLieAlgebra`
 
 ## Main results
+
   * Every `LeftPreLieRing` is a `RightPreLieRing` with the opposite multiplication.
 
 ## Implementation notes

@@ -26,6 +26,7 @@ decided to maintain some distinction by using the symbol `T`, rather than `X`, a
 Laurent polynomials.
 
 ## Notation
+
 The symbol `R[T;T⁻¹]` stands for `LaurentPolynomial R`.  We also define
 
 * `C : R →+* R[T;T⁻¹]` the inclusion of constant polynomials, analogous to the one for `R[X]`;

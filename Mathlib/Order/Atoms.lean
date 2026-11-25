@@ -42,6 +42,7 @@ which are lattices with only two elements, and related ideas.
   * `IsSimpleOrder.completeBooleanAlgebra`
 
 ## Main results
+
 * `isAtom_dual_iff_isCoatom` and `isCoatom_dual_iff_isAtom` express the (definitional) duality
   of `IsAtom` and `IsCoatom`.
 * `isSimpleOrder_iff_isAtom_top` and `isSimpleOrder_iff_isCoatom_bot` express the

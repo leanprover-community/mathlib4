@@ -11,6 +11,7 @@ public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 # Continuous linear equivalences involving submodules
 
 ## Main Definitions
+
 * `ofEq`: `LinearEquiv.ofEq` as a continuous linear equivalence.
 * `submoduleMap`: `LinearEquiv.submoduleMap` as a continuous linear equivalence.
 * `ofSubmodules`: `LinearEquiv.ofSubmodules` as a continuous linear equivalence.
