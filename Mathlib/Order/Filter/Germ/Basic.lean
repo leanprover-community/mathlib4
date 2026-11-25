@@ -603,7 +603,10 @@ instance instDivisionMonoid [∀ i, DivisionMonoid (G i)] : DivisionMonoid (Prod
   inv_eq_of_mul a b := by
     induction a, b using inductionOn₂ with | ofFun a b
     simp_rw [← coe_mul, ← coe_one, ← coe_inv, ofFun_eq]
-    exact fun h => h.mono fun x => by simpa using inv_eq_of_mul_eq_one_right
+    intro h
+    filter_upwards [h] with x
+    rw [Pi.mul_apply, Pi.one_apply, Pi.inv_apply]
+    exact inv_eq_of_mul_eq_one_right
 
 @[to_additive]
 instance instGroup [∀ i, Group (G i)] : Group (Product l G) where
@@ -736,34 +739,58 @@ instance instModule' [∀ i, Semiring (R i)] [∀ i, AddCommMonoid (M i)] [∀ i
 
 end Module
 
-instance instLE [LE β] : LE (Germ l β) := ⟨LiftRel (· ≤ ·)⟩
+section Order
 
-theorem le_def [LE β] : ((· ≤ ·) : Germ l β → Germ l β → Prop) = LiftRel (· ≤ ·) :=
+variable {ε : α → Type*} {f g h : (x : α) → ε x}
+
+instance instLE [∀ i, LE (ε i)] : LE (Product l ε) where
+  le := LiftRel fun _ x y => x ≤ y
+
+theorem le_def [∀ i, LE (ε i)] :
+    (LE.le : Product l ε → Product l ε → Prop) = LiftRel fun _ x y => x ≤ y :=
   rfl
 
 @[simp]
-theorem coe_le [LE β] : (f : Germ l β) ≤ g ↔ f ≤ᶠ[l] g :=
+theorem coe_le [∀ i, LE (ε i)] : (f : Product l ε) ≤ g ↔ ∀ᶠ x in l, f x ≤ g x :=
   Iff.rfl
 
-theorem coe_nonneg [LE β] [Zero β] {f : α → β} : 0 ≤ (f : Germ l β) ↔ ∀ᶠ x in l, 0 ≤ f x :=
+theorem coe_nonneg [∀ i, LE (ε i)] [∀ i, Zero (ε i)] : 0 ≤ (f : Product l ε) ↔ ∀ᶠ x in l, 0 ≤ f x :=
   Iff.rfl
 
 theorem const_le [LE β] {x y : β} : x ≤ y → (↑x : Germ l β) ≤ ↑y :=
-  liftRel_const
+  Germ.liftRel_const
 
 @[simp, norm_cast]
 theorem const_le_iff [LE β] [NeBot l] {x y : β} : (↑x : Germ l β) ≤ ↑y ↔ x ≤ y :=
-  liftRel_const_iff
+  Germ.liftRel_const_iff
 
-instance instPreorder [Preorder β] : Preorder (Germ l β) where
-  le_refl f := inductionOn f <| EventuallyLE.refl l
-  le_trans f₁ f₂ f₃ := inductionOn₃ f₁ f₂ f₃ fun _ _ _ => EventuallyLE.trans
+instance instPreorder [∀ i, Preorder (ε i)] : Preorder (Product l ε) where
+  le_refl a := by induction a using inductionOn with | ofFun a => simp
+  le_trans a b c := by
+    induction a, b, c using inductionOn₃ with | ofFun a b c
+    simp_rw [coe_le]
+    intro h₁ h₂
+    filter_upwards [h₁, h₂] with x
+    exact le_trans
 
-instance instPartialOrder [PartialOrder β] : PartialOrder (Germ l β) where
-  le_antisymm f g := inductionOn₂ f g fun _ _ h₁ h₂ ↦ (EventuallyLE.antisymm h₁ h₂).germ_eq
+instance instPartialOrder [∀ i, PartialOrder (ε i)] : PartialOrder (Product l ε) where
+  le_antisymm a b := by
+    induction a, b using inductionOn₂ with | ofFun a b
+    simp_rw [coe_le, ofFun_eq]
+    intro h₁ h₂
+    filter_upwards [h₁, h₂] with x
+    exact le_antisymm
 
-instance instBot [Bot β] : Bot (Germ l β) := ⟨↑(⊥ : β)⟩
-instance instTop [Top β] : Top (Germ l β) := ⟨↑(⊤ : β)⟩
+instance instBot [∀ i, Bot (ε i)] : Bot (Product l ε) where bot := ofFun fun _ => ⊥
+instance instTop [∀ i, Top (ε i)] : Top (Product l ε) where top := ofFun fun _ => ⊤
+
+@[simp, norm_cast]
+theorem coe_bot [∀ i, Bot (ε i)] : (↑(⊥ : (x : α) → ε x) : Product l ε) = ⊥ :=
+  rfl
+
+@[simp, norm_cast]
+theorem coe_top [∀ i, Top (ε i)] : (↑(⊤ : (x : α) → ε x) : Product l ε) = ⊤ :=
+  rfl
 
 @[simp, norm_cast]
 theorem const_bot [Bot β] : (↑(⊥ : β) : Germ l β) = ⊥ :=
@@ -783,8 +810,16 @@ instance instBoundedOrder [LE β] [BoundedOrder β] : BoundedOrder (Germ l β) w
   __ := instOrderBot
   __ := instOrderTop
 
-instance instSup [Max β] : Max (Germ l β) := ⟨map₂ (· ⊔ ·)⟩
-instance instInf [Min β] : Min (Germ l β) := ⟨map₂ (· ⊓ ·)⟩
+instance instSup [∀ i, Max (ε i)] : Max (Product l ε) where max := map₂ fun _ x y => x ⊔ y
+instance instInf [∀ i, Min (ε i)] : Min (Product l ε) where min := map₂ fun _ x y => x ⊓ y
+
+@[simp, norm_cast]
+theorem coe_sup [∀ i, Max (ε i)] (a b : (x : α) → ε x) : ↑(a ⊔ b) = (↑a ⊔ ↑b : Product l ε) :=
+  rfl
+
+@[simp, norm_cast]
+theorem coe_inf [∀ i, Min (ε i)] (a b : (x : α) → ε x) : ↑(a ⊓ b) = (↑a ⊓ ↑b : Product l ε) :=
+  rfl
 
 @[simp, norm_cast]
 theorem const_sup [Max β] (a b : β) : ↑(a ⊔ b) = (↑a ⊔ ↑b : Germ l β) :=
@@ -794,33 +829,51 @@ theorem const_sup [Max β] (a b : β) : ↑(a ⊔ b) = (↑a ⊔ ↑b : Germ l �
 theorem const_inf [Min β] (a b : β) : ↑(a ⊓ b) = (↑a ⊓ ↑b : Germ l β) :=
   rfl
 
-instance instSemilatticeSup [SemilatticeSup β] : SemilatticeSup (Germ l β) where
+instance instSemilatticeSup [∀ i, SemilatticeSup (ε i)] : SemilatticeSup (Product l ε) where
   sup := max
-  le_sup_left f g := inductionOn₂ f g fun _f _g => Eventually.of_forall fun _x ↦ le_sup_left
-  le_sup_right f g := inductionOn₂ f g fun _f _g ↦ Eventually.of_forall fun _x ↦ le_sup_right
-  sup_le f₁ f₂ g := inductionOn₃ f₁ f₂ g fun _f₁ _f₂ _g h₁ h₂ ↦ h₂.mp <| h₁.mono fun _x ↦ sup_le
+  le_sup_left a b := by induction a, b using inductionOn₂ with | ofFun a b => simp [← coe_sup]
+  le_sup_right a b := by induction a, b using inductionOn₂ with | ofFun a b => simp [← coe_sup]
+  sup_le a b c := by
+    induction a, b, c using inductionOn₃ with | ofFun a b c
+    simp_rw [← coe_sup, coe_le]
+    intro h₁ h₂
+    filter_upwards [h₁, h₂] with x
+    rw [Pi.sup_apply]
+    exact sup_le
 
-instance instSemilatticeInf [SemilatticeInf β] : SemilatticeInf (Germ l β) where
+instance instSemilatticeInf [∀ i, SemilatticeInf (ε i)] : SemilatticeInf (Product l ε) where
   inf := min
-  inf_le_left f g := inductionOn₂ f g fun _f _g ↦ Eventually.of_forall fun _x ↦ inf_le_left
-  inf_le_right f g := inductionOn₂ f g fun _f _g ↦ Eventually.of_forall fun _x ↦ inf_le_right
-  le_inf f₁ f₂ g := inductionOn₃ f₁ f₂ g fun _f₁ _f₂ _g h₁ h₂ ↦ h₂.mp <| h₁.mono fun _x ↦ le_inf
+  inf_le_left a b := by induction a, b using inductionOn₂ with | ofFun a b => simp [← coe_inf]
+  inf_le_right a b := by induction a, b using inductionOn₂ with | ofFun a b => simp [← coe_inf]
+  le_inf a b c := by
+    induction a, b, c using inductionOn₃ with | ofFun a b c
+    simp_rw [← coe_inf, coe_le]
+    intro h₁ h₂
+    filter_upwards [h₁, h₂] with x
+    rw [Pi.inf_apply]
+    exact le_inf
 
 instance instLattice [Lattice β] : Lattice (Germ l β) where
-  __ := instSemilatticeSup
-  __ := instSemilatticeInf
 
 instance instDistribLattice [DistribLattice β] : DistribLattice (Germ l β) where
-  le_sup_inf f g h := inductionOn₃ f g h fun _f _g _h ↦ Eventually.of_forall fun _ ↦ le_sup_inf
+  le_sup_inf a b c := by
+    induction a, b, c using inductionOn₃ with | ofFun a b c
+    simp [← coe_sup, ← coe_inf, sup_inf_left]
 
 @[to_additive]
-instance instExistsMulOfLE [Mul β] [LE β] [ExistsMulOfLE β] : ExistsMulOfLE (Germ l β) where
-  exists_mul_of_le {x y} := inductionOn₂ x y fun f g (h : f ≤ᶠ[l] g) ↦ by
+instance instExistsMulOfLE [∀ i, Mul (ε i)] [∀ i, LE (ε i)] [∀ i, ExistsMulOfLE (ε i)] :
+    ExistsMulOfLE (Product l ε) where
+  exists_mul_of_le {a b} := by
+    induction a, b using inductionOn₂ with | ofFun a b
+    rw [coe_le]
+    intro hab
     classical
-    choose c hc using fun x (hx : f x ≤ g x) ↦ exists_mul_of_le hx
-    refine ⟨ofFun fun x ↦ if hx : f x ≤ g x then c x hx else f x, coe_eq.2 ?_⟩
-    filter_upwards [h] with x hx
+    choose c hc using fun x (hx : a x ≤ b x) ↦ exists_mul_of_le hx
+    refine ⟨ofFun fun x ↦ if hx : a x ≤ b x then c x hx else a x, ofFun_eq.2 ?_⟩
+    filter_upwards [hab] with x hx
     rw [dite_eq_left hx, hc]
+
+end Order
 
 end Product
 
