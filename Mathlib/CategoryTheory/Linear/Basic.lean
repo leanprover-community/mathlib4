@@ -11,6 +11,9 @@ public import Mathlib.CategoryTheory.Preadditive.Opposite
 
 import Mathlib.CategoryTheory.Preadditive.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Linear categories
 
@@ -26,7 +29,7 @@ to talk about a `Module R X` structure,
 we need `Preadditive C` as a prerequisite typeclass for `Linear R C`.
 This makes for longer signatures than would be ideal.
 
-## Future work
+## TODO
 
 It would be nice to have a usable framework of enriched categories in which this would just be
 a category enriched in `Module R`.

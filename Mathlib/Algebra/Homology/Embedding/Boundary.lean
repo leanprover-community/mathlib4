@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Homology.Embedding.Basic
 
 import Mathlib.Algebra.Homology.HomologicalComplex
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Boundary of an embedding of complex shapes
 

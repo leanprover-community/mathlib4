@@ -14,6 +14,9 @@ import Mathlib.LinearAlgebra.Matrix.Nondegenerate
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Polynomial.Pochhammer
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Vandermonde matrix
 

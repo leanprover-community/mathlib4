@@ -11,6 +11,9 @@ public import Mathlib.Topology.LocallyConstant.Basic
 import Mathlib.Algebra.GroupWithZero.Indicator
 import Mathlib.LinearAlgebra.Pi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Algebraic structure on locally constant functions
 

@@ -13,7 +13,7 @@ public import Mathlib.RingTheory.Smooth.Flat
 In this file we define weakly étale algebras. An `R`-algebra `S` is weakly étale if
 `S` is `R`-flat and the multiplication map `S ⊗[R] S → S` is flat.
 
-## TODOs
+## TODO
 
 - Show that a weakly étale algebra is formally unramified and in particular that
   a weakly étale algebra of finite presentation is étale (@chrisflav).
@@ -40,7 +40,6 @@ attribute [instance] WeaklyEtale.flat
 
 namespace WeaklyEtale
 
-set_option backward.isDefEq.respectTransparency.types false in
 attribute [local instance] ULift.algebra' in
 lemma ulift_iff : WeaklyEtale (ULift.{u₁} R) (ULift.{u₂} S) ↔ WeaklyEtale R S := by
   rw [weaklyEtale_iff, weaklyEtale_iff, Module.Flat.ulift_left_iff, Module.Flat.ulift_right_iff]

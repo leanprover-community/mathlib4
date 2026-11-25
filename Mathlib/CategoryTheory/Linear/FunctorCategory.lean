@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Linear.Basic
 
 import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Linear structure on functor categories
 

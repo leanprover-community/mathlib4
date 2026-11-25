@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicTopology.DoldKan.FunctorN
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Comparison with the normalized Moore complex functor
 

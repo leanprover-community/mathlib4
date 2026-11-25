@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.Basic.Rel
 public import Mathlib.Data.Finset.Lattice.Fold
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pseudometrics as bundled functions
 

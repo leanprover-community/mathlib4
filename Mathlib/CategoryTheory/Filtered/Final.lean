@@ -404,7 +404,7 @@ induces via `CostructuredArrow.map₂` is initial, if `T` and `S` are initial an
 filtered. -/
 instance CostructuredArrow.initial_map₂_id [IsCofiltered C] {E : Type u₃} [Category.{v₃} E]
     (T : C ⥤ D) [T.Initial] (S : D ⥤ E) [S.Initial] (d : D) (e : E)
-    (u : S.obj d ⟶ e) : Initial (map₂ (F := 𝟭 _) (U := T ⋙ S) (𝟙 (T ⋙ S)) u) := by
+    (u : S.obj d ⟶ e) : Initial (map₂ (F := 𝟭 _) (R' := T ⋙ S) (𝟙 (T ⋙ S)) u) := by
   have := (T ⋙ S).initial_iff_isCofiltered_costructuredArrow.mp inferInstance e
   apply initial_of_natIso (map₂IsoPreEquivalenceInverseCompProj T S d e u).symm
 

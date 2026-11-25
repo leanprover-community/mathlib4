@@ -16,12 +16,14 @@ the completion of `K` with respect to its `v`-adic valuation, denoted `v.adicCom
 ring of integers, denoted `v.adicCompletionIntegers`.
 
 ## Main definitions
+
 - `IsDedekindDomain.HeightOneSpectrum.adicCompletion v` is the completion of `K` with respect
   to its `v`-adic valuation.
 - `IsDedekindDomain.HeightOneSpectrum.adicCompletionIntegers v` is the ring of integers of
   `v.adicCompletion`.
 
 ## Tags
+
 dedekind domain, dedekind ring, adic valuation, completion
 -/
 

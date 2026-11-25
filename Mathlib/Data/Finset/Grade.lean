@@ -9,6 +9,9 @@ public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.Order.Atoms
 public import Mathlib.Order.Grade
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finsets and multisets form a graded order
 

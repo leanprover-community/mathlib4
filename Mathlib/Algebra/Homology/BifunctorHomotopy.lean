@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.BifunctorFlip
 public import Mathlib.Algebra.Homology.Homotopy
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The action of a bifunctor on homological complexes factors through homotopies
 
