@@ -619,6 +619,10 @@ noncomputable def Set.BijOn.equiv {α : Type*} {β : Type*} {s : Set α} {t : Se
     (h : BijOn f s t) : s ≃ t :=
   Equiv.ofBijective _ h.bijective
 
+theorem Set.BijOn.equiv_apply {α : Type*} {β : Type*} {s : Set α} {t : Set β} (f : α → β)
+    (h : BijOn f s t) (x : s) : h.equiv f x = ⟨f x.val, h.mapsTo x.property⟩ :=
+  rfl
+
 /-- The composition of an updated function with an equiv on a subtype can be expressed as an
 updated function. -/
 theorem dite_comp_equiv_update

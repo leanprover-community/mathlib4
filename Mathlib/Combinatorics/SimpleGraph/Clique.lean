@@ -680,7 +680,7 @@ variable {G} in
 theorem Embedding.cliqueFreeOn_image {G' : SimpleGraph β} {f : G ↪g G'} {s : Set α} {n : ℕ} :
     G'.CliqueFreeOn (f '' s) n ↔ G.CliqueFreeOn s n := by
   have hf : s.BijOn f (f '' s) := f.injective.bijOn_image
-  simp_rw [← cliqueFree_induce_iff, (f.induceIso hf).cliqueFree_iff]
+  simp_rw [← cliqueFree_induce_iff, (f.induceIso _ _ hf).cliqueFree_iff]
 
 theorem CliqueFreeOn.of_image {G' : SimpleGraph β} (F) [FunLike F α β] [HomClass F G G']
     {f : F} {s : Set α} (hfs : s.InjOn f) {n : ℕ} (hG' : G'.CliqueFreeOn (f '' s) n) :
