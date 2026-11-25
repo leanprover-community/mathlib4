@@ -127,7 +127,7 @@ def partialSups.gi :
 protected lemma Pi.partialSups_apply {τ : Type*} {π : τ → Type*} [∀ t, SemilatticeSup (π t)]
     (f : ι → (t : τ) → π t) (i : ι) (t : τ) :
     partialSups f i t = partialSups (f · t) i := by
-  simp only [partialSups_apply, Finset.sup'_apply]
+  simp only [partialSups_apply, Pi.finsetSup'_apply]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma comp_partialSups {F : Type*} [FunLike F α β] [SupHomClass F α β] (f : ι → α) (g : F) :

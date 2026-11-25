@@ -53,3 +53,10 @@ theorem pi_midpoint_apply {k ι : Type*} {V : ι → Type*} {P : ι → Type*} [
     [∀ i, AddTorsor (V i) (P i)] (f g : ∀ i, P i) (i : ι) :
     midpoint k f g i = midpoint k (f i) (g i) :=
   rfl
+
+@[push ←]
+theorem Pi.midpoint_def {k ι : Type*} {V : ι → Type*} {P : ι → Type*} [Ring k]
+    [Invertible (2 : k)] [∀ i, AddCommGroup (V i)] [∀ i, Module k (V i)]
+    [∀ i, AddTorsor (V i) (P i)] (f g : ∀ i, P i) :
+    midpoint k f g = fun i ↦ midpoint k (f i) (g i) :=
+  rfl

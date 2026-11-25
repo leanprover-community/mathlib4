@@ -690,18 +690,6 @@ theorem coe_sup_of_nonempty (h : s.Nonempty) (f : β → α) :
 end Sup
 
 @[to_dual (attr := simp)]
-protected theorem sup_apply {C : β → Type*} [∀ b : β, SemilatticeSup (C b)]
-    [∀ b : β, OrderBot (C b)] (s : Finset α) (f : α → ∀ b : β, C b) (b : β) :
-    s.sup f b = s.sup fun a => f a b :=
-  apply_sup_eq_sup_comp (fun x : ∀ b : β, C b => x b) (fun _ _ => rfl) rfl
-
-@[to_dual (attr := simp)]
-protected theorem sup'_apply {C : β → Type*} [∀ b : β, SemilatticeSup (C b)]
-    {s : Finset α} (H : s.Nonempty) (f : α → ∀ b : β, C b) (b : β) :
-    s.sup' H f b = s.sup' H fun a => f a b :=
-  apply_sup'_eq_sup'_comp H (fun x : ∀ b : β, C b => x b) fun _ _ => rfl
-
-@[to_dual (attr := simp)]
 theorem toDual_sup' [SemilatticeSup α] {s : Finset ι} (hs : s.Nonempty) (f : ι → α) :
     toDual (s.sup' hs f) = s.inf' hs (toDual ∘ f) :=
   rfl
@@ -771,6 +759,48 @@ theorem exists_mem_eq_sup [OrderBot α] (s : Finset ι) (h : s.Nonempty) (f : ι
   sup'_eq_sup h f ▸ exists_mem_eq_sup' h f
 
 end LinearOrder
+
+end Finset
+
+namespace Pi
+variable {α β : Type*} {C : β → Type*}
+
+@[to_dual (attr := simp)]
+protected lemma finsetSup_apply [∀ b, SemilatticeSup (C b)] [∀ b, OrderBot (C b)] (s : Finset α)
+    (f : α → ∀ b, C b) (b : β) : s.sup f b = s.sup fun a ↦ f a b :=
+  Finset.apply_sup_eq_sup_comp (fun x : ∀ b, C b ↦ x b) (fun _ _ ↦ rfl) rfl
+
+@[to_dual (attr := simp)]
+protected lemma finsetSup'_apply [∀ b, SemilatticeSup (C b)] {s : Finset α} (H : s.Nonempty)
+    (f : α → ∀ b, C b) (b : β) : s.sup' H f b = s.sup' H fun a ↦ f a b :=
+  Finset.apply_sup'_eq_sup'_comp H (fun x : ∀ b, C b ↦ x b) fun _ _ ↦ rfl
+
+/-- Unapplied form of `Pi.finsetSup_apply`, tagged `push ←` so that `@[to_fun]` can eta-expand
+`s.sup f` into `fun b ↦ s.sup fun a ↦ f a b`. -/
+@[to_dual (attr := push ←)
+/-- Unapplied form of `Pi.finsetInf_apply`, tagged `push ←` so that `@[to_fun]` can eta-expand
+`s.inf f` into `fun b ↦ s.inf fun a ↦ f a b`. -/]
+protected lemma finsetSup_def [∀ b, SemilatticeSup (C b)] [∀ b, OrderBot (C b)] (s : Finset α)
+    (f : α → ∀ b, C b) : s.sup f = fun b ↦ s.sup fun a ↦ f a b :=
+  funext <| Pi.finsetSup_apply s f
+
+/-- Unapplied form of `Pi.finsetSup'_apply`, tagged `push ←` so that `@[to_fun]` can eta-expand
+`s.sup' H f` into `fun b ↦ s.sup' H fun a ↦ f a b`. -/
+@[to_dual (attr := push ←)
+/-- Unapplied form of `Pi.finsetInf'_apply`, tagged `push ←` so that `@[to_fun]` can eta-expand
+`s.inf' H f` into `fun b ↦ s.inf' H fun a ↦ f a b`. -/]
+protected lemma finsetSup'_def [∀ b, SemilatticeSup (C b)] {s : Finset α} (H : s.Nonempty)
+    (f : α → ∀ b, C b) : s.sup' H f = fun b ↦ s.sup' H fun a ↦ f a b :=
+  funext <| Pi.finsetSup'_apply H f
+
+end Pi
+
+namespace Finset
+
+@[deprecated (since := "2026-11-25")] protected alias sup_apply := Pi.finsetSup_apply
+@[deprecated (since := "2026-11-25")] protected alias inf_apply := Pi.finsetInf_apply
+@[deprecated (since := "2026-11-25")] protected alias sup'_apply := Pi.finsetSup'_apply
+@[deprecated (since := "2026-11-25")] protected alias inf'_apply := Pi.finsetInf'_apply
 
 end Finset
 

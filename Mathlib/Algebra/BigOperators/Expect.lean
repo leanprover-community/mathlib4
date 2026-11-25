@@ -376,11 +376,25 @@ lemma expect_div (s : Finset ι) (f : ι → K) (a : K) : (𝔼 i ∈ s, f i) / 
 
 end Semifield
 
-@[simp] lemma expect_apply {α : Type*} {π : α → Type*} [∀ a, CommSemiring (π a)]
-    [∀ a, Module ℚ≥0 (π a)] (s : Finset ι) (f : ι → ∀ a, π a) (a : α) :
-    (𝔼 i ∈ s, f i) a = 𝔼 i ∈ s, f i a := by simp [expect]
-
 end Finset
+
+namespace Pi
+variable {α : Type*} {π : α → Type*} [∀ a, CommSemiring (π a)] [∀ a, Module ℚ≥0 (π a)]
+
+@[simp]
+protected lemma finsetExpect_apply (s : Finset ι) (f : ι → ∀ a, π a) (a : α) :
+    (𝔼 i ∈ s, f i) a = 𝔼 i ∈ s, f i a := by simp [Finset.expect]
+
+/-- Unapplied form of `Pi.finsetExpect_apply`, tagged `push ←` so that `@[to_fun]` can
+eta-expand `𝔼 i ∈ s, f i` into `fun a ↦ 𝔼 i ∈ s, f i a`. -/
+@[push ←]
+protected lemma finsetExpect_def (s : Finset ι) (f : ι → ∀ a, π a) :
+    𝔼 i ∈ s, f i = fun a ↦ 𝔼 i ∈ s, f i a :=
+  funext <| Pi.finsetExpect_apply s f
+
+end Pi
+
+@[deprecated (since := "2026-11-25")] alias Finset.expect_apply := Pi.finsetExpect_apply
 
 namespace algebraMap
 variable [Semifield M] [CharZero M] [Semifield N] [CharZero N] [Algebra M N]
