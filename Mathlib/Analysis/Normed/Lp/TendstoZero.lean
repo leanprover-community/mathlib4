@@ -282,7 +282,7 @@ noncomputable def lpOneToStrongDual :
   .flip <| lp.scalarDualPairing ι 𝕜 ∞ 1 ∘L (subtypeₗᵢ 𝕜 _).toContinuousLinearMap
 
 lemma lpOneToStrongDual_apply_apply (x : ℓ¹(ι, 𝕜)) (y : c₀(ι, 𝕜)) :
-    lpOneToStrongDual ι 𝕜 x y = ∑' i, (y : ℓ^∞(ι, 𝕜)) i * x i :=
+    lpOneToStrongDual ι 𝕜 x y = ∑' i, y i * x i :=
   rfl
 
 lemma norm_lpOneToStrongDual_le : ‖lpOneToStrongDual ι 𝕜‖ ≤ 1 := by
