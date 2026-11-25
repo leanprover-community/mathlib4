@@ -361,7 +361,7 @@ instance (M : Comon (Mon C)) : ComonObj M.X.X where
 instance (M : Comon (Mon C)) : BimonObj M.X.X where
 
 /-- Construct an object of `Comon (Mon C)` from an object `X : C` and `BimonObj X` instance. -/
-@[simps, instance_reducible]
+@[instance_reducible]
 def mk' (X : C) [BimonObj X] : Comon (Mon C) where
   X := .mk X
   comon :=
