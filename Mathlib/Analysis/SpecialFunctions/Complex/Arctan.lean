@@ -144,3 +144,19 @@ end Complex
 theorem Real.hasSum_arctan {x : ℝ} (hx : ‖x‖ < 1) :
     HasSum (fun n : ℕ => (-1) ^ n * x ^ (2 * n + 1) / ↑(2 * n + 1)) (arctan x) :=
   mod_cast Complex.hasSum_arctan (z := x) (by simpa)
+
+/-- For `0 ≤ x < 1`, the partial sums of the series of `Real.arctan x` are within the first
+omitted term of `arctan x`. -/
+theorem Real.abs_arctan_sub_sum_range_le {x : ℝ} (hx₀ : 0 ≤ x) (hx₁ : x < 1) (n : ℕ) :
+    |arctan x - ∑ m ∈ Finset.range n, (-1) ^ m * x ^ (2 * m + 1) / ↑(2 * m + 1)| ≤
+      x ^ (2 * n + 1) / ↑(2 * n + 1) := by
+  have hs := hasSum_arctan (x := x) (by rwa [norm_of_nonneg hx₀])
+  have hfa : Antitone fun m : ℕ ↦ x ^ (2 * m + 1) / ↑(2 * m + 1) := by
+    refine antitone_nat_of_succ_le fun m ↦ ?_
+    refine div_le_div₀ (by positivity) (pow_le_pow_of_le_one hx₀ hx₁.le (by lia))
+      (by positivity) ?_
+    exact_mod_cast (by lia : 2 * m + 1 ≤ 2 * (m + 1) + 1)
+  have hfs : Summable fun m : ℕ ↦ x ^ (2 * m + 1) / ↑(2 * m + 1) :=
+    (summable_abs_iff.mpr hs.summable).congr fun m ↦ by
+      simp [abs_div, abs_of_nonneg hx₀, abs_of_pos (by positivity : (0 : ℝ) < 2 * m + 1)]
+  simpa only [← mul_div_assoc, hs.tsum_eq] using alternating_series_error_bound _ hfa hfs n
