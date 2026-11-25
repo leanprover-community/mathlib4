@@ -40,7 +40,6 @@ The proof is done by induction, using two standard constructions
 
 ## References
 
-
 [Becker-Weispfenning1993]
 -/
 
