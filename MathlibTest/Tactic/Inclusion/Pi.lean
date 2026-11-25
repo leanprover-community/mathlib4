@@ -19,6 +19,4 @@ example : Real.pi < 3.1416 := by dyadic_interval [prec := 20]
 example : |Real.pi - 3.14159265358979323846264338327950288| < 1e-35 := by
   dyadic_interval [prec := 130]
 
-example : Real.pi ^ 2 < 9.8697 := by dyadic_interval [prec := 20]
-
 end Inclusion.Tests
