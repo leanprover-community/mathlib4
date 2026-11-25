@@ -43,6 +43,21 @@ namespace AddCircle
 
 variable {T : ℝ} [hT : Fact (0 < T)]
 
+/-- Let `u₁, u₂, ...` be a sequence of points on the circle. Suppose that each `uⱼ` has finite order
+`nⱼ` and that `nⱼ → ∞` as `j → ∞`. Given a subset `s` of the circle, let `εⱼ(s) = μ ((uⱼ +ᵥ s) ∆ s)`
+where `μ` is the Haar measure. This lemma shows that, up to sets of measure zero, only the empty
+set or the entire circle can satisfy the key condition: `εⱼ(s) = o(1 / nⱼ ^ 2)`.
+
+The quadratic decay condition arises since if `Iⱼ` is an appropriate fundamental domain for the
+rotation corresponding to `uⱼ`, a triangle-inequality-based argument yields:
+`μ (s ∩ Iⱼ) / μ Iⱼ ≤ μ s + nⱼ ^ 2 * εⱼ(s)`.
+The left hand side of this inequality is exactly what appears in a Lebesgue-density argument
+proving `1 ≤ μ s` for non-empty `s`, provided `nⱼ ^ 2 * εⱼ(s) → 0`.
+
+The formal statement is slightly more general as it allows a family of points parameterised by
+a general filter-carrying type, it allows a null-measurable set, it only demands that the
+sequence `uⱼ` _eventually_ consist of points of finite order (since `addOrderOf` is `0` for points
+of infinite order), and it allows the circle to have total volume `T` for any `T > 0`. -/
 theorem ae_empty_or_univ_of_tendsto_addOrderOf_sq_volume_symmDiff_zero {s : Set <| AddCircle T}
     (hs : NullMeasurableSet s volume) {ι : Type*} {l : Filter ι} [l.NeBot] {u : ι → AddCircle T}
     (hu₁ : Tendsto (fun i ↦ addOrderOf (u i) ^ 2 • volume ((u i +ᵥ s) ∆ s)) l (𝓝 0))
