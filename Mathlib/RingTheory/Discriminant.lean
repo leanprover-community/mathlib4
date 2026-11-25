@@ -41,7 +41,7 @@ Given an `A`-algebra `B` and `b`, an `ι`-indexed family of elements of `B`, we 
   be such that `IsIntegral R B.gen`. Then for all, `z : L` we have
   `(discr K B.basis) • z ∈ adjoin R ({B.gen} : Set L)`.
 
-## Implementation details
+## Implementation notes
 
 Our definition works for any `A`-algebra `B`, but note that if `B` is not free as an `A`-module,
 then `trace A B = 0` by definition, so `discr A b = 0` for any `b`.
@@ -189,7 +189,7 @@ theorem discr_powerBasis_eq_prod'' [Algebra.IsSeparable K L] (e : Fin pb.dim ≃
   have h₂ : 2 ∣ pb.dim * (pb.dim - 1) := pb.dim.even_mul_pred_self.two_dvd
   have hne : ((2 : ℕ) : ℚ) ≠ 0 := by simp
   have hle : 1 ≤ pb.dim := by
-    rw [← hn, Nat.one_le_iff_ne_zero, ← zero_lt_iff, Module.finrank_pos_iff]
+    rw [← hn, Nat.one_le_iff_ne_zero, ← pos_iff_ne_zero, Module.finrank_pos_iff]
     infer_instance
   rw [hn, Nat.cast_div h₂ hne, Nat.cast_mul, Nat.cast_sub hle]
   ring
@@ -216,9 +216,7 @@ theorem discr_powerBasis_eq_norm [Algebra.IsSeparable K L] :
   congr
   rw [norm_eq_prod_embeddings, prod_prod_Ioi_mul_eq_prod_prod_off_diag]
   conv_rhs =>
-    congr
-    rfl
-    ext σ
+    enter [2, σ]
     rw [← aeval_algHom_apply, ← eval_map_algebraMap, ← derivative_map,
       (IsAlgClosed.splits _).eval_root_derivative ((minpoly.monic pb.isIntegral_gen).map _)
       (hroots σ), ← Finset.prod_mk _ (hnodup.erase _)]

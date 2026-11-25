@@ -7,7 +7,8 @@ module
 
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.InducedTopology
 public import Mathlib.CategoryTheory.Sites.LocallyBijective
-public import Mathlib.CategoryTheory.Sites.PreservesLocallyBijective
+
+import Mathlib.CategoryTheory.Sites.PreservesLocallyBijective
 
 /-!
 # Equivalences of sheaf categories
@@ -35,7 +36,6 @@ sufficiently small limits in the sheaf category on the essentially small site.
 
 * `CategoryTheory.smallSheafificationAdjunction`: `smallSheafify` is left adjoint to the functor
   taking a sheaf to its underlying presheaf.
-
 -/
 
 @[expose] public section

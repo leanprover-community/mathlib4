@@ -13,6 +13,7 @@ public import Mathlib.RingTheory.Ideal.Norm.RelNorm
 # (Absolute) Discriminant and Different Ideal
 
 ## Main results
+
 - `NumberField.absNorm_differentIdeal`:
   The norm of `differentIdeal ℤ 𝒪` is the absolute discriminant.
 - `NumberField.natAbs_discr_eq_absNorm_differentIdeal_mul_natAbs_discr_pow`:
@@ -21,7 +22,6 @@ public import Mathlib.RingTheory.Ideal.Norm.RelNorm
   Assume that `K₁` and `K₂` are two linear disjoint number fields with coprime different ideals.
   Then, the absolute value of the discriminant of their compositum is equal to
   `|discr K₁| ^ [K₂ : ℚ] * |discr K₂| ^ [K₁ : ℚ]`.
-
 -/
 
 public section
@@ -52,7 +52,7 @@ lemma absNorm_differentIdeal : (differentIdeal ℤ 𝒪).absNorm = (discr K).nat
       (by simpa using FractionalIdeal.coeIdeal_le_one)) one_ne_zero one_ne_zero
   have := Nat.card_congr this.toEquiv
   refine this.trans ?_
-  rw [FractionalIdeal.coe_one, coeIdeal_differentIdeal (K := ℚ), inv_inv]
+  rw [FractionalIdeal.coeToSubmodule_one, coeIdeal_differentIdeal (K := ℚ), inv_inv]
   let b := integralBasis K
   let b' := (Algebra.traceForm ℚ K).dualBasis (traceForm_nondegenerate ℚ K) b
   have hb : Submodule.span ℤ (Set.range b) = (1 : Submodule 𝒪 K).restrictScalars ℤ := by
@@ -62,7 +62,7 @@ lemma absNorm_differentIdeal : (differentIdeal ℤ 𝒪).absNorm = (discr K).nat
   qify
   refine (AddSubgroup.relIndex_eq_abs_det (1 : Submodule 𝒪 K).toAddSubgroup (FractionalIdeal.dual
     ℤ ℚ 1 : FractionalIdeal 𝒪⁰ K).coeToSubmodule.toAddSubgroup ?_ b b' ?_ ?_).trans ?_
-  · rw [Submodule.toAddSubgroup_le, ← FractionalIdeal.coe_one]
+  · rw [Submodule.toAddSubgroup_le, ← FractionalIdeal.coeToSubmodule_one]
     exact FractionalIdeal.one_le_dual_one ℤ ℚ (L := K) (B := 𝒪)
   · apply AddSubgroup.toIntSubmodule.injective
     rw [AddSubgroup.toIntSubmodule_closure, hb, Submodule.toIntSubmodule_toAddSubgroup]
@@ -207,6 +207,6 @@ lemma not_dvd_discr_iff_forall_mem [IsIntegralClosure 𝒪 ℤ K] {p : ℤ} (hp 
   rw [NumberField.not_dvd_discr_iff_forall_liesOver K 𝒪 hp]
   exact ⟨fun H P hP h ↦ H P (hP.isMaximal (by aesop))
     ((Ideal.liesOver_span_iff hP.ne_top hp).mpr h),
-    fun H P _ h ↦ H P _ (h.1.le (Ideal.mem_span_singleton_self _))⟩
+    fun H P _ h ↦ H P _ (h.over.le (Ideal.mem_span_singleton_self _))⟩
 
 end NumberField

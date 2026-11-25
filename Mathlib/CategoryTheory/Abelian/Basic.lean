@@ -7,9 +7,10 @@ module
 
 public import Mathlib.CategoryTheory.Abelian.NonPreadditive
 public import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
-public import Mathlib.CategoryTheory.Limits.Constructions.Pullbacks
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 public import Mathlib.CategoryTheory.Preadditive.Biproducts
+
+import Mathlib.CategoryTheory.Limits.Constructions.Pullbacks
 
 /-!
 # Abelian categories
@@ -78,7 +79,6 @@ convention:
 
 * [F. Borceux, *Handbook of Categorical Algebra 2*][borceux-vol2]
 * [P. Aluffi, *Algebra: Chapter 0*][aluffi2016]
-
 -/
 
 @[expose] public section

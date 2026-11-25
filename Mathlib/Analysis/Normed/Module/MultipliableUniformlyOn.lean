@@ -92,11 +92,11 @@ lemma hasProdUniformlyOn_one_add (hK : IsCompact K) (hu : Summable u)
   by_cases hKe : K = ∅
   · simp [TendstoUniformly, hKe]
   · have hCK : CompactSpace K := isCompact_iff_compactSpace.mp hK
-    have hne : Nonempty K := by rwa [Set.nonempty_coe_sort, Set.nonempty_iff_ne_empty]
+    have hne : Nonempty K := by rwa [Set.nonempty_coe_sort, ← Set.ne_empty_iff_nonempty]
     let f' i : C(K, R) := ⟨_, continuousOn_iff_continuous_domRestrict.mp (hcts i)⟩
     have hf'_bd : ∀ᶠ i in cofinite, ‖f' i‖ ≤ u i := by
       simp only [ContinuousMap.norm_le_of_nonempty]
-      filter_upwards [h] with i hi using fun x ↦ hi x x.2
+      filter_upwards [h] with i hi using fun x ↦ hi x x.property
     have hM : Multipliable fun i ↦ 1 + f' i :=
       multipliable_one_add_of_summable (hu.of_norm_bounded_eventually (by simpa using hf'_bd))
     convert! ContinuousMap.tendsto_iff_tendstoUniformly.mp hM.hasProd

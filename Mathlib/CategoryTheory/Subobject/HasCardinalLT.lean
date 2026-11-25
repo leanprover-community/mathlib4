@@ -8,12 +8,14 @@ module
 public import Mathlib.CategoryTheory.Subobject.Basic
 public import Mathlib.SetTheory.Cardinal.HasCardinalLT
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cardinality of Subobject
 
 If `X ⟶ Y` is a monomorphism, and the cardinality of `Subobject Y`
 is `< κ`, then the cardinality of `Subobject X` is also `< κ`.
-
 -/
 
 public section

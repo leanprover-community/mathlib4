@@ -6,6 +6,7 @@ Authors: Kyle Miller
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+public import Mathlib.Combinatorics.SimpleGraph.Walk.Chord
 
 /-!
 # Trails and Eulerian trails
@@ -83,12 +84,31 @@ theorem isEulerian_iff (p : G.Walk u v) :
   mp h := ⟨h.isTrail, fun _ ↦ h.mem_edges_iff.mpr⟩
   mpr := fun ⟨h, hl⟩ ↦ h.isEulerian_of_forall_mem hl
 
-theorem IsTrail.isEulerian_iff (hp : p.IsTrail) : p.IsEulerian ↔ p.edgeSet = G.edgeSet where
-  mp h := p.edgeSet_subset_edgeSet.antisymm (p.isEulerian_iff.mp h).2
-  mpr h := p.isEulerian_iff.mpr ⟨hp, by simp [← h]⟩
+theorem isEulerian_iff_isTrail_and_edgeSet_eq :
+    p.IsEulerian ↔ p.IsTrail ∧ p.edgeSet = G.edgeSet := by
+  rw [isEulerian_iff, and_congr_right_iff]
+  exact fun _ ↦ ⟨(Set.Subset.antisymm p.edges_subset_edgeSet ·), fun h ↦ by simp [← h]⟩
+
+theorem isEulerian_iff_isTrail_and_length_eq_encard_edgeSet :
+    p.IsEulerian ↔ p.IsTrail ∧ p.length = G.edgeSet.encard := by
+  rw [isEulerian_iff_isTrail_and_edgeSet_eq, and_congr_right_iff, ← length_edges]
+  intro hp
+  rw [← hp.edges_nodup.dedup, ← List.card_toFinset, ← Set.ncard_coe_finset, List.coe_toFinset,
+    p.edges.finite_toSet.cast_ncard_eq, ← edgeSet]
+  refine ⟨congrArg _, fun h ↦ ?_⟩
+  exact p.edges.finite_toSet.eq_of_subset_of_encard_le p.edges_subset_edgeSet h.symm.le
+
+theorem IsTrail.isEulerian_iff (hp : p.IsTrail) : p.IsEulerian ↔ p.edgeSet = G.edgeSet := by
+  simp [isEulerian_iff_isTrail_and_edgeSet_eq, hp]
 
 theorem IsEulerian.edgeSet_eq (h : p.IsEulerian) : p.edgeSet = G.edgeSet := by
   rwa [← h.isTrail.isEulerian_iff]
+
+theorem IsEulerian.finite_edgeSet (h : p.IsEulerian) : G.edgeSet.Finite :=
+  h.edgeSet_eq ▸ p.edges.finite_toSet
+
+theorem IsEulerian.length_eq_ncard_edgeSet (h : p.IsEulerian) : p.length = G.edgeSet.ncard := by
+  rw [← h.isTrail.ncard_edgeSet, h.edgeSet_eq]
 
 theorem IsEulerian.edgesFinset_eq [Fintype G.edgeSet] (h : p.IsEulerian) :
     h.isTrail.edgesFinset = G.edgeFinset := by
@@ -119,6 +139,9 @@ theorem IsEulerian.connected_of_forall_not_isIsolated (hp : p.IsEulerian)
     have hb : b ∈ p.support := hp.mem_support_of_not_isIsolated <| hG b
     ⟨p.takeUntil a ha |>.reverse.append <| p.takeUntil b hb⟩
   nonempty := ⟨u⟩
+
+theorem IsEulerian.isChordless {u v : V} {p : G.Walk u v} (hp : p.IsEulerian) : p.IsChordless :=
+  fun _ ⟨hadj, hnmem, _⟩ ↦ hnmem <| hp.mem_edges_iff.mpr hadj
 
 theorem IsEulerian.even_degree_iff (ht : p.IsEulerian) [Fintype V] [DecidableRel G.Adj] :
     Even (G.degree w) ↔ u ≠ v → w ≠ u ∧ w ≠ v := by

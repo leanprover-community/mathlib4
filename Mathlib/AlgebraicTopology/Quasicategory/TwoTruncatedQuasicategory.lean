@@ -8,12 +8,14 @@ module
 public import Mathlib.AlgebraicTopology.Quasicategory.Basic
 public import Mathlib.AlgebraicTopology.Quasicategory.TwoTruncated
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The truncation of a quasicategory
 
 In this file, we show that if `X : SSet` is a quasicategory, then
 `((truncation 2).obj X)` satisfies the property `SSet.Truncated.Quasicategory₂`.
-
 -/
 
 @[expose] public section

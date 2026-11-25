@@ -54,7 +54,8 @@ integrable as a function in `α`.
 lemma integrableOn_cartanKernel_left (f : ℂ → ℂ) (R : ℝ) (β : ℝ) :
     IntegrableOn (cartanKernel f R · β) (Ioc 0 (2 * π)) := by
   apply (intervalIntegrable_iff_integrableOn_Ioc_of_le two_pi_pos.le).1
-  simpa [cartanKernel, norm_sub_rev, CircleIntegrable] using circleIntegrable_log_norm_sub_const 1
+  have : CircleIntegrable (log ‖f (circleMap 0 R β) - ·‖) 0 1 := by fun_prop
+  simpa [cartanKernel, CircleIntegrable] using this
 
 /--
 If `f : ℂ → ℂ` is measurable, then the Cartan kernel of integration is measurable as a function in
@@ -193,7 +194,8 @@ integrability of the integrand.
 theorem circleIntegrable_circleAverage_log_norm_sub (h : Meromorphic f) :
     CircleIntegrable (fun a ↦ circleAverage (log ‖f · - a‖) 0 R) 0 1 := by
   by_cases hR : R = 0
-  · simp [hR, circleAverage_zero, norm_sub_rev, circleIntegrable_log_norm_sub_const]
+  · simp only [hR, circleAverage_zero]
+    fun_prop
   rw [CircleIntegrable, intervalIntegrable_iff_integrableOn_Ioc_of_le two_pi_pos.le]
   apply IntegrableOn.congr_fun
     ((Cartan.integrableOn_intervalIntegral_cartanKernel_right (R := R) h).const_mul (2 * π)⁻¹)

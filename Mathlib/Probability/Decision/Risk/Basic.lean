@@ -33,7 +33,6 @@ its maximal value.
 
 In many cases, the maximal Bayes risk and the minimax risk are equal
 (by a so-called minimax theorem).
-
 -/
 
 public section
@@ -207,8 +206,8 @@ lemma bayesRisk_eq_iInf_measure_of_subsingleton :
   obtain x := hX.some
   rw [bayesRisk, iInf_subtype', iInf_subtype']
   let e : {κ : Kernel 𝓧 𝓨 // IsMarkovKernel κ} ≃ {μ : Measure 𝓨 // IsProbabilityMeasure μ} :=
-    { toFun κ := ⟨κ.1 x, κ.2.isProbabilityMeasure x⟩
-      invFun μ := ⟨Kernel.const 𝓧 μ, ⟨fun _ ↦ μ.2⟩⟩
+    { toFun κ := ⟨κ.val x, κ.property.isProbabilityMeasure x⟩
+      invFun μ := ⟨Kernel.const 𝓧 μ, ⟨fun _ ↦ μ.property⟩⟩
       left_inv κ := by ext y; simp only [Kernel.const_apply, Subsingleton.elim x y]
       right_inv μ := by simp }
   rw [← Equiv.iInf_comp e.symm]

@@ -19,7 +19,8 @@ Then most of its values belong to a compact subset of the target space.
 
 public section
 
-open scoped ENNReal
+open Filter
+open scoped ENNReal Topology
 
 namespace MeasureTheory
 
@@ -42,7 +43,7 @@ lemma StronglyMeasurable.exists_isCompact_measure_preimage_compl_le {g : X → Y
   have : SecondCountableTopology T := hTsep.secondCountableTopology
   let μT : Measure T := (ν : Measure X).map gT
   obtain ⟨K, hKcomp, hKμ⟩ := exists_isCompact_closure_measure_compl_lt μT ε hε
-  refine ⟨Subtype.val '' closure K, hKcomp.image continuous_subtype_val, ?_⟩
+  refine ⟨Subtype.val '' closure K, hKcomp.image continuous_subtypeVal, ?_⟩
   have hmap : μT (closure K)ᶜ = ν (g ⁻¹' (Subtype.val '' closure K))ᶜ := by
     rw [Measure.map_apply_of_aemeasurable hgTae isClosed_closure.measurableSet.compl]
     congr
@@ -67,13 +68,21 @@ lemma AEStronglyMeasurable.exists_isCompact_measure_preimage_compl_le {g : X →
   exact hLε
 
 /-- A strongly measurable function on a finite measure space takes with high probability its values
-in a compact subset. Version for `Measure.real`. -/
-lemma StronglyMeasurable.exists_isCompact_measureReal_preimage_compl_le {g : X → Y}
-    (ν : Measure X) [IsFiniteMeasure ν] (hg : StronglyMeasurable g) {ε : ℝ} (hε : 0 < ε) :
-    ∃ L : Set Y, IsCompact L ∧ ν.real (g ⁻¹' L)ᶜ < ε := by
-  obtain ⟨L, hL, hLε⟩ := StronglyMeasurable.exists_isCompact_measure_preimage_compl_le ν hg
-    (ENNReal.ofReal_pos.2 hε)
-  exact ⟨L, hL, ENNReal.toReal_lt_of_lt_ofReal hLε⟩
+in a compact subset. Version stated in filter language. -/
+lemma AEStronglyMeasurable.tendsto_measure_comap_cocompact_nhds_zero
+    {g : X → Y} (ν : Measure X) [IsFiniteMeasure ν] (hg : AEStronglyMeasurable g ν) :
+    Tendsto ν ((cocompact Y).comap g).smallSets (𝓝 0) := by
+  refine ENNReal.nhds_zero_basis.tendsto_right_iff.2 fun ε hε ↦ ?_
+  refine (eventually_smallSets' fun s t hst (ht : ν t < ε) ↦ (measure_mono hst).trans_lt ht).2 ?_
+  obtain ⟨L, hL, hLε⟩ := hg.exists_isCompact_measure_preimage_compl_le ν hε
+  exact ⟨g ⁻¹' Lᶜ, preimage_mem_comap hL.compl_mem_cocompact, hLε⟩
+
+/-- An ae strongly measurable function on a finite measure space takes with high probability its
+values in a compact subset. Version stated in filter language. -/
+lemma StronglyMeasurable.tendsto_measure_comap_cocompact_nhds_zero
+    {g : X → Y} (ν : Measure X) [IsFiniteMeasure ν] (hg : StronglyMeasurable g) :
+    Tendsto ν ((cocompact Y).comap g).smallSets (𝓝 0) :=
+  hg.aestronglyMeasurable.tendsto_measure_comap_cocompact_nhds_zero ν
 
 /-- An ae strongly measurable function on a finite measure space takes with high probability its
 values in a compact subset. Version for `Measure.real`. -/
@@ -83,5 +92,26 @@ lemma AEStronglyMeasurable.exists_isCompact_measureReal_preimage_compl_le {g : X
   obtain ⟨L, hL, hLε⟩ := AEStronglyMeasurable.exists_isCompact_measure_preimage_compl_le ν hg
     (ENNReal.ofReal_pos.2 hε)
   exact ⟨L, hL, ENNReal.toReal_lt_of_lt_ofReal hLε⟩
+
+/-- A strongly measurable function on a finite measure space takes with high probability its values
+in a compact subset. Version for `Measure.real`. -/
+lemma StronglyMeasurable.exists_isCompact_measureReal_preimage_compl_le {g : X → Y}
+    (ν : Measure X) [IsFiniteMeasure ν] (hg : StronglyMeasurable g) {ε : ℝ} (hε : 0 < ε) :
+    ∃ L : Set Y, IsCompact L ∧ ν.real (g ⁻¹' L)ᶜ < ε :=
+  hg.aestronglyMeasurable.exists_isCompact_measureReal_preimage_compl_le ν hε
+
+/-- An ae strongly measurable function on a finite measure space takes with high probability its
+values in a compact subset. Version for `Measure.real`, stated in filter language. -/
+lemma AEStronglyMeasurable.tendsto_measureReal_comap_cocompact_nhds_zero
+    {g : X → Y} (ν : Measure X) [IsFiniteMeasure ν] (hg : AEStronglyMeasurable g ν) :
+    Tendsto ν.real ((cocompact Y).comap g).smallSets (𝓝 0) :=
+  (ENNReal.tendsto_toReal ENNReal.zero_ne_top).comp (hg.tendsto_measure_comap_cocompact_nhds_zero)
+
+/-- A strongly measurable function on a finite measure space takes with high probability its
+values in a compact subset. Version for `Measure.real`, stated in filter language. -/
+lemma StronglyMeasurable.tendsto_measureReal_comap_cocompact_nhds_zero
+    {g : X → Y} (ν : Measure X) [IsFiniteMeasure ν] (hg : StronglyMeasurable g) :
+    Tendsto ν.real ((cocompact Y).comap g).smallSets (𝓝 0) :=
+  hg.aestronglyMeasurable.tendsto_measureReal_comap_cocompact_nhds_zero
 
 end MeasureTheory

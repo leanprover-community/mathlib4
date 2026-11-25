@@ -9,6 +9,9 @@ public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.Topology.Algebra.Order.LiminfLimsup
 public import Mathlib.Topology.ContinuousMap.Bounded.Normed
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integration of bounded continuous functions
 
@@ -103,7 +106,7 @@ lemma integrable [IsFiniteMeasure μ] (f : X →ᵇ E) :
   refine ⟨f.continuous.aestronglyMeasurable, (hasFiniteIntegral_def _ _).mp ?_⟩
   calc  ∫⁻ x, ‖f x‖₊ ∂μ
     _ ≤ ‖f‖₊ * (μ Set.univ) := f.lintegral_nnNorm_le μ
-    _ < ∞                   := ENNReal.mul_lt_top ENNReal.coe_lt_top (measure_lt_top μ Set.univ)
+    _ < ∞                   := by finiteness
 
 variable [NormedSpace ℝ E]
 

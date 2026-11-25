@@ -8,6 +8,9 @@ module
 public import Mathlib.Dynamics.Ergodic.MeasurePreserving
 public import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ergodic maps and measures
 
@@ -28,7 +31,6 @@ preserving condition is relaxed to quasi-measure-preserving.
 * `Ergodic.quasiErgodic`: an ergodic map / measure is quasi-ergodic.
 * `PreErgodic.of_preimage_eq`: to prove pre-ergodicity of a quasi-measure-preserving map, it
   suffices to check the ergodicity condition on strictly invariant null-measurable sets.
-
 -/
 
 public section
@@ -204,7 +206,7 @@ theorem ae_mem_or_ae_notMem₀ (hf : QuasiErgodic f μ) (hsm : NullMeasurableSet
 
 theorem smul_measure {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
     (hf : QuasiErgodic f μ) (c : R) : QuasiErgodic f (c • μ) :=
-  ⟨hf.1.smul_measure _, hf.2.smul_measure _⟩
+  ⟨hf.toQuasiMeasurePreserving.smul_measure _, hf.toPreErgodic.smul_measure _⟩
 
 theorem zero_measure {f : α → α} : @QuasiErgodic α m f 0 where
   aemeasurable := aemeasurable_zero_measure
@@ -251,7 +253,7 @@ theorem symm {e : α ≃ᵐ α} (he : Ergodic e μ) : Ergodic e.symm μ :=
 
 theorem smul_measure {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
     (hf : Ergodic f μ) (c : R) : Ergodic f (c • μ) :=
-  ⟨hf.1.smul_measure _, hf.2.smul_measure _⟩
+  ⟨hf.toMeasurePreserving.smul_measure _, hf.toPreErgodic.smul_measure _⟩
 
 theorem zero_measure {f : α → α} (hf : Measurable f) : @Ergodic α m f 0 where
   measurable := hf

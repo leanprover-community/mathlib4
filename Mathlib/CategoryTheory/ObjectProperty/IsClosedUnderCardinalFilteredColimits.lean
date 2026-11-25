@@ -23,8 +23,8 @@ the condition `P.IsClosedUnderCardinalFilteredColimits κ` means
 that the subcategory `P.FullSubcategory` is accessibly embedded in `C`.
 
 ## References
-* [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 
+* [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 -/
 
 @[expose] public section

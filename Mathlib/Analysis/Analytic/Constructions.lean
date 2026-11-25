@@ -874,7 +874,7 @@ lemma one_le_formalMultilinearSeries_geometric_radius :
     1 ≤ (formalMultilinearSeries_geometric 𝕜 A).radius := by
   convert
     formalMultilinearSeries_geometric_eq_ofScalars 𝕜 A ▸
-      FormalMultilinearSeries.inv_le_ofScalars_radius_of_tendsto A _ one_ne_zero (by simp)
+      FormalMultilinearSeries.inv_le_ofScalars_radius_of_tendsto A _ (r := 1) (by simp)
   simp
 
 lemma formalMultilinearSeries_geometric_radius [NormOneClass A] :

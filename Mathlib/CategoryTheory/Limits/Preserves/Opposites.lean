@@ -8,12 +8,14 @@ module
 public import Mathlib.CategoryTheory.Limits.Opposites
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Limit preservation properties of `Functor.op` and related constructions
 
 We formulate conditions about `F` which imply that `F.op`, `F.unop`, `F.leftOp` and `F.rightOp`
 preserve certain (co)limits and vice versa.
-
 -/
 
 public section

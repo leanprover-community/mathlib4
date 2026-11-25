@@ -6,8 +6,8 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.DedekindDomain.Factorization
-public import Mathlib.RingTheory.DiscreteValuationRing.Basic
 
+import Mathlib.RingTheory.DiscreteValuationRing.Basic
 import Mathlib.RingTheory.HopkinsLevitzki
 import Mathlib.RingTheory.LocalRing.Quotient
 import Mathlib.Topology.Algebra.Group.ClosedSubgroup
@@ -19,6 +19,7 @@ import Mathlib.Topology.Algebra.Ring.Ideal
 # Compact Hausdorff Rings
 
 ## Main results
+
 - `IsArtinianRing.finite_of_compactSpace_of_t2Space`:
   Compact Hausdorff Artinian rings are finite (and thus discrete).
 - `Ideal.isOpen_of_isMaximal`:
@@ -31,7 +32,6 @@ import Mathlib.Topology.Algebra.Ring.Ideal
 ## Future projects
 Show that compact Hausdorff rings are totally disconnected and linearly topologized.
 See https://ncatlab.org/nlab/show/compact+Hausdorff+rings+are+profinite
-
 -/
 
 public section

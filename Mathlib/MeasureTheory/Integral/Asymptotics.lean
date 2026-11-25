@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Integral.Bochner.Set
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bounding of integrals by asymptotics
 

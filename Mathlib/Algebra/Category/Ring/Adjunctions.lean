@@ -15,11 +15,11 @@ import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 # Adjunctions in `CommRingCat`
 
 ## Main results
+
 - `CommRingCat.adj`: `σ ↦ ℤ[σ]` is left adjoint to the forgetful functor `CommRingCat ⥤ Type`.
 - `CommRingCat.coyonedaAdj`: `Fun(-, R)` is left adjoint to `Hom_{CRing}(R, -)`.
 - `CommRingCat.monoidAlgebraAdj`: `G ↦ R[G]` as `CommGrpCat ⥤ R-Alg` is left adjoint to `S ↦ Sˣ`.
 - `CommRingCat.unitsAdj`: `G ↦ ℤ[G]` is left adjoint to `S ↦ Sˣ`.
-
 -/
 
 @[expose] public section

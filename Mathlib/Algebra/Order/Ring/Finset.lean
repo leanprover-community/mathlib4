@@ -10,6 +10,9 @@ public import Mathlib.Data.Nat.Cast.Order.Ring
 
 import Mathlib.Algebra.Order.Ring.Canonical
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Finset.sup` and ring operations
 -/

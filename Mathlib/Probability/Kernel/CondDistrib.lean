@@ -8,6 +8,9 @@ module
 public import Mathlib.Probability.Kernel.Composition.Lemmas
 public import Mathlib.Probability.Kernel.Disintegration.Unique
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Regular conditional probability distribution
 
@@ -39,7 +42,6 @@ respect to `m`.
 * `condExp_prod_ae_eq_integral_condDistrib`: the conditional expectation
   `μ[(fun a => f (X a, Y a)) | X; mβ]` is almost everywhere equal to the integral
   `∫ y, f (X a, y) ∂(condDistrib Y X μ (X a))`.
-
 -/
 
 @[expose] public section

@@ -11,8 +11,8 @@ public import Mathlib.Algebra.Group.Subgroup.Ker
 # Saturated subgroups
 
 ## Tags
-subgroup, subgroups
 
+subgroup, subgroups
 -/
 
 @[expose] public section

@@ -185,8 +185,8 @@ instance : SplitEpiCategory NonemptyFinLinOrd.{u} :=
       rw [epi_iff_surjective] at hf
       intro y
       exact Nonempty.intro ⟨(hf y).choose, (hf y).choose_spec⟩
-    let φ : Y → X := fun y => (H y).some.1
-    have hφ : ∀ y : Y, f (φ y) = y := fun y => (H y).some.2
+    let φ : Y → X := fun y => (H y).some.val
+    have hφ : ∀ y : Y, f (φ y) = y := fun y => (H y).some.property
     refine IsSplitEpi.mk' ⟨ofHom ⟨φ, ?_⟩, ?_⟩
     swap
     · ext b
@@ -207,7 +207,7 @@ instance : HasStrongEpiMonoFactorisations NonemptyFinLinOrd.{u} :=
   ⟨fun {X Y} f => by
     let I := of (Set.image f ⊤)
     let e : X ⟶ I := ofHom ⟨fun x => ⟨f x, ⟨x, by tauto⟩⟩, fun x₁ x₂ h => f.hom.hom.monotone h⟩
-    let m : I ⟶ Y := ofHom ⟨fun y => y.1, by tauto⟩
+    let m : I ⟶ Y := ofHom ⟨fun y => y.val, by tauto⟩
     have : Epi e := by
       rw [epi_iff_surjective]
       rintro ⟨_, y, h, rfl⟩

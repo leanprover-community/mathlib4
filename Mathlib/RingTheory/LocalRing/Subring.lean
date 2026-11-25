@@ -9,6 +9,9 @@ public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 public import Mathlib.Algebra.Ring.Subsemiring.Basic
 public import Mathlib.RingTheory.LocalRing.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subrings of local rings
 
