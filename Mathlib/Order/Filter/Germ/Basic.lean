@@ -436,28 +436,24 @@ theorem coe_one [∀ i, One (M i)] : ↑(1 : (x : α) → (M x)) = (1 : Product 
 @[to_additive]
 instance instSemigroup [∀ i, Semigroup (M i)] : Semigroup (Product l M) where
   mul_assoc a b c := by
-    induction a, b, c using inductionOn₃ with | ofFun a b c
-    simp [← coe_mul, mul_assoc]
+    induction a, b, c using inductionOn₃ with | ofFun a b c => simp [← coe_mul, mul_assoc]
 
 @[to_additive]
 instance instCommSemigroup [∀ i, CommSemigroup (M i)] : CommSemigroup (Product l M) where
   mul_comm a b := by
-    induction a, b using inductionOn₂ with | ofFun a b
-    simp [← coe_mul, mul_comm]
+    induction a, b using inductionOn₂ with | ofFun a b => simp [← coe_mul, mul_comm]
 
 @[to_additive]
 instance instIsLeftCancelMul [∀ i, Mul (M i)] [∀ i, IsLeftCancelMul (M i)] :
     IsLeftCancelMul (Product l M) where
   mul_left_cancel a b c := by
-    induction a, b, c using inductionOn₃ with | ofFun a b c
-    simp [← coe_mul]
+    induction a, b, c using inductionOn₃ with | ofFun a b c => simp [← coe_mul]
 
 @[to_additive]
 instance instIsRightCancelMul [∀ i, Mul (M i)] [∀ i, IsRightCancelMul (M i)] :
     IsRightCancelMul (Product l M) where
   mul_right_cancel a b c := by
-    induction a, b, c using inductionOn₃ with | ofFun a b c
-    simp [← coe_mul]
+    induction a, b, c using inductionOn₃ with | ofFun a b c => simp [← coe_mul]
 
 @[to_additive]
 instance instIsCancelMul [∀ i, Mul (M i)] [∀ i, IsCancelMul (M i)] : IsCancelMul (Product l M) where
@@ -488,12 +484,12 @@ theorem coe_smul [∀ i, SMul M' (G i)] (n : M') (f : (x : α) → G x) :
 theorem const_smul [SMul M' G'] (n : M') (a : G') : (↑(n • a) : Germ l G') = n • (↑a : Germ l G') :=
   rfl
 
-@[to_additive (attr := simp, norm_cast)]
+@[to_additive existing coe_smul]
 theorem coe_pow [∀ i, Pow (G i) M'] (f : (x : α) → G x) (n : M') :
     ↑(f ^ n) = (f : Product l G) ^ n :=
   rfl
 
-@[to_additive (attr := simp, norm_cast)]
+@[to_additive existing const_smul]
 theorem const_pow [Pow G' M'] (a : G') (n : M') : (↑(a ^ n) : Germ l G') = (↑a : Germ l G') ^ n :=
   rfl
 
@@ -688,68 +684,55 @@ end Ring
 
 section Module
 
-variable {M N R : Type*}
+variable {R' M' : Type*} {M N R ε : α → Type*}
 
 @[to_additive]
-instance instSMul' [SMul M β] : SMul (Germ l M) (Germ l β) :=
-  ⟨map₂ (· • ·)⟩
+instance instSMul' [∀ i, SMul (M i) (ε i)] : SMul (Product l M) (Product l ε) where
+  smul := map₂ fun _ r x => r • x
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_smul' [SMul M β] (c : α → M) (f : α → β) : ↑(c • f) = (c : Germ l M) • (f : Germ l β) :=
+theorem coe_smul' [∀ i, SMul (M i) (ε i)] (c : (x : α) → M x) (f : (x : α) → ε x) :
+    ↑(c • f) = (c : Product l M) • (f : Product l ε) :=
   rfl
 
 @[to_additive]
-instance instMulAction [Monoid M] [MulAction M β] : MulAction M (Germ l β) where
-  one_smul f :=
-    inductionOn f fun f => by
-      norm_cast
-      simp [one_smul]
-  mul_smul c₁ c₂ f :=
-    inductionOn f fun f => by
-      norm_cast
-      simp [mul_smul]
+instance instMulAction [Monoid M'] [∀ i, MulAction M' (ε i)] :
+    MulAction M' (Product l ε) where
+  one_smul a := by induction a using inductionOn with | ofFun a => simp [← coe_smul]
+  mul_smul x y a := by induction a using inductionOn with | ofFun a => simp [← coe_smul, mul_smul]
 
 @[to_additive]
-instance instMulAction' [Monoid M] [MulAction M β] : MulAction (Germ l M) (Germ l β) where
-  one_smul f := inductionOn f fun f => by simp only [← coe_one, ← coe_smul', one_smul]
-  mul_smul c₁ c₂ f :=
-    inductionOn₃ c₁ c₂ f fun c₁ c₂ f => by
-      norm_cast
-      simp [mul_smul]
+instance instMulAction' [∀ i, Monoid (M i)] [∀ i, MulAction (M i) (ε i)] :
+    MulAction (Product l M) (Product l ε) where
+  one_smul a := by induction a using inductionOn with | ofFun a => simp [← coe_smul', ← coe_one]
+  mul_smul a b c := by
+    induction a, b, c using inductionOn₃ with | ofFun a b c
+    simp [← coe_smul', ← coe_mul, mul_smul]
 
-instance instDistribMulAction [Monoid M] [AddMonoid N] [DistribMulAction M N] :
-    DistribMulAction M (Germ l N) where
-  smul_add c f g :=
-    inductionOn₂ f g fun f g => by
-      norm_cast
-      simp [smul_add]
-  smul_zero c := by simp only [← coe_zero, ← coe_smul, smul_zero]
+instance instDistribMulAction [Monoid M'] [∀ i, AddMonoid (N i)] [∀ i, DistribMulAction M' (N i)] :
+    DistribMulAction M' (Product l N) where
+  smul_add x a b := by
+    induction a, b using inductionOn₂ with | ofFun a b => simp [← coe_add, ← coe_smul]
+  smul_zero := by simp [← coe_zero, ← coe_smul]
 
-instance instDistribMulAction' [Monoid M] [AddMonoid N] [DistribMulAction M N] :
-    DistribMulAction (Germ l M) (Germ l N) where
-  smul_add c f g :=
-    inductionOn₃ c f g fun c f g => by
-      norm_cast
-      simp [smul_add]
-  smul_zero c := inductionOn c fun c => by simp only [← coe_zero, ← coe_smul', smul_zero]
+instance instDistribMulAction' [∀ i, Monoid (M i)] [∀ i, AddMonoid (N i)]
+    [∀ i, DistribMulAction (M i) (N i)] : DistribMulAction (Product l M) (Product l N) where
+  smul_add a b c := by
+    induction a, b, c using inductionOn₃ with | ofFun a b c => simp [← coe_add, ← coe_smul']
+  smul_zero a := by induction a using inductionOn with | ofFun a => simp [← coe_zero, ← coe_smul']
 
-instance instModule [Semiring R] [AddCommMonoid M] [Module R M] : Module R (Germ l M) where
-  add_smul c₁ c₂ f :=
-    inductionOn f fun f => by
-      norm_cast
-      simp [add_smul]
-  zero_smul f :=
-    inductionOn f fun f => by
-      norm_cast
-      simp
+instance instModule [Semiring R'] [∀ i, AddCommMonoid (M i)] [∀ i, Module R' (M i)] :
+    Module R' (Product l M) where
+  add_smul x y a := by
+    induction a using inductionOn with | ofFun a => simp [← coe_smul, ← coe_add, add_smul]
+  zero_smul a := by induction a using inductionOn with | ofFun a => simp [← coe_smul]
 
-instance instModule' [Semiring R] [AddCommMonoid M] [Module R M] :
-    Module (Germ l R) (Germ l M) where
-  add_smul c₁ c₂ f :=
-    inductionOn₃ c₁ c₂ f fun c₁ c₂ f => by
-      norm_cast
-      simp [add_smul]
-  zero_smul f := inductionOn f fun f => by simp only [← coe_zero, ← coe_smul', zero_smul]
+instance instModule' [∀ i, Semiring (R i)] [∀ i, AddCommMonoid (M i)] [∀ i, Module (R i) (M i)] :
+    Module (Product l R) (Product l M) where
+  add_smul a b c := by
+    induction a, b, c using inductionOn₃ with | ofFun a b c
+    simp [← coe_smul', ← coe_add, add_smul]
+  zero_smul a := by induction a using inductionOn with | ofFun a => simp [← coe_smul', ← coe_zero]
 
 end Module
 
