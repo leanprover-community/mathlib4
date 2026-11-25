@@ -62,7 +62,7 @@ prove `f x₁ ... xₙ > 0`, `f x₁ ... xₙ ≥ 0`, or `f x₁ ... xₙ ≠ 0`
 (or the forms `0 < f x₁ ... xₙ`, `0 ≤ f x₁ ... xₙ`, and `0 ≠ f x₁ ... xₙ`).
 The head `f` must be a constant. For example:
 ```lean
-attribute [positivity_lemma] mul_pos mul_nonneg mul_ne_zero
+attribute [positivity_lemma] ite_pos ite_nonneg ite_ne_zero
 ```
 
 Each non-typeclass propositional premise must also have one of these positivity forms
@@ -943,8 +943,8 @@ goal or fails.
 For each subexpression `e`, `positivity` will try to:
 * try `@[positivity]`-tagged extensions to recursively prove `e` is positive/nonnegative/nonzero
   based on its subexpressions (see the `positivity` attribute for more details), or
-* apply `@[positivity_lemma]`-tagged lemmas such as `mul_pos`, proving their premises recursively
-  (see the `positivity_lemma` attribute for more details), or
+* apply `@[positivity_lemma]`-tagged lemmas such as `Real.exp_pos`, proving their premises
+  recursively (see the `positivity_lemma` attribute for more details), or
 * try the `norm_num` tactic to prove `e` is positive/nonnegative/nonzero, or
 * try showing `e : t` is nonnegative because there is a `CanonicallyOrderedAdd t` instance, or
 * use a local hypothesis of the form `0 ≤ e`, `0 < e` or `e ≠ 0`.

@@ -230,10 +230,46 @@ such that there is a local hypothesis `b < a`, `b ≤ a`, `a ≠ b` or `b ≠ a`
           | _ => return .none
     return result
 
-attribute [positivity_lemma]
-  mul_pos
-  mul_nonneg
-  mul_ne_zero
+/-- The `positivity` extension which identifies expressions of the form `a * b`,
+such that `positivity` successfully recognises both `a` and `b`. -/
+@[positivity _ * _] def evalMul : PositivityExt where eval {u α} zα pα? e := do
+  let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← whnf e | throwError "not *"
+  let _e_eq : $e =Q $f $a $b := ⟨⟩
+  let _a ← synthInstanceQ q(Mul $α)
+  let ⟨_f_eq⟩ ← withNewMCtxDepth <| assertDefEqQ q($f) q(HMul.hMul)
+  let ra ← core zα pα? a; let rb ← core zα pα? b
+  let tryProveNonzero (pα? : Option Q(PartialOrder $α))
+      (pa? : Option Q($a ≠ 0)) (pb? : Option Q($b ≠ 0)) : MetaM (Strictness zα e pα?) := do
+    let pa ← liftOption pa?
+    let pb ← liftOption pb?
+    let _a ← synthInstanceQ q(NoZeroDivisors $α)
+    pure (.nonzero q(mul_ne_zero $pa $pb))
+  let tryProveNonneg (pα : Q(PartialOrder $α)) (pa? : Option Q(0 ≤ $a)) (pb? : Option Q(0 ≤ $b)) :
+      MetaM (Strictness zα e pα) := do
+    let pa ← liftOption pa?
+    let pb ← liftOption pb?
+    let _a ← synthInstanceQ q(MulZeroClass $α)
+    let _a ← synthInstanceQ q(PosMulMono $α)
+    assumeInstancesCommute
+    pure (.nonnegative q(mul_nonneg $pa $pb))
+  let tryProvePositive (pα : Q(PartialOrder $α)) (pa? : Option Q(0 < $a)) (pb? : Option Q(0 < $b)) :
+      MetaM (Strictness zα e pα) := do
+    let pa ← liftOption pa?
+    let pb ← liftOption pb?
+    let _a ← synthInstanceQ q(MulZeroClass $α)
+    let _a ← synthInstanceQ q(PosMulStrictMono $α)
+    assumeInstancesCommute
+    pure (.positive q(mul_pos $pa $pb))
+  id <|
+  match pα? with
+  | some pα => do
+    let mut result : Strictness zα e (some pα) := .none
+    result ← orElse result (tryProvePositive pα ra.toPositive rb.toPositive)
+    result ← orElse result (tryProveNonneg pα ra.toNonneg rb.toNonneg)
+    result ← orElse result (tryProveNonzero pα ra.toNonzero rb.toNonzero)
+    return result
+  | none =>
+    return ← catchNone <| tryProveNonzero .none ra.toNonzero rb.toNonzero
 
 lemma int_div_self_pos {a : ℤ} (ha : 0 < a) : 0 < a / a := by
   rw [Int.ediv_self ha.ne']; exact zero_lt_one
