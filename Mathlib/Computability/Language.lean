@@ -130,8 +130,8 @@ theorem one_def : (1 : Language α) = ofSetList {[]} := rfl
 @[deprecated toSetList_add +typeChanged (since := "2026-11-18")]
 theorem add_def (l m : Language α) : l + m = ofSetList (l.toSetList ∪ m.toSetList) := rfl
 
-@[simp] lemma toSetList_sub (l m : Language α) :
-    (l - m).toSetList = l.toSetList \ m.toSetList := rfl
+@[simp] lemma toSetList_sub (l m : Language α) : (l - m).toSetList = l.toSetList \ m.toSetList :=
+  rfl
 
 @[deprecated toSetList_sub +typeChanged (since := "2026-11-18")]
 theorem sub_def (l m : Language α) : l - m = ofSetList (l.toSetList \ m.toSetList) := rfl
