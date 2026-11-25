@@ -574,6 +574,7 @@ def compareHypEq (pα : Q(PartialOrder $α)) (e x : Q($α)) (p₂ : Q($x = $e)) 
 initialize registerTraceClass `Tactic.positivity
 initialize registerTraceClass `Tactic.positivity.failure
 initialize registerTraceClass `Tactic.positivity.cache (inherited := true)
+initialize registerTraceClass `Tactic.positivity.lemma (inherited := true)
 
 /-- A variation on `assumption` which checks if the hypothesis `ldecl` is `a [</≤/=] e`
 where `a` is a numeral. -/
@@ -760,10 +761,13 @@ partial def applyPositivityLemmas {u : Level} {α : Q(Type u)} (zα : Q(Zero $α
     -- The premises are proved inside `orElse`, so that they are skipped once `result` is
     -- `.positive`, and so that an error only discards this lemma.
     result ← orElse result do
-      let some prePfs ←
-        (lem.premises.mapM fun (i, kind) => OptionT.mk <| provePremise i kind).run
-        | return .none
-      applyPositivityLemma zα pα? e lem prePfs
+      let r : Strictness zα e pα? ← catchNone do
+        let some prePfs ←
+          (lem.premises.mapM fun (i, kind) => OptionT.mk <| provePremise i kind).run
+          | return .none
+        applyPositivityLemma zα pα? e lem prePfs
+      trace[Tactic.positivity.lemma] "{.ofConstName lem.declName}: {e} => {r.toString}"
+      return r
   return result
 
 /-- Run each registered `positivity` extension and lemma on an expression, without consulting or
