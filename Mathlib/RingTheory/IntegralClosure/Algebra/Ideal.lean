@@ -11,6 +11,7 @@ public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 # Integrality over ideals
 
 ## Main results
+
 - `Polynomial.exists_monic_aeval_eq_zero_forall_mem_of_mem_map`:
   If `S` is an integral `R`-algebra, and `I` is an ideal of `R`,
   then any `x ∈ IS` is integral over `I`, i.e. it is a root

@@ -26,6 +26,7 @@ we say that `Y` is `X`-generated (typeclass `IsGeneratedBy X Y`).
   spaces is a closed cartesian monoidal category.
 
 ## References
+
 * [Rainer M. Vogt, *Convenient categories of topological spaces
   for homotopy theory*][vogt-1971]
 * [Martín Escardó, Jimmie Lawson and Alex Simpson, *Comparing Cartesian closed

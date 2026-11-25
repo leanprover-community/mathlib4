@@ -48,6 +48,7 @@ positive semidefinite matrices.
 - Privatize `RKHS.H₀`
 
 ## References
+
 * [Paulsen, Vern I. and Raghupathi, Mrinal,
   *An introduction to the theory of reproducing kernel Hilbert spaces*][MR3526117]
 -/

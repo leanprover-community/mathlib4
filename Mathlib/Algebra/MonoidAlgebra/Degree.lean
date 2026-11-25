@@ -14,6 +14,7 @@ import Mathlib.Algebra.Group.Subsemigroup.Operations
 # Lemmas about the `sup` and `inf` of the support of `AddMonoidAlgebra`
 
 ## TODO
+
 The current plan is to state and prove lemmas about `Finset.sup (Finsupp.support f) D` with a
 "generic" degree/weight function `D` from the grading Type `A` to a somewhat ordered Type `B`.
 

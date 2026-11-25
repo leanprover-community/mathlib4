@@ -15,7 +15,7 @@ public import Mathlib.FieldTheory.RatFunc.AsPolynomial
 * `RatFunc.laurent`: the Laurent expansion of the rational function `f` at `r`, as an `AlgHom`.
 * `RatFunc.laurent_injective`: the Laurent expansion at `r` is unique
 
-## Implementation details
+## Implementation notes
 
 Implemented as the quotient of two Taylor expansions, over domains.
 An auxiliary definition is provided first to make the construction of the `AlgHom` easier,

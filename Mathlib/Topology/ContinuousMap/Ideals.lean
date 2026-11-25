@@ -61,7 +61,7 @@ herein called `WeakDual.CharacterSpace.homeoEval`.
 * `ContinuousMap.ideal_isMaximal_iff`: when `X` is compact Hausdorff and `RCLike 𝕜`, a closed
   ideal of `C(X, 𝕜)` is maximal if and only if it is `idealOfSet 𝕜 {x}ᶜ` for some `x : X`.
 
-## Implementation details
+## Implementation notes
 
 Because there does not currently exist a bundled type of closed ideals, we don't provide the actual
 order isomorphism described above, and instead we only consider the Galois insertion
