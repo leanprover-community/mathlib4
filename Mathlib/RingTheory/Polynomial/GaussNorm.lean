@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.PowerSeries.GaussNorm
 
 import Mathlib.Algebra.Order.Ring.IsNonarchimedean
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Gauss norm for polynomials
 

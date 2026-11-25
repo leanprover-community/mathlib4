@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Finsupp.Multiset
 public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Factors as finsupp
 

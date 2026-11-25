@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Category.Basic
 public import Mathlib.LinearAlgebra.RootSystem.Hom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of root pairings
 
