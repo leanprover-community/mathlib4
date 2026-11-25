@@ -10,6 +10,9 @@ public import Mathlib.Data.Fintype.Sum
 public import Mathlib.Data.Set.Lattice.Image
 public import Mathlib.Tactic.DeriveFintype
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Languages
 

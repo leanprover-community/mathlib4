@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.IsTensorProduct
 
 import Mathlib.Algebra.FiveLemma
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about `IsBaseChange` under exact sequences
 

@@ -12,7 +12,11 @@ public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 public import Mathlib.Topology.ContinuousMap.CocompactMap
 
 import Mathlib.Algebra.Group.Pointwise.Set.Card
+import Mathlib.Algebra.HierarchyDesign
 import Mathlib.GroupTheory.Complement
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Measures on Groups
@@ -763,26 +767,30 @@ section Haar
 
 namespace Measure
 
-/-- A measure on an additive group is an additive Haar measure if it is left-invariant, and
+/--
+A measure on an additive group is an additive Haar measure if it is left-invariant, and
 gives finite mass to compact sets and positive mass to open sets.
 
 Textbooks generally require an additional regularity assumption to ensure nice behavior on
 arbitrary locally compact groups. Use `[IsAddHaarMeasure μ] [Regular μ]` or
 `[IsAddHaarMeasure μ] [InnerRegular μ]` in these situations. Note that a Haar measure in our
 sense is automatically regular and inner regular on second countable locally compact groups, as
-checked just below this definition. -/
+checked just below this definition.
+-/
 class IsAddHaarMeasure {G : Type*} [AddGroup G] [TopologicalSpace G] [MeasurableSpace G]
     (μ : Measure G) : Prop
     extends IsFiniteMeasureOnCompacts μ, IsAddLeftInvariant μ, IsOpenPosMeasure μ
 
-/-- A measure on a group is a Haar measure if it is left-invariant, and gives finite mass to
+/--
+A measure on a group is a Haar measure if it is left-invariant, and gives finite mass to
 compact sets and positive mass to open sets.
 
 Textbooks generally require an additional regularity assumption to ensure nice behavior on
 arbitrary locally compact groups. Use `[IsHaarMeasure μ] [Regular μ]` or
 `[IsHaarMeasure μ] [InnerRegular μ]` in these situations. Note that a Haar measure in our
 sense is automatically regular and inner regular on second countable locally compact groups, as
-checked just below this definition. -/
+checked just below this definition.
+-/
 @[to_additive existing]
 class IsHaarMeasure {G : Type*} [Group G] [TopologicalSpace G] [MeasurableSpace G]
     (μ : Measure G) : Prop
@@ -912,13 +920,17 @@ instance _root_.ContinuousLinearEquiv.isAddHaarMeasure_map
     IsAddHaarMeasure (μ.map L) :=
   AddEquiv.isAddHaarMeasure_map _ (L : E ≃+ F) L.continuous L.symm.continuous
 
-/-- A Haar measure on a σ-compact space is σ-finite.
+/--
+A Haar measure on a σ-compact space is σ-finite.
 
-See Note [lower instance priority] -/
+See {library_note}`lower instance priority`.
+-/
 @[to_additive
-/-- A Haar measure on a σ-compact space is σ-finite.
+/--
+A Haar measure on a σ-compact space is σ-finite.
 
-See Note [lower instance priority] -/]
+See {library_note}`lower instance priority`.
+-/]
 instance (priority := 100) IsHaarMeasure.sigmaFinite [SigmaCompactSpace G] : SigmaFinite μ :=
   ⟨⟨{   set := compactCovering G
         set_mem := fun _ => mem_univ _
@@ -931,17 +943,21 @@ instance prod.instIsHaarMeasure {G : Type*} [Group G] [TopologicalSpace G] {_ : 
     (ν : Measure H) [IsHaarMeasure μ] [IsHaarMeasure ν] [SFinite ν]
     [MeasurableMul G] [MeasurableMul H] : IsHaarMeasure (μ.prod ν) where
 
-/-- If the neutral element of a group is not isolated, then a Haar measure on this group has value
+/--
+If the neutral element of a group is not isolated, then a Haar measure on this group has value
 zero on singletons.
 
 The additive version of this instance applies in particular to show that an additive Haar
-measure on a nontrivial finite-dimensional real vector space has no atom. -/
+measure on a nontrivial finite-dimensional real vector space has no atom.
+-/
 @[to_additive
-/-- If the zero element of an additive group is not isolated, then an additive Haar measure on this
+/--
+If the zero element of an additive group is not isolated, then an additive Haar measure on this
 group has value zero on singletons.
 
 This applies in particular to show that an additive Haar measure on a nontrivial
-finite-dimensional real vector space has no atom. -/]
+finite-dimensional real vector space has no atom.
+-/]
 instance (priority := 100) IsHaarMeasure.nullSingletonClass [IsTopologicalGroup G] [BorelSpace G]
     [T1Space G] [WeaklyLocallyCompactSpace G] [(𝓝[≠] (1 : G)).NeBot] (μ : Measure G)
     [μ.IsHaarMeasure] : NullSingletonClass μ := by

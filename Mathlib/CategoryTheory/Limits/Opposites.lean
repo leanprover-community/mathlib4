@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Limits in `C` give colimits in `Cᵒᵖ`.
 

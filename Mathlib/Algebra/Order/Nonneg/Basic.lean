@@ -23,7 +23,7 @@ Currently we only state instances and states some `simp`/`norm_cast` lemmas.
 
 When `α` is `ℝ`, this will give us some properties about `ℝ≥0`.
 
-## Implementation Notes
+## Implementation notes
 
 Instead of `{x : α // 0 ≤ x}` we could also use `Set.Ici (0 : α)`, which is definitionally equal.
 However, using the explicit subtype has a big advantage: when writing an element explicitly

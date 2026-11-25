@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Probability.Kernel.Composition.Comp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Risk of an estimator
 

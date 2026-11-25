@@ -16,6 +16,7 @@ Given a presentation `0 → I → R[x₁,...,xₙ] → S → 0` (or equivalently
 defined by `I`), we may define the (naive) cotangent complex `I/I² → ⨁ᵢ S dxᵢ → Ω[S/R] → 0`.
 
 ## Main results
+
 - `Algebra.Extension.Cotangent`: The conormal space `I/I²`. (Defined in `Generators/Basic`)
 - `Algebra.Extension.CotangentSpace`: The cotangent space `⨁ᵢ S dxᵢ`.
 - `Algebra.Generators.cotangentSpaceBasis`: The canonical basis on `⨁ᵢ S dxᵢ`.
@@ -469,8 +470,9 @@ lemma cotangentRestrict_mk {σ : Type*} {u : σ → ι} (hu : Function.Injective
     cotangentRestrict P hu (Extension.Cotangent.mk x) =
       fun j ↦ (aeval P.val) <| pderiv (u j) x.val := by
   ext j
-  simp only [cotangentRestrict, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
-    Finsupp.lcomapDomain_apply, Finsupp.comapDomain_apply, Extension.cotangentComplex_mk]
+  simp only [cotangentRestrict, LinearMap.coe_comp, LinearEquiv.coe_toLinearMap,
+    Function.comp_apply, Finsupp.lcomapDomain_apply, Finsupp.comapDomain_apply,
+    Extension.cotangentComplex_mk]
   simp only [toExtension_Ring, P.cotangentSpaceBasis_repr_tmul, one_mul]
 
 universe w' u' v'

@@ -11,6 +11,7 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 # Multiplicative maps on unique factorization domains
 
 ## Main results
+
 * `UniqueFactorizationMonoid.induction_on_coprime`: if `P` holds for `0`, units and powers of
   primes, and `P x ∧ P y` for coprime `x, y` implies `P (x * y)`, then `P` holds on all `a : α`.
 * `UniqueFactorizationMonoid.multiplicative_of_coprime`: if `f` maps `p ^ i` to `(f p) ^ i` for

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Geometry.Convex.Cone.Pointed
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The algebraic dual of a cone
 

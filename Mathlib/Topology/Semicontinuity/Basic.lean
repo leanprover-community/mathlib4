@@ -40,7 +40,7 @@ Similar results are stated and proved for upper semicontinuity.
 We also prove that a function is continuous if and only if it is both lower and upper
 semicontinuous.
 
-## Implementation details
+## Implementation notes
 
 All the nontrivial results for upper semicontinuous functions are deduced from the corresponding
 ones for lower semicontinuous functions using `OrderDual`.

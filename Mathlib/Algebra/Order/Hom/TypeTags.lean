@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.TypeTags
 
 import Mathlib.Order.Hom.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Order Monoid Isomorphisms on `Additive` and `Multiplicative`.
 -/

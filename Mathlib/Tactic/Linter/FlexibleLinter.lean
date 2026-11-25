@@ -71,6 +71,7 @@ Future modifications of the linter may increase the scope of the `flexible?` pre
 forbid a wider range of combinations.
 
 ## TODO
+
 The example
 ```lean
 example (h : 0 = 0) : True := by
@@ -128,6 +129,7 @@ def flexible? : Syntax → Bool
   | .node _ ``Lean.Parser.Tactic.tacticSimp?!_ #[_, rest]
   | .node _ ``Lean.Parser.Tactic.tacticSimp_all?!_ #[_, rest] =>
     rest[2][0].getAtomVal != "only"
+  | .node _ ``Lean.Parser.Tactic.cbv _ => true
   | _ => false
 
 end Mathlib.Linter
@@ -314,7 +316,7 @@ def stoppers : Std.HashSet Name :=
 
 /-- `SyntaxNodeKind`s that are allowed to follow a flexible tactic:
   `simp`, `simp_all`, `simpa`, `dsimp`, `grind`, `constructor`, `congr`, `done`, `rfl`, `ac_rfl`,
-  `omega` and `lia`, `grobner`
+  `omega` and `lia`, `grobner`, `cbv`,
   `abel` and `abel!`, `group`, `ring` and `ring!`, `module`, `field_simp` and `field`, `norm_num`,
   `linarith`, `nlinarith` and `nlinarith!`, `norm_cast`, `tauto`,
   `aesop`, `cfc_tac` (and `cfc_zero_tac` and `cfc_cont_tac`),
@@ -333,6 +335,7 @@ def flexible : Std.HashSet Name :=
     ``Lean.Parser.Tactic.tacticRfl,
     ``Lean.Parser.Tactic.acRfl,
     ``Lean.Parser.Tactic.omega,
+    ``Lean.Parser.Tactic.cbv,
     `Mathlib.Tactic.Abel.abel,
     `Mathlib.Tactic.Abel.tacticAbel!,
     `Mathlib.Tactic.Group.group,

@@ -19,6 +19,7 @@ Let `M, N` be `R`-modules, `m ≤ M` and `n ≤ N` be an `R`-submodules and `I �
 the following isomorphisms:
 
 ## Main results
+
 - `TensorProduct.quotientTensorQuotientEquiv`:
   `(M ⧸ m) ⊗[R] (N ⧸ n) ≃ₗ[R] (M ⊗[R] N) ⧸ (m ⊗ N ⊔ M ⊗ n)`
 - `TensorProduct.quotientTensorEquiv`:
@@ -273,7 +274,7 @@ noncomputable def tensorQuotientEquiv (n : Submodule B N) :
       (M ⊗[R] N) ⧸ LinearMap.range (lTensor A M (n.subtype.restrictScalars R)) where
   __ := TensorProduct.tensorQuotientEquiv M (n.restrictScalars R)
   map_smul' m x := by
-    simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearEquiv.coe_coe]
+    simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearEquiv.coe_toLinearMap]
     induction x with
     | add x y hx hy => simp [hx, hy]
     | tmul x y =>

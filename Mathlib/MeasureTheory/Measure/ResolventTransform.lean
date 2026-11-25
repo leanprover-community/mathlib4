@@ -15,6 +15,9 @@ import Mathlib.Analysis.Complex.CauchyIntegral
 import Mathlib.Analysis.Normed.Algebra.GelfandFormula
 import Mathlib.Tactic.Positivity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Resolvent Transform of a Measure
 

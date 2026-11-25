@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Equiv.Opposite
 public import Mathlib.Algebra.Group.TypeTags.Basic
 public import Mathlib.Data.Set.Operations
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Squares and even elements
 

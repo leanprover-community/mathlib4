@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.Quasicategory.Basic
 public import Mathlib.AlgebraicTopology.Quasicategory.TwoTruncated
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The truncation of a quasicategory
 

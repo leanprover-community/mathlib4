@@ -54,7 +54,7 @@ in `WithTop ℕ∞` (to incorporate analytic functions). This means that we can'
 `∞` introduced for `ContDiff` for our regularity, because it denotes an element of `WithTop ℕ∞`.
 We could introduce another notation `∞` for `⊤ : ℕ∞`, but we believe it would be confusing.
 
-## Implementation Notes
+## Implementation notes
 
 ### `abbrev` or `def`
 

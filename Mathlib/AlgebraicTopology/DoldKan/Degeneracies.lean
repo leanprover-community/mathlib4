@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.DoldKan.Decomposition
 public import Mathlib.Tactic.Linarith
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Behaviour of `P_infty` with respect to degeneracies
 

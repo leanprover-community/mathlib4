@@ -32,7 +32,7 @@ insertion from the set of closed elements to the underlying type (see `ClosureOp
 * `LowerAdjoint`: A lower adjoint to `u : β → α` is a function `l : α → β` such that `l` and `u`
   form a Galois connection.
 
-## Implementation details
+## Implementation notes
 
 Although `LowerAdjoint` is technically a generalisation of `ClosureOperator` (by defining
 `toFun := id`), it is desirable to have both as otherwise `id`s would be carried all over the

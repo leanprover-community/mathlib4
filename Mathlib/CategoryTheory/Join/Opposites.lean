@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Join.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Opposites of joins of categories
 

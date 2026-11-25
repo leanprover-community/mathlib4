@@ -48,6 +48,7 @@ is obtained by removing `x (l.pred _)` from the walk.
 
 
 ## References
+
 * [Sean Moss, *Another approach to the Kan-Quillen model structure*][moss-2020]
 -/
 
