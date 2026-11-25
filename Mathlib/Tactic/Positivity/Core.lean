@@ -62,7 +62,8 @@ prove `f x₁ ... xₙ > 0`, `f x₁ ... xₙ ≥ 0`, or `f x₁ ... xₙ ≠ 0`
 The head `f` must be a constant.
 
 Each non-typeclass propositional premise must also have one of these positivity forms
-for a direct argument `xᵢ`.
+for a direct argument `xᵢ`, and the conclusion must not depend on it.
+All other arguments, except for typeclass arguments, must appear in the conclusion.
 
 `positivity` tries to prove
 these premises recursively and may use a matching local hypothesis.
@@ -322,14 +323,18 @@ def makePositivityLemma (hyps : Array Expr) (target : Expr) (declName : Name) (p
   let mut premises := #[]
   for hyp in hyps do
     unless (← hyp.fvarId!.getDecl).binderInfo == .instImplicit do
-      let hypType <- inferType hyp
+      let hypType := (← inferType hyp).cleanupAnnotations
       if ← isProp hypType then
+        if target.containsFVar hyp.fvarId! then
+          fail m!"The conclusion {target} depends on the premise {hyp}"
         let some (hypVal, kind) ← getPositivity hypType
           | fail m!"The premise {hypType} is not a positivity proposition"
         let some i ← findArg? args hypVal
           | fail m!"The premise {hypType} does not refer to a direct argument of the conclusion \
             {target}"
         premises := premises.push (i, kind)
+      else unless target.containsFVar hyp.fvarId! do
+        fail m!"The argument {hyp} does not appear in the conclusion {target}"
   return { key, declName, premises, prio, kind }
 
 initialize registerBuiltinAttribute {

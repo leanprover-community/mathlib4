@@ -138,6 +138,16 @@ example {x : α} (hx : 0 < x) : 0 < f x := by positivity
 
 end InstancePremises
 
+namespace AutoParam
+
+/-! A premise may be an `autoParam`. -/
+
+@[local positivity_lemma] axiom f_pos {x : α} (hx : 0 < x := by positivity) : 0 < f x
+
+example {x : α} (hx : 0 < x) : 0 < f x := by positivity
+
+end AutoParam
+
 /-! ### Several lemmas for the same function -/
 
 namespace Combine
@@ -260,10 +270,36 @@ theorem neg_pos''' {a : ℤ} : a < 0 ↔ 0 < -a := Int.neg_pos.symm
 /--
 error: @[positivity_lemma] attribute only applies to lemmas
     proving 0 [</≤/≠] f x₁ ... xₙ or f x₁ ... xₙ [>/≥/≠] 0.
-The premise 0 < c does not refer to a direct argument of the conclusion 0 < a - b
+The premise 0 < a does not refer to a direct argument of the conclusion 0 < - -a
 -/
 #guard_msgs in
 @[local positivity_lemma]
-axiom not_direct_arg {a b c : ℤ} : 0 < c → 0 < a - b
+axiom not_direct_arg {a : ℤ} : 0 < a → 0 < -(-a)
+
+/-! `positivity` finds the arguments of a lemma from the conclusion, so they must all appear in it.
+-/
+
+/--
+error: @[positivity_lemma] attribute only applies to lemmas
+    proving 0 [</≤/≠] f x₁ ... xₙ or f x₁ ... xₙ [>/≥/≠] 0.
+The argument y does not appear in the conclusion 0 ≤ g x x
+-/
+#guard_msgs in
+@[local positivity_lemma]
+axiom g_nonneg {x y : α} : 0 ≤ x → 0 ≤ g x x
+
+/-! The premises are proved after the lemma is applied, so the conclusion must not depend on them.
+-/
+
+axiom d (x : α) (hx : 0 < x) : α
+
+/--
+error: @[positivity_lemma] attribute only applies to lemmas
+    proving 0 [</≤/≠] f x₁ ... xₙ or f x₁ ... xₙ [>/≥/≠] 0.
+The conclusion 0 < d x hx depends on the premise hx
+-/
+#guard_msgs in
+@[local positivity_lemma]
+axiom d_pos {x : α} (hx : 0 < x) : 0 < d x hx
 
 end Validation
