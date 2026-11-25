@@ -175,6 +175,7 @@ private theorem exists_mulVec_eq_zero_iff' {A : Type*} (K : Type*) [DecidableEq 
           RingHom.mapMatrix_apply, Pi.smul_apply, smul_eq_mul, Algebra.smul_def]
       · rw [mulVec_smul, mul_eq, Pi.smul_apply, Pi.zero_apply, smul_zero]
 
+section IsDomain
 variable {A : Type*} [CommRing A] [IsDomain A] {M N : Matrix n n A}
 
 theorem exists_mulVec_eq_zero_iff [DecidableEq n] : (∃ v ≠ 0, M *ᵥ v = 0) ↔ M.det = 0 :=
@@ -194,6 +195,8 @@ lemma separatingLeft_iff_det_ne_zero [DecidableEq n] : SeparatingLeft M ↔ M.de
 
 lemma separatingRight_iff_det_ne_zero [DecidableEq n] : SeparatingRight M ↔ M.det ≠ 0 := by
   grind [separatingRight_iff_forall_mulVec_eq_zero, exists_mulVec_eq_zero_iff]
+
+end IsDomain
 
 omit [Fintype n] in
 theorem separatingLeft_iff_separatingRight [Finite n] {M : Matrix n n R} :
@@ -253,7 +256,9 @@ theorem Nondegenerate.mul_iff_left {l m : Type*} [Finite l] [Fintype m] [Finite 
     Nondegenerate.mul_iff_right h.transpose, nondegenerate_transpose_iff]
 
 omit [Fintype n] in
-theorem Nondegenerate.smul_iff [Finite n] {t : A} (h : t ≠ 0) :
+theorem Nondegenerate.smul_iff
+    {A : Type*} [CommRing A] [IsDomain A] [Finite n] {t : A} (h : t ≠ 0)
+    {M : Matrix n n A} :
     (t • M).Nondegenerate ↔ M.Nondegenerate := by
   have := Fintype.ofFinite
   rw [nondegenerate_def, nondegenerate_def]
