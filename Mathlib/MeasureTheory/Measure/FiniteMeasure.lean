@@ -1070,7 +1070,6 @@ theorem tendsto_integral_of_continuous_of_compactSpace [CompactSpace X]
     Tendsto (fun i ↦ ∫ x, f x ∂(μs i)) F (𝓝 (∫ x, f x ∂ν)) :=
   tendsto_integral_of_compactSpace (⟨f, hf⟩ : C(X, E)) hμ
 
-@[fun_prop]
 theorem continuous_integral [SecondCountableTopologyEither X E] (g : T) :
     Continuous (fun (μ : FiniteMeasure X) ↦ ∫ x, g x ∂μ) :=
   continuous_iff_continuousAt.2 (fun _ ↦ tendsto_integral _ tendsto_id)
@@ -1092,6 +1091,7 @@ theorem continuous_integral_of_continuous_of_norm_le [SecondCountableTopologyEit
   continuous_iff_continuousAt.2
     (fun _ ↦ tendsto_integral_of_continuous_of_norm_le C hf h'f tendsto_id)
 
+@[fun_prop]
 theorem continuous_integral_of_continuous_of_compactSpace [CompactSpace X]
     {f : X → E} (hf : Continuous f) :
     Continuous (fun (μ : FiniteMeasure X) ↦ ∫ x, f x ∂μ) :=
