@@ -66,7 +66,7 @@ lemma reflectionMatrix_apply (B : Matrix ι ι K) (i r c : ι) :
     reflectionMatrix B i r c =
       (if r = c then 1 else 0) - (if r = i then 2 * B i c / B i i else 0) := rfl
 
-lemma reflectionMatrix_apply_self [NeZero (2 : K)] (B : Matrix ι ι K) {i : ι} (h : B i i ≠ 0) :
+lemma reflectionMatrix_apply_self (B : Matrix ι ι K) {i : ι} (h : B i i ≠ 0) :
     reflectionMatrix B i i i = -1 := by
   simp [h]
   field_simp
