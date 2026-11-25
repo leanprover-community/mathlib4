@@ -855,9 +855,9 @@ instance instSemilatticeInf [∀ i, SemilatticeInf (ε i)] : SemilatticeInf (Pro
     rw [Pi.inf_apply]
     exact le_inf
 
-instance instLattice [Lattice β] : Lattice (Germ l β) where
+instance instLattice [∀ i, Lattice (ε i)] : Lattice (Product l ε) where
 
-instance instDistribLattice [DistribLattice β] : DistribLattice (Germ l β) where
+instance instDistribLattice [∀ i, DistribLattice (ε i)] : DistribLattice (Product l ε) where
   le_sup_inf a b c := by
     induction a, b, c using inductionOn₃ with | ofFun a b c
     simp [← coe_sup, ← coe_inf, sup_inf_left]
