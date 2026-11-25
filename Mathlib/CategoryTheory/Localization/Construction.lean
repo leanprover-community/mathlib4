@@ -119,6 +119,10 @@ def wIso {X Y : C} (w : X ⟶ Y) (hw : W w) : Iso (W.Q.obj X) (W.Q.obj Y) where
   hom_inv_id := Quotient.sound _ (relations.Winv₁ w hw)
   inv_hom_id := Quotient.sound _ (relations.Winv₂ w hw)
 
+@[simp]
+lemma wIso_hom {X Y : C} (w : X ⟶ Y) (hw : W w) :
+    (wIso w hw).hom = W.Q.map w := by rfl
+
 /-- The formal inverse in `W.Localization` of a morphism `w` in `W`. -/
 abbrev wInv {X Y : C} (w : X ⟶ Y) (hw : W w) :=
   (wIso w hw).inv
@@ -192,8 +196,34 @@ variable (W) in
 lemma objEquiv_apply (X : C) :
     objEquiv W X = W.Q.obj X := by rfl
 
+variable (W) in
+lemma objEquiv_apply_symm_apply (X : W.Localization) :
+    W.Q.obj ((objEquiv W).symm X) = X := by rfl
+
 instance : W.Q.EssSurj where
   mem_essImage Y := ⟨(objEquiv W).symm Y, ⟨Iso.refl _⟩⟩
+
+lemma hom_induction_fixed_source
+    {X : C} (P : ∀ ⦃Y : C⦄, (W.Q.obj X ⟶ W.Q.obj Y) → Prop)
+    (id : P (𝟙 _))
+    (comp_map : ∀ ⦃Y₁ Y₂ : C⦄ (f : Y₁ ⟶ Y₂) (φ : W.Q.obj X ⟶ W.Q.obj Y₁),
+      P φ → P (φ ≫ W.Q.map f))
+    (comp_wInv : ∀ ⦃Y₁ Y₂ : C⦄ (w : Y₁ ⟶ Y₂) (hw : W w) (φ : W.Q.obj X ⟶ W.Q.obj Y₂),
+      P φ → P (φ ≫ wInv w hw))
+    {Y : C} (f : W.Q.obj X ⟶ W.Q.obj Y) :
+    P f := by
+  let G : _ ⥤ W.Localization := Quotient.functor _
+  have : G.Full := Quotient.full_functor _
+  suffices ∀ {Y : Paths (LocQuiver W)} (f : ⟨X⟩ ⟶ Y), P (G.map f) by
+    obtain ⟨f, rfl⟩ := G.map_surjective f
+    exact this f
+  rintro Y p
+  induction p with
+  | nil => exact id
+  | cons g h hg =>
+    obtain (h | ⟨w, hw⟩) := h
+    · exact comp_map h _ hg
+    · exact comp_wInv w hw _ hg
 
 /-- A `MorphismProperty` in `W.Localization` is satisfied by all
 morphisms in the localized category if it contains the image of the
@@ -205,26 +235,14 @@ theorem morphismProperty_eq_top (P : MorphismProperty W.Localization)
     P = ⊤ := by
   funext X Y f
   ext
-  constructor
-  · intro
-    apply MorphismProperty.top_apply
-  · intro
-    let G : _ ⥤ W.Localization := Quotient.functor _
-    have : G.Full := Quotient.full_functor _
-    suffices ∀ (X₁ X₂ : Paths (LocQuiver W)) (f : X₁ ⟶ X₂), P (G.map f) by
-      rcases X with ⟨⟨X⟩⟩
-      rcases Y with ⟨⟨Y⟩⟩
-      simpa only [Functor.map_preimage] using! this _ _ (G.preimage f)
-    intro X₁ X₂ p
-    induction p with
-    | nil => simpa only [Functor.map_id] using! hP₁ (𝟙 X₁.obj)
-    | @cons X₂ X₃ p g hp =>
-      let p' : X₁ ⟶ X₂ := p
-      rw [show p'.cons g = p' ≫ Quiver.Hom.toPath g by rfl, G.map_comp]
-      refine P.comp_mem _ _ hp ?_
-      rcases g with (g | ⟨g, hg⟩)
-      · apply hP₁
-      · apply hP₂
+  refine ⟨fun _ ↦ MorphismProperty.top_apply _, fun hf ↦ ?_⟩
+  clear hf
+  obtain ⟨X, rfl⟩ := (objEquiv W).surjective X
+  obtain ⟨Y, rfl⟩ := (objEquiv W).surjective Y
+  induction f using hom_induction_fixed_source with
+  | id => simpa using hP₁ (𝟙 X)
+  | comp_map f φ hφ => exact P.comp_mem _ _ hφ (hP₁ _)
+  | comp_wInv f w hw hφ => exact P.comp_mem _ _ hφ (hP₂ _ _)
 
 /-- A `MorphismProperty` in `W.Localization` is satisfied by all
 morphisms in the localized category if it contains the image of the
@@ -291,7 +309,7 @@ namespace WhiskeringLeftEquivalence
 
 /-- The functor `(W.Localization ⥤ D) ⥤ (W.FunctorsInverting D)` induced by the
 composition with `W.Q : C ⥤ W.Localization`. -/
-@[local implicit_reducible, local simp]
+@[expose, implicit_reducible, local simp]
 def functor : (W.Localization ⥤ D) ⥤ W.FunctorsInverting D :=
   ObjectProperty.lift _ ((whiskeringLeft _ _ D).obj W.Q) fun _ =>
     MorphismProperty.IsInvertedBy.of_comp W W.Q W.Q_inverts _
@@ -317,10 +335,11 @@ def counitIso : inverse W D ⋙ functor W D ≅ 𝟭 (W.FunctorsInverting D) :=
 end WhiskeringLeftEquivalence
 
 open WhiskeringLeftEquivalence in
-attribute [local simp, local implicit_reducible] functor inverse unitIso counitIso in
+attribute [local simp] functor inverse unitIso counitIso in
+attribute [local implicit_reducible] inverse unitIso counitIso in
 /-- The equivalence of categories `(W.Localization ⥤ D) ≌ (W.FunctorsInverting D)`
 induced by the composition with `W.Q : C ⥤ W.Localization`. -/
-@[implicit_reducible]
+@[expose, implicit_reducible]
 def whiskeringLeftEquivalence : W.Localization ⥤ D ≌ W.FunctorsInverting D where
   functor := functor W D
   inverse := inverse W D

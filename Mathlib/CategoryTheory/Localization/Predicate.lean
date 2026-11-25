@@ -167,8 +167,7 @@ variable {W}
 
 lemma Construction.wIso_eq_isoOfHom {X Y : C} (f : X ⟶ Y) (hf : W f) :
     Construction.wIso f hf = isoOfHom W.Q W f hf := by
-  sorry
-  --ext; rfl
+  cat_disch
 
 lemma Construction.wInv_eq_isoOfHom_inv {X Y : C} (f : X ⟶ Y) (hf : W f) :
     Construction.wInv f hf = (isoOfHom W.Q W f hf).inv :=
@@ -202,13 +201,12 @@ def compEquivalenceFromModelInverseIso : L ⋙ (equivalenceFromModel L W).invers
     _ ≅ W.Q ⋙ 𝟭 _ := isoWhiskerLeft _ (equivalenceFromModel L W).unitIso.symm
     _ ≅ W.Q := rightUnitor _
 
-theorem essSurj (W) [L.IsLocalization W] : L.EssSurj :=
-  sorry
-  --⟨fun X =>
-  --  ⟨(Construction.objEquiv W).invFun ((equivalenceFromModel L W).inverse.obj X),
-  --    Nonempty.intro
-  --      ((qCompEquivalenceFromModelFunctorIso L W).symm.app _ ≪≫
-  --        (equivalenceFromModel L W).counitIso.app X)⟩⟩
+theorem essSurj (W) [L.IsLocalization W] : L.EssSurj where
+  mem_essImage X :=
+    ⟨(Construction.objEquiv W).symm ((equivalenceFromModel L W).inverse.obj X),
+      ⟨(qCompEquivalenceFromModelFunctorIso L W).symm.app _ ≪≫
+        eqToIso (by simp [Construction.objEquiv_apply_symm_apply]) ≪≫
+      (equivalenceFromModel L W).counitIso.app X⟩⟩
 
 /-- The functor `(D ⥤ E) ⥤ W.functors_inverting E` induced by the composition
 with a localization functor `L : C ⥤ D` with respect to `W : MorphismProperty C`. -/
@@ -221,18 +219,17 @@ instance : (whiskeringLeftFunctor L W E).IsEquivalence := by
   let iso : (whiskeringLeft (MorphismProperty.Localization W) D E).obj
     (equivalenceFromModel L W).functor ⋙
       (Construction.whiskeringLeftEquivalence W E).functor ≅ whiskeringLeftFunctor L W E :=
-    NatIso.ofComponents (fun F => eqToIso (by
-      ext
-      sorry))
-      --change (W.Q ⋙ Localization.Construction.lift L (inverts L W)) ⋙ F = L ⋙ F
-      --rw [Construction.fac])) (fun τ => by
-      --  ext
-      --  dsimp [Construction.whiskeringLeftEquivalence, equivalenceFromModel, whiskerLeft]
-      --  rw [ObjectProperty.eqToHom_hom, ObjectProperty.eqToHom_hom, eqToHom_app, eqToHom_app,
-      --    eqToHom_refl, eqToHom_refl]
-      --  dsimp
-      --  rw [comp_id, id_comp]
-      --  rfl)
+    NatIso.ofComponents
+      (fun F ↦ eqToIso (by
+        ext
+        change W.Q ⋙ Localization.Construction.lift L (inverts L W) ⋙ F = L ⋙ F
+        rw [← Functor.assoc, Construction.fac]))
+      (fun τ ↦ by
+        dsimp [Construction.whiskeringLeftEquivalence, equivalenceFromModel, whiskerLeft]
+        ext X
+        symm
+        simpa [comp_obj, eqToHom_map] using! τ.naturality
+          (eqToHom (Functor.congr_obj (Construction.fac L _) X)))
   exact Functor.isEquivalence_of_iso iso
 
 /-- The equivalence of categories `(D ⥤ E) ≌ (W.FunctorsInverting E)` induced by
