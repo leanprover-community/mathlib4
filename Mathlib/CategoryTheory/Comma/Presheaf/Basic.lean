@@ -37,12 +37,13 @@ to interact with the actual construction, the mere existence of the equivalence 
 triangle should generally be sufficient.
 
 ## Main results
+
 * `overEquivPresheafCostructuredArrow`:
   the equivalence `Over A ≌ (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v`
 * `CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow`: the natural isomorphism
   `CostructuredArrow.toOver yoneda A ⋙ (overEquivPresheafCostructuredArrow A).functor ≅ yoneda`
 
-## Implementation details
+## Implementation notes
 
 The proof needs to introduce "correction terms" in various places in order to overcome DTT issues,
 and these need to be canceled against each other when appropriate. It is important to deal with
@@ -57,9 +58,11 @@ possible.
 * If needed, it should be possible to show that the equivalence is natural in `A`.
 
 ## References
+
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Lemma 1.4.12
 
 ## Tags
+
 presheaf, over category, coyoneda
 -/
 
@@ -148,7 +151,7 @@ lemma map_val {Y : C} {η : yoneda.obj Y ⟶ A} {X : C} {s : yoneda.obj X ⟶ A}
 /-- Functoriality of `OverArrows η s` in `η`. -/
 def map₁ {F G : Cᵒᵖ ⥤ Type v} {η : F ⟶ A} {μ : G ⟶ A} {X : C} {s : yoneda.obj X ⟶ A}
     (u : OverArrows η s) (ε : F ⟶ G) (hε : ε ≫ μ = η) : OverArrows μ s :=
-  ⟨ε.app _ u.val, MakesOverArrow.map₁ hε u.2⟩
+  ⟨ε.app _ u.val, MakesOverArrow.map₁ hε u.property⟩
 
 @[simp]
 lemma map₁_val {F G : Cᵒᵖ ⥤ Type v} {η : F ⟶ A} {μ : G ⟶ A} {X : C}
@@ -160,7 +163,7 @@ lemma map₁_val {F G : Cᵒᵖ ⥤ Type v} {η : F ⟶ A} {μ : G ⟶ A} {X : C
 def map₂ {F : Cᵒᵖ ⥤ Type v} {η : F ⟶ A} {X Y : C} {s : yoneda.obj X ⟶ A}
     {t : yoneda.obj Y ⟶ A} (u : OverArrows η t) (f : X ⟶ Y) (hst : yoneda.map f ≫ t = s) :
     OverArrows η s :=
-  ⟨F.map f.op u.val, MakesOverArrow.map₂ f hst u.2⟩
+  ⟨F.map f.op u.val, MakesOverArrow.map₂ f hst u.property⟩
 
 @[simp]
 lemma map₂_val {F : Cᵒᵖ ⥤ Type v} {η : F ⟶ A} {X Y : C} (f : X ⟶ Y)

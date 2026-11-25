@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Homology.ExactSequence
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Exact sequences with four terms
 
@@ -105,7 +108,6 @@ variable (hS : S.IsComplex) (k : ℕ) (hk : k ≤ n)
   (cc : CokernelCofork (S.map' k (k + 1))) (kf : KernelFork (S.map' (k + 2) (k + 3)))
   (hcc : IsColimit cc) (hkf : IsLimit kf)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma epi_cokerToKer' (hS' : (S.sc hS (k + 1)).Exact) :
     Epi (hS.cokerToKer' k hk cc kf hcc hkf) := by
   have := hS'.hasZeroObject
@@ -117,7 +119,6 @@ lemma epi_cokerToKer' (hS' : (S.sc hS (k + 1)).Exact) :
       assoc, IsComplex.cokerToKer'_fac]
   exact epi_of_epi_fac fac
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mono_cokerToKer' (hS' : (S.sc hS k).Exact) :
     Mono (hS.cokerToKer' k hk cc kf hcc hkf) := by
   have := hS'.hasZeroObject

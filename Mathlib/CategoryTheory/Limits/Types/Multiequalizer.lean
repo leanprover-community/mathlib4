@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 public import Mathlib.CategoryTheory.Limits.Types.Limits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Multiequalizers in Type
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.ChangeOfRings
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Change of sheaf of rings
 

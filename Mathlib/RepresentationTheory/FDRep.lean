@@ -5,11 +5,12 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Category.FGModuleCat.Colimits
 public import Mathlib.Algebra.Category.FGModuleCat.Limits
-public import Mathlib.CategoryTheory.Monoidal.Rigid.Braided  -- shake: keep (`example`)
 public import Mathlib.CategoryTheory.Preadditive.Schur
 public import Mathlib.RepresentationTheory.Rep.Basic
+
+import Mathlib.Algebra.Category.FGModuleCat.Colimits
+import Mathlib.CategoryTheory.Monoidal.Rigid.Braided  -- shake: keep (`example`)
 
 /-!
 # `FDRep k G` is the category of finite-dimensional `k`-linear representations of `G`.
@@ -38,6 +39,7 @@ The main case of interest is when `R = k` is a field and `G` is a group,
 and this is reflected in the documentation.
 
 ## TODO
+
 * `FdRep k G ≌ FullSubcategory (FiniteDimensional k)`
 * `FdRep k G` has all finite colimits.
 * `FdRep k G` is abelian.
@@ -164,7 +166,7 @@ def forget₂HomLinearEquiv (X Y : FDRep R G) :
   toFun f := ⟨InducedCategory.homMk (ModuleCat.ofHom f.hom.toLinearMap), fun g ↦ by
     ext1
     simp only [FGModuleCat.obj_carrier]
-    exact f.hom.2 g⟩
+    exact f.hom.isIntertwining' g⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
   invFun f := Rep.ofHom ⟨((forget₂ (FGModuleCat R) (ModuleCat R)).map f.hom).hom, fun g ↦ by

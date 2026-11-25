@@ -23,6 +23,7 @@ The names contain the prefix `ab` in order to allow similar constructions for
 other categories like `ModuleCat`.
 
 ## Main definitions
+
 - `ShortComplex.abHomologyIso` identifies the homology of a short complex of abelian
   groups to an explicit quotient.
 - `ShortComplex.ab_exact_iff` expresses that a short complex of abelian groups `S`
@@ -51,7 +52,7 @@ def abToCycles : S.X₁ →+ AddMonoidHom.ker S.g.hom :=
 
 /-- The explicit left homology data of a short complex of abelian group that is
 given by a kernel and a quotient given by the `AddMonoidHom` API. -/
-@[simps]
+@[simps, implicit_reducible]
 def abLeftHomologyData : S.LeftHomologyData where
   K := ↧S.g.hom.ker
   H := ↧(S.g.hom.ker ⧸ S.abToCycles.range)
@@ -77,7 +78,6 @@ the abstract `S.cycles` of the homology API and the more concrete description as
 noncomputable def abCyclesIso : S.cycles ≅ ↧(AddMonoidHom.ker S.g.hom) :=
   S.abLeftHomologyData.cyclesIso
 
-set_option backward.isDefEq.respectTransparency false in
 -- This was a simp lemma until we made `AddCommGrpCat.coe_of` a simp lemma,
 -- after which the simp normal form linter complains.
 -- It was not used a simp lemma in Mathlib.
@@ -97,7 +97,6 @@ noncomputable def abHomologyIso : S.homology ≅
     ↧((AddMonoidHom.ker S.g.hom) ⧸ AddMonoidHom.range S.abToCycles) :=
   S.abLeftHomologyData.homologyIso
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma exact_iff_surjective_abToCycles :
     S.Exact ↔ Function.Surjective S.abToCycles := by
   rw [S.abLeftHomologyData.exact_iff_epi_f', abLeftHomologyData_f',

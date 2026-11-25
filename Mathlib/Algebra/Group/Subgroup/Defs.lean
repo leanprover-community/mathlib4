@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.Submonoid.Defs
-public import Mathlib.Data.Set.Inclusion
 public import Mathlib.Tactic.Attr.Core
 public import Mathlib.Tactic.Common
+
+import Mathlib.Data.Set.Inclusion
 
 /-!
 # Subgroups
@@ -49,6 +50,7 @@ Subgroup inclusion is denoted `≤` rather than `⊆`, although `∈` is defined
 membership of a subgroup's underlying set.
 
 ## Tags
+
 subgroup, subgroups
 -/
 
@@ -162,10 +164,10 @@ namespace InvMemClass
 /-- A subgroup of a group inherits an inverse. -/
 @[to_additive /-- An additive subgroup of an `AddGroup` inherits an inverse. -/]
 instance inv {G S : Type*} [Inv G] [SetLike S G] [InvMemClass S G] {H : S} : Inv H :=
-  ⟨fun a => ⟨a⁻¹, inv_mem a.2⟩⟩
+  ⟨fun a => ⟨a⁻¹, inv_mem a.property⟩⟩
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_inv (x : H) : (x⁻¹).1 = x.1⁻¹ :=
+theorem coe_inv (x : H) : (x⁻¹).val = x.val⁻¹ :=
   rfl
 
 end InvMemClass
@@ -177,11 +179,11 @@ namespace SubgroupClass
 -- Counterexample where K and L are submonoids: H = ℤ, K = ℕ, L = -ℕ
 -- Counterexample where H and K are submonoids: H = {n | n = 0 ∨ 3 ≤ n}, K = 3ℕ + 4ℕ, L = 5ℤ
 @[to_additive]
-theorem subset_union [LE S] [IsConcreteLE S G] {H K L : S} :
+theorem subset_union [LE S] [IsMemLE S G] {H K L : S} :
     (H : Set G) ⊆ K ∪ L ↔ H ≤ K ∨ H ≤ L := by
   refine ⟨fun h ↦ ?_, fun h x xH ↦ h.imp
     (SetLike.coe_subset_coe.2 · xH) (SetLike.coe_subset_coe.2 · xH)⟩
-  rw [or_iff_not_imp_left, IsConcreteLE.not_le_iff_exists, ← SetLike.coe_subset_coe]
+  rw [or_iff_not_imp_left, not_le_iff_exists_mem_notMem, ← SetLike.coe_subset_coe]
   exact fun ⟨x, xH, xK⟩ y yH ↦ (h <| mul_mem xH yH).elim
     ((h yH).resolve_left fun yK ↦ xK <| (mul_mem_cancel_right yK).mp ·)
     (mul_mem_cancel_left <| (h xH).resolve_left xK).mp
@@ -189,15 +191,15 @@ theorem subset_union [LE S] [IsConcreteLE S G] {H K L : S} :
 /-- A subgroup of a group inherits a division -/
 @[to_additive /-- An additive subgroup of an `AddGroup` inherits a subtraction. -/]
 instance div {G S : Type*} [DivInvMonoid G] [SetLike S G] [SubgroupClass S G] {H : S} : Div H :=
-  ⟨fun a b => ⟨a / b, div_mem a.2 b.2⟩⟩
+  ⟨fun a b => ⟨a / b, div_mem a.property b.property⟩⟩
 
 /-- A subgroup of a group inherits an integer power. -/
 @[to_additive /-- An additive subgroup of an `AddGroup` inherits an integer scaling. -/]
 instance instZPow {M S} [DivInvMonoid M] [SetLike S M] [SubgroupClass S M] {H : S} : Pow H ℤ :=
-  ⟨fun a n => ⟨a.1 ^ n, zpow_mem a.2 n⟩⟩
+  ⟨fun a n => ⟨a.val ^ n, zpow_mem a.property n⟩⟩
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_div (x y : H) : (x / y).1 = x.1 / y.1 :=
+theorem coe_div (x y : H) : (x / y).val = x.val / y.val :=
   rfl
 
 variable (H)
@@ -250,39 +252,39 @@ theorem coe_zpow (x : H) (n : ℤ) : ((x ^ n : H) : G) = (x : G) ^ n :=
 /-- The inclusion homomorphism from a subgroup `H` contained in `K` to `K`. -/
 @[to_additive
 /-- The inclusion homomorphism from an additive subgroup `H` contained in `K` to `K`. -/]
-def inclusion [LE S] [IsConcreteLE S G] {H K : S} (h : H ≤ K) : H →* K :=
+def inclusion [LE S] [IsMemLE S G] {H K : S} (h : H ≤ K) : H →* K :=
   MonoidHom.mk' (fun x => ⟨x, mem_of_le_of_mem h x.prop⟩) fun _ _ => rfl
 
 @[to_additive (attr := simp)]
-theorem inclusion_self [Preorder S] [IsConcreteLE S G] (x : H) : inclusion le_rfl x = x := by
+theorem inclusion_self [Preorder S] [IsMemLE S G] (x : H) : inclusion le_rfl x = x := by
   cases x
   rfl
 
 @[to_additive (attr := simp)]
-theorem inclusion_mk [LE S] [IsConcreteLE S G] {h : H ≤ K} (x : G) (hx : x ∈ H) :
+theorem inclusion_mk [LE S] [IsMemLE S G] {h : H ≤ K} (x : G) (hx : x ∈ H) :
     inclusion h ⟨x, hx⟩ = ⟨x, mem_of_le_of_mem h hx⟩ :=
   rfl
 
 @[to_additive]
-theorem inclusion_right [LE S] [IsConcreteLE S G] (h : H ≤ K) (x : K) (hx : (x : G) ∈ H) :
+theorem inclusion_right [LE S] [IsMemLE S G] (h : H ≤ K) (x : K) (hx : (x : G) ∈ H) :
     inclusion h ⟨x, hx⟩ = x := by
   cases x
   rfl
 
 @[simp]
-theorem inclusion_inclusion [Preorder S] [IsConcreteLE S G]
+theorem inclusion_inclusion [Preorder S] [IsMemLE S G]
     {L : S} (hHK : H ≤ K) (hKL : K ≤ L) (x : H) :
     inclusion hKL (inclusion hHK x) = inclusion (hHK.trans hKL) x := by
   cases x
   rfl
 
 @[to_additive (attr := simp)]
-theorem coe_inclusion [LE S] [IsConcreteLE S G]
+theorem coe_inclusion [LE S] [IsMemLE S G]
     {H K : S} (h : H ≤ K) (a : H) : (inclusion h a : G) = a :=
   Set.coe_inclusion (SetLike.coe_subset_coe.mpr h) a
 
 @[to_additive (attr := simp)]
-theorem subtype_comp_inclusion [LE S] [IsConcreteLE S G]
+theorem subtype_comp_inclusion [LE S] [IsMemLE S G]
     {H K : S} (h : H ≤ K) :
     (SubgroupClass.subtype K).comp (inclusion h) = SubgroupClass.subtype H :=
   rfl
@@ -497,22 +499,22 @@ instance one : One H :=
 /-- A subgroup of a group inherits an inverse. -/
 @[to_additive /-- An `AddSubgroup` of an `AddGroup` inherits an inverse. -/]
 instance inv : Inv H :=
-  ⟨fun a => ⟨a⁻¹, H.inv_mem a.2⟩⟩
+  ⟨fun a => ⟨a⁻¹, H.inv_mem a.property⟩⟩
 
 /-- A subgroup of a group inherits a division -/
 @[to_additive /-- An `AddSubgroup` of an `AddGroup` inherits a subtraction. -/]
 instance div : Div H :=
-  ⟨fun a b => ⟨a / b, H.div_mem a.2 b.2⟩⟩
+  ⟨fun a b => ⟨a / b, H.div_mem a.property b.property⟩⟩
 
 /-- A subgroup of a group inherits a natural power -/
 @[to_additive /-- An `AddSubgroup` of an `AddGroup` inherits a natural scaling. -/]
 protected instance npow : Pow H ℕ :=
-  ⟨fun a n => ⟨a ^ n, H.pow_mem a.2 n⟩⟩
+  ⟨fun a n => ⟨a ^ n, H.pow_mem a.property n⟩⟩
 
 /-- A subgroup of a group inherits an integer power -/
 @[to_additive /-- An `AddSubgroup` of an `AddGroup` inherits an integer scaling. -/]
 instance zpow : Pow H ℤ :=
-  ⟨fun a n => ⟨a ^ n, H.zpow_mem a.2 n⟩⟩
+  ⟨fun a n => ⟨a ^ n, H.zpow_mem a.property n⟩⟩
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_mul (x y : H) : (↑(x * y) : G) = ↑x * ↑y :=
@@ -577,7 +579,7 @@ theorem coe_subtype : ⇑H.subtype = ((↑) : H → G) :=
 @[to_additive
 /-- The inclusion homomorphism from an additive subgroup `H` contained in `K` to `K`. -/]
 def inclusion {H K : Subgroup G} (h : H ≤ K) : H →* K :=
-  MonoidHom.mk' (fun x => ⟨x, h x.2⟩) fun _ _ => rfl
+  MonoidHom.mk' (fun x => ⟨x, h x.property⟩) fun _ _ => rfl
 
 @[to_additive (attr := simp)]
 theorem coe_inclusion {H K : Subgroup G} (h : H ≤ K) (a : H) : (inclusion h a : G) = a :=

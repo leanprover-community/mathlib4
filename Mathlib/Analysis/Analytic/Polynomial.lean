@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Analytic.Constructions
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Polynomials are analytic
 

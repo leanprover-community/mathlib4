@@ -13,6 +13,9 @@ public import Mathlib.CategoryTheory.Bicategory.Adjunction.Cat
 public import Mathlib.CategoryTheory.Bicategory.Functor.LocallyDiscrete
 public import Mathlib.Topology.Sheaves.Module
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of sheaves of modules over a scheme
 
@@ -85,7 +88,7 @@ variable {M N K : X.Modules} {φ : M ⟶ N} {U V : X.Opens}
 section Presheaf
 
 /-- The underlying abelian presheaf of an `𝒪ₓ`-module. -/
-noncomputable def presheaf (M : X.Modules) : TopCat.Presheaf Ab X := M.1.presheaf
+noncomputable def presheaf (M : X.Modules) : TopCat.Presheaf Ab X := M.val.presheaf
 
 /-- Notation for sections of a presheaf of module. -/
 scoped[AlgebraicGeometry] notation3 "Γ(" M ", " U ")" => (Scheme.Modules.presheaf M).obj (.op U)

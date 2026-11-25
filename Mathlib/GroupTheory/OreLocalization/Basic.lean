@@ -31,6 +31,7 @@ a denominator `s : S`.
 
 
 ## Tags
+
 localization, Ore, non-commutative
 
 ## Implementation detail
@@ -253,7 +254,7 @@ protected abbrev smul (y : R[S⁻¹]) (x : X[S⁻¹]) : X[S⁻¹] :=
       rcases ore_right_cancel _ _ _ this with ⟨s₄', h₄⟩
       have : (s₄' * r₃') * (s₂' * s) ∈ S := by
         rw [mul_assoc, ← mul_assoc r₃', ← h₃]
-        exact (s₄' * (s₃' * s₁' * s)).2
+        exact (s₄' * (s₃' * s₁' * s)).property
       rw [OreLocalization.expand' _ _ (s₄' * s₃'), OreLocalization.expand _ (s₂' * s) _ this]
       simp only [Submonoid.smul_def, Submonoid.coe_mul, smul_smul, mul_assoc, h₄]
       congr 1
@@ -273,7 +274,7 @@ protected abbrev smul (y : R[S⁻¹]) (x : X[S⁻¹]) : X[S⁻¹] :=
     rcases ore_right_cancel _ _ _ this with ⟨s₄', h₄⟩
     have : (s₄' * r₃') * (s₁' * s) ∈ S := by
       rw [← mul_assoc, mul_assoc _ r₃', ← h₃, ← mul_assoc, ← mul_assoc, mul_assoc]
-      exact mul_mem (s₄' * s₃' * s₂').2 hs
+      exact mul_mem (s₄' * s₃' * s₂').property hs
     rw [OreLocalization.expand' (r₂' • x) _ (s₄' * s₃'), OreLocalization.expand _ _ _ this]
     simp only [Submonoid.smul_def, Submonoid.coe_mul, smul_smul, mul_assoc, h₄]
     congr 1
@@ -426,11 +427,11 @@ protected theorem one_div_mul {r : R} {s t : S} : (1 /ₒ t) * (r /ₒ s) = r /�
 
 @[to_additive (attr := simp)]
 protected theorem smul_cancel {r : X} {s t : S} : ((s : R) /ₒ t) • (r /ₒ s) = r /ₒ t := by
-  simp [oreDiv_smul_char s.1 r t s 1 1 (by simp)]
+  simp [oreDiv_smul_char s.val r t s 1 1 (by simp)]
 
 @[to_additive (attr := simp)]
 protected theorem mul_cancel {r : R} {s t : S} : ((s : R) /ₒ t) * (r /ₒ s) = r /ₒ t := by
-  simp [oreDiv_mul_char s.1 r t s 1 1 (by simp)]
+  simp [oreDiv_mul_char s.val r t s 1 1 (by simp)]
 
 @[to_additive (attr := simp)]
 protected theorem smul_cancel' {r₁ : R} {r₂ : X} {s t : S} :

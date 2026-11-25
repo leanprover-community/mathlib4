@@ -12,6 +12,9 @@ import Mathlib.MeasureTheory.Measure.CharacteristicFunction.TaylorExpansion
 import Mathlib.MeasureTheory.Measure.LevyConvergence
 import Mathlib.Probability.Independence.CharacteristicFunction
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Central limit theorem
 

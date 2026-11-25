@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.Morita.Basic
 # Morita Equivalence between `R` and `Mₙ(R)`
 
 ## Main definitions
+
 - `ModuleCat.toMatrixModCat`: The functor from `Mod-R` to `Mod-Mₙ(R)` induced by
   `LinearMap.mapMatrixModule` and `Matrix.Module.matrixModule`.
 - `MatrixModCat.toModuleCat`: The functor from `Mod-Mₙ(R)` to `Mod-R` induced by sending `M` to
@@ -22,6 +23,7 @@ public import Mathlib.RingTheory.Morita.Basic
 - `moritaEquivalentToMatrix`: `moritaEquivalentToMatrix` is a `MoritaEquivalence`.
 
 ## Main results
+
 - `IsMoritaEquivalent.matrix`: `R` and `Mₙ(R)` are Morita equivalent.
 -/
 
@@ -119,7 +121,7 @@ def fromModuleCatToModuleCatLinearEquivtoModuleCatObj
 @[simps]
 def fromModuleCatToModuleCatLinearEquiv (M : Type*) [AddCommGroup M] [Module R M] (i : ι) :
     MatrixModCat.toModuleCatObj R (ι → M) i ≃ₗ[R] M where
-  toFun x := ∑ i : ι, x.1 i
+  toFun x := ∑ i : ι, x.val i
   map_add' := by simp [Finset.sum_add_distrib]
   map_smul' r := fun ⟨x, hx⟩ ↦ by simp [Finset.smul_sum]
   invFun x := ⟨Pi.single i x, Function.const ι x, by simp⟩
@@ -166,7 +168,7 @@ def toModuleCatFromModuleCatLinearEquiv (M : ModuleCat (Matrix ι ι R)) (j : ι
     simp only [Finset.smul_sum]
     rw [Finset.sum_eq_single i (fun b _ hb ↦ by
       simp [← mul_smul, single_mul_single_of_ne _ _ _ _ hb.symm]) (by simp)]
-    obtain ⟨y, hy⟩ := by simpa [-SetLike.coe_mem] using (v i).2
+    obtain ⟨y, hy⟩ := by simpa [-SetLike.coe_mem] using (v i).property
     simp [← mul_smul, ← hy]
 
 set_option backward.isDefEq.respectTransparency false in

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Data.Matrix.Diagonal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Matrices in prime characteristic
 

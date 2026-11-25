@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Homology.HomotopyCategory.Plus
 public import Mathlib.CategoryTheory.Triangulated.LocalizingSubcategory
 public import Mathlib.CategoryTheory.Triangulated.TStructure.Induced
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The bounded below derived category
 
@@ -74,7 +77,6 @@ instance : (Qh : _ ⥤ Plus C).IsTriangulated := by
   dsimp only [Qh]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Qh_map_bijective_of_isKInjective (K L : HomotopyCategory.Plus C)
     (_ : CochainComplex.IsKInjective L.obj.as) : Function.Bijective (Qh.map : (K ⟶ L) → _) := by
   have := CochainComplex.IsKInjective.Qh_map_bijective K.obj L.obj.as

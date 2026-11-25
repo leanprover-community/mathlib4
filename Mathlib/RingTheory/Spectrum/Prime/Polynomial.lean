@@ -5,10 +5,11 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.LinearAlgebra.Charpoly.BaseChange
 public import Mathlib.LinearAlgebra.Eigenspace.Zero
 public import Mathlib.RingTheory.AdjoinRoot
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
+
+import Mathlib.LinearAlgebra.Charpoly.BaseChange
 
 /-!
 # Prime spectrum of (multivariate) polynomials
@@ -16,6 +17,7 @@ public import Mathlib.RingTheory.Spectrum.Prime.Topology
 Also see `AlgebraicGeometry/AffineSpace` for the affine space over arbitrary schemes.
 
 ## Main results
+
 - `isNilpotent_tensor_residueField_iff`:
   If `A` is a finite free `R`-algebra, then `f : A` is nilpotent on `κ(𝔭) ⊗ A` for some
   prime `𝔭 ◃ R` if and only if every non-leading coefficient of `charpoly(f)` is in `𝔭`.

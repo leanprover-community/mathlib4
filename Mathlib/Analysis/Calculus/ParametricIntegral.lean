@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Analysis.Calculus.ContDiff.Operations
 public import Mathlib.Analysis.Calculus.MeanValue
-public import Mathlib.Analysis.Calculus.TangentCone.Prod
 public import Mathlib.MeasureTheory.Integral.DominatedConvergence
+
+import Mathlib.Analysis.Calculus.TangentCone.Prod
 
 /-!
 # Derivatives of integrals depending on parameters
@@ -63,6 +64,7 @@ assume `H = ℝ` or `H = ℂ` and use the high-school derivative `deriv` instead
 `fderiv`.
 
 ## Tags
+
 integral, derivative
 -/
 
@@ -547,7 +549,7 @@ theorem hasDerivAt_integral_of_dominated_loc_of_lip {F' : α → E} (hs : s ∈ 
     (bound_integrable : Integrable (bound : α → ℝ) μ)
     (h_diff : ∀ᵐ a ∂μ, HasDerivAt (F · a) (F' a) x₀) :
     Integrable F' μ ∧ HasDerivAt (fun x ↦ ∫ a, F x a ∂μ) (∫ a, F' a ∂μ) x₀ := by
-  set L : E →L[𝕜] 𝕜 →L[𝕜] E := ContinuousLinearMap.smulRightL 𝕜 𝕜 E 1
+  set L : E →L[𝕜] 𝕜 →L[𝕜] E := StrongDual.smulRightL 𝕜 𝕜 E 1
   replace h_diff : ∀ᵐ a ∂μ, HasFDerivAt (F · a) (L (F' a)) x₀ :=
     h_diff.mono fun x hx ↦ hx.hasFDerivAt
   have hm : AEStronglyMeasurable (L ∘ F') μ := L.continuous.comp_aestronglyMeasurable hF'_meas

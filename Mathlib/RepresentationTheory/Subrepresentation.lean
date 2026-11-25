@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RepresentationTheory.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subrepresentations
 
@@ -62,7 +65,7 @@ lemma toRepresentation_apply_mk {ρ' : Subrepresentation ρ} {g : G} {v w : W} {
   rw [Subtype.ext_iff]; rfl
 
 lemma toRepresentation_apply_coe {ρ' : Subrepresentation ρ} {g : G} {v w : ρ'.toSubmodule} :
-    ρ'.toRepresentation g v = w ↔ ρ g v.1 = w.1 := by
+    ρ'.toRepresentation g v = w ↔ ρ g v.val = w.val := by
   rw [Subtype.ext_iff]; rfl
 
 instance : Max (Subrepresentation ρ) where

@@ -15,11 +15,13 @@ public import Mathlib.Topology.Algebra.Valued.ValuationTopology
 Nontrivial nonarchimedean norms correspond to rank one valuations.
 
 ## Main Definitions
+
 * `NormedField.toValued` : the valued field structure on a nonarchimedean normed field `K`,
   determined by the norm.
 * `Valued.toNormedField` : the normed field structure determined by a rank one valuation.
 
 ## Main Results
+
 * The valuation of a normed field has rank at most one.
 
 ## Tags
@@ -93,7 +95,7 @@ def toValued : Valued K ℝ≥0 :=
           apply lt_trans hy
           simpa [RankLeOne.hom', valuation.restrict_def] using! hxy
       · rintro ⟨ε, hε⟩
-        refine ⟨(embedding ε.1 : ℝ≥0), ?_, fun x hx ↦ hε ?_⟩
+        refine ⟨(embedding ε.val : ℝ≥0), ?_, fun x hx ↦ hε ?_⟩
         · exact NNReal.coe_pos.mpr <| embedding_unit_pos _
         · simpa [restrict_lt_iff_lt_embedding] using! (mem_ball_zero_iff.mp hx) }
 
@@ -289,11 +291,12 @@ def toNontriviallyNormedField : NontriviallyNormedField L := {
     obtain ⟨x, hx⟩ := Valuation.RankOne.nontrivial val.v
     rcases Valuation.val_le_one_or_val_inv_le_one val.v x with h | h
     · use x⁻¹
-      simp only [toNormedField.one_lt_norm_iff, map_inv₀, one_lt_inv₀ (zero_lt_iff.mpr hx.1),
-          lt_of_le_of_ne h hx.2]
+      rw [toNormedField.one_lt_norm_iff, map_inv₀, one_lt_inv₀ hx.1.pos]
+      exact h.lt_of_ne hx.2
     · use x
-      simp only [map_inv₀, inv_le_one₀ <| zero_lt_iff.mpr hx.1] at h
-      simp only [toNormedField.one_lt_norm_iff, lt_of_le_of_ne h hx.2.symm]
+      rw [map_inv₀, inv_le_one₀ hx.1.pos] at h
+      rw [toNormedField.one_lt_norm_iff]
+      exact h.lt_of_ne hx.2.symm
 }
 
 scoped[Valued] attribute [instance] Valued.toNontriviallyNormedField

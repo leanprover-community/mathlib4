@@ -191,7 +191,7 @@ instance injective_of_light (S : LightProfinite.{u}) [Nonempty S] :
     have hg : g = (isLimitOfPreserves _ S.asLimit).lift (k_cone.extend f) := by
       apply (isLimitOfPreserves _ S.asLimit).uniq (k_cone.extend f)
       intro n
-      simp [show k_cone.π.app n = (k_seq n.unop).1 from rfl, h_down]
+      simp [show k_cone.π.app n = (k_seq n.unop).val from rfl, h_down]
     rw [hg]
     apply (isLimitOfPreserves _ S.asLimit).uniq (k_cone.extend f)
     intro n
