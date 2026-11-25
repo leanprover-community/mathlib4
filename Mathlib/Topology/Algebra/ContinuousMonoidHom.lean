@@ -111,41 +111,27 @@ def ofClass [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) : A →ₜ
   { MonoidHom.ofClass f with
     continuous_toFun := by dsimp; fun_prop }
 
-@[deprecated (since := "2026-11-24")] alias
-    _root_.ContinuousAddMonoidHom.toContinuousAddMonoidHom := ContinuousAddMonoidHom.ofClass
-
-@[to_additive existing, deprecated (since := "2026-11-24")] alias toContinuousMonoidHom := ofClass
+@[to_additive (attr := deprecated (since := "2026-11-24"))] alias toContinuousMonoidHom := ofClass
 
 @[to_additive (attr := simp)]
 protected lemma coe_ofClass [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) :
     ⇑(ofClass f) = f := rfl
 
-@[deprecated (since := "2026-11-24")] alias _root_.ContinuousAddMonoidHom.coe_coe :=
-  ContinuousAddMonoidHom.coe_ofClass
-
-@[to_additive existing, deprecated (since := "2026-11-24")] alias coe_coe :=
+@[to_additive (attr := deprecated (since := "2026-11-24"))] alias coe_coe :=
   ContinuousMonoidHom.coe_ofClass
 
 @[to_additive (attr := simp)]
 lemma toMonoidHom_ofClass [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) :
     (ofClass f : A →* B) = f := rfl
 
-@[deprecated (since := "2026-11-24")] alias
-    _root_.ContinuousAddMonoidHom.toAddMonoidHom_toContinuousAddMonoidHom :=
-  ContinuousAddMonoidHom.toAddMonoidHom_ofClass
-
-@[to_additive existing, deprecated (since := "2026-11-24")] alias
+@[to_additive (attr := deprecated (since := "2026-11-24"))] alias
     toMonoidHom_toContinuousMonoidHom := toMonoidHom_ofClass
 
 @[to_additive (attr := simp)]
 lemma toContinuousMap_ofClass [MonoidHomClass F A B] [ContinuousMapClass F A B]
     (f : F) : (ofClass f : C(A, B)) = f := rfl
 
-@[deprecated (since := "2026-11-24")] alias
-    _root_.ContinuousAddMonoidHom.toContinuousMap_toContinuousAddMonoidHom :=
-  ContinuousAddMonoidHom.toContinuousMap_ofClass
-
-@[to_additive existing, deprecated (since := "2026-11-24")] alias
+@[to_additive (attr := deprecated (since := "2026-11-24"))] alias
     toContinuousMap_toContinuousMonoidHom := toContinuousMap_ofClass
 
 end
