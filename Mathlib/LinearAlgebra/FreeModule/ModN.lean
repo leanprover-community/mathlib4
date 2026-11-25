@@ -33,26 +33,26 @@ instance : Module (ZMod n) (ModN G n) := QuotientAddGroup.zmodModule (by simp)
 set_option backward.isDefEq.respectTransparency false in
 /-- The universal property of `ModN G n` in terms of monoids: Monoid homomorphisms from `ModN G n`
 are the same as monoid homomorphisms from `G` whose values are `n`-torsion. -/
-protected def liftEquiv [AddMonoid M] : (ModN G n →+ M) ≃ {φ : G →+ M // ∀ g, n • φ g = 0} where
-  toFun f := ⟨f.comp (QuotientAddGroup.mk' _), fun g ↦ by
+protected def liftEquiv [AddMonoid M] : {φ : G →+ M // ∀ g, n • φ g = 0} ≃ (ModN G n →+ M) where
+  toFun φ := QuotientAddGroup.lift _ φ <| by rintro - ⟨g, rfl⟩; simpa using φ.property g
+  invFun f := ⟨f.comp (QuotientAddGroup.mk' _), fun g ↦ by
     let Gn : AddSubgroup G := (LinearMap.range (LinearMap.lsmul ℤ G n)).toAddSubgroup
     suffices n • g ∈ (QuotientAddGroup.mk' Gn).ker by
       simp only [AddMonoidHom.coe_comp, comp_apply, ← map_nsmul]
       change f (QuotientAddGroup.mk' Gn (n • g)) = 0 -- Can we avoid `change`?
       rw [this, map_zero]
     simp [QuotientAddGroup.ker_mk', Gn]⟩
-  invFun φ := QuotientAddGroup.lift _ φ <| by rintro - ⟨g, rfl⟩; simpa using φ.property g
-  left_inv f := by
+  left_inv φ := by aesop
+  right_inv f := by
     ext x
     induction x using QuotientAddGroup.induction_on
     rfl -- Should `simp` suffice here?
-  right_inv φ := by aesop
 
 /-- The universal property of `ModN G n` in terms of `ZMod n`-modules: `ZMod n`-linear maps from
 `ModN G n` are the same as monoid homomorphisms from `G` whose values are `n`-torsion. -/
 protected def liftEquiv' [AddCommGroup H] [Module (ZMod n) H] :
-    (ModN G n →ₗ[ZMod n] H) ≃ {φ : G →+ H // ∀ g, n • φ g = 0} :=
-  (AddMonoidHom.toZModLinearMapEquiv n).symm.toEquiv.trans ModN.liftEquiv
+    {φ : G →+ H // ∀ g, n • φ g = 0} ≃ (ModN G n →ₗ[ZMod n] H) :=
+  ModN.liftEquiv.trans (AddMonoidHom.toZModLinearMapEquiv n).toEquiv
 
 variable (n) in
 /-- The quotient map `G → G / nG`. -/

@@ -651,16 +651,17 @@ end PowerBasis
 /-- Algebra homomorphism `F⟮α⟯ →ₐ[F] K` are in bijection with the set of roots
 of `minpoly α` in `K`. -/
 noncomputable def algHomAdjoinIntegralEquiv (h : IsIntegral F α) :
-    (F⟮α⟯ →ₐ[F] K) ≃ { x // x ∈ (minpoly F α).aroots K } :=
-  (adjoin.powerBasis h).liftEquiv'.trans
-    ((Equiv.refl _).subtypeEquiv fun x => by
-      rw [adjoin.powerBasis_gen, minpoly_gen, Equiv.refl_apply])
+    { x // x ∈ (minpoly F α).aroots K } ≃ (F⟮α⟯ →ₐ[F] K) :=
+  (Equiv.refl _ |>.subtypeEquiv <| by simp [minpoly_gen]).trans (adjoin.powerBasis h).liftEquiv'
 
-lemma algHomAdjoinIntegralEquiv_symm_apply_gen (h : IsIntegral F α)
+lemma algHomAdjoinIntegralEquiv_apply_gen (h : IsIntegral F α)
     (x : { x // x ∈ (minpoly F α).aroots K }) :
-    (algHomAdjoinIntegralEquiv F h).symm x (AdjoinSimple.gen F α) = x :=
+    algHomAdjoinIntegralEquiv F h x (AdjoinSimple.gen F α) = x :=
   (adjoin.powerBasis h).lift_gen x.val <| by
     rw [adjoin.powerBasis_gen, minpoly_gen]; exact (mem_aroots.mp x.property).2
+
+@[deprecated (since := "2026-11-24")]
+alias algHomAdjoinIntegralEquiv_symm_apply_gen := algHomAdjoinIntegralEquiv_apply_gen
 
 /-- Fintype of algebra homomorphism `F⟮α⟯ →ₐ[F] K` -/
 @[instance_reducible]

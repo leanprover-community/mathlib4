@@ -755,7 +755,7 @@ theorem AlgHom.natCard_of_powerBasis (pb : PowerBasis K S) (h_sep : IsSeparable 
     (h_splits : ((minpoly K pb.gen).map (algebraMap K L)).Splits) :
     Nat.card (S →ₐ[K] L) = pb.dim := by
   classical
-  rw [Nat.card_congr pb.liftEquiv', Nat.subtype_card _ (fun x => Multiset.mem_toFinset),
+  rw [Nat.card_congr pb.liftEquiv'.symm, Nat.subtype_card _ fun x => Multiset.mem_toFinset,
     ← pb.natDegree_minpoly, ← natDegree_map (algebraMap K L), h_splits.natDegree_eq_card_roots,
     Multiset.toFinset_card_of_nodup]
   exact nodup_roots ((separable_map (algebraMap K L)).mpr h_sep)

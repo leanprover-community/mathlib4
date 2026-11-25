@@ -214,7 +214,7 @@ theorem exists_lift_of_splits' (x : Lifts F E K) {s : E} (h1 : IsIntegral x.carr
   have I2 := (minpoly.degree_pos h1).ne'
   letI : Algebra x.carrier K := x.emb.toRingHom.toAlgebra
   let carrier := x.carrier⟮s⟯.restrictScalars F
-  let φ : carrier →ₐ[x.carrier] K := ((algHomAdjoinIntegralEquiv x.carrier h1).symm
+  let φ : carrier →ₐ[x.carrier] K := ((algHomAdjoinIntegralEquiv x.carrier h1)
     ⟨rootOfSplits h2 (by rwa [degree_map]), by
       rw [mem_aroots, and_iff_right (minpoly.ne_zero h1)]
       exact (eval_map _ _).symm.trans (eval_rootOfSplits _ _)⟩)
@@ -325,10 +325,9 @@ theorem exists_algHom_adjoin_of_splits_of_aeval : ∃ φ : adjoin F S →ₐ[F] 
   have := isAlgebraic_adjoin (fun s hs ↦ (hK s hs).1)
   have ix : IsAlgebraic F _ := Algebra.IsAlgebraic.isAlgebraic (⟨x, hx⟩ : adjoin F S)
   rw [isAlgebraic_iff_isIntegral, isIntegral_iff] at ix
-  obtain ⟨φ, hφ⟩ := exists_algHom_adjoin_of_splits hK ((algHomAdjoinIntegralEquiv F ix).symm
+  obtain ⟨φ, hφ⟩ := exists_algHom_adjoin_of_splits hK ((algHomAdjoinIntegralEquiv F ix)
     ⟨y, mem_aroots.mpr ⟨minpoly.ne_zero ix, hy⟩⟩) (adjoin_simple_le_iff.mpr hx)
-  exact ⟨φ, congr($hφ (AdjoinSimple.gen F x)).trans <|
-    algHomAdjoinIntegralEquiv_symm_apply_gen F ix _⟩
+  exact ⟨φ, congr($hφ (AdjoinSimple.gen F x)).trans <| algHomAdjoinIntegralEquiv_apply_gen F ix _⟩
 
 include hS in
 theorem exists_algHom_of_adjoin_splits_of_aeval : ∃ φ : E →ₐ[F] K, φ x = y :=

@@ -27,8 +27,8 @@ details section.
 * `IsPrimitiveRoot.powerBasis`: if `K` and `L` are fields such that
   `IsCyclotomicExtension {n} K L`, then `IsPrimitiveRoot.powerBasis`
   gives a `K`-power basis for `L` given a primitive root `ζ`.
-* `IsPrimitiveRoot.embeddingsEquivPrimitiveRoots`: the equivalence between `L →ₐ[K] A`
-  and `primitiveRoots n A` given by the choice of `ζ`.
+* `IsPrimitiveRoot.embeddingsEquivPrimitiveRoots`: the equivalence between `primitiveRoots n A` and
+  `L →ₐ[K] A` given by the choice of `ζ`.
 
 ## Main results
 * `IsCyclotomicExtension.zeta_spec`: `zeta n A B` is a primitive `n`-th root of unity.
@@ -46,8 +46,6 @@ details section.
 * `IsPrimitiveRoot.norm_sub_one_of_prime_ne_two` : if `Irreducible (cyclotomic (p ^ (k + 1)) K)`
   (in particular for `K = ℚ`) and `p` is an odd prime, then the norm of `ζ - 1` is `p`. We also
   prove the analogous of this result for `zeta`.
-* `IsPrimitiveRoot.embeddingsEquivPrimitiveRoots`: the equivalence between `L →ₐ[K] A`
-  and `primitiveRoots n A` given by the choice of `ζ`.
 
 ## Implementation details
 `zeta n A B` is defined as any primitive root of unity in `B`, - this must exist, by definition of
@@ -138,33 +136,35 @@ noncomputable def subOnePowerBasis : PowerBasis K L := by
 variable {K} (C)
 
 -- We are not using @[simps] to avoid a timeout.
-/-- The equivalence between `L →ₐ[K] C` and `primitiveRoots n C` given by a primitive root `ζ`. -/
+/-- The equivalence between `primitiveRoots n C` and `L →ₐ[K] C` given by a primitive root `ζ`. -/
 noncomputable def embeddingsEquivPrimitiveRoots (C : Type*) [CommRing C] [IsDomain C] [Algebra K C]
-    (hirr : Irreducible (cyclotomic n K)) : (L →ₐ[K] C) ≃ primitiveRoots n C :=
-  (hζ.powerBasis K).liftEquiv.trans
+    (hirr : Irreducible (cyclotomic n K)) : primitiveRoots n C ≃ (L →ₐ[K] C) :=
+  Equiv.trans
     { toFun := fun x => by
         haveI := IsCyclotomicExtension.neZero' n K L
         haveI hn := NeZero.of_faithfulSMul K C n
         refine ⟨x.val, ?_⟩
         cases x
-        rwa [mem_primitiveRoots (NeZero.pos _), ← isRoot_cyclotomic_iff, IsRoot.def,
-          ← map_cyclotomic _ (algebraMap K C), hζ.minpoly_eq_cyclotomic_of_irreducible hirr,
-          ← eval₂_eq_eval_map, ← aeval_def]
+        simpa [aeval_def, eval₂_eq_eval_map, ← hζ.minpoly_eq_cyclotomic_of_irreducible hirr,
+          ← IsRoot.def, isRoot_cyclotomic_iff, ← mem_primitiveRoots <| NeZero.pos _]
       invFun := fun x => by
         haveI := IsCyclotomicExtension.neZero' n K L
         haveI hn := NeZero.of_faithfulSMul K C n
         refine ⟨x.val, ?_⟩
         cases x
-        rwa [aeval_def, eval₂_eq_eval_map, hζ.powerBasis_gen K, ←
-          hζ.minpoly_eq_cyclotomic_of_irreducible hirr, map_cyclotomic, ← IsRoot.def,
-          isRoot_cyclotomic_iff, ← mem_primitiveRoots (NeZero.pos _)] }
+        simpa [mem_primitiveRoots <| NeZero.pos _, ← isRoot_cyclotomic_iff, ← aeval_def,
+          ← map_cyclotomic _ <| algebraMap K C, hζ.minpoly_eq_cyclotomic_of_irreducible hirr] }
+    (hζ.powerBasis K).liftEquiv
 
 -- Porting note: renamed argument `φ`: "expected '_' or identifier"
 @[simp]
-theorem embeddingsEquivPrimitiveRoots_apply_coe (C : Type*) [CommRing C] [IsDomain C] [Algebra K C]
-    (hirr : Irreducible (cyclotomic n K)) (φ' : L →ₐ[K] C) :
-    (hζ.embeddingsEquivPrimitiveRoots C hirr φ' : C) = φ' ζ :=
+theorem embeddingsEquivPrimitiveRoots_symm_apply_coe (C : Type*) [CommRing C] [IsDomain C]
+    [Algebra K C] (hirr : Irreducible (cyclotomic n K)) (φ' : L →ₐ[K] C) :
+    ((hζ.embeddingsEquivPrimitiveRoots C hirr).symm φ' : C) = φ' ζ :=
   rfl
+
+@[deprecated (since := "2026-11-24")]
+alias embeddingsEquivPrimitiveRoots_apply_coe := embeddingsEquivPrimitiveRoots_symm_apply_coe
 
 end IsPrimitiveRoot
 
@@ -343,7 +343,7 @@ theorem sub_one_norm_eq_eval_cyclotomic [IsCyclotomicExtension {n} K L] (h : 2 <
     IsCyclotomicExtension.finrank L hirr, (totient_even h).neg_one_pow, one_mul]
   have Hprod : (Finset.univ.prod fun σ : L →ₐ[K] E => 1 - σ ζ) = eval 1 (cyclotomic' n E) := by
     rw [cyclotomic', eval_prod, ← @Finset.prod_attach E E, ← univ_eq_attach]
-    refine Fintype.prod_equiv (hζ.embeddingsEquivPrimitiveRoots E hirr) _ _ fun σ => ?_
+    refine Fintype.prod_equiv (hζ.embeddingsEquivPrimitiveRoots E hirr).symm _ _ fun σ => ?_
     simp
   have : NeZero (n : E) := NeZero.of_faithfulSMul K _ n
   rw [Hprod, cyclotomic', ← cyclotomic_eq_prod_X_sub_primitiveRoots (isRoot_cyclotomic_iff.1 hz),

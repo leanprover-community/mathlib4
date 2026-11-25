@@ -79,12 +79,12 @@ theorem Normal.of_isSplittingField (p : F[X]) [hFEp : IsSplittingField F E p] : 
     rw [← j.comp_algebraMap, ← Polynomial.map_map] at hL2
     refine ⟨hx, Splits.of_splits_map (j : E →+* L) hL2 fun a ha ↦ ?_⟩
     rw [Polynomial.map_map, j.comp_algebraMap] at ha
-    let : Algebra F⟮x⟯ L := ((algHomAdjoinIntegralEquiv F hx).symm ⟨a, ha⟩).toRingHom.toAlgebra
+    let : Algebra F⟮x⟯ L := (algHomAdjoinIntegralEquiv F hx ⟨a, ha⟩).toRingHom.toAlgebra
     let j' : E →ₐ[F⟮x⟯] L := IsSplittingField.lift E (p.map (algebraMap F F⟮x⟯)) ?_
     · change a ∈ j.range
       rw [← IsSplittingField.adjoin_rootSet_eq_range E p j,
             IsSplittingField.adjoin_rootSet_eq_range E p (j'.restrictScalars F)]
-      exact ⟨x, (j'.commutes _).trans (algHomAdjoinIntegralEquiv_symm_apply_gen F hx _)⟩
+      exact ⟨x, (j'.commutes _).trans (algHomAdjoinIntegralEquiv_apply_gen F hx _)⟩
     · rwa [Polynomial.map_map, ← IsScalarTower.algebraMap_eq]
   · exact Polynomial.map_ne_zero hp
 

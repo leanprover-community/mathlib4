@@ -692,7 +692,7 @@ minimal polynomial of `α` over `F`. -/
 theorem finSepDegree_adjoin_simple_eq_natSepDegree {α : E} (halg : IsAlgebraic F α) :
     finSepDegree F F⟮α⟯ = (minpoly F α).natSepDegree := by
   have : finSepDegree F F⟮α⟯ = _ := Nat.card_congr
-    (algHomAdjoinIntegralEquiv F (K := AlgebraicClosure F⟮α⟯) halg.isIntegral)
+    (algHomAdjoinIntegralEquiv F (K := AlgebraicClosure F⟮α⟯) halg.isIntegral).symm
   classical
   rw [this, Nat.card_eq_fintype_card, natSepDegree_eq_of_isAlgClosed (E := AlgebraicClosure F⟮α⟯),
     ← Fintype.card_coe]

@@ -311,11 +311,11 @@ see `liftEquiv'` for the corresponding statement.
 -/
 @[simps]
 noncomputable def liftEquiv (pb : PowerBasis A S) :
-    (S →ₐ[A] S') ≃ { y : S' // aeval y (minpoly A pb.gen) = 0 } where
-  toFun f := ⟨f pb.gen, by rw [aeval_algHom_apply, minpoly.aeval, map_zero]⟩
-  invFun y := pb.lift y y.property
-  left_inv _ := pb.algHom_ext <| lift_gen _ _ _
-  right_inv y := Subtype.ext <| lift_gen _ _ y.prop
+    { y : S' // aeval y (minpoly A pb.gen) = 0 } ≃ (S →ₐ[A] S') where
+  toFun y := pb.lift y y.property
+  invFun f := ⟨f pb.gen, by rw [aeval_algHom_apply, minpoly.aeval, map_zero]⟩
+  left_inv y := Subtype.ext <| lift_gen _ _ y.prop
+  right_inv _ := pb.algHom_ext <| lift_gen _ _ _
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
@@ -324,18 +324,23 @@ set_option backward.isDefEq.respectTransparency.types false in
 polynomial of `pb.gen` correspond to maps sending `pb.gen` to that root. -/
 @[simps! -fullyApplied]
 noncomputable def liftEquiv' [IsDomain B] (pb : PowerBasis A S) :
-    (S →ₐ[A] B) ≃ { y : B // y ∈ (minpoly A pb.gen).aroots B } :=
-  pb.liftEquiv.trans ((Equiv.refl _).subtypeEquiv fun x => by
+    { y : B // y ∈ (minpoly A pb.gen).aroots B } ≃ (S →ₐ[A] B) :=
+  (Equiv.refl _ |>.subtypeEquiv fun x => by
     rw [Equiv.refl_apply, mem_roots_iff_aeval_eq_zero]
     · simp
-    · exact map_monic_ne_zero (minpoly.monic pb.isIntegral_gen))
+    · exact map_monic_ne_zero <| minpoly.monic pb.isIntegral_gen).trans pb.liftEquiv
+
+@[deprecated (since := "2026-11-24")] alias liftEquiv_apply_coe := liftEquiv_symm_apply_coe
+@[deprecated (since := "2026-11-24")] alias liftEquiv_symm_apply := liftEquiv_apply
+@[deprecated (since := "2026-11-24")] alias liftEquiv'_apply_coe := liftEquiv'_symm_apply_coe
+@[deprecated (since := "2026-11-24")] alias liftEquiv'_symm_apply_apply := liftEquiv'_apply_apply
 
 /-- There are finitely many algebra homomorphisms `S →ₐ[A] B` if `S` is of the form `A[x]`
 and `B` is an integral domain. -/
 @[instance_reducible]
 noncomputable def AlgHom.fintype [IsDomain B] (pb : PowerBasis A S) : Fintype (S →ₐ[A] B) :=
   letI := Classical.decEq B
-  Fintype.ofEquiv _ pb.liftEquiv'.symm
+  Fintype.ofEquiv _ pb.liftEquiv'
 
 /-- `pb.equivOfRoot pb' h₁ h₂` is an equivalence of algebras with the same power basis,
 where "the same" means that `pb` is a root of `pb'`s minimal polynomial and vice versa.

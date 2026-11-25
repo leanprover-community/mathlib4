@@ -917,12 +917,10 @@ variable (L F : Type*) [Field F] [CommRing L] [IsDomain L] [Algebra F L]
 
 /-- If `L` is a field extension of `F` and `f` is a polynomial over `F` then the set
 of maps from `F[x]/(f)` into `L` is in bijection with the set of roots of `f` in `L`. -/
-def equiv (f : F[X]) (hf : f ≠ 0) :
-    (AdjoinRoot f →ₐ[F] L) ≃ { x // x ∈ f.aroots L } :=
-  (powerBasis hf).liftEquiv'.trans
-    ((Equiv.refl _).subtypeEquiv fun x => by
-      rw [powerBasis_gen, minpoly_root hf, aroots_mul, aroots_C, add_zero, Equiv.refl_apply]
-      exact (monic_mul_leadingCoeff_inv hf).ne_zero)
+def equiv (f : F[X]) (hf : f ≠ 0) : { x // x ∈ f.aroots L } ≃ (AdjoinRoot f →ₐ[F] L) :=
+  (Equiv.refl _ |>.subtypeEquiv fun x => by
+    rw [powerBasis_gen, minpoly_root hf, aroots_mul, aroots_C, add_zero, Equiv.refl_apply]
+    exact (monic_mul_leadingCoeff_inv hf).ne_zero).trans (powerBasis hf).liftEquiv'
 
 end Field
 

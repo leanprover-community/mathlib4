@@ -179,13 +179,13 @@ theorem norm_eq_prod_embeddings_gen [Algebra R F] (pb : PowerBasis R S)
       (@Finset.univ _ (PowerBasis.AlgHom.fintype pb)).prod fun σ => σ pb.gen := by
   let := Classical.decEq F
   rw [PowerBasis.norm_gen_eq_prod_roots pb hE]
-  rw [@Fintype.prod_equiv (S →ₐ[R] F) _ _ (PowerBasis.AlgHom.fintype pb) _ _ pb.liftEquiv'
+  rw [@Fintype.prod_equiv (S →ₐ[R] F) _ _ (PowerBasis.AlgHom.fintype pb) _ _ pb.liftEquiv'.symm
     (fun σ => σ pb.gen) (fun x => x) ?_]
   · rw [Finset.prod_mem_multiset, Finset.prod_eq_multiset_prod, Multiset.toFinset_val,
       Multiset.dedup_eq_self.mpr, Multiset.map_id]
     · exact nodup_roots (.map hfx)
     · intro x; rfl
-  · intro σ; simp only [PowerBasis.liftEquiv'_apply_coe]
+  · intro σ; simp only [PowerBasis.liftEquiv'_symm_apply_coe]
 
 theorem prod_embeddings_eq_finrank_pow [Algebra L F] [IsScalarTower K L F] [IsAlgClosed E]
     [Algebra.IsSeparable K F] [FiniteDimensional K F] (pb : PowerBasis K L) :
