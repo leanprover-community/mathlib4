@@ -35,6 +35,7 @@ Further, we use `Finset.Ioc` rather than a set intersection since the set is fin
 which reduces the proof obligations later that would arise with `Nat.card`.
 
 ## TODO
+
 * Give other calculations of the density, for example powers and their sumsets.
 * Define other densities like the lower and upper asymptotic density, and the natural density,
   and show how these relate to the Schnirelmann density.
@@ -102,7 +103,7 @@ lemma schnirelmannDensity_le_of_notMem {k : ℕ} (hk : k ∉ A) :
   gcongr
   rw [← Nat.cast_pred hk', Nat.cast_le]
   suffices {a ∈ Ioc 0 k | a ∈ A} ⊆ Ioo 0 k from (card_le_card this).trans_eq (by simp)
-  rw [← Ioo_insert_right hk', filter_insert, ite_eq_right hk]
+  rw [← insert_right_Ioo hk', filter_insert, ite_eq_right hk]
   exact filter_subset _ _
 
 /-- The Schnirelmann density of a set not containing `1` is `0`. -/

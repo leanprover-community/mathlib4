@@ -13,6 +13,9 @@ public import Mathlib.LinearAlgebra.SpecialLinearGroup
 import Mathlib.LinearAlgebra.Center
 import Mathlib.LinearAlgebra.Transvection.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Group actions on projectivization
 
@@ -24,7 +27,6 @@ Prove that these actions are 2-transitive.
 ## TODO
 
 Generalize to the special linear group over a division ring.
-
 -/
 
 @[expose] public section
@@ -141,7 +143,7 @@ instance specialLinearGroup_is_two_pretransitive :
     · simp [← Units.val_inj, coe_det, LinearMap.transvection.det]
     · rw [smul_mk, mk_eq_mk_iff, LinearEquiv.smul_def]
       use a
-      rw [← coe_coe, dilatransvection.coe_toLinearMap,
+      rw [← coe_toLinearMap, dilatransvection.coe_toLinearMap,
         LinearMap.transvection.apply, Module.Basis.coord_apply]
       suffices (b.repr D.rep) ⟨D.rep, hD_mem⟩ = 1 by
         rw [this, Module.Basis.extend_apply_self, Units.smul_def]
@@ -151,7 +153,7 @@ instance specialLinearGroup_is_two_pretransitive :
       simp
     · rw [smul_mk, mk_eq_mk_iff, LinearEquiv.smul_def]
       use 1
-      rw [one_smul, ← coe_coe, dilatransvection.coe_toLinearMap,
+      rw [one_smul, ← coe_toLinearMap, dilatransvection.coe_toLinearMap,
         LinearMap.transvection.apply, Module.Basis.coord_apply]
       suffices (b.repr D'.rep) ⟨D.rep, hD_mem⟩ = 0 by
         rw [Module.Basis.extend_apply_self]
@@ -198,16 +200,16 @@ lemma SL_mulAction_ker :
       by_cases hv : v = 0
       · simp [hv, linearIndependent_fin2]
       · simpa [LinearIndependent.pair_iff' hv, mk_eq_mk_iff'] using! hm (.mk K v hv)
-    have hscalar : m.1 = Matrix.scalar ι a := calc
-      m.1 = LinearMap.toMatrix' f := by
+    have hscalar : m.val = Matrix.scalar ι a := calc
+      m.val = LinearMap.toMatrix' f := by
         rw [hf, Matrix.SpecialLinearGroup.toLin'_to_linearMap, LinearMap.toMatrix'_toLin']
       _ = (algebraMap K (Module.End K (ι → K)) a).toMatrix' := congrArg LinearMap.toMatrix' ha
       _ = Matrix.scalar ι a := LinearMap.toMatrix'_algebraMap a
-    exact ⟨a, by simpa [hscalar] using m.2, hscalar.symm⟩
+    exact ⟨a, by simpa [hscalar] using m.property, hscalar.symm⟩
   · induction l using Projectivization.ind with | _ v hv =>
     simp only [smul_mk, mk_eq_mk_iff']
     use r
-    change _ = m.1 • v
+    change _ = m.val • v
     simp [← hr2]
 
 /-- The action of the special linear group on `ℙ F (ι → F)` factors through the

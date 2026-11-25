@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.Group.Cone
 public import Mathlib.Algebra.Ring.Subsemiring.Order
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Construct ordered rings from rings with a specified positive cone.
 
@@ -32,7 +35,7 @@ theorem IsOrderedRing.ofSubsemiring :
     IsOrderedRing R :=
   letI _ := PartialOrder.ofAddSubmonoid hS
   haveI := IsOrderedAddMonoid.ofAddSubmonoid hS
-  haveI : ZeroLEOneClass R := ⟨by simp⟩
+  haveI : ZeroLEOneClass R := ⟨by simp [PartialOrder.ofAddSubmonoid_le_iff]⟩
   .of_mul_nonneg fun x y xnn ynn ↦ show _ ∈ S by simpa using Subsemiring.mul_mem _ xnn ynn
 
 /-- `RingConeClass S R` says that `S` is a type of cones in `R`. -/

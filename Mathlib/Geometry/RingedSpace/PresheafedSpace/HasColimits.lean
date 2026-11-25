@@ -10,6 +10,9 @@ public import Mathlib.Topology.Sheaves.Limits
 
 import Mathlib.Topology.Category.TopCat.Limits.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `PresheafedSpace C` has colimits.
 
@@ -312,7 +315,7 @@ def colimitPresheafObjIsoComponentwiseLimit (F : J ⥤ PresheafedSpace.{_, _, v}
     refine (F.obj (unop X)).presheaf.mapIso (eqToIso ?_)
     simp only [Functor.op_obj, op_inj_iff, Opens.map_coe, SetLike.ext'_iff,
       Set.preimage_preimage]
-    congrm Set.preimage $(funext fun x => ?_) U.1
+    congrm Set.preimage $(funext fun x => ?_) U.carrier
     simp only [colimitCocone, colimit, ← TopCat.comp_app]
     congr
     exact ι_preservesColimitIso_inv (forget C) F (unop X)

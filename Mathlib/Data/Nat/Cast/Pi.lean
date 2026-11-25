@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Tactic.Push.Attr
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cast of natural numbers to function types
 
@@ -29,7 +32,7 @@ variable {ι : Type*} {π : ι → Type*} [∀ i, NatCast (π i)]
 instance instNatCast : NatCast (∀ i, π i) where natCast n _ := n
 
 @[simp]
-theorem natCast_apply (n : ℕ) (i : ι) : (n : ∀ i, π i) i = n :=
+protected theorem natCast_apply (n : ℕ) (i : ι) : (n : ∀ i, π i) i = n :=
   rfl
 
 @[push ←]

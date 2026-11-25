@@ -10,6 +10,9 @@ public import Mathlib.Analysis.Calculus.MeanValue
 
 import Mathlib.Analysis.Calculus.Deriv.Pow
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Symmetry of the second derivative
 
@@ -40,7 +43,7 @@ is `ℝ` or `ℂ`, and analytic otherwise. Formally, we assume that the function
 with `minSmoothness 𝕜 2 ≤ n`, where `minSmoothness 𝕜 i` is `i` if `𝕜` is `ℝ` or `ℂ`,
 and `ω` otherwise.
 
-## Implementation note
+## Implementation notes
 
 For the proof, we obtain an asymptotic expansion to order two of `f (x + v + w) - f (x + v)`, by
 using the mean value inequality applied to a suitable function along the

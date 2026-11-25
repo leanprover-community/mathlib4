@@ -92,10 +92,10 @@ lemma one_half_le_sum_primes_ge_one_div (k : ℕ) :
       show (2 * (2 * m ^ 2) - m * (2 * m) : ℝ) = 2 * (2 * m ^ 2) * (1 / 2) by ring,
       mul_le_mul_iff_right₀ <| by positivity] at this
   calc (2 * N₀ : ℝ)
-    _ = #((2 * N₀).smoothNumbersUpTo k) + #((2 * N₀).roughNumbersUpTo k) := by
-        exact mod_cast ((2 * N₀).smoothNumbersUpTo_card_add_roughNumbersUpTo_card k).symm
-    _ ≤ m * (2 * N₀).sqrt + #((2 * N₀).roughNumbersUpTo k) := by
-        exact mod_cast Nat.add_le_add_right ((2 * N₀).smoothNumbersUpTo_card_le k) _
+    _ = #((2 * N₀).smoothNumbersUpTo k) + #((2 * N₀).roughNumbersUpTo k) :=
+        mod_cast ((2 * N₀).smoothNumbersUpTo_card_add_roughNumbersUpTo_card k).symm
+    _ ≤ m * (2 * N₀).sqrt + #((2 * N₀).roughNumbersUpTo k) :=
+        mod_cast Nat.add_le_add_right ((2 * N₀).smoothNumbersUpTo_card_le k) _
     _ ≤ m * (2 * N₀).sqrt + 2 * N₀ * S := by grw [roughNumbersUpTo_card_le']; norm_cast
 
 /-- The sum over the reciprocals of the primes diverges. -/

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.GaloisConnection.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lattice structure on order homomorphisms
 

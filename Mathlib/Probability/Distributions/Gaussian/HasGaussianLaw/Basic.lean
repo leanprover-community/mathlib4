@@ -9,12 +9,15 @@ public import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Def
 
 import Mathlib.Probability.Distributions.Gaussian.Fernique
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Gaussian random variables
 
 In this file we prove basic properties of Gaussian random variables.
 
-## Implementation note
+## Implementation notes
 
 Many lemmas are duplicated with an expanded form of some function. For instance there is
 `HasGaussianLaw.add` and `HasGaussianLaw.fun_add`. The reason is that if someone wants for instance

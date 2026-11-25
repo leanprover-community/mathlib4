@@ -11,7 +11,6 @@ public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Extend
 public import Mathlib.Topology.Algebra.Module.LinearPMap
 
 /-!
-
 # Partially defined linear operators on Hilbert spaces
 
 We will develop the basics of the theory of unbounded operators on Hilbert spaces.
@@ -114,8 +113,8 @@ variable {T}
 @[simp]
 theorem adjointDomainMkCLMExtend_apply (hT : Dense (T.domain : Set E)) (y : T.adjointDomain)
     (x : T.domain) : adjointDomainMkCLMExtend T y (x : E) = ⟪(y : F), T x⟫ :=
-  ContinuousLinearMap.extend_eq _ hT.denseRange_val
-    isUniformEmbedding_subtype_val.isUniformInducing _
+  ContinuousLinearMap.extend_eq _ hT.denseRange_subtypeVal
+    isUniformEmbedding_subtypeVal.isUniformInducing _
 
 variable [CompleteSpace E]
 
@@ -272,7 +271,7 @@ def adjoint (g : Submodule 𝕜 (E × F)) : Submodule 𝕜 (F × E) :=
 theorem mem_adjoint_iff (g : Submodule 𝕜 (E × F)) (x : F × E) :
     x ∈ g.adjoint ↔
     ∀ a b, (a, b) ∈ g → inner 𝕜 b x.fst - inner 𝕜 a x.snd = 0 := by
-  simp only [Submodule.adjoint, mem_map, mem_orthogonal, LinearEquiv.coe_coe,
+  simp only [Submodule.adjoint, mem_map, mem_orthogonal, LinearEquiv.coe_toLinearMap,
     LinearEquiv.trans_apply, LinearEquiv.skewSwap_symm_apply, coe_symm_linearEquiv, Prod.exists,
     prod_inner_apply, ofLp_fst, ofLp_snd, forall_exists_index, and_imp, coe_linearEquiv]
   constructor
@@ -333,7 +332,7 @@ theorem adjoint_isClosed (hT : Dense (T.domain : Set E)) :
     T†.IsClosed := by
   rw [IsClosed, adjoint_graph_eq_graph_adjoint hT, Submodule.adjoint]
   simp only [Submodule.map_coe]
-  rw [LinearEquiv.coe_coe, LinearEquiv.image_eq_preimage_symm]
+  rw [LinearEquiv.coe_toLinearMap, LinearEquiv.image_eq_preimage_symm]
   exact (Submodule.isClosed_orthogonal _).preimage (WithLp.prod_continuous_toLp _ _ _)
 
 /-- Every self-adjoint `LinearPMap` is closed. -/

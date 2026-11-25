@@ -40,7 +40,7 @@ open scoped LSeries.notation
 /-- `δ` is the function underlying the arithmetic function `1`. -/
 lemma ArithmeticFunction.one_eq_delta : ↗(1 : ArithmeticFunction ℂ) = δ := by
   ext
-  simp [one_apply, LSeries.delta]
+  simp [ArithmeticFunction.one_apply, LSeries.delta]
 
 
 section Moebius

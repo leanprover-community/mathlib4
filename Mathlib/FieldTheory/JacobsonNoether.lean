@@ -36,7 +36,7 @@ the noncommutative division algebra `D` with center `k`.
 - `D` is a noncommutative division algebra
 - `k` is the center of `D`
 
-## Implementation Notes
+## Implementation notes
 
 Mathematically, `exists_separable_and_not_isCentral` and `exists_separable_and_not_isCentral'`
 are equivalent.
@@ -69,7 +69,7 @@ lemma exists_pow_mem_center_of_inseparable (p : ℕ) [hchar : ExpChar D p] (a : 
     rw [RingHom.mem_range, Subtype.exists]
     exact ⟨x, ⟨hinsep x hx, rfl⟩⟩⟩
   obtain ⟨n, ⟨m, hm⟩⟩ := (isPurelyInseparable_iff_pow_mem k p).1 insep a
-  have := Subalgebra.range_subset (R := k) ⟨(k).toSubsemiring, fun r ↦ r.2⟩
+  have := Subalgebra.range_subset (R := k) ⟨(k).toSubsemiring, fun r ↦ r.property⟩
   exact ⟨n, Set.mem_of_subset_of_mem this <| Set.mem_range.2 ⟨m, hm⟩⟩
 
 /-- If `D` is a purely inseparable extension of `k` with characteristic `p`,

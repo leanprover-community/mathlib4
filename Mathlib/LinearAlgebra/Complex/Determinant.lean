@@ -8,12 +8,14 @@ module
 public import Mathlib.LinearAlgebra.Complex.Module
 public import Mathlib.LinearAlgebra.Determinant
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Determinants of maps in the complex numbers as a vector space over `ℝ`
 
 This file provides results about the determinants of maps in the complex numbers as a vector
 space over `ℝ`.
-
 -/
 
 public section

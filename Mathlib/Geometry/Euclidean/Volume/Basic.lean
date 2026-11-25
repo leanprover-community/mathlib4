@@ -15,6 +15,7 @@ import Mathlib.Geometry.Euclidean.Volume.MeasureSimplex
 This file provides lemmas related to the volume of a simplex.
 
 ## Main statements
+
 * `Affine.Simplex.volume_eq`: The volume of a $n$-simplex is equal to $h * b / n$, where $h$ is the
 height and $b$ is the volume of the face.
 -/

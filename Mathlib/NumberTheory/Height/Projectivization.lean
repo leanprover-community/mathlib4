@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.Projectivization.Basic
 public import Mathlib.NumberTheory.Height.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Heights of points in projective space
 

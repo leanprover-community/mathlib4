@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Functor.Derived.RightDerived
 public import Mathlib.CategoryTheory.Shift.Localization
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The right derived functor commutes with the shift
 
@@ -18,7 +21,6 @@ are equipped with shifts by an additive group `A`, that `L` and `F` commute with
 and that `W` is compatible with the shift. Under these assumptions, we show that
 `RF` commutes with shifts, and that for this structure, the natural
 transformation `α` is compatible with the shifts.
-
 -/
 
 @[expose] public section

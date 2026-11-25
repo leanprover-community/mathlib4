@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Algebra.Operations
 public import Mathlib.Algebra.Algebra.Subalgebra.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Complete lattice structure of subalgebras
 
@@ -955,7 +958,7 @@ variable [CommSemiring R] [Semiring A] [Algebra R A]
 def toNonUnitalSubalgebraOrderEmbedding : Subalgebra R A ↪o NonUnitalSubalgebra R A where
   toFun := toNonUnitalSubalgebra
   inj' := toNonUnitalSubalgebra_injective
-  map_rel_iff' := by simp [IsConcreteLE.le_iff]
+  map_rel_iff' := by simp [le_iff_mem_imp_mem]
 
 @[simp]
 lemma toNonUnitalSubalgebra_le_toNonUnitalSubalgebra {S T : Subalgebra R A} :

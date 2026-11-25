@@ -12,6 +12,9 @@ public import Mathlib.LinearAlgebra.Dimension.Finrank
 
 import Mathlib.Algebra.GroupWithZero.Indicator
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Euler characteristic of homological complexes
 
@@ -43,7 +46,6 @@ These definitions may have junk values from `finsum` (0 for infinite support) an
   the finite sum when the complex has finite support contained in the given set
 * `HomologicalComplex.homologyEulerChar_eq_sum_finSet_of_finrankSupport_subset`: The `finsum`
   homological Euler characteristic equals the finite sum when homology has finite support
-
 -/
 
 @[expose] public section

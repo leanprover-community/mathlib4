@@ -10,10 +10,13 @@ public import Mathlib.Topology.Order.Real
 
 import Mathlib.Topology.Order.MonotoneContinuity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `ENNReal` is metrizable
 
-## Implementation details
+## Implementation notes
 
 This file currently only contains results on `ENNReal` but is named `Real.lean`
 to make it clear we can accept more `(E)(NN)Real` results.

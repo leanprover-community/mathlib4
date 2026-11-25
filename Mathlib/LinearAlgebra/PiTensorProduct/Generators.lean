@@ -14,6 +14,9 @@ import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 import Mathlib.LinearAlgebra.Quotient.Basic
 import Mathlib.SetTheory.Cardinal.Finite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Generators of multiple tensor products
 
@@ -23,7 +26,6 @@ of these elements generate `⨂[R] i, M i`.
 
 In `LinearAlgebra.PiTensorProduct.Finite`, we deduce that if the modules `M i`
 are finitely generated, then so is `⨂[R] i, M i`.
-
 -/
 
 @[expose] public section
@@ -149,8 +151,7 @@ lemma ext_of_span_eq_top
   LinearMap.ext_on_range (submodule_span_eq_top hg) h
 
 lemma _root_.MultilinearMap.ext_of_span_eq_top
-    (hg : ∀ i, Submodule.span R (Set.range (@g i)) = ⊤)
-    {φ φ' : MultilinearMap R M N}
+    (hg : ∀ i, Submodule.span R (Set.range (@g i)) = ⊤) {φ φ' : (Π i, M i) →ₘₗ[R] N}
     (h : ∀ (j : (i : ι) → γ i), φ (fun i ↦ g (j i)) = φ' (fun i ↦ g (j i))) :
     φ = φ' := by
   suffices lift φ = lift φ' by

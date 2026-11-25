@@ -73,7 +73,7 @@ The following examples can be found in the book of Lam [lam_1999]
   but not the rank condition.
 
 
-## Future work
+## TODO
 
 So far, there is no API at all for the `InvariantBasisNumber` class. There are several natural
 ways to formulate that a module `M` is finitely generated and free, for example
@@ -98,7 +98,6 @@ variants) should be formalized.
 ## Tags
 
 free module, rank, Orzech property, (strong) rank condition, invariant basis number, IBN
-
 -/
 
 public section
