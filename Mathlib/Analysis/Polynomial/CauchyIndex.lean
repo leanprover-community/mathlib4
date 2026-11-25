@@ -329,7 +329,7 @@ theorem cauchyIndex_neg [IsStrictOrderedRing K] (f : K⟮X⟯) (a b : K) :
 /-! ### Modifying the interval -/
 
 /-- The Cauchy index vanishes on an interval without poles. -/
-theorem cauchyIndex_eq_zero_of_forall_eval_denom_ne_zero {f : ℝ⟮X⟯} {a b : ℝ}
+theorem cauchyIndex_eq_zero_of_forall_eval_denom_ne_zero {f : K⟮X⟯} {a b : K}
     (h : ∀ x ∈ Ioo a b, f.denom.eval x ≠ 0) : cauchyIndex f a b = 0 :=
   Finset.sum_eq_zero fun x hx =>
     jump_eq_zero_of_eval_denom_ne_zero (h x (Finset.mem_filter.mp hx).2)
