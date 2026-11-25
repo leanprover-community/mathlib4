@@ -17,6 +17,7 @@ the `W`-weighted limit of `J` is the limit of the functor
 `CategoryOfElements.π W ⋙ F : W.Elements ⥤ C`.
 
 ## References
+
 * https://ncatlab.org/nlab/show/weighted+limit
 -/
 

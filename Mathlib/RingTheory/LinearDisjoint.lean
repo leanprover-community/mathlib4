@@ -355,11 +355,11 @@ lemma mulLeftMap_ker_eq_bot_iff_linearIndependent_op {ι : Type*} (a : ι → A)
     (Finsupp.mapRange.linearEquiv (linearEquivOp B)).toLinearMap
   suffices i = j by
     change Function.Injective i ↔ _
-    simp_rw [this, j, LinearMap.coe_comp, LinearEquiv.coe_coe, EquivLike.comp_injective,
+    simp_rw [this, j, LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, EquivLike.comp_injective,
       EquivLike.injective_comp, LinearMap.coe_restrictScalars]
   ext
   simp only [LinearMap.coe_comp, Function.comp_apply, Finsupp.lsingle_apply, coe_val,
-    Finsupp.mapRange.linearEquiv_toLinearMap, LinearEquiv.coe_coe,
+    Finsupp.mapRange.linearEquiv_toLinearMap, LinearEquiv.coe_toLinearMap,
     MulOpposite.coe_opLinearEquiv_symm, LinearMap.coe_restrictScalars,
     Finsupp.mapRange.linearMap_apply, Finsupp.mapRange_single, Finsupp.linearCombination_single,
     MulOpposite.unop_smul, MulOpposite.unop_op, i, j]

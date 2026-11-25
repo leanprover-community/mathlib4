@@ -17,6 +17,7 @@ This file proves that `Affine.Simplex.volume` agrees with the volume measure of 
 interior.
 
 ## Main statements
+
 * `Affine.Simplex.euclideanHausdorffMeasure_real_closedInterior`: the volume measure of the closed
   interior of a simplex satisfies the recurrence relation with base and height.
 * `Affine.Simplex.volume_eq_euclideanHausdorffMeasure_real_closedInterior`: `Affine.Simplex.volume`

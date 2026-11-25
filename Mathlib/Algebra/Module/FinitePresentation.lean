@@ -40,6 +40,7 @@ Suppose `0 → K → M → N → 0` is an exact sequence of `R`-modules.
 Also the instances finite + free => f.p. => finite are also provided
 
 ## TODO
+
 Suppose `S` is an `R`-algebra, `M` is an `S`-module. Then
 1. If `S` is f.p., then `M` is `R`-f.p. implies `M` is `S`-f.p.
 2. If `S` is both f.p. (as an algebra) and finite (as a module),
@@ -561,7 +562,7 @@ lemma Module.FinitePresentation.exists_lift_equiv_of_isLocalizedModule
   ext x
   apply ((Module.End.isUnit_iff _).mp (IsLocalizedModule.map_units g s)).1
   have : ∀ x, g (l' x) = s.val • (l (f x)) := LinearMap.congr_fun H
-  simp only [rs, LinearMap.coe_comp, LinearMap.coe_restrictScalars, LinearEquiv.coe_coe,
+  simp only [rs, LinearMap.coe_comp, LinearMap.coe_restrictScalars, LinearEquiv.coe_toLinearMap,
     Function.comp_apply, LocalizedModule.mkLinearMap_apply, LinearEquiv.ofBijective_apply,
     LinearMap.smul_apply, LocalizedModule.map_mk, algebraMap_end_apply]
   rw [← map_smul, ← smul_assoc, Algebra.smul_def s.val, hsu.mul_val_inv, one_smul]

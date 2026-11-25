@@ -13,7 +13,7 @@ public import Mathlib.RingTheory.Ideal.Quotient.Basic
 /-!
 # More operations on modules and ideals related to quotients
 
-## Main results:
+## Main results
 
 - `RingHom.quotientKerEquivRange` : the **first isomorphism theorem** for commutative rings.
 - `RingHom.quotientKerEquivRangeS` : the **first isomorphism theorem**

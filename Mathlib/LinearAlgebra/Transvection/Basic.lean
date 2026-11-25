@@ -300,7 +300,7 @@ theorem symm_mem_dilatransvections_iff {e : V ≃ₗ[R] V} :
   ext x
   suffices x = e x - f x • v by
     simpa [LinearMap.transvection.apply, ← sub_eq_add_neg, symm_apply_eq]
-  rw [eq_comm, sub_eq_iff_eq_add, ← coe_coe, he, LinearMap.transvection.apply]
+  rw [eq_comm, sub_eq_iff_eq_add, ← coe_toLinearMap, he, LinearMap.transvection.apply]
 
 @[simp]
 theorem inv_mem_dilatransvections_iff {e : V ≃ₗ[R] V} :
@@ -469,7 +469,7 @@ theorem mem_transvections_iff_mem_dilatransvections_and_fixedReduce_eq_one
         ← sub_eq_zero, ← LinearMap.ker_eq_top, eq_top_iff, ← eq_top]
       simp only [LinearEquiv.transvection.coe_toLinearMap,
         sup_le_iff, Submodule.span_singleton_le_iff_mem, LinearMap.mem_ker, LinearMap.sub_apply,
-        LinearEquiv.coe_coe]
+        coe_toLinearMap]
       constructor
       · intro x hx
         suffices f x = 0 by

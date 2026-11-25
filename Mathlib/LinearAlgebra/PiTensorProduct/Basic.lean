@@ -607,13 +607,13 @@ noncomputable def congr (f : Π i, s i ≃ₛₗ[σ₁₂] t i) :
 @[simp]
 theorem congr_tprod (f : Π i, s i ≃ₛₗ[σ₁₂] t i) (m : Π i, s i) :
     congr f (tprod R m) = tprod R₂ (fun (i : ι) ↦ (f i) (m i)) := by
-  simp only [congr, LinearEquiv.coe_ofLinearMap, map_tprod, LinearEquiv.coe_coe]
+  simp only [congr, LinearEquiv.coe_ofLinearMap, map_tprod, LinearEquiv.coe_toLinearMap]
 
 @[simp]
 theorem congr_symm_tprod (f : Π i, s i ≃ₛₗ[σ₁₂] t i) (p : Π i, t i) :
     (congr f).symm (tprod R₂ p) = tprod R (fun (i : ι) ↦ (f i).symm (p i)) := by
   simp only [congr, LinearEquiv.symm_ofLinearMap, LinearEquiv.coe_ofLinearMap, map_tprod,
-    LinearEquiv.coe_coe]
+    LinearEquiv.coe_toLinearMap]
 
 /--
 Let `sᵢ`, `tᵢ` and `t'ᵢ` be families of `R`-, `R₂`- and `R₃`-modules, respectively.
@@ -714,7 +714,7 @@ theorem reindex_trans (e : ι ≃ ι₂) (e' : ι₂ ≃ ι₃) :
     (reindex R s e).trans (reindex R _ e') = reindex R s (e.trans e') := by
   apply LinearEquiv.toLinearMap_injective
   ext f
-  simp only [LinearEquiv.trans_apply, LinearEquiv.coe_coe, reindex_tprod,
+  simp only [LinearEquiv.trans_apply, LinearEquiv.coe_toLinearMap, reindex_tprod,
     LinearMap.coe_compMultilinearMap, Function.comp_apply,
     reindex_comp_tprod]
   congr
@@ -757,7 +757,7 @@ theorem map_comp_reindex_eq (f : Π i, s i →ₛₗ[σ] t i) (e : ι ≃ ι₂)
     map (fun i ↦ f (e.symm i)) ∘ₛₗ (reindex R s e).toLinearMap =
       (reindex S t e).toLinearMap ∘ₛₗ map f := by
   ext m
-  simp only [LinearMap.compMultilinearMap_apply, LinearEquiv.coe_coe,
+  simp only [LinearMap.compMultilinearMap_apply, LinearEquiv.coe_toLinearMap,
     LinearMap.comp_apply, reindex_tprod, map_tprod]
 
 theorem map_reindex (f : Π i, s i →ₛₗ[σ] t i) (e : ι ≃ ι₂) (x : ⨂[R] i, s i) :
@@ -769,7 +769,7 @@ theorem map_comp_reindex_symm (f : Π i, s i →ₛₗ[σ] t i) (e : ι ≃ ι�
       (reindex S t e).symm.toLinearMap ∘ₛₗ map (fun i => f (e.symm i)) := by
   ext m
   apply LinearEquiv.injective (reindex S t e)
-  simp only [LinearMap.compMultilinearMap_apply, LinearMap.coe_comp, LinearEquiv.coe_coe,
+  simp only [LinearMap.compMultilinearMap_apply, LinearMap.coe_comp, LinearEquiv.coe_toLinearMap,
     comp_apply, ← map_reindex, LinearEquiv.apply_symm_apply, map_tprod]
 
 theorem map_reindex_symm (f : Π i, s i →ₛₗ[σ] t i) (e : ι ≃ ι₂) (x : ⨂[R] i, s (e.symm i)) :

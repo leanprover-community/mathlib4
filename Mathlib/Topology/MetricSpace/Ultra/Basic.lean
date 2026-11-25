@@ -23,7 +23,7 @@ so that it can apply on pseudometric spaces as well.
 * `IsUltrametricDist X`: Annotates `dist : X → X → ℝ` as respecting the ultrametric inequality
   of `dist(x, z) ≤ max {dist(x,y), dist(y,z)}`
 
-## Implementation details
+## Implementation notes
 
 The mixin could have been defined as a hypothesis to be carried around, instead of relying on
 typeclass synthesis. However, since we declare a (pseudo)metric space on a type using

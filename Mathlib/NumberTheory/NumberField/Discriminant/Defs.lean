@@ -18,6 +18,7 @@ This file defines the discriminant of a number field.
 * `NumberField.discr`: the absolute discriminant of a number field.
 
 ## Tags
+
 number field, discriminant
 -/
 

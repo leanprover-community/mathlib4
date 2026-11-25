@@ -25,7 +25,8 @@ In the file `Mathlib/RingTheory/PowerSeries/GaussNorm.lean`, the Gauss norm is d
 series. This is a generalization of the Gauss norm defined in this file in case `v` is a
 nonnegative function with `v 0 = 0` and `c ≥ 0`.
 
-## Main Definitions and Results
+## Main definitions and results
+
 * `Polynomial.gaussNorm` is the supremum of the set of all values of `v (p.coeff i) * c ^ i`
   for all `i` in the support of `p`, where `p` is a polynomial in `R[X]`, `v : R → ℝ` is a function
   and `c` is a real number.

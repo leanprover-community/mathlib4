@@ -27,7 +27,7 @@ This file contains a proof that the radical of any homogeneous ideal is a homoge
 * `HomogeneousIdeal.radical`: for any `I : HomogeneousIdeal 𝒜`, `I.radical` is the
   radical of `I` as a `HomogeneousIdeal 𝒜`.
 
-## Implementation details
+## Implementation notes
 
 Throughout this file, the indexing type `ι` of grading is assumed to be a
 linearly ordered cancellative monoid. This might be stronger than necessary but cancelling
