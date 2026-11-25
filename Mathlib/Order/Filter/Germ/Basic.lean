@@ -266,7 +266,7 @@ theorem map'_coe {lc : Filter γ} (F : (α → β) → γ → δ) (hF : (l.Event
     (f : α → β) : map' F hF f = F f :=
   rfl
 
-@[simp, norm_cast]
+@[norm_cast]
 theorem coe_eq : (f : Germ l β) = g ↔ f =ᶠ[l] g :=
   Quotient.eq''
 
@@ -275,11 +275,9 @@ alias ⟨_, _root_.Filter.EventuallyEq.germ_eq⟩ := coe_eq
 /-- Lift a function `β → γ` to a function `Germ l β → Germ l γ`. -/
 abbrev map (op : β → γ) : Germ l β → Germ l γ := Product.map fun _ => op
 
-@[simp]
 theorem map_coe (op : β → γ) (f : α → β) : map op (f : Germ l β) = op ∘ f :=
   rfl
 
-@[simp]
 theorem map_id : map id = (id : Germ l β → Germ l β) := by
   ext ⟨f⟩
   rfl
@@ -292,7 +290,6 @@ theorem map_map (op₁ : γ → δ) (op₂ : β → γ) (f : Germ l β) :
 abbrev map₂ (op : β → γ → δ) : Germ l β → Germ l γ → Germ l δ :=
   Product.map₂ fun _ => op
 
-@[simp]
 theorem map₂_coe (op : β → γ → δ) (f : α → β) (g : α → γ) :
     map₂ op (f : Germ l β) g = fun x => op (f x) (g x) :=
   rfl
@@ -354,25 +351,21 @@ lemma isConstant_compTendsto {f : Germ l β} {lc : Filter γ} {g : γ → α}
   induction f using Quotient.inductionOn with | _ f => ?_
   exact isConstant_comp_tendsto hf hg
 
-@[simp, norm_cast]
+@[norm_cast]
 theorem const_inj [NeBot l] {a b : β} : (↑a : Germ l β) = ↑b ↔ a = b :=
   coe_eq.trans const_eventuallyEq
 
-@[simp]
 theorem map_const (l : Filter α) (a : β) (f : β → γ) : (↑a : Germ l β).map f = ↑(f a) :=
   rfl
 
-@[simp]
 theorem map₂_const (l : Filter α) (b : β) (c : γ) (f : β → γ → δ) :
     map₂ f (↑b : Germ l β) ↑c = ↑(f b c) :=
   rfl
 
-@[simp]
 theorem const_compTendsto {l : Filter α} (b : β) {lc : Filter γ} {g : γ → α} (hg : Tendsto g lc l) :
     (↑b : Germ l β).compTendsto g hg = ↑b :=
   rfl
 
-@[simp]
 theorem const_compTendsto' {l : Filter α} (b : β) {lc : Filter γ} {g : Germ lc α}
     (hg : g.Tendsto l) : (↑b : Germ l β).compTendsto' g hg = ↑b :=
   inductionOn g (fun _ _ => rfl) hg
@@ -381,14 +374,12 @@ theorem const_compTendsto' {l : Filter α} (b : β) {lc : Filter γ} {g : Germ l
 abbrev LiftPred (p : β → Prop) (f : Germ l β) : Prop :=
   Product.LiftPred (fun _ => p) f
 
-@[simp]
 theorem liftPred_coe {p : β → Prop} {f : α → β} : LiftPred p (f : Germ l β) ↔ ∀ᶠ x in l, p (f x) :=
   Iff.rfl
 
 theorem liftPred_const {p : β → Prop} {x : β} (hx : p x) : LiftPred p (↑x : Germ l β) :=
   Eventually.of_forall fun _y => hx
 
-@[simp]
 theorem liftPred_const_iff [NeBot l] {p : β → Prop} {x : β} : LiftPred p (↑x : Germ l β) ↔ p x :=
   @eventually_const _ _ _ (p x)
 
@@ -396,7 +387,6 @@ theorem liftPred_const_iff [NeBot l] {p : β → Prop} {x : β} : LiftPred p (�
 abbrev LiftRel (r : β → γ → Prop) (f : Germ l β) (g : Germ l γ) : Prop :=
   Product.LiftRel (fun _ => r) f g
 
-@[simp]
 theorem liftRel_coe {r : β → γ → Prop} {f : α → β} {g : α → γ} :
     LiftRel r (f : Germ l β) g ↔ ∀ᶠ x in l, r (f x) (g x) :=
   Iff.rfl
@@ -405,7 +395,6 @@ theorem liftRel_const {r : β → γ → Prop} {x : β} {y : γ} (h : r x y) :
     LiftRel r (↑x : Germ l β) ↑y :=
   Eventually.of_forall fun _ => h
 
-@[simp]
 theorem liftRel_const_iff [NeBot l] {r : β → γ → Prop} {x : β} {y : γ} :
     LiftRel r (↑x : Germ l β) ↑y ↔ r x y :=
   @eventually_const _ _ _ (r x y)
@@ -763,7 +752,7 @@ theorem coe_nonneg [∀ i, LE (ε i)] [∀ i, Zero (ε i)] : 0 ≤ (f : Product 
 theorem _root_.Filter.Germ.const_le [LE β] {x y : β} : x ≤ y → (↑x : Germ l β) ≤ ↑y :=
   Germ.liftRel_const
 
-@[simp, norm_cast]
+@[norm_cast]
 theorem _root_.Filter.Germ.const_le_iff [LE β] [NeBot l] {x y : β} : (↑x : Germ l β) ≤ ↑y ↔ x ≤ y :=
   Germ.liftRel_const_iff
 
