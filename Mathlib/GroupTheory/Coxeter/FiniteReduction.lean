@@ -5,8 +5,8 @@ Authors: Johnathon Kyle Armstrong
 -/
 module
 
-public import Mathlib.Logic.Relation
 public import Mathlib.GroupTheory.Coxeter.ReflectionSystem
+public import Mathlib.Logic.Relation
 
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Linarith
