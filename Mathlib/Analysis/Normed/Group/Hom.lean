@@ -243,6 +243,8 @@ instance : ContinuousMapClass (NormedAddGroupHom V₁ V₂) V₁ V₂ where
 
 section toContinuousAddMonoidHom
 
+/-- Reinterpret a `NormedAddGroupHom V₁ V₂` as
+a continuous morphism of additive monoids `V₁ →ₜ+ V₂`. -/
 def toContinuousAddMonoidHom : V₁ →ₜ+ V₂ := .ofClass f
 
 @[simp]
