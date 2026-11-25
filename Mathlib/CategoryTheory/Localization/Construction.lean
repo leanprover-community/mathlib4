@@ -188,6 +188,10 @@ def objEquiv : C ≃ W.Localization where
     rintro ⟨⟨X⟩⟩
     rfl
 
+variable (W) in
+lemma objEquiv_apply (X : C) :
+    objEquiv W X = W.Q.obj X := by rfl
+
 instance : W.Q.EssSurj where
   mem_essImage Y := ⟨(objEquiv W).symm Y, ⟨Iso.refl _⟩⟩
 
