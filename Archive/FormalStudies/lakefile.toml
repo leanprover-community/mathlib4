@@ -1,9 +1,9 @@
-name = "SiliquantFormalStudies"
+name = "FormalStudies"
 version = "0.1.0"
-defaultTargets = ["SiliquantFormalStudies"]
+defaultTargets = ["FormalStudies"]
 
 [[lean_lib]]
-name = "SiliquantFormalStudies"
+name = "FormalStudies"
 roots = [
   "E8VsA16HadamardLaw",
   "S70FormalTheory.CrossLayerNonAdditivity",

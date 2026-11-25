@@ -1,8 +1,7 @@
-# SiliquantFormalStudies — pure-Init Lean 4 formal theories (Moissanite-Labs/siliquant)
+# FormalStudies — pure-Init Lean 4 formal theories
 
 Self-contained, zero-dependency (`import`-free, pure `Init`) Lean 4 formal theory
-package contributed from [Moissanite-Labs/siliquant](https://github.com/Moissanite-Labs/siliquant)
-(`main`, `studies/`). **75 theorems across 10 modules**, all kernel-checked on
+package. **75 theorems across 10 modules**, all kernel-checked on
 `leanprover/lean4:v4.36.0` with `lake build` — no `sorry`, no custom axioms, no
 `native_decide`/`unsafe`/`partial`; `#print axioms` reports only the standard
 `propext` / `Quot.sound` / `Classical.choice` (several exact witnesses depend on no
@@ -33,7 +32,6 @@ Each theorem is accompanied by `#print axioms <name>` at the end of its module.
 
 ## Provenance
 
-Extracted verbatim (no edits) from the merged `studies/` bundles on
-`Moissanite-Labs/siliquant@main` (PRs #87, #92, #94, #99), where each study also
-ships a pure-Z/Q Python oracle, an adversarial test suite, and a SHA-256-pinned
-certificate.
+Extracted verbatim (no edits) from the merged study bundles of an independent
+research program on weight quantization, where each study also ships a pure-Z/Q
+Python oracle, an adversarial test suite, and a SHA-256-pinned certificate.
