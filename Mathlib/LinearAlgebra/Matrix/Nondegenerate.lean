@@ -218,15 +218,16 @@ section SMul
 variable {α : Type*} [DistribSMul α R] [SMulCommClass α R R] [IsScalarTower α R R] {t : α}
 
 theorem SeparatingRight.of_smul (h : (t • M).SeparatingRight) : M.SeparatingRight := by
-  have := Fintype.ofFinite m; have := Fintype.ofFinite n
+  have := Fintype.ofFinite m
+  have := Fintype.ofFinite n
   rw [separatingRight_def] at h ⊢
-  exact fun w hw ↦ h w fun v ↦ by simp [smul_mulVec, dotProduct_smul, hw]
+  exact fun w hw ↦ h w fun v ↦ by simp [smul_mulVec, hw]
 
 theorem SeparatingRight.smul (ht : IsSMulRegular R t) (h : M.SeparatingRight) :
     (t • M).SeparatingRight := by
   have := Fintype.ofFinite m; have := Fintype.ofFinite n
   rw [separatingRight_def] at h ⊢
-  exact fun w hw ↦ h w fun v ↦ ht <| by simpa [smul_mulVec, dotProduct_smul] using hw v
+  exact fun w hw ↦ h w fun v ↦ ht <| by simpa [smul_mulVec] using hw v
 
 theorem separatingRight_smul_iff (ht : IsSMulRegular R t) :
     (t • M).SeparatingRight ↔ M.SeparatingRight :=
@@ -235,13 +236,13 @@ theorem separatingRight_smul_iff (ht : IsSMulRegular R t) :
 theorem SeparatingLeft.of_smul (h : (t • M).SeparatingLeft) : M.SeparatingLeft := by
   have := Fintype.ofFinite m; have := Fintype.ofFinite n
   rw [separatingLeft_def] at h ⊢
-  exact fun v hv ↦ h v fun w ↦ by simp [smul_mulVec, dotProduct_smul, hv]
+  exact fun v hv ↦ h v fun w ↦ by simp [smul_mulVec, hv]
 
 theorem SeparatingLeft.smul (ht : IsSMulRegular R t) (h : M.SeparatingLeft) :
     (t • M).SeparatingLeft := by
   have := Fintype.ofFinite m; have := Fintype.ofFinite n
   rw [separatingLeft_def] at h ⊢
-  exact fun v hv ↦ h v fun w ↦ ht <| by simpa [smul_mulVec, dotProduct_smul] using hv w
+  exact fun v hv ↦ h v fun w ↦ ht <| by simpa [smul_mulVec] using hv w
 
 theorem separatingLeft_smul_iff (ht : IsSMulRegular R t) :
     (t • M).SeparatingLeft ↔ M.SeparatingLeft :=
