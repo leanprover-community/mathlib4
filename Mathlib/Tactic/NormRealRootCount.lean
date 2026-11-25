@@ -115,7 +115,12 @@ def proveCardRootSet (e : Expr) : MetaM (Q(ℕ) × Expr) := do
   have h : Q(realRootCount? $dE = some $nE) := (q(Eq.refl (some $nE)) : Expr)
   return (nE, q(card_rootSet_of_realRootCount? $hf $h))
 
-/-- Prove the closed numerical proposition `p` with `norm_num`. -/
+/-- Prove `p`, an equation between literal numerical expressions using `norm_num`.
+
+It is used in the tactic to prove that an interval endpoint is equal to the fraction that's passed
+to the kernel.
+For example `(-1.6 : ℝ) = ((-8 : ℤ) : ℝ) / ((5 : ℤ) : ℝ)`.
+-/
 def proveNum (p : Q(Prop)) : MetaM Q($p) := do
   let r ← Mathlib.Meta.NormNum.deriveSimp (← Simp.mkContext) (useSimp := false) (e := p)
   unless r.expr.isConstOf ``True do throwError "could not prove{indentExpr p}"
