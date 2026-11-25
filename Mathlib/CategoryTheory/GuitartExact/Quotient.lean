@@ -8,11 +8,15 @@ module
 public import Mathlib.AlgebraicTopology.ModelCategory.RightHomotopy
 public import Mathlib.CategoryTheory.GuitartExact.Opposite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Guitart exact squares and quotient categories
 
 Consider a commutative square of categories given by a natural isomorphism
 `e : T ⋙ R ≅ L ⋙ B`:
+
 ```
       T
  C₀ ----> H₀

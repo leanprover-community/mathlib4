@@ -14,10 +14,14 @@ public import Mathlib.GroupTheory.GroupAction.Basic
 public import Mathlib.GroupTheory.GroupAction.ConjAct
 public import Mathlib.GroupTheory.GroupAction.Hom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of group actions involving quotient groups
 
 This file proves properties of group actions which use the quotient group construction, notably
+
 * the orbit-stabilizer theorem `MulAction.card_orbit_mul_card_stabilizer_eq_card_group`
 * the class formula `MulAction.selfEquivSigmaOrbitsQuotientStabilizer'`
 * Burnside's lemma `MulAction.sum_card_fixedBy_eq_card_orbits_mul_card_group`,

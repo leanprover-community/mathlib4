@@ -7,10 +7,14 @@ module
 
 public import Mathlib.Data.Finset.Sort
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sorting a finite type
 
 This file provides two equivalences for linearly ordered fintypes:
+
 * `monoEquivOfFin`: Order isomorphism between `α` and `Fin (card α)`.
 * `finSumEquivOfFinset`: Equivalence between `α` and `Fin m ⊕ Fin n` where `m` and `n` are
   respectively the cardinalities of some `Finset α` and its complement.
