@@ -37,7 +37,6 @@ this side condition for convenience.
 
 * `AdicCompletion.spanFinrank_maximalIdeal_eq` : for Noetherian local ring `R`, minimal number of
   generators of maximal ideal of `R` and `AdicCompletion (IsLocalRing.maximalIdeal R) R` are equal.
-
 -/
 
 public section
@@ -100,7 +99,7 @@ lemma maximalIdeal_eq_map [IsNoetherianRing R] [IsLocalRing R] :
 
 lemma mem_maximalIdeal_iff_eval_one_eq_zero [IsNoetherianRing R] [IsLocalRing R]
     (x : AdicCompletion (maximalIdeal R) R) :
-    x ∈ maximalIdeal (AdicCompletion (maximalIdeal R) R) ↔ x.1 1 = 0 := by
+    x ∈ maximalIdeal (AdicCompletion (maximalIdeal R) R) ↔ x.val 1 = 0 := by
   have : (AdicCompletion.eval (maximalIdeal R) R 1).ker =
     (maximalIdeal R) • (⊤ : Submodule R (AdicCompletion (maximalIdeal R) R)) := by
     simp [← pow_smul_top_eq_ker_eval (maximalIdeal R).fg_of_isNoetherianRing]
@@ -136,7 +135,7 @@ lemma residueField_map_bijective_of_fg [IsLocalRing R] (fg : (maximalIdeal R).FG
   have := AdicCompletion.isLocalRing_of_fg fg
   refine ⟨RingHom.injective _, fun x ↦ ?_⟩
   rcases residue_surjective x with ⟨y, hy⟩
-  rcases Ideal.Quotient.mk_surjective (y.1 1) with ⟨z, hz⟩
+  rcases Ideal.Quotient.mk_surjective (y.val 1) with ⟨z, hz⟩
   use residue R z
   rw [IsLocalRing.ResidueField.map_residue, ← hy]
   apply (Ideal.Quotient.mk_eq_mk_iff_sub_mem _ _).mpr
@@ -168,18 +167,20 @@ lemma spanFinrank_maximalIdeal_eq [IsNoetherianRing R] [IsLocalRing R] :
       maximalIdeal_eq_map, ← Ideal.map_pow, f] at hm
     rw [← Submodule.restrictScalars_mem R, ← Ideal.smul_top_eq_map,
       pow_smul_top_eq_ker_eval fg] at hm
-    have : (algebraMap R (AdicCompletion (maximalIdeal R) R)) m'.1 = of _ R m'.1 := rfl
+    have : (algebraMap R (AdicCompletion (maximalIdeal R) R)) m'.val = of _ R m'.val := rfl
     simp only [smul_eq_mul, eval, this, LinearMap.mem_ker, LinearMap.coe_mk, AddHom.coe_mk,
       of_apply, Submodule.mkQ_apply, mk_eq_mk, Ideal.Quotient.eq_zero_iff_mem] at hm
     simpa [← hm', toCotangent_eq_zero] using hm
   have surj : Function.Surjective f := by
     intro m
     rcases Ideal.toCotangent_surjective _ m with ⟨m', hm'⟩
-    rcases Submodule.Quotient.mk_surjective _ (m'.1.1 2) with ⟨l, hl⟩
-    have lmem : (transitionMap _ R (Nat.le_succ 1)) (m'.1.1 2) = m'.1.1 1 := m'.1.2 (Nat.le_succ 1)
+    rcases Submodule.Quotient.mk_surjective _ (m'.val.val 2) with ⟨l, hl⟩
+    have lmem : (transitionMap _ R (Nat.le_succ 1)) (m'.val.val 2) = m'.val.val 1 :=
+      m'.val.property (Nat.le_succ 1)
     simp only [smul_eq_mul, Nat.succ_eq_add_one, Nat.reduceAdd, transitionMap, Submodule.factorPow,
       Submodule.mapQ_eq_factor, Submodule.factor_eq_factor, ← hl, mk_eq_mk, factor_mk, pow_one,
-      (mem_maximalIdeal_iff_eval_one_eq_zero m'.1).mp m'.2, eq_zero_iff_mem, mul_top] at lmem
+      (mem_maximalIdeal_iff_eval_one_eq_zero m'.val).mp m'.property, eq_zero_iff_mem,
+      mul_top] at lmem
     use (maximalIdeal R).toCotangent ⟨l, lmem⟩
     simp only [mapCotangent_toCotangent, Algebra.ofId_apply, ← hm', toCotangent_eq, f]
     change (of (maximalIdeal R) R l) - m' ∈ _

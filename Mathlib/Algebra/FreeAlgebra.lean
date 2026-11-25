@@ -34,7 +34,7 @@ Given a commutative semiring `R`, and a type `X`, we construct the free unital, 
 5. `equivMonoidAlgebraFreeMonoid : FreeAlgebra R X ≃ₐ[R] R[FreeMonoid X]`
 6. An inductive principle `induction`.
 
-## Implementation details
+## Implementation notes
 
 We construct the free algebra on `X` as a quotient of an inductive type `FreeAlgebra.Pre` by an
 inductively defined relation `FreeAlgebra.Rel`. Explicitly, the construction involves three steps:
@@ -488,7 +488,7 @@ theorem algebraMap_eq_zero_iff (x : R) : algebraMap R (FreeAlgebra R X) x = 0 �
 theorem algebraMap_eq_one_iff (x : R) : algebraMap R (FreeAlgebra R X) x = 1 ↔ x = 1 :=
   map_eq_one_iff (algebraMap _ _) algebraMap_leftInverse.injective
 
--- this proof is copied from the approach in `FreeAbelianGroup.of_injective`
+-- this proof is copied from the approach in `FreeAddCommGroup.of_injective`
 theorem ι_injective [Nontrivial R] : Function.Injective (ι R : X → FreeAlgebra R X) :=
   fun x y hoxy ↦
   by_contradiction <| by

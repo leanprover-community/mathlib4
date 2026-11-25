@@ -14,12 +14,12 @@ A morphism of schemes is proper if it is separated, universally closed and (loca
 Note that we don't require quasi-compact, since this is implied by universally closed.
 
 ## Main results
+
 - `AlgebraicGeometry.isField_of_universallyClosed`:
   If `X` is an integral scheme that is universally closed over `Spec K`, then `Γ(X, ⊤)` is a field.
 - `AlgebraicGeometry.finite_appTop_of_universallyClosed`:
   If `X` is an integral scheme that is universally closed and of finite type over `Spec K`,
   then `Γ(X, ⊤)` is finite dimensional over `K`.
-
 -/
 
 public section

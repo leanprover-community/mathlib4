@@ -19,6 +19,7 @@ and `LieAlgebra.IsKilling.invtSubmoduleToLieIdeal`, which constructs the ideal a
 invariant submodule.
 
 ## Main definitions
+
 * `LieIdeal.rootSet`: the set of roots whose root space is contained in a given Lie ideal.
 * `LieIdeal.rootSpan`: the submodule of `Dual K H` spanned by `LieIdeal.rootSet`.
 * `LieIdeal.toInvtRootSubmodule`: the invariant root submodule associated to an ideal.
@@ -28,6 +29,7 @@ invariant submodule.
   invariant root submodules.
 
 ## Main results
+
 * `LieAlgebra.IsKilling.restr_inf_cartan_eq_iSup_corootSubmodule`: the intersection of a Lie ideal
   and a Cartan subalgebra is the span of the coroots whose roots have root spaces in the ideal.
 * `LieAlgebra.IsKilling.isSimple_iff_isIrreducible`: a Killing Lie algebra is simple if and only
@@ -55,10 +57,10 @@ lemma corootSubmodule_le (I : LieIdeal K L) {α : Weight K H L}
   exact lie_mem_left K L I y _ (hα hy)
 
 /-- The set of roots whose root space is contained in a given Lie ideal. -/
-def rootSet (I : LieIdeal K L) : Set H.root := { α | rootSpace H α.1 ≤ I.restr H }
+def rootSet (I : LieIdeal K L) : Set H.root := { α | rootSpace H α.val ≤ I.restr H }
 
 lemma mem_rootSet {I : LieIdeal K L} {α : H.root} :
-    α ∈ I.rootSet ↔ rootSpace H α.1 ≤ I.restr H := Iff.rfl
+    α ∈ I.rootSet ↔ rootSpace H α.val ≤ I.restr H := Iff.rfl
 
 variable [CharZero K] [IsKilling K L] [IsTriangularizable K H L]
 
@@ -99,7 +101,8 @@ lemma rootSpan_mem_invtRootSubmodule (I : LieIdeal K L) :
   intro β
   rw [Module.End.mem_invtSubmodule, rootSpan, Submodule.span_le]
   rintro - ⟨α, hα, rfl⟩
-  rw [SetLike.mem_coe, Submodule.mem_comap, LinearEquiv.coe_coe, ← RootPairing.root_reflectionPerm]
+  rw [SetLike.mem_coe, Submodule.mem_comap, LinearEquiv.coe_toLinearMap,
+    ← RootPairing.root_reflectionPerm]
   exact Submodule.subset_span ⟨_, (I.reflectionPerm_mem_rootSet_iff α β).mpr hα, rfl⟩
 
 /-- The invariant root submodule corresponding to a Lie ideal.
@@ -114,7 +117,7 @@ noncomputable def toInvtRootSubmodule (I : LieIdeal K L) :
 lemma toInvtRootSubmodule_mono {I J : LieIdeal K L} (h : I ≤ J) :
     I.toInvtRootSubmodule (H := H) ≤ J.toInvtRootSubmodule :=
   Submodule.span_mono (Set.image_mono
-    fun α (hα : rootSpace H α.1 ≤ I.restr H) ↦ hα.trans (show I.restr H ≤ J.restr H from h))
+    fun α (hα : rootSpace H α.val ≤ I.restr H) ↦ hα.trans (show I.restr H ≤ J.restr H from h))
 
 lemma root_apply_eq_zero_of_notMem_rootSet (I : LieIdeal K L)
     {h : H} (hI : (h : L) ∈ I) {β : H.root} (hβ : β ∉ I.rootSet) :
@@ -143,11 +146,11 @@ set_option backward.isDefEq.respectTransparency.types false in
 /-- The intersection of a Lie ideal and a Cartan subalgebra is the span of the coroots whose roots
 have root spaces in the ideal. -/
 lemma restr_inf_cartan_eq_biSup_corootSubmodule (I : LieIdeal K L) :
-    I.restr H ⊓ H.toLieSubmodule = ⨆ α ∈ I.rootSet, corootSubmodule α.1 := by
+    I.restr H ⊓ H.toLieSubmodule = ⨆ α ∈ I.rootSet, corootSubmodule α.val := by
   refine le_antisymm ?_ (iSup₂_le fun _ hα ↦
     le_inf (I.corootSubmodule_le hα) LieSubmodule.map_incl_le)
   intro x ⟨hxI, hxH⟩
-  let f : H.root → LieIdeal K H := fun α ↦ corootSpace α.1
+  let f : H.root → LieIdeal K H := fun α ↦ corootSpace α.val
   set span_I_roots := ⨆ α ∈ I.rootSet, f α
   set span_compl_roots := ⨆ (β : H.root) (_ : β ∉ I.rootSet), f β
   have h_split : span_I_roots ⊔ span_compl_roots = ⨆ α, f α :=
@@ -156,11 +159,11 @@ lemma restr_inf_cartan_eq_biSup_corootSubmodule (I : LieIdeal K L) :
     rw [h_split, eq_top_iff, ← biSup_corootSpace_eq_top]
     exact iSup₂_le fun α hα ↦ le_iSup_of_le ⟨α, by simpa [LieSubalgebra.root] using hα⟩ le_rfl
   have hspan_I_roots_incl : LieSubmodule.map H.toLieSubmodule.incl span_I_roots =
-      ⨆ α ∈ I.rootSet, corootSubmodule α.1 := by
+      ⨆ α ∈ I.rootSet, corootSubmodule α.val := by
     change LieSubmodule.map _ (⨆ α ∈ I.rootSet, f α) = ⨆ α ∈ I.rootSet, _
     simp_rw [LieSubmodule.map_iSup]; rfl
   have hspan_compl_roots_vanish (μ : H.root) (hμ : μ ∈ I.rootSet) :
-      span_compl_roots.toSubmodule ≤ μ.1.ker := by
+      span_compl_roots.toSubmodule ≤ μ.val.ker := by
     have : span_compl_roots.toSubmodule = ⨆ β ∉ I.rootSet, (f β).toSubmodule := by
       simp_rw [span_compl_roots, LieSubmodule.iSup_toSubmodule]
     rw [this]
@@ -171,7 +174,7 @@ lemma restr_inf_cartan_eq_biSup_corootSubmodule (I : LieIdeal K L) :
   obtain ⟨a, ha, b, hb, hab⟩ := Submodule.mem_sup.mp hx_top
   have haI : (a : L) ∈ I :=
     (iSup₂_le (fun _ hα ↦ I.corootSubmodule_le hα) :
-      ⨆ α ∈ I.rootSet, corootSubmodule α.1 ≤ _)
+      ⨆ α ∈ I.rootSet, corootSubmodule α.val ≤ _)
       (hspan_I_roots_incl ▸ LieSubmodule.mem_map_of_mem ha)
   have hbI : (b : L) ∈ I := by
     have h_sum : (a : L) + b = x := congr($(hab).val)
@@ -255,7 +258,8 @@ variable
 include hx_χ w_plus w_minus w_chi h_bracket_sum h_pos_containment h_neg_containment hαq
 
 private theorem chi_in_q_aux (h_chi_in_q : ↑χ ∈ q) :
-    ⁅x_χ, m_α⁆ ∈ ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2 := by
+    ⁅x_χ, m_α⁆ ∈ ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero},
+      sl2SubmoduleOfRoot α.property.2 := by
   have h_h_containment : ⁅x_χ, (y : L)⁆ ∈ genWeightSpace L χ := by
     have h_zero_weight : H.toLieSubmodule.incl y ∈ genWeightSpace L (0 : H → K) := by
       apply toLieSubmodule_le_rootSpace_zero
@@ -270,7 +274,7 @@ private theorem chi_in_q_aux (h_chi_in_q : ↑χ ∈ q) :
       (Submodule.mem_sup_left (Submodule.mem_sup_left h_pos_containment))
       (Submodule.mem_sup_left (Submodule.mem_sup_right h_neg_containment)))
       (Submodule.mem_sup_right h_h_containment)
-  let I := ⨆ β : {β : Weight K H L // ↑β ∈ q ∧ β.IsNonZero}, sl2SubmoduleOfRoot β.2.2
+  let I := ⨆ β : {β : Weight K H L // ↑β ∈ q ∧ β.IsNonZero}, sl2SubmoduleOfRoot β.property.2
   have genWeightSpace_le_I (β_lin : H →ₗ[K] K) (hβ_in_q : β_lin ∈ q)
       (hβ_ne_zero : β_lin ≠ 0) : genWeightSpace L β_lin ≤ I := by
     by_cases h_trivial : genWeightSpace L β_lin = ⊥
@@ -294,7 +298,8 @@ private theorem chi_in_q_aux (h_chi_in_q : ↑χ ∈ q) :
 include hq hα₀ hy
 
 private theorem chi_not_in_q_aux (h_chi_not_in_q : ↑χ ∉ q) :
-    ⁅x_χ, m_α⁆ ∈ ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2 := by
+    ⁅x_χ, m_α⁆ ∈ ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero},
+      sl2SubmoduleOfRoot α.property.2 := by
   let S := rootSystem H
   have exists_root_index (γ : Weight K H L) (hγ : γ.IsNonZero) : ∃ i, S.root i = ↑γ :=
     ⟨⟨γ, by simpa [LieSubalgebra.root]⟩, rfl⟩
@@ -353,13 +358,13 @@ private theorem chi_not_in_q_aux (h_chi_not_in_q : ↑χ ∉ q) :
     rwa [LieSubmodule.mem_bot] at h_in_bot
   have h_bracket_zero : ⁅x_χ, (y : L)⁆ = 0 := by
     have h_chi_coroot_zero : χ (coroot α) = 0 := by
-      have h_pairing_eq : S.pairing i j = i.1 (coroot j.1) := by
+      have h_pairing_eq : S.pairing i j = i.val (coroot j.val) := by
         rw [rootSystem_pairing_apply]
       rw [h_pairing_zero] at h_pairing_eq
       have w_eq {w₁ w₂ : Weight K H L} (h : w₁.toLinear = w₂.toLinear) : w₁ = w₂ := by
         apply Weight.ext; intro x; exact LinearMap.ext_iff.mp h x
-      have hi_val : i.1 = χ := w_eq (by rw [← hi]; rfl)
-      have hj_val : j.1 = α := w_eq (by rw [← hj]; rfl)
+      have hi_val : i.val = χ := w_eq (by rw [← hi]; rfl)
+      have hj_val : j.val = α := w_eq (by rw [← hj]; rfl)
       rw [hi_val, hj_val] at h_pairing_eq
       exact h_pairing_eq.symm
     have h_lie_eq_smul : ⁅(y : L), x_χ⁆ = χ y • x_χ := lie_eq_smul_of_mem_rootSpace hx_χ y
@@ -379,7 +384,8 @@ end
 set_option backward.isDefEq.respectTransparency.types false in
 include hq hx_χ hαq in
 private theorem invtSubmoduleToLieIdeal_aux (hm_α : m_α ∈ sl2SubmoduleOfRoot hα₀) :
-    ⁅x_χ, m_α⁆ ∈ ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2 := by
+    ⁅x_χ, m_α⁆ ∈ ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero},
+      sl2SubmoduleOfRoot α.property.2 := by
   have hm_α_original : m_α ∈ sl2SubmoduleOfRoot hα₀ := hm_α
   rw [sl2SubmoduleOfRoot_eq_sup] at hm_α
   obtain ⟨m_αneg, hm_αneg, m_h, hm_h, hm_eq⟩ := Submodule.mem_sup.mp hm_α
@@ -441,7 +447,7 @@ this produces a Lie ideal by taking the sum of all `sl₂` subalgebras correspon
 whose linear forms lie in `q`. -/
 noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
     (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i)) : LieIdeal K L where
-  __ := ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2
+  __ := ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.property.2
   lie_mem := by
     intro x m hm
     have hx : x ∈ ⨆ χ : Weight K H L, genWeightSpace L χ := by
@@ -449,7 +455,8 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
     induction hx using LieSubmodule.iSup_induction' with
     | mem χ x_χ hx_χ =>
       induction hm using LieSubmodule.iSup_induction' with
-      | mem α m_α hm_α => exact invtSubmoduleToLieIdeal_aux q hq χ x_χ m_α hx_χ α.1 α.2.1 α.2.2 hm_α
+      | mem α m_α hm_α =>
+        exact invtSubmoduleToLieIdeal_aux q hq χ x_χ m_α hx_χ α.val α.property.1 α.property.2 hm_α
       | zero =>
         simp only [Submodule.carrier_eq_coe, lie_zero, SetLike.mem_coe, zero_mem]
       | add m₁ m₂ _ _ ih₁ ih₂ =>
@@ -464,13 +471,13 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
 @[simp] lemma coe_invtSubmoduleToLieIdeal_eq_iSup (q : Submodule K (Dual K H))
     (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i).toLinearMap) :
     (invtSubmoduleToLieIdeal q hq).toSubmodule =
-      ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2 :=
+      ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.property.2 :=
   rfl
 
 @[simp] lemma restr_invtSubmoduleToLieIdeal_eq_iSup (q : Submodule K (Dual K H))
     (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i).toLinearMap) :
     (invtSubmoduleToLieIdeal q hq).restr H =
-      ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2 := by
+      ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.property.2 := by
   rw [← LieSubmodule.toSubmodule_inj, LieSubmodule.restr_toSubmodule,
     coe_invtSubmoduleToLieIdeal_eq_iSup, LieSubmodule.iSup_toSubmodule]
 
@@ -499,7 +506,7 @@ lemma mem_rootSet_invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
     calc rootSpace H (α : Weight K H L)
         ≤ sl2SubmoduleOfRoot (H.isNonZero_coe_root α) := by
           rw [sl2SubmoduleOfRoot_eq_sup]; exact le_sup_of_le_left le_sup_left
-      _ ≤ ⨆ x : {β : Weight K H L // ↑β ∈ q ∧ β.IsNonZero}, sl2SubmoduleOfRoot x.2.2 :=
+      _ ≤ ⨆ x : {β : Weight K H L // ↑β ∈ q ∧ β.IsNonZero}, sl2SubmoduleOfRoot x.property.2 :=
           le_iSup_of_le ⟨↑α, hα, H.isNonZero_coe_root α⟩ le_rfl
       _ = J.restr H := (restr_invtSubmoduleToLieIdeal_eq_iSup q hq).symm
 
@@ -532,7 +539,7 @@ lemma lieIdealOrderIso_left_inv (I : LieIdeal K L)
 lemma lieIdealOrderIso_right_inv (q : (rootSystem H).invtRootSubmodule)
     (hq : ∀ α, ↑q ∈ End.invtSubmodule ((rootSystem H).reflection α).toLinearMap :=
       (rootSystem H).mem_invtRootSubmodule_iff.mp q.property) :
-    (invtSubmoduleToLieIdeal q.1 hq).toInvtRootSubmodule = q := by
+    (invtSubmoduleToLieIdeal q.val hq).toInvtRootSubmodule = q := by
   simp only [Subtype.ext_iff, LieIdeal.toInvtRootSubmodule, LieIdeal.rootSpan, LieIdeal.rootSet]
   conv_rhs => rw [RootPairing.invtRootSubmodule.eq_span_root q]
   congr 2; ext α
@@ -543,7 +550,7 @@ variable (H) in
 noncomputable def lieIdealOrderIso :
     LieIdeal K L ≃o (rootSystem H).invtRootSubmodule where
   toFun := LieIdeal.toInvtRootSubmodule
-  invFun q := invtSubmoduleToLieIdeal q.1 ((rootSystem H).mem_invtRootSubmodule_iff.mp q.2)
+  invFun q := invtSubmoduleToLieIdeal q.val ((rootSystem H).mem_invtRootSubmodule_iff.mp q.property)
   left_inv := lieIdealOrderIso_left_inv
   right_inv := lieIdealOrderIso_right_inv
   map_rel_iff' {I J} := by

@@ -35,8 +35,8 @@ when `F` is a commutative formal group law
 - `AddCommMonoid (F.Point σ)`
 
 ## References
-* [Hazewinkel, Michiel. Formal Groups and Applications][hazewinkel1978]
 
+* [Hazewinkel, Michiel. Formal Groups and Applications][hazewinkel1978]
 -/
 
 @[expose] public section

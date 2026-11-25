@@ -5,9 +5,13 @@ Authors: Johannes Hölzl, Jens Wagemaker, Paul Lezeau
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Associated
 public import Mathlib.Algebra.Order.Monoid.Associated
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+
+import Mathlib.Algebra.GroupWithZero.Associated
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Order on associates of a monoid with zero

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Lie.Semisimple.Defs
 public import Mathlib.Order.BooleanGenerators
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Semisimple Lie algebras
 
@@ -165,7 +168,7 @@ lemma isSimple_of_isAtom (I : LieIdeal R L) (hI : IsAtom I) : IsSimple R I where
         · suffices ⁅b, y.val⁆ = 0 by erw [this]; simp only [zero_mem]
           rw [← LieSubmodule.mem_bot (R := R) (L := L),
               ← (IsSemisimple.sSupIndep_isAtom hI).eq_bot]
-          exact ⟨lie_mem_right R L I b y y.2, lie_mem_left _ _ _ _ _ hb⟩ }
+          exact ⟨lie_mem_right R L I b y y.property, lie_mem_left _ _ _ _ _ hb⟩ }
     -- Now that we know that `J` is an ideal of `L`,
     -- we start with the proof that `I` is a simple Lie algebra.
     -- Assume that `J ≠ ⊤`.
@@ -175,7 +178,7 @@ lemma isSimple_of_isAtom (I : LieIdeal R L) (hI : IsAtom I) : IsSimple R I where
       rw [eq_bot_iff] at this ⊢
       intro x hx
       suffices x ∈ J → x = 0 from this hx
-      have := @this x.1
+      have := @this x.val
       simp only [LieIdeal.incl_coe, LieIdeal.toLieSubalgebra_toSubmodule,
         LieSubmodule.mem_mk_iff', Submodule.mem_map, LieSubmodule.mem_toSubmodule, Subtype.exists,
         LieSubmodule.mem_bot, ZeroMemClass.coe_eq_zero, forall_exists_index, and_imp, J'] at this
@@ -188,7 +191,7 @@ lemma isSimple_of_isAtom (I : LieIdeal R L) (hI : IsAtom I) : IsSimple R I where
     constructor
     -- We know that `J ≤ I` since `J` is an ideal of `I`.
     · rintro _ ⟨x, -, rfl⟩
-      exact x.2
+      exact x.property
     -- So we need to show `J ≠ I` as ideals of `L`.
     -- This follows from our assumption that `J ≠ ⊤` as ideals of `I`.
     contrapose hJ
@@ -256,13 +259,13 @@ lemma finitelyAtomistic : ∀ s : Finset (LieIdeal R L), ↑s ⊆ {I : LieIdeal 
   -- and `J ⊓ K = ⊥` by the independence of the atoms.
   · apply (sSupIndep_isAtom.disjoint_sSup (hs hJs) hs'S (Finset.notMem_erase _ _)).le_bot
     apply LieSubmodule.lie_le_inf
-    apply LieSubmodule.lie_mem_lie j.2
+    apply LieSubmodule.lie_mem_lie j.property
     simpa only [K, Finset.sup_id_eq_sSup] using hz
   -- By similar reasoning, `j` brackets to `0` with `x = y + z ∈ I`, if we show `J ⊓ I = ⊥`.
   suffices J ⊓ I = ⊥ by
     apply this.le
     apply LieSubmodule.lie_le_inf
-    exact LieSubmodule.lie_mem_lie j.2 hx
+    exact LieSubmodule.lie_mem_lie j.property hx
   -- Indeed `J ⊓ I = ⊥`, since `J` is an atom that is not contained in `I`.
   apply ((hs hJs).le_iff.mp _).resolve_right
   · contrapose hJI
@@ -295,7 +298,7 @@ instance (priority := 100) instHasTrivialRadical : HasTrivialRadical R L := by
   intro x y
   ext
   simp only [LieIdeal.coe_bracket_of_module, LieSubmodule.coe_bracket, ZeroMemClass.coe_zero]
-  have : (⁅(⟨x, hJ' x.2⟩ : I), ⟨y, hJ' y.2⟩⁆ : I) = 0 := trivial_lie_zero _ _ _ _
+  have : (⁅(⟨x, hJ' x.property⟩ : I), ⟨y, hJ' y.property⟩⁆ : I) = 0 := trivial_lie_zero _ _ _ _
   apply_fun Subtype.val at this
   exact this
 

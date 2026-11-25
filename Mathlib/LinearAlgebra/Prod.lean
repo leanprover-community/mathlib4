@@ -6,8 +6,9 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Eric W
 module
 
 public import Mathlib.Algebra.Algebra.Prod
-public import Mathlib.Algebra.Group.Graph
 public import Mathlib.LinearAlgebra.Span.Basic
+
+import Mathlib.Algebra.Group.Graph
 
 /-! # Products of modules
 
@@ -453,7 +454,7 @@ theorem ker_prod (f : M →ₗ[R] M₂) (g : M →ₗ[R] M₃) : ker (prod f g) 
 
 theorem range_prod_le (f : M →ₗ[R] M₂) (g : M →ₗ[R] M₃) :
     range (prod f g) ≤ (range f).prod (range g) := by
-  simp only [IsConcreteLE.le_iff, prod_apply, mem_range, mem_prod, exists_imp]
+  simp only [le_iff_mem_imp_mem, prod_apply, mem_range, mem_prod, exists_imp]
   rintro _ x rfl
   exact ⟨⟨x, rfl⟩, ⟨x, rfl⟩⟩
 
@@ -557,7 +558,7 @@ def fst : Submodule R (M × M₂) :=
 /-- `M` as a submodule of `M × N` is isomorphic to `M`. -/
 @[simps]
 def fstEquiv : Submodule.fst R M M₂ ≃ₗ[R] M where
-  toFun x := x.1.1
+  toFun x := x.val.1
   invFun m := ⟨⟨m, 0⟩, by aesop⟩
   map_add' := by simp
   map_smul' := by simp
@@ -577,7 +578,7 @@ def snd : Submodule R (M × M₂) :=
 /-- `N` as a submodule of `M × N` is isomorphic to `N`. -/
 @[simps]
 def sndEquiv : Submodule.snd R M M₂ ≃ₗ[R] M₂ where
-  toFun x := x.1.2
+  toFun x := x.val.2
   invFun n := ⟨⟨0, n⟩, by aesop⟩
   map_add' := by simp
   map_smul' := by simp
@@ -589,16 +590,14 @@ theorem snd_map_fst : (Submodule.snd R M M₂).map (LinearMap.fst R M M₂) = �
 theorem snd_map_snd : (Submodule.snd R M M₂).map (LinearMap.snd R M M₂) = ⊤ := by
   aesop
 
-theorem fst_sup_snd : Submodule.fst R M M₂ ⊔ Submodule.snd R M M₂ = ⊤ := by
-  rw [eq_top_iff]
-  rintro ⟨m, n⟩ -
-  rw [show (m, n) = (m, 0) + (0, n) by simp]
-  apply Submodule.add_mem (Submodule.fst R M M₂ ⊔ Submodule.snd R M M₂)
-  · exact Submodule.mem_sup_left (Submodule.mem_comap.mpr (by simp))
-  · exact Submodule.mem_sup_right (Submodule.mem_comap.mpr (by simp))
+theorem isCompl_fst_snd : IsCompl (Submodule.fst R M M₂) (Submodule.snd R M M₂) := by
+  simpa [range_inl, range_inr] using! isCompl_range_inl_inr
 
-theorem fst_inf_snd : Submodule.fst R M M₂ ⊓ Submodule.snd R M M₂ = ⊥ := by
-  aesop
+theorem fst_sup_snd : Submodule.fst R M M₂ ⊔ Submodule.snd R M M₂ = ⊤ :=
+  (isCompl_fst_snd R M M₂).sup_eq_top
+
+theorem fst_inf_snd : Submodule.fst R M M₂ ⊓ Submodule.snd R M M₂ = ⊥ :=
+  (isCompl_fst_snd R M M₂).inf_eq_bot
 
 theorem le_prod_iff {p₁ : Submodule R M} {p₂ : Submodule R M₂} {q : Submodule R (M × M₂)} :
     q ≤ p₁.prod p₂ ↔ map (LinearMap.fst R M M₂) q ≤ p₁ ∧ map (LinearMap.snd R M M₂) q ≤ p₂ := by
@@ -862,7 +861,7 @@ variable [Module R M] [Module R M₂] [Module R M₃]
 theorem range_prod_eq {f : M →ₗ[R] M₂} {g : M →ₗ[R] M₃} (h : ker f ⊔ ker g = ⊤) :
     range (prod f g) = (range f).prod (range g) := by
   refine le_antisymm (f.range_prod_le g) ?_
-  simp only [IsConcreteLE.le_iff, prod_apply, mem_range, mem_prod, exists_imp, and_imp,
+  simp only [le_iff_mem_imp_mem, prod_apply, mem_range, mem_prod, exists_imp, and_imp,
     Prod.forall, Function.prod_apply]
   rintro _ _ x rfl y rfl
   -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to specify `(f := f)`
@@ -970,7 +969,7 @@ lemma LinearMap.exists_linearEquiv_eq_graph {f : G →ₛₗ[σ] H × I} (hf₁ 
   have he₁₂ h i : e₁ h = i ↔ e₂ i = h := by
     simp only [SetLike.ext_iff, LinearMap.mem_graph_iff] at he₁ he₂
     rw [Eq.comm, ← he₁ (h, i), Eq.comm, ← he₂ (i, h)]
-    simp only [mem_range, coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+    simp only [mem_range, coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply,
       LinearEquiv.prodComm_apply, Prod.swap_eq_iff_eq_swap, Prod.swap_prod_mk]
   exact ⟨
   { toFun := e₁

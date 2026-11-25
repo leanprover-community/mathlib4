@@ -6,9 +6,10 @@ Authors: Eric Rodriguez
 module
 
 public import Mathlib.Analysis.Complex.Arg
-public import Mathlib.NumberTheory.Padics.PadicVal.Basic
 public import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
-public import Mathlib.Topology.Algebra.Polynomial
+
+import Mathlib.NumberTheory.Padics.PadicVal.Basic
+import Mathlib.Topology.Algebra.Polynomial
 
 /-!
 # Evaluating cyclotomic polynomials
@@ -16,6 +17,7 @@ public import Mathlib.Topology.Algebra.Polynomial
 This file states some results about evaluating cyclotomic polynomials in various different ways.
 
 ## Main definitions
+
 * `Polynomial.eval(₂)_one_cyclotomic_prime(_pow)`: `eval 1 (cyclotomic p^k R) = p`.
 * `Polynomial.eval_one_cyclotomic_not_prime_pow`: Otherwise, `eval 1 (cyclotomic n R) = 1`.
 * `Polynomial.cyclotomic_pos` : `∀ x, 0 < eval x (cyclotomic n R)` if `2 < n`.

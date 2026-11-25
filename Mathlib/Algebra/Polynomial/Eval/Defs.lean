@@ -12,6 +12,7 @@ public import Mathlib.Algebra.Polynomial.Basic
 # Evaluating a polynomial
 
 ## Main definitions
+
 * `Polynomial.eval₂`: evaluate `p : R[X]` in `S` given a ring hom `f : R →+* S` and `x : S`.
 * `Polynomial.eval`: evaluate `p : R[X]` given `x : R`.
 * `Polynomial.IsRoot`: `x : R` is a root of `p : R[X]`.
@@ -25,7 +26,6 @@ We also provide the following bundled versions:
 * `Polynomial.mapRingHom`
 
 We include results on applying the definitions to `C`, `X` and ring operations.
-
 -/
 
 @[expose] public section

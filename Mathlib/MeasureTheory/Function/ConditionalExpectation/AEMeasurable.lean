@@ -31,7 +31,6 @@ sub-σ-algebra `m` in a normed space, it suffices to show that
 * is closed under addition;
 * the set of functions in `Lp` strongly measurable w.r.t. `m` for which the property holds is
   closed.
-
 -/
 
 @[expose] public section
@@ -156,13 +155,13 @@ variable (F p μ)
 noncomputable def lpMeasSubgroupToLpTrim (hm : m ≤ m0) (f : lpMeasSubgroup F m p μ) :
     Lp F p (μ.trim hm) :=
   MemLp.toLp (mem_lpMeasSubgroup_iff_aestronglyMeasurable.mp f.mem).choose
-    (memLp_trim_of_mem_lpMeasSubgroup hm f.1 f.mem)
+    (memLp_trim_of_mem_lpMeasSubgroup hm f.val f.mem)
 
 variable (𝕜) in
 /-- Map from `lpMeas` to `Lp F p (μ.trim hm)`. -/
 noncomputable def lpMeasToLpTrim (hm : m ≤ m0) (f : lpMeas F 𝕜 m p μ) : Lp F p (μ.trim hm) :=
   MemLp.toLp (mem_lpMeas_iff_aestronglyMeasurable.mp f.mem).choose
-    (memLp_trim_of_mem_lpMeasSubgroup hm f.1 f.mem)
+    (memLp_trim_of_mem_lpMeasSubgroup hm f.val f.mem)
 
 /-- Map from `Lp F p (μ.trim hm)` to `lpMeasSubgroup`, inverse of
 `lpMeasSubgroupToLpTrim`. -/
@@ -179,7 +178,7 @@ variable {F p μ}
 
 theorem lpMeasSubgroupToLpTrim_ae_eq (hm : m ≤ m0) (f : lpMeasSubgroup F m p μ) :
     lpMeasSubgroupToLpTrim F p μ hm f =ᵐ[μ] f :=
-  (ae_eq_of_ae_eq_trim (MemLp.coeFn_toLp (memLp_trim_of_mem_lpMeasSubgroup hm f.1 f.mem))).trans
+  (ae_eq_of_ae_eq_trim (MemLp.coeFn_toLp (memLp_trim_of_mem_lpMeasSubgroup hm f.val f.mem))).trans
     (mem_lpMeasSubgroup_iff_aestronglyMeasurable.mp f.mem).choose_spec.2.symm
 
 theorem lpTrimToLpMeasSubgroup_ae_eq (hm : m ≤ m0) (f : Lp F p (μ.trim hm)) :
@@ -188,7 +187,7 @@ theorem lpTrimToLpMeasSubgroup_ae_eq (hm : m ≤ m0) (f : Lp F p (μ.trim hm)) :
 
 theorem lpMeasToLpTrim_ae_eq (hm : m ≤ m0) (f : lpMeas F 𝕜 m p μ) :
     lpMeasToLpTrim F 𝕜 p μ hm f =ᵐ[μ] f :=
-  (ae_eq_of_ae_eq_trim (MemLp.coeFn_toLp (memLp_trim_of_mem_lpMeasSubgroup hm f.1 f.mem))).trans
+  (ae_eq_of_ae_eq_trim (MemLp.coeFn_toLp (memLp_trim_of_mem_lpMeasSubgroup hm f.val f.mem))).trans
     (mem_lpMeasSubgroup_iff_aestronglyMeasurable.mp f.mem).choose_spec.2.symm
 
 theorem lpTrimToLpMeas_ae_eq (hm : m ≤ m0) (f : Lp F p (μ.trim hm)) :
@@ -324,7 +323,7 @@ variable {m m0 : MeasurableSpace α} {μ : Measure α}
 `f =ᵐ[μ] Lp_meas_to_Lp_trim F 𝕜 p μ hm f`. -/
 theorem lpMeas.ae_fin_strongly_measurable' (hm : m ≤ m0) (f : lpMeas F 𝕜 m p μ) (hp_ne_zero : p ≠ 0)
     (hp_ne_top : p ≠ ∞) :
-    ∃ g, FinStronglyMeasurable g (μ.trim hm) ∧ f.1 =ᵐ[μ] g :=
+    ∃ g, FinStronglyMeasurable g (μ.trim hm) ∧ f.val =ᵐ[μ] g :=
   ⟨lpMeasSubgroupToLpTrim F p μ hm f, Lp.finStronglyMeasurable _ hp_ne_zero hp_ne_top,
     (lpMeasSubgroupToLpTrim_ae_eq hm f).symm⟩
 

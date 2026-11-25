@@ -11,6 +11,9 @@ public import Mathlib.Data.ENat.Lattice
 
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Projective dimension
 
@@ -25,7 +28,6 @@ if all `Ext X Y i` vanish when `n ≤ i`. This defines a type class
 
 We also define the projective dimension in `WithBot ℕ∞` as `projectiveDimension`,
 `projectiveDimension X = ⊥` iff `X` is zero and behaves as expected on non-negative values.
-
 -/
 
 @[expose] public section

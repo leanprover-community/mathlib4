@@ -25,11 +25,13 @@ so this is mostly just a more convenient API. We prove the equivalence in
 `CategoryTheory.Functor.Elements.structuredArrowEquivalence`.
 
 ## References
+
 * [Emily Riehl, *Category Theory in Context*, Section 2.4][riehl2017]
 * <https://en.wikipedia.org/wiki/Category_of_elements>
 * <https://ncatlab.org/nlab/show/category+of+elements>
 
 ## Tags
+
 category of elements, Grothendieck construction, comma category
 -/
 
@@ -91,8 +93,12 @@ variable (F) in
 /-- The functor out of the category of elements which forgets the element. -/
 @[implicit_reducible, simps]
 def π : F.Elements ⥤ C where
-  obj X := X.1
+  obj X := X.obj
   map f := f.hom
+
+@[simp]
+lemma eqToHom_hom {x y : F.Elements} (h : x = y) :
+    (eqToHom h).hom = eqToHom (by rw [h]) := by subst h; rfl
 
 end Functor.Elements
 
@@ -104,6 +110,12 @@ def NatTrans.mapElements {G : C ⥤ Type w} (φ : F ⟶ G) : F.Elements ⥤ G.El
     { hom := f.hom
       map_val := by simpa using (φ.naturality_apply f.hom e₁.val).symm }
 
+lemma NatTrans.injective_mapElements_obj {G : C ⥤ Type w} :
+    Function.Injective (fun (φ : F ⟶ G) ↦ φ.mapElements.obj) := by
+  intro a b h
+  ext X e
+  exact congr(($(h) (Functor.elementsMk _ _ e)).val)
+
 /-- If `φ : F ⟶ G` is a natural transformation between functors to types, this is the
 canonical isomorphism `φ.mapElements ⋙ Functor.Elements.π G ≅ Functor.Elements.π F`. -/
 @[simps!]
@@ -114,6 +126,10 @@ def NatTrans.mapElementsCompπIso {G : C ⥤ Type w} (φ : F ⟶ G) :
 lemma NatTrans.mapElements_comp_π {G : C ⥤ Type w} (φ : F ⟶ G) :
     φ.mapElements ⋙ Functor.Elements.π G = Functor.Elements.π F :=
   rfl
+
+lemma NatTrans.mapElements_comp_obj {G H : C ⥤ Type w} (φ : F ⟶ G) (ψ : G ⟶ H)
+    (e : F.Elements) :
+    (φ ≫ ψ).mapElements.obj e = ψ.mapElements.obj (φ.mapElements.obj e) := rfl
 
 /-- The functor mapping functors `C ⥤ Type w` to their category of elements -/
 @[simps]
@@ -387,7 +403,7 @@ instance essentiallySmall {C : Type u} [Category.{v} C]
   obtain ⟨P, _, hP⟩ := ObjectProperty.EssentiallySmall.exists_small_le' (⊤ : ObjectProperty C)
   refine ⟨fun x ↦ P x.obj, ?_, fun y _ ↦ ?_⟩
   · exact small_of_surjective.{w} (α := Σ (Z : Subtype P), F.obj Z.val)
-      (f := fun x ↦ ⟨F.elementsMk _ x.2, x.1.2⟩)
+      (f := fun x ↦ ⟨F.elementsMk _ x.2, x.1.property⟩)
       (fun ⟨x, hx⟩ ↦ ⟨⟨⟨x.obj, hx⟩, x.val⟩, rfl⟩)
   · obtain ⟨Z, hZ, ⟨e⟩⟩ := hP y.obj (by simp)
     exact ⟨F.elementsMk Z (F.map e.hom y.val), hZ, ⟨isoMk e rfl⟩⟩
@@ -482,5 +498,28 @@ def Equivalence.congrElements {D : Type*} [Category* D] (e : C ≌ D) (P : D ⥤
     NatIso.ofComponents
       (fun x ↦ Functor.Elements.isoMk (e.unitIso.symm.app x.obj) (by
         simp [← ConcreteCategory.comp_apply, ← Functor.map_comp]))
+
+/-- Two equal natural transformations induce isomorphic functors on
+categories of elements. -/
+@[simps!]
+def NatTrans.congrMapElements {G : C ⥤ Type w} {φ φ' : F ⟶ G} (h : φ = φ') :
+    φ.mapElements ≅ φ'.mapElements :=
+  NatIso.ofComponents (fun _ ↦ Functor.Elements.isoMk (Iso.refl _))
+
+/-- Isomorphic functors have equivalent categories of elements. -/
+@[simps!, implicit_reducible]
+def Functor.Elements.equivalenceOfIso {G : C ⥤ Type w} (e : F ≅ G) :
+    F.Elements ≌ G.Elements where
+  functor := e.hom.mapElements
+  inverse := e.inv.mapElements
+  unitIso := NatTrans.congrMapElements e.hom_inv_id.symm
+  counitIso := NatTrans.congrMapElements e.inv_hom_id
+
+/-- Isomorphic functors have isomorphic categories of elements. -/
+@[simps!, implicit_reducible]
+def Functor.Elements.isoCatOfIso {G : C ⥤ Type w} (e : F ≅ G) :
+    IsoCat F.Elements G.Elements :=
+  (equivalenceOfIso e).toIsoCat
+    (fun x ↦ ext _ _ rfl (by simp)) (fun y ↦ ext _ _ rfl (by simp))
 
 end CategoryTheory

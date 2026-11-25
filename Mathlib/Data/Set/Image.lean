@@ -30,7 +30,6 @@ public import Mathlib.Data.Set.SymmDiff
 ## Tags
 
 set, sets, image, preimage, pre-image, range
-
 -/
 
 public section
@@ -155,8 +154,11 @@ theorem preimage_preimage {g : β → γ} {f : α → β} {s : Set γ} :
     f ⁻¹' g ⁻¹' s = (fun x => g (f x)) ⁻¹' s :=
   preimage_comp.symm
 
-theorem eq_preimage_subtype_val_iff {p : α → Prop} {s : Set (Subtype p)} {t : Set α} :
+theorem eq_preimage_subtypeVal_iff {p : α → Prop} {s : Set (Subtype p)} {t : Set α} :
     s = Subtype.val ⁻¹' t ↔ ∀ (x) (h : p x), (⟨x, h⟩ : Subtype p) ∈ s ↔ x ∈ t := by grind
+
+@[deprecated (since := "2026-11-11")]
+alias eq_preimage_subtype_val_iff := eq_preimage_subtypeVal_iff
 
 theorem nonempty_of_nonempty_preimage {s : Set β} {f : α → β} (hf : (f ⁻¹' s).Nonempty) :
     s.Nonempty :=
@@ -171,13 +173,16 @@ theorem nonempty_preimage_iff {s : Set β} {f : α → β} :
 
 @[simp] theorem preimage_singleton_false (p : α → Prop) : p ⁻¹' {False} = {a | ¬p a} := by ext; simp
 
-theorem preimage_subtype_coe_eq_compl {s u v : Set α} (hsuv : s ⊆ u ∪ v)
+theorem preimage_subtypeVal_eq_compl {s u v : Set α} (hsuv : s ⊆ u ∪ v)
     (H : s ∩ (u ∩ v) = ∅) : ((↑) : s → α) ⁻¹' u = ((↑) ⁻¹' v)ᶜ := by
   ext ⟨x, x_in_s⟩
   constructor
   · intro x_in_u x_in_v
     exact eq_empty_iff_forall_notMem.mp H x ⟨x_in_s, ⟨x_in_u, x_in_v⟩⟩
   · grind
+
+@[deprecated (since := "2026-11-10")]
+alias preimage_subtype_coe_eq_compl := preimage_subtypeVal_eq_compl
 
 lemma preimage_subset {s t} (hs : s ⊆ f '' t) (hf : Set.InjOn f (f ⁻¹' s)) : f ⁻¹' s ⊆ t := by
   rintro a ha
@@ -216,7 +221,8 @@ theorem image_congr {f g : α → β} {s : Set α} (h : ∀ a ∈ s, f a = g a) 
   aesop
 
 /-- A common special case of `image_congr` -/
-theorem image_congr' {f g : α → β} {s : Set α} (h : ∀ x : α, f x = g x) : f '' s = g '' s := by
+theorem image_congr' {f g : α → β} {s t : Set α} (hs : s = t) (h : ∀ x : α, f x = g x) :
+    f '' s = g '' t := by
   grind
 
 @[gcongr]
@@ -945,7 +951,7 @@ theorem range_singleton {x : α} (f : ({x} : Set α) → β) : range f = {f ⟨x
 @[simp]
 theorem range_insert {x : α} {s : Set α} (f : ((insert x s) : Set α) → β) :
     range f = insert (f ⟨x, mem_insert x s⟩)
-      (range fun y : s ↦ f ⟨y, mem_insert_of_mem _ y.2⟩) := by
+      (range fun y : s ↦ f ⟨y, mem_insert_of_mem _ y.property⟩) := by
   aesop
 
 theorem range_sdiff_image_subset (f : α → β) (s : Set α) : range f \ f '' s ⊆ f '' sᶜ :=
@@ -1247,7 +1253,7 @@ lemma preimage_val_subset_preimage_val_iff (s t u : Set α) :
   · rw [← image_preimage_coe, ← image_preimage_coe]
     exact image_mono
   · intro h x a
-    exact (h ⟨x.2, a⟩).2
+    exact (h ⟨x.property, a⟩).2
 
 theorem exists_set_subtype {t : Set α} (p : Set α → Prop) :
     (∃ s : Set t, p (((↑) : t → α) '' s)) ↔ ∃ s : Set α, s ⊆ t ∧ p s := by
@@ -1353,7 +1359,7 @@ lemma Codisjoint.preimage (f : α → β) {s t : Set β} (h : Codisjoint s t) :
 
 lemma IsCompl.preimage (f : α → β) {s t : Set β} (h : IsCompl s t) :
     IsCompl (f ⁻¹' s) (f ⁻¹' t) :=
-  ⟨h.1.preimage f, h.2.preimage f⟩
+  ⟨h.disjoint.preimage f, h.codisjoint.preimage f⟩
 
 namespace Set
 

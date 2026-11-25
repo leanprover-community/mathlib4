@@ -32,7 +32,7 @@ attribute [local reducible] CategoryTheory.Functor.mapHomologicalComplex
 variable (X : TopRep k G)
 
 lemma cocycles₀IsoAux (σ : (homogeneousCochains X).X 0)
-    (hσ : σ ∈ ((homogeneousCochains X).d 0 1).hom.ker) : σ.1 1 ∈ X.ρ.invariants := by
+    (hσ : σ ∈ ((homogeneousCochains X).d 0 1).hom.ker) : σ.val 1 ∈ X.ρ.invariants := by
   simp only [Nat.reduceAdd, LinearMap.mem_ker, ContinuousLinearMap.coe_coe,
     Subtype.ext_iff, homogeneousCochains.d_apply _] at hσ
   simp only [mem_invariants]
@@ -42,7 +42,7 @@ lemma cocycles₀IsoAux (σ : (homogeneousCochains X).X 0)
   replace hσ := DFunLike.ext_iff.1 (DFunLike.ext_iff.1 hσ 1) g⁻¹
   simp only [Nat.reduceAdd, coind₁ι_toFun, ContinuousMap.const_apply, ConcreteCategory.hom_ofHom,
     coind₁Map_toFun, ContinuousMap.comp_apply, ContinuousMap.coe_mk] at hσ
-  simpa [hσ] using DFunLike.ext_iff.1 (σ.2 g) 1
+  simpa [hσ] using DFunLike.ext_iff.1 (σ.property g) 1
 
 lemma mem_const_resol₀ (x : X) (hx : x ∈ X.ρ.invariants) :
     ContinuousMap.const G x ∈ ((resolution' X).X 0).ρ.invariants :=
@@ -78,9 +78,9 @@ def d₀kerIso : ((homogeneousCochains X).d 0 1).hom.ker ≃L[k] X.ρ.invariants
     simpa using DFunLike.ext_iff.1 (DFunLike.ext_iff.1 hx g) 1
   right_inv _ := rfl
   continuous_toFun := continuous_induced_rng.2 <| (continuous_eval_const 1).comp
-    (continuous_subtype_val.comp continuous_subtype_val)
+    (continuous_subtypeVal.comp continuous_subtypeVal)
   continuous_invFun := continuous_induced_rng.2 <| continuous_induced_rng.2 <|
-    ContinuousMap.continuous_const'.comp continuous_subtype_val
+    ContinuousMap.continuous_const'.comp continuous_subtypeVal
 
 /-- The isomorphism between the zeroth continuous cohomology group and
 the invariants of a representation. -/

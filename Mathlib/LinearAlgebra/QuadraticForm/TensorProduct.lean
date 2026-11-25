@@ -17,7 +17,6 @@ import Mathlib.Tactic.LinearCombination
 
 * `QuadraticForm.tensorDistrib (Q₁ ⊗ₜ Q₂)`: the quadratic form on `M₁ ⊗ M₂` constructed by applying
   `Q₁` on `M₁` and `Q₂` on `M₂`. This construction is not available in characteristic two.
-
 -/
 
 @[expose] public section
@@ -111,7 +110,8 @@ protected abbrev tmul (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂
 theorem associated_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :
     (Q₁.tmul Q₂).associated = BilinForm.tmul Q₁.associated Q₂.associated := by
   rw [BilinForm.tmul, BilinForm.tensorDistrib, LinearMap.comp_apply, ← BilinMap.tmul,
-    ← QuadraticMap.associated_tmul Q₁ Q₂, LinearEquiv.coe_coe, LinearEquiv.congrRight₂_apply]
+    ← QuadraticMap.associated_tmul Q₁ Q₂, LinearEquiv.coe_toLinearMap,
+    LinearEquiv.congrRight₂_apply]
   ext : 6
   simp [associated_apply]
   rfl

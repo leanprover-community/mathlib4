@@ -20,7 +20,6 @@ Let `α` be a decidable fintype.
 * `cycleFactorsFinset_conj_eq`, `mem_cycleFactorsFinset_conj'`
   and `cycleFactorsFinset_conj` relate the set of cycles of `g`, `g.cycleFactorsFinset`,
   with that for `MulAut.conj k g`.
-
 -/
 
 public section

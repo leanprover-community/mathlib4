@@ -122,7 +122,7 @@ theorem minTensorProduct_eq_max_of_simplicial_generating_left (C₁ : PointedCon
     have h_eq : dualDistrib ℝ E F ((b.coord i) ⊗ₜ[ℝ] (f : F →ₗ[ℝ] ℝ)) =
         (f : F →ₗ[ℝ] ℝ) ∘ₗ (TensorProduct.lid ℝ F) ∘ₗ (b.coord i).rTensor F := by
       ext; simp [mul_comm]
-    simpa only [h_eq, LinearMap.comp_apply, LinearEquiv.coe_coe] using! h_nonneg
+    simpa only [h_eq, LinearMap.comp_apply, LinearEquiv.coe_toLinearMap] using! h_nonneg
 
 /-- If `C₁` is a proper cone and `C₂` is a simplicial and generating cone, then their minimal
 and maximal tensor products are equal. -/

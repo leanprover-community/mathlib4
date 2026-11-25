@@ -17,14 +17,14 @@ independent roots in finite crystallographic root pairings, these chains are alw
 of the form: `β - q • α, ..., β - α, β, β + α, ..., β + p • α` for natural numbers `p`, `q`, and the
 length, `p + q` is at most 3.
 
-## Main definitions / results:
+## Main definitions and statements
+
 * `RootPairing.chainTopCoeff`: the natural number `p` in the chain
   `β - q • α, ..., β - α, β, β + α, ..., β + p • α`
 * `RootPairing.chainTopCoeff`: the natural number `q` in the chain
   `β - q • α, ..., β - α, β, β + α, ..., β + p • α`
 * `RootPairing.root_add_zsmul_mem_range_iff`: every chain is an interval (aka unbroken).
 * `RootPairing.chainBotCoeff_add_chainTopCoeff_le`: every chain has length at most three.
-
 -/
 
 @[expose] public section
