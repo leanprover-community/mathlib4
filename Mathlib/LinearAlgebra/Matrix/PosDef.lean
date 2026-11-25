@@ -776,4 +776,3 @@ theorem posDef_toMatrix' [DecidableEq n] {Q : QuadraticForm ℝ (n → ℝ)} (hQ
   exact .of_toQuadraticForm' (isSymm_toMatrix' Q) hQ
 
 end QuadraticForm
-#min_imports
