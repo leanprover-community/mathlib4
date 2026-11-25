@@ -114,7 +114,7 @@ public theorem map_ofCoeffList_cons {R : Type*} [Ring R] (c : ℤ) (p : List ℤ
 
 end ofCoeffList
 
-variable {p q : List ℤ} {st : SturmStep ℤ} {steps : List (SturmStep ℤ)} {L : List (List ℤ)}
+variable {p q : List ℤ} {step : SturmStep ℤ} {steps : List (SturmStep ℤ)} {entries : List (List ℤ)}
 
 /-- The real polynomial that `p` represents. -/
 noncomputable def toReal (p : List ℤ) : ℝ[X] := (ofCoeffList p).map (Int.castRingHom ℝ)
@@ -148,24 +148,25 @@ theorem toReal_coeffMul (p q : List ℤ) : toReal (coeffMul p q) = toReal p * to
   simp [toReal, ofCoeffList_coeffMul]
 
 theorem SturmStep.check_iff :
-    st.check p q = true ↔ 0 < st.a ∧ 0 < st.c ∧ coeffLead q ≠ 0 ∧ st.r.length < q.length ∧
-      ∀ x ∈ coeffAddSmul st.c st.r (coeffAddSmul st.a p (coeffMul st.b q)), x = 0 := by
+    step.check p q = true ↔ 0 < step.a ∧ 0 < step.c ∧ coeffLead q ≠ 0 ∧ step.r.length < q.length ∧
+      ∀ x ∈ coeffAddSmul step.c step.r (coeffAddSmul step.a p (coeffMul step.b q)), x = 0 := by
   simp [SturmStep.check, and_assoc]
 
-theorem SturmStep.eq_zero_of_check (h : st.check p q = true) :
-    C (st.a : ℝ) * toReal p + toReal st.b * toReal q + C (st.c : ℝ) * toReal st.r = 0 := by
+theorem SturmStep.eq_zero_of_check (h : step.check p q = true) :
+    C (step.a : ℝ) * toReal p + toReal step.b * toReal q + C (step.c : ℝ) * toReal step.r = 0 := by
   obtain ⟨_, _, _, _, hz⟩ := SturmStep.check_iff.mp h
-  calc C (st.a : ℝ) * toReal p + toReal st.b * toReal q + C (st.c : ℝ) * toReal st.r
-    _ = toReal (coeffAddSmul st.c st.r (coeffAddSmul st.a p (coeffMul st.b q))) := by
+  calc C (step.a : ℝ) * toReal p + toReal step.b * toReal q + C (step.c : ℝ) * toReal step.r
+    _ = toReal (coeffAddSmul step.c step.r (coeffAddSmul step.a p (coeffMul step.b q))) := by
       rw [toReal_coeffAddSmul, toReal_coeffAddSmul, toReal_coeffMul, add_comm]
     _ = 0 := by rw [toReal, ofCoeffList_eq_zero hz, Polynomial.map_zero]
 
-theorem sturmEntries?_nil : sturmEntries? p q [] = some L ↔ q = [] ∧ [p] = L := by
+theorem sturmEntries?_nil : sturmEntries? p q [] = some entries ↔ q = [] ∧ [p] = entries := by
   cases q <;> simp [sturmEntries?]
 
 theorem sturmEntries?_cons :
-    sturmEntries? p q (st :: steps) = some L ↔
-      st.check p q = true ∧ ∃ L', sturmEntries? q st.r steps = some L' ∧ p :: L' = L := by
+    sturmEntries? p q (step :: steps) = some entries ↔
+      step.check p q = true ∧
+        ∃ entries', sturmEntries? q step.r steps = some entries' ∧ p :: entries' = entries := by
   simp [sturmEntries?]
 
 theorem exists_pos_eq_C_mul_neg_mod {K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K]
@@ -190,19 +191,19 @@ def IsScaledSturmSeq (u v : ℝ[X]) (L : List ℝ[X]) : Prop :=
 
 theorem isScaledSturmSeq_of_sturmEntries? {u v : ℝ[X]} {x y : ℝ}
     (hx : 0 < x) (hy : 0 < y) (hp : toReal p = C x * u) (hq : toReal q = C y * v) (hu : u ≠ 0)
-    (h : sturmEntries? p q steps = some L) :
-    IsScaledSturmSeq u v (L.map toReal) := by
+    (h : sturmEntries? p q steps = some entries) :
+    IsScaledSturmSeq u v (entries.map toReal) := by
   unfold IsScaledSturmSeq
-  induction steps generalizing p q u v x y L with
+  induction steps generalizing p q u v x y entries with
   | nil =>
     obtain ⟨rfl, rfl⟩ := sturmEntries?_nil.mp h
     obtain rfl : v = 0 := by simpa [toReal, hy.ne'] using hq.symm
     rw [sturmSeq_cons hu, sturmSeq_zero_left]
     exact .cons ⟨x, hx, hp⟩ .nil
-  | cons st steps ih =>
-    obtain ⟨hstep, L, hsteps, rfl⟩ := sturmEntries?_cons.mp h
+  | cons step steps ih =>
+    obtain ⟨hstep, entries, hsteps, rfl⟩ := sturmEntries?_cons.mp h
     obtain ⟨ha, hc, hlead, hlen, _⟩ := SturmStep.check_iff.mp hstep
-    obtain ⟨z, hz, hr⟩ : ∃ z > 0, toReal st.r = C z * (-u % v) := by
+    obtain ⟨z, hz, hr⟩ : ∃ z > 0, toReal step.r = C z * (-u % v) := by
       apply exists_pos_eq_C_mul_neg_mod (Int.cast_pos.mpr ha) (Int.cast_pos.mpr hc) hx hy
       · simpa only [hp, hq] using SturmStep.eq_zero_of_check hstep
       · simpa only [hq] using degree_toReal_lt_degree hlen hlead
@@ -212,31 +213,31 @@ theorem isScaledSturmSeq_of_sturmEntries? {u v : ℝ[X]} {x y : ℝ}
     exact .cons ⟨x, hx, hp⟩ (ih hy hz hq hr (right_ne_zero_of_mul hv) hsteps)
 
 theorem SturmCertificate.entries?_eq_some_iff {d : SturmCertificate ℤ} :
-    d.entries? = some L ↔
-      coeffLead d.p ≠ 0 ∧ sturmEntries? d.p (coeffDerivative d.p) d.steps = some L := by
+    d.entries? = some entries ↔
+      coeffLead d.p ≠ 0 ∧ sturmEntries? d.p (coeffDerivative d.p) d.steps = some entries := by
   simp [SturmCertificate.entries?]
 
-theorem isScaledSturmSeq_of_entries? {d : SturmCertificate ℤ} (h : d.entries? = some L) :
-    IsScaledSturmSeq (toReal d.p) (derivative (toReal d.p)) (L.map toReal) := by
+theorem isScaledSturmSeq_of_entries? {d : SturmCertificate ℤ} (h : d.entries? = some entries) :
+    IsScaledSturmSeq (toReal d.p) (derivative (toReal d.p)) (entries.map toReal) := by
   obtain ⟨hlead, hsteps⟩ := SturmCertificate.entries?_eq_some_iff.mp h
   refine isScaledSturmSeq_of_sturmEntries? one_pos one_pos ?_ ?_ (toReal_ne_zero hlead) hsteps
   · simp
   · simp [toReal_coeffDerivative]
 
 theorem coeffLead_ne_zero_of_sturmEntries? (hp : coeffLead p ≠ 0)
-    (h : sturmEntries? p q steps = some L) : ∀ e ∈ L, coeffLead e ≠ 0 := by
-  induction steps generalizing p q L with
+    (h : sturmEntries? p q steps = some entries) : ∀ e ∈ entries, coeffLead e ≠ 0 := by
+  induction steps generalizing p q entries with
   | nil =>
     obtain ⟨_, rfl⟩ := sturmEntries?_nil.mp h
     simpa using hp
-  | cons st steps ih =>
-    obtain ⟨hstep, L, hsteps, rfl⟩ := sturmEntries?_cons.mp h
+  | cons step steps ih =>
+    obtain ⟨hstep, entries, hsteps, rfl⟩ := sturmEntries?_cons.mp h
     obtain ⟨_, _, hlead, _⟩ := SturmStep.check_iff.mp hstep
     rw [List.forall_mem_cons]
     exact ⟨hp, ih hlead hsteps⟩
 
-theorem coeffLead_ne_zero_of_entries? {d : SturmCertificate ℤ} (h : d.entries? = some L) :
-    ∀ e ∈ L, coeffLead e ≠ 0 := by
+theorem coeffLead_ne_zero_of_entries? {d : SturmCertificate ℤ} (h : d.entries? = some entries) :
+    ∀ e ∈ entries, coeffLead e ≠ 0 := by
   obtain ⟨hlead, hsteps⟩ := SturmCertificate.entries?_eq_some_iff.mp h
   exact coeffLead_ne_zero_of_sturmEntries? hlead hsteps
 
@@ -252,17 +253,17 @@ theorem signAtBot_toReal (h : coeffLead p ≠ 0) :
       Nat.even_iff, apply_ite sign, Left.sign_neg]
     split_ifs <;> lia
 
-theorem signVariationsLine_map_toReal (hL : ∀ e ∈ L, coeffLead e ≠ 0) :
-    signVariationsLine (L.map toReal) =
-      (L.map fun e => if e.length % 2 = 0 then -coeffLead e else coeffLead e).signVariations -
-        (L.map coeffLead).signVariations := by
-  have hBot : (L.map toReal).map signAtBot =
-      (L.map fun e => if e.length % 2 = 0 then -coeffLead e else coeffLead e).map sign := by
+theorem signVariationsLine_map_toReal (hentries : ∀ e ∈ entries, coeffLead e ≠ 0) :
+    signVariationsLine (entries.map toReal) =
+      (entries.map fun e => if e.length % 2 = 0 then -coeffLead e else coeffLead e).signVariations -
+        (entries.map coeffLead).signVariations := by
+  have hBot : (entries.map toReal).map signAtBot =
+      (entries.map fun e => if e.length % 2 = 0 then -coeffLead e else coeffLead e).map sign := by
     rw [List.map_map, List.map_map]
-    exact List.map_congr_left fun e he => signAtBot_toReal (hL e he)
-  have hTop : (L.map toReal).map signAtTop = (L.map coeffLead).map sign := by
+    exact List.map_congr_left fun e he => signAtBot_toReal (hentries e he)
+  have hTop : (entries.map toReal).map signAtTop = (entries.map coeffLead).map sign := by
     rw [List.map_map, List.map_map]
-    exact List.map_congr_left fun e he => signAtTop_toReal (hL e he)
+    exact List.map_congr_left fun e he => signAtTop_toReal (hentries e he)
   rw [signVariationsLine_def, hBot, hTop, List.signVariations_map_sign,
     List.signVariations_map_sign]
 
@@ -300,17 +301,18 @@ public theorem card_rootSet_of_realRootCount? {R : Type*} [CommRing R] [Algebra 
     (h : realRootCount? d = some n) :
     Fintype.card (f.rootSet ℝ) = n := by
   rw [realRootCount?, Option.map_eq_some_iff] at h
-  obtain ⟨L, hL, rfl⟩ := h
-  obtain ⟨hlead, _⟩ := SturmCertificate.entries?_eq_some_iff.mp hL
+  obtain ⟨entries, hentries, rfl⟩ := h
+  obtain ⟨hlead, _⟩ := SturmCertificate.entries?_eq_some_iff.mp hentries
   calc Fintype.card (f.rootSet ℝ)
     _ = (toReal d.p).roots.toFinset.card := by
       rw [roots_toReal hf hlead]
       simp [rootSet_def]
-    _ = (signVariationsLine (L.map toReal)).toNat := by
-      rw [← sturm_R_of_isScaledSturmSeq (isScaledSturmSeq_of_entries? hL), Int.toNat_natCast]
-    _ = (L.map fun e => if e.length % 2 = 0 then -coeffLead e else coeffLead e).signVariations -
-          (L.map coeffLead).signVariations := by
-      rw [signVariationsLine_map_toReal (coeffLead_ne_zero_of_entries? hL), Int.toNat_sub]
+    _ = (signVariationsLine (entries.map toReal)).toNat := by
+      rw [← sturm_R_of_isScaledSturmSeq (isScaledSturmSeq_of_entries? hentries), Int.toNat_natCast]
+    _ = (entries.map fun e =>
+            if e.length % 2 = 0 then -coeffLead e else coeffLead e).signVariations -
+          (entries.map coeffLead).signVariations := by
+      rw [signVariationsLine_map_toReal (coeffLead_ne_zero_of_entries? hentries), Int.toNat_sub]
 
 theorem eval_toReal_cons (c : ℤ) (p : List ℤ) (x : ℝ) :
     (toReal (c :: p)).eval x = c + x * (toReal p).eval x := by
@@ -341,9 +343,9 @@ theorem eval_toReal_ne_zero {n d : ℤ} (hd : 0 < d) (h : evalScaled n d p ≠ 0
     (toReal p).eval ((n : ℝ) / d) ≠ 0 := by
   rwa [← sign_ne_zero, ← sign_evalScaled n hd, sign_ne_zero]
 
-theorem signVariations_map_evalScaled (n : ℤ) {d : ℤ} (hd : 0 < d) (L : List (List ℤ)) :
-    (L.map (evalScaled n d)).signVariations =
-      ((L.map toReal).map (sign ∘ eval ((n : ℝ) / d))).signVariations := by
+theorem signVariations_map_evalScaled (n : ℤ) {d : ℤ} (hd : 0 < d) (entries : List (List ℤ)) :
+    (entries.map (evalScaled n d)).signVariations =
+      ((entries.map toReal).map (sign ∘ eval ((n : ℝ) / d))).signVariations := by
   rw [← List.signVariations_map_sign, List.map_map, List.map_map]
   congrm List.signVariations ?_
   exact List.map_congr_left fun e _ => sign_evalScaled n hd e
@@ -370,8 +372,8 @@ public theorem card_rootsIoo_of_realRootCountIoo? {R : Type*} [CommRing R] [Alge
     (f.rootsIoo ℝ ((an : ℝ) / ad) (bn / bd)).card = n := by
   simp only [realRootCountIoo?, Option.ite_none_right_eq_some, Option.map_eq_some_iff,
     Bool.and_eq_true, decide_eq_true_eq, bne_iff_ne, ne_eq, and_assoc] at h
-  obtain ⟨had, hbd, hab, ha, hb, L, hL, rfl⟩ := h
-  obtain ⟨hlead, _⟩ := SturmCertificate.entries?_eq_some_iff.mp hL
+  obtain ⟨had, hbd, hab, ha, hb, entries, hentries, rfl⟩ := h
+  obtain ⟨hlead, _⟩ := SturmCertificate.entries?_eq_some_iff.mp hentries
   have hab' : (an : ℝ) / ad < bn / bd := by
     rw [div_lt_div_iff₀ (Int.cast_pos.mpr had) (Int.cast_pos.mpr hbd)]
     exact_mod_cast hab
@@ -379,11 +381,12 @@ public theorem card_rootsIoo_of_realRootCountIoo? {R : Type*} [CommRing R] [Alge
     _ = ((toReal d.p).rootsIoo ℝ ((an : ℝ) / ad) (bn / bd)).card := by
       rw [rootsIoo_def, rootsIoo_def, ← roots_toReal hf hlead]
       simp [aroots_def]
-    _ = (((L.map toReal).map (sign ∘ eval ((an : ℝ) / ad))).signVariations -
-          ((L.map toReal).map (sign ∘ eval ((bn : ℝ) / bd))).signVariations : ℤ).toNat := by
+    _ = (((entries.map toReal).map (sign ∘ eval ((an : ℝ) / ad))).signVariations -
+          ((entries.map toReal).map (sign ∘ eval ((bn : ℝ) / bd))).signVariations : ℤ).toNat := by
       rw [← sturm_Ioo_of_isScaledSturmSeq hab' (eval_toReal_ne_zero had ha)
-        (eval_toReal_ne_zero hbd hb) (isScaledSturmSeq_of_entries? hL), Int.toNat_natCast]
-    _ = (L.map (evalScaled an ad)).signVariations - (L.map (evalScaled bn bd)).signVariations := by
+        (eval_toReal_ne_zero hbd hb) (isScaledSturmSeq_of_entries? hentries), Int.toNat_natCast]
+    _ = (entries.map (evalScaled an ad)).signVariations -
+          (entries.map (evalScaled bn bd)).signVariations := by
       rw [signVariations_map_evalScaled an had, signVariations_map_evalScaled bn hbd,
         Int.toNat_sub]
 
