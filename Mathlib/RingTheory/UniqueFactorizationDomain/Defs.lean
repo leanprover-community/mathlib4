@@ -14,6 +14,7 @@ import Mathlib.Algebra.GroupWithZero.Submonoid.Primal
 # Unique factorization
 
 ## Main Definitions
+
 * `WfDvdMonoid` holds for `Monoid`s for which a strict divisibility relation is
   well-founded.
 * `UniqueFactorizationMonoid` holds for `WfDvdMonoid`s where

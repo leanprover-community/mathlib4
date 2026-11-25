@@ -21,7 +21,7 @@ The theory of the free ring over a type.
 * `lift (f : α → R)` : the ring hom `FreeRing α →+* R` induced by `f`.
 * `map (f : α → β)` : the ring hom `FreeRing α →+* FreeRing β` induced by `f`.
 
-## Implementation details
+## Implementation notes
 
 `FreeRing α` is implemented as the `ℤ` monoid algebra over the free monoid on `α`.
 

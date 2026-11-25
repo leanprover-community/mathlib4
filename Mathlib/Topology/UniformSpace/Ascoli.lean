@@ -34,7 +34,7 @@ a family of compact subsets of `X`, and `α` is a uniform space.
 * The **Arzela-Ascoli theorem** follows from the previous fact and Tykhonov's theorem.
   All of its variations can be found under the `ArzelaAscoli` namespace.
 
-## Implementation details
+## Implementation notes
 
 * The statements in this file may be a bit daunting because we prove everything for families and
   embeddings instead of subspaces with the subspace topology. This is done because, in practice,

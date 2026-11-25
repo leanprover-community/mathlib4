@@ -23,7 +23,7 @@ accessed by the following definition and lemmas:
 
 We also define left Kan lifts, right Kan extensions, and right Kan lifts.
 
-## Implementation Notes
+## Implementation notes
 
 We use the Is-Has design pattern, which is used for the implementation of limits and colimits in
 the category theory library. This means that `IsKan t` is a structure containing the data of
@@ -37,6 +37,7 @@ abbreviation of `t : StructuredArrow g (precomp _ f)`) to be an abbreviation for
 in the namespace `StructuredArrow.IsUniversal`.
 
 ## References
+
 https://ncatlab.org/nlab/show/Kan+extension
 -/
 

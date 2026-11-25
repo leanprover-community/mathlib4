@@ -16,6 +16,7 @@ import Mathlib.Algebra.Group.Submonoid.Finsupp
 # Homogeneous Localization
 
 ## Notation
+
 - `ι` is a commutative monoid;
 - `A` is a commutative ring;
 - `σ` is a class of additive subgroups of `A`;

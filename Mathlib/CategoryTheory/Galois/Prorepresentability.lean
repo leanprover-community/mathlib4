@@ -34,7 +34,7 @@ groups of all Galois objects.
 - `FiberFunctor.isPretransitive_of_isConnected`: The `Aut F` action on the fiber of a connected
   object is transitive.
 
-## Implementation details
+## Implementation notes
 
 The pro-representability statement and the isomorphism of `Aut F` with the limit over the
 automorphism groups of all Galois objects naturally forces `F` to take values in `FintypeCat.{u₂}`
