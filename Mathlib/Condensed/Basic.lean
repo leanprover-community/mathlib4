@@ -13,7 +13,7 @@ public import Mathlib.Topology.Category.CompHaus.EffectiveEpi
 This file defines the category of condensed objects in a category `C`, following the work
 of Clausen-Scholze and Barwick-Haine.
 
-## Implementation Details
+## Implementation notes
 
 We use the coherent Grothendieck topology on `CompHaus`, and define condensed objects in `C` to
 be `C`-valued sheaves, with respect to this Grothendieck topology.
@@ -25,7 +25,6 @@ as we do not impose cardinality bounds, and manage universes carefully instead.
 
 - [barwickhaine2019]: *Pyknotic objects, I. Basic notions*, 2019.
 - [scholze2019condensed]: *Lectures on Condensed Mathematics*, 2019.
-
 -/
 
 public section

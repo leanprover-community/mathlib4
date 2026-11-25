@@ -20,7 +20,6 @@ transcendental separable field extensions.
 
 * `Algebra.IsTranscendentalSeparable` : A field extension is transcendental separable if
   every finitely generated subextension is separably generated.
-
 -/
 
 @[expose] public section

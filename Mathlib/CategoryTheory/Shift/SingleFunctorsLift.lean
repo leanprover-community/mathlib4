@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 public import Mathlib.CategoryTheory.Shift.SingleFunctors
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lift of a "single functor" to a full subcategory
 
@@ -17,7 +20,6 @@ a fully faithful functor `G : D ⥤ A` which commutes with shifts.
 Given `F : SingleFunctors C E A`, and a family of functors
 `Φ a : C ⥤ D` with isomorphisms `Φ a ⋙ G ≅ F.functor a` for all `a : A`,
 we lift `F` in `SingleFunctor C D A`.
-
 -/
 
 @[expose] public section

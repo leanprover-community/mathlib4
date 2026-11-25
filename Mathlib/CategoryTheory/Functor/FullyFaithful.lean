@@ -16,6 +16,7 @@ contains the data of the inverse map `(F.obj X ⟶ F.obj Y) ⟶ (X ⟶ Y)` of th
 map induced on morphisms by a functor `F`.
 
 ## Main definitions and results
+
 * Use `F.map_injective` to retrieve the fact that `F.map` is injective when `[Faithful F]`.
 * Similarly, `F.map_surjective` states that `F.map` is surjective when `[Full F]`.
 * Use `F.preimage` to obtain preimages of morphisms when `[Full F]`.
@@ -24,7 +25,6 @@ map induced on morphisms by a functor `F`.
 
 See `CategoryTheory.Equivalence.of_fullyFaithful_ess_surj` for the fact that a functor is an
 equivalence if and only if it is fully faithful and essentially surjective.
-
 -/
 
 @[expose] public section

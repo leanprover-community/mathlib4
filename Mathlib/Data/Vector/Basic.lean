@@ -6,12 +6,12 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Algebra.BigOperators.Group.List.Basic
-public import Mathlib.Control.Applicative
 public import Mathlib.Control.Traversable.Basic
 public import Mathlib.Data.Fin.SuccPred
 public import Mathlib.Data.Vector.Defs
 
 import Batteries.Data.Fin.Lemmas
+import Mathlib.Control.Applicative
 import Mathlib.Data.List.Nodup
 
 set_option doc.verso true
@@ -75,7 +75,7 @@ theorem mk_toList : ∀ (v : Vector α n) (h), (⟨toList v, h⟩ : Vector α n)
   | ⟨_, _⟩, _ => rfl
 
 
-@[simp] theorem length_val (v : Vector α n) : v.val.length = n := v.2
+@[simp] theorem length_val (v : Vector α n) : v.val.length = n := v.property
 
 @[simp]
 theorem pmap_cons {p : α → Prop} (f : (a : α) → p a → β) (a : α) (v : Vector α n)
@@ -159,7 +159,7 @@ theorem ofFn_get (v : Vector α n) : ofFn (get v) = v := by
 def _root_.Equiv.vectorEquivFin (α : Type*) (n : ℕ) : Vector α n ≃ (Fin n → α) :=
   ⟨Vector.get, Vector.ofFn, Vector.ofFn_get, fun f => funext <| Vector.get_ofFn f⟩
 
-theorem get_tail (x : Vector α n) (i) : x.tail.get i = x.get ⟨i.1 + 1, by lia⟩ := by
+theorem get_tail (x : Vector α n) (i) : x.tail.get i = x.get ⟨i.val + 1, by lia⟩ := by
   obtain ⟨i, ih⟩ := i; dsimp
   rcases x with ⟨_ | _, h⟩ <;> try rfl
   rw [List.length] at h
@@ -198,7 +198,7 @@ theorem toList_tail : ∀ (v : Vector α n), v.tail.toList = v.toList.tail
 
 @[simp]
 theorem toList_empty (v : Vector α 0) : v.toList = [] :=
-  List.length_eq_zero_iff.mp v.2
+  List.length_eq_zero_iff.mp v.property
 
 /-- The list that makes up a `Vector` made up of a single element,
 retrieved via `toList`, is equal to the list of that single element. -/
@@ -516,12 +516,12 @@ variable {a : α}
 /-- `v.insertIdx a i` inserts `a` into the vector `v` at position `i`
 (and shifting later components to the right). -/
 def insertIdx (a : α) (i : Fin (n + 1)) (v : Vector α n) : Vector α (n + 1) :=
-  ⟨v.1.insertIdx i a, by
-    rw [List.length_insertIdx, v.2]
+  ⟨v.val.insertIdx i a, by
+    rw [List.length_insertIdx, v.property]
     split <;> lia⟩
 
 theorem insertIdx_val {i : Fin (n + 1)} {v : Vector α n} :
-    (v.insertIdx a i).val = v.val.insertIdx i.1 a :=
+    (v.insertIdx a i).val = v.val.insertIdx i.val a :=
   rfl
 
 @[simp]
@@ -561,7 +561,7 @@ theorem insertIdx_comm (a b : α) (i j : Fin (n + 1)) (h : i ≤ j) :
     apply List.insertIdx_comm
     · assumption
     · rw [hl]
-      exact Nat.le_of_succ_le_succ j.2
+      exact Nat.le_of_succ_le_succ j.isLt
 
 end InsertIdx
 
@@ -569,7 +569,7 @@ section Set
 
 /-- `set v n a` replaces the `n`th element of `v` with `a`. -/
 def set (v : Vector α n) (i : Fin n) (a : α) : Vector α n :=
-  ⟨v.1.set i.1 a, by simp⟩
+  ⟨v.val.set i.val a, by simp⟩
 
 @[simp]
 theorem toList_set (v : Vector α n) (i : Fin n) (a : α) :

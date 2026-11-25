@@ -8,9 +8,11 @@ module
 public import Mathlib.Algebra.Module.Projective
 public import Mathlib.RingTheory.Finiteness.Cardinality
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite and projective modules
-
 -/
 
 public section

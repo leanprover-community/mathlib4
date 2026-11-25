@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 
 import Mathlib.Tactic.ApplyFun
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Effective epimorphic families and coproducts
 

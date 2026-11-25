@@ -17,8 +17,8 @@ which sends `Y : D` and `X : Cᵒᵖ` to a type that is equivalent to
 `restrictedULiftYoneda` variants.)
 
 ## References
-* [S. MacLane, I. Moerdijk, *Sheaves in Geometry and Logic*][MM92]
 
+* [S. MacLane, I. Moerdijk, *Sheaves in Geometry and Logic*][MM92]
 -/
 
 @[expose] public section

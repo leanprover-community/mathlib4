@@ -7,6 +7,9 @@ module
 
 public import Mathlib.GroupTheory.Index
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Commensurability for subgroups
 
@@ -23,7 +26,7 @@ commensurable with `H`.
 * `Commensurable H K`: the statement that the subgroups `H` and `K` of `G` are commensurable.
 * `commensurator H`: the commensurator of a subgroup `H` of `G`.
 
-## Implementation details
+## Implementation notes
 
 We define the commensurator of a subgroup `H` of `G` by first defining it as a subgroup of
 `(conjAct G)`, which we call `commensurator'` and then taking the pre-image under

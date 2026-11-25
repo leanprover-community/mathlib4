@@ -71,7 +71,7 @@ noncomputable def repr : ONote → Ordinal.{0}
   | 0 => 0
   | oadd e n a => ω ^ repr e * n + repr a
 @[simp] theorem repr_zero : repr 0 = 0 := rfl
-attribute [simp] repr.eq_1 repr.eq_2
+attribute [simp] repr.eq_2
 
 set_option backward.privateInPublic true in
 /-- Print `ω^s*n`, omitting `s` if `e = 0` or `e = 1`, and omitting `n` if `n = 1` -/
@@ -143,7 +143,7 @@ instance (priority := low) nat (n : ℕ) : OfNat ONote n where
 
 theorem omega0_le_oadd (e n a) : ω ^ repr e ≤ repr (oadd e n a) := by
   refine le_trans ?_ le_self_add
-  simpa using! (mul_le_mul_iff_right₀ <| opow_pos (repr e) omega0_pos).2 (Nat.cast_le.2 n.2)
+  simpa using! (mul_le_mul_iff_right₀ <| opow_pos (repr e) omega0_pos).2 (Nat.cast_le.2 n.property)
 
 theorem oadd_pos (e n a) : 0 < oadd e n a :=
   @lt_of_lt_of_le _ _ _ (ω ^ repr e) _ (opow_pos (repr e) omega0_pos) (omega0_le_oadd e n a)
@@ -553,7 +553,7 @@ theorem repr_mul : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ * o₂) = rep
       simp [(· * ·)]
     have ao : repr a₁ + ω ^ repr e₁ * (n₁ : ℕ) = ω ^ repr e₁ * (n₁ : ℕ) := by
       apply add_of_omega0_opow_le h₁.snd'.repr_lt
-      simpa using! (mul_le_mul_iff_right₀ <| opow_pos _ omega0_pos).2 (Nat.cast_le.2 n₁.2)
+      simpa using! (mul_le_mul_iff_right₀ <| opow_pos _ omega0_pos).2 (Nat.cast_le.2 n₁.property)
     by_cases e0 : e₂ = 0
     · obtain ⟨x, xe⟩ := Nat.exists_eq_succ_of_ne_zero n₂.ne_zero
       simp only [Mul.mul, mul, e0, ↓reduceIte, repr, repr_zero, PNat.mul_coe, natCast_mul,
@@ -1135,8 +1135,8 @@ namespace NONote
 
 open ONote
 
-instance NF (o : NONote) : NF o.1 :=
-  o.2
+instance NF (o : NONote) : NF o.val :=
+  o.property
 
 /-- Construct a `NONote` from an ordinal notation (and infer normality) -/
 def mk (o : ONote) [h : ONote.NF o] : NONote :=
@@ -1148,13 +1148,13 @@ This function is noncomputable because ordinal arithmetic is noncomputable. In c
 applications `NONote` can be used exclusively without reference to `Ordinal`, but this function
 allows for correctness results to be stated. -/
 noncomputable def repr (o : NONote) : Ordinal :=
-  o.1.repr
+  o.val.repr
 
 instance : ToString NONote :=
-  ⟨fun x => x.1.toString⟩
+  ⟨fun x => x.val.toString⟩
 
 instance : Repr NONote :=
-  ⟨fun x prec => x.1.repr' prec⟩
+  ⟨fun x prec => x.val.repr' prec⟩
 
 instance : Preorder NONote where
   le x y := repr x ≤ repr y
@@ -1181,7 +1181,7 @@ def ofNat (n : ℕ) : NONote :=
 
 /-- Compare ordinal notations -/
 def cmp (a b : NONote) : Ordering :=
-  ONote.cmp a.1 b.1
+  ONote.cmp a.val b.val
 
 theorem cmp_compares : ∀ a b : NONote, (cmp a b).Compares a b
   | ⟨a, ha⟩, ⟨b, hb⟩ => by
@@ -1195,11 +1195,11 @@ instance : LinearOrder NONote :=
 
 /-- Asserts that `repr a < ω ^ repr b`. Used in `NONote.recOn`. -/
 def below (a b : NONote) : Prop :=
-  NFBelow a.1 (repr b)
+  NFBelow a.val (repr b)
 
 /-- The `oadd` pseudo-constructor for `NONote` -/
 def oadd (e : NONote) (n : ℕ+) (a : NONote) (h : below a e) : NONote :=
-  ⟨_, NF.oadd e.2 n h⟩
+  ⟨_, NF.oadd e.property n h⟩
 
 /-- This is a recursor-like theorem for `NONote` suggesting an inductive definition, which can't
 actually be defined this way due to conflicting dependencies. -/
@@ -1212,30 +1212,30 @@ def recOn {C : NONote → Sort*} (o : NONote) (H0 : C 0)
 
 /-- Addition of ordinal notations -/
 instance : Add NONote :=
-  ⟨fun x y => mk (x.1 + y.1)⟩
+  ⟨fun x y => mk (x.val + y.val)⟩
 
 theorem repr_add (a b) : repr (a + b) = repr a + repr b :=
-  ONote.repr_add a.1 b.1
+  ONote.repr_add a.val b.val
 
 /-- Subtraction of ordinal notations -/
 instance : Sub NONote :=
-  ⟨fun x y => mk (x.1 - y.1)⟩
+  ⟨fun x y => mk (x.val - y.val)⟩
 
 theorem repr_sub (a b) : repr (a - b) = repr a - repr b :=
-  ONote.repr_sub a.1 b.1
+  ONote.repr_sub a.val b.val
 
 /-- Multiplication of ordinal notations -/
 instance : Mul NONote :=
-  ⟨fun x y => mk (x.1 * y.1)⟩
+  ⟨fun x y => mk (x.val * y.val)⟩
 
 theorem repr_mul (a b) : repr (a * b) = repr a * repr b :=
-  ONote.repr_mul a.1 b.1
+  ONote.repr_mul a.val b.val
 
 /-- Exponentiation of ordinal notations -/
 def opow (x y : NONote) :=
-  mk (x.1 ^ y.1)
+  mk (x.val ^ y.val)
 
 theorem repr_opow (a b) : repr (opow a b) = repr a ^ repr b :=
-  ONote.repr_opow a.1 b.1
+  ONote.repr_opow a.val b.val
 
 end NONote

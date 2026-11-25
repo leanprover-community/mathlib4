@@ -16,9 +16,9 @@ If semiring `S` acts on a semiring `R` and `M` is a module over both (compatibly
 then we can turn an `R`-submodule into an `S`-submodule by forgetting the action of `R`. We call
 this restriction of scalars for submodules.
 
-## Main definitions:
-* `Submodule.restrictScalars`: regard an `R`-submodule as an `S`-submodule if `S` acts on `R`
+## Main definitions
 
+* `Submodule.restrictScalars`: regard an `R`-submodule as an `S`-submodule if `S` acts on `R`
 -/
 
 @[expose] public section

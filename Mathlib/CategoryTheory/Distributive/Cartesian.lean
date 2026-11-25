@@ -18,7 +18,7 @@ A category `C` with finite products and binary coproducts is called distributive
 canonical distributivity morphism `(X ⨯ Y) ⨿ (X ⨯ Z) ⟶ X ⨯ (Y ⨿ Z)` is an isomorphism
 for all objects `X`, `Y`, and `Z` in `C`.
 
-## Implementation Details
+## Implementation notes
 
 A Cartesian distributive category is defined as a Cartesian monoidal category which is
 monoidal distributive.

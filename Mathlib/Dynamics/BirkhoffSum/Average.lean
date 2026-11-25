@@ -23,7 +23,6 @@ and `R` is used to formalize division by `n` as `(n : R)⁻¹ • _`.
 While we need an auxiliary division semiring `R` to define `birkhoffAverage`,
 the definition does not depend on the choice of `R`,
 see `birkhoffAverage_congr_ring`.
-
 -/
 
 @[expose] public section

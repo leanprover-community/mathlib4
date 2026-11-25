@@ -116,7 +116,6 @@ def tateComplex.map (φ : X ⟶ Y) : tateComplex X ⟶ tateComplex Y := by
 @[simp]
 lemma tateComplex.map_zero : tateComplex.map (0 : X ⟶ Y) = 0 := by cat_disch
 
-set_option backward.isDefEq.respectTransparency false in
 lemma tateComplex.map_add (f g : X ⟶ Y) : tateComplex.map (f + g) =
     tateComplex.map f + tateComplex.map g := by
   ext (i | i) : 1
@@ -150,7 +149,7 @@ namespace TateCohomology
 section Exact
 
 set_option backward.isDefEq.respectTransparency false in
-instance : (tateComplexFunctor (R := R) (G := G)).PreservesZeroMorphisms where
+instance : (tateComplexFunctor R G).PreservesZeroMorphisms where
   map_zero X Y := by simp
 
 /-- The natural isomorphism between the `n`-th index of the Tate complex and inhomogeneous
@@ -166,8 +165,6 @@ def tateComplex.evalNeg (n : ℕ) : tateComplexFunctor R G ⋙ HomologicalComple
     (ComplexShape.up ℤ) (.negSucc n) ≅ chainsFunctor R G ⋙
     HomologicalComplex.eval (ModuleCat R) (ComplexShape.down ℕ) n :=
   .refl _
-
-instance : (tateComplexFunctor R G).PreservesZeroMorphisms where
 
 lemma map_tateComplexFunctor_shortExact {S : ShortComplex (Rep R G)} (hS : S.ShortExact) :
     (S.map (tateComplexFunctor R G)).ShortExact := by

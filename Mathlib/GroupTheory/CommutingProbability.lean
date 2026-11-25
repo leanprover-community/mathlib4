@@ -18,9 +18,11 @@ import Mathlib.Tactic.Qify
 This file introduces the commuting probability of finite groups.
 
 ## Main definitions
+
 * `commProb`: The commuting probability of a finite type with a multiplication operation.
 
 ## TODO
+
 * Neumann's theorem.
 -/
 
@@ -46,16 +48,19 @@ theorem commProb_prod (M' : Type*) [Mul M'] : commProb (M × M') = commProb M * 
   simp_rw [commProb_def, div_mul_div_comm, Nat.card_prod, Nat.cast_mul, mul_pow, ← Nat.cast_mul,
     ← Nat.card_prod, Commute, SemiconjBy, Prod.ext_iff]
   congr 2
-  exact Nat.card_congr ⟨fun x => ⟨⟨⟨x.1.1.1, x.1.2.1⟩, x.2.1⟩, ⟨⟨x.1.1.2, x.1.2.2⟩, x.2.2⟩⟩,
-    fun x => ⟨⟨⟨x.1.1.1, x.2.1.1⟩, ⟨x.1.1.2, x.2.1.2⟩⟩, ⟨x.1.2, x.2.2⟩⟩, fun x => rfl, fun x => rfl⟩
+  exact Nat.card_congr ⟨fun x => ⟨⟨⟨x.val.1.1, x.val.2.1⟩, x.property.1⟩,
+      ⟨⟨x.val.1.2, x.val.2.2⟩, x.property.2⟩⟩,
+    fun x => ⟨⟨⟨x.1.val.1, x.2.val.1⟩, ⟨x.1.val.2, x.2.val.2⟩⟩, ⟨x.1.property, x.2.property⟩⟩,
+    fun x => rfl, fun x => rfl⟩
 
 theorem commProb_pi {α : Type*} (i : α → Type*) [Fintype α] [∀ a, Mul (i a)] :
     commProb (∀ a, i a) = ∏ a, commProb (i a) := by
   simp_rw [commProb_def, Finset.prod_div_distrib, Finset.prod_pow, ← Nat.cast_prod,
     ← Nat.card_pi, Commute, SemiconjBy, funext_iff]
   congr 2
-  exact Nat.card_congr ⟨fun x a => ⟨⟨x.1.1 a, x.1.2 a⟩, x.2 a⟩, fun x => ⟨⟨fun a => (x a).1.1,
-    fun a => (x a).1.2⟩, fun a => (x a).2⟩, fun x => rfl, fun x => rfl⟩
+  exact Nat.card_congr ⟨fun x a => ⟨⟨x.val.1 a, x.val.2 a⟩, x.property a⟩,
+    fun x => ⟨⟨fun a => (x a).val.1, fun a => (x a).val.2⟩, fun a => (x a).property⟩,
+    fun x => rfl, fun x => rfl⟩
 
 theorem commProb_function {α β : Type*} [Fintype α] [Mul β] :
     commProb (α → β) = (commProb β) ^ Fintype.card α := by
@@ -108,7 +113,8 @@ theorem Subgroup.commProb_subgroup_le : commProb H ≤ commProb G * (H.index : �
       commuting pairs as `H`. -/
   rw [commProb_def, commProb_def, div_le_iff₀, mul_assoc, ← mul_pow, ← Nat.cast_mul,
     mul_comm H.index, H.card_mul_index, div_mul_cancel₀, Nat.cast_le]
-  · refine Nat.card_le_card_of_injective (fun p ↦ ⟨⟨p.1.1, p.1.2⟩, Subtype.ext_iff.mp p.2⟩) ?_
+  · refine Nat.card_le_card_of_injective
+      (fun p ↦ ⟨⟨p.val.1, p.val.2⟩, Subtype.ext_iff.mp p.property⟩) ?_
     exact fun p q h ↦ by simpa only [Subtype.ext_iff, Prod.ext_iff] using h
   · exact pow_ne_zero 2 (Nat.cast_ne_zero.mpr Finite.card_pos.ne')
   · exact pow_pos (Nat.cast_pos.mpr Finite.card_pos) 2

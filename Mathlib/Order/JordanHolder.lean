@@ -5,12 +5,12 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Logic.Equiv.Functor
 public import Mathlib.Order.ModularLattice
 public import Mathlib.Order.RelSeries
 
 import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.Logic.Equiv.Fin.Basic
+import Mathlib.Logic.Equiv.Functor
 
 /-!
 # Jordan-Hölder Theorem
@@ -21,6 +21,7 @@ this file. Examples of `JordanHolderLattice` include `Subgroup G` if `G` is a gr
 separately for both groups and modules, the proof in this file can be applied to both.
 
 ## Main definitions
+
 The main definitions in this file are `JordanHolderLattice` and `CompositionSeries`,
 and the relation `Equivalent` on `CompositionSeries`
 
@@ -115,7 +116,7 @@ theorem Iso.rel
     (h_rel : ∀ {x y}, IsMaximal x (x ⊔ y) → e (x, x ⊔ y) (x ⊓ y, y))
     {x y : X × X} (h_iso : Iso x y) : e x y := by
   have : IsEquiv (X × X) e := { refl _ := h_refl, symm _ _ := h_symm, trans _ _ _ := h_trans }
-  refine Relation.EqvGen.eqvGen_le ?_ _ _ h_iso
+  refine Relation.eqvGen_le ?_ _ _ h_iso
   rintro ⟨a, b⟩ ⟨c, d⟩ ⟨h, rfl : b = a ⊔ d, rfl : c = a ⊓ d⟩
   exact h_rel h
 
@@ -221,7 +222,7 @@ theorem mem_eraseLast_of_ne_of_mem {s : CompositionSeries X} {x : X}
   have hi : (i : ℕ) < (s.length - 1).succ := by
     conv_rhs => rw [← Nat.succ_sub (length_pos_of_nontrivial ⟨_, ⟨i, rfl⟩, _, s.last_mem, hx⟩),
       Nat.add_one_sub_one]
-    exact lt_of_le_of_ne (Nat.le_of_lt_succ i.2) (by simpa [last, s.inj, Fin.ext_iff] using hx)
+    exact lt_of_le_of_ne (Nat.le_of_lt_succ i.isLt) (by simpa [last, s.inj, Fin.ext_iff] using hx)
   exact ⟨⟨↑i, hi⟩, by simp⟩
 
 theorem mem_eraseLast {s : CompositionSeries X} {x : X} (h : 0 < s.length) :

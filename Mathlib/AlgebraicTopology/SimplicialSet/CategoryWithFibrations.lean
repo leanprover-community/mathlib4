@@ -10,6 +10,9 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.HornColimits
 public import Mathlib.AlgebraicTopology.SimplicialSet.Skeleton
 public import Mathlib.CategoryTheory.SmallObject.TransfiniteCompositionLifting
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cofibrations and fibrations in the category of simplicial sets
 
@@ -20,7 +23,6 @@ having the right lifting property with respect to horn inclusions.
 We have an instance `mono_of_cofibration` (but only a lemma `cofibration_of_mono`).
 Then, when stating lemmas about cofibrations of simplicial sets, it is advisable
 to use the assumption `[Mono f]` instead of `[Cofibration f]`.
-
 -/
 
 @[expose] public section

@@ -7,12 +7,12 @@ module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Indicator
 public import Mathlib.Algebra.Group.Submonoid.Defs
-public import Mathlib.Order.Filter.AtTopBot.BigOperators
 public import Mathlib.Topology.Algebra.InfiniteSum.Defs
 public import Mathlib.Topology.Algebra.Monoid.Defs
 
 import Mathlib.Algebra.Group.Submonoid.BigOperators
 import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Order.Filter.AtTopBot.BigOperators
 
 /-!
 # Lemmas on infinite sums and products in topological monoids
@@ -21,7 +21,6 @@ This file contains many simple lemmas on `tsum`, `HasSum` etc, which are placed 
 keep the basic file of definitions as short as possible.
 
 Results requiring a group (rather than monoid) structure on the target should go in `Group.lean`.
-
 -/
 
 public section

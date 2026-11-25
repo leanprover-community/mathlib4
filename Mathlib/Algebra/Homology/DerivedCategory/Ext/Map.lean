@@ -38,7 +38,6 @@ where `F` is an exact functor between abelian categories.
 
 * `mapExactFunctor_comp_mk₀_natTransApp`: compatibility with a natural
 transformation between two exact functors
-
 -/
 
 @[expose] public section
@@ -129,7 +128,6 @@ noncomputable def Abelian.Ext.mapExactFunctor [HasExt.{w} C] [HasExt.{w'} D] {X 
     (ComplexShape.up ℤ)).smallShiftedHomMap
     ((F.mapCochainComplexSingleFunctor 0).app X) ((F.mapCochainComplexSingleFunctor 0).app Y) f
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Abelian.Ext.mapExactFunctor_hom
     [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D]
     [HasExt.{w} C] [HasExt.{w'} D] {X Y : C} {n : ℕ} (e : Ext X Y n) :

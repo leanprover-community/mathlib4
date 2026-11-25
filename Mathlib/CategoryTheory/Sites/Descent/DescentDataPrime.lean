@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.ChosenPullback
 public import Mathlib.CategoryTheory.Sites.Descent.DescentData
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Descent data when we have pullbacks
 
@@ -17,7 +20,6 @@ and threefold wide pullbacks `sq₃` for these morphisms, we define a
 category `F.DescentData' sq sq₃` of objects over the `X i`
 equipped with a descent data relative to the morphisms `f i : X i ⟶ S`, where
 the data and compatibilities are expressed using the chosen pullbacks.
-
 -/
 
 @[expose] public section

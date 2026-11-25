@@ -7,12 +7,14 @@ module
 
 public import Mathlib.CategoryTheory.GuitartExact.VerticalComposition
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The opposite of a Guitart exact square
 
 A `2`-square is Guitart exact iff the opposite (transposed) `2`-square
 is Guitart exact.
-
 -/
 
 @[expose] public section

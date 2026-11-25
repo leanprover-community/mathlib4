@@ -41,7 +41,6 @@ Finally, we define `stieltjesOfMeasurableRat`, composition of `toRatCDF` and
 
 * `stieltjesOfMeasurableRat`: turn a measurable function `f : α → ℚ → ℝ` into a measurable
   function `α → StieltjesFunction ℝ`.
-
 -/
 
 @[expose] public section
@@ -297,8 +296,8 @@ lemma IsMeasurableRatCDF.stieltjesFunctionAux_eq (a : α) (r : ℚ) :
   rw [← hf.iInf_rat_gt_eq a r, IsMeasurableRatCDF.stieltjesFunctionAux]
   refine Equiv.iInf_congr ?_ ?_
   · exact
-      { toFun := fun t ↦ ⟨t.1, mod_cast t.2⟩
-        invFun := fun t ↦ ⟨t.1, mod_cast t.2⟩ }
+      { toFun := fun t ↦ ⟨t.val, mod_cast t.property⟩
+        invFun := fun t ↦ ⟨t.val, mod_cast t.property⟩ }
   · intro t
     rfl
 
@@ -317,7 +316,7 @@ lemma IsMeasurableRatCDF.monotone_stieltjesFunctionAux (a : α) :
     exact ⟨⟨r, hrx⟩⟩
   refine le_ciInf fun r ↦ (ciInf_le ?_ ?_).trans_eq ?_
   · refine ⟨0, fun z ↦ ?_⟩; rintro ⟨u, rfl⟩; exact hf.nonneg a _
-  · exact ⟨r.1, hxy.trans_lt r.prop⟩
+  · exact ⟨r.val, hxy.trans_lt r.prop⟩
   · rfl
 
 lemma IsMeasurableRatCDF.continuousWithinAt_stieltjesFunctionAux_Ici (a : α) (x : ℝ) :

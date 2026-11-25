@@ -31,10 +31,10 @@ We call this `opow` in theorems in order to disambiguate from other exponentials
 @[no_expose]
 instance instPow : Pow Ordinal Ordinal :=
   ⟨fun a b ↦ if a = 0 then 1 - b else
-    limitRecOn b 1 (fun _ x ↦ x * a) fun o _ f ↦ ⨆ x : Iio o, f x.1 x.2⟩
+    limitRecOn b 1 (fun _ x ↦ x * a) fun o _ f ↦ ⨆ x : Iio o, f x.val x.property⟩
 
 private theorem opow_of_ne_zero {a b : Ordinal} (h : a ≠ 0) : a ^ b =
-    limitRecOn b 1 (fun _ x ↦ x * a) fun o _ f ↦ ⨆ x : Iio o, f x.1 x.2 :=
+    limitRecOn b 1 (fun _ x ↦ x * a) fun o _ f ↦ ⨆ x : Iio o, f x.val x.property :=
   ite_eq_right h
 
 /-- `0 ^ a = 1` if `a = 0` and `0 ^ a = 0` otherwise. -/
@@ -67,7 +67,7 @@ theorem opow_succ (a b : Ordinal) : a ^ succ b = a ^ b * a :=
   opow_add_one a b
 
 theorem opow_limit {a b : Ordinal} (ha : a ≠ 0) (hb : IsSuccLimit b) :
-    a ^ b = ⨆ x : Iio b, a ^ x.1 := by
+    a ^ b = ⨆ x : Iio b, a ^ x.val := by
   simp_rw [opow_of_ne_zero ha, limitRecOn_limit _ _ _ _ hb]
 
 theorem opow_le_of_isSuccLimit {a b c : Ordinal} (a0 : a ≠ 0) (h : IsSuccLimit b) :
