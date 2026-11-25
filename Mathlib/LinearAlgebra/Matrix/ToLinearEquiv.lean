@@ -196,31 +196,40 @@ lemma separatingRight_iff_det_ne_zero [DecidableEq n] : SeparatingRight M ↔ M.
   grind [separatingRight_iff_forall_mulVec_eq_zero, exists_mulVec_eq_zero_iff]
 
 omit [Fintype n] in
-theorem nondegenerate_iff_separatingLeft [Finite n] : M.Nondegenerate ↔ M.SeparatingLeft := by
-  classical
+theorem separatingLeft_iff_separatingRight [Finite n] {M : Matrix n n R} :
+    M.SeparatingLeft ↔ M.SeparatingRight := by
   have := Fintype.ofFinite n
-  rw [nondegenerate_iff_det_ne_zero, separatingLeft_iff_det_ne_zero]
-
-alias ⟨_, SeparatingLeft.nondegenerate⟩ := nondegenerate_iff_separatingLeft
-
-omit [Fintype n] in
-theorem nondegenerate_iff_separatingRight [Finite n] : M.Nondegenerate ↔ M.SeparatingRight := by
-  classical
-  have := Fintype.ofFinite n
-  rw [nondegenerate_iff_det_ne_zero, separatingRight_iff_det_ne_zero]
-
-alias ⟨_, SeparatingRight.nondegenerate⟩ := nondegenerate_iff_separatingRight
-
-omit [Fintype n] in
-theorem separatingLeft_iff_separatingRight [Finite n] : M.SeparatingLeft ↔ M.SeparatingRight :=
-  nondegenerate_iff_separatingLeft.symm.trans nondegenerate_iff_separatingRight
+  rw [separatingLeft_iff_vecMul_injective, separatingRight_iff_mulVec_injective,
+    vecMul_injective_iff, mulVec_injective_iff, ← linearIndependent_col_iff_row]
 
 alias ⟨SeparatingLeft.separatingRight, SeparatingRight.separatingLeft⟩ :=
   separatingLeft_iff_separatingRight
 
 omit [Fintype n] in
+theorem nondegenerate_iff_separatingLeft [Finite n] {M : Matrix n n R} :
+    M.Nondegenerate ↔ M.SeparatingLeft := by
+  rw [nondegenerate_iff, ← separatingLeft_iff_separatingRight, and_self]
+
+alias ⟨_, SeparatingLeft.nondegenerate⟩ := nondegenerate_iff_separatingLeft
+
+omit [Fintype n] in
+theorem nondegenerate_iff_separatingRight [Finite n] {M : Matrix n n R} :
+    M.Nondegenerate ↔ M.SeparatingRight := by
+  rw [nondegenerate_iff, separatingLeft_iff_separatingRight, and_self]
+
+alias ⟨_, SeparatingRight.nondegenerate⟩ := nondegenerate_iff_separatingRight
+
+theorem nondegenerate_iff_nonsingular [DecidableEq n] {M : Matrix n n R} :
+    M.Nondegenerate ↔ M.Nonsingular := by
+  rw [nondegenerate_iff, separatingLeft_iff_vecMul_injective,
+    separatingRight_iff_mulVec_injective, vecMul_injective_iff, mulVec_injective_iff,
+    linearIndependent_row_iff, linearIndependent_col_iff, and_self]
+
+alias ⟨Nondegenerate.nonsingular, Nonsingular.nondegenerate⟩ := nondegenerate_iff_nonsingular
+
+omit [Fintype n] in
 theorem Nondegenerate.mul_iff_right {l m : Type*} [Finite l] [Fintype m] [Finite n]
-    {M : Matrix l m A} {N : Matrix m n A} (h : N.Nondegenerate) :
+    {M : Matrix l m R} {N : Matrix m n R} (h : N.Nondegenerate) :
     (M * N).Nondegenerate ↔ M.Nondegenerate := by
   by_cases! Subsingleton R
   · simp [nondegenerate_iff, SeparatingLeft, SeparatingRight, Subsingleton.eq_zero]
@@ -238,7 +247,7 @@ theorem Nondegenerate.mul_iff_right {l m : Type*} [Finite l] [Fintype m] [Finite
 
 omit [Fintype n] in
 theorem Nondegenerate.mul_iff_left {l m : Type*} [Finite l] [Fintype m] [Finite n]
-    {M : Matrix l m A} {N : Matrix m n A} (h : M.Nondegenerate) :
+    {M : Matrix l m R} {N : Matrix m n R} (h : M.Nondegenerate) :
     (M * N).Nondegenerate ↔ N.Nondegenerate := by
   rw [← nondegenerate_transpose_iff (M := M * N), transpose_mul,
     Nondegenerate.mul_iff_right h.transpose, nondegenerate_transpose_iff]
