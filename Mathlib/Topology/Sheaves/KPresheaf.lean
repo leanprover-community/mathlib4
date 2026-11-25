@@ -14,10 +14,12 @@ public import Mathlib.Topology.Sets.BaseChangeNhds
 /-!
 # KPresheaves on a topological space
 
-We define `TopCat.KPresheaf A X` simply as `(TopologicalSpace.Opens X)ᵒᵖ ⥤ C`,
+We define `TopCat.KPresheaf A X` simply as `(Compacts X)ᵒᵖ ⥤ A`,
 and inherit the category structure with natural transformations as morphisms.
 
-We define
+We define construction that will allow to state the condition of being a K-sheaf.
+
+We also define the pushforward of a presheaf by a proper map
 
 -/
 @[expose] public section
@@ -89,6 +91,12 @@ lemma hom_ext_of_isColimit_coconeOfCompacts (P : KPresheaf A X) {K : Compacts X}
     f = f' :=
   ((Functor.Final.isColimitWhiskerEquiv K.openRcNhdsToCompactNhds_mono.functor.op
     _).symm h).hom_ext w
+
+/-- The pushforward by a proper map as a functor over K-presheaves -/
+@[simps!, implicit_reducible]
+def pushforward {Y : TopCat.{w}} (f : X ⟶ Y) (pf : IsProperMap f) :
+    KPresheaf A X ⥤ KPresheaf A Y :=
+  (Functor.whiskeringLeft _ _ _).obj (Compacts.properPreimage_mono pf).functor.op
 
 end KPresheaf
 
