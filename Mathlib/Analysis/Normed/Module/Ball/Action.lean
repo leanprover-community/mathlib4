@@ -20,7 +20,6 @@ multiplicative actions.
 
 public section
 
-
 open Metric Set
 
 variable {𝕜 𝕜' E : Type*} [NormedField 𝕜] [NormedField 𝕜'] [SeminormedAddCommGroup E]

@@ -19,7 +19,6 @@ be the polynomial with root `r * s` for each root `r` of `p` and proves some bas
 
 @[expose] public section
 
-
 variable {R S A K : Type*}
 
 open AddMonoidAlgebra

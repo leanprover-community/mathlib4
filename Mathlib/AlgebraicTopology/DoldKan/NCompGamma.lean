@@ -24,7 +24,6 @@ which reflects isomorphisms.
 
 @[expose] public section
 
-
 noncomputable section
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits CategoryTheory.Idempotents

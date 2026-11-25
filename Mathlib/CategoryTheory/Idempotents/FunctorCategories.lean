@@ -23,7 +23,6 @@ We also provide a fully faithful functor
 
 @[expose] public section
 
-
 open CategoryTheory
 
 open CategoryTheory.Category

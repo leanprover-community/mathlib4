@@ -225,7 +225,6 @@ theorem symm_mul (e : Perm α) : e.symm * e = 1 :=
 
 /-! Lemmas about `Equiv.Perm.sumCongr` re-expressed via the group structure. -/
 
-
 @[simp]
 theorem sumCongr_mul {α β : Type*} (e : Perm α) (f : Perm β) (g : Perm α) (h : Perm β) :
     sumCongr e f * sumCongr g h = sumCongr (e * g) (f * h) :=
@@ -268,7 +267,6 @@ theorem sumCongr_one_swap {α β : Type*} [DecidableEq α] [DecidableEq β] (i j
   sumCongr_refl_swap i j
 
 /-! Lemmas about `Equiv.Perm.sigmaCongrRight` re-expressed via the group structure. -/
-
 
 @[simp]
 theorem sigmaCongrRight_mul {α : Type*} {β : α → Type*} (F : ∀ a, Perm (β a))
@@ -355,7 +353,6 @@ lemma _root_.Equiv.permCongrHom_coe (e : α ≃ β) : ⇑e.permCongrHom = ⇑e.p
 section ExtendDomain
 
 /-! Lemmas about `Equiv.Perm.extendDomain` re-expressed via the group structure. -/
-
 
 variable (e : Perm α) {p : β → Prop} [DecidablePred p] (f : α ≃ Subtype p)
 

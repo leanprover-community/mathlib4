@@ -26,7 +26,6 @@ rigid motions in 3D space can be represented by dual quaternions of unit length.
 
 @[expose] public section
 
-
 variable {R : Type*} [CommRing R]
 
 namespace Quaternion
@@ -48,7 +47,6 @@ def dualNumberEquiv : Quaternion (DualNumber R) ≃ₐ[R] DualNumber (Quaternion
   map_smul' _ _ := rfl
 
 /-! Lemmas characterizing `Quaternion.dualNumberEquiv`. -/
-
 
 -- `simps` can't work on `DualNumber` because it's not a structure
 @[simp]

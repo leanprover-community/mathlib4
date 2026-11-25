@@ -19,7 +19,6 @@ and pullbacks/pushouts over a zero object are products/coproducts.
 
 @[expose] public section
 
-
 noncomputable section
 
 open CategoryTheory

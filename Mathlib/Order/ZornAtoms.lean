@@ -21,7 +21,6 @@ statement.
 
 public section
 
-
 open Set
 
 /-- **Zorn's lemma**: A partial order is coatomic if every nonempty chain `c`, `⊤ ∉ c`, has an upper

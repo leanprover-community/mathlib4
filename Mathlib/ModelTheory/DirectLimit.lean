@@ -29,7 +29,6 @@ This file constructs the direct limit of a directed system of first-order embedd
 
 @[expose] public section
 
-
 universe v w w' u₁ u₂
 
 open FirstOrder
@@ -278,8 +277,6 @@ noncomputable def of (i : ι) : G i ↪[L] DirectLimit G f where
     intro n R x
     change RelMap R (fun a => (⟦.mk f i (x a)⟧ : DirectLimit G f)) ↔ _
     simp only [relMap_quotient_mk'_sigma_mk']
-
-
 
 variable {L ι G f}
 

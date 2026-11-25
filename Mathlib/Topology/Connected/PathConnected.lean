@@ -57,7 +57,6 @@ variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {x y z : X} {ι
 
 /-! ### Being joined by a path -/
 
-
 /-- The relation "being joined by a path". This is an equivalence relation. -/
 def Joined (x y : X) : Prop :=
   Nonempty (Path x y)
@@ -168,7 +167,6 @@ end ZerothHomotopy
 variable {X}
 
 /-! ### Being joined by a path inside a set -/
-
 
 /-- The relation "being joined by a path in `F`". Not quite an equivalence relation since it's not
 reflexive for points that do not belong to `F`. -/
@@ -407,7 +405,6 @@ instance Subgroup.Normal.pathComponentOne (G : Type*) [Group G] [TopologicalSpac
 
 /-! ### Path connected sets -/
 
-
 /-- A set `F` is path connected if it contains a point that can be joined to all other in `F`. -/
 def IsPathConnected (F : Set X) : Prop :=
   ∃ x ∈ F, ∀ ⦃y⦄, y ∈ F → JoinedIn F x y
@@ -570,7 +567,6 @@ theorem IsPathConnected.exists_path_through_family' {n : ℕ}
   exact ⟨γ, t, h₁, ht⟩
 
 /-! ### Path connected spaces -/
-
 
 /-- A topological space is path-connected if it is non-empty and every two points can be
 joined by a continuous path. -/

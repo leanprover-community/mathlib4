@@ -28,7 +28,6 @@ In this file we prove Schreier's lemma.
 
 @[expose] public section
 
-
 open scoped Finset Pointwise
 
 section CommGroup

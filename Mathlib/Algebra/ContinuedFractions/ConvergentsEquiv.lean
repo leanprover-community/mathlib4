@@ -67,7 +67,6 @@ fractions, recurrence, equivalence
 
 @[expose] public section
 
-
 variable {K : Type*} {n : ℕ}
 
 namespace GenContFract
@@ -81,7 +80,6 @@ We will show the equivalence of the computations by induction. To make the induc
 to be able to *squash* the nth and (n + 1)th value of a sequence. This squashing itself and the
 lemmas about it are not very interesting. As a reader, you hence might want to skip this section.
 -/
-
 
 section WithDivisionRing
 
@@ -101,7 +99,6 @@ def squashSeq (s : Stream'.Seq <| Pair K) (n : ℕ) : Stream'.Seq (Pair K) :=
   | _ => s
 
 /-! We now prove some simple lemmas about the squashed sequence -/
-
 
 /-- If the sequence already terminated at position `n + 1`, nothing gets squashed. -/
 theorem squashSeq_eq_self_of_terminated (terminatedAt_succ_n : s.TerminatedAt (n + 1)) :
@@ -174,7 +171,6 @@ theorem succ_succ_nth_conv'Aux_eq_succ_nth_conv'Aux_squashSeq :
 
 /-! Let us now lift the squashing operation to gcfs. -/
 
-
 /-- Given a gcf `g = [h; (a₀, b₀), (a₁, b₁), ...]`, we have
 - `squashGCF g 0 = [h + a₀ / b₀; (a₁, b₁), ...]`,
 - `squashGCF g (n + 1) = ⟨g.h, squashSeq g.s n⟩`
@@ -188,7 +184,6 @@ def squashGCF (g : GenContFract K) : ℕ → GenContFract K
 
 /-! Again, we derive some simple lemmas that are not really of interest. This time for the
 squashed gcf. -/
-
 
 /-- If the gcf already terminated at position `n`, nothing gets squashed. -/
 theorem squashGCF_eq_self_of_terminated (terminatedAt_n : TerminatedAt g n) :

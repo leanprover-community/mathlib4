@@ -19,7 +19,6 @@ topological space.
 
 public section
 
-
 variable {E : Type*} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [ContinuousAdd E]
   [ContinuousSMul ℝ E] {s : Set E} {x : E}
 

@@ -32,7 +32,6 @@ and
 
 public section
 
-
 universe w v v₂ u₁ u₂
 
 namespace CategoryTheory

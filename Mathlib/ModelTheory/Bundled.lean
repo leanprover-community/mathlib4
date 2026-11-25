@@ -25,7 +25,6 @@ This file bundles types together with their first-order structure.
 
 @[expose] public section
 
-
 universe u v w w' x
 
 variable {L : FirstOrder.Language.{u, v}}

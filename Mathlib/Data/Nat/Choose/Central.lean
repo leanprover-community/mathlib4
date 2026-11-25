@@ -29,7 +29,6 @@ This file proves properties of the central binomial coefficients (that is, `Nat.
 
 @[expose] public section
 
-
 namespace Nat
 
 /-- The central binomial coefficient, `Nat.choose (2 * n) n`.

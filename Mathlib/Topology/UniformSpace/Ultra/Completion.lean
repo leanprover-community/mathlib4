@@ -33,7 +33,6 @@ lemma IsUniformInducing.isUltraUniformity [IsUltraUniformity Y] {f : X → Y}
 instance CauchyFilter.isSymm_gen {s : SetRel X X} [s.IsSymm] : (gen s).IsSymm where
   symm _ := by simp [CauchyFilter.gen, s.mem_filter_prod_comm]
 
-
 instance CauchyFilter.isTrans_gen {s : SetRel X X} [s.IsTrans] : (gen s).IsTrans where
   trans _ _ _ := IsTransitiveRel.mem_filter_prod_trans
 

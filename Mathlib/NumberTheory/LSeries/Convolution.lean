@@ -89,7 +89,6 @@ lemma convolution_def {R : Type*} [Semiring R] (f g : ℕ → R) :
 lemma convolution_map_zero {R : Type*} [Semiring R] (f g : ℕ → R) : (f ⍟ g) 0 = 0 := by
   simp [convolution_def]
 
-
 /-!
 ### Multiplication of L-series
 -/

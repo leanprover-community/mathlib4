@@ -13,7 +13,6 @@ public import Mathlib.Algebra.Homology.Single
 
 @[expose] public section
 
-
 noncomputable section
 
 open CategoryTheory Limits HomologicalComplex

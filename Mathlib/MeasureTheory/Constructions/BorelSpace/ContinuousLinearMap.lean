@@ -18,7 +18,6 @@ set_option doc.verso.suggestions false
 
 public section
 
-
 open MeasureTheory
 
 variable {α : Type*} [MeasurableSpace α]

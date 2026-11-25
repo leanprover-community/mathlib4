@@ -20,7 +20,6 @@ This file proves lemmas relating to bisecting angles.
 
 public section
 
-
 namespace EuclideanGeometry
 
 variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]

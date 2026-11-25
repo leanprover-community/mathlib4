@@ -45,7 +45,6 @@ Replace with `Convexity.IsStarConvexSet`.
 
 @[expose] public section
 
-
 open Set
 
 open Convex Pointwise

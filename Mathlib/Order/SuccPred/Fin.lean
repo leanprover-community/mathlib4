@@ -21,7 +21,6 @@ to a specific `Fin` instance.
 
 public section
 
-
 namespace Fin
 
 instance : ∀ {n : ℕ}, SuccOrder (Fin n)

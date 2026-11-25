@@ -71,7 +71,6 @@ end NormedOrderedGroup
 
 /-! ### `ℝⁿ` -/
 
-
 section Finite
 variable [Finite ι] {s : Set (ι → ℝ)} {x y : ι → ℝ}
 

@@ -28,7 +28,6 @@ set of subsets of `α` which is closed under finite intersections.
 
 public section
 
-
 variable {α : Type*} (S : Set (Set α))
 
 /-- A structure encapsulating the fact that a set of sets is closed under finite intersection. -/

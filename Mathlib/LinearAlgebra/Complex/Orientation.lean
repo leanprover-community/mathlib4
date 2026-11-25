@@ -20,7 +20,6 @@ but keeping it separate results in a significant import reduction.
 
 @[expose] public section
 
-
 namespace Complex
 
 /-- The standard orientation on `ℂ`. -/

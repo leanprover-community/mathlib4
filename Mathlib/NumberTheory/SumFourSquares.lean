@@ -23,7 +23,6 @@ The proof used is close to Lagrange's original proof.
 
 public section
 
-
 open Finset Polynomial FiniteField Equiv
 
 /-- **Euler's four-square identity**. -/

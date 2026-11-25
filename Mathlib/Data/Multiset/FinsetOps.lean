@@ -17,7 +17,6 @@ and prepare for defining the corresponding operations on `Finset`.
 
 @[expose] public section
 
-
 -- Assert that we define `Finset` without the material on the set lattice.
 -- Note that we cannot put this in `Data.Finset.Basic` because we proved relevant lemmas there.
 assert_not_exists Set.sInter
@@ -29,7 +28,6 @@ open List
 variable {α : Type*} [DecidableEq α] {s : Multiset α}
 
 /-! ### finset insert -/
-
 
 /-- `ndinsert a s` is the lift of the list `insert` operation. This operation
   does not respect multiplicities, unlike `cons`, but it is suitable as
@@ -118,7 +116,6 @@ theorem disjoint_ndinsert_right {a : α} {s t : Multiset α} :
 
 /-! ### finset union -/
 
-
 /-- `ndunion s t` is the lift of the list `union` operation. This operation
   does not respect multiplicities, unlike `s ∪ t`, but it is suitable as
   a union operation on `Finset`. (`s ∪ t` would also work as a union operation
@@ -187,7 +184,6 @@ theorem Subset.ndunion_eq_right {s t : Multiset α} (h : s ⊆ t) : s.ndunion t 
   exact congr_arg ((↑) : List α → Multiset α) <| List.Subset.union_eq_right h
 
 /-! ### finset inter -/
-
 
 /-- `ndinter s t` is the lift of the list `∩` operation. This operation
   does not respect multiplicities, unlike `s ∩ t`, but it is suitable as

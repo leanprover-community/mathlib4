@@ -164,7 +164,6 @@ We define bounded finitely additive signed measures on the space of all subsets 
 and show that such an object can be split into a discrete part and a continuous part.
 -/
 
-
 /-- A bounded signed finitely additive measure defined on *all* subsets of a type. -/
 structure BoundedAdditiveMeasure (α : Type u) where
   toFun : Set α → ℝ
@@ -382,7 +381,6 @@ section
 ### Relationship between continuous functionals and finitely additive measures.
 -/
 
-
 theorem norm_indicator_le_one (s : Set α) (x : α) : ‖(indicator s (1 : α → ℝ)) x‖ ≤ 1 := by
   simp only [Set.indicator, Pi.one_apply]; split_ifs <;> norm_num
 
@@ -489,7 +487,6 @@ talking of everywhere defined functions). And `f x` will be the characteristic f
 which is large (it has countable complement), as in the Sierpinski pathological family.
 -/
 
-
 /-- A family of bounded functions `f_x` from `ℝ` (seen with the discrete topology) to `ℝ` (in fact
 taking values in `{0, 1}`), indexed by a real parameter `x`, corresponding to the characteristic
 functions of the different fibers of the Sierpinski pathological family -/
@@ -550,7 +547,6 @@ The next few statements show that the function `f Hcont : ℝ → (DiscreteCopy 
 values in a complete space, is scalarly measurable, is everywhere bounded by `1`, and still has
 no Pettis integral.
 -/
-
 
 example : CompleteSpace (DiscreteCopy ℝ →ᵇ ℝ) := by infer_instance
 

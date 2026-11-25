@@ -16,7 +16,6 @@ We show that the support of `x ↦ f (c⁻¹ • x)` is equal to `c • support 
 
 public section
 
-
 open scoped Pointwise
 
 open Function Set

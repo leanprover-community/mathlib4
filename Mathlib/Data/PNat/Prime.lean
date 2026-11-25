@@ -17,7 +17,6 @@ This file extends the theory of `ℕ+` with `gcd`, `lcm` and `Prime` functions, 
 
 @[expose] public section
 
-
 namespace Nat.Primes
 
 /-- The canonical map from `Nat.Primes` to `ℕ+` -/
@@ -96,7 +95,6 @@ section Prime
 
 /-! ### Prime numbers -/
 
-
 /-- Primality predicate for `ℕ+`, defined in terms of `Nat.Prime`. -/
 def Prime (p : ℕ+) : Prop :=
   (p : ℕ).Prime
@@ -153,7 +151,6 @@ end Prime
 section Coprime
 
 /-! ### Coprime numbers and gcd -/
-
 
 /-- Two pnats are coprime if their gcd is 1. -/
 def Coprime (m n : ℕ+) : Prop :=

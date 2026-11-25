@@ -37,7 +37,6 @@ with respect to `ℱ` and for all `i ≤ j`, `f i ≤ᵐ[μ] μ[f j | ℱ i]`.
 
 @[expose] public section
 
-
 open Filter
 
 open scoped NNReal ENNReal MeasureTheory ProbabilityTheory

@@ -28,7 +28,6 @@ defined in this file but is introduced in
 
 public section
 
-
 open scoped ENNReal MeasureTheory
 
 namespace MeasureTheory

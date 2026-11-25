@@ -31,7 +31,6 @@ import Mathlib.CategoryTheory.Adjunction.Limits
 
 @[expose] public section
 
-
 open CategoryTheory.Limits CategoryTheory.Functor
 
 namespace CategoryTheory

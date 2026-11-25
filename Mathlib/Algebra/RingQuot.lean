@@ -398,7 +398,6 @@ We now verify that in the case of a commutative ring, the `RingQuot` constructio
 agrees with the quotient by the appropriate ideal.
 -/
 
-
 variable {B : Type uR} [CommRing B]
 
 /-- The universal ring homomorphism from `RingQuot r` to `B ⧸ Ideal.ofRel r`. -/
@@ -430,7 +429,6 @@ def idealQuotientToRingQuot (r : B → B → Prop) : B ⧸ Ideal.ofRel r →+* R
 theorem idealQuotientToRingQuot_apply (r : B → B → Prop) (x : B) :
     idealQuotientToRingQuot r (Ideal.Quotient.mk _ x) = mkRingHom r x :=
   rfl
-
 
 /-- The ring equivalence between `RingQuot r` and `(Ideal.ofRel r).quotient`
 -/

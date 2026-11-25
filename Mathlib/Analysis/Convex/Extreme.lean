@@ -44,7 +44,6 @@ Prove lemmas relating extreme sets and points to the intrinsic frontier.
 
 @[expose] public section
 
-
 open Function Module Set
 
 variable {𝕜 E F ι : Type*} {M : ι → Type*}

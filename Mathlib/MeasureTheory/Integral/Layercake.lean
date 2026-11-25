@@ -90,7 +90,6 @@ end
 
 /-! ### Layercake formula -/
 
-
 section Layercake
 
 variable {α : Type*} [MeasurableSpace α] {f : α → ℝ} {g : ℝ → ℝ}

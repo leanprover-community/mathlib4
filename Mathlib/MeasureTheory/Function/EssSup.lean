@@ -34,7 +34,6 @@ sense). We do not define that quantity here, which is simply the supremum of a m
 
 @[expose] public section
 
-
 open Filter MeasureTheory ProbabilityTheory Set TopologicalSpace
 open scoped ENNReal NNReal
 

@@ -11,7 +11,6 @@ public import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 public section
 
-
 open Set Filter MeasureTheory MeasureTheory.Measure TopologicalSpace
 
 section regionBetween
@@ -74,7 +73,6 @@ These lemmas are stated in terms of either `Iic` or `Ioi` (neglecting `Iio` and 
 mathlib's conventions for integrals over finite intervals (see `intervalIntegral`). For the case
 of finite integrals, see `intervalIntegral.integral_comp_neg`.
 -/
-
 
 @[simp]
 theorem integral_comp_neg_Iic {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]

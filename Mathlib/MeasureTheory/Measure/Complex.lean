@@ -36,7 +36,6 @@ Complex measure
 
 @[expose] public section
 
-
 noncomputable section
 
 open scoped MeasureTheory ENNReal NNReal

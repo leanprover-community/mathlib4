@@ -29,7 +29,6 @@ form of Lebesgue's density theorem.
 
 public section
 
-
 noncomputable section
 
 open Set Filter Metric MeasureTheory

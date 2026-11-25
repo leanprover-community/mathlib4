@@ -47,7 +47,6 @@ open Category Limits Comonad
 variable {C : Type u} [Category.{v} C] (X Y : C)
 variable {D : Type u₂} [Category.{v₂} D]
 
-
 namespace Over
 
 open Limits

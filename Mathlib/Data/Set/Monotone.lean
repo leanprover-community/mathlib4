@@ -19,7 +19,6 @@ open Equiv Equiv.Perm Function
 
 namespace Set
 
-
 /-! ### Congruence lemmas for monotonicity and antitonicity -/
 section Order
 
@@ -102,8 +101,6 @@ lemma antitoneOn_insert_iff {a : α} :
 end Mono
 
 end Set
-
-
 
 open Function
 

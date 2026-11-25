@@ -87,7 +87,6 @@ Hausdorff measure, Hausdorff dimension, dimension
 
 @[expose] public section
 
-
 open scoped MeasureTheory ENNReal NNReal Topology
 
 open MeasureTheory MeasureTheory.Measure Set TopologicalSpace Module Filter
@@ -101,7 +100,6 @@ variable {ι X Y : Type*} [EMetricSpace X] [EMetricSpace Y]
 /-!
 ### Basic properties
 -/
-
 
 section Measurable
 
@@ -230,7 +228,6 @@ alias Finset.dimH_zero := dimH_coe_finset
 ### Hausdorff dimension as the supremum of local Hausdorff dimensions
 -/
 
-
 section
 
 variable [SecondCountableTopology X]
@@ -274,7 +271,6 @@ end
 /-!
 ### Hausdorff dimension and Hölder continuity
 -/
-
 
 variable {C K r : ℝ≥0} {f : X → Y} {s : Set X}
 
@@ -335,7 +331,6 @@ theorem dimH_range_le_of_locally_holder_on [SecondCountableTopology X] {r : ℝ�
 ### Hausdorff dimension and Lipschitz continuity
 -/
 
-
 /-- If `f : X → Y` is Lipschitz continuous on `s`, then `dimH (f '' s) ≤ dimH s`. -/
 theorem LipschitzOnWith.dimH_image_le (h : LipschitzOnWith K f s) : dimH (f '' s) ≤ dimH s := by
   simpa using h.holderOnWith.dimH_image_le zero_lt_one
@@ -392,7 +387,6 @@ end AntilipschitzWith
 ### Isometries preserve Hausdorff dimension
 -/
 
-
 theorem Isometry.dimH_image (hf : Isometry f) (s : Set X) : dimH (f '' s) = dimH s :=
   le_antisymm (hf.lipschitzWith.dimH_image_le _) (hf.antilipschitzWith.le_dimH_image _)
 
@@ -433,7 +427,6 @@ end ContinuousLinearEquiv
 /-!
 ### Hausdorff dimension in a real vector space
 -/
-
 
 namespace Real
 

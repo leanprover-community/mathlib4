@@ -35,7 +35,6 @@ Let `K` be a field, `A` be a `K`-algebra and `L` be a field extension of `K`.
 
 public section
 
-
 universe u
 
 variable (K L : Type*) (A : Type u) [Field K] [Field L] [CommRing A] [Algebra K L] [Algebra K A]

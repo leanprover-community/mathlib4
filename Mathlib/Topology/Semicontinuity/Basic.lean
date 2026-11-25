@@ -50,7 +50,6 @@ ones for lower semicontinuous functions using `OrderDual`.
 * <https://en.wikipedia.org/wiki/Closed_convex_function>
 * <https://en.wikipedia.org/wiki/Semi-continuity>
 
-
 + lower and upper semicontinuity correspond to `r := (f · > ·)` and `r := (f · < ·)`;
 + lower and upper hemicontinuity correspond to `r := (fun x s ↦ IsOpen s ∧ ((f x) ∩ s).Nonempty)`
   and `r := (fun x s ↦ s ∈ 𝓝ˢ (f x))`, respectively.
@@ -116,7 +115,6 @@ theorem LowerSemicontinuousOn.bddBelow_of_isCompact [Nonempty β] {s : Set α} (
 end
 
 /-! #### Indicators -/
-
 
 section
 
@@ -414,7 +412,6 @@ end
 
 /-! #### Addition -/
 
-
 section
 
 variable {ι : Type*} {γ : Type*} [AddCommMonoid γ] [LinearOrder γ] [IsOrderedAddMonoid γ]
@@ -698,7 +695,6 @@ end
 
 /-! #### Infinite sums -/
 
-
 section
 
 variable {ι : Type*}
@@ -748,7 +744,6 @@ theorem UpperSemicontinuousOn.bddAbove_of_isCompact [Nonempty β] {s : Set α}
 end
 
 /-! #### Indicators -/
-
 
 section
 
@@ -1040,7 +1035,6 @@ end
 
 /-! #### Addition -/
 
-
 section
 
 variable {ι : Type*} {γ : Type*} [AddCommMonoid γ] [LinearOrder γ] [IsOrderedAddMonoid γ]
@@ -1180,7 +1174,6 @@ theorem UpperSemicontinuousOn.sup
 theorem UpperSemicontinuous.sup (hf : UpperSemicontinuous f) (hg : UpperSemicontinuous g) :
     UpperSemicontinuous fun x ↦ f x ⊔ g x :=
   LowerSemicontinuous.inf (β := βᵒᵈ) hf hg
-
 
 end
 

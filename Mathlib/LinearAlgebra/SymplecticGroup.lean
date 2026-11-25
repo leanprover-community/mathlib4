@@ -45,7 +45,6 @@ keeping the upper-left block invertible.
 
 @[expose] public section
 
-
 open Matrix
 
 variable {l R : Type*}

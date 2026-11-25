@@ -57,7 +57,6 @@ that is both a pullback square and a pushout square.
 structure BicartesianSq {W X Y Z : C} (f : W ⟶ X) (g : W ⟶ Y) (h : X ⟶ Z) (i : Y ⟶ Z) : Prop
     extends IsPullback f g h i, IsPushout f g h i
 
-
 variable [HasZeroObject C] [HasZeroMorphisms C]
 open ZeroObject
 
@@ -207,7 +206,6 @@ theorem zero_left (X : C) : IsPushout (0 : 0 ⟶ X) (0 : (0 : C) ⟶ 0) (𝟙 X)
 theorem zero_top (X : C) : IsPushout (0 : (0 : C) ⟶ 0) (0 : 0 ⟶ X) (0 : 0 ⟶ X) (𝟙 X) :=
   (zero_left X).flip
 
-
 theorem of_isBilimit {b : BinaryBicone X Y} (h : b.IsBilimit) :
     IsPushout (0 : 0 ⟶ X) (0 : 0 ⟶ Y) b.inl b.inr := by
   convert IsPushout.of_is_coproduct' h.isColimit HasZeroObject.zeroIsInitial
@@ -294,7 +292,6 @@ theorem flip (p : BicartesianSq f g h i) : BicartesianSq g f i h :=
   of_isPullback_isPushout p.toIsPullback.flip p.toIsPushout.flip
 
 end
-
 
 /-- ```
  X ⊞ Y --fst--> X

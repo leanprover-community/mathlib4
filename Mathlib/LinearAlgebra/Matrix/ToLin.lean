@@ -274,7 +274,6 @@ and fail to distinguish between `Rᵐᵒᵖ` and `R`.
 This should eventually be remedied.
 -/
 
-
 section mulVec
 
 variable {R : Type*} [CommSemiring R]

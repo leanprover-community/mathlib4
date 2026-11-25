@@ -29,7 +29,6 @@ multilinear, formal series
 
 @[expose] public section
 
-
 noncomputable section
 
 open Set Fin

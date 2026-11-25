@@ -584,7 +584,6 @@ end BooleanAlgebra
 
 /-! ### Prod -/
 
-
 section Prod
 
 @[to_dual (attr := simp)]
@@ -600,7 +599,6 @@ theorem symmDiff_snd [GeneralizedCoheytingAlgebra α] [GeneralizedCoheytingAlgeb
 end Prod
 
 /-! ### Pi -/
-
 
 namespace Pi
 

@@ -20,7 +20,6 @@ and weak equivalences from the axioms of model categories.
 
 public section
 
-
 universe w v u
 
 open CategoryTheory Limits MorphismProperty
@@ -175,7 +174,6 @@ instance : (cofibrations C).IsMultiplicative := by
 instance : (trivialFibrations C).IsMultiplicative := by
   rw [← cofibrations_rlp]
   infer_instance
-
 
 variable (J : Type w)
 

@@ -112,7 +112,6 @@ Hausdorff measure, measure, metric measure
 
 @[expose] public section
 
-
 open scoped NNReal ENNReal Topology
 
 open Metric Set Function Filter Encodable Module TopologicalSpace CompleteLattice
@@ -131,7 +130,6 @@ namespace OuterMeasure
 In this section we define metric outer measures and prove Carathéodory's theorem: a metric outer
 measure has the Carathéodory property.
 -/
-
 
 /-- We say that an outer measure `μ` in an (e)metric space is *metric* if `μ (s ∪ t) = μ s + μ t`
 for any two metric separated sets `s`, `t`. -/
@@ -240,7 +238,6 @@ In this section we provide constructors `MeasureTheory.OuterMeasure.mkMetric'` a
 `MeasureTheory.OuterMeasure.mkMetric` and prove that these outer measures are metric outer
 measures. We also prove basic lemmas about `map`/`comap` of these measures.
 -/
-
 
 /-- Auxiliary definition for `OuterMeasure.mkMetric'`: given a function on sets
 `m : Set X → ℝ≥0∞`, returns the maximal outer measure `μ` such that `μ s ≤ m s`
@@ -405,7 +402,6 @@ In this section we use `MeasureTheory.OuterMeasure.toMeasure` and theorems about
 about metric outer measures for metric measures.
 -/
 
-
 namespace Measure
 
 variable [MeasurableSpace X] [BorelSpace X]
@@ -529,7 +525,6 @@ theorem mkMetric_le_liminf_sum {β : Type*} {ι : β → Type*} [hι : ∀ n, Fi
 /-!
 ### Hausdorff measure and Hausdorff dimension
 -/
-
 
 /-- Hausdorff measure on an (e)metric space. -/
 def hausdorffMeasure (d : ℝ) : Measure X :=
@@ -671,7 +666,6 @@ end MeasureTheory
 /-!
 ### Hausdorff measure, Hausdorff dimension, and Hölder or Lipschitz continuous maps
 -/
-
 
 open scoped MeasureTheory
 
@@ -816,7 +810,6 @@ end AntilipschitzWith
 ### Isometries preserve the Hausdorff measure and Hausdorff dimension
 -/
 
-
 namespace Isometry
 
 variable {f : X → Y} {d : ℝ}
@@ -881,7 +874,6 @@ instance {d : ℝ} [Group X] [IsIsometricSMul Xᵐᵒᵖ X] : IsMulRightInvarian
 /-!
 ### Hausdorff measure and Lebesgue measure
 -/
-
 
 /-- In the space `ι → ℝ`, the Hausdorff measure coincides exactly with the Lebesgue measure. -/
 @[simp]

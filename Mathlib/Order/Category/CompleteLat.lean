@@ -19,7 +19,6 @@ This file defines `CompleteLat`, the category of complete lattices.
 
 @[expose] public section
 
-
 universe u
 
 open CategoryTheory

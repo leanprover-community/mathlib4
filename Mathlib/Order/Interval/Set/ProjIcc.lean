@@ -30,7 +30,6 @@ We also prove some trivial properties of these maps.
 
 @[expose] public section
 
-
 variable {α β : Type*} [LinearOrder α]
 
 open Function

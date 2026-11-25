@@ -28,7 +28,6 @@ Also see `tfae_of_isNoetherianRing_of_isLocalRing_of_isDomain` for a version wit
 
 public section
 
-
 variable (R : Type*) [CommRing R]
 
 open scoped Multiplicative

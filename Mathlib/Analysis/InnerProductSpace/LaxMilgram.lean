@@ -32,7 +32,6 @@ dual, Lax-Milgram
 
 @[expose] public section
 
-
 noncomputable section
 
 open RCLike LinearMap ContinuousLinearMap InnerProductSpace

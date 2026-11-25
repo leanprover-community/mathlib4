@@ -28,7 +28,6 @@ This file proves asymptotic theorems for binomial coefficients and factorial var
 
 public section
 
-
 open Asymptotics Filter Nat Topology
 
 /-- `n.descFactorial k` is asymptotically equivalent to `n^k`. -/

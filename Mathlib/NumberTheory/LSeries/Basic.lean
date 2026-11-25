@@ -313,7 +313,6 @@ lemma LSeries_delta : LSeries δ = 1 := by
 
 end delta
 
-
 /-!
 ### Criteria for and consequences of summability of L-series
 

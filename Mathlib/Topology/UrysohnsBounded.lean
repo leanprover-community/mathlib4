@@ -22,7 +22,6 @@ Urysohn's lemma, normal topological space
 
 public section
 
-
 open BoundedContinuousFunction
 
 open Set Function

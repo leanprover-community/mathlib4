@@ -386,7 +386,6 @@ theorem sup_h_of_disjoint (f g : E →ₛₗ.[σ] F) (h : Disjoint f.domain g.do
 
 /-! ### Algebraic operations -/
 
-
 section Zero
 
 instance instZero : Zero (E →ₛₗ.[σ] F) := ⟨⊤, 0⟩
@@ -784,7 +783,6 @@ theorem domRestrict_le {f : E →ₛₗ.[σ] F} {S : Submodule R E} : f.domRestr
   ⟨by simp, fun _ _ hxy => domRestrict_apply hxy⟩
 
 /-! ### Graph -/
-
 
 section Graph
 

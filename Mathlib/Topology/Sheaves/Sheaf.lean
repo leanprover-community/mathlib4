@@ -27,7 +27,6 @@ presheaves, and the fully faithful functor `Sheaf.forget : TopCat.Sheaf C X ⥤ 
 
 @[expose] public section
 
-
 universe w v u
 
 noncomputable section

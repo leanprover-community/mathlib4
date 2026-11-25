@@ -29,7 +29,6 @@ that the concrete definition is equivalent to a \*-closed subalgebra which is we
 
 @[expose] public section
 
-
 universe u v
 
 /-- Sakai's definition of a von Neumann algebra as a C⋆ algebra with a Banach space predual.

@@ -56,7 +56,6 @@ variable {α : Type*}
 ### Binary operations: `(· + ·)`, `(· * ·)`, `(· - ·)`, `(· / ·)`
 -/
 
-
 /-- We say that a type has `MeasurableAdd` if `(c + ·)` and `(· + c)` are measurable functions.
 For a typeclass assuming measurability of `uncurry (· + ·)` see `MeasurableAdd₂`. -/
 class MeasurableAdd (M : Type*) [MeasurableSpace M] [Add M] : Prop where
@@ -693,7 +692,6 @@ end MulAction
 ### Opposite monoid
 -/
 
-
 section Opposite
 
 open MulOpposite
@@ -754,7 +752,6 @@ end Opposite
 /-!
 ### Big operators: `∏` and `∑`
 -/
-
 
 section Monoid
 

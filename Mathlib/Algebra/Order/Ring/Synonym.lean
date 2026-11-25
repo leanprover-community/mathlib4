@@ -16,7 +16,6 @@ Transfer algebraic instances from `R` to `Rᵒᵈ` and `Lex R`.
 
 public section
 
-
 variable {R : Type*}
 
 /-! ### Order dual -/

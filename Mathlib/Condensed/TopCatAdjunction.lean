@@ -169,7 +169,6 @@ noncomputable def compactlyGeneratedToCondensedSet :
     CompactlyGenerated.{u, u + 1} ⥤ CondensedSet.{u} :=
   compactlyGeneratedToTop ⋙ topCatToCondensedSet
 
-
 /--
 The adjunction `condensedSetToTopCat ⊣ topCatToCondensedSet` restricted to compactly generated
 spaces.

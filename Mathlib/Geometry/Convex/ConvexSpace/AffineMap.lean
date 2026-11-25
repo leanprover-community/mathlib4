@@ -81,7 +81,6 @@ def const (y : Y) : ConvexSpace.AffineMap R X Y where
 
 end ConvexSpace.AffineMap
 
-
 namespace StdSimplex
 
 @[ext]

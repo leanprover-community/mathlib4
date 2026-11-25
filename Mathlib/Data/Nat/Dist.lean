@@ -20,7 +20,6 @@ This file defines a simple distance function on naturals from truncated subtract
 
 @[expose] public section
 
-
 namespace Nat
 
 /-- Distance (absolute value of difference) between natural numbers. -/

@@ -25,7 +25,6 @@ base changes.
 
 public section
 
-
 noncomputable section
 
 open CategoryTheory CategoryTheory.Limits TopologicalSpace

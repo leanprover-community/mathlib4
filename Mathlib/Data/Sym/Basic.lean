@@ -565,7 +565,6 @@ section Equiv
 
 /-! ### Combinatorial equivalences -/
 
-
 variable {α : Type*} {n : ℕ}
 
 open Sym

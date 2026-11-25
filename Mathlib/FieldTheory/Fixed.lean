@@ -32,7 +32,6 @@ then `finrank (FixedPoints.subfield G F) F = Fintype.card G`.
 
 @[expose] public section
 
-
 noncomputable section
 
 open MulAction Finset Module

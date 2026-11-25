@@ -20,7 +20,6 @@ preadditive. Dually, if `U` is an additive comonad on `C` then `Coalgebra U` is 
 
 public section
 
-
 universe v₁ u₁
 
 namespace CategoryTheory

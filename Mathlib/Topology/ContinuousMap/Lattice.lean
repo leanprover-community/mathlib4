@@ -17,7 +17,6 @@ set_option doc.verso.suggestions false
 
 public section
 
-
 /-!
 We now provide formulas for `f ⊓ g` and `f ⊔ g`, where `f g : C(α, β)`,
 in terms of `ContinuousMap.abs`.

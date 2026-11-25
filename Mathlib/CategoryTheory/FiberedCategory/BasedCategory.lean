@@ -129,7 +129,6 @@ end
 
 end BasedFunctor
 
-
 /-- A `BasedNatTrans` between two `BasedFunctor`s is a natural transformation `α` between the
 underlying functors, such that for all `a : 𝒳`, `α.app a` lifts `𝟙 S` whenever `𝒳.p.obj a = S`. -/
 structure BasedNatTrans {𝒳 : BasedCategory.{v₂, u₂} 𝒮} {𝒴 : BasedCategory.{v₃, u₃} 𝒮}

@@ -756,7 +756,6 @@ end CompleteLinearOrder
 ### Instances
 -/
 
-
 instance Prop.instCompleteLattice : CompleteLattice Prop where
   __ := Prop.instBoundedOrder
   __ := Prop.instDistribLattice

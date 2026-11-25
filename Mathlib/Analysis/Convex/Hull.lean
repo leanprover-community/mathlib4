@@ -25,7 +25,6 @@ while the impact on writing code is minimal as `convexHull 𝕜 s` is automatica
 
 @[expose] public section
 
-
 open Set
 
 open scoped Pointwise

@@ -24,7 +24,6 @@ category `V`.
 
 @[expose] public section
 
-
 universe w v u u₁ u₂ u₃
 
 namespace CategoryTheory

@@ -28,7 +28,6 @@ compute `Ext` using both projective or injective resolutions.
 
 @[expose] public section
 
-
 noncomputable section
 
 open CategoryTheory Limits

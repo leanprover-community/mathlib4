@@ -459,7 +459,6 @@ end Order.Preimage
 
 /-! ### Strict-non strict relations -/
 
-
 /-- An unbundled relation class stating that `r` is the nonstrict relation corresponding to the
 strict relation `s`. Compare `lt_iff_le_not_ge`. This is mostly meant to provide dot
 notation on `(⊆)` and `(⊂)`. -/
@@ -573,7 +572,6 @@ alias ssubset_iff_subset_ne := ssubset_iff_subset_and_ne
 end SubsetSSubset
 
 /-! ### Conversion of bundled order typeclasses to unbundled relation typeclasses -/
-
 
 @[to_dual instReflGe]
 instance instReflLe [Preorder α] : @Std.Refl α (· ≤ ·) :=

@@ -422,7 +422,6 @@ end Order
 ### Big operators: `∏` and `∑`
 -/
 
-
 section Monoid
 
 variable {M : Type*} [Monoid M] [TopologicalSpace M] [ContinuousMul M]
@@ -891,7 +890,6 @@ end AEStronglyMeasurable
 end AEStronglyMeasurable
 
 /-! ## Almost everywhere finitely strongly measurable functions -/
-
 
 namespace AEFinStronglyMeasurable
 

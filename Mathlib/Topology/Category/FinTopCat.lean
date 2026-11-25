@@ -20,7 +20,6 @@ forgetful functors.
 
 @[expose] public section
 
-
 universe u
 
 open CategoryTheory

@@ -20,7 +20,6 @@ with nonempty index type have the same characteristic.
 
 public section
 
-
 namespace Matrix
 
 variable {n : Type*} {R : Type*} [DecidableEq n] [Nonempty n] [AddMonoidWithOne R]

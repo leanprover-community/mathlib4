@@ -21,7 +21,6 @@ open scoped Finset
 
 @[expose] public section
 
-
 theorem IsPrimePow.minFac_pow_factorization_eq {n : ℕ} (hn : IsPrimePow n) :
     n.minFac ^ n.factorization n.minFac = n := by
   obtain ⟨p, k, hp, hk, rfl⟩ := hn

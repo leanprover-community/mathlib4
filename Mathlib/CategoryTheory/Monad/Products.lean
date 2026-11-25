@@ -26,7 +26,6 @@ is a monadic right adjoint.
 
 @[expose] public section
 
-
 noncomputable section
 
 universe v u
@@ -84,7 +83,6 @@ def coalgebraEquivOver : Coalgebra (prodComonad X) ≌ Over X where
 end
 
 section
-
 
 variable [HasBinaryCoproducts C]
 

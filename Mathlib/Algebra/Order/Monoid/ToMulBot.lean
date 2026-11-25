@@ -19,7 +19,6 @@ element then making it multiplicative.
 
 @[expose] public section
 
-
 universe u
 
 variable {α : Type u}

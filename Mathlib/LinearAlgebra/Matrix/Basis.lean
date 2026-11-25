@@ -39,7 +39,6 @@ matrix, basis
 
 @[expose] public section
 
-
 noncomputable section
 
 open Function LinearMap Matrix Module Set Submodule

@@ -353,7 +353,6 @@ lemma contMDiff_of_contMDiffOn_iUnion_of_isOpen {ι : Type*} {s : ι → Set M}
 
 end contMDiff_union
 
-
 /-! ### The inclusion map from one open set to another is `C^n` -/
 
 section Inclusion

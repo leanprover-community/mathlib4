@@ -46,11 +46,9 @@ For the finite version, we avoid the "obvious" definition
 
 @[expose] public section
 
-
 variable {α β ι ι' : Type*}
 
 /-! ### On lattices with a bottom element, via `Finset.sup` -/
-
 
 namespace Finset
 

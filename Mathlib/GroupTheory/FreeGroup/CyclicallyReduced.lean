@@ -66,7 +66,6 @@ protected theorem nil : IsCyclicallyReduced ([] : List (α × Bool)) := by
 protected theorem singleton {x : (α × Bool)} : IsCyclicallyReduced [x] := by
   simp [IsCyclicallyReduced]
 
-
 @[to_additive]
 theorem isReduced (h : IsCyclicallyReduced L) : IsReduced L := h.1
 
@@ -130,7 +129,6 @@ protected theorem cons_append {a b : α × Bool} (L : List (α × Bool)) :
     reduceCyclically (a :: (L ++ [b])) =
     if b.1 = a.1 ∧ (!b.2) = a.2 then reduceCyclically L else a :: L ++ [b] := by
   simp [reduceCyclically]
-
 
 @[to_additive]
 theorem isCyclicallyReduced (h : IsReduced L) : IsCyclicallyReduced (reduceCyclically L) := by

@@ -28,7 +28,6 @@ public import Mathlib.ModelTheory.ElementarySubstructures
 
 @[expose] public section
 
-
 universe u v w w'
 
 namespace FirstOrder

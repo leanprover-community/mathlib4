@@ -486,7 +486,6 @@ instance : MetricSpace GHSpace where
         rw [hausdorffDist_optimal, hausdorffDist_optimal, ghDist, ghDist]
       _ = dist x y + dist y z := by rw [x.toGHSpace_rep, y.toGHSpace_rep, z.toGHSpace_rep]
 
-
 end GHSpace --section
 
 end GromovHausdorff

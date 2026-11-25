@@ -102,7 +102,6 @@ def mkUncurryFun (n : Nat) (f : Expr) : MetaM Expr := do
       let xs' ← mkProdSplitElem xProd n
       mkLambdaFVars #[xProd] (← mkAppM' f xs').headBeta
 
-
 /-- Eta expand `f` in only one variable and reduce in others.
 
 Examples:
@@ -155,7 +154,6 @@ let y := a * a; a + y + b
 def headBetaThroughLet (e : Expr) : Expr :=
   let f := e.getAppFn
   if f.isHeadBetaTargetFn true then betaThroughLet f e.getAppArgs else e
-
 
 end Meta.FunProp
 

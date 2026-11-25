@@ -281,7 +281,6 @@ theorem setToFun_add_left'' {hT : DominatedFinMeasAdditive μ T C}
   rw [← A, ← A', ← A'']
   apply setToFun_add_left' _ _ _ h
 
-
 end Function
 
 end MeasureTheory

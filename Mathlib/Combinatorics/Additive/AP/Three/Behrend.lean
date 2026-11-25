@@ -93,7 +93,6 @@ integer points. Because the $L^2$ closed ball is strictly convex, the $L^2$ sphe
 an additive monoid homomorphism.
 -/
 
-
 /-- The box `{0, ..., d - 1}^n` as a `Finset`. -/
 def box (n d : ℕ) : Finset (Fin n → ℕ) :=
   Fintype.piFinset fun _ => range d
@@ -233,7 +232,6 @@ sphere containing many integer points by the pigeonhole principle. This gives us
 that we then optimize by tweaking the parameters. The (almost) optimal parameters are
 `Behrend.nValue` and `Behrend.dValue`.
 -/
-
 
 theorem exists_large_sphere_aux (n d : ℕ) : ∃ k ∈ range (n * (d - 1) ^ 2 + 1),
     (↑(d ^ n) / ((n * (d - 1) ^ 2 :) + 1) : ℝ) ≤ #(sphere n d k) := by

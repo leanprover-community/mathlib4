@@ -60,7 +60,6 @@ p-adic, p adic, padic, norm, valuation
 
 @[expose] public section
 
-
 universe u
 
 open Nat Rat

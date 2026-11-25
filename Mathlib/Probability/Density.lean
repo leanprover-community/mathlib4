@@ -47,7 +47,6 @@ random variables with this distribution.
 
 @[expose] public section
 
-
 open scoped MeasureTheory NNReal ENNReal
 
 open TopologicalSpace MeasureTheory Measure ProbabilityTheory

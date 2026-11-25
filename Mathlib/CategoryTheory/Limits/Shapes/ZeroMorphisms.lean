@@ -29,7 +29,6 @@ zero object provides zero morphisms, as the unique morphisms factoring through t
 
 @[expose] public section
 
-
 noncomputable section
 
 universe w v v' u u'
@@ -524,7 +523,6 @@ instance isSplitEpi_prod_fst [HasZeroMorphisms C] {X Y : C} [HasLimit (pair X Y)
 instance isSplitEpi_prod_snd [HasZeroMorphisms C] {X Y : C} [HasLimit (pair X Y)] :
     IsSplitEpi (prod.snd : X ⨯ Y ⟶ Y) :=
   IsSplitEpi.mk' { section_ := prod.lift 0 (𝟙 Y) }
-
 
 section
 

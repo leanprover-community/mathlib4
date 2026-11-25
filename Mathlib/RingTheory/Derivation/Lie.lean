@@ -19,7 +19,6 @@ public import Mathlib.RingTheory.Derivation.Basic
 
 @[expose] public section
 
-
 namespace Derivation
 
 variable {R : Type*} [CommRing R]
@@ -29,7 +28,6 @@ variable {D1 D2 : Derivation R A A} (a : A)
 section LieStructures
 
 /-! ### Lie structures -/
-
 
 /-- The commutator of derivations is again a derivation. -/
 instance : Bracket (Derivation R A A) (Derivation R A A) :=

@@ -36,7 +36,6 @@ We show that any simple object is indecomposable.
 
 public section
 
-
 noncomputable section
 
 open CategoryTheory.Limits

@@ -19,7 +19,6 @@ This file proves various versions of Ceva's theorem.
 
 public section
 
-
 open scoped Affine
 
 variable {k V P ι : Type*}

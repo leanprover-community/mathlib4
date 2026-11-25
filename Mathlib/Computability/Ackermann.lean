@@ -52,7 +52,6 @@ which bump up our constant to `9`.
 
 @[expose] public section
 
-
 open Nat
 
 /-- The two-argument Ackermann function, defined so that

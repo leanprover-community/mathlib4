@@ -38,7 +38,6 @@ the Kolmogorov extension theorem.
 
 @[expose] public section
 
-
 open Finset
 
 open scoped ENNReal

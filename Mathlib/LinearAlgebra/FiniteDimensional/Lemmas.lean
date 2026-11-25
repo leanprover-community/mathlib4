@@ -24,7 +24,6 @@ and results that require fewer imports are in `Mathlib/LinearAlgebra/FiniteDimen
 
 assert_not_exists Monoid.exponent Module.IsTorsion
 
-
 universe u v v'
 
 open Cardinal Submodule Module Function

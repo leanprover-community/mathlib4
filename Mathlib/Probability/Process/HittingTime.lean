@@ -34,7 +34,6 @@ we have only proved it for the discrete case so far).
 
 @[expose] public section
 
-
 open TopologicalSpace
 
 open scoped MeasureTheory NNReal ENNReal Topology

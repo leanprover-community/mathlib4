@@ -17,7 +17,6 @@ as a subalgebra of the field `K` over `A`.
 
 @[expose] public section
 
-
 namespace Localization
 
 open nonZeroDivisors

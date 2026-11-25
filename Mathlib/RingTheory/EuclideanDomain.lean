@@ -24,7 +24,6 @@ euclidean domain
 
 @[expose] public section
 
-
 section
 
 open EuclideanDomain Set Ideal

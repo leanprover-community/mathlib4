@@ -277,7 +277,6 @@ lemma mapComp'_comp_whiskerLeft_mapComp' (hf : f₀₁ ≫ f₁₃ = f) :
   simp only [Strict.associator_eqToIso, eqToIso.hom] at this
   simp [OplaxFunctor.mapComp', ← this, PrelaxFunctor.map₂_eqToHom]
 
-
 @[reassoc]
 lemma mapComp'_comp_mapComp'_whiskerRight (hf : f₀₂ ≫ f₂₃ = f) :
     F.mapComp' f₀₂ f₂₃ f ≫ F.mapComp' f₀₁ f₁₂ f₀₂ h₀₂ ▷ F.map f₂₃ =

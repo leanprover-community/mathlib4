@@ -25,7 +25,6 @@ involved are abelian, or more generally, finitely (co)complete.
 
 public section
 
-
 open CategoryTheory
 
 namespace CategoryTheory.Limits

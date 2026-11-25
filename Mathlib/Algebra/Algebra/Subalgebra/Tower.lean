@@ -30,7 +30,6 @@ compatibility condition `(r • s) • a = r • (s • a)`.
 
 @[expose] public section
 
-
 open scoped Pointwise
 
 universe u v w u₁ v₁

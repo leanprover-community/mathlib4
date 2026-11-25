@@ -17,7 +17,6 @@ set_option doc.verso.suggestions false
 
 @[expose] public section
 
-
 universe u v
 
 open Cardinal Submodule Module

@@ -26,7 +26,6 @@ In this file we prove some basic properties of two filters on `Π i, α i`.
 
 @[expose] public section
 
-
 open Set Function Filter
 
 namespace Filter

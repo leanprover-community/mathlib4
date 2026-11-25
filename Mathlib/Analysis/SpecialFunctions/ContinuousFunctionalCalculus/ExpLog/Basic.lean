@@ -107,7 +107,6 @@ lemma complex_exp_eq_normedSpace_exp {a : A} (ha : p a := by cfc_tac) :
 
 end ComplexNormed
 
-
 section real_log
 
 open scoped ComplexOrder

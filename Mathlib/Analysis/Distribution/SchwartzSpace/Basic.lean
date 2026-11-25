@@ -15,7 +15,6 @@ import Mathlib.Analysis.Calculus.ContDiff.Bounds
 import Mathlib.Analysis.Calculus.ContDiff.Operations
 import Mathlib.Analysis.Normed.Lp.SmoothApprox
 
-
 /-!
 # Schwartz space
 
@@ -391,7 +390,6 @@ section Seminorms
 
 /-! ### Seminorms on Schwartz space -/
 
-
 variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 variable (𝕜)
 
@@ -497,7 +495,6 @@ section Topology
 
 /-! ### The topology on the Schwartz space -/
 
-
 variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 variable (𝕜 E F)
 
@@ -561,7 +558,6 @@ end HasCompactSupport
 section CLM
 
 /-! ### Construction of continuous linear maps between Schwartz spaces -/
-
 
 variable [NormedField 𝕜] [NormedField 𝕜']
 variable [NormedAddCommGroup D] [NormedSpace ℝ D]
@@ -1099,7 +1095,6 @@ section Integration
 
 /-! ### Integration -/
 
-
 open Real Filter MeasureTheory MeasureTheory.Measure Module
 
 variable [RCLike 𝕜]
@@ -1170,7 +1165,6 @@ end Integration
 section BoundedContinuousFunction
 
 /-! ### Inclusion into the space of bounded continuous functions -/
-
 
 open scoped BoundedContinuousFunction
 

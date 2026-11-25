@@ -125,7 +125,6 @@ lemma volume_uIoc : volume (uIoc x y) = edist y x := by
   simp only [uIoc, volume_apply, image_subtypeVal_Ioc, Icc.coe_inf, Icc.coe_sup, Real.volume_Ioc,
     max_sub_min_eq_abs, edist_dist, Subtype.dist_eq, Real.dist_eq]
 
-
 @[simp]
 lemma volume_Ioo : volume (Ioo x y) = .ofReal (y - x) := by
   simp only [volume_apply, image_subtypeVal_Ioo, Real.volume_Ioo]

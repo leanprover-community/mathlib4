@@ -20,7 +20,6 @@ namespace MeasureTheory
 
 /-! ## Strongly measurable functions -/
 
-
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 namespace StronglyMeasurable

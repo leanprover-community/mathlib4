@@ -33,7 +33,6 @@ We gather results relating cyclotomic polynomials and `expand`.
 
 public section
 
-
 namespace Polynomial
 
 /-- If `p` is a prime such that `¬ p ∣ n`, then

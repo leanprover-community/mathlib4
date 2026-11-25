@@ -28,7 +28,6 @@ triangle unnecessarily.
 
 public section
 
-
 open scoped EuclideanGeometry
 
 open scoped Real

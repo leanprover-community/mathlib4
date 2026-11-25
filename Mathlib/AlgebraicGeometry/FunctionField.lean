@@ -24,7 +24,6 @@ public section
 
 -- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 
-
 universe u v
 
 open TopologicalSpace Opposite CategoryTheory CategoryTheory.Limits TopCat

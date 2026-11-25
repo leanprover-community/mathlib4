@@ -25,7 +25,6 @@ with respect to the new monoidal structure on `D`.
 
 @[expose] public section
 
-
 universe v₁ v₂ u₁ u₂
 
 open CategoryTheory

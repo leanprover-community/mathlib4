@@ -12,7 +12,6 @@ public import Mathlib.Tactic.Attr.Core
 public import Mathlib.Tactic.Lift
 public import Mathlib.Tactic.Subsingleton
 
-
 /-!
 # Units (i.e., invertible elements) of a monoid
 
@@ -214,7 +213,6 @@ end CommMonoid
 /-!
 ### `IsUnit` predicate
 -/
-
 
 section IsUnit
 

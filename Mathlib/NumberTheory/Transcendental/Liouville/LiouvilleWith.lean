@@ -38,7 +38,6 @@ Liouville number, irrational, irrationality exponent
 
 @[expose] public section
 
-
 open Filter Real Set
 
 open scoped Filter Topology

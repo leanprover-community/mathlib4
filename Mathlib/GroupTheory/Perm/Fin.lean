@@ -77,7 +77,6 @@ section CycleRange
 Define the permutations `Fin.cycleRange i`, the cycle `(0 1 2 ... i)`.
 -/
 
-
 open Equiv.Perm
 
 theorem finRotate_succ_eq_decomposeFin {n : ℕ} :

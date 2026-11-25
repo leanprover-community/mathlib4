@@ -417,7 +417,6 @@ theorem diag_submatrix (A : Matrix m m α) (e : l → m) : diag (A.submatrix e e
 /-! `simp` lemmas for `Matrix.submatrix`s interaction with `Matrix.diagonal`, `1`, and `Matrix.mul`
 for when the mappings are bundled. -/
 
-
 @[simp]
 theorem submatrix_diagonal_embedding [Zero α] [DecidableEq m] [DecidableEq l] (d : m → α)
     (e : l ↪ m) : (diagonal d).submatrix e e = diagonal (d ∘ e) :=

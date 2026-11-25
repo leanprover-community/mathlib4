@@ -40,7 +40,6 @@ which are stated in lemmas like `shiftFunctorAdd'_assoc`, `shiftFunctorAdd'_zero
 
 @[expose] public section
 
-
 namespace CategoryTheory
 
 open CategoryTheory.Functor

@@ -360,7 +360,6 @@ lemma HasProd.of_nat_of_neg_add_one {f : ℤ → M}
   exact (Nat.cast_injective.hasProd_range_iff.mpr hf₁).mul_isCompl
     this (hi₂.hasProd_range_iff.mpr hf₂)
 
-
 @[to_additive Summable.of_nat_of_neg_add_one]
 lemma Multipliable.of_nat_of_neg_add_one {f : ℤ → M}
     (hf₁ : Multipliable fun n : ℕ ↦ f n) (hf₂ : Multipliable fun n : ℕ ↦ f (-(n + 1))) :

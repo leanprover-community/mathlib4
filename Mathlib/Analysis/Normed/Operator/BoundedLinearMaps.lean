@@ -55,7 +55,6 @@ artifact, really.
 
 @[expose] public section
 
-
 noncomputable section
 
 open scoped Topology

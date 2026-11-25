@@ -20,7 +20,6 @@ It then follows that `LocallyRingedSpace` has all colimits, and
 
 @[expose] public section
 
-
 namespace AlgebraicGeometry
 
 universe w' w v u
@@ -163,7 +162,6 @@ Since `f ⁻¹' V = Y.basic_open (f ≫ π)꙳ x = Y.basic_open (g ≫ π)꙳ x 
 This shows that `π '' V` is indeed open, and `s` is invertible on `π '' V` as the components of `π꙳`
 are local ring homs.
 -/
-
 
 variable (U : Opens (coequalizer f.toShHom g.toShHom).carrier)
 variable (s : (coequalizer f.toShHom g.toShHom).presheaf.obj (op U))

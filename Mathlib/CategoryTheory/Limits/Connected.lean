@@ -31,7 +31,6 @@ preserved by the functor `(X × -)`.
 
 @[expose] public section
 
-
 noncomputable section
 
 universe v₁ v₂ u₁ u₂

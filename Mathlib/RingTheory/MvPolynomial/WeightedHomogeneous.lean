@@ -43,7 +43,6 @@ occurring in `φ` have the same weighted degree `m`.
 
 @[expose] public section
 
-
 noncomputable section
 
 open Set Function Finset Finsupp AddMonoidAlgebra
@@ -59,7 +58,6 @@ section AddCommMonoid
 variable [AddCommMonoid M]
 
 /-! ### `weight` -/
-
 
 section SemilatticeSup
 
@@ -688,7 +686,6 @@ def weightedDecomposition [DecidableEq M] :
     intro m
     rw [← Subtype.coe_inj, decompose'_apply]
     exact weightedHomogeneousComponent_directSum R w x m
-
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Given a weight, `MvPolynomial` as a graded algebra -/

@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Data.Fintype.Pi
 
-
 set_option doc.verso true
 set_option doc.verso.suggestions false
 

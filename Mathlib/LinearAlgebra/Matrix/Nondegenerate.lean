@@ -23,7 +23,6 @@ we require associativity to avoid having to distinguish `v ⬝ᵥ M *ᵥ w` and 
 
 @[expose] public section
 
-
 namespace Matrix
 
 section Finite

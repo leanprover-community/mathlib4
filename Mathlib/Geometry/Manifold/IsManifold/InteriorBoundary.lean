@@ -396,7 +396,6 @@ lemma IsLocalDiffeomorphAt.isBoundaryPoint_iff (hn : n ≠ 0) {f : M → N} {x :
     (hf : IsLocalDiffeomorphAt I I' n f x) : I.IsBoundaryPoint x ↔ I'.IsBoundaryPoint (f x) := by
   simp [isBoundaryPoint_iff_not_isInteriorPoint, hf.isInteriorPoint_iff hn]
 
-
 lemma IsLocalDiffeomorphOn.preimage_interior_inter (hn : n ≠ 0) {f : M → N} {s : Set M}
     (hf : IsLocalDiffeomorphOn I I' n f s) : f ⁻¹' I'.interior N ∩ s = I.interior M ∩ s := by
   ext x

@@ -36,7 +36,6 @@ It is possible to configure `simp` to compute determinants. See the file
 
 @[expose] public section
 
-
 universe u v w z
 
 open Equiv Equiv.Perm Finset Function
@@ -383,7 +382,6 @@ section DetZero
 Prove that a matrix with a repeated column has determinant equal to zero.
 -/
 
-
 theorem det_eq_zero_of_row_eq_zero {A : Matrix n n R} (i : n) (h : ∀ j, A i j = 0) : det A = 0 :=
   (detRowAlternating : (n → R) [⋀^n]→ₗ[R] R).map_coord_zero i (funext h)
 
@@ -472,7 +470,6 @@ section DetEq
 
 Lemmas showing the determinant is invariant under a variety of operations.
 -/
-
 
 theorem det_eq_of_eq_mul_det_one {A B : Matrix n n R} (C : Matrix n n R) (hC : det C = 1)
     (hA : A = B * C) : det A = det B :=

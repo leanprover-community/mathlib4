@@ -19,7 +19,6 @@ The quotient with respect to this relation defines a functor from our category t
 
 @[expose] public section
 
-
 universe v u
 
 namespace CategoryTheory

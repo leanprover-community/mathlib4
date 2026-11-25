@@ -38,7 +38,6 @@ namespace CategoryTheory
 
 open Limits
 
-
 namespace ObjectProperty
 
 variable {C : Type u} [Category.{v} C] (P : ObjectProperty C)

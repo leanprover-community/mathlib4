@@ -35,7 +35,6 @@ equicontinuity, continuity modulus
 
 public section
 
-
 open Filter
 
 open scoped Topology Uniformity

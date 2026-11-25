@@ -81,7 +81,6 @@ instance : Min (Subrepresentation ρ) where
       rintro g x hx₁ hx₂
       exact ⟨ρ₁.apply_mem_toSubmodule g hx₁, ρ₂.apply_mem_toSubmodule g hx₂⟩
 
-
 @[simp, norm_cast]
 lemma coe_sup (ρ₁ ρ₂ : Subrepresentation ρ) : ↑(ρ₁ ⊔ ρ₂) = (ρ₁ : Set W) + (ρ₂ : Set W) :=
   Submodule.coe_sup ρ₁.toSubmodule ρ₂.toSubmodule

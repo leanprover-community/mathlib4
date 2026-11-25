@@ -334,7 +334,6 @@ theorem valuation_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X
   nth_rw 1 [RatFunc.X, ← aeval_X_left_apply p (R := K)]
   exact (aeval_algebraMap_apply K⟮X⟯ X p).symm
 
-
 /-- If a valuation `v` is trivial on constants and `v RatFunc.X ≤ 1` then for every polynomial `p`,
 `v p ≤ 1`. -/
 theorem valuation_le_one_of_valuation_X_le_one (hle : v RatFunc.X ≤ 1) (p : K[X]) : v p ≤ 1 := by

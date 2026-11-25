@@ -165,7 +165,6 @@ lemma coeff_of (x y : X) [Decidable (x = y)] : coeff x (of y) = if x = y then 1 
 
 end FreeAddCommGroup
 
-
 @[deprecated (since := "2026-11-11")] alias FreeAbelianGroup.toFinsupp :=
   FreeAddCommGroup.toFinsupp
 @[deprecated (since := "2026-11-11")] alias Finsupp.toFreeAbelianGroup :=

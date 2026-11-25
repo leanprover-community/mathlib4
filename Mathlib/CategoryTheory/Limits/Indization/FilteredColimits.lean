@@ -40,7 +40,6 @@ namespace IndizationClosedUnderFilteredColimitsAux
 
 variable {I : Type v} [SmallCategory I] (F : I ⥤ Cᵒᵖ ⥤ Type v)
 
-
 section Interchange
 
 /-!

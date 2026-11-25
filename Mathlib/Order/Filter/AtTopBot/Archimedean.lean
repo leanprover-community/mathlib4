@@ -25,7 +25,6 @@ well as version of these two results for `ℤ` (and a ring `R`) and `ℚ` (and a
 
 public section
 
-
 variable {α R : Type*}
 
 open Filter Set Function

@@ -99,7 +99,6 @@ From the previous statements on uniform approximation, we deduce continuity resu
 limits.
 -/
 
-
 /-- A locally uniform limit on a set of functions which are continuous on this set is itself
 continuous on this set. -/
 protected theorem TendstoLocallyUniformlyOn.continuousOn (h : TendstoLocallyUniformlyOn F f p s)
@@ -133,7 +132,6 @@ In general, if `Fₙ` converges pointwise to a function `f`, and `gₙ` tends to
 that `Fₙ gₙ` tends to `f x`. It is true however if the convergence of `Fₙ` to `f` is uniform. In
 this paragraph, we prove variations around this statement.
 -/
-
 
 /-- If `Fₙ` converges locally uniformly on a neighborhood of `x` within a set `s` to a function `f`
 which is continuous at `x` within `s`, and `gₙ` tends to `x` within `s`, then `Fₙ (gₙ)` tends

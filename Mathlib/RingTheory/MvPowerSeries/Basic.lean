@@ -48,7 +48,6 @@ We provide the natural inclusion from multivariate polynomials to multivariate f
 
 - `MvPolynomial.toMvPowerSeries`: the canonical coercion from `MvPolynomial` to `MvPowerSeries`
 
-
 ## Note
 
 This file sets up the (semi)ring structure on multivariate power series:
@@ -74,7 +73,6 @@ it should not be hard to fill in the details.
 -/
 
 @[expose] public section
-
 
 noncomputable section
 
@@ -815,7 +813,6 @@ instance [Nonempty σ] [Nontrivial R] : Nontrivial (Subalgebra R (MvPowerSeries 
       simp [algebraMap_apply, coeff_C]⟩⟩
 
 end Algebra
-
 
 end MvPowerSeries
 

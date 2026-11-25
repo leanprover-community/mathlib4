@@ -319,7 +319,6 @@ protected def shrinkPerm {α : Type} [DecidableEq α] :
     let i ← List.finRange <| k / n
     pure <| Perm.slice (i * n) n xs
 
-
 /-- Shrink an injective function slicing a segment in the middle of the domain and removing
 the corresponding elements in the codomain, hence maintaining the property that
 one is a permutation of the other.

@@ -20,7 +20,6 @@ and the functor categories `E ⥤ C` and `D ⥤ C`.
 
 @[expose] public section
 
-
 namespace CategoryTheory.Adjunction
 
 open CategoryTheory CategoryTheory.Functor

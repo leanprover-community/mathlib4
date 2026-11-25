@@ -20,7 +20,6 @@ We generally follow the approach of https://stacks.math.columbia.edu/tag/00W1
 
 @[expose] public section
 
-
 namespace CategoryTheory
 
 open CategoryTheory.Limits Opposite

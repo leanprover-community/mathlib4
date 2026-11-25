@@ -11,7 +11,6 @@ public import Mathlib.Topology.PartialHomeomorph.Defs
 /-!
 # Partial homeomorphisms: basic theory
 
-
 ## Main definitions
 
 * `PartialHomeomorph.refl`: the identity partial homeomorphism

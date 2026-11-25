@@ -48,13 +48,11 @@ graded action
 
 public section
 
-
 variable {ιA ιB ιM : Type*}
 
 namespace GradedMonoid
 
 /-! ### Typeclasses -/
-
 
 section Defs
 
@@ -99,7 +97,6 @@ end Defs
 end GradedMonoid
 
 /-! ### Shorthands for creating instance of the above typeclasses for collections of subobjects -/
-
 
 section Subobjects
 

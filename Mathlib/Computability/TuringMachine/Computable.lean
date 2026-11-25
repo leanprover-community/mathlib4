@@ -33,10 +33,7 @@ once, this execution time is up to multiplication by a constant the amount of fu
 
 @[expose] public section
 
-
-
 open Computability StateTransition
-
 
 namespace Turing
 

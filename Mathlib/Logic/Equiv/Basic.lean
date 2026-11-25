@@ -436,7 +436,6 @@ def sigmaSubtype {α : Type*} {β : α → Type*} (a : α) :
   left_inv := fun ⟨a, h⟩ ↦ by cases h; simp
   right_inv b := by simp
 
-
 section
 attribute [local simp] Trans.trans sigmaAssoc subtypeEquiv subtypeSigmaEquiv uniqueSigma
   eqRec_eq_cast

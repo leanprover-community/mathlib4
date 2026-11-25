@@ -198,7 +198,6 @@ theorem directedOn_or_directedOn_of_union'
 ### Monotonicity
 -/
 
-
 @[to_dual]
 theorem upperBounds_mono_set ⦃s t : Set α⦄ (hst : s ⊆ t) : upperBounds t ⊆ upperBounds s :=
   fun _ hb _ h => hb <| hst h
@@ -263,7 +262,6 @@ theorem Set.Nonempty.bddAbove_lowerBounds (hs : s.Nonempty) : BddAbove (lowerBou
 /-!
 ### Conversions
 -/
-
 
 @[to_dual]
 theorem IsLeast.isGLB (h : IsLeast s a) : IsGLB s a :=
@@ -436,7 +434,6 @@ theorem BddAbove.exists_ge [SemilatticeSup γ] {s : Set γ} (hs : BddAbove s) (x
 #### Unbounded intervals
 -/
 
-
 @[to_dual]
 theorem isLeast_Ici : IsLeast (Ici a) a :=
   ⟨self_mem_Ici, fun _ => id⟩
@@ -497,7 +494,6 @@ end
 #### Singleton
 -/
 
-
 @[to_dual (attr := simp)]
 theorem isGreatest_singleton : IsGreatest {a} a :=
   ⟨mem_singleton a, fun _ hx => le_of_eq <| eq_of_mem_singleton hx⟩
@@ -516,7 +512,6 @@ theorem upperBounds_singleton : upperBounds {a} = Ici a :=
 /-!
 #### Bounded intervals
 -/
-
 
 @[to_dual (attr := simp)]
 lemma bddAbove_Icc : BddAbove (Icc a b) := ⟨b, fun _ => And.right⟩
@@ -627,7 +622,6 @@ theorem not_bddAbove_univ [NoTopOrder α] : ¬BddAbove (univ : Set α) := by sim
 #### Empty set
 -/
 
-
 @[to_dual (attr := simp)]
 theorem upperBounds_empty : upperBounds (∅ : Set α) = univ := by
   simp only [upperBounds, eq_univ_iff_forall, mem_ofPred_eq, forall_mem_empty, forall_true_iff]
@@ -655,7 +649,6 @@ theorem nonempty_of_not_bddAbove [ha : Nonempty α] (h : ¬BddAbove s) : s.Nonem
 /-!
 #### insert
 -/
-
 
 /-- Adding a point to a set preserves its boundedness above. -/
 @[to_dual (attr := simp) /-- Adding a point to a set preserves its boundedness below. -/]
@@ -703,7 +696,6 @@ macro "bddDefault" : tactic =>
 #### Pair
 -/
 
-
 @[to_dual]
 theorem isLUB_pair [SemilatticeSup γ] {a b : γ} : IsLUB {a, b} (a ⊔ b) :=
   isLUB_singleton.insert _
@@ -715,7 +707,6 @@ theorem isGreatest_pair [LinearOrder γ] {a b : γ} : IsGreatest {a, b} (max a b
 /-!
 #### Lower/upper bounds
 -/
-
 
 @[to_dual (attr := simp)]
 theorem isLUB_lowerBounds : IsLUB (lowerBounds s) a ↔ IsGLB s a :=
@@ -813,7 +804,6 @@ theorem minimal_iff_isLeast [LinearOrder α] {s : Set α} {a : α} :
 /-!
 ### (In)equalities with the least upper bound and the greatest lower bound
 -/
-
 
 section Preorder
 

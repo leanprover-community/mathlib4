@@ -33,7 +33,6 @@ Then we extend the valuation given on `K` to a valuation on `hat K`.
 
 @[expose] public section
 
-
 open Filter Set
 
 open Topology

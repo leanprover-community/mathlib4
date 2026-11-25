@@ -48,7 +48,6 @@ balanced
 
 @[expose] public section
 
-
 open Set Pointwise Filter
 
 open scoped Topology

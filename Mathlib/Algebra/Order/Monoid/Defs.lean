@@ -18,7 +18,6 @@ This file provides the definitions of ordered monoids.
 
 public section
 
-
 open Function
 
 variable {α : Type*}

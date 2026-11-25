@@ -37,7 +37,6 @@ behavior of `μ [x, y]`.
 
 public section
 
-
 open Set Filter Function Metric MeasureTheory MeasureTheory.Measure IsUnifLocDoublingMeasure
 
 open scoped Topology

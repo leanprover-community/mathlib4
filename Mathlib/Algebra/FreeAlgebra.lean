@@ -426,7 +426,6 @@ Since we have set the basic definitions as `@[no_expose]`, from this point onwar
 should only use the universal properties of the free algebra, and consider the actual implementation
 as a quotient of an inductive type as completely hidden. -/
 
-
 -- Marking `FreeAlgebra` unexposed makes `Ring` instances inaccessible on quotients.
 -- https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/algebra.2Esemiring_to_ring.20breaks.20semimodule.20typeclass.20lookup/near/212580241
 -- For now, we avoid this by not marking it `no_expose`.

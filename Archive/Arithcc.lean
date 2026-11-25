@@ -52,7 +52,6 @@ section Types
 
 /-! ### Types -/
 
-
 /-- Value type shared by both source and target languages. -/
 abbrev Word :=
   ℕ
@@ -157,7 +156,6 @@ open Instruction
 
 /-! ### Compiler -/
 
-
 /-- Map a variable in the source expression to a machine register. -/
 @[simp]
 def loc (ν : Identifier) (map : Identifier → Register) : Register :=
@@ -178,7 +176,6 @@ end Compiler
 section Correctness
 
 /-! ### Correctness -/
-
 
 /-- Machine states ζ₁ and ζ₂ are equal except for the accumulator and registers {x | x ≥ t}. -/
 def StateEqRs (t : Register) (ζ₁ ζ₂ : State) : Prop :=

@@ -38,7 +38,6 @@ Someone may like to formalize that lemma, and restate this theorem in terms of `
 
 @[expose] public section
 
-
 noncomputable section
 
 namespace CategoryTheory
@@ -147,7 +146,6 @@ noncomputable instance abelian [Abelian C] :
     Abelian.{w} (ShrinkHoms C) := abelianOfEquivalence (inverse C)
 
 end ShrinkHoms
-
 
 namespace AsSmall
 

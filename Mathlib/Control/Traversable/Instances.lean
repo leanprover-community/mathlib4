@@ -24,7 +24,6 @@ This file provides instances of `LawfulTraversable` for types from the core libr
 
 public section
 
-
 universe u v
 
 section Option

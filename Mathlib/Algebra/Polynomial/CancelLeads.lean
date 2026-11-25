@@ -23,7 +23,6 @@ Thus it is useful for induction or minimal-degree arguments.
 
 @[expose] public section
 
-
 namespace Polynomial
 
 noncomputable section

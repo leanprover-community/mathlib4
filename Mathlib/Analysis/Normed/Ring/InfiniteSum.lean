@@ -23,7 +23,6 @@ We first establish results about arbitrary index types, `ι` and `ι'`, and then
 
 public section
 
-
 variable {R : Type*} {ι : Type*} {ι' : Type*} [NormedRing R]
 
 open scoped Topology

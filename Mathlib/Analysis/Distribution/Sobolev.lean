@@ -42,7 +42,6 @@ The bundled variant of `TemperedDistribution.MemSobolev` is called `BesselPotent
 * `TemperedDistribution.MemSobolev.laplacian`: If `u` is a Sobolev function of order `s`, then
   `Δ u` is a Sobolev function of order `s - 2`.
 
-
 ## References
 
 * [M. Taylor, *Partial Differential Equations 1*][taylorPDE1]

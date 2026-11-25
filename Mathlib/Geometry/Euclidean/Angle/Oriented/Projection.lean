@@ -19,7 +19,6 @@ This file proves lemmas relating to oriented angles involving orthogonal project
 
 public section
 
-
 namespace EuclideanGeometry
 
 open Module

@@ -340,7 +340,6 @@ The non-Archimedean subgroup basis lemmas cannot be instances because some insta
 cause the search for `@IsTopologicalAddGroup β ?m1 ?m2`, i.e. a search for a topological group where
 the topology/group structure are unknown. -/
 
-
 end SubmodulesBasis
 
 section

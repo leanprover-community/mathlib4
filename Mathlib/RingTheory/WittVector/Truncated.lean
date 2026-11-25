@@ -37,7 +37,6 @@ The ring of Witt vectors is the projective limit of all the rings of truncated W
 
 @[expose] public section
 
-
 open Function (Injective Surjective)
 
 noncomputable section

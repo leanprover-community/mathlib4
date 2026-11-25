@@ -91,7 +91,6 @@ This version of the theorem is used to prove the other versions and can be used 
 needs to have a complete control over the choice of the implicit function.
 -/
 
-
 /-- Data for the general version of the implicit function theorem. It holds two functions
 `f : E → F` and `g : E → G` (named `leftFun` and `rightFun`) and a point `a` (named `pt`) such that
 

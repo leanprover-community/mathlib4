@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Category.CommAlgCat.FiniteType
 
-
 /-! # Smallness results on the category of `CommRing` -/
 
 public section

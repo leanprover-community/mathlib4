@@ -366,7 +366,6 @@ theorem Continuous.continuousWithinAt (h : Continuous f) :
     ContinuousWithinAt f s x :=
   h.continuousAt.continuousWithinAt
 
-
 /-!
 ## Congruence properties with respect to functions
 -/
@@ -728,7 +727,6 @@ theorem continuousOn_pi' {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpac
 theorem continuousOn_apply {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
     (i : ι) (s) : ContinuousOn (fun p : ∀ i, X i => p i) s :=
   Continuous.continuousOn (continuous_apply i)
-
 
 /-!
 ## Specific functions

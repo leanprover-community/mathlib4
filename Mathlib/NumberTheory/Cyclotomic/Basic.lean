@@ -62,7 +62,6 @@ included in the `Cyclotomic` locale.
 
 @[expose] public section
 
-
 open Polynomial Algebra Module Set
 
 universe u v w z
@@ -668,7 +667,6 @@ instance algebra : Algebra K (CyclotomicField n K) := inferInstance
 
 /-- Ensure there are no diamonds when `A = ℤ` but there are `reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906 -/
 example : Ring.toIntAlgebra (CyclotomicField n ℚ) = CyclotomicField.instAlgebra _ _ _ := rfl
-
 
 instance [CharZero K] : CharZero (CyclotomicField n K) :=
   charZero_of_injective_algebraMap (algebraMap K _).injective

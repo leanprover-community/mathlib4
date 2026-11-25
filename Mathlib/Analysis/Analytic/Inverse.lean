@@ -49,7 +49,6 @@ namespace FormalMultilinearSeries
 
 /-! ### The left inverse of a formal multilinear series -/
 
-
 /-- The left inverse of a formal multilinear series, where the `n`-th term is defined inductively
 in terms of the previous ones to make sure that `(leftInv p i) ∘ p = id`. For this, the linear term
 `p₁` in `p` should be invertible. In the definition, `i` is a linear isomorphism that should
@@ -151,7 +150,6 @@ theorem leftInv_comp (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F)
       applyComposition_ones, C, D, -Set.toFinset_ofPred, -Finset.union_singleton]
 
 /-! ### The right inverse of a formal multilinear series -/
-
 
 /-- The right inverse of a formal multilinear series, where the `n`-th term is defined inductively
 in terms of the previous ones to make sure that `p ∘ (rightInv p i) = id`. For this, the linear
@@ -279,7 +277,6 @@ theorem rightInv_coeff (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] 
 
 /-! ### Coincidence of the left and the right inverse -/
 
-
 theorem leftInv_eq_rightInv (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) (x : E)
     (h : p 1 = (continuousMultilinearCurryFin1 𝕜 E F).symm i) :
     leftInv p i x = rightInv p i x :=
@@ -358,7 +355,6 @@ therefore negligible.
 By induction, we deduce `Sₙ ≤ K a` for all `n`, which gives in particular the fact that `aⁿ Qₙ`
 remains bounded.
 -/
-
 
 /-- First technical lemma to control the growth of coefficients of the inverse. Bound the explicit
 expression for `∑_{k<n+1} aᵏ Qₖ` in terms of a sum of powers of the same sum one step before,

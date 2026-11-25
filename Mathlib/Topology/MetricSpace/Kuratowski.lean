@@ -19,7 +19,6 @@ Any partially defined Lipschitz map into `ℓ^∞` can be extended to the whole 
 
 noncomputable section
 
-
 open Set Metric TopologicalSpace NNReal ENNReal lp Function
 
 universe u
@@ -29,7 +28,6 @@ variable {α : Type u}
 namespace KuratowskiEmbedding
 
 /-! ### Any separable metric space can be embedded isometrically in ℓ^∞(ℕ, ℝ) -/
-
 
 variable {n : ℕ} [MetricSpace α] (x : ℕ → α) (a : α)
 

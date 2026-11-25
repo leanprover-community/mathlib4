@@ -31,7 +31,6 @@ There are a handful of definitions in this file, given `X : Profinite`:
 
 @[expose] public section
 
-
 noncomputable section
 
 open CategoryTheory

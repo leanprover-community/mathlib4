@@ -16,7 +16,6 @@ set_option linter.style.header false
 
 meta section
 
-
 /-!
 ## Text-based linters
 
@@ -122,7 +121,6 @@ def StyleError.errorCode (err : StyleError) : String := match err with
   | StyleError.semicolon => "ERR_SEM"
   | StyleError.unwantedUnicode _ => "ERR_UNICODE"
   | StyleError.unicodeVariant _ _ => "ERR_UNICODE_VARIANT"
-
 
 /-- Context for a style error: the actual error, the line number in the file we're reading
 and the path to the file. -/

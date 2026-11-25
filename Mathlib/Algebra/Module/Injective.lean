@@ -463,7 +463,6 @@ lemma Module.Injective.extension_property
 
 end lifting_property
 
-
 universe w in
 instance Module.Injective.pi
     (R : Type u) [Ring R] {ι : Type w} (M : ι → Type v) [Small.{v} R]

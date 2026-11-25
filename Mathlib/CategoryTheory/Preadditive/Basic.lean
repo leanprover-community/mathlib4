@@ -47,7 +47,6 @@ additive, preadditive, Hom group, Ab-category, Ab-enriched
 
 @[expose] public section
 
-
 universe w v u
 
 open CategoryTheory.Limits

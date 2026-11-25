@@ -24,7 +24,6 @@ set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
-
 open CategoryTheory Limits
 
 universe v w u t

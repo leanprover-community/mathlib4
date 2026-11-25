@@ -38,7 +38,6 @@ A vector-valued inequality variant of the second mean value theorem
   `∃ ξ ∈ Icc a b, ‖∫ x in a..b, f x • g x‖ ≤ f a * ‖∫ x in a..ξ, g x‖`
 * `exists_le_const_mul_norm_intervalIntegral_of_nonneg_of_monotoneOn` (nondecreasing variant)
 
-
 ## References
 
 * [V. A. Zorich, *Mathematical Analysis I*][zorich2015],

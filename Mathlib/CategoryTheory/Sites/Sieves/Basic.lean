@@ -36,7 +36,6 @@ sieve, pullback
 
 @[expose] public section
 
-
 universe v₁ u₁
 
 namespace CategoryTheory
@@ -184,7 +183,6 @@ def generate (R : Presieve X) : Sieve X where
   downward_closed := by
     rintro Y Z _ ⟨W, g, f, hf, rfl⟩ h
     exact ⟨_, h ≫ g, _, hf, by simp⟩
-
 
 /-- Given a presieve on `X`, and a sieve on each domain of an arrow in the presieve, we can bind to
 produce a sieve on `X`.
@@ -516,7 +514,6 @@ lemma generate_pushforward {X Y : C} (f : X ⟶ Y) (R : Presieve X) :
   ext
   grind [generate_apply, Presieve.pushforward, pushforward_apply]
 
-
 lemma ofArrows_eq_pullback_of_isPullback {ι : Type*} {S : C} {X : ι → C} (f : (i : ι) → X i ⟶ S)
     {Y : C} {g : Y ⟶ S} {P : ι → C} {p₁ : (i : ι) → P i ⟶ Y} {p₂ : (i : ι) → P i ⟶ X i}
     (h : ∀ (i : ι), IsPullback (p₁ i) (p₂ i) g (f i)) :
@@ -529,7 +526,6 @@ lemma ofArrows_eq_pullback_of_isPullback {ι : Type*} {S : C} {X : ι → C} (f 
   · rintro W u ⟨Z, v, s, ⟨i⟩, heq⟩
     use P i, (h i).lift u v heq.symm, p₁ i, ⟨i⟩
     simp
-
 
 end Sieve
 

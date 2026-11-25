@@ -40,7 +40,6 @@ attribute [local trans] Subset.trans Superset.trans
 
 /-! ### sdiff -/
 
-
 section Sdiff
 
 variable [DecidableEq α] {s t u v : Finset α} {a b : α}

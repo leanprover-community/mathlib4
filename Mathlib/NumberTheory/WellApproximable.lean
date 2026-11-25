@@ -62,7 +62,6 @@ Use `AddCircle.exists_norm_nsmul_le` to prove:
 
 @[expose] public section
 
-
 open Set Filter Function Metric MeasureTheory
 
 open scoped MeasureTheory Topology Pointwise

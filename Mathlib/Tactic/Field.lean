@@ -8,7 +8,6 @@ module
 public import Mathlib.Tactic.FieldSimp
 public import Mathlib.Tactic.Ring.Basic
 
-
 /-! # A tactic for proving algebraic goals in a field
 
 This file contains the `field` tactic, a finishing tactic which roughly consists of running

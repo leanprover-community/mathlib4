@@ -26,7 +26,6 @@ natural number such that `-1` is a square modulo `b`; see `Nat.eq_sq_add_sq_iff_
 
 public section
 
-
 section Fermat
 
 open GaussianInt
@@ -43,7 +42,6 @@ end Fermat
 /-!
 ### Generalities on sums of two squares
 -/
-
 
 section General
 
@@ -66,7 +64,6 @@ end General
 /-!
 ### Results on when -1 is a square modulo a natural number
 -/
-
 
 section NegOneSquare
 
@@ -142,7 +139,6 @@ theorem ZMod.isSquare_neg_one_iff' {n : ℕ} (hn : Squarefree n) :
 ### Relation to sums of two squares
 -/
 
-
 /-- If `-1` is a square modulo the natural number `n`, then `n` is a sum of two squares. -/
 theorem Nat.eq_sq_add_sq_of_isSquare_mod_neg_one {n : ℕ} (h : IsSquare (-1 : ZMod n)) :
     ∃ x y : ℕ, n = x ^ 2 + y ^ 2 := by
@@ -201,7 +197,6 @@ end NegOneSquare
 /-!
 ### Characterization in terms of the prime factorization
 -/
-
 
 section Main
 

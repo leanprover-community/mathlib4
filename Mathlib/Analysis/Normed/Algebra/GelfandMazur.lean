@@ -250,7 +250,6 @@ theorem nonempty_algEquiv : Nonempty (ℂ ≃ₐ[ℂ] F) := ⟨algEquivOfNormMul
 
 end Complex
 
-
 /-!
 ### The real case
 -/

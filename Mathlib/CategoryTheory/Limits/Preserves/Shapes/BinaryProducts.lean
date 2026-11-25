@@ -23,7 +23,6 @@ the product of `X` and `Y`.
 
 @[expose] public section
 
-
 noncomputable section
 
 universe v₁ v₂ u₁ u₂

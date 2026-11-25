@@ -410,7 +410,6 @@ lemma coe_conjExponent {p : ℝ≥0} (hp : 1 < p) : p.conjExponent = conjExponen
   field_simp [(tsub_pos_of_lt hp).ne']
   rw [tsub_add_cancel_of_le hp.le]
 
-
 variable {a b p q r : ℝ≥0∞}
 
 @[simp, norm_cast]

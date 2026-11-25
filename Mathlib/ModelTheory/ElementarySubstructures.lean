@@ -25,7 +25,6 @@ public import Mathlib.ModelTheory.ElementaryMaps
 
 @[expose] public section
 
-
 open FirstOrder
 
 namespace FirstOrder

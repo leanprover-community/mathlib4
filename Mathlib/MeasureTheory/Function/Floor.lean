@@ -19,7 +19,6 @@ measurable under some assumptions on the (semi)ring.
 
 public section
 
-
 open Set
 
 section FloorRing

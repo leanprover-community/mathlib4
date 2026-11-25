@@ -48,7 +48,6 @@ reconstruct any natural preadditive structure the category may have.
 
 @[expose] public section
 
-
 noncomputable section
 
 open CategoryTheory

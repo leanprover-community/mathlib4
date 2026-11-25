@@ -50,7 +50,6 @@ statement is clearer.
 
 @[expose] public section
 
-
 namespace groupCohomology
 namespace Hilbert90
 

@@ -29,7 +29,6 @@ If `β` is a ⋆-ring and a ⋆-module over `R`, then the space of continuous fu
 is a ⋆-module over `R`.
 -/
 
-
 section StarStructure
 
 variable {R α β : Type*}

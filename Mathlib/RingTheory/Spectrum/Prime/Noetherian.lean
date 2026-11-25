@@ -20,7 +20,6 @@ This file proves additional properties of the prime spectrum of a Noetherian or 
 
 public section
 
-
 universe u v
 
 namespace PrimeSpectrum

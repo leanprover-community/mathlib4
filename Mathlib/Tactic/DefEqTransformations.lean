@@ -76,7 +76,6 @@ def runDefEqTactic (m : Option FVarId → Expr → MetaM Expr)
 def runDefEqConvTactic (m : Expr → MetaM Expr) : TacticM Unit := withMainContext do
   Conv.changeLhs <| ← m (← instantiateMVars <| ← Conv.getLhs)
 
-
 /-! ### `whnf` -/
 
 /--
@@ -88,7 +87,6 @@ may contain subexpressions which have not been reduced.
 -/
 elab "whnf" loc?:(ppSpace Parser.Tactic.location)? : tactic =>
   runDefEqTactic (checkDefEq := false) (fun _ => whnf) loc? "whnf"
-
 
 /-! ### `beta_reduce` -/
 
@@ -106,7 +104,6 @@ elab (name := betaReduceStx) "beta_reduce" loc?:(ppSpace Parser.Tactic.location)
 @[inherit_doc betaReduceStx]
 elab "beta_reduce" : conv => runDefEqConvTactic (Core.betaReduce ·)
 
-
 /-! ### `reduce` -/
 
 /--
@@ -117,7 +114,6 @@ This does the same transformation as the `#reduce` command.
 -/
 elab "reduce" loc?:(ppSpace Parser.Tactic.location)? : tactic =>
   runDefEqTactic (fun _ e => reduce e (skipTypes := false) (skipProofs := false)) loc? "reduce"
-
 
 /-! ### `unfold_let` -/
 
@@ -175,7 +171,6 @@ elab_rules : conv
   | `(conv| refold_let $hs:term*) => do
     runDefEqConvTactic (refoldFVars (← getFVarIds hs) none)
 
-
 /-! ### `unfold_projs` -/
 
 /-- Recursively unfold all the projection applications for class instances. -/
@@ -195,7 +190,6 @@ elab (name := unfoldProjsStx) "unfold_projs" loc?:(ppSpace Parser.Tactic.locatio
 
 @[inherit_doc unfoldProjsStx]
 elab "unfold_projs" : conv => runDefEqConvTactic unfoldProjs
-
 
 /-! ### `eta_reduce` -/
 
@@ -217,7 +211,6 @@ elab (name := etaReduceStx) "eta_reduce" loc?:(ppSpace Parser.Tactic.location)? 
 
 @[inherit_doc etaReduceStx]
 elab "eta_reduce" : conv => runDefEqConvTactic etaReduceAll
-
 
 /-! ### `eta_expand` -/
 
@@ -280,7 +273,6 @@ elab (name := etaExpandStx) "eta_expand" loc?:(ppSpace Parser.Tactic.location)? 
 
 @[inherit_doc etaExpandStx]
 elab "eta_expand" : conv => runDefEqConvTactic etaExpandAll
-
 
 /-! ### `eta_struct` -/
 

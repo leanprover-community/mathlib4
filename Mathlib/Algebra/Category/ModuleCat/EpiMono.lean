@@ -21,7 +21,6 @@ if and only if it is injective, and similarly an epimorphism if and only if it i
 
 @[expose] public section
 
-
 universe v u
 
 open CategoryTheory

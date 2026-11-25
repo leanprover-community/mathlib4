@@ -48,7 +48,6 @@ public section
 
 open TopCat
 
-
 universe u
 
 open CategoryTheory Limits HomotopicalAlgebra

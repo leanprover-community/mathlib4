@@ -47,13 +47,11 @@ in terms of extended charts in `contMDiffOn_iff` and `contMDiff_iff`.
 
 @[expose] public section
 
-
 open Set Function Filter ChartedSpace IsManifold
 
 open scoped Topology Manifold ContDiff
 
 /-! ### Definition of `Cⁿ` functions between manifolds -/
-
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   -- Prerequisite typeclasses to say that `M` is a manifold over the pair `(E, H)`
@@ -572,7 +570,6 @@ theorem contMDiffOn_iff_target [IsManifold I n M] [IsManifold I' n M'] :
     simp
   · exact fun h' x y => (h' y).2 x 0
 
-
 /-- One can reformulate being `C^n` as continuity and being `C^n` in any extended chart. -/
 theorem contMDiff_iff [IsManifold I n M] [IsManifold I' n M'] :
     ContMDiff I I' n f ↔
@@ -599,7 +596,6 @@ theorem contMDiff_zero_iff :
 
 end IsManifold
 
-
 /-! ### `C^(n+1)` functions are `C^n` -/
 
 theorem ContMDiffWithinAt.of_succ (h : ContMDiffWithinAt I I' (n + 1) f s x) :
@@ -614,7 +610,6 @@ theorem ContMDiffOn.of_succ (h : ContMDiffOn I I' (n + 1) f s) : ContMDiffOn I I
 
 theorem ContMDiff.of_succ (h : ContMDiff I I' (n + 1) f) : ContMDiff I I' n f := fun x =>
   (h x).of_succ
-
 
 /-! ### `C^n` functions are continuous -/
 
@@ -922,7 +917,6 @@ theorem contMDiff_congr (h₁ : ∀ y, f₁ y = f y) :
   exact contMDiffOn_congr fun y _ ↦ h₁ y
 
 /-! ### Locality -/
-
 
 /-- Being `C^n` is a local property. -/
 theorem contMDiffOn_of_locally_contMDiffOn

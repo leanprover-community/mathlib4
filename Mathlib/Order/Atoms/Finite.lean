@@ -24,7 +24,6 @@ This module contains some results on atoms and simple lattices in the finite con
 
 public section
 
-
 variable {α : Type*}
 
 namespace IsSimpleOrder

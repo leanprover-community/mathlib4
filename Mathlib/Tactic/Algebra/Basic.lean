@@ -139,7 +139,6 @@ def pushCast (e : Expr) : MetaM Simp.Result := do
   let (r, _) ← simp e ctx (simprocs := #[])
   return r
 
-
 /-- Handle scalar multiplication when the scalar ring `R'` doesn't match the base ring `R`.
 Assumes `R` is an `R'`-algebra (i.e., `R'` is smaller), and casts the scalar using `algebraMap`. -/
 def evalSMulCast {u u' v : Lean.Level} {R : Q(Type u)} {R' : Q(Type u')} {A : Q(Type v)}
@@ -290,7 +289,6 @@ def ringCompute (cR : Algebra.Cache sR) (cA : Algebra.Cache sA) :
   toRingCompare := ringCompare sAlg
 
 end BaseType
-
 
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta Qq
 

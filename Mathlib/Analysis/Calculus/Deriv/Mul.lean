@@ -94,7 +94,6 @@ section SMul
 
 /-! ### Derivative of the multiplication of a scalar function and a vector function -/
 
-
 variable {𝕜' : Type*} [NormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜'] [Module 𝕜' F] [IsBoundedSMul 𝕜' F]
   [IsScalarTower 𝕜 𝕜' F] {c : 𝕜 → 𝕜'} {c' : 𝕜'}
 
@@ -240,7 +239,6 @@ end ConstSMul
 section Mul
 
 /-! ### Derivative of the multiplication of two functions -/
-
 
 variable {𝕜' 𝔸 : Type*} [NormedDivisionRing 𝕜'] [NormedRing 𝔸] [NormedAlgebra 𝕜 𝕜']
   [NormedAlgebra 𝕜 𝔸] {c d : 𝕜 → 𝔸} {c' d' : 𝔸} {u v : 𝕜 → 𝕜'}
@@ -536,7 +534,6 @@ end Div
 section CLMCompApply
 
 /-! ### Derivative of the pointwise composition/application of continuous linear maps -/
-
 
 open ContinuousLinearMap
 

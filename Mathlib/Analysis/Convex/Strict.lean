@@ -19,7 +19,6 @@ A set is strictly convex if the open segment between any two distinct points lie
 
 @[expose] public section
 
-
 open Set
 
 open Convex Pointwise
@@ -377,7 +376,6 @@ end LinearOrderedField
 
 Relates `Convex` and `Set.OrdConnected`.
 -/
-
 
 section
 

@@ -313,7 +313,6 @@ protected abbrev hasDistribNeg [Mul R] [HasDistribNeg R]
     neg_mul := hf.forall₂.2 fun x y => by rw [← neg, ← mul, neg_mul, neg, mul]
     mul_neg := hf.forall₂.2 fun x y => by rw [← neg, ← mul, mul_neg, neg, mul] }
 
-
 /-- A type endowed with `0`, `1` and `+` is an additive monoid with one, if it admits a surjective
 map that preserves `0`, `1` and `*` from an additive monoid with one. See note
 [reducible non-instances]. -/

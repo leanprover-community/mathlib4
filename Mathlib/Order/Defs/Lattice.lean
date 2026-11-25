@@ -220,7 +220,6 @@ end SemilatticeSup
 ### Lattices
 -/
 
-
 /-- A lattice is a join-semilattice which is also a meet-semilattice. -/
 class Lattice (α : Type u) extends SemilatticeSup α, SemilatticeInf α
 
@@ -260,7 +259,6 @@ lemma inf_left_le_sup_left : (a ⊓ b) ≤ (c ⊔ b) := le_trans inf_le_right le
 #### Distributivity laws
 -/
 
-
 -- TODO: better names?
 @[to_dual le_inf_sup]
 theorem sup_inf_le : a ⊔ b ⊓ c ≤ (a ⊔ b) ⊓ (a ⊔ c) :=
@@ -277,7 +275,6 @@ end Lattice
 /-!
 ### Distributive lattices
 -/
-
 
 /-- A distributive lattice is a lattice that satisfies any of four
 equivalent distributive properties (of `sup` over `inf` or `inf` over `sup`,

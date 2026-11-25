@@ -55,7 +55,6 @@ reflexive.
 
 @[expose] public section
 
-
 namespace CategoryTheory
 
 universe v v₂ u u₂
@@ -628,7 +627,6 @@ walking reflexive pair -/
 def colimitOfIsReflexivePairIsoCoequalizer :
     colimit (ofIsReflexivePair f g) ≅ coequalizer f g :=
   @reflexiveCoequalizerIsoCoequalizer _ _ (ofIsReflexivePair f g) h
-
 
 @[reassoc (attr := simp)]
 lemma ι_colimitOfIsReflexivePairIsoCoequalizer_hom :

@@ -43,7 +43,6 @@ variable {R : Type u} {α : Type*}
 /-! Note that `OrderDual` does not satisfy any of the ordered ring typeclasses due to the
 `zero_le_one` field. -/
 
-
 theorem add_one_le_two_mul [LE R] [NonAssocSemiring R] [AddLeftMono R] {a : R}
     (a1 : 1 ≤ a) : a + 1 ≤ 2 * a :=
   calc

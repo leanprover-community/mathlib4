@@ -23,7 +23,6 @@ in files further down the import graph.
 
 @[expose] public section
 
-
 open Function
 
 universe u v w

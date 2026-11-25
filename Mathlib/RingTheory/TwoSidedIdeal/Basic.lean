@@ -233,7 +233,6 @@ lemma mem_op_iff {I : TwoSidedIdeal R} {x : Rᵐᵒᵖ} : x ∈ I.op ↔ x.unop 
 lemma coe_op {I : TwoSidedIdeal R} : (I.op : Set Rᵐᵒᵖ) = MulOpposite.unop ⁻¹' I :=
   Set.ext fun _ => mem_op_iff
 
-
 /-- If `I` is a two-sided ideal of `Rᵐᵒᵖ`, then `{x.unop | x ∈ I}` is a two-sided ideal in `R`. -/
 @[simps]
 def unop (I : TwoSidedIdeal Rᵐᵒᵖ) : TwoSidedIdeal R where

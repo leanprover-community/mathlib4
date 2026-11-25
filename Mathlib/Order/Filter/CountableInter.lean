@@ -33,7 +33,6 @@ filter, countable
 
 @[expose] public section
 
-
 open Set Filter
 
 variable {ι : Sort*} {α β : Type*}

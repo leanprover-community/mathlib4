@@ -422,7 +422,6 @@ theorem smul_opposite_image_mul_preimage {H : Subgroup G} (g : G) (h : H.op) (s 
 
 /-! ### Pointwise action -/
 
-
 section Monoid
 
 variable [Monoid α] [MulDistribMulAction α G]

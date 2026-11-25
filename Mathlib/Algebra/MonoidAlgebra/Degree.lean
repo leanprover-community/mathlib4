@@ -23,7 +23,6 @@ Next, the general lemmas get specialized for some yet-to-be-defined `degree`s.
 
 @[expose] public section
 
-
 variable {R R' A T B ι : Type*}
 
 namespace AddMonoidAlgebra
@@ -67,7 +66,6 @@ To see this in action, you can look at the triple
 `(sup_support_mul_le, maxDegree_mul_le, le_minDegree_mul)`.
 -/
 
-
 section GeneralResultsAssumingSemilatticeSup
 
 variable [SemilatticeSup B] [OrderBot B] [SemilatticeInf T] [OrderTop T]
@@ -82,7 +80,6 @@ section ExplicitDegrees
 In this section, we use `degb` and `degt` to denote "degree functions" on `A` with values in
 a type with *b*ot or *t*op respectively.
 -/
-
 
 variable (degb : A → B) (degt : A → T) (f g : R[A])
 
@@ -217,11 +214,9 @@ end CommutativeLemmas
 
 end GeneralResultsAssumingSemilatticeSup
 
-
 /-! ### Shorthands for special cases
 Note that these definitions are reducible, in order to make it easier to apply the more generic
 lemmas above. -/
-
 
 section Degrees
 

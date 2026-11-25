@@ -22,7 +22,6 @@ to `↑a - 1`, the other factor is `0` anyway.
 
 public section
 
-
 open Nat
 
 variable (S : Type*)

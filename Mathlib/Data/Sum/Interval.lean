@@ -17,7 +17,6 @@ orders and calculates the cardinality of their finite intervals.
 
 @[expose] public section
 
-
 open Function Sum
 
 namespace Finset
@@ -206,7 +205,6 @@ namespace Sum
 variable {α β : Type*}
 
 /-! ### Disjoint sum of orders -/
-
 
 section Disjoint
 

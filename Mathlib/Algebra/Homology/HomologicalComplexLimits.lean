@@ -133,7 +133,6 @@ def isColimitOfEval (s : Cocone F)
     dsimp
     simp only [← comp_f, hm]
 
-
 variable [∀ (n : ι), HasColimit (F ⋙ HomologicalComplex.eval C c n)]
 
 /-- A cocone for a functor `F : J ⥤ HomologicalComplex C c` which is given in degree `n` by

@@ -44,7 +44,6 @@ intermediate field, field extension
 
 @[expose] public section
 
-
 open Polynomial
 
 variable (K L L' : Type*) [Field K] [Field L] [Field L'] [Algebra K L] [Algebra K L']
@@ -149,7 +148,6 @@ The declarations in this section derive from the fact that an `IntermediateField
 subalgebra or subfield. Their use should be replaceable with the corresponding lemma from a
 subobject class.
 -/
-
 
 /-- An intermediate field contains the image of the smaller field. -/
 theorem algebraMap_mem (x : K) : algebraMap K L x ∈ S :=

@@ -36,7 +36,6 @@ formula for `π`.
 
 @[expose] public section
 
-
 open scoped Topology Real Nat Asymptotics
 
 open Nat hiding log log_pow
@@ -48,7 +47,6 @@ namespace Stirling
 ### Part 1
 https://proofwiki.org/wiki/Stirling%27s_Formula#Part_1
 -/
-
 
 /-- Define `stirlingSeq n` as $\frac{n!}{\sqrt{2n}(\frac{n}{e})^n}$.
 Stirling's formula states that this sequence has limit $\sqrt(π)$.
@@ -176,7 +174,6 @@ theorem stirlingSeq_has_pos_limit_a : ∃ a : ℝ, 0 < a ∧ Tendsto stirlingSeq
 ### Part 2
 https://proofwiki.org/wiki/Stirling%27s_Formula#Part_2
 -/
-
 
 /-- The sequence `n / (2 * n + 1)` tends to `1/2` -/
 theorem tendsto_self_div_two_mul_self_add_one :

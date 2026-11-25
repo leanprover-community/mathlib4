@@ -258,7 +258,6 @@ theorem intCast_add {R} [CommRing R] {b₁ b₂ : R} {a₁ a₂ : ℤ}
     (_ : ((a₁ : ℤ) : R) = b₁) (_ : ((a₂ : ℤ) : R) = b₂) : ((a₁ + a₂ : ℤ) : R) = b₁ + b₂ := by
   subst_vars; simp
 
-
 mutual
 
 variable {v : Lean.Level} {β : Q(Type v)} (sβ : Q(CommSemiring $β))
@@ -279,7 +278,6 @@ def ExBase.evalIntCast {a : Q(ℤ)} (rα : Q(CommRing $α)) (va : ExBase sβ a) 
   | .sum va => do
     let ⟨_, vc, p⟩ ← ExSum.evalIntCast rα va
     pure ⟨_, .sum vc, p⟩
-
 
 /-- Applies `Int.cast` to an int monomial to produce a monomial in `α`.
 
@@ -321,7 +319,6 @@ def ExSum.evalIntCast {a : Q(ℤ)} (rα : Q(CommRing $α))
     pure ⟨_, .add vb₁ vb₂, (q(intCast_add $pb₁ $pb₂))⟩
 
 end
-
 
 mutual
 

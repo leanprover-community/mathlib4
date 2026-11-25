@@ -52,7 +52,6 @@ Mittag-Leffler, surjective, eventual range, inverse system,
 
 @[expose] public section
 
-
 universe u v w
 
 open CategoryTheory CategoryTheory.IsCofiltered Set CategoryTheory.FunctorToTypes

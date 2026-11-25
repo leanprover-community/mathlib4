@@ -12,7 +12,6 @@ public import Mathlib.MeasureTheory.Measure.WithDensity
 
 public section
 
-
 open MeasureTheory Filter ENNReal Set
 
 open NNReal ENNReal

@@ -22,7 +22,6 @@ but also to `ℕ` and `ℝ≥0`, which are not groups.
 
 public section
 
-
 namespace Set
 
 variable {M : Type*} [AddCommMonoid M] [PartialOrder M] [IsOrderedCancelAddMonoid M]
@@ -60,7 +59,6 @@ theorem Ico_add_bij : BijOn (· + d) (Ico a b) (Ico (a + d) (b + d)) := by
 ### Images under `x ↦ x + a`
 -/
 
-
 @[simp]
 theorem image_add_const_Ici : (fun x => x + a) '' Ici b = Ici (b + a) :=
   (Ici_add_bij _ _).image_eq
@@ -88,7 +86,6 @@ theorem image_add_const_Ioo : (fun x => x + a) '' Ioo b c = Ioo (b + a) (c + a) 
 /-!
 ### Images under `x ↦ a + x`
 -/
-
 
 @[simp]
 theorem image_const_add_Ici : (fun x => a + x) '' Ici b = Ici (a + b) := by

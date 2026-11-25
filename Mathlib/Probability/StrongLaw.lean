@@ -58,7 +58,6 @@ random variables. Let `Yₙ` be the truncation of `Xₙ` up to `n`. We claim tha
 
 @[expose] public section
 
-
 noncomputable section
 
 open MeasureTheory Filter Finset Asymptotics
@@ -72,7 +71,6 @@ open scoped Function -- required for scoped `on` notation
 namespace ProbabilityTheory
 
 /-! ### Prerequisites on truncations -/
-
 
 section Truncation
 

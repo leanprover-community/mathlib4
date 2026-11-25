@@ -38,7 +38,6 @@ convex hull, caratheodory
 
 @[expose] public section
 
-
 open Set Finset
 
 universe u

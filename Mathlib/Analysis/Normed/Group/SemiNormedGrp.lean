@@ -22,7 +22,6 @@ them, as well as `SemiNormedGrp₁`, the subcategory of norm non-increasing morp
 
 @[expose] public section
 
-
 noncomputable section
 
 universe u

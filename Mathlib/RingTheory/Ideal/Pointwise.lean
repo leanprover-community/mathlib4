@@ -23,7 +23,6 @@ Where possible, try to keep them in sync.
 
 @[expose] public section
 
-
 open Set
 
 variable {M N R : Type*}

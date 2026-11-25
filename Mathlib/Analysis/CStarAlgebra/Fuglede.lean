@@ -12,7 +12,6 @@ import Mathlib.Analysis.CStarAlgebra.Exponential
 import Mathlib.Analysis.CStarAlgebra.Unitization
 import Mathlib.Analysis.Complex.Liouville
 
-
 /-! # The Fuglede–Putnam–Rosenblum theorem
 
 Let `A` be a C⋆-algebra, and let `a b x : A`. The Fuglede–Putnam–Rosenblum theorem states that
@@ -53,7 +52,6 @@ but the proof is independent of the Fuglede–Putnam–Rosenblum theorem.
 + [rosenblum1958] M. Rosenblum, "On a theorem of Fuglede and Putnam"
 + [cater1961] S. Cater, "Observations on a paper by Rosenblum"
 -/
-
 
 open NormedSpace selfAdjoint Bornology Complex
 open scoped ComplexStarModule

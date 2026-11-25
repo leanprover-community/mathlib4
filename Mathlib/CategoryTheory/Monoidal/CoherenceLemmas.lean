@@ -19,7 +19,6 @@ or if they can be replaced by use of the `coherence` tactic.
 
 public section
 
-
 open CategoryTheory
 
 namespace CategoryTheory.MonoidalCategory

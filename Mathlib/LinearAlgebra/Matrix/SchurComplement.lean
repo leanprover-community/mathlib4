@@ -30,7 +30,6 @@ Compare with `Matrix.invertibleOfFromBlocks₁₁Invertible`.
 
 @[expose] public section
 
-
 variable {l m n α : Type*}
 
 namespace Matrix
@@ -69,7 +68,6 @@ theorem fromBlocks_eq_of_invertible₂₂ (A : Matrix l m α) (B : Matrix l n α
 section Triangular
 
 /-! #### Block triangular matrices -/
-
 
 /-- An upper-block-triangular matrix is invertible if its diagonal is. -/
 @[instance_reducible]
@@ -219,11 +217,9 @@ end Triangular
 
 /-! ### 2×2 block matrices -/
 
-
 section Block
 
 /-! #### General 2×2 block matrices -/
-
 
 /-- A block matrix is invertible if the bottom right corner and the corresponding Schur complement
 is. -/
@@ -359,7 +355,6 @@ theorem isUnit_fromBlocks_iff_of_invertible₁₁ {A : Matrix m m α} {B : Matri
 end Block
 
 /-! ### Lemmas about `Matrix.det` -/
-
 
 section Det
 

@@ -37,7 +37,6 @@ Then, a cover-preserving and compatible-preserving functor is continuous.
 
 public section
 
-
 universe w v₁ v₂ v₃ u₁ u₂ u₃
 
 open CategoryTheory Opposite CategoryTheory.Presieve.FamilyOfElements CategoryTheory.Presieve

@@ -20,7 +20,6 @@ basis for multilinear maps given bases on the domain and codomain.
 
 @[expose] public section
 
-
 open MultilinearMap
 
 variable {ι R S : Type*} [CommSemiring R] [CommSemiring S] {σ : R →+* S}

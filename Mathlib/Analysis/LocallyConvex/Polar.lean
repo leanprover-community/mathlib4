@@ -47,7 +47,6 @@ section NormedRing
 variable [NormedCommRing 𝕜] [AddCommMonoid E] [AddCommMonoid F]
 variable [Module 𝕜 E] [Module 𝕜 F]
 
-
 variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
 /-- The (absolute) polar of `s : Set E` is given by the set of all `y : F` such that `‖B x y‖ ≤ 1`
@@ -137,7 +136,6 @@ section NontriviallyNormedField
 
 variable [NontriviallyNormedField 𝕜] [AddCommMonoid E] [AddCommMonoid F]
 variable [Module 𝕜 E] [Module 𝕜 F]
-
 
 variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 

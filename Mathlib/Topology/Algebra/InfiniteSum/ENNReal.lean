@@ -370,7 +370,6 @@ end ENNReal
 
 namespace NNReal
 
-
 theorem tsum_eq_toNNReal_tsum {f : β → ℝ≥0} : ∑' b, f b = (∑' b, (f b : ℝ≥0∞)).toNNReal := by
   by_cases h : Summable f
   · rw [← ENNReal.coe_tsum h, ENNReal.toNNReal_coe]
@@ -643,7 +642,6 @@ then the distance from `f 0` to the limit is bounded by `∑'_{k=0}^∞ d k`. -/
 theorem edist_le_tsum_of_edist_le_of_tendsto₀ {f : ℕ → α} (d : ℕ → ℝ≥0∞)
     (hf : ∀ n, edist (f n) (f n.succ) ≤ d n) {a : α} (ha : Tendsto f atTop (𝓝 a)) :
     edist (f 0) a ≤ ∑' m, d m := by simpa using edist_le_tsum_of_edist_le_of_tendsto d hf ha 0
-
 
 namespace ENNReal
 

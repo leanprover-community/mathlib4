@@ -56,7 +56,6 @@ Compact operator
 
 @[expose] public section
 
-
 open Function Set Filter Bornology Metric Pointwise Topology
 
 /-- A compact operator between two topological vector spaces. This definition is usually

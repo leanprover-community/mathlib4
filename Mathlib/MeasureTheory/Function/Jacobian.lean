@@ -281,7 +281,6 @@ essentially like this linear map, and that its derivative (if it exists) is almo
 to the approximating linear map.
 -/
 
-
 /-- Let `f` be a function which is sufficiently close (in the Lipschitz sense) to a given linear
 map `A`. Then it expands the volume of any set by at most `m` for any `m > det A`. -/
 theorem addHaar_image_le_mul_of_det_lt (A : E →L[ℝ] E) {m : ℝ≥0}
@@ -553,7 +552,6 @@ non-invertible derivative everywhere, then `f '' s` has measure `0`, again witho
 assumptions.
 -/
 
-
 /-- A differentiable function maps sets of measure zero to sets of measure zero. -/
 theorem addHaar_image_eq_zero_of_differentiableOn_of_addHaar_eq_zero (hf : DifferentiableOn ℝ f s)
     (hs : μ s = 0) : μ (f '' s) = 0 := by
@@ -681,7 +679,6 @@ image `f '' s` is measurable if `f` is injective on `s`. The latter statement fo
 Lusin-Souslin theorem.
 -/
 
-
 /-- The derivative of a function on a measurable set is almost everywhere measurable on this set
 with respect to Lebesgue measure. Note that, in general, it is not genuinely measurable there,
 as `f'` is not unique (but only on a set of measure `0`, as the argument shows). -/
@@ -798,7 +795,6 @@ We show the formula `∫⁻ x in s, ENNReal.ofReal |(f' x).det| ∂μ = μ (f ''
 in `lintegral_abs_det_fderiv_eq_addHaar_image`. For this, we show both inequalities in both
 directions, first up to controlled errors and then letting these errors tend to `0`.
 -/
-
 
 theorem addHaar_image_le_lintegral_abs_det_fderiv_aux1 (hs : MeasurableSet s)
     (hf' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) {ε : ℝ≥0} (εpos : 0 < ε) :
@@ -1177,7 +1173,6 @@ theorem restrict_map_withDensity_abs_det_fderiv_eq_addHaar (hs : MeasurableSet s
   rwa [this] at A
 
 /-! ### Change of variable formulas in integrals -/
-
 
 /-- Change of variable formula for differentiable functions: if a function `f` is
 injective and differentiable on a measurable set `s`, then the Lebesgue integral of a function

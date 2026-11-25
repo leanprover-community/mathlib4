@@ -245,7 +245,6 @@ instance Int.canLiftPNat : CanLift ℤ ℕ+ (↑) ((0 < ·)) :=
 
 end CanLift
 
-
 /-- A `Subtype.mk`-free eliminator for `ℕ+`, exposing the underlying natural and its positivity.
 See `NNReal.recToNNReal` for why `basify` needs this shape. -/
 @[elab_as_elim, basify_elim]

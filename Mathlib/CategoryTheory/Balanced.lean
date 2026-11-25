@@ -22,7 +22,6 @@ as the category of types.
 
 public section
 
-
 universe v u
 
 namespace CategoryTheory

@@ -26,7 +26,6 @@ morphisms in induced categories.
 
 @[expose] public section
 
-
 namespace CategoryTheory
 
 universe v v₂ u₁ u₂

@@ -22,7 +22,6 @@ group action, topologically transitive
 
 public section
 
-
 open scoped Pointwise
 
 /-- An action of an additive monoid `M` on a topological space `α` is called

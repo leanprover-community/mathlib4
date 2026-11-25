@@ -47,5 +47,4 @@ lemma norm_le_one (a : ZMod n) : ‖χ a‖ ≤ 1 := by
   · rw [χ.map_nonunit h, norm_zero]
     exact zero_le_one
 
-
 end DirichletCharacter

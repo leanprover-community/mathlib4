@@ -68,7 +68,6 @@ theorem hermite_one : hermite 1 = X := by
 
 /-! ### Lemmas about `Polynomial.coeff` -/
 
-
 section coeff
 
 theorem coeff_hermite_succ_zero (n : ℕ) : coeff (hermite (n + 1)) 0 = -coeff (hermite n) 1 := by

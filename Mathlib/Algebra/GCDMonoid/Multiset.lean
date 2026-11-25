@@ -36,7 +36,6 @@ variable {α : Type*} [CommMonoidWithZero α] [NormalizedGCDMonoid α]
 
 /-! ### LCM -/
 
-
 section lcm
 
 /-- Least common multiple of a multiset -/
@@ -111,7 +110,6 @@ theorem lcm_ndinsert (a : α) (s : Multiset α) : (ndinsert a s).lcm = GCDMonoid
 end lcm
 
 /-! ### GCD -/
-
 
 section gcd
 

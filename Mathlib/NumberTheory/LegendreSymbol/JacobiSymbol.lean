@@ -63,7 +63,6 @@ Jacobi symbol, quadratic reciprocity
 
 @[expose] public section
 
-
 section Jacobi
 
 /-!
@@ -78,7 +77,6 @@ is `1` when `b = 0`). This is called `jacobiSym a b`.
 We define localized notation (scope `NumberTheorySymbols`) `J(a | b)` for the Jacobi
 symbol `jacobiSym a b`.
 -/
-
 
 open Nat ZMod
 
@@ -97,7 +95,6 @@ open scoped NumberTheorySymbols
 /-!
 ### Properties of the Jacobi symbol
 -/
-
 
 namespace jacobiSym
 
@@ -294,7 +291,6 @@ end ZMod
 ### Values at `-1`, `2` and `-2`
 -/
 
-
 namespace jacobiSym
 
 /-- If `χ` is a multiplicative function such that `J(a | p) = χ p` for all odd primes `p`,
@@ -354,7 +350,6 @@ end jacobiSym
 /-!
 ### Quadratic Reciprocity
 -/
-
 
 /-- The bi-multiplicative map giving the sign in the Law of Quadratic Reciprocity -/
 def qrSign (m n : ℕ) : ℤ :=
@@ -487,7 +482,6 @@ theorem mod_right (a : ℤ) {b : ℕ} (hb : Odd b) : J(a | b) = J(a | b % (4 * a
 end jacobiSym
 
 end Jacobi
-
 
 section FastJacobi
 

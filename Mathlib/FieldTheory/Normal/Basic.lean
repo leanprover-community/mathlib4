@@ -28,7 +28,6 @@ is the same as being a splitting field (`Normal.of_isSplittingField` and
 
 @[expose] public section
 
-
 noncomputable section
 
 open Polynomial IsScalarTower

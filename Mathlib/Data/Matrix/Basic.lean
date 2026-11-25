@@ -380,7 +380,6 @@ end Matrix
 ### Bundled versions of `Matrix.map`
 -/
 
-
 namespace Equiv
 
 /-- The `Equiv` between spaces of matrices induced by an `Equiv` between their

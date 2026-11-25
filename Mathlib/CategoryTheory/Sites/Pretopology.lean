@@ -34,7 +34,6 @@ coverage, pretopology, site
 
 @[expose] public section
 
-
 universe v u
 
 noncomputable section

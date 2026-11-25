@@ -394,7 +394,6 @@ end ConditionallyCompleteLinearOrder
 In this case we have `Sup ∅ = ⊥`, so we can drop some `Nonempty`/`Set.Nonempty` assumptions.
 -/
 
-
 section ConditionallyCompleteLinearOrderBot
 
 @[to_dual (attr := simp)]

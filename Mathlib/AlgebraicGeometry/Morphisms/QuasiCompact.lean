@@ -22,7 +22,6 @@ It suffices to check that preimages of affine open sets are compact
 
 public section
 
-
 noncomputable section
 
 open CategoryTheory CategoryTheory.Limits Opposite TopologicalSpace
@@ -198,7 +197,6 @@ lemma compactSpace_iff_exists :
   mp _ := let 𝒰 : X.OpenCover := X.affineCover.finiteSubcover
     ⟨Γ(∐ 𝒰.X, ⊤), (∐ 𝒰.X).isoSpec.inv ≫ Sigma.desc 𝒰.f, Surjective.surj⟩
   mpr := fun ⟨_, f, hf⟩ ↦ ⟨hf.range_eq ▸ isCompact_range f.continuous⟩
-
 
 lemma isCompact_iff_exists {U : X.Opens} :
     IsCompact (U : Set X) ↔ ∃ R, ∃ f : Spec R ⟶ X, Set.range f = U := by

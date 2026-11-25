@@ -85,7 +85,6 @@ lemma deriv_Gamma_nat (n : ℕ) :
     rw [sub_le_iff_le_add', ← sub_eq_add_neg, le_sub_iff_add_le', ← hder_nat]
     exact derivUB n
 
-
 lemma hasDerivAt_Gamma_nat (n : ℕ) :
     HasDerivAt Gamma (n ! * (-γ + harmonic n)) (n + 1) :=
   (deriv_Gamma_nat n).symm ▸

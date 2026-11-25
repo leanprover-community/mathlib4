@@ -42,7 +42,6 @@ basis, det, determinant
 
 @[expose] public section
 
-
 noncomputable section
 
 open Matrix Module LinearMap Submodule Set Function
@@ -105,7 +104,6 @@ namespace LinearMap
 
 /-! ### Determinant of a linear map -/
 
-
 variable {A : Type*} [CommRing A] [Module A M]
 variable {κ : Type*} [Fintype κ]
 
@@ -115,7 +113,6 @@ theorem det_toMatrix_eq_det_toMatrix [DecidableEq κ] (b : Basis ι A M) (c : Ba
   rw [← linearMap_toMatrix_mul_basis_toMatrix c b c, ← basis_toMatrix_mul_linearMap_toMatrix b c b,
       Matrix.det_conj_of_mul_eq_one] <;>
     rw [Basis.toMatrix_mul_toMatrix, Basis.toMatrix_self]
-
 
 /-- The determinant of an endomorphism given a basis.
 

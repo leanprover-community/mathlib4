@@ -27,7 +27,6 @@ TODO: Generalise the results here from the concrete `completion` to any `Abstrac
 
 @[expose] public section
 
-
 noncomputable section
 
 namespace UniformSpace

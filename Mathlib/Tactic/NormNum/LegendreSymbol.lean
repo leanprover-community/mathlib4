@@ -48,7 +48,6 @@ are the ones occurring in the use of QR above.
 
 public section
 
-
 section Lemmas
 
 namespace Mathlib.Meta.NormNum
@@ -63,7 +62,6 @@ def jacobiSymNat (a b : ℕ) : ℤ :=
 We repeat part of the API for `jacobiSym` with `NormNum.jacobiSymNat` and without implicit
 arguments, in a form that is suitable for constructing proofs in `norm_num`.
 -/
-
 
 /-- Base cases: `b = 0`, `b = 1`, `a = 0`, `a = 1`. -/
 theorem jacobiSymNat.zero_right (a : ℕ) : jacobiSymNat a 0 = 1 := by
@@ -187,7 +185,6 @@ theorem isInt_jacobiSymNat : {a na : ℕ} → {b nb : ℕ} → {r : ℤ} →
     IsNat a na → IsNat b nb → jacobiSymNat na nb = r → IsInt (jacobiSymNat a b) r
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨rfl⟩
 
-
 end Mathlib.Meta.NormNum
 
 end Lemmas
@@ -202,7 +199,6 @@ section Evaluation
 The following functions recursively evaluate a Jacobi symbol and construct the
 corresponding proof term.
 -/
-
 
 namespace Mathlib.Meta.NormNum
 
@@ -359,7 +355,6 @@ section Tactic
 /-!
 ### The `norm_num` plug-in
 -/
-
 
 namespace Tactic
 

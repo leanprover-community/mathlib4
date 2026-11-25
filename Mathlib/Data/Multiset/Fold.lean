@@ -19,7 +19,6 @@ variable {α β : Type*}
 
 /-! ### fold -/
 
-
 section Fold
 
 variable (op : α → α → α) [hc : Std.Commutative op] [ha : Std.Associative op]

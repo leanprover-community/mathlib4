@@ -408,5 +408,4 @@ lemma ext_mahler {μ : C(ℤ_[p], R) →L[R] R}
 
 end DenseSpan
 
-
 end PadicInt

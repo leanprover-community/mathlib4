@@ -328,7 +328,6 @@ partial def certIterStepEntry (t i j : ℕ) : CertM rα (Cert rα) := do
     {s with iterStepEntryCache := s.iterStepEntryCache.insert (t, i, j) cert}
   return cert
 
-
 /-- Certify the diagonal tail sum in one `BirdDet.stepEntry` application:
 
 ```

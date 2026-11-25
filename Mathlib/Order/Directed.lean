@@ -33,7 +33,6 @@ Define connected orders (the transitive symmetric closure of `≤` is everything
 
 @[expose] public section
 
-
 open Function
 
 variable {α β : Type*} {ι κ : Sort*} (r r' s : α → α → Prop)

@@ -25,7 +25,6 @@ differentiable when `f` is (and giving a formula for its derivative).
 
 public section
 
-
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [StarRing 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable {F : Type*} [NormedAddCommGroup F] [StarAddMonoid F] [NormedSpace 𝕜 F] [StarModule 𝕜 F]

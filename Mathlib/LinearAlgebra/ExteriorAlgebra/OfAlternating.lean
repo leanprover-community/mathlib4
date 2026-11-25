@@ -25,7 +25,6 @@ public import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
 
 @[expose] public section
 
-
 variable {R M N N' : Type*}
 variable [CommRing R] [AddCommGroup M] [AddCommGroup N] [AddCommGroup N']
 variable [Module R M] [Module R N] [Module R N']

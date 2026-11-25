@@ -19,7 +19,6 @@ The ring of integers is integrally closed inside the original ring.
 
 public section
 
-
 universe u v w
 
 namespace Valuation

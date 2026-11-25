@@ -19,7 +19,6 @@ predicate `S`) but are not completely determined.
 
 @[expose] public section
 
-
 /-- A member of `Semiquot α` is classically a nonempty `Set α`,
   and in the VM is represented by an element of `α`; the relation
   between these is that the VM element is required to be a member

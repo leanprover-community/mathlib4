@@ -19,7 +19,6 @@ In this file we prove several version of the following fact:
 the displacement (`dist (f a) (f b)`) is at most the integral of `‖deriv f‖` over `[a, b]`.
 -/
 
-
 public section
 
 open Filter Set MeasureTheory Metric

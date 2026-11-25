@@ -130,7 +130,6 @@ noncomputable def mapTriangleInvRotateIso :
     (fun T => Triangle.isoMk _ _ ((F.commShiftIso (-1)).symm.app _) (Iso.refl _) (Iso.refl _)
       (by simp) (by simp) (by simp)) (by cat_disch)
 
-
 variable (C) in
 /-- The canonical isomorphism `(𝟭 C).mapTriangle ≅ 𝟭 (Triangle C)`. -/
 @[simps!]

@@ -35,7 +35,6 @@ lie algebra, derived series, derived length, solvable, radical
 
 @[expose] public section
 
-
 universe u v w w₁ w₂
 
 variable (R : Type u) (L : Type v) (M : Type w) {L' : Type w₁}

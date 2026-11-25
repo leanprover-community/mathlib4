@@ -37,7 +37,6 @@ quadratic residue, quadratic nonresidue, Legendre symbol, quadratic reciprocity
 
 public section
 
-
 open Nat
 
 section Values
@@ -52,7 +51,6 @@ open ZMod
 See `jacobiSym.at_two` and `jacobiSym.at_neg_two` for the corresponding statements
 for the Jacobi symbol.
 -/
-
 
 namespace legendreSym
 
@@ -94,7 +92,6 @@ section Reciprocity
 See `jacobiSym.quadratic_reciprocity` and variants for a version of Quadratic Reciprocity
 for the Jacobi symbol.
 -/
-
 
 variable {p q : ℕ} [Fact p.Prime] [Fact q.Prime]
 

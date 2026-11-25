@@ -136,7 +136,6 @@ theorem isClosable_iff_exists_closed_extension {f : E →ₗ.[R] F} :
 
 /-! ### The core of a linear operator -/
 
-
 /-- A submodule `S` is a core of `f` if the closure of the restriction of `f` to `S` is `f`. -/
 structure HasCore (f : E →ₗ.[R] F) (S : Submodule R E) : Prop where
   le_domain : S ≤ f.domain

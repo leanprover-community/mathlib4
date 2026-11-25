@@ -33,7 +33,6 @@ public section
 open Filter Function MeromorphicAt MeasureTheory MeromorphicOn Metric Real Set Topology
 open scoped ComplexConjugate
 
-
 /-!
 ## Preparatory Material
 
@@ -438,7 +437,6 @@ theorem MeromorphicOn.log_norm_meromorphicTrailingCoeffAt (h₁w : w ∈ ball c 
     rwa [meromorphicOrderAt_fun_comp_add_const_eq_meromorphicOrderAt, sub_add_cancel]
   · rwa [← meromorphicOn_closedBall_fun_comp_sub_const_iff_meromorphicOn_closedBall (c := c),
       ← hfg]
-
 
 /-!
 ## Jensen's Formula

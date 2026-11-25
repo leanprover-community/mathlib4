@@ -46,7 +46,6 @@ variable {α β γ : Type*} {ι : Sort*}
 
 /-! ### Inverse image -/
 
-
 section Preimage
 
 variable {f : α → β} {g : β → γ}
@@ -193,7 +192,6 @@ lemma preimage_subset {s t} (hs : s ⊆ f '' t) (hf : Set.InjOn f (f ⁻¹' s)) 
 end Preimage
 
 /-! ### Image of a set under a function -/
-
 
 section Image
 
@@ -588,7 +586,6 @@ theorem powerset_insert_injOn {s : Set α} {a : α} (h : a ∉ s) :
   grind
 
 /-! ### Lemmas about range of a function. -/
-
 
 section Range
 
@@ -1176,7 +1173,6 @@ end EquivLike
 
 /-! ### Image and preimage on subtypes -/
 
-
 namespace Subtype
 
 variable {α : Type*}
@@ -1283,7 +1279,6 @@ end Subtype
 
 /-! ### Images and preimages on `Option` -/
 
-
 namespace Option
 
 theorem injective_iff {α β} {f : Option α → β} :
@@ -1314,7 +1309,6 @@ end Option
 namespace Set
 
 /-! ### Injectivity and surjectivity lemmas for image and preimage -/
-
 
 section ImagePreimage
 

@@ -25,7 +25,6 @@ relate to operation on lists.
 open List (Vector)
 open Denumerable Encodable Function
 
-
 section
 
 variable {α : Type*} {β : Type*} {σ : Type*}

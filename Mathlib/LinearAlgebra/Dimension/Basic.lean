@@ -34,7 +34,6 @@ and `M₁`, `M₂`, ... all live in the same universe.
 
 public section
 
-
 noncomputable section
 
 universe w w' u u' v v'

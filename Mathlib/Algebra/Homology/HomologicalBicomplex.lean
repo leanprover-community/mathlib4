@@ -27,7 +27,6 @@ which is obtained by exchanging the horizontal and vertical directions.
 
 @[expose] public section
 
-
 open CategoryTheory Limits
 
 variable (C : Type*) [Category* C] [HasZeroMorphisms C]
@@ -211,6 +210,5 @@ def XXIsoOfEq {x₁ y₁ : I₁} (h₁ : x₁ = y₁) {x₂ y₂ : I₂} (h₂ :
 @[simp]
 lemma XXIsoOfEq_rfl (i₁ : I₁) (i₂ : I₂) :
     K.XXIsoOfEq _ _ _ (rfl : i₁ = i₁) (rfl : i₂ = i₂) = Iso.refl _ := rfl
-
 
 end HomologicalComplex₂

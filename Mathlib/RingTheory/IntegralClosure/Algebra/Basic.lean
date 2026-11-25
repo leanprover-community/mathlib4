@@ -26,7 +26,6 @@ Let `R` be a `CommRing` and let `A` be an R-algebra.
 
 @[expose] public section
 
-
 open Submodule
 
 section

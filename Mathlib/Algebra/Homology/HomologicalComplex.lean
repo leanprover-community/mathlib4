@@ -38,7 +38,6 @@ Defined in terms of these we have `C.dFrom i : C.X i ⟶ C.xNext i` and
 
 @[expose] public section
 
-
 universe v u
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
@@ -610,7 +609,6 @@ section Mk
 
 variable {V}
 
-
 variable (X₀ X₁ X₂ : V) (d₀ : X₁ ⟶ X₀) (d₁ : X₂ ⟶ X₁) (s : d₁ ≫ d₀ = 0)
   (succ : ∀ (S : ShortComplex V), Σ' (X₃ : V) (d₂ : X₃ ⟶ S.X₁), d₂ ≫ S.f = 0)
 
@@ -741,7 +739,6 @@ theorem mk'_X_0 : (mk' X₀ X₁ d₀ succ').X 0 = X₀ :=
 @[to_dual (attr := simp)]
 theorem mk'_X_1 : (mk' X₀ X₁ d₀ succ').X 1 = X₁ :=
   rfl
-
 
 @[to_dual (attr := simp) mk'_d_0_1]
 theorem mk'_d_1_0 : (mk' X₀ X₁ d₀ succ').d 1 0 = d₀ := by

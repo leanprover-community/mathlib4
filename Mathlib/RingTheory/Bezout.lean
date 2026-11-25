@@ -21,7 +21,6 @@ Notable examples include principal ideal rings, valuation rings, and the ring of
 
 public section
 
-
 universe u v
 
 variable {R : Type u} [CommRing R]

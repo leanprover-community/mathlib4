@@ -33,7 +33,6 @@ to be precisely what we want here too.
 
 @[expose] public section
 
-
 noncomputable section
 
 open Finsupp

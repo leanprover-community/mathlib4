@@ -28,7 +28,6 @@ This allows us to show that `Sheaf J D` has colimits (of a certain shape) as soo
 
 @[expose] public section
 
-
 namespace CategoryTheory
 
 namespace Sheaf

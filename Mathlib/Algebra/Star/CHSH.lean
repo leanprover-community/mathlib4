@@ -76,7 +76,6 @@ There is a CHSH tuple in 4-by-4 matrices such that
 
 public section
 
-
 universe u
 
 /-- A CHSH tuple in a \*-monoid consists of 4 self-adjoint involutions `A₀ A₁ B₀ B₁` such that
@@ -135,7 +134,6 @@ theorem CHSH_inequality_of_comm [CommRing R] [PartialOrder R] [StarRing R] [Star
 We now prove some rather specialized lemmas in preparation for the Tsirelson inequality,
 which we hide in a namespace as they are unlikely to be useful elsewhere.
 -/
-
 
 namespace TsirelsonInequality
 

@@ -38,7 +38,6 @@ the classification of one-dimensional isocrystals over an algebraically closed f
 
 @[expose] public section
 
-
 noncomputable section
 
 namespace WittVector
@@ -57,7 +56,6 @@ In this section we focus on the recursive case.
 The goal is to turn `WittVector.wittPolyProd n` into a univariate polynomial
 whose variable represents the `n`th coefficient of `x` in `x * a`.
 -/
-
 
 section CommRing
 

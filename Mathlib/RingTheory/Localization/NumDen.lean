@@ -26,7 +26,6 @@ commutative ring, field of fractions
 
 @[expose] public section
 
-
 namespace IsFractionRing
 
 open IsLocalization
@@ -152,7 +151,6 @@ theorem num_den_unique (x : K) (n : A) (d : nonZeroDivisors A) (pr : IsRelPrime 
     associated_of_dvd_dvd
       ((num_den_reduced A x).symm.dvd_of_dvd_mul_left <| h ▸ dvd_mul_left _ _)
       (pr.symm.dvd_of_dvd_mul_left <| h ▸ dvd_mul_left _ _)⟩
-
 
 variable (A) in
 /-- Every element of the fraction field of a unique factorization domain is a square times a

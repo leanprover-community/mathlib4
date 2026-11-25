@@ -28,7 +28,6 @@ Note that analogous lemmas for `Module`s like `Finset.sum_smul` appear in other 
 
 public section
 
-
 variable {M N γ : Type*}
 
 section

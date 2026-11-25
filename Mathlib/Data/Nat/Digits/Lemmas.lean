@@ -213,7 +213,6 @@ theorem sub_one_mul_sum_log_div_pow_eq_sub_sum_digits {p : ℕ} (n : ℕ) :
 
 /-! ### Binary -/
 
-
 theorem digits_two_eq_bits (n : ℕ) : digits 2 n = n.bits.map fun b => cond b 1 0 := by
   simp only [Bool.cond_eq_ite]
   induction n using Nat.binaryRecFromOne with
@@ -228,7 +227,6 @@ theorem digits_two_eq_bits (n : ℕ) : digits 2 n = n.bits.map fun b => cond b 1
     · simpa [Nat.bit, add_comm, digits_add 2 one_lt_two 1 n, Nat.add_mul_div_left]
 
 /-! ### Modular Arithmetic -/
-
 
 -- This is really a theorem about polynomials.
 theorem dvd_ofDigits_sub_ofDigits {α : Type*} [CommRing α] {a b k : α} (h : k ∣ a - b)

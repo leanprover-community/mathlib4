@@ -19,7 +19,6 @@ This contains some results on the big operators `∑` and `∏` interacting with
 
 public section
 
-
 universe u v w
 
 variable {α : Type u}

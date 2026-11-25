@@ -39,7 +39,6 @@ namespace Finset
 
 /-! ### Nonempty -/
 
-
 /-- The property `s.Nonempty` expresses the fact that the finset `s` is not empty. It should be used
 in theorem assumptions instead of `∃ x, x ∈ s` or `s ≠ ∅` as it gives access to a nice API thanks
 to the dot notation. -/
@@ -83,7 +82,6 @@ theorem Nonempty.to_subtype {s : Finset α} : s.Nonempty → Nonempty s :=
 theorem Nonempty.to_type {s : Finset α} : s.Nonempty → Nonempty α := fun ⟨x, _hx⟩ => ⟨x⟩
 
 /-! ### empty -/
-
 
 section Empty
 

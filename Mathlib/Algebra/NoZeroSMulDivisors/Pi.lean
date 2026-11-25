@@ -19,7 +19,6 @@ This file defines instances for NoZeroSMulDivisors on Pi types.
 
 public section
 
-
 universe u v
 
 variable {I : Type u}

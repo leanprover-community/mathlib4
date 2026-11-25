@@ -21,7 +21,6 @@ set_option doc.verso.suggestions false
 
 public section
 
-
 variable {R : Type*} [DivisionRing R] [CharZero R] {p : R}
 
 namespace AddSubgroup

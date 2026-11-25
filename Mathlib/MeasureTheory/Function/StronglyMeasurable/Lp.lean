@@ -26,7 +26,6 @@ Functions in `Lp` for `0 < p < ∞` are finitely strongly measurable.
 
 public section
 
-
 open MeasureTheory Filter TopologicalSpace Function
 
 open scoped ENNReal Topology MeasureTheory

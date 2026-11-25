@@ -23,7 +23,6 @@ This file provides the basic API for open covers of schemes.
 
 @[expose] public section
 
-
 noncomputable section
 
 open TopologicalSpace CategoryTheory Opposite CategoryTheory.Limits

@@ -28,7 +28,6 @@ has an energy greater than the previous one plus some fixed constant.
 
 @[expose] public section
 
-
 open Finset
 
 variable {α : Type*} [DecidableEq α] {s : Finset α} (P : Finpartition s) (G : SimpleGraph α)

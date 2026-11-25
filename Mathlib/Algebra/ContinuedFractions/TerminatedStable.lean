@@ -20,7 +20,6 @@ We show that the continuants and convergents of a gcf stabilise once the gcf ter
 
 public section
 
-
 namespace GenContFract
 
 variable {K : Type*} {g : GenContFract K} {n m : ℕ}

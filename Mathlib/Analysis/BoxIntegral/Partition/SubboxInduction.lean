@@ -30,7 +30,6 @@ partition, tagged partition, Henstock integral
 
 @[expose] public section
 
-
 namespace BoxIntegral
 
 open Set Metric

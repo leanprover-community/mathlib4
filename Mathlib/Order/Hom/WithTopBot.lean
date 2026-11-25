@@ -24,7 +24,6 @@ so they change the type of the homomorphism.
 
 @[expose] public section
 
-
 variable {α β γ : Type*}
 
 namespace WithTop

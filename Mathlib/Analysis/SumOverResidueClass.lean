@@ -25,7 +25,6 @@ mod `m ≠ 0` converges if and only if the sum over all of `ℕ` converges.
 
 public section
 
-
 lemma Finset.sum_indicator_mod {R : Type*} [AddCommMonoid R] (m : ℕ) [NeZero m] (f : ℕ → R) :
     f = ∑ a : ZMod m, {n : ℕ | (n : ZMod m) = a}.indicator f := by
   ext n

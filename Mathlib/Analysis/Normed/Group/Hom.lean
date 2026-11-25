@@ -29,7 +29,6 @@ theory of `SeminormedAddGroupHom` and we specialize to `NormedAddGroupHom` when 
 
 @[expose] public section
 
-
 noncomputable section
 
 open NNReal
@@ -179,7 +178,6 @@ theorem SurjectiveOnWith.surjOn {f : NormedAddGroupHom V₁ V₂} {K : AddSubgro
 
 /-! ### The operator norm -/
 
-
 /-- The operator norm of a seminormed group homomorphism is the inf of all its bounds. -/
 def opNorm (f : NormedAddGroupHom V₁ V₂) :=
   sInf { c | 0 ≤ c ∧ ∀ x, ‖f x‖ ≤ c * ‖x‖ }
@@ -286,7 +284,6 @@ alias _root_.AddMonoidHom.mkNormedAddGroupHom_norm_le' := mkNormedAddGroupHom_no
 
 /-! ### Addition of normed group homs -/
 
-
 /-- Addition of normed group homs. -/
 instance add : Add (NormedAddGroupHom V₁ V₂) :=
   ⟨fun f g =>
@@ -311,7 +308,6 @@ theorem add_apply (f g : NormedAddGroupHom V₁ V₂) (v : V₁) :
   rfl
 
 /-! ### The zero normed group hom -/
-
 
 instance zero : Zero (NormedAddGroupHom V₁ V₂) :=
   ⟨(0 : V₁ →+ V₂).mkNormedAddGroupHom 0 (by simp)⟩
@@ -354,7 +350,6 @@ variable {f g}
 
 /-! ### The identity normed group hom -/
 
-
 variable (V)
 
 /-- The identity as a continuous normed group hom. -/
@@ -381,7 +376,6 @@ theorem coe_id : (NormedAddGroupHom.id V : V → V) = _root_.id :=
 
 /-! ### The negation of a normed group hom -/
 
-
 /-- Opposite of a normed group hom. -/
 instance neg : Neg (NormedAddGroupHom V₁ V₂) :=
   ⟨fun f => (-f.toAddMonoidHom).mkNormedAddGroupHom ‖f‖ fun v => by simp [le_opNorm f v]⟩
@@ -399,7 +393,6 @@ theorem opNorm_neg (f : NormedAddGroupHom V₁ V₂) : ‖-f‖ = ‖f‖ := by
   simp only [norm_def, coe_neg, norm_neg, Pi.neg_apply]
 
 /-! ### Subtraction of normed group homs -/
-
 
 /-- Subtraction of normed group homs. -/
 instance sub : Sub (NormedAddGroupHom V₁ V₂) :=
@@ -419,7 +412,6 @@ theorem sub_apply (f g : NormedAddGroupHom V₁ V₂) (v : V₁) :
   rfl
 
 /-! ### Scalar actions on normed group homs -/
-
 
 section SMul
 
@@ -501,7 +493,6 @@ theorem zsmul_apply (r : ℤ) (f : NormedAddGroupHom V₁ V₂) (v : V₁) : (r 
 
 /-! ### Normed group structure on normed group homs -/
 
-
 /-- Homs between two given normed groups form a commutative additive group. -/
 instance toAddCommGroup : AddCommGroup (NormedAddGroupHom V₁ V₂) :=
   coe_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
@@ -544,7 +535,6 @@ theorem sum_apply {ι : Type*} (s : Finset ι) (f : ι → NormedAddGroupHom V�
 
 /-! ### Module structure on normed group homs -/
 
-
 instance distribMulAction {R : Type*} [MonoidWithZero R] [DistribMulAction R V₂]
     [PseudoMetricSpace R] [IsBoundedSMul R V₂] : DistribMulAction R (NormedAddGroupHom V₁ V₂) :=
   Function.Injective.distribMulAction coeAddHom coe_injective coe_smul
@@ -554,7 +544,6 @@ instance module {R : Type*} [Semiring R] [Module R V₂] [PseudoMetricSpace R] [
   Function.Injective.module _ coeAddHom coe_injective coe_smul
 
 /-! ### Composition of normed group homs -/
-
 
 /-- The composition of continuous normed group homs. -/
 @[simps!]
@@ -633,7 +622,6 @@ theorem norm_incl {V' : AddSubgroup V} (x : V') : ‖incl _ x‖ = ‖x‖ :=
 
 /-!### Kernel -/
 
-
 section Kernels
 
 variable (f : NormedAddGroupHom V₁ V₂) (g : NormedAddGroupHom V₂ V₃)
@@ -674,7 +662,6 @@ theorem isClosed_ker {V₂ : Type*} [NormedAddCommGroup V₂] (f : NormedAddGrou
 end Kernels
 
 /-! ### Range -/
-
 
 section Range
 

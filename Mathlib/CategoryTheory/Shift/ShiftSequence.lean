@@ -34,7 +34,6 @@ variable {C D A : Type*} [Category* C] [Category* D] [Category* A] (F : C ⥤ A)
   {π : C ⥤ D} {H : D ⥤ A} (e : π ⋙ H ≅ F)
   (M : Type*) [AddMonoid M] [HasShift C M] [HasShift D M]
 
-
 namespace CategoryTheory
 
 namespace Functor

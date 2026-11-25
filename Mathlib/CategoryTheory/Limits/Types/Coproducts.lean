@@ -218,7 +218,6 @@ lemma initial_iff_empty (X : Type u) : Nonempty (IsInitial X) ↔ IsEmpty X := b
   · intro h
     exact ⟨IsInitial.ofIso Types.isInitialPEmpty <| Equiv.toIso <| Equiv.equivOfIsEmpty PEmpty X⟩
 
-
 /-- The sum type `X ⊕ Y` forms a cocone for the binary coproduct of `X` and `Y`. -/
 @[simps!]
 def binaryCoproductCocone (X Y : Type u) : Cocone (pair X Y) :=

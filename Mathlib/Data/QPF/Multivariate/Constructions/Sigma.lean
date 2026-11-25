@@ -16,7 +16,6 @@ set_option doc.verso.suggestions false
 
 @[expose] public section
 
-
 universe u
 
 namespace MvQPF
@@ -46,7 +45,6 @@ namespace Sigma
 
 instance [∀ α, MvFunctor <| F α] : MvFunctor (Sigma F) where
   map := fun f ⟨a, x⟩ => ⟨a, f <$$> x⟩
-
 
 variable [∀ α, MvQPF <| F α]
 

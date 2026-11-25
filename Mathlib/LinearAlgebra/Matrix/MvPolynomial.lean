@@ -22,7 +22,6 @@ matrix determinant, multivariate polynomial
 
 @[expose] public section
 
-
 variable {m n R S : Type*}
 
 namespace Matrix

@@ -17,7 +17,6 @@ This is kept separate from `Data.Rat.Defs` in order to minimize imports.
 
 public section
 
-
 namespace Rat
 
 instance : Encodable ℚ :=

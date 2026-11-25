@@ -46,7 +46,6 @@ https://ncatlab.org/nlab/show/rapidly+decreasing+function
 
 @[expose] public section
 
-
 namespace Asymptotics
 
 open Polynomial

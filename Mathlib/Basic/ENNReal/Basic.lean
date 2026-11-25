@@ -34,7 +34,6 @@ making it into a `DivInvOneMonoid`.
 As a consequence of being a `DivInvOneMonoid`, `ℝ≥0∞` inherits a power operation with integer
 exponent: this and other properties is shown in `Mathlib.Basic.ENNReal.Inv`.
 
-
 ## Main definitions
 
 * `ℝ≥0∞`: the extended nonnegative real numbers `[0, ∞]`; defined as `WithTop ℝ≥0`; it is
@@ -788,7 +787,6 @@ meta def evalENNRealOfNNReal : PositivityExt where eval {u α} _zα pα? e :=
   | _, _, _ => throwError "not ENNReal.ofNNReal"
 
 end Mathlib.Meta.Positivity
-
 
 /-- `ENNReal.coe_ofNat` read from right to left, restated because the `ofNat(n)` on the right-hand
 side of `ENNReal.coe_ofNat` is `no_index`ed, which would make the reversed lemma match every term.

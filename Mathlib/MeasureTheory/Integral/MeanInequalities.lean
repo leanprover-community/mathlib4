@@ -38,7 +38,6 @@ we prove `(∫ (f + g)^p ∂μ) ^ (1/p) ≤ (∫ f^p ∂μ) ^ (1/p) + (∫ g^p �
 
 @[expose] public section
 
-
 section LIntegral
 
 /-!
@@ -55,11 +54,9 @@ only to prove the more general results:
 * `NNReal.lintegral_mul_le_Lp_mul_Lq`: `ℝ≥0` functions.
 -/
 
-
 noncomputable section
 
 open NNReal ENNReal MeasureTheory Finset
-
 
 variable {α : Type*} [MeasurableSpace α] {μ : Measure α}
 

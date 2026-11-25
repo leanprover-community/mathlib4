@@ -45,7 +45,6 @@ it is equal to the lowest common multiple of the order of all elements of the gr
 
 @[expose] public section
 
-
 universe u
 
 variable {G : Type u}

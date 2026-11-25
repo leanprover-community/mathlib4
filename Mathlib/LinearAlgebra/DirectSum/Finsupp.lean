@@ -33,7 +33,6 @@ public import Mathlib.LinearAlgebra.DirectSum.TensorProduct
 
 @[expose] public section
 
-
 noncomputable section
 
 open DirectSum TensorProduct

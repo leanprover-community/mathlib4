@@ -21,7 +21,6 @@ They are probably good targets for further cleanup or moves.
 
 public section
 
-
 open Set NNReal
 
 variable {α : Type*}

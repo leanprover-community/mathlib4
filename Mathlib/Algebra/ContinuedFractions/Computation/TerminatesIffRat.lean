@@ -32,7 +32,6 @@ rational, continued fraction, termination
 
 public section
 
-
 namespace GenContFract
 
 open GenContFract (of)
@@ -57,7 +56,6 @@ We first show that every finite convergent corresponds to a rational number `q` 
 finite correctness proof (`of_correctness_of_terminates`) of `GenContFract.of` to show that
 `v = ↑q`.
 -/
-
 
 variable (v : K) (n : ℕ)
 
@@ -149,13 +147,11 @@ To do this, we proceed bottom-up, showing the correspondence between the basic f
 the Computation first and then lift the results step-by-step.
 -/
 
-
 -- The lifting works for arbitrary linear ordered fields with a floor function.
 variable [IsStrictOrderedRing K] {v : K} {q : ℚ}
 
 /-! First, we show the correspondence for the very basic functions in
 `GenContFract.IntFractPair`. -/
-
 
 namespace IntFractPair
 
@@ -189,7 +185,6 @@ theorem coe_stream'_rat_eq (v_eq_q : v = (↑q : K)) :
 end IntFractPair
 
 /-! Now we lift the coercion results to the continued fraction computation. -/
-
 
 theorem coe_of_h_rat_eq (v_eq_q : v = (↑q : K)) : (↑((of q).h : ℚ) : K) = (of v).h := by
   simp_all
@@ -234,7 +229,6 @@ the fractional part of a value `v` and `0 ≤ Int.fract v < 1`, we infer that th
 fractional part in the computation decreases by at least one in each step. As `0 ≤ Int.fract v`,
 this process must stop after finite number of steps, and the computation hence terminates.
 -/
-
 
 namespace IntFractPair
 

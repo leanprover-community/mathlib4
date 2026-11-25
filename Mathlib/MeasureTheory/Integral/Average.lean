@@ -38,7 +38,6 @@ integral, center mass, average value, set average
 
 @[expose] public section
 
-
 open ENNReal MeasureTheory MeasureTheory.Measure Set Filter TopologicalSpace Function
 
 open scoped BigOperators Topology ENNReal Convex

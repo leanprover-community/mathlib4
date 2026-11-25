@@ -18,9 +18,7 @@ public section
 
 variable {α : Type*}
 
-
 /-! ### Order dual -/
-
 
 namespace OrderDual
 
@@ -52,7 +50,6 @@ instance [CommGroupWithZero α] : CommGroupWithZero αᵒᵈ := inferInstanceAs 
 end OrderDual
 
 /-! ### Lexicographic order -/
-
 
 namespace Lex
 

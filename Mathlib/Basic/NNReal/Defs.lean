@@ -199,7 +199,6 @@ protected theorem coe_injective : Injective ((↑) : ℝ≥0 → ℝ) := Subtype
 @[simp, norm_cast, basify_simp ←] lemma coe_inj {r₁ r₂ : ℝ≥0} : (r₁ : ℝ) = r₂ ↔ r₁ = r₂ :=
   NNReal.coe_injective.eq_iff
 
-
 @[simp, norm_cast, basify_op] lemma coe_zero : ((0 : ℝ≥0) : ℝ) = 0 := rfl
 
 @[simp, norm_cast, basify_op] lemma coe_one : ((1 : ℝ≥0) : ℝ) = 1 := rfl
@@ -1087,7 +1086,6 @@ meta def evalRealNNAbs : PositivityExt where eval {u α} _zα pα? e :=
   | _, _, _ => throwError "not Real.nnabs"
 
 end Mathlib.Meta.Positivity
-
 
 /-- A `Subtype.mk`-free eliminator for `ℝ≥0`, exposing the underlying real and its nonnegativity.
 Used by the `basify` tactic: a goal mentioning `⟨x, hx⟩ : ℝ≥0` is not type-correct at the

@@ -31,7 +31,6 @@ We define the following notation in scope `SetFamily`:
 
 @[expose] public section
 
-
 open Function
 
 variable {F α β : Type*}

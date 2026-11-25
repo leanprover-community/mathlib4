@@ -16,7 +16,6 @@ This file establishes many results about the variable sets of a multivariate pol
 The *variable set* of a polynomial $P \in R[X]$ is a `Finset` containing each $x \in X$
 that appears in a monomial in $P$.
 
-
 ## Main declarations
 
 * `MvPolynomial.vars p` : the finset of variables occurring in `p`.
@@ -42,7 +41,6 @@ As in other polynomial files, we typically use the notation:
 
 @[expose] public section
 
-
 noncomputable section
 
 open Set Function Finsupp AddMonoidAlgebra
@@ -62,7 +60,6 @@ variable [CommSemiring R] {p q : MvPolynomial σ R}
 section Vars
 
 /-! ### `vars` -/
-
 
 /-- `vars p` is the set of variables appearing in the polynomial `p` -/
 def vars (p : MvPolynomial σ R) : Finset σ :=
@@ -277,7 +274,6 @@ end Vars
 section EvalVars
 
 /-! ### `vars` and `eval` -/
-
 
 variable [CommSemiring S]
 

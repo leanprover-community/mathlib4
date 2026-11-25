@@ -53,7 +53,6 @@ section Logic
 #### In this section we prove some properties about monotone and antitone operations on `Prop`
 -/
 
-
 section Preorder
 
 variable [Preorder α]

@@ -59,7 +59,6 @@ definitionally on the nose which is convenient in practice.
 
 @[expose] public section
 
-
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
@@ -317,7 +316,6 @@ def toThinSkeleton : C ⥤ ThinSkeleton C where
 The constructions here are intended to be used when the category `C` is thin, even though
 some of the statements can be shown without this assumption.
 -/
-
 
 namespace ThinSkeleton
 

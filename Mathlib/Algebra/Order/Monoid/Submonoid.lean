@@ -40,7 +40,6 @@ instance (priority := 75) toIsOrderedCancelMonoid
     [SubmonoidClass S M] (s : S) : IsOrderedCancelMonoid s :=
   Function.Injective.isOrderedCancelMonoid Subtype.val (fun _ _ => rfl) .rfl
 
-
 end SubmonoidClass
 
 namespace Submonoid

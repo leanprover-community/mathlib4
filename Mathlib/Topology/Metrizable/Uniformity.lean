@@ -46,7 +46,6 @@ metrizable space, uniform space
 
 @[expose] public section
 
-
 open Set Function Metric List Filter
 open scoped NNReal SetRel Uniformity
 

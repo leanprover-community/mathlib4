@@ -228,7 +228,6 @@ theorem zero_apply (a : A) : (0 : A →⋆ₙ+* B) a = 0 :=
 
 end Zero
 
-
 end NonUnitalStarRingHom
 
 /-! ### Star ring equivalences -/

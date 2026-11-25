@@ -31,7 +31,6 @@ be satisfied by itself and all stricter types.
 
 @[expose] public section
 
-
 open Function
 
 variable {F α β γ δ : Type*}

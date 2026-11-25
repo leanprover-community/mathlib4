@@ -24,7 +24,6 @@ functions.
 
 @[expose] public section
 
-
 noncomputable section
 
 open Set hiding restrict restrict_apply

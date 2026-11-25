@@ -18,7 +18,6 @@ Presheaves on `PUnit` satisfy sheaf condition iff its value at empty set is a te
 
 public section
 
-
 namespace TopCat.Presheaf
 
 universe u v w

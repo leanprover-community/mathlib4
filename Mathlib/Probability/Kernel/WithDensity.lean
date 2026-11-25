@@ -34,7 +34,6 @@ an s-finite kernel.
 
 @[expose] public section
 
-
 open MeasureTheory ProbabilityTheory CompleteLattice
 
 open scoped MeasureTheory ENNReal NNReal

@@ -33,7 +33,6 @@ variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D]
   (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W]
   (A : Type w) [AddMonoid A] [HasShift C A]
 
-
 namespace MorphismProperty
 
 /-- A morphism property `W` on a category `C` is compatible with the shift by a

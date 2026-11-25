@@ -20,7 +20,6 @@ then we get an `R'` action on the collection of `R`-subalgebras.
 
 @[expose] public section
 
-
 namespace Subalgebra
 
 section Pointwise

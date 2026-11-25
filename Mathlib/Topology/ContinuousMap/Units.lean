@@ -21,7 +21,6 @@ and `M` has some monoid structure compatible with its topology.
 
 @[expose] public section
 
-
 variable {X M R 𝕜 : Type*} [TopologicalSpace X]
 
 namespace ContinuousMap

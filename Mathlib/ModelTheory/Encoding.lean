@@ -36,7 +36,6 @@ import Mathlib.Logic.Small.List
 
 @[expose] public section
 
-
 universe u v w u'
 
 namespace FirstOrder
@@ -173,7 +172,6 @@ or returns `default` if not possible. -/
 def sigmaAll : (Σ n, L.BoundedFormula α n) → Σ n, L.BoundedFormula α n
   | ⟨n + 1, φ⟩ => ⟨n, φ.all⟩
   | _ => default
-
 
 @[simp]
 lemma sigmaAll_apply {n} {φ : L.BoundedFormula α (n + 1)} :

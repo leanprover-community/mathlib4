@@ -18,7 +18,6 @@ Transfer algebraic instances from `α` to `αᵒᵈ`, `Lex α`, and `Colex α`.
 
 public section
 
-
 open OrderDual
 
 variable {α β : Type*}
@@ -173,7 +172,6 @@ lemma isRegular_ofDual {a : αᵒᵈ} : IsRegular (ofDual a) ↔ IsRegular a := 
 end Monoid
 
 /-! ### Lexicographical order -/
-
 
 namespace Lex
 
@@ -331,7 +329,6 @@ lemma isRegular_ofLex {a : Lex α} : IsRegular (ofLex a) ↔ IsRegular a := .rfl
 end Monoid
 
 /-! ### Colexicographical order -/
-
 
 namespace Colex
 

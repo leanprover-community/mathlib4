@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Order.Monoid.Submonoid
 public import Mathlib.Algebra.Order.Nonneg.Module
 public import Mathlib.Geometry.Convex.Cone.Basic
 
-
 /-!
 # Pointed cones
 

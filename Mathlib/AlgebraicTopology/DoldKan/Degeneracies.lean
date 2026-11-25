@@ -30,7 +30,6 @@ statement vanishing statement `σ_comp_P_eq_zero` for the `P q`.
 
 public section
 
-
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
   CategoryTheory.Preadditive
 

@@ -42,7 +42,6 @@ The hypothesis that `μ` has a second moment is written as `MemLp id 2 μ` in th
 
 @[expose] public section
 
-
 open MeasureTheory ProbabilityTheory NormedSpace
 open scoped ENNReal NNReal Real Topology
 

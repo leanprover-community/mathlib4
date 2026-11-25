@@ -24,7 +24,6 @@ the files in the directory `Mathlib/CategoryTheory/Limits/Preserves/Shapes/`.
 
 @[expose] public section
 
-
 universe w' w v₁ v₂ u₁ u₂
 
 noncomputable section

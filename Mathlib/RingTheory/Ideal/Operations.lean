@@ -681,7 +681,6 @@ theorem multiset_prod_le_inf {s : Multiset (Ideal R)} : s.prod ≤ s.inf := by
 theorem prod_le_inf {s : Finset ι} {f : ι → Ideal R} : s.prod f ≤ s.inf f :=
   multiset_prod_le_inf
 
-
 theorem sup_prod_eq_top {s : Finset ι} {J : ι → Ideal R} (h : ∀ i, i ∈ s → I ⊔ J i = ⊤) :
     (I ⊔ ∏ i ∈ s, J i) = ⊤ :=
   Finset.prod_induction _ (fun J => I ⊔ J = ⊤)
@@ -752,7 +751,6 @@ theorem _root_.IsCoprime.exists (h : IsCoprime I J) : ∃ i ∈ I, ∃ j ∈ J, 
 
 theorem _root_.IsCoprime.sup_eq (h : IsCoprime I J) : I ⊔ J = ⊤ := isCoprime_iff_sup_eq.mp h
 
-
 theorem isCoprime_span_singleton_iff (x y : R) :
     IsCoprime (span <| singleton x) (span <| singleton y) ↔ IsCoprime x y := by
   simp_rw [isCoprime_iff_codisjoint, codisjoint_iff, eq_top_iff_one, mem_span_singleton_sup,
@@ -775,7 +773,6 @@ theorem mul_eq_inf_of_isCoprime (coprime : IsCoprime I J) : I * J = I ⊓ J :=
 @[deprecated mul_eq_inf_of_isCoprime +typeChanged (since := "2026-10-08")]
 theorem mul_eq_inf_of_coprime (h : I ⊔ J = ⊤) : I * J = I ⊓ J :=
   mul_eq_inf_of_isCoprime (isCoprime_iff_sup_eq.mpr h)
-
 
 open Function
 theorem prod_eq_iInf_of_pairwise_isCoprime {s : Finset ι} {J : ι → Ideal R}
@@ -1198,8 +1195,6 @@ end Dvd
 
 end MulAndRadical
 
-
-
 section Total
 
 variable (ι : Type*)
@@ -1241,7 +1236,6 @@ theorem range_finsuppTotal :
     · exact fun _ => zero_smul _ _
 
 end Total
-
 
 /-- `Associates (Ideal R)` almost never has decidable equality.
 We add a global instance that `Associates (Ideal R)` has decidable

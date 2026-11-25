@@ -27,7 +27,6 @@ For the latter lemma, we also prove various order dual versions.
 
 public section
 
-
 open Set Order
 
 variable {α β : Type*} [LinearOrder α]

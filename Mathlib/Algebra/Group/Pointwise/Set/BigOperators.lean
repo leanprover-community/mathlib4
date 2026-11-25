@@ -174,5 +174,4 @@ end CommMonoid
 
 /-! TODO: define `decidable_mem_finsetProd` and `decidable_mem_finsetSum`. -/
 
-
 end Set

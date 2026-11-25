@@ -113,7 +113,6 @@ theorem isUnit_exp (A : Type*) [Ring A] [Algebra ℚ A] : IsUnit (exp A) :=
 theorem order_exp (A : Type*) [Ring A] [Algebra ℚ A] [Nontrivial A] : (exp A).order = 0 :=
   order_zero_of_isUnit (isUnit_exp A)
 
-
 open RingHom
 
 open Finset Nat

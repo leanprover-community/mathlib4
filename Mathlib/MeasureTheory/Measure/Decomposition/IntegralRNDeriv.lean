@@ -30,7 +30,6 @@ set_option doc.verso.suggestions false
 
 public section
 
-
 open Set ProbabilityTheory
 open scoped ENNReal
 

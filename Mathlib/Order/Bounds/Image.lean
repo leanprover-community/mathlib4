@@ -376,7 +376,6 @@ lemma Monotone.upperBounds_image_of_directedOn_prod {γ : Type*} [Preorder γ] {
 
 end Prod
 
-
 section Pi
 
 variable {π : α → Type*} [∀ a, Preorder (π a)]

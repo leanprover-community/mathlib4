@@ -790,7 +790,6 @@ lemma presheafObjObjIso_inv_naturality {X₀ Y₀ : C₀} (f : X₀ ⟶ Y₀) :
   intro j
   simp [presheafObjObjIso, IsDenseSubsite.mapPreimage_comp]
 
-
 /-- The presheaf `presheaf data G₀` extends `G₀`. -/
 noncomputable def compPresheafIso : F.op ⋙ presheaf data G₀ ≅ G₀.obj :=
   (NatIso.ofComponents (fun _ ↦ (presheafObjObjIso data G₀ _).symm)

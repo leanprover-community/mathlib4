@@ -39,7 +39,6 @@ It is naturally endowed with a topology: the Zariski topology.
 
 @[expose] public section
 
-
 noncomputable section
 
 open DirectSum SetLike TopCat TopologicalSpace
@@ -411,7 +410,6 @@ section Order
 We endow `ProjectiveSpectrum 𝒜` with a partial order,
 where `x ≤ y` if and only if `y ∈ closure {x}`.
 -/
-
 
 instance : PartialOrder (ProjectiveSpectrum 𝒜) :=
   PartialOrder.lift asHomogeneousIdeal fun ⟨_, _, _⟩ ⟨_, _, _⟩ => by simp only [mk.injEq, imp_self]

@@ -172,7 +172,6 @@ theorem Filter.Tendsto.num_atTop_iff_den_atTop {α K : Type*}
 
 /-! ### Powers -/
 
-
 theorem tendsto_add_one_pow_atTop_atTop_of_pos
     [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] [Archimedean α] {r : α}
     (h : 0 < r) : Tendsto (fun n : ℕ ↦ (r + 1) ^ n) atTop atTop :=
@@ -326,7 +325,6 @@ theorem summable_geometric_of_lt_one {r : ℝ} (h₁ : 0 ≤ r) (h₂ : r < 1) :
     Summable fun n : ℕ ↦ r ^ n :=
   ⟨_, hasSum_geometric_of_lt_one h₁ h₂⟩
 
-
 theorem tsum_geometric_of_lt_one {r : ℝ} (h₁ : 0 ≤ r) (h₂ : r < 1) : ∑' n : ℕ, r ^ n = (1 - r)⁻¹ :=
   (hasSum_geometric_of_lt_one h₁ h₂).tsum_eq
 
@@ -443,7 +441,6 @@ between two consecutive terms decays geometrically. We show that such sequences 
 sequences, and bound their distances to the limit. We also discuss series with geometrically
 decaying terms.
 -/
-
 
 section EDistLeGeometric
 
@@ -572,7 +569,6 @@ end LeGeometric
 
 /-! ### Summability tests based on comparison with geometric series -/
 
-
 /-- A series whose terms are bounded by the terms of a converging geometric series converges. -/
 theorem summable_one_div_pow_of_le {m : ℝ} {f : ℕ → ℕ} (hm : 1 < m) (fi : ∀ i, i ≤ f i) :
     Summable fun i ↦ 1 / m ^ f i := by
@@ -584,7 +580,6 @@ theorem summable_one_div_pow_of_le {m : ℝ} {f : ℕ → ℕ} (hm : 1 < m) (fi 
     exact pow_pos (zero_lt_one.trans hm) _
 
 /-! ### Positive sequences with small sums on countable types -/
-
 
 /-- For any positive `ε`, define on an encodable type a positive sequence with sum less than `ε` -/
 def posSumOfEncodable {ε : ℝ} (hε : 0 < ε) (ι) [Encodable ι] :
@@ -666,7 +661,6 @@ end ENNReal
 ### Factorial
 -/
 
-
 theorem factorial_tendsto_atTop : Tendsto Nat.factorial atTop atTop :=
   tendsto_atTop_atTop_of_monotone (fun _ _ ↦ Nat.factorial_le) fun n ↦ ⟨n, n.self_le_factorial⟩
 
@@ -696,7 +690,6 @@ theorem tendsto_factorial_div_pow_self_atTop :
 /-!
 ### Ceil and floor
 -/
-
 
 section
 

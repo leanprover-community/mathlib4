@@ -23,7 +23,6 @@ normed group, completion
 
 public section
 
-
 noncomputable section
 
 namespace UniformSpace

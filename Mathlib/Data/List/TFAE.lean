@@ -16,7 +16,6 @@ This file allows to state that all propositions in a list are equivalent. It is 
 
 @[expose] public section
 
-
 namespace List
 
 variable {a b : Prop} {l l₁ l₂ : List Prop}

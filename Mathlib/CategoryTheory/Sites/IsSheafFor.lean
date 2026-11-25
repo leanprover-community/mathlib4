@@ -69,7 +69,6 @@ which can be convenient.
 
 @[expose] public section
 
-
 universe w w' v₁ v₂ u₁ u₂
 
 namespace CategoryTheory

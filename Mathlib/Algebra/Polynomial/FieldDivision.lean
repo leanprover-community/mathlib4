@@ -23,7 +23,6 @@ This file starts looking like the ring theory of $R[X]$
 
 @[expose] public section
 
-
 noncomputable section
 
 open AddMonoidAlgebra Polynomial
@@ -197,7 +196,6 @@ theorem isRoot_of_isRoot_of_dvd_derivative_mul [CharZero R] {f g : R[X]} (hf0 : 
     rootMultiplicity_eq_zero hg, add_zero, rootMultiplicity_mul (hr ▸ hdfg0), add_comm,
     Nat.sub_eq_iff_eq_add (Nat.succ_le_iff.2 ((rootMultiplicity_pos hf0).2 haf))] at hr'
   lia
-
 
 instance instNormalizationMonoid [NormalizationMonoid R] : NormalizationMonoid R[X] where
   normUnit p :=

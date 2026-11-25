@@ -430,7 +430,6 @@ end Map
 
 section Join
 
-
 @[simp]
 theorem join_nil : join nil = (nil : Seq α) :=
   destruct_eq_none rfl
@@ -854,7 +853,6 @@ theorem Pairwise.cons_cons_of_trans {R : α → α → Prop} [IsTrans _ R] {hd t
   apply Pairwise.cons _ h_tl
   simp only [mem_cons_iff, forall_eq_or_imp]
   exact ⟨h_hd, fun x hx ↦ Trans.simple h_hd ((cons_elim h_tl).left x hx)⟩
-
 
 /-- Coinductive principle for `Pairwise`. -/
 theorem Pairwise.coind {R : α → α → Prop} {s : Seq α}

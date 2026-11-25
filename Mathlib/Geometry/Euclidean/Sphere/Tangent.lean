@@ -47,7 +47,6 @@ This file defines notions of spheres being tangent to affine subspaces and other
 
 @[expose] public section
 
-
 namespace EuclideanGeometry
 
 namespace Sphere

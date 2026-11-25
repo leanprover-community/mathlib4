@@ -38,7 +38,6 @@ cross product
 
 @[expose] public section
 
-
 open Matrix
 
 variable {R : Type*} [CommRing R]

@@ -35,7 +35,6 @@ Based on the tensor library found in <https://www.isa-afp.org/entries/Deep_Learn
 
 @[expose] public section
 
-
 universe u
 
 open List

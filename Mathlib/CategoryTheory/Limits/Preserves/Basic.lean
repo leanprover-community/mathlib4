@@ -36,7 +36,6 @@ with the above definition of "preserves limits".
 
 @[expose] public section
 
-
 open CategoryTheory
 
 noncomputable section

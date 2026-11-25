@@ -81,7 +81,6 @@ graded ring, filtered ring, direct sum, additive submonoid
 
 @[expose] public section
 
-
 variable {ι : Type*} [DecidableEq ι]
 
 namespace DirectSum
@@ -89,7 +88,6 @@ namespace DirectSum
 open DirectSum
 
 /-! ### Typeclasses -/
-
 
 section Defs
 
@@ -154,7 +152,6 @@ theorem of_eq_of_gradedMonoid_eq {A : ι → Type*} [∀ i : ι, AddCommMonoid (
 variable (A : ι → Type*)
 
 /-! ### Instances for `⨁ i, A i` -/
-
 
 section One
 
@@ -365,7 +362,6 @@ sends typeclass inference on a wild goose chase with any goal of the form `Ring 
 so we scope these instances to the `DirectSum` namespace.
 -/
 
-
 section GradeZero
 
 section One
@@ -419,7 +415,6 @@ theorem of_zero_pow (a : A 0) : ∀ n : ℕ, of A 0 (a ^ n) = of A 0 a ^ n
 /-- The `NatCast` instance on `A 0`, given `GSemiring A`. -/
 scoped instance (priority := 900) : NatCast (A 0) :=
   ⟨GSemiring.natCast⟩
-
 
 -- TODO: These could be replaced by the general lemmas for `AddMonoidHomClass` (`map_natCast'` and
 -- `map_ofNat'`) if those were marked `@[simp low]`.
@@ -599,7 +594,6 @@ end ToSemiring
 end DirectSum
 
 /-! ### Concrete instances -/
-
 
 section Uniform
 

@@ -49,7 +49,6 @@ assert_not_exists Field Fintype
 
 variable {F α β R S S' : Type*}
 
-
 /-- makes a `NonUnitalRingHom` from the bijective inverse of a `NonUnitalRingHom` -/
 @[simps] def NonUnitalRingHom.inverse
     [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S]

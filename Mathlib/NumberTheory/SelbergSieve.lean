@@ -161,7 +161,6 @@ theorem nu_lt_one_of_dvd_prodPrimes {d : ℕ} (hdP : d ∣ s.prodPrimes) (hd_ne_
 @[simp]
 def multSum (d : ℕ) : ℝ := ∑ n ∈ s.support, if d ∣ n then s.weights n else 0
 
-
 /-- The remainder term in the approximation A_d = ν (d) X + R_d. This is the degree to which `nu`
   fails to approximate the proportion of the weight that is a multiple of `d`. -/
 @[simp]

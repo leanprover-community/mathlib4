@@ -30,7 +30,6 @@ sieve, presheaf, universe
 
 @[expose] public section
 
-
 universe w w' v₁ u₁
 
 namespace CategoryTheory

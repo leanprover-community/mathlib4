@@ -32,7 +32,6 @@ import Mathlib.Combinatorics.Enumerative.DoubleCounting
 
 public section
 
-
 open Finset
 
 universe u

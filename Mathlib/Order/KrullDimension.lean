@@ -1099,7 +1099,6 @@ lemma coheight_zero_of_coheight_one_of_strictMono
   have h₁ : coheight (x : WithTop α) = 1 := le_antisymm this (by simp)
   simpa using h₁
 
-
 @[simp] lemma coheight_coe_withBot (x : α) : coheight (x : WithBot α) = coheight x := by
   have := height_coe_withTop (OrderDual.toDual x)
   rw [← height_orderIso (WithTop.toDualBotEquiv (α := α))] at this

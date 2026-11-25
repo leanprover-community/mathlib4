@@ -22,7 +22,6 @@ Also defines isomorphisms to the categorical product and coproduct, respectively
 
 @[expose] public section
 
-
 open CategoryTheory Limits ConcreteCategory
 
 universe w v u

@@ -144,8 +144,6 @@ the state `init c v` steps to `halt v'` in finitely many steps if and only if
 `Code.eval c v = some v'`.
 -/
 
-
-
 namespace PartrecToTM2
 
 section

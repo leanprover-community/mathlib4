@@ -21,7 +21,6 @@ These are primarily useful to show the General Adjoint Functor Theorem.
 
 public section
 
-
 universe w v u
 
 namespace CategoryTheory

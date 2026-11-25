@@ -39,7 +39,6 @@ This file provides definitions and proves lemmas about orientations of real inne
 
 @[expose] public section
 
-
 noncomputable section
 
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]

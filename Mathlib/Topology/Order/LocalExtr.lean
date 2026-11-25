@@ -36,7 +36,6 @@ and analogous statements for the min and max predicates.
 
 @[expose] public section
 
-
 universe u v w x
 
 variable {α : Type u} {β : Type v} {γ : Type w} {δ : Type x} [TopologicalSpace α]
@@ -188,7 +187,6 @@ theorem IsLocalExtrOn.not_nhds_le_map [TopologicalSpace β] (hf : IsLocalExtrOn 
 
 /-! ### Constant -/
 
-
 theorem isLocalMinOn_const {b : β} : IsLocalMinOn (fun _ => b) s a :=
   isMinFilter_const
 
@@ -281,7 +279,6 @@ nonrec theorem IsLocalMaxOn.bicomp_mono [Preorder δ] {op : β → γ → δ}
 
 /-! ### Composition with `ContinuousAt` -/
 
-
 theorem IsLocalMin.comp_continuous [TopologicalSpace δ] {g : δ → α} {b : δ}
     (hf : IsLocalMin f (g b)) (hg : ContinuousAt g b) : IsLocalMin (f ∘ g) b :=
   hg hf
@@ -331,7 +328,6 @@ end Preorder
 
 /-! ### Pointwise addition -/
 
-
 section OrderedAddCommMonoid
 
 variable [AddCommMonoid β] [PartialOrder β] [IsOrderedAddMonoid β]
@@ -356,7 +352,6 @@ nonrec theorem IsLocalMaxOn.add (hf : IsLocalMaxOn f s a) (hg : IsLocalMaxOn g s
 end OrderedAddCommMonoid
 
 /-! ### Pointwise negation and subtraction -/
-
 
 section OrderedAddCommGroup
 
@@ -400,7 +395,6 @@ nonrec theorem IsLocalMaxOn.sub (hf : IsLocalMaxOn f s a) (hg : IsLocalMinOn g s
 end OrderedAddCommGroup
 
 /-! ### Pointwise `sup`/`inf` -/
-
 
 section SemilatticeSup
 
@@ -448,7 +442,6 @@ end SemilatticeInf
 
 /-! ### Pointwise `min`/`max` -/
 
-
 section LinearOrder
 
 variable [LinearOrder β] {f g : α → β} {a : α} {s : Set α}
@@ -490,7 +483,6 @@ end LinearOrder
 section Eventually
 
 /-! ### Relation with `eventually` comparisons of two functions -/
-
 
 variable [Preorder β] {s : Set α}
 

@@ -387,8 +387,6 @@ theorem IsSemilinearSet.isProperSemilinearSet [IsCancelAdd M] (hs : IsSemilinear
   simp_rw [sUnion_eq_biUnion]
   exact IsProperSemilinearSet.biUnion hS fun s hs => (hS' s hs).isProperSemilinearSet
 
-
-
 /-- A set of `ℕ` is semilinear if and only if it is ultimately periodic, i.e. periodic after some
 number `k`. -/
 theorem Nat.isSemilinearSet_iff_ultimately_periodic {s : Set ℕ} :

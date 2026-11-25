@@ -26,7 +26,6 @@ For the definitions of semirings and rings see `Mathlib/Algebra/Ring/Defs.lean`.
 
 public section
 
-
 universe u
 
 variable {R : Type u}

@@ -25,7 +25,6 @@ the main conditional expectation file.
 
 public section
 
-
 open TopologicalSpace Filter
 
 open scoped NNReal ENNReal MeasureTheory ProbabilityTheory

@@ -16,7 +16,6 @@ We define chain homotopies, and prove that homotopic chain maps induce the same 
 
 @[expose] public section
 
-
 universe v u
 
 noncomputable section
@@ -223,7 +222,6 @@ lemmas that give a degreewise description of `hd+dh`, depending on whether we ha
 two differentials going to and from a certain degree, only one, or none.
 -/
 
-
 /-- The null homotopic map associated to a family `hom` of morphisms `C_i ⟶ D_j`.
 This is the same datum as for the field `hom` in the structure `Homotopy`. For
 this definition, we do not need the field `zero` of that structure
@@ -345,7 +343,6 @@ def nullHomotopy' (h : ∀ i j, c.Rel j i → (C.X i ⟶ D.X j)) : Homotopy (nul
 the degreewise morphisms induced by the null homotopic maps constructed
 with `nullHomotopicMap` or `nullHomotopicMap'` -/
 
-
 -- Cannot be @[simp] because `k₀` and `k₂` cannot be inferred by `simp`.
 theorem nullHomotopicMap_f {k₂ k₁ k₀ : ι} (r₂₁ : c.Rel k₂ k₁) (r₁₀ : c.Rel k₁ k₀)
     (hom : ∀ i j, C.X i ⟶ D.X j) :
@@ -435,7 +432,6 @@ we have to insert `eqToHom` in several places.
 Hopefully this is okay in most applications, where we only need to have the existence of some
 homotopy.
 -/
-
 
 section MkInductive
 

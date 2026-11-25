@@ -587,7 +587,6 @@ end NormedField
 
 /-! ### Seminorm ball -/
 
-
 section SeminormedRing
 
 variable [SeminormedRing 𝕜]
@@ -1053,7 +1052,6 @@ theorem restrictScalars_closedBall (p : Seminorm 𝕜' E) :
 end RestrictScalars
 
 /-! ### Continuity criteria for seminorms -/
-
 
 section Continuity
 

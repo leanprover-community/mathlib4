@@ -17,7 +17,6 @@ set_option doc.verso.suggestions false
 
 public section
 
-
 namespace RingHom
 
 open scoped TensorProduct

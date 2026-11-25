@@ -47,7 +47,6 @@ function field, ring of integers
 
 @[expose] public section
 
-
 noncomputable section
 
 open scoped nonZeroDivisors Polynomial WithZero RatFunc

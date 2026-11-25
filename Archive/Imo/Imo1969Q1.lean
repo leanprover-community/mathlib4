@@ -34,7 +34,6 @@ if $a = 4*m^4$. This is Sophie Germain's identity, called `pow_four_add_four_mul
 in mathlib.
 -/
 
-
 theorem factorization {m n : ℤ} :
     ((n - m) ^ 2 + m ^ 2) * ((n + m) ^ 2 + m ^ 2) = n ^ 4 + 4 * m ^ 4 :=
   pow_four_add_four_mul_pow_four.symm
@@ -44,7 +43,6 @@ To show that the product is not prime, we need to show each of the factors is at
 which `nlinarith` can solve since they are each expressed as a sum of squares.
 -/
 
-
 theorem left_factor_large {m : ℤ} (n : ℤ) (h : 1 < m) : 1 < (n - m) ^ 2 + m ^ 2 := by nlinarith
 
 theorem right_factor_large {m : ℤ} (n : ℤ) (h : 1 < m) : 1 < (n + m) ^ 2 + m ^ 2 := by nlinarith
@@ -52,7 +50,6 @@ theorem right_factor_large {m : ℤ} (n : ℤ) (h : 1 < m) : 1 < (n + m) ^ 2 + m
 /-!
 The factorization is over the integers, but we need the nonprimality over the natural numbers.
 -/
-
 
 theorem int_large {m : ℤ} (h : 1 < m) : 1 < m.natAbs := by
   exact_mod_cast lt_of_lt_of_le h le_natAbs

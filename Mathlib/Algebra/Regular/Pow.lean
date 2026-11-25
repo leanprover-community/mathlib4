@@ -22,7 +22,6 @@ Move to `Mathlib/Algebra/BigOperators/Group/Finset/Basic.lean`?
 
 public section
 
-
 variable {R : Type*} {a : R}
 
 section CommMonoid

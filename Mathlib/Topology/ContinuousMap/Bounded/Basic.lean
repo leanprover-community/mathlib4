@@ -689,7 +689,6 @@ functions from `α` to `β` inherits a so-called `IsBoundedSMul` structure (in p
 `ContinuousMul` structure, which is the mathlib formulation of being a topological module), by
 using pointwise operations and checking that they are compatible with the uniform distance. -/
 
-
 variable {𝕜 : Type*} [PseudoMetricSpace 𝕜] [TopologicalSpace α] [PseudoMetricSpace β]
 
 section SMul

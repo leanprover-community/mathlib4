@@ -52,7 +52,6 @@ often statements are only written in terms of `HasLimit`.
 
 @[expose] public section
 
-
 noncomputable section
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Functor Opposite

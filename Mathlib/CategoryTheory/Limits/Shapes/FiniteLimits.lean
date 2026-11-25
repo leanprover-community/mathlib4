@@ -22,7 +22,6 @@ A typeclass for categories with all finite (co)limits.
 
 public section
 
-
 universe w' w v' u' v u
 
 noncomputable section

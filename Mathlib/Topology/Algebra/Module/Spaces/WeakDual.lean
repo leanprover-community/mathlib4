@@ -44,7 +44,6 @@ weak-star, weak dual, duality
 
 @[expose] public section
 
-
 noncomputable section
 
 open Filter
@@ -161,7 +160,6 @@ theorem coe_toStrongDual (x' : WeakDual 𝕜 E) : (toStrongDual x' : E → 𝕜)
 
 theorem toStrongDual_inj (x' y' : WeakDual 𝕜 E) : toStrongDual x' = toStrongDual y' ↔ x' = y' :=
   (LinearEquiv.injective toStrongDual).eq_iff
-
 
 theorem coeFn_continuous : Continuous fun (x : WeakDual 𝕜 E) y => x y :=
   continuous_induced_dom

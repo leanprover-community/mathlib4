@@ -216,7 +216,6 @@ For a finitely supported function `x : ι →₀ K`, we define the height as the
 restricted to its support.
 -/
 
-
 namespace Height
 
 open AdmissibleAbsValues Real Function

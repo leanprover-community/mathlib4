@@ -49,7 +49,6 @@ normed group
 
 public section
 
-
 variable {α E G : Type*}
 
 open Filter Bornology

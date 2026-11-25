@@ -25,7 +25,6 @@ obtained by `X a ↦ a`.
 
 @[expose] public section
 
-
 namespace MvPolynomial
 
 open Function

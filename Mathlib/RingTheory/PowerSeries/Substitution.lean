@@ -106,7 +106,6 @@ theorem HasSubst.add (hf : HasSubst f) (hg : HasSubst g) :
     HasSubst (f + g) :=
   (Commute.all _ _).isNilpotent_add hf hg
 
-
 theorem HasSubst.mul_left (hf : HasSubst f) :
     HasSubst (f * g) := by
   simp only [HasSubst, map_mul]

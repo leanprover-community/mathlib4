@@ -681,7 +681,6 @@ end Units
 
 /-! ### Multiplication and division as homomorphisms -/
 
-
 section BundledMulDiv
 
 variable {α : Type*}

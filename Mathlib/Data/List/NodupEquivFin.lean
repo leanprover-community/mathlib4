@@ -28,7 +28,6 @@ Given a list `l`,
 
 @[expose] public section
 
-
 namespace List
 
 variable {α : Type*}

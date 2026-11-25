@@ -37,7 +37,6 @@ two homotopic maps are equal.
 
 @[expose] public section
 
-
 open CategoryTheory Category Limits Preadditive
 
 variable {C : Type*} [Category* C] [Preadditive C]
@@ -694,7 +693,6 @@ lemma map_ι₀_eq_map_ι₁ {D : Type*} [Category* D] (H : HomologicalComplex C
   simp only [← cancel_mono (H.map (cylinder.π K)), ← H.map_comp, ι₀_π, H.map_id, ι₁_π]
 
 end
-
 
 section
 

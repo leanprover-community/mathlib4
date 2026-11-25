@@ -51,7 +51,6 @@ to take its limit, which shall be the intermediate object in the
 lemma `cm5a_cof`.
 -/
 
-
 open CategoryTheory Limits Opposite Abelian HomologicalComplex Pretriangulated
 
 variable {C : Type*} [Category* C] [Abelian C]

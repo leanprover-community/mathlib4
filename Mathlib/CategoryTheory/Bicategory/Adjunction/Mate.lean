@@ -27,7 +27,6 @@ For the bicategory `Cat`, the definitions in this file are provided in
 `Mathlib/CategoryTheory/Adjunction/Mates.lean`, where you can find more detailed documentation
 about mates.
 
-
 ## Implementation
 
 The correspondence between mates is obtained by combining

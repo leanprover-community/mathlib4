@@ -41,7 +41,6 @@ and definitions about `Zsqrtd` can easily be used.
 
 @[expose] public section
 
-
 open Zsqrtd Complex
 
 open scoped ComplexConjugate

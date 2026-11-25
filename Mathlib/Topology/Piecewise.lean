@@ -23,7 +23,6 @@ open scoped Topology
 variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
   {f g : α → β} {s s' t : Set α} {x : α}
 
-
 @[simp]
 theorem continuousWithinAt_update_same [DecidableEq α] {y : β} :
     ContinuousWithinAt (update f x y) s x ↔ Tendsto f (𝓝[s \ {x}] x) (𝓝 y) :=

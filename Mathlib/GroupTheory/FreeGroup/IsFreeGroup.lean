@@ -41,7 +41,6 @@ For the explicit construction of free groups, see `GroupTheory/FreeGroup`.
 
 @[expose] public section
 
-
 universe u
 
 open Function Set

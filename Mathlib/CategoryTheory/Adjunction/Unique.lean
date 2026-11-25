@@ -149,7 +149,6 @@ theorem rightAdjointUniq_trans_app {F : C ⥤ D} {G G' G'' : D ⥤ C} (adj1 : F 
   rw [← rightAdjointUniq_trans adj1 adj2 adj3]
   rfl
 
-
 @[simp]
 theorem rightAdjointUniq_refl {F : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) :
     (rightAdjointUniq adj1 adj1).hom = 𝟙 _ := by

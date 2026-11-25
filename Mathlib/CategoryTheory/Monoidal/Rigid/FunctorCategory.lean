@@ -19,7 +19,6 @@ set_option doc.verso.suggestions false
 
 public section
 
-
 noncomputable section
 
 open CategoryTheory

@@ -27,7 +27,6 @@ This file provides infrastructure to compute with topological spaces.
 
 @[expose] public section
 
-
 open Set
 
 open Filter hiding Realizer

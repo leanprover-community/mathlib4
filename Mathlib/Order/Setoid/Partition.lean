@@ -37,7 +37,6 @@ setoid, equivalence, iseqv, relation, equivalence relation, partition, equivalen
 
 @[expose] public section
 
-
 namespace Setoid
 
 variable {α : Type*}

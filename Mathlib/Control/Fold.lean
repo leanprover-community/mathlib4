@@ -55,7 +55,6 @@ but the author cannot think of instances of `foldable` that are not also
 
 @[expose] public section
 
-
 universe u v
 
 open ULift CategoryTheory MulOpposite

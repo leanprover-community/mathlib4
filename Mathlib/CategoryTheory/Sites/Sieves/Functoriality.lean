@@ -31,7 +31,6 @@ presieve, sieve, functor, pullback, pushforward
 
 @[expose] public section
 
-
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
@@ -431,9 +430,7 @@ lemma functorPushforward_ofObjects_le
 
 end Functor
 
-
 end Sieve
-
 
 lemma Presieve.functorPullback_arrows {X : C} (S : Sieve (F.obj X)) :
     Presieve.functorPullback F S.arrows = Sieve.functorPullback F S :=

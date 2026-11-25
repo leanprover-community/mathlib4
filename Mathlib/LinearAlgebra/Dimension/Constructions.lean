@@ -32,7 +32,6 @@ We have `finrank` variants for most lemmas as well.
 
 @[expose] public section
 
-
 noncomputable section
 
 universe u u' v v' u₁' w w'
@@ -207,7 +206,6 @@ theorem rank_matrix_module (m : Type w) (n : Type w') [Finite m] [Finite n] :
   obtain ⟨I, b⟩ := Module.Free.exists_basis (R := R) (M := M)
   rw [← (b.matrix m n).mk_eq_rank'']
   simp only [mk_prod, lift_mul, lift_lift, ← mul_assoc, b.mk_eq_rank'']
-
 
 /-- If `m` and `n` are finite and lie in the same universe, the rank of `m × n` matrices over a
 module `M` is `(#m * #n).lift * rank R M`. -/

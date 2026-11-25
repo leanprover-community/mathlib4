@@ -36,7 +36,6 @@ Gauss's Lemma is one of a few results pertaining to irreducibility of primitive 
 
 public section
 
-
 open scoped nonZeroDivisors Polynomial
 
 variable {R : Type*} [CommRing R]

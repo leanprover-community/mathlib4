@@ -31,7 +31,6 @@ sorted, nodup
 
 public section
 
-
 open Nat
 
 namespace List

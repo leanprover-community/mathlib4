@@ -23,7 +23,6 @@ prove versions of this lemma for `Antitone`, `StrictMono`, and `StrictAnti`.
 
 public section
 
-
 open Set
 
 variable {G H : Type*} [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G]

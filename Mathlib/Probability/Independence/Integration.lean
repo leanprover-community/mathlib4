@@ -30,7 +30,6 @@ example [M1 : MeasurableSpace Ω] {M2 : MeasurableSpace Ω} {μ : Measure Ω} : 
 
 public section
 
-
 open Set MeasureTheory ENNReal
 
 open scoped NNReal MeasureTheory

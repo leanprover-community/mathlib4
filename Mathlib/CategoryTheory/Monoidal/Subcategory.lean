@@ -28,7 +28,6 @@ braided/symmetric structure.
 
 public section
 
-
 universe u v
 
 namespace CategoryTheory

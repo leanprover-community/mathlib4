@@ -28,7 +28,6 @@ principal.
 
 public section
 
-
 variable {R : Type*} [CommRing R]
 
 open Ideal

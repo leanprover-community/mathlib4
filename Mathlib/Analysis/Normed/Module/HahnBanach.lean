@@ -29,7 +29,6 @@ of `𝕜`).
 
 public section
 
-
 universe u v
 
 section RCLike

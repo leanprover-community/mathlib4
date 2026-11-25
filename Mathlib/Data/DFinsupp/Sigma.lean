@@ -23,7 +23,6 @@ public import Mathlib.Data.Fintype.Quotient
 
 @[expose] public section
 
-
 universe u u₁ u₂ v v₁ v₂ v₃ w x y l
 
 variable {ι : Type u} {γ : Type w}

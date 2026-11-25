@@ -24,7 +24,6 @@ has to be `IsDenseInducing` (not necessarily injective).
 
 @[expose] public section
 
-
 noncomputable section
 
 open Filter Set Topology

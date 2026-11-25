@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Monad.Limits
 
 import Mathlib.AlgebraicTopology.SimplicialSet.NerveAdjunction
 
-
 set_option doc.verso true
 set_option doc.verso.suggestions false
 
@@ -24,7 +23,6 @@ homotopy category functor `SSet ⥤ Cat`.
 -/
 
 public section
-
 
 noncomputable section
 

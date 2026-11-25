@@ -19,7 +19,6 @@ https://en.wikipedia.org/wiki/Vandermonde%27s_identity#Algebraic_proof .
 
 public section
 
-
 open Polynomial Finset Finset.Nat
 
 namespace Nat

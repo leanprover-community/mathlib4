@@ -46,7 +46,6 @@ https://math.fontein.de/2009/08/12/the-hasse-derivative/
 
 @[expose] public section
 
-
 noncomputable section
 
 namespace Polynomial

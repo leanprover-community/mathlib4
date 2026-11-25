@@ -19,7 +19,6 @@ set_option doc.verso.suggestions false
 
 public section
 
-
 universe u v w
 
 variable {α : Type u}

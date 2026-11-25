@@ -448,7 +448,6 @@ theorem nonempty_quotient_iff (s : Setoid α) : Nonempty (Quotient s) ↔ Nonemp
 
 /-! ### Truncation -/
 
-
 theorem true_equivalence : @Equivalence α fun _ _ ↦ True :=
   ⟨fun _ ↦ trivial, fun _ ↦ trivial, fun _ _ ↦ trivial⟩
 
@@ -566,7 +565,6 @@ protected theorem nonempty (q : Trunc α) : Nonempty α :=
 end Trunc
 
 /-! ### `Quotient` with implicit `Setoid` -/
-
 
 namespace Quotient
 

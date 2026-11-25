@@ -33,7 +33,6 @@ equalizer diagrams.
 
 @[expose] public section
 
-
 universe t w v u
 
 namespace CategoryTheory
@@ -93,7 +92,6 @@ def forkMap : P.obj (op X) ⟶ FirstObj P R :=
 This section establishes the equivalence between the sheaf condition of Equation (3) [MM92] and
 the definition of `IsSheafFor`.
 -/
-
 
 namespace Sieve
 
@@ -176,7 +174,6 @@ end Sieve
 This section establishes the equivalence between the sheaf condition of
 https://stacks.math.columbia.edu/tag/00VM and the definition of `isSheafFor`.
 -/
-
 
 namespace Presieve
 

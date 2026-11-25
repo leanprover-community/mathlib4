@@ -28,7 +28,6 @@ change the associated topology.
 Finally, it defines `WithIdeal`, a class registering an ideal in a ring and providing the
 corresponding adic topology to the type class inference system.
 
-
 ## Main definitions and results
 
 * `Ideal.adic_basis`: the basis of submodules given by powers of an ideal.
@@ -46,7 +45,6 @@ to make sure it is definitionally equal to the `I`-topology on `R` seen as an `R
 -/
 
 @[expose] public section
-
 
 variable {R : Type*} [CommRing R]
 

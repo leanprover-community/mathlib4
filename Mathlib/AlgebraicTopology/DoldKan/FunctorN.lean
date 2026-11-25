@@ -35,7 +35,6 @@ normalized Moore complex functor shall be obtained in `Normalized.lean`.
 
 @[expose] public section
 
-
 open CategoryTheory CategoryTheory.Category CategoryTheory.Idempotents
 
 noncomputable section

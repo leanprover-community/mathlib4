@@ -21,7 +21,6 @@ This, and the dual result, are used in the development of abelian categories.
 
 public section
 
-
 noncomputable section
 
 open CategoryTheory

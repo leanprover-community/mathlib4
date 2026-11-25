@@ -28,7 +28,6 @@ Prove that the limit of any diagram is a multiequalizer (and similarly for colim
 
 @[expose] public section
 
-
 namespace CategoryTheory.Limits
 
 universe t w w' v u

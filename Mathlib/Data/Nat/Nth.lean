@@ -46,7 +46,6 @@ Future work should address how lemmas that use these should be written.
 
 @[expose] public section
 
-
 open Finset
 
 namespace Nat
@@ -66,7 +65,6 @@ variable {p}
 /-!
 ### Lemmas about `Nat.nth` on a finite set
 -/
-
 
 theorem nth_of_card_le (hf : (Set.ofPred p).Finite) {n : ℕ} (hn : #hf.toFinset ≤ n) :
     nth p n = 0 := by rw [nth, dite_eq_left hf, List.getD_eq_default]; rwa [Finset.length_sort]

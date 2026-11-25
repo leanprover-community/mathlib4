@@ -27,7 +27,6 @@ through a point on that sphere.
 
 @[expose] public section
 
-
 noncomputable section
 
 open scoped RealInnerProductSpace

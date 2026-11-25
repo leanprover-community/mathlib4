@@ -769,7 +769,6 @@ namespace Primrec
 variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
-
 theorem sumInl : Primrec (@Sum.inl α β) :=
   encode_iff.1 <| nat_double.comp Primrec.encode
 
@@ -840,7 +839,6 @@ instance ulower : Primcodable (ULower α) :=
   fast_instance% Primcodable.subtype mem_range_encode
 
 end ULower
-
 
 end Primcodable
 

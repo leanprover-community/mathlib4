@@ -34,7 +34,6 @@ The category `CompHaus` is defined using the structure `CompHausLike`. See the f
 
 @[expose] public section
 
-
 universe v u
 
 open CategoryTheory CompHausLike

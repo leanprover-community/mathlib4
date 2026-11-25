@@ -50,7 +50,6 @@ S integer, S-integer, S unit, S-unit
 
 @[expose] public section
 
-
 noncomputable section
 
 open IsDedekindDomain

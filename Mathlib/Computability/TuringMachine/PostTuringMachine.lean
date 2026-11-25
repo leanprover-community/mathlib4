@@ -100,7 +100,6 @@ of generality, where the output ends. If equality to `default : Γ` is decidable
 to remove the infinite tail of blanks.)
 -/
 
-
 namespace TM0
 
 section
@@ -280,9 +279,7 @@ the halt have a chance to be "committed", since the `eval` relation uses the fin
 before the halt as the output, and `move` and `write` etc. take 0 steps in this model.
 -/
 
-
 namespace TM1
-
 
 section
 
@@ -475,7 +472,6 @@ Even though `Stmt₁` contains a statement called `halt`, we must separate it fr
 TM1 semantics.
 -/
 
-
 namespace TM1to0
 
 variable {Γ : Type*}
@@ -622,7 +618,6 @@ exploiting the 0-step behavior of regular commands to avoid taking steps, but th
 nevertheless a bounded number of `write` calls between `goto` statements because TM1 statements are
 finitely long.
 -/
-
 
 namespace TM1to1
 
@@ -878,7 +873,6 @@ theorem tr_respects :
 
 end
 
-
 variable [Fintype Γ]
 
 open scoped Classical in
@@ -957,7 +951,6 @@ One issue with this is that the `halt` instruction is supposed to halt immediate
 to a halting state. To resolve this we do a check for `halt` first, then `goto` (with an
 unreachable branch).
 -/
-
 
 namespace TM0to1
 

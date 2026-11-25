@@ -20,13 +20,11 @@ living in `Prod` and `Sigma` types respectively. Their definitions can be found 
 
 public section
 
-
 variable {α β : Type*}
 
 namespace List
 
 /-! ### product -/
-
 
 @[simp]
 theorem nil_product (l : List β) : (@nil α) ×ˢ l = [] :=
@@ -56,7 +54,6 @@ theorem length_product (l₁ : List α) (l₂ : List β) :
       Nat.add_comm]
 
 /-! ### sigma -/
-
 
 variable {σ : α → Type*}
 

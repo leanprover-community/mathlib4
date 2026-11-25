@@ -57,7 +57,6 @@ namespace PhragmenLindelof
 ### Auxiliary lemmas
 -/
 
-
 variable {E : Type*} [NormedAddCommGroup E]
 
 /-- An auxiliary lemma that combines two double exponential estimates into a similar estimate
@@ -631,7 +630,6 @@ theorem eqOn_quadrant_IV (hdf : DiffContOnCl ℂ f (Ioi 0 ×ℂ Iio 0))
 /-!
 ### Phragmen-Lindelöf principle in the right half-plane
 -/
-
 
 /-- **Phragmen-Lindelöf principle** in the right half-plane. Let `f : ℂ → E` be a function such that
 

@@ -31,13 +31,11 @@ type synonym.
 
 @[expose] public section
 
-
 variable {α β γ : Type*}
 
 namespace Sum
 
 /-! ### Unbundled relation classes -/
-
 
 section LiftRel
 
@@ -109,7 +107,6 @@ theorem lex_flip_iff (a b : α ⊕ β) : Lex (flip r) (flip s) a b ↔ Lex s r b
 end Lex
 
 /-! ### Disjoint sum of two orders -/
-
 
 section Disjoint
 
@@ -277,9 +274,7 @@ end Disjoint
 
 /-! ### Linear sum of two orders -/
 
-
 namespace Lex
-
 
 /-- The linear sum of two orders -/
 notation3:30 α " ⊕ₗ " β:29 => _root_.Lex (α ⊕ β)
@@ -531,7 +526,6 @@ end Lex
 end Sum
 
 /-! ### Order isomorphisms -/
-
 
 open OrderDual Sum
 

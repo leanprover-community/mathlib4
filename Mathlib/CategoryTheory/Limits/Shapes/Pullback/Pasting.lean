@@ -378,7 +378,6 @@ section
 In this section we show that `(X ×[Z] Y) ×[Y] W ≅ X ×[Z] W`.
 -/
 
-
 variable {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) (g' : W ⟶ Y)
 variable [HasPullback f g] [HasPullback (pullback.snd f g) g']
 

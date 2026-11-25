@@ -16,7 +16,6 @@ In this file, we show that `ℤ` is both an archimedean `SuccOrder` and an archi
 
 public section
 
-
 open Function Order
 
 namespace Int
@@ -51,7 +50,6 @@ instance : IsPredArchimedean ℤ :=
     ⟨(b - a).toNat, by rw [pred_iterate, toNat_sub_of_le h, sub_sub_cancel]⟩⟩
 
 /-! ### Covering relation -/
-
 
 @[simp, norm_cast]
 theorem natCast_covBy {a b : ℕ} : (a : ℤ) ⋖ b ↔ a ⋖ b := by

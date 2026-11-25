@@ -21,7 +21,6 @@ are irreducible, and uniquely determined by their defining property.
 
 @[expose] public section
 
-
 open Polynomial Set Function minpoly
 
 namespace minpoly

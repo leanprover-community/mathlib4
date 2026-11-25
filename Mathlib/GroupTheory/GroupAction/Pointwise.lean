@@ -35,7 +35,6 @@ public section
 
 open Function Set Pointwise
 
-
 section MulActionSemiHomClass
 
 section SMul

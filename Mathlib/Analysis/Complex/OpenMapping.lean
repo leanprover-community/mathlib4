@@ -38,7 +38,6 @@ constant.
 
 public section
 
-
 open Set Filter Metric Complex
 
 open scoped Topology

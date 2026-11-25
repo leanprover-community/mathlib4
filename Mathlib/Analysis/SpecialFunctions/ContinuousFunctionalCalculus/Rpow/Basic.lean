@@ -80,7 +80,6 @@ variable {A : Type*} [PartialOrder A] [NonUnitalRing A] [TopologicalSpace A] [St
   [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
   [NonnegSpectrumClass ℝ A]
 
-
 /- ## `nnrpow` -/
 
 /-- Real powers of operators, based on the non-unital continuous functional calculus. -/

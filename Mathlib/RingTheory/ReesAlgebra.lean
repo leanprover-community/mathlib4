@@ -26,7 +26,6 @@ blowup in the future.
 
 @[expose] public section
 
-
 universe u v
 
 variable {R : Type u} [CommRing R] (I : Ideal R)

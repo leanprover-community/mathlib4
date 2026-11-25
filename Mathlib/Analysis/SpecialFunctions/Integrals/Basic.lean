@@ -36,7 +36,6 @@ integrate, integration, integrable
 
 public section
 
-
 open Real Set Finset
 
 open scoped Real Interval
@@ -111,7 +110,6 @@ end intervalIntegral
 open intervalIntegral
 
 /-! ### Integrals of simple functions -/
-
 
 theorem integral_cpow {r : ℂ} (h : -1 < r.re ∨ r ≠ -1 ∧ (0 : ℝ) ∉ [[a, b]]) :
     (∫ x : ℝ in a..b, (x : ℂ) ^ r) = ((b : ℂ) ^ (r + 1) - (a : ℂ) ^ (r + 1)) / (r + 1) := by
@@ -534,7 +532,6 @@ theorem integral_sin_pow_antitone : Antitone fun n : ℕ => ∫ x in 0..π, sin 
 
 /-! ### Integral of `cos x ^ n` -/
 
-
 theorem integral_cos_pow_aux :
     (∫ x in a..b, cos x ^ (n + 2)) =
       (cos b ^ (n + 1) * sin b - cos a ^ (n + 1) * sin a + (n + 1) * ∫ x in a..b, cos x ^ n) -
@@ -572,7 +569,6 @@ theorem integral_cos_sq : ∫ x in a..b, cos x ^ 2 = (cos b * sin b - cos a * si
   simp [field, integral_cos_pow, add_sub_assoc]
 
 /-! ### Integral of `sin x ^ m * cos x ^ n` -/
-
 
 /-- Simplification of the integral of `sin x ^ m * cos x ^ n`, case `n` is odd. -/
 theorem integral_sin_pow_mul_cos_pow_odd (m n : ℕ) :

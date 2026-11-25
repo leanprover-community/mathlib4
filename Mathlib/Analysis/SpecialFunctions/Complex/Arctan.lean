@@ -21,7 +21,6 @@ is proved in `Complex.hasSum_arctan`.
 
 @[expose] public section
 
-
 namespace Complex
 
 open scoped Real

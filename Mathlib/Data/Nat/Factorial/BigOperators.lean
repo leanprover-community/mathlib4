@@ -25,7 +25,6 @@ While in terms of semantics they could be in the `Basic.lean` file, importing
 
 public section
 
-
 open Finset Nat
 
 namespace Nat

@@ -171,7 +171,6 @@ theorem symm_range {a b : X} (γ : Path a b) : range γ.symm = range γ :=
 
 /-! #### Space of paths -/
 
-
 open ContinuousMap
 
 /-- The following instance defines the topology on the path space to be induced from the
@@ -458,7 +457,6 @@ theorem _root_.Continuous.path_trans {f : Y → Path x y} {g : Y → Path y z} :
 theorem continuous_trans {x y z : X} : Continuous fun ρ : Path x y × Path y z => ρ.1.trans ρ.2 := by
   fun_prop
 
-
 /-! #### Product of paths -/
 section Prod
 
@@ -512,7 +510,6 @@ end Pi
 
 /-! #### Pointwise operations on paths in a topological (additive) group -/
 
-
 /-- Pointwise multiplication of paths in a topological group. -/
 @[to_additive /-- Pointwise addition of paths in a topological additive group. -/]
 protected def mul [Mul X] [ContinuousMul X] {a₁ b₁ a₂ b₂ : X} (γ₁ : Path a₁ b₁) (γ₂ : Path a₂ b₂) :
@@ -537,7 +534,6 @@ protected theorem inv_apply {a b : X} [Inv X] [ContinuousInv X] (γ : Path a b) 
     γ.inv t = (γ t)⁻¹ := rfl
 
 /-! #### Truncating a path -/
-
 
 /-- `γ.truncate t₀ t₁` is the path which follows the path `γ` on the time interval `[t₀, t₁]`
 and stays still otherwise. -/
@@ -614,7 +610,6 @@ theorem truncate_zero_one {a b : X} (γ : Path a b) :
   rw [truncate, coe_mk_mk, max_eq_left this.1, min_eq_left this.2, extend_extends']
 
 /-! #### Reparametrising a path -/
-
 
 /-- Given a path `γ` and a function `f : I → I` where `f 0 = 0` and `f 1 = 1`, `γ.reparam f` is the
 path defined by `γ ∘ f`.

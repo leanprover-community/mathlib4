@@ -640,7 +640,6 @@ macro_rules
   | `(tactic| to_encard_tac) => `(tactic|
       simp only [← Nat.cast_le (α := ℕ∞), ← Nat.cast_inj (R := ℕ∞), Nat.cast_add, Nat.cast_one])
 
-
 /-- The cardinality of `s : Set α` . Has the junk value `0` if `s` is infinite -/
 noncomputable def ncard (s : Set α) : ℕ := ENat.toNat s.encard
 

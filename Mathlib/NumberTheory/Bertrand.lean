@@ -44,7 +44,6 @@ open scoped Finset
 
 public section
 
-
 section Real
 
 open Real

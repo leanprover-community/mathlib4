@@ -49,7 +49,6 @@ structure BoxAdditiveMap (ι M : Type*) [AddCommMonoid M] (I : WithTop (Box ι))
   sum_partition_boxes' : ∀ J : Box ι, ↑J ≤ I → ∀ π : Prepartition J, π.IsPartition →
     ∑ Ji ∈ π.boxes, toFun Ji = toFun J
 
-
 /-- A function on `Box ι` is called box additive if for every box `J` and a partition `π` of `J`
 we have `f J = ∑ Ji ∈ π.boxes, f Ji`. -/
 scoped notation:25 ι " →ᵇᵃ " M => BoxIntegral.BoxAdditiveMap ι M ⊤

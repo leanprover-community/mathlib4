@@ -70,7 +70,6 @@ class ModObj (X : D) where
 set_option linter.translate.overwrite false in
 attribute [to_additive existing (attr := reassoc (attr := simp))] ModObj.mul_smul ModObj.one_smul
 
-
 namespace AddModObj
 
 @[inherit_doc] scoped[CategoryTheory.AddMonObj] notation "δ" => AddModObj.vadd

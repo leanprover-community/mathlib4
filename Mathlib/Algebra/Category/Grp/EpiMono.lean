@@ -21,7 +21,6 @@ epimorphisms are surjective homomorphisms.
 
 @[expose] public section
 
-
 noncomputable section
 
 open scoped Pointwise
@@ -216,7 +215,6 @@ The strategy is the following: assuming `epi f`
   `f.hom.range`.
 -/
 
-
 theorem g_apply_fromCoset (x : B) (y : X) :
     g x (fromCoset y) = fromCoset ⟨x • ↑y,
       by obtain ⟨z, hz⟩ := y.property; exact ⟨x * z, by simp [← hz, smul_smul]⟩⟩ := rfl
@@ -309,7 +307,6 @@ end GrpCat
 
 namespace AddGrpCat
 
-
 variable {A B : AddGrpCat.{u}} (f : A ⟶ B)
 
 theorem epi_iff_surjective : Epi f ↔ Function.Surjective f := by
@@ -325,7 +322,6 @@ end AddGrpCat
 
 namespace GrpCat
 
-
 variable {A B : GrpCat.{u}} (f : A ⟶ B)
 
 @[to_additive AddGrpCat.forget_grp_preserves_mono]
@@ -339,7 +335,6 @@ instance forget_grp_preserves_epi : (forget GrpCat).PreservesEpimorphisms where
 end GrpCat
 
 namespace CommGrpCat
-
 
 variable {A B : CommGrpCat.{u}} (f : A ⟶ B)
 

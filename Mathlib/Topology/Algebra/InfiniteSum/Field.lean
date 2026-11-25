@@ -22,7 +22,6 @@ the most familiar examples.
 
 public section
 
-
 section NormMulClass
 
 variable {α E : Type*} [SeminormedCommRing E] [NormMulClass E] [NormOneClass E]

@@ -37,7 +37,6 @@ not the Hausdorff condition. We then define `StoneCech α` as `T2Quotient (PreSt
 
 @[expose] public section
 
-
 noncomputable section
 
 open Filter Set
@@ -258,7 +257,6 @@ theorem continuous_preStoneCechUnit : Continuous (preStoneCechUnit : α → PreS
 
 theorem denseRange_preStoneCechUnit : DenseRange (preStoneCechUnit : α → PreStoneCech α) :=
   Quot.mk_surjective.denseRange.comp denseRange_pure continuous_coinduced_rng
-
 
 section Extension
 variable {β : Type v} [TopologicalSpace β] [T2Space β]

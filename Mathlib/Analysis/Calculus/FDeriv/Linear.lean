@@ -222,7 +222,6 @@ theorem Differentiable.comp_continuousLinearMap (h : Differentiable 𝕜 g) :
 
 end CompRight
 
-
 /-! ### Unbundled continuous linear maps -/
 
 namespace IsBoundedLinearMap

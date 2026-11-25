@@ -37,7 +37,6 @@ squarefree, multiplicity
 
 @[expose] public section
 
-
 variable {R : Type*}
 
 /-- An element of a monoid is squarefree if the only squares that

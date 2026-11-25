@@ -18,7 +18,6 @@ See <https://stacks.math.columbia.edu/tag/00W1> for details.
 
 @[expose] public section
 
-
 namespace CategoryTheory.GrothendieckTopology
 
 open CategoryTheory

@@ -22,7 +22,6 @@ We show this function is (weight 0) invariant under `Γ` if `f, f'` are (weight 
 
 @[expose] public section
 
-
 open UpperHalfPlane Asymptotics Filter
 
 open scoped MatrixGroups ComplexConjugate ModularForm

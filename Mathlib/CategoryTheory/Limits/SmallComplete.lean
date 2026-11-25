@@ -29,7 +29,6 @@ small complete, preorder, Freyd
 
 public section
 
-
 namespace CategoryTheory
 
 open Category Limits

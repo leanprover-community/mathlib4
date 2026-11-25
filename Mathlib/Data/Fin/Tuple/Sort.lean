@@ -32,7 +32,6 @@ This file provides an API for doing so, with the sorted `n`-tuple given by
 
 @[expose] public section
 
-
 namespace Tuple
 
 variable {n : ℕ}

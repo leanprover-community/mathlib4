@@ -21,7 +21,6 @@ presheafed spaces does not change the stalks.
 
 @[expose] public section
 
-
 noncomputable section
 
 universe v u v' u'

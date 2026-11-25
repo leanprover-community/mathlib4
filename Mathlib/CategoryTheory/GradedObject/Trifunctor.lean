@@ -621,7 +621,6 @@ lemma ι_mapBifunctorBifunctor₂₃Desc
 
 end
 
-
 end
 
 end GradedObject

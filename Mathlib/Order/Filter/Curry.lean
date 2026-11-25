@@ -53,7 +53,6 @@ uniform convergence, curried filters, product filters
 
 public section
 
-
 namespace Filter
 
 variable {α β γ : Type*} {l : Filter α} {m : Filter β} {s : Set α} {t : Set β}

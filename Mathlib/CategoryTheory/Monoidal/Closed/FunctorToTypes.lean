@@ -21,7 +21,6 @@ It should be shown that `C ⥤ Type max w v u` is Cartesian closed.
 
 @[expose] public section
 
-
 universe w v' v u u'
 
 open CategoryTheory Functor MonoidalCategory

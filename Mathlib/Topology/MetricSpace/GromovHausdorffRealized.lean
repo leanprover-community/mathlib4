@@ -34,7 +34,6 @@ space structure on `X ⊕ Y`. The corresponding metric quotient is `OptimalGHCou
 
 @[expose] public section
 
-
 noncomputable section
 
 universe u v w
@@ -48,7 +47,6 @@ attribute [local instance] metricSpaceSum
 
 namespace GromovHausdorff
 
-
 section GromovHausdorffRealized
 
 /-! This section shows that the Gromov-Hausdorff distance
@@ -59,7 +57,6 @@ theorem. The existence of a minimizer follows. -/
 section Definitions
 
 variable (X : Type u) (Y : Type v) [MetricSpace X] [MetricSpace Y]
-
 
 set_option backward.privateInPublic true in
 private abbrev ProdSpaceFun : Type _ :=

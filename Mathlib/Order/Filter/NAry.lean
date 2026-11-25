@@ -26,7 +26,6 @@ This file is very similar to `Mathlib/Data/Set/NAry.lean`, `Mathlib/Data/Finset/
 
 @[expose] public section
 
-
 open Function Set
 
 open Filter

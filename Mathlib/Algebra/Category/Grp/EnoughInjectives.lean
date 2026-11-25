@@ -48,7 +48,6 @@ instance enoughInjectives : EnoughInjectives AddCommGrpCat.{u} where
 
 end AddCommGrpCat
 
-
 namespace CommGrpCat
 
 instance enoughInjectives : EnoughInjectives CommGrpCat.{u} :=

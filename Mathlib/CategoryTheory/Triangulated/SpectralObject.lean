@@ -188,7 +188,6 @@ def mapTriangulatedFunctor : SpectralObject D ι where
       Functor.whiskerLeft (functorArrows ι 0 1 2 ⋙ X.ω₁) (F.commShiftIso 1).hom
   distinguished' D := F.map_distinguished _ (X.distinguished' D)
 
-
 @[simp]
 lemma mapTriangulatedFunctor_δ {i j k : ι} (f : i ⟶ j) (g : j ⟶ k) :
     (X.mapTriangulatedFunctor F).δ f g = F.map (X.δ f g) ≫ (F.commShiftIso 1).hom.app _ := rfl

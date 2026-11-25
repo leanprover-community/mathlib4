@@ -29,7 +29,6 @@ See [miraglia2006introduction] Chapter 21 for a proof that `CompHaus` has enough
 
 @[expose] public section
 
-
 noncomputable section
 
 open CategoryTheory Function

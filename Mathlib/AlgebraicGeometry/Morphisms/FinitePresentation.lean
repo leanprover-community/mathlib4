@@ -30,7 +30,6 @@ We show that these properties are local, and are stable under compositions.
 
 public section
 
-
 noncomputable section
 
 open CategoryTheory Topology

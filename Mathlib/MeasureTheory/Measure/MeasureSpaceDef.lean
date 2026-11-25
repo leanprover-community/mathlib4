@@ -91,7 +91,6 @@ instance Measure.instFunLike [MeasurableSpace α] : FunLike (Measure α) (Set α
   coe μ := μ.toOuterMeasure
   coe_injective | ⟨_, _, _⟩, ⟨_, _, _⟩, h => toOuterMeasure_injective <| DFunLike.coe_injective h
 
-
 instance Measure.instOuterMeasureClass [MeasurableSpace α] : OuterMeasureClass (Measure α) α where
   measure_empty m := measure_empty (μ := m.toOuterMeasure)
   measure_iUnion_nat_le m := m.iUnion_nat
@@ -408,7 +407,6 @@ A function is almost everywhere measurable if it coincides almost everywhere wit
 function. We define this property, called `AEMeasurable f μ`. It's properties are discussed in
 `MeasureTheory.MeasureSpace`.
 -/
-
 
 variable {m : MeasurableSpace α} [MeasurableSpace β] {f g : α → β} {μ : Measure α}
 

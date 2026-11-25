@@ -73,7 +73,6 @@ def formatToHtmlWithDoc (fmt : Format) (n : Name) : MetaM ProofWidgets.Html := d
   -- colour and style of the text (namely the expression style)
   return jsx%{<InteractiveCode fmt={← tagCodeInfos ctx infos tt} />}
 
-
 /-- Pretty print a tactic with its docstring as hover info.
 
 I would love to print `tac` with another colour, e.g. the keyword highlighting used by the editor,

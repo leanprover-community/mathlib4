@@ -52,7 +52,6 @@ quotient monoid, isomorphism theorems
 
 @[expose] public section
 
-
 variable (M : Type*) {N : Type*} {P : Type*}
 
 open Function Setoid
@@ -500,7 +499,6 @@ theorem sSup_eq_conGen (S : Set (Con M)) :
   simp
 
 variable (c)
-
 
 /-- Given types with multiplications `M, N` and a congruence relation `c` on `N`, a
 multiplication-preserving map `f : M → N` induces a congruence relation on `f`'s domain

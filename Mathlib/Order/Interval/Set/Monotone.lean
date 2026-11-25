@@ -22,7 +22,6 @@ about functions monotone on intervals in `SuccOrder`s.
 
 public section
 
-
 open Set
 
 section Ixx

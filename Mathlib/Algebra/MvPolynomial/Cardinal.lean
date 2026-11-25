@@ -22,7 +22,6 @@ and `ℵ₀`.
 
 public section
 
-
 universe u v
 
 open Cardinal
@@ -44,7 +43,6 @@ theorem cardinalMk_eq_lift [IsEmpty σ] : #(MvPolynomial σ R) = lift.{u} #R := 
 
 @[nontriviality]
 theorem cardinalMk_eq_one [Subsingleton R] : #(MvPolynomial σ R) = 1 := mk_eq_one _
-
 
 /-- The cardinality of the multivariate polynomial ring, `MvPolynomial σ R` is at most the maximum
 of `#R`, `#σ` and `ℵ₀`.

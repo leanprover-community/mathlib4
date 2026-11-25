@@ -26,7 +26,6 @@ on differential objects.
 
 @[expose] public section
 
-
 open CategoryTheory.Limits
 
 universe v u
@@ -248,7 +247,6 @@ end ConcreteCategory
 end DifferentialObject
 
 /-! The category of differential objects itself has a shift functor. -/
-
 
 namespace DifferentialObject
 

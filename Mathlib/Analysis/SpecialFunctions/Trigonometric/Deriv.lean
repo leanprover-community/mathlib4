@@ -148,11 +148,9 @@ section
 
 /-! ### Simp lemmas for derivatives of `fun x => Complex.cos (f x)` etc., `f : ℂ → ℂ` -/
 
-
 variable {f : ℂ → ℂ} {f' x : ℂ} {s : Set ℂ}
 
 /-! #### `Complex.cos` -/
-
 
 theorem HasStrictDerivAt.ccos (hf : HasStrictDerivAt f f' x) :
     HasStrictDerivAt (fun x => Complex.cos (f x)) (-Complex.sin (f x) * f') x :=
@@ -176,7 +174,6 @@ theorem deriv_ccos (hc : DifferentiableAt ℂ f x) :
   hc.hasDerivAt.ccos.deriv
 
 /-! #### `Complex.sin` -/
-
 
 theorem HasStrictDerivAt.csin (hf : HasStrictDerivAt f f' x) :
     HasStrictDerivAt (fun x => Complex.sin (f x)) (Complex.cos (f x) * f') x :=
@@ -205,12 +202,10 @@ section
 
 /-! ### Simp lemmas for derivatives of `fun x => Complex.cos (f x)` etc., `f : E → ℂ` -/
 
-
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] {f : E → ℂ} {f' : StrongDual ℂ E}
   {x : E} {s : Set E}
 
 /-! #### `Complex.cos` -/
-
 
 theorem HasStrictFDerivAt.ccos (hf : HasStrictFDerivAt f f' x) :
     HasStrictFDerivAt (fun x => Complex.cos (f x)) (-Complex.sin (f x) • f') x :=
@@ -265,7 +260,6 @@ theorem ContDiffWithinAt.ccos {n} (hf : ContDiffWithinAt ℂ n f s x) :
   Complex.contDiff_cos.contDiffAt.comp_contDiffWithinAt x hf
 
 /-! #### `Complex.sin` -/
-
 
 theorem HasStrictFDerivAt.csin (hf : HasStrictFDerivAt f f' x) :
     HasStrictFDerivAt (fun x => Complex.sin (f x)) (Complex.cos (f x) • f') x :=
@@ -577,11 +571,9 @@ section
 
 /-! ### Simp lemmas for derivatives of `fun x => Real.cos (f x)` etc., `f : ℝ → ℝ` -/
 
-
 variable {f : ℝ → ℝ} {f' x : ℝ} {s : Set ℝ}
 
 /-! #### `Real.cos` -/
-
 
 theorem HasStrictDerivAt.cos (hf : HasStrictDerivAt f f' x) :
     HasStrictDerivAt (fun x => Real.cos (f x)) (-Real.sin (f x) * f') x :=
@@ -605,7 +597,6 @@ theorem deriv_cos (hc : DifferentiableAt ℝ f x) :
   hc.hasDerivAt.cos.deriv
 
 /-! #### `Real.sin` -/
-
 
 theorem HasStrictDerivAt.sin (hf : HasStrictDerivAt f f' x) :
     HasStrictDerivAt (fun x => Real.sin (f x)) (Real.cos (f x) * f') x :=
@@ -634,12 +625,10 @@ section
 
 /-! ### Simp lemmas for derivatives of `fun x => Real.cos (f x)` etc., `f : E → ℝ` -/
 
-
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {f' : StrongDual ℝ E}
   {x : E} {s : Set E}
 
 /-! #### `Real.cos` -/
-
 
 theorem HasStrictFDerivAt.cos (hf : HasStrictFDerivAt f f' x) :
     HasStrictFDerivAt (fun x => Real.cos (f x)) (-Real.sin (f x) • f') x :=
@@ -692,7 +681,6 @@ theorem ContDiffWithinAt.cos {n} (hf : ContDiffWithinAt ℝ n f s x) :
   Real.contDiff_cos.contDiffAt.comp_contDiffWithinAt x hf
 
 /-! #### `Real.sin` -/
-
 
 theorem HasStrictFDerivAt.sin (hf : HasStrictFDerivAt f f' x) :
     HasStrictFDerivAt (fun x => Real.sin (f x)) (Real.cos (f x) • f') x :=

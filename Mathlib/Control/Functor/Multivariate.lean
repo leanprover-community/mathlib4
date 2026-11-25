@@ -21,7 +21,6 @@ Features:
 
 @[expose] public section
 
-
 universe u v w
 
 open MvFunctor
@@ -61,8 +60,6 @@ theorem of_mem_supp {α : TypeVec n} {x : F α} {P : ∀ ⦃i⦄, α i → Prop}
 
 end MvFunctor
 
-
-
 /-- laws for `MvFunctor` -/
 class LawfulMvFunctor {n : ℕ} (F : TypeVec n → Type*) [MvFunctor F] : Prop where
   /-- `map` preserved identities, i.e., maps identity on `α` to identity on `F α` -/
@@ -86,7 +83,6 @@ variable (P : α ⟹ «repeat» n Prop) (R : α ⊗ α ⟹ «repeat» n Prop)
 /-- adapt `MvFunctor.LiftP` to accept predicates as arrows -/
 def LiftP' : F α → Prop :=
   MvFunctor.LiftP fun i x => ofRepeat <| P i x
-
 
 /-- adapt `MvFunctor.LiftR` to accept relations as arrows -/
 def LiftR' : F α → F α → Prop :=

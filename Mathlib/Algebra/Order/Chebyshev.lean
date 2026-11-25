@@ -47,13 +47,11 @@ file because it is easily deducible from the `Monovary` API.
 
 public section
 
-
 open Equiv Equiv.Perm Finset Function OrderDual
 
 variable {ι α β : Type*}
 
 /-! ### Scalar multiplication versions -/
-
 
 section SMul
 variable [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] [ExistsAddOfLE α]
@@ -100,7 +98,6 @@ end SMul
 
 Special cases of the above when scalar multiplication is actually multiplication.
 -/
-
 
 section Mul
 variable [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] [ExistsAddOfLE α]

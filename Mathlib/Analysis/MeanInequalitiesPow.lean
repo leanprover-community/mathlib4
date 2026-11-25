@@ -49,7 +49,6 @@ We also prove that $p \mapsto \sqrt[p]{\sum_{i\in s} z_i^p}$ is antitone on $(0,
 
 public section
 
-
 universe u v
 
 open Finset NNReal ENNReal

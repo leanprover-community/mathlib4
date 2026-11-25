@@ -43,7 +43,6 @@ refer to restricting the scalar type in a bundled type, such as from `A →ₗ[R
 
 @[expose] public section
 
-
 variable (R S M A : Type*)
 
 /-- If we put an `R`-algebra structure on a semiring `S`, we get a natural equivalence from the

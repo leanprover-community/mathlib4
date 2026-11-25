@@ -27,7 +27,6 @@ field of `k⟦X⟧` and `k`, when `k` is a field.
 
 @[expose] public section
 
-
 noncomputable section
 
 open Polynomial
@@ -39,7 +38,6 @@ namespace PowerSeries
 open Finsupp (single)
 
 variable {R : Type*}
-
 
 section Ring
 
@@ -337,7 +335,6 @@ def residueFieldOfPowerSeries : ResidueField k⟦X⟧ ≃+* k :=
     (RingHom.quotientKerEquivOfSurjective constantCoeff_surj)
 
 end IsDiscreteValuationRing
-
 
 end PowerSeries
 

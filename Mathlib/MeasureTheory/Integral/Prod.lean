@@ -92,7 +92,6 @@ end
 
 /-! ### The product measure -/
 
-
 namespace MeasureTheory
 
 namespace Measure
@@ -358,7 +357,6 @@ variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace ℝ E']
 
 /-! Some rules about the sum/difference of double integrals. They follow from `integral_add`, but
   we separate them out as separate lemmas, because they involve quite some steps. -/
-
 
 /-- Integrals commute with addition inside another integral. `F` can be any function. -/
 theorem integral_fn_integral_add ⦃f g : α × β → E⦄ (F : E → E') (hf : Integrable f (μ.prod ν))

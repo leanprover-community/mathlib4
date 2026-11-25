@@ -23,7 +23,6 @@ a deterministic kernel. See `deterministic_comp_eq_map` and `comp_deterministic_
 
 public section
 
-
 open MeasureTheory
 
 open scoped ENNReal
@@ -33,7 +32,6 @@ namespace ProbabilityTheory
 namespace Kernel
 
 variable {α β γ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
-
 
 variable {γ δ : Type*} {mγ : MeasurableSpace γ} {mδ : MeasurableSpace δ} {f : β → γ} {g : γ → α}
 

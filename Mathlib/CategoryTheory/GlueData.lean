@@ -20,7 +20,6 @@ interaction with a functor that preserves certain pullbacks.
 
 @[expose] public section
 
-
 noncomputable section
 
 open CategoryTheory.Limits

@@ -23,7 +23,6 @@ matrix, trace, diagonal
 
 @[expose] public section
 
-
 open Matrix
 
 namespace Matrix

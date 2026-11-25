@@ -24,7 +24,6 @@ See also `Matrix.GeneralLinearGroup`
 
 @[expose] public section
 
-
 variable (R M : Type*)
 
 namespace LinearMap

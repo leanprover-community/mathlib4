@@ -260,7 +260,6 @@ def IsLocallyClosedAt (s : Set X) (x : X) : Prop :=
 
 section Lim
 
-
 /-- If `f` is a filter, then `Filter.lim f` is a limit of the filter, if it exists. -/
 noncomputable def Filter.lim [Nonempty X] (f : Filter X) : X :=
   Classical.epsilon fun x => f ≤ 𝓝 x

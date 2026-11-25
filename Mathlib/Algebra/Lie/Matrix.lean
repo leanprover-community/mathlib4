@@ -28,7 +28,6 @@ lie algebra, matrix
 
 @[expose] public section
 
-
 universe u v w w₁ w₂
 
 section Matrices

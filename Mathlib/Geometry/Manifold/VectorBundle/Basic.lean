@@ -71,7 +71,6 @@ variable {n : ℕ∞ω} {𝕜 B F M : Type*} {E : B → Type*}
 
 /-! ### Charted space structure on a fiber bundle -/
 
-
 section
 
 variable [TopologicalSpace F] [TopologicalSpace (TotalSpace F E)] [∀ x, TopologicalSpace (E x)]
@@ -294,7 +293,6 @@ end Bundle
 end
 
 /-! ### `C^n` vector bundles -/
-
 
 variable [NontriviallyNormedField 𝕜] {EB : Type*} [NormedAddCommGroup EB] [NormedSpace 𝕜 EB]
   {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners 𝕜 EB HB} [TopologicalSpace B]
@@ -650,7 +648,6 @@ instance Bundle.Trivial.contMDiffVectorBundle :
     exact contMDiff_const.contMDiffOn
 
 /-! ### Direct sums of `C^n` vector bundles -/
-
 
 section Prod
 

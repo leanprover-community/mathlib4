@@ -80,7 +80,6 @@ variable {K}
 
 /-! Interlude: define some expected coercions and instances. -/
 
-
 namespace IntFractPair
 
 /-- Make an `IntFractPair` printable. -/
@@ -98,7 +97,6 @@ def mapFr {β : Type*} (f : K → β) (gp : IntFractPair K) : IntFractPair β :=
 section coe
 
 /-! Interlude: define some expected coercions. -/
-
 
 -- Fix another type `β` which we will convert to.
 variable {β : Type*} [Coe K β]

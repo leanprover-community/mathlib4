@@ -16,7 +16,6 @@ Implemented via calling out to `Nat.find`.
 
 @[expose] public section
 
-
 namespace PNat
 
 variable {p q : ℕ+ → Prop} [DecidablePred p] [DecidablePred q] (h : ∃ n, p n)

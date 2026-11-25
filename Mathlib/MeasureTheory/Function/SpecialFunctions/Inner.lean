@@ -17,7 +17,6 @@ set_option doc.verso.suggestions false
 
 public section
 
-
 variable {α : Type*} {𝕜 : Type*} {E : Type*}
 variable [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 

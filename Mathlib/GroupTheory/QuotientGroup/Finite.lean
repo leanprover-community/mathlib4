@@ -21,7 +21,6 @@ set_option doc.verso.suggestions false
 open Function QuotientGroup Subgroup
 open scoped Pointwise
 
-
 variable {F G H : Type*} [Group F] [Group G] [Group H] [Fintype F] [Fintype H]
 variable (f : F →* G) (g : G →* H)
 

@@ -165,7 +165,6 @@ lemma inrNonUnitalStarAlgHom_comp_cfcₙHom_eq_cfcₙAux (a : A) (ha : p a) :
     (by simp [cfcₙHom_id ha, cfcₙAux_id hp₁ a ha])
   all_goals infer_instance
 
-
 include hp₁ in
 open Unitization NonUnitalStarAlgHom in
 theorem RCLike.nonUnitalContinuousFunctionalCalculusIsClosedEmbedding :
@@ -222,7 +221,6 @@ instance IsSelfAdjoint.instNonUnitalContinuousFunctionalCalculus :
 end SelfAdjointNonUnital
 
 section SelfAdjointUnital
-
 
 variable {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [Algebra ℂ A]
   [ContinuousFunctionalCalculus ℂ A IsStarNormal]

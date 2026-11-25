@@ -27,7 +27,6 @@ axioms of a bicategory.
 
 @[expose] public section
 
-
 universe w w₁ w₂ v v₁ v₂ u u₁ u₂
 
 namespace CategoryTheory

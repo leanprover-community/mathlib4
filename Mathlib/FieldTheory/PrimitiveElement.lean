@@ -49,7 +49,6 @@ variable (F : Type*) [Field F] (E : Type*) [Field E] [Algebra F E]
 
 /-! ### Primitive element theorem for finite fields -/
 
-
 /-- **Primitive element theorem** assuming E is finite. -/
 @[stacks 09HY "second part"]
 theorem exists_primitive_element_of_finite_top [Finite E] : ∃ α : E, F⟮α⟯ = ⊤ := by
@@ -73,7 +72,6 @@ theorem exists_primitive_element_of_finite_bot [Finite F] [FiniteDimensional F E
 end PrimitiveElementFinite
 
 /-! ### Primitive element theorem for infinite fields -/
-
 
 section PrimitiveElementInf
 

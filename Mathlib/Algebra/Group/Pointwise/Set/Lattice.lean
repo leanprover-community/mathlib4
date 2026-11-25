@@ -124,7 +124,6 @@ end Mul
 
 /-! ### Set subtraction/division -/
 
-
 section Div
 
 variable {ι : Sort*} {κ : ι → Sort*} [Div α] {s t : Set α} {a : α}

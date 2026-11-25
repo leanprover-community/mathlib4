@@ -41,7 +41,6 @@ variable [CommMonoidWithZero α] [NormalizedGCDMonoid α]
 
 /-! ### lcm -/
 
-
 section lcm
 
 /-- Least common multiple of a finite set -/
@@ -116,7 +115,6 @@ theorem lcm_ne_zero_iff [Nontrivial α] : s.lcm f ≠ 0 ↔ ∀ x ∈ s, f x ≠
 end lcm
 
 /-! ### gcd -/
-
 
 section gcd
 

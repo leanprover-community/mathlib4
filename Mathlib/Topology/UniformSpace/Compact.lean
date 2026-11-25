@@ -167,7 +167,6 @@ theorem lebesgue_number_of_compact_open {K U : Set α} (hK : IsCompact K)
     (hK.nhdsSet_basis_uniformity uniformity_hasBasis_open).mem_iff.1 (hU.mem_nhdsSet.2 hKU)
   ⟨V, hV, hVo, iUnion₂_subset_iff.1 hVU⟩
 
-
 /-- On a compact uniform space, the topology determines the uniform structure, entourages are
 exactly the neighborhoods of the diagonal. -/
 theorem nhdsSet_diagonal_eq_uniformity [CompactSpace α] : 𝓝ˢ (diagonal α) = 𝓤 α := by

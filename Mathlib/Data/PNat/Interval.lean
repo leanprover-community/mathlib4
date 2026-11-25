@@ -20,7 +20,6 @@ intervals as finsets and fintypes.
 
 public section
 
-
 open Finset Function PNat
 
 namespace PNat

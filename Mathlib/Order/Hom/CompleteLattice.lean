@@ -66,7 +66,6 @@ structure FrameHom (α β : Type*) [CompleteLattice α] [CompleteLattice β] ext
   /-- The proposition that frame homomorphisms commute with arbitrary suprema/joins. -/
   map_sSup' (s : Set α) : toFun (sSup s) = sSup (toFun '' s)
 
-
 /-- The type of complete lattice homomorphisms from `α` to `β`. -/
 structure CompleteLatticeHom (α β : Type*) [CompleteLattice α] [CompleteLattice β] extends
   sInfHom α β, sSupHom α β where
@@ -195,7 +194,6 @@ instance [CompleteLattice α] [CompleteLattice β] [CompleteLatticeHomClass F α
   ⟨fun f => ⟨f, map_sSup f⟩⟩
 
 /-! ### Supremum and infimum homomorphisms -/
-
 
 namespace sSupHom
 
@@ -329,7 +327,6 @@ theorem bot_apply (a : α) : (⊥ : sSupHom α β) a = ⊥ :=
 end sSupHom
 
 /-! ### Frame homomorphisms -/
-
 
 namespace FrameHom
 
@@ -544,7 +541,6 @@ end CompleteLatticeHom
 
 /-! ### Dual homs -/
 
-
 namespace sSupHom
 
 variable [SupSet α] [SupSet β] [SupSet γ]
@@ -611,7 +607,6 @@ theorem symm_dual_comp (g : CompleteLatticeHom βᵒᵈ γᵒᵈ) (f : CompleteL
 end CompleteLatticeHom
 
 /-! ### Concrete homs -/
-
 
 namespace CompleteLatticeHom
 

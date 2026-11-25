@@ -22,7 +22,6 @@ the monad `(T, η_ T, μ_ T)` as well as the co-Kleisli adjunction which gives r
 
 @[expose] public section
 
-
 namespace CategoryTheory
 
 universe v u

@@ -32,7 +32,6 @@ This has nothing to do with minimal polynomials of primitive elements in finite 
 
 @[expose] public section
 
-
 namespace Polynomial
 
 section Primitive

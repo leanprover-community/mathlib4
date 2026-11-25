@@ -25,7 +25,6 @@ This file concerns the canonical homomorphism `ℕ → F`, where `F` is a field.
 
 public section
 
-
 namespace Nat
 
 variable {K : Type*} [DivisionSemiring K] {d m n : ℕ}

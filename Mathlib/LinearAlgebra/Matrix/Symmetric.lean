@@ -26,7 +26,6 @@ symm, symmetric, matrix
 
 @[expose] public section
 
-
 variable {α β n m R : Type*}
 
 namespace Matrix

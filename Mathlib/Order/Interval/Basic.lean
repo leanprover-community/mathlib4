@@ -22,7 +22,6 @@ interval arithmetic.
 
 @[expose] public section
 
-
 open Function OrderDual Set
 
 variable {α β γ : Type*} {ι : Sort*} {κ : ι → Sort*}

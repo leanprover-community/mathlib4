@@ -79,7 +79,6 @@ As an intermediate step, we show that derive `z` from `zt`, where `t` is an `Miu
 an even number of `U`s and `z` is any `Miustr`.
 -/
 
-
 /--
 Any number of successive occurrences of `"UU"` can be removed from the end of a `Derivable` `Miustr`
 to produce another `Derivable` `Miustr`.
@@ -103,7 +102,6 @@ In fine-tuning my application of `simp`, I issued the following command to deter
 
 `set_option trace.simplify.rewrite true`
 -/
-
 
 /-- We may replace several consecutive occurrences of `"III"` with the same number of `"U"`s.
 In application of the following lemma, `xs` will either be `[]` or `[U]`.
@@ -131,7 +129,6 @@ theorem der_cons_replicate_I_replicate_U_append_of_der_cons_replicate_I_append (
 We collect purely arithmetic lemmas: `add_mod2` is used to ensure we have an even number of `U`s
 while `le_pow2_and_pow2_eq_mod3` treats the congruence condition modulo 3.
 -/
-
 
 section Arithmetic
 
@@ -245,7 +242,6 @@ We tackle first the base case of the induction. This requires auxiliary results 
 conditions under which `count I ys = length ys`.
 -/
 
-
 /-- If an `Miustr` has a zero `count U` and contains no `M`, then its `count I` is its length.
 -/
 theorem count_I_eq_length_of_count_U_zero_and_neg_mem {ys : Miustr} (hu : count U ys = 0)
@@ -285,7 +281,6 @@ theorem base_case_suf (en : Miustr) (h : Decstr en) (hu : count U en = 0) : Deri
 Before continuing to the proof of the induction step, we need other auxiliary results that
 relate to `count U`.
 -/
-
 
 theorem mem_of_count_U_eq_succ {xs : Miustr} {k : ℕ} (h : count U xs = succ k) : U ∈ xs := by
   induction xs with
@@ -346,7 +341,6 @@ theorem der_of_decstr {en : Miustr} (h : Decstr en) : Derivable en := by
 ### Decidability of `Derivable`
 -/
 
-
 /-- Finally, we have the main result, namely that `Derivable` is a decidable predicate.
 -/
 instance : DecidablePred Derivable := fun _ => decidable_of_iff _ ⟨der_of_decstr, decstr_of_der⟩
@@ -354,7 +348,6 @@ instance : DecidablePred Derivable := fun _ => decidable_of_iff _ ⟨der_of_decs
 /-!
 By decidability, we can automatically determine whether any given `Miustr` is `Derivable`.
 -/
-
 
 example : ¬Derivable "MU" := by decide
 

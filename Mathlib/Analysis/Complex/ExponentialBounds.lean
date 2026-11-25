@@ -18,7 +18,6 @@ set_option doc.verso.suggestions false
 
 public section
 
-
 namespace Real
 
 open IsAbsoluteValue Finset CauSeq Complex

@@ -150,7 +150,6 @@ lemma Antitone.vecCons (hf : Antitone f) (ha : f 0 ≤ a) : Antitone (vecCons a 
 
 example : Monotone ![1, 2, 2, 3] := by decide
 
-
 variable {n : ℕ}
 
 /-- `Π i : Fin 2, α i` is order equivalent to `α 0 × α 1`. See also `OrderIso.finTwoArrowEquiv`

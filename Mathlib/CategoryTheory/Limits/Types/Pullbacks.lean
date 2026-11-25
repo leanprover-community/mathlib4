@@ -164,7 +164,6 @@ end Types
 
 end CategoryTheory.Limits
 
-
 namespace CategoryTheory.Limits.Types
 
 variable {P X Y Z : Type u} {fst : P ⟶ X} {snd : P ⟶ Y} {f : X ⟶ Z} {g : Y ⟶ Z}

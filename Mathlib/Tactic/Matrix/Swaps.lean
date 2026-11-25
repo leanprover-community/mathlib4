@@ -10,7 +10,6 @@ public import Mathlib.Data.Fin.Tuple.Reflection  -- shake: keep (Qq dependency)
 public import Mathlib.GroupTheory.Perm.Sign
 public import Mathlib.LinearAlgebra.Matrix.Defs  -- shake: keep (Qq dependency)
 
-
 /-!
 # Permutations from lists of swaps
 

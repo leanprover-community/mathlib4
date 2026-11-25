@@ -52,7 +52,6 @@ adjoint functor
 
 @[expose] public section
 
-
 universe u v w
 
 noncomputable section

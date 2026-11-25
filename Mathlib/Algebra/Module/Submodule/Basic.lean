@@ -94,7 +94,6 @@ These instances work particularly well in conjunction with `AddGroup.toAddAction
 `s +ᵥ m` as an alias for `↑s + m`.
 -/
 
-
 variable {α β : Type*}
 
 instance [VAdd M α] : VAdd p α :=
@@ -120,7 +119,6 @@ section AddCommGroup
 variable [Ring R] [AddCommGroup M]
 variable {module_M : Module R M}
 variable (p p' : Submodule R M)
-
 
 @[gcongr, mono]
 theorem toAddSubgroup_strictMono : StrictMono (toAddSubgroup : Submodule R M → AddSubgroup M) :=

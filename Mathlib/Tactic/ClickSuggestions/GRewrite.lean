@@ -115,7 +115,6 @@ def getGrwPos? (rootExpr subExpr : Expr) (pos : SubExpr.Pos) (hyp? : Bool) :
       return #[]
   return result
 
-
 /-- The structure for rewrite lemmas stored in the `RefinedDiscrTree`. -/
 structure GrwLemma where
   /-- The lemma -/

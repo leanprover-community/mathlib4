@@ -120,7 +120,6 @@ The actual mathematical content of the proof is here.
     · exact Nat.mod_lt _ (Nat.le_of_ble_eq_true hn)
     · rw [Nat.ModEq, Nat.mod_mod]
 
-
 /--
 The end point is that once we have reduced to `∃ m, n ≤ m < n ∧ a ≡ m (mod n)`
 there are no more cases to consider.

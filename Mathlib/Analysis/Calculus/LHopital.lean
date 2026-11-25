@@ -34,7 +34,6 @@ L'Hôpital's rule, L'Hopital's rule
 
 public section
 
-
 open Filter Set
 
 open scoped Filter Topology Pointwise
@@ -47,7 +46,6 @@ variable {a b : ℝ} {l : Filter ℝ} {f f' g g' : ℝ → ℝ}
 We start by proving statements where all conditions (derivability, `g' ≠ 0`) have
 to be satisfied on an explicitly-provided interval.
 -/
-
 
 namespace HasDerivAt
 
@@ -246,7 +244,6 @@ end deriv
 The following statements no longer any explicit interval, as they only require
 conditions holding eventually.
 -/
-
 
 namespace HasDerivAt
 

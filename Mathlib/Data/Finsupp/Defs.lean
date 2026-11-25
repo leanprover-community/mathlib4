@@ -101,7 +101,6 @@ namespace Finsupp
 
 /-! ### Basic declarations about `Finsupp` -/
 
-
 section Basic
 
 variable [Zero M]
@@ -221,7 +220,6 @@ end Basic
 
 /-! ### Declarations about `onFinset` -/
 
-
 section OnFinset
 
 variable [Zero M]
@@ -290,7 +288,6 @@ instance instCanLift : CanLift (α → M) (α →₀ M) (⇑) fun f => (Function
 end OfSupportFinite
 
 /-! ### Declarations about `mapRange` -/
-
 
 section MapRange
 
@@ -406,7 +403,6 @@ end Equiv
 
 /-! ### Declarations about `embDomain` -/
 
-
 section EmbDomain
 
 variable [Zero M] [Zero N]
@@ -471,7 +467,6 @@ lemma embDomain_refl : embDomain (M := M) (Function.Embedding.refl α) = id := b
 end EmbDomain
 
 /-! ### Declarations about `zipWith` -/
-
 
 section ZipWith
 

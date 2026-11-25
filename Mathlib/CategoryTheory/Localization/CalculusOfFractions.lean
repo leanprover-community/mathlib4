@@ -800,7 +800,6 @@ lemma Localization.essSurj_mapArrow :
 
 end
 
-
 namespace MorphismProperty
 
 variable {W}

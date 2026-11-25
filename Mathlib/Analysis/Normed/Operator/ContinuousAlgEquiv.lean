@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Positive
 
-
 /-!
 # Continuous (star-)algebra equivalences between continuous endomorphisms are (isometrically) inner
 

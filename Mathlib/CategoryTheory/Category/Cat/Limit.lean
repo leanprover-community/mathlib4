@@ -22,7 +22,6 @@ Can the indexing category live in a lower universe?
 
 @[expose] public section
 
-
 noncomputable section
 
 universe v u

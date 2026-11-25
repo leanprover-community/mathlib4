@@ -33,7 +33,6 @@ We also prove that `⨍ x in a..b, f x = ⨍ x in b..a, f x`, see `interval_aver
 
 public section
 
-
 open MeasureTheory Set intervalIntegral
 
 open scoped Interval

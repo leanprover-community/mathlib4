@@ -29,7 +29,6 @@ open scoped Nat
 
 /-! ### `cos` and `sin` for `ℝ` and `ℂ` -/
 
-
 section SinCos
 
 set_option backward.defeqAttrib.useBackward true in

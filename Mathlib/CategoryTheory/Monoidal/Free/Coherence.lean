@@ -35,7 +35,6 @@ is thin.
 
 @[expose] public section
 
-
 universe u
 
 namespace CategoryTheory
@@ -233,7 +232,6 @@ def normalizeIsoAux (X : F C) : (tensorFunc C).obj X ≅ (normalize' C).obj X :=
       subst f
       dsimp
       simp)
-
 
 section
 

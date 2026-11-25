@@ -66,7 +66,6 @@ of finite discrete spaces.
 
 @[expose] public section
 
-
 open Set Function TopologicalSpace Topology
 
 variable {α X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]

@@ -55,7 +55,6 @@ the rational circle `AddCircle (1 : ℚ)`, and so we set things up more generall
 
 @[expose] public section
 
-
 noncomputable section
 
 open AddCommGroup Set Function AddSubgroup TopologicalSpace
@@ -802,7 +801,6 @@ def homeoIccQuot [TopologicalSpace 𝕜] [OrderTopology 𝕜] : 𝕋 ≃ₜ Quot
 /-! We now show that a continuous function on `[a, a + p]` satisfying `f a = f (a + p)` is the
 pullback of a continuous function on `AddCircle p`, by first showing that
 various lifts are equivalent. -/
-
 
 variable {p a}
 

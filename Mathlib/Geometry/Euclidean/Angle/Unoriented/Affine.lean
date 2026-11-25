@@ -25,7 +25,6 @@ This file defines unoriented angles in Euclidean affine spaces.
 
 @[expose] public section
 
-
 noncomputable section
 
 open Real
@@ -155,7 +154,6 @@ nonrec theorem angle_le_pi (p₁ p₂ p₃ : P) : ∠ p₁ p₂ p₃ ≤ π :=
 
 /-- The angle ∠ABA at a point is `0`, unless `A = B`. -/
 theorem angle_self_of_ne (h : p ≠ p₀) : ∠ p p₀ p = 0 := angle_self <| vsub_ne_zero.2 h
-
 
 /-- If the angle ∠ABC at a point is π, the angle ∠BAC is 0. -/
 theorem angle_eq_zero_of_angle_eq_pi_left {p₁ p₂ p₃ : P} (h : ∠ p₁ p₂ p₃ = π) : ∠ p₂ p₁ p₃ = 0 := by

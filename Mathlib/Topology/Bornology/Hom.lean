@@ -29,7 +29,6 @@ be satisfied by itself and all stricter types.
 
 @[expose] public section
 
-
 open Bornology Filter Function Set
 
 variable {F α β γ δ : Type*}

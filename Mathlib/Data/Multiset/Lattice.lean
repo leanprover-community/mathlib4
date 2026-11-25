@@ -20,7 +20,6 @@ via `to_dual`.
 
 @[expose] public section
 
-
 namespace Multiset
 
 variable {α : Type*}

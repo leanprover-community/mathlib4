@@ -21,7 +21,6 @@ and `MonoidAlgebra`.
 
 public section
 
-
 noncomputable section
 
 open Finset
@@ -33,7 +32,6 @@ variable {α : Type u₁} {β : Type u₂} {γ : Type u₃}
 namespace Finsupp
 
 /-! ### Declarations about the pointwise product on `Finsupp`s -/
-
 
 section
 

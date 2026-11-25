@@ -88,7 +88,6 @@ rack, quandle
 
 @[expose] public section
 
-
 open MulOpposite
 
 universe u v
@@ -513,7 +512,6 @@ Note: `Type`-valued relations are not common.  The fact it is
 `Type`-valued is what makes `toEnvelGroup.mapAux.well_def` have
 well-founded recursion.
 -/
-
 
 /-- Free generators of the enveloping group.
 -/

@@ -408,7 +408,6 @@ section SpecOfSurjective
 
 /-! The comap of a surjective ring homomorphism is a closed embedding between the prime spectra. -/
 
-
 open Function RingHom
 
 variable [CommRing R] [CommRing S]

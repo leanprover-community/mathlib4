@@ -21,7 +21,6 @@ public section
 
 open Asymptotics
 
-
 variable {𝕜 𝕜₂ 𝕜₃ E F G : Type*}
 variable [SeminormedAddCommGroup E] [SeminormedAddCommGroup F] [SeminormedAddCommGroup G]
 variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [NontriviallyNormedField 𝕜₃]

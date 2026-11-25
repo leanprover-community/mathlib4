@@ -22,7 +22,6 @@ This file contains instances and definitions relating `MulSemiringAction` to `Po
 
 @[expose] public section
 
-
 variable (M : Type*) [Monoid M]
 
 open Polynomial

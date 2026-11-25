@@ -20,9 +20,7 @@ so we need to add the attribute after the fact.
 
 public section
 
-
 /-! We now add some `elementwise` attributes to lemmas that were proved earlier. -/
-
 
 open CategoryTheory
 

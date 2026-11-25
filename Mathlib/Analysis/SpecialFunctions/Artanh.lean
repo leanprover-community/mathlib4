@@ -36,7 +36,6 @@ artanh, arctanh, argtanh, atanh
 
 @[expose] public section
 
-
 noncomputable section
 
 open Function Set

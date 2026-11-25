@@ -22,7 +22,6 @@ This file contains the usual formulas (and existence assertions) for the derivat
 
 public section
 
-
 open ContinuousLinearMap
 
 section

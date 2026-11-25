@@ -29,7 +29,6 @@ well-founded relation and would then fulfill the same purpose as this file.
 
 @[expose] public section
 
-
 namespace Nat
 
 /-- The subtype of natural numbers `i` which have the property that

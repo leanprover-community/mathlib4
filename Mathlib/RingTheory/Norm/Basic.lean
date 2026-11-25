@@ -37,7 +37,6 @@ See also `Algebra.trace`, which is defined similarly as the trace of
 
 public section
 
-
 universe u v w
 
 variable {R S T : Type*} [CommRing R] [Ring S]

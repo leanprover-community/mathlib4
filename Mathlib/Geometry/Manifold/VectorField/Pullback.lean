@@ -241,7 +241,6 @@ lemma mpullbackWithin_comp_of_right
   rw [mfderivWithin_comp _ hg hf h hu, IsInvertible.inverse_comp_apply_of_right hf',
     Function.comp_apply]
 
-
 /-! ### Regularity of pullback of vector fields
 
 In this paragraph, we assume that the model space is complete, to ensure that the set of invertible
@@ -380,7 +379,6 @@ protected lemma _root_.MDifferentiable.mpullback_vectorField
   fun x ↦ MDifferentiableAt.mpullback_vectorField (hV (f x)) (hf x) (hf' x) hmn
 
 end MDifferentiability
-
 
 section ContMDiff
 

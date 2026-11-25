@@ -25,7 +25,6 @@ import Mathlib.CategoryTheory.Abelian.Subobject
 
 public section
 
-
 open CategoryTheory CategoryTheory.Limits Opposite
 
 universe v u

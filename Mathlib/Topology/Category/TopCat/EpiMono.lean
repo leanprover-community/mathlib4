@@ -22,7 +22,6 @@ topological spaces if and only if it is injective.
 
 public section
 
-
 universe u
 
 open CategoryTheory

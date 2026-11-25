@@ -72,7 +72,6 @@ variable {α : Type u} {β : Type v} {γ : Type w}
 
 /-! ### Definition of ordinals -/
 
-
 /-- Bundled structure registering a well order on a type. Ordinals will be defined as a quotient
 of this type. -/
 structure WellOrder : Type (u + 1) where
@@ -789,7 +788,6 @@ deduce that the order on ordinals is total (and therefore well-founded). Further
 the addition, together with properties of the other operations, are proved in
 `Mathlib/SetTheory/Ordinal/Arithmetic.lean`.
 -/
-
 
 /-- `o₁ + o₂` is the order on the disjoint union of `o₁` and `o₂` obtained by declaring that
 every element of `o₁` is smaller than every element of `o₂`. -/

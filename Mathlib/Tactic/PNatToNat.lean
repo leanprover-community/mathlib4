@@ -8,7 +8,6 @@ module
 public meta import Mathlib.Tactic.ToAdditive
 public import Mathlib.Data.PNat.Basic
 
-
 /-!
 # `pnat_to_nat`
 

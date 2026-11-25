@@ -41,7 +41,6 @@ We define the relation `Mcongr` and take its quotient as the definition of `Cofi
 
 @[expose] public section
 
-
 universe u
 
 open MvFunctor
@@ -189,7 +188,6 @@ A bisimulation relation `R` for values `x y : Cofix F α`:
 * for any values `x y` that satisfy `R`, their root has the same shape
   and their children can be paired in such a way that they satisfy `R`.
 -/
-
 
 set_option backward.isDefEq.respectTransparency false in
 private theorem Cofix.bisim_aux {α : TypeVec n} (r : Cofix F α → Cofix F α → Prop) (h' : ∀ x, r x x)
@@ -340,7 +338,6 @@ theorem Cofix.ext_mk {α : TypeVec n} (x y : F (α ::: Cofix F α)) (h : Cofix.m
 `liftR_map`, `liftR_map_last` and `liftR_map_last'` are useful for reasoning about
 the induction step in bisimulation proofs.
 -/
-
 
 section LiftRMap
 

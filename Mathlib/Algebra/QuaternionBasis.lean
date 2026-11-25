@@ -27,7 +27,6 @@ import Mathlib.Tactic.LinearCombination
 
 @[expose] public section
 
-
 open Quaternion
 
 namespace QuaternionAlgebra
@@ -108,7 +107,6 @@ theorem k_mul_k : q.k * q.k = -((c₁ * c₃) • (1 : A)) := by
     smul_mul_assoc, mul_assoc, j_mul_j, add_mul, smul_mul_assoc, j_mul_j, smul_smul,
     smul_mul_assoc, mul_assoc, j_mul_j]
   linear_combination (norm := module)
-
 
 /-- Intermediate result used to define `QuaternionAlgebra.Basis.liftHom`. -/
 def lift (x : ℍ[R,c₁,c₂,c₃]) : A :=

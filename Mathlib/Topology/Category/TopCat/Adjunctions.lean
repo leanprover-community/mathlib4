@@ -21,7 +21,6 @@ the discrete, resp. trivial, topology.
 
 @[expose] public section
 
-
 universe u
 
 open CategoryTheory

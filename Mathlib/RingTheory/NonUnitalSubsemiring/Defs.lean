@@ -248,7 +248,6 @@ theorem coe_mul (x y : s) : ((x * y : s) : R) = (x * y : R) :=
 
 /-! Note: currently, there are no ordered versions of non-unital rings. -/
 
-
 @[simp high]
 theorem mem_toSubsemigroup {s : NonUnitalSubsemiring R} {x : R} : x ∈ s.toSubsemigroup ↔ x ∈ s :=
   Iff.rfl

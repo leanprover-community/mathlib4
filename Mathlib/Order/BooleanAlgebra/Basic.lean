@@ -390,7 +390,6 @@ instance Pi.instGeneralizedBooleanAlgebra {ι : Type*} {α : ι → Type*}
 
 end GeneralizedBooleanAlgebra
 
-
 /-!
 ### Boolean algebras
 -/

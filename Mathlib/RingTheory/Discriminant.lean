@@ -49,7 +49,6 @@ then `trace A B = 0` by definition, so `discr A b = 0` for any `b`.
 
 @[expose] public section
 
-
 universe u v w z
 
 open scoped Matrix

@@ -32,7 +32,6 @@ namespace Finset
 
 /-! ### sup and inf -/
 
-
 section Sup
 
 -- TODO: define with just `[Bot α]` where some lemmas hold without requiring `[OrderBot α]`
@@ -658,7 +657,6 @@ Also, this lemma assumes that `s` is nonempty instead of assuming that its image
 lemma sup'_comp_eq_map {s : Finset γ} {f : γ ↪ β} (g : β → α) (hs : s.Nonempty) :
     s.sup' hs (g ∘ f) = (s.map f).sup' (map_nonempty.2 hs) g :=
   .symm <| sup'_map _ _
-
 
 @[to_dual (attr := gcongr)]
 theorem sup'_mono {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂) (h₁ : s₁.Nonempty) :

@@ -26,7 +26,6 @@ variable {M : Type*} {M₂ : Type*}
 
 /-! ### Properties of linear maps -/
 
-
 namespace LinearMap
 
 section AddCommMonoid

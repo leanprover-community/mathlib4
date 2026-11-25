@@ -229,7 +229,6 @@ end BooleanAlgebra
 lemma singleton_eq_univ [Subsingleton α] (a : α) : ({a} : Finset α) = univ := by
   ext b; simp [Subsingleton.elim a b]
 
-
 theorem map_univ_of_surjective [Fintype β] {f : β ↪ α} (hf : Surjective f) : univ.map f = univ :=
   eq_univ_of_forall <| hf.forall.2 fun _ => mem_map_of_mem _ <| mem_univ _
 

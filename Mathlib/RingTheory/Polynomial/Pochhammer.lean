@@ -36,7 +36,6 @@ There is lots more in this direction:
 
 @[expose] public section
 
-
 universe u v
 
 open Polynomial

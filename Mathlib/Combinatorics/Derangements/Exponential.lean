@@ -23,7 +23,6 @@ The specific lemma is `numDerangements_tendsto_inv_e`.
 
 public section
 
-
 open Filter NormedSpace
 
 open scoped Topology

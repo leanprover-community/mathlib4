@@ -22,7 +22,6 @@ in any basis is in `LinearAlgebra/Charpoly/ToMatrix`.
 
 @[expose] public section
 
-
 universe u v w
 
 open Matrix Polynomial

@@ -249,7 +249,6 @@ class IndiscreteTopology (α) [TopologicalSpace α] where
 
 instance : @IndiscreteTopology α ⊤ := @IndiscreteTopology.mk _ ⊤ rfl
 
-
 /-- A topological space is nontrivial if it is not the indiscrete topology. -/
 @[mk_iff]
 class NontrivialTopology (α) [TopologicalSpace α] where
@@ -722,7 +721,6 @@ theorem nhds_top {a : α} : @nhds α ⊤ a = ⊤ :=
 theorem isOpen_sup {t₁ t₂ : TopologicalSpace α} {s : Set α} :
     IsOpen[t₁ ⊔ t₂] s ↔ IsOpen[t₁] s ∧ IsOpen[t₂] s :=
   Iff.rfl
-
 
 theorem IndiscreteTopology.nhds_eq [TopologicalSpace α] [IndiscreteTopology α] (a : α) :
     nhds a = ⊤ := by

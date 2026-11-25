@@ -23,7 +23,6 @@ the limit of `f`.
 
 @[expose] public section
 
-
 noncomputable section
 
 universe w v₁ v₂ u₁ u₂

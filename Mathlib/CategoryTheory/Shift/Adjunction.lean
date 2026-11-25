@@ -228,7 +228,6 @@ lemma commShiftIso_inv_app_counit_app [adj.CommShift A] (a : A) (Y : D) :
 
 namespace CommShift
 
-
 /-- Constructor for `Adjunction.CommShift`. -/
 lemma mk' (_ : NatTrans.CommShift adj.unit A) :
     adj.CommShift A where
@@ -525,7 +524,6 @@ The inverse functor of the identity equivalence is compatible with shifts.
 -/
 instance : (Equivalence.refl (C := C)).inverse.CommShift A :=
   inferInstanceAs <| (𝟭 C).CommShift A
-
 
 /--
 The identity equivalence is compatible with shifts.

@@ -26,7 +26,6 @@ implies that `forget (ModuleCat R)` preserves filtered colimits.
 
 @[expose] public section
 
-
 universe v u
 
 noncomputable section

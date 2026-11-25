@@ -26,7 +26,6 @@ public section
 
 universe w v u
 
-
 namespace CategoryTheory.Limits
 
 variable {C : Type u} [Category.{v} C] [Preadditive C]

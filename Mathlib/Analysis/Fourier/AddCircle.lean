@@ -64,7 +64,6 @@ converges to `f` in the uniform-convergence topology of `C(AddCircle T, ℂ)`.
 
 @[expose] public section
 
-
 noncomputable section
 
 open scoped ENNReal ComplexConjugate Real
@@ -337,7 +336,6 @@ theorem fourierCoeff_sum {ι : Type*} (s : Finset ι) (f : ι → AddCircle T �
       obtain ⟨hf₁, hf₂⟩ := by simpa using hf
       rw [s.sum_insert ha, s.sum_insert ha,
         fourierCoeff_add hf₁ (integrable_finsetSum' s hf₂), iha hf₂]
-
 
 theorem fourierCoeff_const_smul (f : AddCircle T → E) (c : ℂ) (n : ℤ) :
     fourierCoeff (c • f :) n = c • fourierCoeff f n := by

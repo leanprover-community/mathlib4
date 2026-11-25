@@ -39,7 +39,6 @@ variable {F : C ⥤ Cat}
 variable {H : Type u₂} [Category.{v₂} H]
 variable (G : Grothendieck F ⥤ H)
 
-
 noncomputable section
 
 variable [∀ {X Y : C} (f : X ⟶ Y), HasColimit ((F.map f).toFunctor ⋙ Grothendieck.ι F Y ⋙ G)]

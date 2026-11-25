@@ -23,7 +23,6 @@ lie algebra, lie module, direct sum
 
 @[expose] public section
 
-
 universe u v w w₁
 
 namespace DirectSum
@@ -38,7 +37,6 @@ section Modules
 
 /-! The direct sum of Lie modules over a fixed Lie algebra carries a natural Lie module
 structure. -/
-
 
 variable {L : Type w₁} {M : ι → Type w}
 variable [LieRing L] [LieAlgebra R L]
@@ -96,7 +94,6 @@ end Modules
 section Algebras
 
 /-! The direct sum of Lie algebras carries a natural Lie algebra structure. -/
-
 
 variable (L : ι → Type w)
 variable [∀ i, LieRing (L i)] [∀ i, LieAlgebra R (L i)]

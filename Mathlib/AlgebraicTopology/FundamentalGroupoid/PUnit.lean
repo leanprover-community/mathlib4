@@ -19,7 +19,6 @@ The fundamental groupoid of punit is naturally isomorphic to `CategoryTheory.Dis
 
 @[expose] public section
 
-
 noncomputable section
 
 open CategoryTheory

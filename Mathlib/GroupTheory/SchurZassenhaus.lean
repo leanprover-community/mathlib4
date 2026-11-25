@@ -24,7 +24,6 @@ In this file we prove the Schur-Zassenhaus theorem.
 
 @[expose] public section
 
-
 namespace Subgroup
 
 section SchurZassenhausAbelian
@@ -133,7 +132,6 @@ In this section, we prove the Schur-Zassenhaus theorem.
 The proof is by contradiction. We assume that `G` is a minimal counterexample to the theorem.
 -/
 
-
 variable {G : Type u} [Group G] {N : Subgroup G} [Normal N]
   (h1 : Nat.Coprime (Nat.card N) N.index)
   (h2 : ∀ (G' : Type u) [Group G'] [Finite G'],
@@ -152,7 +150,6 @@ include h1 h3
 * step 6: `N` is a `p`-group (applies step 1 to the normalizer of `P` in `G`).
 * step 7: `N` is abelian (applies step 3 to the center of `N`).
 -/
-
 
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
 private theorem step0 : N ≠ ⊥ := by

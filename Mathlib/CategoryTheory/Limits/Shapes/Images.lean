@@ -54,7 +54,6 @@ so that `m` factors through the `m'` in any other such factorisation.
 
 @[expose] public section
 
-
 noncomputable section
 
 universe w v u

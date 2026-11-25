@@ -24,7 +24,6 @@ This file contains lemmas about normed additive torsors over normed spaces.
 
 @[expose] public section
 
-
 noncomputable section
 
 open NNReal

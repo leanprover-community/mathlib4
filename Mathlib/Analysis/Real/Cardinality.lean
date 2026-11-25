@@ -45,7 +45,6 @@ continuum, cardinality, reals, cardinality of the reals
 
 @[expose] public section
 
-
 open Nat Set
 
 open Cardinal

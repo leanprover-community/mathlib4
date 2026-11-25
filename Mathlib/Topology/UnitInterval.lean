@@ -26,7 +26,6 @@ open Set Int Set.Icc
 
 /-! ### The unit interval -/
 
-
 /-- The unit interval `[0,1]` in ℝ. -/
 abbrev unitInterval : Set ℝ :=
   Set.Icc 0 1
@@ -124,7 +123,6 @@ def symmHomeomorph : I ≃ₜ I where
   right_inv := symm_symm
 
 theorem strictAnti_symm : StrictAnti σ := fun _ _ h ↦ sub_lt_sub_left (α := ℝ) h _
-
 
 @[simp]
 theorem symm_inj {i j : I} : σ i = σ j ↔ i = j := symm_bijective.injective.eq_iff

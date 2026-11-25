@@ -24,7 +24,6 @@ the image of the homomorphism `i`.
 
 @[expose] public section
 
-
 open Polynomial
 
 open Polynomial

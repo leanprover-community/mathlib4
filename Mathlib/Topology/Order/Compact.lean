@@ -44,7 +44,6 @@ property.
 We also prove some simple lemmas about spaces with this property.
 -/
 
-
 /-- This typeclass says that all closed intervals in `α` are compact. This is true for all
 conditionally complete linear orders with order topology and products (finite or infinite)
 of such spaces. -/

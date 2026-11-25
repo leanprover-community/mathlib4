@@ -345,7 +345,6 @@ theorem zpow_eq_zpow_on_iff [DecidableEq α] [Fintype α]
 
 end CycleOf
 
-
 /-!
 ### `cycleFactors`
 -/

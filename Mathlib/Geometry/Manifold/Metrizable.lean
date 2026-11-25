@@ -23,7 +23,6 @@ vector space is metrizable.
 
 public section
 
-
 open TopologicalSpace
 
 /-- A σ-compact Hausdorff topological manifold over a finite-dimensional real vector space is

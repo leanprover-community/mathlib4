@@ -29,7 +29,6 @@ All results are transferred from `DFinsupp` via `Finsupp.toDFinsupp`.
 
 public section
 
-
 variable {α N : Type*}
 
 namespace Finsupp

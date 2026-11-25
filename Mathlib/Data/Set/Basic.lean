@@ -575,7 +575,6 @@ In Lean `@univ α` (or `univ : Set α`) is the set that contains all elements of
 Mathematically it is the same as `α` but it has a different type.
 -/
 
-
 @[simp, grind =]
 theorem ofPred_true : { _x : α | True } = univ :=
   rfl

@@ -54,7 +54,6 @@ theorem Nodup.notMem (h : (a :: l).Nodup) : a ∉ l :=
 theorem not_nodup_cons_of_mem : a ∈ l → ¬Nodup (a :: l) :=
   imp_not_comm.1 Nodup.notMem
 
-
 theorem not_nodup_pair (a : α) : ¬Nodup [a, a] :=
   not_nodup_cons_of_mem <| mem_singleton_self _
 

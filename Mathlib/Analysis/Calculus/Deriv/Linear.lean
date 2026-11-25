@@ -24,7 +24,6 @@ derivative, linear map
 
 public section
 
-
 universe u v w
 
 open Filter

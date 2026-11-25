@@ -16,18 +16,15 @@ rewriting arrows and paths along equalities of their endpoints.
 
 @[expose] public section
 
-
 universe v v₁ v₂ u u₁ u₂
 
 variable {U : Type*} [Quiver.{u} U]
-
 
 namespace Quiver
 
 /-!
 ### Rewriting arrows along equalities of vertices
 -/
-
 
 /-- Change the endpoints of an arrow using equalities. -/
 def Hom.cast {u v u' v' : U} (hu : u = u') (hv : v = v') (e : u ⟶ v) : u' ⟶ v' :=
@@ -67,7 +64,6 @@ theorem Hom.eq_cast_iff_heq {u v u' v' : U} (hu : u = u') (hv : v = v') (e : u �
 /-!
 ### Rewriting paths along equalities of vertices
 -/
-
 
 open Path
 

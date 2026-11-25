@@ -360,7 +360,6 @@ theorem compHom_algebraMap_apply (s : S) :
 
 end compHom
 
-
 variable (R A)
 
 /-- The canonical ring homomorphism `algebraMap R A : R →+* A` for any `R`-algebra `A`,

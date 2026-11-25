@@ -31,7 +31,6 @@ norm, nonarchimedean, nontrivial, valuation, rank one
 
 @[expose] public section
 
-
 noncomputable section
 
 open Filter Set Valuation MonoidWithZeroHom
@@ -110,7 +109,6 @@ instance {K : Type*} [NontriviallyNormedField K] [IsUltrametricDist K] :
 end NormedField
 
 end
-
 
 namespace Valuation
 

@@ -23,7 +23,6 @@ The resulting nonnegative real number is denoted by `‖n‖₊`.
 
 public section
 
-
 namespace Int
 
 theorem nnNorm_coe_units (e : ℤˣ) : ‖(e : ℤ)‖₊ = 1 := by

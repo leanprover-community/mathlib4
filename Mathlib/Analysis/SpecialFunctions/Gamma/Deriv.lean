@@ -34,14 +34,12 @@ Gamma
 
 public section
 
-
 open Filter Set Real Asymptotics
 open scoped Topology
 
 namespace Complex
 
 /-! Now check that the `Γ` function is differentiable, wherever this makes sense. -/
-
 
 section GammaHasDeriv
 

@@ -16,7 +16,6 @@ Continuity and derivatives of the tangent and arctangent functions.
 
 public section
 
-
 namespace Real
 
 open Set Filter
@@ -110,7 +109,6 @@ section
 
 In this section we register lemmas for the derivatives of the composition of `Real.arctan` with a
 differentiable function, for standalone use and use with `simp`. -/
-
 
 open Real
 

@@ -39,7 +39,6 @@ This version is given in `Vitali.vitaliFamily`.
 
 @[expose] public section
 
-
 variable {α ι : Type*}
 
 open Set Metric MeasureTheory TopologicalSpace Filter

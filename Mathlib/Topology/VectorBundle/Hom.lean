@@ -31,7 +31,6 @@ using a norm on the fiber model if this helps.
 
 @[expose] public section
 
-
 noncomputable section
 
 open Bundle Set ContinuousLinearMap Topology
@@ -356,7 +355,6 @@ lemma ContinuousWithinAt.clm_apply_of_inCoordinates
     apply (trivializationAt F₂ E₂ (b₂ m₀)).open_baseSet.mem_nhds
     exact FiberBundle.mem_baseSet_trivializationAt' (b₂ m₀)
   filter_upwards [A, A'] with m hm h'm using by simp [inCoordinates_eq hm h'm, hm]
-
 
 /-- Consider a continuous map `v : M → E₁` to a vector bundle, over a base map `b₁ : M → B₁`, and
 another basemap `b₂ : M → B₂`. Given linear maps `ϕ m : E₁ (b₁ m) → E₂ (b₂ m)` depending

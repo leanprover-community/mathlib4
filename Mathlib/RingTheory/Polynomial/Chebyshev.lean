@@ -130,7 +130,6 @@ theorem T_neg_one : T R (-1) = X := by
   suffices 2 * X - X = X by simpa
   ring
 
-
 theorem T_two : T R 2 = 2 * X ^ 2 - 1 := by
   unfold T; simp [pow_two, mul_assoc]
 

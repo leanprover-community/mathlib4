@@ -674,7 +674,6 @@ theorem ae_tendsto_rnDeriv :
 
 /-! ### Lebesgue density points -/
 
-
 /-- Given a measurable set `s`, then `μ (s ∩ a) / μ a` converges when `a` shrinks to a typical
 point `x` along a Vitali family. The limit is `1` for `x ∈ s` and `0` for `x ∉ s`. This shows that
 almost every point of `s` is a Lebesgue density point for `s`. A version for non-measurable sets

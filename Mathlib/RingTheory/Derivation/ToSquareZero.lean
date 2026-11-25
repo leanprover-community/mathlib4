@@ -19,7 +19,6 @@ public import Mathlib.RingTheory.Ideal.Quotient.Operations
 
 @[expose] public section
 
-
 section ToSquareZero
 
 universe u v w

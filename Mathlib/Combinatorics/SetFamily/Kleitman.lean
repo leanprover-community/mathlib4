@@ -27,7 +27,6 @@ Kleitman's bound stipulates that `k` intersecting families cover at most `2ⁿ -
 
 public section
 
-
 open Finset
 
 open Fintype (card)

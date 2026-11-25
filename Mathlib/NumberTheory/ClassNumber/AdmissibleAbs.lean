@@ -28,7 +28,6 @@ is finite.
 
 @[expose] public section
 
-
 namespace AbsoluteValue
 
 open Int

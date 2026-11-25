@@ -21,7 +21,6 @@ monotone extension to the whole space.
 
 public section
 
-
 open Set
 
 variable {α β : Type*} [PartialOrder α] [ConditionallyCompleteLinearOrder β] {f : α → β} {s : Set α}

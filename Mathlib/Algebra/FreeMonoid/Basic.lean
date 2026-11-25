@@ -28,7 +28,6 @@ public import Mathlib.Util.CompileInductive
 
 @[expose] public section
 
-
 variable {α : Type*} {β : Type*} {γ : Type*} {M : Type*} [Monoid M] {N : Type*} [Monoid N]
 
 /--

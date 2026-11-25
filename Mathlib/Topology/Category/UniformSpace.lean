@@ -25,11 +25,9 @@ TODO: show that uniform spaces actually have all limits!
 
 @[expose] public section
 
-
 universe u
 
 open CategoryTheory
-
 
 /-- An object in the category of uniform spaces. -/
 structure UniformSpaceCat : Type (u + 1) where

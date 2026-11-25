@@ -33,7 +33,6 @@ Related files are:
 
 public section
 
-
 namespace Sigma
 
 variable {ι : Type*} {α : ι → Type*} {r r₁ r₂ : ι → ι → Prop} {s s₁ s₂ : ∀ i, α i → α i → Prop}
@@ -138,7 +137,6 @@ instance [Std.Trichotomous r] [∀ i, Std.Trichotomous (s i)] : Std.Trichotomous
 end Sigma
 
 /-! ### `PSigma` -/
-
 
 namespace PSigma
 

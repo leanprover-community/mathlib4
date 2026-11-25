@@ -34,7 +34,6 @@ See `SymmetricAlgebra` instead if you are looking for the symmetric algebra of a
 
 @[expose] public section
 
-
 open Function
 
 /-- The symmetrized algebra (denoted as `αˢʸᵐ`)
@@ -265,7 +264,6 @@ instance [Ring α] [Invertible (2 : α)] : NonAssocRing αˢʸᵐ :=
   { SymAlg.nonAssocSemiring, SymAlg.addCommGroup with }
 
 /-! The squaring operation coincides for both multiplications -/
-
 
 theorem unsym_mul_self [Semiring α] [Invertible (2 : α)] (a : αˢʸᵐ) :
     unsym (a * a) = unsym a * unsym a := by

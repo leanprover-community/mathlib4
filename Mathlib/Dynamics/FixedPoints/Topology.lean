@@ -23,7 +23,6 @@ fixed points, iterates
 
 public section
 
-
 variable {α : Type*} [TopologicalSpace α] [T2Space α] {f : α → α}
 
 open Function Filter

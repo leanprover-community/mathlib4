@@ -36,7 +36,6 @@ Instances are defined:
 
 @[expose] public section
 
-
 noncomputable section
 
 open Finset (antidiagonal mem_antidiagonal)

@@ -30,7 +30,6 @@ Noetherian, noetherian, Noetherian ring, Noetherian module, noetherian ring, noe
 
 public section
 
-
 open Filter
 
 open IsNoetherian Submodule

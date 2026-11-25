@@ -141,7 +141,6 @@ lemma ball_eq_singleton {n : ℕ} : Metric.ball n ((2 : ℝ) ^ (-n - 1 : ℤ)) =
     rw [H, mem_ball, dist_self]
     apply zpow_pos two_pos
 
-
 theorem TopIsDiscrete : DiscreteTopology ℕ := by
   apply discreteTopology_iff_isOpen_singleton.mpr
   intro

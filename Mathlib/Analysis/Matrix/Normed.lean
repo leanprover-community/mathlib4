@@ -65,7 +65,6 @@ variable {R l m n α β ι : Type*} [Fintype l] [Fintype m] [Fintype n] [Unique 
 
 /-! ### The elementwise supremum norm -/
 
-
 section LinfLinf
 
 section SeminormedAddCommGroup
@@ -254,7 +253,6 @@ This section defines the matrix norm $\|A\|_\infty = \operatorname{sup}_i (\sum_
 Note that this is equivalent to the operator norm, considering $A$ as a linear map between two
 $L^\infty$ spaces.
 -/
-
 
 section LinftyOp
 
@@ -453,7 +451,6 @@ protected def linftyOpNormedAlgebra [NormedField R] [SeminormedRing α] [NormedA
     [DecidableEq n] : NormedAlgebra R (Matrix n n α) :=
   { Matrix.linftyOpNormedSpace, Matrix.instAlgebra with }
 
-
 section
 variable [NormedDivisionRing α] [NormedAlgebra ℝ α]
 
@@ -540,7 +537,6 @@ end LinftyOp
 This is defined as $\|A\| = \sqrt{\sum_{i,j} \|A_{ij}\|^2}$.
 When the matrix is over the real or complex numbers, this norm is submultiplicative.
 -/
-
 
 section frobenius
 

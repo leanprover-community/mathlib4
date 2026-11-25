@@ -26,7 +26,6 @@ Preferentially, the homomorphism is written as a coercion.
 
 @[expose] public section
 
-
 universe u
 
 /-- Default value for `IntCast.intCast` in an `AddGroupWithOne`. -/

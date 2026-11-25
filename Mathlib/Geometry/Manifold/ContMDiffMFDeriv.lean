@@ -31,7 +31,6 @@ open scoped Topology Manifold Bundle
 
 /-! ### Definition of `C^n` functions between manifolds -/
 
-
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {m n : WithTop ℕ∞}
   -- declare a charted space `M` over the pair `(E, H)`.
   {E : Type*}

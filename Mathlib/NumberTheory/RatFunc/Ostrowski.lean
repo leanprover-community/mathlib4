@@ -26,7 +26,6 @@ valuation at infinity `FunctionField.inftyValuation K`.
 
 @[expose] public noncomputable section
 
-
 open Multiplicative WithZero
 
 variable {K Γ : Type*} [Field K] [LinearOrderedCommGroupWithZero Γ] {v : Valuation (RatFunc K) Γ}

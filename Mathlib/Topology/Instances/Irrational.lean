@@ -34,7 +34,6 @@ irrational, residual
 
 public section
 
-
 open Set Filter Metric
 
 open Filter Topology
@@ -43,7 +42,6 @@ protected theorem IsGδ.setOfPred_irrational : IsGδ { x | Irrational x } :=
   (countable_range _).isGδ_compl
 
 @[deprecated (since := "2026-07-09")] alias IsGδ.setOf_irrational := IsGδ.setOfPred_irrational
-
 
 theorem dense_irrational : Dense { x : ℝ | Irrational x } := by
   refine Real.isTopologicalBasis_Ioo_rat.dense_iff.2 ?_

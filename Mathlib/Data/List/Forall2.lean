@@ -24,7 +24,6 @@ of `l₁`, and `b` is the nth element of `l₂`, then `R a b` is satisfied.
 
 public section
 
-
 open Nat Function
 
 namespace List

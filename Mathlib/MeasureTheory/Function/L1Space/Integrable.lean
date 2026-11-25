@@ -36,7 +36,6 @@ integrable
 
 @[expose] public section
 
-
 noncomputable section
 
 open ENNReal Filter MeasureTheory NNReal Set TopologicalSpace
@@ -965,7 +964,6 @@ end ENNReal
 section PosPart
 
 /-! ### Lemmas used for defining the positive part of an `L¹` function -/
-
 
 @[fun_prop]
 theorem Integrable.pos_part {f : α → ℝ} (hf : Integrable f μ) :

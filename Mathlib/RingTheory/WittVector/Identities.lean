@@ -30,7 +30,6 @@ In this file we derive common identities between the Frobenius and Verschiebung 
 
 public section
 
-
 namespace WittVector
 
 variable {p : ℕ} {R : Type*} [hp : Fact p.Prime] [CommRing R]
@@ -150,7 +149,6 @@ theorem verschiebung_frobenius_comm [CharP R p] :
 /-!
 ## Iteration lemmas
 -/
-
 
 open Function
 

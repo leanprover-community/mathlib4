@@ -29,7 +29,6 @@ W, W type, cardinal, first order
 
 public section
 
-
 universe u v
 
 variable {α : Type u} {β : α → Type v}
@@ -37,7 +36,6 @@ variable {α : Type u} {β : α → Type v}
 namespace WType
 
 open Cardinal
-
 
 theorem cardinalMk_eq_sum_lift : #(WType β) = sum fun a ↦ #(WType β) ^ lift.{u} #(β a) :=
   (mk_congr <| equivSigma β).trans <| by

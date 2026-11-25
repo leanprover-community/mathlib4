@@ -22,7 +22,6 @@ finite limits, and if `C` has arbitrary wide pullbacks then `Over B` has limits.
 
 public section
 
-
 universe w v u
 
 -- morphism levels before object levels. See note [category_theory universes].

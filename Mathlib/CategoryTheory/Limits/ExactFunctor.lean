@@ -21,7 +21,6 @@ In this file, we define the categories of bundled left exact, right exact and ex
 
 @[expose] public section
 
-
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
 open CategoryTheory.Limits

@@ -46,7 +46,6 @@ instance instIsAddApply [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : S
     IsAddApply (E →SLᵤ[σ, 𝔖] F) where
 ```
 
-
 There are a few lemmas that apply to any function space as long as they have an `IsAddApply`
 instance. Then it is now possible to define generic lemmas as follows:
 
@@ -67,7 +66,6 @@ theorem prod_apply {ι : Type*} (s : Finset ι) (f : ι → F) (x : α) :
 end FunLike
 ```
 -/
-
 
 public section
 

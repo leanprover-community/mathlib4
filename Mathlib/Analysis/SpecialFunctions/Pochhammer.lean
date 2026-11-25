@@ -33,7 +33,6 @@ This file proves analysis theorems for Pochhammer polynomials.
 
 public section
 
-
 section DescPochhammer
 
 variable {n : ℕ} {𝕜 : Type*} {k : 𝕜} [NontriviallyNormedField 𝕜]

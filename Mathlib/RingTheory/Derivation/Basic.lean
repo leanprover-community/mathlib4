@@ -63,7 +63,6 @@ variable [CommSemiring R] [CommSemiring A] [CommSemiring B] [AddCommMonoid M]
 variable [Algebra R A] [Algebra R B]
 variable [Module A M] [Module B M] [Module R M]
 
-
 variable (D : Derivation R A M) {D1 D2 : Derivation R A M} (r : R) (a b : A)
 
 @[macro_inline]

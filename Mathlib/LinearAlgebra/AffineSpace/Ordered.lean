@@ -31,7 +31,6 @@ affine space, ordered module, slope
 
 public section
 
-
 open AffineMap
 
 variable {k E : Type*}
@@ -42,7 +41,6 @@ variable {k E : Type*}
 In this section we prove that `lineMap a b r` is monotone (strictly or not) in its arguments if
 other arguments belong to specific domains.
 -/
-
 
 section OrderedRing
 
@@ -214,7 +212,6 @@ For each inequality between `f c` and `lineMap (f a) (f b) r` we provide 3 lemma
 These inequalities can be used to restate `convexOn` in terms of monotonicity of the slope.
 -/
 
-
 variable {f : k → E} {a b r : k}
 
 local notation "c" => lineMap a b r
@@ -312,7 +309,6 @@ theorem lineMap_lt_map_iff_slope_lt_slope (hab : a < b) (h₀ : 0 < r) (h₁ : r
   map_lt_lineMap_iff_slope_lt_slope (E := Eᵒᵈ) hab h₀ h₁
 
 end LinearOrderedField
-
 
 lemma slope_pos_iff {𝕜} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
     {f : 𝕜 → 𝕜} {x₀ b : 𝕜} (hb : x₀ < b) :

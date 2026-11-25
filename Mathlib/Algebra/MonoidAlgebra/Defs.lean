@@ -48,7 +48,6 @@ https://github.com/leanprover-community/mathlib4/pull/36746
 https://github.com/leanprover-community/mathlib4/pull/25273
 -/
 
-
 assert_not_exists NonUnitalAlgHom AlgEquiv
 
 @[expose] public noncomputable section

@@ -26,7 +26,6 @@ closure, the order identity `n = s * star s` from constant row or column sums, t
 
 public section
 
-
 variable {m n R : Type*}
 
 namespace Matrix

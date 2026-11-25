@@ -22,13 +22,11 @@ quadratic character
 
 @[expose] public section
 
-
 /-!
 ### Definition of the quadratic character
 
 We define the quadratic character of a finite field `F` with values in ℤ.
 -/
-
 
 section Define
 
@@ -55,7 +53,6 @@ We prove some properties of the quadratic character.
 We work with a finite field `F` here.
 The interesting case is when the characteristic of `F` is odd.
 -/
-
 
 section quadraticChar
 
@@ -255,7 +252,6 @@ end quadraticChar
 
 We express `quadraticChar F (-1)` in terms of `χ₄`.
 -/
-
 
 section SpecialValues
 

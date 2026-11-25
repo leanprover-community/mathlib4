@@ -33,7 +33,6 @@ submodule, multiplicative action
 
 @[expose] public section
 
-
 open Function
 
 universe u u' u'' v
@@ -531,7 +530,6 @@ namespace SubMulAction
 
 /- The inclusion of a `SubMulAction`, as an equivariant map -/
 variable {M α : Type*} [Monoid M] [MulAction M α]
-
 
 /-- The inclusion of a SubMulAction into the ambient set, as an equivariant map -/
 @[to_additive /-- The inclusion of a SubAddAction into the ambient set, as an equivariant map. -/]

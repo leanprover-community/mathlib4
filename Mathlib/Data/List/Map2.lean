@@ -92,7 +92,6 @@ theorem zipWith_flip (f : α → β → γ) : ∀ as bs, zipWith (flip f) bs as 
     simp! [zipWith_flip]
     rfl
 
-
 /-! ### zipLeft' -/
 
 section ZipLeft'

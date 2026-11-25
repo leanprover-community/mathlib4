@@ -23,7 +23,6 @@ to choices of square roots of `d` in `R`.
 
 @[expose] public section
 
-
 /-- The ring of integers adjoined with a square root of `d`.
   These have the form `a + b √d` where `a b : ℤ`. The components
   are called `re` and `im` by analogy to the negative `d` case. -/

@@ -465,7 +465,6 @@ def prodMap {D : Type*} [Semiring D] [TopologicalSpace D] [Algebra R D] (f₁ : 
     (f₂ : C →A[R] D) : A × C →A[R] B × D :=
   (f₁.comp (fst R A C)).prod (f₂.comp (snd R A C))
 
-
 @[simp, norm_cast]
 theorem coe_prodMap {D : Type*} [Semiring D] [TopologicalSpace D] [Algebra R D] (f₁ : A →A[R] B)
     (f₂ : C →A[R] D) :
@@ -545,7 +544,6 @@ end subalgebra
 
 section Ring
 
-
 variable {S : Type*} [Ring S] [TopologicalSpace S] [Algebra R S] {B : Type*} [Ring B]
   [TopologicalSpace B] [Algebra R B]
 
@@ -554,7 +552,6 @@ protected theorem map_neg (f : S →A[R] B) (x : S) : f (-x) = -f x := map_neg f
 protected theorem map_sub (f : S →A[R] B) (x y : S) : f (x - y) = f x - f y := map_sub f x y
 
 end Ring
-
 
 section RestrictScalars
 

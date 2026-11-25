@@ -113,7 +113,6 @@ theorem norm_lt {T : Type*} [Ring T] [LinearOrder T] [IsStrictOrderedRing T] (a 
   · positivity
   · exact Int.cast_pos.mpr (normBound_pos abv bS)
 
-
 /-- A nonzero ideal has an element of minimal norm. -/
 theorem exists_min (I : (Ideal S)⁰) :
     ∃ b ∈ (I : Ideal S),

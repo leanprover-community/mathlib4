@@ -35,7 +35,6 @@ lie algebra, skew-adjoint, bilinear form
 
 @[expose] public section
 
-
 universe u v w w₁
 
 section SkewAdjointEndomorphisms

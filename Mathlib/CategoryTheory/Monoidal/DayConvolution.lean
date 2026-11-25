@@ -33,7 +33,6 @@ the latter were to have the Day convolution monoidal structure. The definition
 assumptions on `V`) a `LawfulDayConvolutionMonoidalCategoryStruct C V D` to
 a monoidal structure.
 
-
 ## References
 
 - [nLab page: Day convolution](https://ncatlab.org/nlab/show/Day+convolution)
@@ -296,7 +295,6 @@ lemma associator_hom_unit_unit (x y z : C) :
   erw [id_apply] -- TODO: remove this `erw` (introduced in #36613)
   simp
 
-
 set_option backward.isDefEq.respectTransparency false in
 /-- Characterizing the inverse direction of the associator
 with respect to the unit transformations -/
@@ -320,7 +318,6 @@ lemma associator_inv_unit_unit (x y z : C) :
   dsimp [Functor.FullyFaithful.homEquiv, Equivalence.fullyFaithfulFunctor, prod.associativity]
   erw [id_apply] -- TODO: remove this `erw` (introduced in #36613)
   simp
-
 
 variable {F G H} in
 theorem associator_naturality {F' G' H' : C ⥤ V}

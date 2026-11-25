@@ -28,13 +28,11 @@ This file contains basic results on the following notions, which are defined in 
 
 @[expose] public section
 
-
 open Function
 
 namespace Set
 
 /-! ### Cartesian binary product of sets -/
-
 
 section Prod
 
@@ -336,7 +334,6 @@ theorem prod_eq_prod_iff_of_nonempty (h : (s ×ˢ t).Nonempty) :
       snd_image_prod h.1 t, ← snd_image_prod h₁.1 t₁, heq]
   · grind
 
-
 theorem prod_eq_prod_iff :
     s ×ˢ t = s₁ ×ˢ t₁ ↔ s = s₁ ∧ t = t₁ ∨ (s = ∅ ∨ t = ∅) ∧ (s₁ = ∅ ∨ t₁ = ∅) := by
   symm
@@ -412,7 +409,6 @@ end Prod
 In this section we prove some lemmas about the diagonal set `{p | p.1 = p.2}` and the diagonal map
 `fun x ↦ (x, x)`.
 -/
-
 
 section Diagonal
 
@@ -615,7 +611,6 @@ theorem offDiag_insert (ha : a ∉ s) : (insert a s).offDiag = s.offDiag ∪ {a}
 end OffDiag
 
 /-! ### Cartesian set-indexed product of sets -/
-
 
 section Pi
 

@@ -169,7 +169,6 @@ end Basic
 
 Additive operators and scalar multiplication operate elementwise. -/
 
-
 section Additive
 
 variable {T : Type*} {S : Type*} {R : Type u} {M : Type v}
@@ -395,7 +394,6 @@ def sndHom [Semiring R] [AddCommMonoid M] [Module R M] : tsze R M →ₗ[R] M :=
 end Additive
 
 /-! ### Multiplicative structure -/
-
 
 section Mul
 
@@ -1002,7 +1000,6 @@ theorem lift_inlAlgHom_inrHom :
       (inr_mul_inr R) (fun _ _ => (inl_mul_inr _ _).symm) (fun _ _ => (inr_mul_inl _ _).symm) =
     AlgHom.id S (tsze R M) :=
   algHom_ext' (lift_comp_inlHom _ _ _ _ _) (lift_comp_inrHom _ _ _ _ _)
-
 
 @[simp]
 theorem range_inlAlgHom_sup_adjoin_range_inr :

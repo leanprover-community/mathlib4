@@ -42,7 +42,6 @@ TODO: generalize `Nat.le_of_le_of_sub_le_sub_right`, `Nat.sub_le_sub_right_iff`,
 
 public section
 
-
 variable {α : Type*}
 
 /-- `OrderedSub α` means that `α` has a subtraction characterized by `a - b ≤ c ↔ a ≤ c + b`.
@@ -74,7 +73,6 @@ theorem le_tsub_add : b ≤ b - a + a :=
 end Add
 
 /-! ### Preorder -/
-
 
 section OrderedAddCommSemigroup
 
@@ -165,7 +163,6 @@ end Cov
 
 /-! #### Lemmas that assume that an element is `AddLECancellable` -/
 
-
 namespace AddLECancellable
 
 protected theorem le_add_tsub_swap (hb : AddLECancellable b) : a ≤ b + a - b :=
@@ -184,7 +181,6 @@ protected theorem le_tsub_of_add_le_right (hb : AddLECancellable b) (h : a + b �
 end AddLECancellable
 
 /-! ### Lemmas where addition is order-reflecting -/
-
 
 section Contra
 
@@ -216,7 +212,6 @@ end Preorder
 
 /-! ### Partial order -/
 
-
 variable [PartialOrder α] [AddCommSemigroup α] [Sub α] [OrderedSub α] {a b c d : α}
 
 theorem tsub_tsub (b a c : α) : b - a - c = b - (a + c) := by
@@ -235,7 +230,6 @@ theorem tsub_right_comm : a - b - c = a - c - b := by
   rw [← tsub_add_eq_tsub_tsub, tsub_add_eq_tsub_tsub_swap]
 
 /-! ### Lemmas that assume that an element is `AddLECancellable`. -/
-
 
 namespace AddLECancellable
 
@@ -305,7 +299,6 @@ end AddLECancellable
 
 /-! #### Lemmas where addition is order-reflecting. -/
 
-
 section Contra
 
 variable [AddLeftReflectLE α]
@@ -367,7 +360,6 @@ end Both
 end OrderedAddCommSemigroup
 
 /-! ### Lemmas in a linearly ordered monoid. -/
-
 
 section LinearOrder
 

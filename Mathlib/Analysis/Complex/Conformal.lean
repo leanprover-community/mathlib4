@@ -56,7 +56,6 @@ this file.
 
 @[expose] public section
 
-
 noncomputable section
 
 open Complex ContinuousLinearMap

@@ -23,7 +23,6 @@ We prove simple modules are exactly simple objects in the category of `R`-module
 
 public section
 
-
 variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
 
 open CategoryTheory ModuleCat

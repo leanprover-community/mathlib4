@@ -32,7 +32,6 @@ In this file, we take the second approach using the monoidal composition `⊗≫
 
 @[expose] public section
 
-
 universe v v₁ v₂ v₃ u u₁ u₂ u₃
 
 noncomputable section

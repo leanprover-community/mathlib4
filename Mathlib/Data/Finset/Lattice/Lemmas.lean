@@ -36,7 +36,6 @@ attribute [local trans] Subset.trans Superset.trans
 
 /-! ### Lattice structure -/
 
-
 section Lattice
 
 variable [DecidableEq α] {s s₁ s₂ t : Finset α} {a b : α}

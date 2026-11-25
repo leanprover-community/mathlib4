@@ -27,7 +27,6 @@ A bifunctor is a function `F : Type* → Type* → Type*` along with a bimap whi
 
 public section
 
-
 universe u₀ u₁ u₂ v₀ v₁ v₂
 
 open Function

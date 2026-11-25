@@ -18,11 +18,9 @@ This file defines `Locale`, the category of locales. This is the opposite of the
 
 @[expose] public section
 
-
 universe u
 
 open CategoryTheory Opposite Order TopologicalSpace
-
 
 /-- The category of locales. -/
 def Locale :=

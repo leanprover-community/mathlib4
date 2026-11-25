@@ -85,7 +85,6 @@ theorem lintegral_eNorm_neg {f : α → β} : ∫⁻ a, ‖(-f) a‖ₑ ∂μ = 
 
 /-! ### The predicate `HasFiniteIntegral` -/
 
-
 /-- `HasFiniteIntegral f μ` means that the integral `∫⁻ a, ‖f a‖ ∂μ` is finite.
   `HasFiniteIntegral f` means `HasFiniteIntegral f volume`. -/
 @[fun_prop]

@@ -26,7 +26,6 @@ rectangular box, box partition
 
 @[expose] public section
 
-
 noncomputable section
 
 open Finset Function NNReal Set

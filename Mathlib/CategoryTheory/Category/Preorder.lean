@@ -28,7 +28,6 @@ categories.
 
 @[expose] public section
 
-
 universe u v
 
 namespace Preorder

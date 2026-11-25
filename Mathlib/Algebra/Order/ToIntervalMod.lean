@@ -254,7 +254,6 @@ theorem toIcoDiv_nsmul_add (a b : α) (m : ℕ) : toIcoDiv hp a (m • p + b) = 
 
 /-! Note we omit `toIcoDiv_zsmul_add'` as `-m + toIcoDiv hp a b` is not very convenient. -/
 
-
 @[simp]
 theorem toIocDiv_zsmul_add (a b : α) (m : ℤ) : toIocDiv hp a (m • p + b) = m + toIocDiv hp a b := by
   rw [add_comm, toIocDiv_add_zsmul, add_comm]
@@ -264,7 +263,6 @@ theorem toIocDiv_nsmul_add (a b : α) (m : ℕ) : toIocDiv hp a (m • p + b) = 
   mod_cast toIocDiv_zsmul_add hp a b m
 
 /-! Note we omit `toIocDiv_zsmul_add'` as `-m + toIocDiv hp a b` is not very convenient. -/
-
 
 @[simp]
 theorem toIcoDiv_sub_zsmul (a b : α) (m : ℤ) : toIcoDiv hp a (b - m • p) = toIcoDiv hp a b - m := by
@@ -594,7 +592,6 @@ theorem toIocMod_eq_toIocMod : toIocMod hp a b = toIocMod hp a c ↔ ∃ n : ℤ
 
 /-! ### Links between the `Ico` and `Ioc` variants applied to the same element -/
 
-
 section IcoIoc
 
 namespace AddCommGroup
@@ -819,7 +816,6 @@ end
 /-!
 ### The circular order structure on `α ⧸ AddSubgroup.zmultiples p`
 -/
-
 
 section Circular
 
@@ -1356,7 +1352,6 @@ end Ring
 ### Connections to `Int.floor` and `Int.fract`
 -/
 
-
 section LinearOrderedField
 
 variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α] [FloorRing α]
@@ -1401,7 +1396,6 @@ theorem toIcoMod_zero_one (b : α) : toIcoMod (zero_lt_one' α) 0 b = Int.fract 
 end LinearOrderedField
 
 /-! ### Lemmas about unions of translates of intervals -/
-
 
 section Union
 

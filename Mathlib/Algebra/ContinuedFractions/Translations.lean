@@ -19,7 +19,6 @@ Some simple translation lemmas between the different definitions of functions de
 
 public section
 
-
 namespace GenContFract
 
 section General
@@ -30,7 +29,6 @@ section General
 Here we give some basic translations that hold by definition between the various methods that allow
 us to access the numerators and denominators of a continued fraction.
 -/
-
 
 variable {α : Type*} {g : GenContFract α} {n : ℕ}
 
@@ -75,7 +73,6 @@ section WithDivisionRing
 Here we give some basic translations that hold by definition for the computational methods of a
 continued fraction.
 -/
-
 
 variable {K : Type*} {g : GenContFract K} {n : ℕ} [DivisionRing K]
 

@@ -75,8 +75,6 @@ theorem foldl_range_eq_of_range_eq {f : α → β → α} {g : α → γ → α}
   (foldl_range_subset_of_range_subset hfg.le a).antisymm
     (foldl_range_subset_of_range_subset hfg.ge a)
 
-
-
 /-!
   ### MapAccumr and Foldr
   Some lemmas relation `mapAccumr` and `foldr`

@@ -28,7 +28,6 @@ theorem. Both of these properties are proved in the file `Coherence.lean`.
 
 @[expose] public section
 
-
 universe v' u u'
 
 namespace CategoryTheory
@@ -288,7 +287,6 @@ def projectObj : F C → D
   | FreeMonoidalCategory.tensor X Y => projectObj X ⊗ projectObj Y
 
 section
-
 
 open Hom
 

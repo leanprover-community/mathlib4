@@ -34,7 +34,6 @@ In this file, `f` stands for the inertia degree of `P` over `p`, leaving `p` and
 
 @[expose] public section
 
-
 namespace Ideal
 
 universe u v

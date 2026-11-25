@@ -51,7 +51,6 @@ the bundled version, see `Rel`.
 
 @[expose] public section
 
-
 open Function
 
 variable {α β γ δ ε ζ : Type*}

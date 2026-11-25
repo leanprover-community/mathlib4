@@ -17,7 +17,6 @@ preserve the correct limits and colimits.
 
 @[expose] public section
 
-
 namespace CategoryTheory.GrothendieckTopology
 
 open CategoryTheory

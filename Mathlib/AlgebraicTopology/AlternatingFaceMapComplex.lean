@@ -37,7 +37,6 @@ when `A` is an abelian category.
 
 @[expose] public section
 
-
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Subobject
 
 open CategoryTheory.Preadditive CategoryTheory.Category CategoryTheory.Idempotents
@@ -55,7 +54,6 @@ namespace AlternatingFaceMapComplex
 /-!
 ## Construction of the alternating face map complex
 -/
-
 
 variable {C : Type*} [Category* C] [Preadditive C]
 variable (X : SimplicialObject C)
@@ -117,7 +115,6 @@ theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
 /-!
 ## Construction of the alternating face map complex functor
 -/
-
 
 /-- The alternating face map complex, on objects -/
 @[implicit_reducible]

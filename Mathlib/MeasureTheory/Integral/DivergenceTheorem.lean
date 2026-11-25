@@ -53,7 +53,6 @@ divergence theorem, Bochner integral
 
 public section
 
-
 open Set Finset TopologicalSpace Function BoxIntegral MeasureTheory Filter
 
 open scoped Topology Interval
@@ -357,7 +356,6 @@ end
 open scoped Interval
 
 open ContinuousLinearMap (smulRight)
-
 
 local macro:arg t:term:max noWs "¹" : term => `(Fin 1 → $t)
 local macro:arg t:term:max noWs "²" : term => `(Fin 2 → $t)

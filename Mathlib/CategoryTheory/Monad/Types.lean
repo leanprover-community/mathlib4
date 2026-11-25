@@ -20,7 +20,6 @@ This allows us to use these monads in category theory.
 
 @[expose] public section
 
-
 namespace CategoryTheory
 
 section

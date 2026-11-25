@@ -32,7 +32,6 @@ formed as ring equivs.
 
 @[expose] public section
 
-
 namespace Ideal
 
 section IsPrincipal

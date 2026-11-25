@@ -121,7 +121,6 @@ def scalar (z : ℤ) : Sum :=
 def var (n : ℕ) : Sum :=
   TreeMap.empty.insert (TreeMap.empty.insert n 1) 1
 
-
 /-! ### Parsing algorithms -/
 
 open Lean Elab Tactic Meta

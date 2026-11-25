@@ -294,7 +294,6 @@ section
 /-! Register lemmas for the derivatives of the composition of `Real.exp` with a differentiable
 function, for standalone use and use with `simp`. -/
 
-
 variable {f : ℝ → ℝ} {f' x : ℝ} {s : Set ℝ}
 
 theorem HasStrictDerivAt.exp (hf : HasStrictDerivAt f f' x) :
@@ -324,7 +323,6 @@ section
 
 /-! Register lemmas for the derivatives of the composition of `Real.exp` with a differentiable
 function, for standalone use and use with `simp`. -/
-
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {f' : StrongDual ℝ E}
   {x : E} {s : Set E}

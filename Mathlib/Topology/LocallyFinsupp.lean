@@ -770,7 +770,6 @@ lemma _root_.Function.locallyFinsupp.disjoint_nhdsWithin_cofinite
     Disjoint (𝓝[f.support] p) cofinite :=
   disjoint_nhdsWithin_cofinite_of_mem f p (mem_univ _)
 
-
 /-!
 ### Composition a.k.a. `mapRange`
 
@@ -803,7 +802,6 @@ theorem support_mapRange_subset (f : Y → Z) (hf : f 0 = 0) (g : locallyFinsupp
     (g.mapRange f hf).support ⊆ g.support := support_comp_subset hf g
 
 end MapRange
-
 
 section Truncation
 

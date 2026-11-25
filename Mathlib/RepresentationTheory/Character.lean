@@ -35,7 +35,6 @@ defined in `Mathlib/CategoryTheory/Simple.lean`
 
 @[expose] public section
 
-
 noncomputable section
 
 universe u v

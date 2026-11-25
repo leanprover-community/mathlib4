@@ -48,7 +48,6 @@ protected theorem ceil_def' (q : ℚ) : ⌈q⌉ = -(-q.num / ↑q.den) := by
   change -⌊-q⌋ = _
   rw [Rat.floor_def', num_neg_eq_neg_num, den_neg_eq_den]
 
-
 @[norm_cast]
 theorem floor_intCast_div_natCast (n : ℤ) (d : ℕ) : ⌊(↑n / ↑d : ℚ)⌋ = n / (↑d : ℤ) := by
   rw [Rat.floor_def']

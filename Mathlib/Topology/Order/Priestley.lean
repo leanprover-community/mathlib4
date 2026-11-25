@@ -31,7 +31,6 @@ We do not include compactness in the definition, so a Priestley space is to be d
 
 public section
 
-
 open Set
 
 variable {α : Type*}

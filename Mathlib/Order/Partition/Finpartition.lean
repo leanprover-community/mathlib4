@@ -74,7 +74,6 @@ The specialisation to `Finset α` could be generalised to atomistic orders.
 
 @[expose] public section
 
-
 open Finset Function
 
 variable {α : Type*}
@@ -261,7 +260,6 @@ instance [Fintype α] [DecidableEq α] (a : α) : Fintype (Finpartition a) :=
     fun ⟨_, y, z, w⟩ ↦ ⟨⟨_, y, z, w⟩, rfl⟩
 
 /-! ### Refinement order -/
-
 
 section Order
 
@@ -646,7 +644,6 @@ end GeneralizedBooleanAlgebra
 end Finpartition
 
 /-! ### Finite partitions of finsets -/
-
 
 namespace Finpartition
 

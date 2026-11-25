@@ -282,7 +282,6 @@ theorem totient_coprime_totient_iff (m n : ℕ) :
 
 We prove several different statements of this formula. -/
 
-
 /-- Euler's product formula for the totient function. -/
 theorem totient_eq_prod_factorization {n : ℕ} (hn : n ≠ 0) :
     φ n = n.factorization.prod fun p k => p ^ (k - 1) * (p - 1) := by

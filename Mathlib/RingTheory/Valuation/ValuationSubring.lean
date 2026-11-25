@@ -766,7 +766,6 @@ The lemmas in this section are copied from the file `Mathlib/Algebra/Ring/Subrin
 try to keep these in sync.
 -/
 
-
 section PointwiseActions
 
 open scoped Pointwise

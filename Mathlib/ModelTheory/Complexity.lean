@@ -22,7 +22,6 @@ This file defines quantifier complexity of first-order formulas, and constructs 
   when it consists of a series of quantifiers applied to a quantifier-free formula.
 - `FirstOrder.Language.BoundedFormula.toPrenex` constructs a prenex normal form of a given formula.
 
-
 ## Main Results
 
 - `FirstOrder.Language.BoundedFormula.realize_toPrenex` shows that the prenex normal form of a

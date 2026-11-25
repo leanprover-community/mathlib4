@@ -22,7 +22,6 @@ that are `BoundedAtFilter`.
 
 @[expose] public section
 
-
 namespace Filter
 
 variable {𝕜 α β : Type*}

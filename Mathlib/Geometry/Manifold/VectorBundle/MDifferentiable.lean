@@ -18,7 +18,6 @@ open scoped Manifold Topology
 
 section
 
-
 variable {𝕜 B F M : Type*} {E : B → Type*}
 
 variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
@@ -29,7 +28,6 @@ variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup F] [NormedSpace 𝕜
   {IM : ModelWithCorners 𝕜 EM HM} [TopologicalSpace M] [ChartedSpace HM M]
 
 variable [TopologicalSpace B] [ChartedSpace HB B] [FiberBundle F E]
-
 
 /-- Characterization of differentiable functions into a vector bundle.
 Version at a point within a set -/

@@ -31,7 +31,6 @@ quotient monoid, isomorphism theorems
 
 @[expose] public section
 
-
 variable (M : Type*) {N : Type*} {P : Type*}
 
 open Function Setoid

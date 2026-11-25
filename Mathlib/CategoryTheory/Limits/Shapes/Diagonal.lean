@@ -18,7 +18,6 @@ of a morphism `f : X ⟶ Y`.
 
 @[expose] public section
 
-
 open CategoryTheory
 
 noncomputable section

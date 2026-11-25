@@ -22,7 +22,6 @@ We show that these properties are local, and are stable under compositions and b
 
 public section
 
-
 noncomputable section
 
 open CategoryTheory CategoryTheory.Limits Opposite TopologicalSpace

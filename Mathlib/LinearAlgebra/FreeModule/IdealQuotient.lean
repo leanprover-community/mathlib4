@@ -22,7 +22,6 @@ open scoped DirectSum
 
 namespace Ideal
 
-
 variable {ι R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 variable [IsDomain R] [IsPrincipalIdealRing R] [IsDomain S] [Finite ι]
 

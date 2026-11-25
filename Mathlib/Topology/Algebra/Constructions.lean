@@ -24,7 +24,6 @@ topological space, opposite monoid, units
 
 @[expose] public section
 
-
 variable {M N X : Type*}
 
 open Filter Topology

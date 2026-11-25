@@ -231,7 +231,6 @@ lemma equivProdNatFactoredNumbers_apply' {s : Finset ℕ} {p : ℕ} (hp : p.Prim
     (x : ℕ × factoredNumbers s) :
     equivProdNatFactoredNumbers hp hs x = p ^ x.1 * x.2 := rfl
 
-
 /-!
 ### `n`-smooth numbers
 -/
@@ -378,7 +377,6 @@ lemma equivProdNatSmoothNumbers_apply {p e m : ℕ} (hp : p.Prime) (hm : m ∈ p
 @[simp]
 lemma equivProdNatSmoothNumbers_apply' {p : ℕ} (hp : p.Prime) (x : ℕ × p.smoothNumbers) :
     equivProdNatSmoothNumbers hp x = p ^ x.1 * x.2 := rfl
-
 
 /-!
 ### Smooth and rough numbers up to a bound

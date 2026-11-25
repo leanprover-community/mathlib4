@@ -33,7 +33,6 @@ If `τ` is a bounded stopping time and `σ` is another stopping time, then the v
 
 public section
 
-
 open scoped MeasureTheory ENNReal
 
 open TopologicalSpace
@@ -154,7 +153,6 @@ section SubsetOfNat
 `[LinearOrder ι] [LocallyFiniteOrder ι] [OrderBot ι]`, which means that it is order-isomorphic to
 a subset of `ℕ`. `ι` is equipped with the discrete topology, which is also the order topology,
 and is a measurable space with the Borel σ-algebra. -/
-
 
 variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [OrderBot ι] [TopologicalSpace ι]
   [DiscreteTopology ι] [MeasurableSpace ι] [BorelSpace ι] [MeasurableSpace E] [BorelSpace E]

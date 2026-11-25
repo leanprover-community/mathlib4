@@ -53,7 +53,6 @@ Matiyasevic's theorem, Hilbert's tenth problem
 
 @[expose] public section
 
-
 open Fin2 Function Nat Sum
 
 local infixr:67 " ::ₒ " => Option.elim'
@@ -67,7 +66,6 @@ universe u
 
 Note that this duplicates `MvPolynomial`.
 -/
-
 
 section Polynomials
 
@@ -257,7 +255,6 @@ end Poly
 end Polynomials
 
 /-! ### Diophantine sets -/
-
 
 /-- A set `S ⊆ ℕ^α` is Diophantine if there exists a polynomial on
   `α ⊕ β` such that `v ∈ S` iff there exists `t : ℕ^β` with `p (v, t) = 0`. -/

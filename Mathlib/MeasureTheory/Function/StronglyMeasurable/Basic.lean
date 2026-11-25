@@ -602,7 +602,6 @@ end Order
 ### Big operators: `∏` and `∑`
 -/
 
-
 section Monoid
 
 variable {M : Type*} [Monoid M] [TopologicalSpace M] [ContinuousMul M] {m : MeasurableSpace α}
@@ -629,7 +628,6 @@ end Monoid
 section CommMonoid
 
 variable {M : Type*} [CommMonoid M] [TopologicalSpace M] [ContinuousMul M] {m : MeasurableSpace α}
-
 
 @[to_additive (attr := fun_prop)]
 theorem _root_.Multiset.stronglyMeasurable_prod (l : Multiset (α → M))
@@ -1105,7 +1103,6 @@ theorem exists_spanning_measurableSet_norm_le [SeminormedAddCommGroup β] {m m0 
 end StronglyMeasurable
 
 /-! ## Finitely strongly measurable functions -/
-
 
 theorem finStronglyMeasurable_zero {α β} {m : MeasurableSpace α} {μ : Measure α} [Zero β]
     [TopologicalSpace β] : FinStronglyMeasurable (0 : α → β) μ :=

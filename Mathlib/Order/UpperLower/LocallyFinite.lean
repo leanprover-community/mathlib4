@@ -21,7 +21,6 @@ In this file we characterise the interaction of `UpperSet`/`LowerSet` and `Local
 
 public section
 
-
 namespace Set
 
 variable {α : Type*} [Preorder α] {s : Set α}

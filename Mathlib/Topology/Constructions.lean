@@ -149,7 +149,6 @@ end
 The topology on this type synonym is inherited without change.
 -/
 
-
 section
 
 variable [TopologicalSpace X]

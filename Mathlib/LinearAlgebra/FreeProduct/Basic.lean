@@ -113,7 +113,6 @@ def ringCon' : RingCon (PowerAlgebra R A) := ringConGen (rel' R A)
 
 theorem rel_id (i : I) : rel R A (ι R <| lof R I A i 1) 1 := rel.id
 
-
 /-- The free product of the collection of `R`-algebras `A i`, as a quotient of
 `FreeTensorAlgebra R A` -/
 @[reducible] def _root_.LinearAlgebra.FreeProduct := FreeProduct.ringCon R A |>.Quotient

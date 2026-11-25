@@ -21,7 +21,6 @@ and right order continuous.
 
 @[expose] public section
 
-
 universe u v w x
 
 variable {α : Type u} {β : Type v} {γ : Type w} {ι : Sort x}
@@ -31,7 +30,6 @@ open Function OrderDual Set
 /-!
 ### Definitions
 -/
-
 
 /-- A function `f` between preorders is left order continuous if it preserves all suprema of
 nonempty sets. We define it using `IsLUB` instead of `sSup` so that the proof works both for

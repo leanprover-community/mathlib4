@@ -95,7 +95,6 @@ theorem multiplicity_eq_factorization {n p : ℕ} (pp : p.Prime) :
 
 /-! ### Basic facts about factorization -/
 
-
 @[simp]
 theorem prod_factorization_pow_eq_self {n : ℕ} (hn : n ≠ 0) : n.factorization.prod (· ^ ·) = n := by
   rw [factorization_eq_primeFactorsList_multiset n]
@@ -110,7 +109,6 @@ theorem eq_of_factorization_eq {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0)
 theorem eq_of_factorization_eq' {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0)
     (h : a.factorization = b.factorization) : a = b :=
   eq_of_factorization_eq ha hb (congrFun (congrArg DFunLike.coe h))
-
 
 /-- Every nonzero natural number has a unique prime factorization -/
 theorem factorization_inj : Set.InjOn factorization { x : ℕ | x ≠ 0 } := fun a ha b hb h =>
@@ -307,7 +305,6 @@ def factorizationEquiv : ℕ+ ≃ { f : ℕ →₀ ℕ // ∀ p ∈ f.support, P
 
 /-! ### Factorization and coprimes -/
 
-
 /-- For coprime `a` and `b`, the power of `p` in `a * b` is the sum of the powers in `a` and `b` -/
 theorem factorization_mul_apply_of_coprime {p a b : ℕ} (hab : Coprime a b) :
     (a * b).factorization p = a.factorization p + b.factorization p := by
@@ -347,7 +344,6 @@ lemma ordProj_dvd_ordProj_iff_dvd (ha : a ≠ 0) (hb : b ≠ 0) :
   obtain _ | _ | p := p <;> simp [Nat.pow_dvd_pow_iff_le_right]
 
 /-! ### Factorization LCM definitions -/
-
 
 /-- If `a = ∏ pᵢ ^ nᵢ` and `b = ∏ pᵢ ^ mᵢ`, then `factorizationLCMLeft = ∏ pᵢ ^ kᵢ`, where
 `kᵢ = nᵢ` if `mᵢ ≤ nᵢ` and `0` otherwise. Note that the product is over the divisors of `lcm a b`,

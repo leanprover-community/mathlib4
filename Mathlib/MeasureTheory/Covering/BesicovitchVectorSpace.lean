@@ -45,7 +45,6 @@ In particular, this number is bounded by `5 ^ dim` by a straightforward measure 
 
 @[expose] public section
 
-
 universe u
 
 open Metric Set Module MeasureTheory Filter Fin
@@ -92,7 +91,6 @@ theorem centerAndRescale_radius {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ
 end SatelliteConfig
 
 /-! ### Disjoint balls of radius close to `1` in the radius `2` ball. -/
-
 
 /-- The maximum cardinality of a `1`-separated set in the ball of radius `2`. This is also the
 optimal number of families in the Besicovitch covering theorem. -/
@@ -307,7 +305,6 @@ To check that the points `c' i` are `1 - δ`-separated, one treats separately th
 both `‖c i‖` and `‖c j‖` are `≤ 2`, where one of them is `≤ 2` and the other one is `> 2`, and
 where both of them are `> 2`.
 -/
-
 
 theorem exists_normalized_aux1 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
     (lastr : a.r (last N) = 1) (hτ : 1 ≤ τ) (δ : ℝ) (hδ1 : τ ≤ 1 + δ / 4) (hδ2 : δ ≤ 1)

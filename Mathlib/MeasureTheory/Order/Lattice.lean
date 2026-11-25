@@ -30,7 +30,6 @@ measurable function, lattice operation
 
 public section
 
-
 open MeasureTheory
 
 /-- We say that a type has `MeasurableSup` if `(c ⊔ ·)` and `(· ⊔ c)` are measurable functions.

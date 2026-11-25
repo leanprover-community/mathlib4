@@ -25,7 +25,6 @@ We provide the following results:
 
 @[expose] public section
 
-
 universe v u v₁ v₂ v₃ u₁ u₂ u₃
 
 noncomputable section

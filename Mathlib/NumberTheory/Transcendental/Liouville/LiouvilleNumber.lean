@@ -33,7 +33,6 @@ lemmas for $m \in \mathbb{R}$.
 
 @[expose] public section
 
-
 noncomputable section
 
 open scoped Nat
@@ -74,7 +73,6 @@ def remainder (m : ℝ) (k : ℕ) : ℝ :=
 We start with simple observations.
 -/
 
-
 protected theorem summable {m : ℝ} (hm : 1 < m) : Summable fun i : ℕ => 1 / m ^ i ! :=
   summable_one_div_pow_of_le hm Nat.self_le_factorial
 
@@ -95,7 +93,6 @@ theorem partialSum_add_remainder {m : ℝ} (hm : 1 < m) (k : ℕ) :
   (LiouvilleNumber.summable hm).sum_add_tsum_nat_add _
 
 /-! We now prove two useful inequalities, before collecting everything together. -/
-
 
 /-- An upper estimate on the remainder. This estimate works with `m ∈ ℝ` satisfying `1 < m` and is
 stronger than the estimate `LiouvilleNumber.remainder_lt` below. However, the latter estimate is
@@ -150,7 +147,6 @@ theorem remainder_lt (n : ℕ) {m : ℝ} (m2 : 2 ≤ m) : remainder m n < 1 / (m
   (remainder_lt' n <| one_lt_two.trans_le m2).trans_le (aux_calc _ m2)
 
 /-! Starting from here, we specialize to the case in which `m` is a natural number. -/
-
 
 /-- The sum of the `k` initial terms of the Liouville number to base `m` is a ratio of natural
 numbers where the denominator is `m ^ k!`. -/

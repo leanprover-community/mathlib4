@@ -67,7 +67,6 @@ in more details below in the paragraph on associativity.
 
 @[expose] public section
 
-
 noncomputable section
 
 variable {𝕜 : Type*} {E F G H : Type*}
@@ -84,7 +83,6 @@ variable [TopologicalSpace E] [TopologicalSpace F] [TopologicalSpace G]
 
 /-! ### Composing formal multilinear series -/
 
-
 namespace FormalMultilinearSeries
 
 variable [IsTopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
@@ -95,7 +93,6 @@ variable [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜 G]
 In this paragraph, we define the composition of formal multilinear series, by summing over all
 possible compositions of `n`.
 -/
-
 
 /-- Given a formal multilinear series `p`, a composition `c` of `n` and the index `i` of a
 block of `c`, we may define a function on `Fin n → E` by picking the variables in the `i`-th block
@@ -334,7 +331,6 @@ We will now define the identity power series, and show that it is a neutral elem
 right composition.
 -/
 
-
 section
 
 variable (𝕜 E)
@@ -442,7 +438,6 @@ theorem id_comp' (p : FormalMultilinearSeries 𝕜 E F) (x : F) (v0 : Fin 0 → 
 
 /-! ### Summability properties of the composition of formal power series -/
 
-
 section
 
 /-- If two formal multilinear series have positive radius of convergence, then the terms appearing
@@ -534,7 +529,6 @@ This proof is a big reindexing argument of a sum. Since it is a bit involved, we
 the source of the change of variables (`compPartialSumSource`), its target
 (`compPartialSumTarget`) and the change of variables itself (`compChangeOfVariables`) before
 giving the main statement in `comp_partialSum`. -/
-
 
 /-- Source set in the change of variables to compute the composition of partial sums of formal
 power series.
@@ -1016,7 +1010,6 @@ We start with preliminary results on compositions, of a very specialized nature,
 equivalence `Composition.sigmaEquivSigmaPi n`, and we deduce finally the associativity of
 composition of formal multilinear series in `FormalMultilinearSeries.comp_assoc`.
 -/
-
 
 namespace Composition
 

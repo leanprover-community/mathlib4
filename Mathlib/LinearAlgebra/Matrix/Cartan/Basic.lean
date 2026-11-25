@@ -236,8 +236,6 @@ theorem D_four : D 4 = !![ 2, -1,  0,  0;
                            0, -1,  2,  0;
                            0, -1,  0,  2] := by decide
 
-
-
 /-! ### Exceptional matrix diagonal entries -/
 
 @[simp] theorem E_diag (n : ℕ) (i : Fin n) : E n i i = 2 := by
@@ -255,7 +253,6 @@ theorem E₈_diag (i : Fin 8) : E 8 i i = 2 := E_diag 8 i
 @[simp] theorem F₄_diag (i : Fin 4) : F₄ i i = 2 := by fin_cases i <;> decide
 
 @[simp] theorem G₂_diag (i : Fin 2) : G₂ i i = 2 := by fin_cases i <;> decide
-
 
 /-! ### Exceptional matrix off-diagonal entries -/
 

@@ -48,13 +48,11 @@ ordered map, ordered set, data structure, verified programming
 
 @[expose] public section
 
-
 variable {α : Type*}
 
 namespace Ordnode
 
 /-! ### delta and ratio -/
-
 
 theorem not_le_delta {s} (H : 1 ≤ s) : ¬s ≤ delta * 0 :=
   not_le_of_gt H
@@ -65,9 +63,7 @@ theorem delta_lt_false {a b : ℕ} (h₁ : delta * a < b) (h₂ : delta * b < a)
 
 /-! ### `singleton` -/
 
-
 /-! ### `size` and `empty` -/
-
 
 /-- O(n). Computes the actual number of elements in the set, ignoring the cached `size` field. -/
 def realSize : Ordnode α → ℕ
@@ -75,7 +71,6 @@ def realSize : Ordnode α → ℕ
   | node _ l _ r => realSize l + realSize r + 1
 
 /-! ### `Sized` -/
-
 
 /-- The `Sized` property asserts that all the `size` fields in nodes match the actual size of the
 respective subtrees. -/
@@ -116,7 +111,6 @@ theorem Sized.pos {s l x r} (h : Sized (@node α s l x r)) : 0 < s := by
 
 /-! `dual` -/
 
-
 theorem dual_dual : ∀ t : Ordnode α, dual (dual t) = t
   | nil => rfl
   | node s l x r => by rw [dual, dual, dual_dual l, dual_dual r]
@@ -125,7 +119,6 @@ theorem dual_dual : ∀ t : Ordnode α, dual (dual t) = t
 theorem size_dual (t : Ordnode α) : size (dual t) = size t := by cases t <;> rfl
 
 /-! `Balanced` -/
-
 
 /-- The `BalancedSz l r` asserts that a hypothetical tree with children of sizes `l` and `r` is
 balanced: either `l ≤ δ * r` and `r ≤ δ * r`, or the tree is trivial with a singleton on one side
@@ -177,7 +170,6 @@ theorem Balanced.dual : ∀ {t : Ordnode α}, Balanced t → Balanced (dual t)
   | node _ l _ r, ⟨b, bl, br⟩ => ⟨by rw [size_dual, size_dual]; exact b.symm, br.dual, bl.dual⟩
 
 /-! ### `rotate` and `balance` -/
-
 
 /-- Build a tree from three nodes, left associated (ignores the invariants). -/
 def node3L (l : Ordnode α) (x : α) (m : Ordnode α) (y : α) (r : Ordnode α) : Ordnode α :=
@@ -370,7 +362,6 @@ theorem size_balance' {l x r} (hl : @Sized α l) (hr : Sized r) :
 
 /-! ## `All`, `Any`, `Emem`, `Amem` -/
 
-
 theorem All.imp {P Q : α → Prop} (H : ∀ a, P a → Q a) : ∀ {t}, All P t → All Q t
   | nil, _ => ⟨⟩
   | node _ _ _ _, ⟨h₁, h₂, h₃⟩ => ⟨h₁.imp H, H _ h₂, h₃.imp H⟩
@@ -433,7 +424,6 @@ theorem all_balance' {P l x r} : @All α P (balance' l x r) ↔ All P l ∧ P x 
 
 /-! ### `toList` -/
 
-
 theorem foldr_cons_eq_toList : ∀ (t : Ordnode α) (r : List α), t.foldr List.cons r = toList t ++ r
   | nil, _ => rfl
   | node _ l x r, r' => by
@@ -466,12 +456,10 @@ theorem equiv_iff {t₁ t₂ : Ordnode α} (h₁ : Sized t₁) (h₂ : Sized t�
 
 /-! ### `mem` -/
 
-
 theorem pos_size_of_mem [LE α] [DecidableLE α] {x : α} {t : Ordnode α} (h : Sized t)
     (h_mem : x ∈ t) : 0 < size t := by cases t; · { contradiction }; · { simp [h.1] }
 
 /-! ### `(find/erase/split)(Min/Max)` -/
-
 
 theorem findMin'_dual : ∀ (t) (x : α), findMin' (dual t) x = findMax' x t
   | nil, _ => rfl
@@ -518,9 +506,7 @@ theorem findMax'_all {P : α → Prop} : ∀ (x : α) (t), P x → All P t → P
 
 /-! ### `glue` -/
 
-
 /-! ### `merge` -/
-
 
 @[simp]
 theorem merge_nil_left (t : Ordnode α) : merge t nil = t := by cases t <;> rfl
@@ -539,7 +525,6 @@ theorem merge_node {ls ll lx lr rs rl rx rr} :
 
 /-! ### `insert` -/
 
-
 set_option backward.isDefEq.respectTransparency false in
 theorem dual_insert [LE α] [@Std.Total α (· ≤ ·)] [DecidableLE α] (x : α) :
     ∀ t : Ordnode α, dual (Ordnode.insert x t) = @Ordnode.insert αᵒᵈ _ _ x (dual t)
@@ -551,7 +536,6 @@ theorem dual_insert [LE α] [@Std.Total α (· ≤ ·)] [DecidableLE α] (x : α
       simp [Ordering.swap, dual_balanceL, dual_balanceR, dual_insert]
 
 /-! ### `balance` properties -/
-
 
 set_option backward.isDefEq.respectTransparency false in
 theorem balance_eq_balance' {l x r} (hl : Balanced l) (hr : Balanced r) (sl : Sized l)

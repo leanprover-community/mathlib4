@@ -26,7 +26,6 @@ As in other polynomial files, we typically use the notation:
 
 @[expose] public section
 
-
 namespace MvPolynomial
 
 variable {σ : Type*} {τ : Type*} {υ : Type*} {R : Type*} [CommSemiring R]

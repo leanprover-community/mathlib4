@@ -128,7 +128,6 @@ theorem compl_mem_comap : sᶜ ∈ comap f l ↔ (f '' s)ᶜ ∈ l := by rw [mem
 
 end Comap
 
-
 instance : LawfulFunctor (Filter : Type u → Type u) where
   id_map _ := map_id
   comp_map _ _ _ := map_map.symm
@@ -270,7 +269,6 @@ The variables in the following lemmas are used as in this diagram:
     ρ
 ```
 -/
-
 
 variable {φ : α → β} {θ : α → γ} {ψ : β → δ} {ρ : γ → δ}
 
@@ -930,7 +928,6 @@ instance : CommApplicative (Filter : Type u → Type u) :=
 end Applicative
 
 /-! #### `bind` equations -/
-
 
 section Bind
 

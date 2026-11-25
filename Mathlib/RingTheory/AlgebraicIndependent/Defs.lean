@@ -39,7 +39,6 @@ We show that algebraic independence is preserved under injective maps of the ind
 
 @[expose] public section
 
-
 noncomputable section
 
 open Function Set Subalgebra MvPolynomial Algebra

@@ -64,7 +64,6 @@ subfield, subfields
 
 @[expose] public section
 
-
 universe u v w
 
 variable {K : Type u} {L : Type v} {M : Type w}
@@ -97,7 +96,6 @@ end DerivedFromSubfieldClass
 
 /-! ### top -/
 
-
 /-- The subfield of `K` containing all elements of `K`. -/
 instance : Top (Subfield K) :=
   ⟨{ (⊤ : Subring K) with inv_mem' := fun x _ => Subring.mem_top x }⟩
@@ -118,7 +116,6 @@ def topEquiv : (⊤ : Subfield K) ≃+* K :=
   Subsemiring.topEquiv
 
 /-! ### comap -/
-
 
 variable (f : K →+* L)
 
@@ -143,7 +140,6 @@ theorem comap_comap (s : Subfield M) (g : L →+* M) (f : K →+* L) :
   rfl
 
 /-! ### map -/
-
 
 /-- The image of a subfield along a ring homomorphism is a subfield. -/
 def map (s : Subfield K) : Subfield L :=
@@ -191,7 +187,6 @@ variable (g : L →+* M) (f : K →+* L)
 
 /-! ### range -/
 
-
 /-- The range of a ring homomorphism, as a subfield of the target. See Note [range copy pattern]. -/
 def fieldRange : Subfield L :=
   ((⊤ : Subfield K).map f).copy (Set.range f) Set.image_univ.symm
@@ -233,7 +228,6 @@ end RingHom
 namespace Subfield
 
 /-! ### inf -/
-
 
 /-- The inf of two subfields is their intersection. -/
 instance : Min (Subfield K) :=

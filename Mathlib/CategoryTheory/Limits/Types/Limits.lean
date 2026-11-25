@@ -162,7 +162,6 @@ noncomputable def limitConeIsLimit (F : J ⥤ Type (max v u)) : IsLimit (limitCo
 
 end TypeMax
 
-
 /-!
 The results in this section have a `UnivLE.{v, u}` hypothesis,
 but as they only use the constructions from the `CategoryTheory.Limits.Types.UnivLE` namespace

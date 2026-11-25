@@ -550,7 +550,6 @@ lemma isInternal_biSup_submodule_of_iSupIndep {A : ι → Submodule R M} (s : Se
 
 /-! Now copy the lemmas for subgroup and submonoids. -/
 
-
 theorem IsInternal.addSubmonoid_iSupIndep {M : Type*} [AddCommMonoid M] {A : ι → AddSubmonoid M}
     (h : IsInternal A) : iSupIndep A :=
   iSupIndep_of_dfinsuppSumAddHom_injective _ h.injective

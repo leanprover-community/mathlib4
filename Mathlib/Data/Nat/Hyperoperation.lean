@@ -29,7 +29,6 @@ hyperoperation
 
 @[expose] public section
 
-
 /-- Implementation of the hyperoperation sequence
 where `hyperoperation n m k` is the `n`th hyperoperation between `m` and `k`.
 -/

@@ -256,7 +256,6 @@ end TendstoLemmas
 
 section FundamentalDomain
 
-
 attribute [local simp] UpperHalfPlane.coe_specialLinearGroup_apply
 
 /-- For `z : ℍ`, there is a `g : SL(2,ℤ)` maximizing `(g•z).im` -/
@@ -957,7 +956,6 @@ lemma isCompact_truncatedFundamentalDomain (y : ℝ) :
       exact hz.2.2.1
     · rw [sq_le_sq₀ hz.1 (hz.1.trans hz.2.1)]
       exact hz.2.1
-
 
 end Truncated
 

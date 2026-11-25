@@ -17,7 +17,6 @@ set_option doc.verso.suggestions false
 
 public section
 
-
 namespace Prod
 
 variable {α β : Type*} [AddGroupWithOne α] [AddGroupWithOne β]

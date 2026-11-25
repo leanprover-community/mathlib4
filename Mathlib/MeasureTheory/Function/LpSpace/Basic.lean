@@ -729,7 +729,6 @@ this to the composition with continuous linear maps, and to the definition of th
 part of an `L^p` function.
 -/
 
-
 section Composition
 
 variable {g : E → F} {c : ℝ≥0}

@@ -38,7 +38,6 @@ and was ported to mathlib by Kim Morrison.
 
 @[expose] public section
 
-
 universe w' w v₁ v₂ v₃ u₁ u₂ u₃
 
 noncomputable section

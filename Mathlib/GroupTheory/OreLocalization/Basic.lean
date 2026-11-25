@@ -29,7 +29,6 @@ a denominator `s : S`.
 * <https://ncatlab.org/nlab/show/Ore+localization>
 * [Zoran Škoda, *Noncommutative localization in noncommutative geometry*][skoda2006]
 
-
 ## Tags
 
 localization, Ore, non-commutative
@@ -642,7 +641,6 @@ section Zero
 
 variable {R : Type*} [Monoid R] {S : Submonoid R} [OreSet S] {X : Type*} [Zero X]
 variable [MulAction R X]
-
 
 /-- `0` in the localization, defined as `0 /ₒ 1`. -/
 @[irreducible]

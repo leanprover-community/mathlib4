@@ -289,7 +289,6 @@ applied to the previously constructed morphism,
 and the map from the `n`-th object as `Injective.d`.
 -/
 
-
 variable [Abelian C] [EnoughInjectives C] (Z : C)
 
 -- The construction of the injective resolution `of` would be very, very slow

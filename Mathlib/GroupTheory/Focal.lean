@@ -85,7 +85,6 @@ lemma focalSubgroup_le : focalSubgroup H ≤ H := by
 theorem map_focalSubgroupOf : H.focalSubgroupOf.map H.subtype = H.focalSubgroup :=
   map_subgroupOf_eq_of_le H.focalSubgroup_le
 
-
 /-- Lemma: H* is a normal subgroup of H. -/
 @[to_additive /-- Lemma: H* is a normal subgroup of H. -/]
 instance : Normal (focalSubgroupOf H) := by

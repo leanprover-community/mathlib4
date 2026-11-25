@@ -34,7 +34,6 @@ by the pretopology for the purpose of having nice definitional properties for th
 
 @[expose] public section
 
-
 universe u
 
 namespace Opens

@@ -19,7 +19,6 @@ We also state a corresponding lemma guaranteeing that a subset of `M` contains a
 
 public section
 
-
 /-- Any nonempty compact Hausdorff semigroup where right-multiplication is continuous contains
 an idempotent, i.e. an `m` such that `m * m = m`. -/
 @[to_additive

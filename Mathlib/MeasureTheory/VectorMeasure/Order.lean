@@ -236,7 +236,6 @@ instance instAddLeftMono : AddLeftMono (VectorMeasure α M) :=
 
 end
 
-
 end VectorMeasure
 
 namespace SignedMeasure

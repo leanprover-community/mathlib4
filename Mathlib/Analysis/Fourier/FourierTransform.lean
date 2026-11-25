@@ -56,7 +56,6 @@ Fourier transform of an integrable function is continuous (under mild assumption
 
 @[expose] public section
 
-
 noncomputable section
 
 local notation "𝕊" => Circle
@@ -323,9 +322,7 @@ theorem fourierIntegral_continuousMultilinearMap_apply
 
 end VectorFourier
 
-
 /-! ## Fourier theory for functions on `𝕜` -/
-
 
 namespace Fourier
 

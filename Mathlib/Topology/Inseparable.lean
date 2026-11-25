@@ -40,7 +40,6 @@ topological space, separation setoid
 
 @[expose] public section
 
-
 open Set Filter Function Topology
 
 variable {X Y Z α ι : Type*} {A : ι → Type*} [TopologicalSpace X] [TopologicalSpace Y]

@@ -19,7 +19,6 @@ composition of functions (the chain rule).
 
 public section
 
-
 open Filter Asymptotics ContinuousLinearMap Set
 
 open scoped Topology
@@ -38,7 +37,6 @@ variable {f g : E → F} {f' g' : E →L[𝕜] F} {x : E} {s : Set E} {L : Filte
 
 For composition lemmas, we put `x` explicit to help the elaborator, as otherwise Lean tends to
 get confused since there are too many possibilities for composition. -/
-
 
 variable (x)
 

@@ -111,7 +111,6 @@ In the future, we should consider a redesign that changes this simp normal form,
 but for now it breaks too many proofs.
 -/
 
-
 variable (α : F ≅ G)
 
 @[to_dual (attr := simp) cancel_natIso_inv_right]

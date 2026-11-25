@@ -36,7 +36,6 @@ Euclidean affine spaces.
 
 @[expose] public section
 
-
 noncomputable section
 
 open scoped RealInnerProductSpace

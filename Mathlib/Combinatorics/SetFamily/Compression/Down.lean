@@ -38,7 +38,6 @@ compression, down-compression
 
 @[expose] public section
 
-
 variable {α : Type*} [DecidableEq α] {𝒜 : Finset (Finset α)} {s : Finset α} {a : α}
 
 namespace Finset

@@ -38,7 +38,6 @@ Hermann Minkowski.
 
 public section
 
-
 namespace MeasureTheory
 
 open ENNReal Module MeasureTheory MeasureTheory.Measure Set Filter

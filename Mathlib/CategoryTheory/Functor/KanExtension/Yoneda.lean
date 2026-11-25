@@ -20,7 +20,6 @@ that `F.op.lan` is a pointwise left Kan extension of
 `F ⋙ shrinkYoneda : C ⥤ Dᵒᵖ ⥤ Type w` along the Yoneda embedding of `C`.
 -/
 
-
 @[expose] public section
 
 universe w v₁ v₂ u₁ u₂

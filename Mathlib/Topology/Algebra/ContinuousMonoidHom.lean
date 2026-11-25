@@ -213,7 +213,6 @@ def inl : A →ₜ* (A × B) :=
 def inr : B →ₜ* (A × B) :=
   prod 1 (id B)
 
-
 /-- The continuous homomorphism given by the diagonal embedding. -/
 @[to_additive (attr := simps!) /-- The continuous homomorphism given by the diagonal embedding. -/]
 def diag : A →ₜ* (A × A) := prod (id A) (id A)

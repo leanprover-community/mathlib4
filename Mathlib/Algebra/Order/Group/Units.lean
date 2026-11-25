@@ -17,7 +17,6 @@ set_option doc.verso.suggestions false
 
 public section
 
-
 variable {α : Type*}
 
 /-- The units of an ordered commutative monoid form an ordered commutative group. -/

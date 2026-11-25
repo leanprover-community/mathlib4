@@ -24,7 +24,6 @@ set_option doc.verso.suggestions false
 
 public section
 
-
 universe u
 
 namespace EuclideanDomain

@@ -39,7 +39,6 @@ variable {α β F : Type*}
 
 /-! ### Chains -/
 
-
 section Chain
 
 variable (r : α → α → Prop)
@@ -317,7 +316,6 @@ theorem List.IsChain.isChain_setOfPred_mem [IsTrans α r] {l : List α} (h : l.I
 end Chain
 
 /-! ### Flags -/
-
 
 /-- The type of flags, aka maximal chains, of an order. -/
 structure Flag (α : Type*) [LE α] where

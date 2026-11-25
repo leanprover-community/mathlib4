@@ -641,7 +641,6 @@ theorem comap_isMaximal_of_surjective (hf : Function.Surjective f) {K : Ideal S}
 
 end Surjective
 
-
 end Ring
 
 section CommRing

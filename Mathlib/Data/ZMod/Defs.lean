@@ -33,7 +33,6 @@ able to import some part of `ZMod`.
 
 @[expose] public section
 
-
 namespace Fin
 
 /-!
@@ -43,7 +42,6 @@ We define a commutative ring structure on `Fin n`.
 Afterwards, when we define `ZMod n` in terms of `Fin n`, we use these definitions
 to register the ring structure on `ZMod n` as type class instance.
 -/
-
 
 open Nat.ModEq Int
 

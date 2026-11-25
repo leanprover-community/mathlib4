@@ -18,7 +18,6 @@ This file is meant to contain results about the ends of (locally finite connecte
 
 public section
 
-
 variable {V : Type} (G : SimpleGraph V)
 
 namespace SimpleGraph

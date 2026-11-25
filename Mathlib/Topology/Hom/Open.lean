@@ -26,7 +26,6 @@ be satisfied by itself and all stricter types.
 
 @[expose] public section
 
-
 open Function
 
 variable {F α β γ δ : Type*}
@@ -57,7 +56,6 @@ instance [TopologicalSpace α] [TopologicalSpace β] [FunLike F α β]
   ⟨fun f => ⟨f, map_open f⟩⟩
 
 /-! ### Continuous open maps -/
-
 
 namespace ContinuousOpenMap
 

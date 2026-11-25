@@ -20,7 +20,6 @@ convex spaces.
 
 public section
 
-
 open Finset Metric
 
 variable {R V P ι : Type*}

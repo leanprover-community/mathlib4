@@ -19,7 +19,6 @@ This file compiles filter-related results about `ℝ`, `ℝ≥0` and `ℝ≥0∞
 
 public section
 
-
 open Filter ENNReal
 open scoped NNReal
 

@@ -20,7 +20,6 @@ as it requires more substantial imports developing positive compacts.
 
 public section
 
-
 universe u
 variable {G : Type u} [TopologicalSpace G] [Group G] [IsTopologicalGroup G]
 

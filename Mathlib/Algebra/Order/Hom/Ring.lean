@@ -286,7 +286,6 @@ end OrderRingHom
 
 /-! ### Ordered ring isomorphisms -/
 
-
 namespace OrderRingIso
 
 section LE

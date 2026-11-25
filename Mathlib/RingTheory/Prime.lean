@@ -23,7 +23,6 @@ This file contains lemmas about prime elements of commutative rings.
 
 public section
 
-
 section CancelCommMonoidWithZero
 
 variable {R : Type*} [CommMonoidWithZero R] [IsCancelMulZero R]

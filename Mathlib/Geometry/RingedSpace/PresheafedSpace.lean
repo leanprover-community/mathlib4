@@ -24,7 +24,6 @@ presheaves.
 
 @[expose] public section
 
-
 open Opposite CategoryTheory CategoryTheory.Category CategoryTheory.Functor TopCat TopologicalSpace
   Topology
 

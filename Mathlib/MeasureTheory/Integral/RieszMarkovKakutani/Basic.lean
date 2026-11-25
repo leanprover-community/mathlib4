@@ -30,7 +30,6 @@ literature.
 
 @[expose] public section
 
-
 noncomputable section
 
 open Set Function TopologicalSpace CompactlySupportedContinuousMap
@@ -143,7 +142,6 @@ theorem rieszContentAux_sup_le (K1 K2 : Compacts X) :
   rw [add_assoc, add_comm (ε / 2), add_assoc, add_halves ε, add_assoc]
 
 end RieszSubadditive
-
 
 section PartitionOfUnity
 

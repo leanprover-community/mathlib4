@@ -41,7 +41,6 @@ integer numbers, least element, greatest element
 
 @[expose] public section
 
-
 namespace Int
 
 /-- A computable version of `exists_least_of_bdd`: given a decidable predicate on the

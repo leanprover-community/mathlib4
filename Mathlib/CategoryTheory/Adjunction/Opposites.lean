@@ -20,7 +20,6 @@ adjunction, opposite, uniqueness
 
 @[expose] public section
 
-
 open CategoryTheory
 
 universe v₁ v₂ u₁ u₂

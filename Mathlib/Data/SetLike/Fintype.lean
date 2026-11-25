@@ -19,7 +19,6 @@ and `Fintype B` then `Fintype A`.
 
 public section
 
-
 namespace SetLike
 
 /-- TODO: It should be possible to obtain a computable version of this for most

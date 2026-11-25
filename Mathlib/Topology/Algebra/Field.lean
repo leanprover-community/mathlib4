@@ -112,7 +112,6 @@ Technically it does not require `𝕜` to be a topological field, a topological 
 happens to be a field is enough.
 -/
 
-
 variable {𝕜 : Type*} [Field 𝕜] [TopologicalSpace 𝕜] [IsTopologicalRing 𝕜]
 
 /--

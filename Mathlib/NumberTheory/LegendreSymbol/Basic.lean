@@ -37,7 +37,6 @@ quadratic residue, quadratic nonresidue, Legendre symbol
 
 @[expose] public section
 
-
 open Nat
 
 section Euler
@@ -90,7 +89,6 @@ section Legendre
 /-!
 ### Definition of the Legendre symbol and basic properties
 -/
-
 
 open ZMod
 
@@ -208,7 +206,6 @@ section QuadraticForm
 ### Applications to binary quadratic forms
 -/
 
-
 namespace legendreSym
 
 /-- The Legendre symbol `legendreSym p a = 1` if there is a solution in `ℤ/pℤ`
@@ -264,7 +261,6 @@ section Values
 
 See `jacobiSym.at_neg_one` for the corresponding statement for the Jacobi symbol.
 -/
-
 
 variable {p : ℕ} [Fact p.Prime]
 

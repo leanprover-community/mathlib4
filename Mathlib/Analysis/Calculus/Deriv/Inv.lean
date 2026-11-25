@@ -25,7 +25,6 @@ derivative
 
 public section
 
-
 universe u
 
 open scoped Topology

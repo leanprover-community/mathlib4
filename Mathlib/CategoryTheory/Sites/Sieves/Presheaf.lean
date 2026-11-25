@@ -30,7 +30,6 @@ sieve, presheaf, Yoneda
 
 @[expose] public section
 
-
 universe w v₁ u₁
 
 namespace CategoryTheory
@@ -160,7 +159,6 @@ theorem sieveOfUliftSubfunctor_uliftFunctorInclusion {S : Sieve X} :
 
 instance uliftFunctorInclusion_top_isIso : IsIso (Sieve.uliftFunctorInclusion.{w} (⊤ : Sieve X)) :=
   ⟨⟨{ app := fun _ ↦ ↾fun a ↦ ⟨a.down, ⟨⟩⟩ }, rfl, rfl⟩⟩
-
 
 end Sieve
 

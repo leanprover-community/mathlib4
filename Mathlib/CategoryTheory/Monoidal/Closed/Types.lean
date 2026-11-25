@@ -22,7 +22,6 @@ Note this implies that the category of presheaves on a small category `C` is Car
 
 @[expose] public section
 
-
 namespace CategoryTheory
 
 noncomputable section

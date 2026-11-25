@@ -51,7 +51,6 @@ relevant instances on C⋆-algebra can be found in the `Instances` file.
 
 @[expose] public section
 
-
 open scoped Pointwise ENNReal NNReal ComplexOrder CStarAlgebra
 
 open WeakDual WeakDual.CharacterSpace
@@ -107,7 +106,6 @@ noncomputable def characterSpaceHomeo :
 end StarAlgebra.elemental
 
 open StarAlgebra elemental
-
 
 /-- **Continuous functional calculus.** Given a normal element `a : A` of a unital C⋆-algebra,
 the continuous functional calculus is a `StarAlgEquiv` from the complex-valued continuous

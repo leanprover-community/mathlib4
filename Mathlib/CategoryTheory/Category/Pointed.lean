@@ -24,7 +24,6 @@ This defines `Pointed`, the category of pointed types.
 
 @[expose] public section
 
-
 open CategoryTheory
 
 universe u

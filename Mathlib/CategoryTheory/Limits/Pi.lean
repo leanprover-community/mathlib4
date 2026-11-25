@@ -19,7 +19,6 @@ Given a functor `F : J ⥤ Π i, C i` into a category of indexed families,
 
 @[expose] public section
 
-
 open CategoryTheory
 
 open CategoryTheory.Limits
@@ -139,6 +138,5 @@ attribute [local instance] hasLimit_of_hasLimit_comp_eval
 example : hasBinaryProducts (I → Type v₁) := ⟨by infer_instance⟩
 ```
 -/
-
 
 end CategoryTheory.pi

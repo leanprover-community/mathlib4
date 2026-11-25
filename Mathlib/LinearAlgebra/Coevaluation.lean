@@ -27,7 +27,6 @@ coevaluation, dual module, tensor product
 
 @[expose] public section
 
-
 noncomputable section
 
 section coevaluation

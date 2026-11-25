@@ -21,7 +21,6 @@ enumeration.
 
 @[expose] public section
 
-
 universe u v
 
 open Finset

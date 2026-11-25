@@ -72,7 +72,6 @@ variable [IsDomain k] [CharP k p] [PerfectRing k p]
 
 /-! ### Frobenius-linear maps -/
 
-
 /-- The Frobenius automorphism of `k` induces an automorphism of `K`. -/
 def FractionRing.frobenius : K(p, k) ≃+* K(p, k) :=
   IsFractionRing.ringEquivOfRingEquiv (frobeniusEquiv p k)
@@ -103,7 +102,6 @@ scoped[Isocrystal]
     LinearEquiv (WittVector.FractionRing.frobeniusRingHom p k) M M₂
 
 /-! ### Isocrystals -/
-
 
 /-- An isocrystal is a vector space over the field `K(p, k)` additionally equipped with a
 Frobenius-linear automorphism.

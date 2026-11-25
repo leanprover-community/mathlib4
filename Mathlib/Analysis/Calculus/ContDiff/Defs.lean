@@ -453,7 +453,6 @@ theorem contDiffWithinAt_succ_iff_hasFDerivWithinAt' (hn : n ≠ ∞) :
     rintro ⟨u, hu, hus, f_an, f', huf', hf'⟩
     exact ⟨u, hu, f_an, f', fun y hy => (huf' y hy).insert'.mono hus, hf'.insert.mono hus⟩
 
-
 /-! ### Smooth functions within a set -/
 
 variable (𝕜) in
@@ -611,7 +610,6 @@ theorem contDiffOn_succ_iff_hasFDerivWithinAt (hn : n ≠ ∞) :
     rcases h x hx with ⟨u, u_nhbd, f_an, f', hu, hf'⟩
     have : x ∈ u := mem_of_mem_nhdsWithin (mem_insert _ _) u_nhbd
     exact ⟨u, u_nhbd, f_an, f', hu, hf' x this⟩
-
 
 /-! ### Iterated derivative within a set -/
 

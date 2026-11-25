@@ -23,11 +23,9 @@ an `OmegaCompletePartialOrder`.
 
 @[expose] public section
 
-
 open CategoryTheory
 
 universe u v
-
 
 /-- The category of types with an omega complete partial order. -/
 structure ωCPO : Type (u + 1) where

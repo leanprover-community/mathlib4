@@ -183,7 +183,6 @@ lemma IsCondKernel.isProbabilityMeasure_ae [IsFiniteKernel κ.fst] [κ.IsCondKer
     gcongr
     finiteness
 
-
 /-! #### Existence of a disintegrating kernel in a countable space -/
 
 section Countable

@@ -58,7 +58,6 @@ compatible with the application of additive functors (see `map_Hσ`).
 
 @[expose] public section
 
-
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits CategoryTheory.Preadditive
   CategoryTheory.SimplicialObject Homotopy Opposite
 

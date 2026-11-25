@@ -28,7 +28,6 @@ on two technical lemmas `HigherFacesVanish.comp_Hσ_eq` and
 
 @[expose] public section
 
-
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Category
   CategoryTheory.Preadditive CategoryTheory.SimplicialObject
 

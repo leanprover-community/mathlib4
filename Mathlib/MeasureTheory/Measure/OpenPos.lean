@@ -20,7 +20,6 @@ about these measures.
 
 public section
 
-
 open Topology ENNReal MeasureTheory
 
 open Set Function Filter

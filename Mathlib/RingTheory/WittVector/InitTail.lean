@@ -34,12 +34,10 @@ and shows how that polynomial interacts with `MvPolynomial.bind₁`.
 
 @[expose] public section
 
-
 variable {p : ℕ} (n : ℕ) {R : Type*} [CommRing R]
 
 -- type as `\bbW`
 local notation "𝕎" => WittVector p
-
 
 namespace WittVector
 

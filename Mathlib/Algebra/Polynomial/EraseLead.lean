@@ -23,7 +23,6 @@ and thus works for polynomials over semirings as well as rings.
 
 @[expose] public section
 
-
 noncomputable section
 
 open Polynomial

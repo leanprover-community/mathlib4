@@ -10,7 +10,6 @@ public import Mathlib.Logic.Equiv.Defs
 
 import Batteries.Tactic.SeqFocus
 
-
 set_option doc.verso true
 set_option doc.verso.suggestions false
 
@@ -31,7 +30,6 @@ This file allows to transfer `Traversable` instances along isomorphisms.
 -/
 
 @[expose] public section
-
 
 universe u
 

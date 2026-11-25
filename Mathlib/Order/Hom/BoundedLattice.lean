@@ -36,7 +36,6 @@ Do we need more intersections between `BotHom`, `TopHom` and lattice homomorphis
 
 @[expose] public section
 
-
 open Function
 
 variable {F α β γ δ : Type*}

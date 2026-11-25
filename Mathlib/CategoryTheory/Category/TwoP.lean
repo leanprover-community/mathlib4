@@ -21,11 +21,9 @@ This defines `TwoP`, the category of two-pointed types.
 
 @[expose] public section
 
-
 open CategoryTheory Option
 
 universe u
-
 
 /-- The category of two-pointed types. -/
 structure TwoP : Type (u + 1) where

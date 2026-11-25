@@ -35,7 +35,6 @@ lie algebra, ideal operation
 
 public section
 
-
 universe u v w w₁ w₂
 
 namespace LieSubmodule

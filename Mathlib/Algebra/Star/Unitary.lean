@@ -31,7 +31,6 @@ unitary
 
 @[expose] public section
 
-
 /-- In a \*-monoid, `unitary R` is the submonoid consisting of all the elements `U` of
 `R` such that `star U * U = 1` and `U * star U = 1`.
 -/

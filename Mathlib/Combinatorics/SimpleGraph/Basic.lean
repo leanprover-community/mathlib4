@@ -769,7 +769,6 @@ theorem disjoint_left {G H : SimpleGraph V} : Disjoint G H ↔ ∀ x y, G.Adj x 
 
 /-! ### Incidence set -/
 
-
 /-- Set of edges incident to a given vertex, aka incidence set. -/
 def incidenceSet (v : V) : Set (Sym2 V) :=
   { e ∈ G.edgeSet | v ∈ e }

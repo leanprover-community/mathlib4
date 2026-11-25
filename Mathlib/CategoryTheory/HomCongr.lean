@@ -25,7 +25,6 @@ As corollaries, an isomorphism `α : X ≅ Y` defines
 
 @[expose] public section
 
-
 set_option mathlib.tactic.category.grind true
 
 universe v u

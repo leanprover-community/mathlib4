@@ -21,7 +21,6 @@ Lemmas about the type of natural numbers with a bottom element adjoined.
 
 public section
 
-
 namespace Nat
 
 namespace WithBot

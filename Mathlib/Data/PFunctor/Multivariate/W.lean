@@ -47,7 +47,6 @@ its valid paths to values of `α`
 
 @[expose] public section
 
-
 universe u v
 
 namespace MvPFunctor
@@ -121,7 +120,6 @@ instance mvfunctorW : MvFunctor P.W := by delta MvPFunctor.W; infer_instance
 First, describe operations on `W` as a polynomial functor.
 -/
 
-
 /-- Constructor for `wp` -/
 def wpMk {α : TypeVec n} (a : P.A) (f : P.last.B a → P.last.W) (f' : P.WPath ⟨a, f⟩ ⟹ α) :
     P.W α :=
@@ -151,7 +149,6 @@ Now think of W as defined inductively by the data ⟨a, f', f⟩ where
 - `f' : P.drop.B a ⟹ α` is the contents of the top node
 - `f  : P.last.B a → P.last.W` are the subtrees
 -/
-
 
 /-- Constructor for `W` -/
 def wMk {α : TypeVec n} (a : P.A) (f' : P.drop.B a ⟹ α) (f : P.last.B a → P.W α) : P.W α :=
@@ -245,7 +242,6 @@ Yet another view of the W type: as a fixed point for a multivariate polynomial f
 These are needed to use the W-construction to construct a fixed point of a qpf, since
 the qpf axioms are expressed in terms of `map` on `P`.
 -/
-
 
 /-- Constructor for the W-type of `P` -/
 def wMk' {α : TypeVec n} : P (α ::: P.W α) → P.W α

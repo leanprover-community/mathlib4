@@ -23,7 +23,6 @@ import Mathlib.Algebra.Polynomial.Degree.Support
 
 @[expose] public section
 
-
 noncomputable section
 
 open AddMonoidAlgebra Finset

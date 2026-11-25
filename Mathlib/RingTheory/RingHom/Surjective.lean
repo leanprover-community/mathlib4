@@ -26,7 +26,6 @@ Let `R` be a commutative ring, `M` be a submonoid of `R`.
 
 public section
 
-
 namespace RingHom
 
 open scoped TensorProduct

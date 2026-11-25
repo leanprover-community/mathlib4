@@ -18,7 +18,6 @@ This file provides two equivalences for linearly ordered fintypes:
 
 @[expose] public section
 
-
 open Finset
 
 /-- Given a linearly ordered fintype `α` of cardinal `k`, the order isomorphism

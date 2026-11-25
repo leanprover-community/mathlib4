@@ -32,7 +32,6 @@ invariant" property is preserved under restriction and gluing.
 
 @[expose] public section
 
-
 open scoped Manifold Topology
 
 open Set TopologicalSpace StructureGroupoid StructureGroupoid.LocalInvariantProp Opposite

@@ -34,7 +34,6 @@ of localizations.
 
 public section
 
-
 section
 
 variable {R S : Type*} [CommSemiring R] [CommSemiring S] {I J : Ideal R}

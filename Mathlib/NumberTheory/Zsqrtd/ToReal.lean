@@ -17,7 +17,6 @@ It is in a separate file to avoid pulling in all of `Data.Real` into `Data.Zsqrt
 
 @[expose] public section
 
-
 namespace Zsqrtd
 
 /-- The image of `Zsqrtd` in `ℝ`, using `Real.sqrt` which takes the positive root of `d`.

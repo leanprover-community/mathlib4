@@ -20,7 +20,6 @@ asserts the existence of some `P.factorThru f : X ⟶ (P : C)` making the obviou
 
 @[expose] public section
 
-
 universe v₁ v₂ u₁ u₂
 
 noncomputable section

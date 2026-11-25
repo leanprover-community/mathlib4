@@ -35,7 +35,6 @@ open scoped Finset
 
 public section
 
-
 open Real Set
 
 open scoped NNReal

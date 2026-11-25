@@ -252,7 +252,6 @@ In this section we define `Submodule.IsOrtho U V`, denoted as `U ⟂ V`.
 The API roughly matches that of `Disjoint`.
 -/
 
-
 namespace Submodule
 
 /-- The proposition that two submodules are orthogonal, denoted as `U ⟂ V`. -/

@@ -26,7 +26,6 @@ The proof proceeds in two steps:
 2. In the general case, we choose a model of `A` over a finitely generated
   `ℤ`-subalgebra of `R` and apply 1.
 
-
 ## References
 
 - [Conde-Lago, A short proof of smooth implies flat][condelago2016shortproofsmoothimplies]

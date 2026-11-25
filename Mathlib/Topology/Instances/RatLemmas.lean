@@ -32,7 +32,6 @@ compactification.
 
 public section
 
-
 open Set Filter TopologicalSpace
 
 open OnePoint

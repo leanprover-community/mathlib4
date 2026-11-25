@@ -92,7 +92,6 @@ section
 variable (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W] {X : C}
   (P : StructuredArrow (L.obj X) L → Prop)
 
-
 @[elab_as_elim]
 lemma induction_structuredArrow
     (hP₀ : P (StructuredArrow.mk (𝟙 (L.obj X))))

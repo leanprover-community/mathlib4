@@ -63,7 +63,6 @@ private lemma isBigO_one_aux :
 
 end lemmas
 
-
 section nat
 
 /-- Summand in the sum to be bounded (`ℕ` version). -/

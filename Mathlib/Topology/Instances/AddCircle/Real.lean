@@ -20,7 +20,6 @@ Results specific to the additive circle over `ℝ`.
 
 @[expose] public section
 
-
 noncomputable section
 
 open AddCommGroup Set Function AddSubgroup

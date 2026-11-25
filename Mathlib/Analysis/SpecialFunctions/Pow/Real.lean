@@ -16,7 +16,6 @@ We construct the power functions `x ^ y`, where `x` and `y` are real numbers.
 
 @[expose] public section
 
-
 noncomputable section
 
 open Real Finset Set
@@ -276,7 +275,6 @@ end Real
 ## Comparing real and complex powers
 -/
 
-
 namespace Complex
 
 theorem ofReal_cpow {x : ℝ} (hx : 0 ≤ x) (y : ℝ) : ((x ^ y : ℝ) : ℂ) = (x : ℂ) ^ (y : ℂ) := by
@@ -406,7 +404,6 @@ end Mathlib.Meta.Positivity
 ## Further algebraic properties of `rpow`
 -/
 
-
 namespace Real
 
 variable {x y z : ℝ} {n : ℕ}
@@ -532,7 +529,6 @@ in `Mathlib/Analysis/SpecialFunctions/Pow/NNReal.lean` instead. -/
 /-!
 ## Order and monotonicity
 -/
-
 
 @[gcongr, bound]
 theorem rpow_lt_rpow (hx : 0 ≤ x) (hxy : x < y) (hz : 0 < z) : x ^ z < y ^ z := by
@@ -975,11 +971,9 @@ lemma norm_log_natCast_le_rpow_div (n : ℕ) {ε : ℝ} (hε : 0 < ε) : ‖log 
 
 end Complex
 
-
 /-!
 ## Square roots of reals
 -/
-
 
 namespace Real
 

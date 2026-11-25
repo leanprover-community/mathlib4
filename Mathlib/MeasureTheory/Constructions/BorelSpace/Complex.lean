@@ -12,7 +12,6 @@ public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 public section
 
-
 noncomputable section
 
 instance (priority := 900) RCLike.measurableSpace {𝕜 : Type*} [RCLike 𝕜] : MeasurableSpace 𝕜 :=

@@ -62,7 +62,6 @@ be used with the theory here.
   conjecture*][GreenfeldTao2024]
 -/
 
-
 @[expose] public section
 
 namespace DiscreteTiling

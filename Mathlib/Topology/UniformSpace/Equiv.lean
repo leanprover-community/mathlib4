@@ -22,7 +22,6 @@ directions uniformly continuous. We denote uniform isomorphisms with the notatio
 
 @[expose] public section
 
-
 open Set Filter
 
 universe u v

@@ -22,7 +22,6 @@ as well as the interaction of `List.Pairwise Disjoint` and the condition of
 
 public section
 
-
 open Finset
 
 variable {α ι ι' : Type*}

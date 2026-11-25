@@ -26,7 +26,6 @@ norm-topology on the model fiber `F₁ [⋀^ι]→L[𝕜] F₂` using the `Vecto
 
 @[expose] public section
 
-
 noncomputable section
 
 open Bundle Set Topology
@@ -432,7 +431,6 @@ variable {F₂ : Type*} [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂] {E₂ 
 variable [∀ x, IsTopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜 (E₂ x)]
 
 variable {X : Type*} [TopologicalSpace X] {s : Set X} {x₀ : X}
-
 
 theorem continuousWithinAt_continuousAlternatingMap_bundle
     (f : X → TotalSpace (F₁ [⋀^ι]→L[𝕜] F₂) (fun x ↦ E₁ x [⋀^ι]→L[𝕜] E₂ x)) :

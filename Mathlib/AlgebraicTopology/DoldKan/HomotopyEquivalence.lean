@@ -20,7 +20,6 @@ normalized Moore complex and the alternating face map complex of a simplicial ob
 
 @[expose] public section
 
-
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
   CategoryTheory.Preadditive
 
@@ -74,7 +73,6 @@ def homotopyPInftyToId : Homotopy (PInfty : K[X] ⟶ _) (𝟙 _) where
           homotopyPToId_eventually_constant X (Nat.lt_add_one (Nat.succ n)),
           Homotopy.dNext_succ_chainComplex, Homotopy.prevD_chainComplex]
         using (homotopyPToId X (n + 2)).comm (n + 1)
-
 
 /-- The inclusion of the Moore complex in the alternating face map complex
 is a homotopy equivalence -/

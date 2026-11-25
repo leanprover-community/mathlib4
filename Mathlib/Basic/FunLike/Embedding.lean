@@ -130,7 +130,6 @@ instead of linearly increasing the work per `MyEmbedding`-related declaration.
 
 public section
 
-
 /-- The class `EmbeddingLike F α β` expresses that terms of type `F` have an
 injective coercion to injective functions `α ↪ β`.
 -/

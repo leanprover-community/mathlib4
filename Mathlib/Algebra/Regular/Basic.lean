@@ -133,7 +133,6 @@ theorem IsRegular.and_of_mul_of_mul (ab : IsRegular (a * b)) (ba : IsRegular (b 
 
 end Semigroup
 
-
 section MulOneClass
 
 variable [MulOneClass R]

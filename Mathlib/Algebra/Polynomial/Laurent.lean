@@ -73,7 +73,6 @@ Lots is missing!
 
 @[expose] public section
 
-
 open Polynomial Function AddMonoidAlgebra Finsupp
 
 noncomputable section

@@ -30,7 +30,6 @@ derivative, inverse function
 
 public section
 
-
 universe u v
 
 open scoped Topology

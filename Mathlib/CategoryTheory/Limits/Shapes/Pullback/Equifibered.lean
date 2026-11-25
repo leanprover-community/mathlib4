@@ -26,7 +26,6 @@ public import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 @[expose] public section
 
-
 open CategoryTheory.Limits CategoryTheory.Functor
 
 namespace CategoryTheory

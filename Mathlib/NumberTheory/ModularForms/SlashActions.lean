@@ -28,7 +28,6 @@ Scoped in the `ModularForm` namespace, this file defines
 
 @[expose] public section
 
-
 open Complex UpperHalfPlane
 
 open scoped MatrixGroups

@@ -32,13 +32,11 @@ Both hold for all (non-minimal) elements in a linear order.
 
 @[expose] public section
 
-
 open Finset OrderDual
 
 variable {ι α : Type*}
 
 /-! ### Irreducible and prime elements -/
-
 
 section SemilatticeSup
 

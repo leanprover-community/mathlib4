@@ -249,7 +249,6 @@ variable [CommRing K] [CommRing L] [CommRing M] [CommRing N]
   (i : K →+* L) (j : K →+* M) (k : K →+* N) (f : L →+* M) (g : L →+* N)
   (p : ℕ) [ExpChar M p]
 
-
 namespace IsPRadical
 
 /-- If `i : K →+* L` is `p`-radical, then for any ring `M` of exponential characteristic `p` whose

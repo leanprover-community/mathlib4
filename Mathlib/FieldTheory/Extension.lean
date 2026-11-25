@@ -335,7 +335,6 @@ theorem exists_algHom_of_adjoin_splits_of_aeval : ∃ φ : E →ₐ[F] K, φ x =
   have ⟨φ, hφ⟩ := exists_algHom_adjoin_of_splits_of_aeval hK (hS ▸ mem_top) hy
   ⟨φ.comp ((equivOfEq hS).trans topEquiv).symm.toAlgHom, hφ⟩
 
-
 include hK'
 
 end

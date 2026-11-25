@@ -27,7 +27,6 @@ monoidal distributive.
 
 - The coproduct coprojections are monic in a Cartesian distributive category.
 
-
 ## TODO
 
 - Every Cartesian distributive category is finitary distributive, meaning that

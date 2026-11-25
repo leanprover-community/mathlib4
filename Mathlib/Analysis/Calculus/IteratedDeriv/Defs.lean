@@ -73,7 +73,6 @@ theorem iteratedDerivWithin_eq_iteratedDeriv (hs : UniqueDiffOn 𝕜 s) (h : Con
 
 /-! ### Properties of the iterated derivative within a set -/
 
-
 theorem iteratedDerivWithin_eq_iteratedFDerivWithin : iteratedDerivWithin n f s x =
     (iteratedFDerivWithin 𝕜 n f s x : (Fin n → 𝕜) → F) fun _ : Fin n => 1 :=
   rfl
@@ -222,7 +221,6 @@ theorem contDiffOn_nat_succ_iff_contDiffOn_one_iteratedDerivWithin {n : ℕ}
   grind
 
 /-! ### Properties of the iterated derivative on the whole space -/
-
 
 theorem iteratedDeriv_eq_iteratedFDeriv :
     iteratedDeriv n f x = (iteratedFDeriv 𝕜 n f x : (Fin n → 𝕜) → F) fun _ : Fin n => 1 :=

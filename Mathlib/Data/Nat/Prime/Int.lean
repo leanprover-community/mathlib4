@@ -21,7 +21,6 @@ TODO: This file can probably be merged with `Mathlib/Data/Int/NatPrime.lean`.
 
 public section
 
-
 namespace Nat
 
 theorem prime_iff_prime_int {p : ℕ} : p.Prime ↔ _root_.Prime (p : ℤ) :=

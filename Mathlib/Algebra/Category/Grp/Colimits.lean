@@ -272,7 +272,6 @@ instance hasColimit [Small.{w} J] (F : J ⥤ AddCommGrpCat.{w}) : HasColimit F :
   classical
   exact hasColimit_of_small_quot F inferInstance
 
-
 /--
 If `J` is `w`-small, then any functor `J ⥤ AddCommGrpCat.{w}` has a colimit.
 -/

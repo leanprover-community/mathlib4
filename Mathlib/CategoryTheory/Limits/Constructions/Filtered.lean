@@ -27,7 +27,6 @@ We also deduce the dual statement by invoking the original statement in `Cᵒᵖ
 
 @[expose] public section
 
-
 universe w v u
 
 noncomputable section
@@ -193,7 +192,6 @@ def liftToFinsetObj (F : Discrete α ⥤ C) : (Finset (Discrete α))ᵒᵖ ⥤ C
   obj s := ∏ᶜ (fun x : s.unop => F.obj x)
   map {Y _} h := Pi.lift fun y =>
     Pi.π (fun (x : { x // x ∈ Y.unop }) => F.obj x) ⟨y, h.unop.down.down y.property⟩
-
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

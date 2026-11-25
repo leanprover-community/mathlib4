@@ -33,7 +33,6 @@ matrix
 
 public section
 
-
 variable {m n p R : Type*}
 
 section Semiring

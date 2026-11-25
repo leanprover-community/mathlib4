@@ -189,7 +189,6 @@ noncomputable
 def representableBy : F.obj.RepresentableBy (glueData hf).glued :=
   Functor.representableByEquiv.symm ((sheafToPresheaf _ _).mapIso (yonedaIsoSheaf hf))
 
-
 include hf in
 /--
 Suppose

@@ -373,7 +373,6 @@ noncomputable def mkOfOplax' {F G : B ⥤ᵒᵖᴸ C} (η : OplaxTrans F G)
 
 variable (F : B ⥤ᵒᵖᴸ C)
 
-
 /-- The identity strong natural transformation. -/
 @[simps!]
 def id : StrongTrans F F :=
@@ -385,7 +384,6 @@ lemma id.toOplax : (id F).toOplax = OplaxTrans.id F :=
 
 instance : Inhabited (StrongTrans F F) :=
   ⟨id F⟩
-
 
 variable {F} {G H : B ⥤ᵒᵖᴸ C} (η : StrongTrans F G) (θ : StrongTrans G H)
 

@@ -396,7 +396,6 @@ theorem isClosedEmbedding : IsClosedEmbedding I :=
 theorem isClosed_range : IsClosed (range I) :=
   I.isClosedEmbedding.isClosed_range
 
-
 theorem range_eq_closure_interior : range I = closure (interior (range I)) :=
   Subset.antisymm I.range_subset_closure_interior I.isClosed_range.closure_interior_subset
 
@@ -622,7 +621,6 @@ end Boundaryless
 section contDiffGroupoid
 
 /-! ### `C^n` functions on models with corners -/
-
 
 variable {m n : ℕ∞ω} {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]

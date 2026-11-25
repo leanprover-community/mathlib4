@@ -74,7 +74,6 @@ theorem toList_ofFn : ∀ {n} (f : Fin n → α), toList (ofFn f) = List.ofFn f
 theorem mk_toList : ∀ (v : Vector α n) (h), (⟨toList v, h⟩ : Vector α n) = v
   | ⟨_, _⟩, _ => rfl
 
-
 @[simp] theorem length_val (v : Vector α n) : v.val.length = n := v.property
 
 @[simp]

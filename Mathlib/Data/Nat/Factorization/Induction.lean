@@ -20,7 +20,6 @@ variable {a b n p : ℕ}
 
 /-! ## Definitions -/
 
-
 /-- Given `P 0, P 1` and a way to extend `P a` to `P (p ^ n * a)` for prime `p` not dividing `a`,
 we can define `P` for all natural numbers. -/
 @[elab_as_elim]

@@ -50,7 +50,6 @@ This section develops some geometrical definitions and results on
 Euclidean affine spaces.
 -/
 
-
 variable {V : Type*} {P : Type*}
 variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
 variable [NormedAddTorsor V P]

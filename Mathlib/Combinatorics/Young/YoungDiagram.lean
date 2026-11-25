@@ -53,7 +53,6 @@ Young diagram
 
 @[expose] public section
 
-
 open Function
 
 /-- A Young diagram is a finite collection of cells on the `ℕ × ℕ` grid such that whenever
@@ -253,7 +252,6 @@ This section defines `μ.row` and `μ.rowLen`, with the following API:
 Note: #3 is not convenient for defining `μ.rowLen`; instead, `μ.rowLen` is defined
 as the smallest `j` such that `(i, j) ∉ μ`. -/
 
-
 /-- The `i`-th row of a Young diagram consists of the cells whose first coordinate is `i`. -/
 def row (μ : YoungDiagram) (i : ℕ) : Finset (ℕ × ℕ) :=
   μ.cells.filter fun c => c.fst = i
@@ -306,7 +304,6 @@ section Columns
 /-! ### Columns and column lengths of Young diagrams.
 
 This section has an identical API to the rows section. -/
-
 
 /-- The `j`-th column of a Young diagram consists of the cells whose second coordinate is `j`. -/
 def col (μ : YoungDiagram) (j : ℕ) : Finset (ℕ × ℕ) :=
@@ -362,7 +359,6 @@ This section defines `μ.rowLens : List ℕ`, the list of row lengths of a Young
   2. `YoungDiagram.rowLens_pos` : It is strictly positive.
 -/
 
-
 /-- List of row lengths of a Young diagram -/
 def rowLens (μ : YoungDiagram) : List ℕ :=
   (List.range <| μ.colLen 0).map μ.rowLen
@@ -409,7 +405,6 @@ of positive natural numbers, corresponding to row lengths of the diagram:
 
 The two directions are `YoungDiagram.rowLens` (defined above) and `YoungDiagram.ofRowLens`.
 -/
-
 
 /-- The cells making up a `YoungDiagram` from a list of row lengths -/
 protected def cellsOfRowLens : List ℕ → Finset (ℕ × ℕ)

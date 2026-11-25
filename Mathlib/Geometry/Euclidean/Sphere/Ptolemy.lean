@@ -43,7 +43,6 @@ and so on.
 
 public section
 
-
 open Real
 
 open scoped EuclideanGeometry RealInnerProductSpace Real

@@ -23,7 +23,6 @@ We compute the discriminant of a `p ^ n`-th cyclotomic extension.
 
 public section
 
-
 universe u v
 
 open Algebra Polynomial Nat IsPrimitiveRoot PowerBasis

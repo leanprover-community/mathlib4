@@ -43,7 +43,6 @@ multiplicative character
 
 open scoped Ring
 
-
 /-!
 ### Definitions related to multiplicative characters
 
@@ -57,7 +56,6 @@ In this setting, there is an equivalence between multiplicative characters
 `R → R'` and group homomorphisms `Rˣ → R'ˣ`, and the multiplicative characters
 have a natural structure as a commutative group.
 -/
-
 
 section Defi
 
@@ -147,7 +145,6 @@ We show that restriction / extension by zero gives an equivalence
 between `MulChar R R'` and `Rˣ →* R'ˣ`.
 -/
 
-
 /-- Turn a `MulChar` into a homomorphism between the unit groups. -/
 def toUnitHom (χ : MulChar R R') : Rˣ →* R'ˣ :=
   Units.map χ
@@ -228,7 +225,6 @@ instance [Nontrivial R'] (χ : MulChar R R') : IsLocalHom χ where
 
 The multiplicative characters `R → R'` form a commutative group.
 -/
-
 
 protected theorem map_one (χ : MulChar R R') : χ (1 : R) = 1 :=
   χ.map_one'
@@ -416,7 +412,6 @@ some basic facts about them.
 
 We now (mostly) assume that the target is a commutative ring.
 -/
-
 
 section Properties
 

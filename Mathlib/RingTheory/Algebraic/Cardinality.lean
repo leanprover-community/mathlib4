@@ -21,7 +21,6 @@ This file contains results on cardinality of algebraic extensions.
 
 public section
 
-
 universe u v
 
 open Cardinal Module

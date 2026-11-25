@@ -28,7 +28,6 @@ isotropy, vertex group, groupoid
 
 @[expose] public section
 
-
 namespace CategoryTheory
 
 namespace Groupoid

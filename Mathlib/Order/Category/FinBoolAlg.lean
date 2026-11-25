@@ -31,7 +31,6 @@ FintypeCat_to_FinBoolAlg_op.left_op
 
 @[expose] public section
 
-
 universe u
 
 open CategoryTheory OrderDual Opposite

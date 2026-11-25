@@ -9,7 +9,6 @@ public import Mathlib.Basic.FunLike.Equiv
 public import Mathlib.Data.Quot
 public import Mathlib.Data.Subtype
 
-
 /-!
 # Equivalence between types
 

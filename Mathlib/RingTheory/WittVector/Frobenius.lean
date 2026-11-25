@@ -47,7 +47,6 @@ and bundle it into `WittVector.frobenius`.
 
 @[expose] public section
 
-
 namespace WittVector
 
 variable {p : ℕ} {R : Type*} [hp : Fact p.Prime] [CommRing R]

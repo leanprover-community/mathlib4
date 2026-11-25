@@ -268,7 +268,6 @@ lemma comp_sub (f : π₂ →ⁱL π₃) (g h : π₁ →ⁱL π₂) :
     f.comp (g - h) = f.comp g - f.comp h := by
   ext; simp
 
-
 section addcommgroup
 
 variable {S : Type*} [Monoid S] [DistribMulAction S W] [SMulCommClass R S W]

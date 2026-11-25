@@ -44,7 +44,6 @@ end Subgroup
 ### Conversion to/from `Additive`/`Multiplicative`
 -/
 
-
 namespace Subgroup
 
 variable (H K : Subgroup G)

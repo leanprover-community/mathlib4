@@ -41,9 +41,7 @@ refined properties of the Gamma function using these relations.
 
 @[expose] public section
 
-
 noncomputable section
-
 
 open Filter intervalIntegral Set Real MeasureTheory
 
@@ -52,7 +50,6 @@ open scoped Nat Topology Real
 section BetaIntegral
 
 /-! ## The Beta function -/
-
 
 namespace Complex
 
@@ -222,7 +219,6 @@ section LimitFormula
 
 /-! ## The Euler limit formula -/
 
-
 namespace Complex
 
 /-- The sequence with `n`-th term `n ^ s * n! / (s * (s + 1) * ... * (s + n))`, for complex `s`.
@@ -364,7 +360,6 @@ end LimitFormula
 section GammaReflection
 
 /-! ## The reflection formula -/
-
 
 namespace Complex
 
@@ -527,7 +522,6 @@ We show that the reciprocal Gamma function `1 / Γ(s)` is entire. These lemmas s
 case at least) mathlib's conventions for division by zero do actually give a mathematically useful
 answer! (These results are useful in the theory of zeta and L-functions.) -/
 
-
 /-- A reformulation of the Gamma recurrence relation which is true for `s = 0` as well. -/
 theorem one_div_Gamma_eq_self_mul_one_div_Gamma_add_one (s : ℂ) :
     (Gamma s)⁻¹ = s * (Gamma (s + 1))⁻¹ := by
@@ -570,7 +564,6 @@ We prove the doubling formula for arbitrary real or complex arguments, by analyt
 the positive real case. (Knowing that `Γ⁻¹` is analytic everywhere makes this much simpler, since we
 do not have to do any special-case handling for the poles of `Γ`.)
 -/
-
 
 namespace Complex
 

@@ -29,7 +29,6 @@ be satisfied by itself and all stricter types.
 
 @[expose] public section
 
-
 open Function
 
 variable {F α β γ δ : Type*}
@@ -75,7 +74,6 @@ instance : CoeTC F (α →Co β) :=
 
 end ContinuousOrderHomClass
 /-! ### Top homomorphisms -/
-
 
 namespace ContinuousOrderHom
 

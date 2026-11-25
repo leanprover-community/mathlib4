@@ -78,7 +78,6 @@ instance {β : Type v} [Countable β] : Countable (ULift.{u} β) :=
 ### Operations on `Sort*`s
 -/
 
-
 instance [Countable α] : Countable (PLift α) :=
   Equiv.plift.injective.countable
 

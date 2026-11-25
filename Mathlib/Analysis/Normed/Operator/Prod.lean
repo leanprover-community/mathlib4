@@ -60,11 +60,9 @@ theorem opNorm_prod (f : E →L[𝕜] F) (g : E →L[𝕜] G) : ‖f.prod g‖ =
       (opNorm_le_bound _ (norm_nonneg _) fun x =>
         (le_max_right _ _).trans ((f.prod g).le_opNorm x))
 
-
 @[simp]
 theorem opNNNorm_prod (f : E →L[𝕜] F) (g : E →L[𝕜] G) : ‖f.prod g‖₊ = ‖(f, g)‖₊ :=
   Subtype.ext <| opNorm_prod f g
-
 
 /-- `ContinuousLinearMap.prod` as a `LinearIsometryEquiv`. -/
 noncomputable def prodₗᵢ (R : Type*)
@@ -74,7 +72,6 @@ noncomputable def prodₗᵢ (R : Type*)
   ⟨prodₗ R, fun ⟨f, g⟩ => opNorm_prod f g⟩
 
 end OpNorm
-
 
 section Prod
 

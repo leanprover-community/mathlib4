@@ -38,7 +38,6 @@ variable {γ : Type*}
 ### Uniformity on compact spaces
 -/
 
-
 /-- The unique uniform structure inducing a given compact topological structure. -/
 @[instance_reducible]
 def uniformSpaceOfCompactR1 [TopologicalSpace γ] [CompactSpace γ] [R1Space γ] : UniformSpace γ where

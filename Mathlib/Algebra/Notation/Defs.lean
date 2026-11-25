@@ -36,7 +36,6 @@ assert_not_exists Function.Bijective
 
 universe u v w
 
-
 /--
 The notation typeclass for heterogeneous additive actions.
 This enables the notation `a +ᵥ b : γ` where `a : α`, `b : β`.

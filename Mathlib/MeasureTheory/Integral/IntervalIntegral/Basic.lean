@@ -51,7 +51,6 @@ integral
 
 @[expose] public section
 
-
 noncomputable section
 
 open MeasureTheory Set Filter Function TopologicalSpace
@@ -64,7 +63,6 @@ variable {ι 𝕜 ε ε' E F A : Type*} [NormedAddCommGroup E]
 /-!
 ### Integrability on an interval
 -/
-
 
 /-- A function `f` is called *interval integrable* with respect to a measure `μ` on an unordered
 interval `a..b` if it is integrable on both intervals `(a, b]` and `(b, a]`. One of these

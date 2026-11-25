@@ -13,7 +13,6 @@ public import Mathlib.Data.Finset.Sort
 
 import Mathlib.Algebra.Order.Group.Nat
 
-
 /-!
 # Theory of univariate polynomials
 

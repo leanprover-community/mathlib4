@@ -30,7 +30,6 @@ traversable bitraversable functor bifunctor applicative
 
 @[expose] public section
 
-
 universe u v w
 
 variable {t : Type u → Type u → Type u} [Bitraversable t]
@@ -61,7 +60,6 @@ instance : Bitraversable Sum where bitraverse := @Sum.bitraverse
 instance : LawfulBitraversable Sum := by
   constructor <;> intros <;> casesm _ ⊕ _ <;>
     simp [bitraverse, Sum.bitraverse, functor_norm] <;> rfl
-
 
 set_option linter.unusedVariables false in
 /-- The bitraverse function for `Const`. It throws away the second map. -/

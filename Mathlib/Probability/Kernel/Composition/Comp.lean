@@ -34,7 +34,6 @@ a kernel from `α` to `γ`.
 
 @[expose] public section
 
-
 open MeasureTheory
 
 open scoped ENNReal

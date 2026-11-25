@@ -19,7 +19,6 @@ from `NonUnitalSeminormedRing` to `NormedField`.
 
 @[expose] public section
 
-
 open Set Metric
 
 variable {𝕜 : Type*}

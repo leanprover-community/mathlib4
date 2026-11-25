@@ -162,7 +162,6 @@ example : TFAE [P, Q, R] := by
 -/
 syntax (name := tfaeFinish) "tfae_finish" : tactic
 
-
 /-! ### Setup -/
 
 open List Lean Meta Expr Elab Tactic Mathlib.Tactic Qq

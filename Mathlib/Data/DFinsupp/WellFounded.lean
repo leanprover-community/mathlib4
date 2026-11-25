@@ -52,7 +52,6 @@ to be well-founded.
 
 public section
 
-
 variable {ι : Type*} {α : ι → Type*}
 
 namespace DFinsupp

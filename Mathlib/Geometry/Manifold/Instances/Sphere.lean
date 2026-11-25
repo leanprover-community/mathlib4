@@ -49,7 +49,6 @@ centred at `0` of radius `1`) with the following structure:
 We furthermore show that `Circle.exp` (defined in `Analysis.Complex.Circle` to be the natural
 map `fun t ↦ exp (t * I)` from `ℝ` to `Circle`) is analytic.
 
-
 ## Implementation notes
 
 The model space for the charted space instance is `EuclideanSpace ℝ (Fin n)`, where `n` is a
@@ -67,7 +66,6 @@ Relate the stereographic projection to the inversion of the space.
 
 @[expose] public section
 
-
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 
 noncomputable section
@@ -81,7 +79,6 @@ section StereographicProjection
 variable (v : E)
 
 /-! ### Construction of the stereographic projection -/
-
 
 /-- Stereographic projection, forward direction. This is a map from an inner product space `E` to
 the orthogonal complement of an element `v` of `E`. It is smooth away from the affine hyperplane

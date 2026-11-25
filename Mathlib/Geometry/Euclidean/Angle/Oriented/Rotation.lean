@@ -23,7 +23,6 @@ This file defines rotations by oriented angles in real inner product spaces.
 
 @[expose] public section
 
-
 noncomputable section
 
 open Module Complex

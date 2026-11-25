@@ -28,7 +28,6 @@ This file also contains Doob's maximal inequality: given a non-negative submarti
 
 public section
 
-
 open scoped NNReal ENNReal MeasureTheory ProbabilityTheory
 
 namespace MeasureTheory

@@ -69,7 +69,6 @@ namespace Miu
 ### Declarations and instance derivations for `MiuAtom` and `Miustr`
 -/
 
-
 /-- The atoms of MIU can be represented as an enumerated type in Lean.
 -/
 inductive MiuAtom : Type
@@ -83,7 +82,6 @@ The annotation `deriving DecidableEq` above indicates that Lean will automatical
 `MiuAtom` is an instance of `DecidableEq`. The use of `deriving` is crucial in this project and will
 lead to the automatic derivation of decidability.
 -/
-
 
 open MiuAtom
 
@@ -138,7 +136,6 @@ instance stringCoeMiustr : Coe String Miustr :=
 ### Derivability
 -/
 
-
 /--
 The inductive type `Derivable` has five constructors. The nonrecursive constructor `mk` corresponds
 to Hofstadter's axiom that `"MI"` is derivable. Each of the constructors `r1`, `r2`, `r3`, `r4`
@@ -154,7 +151,6 @@ inductive Derivable : Miustr → Prop
 /-!
 ### Rule usage examples
 -/
-
 
 example (h : Derivable "UMI") : Derivable "UMIU" := by
   change Derivable ([U, M] ++ [I, U])
@@ -175,7 +171,6 @@ example (h : Derivable "MIMIMUUIIM") : Derivable "MIMIMIIM" := by
 /-!
 ### Derivability examples
 -/
-
 
 private theorem MIU_der : Derivable "MIU" := by
   change Derivable ([M] ++ [I, U])

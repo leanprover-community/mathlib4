@@ -24,7 +24,6 @@ We also provide `ULift.ringEquiv : ULift R ≃+* R`.
 
 @[expose] public section
 
-
 universe u u₁ u₂
 
 variable {R : Type u}

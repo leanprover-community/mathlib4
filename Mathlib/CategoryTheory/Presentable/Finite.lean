@@ -21,7 +21,6 @@ and link this definition with the preservation of filtered colimits.
 
 @[expose] public section
 
-
 universe w v' v u' u
 
 namespace CategoryTheory

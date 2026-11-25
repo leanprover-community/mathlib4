@@ -103,7 +103,6 @@ theorem filterMap_join (S : Multiset (Multiset α)) (f : α → Option β) :
 
 /-! ### Bind -/
 
-
 section Bind
 
 variable (a : α) (s t : Multiset α) (f g : α → Multiset β)
@@ -288,7 +287,6 @@ end Bind
 
 /-! ### Product of two multisets -/
 
-
 section Product
 
 variable (a : α) (b : β) (s : Multiset α) (t : Multiset β)
@@ -359,7 +357,6 @@ lemma prod_map_product_eq_prod_prod {M : Type*} [CommMonoid M]
 end Product
 
 /-! ### Disjoint sum of multisets -/
-
 
 section Sigma
 

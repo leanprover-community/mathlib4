@@ -44,7 +44,6 @@ arc-length, parameterization
 
 @[expose] public section
 
-
 open scoped NNReal ENNReal
 
 open Set

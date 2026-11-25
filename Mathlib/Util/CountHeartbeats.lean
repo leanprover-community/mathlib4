@@ -25,7 +25,6 @@ If this number is above the current `maxHeartbeats`, we also print a `Try this:`
 
 public meta section
 
-
 open Lean Elab Command Meta Linter
 
 namespace Mathlib.CountHeartbeats

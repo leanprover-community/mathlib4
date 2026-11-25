@@ -512,7 +512,6 @@ lemma drop_sum_flatten (L : List (List α)) (i : ℕ) :
 
 end List
 
-
 namespace List
 
 /-- If all elements in a list are bounded below by `1`, then the length of the list is bounded

@@ -35,7 +35,6 @@ the incenter or an excenter.
 
 @[expose] public noncomputable section
 
-
 open EuclideanGeometry
 open scoped Finset RealInnerProductSpace
 

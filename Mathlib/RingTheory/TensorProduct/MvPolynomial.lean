@@ -38,7 +38,6 @@ Let `Semiring R`, `Algebra R S` and `Module R N`.
 
 @[expose] public section
 
-
 universe u v
 
 noncomputable section

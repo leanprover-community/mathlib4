@@ -25,7 +25,6 @@ open scoped Topology
 
 namespace Asymptotics
 
-
 variable {α : Type*} {β : Type*} {E : Type*} {F : Type*} {G : Type*} {E' : Type*}
   {F' : Type*} {G' : Type*} {E'' : Type*} {F'' : Type*} {E''' : Type*}
   {R : Type*} {𝕜 : Type*} {𝕜' : Type*}

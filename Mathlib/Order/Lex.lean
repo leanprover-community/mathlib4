@@ -42,7 +42,6 @@ variable {α : Type*}
 
 /-! ### Lexicographic order -/
 
-
 /-- A type synonym to equip a type with its lexicographic order. -/
 def Lex (α : Type*) :=
   α
@@ -99,7 +98,6 @@ protected def Lex.rec {β : Lex α → Sort*} (h : ∀ a, β (toLex a)) : ∀ a,
 @[simp] lemma Lex.exists {p : Lex α → Prop} : (∃ a, p a) ↔ ∃ a, p (toLex a) := Iff.rfl
 
 /-! ### Colexicographic order -/
-
 
 /-- A type synonym to equip a type with its lexicographic order. -/
 def Colex (α : Type*) :=

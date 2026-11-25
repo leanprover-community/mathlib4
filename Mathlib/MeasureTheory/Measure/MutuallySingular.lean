@@ -25,7 +25,6 @@ measure, mutually singular
 
 @[expose] public section
 
-
 open Set CompleteLattice
 
 open MeasureTheory NNReal ENNReal Filter

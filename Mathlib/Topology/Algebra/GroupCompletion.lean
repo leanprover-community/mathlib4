@@ -33,7 +33,6 @@ the main constructions deal with continuous group morphisms.
 
 @[expose] public section
 
-
 noncomputable section
 
 variable {M R α β : Type*}

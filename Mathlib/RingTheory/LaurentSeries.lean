@@ -14,7 +14,6 @@ public import Mathlib.RingTheory.PowerSeries.Inverse
 
 import Mathlib.RingTheory.PowerSeries.Trunc
 
-
 /-!
 # Laurent Series
 
@@ -496,7 +495,6 @@ theorem valuation_eq_LaurentSeries_valuation (P : K⟮X⟯) :
 end RatFunc
 
 namespace LaurentSeries
-
 
 open IsDedekindDomain.HeightOneSpectrum PowerSeries RatFunc WithZero
 

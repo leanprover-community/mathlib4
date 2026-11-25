@@ -18,7 +18,6 @@ This file defines the lexicographic order on `DFinsupp`.
 
 @[expose] public section
 
-
 variable {ι : Type*} {α : ι → Type*}
 
 namespace DFinsupp

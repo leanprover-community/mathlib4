@@ -65,7 +65,6 @@ We begin with some lemmas about the stream of `IntFractPair`s, which presumably 
 of great interest for the end user.
 -/
 
-
 /-- Shows that the fractional parts of the stream are in `[0,1)`. -/
 theorem nth_stream_fr_nonneg_lt_one {ifp_n : IntFractPair K}
     (nth_stream_eq : IntFractPair.stream v n = some ifp_n) : 0 ≤ ifp_n.fr ∧ ifp_n.fr < 1 := by
@@ -124,7 +123,6 @@ end IntFractPair
 Next we translate above results about the stream of `IntFractPair`s to the computed continued
 fraction `GenContFract.of`.
 -/
-
 
 /-- Shows that the integer parts of the continued fraction are at least one. -/
 theorem of_one_le_get?_partDen {b : K}
@@ -201,7 +199,6 @@ denominators `Bₙ` are bounded from below by the fibonacci sequence `Nat.fib`. 
 `0 ≤ Bₙ` and hence `Bₙ₊₂ = bₙ₊₁ * Bₙ₊₁ + Bₙ ≥ bₙ₊₁ * Bₙ₊₁ + 0 = bₙ₊₁ * Bₙ₊₁`.
 -/
 
-
 -- open `Nat` as we will make use of fibonacci numbers.
 open Nat
 
@@ -255,7 +252,6 @@ theorem succ_nth_fib_le_of_nth_den (hyp : n = 0 ∨ ¬(of v).TerminatedAt (n - 1
   exact fib_le_of_contsAux_b this
 
 /-! As a simple consequence, we can now derive that all denominators are nonnegative. -/
-
 
 theorem zero_le_of_contsAux_b : 0 ≤ ((of v).contsAux n).b := by
   let g := of v
@@ -319,7 +315,6 @@ section ErrorTerm
 Next we derive some approximations for the error term when computing a continued fraction up a given
 position, i.e. bounds for the term `|v - (GenContFract.of v).convs n|`.
 -/
-
 
 /-- This lemma follows from the finite correctness proof, the determinant equality, and
 by simplifying the difference. -/

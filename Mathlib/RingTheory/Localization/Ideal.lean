@@ -28,7 +28,6 @@ commutative ring, field of fractions
 
 @[expose] public section
 
-
 namespace IsLocalization
 
 section CommSemiring

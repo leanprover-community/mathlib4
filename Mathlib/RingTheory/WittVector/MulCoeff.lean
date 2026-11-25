@@ -32,7 +32,6 @@ that needs to happen in characteristic 0.
 
 @[expose] public section
 
-
 noncomputable section
 
 namespace WittVector

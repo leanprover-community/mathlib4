@@ -30,7 +30,6 @@ code.
 
 @[expose] public section
 
-
 section HammingDistNorm
 
 open Finset Function
@@ -264,7 +263,6 @@ instance (α) [Semiring α] (β : ι → Type*) [∀ i, AddCommMonoid (β i)] [�
   inferInstanceAs <| Module α (∀ i, β i)
 
 /-! API to/from the type synonym. -/
-
 
 /-- `Hamming.toHamming` is the identity function to the `Hamming` of a type. -/
 @[match_pattern]

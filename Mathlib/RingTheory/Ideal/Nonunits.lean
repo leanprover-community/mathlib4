@@ -24,7 +24,6 @@ set_option doc.verso.suggestions false
 
 @[expose] public section
 
-
 variable {F α β : Type*} {a b : α}
 
 /-- The set of non-invertible elements of a monoid. -/

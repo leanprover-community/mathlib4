@@ -24,7 +24,6 @@ This is in a separate file to avoid having to import the development of the abel
 
 public section
 
-
 universe v u
 
 open CategoryTheory.Preadditive Opposite CategoryTheory.Limits

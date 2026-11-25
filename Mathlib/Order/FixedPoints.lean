@@ -35,7 +35,6 @@ fixed point, complete lattice, monotone function
 
 @[expose] public section
 
-
 universe u v w
 
 variable {α : Type u} {β : Type v}

@@ -240,7 +240,6 @@ theorem ACF_zero_realize_iff_finite_ACF_prime_not_realize {φ : Language.ring.Se
     fun h => ACF_zero_realize_iff_infinite_ACF_prime_realize.2
       (Set.infinite_of_finite_compl h)⟩
 
-
 end Field
 
 end FirstOrder

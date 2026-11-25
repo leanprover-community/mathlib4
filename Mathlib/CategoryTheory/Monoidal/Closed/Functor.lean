@@ -34,7 +34,6 @@ Frobenius reciprocity, Cartesian closed functor
 
 @[expose] public section
 
-
 noncomputable section
 
 namespace CategoryTheory

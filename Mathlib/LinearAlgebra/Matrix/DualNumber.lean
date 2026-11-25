@@ -20,7 +20,6 @@ Showing this for the more general case of `TrivSqZeroExt R M` would require an a
 
 @[expose] public section
 
-
 variable {R n : Type*} [CommSemiring R] [Fintype n] [DecidableEq n]
 
 open Matrix TrivSqZeroExt

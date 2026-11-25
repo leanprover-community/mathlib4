@@ -12,7 +12,6 @@ public import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
 import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 import Mathlib.RingTheory.Polynomial.IsIntegral
 
-
 /-!
 # Universal factorization ring
 

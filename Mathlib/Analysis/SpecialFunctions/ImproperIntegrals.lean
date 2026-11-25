@@ -28,7 +28,6 @@ mathlib's conventions for integrals over finite intervals (see `intervalIntegral
 
 public section
 
-
 open Real Set Filter MeasureTheory intervalIntegral
 
 open scoped Topology

@@ -336,7 +336,6 @@ theorem coe_inverse' (f : A →ₛₙₐ[φ] B) (g : B → A)
 
 Note that much of this is copied from [`LinearAlgebra/Prod`](../../LinearAlgebra/Prod). -/
 
-
 section Prod
 
 variable (R A B)

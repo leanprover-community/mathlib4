@@ -27,7 +27,6 @@ case.
 
 @[expose] public section
 
-
 open Finset Fintype
 
 namespace SimpleGraph

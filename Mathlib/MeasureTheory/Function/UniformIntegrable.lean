@@ -46,7 +46,6 @@ uniformly integrable, uniformly absolutely continuous integral, Vitali convergen
 
 @[expose] public section
 
-
 noncomputable section
 
 open scoped NNReal Topology
@@ -678,7 +677,6 @@ of function `(fₙ)` satisfies for all `ε > 0`, there exists some `C ≥ 0` suc
 In this section, we will develop some API for `UniformIntegrable` and prove that
 `UniformIntegrable` is equivalent to this definition of uniform integrability.
 -/
-
 
 variable {p : ℝ≥0∞} {f : ι → α → β}
 

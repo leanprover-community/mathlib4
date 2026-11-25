@@ -31,7 +31,6 @@ opposite, chain complex, cochain complex, homology, cohomology, homological comp
 
 @[expose] public section
 
-
 noncomputable section
 
 open Opposite CategoryTheory CategoryTheory.Limits

@@ -82,5 +82,4 @@ lemma right_of_tensor_of_field (K B C : Type*) [Field K] [Ring B] [Ring C] [Nont
     [Algebra K B] [Algebra K C] [IsCentral K (B ⊗[K] C)] : IsCentral K C :=
   right_of_tensor K B C <| FaithfulSMul.algebraMap_injective K B
 
-
 end Algebra.IsCentral

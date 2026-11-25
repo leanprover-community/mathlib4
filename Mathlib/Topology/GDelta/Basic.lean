@@ -55,7 +55,6 @@ open Topology TopologicalSpace Filter Set
 
 variable {X Y ι : Type*} {ι' : Sort*}
 
-
 section IsGδ
 
 variable [TopologicalSpace X]
@@ -73,21 +72,17 @@ theorem IsOpen.isGδ {s : Set X} (h : IsOpen s) : IsGδ s :=
 protected theorem IsGδ.empty : IsGδ (∅ : Set X) :=
   isOpen_empty.isGδ
 
-
 @[simp]
 protected theorem IsGδ.univ : IsGδ (univ : Set X) :=
   isOpen_univ.isGδ
-
 
 theorem IsGδ.biInter_of_isOpen {I : Set ι} (hI : I.Countable) {f : ι → Set X}
     (hf : ∀ i ∈ I, IsOpen (f i)) : IsGδ (⋂ i ∈ I, f i) :=
   ⟨f '' I, by rwa [forall_mem_image], hI.image _, by rw [sInter_image]⟩
 
-
 theorem IsGδ.iInter_of_isOpen [Countable ι'] {f : ι' → Set X} (hf : ∀ i, IsOpen (f i)) :
     IsGδ (⋂ i, f i) :=
   ⟨range f, by rwa [forall_mem_range], countable_range _, by rw [sInter_range]⟩
-
 
 lemma isGδ_iff_eq_iInter_nat {s : Set X} :
     IsGδ s ↔ ∃ (f : ℕ → Set X), (∀ n, IsOpen (f n)) ∧ s = ⋂ n, f n := by
@@ -116,11 +111,9 @@ theorem IsGδ.biInter {s : Set ι} (hs : s.Countable) {t : ∀ i ∈ s, Set X}
   have := hs.to_subtype
   exact .iInter fun x => ht x x.property
 
-
 /-- A countable intersection of Gδ sets is a Gδ set. -/
 theorem IsGδ.sInter {S : Set (Set X)} (h : ∀ s ∈ S, IsGδ s) (hS : S.Countable) : IsGδ (⋂₀ S) := by
   simpa only [sInter_eq_biInter] using IsGδ.biInter hS h
-
 
 theorem IsGδ.inter {s t : Set X} (hs : IsGδ s) (ht : IsGδ t) : IsGδ (s ∩ t) := by
   rw [inter_eq_iInter]

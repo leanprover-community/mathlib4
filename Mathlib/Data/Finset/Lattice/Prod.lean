@@ -25,7 +25,6 @@ variable {α β γ ι κ : Type*}
 
 namespace Finset
 
-
 section Sup
 
 -- TODO: define with just `[Bot α]` where some lemmas hold without requiring `[OrderBot α]`

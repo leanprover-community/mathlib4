@@ -59,7 +59,6 @@ theorem lift_injective_of_ker_le_ideal (I : Ideal R) [I.IsTwoSided]
 theorem kerLift_injective : Function.Injective (kerLift f) :=
   lift_injective_of_ker_le_ideal (ker f) (fun a => by simp only [mem_ker, imp_self]) le_rfl
 
-
 variable {f}
 
 /-- The **first isomorphism theorem for commutative rings**, computable version. -/
@@ -704,7 +703,6 @@ theorem comp_quotientMap_eq_of_comp_eq {R' S' : Type*} [Ring R'] [Ring S'] {f : 
     (hfg ▸ f'.comp_apply g r))
 
 end Ring_Ring
-
 
 section
 

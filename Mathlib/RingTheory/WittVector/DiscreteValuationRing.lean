@@ -29,7 +29,6 @@ When `k` is also a field, this `b` can be chosen to be a unit of `𝕎 k`.
 
 @[expose] public section
 
-
 noncomputable section
 
 namespace WittVector

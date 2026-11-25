@@ -514,7 +514,6 @@ noncomputable def consRecOn {motive : NormalWord d → Sort _} (w : NormalWord d
           (equiv_snd_eq_self_iff_mem (d.compl i) (one_mem _)).2
           (h3 _ _ List.mem_cons_self)]
 
-
 theorem cons_eq_smul {i : ι} (g : G i)
     (w : NormalWord d) (hmw : w.fstIdx ≠ some i)
     (hgr : g ∉ (φ i).range) : cons g w hmw hgr = of (φ := φ) i g • w := by

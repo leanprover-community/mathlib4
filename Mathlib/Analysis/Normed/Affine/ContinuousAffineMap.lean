@@ -39,7 +39,6 @@ submultiplicative: for a composition of maps, we have only `‖f.comp g‖ ≤ �
 
 @[expose] public section
 
-
 namespace ContinuousAffineMap
 
 variable {𝕜 R V W W₂ Q : Type*}

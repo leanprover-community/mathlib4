@@ -27,7 +27,6 @@ rings of integers.
 
 @[expose] public section
 
-
 open scoped NumberField
 
 open Finset NumberField Algebra Module IntermediateField

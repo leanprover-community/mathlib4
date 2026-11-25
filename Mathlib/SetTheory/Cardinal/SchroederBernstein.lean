@@ -30,7 +30,6 @@ Cardinals are defined and further developed in the folder `SetTheory.Cardinal`.
 
 public section
 
-
 open Set Function
 
 universe u v

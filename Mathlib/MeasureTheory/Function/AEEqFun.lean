@@ -62,7 +62,6 @@ See `Mathlib/MeasureTheory/Function/L1Space/AEEqFun.lean` for `L¹` space.
 * `comp₂`:       Use `comp₂ g f₁ f₂` to get `[fun a ↦ g (f₁ a) (f₂ a)]`.
                  For example, `[f + g]` is `comp₂ (+)`
 
-
 ## Tags
 
 function space, almost everywhere equal, `L⁰`, ae_eq_fun

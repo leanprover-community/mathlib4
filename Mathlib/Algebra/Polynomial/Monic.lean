@@ -19,7 +19,6 @@ We give several tools for proving that polynomials are monic, e.g.
 
 @[expose] public section
 
-
 noncomputable section
 
 open Finset
@@ -335,7 +334,6 @@ lemma irreducible_of_monic (hp : p.Monic) (hp1 : p ≠ 1) :
   · rwa [Monic, leadingCoeff_mul, leadingCoeff_C, ← leadingCoeff_mul, ← hfg, ← Monic]
   · rw [mul_mul_mul_comm, ← C_mul, ← leadingCoeff_mul, ← hfg, hp.leadingCoeff, C_1, mul_one,
       mul_comm, ← hfg]
-
 
 lemma Monic.irreducible_iff_natDegree (hp : p.Monic) :
     Irreducible p ↔

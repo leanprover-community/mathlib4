@@ -98,7 +98,6 @@ theorem pair_encode_step {p : Prop} {α : Sort*} [Countable α]
     (h : a = b → m = n → p) : Nat.pair (encode a) m = Nat.pair (encode b) n → p :=
   cons_eq_imp fun ha => h (encode_injective ha)
 
-
 /-!
 ### Implementation
 -/

@@ -185,7 +185,6 @@ lemma powerset_mono : Monotone (@Multiset.powerset α) :=
 
 /-! ### powersetCard -/
 
-
 /-- Helper function for `powersetCard`. Given a list `l`, `powersetCardAux n l` is the list
 of sublists of length `n`, as multisets. -/
 def powersetCardAux (n : ℕ) (l : List α) : List (Multiset α) :=

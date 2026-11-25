@@ -91,7 +91,6 @@ instance : Append (PreDiscrTree α) where
 
 end PreDiscrTree
 
-
 /-- Information about a failed import. -/
 private structure ImportFailure where
   /-- Module containing the constant whose import failed. -/
@@ -154,7 +153,6 @@ Note: It is expensive to create two new `IO.Ref`s for every `MetaM` operation,
       exception := e }
     data.errors.modify (·.push i)
     return tree
-
 
 /--
 Contains a `PreDiscrTree` and any errors occurring during initialization of

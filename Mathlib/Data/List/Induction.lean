@@ -75,7 +75,6 @@ theorem bidirectionalRec_nil {motive : List α → Sort*}
     (cons_append : ∀ (a : α) (l : List α) (b : α), motive l → motive (a :: (l ++ [b]))) :
     bidirectionalRec nil singleton cons_append [] = nil := by grind [bidirectionalRec]
 
-
 @[simp]
 theorem bidirectionalRec_singleton {motive : List α → Sort*}
     (nil : motive []) (singleton : ∀ a : α, motive [a])

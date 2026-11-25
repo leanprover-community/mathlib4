@@ -28,7 +28,6 @@ This file expands on the development in the core library.
 
 @[expose] public section
 
-
 assert_not_exists Monoid Finset Preorder
 
 open Fin Nat Function
@@ -149,7 +148,6 @@ protected theorem heq_ext_iff {k l : ℕ} (h : k = l) {i : Fin k} {j : Fin l} :
   simp [val_eq_val]
 
 end coe
-
 
 section Order
 

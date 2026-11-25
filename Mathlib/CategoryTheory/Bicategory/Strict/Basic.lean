@@ -28,7 +28,6 @@ identities.
 
 public section
 
-
 namespace CategoryTheory
 
 open Bicategory

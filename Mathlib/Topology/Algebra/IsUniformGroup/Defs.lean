@@ -646,7 +646,6 @@ theorem uniformity_eq_comap_nhds_one' : 𝓤 G = comap (fun p : G × G => p.2 * 
 
 end IsTopologicalGroup
 
-
 section IsTopologicalGroup
 
 open Filter

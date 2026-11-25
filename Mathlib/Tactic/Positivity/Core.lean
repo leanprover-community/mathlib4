@@ -471,7 +471,6 @@ def core (pα? : Option Q(PartialOrder $α)) (e : Q($α)) : MetaM (Strictness z�
     trace[Tactic.positivity] "{e} => {result.toString}"
     throwNone (pure result)
 
-
 private inductive OrderRel : Type
 | le : OrderRel -- `0 ≤ a`
 | lt : OrderRel -- `0 < a`

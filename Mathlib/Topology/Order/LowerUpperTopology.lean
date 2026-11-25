@@ -375,7 +375,6 @@ end CompleteLinearOrder
 
 end IsLower
 
-
 namespace IsUpper
 
 /-- The complements of the lower closures of finite sets are a collection of upper sets
@@ -440,7 +439,6 @@ lemma continuous_iff_Iic [TopologicalSpace β] {f : β → α} :
   IsLower.continuous_iff_Ici (α := αᵒᵈ)
 
 end Preorder
-
 
 section PartialOrder
 

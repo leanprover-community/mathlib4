@@ -20,7 +20,6 @@ function indeed satisfies the following recurrences:
 
 public section
 
-
 namespace GenContFract
 
 variable {K : Type*} {g : GenContFract K} {n : ℕ} [DivisionRing K]

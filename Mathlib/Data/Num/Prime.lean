@@ -29,7 +29,6 @@ Nevertheless, sometimes proof by computational reflection requires natural numbe
 
 @[expose] public section
 
-
 namespace PosNum
 
 /-- Auxiliary function for computing the smallest prime factor of a `PosNum`. Unlike

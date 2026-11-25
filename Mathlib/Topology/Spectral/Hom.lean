@@ -27,7 +27,6 @@ Once we have `SpectralSpace`, `IsSpectralMap` should move to `Mathlib/Topology/S
 
 @[expose] public section
 
-
 open Function
 
 variable {F α β γ δ : Type*}
@@ -98,7 +97,6 @@ instance [TopologicalSpace α] [TopologicalSpace β] [FunLike F α β] [Spectral
   ⟨fun f => ⟨_, map_spectral f⟩⟩
 
 /-! ### Spectral maps -/
-
 
 namespace SpectralMap
 

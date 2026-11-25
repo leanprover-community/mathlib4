@@ -186,7 +186,6 @@ The structures above permit morphisms that themselves produce morphisms, provide
 is commutative.
 -/
 
-
 namespace MonoidHom
 
 @[to_additive]

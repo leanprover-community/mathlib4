@@ -23,7 +23,6 @@ This file concerns the canonical homomorphism `ℤ → F`, where `F` is a field.
 
 public section
 
-
 namespace Int
 
 open Nat

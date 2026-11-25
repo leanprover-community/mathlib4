@@ -29,7 +29,6 @@ therefore be favored to construct a theory of Lie groups in suitable generality.
 
 @[expose] public section
 
-
 noncomputable section
 
 open scoped LieGroup Manifold Derivation ContDiff

@@ -26,7 +26,6 @@ carrying a uniformly locally doubling measure.
 
 public section
 
-
 open Set Filter Metric MeasureTheory TopologicalSpace
 
 open scoped NNReal ENNReal Topology

@@ -1059,7 +1059,6 @@ theorem norm_compContinuous_linearIsometryEquiv (g : ContinuousMultilinearMap �
     (f i : E i →L[𝕜] E₁ i)).norm_compContinuous_linearIsometry_le
       fun i => (f i).symm.toLinearIsometry
 
-
 variable (G) in
 theorem norm_compContinuousLinearMapL_le (f : ∀ i, E i →L[𝕜] E₁ i) :
     ‖compContinuousLinearMapL (F := G) f‖ ≤ ∏ i, ‖f i‖ :=

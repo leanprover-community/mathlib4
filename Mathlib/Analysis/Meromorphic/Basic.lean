@@ -488,7 +488,6 @@ theorem meromorphicAt_comp_sub_const_iff_meromorphicAt {c : 𝕜} {f : 𝕜 → 
 
 end composition
 
-
 /-- Meromorphy of a function on a set. -/
 @[fun_prop]
 def MeromorphicOn (f : 𝕜 → E) (U : Set 𝕜) : Prop := ∀ x ∈ U, MeromorphicAt f x

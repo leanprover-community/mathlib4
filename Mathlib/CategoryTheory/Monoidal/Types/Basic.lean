@@ -16,7 +16,6 @@ set_option doc.verso.suggestions false
 
 @[expose] public section
 
-
 open CategoryTheory Limits MonoidalCategory
 
 universe v u

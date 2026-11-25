@@ -21,7 +21,6 @@ by showing that intervals belong to the relevant Vitali family.
 
 public section
 
-
 open Set MeasureTheory IsUnifLocDoublingMeasure Filter
 
 open scoped Topology

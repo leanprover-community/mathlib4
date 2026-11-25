@@ -101,7 +101,6 @@ open Iso
 /-- The underlying prelax functor. -/
 add_decl_doc Pseudofunctor.toPrelaxFunctor
 
-
 attribute [nolint docBlame] CategoryTheory.Pseudofunctor.mapId
   CategoryTheory.Pseudofunctor.mapComp
   CategoryTheory.Pseudofunctor.map₂_whisker_left

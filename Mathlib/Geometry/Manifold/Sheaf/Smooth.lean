@@ -67,7 +67,6 @@ https://github.com/leanprover-community/mathlib4/pull/5726.
 
 @[expose] public section
 
-
 noncomputable section
 open TopologicalSpace Opposite
 open scoped ContDiff

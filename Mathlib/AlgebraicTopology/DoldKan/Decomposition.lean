@@ -31,7 +31,6 @@ reflects isomorphisms.
 
 @[expose] public section
 
-
 open CategoryTheory CategoryTheory.Category CategoryTheory.Preadditive
   Opposite
 

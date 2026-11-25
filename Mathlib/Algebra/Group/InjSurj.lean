@@ -285,7 +285,6 @@ protected abbrev group [Group M₂] (f : M₁ → M₂) (hf : Injective f) (one 
   { hf.divInvMonoid f one mul inv div npow zpow with
     inv_mul_cancel := fun x => hf <| by rw [mul, inv, inv_mul_cancel, one] }
 
-
 /-- A type endowed with `1`, `*` and `⁻¹` is a commutative group, if it admits an injective map that
 preserves `1`, `*` and `⁻¹` to a commutative group. See note [reducible non-instances]. -/
 @[to_additive
@@ -302,7 +301,6 @@ end Injective
 /-!
 ### Surjective
 -/
-
 
 namespace Surjective
 
@@ -363,7 +361,6 @@ protected abbrev monoid [Monoid M₁] (f : M₁ → M₂) (hf : Surjective f) (o
     npow_zero := hf.forall.2 fun x => by rw [← npow, pow_zero, ← one],
     npow_succ := fun n => hf.forall.2 fun x => by
       rw [← npow, pow_succ, ← npow, ← mul] }
-
 
 /-- A type endowed with `1` and `*` is a commutative monoid, if it admits a surjective map that
 preserves `1` and `*` from a commutative monoid. See note [reducible non-instances]. -/

@@ -38,7 +38,6 @@ variable {α β : Type*} (G H : SimpleGraph α)
 
 /-! ### Cliques -/
 
-
 section Clique
 
 variable {s t : Set α}
@@ -234,7 +233,6 @@ end Clique
 
 /-! ### `n`-cliques -/
 
-
 section NClique
 
 variable {n : ℕ} {s : Finset α}
@@ -366,7 +364,6 @@ theorem isNClique_induce_iff (s : Set α) (t : Finset s) (n : ℕ) :
 end NClique
 
 /-! ### Graphs without cliques -/
-
 
 section CliqueFree
 
@@ -656,7 +653,6 @@ end CliqueFreeOn
 
 /-! ### Set of cliques -/
 
-
 section CliqueSet
 
 variable {n : ℕ} {s : Finset α}
@@ -725,7 +721,6 @@ theorem cliqueSet_map_of_equiv (G : SimpleGraph α) (e : α ≃ β) (n : ℕ) :
 end CliqueSet
 
 /-! ### Clique number -/
-
 
 section CliqueNumber
 
@@ -853,7 +848,6 @@ end CliqueNumber
 
 /-! ### Finset of cliques -/
 
-
 section CliqueFinset
 
 variable [Fintype α] [DecidableEq α] [DecidableRel G.Adj] {n : ℕ} {s : Finset α}
@@ -966,7 +960,6 @@ end IndepSet
 
 /-! ### N-Independent sets -/
 
-
 section NIndepSet
 
 variable {n : ℕ} {s : Finset α}
@@ -1003,7 +996,6 @@ end NIndepSet
 
 /-! ### Graphs without independent sets -/
 
-
 section IndepSetFree
 
 variable {n : ℕ}
@@ -1028,7 +1020,6 @@ end IndepSetFree
 
 /-! ### Set of independent sets -/
 
-
 section IndepSetSet
 
 variable {n : ℕ} {s : Finset α}
@@ -1046,7 +1037,6 @@ theorem mem_indepSetSet_iff : s ∈ G.indepSetSet n ↔ G.IsNIndepSet n s :=
 end IndepSetSet
 
 /-! ### Independence Number -/
-
 
 section IndepNumber
 
@@ -1117,7 +1107,6 @@ lemma maximumIndepSet_exists [Finite α] : ∃ (s : Finset α), G.IsMaximumIndep
 end IndepNumber
 
 /-! ### Finset of independent sets -/
-
 
 section IndepSetFinset
 

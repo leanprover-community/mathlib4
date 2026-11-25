@@ -32,7 +32,6 @@ https://en.wikipedia.org/wiki/Clifford_algebra#Antiautomorphisms
 
 @[expose] public section
 
-
 variable {R : Type*} [CommRing R]
 variable {M : Type*} [AddCommGroup M] [Module R M]
 variable {Q : QuadraticForm R M}
@@ -161,7 +160,6 @@ end Reverse
 ### Statements about conjugations of products of lists
 -/
 
-
 section List
 
 /-- Taking the reverse of the product a list of $n$ vectors lifted via `ι` is equivalent to
@@ -183,7 +181,6 @@ end List
 /-!
 ### Statements about `Submodule.map` and `Submodule.comap`
 -/
-
 
 section Submodule
 
@@ -297,7 +294,6 @@ end Submodule
 
 TODO: show that these are `iff`s when `Invertible (2 : R)`.
 -/
-
 
 theorem involute_eq_of_mem_even {x : CliffordAlgebra Q} (h : x ∈ evenOdd Q 0) : involute x = x := by
   induction x, h using even_induction with

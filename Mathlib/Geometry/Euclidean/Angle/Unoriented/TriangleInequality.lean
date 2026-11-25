@@ -189,7 +189,6 @@ lemma angle_expression_of_angle_eq_angle_sum :
 
 end UnitVectorAngles
 
-
 /-- **Triangle inequality** for angles between vectors. -/
 public theorem angle_le_angle_add_angle (x y z : V) :
     angle x z ≤ angle x y + angle y z := by

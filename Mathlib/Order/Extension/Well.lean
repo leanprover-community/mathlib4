@@ -36,7 +36,6 @@ well-founded relation, well order, extension
 
 @[expose] public section
 
-
 universe u
 
 variable {α : Type u} {r : α → α → Prop}

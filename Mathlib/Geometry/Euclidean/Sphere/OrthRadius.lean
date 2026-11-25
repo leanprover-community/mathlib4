@@ -22,7 +22,6 @@ This file defines the affine subspace orthogonal to the radius vector at a point
 
 @[expose] public section
 
-
 namespace EuclideanGeometry
 
 namespace Sphere

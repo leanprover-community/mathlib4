@@ -868,7 +868,6 @@ protected theorem le_inf {a b c : CauSeq α abs} (hb : a ≤ b) (hc : a ≤ c) :
 
 /-! Note that `DistribLattice (CauSeq α abs)` is not true because there is no `PartialOrder`. -/
 
-
 protected theorem sup_inf_distrib_left (a b c : CauSeq α abs) : a ⊔ b ⊓ c = (a ⊔ b) ⊓ (a ⊔ c) :=
   ext fun _ ↦ max_min_distrib_left _ _ _
 

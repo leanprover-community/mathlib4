@@ -30,7 +30,6 @@ constructions quicker to implement.
 
 public section
 
-
 variable {R : Type*}
 
 namespace MinTropical

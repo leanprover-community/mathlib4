@@ -36,7 +36,6 @@ Bilinear form,
 
 @[expose] public section
 
-
 open LinearMap (BilinForm)
 open Module
 
@@ -53,7 +52,6 @@ namespace LinearMap
 namespace BilinForm
 
 /-! ### Reflexivity, symmetry, and alternativity -/
-
 
 /-- The proposition that a bilinear form is reflexive -/
 def IsRefl (B : BilinForm R M) : Prop := LinearMap.IsRefl B
@@ -271,7 +269,6 @@ theorem isAlt_neg {B : BilinForm R₁ M₁} : (-B).IsAlt ↔ B.IsAlt :=
 end BilinForm
 
 namespace BilinForm
-
 
 -- Note: This originally involved only left-separating, and was changed (January 2026, PR #34110)
 -- to be symmetric to match `LinearMap.Nondegenerate`. See discussion at this Zulip thread:

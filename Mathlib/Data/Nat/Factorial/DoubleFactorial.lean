@@ -22,7 +22,6 @@ This file defines the double factorial,
 
 @[expose] public section
 
-
 open Nat
 
 namespace Nat

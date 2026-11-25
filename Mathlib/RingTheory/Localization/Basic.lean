@@ -431,7 +431,6 @@ theorem algEquiv_comp_algebraMap_apply (x : Rₘ) :
     (algebraMap Rₘ' Sₙ').comp (algEquiv M Rₘ Rₘ') x := by
   rw [algEquiv_comp_algebraMap M Rₘ Sₙ Rₘ']
 
-
 end IsLocalization
 
 namespace Localization

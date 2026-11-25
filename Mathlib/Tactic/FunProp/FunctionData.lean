@@ -22,7 +22,6 @@ open Lean Meta
 
 namespace Meta.FunProp
 
-
 /-- Structure storing parts of a function in funProp-normal form. -/
 structure FunctionData where
   /-- local context where `mainVar` exists -/
@@ -69,7 +68,6 @@ def FunctionData.getFnConstName? (f : FunctionData) : MetaM (Option Name) := do
     let some projName := info.getProjFn? idx | return none
     return projName
   | _ => return none
-
 
 /-- Get `FunctionData` for `f`. Throws if `f` can't be put into funProp-normal form. -/
 def getFunctionData (f : Expr) : MetaM FunctionData := do
@@ -177,7 +175,6 @@ def FunctionData.isMorApplication (f : FunctionData) : MetaM MorApplication := d
     else
       return .none
 
-
 /-- The result of `FunctionData.decomposition` and `FunctionData.peeloffArgDecomposition`. -/
 inductive DecompositionResult
   /-- The function can be decomposed in a non-trivial way. -/
@@ -265,7 +262,6 @@ def FunctionData.decomposition (fData : FunctionData) : MetaM DecompositionResul
       return .failed
 
     return .comp f g
-
 
 /-- Decompose function `fun x ↦ f y₁ ... yₙ` over specified argument indices `#[i, j, ...]`.
 

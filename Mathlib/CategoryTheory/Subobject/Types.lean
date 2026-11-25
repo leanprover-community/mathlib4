@@ -26,7 +26,6 @@ but it remains to be seen whether this just pushes lumps around in the carpet.
 
 @[expose] public section
 
-
 universe u
 
 open CategoryTheory ConcreteCategory

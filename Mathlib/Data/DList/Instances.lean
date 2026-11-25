@@ -22,7 +22,6 @@ for `DList`.
 
 @[expose] public section
 
-
 open Equiv
 
 namespace Batteries

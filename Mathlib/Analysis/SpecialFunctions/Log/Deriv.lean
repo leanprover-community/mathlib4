@@ -28,7 +28,6 @@ logarithm, derivative
 
 public section
 
-
 open Filter Finset Set
 
 open scoped Topology ContDiff

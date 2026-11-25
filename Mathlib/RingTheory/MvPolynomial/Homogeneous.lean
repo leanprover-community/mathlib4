@@ -34,7 +34,6 @@ if all monomials occurring in `φ` have degree `n`.
 
 @[expose] public section
 
-
 namespace MvPolynomial
 
 variable {σ : Type*} {τ : Type*} {R : Type*} {S : Type*}
@@ -608,7 +607,6 @@ lemma rename_homogeneousComponent {τ : Type*} {φ : σ → τ} (n : ℕ) (p : M
       homogeneousComponent_of_mem (isHomogeneous_monomial c (Finsupp.degree_mapDomain φ d))]
     split_ifs <;> simp [rename_monomial]
   | add p q hp hq => simp [map_add, hp, hq]
-
 
 end HomogeneousComponent
 

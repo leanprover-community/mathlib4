@@ -1068,7 +1068,6 @@ theorem orderOf_zpow' (x : G) {n : ℤ} (h : n ≠ 0) :
 theorem zpow_eq_one_iff_modEq {n : ℤ} : x ^ n = 1 ↔ n ≡ 0 [ZMOD orderOf x] := by
   rw [Int.modEq_zero_iff_dvd, orderOf_dvd_iff_zpow_eq_one]
 
-
 @[to_additive]
 theorem zpow_eq_zpow_iff_modEq {m n : ℤ} : x ^ m = x ^ n ↔ m ≡ n [ZMOD orderOf x] := by
   rw [← mul_inv_eq_one, ← zpow_sub, zpow_eq_one_iff_modEq, Int.modEq_iff_dvd, Int.modEq_iff_dvd,

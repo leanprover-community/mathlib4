@@ -18,7 +18,6 @@ We define `integralNormalization`, which relate arbitrary polynomials to monic o
 
 @[expose] public section
 
-
 open AddMonoidAlgebra Polynomial
 
 namespace Polynomial

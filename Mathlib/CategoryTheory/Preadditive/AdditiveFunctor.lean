@@ -30,7 +30,6 @@ We also define the category of bundled additive functors.
 
 @[expose] public section
 
-
 universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory

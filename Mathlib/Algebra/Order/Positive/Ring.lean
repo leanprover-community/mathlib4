@@ -21,7 +21,6 @@ assumptions on `R` but possibly, there is a room for improvements.
 
 public section
 
-
 open Function
 
 namespace Positive

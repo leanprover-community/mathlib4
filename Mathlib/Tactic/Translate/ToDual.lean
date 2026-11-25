@@ -312,7 +312,6 @@ def abbreviationDict : Std.HashMap String String := .ofList [
 initialize guessNameExt : GuessName.GuessNameExt ←
   GuessName.registerGuessNameExt { nameDict, abbreviationDict }
 
-
 /-- The bundle of environment extensions for `to_dual` -/
 def data : TranslateData where
   dontTranslateAttr; translations

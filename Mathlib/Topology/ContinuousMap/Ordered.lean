@@ -17,7 +17,6 @@ set_option doc.verso.suggestions false
 
 @[expose] public section
 
-
 variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 
 namespace ContinuousMap

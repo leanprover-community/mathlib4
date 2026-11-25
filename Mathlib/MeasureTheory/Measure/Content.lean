@@ -54,7 +54,6 @@ open scoped Finset
 
 @[expose] public section
 
-
 universe u v w
 
 noncomputable section

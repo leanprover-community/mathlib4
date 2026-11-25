@@ -43,7 +43,6 @@ variable (L₁ : C₁ ⥤ D₁) (W₁ : MorphismProperty C₁) [L₁.IsLocalizat
   (G' : D₁ ⥤ D₂) (F' : D₂ ⥤ D₁)
   [CatCommSq G L₁ L₂ G'] [CatCommSq F L₂ L₁ F']
 
-
 namespace Localization
 
 /-- Auxiliary definition of the unit morphism for the adjunction `Adjunction.localization` -/

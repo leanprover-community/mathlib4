@@ -37,7 +37,6 @@ Hahn decomposition theorem
 
 @[expose] public section
 
-
 noncomputable section
 
 open scoped NNReal ENNReal MeasureTheory
@@ -88,7 +87,6 @@ To implement this in Lean, we define several auxiliary definitions.
 With these definitions, we are able to consider the case where the sequence terminates separately,
 allowing us to prove `exists_subset_restrict_nonpos`.
 -/
-
 
 /-- Given the set `i` and the natural number `n`, `ExistsOneDivLT s i j` is the property that
 there exists a measurable set `k ⊆ i` such that `1 / (n + 1) < s k`. -/

@@ -16,7 +16,6 @@ public import Mathlib.Topology.Instances.Matrix
 import Mathlib.Analysis.Normed.Module.Ball.Pointwise
 import Mathlib.Topology.Algebra.InfiniteSum.Module
 
-
 set_option doc.verso true
 set_option doc.verso.suggestions false
 
@@ -650,7 +649,6 @@ theorem summable_of_isBigO_nat' {E F : Type*} [NormedAddCommGroup E] [CompleteSp
     [NormedAddCommGroup F] [NormedSpace ℝ F] [FiniteDimensional ℝ F] {f : ℕ → E} {g : ℕ → F}
     (hg : Summable g) (h : f =O[atTop] g) : Summable f :=
   summable_of_isBigO_nat hg.norm h.norm_right
-
 
 open Nat Asymptotics in
 /-- This is a version of `summable_norm_mul_geometric_of_norm_lt_one` for more general codomains. We

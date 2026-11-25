@@ -23,7 +23,6 @@ object and one morphism.
 
 @[expose] public section
 
-
 universe w v u
 
 noncomputable section

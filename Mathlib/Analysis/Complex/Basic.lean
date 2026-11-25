@@ -40,7 +40,6 @@ We also register the fact that `ℂ` is an `RCLike` field.
 
 @[expose] public section
 
-
 assert_not_exists Absorbs
 
 namespace Complex
@@ -564,7 +563,6 @@ matches for `Complex.re` and `Complex.im`.
 We do not have this problem with `ofReal` and `conj`, although we repeat them anyway for
 discoverability and to avoid the need to unify `𝕜`.
 -/
-
 
 section tsum
 

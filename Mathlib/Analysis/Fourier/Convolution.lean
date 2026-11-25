@@ -192,5 +192,4 @@ theorem convolution_apply (B : F₁ →L[ℂ] F₂ →L[ℂ] F₃) (f : 𝓢(E, 
       convert! this
       rw [← fourier_convolution_apply B f g, fourier_convolution, pairing_apply_apply]
 
-
 end SchwartzMap

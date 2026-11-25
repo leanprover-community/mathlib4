@@ -34,7 +34,6 @@ be satisfied by itself and all stricter types.
 
 @[expose] public section
 
-
 open Function
 
 variable {F α β γ δ : Type*}
@@ -104,7 +103,6 @@ instance (priority := 100) OrderIsoClass.toPseudoEpimorphismClass [Preorder α] 
     ⟨EquivLike.inv f b, (le_map_inv_iff f).2 h, EquivLike.right_inv _ _⟩
 
 /-! ### Pseudo-epimorphisms -/
-
 
 namespace PseudoEpimorphism
 
@@ -206,7 +204,6 @@ theorem cancel_left {g : PseudoEpimorphism β γ} {f₁ f₂ : PseudoEpimorphism
 end PseudoEpimorphism
 
 /-! ### Esakia morphisms -/
-
 
 namespace EsakiaHom
 

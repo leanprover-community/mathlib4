@@ -39,7 +39,6 @@ In this file, `e` stands for the ramification index of `P` over `p`, leaving `p`
 
 @[expose] public section
 
-
 namespace Ideal
 
 universe u v

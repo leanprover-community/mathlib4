@@ -16,7 +16,6 @@ set_option doc.verso.suggestions false
 
 public section
 
-
 open CategoryTheory
 
 namespace CategoryTheory.Bifunctor

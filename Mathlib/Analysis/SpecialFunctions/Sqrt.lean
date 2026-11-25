@@ -24,7 +24,6 @@ sqrt, differentiable
 
 @[expose] public section
 
-
 open Set
 
 open scoped Topology

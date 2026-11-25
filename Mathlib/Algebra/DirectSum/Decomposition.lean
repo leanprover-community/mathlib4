@@ -16,7 +16,6 @@ public import Mathlib.Algebra.DirectSum.Module
   an additive monoid `M` into a family of additive submonoids `ℳ`
 * `DirectSum.decompose ℳ`: The canonical equivalence provided by the above typeclass
 
-
 ## Main statements
 
 * `DirectSum.Decomposition.isInternal`: The link to `DirectSum.IsInternal`.
@@ -30,7 +29,6 @@ bundled homs, but means we don't have to repeat statements for different types o
 -/
 
 @[expose] public section
-
 
 variable {ι R M σ : Type*}
 

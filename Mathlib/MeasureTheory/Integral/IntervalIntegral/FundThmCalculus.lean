@@ -203,7 +203,6 @@ class FTCFilter (a : outParam ℝ) (outer : Filter ℝ) (inner : outParam <| Fil
 
 namespace FTCFilter
 
-
 instance pure (a : ℝ) : FTCFilter a (pure a) ⊥ where
   pure_le := le_rfl
   le_nhds := bot_le
@@ -469,7 +468,6 @@ In particular, we prove that `∫ x in u..v, f x` is strictly differentiable in 
 at `(a, b)` provided that `f` is integrable on `a..b` and is continuous at `a` and `b`.
 -/
 
-
 variable [CompleteSpace E]
   {f : ℝ → E} {c ca cb : E} {l l' la la' lb lb' : Filter ℝ} {lt : Filter ι} {a b : ℝ}
   {u v ua ub va vb : ι → ℝ} [FTCFilter a la la'] [FTCFilter b lb lb']
@@ -481,7 +479,6 @@ In this section we prove several lemmas that can be interpreted as strict differ
 `(u, v) ↦ ∫ x in u..v, f x ∂μ` in `u` and/or `v` at a filter. The statements use
 `Asymptotics.isLittleO` because we have no definition of `HasStrict(F)DerivAtFilter` in the library.
 -/
-
 
 /-- **Fundamental theorem of calculus-1**, local version.
 
@@ -575,7 +572,6 @@ In this section we prove that for a measurable function `f` integrable on `a..b`
 * `integral_hasStrictDerivAt_left`: the function `u ↦ ∫ x in u..b, f x` has derivative `-f a` at
   `a` in the sense of strict differentiability provided that `f` is continuous at `a`.
 -/
-
 
 /-- **Fundamental theorem of calculus-1**, strict differentiability in both endpoints.
 
@@ -672,7 +668,6 @@ theorem _root_.Continuous.deriv_integral (f : ℝ → E) (hf : Continuous f) (a 
 In this subsection we restate results from the previous subsection in terms of `HasFDerivAt`,
 `HasDerivAt`, `fderiv`, and `deriv`.
 -/
-
 
 /-- **Fundamental theorem of calculus-1**: if `f : ℝ → E` is integrable on `a..b` and `f x` has
 finite limits `ca` and `cb` almost surely as `x` tends to `a` and `b`, respectively, then
@@ -773,7 +768,6 @@ theorem deriv_integral_left (hf : IntervalIntegrable f volume a b)
 /-!
 #### One-sided derivatives
 -/
-
 
 /-- Let `f` be a measurable function integrable on `a..b`. The function `(u, v) ↦ ∫ x in u..v, f x`
 has derivative `(u, v) ↦ v • cb - u • ca` within `s × t` at `(a, b)`, where

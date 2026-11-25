@@ -309,7 +309,6 @@ open scoped Pointwise
 
 /-! ### Finset addition/multiplication -/
 
-
 section Mul
 
 variable [DecidableEq α] [Mul α] [Mul β] [FunLike F α β] [MulHomClass F α β]
@@ -1026,7 +1025,6 @@ variable [Group α] [DivisionMonoid β] [FunLike F α β] [MonoidHomClass F α �
 variable (f : F) {s t : Finset α} {a b : α}
 
 /-! Note that `Finset` is not a `Group` because `s / s ≠ 1` in general. -/
-
 
 @[to_additive (attr := simp)]
 theorem one_mem_div_iff : (1 : α) ∈ s / t ↔ ¬Disjoint s t := by

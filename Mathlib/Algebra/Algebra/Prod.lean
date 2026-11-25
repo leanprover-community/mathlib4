@@ -26,7 +26,6 @@ The R-algebra structure on `(i : I) → A i` when each `A i` is an R-algebra.
 
 @[expose] public section
 
-
 variable {R A B C : Type*}
 variable [CommSemiring R]
 variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B] [Semiring C] [Algebra R C]

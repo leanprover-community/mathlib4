@@ -26,7 +26,6 @@ section CpowLimits
 ## Continuity for complex powers
 -/
 
-
 open Complex
 
 variable {α : Type*}
@@ -289,7 +288,6 @@ end RpowLimits
 These results involve relating real and complex powers, so cannot be done higher up.
 -/
 
-
 section CpowLimits2
 
 namespace Complex
@@ -374,7 +372,6 @@ end CpowLimits2
 
 /-! ## Limits and continuity for `ℝ≥0` powers -/
 
-
 namespace NNReal
 
 theorem continuousAt_rpow {x : ℝ≥0} {y : ℝ} (h : x ≠ 0 ∨ 0 < y) :
@@ -438,7 +435,6 @@ theorem continuousOn_rpow_const {r : ℝ} {s : Set ℝ≥0}
 end NNReal
 
 /-! ## Continuity for `ℝ≥0∞` powers -/
-
 
 namespace ENNReal
 

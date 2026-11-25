@@ -25,7 +25,6 @@ condition.
 
 @[expose] public section
 
-
 universe v' v u
 
 noncomputable section
@@ -181,7 +180,6 @@ def IsSheafEqualizerProducts (F : Presheaf.{v', v, u} C X) : Prop :=
 The remainder of this file shows that the "equalizer products" sheaf condition is equivalent
 to the "pairwise intersections" sheaf condition.
 -/
-
 
 namespace SheafConditionPairwiseIntersections
 

@@ -34,7 +34,6 @@ namespace Multiset
 
 /-! ### `Multiset.filter` -/
 
-
 section
 
 variable (p : α → Prop) [DecidablePred p]
@@ -180,7 +179,6 @@ lemma card_filter_le_iff (s : Multiset α) (P : α → Prop) [DecidablePred P] (
 
 /-! ### Simultaneously filter and map elements of a multiset -/
 
-
 /-- `filterMap f s` is a combination filter/map operation on `s`.
   The function `f : α → Option β` is applied to each element of `s`;
   if `f a` is `some b` then `b` is added to the result, otherwise
@@ -301,7 +299,6 @@ lemma filter_attach (s : Multiset α) (p : α → Prop) [DecidablePred p] :
 end
 
 /-! ### Multiplicity of an element -/
-
 
 section
 

@@ -151,7 +151,6 @@ end NNNorm
 instance Additive.seminormedAddGroup [SeminormedGroup E] : SeminormedAddGroup (Additive E) where
   dist_eq x y := dist_eq_norm_inv_mul x.toMul y.toMul
 
-
 instance Multiplicative.seminormedGroup [SeminormedAddGroup E] :
     SeminormedGroup (Multiplicative E) where
   dist_eq x y := dist_eq_norm_neg_add x.toAdd y.toAdd

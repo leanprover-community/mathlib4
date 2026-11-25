@@ -26,7 +26,6 @@ stated via `[QuasiSober α] [T0Space α]`.
 
 @[expose] public section
 
-
 open Set
 
 variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]

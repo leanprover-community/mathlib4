@@ -53,7 +53,6 @@ Bochner integral, simple function, function space, Lebesgue dominated convergenc
 
 @[expose] public section
 
-
 assert_not_exists Differentiable
 
 noncomputable section
@@ -181,7 +180,6 @@ section Integral
 Define the Bochner integral of simple functions of the type `α →ₛ β` where `β` is a normed group,
 and prove basic properties of this integral.
 -/
-
 
 open Finset
 

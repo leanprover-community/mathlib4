@@ -45,7 +45,6 @@ variable {R α β : Type*}
 
 /-! ### Bipartite graph -/
 
-
 namespace Finset
 
 section Bipartite

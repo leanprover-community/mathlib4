@@ -511,8 +511,6 @@ lemma toCLM_apply_eq_sum {M : CStarMatrix m n A} {v : C⋆ᵐᵒᵈ(A, m → A)}
   ext i
   simp [toCLM_apply, Matrix.vecMul, dotProduct]
 
-
-
 set_option backward.isDefEq.respectTransparency false in
 /-- Interpret a `CStarMatrix m n A` as a continuous linear map acting on `C⋆ᵐᵒᵈ (n → A)`. This
 version is specialized to the case `m = n` and is bundled as a non-unital algebra homomorphism. -/
@@ -739,7 +737,6 @@ instance instCompleteSpace : CompleteSpace (CStarMatrix m n A) :=
 
 instance instT2Space : T2Space (CStarMatrix m n A) := inferInstanceAs <| T2Space (Matrix m n A)
 instance instT3Space : T3Space (CStarMatrix m n A) := inferInstanceAs <| T3Space (Matrix m n A)
-
 
 instance instIsTopologicalAddGroup : IsTopologicalAddGroup (CStarMatrix m n A) :=
   inferInstanceAs <| IsTopologicalAddGroup (Matrix m n A)

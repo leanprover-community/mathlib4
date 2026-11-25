@@ -43,7 +43,6 @@ to get a polynomial with integer coefficients and then we map it to `R[X]`, for 
 
 @[expose] public section
 
-
 open scoped Polynomial
 
 noncomputable section

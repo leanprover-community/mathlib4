@@ -138,7 +138,6 @@ alias Ioo_pred_left_eq_Ioc_of_not_isMin := Ioo_pred_left_eq_Ico_of_not_isMin
 
 end SuccOrder
 
-
 section SuccPredOrder
 variable [SuccOrder α] [PredOrder α] [Nontrivial α]
 

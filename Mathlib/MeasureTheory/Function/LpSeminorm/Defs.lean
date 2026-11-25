@@ -59,7 +59,6 @@ follows: for a given property, we prove it for `eLpNorm'` and `eLpNormEssSup` wh
 deduce it for `eLpNorm`, and translate it in terms of `MemLp`.
 -/
 
-
 /-- `(∫ ‖f a‖^q ∂μ) ^ (1/q)`, which is a seminorm on the space of measurable functions for which
 this quantity is finite.
 

@@ -20,7 +20,6 @@ import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 
 @[expose] public section
 
-
 open Function OrderDual
 
 variable {α β : Type*}
@@ -251,7 +250,6 @@ theorem div_nat_lt_self_of_pos_of_two_le (ha : 0 < a) {n : ℕ} (hn : 2 ≤ n) :
 
 /-! ### Results about `IsGLB` -/
 
-
 theorem IsGLB.mul_left {s : Set α} (ha : 0 ≤ a) (hs : IsGLB s b) :
     IsGLB ((fun b => a * b) '' s) (a * b) := by
   rcases lt_or_eq_of_le ha with (ha | rfl)
@@ -264,7 +262,6 @@ theorem IsGLB.mul_right {s : Set α} (ha : 0 ≤ a) (hs : IsGLB s b) :
     IsGLB ((fun b => b * a) '' s) (b * a) := by simpa [mul_comm] using hs.mul_left ha
 
 /-! ### Results about `IsLUB` -/
-
 
 theorem IsLUB.mul_left {s : Set α} (ha : 0 ≤ a) (hs : IsLUB s b) :
     IsLUB ((fun b => a * b) '' s) (a * b) := by
@@ -403,7 +400,6 @@ theorem lt_inv_of_neg (ha : a < 0) (hb : b < 0) : a < b⁻¹ ↔ b < a⁻¹ := b
 ### Monotonicity results involving inversion
 -/
 
-
 theorem sub_inv_antitoneOn_Ioi :
     AntitoneOn (fun x ↦ (x - c)⁻¹) (Set.Ioi c) :=
   antitoneOn_iff_forall_lt.mpr fun _ ha _ hb hab ↦
@@ -448,7 +444,6 @@ theorem inv_antitoneOn_Icc_left (hb : b < 0) :
 
 /-! ### Relating two divisions -/
 
-
 theorem div_le_div_of_nonpos_of_le (hc : c ≤ 0) (h : b ≤ a) : a / c ≤ b / c := by
   rw [div_eq_mul_inv a c, div_eq_mul_inv b c]
   exact mul_le_mul_of_nonpos_right h (inv_nonpos'.2 hc)
@@ -464,7 +459,6 @@ theorem div_lt_div_right_of_neg (hc : c < 0) : a / c < b / c ↔ b < a := by
   rw [div_lt_iff_of_neg hc, div_mul_cancel₀ _ hc.ne]
 
 /-! ### Relating one division and involving `1` -/
-
 
 theorem one_le_div_of_neg (hb : b < 0) : 1 ≤ a / b ↔ a ≤ b := by rw [le_div_iff_of_neg hb, one_mul]
 
@@ -487,7 +481,6 @@ theorem lt_one_div_of_neg (ha : a < 0) (hb : b < 0) : a < 1 / b ↔ b < 1 / a :=
   simpa using lt_inv_of_neg ha hb
 
 /-! ### Relating two divisions, involving `1` -/
-
 
 theorem one_div_le_one_div_of_neg_of_le (hb : b < 0) (h : a ≤ b) : 1 / b ≤ 1 / a := by
   rwa [div_le_iff_of_neg' hb, ← div_eq_mul_one_div, div_le_one_of_neg (h.trans_lt hb)]
@@ -548,7 +541,6 @@ theorem sub_one_div_inv_le_two (a2 : 2 ≤ a) : (1 - 1 / a)⁻¹ ≤ 2 := by
   rw [sub_eq_iff_eq_add, ← two_mul, mul_inv_cancel₀ two_ne_zero]
 
 /-! ### Miscellaneous lemmas -/
-
 
 omit [PosMulReflectLT α] in
 theorem mul_sub_mul_div_mul_neg_iff (hc : c ≠ 0) (hd : d ≠ 0) :

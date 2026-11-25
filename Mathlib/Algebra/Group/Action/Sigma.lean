@@ -28,7 +28,6 @@ public section
 
 assert_not_exists MonoidWithZero
 
-
 variable {ι : Type*} {M N : Type*} {α : ι → Type*}
 
 namespace Sigma

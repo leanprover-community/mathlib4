@@ -26,7 +26,6 @@ to transport over to `Option.{v}`. `ULiftable` is an attempt at improving the si
 `Option.{u}` in a context that requires `Option.{v}`. It is often used in tandem with
 `ULift` but the two are purposefully decoupled.
 
-
 ## Main definitions
 
 * `ULiftable` class
@@ -37,7 +36,6 @@ universe polymorphism functor
 -/
 
 @[expose] public section
-
 
 universe v u₀ u₁ v₀ v₁ v₂ w w₀ w₁
 

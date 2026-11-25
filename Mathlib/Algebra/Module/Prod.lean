@@ -19,7 +19,6 @@ This file defines instances for binary product of modules
 
 public section
 
-
 variable {R : Type*} {M : Type*} {N : Type*}
 
 namespace Prod

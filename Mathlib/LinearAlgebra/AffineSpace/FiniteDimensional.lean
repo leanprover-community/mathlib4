@@ -32,7 +32,6 @@ subspaces of affine spaces.
 
 @[expose] public section
 
-
 noncomputable section
 
 open Affine

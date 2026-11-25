@@ -36,7 +36,6 @@ are also topological spaces.
 
 open scoped Topology
 
-
 /--
 `ContinuousAlgEquiv R A B`, with notation `A ≃A[R] B`, is the type of bijections
 between the topological `R`-algebras `A` and `B` which are both homeomorphisms

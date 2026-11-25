@@ -37,7 +37,6 @@ to `f`.
 
 @[expose] public section
 
-
 noncomputable section
 
 open Nat (choose)
@@ -196,7 +195,6 @@ theorem iterate_derivative_at_0_ne_zero [CharZero R] (n ν : ℕ) (h : ν ≤ n)
 Rather than redoing the work of evaluating the derivatives at 1,
 we use the symmetry of the Bernstein polynomials.
 -/
-
 
 theorem iterate_derivative_at_1_eq_zero_of_lt (n : ℕ) {ν k : ℕ} :
     k < n - ν → (Polynomial.derivative^[k] (bernsteinPolynomial R n ν)).eval 1 = 0 := by

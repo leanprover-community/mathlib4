@@ -19,7 +19,6 @@ Also, if a category has binary coproducts and coequalizers, then it has pushouts
 
 public section
 
-
 universe v u
 
 open CategoryTheory

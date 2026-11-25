@@ -20,7 +20,6 @@ coefficients of `f` and `g` do not multiply to zero.
 
 @[expose] public section
 
-
 namespace Polynomial
 
 open AddMonoidAlgebra Finsupp Finset

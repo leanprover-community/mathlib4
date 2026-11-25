@@ -31,7 +31,6 @@ universe u v w' w
 
 variable (C : Type u) [Category.{v} C]
 
-
 -- We could enable the following line:
 -- attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Opposite
 -- but may need

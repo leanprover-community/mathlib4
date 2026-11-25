@@ -33,7 +33,6 @@ corresponding `*_eq` lemmas to be used in a place where they are definitionally 
 
 @[expose] public section
 
-
 open Matrix
 
 namespace Matrix

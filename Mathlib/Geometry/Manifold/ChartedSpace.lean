@@ -401,7 +401,6 @@ the two `chartedSpaceSelf` on each component. They are equal, but not defeq (bec
 of `id` and `id` is not defeq to `id`), which is bad as we know. This expedient of renaming `H × H'`
 solves this problem. -/
 
-
 /-- Same thing as `H × H'`. We introduce it for technical reasons,
 see note [Manifold type tags]. -/
 @[implicit_reducible]

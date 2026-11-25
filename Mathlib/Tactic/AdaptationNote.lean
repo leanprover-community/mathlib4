@@ -73,7 +73,6 @@ def adaptationNoteTermElab : Elab.Term.TermElab
     Elab.Term.elabTerm t expectedType?
   | _ => fun _ => Elab.throwUnsupportedSyntax
 
-
 #adaptation_note /-- This is a test -/
 
 example : True := by

@@ -29,7 +29,6 @@ of the basis).
 
 @[expose] public section
 
-
 open Set TopologicalSpace MeasureTheory MeasureTheory.Measure Module
 
 open scoped Pointwise

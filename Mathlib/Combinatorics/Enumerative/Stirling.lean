@@ -110,7 +110,6 @@ theorem stirlingFirst_one_right (n : ℕ) : stirlingFirst (n + 1) 1 = n.factoria
     rw [stirlingFirst_succ_succ, zero_add, hn, stirlingFirst_succ_zero]
     simp [Nat.factorial_succ]
 
-
 /--
 `Nat.stirlingSecond n k` is the Stirling number of the second kind,
 counting the number of ways to partition a set of `n` elements into `k` nonempty subsets.

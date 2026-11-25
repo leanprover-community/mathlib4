@@ -18,7 +18,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
 
 @[expose] public section
 
-
 noncomputable section
 
 universe w w' v v₁ v₂ u u₁ u₂

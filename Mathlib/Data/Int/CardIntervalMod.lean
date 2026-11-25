@@ -24,13 +24,11 @@ zero, which reduces to the multiples). Theorems are given for `Ico` and `Ioc` in
 
 public section
 
-
 open Finset Int
 
 namespace Int
 
 variable (a b : ℤ) {r : ℤ}
-
 
 lemma Ico_filter_modEq_eq (v : ℤ) :
     {x ∈ Ico a b | x ≡ v [ZMOD r]} =

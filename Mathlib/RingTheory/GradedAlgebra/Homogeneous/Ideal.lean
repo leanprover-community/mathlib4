@@ -218,7 +218,6 @@ end IsHomogeneousIdealDefs
 In this section, we show that `Ideal.IsHomogeneous` is preserved by various notations, then use
 these results to provide these notation typeclasses for `HomogeneousIdeal`. -/
 
-
 section Operations
 
 section Semiring
@@ -420,7 +419,6 @@ end Operations
 Note that many results about the homogeneous core came earlier in this file, as they are helpful
 for building the lattice structure. -/
 
-
 section homogeneousCore
 
 open HomogeneousIdeal
@@ -461,7 +459,6 @@ theorem Ideal.homogeneousCore'_eq_sSup :
 end homogeneousCore
 
 /-! ### Homogeneous hulls -/
-
 
 section HomogeneousHull
 

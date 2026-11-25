@@ -58,7 +58,6 @@ properties of the mgf from those of the characteristic function).
 
 @[expose] public section
 
-
 open MeasureTheory Filter Real Complex
 
 open scoped MeasureTheory ProbabilityTheory ENNReal NNReal Topology

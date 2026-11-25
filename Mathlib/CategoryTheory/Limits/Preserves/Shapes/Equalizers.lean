@@ -23,7 +23,6 @@ the limit of the parallel pair `f,g`, as well as the dual result.
 
 @[expose] public section
 
-
 noncomputable section
 
 universe w v₁ v₂ u₁ u₂

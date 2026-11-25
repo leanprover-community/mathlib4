@@ -301,7 +301,6 @@ We show that the gcd of two ideals in a Dedekind domain is just their supremum,
 and the lcm is their infimum, and use this to instantiate `NormalizedGCDMonoid (Ideal A)`.
 -/
 
-
 @[simp]
 theorem sup_mul_inf (I J : Ideal A) : (I ⊔ J) * (I ⊓ J) = I * J := by
   let := UniqueFactorizationMonoid.toNormalizedGCDMonoid (Ideal A)
@@ -464,7 +463,6 @@ prime ideals.
 We define `HeightOneSpectrum` and provide lemmas to recover the facts that prime ideals of height
 one are prime and irreducible.
 -/
-
 
 namespace IsDedekindDomain
 

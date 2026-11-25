@@ -168,7 +168,6 @@ section Const
 
 /-! #### Constants -/
 
-
 variable {c : M'}
 
 theorem hasMFDerivAt_const (c : M') (x : M) :
@@ -442,7 +441,6 @@ theorem mdifferentiable_prod_module_iff (f : M → F₁ × F₂) :
   exact mdifferentiable_prod_iff f
 
 end prod_module
-
 
 section prodMap
 

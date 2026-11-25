@@ -41,7 +41,6 @@ These definitions are for sums over a `Finset`; versions for a
 
 @[expose] public section
 
-
 noncomputable section
 
 open scoped Affine

@@ -24,7 +24,6 @@ variable {α β : Type*} [DecidableEq α]
 
 /-! ### dedup -/
 
-
 /-- `dedup s` removes duplicates from `s`, yielding a `nodup` multiset. -/
 def dedup (s : Multiset α) : Multiset α :=
   Quot.liftOn s (fun l => (l.dedup : Multiset α)) fun _ _ p => Quot.sound p.dedup

@@ -28,7 +28,6 @@ variable (I : Ideal R) [I.IsPrime] (J : Ideal R[X]) [J.IsPrime] [J.LiesOver I]
   [Algebra (Localization.AtPrime I) (Localization.AtPrime J)]
   [IsScalarTower R (Localization.AtPrime I) (Localization.AtPrime J)]
 
-
 set_option backward.isDefEq.respectTransparency.types false in
 /-- `κ(I[X]) ≃ₐ[κ(I)] κ(I)(X)`. -/
 noncomputable

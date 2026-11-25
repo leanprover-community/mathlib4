@@ -377,7 +377,6 @@ theorem coe_map : (map f s : Set β) = f '' s :=
 theorem compl_map : (map f s).compl = LowerSet.map f s.compl :=
   SetLike.coe_injective (Set.image_compl_eq f.bijective).symm
 
-
 end Map
 
 end UpperSet

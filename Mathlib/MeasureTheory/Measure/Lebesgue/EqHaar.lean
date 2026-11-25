@@ -332,7 +332,6 @@ theorem ContinuousLinearMap.quasiMeasurePreserving (f : E →L[ℝ] E) (hf : f.d
 ### Basic properties of Haar measures on real vector spaces
 -/
 
-
 theorem map_addHaar_smul {r : ℝ} (hr : r ≠ 0) :
     Measure.map (r • ·) μ = ENNReal.ofReal (abs (r ^ finrank ℝ E)⁻¹) • μ := by
   let f : E →ₗ[ℝ] E := r • (1 : E →ₗ[ℝ] E)
@@ -411,7 +410,6 @@ theorem addHaar_image_homothety (x : E) (r : ℝ) (s : Set E) :
 
 /-! We don't need to state `map_addHaar_neg` here, because it has already been proved for
 general Haar measures on general commutative groups. -/
-
 
 /-! ### Measure of balls -/
 

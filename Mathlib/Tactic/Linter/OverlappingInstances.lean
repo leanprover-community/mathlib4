@@ -31,7 +31,6 @@ A common case where this linter may fire is if the same type class assumption is
 `variable` statement and a declaration. This kind of variable shadowing does not actually produce
 declarations with duplicate type class assumptions, but it is still not desirable.
 
-
 ## TODO
 
 Support declarations without bodies (`structure`s/`class`es/`inductive`s etc.)

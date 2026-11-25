@@ -187,7 +187,6 @@ theorem MemLp.exists_hasCompactSupport_eLpNorm_sub_le
   contrapose hx
   exact interior_subset (f_support hx)
 
-
 /-- In a locally compact space, any function in `ℒp` can be approximated by compactly supported
 continuous functions when `0 < p < ∞`, version in terms of `∫`. -/
 theorem MemLp.exists_hasCompactSupport_integral_rpow_sub_le
@@ -208,7 +207,6 @@ theorem MemLp.exists_hasCompactSupport_integral_rpow_sub_le
     ENNReal.ofReal_le_ofReal_iff I.le, one_div, ENNReal.toReal_ofReal hp.le,
     Real.rpow_le_rpow_iff _ hε.le (inv_pos.2 hp)] at hg
   positivity
-
 
 /-- In a locally compact space, any integrable function can be approximated by compactly supported
 continuous functions, version in terms of `∫⁻`. -/

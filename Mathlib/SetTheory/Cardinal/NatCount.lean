@@ -19,7 +19,6 @@ This file provides lemmas about the relation of `Nat.count` with cardinality fun
 
 public section
 
-
 namespace Nat
 open Nat
 

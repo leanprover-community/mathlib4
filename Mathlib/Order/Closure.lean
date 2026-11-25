@@ -51,7 +51,6 @@ open Set
 
 /-! ### Closure operator -/
 
-
 variable (α : Type*) {ι : Sort*} {κ : ι → Sort*}
 
 /-- A closure operator on the preorder `α` is a monotone function which is extensive (every `x`
@@ -79,7 +78,6 @@ instance [Preorder α] : OrderHomClass (ClosureOperator α) α α where
   map_rel f _ _ h := f.mono h
 
 initialize_simps_projections ClosureOperator (toFun → apply, IsClosed → isClosed)
-
 
 /-- If `c` is a closure operator on `α` and `e` an order-isomorphism
 between `α` and `β` then `e ∘ c ∘ e⁻¹` is a closure operator on `β`. -/
@@ -318,7 +316,6 @@ def OrderIso.equivClosureOperator {α β} [Preorder α] [Preorder β] (e : α �
                  <| Eq.trans (congrArg _ e.symm_trans_self) c.conjBy_refl
 
 /-! ### Lower adjoint -/
-
 
 variable {α} {β : Type*}
 

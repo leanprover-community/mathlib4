@@ -43,7 +43,6 @@ import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
 
 @[expose] public section
 
-
 namespace CategoryTheory
 
 open Limits

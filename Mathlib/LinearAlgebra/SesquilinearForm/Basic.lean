@@ -45,7 +45,6 @@ namespace LinearMap
 
 /-! ### Orthogonal vectors -/
 
-
 section CommRing
 
 -- the `ₗ` subscript variables are for special cases about linear (as opposed to semilinear) maps

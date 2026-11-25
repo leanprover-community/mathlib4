@@ -165,7 +165,6 @@ lemma norm_tsum_smoothNumbers_sub_tsum_lt (hsum : Summable f) (hf₀ : f 0 = 0)
   refine ⟨N₀, fun N hN ↦ hN₀ (range N) fun p hp ↦ ?_⟩
   exact mem_range.mpr <| (lt_of_mem_primesBelow hp).trans_le hN
 
-
 include hf₁ hmul in
 /-- The *Euler Product* for multiplicative (on coprime arguments) functions.
 

@@ -24,7 +24,6 @@ Generalise this to work with CategoryTheory.Monad
 
 @[expose] public section
 
-
 universe u v
 
 namespace CategoryTheory

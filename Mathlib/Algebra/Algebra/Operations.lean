@@ -47,7 +47,6 @@ multiplication of submodules, division of submodules, submodule semiring
 
 @[expose] public section
 
-
 universe uι u v
 
 open Algebra Set MulOpposite

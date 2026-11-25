@@ -61,7 +61,6 @@ To proceed with the induction, we reindex our matrices to reduce to the above si
 
 @[expose] public section
 
-
 universe u₁ u₂
 
 namespace Matrix
@@ -325,7 +324,6 @@ have the desired effect.
 Once this is done, one concludes the reduction by induction on the size
 of the matrices, through a suitable reindexing to identify any fintype with `Fin r ⊕ Unit`.
 -/
-
 
 namespace Pivot
 

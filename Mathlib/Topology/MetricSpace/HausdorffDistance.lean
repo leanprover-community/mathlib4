@@ -54,7 +54,6 @@ metric space, Hausdorff distance
 
 @[expose] public section
 
-
 noncomputable section
 
 open NNReal ENNReal Set Filter Pointwise Bornology

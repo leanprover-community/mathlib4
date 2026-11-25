@@ -44,7 +44,6 @@ or `card_verts`.
 
 @[expose] public section
 
-
 open Finset Function
 
 namespace SimpleGraph

@@ -221,7 +221,6 @@ theorem zpow_natCast (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
     _ = a ^ n * a := congrArg (· * a) (zpow_natCast a n)
     _ = a ^ (n + 1) := (pow_succ _ _).symm
 
-
 -- TODO: consider also making `ofNat_zsmul` a `simp` lemma; it is currently not, because it breaks
 -- `simp`-normal forms involving `(2 : ℤ) • ·` used in the theory of oriented angles.
 @[to_additive ofNat_zsmul, simp]

@@ -18,7 +18,6 @@ In this file we provide various simp lemmas in its elementwise form via `Tactic.
 
 public section
 
-
 open CategoryTheory CategoryTheory.Limits
 
 attribute [elementwise] limit.lift_π limit.w

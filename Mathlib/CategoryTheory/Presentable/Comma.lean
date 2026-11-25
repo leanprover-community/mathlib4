@@ -272,7 +272,6 @@ private lemma J.exists_hom'
         dsimp% j.hom.w, dsimp% CostructuredArrow.w g₂])
   exact ⟨j₂, a, by cat_disch⟩
 
-
 private lemma J.exists_hom {j j' : J κ f} (g₁ : j.fst ⟶ j'.fst) (g₂ : j.snd ⟶ j'.snd) :
     ∃ (j'' : J κ f) (a : j ⟶ j'') (b : j' ⟶ j''),
       g₁.left.hom ≫ b.left.hom.left = a.left.hom.left ∧

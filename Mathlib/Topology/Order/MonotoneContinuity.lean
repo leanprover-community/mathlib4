@@ -23,7 +23,6 @@ continuous, monotone
 
 public section
 
-
 open Set Filter
 
 open scoped Topology
@@ -271,7 +270,6 @@ end LinearOrder
 In this section we prove that an `OrderIso` is continuous, hence it is a `Homeomorph`. We prove
 this for an `OrderIso` between to partial orders with order topology.
 -/
-
 
 namespace OrderIso
 

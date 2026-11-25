@@ -17,7 +17,6 @@ set_option doc.verso.suggestions false
 
 @[expose] public section
 
-
 open Function
 
 variable {α β γ δ : Sort*}

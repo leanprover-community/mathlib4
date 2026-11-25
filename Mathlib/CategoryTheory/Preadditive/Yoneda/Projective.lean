@@ -22,7 +22,6 @@ An object is projective iff the preadditive coyoneda functor on it preserves epi
 
 public section
 
-
 universe v u
 
 open Opposite

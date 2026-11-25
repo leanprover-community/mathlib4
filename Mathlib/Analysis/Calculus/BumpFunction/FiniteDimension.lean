@@ -30,7 +30,6 @@ the indicator function of `closedBall 0 1` with a function as above with `s = ba
 
 @[expose] public section
 
-
 noncomputable section
 
 open Set Metric TopologicalSpace Function MeasureTheory Module

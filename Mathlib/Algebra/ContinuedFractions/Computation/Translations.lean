@@ -61,7 +61,6 @@ Here we state some lemmas that give us inversion rules and recurrences for the c
 stream of integer and fractional parts of a value.
 -/
 
-
 theorem stream_zero (v : K) : IntFractPair.stream v 0 = some (IntFractPair.of v) :=
   rfl
 
@@ -151,7 +150,6 @@ value `v` is `⌊v⌋` and how this head term is moved along the structures used
 process.
 -/
 
-
 /-- The head term of the sequence with head of `v` is just the integer part of `v`. -/
 @[simp]
 theorem IntFractPair.seq1_fst_eq_of : (IntFractPair.seq1 v).fst = IntFractPair.of v :=
@@ -178,7 +176,6 @@ values are moved along the structures and how the termination of one sequence im
 termination of another sequence.
 -/
 
-
 variable {n : ℕ}
 
 theorem IntFractPair.get?_seq1_eq_succ_get?_stream :
@@ -192,7 +189,6 @@ section Termination
 
 Let's first show how the termination of one sequence implies the termination of another sequence.
 -/
-
 
 theorem of_terminatedAt_iff_intFractPair_seq1_terminatedAt :
     (of v).TerminatedAt n ↔ (IntFractPair.seq1 v).snd.TerminatedAt n :=
@@ -212,7 +208,6 @@ section Values
 
 Now let's show how the values of the sequences correspond to one another.
 -/
-
 
 set_option backward.isDefEq.respectTransparency.types false in
 theorem IntFractPair.exists_succ_get?_stream_of_gcf_of_get?_eq_some {gp_n : Pair K}

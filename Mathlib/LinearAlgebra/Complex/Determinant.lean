@@ -20,7 +20,6 @@ space over `ℝ`.
 
 public section
 
-
 namespace Complex
 
 /-- The determinant of `conjAe`, as a linear map. -/

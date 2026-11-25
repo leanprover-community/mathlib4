@@ -28,7 +28,6 @@ This file contains results in number theory relating to multiplicity.
 
 public section
 
-
 open Ideal Ideal.Quotient Finset
 
 variable {R : Type*} {n : ℕ}

@@ -25,7 +25,6 @@ See also `AddMonoidHom.mulLeft`, `AddMonoidHom.mulRight`, `AddMonoid.End.mulLeft
 
 @[expose] public section
 
-
 namespace AddAut
 
 variable {R : Type*} [Semiring R]

@@ -27,7 +27,6 @@ The result of `arctan x + arctan y` is given by `arctan_add`, `arctan_add_eq_add
 
 @[expose] public section
 
-
 noncomputable section
 
 open Set Filter

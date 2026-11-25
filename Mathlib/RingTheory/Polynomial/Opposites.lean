@@ -17,7 +17,6 @@ over a semiring and the polynomial ring over the opposite semiring. -/
 
 @[expose] public section
 
-
 open AddMonoidAlgebra Polynomial
 
 open MulOpposite
@@ -36,7 +35,6 @@ def opRingEquiv (R : Type*) [Semiring R] : R[X]ᵐᵒᵖ ≃+* Rᵐᵒᵖ[X] :=
 
 /-!  Lemmas to get started, using `opRingEquiv R` on the various expressions of
 `Finsupp.single`: `monomial`, `C a`, `X`, `C a * X ^ n`. -/
-
 
 @[simp]
 theorem opRingEquiv_op_monomial (n : ℕ) (r : R) :
@@ -57,7 +55,6 @@ theorem opRingEquiv_op_C_mul_X_pow (r : R) (n : ℕ) :
 
 /-!  Lemmas to get started, using `(opRingEquiv R).symm` on the various expressions of
 `Finsupp.single`: `monomial`, `C a`, `X`, `C a * X ^ n`. -/
-
 
 @[simp]
 theorem opRingEquiv_symm_monomial (n : ℕ) (r : Rᵐᵒᵖ) :

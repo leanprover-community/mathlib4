@@ -38,7 +38,6 @@ Once ported to mathlib4, this file will be a great golfing ground for Heather's 
 
 @[expose] public section
 
-
 open Finpartition Finset Fintype Rel Nat
 open scoped SzemerediRegularity.Positivity
 
@@ -56,7 +55,6 @@ local notation3 "m" => (card α / stepBound #P.parts : ℕ)
 We define `chunk`, the partition of a part, and `star`, the sets of parts of `chunk` that are
 contained in the corresponding witness of non-uniformity.
 -/
-
 
 /-- The portion of `SzemerediRegularity.increment` which partitions `U`. -/
 noncomputable def chunk : Finpartition U :=
@@ -76,7 +74,6 @@ noncomputable def star (V : Finset α) : Finset (Finset α) :=
 
 We estimate the density between parts of `chunk`.
 -/
-
 
 theorem biUnion_star_subset_nonuniformWitness :
     (star hP G ε hU V).biUnion id ⊆ G.nonuniformWitness ε U V :=
@@ -168,7 +165,6 @@ private theorem one_sub_eps_mul_card_nonuniformWitness_le_card_star (hV : V ∈ 
       exact mod_cast card_nonuniformWitness_sdiff_biUnion_star hV hUV hunif
 
 /-! ### `chunk` -/
-
 
 theorem card_chunk (hm : m ≠ 0) : #(chunk hP G ε hU).parts = 4 ^ #P.parts := by
   unfold chunk
@@ -413,7 +409,6 @@ private theorem eps_le_card_star_div [Nonempty α] (hPα : #P.parts * 16 ^ #P.pa
 
 Those inequalities are the end result of all this hard work.
 -/
-
 
 /-- Lower bound on the edge densities between non-uniform parts of `SzemerediRegularity.star`. -/
 private theorem edgeDensity_star_not_uniform [Nonempty α]

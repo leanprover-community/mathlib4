@@ -73,7 +73,6 @@ divisibility, gcd, lcm, normalize
 
 @[expose] public section
 
-
 variable {α : Type*}
 
 /-- Normalization monoid: multiplying with `normUnit` gives a normal form for associated

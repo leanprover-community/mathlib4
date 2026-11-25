@@ -19,7 +19,6 @@ This file proves that conformal maps preserve angles.
 
 public section
 
-
 namespace InnerProductGeometry
 
 variable {E F : Type*}

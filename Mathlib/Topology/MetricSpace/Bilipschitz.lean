@@ -77,7 +77,6 @@ lemma bornology_eq_of_bilipschitz (hf₁ : AntilipschitzWith K₁ f) (hf₂ : Li
     @cobounded _ (induced f) = cobounded α :=
   le_antisymm hf₂.comap_cobounded_le hf₁.tendsto_cobounded.le_comap
 
-
 /-- If `f : α → β` is bilipschitz, then the pullback of the bornology on `β` through `f` agrees
 with the bornology on `α`.
 

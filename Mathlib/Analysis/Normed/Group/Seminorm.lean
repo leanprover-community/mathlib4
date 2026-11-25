@@ -99,7 +99,6 @@ structure NonarchAddGroupSeminorm (G : Type*) [AddGroup G] extends ZeroHom G ℝ
   to avoid having a superfluous `add_le'` field in the resulting structure. The same applies to
   `NonarchAddGroupNorm` below. -/
 
-
 /-- A norm on an additive group `G` is a function `f : G → ℝ` that preserves zero, is subadditive
 and such that `f (-x) = f x` and `f x = 0 → x = 0` for all `x`. -/
 structure AddGroupNorm (G : Type*) [AddGroup G] extends AddGroupSeminorm G where
@@ -171,7 +170,6 @@ instance (priority := 100) NonarchAddGroupNormClass.toAddGroupNormClass
     map_neg_eq_map := NonarchAddGroupSeminormClass.map_neg_eq_map' }
 
 /-! ### Seminorms -/
-
 
 namespace GroupSeminorm
 
@@ -676,7 +674,6 @@ theorem smul_sup (r : R) (p q : NonarchAddGroupSeminorm E) : r • (p ⊔ q) = r
 end NonarchAddGroupSeminorm
 
 /-! ### Norms -/
-
 
 namespace GroupNorm
 

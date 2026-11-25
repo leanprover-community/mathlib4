@@ -86,7 +86,6 @@ Some set instances do not appear here since they are consequences of others, for
 `Subtype.Finite` for subsets of a finite type.
 -/
 
-
 namespace Finite.Set
 
 instance finite_iUnion [Finite ι] (f : ι → Set α) [∀ i, Finite (f i)] : Finite (⋃ i, f i) := by
@@ -132,7 +131,6 @@ Every constructor here should have a corresponding `Fintype` instance in the pre
 The implementation of these constructors ideally should be no more than `Set.toFinite`,
 after possibly setting up some `Fintype` and classical `Decidable` instances.
 -/
-
 
 section SetFiniteConstructors
 

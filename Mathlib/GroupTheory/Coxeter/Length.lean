@@ -196,7 +196,6 @@ theorem IsReduced.reverse {cs : CoxeterSystem M W} {ω : List B}
     (hω : cs.IsReduced ω) : cs.IsReduced (ω.reverse) :=
   (cs.isReduced_reverse_iff ω).mpr hω
 
-
 private theorem isReduced_take_and_drop {ω : List B} (hω : cs.IsReduced ω) (j : ℕ) :
     cs.IsReduced (ω.take j) ∧ cs.IsReduced (ω.drop j) := by
   have h₁ : ℓ (π (ω.take j)) ≤ (ω.take j).length := cs.length_wordProd_le (ω.take j)

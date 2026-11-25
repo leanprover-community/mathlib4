@@ -31,7 +31,6 @@ and construct the restriction functors
 
 @[expose] public section
 
-
 universe u v
 
 open CategoryTheory Limits

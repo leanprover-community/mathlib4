@@ -29,7 +29,6 @@ see `Fintype.card_perm`.
 
 @[expose] public section
 
-
 namespace Nat
 
 /-- `Nat.factorial n` is the factorial of `n`. -/
@@ -55,7 +54,6 @@ variable {m n : ℕ}
 
 theorem factorial_succ (n : ℕ) : (n + 1)! = (n + 1) * n ! :=
   rfl
-
 
 @[simp] theorem factorial_one : 1! = 1 :=
   rfl
@@ -191,7 +189,6 @@ lemma factorial_le_pow : ∀ n, n ! ≤ n ^ n
 end Factorial
 
 /-! ### Ascending and descending factorials -/
-
 
 section AscFactorial
 
@@ -491,7 +488,6 @@ lemma two_pow_mul_factorial_le_factorial_two_mul (n : ℕ) : 2 ^ n * n ! ≤ (2 
       Nat.mul_le_mul_left _ (Nat.pow_le_pow_left (le_add_left _ _) _)
     _ ≤ _ := Nat.factorial_mul_pow_le_factorial
 
-
 /-!
 ### Factorial via binary splitting.
 
@@ -568,6 +564,5 @@ and this is much faster than even the tail-recursive version.
 #eval (10^6) ! |>.log2
 ```
 -/
-
 
 end Nat

@@ -67,7 +67,6 @@ and only at the "final step", when we need to provide an "explicit" primitive ro
 
 @[expose] public section
 
-
 open Polynomial Algebra Finset Module IsCyclotomicExtension Nat PNat Set
 open scoped IntermediateField
 

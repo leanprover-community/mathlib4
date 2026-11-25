@@ -25,7 +25,6 @@ tower law
 
 public section
 
-
 universe u v w u₁ v₁ w₁
 
 open Submodule

@@ -23,7 +23,6 @@ of `Z` in degree zero.
 
 @[expose] public section
 
-
 universe v u v' u'
 
 namespace CategoryTheory

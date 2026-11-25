@@ -599,7 +599,6 @@ lemma X_pow_smul_rTensor_monomial [CommSemiring S] [Algebra R S] {N : Type*}
     simp only [rTensor_tmul, coe_restrictScalars, monomial_zero_left]
     rw [smul_tmul', smul_eq_mul, mul_comm, C_mul_X_pow_eq_monomial]
 
-
 end CommSemiring
 
 section CommRing

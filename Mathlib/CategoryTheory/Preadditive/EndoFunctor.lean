@@ -20,7 +20,6 @@ also preadditive. Dually, the category `Coalgebra F` is also preadditive.
 
 public section
 
-
 universe v₁ u₁
 
 -- morphism levels before object levels. See note [category_theory universes].

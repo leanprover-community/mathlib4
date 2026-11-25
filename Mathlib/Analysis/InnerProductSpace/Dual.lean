@@ -25,7 +25,6 @@ For a bounded sesquilinear form `B : E →L⋆[𝕜] E →L[𝕜] 𝕜`,
 we define a map `InnerProductSpace.continuousLinearMapOfBilin B : E →L[𝕜] E`,
 given by substituting `E →L[𝕜] 𝕜` with `E` using `toDual`.
 
-
 ## References
 
 * [M. Einsiedler and T. Ward, *Functional Analysis, Spectral Theory, and

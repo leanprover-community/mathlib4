@@ -46,7 +46,6 @@ namespace Finset
 
 /-! ### map -/
 
-
 section Map
 
 /-- When `f` is an embedding of `α` in `β` and `s` is a finset in `α`, then `s.map f` is the image
@@ -269,7 +268,6 @@ theorem range_add_one' (n : ℕ) :
 
 /-! ### image -/
 
-
 section Image
 
 variable [DecidableEq β]
@@ -324,7 +322,6 @@ theorem image_congr (h : (s : Set α).EqOn f g) : Finset.image f s = Finset.imag
 theorem _root_.Function.Injective.mem_finset_image (hf : Injective f) :
     f a ∈ s.image f ↔ a ∈ s := by
   grind
-
 
 @[simp, norm_cast]
 theorem coe_image : ↑(s.image f) = f '' ↑s :=
@@ -627,7 +624,6 @@ theorem _root_.List.toFinset_filterMap [DecidableEq α] [DecidableEq β]
 end FilterMap
 
 /-! ### Subtype -/
-
 
 section Subtype
 

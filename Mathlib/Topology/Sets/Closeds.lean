@@ -22,16 +22,13 @@ For a topological space `α`,
 
 @[expose] public section
 
-
 open Order OrderDual Set Topology
-
 
 variable {ι α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 
 namespace TopologicalSpace
 
 /-! ### Closed sets -/
-
 
 /-- The type of closed subsets of a topological space. -/
 structure Closeds (α : Type*) [TopologicalSpace α] where
@@ -302,7 +299,6 @@ theorem Opens.isCoatom_iff [T1Space α] {s : Opens α} :
     Closeds.compl_bijective.injective.eq_iff]
 
 /-! ### Clopen sets -/
-
 
 /-- The type of clopen sets of a topological space. -/
 structure Clopens (α : Type*) [TopologicalSpace α] where

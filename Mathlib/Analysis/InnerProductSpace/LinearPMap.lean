@@ -52,7 +52,6 @@ Unbounded operators, closed operators
 
 @[expose] public section
 
-
 noncomputable section
 
 open RCLike LinearPMap WithLp

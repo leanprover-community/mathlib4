@@ -52,7 +52,6 @@ We use the following type variables in this file:
 * `G`, `G'` : normed vector spaces over `𝕜`.
 -/
 
-
 universe u v v' wE wE₁ wE' wEi wG wG'
 
 variable {𝕜 : Type u} {ι : Type v} {ι' : Type v'} {n : ℕ} {E : ι → Type wE}
@@ -93,7 +92,6 @@ theorem ContinuousMultilinearMap.norm_map_snoc_le (f : ContinuousMultilinearMap 
   simpa [prod_univ_castSucc, mul_assoc] using f.le_opNorm (snoc m x)
 
 /-! #### Left currying -/
-
 
 /-- Given a continuous linear map `f` from `E 0` to continuous multilinear maps on `n` variables,
 construct the corresponding continuous multilinear map on `n+1` variables obtained by concatenating
@@ -187,7 +185,6 @@ theorem ContinuousLinearMap.uncurryLeft_norm
   (continuousMultilinearCurryLeftEquiv 𝕜 Ei G).symm.norm_map f
 
 /-! #### Right currying -/
-
 
 /-- Given a continuous linear map `f` from continuous multilinear maps on `n` variables to
 continuous linear maps on `E 0`, construct the corresponding continuous multilinear map on `n+1`

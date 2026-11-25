@@ -28,7 +28,6 @@ Finally we prove that reflective functors are `MonadicRightAdjoint` and coreflec
 
 @[expose] public section
 
-
 namespace CategoryTheory
 
 open Category CategoryTheory.Functor

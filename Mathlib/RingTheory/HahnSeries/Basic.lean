@@ -41,7 +41,6 @@ in the file `Mathlib/RingTheory/LaurentSeries.lean`.
 
 @[expose] public section
 
-
 open Function
 
 noncomputable section

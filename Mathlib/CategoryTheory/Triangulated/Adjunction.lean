@@ -195,7 +195,6 @@ instance [E.IsTriangulated] : E.inverse.IsTriangulated := inferInstance
 instance [h : E.functor.IsTriangulated] : E.symm.inverse.IsTriangulated := h
 instance [h : E.inverse.IsTriangulated] : E.symm.functor.IsTriangulated := h
 
-
 /-- Constructor for `Equivalence.IsTriangulated`. -/
 lemma mk' (h : E.functor.IsTriangulated) : E.IsTriangulated where
   rightAdjoint_isTriangulated := E.toAdjunction.isTriangulated_rightAdjoint

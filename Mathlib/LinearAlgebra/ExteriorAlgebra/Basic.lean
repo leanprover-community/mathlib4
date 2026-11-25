@@ -49,7 +49,6 @@ as this avoids us having to duplicate API.
 
 @[expose] public section
 
-
 universe u1 u2 u3 u4 u5
 
 variable (R : Type u1) [CommRing R]

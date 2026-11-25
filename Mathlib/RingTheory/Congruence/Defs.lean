@@ -226,7 +226,6 @@ end Basic
 The basic algebraic notation, `0`, `1`, `+`, `*`, `-`, `^`, descend naturally under the quotient
 -/
 
-
 section Data
 
 section add_mul
@@ -361,7 +360,6 @@ end Data
 
 The operations above on the quotient by `c : RingCon R` preserve the algebraic structure of `R`.
 -/
-
 
 section Algebraic
 

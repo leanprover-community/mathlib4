@@ -28,7 +28,6 @@ This file contains some results about vector spaces over the field of fractions 
 
 @[expose] public section
 
-
 open nonZeroDivisors
 
 section Localization
@@ -185,7 +184,6 @@ theorem localizationLocalization_span {ι : Type*} (b : Basis ι R A) :
 
 end Module.Basis
 end LocalizationLocalization
-
 
 section FractionRing
 

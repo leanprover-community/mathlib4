@@ -38,12 +38,10 @@ This file defines natural or von Neumann bounded sets and proves elementary prop
 
 @[expose] public section
 
-
 variable {𝕜 𝕜' E F ι : Type*}
 
 open Set Filter Function
 open scoped Topology Pointwise
-
 
 namespace Bornology
 

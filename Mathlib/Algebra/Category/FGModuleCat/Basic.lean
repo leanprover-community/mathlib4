@@ -37,7 +37,6 @@ and then as a right-rigid monoidal category.
 
 @[expose] public section
 
-
 noncomputable section
 
 open CategoryTheory Module

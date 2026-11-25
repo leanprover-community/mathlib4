@@ -44,7 +44,6 @@ boundaries.
 * [Robin Hartshorne, *Algebraic Geometry*][har77]
 -/
 
-
 universe u
 
 noncomputable section
@@ -254,7 +253,6 @@ def structurePresheafCompForget :
   NatIso.ofComponents fun _ => Iso.refl _
 
 open TopCat.Presheaf
-
 
 open TopCat.Presheaf
 

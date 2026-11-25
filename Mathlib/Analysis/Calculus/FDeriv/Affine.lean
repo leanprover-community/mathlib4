@@ -11,7 +11,6 @@ public import Mathlib.Topology.Algebra.ContinuousAffineMap
 
 import Mathlib.Algebra.Order.Field.Power
 
-
 /-!
 # The derivative of continuous affine maps
 

@@ -132,7 +132,6 @@ lemma lift_ι (hc : IsLimit c) {X : C} (f : ∀ j, X ⟶ (F.obj (op j)).obj j)
     lift hc f hf ≫ c.ι j = f j := by
   apply IsLimit.fac
 
-
 end IsLimit
 
 end Wedge

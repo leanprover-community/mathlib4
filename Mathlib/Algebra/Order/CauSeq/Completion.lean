@@ -20,7 +20,6 @@ with absolute value.
 
 @[expose] public section
 
-
 namespace CauSeq.Completion
 
 open CauSeq

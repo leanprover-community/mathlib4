@@ -55,7 +55,6 @@ commute with the maps in the diagram (the green arrows), which is just a lengthy
 
 @[expose] public section
 
-
 noncomputable section
 
 open TopologicalSpace CategoryTheory Opposite Topology

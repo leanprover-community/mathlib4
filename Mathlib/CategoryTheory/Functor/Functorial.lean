@@ -16,7 +16,6 @@ set_option doc.verso.suggestions false
 
 @[expose] public section
 
-
 namespace CategoryTheory
 
 -- declare the `v`'s first; see `CategoryTheory.Category` for an explanation

@@ -37,7 +37,6 @@ related work.
 
 @[expose] public section
 
-
 assert_not_exists CategoryTheory.CommSq CategoryTheory.Adjunction
 
 universe w w' v v' v'' u u' u''

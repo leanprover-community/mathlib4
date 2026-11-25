@@ -268,7 +268,6 @@ section
 
 /-! `Subalgebra`s inherit structure from their `Subsemiring` / `Semiring` coercions. -/
 
-
 instance toSemiring {R A} [CommSemiring R] [Semiring A] [Algebra R A] (S : Subalgebra R A) :
     Semiring S :=
   S.toSubsemiring.toSemiring
@@ -788,7 +787,6 @@ end equivMapOfInjective
 These are just copies of the definitions about `Subsemiring` starting from
 `Subring.mulAction`.
 -/
-
 
 section Actions
 

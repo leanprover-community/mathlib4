@@ -12,7 +12,6 @@ public import Mathlib.Order.OrderDual
 
 This file provides basic results about orderings and comparison in linear orders.
 
-
 ## Definitions
 
 * `CmpLE`: An `Ordering` from `≤`.
@@ -22,7 +21,6 @@ This file provides basic results about orderings and comparison in linear orders
 -/
 
 @[expose] public section
-
 
 variable {α β : Type*}
 

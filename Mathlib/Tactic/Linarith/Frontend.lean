@@ -139,7 +139,6 @@ public meta section
 open Lean Elab Parser Tactic Meta
 open Batteries
 
-
 namespace Mathlib.Tactic.Linarith
 
 /-! ### Config objects

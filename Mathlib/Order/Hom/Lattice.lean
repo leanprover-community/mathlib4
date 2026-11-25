@@ -31,7 +31,6 @@ be satisfied by itself and all stricter types.
 
 @[expose] public section
 
-
 open Function
 
 variable {F α β γ δ : Type*}
@@ -360,7 +359,6 @@ lemma subtypeVal_coe {P : β → Prop}
 end SupHom
 
 /-! ### Lattice homomorphisms -/
-
 
 namespace LatticeHom
 

@@ -69,7 +69,6 @@ Often, you should not need the rewriting lemmas. Instead, you probably want to a
 `.dual_left` or `.dual_right` to your `Monotone`/`Antitone` hypothesis.
 -/
 
-
 section OrderDual
 
 variable [Preorder α] [Preorder β] {f : α → β} {s : Set α}
@@ -334,7 +333,6 @@ end List
 
 /-! ### Monotonicity in linear orders  -/
 
-
 section LinearOrder
 
 variable [LinearOrder α]
@@ -490,7 +488,6 @@ lemma not_monotone_not_antitone_iff_exists_lt_lt :
 ### Strictly monotone functions and `cmp`
 -/
 
-
 theorem StrictMonoOn.cmp_map_eq (hf : StrictMonoOn f s) (hx : x ∈ s) (hy : y ∈ s) :
     cmp (f x) (f y) = cmp x y :=
   ((hf.compares hx hy).2 (cmp_compares x y)).cmp_eq
@@ -508,7 +505,6 @@ theorem StrictAnti.cmp_map_eq (hf : StrictAnti f) (x y : α) : cmp (f x) (f y) =
 end LinearOrder
 
 /-! ### Monotonicity in `ℕ` and `ℤ` -/
-
 
 section Preorder
 

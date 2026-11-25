@@ -70,7 +70,6 @@ instance Arrow.inhabited (α β : TypeVec n) [∀ i, Inhabited (β i)] : Inhabit
 /-- identity of arrow composition -/
 def id {α : TypeVec n} : α ⟹ α := fun _ x => x
 
-
 /-- arrow composition in the category of `TypeVec` -/
 def comp (g : β ⟹ γ) (f : α ⟹ β)
     : α ⟹ γ :=
@@ -317,7 +316,6 @@ def typevecCasesCons₂ (n : ℕ) (t t' : Type*) (v v' : TypeVec n)
   rw [← split_dropFun_lastFun fs]
   apply F
 
-
 theorem typevecCasesNil₂_appendFun {β : Fin2.elim0 ⟹ Fin2.elim0 → Sort*} (f : β nilFun) :
     typevecCasesNil₂ f nilFun = f :=
   rfl
@@ -453,7 +451,6 @@ def prod.mk : ∀ {n} {α β : TypeVec.{u} n} (i : Fin2 n), α i → β i → (�
 
 end
 
-
 @[simp]
 theorem prod_fst_mk {α β : TypeVec n} (i : Fin2 n) (a : α i) (b : β i) :
     TypeVec.prod.fst i (prod.mk i a b) = a := by
@@ -473,8 +470,6 @@ protected def prod.map : ∀ {n} {α α' β β' : TypeVec.{u} n}, α ⟹ β → 
   | succ _, α, α', β, β', x, y, Fin2.fs _, a =>
     @prod.map _ (drop α) (drop α') (drop β) (drop β') (dropFun x) (dropFun y) _ a
   | succ _, _, _, _, _, x, y, Fin2.fz, a => (x _ a.1, y _ a.2)
-
-
 
 @[inherit_doc] scoped[MvFunctor] infixl:45 " ⊗' " => TypeVec.prod.map
 

@@ -13,7 +13,6 @@ public import Mathlib.RingTheory.Trace.Defs
 
 public section
 
-
 open Complex
 
 theorem Algebra.leftMulMatrix_complex (z : ℂ) :

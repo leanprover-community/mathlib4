@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.Algebraic.Basic
 public import Mathlib.RingTheory.Valuation.Basic
 
-
 /-!
 # Basic lemmas on valuations that are trivial over a base ring
 

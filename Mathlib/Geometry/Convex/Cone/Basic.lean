@@ -264,7 +264,6 @@ end LinearOrderedField
 
 /-! ### Convex cones with extra properties -/
 
-
 section OrderedSemiring
 
 variable [Semiring R] [PartialOrder R]
@@ -506,7 +505,6 @@ end ConvexCone
 namespace Submodule
 
 /-! ### Submodules are cones -/
-
 
 section OrderedSemiring
 

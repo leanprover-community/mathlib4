@@ -23,7 +23,6 @@ relation, `functor_map_eq_iff` says that no unnecessary identifications have bee
 
 @[expose] public section
 
-
 /-- A `HomRel` on `C` consists of a relation on every hom-set. -/
 def HomRel (C) [Quiver C] :=
   ∀ ⦃X Y : C⦄, (X ⟶ Y) → (X ⟶ Y) → Prop

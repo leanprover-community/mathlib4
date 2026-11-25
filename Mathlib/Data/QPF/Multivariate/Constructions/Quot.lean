@@ -20,7 +20,6 @@ functions found in the definition of `MvQPF`
 
 @[expose] public section
 
-
 universe u
 
 open MvFunctor

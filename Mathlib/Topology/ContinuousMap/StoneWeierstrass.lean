@@ -362,7 +362,6 @@ open ContinuousMap
 state and prove the Stone-Weierstrass theorem, in favor of using `StarSubalgebra`s,
 which didn't exist at the time Stone-Weierstrass was written. -/
 
-
 set_option backward.isDefEq.respectTransparency false in
 /-- If a star subalgebra of `C(X, 𝕜)` separates points, then the real subalgebra
 of its purely real-valued elements also separates points. -/

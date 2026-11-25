@@ -32,7 +32,6 @@ is developed here.
 
 @[expose] public section
 
-
 universe v u u₂
 
 namespace CategoryTheory

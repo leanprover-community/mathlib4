@@ -17,7 +17,6 @@ this file defines environment extension for `funProp`
 
 public meta section
 
-
 namespace Mathlib
 open Lean Meta
 open Std (TreeSet)
@@ -27,7 +26,6 @@ namespace Meta.FunProp
 initialize registerTraceClass `Meta.Tactic.fun_prop
 initialize registerTraceClass `Meta.Tactic.fun_prop.attr
 initialize registerTraceClass `Debug.Meta.Tactic.fun_prop
-
 
 /-- Indicated origin of a function or a statement. -/
 inductive Origin where

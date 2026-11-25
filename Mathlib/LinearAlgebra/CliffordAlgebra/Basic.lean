@@ -44,7 +44,6 @@ This file is almost identical to `Mathlib/LinearAlgebra/ExteriorAlgebra/Basic.le
 
 @[expose] public section
 
-
 variable {R : Type*} [CommRing R]
 variable {M : Type*} [AddCommGroup M] [Module R M]
 variable (Q : QuadraticForm R M)

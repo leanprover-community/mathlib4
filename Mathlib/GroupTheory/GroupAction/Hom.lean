@@ -296,7 +296,6 @@ def inverse (f : X →[M] Y₁) (g : Y₁ → X)
       _ = g (f (m • g x)) := by simp only [map_smul]
       _ = m • g x := by rw [h₁]
 
-
 /-- The inverse of a bijective equivariant map is equivariant. -/
 @[to_additive (attr := simps) /-- The inverse of a bijective equivariant map is equivariant. -/]
 def inverse' (f : X →ₑ[φ] Y) (g : Y → X) (k : Function.RightInverse φ' φ)
@@ -864,7 +863,6 @@ theorem DistribMulActionHom.ext_ring {f g : R →ₑ+[σ] N'} (h : f 1 = g 1) : 
 
 end Semiring
 
-
 variable (R : Type*) [Semiring R] [MulSemiringAction M R]
 variable (R' : Type*) [Ring R'] [MulSemiringAction M R']
 variable (S : Type*) [Semiring S] [MulSemiringAction N S]
@@ -994,7 +992,6 @@ protected def id : R →+*[M] R :=
 @[simp]
 theorem id_apply (x : R) : MulSemiringActionHom.id M x = x :=
   rfl
-
 
 end MulSemiringActionHom
 

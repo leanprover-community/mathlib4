@@ -27,7 +27,6 @@ Similarly for `AddGrpCat`, `CommGrpCat` and `AddCommGrpCat`.
 
 @[expose] public section
 
-
 universe v u
 
 noncomputable section

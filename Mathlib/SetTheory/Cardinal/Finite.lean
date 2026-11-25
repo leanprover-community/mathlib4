@@ -277,7 +277,6 @@ lemma natCard_graphOn (s : Set α) (f : α → β) : Nat.card (s.graphOn f) = Na
 
 end Set
 
-
 namespace ENat
 
 /-- `ENat.card α` is the cardinality of `α` as an extended natural number.

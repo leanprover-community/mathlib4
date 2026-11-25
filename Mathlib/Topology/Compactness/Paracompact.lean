@@ -47,7 +47,6 @@ compact space, paracompact space, locally finite covering
 
 public section
 
-
 open Set Filter Function
 
 open Filter Topology

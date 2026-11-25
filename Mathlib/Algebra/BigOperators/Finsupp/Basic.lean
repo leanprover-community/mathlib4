@@ -40,7 +40,6 @@ namespace Finsupp
 In most of this section, the domain `β` is assumed to be an `AddMonoid`.
 -/
 
-
 section SumProd
 
 /-- `prod f g` is the product of `g a (f a)` over the support of `f`. -/

@@ -8,7 +8,6 @@ module
 public import Mathlib.Order.CompleteLattice.Defs
 public import Mathlib.Order.ConditionallyCompletePartialOrder.Defs
 
-
 /-! # Basic results on conditionally complete partial orders
 
 This file contains some basic results on conditionally complete partial orders, and is intended

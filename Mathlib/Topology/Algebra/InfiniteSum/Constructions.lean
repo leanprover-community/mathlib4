@@ -25,7 +25,6 @@ open scoped Topology
 
 variable {α β γ : Type*} {L : SummationFilter β}
 
-
 /-! ## Product, Sigma and Pi types -/
 
 section ProdDomain
@@ -289,7 +288,6 @@ theorem Pi.tprod_apply [L.NeBot] [∀ x, T2Space (X x)] {f : ι → ∀ x, X x} 
   (Pi.hasProd.mp hf.hasProd x).tprod_eq.symm
 
 end Pi
-
 
 /-! ## Multiplicative opposite -/
 

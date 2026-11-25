@@ -30,7 +30,6 @@ We also construct the subcategory of subterminal objects.
 
 @[expose] public section
 
-
 universe v₁ v₂ u₁ u₂
 
 noncomputable section

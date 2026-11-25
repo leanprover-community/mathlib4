@@ -34,7 +34,6 @@ implementation.
 
 @[expose] public section
 
-
 variable {M : Type*}
 
 namespace Submonoid

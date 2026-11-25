@@ -36,7 +36,6 @@ p-adic, p adic, padic, p-adic integer
 
 public section
 
-
 noncomputable section
 
 open scoped Topology
@@ -83,7 +82,6 @@ private theorem norm_deriv_eq : ‖F.derivative.aeval ncs.lim‖ = ‖F.derivati
 end
 
 section
-
 
 variable {p : ℕ} [Fact p.Prime] {R : Type*} [CommSemiring R] [Algebra R ℤ_[p]]
   {ncs : CauSeq ℤ_[p] norm} {F : Polynomial R}
@@ -160,7 +158,6 @@ private theorem deriv_norm_pos : 0 < ‖F.derivative.aeval a‖ :=
 
 private theorem deriv_ne_zero : F.derivative.aeval a ≠ 0 :=
   mt norm_eq_zero.2 (deriv_norm_ne_zero hnorm)
-
 
 private theorem T_lt_one : T < 1 := by
   have h := (div_lt_one (deriv_sq_norm_pos hnorm)).2 hnorm
@@ -244,7 +241,6 @@ private theorem calc_eval_z'_norm {z z' z1 : ℤ_[p]} {n} (hz : ih n z) {q}
       simp only [mul_pow]
     _ = ‖F.derivative.aeval a‖ ^ 2 * (T ^ 2 ^ n) ^ 2 := div_sq_cancel _ _
     _ = ‖F.derivative.aeval a‖ ^ 2 * T ^ 2 ^ (n + 1) := by rw [← pow_mul, pow_succ 2]
-
 
 /-- Given `z : ℤ_[p]` satisfying `ih n z`, construct `z' : ℤ_[p]` satisfying `ih (n+1) z'`. We need
 the hypothesis `ih n z`, since otherwise `z'` is not necessarily an integer. -/

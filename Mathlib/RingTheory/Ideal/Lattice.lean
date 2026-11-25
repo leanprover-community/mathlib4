@@ -23,7 +23,6 @@ Support right ideals, and two-sided ideals over non-commutative rings.
 
 public section
 
-
 universe u v w
 
 variable {α : Type u}

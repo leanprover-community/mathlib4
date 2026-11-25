@@ -30,7 +30,6 @@ to `EMetricSpace` at the end.
 
 @[expose] public section
 
-
 assert_not_exists Nat.instLocallyFiniteOrder IsUniformEmbedding.prod TendstoUniformlyOnFilter
 
 open Filter Set Topology Set.Notation
@@ -917,7 +916,6 @@ theorem uniformity_edist {γ} [EMetricSpace γ] :
 The distance on those type synonyms is inherited without change.
 -/
 
-
 open Additive Multiplicative
 
 section
@@ -955,7 +953,6 @@ instance [EMetricSpace X] : EMetricSpace (Multiplicative X) := ‹EMetricSpace X
 
 The distance on this type synonym is inherited without change.
 -/
-
 
 open OrderDual
 

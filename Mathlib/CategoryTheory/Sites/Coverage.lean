@@ -143,7 +143,6 @@ lemma isSheafFor_of_factorsThru
   apply hx
   simp only [Category.assoc, h2, hh2]
 
-
 end Presieve
 
 variable (C) in

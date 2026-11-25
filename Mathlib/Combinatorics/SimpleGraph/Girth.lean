@@ -25,7 +25,6 @@ variable {α β : Type*} {G : SimpleGraph α} {G' : SimpleGraph β}
 
 section egirth
 
-
 /--
 The extended girth of a simple graph is the length of its smallest cycle, or `∞` if the graph is
 acyclic.
@@ -108,7 +107,6 @@ lemma Iso.egirth_eq (f : G ≃g G') : G.egirth = G'.egirth :=
 end egirth
 
 section girth
-
 
 /--
 The girth of a simple graph is the length of its smallest cycle, or junk value `0` if the graph is

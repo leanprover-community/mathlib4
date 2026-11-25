@@ -85,7 +85,6 @@ lemma ofVal_bijective : Function.Bijective (ofVal (v := v)) :=
 lemma toVal_bijective : Function.Bijective (toVal v) :=
   ⟨toVal_injective v, toVal_surjective v⟩
 
-
 instance : Zero (WithVal v) where zero := toVal _ 0
 instance : One (WithVal v) where one := toVal _ 1
 instance : Add (WithVal v) where add x y := toVal _ (x.ofVal + y.ofVal)

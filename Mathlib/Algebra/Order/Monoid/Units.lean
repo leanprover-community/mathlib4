@@ -45,7 +45,6 @@ instance [Monoid α] [LinearOrder α] : Max αˣ where
 instance [Monoid α] [LinearOrder α] : Min αˣ where
   min a b := if a ≤ b then a else b
 
-
 @[to_additive (attr := simp, norm_cast)]
 theorem max_val [Monoid α] [LinearOrder α] (a b : αˣ) : (max a b).val = max a.val b.val := by
   simp_rw [max_def, val_le_val, ← apply_ite]

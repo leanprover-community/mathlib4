@@ -37,7 +37,6 @@ Hall's Marriage Theorem, indexed families
 
 public section
 
-
 open Finset
 
 universe u v

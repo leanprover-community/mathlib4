@@ -226,7 +226,6 @@ noncomputable def factors (a : Associates α) : FactorSet α := by
 theorem factors_zero : (0 : Associates α).factors = ⊤ :=
   dite_eq_left rfl
 
-
 @[simp]
 theorem factors_mk (a : α) (h : a ≠ 0) : (Associates.mk a).factors = factors' a := by
   apply dite_eq_right

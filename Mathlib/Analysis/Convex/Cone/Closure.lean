@@ -49,8 +49,6 @@ theorem closure_eq {K L : ConvexCone 𝕜 E} : K.closure = L ↔ closure (K : Se
 
 end ConvexCone
 
-
-
 namespace PointedCone
 
 variable {𝕜 : Type*} [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]

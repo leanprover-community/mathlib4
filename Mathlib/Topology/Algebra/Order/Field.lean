@@ -25,7 +25,6 @@ then `f * g` tends to positive infinity.
 
 public section
 
-
 open Set Filter TopologicalSpace Function
 open scoped Pointwise Topology
 open OrderDual (toDual ofDual)

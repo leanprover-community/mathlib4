@@ -110,7 +110,6 @@ theorem slash_action_eqn_SL'' {k : ℤ} {Γ : Subgroup SL(2, ℤ)} [SlashInvaria
     f (γ • z) = (denom γ z) ^ k * f z :=
   SlashInvariantForm.slash_action_eqn' f (by simpa using hγ) z
 
-
 instance [SlashInvariantFormClass F Γ k] : CoeTC F (SlashInvariantForm Γ k) :=
   ⟨fun f ↦ { slash_action_eq' := slash_action_eqn f, .. }⟩
 

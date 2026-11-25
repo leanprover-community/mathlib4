@@ -15,7 +15,6 @@ public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
 public section
 
-
 open Set
 
 variable {ι α β : Type*}

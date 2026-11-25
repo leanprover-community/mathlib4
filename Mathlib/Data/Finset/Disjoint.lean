@@ -38,7 +38,6 @@ attribute [local trans] Subset.trans Superset.trans
 
 /-! ### disjoint -/
 
-
 section Disjoint
 
 variable {f : α → β} {s t u : Finset α} {a b : α}
@@ -121,7 +120,6 @@ instance decidableDisjoint (U V : Finset α) : Decidable (Disjoint U V) :=
 end Disjoint
 
 /-! ### disjoint union -/
-
 
 /-- `disjUnion s t h` is the set such that `a ∈ disjUnion s t h` iff `a ∈ s` or `a ∈ t`.
 It is the same as `s ∪ t`, but it does not require decidable equality on the type. The hypothesis

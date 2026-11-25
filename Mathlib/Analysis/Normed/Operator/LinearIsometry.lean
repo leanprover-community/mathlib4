@@ -859,7 +859,6 @@ after simp.
 
 This copies the approach used by the lemmas near `Equiv.Perm.trans_one`. -/
 
-
 @[simp]
 theorem trans_one : e.trans (1 : E₂ ≃ₗᵢ[R₂] E₂) = e :=
   trans_refl _
@@ -904,7 +903,6 @@ theorem map_smulₛₗ (c : R) (x : E) : e (c • x) = σ₁₂ c • e x :=
 
 theorem map_smul [Module R E₂] {e : E ≃ₗᵢ[R] E₂} (c : R) (x : E) : e (c • x) = c • e x :=
   e.toLinearEquiv.map_smul c x
-
 
 @[simp]
 theorem dist_map (x y : E) : dist (e x) (e y) = dist x y :=

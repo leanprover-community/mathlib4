@@ -21,7 +21,6 @@ are (co)limit (co)cones. We also show that such (co)cones exist, and that `Discr
 
 @[expose] public section
 
-
 universe v' v
 
 open CategoryTheory

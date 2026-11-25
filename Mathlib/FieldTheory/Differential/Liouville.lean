@@ -101,7 +101,6 @@ instance (B : IntermediateField F K)
     simp_rw [IsScalarTower.algebraMap_apply F B K]
     norm_cast
 
-
 /--
 Transfer an `IsLiouville` instance using an equivalence `K ≃ₐ[F] K'`.
 Requires an algebraic `K'` to show that the equivalence commutes with the derivative.

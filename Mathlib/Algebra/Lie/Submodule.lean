@@ -28,7 +28,6 @@ lie algebra, lie submodule, lie ideal, lattice structure
 
 @[expose] public section
 
-
 universe u v w w₁ w₂
 
 section LieSubmodule
@@ -852,7 +851,6 @@ Submodules. -/
   map_rel_iff' := fun {_ _} ↦ Set.image_subset_image_iff e.injective
 
 end LieSubmodule
-
 
 end LieSubmoduleMapAndComap
 

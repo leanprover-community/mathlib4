@@ -56,7 +56,6 @@ since there is no well-behaved measure on the domain of `f`.
 
 @[expose] public section
 
-
 open scoped ENNReal
 open Function Equiv Finset
 

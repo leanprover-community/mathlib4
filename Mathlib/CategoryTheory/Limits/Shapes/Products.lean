@@ -547,7 +547,6 @@ def sigmaConstAdj [Limits.HasCoproducts.{v} C] (X : C) :
 (Co)products over a type with a unique term.
 -/
 
-
 section Unique
 
 /-- The limit cone for the product over an index type with exactly one term. -/

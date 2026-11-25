@@ -28,7 +28,6 @@ This file defines light condensed modules over a ring `R`.
 
 @[expose] public section
 
-
 universe u
 
 open CategoryTheory

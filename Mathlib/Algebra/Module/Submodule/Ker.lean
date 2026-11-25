@@ -40,7 +40,6 @@ variable {V : Type*} {V₂ : Type*}
 
 /-! ### Properties of linear maps -/
 
-
 namespace LinearMap
 
 section AddCommMonoid
@@ -306,7 +305,6 @@ end RestrictScalars
 end LinearMap
 
 /-! ### Linear equivalences -/
-
 
 namespace LinearEquiv
 

@@ -96,7 +96,6 @@ Finally,
 
 noncomputable section
 
-
 namespace AlgebraicGeometry
 
 open scoped DirectSum Pointwise
@@ -430,7 +429,6 @@ def carrier.asIdeal : Ideal A where
   add_mem' := carrier.add_mem f_deg q
   smul_mem' := carrier.smul_mem f_deg hm q
 
-
 theorem carrier.asIdeal.homogeneous : (carrier.asIdeal f_deg hm q).IsHomogeneous 𝒜 :=
   fun i a ha j =>
   (em (i = j)).elim (fun h => h ▸ by simpa only [proj_apply, decompose_coe, of_eq_same] using ha _)
@@ -498,7 +496,6 @@ lemma toSpec_fromSpec {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) (x :
   obtain ⟨z, rfl⟩ := HomogeneousLocalization.mk_surjective z
   rw [← FromSpec.num_mem_carrier_iff f_deg hm x]
   exact ToSpec.mk_mem_carrier _ z
-
 
 end toSpecFromSpec
 
@@ -871,6 +868,5 @@ def «Proj» : Scheme where
       exact x.asHomogeneousIdeal.toIdeal.sum_mem fun k hk ↦
         this _ k (SetLike.coe_mem _) <| by_contra <| by aesop
     exact ⟨⟨pbo f, hx⟩, ↧(A⁰_ f), ⟨projIsoSpec 𝒜 f f_deg hm⟩⟩
-
 
 end AlgebraicGeometry

@@ -22,7 +22,6 @@ A prime natural number is prime in `ℤ[i]` if and only if it is `3` mod `4`
 
 public section
 
-
 open Zsqrtd Complex
 
 open scoped ComplexConjugate

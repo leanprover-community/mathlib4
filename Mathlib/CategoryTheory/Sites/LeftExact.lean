@@ -21,7 +21,6 @@ In this file we show that sheafification commutes with finite limits.
 
 @[expose] public section
 
-
 open CategoryTheory Limits Opposite
 
 universe s t w' w v u

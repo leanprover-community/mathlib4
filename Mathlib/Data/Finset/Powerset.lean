@@ -15,7 +15,6 @@ public import Mathlib.Data.Set.Pairwise.Lattice
 
 @[expose] public section
 
-
 namespace Finset
 
 open Function Multiset
@@ -23,7 +22,6 @@ open Function Multiset
 variable {α : Type*} {s t : Finset α}
 
 /-! ### powerset -/
-
 
 section Powerset
 

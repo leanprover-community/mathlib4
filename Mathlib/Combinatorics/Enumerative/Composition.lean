@@ -452,7 +452,6 @@ lemma prod_prod_apply_embedding {A : Type*} [CommMonoid A] (a : Fin n → A) (x 
 
 /-! ### The composition `Composition.ones` -/
 
-
 /-- The composition made of blocks all of size `1`. -/
 def ones (n : ℕ) : Composition n :=
   ⟨replicate n (1 : ℕ), fun {i} hi => by simp [List.eq_of_mem_replicate hi], by simp⟩
@@ -689,7 +688,6 @@ of respective lengths `c.blocksFun 0`, ..., `c.blocksFun (c.length-1)`. This is 
 join operation.
 -/
 
-
 namespace List
 
 variable {α : Type*}
@@ -724,7 +722,6 @@ theorem length_splitWrtCompositionAux (l : List α) (ns) :
 theorem length_splitWrtComposition (l : List α) (c : Composition n) :
     length (l.splitWrtComposition c) = c.length :=
   length_splitWrtCompositionAux _ _
-
 
 theorem map_length_splitWrtCompositionAux {ns : List ℕ} :
     ∀ {l : List α}, ns.sum ≤ l.length → map length (l.splitWrtCompositionAux ns) = ns := by
@@ -810,7 +807,6 @@ end List
 Combinatorial viewpoints on compositions, seen as finite subsets of `Fin (n+1)` containing `0` and
 `n`, where the points of the set (other than `n`) correspond to the leftmost points of each block.
 -/
-
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Bijection between compositions of `n` and subsets of `{0, ..., n-2}`, defined by
@@ -965,7 +961,6 @@ In this section, we explain how to go back and forth between a `Composition` and
 `CompositionAsSet`, by showing that their `blocks` and `length` and `boundaries` correspond to
 each other, and construct an equivalence between them called `compositionEquiv`.
 -/
-
 
 @[simp]
 theorem Composition.toCompositionAsSet_length (c : Composition n) :

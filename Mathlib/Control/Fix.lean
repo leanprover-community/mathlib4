@@ -25,7 +25,6 @@ An instance is defined for `Part`.
 
 @[expose] public section
 
-
 universe u v
 
 variable {α : Type*} {β : α → Type*}

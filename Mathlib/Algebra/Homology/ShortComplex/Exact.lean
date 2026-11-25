@@ -946,7 +946,6 @@ lemma Exact.liftFromProjective_comp
   dsimp [liftFromProjective]
   rw [← toCycles_i, Projective.factorThru_comp_assoc, liftCycles_i]
 
-
 end Abelian
 
 end ShortComplex
@@ -962,13 +961,11 @@ instance : F.PreservesMonomorphisms where
     exact ((S.map F).exact_iff_mono (by simp [S])).1
       (((S.exact_iff_mono rfl).2 hf).map F)
 
-
 instance : F.PreservesEpimorphisms where
   preserves {X Y} f hf := by
     let S := ShortComplex.mk f (0 : Y ⟶ Y) comp_zero
     exact ((S.map F).exact_iff_epi (by simp [S])).1
       (((S.exact_iff_epi rfl).2 hf).map F)
-
 
 end Functor
 

@@ -86,7 +86,6 @@ class GeneralizedBooleanAlgebra (α : Type u) extends DistribLattice α, SDiff �
 ### Boolean algebras
 -/
 
-
 /-- A Boolean algebra is a bounded distributive lattice with a complement operator `ᶜ` such that
 `x ⊓ xᶜ = ⊥` and `x ⊔ xᶜ = ⊤`. For convenience, it must also provide a set difference operation `\`
 and a Heyting implication `⇨` satisfying `x \ y = x ⊓ yᶜ` and `x ⇨ y = y ⊔ xᶜ`.

@@ -26,7 +26,6 @@ where all `A i` are `R`-modules. This is the extra structure needed to promote `
 
 @[expose] public section
 
-
 universe uι uR uA uB
 
 variable {ι : Type uι}
@@ -150,7 +149,6 @@ def gMulLHom {i j} : A i →ₗ[R] A j →ₗ[R] A (i + j) where
 end DirectSum
 
 /-! ### Concrete instances -/
-
 
 /-- A direct sum of copies of an `Algebra` inherits the algebra structure. -/
 @[simps]

@@ -77,7 +77,6 @@ finsum, finprod, finite sum, finite product
 
 @[expose] public section
 
-
 open Function Set
 
 /-!
@@ -612,7 +611,6 @@ lemma finprod_zero_le_one {M α : Type*} [CommMonoidWithZero M] [PartialOrder M]
 ### Distributivity w.r.t. addition, subtraction, and (scalar) multiplication
 -/
 
-
 set_option backward.isDefEq.respectTransparency false in
 /-- If the multiplicative supports of `f` and `g` are finite, then the product of `f i * g i` equals
 the product of `f i` multiplied by the product of `g i`. -/
@@ -751,7 +749,6 @@ theorem finprod_mem_div_distrib [DivisionCommMonoid G] (f g : α → G) (hs : s.
 /-!
 ### `∏ᶠ x ∈ s, f x` and set operations
 -/
-
 
 /-- The product of any function over an empty set is `1`. -/
 @[to_additive /-- The sum of any function over an empty set is `0`. -/]

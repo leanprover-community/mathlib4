@@ -32,7 +32,6 @@ two processes `martingalePart f ℱ μ` and `predictablePart f ℱ μ`.
 
 @[expose] public section
 
-
 open Filter
 
 open scoped NNReal ENNReal MeasureTheory ProbabilityTheory

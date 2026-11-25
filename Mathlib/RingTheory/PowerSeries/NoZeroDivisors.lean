@@ -26,7 +26,6 @@ If `R` has `NoZeroDivisors`, then so does `R⟦X⟧`.
 
 public section
 
-
 variable {R : Type*}
 
 namespace PowerSeries

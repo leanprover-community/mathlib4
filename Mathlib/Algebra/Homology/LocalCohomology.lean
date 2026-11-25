@@ -162,7 +162,6 @@ end localCohomology
 the powers of `J` (`localCohomology`), then in terms of *all* ideals with radical
 containing `J` (`localCohomology.ofSelfLERadical`). -/
 
-
 section ModelsForLocalCohomology
 
 open localCohomology

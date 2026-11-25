@@ -332,7 +332,6 @@ An inclusion family is declared using `registerInclusionFamily` and can be exten
 The `core` family provides reasoning about logical operators `∧`, `∨`, `¬` and `=`. This family
 is recommended to be included by default.
 
-
 * `inclusion [fam₁, x := e]` sets the parameter named `x` to the value of the term `e`.
   All the families in an `inclusion` call can access this parameter.
 * `inclusion (config := cfg) [fam₁, ...]` uses `cfg : InclusionConfig` as configuration options.

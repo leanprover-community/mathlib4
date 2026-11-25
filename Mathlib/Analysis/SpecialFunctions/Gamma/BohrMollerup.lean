@@ -40,7 +40,6 @@ formula).
 
 @[expose] public section
 
-
 noncomputable section
 
 open Filter Set MeasureTheory
@@ -381,7 +380,6 @@ As a fun application of the Bohr-Mollerup theorem, we prove the Gamma-function d
 (for positive real `s`). The idea is that `2 ^ s * Gamma (s / 2) * Gamma (s / 2 + 1 / 2)` is
 log-convex and satisfies the Gamma functional equation, so it must actually be a constant
 multiple of `Gamma`, and we can compute the constant by specialising at `s = 1`. -/
-
 
 /-- Auxiliary definition for the doubling formula (we'll show this is equal to `Gamma s`) -/
 def doublingGamma (s : ℝ) : ℝ :=

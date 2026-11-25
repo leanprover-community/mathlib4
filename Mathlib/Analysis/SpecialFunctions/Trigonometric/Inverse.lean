@@ -20,7 +20,6 @@ Basic inequalities on trigonometric functions.
 
 @[expose] public section
 
-
 noncomputable section
 
 open Filter Set Filter Real

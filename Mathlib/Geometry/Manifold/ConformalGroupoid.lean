@@ -27,7 +27,6 @@ conformal, groupoid
 
 @[expose] public section
 
-
 variable {X : Type*} [NormedAddCommGroup X] [NormedSpace ℝ X]
 
 /-- The pregroupoid of conformal maps. -/

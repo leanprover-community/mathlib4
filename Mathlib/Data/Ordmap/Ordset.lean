@@ -39,7 +39,6 @@ theorem will go through with multiple choices of assumption.
 
 @[expose] public section
 
-
 variable {α : Type*}
 
 namespace Ordnode

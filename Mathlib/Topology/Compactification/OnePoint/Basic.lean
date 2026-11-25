@@ -39,7 +39,6 @@ one point compactification, Alexandroff compactification, compactness
 
 @[expose] public section
 
-
 open Set Filter Topology
 
 /-!
@@ -48,7 +47,6 @@ open Set Filter Topology
 In this section we define `OnePoint X` to be the disjoint union of `X` and `∞`, implemented as
 `Option X`. Then we restate some lemmas about `Option X` for `OnePoint X`.
 -/
-
 
 variable {X Y : Type*}
 
@@ -194,7 +192,6 @@ Then we reformulate this definition in a few different ways, and prove that
 `(↑) : X → OnePoint X` is an open embedding. If `X` is not a compact space, then we also prove
 that `(↑)` has dense range, so it is a dense embedding.
 -/
-
 
 variable [TopologicalSpace X]
 

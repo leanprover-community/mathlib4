@@ -19,7 +19,6 @@ A ring `R` is **simple** if it has only two two-sided ideals, namely `⊥` and `
 
 public section
 
-
 /--
 A ring `R` is **simple** if it has only two two-sided ideals, namely `⊥` and `⊤`.
 -/

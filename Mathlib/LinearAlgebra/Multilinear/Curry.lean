@@ -48,12 +48,9 @@ We also register linear equiv versions of these correspondences, in
 `multilinearCurryLeftEquiv` and `multilinearCurryRightEquiv`.
 -/
 
-
 open MultilinearMap
 
-
 /-! #### Left currying -/
-
 
 /-- Given a linear map `f` from `M 0` to multilinear maps on `n` variables,
 construct the corresponding multilinear map on `n+1` variables obtained by concatenating

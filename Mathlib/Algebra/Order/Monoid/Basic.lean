@@ -19,7 +19,6 @@ This file develops some additional material on ordered monoids.
 
 @[expose] public section
 
-
 open Function
 
 universe u

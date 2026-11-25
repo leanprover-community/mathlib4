@@ -29,7 +29,6 @@ Recall that `∑` and `∏` are notation for `Finset.sum` and `Finset.prod` resp
 
 public section
 
-
 open AddMonoidAlgebra Finset
 
 open Multiset

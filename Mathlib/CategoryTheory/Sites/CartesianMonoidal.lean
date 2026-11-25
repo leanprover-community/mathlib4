@@ -54,7 +54,6 @@ instance : ObjectProperty.IsMonoidal (Presheaf.IsSheaf J (A := A)) where
 example : CartesianMonoidalCategory (Sheaf J A) :=
   inferInstance
 
-
 @[simp] lemma cartesianMonoidalCategoryFst_hom : (fst X Y).hom = fst X.obj Y.obj := rfl
 @[simp] lemma cartesianMonoidalCategorySnd_hom : (snd X Y).hom = snd X.obj Y.obj := rfl
 

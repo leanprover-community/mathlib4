@@ -10,7 +10,6 @@ public import Mathlib.LinearAlgebra.AffineSpace.Midpoint
 public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 public import Mathlib.LinearAlgebra.Ray
 
-
 /-!
 # Segments in vector spaces
 
@@ -447,7 +446,6 @@ end LinearOrderedField
 
 Relates `segment`, `openSegment` and `Set.Icc`, `Set.Ico`, `Set.Ioc`, `Set.Ioo`
 -/
-
 
 section OrderedSemiring
 

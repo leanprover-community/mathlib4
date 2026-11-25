@@ -21,7 +21,6 @@ set_option doc.verso.suggestions false
 
 @[expose] public section
 
-
 open TopologicalSpace Set Filter
 
 open scoped Topology

@@ -25,7 +25,6 @@ This file defines oriented angles in Euclidean affine spaces.
 
 @[expose] public section
 
-
 noncomputable section
 
 open Module

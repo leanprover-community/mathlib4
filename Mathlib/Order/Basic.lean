@@ -58,7 +58,6 @@ preorder, order, partial order, poset, linear order, chain
 
 @[expose] public section
 
-
 open Function
 
 variable {ι α β : Type*} {π : ι → Type*}
@@ -515,7 +514,6 @@ lemma LinearOrder.ext_lt {A B : LinearOrder α} (H : ∀ x y : α, (haveI := A; 
 
 /-! ### `Compl` -/
 
-
 instance Prop.instCompl : Compl Prop :=
   ⟨Not⟩
 
@@ -822,7 +820,6 @@ abbrev LinearOrder.liftWithOrd' [LinearOrder β] [Ord α] (f : α → β)
 
 /-! ### Subtype of an order -/
 
-
 namespace Subtype
 
 @[simp, gcongr, to_dual self]
@@ -873,7 +870,6 @@ end Subtype
 The lexicographic order is defined in `Order.Prod.Lex.Basic`, and the instances are available via
 the type synonym `α ×ₗ β = α × β`.
 -/
-
 
 namespace Prod
 section LE
@@ -984,7 +980,6 @@ to_dual_for DenselyOrdered.mk := ⟨by simpa [and_comm] using forall_comm.mp den
 @[to_dual exists_between']
 theorem exists_between [LT α] [DenselyOrdered α] {a₁ a₂ : α} : a₁ < a₂ → ∃ a, a₁ < a ∧ a < a₂ :=
   DenselyOrdered.dense _ _
-
 
 /-- Any ordered subsingleton is densely ordered. Not an instance to avoid a heavy subsingleton
 typeclass search. -/

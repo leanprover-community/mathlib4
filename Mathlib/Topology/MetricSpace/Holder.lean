@@ -35,7 +35,6 @@ Hölder continuity, Lipschitz continuity
 
 @[expose] public section
 
-
 variable {X Y Z : Type*}
 
 open Filter Set Metric

@@ -11,7 +11,6 @@ public import Mathlib.RepresentationTheory.Homological.GroupHomology.LongExactSe
 
 import Mathlib.Algebra.Homology.HomologicalComplexAbelian
 
-
 /-!
 # Tate Cohomology
 

@@ -20,7 +20,6 @@ sections are `C^n`.
 
 @[expose] public section
 
-
 open Bundle Filter Function
 
 open scoped Bundle Manifold ContDiff

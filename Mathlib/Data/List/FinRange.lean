@@ -28,7 +28,6 @@ namespace List
 
 variable {α : Type u}
 
-
 @[simp]
 lemma count_finRange {n : ℕ} (a : Fin n) : count a (finRange n) = 1 := by
   simp [List.Nodup.count (nodup_finRange n)]

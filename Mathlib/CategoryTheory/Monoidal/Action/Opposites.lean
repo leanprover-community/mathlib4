@@ -39,7 +39,6 @@ namespace MonoidalLeftAction
 open scoped MonoidalLeftAction MonoidalRightAction
 open MonoidalOpposite
 
-
 /-- Define a left action of `C` on `D` from a right action of `Cᴹᵒᵖ` on `D` via
 the formula `c ⊙ₗ d := d ⊙ᵣ (mop c)`. -/
 @[simps -isSimp, instance_reducible]

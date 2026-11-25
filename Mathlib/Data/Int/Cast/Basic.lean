@@ -25,7 +25,6 @@ By contrast, this file's only import beyond `Mathlib.Data.Int.Cast.Defs` is
 
 public section
 
-
 universe u
 
 namespace Nat

@@ -17,7 +17,6 @@ set_option doc.verso.suggestions false
 
 @[expose] public section
 
-
 open CategoryTheory CategoryTheory.Limits Opposite
 
 universe w v u

@@ -19,7 +19,6 @@ This file provides an instance `T2Space X` given `TotallySeparatedSpace X`.
 
 public section
 
-
 variable {X : Type*} [TopologicalSpace X]
 
 section TotallySeparated

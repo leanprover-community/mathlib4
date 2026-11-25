@@ -36,7 +36,6 @@ self-adjoint, symmetric
 
 @[expose] public section
 
-
 open RCLike
 
 open scoped ComplexConjugate
@@ -51,7 +50,6 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 namespace LinearMap
 
 /-! ### Symmetric operators -/
-
 
 /-- A (not necessarily bounded) operator on an inner product space is symmetric, if for all
 `x`, `y`, we have `⟪T x, y⟫ = ⟪x, T y⟫`. -/

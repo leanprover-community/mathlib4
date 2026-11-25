@@ -77,7 +77,6 @@ end AddLECancellable
 
 /-! #### Lemmas where addition is order-reflecting. -/
 
-
 section Contra
 
 variable [AddLeftReflectLE α]
@@ -105,7 +104,6 @@ end Contra
 end CanonicallyOrderedAddCommMonoid
 
 /-! ### Lemmas in a linearly canonically ordered monoid. -/
-
 
 section CanonicallyLinearOrderedAddCommMonoid
 
@@ -175,7 +173,6 @@ lemma tsub_tsub_eq_min (a b : α) : a - (a - b) = min a b := by
 end Contra
 
 /-! ### Lemmas about `max` and `min`. -/
-
 
 theorem tsub_add_eq_max : a - b + b = max a b := by
   rcases le_total a b with h | h

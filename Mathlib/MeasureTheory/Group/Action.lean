@@ -21,7 +21,6 @@ some basic properties of such measures.
 
 public section
 
-
 open scoped ENNReal NNReal Pointwise Topology symmDiff
 open MeasureTheory.Measure Set Function Filter
 

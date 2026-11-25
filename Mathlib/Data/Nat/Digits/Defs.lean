@@ -268,7 +268,6 @@ theorem ofDigits_one (L : List ℕ) : ofDigits 1 L = L.sum := by
 This section contains various lemmas of properties relating to `digits` and `ofDigits`.
 -/
 
-
 theorem digits_eq_nil_iff_eq_zero {b n : ℕ} : digits b n = [] ↔ n = 0 := by
   constructor
   · intro h

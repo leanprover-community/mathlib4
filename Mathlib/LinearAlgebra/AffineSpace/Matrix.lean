@@ -20,7 +20,6 @@ respect to some affine basis.
 
 @[expose] public section
 
-
 open Matrix
 
 open scoped Affine

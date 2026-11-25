@@ -134,7 +134,6 @@ def triangleMorphism₂ : Triangle.mk u₁₃ v₁₃ w₁₃ ⟶ Triangle.mk u�
     rw [id_comp, h.comm₃]
   comm₃ := h.comm₄
 
-
 variable (u₁₂ u₁₃ u₂₃ comm h₁₂ h₁₃ h₂₃)
 
 /-- When two diagrams are isomorphic, an octahedron for one gives an octahedron for the other. -/

@@ -12,7 +12,6 @@ public import Mathlib.CategoryTheory.Limits.Types.Limits
 /-!
 # `ULift` creates small (co)limits
 
-
 This file shows that `uliftFunctor.{v, u}` preserves all limits and colimits, including those
 potentially too big to exist in `Type u`.
 

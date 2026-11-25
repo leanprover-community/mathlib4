@@ -24,7 +24,6 @@ normed group
 
 @[expose] public section
 
-
 variable {𝓕 α ι E F G : Type*}
 
 open Filter Function Metric Bornology

@@ -80,7 +80,6 @@ noncomputable instance [RingHomInvPair σ' σ] (f : E ≃SL[σ] F) :
 
 /-! ### Proof of the Banach open mapping theorem -/
 
-
 variable [CompleteSpace F]
 
 namespace ContinuousLinearMap

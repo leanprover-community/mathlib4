@@ -83,7 +83,6 @@ propositional logic, intuitionistic logic, decision procedure
 
 public meta section
 
-
 open Std (TreeMap TreeSet)
 
 namespace Mathlib.Tactic.ITauto

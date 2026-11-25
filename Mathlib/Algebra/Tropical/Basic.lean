@@ -527,7 +527,6 @@ instance mulRightStrictMono [Preorder R] [Add R] [AddRightStrictMono R] :
     MulRightStrictMono (MinTropical R) :=
   ⟨fun _ y z h => add_lt_add_left (show untrop y < untrop z from h) _⟩
 
-
 @[to_dual existing]
 instance _root_.MaxTropical.mulLeftMono [LE R] [Add R] [AddLeftMono R] :
     MulLeftMono (MaxTropical R) :=

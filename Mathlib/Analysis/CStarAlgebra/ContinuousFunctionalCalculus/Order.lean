@@ -245,7 +245,6 @@ lemma nnNorm_le_natCast_iff_of_nonneg (a : A) (n : ℕ) (ha : 0 ≤ a := by cfc_
 @[deprecated (since := "2026-10-31")]
 alias nnnorm_le_natCast_iff_of_nonneg := nnNorm_le_natCast_iff_of_nonneg
 
-
 section Icc
 
 open Set

@@ -31,7 +31,6 @@ of the inverse limit of `ZMod (p^n)`.
 
 @[expose] public section
 
-
 noncomputable section
 
 variable {p : ℕ} [hp : Fact p.Prime]

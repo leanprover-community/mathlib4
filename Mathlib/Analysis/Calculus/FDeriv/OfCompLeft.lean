@@ -106,7 +106,6 @@ theorem HasStrictFDerivAt.of_comp_of_leftInverse
   HasFDerivAtFilter.of_comp_of_leftInverse (hgc.prodMap_nhds hgc) hf hh
     (hcomp.prodMap_nhds hcomp) hf'symm
 
-
 /-!
 ### Embedding
 

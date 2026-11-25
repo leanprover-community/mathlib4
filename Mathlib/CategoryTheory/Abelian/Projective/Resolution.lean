@@ -44,7 +44,6 @@ variable {C : Type u} [Category.{v} C]
 
 open Category Limits Projective
 
-
 namespace ProjectiveResolution
 
 section

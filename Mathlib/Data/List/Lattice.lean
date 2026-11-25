@@ -28,7 +28,6 @@ As opposed to `List.inter`, `List.bagInter` copes well with multiplicity. For ex
 
 public section
 
-
 open Nat
 
 namespace List
@@ -36,7 +35,6 @@ namespace List
 variable {α : Type*} {l₁ l₂ : List α} {p : α → Prop} {a : α}
 
 /-! ### `Disjoint` -/
-
 
 section Disjoint
 
@@ -50,7 +48,6 @@ end Disjoint
 variable [DecidableEq α]
 
 /-! ### `union` -/
-
 
 section Union
 
@@ -97,7 +94,6 @@ theorem Subset.union_eq_right {xs ys : List α} (h : xs ⊆ ys) : xs ∪ ys = ys
 end Union
 
 /-! ### `inter` -/
-
 
 section Inter
 
@@ -170,7 +166,6 @@ theorem Sublist.inter_right {l₁ l₂ l₃ : List α} (h : l₁.Sublist l₂) :
 end Inter
 
 /-! ### `bagInter` -/
-
 
 section BagInter
 

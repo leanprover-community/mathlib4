@@ -91,7 +91,6 @@ end Bundle
 
 /-! ### Fibrewise product of two bundles -/
 
-
 section Prod
 
 variable {B : Type*}

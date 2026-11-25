@@ -643,7 +643,6 @@ end toEuclideanDomain
 
 end IsDiscreteValuationRing
 
-
 section
 
 variable (A : Type u) [CommRing A] [IsDomain A] [IsDiscreteValuationRing A]

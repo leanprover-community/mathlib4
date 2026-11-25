@@ -44,7 +44,6 @@ set_option doc.verso.suggestions false
 
 @[expose] public section
 
-
 open MeasureTheory Filter Finset Real
 
 noncomputable section

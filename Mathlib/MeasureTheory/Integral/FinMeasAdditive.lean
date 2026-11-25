@@ -34,7 +34,6 @@ with finite measure. Its value on other sets is ignored.
 
 @[expose] public section
 
-
 noncomputable section
 
 open Set Filter ENNReal Finset

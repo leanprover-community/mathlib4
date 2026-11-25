@@ -64,7 +64,6 @@ then taking the quotient by the monoid laws within each monoid,
 and the identifications given by the morphisms in the diagram.
 -/
 
-
 variable {J : Type v} [Category.{u} J] (F : J ⥤ MonCat.{v})
 
 /-- An inductive type representing all monoid expressions (without relations)

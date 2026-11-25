@@ -22,7 +22,6 @@ https://stacks.math.columbia.edu/tag/00FB
 
 @[expose] public section
 
-
 open AddMonoidAlgebra Ideal Polynomial PrimeSpectrum Set
 
 namespace AlgebraicGeometry
@@ -30,7 +29,6 @@ namespace AlgebraicGeometry
 namespace Polynomial
 
 variable {R : Type*} [CommRing R] {f : R[X]}
-
 
 /-- Given a polynomial `f ∈ R[x]`, `imageOfDf` is the subset of `Spec R` where at least one
 of the coefficients of `f` does not vanish.  Lemma `imageOfDf_eq_comap_C_compl_zeroLocus`

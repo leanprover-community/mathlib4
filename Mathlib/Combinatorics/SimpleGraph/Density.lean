@@ -33,7 +33,6 @@ variable {𝕜 ι κ α β : Type*}
 
 /-! ### Density of a relation -/
 
-
 namespace Rel
 
 section Asymmetric
@@ -267,7 +266,6 @@ end Rel
 open Rel
 
 /-! ### Density of a graph -/
-
 
 namespace SimpleGraph
 

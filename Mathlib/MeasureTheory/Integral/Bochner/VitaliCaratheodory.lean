@@ -69,7 +69,6 @@ See result `MeasureTheory.Lp.boundedContinuousFunction_dense`, in the file
 
 public section
 
-
 open scoped ENNReal NNReal
 
 open MeasureTheory MeasureTheory.Measure
@@ -82,7 +81,6 @@ namespace MeasureTheory
 local infixr:25 " →ₛ " => SimpleFunc
 
 /-! ### Lower semicontinuous upper bound for nonnegative functions -/
-
 
 /-- Given a simple function `f` with values in `ℝ≥0`, there exists a lower semicontinuous
 function `g ≥ f` with integral arbitrarily close to that of `f`. Formulation in terms of
@@ -299,7 +297,6 @@ theorem exists_lt_lowerSemicontinuous_integral_gt_nnreal [SigmaFinite μ] (f : �
 
 /-! ### Upper semicontinuous lower bound for nonnegative functions -/
 
-
 /-- Given a simple function `f` with values in `ℝ≥0`, there exists an upper semicontinuous
 function `g ≤ f` with integral arbitrarily close to that of `f`. Formulation in terms of
 `lintegral`.
@@ -414,7 +411,6 @@ theorem exists_upperSemicontinuous_le_integral_le (f : α → ℝ≥0)
     · exact fint.aestronglyMeasurable
 
 /-! ### Vitali-Carathéodory theorem -/
-
 
 /-- **Vitali-Carathéodory Theorem**: given an integrable real function `f`, there exists an
 integrable function `g > f` which is lower semicontinuous, with integral arbitrarily close

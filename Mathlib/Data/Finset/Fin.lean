@@ -23,7 +23,6 @@ A few constructions for Finsets in `Fin n`.
 
 @[expose] public section
 
-
 variable {n : ℕ}
 
 namespace Finset

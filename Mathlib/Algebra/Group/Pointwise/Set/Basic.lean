@@ -140,7 +140,6 @@ end One
 
 /-! ### Set negation/inversion -/
 
-
 section Inv
 
 /-- The pointwise inversion of set `s⁻¹` is defined as `{x | x⁻¹ ∈ s}` in scope `Pointwise`. It is
@@ -291,7 +290,6 @@ open scoped Pointwise
 
 /-! ### Set addition/multiplication -/
 
-
 section Mul
 
 variable [Mul α] {s s₁ s₂ t t₁ t₂ u : Set α} {a b : α}
@@ -432,7 +430,6 @@ lemma prod_mul_prod_comm [Mul β] (s₁ s₂ : Set α) (t₁ t₂ : Set β) :
 end Mul
 
 /-! ### Set subtraction/division -/
-
 
 section Div
 
@@ -876,7 +873,6 @@ variable [Group α] {s t : Set α} {a b : α}
 
 /-! Note that `Set` is not a `Group` because `s / s ≠ 1` in general. -/
 
-
 @[to_additive (attr := simp)]
 theorem one_mem_div_iff : (1 : α) ∈ s / t ↔ ¬Disjoint s t := by
   simp [not_disjoint_iff_nonempty_inter, mem_div, div_eq_one, Set.Nonempty]
@@ -1077,7 +1073,6 @@ lemma MapsTo.mul [Mul β] {A : Set α} {B₁ B₂ : Set β} {f₁ f₂ : α → 
 lemma MapsTo.inv [InvolutiveInv β] {A : Set α} {B : Set β} {f : α → β} (h : MapsTo f A B) :
     MapsTo (f⁻¹) A (B⁻¹) :=
   fun _ ha => inv_mem_inv.2 (h ha)
-
 
 @[to_additive]
 lemma MapsTo.div [Div β] {A : Set α} {B₁ B₂ : Set β} {f₁ f₂ : α → β}

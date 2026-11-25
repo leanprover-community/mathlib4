@@ -25,7 +25,6 @@ in a preorder this is equivalent to `a ⋖ b ∨ (a ≤ b ∧ b ≤ a)`
 
 public section
 
-
 open Set OrderDual
 
 variable {α β : Type*}

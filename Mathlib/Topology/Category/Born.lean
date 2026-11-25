@@ -20,7 +20,6 @@ This defines `Born`, the category of bornologies.
 
 public section
 
-
 universe u
 
 open CategoryTheory

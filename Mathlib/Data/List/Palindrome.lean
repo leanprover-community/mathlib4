@@ -28,7 +28,6 @@ palindrome, reverse, induction
 
 public section
 
-
 variable {α β : Type*}
 
 namespace List

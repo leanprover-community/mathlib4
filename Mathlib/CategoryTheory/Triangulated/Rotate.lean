@@ -16,7 +16,6 @@ It also shows that rotation gives an equivalence on the category of triangles.
 
 @[expose] public section
 
-
 noncomputable section
 
 open CategoryTheory

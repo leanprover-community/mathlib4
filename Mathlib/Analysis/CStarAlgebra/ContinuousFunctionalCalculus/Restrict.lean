@@ -193,7 +193,6 @@ protected theorem closedEmbeddingCFC (f : C(S, R)) (halg : IsUniformEmbedding (a
 
 end SpectrumRestricts
 
-
 namespace QuasispectrumRestricts
 
 local notation "σₙ" => quasispectrum

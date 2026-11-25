@@ -56,7 +56,6 @@ consistent with the `ZSpan` construction of `ℤ`-lattices.
 
 @[expose] public section
 
-
 noncomputable section
 
 namespace ZSpan

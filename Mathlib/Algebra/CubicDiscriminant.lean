@@ -37,7 +37,6 @@ open scoped Finset
 
 @[expose] public section
 
-
 noncomputable section
 
 /-- The structure representing a cubic polynomial. -/
@@ -84,7 +83,6 @@ theorem prod_X_sub_C_eq [CommRing S] {x y z : S} :
   rw [← one_mul <| X - C x, ← C_1, C_mul_prod_X_sub_C_eq, one_mul, one_mul, one_mul]
 
 /-! ### Coefficients -/
-
 
 section Coeff
 
@@ -235,7 +233,6 @@ end Coeff
 
 /-! ### Degrees -/
 
-
 section Degree
 
 /-- The equivalence between cubic polynomials and polynomials of degree at most three. -/
@@ -360,7 +357,6 @@ end Degree
 
 /-! ### Map across a homomorphism -/
 
-
 section Map
 
 variable [Semiring S] {φ : R →+* S}
@@ -381,7 +377,6 @@ section Roots
 open Multiset
 
 /-! ### Roots over an extension -/
-
 
 section Extension
 
@@ -410,7 +405,6 @@ end Extension
 variable {P : Cubic F} [Field F] [Field K] {φ : F →+* K} {x y z : K}
 
 /-! ### Roots over a splitting field -/
-
 
 section Split
 
@@ -455,7 +449,6 @@ theorem d_eq_three_roots (ha : P.a ≠ 0) (h3 : (map φ P).roots = {x, y, z}) :
 end Split
 
 /-! ### Discriminant over a splitting field -/
-
 
 section Discriminant
 

@@ -14,7 +14,6 @@ These lemmas are kept separate from `Data.Nat.GCD.Basic` in order to minimize im
 
 public section
 
-
 namespace Nat
 
 variable {ι : Type*}

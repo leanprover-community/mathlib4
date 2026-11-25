@@ -20,7 +20,6 @@ to the unit circle. These two maps define a partial equivalence between `Circle`
 
 @[expose] public section
 
-
 open Complex Function Set
 
 open Real

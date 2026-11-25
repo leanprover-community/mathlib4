@@ -20,7 +20,6 @@ Multiplicative morphisms induce monoidal functors.
 
 @[expose] public section
 
-
 universe u u'
 
 open CategoryTheory Discrete MonoidalCategory

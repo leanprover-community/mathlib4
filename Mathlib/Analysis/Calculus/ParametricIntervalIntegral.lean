@@ -19,7 +19,6 @@ universe u
 
 public section
 
-
 open TopologicalSpace MeasureTheory Filter Set
 
 open scoped Topology Filter Interval

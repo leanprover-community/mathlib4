@@ -13,7 +13,6 @@ public import Mathlib.Basic.Nontrivial.Defs
 public import Mathlib.Logic.Function.Defs
 public import Mathlib.Order.Defs.Unbundled
 
-
 /-!
 # Miscellaneous function constructions and lemmas
 -/
@@ -634,7 +633,6 @@ section Update
 variable {α : Sort u} {β : α → Sort v} {α' : Sort w} [DecidableEq α]
   {f : (a : α) → β a} {a : α} {b : β a}
 
-
 /-- Replacing the value of a function at a given point by a given value. -/
 @[grind]
 def update (f : ∀ a, β a) (a' : α) (v : β a') (a : α) : β a :=
@@ -1184,7 +1182,6 @@ protected alias Symmetric.forall_existsUnique_iff := Std.Symm.forall_existsUniqu
 def Set.piecewise {α : Type u} {β : α → Sort v} (s : Set α) (f g : ∀ i, β i)
     [∀ j, Decidable (j ∈ s)] : ∀ i, β i :=
   fun i ↦ if i ∈ s then f i else g i
-
 
 /-! ### Bijectivity of `Eq.rec`, `Eq.mp`, `Eq.mpr`, and `cast` -/
 

@@ -23,7 +23,6 @@ We consider various intersections and unions of half infinite intervals.
 
 public section
 
-
 universe u v w
 
 variable {ι : Sort u} {α : Type v} {β : Type w}

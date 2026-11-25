@@ -67,7 +67,6 @@ rectangle are contained in `s` by convexity. The general case follows by lineari
 
 @[expose] public section
 
-
 open Asymptotics Set Filter
 
 open scoped Topology ContDiff

@@ -65,7 +65,6 @@ public section
 variable (X : Type*) [NormedAddCommGroup X]
 variable {M : Type*} [Ring M] [Module M X]
 
-
 /-- A projection on a normed space `X` is said to be an L-projection if, for all `x` in `X`,
 $\|x\| = \|P x\| + \|(1 - P) x\|$.
 

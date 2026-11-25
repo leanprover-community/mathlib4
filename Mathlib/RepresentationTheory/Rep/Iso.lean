@@ -64,7 +64,6 @@ end Group
 ### The categorical equivalence `Rep k G ≌ Module.{u} k[G]`.
 -/
 
-
 variable {k : Type u} {G : Type v} [CommRing k] [Monoid G]
 
 open MonoidAlgebra

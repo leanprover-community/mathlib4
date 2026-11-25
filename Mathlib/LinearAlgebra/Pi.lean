@@ -29,7 +29,6 @@ It contains theorems relating these to each other, as well as to `LinearMap.ker`
 
 @[expose] public section
 
-
 universe u v w x y z u' v' w' x' y'
 
 variable {R : Type u} {M : Type v} {M₂ : Type w}
@@ -608,7 +607,6 @@ def Fin.consLinearEquiv
   map_add' x y := funext <| Fin.cases rfl (by simp)
   map_smul' c x := funext <| Fin.cases rfl (by simp)
 
-
 /-! ### Bundled versions of `Matrix.vecCons` and `Matrix.vecEmpty`
 
 The idea of these definitions is to be able to define a map as `x ↦ ![f₁ x, f₂ x, f₃ x]`, where
@@ -620,7 +618,6 @@ application do not commute definitionally.
 
 Versions for when `f₁ f₂ f₃` are bilinear maps are also provided.
 -/
-
 
 section Fin
 

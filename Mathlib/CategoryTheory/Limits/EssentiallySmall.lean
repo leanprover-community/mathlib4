@@ -20,7 +20,6 @@ See also the file `FinallySmall.lean` for more general results.
 
 public section
 
-
 universe w₁ w₂ v₁ v₂ u₁ u₂
 
 open CategoryTheory

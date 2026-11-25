@@ -24,7 +24,6 @@ The Lebesgue integral of a measurable function against a kernel is measurable.
 
 public section
 
-
 open MeasureTheory ProbabilityTheory Function Set
 
 open scoped MeasureTheory ENNReal Topology

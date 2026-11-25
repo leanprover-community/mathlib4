@@ -36,7 +36,6 @@ equivalently it is subcanonical iff every representable presheaf is a sheaf.
 
 @[expose] public section
 
-
 universe w v u
 
 namespace CategoryTheory

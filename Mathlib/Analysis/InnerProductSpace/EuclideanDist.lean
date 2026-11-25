@@ -26,7 +26,6 @@ distance. This way we hide the usage of `toEuclidean` behind an API.
 
 @[expose] public section
 
-
 open scoped Topology
 
 open Set

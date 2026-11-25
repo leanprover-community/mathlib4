@@ -26,7 +26,6 @@ variable {R : Type*} [Semiring R]
   {U V : Type*} [AddCommMonoid U] [AddCommMonoid V]
   [Module R U] [Module R V] (e : V ≃ₗ[R] V)
 
-
 /-- The fixed submodule of a linear map. -/
 def fixedSubmodule (f : V →ₗ[R] V) : Submodule R V where
   carrier := { x | f x = x }
