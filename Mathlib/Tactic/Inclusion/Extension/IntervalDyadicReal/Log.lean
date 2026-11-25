@@ -65,7 +65,7 @@ theorem spec (num den n : ℕ) :
   rw [← hypergeomPartialSum_div (Nat.castRingHom ℝ) (fun j ↦ (2 * j + 1) * num ^ 2)
     (fun j ↦ (2 * j + 3) * den ^ 2) (fun j ↦ by positivity)
     (fun k ↦ (num / den : ℝ) ^ (2 * k + 1) / (2 * k + 1))
-    (fun j ↦ by push_cast [eq_natCast, div_pow]; field)]
+    (fun j ↦ by push_cast [div_pow]; field)]
   push_cast [smallArtanh]
   field
 
