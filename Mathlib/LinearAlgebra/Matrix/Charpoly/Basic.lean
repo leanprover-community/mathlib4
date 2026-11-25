@@ -22,7 +22,7 @@ See the file `Mathlib/LinearAlgebra/Matrix/Charpoly/Coeff.lean` for corollaries 
 
 * `Matrix.charpoly` is the characteristic polynomial of a matrix.
 
-## Implementation details
+## Implementation notes
 
 We follow a nice proof from http://drorbn.net/AcademicPensieve/2015-12/CayleyHamilton.pdf
 -/

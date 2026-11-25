@@ -32,7 +32,7 @@ See `Basic.lean` for further basic properties of `Cⁿ` functions between manifo
 `Product.lean` for smoothness results related to the product of manifolds and
 `Atlas.lean` for smoothness of atlas members and local structomorphisms.
 
-## Implementation details
+## Implementation notes
 
 Many properties follow for free from the corresponding properties of functions in vector spaces,
 as being `Cⁿ` is a local property invariant under the `Cⁿ` groupoid. We take advantage of the

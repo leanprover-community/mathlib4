@@ -16,6 +16,7 @@ import Mathlib.Data.List.Indexes
 This file contains a proof by Nagata of the Noether normalization lemma.
 
 ## Main Results
+
 Let `A` be a finitely generated algebra over a field `k`.
 Then there exists a natural number `s` and an injective homomorphism
 from `k[X_0, X_1, ..., X_(s-1)]` to `A` such that `A` is integral over `k[X_0, X_1, ..., X_(s-1)]`.
@@ -52,6 +53,7 @@ Composing `φ` and `g` we get the desired map since both `φ` and `g` are inject
 * <https://stacks.math.columbia.edu/tag/00OW>
 
 ## TODO
+
 * In the final theorems, consider setting `s` equal to the Krull dimension of `R`.
 -/
 

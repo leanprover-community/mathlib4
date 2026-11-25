@@ -14,7 +14,7 @@ public import Mathlib.LinearAlgebra.RootSystem.Reduced
 In this file we gather basic lemmas necessary for the classification of finite crystallographic
 root pairings.
 
-## Main results:
+## Main results
 
 * `RootPairing.coxeterWeightIn_mem_set_of_isCrystallographic`: the Coxeter weights of a finite
   crystallographic root pairing belong to the set `{0, 1, 2, 3, 4}`.
