@@ -699,8 +699,8 @@ section induceIso
 
 variable {G G'}
 
-/-- A graph embedding maps an induced subgraph of the domain to an isomorphic induced subgraph of
-the codomain. -/
+/-- Two homomorphisms between graphs induce a bijection between their induced subgraphs if they are
+  inverses of each other in the corresponding sets. -/
 noncomputable def Hom.induceIso (s : Set V) (t : Set W) (f : G →g G') (g : G' →g G)
     (hf : Set.MapsTo f s t) (hg : Set.MapsTo g t s) (hfg : Set.InvOn g f s t) :
     G.induce s ≃g G'.induce t where
@@ -720,6 +720,8 @@ theorem Hom.induceIso_symm (s : Set V) (t : Set W) (f : G →g G') (g : G' →g 
   apply congrArg
   simp [induceIso, Equiv.symm_apply_eq, Set.BijOn.equiv_apply, hfg.left u.property]
 
+/-- A graph embedding maps an induced subgraph of the domain to an isomorphic induced subgraph of
+the codomain. -/
 noncomputable def Embedding.induceIso (s : Set V) (t : Set W) (f : G ↪g G') (hfst : s.BijOn f t) :
     G.induce s ≃g G'.induce t where
   __ := Set.BijOn.equiv f hfst
