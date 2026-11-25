@@ -185,15 +185,12 @@ lemma hasSum_single (x : c₀ E) :
   gconvert hx with ε hε hx
   rw [Filter.eventually_cofinite] at hx
   simp only [Metric.mem_closedBall, dist_zero_right, norm_norm, not_le] at hx
-  filter_upwards [Filter.atTop_basis.mem_of_mem (i := hx.toFinset) trivial] with s hs
+  filter_upwards [Filter.Ici_mem_atTop hx.toFinset] with s hs
   simp only [Metric.mem_closedBall, dist_eq_norm]
   refine lp.norm_le_of_forall_le hε.le fun i ↦ ?_
-  rw [AddSubgroup.subtype_apply, AddSubgroupClass.coe_sub, FunLike.coe_sub, Pi.sub_apply,
-    AddSubgroup.val_finsetSum, FunLike.coe_sum, Finset.sum_apply]
-  simp only [coe_single, lp.coeFn_single, Finset.sum_pi_single]
-  split_ifs with hi
-  · simpa using hε.le
-  · simpa using Set.notMem_subset hs hi
+  by_cases hi : i ∈ s
+  · simpa [hi] using hε.le
+  · simpa [hi] using Set.notMem_subset hs hi
 
 end lp.tendstoZero
 
