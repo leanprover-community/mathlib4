@@ -367,8 +367,8 @@ theorem cauchyIndex_congr_of_eval_denom_ne_zero {f : K⟮X⟯} {a₁ a₂ b₁ b
 
 /-- Dividing by a polynomial `g` of constant sign `s` on `(a, b)` multiplies the Cauchy index on
 `(a, b)` by `s`. -/
-theorem cauchyIndex_div_algebraMap {g : ℝ[X]} {s : SignType} {a b : ℝ} (f : ℝ⟮X⟯) (hs : s ≠ 0)
-    (hg : ∀ x ∈ Ioo a b, sign (g.eval x) = s) :
+theorem cauchyIndex_div_algebraMap [IsStrictOrderedRing K] {g : K[X]} {s : SignType} {a b : K}
+    (f : K⟮X⟯) (hs : s ≠ 0) (hg : ∀ x ∈ Ioo a b, sign (g.eval x) = s) :
     cauchyIndex (f / algebraMap _ _ g) a b = s * cauchyIndex f a b := by
   rcases (Ioo a b).eq_empty_or_nonempty with he | ⟨y, hy⟩
   · simp [cauchyIndex, he]
