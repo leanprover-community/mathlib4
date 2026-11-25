@@ -30,7 +30,7 @@ We show:
   then `γ` is an epimorphism,
 - the five lemma: if `α`, `β`, `δ` and `ε` are isomorphisms, then `γ` is an isomorphism.
 
-## Implementation details
+## Implementation notes
 
 The diagram of the five lemma is given by a morphism in the category `ComposableArrows C 4`
 between two objects which satisfy `ComposableArrows.Exact`. Similarly, the two versions of the
