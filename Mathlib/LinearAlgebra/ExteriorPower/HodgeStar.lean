@@ -55,24 +55,23 @@ lemma exteriorPower_hodgeStar_eq_wedgePairing (x : ⋀[R]^k M) :
 
 /-- If `bᵢ` and `cᵢ` are two bases for `M`, in duality wrt `B`, and `I` is a subset of the type
 indexing the bases, then:
-  `★ ∧_{i ∈ I} b_i = ± D ∧_{j ∈ Iᶜ} c_j`
+  `★ ∧_{i ∈ I} bᵢ = ± D ∧_{j ∈ Iᶜ} cⱼ`
 where `★` is the Hodge star and `D` is the volume of the basis `b`.
 
-In the case that `b` is othonormal wrt `B` we have `c = b`, `D = 1` and the lemma takes a familiar
+In the case that `b` is orthonormal wrt `B` we have `c = b`, `D = ±1` and the lemma takes a familiar
 form. -/
 public lemma hodgeStar_basis_exteriorPower [Nontrivial R] {ι : Type*} [LinearOrder ι] [Fintype ι]
     (b c : Basis ι R M) (hc : ∀ i, B (c i) = b.dualBasis i)
     (I : powersetCard ι k) (J : powersetCard ι l) (hIJ : (J : Finset ι)ᶜ = I) :
     hodgeStar B hB vol hkl (b.exteriorPower k I) =
       powersetCard.sign I • vol b.topVector • c.exteriorPower l J := by
-  obtain rfl : J = (powersetCard.compl <| hkl.trans <| finrank_eq_card_basis b).symm I := by
-    rw [Equiv.eq_symm_apply]
-    ext
-    simp [powersetCard.coe_compl, hIJ]
   apply (B.bijective_exteriorPower l hB).injective
-  rw [exteriorPower_hodgeStar_eq_wedgePairing, wedgePairing_eq_apply_topVector_smul vol hkl b]
-  simp [-coe_basis, Basis.groupSMul_apply, B.exteriorPower_apply_basis_exteriorPower l b c hc,
-    smul_comm (powersetCard.sign I) (vol b.topVector)]
+  refine (b.exteriorPower l).ext fun J' ↦ ?_
+  have : Disjoint I.val J'.val ↔ J' = J := by
+    rw [← hIJ, disjoint_compl_left_iff, powersetCard.eq_iff_subset]
+  rw [exteriorPower_hodgeStar_eq_wedgePairing, wedgePairing_basis_exteriorPower]
+  simp [-coe_basis, B.exteriorPower_apply_basis_exteriorPower l b c hc, Finsupp.single_apply, this,
+    eq_comm]
 
 /-- Up to multiplication by the discriminant, the Hodge star preserves the bilinear form. -/
 @[simp↓] public lemma discr_mul_exteriorPower_hodgeStar_hodgeStar (x y : ⋀[R]^k M) :
@@ -85,14 +84,19 @@ public lemma hodgeStar_basis_exteriorPower [Nontrivial R] {ι : Type*} [LinearOr
   let b := finBasis R M
   let c := b.dualBasis.map (LinearEquiv.ofBijective B hB).symm
   have hc i : B (c i) = b.dualBasis i := by simp [c]
-  rw [wedgePairing_eq_apply_topVector_smul vol hkl c]
-  have h (I : powersetCard _ k) := hodgeStar_basis_exteriorPower B hB vol hkl b c hc I
-    ((powersetCard.compl (hkl.trans (finrank_eq_card_basis b))).symm I)
-    (by simp [powersetCard.compl_symm, powersetCard.coe_compl])
+  have hkl' : l + k = Fintype.card (Fin (finrank R M)) := by simp [hkl, add_comm]
   refine LinearMap.ext_basis (c.exteriorPower k) (b.exteriorPower k) fun I J ↦ ?_
-  simp +contextual [-Basis.coe_dualBasis, -coe_basis, Basis.groupSMul_apply, h,
-    B.exteriorPower_apply_basis_exteriorPower k b c hc, Basis.dualBasis_apply_self, ← mul_smul_comm,
-    smul_smul, B.discr_mul_vol_topVector_mul_vol_topVector vol b c hc]
+  have : Disjoint I.val J.valᶜ ↔ J = I := by
+    rw [disjoint_compl_right_iff, ← powersetCard.eq_iff_subset, eq_comm]
+  simp only [LinearMap.smul_apply, LinearMap.compl₂_apply, LinearEquiv.coe_toLinearMap]
+  rw [hodgeStar_basis_exteriorPower B hB vol hkl b c hc J (powersetCard.compl hkl' J) (by simp),
+    map_zsmul_unit, map_smul, wedgePairing_basis_exteriorPower]
+  simp only [B.exteriorPower_apply_basis_exteriorPower k b c hc, Basis.dualBasis_apply_self,
+    powersetCard.coe_compl, this]
+  split_ifs with hIJ
+  · subst hIJ
+    simp [← mul_smul_comm, smul_smul, B.discr_mul_vol_topVector_mul_vol_topVector vol b c hc]
+  · simp
 
 variable [LinearOrder R] [IsStrictOrderedRing R] [Module.Oriented R M (Fin (finrank R M))]
 
