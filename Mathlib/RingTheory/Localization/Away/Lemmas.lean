@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.Localization.Away.Basic
 public import Mathlib.RingTheory.Localization.Submodule
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # More lemmas on localization away
 

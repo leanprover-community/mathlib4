@@ -96,6 +96,7 @@ copy of the vector space, instead of more usual definitions such as the space of
 the space of equivalence classes of smooth curves in the manifold.
 
 ## Tags
+
 derivative, manifold
 -/
 

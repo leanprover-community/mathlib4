@@ -24,6 +24,7 @@ This file contains some results about simple modules over division rings.
   then `e(M)` is a simple module over `S`.
 
 ## Tags
+
 Noncommutative algebra, simple module, division ring
 -/
 

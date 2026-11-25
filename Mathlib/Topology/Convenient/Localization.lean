@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Localization.CalculusOfFractions.OfAdjunction
 public import Mathlib.Topology.Convenient.Category
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of `X`-generated spaces, as a localization
 

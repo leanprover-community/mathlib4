@@ -10,6 +10,9 @@ public import Mathlib.SetTheory.Cardinal.Arithmetic
 
 import Mathlib.Data.Fintype.Order
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cardinality of direct limits
 

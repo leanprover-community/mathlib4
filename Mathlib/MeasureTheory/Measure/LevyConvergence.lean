@@ -13,6 +13,9 @@ import Mathlib.MeasureTheory.Measure.IntegralCharFun
 import Mathlib.MeasureTheory.Measure.Prokhorov
 import Mathlib.MeasureTheory.Measure.TightNormed
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lévy's convergence theorem
 
