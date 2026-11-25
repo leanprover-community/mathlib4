@@ -53,6 +53,17 @@ class BoundedContinuousMapClass (F : Type*) (α β : outParam Type*) [Topologica
     [PseudoMetricSpace β] [FunLike F α β] : Prop extends ContinuousMapClass F α β where
   map_bounded (f : F) : ∃ C, ∀ x y, dist (f x) (f y) ≤ C
 
+export BoundedContinuousMapClass (map_bounded)
+
+/-- Turn an element of a type `F` satisfying `BoundedContinuousMapClass F α β` into an actual
+`BoundedContinuousFunction`. -/
+def BoundedContinuousFunction.ofClass [TopologicalSpace α] [PseudoMetricSpace β] [FunLike F α β]
+    [BoundedContinuousMapClass F α β] (f : F) :
+    BoundedContinuousFunction α β where
+  toFun := f
+  continuous_toFun := map_continuous f
+  map_bounded' := map_bounded f
+
 end
 
 export BoundedContinuousMapClass (map_bounded)
@@ -76,11 +87,9 @@ instance instBoundedContinuousMapClass : BoundedContinuousMapClass (α →ᵇ β
   map_continuous f := f.continuous_toFun
   map_bounded f := f.map_bounded'
 
-instance instCoeTC [FunLike F α β] [BoundedContinuousMapClass F α β] : CoeTC F (α →ᵇ β) :=
-  ⟨fun f =>
-    { toFun := f
-      continuous_toFun := map_continuous f
-      map_bounded' := map_bounded f }⟩
+@[simp]
+protected theorem coe_ofClass [FunLike F α β] [BoundedContinuousMapClass F α β] (f : F) :
+    ⇑(ofClass f) = f := rfl
 
 @[simp]
 theorem coe_toContinuousMap (f : α →ᵇ β) : (f.toContinuousMap : α → β) = f := rfl
@@ -329,7 +338,7 @@ instance instCompleteSpace [CompleteSpace β] : CompleteSpace (α →ᵇ β) :=
 
 /-- Composition of a bounded continuous function and a continuous function. -/
 def compContinuous {δ : Type*} [TopologicalSpace δ] (f : α →ᵇ β) (g : C(δ, α)) : δ →ᵇ β where
-  toContinuousMap := f.1.comp g
+  toContinuousMap := f.toContinuousMap.comp g
   map_bounded' := f.map_bounded'.imp fun _ hC _ _ => hC _ _
 
 @[simp]
@@ -382,7 +391,7 @@ theorem comp_apply (G : β → γ) {C : ℝ≥0} (H : LipschitzWith C G) (f : α
 theorem lipschitz_comp {G : β → γ} {C : ℝ≥0} (H : LipschitzWith C G) :
     LipschitzWith C (comp G H : (α →ᵇ β) → α →ᵇ γ) :=
   LipschitzWith.of_dist_le_mul fun f g =>
-    (dist_le (mul_nonneg C.2 dist_nonneg)).2 fun x =>
+    (dist_le (mul_nonneg C.property dist_nonneg)).2 fun x =>
       calc
         dist (G (f x)) (G (g x)) ≤ C * dist (f x) (g x) := H.dist_le_mul _ _
         _ ≤ C * dist f g := by gcongr; apply dist_coe_le_dist

@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.EssentiallySmall
 public import Mathlib.CategoryTheory.Localization.HasLocalization
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Locally small localizations
 

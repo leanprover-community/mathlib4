@@ -14,6 +14,9 @@ import Mathlib.RingTheory.Ideal.AssociatedPrime.Localization
 import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 import Mathlib.RingTheory.Regular.IsSMulRegular
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Hom(N,M) is subsingleton iff there exists a smul regular element of M in ann(N)
 

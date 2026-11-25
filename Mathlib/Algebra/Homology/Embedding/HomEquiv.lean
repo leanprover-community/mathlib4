@@ -19,6 +19,7 @@ and the subtype of morphisms `φ : K.restriction e ⟶ L` which satisfy a certai
 condition `e.HasLift φ`.
 
 ## TODO
+
 * obtain dual results for morphisms `L.extend e ⟶ K`.
 -/
 
@@ -208,7 +209,7 @@ consisting of morphisms `φ` such that `e.HasLift φ`. -/
 noncomputable def homEquiv :
     (K ⟶ L.extend e) ≃ { φ : K.restriction e ⟶ L // e.HasLift φ } where
   toFun ψ := ⟨e.homRestrict ψ, e.homRestrict_hasLift ψ⟩
-  invFun φ := e.liftExtend φ.1 φ.2
+  invFun φ := e.liftExtend φ.val φ.property
   left_inv ψ := by simp
   right_inv φ := by simp
 

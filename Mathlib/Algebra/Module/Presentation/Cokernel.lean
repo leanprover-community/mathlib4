@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Module.Presentation.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Presentation of a cokernel
 

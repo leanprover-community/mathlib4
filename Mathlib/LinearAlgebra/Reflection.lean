@@ -143,7 +143,7 @@ lemma _root_.Submodule.mem_invtSubmodule_reflection_iff [IsDomain R] [NeZero (2 
       rw [hp.eq_bot, Submodule.mem_bot, smul_eq_zero] at aux
       exact aux.resolve_right hx
     specialize h' hy
-    simp only [Submodule.mem_comap, LinearEquiv.coe_coe, reflection_apply] at h'
+    simp only [Submodule.mem_comap, LinearEquiv.coe_toLinearMap, reflection_apply] at h'
     simpa using p.sub_mem h' hy
   · have hy' : f y = 0 := by simpa using h' hy
     simpa [reflection_apply, hy']
@@ -346,7 +346,7 @@ lemma Dual.eq_of_preReflection_mapsTo [CharZero R] [IsDomain R] [IsTorsionFree R
   have hu : u = LinearMap.id (R := R) (M := M) + (f - g).smulRight x := by
     ext y
     simp only [u, reflection_apply, hg₁, two_smul, LinearEquiv.coe_toLinearMap_mul,
-      LinearMap.id_coe, LinearEquiv.coe_coe, mul_apply_eq_comp, LinearMap.add_apply, id_eq,
+      LinearMap.id_coe, LinearEquiv.coe_toLinearMap, mul_apply_eq_comp, LinearMap.add_apply, id_eq,
       LinearMap.coe_smulRight, LinearMap.sub_apply, map_sub, map_smul, sub_add_cancel_left,
       smul_neg, sub_neg_eq_add, sub_smul]
     abel

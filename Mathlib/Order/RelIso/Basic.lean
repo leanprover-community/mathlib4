@@ -141,7 +141,7 @@ protected def id (r : α → α → Prop) : r →r r :=
 /-- Composition of two relation homomorphisms is a relation homomorphism. -/
 @[simps]
 protected def comp (g : s →r t) (f : r →r s) : r →r t :=
-  ⟨fun x => g (f x), fun h => g.2 (f.2 h)⟩
+  ⟨fun x => g (f x), fun h => g.map_rel' (f.map_rel' h)⟩
 
 /-- The identity relation homomorphism from a subrelation to its containing relation. -/
 @[simps]
@@ -206,7 +206,7 @@ theorem Function.Surjective.wellFounded_iff {f : α → β} (hf : Surjective f)
 /-- A relation embedding with respect to a given pair of relations `r` and `s`
 is an embedding `f : α ↪ β` such that `r a b ↔ s (f a) (f b)`. -/
 structure RelEmbedding {α β : Type*} (r : α → α → Prop) (s : β → β → Prop) extends α ↪ β where
-  /-- Elements are related iff they are related after apply a `RelEmbedding` -/
+  /-- Elements are related iff they are related after applying a `RelEmbedding`. -/
   map_rel_iff' : ∀ {a b}, s (toEmbedding a) (toEmbedding b) ↔ r a b
 
 /-- A relation embedding with respect to a given pair of relations `r` and `s`
@@ -215,7 +215,7 @@ infixl:25 " ↪r " => RelEmbedding
 
 theorem preimage_equivalence {α β} (f : α → β) {s : β → β → Prop} (hs : Equivalence s) :
     Equivalence (f ⁻¹'o s) :=
-  ⟨fun _ => hs.1 _, fun h => hs.2 h, fun h₁ h₂ => hs.3 h₁ h₂⟩
+  ⟨fun _ => hs.refl _, fun h => hs.symm h, fun h₁ h₂ => hs.trans h₁ h₂⟩
 
 namespace RelEmbedding
 
@@ -285,7 +285,7 @@ protected def refl (r : α → α → Prop) : r ↪r r :=
 
 /-- Composition of two relation embeddings is a relation embedding. -/
 protected def trans (f : r ↪r s) (g : s ↪r t) : r ↪r t :=
-  ⟨f.1.trans g.1, by simp [f.map_rel_iff, g.map_rel_iff]⟩
+  ⟨f.toEmbedding.trans g.toEmbedding, by simp [f.map_rel_iff, g.map_rel_iff]⟩
 
 instance (r : α → α → Prop) : Inhabited (r ↪r r) :=
   ⟨RelEmbedding.refl _⟩
@@ -559,9 +559,10 @@ def prodLexMap (f : r ↪r s) (g : t ↪r u) : Prod.Lex r t ↪r Prod.Lex s u wh
 
 end RelEmbedding
 
-/-- A relation isomorphism is an equivalence that is also a relation embedding. -/
+/-- A relation isomorphism with respect to a given pair of relations `r` and `s`
+is an equivalence `f : α ≃ β` such that `r a b ↔ s (f a) (f b)`. -/
 structure RelIso {α β : Type*} (r : α → α → Prop) (s : β → β → Prop) extends α ≃ β where
-  /-- Elements are related iff they are related after apply a `RelIso` -/
+  /-- Elements are related iff they are related after applying a `RelIso`. -/
   map_rel_iff' : ∀ {a b}, s (toEquiv a) (toEquiv b) ↔ r a b
 
 /-- A relation isomorphism is an equivalence that is also a relation embedding. -/
@@ -626,7 +627,8 @@ theorem ext ⦃f g : r ≃r s⦄ (h : ∀ x, f x = g x) : f = g :=
 
 /-- Inverse map of a relation isomorphism is a relation isomorphism. -/
 protected def symm (f : r ≃r s) : s ≃r r :=
-  ⟨f.toEquiv.symm, @fun a b => by erw [← f.map_rel_iff, f.1.apply_symm_apply, f.1.apply_symm_apply]⟩
+  ⟨f.toEquiv.symm, @fun a b => by
+    erw [← f.map_rel_iff, f.toEquiv.apply_symm_apply, f.toEquiv.apply_symm_apply]⟩
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
   because `RelIso` defines custom coercions other than the ones given by `DFunLike`. -/

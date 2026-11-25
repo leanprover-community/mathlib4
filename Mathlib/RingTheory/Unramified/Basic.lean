@@ -107,7 +107,7 @@ theorem iff_comp_injective_of_small [Small.{w} A] :
       exact Ideal.cotangentIdeal_square _
     · ext x
       apply RingHom.kerLift_injective (TensorProduct.lmul' R (S := A)).kerSquareLift.toRingHom
-      simpa using congr($(f₁.2.trans f₂.2.symm) x)
+      simpa using congr($(f₁.property.trans f₂.property.symm) x)
 
 /-- A version without stray universes that is more easy to rewrite with. -/
 theorem iff_comp_injective :
@@ -218,8 +218,8 @@ theorem comp [FormallyUnramified R A] [FormallyUnramified A B] :
     FormallyUnramified.lift_unique I ⟨2, hI⟩ (f₁.comp <| IsScalarTower.toAlgHom R A B)
       (f₂.comp <| IsScalarTower.toAlgHom R A B) (by rw [← AlgHom.comp_assoc, e, AlgHom.comp_assoc])
   let := (f₁.domRestrict A).toAlgebra
-  let F₁ : B →ₐ[A] C := { f₁ with commutes' := fun r => rfl }
-  let F₂ : B →ₐ[A] C := { f₂ with commutes' := AlgHom.congr_fun e'.symm }
+  let F₁ : B →ₐ[A] C := { f₁.toRingHom with commutes' r := rfl }
+  let F₂ : B →ₐ[A] C := { f₂.toRingHom with commutes' := AlgHom.congr_fun e'.symm }
   ext1 x
   change F₁ x = F₂ x
   congr

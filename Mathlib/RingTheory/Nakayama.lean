@@ -5,8 +5,9 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.RingTheory.Finiteness.Nakayama
 public import Mathlib.RingTheory.Jacobson.Ideal
+
+import Mathlib.RingTheory.Finiteness.Nakayama
 
 /-!
 # Nakayama's lemma
@@ -38,9 +39,11 @@ Note that a version of Statement (1) in
 `Submodule.exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul`
 
 ## References
+
 * [Stacks: Nakayama's Lemma](https://stacks.math.columbia.edu/tag/00DV)
 
 ## Tags
+
 Nakayama, Jacobson
 -/
 

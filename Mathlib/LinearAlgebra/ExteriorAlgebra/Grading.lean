@@ -101,4 +101,16 @@ lemma ιMulti_span :
     obtain ⟨y, rfl⟩ := hx
     exact ⟨⟨_, y⟩, rfl⟩
 
+/-- The projection from the exterior algebra onto the exterior power `⋀[R]^i M`. -/
+def toExteriorPower (i : ℕ) : ExteriorAlgebra R M →ₗ[R] ⋀[R]^i M :=
+  (DFinsupp.lapply i).comp (GradedAlgebra.liftι R M).toLinearMap
+
+@[simp]
+lemma toExteriorPower_coe (i : ℕ) (x : ⋀[R]^i M) : toExteriorPower R M i x = x := by
+  simp [toExteriorPower, GradedAlgebra.liftι_eq]
+
+lemma toExteriorPower_coe_of_ne {i j : ℕ} (h : j ≠ i) (x : ⋀[R]^j M) :
+    toExteriorPower R M i x = 0 := by
+  simp [toExteriorPower, GradedAlgebra.liftι_eq, DirectSum.of_eq_of_ne _ _ _ h.symm]
+
 end ExteriorAlgebra

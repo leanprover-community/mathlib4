@@ -11,6 +11,9 @@ public import Mathlib.NumberTheory.Padics.PadicIntegers
 public import Mathlib.Topology.Algebra.Valued.WithVal
 public import Mathlib.Topology.GDelta.MetrizableSpace
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equivalence between `ℚ_[p]` and `(Rat.padicValuation p).Completion`
 
@@ -75,7 +78,7 @@ lemma isUniformInducing_cast_withVal : IsUniformInducing ((Rat.castHom ℚ_[p]).
     set x' := (WithVal.equiv (Rat.padicValuation p)) x with hx
     set y' := (WithVal.equiv (Rat.padicValuation p)) y with hy
     rw [Valuation.map_sub_swap, Valuation.restrict_lt_iff_lt_embedding]
-    change Rat.padicValuation p (x' - y') < embedding γ.1
+    change Rat.padicValuation p (x' - y') < embedding γ.val
     rw [← Nat.cast_pow, ← Rat.cast_natCast, ← Rat.cast_inv_of_ne_zero, Rat.cast_le] at h
     · change padicNorm p (x' - y') ≤ _ at h
       unfold Rat.padicValuation at *

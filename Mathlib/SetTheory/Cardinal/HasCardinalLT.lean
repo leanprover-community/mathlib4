@@ -7,6 +7,9 @@ module
 
 public import Mathlib.SetTheory.Cardinal.Regular
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The property of being of cardinality less than a cardinal
 
@@ -123,8 +126,8 @@ lemma hasCardinalLT_subtype_max
   have : HasCardinalLT (Subtype P₁ ⊕ Subtype P₂) κ := by
     rw [hasCardinalLT_sum_iff _ _ _ hκ]
     exact ⟨h₁, h₂⟩
-  refine this.of_surjective (Sum.elim (fun x ↦ ⟨x.1, Or.inl x.2⟩)
-    (fun x ↦ ⟨x.1, Or.inr x.2⟩)) ?_
+  refine this.of_surjective (Sum.elim (fun x ↦ ⟨x.val, Or.inl x.property⟩)
+    (fun x ↦ ⟨x.val, Or.inr x.property⟩)) ?_
   rintro ⟨x, hx | hx⟩
   · exact ⟨Sum.inl ⟨x, hx⟩, rfl⟩
   · exact ⟨Sum.inr ⟨x, hx⟩, rfl⟩

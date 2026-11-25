@@ -18,10 +18,12 @@ import Mathlib.NumberTheory.NumberField.Cyclotomic.PID
 The goal of this file is to prove Fermat's Last Theorem in the case `n = 3`.
 
 ## Main results
+
 * `fermatLastTheoremThree`: Fermat's Last Theorem for `n = 3`: if `a b c : ℕ` are all non-zero then
   `a ^ 3 + b ^ 3 ≠ c ^ 3`.
 
-## Implementation details
+## Implementation notes
+
 We follow the proof in <https://webusers.imj-prg.fr/~marc.hindry/Cours-arith.pdf>, page 43.
 
 The strategy is the following:
@@ -449,8 +451,8 @@ lemma associated_of_dvd_a_add_eta_mul_b_of_dvd_a_add_eta_sq_mul_b {p : 𝓞 K} (
   rw [one_mul, mul_one, IsUnit.dvd_mul_right <| (gcd_isUnit_iff _ _).2 S.coprime] at this
   convert (dvd_mul_of_dvd_left (dvd_mul_of_dvd_left this η) η) using 1
   symm
-  calc _ = (-η.1 - 1 - η) * (-η - 1) := by rw [eta_sq, mul_assoc, ← pow_two, eta_sq]
-  _ = 2 * η.1 ^ 2 + 3 * η + 1 := by ring
+  calc _ = (-(η).val - 1 - η) * (-η - 1) := by rw [eta_sq, mul_assoc, ← pow_two, eta_sq]
+  _ = 2 * (η).val ^ 2 + 3 * η + 1 := by ring
   _ = λ := by rw [eta_sq, coe_eta]; ring
 
 end IsCyclotomicExtension

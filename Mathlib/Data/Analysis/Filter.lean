@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.Filter.Cofinite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Computational realization of filters (experimental)
 
@@ -278,7 +281,8 @@ protected def bind {f : Filter α} {m : α → Filter β} (F : f.Realizer) (G : 
         ⟨fun ⟨s, f, h⟩ ↦
           ⟨F s, ⟨s, Subset.refl _⟩, fun i H ↦ (G i).mem_sets.2 ⟨f i H, fun _ h' ↦ h i H h'⟩⟩,
           fun ⟨_, ⟨s, h⟩, f⟩ ↦
-          let ⟨f', h'⟩ := Classical.axiom_of_choice fun i : F s ↦ (G i).mem_sets.1 (f i (h i.2))
+          let ⟨f', h'⟩ := Classical.axiom_of_choice fun i : F s ↦
+            (G i).mem_sets.1 (f i (h i.property))
           ⟨s, fun i h ↦ f' ⟨i, h⟩, fun _ H _ m ↦ h' ⟨_, H⟩ m⟩⟩⟩
 
 /-- Construct a realizer for indexed supremum -/

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Group.Submonoid.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # (Left) Ore sets
 

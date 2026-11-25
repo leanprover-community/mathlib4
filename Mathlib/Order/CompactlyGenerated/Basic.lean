@@ -9,12 +9,12 @@ public import Mathlib.Basic.Finite.Set
 public import Mathlib.Data.Finset.Order
 public import Mathlib.Data.Set.Lattice.Order
 public import Mathlib.Order.Atoms
-public import Mathlib.Order.Interval.Set.OrderIso
 public import Mathlib.Order.SupClosed
 public import Mathlib.Order.SupIndep
 public import Mathlib.Order.Zorn
 public import Mathlib.Tactic.TFAE
 
+import Mathlib.Order.Interval.Set.OrderIso
 import Mathlib.Order.OrderIsoNat
 
 /-!
@@ -25,12 +25,14 @@ is well-founded. In this file we define three especially-useful characterisation
 proofs that they are indeed equivalent to well-foundedness.
 
 ## Main definitions
+
 * `CompleteLattice.IsSupClosedCompact`
 * `CompleteLattice.IsSupFiniteCompact`
 * `IsCompactElement`
 * `IsCompactlyGenerated`
 
 ## Main results
+
 The main result is that the following four conditions are equivalent for a complete lattice:
 * `well_founded (>)`
 * `CompleteLattice.IsSupClosedCompact`
@@ -47,6 +49,7 @@ We also show well-founded lattices are compactly generated
 (`CompleteLattice.isCompactlyGenerated_of_wellFounded`).
 
 ## References
+
 - [G. Călugăreanu, *Lattice Concepts of Module Theory*][calugareanu]
 
 ## Tags
@@ -252,7 +255,7 @@ protected lemma IsCompactElement.biSup {ι : Type*} {s : Set ι} (hs : s.Finite)
 
 protected lemma IsCompactElement.sSup (hs : s.Finite) (h : ∀ a ∈ s, IsCompactElement a) :
     IsCompactElement (sSup s) := by
-  have := hs.to_subtype; rw [sSup_eq_iSup']; exact .iSup fun a ↦ h _ a.2
+  have := hs.to_subtype; rw [sSup_eq_iSup']; exact .iSup fun a ↦ h _ a.property
 
 lemma IsCompactElement.exists_finsetSup_eq_of_isLUB {α : Type*} [SemilatticeSup α] [OrderBot α]
     {a : α} (ha : IsCompactElement a) {s : Set α} (hs : IsLUB s a) :
@@ -362,13 +365,15 @@ theorem WellFoundedLT.finite_of_sSupIndep [WellFoundedLT α] {s : Set α}
     (hs : sSupIndep s) : s.Finite := by
   by_contra inf
   let e := (Infinite.sdiff inf <| finite_singleton ⊥).to_subtype.natEmbedding
-  let a n := ⨆ i ≥ n, (e i).1
-  have sup_le n : (e n).1 ⊔ a (n + 1) ≤ a n := sup_le_iff.mpr ⟨le_iSup₂_of_le n le_rfl le_rfl,
+  let a n := ⨆ i ≥ n, (e i).val
+  have sup_le n : (e n).val ⊔ a (n + 1) ≤ a n := sup_le_iff.mpr ⟨le_iSup₂_of_le n le_rfl le_rfl,
     iSup₂_le fun i hi ↦ le_iSup₂_of_le i (n.le_succ.trans hi) le_rfl⟩
   have lt n : a (n + 1) < a n := (Disjoint.right_lt_sup_of_left_ne_bot
-    ((hs (e n).2.1).mono_right <| iSup₂_le fun i hi ↦ le_sSup ?_) (e n).2.2).trans_le (sup_le n)
+    ((hs (e n).property.1).mono_right <| iSup₂_le fun i hi ↦ le_sSup ?_)
+    (e n).property.2).trans_le (sup_le n)
   · exact (RelEmbedding.natGT a lt).not_wellFounded wellFounded_lt
-  exact ⟨(e i).2.1, fun h ↦ n.lt_succ_self.not_ge <| hi.trans_eq <| e.2 <| Subtype.val_injective h⟩
+  exact ⟨(e i).property.1, fun h ↦
+    n.lt_succ_self.not_ge <| hi.trans_eq <| e.inj' <| Subtype.val_injective h⟩
 
 theorem WellFoundedLT.finite_ne_bot_of_iSupIndep [WellFoundedLT α]
     {ι : Type*} {t : ι → α} (ht : iSupIndep t) : Set.Finite {i | t i ≠ ⊥} := by
@@ -613,7 +618,7 @@ theorem Iic_coatomic_of_compact_element {k : α} (h : IsCompactElement k) :
   right
   have ⟨a, ba, h⟩ := zorn_le_nonempty₀ (Set.Iio k) ?_ b (lt_of_le_of_ne hbk H)
   · refine ⟨⟨a, le_of_lt h.prop⟩, ⟨ne_of_lt h.prop, fun c hck => by_contradiction fun c₀ => ?_⟩, ba⟩
-    cases h.eq_of_le (y := c.1) (lt_of_le_of_ne c.2 fun con ↦ c₀ (Subtype.ext con)) hck.le
+    cases h.eq_of_le (y := c.val) (lt_of_le_of_ne c.property fun con ↦ c₀ (Subtype.ext con)) hck.le
     exact lt_irrefl _ hck
   · intro S SC cC I _
     by_cases hS : S.Nonempty
@@ -689,7 +694,7 @@ instance (priority := 100) isAtomistic_of_complementedLattice [ComplementedLatti
         rw [eq_bot_iff]
         apply le_trans (le_inf _ hac) hc.disjoint.le_bot
         rw [← Subtype.coe_le_coe, Subtype.coe_mk]
-        exact le_sSup ⟨ha.of_isAtom_coe_Iic, a.2⟩, fun _ => And.left⟩
+        exact le_sSup ⟨ha.of_isAtom_coe_Iic, a.property⟩, fun _ => And.left⟩
 
 /-!
 Now we will prove that a compactly generated modular atomistic lattice is a complemented lattice.

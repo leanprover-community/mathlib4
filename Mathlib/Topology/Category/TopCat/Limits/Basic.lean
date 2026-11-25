@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Limits.Types.Colimits
 public import Mathlib.CategoryTheory.Limits.Types.Limits
 public import Mathlib.Topology.Category.TopCat.Adjunctions
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of topological spaces has all limits and colimits
 
@@ -34,7 +37,7 @@ section Limits
 
 variable {J : Type v} [Category.{w} J]
 
-attribute [local fun_prop] continuous_subtype_val
+attribute [local fun_prop] continuous_subtypeVal
 /-- A choice of limit cone for a functor `F : J ⥤ TopCat`.
 Generally you should just use `limit.cone F`, unless you need the actual definition
 (which is in terms of `Types.limitCone`).
@@ -45,10 +48,10 @@ def limitCone (F : J ⥤ TopCat.{max v u}) : Cone F where
     { app := fun j => ofHom
         { toFun := fun u => u.val j
           -- Porting note: `continuity` from the original mathlib3 proof failed here.
-          continuous_toFun := Continuous.comp (continuous_apply _) (continuous_subtype_val) }
+          continuous_toFun := Continuous.comp (continuous_apply _) (continuous_subtypeVal) }
       naturality := fun X Y f => by
         ext a
-        exact (a.2 f).symm }
+        exact (a.property f).symm }
 
 /-- The chosen cone `TopCat.limitCone F` for a functor `F : J ⥤ TopCat` is a limit cone.
 Generally you should just use `limit.isLimit F`, unless you need the actual definition

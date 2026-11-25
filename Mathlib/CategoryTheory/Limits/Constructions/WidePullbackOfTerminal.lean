@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
 public import Mathlib.CategoryTheory.Limits.Shapes.Products
 public import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Existence of wide pullbacks when the target object is terminal
 

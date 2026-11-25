@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Triangulated.TStructure.TruncLTGE
 public import Mathlib.Order.WithBotTop
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Truncations for a t-structure
 
@@ -125,7 +128,7 @@ instance (i : EInt) : (t.eTruncGE.obj i).Additive := by
 /-- The connecting homomorphism from `t.eTruncGE` to the
 shift by `1` of `t.eTruncLT`. -/
 noncomputable def eTruncGEδLT :
-    t.eTruncGE ⟶ t.eTruncLT ⋙ ((Functor.whiskeringRight ..).obj (shiftFunctor C (1 : ℤ))) where
+    t.eTruncGE ⟶ t.eTruncLT ⋙ ((Functor.whiskeringRight ..).obj (shiftFunctor C 1)) where
   app := WithBotTop.rec 0 t.truncGEδLT 0
   naturality {a b} hab := by
     replace hab := leOfHom hab

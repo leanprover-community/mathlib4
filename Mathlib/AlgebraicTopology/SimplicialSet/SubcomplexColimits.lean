@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
 public import Mathlib.CategoryTheory.Limits.Types.Multicoequalizer
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Colimits involving subcomplexes of a simplicial set
 
@@ -56,7 +59,7 @@ noncomputable def isColimit :
         (fun i j ↦ (V i j).obj n) :=
       { eq_inf := by simp [h.eq_inf]
         iSup_eq := by simp [← h.iSup_eq] }
-    exact (Multicofork.isColimitMapEquiv _ _).2
+    exact (Multicofork.isColimitMapEquiv _ _).invFun
       (Types.isColimitOfMulticoequalizerDiagram h'))
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -88,7 +91,7 @@ lemma BicartSq.isPushout {A₁ A₂ A₃ A₄ : X.Subcomplex} (sq : BicartSq A�
   w := rfl
   isColimit' :=
     ⟨evaluationJointlyReflectsColimits _
-      (fun n ↦ (PushoutCocone.isColimitMapCoconeEquiv _ _).2 (by
+      (fun n ↦ (PushoutCocone.isColimitMapCoconeEquiv _ _).invFun (by
         have h : Lattice.BicartSq (A₁.obj n) (A₂.obj n) (A₃.obj n) (A₄.obj n) :=
           { sup_eq := by
               rw [← sq.sup_eq]

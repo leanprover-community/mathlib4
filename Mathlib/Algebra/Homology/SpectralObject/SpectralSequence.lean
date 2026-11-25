@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Homology.SpectralObject.HasSpectralSequence
 public import Mathlib.Algebra.Homology.SpectralObject.Homology
 public import Mathlib.Algebra.Homology.SpectralSequence.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The spectral sequence of a spectral object
 

@@ -26,6 +26,7 @@ public import Mathlib.RingTheory.TensorProduct.Maps
   asserting that is a pushout diagram (i.e. `S' = S ⊗[R] R'`)
 
 ## Main results
+
 - `TensorProduct.isBaseChange`: `S ⊗[R] M` is the base change of `M` along `R → S`.
 -/
 
@@ -615,17 +616,18 @@ class Algebra.IsPushout : Prop where
 
 /-- The isomorphism `S' ≃ S ⊗[R] R` given `Algebra.IsPushout R S R' S'`. -/
 noncomputable
-def Algebra.IsPushout.equiv [h : Algebra.IsPushout R S R' S'] : S ⊗[R] R' ≃ₐ[S] S' where
-  __ := h.out.equiv
-  map_mul' x y := by
-    dsimp
-    induction x with
-    | add x y _ _ => simp [*, add_mul]
-    | tmul a b =>
-      induction y with
-      | add x y _ _ => simp [*, mul_add]
-      | tmul x y => simp [IsBaseChange.equiv_tmul, Algebra.smul_def, mul_mul_mul_comm]
-  commutes' := by simp [IsBaseChange.equiv_tmul, Algebra.smul_def]
+def Algebra.IsPushout.equiv [h : Algebra.IsPushout R S R' S'] : S ⊗[R] R' ≃ₐ[S] S' :=
+  .ofCommutes
+    { __ := h.out.equiv
+      map_mul' x y := by
+        dsimp
+        induction x with
+        | add x y _ _ => simp [*, add_mul]
+        | tmul a b =>
+          induction y with
+          | add x y _ _ => simp [*, mul_add]
+          | tmul x y => simp [IsBaseChange.equiv_tmul, Algebra.smul_def, mul_mul_mul_comm] }
+    fun _ ↦ by simp [IsBaseChange.equiv_tmul, Algebra.smul_def]
 
 lemma Algebra.IsPushout.equiv_tmul [h : Algebra.IsPushout R S R' S'] (a : S) (b : R') :
     equiv R S R' S' (a ⊗ₜ b) = algebraMap _ _ a * algebraMap _ _ b :=
@@ -722,7 +724,7 @@ theorem Algebra.IsPushout.algHom_ext [H : Algebra.IsPushout R S R' S'] {A : Type
     [Algebra R A] {f g : S' →ₐ[R] A} (h₁ : f.comp (toAlgHom R R' S') = g.comp (toAlgHom R R' S'))
     (h₂ : f.comp (toAlgHom R S S') = g.comp (toAlgHom R S S')) : f = g := by
   ext x
-  refine H.1.inductionOn x ?_ ?_ ?_
+  refine H.out.inductionOn x ?_ ?_ ?_
   · exact AlgHom.congr_fun h₁
   · intro s s' e
     rw [Algebra.smul_def, map_mul, map_mul, e]
@@ -821,11 +823,9 @@ variable (C : Type*) [CommRing C] [Algebra R C] [Algebra A C] [IsScalarTower R A
 
 /-- Algebra version of `IsPushout.cancelBaseChange`. -/
 noncomputable def IsPushout.cancelBaseChangeAlg : B ⊗[A] C ≃ₐ[S] S ⊗[R] C := by
-  refine AlgEquiv.symm
-    (AlgEquiv.ofLinearEquiv (IsPushout.cancelBaseChange R S A B C).symm ?_ ?_)
-  · simp [TensorProduct.one_def]
-  · apply LinearMap.map_mul_of_map_mul_tmul
-    simp
+  refine (AlgEquiv.ofLinearEquiv (IsPushout.cancelBaseChange R S A B C).symm ?_).symm
+  apply LinearMap.map_mul_of_map_mul_tmul
+  simp
 
 @[simp]
 lemma IsPushout.toLinearEquiv_cancelBaseChangeAlg :

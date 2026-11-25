@@ -5,9 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.GuitartExact.Prod
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
-public import Mathlib.CategoryTheory.Localization.Prod
+
+import Mathlib.CategoryTheory.GuitartExact.Prod
+import Mathlib.CategoryTheory.Localization.Prod
 
 /-!
 # Product of derivability structures
@@ -28,6 +29,7 @@ to derive functors "in one variable" but also to derive functors in several
 variables (e.g. the tensor product as a bifunctor).
 
 ## References
+
 * [Bruno Kahn and Georges Maltsiniotis, *Structures de dérivabilité*][KahnMaltsiniotis2008]
 * [Joël Riou, *Formalization of derived categories in {Lean}/mathlib*][riou-2025]
 -/

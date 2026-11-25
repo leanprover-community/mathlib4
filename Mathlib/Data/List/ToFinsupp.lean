@@ -24,7 +24,7 @@ public import Mathlib.Data.List.GetD
   as a finitely supported function, is equal to the sum of `Finsupp.single` produced by mapping over
   `List.enum l`.
 
-## Implementation details
+## Implementation notes
 
 The functions defined here rely on a decidability predicate that each element in the list
 can be decidably determined to be not equal to zero or that one can decide one is out of the

@@ -11,6 +11,9 @@ public import Mathlib.MeasureTheory.Measure.Typeclasses.NullSingletonClass
 public import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
 public import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic properties of the Dirac measure
 
@@ -96,12 +99,12 @@ If `α` has measurable singletons, `sum_smul_dirac` gives a simpler sum. -/
 lemma exists_sum_smul_dirac [Countable α] (μ : Measure α) :
     ∃ s : Set α, μ = Measure.sum (fun x : s ↦ μ (measurableAtom x) • dirac (x : α)) := by
   let measurableAtoms := measurableAtom '' (Set.univ : Set α)
-  have h_nonempty (s : measurableAtoms) : Set.Nonempty s.1 := by
-    obtain ⟨y, _, hy⟩ := s.2
+  have h_nonempty (s : measurableAtoms) : Set.Nonempty s.val := by
+    obtain ⟨y, _, hy⟩ := s.property
     rw [← hy]
     exact ⟨y, mem_measurableAtom_self y⟩
   let points : measurableAtoms → α := fun s ↦ (h_nonempty s).some
-  have h_points_mem (s : measurableAtoms) : points s ∈ s.1 := (h_nonempty s).some_mem
+  have h_points_mem (s : measurableAtoms) : points s ∈ s.val := (h_nonempty s).some_mem
   refine ⟨Set.range points, ext_of_measurableAtoms fun x ↦ ?_⟩
   rw [Measure.sum_apply _ (MeasurableSet.measurableAtom_of_countable x)]
   simp only [smul_apply, smul_eq_mul]

@@ -8,6 +8,9 @@ module
 public import Mathlib.Probability.Kernel.Composition.Lemmas
 public import Mathlib.Probability.Kernel.Disintegration.Unique
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Regular conditional probability distribution
 

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.ExteriorPower.WedgePairing
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bilinear forms on exterior powers
 

@@ -5,12 +5,16 @@ Authors: Brian Nugent
 -/
 module
 
-public import Mathlib.Algebra.Category.Grp.AB
 public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Sheaf
-public import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 public import Mathlib.Topology.Sheaves.Limits
 public import Mathlib.Topology.Sheaves.Skyscraper
+
+import Mathlib.Algebra.Category.Grp.AB
+import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Sheaves over Abelian categories
@@ -78,7 +82,7 @@ instance : Limits.PreservesFiniteLimits (forget C X ⋙ stalkFunctor C p₀) :=
     have := ((forget C X ⋙ stalkFunctor C p₀).preservesFiniteColimits_tfae.out 4 1).mp
       (inferInstance : (PreservesFiniteColimits _))
     refine ShortComplex.ShortExact.mk' (this S h).left ?_ (this S h).right
-    have := h.2
+    have := h.mono_f
     exact Functor.map_mono (forget C X ⋙ stalkFunctor C p₀) _
   (forget C X ⋙ stalkFunctor C p₀).preservesFiniteLimits_of_preservesHomology
 

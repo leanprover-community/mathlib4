@@ -10,6 +10,9 @@ public import Mathlib.LinearAlgebra.Semisimple
 
 import Mathlib.Dynamics.Newton
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Jordan-Chevalley-Dunford decomposition
 
