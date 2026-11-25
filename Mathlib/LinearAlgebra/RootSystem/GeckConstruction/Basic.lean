@@ -21,7 +21,7 @@ set_option doc.verso.suggestions false
 This file contains an implementation of Geck's construction of a semisimple Lie algebra from a
 reduced crystallographic root system. It follows \[Geck\]\[Geck2017\] quite closely.
 
-## Main definitions:
+## Main definitions and statements
 
 * `RootPairing.GeckConstruction.lieAlgebra`: the Geck construction of the Lie algebra associated to
   a root system with distinguished base.

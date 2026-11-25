@@ -12,7 +12,7 @@ import Mathlib.Analysis.PSeriesComplex
 /-!
 # Definition of the Riemann zeta function
 
-## Main definitions:
+## Main definitions
 
 * `riemannZeta`: the Riemann zeta function `ζ : ℂ → ℂ`.
 * `completedRiemannZeta`: the completed zeta function `Λ : ℂ → ℂ`, which satisfies

@@ -15,7 +15,7 @@ set_option doc.verso.suggestions false
 
 This file provides the basic API for open covers of schemes.
 
-## Main definition
+## Main definitions
 
 * `AlgebraicGeometry.Scheme.OpenCover`: The type of open covers of a scheme `X`,
   consisting of a family of open immersions into `X`,

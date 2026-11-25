@@ -16,7 +16,7 @@ set_option doc.verso.suggestions false
 
 We define these as thin wrappers around `CategoryTheory/Comma/OverClass`.
 
-## Main definition
+## Main definitions
 
 * `AlgebraicGeometry.Scheme.Over`: `X.Over S` equips `X` with an `S`-scheme structure.
   `X ↘ S : X ⟶ S` is the structure morphism.

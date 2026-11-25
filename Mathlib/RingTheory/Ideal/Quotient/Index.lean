@@ -22,7 +22,7 @@ set_option doc.verso.suggestions false
 /-!
 # Indices of ideals
 
-## Main result
+## Main results
 
 * `Submodule.finite_quotient_smul`:
   Let `N` be a finite index f.g. `R`-submodule, and `I` be a finite index ideal.

@@ -18,7 +18,7 @@ set_option doc.verso.suggestions false
 
 We provide some basic properties of schemes
 
-## Main definition
+## Main definitions
 
 * `AlgebraicGeometry.IsIntegral`: A scheme is integral if it is nontrivial and all nontrivial
   components of the structure sheaf are integral domains.

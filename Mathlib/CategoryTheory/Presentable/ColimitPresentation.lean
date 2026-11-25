@@ -13,7 +13,7 @@ set_option doc.verso.suggestions false
 /-!
 # Presentation of a colimit of objects equipped with a presentation
 
-## Main definition:
+## Main definition
 
 * `CategoryTheory.Limits.ColimitPresentation.bind`: Given a colimit presentation of `X` and
   colimit presentations of the components, this is the colimit presentation over the sigma type.

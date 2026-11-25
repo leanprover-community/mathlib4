@@ -14,7 +14,7 @@ set_option doc.verso.suggestions false
 /-!
 # Restriction of Schemes and Morphisms
 
-## Main definition
+## Main definitions
 
 * `AlgebraicGeometry.Scheme.restrict`: The restriction of a scheme along an open embedding.
   The map `X.restrict f ⟶ X` is `AlgebraicGeometry.Scheme.ofRestrict`.

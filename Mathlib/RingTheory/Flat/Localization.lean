@@ -16,7 +16,7 @@ set_option doc.verso.suggestions false
 
 In this file we show that localizations are flat, and flatness is a local property.
 
-## Main result
+## Main results
 
 * `IsLocalization.flat`: a localization of a commutative ring is flat over it.
 * `Module.flat_iff_of_isLocalization` : Let `Rₚ` a localization of a commutative ring `R`

@@ -17,7 +17,7 @@ set_option doc.verso.suggestions false
 
 This file contains basic definitions and results about irreducible root systems.
 
-## Main definitions / results:
+## Main definitions and statements
 
 * `RootPairing.isSimpleModule_weylGroupRootRep_iff`: a criterion for the representation of the Weyl
   group on root space to be irreducible.

@@ -546,9 +546,11 @@ def toContinuousMapZero (g : C(X, R)) : C(X, R)₀ where
 lemma toContinuousMapZero_apply (g : C(X, R)) (x : X) : g.toContinuousMapZero x = g x - g 0 := rfl
 
 @[simp]
-lemma coe_toContinuousMapZero (g : C(X, R)) :
+lemma ofClass_toContinuousMapZero (g : C(X, R)) :
     (g.toContinuousMapZero : C(X, R)) = g - const X (g 0) :=
   rfl
+
+@[deprecated (since := "2026-11-24")] alias coe_toContinuousMapZero := ofClass_toContinuousMapZero
 
 @[simp]
 lemma toContinuousMapZero_const (r : R) : (const X r).toContinuousMapZero = 0 := by ext; simp

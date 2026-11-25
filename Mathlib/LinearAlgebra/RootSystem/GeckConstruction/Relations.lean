@@ -19,7 +19,7 @@ set_option doc.verso.suggestions false
 This file contains proofs that `RootPairing.GeckConstruction.lieAlgebra` contains `sl₂` triples
 satisfying relations associated to the Cartan matrix of the input root system.
 
-## Main definitions:
+## Main definitions
 
 * `RootPairing.GeckConstruction.isSl2Triple`: a distinguished family of `sl₂` triples contained in
   the Geck construction.

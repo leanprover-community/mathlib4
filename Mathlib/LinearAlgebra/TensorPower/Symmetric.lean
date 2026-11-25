@@ -21,7 +21,7 @@ by a permutation of `ι`. We denote this space by `Sym[R] ι M`, and the canonic
 from `ι → M` to `Sym[R] ι M` by `⨂ₛ[R] i, f i`. We also reserve the notation `Sym[R]^n M` for the
 `n`th symmetric tensor power of `M`, which is the symmetric tensor power indexed by `Fin n`.
 
-## Main definitions:
+## Main definitions
 
 * `SymmetricPower.module`: the symmetric tensor power is a module over `R`.
 

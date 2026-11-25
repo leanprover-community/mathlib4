@@ -28,7 +28,6 @@ Results about squarefree natural numbers are proved in `Data.Nat.Squarefree`.
 
 ## Main Results
 
-
 * `multiplicity.squarefree_iff_emultiplicity_le_one`: `x` is `Squarefree` iff for every `y`, either
   `emultiplicity y x ≤ 1` or `IsUnit y`.
 * `UniqueFactorizationMonoid.squarefree_iff_nodup_factors`: A nonzero element `x` of a unique

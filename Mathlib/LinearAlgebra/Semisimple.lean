@@ -27,7 +27,7 @@ conditions are equivalent:
 A linear endomorphism `f` satisfying these equivalent conditions is known as a _semisimple_
 endomorphism. We provide basic definitions and results about such endomorphisms in this file.
 
-## Main definitions / results:
+## Main definitions / results
 
 * `Module.End.IsSemisimple`: the definition that a linear endomorphism is semisimple
 * `Module.End.isSemisimple_iff`: the characterisation of semisimplicity in terms of invariant

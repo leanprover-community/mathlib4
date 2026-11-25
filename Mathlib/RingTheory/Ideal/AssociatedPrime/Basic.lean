@@ -16,12 +16,13 @@ import Mathlib.RingTheory.Ideal.MinimalPrime.Colon
 
 We provide the definition and related lemmas about associated primes of modules.
 
-## Main definition
+## Main definitions
+
 - `IsAssociatedPrime`: `IsAssociatedPrime I M` if the prime ideal `I` is the
   radical of the annihilator of some `x : M`.
 - `associatedPrimes`: The set of associated primes of a module.
 
-## Main results
+## Main statements
 
 - `exists_le_isAssociatedPrime_of_isNoetherianRing`: In a Noetherian ring, any `ann(x)` is
   contained in an associated prime for `x ≠ 0`.

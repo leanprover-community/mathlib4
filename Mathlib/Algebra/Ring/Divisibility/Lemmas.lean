@@ -15,7 +15,7 @@ set_option doc.verso.suggestions false
 /-!
 # Lemmas about divisibility in rings
 
-## Main results:
+## Main results
 
 * `dvd_smul_of_dvd`: stating that `x ∣ y → x ∣ m • y` for any scalar `m`.
 * `Commute.pow_dvd_add_pow_of_pow_eq_zero_right`: stating that if `y` is nilpotent then

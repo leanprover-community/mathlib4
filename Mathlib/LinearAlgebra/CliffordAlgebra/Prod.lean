@@ -18,7 +18,7 @@ set_option doc.verso.suggestions false
 We show that the Clifford algebra of a direct sum is the graded tensor product of the Clifford
 algebras, as `CliffordAlgebra.equivProd`.
 
-## Main definitions:
+## Main definitions
 
 * `CliffordAlgebra.equivProd : CliffordAlgebra (Q₁.prod Q₂) ≃ₐ[R] (evenOdd Q₁ ᵍ⊗[R] evenOdd Q₂)`
 

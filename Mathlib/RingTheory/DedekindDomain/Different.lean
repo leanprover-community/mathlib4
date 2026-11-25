@@ -19,7 +19,7 @@ set_option doc.verso.suggestions false
 /-!
 # The different ideal
 
-## Main definition
+## Main definitions
 
 * `Submodule.traceDual`: The dual `L`-sub `B`-module under the trace form.
 * `FractionalIdeal.dual`: The dual fractional ideal under the trace form.

@@ -17,7 +17,7 @@ set_option doc.verso.suggestions false
 Given a trivialisation of the top exterior power, the wedge pairing in complementary degrees
 is a scalar-valued bilinear map. We construct this here and prove that it is a perfect pairing.
 
-## Main definitions / results:
+## Main definitions and statements
 
 * `exteriorPower.wedge`: the bilinear map `∧^k × ∧^l → ∧^(k + l)`
 * `exteriorPower.wedgePairing`: the bilinear map `∧^k × ∧^l → R` when `k + l` = top degree

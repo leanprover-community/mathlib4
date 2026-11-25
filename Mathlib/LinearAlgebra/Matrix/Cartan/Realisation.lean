@@ -30,7 +30,7 @@ propositions are equivalent:
 The definition `RootPairing` formalises item 1 above. Here we introduce `CartanMatrix.Realisation`
 to formalise item 2.
 
-## Main definitions / results:
+## Main definitions and statements
 
 * `CartanMatrix.Realisation`: the definition of a realisation of a Cartan matrix.
 * `CartanMatrix.Realisation.toRootPairing`: the root pairing defined by a realisation of a Cartan

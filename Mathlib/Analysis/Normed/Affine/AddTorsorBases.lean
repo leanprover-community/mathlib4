@@ -17,7 +17,7 @@ set_option doc.verso.suggestions false
 
 This file contains results about bases in normed affine spaces.
 
-## Main definitions:
+## Main definitions
 
 * `continuous_barycentric_coord`
 * `isOpenMap_barycentric_coord`

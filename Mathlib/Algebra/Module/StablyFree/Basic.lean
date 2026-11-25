@@ -16,7 +16,7 @@ set_option doc.verso.suggestions false
 /-!
 # Stably free modules
 
-## Main definition
+## Main definitions
 
 * `IsStablyFree`: A module `M` over a ring `R` is called stably free if there exists a finite free
   `R`-module `N` such that `M ⊕ N` is free.

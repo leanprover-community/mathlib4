@@ -27,7 +27,7 @@ unitary).
 
 ## References
 
-* [Kerodon, section 2.2.2.4](https://kerodon.net/tag/008G)
+- [Kerodon, section 2.2.2.4](https://kerodon.net/tag/008G)
 
 ## TODOs
 

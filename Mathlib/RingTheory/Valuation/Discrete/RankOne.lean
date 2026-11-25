@@ -15,7 +15,7 @@ set_option doc.verso.suggestions false
 /-!
 # Discrete valuations have rank one
 
-## Main Definitions and Results
+## Main definitions and results
 
 * `Valuation.IsRankOneDiscrete.valueGroup₀_equiv_withZeroMulInt` : the order-preserving isomorphism
   between the `ValueGroup₀` of a discrete valuation and `ℤᵐ⁰`.

@@ -29,7 +29,6 @@ Results about localizations of submodules and quotient modules are provided in t
 
 ## TODO
 
-
 * Statements regarding the exactness of localization.
 -/
 

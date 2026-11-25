@@ -18,7 +18,7 @@ set_option doc.verso.suggestions false
 
 We construct the subscheme associated to an ideal sheaf.
 
-## Main definition
+## Main definitions
 
 * `AlgebraicGeometry.Scheme.IdealSheafData.subscheme`: The subscheme associated to an ideal sheaf.
 * `AlgebraicGeometry.Scheme.IdealSheafData.subschemeι`: The inclusion from the subscheme.

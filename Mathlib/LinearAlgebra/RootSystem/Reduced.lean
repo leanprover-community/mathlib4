@@ -15,7 +15,7 @@ set_option doc.verso.suggestions false
 
 This file contains basic definitions and results related to reduced root pairings.
 
-## Main definitions:
+## Main definitions
 
 * `RootPairing.IsReduced`: A root pairing is said to be reduced if two linearly dependent roots are
   always related by a sign.

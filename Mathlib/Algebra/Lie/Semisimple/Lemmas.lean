@@ -16,7 +16,7 @@ set_option doc.verso.suggestions false
 
 This file is a home for lemmas about semisimple and reductive Lie algebras.
 
-## Main definitions / results:
+## Main definitions / results
 
 * `LieAlgebra.hasCentralRadical_and_of_isIrreducible_of_isFaithful`: a finite-dimensional Lie
   algebra with an irreducible faithful finite-dimensional representation is reductive.

@@ -16,7 +16,7 @@ set_option doc.verso.suggestions false
 /-!
 # Scheme-theoretic fiber
 
-## Main result
+## Main results
 
 * `AlgebraicGeometry.Scheme.Hom.fiber`: `f.fiber y` is the scheme-theoretic fiber of `f` at `y`.
 * `AlgebraicGeometry.Scheme.Hom.fiberHomeo`: `f.fiber y` is homeomorphic to `f ⁻¹' {y}`.
