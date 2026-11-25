@@ -201,6 +201,15 @@ Analogue of `IntervalIntegrable.abs`: If a real-valued function `f` is circle in
 theorem abs {f : ℂ → ℝ} (hf : CircleIntegrable f c R) :
     CircleIntegrable |f| c R := IntervalIntegrable.abs hf
 
+/--
+If a real-valued function `f` is circle integrable, then so is `f`, seen as a complex-valued
+function. Analogue of `MeasureTheory.Integrable.ofReal`.
+-/
+@[fun_prop]
+theorem ofReal {f : ℂ → ℝ} {c : ℂ} {R : ℝ} (hf : CircleIntegrable f c R) :
+    CircleIntegrable (fun z ↦ (f z : ℂ)) c R :=
+  ⟨hf.1.ofReal, hf.2.ofReal⟩
+
 @[to_fun (attr := fun_prop)]
 theorem add (hf : CircleIntegrable f c R) (hg : CircleIntegrable g c R) :
     CircleIntegrable (f + g) c R :=

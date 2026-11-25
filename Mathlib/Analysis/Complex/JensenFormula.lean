@@ -10,6 +10,8 @@ public import Mathlib.Analysis.Complex.Harmonic.Poisson
 public import Mathlib.Analysis.Normed.Module.Connected
 public import Mathlib.Analysis.SpecialFunctions.Integrals.PosLog
 
+import Mathlib.Analysis.Complex.AbsMax
+
 /-!
 # Jensen's Formula of Complex Analysis
 
@@ -439,6 +441,95 @@ theorem MeromorphicOn.log_norm_meromorphicTrailingCoeffAt (h₁w : w ∈ ball c 
   · rwa [← meromorphicOn_closedBall_fun_comp_sub_const_iff_meromorphicOn_closedBall (c := c),
       ← hfg]
 
+/--
+**Poisson integral formula** for `log ‖f ·‖`: if `f` is meromorphic on the closed ball, and analytic
+without zeros on the open ball, then the Poisson integral of `log ‖f ·‖` at a point `w` of the open
+ball equals `log ‖f w‖`. In contrast to
+`InnerProductSpace.HarmonicContOnCl.circleAverage_poissonKernel_smul`, the function `f` may have
+zeros and poles on the boundary circle, where `log ‖f ·‖` is not continuous.
+
+This is the Poisson–Jensen formula `MeromorphicOn.log_norm_meromorphicTrailingCoeffAt` in the
+special case where the divisor of `f` on the open ball is trivial. It generalizes
+`circleAverage_poissonKernel_smul_log` from `f = (· - ρ)` to arbitrary `f`.
+-/
+theorem MeromorphicOn.circleAverage_poissonKernel_smul_log_norm_of_ne_zero
+    (h₁f : MeromorphicOn f (closedBall c R)) (h₂f : AnalyticOnNhd ℂ f (ball c R))
+    (h₃f : ∀ z ∈ ball c R, f z ≠ 0) (hw : w ∈ ball c R) :
+    circleAverage (poissonKernel c w • (Real.log ‖f ·‖)) c R = Real.log ‖f w‖ := by
+  have h₄f {z : ℂ} (hz : z ∈ ball c R) : meromorphicOrderAt f z = 0 :=
+    (h₂f z hz).meromorphicNFAt.meromorphicOrderAt_eq_zero_iff.2 (h₃f z hz)
+  have h₅f : divisor f (ball c R) = 0 := by
+    ext z
+    by_cases hz : z ∈ ball c R <;> simp [h₂f.meromorphicOn, hz, h₄f]
+  simpa [h₅f, (h₂f w hw).meromorphicTrailingCoeffAt_of_ne_zero (h₃f w hw)] using
+    (log_norm_meromorphicTrailingCoeffAt hw (h₄f hw) h₁f).symm
+
+-- Auxiliary lemma for `MeromorphicOn.logDeriv_eq_circleAverage`. The differentiated Poisson formula
+-- in the special case where the ball is centred at the origin.
+private lemma MeromorphicOn.logDeriv_eq_circleAverage₀
+    (h₁f : MeromorphicOn f (closedBall 0 R)) (h₂f : AnalyticOnNhd ℂ f (ball 0 R))
+    (h₃f : ∀ z ∈ ball 0 R, f z ≠ 0) (hw : w ∈ ball 0 R) :
+    logDeriv f w
+      = circleAverage (fun ζ ↦ derivHerglotzRieszKernel 0 w ζ • (Real.log ‖f ζ‖ : ℂ)) 0 R := by
+  have hball {z : ℂ} (hz : z ∈ ball 0 R) : z ∉ sphere 0 |R| := by
+    grind [mem_sphere, mem_ball, le_abs_self R]
+  have hlog : CircleIntegrable (Real.log ‖f ·‖) 0 R :=
+    circleIntegrable_log_norm (h₁f.mono_set
+      (by simpa [abs_of_pos (pos_of_mem_ball hw)] using sphere_subset_closedBall))
+  -- The Herglotz–Riesz integral `F` of `log ‖f ·‖` is holomorphic in the ball. By Poisson's
+  -- formula, its real part equals `log ‖f ·‖` there, so that `exp ∘ F` and `f` have the same norm.
+  let F := fun z ↦ circleAverage (fun ζ ↦ herglotzRieszKernel 0 z ζ • (Real.log ‖f ζ‖ : ℂ)) 0 R
+  have hF : ∀ᶠ z in 𝓝 w, ‖f z‖ = ‖Complex.exp (F z)‖ := by
+    filter_upwards [isOpen_ball.mem_nhds hw] with z hz
+    rw [Complex.norm_exp, re_circleAverage_herglotzRieszKernel_smul hlog (hball hz),
+      ← poissonKernel_eq_re_herglotzRieszKernel,
+      h₁f.circleAverage_poissonKernel_smul_log_norm_of_ne_zero h₂f h₃f hz,
+      Real.exp_log (norm_pos_iff.2 (h₃f z hz))]
+  -- Hence, `f` and `exp ∘ F` have the same logarithmic derivative, namely the derivative of `F`.
+  rw [(h₂f w hw).logDeriv_eq_of_eventually_norm_eq
+      (analyticOnNhd_circleAverage_herglotzRieszKernel_smul hlog.ofReal w (hball hw)).cexp' hF,
+    logDeriv_apply,
+    (hasDerivAt_circleAverage_herglotzRieszKernel_smul hlog.ofReal (hball hw)).cexp.deriv,
+    mul_div_cancel_left₀ _ (Complex.exp_ne_zero _)]
+  simp [derivHerglotzRieszKernel_def]
+
+/--
+**Differentiated Poisson formula**: if `f` is meromorphic on the closed ball, and analytic without
+zeros on the open ball, then the logarithmic derivative of `f` at a point `w` of the open ball is
+the circle average of `log ‖f ·‖` against the derivative of the Herglotz–Riesz kernel. The function
+`f` may have zeros and poles on the boundary circle.
+
+This is the derivative of the Poisson integral formula
+`MeromorphicOn.circleAverage_poissonKernel_smul_log_norm_of_ne_zero` with respect to `w`.
+-/
+theorem MeromorphicOn.logDeriv_eq_circleAverage
+    (h₁f : MeromorphicOn f (closedBall c R)) (h₂f : AnalyticOnNhd ℂ f (ball c R))
+    (h₃f : ∀ z ∈ ball c R, f z ≠ 0) (hw : w ∈ ball c R) :
+    logDeriv f w
+      = circleAverage (fun ζ ↦ derivHerglotzRieszKernel c w ζ • (Real.log ‖f ζ‖ : ℂ)) c R := by
+  -- Reduce to the centred case by translating `f` to `g z = f (z + c)`.
+  have hc {z : ℂ} (hz : z ∈ ball 0 R) : z + c ∈ ball c R := by simpa using hz
+  have h₁g : MeromorphicOn (fun z ↦ f (z + c)) (closedBall 0 R) := by
+    simpa [meromorphicOn_fun_comp_add_const_iff_meromorphicOn] using h₁f
+  have key := h₁g.logDeriv_eq_circleAverage₀ (h₂f.comp (by fun_prop) fun _ ↦ hc)
+    (fun z hz ↦ h₃f _ (hc hz)) (w := w - c) (by simpa [dist_eq_norm] using hw)
+  rw [← circleAverage_map_add_const (c := c)]
+  simpa [logDeriv_apply, deriv_comp_add_const, derivHerglotzRieszKernel_add_const] using key
+
+/--
+The differentiated Poisson formula for the function `· - ρ`, where `ρ` is a point of the boundary
+circle: the circle average of `log ‖· - ρ‖` against the derivative of the Herglotz–Riesz kernel
+equals `(w - ρ)⁻¹`, the logarithmic derivative of `· - ρ` at `w`.
+
+This is the derivative of `circleAverage_poissonKernel_smul_log` with respect to `w`.
+-/
+theorem circleAverage_derivHerglotzRieszKernel_smul_log {ρ : ℂ} (hρ : ρ ∈ sphere c R)
+    (hw : w ∈ ball c R) :
+    circleAverage (fun ζ ↦ derivHerglotzRieszKernel c w ζ • (Real.log ‖ζ - ρ‖ : ℂ)) c R
+      = (w - ρ)⁻¹ := by
+  rw [← logDeriv_eq_circleAverage (f := (· - ρ)) (by fun_prop) (by fun_prop) (fun z hz ↦ ?_) hw]
+  · simp [logDeriv_apply]
+  · grind [mem_sphere, mem_ball, sub_ne_zero]
 
 /-!
 ## Jensen's Formula

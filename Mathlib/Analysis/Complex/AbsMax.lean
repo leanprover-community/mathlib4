@@ -369,6 +369,28 @@ theorem eventually_eq_or_eq_zero_of_isLocalMin_norm {f : E → ℂ} {c : E}
   have h4 : ∀ᶠ z in 𝓝 c, DifferentiableAt ℂ f⁻¹ z := by filter_upwards [hf, h1] with z h using h.inv
   filter_upwards [eventually_eq_of_isLocalMax_norm h4 h3] with z using inv_inj.mp
 
+/--
+If two functions are holomorphic near `x` and have the same norm there, then their logarithmic
+derivatives at `x` agree.
+-/
+theorem _root_.AnalyticAt.logDeriv_eq_of_eventually_norm_eq {f g : ℂ → ℂ} {x : ℂ}
+    (hf : AnalyticAt ℂ f x) (hg : AnalyticAt ℂ g x) (h : ∀ᶠ z in 𝓝 x, ‖f z‖ = ‖g z‖) :
+    logDeriv f x = logDeriv g x := by
+  have hx : ‖f x‖ = ‖g x‖ := h.self_of_nhds
+  obtain hgx | hgx := eq_or_ne (g x) 0
+  · simp_all [logDeriv_apply]
+  have hfx : f x ≠ 0 := by rwa [← norm_ne_zero_iff, hx, norm_ne_zero_iff]
+  -- The quotient `f / g` is holomorphic near `x` and has constant norm, so it is locally constant.
+  have h₁ : (fun _ ↦ 1) =ᶠ[𝓝 x] norm ∘ (f / g) := by
+    filter_upwards [h, hg.continuousAt.eventually_ne hgx] with z h₁z h₂z
+    simp [h₁z, h₂z]
+  have h₂ := Complex.eventually_eq_of_isLocalMax_norm
+    ((hf.div hg hgx).eventually_analyticAt.mono fun _ h ↦ h.differentiableAt)
+    (isLocalMax_const.congr h₁)
+  rw [← sub_eq_zero, ← logDeriv_div x hfx hgx hf.differentiableAt hg.differentiableAt,
+    (logDeriv_congr_nhds h₂).self_of_nhds]
+  simp
+
 end StrictConvex
 
 /-!
