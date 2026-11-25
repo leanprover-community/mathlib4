@@ -115,6 +115,7 @@ theorem analyticOnNhd_circleMap (c : ℂ) (R : ℝ) {u : Set ℝ} :
   apply analyticAt_cexp.restrictScalars.comp ((ofRealCLM.analyticAt z).mul (by fun_prop))
 
 /-- The circleMap is continuously differentiable. -/
+@[fun_prop]
 theorem contDiff_circleMap (c : ℂ) (R : ℝ) {n : WithTop ℕ∞} :
     ContDiff ℝ n (circleMap c R) :=
   (analyticOnNhd_circleMap c R).contDiff
