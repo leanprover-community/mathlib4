@@ -4992,6 +4992,7 @@ public import Mathlib.GroupTheory.Coxeter.Deletion
 public import Mathlib.GroupTheory.Coxeter.Inversion
 public import Mathlib.GroupTheory.Coxeter.Length
 public import Mathlib.GroupTheory.Coxeter.Matrix
+public import Mathlib.GroupTheory.Coxeter.Presentation
 public import Mathlib.GroupTheory.DedekindFinite
 public import Mathlib.GroupTheory.Descent
 public import Mathlib.GroupTheory.Divisible
