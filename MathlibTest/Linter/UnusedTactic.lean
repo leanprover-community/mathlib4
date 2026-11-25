@@ -1,5 +1,6 @@
 module
 import Batteries.Tactic.PermuteGoals
+import Batteries.Tactic.SeqFocus
 import Mathlib.Tactic.Linter.UnusedTactic
 import Mathlib.Tactic.AdaptationNote
 
@@ -333,3 +334,15 @@ Note: This linter can be disabled with `set_option linter.unusedTactic false`
 #guard_msgs in doNotEmitWarning congr
 
 end ignore_tactic_kind
+
+
+-- Lint subtactics in `t <;> [t1, ...]`, ignore padding `skip`s
+/--
+warning: Unused tactic linter: `all_goals` can be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+-/
+#guard_msgs in
+example : True ∧ True := by
+  constructor <;> [skip; all_goals trivial]
+  trivial

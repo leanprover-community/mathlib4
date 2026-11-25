@@ -39,13 +39,10 @@ Possible reason for whitelisting are
   If there are no goals, then these could in principle not be redundant,
   but we lint against such cases as well.
   We also warn if `any_goals` can be replaced with `all_goals`, or with `on_goal n =>`.
+- `t <;> [t1, t2, ...]`: each subtactic is linted individually.
+  A padding `skip` (to match the number of goals) is never reported as unused.
 
 ## Notable exclusions
-
-* The linter does not enter a "sequence tactic": upon finding `tac <;> [tac1, tac2, ...]`
-  the linter assumes that the tactic is doing something and does not recurse into each
-  `tac1, tac2, ...`.
-  This is just for lack of an implementation: it may not be hard to do this.
 
 * The tactic does not check the discharger for `linear_combination`,
   but checks `linear_combination` itself.
@@ -203,7 +200,6 @@ initialize ignoreTacticKindsRef : IO.Ref NameHashSet ←
     ``Lean.Parser.Command.mixfix,
     ``Lean.Parser.Tactic.discharger,
     ``Lean.Parser.Command.registerTryTactic,
-    `Batteries.Tactic.seq_focus,
     `Mathlib.Tactic.Hint.registerHintStx,
     `Mathlib.Tactic.LinearCombination.linearCombination,
     `Aesop.Frontend.Parser.addRules,
@@ -315,6 +311,11 @@ def eraseUsedTactics (exceptions : Std.HashSet SyntaxNodeKind)
         -- `swap_var` is used if it changes the username of a free variable.
         if getNames i.mctxBefore == getNames i.mctxAfter then
           return withMsg m!"`swap_var` does not change the variable names in the goal"
+      | `Batteries.Tactic.seq_focus =>
+        -- In `t <;> (t1 ; t2 ; ...)`, lint subtactics, but ignore padding `skip`s
+        let inBrackets (r': Syntax.Range) : Bool := r.start <= r'.start && r'.stop <= r.stop
+        return (ranges.erase r).filter fun r' ⟨stx', _⟩ =>
+          !(inBrackets r' && stx'.getKind == ``Lean.Parser.Tactic.skip)
       | _ =>
         -- The tactic is unused if the goals stay the same.
         if i.goalsAfter == i.goalsBefore then
