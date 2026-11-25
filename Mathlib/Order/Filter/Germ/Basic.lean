@@ -85,6 +85,7 @@ namespace Product
 
 variable {ε ζ η : α → Type*} {f g h : (x : α) → ε x}
 
+/-- The germ corresponding to a global function. -/
 @[coe]
 def ofFun (f : (a : α) → ε a) : l.Product ε :=
   Quotient.mk (productSetoid l ε) f
