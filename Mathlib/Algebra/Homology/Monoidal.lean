@@ -321,6 +321,9 @@ noncomputable def Monoidal.inducingFunctorData :
 noncomputable instance monoidalCategory : MonoidalCategory (HomologicalComplex C c) :=
   Monoidal.induced _ (Monoidal.inducingFunctorData C c)
 
+noncomputable instance : (forget C c).Monoidal :=
+  Monoidal.fromInducedMonoidal _ (Monoidal.inducingFunctorData C c)
+
 noncomputable example {D : Type*} [Category* D] [Preadditive D] [MonoidalCategory D]
     [HasZeroObject D] [HasFiniteCoproducts D] [((curriedTensor D).Additive)]
     [∀ (X : D), (((curriedTensor D).obj X).Additive)]

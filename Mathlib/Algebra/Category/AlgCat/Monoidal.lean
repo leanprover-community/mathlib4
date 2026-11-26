@@ -95,18 +95,23 @@ theorem hom_inv_associator {M N K : AlgCat.{u} R} :
     (α_ M N K).inv.hom = (Algebra.TensorProduct.assoc R R R M N K).symm.toAlgHom :=
   rfl
 
+/-- The data needed to induce a `MonoidalCategory` structure via
+`AlgCat.instMonoidalCategoryStruct` and the forgetful functor to modules. -/
+noncomputable abbrev MonoidalCategory.inducingFunctorData :
+    Monoidal.InducingFunctorData (forget₂ (AlgCat.{u} R) (ModuleCat R)) where
+  μIso := fun _ _ => Iso.refl _
+  εIso := Iso.refl _
+  associator_eq := fun _ _ _ =>
+    ModuleCat.hom_ext <| TensorProduct.ext_threefold (fun _ _ _ => rfl)
+  leftUnitor_eq := fun _ => ModuleCat.hom_ext <| TensorProduct.ext' (fun _ _ => rfl)
+  rightUnitor_eq := fun _ => ModuleCat.hom_ext <| TensorProduct.ext' (fun _ _ => rfl)
+
 noncomputable instance instMonoidalCategory : MonoidalCategory (AlgCat.{u} R) :=
-  Monoidal.induced
-    (forget₂ (AlgCat R) (ModuleCat R))
-    { μIso := fun _ _ => Iso.refl _
-      εIso := Iso.refl _
-      associator_eq := fun _ _ _ =>
-        ModuleCat.hom_ext <| TensorProduct.ext_threefold (fun _ _ _ => rfl)
-      leftUnitor_eq := fun _ => ModuleCat.hom_ext <| TensorProduct.ext' (fun _ _ => rfl)
-      rightUnitor_eq := fun _ => ModuleCat.hom_ext <| TensorProduct.ext' (fun _ _ => rfl) }
+  Monoidal.induced _ MonoidalCategory.inducingFunctorData
 
 /-- `forget₂ (AlgCat R) (ModuleCat R)` as a monoidal functor. -/
-example : (forget₂ (AlgCat R) (ModuleCat R)).Monoidal := inferInstance
+noncomputable instance : (forget₂ (AlgCat.{u} R) (ModuleCat R)).Monoidal :=
+  Monoidal.fromInducedMonoidal _ MonoidalCategory.inducingFunctorData
 
 end
 

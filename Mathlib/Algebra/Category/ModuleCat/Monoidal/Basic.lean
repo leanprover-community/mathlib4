@@ -310,13 +310,21 @@ instance MonoidalCategory.instMonoidalCategoryStruct :
   leftUnitor M := (TensorProduct.lid R M).toModuleIso
   rightUnitor M := (TensorProduct.rid R M).toModuleIso
 
+/-- The data needed to induce a `MonoidalCategory` structure via
+`ModuleCat.MonoidalCategory.instMonoidalCategoryStruct` and the equivalence with `SemimoduleCat`. -/
+def MonoidalCategory.inducingFunctorData :
+    Monoidal.InducingFunctorData (equivalenceSemimoduleCat (R := R)).functor where
+  μIso _ _ := .refl _
+  εIso := .refl _
+  associator_eq _ _ _ := by ext1; exact TensorProduct.ext (TensorProduct.ext rfl)
+  leftUnitor_eq _ := by ext1; exact TensorProduct.ext rfl
+  rightUnitor_eq _ := by ext1; exact TensorProduct.ext rfl
+
 instance monoidalCategory : MonoidalCategory (ModuleCat.{u} R) :=
-  Monoidal.induced equivalenceSemimoduleCat.functor
-  { μIso _ _ := .refl _
-    εIso := .refl _
-    associator_eq _ _ _ := by ext1; exact TensorProduct.ext (TensorProduct.ext rfl)
-    leftUnitor_eq _ := by ext1; exact TensorProduct.ext rfl
-    rightUnitor_eq _ := by ext1; exact TensorProduct.ext rfl }
+  Monoidal.induced _ MonoidalCategory.inducingFunctorData
+
+instance : (equivalenceSemimoduleCat (R := R)).functor.Monoidal :=
+  Monoidal.fromInducedMonoidal _ MonoidalCategory.inducingFunctorData
 
 open MonoidalCategory
 

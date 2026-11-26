@@ -63,6 +63,7 @@ noncomputable instance instMonoidalCategory : MonoidalCategory (HopfAlgCat R) :=
   Monoidal.induced (forget₂ _ (BialgCat R)) (MonoidalCategory.inducingFunctorData R)
 
 /-- `forget₂ (HopfAlgCat R) (BialgCat R)` is a monoidal functor. -/
-noncomputable instance : (forget₂ (HopfAlgCat R) (BialgCat R)).Monoidal where
+noncomputable instance : (forget₂ (HopfAlgCat R) (BialgCat R)).Monoidal :=
+  Monoidal.fromInducedMonoidal _ (MonoidalCategory.inducingFunctorData R)
 
 end HopfAlgCat

@@ -83,10 +83,18 @@ instance [P.IsMonoidalStable] : MonoidalCategoryStruct (WideSubcategory P) where
     isoMk (ρ_ _) (P.rightUnitor_hom_mem _) (P.rightUnitor_inv_mem _)
   tensorHom f g := ⟨f.hom ⊗ₘ g.hom, P.tensorHom_mem _ _ f.property g.property⟩
 
+/-- The data needed to induce a `MonoidalCategory` structure on `WideSubcategory P`
+via the inclusion functor. -/
+def inducingFunctorData [P.IsMonoidalStable] :
+    Monoidal.InducingFunctorData (wideSubcategoryInclusion P) where
+  εIso := Iso.refl _
+  μIso _ _ := Iso.refl _
+
 instance [P.IsMonoidalStable] : MonoidalCategory (WideSubcategory P) :=
-  Monoidal.induced (wideSubcategoryInclusion P)
-    { εIso := Iso.refl _
-      μIso _ _ := Iso.refl _ }
+  Monoidal.induced _ (inducingFunctorData P)
+
+instance [P.IsMonoidalStable] : (wideSubcategoryInclusion P).Monoidal :=
+  Monoidal.fromInducedMonoidal _ (inducingFunctorData P)
 
 instance [BraidedCategory C] [P.IsStableUnderBraiding] :
     BraidedCategory (WideSubcategory P) where
