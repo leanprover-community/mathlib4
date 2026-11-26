@@ -30,7 +30,6 @@ set_option linter.style.header true in
 set_option doc.verso true in
 def foo : Nat := 37
 
-
 -- Make sure Verso is indeed enabled when we do `set_option docs.verso true`.
 
 /--
