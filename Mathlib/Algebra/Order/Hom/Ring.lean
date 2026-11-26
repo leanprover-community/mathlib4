@@ -360,16 +360,17 @@ theorem coe_mk (e : α ≃+* β) (h) : ⇑(⟨e, h⟩ : α ≃+*o β) = e :=
 theorem mk_coe (e : α ≃+*o β) (h) : (⟨e, h⟩ : α ≃+*o β) = e :=
   ext fun _ => rfl
 
-@[simp]
-theorem toOrderIso_eq_coe (f : α ≃+*o β) : f.toOrderIso = f :=
+theorem toOrderIso_eq_ofClass (f : α ≃+*o β) : f.toOrderIso = .ofClass f :=
   OrderIso.ext rfl
+
+@[deprecated (since := "2026-11-26")] alias toOrderIso_eq_coe := toOrderIso_eq_ofClass
 
 @[simp]
 theorem coe_toRingEquiv (f : α ≃+*o β) : ⇑(f : α ≃+* β) = f :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_toOrderIso (f : α ≃+*o β) : DFunLike.coe (f : α ≃o β) = f :=
+theorem coe_toOrderIso (f : α ≃+*o β) : DFunLike.coe f.toOrderIso = f :=
   rfl
 
 variable (α)
@@ -393,8 +394,10 @@ theorem toRingEquiv_refl : (OrderRingIso.refl α : α ≃+* α) = RingEquiv.refl
 @[deprecated (since := "2026-05-05")] alias coe_ringEquiv_refl := toRingEquiv_refl
 
 @[simp]
-theorem coe_orderIso_refl : (OrderRingIso.refl α : α ≃o α) = OrderIso.refl α :=
+theorem toOrderIso_refl : (OrderRingIso.refl α).toOrderIso = OrderIso.refl α :=
   rfl
+
+@[deprecated (since := "2026-11-26")] alias coe_orderIso_refl := toOrderIso_refl
 
 variable {α}
 

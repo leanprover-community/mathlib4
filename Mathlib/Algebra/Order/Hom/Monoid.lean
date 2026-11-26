@@ -597,7 +597,7 @@ theorem coe_trans_mulEquiv (f : α ≃*o β) (g : β ≃*o γ) :
 
 @[to_additive]
 theorem coe_trans_orderIso (f : α ≃*o β) (g : β ≃*o γ) :
-    (f.trans g : α ≃o γ) = (f : α ≃o β).trans g :=
+    (f.trans g).toOrderIso = f.toOrderIso.trans g.toOrderIso :=
   rfl
 
 @[to_additive (attr := simp)]
@@ -627,9 +627,12 @@ theorem cancel_left {g : α ≃*o β} {f₁ f₂ : β ≃*o γ} (hg : Function.S
 theorem toMulEquiv_eq_coe (f : α ≃*o β) : f.toMulEquiv = f :=
   rfl
 
-@[to_additive (attr := simp)]
-theorem toOrderIso_eq_coe (f : α ≃*o β) : f.toOrderIso = f :=
+@[to_additive]
+theorem toOrderIso_eq_ofClass (f : α ≃*o β) : f.toOrderIso = .ofClass f :=
   rfl
+
+@[to_additive (attr := deprecated (since := "2026-11-26"))] alias toOrderIso_eq_coe :=
+  toOrderIso_eq_ofClass
 
 /-- The inverse of an isomorphism is an isomorphism. -/
 @[to_additive (attr := symm) /-- The inverse of an order isomorphism is an order isomorphism. -/]
