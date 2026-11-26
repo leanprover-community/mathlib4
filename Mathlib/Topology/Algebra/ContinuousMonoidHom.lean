@@ -117,7 +117,7 @@ def ofClass [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) : A →ₜ
 protected lemma coe_ofClass [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) :
     ⇑(ofClass f) = f := rfl
 
-@[to_additive (attr := deprecated (since := "2026-11-24"))] alias coe_coe :=
+@[to_additive (attr := deprecated (since := "2026-11-24"))] protected alias coe_coe :=
   ContinuousMonoidHom.coe_ofClass
 
 @[to_additive (attr := simp)]
