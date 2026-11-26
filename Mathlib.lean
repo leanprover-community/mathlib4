@@ -4870,6 +4870,7 @@ public import Mathlib.Geometry.Euclidean.Volume.Incenter
 public import Mathlib.Geometry.Euclidean.Volume.Measure
 public import Mathlib.Geometry.Euclidean.Volume.MeasureSimplex
 public import Mathlib.Geometry.Euclidean.Volume.Triangle
+public import Mathlib.Geometry.Group.Coxeter.BipartiteSpectrum
 public import Mathlib.Geometry.Group.Growth.LinearLowerBound
 public import Mathlib.Geometry.Group.Growth.QuotientInter
 public import Mathlib.Geometry.Group.WordMetric
