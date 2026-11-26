@@ -214,8 +214,8 @@ theorem tendstoInDistribution_inv_sqrt_smul_sum_sub
         simp [mul_add, Finset.sum_add_distrib, pow_two, Finset.sum_mul_sum, mul_left_comm,
           mul_assoc]
       _ = t ⬝ᵥ S *ᵥ t + ⟪t, P[X 0]⟫ ^ 2 := by
-        simp [h1, ← eval_integral_piLp (hX.integrable (by norm_num)).eval_piLp]
-        simp [dotProduct, Matrix.mulVec, Finset.mul_sum, PiLp.inner_apply, mul_comm, mul_left_comm]
+        simp [h1, ← eval_integral_piLp (hX.integrable (by norm_num)).eval_piLp,
+          dotProduct, Matrix.mulVec, Finset.mul_sum, PiLp.inner_apply, mul_comm, mul_left_comm]
   have hYVar : Var[fun ω ↦ ⟪t, X 0 ω⟫; P] = t ⬝ᵥ S *ᵥ t := by
     simp [variance_eq_sub (hX.const_inner t), Pi.pow_apply, hY2, hYmean]
   simpa [hYmean, real_inner_comm, real_inner_smul_right, inner_sum, inner_sub_left, inner_sub_right]
