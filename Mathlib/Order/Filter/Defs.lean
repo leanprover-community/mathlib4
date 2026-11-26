@@ -6,8 +6,9 @@ Authors: Johannes Hölzl, Jeremy Avigad
 module
 
 public import Mathlib.Order.BooleanAlgebra.Set
-public import Mathlib.Order.Bounds.Defs
 public import Mathlib.Order.SetNotation
+
+import Mathlib.Order.Bounds.Defs
 
 /-!
 # Definitions about filters
@@ -48,7 +49,7 @@ abstract two related kinds of ideas:
 * `f ≤ᶠ[l] g` : `∀ᶠ x in l, f x ≤ g x`;
 * `𝓟 s` : `Filter.Principal s`, localized in `Filter`.
 
-## Implementation Notes
+## Implementation notes
 
 Important note: Bourbaki requires that a filter on `X` cannot contain all sets of `X`,
 which we do *not* require.
@@ -273,7 +274,7 @@ class NeBot (f : Filter α) : Prop where
 
 @[push ←]
 theorem neBot_iff {f : Filter α} : NeBot f ↔ f ≠ ⊥ :=
-  ⟨fun h => h.1, fun h => ⟨h⟩⟩
+  ⟨fun h => h.ne', fun h => ⟨h⟩⟩
 
 /-- `f.Eventually p` or `∀ᶠ x in f, p x` mean that `{x | p x} ∈ f`. E.g., `∀ᶠ x in atTop, p x`
 means that `p` holds true for sufficiently large `x`. -/

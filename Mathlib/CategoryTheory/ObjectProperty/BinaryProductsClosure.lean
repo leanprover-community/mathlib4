@@ -8,12 +8,14 @@ module
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsClosure
 public import Mathlib.CategoryTheory.ObjectProperty.FiniteProducts
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Closure under binary products
 
 In this file, we introduce the closure of a property of objects under
 binary (co)products.
-
 -/
 
 public section

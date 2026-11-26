@@ -8,14 +8,17 @@ module
 public import Mathlib.Combinatorics.Graph.Basic
 public import Mathlib.Topology.CWComplex.Classical.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # 1-skeletons of CW complexes as graphs
 
 In this file we define the 1-skeleton of a CW complex as a graph.
 
 ## Main definitions
-* `CWComplex.OneSkeletonGraph`: the 1-skeleton of a CW complex as a graph.
 
+* `CWComplex.OneSkeletonGraph`: the 1-skeleton of a CW complex as a graph.
 -/
 
 public section

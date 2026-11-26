@@ -11,7 +11,6 @@ public import Mathlib.LinearAlgebra.Dimension.Constructions
 # Conditions for rank to be finite
 
 Also contains characterization for when rank equals zero or rank equals one.
-
 -/
 
 @[expose] public section
@@ -221,7 +220,7 @@ lemma natCast_le_rank_iff_finset [Nontrivial R] {n : ℕ} :
 lemma exists_finset_linearIndependent_of_le_finrank {n : ℕ} (hn : n ≤ finrank R M) :
     ∃ s : Finset M, s.card = n ∧ LinearIndependent R ((↑) : s → M) := by
   by_cases h : finrank R M = 0
-  · rw [le_zero_iff.mp (hn.trans_eq h)]
+  · rw [(hn.trans_eq h).eq_zero]
     exact ⟨∅, rfl, by convert! linearIndependent_empty R M using 2 <;> aesop⟩
   exact exists_finset_linearIndependent_of_le_rank
     ((Nat.cast_le.mpr hn).trans_eq (cast_toNat_of_lt_aleph0 (toNat_ne_zero.mp h).2))
@@ -299,7 +298,7 @@ theorem Module.exists_nontrivial_relation_of_finrank_lt_card {t : Finset M}
     (h : finrank R M < t.card) : ∃ f : M → R, ∑ e ∈ t, f e • e = 0 ∧ ∃ x ∈ t, f x ≠ 0 := by
   obtain ⟨g, sum, z, nonzero⟩ := Fintype.not_linearIndependent_iff.mp
     (mt LinearIndependent.finset_card_le_finrank h.not_ge)
-  refine ⟨Subtype.val.extend g 0, ?_, z, z.2, by rwa [Subtype.val_injective.extend_apply]⟩
+  refine ⟨Subtype.val.extend g 0, ?_, z, z.property, by rwa [Subtype.val_injective.extend_apply]⟩
   rw [← Finset.sum_finset_coe]; convert! sum; apply Subtype.val_injective.extend_apply
 
 /-- If a finset has cardinality larger than `finrank + 1`,

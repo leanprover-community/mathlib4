@@ -54,10 +54,10 @@ theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsCl
   -- are preimages of clopens from the factors in the limit.
   obtain ⟨S, hS, h⟩ := hB.open_eq_sUnion hU.2
   clear hB
-  let j : S → J := fun s => (hS s.2).choose
-  let V : ∀ s : S, Set (F.obj (j s)) := fun s => (hS s.2).choose_spec.choose
-  have hV : ∀ s : S, IsClopen (V s) ∧ s.1 = C.π.app (j s) ⁻¹' V s := fun s =>
-    (hS s.2).choose_spec.choose_spec
+  let j : S → J := fun s => (hS s.property).choose
+  let V : ∀ s : S, Set (F.obj (j s)) := fun s => (hS s.property).choose_spec.choose
+  have hV : ∀ s : S, IsClopen (V s) ∧ s.val = C.π.app (j s) ⁻¹' V s := fun s =>
+    (hS s.property).choose_spec.choose_spec
   -- Since `U` is also closed, hence compact, it is covered by finitely many of the
   -- clopens constructed in the previous step.
   have hUo : ∀ (i : ↑S), IsOpen ((fun s ↦ (C.π.app (j s)) ⁻¹' V s) i) := by
@@ -100,7 +100,7 @@ theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsCl
       simp_rw [W, Set.preimage_iUnion, Set.mem_iUnion] at hx
       obtain ⟨s, hs, hx⟩ := hx
       rw [h]
-      refine ⟨s.1, s.2, ?_⟩
+      refine ⟨s.val, s.property, ?_⟩
       rw [(hV s).2]
       rwa [dite_eq_left hs, ← Set.preimage_comp, ← CompHausLike.coe_comp, C.w] at hx
 

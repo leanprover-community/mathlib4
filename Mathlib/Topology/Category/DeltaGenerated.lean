@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Compactness.DeltaGeneratedSpace
 public import Mathlib.Topology.Convenient.Category
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Delta-generated topological spaces
 
@@ -18,11 +21,12 @@ This is a particular case of the construction in the file
 for all `n : ℕ`.
 
 ## TODO
+
 * `DeltaGenerated` is Cartesian closed (@joelriou).
 
 ## References
-* https://ncatlab.org/nlab/show/Delta-generated+topological+space
 
+* https://ncatlab.org/nlab/show/Delta-generated+topological+space
 -/
 
 @[expose] public section

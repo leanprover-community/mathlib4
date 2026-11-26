@@ -66,11 +66,9 @@ The characterization of cases with `z ∈ 𝒟` and `g • z ∈ 𝒟` follows T
 
 @[expose] public section
 
-open Complex hiding I
+open Complex Matrix.SpecialLinearGroup UpperHalfPlane ModularGroup Topology
 
 open Matrix hiding mul_smul zpow_neg_one
-
-open Matrix.SpecialLinearGroup UpperHalfPlane ModularGroup Topology
 
 noncomputable section
 
@@ -138,7 +136,7 @@ theorem tendsto_normSq_coprime_pair :
     suffices ((z : ℂ).im⁻¹ • g).comp f = LinearMap.id by exact LinearMap.ker_eq_bot_of_inverse this
     apply LinearMap.ext
     intro c
-    have hz : (z : ℂ).im ≠ 0 := z.2.ne'
+    have hz : (z : ℂ).im ≠ 0 := z.coe_im_pos.ne'
     rw [LinearMap.comp_apply, LinearMap.smul_apply, LinearMap.id_apply]
     ext i
     dsimp only [Pi.smul_apply, LinearMap.pi_apply, smul_eq_mul]
@@ -184,7 +182,6 @@ def lcRow0Extend {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
       rw [neg_sq]
       exact hcd.sq_add_sq_ne_zero, LinearEquiv.refl ℝ (Fin 2 → ℝ)]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The map `lcRow0` is proper, that is, preimages of cocompact sets are finite in
 `[[* , *], [c, d]]`. -/
 theorem tendsto_lcRow0 {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
@@ -210,23 +207,9 @@ theorem tendsto_lcRow0 {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
     (lcRow0Extend hcd).toContinuousLinearEquiv.toHomeomorph.isClosedEmbedding
   convert hf₂.tendsto_cocompact.comp (hf₁.comp Subtype.coe_injective.tendsto_cofinite) using 1
   ext ⟨g, rfl⟩ i j : 3
-  fin_cases i <;> [fin_cases j; skip]
-  -- the following are proved by `simp`, but it is replaced by `simp only` to avoid timeouts.
-  · simp only [Fin.isValue, Int.cast_one, map_apply_coe, RingHom.mapMatrix_apply,
-      Int.coe_castRingHom, lcRow0_apply, map_apply, Fin.zero_eta, Function.comp_apply,
-      of_apply, cons_val', cons_val_zero, empty_val', cons_val_fin_one, lcRow0Extend_apply,
-      LinearMap.GeneralLinearGroup.coeFn_generalLinearEquiv, GeneralLinearGroup.coe_toLin,
-      val_planeConformalMatrix, neg_neg, mulVecLin_apply, mulVec, dotProduct, Fin.sum_univ_two,
-      cons_val_one, mB, f₁]
-  · convert! congr((-$g.det_coe.symm : ℝ)) using 1
-    simp only [Fin.zero_eta, Function.comp_apply, lcRow0Extend_apply, cons_val_zero,
-      LinearMap.GeneralLinearGroup.coeFn_generalLinearEquiv, GeneralLinearGroup.coe_toLin,
-      mulVecLin_apply, mulVec, dotProduct, det_fin_two, f₁]
-    simp only [Fin.isValue, Fin.mk_one, val_planeConformalMatrix, neg_neg, of_apply, cons_val',
-      empty_val', cons_val_fin_one, cons_val_one, map_apply, Fin.sum_univ_two,
-      cons_val_zero, neg_mul, Int.cast_sub, Int.cast_mul, neg_sub]
-    ring
-  · rfl
+  refine .trans ?_ (lcRow0Extend_apply hcd (f₁ g) i j).symm
+  fin_cases i <;> fin_cases j <;> simp [mB, f₁, mulVec, dotProduct]
+  grind [congr(($((det_fin_two (g : Matrix _ _ ℤ)).symm.trans g.det_coe) : ℝ))]
 
 /-- This replaces `(g•z).re = a/c + *` in the standard theory with the following novel identity:
   `g • z = (a c + b d) / (c^2 + d^2) + (d z - c) / ((c^2 + d^2) (c z + d))`
@@ -265,7 +248,7 @@ theorem tendsto_abs_re_smul {p : Fin 2 → ℤ} (hp : IsCoprime (p 0) (p 1)) :
     ((g : SL(2, ℤ)) • z).re =
       lcRow0 p ↑(↑g : SL(2, ℝ)) / ((p 0 : ℝ) ^ 2 + (p 1 : ℝ) ^ 2) +
         Complex.re (((p 1 : ℂ) * z - p 0) / (((p 0 : ℂ) ^ 2 + (p 1 : ℂ) ^ 2) * (p 0 * z + p 1)))
-  exact mod_cast congr_arg Complex.re (smul_eq_lcRow0_add z hp g.2)
+  exact mod_cast congr_arg Complex.re (smul_eq_lcRow0_add z hp g.property)
 
 end TendstoLemmas
 
@@ -298,11 +281,11 @@ theorem exists_row_one_eq_and_min_re {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0
     let ⟨x, hx⟩ := bottom_row_surj hcd
     ⟨⟨x, hx.2⟩⟩
   obtain ⟨g, hg⟩ := Filter.Tendsto.exists_forall_le (tendsto_abs_re_smul z hcd)
-  refine ⟨g, g.2, ?_⟩
+  refine ⟨g, g.property, ?_⟩
   intro g1 hg1
   have : g1 ∈ (fun g : SL(2, ℤ) => g 1) ⁻¹' {cd} := by
     rw [Set.mem_preimage, Set.mem_singleton_iff]
-    exact Eq.trans hg1.symm (Set.mem_singleton_iff.mp (Set.mem_preimage.mp g.2))
+    exact Eq.trans hg1.symm (Set.mem_singleton_iff.mp (Set.mem_preimage.mp g.property))
   exact hg ⟨g1, this⟩
 
 theorem coe_T_zpow_smul_eq {n : ℤ} : (↑(T ^ n • z) : ℂ) = z + n := by
@@ -383,7 +366,7 @@ lemma fdo_subset_fd : 𝒟ᵒ ⊆ 𝒟 := fun _ ⟨hx, hx'⟩ ↦ ⟨hx.le, hx'.
 lemma ρ_mem_fd : ρ ∈ 𝒟 := by
   constructor <;> norm_num [ρ, ← pow_two, div_pow]
 
-lemma I_mem_fd : I ∈ 𝒟 := by
+lemma I_mem_fd : .I ∈ 𝒟 := by
   constructor <;> simp
 
 theorem abs_two_mul_re_lt_one_of_mem_fdo (h : z ∈ 𝒟ᵒ) : |2 * z.re| < 1 := by
@@ -653,11 +636,10 @@ private lemma case_c_one_d_neg_one (hz : z ∈ 𝒟) (hg : g • z ∈ 𝒟) (hg
   rw [← Int.cast_one, ← Int.cast_neg, Int.cast_le] at this
   grind
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma serreTheorem_im_eq (hz : z ∈ 𝒟) (hg : g • z ∈ 𝒟) : (g • z).im = z.im := by
   wlog hden : z.im ≤ (g • z).im
-  · rw [← this (g := g⁻¹) hg (by simpa using hz) (by simpa using le_of_not_ge hden)]
-    simp
+  · rw [← this (g := g⁻¹) hg (by rwa [inv_smul_smul]) (by simpa using le_of_not_ge hden),
+      inv_smul_smul]
   wlog hc : 0 ≤ g 1 0
   · -- TODO: `wlog` leaves junk copies of variables in scope
     simpa using @this (-g) z (-g) z hz (by simpa using hg)
@@ -675,19 +657,19 @@ private lemma serreTheorem_im_eq (hz : z ∈ 𝒟) (hg : g • z ∈ 𝒟) : (g 
     · rcases cases_c_one_d_zero hz hg hden hc hd with
         ⟨rfl, hnm⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩
       · simp [normSq_eq_norm_sq, denom, hnm]
-      · rw [show T⁻¹ * S = ⟨!![-1, -1; 1, 0], by simp⟩ by decide]
+      · rw [show T⁻¹ * S = .mk !![-1, -1; 1, 0] (by simp) by decide]
         norm_num [ρ, denom, ← pow_two, div_pow]
-      · rw [show T * S = ⟨!![1, -1; 1, 0], by simp⟩ by decide]
+      · rw [show T * S = .mk !![1, -1; 1, 0] (by simp) by decide]
         norm_num [ρ, denom, normSq, ← pow_two, div_pow]
     · rcases case_c_one_d_one hz hg hden hc hd with ⟨(rfl | rfl), rfl⟩
-      · rw [show S * T = ⟨!![0, -1; 1, 1], by simp⟩ by decide]
+      · rw [show S * T = .mk !![0, -1; 1, 1] (by simp) by decide]
         norm_num [ρ, denom, normSq, ← pow_two, div_pow]
-      · rw [show T * S * T = ⟨!![1, 0; 1, 1], by simp⟩ by decide]
+      · rw [show T * S * T = .mk !![1, 0; 1, 1] (by simp) by decide]
         norm_num [ρ, denom, normSq, ← pow_two, div_pow]
     · rcases case_c_one_d_neg_one hz hg hden hc hd with ⟨(rfl | rfl), rfl⟩
-      · rw [show S * T⁻¹ = ⟨!![0, -1; 1, -1], by simp⟩ by decide]
+      · rw [show S * T⁻¹ = .mk !![0, -1; 1, -1] (by simp) by decide]
         norm_num [ρ, denom, normSq, ← pow_two, div_pow]
-      · rw [show T⁻¹ * S * T⁻¹ = ⟨!![-1, 0; 1, -1], by simp⟩ by decide]
+      · rw [show T⁻¹ * S * T⁻¹ = .mk !![-1, 0; 1, -1] (by simp) by decide]
         norm_num [ρ, denom, normSq, ← pow_two, div_pow]
 
 /-- Classify the `z` and `g` with `z ∈ 𝒟` and `g • z ∈ 𝒟`. -/
@@ -719,28 +701,28 @@ lemma cases_of_mem_fd_smul_mem_fd (hz : z ∈ 𝒟) (hg : g • z ∈ 𝒟) :
 
 /-- If `z ∈ 𝒟` and `z ≠ I, ρ, 1 + ρ`, then the stabilizer of `z` in `SL(2, ℤ)` is `± 1`. -/
 lemma stabilizer_of_ne (hz : z ∈ 𝒟) (hg : g • z = z)
-    (hzI : z ≠ I) (hzρ : z ≠ ρ) (hzρ' : z ≠ (1 : ℝ) +ᵥ ρ) :
+    (hzI : z ≠ .I) (hzρ : z ≠ ρ) (hzρ' : z ≠ (1 : ℝ) +ᵥ ρ) :
     g = 1 ∨ g = -1 := by
   have : T • z ≠ z := by
     apply_fun UpperHalfPlane.re
     simp [-sl_moeb, re_T_smul]
   have : T⁻¹ • z ≠ z := by rwa [ne_eq, inv_smul_eq_iff, eq_comm]
-  have : (z : ℂ) ≠ -I := by grind [neg_im, coe_I, Complex.I_im, z.coe_im_pos]
+  have : (z : ℂ) ≠ -.I := by grind [neg_im, Complex.I_im, z.coe_im_pos]
   have : S • z ≠ z := by
     contrapose hzI
     rw [UpperHalfPlane.ext_iff, modular_S_smul, coe_mk, ← mul_one (_ : ℂ)⁻¹,
       inv_mul_eq_iff_eq_mul₀ (neg_ne_zero.mpr z.ne_zero), neg_mul, ← neg_eq_iff_eq_neg, ← I_sq,
       ← sq, sq_eq_sq_iff_eq_or_eq_neg, ← coe_I, ← UpperHalfPlane.ext_iff] at hzI
-    grind
+    grind [coe_I]
   grind [cases_of_mem_fd_smul_mem_fd hz (hg ▸ hz), SL_neg_smul]
 
-lemma stabilizer_I : g • I = I ↔ g ∈ ({1, -1, S, -S} : Finset SL(2, ℤ)) := by
+lemma stabilizer_I : (g • .I : ℍ) = .I ↔ g ∈ ({1, -1, S, -S} : Finset SL(2, ℤ)) := by
   constructor
   · intro hg
     have := cases_of_mem_fd_smul_mem_fd I_mem_fd (hg.symm ▸ I_mem_fd)
     simp [UpperHalfPlane.ext_iff, Complex.ext_iff, ρ] at this
     grind
-  · suffices S • I = I by simp +contextual [-sl_moeb, or_imp, this]
+  · suffices (S • .I : ℍ) = .I by simp +contextual [-sl_moeb, or_imp, this]
     rw [modular_S_smul, UpperHalfPlane.ext_iff]
     simp
 
@@ -885,7 +867,7 @@ private lemma mem_closure_of_arc {x : ℍ} (hxnorm : ‖(x : ℂ)‖ = 1) (hxre 
   rw [← closure_closure]
   -- Consider a vertical line going upwards from `x` (parametrized by `ℝ≥0`)
   apply mem_closure_of_frequently_of_tendsto (b := 𝓝[>] 0)
-    (f := fun t : ℝ≥0 ↦ ⟨x + t * Complex.I, by
+    (f := fun t : ℝ≥0 ↦ ⟨x + t * I, by
       simpa using! add_pos_of_pos_of_nonneg x.coe_im_pos t.property⟩)
   · apply Filter.Eventually.frequently
     filter_upwards [self_mem_nhdsWithin] with a (ha : 0 < a)
@@ -898,7 +880,7 @@ private lemma mem_closure_of_arc {x : ℍ} (hxnorm : ‖(x : ℂ)‖ = 1) (hxre 
     rw [hxnorm, one_pow, add_assoc, lt_add_iff_pos_right]
     positivity
   · refine .mono_left ?_ nhdsWithin_le_nhds
-    simpa [show 𝓝 (x : ℂ) = 𝓝 (x + (((0 : ℝ≥0) : ℝ) : ℂ) * Complex.I) by simp,
+    simpa [show 𝓝 (x : ℂ) = 𝓝 (x + (((0 : ℝ≥0) : ℝ) : ℂ) * I) by simp,
       isOpenEmbedding_coe.tendsto_nhds_iff] using! Continuous.tendsto (by fun_prop) _
 
 lemma fd_eq_closure_fdo : 𝒟 = closure 𝒟ᵒ := by
@@ -996,6 +978,6 @@ lemma exists_one_half_le_im_smul_and_norm_denom_le (τ : ℍ) :
     rw [im_smul_eq_div_normSq, le_div_iff₀ (normSq_denom_pos γ τ.im_ne_zero),
       normSq_eq_norm_sq] at h1
     simpa only [sq_le_one_iff_abs_le_one, abs_norm] using
-      (mul_le_iff_le_one_right τ.2).mp h1
+      (mul_le_iff_le_one_right τ.coe_im_pos).mp h1
 
 end ModularGroup

@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 public import Mathlib.CategoryTheory.Functor.KanExtension.RestrictedYoneda
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `F.op.lan` is a pointwise left Kan extension
 
@@ -15,7 +18,6 @@ Let `F : C ⥤ D` be a functor between locally `w`-small categories. Assume that
 `F.op.lan : (Cᵒᵖ ⥤ Type w) ⥤ Dᵒᵖ ⥤ Type w` is defined. In this file, we show
 that `F.op.lan` is a pointwise left Kan extension of
 `F ⋙ shrinkYoneda : C ⥤ Dᵒᵖ ⥤ Type w` along the Yoneda embedding of `C`.
-
 -/
 
 

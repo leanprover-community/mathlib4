@@ -13,6 +13,7 @@ public import Mathlib.RingTheory.Polynomial.Basic
 # Lagrange interpolation
 
 ## Main definitions
+
 * In everything that follows, `s : Finset ι` is a finite set of indices, with `v : ι → F` an
   indexing of the field over some type. We call the image of `v` on `s` the interpolation nodes,
   though strictly unique nodes are only defined when `v` is injective on `s`.
@@ -381,7 +382,7 @@ theorem eq_interpolate_iff {f : F[X]} (hvs : Set.InjOn v s) :
 /-- Lagrange interpolation induces isomorphism between functions from `s`
 and polynomials of degree less than `Fintype.card ι`. -/
 def funEquivDegreeLT (hvs : Set.InjOn v s) : degreeLT F #s ≃ₗ[F] s → F where
-  toFun f i := f.1.eval (v i)
+  toFun f i := f.val.eval (v i)
   map_add' _ _ := funext fun _ => eval_add
   map_smul' c f := funext <| by simp
   invFun r :=
@@ -690,11 +691,12 @@ theorem sum_nodalWeight_mul_inv_sub_ne_zero (hvs : Set.InjOn v s) (hx : ∀ i �
       (eval_interpolate_not_at_node 1 hx).symm
 
 /-- This is the second barycentric form of the Lagrange interpolant. -/
-theorem eval_interpolate_not_at_node' (hvs : Set.InjOn v s) (hs : s.Nonempty)
-    (hx : ∀ i ∈ s, x ≠ v i) :
+theorem eval_interpolate_not_at_node' (hvs : Set.InjOn v s) (hx : ∀ i ∈ s, x ≠ v i) :
     eval x (interpolate s v r) =
       (∑ i ∈ s, nodalWeight s v i * (x - v i)⁻¹ * r i) /
         ∑ i ∈ s, nodalWeight s v i * (x - v i)⁻¹ := by
+  rcases s.eq_empty_or_nonempty with rfl | hs
+  · simp
   rw [← div_one (eval x (interpolate s v r)), ← @eval_one _ _ x, ← interpolate_one hvs hs,
     eval_interpolate_not_at_node r hx, eval_interpolate_not_at_node 1 hx]
   simp only [mul_div_mul_left _ _ (eval_nodal_not_at_node hx), Pi.one_apply, mul_one]

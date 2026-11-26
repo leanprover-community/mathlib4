@@ -49,7 +49,7 @@ TODO: add the similar result for the series of homogeneous components.
 - If `R` is a `IsUniformAddGroup`, then so is `MvPowerSeries σ R`.
 - If `R` is complete, then so is `MvPowerSeries σ R`.
 
-## Implementation Notes
+## Implementation notes
 
 In `Mathlib/RingTheory/MvPowerSeries/LinearTopology.lean`, we generalize the criterion for
 topological nilpotency by proving that, if the base ring is equipped with a *linear* topology, then
@@ -70,7 +70,6 @@ formalizing this yields a few (minor) annoyances:
 Since the code duplication is rather minor (the interesting part of the proof is already extracted
 as `MvPowerSeries.coeff_eq_zero_of_constantCoeff_nilpotent`), we just leave this as is for now.
 But future contributors wishing to clean this up should feel free to give it a try!
-
 -/
 
 public section

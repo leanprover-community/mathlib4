@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Finsupp.Basic
 public import Mathlib.Data.List.AList
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Connections between `Finsupp` and `AList`
 
@@ -16,7 +19,6 @@ public import Mathlib.Data.List.AList
 * `Finsupp.toAList`
 * `AList.lookupFinsupp`: converts an association list into a finitely supported function
   via `AList.lookup`, sending absent keys to zero.
-
 -/
 
 @[expose] public section
@@ -61,7 +63,7 @@ absent keys to zero. -/
 noncomputable def lookupFinsupp (l : AList fun _x : α => M) : α →₀ M where
   support := by
     haveI := Classical.decEq α; haveI := Classical.decEq M
-    exact (l.1.filter fun x => Sigma.snd x ≠ 0).keys.toFinset
+    exact (l.entries.filter fun x => Sigma.snd x ≠ 0).keys.toFinset
   toFun a :=
     haveI := Classical.decEq α
     (l.lookup a).getD 0
@@ -78,7 +80,7 @@ theorem lookupFinsupp_apply [DecidableEq α] (l : AList fun _x : α => M) (a : �
 
 @[simp]
 theorem lookupFinsupp_support [DecidableEq α] [DecidableEq M] (l : AList fun _x : α => M) :
-    l.lookupFinsupp.support = (l.1.filter fun x => Sigma.snd x ≠ 0).keys.toFinset := by
+    l.lookupFinsupp.support = (l.entries.filter fun x => Sigma.snd x ≠ 0).keys.toFinset := by
   dsimp only [lookupFinsupp]
   congr!
 

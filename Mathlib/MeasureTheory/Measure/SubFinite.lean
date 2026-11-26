@@ -11,6 +11,9 @@ public import Mathlib.MeasureTheory.Measure.WithDensity
 import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
 import Mathlib.MeasureTheory.Measure.Decomposition.Hahn
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Results about subtraction of finite measures
 
@@ -25,7 +28,6 @@ not imported in the other file: the Hahn decomposition of finite measures and me
   `ν ≤ μ`.
 * `withDensity_sub`: If `μ.withDensity g` is finite, then
   `μ.withDensity (f - g) = μ.withDensity f - μ.withDensity g`.
-
 -/
 
 public section

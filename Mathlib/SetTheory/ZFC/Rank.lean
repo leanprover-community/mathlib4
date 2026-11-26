@@ -119,12 +119,12 @@ theorem le_succ_rank_sUnion (x : PSet) : rank x ≤ succ (rank (⋃₀ x)) := by
 theorem rank_eq_wfRank : lift.{u + 1, u} (rank x) = WellFounded.rank (α := PSet) (· ∈ ·) x := by
   induction x using mem_wf.induction with | _ x ih
   rw [WellFounded.rank_eq]
-  simp_rw [← fun y : { y // y ∈ x } => ih y y.2]
+  simp_rw [← fun y : { y // y ∈ x } => ih y y.property]
   apply (le_of_forall_lt _).antisymm (Ordinal.iSup_le _) <;> intro h
   · rw [lt_lift_iff]
     rintro ⟨o, h, rfl⟩
     simpa [Ordinal.lt_iSup_iff] using lt_rank_iff.1 h
-  · simpa using rank_lt_of_mem h.2
+  · simpa using rank_lt_of_mem h.property
 
 end PSet
 
@@ -219,11 +219,11 @@ theorem rank_iUnion {α : Type*} [Small.{u} α] (f : α → ZFSet.{u}) :
 theorem rank_eq_wfRank : lift.{u + 1, u} (rank x) = WellFounded.rank (α := ZFSet) (· ∈ ·) x := by
   induction x using inductionOn with | _ x ih
   rw [WellFounded.rank_eq]
-  simp_rw [← fun y : { y // y ∈ x } => ih y y.2]
+  simp_rw [← fun y : { y // y ∈ x } => ih y y.property]
   apply (le_of_forall_lt _).antisymm (Ordinal.iSup_le _) <;> intro h
   · rw [lt_lift_iff]
     rintro ⟨o, h, rfl⟩
     simpa [Ordinal.lt_iSup_iff] using lt_rank_iff.1 h
-  · simpa using rank_lt_of_mem h.2
+  · simpa using rank_lt_of_mem h.property
 
 end ZFSet

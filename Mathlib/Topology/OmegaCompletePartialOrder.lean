@@ -8,16 +8,18 @@ module
 public import Mathlib.Order.BourbakiWitt
 public import Mathlib.Topology.Order.ScottTopology
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Scott Topological Spaces
 
 A type of topological spaces whose notion
 of continuity is equivalent to continuity in ωCPOs.
 
-## Reference
+## References
 
 * https://ncatlab.org/nlab/show/Scott+topology
-
 -/
 
 @[expose] public section

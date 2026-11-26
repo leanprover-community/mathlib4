@@ -5,13 +5,13 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Comma
 public import Mathlib.CategoryTheory.Limits.Constructions.Over.Basic
 public import Mathlib.CategoryTheory.MorphismProperty.OverAdjunction
 
+import Mathlib.CategoryTheory.Limits.Comma
+
 /-!
 # (Co)limits in subcategories of comma categories defined by morphism properties
-
 -/
 
 @[expose] public section

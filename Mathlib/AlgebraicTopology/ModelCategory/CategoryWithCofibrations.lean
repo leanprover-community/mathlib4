@@ -7,13 +7,15 @@ module
 
 public import Mathlib.CategoryTheory.MorphismProperty.Composition
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Categories with classes of fibrations, cofibrations, weak equivalences
 
 We introduce typeclasses `CategoryWithFibrations`, `CategoryWithCofibrations` and
 `CategoryWithWeakEquivalences` to express that a category `C` is equipped with
 classes of morphisms named "fibrations", "cofibrations" or "weak equivalences".
-
 -/
 
 @[expose] public section
@@ -51,6 +53,7 @@ section Fib
 variable [CategoryWithFibrations C]
 
 /-- The class of fibrations in a category with fibrations. -/
+@[implicit_reducible]
 def fibrations : MorphismProperty C := CategoryWithFibrations.fibrations
 
 variable {C}
@@ -69,6 +72,7 @@ section Cof
 variable [CategoryWithCofibrations C]
 
 /-- The class of cofibrations in a category with cofibrations. -/
+@[implicit_reducible]
 def cofibrations : MorphismProperty C := CategoryWithCofibrations.cofibrations
 
 variable {C}
@@ -87,6 +91,7 @@ section W
 variable [CategoryWithWeakEquivalences C]
 
 /-- The class of weak equivalences in a category with weak equivalences. -/
+@[implicit_reducible]
 def weakEquivalences : MorphismProperty C := CategoryWithWeakEquivalences.weakEquivalences
 
 variable {C}

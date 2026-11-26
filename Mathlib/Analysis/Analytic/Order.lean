@@ -392,15 +392,20 @@ lemma analyticOrderAt_deriv_of_pos {𝕜 : Type*} {E : Type*} [NontriviallyNorme
 
 lemma analyticOrderAt_iterated_deriv {𝕜 : Type*} {E : Type*} [NontriviallyNormedField 𝕜]
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E] {f : 𝕜 → E} {z₀ : 𝕜}
-    (hf : AnalyticAt 𝕜 f z₀) {k n : ℕ} [CharZero 𝕜] :
-    n = analyticOrderAt f z₀ → n ≠ 0 → k ≤ n → analyticOrderAt (deriv^[k] f) z₀ = (n - k : ℕ) := by
+    {k n : ℕ} [CharZero 𝕜] :
+    n = analyticOrderAt f z₀ → k ≤ n → analyticOrderAt (deriv^[k] f) z₀ = (n - k : ℕ) := by
   induction k generalizing n with
-  | zero => exact fun Hn Hpos Hk ↦ Hn.symm
+  | zero => exact fun Hn Hk ↦ Hn.symm
   | succ n' hk =>
-    intro Hn Hpos Hk
+    intro Hn Hk
+    have hf : AnalyticAt 𝕜 f z₀ := by
+      by_contra h
+      have h0 : (n : ℕ∞) = 0 := Hn.trans (analyticOrderAt_eq_zero.mpr (.inl h))
+      norm_cast at h0
+      lia
     rw [Function.iterate_succ']
     have horder : analyticOrderAt (deriv^[n'] f) z₀ = (n - n'.succ) + 1 := by
-      refine (hk Hn Hpos (by lia)).trans ?_
+      refine (hk Hn (by lia)).trans ?_
       have : (n - n'.succ) + 1 = n - n' := by grind
       rw [← this]
       simp
@@ -657,7 +662,7 @@ theorem isClopen_setOfPred_analyticOrderAt_eq_top (hf : AnalyticOnNhd 𝕜 f U) 
   constructor
   · rw [← isOpen_compl_iff, isOpen_iff_forall_mem_open]
     intro z hz
-    rcases (hf z.1 z.2).eventually_eq_zero_or_eventually_ne_zero with h | h
+    rcases (hf z.val z.property).eventually_eq_zero_or_eventually_ne_zero with h | h
     · -- Case: f is locally zero in a punctured neighborhood of z
       rw [← analyticOrderAt_eq_top] at h
       tauto
@@ -669,7 +674,8 @@ theorem isClopen_setOfPred_analyticOrderAt_eq_top (hf : AnalyticOnNhd 𝕜 f U) 
         push _ ∈ _
         by_cases h₁w : w = z
         · rwa [h₁w]
-        · rw [(hf _ w.2).analyticOrderAt_eq_zero.2 ((h₁t' w hw) (Subtype.coe_ne_coe.mpr h₁w))]
+        · rw [(hf _ w.property).analyticOrderAt_eq_zero.2
+            ((h₁t' w hw) (Subtype.coe_ne_coe.mpr h₁w))]
           exact ENat.zero_ne_top
       · exact ⟨isOpen_induced h₂t', h₃t'⟩
   · apply isOpen_iff_forall_mem_open.mpr

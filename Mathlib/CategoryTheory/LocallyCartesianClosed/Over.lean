@@ -39,7 +39,6 @@ public import Mathlib.CategoryTheory.LocallyCartesianClosed.ChosenPullbacksAlong
 
 - Show that the functors `pullback f` are monoidal with respect to
   the cartesian monoidal structures on slices.
-
 -/
 
 @[expose] public section

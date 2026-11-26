@@ -6,9 +6,10 @@ Authors: Mario Carneiro
 module
 
 public import Batteries.Data.String.Lemmas
-public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Data.Char
 public import Mathlib.Data.List.Lex
+
+import Mathlib.Algebra.Order.Group.Nat
 
 import all Init.Data.Ord.String  -- for unfolding `String.compare`
 import all Init.Data.String.Iterator  -- for unfolding `Iterator.curr`

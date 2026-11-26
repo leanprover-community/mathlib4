@@ -31,7 +31,6 @@ is patterned after `Mathlib/Algebra/MvPolynomial/Equiv.lean`.
 * `MvPowerSeries.toAdicCompletionAlgEquiv` : the canonical isomorphism from
   multivariate power series to the adic completion of multivariate polynomials
   with respect to the ideal spanned by all variables when the index is finite.
-
 -/
 
 @[expose] public section
@@ -55,7 +54,7 @@ def isEmptyEquiv [IsEmpty σ] : MvPowerSeries σ R ≃ₐ[R] R where
   __ := constantCoeff
   invFun := C
   left_inv _ := by ext x; simp [Subsingleton.eq_zero x]
-  commutes' _ := rfl
+  map_smul' _ _ := rfl
 
 end isEmptyEquiv
 
@@ -123,9 +122,7 @@ def optionEquivLeft : MvPowerSeries (Option σ) R ≃ₐ[R] PowerSeries (MvPower
   right_inv _ := by ext; simp [coeff_optionInvFunLeft, coeff_coeff_optionFunLeft]
   map_mul' := optionFunLeft_mul
   map_add' _ _ := by ext; simp [coeff_coeff_optionFunLeft]
-  commutes' := by
-    simpa [MvPowerSeries.algebraMap_apply, PowerSeries.C] using
-      optionFunLeft_monomial (0 : Option σ →₀ ℕ)
+  map_smul' _ _ := by rfl
 
 lemma coeff_coeff_optionEquivLeft (p : MvPowerSeries (Option σ) R) (n : ℕ) (x : σ →₀ ℕ) :
     coeff x (PowerSeries.coeff n (optionEquivLeft σ R p)) = coeff (x.optionElim n) p :=
@@ -241,14 +238,14 @@ lemma truncTotal_sub_truncTotal_mem_pow_idealOfVars {l m n : ℕ} (h : l ≤ m) 
     (p : MvPowerSeries σ R) : p.truncTotal m - p.truncTotal n ∈
       MvPolynomial.idealOfVars σ R ^ l := by
   refine (MvPolynomial.mem_pow_idealOfVars_iff' ..).mpr (fun x hx ↦ ?_)
-  rw [MvPolynomial.coeff_sub, sub_eq_zero, coeff_truncTotal _ (by lia),
+  rw [AddMonoidAlgebra.coeff_sub_apply, sub_eq_zero, coeff_truncTotal _ (by lia),
     coeff_truncTotal _ (by lia)]
 
 lemma truncTotal_mul_sub_mul_truncTotal_mem_pow_idealOfVars (p q : MvPowerSeries σ R) :
     (p * q).truncTotal n - p.truncTotal n * q.truncTotal n ∈
       MvPolynomial.idealOfVars σ R ^ n := by
   refine (MvPolynomial.mem_pow_idealOfVars_iff' ..).mpr (fun x hx ↦ ?_)
-  rw [MvPolynomial.coeff_sub, sub_eq_zero, coeff_truncTotal _ hx,
+  rw [AddMonoidAlgebra.coeff_sub_apply, sub_eq_zero, coeff_truncTotal _ hx,
     coeff_truncTotal_mul_truncTotal_eq_coeff_mul _ _ hx]
 
 /-- The canonical map induced by `truncTotal` from multivariate power series to
@@ -275,7 +272,8 @@ def truncTotalAlgHom (σ R : Type*) [Finite σ] [CommRing R] (n : ℕ) :
       (Ideal.Quotient.mk (MvPolynomial.idealOfVars σ R ^ n)) p
     rw [Ideal.Quotient.eq, MvPolynomial.mem_pow_idealOfVars_iff']
     intro x h
-    rw [MvPolynomial.coeff_sub, sub_eq_zero, coeff_truncTotal _ h, MvPolynomial.coeff_coe]
+    rw [AddMonoidAlgebra.coeff_sub_apply, sub_eq_zero, coeff_truncTotal _ h,
+      MvPolynomial.coeff_coe]
 
 /-- The canonical map from multivariate power series to the adic completion of
 multivariate polynomials with respect to the ideal spanned by all variables
@@ -294,7 +292,7 @@ lemma toAdicCompletion_apply_eq_mk_truncTotal {n : ℕ} {p : MvPowerSeries σ R}
 theorem coeff_toAdicCompletion_val_apply_out {x : σ →₀ ℕ} {p : MvPowerSeries σ R} {n : ℕ}
     (hx : degree x < n) : (Quotient.out (((toAdicCompletion σ R) p).val n)).coeff x =
       (coeff x) p := by
-  rw [← coeff_truncTotal _ hx, ← sub_eq_zero, ← MvPolynomial.coeff_sub]
+  rw [← coeff_truncTotal _ hx, ← sub_eq_zero, ← AddMonoidAlgebra.coeff_sub_apply]
   apply (MvPolynomial.mem_pow_idealOfVars_iff' n _).mp
   · rw [toAdicCompletion_apply_eq_mk_truncTotal, smul_eq_mul]
     nth_rw 1 [← Ideal.mul_top (MvPolynomial.idealOfVars σ R ^ n), ← Ideal.Quotient.eq,
@@ -326,9 +324,9 @@ theorem mk_truncTotal_toAdicCompletionInv {n : ℕ}
     ((truncTotal n) (toAdicCompletionInv σ R f)) = f.val n := by
   rw [← Ideal.Quotient.mk_out (f.val n), Ideal.Quotient.mk_eq_mk_iff_sub_mem]
   simp only [smul_eq_mul, Ideal.mul_top, MvPolynomial.mem_pow_idealOfVars_iff',
-    MvPolynomial.coeff_sub]
+    AddMonoidAlgebra.coeff_sub_apply]
   intro x h
-  rw [coeff_truncTotal _ h, coeff_toAdicCompletionInv, ← MvPolynomial.coeff_sub]
+  rw [coeff_truncTotal _ h, coeff_toAdicCompletionInv, ← AddMonoidAlgebra.coeff_sub_apply]
   apply (MvPolynomial.mem_pow_idealOfVars_iff' (degree x + 1) _).mp
   · nth_rw 1 [← Ideal.mul_top (MvPolynomial.idealOfVars σ R ^ (degree x + 1)),
       ← smul_eq_mul, ← Ideal.Quotient.eq]

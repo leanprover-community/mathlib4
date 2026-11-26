@@ -32,7 +32,7 @@ It just states that if `I` is a finite independent set and `J` is a larger finit
 independent set, then there exists `e ∈ J \ I` for which `insert e I` is independent.
 This is the axiom that appears in most of the definitions.
 
-## Implementation Details
+## Implementation notes
 
 To facilitate building a matroid from its independent sets, we define a structure `IndepMatroid`
 which has a ground set `E`, an independence predicate `Indep`, and some axioms as its fields.

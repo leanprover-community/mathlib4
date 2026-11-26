@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pseudofunctors from strict bicategory
 
@@ -20,7 +23,6 @@ associativity.
 Secondly, given a commutative square `t ≫ r = l ≫ b` in `B`, we construct an
 isomorphism `F.map t ≫ F.map r ≅ F.map l ≫ F.map b`
 (see `Pseudofunctor.isoMapOfCommSq`).
-
 -/
 
 @[expose] public section

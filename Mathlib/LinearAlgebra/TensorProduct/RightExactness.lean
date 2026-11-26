@@ -82,7 +82,6 @@ to compute some kernels.
   [Grillet-1969b], Pierre-Antoine Grillet,
   *The tensor product of commutative semigroups*,
   Trans. Amer. Math. Soc. 138 (1969), 281-293, doi:10.1090/S0002-9947-1969-0237688-1 .)
-
 -/
 
 @[expose] public section
@@ -173,6 +172,17 @@ lemma LinearMap.rTensor_exact_iff_lTensor_exact :
   Function.Exact.iff_of_ladder_linearEquiv (e₁ := TensorProduct.comm _ _ _)
     (e₂ := TensorProduct.comm _ _ _) (e₃ := TensorProduct.comm _ _ _)
     (by ext; simp) (by ext; simp)
+
+lemma LinearMap.range_baseChange {A : Type*} [Semiring A] [Algebra R A] (f : M →ₗ[R] N) :
+    (f.baseChange A).range = f.range.baseChange A := by
+  simp_rw [Submodule.baseChange, ← f.subtype_comp_rangeRestrict, baseChange_comp]
+  rw [range_comp_of_range_eq_top]
+  simp [range_eq_top.mpr, baseChange_surjective, f.surjective_rangeRestrict]
+
+lemma Submodule.baseChange_map {A : Type*} [Semiring A] [Algebra R A] (f : M →ₗ[R] N)
+    (p : Submodule R M) : (p.map f).baseChange A = (p.baseChange A).map (f.baseChange A) := by
+  conv_lhs => rw [← p.range_subtype, ← range_comp, ← range_baseChange]
+  simp [baseChange, baseChange_comp, range_comp]
 
 variable (hg : Function.Surjective g)
     {N' P' : Type*} [AddCommMonoid N'] [AddCommMonoid P'] [Module R N'] [Module R P']

@@ -7,9 +7,11 @@ module
 
 public import Mathlib.Data.Fin.Tuple.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Conditions for `Fin.insertNth` to be monotone or strictly monotone
-
 -/
 
 public section
