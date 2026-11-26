@@ -895,7 +895,7 @@ lemma map_smul_of_iInf_genEigenspace_ne_bot [IsDomain R] [IsTorsionFree R M]
   exact disjoint_genEigenspace (t • f x) (Ne.symm contra) k k
 
 lemma map_add_of_iInf_genEigenspace_ne_bot_of_commute [IsDomain R] [IsTorsionFree R M]
-    {L F : Type*} [Add L] [FunLike F L (End R M)] [AddHomClass F L (End R M)] (f : F)
+    {L F : Type*} [Add L] [FunLike F L (End R M)] [AddHomClass F] (f : F)
     (μ : L → R) (k : ℕ∞) (h_ne : ⨅ x, (f x).genEigenspace (μ x) k ≠ ⊥)
     (h : ∀ x y, Commute (f x) (f y)) (x y : L) :
     μ (x + y) = μ x + μ y := by

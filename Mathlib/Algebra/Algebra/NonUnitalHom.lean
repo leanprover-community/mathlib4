@@ -72,7 +72,7 @@ class NonUnitalAlgSemiHomClass (F : Type*) {R S : outParam Type*} [Monoid R] [Mo
     (φ : outParam (R →* S)) (A B : outParam Type*)
     [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
     [DistribMulAction R A] [DistribMulAction S B] [FunLike F A B] : Prop
-    extends DistribMulActionSemiHomClass F φ A B, MulHomClass F A B
+    extends DistribMulActionSemiHomClass F φ A B, MulHomClass F
 
 /-- `NonUnitalAlgHomClass F R A B` asserts `F` is a type of bundled algebra homomorphisms
 from `A` to `B` which are `R`-linear.

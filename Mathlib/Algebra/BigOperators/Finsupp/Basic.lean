@@ -227,7 +227,7 @@ end Finsupp
 
 @[to_additive]
 theorem map_finsuppProd [Zero M] [CommMonoid N] [CommMonoid P] {H : Type*}
-    [FunLike H N P] [MonoidHomClass H N P]
+    [FunLike H N P] [MonoidHomClass H]
     (h : H) (f : α →₀ M) (g : α → M → N) : h (f.prod g) = f.prod fun a b => h (g a b) :=
   map_prod h _ _
 

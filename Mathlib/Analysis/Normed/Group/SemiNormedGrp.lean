@@ -251,7 +251,7 @@ instance : ConcreteCategory SemiNormedGrp₁
   ofHom f := ⟨f.val, f.property⟩
 
 instance (X Y : SemiNormedGrp₁) :
-    AddMonoidHomClass { f : NormedAddGroupHom X Y // f.NormNoninc } X Y where
+    AddMonoidHomClass { f : NormedAddGroupHom X Y // f.NormNoninc } where
   map_add f := map_add f.val
   map_zero f := map_zero f.val
 

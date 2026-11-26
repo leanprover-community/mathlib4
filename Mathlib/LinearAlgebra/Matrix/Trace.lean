@@ -106,7 +106,7 @@ theorem trace_sum (s : Finset ι) (f : ι → Matrix n n R) :
   map_sum (traceAddMonoidHom n R) f s
 
 theorem _root_.AddMonoidHom.map_trace [AddCommMonoid S] {F : Type*} [FunLike F R S]
-    [AddMonoidHomClass F R S] (f : F) (A : Matrix n n R) :
+    [AddMonoidHomClass F] (f : F) (A : Matrix n n R) :
     f (trace A) = trace (A.map f) :=
   map_sum f (fun i => diag A i) Finset.univ
 

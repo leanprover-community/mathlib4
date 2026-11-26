@@ -79,7 +79,7 @@ instance (priority := 100) [Finite M] : IsMulFG M := by
   exact ⟨Finset.univ, by simp⟩
 
 @[to_additive]
-theorem IsMulFG.of_surjective {F : Type*} [FunLike F M M'] [MulHomClass F M M'] (f : F)
+theorem IsMulFG.of_surjective {F : Type*} [FunLike F M M'] [MulHomClass F] (f : F)
     (hf : Function.Surjective f) [IsMulFG M] : IsMulFG M' := by
   classical
   obtain ⟨S, hS⟩ := IsMulFG.out M

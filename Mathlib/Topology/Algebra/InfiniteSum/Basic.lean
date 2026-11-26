@@ -206,7 +206,7 @@ theorem Equiv.multipliable_iff_of_mulSupport {g : γ → α} (e : mulSupport f �
 
 @[to_additive]
 protected theorem HasProd.map [CommMonoid γ] [TopologicalSpace γ] (hf : HasProd f a L) {G}
-    [FunLike G α γ] [MonoidHomClass G α γ] (g : G) (hg : Continuous g) :
+    [FunLike G α γ] [MonoidHomClass G] (g : G) (hg : Continuous g) :
     HasProd (g ∘ f) (g a) L := by
   have : (g ∘ fun s : Finset β ↦ ∏ b ∈ s, f b) = fun s : Finset β ↦ ∏ b ∈ s, (g ∘ f) b :=
     funext <| map_prod g _
@@ -216,21 +216,21 @@ protected theorem HasProd.map [CommMonoid γ] [TopologicalSpace γ] (hf : HasPro
 
 @[to_additive]
 protected theorem Topology.IsInducing.hasProd_iff [CommMonoid γ] [TopologicalSpace γ] {G}
-    [FunLike G α γ] [MonoidHomClass G α γ] {g : G} (hg : IsInducing g) (f : β → α) (a : α) :
+    [FunLike G α γ] [MonoidHomClass G] {g : G} (hg : IsInducing g) (f : β → α) (a : α) :
     HasProd (g ∘ f) (g a) L ↔ HasProd f a L := by
   simp_rw [HasProd, comp_apply, ← _root_.map_prod]
   exact hg.tendsto_nhds_iff.symm
 
 @[to_additive]
 protected theorem Multipliable.map [CommMonoid γ] [TopologicalSpace γ]
-    (hf : Multipliable f L) {G} [FunLike G α γ] [MonoidHomClass G α γ] (g : G) (hg : Continuous g) :
+    (hf : Multipliable f L) {G} [FunLike G α γ] [MonoidHomClass G] (g : G) (hg : Continuous g) :
     Multipliable (g ∘ f) L :=
   (hf.hasProd.map g hg).multipliable
 
 @[to_additive]
 protected theorem Multipliable.map_iff_of_leftInverse [CommMonoid γ]
     [TopologicalSpace γ] {G G'}
-    [FunLike G α γ] [MonoidHomClass G α γ] [FunLike G' γ α] [MonoidHomClass G' γ α]
+    [FunLike G α γ] [MonoidHomClass G] [FunLike G' γ α] [MonoidHomClass G']
     (g : G) (g' : G') (hg : Continuous g) (hg' : Continuous g') (hinv : Function.LeftInverse g' g) :
     Multipliable (g ∘ f) L ↔ Multipliable f L :=
   ⟨fun h ↦ by
@@ -239,14 +239,14 @@ protected theorem Multipliable.map_iff_of_leftInverse [CommMonoid γ]
 
 @[to_additive]
 theorem Multipliable.map_tprod [L.NeBot] [CommMonoid γ] [TopologicalSpace γ] [T2Space γ]
-    (hf : Multipliable f L) {G} [FunLike G α γ] [MonoidHomClass G α γ] (g : G) (hg : Continuous g) :
+    (hf : Multipliable f L) {G} [FunLike G α γ] [MonoidHomClass G] (g : G) (hg : Continuous g) :
     g (∏'[L] i, f i) = ∏'[L] i, g (f i) :=
   (HasProd.tprod_eq (HasProd.map hf.hasProd g hg)).symm
 
 @[to_additive]
 lemma Topology.IsClosedEmbedding.map_tprod {ι α α' G : Type*}
     [CommMonoid α] [CommMonoid α'] [TopologicalSpace α] [TopologicalSpace α'] [T2Space α']
-    (f : ι → α) {L : SummationFilter ι} {g : G} [FunLike G α α'] [MonoidHomClass G α α']
+    (f : ι → α) {L : SummationFilter ι} {g : G} [FunLike G α α'] [MonoidHomClass G]
     (hge : Topology.IsClosedEmbedding g) :
     g (∏'[L] i, f i) = ∏'[L] i, g (f i) := by
   by_cases hL : L.NeBot
@@ -269,14 +269,14 @@ to apply in practice. -/
 @[to_additive /-- Special case of `Topology.IsClosedEmbedding.map_tsum`, logically weaker but
 possibly easier to apply in practice. -/]
 lemma Function.LeftInverse.map_tprod {G : Type*} (f : β → α) [CommMonoid γ] [TopologicalSpace γ]
-    [T2Space γ] {g : G} [FunLike G α γ] [MonoidHomClass G α γ] (hg : Continuous g)
+    [T2Space γ] {g : G} [FunLike G α γ] [MonoidHomClass G] (hg : Continuous g)
     {g' : γ → α} (hg' : Continuous g') (hgg' : LeftInverse g' g) :
     g (∏'[L] b, f b) = ∏'[L] b, g (f b) :=
   (hgg'.isClosedEmbedding hg' hg).map_tprod _
 
 @[to_additive]
 lemma Topology.IsInducing.multipliable_iff_tprod_comp_mem_range [CommMonoid γ] [TopologicalSpace γ]
-    [T2Space γ] {G} [FunLike G α γ] [MonoidHomClass G α γ] {g : G} (hg : IsInducing g) (f : β → α) :
+    [T2Space γ] {G} [FunLike G α γ] [MonoidHomClass G] {g : G} (hg : IsInducing g) (f : β → α) :
     Multipliable f L ↔ Multipliable (g ∘ f) L ∧ ∏'[L] i, g (f i) ∈ Set.range g := by
   constructor
   · intro hf

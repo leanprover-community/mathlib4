@@ -55,7 +55,7 @@ open scoped Finset
 @[expose] public section
 
 variable {M N ι κ F : Type*} [AddCommMonoid M] [AddCommMonoid N]
-  [FunLike F M N] [AddMonoidHomClass F M N] {a : M} {s s₁ s₂ : Set M}
+  [FunLike F M N] [AddMonoidHomClass F] {a : M} {s s₁ s₂ : Set M}
 
 open Set Pointwise AddSubmonoid
 

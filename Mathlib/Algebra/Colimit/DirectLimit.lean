@@ -69,12 +69,12 @@ variable [IsDirectedOrder ι]
 namespace DirectLimit
 
 section ZeroOne
-variable [Nonempty ι] [∀ i, One (G i)] [One C] [∀ i, OneHomClass (H i) (G i) C]
+variable [Nonempty ι] [∀ i, One (G i)] [One C] [∀ i, OneHomClass (H i)]
 
 @[to_additive] instance : One (DirectLimit G f) where
   one := map₀ f fun _ ↦ 1
 
-variable [∀ i j h, OneHomClass (T h) (G i) (G j)]
+variable [∀ i j (h : i ≤ j), OneHomClass (T h)]
 
 @[to_additive] theorem one_def (i) : (1 : DirectLimit G f) = ⟦⟨i, 1⟩⟧ :=
   map₀_def _ _ (fun _ _ _ ↦ map_one _) _
@@ -127,7 +127,7 @@ end InvolutiveStar
 
 section AddMul
 variable [∀ i, Mul (G i)] [Mul C]
-variable [∀ i j h, MulHomClass (T h) (G i) (G j)] [∀ i, MulHomClass (H i) (G i) C]
+variable [∀ i j (h : i ≤ j), MulHomClass (T h)] [∀ i, MulHomClass (H i)]
 
 @[to_additive] instance : Mul (DirectLimit G f) where
   mul := map₂ f f f (fun _ ↦ (· * ·)) fun _ _ _ ↦ map_mul _
@@ -148,20 +148,20 @@ lemma map₀_mul [Nonempty ι] (r s : ∀ i, G i) : map₀ f (r * s) = map₀ f 
 
 end AddMul
 
-@[to_additive] instance [∀ i, CommMagma (G i)] [∀ i j h, MulHomClass (T h) (G i) (G j)] :
+@[to_additive] instance [∀ i, CommMagma (G i)] [∀ i j (h : i ≤ j), MulHomClass (T h)] :
     CommMagma (DirectLimit G f) where
   mul_comm := DirectLimit.induction₂ _ fun i _ _ ↦ by simp_rw [mul_def, mul_comm]
 
-@[to_additive] instance [∀ i, Semigroup (G i)] [∀ i j h, MulHomClass (T h) (G i) (G j)] :
+@[to_additive] instance [∀ i, Semigroup (G i)] [∀ i j (h : i ≤ j), MulHomClass (T h)] :
     Semigroup (DirectLimit G f) where
   mul_assoc := DirectLimit.induction₃ _ fun i _ _ _ ↦ by simp_rw [mul_def, mul_assoc]
 
-@[to_additive] instance [∀ i, CommSemigroup (G i)] [∀ i j h, MulHomClass (T h) (G i) (G j)] :
+@[to_additive] instance [∀ i, CommSemigroup (G i)] [∀ i j (h : i ≤ j), MulHomClass (T h)] :
     CommSemigroup (DirectLimit G f) where
   mul_comm := mul_comm
 
 section StarMul
-variable [∀ i, Mul (G i)] [∀ i j h, MulHomClass (T h) (G i) (G j)]
+variable [∀ i, Mul (G i)] [∀ i j (h : i ≤ j), MulHomClass (T h)]
 variable [∀ i, StarMul (G i)] [∀ i j h, StarHomClass (T h) (G i) (G j)]
 
 instance : StarMul (DirectLimit G f) where
@@ -201,7 +201,7 @@ instance [Star R] [∀ i, Star (G i)] [∀ i j h, StarHomClass (T h) (G i) (G j)
 
 variable [Nonempty ι]
 
-@[to_additive] instance [∀ i, MulOneClass (G i)] [∀ i j h, MonoidHomClass (T h) (G i) (G j)] :
+@[to_additive] instance [∀ i, MulOneClass (G i)] [∀ i j (h : i ≤ j), MonoidHomClass (T h)] :
     MulOneClass (DirectLimit G f) where
   one_mul := DirectLimit.induction _ fun i _ ↦ by simp_rw [one_def i, mul_def, one_mul]
   mul_one := DirectLimit.induction _ fun i _ ↦ by simp_rw [one_def i, mul_def, mul_one]
@@ -209,7 +209,7 @@ variable [Nonempty ι]
 variable (f) in
 /-- `map₀` as a `MonoidHom`. -/
 @[to_additive (attr := simps) /-- `map₀` as an `AddMonoidHom`. -/]
-def map₀MonoidHom [∀ i, MulOneClass (G i)] [∀ i j h, MonoidHomClass (T h) (G i) (G j)] :
+def map₀MonoidHom [∀ i, MulOneClass (G i)] [∀ i j (h : i ≤ j), MonoidHomClass (T h)] :
     (∀ i, G i) →* DirectLimit G f where
   toFun x := map₀ _ x
   map_one' := map₀_one
@@ -217,7 +217,7 @@ def map₀MonoidHom [∀ i, MulOneClass (G i)] [∀ i j h, MonoidHomClass (T h) 
 
 section Monoid
 variable [∀ i, Monoid (G i)] [Monoid C]
-variable [∀ i j h, MonoidHomClass (T h) (G i) (G j)] [∀ i, MonoidHomClass (H i) (G i) C]
+variable [∀ i j (h : i ≤ j), MonoidHomClass (T h)] [∀ i, MonoidHomClass (H i)]
 
 @[to_additive] instance : Monoid (DirectLimit G f) where
   one_mul := one_mul
@@ -240,12 +240,12 @@ theorem lift_npow (g : ∀ i, H i) (h) (x : DirectLimit G f) (n : ℕ) :
 
 end Monoid
 
-@[to_additive] instance [∀ i, CommMonoid (G i)] [∀ i j h, MonoidHomClass (T h) (G i) (G j)] :
+@[to_additive] instance [∀ i, CommMonoid (G i)] [∀ i j (h : i ≤ j), MonoidHomClass (T h)] :
     CommMonoid (DirectLimit G f) where
   mul_comm := mul_comm
 
 section StarAddMonoid
-variable [∀ i, AddMonoid (G i)] [∀ i j h, AddMonoidHomClass (T h) (G i) (G j)]
+variable [∀ i, AddMonoid (G i)] [∀ i j (h : i ≤ j), AddMonoidHomClass (T h)]
 variable [∀ i, StarAddMonoid (G i)] [∀ i j h, StarHomClass (T h) (G i) (G j)]
 
 instance : StarAddMonoid (DirectLimit G f) where
@@ -255,7 +255,7 @@ end StarAddMonoid
 
 section Group
 variable [∀ i, Group (G i)] [Group C]
-variable [∀ i j h, MonoidHomClass (T h) (G i) (G j)] [∀ i, MonoidHomClass (H i) (G i) C]
+variable [∀ i j (h : i ≤ j), MonoidHomClass (T h)] [∀ i, MonoidHomClass (H i)]
 
 @[to_additive] instance : Group (DirectLimit G f) where
   inv := map _ _ (fun _ ↦ (·⁻¹)) fun _ _ _ ↦ map_inv _
@@ -298,12 +298,12 @@ theorem lift_zpow (g : ∀ i, H i) (h) (x : DirectLimit G f) (z : ℤ) :
 
 end Group
 
-@[to_additive] instance [∀ i, CommGroup (G i)] [∀ i j h, MonoidHomClass (T h) (G i) (G j)] :
+@[to_additive] instance [∀ i, CommGroup (G i)] [∀ i j (h : i ≤ j), MonoidHomClass (T h)] :
     CommGroup (DirectLimit G f) where
   mul_comm := mul_comm
 
-instance [∀ i, MulZeroClass (G i)] [∀ i j h, MulHomClass (T h) (G i) (G j)]
-    [∀ i j h, ZeroHomClass (T h) (G i) (G j)] :
+instance [∀ i, MulZeroClass (G i)] [∀ i j (h : i ≤ j), MulHomClass (T h)]
+    [∀ i j (h : i ≤ j), ZeroHomClass (T h)] :
     MulZeroClass (DirectLimit G f) where
   zero_mul := DirectLimit.induction _ fun i _ ↦ by simp_rw [zero_def i, mul_def, zero_mul]
   mul_zero := DirectLimit.induction _ fun i _ ↦ by simp_rw [zero_def i, mul_def, mul_zero]
@@ -321,8 +321,8 @@ instance [∀ i, Nontrivial (G i)] : Nontrivial (DirectLimit G f) where
 
 end MulZeroOneClass
 
-instance [∀ i, SemigroupWithZero (G i)] [∀ i j h, MulHomClass (T h) (G i) (G j)]
-    [∀ i j h, ZeroHomClass (T h) (G i) (G j)] :
+instance [∀ i, SemigroupWithZero (G i)] [∀ i j (h : i ≤ j), MulHomClass (T h)]
+    [∀ i j (h : i ≤ j), ZeroHomClass (T h)] :
     SemigroupWithZero (DirectLimit G f) where
   zero_mul := zero_mul
   mul_zero := mul_zero
@@ -392,14 +392,14 @@ instance [∀ i, CommGroupWithZero (G i)] [∀ i j h, MonoidWithZeroHomClass (T 
 
 section AddMonoidWithOne
 
-variable [∀ i, AddMonoidWithOne (G i)] [∀ i j h, AddMonoidHomClass (T h) (G i) (G j)]
+variable [∀ i, AddMonoidWithOne (G i)] [∀ i j (h : i ≤ j), AddMonoidHomClass (T h)]
 
 instance : AddMonoidWithOne (DirectLimit G f) where
   natCast n := map₀ _ fun _ ↦ n
   natCast_zero := show ⟦_⟧ = ⟦_⟧ by simp_rw [Nat.cast_zero]
   natCast_succ n := show ⟦_⟧ = ⟦_⟧ + ⟦_⟧ by simp_rw [Nat.cast_succ, add_def]
 
-theorem natCast_def [∀ i j h, OneHomClass (T h) (G i) (G j)] (n : ℕ) (i) :
+theorem natCast_def [∀ i j (h : i ≤ j), OneHomClass (T h)] (n : ℕ) (i) :
     (n : DirectLimit G f) = ⟦⟨i, n⟩⟧ :=
   map₀_def _ _ (fun _ _ _ ↦ map_natCast' _ (map_one _) _) _
 
@@ -407,7 +407,7 @@ end AddMonoidWithOne
 
 section AddGroupWithOne
 
-variable [∀ i, AddGroupWithOne (G i)] [∀ i j h, AddMonoidHomClass (T h) (G i) (G j)]
+variable [∀ i, AddGroupWithOne (G i)] [∀ i j (h : i ≤ j), AddMonoidHomClass (T h)]
 
 instance : AddGroupWithOne (DirectLimit G f) where
   __ : AddGroup _ := inferInstance
@@ -417,17 +417,17 @@ instance : AddGroupWithOne (DirectLimit G f) where
   natCast_zero := Nat.cast_zero
   natCast_succ := Nat.cast_succ
 
-theorem intCast_def [∀ i j h, OneHomClass (T h) (G i) (G j)] (n : ℤ) (i) :
+theorem intCast_def [∀ i j (h : i ≤ j), OneHomClass (T h)] (n : ℤ) (i) :
     (n : DirectLimit G f) = ⟦⟨i, n⟩⟧ :=
   map₀_def _ _ (fun _ _ _ ↦ map_intCast' _ (map_one _) _) _
 
 end AddGroupWithOne
 
-instance [∀ i, AddCommMonoidWithOne (G i)] [∀ i j h, AddMonoidHomClass (T h) (G i) (G j)] :
+instance [∀ i, AddCommMonoidWithOne (G i)] [∀ i j (h : i ≤ j), AddMonoidHomClass (T h)] :
     AddCommMonoidWithOne (DirectLimit G f) where
   add_comm := add_comm
 
-instance [∀ i, AddCommGroupWithOne (G i)] [∀ i j h, AddMonoidHomClass (T h) (G i) (G j)] :
+instance [∀ i, AddCommGroupWithOne (G i)] [∀ i j (h : i ≤ j), AddMonoidHomClass (T h)] :
     AddCommGroupWithOne (DirectLimit G f) where
   __ : AddGroupWithOne _ := inferInstance
   add_comm := add_comm
@@ -515,12 +515,12 @@ instance [∀ i, Zero (G i)] [∀ i, SMulZeroClass R (G i)]
 
 instance [Zero R] [∀ i, Zero (G i)] [∀ i, SMulWithZero R (G i)]
     [∀ i j h, MulActionHomClass (T h) R (G i) (G j)]
-    [∀ i j h, ZeroHomClass (T h) (G i) (G j)] :
+    [∀ i j (h : i ≤ j), ZeroHomClass (T h)] :
     SMulWithZero R (DirectLimit G f) where
   zero_smul := DirectLimit.induction _ fun i _ ↦ by simp_rw [smul_def, zero_smul, zero_def i]
 
 instance [∀ i, AddZeroClass (G i)] [∀ i, DistribSMul R (G i)]
-    [∀ i j h, AddMonoidHomClass (T h) (G i) (G j)]
+    [∀ i j (h : i ≤ j), AddMonoidHomClass (T h)]
     [∀ i j h, MulActionHomClass (T h) R (G i) (G j)] :
     DistribSMul R (DirectLimit G f) where
   smul_add r := DirectLimit.induction₂ _ fun i _ _ ↦ by
@@ -533,7 +533,7 @@ instance [Monoid R] [∀ i, AddMonoid (G i)] [∀ i, DistribMulAction R (G i)]
   { smul_zero := smul_zero, smul_add := smul_add }
 
 instance [Monoid R] [∀ i, Monoid (G i)] [∀ i, MulDistribMulAction R (G i)]
-    [∀ i j h, MonoidHomClass (T h) (G i) (G j)]
+    [∀ i j (h : i ≤ j), MonoidHomClass (T h)]
     [∀ i j h, MulActionHomClass (T h) R (G i) (G j)] :
     MulDistribMulAction R (DirectLimit G f) where
   smul_mul r := DirectLimit.induction₂ _ fun i _ _ ↦ by
@@ -548,19 +548,19 @@ instance [Semiring R] [∀ i, AddCommMonoid (G i)] [∀ i, Module R (G i)]
     zero_smul := DirectLimit.induction _ fun i _ ↦ by simp_rw [smul_def, zero_smul, zero_def i] }
 
 instance [∀ i, Mul (G i)] [∀ i, SMul R (G i)] [∀ i, IsScalarTower R (G i) (G i)]
-    [∀ i j h, MulHomClass (T h) (G i) (G j)] [∀ i j h, MulActionHomClass (T h) R (G i) (G j)] :
+    [∀ i j (h : i ≤ j), MulHomClass (T h)] [∀ i j h, MulActionHomClass (T h) R (G i) (G j)] :
     IsScalarTower R (DirectLimit G f) (DirectLimit G f) where
   smul_assoc r := DirectLimit.induction₂ _ fun i _ _ ↦ by
     simp_rw [smul_eq_mul, smul_def, mul_def, smul_def, smul_mul_assoc]
 
 instance [∀ i, Mul (G i)] [∀ i, SMul R (G i)] [∀ i, SMulCommClass R (G i) (G i)]
-    [∀ i j h, MulHomClass (T h) (G i) (G j)] [∀ i j h, MulActionHomClass (T h) R (G i) (G j)] :
+    [∀ i j (h : i ≤ j), MulHomClass (T h)] [∀ i j h, MulActionHomClass (T h) R (G i) (G j)] :
     SMulCommClass R (DirectLimit G f) (DirectLimit G f) where
   smul_comm r := DirectLimit.induction₂ _ fun i _ _ ↦ by
     simp_rw [smul_eq_mul, smul_def, mul_def, smul_def, mul_smul_comm]
 
 instance [∀ i, Mul (G i)] [∀ i, SMul R (G i)] [∀ i, SMulCommClass (G i) R (G i)]
-    [∀ i j h, MulHomClass (T h) (G i) (G j)] [∀ i j h, MulActionHomClass (T h) R (G i) (G j)] :
+    [∀ i j (h : i ≤ j), MulHomClass (T h)] [∀ i j h, MulActionHomClass (T h) R (G i) (G j)] :
     SMulCommClass (DirectLimit G f) R (DirectLimit G f) :=
   have _ (i) : SMulCommClass R (G i) (G i) := SMulCommClass.symm _ _ _
   SMulCommClass.symm _ _ _

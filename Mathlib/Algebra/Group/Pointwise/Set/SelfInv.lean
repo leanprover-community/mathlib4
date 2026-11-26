@@ -135,7 +135,7 @@ end InvolutiveInv
 
 section Group
 
-variable [Group α] [DivisionMonoid β] {F : Type*} [FunLike F α β] [MonoidHomClass F α β]
+variable [Group α] [DivisionMonoid β] {F : Type*} [FunLike F α β] [MonoidHomClass F]
   {s : Set α}
 
 @[to_additive]

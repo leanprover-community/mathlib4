@@ -268,7 +268,7 @@ def AlgHom.tensorEqualizerAux :
         (Algebra.TensorProduct.map (AlgHom.id S T) g) :=
   LinearMap.tensorEqLocus S T (f : A →ₗ[R] B) (g : A →ₗ[R] B)
 
-private local instance : AddHomClass (A →ₐ[R] B) A B := inferInstance
+private local instance : AddHomClass (A →ₐ[R] B) := inferInstance
 
 @[simp]
 private lemma AlgHom.coe_tensorEqualizerAux (x : T ⊗[R] AlgHom.equalizer f g) :

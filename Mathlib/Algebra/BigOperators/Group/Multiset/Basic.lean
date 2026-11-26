@@ -82,19 +82,19 @@ lemma prod_eq_one (h : ∀ x ∈ s, x = (1 : M)) : s.prod = 1 := by
 
 @[to_additive]
 theorem prod_hom_ne_zero {s : Multiset M} (hs : s ≠ 0) {F : Type*} [FunLike F M N]
-    [MulHomClass F M N] (f : F) :
+    [MulHomClass F] (f : F) :
     (s.map f).prod = f s.prod := by
   induction s using Quot.inductionOn; aesop (add simp List.prod_hom_nonempty)
 
 @[to_additive]
 theorem prod_hom (s : Multiset M) {F : Type*} [FunLike F M N]
-    [MonoidHomClass F M N] (f : F) :
+    [MonoidHomClass F] (f : F) :
     (s.map f).prod = f s.prod :=
   Quotient.inductionOn s fun l => by simp only [l.prod_hom f, quot_mk_to_coe, map_coe, prod_coe]
 
 @[to_additive]
 theorem prod_hom' (s : Multiset ι) {F : Type*} [FunLike F M N]
-    [MonoidHomClass F M N] (f : F)
+    [MonoidHomClass F] (f : F)
     (g : ι → M) : (s.map fun i => f <| g i).prod = f (s.map g).prod := by
   convert (s.map g).prod_hom f
   exact (map_map _ _ _).symm
@@ -131,11 +131,11 @@ theorem prod_dvd_prod_of_le (h : s ≤ t) : s.prod ∣ t.prod := by
   simp only [prod_add, dvd_mul_right]
 
 @[to_additive]
-lemma _root_.map_multiset_prod [FunLike F M N] [MonoidHomClass F M N] (f : F) (s : Multiset M) :
+lemma _root_.map_multiset_prod [FunLike F M N] [MonoidHomClass F] (f : F) (s : Multiset M) :
     f s.prod = (s.map f).prod := (s.prod_hom f).symm
 
 @[to_additive]
-lemma _root_.map_multiset_ne_zero_prod [FunLike F M N] [MulHomClass F M N] (f : F)
+lemma _root_.map_multiset_ne_zero_prod [FunLike F M N] [MulHomClass F] (f : F)
     {s : Multiset M} (hs : s ≠ 0) :
     f s.prod = (s.map f).prod := (s.prod_hom_ne_zero hs f).symm
 

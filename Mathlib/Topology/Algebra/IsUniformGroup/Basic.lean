@@ -438,7 +438,7 @@ variable [TopologicalSpace α] [Group α] [IsTopologicalGroup α]
 
 -- β is a dense subgroup of α, inclusion is denoted by e
 variable [TopologicalSpace β] [Group β]
-variable [FunLike hom β α] [MonoidHomClass hom β α] {e : hom}
+variable [FunLike hom β α] [MonoidHomClass hom] {e : hom}
 
 @[to_additive]
 theorem tendsto_div_comap_self (de : IsDenseInducing e) (x₀ : α) :

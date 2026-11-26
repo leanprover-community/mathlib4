@@ -32,7 +32,7 @@ section Semiring
 
 variable [FunLike F α α] [Zero F] [One F] [Mul F] [Add F] [NPow F] [AddCommMonoid α]
   [IsZeroApply F] [IsAddApply F] [IsOneApplyEqSelf F] [IsMulApplyEqComp F] [IsNPowApplyEqIterate F]
-  [SMul ℕ F] [IsSMulApply ℕ F] [AddMonoidHomClass F α α] [NatCast F] [IsNatCastApplyEqSMul F]
+  [SMul ℕ F] [IsSMulApply ℕ F] [AddMonoidHomClass F] [NatCast F] [IsNatCastApplyEqSMul F]
 
 /-- A `FunLike` type with `(f * g) x = f (g x)` is a `Semiring`. -/
 protected abbrev compSemiring : Semiring F where
@@ -52,7 +52,7 @@ variable [FunLike F α α] [Zero F] [One F] [Mul F] [Add F] [Neg F] [Sub F] [NPo
   [IsZeroApply F] [IsAddApply F] [IsOneApplyEqSelf F] [IsMulApplyEqComp F]
   [IsNegApply F] [IsSubApply F] [IsNPowApplyEqIterate F]
   [SMul ℕ F] [IsSMulApply ℕ F]
-  [SMul ℤ F] [IsSMulApply ℤ F] [AddMonoidHomClass F α α]
+  [SMul ℤ F] [IsSMulApply ℤ F] [AddMonoidHomClass F]
   [NatCast F] [IsNatCastApplyEqSMul F] [IntCast F] [IsIntCastApplyEqSMul F]
 
 /-- A `FunLike` type with `(f * g) x = f (g x)` is a `Ring`. -/

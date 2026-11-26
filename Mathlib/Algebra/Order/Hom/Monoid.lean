@@ -50,7 +50,7 @@ This file used to define typeclasses for order-preserving (additive) monoid homo
 `OrderAddMonoidHomClass`, `OrderMonoidHomClass`, and `OrderMonoidWithZeroHomClass`.
 
 In https://github.com/leanprover-community/mathlib4/pull/10544 we migrated from these typeclasses
-to assumptions like `[FunLike F M N] [MonoidHomClass F M N] [OrderHomClass F M N]`,
+to assumptions like `[FunLike F M N] [MonoidHomClass F] [OrderHomClass F M N]`,
 making some definitions and lemmas irrelevant.
 
 ## Tags
@@ -75,7 +75,7 @@ structure.
 
 When possible, instead of parametrizing results over `(f : α →+o β)`,
 you should parametrize over
-`(F : Type*) [FunLike F M N] [MonoidHomClass F M N] [OrderHomClass F M N] (f : F)`. -/
+`(F : Type*) [FunLike F M N] [MonoidHomClass F] [OrderHomClass F M N] (f : F)`. -/
 structure OrderAddMonoidHom (α β : Type*) [Preorder α] [Preorder β] [AddZeroClass α]
   [AddZeroClass β] extends α →+ β where
   /-- An `OrderAddMonoidHom` is a monotone function. -/
@@ -111,7 +111,7 @@ section Monoid
 
 When possible, instead of parametrizing results over `(f : α →*o β)`,
 you should parametrize over
-`(F : Type*) [FunLike F M N] [MonoidHomClass F M N] [OrderHomClass F M N] (f : F)`. -/
+`(F : Type*) [FunLike F M N] [MonoidHomClass F] [OrderHomClass F M N] (f : F)`. -/
 @[to_additive]
 structure OrderMonoidHom (α β : Type*) [Preorder α] [Preorder β] [MulOneClass α]
   [MulOneClass β] extends α →* β where
@@ -123,13 +123,13 @@ infixr:25 " →*o " => OrderMonoidHom
 
 variable [Preorder α] [Preorder β] [MulOneClass α] [MulOneClass β] [FunLike F α β]
 
-/-- Turn an element of a type `F` satisfying `OrderHomClass F α β` and `MonoidHomClass F α β`
+/-- Turn an element of a type `F` satisfying `OrderHomClass F α β` and `MonoidHomClass F`
 into an actual `OrderMonoidHom`. This is declared as the default coercion from `F` to `α →*o β`. -/
 @[to_additive (attr := coe)
-  /-- Turn an element of a type `F` satisfying `OrderHomClass F α β` and `AddMonoidHomClass F α β`
+  /-- Turn an element of a type `F` satisfying `OrderHomClass F α β` and `AddMonoidHomClass F`
   into an actual `OrderAddMonoidHom`.
   This is declared as the default coercion from `F` to `α →+o β`. -/]
-def OrderMonoidHomClass.toOrderMonoidHom [OrderHomClass F α β] [MonoidHomClass F α β] (f : F) :
+def OrderMonoidHomClass.toOrderMonoidHom [OrderHomClass F α β] [MonoidHomClass F] (f : F) :
     α →*o β :=
   { (f : α →* β) with monotone' := OrderHomClass.monotone f }
 
@@ -137,7 +137,7 @@ def OrderMonoidHomClass.toOrderMonoidHom [OrderHomClass F α β] [MonoidHomClass
   `OrderMonoidHomClass.toOrderMonoidHom`. -/
 @[to_additive /-- Any type satisfying `OrderAddMonoidHomClass` can be cast into `OrderAddMonoidHom`
   via `OrderAddMonoidHomClass.toOrderAddMonoidHom`. -/]
-instance [OrderHomClass F α β] [MonoidHomClass F α β] : CoeTC F (α →*o β) :=
+instance [OrderHomClass F α β] [MonoidHomClass F] : CoeTC F (α →*o β) :=
   ⟨OrderMonoidHomClass.toOrderMonoidHom⟩
 
 /-- `α ≃*o β` is the type of isomorphisms `α ≃ β` that preserve the ordered monoid structure.
@@ -174,7 +174,7 @@ end Monoid
 section MonoidHomClass
 
 variable [Group α] [Monoid β]
-variable {F : Type*} [FunLike F α β] [MonoidHomClass F α β]
+variable {F : Type*} [FunLike F α β] [MonoidHomClass F]
 
 @[to_additive]
 theorem map_inv_le_map_inv_iff_map_le_map [LE β] [MulRightMono β] [MulLeftMono β]
@@ -199,7 +199,7 @@ section OrderedZero
 
 variable [FunLike F α β]
 variable [Preorder α] [Zero α] [Preorder β] [Zero β] [OrderHomClass F α β]
-  [ZeroHomClass F α β] (f : F) {a : α}
+  [ZeroHomClass F] (f : F) {a : α}
 
 /-- See also `NonnegHomClass.apply_nonneg`. -/
 theorem map_nonneg (ha : 0 ≤ a) : 0 ≤ f a := by
@@ -218,7 +218,7 @@ variable [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α]
   [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β] [i : FunLike F α β]
 variable (f : F)
 
-theorem monotone_iff_map_nonneg [iamhc : AddMonoidHomClass F α β] :
+theorem monotone_iff_map_nonneg [iamhc : AddMonoidHomClass F] :
     Monotone (f : α → β) ↔ ∀ a, 0 ≤ a → 0 ≤ f a :=
   ⟨fun h a => by
     rw [← map_zero f]
@@ -226,7 +226,7 @@ theorem monotone_iff_map_nonneg [iamhc : AddMonoidHomClass F α β] :
     rw [← sub_add_cancel b a, map_add f]
     exact le_add_of_nonneg_left (h _ <| sub_nonneg.2 hl)⟩
 
-variable [iamhc : AddMonoidHomClass F α β]
+variable [iamhc : AddMonoidHomClass F]
 
 theorem antitone_iff_map_nonpos : Antitone (f : α → β) ↔ ∀ a, 0 ≤ a → f a ≤ 0 :=
   monotone_toDual_comp_iff.symm.trans <| monotone_iff_map_nonneg (β := βᵒᵈ) (iamhc := iamhc) _
@@ -279,7 +279,7 @@ instance : OrderHomClass (α →*o β) α β where
   map_rel f _ _ h := f.monotone' h
 
 @[to_additive]
-instance : MonoidHomClass (α →*o β) α β where
+instance : MonoidHomClass (α →*o β) where
   map_mul f := f.map_mul'
   map_one f := f.map_one'
 

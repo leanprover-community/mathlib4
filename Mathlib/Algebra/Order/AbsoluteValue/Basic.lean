@@ -57,10 +57,10 @@ instance funLike : FunLike (AbsoluteValue R S) R S where
   coe f := f.toFun
   coe_injective f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
 
-instance zeroHomClass : ZeroHomClass (AbsoluteValue R S) R S where
+instance zeroHomClass : ZeroHomClass (AbsoluteValue R S) where
   map_zero f := (f.eq_zero' _).2 rfl
 
-instance mulHomClass : MulHomClass (AbsoluteValue R S) R S :=
+instance mulHomClass : MulHomClass (AbsoluteValue R S) :=
   { AbsoluteValue.zeroHomClass (R := R) (S := S) with map_mul := fun f => f.map_mul' }
 
 instance nonnegHomClass : NonnegHomClass (AbsoluteValue R S) R S :=

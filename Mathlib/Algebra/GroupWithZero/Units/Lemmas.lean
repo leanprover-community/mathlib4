@@ -29,7 +29,7 @@ section MonoidWithZero
 
 variable [MonoidWithZero M₀'] [FunLike F M₀ M₀']
 
-protected theorem IsUnit.map_ringInverse [MonoidHomClass F M₀ M₀'] (f : F) {a : M₀} (h : IsUnit a) :
+protected theorem IsUnit.map_ringInverse [MonoidHomClass F] (f : F) {a : M₀} (h : IsUnit a) :
     f a⁻¹ʳ = (f a)⁻¹ʳ := by
   lift a to M₀ˣ using h
   simpa [Ring.inverse_unit] using (Ring.inverse_unit (Units.map (.ofClass f) a)).symm
@@ -55,7 +55,7 @@ section Monoid
 
 variable [Monoid M] [GroupWithZero G₀]
 
-lemma isLocalHom_of_exists_map_ne_one [FunLike F G₀ M] [MonoidHomClass F G₀ M] {f : F}
+lemma isLocalHom_of_exists_map_ne_one [FunLike F G₀ M] [MonoidHomClass F] {f : F}
     (hf : ∃ x : G₀, f x ≠ 1) : IsLocalHom f where
   map_nonunit a h := by
     rcases eq_or_ne a 0 with (rfl | h)

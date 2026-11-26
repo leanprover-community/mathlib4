@@ -80,7 +80,7 @@ instance MulChar.instFunLike : FunLike (MulChar R R') R R' :=
 
 /-- This is the corresponding extension of `MonoidHomClass`. -/
 class MulCharClass (F : Type*) (R R' : outParam Type*) [CommMonoid R]
-    [CommMonoidWithZero R'] [FunLike F R R'] : Prop extends MonoidHomClass F R R' where
+    [CommMonoidWithZero R'] [FunLike F R R'] : Prop extends MonoidHomClass F where
   map_nonunit : ∀ (χ : F) {a : R} (_ : ¬IsUnit a), χ a = 0
 
 initialize_simps_projections MulChar (toFun → apply, -toMonoidHom)

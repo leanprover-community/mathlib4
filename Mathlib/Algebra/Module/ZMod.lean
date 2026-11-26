@@ -55,7 +55,7 @@ abbrev QuotientAddGroup.zmodModule {G : Type*} [AddCommGroup G] {H : AddSubgroup
   AddCommGroup.zmodModule <| by simpa [QuotientAddGroup.forall_mk, ← QuotientAddGroup.mk_nsmul]
 
 variable {F S : Type*} [AddCommGroup M] [AddCommGroup M₁] [FunLike F M M₁]
-  [AddMonoidHomClass F M M₁] [Module (ZMod n) M] [Module (ZMod n) M₁] [SetLike S M]
+  [AddMonoidHomClass F] [Module (ZMod n) M] [Module (ZMod n) M₁] [SetLike S M]
   [AddSubgroupClass S M] {x : M} {K : S}
 
 namespace ZMod

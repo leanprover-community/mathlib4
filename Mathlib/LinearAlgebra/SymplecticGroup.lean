@@ -63,7 +63,7 @@ def J : Matrix (l ⊕ l) (l ⊕ l) R :=
 variable {R} in
 @[simp]
 theorem map_J {F S : Type*} [CommRing S] [FunLike F R S]
-    [AddMonoidHomClass F R S] [OneHomClass F R S] (f : F) :
+    [AddMonoidHomClass F] [OneHomClass F] (f : F) :
     (J l R).map f = J l S := by
   simp [J, fromBlocks_map, Matrix.map_neg]
 

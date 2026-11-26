@@ -58,7 +58,7 @@ alias PositiveLinearMapClass.toPositiveLinearMap := PositiveLinearMap.ofClass
 is also a type of order homomorphisms. -/
 lemma OrderHomClass.of_addMonoidHom {F' E₁' E₂' : Type*} [FunLike F' E₁' E₂'] [AddGroup E₁']
     [LE E₁'] [AddRightMono E₁'] [AddGroup E₂'] [LE E₂'] [AddRightMono E₂']
-    [AddMonoidHomClass F' E₁' E₂']
+    [AddMonoidHomClass F']
     (h : ∀ f : F', ∀ x, 0 ≤ x → 0 ≤ f x) : OrderHomClass F' E₁' E₂' where
   map_rel f a b hab := by simpa using h f (b - a) (sub_nonneg.mpr hab)
 

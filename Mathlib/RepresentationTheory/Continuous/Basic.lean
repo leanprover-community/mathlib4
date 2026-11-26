@@ -73,7 +73,7 @@ instance : FunLike (ContRepresentation R G V) G (V →L[R] V) where
   coe π := π.toMonoidHom
   coe_injective π₁ π₂ _ := by cases π₁; cases π₂; simp_all
 
-instance : MonoidHomClass (ContRepresentation R G V) G (V →L[R] V) where
+instance : MonoidHomClass (ContRepresentation R G V) where
   map_one π := π.toMonoidHom.map_one
   map_mul π := π.toMonoidHom.map_mul
 

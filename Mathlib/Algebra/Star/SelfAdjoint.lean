@@ -688,7 +688,7 @@ protected instance zpow [Group R] [StarMul R] {x : R} [IsStarNormal x] (n : ℤ)
   star_comm_self := star_zpow x n ▸ (star_comm_self.zpow_zpow n n)
 
 protected instance map {F R S : Type*} [Mul R] [Star R] [Mul S] [Star S]
-    [FunLike F R S] [MulHomClass F R S] [StarHomClass F R S] (f : F) (r : R) [hr : IsStarNormal r] :
+    [FunLike F R S] [MulHomClass F] [StarHomClass F R S] (f : F) (r : R) [hr : IsStarNormal r] :
     IsStarNormal (f r) where
   star_comm_self := by simpa [map_star] using! congr(f $hr.star_comm_self)
 

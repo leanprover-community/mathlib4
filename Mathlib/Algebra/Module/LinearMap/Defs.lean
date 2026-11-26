@@ -107,7 +107,7 @@ is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
 class SemilinearMapClass (F : Type*) {R S : outParam Type*} [Semiring R] [Semiring S]
     (σ : outParam (R →+* S)) (M M₂ : outParam Type*) [AddCommMonoid M] [AddCommMonoid M₂]
     [Module R M] [Module S M₂] [FunLike F M M₂] : Prop
-    extends AddHomClass F M M₂, MulActionSemiHomClass F σ M M₂
+    extends AddHomClass F, MulActionSemiHomClass F σ M M₂
 
 end
 
@@ -137,7 +137,7 @@ variable [Module R M] [Module R M₂] [Module S M₃]
 variable {σ : R →+* S}
 
 instance (priority := 100) instAddMonoidHomClass [FunLike F M M₃] [SemilinearMapClass F σ M M₃] :
-    AddMonoidHomClass F M M₃ :=
+    AddMonoidHomClass F :=
   { SemilinearMapClass.toAddHomClass with
     map_zero := fun f ↦
       show f 0 = 0 by
@@ -377,7 +377,7 @@ theorem isScalarTower_of_injective [SMul R S] [CompatibleSMul M M₂ R S] [IsSca
   smul_assoc r s _ := hf <| by rw [f.map_smul_of_tower r, map_smul, map_smul, smul_assoc]
 
 @[simp] lemma _root_.map_zsmul_unit {F M N : Type*}
-    [AddGroup M] [AddGroup N] [FunLike F M N] [AddMonoidHomClass F M N]
+    [AddGroup M] [AddGroup N] [FunLike F M N] [AddMonoidHomClass F]
     (f : F) (c : ℤˣ) (m : M) :
     f (c • m) = c • f m := by
   simp [Units.smul_def]

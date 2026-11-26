@@ -150,7 +150,7 @@ lemma IsMulFreimanIso.threeGPFree_congr (hf : IsMulFreimanIso 2 s t f) :
 /-- Geometric progressions of length three are preserved under semigroup homomorphisms. -/
 @[to_additive
 /-- Arithmetic progressions of length three are preserved under semigroup homomorphisms. -/]
-theorem ThreeGPFree.image' [FunLike F α β] [MulHomClass F α β] (f : F) (hf : (s * s).InjOn f)
+theorem ThreeGPFree.image' [FunLike F α β] [MulHomClass F] (f : F) (hf : (s * s).InjOn f)
     (h : ThreeGPFree s) : ThreeGPFree (f '' s) := by
   rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩ _ ⟨c, hc, rfl⟩ habc
   rw [h ha hb hc (hf (mul_mem_mul ha hc) (mul_mem_mul hb hb) <| by rwa [map_mul, map_mul])]

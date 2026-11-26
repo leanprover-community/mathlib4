@@ -137,7 +137,7 @@ theorem singletonOneHom_apply (a : α) : singletonOneHom a = {a} :=
 
 /-- Lift a `OneHom` to `Finset` via `image`. -/
 @[to_additive (attr := simps) /-- Lift a `ZeroHom` to `Finset` via `image` -/]
-def imageOneHom [DecidableEq β] [One β] [FunLike F α β] [OneHomClass F α β] (f : F) :
+def imageOneHom [DecidableEq β] [One β] [FunLike F α β] [OneHomClass F] (f : F) :
     OneHom (Finset α) (Finset β) where
   toFun := Finset.image f
   map_one' := by rw [image_one, map_one, singleton_one]
@@ -312,7 +312,7 @@ open scoped Pointwise
 
 section Mul
 
-variable [DecidableEq α] [Mul α] [Mul β] [FunLike F α β] [MulHomClass F α β]
+variable [DecidableEq α] [Mul α] [Mul β] [FunLike F α β] [MulHomClass F]
   (f : F) {s s₁ s₂ t t₁ t₂ u : Finset α} {a b : α}
 
 /-- The pointwise multiplication of finsets `s * t` and `t` is defined as `{x * y | x ∈ s, y ∈ t}`
@@ -790,7 +790,7 @@ theorem coeMonoidHom_apply (s : Finset α) : coeMonoidHom s = s :=
 
 /-- Lift a `MonoidHom` to `Finset` via `image`. -/
 @[to_additive (attr := simps) /-- Lift an `add_monoid_hom` to `Finset` via `image` -/]
-def imageMonoidHom [MulOneClass β] [FunLike F α β] [MonoidHomClass F α β] (f : F) :
+def imageMonoidHom [MulOneClass β] [FunLike F α β] [MonoidHomClass F] (f : F) :
     Finset α →* Finset β :=
   { imageMulHom f, imageOneHom f with }
 
@@ -1022,7 +1022,7 @@ protected def divisionCommMonoid [DivisionCommMonoid α] :
 scoped[Pointwise] attribute [instance] Finset.divisionCommMonoid Finset.subtractionCommMonoid
 section Group
 
-variable [Group α] [DivisionMonoid β] [FunLike F α β] [MonoidHomClass F α β]
+variable [Group α] [DivisionMonoid β] [FunLike F α β] [MonoidHomClass F]
 variable (f : F) {s t : Finset α} {a b : α}
 
 /-! Note that `Finset` is not a `Group` because `s / s ≠ 1` in general. -/
@@ -1125,13 +1125,13 @@ section Monoid
 variable [DecidableEq α] [DecidableEq β] [Monoid α] [Monoid β] [FunLike F α β]
 
 @[to_additive]
-lemma image_pow_of_ne_zero [MulHomClass F α β] :
+lemma image_pow_of_ne_zero [MulHomClass F] :
     ∀ {n}, n ≠ 0 → ∀ (f : F) (s : Finset α), (s ^ n).image f = s.image f ^ n
   | 1, _ => by simp
   | n + 2, _ => by simp [image_mul, pow_succ _ n.succ, image_pow_of_ne_zero]
 
 @[to_additive]
-lemma image_pow [MonoidHomClass F α β] (f : F) (s : Finset α) : ∀ n, (s ^ n).image f = s.image f ^ n
+lemma image_pow [MonoidHomClass F] (f : F) (s : Finset α) : ∀ n, (s ^ n).image f = s.image f ^ n
   | 0 => by simp [singleton_one]
   | n + 1 => image_pow_of_ne_zero n.succ_ne_zero ..
 

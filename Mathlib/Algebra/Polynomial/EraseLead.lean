@@ -353,7 +353,7 @@ theorem induction_with_natDegree_le (motive : R[X] → Prop) (N : ℕ) (zero : m
 
 Then, `φ` maps each polynomial `p` in `R[x]` to a polynomial of degree `fu (deg p)`. -/
 theorem mono_map_natDegree_eq {S F : Type*} [Semiring S]
-    [FunLike F R[X] S[X]] [AddMonoidHomClass F R[X] S[X]] {φ : F}
+    [FunLike F R[X] S[X]] [AddMonoidHomClass F] {φ : F}
     {p : R[X]} (k : ℕ) (fu : ℕ → ℕ) (fu0 : ∀ {n}, n ≤ k → fu n = 0)
     (fc : ∀ {n m}, k ≤ n → n < m → fu n < fu m) (φ_k : ∀ {f : R[X]}, f.natDegree < k → φ f = 0)
     (φ_mon_nat : ∀ n c, c ≠ 0 → (φ (monomial n c)).natDegree = fu n) :
@@ -373,7 +373,7 @@ theorem mono_map_natDegree_eq {S F : Type*} [Semiring S]
       · rwa [φ_k FG, zero_add]
 
 theorem map_natDegree_eq_sub {S F : Type*} [Semiring S]
-    [FunLike F R[X] S[X]] [AddMonoidHomClass F R[X] S[X]] {φ : F}
+    [FunLike F R[X] S[X]] [AddMonoidHomClass F] {φ : F}
     {p : R[X]} {k : ℕ} (φ_k : ∀ f : R[X], f.natDegree < k → φ f = 0)
     (φ_mon : ∀ n c, c ≠ 0 → (φ (monomial n c)).natDegree = n - k) :
     (φ p).natDegree = p.natDegree - k :=
@@ -382,7 +382,7 @@ theorem map_natDegree_eq_sub {S F : Type*} [Semiring S]
     (φ_k _) φ_mon
 
 theorem map_natDegree_eq_natDegree {S F : Type*} [Semiring S]
-    [FunLike F R[X] S[X]] [AddMonoidHomClass F R[X] S[X]]
+    [FunLike F R[X] S[X]] [AddMonoidHomClass F]
     {φ : F} (p) (φ_mon_nat : ∀ n c, c ≠ 0 → (φ (monomial n c)).natDegree = n) :
     (φ p).natDegree = p.natDegree :=
   (map_natDegree_eq_sub (fun _ h => (Nat.not_lt_zero _ h).elim) (by simpa)).trans

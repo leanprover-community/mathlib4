@@ -54,7 +54,7 @@ lemma mapDomain_injective (hf : Injective f) : Injective (mapDomain (R := R) f) 
   ofCoeff_injective.comp <| (Finsupp.mapDomain_injective hf).comp coeff_injective
 
 @[to_additive (dont_translate := R) (attr := simp) mapDomain_one]
-theorem mapDomain_one [One M] [One N] {F : Type*} [FunLike F M N] [OneHomClass F M N] (f : F) :
+theorem mapDomain_one [One M] [One N] {F : Type*} [FunLike F M N] [OneHomClass F] (f : F) :
     mapDomain f (1 : R[M]) = (1 : R[N]) := by
   simp [one_def]
 
@@ -163,7 +163,7 @@ lemma mapDomain_comapDomain {f : M → N} {x : R[N]} (hx : ↑x.coeff.support �
   ext : 1; exact Finsupp.mapDomain_comapDomain _ hf _ hx
 
 section Mul
-variable [Mul M] [Mul N] [Mul O] [FunLike F M N] [MulHomClass F M N]
+variable [Mul M] [Mul N] [Mul O] [FunLike F M N] [MulHomClass F]
 
 @[to_additive (dont_translate := R) mapDomain_mul]
 lemma mapDomain_mul (f : F) (x y : R[M]) : mapDomain f (x * y) = mapDomain f x * mapDomain f y := by

@@ -67,13 +67,13 @@ theorem birkhoffAverage_one (f : α → α) (g : α → M) : birkhoffAverage R f
 
 theorem map_birkhoffAverage (S : Type*) {F N : Type*}
     [DivisionSemiring S] [AddCommMonoid N] [Module S N] [FunLike F M N]
-    [AddMonoidHomClass F M N] (g' : F) (f : α → α) (g : α → M) (n : ℕ) (x : α) :
+    [AddMonoidHomClass F] (g' : F) (f : α → α) (g : α → M) (n : ℕ) (x : α) :
     g' (birkhoffAverage R f g n x) = birkhoffAverage S f (g' ∘ g) n x := by
   simp only [birkhoffAverage, map_inv_natCast_smul g' R S, map_birkhoffSum]
 
 theorem map_comp_birkhoffAverage (S : Type*) {F N : Type*}
     [DivisionSemiring S] [AddCommMonoid N] [Module S N] [FunLike F M N]
-    [AddMonoidHomClass F M N] (g' : F) (f : α → α) (g : α → M) (n : ℕ) :
+    [AddMonoidHomClass F] (g' : F) (f : α → α) (g : α → M) (n : ℕ) :
     ⇑g' ∘ birkhoffAverage R f g n = birkhoffAverage S f (g' ∘ g) n :=
   funext <| map_birkhoffAverage R S g' f g n
 

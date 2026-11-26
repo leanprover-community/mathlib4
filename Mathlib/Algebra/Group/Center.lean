@@ -87,7 +87,7 @@ protected theorem right_comm (h : IsMulCentral c) (a b) : a * b * c = a * c * b 
   simp only [h.right_assoc, h.mid_assoc, (h.comm _).eq]
 
 @[to_additive]
-protected theorem map {F} [FunLike F M N] [MulHomClass F M N] {f : F} (h : IsMulCentral a)
+protected theorem map {F} [FunLike F M N] [MulHomClass F] {f : F} (h : IsMulCentral a)
     (hf : Function.Surjective f) : IsMulCentral (f a) := by
   refine ⟨fun a ↦ ?_ , fun a b ↦ ?_, fun a b ↦ ?_⟩
   · obtain ⟨_, rfl⟩ := hf a
@@ -98,7 +98,7 @@ protected theorem map {F} [FunLike F M N] [MulHomClass F M N] {f : F} (h : IsMul
     simp only [← map_mul, h.left_assoc, h.right_assoc]
 
 @[to_additive]
-protected theorem of_map {F} [FunLike F M N] [MulHomClass F M N] {f : F} (h : IsMulCentral (f a))
+protected theorem of_map {F} [FunLike F M N] [MulHomClass F] {f : F} (h : IsMulCentral (f a))
     (hf : Function.Injective f) : IsMulCentral a where
   comm _ := hf <| by rw [map_mul, map_mul, h.comm]
   left_assoc _ _ := hf <| by simp [map_mul, h.left_assoc]
@@ -129,12 +129,12 @@ theorem mem_center_iff {z : M} : z ∈ center M ↔ IsMulCentral z :=
   Iff.rfl
 
 @[to_additive image_addCenter_subset]
-theorem image_center_subset {F} [FunLike F M N] [MulHomClass F M N] {f : F}
+theorem image_center_subset {F} [FunLike F M N] [MulHomClass F] {f : F}
     (hf : Function.Surjective f) : f '' (Set.center M) ⊆ Set.center N := by
   simpa [subset_def, mem_center_iff] using fun _ h ↦ IsMulCentral.map h hf
 
 @[to_additive preimage_addCenter_subset]
-theorem preimage_center_subset {F} [FunLike F M N] [MulHomClass F M N] {f : F}
+theorem preimage_center_subset {F} [FunLike F M N] [MulHomClass F] {f : F}
     (hf : Function.Injective f) : f ⁻¹' Set.center N ⊆ Set.center M :=
   fun _ hx ↦ Set.mem_center_iff.mpr (hx.of_map hf)
 

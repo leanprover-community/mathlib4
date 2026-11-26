@@ -190,7 +190,7 @@ def mapDomainNonUnitalAlgHom [CommSemiring R] [Semiring A] [Algebra R A]
 variable (A) in
 @[to_additive]
 theorem mapDomain_algebraMap {F : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
-    [Monoid M] [Monoid N] [FunLike F M N] [MonoidHomClass F M N] (f : F) (r : R) :
+    [Monoid M] [Monoid N] [FunLike F M N] [MonoidHomClass F] (f : F) (r : R) :
     mapDomain f (algebraMap R A[M] r) = algebraMap R A[N] r := by
   simp only [coe_algebraMap, mapDomain_single, map_one, (· ∘ ·)]
 

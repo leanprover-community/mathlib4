@@ -283,7 +283,7 @@ instance : FunLike S.Splitting G E where
     exact DFunLike.coe_injective h
 
 @[to_additive]
-instance : MonoidHomClass S.Splitting G E where
+instance : MonoidHomClass S.Splitting where
   map_mul s := s.map_mul'
   map_one s := s.map_one'
 

@@ -107,7 +107,7 @@ theorem le_prod_of_submultiplicative [IsOrderedMonoid N] (f : M → N) (h_one : 
 add_decl_doc le_sum_of_subadditive
 
 @[to_additive]
-theorem map_prod_le_prod [IsOrderedMonoid N] {F : Type*} [FunLike F M N] [OneHomClass F M N]
+theorem map_prod_le_prod [IsOrderedMonoid N] {F : Type*} [FunLike F M N] [OneHomClass F]
     [SubmultiplicativeHomClass F M N] (f : F) (s : Finset ι) (g : ι → M) :
     f (∏ i ∈ s, g i) ≤ ∏ i ∈ s, f (g i) :=
   le_prod_of_submultiplicative f (map_one f).le (map_mul_le_mul f) s g

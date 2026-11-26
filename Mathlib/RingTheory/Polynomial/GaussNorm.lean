@@ -62,7 +62,7 @@ def gaussNorm : ℝ := if h : p.support.Nonempty then p.support.sup' h fun i ↦
 @[simp]
 lemma gaussNorm_zero : gaussNorm v c 0 = 0 := by simp [gaussNorm]
 
-variable [ZeroHomClass F R ℝ]
+variable [ZeroHomClass F]
 
 theorem exists_eq_gaussNorm : ∃ i, p.gaussNorm v c = v (p.coeff i) * c ^ i := by
   by_cases h_supp : p.support.Nonempty
@@ -82,7 +82,7 @@ theorem gaussNorm_monomial (n : ℕ) (r : R) :
 
 variable {c}
 
-omit [ZeroHomClass F R ℝ] in
+omit [ZeroHomClass F] in
 private lemma sup'_nonneg_of_ne_zero [NonnegHomClass F R ℝ] {p : R[X]} (h : p.support.Nonempty)
     (hc : 0 ≤ c) : 0 ≤ p.support.sup' h fun i ↦ (v (p.coeff i) * c ^ i) := by
   simp only [Finset.le_sup'_iff, mem_support_iff]
@@ -135,7 +135,7 @@ theorem gaussNorm_eq_zero_iff (h_eq_zero : ∀ x : R, v x = 0 → x = 0) (hc : 0
     (by simpa [PowerSeries.HasGaussNorm] using! aux_bdd v p)
   exact Iff.symm coe_eq_zero_iff
 
-omit [ZeroHomClass F R ℝ] in
+omit [ZeroHomClass F] in
 /-- If `v` is a nonnegative function, then the Gauss norm is nonnegative. -/
 theorem gaussNorm_nonneg (hc : 0 ≤ c) : 0 ≤ p.gaussNorm v c := by
   by_cases hp : p.support.Nonempty <;>
@@ -199,7 +199,7 @@ theorem isNonarchimedean_gaussNorm (hna : IsNonarchimedean v) {c : ℝ} (hc : 0 
 open Finset in
 /-- If `v` is a nonnegative nonarchimedean multiplicative function with `v 0 = 0` and `c` is
 nonnegative, then the Gauss norm is submultiplicative. -/
-theorem gaussNorm_mul_le [MulHomClass F R ℝ] (hna : IsNonarchimedean v) (p q : R[X]) (hc : 0 ≤ c) :
+theorem gaussNorm_mul_le [MulHomClass F] (hna : IsNonarchimedean v) (p q : R[X]) (hc : 0 ≤ c) :
     (p * q).gaussNorm v c ≤ p.gaussNorm v c * q.gaussNorm v c := by
   rcases eq_or_ne (p * q) 0 with hpq | hpq
   · simp [hpq, hc, gaussNorm_nonneg, mul_nonneg]
@@ -302,12 +302,12 @@ namespace PowerSeries
 variable {c} (r : R)
 
 @[simp]
-theorem gaussNorm_C [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ] (hc : 0 ≤ c) :
+theorem gaussNorm_C [ZeroHomClass F] [NonnegHomClass F R ℝ] (hc : 0 ≤ c) :
     (C r).gaussNorm v c = v r := by
   simp [← Polynomial.coe_C, hc]
 
 @[simp]
-theorem gaussNorm_monomial [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ] (hc : 0 ≤ c) (n : ℕ) :
+theorem gaussNorm_monomial [ZeroHomClass F] [NonnegHomClass F R ℝ] (hc : 0 ≤ c) (n : ℕ) :
     (monomial n r).gaussNorm v c = v r * c ^ n := by
   simp [← Polynomial.coe_monomial, hc]
 

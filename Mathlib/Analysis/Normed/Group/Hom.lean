@@ -90,7 +90,7 @@ instance funLike : FunLike (NormedAddGroupHom V₁ V₂) V₁ V₂ where
   coe := toFun
   coe_injective f g h := by cases f; cases g; congr
 
-instance toAddMonoidHomClass : AddMonoidHomClass (NormedAddGroupHom V₁ V₂) V₁ V₂ where
+instance toAddMonoidHomClass : AddMonoidHomClass (NormedAddGroupHom V₁ V₂) where
   map_add f := f.map_add'
   map_zero f := (AddMonoidHom.mk' f.toFun f.map_add').map_zero
 

@@ -95,16 +95,16 @@ section AddMonoidHomClass
 variable {A B F : Type*} [AddMonoidWithOne B] [FunLike F ℕ A] [AddMonoidWithOne A]
 
 -- these versions are primed so that the `RingHomClass` versions aren't
-theorem eq_natCast' [AddMonoidHomClass F ℕ A] (f : F) (h1 : f 1 = 1) : ∀ n : ℕ, f n = n
+theorem eq_natCast' [AddMonoidHomClass F] (f : F) (h1 : f 1 = 1) : ∀ n : ℕ, f n = n
   | 0 => by simp
   | n + 1 => by rw [map_add, h1, eq_natCast' f h1 n, Nat.cast_add_one]
 
-theorem map_natCast' {A} [AddMonoidWithOne A] [FunLike F A B] [AddMonoidHomClass F A B]
+theorem map_natCast' {A} [AddMonoidWithOne A] [FunLike F A B] [AddMonoidHomClass F]
     (f : F) (h : f 1 = 1) :
     ∀ n : ℕ, f n = n :=
   eq_natCast' ((f : A →+ B).comp <| Nat.castAddMonoidHom _) (by simpa)
 
-theorem map_ofNat' {A} [AddMonoidWithOne A] [FunLike F A B] [AddMonoidHomClass F A B]
+theorem map_ofNat' {A} [AddMonoidWithOne A] [FunLike F A B] [AddMonoidHomClass F]
     (f : F) (h : f 1 = 1) (n : ℕ) [n.AtLeastTwo] : f (OfNat.ofNat n) = OfNat.ofNat n :=
   map_natCast' f h n
 
@@ -115,7 +115,7 @@ section MonoidWithZeroHomClass
 variable {A F : Type*} [MulZeroOneClass A] [FunLike F ℕ A]
 
 /-- If two `MonoidWithZeroHom`s agree on the positive naturals they are equal. -/
-theorem ext_nat'' [ZeroHomClass F ℕ A] (f g : F) (h_pos : ∀ {n : ℕ}, 0 < n → f n = g n) :
+theorem ext_nat'' [ZeroHomClass F] (f g : F) (h_pos : ∀ {n : ℕ}, 0 < n → f n = g n) :
     f = g := by
   apply DFunLike.ext
   rintro (_ | n)

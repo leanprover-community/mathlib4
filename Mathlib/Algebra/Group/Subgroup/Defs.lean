@@ -706,7 +706,7 @@ end Subgroup
 
 @[to_additive]
 theorem Set.injOn_iff_map_eq_one {F G H S : Type*} [Group G] [Group H]
-    [FunLike F G H] [MonoidHomClass F G H] (f : F)
+    [FunLike F G H] [MonoidHomClass F] (f : F)
     [SetLike S G] [OneMemClass S G] [MulMemClass S G] [InvMemClass S G] (s : S) :
     Set.InjOn f s ↔ ∀ a ∈ s, f a = 1 → a = 1 where
   mp h a ha ha' := by

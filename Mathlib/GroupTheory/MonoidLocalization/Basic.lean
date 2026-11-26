@@ -388,12 +388,12 @@ namespace Submonoid
 
 namespace IsLocalizationMap
 
-@[to_additive] protected theorem map_one {F : Type*} [FunLike F M N] [MulHomClass F M N]
+@[to_additive] protected theorem map_one {F : Type*} [FunLike F M N] [MulHomClass F]
     {f : F} (hf : IsLocalizationMap S f) : f 1 = 1 := by
   rw [← (hf.map_units 1).mul_right_inj, mul_one]
   exact (map_mul ..).symm.trans congr(f $(mul_one _))
 
-@[to_additive] protected theorem map_pow {F : Type*} [FunLike F M N] [MulHomClass F M N]
+@[to_additive] protected theorem map_pow {F : Type*} [FunLike F M N] [MulHomClass F]
     {f : F} (hf : IsLocalizationMap S f) (a : M) (n : ℕ) : f (a ^ n) = f a ^ n := by
   induction n with
   | zero => simp [hf.map_one]
@@ -410,7 +410,7 @@ namespace IsLocalizationMap
 /-- A monoid with a localization map of a monoid with unique roots has unique roots. -/
 @[to_additive /-- An additive monoid with a localization map of an additive monoid with unique
 divisibility has unique divisibility. -/]
-theorem hasUniqueRoots {F : Type*} [FunLike F M N] [MulHomClass F M N] {f : F}
+theorem hasUniqueRoots {F : Type*} [FunLike F M N] [MulHomClass F] {f : F}
     (hf : IsLocalizationMap S f) [HasUniqueRoots M] : HasUniqueRoots N where
   pow_left_injective {n} hn x y hxy := by
     obtain ⟨⟨a₁, a₂⟩, ha⟩ := hf.surj x
@@ -446,7 +446,7 @@ theorem toMonoidHom_injective : Injective (toMonoidHom : LocalizationMap S N →
   coe f := f.toMonoidHom
   coe_injective := DFunLike.coe_injective.comp toMonoidHom_injective
 
-@[to_additive] instance : MonoidHomClass (LocalizationMap S N) M N where
+@[to_additive] instance : MonoidHomClass (LocalizationMap S N) where
   map_one f := f.toMonoidHom.map_one
   map_mul f := f.map_mul
 
@@ -823,7 +823,7 @@ section Group
 variable {M G F : Type*} [CommMonoid M] [CommGroup G]
 
 @[to_additive] theorem Submonoid.isLocalizationMap_iff_bijective {S : Submonoid G}
-    [FunLike F G M] [MulHomClass F G M] {f : F} :
+    [FunLike F G M] [MulHomClass F] {f : F} :
     S.IsLocalizationMap f ↔ Bijective f where
   mp h := by
     refine ⟨fun g g' eq ↦ ?_, fun m ↦ ?_⟩

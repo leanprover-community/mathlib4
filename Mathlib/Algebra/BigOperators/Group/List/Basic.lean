@@ -47,12 +47,12 @@ theorem rel_prod {R : M → N → Prop} (h : R 1 1) (hf : (R ⇒ R ⇒ R) (· * 
   rel_foldr hf h
 
 @[to_additive]
-theorem prod_hom_nonempty {l : List M} {F : Type*} [FunLike F M N] [MulHomClass F M N] (f : F)
+theorem prod_hom_nonempty {l : List M} {F : Type*} [FunLike F M N] [MulHomClass F] (f : F)
     (hl : l ≠ []) : (l.map f).prod = f l.prod :=
   match l, hl with | x :: xs, hl => by induction xs generalizing x <;> simp_all
 
 @[to_additive]
-theorem prod_hom (l : List M) {F : Type*} [FunLike F M N] [MonoidHomClass F M N] (f : F) :
+theorem prod_hom (l : List M) {F : Type*} [FunLike F M N] [MonoidHomClass F] (f : F) :
     (l.map f).prod = f l.prod := by
   simp only [prod, foldr_map, ← map_one f]
   exact l.foldr_hom f (fun x y => (map_mul f x y).symm)
@@ -76,7 +76,7 @@ theorem prod_map_mul {M : Type*} [CommMonoid M] {l : List ι} {f g : ι → M} :
   l.prod_hom₂ (· * ·) mul_mul_mul_comm (mul_one _) _ _
 
 @[to_additive]
-theorem prod_map_hom (L : List ι) (f : ι → M) {G : Type*} [FunLike G M N] [MonoidHomClass G M N]
+theorem prod_map_hom (L : List ι) (f : ι → M) {G : Type*} [FunLike G M N] [MonoidHomClass G]
     (g : G) :
     (L.map (g ∘ f)).prod = g (L.map f).prod := by rw [← prod_hom, map_map]
 
@@ -473,7 +473,7 @@ section MonoidHom
 variable [Monoid M] [Monoid N]
 
 @[to_additive]
-theorem map_list_prod {F : Type*} [FunLike F M N] [MonoidHomClass F M N] (f : F) (l : List M) :
+theorem map_list_prod {F : Type*} [FunLike F M N] [MonoidHomClass F] (f : F) (l : List M) :
     f l.prod = (l.map f).prod :=
   (l.prod_hom f).symm
 

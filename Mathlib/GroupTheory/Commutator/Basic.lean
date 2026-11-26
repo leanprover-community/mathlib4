@@ -28,7 +28,7 @@ assert_not_exists Cardinal Multiset Ring
 
 open scoped commutatorElement
 
-variable {G G' F : Type*} [Group G] [Group G'] [FunLike F G G'] [MonoidHomClass F G G']
+variable {G G' F : Type*} [Group G] [Group G'] [FunLike F G G'] [MonoidHomClass F]
 variable (f : F) {g₁ g₂ g₃ g : G}
 
 @[to_additive]

@@ -93,7 +93,7 @@ lemma transpose_single (i : m) (j : n) (a : α) :
 
 @[simp]
 lemma map_single (i : m) (j : n) (a : α) {β : Type*} [Zero β]
-    {F : Type*} [FunLike F α β] [ZeroHomClass F α β] (f : F) :
+    {F : Type*} [FunLike F α β] [ZeroHomClass F] (f : F) :
     (single i j a).map f = single i j (f a) := by
   aesop (add unsafe unfold single)
 

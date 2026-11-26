@@ -688,7 +688,7 @@ theorem MonoidHom.map_finprod {f : α → M} (g : M →* N) (hf : HasFiniteMulSu
   g.map_finprod_plift f <| hf.preimage Equiv.plift.injective.injOn
 
 @[to_additive]
-theorem map_finprod {G : Type*} [FunLike G M N] [MonoidHomClass G M N] (g : G)
+theorem map_finprod {G : Type*} [FunLike G M N] [MonoidHomClass G] (g : G)
     (hf : HasFiniteMulSupport f) :
     g (∏ᶠ i, f i) = ∏ᶠ i, g (f i) :=
   (g : M →* N).map_finprod hf

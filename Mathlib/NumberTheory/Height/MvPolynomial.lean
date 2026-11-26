@@ -34,7 +34,7 @@ private lemma Height.iSup_fun_eq_max (f : Fin 2 → ℝ) : iSup f = max (f 0) (f
 namespace IsNonarchimedean
 
 variable {α β F : Type*} [AddCommMonoid β] [FunLike F β ℝ] [NonnegHomClass F β ℝ]
-    [ZeroHomClass F β ℝ] {v : F} {l : α → β}
+    [ZeroHomClass F] {v : F} {l : α → β}
 
 -- NOTE: The following cannot be moved to Mathlib.Algebra.Order.Ring.IsNonarchimedean,
 --       because it needs the target to be the reals (to have the default value zero

@@ -55,7 +55,7 @@ instance : FunLike (A →⋆* B) A B where
   coe f := f.toFun
   coe_injective f g h := by cases f; cases g; simp_all
 
-instance : MonoidHomClass (A →⋆* B) A B where
+instance : MonoidHomClass (A →⋆* B) where
   map_mul f := f.map_mul'
   map_one f := f.map_one'
 
@@ -69,7 +69,7 @@ initialize_simps_projections StarMonoidHom (toFun → coe)
 
 /-- Construct a `StarMonoidHom` from a morphism in some type which preserves `1`, `*` and `star`. -/
 @[simps]
-def ofClass [FunLike F A B] [MonoidHomClass F A B] [StarHomClass F A B] (f : F) :
+def ofClass [FunLike F A B] [MonoidHomClass F] [StarHomClass F A B] (f : F) :
     A →⋆* B where
   toFun := f
   map_one' := map_one f

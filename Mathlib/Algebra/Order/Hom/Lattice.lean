@@ -18,7 +18,7 @@ set_option doc.verso.suggestions false
 -/
 
 public lemma Finite.iSup_eq_iSup_subtype {ι K M F : Type*} [Finite ι] [Zero K] [Zero M]
-    [ConditionallyCompleteLattice M] [FunLike F K M] [ZeroHomClass F K M] [NonnegHomClass F K M]
+    [ConditionallyCompleteLattice M] [FunLike F K M] [ZeroHomClass F] [NonnegHomClass F K M]
     {x : ι → K} (hx : x ≠ 0) {v : F} :
     ⨆ i, v (x i) =  ⨆ i : {j // x j ≠ 0}, v (x i) := by
   obtain ⟨i, hi⟩ : ∃ j, x j ≠ 0 := Function.ne_iff.mp hx

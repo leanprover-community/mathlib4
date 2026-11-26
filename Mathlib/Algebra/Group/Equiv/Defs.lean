@@ -41,7 +41,7 @@ open Function
 variable {F α β M N P G H : Type*}
 
 namespace EmbeddingLike
-variable [One M] [One N] [FunLike F M N] [EmbeddingLike F M N] [OneHomClass F M N]
+variable [One M] [One N] [FunLike F M N] [EmbeddingLike F M N] [OneHomClass F]
 
 @[to_additive (attr := simp)]
 theorem map_eq_one_iff {f : F} {x : M} :
@@ -61,7 +61,7 @@ structure AddEquiv (A B : Type*) [Add A] [Add B] extends A ≃ B, AddHom A B
 /-- `AddEquivClass F A B` states that `F` is a type of addition-preserving morphisms.
 You should extend this class when you extend `AddEquiv`. -/
 class AddEquivClass (F : Type*) (A B : outParam Type*) [Add A] [Add B] [EquivLike F A B] :
-    Prop extends AddHomClass F A B
+    Prop extends AddHomClass F
 
 /-- The `Equiv` underlying an `AddEquiv`. -/
 add_decl_doc AddEquiv.toEquiv
@@ -95,7 +95,7 @@ You should extend this class when you extend `MulEquiv`. -/
 -- TODO: make this a synonym for MulHomClass?
 @[to_additive]
 class MulEquivClass (F : Type*) (A B : outParam Type*) [Mul A] [Mul B] [EquivLike F A B] :
-    Prop extends MulHomClass F A B
+    Prop extends MulHomClass F
 
 @[to_additive]
 alias MulEquivClass.map_eq_one_iff := EmbeddingLike.map_eq_one_iff
@@ -115,7 +115,7 @@ attribute [instance 100] toMulHomClass
 @[to_additive]
 instance (priority := 100) instMonoidHomClass
     [MulOneClass M] [MulOneClass N] [MulEquivClass F M N] :
-    MonoidHomClass F M N :=
+    MonoidHomClass F :=
   { MulEquivClass.toMulHomClass with
     map_one := fun e =>
       calc
@@ -513,7 +513,7 @@ theorem map_ne_one_iff (h : M ≃* N) {x : M} : h x ≠ 1 ↔ x ≠ 1 :=
 /-- A bijective `Semigroup` homomorphism is an isomorphism -/
 @[to_additive (attr := simps! apply, simps -isSimp toEquiv)
 /-- A bijective `AddSemigroup` homomorphism is an isomorphism -/]
-noncomputable def ofBijective {M N F} [Mul M] [Mul N] [FunLike F M N] [MulHomClass F M N]
+noncomputable def ofBijective {M N F} [Mul M] [Mul N] [FunLike F M N] [MulHomClass F]
     (f : F) (hf : Bijective f) : M ≃* N :=
   { Equiv.ofBijective f hf with map_mul' := map_mul f }
 

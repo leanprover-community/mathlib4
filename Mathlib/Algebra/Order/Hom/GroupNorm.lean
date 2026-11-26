@@ -97,7 +97,7 @@ attribute [simp] map_one_eq_zero map_neg_eq_map map_inv_eq_map
 
 -- See note [lower instance priority]
 instance (priority := 100) AddGroupSeminormClass.toZeroHomClass [AddGroup α]
-    [AddCommMonoid β] [PartialOrder β] [AddGroupSeminormClass F α β] : ZeroHomClass F α β :=
+    [AddCommMonoid β] [PartialOrder β] [AddGroupSeminormClass F α β] : ZeroHomClass F :=
   { ‹AddGroupSeminormClass F α β› with }
 
 section GroupSeminormClass

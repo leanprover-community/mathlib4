@@ -30,7 +30,7 @@ variable [TopologicalSpace G] [Inv G] [ContinuousInv G]
 
 @[to_additive]
 theorem ContinuousInv.induced {α : Type*} {β : Type*} {F : Type*} [FunLike F α β] [Group α]
-    [DivisionMonoid β] [MonoidHomClass F α β] [tβ : TopologicalSpace β] [ContinuousInv β] (f : F) :
+    [DivisionMonoid β] [MonoidHomClass F] [tβ : TopologicalSpace β] [ContinuousInv β] (f : F) :
     @ContinuousInv α (tβ.induced f) _ := by
   let _tα := tβ.induced f
   refine ⟨continuous_induced_rng.2 ?_⟩

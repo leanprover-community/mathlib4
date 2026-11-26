@@ -27,7 +27,7 @@ variable {ι α β F : Type*} [FunLike F α β]
 
 section Monoid
 
-variable [Monoid α] [Monoid β] [MonoidHomClass F α β]
+variable [Monoid α] [Monoid β] [MonoidHomClass F]
 
 @[to_additive]
 theorem image_list_prod (f : F) :
@@ -39,7 +39,7 @@ end Monoid
 
 section CommMonoid
 
-variable [CommMonoid α] [CommMonoid β] [MonoidHomClass F α β]
+variable [CommMonoid α] [CommMonoid β] [MonoidHomClass F]
 
 @[to_additive]
 theorem image_multiset_prod (f : F) :

@@ -92,7 +92,7 @@ instance ContinuousMul.to_continuousSMul_op : ContinuousSMul Mᵐᵒᵖ M :=
 
 @[to_additive]
 theorem ContinuousMul.induced {α : Type*} {β : Type*} {F : Type*} [FunLike F α β] [Mul α]
-    [Mul β] [MulHomClass F α β] [tβ : TopologicalSpace β] [ContinuousMul β] (f : F) :
+    [Mul β] [MulHomClass F] [tβ : TopologicalSpace β] [ContinuousMul β] (f : F) :
     @ContinuousMul α (tβ.induced f) _ := by
   let tα := tβ.induced f
   refine ⟨continuous_induced_rng.2 ?_⟩
@@ -302,7 +302,7 @@ theorem isClosed_setOfPred_map_mul [Mul M₁] [Mul M₂] [ContinuousMul M₂] :
 section Semigroup
 
 variable {M₁ M₂} [Mul M₁] [Mul M₂] [ContinuousMul M₂]
-  {F : Type*} [FunLike F M₁ M₂] [MulHomClass F M₁ M₂] {l : Filter α}
+  {F : Type*} [FunLike F M₁ M₂] [MulHomClass F] {l : Filter α}
 
 /-- Construct a bundled semigroup homomorphism `M₁ →ₙ* M₂` from a function `f` and a proof that it
 belongs to the closure of the range of the coercion from `M₁ →ₙ* M₂` (or another type of bundled
@@ -337,7 +337,7 @@ end Semigroup
 section Monoid
 
 variable {M₁ M₂} [MulOneClass M₁] [MulOneClass M₂] [ContinuousMul M₂]
-  {F : Type*} [FunLike F M₁ M₂] [MonoidHomClass F M₁ M₂] {l : Filter α}
+  {F : Type*} [FunLike F M₁ M₂] [MonoidHomClass F] {l : Filter α}
 
 /-- Construct a bundled monoid homomorphism `M₁ →* M₂` from a function `f` and a proof that it
 belongs to the closure of the range of the coercion from `M₁ →* M₂` (or another type of bundled
@@ -375,12 +375,12 @@ end PointwiseLimits
 
 @[to_additive]
 theorem Topology.IsInducing.continuousMul {M N F : Type*} [Mul M] [Mul N] [FunLike F M N]
-    [MulHomClass F M N] [TopologicalSpace M] [TopologicalSpace N] [ContinuousMul N] (f : F)
+    [MulHomClass F] [TopologicalSpace M] [TopologicalSpace N] [ContinuousMul N] (f : F)
     (hf : IsInducing f) : ContinuousMul M :=
   ⟨(hf.continuousSMul hf.continuous (map_mul f _ _)).continuous_smul⟩
 
 @[to_additive]
-theorem continuousMul_induced {M N F : Type*} [Mul M] [Mul N] [FunLike F M N] [MulHomClass F M N]
+theorem continuousMul_induced {M N F : Type*} [Mul M] [Mul N] [FunLike F M N] [MulHomClass F]
     [TopologicalSpace N] [ContinuousMul N] (f : F) : @ContinuousMul M (induced f ‹_›) _ :=
   letI := induced f ‹_›
   IsInducing.continuousMul f ⟨rfl⟩
@@ -398,7 +398,7 @@ instance Submonoid.continuousMul [TopologicalSpace M] [Monoid M] [ContinuousMul 
 open MulOpposite in
 @[to_additive]
 theorem Topology.IsInducing.separatelyContinuousMul {M N F : Type*} [Mul M] [Mul N] [FunLike F M N]
-    [MulHomClass F M N] [TopologicalSpace M] [TopologicalSpace N] [SeparatelyContinuousMul N]
+    [MulHomClass F] [TopologicalSpace M] [TopologicalSpace N] [SeparatelyContinuousMul N]
     (f : F) (hf : IsInducing f) : SeparatelyContinuousMul M where
   continuous_const_mul := (hf.continuousConstSMul f (map_mul f _ _)).continuous_const_smul _
   continuous_mul_const {m} :=
@@ -408,7 +408,7 @@ theorem Topology.IsInducing.separatelyContinuousMul {M N F : Type*} [Mul M] [Mul
 
 @[to_additive]
 theorem separatelyContinuousMul_induced {M N F : Type*} [Mul M] [Mul N] [FunLike F M N]
-    [MulHomClass F M N] [TopologicalSpace N] [SeparatelyContinuousMul N] (f : F) :
+    [MulHomClass F] [TopologicalSpace N] [SeparatelyContinuousMul N] (f : F) :
     @SeparatelyContinuousMul M (induced f ‹_›) _ :=
   letI := induced f ‹_›
   IsInducing.separatelyContinuousMul f ⟨rfl⟩

@@ -141,7 +141,7 @@ lemma BlockTriangular.sub_iff_right [AddGroup R] (hM : BlockTriangular M b) :
 lemma BlockTriangular.sub_iff_left [AddGroup R] (hN : BlockTriangular N b) :
     BlockTriangular (M - N) b ↔ BlockTriangular M b := ⟨(by simpa using ·.add hN), (·.sub hN)⟩
 
-protected lemma BlockTriangular.map {S F} [FunLike F R S] [Zero R] [Zero S] [ZeroHomClass F R S]
+protected lemma BlockTriangular.map {S F} [FunLike F R S] [Zero R] [Zero S] [ZeroHomClass F]
     (f : F) (h : BlockTriangular M b) : BlockTriangular (M.map f) b :=
   fun i j lt ↦ by simp [h lt]
 
@@ -251,7 +251,7 @@ lemma StrictBlockTriangular.sub_iff_left [AddGroup R] (hN : N.StrictBlockTriangu
   ⟨(by simpa using ·.add hN), (·.sub hN)⟩
 
 protected lemma StrictBlockTriangular.map {S F} [FunLike F R S] [Zero R] [Zero S]
-    [ZeroHomClass F R S] (f : F) (h : M.StrictBlockTriangular b) :
+    [ZeroHomClass F] (f : F) (h : M.StrictBlockTriangular b) :
     (M.map f).StrictBlockTriangular b :=
   fun _ _ hij => by simp [h hij]
 

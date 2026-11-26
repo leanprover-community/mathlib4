@@ -205,14 +205,14 @@ theorem ext_int [AddMonoid A] {f g : ℤ ≃+ A} (h1 : f 1 = g 1) : f = g :=
 
 end AddEquiv
 
-theorem eq_intCast' [AddGroupWithOne α] [FunLike F ℤ α] [AddMonoidHomClass F ℤ α]
+theorem eq_intCast' [AddGroupWithOne α] [FunLike F ℤ α] [AddMonoidHomClass F]
     (f : F) (h₁ : f 1 = 1) :
     ∀ n : ℤ, f n = n :=
   DFunLike.ext_iff.1 <| (f : ℤ →+ α).eq_intCastAddHom h₁
 
 /-- This version is primed so that the `RingHomClass` versions aren't. -/
 theorem map_intCast' [AddGroupWithOne α] [AddGroupWithOne β] [FunLike F α β]
-    [AddMonoidHomClass F α β] (f : F) (h₁ : f 1 = 1) : ∀ n : ℤ, f n = n :=
+    [AddMonoidHomClass F] (f : F) (h₁ : f 1 = 1) : ∀ n : ℤ, f n = n :=
   eq_intCast' ((f : α →+ β).comp <| Int.castAddHom _) (by simpa)
 
 @[simp]
