@@ -5,9 +5,13 @@ Authors: Anand Rao, Rémi Bottinelli
 -/
 module
 
-import Mathlib.Basic.Finite.Set
 public import Mathlib.CategoryTheory.CofilteredSystem
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+
+import Mathlib.Basic.Finite.Set
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Ends

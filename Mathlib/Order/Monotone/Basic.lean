@@ -5,15 +5,15 @@ Authors: Jeremy Avigad, Mario Carneiro, Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.Nat.Basic
 public import Mathlib.Data.Int.Order.Basic
+public import Mathlib.Data.Nat.Basic
 public import Mathlib.Order.Compare
 public import Mathlib.Order.Max
 public import Mathlib.Order.Monotone.Defs
 public import Mathlib.Order.RelClasses
+public import Mathlib.Tactic.ByCases
 public import Mathlib.Tactic.Choose
 public import Mathlib.Tactic.Contrapose
-public import Mathlib.Tactic.ByCases
 
 /-!
 # Monotonicity
@@ -88,6 +88,14 @@ theorem monotone_toDual_comp_iff : Monotone (toDual ∘ f) ↔ Antitone f :=
 
 @[simp]
 theorem antitone_toDual_comp_iff : Antitone (toDual ∘ f) ↔ Monotone f :=
+  Iff.rfl
+
+omit [Preorder β] in
+/-- Stability of `σ` for `f` is unchanged by reversing the order on the codomain of `f`, since it
+only uses equality there. -/
+@[simp]
+theorem isStable_toDual_comp_iff (σ : α → α) :
+    IsStable (toDual ∘ f) σ ↔ IsStable f σ :=
   Iff.rfl
 
 @[simp]
@@ -529,6 +537,10 @@ theorem Nat.rel_of_forall_rel_succ_of_le (r : β → β → Prop) [Std.Refl r] [
 theorem monotone_nat_of_le_succ {f : ℕ → α} (hf : ∀ n, f n ≤ f (n + 1)) : Monotone f :=
   Nat.rel_of_forall_rel_succ_of_le (· ≤ ·) hf
 
+theorem monotone_nat_iff {f : ℕ → α} :
+    Monotone f ↔ ∀ n, f n ≤ f (n + 1) :=
+  ⟨fun h n ↦ h (Nat.le_succ n), monotone_nat_of_le_succ⟩
+
 theorem monotone_add_nat_of_le_succ {f : ℕ → α} {k : ℕ} (hf : ∀ n ≥ k, f n ≤ f (n + 1)) :
     Monotone (fun n ↦ f (n + k)) :=
   fun _ _ hle ↦ Nat.rel_of_forall_rel_succ_of_le_of_le (· ≤ ·) hf
@@ -552,6 +564,10 @@ theorem monotone_add_nat_iff_monotoneOn_nat_Ici {f : ℕ → α} {k : ℕ} :
 theorem antitone_nat_of_succ_le {f : ℕ → α} (hf : ∀ n, f (n + 1) ≤ f n) : Antitone f :=
   @monotone_nat_of_le_succ αᵒᵈ _ _ hf
 
+theorem antitone_nat_iff {f : ℕ → α} :
+    Antitone f ↔ ∀ n, f (n + 1) ≤ f n :=
+  ⟨fun h n ↦ h (Nat.le_succ n), antitone_nat_of_succ_le⟩
+
 theorem antitone_add_nat_of_succ_le {f : ℕ → α} {k : ℕ} (hf : ∀ n ≥ k, f (n + 1) ≤ f n) :
     Antitone (fun n ↦ f (n + k)) :=
   @monotone_add_nat_of_le_succ αᵒᵈ _ f k hf
@@ -572,6 +588,14 @@ theorem strictMono_nat_of_lt_succ {f : ℕ → α} (hf : ∀ n, f n < f (n + 1))
 theorem strictAnti_nat_of_succ_lt {f : ℕ → α} (hf : ∀ n, f (n + 1) < f n) : StrictAnti f :=
   @strictMono_nat_of_lt_succ αᵒᵈ _ f hf
 
+theorem strictMono_nat_iff {f : ℕ → α} :
+    StrictMono f ↔ ∀ n, f n < f (n + 1) :=
+  ⟨fun h n ↦ h (Nat.lt_succ_self n), strictMono_nat_of_lt_succ⟩
+
+theorem strictAnti_nat_iff {f : ℕ → α} :
+    StrictAnti f ↔ ∀ n, f (n + 1) < f n :=
+  ⟨fun h n ↦ h (Nat.lt_succ_self n), strictAnti_nat_of_succ_lt⟩
+
 namespace Nat
 
 /-- If `α` is a preorder with no maximal elements, then there exists a strictly monotone function
@@ -588,9 +612,9 @@ theorem exists_strictAnti' [NoMinOrder α] (a : α) : ∃ f : ℕ → α, Strict
 theorem exists_strictMono_subsequence {P : ℕ → Prop} (h : ∀ N, ∃ n > N, P n) :
     ∃ φ : ℕ → ℕ, StrictMono φ ∧ ∀ n, P (φ n) := by
   have : NoMaxOrder {n // P n} :=
-    ⟨fun n ↦ Exists.intro ⟨(h n.1).choose, (h n.1).choose_spec.2⟩ (h n.1).choose_spec.1⟩
+    ⟨fun n ↦ Exists.intro ⟨(h n.val).choose, (h n.val).choose_spec.2⟩ (h n.val).choose_spec.1⟩
   obtain ⟨f, hf, _⟩ := Nat.exists_strictMono' (⟨(h 0).choose, (h 0).choose_spec.2⟩ : {n // P n})
-  exact Exists.intro (fun n ↦ (f n).1) ⟨hf, fun n ↦ (f n).2⟩
+  exact Exists.intro (fun n ↦ (f n).val) ⟨hf, fun n ↦ (f n).property⟩
 
 variable (α)
 
@@ -734,9 +758,11 @@ lemma Nat.stabilises_of_antitone {f : ℕ → ℕ} (hfmono : Antitone f)
       exact ⟨0, Nat.zero_le _, fun m _ => by induction m with grind⟩
     · have hlt : f 1 < f 0 := (hfmono (Nat.le_succ 0)).lt_of_ne' heq
       let g (i : ℕ) := f (i + 1)
-      have hg_anti : Antitone g := by grind [Antitone]
+      #adaptation_note /-- Before nightly-2026-09-29, the proof of
+      `Antitone g` was `by grind [Antitone]`; now it fails to find a witness. -/
+      have hg_anti : Antitone g := fun _ _ hab => hfmono (by lia)
       obtain ⟨p, hp, hp'⟩ := ih (f 1) (by grind) hg_anti (by grind) rfl
-      refine ⟨p + 1, by omega, fun m hm => ?_⟩
+      refine ⟨p + 1, by lia, fun m hm => ?_⟩
       specialize hp' (m - 1) (by lia)
       grind
 

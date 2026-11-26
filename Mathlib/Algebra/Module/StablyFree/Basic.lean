@@ -6,13 +6,15 @@ Authors: Yongle Hu
 module
 
 public import Mathlib.Algebra.Module.Projective
-import Mathlib.LinearAlgebra.Basis.Prod
 public import Mathlib.RingTheory.Finiteness.Small
+
+import Mathlib.LinearAlgebra.Basis.Prod
 
 /-!
 # Stably free modules
 
-## Main definition
+## Main definitions
+
 * `IsStablyFree`: A module `M` over a ring `R` is called stably free if there exists a finite free
   `R`-module `N` such that `M ⊕ N` is free.
 -/

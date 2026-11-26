@@ -6,10 +6,13 @@ Authors: Edison Xie, Bhavik Mehta
 module
 
 public import Mathlib.LinearAlgebra.Projectivization.Subspace
+
 import Mathlib.LinearAlgebra.Projectivization.Independence
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Collinearity in Projective Space
 
 This file defines collinearity of points in projective space and proves
@@ -23,8 +26,8 @@ the uniqueness of the line through two distinct points.
   line (submodule of dimension 2) containing both points.
 
 ## Tags
-Projective space, collinearity, projective geometry
 
+Projective space, collinearity, projective geometry
 -/
 
 @[expose] public section

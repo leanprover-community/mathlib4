@@ -16,6 +16,7 @@ as comonoid objects in the category of monoid objects in `C`.
 We verify that this is equivalent to the monoid objects in the category of comonoid objects.
 
 ## TODO
+
 * Construct the category of modules, and show that it is monoidal with a monoidal forgetful functor
   to `C`.
 * Some form of Tannaka reconstruction:
@@ -98,7 +99,6 @@ def toComon : Bimon C ⥤ Comon C := (Mon.forget C).mapComon
 @[simp]
 theorem toComon_forget : toComon C ⋙ Comon.forget C = forget C := rfl
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable {C} in
 /-- The object level part of the forward direction of `Comon (Mon C) ≌ Mon (Comon C)` -/

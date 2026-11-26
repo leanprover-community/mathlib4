@@ -5,9 +5,10 @@ Authors: Salvatore Mercuri, María Inés de Frutos-Fernández
 -/
 module
 
-import Mathlib.Algebra.Group.Pi.Units
 public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
 public import Mathlib.NumberTheory.NumberField.Completion.InfinitePlace
+
+import Mathlib.Algebra.Group.Pi.Units
 
 /-!
 # The infinite adele ring of a number field
@@ -23,13 +24,16 @@ finite product of completions over its infinite places.
   the infinite adele ring of `K` and `ℝ ^ r₁ × ℂ ^ r₂`, where `(r₁, r₂)` is the signature of `K`.
 
 ## Main results
+
 - `NumberField.InfiniteAdeleRing.locallyCompactSpace` : the infinite adele ring is a
   locally compact space.
 
 ## References
+
 * [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
 
 ## Tags
+
 infinite adele ring, number field
 -/
 
@@ -49,6 +53,7 @@ infinite places. See `NumberField.InfinitePlace` for the definition of an infini
 -/
 
 /-- The infinite adele ring of a number field. -/
+@[implicit_reducible]
 def InfiniteAdeleRing (K : Type*) [Field K] := (v : InfinitePlace K) → v.Completion
 deriving CommRing, Inhabited, TopologicalSpace, IsTopologicalRing, Algebra K
 
@@ -64,7 +69,9 @@ variable (K : Type*) [Field K]
 instance [NumberField K] : Nontrivial K∞ :=
   (inferInstance : Nonempty (InfinitePlace K)).elim fun w => Pi.nontrivial_at w
 
-@[simp] theorem algebraMap_apply (x : K) (v : InfinitePlace K) : algebraMap K K∞ x v = x := rfl
+@[simp] theorem algebraMap_apply (x : K) (v : InfinitePlace K) : algebraMap K K∞ x v = x :=
+  (AbsoluteValue.Completion.algebraMap_def v.val x).trans <| by
+    rw [WithAbs.algebraMap_right_apply, Algebra.algebraMap_self_apply]
 
 /-- The infinite adele ring is locally compact. -/
 instance locallyCompactSpace [NumberField K] : LocallyCompactSpace K∞ :=
@@ -81,15 +88,15 @@ abbrev ringEquiv_mixedSpace : K∞ ≃+* mixedEmbedding.mixedSpace K :=
       (RingEquiv.piCongrRight (fun ⟨_, hv⟩ => Completion.ringEquivRealOfIsReal hv))
       (RingEquiv.trans
         (RingEquiv.piCongrRight (fun v => Completion.ringEquivComplexOfIsComplex
-          ((not_isReal_iff_isComplex.1 v.2))))
+          ((not_isReal_iff_isComplex.1 v.property))))
         (RingEquiv.piCongrLeft (fun _ => ℂ) <|
           Equiv.subtypeEquivRight (fun _ => not_isReal_iff_isComplex))))
 
 @[simp]
 theorem ringEquiv_mixedSpace_apply (x : K∞) :
     ringEquiv_mixedSpace K x =
-      (fun (v : {w : InfinitePlace K // IsReal w}) => extensionEmbeddingOfIsReal v.2 (x v),
-       fun (v : {w : InfinitePlace K // IsComplex w}) => extensionEmbedding v.1 (x v)) := rfl
+      (fun (v : {w : InfinitePlace K // IsReal w}) => extensionEmbeddingOfIsReal v.property (x v),
+       fun (v : {w : InfinitePlace K // IsComplex w}) => extensionEmbedding v.val (x v)) := rfl
 
 /-- Transfers the embedding of `x ↦ (x)ᵥ` of the number field `K` into its infinite adele
 ring to the mixed embedding `x ↦ (φᵢ(x))ᵢ` of `K` into the space `ℝ ^ r₁ × ℂ ^ r₂`, where
@@ -103,9 +110,13 @@ theorem mixedEmbedding_eq_algebraMap_comp {x : K} :
 
 The number field $K$ is dense in the infinite adele ring $\prod_v K_v$.
 -/
-theorem denseRange_algebraMap [NumberField K] : DenseRange <| algebraMap K K∞ :=
-  (DenseRange.piMap fun v => Completion.denseRange_coe v).comp
-    (InfinitePlace.denseRange_algebraMap_pi K) (.piMap fun v => Completion.continuous_coe v)
+theorem denseRange_algebraMap [NumberField K] : DenseRange <| algebraMap K K∞ := by
+  have h : ⇑(algebraMap K K∞) = (Pi.map fun v (x : WithAbs v.val) => (x : v.Completion)) ∘
+      algebraMap K ((v : InfinitePlace K) → WithAbs v.val) :=
+    funext₂ (algebraMap_apply K)
+  exact h ▸ (DenseRange.piMap fun v => AbsoluteValue.Completion.denseRange_coe v.val).comp
+    (InfinitePlace.denseRange_algebraMap_pi K)
+    (.piMap fun v => AbsoluteValue.Completion.continuous_coe v.val)
 
 /-- The norm on the infinite adele ring is given by the product of the normalized norms
 across infinite places. The normalized norm is the real norm at real places and the
@@ -116,7 +127,6 @@ variable {K}
 
 theorem norm_def [NumberField K] (x : K∞) : ‖x‖ = ∏ v, ‖x v‖ ^ v.mult := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem norm_eq_zero_of_not_isUnit [NumberField K] {x : K∞} (hx : ¬IsUnit x) :
     ‖x‖ = 0 := by
   rw [Pi.isUnit_iff, not_forall] at hx
@@ -127,7 +137,7 @@ theorem norm_eq_zero_of_not_isUnit [NumberField K] {x : K∞} (hx : ¬IsUnit x) 
 `NumberField.InfinitePlace.prod_eq_abs_norm`. -/
 theorem coe_norm_eq_abs_norm [NumberField K] (x : K) :
     ‖algebraMap K K∞ x‖ = |Algebra.norm ℚ x| := by
-  simpa [-Rat.cast_abs, norm_def] using! InfinitePlace.prod_eq_abs_norm x
+  simpa [norm_def, AbsoluteValue.Completion.norm_coe] using! InfinitePlace.prod_eq_abs_norm x
 
 /-- The embedding of the completion `Kᵥ` at an infinite place `v` into the infinite adele ring. -/
 @[simps!]

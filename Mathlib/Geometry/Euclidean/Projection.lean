@@ -6,7 +6,9 @@ Authors: Joseph Myers, Manuel Candales
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Projection.Reflection
-public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
+public import Mathlib.Geometry.Euclidean.PerpBisector
+
+import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 
 /-!
 # Orthogonal projection in affine spaces
@@ -21,7 +23,6 @@ and reflection of a point in an affine subspace.
 
 * `EuclideanGeometry.reflection` is the reflection of a point in an
   affine subspace.
-
 -/
 
 @[expose] public section
@@ -99,7 +100,7 @@ theorem orthogonalProjection_contLinear {s : AffineSubspace 𝕜 P} [Nonempty s]
 /-- The `orthogonalProjection` lies in the given subspace. -/
 theorem orthogonalProjection_mem {s : AffineSubspace 𝕜 P} [Nonempty s]
     [s.direction.HasOrthogonalProjection] (p : P) : ↑(orthogonalProjection s p) ∈ s :=
-  (orthogonalProjection s p).2
+  (orthogonalProjection s p).property
 
 /-- The `orthogonalProjection` lies in the orthogonal subspace. -/
 theorem orthogonalProjection_mem_orthogonal (s : AffineSubspace 𝕜 P) [Nonempty s]
@@ -129,14 +130,14 @@ given subspace. -/
 theorem orthogonalProjection_vsub_mem_direction {s : AffineSubspace 𝕜 P} [Nonempty s]
     [s.direction.HasOrthogonalProjection] {p₁ : P} (p₂ : P) (hp₁ : p₁ ∈ s) :
     ↑(orthogonalProjection s p₂ -ᵥ ⟨p₁, hp₁⟩ : s.direction) ∈ s.direction :=
-  (orthogonalProjection s p₂ -ᵥ ⟨p₁, hp₁⟩ : s.direction).2
+  (orthogonalProjection s p₂ -ᵥ ⟨p₁, hp₁⟩ : s.direction).property
 
 /-- Subtracting the `orthogonalProjection` from a point in the given
 subspace produces a result in the direction of the given subspace. -/
 theorem vsub_orthogonalProjection_mem_direction {s : AffineSubspace 𝕜 P} [Nonempty s]
     [s.direction.HasOrthogonalProjection] {p₁ : P} (p₂ : P) (hp₁ : p₁ ∈ s) :
     ↑((⟨p₁, hp₁⟩ : s) -ᵥ orthogonalProjection s p₂ : s.direction) ∈ s.direction :=
-  ((⟨p₁, hp₁⟩ : s) -ᵥ orthogonalProjection s p₂ : s.direction).2
+  ((⟨p₁, hp₁⟩ : s) -ᵥ orthogonalProjection s p₂ : s.direction).property
 
 /-- A point equals its orthogonal projection if and only if it lies in
 the subspace. -/
@@ -155,7 +156,7 @@ theorem orthogonalProjection_mem_subspace_eq_self {s : AffineSubspace 𝕜 P} [N
     [s.direction.HasOrthogonalProjection] (p : s) : orthogonalProjection s p = p := by
   ext
   rw [orthogonalProjection_eq_self_iff]
-  exact p.2
+  exact p.property
 
 /-- Orthogonal projection is idempotent. -/
 theorem orthogonalProjection_orthogonalProjection (s : AffineSubspace 𝕜 P) [Nonempty s]
@@ -349,7 +350,7 @@ the version with the orthogonal projection gives access to more lemmas about ort
 projections that may be useful). -/
 lemma dist_orthogonalProjection_eq_infNndist (s : AffineSubspace 𝕜 P) [Nonempty s]
     [s.direction.HasOrthogonalProjection] (p : P) :
-    nndist p (orthogonalProjection s p) = Metric.infNndist p s := by
+    nnDist p (orthogonalProjection s p) = Metric.infNndist p s := by
   rw [← NNReal.coe_inj]
   simp [dist_orthogonalProjection_eq_infDist]
 
@@ -575,6 +576,42 @@ lemma reflection_subtype (s : AffineSubspace 𝕜 P) [Nonempty s] (s' : AffineSu
     [(s'.map s.subtype).direction.HasOrthogonalProjection] (p : s) :
     (reflection s' p : P) = reflection (s'.map s.subtype) p := by
   simp [reflection_apply', orthogonalProjection_subtype]
+
+section perpBisector
+
+variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+  [NormedAddTorsor V P]
+
+theorem le_perpBisector_self_reflection (s : AffineSubspace ℝ P) [Nonempty s]
+    [s.direction.HasOrthogonalProjection] (a : P) :
+    s ≤ perpBisector a (reflection s a) := by
+  intro b hb
+  rw [mem_perpBisector_iff_dist_eq, dist_reflection_eq_of_mem _ hb]
+
+theorem le_perpBisector_reflection_self (s : AffineSubspace ℝ P) [Nonempty s]
+    [s.direction.HasOrthogonalProjection] (a : P) :
+    s ≤ perpBisector (reflection s a) a :=
+  perpBisector_comm (reflection s a) a ▸ le_perpBisector_self_reflection s a
+
+instance (a b : P) : (perpBisector a b).direction.HasOrthogonalProjection := by
+  rw [direction_perpBisector]
+  infer_instance
+
+@[simp]
+theorem reflection_perpBisector_left (a b : P) :
+    reflection (perpBisector a b) a = b := by
+  rw [reflection_apply_of_mem _ _ (midpoint_mem_perpBisector a b)]
+  simp_rw [direction_perpBisector]
+  rw [Submodule.reflection_orthogonal_apply, ← map_neg, neg_vsub_eq_vsub_rev,
+    (Submodule.reflection_eq_self_iff _).mpr (by simp), Eq.comm, eq_vadd_iff_vsub_eq]
+  simp
+
+@[simp]
+theorem reflection_perpBisector_right (a b : P) :
+    reflection (perpBisector b a) a = b := by
+  simpa [perpBisector_comm a b] using reflection_perpBisector_left a b
+
+end perpBisector
 
 end EuclideanGeometry
 

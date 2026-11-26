@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Set.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-! # Lemmas about `inclusion`, the injection of subtypes induced by `⊆` -/
 
 public section
@@ -50,6 +53,7 @@ theorem inclusion_comp_inclusion {α} {s t u : Set α} (hst : s ⊆ t) (htu : t 
 theorem coe_inclusion (h : s ⊆ t) (x : s) : (inclusion h x : α) = (x : α) :=
   rfl
 
+@[simp]
 theorem val_comp_inclusion (h : s ⊆ t) : Subtype.val ∘ inclusion h = Subtype.val :=
   rfl
 

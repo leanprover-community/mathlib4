@@ -6,8 +6,9 @@ Authors: María Inés de Frutos-Fernández
 module
 
 public import Mathlib.GroupTheory.Commutator.Basic
-import Mathlib.Tactic.Group
 public import Mathlib.Topology.Algebra.Group.Subgroup
+
+import Mathlib.Tactic.Group
 
 /-!
 # The topological abelianization of a group.
@@ -17,15 +18,16 @@ This file defines the topological abelianization of a topological group.
 ## Main definitions
 
 * `TopologicalAbelianization`: defines the topological abelianization of a group `G` as the quotient
-  of `G` by the topological closure of its commutator subgroup..
+  of `G` by the topological closure of its commutator subgroup.
 
 ## Main results
+
 - `instNormalCommutatorClosure` : the topological closure of the commutator of a topological group
   `G` is a normal subgroup.
 
 ## Tags
-group, topological abelianization
 
+group, topological abelianization
 -/
 
 public section
@@ -47,7 +49,7 @@ namespace TopologicalAbelianization
 
 instance commGroup : CommGroup (G_ab G) where
   mul_comm := fun x y =>
-    Quotient.inductionOn₂' x y fun a b =>
+    Quotient.inductionOn₂ x y fun a b =>
       Quotient.sound' <|
         QuotientGroup.leftRel_apply.mpr <| by
           have h : (a * b)⁻¹ * (b * a) = ⁅b⁻¹, a⁻¹⁆ := by group

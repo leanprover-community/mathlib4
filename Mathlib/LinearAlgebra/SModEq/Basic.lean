@@ -7,7 +7,11 @@ module
 
 public import Mathlib.Algebra.Polynomial.Eval.Defs
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
+
 import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # modular equivalence for submodule

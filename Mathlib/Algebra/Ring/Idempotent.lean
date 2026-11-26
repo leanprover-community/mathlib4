@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Algebra.GroupWithZero.Idempotent
 public import Mathlib.Algebra.Ring.Defs
-public import Mathlib.Order.Notation
-import Mathlib.Tactic.Convert
+
 import Mathlib.Algebra.Group.Torsion
+import Mathlib.Order.Notation
+import Mathlib.Tactic.Convert
 
 /-!
 # Idempotent elements of a ring

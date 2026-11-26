@@ -6,8 +6,9 @@ Authors: Gabriel Ebner, Sébastien Gouëzel, Yury Kudryashov, Yuyang Zhao
 module
 
 public import Mathlib.Analysis.Calculus.Deriv.Basic
-import Mathlib.Analysis.Calculus.FDeriv.Comp
 public import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
+
+import Mathlib.Analysis.Calculus.FDeriv.Comp
 
 /-!
 # One-dimensional derivatives of compositions of functions
@@ -28,7 +29,7 @@ often more flexible to use.
 For a more detailed overview of one-dimensional derivatives in mathlib, see the module docstring of
 `Mathlib/Analysis/Calculus/Deriv/Basic.lean`.
 
-## Keywords
+## Tags
 
 derivative, chain rule
 -/

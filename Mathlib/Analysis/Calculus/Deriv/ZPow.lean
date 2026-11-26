@@ -5,9 +5,10 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 module
 
-import Mathlib.Analysis.Calculus.Deriv.Pow
 public import Mathlib.Analysis.Calculus.Deriv.Inv
 public import Mathlib.Analysis.Calculus.Deriv.Shift
+
+import Mathlib.Analysis.Calculus.Deriv.Pow
 
 /-!
 # Derivatives of `x ^ m`, `m : ℤ`
@@ -17,7 +18,7 @@ In this file we prove theorems about (iterated) derivatives of `x ^ m`, `m : ℤ
 For a more detailed overview of one-dimensional derivatives in mathlib, see the module docstring of
 `Mathlib/Analysis/Calculus/Deriv/Basic.lean`.
 
-## Keywords
+## Tags
 
 derivative, power
 -/

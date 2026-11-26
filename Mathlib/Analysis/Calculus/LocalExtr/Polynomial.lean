@@ -5,9 +5,13 @@ Authors: Benjamin Davidson, Yury Kudryashov
 -/
 module
 
-import Mathlib.Analysis.Calculus.LocalExtr.Rolle
-import Mathlib.Analysis.Calculus.Deriv.Polynomial
 public import Mathlib.Topology.Algebra.Polynomial
+
+import Mathlib.Analysis.Calculus.Deriv.Polynomial
+import Mathlib.Analysis.Calculus.LocalExtr.Rolle
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Rolle's Theorem for polynomials
@@ -24,7 +28,7 @@ Namely, we prove the following facts.
   is at most the number of roots of its derivative plus one.
 * `Polynomial.card_roots_le_derivative`: same, but the roots are counted with multiplicities.
 
-## Keywords
+## Tags
 
 polynomial, Rolle's Theorem, root
 -/

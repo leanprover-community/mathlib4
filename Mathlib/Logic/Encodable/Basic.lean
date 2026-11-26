@@ -192,8 +192,6 @@ theorem decode₂_ne_none_iff [Encodable α] {n : ℕ} :
 theorem decode₂_isPartialInv [Encodable α] : IsPartialInv encode (decode₂ α) := fun _ _ =>
   mem_decode₂
 
-@[deprecated (since := "2026-03-11")] alias decode₂_is_partial_inv := decode₂_isPartialInv
-
 theorem decode₂_inj [Encodable α] {n : ℕ} {a₁ a₂ : α} (h₁ : a₁ ∈ decode₂ α n)
     (h₂ : a₂ ∈ decode₂ α n) : a₁ = a₂ :=
   encode_injective <| (mem_decode₂.1 h₁).trans (mem_decode₂.1 h₂).symm
@@ -214,7 +212,8 @@ def equivRangeEncode (α : Type*) [Encodable α] : α ≃ Set.range (@encode α 
   toFun a := ⟨encode a, Set.mem_range_self _⟩
   invFun n :=
     Option.get _
-      (show isSome (decode₂ α n.1) by obtain ⟨x, hx⟩ := n.2; rw [← hx, encodek₂]; exact rfl)
+      (show isSome (decode₂ α n.val) by
+        obtain ⟨x, hx⟩ := n.property; rw [← hx, encodek₂]; exact rfl)
   left_inv _ := by dsimp; rw [← Option.some_inj, Option.some_get, encodek₂]
   right_inv _ := Subtype.ext <| decode₂_isPartialInv.get_eq _ _
 
@@ -499,10 +498,10 @@ private def chooseX (h : ∃ x, p x) : { a : α // p a } :=
 
 /-- Constructive choice function for a decidable predicate over an encodable type. -/
 @[no_expose] def choose (h : ∃ x, p x) : α :=
-  (chooseX h).1
+  (chooseX h).val
 
 theorem choose_spec (h : ∃ x, p x) : p (choose h) :=
-  (chooseX h).2
+  (chooseX h).property
 
 end FindA
 

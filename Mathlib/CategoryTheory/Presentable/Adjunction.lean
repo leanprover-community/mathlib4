@@ -6,7 +6,11 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
+
 import Mathlib.CategoryTheory.Monad.Limits
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Presentable objects and adjunctions
@@ -19,7 +23,6 @@ Moreover, if `G : D ⥤ C` is fully faithful, then `D` is locally `κ`-presentab
 
 In particular, if `e : C ≌ D` is an equivalence of categories and
 `C` is locally presentable (resp. accessible), then so is `D`.
-
 -/
 
 public section

@@ -7,15 +7,17 @@ module
 
 public import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
 public import Mathlib.RingTheory.Ideal.GoingDown
+
 import Mathlib.RingTheory.IntegralClosure.Algebra.Ideal
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Going down for integrally closed domains
 
 In this file, we provide the instance that any integral extension of `R ⊆ S` satisfies going down
 if `R` is integrally closed.
-
 -/
 
 public section

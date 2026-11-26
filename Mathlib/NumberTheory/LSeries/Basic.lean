@@ -5,8 +5,8 @@ Authors: Aaron Anderson, Michael Stoll
 -/
 module
 
-public import Mathlib.Analysis.PSeries
 public import Mathlib.Analysis.Normed.Module.FiniteDimension
+public import Mathlib.Analysis.PSeries
 public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 
 /-!
@@ -42,7 +42,7 @@ both scoped to `LSeries.notation`. The latter makes it convenient to use arithme
 or Dirichlet characters (or anything that coerces to a function `N → R`, where `ℕ` coerces
 to `N` and `R` coerces to `ℂ`) as arguments to `LSeries` etc.
 
-## Reference
+## References
 
 For some background on the design decisions made when implementing L-series in Mathlib
 (and applications motivating the development), see the paper

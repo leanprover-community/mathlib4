@@ -5,8 +5,8 @@ Authors: Joseph Myers
 -/
 module
 
-public import Mathlib.LinearAlgebra.Ray
 public import Mathlib.LinearAlgebra.Determinant
+public import Mathlib.LinearAlgebra.Ray
 
 /-!
 # Orientations of modules
@@ -30,7 +30,6 @@ that index type is a `Fintype` and there exists a basis of the same cardinality.
 ## References
 
 * https://en.wikipedia.org/wiki/Orientation_(vector_space)
-
 -/
 
 @[expose] public section
@@ -58,6 +57,11 @@ class Module.Oriented where
 export Module.Oriented (positiveOrientation)
 
 variable {R M}
+
+instance [Nonempty ι] [Subsingleton M] : Subsingleton (Orientation R M ι) := by
+  refine ⟨fun o ↦ ?_⟩
+  induction o using Module.Ray.ind with | h f hf =>
+  exact absurd (AlternatingMap.ext fun v ↦ by simp [Subsingleton.elim v 0]) hf
 
 /-- An equivalence between modules implies an equivalence between orientations. -/
 def Orientation.map (e : M ≃ₗ[R] N) : Orientation R M ι ≃ Orientation R N ι :=
@@ -121,7 +125,7 @@ theorem Orientation.map_of_isEmpty [IsEmpty ι] (x : Orientation R M ι) (f : M 
   ext i
   rw [AlternatingMap.compLinearMap_apply]
   congr
-  simp only [LinearEquiv.coe_coe, eq_iff_true_of_subsingleton]
+  simp only [LinearEquiv.coe_toLinearMap, eq_iff_true_of_subsingleton]
 
 end OrderedCommSemiring
 
@@ -153,7 +157,7 @@ theorem map_orientation_eq_det_inv_smul [Finite ι] (e : Basis ι R M) (x : Orie
   induction x using Module.Ray.ind with | h g hg =>
   rw [Orientation.map_apply, smul_rayOfNeZero, ray_eq_iff, Units.smul_def,
     (g.compLinearMap f.symm).eq_smul_basis_det e, g.eq_smul_basis_det e,
-    AlternatingMap.compLinearMap_apply, AlternatingMap.smul_apply,
+    AlternatingMap.compLinearMap_apply, _root_.smul_apply,
     show (fun i ↦ (LinearEquiv.symm f).toLinearMap (e i)) = (LinearEquiv.symm f).toLinearMap ∘ e
     by rfl, Basis.det_comp, Basis.det_self, mul_one, smul_eq_mul, mul_comm, mul_smul,
     LinearEquiv.coe_inv_det]
@@ -329,6 +333,23 @@ theorem abs_det_adjustToOrientation [Nonempty ι] (e : Basis ι R M)
 
 end Module.Basis
 
+/-- If the index type has cardinality equal to the finite rank, any two orientations are
+equal or negations. -/
+theorem Orientation.eq_or_eq_neg [Module.Free R M] [Module.Finite R M] (x₁ x₂ : Orientation R M ι)
+    (h : Nat.card ι = finrank R M) : x₁ = x₂ ∨ x₁ = -x₂ := by
+  classical
+  cases finite_or_infinite ι
+  · have := Fintype.ofFinite ι
+    let b : Basis ι R M :=
+      (finBasis R M).reindex (Fintype.equivFinOfCardEq (Nat.card_eq_fintype_card.symm.trans h)).symm
+    rcases b.orientation_eq_or_eq_neg x₂ with rfl | rfl
+    · exact b.orientation_eq_or_eq_neg x₁
+    · rw [neg_neg b.orientation]
+      exact (b.orientation_eq_or_eq_neg x₁).symm
+  · have : Subsingleton M :=
+      (finrank_eq_zero_iff_of_free R M).mp (h.symm.trans Nat.card_eq_zero_of_infinite)
+    simp [Subsingleton.elim x₁ x₂]
+
 end LinearOrderedCommRing
 
 section LinearOrderedField
@@ -339,25 +360,16 @@ variable {ι : Type*}
 
 namespace Orientation
 
-variable [Fintype ι]
-
 open FiniteDimensional Module
-
-/-- If the index type has cardinality equal to the finite dimension, any two orientations are
-equal or negations. -/
-theorem eq_or_eq_neg [FiniteDimensional R M] (x₁ x₂ : Orientation R M ι)
-    (h : Fintype.card ι = finrank R M) : x₁ = x₂ ∨ x₁ = -x₂ := by
-  have e := (finBasis R M).reindex (Fintype.equivFinOfCardEq h).symm
-  let := Classical.decEq ι
-  rcases e.orientation_eq_or_eq_neg x₁ with (h₁ | h₁) <;>
-    rcases e.orientation_eq_or_eq_neg x₂ with (h₂ | h₂) <;> simp [h₁, h₂]
 
 /-- If the index type has cardinality equal to the finite dimension, an orientation equals the
 negation of another orientation if and only if they are not equal. -/
 theorem ne_iff_eq_neg [FiniteDimensional R M] (x₁ x₂ : Orientation R M ι)
-    (h : Fintype.card ι = finrank R M) : x₁ ≠ x₂ ↔ x₁ = -x₂ :=
+    (h : Nat.card ι = finrank R M) : x₁ ≠ x₂ ↔ x₁ = -x₂ :=
   ⟨fun hn => (eq_or_eq_neg x₁ x₂ h).resolve_left hn, fun he =>
     he.symm ▸ (Module.Ray.ne_neg_self x₂).symm⟩
+
+variable [Fintype ι]
 
 /-- The value of `Orientation.map` when the index type has cardinality equal to the finite
 dimension, in terms of `f.det`. -/

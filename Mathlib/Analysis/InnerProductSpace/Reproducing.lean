@@ -29,6 +29,8 @@ positive semidefinite matrices.
 ## Main results
 
 - `RKHS.kerFun_dense`: the kernel functions are dense in the Hilbert space.
+- `RKHS.mem_topologicalClosure_span_kerFun`: the representer theorem -- a regularized minimizer
+    lies in the closed span of the kernel sections at the data points.
 - `RKHS.posSemidef_kernel`: The kernel is positive semidefinite.
 - `RKHS.continuous_tfae`: The joint continuity of the kernel, the continuity of the evaluation map
   and continuity of the kernel functions are all equivalent.
@@ -46,6 +48,7 @@ positive semidefinite matrices.
 - Privatize `RKHS.H₀`
 
 ## References
+
 * [Paulsen, Vern I. and Raghupathi, Mrinal,
   *An introduction to the theory of reproducing kernel Hilbert spaces*][MR3526117]
 -/
@@ -76,11 +79,21 @@ variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace 𝕜 V]
 variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace 𝕜 H]
 variable [RKHS 𝕜 H X V]
 
+/-
+It is essential for performance that synthesizing `FunLike` instances is fast.
+So, we need to be careful with the following generic `FunLike` instance.
+To ensure that it fails quickly, we ensure its first subgoal is `RKHS 𝕜 H X V` instead of
+something like `RCLike 𝕜` (which has many more available instances and will fail slowly).
+Lean's algorithm that determines this synth order mistakenly rejects this,
+so we have to set `synthInstance.checkSynthOrder` to false.
+-/
+set_option synthInstance.checkSynthOrder false in
 /--
 Each element of a reproducing kernel Hilbert space may be coerced into a function.
 -/
 @[macro_inline]
-instance instFunLike : FunLike H X V where
+instance {𝕜 H X V : Type*} {_ : RCLike 𝕜} {_ : NormedAddCommGroup V} {_ : InnerProductSpace 𝕜 V}
+    {_ : NormedAddCommGroup H} {_ : InnerProductSpace 𝕜 H} [RKHS 𝕜 H X V] : FunLike H X V where
   coe f := coeCLM 𝕜 f
   coe_injective := coeCLM_injective
 
@@ -260,6 +273,38 @@ theorem kerFun_dense : topologicalClosure (span 𝕜 {kerFun H x v | (x) (v)}) =
   simp only [← kerFun_inner, coe_zero, Pi.zero_apply, inner_zero_right]
   refine inner_right_of_mem_orthogonal (subset_closure ?_) fin
   simp [mem_span_of_mem]
+
+variable {H} in
+/-- An element of `H` orthogonal to the kernel sections `kerFun H (x i) v` at the data points
+`x i` vanishes at every data point. -/
+lemma apply_eq_zero_of_mem_orthogonal_span_kerFun {ι : Type*} {x : ι → X} {f : H}
+    (hf : f ∈ (span 𝕜 (Set.range fun iv : ι × V ↦ kerFun H (x iv.1) iv.2))ᗮ) (i : ι) :
+    f (x i) = 0 :=
+  inner_self_eq_zero.mp <| by
+    rw [← kerFun_inner (x i) _ f]
+    exact inner_right_of_mem_orthogonal (subset_span (Set.mem_range_self (i, f (x i)))) hf
+
+variable {H} in
+/-- **Representer theorem** (generalized / Schölkopf–Herbrich–Smola, vector-valued form).
+For data points `x i`, an objective `L` that
+sees `f` only through its values `(f (x i))ᵢ`, and a regularizer `Ω` that is strictly increasing
+on `[0, ∞)`, every minimizer of `f ↦ L (f ∘ x) + Ω ‖f‖` over the reproducing kernel Hilbert
+space `H` lies in the closed span of the kernel sections `kerFun H (x i)`. -/
+theorem mem_topologicalClosure_span_kerFun {ι : Type*} (x : ι → X) (L : (ι → V) → ℝ)
+    (Ω : ℝ → ℝ) (hΩ : StrictMonoOn Ω (Set.Ici 0)) (f : H)
+    (hf : ∀ p : H, L (fun i ↦ f (x i)) + Ω ‖f‖ ≤ L (fun i ↦ p (x i)) + Ω ‖p‖) :
+    f ∈ (span 𝕜 (Set.range fun iv : ι × V ↦ kerFun H (x iv.1) iv.2)).topologicalClosure := by
+  set K := (span 𝕜 (Set.range fun iv : ι × V ↦ kerFun H (x iv.1) iv.2)).topologicalClosure
+  -- `f` and its star-projection onto `K` agree on the points `x i`.
+  have heval : (fun i ↦ f (x i)) = fun i ↦ K.starProjection f (x i) := by
+    rw [funext_iff]
+    simpa [sub_eq_zero] using apply_eq_zero_of_mem_orthogonal_span_kerFun <|
+      orthogonal_le (le_topologicalClosure _) (K.sub_starProjection_mem_orthogonal f)
+  -- by minimality `‖f‖ ≤ ‖K.starProjection f‖` and hence `f ∈ K`
+  rw [K.mem_iff_norm_starProjection f]
+  apply le_antisymm (K.norm_starProjection_apply_le f)
+  rw [← hΩ.le_iff_le (norm_nonneg _) (norm_nonneg _)]
+  simpa [← heval] using hf (K.starProjection f)
 
 lemma isHermitian_kernel : (kernel H).IsHermitian := by
   ext
@@ -514,15 +559,17 @@ instance instRKHSSubmodule : RKHS 𝕜 H₀ X V where
   coeCLM := (coeCLM 𝕜).comp H₀.subtypeL
   coeCLM_injective := coeCLM_injective.comp H₀.subtype_injective
 
+-- Keep this lemma out of `simp` because its discrimination-tree key
+-- `@DFunLike.coe _ _ _ _ _.1` is too general.
+-- It may be possible to add `@[simp]` if https://github.com/leanprover/lean4/pull/8883 is merged.
 omit [CompleteSpace H] [CompleteSpace V] [CompleteSpace H₀] in
-@[simp]
 lemma coe_coe (f : H₀) : ⇑(f : H) = f := rfl
 
 lemma kerFun_submodule (x : X) :
     kerFun H₀ x = H₀.orthogonalProjectionOnto.comp (kerFun H x) := by
   ext1
   refine ext_inner_right 𝕜 fun v ↦ ?_
-  simp
+  simp [coe_coe]
 
 lemma kernel_submodule (x y : X) :
     kernel H₀ x y = (kerFun H x).adjoint ∘L (H₀.starProjection.comp (kerFun H y)) := by

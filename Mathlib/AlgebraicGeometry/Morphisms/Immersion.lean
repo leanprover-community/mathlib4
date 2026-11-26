@@ -6,10 +6,10 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.Separated
+
 import Mathlib.AlgebraicGeometry.IdealSheaf.Functorial
 
 /-!
-
 # Immersions of schemes
 
 A morphism of schemes `f : X ⟶ Y` is an immersion if the underlying map of topological spaces
@@ -17,13 +17,13 @@ is a locally closed embedding, and the induced morphisms of stalks are all surje
 if and only if it can be factored into a closed immersion followed by an open immersion.
 
 ## Main results
+
 - `isImmersion_iff_exists`:
   A morphism is a (locally-closed) immersion if and only if it can be factored into
   a closed immersion followed by a (dominant) open immersion.
 - `isImmersion_iff_exists_of_quasiCompact`:
   A quasicompact morphism is a (locally-closed) immersion if and only if it can be factored into
   an open immersion followed by a closed immersion.
-
 -/
 
 @[expose] public section
@@ -129,10 +129,10 @@ instance : IsZariskiLocalAtTarget @IsImmersion := by
     exact fun _ _ _ hU _ ↦ hU.isLocallyClosed_iff_coe_preimage
 
 instance (priority := 900) (f : X ⟶ Y) [IsOpenImmersion f] : IsImmersion f where
-  isLocallyClosed_range := f.isOpenEmbedding.2.isLocallyClosed
+  isLocallyClosed_range := f.isOpenEmbedding.isOpen_range.isLocallyClosed
 
 instance (priority := 900) (f : X ⟶ Y) [IsClosedImmersion f] : IsImmersion f where
-  isLocallyClosed_range := f.isClosedEmbedding.2.isLocallyClosed
+  isLocallyClosed_range := f.isClosedEmbedding.isClosed_range.isLocallyClosed
 
 instance : MorphismProperty.IsMultiplicative @IsImmersion where
   id_mem _ := inferInstance

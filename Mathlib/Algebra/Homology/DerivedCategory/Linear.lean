@@ -8,9 +8,11 @@ module
 public import Mathlib.Algebra.Homology.DerivedCategory.Basic
 public import Mathlib.CategoryTheory.Shift.Linear
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The derived category of a linear abelian category is linear
-
 -/
 
 public section

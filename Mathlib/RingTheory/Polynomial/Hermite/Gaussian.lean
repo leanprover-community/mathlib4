@@ -5,9 +5,12 @@ Authors: Luke Mantle, Jake Levinson
 -/
 module
 
-public import Mathlib.RingTheory.Polynomial.Hermite.Basic
 public import Mathlib.Analysis.Calculus.Deriv.Polynomial
 public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+public import Mathlib.RingTheory.Polynomial.Hermite.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Hermite polynomials and Gaussians
@@ -24,13 +27,10 @@ polynomial factor occurring in the `n`th derivative of a Gaussian.
 ## References
 
 * [Hermite Polynomials](https://en.wikipedia.org/wiki/Hermite_polynomials)
-
 -/
 
 public section
 
-
-noncomputable section
 
 open Polynomial
 

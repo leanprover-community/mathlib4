@@ -8,8 +8,9 @@ module
 public import Mathlib.Analysis.InnerProductSpace.Positive
 public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
 public import Mathlib.MeasureTheory.SpecificCodomains.WithLp
-import Mathlib.Probability.Moments.Basic
 public import Mathlib.Probability.Moments.CovarianceBilinDual
+
+import Mathlib.Probability.Moments.Basic
 
 /-!
 # Covariance in Hilbert spaces

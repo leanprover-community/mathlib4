@@ -6,7 +6,11 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
+
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Mono
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Relation between mono/epi and pullback/pushout squares
@@ -24,8 +28,6 @@ X ⟶ Y
 ```
 
 is a pullback square.
-
-
 -/
 
 public section

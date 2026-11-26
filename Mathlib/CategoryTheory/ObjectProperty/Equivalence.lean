@@ -7,13 +7,15 @@ module
 
 public import Mathlib.CategoryTheory.Equivalence
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equivalence of full subcategories
 
 The inclusion functor `P.FullSubcategory ⥤ Q.FullSubcategory` induced
 by an inequality `P ≤ Q` in `ObjectProperty C` is an equivalence iff
 `Q ≤ P.isoClosure`.
-
 -/
 
 @[expose] public section
@@ -26,7 +28,7 @@ variable {C : Type u} [Category.{v} C] {P Q : ObjectProperty C} (h : P ≤ Q)
 
 lemma essSurj_ιOfLE_iff : (ιOfLE h).EssSurj ↔ Q ≤ P.isoClosure := by
   refine ⟨fun _ X hX ↦ ?_, fun hPQ ↦ ⟨fun ⟨Y, hY⟩ ↦ ?_⟩⟩
-  · exact ⟨_, ((ιOfLE h).objPreimage ⟨X, hX⟩).2,
+  · exact ⟨_, ((ιOfLE h).objPreimage ⟨X, hX⟩).property,
       ⟨Q.ι.mapIso ((ιOfLE h).objObjPreimageIso ⟨X, hX⟩).symm⟩⟩
   · obtain ⟨X, hX, ⟨e⟩⟩ := hPQ _ hY
     exact ⟨⟨X, hX⟩, ⟨Q.ι.preimageIso e.symm⟩⟩
@@ -37,7 +39,6 @@ lemma isEquivalence_ιOfLE_iff : (ιOfLE h).IsEquivalence ↔ Q ≤ P.isoClosure
 
 instance : (ιOfLE P.le_isoClosure).IsEquivalence := by rw [isEquivalence_ιOfLE_iff]
 
-set_option backward.defeqAttrib.useBackward true in
 variable (C) in
 /-- The equivalence between the full subcategory `⊤` of a category `C` and `C` itself. -/
 @[simps]

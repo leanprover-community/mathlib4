@@ -5,10 +5,11 @@ Authors: Paul van Wamelen
 -/
 module
 
-import Mathlib.Data.Int.NatPrime
 public import Mathlib.Data.ZMod.Basic
 public import Mathlib.RingTheory.Int.Basic
 public import Mathlib.Tactic.Field
+
+import Mathlib.Data.Int.NatPrime
 
 /-!
 # Pythagorean Triples
@@ -409,7 +410,7 @@ theorem isPrimitiveClassified_aux (hc : x.gcd y = 1) (hzpos : 0 < z) {m n : ℤ}
   apply And.intro _ (And.intro co pp)
   right
   refine ⟨?_, h2.left⟩
-  rw [← Rat.intCast_inj, ← div_left_inj' (mt Rat.intCast_inj.mp hz), hv2, h2.right]
+  rw [← Rat.intCast_inj, ← div_left_inj₀ (mt Rat.intCast_inj.mp hz), hv2, h2.right]
   norm_cast
 
 theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (hyo : y % 2 = 1)
@@ -543,10 +544,10 @@ theorem coprime_classification :
         ring
       simpa using eq_or_eq_neg_of_sq_eq_sq _ _ this
   · delta PythagoreanTriple
-    rintro ⟨m, n, ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩, rfl | rfl, co, pp⟩ <;>
+    rintro ⟨m, n, ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩, rfl | rfl, co, pp⟩ <;> refine ⟨by ring, ?_⟩ <;>
       first
-      | constructor; ring; exact coprime_sq_sub_mul co pp
-      | constructor; ring; rw [Int.gcd_comm]; exact coprime_sq_sub_mul co pp
+      | exact coprime_sq_sub_mul co pp
+      | rw [Int.gcd_comm]; exact coprime_sq_sub_mul co pp
 
 /-- By assuming `x` is odd and `z` is positive we get a slightly more precise classification of
 the Pythagorean triple `x ^ 2 + y ^ 2 = z ^ 2`. -/

@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Analysis.Calculus.FDeriv.Mul
 public import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
+
+import Mathlib.Geometry.Manifold.ContMDiff.Constructions
 import Mathlib.Geometry.Manifold.Notation
 
 /-!
@@ -18,12 +20,9 @@ In this file, we establish differentiability results for
 - constant functions
 - products
 - arithmetic operations (such as addition and scalar multiplication).
-
 -/
 
 public section
-
-noncomputable section
 
 open scoped Manifold
 open Bundle Set Topology
@@ -209,7 +208,7 @@ section Prod
 theorem MDifferentiableWithinAt.prodMk {f : M → M'} {g : M → M''}
     (hf : MDiffAt[s] f x) (hg : MDiffAt[s] g x) :
     MDiffAt[s] (fun x ↦ (f x, g x)) x :=
-  ⟨hf.1.prodMk hg.1, hf.2.prodMk hg.2⟩
+  ⟨hf.continuousWithinAt.prodMk hg.continuousWithinAt, hf.prop.prodMk hg.prop⟩
 
 /-- If `f` and `g` have derivatives `df` and `dg` within `s` at `x`, respectively,
 then `x ↦ (f x, g x)` has derivative `df.prod dg` within `s`. -/
@@ -232,7 +231,7 @@ lemma mfderiv_prodMk {f : M → M'} {g : M → M''} (hf : MDiffAt f x) (hg : MDi
 
 theorem MDifferentiableAt.prodMk {f : M → M'} {g : M → M''} (hf : MDiffAt f x) (hg : MDiffAt g x) :
     MDiffAt (fun x ↦ (f x, g x)) x :=
-  ⟨hf.1.prodMk hg.1, hf.2.prodMk hg.2⟩
+  ⟨hf.continuousWithinAt.prodMk hg.continuousWithinAt, hf.prop.prodMk hg.prop⟩
 
 /-- If `f` and `g` have derivatives `df` and `dg` at `x`, respectively,
 then `x ↦ (f x, g x)` has derivative `df.prod dg`. -/
@@ -245,12 +244,12 @@ theorem HasMFDerivAt.prodMk {f : M → M'} {g : M → M''}
 theorem MDifferentiableWithinAt.prodMk_space {f : M → E'} {g : M → E''}
     (hf : MDiffAt[s] f x) (hg : MDiffAt[s] g x) :
     MDifferentiableWithinAt I 𝓘(𝕜, E' × E'') (fun x ↦ (f x, g x)) s x :=
-  ⟨hf.1.prodMk hg.1, hf.2.prodMk hg.2⟩
+  ⟨hf.continuousWithinAt.prodMk hg.continuousWithinAt, hf.prop.prodMk hg.prop⟩
 
 theorem MDifferentiableAt.prodMk_space {f : M → E'} {g : M → E''}
     (hf : MDiffAt f x) (hg : MDiffAt g x) :
     MDifferentiableAt I 𝓘(𝕜, E' × E'') (fun x ↦ (f x, g x)) x :=
-  ⟨hf.1.prodMk hg.1, hf.2.prodMk hg.2⟩
+  ⟨hf.continuousWithinAt.prodMk hg.continuousWithinAt, hf.prop.prodMk hg.prop⟩
 
 theorem MDifferentiableOn.prodMk {f : M → M'} {g : M → M''} (hf : MDiff[s] f) (hg : MDiff[s] g) :
     MDiff[s] (fun x ↦ (f x, g x)) := fun x hx ↦ (hf x hx).prodMk (hg x hx)
@@ -316,12 +315,12 @@ theorem mfderivWithin_fst {s : Set (M × M')} {x : M × M'}
 
 @[simp, mfld_simps]
 theorem tangentMap_prodFst {p : TangentBundle (I.prod I') (M × M')} :
-    tangentMap% (@Prod.fst M M') p = ⟨p.proj.1, p.2.1⟩ := by
+    tangentMap% (@Prod.fst M M') p = ⟨p.proj.1, p.snd.1⟩ := by
   simp [tangentMap]; rfl
 
 theorem tangentMapWithin_prodFst {s : Set (M × M')} {p : TangentBundle (I.prod I') (M × M')}
     (hs : UniqueMDiffAt[s] p.proj) :
-    tangentMap[s] (@Prod.fst M M') p = ⟨p.proj.1, p.2.1⟩ := by
+    tangentMap[s] (@Prod.fst M M') p = ⟨p.proj.1, p.snd.1⟩ := by
   simp only [tangentMapWithin]
   rw [mfderivWithin_fst]
   · rcases p with ⟨⟩; rfl
@@ -536,12 +535,12 @@ end prodMap
 
 @[simp, mfld_simps]
 theorem tangentMap_prodSnd {p : TangentBundle (I.prod I') (M × M')} :
-    tangentMap% (@Prod.snd M M') p = ⟨p.proj.2, p.2.2⟩ := by
+    tangentMap% (@Prod.snd M M') p = ⟨p.proj.2, p.snd.2⟩ := by
   simp [tangentMap]; rfl
 
 theorem tangentMapWithin_prodSnd {s : Set (M × M')} {p : TangentBundle (I.prod I') (M × M')}
     (hs : UniqueMDiffAt[s] p.proj) :
-    tangentMap[s] (@Prod.snd M M') p = ⟨p.proj.2, p.2.2⟩ := by
+    tangentMap[s] (@Prod.snd M M') p = ⟨p.proj.2, p.snd.2⟩ := by
   simp only [tangentMapWithin]
   rw [mfderivWithin_snd hs]
   rcases p with ⟨⟩; rfl
@@ -557,7 +556,7 @@ theorem mfderiv_prod_left {x₀ : M} {y₀ : M'} :
 
 -- TODO: better error when the type of x is left open
 theorem tangentMap_prod_left {p : TangentBundle I M} {y₀ : M'} :
-    tangentMap% (fun (x : M) ↦ (x, y₀)) p = ⟨(p.1, y₀), (p.2, 0)⟩ := by
+    tangentMap% (fun (x : M) ↦ (x, y₀)) p = ⟨(p.proj, y₀), (p.snd, 0)⟩ := by
   simp only [tangentMap, mfderiv_prod_left]
   rfl
 
@@ -568,7 +567,7 @@ theorem mfderiv_prod_right {x₀ : M} {y₀ : M'} :
   rw [mfderiv_id, mfderiv_const, ContinuousLinearMap.inr]
 
 theorem tangentMap_prod_right {p : TangentBundle I' M'} {x₀ : M} :
-    tangentMap% (fun (y : M') ↦ (x₀, y)) p = ⟨(x₀, p.1), (0, p.2)⟩ := by
+    tangentMap% (fun (y : M') ↦ (x₀, y)) p = ⟨(x₀, p.proj), (0, p.snd)⟩ := by
   simp only [tangentMap, mfderiv_prod_right]
   rfl
 
@@ -625,6 +624,81 @@ theorem mfderiv_prod_eq_add_apply {f : M × M' → M''} {p : M × M'} {v : Tange
   rfl
 
 end Prod
+
+section Pi
+
+/-!
+### Differentiability of functions with codomain `Π i, M i`
+-/
+
+variable {ι : Type*} [Fintype ι] {Mi Hi Ei : ι → Type*}
+  [∀ i, NormedAddCommGroup (Ei i)] [∀ i, NormedSpace 𝕜 (Ei i)]
+  [∀ i, TopologicalSpace (Hi i)] {Ii : ∀ i, ModelWithCorners 𝕜 (Ei i) (Hi i)}
+  [∀ i, TopologicalSpace (Mi i)] [∀ i, ChartedSpace (Hi i) (Mi i)]
+  {φ : M → ∀ i, Ei i} {f : M → ∀ i, Mi i}
+
+theorem mdifferentiableWithinAt_apply {i : ι} {s : Set (Π i, Mi i)} {x : Π i, Mi i} :
+    MDifferentiableWithinAt (ModelWithCorners.pi Ii) (Ii i) (fun (x : Π i, Mi i) ↦ x i) s x :=
+  contMDiffWithinAt_apply.mdifferentiableWithinAt one_ne_zero
+
+theorem mdifferentiableAt_apply {i : ι} {x : Π i, Mi i} :
+    MDifferentiableAt (ModelWithCorners.pi Ii) (Ii i) (fun (x : Π i, Mi i) ↦ x i) x :=
+  contMDiffAt_apply.mdifferentiableAt one_ne_zero
+
+theorem mdifferentiableOn_apply {i : ι} {s : Set (Π i, Mi i)} :
+    MDifferentiableOn (ModelWithCorners.pi Ii) (Ii i) (fun (x : Π i, Mi i) ↦ x i) s :=
+  contMDiffOn_apply.mdifferentiableOn one_ne_zero
+
+theorem mdifferentiable_apply {i : ι} :
+    MDifferentiable (ModelWithCorners.pi Ii) (Ii i) (fun (x : Π i, Mi i) ↦ x i) :=
+  contMDiff_apply.mdifferentiable one_ne_zero
+
+theorem mdifferentiableWithinAt_pi_iff :
+    MDifferentiableWithinAt I (ModelWithCorners.pi Ii) f s x ↔
+      ∀ i, MDifferentiableWithinAt I (Ii i) (fun x => f x i) s x := by
+  refine ⟨fun h i ↦ mdifferentiableAt_apply.comp_mdifferentiableWithinAt _ h, fun h ↦ ?_⟩
+  simp only [mdifferentiableWithinAt_iff] at *
+  exact ⟨continuousWithinAt_pi.2 (fun i ↦ (h i).1), differentiableWithinAt_pi.2 (fun i ↦ (h i).2)⟩
+
+theorem mdifferentiableWithinAt_pi_space :
+    MDifferentiableWithinAt I 𝓘(𝕜, ∀ i, Ei i) φ s x ↔
+      ∀ i, MDifferentiableWithinAt I 𝓘(𝕜, Ei i) (fun x => φ x i) s x := by
+  simp only [mdifferentiableWithinAt_iff, continuousWithinAt_pi, differentiableWithinAt_pi,
+    forall_and, extChartAt_model_space_eq_id, Function.comp_def, PartialEquiv.refl_coe, id]
+
+theorem mdifferentiableAt_pi_iff :
+    MDifferentiableAt I (ModelWithCorners.pi Ii) f x ↔
+      ∀ i, MDifferentiableAt I (Ii i) (fun x => f x i) x :=
+  mdifferentiableWithinAt_pi_iff
+
+theorem mdifferentiableAt_pi_space :
+    MDifferentiableAt I 𝓘(𝕜, ∀ i, Ei i) φ x ↔
+      ∀ i, MDifferentiableAt I 𝓘(𝕜, Ei i) (fun x => φ x i) x :=
+  mdifferentiableWithinAt_pi_space
+
+theorem mdifferentiableOn_pi_iff :
+    MDifferentiableOn I (ModelWithCorners.pi Ii) f s ↔
+      ∀ i, MDifferentiableOn I (Ii i) (fun x => f x i) s :=
+  ⟨fun h i x hx ↦ mdifferentiableWithinAt_pi_iff.1 (h x hx) i,
+    fun h x hx ↦ mdifferentiableWithinAt_pi_iff.2 (fun i ↦ h i x hx)⟩
+
+theorem mdifferentiableOn_pi_space_iff :
+    MDifferentiableOn I 𝓘(𝕜, ∀ i, Ei i) φ s ↔
+      ∀ i, MDifferentiableOn I 𝓘(𝕜, Ei i) (fun x => φ x i) s :=
+  ⟨fun h i x hx => mdifferentiableWithinAt_pi_space.1 (h x hx) i, fun h x hx =>
+    mdifferentiableWithinAt_pi_space.2 fun i => h i x hx⟩
+
+theorem mdifferentiable_pi_iff :
+    MDifferentiable I (ModelWithCorners.pi Ii) f ↔ ∀ i, MDifferentiable I (Ii i) (fun x => f x i) :=
+  ⟨fun h i x ↦ mdifferentiableAt_pi_iff.1 (h x) i,
+    fun h x ↦ mdifferentiableAt_pi_iff.2 (fun i ↦ h i x)⟩
+
+theorem mdifferentiable_pi_space_iff :
+    MDifferentiable I 𝓘(𝕜, ∀ i, Ei i) φ ↔ ∀ i, MDifferentiable I 𝓘(𝕜, Ei i) fun x => φ x i :=
+  ⟨fun h i x => mdifferentiableAt_pi_space.1 (h x) i,
+    fun h x => mdifferentiableAt_pi_space.2 fun i => h i x⟩
+
+end Pi
 
 section disjointUnion
 

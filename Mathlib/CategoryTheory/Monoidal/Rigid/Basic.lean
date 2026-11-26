@@ -5,8 +5,9 @@ Authors: Jakob von Raumer
 -/
 module
 
-public import Mathlib.Tactic.CategoryTheory.Monoidal.Basic
 public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
+public import Mathlib.Tactic.CategoryTheory.Monoidal.Basic
+
 import Mathlib.Tactic.ApplyFun
 
 /-!
@@ -33,7 +34,7 @@ exact pairings and duals.
 * `Xᘁ` and `ᘁX` denote the right and left dual of an object, as well as the adjoint
   mate of a morphism.
 
-## Future work
+## TODO
 
 * Show that `X ⊗ Y` and `Yᘁ ⊗ Xᘁ` form an exact pairing.
 * Show that the left adjoint mate of the right adjoint mate of a morphism is the morphism itself.
@@ -56,7 +57,6 @@ and `ExactPairing X Y` is in bijection with adjunctions compatible with this rig
 ## Tags
 
 rigid category, monoidal category
-
 -/
 
 @[expose] public section

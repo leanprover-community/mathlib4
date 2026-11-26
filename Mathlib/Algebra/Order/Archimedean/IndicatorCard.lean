@@ -5,12 +5,16 @@ Authors: Damien Thomine
 -/
 module
 
-import Mathlib.Algebra.BigOperators.Group.Finset.Indicator
 public import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.Order.Group.Indicator
 public import Mathlib.Order.LiminfLimsup
 public import Mathlib.SetTheory.Cardinal.Finite
+
+import Mathlib.Algebra.BigOperators.Group.Finset.Indicator
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Cardinality and limit of sum of indicators
@@ -19,6 +23,7 @@ This file contains results relating the cardinality of subsets of ℕ and limits
 limsups of sums of indicators.
 
 ## Tags
+
 finite, indicator, limsup, tendsto
 -/
 

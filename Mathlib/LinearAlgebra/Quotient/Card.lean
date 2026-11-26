@@ -7,7 +7,11 @@ module
 
 public import Mathlib.LinearAlgebra.Quotient.Defs
 public import Mathlib.SetTheory.Cardinal.Finite
+
 import Mathlib.GroupTheory.Coset.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-! # Results about the cardinality of a quotient module -/
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Central.Basic
 public import Mathlib.LinearAlgebra.FreeModule.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Module.End R M` is a central algebra
 
@@ -17,7 +20,7 @@ This file shows that the algebra of endomorphisms on a free module is central.
 open Module
 
 variable {R S M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [Free R M]
-  [CommSemiring S] [Module S M] [SMulCommClass R S M] [Algebra S R] [IsScalarTower S R M]
+  [CommSemiring S] [Module S M] [Algebra S R] [IsScalarTower S R M]
 
 public theorem Module.End.mem_subsemiringCenter_iff {f : End R M} :
     f ∈ Subsemiring.center (End R M) ↔
@@ -42,20 +45,20 @@ end Algebra.IsCentral
 
 open LinearMap in
 public theorem LinearEquiv.conjAlgEquiv_ext_iff {M₂ : Type*} [AddCommMonoid M₂] [Module R M₂]
-    [Module S M₂] [SMulCommClass R S M₂] [IsScalarTower S R M₂] [Algebra.IsCentral S R]
+    [Module S M₂] [IsScalarTower S R M₂] [Algebra.IsCentral S R]
     {f g : M ≃ₗ[R] M₂} : f.conjAlgEquiv S = g.conjAlgEquiv S ↔ ∃ α : S, ⇑f = α • g := by
   conv_lhs => rw [eq_comm]
   simp_rw [AlgEquiv.ext_iff, conjAlgEquiv_apply, ← eq_toLinearMap_symm_comp, ← comp_assoc,
     eq_comp_toLinearMap_symm, comp_assoc, ← comp_assoc _ _ g.symm.toLinearMap, comp_coe,
     ← End.mul_eq_comp, ← Subalgebra.mem_center_iff (R := S), Algebra.IsCentral.center_eq_bot,
     ← comp_coe, Algebra.mem_bot, Set.mem_range, Algebra.algebraMap_eq_smul_one,
-    eq_toLinearMap_symm_comp, eq_comm, LinearMap.ext_iff, funext_iff, comp_apply, coe_coe,
-    LinearMap.smul_apply, End.one_apply, Pi.smul_apply, LinearMapClass.map_smul_of_tower g]
+    eq_toLinearMap_symm_comp, eq_comm, LinearMap.ext_iff, funext_iff, comp_apply, coe_toLinearMap,
+    LinearMap.smul_apply, one_apply_eq_self, Pi.smul_apply, LinearMapClass.map_smul_of_tower g]
 
 open LinearMap in
 public theorem LinearEquiv.conjAlgEquiv_ext_iff' {S M₂ : Type*} [CommRing S] [IsCancelMulZero S]
-    [Module S M] [SMulCommClass R S M] [Algebra S R] [IsScalarTower S R M] [AddCommGroup M₂]
-    [Module R M₂] [Module S M₂] [SMulCommClass R S M₂] [IsScalarTower S R M₂]
+    [Module S M] [Algebra S R] [IsScalarTower S R M] [AddCommGroup M₂]
+    [Module R M₂] [Module S M₂] [IsScalarTower S R M₂]
     [Algebra.IsCentral S R] [IsTorsionFree S M₂]
     (f g : M ≃ₗ[R] M₂) : f.conjAlgEquiv S = g.conjAlgEquiv S ↔ ∃ α : Sˣ, f = α • g := by
   refine ⟨fun h ↦ ?_, fun ⟨y, h⟩ ↦ conjAlgEquiv_ext_iff.mpr ⟨(y : S), congr($h)⟩⟩

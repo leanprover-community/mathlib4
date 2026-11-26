@@ -6,11 +6,15 @@ Authors: Anne Baanen, Kexing Ying, Eric Wieser
 module
 
 public import Mathlib.Algebra.CharP.Invertible
-import Mathlib.Algebra.Order.BigOperators.Expect
-import Mathlib.Analysis.Normed.Group.Basic
 public import Mathlib.Analysis.Real.Sqrt
 public import Mathlib.Basic.Sign.Basic
 public import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
+
+import Mathlib.Algebra.Order.BigOperators.Expect
+import Mathlib.Analysis.Normed.Group.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Real quadratic forms
@@ -21,7 +25,6 @@ sum of squares with the weights being ±1 or 0.
 
 When the real quadratic form is nondegenerate we can take the weights to be ±1,
 as in `QuadraticForm.equivalent_one_zero_neg_one_weighted_sum_squared`.
-
 -/
 
 @[expose] public section

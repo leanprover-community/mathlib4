@@ -5,8 +5,11 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.LinearAlgebra.QuadraticForm.TensorProduct
 public import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
+public import Mathlib.LinearAlgebra.QuadraticForm.TensorProduct
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Linear equivalences of tensor products as isometries

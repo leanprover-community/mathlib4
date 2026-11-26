@@ -6,7 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
-public import Mathlib.CategoryTheory.Limits.Presheaf
+public import Mathlib.CategoryTheory.Functor.KanExtension.RestrictedYoneda
 public import Mathlib.Order.NonemptyFiniteChains
 
 /-!
@@ -16,15 +16,16 @@ In this file, we define the subdivision functor `sd : SSet ⥤ SSet`
 and its right adjoint `ex`.
 
 ## TODO (@joelriou)
+
 * define another functor `SSet.B : SSet ⥤ SSet` by sending `X` to
-the nerve of the partially ordered type `X.N` of nondegenerate
-simplices in `X`, define a natural transformation `sd ⟶ B`,
-and show that on suitable simplicial sets `X`, this natural
-transformation is an isomorphism.
+  the nerve of the partially ordered type `X.N` of nondegenerate
+  simplices in `X`, define a natural transformation `sd ⟶ B`,
+  and show that on suitable simplicial sets `X`, this natural
+  transformation is an isomorphism.
 
 ## References
-* [J. F. Jardine, *Simplicial approximation*][jardine-2004]
 
+* [J. F. Jardine, *Simplicial approximation*][jardine-2004]
 -/
 
 @[expose] public section
@@ -42,6 +43,7 @@ noncomputable def SimplexCategory.sd : SimplexCategory ⥤ SSet.{u} :=
 namespace SSet
 
 /-- The subdivision functor on simplicial sets. -/
+@[no_expose]
 noncomputable def sd : SSet.{u} ⥤ SSet.{u} :=
   stdSimplex.leftKanExtension SimplexCategory.sd
 
@@ -49,12 +51,11 @@ noncomputable def sd : SSet.{u} ⥤ SSet.{u} :=
 noncomputable def ex : SSet.{u} ⥤ SSet.{u} :=
   Presheaf.restrictedULiftYoneda.{0} SimplexCategory.sd
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction between the subdivision functor `sd` and `ex`. -/
+@[no_expose]
 noncomputable def sdExAdjunction : sd.{u} ⊣ ex :=
-  Presheaf.uliftYonedaAdjunction.{0}
-    (SSet.stdSimplex.{u}.leftKanExtension SimplexCategory.sd)
-    (SSet.stdSimplex.{u}.leftKanExtensionUnit SimplexCategory.sd)
+  (Presheaf.restrictedULiftYonedaAdjunction.{0}
+    (uliftYoneda.{u}.leftKanExtensionUnit SimplexCategory.sd) :)
 
 instance : sd.{u}.IsLeftAdjoint := sdExAdjunction.isLeftAdjoint
 
@@ -63,8 +64,9 @@ instance : ex.{u}.IsRightAdjoint := sdExAdjunction.isRightAdjoint
 namespace stdSimplex
 
 /-- The natural isomorphism `stdSimplex ⋙ sd ≅ SimplexCategory.sd`. -/
+@[no_expose]
 noncomputable def sdIso : stdSimplex.{u} ⋙ sd ≅ SimplexCategory.sd :=
-  Presheaf.isExtensionAlongULiftYoneda _
+  (asIso (uliftYoneda.{u}.leftKanExtensionUnit SimplexCategory.sd.{u})).symm
 
 end stdSimplex
 

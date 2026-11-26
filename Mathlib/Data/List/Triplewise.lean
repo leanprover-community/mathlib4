@@ -5,8 +5,11 @@ Authors: Joseph Myers, Yaël Dillies
 -/
 module
 
-import Mathlib.Tactic.MkIffOfInductiveProp
 import Batteries.Data.List.Lemmas
+import Mathlib.Tactic.MkIffOfInductiveProp
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Triplewise predicates on list.
@@ -14,7 +17,6 @@ import Batteries.Data.List.Lemmas
 ## Main definitions
 
 * `List.Triplewise` says that a predicate applies to all ordered triples of elements of a list.
-
 -/
 
 public section

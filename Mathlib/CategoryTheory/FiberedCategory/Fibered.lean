@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.FiberedCategory.Cartesian
 
 /-!
-
 # Fibered categories
 
 This file defines what it means for a functor `p : 𝒳 ⥤ 𝒮` to be (pre)fibered.
@@ -35,8 +34,8 @@ when wanting to apply this condition, it is recommended to instead use the lemma
 equalities.
 
 ## References
-* [A. Grothendieck, M. Raynaud, *SGA 1*](https://arxiv.org/abs/math/0206203)
 
+* [A. Grothendieck, M. Raynaud, *SGA 1*](https://arxiv.org/abs/math/0206203)
 -/
 
 @[expose] public section

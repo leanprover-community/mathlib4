@@ -5,9 +5,13 @@ Authors: Yaël Dillies
 -/
 module
 
+public meta import Aesop.Frontend
+
+meta import Aesop.Frontend.Basic
 import Mathlib.Init
-public import Aesop.Frontend
-import Aesop.Frontend.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Aesop rule set for finsets

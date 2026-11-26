@@ -5,8 +5,9 @@ Authors: Markus Himmel
 -/
 module
 
-import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesProduct
 public import Mathlib.CategoryTheory.Limits.Indization.FilteredColimits
+
+import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesProduct
 
 /-!
 # Ind-objects are closed under products
@@ -16,6 +17,7 @@ products in `Cᵒᵖ ⥤ Type v` indexed by `α`. This will imply that the funct
 creates products indexed by `α` and that the functor `C ⥤ Ind C` preserves them.
 
 ## References
+
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Prop. 6.1.16(ii)
 -/
 

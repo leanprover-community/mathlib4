@@ -78,6 +78,10 @@ the namespace `Real` in the above statements.
 
 We also give specialized versions of the one-dimensional real derivative (and iterated derivative)
 in `Real.deriv_fourierIntegral` and `Real.iteratedDeriv_fourierIntegral`.
+
+Finally, `Real.one_add_pow_mul_norm_fourier_le` records the decay of the Fourier transform of a
+function on the real line whose first `n` derivatives are integrable: `𝓕 f u` decays like
+`|u| ^ (-n)`, with an explicit bound which is also nontrivial at `u = 0`.
 -/
 
 @[expose] public section
@@ -96,11 +100,12 @@ attribute [local instance 101] secondCountableTopologyEither_of_left
 namespace Real
 
 lemma hasDerivAt_fourierChar (x : ℝ) : HasDerivAt (𝐞 · : ℝ → ℂ) (2 * π * I * 𝐞 x) x := by
-  have h1 (y : ℝ) : 𝐞 y = fourier 1 (y : UnitAddCircle) := by
-    rw [fourierChar_apply, fourier_coe_apply]
+  have h1 (y : ℝ) : 𝐞 y = AddCircle.fourier 1 (y : UnitAddCircle) := by
+    rw [fourierChar_apply, AddCircle.fourier_coe_apply]
     push_cast
     ring_nf
-  simpa only [h1, Int.cast_one, ofReal_one, div_one, mul_one] using hasDerivAt_fourier 1 1 x
+  simpa only [h1, Int.cast_one, ofReal_one, div_one, mul_one] using
+    AddCircle.hasDerivAt_fourier 1 1 x
 
 lemma differentiable_fourierChar : Differentiable ℝ (𝐞 · : ℝ → ℂ) :=
   fun x ↦ (Real.hasDerivAt_fourierChar x).differentiableAt
@@ -198,7 +203,7 @@ lemma _root_.MeasureTheory.AEStronglyMeasurable.fourierSMulRight
     AEStronglyMeasurable (fun v ↦ fourierSMulRight L f v) μ := by
   apply AEStronglyMeasurable.fun_const_smul
   have aux0 : Continuous fun p : (W →L[ℝ] ℝ) × E ↦ p.1.smulRight p.2 :=
-    (ContinuousLinearMap.smulRightL ℝ W E).continuous₂
+    (StrongDual.smulRightL ℝ W E).continuous₂
   have aux1 : AEStronglyMeasurable (fun v ↦ (L v, f v)) μ :=
     L.continuous.aestronglyMeasurable.prodMk hf
   -- Elaboration without the expected type is faster here:
@@ -509,7 +514,7 @@ theorem contDiff_fourierIntegral {N : ℕ∞}
   by_cases h'f : Integrable f μ
   · exact (hasFTaylorSeriesUpTo_fourierIntegral' L hf h'f.1).contDiff
   · have : fourierIntegral 𝐞 μ L.toLinearMap₁₂ f = 0 := by
-      ext w; simp [fourierIntegral, integral, h'f]
+      ext w; simp [fourierIntegral, integral_undef, h'f]
     simpa [this] using! contDiff_const
 
 /-- If `‖v‖^n * ‖f v‖` is integrable for all `n ≤ N`, then the `n`-th derivative of the Fourier
@@ -791,7 +796,7 @@ theorem fourier_deriv
   ext x
   have I : Integrable (fun x ↦ fderiv ℝ f x) := by
     simpa only [← toSpanSingleton_deriv] using!
-      (ContinuousLinearMap.smulRightL ℝ ℝ E 1).integrable_comp hf'
+      (StrongDual.smulRightL ℝ ℝ E 1).integrable_comp hf'
   have : 𝓕 (deriv f) x = 𝓕 (fderiv ℝ f) x 1 := by
     simp only [fourier_continuousLinearMap_apply I, fderiv_apply_one_eq_deriv]
   rw [this, fourier_fderiv hf h'f I]
@@ -826,5 +831,35 @@ theorem fourier_iteratedDeriv {f : ℝ → E} {N : ℕ∞} {n : ℕ} (hf : ContD
   simp_rw [iteratedDeriv, ← fourier_continuousMultilinearMap_apply (A n hn),
     fourier_iteratedFDeriv hf A hn]
   simp [← coe_smul, smul_smul, ← mul_pow, innerSL_apply_apply ℝ]
+
+/-- If `f` and its first `n` derivatives are integrable, then the Fourier transform of `f` decays
+like `|u| ^ (-n)`, with an explicit bound that is also nontrivial at `u = 0`.
+
+TODO: a higher-dimensional analogue.  This requires a reverse bound for `fourierPowSMulRight`, for
+which Mathlib currently only has the ≤ direction.
+-/
+theorem one_add_pow_mul_norm_fourier_le {f : ℝ → E} {n : ℕ} (hf : ContDiff ℝ n f)
+    (h'f : ∀ k ≤ n, Integrable (iteratedDeriv k f)) (u : ℝ) :
+    (1 + |u| ^ n) * ‖𝓕 f u‖ ≤
+      (∫ v, ‖f v‖) + ((2 * π) ^ n)⁻¹ * ∫ v, ‖iteratedDeriv n f v‖ := by
+  rw [one_add_mul]
+  apply add_le_add (norm_fourier_le_integral_norm f u)
+  rw [inv_mul_eq_div, le_div_iff₀ (by positivity)]
+  calc
+    _ = (2 * π * |u|) ^ n * ‖𝓕 f u‖ := by rw [mul_pow]; ring
+    _ = ‖𝓕 (iteratedDeriv n f) u‖ := by
+      rw [fourier_iteratedDeriv hf (fun k hk ↦ h'f k (mod_cast hk)) le_rfl, norm_smul, norm_pow]
+      simp [abs_of_nonneg pi_nonneg]
+    _ ≤ _ := norm_fourier_le_integral_norm _ u
+
+/-- The Fourier transform of a function whose first two derivatives are integrable decays
+quadratically. -/
+theorem one_add_sq_mul_norm_fourier_le {f : ℝ → E} (hf : ContDiff ℝ 2 f)
+    (h'f : ∀ k ≤ 2, Integrable (iteratedDeriv k f)) (u : ℝ) :
+    (1 + u ^ 2) * ‖𝓕 f u‖ ≤
+      (∫ v, ‖f v‖) + (4 * π ^ 2)⁻¹ * ∫ v, ‖iteratedDeriv 2 f v‖ := by
+  convert one_add_pow_mul_norm_fourier_le hf h'f u using 3
+  · simp
+  · ring
 
 end Real

@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Jens Wagemaker, Yaël Dillies
 module
 
 public import Mathlib.Algebra.Group.Units.Defs
+
 import Mathlib.Basic.Logic.Basic
 
 /-!

@@ -5,12 +5,13 @@ Authors: P. Michael Kielstra
 -/
 module
 
-import Mathlib.Analysis.Calculus.Deriv.Pow
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
+
+import Mathlib.Analysis.Calculus.Deriv.Pow
 import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
 import Mathlib.MeasureTheory.Covering.Besicovitch
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 
 /-!
 # The trapezoidal rule
@@ -19,9 +20,11 @@ This file contains a definition of integration on `[[a, b]]` via the trapezoidal
 an error bound in terms of a bound on the second derivative of the integrand.
 
 ## Main results
+
 - `trapezoidal_error_le`: the convergence theorem for the trapezoidal rule.
 
 ## References
+
 We follow the proof on (Wikipedia)[https://en.wikipedia.org/wiki/Trapezoidal_rule] for the error
 bound.
 -/

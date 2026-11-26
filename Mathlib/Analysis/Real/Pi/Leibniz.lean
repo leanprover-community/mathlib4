@@ -5,8 +5,12 @@ Authors: Benjamin Davidson, Jeremy Tan
 -/
 module
 
-import Mathlib.Analysis.Complex.AbelLimit
 public import Mathlib.Analysis.SpecialFunctions.Complex.Arctan
+
+import Mathlib.Analysis.Complex.AbelLimit
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-! # Leibniz's series for `π` -/
 

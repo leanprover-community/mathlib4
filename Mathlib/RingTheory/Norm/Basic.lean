@@ -6,7 +6,8 @@ Authors: Anne Baanen
 module
 
 public import Mathlib.FieldTheory.PrimitiveElement
-public import Mathlib.LinearAlgebra.Matrix.Charpoly.Minpoly
+
+import Mathlib.LinearAlgebra.Matrix.Charpoly.Minpoly
 
 /-!
 # Norm for (finite) ring extensions
@@ -32,7 +33,6 @@ See also `Algebra.trace`, which is defined similarly as the trace of
 ## References
 
 * https://en.wikipedia.org/wiki/Field_norm
-
 -/
 
 public section
@@ -61,7 +61,7 @@ section EqProdRoots
 /-- Given `pb : PowerBasis K S`, then the norm of `pb.gen` is
 `(-1) ^ pb.dim * coeff (minpoly K pb.gen) 0`. -/
 theorem PowerBasis.norm_gen_eq_coeff_zero_minpoly (pb : PowerBasis R S) :
-    norm R pb.gen = (-1) ^ pb.dim * coeff (minpoly R pb.gen) 0 := by
+    norm R pb.gen = (-1) ^ pb.dim * (minpoly R pb.gen).coeff 0 := by
   rw [norm_eq_matrix_det pb.basis, det_eq_sign_charpoly_coeff, charpoly_leftMulMatrix,
     Fintype.card_fin]
 
@@ -235,7 +235,7 @@ lemma norm_eq_of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [CommRing A₁] [Ring
     (he : RingHom.comp (algebraMap A₂ B₂) ↑e₁ = RingHom.comp ↑e₂ (algebraMap A₁ B₁)) (x) :
     Algebra.norm A₁ x = e₁.symm (Algebra.norm A₂ (e₂ x)) := by
   let := (RingHom.comp (e₂ : B₁ →+* B₂) (algebraMap A₁ B₁)).toAlgebra' ?_
-  · let e' : B₁ ≃ₐ[A₁] B₂ := { e₂ with commutes' := fun _ ↦ rfl }
+  · let e' : B₁ ≃ₐ[A₁] B₂ := .ofCommutes e₂ fun _ ↦ rfl
     rw [← Algebra.norm_eq_of_ringEquiv e₁ he, ← Algebra.norm_eq_of_algEquiv e']
     simp [e']
   intro c x

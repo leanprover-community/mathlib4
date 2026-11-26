@@ -5,8 +5,9 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 module
 
-import Mathlib.Analysis.Calculus.Deriv.Mul
 public import Mathlib.Analysis.Calculus.Deriv.Comp
+
+import Mathlib.Analysis.Calculus.Deriv.Mul
 
 /-!
 # Derivatives of `x ↦ x⁻¹` and `f x / g x`
@@ -17,7 +18,7 @@ In this file we prove `(x⁻¹)' = -1 / x ^ 2`, `((f x)⁻¹)' = -f' x / (f x) ^
 For a more detailed overview of one-dimensional derivatives in mathlib, see the module docstring of
 `Analysis/Calculus/Deriv/Basic`.
 
-## Keywords
+## Tags
 
 derivative
 -/

@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Algebra.Ring.Action.ConjAct
 public import Mathlib.Algebra.Star.Unitary
-public import Mathlib.LinearAlgebra.CliffordAlgebra.Star
 public import Mathlib.LinearAlgebra.CliffordAlgebra.Even
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Star
+
 import Mathlib.LinearAlgebra.CliffordAlgebra.Inversion
 
 /-!
@@ -22,7 +23,7 @@ In this file we define `lipschitzGroup`, `pinGroup` and `spinGroup` and show the
 * `pinGroup`: the Pin group defined as the infimum of `lipschitzGroup` and `unitary`.
 * `spinGroup`: the Spin group defined as the infimum of `pinGroup` and `CliffordAlgebra.even`.
 
-## Implementation Notes
+## Implementation notes
 
 The definition of the Lipschitz group
 $\{ x \in \mathop{\mathcal{C}\ell} | x \text{ is invertible and } x v x^{-1} ∈ V \}$ is given by:

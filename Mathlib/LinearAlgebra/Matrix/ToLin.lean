@@ -9,12 +9,14 @@ public import Mathlib.Algebra.Algebra.Subalgebra.Tower
 public import Mathlib.Algebra.Module.Projective
 public import Mathlib.Basic.Finite.Sum
 public import Mathlib.Data.Matrix.Block
+public import Mathlib.Data.Matrix.ColumnRowPartitioned
 public import Mathlib.LinearAlgebra.Basis.Fin
 public import Mathlib.LinearAlgebra.Basis.Prod
 public import Mathlib.LinearAlgebra.Basis.SMul
 public import Mathlib.LinearAlgebra.Matrix.Notation
 public import Mathlib.LinearAlgebra.Matrix.StdBasis
 public import Mathlib.RingTheory.AlgebraTower
+
 import Mathlib.RingTheory.Ideal.Span
 
 /-!
@@ -482,7 +484,7 @@ theorem LinearMap.toMatrix'_algebraMap (x : R) :
     LinearMap.toMatrix' (algebraMap R (Module.End R (n → R)) x) = scalar n x := by
   simp [Module.algebraMap_end_eq_smul_id, smul_eq_diagonal_mul]
 
-theorem Matrix.ker_toLin'_eq_bot_iff {M : Matrix n n R} :
+theorem Matrix.ker_toLin'_eq_bot_iff {M : Matrix m n R} :
     LinearMap.ker (Matrix.toLin' M) = ⊥ ↔ ∀ v, M *ᵥ v = 0 → v = 0 :=
   Matrix.ker_mulVecLin_eq_bot_iff
 
@@ -504,7 +506,7 @@ def Matrix.toLin'OfInv [Fintype m] [DecidableEq m] {M : Matrix m n R} {M' : Matr
 
 /-- Linear maps `(n → R) →ₗ[R] (n → R)` are algebra equivalent to `Matrix n n R`. -/
 def LinearMap.toMatrixAlgEquiv' : ((n → R) →ₗ[R] n → R) ≃ₐ[R] Matrix n n R :=
-  AlgEquiv.ofLinearEquiv LinearMap.toMatrix' LinearMap.toMatrix'_one LinearMap.toMatrix'_mul
+  AlgEquiv.ofLinearEquiv LinearMap.toMatrix' LinearMap.toMatrix'_mul
 
 /-- A `Matrix n n R` is algebra equivalent to a linear map `(n → R) →ₗ[R] (n → R)`. -/
 def Matrix.toLinAlgEquiv' : Matrix n n R ≃ₐ[R] (n → R) →ₗ[R] n → R :=
@@ -585,7 +587,7 @@ def LinearMap.toMatrix : (M₁ →ₗ[R] M₂) ≃ₗ[R] Matrix m n R :=
 /-- `LinearMap.toMatrix'` is a particular case of `LinearMap.toMatrix`, for the standard basis
 `Pi.basisFun R n`. -/
 @[simp] theorem LinearMap.toMatrix_eq_toMatrix' :
-    LinearMap.toMatrix (Pi.basisFun R n) (Pi.basisFun R n) = LinearMap.toMatrix' :=
+    LinearMap.toMatrix (Pi.basisFun R n) (Pi.basisFun R m) = LinearMap.toMatrix' :=
   rfl
 
 /-- Given bases of two modules `M₁` and `M₂` over a commutative ring `R`, we get a linear
@@ -642,8 +644,9 @@ theorem LinearMap.toMatrix_one : LinearMap.toMatrix v₁ v₁ 1 = 1 :=
   LinearMap.toMatrix_id v₁
 
 @[simp]
-lemma LinearMap.toMatrix_singleton {ι : Type*} [Unique ι] (f : R →ₗ[R] R) (i j : ι) :
-    f.toMatrix (.singleton ι R) (.singleton ι R) i j = f 1 := by
+lemma LinearMap.toMatrix_singleton {ι ι' : Type*} [Unique ι] [Unique ι'] (f : R →ₗ[R] R)
+    (i : ι') (j : ι) :
+    f.toMatrix (.singleton ι R) (.singleton ι' R) i j = f 1 := by
   simp [toMatrix, Subsingleton.elim j default]
 
 @[simp]
@@ -804,8 +807,7 @@ def Matrix.toLinOfInv [DecidableEq m] {M : Matrix m n R} {M' : Matrix n m R} (hM
 /-- Given a basis of a module `M₁` over a commutative ring `R`, we get an algebra
 equivalence between linear maps `M₁ →ₗ M₁` and square matrices over `R` indexed by the basis. -/
 def LinearMap.toMatrixAlgEquiv : (M₁ →ₗ[R] M₁) ≃ₐ[R] Matrix n n R :=
-  AlgEquiv.ofLinearEquiv
-    (LinearMap.toMatrix v₁ v₁) (LinearMap.toMatrix_one v₁) (LinearMap.toMatrix_mul v₁)
+  AlgEquiv.ofLinearEquiv (LinearMap.toMatrix v₁ v₁) (LinearMap.toMatrix_mul v₁)
 
 /-- Given a basis of a module `M₁` over a commutative ring `R`, we get an algebra
 equivalence between square matrices over `R` indexed by the basis and linear maps `M₁ →ₗ M₁`. -/
@@ -914,11 +916,54 @@ theorem toMatrix_distrib_mul_action_toLinearMap (x : R) :
     Basis.repr_self, Finsupp.smul_single_one, Finsupp.single_eq_pi_single, Matrix.diagonal_apply,
     Pi.single_apply]
 
-lemma LinearMap.toMatrix_prodMap [DecidableEq m] [DecidableEq (n ⊕ m)]
-    (φ₁ : Module.End R M₁) (φ₂ : Module.End R M₂) :
-    toMatrix (v₁.prod v₂) (v₁.prod v₂) (φ₁.prodMap φ₂) =
-      Matrix.fromBlocks (toMatrix v₁ v₁ φ₁) 0 0 (toMatrix v₂ v₂ φ₂) := by
-  ext (i | i) (j | j) <;> simp [toMatrix]
+variable {m' n' M₁' M₂' : Type*} [Finite n'] [Finite m'] [AddCommMonoid M₁'] [AddCommMonoid M₂']
+  [Module R M₁'] [Module R M₂'] (v₁' : Basis n' R M₁') (v₂' : Basis m' R M₂')
+
+/-- Disambiguation: This statement is about `LinearMap.prod`. For the statement about maps between
+product modules see `LinearMap.toMatrix_prod_eq_fromBlocks`. -/
+lemma LinearMap.toMatrix_prod_eq_fromRows (φ : M₁ →ₗ[R] M₁') (φ₂ : M₁ →ₗ[R] M₂') :
+    toMatrix v₁ (v₁'.prod v₂') (φ.prod φ₂) =
+      fromRows (toMatrix v₁ v₁' φ) (toMatrix v₁ v₂' φ₂) := by
+  ext (i | i) j <;> simp [toMatrix_apply]
+
+lemma Matrix.toLin_fromRows (A : Matrix n' n R) (B : Matrix m' n R) :
+    toLin v₁ (v₁'.prod v₂') (A.fromRows B) = (toLin v₁ v₁' A).prod (toLin v₁ v₂' B) := by
+  apply (toMatrix v₁ (v₁'.prod v₂')).injective
+  simp [toMatrix_prod_eq_fromRows]
+
+variable [DecidableEq m]
+
+lemma LinearMap.toMatrix_coprod (φ : M₁ →ₗ[R] M₁') (φ₂ : M₂ →ₗ[R] M₁') :
+    toMatrix (v₁.prod v₂) v₁' (φ.coprod φ₂) =
+      fromCols (toMatrix v₁ v₁' φ) (toMatrix v₂ v₁' φ₂) := by
+  ext i (j | j) <;> simp [toMatrix_apply]
+
+lemma Matrix.toLin_fromCols (A : Matrix n' n R) (B : Matrix n' m R) :
+    toLin (v₁.prod v₂) v₁' (A.fromCols B) = (toLin v₁ v₁' A).coprod (toLin v₂ v₁' B) := by
+  apply (toMatrix (v₁.prod v₂) v₁').injective
+  simp [toMatrix_coprod]
+
+/-- Disambiguation: This statement is about maps between product modules. For the statement about
+`LinearMap.prod` see `LinearMap.toMatrix_prod_eq_fromRows`. -/
+lemma LinearMap.toMatrix_prod_eq_fromBlocks (φ : M₁ × M₂ →ₗ[R] M₁' × M₂') :
+    toMatrix (v₁.prod v₂) (v₁'.prod v₂') φ =
+      fromBlocks (toMatrix v₁ v₁' (fst R M₁' M₂' ∘ₗ φ ∘ₗ inl R M₁ M₂))
+        (toMatrix v₂ v₁' (fst R M₁' M₂' ∘ₗ φ ∘ₗ inr R M₁ M₂))
+        (toMatrix v₁ v₂' (snd R M₁' M₂' ∘ₗ φ ∘ₗ inl R M₁ M₂))
+        (toMatrix v₂ v₂' (snd R M₁' M₂' ∘ₗ φ ∘ₗ inr R M₁ M₂)) := by
+  ext (i | i) (j | j) <;> simp [toMatrix_apply]
+
+lemma Matrix.toLin_fromBlocks (A : Matrix n' n R) (B : Matrix n' m R) (C : Matrix m' n R)
+    (D : Matrix m' m R) : toLin (v₁.prod v₂) (v₁'.prod v₂') (fromBlocks A B C D) =
+      LinearMap.coprod (LinearMap.prod (toLin v₁ v₁' A) (toLin v₁ v₂' C))
+        (LinearMap.prod (toLin v₂ v₁' B) (toLin v₂ v₂' D)) := by
+  apply (toMatrix (v₁.prod v₂) (v₁'.prod v₂')).injective
+  simp [toMatrix_prod_eq_fromBlocks]
+
+lemma LinearMap.toMatrix_prodMap (φ₁ : M₁ →ₗ[R] M₁') (φ₂ : M₂ →ₗ[R] M₂') :
+    toMatrix (v₁.prod v₂) (v₁'.prod v₂') (φ₁.prodMap φ₂) =
+      fromBlocks (toMatrix v₁ v₁' φ₁) 0 0 (toMatrix v₂ v₂' φ₂) := by
+  simp [toMatrix_prod_eq_fromBlocks, LinearMap.ext_iff]
 
 end ToMatrix
 
@@ -989,7 +1034,7 @@ theorem smul_leftMulMatrix {G} [Group G] [DistribMulAction G S]
     leftMulMatrix (g • b) x = leftMulMatrix b x := by
   ext
   simp_rw [leftMulMatrix_apply, LinearMap.toMatrix_apply, coe_lmul_eq_mul, LinearMap.mul_apply',
-    Basis.repr_smul, Basis.smul_apply, LinearEquiv.trans_apply,
+    Basis.repr_smul, smul_apply, LinearEquiv.trans_apply,
     DistribMulAction.toLinearEquiv_symm_apply, mul_smul_comm, inv_smul_smul]
 
 variable {A M n : Type*} [Fintype n] [DecidableEq n]
@@ -1112,8 +1157,8 @@ lemma lie_end_of_apply_eq_smul {R M : Type*} [CommRing R] [AddCommGroup M] [Modu
     (hs : ∀ k, s (b k) = a k • b k) (i j : ι) :
     ⁅s, b.end (i, j)⁆ = (a i - a j) • b.end (i, j) := by
   refine b.ext fun k ↦ ?_
-  simp only [Ring.lie_def, LinearMap.sub_apply, End.mul_apply, LinearMap.smul_apply,
-    Basis.end_apply_apply, smul_ite, smul_zero, sub_smul]
+  simp only [Ring.lie_def, LinearMap.sub_apply, mul_apply_eq_comp, end_apply_apply, sub_smul,
+    LinearMap.smul_apply, smul_ite, smul_zero]
   rcases eq_or_ne j k with rfl | hjk
   · simp [hs, Basis.end_apply_apply]
   · simp [hs, Basis.end_apply_apply, hjk]
@@ -1155,7 +1200,7 @@ def endVecRingEquivMatrixEnd :
   right_inv m := by ext; simp [Pi.single_apply, apply_ite]
   map_mul' f g := by
     ext
-    simp only [Module.End.mul_apply, LinearMap.coe_mk, AddHom.coe_mk, Matrix.mul_apply,
+    simp only [mul_apply_eq_comp, LinearMap.coe_mk, AddHom.coe_mk, Matrix.mul_apply,
       LinearMap.coe_sum, Finset.sum_apply]
     rw [← Fintype.sum_apply, ← map_sum]
     exact congr_arg₂ _ (by aesop) rfl
@@ -1174,13 +1219,7 @@ See also `LinearMap.toMatrix'`
 def endVecAlgEquivMatrixEnd :
     Module.End A (ι → M) ≃ₐ[R] Matrix ι ι (Module.End A M) where
   __ := endVecRingEquivMatrixEnd ι A M
-  commutes' r := by
-    ext
-    simp only [endVecRingEquivMatrixEnd, RingEquiv.toEquiv_eq_coe, Module.algebraMap_end_eq_smul_id,
-      Equiv.toFun_as_coe, EquivLike.coe_coe, RingEquiv.coe_mk, Equiv.coe_fn_mk,
-      LinearMap.smul_apply, id_coe, id_eq, Pi.smul_apply, Pi.single_apply, smul_ite, smul_zero,
-      LinearMap.coe_mk, AddHom.coe_mk, algebraMap_matrix_apply]
-    split_ifs <;> rfl
+  map_smul' _ r := by ext; simp
 
 variable {A ι}
 

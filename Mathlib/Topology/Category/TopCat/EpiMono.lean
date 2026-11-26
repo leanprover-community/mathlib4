@@ -6,7 +6,11 @@ Authors: Reid Barton
 module
 
 public import Mathlib.Topology.Category.TopCat.Adjunctions
+
 import Mathlib.CategoryTheory.Functor.EpiMono
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Epi- and monomorphisms in `Top`

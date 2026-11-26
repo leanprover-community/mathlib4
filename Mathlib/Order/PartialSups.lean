@@ -5,12 +5,12 @@ Authors: Kim Morrison
 -/
 module
 
-import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 public import Mathlib.Order.Interval.Finset.Nat
 public import Mathlib.Order.SuccPred.Basic
-import Mathlib.Data.Finset.Max
 
+import Mathlib.Data.Finset.Max
 import Mathlib.Data.Fintype.Order
+import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
 /-!
 # The monotone sequence of partial supremums of a sequence
@@ -29,13 +29,12 @@ and `partialSups_eq_sup'_range`.
 We show this construction gives a Galois insertion between functions `ι → α` and monotone functions
 `ι →o α`, see `partialSups.gi`.
 
-## Notes
+## Implementation notes
 
 One might dispute whether this sequence should start at `f 0` or `⊥`. We choose the former because:
 * Starting at `⊥` requires... having a bottom element.
 * `fun f i ↦ (Finset.Iio i).sup f` is already effectively the sequence starting at `⊥`.
 * If we started at `⊥` we wouldn't have the Galois insertion. See `partialSups.gi`.
-
 -/
 
 @[expose] public section

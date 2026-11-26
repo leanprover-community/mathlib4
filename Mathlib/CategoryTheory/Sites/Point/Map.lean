@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Sites.CoverLifting
 public import Mathlib.CategoryTheory.Sites.Point.OfIsCofiltered
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The image of a point by a cocontinuous functor
 
@@ -17,7 +20,6 @@ of `(D, K)` and show that there are natural isomorphisms
 `(Φ.map F K).presheafFiber ≅ (Functor.whiskeringLeft _ _ A).obj F.op ⋙ Φ.presheafFiber`
 and `(Φ.map F K).sheafFiber ≅ F.sheafPushforwardContinuous A J K ⋙ Φ.sheafFiber`
 (the latter is defined only if `F` is also continuous).
-
 -/
 
 @[expose] public section
@@ -34,11 +36,10 @@ variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
   {J : GrothendieckTopology C} (Φ : Point.{w} J) (F : C ⥤ D)
   (K : GrothendieckTopology D) [F.IsCocontinuous J K]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma map_aux ⦃X : D⦄ (R : Sieve X) (hR : R ∈ K X)
     ⦃u : Φ.fiber.Elements⦄ (f : (Functor.Elements.π Φ.fiber ⋙ F).obj u ⟶ X) :
     ∃ (Y : D) (g : Y ⟶ X) (_ : R.arrows g) (v : Φ.fiber.Elements)
-      (q : v ⟶ u) (a : F.obj v.obj ⟶ Y), a ≫ g = F.map q.1 ≫ f := by
+      (q : v ⟶ u) (a : F.obj v.obj ⟶ Y), a ≫ g = F.map q.hom ≫ f := by
   induction u with | mk u
   dsimp at f ⊢
   obtain ⟨V, g, hg, v, rfl⟩ :=
@@ -83,7 +84,7 @@ for `X : C`, `x : Φ.fiber.obj X`. -/
 noncomputable def presheafFiberMapCocone (P : Dᵒᵖ ⥤ A) :
     Cocone ((Functor.Elements.π Φ.fiber).op ⋙ F.op ⋙ P) where
   pt := (Φ.map F K).presheafFiber.obj P
-  ι.app x := Φ.toPresheafFiberMap F K P x.unop.1 x.unop.2
+  ι.app x := Φ.toPresheafFiberMap F K P x.unop.obj x.unop.val
 
 /-- Given a cocontinuous functor `F : C ⥤ D` between sites `(C, J)` and `(D, K)`,
 `P` a presheaf on `D`, then `(Φ.map F K).presheafFiber.obj P` is a colimit
@@ -114,7 +115,6 @@ lemma toPresheafFiberMap_presheafFiberMapObjIso_hom (P : Dᵒᵖ ⥤ A) (X : C) 
   IsColimit.comp_coconePointUniqueUpToIso_hom
     (Φ.isColimitPresheafFiberMapCocone F K P) _ ⟨.mk x⟩
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma toPresheafFiber_presheafFiberMapObjIso_inv (P : Dᵒᵖ ⥤ A) (X : C) (x : Φ.fiber.obj X) :
     Φ.toPresheafFiber X x (F.op ⋙ P) ≫ (Φ.presheafFiberMapObjIso F K P).inv =

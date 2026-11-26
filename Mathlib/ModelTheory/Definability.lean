@@ -33,7 +33,6 @@ This file defines what it means for a set over a first-order structure to be def
   dimensions.
 - The `Set.TermDefinable` property is transitive, and `TermDefinable` functions are closed under
   composition.
-
 -/
 
 @[expose] public section
@@ -113,11 +112,11 @@ theorem Definable.inter {f g : Set (α → M)} (hf : A.Definable L f) (hg : A.De
 @[simp]
 theorem Definable.union {f g : Set (α → M)} (hf : A.Definable L f) (hg : A.Definable L g) :
     A.Definable L (f ∪ g) := by
-  rcases hf with ⟨φ, hφ⟩
-  rcases hg with ⟨θ, hθ⟩
+  rcases hf with ⟨φ, rfl⟩
+  rcases hg with ⟨θ, rfl⟩
   refine ⟨φ ⊔ θ, ?_⟩
   ext
-  rw [hφ, hθ, mem_ofPred_eq, Formula.realize_sup, mem_union, mem_ofPred_eq, mem_ofPred_eq]
+  simp
 
 theorem definable_finset_inf {ι : Type*} {f : ι → Set (α → M)} (hf : ∀ i, A.Definable L (f i))
     (s : Finset ι) : A.Definable L (s.inf f) := by
@@ -196,8 +195,8 @@ theorem definable_iff_finitely_definable :
   · simp only [definable_iff_exists_formula_sum]
     rintro ⟨φ, rfl⟩
     let A0 := (φ.freeVarFinset.toLeft).image Subtype.val
-    refine ⟨A0, by simp [A0], (φ.restrictFreeVar <| fun x => Sum.casesOn x.1
-        (fun x hx => Sum.inl ⟨x, by simp [A0, hx]⟩) (fun x _ => Sum.inr x) x.2), ?_⟩
+    refine ⟨A0, by simp [A0], (φ.restrictFreeVar <| fun x => Sum.casesOn x.val
+        (fun x hx => Sum.inl ⟨x, by simp [A0, hx]⟩) (fun x _ => Sum.inr x) x.property), ?_⟩
     ext
     simp only [Formula.Realize, mem_ofPred_eq, Finset.coe_sort_coe]
     exact iff_comm.1 <| BoundedFormula.realize_restrictFreeVar _ (by simp)
@@ -268,7 +267,7 @@ theorem Definable.image_comp {s : Set (β → M)} (h : A.Definable L s) (f : α 
       · ext
         simp [Set.apply_rangeSplitting f]
       · rw [Function.comp_apply, Function.comp_apply, apply_rangeSplitting f,
-          rangeFactorization_coe]
+          subtypeVal_rangeFactorization]
 
 /-- Finite existential quantifiers preserve definablity. -/
 lemma Definable.exists_of_finite [Finite β] {S : Set ((α ⊕ β) → M)}
@@ -346,20 +345,20 @@ instance instBot : Bot (L.DefinableSet A α) :=
   ⟨⟨⊥, definable_empty⟩⟩
 
 instance instSup : Max (L.DefinableSet A α) :=
-  ⟨fun s t => ⟨s ∪ t, s.2.union t.2⟩⟩
+  ⟨fun s t => ⟨s ∪ t, s.property.union t.property⟩⟩
 
 instance instInf : Min (L.DefinableSet A α) :=
-  ⟨fun s t => ⟨s ∩ t, s.2.inter t.2⟩⟩
+  ⟨fun s t => ⟨s ∩ t, s.property.inter t.property⟩⟩
 
 instance instCompl : Compl (L.DefinableSet A α) :=
-  ⟨fun s => ⟨sᶜ, s.2.compl⟩⟩
+  ⟨fun s => ⟨sᶜ, s.property.compl⟩⟩
 
 instance instSDiff : SDiff (L.DefinableSet A α) :=
-  ⟨fun s t => ⟨s \ t, s.2.sdiff t.2⟩⟩
+  ⟨fun s t => ⟨s \ t, s.property.sdiff t.property⟩⟩
 
 -- Why does it complain that `s ⇨ t` is noncomputable?
 noncomputable instance instHImp : HImp (L.DefinableSet A α) where
-  himp s t := ⟨s ⇨ t, s.2.himp t.2⟩
+  himp s t := ⟨s ⇨ t, s.property.himp t.property⟩
 
 instance instInhabited : Inhabited (L.DefinableSet A α) :=
   ⟨⊥⟩

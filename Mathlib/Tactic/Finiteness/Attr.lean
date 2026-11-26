@@ -5,8 +5,12 @@ Authors: Floris van Doorn
 -/
 module
 
+public meta import Aesop.Frontend
+
 import Mathlib.Init
-public import Aesop.Frontend
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-! # Finiteness tactic attribute -/
 

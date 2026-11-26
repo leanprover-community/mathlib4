@@ -5,8 +5,11 @@ Authors: Alvaro Belmonte, Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Category.Cat
 public import Mathlib.CategoryTheory.Adjunction.Basic
+public import Mathlib.CategoryTheory.Category.Cat
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Codiscrete categories

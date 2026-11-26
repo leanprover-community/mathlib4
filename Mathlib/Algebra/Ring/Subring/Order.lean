@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Order.Hom.Ring
 public import Mathlib.Algebra.Order.Ring.InjSurj
 public import Mathlib.Algebra.Ring.Subring.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subrings of ordered rings
 

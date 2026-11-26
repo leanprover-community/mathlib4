@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.RootSystem.IsValuedIn
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Invariant and root-positive bilinear forms on root pairings
 
@@ -31,7 +34,6 @@ positive semi-definite on weight space and positive-definite on the span of root
 * `RootPairing.coxeterWeight_nonneg`: All pairs of roots have non-negative Coxeter weight.
 * `RootPairing.coxeterWeight_zero_iff_isOrthogonal` : A Coxeter weight vanishes iff the roots are
   orthogonal.
-
 -/
 
 @[expose] public section

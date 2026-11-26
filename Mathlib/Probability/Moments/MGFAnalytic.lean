@@ -6,8 +6,9 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.Probability.Moments.ComplexMGF
-import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
+
 import Mathlib.Analysis.Calculus.Taylor
+import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
 
 /-!
 # The moment-generating function is analytic
@@ -23,7 +24,6 @@ is analytic on the interior of `integrableExpSet X μ`, the interval on which it
 
 * `analyticOn_cgf`: the cumulant-generating function is analytic on the interior of the interval
   `integrableExpSet X μ`.
-
 -/
 
 public section

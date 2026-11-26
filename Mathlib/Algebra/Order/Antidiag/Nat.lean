@@ -6,9 +6,13 @@ Authors: Arend Mellendijk
 module
 
 public import Mathlib.Algebra.Order.Antidiag.Pi
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 public import Mathlib.NumberTheory.ArithmeticFunction.Misc
+
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Tactic.FinCases
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Sets of tuples with a fixed product
@@ -17,6 +21,7 @@ This file defines the finite set of `d`-tuples of natural numbers with a fixed p
 `Nat.finMulAntidiag`.
 
 ## Main Results
+
 * There are `d^(ω n)` ways to write `n` as a product of `d` natural numbers, when `n` is squarefree
   (`card_finMulAntidiag_of_squarefree`)
 * There are `3^(ω n)` pairs of natural numbers whose `lcm` is `n`, when `n` is squarefree
@@ -171,7 +176,7 @@ lemma finMulAntidiag_existsUnique_prime_dvd {d n p : ℕ} (hn : Squarefree n)
 
 private def primeFactorsPiBij (d n : ℕ) :
     ∀ f ∈ (n.primeFactors.pi fun _ => (univ : Finset <| Fin d)), Fin d → ℕ :=
-  fun f _ i => ∏ p ∈ {p ∈ n.primeFactors.attach | f p.1 p.2 = i}, p
+  fun f _ i => ∏ p ∈ {p ∈ n.primeFactors.attach | f p.val p.property = i}, p
 
 private theorem primeFactorsPiBij_img (d n : ℕ) (hn : Squarefree n)
     (f : (p : ℕ) → p ∈ n.primeFactors → Fin d) (hf : f ∈ pi n.primeFactors fun _ => univ) :
@@ -201,7 +206,7 @@ private theorem primeFactorsPiBij_inj (d n : ℕ)
     push Not
     intro q hq
     rw [Nat.prime_dvd_prime_iff_eq hp.1 (Nat.prime_of_mem_primeFactorsList
-      <| List.mem_toFinset.mp q.2)]
+      <| List.mem_toFinset.mp q.property)]
     rintro rfl
     rw [(mem_filter.mp hq).2] at hfg
     exact hfg rfl
@@ -217,7 +222,7 @@ private theorem primeFactorsPiBij_surj (d n : ℕ) (hn : Squarefree n)
   · simp only [mem_pi, mem_univ, forall_true_iff]
   funext i
   have : t i ∣ n := dvd_of_mem_finMulAntidiag ht _
-  trans (∏ p ∈ n.primeFactors.attach, if p.1 ∣ t i then p else 1)
+  trans (∏ p ∈ n.primeFactors.attach, if p.val ∣ t i then p else 1)
   · rw [Nat.primeFactorsPiBij, ← prod_filter]
     congr
     grind
@@ -235,8 +240,8 @@ open scoped ArithmeticFunction.omega in -- access notation `ω`
 theorem card_finMulAntidiag_of_squarefree {d n : ℕ} (hn : Squarefree n) :
     #(finMulAntidiag d n) = d ^ ω n := by
   rw [← card_finMulAntidiag_pi d n hn, Finset.card_pi, Finset.prod_const,
-    ArithmeticFunction.cardDistinctFactors_apply, ← List.card_toFinset, toFinset_factors,
-    Finset.card_fin]
+    ArithmeticFunction.cardDistinctFactors_eq_length_dedup_primeFactorsList, ← List.card_toFinset,
+    toFinset_factors, Finset.card_fin]
 
 theorem finMulAntidiag_three {n : ℕ} (a) (ha : a ∈ finMulAntidiag 3 n) : a 0 * a 1 * a 2 = n := by
   rw [← (mem_finMulAntidiag.mp ha).1, Fin.prod_univ_three a]
@@ -291,10 +296,10 @@ private theorem f_surj {n : ℕ} (hn : n ≠ 0) (b : ℕ × ℕ)
     rw [mem_finMulAntidiag]
     rw [mem_filter, Finset.mem_product] at hb
     refine ⟨?_, hn⟩
-    · rw [Fin.prod_univ_three a]
-      dsimp only [a, Matrix.cons_val]
-      rw [Nat.mul_div_cancel_left' (Nat.gcd_dvd_left _ _), ← hb.2, lcm,
-        Nat.mul_div_assoc b.fst (Nat.gcd_dvd_right b.fst b.snd)]
+    rw [Fin.prod_univ_three a]
+    dsimp only [a, Matrix.cons_val]
+    rw [Nat.mul_div_cancel_left' (Nat.gcd_dvd_left _ _), ← hb.2, lcm,
+      Nat.mul_div_assoc b.fst (Nat.gcd_dvd_right b.fst b.snd)]
   use a; use ha
   apply Prod.ext <;> dsimp only [a, Matrix.cons_val]
     <;> apply Nat.mul_div_cancel'

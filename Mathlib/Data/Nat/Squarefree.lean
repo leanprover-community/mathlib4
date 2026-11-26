@@ -17,12 +17,13 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
 A number is squarefree when it is not divisible by any squares except the squares of units.
 
 ## Main Results
+
 - `Nat.squarefree_iff_nodup_primeFactorsList`: A positive natural number `x` is squarefree iff
   the list `factors x` has no duplicate factors.
 
 ## Tags
-squarefree, multiplicity
 
+squarefree, multiplicity
 -/
 
 @[expose] public section
@@ -127,8 +128,8 @@ def minSqFacAux : ℕ → ℕ → Option ℕ
   | n, k =>
     if h : n < k * k then none
     else
-      have : Nat.sqrt n - k < Nat.sqrt n + 2 - k := by
-        exact Nat.minFac_lemma n k h
+      have : Nat.sqrt n - k < Nat.sqrt n + 2 - k :=
+        Nat.minFac_lemma n k h
       if k ∣ n then
         let n' := n / k
         have : Nat.sqrt n' - k < Nat.sqrt n + 2 - k :=
@@ -349,7 +350,9 @@ theorem squarefree_mul_iff {m n : ℕ} :
     Squarefree (m * n) ↔ m.Coprime n ∧ Squarefree m ∧ Squarefree n := by
   rw [_root_.squarefree_mul_iff, Nat.coprime_iff_isRelPrime]
 
-lemma coprime_div_gcd_of_squarefree (hm : Squarefree m) (hn : n ≠ 0) : Coprime (m / gcd m n) n := by
+lemma coprime_div_gcd_of_squarefree (hm : Squarefree m) : Coprime (m / gcd m n) n := by
+  rcases eq_or_ne n 0 with rfl | hn
+  · simp [Nat.div_self (Nat.pos_of_ne_zero hm.ne_zero)]
   have : Coprime (m / gcd m n) (gcd m n) :=
     coprime_of_squarefree_mul <| by simpa [Nat.div_mul_cancel, gcd_dvd_left]
   simpa [Nat.div_mul_cancel, gcd_dvd_right] using
@@ -360,7 +363,7 @@ lemma prod_primeFactors_of_squarefree (hn : Squarefree n) : ∏ p ∈ n.primeFac
     List.map_id', Nat.prod_primeFactorsList hn.ne_zero]
 
 theorem squarefree_and_primeFactors_card_eq_two_iff (n : ℕ) :
-    Squarefree n ∧ (primeFactors n).card = 2 ↔
+    Squarefree n ∧ #(primeFactors n) = 2 ↔
       ∃ p q : ℕ, p < q ∧ p.Prime ∧ q.Prime ∧ p * q = n := by
   refine ⟨fun ⟨sq, nc⟩ ↦ ?_, fun ⟨p, q, pq, hp, hq, hn⟩ ↦ ?_⟩
   · obtain ⟨p, q, pq, eq⟩ := Finset.card_eq_two.mp nc
@@ -384,6 +387,12 @@ lemma primeFactors_prod (hs : ∀ p ∈ s, p.Prime) : primeFactors (∏ p ∈ s,
 theorem primeFactors_prod_primeFactors (n : ℕ) :
     (∏ p ∈ n.primeFactors, p).primeFactors = n.primeFactors :=
   primeFactors_prod fun _ hp ↦ n.mem_primeFactors.mp hp |>.left
+
+theorem squarefree_prod_primeFactors (n : ℕ) : Squarefree (∏ p ∈ n.primeFactors, p) :=
+  squarefree_prod_of_pairwise_isCoprime
+    (fun _ hp _ hq hpq ↦ coprime_iff_isRelPrime.mp <|
+      (coprime_primes (prime_of_mem_primeFactors hp) (prime_of_mem_primeFactors hq)).mpr hpq)
+    fun _ hp ↦ (prime_of_mem_primeFactors hp).prime.squarefree
 
 theorem prod_primeFactors_dvd_iff {n k : ℕ} (hk : k ≠ 0) :
     (∏ p ∈ n.primeFactors, p) ∣ k ↔ n.primeFactors ⊆ k.primeFactors := by
@@ -609,5 +618,4 @@ unsafe def eval_squarefree : expr → tactic (expr × expr)
 end NormNum
 
 end Tactic
-
 -/

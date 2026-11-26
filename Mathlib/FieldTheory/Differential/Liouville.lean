@@ -5,9 +5,10 @@ Authors: Daniel Weber
 -/
 module
 
+public import Mathlib.FieldTheory.Differential.Basic
+
 import Mathlib.Algebra.Algebra.Field
 import Mathlib.Algebra.BigOperators.Field
-public import Mathlib.FieldTheory.Differential.Basic
 import Mathlib.FieldTheory.Galois.Basic
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 
@@ -24,10 +25,10 @@ a slight generalization of Liouville's theorem. Note that this definition doesn'
 literature, and we introduce it as part of the formalization of Liouville's theorem.
 
 ## Main declarations
+
 - `IsLiouville`: A field extension being Liouville
 - `isLiouville_of_finiteDimensional`: all finite-dimensional field extensions
   (of a field with characteristic 0) are Liouville.
-
 -/
 
 public section
@@ -94,11 +95,9 @@ instance (B : IntermediateField F K)
     conv =>
       rhs
       congr
-      · rhs
-        intro x
-        rhs
+      · enter [2, x, 2]
         apply logDeriv_algebraMap (u x)
-      · apply (deriv_algebraMap v)
+      · apply deriv_algebraMap v
     simp_rw [IsScalarTower.algebraMap_apply F B K]
     norm_cast
 

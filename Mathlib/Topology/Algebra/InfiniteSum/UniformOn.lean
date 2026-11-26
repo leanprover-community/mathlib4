@@ -7,12 +7,14 @@ module
 
 public import Mathlib.Topology.Algebra.InfiniteSum.Defs
 public import Mathlib.Topology.Algebra.UniformConvergence
+
 import Mathlib.Order.Filter.AtTopBot.Finset
 
 /-!
 # Infinite sum and products that converge uniformly
 
 ## Main definitions
+
 - `HasProdUniformlyOn f g s` : `∏ i, f i b` converges uniformly on `s` to `g`.
 - `HasProdLocallyUniformlyOn f g s` : `∏ i, f i b` converges locally uniformly on `s` to `g`.
 - `HasProdUniformly f g` : `∏ i, f i b` converges uniformly to `g`.

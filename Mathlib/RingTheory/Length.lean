@@ -5,20 +5,20 @@ Authors: Andrew Yang
 -/
 module
 
-import Mathlib.LinearAlgebra.Basis.VectorSpace
-public import Mathlib.RingTheory.FiniteLength
 public import Mathlib.LinearAlgebra.Dimension.Free
+public import Mathlib.RingTheory.FiniteLength
+
+import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-!
-
 # Length of modules
 
 ## Main results
+
 - `Module.length`: `Module.length R M` is the length of `M` as an `R`-module.
 - `Module.length_pos`: The length of a nontrivial module is positive
 - `Module.length_ne_top`: The length of an Artinian and Noetherian module is finite.
 - `Module.length_eq_add_of_exact`: Length is additive in exact sequences.
-
 -/
 
 @[expose] public section

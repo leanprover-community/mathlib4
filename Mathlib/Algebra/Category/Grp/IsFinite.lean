@@ -5,16 +5,19 @@ Authors: Joël Riou
 -/
 module
 
-import Mathlib.Algebra.Category.Grp.Zero
 public import Mathlib.Algebra.Homology.ShortComplex.Ab
 public import Mathlib.CategoryTheory.Abelian.SerreClass.Basic
+
+import Mathlib.Algebra.Category.Grp.Zero
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The Serre class of finite abelian groups
 
 In this file, we define `isFinite : ObjectProperty AddCommGrpCat` and show
 that it is a Serre class.
-
 -/
 
 @[expose] public section

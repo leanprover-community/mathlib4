@@ -5,8 +5,8 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.GroupTheory.GroupAction.MultipleTransitivity
 public import Mathlib.Data.ENat.Lattice
+public import Mathlib.GroupTheory.GroupAction.MultipleTransitivity
 
 /-! # Multiply preprimitive actions
 
@@ -33,7 +33,6 @@ Let `G` be a group acting on a type `α`.
   If an action is `s.ncard + m`-primitive, then
   the action of `FixingSubgroup G s` on the complement of `s`
   is `m`-primitive.
-
 -/
 
 public section
@@ -167,13 +166,10 @@ theorem isMultiplyPreprimitive_succ_iff_ofStabilizer
     constructor
     · exact ofStabilizer.isMultiplyPretransitive.mpr H.isMultiplyPretransitive
     · intro s hs
-      have : ∃ b : α, b ∈ s := by
-        rw [← Set.nonempty_def, Set.nonempty_iff_ne_empty]
-        intro h
-        apply not_lt.mpr hn
-        rw [h, Set.encard_empty, zero_add, ← Nat.cast_one, Nat.cast_inj, Nat.succ_inj] at hs
-        simp only [← hs, zero_lt_one]
-      obtain ⟨b, hb⟩ := this
+      obtain ⟨b, hb⟩ : s.Nonempty := by
+        by_contra! rfl
+        rw [Set.encard_empty, zero_add, ← Nat.cast_one, Nat.cast_inj] at hs
+        lia
       obtain ⟨g, hg : g • b = a⟩ := exists_smul_eq M b a
       rw [isPreprimitive_ofFixingSubgroup_conj_iff (g := g)]
       set s' := g • s with hs'
@@ -260,7 +256,7 @@ theorem isMultiplyPreprimitive_of_le
     · apply hrec
         (isMultiplyPreprimitive_of_isMultiplyPretransitive_succ M α hα)
         (Nat.lt_succ_iff.mp hmn')
-      · refine le_trans ?_ hα; rw [ENat.natCast_le_natCast]; exact Nat.le_succ n
+      refine le_trans ?_ hα; rw [ENat.natCast_le_natCast]; exact Nat.le_succ n
 
 variable {M α}
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.Dynamics.Ergodic.MeasurePreserving
 public import Mathlib.MeasureTheory.Integral.Lebesgue.Add
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Behavior of the Lebesgue integral under maps
 -/
@@ -78,13 +81,13 @@ measurable), then `∫⁻ a, f a ∂(map g μ) = ∫⁻ a, f (g a) ∂μ`. Compa
 applies to any measurable `g : α → β` but requires that `f` is measurable as well. -/
 theorem _root_.MeasurableEmbedding.lintegral_map {g : α → β}
     (hg : MeasurableEmbedding g) (f : β → ℝ≥0∞) : ∫⁻ a, f a ∂map g μ = ∫⁻ a, f (g a) ∂μ := by
-  rw [lintegral, lintegral]
+  rw [lintegral_def, lintegral_def]
   refine le_antisymm (iSup₂_le fun f₀ hf₀ => ?_) (iSup₂_le fun f₀ hf₀ => ?_)
   · rw [SimpleFunc.lintegral_map _ hg.measurable]
     have : (f₀.comp g hg.measurable : α → ℝ≥0∞) ≤ f ∘ g := fun x => hf₀ (g x)
     exact le_iSup_of_le (comp f₀ g hg.measurable) (by grw [← le_iSup _ this])
   · rw [← f₀.extend_comp_eq hg (const _ 0), ← SimpleFunc.lintegral_map, ←
-      SimpleFunc.lintegral_eq_lintegral, ← lintegral]
+      SimpleFunc.lintegral_eq_lintegral, ← lintegral_def]
     refine lintegral_mono_ae (hg.ae_map_iff.2 <| Eventually.of_forall fun x => ?_)
     exact (extend_apply _ _ _ _).trans_le (hf₀ _)
 
@@ -97,11 +100,11 @@ theorem lintegral_map_equiv (f : β → ℝ≥0∞) (g : α ≃ᵐ β) :
 
 theorem lintegral_subtype_comap {s : Set α} (hs : MeasurableSet s) (f : α → ℝ≥0∞) :
     ∫⁻ x : s, f x ∂(μ.comap (↑)) = ∫⁻ x in s, f x ∂μ := by
-  rw [← (MeasurableEmbedding.subtype_coe hs).lintegral_map, map_comap_subtype_coe hs]
+  rw [← (MeasurableEmbedding.subtypeVal hs).lintegral_map, map_comap_subtypeVal hs]
 
 theorem setLIntegral_subtype {s : Set α} (hs : MeasurableSet s) (t : Set s) (f : α → ℝ≥0∞) :
     ∫⁻ x in t, f x ∂(μ.comap (↑)) = ∫⁻ x in (↑) '' t, f x ∂μ := by
-  rw [(MeasurableEmbedding.subtype_coe hs).restrict_comap, lintegral_subtype_comap hs,
+  rw [(MeasurableEmbedding.subtypeVal hs).restrict_comap, lintegral_subtype_comap hs,
     restrict_restrict hs, inter_eq_right.2 (Subtype.coe_image_subset _ _)]
 
 end Map
@@ -116,8 +119,13 @@ protected theorem lintegral_map_equiv (f : β → ℝ≥0∞) (g : α ≃ᵐ β)
 
 include hg
 
+theorem lintegral_comp' {f : β → ℝ≥0∞} (hf : AEMeasurable f ν) :
+    ∫⁻ a, f (g a) ∂μ = ∫⁻ b, f b ∂ν := by
+  rw [← hg.map_eq, lintegral_map' (hg.map_eq ▸ hf) hg.aemeasurable]
+
 theorem lintegral_comp {f : β → ℝ≥0∞} (hf : Measurable f) :
-    ∫⁻ a, f (g a) ∂μ = ∫⁻ b, f b ∂ν := by rw [← hg.map_eq, lintegral_map hf hg.measurable]
+    ∫⁻ a, f (g a) ∂μ = ∫⁻ b, f b ∂ν :=
+  hg.lintegral_comp' hf.aemeasurable
 
 theorem lintegral_comp_emb (hge : MeasurableEmbedding g) (f : β → ℝ≥0∞) :
     ∫⁻ a, f (g a) ∂μ = ∫⁻ b, f b ∂ν := by rw [← hg.map_eq, hge.lintegral_map]

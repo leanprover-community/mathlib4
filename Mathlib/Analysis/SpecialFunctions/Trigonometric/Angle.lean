@@ -5,11 +5,15 @@ Authors: Calle Sönne
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 public import Mathlib.Analysis.Normed.Group.AddCircle
-public import Mathlib.Algebra.CharZero.Quotient
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 public import Mathlib.Topology.Instances.Sign
+
+import Mathlib.Algebra.CharZero.Quotient
 import Mathlib.Algebra.Order.Ring.Interval
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The type of angles
@@ -59,7 +63,7 @@ theorem coe_coeHom : (coeHom : ℝ → Angle) = ((↑) : ℝ → Angle) :=
 `induction θ using Real.Angle.induction_on`. -/
 @[elab_as_elim]
 protected theorem induction_on {p : Angle → Prop} (θ : Angle) (h : ∀ x : ℝ, p x) : p θ :=
-  Quotient.inductionOn' θ h
+  Quotient.inductionOn θ h
 
 @[simp]
 theorem coe_zero : ↑(0 : ℝ) = (0 : Angle) :=

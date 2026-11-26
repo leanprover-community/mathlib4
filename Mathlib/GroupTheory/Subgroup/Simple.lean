@@ -5,8 +5,8 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.Order.Atoms
 public import Mathlib.Algebra.Group.Subgroup.Basic
+public import Mathlib.Order.Atoms
 
 /-!
 # Simple groups
@@ -19,8 +19,8 @@ subgroups.
 - `IsSimpleGroup G`, a class indicating that a group has exactly two normal subgroups.
 
 ## Tags
-subgroup, subgroups
 
+subgroup, subgroups
 -/
 
 public section

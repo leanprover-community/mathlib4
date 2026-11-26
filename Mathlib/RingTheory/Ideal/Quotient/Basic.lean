@@ -6,10 +6,11 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro, Anne Baanen
 module
 
 public import Mathlib.GroupTheory.QuotientGroup.Finite
-import Mathlib.LinearAlgebra.Quotient.Basic
-import Mathlib.RingTheory.Congruence.Basic
 public import Mathlib.RingTheory.Ideal.Basic
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
+
+import Mathlib.LinearAlgebra.Quotient.Basic
+import Mathlib.RingTheory.Congruence.Basic
 
 /-!
 # Ideal quotients
@@ -22,7 +23,6 @@ See `RingCon.Quotient` for quotients of (possibly non-commutative) semirings.
 ## Main definitions
 
 - `Ideal.Quotient.Ring`: the quotient of a ring `R` by a two-sided ideal `I : Ideal R`
-
 -/
 
 @[expose] public section
@@ -82,17 +82,17 @@ lemma mk_singleton_self (x : R) [(Ideal.span {x}).IsTwoSided] : mk (Ideal.span {
 variable (I)
 
 instance noZeroDivisors [hI : I.IsPrime] : NoZeroDivisors (R ⧸ I) where
-    eq_zero_or_eq_zero_of_mul_eq_zero {a b} := Quotient.inductionOn₂' a b fun {_ _} hab =>
+    eq_zero_or_eq_zero_of_mul_eq_zero {a b} := Quotient.inductionOn₂ a b fun {_ _} hab =>
       (hI.mem_or_mem (eq_zero_iff_mem.1 hab)).elim (Or.inl ∘ eq_zero_iff_mem.2)
         (Or.inr ∘ eq_zero_iff_mem.2)
 
 instance isDomain [hI : I.IsPrime] : IsDomain (R ⧸ I) :=
-  let _ := Quotient.nontrivial_iff.mpr hI.1
+  let _ := Quotient.nontrivial_iff.mpr hI.ne_top'
   NoZeroDivisors.to_isDomain _
 
 theorem isDomain_iff_prime : IsDomain (R ⧸ I) ↔ I.IsPrime := by
   refine ⟨fun H => ⟨zero_ne_one_iff.1 ?_, fun {x y} h => ?_⟩, fun h => inferInstance⟩
-  · have : Nontrivial (R ⧸ I) := ⟨H.2.1⟩
+  · have : Nontrivial (R ⧸ I) := ⟨H.toNontrivial.exists_pair_ne⟩
     exact zero_ne_one
   · simp only [← eq_zero_iff_mem, (mk I).map_mul] at h ⊢
     have := @IsDomain.to_noZeroDivisors (R ⧸ I) _ H

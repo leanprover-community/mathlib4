@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Algebra.Polynomial.Derivative
-import Mathlib.Analysis.Calculus.Deriv.Mul
 public import Mathlib.Analysis.Calculus.Deriv.Pow
+
 import Mathlib.Analysis.Calculus.Deriv.Add
+import Mathlib.Analysis.Calculus.Deriv.Mul
 
 /-!
 # Derivatives of polynomials
@@ -25,7 +26,7 @@ For a more detailed overview of one-dimensional derivatives in mathlib, see the 
 * Add results about multivariable polynomials.
 * Generalize some (most?) results to an algebra over the base field.
 
-## Keywords
+## Tags
 
 derivative, polynomial
 -/

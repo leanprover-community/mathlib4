@@ -11,6 +11,9 @@ public import Mathlib.Data.ENat.Lattice
 
 import Mathlib.Basic.ENNReal.Operations
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extended floor and ceil
 
@@ -26,7 +29,7 @@ This file defines the extended floor and ceil functions `ENat.floor, ENat.ceil :
 * `⌊r⌋ₑ` is `ENat.floor r`.
 * `⌈r⌉ₑ` is `ENat.ceil r`.
 
-The index `ₑ` is used in analogy to the notation for `enorm`.
+The index `ₑ` is used in analogy to the notation for `eNorm`.
 
 ## TODO
 

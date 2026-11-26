@@ -252,7 +252,7 @@ theorem isCompact (hf : HasCompactMulSupport f) : IsCompact (mulTSupport f) := h
 @[to_additive]
 theorem _root_.hasCompactMulSupport_iff_eventuallyEq :
     HasCompactMulSupport f ↔ f =ᶠ[coclosedCompact α] 1 :=
-  mem_coclosedCompact_iff.symm
+  (mem_coclosedCompact_iff (s := {x | f x = (1 : α → β) x})).symm
 
 @[to_additive]
 theorem _root_.isCompact_range_of_mulSupport_subset_isCompact [TopologicalSpace β]
@@ -343,7 +343,7 @@ theorem continuous_extend_one [TopologicalSpace β] {U : Set α'} (hU : IsOpen U
     Continuous (Subtype.val.extend f 1) :=
   continuous_of_mulTSupport fun x h ↦ by
     rw [show x = ↑(⟨x, Subtype.coe_image_subset _ _
-      (supp.mulTSupport_extend_one_subset continuous_subtype_val h)⟩ : U) by rfl,
+      (supp.mulTSupport_extend_one_subset continuous_subtypeVal h)⟩ : U) by rfl,
       ← (hU.isOpenEmbedding_subtypeVal).continuousAt_iff, extend_comp Subtype.val_injective]
     exact cont.continuousAt
 

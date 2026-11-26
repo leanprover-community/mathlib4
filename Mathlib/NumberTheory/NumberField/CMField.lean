@@ -5,9 +5,10 @@ Authors: Xavier Roblot
 -/
 module
 
-import Mathlib.FieldTheory.Galois.IsGaloisGroup
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Embeddings
 public import Mathlib.NumberTheory.NumberField.Units.Regulator
+
+import Mathlib.FieldTheory.Galois.IsGaloisGroup
 
 /-!
 # CM-extension of number fields
@@ -41,7 +42,7 @@ subfield `F` is (isomorphic to) the maximal real subfield `K⁺` of `K`.
 
 * `IsCyclotomicExtension.Rat.isCMField`: A nontrivial cyclotomic extension of `ℚ` is CM.
 
-## Implementation note
+## Implementation notes
 
 Most results are proved for the case of a CM field, that is `K` is totally complex quadratic
 extension of its totally real. These results live in the `NumberField.IsCMField` namespace. Some
@@ -49,7 +50,6 @@ results deal with the general case `K/F`, where `K` is totally complex, `F` is t
 `K` is a quadratic extension of `F`, and live in the `NumberField.CMExtension` namespace. Note that
 results for the general case can be deduced for the CM case by using the isomorphism
 `equivMaximalRealSubfield` between `F` and `K⁺` mentioned above.
-
 -/
 
 @[expose] public section
@@ -431,7 +431,7 @@ theorem regOfFamily_realFunSystem :
     ← abs_mul, ← Matrix.det_mul_column, ← Matrix.det_reindex_self f, Matrix.reindex_apply]
   congr; ext i w
   rw [Matrix.submatrix_apply, Matrix.of_apply, Matrix.of_apply,
-    show f.symm w = (equivInfinitePlace K).symm w.1 by rfl,
+    show f.symm w = (equivInfinitePlace K).symm w.val by rfl,
     show algebraMap (𝓞 K) K _ = algebraMap K⁺ K _ by rfl, equivInfinitePlace_symm_apply]
   simp [f, g]
 

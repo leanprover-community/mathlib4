@@ -5,14 +5,14 @@ Authors: Kevin Kappelmann
 -/
 module
 
-import Mathlib.Algebra.ContinuedFractions.Computation.Approximations
 public import Mathlib.Algebra.ContinuedFractions.Computation.CorrectnessTerminating
 public import Mathlib.Data.Rat.Floor
+
+import Mathlib.Algebra.ContinuedFractions.Computation.Approximations
 
 /-!
 # Termination of Continued Fraction Computations (`GenContFract.of`)
 
-## Summary
 We show that the continued fraction for a value `v`, as defined in
 `Mathlib/Algebra/ContinuedFractions/Basic.lean`, terminates if and only if `v` corresponds to a
 rational number, that is `↑v = q` for some `q : ℚ`.

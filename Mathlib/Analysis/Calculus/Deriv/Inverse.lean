@@ -7,7 +7,11 @@ module
 
 public import Mathlib.Analysis.Calculus.Deriv.Comp
 public import Mathlib.Analysis.Calculus.FDeriv.Equiv
+
 import Mathlib.Analysis.Calculus.FDeriv.OfCompLeft
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Inverse function theorem - the easy half
@@ -19,7 +23,7 @@ easy half of the inverse function theorem: the harder half states that `g` exist
 For a more detailed overview of one-dimensional derivatives in mathlib, see the module docstring of
 `Analysis/Calculus/Deriv/Basic`.
 
-## Keywords
+## Tags
 
 derivative, inverse function
 -/

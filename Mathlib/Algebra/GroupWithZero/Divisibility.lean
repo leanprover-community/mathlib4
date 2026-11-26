@@ -6,15 +6,18 @@ Neil Strickland, Aaron Anderson
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Units.Basic
 public import Mathlib.Algebra.Divisibility.Units
+public import Mathlib.Algebra.GroupWithZero.Units.Basic
+
 import Mathlib.Data.Nat.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Divisibility in groups with zero.
 
 Lemmas about divisibility in groups and monoids with zero.
-
 -/
 
 @[expose] public section

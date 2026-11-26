@@ -5,8 +5,9 @@ Authors: Yakov Pechersky
 -/
 module
 
-import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.RingTheory.Ideal.Colon
+
+import Mathlib.LinearAlgebra.Quotient.Basic
 
 /-!
 # Primary submodules
@@ -21,7 +22,7 @@ A proper submodule `S : Submodule R M` is primary iff
   See https://mathoverflow.net/questions/3910/primary-decomposition-for-modules
   for a comparison of this definition (a la Atiyah-Macdonald) vs "locally nilpotent" (Matsumura).
 
-## Implementation details
+## Implementation notes
 
 This is a generalization of `Ideal.IsPrimary`. For brevity, the pointwise instances are used
 to define the nilpotency of `r : R`.
@@ -30,7 +31,6 @@ to define the nilpotency of `r : R`.
 
 * [M. F. Atiyah and I. G. Macdonald, *Introduction to commutative algebra*][atiyah-macdonald]
   Chapter 4, Exercise 21.
-
 -/
 
 @[expose] public section

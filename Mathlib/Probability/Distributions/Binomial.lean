@@ -23,7 +23,7 @@ of `Set.Iic n` such that each `k ∈ Set.Iic n` belongs to `U` independently wit
 * `ProbabilityTheory.binomial`:
   Binomial distribution on an arbitrary semiring with parameters `n` and `p`.
 
-## Implementation details
+## Implementation notes
 
 We provide the definition `binomial` with notation `Bin(n, P)` as the corresponding measure
 over `ℕ`. We also introduce a notation `Bin(R, n p)` for the same measure but over a general
@@ -134,7 +134,7 @@ lemma binomial_eq_sum_dirac (n : ℕ) (p : I) :
     Bin(n, p) =
       ∑ k ∈ Finset.Iic n, ENNReal.ofReal ((n.choose k) * p ^ k * (1 - p) ^ (n - k)) • dirac k := by
   refine ext_of_singleton fun k ↦ ?_
-  rw [binomial_singleton, finsetSum_apply, Finset.sum_eq_single k]
+  rw [binomial_singleton, sum_apply, Finset.sum_eq_single k]
   · simp
   · simp_all
   · simp_all [Nat.choose_eq_zero_of_lt]

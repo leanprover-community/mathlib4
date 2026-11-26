@@ -6,14 +6,18 @@ Authors: Chris Birkbeck
 module
 
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+
 import Mathlib.Analysis.Calculus.Deriv.ZPow
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Derivatives of `x ^ m`, `m : ℤ` within an open set
 
 In this file we prove theorems about iterated derivatives of `x ^ m`, `m : ℤ` within an open set.
 
-## Keywords
+## Tags
 
 iterated, derivative, power, open set
 -/

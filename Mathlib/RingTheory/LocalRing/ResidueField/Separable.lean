@@ -6,8 +6,12 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.FieldTheory.Perfect
-import Mathlib.RingTheory.Ideal.GoingUp
 public import Mathlib.RingTheory.LocalRing.ResidueField.Instances
+
+import Mathlib.RingTheory.Ideal.GoingUp
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Separable residue field extensions
