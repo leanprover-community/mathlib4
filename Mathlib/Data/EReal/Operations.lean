@@ -530,47 +530,32 @@ lemma _root_.ENNReal.toEReal_sub {x y : ℝ≥0∞} (hy_top : y ≠ ∞) (h_le :
   | coe x =>
     simp only [coe_nnreal_eq_coe_real, ← ENNReal.coe_sub, NNReal.coe_sub (mod_cast h_le), coe_sub]
 
-/-- Left translation by a real number is an order isomorphism of `EReal`. -/
-@[simps! toEquiv apply symm_apply]
-def addCoeLeftOrderIso (a : ℝ) : EReal ≃o EReal where
-  toFun x := a + x
-  invFun x := -a + x
-  left_inv e := by
-    dsimp only
-    cases e <;> norm_cast
-    simp
-  right_inv e := by
-    dsimp only
-    cases e <;> norm_cast
-    simp
-  map_rel_iff' := (addLECancellable_coe _).add_le_add_iff_left
+section iSupInf
 
-/-- Right translation by a real number is an order isomorphism of `EReal`. -/
-@[simps! toEquiv apply symm_apply]
-def addCoeRightOrderIso (a : ℝ) : EReal ≃o EReal where
-  toFun x := x + a
-  invFun x := x - a
-  left_inv e := by
-    dsimp only
-    cases e <;> norm_cast
-    simp
-  right_inv e := by
-    dsimp only
-    cases e <;> norm_cast
-    simp
-  map_rel_iff' := (addLECancellable_coe _).add_le_add_iff_right
+variable {ι : Sort*} {a : EReal}
 
-lemma coe_add_iSup {ι : Sort*} {u : ι → EReal} (a : ℝ) : a + ⨆ i, u i = ⨆ i, a + u i :=
-  (addCoeLeftOrderIso a).map_iSup u
+lemma iSup_add (u : ι → EReal) : (⨆ i, u i) + a = ⨆ i, u i + a := by
+  refine le_antisymm (add_le_of_forall_lt fun b hb c hc ↦ ?_) (iSup_le fun i ↦ by grw [← le_iSup])
+  obtain ⟨i, hi⟩ := lt_iSup_iff.1 hb
+  exact le_iSup_of_le i (by grw [hi.le, hc.le])
 
-lemma coe_add_iInf {ι : Sort*} {u : ι → EReal} (a : ℝ) : a + ⨅ i, u i = ⨅ i, a + u i :=
-  (addCoeLeftOrderIso a).map_iInf u
+lemma add_iSup (u : ι → EReal) : a + ⨆ i, u i = ⨆ i, a + u i := by
+  simp only [add_comm a, iSup_add]
 
-lemma iSup_add_coe {ι : Sort*} {u : ι → EReal} (a : ℝ) : (⨆ i, u i) + a = ⨆ i, u i + a :=
-  (addCoeRightOrderIso a).map_iSup u
+lemma iInf_add [Nonempty ι] (ha : a ≠ ⊤) (u : ι → EReal) :
+    (⨅ i, u i) + a = ⨅ i, u i + a := by
+  obtain rfl | ha' := eq_or_ne a ⊥
+  · simp
+  refine le_antisymm (le_iInf fun i ↦ by grw [iInf_le]) ?_
+  refine le_add_of_forall_gt (.inr ha) (.inr ha') fun b hb c hc ↦ ?_
+  obtain ⟨i, hi⟩ := iInf_lt_iff.1 hb
+  exact iInf_le_of_le i (by grw [hi.le, hc.le])
 
-lemma iInf_add_coe {ι : Sort*} {u : ι → EReal} (a : ℝ) : (⨅ i, u i) + a = ⨅ i, u i + a :=
-  (addCoeRightOrderIso a).map_iInf u
+lemma add_iInf [Nonempty ι] (ha : a ≠ ⊤) (u : ι → EReal) :
+    a + ⨅ i, u i = ⨅ i, a + u i := by
+  simp only [add_comm a, iInf_add ha]
+
+end iSupInf
 
 /-! ### Multiplication -/
 
