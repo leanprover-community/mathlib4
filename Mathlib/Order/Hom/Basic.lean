@@ -141,18 +141,12 @@ export OrderIsoClass (map_le_map_iff)
 
 attribute [simp] map_le_map_iff
 
-/-- Turn an element of a type `F` satisfying `OrderIsoClass F α β` into an actual
-`OrderIso`. This is declared as the default coercion from `F` to `α ≃o β`. -/
-@[coe]
+/-- Turn an element of a type `F` satisfying `OrderIsoClass F α β` into an actual `OrderIso`. -/
 def OrderIso.ofClass [LE α] [LE β] [EquivLike F α β] [OrderIsoClass F α β] (f : F) :
     α ≃o β :=
   { EquivLike.toEquiv f with map_rel_iff' := map_le_map_iff f }
 
 @[deprecated (since := "2026-09-02")] alias OrderIsoClass.toOrderIso := OrderIso.ofClass
-
-/-- Any type satisfying `OrderIsoClass` can be cast into `OrderIso` via `OrderIso.ofClass`. -/
-instance [LE α] [LE β] [EquivLike F α β] [OrderIsoClass F α β] : CoeTC F (α ≃o β) :=
-  ⟨.ofClass⟩
 
 -- See note [lower instance priority]
 instance (priority := 100) OrderIsoClass.toOrderHomClass [LE α] [LE β]
@@ -782,6 +776,10 @@ instance : EquivLike (α ≃o β) α β :=
 
 instance : OrderIsoClass (α ≃o β) α β where
   map_le_map_iff f _ _ := f.map_rel_iff'
+
+@[simp]
+protected theorem coe_ofClass [EquivLike F α β] [OrderIsoClass F α β] (f : F) :
+    ⇑(ofClass f) = f := rfl
 
 @[simp]
 theorem toFun_eq_coe {f : α ≃o β} : f.toFun = f :=
