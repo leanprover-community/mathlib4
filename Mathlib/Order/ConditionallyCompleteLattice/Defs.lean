@@ -103,18 +103,18 @@ class ConditionallyCompleteLinearOrderBot (α : Type*) extends ConditionallyComp
 -- see Note [lower instance priority]
 attribute [instance 100] ConditionallyCompleteLinearOrderBot.toOrderBot
 
-/-- Create a `ConditionallyCompleteLattice` from a `PartialOrder` and `sup` function
+/-- Create a `ConditionallyCompleteLattice` from a `PartialOrder` and `sSup` function
 that returns the least upper bound of a nonempty set which is bounded above. Usually this
 constructor provides poor definitional equalities.  If other fields are known explicitly, they
-should be provided; for example, if `inf` is known explicitly, construct the
+should be provided; for example, if `min` is known explicitly, construct the
 `ConditionallyCompleteLattice` instance as
 ```
 instance : ConditionallyCompleteLattice my_T where
-  inf := better_inf
+  min := better_inf
   le_inf := ...
   inf_le_right := ...
   inf_le_left := ...
-  -- don't care to fix sup, sInf
+  -- don't care to fix max, sInf
   __ := conditionallyCompleteLatticeOfsSup my_T ...
 ```
 -/
@@ -122,15 +122,15 @@ instance : ConditionallyCompleteLattice my_T where
 /-- Create a `ConditionallyCompleteLattice` from a `PartialOrder` and `sInf` function
 that returns the greatest lower bound of a nonempty set which is bounded below. Usually this
 constructor provides poor definitional equalities.  If other fields are known explicitly, they
-should be provided; for example, if `inf` is known explicitly, construct the
+should be provided; for example, if `min` is known explicitly, construct the
 `ConditionallyCompleteLattice` instance as
 ```
 instance : ConditionallyCompleteLattice my_T :=
-  inf := better_inf
+  min := better_inf
   le_inf := ...
   inf_le_right := ...
   inf_le_left := ...
-  -- don't care to fix sup, sSup
+  -- don't care to fix max, sSup
   __ := conditionallyCompleteLatticeOfsInf my_T ...
 ```
 -/]
