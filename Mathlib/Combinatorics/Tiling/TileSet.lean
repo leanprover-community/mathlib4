@@ -36,7 +36,7 @@ indices.
 -/
 
 
-@[expose] public section
+public section
 
 namespace DiscreteTiling
 
@@ -120,7 +120,7 @@ lemma finite_of_forall_finite (t : TileSet ps ιₜ) (h : ∀ i, (ps i : Set X).
 
 /-- Reindex a `TileSet` by composition with a function on index types (typically an equivalence for
 it to literally be reindexing, though not required to be one in this definition). -/
-def reindex (t : TileSet ps ιₜ) (f : ιₜ' → ιₜ) : TileSet ps ιₜ' where
+@[expose] def reindex (t : TileSet ps ιₜ) (f : ιₜ' → ιₜ) : TileSet ps ιₜ' where
   tiles := ↑t ∘ f
 
 @[simp] lemma coe_reindex (t : TileSet ps ιₜ) (f : ιₜ' → ιₜ) : t.reindex f = ↑t ∘ f := rfl
@@ -210,7 +210,7 @@ lemma range_reindex_of_equivLike (t : TileSet ps ιₜ) (f : E) :
 
 /-- If two `TileSet`s have the same set of tiles and no duplicate tiles, this equivalence maps
 one index type to the other. -/
-noncomputable def equivOfRangeEqOfInjective {t₁ : TileSet ps ιₜ} {t₂ : TileSet ps ιₜ'}
+@[expose] noncomputable def equivOfRangeEqOfInjective {t₁ : TileSet ps ιₜ} {t₂ : TileSet ps ιₜ'}
     (h : Set.range t₁ = Set.range t₂) (h₁ : Injective t₁) (h₂ : Injective t₂) : ιₜ' ≃ ιₜ :=
   ((Equiv.ofInjective t₂ h₂).trans (Equiv.cast (congrArg _ h.symm))).trans
     (Equiv.ofInjective t₁ h₁).symm
@@ -221,8 +221,7 @@ noncomputable def equivOfRangeEqOfInjective {t₁ : TileSet ps ιₜ} {t₂ : Ti
   ext i : 2
   simp only [equivOfRangeEqOfInjective, Equiv.coe_trans, reindex_apply, comp_apply,
     Equiv.ofInjective_apply, Equiv.cast_apply]
-  erw [Equiv.apply_ofInjective_symm h₁]
-  rw [Subtype.coe_eq_iff]
+  rw [Equiv.apply_ofInjective_symm h₁, Subtype.coe_eq_iff]
   refine ⟨h ▸ Set.mem_range_self _, ?_⟩
   rw [cast_eq_iff_heq, Subtype.heq_iff_coe_eq]
   simp [h]
@@ -301,7 +300,7 @@ lemma smul_prod_apply (g : G) (f : Equiv.Perm ιₜ) (t : TileSet ps ιₜ) (i :
 
 /-- The symmetry group of a `TileSet ps ιₜ` is the subgroup of `G` that preserves the tiles up to
 permutation of the indices. -/
-def symmetryGroup (t : TileSet ps ιₜ) : Subgroup G :=
+@[expose] def symmetryGroup (t : TileSet ps ιₜ) : Subgroup G :=
   (MulAction.stabilizer (G × Equiv.Perm ιₜ) t).map (MonoidHom.fst _ _)
 
 /-- A group element is in the symmetry group if and only if there is a permutation of the indices
@@ -407,7 +406,7 @@ lemma symmetryGroup_eq_stabilizer_range_of_injective (t : TileSet ps ιₜ) (h :
   exact ⟨equivOfRangeEqOfInjective hg ((injective_smul_iff g).2 h) h, by simp⟩
 
 /-- The disjoint union of two `TileSet`s, indexed by the sum of their index types. -/
-protected def sum (t : TileSet ps ιₜ) (t' : TileSet ps ιₜ') : TileSet ps (ιₜ ⊕ ιₜ') where
+@[expose] protected def sum (t : TileSet ps ιₜ) (t' : TileSet ps ιₜ') : TileSet ps (ιₜ ⊕ ιₜ') where
   tiles := Sum.elim t.tiles t'.tiles
 
 @[simp] lemma coe_sum (t : TileSet ps ιₜ) (t' : TileSet ps ιₜ') : t.sum t' = Sum.elim (↑t) (↑t') :=
@@ -430,7 +429,7 @@ lemma smul_sum (g : G) (t : TileSet ps ιₜ) (t' : TileSet ps ιₜ') :
   TileSet.ext <| funext fun x ↦ Sum.recOn x (fun _ ↦ rfl) (fun _ ↦ rfl)
 
 /-- The disjoint union of an indexed family of `TileSet`s, indexed by a sigma type. -/
-protected def sigma (t : (i : ι) → TileSet ps (ιₜι i)) : TileSet ps (Σ i, ιₜι i) where
+@[expose] protected def sigma (t : (i : ι) → TileSet ps (ιₜι i)) : TileSet ps (Σ i, ιₜι i) where
   tiles := Sigma.uncurry (fun i ↦ ↑(t i))
 
 lemma coe_sigma (t : (i : ι) → TileSet ps (ιₜι i)) :
