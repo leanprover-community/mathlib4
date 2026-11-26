@@ -256,7 +256,7 @@ theorem sq_add_sq_of_nat_prime_of_not_irreducible (p : ℕ) [hp : Fact p.Prime]
 
 /-- The units of the Gaussian integers are `1`, `-1`, `I` and `-I`. -/
 theorem isUnit_eq_one_or_neg_one_or_I_or_neg_I {u : ℤ[i]} (hu : IsUnit u) :
-    u = 1 ∨ u = -1 ∨ u = ⟨0, 1⟩ ∨ u = ⟨0, -1⟩ := by
+    u = 1 ∨ u = -1 ∨ u = Zsqrtd.sqrtd ∨ u = -Zsqrtd.sqrtd := by
   have hn : u.norm.natAbs = 1 := Zsqrtd.norm_eq_one_iff.2 hu
   have hsum := GaussianInt.natAbs_norm_eq u
   rw [hn] at hsum
