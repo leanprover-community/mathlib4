@@ -190,6 +190,51 @@ theorem factorization_pow (n k : ℕ) : factorization (n ^ k) = k • n.factoriz
     rw [Nat.pow_succ, mul_comm, factorization_mul hn (pow_ne_zero _ hn), ih,
       add_smul, one_smul, add_comm]
 
+/-- If the `p`-adic valuation of `n` is divisible by `k` at every prime `p`,
+then `n` is a perfect `k`-th power: the root is assembled prime by prime from
+the factorization of `n`, dividing each exponent by `k`. -/
+theorem exists_pow_of_dvd_padicValNat {n k : ℕ} (hn : n ≠ 0)
+    (h : ∀ p, Nat.Prime p → k ∣ padicValNat p n) :
+    ∃ m, n = m ^ k := by
+  let m := n.factorization.prod fun p e => p ^ (e / k)
+  refine ⟨m, ?_⟩
+  have hself : n.factorization.prod (· ^ ·) = n :=
+    Nat.prod_factorization_pow_eq_self hn
+  apply Eq.symm
+  calc
+    m ^ k
+        = (n.factorization.support.prod fun p =>
+            p ^ (n.factorization p / k)) ^ k := by
+          simp only [m, Finsupp.prod]
+    _ = n.factorization.support.prod fun p =>
+            (p ^ (n.factorization p / k)) ^ k := by
+          rw [Finset.prod_pow]
+    _ = n.factorization.support.prod fun p =>
+            p ^ n.factorization p := by
+          refine Finset.prod_congr rfl ?_
+          intro p hp
+          have hpP : p.Prime :=
+            Nat.prime_of_mem_primeFactors (by
+              simpa [Nat.support_factorization] using hp)
+          have hk : k ∣ n.factorization p := by
+            rw [Nat.factorization_def n hpP, ← Nat.padicValNat_def]
+            exact h p hpP
+          rw [← pow_mul, Nat.mul_comm, Nat.mul_div_cancel' hk]
+    _ = n := by
+          simpa [Finsupp.prod] using hself
+
+/-- A natural number is a perfect `k`-th power if and only if its `p`-adic
+valuation is divisible by `k` at every prime `p`. -/
+theorem exists_pow_iff_forall_prime_dvd_padicValNat {n k : ℕ} (hn : n ≠ 0) :
+    (∃ m, n = m ^ k) ↔ ∀ p, Nat.Prime p → k ∣ padicValNat p n := by
+  constructor
+  · rintro ⟨m, rfl⟩ p hp
+    have hfac : padicValNat p (m ^ k) = (m ^ k).factorization p := by
+      rw [padicValNat_def, ← factorization_def _ hp]
+    rw [hfac, factorization_pow, Finsupp.smul_apply, smul_eq_mul]
+    exact dvd_mul_right k _
+  · exact exists_pow_of_dvd_padicValNat hn
+
 /-! ## Criterion for a natural number or integer being a square through even factorization -/
 
 /-- `n` is a square if and only if for any prime `p`, the power of `p` in `n` is even. -/
@@ -198,14 +243,20 @@ theorem isSquare_iff_even_factorization {n : ℕ} :
   by_cases h0 : n = 0
   · simp [h0]
   constructor
-  · intro ⟨m, hmn⟩ p hp
-    have hm : m ≠ 0 := mul_self_ne_zero.mp (hmn ▸ h0)
-    simp [hmn, factorization_mul hm hm]
-  · refine fun h ↦ ⟨n.factorization.prod fun a b ↦ a ^ (b / 2), ?_⟩
-    rw [← pow_two, ← powMonoidHom_apply, map_finsuppProd]
-    nth_rw 1 [← prod_factorization_pow_eq_self h0]
-    refine Finsupp.prod_congr fun p hp ↦ ?_
-    rw [powMonoidHom_apply, ← pow_mul, div_two_mul_two_of_even (h p (prime_of_mem_primeFactors hp))]
+  · rintro ⟨m, hm⟩ p hp
+    have h2 : 2 ∣ padicValNat p n :=
+      (exists_pow_iff_forall_prime_dvd_padicValNat h0).mp
+        ⟨m, by rw [pow_two]; exact hm⟩ p hp
+    rw [padicValNat_def, ← factorization_def n hp] at h2
+    obtain ⟨c, hc⟩ := h2
+    exact ⟨c, hc.trans (two_mul c)⟩
+  · intro h
+    have h2 : ∀ p, p.Prime → 2 ∣ padicValNat p n := by
+      intro p hp
+      have hdvd : 2 ∣ n.factorization p := (h p hp).two_dvd
+      rwa [factorization_def n hp, ← padicValNat_def] at hdvd
+    obtain ⟨m, hm⟩ := (exists_pow_iff_forall_prime_dvd_padicValNat h0).mpr h2
+    exact ⟨m, hm.trans (pow_two m)⟩
 
 end Nat
 
