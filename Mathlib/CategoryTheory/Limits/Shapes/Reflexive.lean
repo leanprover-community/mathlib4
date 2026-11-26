@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
 
 import Mathlib.CategoryTheory.Limits.ConeCategory
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Reflexive coequalizers
 
