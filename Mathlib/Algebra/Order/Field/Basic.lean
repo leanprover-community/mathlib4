@@ -730,7 +730,7 @@ lemma div_ne_zero_of_pos_of_ne_zero (ha : 0 < a) (hb : b ≠ 0) : a / b ≠ 0 :=
 lemma div_ne_zero_of_ne_zero_of_pos (ha : a ≠ 0) (hb : 0 < b) : a / b ≠ 0 :=
   div_ne_zero ha hb.ne'
 
-lemma zpow_zero_pos {α : Type*} [Semifield α] [PartialOrder α] [IsStrictOrderedRing α]
+lemma zpow_zero_pos {α : Type*} [DivisionSemiring α] [PartialOrder α] [IsStrictOrderedRing α]
     (a : α) : 0 < a ^ (0 : ℤ) :=
   zero_lt_one.trans_eq (zpow_zero a).symm
 
@@ -741,7 +741,7 @@ such that `positivity` successfully recognises both `a` and `b`. -/
     | throwError "not /"
   let _e_eq : $e =Q $f $a $b := ⟨⟩
   trace[Tactic.positivity.zeroness] "evalDiv: {a} divided by {b}"
-  let _a ← synthInstanceQ q(Semifield $α)
+  let _a ← synthInstanceQ q(GroupWithZero $α)
   let ⟨_f_eq⟩ ← withNewMCtxDepth <| assertDefEqQ q($f) q(HDiv.hDiv)
   match (dependent := true) pα? with
   | none =>
@@ -772,7 +772,7 @@ such that `positivity` successfully recognises `a`. -/
 meta def evalInv : PositivityExt where eval {u α} zα pα? e := do
   let .app (f : Q($α → $α)) (a : Q($α)) ← whnf e | throwError "not ⁻¹"
   let _e_eq : $e =Q $f $a := ⟨⟩
-  let _a ← synthInstanceQ q(Semifield $α)
+  let _a ← synthInstanceQ q(GroupWithZero $α)
   let ⟨_f_eq⟩ ← withNewMCtxDepth <| assertDefEqQ q($f) q(Inv.inv)
   match (dependent := true) pα? with
   | none =>
@@ -803,7 +803,7 @@ meta def evalInv : PositivityExt where eval {u α} zα pα? e := do
 meta def evalPowZeroInt : PositivityExt where eval {u α} _zα pα? e :=
   match pα? with | none => pure .none | some _ => do
   let .app (.app _ (a : Q($α))) _ ← whnf e | throwError "not ^"
-  let _a ← synthInstanceQ q(Semifield $α)
+  let _a ← synthInstanceQ q(DivisionSemiring $α)
   let _a ← synthInstanceQ q(LinearOrder $α)
   let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
   assumeInstancesCommute
