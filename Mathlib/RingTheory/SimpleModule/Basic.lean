@@ -19,6 +19,9 @@ import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.Order.CompactlyGenerated.Intervals
 import Mathlib.SetTheory.Cardinal.NatCard
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Simple Modules
 
