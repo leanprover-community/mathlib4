@@ -1083,6 +1083,7 @@ public import Mathlib.Algebra.Order.Kleene
 public import Mathlib.Algebra.Order.Module.Archimedean
 public import Mathlib.Algebra.Order.Module.Basic
 public import Mathlib.Algebra.Order.Module.Defs
+public import Mathlib.Algebra.Order.Module.DiscreteOrder
 public import Mathlib.Algebra.Order.Module.Equiv
 public import Mathlib.Algebra.Order.Module.Field
 public import Mathlib.Algebra.Order.Module.HahnEmbedding
@@ -1095,6 +1096,7 @@ public import Mathlib.Algebra.Order.Monoid.Basic
 public import Mathlib.Algebra.Order.Monoid.Canonical.Basic
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 public import Mathlib.Algebra.Order.Monoid.Defs
+public import Mathlib.Algebra.Order.Monoid.DiscreteOrder
 public import Mathlib.Algebra.Order.Monoid.Lex
 public import Mathlib.Algebra.Order.Monoid.LocallyFiniteOrder
 public import Mathlib.Algebra.Order.Monoid.Multiset
@@ -6698,8 +6700,6 @@ public import Mathlib.Probability.Martingale.Centering
 public import Mathlib.Probability.Martingale.Convergence
 public import Mathlib.Probability.Martingale.OptionalSampling
 public import Mathlib.Probability.Martingale.OptionalStopping
-public import Mathlib.Probability.Martingale.Order.Discrete
-public import Mathlib.Probability.Martingale.Order.Dual
 public import Mathlib.Probability.Martingale.Upcrossing
 public import Mathlib.Probability.Moments.Basic
 public import Mathlib.Probability.Moments.ComplexMGF
@@ -8542,6 +8542,7 @@ public import Mathlib.Topology.Order.Compact
 public import Mathlib.Topology.Order.Completion
 public import Mathlib.Topology.Order.CountableSeparating
 public import Mathlib.Topology.Order.DenselyOrdered
+public import Mathlib.Topology.Order.DiscreteOrder
 public import Mathlib.Topology.Order.ExtendFrom
 public import Mathlib.Topology.Order.ExtrClosure
 public import Mathlib.Topology.Order.Filter

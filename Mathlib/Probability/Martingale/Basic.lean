@@ -5,11 +5,11 @@ Authors: Rémy Degenne, Kexing Ying
 -/
 module
 
+public import Mathlib.Algebra.Order.Module.DiscreteOrder
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.PullOut
-public import Mathlib.Probability.Martingale.Order.Discrete
-public import Mathlib.Probability.Martingale.Order.Dual
 public import Mathlib.Probability.Process.Predictable
 public import Mathlib.Probability.Process.Stopping
+public import Mathlib.Topology.Order.DiscreteOrder
 
 /-!
 # Martingales
