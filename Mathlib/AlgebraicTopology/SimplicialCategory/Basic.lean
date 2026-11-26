@@ -71,6 +71,8 @@ noncomputable abbrev sHomFunctor : Cᵒᵖ ⥤ C ⥤ SSet.{v} := eHomFunctor _ _
 
 variable {m : SimplexCategoryᵒᵖ} {K L M N : C}
 
+namespace sHom
+
 /-- The identity `m`-simplex of `sHom K K`. -/
 def idS (m : SimplexCategoryᵒᵖ) (K : C) : (sHom K K).obj m :=
   (eId SSet K).app m PUnit.unit
@@ -92,6 +94,8 @@ lemma comp_assoc (s : (sHom K L).obj m) (t : (sHom L M).obj m) (r : (sHom M N).o
   ConcreteCategory.congr_hom (congr_app (e_assoc SSet K L M N) m)
     ((s, (t, r)) : (sHom K L ⊗ (sHom L M ⊗ sHom M N)).obj m)
 
+end sHom
+
 /-- The category of `m`-simplices of a simplicial category `C`: the objects of `C`, and the
 `m`-simplices of `sHom A B` as morphisms `A ⟶ B`. -/
 @[kerodon 00JT]
@@ -102,11 +106,11 @@ structure Level (C : Type u) [Category.{v} C] [SimplicialCategory C]
 
 instance : Category.{v} (Level C m) where
   Hom A B := (sHom A.as B.as).obj m
-  id A := idS m A.as
-  comp s t := comp s t
-  id_comp := idS_comp
-  comp_id := comp_idS
-  assoc := comp_assoc
+  id A := sHom.idS m A.as
+  comp s t := sHom.comp s t
+  id_comp := sHom.idS_comp
+  comp_id := sHom.comp_idS
+  assoc := sHom.comp_assoc
 
 end SimplicialCategory
 
