@@ -19,11 +19,14 @@ public import Mathlib.Topology.Sheaves.Presheaf
 We define `TopCat.KPresheaf A X` simply as `(Compacts X)ᵒᵖ ⥤ A`,
 and inherit the category structure with natural transformations as morphisms.
 
-We define construction that will allow to state the condition of being a K-sheaf.
+We define constructions that will allow to state the condition of being a K-sheaf.
 
-We also define the pushforward of a presheaf by a proper map
+We define the functors `toKPresheafFunctor` and `toPresheafFunctor` that gives rise to an adjunction
+between `KPresheaf A X` and `Presheaf A X`.
 
+We also define the pushforward of a presheaf by a proper map.
 -/
+
 @[expose] public section
 
 universe w v u
@@ -106,9 +109,7 @@ noncomputable section
 
 namespace Presheaf
 
-/- TODO: replace HasCoimitsOfSize by HasFilteredColimitsOfSize, but it breaks things below-/
-
-variable [HasColimitsOfSize.{w, w} A] (F : Presheaf A X) {K : Compacts X}
+variable [HasFilteredColimitsOfSize.{w, w} A] (F : Presheaf A X) {K : Compacts X}
 
 variable (K) in
 /-- The `.obj` component of `TopCat.Presheaf.toKPresheafFunctorObj` -/
@@ -153,7 +154,7 @@ lemma toKPresheafFunctorObjObj_ι_desc {K : Compacts X}
   colimit.ι_desc c (op U)
 
 /-- The canonical map from a value of the presheaf over an open subset relatively compact to a
-value of it's coresponding Kpresheaf -/
+value of it's coresponding K-presheaf -/
 def ιToKPresheafFunctorObjObjRc (U : (K.openRcNhds)) :
     F.obj (op U.val) ⟶ F.toKPresheafFunctorObjObj K :=
   F.ιToKPresheafFunctorObjObj (K.openRcNhdsToOpenNhds_mono.functor.obj U)
@@ -205,21 +206,12 @@ lemma ι_toKPresheafFunctorObjMap {K L : Compacts X} (i : K ⟶ L) (U : L.openNh
   colimit.ι_pre ((Set.mono_coe K.openNhds).functor.op ⋙ F)
   (baseChangeOpenNhds_mono i).functor.op _
 
-/-- The KPresheaf associated to a Presheaf -/
+/-- The K-presheaf associated to a presheaf -/
 @[simps, implicit_reducible]
 def toKPresheafFunctorObj (F : Presheaf A X) : KPresheaf A X where
   obj K := F.toKPresheafFunctorObjObj (K.unop)
   map i := F.toKPresheafFunctorObjMap i.unop
-  map_comp {K L M} f g := by
-    ext U
-    simp
-    suffices F.ιToKPresheafFunctorObjObj (baseChangeOpenNhds (g.unop ≫ f.unop) U) =  F.ιToKPresheafFunctorObjObj (baseChangeOpenNhds g.unop (baseChangeOpenNhds f.unop U)) by
-      rw [this]
 
-      sorry
-
-    rfl
-    sorry
 
 variable {F} in
 @[ext]
@@ -248,20 +240,20 @@ lemma ι_toKPresheafFunctorMapApp {F1 F2 : Presheaf A X} (τ : F1 ⟶ F2) {K : C
   Limits.ι_colimMap _ _
 
 attribute [local simp] baseChangeOpenNhds in
-/-- The natural transformation between KPresheaves induced by a
+/-- The natural transformation between K-presheaves induced by a
 natural transformation between their coresponding presheaves -/
 @[simps]
 def toKPresheafFunctorMap {F1 F2 : Presheaf A X} (τ : F1 ⟶ F2) :
     F1.toKPresheafFunctorObj ⟶ F2.toKPresheafFunctorObj where
   app K := toKPresheafFunctorMapApp τ K.unop
 
-/-- The functor sending Presheaves into Kpresheaves -/
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+/-- The functor sending presheaves into K-presheaves -/
 @[simps, implicit_reducible]
 def toKPresheafFunctor : Presheaf A X ⥤ KPresheaf A X where
   obj := toKPresheafFunctorObj
   map := toKPresheafFunctorMap
-  map_id := sorry
-  map_comp := sorry
 
 variable {F} in
 @[ext]
@@ -278,9 +270,7 @@ namespace KPresheaf
 
 open Opens
 
-/- TODO: replace HasLimitsOfSize by HasCofilteredLimitsOfSize, but it breaks thing below-/
-
-variable [HasLimitsOfSize.{w, w} A] (G : KPresheaf A X) {U : Opens X}
+variable [HasCofilteredLimitsOfSize.{w, w} A] (G : KPresheaf A X) {U : Opens X}
 
 variable (U) in
 /-- The `.obj` component of `TopCat.KPresheaf.toPresheafFunctorObj` -/
@@ -315,12 +305,12 @@ variable {G} in
 lemma toPresheafFunctorObjObj_hom_ext {Y : A} (f g : Y ⟶ G.toPresheafFunctorObjObj U)
     (h : ∀ K : U.compactsInside, (f ≫ G.πToPresheafFunctorObjObj K =
     g ≫ G.πToPresheafFunctorObjObj K)) : f = g :=
-  (G.isLimitToPresheafFunctorObjObjCone _ ).hom_ext (fun _ ↦ h _)
+  (G.isLimitToPresheafFunctorObjObjCone _).hom_ext (fun _ ↦ h _)
 
 @[reassoc (attr := simp)]
 lemma toPresheafFunctorObjObj_lift_π {U : Opens X}
     (c : Cone <| (Set.mono_coe U.compactsInside).functor.op ⋙ G) (K : U.compactsInside) :
-    (G.isLimitToPresheafFunctorObjObjCone _ ).lift c ≫ G.πToPresheafFunctorObjObj K =
+    (G.isLimitToPresheafFunctorObjObjCone _).lift c ≫ G.πToPresheafFunctorObjObj K =
   c.π.app (op K) := limit.lift_π c (op K)
 
 /-- The `.map` component of `TopCat.KPresheaf.toPresheafFunctorObj` -/
@@ -335,13 +325,11 @@ lemma toPresheafFunctorObjMap_π {U V : Opens X} (i : U ⟶ V) (K : U.compactsIn
     G.πToPresheafFunctorObjObj ((baseChangeCompactsInside_mono i).functor.obj K) :=
   limit.pre_π _ (baseChangeCompactsInside_mono i).functor.op (op K)
 
-/-- The presheaf associated to a Kpresheaf -/
+/-- The presheaf associated to a K-presheaf -/
 @[simps, implicit_reducible]
 def toPresheafFunctorObj (G : KPresheaf A X) : Presheaf A X where
   obj U := G.toPresheafFunctorObjObj U.unop
   map i := G.toPresheafFunctorObjMap i.unop
-  map_comp := sorry
-
 
 variable {G} in
 @[ext]
@@ -367,7 +355,6 @@ their coresponding Kpresheaves -/
 def toPresheafFunctorMap {G1 G2 : KPresheaf A X} (σ : G1 ⟶ G2) :
     G1.toPresheafFunctorObj ⟶ G2.toPresheafFunctorObj where
   app U := toPresheafFunctorMapApp σ U.unop
-  naturality := sorry
 
 @[simp]
 lemma toPresheafFunctorMapId {G : KPresheaf A X} : toPresheafFunctorMap (𝟙 G) = 𝟙 _:= by
@@ -391,7 +378,7 @@ end KPresheaf
 
 namespace KPresheaf
 
-variable [HasColimitsOfSize.{w, w} A] [HasLimitsOfSize.{w, w} A]
+variable [HasFilteredColimitsOfSize.{w, w} A] [HasCofilteredLimitsOfSize.{w, w} A]
 
 open TopCat Presheaf Compacts Opens
 
@@ -453,7 +440,7 @@ def coreHomEquiv :
 end adjunction
 
 /-- The adjunction between `toKpresheafFunctor` and `toPresheafFunctor` -/
-def adjunction : (toKPresheafFunctor (A := A) (X := X)) ⊣ (toPresheafFunctor ) :=
+def adjunction : (toKPresheafFunctor (A := A) (X := X)) ⊣ (toPresheafFunctor) :=
   Adjunction.mkOfHomEquiv adjunction.coreHomEquiv
 
 attribute [local simp] adjunction adjunction.coreHomEquiv adjunction.homEquiv in
@@ -518,7 +505,5 @@ lemma adjunctionUCouitEq : (adjunction (A:= A) (X := X)).counit = adjunctionCoun
 end KPresheaf
 
 end
-
-end TopCat
 
 end TopCat

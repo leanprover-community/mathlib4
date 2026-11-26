@@ -350,6 +350,7 @@ lemma closure_mem_compactNhds_of_mem_openRcNhds {K : Compacts α} {U : Opens α}
 
 /-- The converting map from relatively compact opens
 neighbourhood of a compact subset to its opens neighbourhoods -/
+@[implicit_reducible]
 def openRcNhdsToOpenNhds (K : Compacts α) : K.openRcNhds → K.openNhds :=
   fun U ↦ ⟨_, U.property.2⟩
 
@@ -359,6 +360,7 @@ lemma openRcNhdsToOpenNhds_mono (K : Compacts α) :
 /-- An open relatively compact neighbourhood of `K` induces a compact neighbourhood by taking
 the closure
 -/
+@[implicit_reducible]
 def openRcNhdsToCompactNhds (K : Compacts α) : K.openRcNhds → K.compactNhds :=
   fun U ↦ ⟨_, closure_mem_compactNhds_of_mem_openRcNhds (Subtype.coe_prop U)⟩
 
@@ -381,14 +383,23 @@ namespace Opens
 /-- The set of compacts inside an open subset -/
 def compactsInside (U : Opens α) : Set (Compacts α) := {K | (K : Set α) ⊆ U}
 
+instance (U : Opens α) : IsDirectedOrder U.compactsInside where
+  directed K1 K2 := ⟨⟨K1.val ⊔ K2.val,Set.union_subset K1.property K2.property⟩,
+    ⟨Subtype.mk_le_mk.2 le_sup_left, Subtype.mk_le_mk.2  le_sup_right⟩⟩
+
+instance (U : Opens α) : Bot U.compactsInside := ⟨⊥, Set.empty_subset _⟩
+-- in particular `K.openNhds` is not empty and thus the induced category is cofiltered
+
 /-- For `K` a compact subset inside an open subset `U`, `U` has a structure of open neighbourhood
 of `K` -/
+@[implicit_reducible]
 def openNhdsOfCompactsInside {U : Opens α} (K : U.compactsInside) : (K.val).openNhds :=
   ⟨U, K.property⟩
 
 end Opens
 
 /-- For `U` an open neighbourhood of `K`, `K` has a structure of compact inside `U` -/
+@[implicit_reducible]
 def Compacts.compactsInsideOfOpenNhds {K : Compacts α} (U : K.openNhds) : (U.val).compactsInside :=
   ⟨K, U.property⟩
 

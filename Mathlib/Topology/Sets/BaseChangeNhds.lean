@@ -32,6 +32,7 @@ namespace Opens
 
 /-- For `U` an open subset included in a open subset `V`, there is
 a map sending compacts inside `U` to the ones inside `V` -/
+@[implicit_reducible]
 def baseChangeCompactsInside {U V : Opens α} (h : U ⟶ V) : U.compactsInside → V.compactsInside :=
   fun ⟨K, hK⟩ ↦ ⟨K, fun _ hx ↦ Set.mem_of_subset_of_mem (leOfHom h) (hK hx)⟩
 
@@ -55,6 +56,7 @@ namespace Compacts
 
 /-- For `K` a compact subset included in a compact subset `L`, there
 is a map sending open neighbourhoods of `L` to the ones of `K` -/
+@[implicit_reducible]
 def baseChangeOpenNhds {K L : Compacts α} (h : K ⟶ L) : L.openNhds → K.openNhds :=
   fun ⟨U, hU⟩ ↦ ⟨U, fun _ hx ↦ Set.mem_of_subset_of_mem hU (leOfHom h hx)⟩
 

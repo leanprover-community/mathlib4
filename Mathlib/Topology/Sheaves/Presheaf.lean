@@ -42,8 +42,10 @@ variable (C : Type u) [Category.{v} C]
 namespace TopCat
 
 /-- The category of `C`-valued presheaves on a (bundled) topological space `X`. -/
-@[implicit_reducible]
+/-@[implicit_reducible]
 def Presheaf (X : TopCat.{w}) : Type max u v w :=
+  (Opens X)ᵒᵖ ⥤ C-/
+abbrev Presheaf (X : TopCat.{w}) : Type max u v w :=
   (Opens X)ᵒᵖ ⥤ C
 
 instance (X : TopCat.{w}) : Category (Presheaf.{w, v, u} C X) :=
@@ -53,7 +55,9 @@ variable {C}
 
 namespace Presheaf
 
-@[simp] theorem comp_app {X : TopCat.{w}} {U : (Opens X)ᵒᵖ} {P Q R : Presheaf C X}
+set_option linter.deprecated.automationAttr false in
+@[deprecated " with abbrev there is no need of this" (since := "2026-26-11")]
+theorem comp_app {X : TopCat.{w}} {U : (Opens X)ᵒᵖ} {P Q R : Presheaf C X}
     (f : P ⟶ Q) (g : Q ⟶ R) :
     (f ≫ g).app U = f.app U ≫ g.app U := rfl
 
@@ -61,10 +65,11 @@ namespace Presheaf
 lemma ext {X : TopCat.{w}} {P Q : Presheaf C X} {f g : P ⟶ Q}
     (w : ∀ U : Opens X, f.app (op U) = g.app (op U)) :
     f = g := by
-  apply NatTrans.ext
+  aesop
+  /-apply NatTrans.ext
   ext U
   induction U with | _ U => ?_
-  apply w
+  apply w-/
 
 /-- attribute `sheaf_restrict` to mark lemmas related to restricting sheaves -/
 macro "sheaf_restrict" : attr =>
