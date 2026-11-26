@@ -951,6 +951,17 @@ theorem denom_one : denom (1 : K⟮X⟯) = 1 := by
 theorem denom_algebraMap (p : K[X]) : denom (algebraMap _ K⟮X⟯ p) = 1 := by
   convert denom_div p one_ne_zero <;> simp
 
+theorem denom_inv_algebraMap_eq_normalize [DecidableEq K] {p : K[X]} (hp : p ≠ 0) :
+    (algebraMap K[X] K⟮X⟯ p)⁻¹.denom = normalize p := by
+  obtain rfl : Classical.decEq K = ‹_› := Subsingleton.elim _ _
+  rw [← one_div, ← map_one (algebraMap K[X] K⟮X⟯), denom_div _ hp]
+  simp [normalize_apply, mul_comm, leadingCoeff_ne_zero.mpr hp]
+
+theorem denom_inv_algebraMap_eq_self {p : K[X]} (hp : p.Monic) :
+    (algebraMap K[X] K⟮X⟯ p)⁻¹.denom = p := by
+  classical
+  rw [denom_inv_algebraMap_eq_normalize hp.ne_zero, hp.normalize_eq_self]
+
 @[simp]
 theorem denom_div_dvd (p q : K[X]) : denom (algebraMap _ _ p / algebraMap _ _ q) ∣ q := by
   classical
