@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Group.Hom.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extensionality lemmas for monoid and group structures
 

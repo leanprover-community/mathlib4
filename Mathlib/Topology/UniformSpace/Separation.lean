@@ -91,7 +91,7 @@ This generalization will drop `UniformContinuous` assumptions in some lemmas,
 and add these assumptions in other lemmas,
 so it was not done in https://github.com/leanprover-community/mathlib4/pull/10644 to keep it reasonably sized.
 
-## Keywords
+## Tags
 
 uniform space, separated space, Hausdorff space, separation quotient
 -/

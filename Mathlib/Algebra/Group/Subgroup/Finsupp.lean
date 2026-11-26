@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.BigOperators.Finsupp.Basic
 public import Mathlib.Algebra.Group.Subgroup.Lattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-! # Connection between `Subgroup.closure` and `Finsupp.prod` -/
 
 public section

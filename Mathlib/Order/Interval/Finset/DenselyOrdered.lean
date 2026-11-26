@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.Interval.Finset.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Linear locally finite orders are densely ordered iff they are trivial
 
