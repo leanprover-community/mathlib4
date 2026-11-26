@@ -154,11 +154,13 @@ theorem coe_coalgHom_mk {f : A →ₗc[R] B} (h h₁) :
     ((⟨f, h, h₁⟩ : A →ₐc[R] B) : A →ₗc[R] B) = f := by
   rfl
 
+@[simp, norm_cast, nolint simpNF] -- `nolint` needed while this uses `CoalgHom.ofClass`
 theorem coe_toCoalgHom (f : A →ₐc[R] B) : ⇑(f : A →ₗc[R] B) = f :=
   rfl
 
 lemma toCoalgHom_apply (f : A →ₐc[R] B) (a : A) : f.toCoalgHom a = f a := rfl
 
+@[simp, norm_cast, nolint simpNF] -- `nolint` needed while this uses `LinearMap.ofClass`
 theorem coe_toLinearMap (f : A →ₐc[R] B) : ⇑(f : A →ₗ[R] B) = f :=
   rfl
 

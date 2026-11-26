@@ -165,12 +165,15 @@ theorem toRingHom_mk {f : A →+* B} (h₁ h₂) : ((⟨f, h₁, h₂⟩ : A →
 theorem toRingHom_eq_coe (f : A →ₐ[R] B) : f.toRingHom = f :=
   rfl
 
+@[simp, norm_cast, nolint simpNF] -- `nolint` needed while this uses `RingHomClass.toRingHom`
 theorem coe_toRingHom (f : A →ₐ[R] B) : ⇑(f : A →+* B) = f :=
   rfl
 
+@[simp, norm_cast, nolint simpNF] -- `nolint` needed while this uses `MonoidHom.ofClass`
 theorem coe_toMonoidHom (f : A →ₐ[R] B) : ⇑(f : A →* B) = f :=
   rfl
 
+@[simp, norm_cast, nolint simpNF] -- `nolint` needed while this uses `AddMonoidHom.ofClass`
 theorem coe_toAddMonoidHom (f : A →ₐ[R] B) : ⇑(f : A →+ B) = f :=
   rfl
 

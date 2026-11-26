@@ -162,6 +162,7 @@ theorem mk_coe (e : R ≃+* S) (e' h₁ h₂ h₃ h₄) : (⟨⟨e, e', h₁, h�
 theorem toEquiv_eq_coe (f : R ≃+* S) : f.toEquiv = f :=
   rfl
 
+@[simp, nolint simpNF] -- `nolint` needed while this uses `EquivLike.toEquiv`
 theorem coe_toEquiv (f : R ≃+* S) : ⇑(f : R ≃ S) = f :=
   rfl
 
@@ -779,6 +780,7 @@ theorem toRingHom_injective : Function.Injective (toRingHom : R ≃+* S → R �
 @[simp] theorem toRingHom_eq_coe (f : R ≃+* S) : f.toRingHom = ↑f :=
   rfl
 
+@[simp, norm_cast, nolint simpNF] -- `nolint` needed while this uses `RingHomClass.toRingHom`
 theorem coe_toRingHom (f : R ≃+* S) : ⇑(f : R →+* S) = f :=
   rfl
 

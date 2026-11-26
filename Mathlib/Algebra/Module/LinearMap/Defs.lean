@@ -624,6 +624,7 @@ instance : SemilinearMapClass (M →ₑ+[σ.toMonoidHom] M₂) σ M M₂ where
 /-- A `DistribMulActionHom` between two modules is a linear map. -/
 instance : LinearMapClass (M →+[R] M₃) R M M₃ where
 
+@[simp, nolint simpNF] -- `nolint` needed while this uses `LinearMap.ofClass`
 theorem coe_toLinearMap (f : M →ₑ+[σ.toMonoidHom] M₂) : ((f : M →ₛₗ[σ] M₂) : M → M₂) = f :=
   rfl
 

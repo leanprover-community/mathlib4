@@ -395,7 +395,7 @@ theorem toFun_eq_coe (f : α →+* β) : f.toFun = f :=
 theorem coe_mk (f : α →* β) (h₁ h₂) : ((⟨f, h₁, h₂⟩ : α →+* β) : α → β) = f :=
   rfl
 
-@[simp, norm_cast]
+@[simp]
 theorem coe_coe {F : Type*} [FunLike F α β] [RingHomClass F α β] (f : F) :
     ((f : α →+* β) : α → β) = f :=
   rfl
@@ -405,6 +405,7 @@ attribute [coe] RingHom.toMonoidWithZeroHom
 instance : Coe (α →+* β) (α →*₀ β) :=
   ⟨RingHom.toMonoidWithZeroHom⟩
 
+@[simp, nolint simpNF] -- `nolint` needed while we have `toMonoidHom_eq_coe`
 theorem coe_toMonoidWithZeroHom (f : α →+* β) : ⇑(f : α →*₀ β) = f := rfl
 
 @[deprecated (since := "2026-09-15")] alias toMonoidWithZeroHom_eq_coe := coe_toMonoidWithZeroHom
