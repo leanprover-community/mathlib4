@@ -63,6 +63,8 @@ theorem compMeasurePreserving_continuous (hp : p ≠ ∞) :
   induction f using Lp.simpleFunc.induction hp₀ hp with
   | add hfp hgp _ ihf ihg => exact ihf.add ihg
   | @indicatorConst c s hs hνs =>
+    -- TODO: once `indicatorConstLp` takes a `NullMeasurableSet`, rewrite with
+    -- `Lp.indicatorConstLp_compMeasurePreserving` instead of passing `hs` and `hμs`.
     refine continuous_indicatorConstLp_set (hs := fun f ↦ hs.preimage f.val.continuous.measurable)
       (hμs := fun f ↦ (f.property.measure_preimage hs.nullMeasurableSet).trans_ne hνs.ne) hp
       fun f ↦ ?_
