@@ -471,7 +471,7 @@ theorem LinearMap.toMatrix'_one : LinearMap.toMatrix' (1 : (n → R) →ₗ[R] n
 
 @[deprecated Matrix.mulVecLin_mul +typeChanged (since := "2026-11-25")]
 theorem Matrix.toLin'_mul [Fintype m] [DecidableEq m] (M : Matrix l m R) (N : Matrix m n R) :
-    Matrix.toLin' (M * N) = Matrix.toLin' M ∘ₗ Matrix.toLin' N :=
+    Matrix.toLin' (M * N) = (Matrix.toLin' M).comp (Matrix.toLin' N) :=
   Matrix.mulVecLin_mul _ _
 
 @[deprecated Matrix.mulVecLin_pow +typeChanged (since := "2026-11-25")]
@@ -482,7 +482,8 @@ theorem Matrix.toLin'_pow (M : Matrix n n R) (k : ℕ) :
 @[deprecated Matrix.mulVecLin_submatrix +typeChanged (since := "2026-11-25")]
 theorem Matrix.toLin'_submatrix [Fintype l] [DecidableEq l] (f₁ : m → k) (e₂ : n ≃ l)
     (M : Matrix k l R) :
-    Matrix.toLin' (M.submatrix f₁ e₂) = funLeft R R f₁ ∘ₗ M.toLin' ∘ₗ funLeft _ _ e₂.symm :=
+    Matrix.toLin' (M.submatrix f₁ e₂) =
+      funLeft R R f₁ ∘ₗ (Matrix.toLin' M) ∘ₗ funLeft _ _ e₂.symm :=
   Matrix.mulVecLin_submatrix _ _ _
 
 /-- A variant of `Matrix.toLin'_submatrix` that keeps around `LinearEquiv`s. -/
