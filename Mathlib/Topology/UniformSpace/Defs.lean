@@ -329,12 +329,14 @@ theorem Filter.Tendsto.uniformity_symm {l : Filter β} {f : β → α × α} (h 
   tendsto_swap_uniformity.comp h
 
 /-- Relation `fun f g ↦ Tendsto (fun x ↦ (f x, g x)) l (𝓤 α)` is reflexive. -/
-theorem tendsto_diag_uniformity (f : β → α) (l : Filter β) :
+theorem tendsto_diagonal_uniformity (f : β → α) (l : Filter β) :
     Tendsto (fun x => (f x, f x)) l (𝓤 α) := fun _s hs =>
   mem_map.2 <| univ_mem' fun _ => refl_mem_uniformity hs
 
+@[deprecated (since := "2026-09-06")] alias tendsto_diag_uniformity := tendsto_diagonal_uniformity
+
 theorem tendsto_const_uniformity {a : α} {f : Filter β} : Tendsto (fun _ => (a, a)) f (𝓤 α) :=
-  tendsto_diag_uniformity (fun _ => a) f
+  tendsto_diagonal_uniformity (fun _ => a) f
 
 theorem symm_of_uniformity {s : SetRel α α} (hs : s ∈ 𝓤 α) :
     ∃ t ∈ 𝓤 α, SetRel.IsSymm t ∧ t ⊆ s :=
