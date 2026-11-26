@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Calculus.FDeriv.Mul
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fréchet Derivative of `f x ^ n`, `n : ℕ`
 
@@ -18,7 +21,7 @@ where the result is instead `∑ i ∈ Finset.range n, f x ^ (n.pred - i) •> f
 For detailed documentation of the Fréchet derivative,
 see the module docstring of `Mathlib/Analysis/Calculus/FDeriv/Basic.lean`.
 
-## Keywords
+## Tags
 
 derivative, power
 -/

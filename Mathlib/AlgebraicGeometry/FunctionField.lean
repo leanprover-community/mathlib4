@@ -7,13 +7,17 @@ module
 
 public import Mathlib.AlgebraicGeometry.Properties
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Function field of integral schemes
 
 We define the function field of an irreducible scheme as the stalk of the generic point.
 This is a field when the scheme is integral.
 
-## Main definition
+## Main definitions
+
 * `AlgebraicGeometry.Scheme.functionField`: The function field of an integral scheme.
 * `AlgebraicGeometry.Scheme.germToFunctionField`: The canonical map from a component into the
   function field. This map is injective.
@@ -62,9 +66,15 @@ theorem germ_injective_of_isIntegral [IsIntegral X] {U : X.Opens} (x : X) (hx : 
   have : Nonempty W := ⟨⟨_, hW⟩⟩
   exact map_injective_of_isIntegral X iU e
 
+instance [IsIntegral X] {U : X.Opens} (x : U) : FaithfulSMul Γ(X, U) (X.presheaf.stalk x) :=
+  (faithfulSMul_iff_algebraMap_injective _ _).mpr (germ_injective_of_isIntegral X x x.property)
+
 theorem Scheme.germToFunctionField_injective [IsIntegral X] (U : X.Opens) [Nonempty U] :
     Function.Injective (X.germToFunctionField U) :=
   germ_injective_of_isIntegral _ _ _
+
+instance [IsIntegral X] (U : X.Opens) [Nonempty U] : FaithfulSMul Γ(X, U) X.functionField :=
+  (faithfulSMul_iff_algebraMap_injective _ _).mpr (X.germToFunctionField_injective U)
 
 theorem genericPoint_eq_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [IsOpenImmersion f]
     [hX : IrreducibleSpace X] [IrreducibleSpace Y] :
@@ -76,7 +86,7 @@ theorem genericPoint_eq_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [IsOpenI
   convert subset_closure_inter_of_isPreirreducible_of_isOpen _ f.isOpenEmbedding.isOpen_range _
   · rw [Set.univ_inter, Set.image_univ]
   · apply PreirreducibleSpace.isPreirreducible_univ (X := Y)
-  · exact ⟨_, trivial, Set.mem_range_self hX.2.some⟩
+  · exact ⟨_, trivial, Set.mem_range_self hX.toNonempty.some⟩
 
 noncomputable instance stalkFunctionFieldAlgebra [IrreducibleSpace X] (x : X) :
     Algebra (X.presheaf.stalk x) X.functionField := by
@@ -88,7 +98,7 @@ instance functionField_isScalarTower [IrreducibleSpace X] (U : X.Opens) (x : U)
     [Nonempty U] : IsScalarTower Γ(X, U) (X.presheaf.stalk x) X.functionField := by
   apply IsScalarTower.of_algebraMap_eq'
   simp_rw [RingHom.algebraMap_toAlgebra]
-  change _ = (X.presheaf.germ U x x.2 ≫ _).hom
+  change _ = (X.presheaf.germ U x x.property ≫ _).hom
   rw [X.presheaf.germ_stalkSpecializes]
 
 @[simp]

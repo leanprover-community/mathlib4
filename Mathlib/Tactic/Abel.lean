@@ -15,14 +15,13 @@ public import Mathlib.Util.AtomM.Recurse
 
 Evaluate expressions in the language of additive, commutative monoids and groups.
 
-## Future work
+## TODO
 
 * In mathlib 3, `abel` accepted additional optional arguments:
   ```
   syntax "abel" (&" raw" <|> &" term")? (location)? : tactic
   ```
   It is undecided whether these features should be restored eventually.
-
 -/
 
 public section

@@ -9,8 +9,12 @@ public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
 public import Mathlib.CategoryTheory.Monoidal.Rigid.Basic
 public import Mathlib.CategoryTheory.Monoidal.Subcategory
 public import Mathlib.LinearAlgebra.Coevaluation
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 public import Mathlib.RingTheory.TensorProduct.Finite
+
+import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The category of finitely generated modules over a ring
@@ -26,10 +30,9 @@ When `R` is commutative we then give the structure as an `R`-linear monoidal cat
 When `R` is a field we give it the structure of a closed monoidal category
 and then as a right-rigid monoidal category.
 
-## Future work
+## TODO
 
 * Show that `FGModuleCat R` is abelian when `R` is (left)-Noetherian.
-
 -/
 
 @[expose] public section
@@ -272,14 +275,14 @@ end FGModuleCat
 `@[simp]` lemmas for `LinearMap.comp` and categorical identities.
 -/
 
-@[simp]
+@[deprecated "This is proved by `simp`" (since := "2026-10-06")]
 theorem LinearMap.comp_id_fgModuleCat
     {R} [Ring R] {G : FGModuleCat.{v} R} {H : Type v} [AddCommGroup H] [Module R H]
-    (f : G →ₗ[R] H) : f.comp (ModuleCat.Hom.hom (InducedCategory.Hom.hom (𝟙 G))) = f :=
-  ModuleCat.hom_ext_iff.mp <| Category.id_comp (ModuleCat.ofHom f)
+    (f : G →ₗ[R] H) : f.comp (ModuleCat.Hom.hom (InducedCategory.Hom.hom (𝟙 G))) = f := by
+  simp
 
-@[simp]
+@[deprecated "This is proved by `simp`" (since := "2026-10-06")]
 theorem LinearMap.id_fgModuleCat_comp
     {R} [Ring R] {G : Type v} [AddCommGroup G] [Module R G] {H : FGModuleCat.{v} R}
-    (f : G →ₗ[R] H) : LinearMap.comp (ModuleCat.Hom.hom (InducedCategory.Hom.hom (𝟙 H))) f = f :=
-  ModuleCat.hom_ext_iff.mp <| Category.comp_id (ModuleCat.ofHom f)
+    (f : G →ₗ[R] H) : LinearMap.comp (ModuleCat.Hom.hom (InducedCategory.Hom.hom (𝟙 H))) f = f := by
+  simp

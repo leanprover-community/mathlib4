@@ -9,13 +9,15 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.Basic
 public import Mathlib.AlgebraicTopology.SimplicialSet.PiZero
 public import Mathlib.CategoryTheory.Limits.Preserves.SigmaConst
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Homology of simplicial sets in degree 0
 
 The main definition in this file is `SSet.homology₀Iso` which is
 an isomorphism `X.homology R 0 ≅ ∐ (fun (_ : π₀ X) ↦ R)` for any simplicial
 set `X`.
-
 -/
 
 @[expose] public section
@@ -59,9 +61,9 @@ of the chain complex of `X` with coefficients in `R` identifies
 to the coproduct of copies of `R` indexed by `π₀ X`. -/
 noncomputable def isColimitCokernelCoforkChainComplexDOneZero :
     IsColimit (CokernelCofork.ofπ _ (π₀.d_fromChainComplexXZero X R 1)) := by
-  refine (IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_).1
+  refine (IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_).toFun
     (Preadditive.isColimitCokernelCoforkOfCofork
-      ((isColimitMapCoconeCoforkEquiv _ _).1
+      ((isColimitMapCoconeCoforkEquiv _ _).toFun
         (isColimitOfPreserves (sigmaConst.obj R) X.isColimitCoforkπ₀)))
   · refine parallelPair.ext (-Iso.refl _) (Iso.refl _) ?_ (by simp)
     simp [chainComplex, SSet.chainComplexFunctor, sub_eq_neg_add]
@@ -102,7 +104,6 @@ noncomputable def homology₀Iso :
   ShortComplex.homologyMapIso (HomologicalComplex.isoSc' _ 1 0 0 (by simp) (by simp)) ≪≫
     (X.homologyData₀ R).left.homologyIso
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma liftCycles_ιChainComplex_homologyπ_homology₀Iso_hom (x : X _⦋0⦌) :

@@ -10,7 +10,6 @@ public import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.CategoryTheory.Functor.EpiMono
 
 /-!
-
 # Categories of Compact Hausdorff Spaces
 
 We construct the category of compact Hausdorff spaces satisfying an additional property `P`.
@@ -105,7 +104,7 @@ variable (X : Type u) [TopologicalSpace X] [CompactSpace X] [T2Space X]
 class HasProp : Prop where
   hasProp : P ↧X
 
-instance (X : CompHausLike P) : HasProp P X := ⟨X.4⟩
+instance (X : CompHausLike P) : HasProp P X := ⟨X.prop⟩
 
 variable [HasProp P X]
 

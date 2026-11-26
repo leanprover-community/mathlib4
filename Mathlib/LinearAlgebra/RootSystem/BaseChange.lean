@@ -15,7 +15,8 @@ public import Mathlib.LinearAlgebra.RootSystem.IsValuedIn
 When the coefficients are a field, root pairings behave well with respect to restriction and
 extension of scalars.
 
-## Main results:
+## Main results
+
 * `RootPairing.restrict`: if `RootPairing.pairing` takes values in a subfield, we may restrict to
   get a root _system_ with coefficients in the subfield. Of particular interest is the case when
   the pairing takes values in its prime subfield (which happens for crystallographic pairings).
@@ -25,7 +26,6 @@ extension of scalars.
 * Extension of scalars
 * Crystallographic root systems are isomorphic to base changes of root systems over `ℤ`: Take
   `M₀` and `N₀` to be the `ℤ`-span of roots and coroots.
-
 -/
 
 @[expose] public section

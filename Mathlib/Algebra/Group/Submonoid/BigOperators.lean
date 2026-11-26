@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Group.Submonoid.Basic
 public import Mathlib.Algebra.Group.Support
 public import Mathlib.Data.Finset.NoncommProd
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Submonoids: membership criteria for products and sums
 
@@ -21,6 +24,7 @@ In this file we prove various facts about membership in a submonoid:
   to an additive submonoid, then so does their sum;
 
 ## Tags
+
 submonoid, submonoids
 -/
 
@@ -78,7 +82,7 @@ submonoid. -/
       is in the `AddSubmonoid`. -/]
 theorem prod_mem {M : Type*} [CommMonoid M] [SetLike B M] [SubmonoidClass B M] {ι : Type*}
     {t : Finset ι} {f : ι → M} (h : ∀ c ∈ t, f c ∈ S) : (∏ c ∈ t, f c) ∈ S :=
-  multiset_prod_mem (t.1.map f) fun _x hx =>
+  multiset_prod_mem (t.val.map f) fun _x hx =>
     let ⟨i, hi, hix⟩ := Multiset.mem_map.1 hx
     hix ▸ h i hi
 
@@ -127,7 +131,7 @@ submonoid. -/
       is in the `AddSubmonoid`. -/]
 theorem prod_mem {M : Type*} [CommMonoid M] (S : Submonoid M) {ι : Type*} {t : Finset ι}
     {f : ι → M} (h : ∀ c ∈ t, f c ∈ S) : (∏ c ∈ t, f c) ∈ S :=
-  S.multiset_prod_mem (t.1.map f) fun _ hx =>
+  S.multiset_prod_mem (t.val.map f) fun _ hx =>
     let ⟨i, hi, hix⟩ := Multiset.mem_map.1 hx
     hix ▸ h i hi
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Normed.Affine.Simplex
 public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Simplices in Euclidean spaces.
 
@@ -16,7 +19,6 @@ This file defines properties of simplices in a Euclidean space.
 ## Main definitions
 
 * `Affine.Simplex.AcuteAngled`
-
 -/
 
 @[expose] public section

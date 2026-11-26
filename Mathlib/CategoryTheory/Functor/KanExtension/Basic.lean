@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 public import Mathlib.CategoryTheory.Limits.Shapes.Equivalence
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Kan extensions
 
@@ -28,8 +31,8 @@ which assert the existence of a right or left Kan extension, and chosen Kan exte
 are obtained as `leftKanExtension L F` and `rightKanExtension L F`.
 
 ## References
-* https://ncatlab.org/nlab/show/Kan+extension
 
+* https://ncatlab.org/nlab/show/Kan+extension
 -/
 
 @[expose] public section
@@ -128,6 +131,11 @@ lemma isRightKanExtension_iff_of_iso {F' F'' : D ⥤ H} (e : F' ≅ F'') {L : C 
     refine isRightKanExtension_of_iso e.symm α' α ?_
     rw [← comm, ← whiskerLeft_comp_assoc, Iso.symm_hom, e.inv_hom_id, whiskerLeft_id', id_comp]
 
+instance {F'' : D ⥤ H} {L : C ⥤ D} {F : C ⥤ H} (α : L ⋙ F' ⟶ F) (f : F'' ⟶ F') [IsIso f]
+    [F'.IsRightKanExtension α] :
+    F''.IsRightKanExtension (Functor.whiskerLeft _ f ≫ α) := by
+  rwa [isRightKanExtension_iff_of_iso (asIso f) (Functor.whiskerLeft _ f ≫ α) α (by simp)]
+
 /-- Right Kan extensions of isomorphic functors are isomorphic. -/
 @[simps]
 noncomputable def rightKanExtensionUniqueOfIso {G : C ⥤ H} (i : F ≅ G) (G' : D ⥤ H)
@@ -222,6 +230,11 @@ lemma isLeftKanExtension_iff_of_iso {F' F'' : D ⥤ H} (e : F' ≅ F'')
   · intro
     refine isLeftKanExtension_of_iso e.symm α' α ?_
     rw [← comm, assoc, ← whiskerLeft_comp, Iso.symm_hom, e.hom_inv_id, whiskerLeft_id', comp_id]
+
+instance {F'' : D ⥤ H} {L : C ⥤ D} {F : C ⥤ H} (α : F ⟶ L ⋙ F') (f : F' ⟶ F'') [IsIso f]
+    [F'.IsLeftKanExtension α] :
+    F''.IsLeftKanExtension (α ≫ Functor.whiskerLeft _ f) := by
+  rwa [← isLeftKanExtension_iff_of_iso (asIso f) α (α ≫ Functor.whiskerLeft _ f) (by simp)]
 
 /-- Left Kan extensions of isomorphic functors are isomorphic. -/
 @[simps]
@@ -392,6 +405,24 @@ lemma isRightKanExtension_iff_postcomp₁ (α : L' ⋙ F' ⟶ F) :
   constructor
   · exact fun _ => ⟨⟨eq (isUniversalOfIsRightKanExtension _ _)⟩⟩
   · exact fun _ => ⟨⟨eq.symm (isUniversalOfIsRightKanExtension _ _)⟩⟩
+
+instance {L L' : C ⥤ D} {F : C ⥤ H} (α : F ⟶ L ⋙ F') (f : L ⟶ L') [IsIso f]
+    [F'.IsLeftKanExtension α] :
+    F'.IsLeftKanExtension (α ≫ Functor.whiskerRight f _) := by
+  let α' := α ≫ whiskerRight f F' ≫ whiskerRight L'.rightUnitor.inv F' ≫ (associator _ _ _).hom
+  have : (𝟭 D ⋙ F').IsLeftKanExtension α' := by
+    simpa using (isLeftKanExtension_iff_postcomp₁ (𝟭 D)
+      (L'.rightUnitor ≪≫ (asIso f).symm) α).mp inferInstance
+  exact isLeftKanExtension_of_iso F'.leftUnitor α' _ (by cat_disch)
+
+instance {L L' : C ⥤ D} {F : C ⥤ H} (α : L ⋙ F' ⟶ F) (f : L' ⟶ L) [IsIso f]
+    [F'.IsRightKanExtension α] :
+    F'.IsRightKanExtension (Functor.whiskerRight f _ ≫ α) := by
+  let α' := (associator _ _ _).inv ≫ whiskerRight L'.rightUnitor.hom F' ≫ whiskerRight f F' ≫ α
+  have : (𝟭 D ⋙ F').IsRightKanExtension α' := by
+    simpa using! (isRightKanExtension_iff_postcomp₁ (𝟭 D)
+      (L'.rightUnitor ≪≫ asIso f) α).1 inferInstance
+  exact isRightKanExtension_of_iso F'.leftUnitor α' _ (by cat_disch)
 
 end
 
@@ -587,8 +618,13 @@ lemma isLeftKanExtension_iff_of_iso₂ {F₁' F₂' : D ⥤ H} (α₁ : F₁ ⟶
   let eq := LeftExtension.isUniversalEquivOfIso₂ (LeftExtension.mk _ α₁)
     (LeftExtension.mk _ α₂) e e' h
   constructor
-  · exact fun _ => ⟨⟨eq.1 (isUniversalOfIsLeftKanExtension F₁' α₁)⟩⟩
-  · exact fun _ => ⟨⟨eq.2 (isUniversalOfIsLeftKanExtension F₂' α₂)⟩⟩
+  · exact fun _ => ⟨⟨eq.toFun (isUniversalOfIsLeftKanExtension F₁' α₁)⟩⟩
+  · exact fun _ => ⟨⟨eq.invFun (isUniversalOfIsLeftKanExtension F₂' α₂)⟩⟩
+
+instance {F' : D ⥤ H} (α : F₁ ⟶ L ⋙ F') [F'.IsLeftKanExtension α]
+    (f : F₂ ⟶ F₁) [IsIso f] :
+    F'.IsLeftKanExtension (f ≫ α) := by
+  rwa [isLeftKanExtension_iff_of_iso₂ (f ≫ α) α (asIso f) (Iso.refl _) (by simp)]
 
 /-- When two right extensions `α₁ : RightExtension L F₁` and `α₂ : RightExtension L F₂`
 are essentially the same via an isomorphism of functors `F₁ ≅ F₂`,
@@ -608,8 +644,13 @@ lemma isRightKanExtension_iff_of_iso₂ {F₁' F₂' : D ⥤ H} (α₁ : L ⋙ F
   let eq := RightExtension.isUniversalEquivOfIso₂ (RightExtension.mk _ α₁)
     (RightExtension.mk _ α₂) e e' h
   constructor
-  · exact fun _ => ⟨⟨eq.1 (isUniversalOfIsRightKanExtension F₁' α₁)⟩⟩
-  · exact fun _ => ⟨⟨eq.2 (isUniversalOfIsRightKanExtension F₂' α₂)⟩⟩
+  · exact fun _ => ⟨⟨eq.toFun (isUniversalOfIsRightKanExtension F₁' α₁)⟩⟩
+  · exact fun _ => ⟨⟨eq.invFun (isUniversalOfIsRightKanExtension F₂' α₂)⟩⟩
+
+instance {F' : D ⥤ H} (α : L ⋙ F' ⟶ F₁) [F'.IsRightKanExtension α]
+    (f : F₁ ⟶ F₂) [IsIso f] :
+    F'.IsRightKanExtension (α ≫ f) := by
+  rwa [← isRightKanExtension_iff_of_iso₂ α (α ≫ f) (asIso f) (Iso.refl _) (by simp)]
 
 end
 
@@ -632,7 +673,6 @@ variable
     {F₀ : C ⥤ H} {F₁ : D ⥤ H} {F₂ : D' ⥤ H}
     (α : F₀ ⟶ L ⋙ F₁)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If the right extension defined by `α : F₀ ⟶ L ⋙ F₁` is universal,
 then for every `L' : D ⥤ D'`, `F₁ : D ⥤ H`, if an extension
@@ -670,9 +710,6 @@ def LeftExtension.isUniversalPrecomp₂
         (hα.fac <| LeftExtension.mk _ <|
           y.hom ≫ (L.associator L' y.right).hom) t
     dsimp at hb_fac_app hα_fac_app
-    simp only [whiskeringLeft_obj_obj, comp_obj,
-      precomp₂_obj_right, whiskeringLeft_obj_map, NatTrans.comp_app,
-      precomp₂_obj_hom_app, whiskerLeft_app, assoc] at a_w_t
     simp [← a_w_t, hb_fac_app, u, hα_fac_app]
   apply IsInitial.ofUnique
 

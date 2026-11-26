@@ -6,7 +6,8 @@ Authors: Reid Barton, Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
-public import Mathlib.Data.Fin.VecNotation
+
+import Mathlib.Data.Fin.VecNotation
 
 /-!
 # Filtered categories
@@ -51,13 +52,13 @@ All of the above API, except for the `bowtie` and the `tulip`, is also provided 
 categories.
 
 ## See also
+
 In `Mathlib/CategoryTheory/Limits/FilteredColimitCommutesFiniteLimit.lean` we show that filtered
 colimits commute with finite limits.
 
 There is another characterization of filtered categories, namely that whenever `F : J ⥤ C` is a
 functor from a finite category, there is `X : C` such that `Nonempty (limit (F.op ⋙ yoneda.obj X))`.
 This is shown in `Mathlib/CategoryTheory/Limits/Filtered.lean`.
-
 -/
 
 @[expose] public section

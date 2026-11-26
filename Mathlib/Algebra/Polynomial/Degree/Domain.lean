@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Polynomial.Degree.Operations
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Univariate polynomials form a domain
 
@@ -42,7 +45,7 @@ lemma natDegree_smul {S : Type*} [Semiring S] [IsDomain S] [Module S R] [Module.
   · simp only [hp, smul_zero]
   · apply natDegree_eq_of_le_of_coeff_ne_zero
     · exact (natDegree_smul_le _ _).trans (le_refl _)
-    · simp only [coeff_smul]
+    · simp only [AddMonoidAlgebra.coeff_smul_apply]
       apply smul_ne_zero ha
       simp [hp]
 

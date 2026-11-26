@@ -18,7 +18,6 @@ import Mathlib.RingTheory.Polynomial.Subring
 # # Integral closure as a characteristic predicate
 
 We prove basic properties of `IsIntegralClosure`.
-
 -/
 
 @[expose] public section
@@ -76,6 +75,15 @@ theorem IsIntegral.mem_of_inv_mem (int : IsIntegral R x) (inv_mem : x⁻¹ ∈ A
   rw [← inv_inv x]; exact int.inv.inv_mem inv_mem
 
 end inv
+
+section div
+
+variable {R S : Type*} [Field R] [Field S] [Algebra R S] {x y : S}
+
+theorem IsIntegral.div (hx : IsIntegral R x) (hy : IsIntegral R y) : IsIntegral R (x / y) := by
+  simpa [div_eq_mul_inv] using hx.mul hy.inv
+
+end div
 
 section
 
@@ -188,7 +196,7 @@ theorem AlgEquiv.coe_mapIntegralClosure [Algebra R S] (f : A ≃ₐ[R] S)
     (x : integralClosure R A) : (f.mapIntegralClosure x : S) = f (x : A) := rfl
 
 theorem integralClosure.isIntegral (x : integralClosure R A) : IsIntegral R x :=
-  let ⟨p, hpm, hpx⟩ := x.2
+  let ⟨p, hpm, hpx⟩ := x.property
   ⟨p, hpm,
     Subtype.ext <| by
       rwa [← aeval_def, ← Subalgebra.val_apply, aeval_algHom_apply] at hpx⟩
@@ -319,7 +327,7 @@ theorem RingHom.isIntegralElem_leadingCoeff_mul (h : p.eval₂ f x = 0) :
     use monic_integralNormalization this
     rw [integralNormalization_eval₂_leadingCoeff_mul h' f x, h, mul_zero]
   · by_cases hp : p.map f = 0
-    · apply_fun fun q => coeff q p.natDegree at hp
+    · apply_fun fun q => q.coeff p.natDegree at hp
       rw [coeff_map, coeff_zero, coeff_natDegree] at hp
       rw [hp, zero_mul]
       exact f.isIntegralElem_zero
@@ -340,8 +348,8 @@ end
 
 lemma Polynomial.Monic.quotient_isIntegralElem {g : S[X]} (mon : g.Monic) {I : Ideal S[X]}
     (h : g ∈ I) :
-    ((Ideal.Quotient.mk I).comp (algebraMap S S[X])).IsIntegralElem (Ideal.Quotient.mk I X) := by
-  exact ⟨g, mon, by
+    ((Ideal.Quotient.mk I).comp (algebraMap S S[X])).IsIntegralElem (Ideal.Quotient.mk I X) :=
+  ⟨g, mon, by
   rw [← (Ideal.Quotient.eq_zero_iff_mem.mpr h), eval₂_eq_sum_range]
   nth_rw 3 [(as_sum_range_C_mul_X_pow g)]
   simp only [map_sum, algebraMap_eq, RingHom.coe_comp, Function.comp_apply, map_mul, map_pow]⟩

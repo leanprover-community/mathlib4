@@ -32,7 +32,7 @@ def quotientSpanXSubCAlgEquiv (x : R) :
   let e := RingHom.quotientKerEquivOfRightInverse (fun x => by
     exact eval_C : Function.RightInverse (fun a : R => (C a : R[X])) (@aeval R R _ _ _ x))
   (Ideal.quotientEquivAlgOfEq R (ker_evalRingHom x).symm).trans
-    { e with commutes' := fun r => e.apply_symm_apply r }
+    (.ofCommutes e fun r ↦ e.apply_symm_apply r)
 
 @[simp]
 theorem quotientSpanXSubCAlgEquiv_mk (x : R) (p : R[X]) :
@@ -58,9 +58,9 @@ def quotientSpanCXSubCAlgEquiv (x y : R) :
 /-- For a commutative ring $R$, evaluating a polynomial at elements $y(X) \in R[X]$ and $x \in R$
 induces an isomorphism of $R$-algebras $R[X, Y] / \langle X - x, Y - y(X) \rangle \cong R$. -/
 def quotientSpanCXSubCXSubCAlgEquiv {x : R} {y : R[X]} :
-    @AlgEquiv R (R[X][X] ⧸ (Ideal.span {C (X - C x), X - C y} : Ideal <| R[X][X])) R _ _ _
-      (Ideal.Quotient.algebra R) _ :=
-((quotientSpanCXSubCAlgEquiv (X - C x) y).restrictScalars R).trans <| quotientSpanXSubCAlgEquiv x
+    @AlgEquiv R (R[X][X] ⧸ (Ideal.span {C (X - C x), X - C y} : Ideal <| R[X][X])) R _ _
+      _ _ (Ideal.Quotient.algebra R).toSMul _ :=
+  ((quotientSpanCXSubCAlgEquiv (X - C x) y).restrictScalars R).trans <| quotientSpanXSubCAlgEquiv x
 
 lemma modByMonic_eq_zero_iff_quotient_eq_zero (p q : R[X]) (hq : q.Monic) :
     p %ₘ q = 0 ↔ (p : R[X] ⧸ Ideal.span {q}) = 0 := by
@@ -89,7 +89,8 @@ theorem eval₂_C_mk_eq_zero {I : Ideal R} :
   refine Finset.sum_eq_zero fun n _ => ?_
   dsimp
   rw [eval₂_monomial (C.comp (Quotient.mk I)) X]
-  refine mul_eq_zero_of_left (Polynomial.ext fun m => ?_) (X ^ n)
+  refine mul_eq_zero_of_left ?_ (X ^ n)
+  ext m
   rw [RingHom.comp_apply, coeff_C]
   by_cases h : m = 0
   · simpa [h] using Quotient.eq_zero_iff_mem.2 ((mem_map_C_iff.1 ha) n)

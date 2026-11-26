@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.IntegralDomain
 
 -- TODO: remove Mathlib.Algebra.CharP.Reduced and move the last two lemmas to Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Roots of unity
 
@@ -25,7 +28,7 @@ as a subgroup of the group of units.
 
 * `rootsOfUnity.isCyclic`: the roots of unity in an integral domain form a cyclic group.
 
-## Implementation details
+## Implementation notes
 
 It is desirable that `rootsOfUnity` is a subgroup,
 and it will mainly be applied to rings (e.g. the ring of integers in a number field) and fields.
@@ -220,7 +223,7 @@ This is implemented as equivalence of subtypes,
 because `rootsOfUnity` is a subgroup of the group of units,
 whereas `nthRoots` is a multiset. -/
 def rootsOfUnityEquivNthRoots : rootsOfUnity k R ≃ { x // x ∈ nthRoots k (1 : R) } where
-  toFun x := ⟨(x : Rˣ), mem_rootsOfUnity_iff_mem_nthRoots.mp x.2⟩
+  toFun x := ⟨(x : Rˣ), mem_rootsOfUnity_iff_mem_nthRoots.mp x.property⟩
   invFun x := by
     refine ⟨⟨x, ↑x ^ (k - 1 : ℕ), ?_, ?_⟩, ?_⟩
     all_goals

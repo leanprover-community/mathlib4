@@ -19,6 +19,7 @@ The classes `HasTerminal` and `HasInitial` and the associated notations for term
 objects are defined in `Terminal.lean`.
 
 ## References
+
 * [Stacks: Initial and final objects](https://stacks.math.columbia.edu/tag/002B)
 -/
 
@@ -60,7 +61,7 @@ def isTerminalEquivUnique (F : Discrete.{0} PEmpty.{1} ⥤ C) (Y : C) :
       uniq := fun f => t.uniq ⟨X, ⟨by cat_disch, by simp⟩⟩ f (by simp) }
   invFun u :=
     { lift := fun s => (u s.pt).default
-      uniq := fun s _ _ => (u s.pt).2 _ }
+      uniq := fun s _ _ => (u s.pt).uniq _ }
   left_inv := by dsimp [Function.LeftInverse]; intro x; simp only [eq_iff_true_of_subsingleton]
   right_inv := by
     dsimp [Function.RightInverse, Function.LeftInverse]

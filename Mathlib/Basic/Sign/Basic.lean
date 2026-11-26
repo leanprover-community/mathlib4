@@ -12,6 +12,9 @@ public import Mathlib.Data.Fintype.BigOperators
 
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sign function
 
@@ -52,6 +55,10 @@ lemma pow_even (s : SignType) {n : ℕ} (hn : Even n) (hs : s ≠ 0) :
 lemma zpow_even (s : SignType) {z : ℤ} (hz : Even z) (hs : s ≠ 0) :
     s ^ z = 1 := by
   cases s <;> simp_all [Even.neg_one_zpow]
+
+@[simp]
+protected lemma mul_self_eq_one_iff {s : SignType} : s * s = 1 ↔ s ≠ 0 :=
+  ⟨right_ne_zero_of_mul_eq_one, fun hs => (mul_eq_one_iff_inv_eq₀ hs).mpr rfl⟩
 
 /-- `SignType.cast` as a `MulWithZeroHom`. -/
 @[simps]
@@ -165,7 +172,7 @@ private theorem exists_signed_sum_aux [DecidableEq α] (s : Finset α) (f : α �
           ∀ a ∈ s, (∑ b ∈ t, if g b = a then (sgn b : ℤ) else 0) = f a := by
   refine
     ⟨(Σ _ : { x // x ∈ s }, ℕ), Finset.univ.sigma fun a => range (f a).natAbs,
-      fun a => sign (f a.1), fun a => a.1, fun a => a.1.2, ?_, ?_⟩
+      fun a => sign (f a.1), fun a => a.1, fun a => a.1.property, ?_, ?_⟩
   · simp [sum_attach (f := fun a => (f a).natAbs)]
   · intro x hx
     simp [sum_sigma, hx, ← Int.sign_eq_sign, Int.sign_mul_abs, mul_comm |f _|,
