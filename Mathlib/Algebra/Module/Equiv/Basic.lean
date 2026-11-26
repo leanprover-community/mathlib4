@@ -529,6 +529,9 @@ theorem toLinearMap_ofLinearMap (h₁ h₂) : (ofLinearMap f g h₁ h₂ : M ≃
 
 @[deprecated (since := "2026-08-04")] alias ofLinear_toLinearMap := toLinearMap_ofLinearMap
 
+@[simp]
+theorem ofLinearMap_id : ofLinearMap (.id : M →ₗ[R] M) .id rfl rfl = .refl R M := rfl
+
 end
 
 end AddCommMonoid
