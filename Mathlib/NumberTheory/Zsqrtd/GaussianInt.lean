@@ -255,41 +255,50 @@ theorem sq_add_sq_of_nat_prime_of_not_irreducible (p : ℕ) [hp : Fact p.Prime]
   ⟨a.re.natAbs, a.im.natAbs, by simpa [natAbs_norm_eq, sq] using hnap⟩
 
 /-- The units of the Gaussian integers are `1`, `-1`, `I` and `-I`. -/
-theorem isUnit_eq_one_or_neg_one_or_I_or_neg_I {u : ℤ[i]} (hu : IsUnit u) :
-    u = 1 ∨ u = -1 ∨ u = Zsqrtd.sqrtd ∨ u = -Zsqrtd.sqrtd := by
-  have hn : u.norm.natAbs = 1 := Zsqrtd.norm_eq_one_iff.2 hu
-  have hsum := GaussianInt.natAbs_norm_eq u
-  rw [hn] at hsum
-  have hlea : u.re.natAbs ≤ 1 := by
-    have hle := Nat.le_add_right (u.re.natAbs * u.re.natAbs)
-      (u.im.natAbs * u.im.natAbs)
-    have hsq : u.re.natAbs * u.re.natAbs ≤ 1 := by
-      simpa [← hsum] using hle
-    nlinarith
-  have hleb : u.im.natAbs ≤ 1 := by
-    have hle := Nat.le_add_left (u.im.natAbs * u.im.natAbs)
-      (u.re.natAbs * u.re.natAbs)
-    have hsq : u.im.natAbs * u.im.natAbs ≤ 1 := by
-      simpa [← hsum] using hle
-    nlinarith
-  have hre : u.re.natAbs = 1 ∧ u.im.natAbs = 0 ∨
-      u.re.natAbs = 0 ∧ u.im.natAbs = 1 := by
-    rcases Nat.le_one_iff_eq_zero_or_eq_one.mp hlea with hre0 | hre1 <;>
-      rcases Nat.le_one_iff_eq_zero_or_eq_one.mp hleb with him0 | him1
-    · rw [hre0, him0] at hsum; norm_num at hsum
-    · exact Or.inr ⟨hre0, him1⟩
-    · exact Or.inl ⟨hre1, him0⟩
-    · rw [hre1, him1] at hsum; norm_num at hsum
-  rcases hre with ⟨hra, hia⟩ | ⟨hra, hia⟩
-  · have him0 : u.im = 0 := Int.natAbs_eq_zero.mp hia
-    have hreu : u.re = 1 ∨ u.re = -1 := Int.natAbs_eq_iff.mp hra
-    rcases hreu with h1 | h1
-    · left; ext <;> simp [h1, him0]
-    · right; left; ext <;> simp [h1, him0]
-  · have hre0 : u.re = 0 := Int.natAbs_eq_zero.mp hra
-    have himu : u.im = 1 ∨ u.im = -1 := Int.natAbs_eq_iff.mp hia
-    rcases himu with h1 | h1
-    · right; right; left; ext <;> simp [h1, hre0]
-    · right; right; right; ext <;> simp [h1, hre0]
+theorem isUnit_iff_eq_one_or_neg_one_or_I_or_neg_I {u : ℤ[i]} :
+    IsUnit u ↔ u = 1 ∨ u = -1 ∨ u = Zsqrtd.sqrtd ∨ u = -Zsqrtd.sqrtd := by
+  constructor
+  · intro hu
+    have hn : u.norm.natAbs = 1 := Zsqrtd.norm_eq_one_iff.2 hu
+    have hsum := GaussianInt.natAbs_norm_eq u
+    rw [hn] at hsum
+    have hlea : u.re.natAbs ≤ 1 := by
+      have hle := Nat.le_add_right (u.re.natAbs * u.re.natAbs)
+        (u.im.natAbs * u.im.natAbs)
+      have hsq : u.re.natAbs * u.re.natAbs ≤ 1 := by
+        simpa [← hsum] using hle
+      nlinarith
+    have hleb : u.im.natAbs ≤ 1 := by
+      have hle := Nat.le_add_left (u.im.natAbs * u.im.natAbs)
+        (u.re.natAbs * u.re.natAbs)
+      have hsq : u.im.natAbs * u.im.natAbs ≤ 1 := by
+        simpa [← hsum] using hle
+      nlinarith
+    have hre : u.re.natAbs = 1 ∧ u.im.natAbs = 0 ∨
+        u.re.natAbs = 0 ∧ u.im.natAbs = 1 := by
+      rcases Nat.le_one_iff_eq_zero_or_eq_one.mp hlea with hre0 | hre1 <;>
+        rcases Nat.le_one_iff_eq_zero_or_eq_one.mp hleb with him0 | him1
+      · rw [hre0, him0] at hsum; norm_num at hsum
+      · exact Or.inr ⟨hre0, him1⟩
+      · exact Or.inl ⟨hre1, him0⟩
+      · rw [hre1, him1] at hsum; norm_num at hsum
+    rcases hre with ⟨hra, hia⟩ | ⟨hra, hia⟩
+    · have him0 : u.im = 0 := Int.natAbs_eq_zero.mp hia
+      have hreu : u.re = 1 ∨ u.re = -1 := Int.natAbs_eq_iff.mp hra
+      rcases hreu with h1 | h1
+      · left; ext <;> simp [h1, him0]
+      · right; left; ext <;> simp [h1, him0]
+    · have hre0 : u.re = 0 := Int.natAbs_eq_zero.mp hra
+      have himu : u.im = 1 ∨ u.im = -1 := Int.natAbs_eq_iff.mp hia
+      rcases himu with h1 | h1
+      · right; right; left; ext <;> simp [h1, hre0]
+      · right; right; right; ext <;> simp [h1, hre0]
+  · rintro (rfl | rfl | rfl | rfl)
+    · exact isUnit_one
+    · exact isUnit_one.neg
+    · exact IsUnit.of_mul_eq_one (-Zsqrtd.sqrtd)
+        (by ext <;> simp [Zsqrtd.sqrtd])
+    · exact (IsUnit.of_mul_eq_one (-Zsqrtd.sqrtd)
+        (by ext <;> simp [Zsqrtd.sqrtd])).neg
 
 end GaussianInt
