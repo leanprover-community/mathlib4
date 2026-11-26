@@ -5,9 +5,11 @@ Authors: Antoine Labelle
 -/
 module
 
-public import Mathlib.RepresentationTheory.Intertwining
 public import Mathlib.RepresentationTheory.FDRep
 public import Mathlib.RepresentationTheory.Rep.Res
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Subspace of invariants a group representation
@@ -130,7 +132,7 @@ noncomputable def averageMap : V →ₗ[k] V :=
 /-- The `averageMap` sends elements of `V` to the subspace of invariants.
 -/
 theorem averageMap_invariant (v : V) : averageMap ρ v ∈ invariants ρ := fun g => by
-  rw [averageMap, ← asAlgebraHom_single_one, ← Module.End.mul_apply, ← map_mul (asAlgebraHom ρ),
+  rw [averageMap, ← asAlgebraHom_single_one, ← mul_apply_eq_comp, ← map_mul (asAlgebraHom ρ),
     mul_average_left]
 
 /-- The `averageMap` acts as the identity on the subspace of invariants.
@@ -202,10 +204,10 @@ variable (X Y) in
 homomorphisms from `X` to `Y`. -/
 @[simps]
 def invariantsEquivRepHom : (linHom X.ρ Y.ρ).invariants ≃ₗ[k] X ⟶ Y where
-  toFun f := Rep.ofHom ⟨f.val, fun g ↦ (mem_invariants_iff_comm _ g).1 <| f.2 g⟩
+  toFun f := Rep.ofHom ⟨f.val, fun g ↦ (mem_invariants_iff_comm _ g).1 <| f.property g⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-  invFun f := ⟨f.hom, fun g => (mem_invariants_iff_comm _ g).2 <| f.hom.2 g⟩
+  invFun f := ⟨f.hom, fun g => (mem_invariants_iff_comm _ g).2 <| f.hom.isIntertwining' g⟩
 
 end Rep
 
@@ -248,7 +250,7 @@ variable (k G)
 /-- The functor sending a representation to its submodule of invariants. -/
 @[implicit_reducible, simps! obj_carrier map_hom]
 noncomputable def invariantsFunctor : Rep.{w} k G ⥤ ModuleCat k where
-  obj A := ModuleCat.of k A.ρ.invariants
+  obj A := ↧A.ρ.invariants
   map {A B} f := ModuleCat.ofHom <| (f.hom ∘ₗ A.ρ.invariants.subtype).codRestrict
     B.ρ.invariants fun ⟨c, hc⟩ g => by
       have := (hom_comm_apply f g c).symm
@@ -261,6 +263,7 @@ instance : (invariantsFunctor k G).Linear k where
 variable {G} in
 /-- Given a normal subgroup S ≤ G, this is the functor sending a `G`-representation `A` to the
 `G ⧸ S`-representation it induces on `A^S`. -/
+@[implicit_reducible, simps]
 noncomputable def quotientToInvariantsFunctor (S : Subgroup G) [S.Normal] :
     Rep.{w} k G ⥤ Rep k (G ⧸ S) where
   obj X := X.quotientToInvariants S
@@ -272,7 +275,8 @@ the functor sending a representation to its submodule of invariants. -/
 @[simps]
 noncomputable def invariantsAdjunction : trivialFunctor k G ⊣ invariantsFunctor k G where
   unit := { app _ := ModuleCat.ofHom <| LinearMap.id.codRestrict _ <| by simp [trivialFunctor] }
-  counit := { app X := Rep.ofHom ⟨Submodule.subtype _, fun g ↦ by ext x; exact (x.2 g).symm⟩ }
+  counit :=
+    { app X := Rep.ofHom ⟨Submodule.subtype _, fun g ↦ by ext x; exact (x.property g).symm⟩ }
 
 @[simp]
 lemma invariantsAdjunction_homEquiv_apply_hom

@@ -6,7 +6,6 @@ Authors: Damien Thomine, Pietro Monticone, Rémy Degenne, Lorenzo Luccioli
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
-public import Mathlib.Data.EReal.Basic
 
 /-!
 # Extended Nonnegative Real Logarithm
@@ -16,9 +15,11 @@ to the extended nonnegative reals `ℝ≥0∞`. The function takes values
 in the extended reals `EReal`, with `log 0 = ⊥` and `log ⊤ = ⊤`.
 
 ## Main Definitions
+
 - `ENNReal.log`: The extension of the real logarithm to `ℝ≥0∞`.
 
 ## Main Results
+
 - `ENNReal.log_strictMono`: `log` is increasing;
 - `ENNReal.log_injective`, `ENNReal.log_surjective`, `ENNReal.log_bijective`: `log` is
   injective, surjective, and bijective;
@@ -27,6 +28,7 @@ in the extended reals `EReal`, with `log 0 = ⊥` and `log ⊤ = ⊤`.
   (with either `y ∈ ℕ` or `y ∈ ℝ`).
 
 ## Tags
+
 ENNReal, EReal, logarithm
 -/
 

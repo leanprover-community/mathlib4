@@ -5,11 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Abelian.Basic
-public import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
 public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
 public import Mathlib.CategoryTheory.ObjectProperty.Extensions
-public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+
+import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
 
 /-!
 # Serre classes
@@ -19,14 +18,13 @@ Serre classes in `C` (also known as "Serre subcategories"). A Serre class is
 a property `P : ObjectProperty C` of objects in `C` which holds for a zero object,
 and is closed under subobjects, quotients and extensions.
 
-## Future work
+## TODO
 
 * Show that the localization of `C` with respect to a Serre class is an abelian category.
 
 ## References
 
 * [Jean-Pierre Serre, *Groupes d'homotopie et classes de groupes abéliens*][serre1958]
-
 -/
 
 public section

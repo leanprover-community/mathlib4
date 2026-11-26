@@ -5,11 +5,13 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 public import Mathlib.FieldTheory.Separable
-public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
+public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 
 import Mathlib.RingTheory.Finiteness.Quotient
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-! # Instances on residue fields -/
 
@@ -23,7 +25,7 @@ variable (p : Ideal A) (q : Ideal B) [q.LiesOver p]
 section maximal
 
 variable [p.IsMaximal] [q.IsMaximal] [Algebra (Localization.AtPrime p) (Localization.AtPrime q)]
-  [Localization.AtPrime.IsLiesOverAlgebra p q]
+  [IsScalarTower A (Localization.AtPrime p) (Localization.AtPrime q)]
 
 attribute [local instance] Ideal.Quotient.field
 
@@ -61,7 +63,7 @@ end maximal
 section prime
 
 variable [p.IsPrime] [q.IsPrime] [Algebra (Localization.AtPrime p) (Localization.AtPrime q)]
-  [Localization.AtPrime.IsLiesOverAlgebra p q]
+  [IsScalarTower A (Localization.AtPrime p) (Localization.AtPrime q)]
 
 instance : Algebra.IsAlgebraic (A ⧸ p) p.ResidueField :=
   IsLocalization.isAlgebraic _ (nonZeroDivisors (A ⧸ p))

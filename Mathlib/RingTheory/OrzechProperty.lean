@@ -5,11 +5,9 @@ Authors: Jz Pan
 -/
 module
 
-public import Mathlib.Algebra.Module.TransferInstance
 public import Mathlib.RingTheory.Finiteness.Cardinality
 
 /-!
-
 # Orzech property of rings
 
 In this file we define the following property of rings:
@@ -41,7 +39,6 @@ It's proved in the above papers that
 ## Tags
 
 free module, rank, Orzech property, (strong) rank condition, invariant basis number, IBN
-
 -/
 
 public section

@@ -5,9 +5,9 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Init
-public meta import Lean.Util.Heartbeats
 public meta import Lean.Meta.Tactic.TryThis
+public meta import Lean.Util.Heartbeats
+public import Mathlib.Init
 
 /-!
 # Counting heartbeats
@@ -133,11 +133,14 @@ As this is intended as a user command, we divide by 1000.
 The optional `approximately` keyword rounds down the heartbeats to the nearest thousand.
 This helps make the tests more stable to small changes in heartbeats.
 To use this functionality, use `#count_heartbeats approximately in cmd`.
+
+`cmd` is elaborated with `Elab.async` disabled: with async elaboration, theorem bodies are
+elaborated in a separate task, whose heartbeats would otherwise not be counted.
 -/
 elab "#count_heartbeats " approx:(&"approximately ")? "in" ppLine cmd:command : command => do
   let start ← IO.getNumHeartbeats
   try
-    elabCommand (← `(command| set_option maxHeartbeats 0 in $cmd))
+    elabCommand (← `(command| set_option Elab.async false in set_option maxHeartbeats 0 in $cmd))
   finally
     let finish ← IO.getNumHeartbeats
     let elapsed := (finish - start) / 1000
@@ -196,7 +199,7 @@ Run a command, optionally restoring the original state, and report just the numb
 def elabForHeartbeats (cmd : TSyntax `command) (revert : Bool := true) : CommandElabM Nat := do
   let start ← IO.getNumHeartbeats
   let s ← get
-  elabCommand (← `(command| set_option maxHeartbeats 0 in $cmd))
+  elabCommand (← `(command| set_option Elab.async false in set_option maxHeartbeats 0 in $cmd))
   if revert then set s
   return (← IO.getNumHeartbeats) - start
 
@@ -291,7 +294,10 @@ def countHeartbeatsLinter : Linter where run := withSetOptionIn fun stx ↦ do
 set_option linter.deprecated false in
 initialize addLinter countHeartbeatsLinter
 
-@[inherit_doc Mathlib.Linter.linter.countHeartbeats]
+@[inherit_doc Mathlib.Linter.linter.countHeartbeats, deprecated
+  "use `#count_heartbeats in` or \
+  `set_option trace.profiler true` with `set_option trace.profiler.useHeartbeats true`"
+  (since := "2026-07-30")]
 macro (name := countHeartbeats) "#count_heartbeats" approx:(&" approximately")? : command => do
   let approx ←
     if approx.isSome then
@@ -300,10 +306,6 @@ macro (name := countHeartbeats) "#count_heartbeats" approx:(&" approximately")? 
   return ⟨mkNullNode
     #[← `(command| set_option linter.countHeartbeats true),
       approx]⟩
-
-deprecated_syntax countHeartbeats "use `#count_heartbeats in` or \
-  `set_option trace.profiler true` with `set_option trace.profiler.useHeartbeats true`"
-  (since := "2026-07-30")
 
 end CountHeartbeats
 

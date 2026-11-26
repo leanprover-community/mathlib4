@@ -5,11 +5,14 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.NumberTheory.NumberField.Discriminant.Basic
-public import Mathlib.NumberTheory.NumberField.Discriminant.Different
 public import Mathlib.NumberTheory.RamificationInertia.Galois
-public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients.Basic
-public import Mathlib.RingTheory.Unramified.Dedekind
+
+import Mathlib.NumberTheory.NumberField.Discriminant.Basic
+import Mathlib.NumberTheory.NumberField.Discriminant.Different
+import Mathlib.RingTheory.Unramified.Dedekind
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Every number field has a ramified prime over `ℚ`
@@ -18,7 +21,6 @@ public import Mathlib.RingTheory.Unramified.Dedekind
 
 This is a trivial corollary of `NumberField.not_dvd_discr_iff_forall_mem` and
 `NumberField.abs_discr_gt_two` but is placed in a separate file to avoid large imports.
-
 -/
 public section
 
@@ -64,7 +66,7 @@ lemma bijective_algebraMap_int_of_finite_of_unramified
   have : CharZero 𝒪 := Algebra.charZero_of_charZero ℤ _
   have : NumberField K := { to_finiteDimensional := Module.Finite.of_isLocalization ℤ 𝒪 ℤ⁰ }
   have := NumberField.finrank_eq_one_of_unramified (K := K) (𝒪 := 𝒪)
-  have : IsIntegralClosure ℤ ℤ K := .of_algEquiv _ (.ofBijective (IsScalarTower.toAlgHom _ _ _)
+  have : IsIntegralClosure ℤ ℤ K := .of_algEquiv _ (.ofBijective (IsScalarTower.toAlgHom ℤ ℚ K)
     (Algebra.finrank_eq_one_iff_bijective_algebraMap.mp this)) (by simp)
   exact bijective_algebraMap_of_linearEquiv (IsIntegralClosure.equiv ℤ ℤ K 𝒪).toLinearEquiv
 
@@ -83,13 +85,13 @@ lemma NumberField.exists_not_isUnramifiedAt_int_of_isGalois [IsGalois ℚ K]
   obtain ⟨P, _, hP'⟩ := NumberField.exists_not_isUnramifiedAt_int (𝒪 := 𝒪) H.ne'
   obtain ⟨p, hp : _ = Ideal.span _⟩ := IsPrincipalIdealRing.principal (P.under ℤ)
   have hp0 : p ≠ 0 := fun hp0 ↦ Ideal.IsMaximal.ne_bot_of_isIntegral_int _
-    (Ideal.eq_bot_of_comap_eq_bot (hp.trans (by aesop)))
+    (Ideal.eq_bot_of_under_eq_bot (hp.trans (by aesop)))
   have : Prime p := by rw [← Ideal.span_singleton_prime hp0, ← hp]; infer_instance
   refine ⟨p.natAbs, Int.prime_iff_natAbs_prime.mp this, fun Q _ hQ ↦ ?_⟩
   replace hQ : (p : 𝒪) ∈ Q := Q.mem_of_dvd
     (map_dvd (algebraMap _ _) p.associated_natAbs.symm.dvd) (by simpa using hQ)
   have : .span {p} = Ideal.under ℤ Q :=
-    ((Ideal.liesOver_span_iff Ideal.IsPrime.ne_top' this).mpr hQ).1
+    ((Ideal.liesOver_span_iff Ideal.IsPrime.ne_top' this).mpr hQ).over
   rwa [← Ideal.ramificationIdx_eq_one_iff,
     ← Ideal.ramificationIdxIn_eq_ramificationIdx (Q.under ℤ) _ Gal(K/ℚ), ← this, ← hp,
     Ideal.ramificationIdxIn_eq_ramificationIdx _ P Gal(K/ℚ), Ideal.ramificationIdx_eq_one_iff]

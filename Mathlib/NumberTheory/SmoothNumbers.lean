@@ -5,9 +5,9 @@ Authors: Michael Stoll, Ralf Stephan
 -/
 module
 
-public import Mathlib.Data.Nat.Factorization.Defs
-public import Mathlib.Data.Nat.Squarefree
 public import Mathlib.NumberTheory.PrimeCounting
+
+import Mathlib.Data.Nat.Squarefree
 
 /-!
 # Smooth numbers
@@ -196,7 +196,7 @@ given by `(e, n) ↦ p^e * n` when `p ∉ s` is a prime. See `Nat.factoredNumber
 when `p` is not prime. -/
 def equivProdNatFactoredNumbers {s : Finset ℕ} {p : ℕ} (hp : p.Prime) (hs : p ∉ s) :
     ℕ × factoredNumbers s ≃ factoredNumbers (insert p s) where
-  toFun := fun ⟨e, n⟩ ↦ ⟨p ^ e * n, pow_mul_mem_factoredNumbers hp e n.2⟩
+  toFun := fun ⟨e, n⟩ ↦ ⟨p ^ e * n, pow_mul_mem_factoredNumbers hp e n.property⟩
   invFun := fun ⟨m, _⟩  ↦ (m.factorization p,
                             ⟨(m.primeFactorsList.filter (· ∈ s)).prod, prod_mem_factoredNumbers ..⟩)
   left_inv := by
@@ -367,9 +367,9 @@ given by `(e, n) ↦ p^e * n` when `p` is a prime. See `Nat.smoothNumbers_succ` 
 when `p` is not prime. -/
 def equivProdNatSmoothNumbers {p : ℕ} (hp : p.Prime) :
     ℕ × smoothNumbers p ≃ smoothNumbers (p + 1) :=
-  ((prodCongrRight fun _ ↦ setCongr <| smoothNumbers_eq_factoredNumbers p).trans <|
+  ((prodCongrRight fun _ ↦ Set.equivOfEq <| smoothNumbers_eq_factoredNumbers p).trans <|
     equivProdNatFactoredNumbers hp Finset.notMem_range_self).trans <|
-    setCongr <| (smoothNumbers_eq_factoredNumbers (p + 1)) ▸ Finset.range_add_one ▸ rfl
+    Set.equivOfEq <| (smoothNumbers_eq_factoredNumbers (p + 1)) ▸ Finset.range_add_one ▸ rfl
 
 @[simp]
 lemma equivProdNatSmoothNumbers_apply {p e m : ℕ} (hp : p.Prime) (hm : m ∈ p.smoothNumbers) :
@@ -446,13 +446,13 @@ lemma smoothNumbersUpTo_subset_image (N k : ℕ) :
     refine LE.le.trans ?_ (hm ▸ hn₁)
     nth_rw 1 [← mul_one (m ^ 2)]
     gcongr
-    exact Finset.one_le_prod' fun p hp ↦
+    exact Finset.one_le_prod fun p hp ↦
       (prime_of_mem_primesBelow <| Finset.mem_powerset.mp hs hp).one_le
 
 /-- The cardinality of the set of `k`-smooth numbers `≤ N` is bounded by `2^π(k-1) * √N`. -/
 lemma smoothNumbersUpTo_card_le (N k : ℕ) :
     #(smoothNumbersUpTo N k) ≤ 2 ^ #k.primesBelow * N.sqrt := by
-  convert! (Finset.card_le_card <| smoothNumbersUpTo_subset_image N k).trans <| Finset.card_image_le
+  convert (Finset.card_le_card <| smoothNumbersUpTo_subset_image N k).trans Finset.card_image_le
   simp only [Finset.card_product, Finset.card_powerset, Finset.mem_range, zero_lt_succ,
     Finset.card_erase_of_mem, Finset.card_range, succ_sub_succ_eq_sub, Nat.sub_zero]
 

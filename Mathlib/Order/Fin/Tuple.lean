@@ -5,11 +5,9 @@ Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes
 -/
 module
 
-public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Logic.Equiv.Fin.Basic
-public import Mathlib.Order.Fin.Basic
-public import Mathlib.Order.PiLex
 public import Mathlib.Order.Interval.Set.Defs
+public import Mathlib.Order.PiLex
 
 /-!
 # Order properties on tuples
@@ -106,7 +104,7 @@ lemma Fin.strictMono_cons {f : Fin n → α} {a : α} :
     -- Import restrictions prevent us using `StrictMono.eq_id`: hence this manual proof.
     refine funext fun x ↦ le_antisymm ?_ (hg.id_le x)
     simpa using ((Fin.rev_strictAnti.comp_strictMono hg).comp Fin.rev_strictAnti).id_le (Fin.rev x)
-  simpa using congrFun (key _ h) i.succ
+  simpa using congr($(key _ h) i.succ)
 
 variable {f : Fin (n + 1) → α} {a : α}
 
@@ -218,7 +216,7 @@ lemma finSuccAboveOrderIso_apply (p : Fin (n + 1)) (i : Fin n) :
     finSuccAboveOrderIso p i = ⟨p.succAbove i, p.succAbove_ne i⟩ := rfl
 
 lemma finSuccAboveOrderIso_symm_apply_last (x : { x : Fin (n + 1) // x ≠ Fin.last n }) :
-    (finSuccAboveOrderIso (Fin.last n)).symm x = Fin.castLT x.1 (Fin.val_lt_last x.2) := by
+    (finSuccAboveOrderIso (Fin.last n)).symm x = Fin.castLT x.val (Fin.val_lt_last x.property) := by
   rw [← Option.some_inj]
   simp [finSuccAboveOrderIso, finSuccAboveEquiv, OrderIso.symm]
 

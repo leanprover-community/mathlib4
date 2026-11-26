@@ -9,10 +9,10 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 public import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 /-!
-
 # Equifibered natural transformation
 
 ## Main definition
+
 - `CategoryTheory.NatTrans.Equifibered`:
   A natural transformation `α : F ⟶ G` is equifibered if every commutative square of the following
   form is a pullback.
@@ -22,7 +22,6 @@ public import Mathlib.CategoryTheory.MorphismProperty.Composition
   G(X) → G(Y)
   ```
 - `CategoryTheory.NatTrans.Coequifibered`: The dual notion.
-
 -/
 
 @[expose] public section
@@ -49,8 +48,6 @@ def Equifibered : MorphismProperty (J ⥤ C) :=
 
 theorem Equifibered.of_isIso {F G : J ⥤ C} (α : F ⟶ G) [IsIso α] : Equifibered α :=
   fun _ _ f => IsPullback.of_vert_isIso ⟨naturality _ f⟩
-
-@[deprecated (since := "2026-02-01")] alias equifibered_of_isIso := Equifibered.of_isIso
 
 theorem Equifibered.comp {F G H : J ⥤ C} {α : F ⟶ G} {β : G ⟶ H} (hα : Equifibered α)
     (hβ : Equifibered β) : Equifibered (α ≫ β) :=
@@ -90,8 +87,6 @@ def Coequifibered : MorphismProperty (J ⥤ C) :=
 
 theorem Coequifibered.of_isIso {F G : J ⥤ C} (α : F ⟶ G) [IsIso α] : Coequifibered α :=
   fun _ _ f => .of_vert_isIso ⟨naturality _ f⟩
-
-@[deprecated (since := "2026-02-01")] alias Coequifibered_of_isIso := Coequifibered.of_isIso
 
 theorem Coequifibered.comp {F G H : J ⥤ C} {α : F ⟶ G} {β : G ⟶ H} (hα : Coequifibered α)
     (hβ : Coequifibered β) : Coequifibered (α ≫ β) :=

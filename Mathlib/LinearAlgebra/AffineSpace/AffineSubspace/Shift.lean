@@ -21,6 +21,7 @@ With this convention, this transformation is also equivalent to `AffineSubspace.
 when `r` is a unit.
 
 ## Main declarations
+
 * `AffineSubspace.shift` defines the shift transformation.
 * `AffineSubspace.shift_eq` shows the shift transformation is equivalent to translation.
 * `AffineSubspace.shift_eq_map_homothety` shows the shift transformation is equivalent to homothety.
@@ -97,6 +98,15 @@ theorem shift_one (s : AffineSubspace k P) (c : P) : s.shift c 1 = s := by
   · simp [h]
   have h : Nonempty s := by simpa using! h
   simp [shift, h]
+
+theorem vadd_mem_shift {s : AffineSubspace k P} {p : P} (hp : p ∈ s) (c : P) (r : k) :
+    (1 - r) • (c -ᵥ p) +ᵥ p ∈ s.shift c r := by
+  simpa [shift_eq ⟨p, hp⟩] using hp
+
+theorem lineMap_mem_shift {s : AffineSubspace k P} {p : P} (hp : p ∈ s) (c : P) (r : k) :
+    lineMap c p r ∈ s.shift c r := by
+  rw [← lineMap_apply_one_sub, lineMap_apply]
+  exact vadd_mem_shift hp c r
 
 /-- Consider a point `A` with barycentric coordinates associated to a collection of points `P`.
 If the coordinate associated to one of the points `Pᵢ` is `r`, then the point `A` is on the span

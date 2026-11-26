@@ -5,17 +5,16 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-public import Mathlib.LinearAlgebra.FreeModule.PID
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
 public import Mathlib.LinearAlgebra.Trace
+
+import Mathlib.LinearAlgebra.FreeModule.PID
 
 /-!
 # Linear maps between direct sums
 
 This file contains results about linear maps which respect direct sum decompositions of their
 domain and codomain.
-
 -/
 
 public section

@@ -19,7 +19,6 @@ functor `X ⥤ (Opens X)ᵒᵖ` sending `x : X` to the principal open `{y | x �
 Alexandrov topology.
 
 This file proves that this presheaf is a sheaf.
-
 -/
 
 @[expose] public section
@@ -50,9 +49,9 @@ lemma self_mem_principalOpen (x : X) : x ∈ principalOpen x := le_refl _
 lemma principalOpen_le_iff {x : X} (U : Opens X) :
     principalOpen x ≤ U ↔ x ∈ U := by
   refine ⟨fun h => h <| self_mem_principalOpen _, fun hx y hy => ?_⟩
-  · have := U.isOpen
-    rw [IsUpperSet.isOpen_iff_isUpperSet] at this
-    exact this hy hx
+  have := U.isOpen
+  rw [IsUpperSet.isOpen_iff_isUpperSet] at this
+  exact this hy hx
 
 lemma principalOpen_le {x y : X} (h : x ≤ y) :
     principalOpen y ≤ principalOpen x :=
@@ -90,18 +89,17 @@ This definition is primarily meant to be used in `lowerCone`, and `isLimit` belo
 @[simps]
 def projSup {ι : Type v} (Us : ι → Opens X) :
     StructuredArrow (.op <| iSup Us) (principals X) ⥤
-      (OpensLeCover (X := .of X) Us)ᵒᵖ where
+      (OpensLeCover (X := ↧X) Us)ᵒᵖ where
   obj f := .op <| .mk (principalOpen f.right) <| exists_le_of_le_sup Us f.hom.unop.le
   map e := (ObjectProperty.homMk (homOfLE (principalOpen_le e.right.le))).op
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable {F} in
 /-- This is an auxiliary definition which is only meant to be used in `isLimit` below. -/
 @[simps]
 def lowerCone
     {α : Type v} (Us : α → Opens X)
-    (S : Cone ((ObjectProperty.ι _ : OpensLeCover (X := .of X) Us ⥤ _).op ⋙
+    (S : Cone ((ObjectProperty.ι _ : OpensLeCover (X := ↧X) Us ⥤ _).op ⋙
       principalsKanExtension F)) :
     Cone (generator (iSup Us) ⋙ F) where
   pt := S.pt
@@ -111,9 +109,7 @@ def lowerCone
         ⟨.mk .unit, f.right, 𝟙 _⟩
     naturality := by
       rintro x y e
-      simp only [Functor.const_obj_obj, Functor.comp_obj, Functor.const_obj_map,
-        Functor.op_obj, Functor.pointwiseRightKanExtension_obj,
-        Category.id_comp, Functor.comp_map, Category.assoc]
+      simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.id_comp, Category.assoc]
       rw [← S.w ((projSup Us).map e), Category.assoc]
       congr 1
       let xx : StructuredArrow (Opposite.op (principalOpen x.right)) (principals X) :=
@@ -197,6 +193,6 @@ theorem Topology.IsUpperSet.isSheaf_of_isRightKanExtension
   let _ : (principalsKanExtension F).IsRightKanExtension γ := inferInstance
   have : P ≅ principalsKanExtension F :=
     @rightKanExtensionUnique _ _ _ _ _ _ _ _ _ _ (by assumption) _ _ (by assumption)
-  change TopCat.Presheaf.IsSheaf (X := TopCat.of X) P
+  change TopCat.Presheaf.IsSheaf (X := ↧X) P
   rw [isSheaf_iso_iff this]
-  exact isSheaf_principalsKanExtension (X := TopCat.of X) F
+  exact isSheaf_principalsKanExtension (X := ↧X) F

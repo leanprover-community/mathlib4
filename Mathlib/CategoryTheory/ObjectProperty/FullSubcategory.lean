@@ -8,13 +8,15 @@ module
 public import Mathlib.CategoryTheory.InducedCategory
 public import Mathlib.CategoryTheory.ObjectProperty.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The full subcategory associated to a property of objects
 
 Given a category `C` and `P : ObjectProperty C`, we define
 a category structure on the type `P.FullSubcategory`
 of objects in `C` satisfying `P`.
-
 -/
 
 @[expose] public section
@@ -67,7 +69,7 @@ theorem ι_obj {X} : P.ι.obj X = X.obj :=
 theorem ι_map {X Y} {f : X ⟶ Y} : P.ι.map f = f.hom :=
   rfl
 
-lemma prop_ι_obj (X) : P (P.ι.obj X) := X.2
+lemma prop_ι_obj (X) : P (P.ι.obj X) := X.property
 
 @[simp]
 lemma FullSubcategory.id_hom (X : P.FullSubcategory) :
@@ -131,7 +133,7 @@ variable {P' : ObjectProperty C}
 an induced functor `P.FullSubcategory ⥤ P'.FullSubcategory`. -/
 @[simps, implicit_reducible]
 def ιOfLE (h : P ≤ P') : P.FullSubcategory ⥤ P'.FullSubcategory where
-  obj X := ⟨X.1, h _ X.2⟩
+  obj X := ⟨X.obj, h _ X.property⟩
   map f := homMk f.hom
 
 /-- If `h : P ≤ P'`, then `ιOfLE h` is fully faithful. -/

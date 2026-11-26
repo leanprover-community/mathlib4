@@ -8,12 +8,10 @@ module
 public import Mathlib.Analysis.Normed.Group.AddTorsor
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Geometry.Convex.ConvexSpace.AffineSpace
-public import Mathlib.Geometry.Convex.ConvexSpace.Module
-public import Mathlib.Algebra.BigOperators.Fin
-public import Mathlib.Algebra.Order.Algebra
+
+import Mathlib.Algebra.Order.Algebra
 
 /-!
-
 # Convex spaces with compatible metric structure
 
 A convex space has a compatible metric structure if `dist(∑ tᵢ xᵢ, ∑ tᵢ yᵢ) ≤ ∑ tᵢ dist(xᵢ, yᵢ)`.
@@ -166,7 +164,7 @@ lemma dist_convexCombPair_convexCombPair_le
     {s t : ℝ} (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) (x y x' y' : X) :
     dist (convexCombPair s t hs ht h x y) (convexCombPair s t hs ht h x' y') ≤
       s * dist x x' + t * dist y y' := by
-  convert dist_iConvexComb_le (.duple (M := Fin 2) 0 1 hs ht h) ![x, y] ![x', y']
+  convert dist_iConvexComb_le (.duple (X := Fin 2) 0 1 hs ht h) ![x, y] ![x', y']
   · simp [convexCombPair_def]
   · simp [convexCombPair_def]
   · simp [Finsupp.sum_fintype, Fin.sum_univ_succ, StdSimplex.duple, iConvexComb_eq_sum]
@@ -179,8 +177,8 @@ lemma continuous_convexCombPair :
       x.2.1 x.2.2 := by
   apply continuous_prod_of_continuous_lipschitzWith' (K := 1)
   · intro i x y
-    simp only [← coe_nnreal_ennreal_nndist, ENNReal.coe_one, one_mul, ENNReal.coe_le_coe,
-      NNReal.toReal_le, coe_nndist]
+    simp only [← coe_nnreal_ennreal_nnDist, ENNReal.coe_one, one_mul, ENNReal.coe_le_coe,
+      NNReal.toReal_le, coe_nnDist]
     grw [dist_convexCombPair_convexCombPair_le, Prod.dist_eq]
     nth_grw 1 [le_max_left (dist x.1 y.1) (dist x.2 y.2)]
     swap; · simpa using i.prop.left
@@ -188,9 +186,9 @@ lemma continuous_convexCombPair :
     swap; · simpa using i.prop.right
     rw [← add_mul, add_sub_cancel, one_mul]
   · intro b
-    refine LipschitzWith.continuous (K := nndist b.1 b.2) fun x y ↦ ?_
+    refine LipschitzWith.continuous (K := nnDist b.1 b.2) fun x y ↦ ?_
     rw [mul_comm]
-    simp [← coe_nnreal_ennreal_nndist, ← ENNReal.coe_mul, NNReal.toReal_le,
+    simp [← coe_nnreal_ennreal_nnDist, ← ENNReal.coe_mul, NNReal.toReal_le,
       dist_convexCombPair_convexCombPair, Subtype.dist_eq, dist_eq_norm]
 
 @[deprecated (since := "2026-05-15")] alias continuous_convexComboPair := continuous_convexCombPair
@@ -211,8 +209,8 @@ lemma continuous_convexCombPair_of_isBounded
   · exact ((isOpen_Ioo.preimage hf).isOpenEmbedding_subtypeVal.continuousAt_iff
       (x := ⟨t, ht⟩)).mp ((continuous_convexCombPair (X := X)).comp₃ (W := f ⁻¹' Set.Ioo 0 1)
       (e := fun i ↦ ⟨f i, Set.Ioo_subset_Icc_self i.prop⟩) (f := x ∘ (↑)) (k := y ∘ (↑))
-      (by fun_prop) (hx.comp_continuous continuous_subtype_val (by simp_all; grind))
-      (hy.comp_continuous continuous_subtype_val (by simp_all; grind))).continuousAt
+      (by fun_prop) (hx.comp_continuous continuous_subtypeVal (by grind))
+      (hy.comp_continuous continuous_subtypeVal (by grind))).continuousAt
   obtain ht | ht : f t = 0 ∨ f t = 1 := by
     simpa [le_antisymm_iff, hf0, hf1, -not_and, not_and_or] using ht
   · simp only [ContinuousAt, ht, sub_zero, convexCombPair_zero]
@@ -257,14 +255,13 @@ lemma continuous_convexCombPair' [BoundedSpace X]
 @[deprecated (since := "2026-05-15")]
 alias continuous_convexComboPair' := continuous_convexCombPair'
 
-attribute [local instance] AddTorsor.toConvexSpace in
 instance (priority := low) {V P : Type*}
-    [NormedAddCommGroup V] [NormedSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P] :
+    [NormedAddCommGroup V] [NormedSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
+    [ConvexSpace ℝ P] [IsAffineConvexSpace ℝ V P] :
     IsConvexDist P where
   dist_iConvexComb_fst_snd_le f := by
     let p : P := Nonempty.some inferInstance
-    simp only [AddTorsor.iConvexComb_eq_affineCombination]
-    rw [Finset.affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one _ _ _ f.total p,
+    repeat rw [AddTorsor.iConvexComb_eq_affineCombination,
       Finset.affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one _ _ _ f.total p]
     suffices ‖f.weights.sum fun a b ↦ b • (a.1 -ᵥ a.2)‖ ≤
       f.weights.sum fun a b ↦ b * ‖a.1 -ᵥ a.2‖ by

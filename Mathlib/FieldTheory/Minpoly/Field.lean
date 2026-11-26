@@ -8,13 +8,15 @@ module
 public import Mathlib.FieldTheory.Minpoly.Basic
 public import Mathlib.RingTheory.Algebraic.Integral
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Minimal polynomials on an algebra over a field
 
 This file specializes the theory of minpoly to the setting of field extensions
 and derives some well-known properties, amongst which the fact that minimal polynomials
 are irreducible, and uniquely determined by their defining property.
-
 -/
 
 @[expose] public section
@@ -232,7 +234,7 @@ variable (F E K : Type*) [Field F] [Ring E] [CommRing K] [IsDomain K] [Algebra F
 /-- Function from `Hom_K(E,L)` to pi type Π (x : basis), roots of min poly of x -/
 def rootsOfMinPolyPiType (φ : E →ₐ[F] K)
     (x : range (Module.finBasis F E : _ → E)) :
-    { l : K // l ∈ (minpoly F x.1).aroots K } :=
+    { l : K // l ∈ (minpoly F x.val).aroots K } :=
   ⟨φ x, by
     rw [mem_roots_map (minpoly.ne_zero_of_finite F x.val),
       ← aeval_def, aeval_algHom_apply, minpoly.aeval, map_zero]⟩
@@ -240,7 +242,7 @@ def rootsOfMinPolyPiType (φ : E →ₐ[F] K)
 theorem aux_inj_roots_of_min_poly : Injective (rootsOfMinPolyPiType F E K) := by
   intro f g h
   -- needs explicit coercion on the RHS
-  suffices (f : E →ₗ[F] K) = (g : E →ₗ[F] K) by rwa [DFunLike.ext'_iff] at this ⊢
+  suffices (f : E →ₗ[F] K) = (g : E →ₗ[F] K) by rw [DFunLike.ext'_iff] at this ⊢; assumption
   rw [funext_iff] at h
   exact LinearMap.ext_on (Module.finBasis F E).span_eq fun e he =>
     Subtype.ext_iff.mp (h ⟨e, he⟩)
@@ -304,7 +306,7 @@ theorem root {x : B} (hx : IsIntegral A x) {y : A} (h : IsRoot (minpoly A x) y) 
 
 /-- The constant coefficient of the minimal polynomial of `x` is `0` if and only if `x = 0`. -/
 @[simp]
-theorem coeff_zero_eq_zero (hx : IsIntegral A x) : coeff (minpoly A x) 0 = 0 ↔ x = 0 := by
+theorem coeff_zero_eq_zero (hx : IsIntegral A x) : (minpoly A x).coeff 0 = 0 ↔ x = 0 := by
   constructor
   · intro h
     have zero_root := zero_isRoot_of_coeff_zero_eq_zero h
@@ -314,7 +316,7 @@ theorem coeff_zero_eq_zero (hx : IsIntegral A x) : coeff (minpoly A x) 0 = 0 ↔
     simp
 
 /-- The minimal polynomial of a nonzero element has nonzero constant coefficient. -/
-theorem coeff_zero_ne_zero (hx : IsIntegral A x) (h : x ≠ 0) : coeff (minpoly A x) 0 ≠ 0 := by
+theorem coeff_zero_ne_zero (hx : IsIntegral A x) (h : x ≠ 0) : (minpoly A x).coeff 0 ≠ 0 := by
   contrapose h
   simpa only [hx, coeff_zero_eq_zero] using h
 
@@ -346,7 +348,7 @@ lemma minpoly_algEquiv_toLinearMap (σ : L ≃ₐ[K] L) (hσ : IsOfFinOrder σ) 
 lemma minpoly_algHom_toLinearMap (σ : L →ₐ[K] L) (hσ : IsOfFinOrder σ) :
     minpoly K σ.toLinearMap = X ^ (orderOf σ) - C 1 := by
   have : orderOf σ = orderOf (AlgEquiv.algHomUnitsEquiv _ _ hσ.unit) := by
-    rw [← MonoidHom.coe_coe, orderOf_injective, ← orderOf_units, IsOfFinOrder.val_unit]
+    rw [← MonoidHom.coe_ofClass, orderOf_injective, ← orderOf_units, IsOfFinOrder.val_unit]
     exact (AlgEquiv.algHomUnitsEquiv K L).injective
   rw [this, ← minpoly_algEquiv_toLinearMap]
   · apply congr_arg

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Subspace
 public import Mathlib.LinearAlgebra.SesquilinearForm.Orthogonal
-public import Mathlib.Topology.Algebra.Module.ClosedSubmodule
 
 /-!
 # Orthogonal complements of submodules
@@ -128,7 +127,7 @@ theorem orthogonal_eq_inter : Kᗮ = ⨅ v : K, (innerSL 𝕜 (v : E)).ker := by
 /-- The orthogonal complement of any submodule `K` is closed. -/
 theorem isClosed_orthogonal : IsClosed (Kᗮ : Set E) := by
   rw [orthogonal_eq_inter K]
-  convert! isClosed_iInter <| fun v : K => ContinuousLinearMap.isClosed_ker (innerSL 𝕜 (v : E))
+  convert isClosed_iInter <| fun v : K => ContinuousLinearMap.isClosed_ker (innerSL 𝕜 (v : E))
   simp
 
 /-- In a complete space, the orthogonal complement of any submodule `K` is complete. -/
@@ -148,6 +147,15 @@ lemma map_orthogonal_equiv (f : E ≃ₗᵢ[𝕜] F) :
   have : f.toLinearIsometry.range = ⊤ := f.range
   rw [this, inf_top_eq]
   rfl
+
+lemma comap_orthogonal (f : F →ₗᵢ[𝕜] E) :
+    (K ⊓ f.range)ᗮ.comap f.toLinearMap = (K.comap f.toLinearMap)ᗮ := by
+  ext; simp [mem_orthogonal]; grind [LinearIsometry.inner_map_map]
+
+variable {K} in
+lemma comap_orthogonal_of_le {f : F →ₗᵢ[𝕜] E} (h : K ≤ f.range) :
+    Kᗮ.comap f.toLinearMap = (K.comap f.toLinearMap)ᗮ := by
+  simpa [inf_eq_left.mpr h] using comap_orthogonal K f
 
 variable (𝕜 E)
 

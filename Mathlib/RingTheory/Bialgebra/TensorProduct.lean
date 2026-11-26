@@ -7,7 +7,9 @@ module
 
 public import Mathlib.RingTheory.Bialgebra.Equiv
 public import Mathlib.RingTheory.Coalgebra.TensorProduct
-public import Mathlib.RingTheory.TensorProduct.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Tensor products of bialgebras
@@ -15,7 +17,6 @@ public import Mathlib.RingTheory.TensorProduct.Basic
 We define the data in the monoidal structure on the category of bialgebras - e.g. the bialgebra
 instance on a tensor product of bialgebras, and the tensor product of two `BialgHom`s as a
 `BialgHom`. This is done by combining the corresponding API for coalgebras and algebras.
-
 -/
 
 public noncomputable section
@@ -46,8 +47,8 @@ lemma comul_eq_algHom_toLinearMap :
   rfl
 
 noncomputable instance _root_.TensorProduct.instBialgebra : Bialgebra S (A ⊗[R] B) := by
-  have hcounit := congr(DFunLike.coe $(counit_eq_algHom_toLinearMap R S A B))
-  have hcomul := congr(DFunLike.coe $(comul_eq_algHom_toLinearMap R S A B))
+  have hcounit := congr($(counit_eq_algHom_toLinearMap R S A B))
+  have hcomul := congr($(comul_eq_algHom_toLinearMap R S A B))
   refine Bialgebra.mk' S (A ⊗[R] B) ?_ (fun {x y} => ?_) ?_ (fun {x y} => ?_) <;>
   simp_all only [AlgHom.toLinearMap_apply] <;>
   simp only [map_one, map_mul]
@@ -70,7 +71,7 @@ variable [Semiring C] [Semiring D] [Bialgebra S C]
 
 /-- The tensor product of two bialgebra morphisms as a bialgebra morphism. -/
 @[expose] def map (f : A →ₐc[S] C) (g : B →ₐc[R] D) : A ⊗[R] B →ₐc[S] C ⊗[R] D :=
-  { Coalgebra.TensorProduct.map (f : A →ₗc[S] C) (g : B →ₗc[R] D),
+  { Coalgebra.TensorProduct.map f.toCoalgHom g.toCoalgHom,
     Algebra.TensorProduct.map (f : A →ₐ[S] C) (g : B →ₐ[R] D) with }
 
 @[simp]
@@ -80,7 +81,7 @@ theorem map_tmul (f : A →ₐc[S] C) (g : B →ₐc[R] D) (x : A) (y : B) :
 
 @[simp]
 theorem map_toCoalgHom (f : A →ₐc[S] C) (g : B →ₐc[R] D) :
-    map f g = Coalgebra.TensorProduct.map (f : A →ₗc[S] C) (g : B →ₗc[R] D) := rfl
+    (map f g).toCoalgHom = Coalgebra.TensorProduct.map f.toCoalgHom g.toCoalgHom := rfl
 
 @[simp]
 theorem map_toAlgHom (f : A →ₐc[S] C) (g : B →ₐc[R] D) :
@@ -105,7 +106,7 @@ theorem assoc_symm_tmul (x : A) (y : C) (z : D) :
 
 @[simp]
 theorem assoc_toCoalgEquiv :
-    (Bialgebra.TensorProduct.assoc R S A C D : _ ≃ₗc[S] _) =
+    (Bialgebra.TensorProduct.assoc R S A C D).toCoalgEquiv =
     Coalgebra.TensorProduct.assoc R S A C D := rfl
 
 @[simp]
@@ -121,7 +122,7 @@ bialgebra equivalence. -/
 
 @[simp]
 theorem lid_toCoalgEquiv :
-    (Bialgebra.TensorProduct.lid R B : R ⊗[R] B ≃ₗc[R] B) = Coalgebra.TensorProduct.lid R B := rfl
+    (Bialgebra.TensorProduct.lid R B).toCoalgEquiv = Coalgebra.TensorProduct.lid R B := rfl
 
 @[simp]
 theorem lid_toAlgEquiv :
@@ -141,14 +142,11 @@ variable (R S A) in
 bialgebra equivalence. -/
 @[expose] protected def rid : A ⊗[R] R ≃ₐc[S] A where
   toCoalgEquiv := Coalgebra.TensorProduct.rid R S A
-  map_mul' x y := by
-    simp only [CoalgEquiv.toCoalgHom_eq_coe, CoalgHom.toLinearMap_eq_coe, AddHom.toFun_eq_coe,
-      LinearMap.coe_toAddHom, CoalgHom.coe_toLinearMap, CoalgHom.coe_coe,
-      coalgebra_rid_eq_algebra_rid_apply, map_mul]
+  map_mul' x y := by simp [coalgebra_rid_eq_algebra_rid_apply]
 
 @[simp]
 theorem rid_toCoalgEquiv :
-    (TensorProduct.rid R S A : A ⊗[R] R ≃ₗc[S] A) = Coalgebra.TensorProduct.rid R S A := rfl
+    (TensorProduct.rid R S A).toCoalgEquiv = Coalgebra.TensorProduct.rid R S A := rfl
 
 @[simp]
 theorem rid_toAlgEquiv :

@@ -5,12 +5,14 @@ Authors: Joël Riou, Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Subobject.Lattice
-public import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
-public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
 public import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
-public import Mathlib.Order.OrderIsoNat
+public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
 public import Mathlib.CategoryTheory.Simple
+
+import Mathlib.Order.OrderIsoNat
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Artinian objects
@@ -21,11 +23,10 @@ satisfies the descending chain condition. The corresponding property of
 objects `isArtinianObject : ObjectProperty C` is always
 closed under subobjects.
 
-## Future work
+## TODO
 
 * when `C` is an abelian category, relate `IsArtinianObject` in `C`
   with `IsNoetherianObject` in `Cᵒᵖ`.
-
 -/
 
 @[expose] public section
@@ -76,8 +77,7 @@ lemma isArtinianObject_iff_not_strictAnti :
     IsArtinianObject X ↔ ∀ (f : ℕ → Subobject X), ¬ StrictAnti f := by
   refine ⟨fun _ ↦ not_strictAnti_of_wellFoundedLT, fun h ↦ ?_⟩
   dsimp only [IsArtinianObject]
-  rw [ObjectProperty.is_iff, isArtinianObject, WellFoundedLT,
-    isWellFounded_iff, RelEmbedding.wellFounded_iff_isEmpty]
+  rw [ObjectProperty.is_iff, isArtinianObject, WellFoundedLT, RelEmbedding.wellFounded_iff_isEmpty]
   exact ⟨fun f ↦ h f.toFun (fun a b h ↦ f.map_rel_iff.2 h)⟩
 
 variable {X} in
@@ -87,7 +87,6 @@ lemma not_strictAnti_of_isArtinianObject
   (isArtinianObject_iff_not_strictAnti X).1 inferInstance f
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 lemma isArtinianObject_iff_isEventuallyConstant :
     IsArtinianObject X ↔ ∀ (F : ℕ ⥤ (MonoOver X)ᵒᵖ),
       IsFiltered.IsEventuallyConstant F := by
@@ -128,7 +127,7 @@ lemma isArtinianObject_of_mono (i : X ⟶ Y) [Mono i] [IsArtinianObject Y] :
   intro f
   obtain ⟨n, hn⟩ := antitone_chain_condition_of_isArtinianObject
     ⟨fun n ↦ (Subobject.map i).obj (f n),
-      fun _ _ h ↦ (Subobject.map i).monotone (f.2 h)⟩
+      fun _ _ h ↦ (Subobject.map i).monotone (f.monotone' h)⟩
   exact ⟨n, fun m hm ↦ Subobject.map_obj_injective i (hn m hm)⟩
 
 instance : (isArtinianObject (C := C)).IsClosedUnderSubobjects where

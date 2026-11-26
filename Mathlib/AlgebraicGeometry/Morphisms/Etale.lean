@@ -5,14 +5,11 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Morphisms.Smooth
 public import Mathlib.AlgebraicGeometry.Morphisms.FormallyUnramified
-public import Mathlib.CategoryTheory.MorphismProperty.Comma
-public import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
+public import Mathlib.AlgebraicGeometry.Morphisms.Smooth
 public import Mathlib.CategoryTheory.Limits.MorphismProperty
 
 /-!
-
 # Étale morphisms
 
 A morphism of schemes `f : X ⟶ Y` is étale if for each affine `U ⊆ Y`
@@ -22,7 +19,6 @@ and `V ⊆ f ⁻¹' U`, the induced map `Γ(Y, U) ⟶ Γ(X, V)` is étale.
 
 - `AlgebraicGeometry.Etale.iff_smoothOfRelativeDimension_zero`: Etale is equivalent to
   smooth of relative dimension `0`.
-
 -/
 
 @[expose] public section
@@ -44,8 +40,6 @@ class Etale {X Y : Scheme.{u}} (f : X ⟶ Y) : Prop where
       (f.appLE U V e).hom.Etale
 
 alias Scheme.Hom.etale_appLE := Etale.etale_appLE
-
-@[deprecated (since := "2026-02-09")] alias IsEtale := Etale
 
 namespace Etale
 
@@ -159,10 +153,8 @@ deriving Category, HasPullbacks, HasFiniteLimits
 
 variable (X : Scheme.{u})
 
-set_option backward.defeqAttrib.useBackward true in
 instance (Y : X.Etale) : dsimp% Etale Y.hom := Y.prop
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance {X : Scheme.{u}} {Z Y : X.Etale} (f : Z ⟶ Y) : Etale f.left := by
   have : Etale (f.left ≫ Y.hom) := by rw [CategoryTheory.Over.w]; infer_instance
   exact Etale.of_comp f.left Y.hom

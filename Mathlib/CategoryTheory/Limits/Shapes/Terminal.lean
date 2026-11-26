@@ -5,13 +5,17 @@ Authors: Kim Morrison, Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
 public import Mathlib.CategoryTheory.Limits.HasLimits
+public import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Initial and terminal objects in a category.
 
 ## References
+
 * [Stacks: Initial and final objects](https://stacks.math.columbia.edu/tag/002B)
 -/
 
@@ -52,7 +56,7 @@ theorem hasTerminalChangeDiagram (h : HasLimit F₁) : HasLimit F₂ :=
 @[to_dual]
 theorem hasTerminalChangeUniverse [h : HasLimitsOfShape (Discrete.{w} PEmpty) C] :
     HasLimitsOfShape (Discrete.{w'} PEmpty) C where
-  has_limit _ := hasTerminalChangeDiagram C (h.1 (Functor.empty C))
+  has_limit _ := hasTerminalChangeDiagram C (h.has_limit (Functor.empty C))
 
 end Univ
 
@@ -116,15 +120,11 @@ theorem terminal.comp_from [HasTerminal C] {P Q : C} (f : P ⟶ Q) :
     f ≫ terminal.from Q = terminal.from P := by
   simp [eq_iff_true_of_subsingleton]
 
-set_option linter.translate.warnInvalid false in
 /-- The (unique) isomorphism between the chosen initial object and any other initial object. -/
 @[to_dual (attr := simps!)
 /-- The (unique) isomorphism between the chosen terminal object and any other terminal object. -/]
 def initialIsoIsInitial [HasInitial C] {P : C} (t : IsInitial P) : ⊥_ C ≅ P :=
   initialIsInitial.uniqueUpToIso t
-
-attribute [to_dual existing terminalIsoIsTerminal_inv] initialIsoIsInitial_hom
-attribute [to_dual existing terminalIsoIsTerminal_hom] initialIsoIsInitial_inv
 
 /-- Any morphism from a terminal object is split mono. -/
 @[to_dual isSplitEpi_to /-- Any morphism to an initial object is split epi. -/]

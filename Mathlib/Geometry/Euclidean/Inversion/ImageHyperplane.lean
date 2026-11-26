@@ -8,6 +8,9 @@ module
 public import Mathlib.Geometry.Euclidean.Inversion.Basic
 public import Mathlib.Geometry.Euclidean.PerpBisector
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Image of a hyperplane under inversion
 
@@ -21,7 +24,7 @@ the center to itself, not to a point at infinity.
 
 We also prove that the inversion sends an affine subspace passing through the center to itself.
 
-## Keywords
+## Tags
 
 inversion
 -/

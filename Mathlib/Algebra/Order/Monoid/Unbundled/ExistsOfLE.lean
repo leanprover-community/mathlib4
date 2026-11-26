@@ -6,7 +6,9 @@ Authors: Peter Nelson, Yaël Dillies
 module
 
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
-public import Mathlib.Order.MinMax
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Unbundled and weaker forms of canonically ordered monoids

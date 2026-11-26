@@ -13,6 +13,9 @@ public import Mathlib.Algebra.MonoidAlgebra.Grading
 public import Mathlib.Algebra.Polynomial.Laurent
 public import Mathlib.LinearAlgebra.TensorProduct.Decomposition
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Loop Lie algebras and their central extensions
 
@@ -30,6 +33,7 @@ We implement the basic theory using `AddMonoidAlgebra` instead of `LaurentPolyno
 flexibility. The classical loop algebra is then written `loopAlgebra R ℤ L`.
 
 ## Main definitions
+
 * `LieAlgebra.loopAlgebra`: The tensor product of a Lie algebra with an `AddMonoidAlgebra`.
 * `LieAlgebra.loopAlgebra.toFinsupp`: A linear equivalence from the loop algebra to the space of
   finitely supported functions.
@@ -39,11 +43,13 @@ flexibility. The classical loop algebra is then written `loopAlgebra R ℤ L`.
   coefficients attached to a symmetric invariant bilinear form on the base Lie algebra.
 
 ## TODO
+
 * Evaluation representations
 * Construction of central extensions from invariant forms.
 * Positive energy representations induced from a fixed central character
 
 ## Tags
+
 lie ring, lie algebra, base change, Laurent polynomial
 -/
 
@@ -80,12 +86,10 @@ noncomputable instance [DecidableEq A] [AddCommMonoid A] :
     rw [decomposeTensor_apply] at hi hj ⊢
     obtain ⟨xi, rfl⟩ := hi
     obtain ⟨xj, rfl⟩ := hj
-    induction xi using TensorProduct.induction_on with
-    | zero => simp
+    induction xi using TensorProduct.inductionOn with
     | tmul x y =>
       simp only [LinearMap.rTensor_tmul, Submodule.subtype_apply]
-      induction xj using TensorProduct.induction_on with
-      | zero => simp
+      induction xj using TensorProduct.inductionOn with
       | tmul u v =>
         obtain ⟨x, hx⟩ := x
         obtain ⟨u, hu⟩ := u
@@ -152,7 +156,7 @@ def residuePairing [AddCommGroup A] [DistribSMul A R] [SMulCommClass A R R]
 open LieModule in
 /-- A 2-cochain on a loop algebra given by an invariant bilinear form. When `A = ℤ`, the alternating
 condition amounts to the fact that Res f df = 0. -/
-def twoCochainOfBilinear [CommRing A] [IsAddTorsionFree R] [Algebra A R]
+def twoCochainOfBilinear [CommRing A] [HasUniqueDiv R] [Algebra A R]
     (Φ : LinearMap.BilinForm R L) (hΦ : Φ.IsSymm) :
     Cohomology.twoCochain R (loopAlgebra R A L) (TrivialLieModule R (loopAlgebra R A L) R) where
   val := (residuePairing R A L Φ).compr₂ (TrivialLieModule.equiv R (loopAlgebra R A L) R).symm
@@ -173,7 +177,7 @@ def twoCochainOfBilinear [CommRing A] [IsAddTorsionFree R] [Algebra A R]
     · exact Or.inl <| by simpa using h
 
 @[simp]
-lemma twoCochainOfBilinear_apply_apply [CommRing A] [IsAddTorsionFree R] [Algebra A R]
+lemma twoCochainOfBilinear_apply_apply [CommRing A] [HasUniqueDiv R] [Algebra A R]
     (Φ : LinearMap.BilinForm R L) (hΦ : Φ.IsSymm) (x y : loopAlgebra R A L) :
     twoCochainOfBilinear R A L Φ hΦ x y =
       (TrivialLieModule.equiv R (loopAlgebra R A L) R).symm (residuePairing R A L Φ x y) :=
@@ -182,7 +186,7 @@ lemma twoCochainOfBilinear_apply_apply [CommRing A] [IsAddTorsionFree R] [Algebr
 open LieModule in
 /-- A 2-cocycle on a loop algebra given by an invariant bilinear form. -/
 @[simps]
-def twoCocycleOfBilinear [CommRing A] [IsAddTorsionFree R] [Algebra A R]
+def twoCocycleOfBilinear [CommRing A] [HasUniqueDiv R] [Algebra A R]
     (Φ : LinearMap.BilinForm R L) (hΦ : Φ.lieInvariant L) (hΦs : Φ.IsSymm) :
     Cohomology.twoCocycle R (loopAlgebra R A L) (TrivialLieModule R (loopAlgebra R A L) R) where
   val := twoCochainOfBilinear R A L Φ hΦs

@@ -6,11 +6,11 @@ Authors: Jiale Miao, Utensil Song, Eric Wieser
 module
 
 public import Mathlib.Algebra.Ring.Action.ConjAct
-public import Mathlib.GroupTheory.GroupAction.ConjAct
 public import Mathlib.Algebra.Star.Unitary
-public import Mathlib.LinearAlgebra.CliffordAlgebra.Star
 public import Mathlib.LinearAlgebra.CliffordAlgebra.Even
-public import Mathlib.LinearAlgebra.CliffordAlgebra.Inversion
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Star
+
+import Mathlib.LinearAlgebra.CliffordAlgebra.Inversion
 
 /-!
 # The Pin group and the Spin group
@@ -23,7 +23,7 @@ In this file we define `lipschitzGroup`, `pinGroup` and `spinGroup` and show the
 * `pinGroup`: the Pin group defined as the infimum of `lipschitzGroup` and `unitary`.
 * `spinGroup`: the Spin group defined as the infimum of `pinGroup` and `CliffordAlgebra.even`.
 
-## Implementation Notes
+## Implementation notes
 
 The definition of the Lipschitz group
 $\{ x \in \mathop{\mathcal{C}\ell} | x \text{ is invertible and } x v x^{-1} ∈ V \}$ is given by:
@@ -226,7 +226,7 @@ See `star_mem` for only one direction. -/
 theorem star_mem_iff {x : CliffordAlgebra Q} : star x ∈ pinGroup Q ↔ x ∈ pinGroup Q := by
   refine ⟨?_, star_mem⟩
   intro hx
-  convert! star_mem hx
+  convert star_mem hx
   exact (star_star x).symm
 
 instance : Star (pinGroup Q) where
@@ -357,7 +357,7 @@ See `star_mem` for only one direction.
 theorem star_mem_iff {x : CliffordAlgebra Q} : star x ∈ spinGroup Q ↔ x ∈ spinGroup Q := by
   refine ⟨?_, star_mem⟩
   intro hx
-  convert! star_mem hx
+  convert star_mem hx
   exact (star_star x).symm
 
 instance : Star (spinGroup Q) where

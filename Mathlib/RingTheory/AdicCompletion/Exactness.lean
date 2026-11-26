@@ -5,7 +5,6 @@ Authors: Judith Ludwig, Christian Merten
 -/
 module
 
-public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.RingTheory.AdicCompletion.Functoriality
 public import Mathlib.RingTheory.Filtration
 
@@ -22,10 +21,9 @@ In this file we establish exactness properties of adic completions. In particula
 - `AdicCompletion.map_exact`: Over a Noetherian ring adic completion is exact on finite
   modules.
 
-## Implementation details
+## Implementation notes
 
 All results are proven directly without using Mittag-Leffler systems.
-
 -/
 
 public section

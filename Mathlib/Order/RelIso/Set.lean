@@ -5,10 +5,14 @@ Authors: Mario Carneiro
 -/
 module
 
+public import Mathlib.Logic.Embedding.Set
 public import Mathlib.Order.Directed
 public import Mathlib.Order.RelIso.Basic
-public import Mathlib.Logic.Embedding.Set
-public import Mathlib.Logic.Equiv.Set
+
+import Mathlib.Logic.Equiv.Set
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Interactions between relation homomorphisms and sets
@@ -64,7 +68,7 @@ def Subrel (r : α → α → Prop) (p : α → Prop) : Subtype p → Subtype p 
   Subtype.val ⁻¹'o r
 
 @[simp]
-theorem subrel_val (r : α → α → Prop) (p : α → Prop) {a b} : Subrel r p a b ↔ r a.1 b.1 :=
+theorem subrel_val (r : α → α → Prop) (p : α → Prop) {a b} : Subrel r p a b ↔ r a.val b.val :=
   Iff.rfl
 
 namespace Subrel
@@ -74,7 +78,7 @@ protected def relEmbedding (r : α → α → Prop) (p : α → Prop) : Subrel r
   ⟨Embedding.subtype _, Iff.rfl⟩
 
 @[simp]
-theorem relEmbedding_apply (r : α → α → Prop) (p a) : Subrel.relEmbedding r p a = a.1 :=
+theorem relEmbedding_apply (r : α → α → Prop) (p a) : Subrel.relEmbedding r p a = a.val :=
   rfl
 
 /-- `Set.inclusion` as a relation embedding. -/
@@ -107,8 +111,8 @@ instance (r : α → α → Prop) [Std.Irrefl r] (p : α → Prop) : Std.Irrefl 
 instance (r : α → α → Prop) [Std.Trichotomous r] (p : α → Prop) : Std.Trichotomous (Subrel r p) :=
   ⟨fun x y => by rw [Subtype.ext_iff]; exact @Std.Trichotomous.trichotomous α r _ x y⟩
 
-instance (r : α → α → Prop) [IsWellFounded α r] (p : α → Prop) : IsWellFounded _ (Subrel r p) :=
-  (Subrel.relEmbedding r p).isWellFounded
+instance (r : α → α → Prop) [WellFounded r] (p : α → Prop) : WellFounded (Subrel r p) :=
+  (Subrel.relEmbedding r p).wellFounded'
 
 instance (r : α → α → Prop) [IsPreorder α r] (p : α → Prop) : IsPreorder _ (Subrel r p) where
 instance (r : α → α → Prop) [IsStrictOrder α r] (p : α → Prop) : IsStrictOrder _ (Subrel r p) where
@@ -143,8 +147,8 @@ theorem RelIso.preimage_eq_image_symm (e : r ≃r s) (t : Set β) : e ⁻¹' t =
 end image
 
 theorem Acc.of_subrel {r : α → α → Prop} [IsTrans α r] {b : α} (a : { a // r a b })
-    (h : Acc (Subrel r (r · b)) a) : Acc r a.1 :=
-  h.recOn fun a _ IH ↦ ⟨_, fun _ hb ↦ IH ⟨_, _root_.trans hb a.2⟩ hb⟩
+    (h : Acc (Subrel r (r · b)) a) : Acc r a.val :=
+  h.recOn fun a _ IH ↦ ⟨_, fun _ hb ↦ IH ⟨_, _root_.trans hb a.property⟩ hb⟩
 
 /-- A relation `r` is well-founded iff every downward-interval `{ a | r a b }` of it is
 well-founded. -/

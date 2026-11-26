@@ -7,7 +7,8 @@ module
 
 public import Mathlib.FieldTheory.Galois.Basic
 public import Mathlib.Topology.Algebra.FilterBasis
-public import Mathlib.Topology.Algebra.OpenSubgroup
+
+import Mathlib.Topology.Algebra.OpenSubgroup
 
 /-!
 # Krull topology
@@ -51,7 +52,7 @@ all intermediate fields `E` with `E/K` finite dimensional.
   every element of `E`. In particular, we distinguish between `Gal(L/E)` and `Gal(L/E)`, since the
   former is defined to be a subgroup of `Gal(L/K)`, while the latter is a group in its own right.
 
-## Implementation Notes
+## Implementation notes
 
 - `krullTopology K L` is defined as an instance for type class inference.
 -/
@@ -262,7 +263,7 @@ theorem stabilizer_isOpen_of_isIntegral [Algebra.IsIntegral K L] (x : L) :
   open IntermediateField in
   let E := adjoin K {x}
   have hL : FiniteDimensional K E := adjoin.finiteDimensional (Algebra.IsIntegral.isIntegral x)
-  convert! fixingSubgroup_isOpen E
+  convert fixingSubgroup_isOpen E
   ext g
   simpa using (forall_mem_adjoin_smul_eq_self_iff K (S := {x}) g).symm
 

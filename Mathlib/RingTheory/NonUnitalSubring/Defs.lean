@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Group.Subgroup.Defs
 public import Mathlib.RingTheory.NonUnitalSubsemiring.Defs
-public import Mathlib.Tactic.FastInstance
 
 /-!
 # `NonUnitalSubring`s
@@ -34,6 +33,7 @@ Lattice inclusion (e.g. `≤` and `⊓`) is used rather than set notation (`⊆`
 `∈` is defined as membership of a non-unital subring's underlying set.
 
 ## Tags
+
 non-unital subring
 -/
 
@@ -137,7 +137,7 @@ instance : SetLike (NonUnitalSubring R) R where
   coe s := s.carrier
   coe_injective p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
 
-instance : PartialOrder (NonUnitalSubring R) := .ofSetLike (NonUnitalSubring R) R
+instance : PartialOrder (NonUnitalSubring R) := .ofSetLike (NonUnitalSubring R)
 
 /-- The actual `NonUnitalSubring` obtained from an element of a `NonUnitalSubringClass`. -/
 @[simps]
@@ -366,7 +366,7 @@ open NonUnitalRingHom
 
 /-- The ring homomorphism associated to an inclusion of `NonUnitalSubring`s. -/
 def inclusion {S T : NonUnitalSubring R} (h : S ≤ T) : S →ₙ+* T :=
-  NonUnitalRingHom.codRestrict (NonUnitalSubringClass.subtype S) _ fun x => h x.2
+  NonUnitalRingHom.codRestrict (NonUnitalSubringClass.subtype S) _ fun x => h x.property
 
 end NonUnitalSubring
 

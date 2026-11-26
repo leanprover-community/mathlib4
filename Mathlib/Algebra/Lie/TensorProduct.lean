@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Lie.Abelian
 public import Mathlib.LinearAlgebra.TensorProduct.Tower
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tensor products of Lie modules
 
@@ -88,7 +91,7 @@ def lift : (M →ₗ[R] N →ₗ[R] P) ≃ₗ⁅R,L⁆ M ⊗[R] N →ₗ[R] P :=
   { TensorProduct.lift.equiv (.id R) M N P with
     map_lie' := fun {x f} => by
       ext m n
-      simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearEquiv.coe_coe,
+      simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearEquiv.coe_toLinearMap,
         AlgebraTensorModule.curry_apply, curry_apply, LinearMap.coe_restrictScalars,
         lift.equiv_apply, LieHom.lie_apply, LinearMap.sub_apply, lie_tmul_right, map_add]
       abel }
@@ -122,8 +125,7 @@ nonrec def map (f : M →ₗ⁅R,L⁆ P) (g : N →ₗ⁅R,L⁆ Q) : M ⊗[R] N 
   { map (f : M →ₗ[R] P) (g : N →ₗ[R] Q) with
     map_lie' := fun {x t} => by
       simp only [LinearMap.toFun_eq_coe]
-      refine t.induction_on ?_ ?_ ?_
-      · simp only [map_zero, lie_zero]
+      refine t.inductionOn ?_ ?_
       · intro m n
         simp only [LieModuleHom.coe_toLinearMap, lie_tmul_right, LieModuleHom.map_lie, map_tmul,
           map_add]

@@ -13,6 +13,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.SchemeTheoreticallyDominant
 # Geometrically Reduced Schemes
 
 ## Main results
+
 - `AlgebraicGeometry.GeometricallyReduced`:
   We say that morphism `f : X ⟶ Y` is geometrically reduced if for all `Spec K ⟶ Y` with `K`
   a field, `X ×[Y] Spec K` is reduced.
@@ -27,6 +28,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.SchemeTheoreticallyDominant
   reduced and locally noetherian scheme is reduced (by `infer_instance`).
 
 ## TODO
+
 Get rid of the noetherian assumption.
 -/
 
@@ -91,7 +93,7 @@ lemma GeometricallyReduced.isReduced_of_flat_of_finite_irreducibleComponents
     let z : Z := Sigma.ι (fun Z ↦ Spec (pt Z)) ⟨_, irreducibleComponent_mem_irreducibleComponents y⟩
       (IsLocalRing.closedPoint _)
     have hz : g z ⤳ y := by
-      simp only [g, z, Z, ← Scheme.Hom.comp_apply, Sigma.ι_desc, pt,
+      simp only [g, z, Z, ← Scheme.Hom.comp_apply, Sigma.ι_comp_desc, pt,
         Scheme.fromSpecStalk_closedPoint]
       exact (IsIrreducible.isGenericPoint_genericPoint _
         isClosed_irreducibleComponent).specializes mem_irreducibleComponent

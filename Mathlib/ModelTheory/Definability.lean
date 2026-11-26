@@ -5,10 +5,8 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.Data.SetLike.Basic
-public import Mathlib.Data.Rel
+public import Mathlib.Basic.Rel
 public import Mathlib.ModelTheory.Semantics
-public import Mathlib.Tactic.FunProp
 
 /-!
 # Definable Sets
@@ -35,7 +33,6 @@ This file defines what it means for a set over a first-order structure to be def
   dimensions.
 - The `Set.TermDefinable` property is transitive, and `TermDefinable` functions are closed under
   composition.
-
 -/
 
 @[expose] public section
@@ -68,10 +65,8 @@ theorem Definable.map_expansion {L' : FirstOrder.Language} [L'.Structure M] (h :
 theorem definable_iff_exists_formula_sum :
     A.Definable L s ↔ ∃ φ : L.Formula (A ⊕ α), s = {v | φ.Realize (Sum.elim (↑) v)} := by
   rw [Definable, Equiv.exists_congr_left (BoundedFormula.constantsVarsEquiv)]
-  refine exists_congr (fun φ => iff_iff_eq.2 (congr_arg (s = ·) ?_))
-  ext
-  simp only [BoundedFormula.constantsVarsEquiv, constantsOn,
-    mem_ofPred_eq, Formula.Realize]
+  congr! with φ x
+  simp only [BoundedFormula.constantsVarsEquiv, constantsOn, Formula.Realize]
   refine BoundedFormula.realize_mapTermRel_id ?_ (fun _ _ _ => rfl)
   intros
   simp only [Term.constantsVarsEquivLeft_symm_apply, Term.realize_varsToConstants,
@@ -117,11 +112,11 @@ theorem Definable.inter {f g : Set (α → M)} (hf : A.Definable L f) (hg : A.De
 @[simp]
 theorem Definable.union {f g : Set (α → M)} (hf : A.Definable L f) (hg : A.Definable L g) :
     A.Definable L (f ∪ g) := by
-  rcases hf with ⟨φ, hφ⟩
-  rcases hg with ⟨θ, hθ⟩
+  rcases hf with ⟨φ, rfl⟩
+  rcases hg with ⟨θ, rfl⟩
   refine ⟨φ ⊔ θ, ?_⟩
   ext
-  rw [hφ, hθ, mem_ofPred_eq, Formula.realize_sup, mem_union, mem_ofPred_eq, mem_ofPred_eq]
+  simp
 
 theorem definable_finset_inf {ι : Type*} {f : ι → Set (α → M)} (hf : ∀ i, A.Definable L (f i))
     (s : Finset ι) : A.Definable L (s.inf f) := by
@@ -150,13 +145,13 @@ theorem definable_biUnion_finset {ι : Type*} {f : ι → Set (α → M)}
 theorem definable_iInter_of_finite {ι : Type*} [Finite ι] {f : ι → Set (α → M)}
     (hf : ∀ i, A.Definable L (f i)) : A.Definable L (⋂ i, f i) := by
   have := Fintype.ofFinite ι
-  convert! definable_finset_inf hf Finset.univ using 1
+  convert definable_finset_inf hf Finset.univ using 1
   simp
 
 theorem definable_iUnion_of_finite {ι : Type*} [Finite ι] {f : ι → Set (α → M)}
     (hf : ∀ i, A.Definable L (f i)) : A.Definable L (⋃ i, f i) := by
   have := Fintype.ofFinite ι
-  convert! definable_finset_sup hf Finset.univ using 1
+  convert definable_finset_sup hf Finset.univ using 1
   simp
 
 @[simp]
@@ -200,8 +195,8 @@ theorem definable_iff_finitely_definable :
   · simp only [definable_iff_exists_formula_sum]
     rintro ⟨φ, rfl⟩
     let A0 := (φ.freeVarFinset.toLeft).image Subtype.val
-    refine ⟨A0, by simp [A0], (φ.restrictFreeVar <| fun x => Sum.casesOn x.1
-        (fun x hx => Sum.inl ⟨x, by simp [A0, hx]⟩) (fun x _ => Sum.inr x) x.2), ?_⟩
+    refine ⟨A0, by simp [A0], (φ.restrictFreeVar <| fun x => Sum.casesOn x.val
+        (fun x hx => Sum.inl ⟨x, by simp [A0, hx]⟩) (fun x _ => Sum.inr x) x.property), ?_⟩
     ext
     simp only [Formula.Realize, mem_ofPred_eq, Finset.coe_sort_coe]
     exact iff_comm.1 <| BoundedFormula.realize_restrictFreeVar _ (by simp)
@@ -272,7 +267,7 @@ theorem Definable.image_comp {s : Set (β → M)} (h : A.Definable L s) (f : α 
       · ext
         simp [Set.apply_rangeSplitting f]
       · rw [Function.comp_apply, Function.comp_apply, apply_rangeSplitting f,
-          rangeFactorization_coe]
+          subtypeVal_rangeFactorization]
 
 /-- Finite existential quantifiers preserve definablity. -/
 lemma Definable.exists_of_finite [Finite β] {S : Set ((α ⊕ β) → M)}
@@ -341,7 +336,7 @@ instance instSetLike : SetLike (L.DefinableSet A α) (α → M) where
   coe := Subtype.val
   coe_injective := Subtype.val_injective
 
-instance : PartialOrder (L.DefinableSet A α) := .ofSetLike (L.DefinableSet A α) (α → M)
+instance : PartialOrder (L.DefinableSet A α) := .ofSetLike (L.DefinableSet A α)
 
 instance instTop : Top (L.DefinableSet A α) :=
   ⟨⟨⊤, definable_univ⟩⟩
@@ -350,20 +345,20 @@ instance instBot : Bot (L.DefinableSet A α) :=
   ⟨⟨⊥, definable_empty⟩⟩
 
 instance instSup : Max (L.DefinableSet A α) :=
-  ⟨fun s t => ⟨s ∪ t, s.2.union t.2⟩⟩
+  ⟨fun s t => ⟨s ∪ t, s.property.union t.property⟩⟩
 
 instance instInf : Min (L.DefinableSet A α) :=
-  ⟨fun s t => ⟨s ∩ t, s.2.inter t.2⟩⟩
+  ⟨fun s t => ⟨s ∩ t, s.property.inter t.property⟩⟩
 
 instance instCompl : Compl (L.DefinableSet A α) :=
-  ⟨fun s => ⟨sᶜ, s.2.compl⟩⟩
+  ⟨fun s => ⟨sᶜ, s.property.compl⟩⟩
 
 instance instSDiff : SDiff (L.DefinableSet A α) :=
-  ⟨fun s t => ⟨s \ t, s.2.sdiff t.2⟩⟩
+  ⟨fun s t => ⟨s \ t, s.property.sdiff t.property⟩⟩
 
 -- Why does it complain that `s ⇨ t` is noncomputable?
 noncomputable instance instHImp : HImp (L.DefinableSet A α) where
-  himp s t := ⟨s ⇨ t, s.2.himp t.2⟩
+  himp s t := ⟨s ⇨ t, s.property.himp t.property⟩
 
 instance instInhabited : Inhabited (L.DefinableSet A α) :=
   ⟨⊥⟩
@@ -523,7 +518,7 @@ lemma _root_.Set.Definable.preimage_map
       (hF i).preimage_comp (fun | none => Sum.inr i | some j => Sum.inl j)
   have h_cyl : A.Definable L { w : α ⊕ β → M | w ∘ Sum.inr ∈ S } :=
     hS.preimage_comp Sum.inr
-  convert! Definable.exists_of_finite (Definable.inter h_graph h_cyl) using 1
+  convert Definable.exists_of_finite (Definable.inter h_graph h_cyl) using 1
   ext v
   simp [← funext_iff]
 
@@ -551,7 +546,7 @@ theorem DefinableFun.ite {p : (α → M) → Prop} {g} [DecidablePred p]
   let P : Set (Option α → M) := {w | p (w ∘ some)}
   have hP : A.Definable L P := hp.preimage_comp some
   simp only [DefinableFun]
-  convert! (hP.inter hf).union (hP.compl.inter hg)
+  convert (hP.inter hf).union (hP.compl.inter hg)
   ext w
   by_cases h : p (w ∘ some) <;> simp [tupleGraph, P, h]
 

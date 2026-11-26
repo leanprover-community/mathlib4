@@ -9,6 +9,9 @@ public import Mathlib.Data.Set.Defs
 
 import Mathlib.Tactic.Attr.Register
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functors
 
@@ -142,6 +145,14 @@ def Comp.mk {F : Type u → Type w} {G : Type v → Type u} {α : Type v} (x : F
 /-- Extract a term of `F (G α)` from a term of `Comp F G α`, which is the same type. -/
 def Comp.run {F : Type u → Type w} {G : Type v → Type u} {α : Type v} (x : Comp F G α) : F (G α) :=
   x
+
+@[simp]
+theorem Comp.run_mk {F : Type u → Type w} {G : Type v → Type u} {α : Type v}
+    (x : F (G α)) : (mk x).run = x := rfl
+
+@[simp]
+theorem Comp.mk_run {F : Type u → Type w} {G : Type v → Type u} {α : Type v}
+    (x : Comp F G α) : mk (x.run) = x := rfl
 
 namespace Comp
 

@@ -5,11 +5,11 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.Group.Basic
+public import Batteries.Tactic.SeqFocus
+public import Mathlib.Algebra.Group.SelfInv
 public import Mathlib.Algebra.GroupWithZero.NeZero
 public import Mathlib.Basic.Unique
 public import Mathlib.Tactic.Conv
-public import Batteries.Tactic.SeqFocus
 
 /-!
 # Groups with an adjoined zero element
@@ -30,11 +30,10 @@ Various lemmas about `GroupWithZero` and `CommGroupWithZero`.
 To reduce import dependencies, the type-classes themselves are in
 `Algebra.GroupWithZero.Defs`.
 
-## Implementation details
+## Implementation notes
 
 As is usual in mathlib, we extend the inverse function to the zero element,
 and require `0⁻¹ = 0`.
-
 -/
 
 @[expose] public section
@@ -78,7 +77,8 @@ section Mul
 
 variable [Mul M₀] [Zero M₀] [NoZeroDivisors M₀] {a b : M₀}
 
-theorem eq_zero_of_mul_self_eq_zero (h : a * a = 0) : a = 0 :=
+/-- `eq_zero_of_mul_self_eq_zero` needs a `MonoidWithZero` instance -/
+protected theorem NoZeroDivisors.eq_zero_of_mul_self_eq_zero (h : a * a = 0) : a = 0 :=
   (eq_zero_or_eq_zero_of_mul_eq_zero h).elim id id
 
 theorem mul_ne_zero (ha : a ≠ 0) (hb : b ≠ 0) : a * b ≠ 0 :=
@@ -261,6 +261,11 @@ instance NeZero.pow [NeZero a] : NeZero (a ^ n) := ⟨pow_ne_zero n NeZero.out�
 
 lemma sq_eq_zero_iff : a ^ 2 = 0 ↔ a = 0 := pow_eq_zero_iff two_ne_zero
 
+@[simp] lemma mul_self_eq_zero_iff : a * a = 0 ↔ a = 0 := (pow_two a) ▸ sq_eq_zero_iff
+
+/-- `NoZeroDivisors.eq_zero_of_mul_self_eq_zero` requires the monoid to have no zero divisors -/
+alias ⟨eq_zero_of_mul_self_eq_zero, _⟩ := mul_self_eq_zero_iff
+
 /-- A variant of `pow_eq_zero_iff` assuming `M₀` is not trivial. -/
 @[simp] lemma pow_eq_zero_iff' [Nontrivial M₀] : a ^ n = 0 ↔ a = 0 ∧ n ≠ 0 := by
   obtain rfl | hn := eq_or_ne n 0 <;> simp [*]
@@ -399,6 +404,9 @@ theorem zero_div (a : G₀) : 0 / a = 0 := by rw [div_eq_mul_inv, zero_mul]
 
 @[simp]
 theorem div_zero (a : G₀) : a / 0 = 0 := by rw [div_eq_mul_inv, inv_zero, mul_zero]
+
+@[simp]
+protected theorem IsSelfInv.zero : IsSelfInv (0 : G₀) := inv_zero
 
 /-- Multiplying `a` by itself and then by its inverse results in `a`
 (whether or not `a` is zero). -/

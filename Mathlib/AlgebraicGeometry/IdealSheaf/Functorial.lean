@@ -14,11 +14,11 @@ public import Mathlib.AlgebraicGeometry.PullbackCarrier
 We define the pullback and pushforward of ideal sheaves in this file.
 
 ## Main definitions
+
 - `AlgebraicGeometry.Scheme.IdealSheafData.comap`: The pullback of an ideal sheaf.
 - `AlgebraicGeometry.Scheme.IdealSheafData.map`: The pushforward of an ideal sheaf.
 - `AlgebraicGeometry.Scheme.IdealSheafData.map_gc`:
   The Galois connection between pullback and pushforward.
-
 -/
 
 @[expose] public section
@@ -54,7 +54,6 @@ lemma comapIso_hom_fst (I : Y.IdealSheafData) (f : X ⟶ Y) :
     (I.comapIso f).hom ≫ pullback.fst _ _ = (I.comap f).subschemeι := by
   rw [← comapIso_inv_subschemeι, Iso.hom_inv_id_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma comap_comp (I : Z.IdealSheafData) (f : X ⟶ Y) (g : Y ⟶ Z) :
     I.comap (f ≫ g) = (I.comap g).comap f := by
@@ -83,7 +82,6 @@ lemma ker_fst_of_isClosedImmersion (i : Z ⟶ Y) (f : X ⟶ Y) [IsClosedImmersio
   rw [← Hom.ker_comp_of_isIso (pullback.map f i f i.imageι (𝟙 _) (i.toImage) (𝟙 _)
     (by simp) (by simp)), pullback.lift_fst, Category.comp_id]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- To show that the pullback of the closed immersion `iX` along `f` is the closed immersion
 `iY`, it suffices to check that the preimage of `ker iY` under `f` is `ker iX`. -/
 lemma _root_.AlgebraicGeometry.isPullback_of_isClosedImmersion
@@ -193,12 +191,12 @@ lemma ideal_map (I : X.IdealSheafData) (f : X ⟶ Y) [QuasiCompact f] (U : Y.aff
 
 lemma ideal_map_of_isAffineHom
     (I : X.IdealSheafData) (f : X ⟶ Y) [IsAffineHom f] (U : Y.affineOpens) :
-    (I.map f).ideal U = (I.ideal ⟨_, U.2.preimage f⟩).comap (f.app U).hom :=
-  ideal_map I f U (U.2.preimage f)
+    (I.map f).ideal U = (I.ideal ⟨_, U.property.preimage f⟩).comap (f.app U).hom :=
+  ideal_map I f U (U.property.preimage f)
 
 lemma ideal_comap_of_isOpenImmersion
     (I : Y.IdealSheafData) (f : X ⟶ Y) [IsOpenImmersion f] (U : X.affineOpens) :
-    (I.comap f).ideal U = (I.ideal ⟨f ''ᵁ U, U.2.image_of_isOpenImmersion f⟩).comap
+    (I.comap f).ideal U = (I.ideal ⟨f ''ᵁ U, U.property.image_of_isOpenImmersion f⟩).comap
       (f.appIso U).inv.hom := by
   refine (ker_ideal_of_isPullback_of_isOpenImmersion _ _ _ _
     (IsPullback.of_hasPullback f I.subschemeι) U).trans ?_

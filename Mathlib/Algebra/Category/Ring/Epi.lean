@@ -7,13 +7,14 @@ module
 
 public import Mathlib.Algebra.Algebra.Epi
 public import Mathlib.Algebra.Category.Ring.Basic
-public import Mathlib.RingTheory.TensorProduct.Finite
-public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+
+import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 
 /-!
 # Epimorphisms in `CommRingCat`
 
 ## Main results
+
 - `RingHom.surjective_iff_epi_and_finite`: surjective <=> epi + finite
 -/
 
@@ -28,15 +29,15 @@ lemma CommRingCat.epi_iff_epi {R S : Type u} [CommRing R] [CommRing S] [Algebra 
   simp_rw [Algebra.isEpi_iff_forall_one_tmul_eq, eq_comm]
   constructor
   · intro H
-    have := H.1 (CommRingCat.ofHom <| Algebra.TensorProduct.includeLeftRingHom)
-      (CommRingCat.ofHom <| (Algebra.TensorProduct.includeRight (R := R) (A := S)).toRingHom)
+    have := H.left_cancellation (CommRingCat.ofHom Algebra.TensorProduct.includeLeftRingHom)
+      (CommRingCat.ofHom (Algebra.TensorProduct.includeRight (R := R) (A := S)).toRingHom)
       (by ext r; change algebraMap R S r ⊗ₜ 1 = 1 ⊗ₜ algebraMap R S r;
           simp only [Algebra.algebraMap_eq_smul_one, smul_tmul])
     exact RingHom.congr_fun (congrArg Hom.hom this)
   · refine fun H ↦ ⟨fun {T} f g e ↦ ?_⟩
     let : Algebra R T := (ofHom (algebraMap R S) ≫ g).hom.toAlgebra
-    let f' : S →ₐ[R] T := ⟨f.hom, RingHom.congr_fun (congrArg Hom.hom e)⟩
-    let g' : S →ₐ[R] T := ⟨g.hom, fun _ ↦ rfl⟩
+    let f' : S →ₐ[R] T := { f.hom with commutes' x := congr(Hom.hom $e x) }
+    let g' : S →ₐ[R] T := { g.hom with commutes' _ := rfl }
     ext s
     simpa using! congr(Algebra.TensorProduct.lift f' g' (fun _ _ ↦ .all _ _) $(H s))
 

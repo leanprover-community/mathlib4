@@ -5,18 +5,19 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Data.Fintype.EquivFin
-public import Mathlib.CategoryTheory.Discrete.Basic
-public import Mathlib.CategoryTheory.Opposites
 public import Mathlib.CategoryTheory.Category.ULift
+public import Mathlib.CategoryTheory.Discrete.Basic
+public import Mathlib.Data.Fintype.EquivFin
 
 /-!
 # Finite categories
 
 A category is finite in this sense if it has finitely many objects, and finitely many morphisms.
 
-## Implementation
-Prior to https://github.com/leanprover-community/mathlib4/pull/14046, `FinCategory` required a `DecidableEq` instance on the object and morphism types.
+## Implementation notes
+
+Prior to https://github.com/leanprover-community/mathlib4/pull/14046,
+`FinCategory` required a `DecidableEq` instance on the object and morphism types.
 This does not seem to have had any practical payoff (i.e. making some definition constructive)
 so we have removed these requirements to avoid
 having to supply instances or delay with non-defeq conflicts between instances.
@@ -44,6 +45,8 @@ instance discreteHomFintype {α : Type*} (X Y : Discrete α) : Fintype (X ⟶ Y)
 class FinCategory (J : Type v) [SmallCategory J] where
   fintypeObj : Fintype J := by infer_instance
   fintypeHom : ∀ j j' : J, Fintype (j ⟶ j') := by infer_instance
+
+attribute [to_dual self] FinCategory.fintypeHom FinCategory.mk
 
 attribute [instance_reducible, instance] FinCategory.fintypeObj FinCategory.fintypeHom
 

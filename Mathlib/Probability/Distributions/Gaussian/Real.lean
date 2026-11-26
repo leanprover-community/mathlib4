@@ -6,9 +6,10 @@ Authors: Lorenzo Luccioli, Rémy Degenne, Alexander Bentkamp
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Gaussian.FourierTransform
-public import Mathlib.Probability.HasLaw
 public import Mathlib.Probability.Moments.MGFAnalytic
-public import Mathlib.Tactic.CrossRefAttribute
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Gaussian distributions over ℝ
@@ -31,7 +32,6 @@ We define a Gaussian measure over the reals.
   variance `v`, then `X + y` is Gaussian with mean `μ + y` and variance `v`.
 * `gaussianReal_const_mul`: if `X` is a random variable with Gaussian distribution with mean `μ` and
   variance `v`, then `c * X` is Gaussian with mean `c * μ` and variance `c ^ 2 * v`.
-
 -/
 
 @[expose] public section
@@ -364,7 +364,7 @@ lemma gaussianReal_map_neg : (gaussianReal μ v).map (fun x ↦ -x) = gaussianRe
 lemma gaussianReal_map_div_const (c : ℝ) :
     (gaussianReal μ v).map (· / c) = gaussianReal (μ / c) (v / .mk (c ^ 2) (sq_nonneg _)) := by
   simp_rw [div_eq_mul_inv]
-  convert! gaussianReal_map_mul_const c⁻¹ using 2 <;> rw [mul_comm]
+  convert gaussianReal_map_mul_const c⁻¹ using 2 <;> rw [mul_comm]
   ext; simp
 
 lemma gaussianReal_map_sub_const (y : ℝ) :

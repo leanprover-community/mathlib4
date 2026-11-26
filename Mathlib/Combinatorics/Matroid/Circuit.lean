@@ -38,7 +38,7 @@ In matroids arising from graphs, circuits correspond to graphical cycles.
 * `Matroid.IsBase.mem_fundCocircuit_iff_mem_fundCircuit` : `e` is in the fundamental circuit
   for `B` and `f` iff `f` is in the fundamental cocircuit for `B` and `e`.
 
-## Implementation Details
+## Implementation notes
 
 Since `Matroid.fundCircuit M e I` is only sensible if `I` is independent and `e ∈ M.closure I \ I`,
 to avoid hypotheses being explicitly included in the definition,
@@ -666,7 +666,7 @@ lemma IsCircuit.isCocircuit_inter_nontrivial (hC : M.IsCircuit C) (hK : M.IsCoci
 
 lemma IsCircuit.isCocircuit_disjoint_or_nontrivial_inter (hC : M.IsCircuit C)
     (hK : M.IsCocircuit K) : Disjoint C K ∨ (C ∩ K).Nontrivial := by
-  rw [or_iff_not_imp_left, disjoint_iff_inter_eq_empty, ← ne_eq, ← nonempty_iff_ne_empty]
+  rw [or_iff_not_imp_left, disjoint_iff_inter_eq_empty, ← ne_eq, ne_empty_iff_nonempty]
   exact hC.isCocircuit_inter_nontrivial hK
 
 lemma dual_rankPos_iff_exists_isCircuit : M✶.RankPos ↔ ∃ C, M.IsCircuit C := by

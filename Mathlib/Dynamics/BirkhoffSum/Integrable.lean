@@ -17,7 +17,7 @@ is measure-preserving.
 
 public section
 
-open MeasureTheory
+open MeasureTheory Measure
 
 variable {α β R : Type*} [MeasurableSpace α] [AddCommMonoid β] {f : α → α} {g : α → β} {n : ℕ}
   {μ : Measure α} [DivisionSemiring R] [Module R β]
@@ -43,14 +43,14 @@ section AEStronglyMeasurable
 variable [TopologicalSpace β] [ContinuousAdd β] [ContinuousConstSMul R β]
 
 @[fun_prop]
-lemma aestronglyMeasurable_birkhoffSum (hf : MeasurePreserving f μ μ)
+lemma aestronglyMeasurable_birkhoffSum (hf : QuasiMeasurePreserving f μ μ)
     (hg : AEStronglyMeasurable g μ) :
     AEStronglyMeasurable (birkhoffSum f g n) μ := by
   apply Finset.aestronglyMeasurable_fun_sum
-  exact fun i _ ↦ hg.comp_measurePreserving (hf.iterate i)
+  exact fun i _ ↦ hg.comp_quasiMeasurePreserving (hf.iterate i)
 
 @[fun_prop]
-lemma aestronglyMeasurable_birkhoffAverage (hf : MeasurePreserving f μ μ)
+lemma aestronglyMeasurable_birkhoffAverage (hf : QuasiMeasurePreserving f μ μ)
     (hg : AEStronglyMeasurable g μ) :
     AEStronglyMeasurable (birkhoffAverage R f g n) μ := by
   fun_prop [birkhoffAverage]

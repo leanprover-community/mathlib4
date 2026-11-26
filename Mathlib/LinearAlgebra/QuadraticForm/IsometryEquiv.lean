@@ -5,8 +5,10 @@ Authors: Kexing Ying, Eric Wieser
 -/
 module
 
-public import Mathlib.LinearAlgebra.QuadraticForm.Basic
 public import Mathlib.LinearAlgebra.QuadraticForm.Isometry
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Isometric equivalences with respect to quadratic forms
@@ -51,6 +53,7 @@ namespace IsometryEquiv
 
 variable {Q₁ : QuadraticMap R M₁ N} {Q₂ : QuadraticMap R M₂ N} {Q₃ : QuadraticMap R M₃ N}
 
+@[macro_inline]
 instance : EquivLike (Q₁.IsometryEquiv Q₂) M₁ M₂ where
   coe f := f.toLinearEquiv
   inv f := f.toLinearEquiv.symm
@@ -139,7 +142,7 @@ def isometryEquivOfCompLinearEquiv (Q : QuadraticMap R M N) (f : M₁ ≃ₗ[R] 
   { f.symm with
     map_app' := by
       intro
-      simp only [comp_apply, LinearEquiv.coe_coe, LinearEquiv.toFun_eq_coe,
+      simp only [comp_apply, LinearEquiv.coe_toLinearMap, LinearEquiv.toFun_eq_coe,
         f.apply_symm_apply] }
 
 variable [Finite ι]
@@ -162,7 +165,7 @@ noncomputable def isometryEquivWeightedSumSquares (Q : QuadraticForm K V)
     Q.IsometryEquiv (weightedSumSquares K fun i => Q (v i)) := by
   let iso := Q.isometryEquivBasisRepr v
   refine ⟨iso, fun m => ?_⟩
-  convert! iso.map_app m
+  convert iso.map_app m
   rw [basisRepr_eq_of_iIsOrtho _ _ hv₁]
 
 variable [FiniteDimensional K V]

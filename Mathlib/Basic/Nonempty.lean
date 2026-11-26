@@ -5,7 +5,11 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Init
+import Mathlib.Init
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Nonempty types
 
@@ -90,7 +94,7 @@ protected noncomputable abbrev Classical.arbitrary (α) [h : Nonempty α] : α :
   Classical.choice h
 
 /-- Given `f : α → β`, if `α` is nonempty then `β` is also nonempty.
-`Nonempty` cannot be a `functor`, because `Functor` is restricted to `Type`. -/
+`Nonempty` cannot be a `Functor`, because `Functor` is restricted to `Type`. -/
 theorem Nonempty.map {α β} (f : α → β) : Nonempty α → Nonempty β
   | ⟨h⟩ => ⟨f h⟩
 

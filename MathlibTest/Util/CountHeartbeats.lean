@@ -1,5 +1,7 @@
-import Mathlib.Util.CountHeartbeats
-import Mathlib.Util.SleepHeartbeats
+module
+
+public import Mathlib.Util.CountHeartbeats
+public import Mathlib.Util.SleepHeartbeats
 
 /-- info: Used approximately 0 heartbeats, which is less than the current maximum of 200000. -/
 #guard_msgs in
@@ -25,8 +27,17 @@ example (a : Nat) : a = a := rfl
 -- exactly what the linter invoked internally for each declaration.
 /-- info: Used approximately 1000 heartbeats, which is less than the current maximum of 200000. -/
 #guard_msgs in
-set_option linter.unusedTactic false in
 #count_heartbeats approximately in
 example : True := by
   sleep_heartbeats 1000
+  trivial
+
+-- With `Elab.async` (the default), `theorem` bodies are elaborated in a separate task, and their
+-- heartbeats were not counted; check they are. Note this needs a `theorem`, not an `example`:
+-- `example` and `def` bodies are elaborated synchronously and did not exhibit the bug.
+/-- info: Used approximately 5000 heartbeats, which is less than the current maximum of 200000. -/
+#guard_msgs in
+#count_heartbeats approximately in
+theorem countHeartbeatsCountsAsyncTheoremBody : True := by
+  sleep_heartbeats 5000
   trivial

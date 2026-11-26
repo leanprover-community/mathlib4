@@ -5,9 +5,7 @@ Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
 -/
 module
 
-public import Mathlib.Data.Finset.Basic
 public import Mathlib.ModelTheory.Syntax
-public import Mathlib.Data.List.ProdSigma
 
 /-!
 # Basics on First-Order Semantics
@@ -34,7 +32,7 @@ in a style inspired by the [Flypitch project](https://flypitch.github.io/).
   `liftAt`, `subst`, and the actions of language maps commute with realization of terms, formulas,
   sentences, and theories.
 
-## Implementation Notes
+## Implementation notes
 
 - `BoundedFormula` uses a locally nameless representation with bound variables as well-scoped de
   Bruijn levels. See the implementation note in `Syntax.lean` for details.

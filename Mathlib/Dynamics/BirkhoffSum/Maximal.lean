@@ -5,19 +5,27 @@ Authors: Lua Viana Reis
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.Bochner.Basic
-public import Mathlib.Dynamics.BirkhoffSum.Average
 public import Mathlib.Dynamics.BirkhoffSum.Integrable
-import Mathlib.MeasureTheory.Integral.Bochner.Set
+
 import Mathlib.Algebra.Order.Group.PartialSups
 import Mathlib.Algebra.Order.Ring.Star
 import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.MeasureTheory.Integral.Bochner.Set
 
 /-!
 # Maximal ergodic theorem.
 
-We prove the maximal ergodic theorem for a measure-preserving map `f` and an integrable function
-`g`.
+In this file we prove two closely related versions of maximal ergodic theorem for a
+measure-preserving map `f`.
+
+The first version deals with integrable real-valued functions `g`, and states that the integral of
+`g` over the set $\left\{ x : \sup_{n ≥ 0} \sum_{i = 0}^{n - 1} (g ∘ f ^ i)(x) > 0\right\}$ is
+nonnegative.
+
+The second version, a corollary of the first, states that for integrable normed-space valued `g`,
+the operator $g ↦ \sup_{n ≥ 0} \frac{1}{n}\sum_{i=0}^{n-1}g ∘ f^i$ satisfies a weak-type
+inequality. In other words, its cumulative distribution function
+`a ↦ a * μ.real {x | a < birkhoffAverageSup f g x}` is bounded above by the `L1` norm of `g`.
 
 ## Main definitions
 
@@ -29,31 +37,50 @@ We prove the maximal ergodic theorem for a measure-preserving map `f` and an int
 ## Main results
 
 * `setIntegral_birkhoffSumSup_nonneg`: for a measure-preserving `f`, the integral of an integrable
-  `g` over the set where `birkhoffSumSup f g` is positive is non-negative.
-* `const_mul_distribution_birkhoffAverageSup_le_integral`: the cumulative distribution function of
+  real-valued `g` over the set where `birkhoffSumSup f g` is positive is non-negative.
+* `mul_measureReal_lt_birkhoffAverageSup_le_integral`: the cumulative distribution function of
   `birkhoffAverageSup` at `a` is less than or equal to the integral of `g` on the set where
   `a < birkhoffAverageSup f g x`.
-* `const_mul_distribution_birkhoffAverageSup_le_norm`: the operator `birkhoffAverageSup` satisfies a
+* `mul_measureReal_lt_birkhoffAverageSup_le_norm`: the operator `birkhoffAverageSup` satisfies a
    weak-type inequality.
+
+## Implementation
+
+Write $M_n$ for `birkhoffMax f g n`, which is non-negative and monotone in `n`. We have a
+recurrence relation $M_{n+1} = g + M_n ∘ f$ in the set where $M_{n+1} > 0$ (`birkhoffMax_succ'`),
+so by monotonicity of $M_n$, $M_n ≤ 1_{\{M_n > 0\}} g + M_n ∘ f$ pointwise
+(`birkhoffMax_le_indicator_add_comp`). Integrating this inequality and using
+that `f` preserves `μ`, we conclude that $\int_{\{M_n > 0\}} g$ is nonnegative
+(`setIntegral_support_birkhoffMax_nonneg`). The sets $\{M_n > 0\}$ increase to the set where
+`birkhoffSumSup f g` is positive (`setOf_birkhoffSumSup_pos_eq_iUnion_birkhoffMax_support`), so
+`setIntegral_birkhoffSumSup_nonneg` follows by passing to the limit
+(`tendsto_setIntegral_support_birkhoffMax`).
+
+For `0 ≤ a`, the set where `a < birkhoffAverageSup f g` equals the set where
+`birkhoffSumSup f (g - a)` is positive (`lt_birkhoffAverageSup_iff_lt_birkhoffSumSup`). Applying
+the previous result to `g - a` on this set gives
+`mul_measureReal_lt_birkhoffAverageSup_le_integral`. Applying that to `‖g ·‖` gives the
+weak-type inequality.
 -/
+
+@[expose] public section
 
 open MeasureTheory Measure MeasurableSpace Filter Topology
 
 variable {α M : Type*} {f : α → α} {g : α → M} {m n : ℕ} {x : α}
 
-@[expose]
-public section BirkhoffMax
+section BirkhoffMax
 
 /-- The maximum of the Birkhoff sums of `g` along orbits of `f` from `0` to `n`. -/
 def birkhoffMax [AddCommMonoid M] [SemilatticeSup M]
     (f : α → α) (g : α → M) : ℕ →o (α → M) :=
   partialSups (birkhoffSum f g)
 
-lemma birkhoffMax_mono [AddCommMonoid M] [SemilatticeSup M] : Monotone (birkhoffMax f g) :=
+lemma birkhoffMax_monotone [AddCommMonoid M] [SemilatticeSup M] : Monotone (birkhoffMax f g) :=
   (birkhoffMax ..).mono
 
 @[gcongr]
-lemma birkhoffMax_apply_monotone [AddCommMonoid M] [SemilatticeSup M] (h : m ≤ n) :
+lemma birkhoffMax_apply_mono [AddCommMonoid M] [SemilatticeSup M] (h : m ≤ n) :
     birkhoffMax f g m x ≤ birkhoffMax f g n x :=
   (birkhoffMax ..).mono h _
 
@@ -81,18 +108,21 @@ lemma birkhoffMax_succ' (hpos : 0 < birkhoffMax f g (n + 1) x) :
 
 lemma birkhoffMax_le_self_add_comp (hpos : 0 < birkhoffMax f g n x) :
     birkhoffMax f g n x ≤ g x + birkhoffMax f g n (f x) := by
-  rcases n with _ | n
-  · simp [birkhoffMax] at *
-  · rw [birkhoffMax_succ' hpos]
-    gcongr
-    simp
+  have hle : birkhoffMax f g n x ≤ birkhoffMax f g (n + 1) x := birkhoffMax_apply_mono n.le_succ
+  rwa [birkhoffMax_succ' (hpos.trans_le hle)] at hle
+
+lemma birkhoffMax_le_indicator_add_comp :
+    birkhoffMax f g n x ≤ (birkhoffMax f g n).support.indicator g x + birkhoffMax f g n (f x) := by
+  by_cases hx : x ∈ (birkhoffMax f g n).support
+  · simpa [hx] using birkhoffMax_le_self_add_comp (birkhoffMax_nonneg.lt_of_ne' hx)
+  · simp [hx, Function.notMem_support.mp hx, birkhoffMax_nonneg]
 
 end BirkhoffMax
 
 variable {g : α → ℝ}
 
 @[fun_prop]
-public lemma measurable_birkhoffMax [MeasurableSpace α] (hf : Measurable f) (hg : Measurable g) :
+lemma measurable_birkhoffMax {mα : MeasurableSpace α} (hf : Measurable f) (hg : Measurable g) :
     Measurable (birkhoffMax f g n) := by
   unfold birkhoffMax
   induction n <;> measurability
@@ -101,61 +131,45 @@ section MeasurePreserving
 
 attribute [local fun_prop] MeasurePreserving.integrable_comp_of_integrable
 
-variable [MeasurableSpace α] (μ : Measure α := by volume_tac)
+variable {mα : MeasurableSpace α} (μ : Measure α)
 
 @[fun_prop]
-public lemma aestronglyMeasurable_birkhoffMax
-    (hf : MeasurePreserving f μ μ) (hg : AEStronglyMeasurable g μ) :
+lemma aestronglyMeasurable_birkhoffMax
+    (hf : QuasiMeasurePreserving f μ μ) (hg : AEStronglyMeasurable g μ) :
     AEStronglyMeasurable (birkhoffMax f g n) μ := by
   unfold birkhoffMax
   induction n <;> measurability
 
 @[fun_prop]
-public lemma integrable_birkhoffMax (hf : MeasurePreserving f μ μ) (hg : Integrable g μ) :
+lemma integrable_birkhoffMax (hf : MeasurePreserving f μ μ) (hg : Integrable g μ) :
     Integrable (birkhoffMax f g n) μ := by
   unfold birkhoffMax
   induction n with
   | zero => simp
   | succ n hn => simpa using hn.sup (by fun_prop)
 
-lemma birkhoffMax_integral_le (hf : MeasurePreserving f μ μ) (hg : Integrable g μ) :
-    ∫ x, birkhoffMax f g n x ∂μ ≤
-    ∫ x in (birkhoffMax f g n).support, g x ∂μ +
-    ∫ x in (birkhoffMax f g n).support, birkhoffMax f g n (f x) ∂μ := by
-  rw [← integral_add hg.restrict (.restrict (by fun_prop)), ← setIntegral_support]
-  apply setIntegral_mono_on₀
-  · exact Integrable.integrableOn (by fun_prop)
-  · exact Integrable.integrableOn (by fun_prop)
-  · exact AEStronglyMeasurable.nullMeasurableSet_support (by fun_prop)
-  · grind [birkhoffMax_le_self_add_comp, birkhoffMax_nonneg, Function.mem_support]
-
-lemma setIntegral_birkhoffMax_support_nonneg (hf : MeasurePreserving f μ μ) (hg : Integrable g μ) :
+lemma setIntegral_support_birkhoffMax_nonneg (hf : MeasurePreserving f μ μ) (hg : Integrable g μ) :
     0 ≤ ∫ x in (birkhoffMax f g n).support, g x ∂μ := by
   have hg₁ : AEStronglyMeasurable (birkhoffMax f g n) μ := by fun_prop
+  have hs := hg₁.nullMeasurableSet_support
   calc
-    0 ≤ ∫ x in (birkhoffMax f g n).supportᶜ, birkhoffMax f g n (f x) ∂μ :=
-      integral_nonneg (fun x ↦ birkhoffMax_nonneg)
-    _ = ∫ x, birkhoffMax f g n (f x) ∂μ -
-        ∫ x in (birkhoffMax f g n).support, birkhoffMax f g n (f x) ∂μ :=
-      setIntegral_compl₀ hg₁.nullMeasurableSet_support (by fun_prop)
-    _ = ∫ x, birkhoffMax f g n x ∂μ -
-        ∫ x in (birkhoffMax f g n).support, birkhoffMax f g n (f x) ∂μ := by
-      rw [← integral_map hf.aemeasurable (hf.map_eq.symm ▸ hg₁), hf.map_eq]
-    _ ≤ ∫ x in (birkhoffMax f g n).support, g x ∂μ := by
-      grind [birkhoffMax_integral_le]
+    0 = ∫ x, birkhoffMax f g n x ∂μ - ∫ x, birkhoffMax f g n (f x) ∂μ := by
+      rw [← integral_map hf.aemeasurable (hf.map_eq.symm ▸ hg₁), hf.map_eq, sub_self]
+    _ ≤ ∫ x, (birkhoffMax f g n).support.indicator g x + birkhoffMax f g n (f x) ∂μ -
+        ∫ x, birkhoffMax f g n (f x) ∂μ := by
+      gcongr
+      exacts [by fun_prop, by fun_prop, fun x ↦ birkhoffMax_le_indicator_add_comp]
+    _ = ∫ x in (birkhoffMax f g n).support, g x ∂μ := by
+      rw [integral_add (hg.indicator₀ hs) (by fun_prop), integral_indicator₀ hs,
+        add_sub_cancel_right]
 
 end MeasurePreserving
 
 noncomputable section BirkhoffSup
 
 /-- The supremum of the Birkhoff sums of `g` along orbits of `f`. -/
-@[expose]
-public def birkhoffSumSup (f : α → α) (g : α → ℝ) (x : α) : EReal :=
+def birkhoffSumSup (f : α → α) (g : α → ℝ) (x : α) : EReal :=
   ⨆ n, ↑(birkhoffSum f g n x)
-
-@[fun_prop]
-public lemma measurable_birkhoffSumSup [MeasurableSpace α] (hf : Measurable f) (hg : Measurable g) :
-    Measurable (birkhoffSumSup f g) := by fun_prop [birkhoffSumSup]
 
 lemma birkhoffSumSup_eq_iSup_birkhoffMax :
     birkhoffSumSup f g x = ⨆ n, ↑(birkhoffMax f g n x) := by
@@ -163,13 +177,8 @@ lemma birkhoffSumSup_eq_iSup_birkhoffMax :
     ← map_partialSups]
 
 /-- The maximal ergodic operator: the supremum of the Birkhoff averages of `g`. -/
-@[expose]
-public def birkhoffAverageSup (f : α → α) (g : α → ℝ) (x : α) : EReal :=
+def birkhoffAverageSup (f : α → α) (g : α → ℝ) (x : α) : EReal :=
   ⨆ n, ↑(birkhoffAverage ℝ f g n x)
-
-@[fun_prop]
-lemma measurable_birkhoffAverageSup [MeasurableSpace α] (hf : Measurable f) (hg : Measurable g) :
-    Measurable (birkhoffAverageSup f g) := by fun_prop [birkhoffAverageSup]
 
 end BirkhoffSup
 
@@ -183,9 +192,10 @@ theorem lt_birkhoffAverage_iff_lt_birkhoffSum {a : ℝ} (ha : 0 ≤ a) :
   by_cases! hn : n = 0
   · simpa [hn]
   calc
+    a < birkhoffAverage ℝ f g n x
     _ ↔ birkhoffAverage ℝ f (fun x ↦ a) n x < birkhoffAverage ℝ f g n x := by
       rw [birkhoffAverage_const ℝ]
-    _ ↔ _ := by
+    _ ↔ 0 < birkhoffSum f (g - fun _ ↦ a) n x := by
       simp [birkhoffAverage, birkhoffSum_sub, field]
 
 theorem lt_birkhoffAverageSup_iff_lt_birkhoffSumSup {a : ℝ} (ha : 0 ≤ a) :
@@ -194,14 +204,14 @@ theorem lt_birkhoffAverageSup_iff_lt_birkhoffSumSup {a : ℝ} (ha : 0 ≤ a) :
 
 section MeasurePreserving
 
-variable [MeasurableSpace α] (μ : Measure α)
+variable {mα : MeasurableSpace α} (μ : Measure α)
 
 section Real
 
 variable {g : α → ℝ}
 
-lemma tendsto_setIntegral_birkhoffMax_support
-    (hf : MeasurePreserving f μ μ) (hg : Integrable g μ) :
+lemma tendsto_setIntegral_support_birkhoffMax
+    (hf : QuasiMeasurePreserving f μ μ) (hg : Integrable g μ) :
     Tendsto (fun n ↦ ∫ x in (birkhoffMax f g n).support, g x ∂μ) atTop
     (𝓝 <| ∫ x in {x | 0 < birkhoffSumSup f g x}, g x ∂ μ) := by
   rw [setOf_birkhoffSumSup_pos_eq_iUnion_birkhoffMax_support]
@@ -209,24 +219,23 @@ lemma tendsto_setIntegral_birkhoffMax_support
   · intros
     exact AEStronglyMeasurable.nullMeasurableSet_support (by measurability)
   · intro i j hij x
-    grind [birkhoffMax_nonneg, (birkhoffMax f g).mono hij x, Function.mem_support]
+    grind [birkhoffMax_nonneg, (birkhoffMax f g).mono hij x]
 
 /-- The integral of `g` over the set where `birkhoffSumSup f g` is positive is non-negative. -/
-public theorem setIntegral_birkhoffSumSup_nonneg
+theorem setIntegral_birkhoffSumSup_nonneg
     (hf : MeasurePreserving f μ μ) (hg : Integrable g μ) :
     0 ≤ ∫ x in {x | 0 < birkhoffSumSup f g x}, g x ∂μ := by
-  apply ge_of_tendsto' (tendsto_setIntegral_birkhoffMax_support μ hf hg)
-  grind [setIntegral_birkhoffMax_support_nonneg]
-
-variable [IsFiniteMeasure μ]
+  apply ge_of_tendsto' (tendsto_setIntegral_support_birkhoffMax μ hf.quasiMeasurePreserving hg)
+  grind [setIntegral_support_birkhoffMax_nonneg]
 
 /-- The cumulative distribution function of `birkhoffAverageSup` at `a` is less than or equal to the
 integral of `g` on the set where `a < birkhoffAverageSup f g x`. -/
-public theorem const_mul_distribution_birkhoffAverageSup_le_integral
+theorem mul_measureReal_lt_birkhoffAverageSup_le_integral [IsFiniteMeasure μ]
     (hf : MeasurePreserving f μ μ) (hg : Integrable g μ) (a : ℝ) (ha : 0 ≤ a) :
     a * μ.real {x | a < birkhoffAverageSup f g x}
     ≤ ∫ x in {x | a < birkhoffAverageSup f g x}, g x ∂μ := by
   calc
+    a * μ.real {x | a < birkhoffAverageSup f g x}
     _ = ∫ x in {x | 0 < birkhoffSumSup f (g - fun _ ↦ a) x}, a ∂μ := by
       simp [lt_birkhoffAverageSup_iff_lt_birkhoffSumSup ha, field]
     _ ≤ ∫ x in {x | 0 < birkhoffSumSup f (g - fun _ ↦ a) x}, a ∂μ +
@@ -243,16 +252,18 @@ section NormedAddCommGroup
 variable [NormedAddCommGroup M] {g : α → M} [IsFiniteMeasure μ]
 
 /-- Maximal ergodic theorem: the operator `birkhoffAverageSup` satisfies a weak-type inequality. -/
-public theorem const_mul_distribution_birkhoffAverageSup_le_norm
+theorem mul_measureReal_lt_birkhoffAverageSup_le_norm
     (hf : MeasurePreserving f μ μ) (hg : Integrable g μ) (a : ℝ) :
     a * μ.real {x | a < birkhoffAverageSup f (‖g ·‖) x} ≤ ∫ x, ‖g x‖ ∂μ := by
   by_cases! ha : 0 ≤ a; swap
   · calc
+      a * μ.real {x | ↑a < birkhoffAverageSup f (fun x ↦ ‖g x‖) x}
       _ ≤ 0 := mul_nonpos_of_nonpos_of_nonneg ha.le (by positivity)
-      _ ≤ _ := by positivity
+      _ ≤ ∫ (x : α), ‖g x‖ ∂μ := by positivity
   calc
+    a * μ.real {x | ↑a < birkhoffAverageSup f (fun x ↦ ‖g x‖) x}
     _ ≤ ∫ x in {x | a < birkhoffAverageSup f (‖g ·‖) x}, ‖g x‖ ∂μ :=
-      const_mul_distribution_birkhoffAverageSup_le_integral μ hf hg.norm a ha
+      mul_measureReal_lt_birkhoffAverageSup_le_integral μ hf hg.norm a ha
     _ ≤ ∫ x, ‖g x‖ ∂μ :=
       setIntegral_le_integral hg.norm (ae_of_all _ (norm_nonneg <| g ·))
 
