@@ -70,6 +70,7 @@ variable (I n f) in
 
 For convenience `σ` is a globally defined map of type `σ : M → M`. Only its germ at `x` matters,
 so one could equivalently ask for `σ : Filter.Germ (𝓝 x) M`. -/
+@[expose]
 def ContMDiffTransitions : Prop :=
   ∀ {x y : M}, f x = f y → ∃ σ : M → M, σ x = y ∧ CMDiffAt n σ x ∧ f ∘ σ =ᶠ[𝓝 x] f
 
