@@ -209,6 +209,7 @@ variable {module_M : Module R M} {module_S_M₂ : Module S M₂} {σ : R →+* S
 variable {re₁ : RingHomInvPair σ σ'} {re₂ : RingHomInvPair σ' σ}
 variable (e e' : M ≃ₛₗ[σ] M₂)
 
+@[simp]
 theorem coe_toEquiv : ⇑(e.toEquiv) = e :=
   rfl
 
