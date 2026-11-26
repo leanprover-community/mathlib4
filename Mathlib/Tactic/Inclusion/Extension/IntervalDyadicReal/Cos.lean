@@ -6,6 +6,7 @@ Authors: Rao Xiaojia
 module
 
 public import Mathlib.Analysis.Complex.Trigonometric
+public import Mathlib.Data.Nat.Log
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Rational
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Series
 
@@ -50,7 +51,7 @@ theorem cosShiftRightTaylor_mem {x : Dyadic} {k : ℕ} (h0 : 0 ≤ x.toReal) (hx
   rw [← hypergeomPartialSum_div (Int.castRingHom ℝ) (fun _ ↦ -a ^ 2)
     (fun j ↦ b ^ 2 * ((2 * j + 1) * (2 * j + 2))) (fun j ↦ by positivity)
     (fun m ↦ (-1) ^ m * ((a : ℝ) / b) ^ (2 * m) / (2 * m)!) (fun j ↦ by
-      push_cast [eq_intCast, mul_add_one, Nat.factorial_succ, pow_add, pow_succ]
+      push_cast [eq_intCast, mul_add_one, Nat.factorial_succ, pow_add]
       field)] at h
   obtain ⟨hterm, hden, -⟩ := hypergeomPartialSum_spec (fun _ ↦ -a ^ 2)
     (fun j ↦ b ^ 2 * ((2 * j + 1) * (2 * j + 2))) 0 n
@@ -64,10 +65,7 @@ theorem cosShiftRightTaylor_mem {x : Dyadic} {k : ℕ} (h0 : 0 ≤ x.toReal) (hx
   generalize hypergeomPartialSum (R := ℤ) _ _ 0 n = X at h hterm hden ⊢
   simp only [zero_add, Nat.Ico_zero_eq_range, prod_const, card_range, hprod] at hterm hden
   refine ratBall_mem ?_ prec
-  convert h using 1 <;> push_cast [hterm, hden, eq_intCast, Nat.factorial_zero]
-  · field_simp
-  · rw [abs_div, Nat.abs_cast, abs_pow, abs_neg, abs_pow, div_pow, ← pow_mul]
-    field
+  convert h using 1 <;> simp [hterm, hden, div_pow, pow_mul, div_div]
 
 /-- Apply the double-angle formula `cos (2 * x) = 2 * cos x ^ 2 - 1` `k` times to an enclosure `I`
 of `cos x`, rounding outward after each step. The formula uses `cos x` once, so each step encloses
@@ -82,35 +80,35 @@ def cosDoubling (k : ℕ) (I : Interval Dyadic) (prec : ℕ) : Interval Dyadic :
 
 theorem cosDoubling_mem {x : ℝ} {I : Interval Dyadic} (hx : Real.cos x ∈ I) (k prec : ℕ) :
     Real.cos (2 ^ k * x) ∈ cosDoubling k I prec := by
-  have h1 : (1 : ℝ) ∈ Interval.singleton (1 : Dyadic) := by simpa using natCast_mem 1
   induction k generalizing x I with
   | zero => simpa [cosDoubling] using hx
   | succ k ih =>
     rw [cosDoubling, pow_succ, mul_assoc]
     refine ih ?_
     rw [Real.cos_two_mul]
-    exact roundOut_mem (sub_mem (mul_mem (ofNat_mem 2) (pow_mem 2 hx)) h1) prec
+    exact roundOut_mem (sub_mem (mul_mem (ofNat_mem 2) (pow_mem 2 hx)) (ofNat_mem 1)) prec
 
-/-- The cosine of an interval `I`, which is `[-1, 1]` when `I` is unbounded or wider than `7` (more
-than a period). Otherwise, with `[a, b]` the absolute values of `I`, the series encloses `cos` at
-`a / 2 ^ k` and at `b / 2 ^ k`, and so between them, since `cos` is antitone on `[0, 1]`. Then `k`
-doublings give the enclosure on `[a, b]`. The constants are chosen as follows.
-- `k` is chosen so that `b / 2 ^ k ≤ 2 ^ (-2 - e)`, with `e = ⌊√prec⌋`.
+/-- The cosine of an interval `I`, which is `[-1, 1]` when `I` is wider than `2π` (using `7` as a
+proxy for efficiency). Otherwise, `cos [a, b]` is computed by halving the interval `k` times to
+a small enough `[a / 2 ^ k, b / 2 ^ k]` so that `cos` is antitone on it. The constants are chosen
+as follows:
+- `k` is chosen so that `b / 2 ^ k ≤ 2 ^ (-⌊√prec⌋)`. This provides `√prec`
+bits of precision per term in the series.
 - `p` adds to `prec` `2` bits for each doubling, which widens an interval by a factor of at most
   `4`, and `8` more bits so that the result exceeds the range of `cos` on `I` by little more than
   `2 ^ (-prec - 1)` on each side, and has width at most `2 ^ (-prec)` when `I` is a point.
 - The number of terms brings the remainder below `2 ^ (-p)`, since each term shrinks it by at
-  least `2 * e + 5` bits (`2 * e + 4` from the bound on `b / 2 ^ k` and `1` from the factorial).
+  least `2 * ⌊√prec⌋ + 1` bits (`2 * ⌊√prec⌋` from the bound on `b / 2 ^ k` and `1` from the
+  factorial).
 -/
 @[expose]
 def cos (I : Interval Dyadic) (prec : ℕ) : Interval Dyadic :=
   (match I, I.abs with
   | ⟨some l, some u⟩, ⟨some a, some b⟩ =>
     if l + 7 < u then Interval.univ Dyadic else
-      let e := Nat.sqrt prec
-      let k := Nat.log2 ⌈b.toRat⌉₊ + 3 + e
+      let k := Nat.clog 2 ⌈b.toRat⌉₊ + Nat.sqrt prec
       let p := prec + 2 * k + 8
-      let taylor (x : Dyadic) := cosShiftRightTaylor x k (p / (2 * e + 5) + 1) p
+      let taylor (x : Dyadic) := cosShiftRightTaylor x k (p / (2 * Nat.sqrt prec + 1) + 1) p
       roundOut (cosDoubling k
         (if a = b then taylor b else ⟨(taylor b).lb, (taylor a).ub⟩) p) (prec + 1)
   | _, _ => Interval.univ Dyadic).inter (Interval.Icc (-1 : Dyadic) (1 : Dyadic))
@@ -130,9 +128,9 @@ theorem cos_mem {x : ℝ} {I : Interval Dyadic} (hx : x ∈ I) (prec : ℕ) :
   · exact Interval.mem_map_univ _ _
   obtain ⟨hax, hxb⟩ := (mem_mk_coe |x| a b).mp habs
   have ha : 0 ≤ a.toReal := by simpa using Dyadic.toReal_le_toReal.mpr (WithBot.coe_le_coe.mp h0)
-  generalize hk : Nat.log2 ⌈b.toRat⌉₊ + 3 + Nat.sqrt prec = k
-  have hb : b.toReal ≤ 2 ^ k := (Rat.cast_le.mpr (Nat.ceil_le.mp (Nat.lt_log2_self.le.trans
-    (Nat.pow_le_pow_right two_pos (by lia : _ ≤ k))))).trans_eq (by norm_cast)
+  generalize hk : Nat.clog 2 ⌈b.toRat⌉₊ + Nat.sqrt prec = k
+  have hb : b.toReal ≤ 2 ^ k := (Rat.cast_le.mpr (Nat.ceil_le.mp
+    ((Nat.clog_le_iff_le_pow one_lt_two).mp (by lia : _ ≤ k)))).trans_eq (by norm_cast)
   have hπ := (div_le_one_of_le₀ hb (by positivity)).trans (one_le_two.trans Real.two_le_pi)
   rw [← Real.cos_abs, ← mul_div_cancel₀ |x| (pow_ne_zero k two_ne_zero),
     ite_eq_right_iff.mpr fun h ↦ h ▸ rfl]

@@ -16,7 +16,8 @@ example : |Real.cos 1 - 0.5403023058681398| < 1e-15 := by dyadic_interval [prec 
 example {x : ℝ} (h₁ : 1 ≤ x) (h₂ : x ≤ 2) : -0.416147 < Real.cos x ∧ Real.cos x < 0.540303 := by
   dyadic_interval [prec := 25]
 
-example {x : ℝ} (h₁ : 0 ≤ x) (h₂ : x ≤ 8) : Real.cos x ≤ 1 := by dyadic_interval
+-- An interval wider than `2π` gets a shortcut
+example {x : ℝ} (h₁ : 0 ≤ x) (h₂ : x ≤ 8) : Real.cos x ∈ Set.Icc (-1) 1 := by dyadic_interval
 
 example (x : ℝ) : -1 ≤ Real.cos x := by dyadic_interval
 

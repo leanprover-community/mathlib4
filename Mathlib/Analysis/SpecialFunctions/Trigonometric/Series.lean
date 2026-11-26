@@ -116,16 +116,14 @@ theorem Real.sin_eq_tsum (r : ℝ) :
 theorem Real.abs_cos_sub_sum_range_le {r : ℝ} (hr : |r| ≤ 1) (n : ℕ) :
     |Real.cos r - ∑ m ∈ Finset.range n, (-1) ^ m * r ^ (2 * m) / ↑(2 * m)!| ≤
       |r| ^ (2 * n) / ↑(2 * n)! := by
-  rw [← Real.cos_abs]
-  simp_rw [← pow_abs_two_mul r]
   have hfa : Antitone fun m : ℕ ↦ |r| ^ (2 * m) / ↑(2 * m)! := by
     refine antitone_nat_of_succ_le fun m ↦ ?_
     refine div_le_div₀ (by positivity) (pow_le_pow_of_le_one (abs_nonneg r) hr (by lia))
       (by positivity) ?_
     exact_mod_cast Nat.factorial_le (by lia)
   have hfs : Summable fun m : ℕ ↦ |r| ^ (2 * m) / ↑(2 * m)! :=
-    (Real.summable_pow_div_factorial |r|).comp_injective fun a b h ↦ by simpa using h
-  simpa only [← mul_div_assoc, (Real.hasSum_cos |r|).tsum_eq] using
+    (Real.summable_pow_div_factorial |r|).comp_injective (mul_right_injective₀ two_ne_zero)
+  simpa only [pow_abs_two_mul, ← mul_div_assoc, (Real.hasSum_cos r).tsum_eq] using
     alternating_series_error_bound _ hfa hfs n
 
 end SinCos
