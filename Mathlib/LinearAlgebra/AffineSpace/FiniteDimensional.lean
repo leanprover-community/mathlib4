@@ -58,7 +58,7 @@ theorem finite_vectorSpan_of_finite {s : Set P} (h : Set.Finite s) :
 alias finiteDimensional_vectorSpan_of_finite := finite_vectorSpan_of_finite
 
 /-- The vector span of a singleton is finite-dimensional. -/
-instance finite_vectorSpan_singleton (p : P) : Module.Finite k (vectorSpan k { p }) :=
+instance finite_vectorSpan_singleton (p : P) : Module.Finite k (vectorSpan k {p}) :=
   finite_vectorSpan_of_finite _ (Set.finite_singleton p)
 
 @[deprecated (since := "2026-09-13")]
@@ -93,7 +93,7 @@ alias finiteDimensional_direction_affineSpan_of_finite := finite_direction_affin
 
 /-- The direction of the affine span of a singleton is finite-dimensional. -/
 instance finite_direction_affineSpan_singleton (p : P) :
-    Module.Finite k (affineSpan k { p }).direction := by
+    Module.Finite k (affineSpan k {p}).direction := by
   rw [direction_affineSpan]
   infer_instance
 
@@ -102,7 +102,7 @@ alias finiteDimensional_direction_affineSpan_singleton := finite_direction_affin
 
 /-- The direction of a singleton is finite-dimensional. -/
 instance finite_direction_singleton (p : P) :
-    Module.Finite k ({ p } : AffineSubspace k P).direction := by
+    Module.Finite k ({p} : AffineSubspace k P).direction := by
   rw [← affineSpan_singleton]
   infer_instance
 
@@ -152,7 +152,7 @@ theorem finite_of_fin_dim_affineIndependent {p : ι → P} (hi : AffineIndepende
   finite_vectorSpan_iff_finite k hi |>.mp inferInstance
 
 /-- An affine-independent subset `s` generates a finite-dimensional subspace iff `s` is finite. -/
-theorem finite_iff_setFinite {s : Set ι} {f : s → P} (hi : AffineIndependent k f) :
+theorem finite_vectorSpan_iff_setFinite {s : Set ι} {f : s → P} (hi : AffineIndependent k f) :
     Module.Finite k (vectorSpan k (Set.range f)) ↔ s.Finite := by
   refine ⟨fun _ ↦ ?_, fun h ↦ ?_⟩
   · exact @s.toFinite _ (finite_vectorSpan_iff_finite k hi |>.mp inferInstance)
@@ -160,13 +160,13 @@ theorem finite_iff_setFinite {s : Set ι} {f : s → P} (hi : AffineIndependent 
     infer_instance
 
 @[deprecated (since := "2026-09-13")]
-alias finiteDimensional_iff_setFinite := finite_iff_setFinite
+alias finiteDimensional_iff_setFinite := finite_vectorSpan_iff_setFinite
 
 /-- An affine-independent subset of a finite-dimensional affine subspace is finite. -/
-@[deprecated finite_iff_setFinite +typeChanged (since := "2026-09-01")]
+@[deprecated finite_vectorSpan_iff_setFinite +typeChanged (since := "2026-09-01")]
 theorem finite_set_of_fin_dim_affineIndependent {s : Set ι} {f : s → P} (hi : AffineIndependent k f)
     [Module.Finite k (vectorSpan k (Set.range f))] : s.Finite :=
-  finite_iff_setFinite k hi |>.mp inferInstance
+  finite_vectorSpan_iff_setFinite k hi |>.mp inferInstance
 
 /-- The `vectorSpan` of `n + 1` points in an indexed family has
 dimension at most `n`. -/
@@ -301,7 +301,7 @@ theorem AffineIndepOn.ncard_eq_succ_finDim_affineSpan {s : Set P} (hai : AffineI
   rcases Set.eq_empty_or_nonempty s with rfl | hs
   · simp
   rw [← Subtype.range_coe (s := s)] at hf
-  have := finite_iff_setFinite k hai |>.mp hf
+  have := finite_vectorSpan_iff_setFinite k hai |>.mp hf
   have := hai.finrank_vectorSpan this hs
   rw [finDim_eq_finrank (by simp [hs]), direction_affineSpan,
     WithBot.succ_natCast, this]
@@ -994,7 +994,7 @@ protected theorem finite [FiniteDimensional k V] (b : AffineBasis ι k P) : Fini
 
 protected theorem setFinite [FiniteDimensional k V] {s : Set ι} (b : AffineBasis s k P) :
     s.Finite :=
-  finite_iff_setFinite k b.ind |>.mp inferInstance
+  finite_vectorSpan_iff_setFinite k b.ind |>.mp inferInstance
 
 @[deprecated AffineBasis.setFinite (since := "2026-09-01")]
 protected alias finite_set := AffineBasis.setFinite
