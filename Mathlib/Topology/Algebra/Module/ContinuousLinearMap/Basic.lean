@@ -162,9 +162,9 @@ theorem coe_inj {f g : M₁ →SL[σ₁₂] M₂} : (f : M₁ →ₛₗ[σ₁₂
 theorem coeFn_injective : @Function.Injective (M₁ →SL[σ₁₂] M₂) (M₁ → M₂) (↑) :=
   DFunLike.coe_injective
 
-
 /-- Reinterpret a continuous linear map `M₁ →SL[σ₁₂] M₂` as
 a continuous morphism of additive monoids `M₁ →ₜ+ M₂`. -/
+@[coe]
 def toContinuousAddMonoidHom (f : M₁ →SL[σ₁₂] M₂) : M₁ →ₜ+ M₂ := .ofClass f
 
 @[simp]
