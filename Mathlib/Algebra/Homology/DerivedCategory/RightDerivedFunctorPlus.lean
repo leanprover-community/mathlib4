@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Homology.DerivedCategory.DerivabilityStructureInje
 import Mathlib.CategoryTheory.Functor.Derived.RightDerivedCommShift
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.DerivesTriangulated
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The right derived functor on the bounded below derived category
 

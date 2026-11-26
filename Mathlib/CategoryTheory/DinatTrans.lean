@@ -21,6 +21,7 @@ hexagon does not commute in general), but can still be "pre/post-composed" with
 ordinary natural transformations.
 
 ## References
+
 * <https://ncatlab.org/nlab/show/dinatural+transformation>
 -/
 

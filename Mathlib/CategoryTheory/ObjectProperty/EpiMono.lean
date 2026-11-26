@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 
 import Mathlib.CategoryTheory.ObjectProperty.Opposite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of objects that are closed under subobjects and quotients
 

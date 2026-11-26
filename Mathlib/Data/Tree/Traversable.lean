@@ -10,6 +10,9 @@ public import Mathlib.Data.Tree.Basic
 
 import Mathlib.Control.Applicative
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Traversable Binary Tree
 

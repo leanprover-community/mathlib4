@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Category.Ring.Colimits
 import Mathlib.Algebra.Category.Ring.Basic
 import Mathlib.Algebra.Ring.ULift
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The forgetful functor from (commutative) (semi-) rings preserves filtered colimits.
 

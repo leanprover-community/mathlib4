@@ -29,6 +29,7 @@ which is the "correct" connecting homomorphism, and the exactness properties are
 also restated using `Ext.δ` instead of the pre-composition with the class in `Ext S.X₃ S.X₁ 1`.
 
 ## References
+
 * [Brian Conrad, Grothendieck duality and base change][conrad2000]
 -/
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.Embedding.CochainComplex
 public import Mathlib.CategoryTheory.Preadditive.Injective.Resolution
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Injective resolutions as cochain complexes indexed by the integers
 

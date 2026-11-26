@@ -18,7 +18,7 @@ of a functorial linear map `M.map f` from `M.obj X` to the restriction
 of scalars of `M.obj Y` via `R.map f`.
 
 
-## Future work
+## TODO
 
 * Compare this to the definition as a presheaf of pairs `(R, M)` with specified first part.
 * Compare this to the definition as a module object of the presheaf of rings

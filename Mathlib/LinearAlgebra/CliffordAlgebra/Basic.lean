@@ -32,7 +32,7 @@ of the Clifford algebra.
 1. `ι_comp_lift` is the fact that the composition of `ι Q` with `lift Q f cond` agrees with `f`.
 2. `lift_unique` ensures the uniqueness of `lift Q f cond` with respect to 1.
 
-## Implementation details
+## Implementation notes
 
 The Clifford algebra of `M` is constructed as a quotient of the tensor algebra, as follows.
 1. We define a relation `CliffordAlgebra.Rel Q` on `TensorAlgebra R M`.

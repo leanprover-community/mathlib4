@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
 public import Mathlib.Order.Setoid.Partition
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Measurability of piecewise functions
 

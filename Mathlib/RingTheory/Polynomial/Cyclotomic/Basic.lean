@@ -30,7 +30,7 @@ with coefficients in any ring `R`.
 * `Polynomial.cyclotomic_eq_prod_X_pow_sub_one_pow_moebius` : The Möbius inversion formula for
   `cyclotomic n R` over an abstract fraction field for `R[X]`.
 
-## Implementation details
+## Implementation notes
 
 Our definition of `cyclotomic' n R` makes sense in any integral domain `R`, but the interesting
 results hold if there is a primitive `n`-th root of unity in `R`. In particular, our definition is

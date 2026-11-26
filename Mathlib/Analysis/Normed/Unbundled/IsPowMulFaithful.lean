@@ -17,9 +17,11 @@ commutative ring and `f₁` and `f₂` are two power-multiplicative `R`-algebra 
 `f₁` and `f₂` are equivalent on every subring `R[y]` for `y : S`, it follows that `f₁ = f₂`.
 
 ## Main Results
+
 * `eq_of_powMul_faithful` : the proof of [BGR, Proposition 3.1.5/1][bosch-guntzer-remmert].
 
 ## References
+
 * [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*][bosch-guntzer-remmert]
 
 ## Tags

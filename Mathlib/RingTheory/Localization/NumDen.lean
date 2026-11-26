@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.Localization.Integer
 
 import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Numerator and denominator in a localization
 
@@ -19,6 +22,7 @@ import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
 See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
 
 ## Tags
+
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
 -/

@@ -13,6 +13,9 @@ public import Mathlib.RingTheory.TensorProduct.Finite
 
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of finitely generated modules over a ring
 
@@ -27,7 +30,7 @@ When `R` is commutative we then give the structure as an `R`-linear monoidal cat
 When `R` is a field we give it the structure of a closed monoidal category
 and then as a right-rigid monoidal category.
 
-## Future work
+## TODO
 
 * Show that `FGModuleCat R` is abelian when `R` is (left)-Noetherian.
 -/

@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
 public import Mathlib.CategoryTheory.Limits.MorphismProperty
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Covers of schemes over a base
 

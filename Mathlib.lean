@@ -5664,6 +5664,7 @@ public import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
 public import Mathlib.MeasureTheory.Function.AEMeasurableOrder
 public import Mathlib.MeasureTheory.Function.AEMeasurableSequence
 public import Mathlib.MeasureTheory.Function.AbsolutelyContinuous
+public import Mathlib.MeasureTheory.Function.AlmostCompactRange
 public import Mathlib.MeasureTheory.Function.BorelGrowth
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.AEMeasurable
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
@@ -7299,6 +7300,7 @@ public import Mathlib.RingTheory.PowerSeries.Derivative
 public import Mathlib.RingTheory.PowerSeries.Evaluation
 public import Mathlib.RingTheory.PowerSeries.Exp
 public import Mathlib.RingTheory.PowerSeries.Expand
+public import Mathlib.RingTheory.PowerSeries.ExponentialModule
 public import Mathlib.RingTheory.PowerSeries.GaussNorm
 public import Mathlib.RingTheory.PowerSeries.Ideal
 public import Mathlib.RingTheory.PowerSeries.Inverse
@@ -7907,6 +7909,7 @@ public import Mathlib.Tactic.Push
 public import Mathlib.Tactic.Push.Attr
 public import Mathlib.Tactic.Qify
 public import Mathlib.Tactic.RSuffices
+public import Mathlib.Tactic.RealRootCount.SturmCertificate
 public import Mathlib.Tactic.Recover
 public import Mathlib.Tactic.ReduceModChar
 public import Mathlib.Tactic.ReduceModChar.Ext
@@ -8625,6 +8628,7 @@ public import Mathlib.Topology.Sheaves.Flasque
 public import Mathlib.Topology.Sheaves.Forget
 public import Mathlib.Topology.Sheaves.Functors
 public import Mathlib.Topology.Sheaves.Init
+public import Mathlib.Topology.Sheaves.KPresheaf
 public import Mathlib.Topology.Sheaves.KSheaf
 public import Mathlib.Topology.Sheaves.Limits
 public import Mathlib.Topology.Sheaves.LocalPredicate

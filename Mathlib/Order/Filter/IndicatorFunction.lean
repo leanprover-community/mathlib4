@@ -12,12 +12,16 @@ public import Mathlib.Order.Filter.AtTopBot.Defs
 
 import Mathlib.Order.Filter.Tendsto
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Indicator function and filters
 
 Properties of additive and multiplicative indicator functions involving `=ᶠ` and `≤ᶠ`.
 
 ## Tags
+
 indicator, characteristic, filter
 -/
 

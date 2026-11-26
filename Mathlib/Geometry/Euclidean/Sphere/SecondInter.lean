@@ -10,6 +10,9 @@ public import Mathlib.Geometry.Euclidean.Sphere.Basic
 
 import Mathlib.Analysis.Convex.StrictCombination
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Second intersection of a sphere and a line
 

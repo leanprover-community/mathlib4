@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Triangulated.Functor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Right derived functors are triangulated
 

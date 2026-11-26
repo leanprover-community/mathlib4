@@ -11,6 +11,9 @@ public import Mathlib.CategoryTheory.Presentable.Adjunction
 import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 import Mathlib.CategoryTheory.Presentable.StrongGenerator
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Categories of presheaves are locally presentable
 
