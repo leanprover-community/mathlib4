@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.BifunctorFlip
 public import Mathlib.Algebra.Homology.Homotopy
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The action of a bifunctor on homological complexes factors through homotopies
 
@@ -16,7 +19,6 @@ we show in this file that up to homotopy the morphism
 `mapBifunctorMap f₁ f₂ F c` only depends on the homotopy classes of
 the morphism `f₁` in `HomologicalComplex C c₁` and of
 the morphism `f₂` in `HomologicalComplex C c₂`.
-
 -/
 
 @[expose] public section
@@ -88,8 +90,7 @@ lemma zero₁ (j j' : J) (h : ¬ c.Rel j' j) :
     apply h
     rw [← h', ← h₄]
     exact ComplexShape.rel_π₁ c₂ c h₃ i₂
-  · dsimp
-    rw [h₁.zero _ _ h₃, Functor.map_zero, zero_app, zero_comp, smul_zero]
+  · rw [h₁.zero _ _ h₃, Functor.map_zero, zero_app, zero_comp, smul_zero]
 
 lemma comm₁_aux {i₁ i₁' : I₁} (hi₁ : c₁.Rel i₁ i₁') {i₂ i₂' : I₂} (hi₂ : c₂.Rel i₂ i₂') (j : J)
     (hj : ComplexShape.π c₁ c₂ c (i₁', i₂) = j) :
@@ -121,9 +122,8 @@ lemma comm₁ (j : J) :
   ext i₁ i₂ h
   simp? [HomologicalComplex₂.total_d, h₁.comm i₁, dFrom, fromNext, toPrev, dTo] says
     simp only [ι_mapBifunctorMap, h₁.comm i₁, dNext_eq_dFrom_fromNext, dFrom, fromNext,
-      AddMonoidHom.mk'_apply, prevD_eq_toPrev_dTo, toPrev, dTo, Functor.map_add,
-      Functor.map_comp, NatTrans.app_add, NatTrans.comp_app,
-      Preadditive.add_comp, assoc, HomologicalComplex₂.total_d,
+      AddMonoidHom.mk'_apply, prevD_eq_toPrev_dTo, toPrev, dTo, Functor.map_add, Functor.map_comp,
+      NatTrans.app_add, NatTrans.comp_app, Preadditive.add_comp, assoc, HomologicalComplex₂.total_d,
       Functor.mapBifunctorHomologicalComplex_obj_obj_toGradedObject, Preadditive.comp_add,
       HomologicalComplex₂.ι_D₁_assoc, Functor.mapBifunctorHomologicalComplex_obj_obj_X_X,
       HomologicalComplex₂.ι_D₂_assoc, add_left_inj]
@@ -148,8 +148,7 @@ lemma comm₁ (j : J) :
     · rw [h₁.zero _ _ h₃, Functor.map_zero, zero_app, zero_comp, zero_comp, smul_zero, zero_comp]
   · rw [ιMapBifunctor_hom₁_assoc _ _ _ _ _ _ _ _ _ _ rfl]
     by_cases h₃ : c₁.Rel (c₁.prev i₁) i₁
-    · dsimp
-      rw [Linear.units_smul_comp, assoc, assoc,
+    · rw [Linear.units_smul_comp, assoc, assoc,
         ιMapBifunctorOrZero_eq _ _ _ _ _ _ _ (by rw [← ComplexShape.prev_π₁ c₂ c h₃, h]),
         HomologicalComplex₂.ι_D₂]
       by_cases h₄ : c₂.Rel i₂ (c₂.next i₂)
@@ -195,7 +194,8 @@ noncomputable def mapBifunctorMapHomotopy₂ :
           ((mapBifunctorFlipIso K₁ K₂ F c).inv)).trans (Homotopy.ofEq (by simp)))
   haveI hom₂_eq : hom₂ f₁ h₂ F c = H.hom := by
     ext j j' i₁ i₂ hj
-    dsimp [H, mapBifunctorMapHomotopy₁]
+    simp only [mapBifunctorMapHomotopy₁, H, Homotopy.trans_hom, Homotopy.ofEq_hom,
+      Pi.zero_apply, Homotopy.compLeft_hom, Homotopy.compRight_hom]
     rw [add_zero, zero_add, ι_mapBifunctorFlipIso_inv_assoc, Linear.units_smul_comp,
       ιMapBifunctor_hom₁_assoc h₂ f₁ F.flip c _ i₂ i₁ j j'
         (by rw [ComplexShape.π_symm c₁ c₂ c i₁ i₂, hj]) rfl,

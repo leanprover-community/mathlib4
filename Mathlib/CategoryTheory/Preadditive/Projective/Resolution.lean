@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Homology.QuasiIso
 public import Mathlib.Algebra.Homology.SingleHomology
 public import Mathlib.CategoryTheory.Preadditive.Projective.Preserves
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Projective resolutions
 
@@ -16,7 +19,6 @@ A projective resolution `P : ProjectiveResolution Z` of an object `Z : C` consis
 an `ℕ`-indexed chain complex `P.complex` of projective objects,
 along with a quasi-isomorphism `P.π` from `C` to the chain complex consisting just
 of `Z` in degree zero.
-
 -/
 
 @[expose] public section
@@ -103,6 +105,8 @@ theorem complex_d_succ_comp (n : ℕ) :
 noncomputable def cokernelCofork : CokernelCofork (P.complex.d 1 0) :=
   CokernelCofork.ofπ _ P.complex_d_comp_π_f_zero
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- `Z` is the cokernel of `P.complex.X 1 ⟶ P.complex.X 0` when `P : ProjectiveResolution Z`. -/
 noncomputable def isColimitCokernelCofork : IsColimit (P.cokernelCofork) := by
   refine IsColimit.ofIsoColimit (P.complex.opcyclesIsCokernel 1 0 (by simp)) ?_
@@ -115,6 +119,7 @@ noncomputable def isColimitCokernelCofork : IsColimit (P.cokernelCofork) := by
     Iso.hom_inv_id, comp_id, isoHomologyι_inv_hom_id, singleObjHomologySelfIso_inv_homologyι,
     singleObjOpcyclesSelfIso_hom, single₀ObjXSelf, Iso.refl_inv, id_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 instance (n : ℕ) : Epi (P.π.f n) := by
   cases n
   · exact epi_of_isColimit_cofork P.isColimitCokernelCofork
@@ -136,7 +141,7 @@ noncomputable def self [Projective Z] : ProjectiveResolution Z where
 
 variable {Z} {Z' : C} (P' : ProjectiveResolution Z')
 
-/-- Given injective resolutions `P` and `P'` of two objects `Z` and `Z'`,
+/-- Given projective resolutions `P` and `P'` of two objects `Z` and `Z'`,
 and a morphism `f : Z ⟶ Z'`, this structure contains the data of a morphism
 `P.complex ⟶ P'.complex` which is compatible with `f` -/
 structure Hom (f : Z ⟶ Z') where

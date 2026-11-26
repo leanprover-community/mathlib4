@@ -63,7 +63,7 @@ theorem W_eq_factorial_ratio (n : ℕ) :
   induction n with
   | zero =>
     simp only [W, prod_range_zero, Nat.factorial_zero, mul_zero, pow_zero]
-    norm_num
+    simp
   | succ n IH =>
     unfold W at IH ⊢
     rw [prod_range_succ, IH, _root_.div_mul_div_comm, _root_.div_mul_div_comm]

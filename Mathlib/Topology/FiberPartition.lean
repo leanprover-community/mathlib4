@@ -5,9 +5,11 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.Topology.LocallyConstant.Basic
 public import Mathlib.Logic.Function.FiberPartition
+public import Mathlib.Topology.LocallyConstant.Basic
+
 /-!
+# Fibers of a map from a topological space
 
 This file provides some API surrounding `Function.Fiber` (see
 `Mathlib/Logic/Function/FiberPartition.lean`) in the presence of a topology on the domain of the
@@ -34,7 +36,9 @@ variable [TopologicalSpace S]
 @[simps apply]
 def sigmaIsoHom : C((x : Fiber f) × x.val, S) where
   toFun | ⟨a, x⟩ => x.val
+  continuous_toFun := continuous_sigma (by fun_prop)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma sigmaIsoHom_inj : Function.Injective (sigmaIsoHom f) := by
   rintro ⟨⟨_, _, rfl⟩, ⟨_, hx⟩⟩ ⟨⟨_, _, rfl⟩, ⟨_, hy⟩⟩ h
   refine Sigma.subtype_ext ?_ h
@@ -49,6 +53,7 @@ lemma sigmaIsoHom_surj : Function.Surjective (sigmaIsoHom f) :=
 def sigmaIncl (a : Fiber f) : C(a.val, S) where
   toFun x := x.val
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The inclusion map from a fiber of a composition into the intermediate fiber. -/
 def sigmaInclIncl {X : Type*} (g : Y → X) (a : Fiber (g ∘ f))
     (b : Fiber (f ∘ (sigmaIncl (g ∘ f) a))) :
@@ -64,7 +69,7 @@ variable (l : LocallyConstant S Y) [CompactSpace S]
 instance (x : Fiber l) : CompactSpace x.val := by
   obtain ⟨y, hy⟩ := x.prop
   rw [← isCompact_iff_compactSpace, ← hy]
-  exact (l.2.isClosed_fiber _).isCompact
+  exact (l.isLocallyConstant.isClosed_fiber _).isCompact
 
 instance : Finite (Fiber l) :=
   have : Finite (Set.range l) := l.range_finite

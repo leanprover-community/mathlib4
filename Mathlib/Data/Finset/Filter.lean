@@ -19,7 +19,6 @@ public import Mathlib.Data.Multiset.Filter
 ## Tags
 
 finite sets, finset
-
 -/
 
 @[expose] public section
@@ -32,7 +31,7 @@ open Multiset Subtype Function
 
 universe u
 
-variable {α : Type*} {β : Type*} {γ : Type*}
+variable {α : Type*} {β : Type*}
 
 namespace Finset
 
@@ -43,14 +42,14 @@ attribute [local trans] Subset.trans Superset.trans
 
 section Filter
 
-variable (p q : α → Prop) [DecidablePred p] [DecidablePred q] {s t : Finset α}
+variable (p : α → Prop) [DecidablePred p] {s t : Finset α}
 
 /-- `Finset.filter p s` is the set of elements of `s` that satisfy `p`.
 
 For example, one can use `s.filter (· ∈ t)` to get the intersection of `s` with `t : Set α`
 as a `Finset α` (when a `DecidablePred (· ∈ t)` instance is available). -/
 def filter (s : Finset α) : Finset α :=
-  ⟨_, s.2.filter p⟩
+  ⟨_, s.nodup.filter p⟩
 
 end Finset.Filter
 
@@ -114,7 +113,7 @@ section Filter
 variable (p q : α → Prop) [DecidablePred p] [DecidablePred q] {s t : Finset α}
 
 @[simp]
-theorem filter_val (s : Finset α) : (filter p s).1 = s.1.filter p :=
+theorem filter_val (s : Finset α) : (filter p s).val = s.val.filter p :=
   rfl
 
 @[simp]
@@ -147,12 +146,8 @@ theorem filter_congr_decidable (s : Finset α) (p : α → Prop) (h : DecidableP
 @[simp]
 theorem filter_true {h} (s : Finset α) : @filter _ (fun _ => True) h s = s := by ext; simp
 
-@[deprecated (since := "2025-08-24")] alias filter_True := filter_true
-
 @[simp]
 theorem filter_false {h} (s : Finset α) : @filter _ (fun _ => False) h s = ∅ := by ext; simp
-
-@[deprecated (since := "2025-08-24")] alias filter_False := filter_false
 
 variable {p q}
 
@@ -163,8 +158,7 @@ lemma filter_eq_self : s.filter p = s ↔ ∀ x ∈ s, p x := by simp [Finset.ex
 theorem filter_eq_empty_iff : s.filter p = ∅ ↔ ∀ ⦃x⦄, x ∈ s → ¬p x := by simp [Finset.ext_iff]
 
 theorem filter_nonempty_iff : (s.filter p).Nonempty ↔ ∃ a ∈ s, p a := by
-  simp only [nonempty_iff_ne_empty, Ne, filter_eq_empty_iff, Classical.not_not, not_forall,
-    exists_prop]
+  simp [← ne_empty_iff_nonempty]
 
 /-- If all elements of a `Finset` satisfy the predicate `p`, `s.filter p` is `s`. -/
 theorem filter_true_of_mem (h : ∀ x ∈ s, p x) : s.filter p = s := filter_eq_self.2 h
@@ -177,7 +171,12 @@ theorem filter_const (p : Prop) [Decidable p] (s : Finset α) :
     (s.filter fun _a => p) = if p then s else ∅ := by split_ifs <;> simp [*]
 
 theorem filter_congr {s : Finset α} (H : ∀ x ∈ s, p x ↔ q x) : filter p s = filter q s :=
-  eq_of_veq <| Multiset.filter_congr H
+  (eq_of_veq <| Multiset.filter_congr H)
+
+@[congr]
+theorem filter_congr' {s t : Finset α} (h : s = t) (H : ∀ x ∈ s, p x ↔ q x) :
+    filter p s = filter q t :=
+  h ▸ filter_congr H
 
 variable (p q)
 
@@ -217,7 +216,7 @@ lemma _root_.Set.pairwiseDisjoint_filter [DecidableEq β] (f : α → β) (s : S
 theorem disjoint_filter_and_not_filter :
     Disjoint (s.filter (fun x ↦ p x ∧ ¬q x)) (s.filter (fun x ↦ q x ∧ ¬p x)) := by
   intro _ htp htq
-  simp only [bot_eq_empty, le_eq_subset, subset_empty]
+  simp only [bot_eq_empty, subset_empty]
   by_contra! ⟨_, hx⟩
   exact (mem_filter.mp (htq hx)).2.2 (mem_filter.mp (htp hx)).2.1
 
@@ -228,6 +227,11 @@ lemma filter_inj : s.filter p = t.filter p ↔ ∀ ⦃a⦄, p a → (a ∈ s ↔
 
 lemma filter_inj' : s.filter p = s.filter q ↔ ∀ ⦃a⦄, a ∈ s → (p a ↔ q a) := by
   simp [Finset.ext_iff]
+
+@[simp]
+lemma filter_mem_eq_of_subset [DecidablePred (· ∈ s)] (hst : s ⊆ t) :
+    t.filter (· ∈ s) = s := by
+  grind
 
 end Filter
 

@@ -8,11 +8,14 @@ module
 public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Data.Int.Cast.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Instances for `grind`.
 -/
 
-@[expose] public section
+public section
 
 open Lean
 
@@ -29,7 +32,7 @@ instance (priority := 100) Semiring.toGrindSemiring [s : Semiring α] :
     natCast := inferInstance
     add_zero := by simp [add_zero]
     mul_one := by simp [mul_one]
-    zero_mul := by simp [zero_mul]
+    zero_mul := by simp
     pow_zero a := by simp
     pow_succ a n := by simp [pow_succ]
     ofNat_eq_natCast

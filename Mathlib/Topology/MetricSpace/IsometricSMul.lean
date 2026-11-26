@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Pointwise.Set.Basic
 public import Mathlib.Topology.Algebra.ConstMulAction
+public import Mathlib.Topology.EMetricSpace.MulOpposite
 public import Mathlib.Topology.MetricSpace.Isometry
 public import Mathlib.Topology.MetricSpace.Lipschitz
 
@@ -61,7 +61,7 @@ instance (priority := 100) IsIsometricSMul.to_continuousConstSMul [PseudoEMetric
 @[to_additive]
 instance (priority := 100) IsIsometricSMul.opposite_of_comm [PseudoEMetricSpace X] [SMul M X]
     [SMul Mᵐᵒᵖ X] [IsCentralScalar M X] [IsIsometricSMul M X] : IsIsometricSMul Mᵐᵒᵖ X :=
-  ⟨fun c x y => by simpa only [← op_smul_eq_smul] using isometry_smul X c.unop x y⟩
+  ⟨fun c x y => by simpa only [← op_smul_eq_smul] using! isometry_smul X c.unop x y⟩
 
 variable {M G X}
 
@@ -243,67 +243,18 @@ end Metric
 
 end EMetric
 
-namespace EMetric
-open Metric
-
-@[deprecated (since := "2026-01-24")]
-alias vadd_ball := vadd_eball
-
-@[to_additive existing, deprecated (since := "2026-01-24")]
-alias smul_ball := smul_eball
-
-@[deprecated (since := "2026-01-24")] alias preimage_vadd_ball := preimage_vadd_eball
-
-@[to_additive existing, deprecated (since := "2026-01-24")]
-alias preimage_smul_ball := preimage_smul_eball
-
-@[deprecated (since := "2026-01-24")]
-alias vadd_closedBall := vadd_closedEBall
-
-@[to_additive existing, deprecated (since := "2026-01-24")]
-alias smul_closedBall := smul_closedEBall
-
-@[deprecated (since := "2026-01-24")]
-alias preimage_vadd_closedBall := preimage_vadd_closedEBall
-
-@[to_additive existing, deprecated (since := "2026-01-24")]
-alias preimage_smul_closedBall := preimage_smul_closedEBall
-
-@[deprecated (since := "2026-01-24")]
-alias preimage_add_left_ball := preimage_add_left_eball
-
-@[to_additive existing, deprecated (since := "2026-01-24")]
-alias preimage_mul_left_ball := preimage_mul_left_eball
-
-@[deprecated (since := "2026-01-24")]
-alias preimage_add_right_ball := preimage_add_right_eball
-
-@[to_additive existing, deprecated (since := "2026-01-24")]
-alias preimage_mul_right_ball := preimage_mul_right_eball
-
-@[deprecated (since := "2026-01-24")]
-alias preimage_add_left_closedBall := preimage_add_left_closedEBall
-
-@[to_additive existing, deprecated (since := "2026-01-24")]
-alias preimage_mul_left_closedBall := preimage_mul_left_closedEBall
-
-@[deprecated (since := "2026-01-24")]
-alias preimage_add_right_closedBall := preimage_add_right_closedEBall
-
-@[to_additive existing, deprecated (since := "2026-01-24")]
-alias preimage_mul_right_closedBall := preimage_mul_right_closedEBall
-
-end EMetric
-
 @[to_additive (attr := simp)]
 theorem dist_smul [PseudoMetricSpace X] [SMul M X] [IsIsometricSMul M X] (c : M) (x y : X) :
     dist (c • x) (c • y) = dist x y :=
   (isometry_smul X c).dist_eq x y
 
 @[to_additive (attr := simp)]
-theorem nndist_smul [PseudoMetricSpace X] [SMul M X] [IsIsometricSMul M X] (c : M) (x y : X) :
-    nndist (c • x) (c • y) = nndist x y :=
-  (isometry_smul X c).nndist_eq x y
+theorem nnDist_smul [PseudoMetricSpace X] [SMul M X] [IsIsometricSMul M X] (c : M) (x y : X) :
+    nnDist (c • x) (c • y) = nnDist x y :=
+  (isometry_smul X c).nnDist_eq x y
+
+@[to_additive (attr := deprecated (since := "2026-11-07"))]
+alias nndist_smul := nnDist_smul
 
 @[to_additive (attr := simp)]
 theorem diam_smul [PseudoMetricSpace X] [SMul M X] [IsIsometricSMul M X] (c : M) (s : Set X) :
@@ -316,9 +267,12 @@ theorem dist_mul_left [PseudoMetricSpace M] [Mul M] [IsIsometricSMul M M] (a b c
   dist_smul a b c
 
 @[to_additive (attr := simp)]
-theorem nndist_mul_left [PseudoMetricSpace M] [Mul M] [IsIsometricSMul M M] (a b c : M) :
-    nndist (a * b) (a * c) = nndist b c :=
-  nndist_smul a b c
+theorem nnDist_mul_left [PseudoMetricSpace M] [Mul M] [IsIsometricSMul M M] (a b c : M) :
+    nnDist (a * b) (a * c) = nnDist b c :=
+  nnDist_smul a b c
+
+@[to_additive (attr := deprecated (since := "2026-11-07"))]
+alias nndist_mul_left := nnDist_mul_left
 
 @[to_additive (attr := simp)]
 theorem dist_mul_right [Mul M] [PseudoMetricSpace M] [IsIsometricSMul Mᵐᵒᵖ M] (a b c : M) :
@@ -326,18 +280,24 @@ theorem dist_mul_right [Mul M] [PseudoMetricSpace M] [IsIsometricSMul Mᵐᵒᵖ
   dist_smul (MulOpposite.op c) a b
 
 @[to_additive (attr := simp)]
-theorem nndist_mul_right [PseudoMetricSpace M] [Mul M] [IsIsometricSMul Mᵐᵒᵖ M] (a b c : M) :
-    nndist (a * c) (b * c) = nndist a b :=
-  nndist_smul (MulOpposite.op c) a b
+theorem nnDist_mul_right [PseudoMetricSpace M] [Mul M] [IsIsometricSMul Mᵐᵒᵖ M] (a b c : M) :
+    nnDist (a * c) (b * c) = nnDist a b :=
+  nnDist_smul (MulOpposite.op c) a b
+
+@[to_additive (attr := deprecated (since := "2026-11-07"))]
+alias nndist_mul_right := nnDist_mul_right
 
 @[to_additive (attr := simp)]
 theorem dist_div_right [DivInvMonoid M] [PseudoMetricSpace M] [IsIsometricSMul Mᵐᵒᵖ M]
     (a b c : M) : dist (a / c) (b / c) = dist a b := by simp only [div_eq_mul_inv, dist_mul_right]
 
 @[to_additive (attr := simp)]
-theorem nndist_div_right [DivInvMonoid M] [PseudoMetricSpace M] [IsIsometricSMul Mᵐᵒᵖ M]
-    (a b c : M) : nndist (a / c) (b / c) = nndist a b := by
-  simp only [div_eq_mul_inv, nndist_mul_right]
+theorem nnDist_div_right [DivInvMonoid M] [PseudoMetricSpace M] [IsIsometricSMul Mᵐᵒᵖ M]
+    (a b c : M) : nnDist (a / c) (b / c) = nnDist a b := by
+  simp only [div_eq_mul_inv, nnDist_mul_right]
+
+@[to_additive (attr := deprecated (since := "2026-11-07"))]
+alias nndist_div_right := nnDist_div_right
 
 @[to_additive (attr := simp)]
 theorem dist_inv_inv [Group G] [PseudoMetricSpace G] [IsIsometricSMul G G]
@@ -345,9 +305,12 @@ theorem dist_inv_inv [Group G] [PseudoMetricSpace G] [IsIsometricSMul G G]
   (IsometryEquiv.inv G).dist_eq a b
 
 @[to_additive (attr := simp)]
-theorem nndist_inv_inv [Group G] [PseudoMetricSpace G] [IsIsometricSMul G G]
-    [IsIsometricSMul Gᵐᵒᵖ G] (a b : G) : nndist a⁻¹ b⁻¹ = nndist a b :=
-  (IsometryEquiv.inv G).nndist_eq a b
+theorem nnDist_inv_inv [Group G] [PseudoMetricSpace G] [IsIsometricSMul G G]
+    [IsIsometricSMul Gᵐᵒᵖ G] (a b : G) : nnDist a⁻¹ b⁻¹ = nnDist a b :=
+  (IsometryEquiv.inv G).nnDist_eq a b
+
+@[to_additive (attr := deprecated (since := "2026-11-07"))]
+alias nndist_inv_inv := nnDist_inv_inv
 
 @[to_additive (attr := simp)]
 theorem dist_div_left [Group G] [PseudoMetricSpace G] [IsIsometricSMul G G]
@@ -355,9 +318,12 @@ theorem dist_div_left [Group G] [PseudoMetricSpace G] [IsIsometricSMul G G]
   simp [div_eq_mul_inv]
 
 @[to_additive (attr := simp)]
-theorem nndist_div_left [Group G] [PseudoMetricSpace G] [IsIsometricSMul G G]
-    [IsIsometricSMul Gᵐᵒᵖ G] (a b c : G) : nndist (a / b) (a / c) = nndist b c := by
+theorem nnDist_div_left [Group G] [PseudoMetricSpace G] [IsIsometricSMul G G]
+    [IsIsometricSMul Gᵐᵒᵖ G] (a b c : G) : nnDist (a / b) (a / c) = nnDist b c := by
   simp [div_eq_mul_inv]
+
+@[to_additive (attr := deprecated (since := "2026-11-07"))]
+alias nndist_div_left := nnDist_div_left
 
 /-- If `G` acts isometrically on `X`, then the image of a bounded set in `X` under scalar
 multiplication by `c : G` is bounded. See also `Bornology.IsBounded.smul₀` for a similar lemma about
@@ -366,35 +332,37 @@ normed spaces. -/
 `X` under translation by `c : G` is bounded. -/]
 theorem Bornology.IsBounded.smul [PseudoMetricSpace X] [SMul G X] [IsIsometricSMul G X] {s : Set X}
     (hs : IsBounded s) (c : G) : IsBounded (c • s) :=
-  (isometry_smul X c).lipschitz.isBounded_image hs
+  (isometry_smul X c).lipschitzWith.isBounded_image hs
 
 namespace Metric
 
 variable [PseudoMetricSpace X] [Group G] [MulAction G X] [IsIsometricSMul G X]
 
 @[to_additive (attr := simp)]
-theorem smul_ball (c : G) (x : X) (r : ℝ) : c • ball x r = ball (c • x) r :=
+protected theorem smul_ball (c : G) (x : X) (r : ℝ) : c • ball x r = ball (c • x) r :=
   (IsometryEquiv.constSMul c).image_ball _ _
 
 @[to_additive (attr := simp)]
 theorem preimage_smul_ball (c : G) (x : X) (r : ℝ) : (c • ·) ⁻¹' ball x r = ball (c⁻¹ • x) r := by
-  rw [preimage_smul, smul_ball]
+  rw [preimage_smul, Metric.smul_ball]
 
 @[to_additive (attr := simp)]
-theorem smul_closedBall (c : G) (x : X) (r : ℝ) : c • closedBall x r = closedBall (c • x) r :=
+protected theorem smul_closedBall (c : G) (x : X) (r : ℝ) :
+    c • closedBall x r = closedBall (c • x) r :=
   (IsometryEquiv.constSMul c).image_closedBall _ _
 
 @[to_additive (attr := simp)]
 theorem preimage_smul_closedBall (c : G) (x : X) (r : ℝ) :
-    (c • ·) ⁻¹' closedBall x r = closedBall (c⁻¹ • x) r := by rw [preimage_smul, smul_closedBall]
+    (c • ·) ⁻¹' closedBall x r = closedBall (c⁻¹ • x) r := by
+  rw [preimage_smul, Metric.smul_closedBall]
 
 @[to_additive (attr := simp)]
-theorem smul_sphere (c : G) (x : X) (r : ℝ) : c • sphere x r = sphere (c • x) r :=
+protected theorem smul_sphere (c : G) (x : X) (r : ℝ) : c • sphere x r = sphere (c • x) r :=
   (IsometryEquiv.constSMul c).image_sphere _ _
 
 @[to_additive (attr := simp)]
 theorem preimage_smul_sphere (c : G) (x : X) (r : ℝ) :
-    (c • ·) ⁻¹' sphere x r = sphere (c⁻¹ • x) r := by rw [preimage_smul, smul_sphere]
+    (c • ·) ⁻¹' sphere x r = sphere (c⁻¹ • x) r := by rw [preimage_smul, Metric.smul_sphere]
 
 variable [PseudoMetricSpace G]
 
@@ -448,15 +416,15 @@ instance Units.isIsometricSMul [Monoid M] : IsIsometricSMul Mˣ X :=
 
 @[to_additive]
 instance : IsIsometricSMul M Xᵐᵒᵖ :=
-  ⟨fun c x y => by simpa only using edist_smul_left c x.unop y.unop⟩
+  ⟨fun c x y => by simpa only using! edist_smul_left c x.unop y.unop⟩
 
 @[to_additive]
 instance ULift.isIsometricSMul : IsIsometricSMul (ULift M) X :=
-  ⟨fun c => by simpa only using isometry_smul X c.down⟩
+  ⟨fun c => by simpa only using! isometry_smul X c.down⟩
 
 @[to_additive]
 instance ULift.isIsometricSMul' : IsIsometricSMul M (ULift X) :=
-  ⟨fun c x y => by simpa only using edist_smul_left c x.1 y.1⟩
+  ⟨fun c x y => by simpa only using! edist_smul_left c x.down y.down⟩
 
 @[to_additive]
 instance {ι} {X : ι → Type*} [Fintype ι] [∀ i, SMul M (X i)] [∀ i, PseudoEMetricSpace (X i)]

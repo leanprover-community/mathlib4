@@ -21,15 +21,15 @@ between `(Triangle C)ᵒᵖ` and `Triangle Cᵒᵖ`, called
 (without introducing signs).
 
 ## References
-* [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
 
+* [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
 -/
 
 @[expose] public section
 
 namespace CategoryTheory.Pretriangulated
 
-open Category Limits Preadditive ZeroObject Opposite
+open Category Limits Preadditive ZeroObject Pretriangulated.Opposite
 
 variable (C : Type*) [Category* C] [HasShift C ℤ]
 
@@ -37,11 +37,11 @@ namespace TriangleOpEquivalence
 
 /-- The functor which sends a triangle `X ⟶ Y ⟶ Z ⟶ X⟦1⟧` in `C` to the triangle
 `op Z ⟶ op Y ⟶ op X ⟶ (op Z)⟦1⟧` in `Cᵒᵖ` (without introducing signs). -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def functor : (Triangle C)ᵒᵖ ⥤ Triangle Cᵒᵖ where
   obj T := Triangle.mk T.unop.mor₂.op T.unop.mor₁.op
       ((opShiftFunctorEquivalence C 1).counitIso.inv.app (Opposite.op T.unop.obj₁) ≫
-        T.unop.mor₃.op⟦(1 : ℤ)⟧')
+        T.unop.mor₃.op⟦1⟧')
   map {T₁ T₂} φ :=
     { hom₁ := φ.unop.hom₃.op
       hom₂ := φ.unop.hom₂.op
@@ -56,10 +56,10 @@ noncomputable def functor : (Triangle C)ᵒᵖ ⥤ Triangle Cᵒᵖ where
 
 /-- The functor which sends a triangle `X ⟶ Y ⟶ Z ⟶ X⟦1⟧` in `Cᵒᵖ` to the triangle
 `Z.unop ⟶ Y.unop ⟶ X.unop ⟶ Z.unop⟦1⟧` in `C` (without introducing signs). -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def inverse : Triangle Cᵒᵖ ⥤ (Triangle C)ᵒᵖ where
   obj T := Opposite.op (Triangle.mk T.mor₂.unop T.mor₁.unop
-      (((opShiftFunctorEquivalence C 1).unitIso.inv.app T.obj₁).unop ≫ T.mor₃.unop⟦(1 : ℤ)⟧'))
+      (((opShiftFunctorEquivalence C 1).unitIso.inv.app T.obj₁).unop ≫ T.mor₃.unop⟦1⟧'))
   map {T₁ T₂} φ := Quiver.Hom.op
     { hom₁ := φ.hom₃.unop
       hom₂ := φ.hom₂.unop
@@ -103,7 +103,7 @@ end TriangleOpEquivalence
 /-- An anti-equivalence between the categories of triangles in `C` and in `Cᵒᵖ`.
 A triangle in `Cᵒᵖ` shall be distinguished iff it corresponds to a distinguished
 triangle in `C` via this equivalence. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def triangleOpEquivalence :
     (Triangle C)ᵒᵖ ≌ Triangle Cᵒᵖ where
   functor := TriangleOpEquivalence.functor C

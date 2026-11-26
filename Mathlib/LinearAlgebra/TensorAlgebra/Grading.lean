@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.TensorAlgebra.Basic
 public import Mathlib.RingTheory.GradedAlgebra.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Results about the grading structure of the tensor algebra
 
@@ -42,7 +45,7 @@ variable {R M}
 /-- The tensor algebra is graded by the powers of the submodule `(TensorAlgebra.ι R).range`. -/
 instance gradedAlgebra :
     GradedAlgebra ((LinearMap.range (ι R : M →ₗ[R] TensorAlgebra R M) ^ ·) : ℕ → Submodule R _) :=
-  GradedAlgebra.ofAlgHom _ (lift R <| GradedAlgebra.ι R M)
+  fast_instance% GradedAlgebra.ofAlgHom _ (lift R <| GradedAlgebra.ι R M)
     (by
       ext m
       dsimp only [LinearMap.comp_apply, AlgHom.toLinearMap_apply, AlgHom.comp_apply,

@@ -6,6 +6,10 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.Topology.Category.LightProfinite.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Light profinite sets as limits of finite sets.
 
@@ -15,7 +19,6 @@ The limit cone for `S : LightProfinite` is `S.asLimitCone`, the fact that it's a
 `S.asLimit`.
 
 We also prove that the projection and transition maps in this limit are surjective.
-
 -/
 
 @[expose] public section
@@ -65,13 +68,13 @@ def asLimitCone : Cone S.diagram where
   pt := S
   π := {
     app := fun n ↦ (lightToProfiniteFullyFaithful.preimageIso <|
-      (Cones.forget _).mapIso S.isoMapCone).inv ≫ S.asLimitConeAux.π.app n
+      (Cone.forget _).mapIso S.isoMapCone).inv ≫ S.asLimitConeAux.π.app n
     naturality := fun _ _ _ ↦ by simp only [Category.assoc, S.asLimitConeAux.w]; rfl }
 
 /-- `S.asLimitCone` is indeed a limit cone. -/
 def asLimit : IsLimit S.asLimitCone := S.asLimitAux.ofIsoLimit <|
-  Cones.ext (lightToProfiniteFullyFaithful.preimageIso <|
-    (Cones.forget _).mapIso S.isoMapCone) (fun _ ↦ by rw [← @Iso.inv_comp_eq]; rfl)
+  Cone.ext (lightToProfiniteFullyFaithful.preimageIso <|
+    (Cone.forget _).mapIso S.isoMapCone) (fun _ ↦ by rw [← @Iso.inv_comp_eq]; rfl)
 
 /-- A bundled version of `S.asLimitCone` and `S.asLimit`. -/
 def lim : Limits.LimitCone S.diagram := ⟨S.asLimitCone, S.asLimit⟩
@@ -81,7 +84,7 @@ abbrev proj (n : ℕ) : S ⟶ S.diagram.obj ⟨n⟩ := S.asLimitCone.π.app ⟨n
 
 lemma lightToProfinite_map_proj_eq (n : ℕ) : lightToProfinite.map (S.proj n) =
     (lightToProfinite.obj S).asLimitCone.π.app _ := by
-  simp only [Functor.comp_obj, toCompHausLike_map]
+  simp only [toCompHausLike_map]
   let c : Cone (S.diagram ⋙ lightToProfinite) := S.toLightDiagram.cone
   let hc : IsLimit c := S.toLightDiagram.isLimit
   exact liftedLimitMapsToOriginal_inv_map_π hc _

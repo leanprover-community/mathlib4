@@ -8,13 +8,16 @@ module
 public import Mathlib.Algebra.FreeAbelianGroup.Finsupp
 public import Mathlib.Algebra.Group.UniqueProds.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Free abelian groups have unique sums
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Cardinal StarModule
 
-instance {σ : Type*} : TwoUniqueSums (FreeAbelianGroup σ) :=
-  (FreeAbelianGroup.equivFinsupp σ).twoUniqueSums_iff.mpr inferInstance
+instance {σ : Type*} : TwoUniqueSums (FreeAddCommGroup σ) :=
+  (FreeAddCommGroup.equivFinsupp σ).twoUniqueSums_iff.mpr inferInstance

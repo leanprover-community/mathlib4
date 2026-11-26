@@ -11,6 +11,8 @@ public import Mathlib.Algebra.Field.Subfield.Basic
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.RingTheory.LocalRing.Basic
 
+import Mathlib.Algebra.Algebra.Rat  -- shake: keep (used in `example` only)
+
 /-!
 # Intermediate fields
 
@@ -36,6 +38,7 @@ Intermediate fields are defined with a structure extending `Subfield` and `Subal
 A `Subalgebra` is closed under all operations except `⁻¹`,
 
 ## Tags
+
 intermediate field, field extension
 -/
 
@@ -64,10 +67,13 @@ instance : SetLike (IntermediateField K L) L :=
     rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
     simp ⟩
 
+instance : PartialOrder (IntermediateField K L) := .ofSetLike (IntermediateField K L)
+
 protected theorem neg_mem {x : L} (hx : x ∈ S) : -x ∈ S := by
   change -x ∈ S.toSubalgebra; simpa
 
 /-- Reinterpret an `IntermediateField` as a `Subfield`. -/
+@[reducible]
 def toSubfield : Subfield L :=
   { S.toSubalgebra with
     neg_mem' := S.neg_mem,
@@ -114,7 +120,6 @@ theorem mem_mk (s : Subsemiring L) (hK : ∀ x, algebraMap K L x ∈ s) (hi) (x 
 theorem mem_toSubalgebra (s : IntermediateField K L) (x : L) : x ∈ s.toSubalgebra ↔ x ∈ s :=
   Iff.rfl
 
-@[simp]
 theorem mem_toSubfield (s : IntermediateField K L) (x : L) : x ∈ s.toSubfield ↔ x ∈ s :=
   Iff.rfl
 
@@ -228,7 +233,12 @@ protected theorem coe_neg (x : S) : (↑(-x) : L) = -↑x :=
 protected theorem coe_mul (x y : S) : (↑(x * y) : L) = ↑x * ↑y :=
   rfl
 
+@[simp, norm_cast]
 protected theorem coe_inv (x : S) : (↑x⁻¹ : L) = (↑x)⁻¹ :=
+  rfl
+
+@[simp, norm_cast]
+protected theorem coe_div (x y : S) : (↑(x / y) : L) = ↑x / ↑y :=
   rfl
 
 protected theorem coe_zero : ((0 : S) : L) = 0 :=
@@ -238,7 +248,7 @@ protected theorem coe_one : ((1 : S) : L) = 1 :=
   rfl
 
 protected theorem coe_pow (x : S) (n : ℕ) : (↑(x ^ n : S) : L) = (x : L) ^ n :=
-  SubmonoidClass.coe_pow x n
+  rfl
 
 end InheritedLemmas
 
@@ -273,10 +283,10 @@ def Subalgebra.toIntermediateField' (S : Subalgebra K L) (hS : IsField S) : Inte
     by_cases hx0 : x = 0
     · rw [hx0, inv_zero]
       exact S.zero_mem
-    letI hS' := hS.toField
+    let hS' := hS.toField
     obtain ⟨y, hy⟩ := hS.mul_inv_cancel (show (⟨x, hx⟩ : S) ≠ 0 from Subtype.coe_ne_coe.1 hx0)
     rw [Subtype.ext_iff, S.coe_mul, S.coe_one, Subtype.coe_mk, mul_eq_one_iff_inv_eq₀ hx0] at hy
-    exact hy.symm ▸ y.2
+    exact hy.symm ▸ y.property
 
 @[simp]
 theorem toSubalgebra_toIntermediateField' (S : Subalgebra K L) (hS : IsField S) :
@@ -314,11 +324,11 @@ instance toField : Field S :=
 
 @[norm_cast]
 theorem coe_sum {ι : Type*} [Fintype ι] (f : ι → S) : (↑(∑ i, f i) : L) = ∑ i, (f i : L) :=
-  AddSubmonoidClass.coe_finset_sum f Finset.univ
+  AddSubmonoidClass.coe_finsetSum f Finset.univ
 
 @[norm_cast]
 theorem coe_prod {ι : Type*} [Fintype ι] (f : ι → S) : (↑(∏ i, f i) : L) = ∏ i, (f i : L) :=
-  SubmonoidClass.coe_finset_prod f Finset.univ
+  SubmonoidClass.coe_finsetProd f Finset.univ
 
 /-!
 `IntermediateField`s inherit structure from their `Subfield` coercions.
@@ -395,6 +405,12 @@ instance algebra' {R' K L : Type*} [Field K] [Field L] [Algebra K L] (S : Interm
     [CommSemiring R'] [SMul R' K] [Algebra R' L] [IsScalarTower R' K L] : Algebra R' S :=
   inferInstanceAs (Algebra R' S.toSubalgebra)
 
+-- Over `ℚ`, the algebra structure inherited from the ambient field and the one coming from the
+-- `DivisionRing` structure of the intermediate field are the same instance.
+example {L : Type*} [Field L] [CharZero L] (S : IntermediateField ℚ L) :
+    (S.algebra' : Algebra ℚ S) = DivisionRing.toRatAlgebra := by
+  with_implicit rfl
+
 instance isScalarTower {R} [Semiring R] [SMul R K] [Module R L] [IsScalarTower R K L] :
     IsScalarTower R K S :=
   inferInstanceAs (IsScalarTower R K S.toSubalgebra)
@@ -422,11 +438,17 @@ instance isScalarTower_mid' : IsScalarTower K S L :=
 instance {E} [Semiring E] [Algebra L E] : Algebra S E := inferInstanceAs (Algebra S.toSubalgebra E)
 
 section shortcut_instances
+
 variable {E} [Field E] [Algebra L E] (T : IntermediateField S E) {S}
+
 instance : Algebra S T := T.algebra
+
 instance : Module S T := Algebra.toModule
+
 instance : SMul S T := Algebra.toSMul
+
 instance [Algebra K E] [IsScalarTower K L E] : IsScalarTower K S T := T.isScalarTower
+
 end shortcut_instances
 
 /-- Given `f : L →ₐ[K] L'`, `S.comap f` is the intermediate field between `K` and `L`
@@ -434,6 +456,19 @@ end shortcut_instances
 def comap (f : L →ₐ[K] L') (S : IntermediateField K L') : IntermediateField K L where
   __ := S.toSubalgebra.comap f
   inv_mem' x hx := show f x⁻¹ ∈ S by rw [map_inv₀ f x]; exact S.inv_mem hx
+
+@[simp]
+theorem coe_comap (f : L →ₐ[K] L') (S : IntermediateField K L') : (S.comap f : Set L) = f ⁻¹' S :=
+  rfl
+
+@[simp]
+theorem mem_comap {S : IntermediateField K L'} {f : L →ₐ[K] L'} {x : L} :
+    x ∈ S.comap f ↔ f x ∈ S :=
+  Iff.rfl
+
+theorem comap_comap {L'' : Type*} [Field L''] [Algebra K L''] (S : IntermediateField K L'')
+    (g : L' →ₐ[K] L'') (f : L →ₐ[K] L') : (S.comap g).comap f = S.comap (g.comp f) :=
+  rfl
 
 /-- Given `f : L →ₐ[K] L'`, `S.map f` is the intermediate field between `K` and `L'`
 such that `x ∈ S ↔ f x ∈ S.map f`. -/
@@ -459,11 +494,24 @@ theorem toSubfield_map (f : L →ₐ[K] L') : (S.map f).toSubfield = S.toSubfiel
 theorem map_id : S.map (AlgHom.id K L) = S :=
   SetLike.coe_injective <| Set.image_id _
 
+@[simp]
+lemma mem_map {f : L →ₐ[K] L'} {y : L'} : y ∈ S.map f ↔ ∃ x ∈ S, f x = y :=
+  Set.mem_image f S y
+
+-- Higher priority to apply before `mem_map`.
+@[simp 1100]
+theorem map_mem_map (f : L →ₐ[K] L') {x : L} :
+    f x ∈ map f S ↔ x ∈ S :=
+  calc
+    _ ↔ f x ∈ (map f S : Set L') := Iff.rfl
+    _ ↔ _ := by simp [Function.Injective.mem_set_image (f := f) f.injective]
+
 theorem map_map {K L₁ L₂ L₃ : Type*} [Field K] [Field L₁] [Algebra K L₁] [Field L₂] [Algebra K L₂]
     [Field L₃] [Algebra K L₃] (E : IntermediateField K L₁) (f : L₁ →ₐ[K] L₂) (g : L₂ →ₐ[K] L₃) :
     (E.map f).map g = E.map (g.comp f) :=
   SetLike.coe_injective <| Set.image_image _ _ _
 
+@[gcongr]
 theorem map_mono (f : L →ₐ[K] L') {S T : IntermediateField K L} (h : S ≤ T) :
     S.map f ≤ T.map f :=
   SetLike.coe_mono (Set.image_mono h)
@@ -473,8 +521,23 @@ theorem map_le_iff_le_comap {f : L →ₐ[K] L'}
     s.map f ≤ t ↔ s ≤ t.comap f :=
   Set.image_subset_iff
 
+theorem comap_map (f : L →ₐ[K] L') (S : IntermediateField K L) : (S.map f).comap f = S :=
+  SetLike.coe_injective (Set.preimage_image_eq _ f.injective)
+
 theorem gc_map_comap (f : L →ₐ[K] L') : GaloisConnection (map f) (comap f) :=
   fun _ _ ↦ map_le_iff_le_comap
+
+/-- `map f` and `comap f` form a `GaloisCoinsertion`, since an algebra homomorphism out of a field
+is injective. -/
+def gciMapComap (f : L →ₐ[K] L') : GaloisCoinsertion (map f) (comap f) :=
+  (gc_map_comap f).toGaloisCoinsertion fun S ↦ (comap_map f S).le
+
+theorem comap_surjective (f : L →ₐ[K] L') : Function.Surjective (comap f) :=
+  (gciMapComap f).u_surjective
+
+theorem map_le_map_iff (f : L →ₐ[K] L') {S T : IntermediateField K L} :
+    S.map f ≤ T.map f ↔ S ≤ T :=
+  (gciMapComap f).l_le_l_iff
 
 /-- Given an equivalence `e : L ≃ₐ[K] L'` of `K`-field extensions and an intermediate
 field `E` of `L/K`, `intermediateFieldMap e E` is the induced equivalence
@@ -509,13 +572,25 @@ theorem coe_fieldRange : ↑f.fieldRange = Set.range f :=
 theorem fieldRange_toSubfield : f.fieldRange.toSubfield = (f : L →+* L').fieldRange :=
   rfl
 
-variable {f}
-
+variable {f} in
 @[simp]
 theorem mem_fieldRange {y : L'} : y ∈ f.fieldRange ↔ ∃ x, f x = y :=
   Iff.rfl
 
+/-- The isomorphism from `L` to the field range of the `AlgHom` `f`, sending `x` to `f x`. -/
+@[simps! apply_coe]
+noncomputable def equivFieldRange : L ≃ₐ[K] f.fieldRange :=
+  .ofBijective f.rangeRestrict ⟨f.rangeRestrict.injective, fun ⟨_, ⟨x, hx⟩⟩ ↦ ⟨x, Subtype.ext hx⟩⟩
+
+@[deprecated (since := "2026-06-20")] alias equivFieldRange_apply := equivFieldRange_apply_coe
+
 end AlgHom
+
+variable (K L L') in
+@[simp]
+theorem IsScalarTower.toAlgHom_fieldRange [Algebra L L'] [IsScalarTower K L L'] :
+    (IsScalarTower.toAlgHom K L L').fieldRange = Set.range (algebraMap L L') := by
+  ext; simp
 
 namespace IntermediateField
 
@@ -586,7 +661,6 @@ variable {F E : IntermediateField K L}
 @[simp]
 theorem toSubalgebra_inj : F.toSubalgebra = E.toSubalgebra ↔ F = E := toSubalgebra_injective.eq_iff
 
-@[simp]
 theorem toSubfield_inj : F.toSubfield = E.toSubfield ↔ F = E := toSubfield_injective.eq_iff
 
 theorem map_injective (f : L →ₐ[K] L') : Function.Injective (map f) := by
@@ -630,24 +704,25 @@ theorem lift_inj {F : IntermediateField K L} (E E' : IntermediateField K F) :
 
 theorem lift_le {F : IntermediateField K L} (E : IntermediateField K F) : lift E ≤ F := by
   rintro _ ⟨x, _, rfl⟩
-  exact x.2
+  exact x.property
 
 theorem mem_lift {F : IntermediateField K L} {E : IntermediateField K F} (x : F) :
-    x.1 ∈ lift E ↔ x ∈ E :=
+    x.val ∈ lift E ↔ x ∈ E :=
   Subtype.val_injective.mem_set_image
 
 /-- The algEquiv between an intermediate field and its lift. -/
 def liftAlgEquiv {E : IntermediateField K L} (F : IntermediateField K E) : ↥F ≃ₐ[K] lift F where
-  toFun x := ⟨x.1.1, (mem_lift x.1).mpr x.2⟩
-  invFun x := ⟨⟨x.1, lift_le F x.2⟩, (mem_lift ⟨x.1, lift_le F x.2⟩).mp x.2⟩
+  toFun x := ⟨x.val.val, (mem_lift x.val).mpr x.property⟩
+  invFun x := ⟨⟨x.val, lift_le F x.property⟩,
+    (mem_lift ⟨x.val, lift_le F x.property⟩).mp x.property⟩
   left_inv := congrFun rfl
   right_inv := congrFun rfl
   map_mul' _ _ := rfl
   map_add' _ _ := rfl
-  commutes' _ := rfl
+  map_smul' _ _ := rfl
 
 lemma liftAlgEquiv_apply {E : IntermediateField K L} (F : IntermediateField K E) (x : F) :
-    (liftAlgEquiv F x).1 = x := rfl
+    (liftAlgEquiv F x).val = x := rfl
 
 section RestrictScalars
 
@@ -689,6 +764,15 @@ theorem restrictScalars_inj {E E' : IntermediateField L' L} :
     E.restrictScalars K = E'.restrictScalars K ↔ E = E' :=
   (restrictScalars_injective K).eq_iff
 
+instance (E : IntermediateField L' L) : Algebra L' (E.restrictScalars K) :=
+  inferInstanceAs (Algebra L' E)
+
+instance (E : IntermediateField L' L) : IsScalarTower L' (E.restrictScalars K) L :=
+  inferInstanceAs (IsScalarTower L' E L)
+
+instance (E : IntermediateField L' L) : IsScalarTower K L' (E.restrictScalars K) :=
+  inferInstanceAs (IsScalarTower K L' E)
+
 end RestrictScalars
 
 /-- This was formerly an instance called `lift2_alg`, but an instance above already provides it. -/
@@ -704,7 +788,7 @@ variable {F : Type*} [Field F] {E : Type*} [Field E] [Algebra F E]
 /-- Construct an algebra isomorphism from an equality of intermediate fields. -/
 @[simps! apply]
 def equivOfEq {S T : IntermediateField F E} (h : S = T) : S ≃ₐ[F] T :=
-  Subalgebra.equivOfEq _ _ (congr_arg toSubalgebra h)
+  Subalgebra.equivOfEq _ _ congr(toSubalgebra $h)
 
 @[simp]
 theorem equivOfEq_symm {S T : IntermediateField F E} (h : S = T) :
@@ -768,17 +852,17 @@ variable (F)
 into an order isomorphism from
 `{ E : Subfield L // F ≤ E }` to `IntermediateField F L`. Its inverse is
 `IntermediateField.toSubfield`. -/
-@[simps]
+@[simps apply symm_apply]
 def extendScalars.orderIso :
     { E : Subfield L // F ≤ E } ≃o IntermediateField F L where
-  toFun E := extendScalars E.2
+  toFun E := extendScalars E.property
   invFun E := ⟨E.toSubfield, fun x hx ↦ E.algebraMap_mem ⟨x, hx⟩⟩
   map_rel_iff' {E E'} := by
     simp only [Equiv.coe_fn_mk]
     exact extendScalars_le_extendScalars_iff _ _
 
 theorem extendScalars_injective :
-    Function.Injective fun E : { E : Subfield L // F ≤ E } ↦ extendScalars E.2 :=
+    Function.Injective fun E : { E : Subfield L // F ≤ E } ↦ extendScalars E.property :=
   (extendScalars.orderIso F).injective
 
 end Subfield
@@ -821,14 +905,14 @@ into an order isomorphism from
 `IntermediateField.restrictScalars`. -/
 @[simps]
 def extendScalars.orderIso : { E : IntermediateField K L // F ≤ E } ≃o IntermediateField F L where
-  toFun E := extendScalars E.2
+  toFun E := extendScalars E.property
   invFun E := ⟨E.restrictScalars K, fun x hx ↦ E.algebraMap_mem ⟨x, hx⟩⟩
   map_rel_iff' {E E'} := by
     simp only [Equiv.coe_fn_mk]
     exact extendScalars_le_extendScalars_iff _ _
 
 theorem extendScalars_injective :
-    Function.Injective fun E : { E : IntermediateField K L // F ≤ E } ↦ extendScalars E.2 :=
+    Function.Injective fun E : { E : IntermediateField K L // F ≤ E } ↦ extendScalars E.property :=
   (extendScalars.orderIso F).injective
 
 end IntermediateField
@@ -853,7 +937,7 @@ If `F ≤ E` are two intermediate fields of `L / K`, then `F` is also an interme
 def restrict : IntermediateField K E :=
   (IntermediateField.inclusion h).fieldRange
 
-theorem mem_restrict (x : E) : x ∈ restrict h ↔ x.1 ∈ F :=
+theorem mem_restrict (x : E) : x ∈ restrict h ↔ x.val ∈ F :=
   Set.ext_iff.mp (Set.range_inclusion h) x
 
 @[simp]
@@ -868,9 +952,12 @@ theorem lift_restrict : lift (restrict h) = F := by
 /--
 `F` is equivalent to `F` as an intermediate field of `E / K`.
 -/
-noncomputable def restrict_algEquiv :
+noncomputable def restrictAlgEquiv :
     F ≃ₐ[K] ↥(IntermediateField.restrict h) :=
   AlgEquiv.ofInjectiveField _
+
+@[deprecated (since := "2026-07-25")]
+alias restrict_algEquiv := restrictAlgEquiv
 
 end Restrict
 

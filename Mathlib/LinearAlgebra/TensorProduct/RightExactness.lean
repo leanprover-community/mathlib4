@@ -5,7 +5,7 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Algebra.Exact
+public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
 public import Mathlib.RingTheory.TensorProduct.Maps
@@ -82,7 +82,6 @@ to compute some kernels.
   [Grillet-1969b], Pierre-Antoine Grillet,
   *The tensor product of commutative semigroups*,
   Trans. Amer. Math. Soc. 138 (1969), 281-293, doi:10.1090/S0002-9947-1969-0237688-1 .)
-
 -/
 
 @[expose] public section
@@ -118,7 +117,6 @@ theorem LinearMap.lTensor_surjective (hg : Function.Surjective g) :
     Function.Surjective (lTensor Q g) := by
   intro z
   induction z with
-  | zero => exact ⟨0, map_zero _⟩
   | tmul q p =>
     obtain ⟨n, rfl⟩ := hg p
     exact ⟨q ⊗ₜ[R] n, rfl⟩
@@ -138,12 +136,17 @@ theorem LinearMap.lTensor_range :
   apply lTensor_surjective
   rw [← range_eq_top, range_rangeRestrict]
 
+/-- If `g` is surjective, then `g.baseChange A` is surjective. -/
+theorem LinearMap.baseChange_surjective (A : Type*) [Semiring A] [Algebra R A]
+    (hg : Function.Surjective g) : Function.Surjective (g.baseChange A) := by
+  rw [LinearMap.baseChange_eq_lTensor]
+  exact lTensor_surjective _ hg
+
 /-- If `g` is surjective, then `rTensor Q g` is surjective -/
 theorem LinearMap.rTensor_surjective (hg : Function.Surjective g) :
     Function.Surjective (rTensor Q g) := by
   intro z
   induction z with
-  | zero => exact ⟨0, map_zero _⟩
   | tmul p q =>
     obtain ⟨n, rfl⟩ := hg p
     exact ⟨n ⊗ₜ[R] q, rfl⟩
@@ -169,6 +172,17 @@ lemma LinearMap.rTensor_exact_iff_lTensor_exact :
   Function.Exact.iff_of_ladder_linearEquiv (e₁ := TensorProduct.comm _ _ _)
     (e₂ := TensorProduct.comm _ _ _) (e₃ := TensorProduct.comm _ _ _)
     (by ext; simp) (by ext; simp)
+
+lemma LinearMap.range_baseChange {A : Type*} [Semiring A] [Algebra R A] (f : M →ₗ[R] N) :
+    (f.baseChange A).range = f.range.baseChange A := by
+  simp_rw [Submodule.baseChange, ← f.subtype_comp_rangeRestrict, baseChange_comp]
+  rw [range_comp_of_range_eq_top]
+  simp [range_eq_top.mpr, baseChange_surjective, f.surjective_rangeRestrict]
+
+lemma Submodule.baseChange_map {A : Type*} [Semiring A] [Algebra R A] (f : M →ₗ[R] N)
+    (p : Submodule R M) : (p.map f).baseChange A = (p.baseChange A).map (f.baseChange A) := by
+  conv_lhs => rw [← p.range_subtype, ← range_comp, ← range_baseChange]
+  simp [baseChange, baseChange_comp, range_comp]
 
 variable (hg : Function.Surjective g)
     {N' P' : Type*} [AddCommMonoid N'] [AddCommMonoid P'] [Module R N'] [Module R P']
@@ -198,11 +212,11 @@ noncomputable def lTensor.toFun (hfg : Exact f g) :
     rw [LinearMap.range_le_iff_comap, ← LinearMap.ker_comp,
       ← lTensor_comp, hfg.linearMap_comp_eq_zero, lTensor_zero, ker_zero]
 
-/-- The inverse map in `lTensor.equiv_of_rightInverse` (computably, given a right inverse) -/
+/-- The inverse map in `lTensor.linearEquiv_of_rightInverse` (computably, given a right inverse). -/
 noncomputable def lTensor.inverse_of_rightInverse {h : P → N} (hfg : Exact f g)
     (hgh : Function.RightInverse h g) :
     Q ⊗[R] P →ₗ[R] Q ⊗[R] N ⧸ LinearMap.range (lTensor Q f) :=
-  TensorProduct.lift <| LinearMap.flip <| {
+  TensorProduct.lift <| LinearMap.flip {
     toFun := fun p ↦ Submodule.mkQ _ ∘ₗ ((TensorProduct.mk R _ _).flip (h p))
     map_add' := fun p p' => LinearMap.ext fun q => (Submodule.Quotient.eq _).mpr <| by
       change q ⊗ₜ[R] (h (p + p')) - (q ⊗ₜ[R] (h p) + q ⊗ₜ[R] (h p')) ∈ range (lTensor Q f)
@@ -257,10 +271,9 @@ lemma lTensor.inverse_comp_lTensor :
       Submodule.mkQ (p := LinearMap.range (lTensor Q f)) := by
   rw [lTensor.inverse, lTensor.inverse_of_rightInverse_comp_lTensor]
 
-set_option linter.style.whitespace false in -- manual alignment is not recognised
-/-- For a surjective `f : N →ₗ[R] P`,
-  the natural equivalence between `Q ⊗ N ⧸ (image of ker f)` to `Q ⊗ P`
-  (computably, given a right inverse) -/
+/-- For a surjective `g : N → P`,
+  the natural equivalence between `Q ⊗ N ⧸ (image of (id Q) ⊗ f)` to `Q ⊗ P`
+  (computably, given a right inverse). -/
 noncomputable
 def lTensor.linearEquiv_of_rightInverse {h : P → N} (hgh : Function.RightInverse h g) :
     ((Q ⊗[R] N) ⧸ (LinearMap.range (lTensor Q f))) ≃ₗ[R] (Q ⊗[R] P) := {
@@ -276,8 +289,8 @@ def lTensor.linearEquiv_of_rightInverse {h : P → N} (hgh : Function.RightInver
     rw [lTensor.inverse_of_rightInverse_apply]
     simp only [lTensor.toFun, Submodule.liftQ_apply] }
 
-/-- For a surjective `f : N →ₗ[R] P`,
-  the natural equivalence between `Q ⊗ N ⧸ (image of ker f)` to `Q ⊗ P` -/
+/-- For a surjective `g : N → P`,
+  the natural equivalence between `Q ⊗ N ⧸ (image of (id Q) ⊗ f)` to `Q ⊗ P`. -/
 noncomputable def lTensor.equiv :
     ((Q ⊗[R] N) ⧸ (LinearMap.range (lTensor Q f))) ≃ₗ[R] (Q ⊗[R] P) :=
   lTensor.linearEquiv_of_rightInverse Q hfg (Function.rightInverse_surjInv hg)
@@ -305,7 +318,7 @@ noncomputable def rTensor.toFun (hfg : Exact f g) :
     rw [range_le_iff_comap, ← ker_comp, ← rTensor_comp,
       hfg.linearMap_comp_eq_zero, rTensor_zero, ker_zero]
 
-/-- The inverse map in `rTensor.equiv_of_rightInverse` (computably, given a right inverse) -/
+/-- The inverse map in `rTensor.linearEquiv_of_rightInverse` (computably, given a right inverse) -/
 noncomputable def rTensor.inverse_of_rightInverse {h : P → N} (hfg : Exact f g)
     (hgh : Function.RightInverse h g) :
     P ⊗[R] Q →ₗ[R] N ⊗[R] Q ⧸ LinearMap.range (rTensor Q f) :=
@@ -363,10 +376,9 @@ lemma rTensor.inverse_comp_rTensor :
       Submodule.mkQ (p := LinearMap.range (rTensor Q f)) := by
   rw [rTensor.inverse, rTensor.inverse_of_rightInverse_comp_rTensor]
 
-set_option linter.style.whitespace false in -- manual alignment is not recognised
-/-- For a surjective `f : N →ₗ[R] P`,
-  the natural equivalence between `N ⊗[R] Q ⧸ (range (rTensor Q f))` and `P ⊗[R] Q`
-  (computably, given a right inverse) -/
+/-- For a surjective `g : N → P`,
+  the natural equivalence between `N ⊗ Q ⧸ (image of f ⊗ (id Q))` and `P ⊗ Q`
+  (computably, given a right inverse). -/
 noncomputable
 def rTensor.linearEquiv_of_rightInverse {h : P → N} (hgh : Function.RightInverse h g) :
     ((N ⊗[R] Q) ⧸ (range (rTensor Q f))) ≃ₗ[R] (P ⊗[R] Q) := {
@@ -382,8 +394,8 @@ def rTensor.linearEquiv_of_rightInverse {h : P → N} (hgh : Function.RightInver
     rw [rTensor.inverse_of_rightInverse_apply]
     simp only [rTensor.toFun, Submodule.liftQ_apply] }
 
-/-- For a surjective `f : N →ₗ[R] P`,
-  the natural equivalence between `N ⊗[R] Q ⧸ (range (rTensor Q f))` and `P ⊗[R] Q` -/
+/-- For a surjective `g : N → P`,
+  the natural equivalence between `N ⊗ Q ⧸ (image of f ⊗ (id Q))` and `P ⊗ Q`. -/
 noncomputable def rTensor.equiv :
     ((N ⊗[R] Q) ⧸ (LinearMap.range (rTensor Q f))) ≃ₗ[R] (P ⊗[R] Q) :=
   rTensor.linearEquiv_of_rightInverse Q hfg (Function.rightInverse_surjInv hg)
@@ -465,14 +477,8 @@ lemma Ideal.map_includeLeft_eq (I : Ideal A) :
       simp only [map_add]
     · rintro a x - ⟨x, hx, rfl⟩
       induction a with
-      | zero =>
-        use 0
-        simp only [map_zero, smul_eq_mul, zero_mul]
       | tmul a b =>
         induction x with
-        | zero =>
-          use 0
-          simp only [map_zero, smul_eq_mul, mul_zero]
         | tmul x y =>
           use (a • x) ⊗ₜ[R] (b * y)
           simp only [smul_eq_mul]
@@ -489,9 +495,6 @@ lemma Ideal.map_includeLeft_eq (I : Ideal A) :
         simp only [map_add, ha', add_smul, hb']
   · rintro x ⟨y, rfl⟩
     induction y with
-    | zero =>
-        rw [map_zero]
-        apply zero_mem
     | tmul a b =>
         simp only [LinearMap.rTensor_tmul, Submodule.coe_subtype]
         suffices (a : A) ⊗ₜ[R] b = ((1 : A) ⊗ₜ[R] b) * ((a : A) ⊗ₜ[R] (1 : B)) by
@@ -529,14 +532,8 @@ lemma Ideal.map_includeRight_eq (I : Ideal B) :
       simp only [map_add]
     · rintro a x - ⟨x, hx, rfl⟩
       induction a with
-      | zero =>
-        use 0
-        simp only [map_zero, smul_eq_mul, zero_mul]
       | tmul a b =>
         induction x with
-        | zero =>
-          use 0
-          simp only [map_zero, smul_eq_mul, mul_zero]
         | tmul x y =>
           use (a * x) ⊗ₜ[R] (b • y)
           simp only [LinearMap.lTensor_tmul, Submodule.coe_subtype, smul_eq_mul, tmul_mul_tmul]
@@ -553,9 +550,6 @@ lemma Ideal.map_includeRight_eq (I : Ideal B) :
         simp only [map_add, ha', add_smul, hb']
   · rintro x ⟨y, rfl⟩
     induction y with
-    | zero =>
-        rw [map_zero]
-        apply zero_mem
     | tmul a b =>
         simp only [LinearMap.lTensor_tmul, Submodule.coe_subtype]
         suffices a ⊗ₜ[R] (b : B) = (a ⊗ₜ[R] (1 : B)) * ((1 : A) ⊗ₜ[R] (b : B)) by
@@ -571,13 +565,22 @@ lemma Ideal.map_includeRight_eq (I : Ideal B) :
         rw [map_add]
         apply Submodule.add_mem _ hx hy
 
+variable (A) in
+lemma TensorProduct.AlgebraTensorModule.range_lTensor_idealMap (S : Type*) [CommSemiring S]
+    [Algebra R S] [Algebra S A] [IsScalarTower R S A] (I : Ideal B) :
+    LinearMap.range (lTensor S A (I.subtype.restrictScalars R)) =
+      (I.map (includeRight (A := A) (R := R))).restrictScalars S := by
+  rw [← (Submodule.restrictScalars_injective R _ _).eq_iff]
+  exact (I.map_includeRight_eq (R := R) (A := A)).symm
+
 -- Now, we can prove the right exactness properties of the tensor product,
 -- in its versions for algebras
 
-variable {R : Type*} [CommRing R]
+variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
   {A B C D : Type*} [Ring A] [Ring B] [Ring C] [Ring D]
-  [Algebra R A] [Algebra R B] [Algebra R C] [Algebra R D]
-  (f : A →ₐ[R] B) (g : C →ₐ[R] D)
+  [Algebra R A] [Algebra R B] [Algebra R C] [Algebra R D] [Algebra S A] [Algebra S B]
+  [IsScalarTower R S A] [IsScalarTower R S B]
+  (f : A →ₐ[S] B) (g : C →ₐ[R] D)
 
 /-- If `g` is surjective, then the kernel of `(id A) ⊗ g` is generated by the kernel of `g` -/
 lemma Algebra.TensorProduct.lTensor_ker (hg : Function.Surjective g) :
@@ -596,10 +599,15 @@ lemma Algebra.TensorProduct.rTensor_ker (hf : Function.Surjective f) :
       (RingHom.ker f).map (Algebra.TensorProduct.includeLeft : A →ₐ[R] A ⊗[R] C) := by
   rw [← Submodule.restrictScalars_inj R]
   have : (RingHom.ker (map f (AlgHom.id R C))).restrictScalars R =
-    LinearMap.ker (LinearMap.rTensor C (AlgHom.toLinearMap f)) := rfl
+    LinearMap.ker (LinearMap.rTensor C (f.restrictScalars R).toLinearMap) := rfl
   rw [this, Ideal.map_includeLeft_eq]
-  rw [(rTensor_exact C f.toLinearMap.exact_subtype_ker_map hf).linearMap_ker_eq]
+  rw [(rTensor_exact C (f.restrictScalars R).toLinearMap.exact_subtype_ker_map hf).linearMap_ker_eq]
   rfl
+
+theorem Algebra.TensorProduct.map_surjective
+    (hf : Function.Surjective f) (hg : Function.Surjective g) :
+    Function.Surjective (map f g) :=
+  _root_.TensorProduct.map_surjective (g := f.toLinearMap.restrictScalars R) hf hg
 
 /-- If `f` and `g` are surjective morphisms of algebras, then
   the kernel of `Algebra.TensorProduct.map f g` is generated by the kernels of `f` and `g` -/
@@ -608,7 +616,7 @@ theorem Algebra.TensorProduct.map_ker (hf : Function.Surjective f) (hg : Functio
       (RingHom.ker f).map (Algebra.TensorProduct.includeLeft : A →ₐ[R] A ⊗[R] C) ⊔
         (RingHom.ker g).map (Algebra.TensorProduct.includeRight : C →ₐ[R] A ⊗[R] C) := by
   -- rewrite map f g as the composition of two maps
-  have : map f g = (map f (AlgHom.id R D)).comp (map (AlgHom.id R A) g) := ext rfl rfl
+  have : map f g = (map f (AlgHom.id R D)).comp (map (AlgHom.id S A) g) := ext rfl rfl
   rw [this]
   -- this needs some rewriting to RingHom
   -- TODO: can `RingHom.comap_ker` take an arbitrary `RingHomClass`, rather than just `RingHom`?

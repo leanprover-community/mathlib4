@@ -7,7 +7,11 @@ module
 
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Subobject
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
-public import Mathlib.CategoryTheory.MorphismProperty.Limits
+
+import Mathlib.CategoryTheory.Abelian.FunctorCategory
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Morphisms to a colimit in a Grothendieck abelian category
@@ -25,7 +29,6 @@ then the map from the colimit of the types `X ⟶ Y j` to
 additional assumption that for any map `f : j ⟶ j'` in `J`,
 `Y.map f` is a monomorphism, see
 `IsGrothendieckAbelian.preservesColimit_coyoneda_obj_of_mono`.
-
 -/
 
 @[expose] public section
@@ -86,14 +89,14 @@ lemma hf (j : Under j₀) :
 
 variable {y} in
 include hc hy in
-lemma epi_f [IsFiltered J] : Epi (f y) := by
-  exact (colim.exact_mapShortComplex
+lemma epi_f [IsFiltered J] : Epi (f y) :=
+  (colim.exact_mapShortComplex
     ((ShortComplex.mk _ _ (kernel.condition (g y))).exact_of_f_is_kernel
       (kernelIsKernel (g y)))
     (colimit.isColimit _) (isColimitConstCocone _ _)
     ((Functor.Final.isColimitWhiskerEquiv (Under.forget j₀) c).symm hc) (f y) 0
-    (fun j ↦ by simpa using hf y j)
-    (fun _ ↦ by simpa using hy.symm)).epi_f rfl
+    (fun j ↦ by simpa using! hf y j)
+    (fun _ ↦ by simpa using! hy.symm)).epi_f rfl
 
 /-- The kernel of `g y` gives a family of subobjects of `X` indexed by `Under j₀`, and
 we consider it as a functor `Under j₀ ⥤ MonoOver X`. -/
@@ -111,17 +114,18 @@ variable {κ : Cardinal.{w}} [hκ : Fact κ.IsRegular] [IsCardinalFiltered J κ]
 
 include hXκ hc
 
+set_option backward.defeqAttrib.useBackward true in
 open injectivity₀ in
 lemma injectivity₀ {j₀ : J} (y : X ⟶ Y.obj j₀) (hy : y ≫ c.ι.app j₀ = 0) :
     ∃ (j : J) (φ : j₀ ⟶ j), y ≫ Y.map φ = 0 := by
   have := isFiltered_of_isCardinalFiltered J κ
   obtain ⟨j, h⟩ := exists_isIso_of_functor_from_monoOver (F y) hXκ _
-      (colimit.isColimit (kernel (g y))) (f y) (fun j ↦ by simpa using hf y j)
+      (colimit.isColimit (kernel (g y))) (f y) (fun j ↦ by simpa using! hf y j)
       (epi_f hc hy)
   dsimp at h
   refine ⟨j.right, j.hom, ?_⟩
   simpa only [← cancel_epi ((kernel.ι (g y)).app j), comp_zero]
-    using NatTrans.congr_app (kernel.condition (g y)) j
+    using! congr($(kernel.condition (g y)).app j)
 
 lemma injectivity (j₀ : J) (y₁ y₂ : X ⟶ Y.obj j₀)
     (hy : y₁ ≫ c.ι.app j₀ = y₂ ≫ c.ι.app j₀) :
@@ -185,7 +189,7 @@ lemma isIso_f [IsFiltered J] : IsIso (f z) := by
       constCocone_ι, NatTrans.id_app, Category.comp_id]
     apply hf
   · refine ((MorphismProperty.isomorphisms C).arrow_mk_iso_iff ?_).2
-      (inferInstanceAs (IsIso (𝟙 c.pt)))
+      ((inferInstance : IsIso (𝟙 c.pt)))
     exact Arrow.isoMk (IsColimit.coconePointUniqueUpToIso (colimit.isColimit Y) hc)
       (IsColimit.coconePointUniqueUpToIso (colimit.isColimit _)
         (isColimitConstCocone J c.pt))
@@ -196,6 +200,8 @@ lemma epi_f [IsFiltered J] : Epi (f z) := by
 
 end surjectivity
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 include hc in
 open surjectivity in
 lemma surjectivity [∀ (j j' : J) (φ : j ⟶ j'), Mono (Y.map φ)]

@@ -6,7 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Triangulated.Adjunction
-public import Mathlib.CategoryTheory.Triangulated.Opposite.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The triangulated equivalence `Cᵒᵖᵒᵖ ≌ C`.
@@ -16,7 +18,6 @@ the functors `opOp C : C ⥤ Cᵒᵖᵒᵖ` and `unopUnop C : Cᵒᵖᵒᵖ ⥤ 
 We also show that the unit and counit isomorphisms of the equivalence
 `opOpEquivalence C : Cᵒᵖᵒᵖ ≌ C` are compatible with shifts, which is summarized
 by the property `(opOpEquivalence C).IsTriangulated`.
-
 -/
 
 @[expose] public section
@@ -100,12 +101,10 @@ instance : (opOp C).CommShift ℤ where
   commShiftIso := iso _
   commShiftIso_zero := by
     ext X
-    refine Quiver.Hom.unop_inj (Quiver.Hom.unop_inj ?_)
     simp [iso_hom_app X 0 0, shiftFunctorZero_op_inv_app,
       shiftFunctorZero_op_hom_app]
   commShiftIso_add p q := by
     ext X
-    refine Quiver.Hom.unop_inj (Quiver.Hom.unop_inj ?_)
     simp [← shiftFunctorAdd'_eq_shiftFunctorAdd, ← unop_comp_assoc, ← Functor.map_comp,
       fun X n ↦ iso_hom_app X n (-n) (add_neg_cancel n),
       shiftFunctor_op_map _ q (-q),
@@ -188,18 +187,18 @@ instance : (opOp C).IsTriangulated where
     refine isomorphic_distinguished _ (op_distinguished _ (op_distinguished _ hT)) _
       (Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) (by simp) (by simp)
       (Quiver.Hom.unop_inj ?_))
-    have := (shiftFunctorCompIsoId C (-1) 1 (neg_add_cancel 1)).inv.naturality T.mor₃
-    dsimp at this ⊢
+    dsimp
     simp only [shiftFunctor_op_map _ 1 (-1), Functor.op_obj,
       unop_id, shiftFunctor_op_map _ (-1) 1,
       commShiftIso_opOp_hom_app _ 1 (-1),
       opShiftFunctorEquivalence_counitIso_inv_app _ 1 (-1) (add_neg_cancel 1),
       unop_comp, Quiver.Hom.unop_op, Category.assoc, ← op_comp, Iso.inv_hom_id_app_assoc,
       shiftFunctorCompIsoId_op_hom_app, Iso.unop_hom_inv_id_app_assoc, ← Functor.map_comp]
-    simp [Functor.map_comp, shift_shiftFunctorCompIsoId_hom_app, ← reassoc_of% this]
+    simp [Functor.map_comp, shift_shiftFunctorCompIsoId_hom_app,
+      ← dsimp% (shiftFunctorCompIsoId C (-1) 1 (neg_add_cancel 1)).inv.naturality_assoc T.mor₃]
 
 instance : (opOpEquivalence C).IsTriangulated :=
-  .mk'' _ (by dsimp; infer_instance)
+  .mk'' _ <| inferInstanceAs <| (opOp C).IsTriangulated
 
 instance : (unopUnop C).IsTriangulated :=
   inferInstanceAs ((opOpEquivalence C).functor.IsTriangulated)

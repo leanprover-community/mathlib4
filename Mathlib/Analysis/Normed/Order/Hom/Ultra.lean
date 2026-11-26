@@ -8,13 +8,16 @@ module
 public import Mathlib.Analysis.Normed.Order.Hom.Basic
 public import Mathlib.Topology.MetricSpace.Ultra.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Constructing nonarchimedean (ultrametric) normed groups from nonarchimedean normed homs
 
 This file defines constructions that upgrade `Add(Comm)Group` to `(Semi)NormedAdd(Comm)Group`
 using an `AddGroup(Semi)normClass` when the codomain is the reals and the hom is nonarchimedean.
 
-## Implementation details
+## Implementation notes
 
 The lemmas need to assume `[Dist α]` to be able to be stated, so they take an extra argument
 that shows that this distance instance is propositionally equal to the one that comes from the
@@ -32,5 +35,8 @@ lemma AddGroupSeminormClass.isUltrametricDist [AddGroup α] [AddGroupSeminormCla
     [inst : Dist α] {f : F} (hna : IsNonarchimedean f)
     (hd : inst = (AddGroupSeminormClass.toSeminormedAddGroup f).toDist := by rfl) :
     IsUltrametricDist α :=
-  ⟨fun x y z ↦ by simpa only [hd, dist_eq_norm, AddGroupSeminormClass.toSeminormedAddGroup_norm_eq,
-      ← sub_add_sub_cancel x y z] using hna _ _⟩
+  ⟨fun x y z ↦ by
+    simp +instances only [hd, dist_eq_norm_neg_add,
+      AddGroupSeminormClass.toSeminormedAddGroup_norm_eq]
+    convert hna (-x + y) (-y + z) using 2
+    rw [add_assoc, ← add_assoc y, add_neg_cancel, zero_add]⟩

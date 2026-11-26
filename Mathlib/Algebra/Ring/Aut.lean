@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.End
 public import Mathlib.Algebra.Ring.Equiv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ring automorphisms
 
@@ -49,7 +52,7 @@ instance : Inhabited (RingAut R) :=
   ⟨1⟩
 
 /-- Monoid homomorphism from ring automorphisms to additive automorphisms. -/
-def toAddAut : RingAut R →* AddAut R where
+def toAddAut : RingAut R →* Multiplicative (AddAut R) where
   toFun := RingEquiv.toAddEquiv
   map_one' := rfl
   map_mul' _ _ := rfl

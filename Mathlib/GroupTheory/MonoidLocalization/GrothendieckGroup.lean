@@ -5,7 +5,7 @@ Authors: Alex J. Best, Yaël Dillies
 -/
 module
 
-public import Mathlib.GroupTheory.MonoidLocalization.Basic
+public import Mathlib.GroupTheory.MonoidLocalization.Maps
 
 /-!
 # Grothendieck group

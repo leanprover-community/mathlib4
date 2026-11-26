@@ -8,15 +8,16 @@ module
 public import Mathlib.CategoryTheory.IsConnected
 public import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Connected shapes
 
 In this file we prove that various shapes are connected.
-
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

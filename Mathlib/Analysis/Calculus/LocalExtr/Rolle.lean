@@ -6,7 +6,8 @@ Authors: Yury Kudryashov, Anatole Dedecker
 module
 
 public import Mathlib.Analysis.Calculus.LocalExtr.Basic
-public import Mathlib.Topology.Order.Rolle
+
+import Mathlib.Topology.Order.Rolle
 
 /-!
 # Rolle's Theorem
@@ -44,7 +45,9 @@ local extremum, Rolle's Theorem
 
 public section
 
-open Set Filter Topology
+open Set Filter
+
+open scoped Topology
 
 variable {f f' : ℝ → ℝ} {a b l : ℝ}
 
@@ -55,6 +58,7 @@ theorem exists_hasDerivAt_eq_zero (hab : a < b) (hfc : ContinuousOn f (Icc a b))
   ⟨c, cmem, hc.hasDerivAt_eq_zero <| hff' c cmem⟩
 
 /-- **Rolle's Theorem** `deriv` version -/
+@[wikidata Q193286]
 theorem exists_deriv_eq_zero (hab : a < b) (hfc : ContinuousOn f (Icc a b)) (hfI : f a = f b) :
     ∃ c ∈ Ioo a b, deriv f c = 0 :=
   let ⟨c, cmem, hc⟩ := exists_isLocalExtr_Ioo hab hfc hfI

@@ -5,12 +5,13 @@ Authors: Justus Springer
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Spaces
-public import Mathlib.Topology.Sheaves.Sheaf
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.Basic
+public import Mathlib.Topology.Sheaves.Sheaf
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
-
 # Coverings and sieves; from sheaves on sites and sheaves on spaces
 
 In this file, we connect coverings in a topological space to sieves in the associated Grothendieck
@@ -20,7 +21,6 @@ on spaces.
 We also specialize results about sheaves on sites to sheaves on spaces; we show that the inclusion
 functor from a topological basis to `TopologicalSpace.Opens` is cover dense, that open maps
 induce cover-preserving functors, and that open embeddings induce continuous functors.
-
 -/
 
 @[expose] public section
@@ -58,9 +58,9 @@ theorem iSup_eq_of_mem_grothendieck (hR : Sieve.generate R ∈ Opens.grothendiec
   apply le_antisymm
   · refine iSup_le ?_
     intro f
-    exact f.2.1.le
+    exact f.2.val.le
   intro x hxU
-  rw [Opens.coe_iSup, Set.mem_iUnion]
+  rw [Opens.mem_iSup]
   obtain ⟨V, iVU, ⟨W, iVW, iWU, hiWU, -⟩, hxV⟩ := hR x hxU
   exact ⟨⟨W, ⟨iWU, hiWU⟩⟩, iVW.le hxV⟩
 
@@ -109,11 +109,11 @@ def homOfIndex (i : ι) : Σ V, { f : V ⟶ iSup U // presieveOfCovering U f } :
 `presieveOfCovering U f` can be turned into an index `i : ι`, such that `V = U i`.
 -/
 def indexOfHom (f : Σ V, { f : V ⟶ iSup U // presieveOfCovering U f }) : ι :=
-  f.2.2.choose
+  f.2.property.choose
 
 theorem indexOfHom_spec (f : Σ V, { f : V ⟶ iSup U // presieveOfCovering U f }) :
     f.1 = U (indexOfHom U f) :=
-  f.2.2.choose_spec
+  f.2.property.choose_spec
 
 end presieveOfCovering
 
@@ -121,13 +121,13 @@ end TopCat.Presheaf
 
 namespace TopCat.Opens
 
-variable {X : TopCat} {ι : Type*}
+variable {X : TopCat.{w}} {ι : Type*}
 
 theorem coverDense_iff_isBasis [Category* ι] (B : ι ⥤ Opens X) :
     B.IsCoverDense (Opens.grothendieckTopology X) ↔ Opens.IsBasis (Set.range B.obj) := by
   rw [Opens.isBasis_iff_nbhd]
   constructor
-  · intro hd U x hx; rcases hd.1 U x hx with ⟨V, f, ⟨i, f₁, f₂, _⟩, hV⟩
+  · intro hd U x hx; rcases hd.is_cover U x hx with ⟨V, f, ⟨i, f₁, f₂, _⟩, hV⟩
     exact ⟨B.obj i, ⟨i, rfl⟩, f₁.le hV, f₂.le⟩
   intro hb; constructor; intro U x hx; rcases hb hx with ⟨_, ⟨i, rfl⟩, hx, hi⟩
   exact ⟨B.obj i, ⟨⟨hi⟩⟩, ⟨⟨i, 𝟙 _, ⟨⟨hi⟩⟩, rfl⟩⟩, hx⟩
@@ -146,8 +146,8 @@ variable {C : Type u} [Category.{v} C]
 variable {X Y : TopCat.{w}} {f : X ⟶ Y} {F : Y.Presheaf C}
 
 theorem Topology.IsOpenEmbedding.compatiblePreserving (hf : IsOpenEmbedding f) :
-    CompatiblePreserving (Opens.grothendieckTopology Y) hf.isOpenMap.functor := by
-  haveI : Mono f := (TopCat.mono_iff_injective f).mpr hf.injective
+    CompatiblePreserving (Opens.grothendieckTopology Y) hf.functor := by
+  have : Mono f := (TopCat.mono_iff_injective f).mpr hf.injective
   apply compatiblePreservingOfDownwardsClosed
   intro U V i
   refine ⟨(Opens.map f).obj V, eqToIso <| Opens.ext <| Set.image_preimage_eq_of_subset fun x h ↦ ?_⟩
@@ -163,16 +163,25 @@ theorem IsOpenMap.coverPreserving (hf : IsOpenMap f) :
 
 
 lemma Topology.IsOpenEmbedding.functor_isContinuous (h : IsOpenEmbedding f) :
-    h.isOpenMap.functor.IsContinuous (Opens.grothendieckTopology X)
+    h.functor.IsContinuous (Opens.grothendieckTopology X)
       (Opens.grothendieckTopology Y) := by
   apply Functor.isContinuous_of_coverPreserving
   · exact h.compatiblePreserving
   · exact h.isOpenMap.coverPreserving
 
 theorem TopCat.Presheaf.isSheaf_of_isOpenEmbedding (h : IsOpenEmbedding f) (hF : F.IsSheaf) :
-    IsSheaf (h.isOpenMap.functor.op ⋙ F) := by
+    IsSheaf (h.functor.op ⋙ F) := by
   have := h.functor_isContinuous
   exact Functor.op_comp_isSheaf _ _ _ ⟨_, hF⟩
+
+/-- The restriction functor of a sheaf to an open subspace. -/
+@[simps!]
+def TopologicalSpace.Opens.sheafRestrict (U : Opens X) :
+    Sheaf (Opens.grothendieckTopology X) C ⥤ Sheaf (Opens.grothendieckTopology U) C :=
+  haveI H : IsOpenEmbedding (TopCat.Hom.hom (TopCat.ofHom ⟨_, continuous_subtypeVal⟩)) :=
+    U.isOpenEmbedding
+  haveI := H.functor_isContinuous
+  H.isOpenMap.functor.sheafPushforwardContinuous C _ _
 
 variable (f)
 
@@ -216,12 +225,12 @@ variable {X : TopCat.{w}} {ι : Type*} {B : ι → Opens X}
 variable (F : X.Presheaf C) (F' : Sheaf C X)
 
 /-- The empty component of a sheaf is terminal. -/
-def isTerminalOfEmpty (F : Sheaf C X) : Limits.IsTerminal (F.val.obj (op ⊥)) :=
+def isTerminalOfEmpty (F : Sheaf C X) : Limits.IsTerminal (F.obj.obj (op ⊥)) :=
   F.isTerminalOfBotCover ⊥ (fun _ h => h.elim)
 
 /-- A variant of `isTerminalOfEmpty` that is easier to `apply`. -/
 def isTerminalOfEqEmpty (F : X.Sheaf C) {U : Opens X} (h : U = ⊥) :
-    Limits.IsTerminal (F.val.obj (op U)) := by
+    Limits.IsTerminal (F.obj.obj (op U)) := by
   convert F.isTerminalOfEmpty
 
 /-- If a family `B` of open sets forms a basis of the topology on `X`, and if `F'`
@@ -229,22 +238,31 @@ is a sheaf on `X`, then a homomorphism between a presheaf `F` on `X` and `F'`
 is equivalent to a homomorphism between their restrictions to the indexing type
 `ι` of `B`, with the induced category structure on `ι`. -/
 def restrictHomEquivHom (h : Opens.IsBasis (Set.range B)) :
-    ((inducedFunctor B).op ⋙ F ⟶ (inducedFunctor B).op ⋙ F'.1) ≃ (F ⟶ F'.1) :=
+    ((inducedFunctor B).op ⋙ F ⟶ (inducedFunctor B).op ⋙ F'.obj) ≃ (F ⟶ F'.obj) :=
   @Functor.IsCoverDense.restrictHomEquivHom _ _ _ _ _ _ _ _
     (Opens.coverDense_inducedFunctor h) _ F F'
 
 @[simp]
 theorem extend_hom_app (h : Opens.IsBasis (Set.range B))
-    (α : (inducedFunctor B).op ⋙ F ⟶ (inducedFunctor B).op ⋙ F'.1) (i : ι) :
+    (α : (inducedFunctor B).op ⋙ F ⟶ (inducedFunctor B).op ⋙ F'.obj) (i : ι) :
     (restrictHomEquivHom F F' h α).app (op (B i)) = α.app (op i) := by
   nth_rw 2 [← (restrictHomEquivHom F F' h).left_inv α]
   rfl
 
 theorem hom_ext (h : Opens.IsBasis (Set.range B))
-    {α β : F ⟶ F'.1} (he : ∀ i, α.app (op (B i)) = β.app (op (B i))) : α = β := by
+    {α β : F ⟶ F'.obj} (he : ∀ i, α.app (op (B i)) = β.app (op (B i))) : α = β := by
   apply (restrictHomEquivHom F F' h).symm.injective
   ext i
   exact he i.unop
+
+theorem isIso_iff_isIso_basis {F G : Sheaf C X} (h : Opens.IsBasis (Set.range B))
+    {φ : F ⟶ G} (hi : ∀ i, IsIso (φ.hom.app (op (B i)))) :
+    IsIso φ := by
+  have : (inducedFunctor B).IsCoverDense (Opens.grothendieckTopology X) :=
+    Opens.coverDense_inducedFunctor h
+  refine Functor.IsCoverDense.iso_of_restrict_iso (G := inducedFunctor B) _ ?_
+  rw [NatTrans.isIso_iff_isIso_app]
+  exact fun _ ↦ hi _
 
 end TopCat.Sheaf
 
@@ -252,9 +270,9 @@ namespace TopologicalSpace.Opens
 
 instance {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
     (F : Opens X ⥤ Opens Y) (G : Opens Y ⥤ Opens Z)
-    [Functor.IsContinuous.{w} F (Opens.grothendieckTopology _) (Opens.grothendieckTopology _)]
-    [Functor.IsContinuous.{w} G (Opens.grothendieckTopology _) (Opens.grothendieckTopology _)] :
-    Functor.IsContinuous.{w} (F ⋙ G) (Opens.grothendieckTopology _)
+    [Functor.IsContinuous F (Opens.grothendieckTopology _) (Opens.grothendieckTopology _)]
+    [Functor.IsContinuous G (Opens.grothendieckTopology _) (Opens.grothendieckTopology _)] :
+    Functor.IsContinuous (F ⋙ G) (Opens.grothendieckTopology _)
       (Opens.grothendieckTopology _) :=
   Functor.isContinuous_comp _ _ _ (Opens.grothendieckTopology _) _
 

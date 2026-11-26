@@ -5,9 +5,10 @@ Authors: Mario Carneiro, Kevin Kappelmann
 -/
 module
 
-public import Mathlib.Algebra.Order.Field.Basic
 public import Mathlib.Algebra.Order.Floor.Semiring
 public import Mathlib.Tactic.Linarith
+
+import Mathlib.Algebra.Order.Field.Basic
 
 /-!
 # Lemmas on `Nat.floor` and `Nat.ceil` for semifields
@@ -22,8 +23,6 @@ rounding, floor, ceil
 public section
 
 assert_not_exists Finset
-
-open Set
 
 variable {R K : Type*}
 
@@ -51,7 +50,7 @@ theorem floor_div_eq_div (m n : ℕ) : ⌊(m : K) / n⌋₊ = m / n := by
 end LinearOrderedSemifield
 
 section LinearOrderedField
-variable [Field K] [LinearOrder K] [IsStrictOrderedRing K] [FloorSemiring K] {a b : K}
+variable [Field K] [LinearOrder K] [IsOrderedRing K] [FloorSemiring K] {a b : K}
 
 lemma mul_lt_floor (hb₀ : 0 < b) (hb : b < 1) (hba : ⌈b / (1 - b)⌉₊ ≤ a) : b * a < ⌊a⌋₊ := by
   calc
@@ -101,7 +100,7 @@ open Qq
 ### `norm_num` extension for `Nat.floor`
 -/
 
-theorem IsNat.natFloor {R : Type*} [Semiring R] [LinearOrder R] [IsStrictOrderedRing R]
+theorem IsNat.natFloor {R : Type*} [Semiring R] [LinearOrder R]
     [FloorSemiring R] (r : R) (m : ℕ) : IsNat r m → IsNat (⌊r⌋₊) m := by
   rintro ⟨⟨⟩⟩
   exact ⟨by simp⟩
@@ -134,7 +133,6 @@ meta def evalNatFloor : NormNumExt where eval {u αZ} e := do
     | .isBool .. => failure
     | .isNat sα nb pb => do
       let instLinearOrder ← synthInstanceQ q(LinearOrder $α)
-      let instIsStrictOrderedRing ← synthInstanceQ q(IsStrictOrderedRing $α)
       assertInstancesCommute
       return .isNat q(inferInstance) nb q(IsNat.natFloor $x _ $pb)
     | .isNegNat sα nb pb => do

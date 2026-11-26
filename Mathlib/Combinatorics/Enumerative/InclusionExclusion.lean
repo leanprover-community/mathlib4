@@ -5,9 +5,10 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Pi
 public import Mathlib.Algebra.BigOperators.Ring.Finset
-public import Mathlib.Algebra.Module.BigOperators
+
+import Mathlib.Algebra.BigOperators.Pi
+import Mathlib.Algebra.Module.BigOperators
 
 /-!
 # Inclusion-exclusion principle
@@ -75,7 +76,7 @@ lemma indicator_biUnion_eq_sum_powerset (s : Finset ι) (S : ι → Set α) (f :
     intro t hts ht
     rw [Set.indicator_of_notMem]
     · simp
-    · contrapose! ha
+    · contrapose ha
       simp only [Set.mem_iInter] at ha
       rcases ht with ⟨i, hi⟩
       simp only [Set.mem_iUnion, exists_prop]
@@ -83,7 +84,7 @@ lemma indicator_biUnion_eq_sum_powerset (s : Finset ι) (S : ι → Set α) (f :
   rw [← sub_eq_zero]
   calc
     Set.indicator (⋃ i ∈ s, S i) f a - ∑ t ∈ s.powerset with t.Nonempty,
-      (-1) ^ (#t + 1) • Set.indicator (⋂ i ∈ t.1, S i) f a
+      (-1) ^ (#t + 1) • Set.indicator (⋂ i ∈ t.val, S i) f a
     _ = ∑ t ∈ s.powerset with t.Nonempty, (-1) ^ #t • Set.indicator (⋂ i ∈ t, S i) f a +
         ∑ t ∈ s.powerset with ¬ t.Nonempty, (-1) ^ #t • Set.indicator (⋂ i ∈ t, S i) f a := by
       simp [sub_eq_neg_add, ← sum_neg_distrib, filter_eq', pow_succ, ha]
@@ -105,23 +106,24 @@ variable [DecidableEq α]
 
 lemma prod_indicator_biUnion_finset_sub_indicator (hs : s.Nonempty) (S : ι → Finset α) (a : α) :
     ∏ i ∈ s, (Set.indicator (s.biUnion S) 1 a - Set.indicator (S i) 1 a) = (0 : ℤ) := by
-  convert prod_indicator_biUnion_sub_indicator hs (fun i ↦ S i) a
+  convert! prod_indicator_biUnion_sub_indicator hs (fun i ↦ S i) a
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Inclusion-exclusion principle** for the sum of a function over a union.
 
 The sum of a function `f` over the union of the `S i` over `i ∈ s` is the alternating sum of the
 sums of `f` over the intersections of the `S i`. -/
 theorem inclusion_exclusion_sum_biUnion (s : Finset ι) (S : ι → Finset α) (f : α → G) :
     ∑ a ∈ s.biUnion S, f a = ∑ t : s.powerset.filter (·.Nonempty),
-      (-1) ^ (#t.1 + 1) • ∑ a ∈ t.1.inf' (mem_filter.1 t.2).2 S, f a := by
+      (-1) ^ (#t.val + 1) • ∑ a ∈ t.val.inf' (mem_filter.1 t.property).2 S, f a := by
   classical
   rw [← sub_eq_zero]
   calc
     ∑ a ∈ s.biUnion S, f a - ∑ t : s.powerset.filter (·.Nonempty),
-      (-1) ^ (#t.1 + 1) • ∑ a ∈ t.1.inf' (mem_filter.1 t.2).2 S, f a
+      (-1) ^ (#t.val + 1) • ∑ a ∈ t.val.inf' (mem_filter.1 t.property).2 S, f a
       = ∑ t : s.powerset.filter (·.Nonempty),
-          (-1) ^ #t.1 • ∑ a ∈ t.1.inf' (mem_filter.1 t.2).2 S, f a +
+          (-1) ^ #t.val • ∑ a ∈ t.val.inf' (mem_filter.1 t.property).2 S, f a +
           ∑ t ∈ s.powerset.filter (¬ ·.Nonempty), (-1) ^ #t • ∑ a ∈ s.biUnion S, f a := by
       simp [sub_eq_neg_add, ← sum_neg_distrib, filter_eq', pow_succ]
     _ = ∑ t ∈ s.powerset, (-1) ^ #t •
@@ -152,7 +154,7 @@ The cardinality of the union of the `S i` over `i ∈ s` is the alternating sum 
 of the intersections of the `S i`. -/
 theorem inclusion_exclusion_card_biUnion (s : Finset ι) (S : ι → Finset α) :
     #(s.biUnion S) = ∑ t : s.powerset.filter (·.Nonempty),
-      (-1 : ℤ) ^ (#t.1 + 1) * #(t.1.inf' (mem_filter.1 t.2).2 S) := by
+      (-1 : ℤ) ^ (#t.val + 1) * #(t.val.inf' (mem_filter.1 t.property).2 S) := by
   simpa using inclusion_exclusion_sum_biUnion (G := ℤ) s S (f := 1)
 
 variable [Fintype α]

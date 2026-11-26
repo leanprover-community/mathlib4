@@ -17,6 +17,7 @@ commonly presented by diagrams and natural transformations in `I ⥤ C`.
 
 
 ## References
+
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Proposition 6.1.15 (though
   our proof is more direct).
 -/
@@ -27,7 +28,7 @@ universe v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
-open Limits Functor
+open Limits CategoryTheory.Functor
 
 variable {C : Type u₁} [Category.{v₁} C]
 
@@ -103,34 +104,30 @@ def ϕ : F₁ f g P₁ P₂ ⟶ F₂ f g P₁ P₂ where
   app h := h.hom.1.left
   naturality _ _ h := by
     have := h.w
-    simp only [prod'_obj, comp_obj, prod'_map, Functor.comp_map, prod_comp, Prod.hom_ext_iff,
-      CostructuredArrow.hom_eq_iff, CostructuredArrow.map_obj_left,
-      IndObjectPresentation.toCostructuredArrow_obj_left, CostructuredArrow.comp_left,
-      CostructuredArrow.map_map_left, IndObjectPresentation.toCostructuredArrow_map_left] at this
+    simp only [prod'_map, Functor.comp_map, Prod.hom_ext_iff,
+      CostructuredArrow.ext_iff] at this
     exact this.1
 
 theorem hf : f = IsColimit.map (isColimit₁ f g P₁ P₂)
     (Cocone.mk B (ι₂ f g P₁ P₂)) (whiskerRight (ϕ f g P₁ P₂) yoneda) := by
   refine (isColimit₁ f g P₁ P₂).hom_ext (fun i => ?_)
   rw [IsColimit.ι_map]
-  simpa using i.hom.1.w.symm
+  simpa using! i.hom.1.w.symm
 
 /-- Implementation; see `nonempty_indParallelPairPresentation`. -/
 def ψ : F₁ f g P₁ P₂ ⟶ F₂ f g P₁ P₂ where
   app h := h.hom.2.left
   naturality _ _ h := by
     have := h.w
-    simp only [prod'_obj, comp_obj, prod'_map, Functor.comp_map, prod_comp, Prod.hom_ext_iff,
-      CostructuredArrow.hom_eq_iff, CostructuredArrow.map_obj_left,
-      IndObjectPresentation.toCostructuredArrow_obj_left, CostructuredArrow.comp_left,
-      CostructuredArrow.map_map_left, IndObjectPresentation.toCostructuredArrow_map_left] at this
+    simp only [prod'_map, Functor.comp_map, Prod.hom_ext_iff,
+      CostructuredArrow.ext_iff] at this
     exact this.2
 
 theorem hg : g = IsColimit.map (isColimit₁ f g P₁ P₂)
     (Cocone.mk B (ι₂ f g P₁ P₂)) (whiskerRight (ψ f g P₁ P₂) yoneda) := by
   refine (isColimit₁ f g P₁ P₂).hom_ext (fun i => ?_)
   rw [IsColimit.ι_map]
-  simpa using i.hom.2.w.symm
+  simpa using! i.hom.2.w.symm
 
 attribute [local instance] Comma.isFiltered_of_final in
 /-- Implementation; see `nonempty_indParallelPairPresentation`. -/

@@ -10,6 +10,7 @@ public import Mathlib.LinearAlgebra.RootSystem.RootPositive
 
 /-!
 # The canonical bilinear form on a finite root pairing
+
 Given a finite root pairing, we define a canonical map from weight space to coweight space, and the
 corresponding bilinear form. This form is symmetric and Weyl-invariant, and if the base ring is
 linearly ordered, then the form is root-positive, positive-semidefinite on the weight space, and
@@ -20,12 +21,14 @@ restricted to a small finite set of possibilities.
 Another application is to the faithfulness of the Weyl group action on roots, and finiteness of the
 Weyl group.
 
-## Main definitions:
+## Main definitions
+
 * `RootPairing.Polarization`: A distinguished linear map from the weight space to the coweight
   space.
 * `RootPairing.RootForm` : The bilinear form on weight space corresponding to `Polarization`.
 
-## Main results:
+## Main results
+
 * `RootPairing.rootForm_self_sum_of_squares` : The inner product of any
   weight vector is a sum of squares.
 * `RootPairing.rootForm_reflection_reflection_apply` : `RootForm` is invariant with respect
@@ -34,10 +37,10 @@ Weyl group.
   times the corresponding coroot is equal to two times Polarization applied to the root.
 * `RootPairing.exists_ge_zero_eq_rootForm`: `RootForm` is positive semidefinite.
 
-## References:
+## References
+
 * [N. Bourbaki, *Lie groups and Lie algebras. Chapters 4--6*][bourbaki1968]
 * [M. Demazure, *SGA III, Exposé XXI, Données Radicielles*][demazure1970]
-
 -/
 
 @[expose] public section
@@ -221,6 +224,11 @@ def RootFormIn : LinearMap.BilinForm S (P.rootSpan S) :=
   ∑ i, (P.coroot'In S i).smulRight (P.coroot'In S i)
 
 omit [Module S N] [IsScalarTower S R N] in
+lemma rootFormIn_isSymm :
+    (P.RootFormIn S).IsSymm := by
+  simp [LinearMap.isSymm_def, mul_comm, RootFormIn]
+
+omit [Module S N] [IsScalarTower S R N] in
 @[simp]
 lemma algebraMap_rootFormIn (x y : P.rootSpan S) :
     (algebraMap S R) (P.RootFormIn S x y) = P.RootForm x y := by
@@ -374,7 +382,7 @@ lemma posRootForm_posForm_apply_apply (x y : P.rootSpan S) : (P.posRootForm S).p
 
 lemma zero_le_posForm (x : span S (range P.root)) :
     0 ≤ (P.posRootForm S).posForm x x := by
-  obtain ⟨s, _, hs⟩ := P.exists_ge_zero_eq_rootForm S x.1 x.2
+  obtain ⟨s, _, hs⟩ := P.exists_ge_zero_eq_rootForm S x.val x.property
   have : s = (P.posRootForm S).posForm x x :=
     FaithfulSMul.algebraMap_injective S R <| (P.algebraMap_posRootForm_posForm S x x) ▸ hs
   rwa [← this]

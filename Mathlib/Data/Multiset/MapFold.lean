@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.List.Perm.Basic
 public import Mathlib.Data.Multiset.Replicate
 public import Mathlib.Data.Set.List
 
@@ -22,7 +21,6 @@ public import Mathlib.Data.Set.List
 
 Many lemmas about `Multiset.map` are proven in `Mathlib/Data/Multiset/Filter.lean`:
 should we switch the import direction?
-
 -/
 
 @[expose] public section
@@ -61,7 +59,7 @@ theorem map_hcongr {β' : Type v} {m : Multiset α} {f : α → β} {f' : α →
 
 theorem forall_mem_map_iff {f : α → β} {p : β → Prop} {s : Multiset α} :
     (∀ y ∈ s.map f, p y) ↔ ∀ x ∈ s, p (f x) :=
-  Quotient.inductionOn' s fun _L => List.forall_mem_map
+  Quotient.inductionOn s fun _L => List.forall_mem_map
 
 @[simp, norm_cast] lemma map_coe (f : α → β) (l : List α) : map f l = l.map f := rfl
 
@@ -110,6 +108,10 @@ theorem card_map (f : α → β) (s) : card (map f s) = card s :=
 theorem map_eq_zero {s : Multiset α} {f : α → β} : s.map f = 0 ↔ s = 0 := by
   rw [← Multiset.card_eq_zero, Multiset.card_map, Multiset.card_eq_zero]
 
+@[simp]
+theorem zero_eq_map {s : Multiset α} {f : α → β} : 0 = s.map f ↔ s = 0 := by
+  rw [eq_comm, map_eq_zero]
+
 theorem mem_map_of_mem (f : α → β) {a : α} {s : Multiset α} (h : a ∈ s) : f a ∈ map f s :=
   mem_map.2 ⟨_, h, rfl⟩
 
@@ -138,11 +140,7 @@ theorem map_eq_cons [DecidableEq α] (f : α → β) (s : Multiset α) (t : Mult
     refine ⟨a, mem_cons_self _ _, rfl, ?_⟩
     rw [Multiset.erase_cons_head, h]
 
--- The simpNF linter says that the LHS can be simplified via `Multiset.mem_map`.
--- However this is a higher priority lemma.
--- It seems the side condition `H` is not applied by `simpNF`.
--- https://github.com/leanprover/std4/issues/207
-@[simp 1100, nolint simpNF]
+@[simp 1100]
 theorem mem_map_of_injective {f : α → β} (H : Function.Injective f) {a : α} {s : Multiset α} :
     f a ∈ map f s ↔ a ∈ s :=
   Quot.inductionOn s fun _l => List.mem_map_of_injective H
@@ -179,8 +177,10 @@ theorem map_lt_map {f : α → β} {s t : Multiset α} (h : s < t) : s.map f < t
   rw [← s.card_map f, ← t.card_map f]
   exact card_le_card H
 
+@[gcongr]
 theorem map_mono (f : α → β) : Monotone (map f) := fun _ _ => map_le_map
 
+@[gcongr]
 theorem map_strictMono (f : α → β) : StrictMono (map f) := fun _ _ => map_lt_map
 
 @[simp, gcongr]
@@ -281,7 +281,7 @@ theorem coe_foldl (f : β → α → β) [RightCommutative f] (b : β) (l : List
 
 theorem coe_foldr_swap (f : α → β → β) [LeftCommutative f] (b : β) (l : List α) :
     foldr f b l = l.foldl (fun x y => f y x) b :=
-  (congr_arg (foldr f b) (coe_reverse l)).symm.trans foldr_reverse
+  congr(foldr f b $(coe_reverse l)).symm.trans foldr_reverse
 
 theorem foldr_swap (f : α → β → β) [LeftCommutative f] (b : β) (s : Multiset α) :
     foldr f b s = foldl (fun x y => f y x) b s :=
@@ -327,7 +327,7 @@ theorem map_pmap {p : α → Prop} (g : β → γ) (f : ∀ a, p a → β) (s) :
   Quot.inductionOn s fun _ H => congr_arg _ <| List.map_pmap H
 
 theorem pmap_eq_map_attach {p : α → Prop} (f : ∀ a, p a → β) (s) :
-    ∀ H, pmap f s H = s.attach.map fun x => f x.1 (H _ x.2) :=
+    ∀ H, pmap f s H = s.attach.map fun x => f x.val (H _ x.property) :=
   Quot.inductionOn s fun _ H => congr_arg _ <| List.pmap_eq_map_attach H
 
 @[simp]
@@ -338,17 +338,18 @@ theorem attach_map_val' (s : Multiset α) (f : α → β) : (s.attach.map fun i 
 theorem attach_map_val (s : Multiset α) : s.attach.map Subtype.val = s :=
   (attach_map_val' _ _).trans s.map_id
 
+set_option backward.isDefEq.respectTransparency false in
 theorem attach_cons (a : α) (m : Multiset α) :
     (a ::ₘ m).attach =
-      ⟨a, mem_cons_self a m⟩ ::ₘ m.attach.map fun p => ⟨p.1, mem_cons_of_mem p.2⟩ :=
+      ⟨a, mem_cons_self a m⟩ ::ₘ m.attach.map fun p => ⟨p.val, mem_cons_of_mem p.property⟩ :=
   Quotient.inductionOn m fun l =>
     congr_arg _ <|
-      congr_arg (List.cons _) <| by
-        rw [List.map_pmap]; exact List.pmap_congr_left _ fun _ _ _ _ => Subtype.ext rfl
+      congr(List.cons _ $(by
+        rw [List.map_pmap]; exact List.pmap_congr_left _ fun _ _ _ _ => Subtype.ext rfl))
 
 section
 
-variable [DecidableEq α] {s t u : Multiset α}
+variable [DecidableEq α] {s : Multiset α}
 
 lemma erase_attach_map_val (s : Multiset α) (x : {x // x ∈ s}) :
     (s.attach.erase x).map (↑) = s.erase x := by
@@ -364,7 +365,7 @@ end
 /-! ### Subtraction -/
 
 section sub
-variable [DecidableEq α] {s t u : Multiset α} {a : α}
+variable [DecidableEq α] {s t : Multiset α}
 
 lemma sub_eq_fold_erase (s t : Multiset α) : s - t = foldl erase s t :=
   Quotient.inductionOn₂ s t fun l₁ l₂ => by
@@ -470,13 +471,13 @@ theorem map_eq_map_of_bij_of_nodup (f : α → γ) (g : β → γ) {s : Multiset
     (hs : s.Nodup) (ht : t.Nodup) (i : ∀ a ∈ s, β) (hi : ∀ a ha, i a ha ∈ t)
     (i_inj : ∀ a₁ ha₁ a₂ ha₂, i a₁ ha₁ = i a₂ ha₂ → a₁ = a₂)
     (i_surj : ∀ b ∈ t, ∃ a ha, i a ha = b) (h : ∀ a ha, f a = g (i a ha)) : s.map f = t.map g := by
-  have : t = s.attach.map fun x => i x.1 x.2 := by
+  have : t = s.attach.map fun x => i x.val x.property := by
     rw [ht.ext]
     · aesop
-    · exact hs.attach.map fun x y hxy ↦ Subtype.ext <| i_inj _ x.2 _ y.2 hxy
+    · exact hs.attach.map fun x y hxy ↦ Subtype.ext <| i_inj _ x.property _ y.property hxy
   calc
     s.map f = s.pmap (fun x _ => f x) fun _ => id := by rw [pmap_eq_map]
-    _ = s.attach.map fun x => f x.1 := by rw [pmap_eq_map_attach]
+    _ = s.attach.map fun x => f x.val := by rw [pmap_eq_map_attach]
     _ = t.map g := by rw [this, Multiset.map_map]; exact map_congr rfl fun x _ => h _ _
 
 end Nodup

@@ -15,22 +15,18 @@ permissions:
 
 jobs:
   otel-export:
-    if: github.repository == 'leanprover-community/mathlib4'
+    # `workflow_run` matches the triggering workflow by name only, which doesn't identify it.
+    # Our CI workflows run on `push` and `pull_request_target` only, which both run workflow
+    # files from this repository, so skip runs for any other event.
+    if: ${{ github.repository == 'leanprover-community/mathlib4' &&
+            contains(fromJSON('["push", "pull_request_target"]'), github.event.workflow_run.event) }}
     runs-on: ubuntu-latest
     steps:
       - name: Export workflow telemetry
-        uses: corentinmusard/otel-cicd-action@769ccb38830ff3d1600ffb2f35ba9da6724e6b3e # v2.2.4
+        uses: corentinmusard/otel-cicd-action@4826b79d63662fa91657272e7711420cb6aea543 # v4.2.0
         with:
-          otlpEndpoint: ${{ secrets.OTLP_ENDPOINT }}
+          otlpEndpoint: ${{ vars.OTLP_ENDPOINT }}
           otlpHeaders: ${{ secrets.OTLP_HEADERS }}
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
-          runId: ${{ github.event.workflow_run.id }}
-
-      - name: Export workflow telemetry (alt endpoint)
-        uses: corentinmusard/otel-cicd-action@769ccb38830ff3d1600ffb2f35ba9da6724e6b3e # v2.2.4
-        with:
-          otlpEndpoint: ${{ secrets.OTLP_ENDPOINT_ALT }}
-          otlpHeaders: ${{ secrets.OTLP_HEADERS_ALT }}
           otelServiceName: "mathlib-ci"
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           runId: ${{ github.event.workflow_run.id }}

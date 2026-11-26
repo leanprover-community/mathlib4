@@ -6,8 +6,11 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
-public import Mathlib.AlgebraicGeometry.PullbackCarrier
-public import Mathlib.Topology.LocalAtTarget
+
+import Mathlib.AlgebraicGeometry.PullbackCarrier
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Universally closed morphism
@@ -18,15 +21,14 @@ This implies that `f` is topologically proper (`AlgebraicGeometry.Scheme.Hom.isP
 
 We show that being universally closed is local at the target, and is stable under compositions and
 base changes.
-
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
 
-open CategoryTheory CategoryTheory.Limits Opposite TopologicalSpace
+open CategoryTheory CategoryTheory.Limits TopologicalSpace
 
 universe v u
 
@@ -42,9 +44,6 @@ along any morphism `Y' ⟶ Y` is (topologically) a closed map.
 @[mk_iff]
 class UniversallyClosed (f : X ⟶ Y) : Prop where
   universally_isClosedMap : universally (topologically @IsClosedMap) f
-
-@[deprecated (since := "2026-01-20")]
-alias UniversallyClosed.out := UniversallyClosed.universally_isClosedMap
 
 lemma Scheme.Hom.isClosedMap {X Y : Scheme} (f : X ⟶ Y) [UniversallyClosed f] :
     IsClosedMap f := UniversallyClosed.universally_isClosedMap _ _ _ IsPullback.of_id_snd
@@ -74,13 +73,15 @@ instance universallyClosed_isStableUnderComposition :
   rw [universallyClosed_eq]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma UniversallyClosed.of_comp_surjective {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
     [UniversallyClosed (f ≫ g)] [Surjective f] : UniversallyClosed g := by
   constructor
   intro X' Y' i₁ i₂ f' H
   have := UniversallyClosed.universally_isClosedMap _ _ _
     ((IsPullback.of_hasPullback i₁ f).paste_horiz H)
-  exact IsClosedMap.of_comp_surjective (MorphismProperty.pullback_fst (P := @Surjective) _ _ ‹_›).1
+  exact IsClosedMap.of_comp_surjective
+    (MorphismProperty.pullback_fst (P := @Surjective) _ _ ‹_›).surj
     (Scheme.Hom.continuous _) this
 
 instance universallyClosedTypeComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
@@ -90,10 +91,12 @@ instance universallyClosedTypeComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
 instance : MorphismProperty.IsMultiplicative @UniversallyClosed where
   id_mem _ := inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance universallyClosed_fst {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) [hg : UniversallyClosed g] :
     UniversallyClosed (pullback.fst f g) :=
   MorphismProperty.pullback_fst f g hg
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance universallyClosed_snd {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) [hf : UniversallyClosed f] :
     UniversallyClosed (pullback.snd f g) :=
   MorphismProperty.pullback_snd f g hf
@@ -123,7 +126,8 @@ lemma compactSpace_of_universallyClosed
   let Z : Set (pullback f q :) := (⨆ i, fT ⁻¹ᵁ (Ti i) ⊓ p ⁻¹ᵁ (U i) : (pullback f q).Opens)ᶜ
   have hZ : IsClosed Z := by
     simp only [Z, isClosed_compl_iff, Opens.coe_iSup, Opens.coe_inf, Opens.map_coe]
-    exact isOpen_iUnion fun i ↦ (fT.continuous.1 _ (Ti i).2).inter (p.continuous.1 _ (U i).2)
+    exact isOpen_iUnion fun i ↦ (fT.continuous.isOpen_preimage _ (Ti i).is_open').inter
+      (p.continuous.isOpen_preimage _ (U i).is_open')
   let Zc : T.Opens := ⟨(fT '' Z)ᶜ, (fT.isClosedMap _ hZ).isOpen_compl⟩
   let ψ : MvPolynomial 𝒰.I₀ K →ₐ[K] K := MvPolynomial.aeval (fun _ ↦ 1)
   let t : T := Spec.map (CommRingCat.ofHom ψ.toRingHom) default
@@ -140,18 +144,19 @@ lemma compactSpace_of_universallyClosed
   have ht'g : t' ∈ PrimeSpectrum.basicOpen g :=
     show φ g ∉ t.asIdeal from (show φ g = g from aeval_ite_mem_eq_self g subset_rfl).symm ▸ htU'
   have h : t' ∉ fT '' Z := hU'le ht'g
-  suffices ⋃ i ∈ σ, (U i).1 = Set.univ from
+  suffices ⋃ i ∈ σ, (U i).carrier = Set.univ from
     ⟨this ▸ Finset.isCompact_biUnion _ fun i _ ↦ isCompact_range (𝒰.f i).continuous⟩
   rw [Set.iUnion₂_eq_univ_iff]
   contrapose! h
   obtain ⟨x, hx⟩ := h
   obtain ⟨z, rfl, hzr⟩ := exists_preimage_pullback x t' (Subsingleton.elim (f x) (q t'))
   suffices ∀ i, t ∈ (Ti i).comap ⟨_, continuous_comap φ⟩ → p z ∉ U i from
-    ⟨z, by simpa [Z, p, fT, hzr], hzr⟩
+    ⟨z, by simpa [← imp_iff_not_or, Z, p, fT, hzr], hzr⟩
   intro i hi₁ hi₂
   rw [comap_basicOpen, show φ (.X i) = 0 by simpa [φ] using (hx i · hi₂), basicOpen_zero] at hi₁
   cases hi₁
 
+set_option backward.isDefEq.respectTransparency false in
 @[stacks 04XU]
 lemma Scheme.Hom.isProperMap (f : X ⟶ Y) [UniversallyClosed f] : IsProperMap f := by
   rw [isProperMap_iff_isClosedMap_and_compact_fibers]
@@ -163,6 +168,7 @@ lemma Scheme.Hom.isProperMap (f : X ⟶ Y) [UniversallyClosed f] : IsProperMap f
 instance (priority := 900) [UniversallyClosed f] : QuasiCompact f where
   isCompact_preimage _ _ := f.isProperMap.isCompact_preimage
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma universallyClosed_eq_universallySpecializing :
     @UniversallyClosed = (topologically @SpecializingMap).universally ⊓ @QuasiCompact := by
   rw [← universally_eq_iff (P := @QuasiCompact).mpr inferInstance, ← universally_inf]

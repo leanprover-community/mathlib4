@@ -5,11 +5,12 @@ Authors: David Wärn
 -/
 module
 
-public import Mathlib.Data.Fintype.Option
-public import Mathlib.Data.Fintype.Shrink
 public import Mathlib.Data.Fintype.Sum
-public import Mathlib.Data.Finite.Prod
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Basic.Finite.Prod
+import Mathlib.Data.Fintype.Option
+import Mathlib.Data.Fintype.Shrink
 
 /-!
 # The Hales-Jewett theorem
@@ -41,7 +42,7 @@ to `∑ i : ι, v i`, which sends a combinatorial line to a homothetic copy of `
 - `Combinatorics.Subspace.exists_mono_in_high_dimension`: The multidimensional Hales-Jewett theorem.
 - `Combinatorics.exists_mono_homothetic_copy`: A generalization of Van der Waerden's theorem.
 
-## Implementation details
+## Implementation notes
 
 For convenience, we work directly with finite types instead of natural numbers. That is, we write
 `α, ι, κ` for (finite) types where one might traditionally use natural numbers `n, H, c`. This
@@ -51,10 +52,10 @@ allows us to work directly with `α`, `Option α`, `(ι → α) → κ`, and `ι
 ## TODO
 
 - Prove a finitary version of Van der Waerden's theorem (either by compactness or by modifying the
-current proof).
+  current proof).
 
 - One could reformulate the proof of Hales-Jewett to give explicit upper bounds on the number of
-coordinates needed.
+  coordinates needed.
 
 ## Tags
 
@@ -63,7 +64,6 @@ combinatorial line, Ramsey theory, arithmetic progression
 ### References
 
 * https://en.wikipedia.org/wiki/Hales%E2%80%93Jewett_theorem
-
 -/
 
 @[expose] public section
@@ -263,6 +263,7 @@ instance {α ι κ : Type*} [Nonempty ι] [Inhabited κ] :
 - each line is only one color except possibly at its endpoint
 - the lines all have the same endpoint
 - the colors of the lines are distinct.
+
 Used in the proof `exists_mono_in_high_dimension`. -/
 structure ColorFocused {α ι κ : Type*} (C : (ι → Option α) → κ) where
   /-- The underlying multiset of almost monochromatic lines of a color-focused collection. -/
@@ -495,7 +496,7 @@ theorem exists_mono_in_high_dimension (α κ η) [Finite α] [Finite κ] [Finite
   refine ⟨ι × Shrink η, inferInstance, fun C ↦ ?_⟩
   obtain ⟨l, hl⟩ := hι fun x ↦ C fun (i, e) ↦ x i e
   refine ⟨l.toSubspace.reindex (equivShrink.{0} η).symm (Equiv.refl _) (Equiv.refl _), ?_⟩
-  convert hl.toSubspace.reindex
+  convert! hl.toSubspace.reindex
   simp
 
 /-- A variant of the **extended Hales-Jewett theorem** `exists_mono_in_high_dimension` where the

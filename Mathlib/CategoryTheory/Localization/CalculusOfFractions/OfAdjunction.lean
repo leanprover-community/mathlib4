@@ -5,9 +5,13 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Adjunction.Opposites
-public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 public import Mathlib.CategoryTheory.Localization.CalculusOfFractions
+
+import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+import Mathlib.CategoryTheory.Adjunction.Opposites
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The calculus of fractions deduced from an adjunction
@@ -22,7 +26,6 @@ holds in particular if `W` is the inverse image of
 the class of isomorphisms by `G`.
 
 (The dual statement is also obtained.)
-
 -/
 
 public section
@@ -93,13 +96,13 @@ lemma isLocalization_rightAdjoint
 lemma functorCategory_inverseImage_isomorphisms_unit (adj : G ⊣ F) :
     ((isomorphisms C₂).inverseImage G).functorCategory C₁ adj.unit := by
   intro
-  simp only [Functor.id_obj, Functor.comp_obj, inverseImage_iff, isomorphisms.iff]
+  simp only [Functor.id_obj, inverseImage_iff, isomorphisms.iff]
   infer_instance
 
 lemma functorCategory_inverseImage_isomorphisms_counit (adj : F ⊣ G) :
     ((isomorphisms C₂).inverseImage G).functorCategory C₁ adj.counit := by
   intro
-  simp only [Functor.id_obj, Functor.comp_obj, inverseImage_iff, isomorphisms.iff]
+  simp only [Functor.id_obj, inverseImage_iff, isomorphisms.iff]
   infer_instance
 
 lemma isLocalization_leftAdjoint' (adj : G ⊣ F) :

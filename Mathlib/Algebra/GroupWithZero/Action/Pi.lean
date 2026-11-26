@@ -7,9 +7,11 @@ module
 
 public import Mathlib.Algebra.Group.Action.Pi
 public import Mathlib.Algebra.GroupWithZero.Action.Defs
-public import Mathlib.Algebra.GroupWithZero.Defs
 public import Mathlib.Algebra.GroupWithZero.Pi
 public import Mathlib.Tactic.Common
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Pi instances for multiplicative actions with zero
@@ -23,7 +25,7 @@ This file defines instances for `MulActionWithZero` and related structures on `P
 * `Algebra.GroupWithZero.Action.Units`
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Ring
 

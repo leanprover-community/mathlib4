@@ -5,7 +5,6 @@ Authors: Yury Kudryashov, Heather Macbeth
 -/
 module
 
-public import Mathlib.Topology.Homeomorph.Defs
 public import Mathlib.Topology.Order.LeftRightNhds
 
 /-!
@@ -22,12 +21,12 @@ We also prove that an `OrderIso` is continuous.
 continuous, monotone
 -/
 
-@[expose] public section
+public section
 
 
 open Set Filter
 
-open Topology
+open scoped Topology
 
 section LinearOrder
 
@@ -293,7 +292,7 @@ instance : HomeomorphClass (α ≃o β) α β where
 
 /-- An order isomorphism between two linear order `OrderTopology` spaces is a homeomorphism. -/
 abbrev toHomeomorph (e : α ≃o β) : α ≃ₜ β :=
-  HomeomorphClass.toHomeomorph e
+  Homeomorph.ofClass e
 
 theorem coe_toHomeomorph (e : α ≃o β) : ⇑e.toHomeomorph = e :=
   rfl --Simp can prove this too

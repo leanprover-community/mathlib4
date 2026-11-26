@@ -6,13 +6,14 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Abelian.Basic
-public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Finite
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
+public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # If `D` is abelian, then the functor category `C ⥤ D` is also abelian.
-
 -/
 
 @[expose] public section
@@ -59,6 +60,7 @@ def imageObjIso : (Abelian.image α).obj X ≅ Abelian.image (α.app X) :=
         simp only [PreservesCokernel.iso_inv, Category.id_comp, Category.comp_id]
         exact (π_comp_cokernelComparison _ ((evaluation C D).obj X)).symm)
 
+set_option backward.defeqAttrib.useBackward true in
 theorem coimageImageComparison_app :
     coimageImageComparison (α.app X) =
       (coimageObjIso α X).inv ≫ (coimageImageComparison α).app X ≫ (imageObjIso α X).hom := by

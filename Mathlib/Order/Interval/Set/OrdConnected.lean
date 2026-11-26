@@ -5,9 +5,13 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Order.Interval.Set.OrderEmbedding
 public import Mathlib.Order.Antichain
-public import Mathlib.Order.SetNotation
+public import Mathlib.Order.Interval.Set.OrderEmbedding
+
+import Mathlib.Order.SetNotation
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Order-connected sets
@@ -15,13 +19,13 @@ public import Mathlib.Order.SetNotation
 We say that a set `s : Set α` is `OrdConnected` if for all `x y ∈ s` it includes the
 interval `[[x, y]]`. If `α` is a `DenselyOrdered` `ConditionallyCompleteLinearOrder` with
 the `OrderTopology`, then this condition is equivalent to `IsPreconnected s`. If `α` is a
-`LinearOrderedField`, then this condition is also equivalent to `Convex α s`.
+linearly ordered field, then this condition is also equivalent to `Convex α s`.
 
 In this file we prove that intersection of a family of `OrdConnected` sets is `OrdConnected` and
 that all standard intervals are `OrdConnected`.
 -/
 
-@[expose] public section
+public section
 
 open scoped Interval
 open Set
@@ -34,10 +38,10 @@ section Preorder
 variable {α β : Type*} [Preorder α] [Preorder β] {s : Set α}
 
 theorem OrdConnected.out (h : OrdConnected s) : ∀ ⦃x⦄ (_ : x ∈ s) ⦃y⦄ (_ : y ∈ s), Icc x y ⊆ s :=
-  h.1
+  h.out'
 
 theorem ordConnected_def : OrdConnected s ↔ ∀ ⦃x⦄ (_ : x ∈ s) ⦃y⦄ (_ : y ∈ s), Icc x y ⊆ s :=
-  ⟨fun h => h.1, fun h => ⟨h⟩⟩
+  ⟨fun h => h.out', fun h => ⟨h⟩⟩
 
 /-- It suffices to prove `[[x, y]] ⊆ s` for `x y ∈ s`, `x ≤ y`. -/
 theorem ordConnected_iff : OrdConnected s ↔ ∀ x ∈ s, ∀ y ∈ s, x ≤ y → Icc x y ⊆ s :=
@@ -49,7 +53,7 @@ theorem ordConnected_of_Ioo {α : Type*} [PartialOrder α] {s : Set α}
   rw [ordConnected_iff]
   intro x hx y hy hxy
   rcases eq_or_lt_of_le hxy with (rfl | hxy'); · simpa
-  rw [← Ioc_insert_left hxy, ← Ioo_insert_right hxy']
+  rw [← insert_left_Ioc hxy, ← insert_right_Ioo hxy']
   exact insert_subset_iff.2 ⟨hx, insert_subset_iff.2 ⟨hy, hs x hx y hy hxy'⟩⟩
 
 theorem OrdConnected.preimage_mono {f : β → α} (hs : OrdConnected s) (hf : Monotone f) :
@@ -100,24 +104,32 @@ section Preorder
 variable {α β : Type*} [Preorder α] [Preorder β]
 
 @[simp]
-lemma image_subtype_val_Icc {s : Set α} [OrdConnected s] (x y : s) :
-    Subtype.val '' Icc x y = Icc x.1 y :=
+lemma image_subtypeVal_Icc {s : Set α} [OrdConnected s] (x y : s) :
+    Subtype.val '' Icc x y = Icc x.val y :=
   (OrderEmbedding.subtype (· ∈ s)).image_Icc (by simpa) x y
 
+@[deprecated (since := "2026-11-10")] alias image_subtype_val_Icc := image_subtypeVal_Icc
+
 @[simp]
-lemma image_subtype_val_Ico {s : Set α} [OrdConnected s] (x y : s) :
-    Subtype.val '' Ico x y = Ico x.1 y :=
+lemma image_subtypeVal_Ico {s : Set α} [OrdConnected s] (x y : s) :
+    Subtype.val '' Ico x y = Ico x.val y :=
   (OrderEmbedding.subtype (· ∈ s)).image_Ico (by simpa) x y
 
-@[simp]
-lemma image_subtype_val_Ioc {s : Set α} [OrdConnected s] (x y : s) :
-    Subtype.val '' Ioc x y = Ioc x.1 y :=
-  (OrderEmbedding.subtype (· ∈ s)).image_Ioc (by simpa) x y
+@[deprecated (since := "2026-11-10")] alias image_subtype_val_Ico := image_subtypeVal_Ico
 
 @[simp]
-lemma image_subtype_val_Ioo {s : Set α} [OrdConnected s] (x y : s) :
-    Subtype.val '' Ioo x y = Ioo x.1 y :=
+lemma image_subtypeVal_Ioc {s : Set α} [OrdConnected s] (x y : s) :
+    Subtype.val '' Ioc x y = Ioc x.val y :=
+  (OrderEmbedding.subtype (· ∈ s)).image_Ioc (by simpa) x y
+
+@[deprecated (since := "2026-11-10")] alias image_subtype_val_Ioc := image_subtypeVal_Ioc
+
+@[simp]
+lemma image_subtypeVal_Ioo {s : Set α} [OrdConnected s] (x y : s) :
+    Subtype.val '' Ioo x y = Ioo x.val y :=
   (OrderEmbedding.subtype (· ∈ s)).image_Ioo (by simpa) x y
+
+@[deprecated (since := "2026-11-10")] alias image_subtype_val_Ioo := image_subtypeVal_Ioo
 
 theorem OrdConnected.inter {s t : Set α} (hs : OrdConnected s) (ht : OrdConnected t) :
     OrdConnected (s ∩ t) :=
@@ -137,9 +149,7 @@ theorem dual_ordConnected {s : Set α} [OrdConnected s] : OrdConnected (ofDual �
 
 @[simp]
 theorem ordConnected_dual {s : Set α} : OrdConnected (OrderDual.ofDual ⁻¹' s) ↔ OrdConnected s :=
-  ⟨fun h => by simpa only [ordConnected_def] using h.dual, fun h => h.dual⟩
-
-@[deprecated (since := "2025-10-28")] alias dual_ordConnected_iff := ordConnected_dual
+  ⟨fun h => by simpa only [ordConnected_def] using! h.dual, fun h => h.dual⟩
 
 theorem ordConnected_sInter {S : Set (Set α)} (hS : ∀ s ∈ S, OrdConnected s) :
     OrdConnected (⋂₀ S) :=
@@ -165,36 +175,24 @@ instance ordConnected_pi' {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α 
     {t : ∀ i, Set (α i)} [h : ∀ i, OrdConnected (t i)] : OrdConnected (s.pi t) :=
   ordConnected_pi fun i _ => h i
 
-@[instance]
-theorem ordConnected_Ici {a : α} : OrdConnected (Ici a) :=
+@[to_dual]
+instance ordConnected_Ici {a : α} : OrdConnected (Ici a) :=
   ⟨fun _ hx _ _ _ hz => le_trans hx hz.1⟩
 
-@[instance]
-theorem ordConnected_Iic {a : α} : OrdConnected (Iic a) :=
-  ⟨fun _ _ _ hy _ hz => le_trans hz.2 hy⟩
-
-@[instance]
-theorem ordConnected_Ioi {a : α} : OrdConnected (Ioi a) :=
+@[to_dual]
+instance ordConnected_Ioi {a : α} : OrdConnected (Ioi a) :=
   ⟨fun _ hx _ _ _ hz => lt_of_lt_of_le hx hz.1⟩
 
-@[instance]
-theorem ordConnected_Iio {a : α} : OrdConnected (Iio a) :=
-  ⟨fun _ _ _ hy _ hz => lt_of_le_of_lt hz.2 hy⟩
-
-@[instance]
-theorem ordConnected_Icc {a b : α} : OrdConnected (Icc a b) :=
+@[to_dual self]
+instance ordConnected_Icc {a b : α} : OrdConnected (Icc a b) :=
   ordConnected_Ici.inter ordConnected_Iic
 
-@[instance]
-theorem ordConnected_Ico {a b : α} : OrdConnected (Ico a b) :=
+@[to_dual]
+instance ordConnected_Ico {a b : α} : OrdConnected (Ico a b) :=
   ordConnected_Ici.inter ordConnected_Iio
 
-@[instance]
-theorem ordConnected_Ioc {a b : α} : OrdConnected (Ioc a b) :=
-  ordConnected_Ioi.inter ordConnected_Iic
-
-@[instance]
-theorem ordConnected_Ioo {a b : α} : OrdConnected (Ioo a b) :=
+@[to_dual self]
+instance ordConnected_Ioo {a b : α} : OrdConnected (Ioo a b) :=
   ordConnected_Ioi.inter ordConnected_Iio
 
 @[instance]
@@ -216,7 +214,7 @@ instance instDenselyOrdered [DenselyOrdered α] {s : Set α} [hs : OrdConnected 
     DenselyOrdered s :=
   ⟨fun a b (h : (a : α) < b) =>
     let ⟨x, H⟩ := exists_between h
-    ⟨⟨x, (hs.out a.2 b.2) (Ioo_subset_Icc_self H)⟩, H⟩⟩
+    ⟨⟨x, (hs.out a.property b.property) (Ioo_subset_Icc_self H)⟩, H⟩⟩
 
 @[instance]
 theorem ordConnected_preimage {F : Type*} [FunLike F α β] [OrderHomClass F α β] (f : F)
@@ -330,19 +328,25 @@ theorem ordConnected_iff_uIcc_subset_right (hx : x ∈ s) :
   simp_rw [ordConnected_iff_uIcc_subset_left hx, uIcc_comm]
 
 @[simp]
-theorem image_subtype_val_uIcc [OrdConnected s] (a b : s) :
-    Subtype.val '' [[a, b]] = [[a.1, b.1]] := by
-  simp [uIcc, (Subtype.mono_coe s).map_inf, (Subtype.mono_coe s).map_sup]
+theorem image_subtypeVal_uIcc [OrdConnected s] (a b : s) :
+    Subtype.val '' [[a, b]] = [[a.val, b.val]] := by
+  simp [uIcc, (Subtype.mono_coe (· ∈ s)).map_inf, (Subtype.mono_coe (· ∈ s)).map_sup]
+
+@[deprecated (since := "2026-11-10")] alias image_subtype_val_uIcc := image_subtypeVal_uIcc
 
 @[simp]
-theorem image_subtype_val_uIoc [OrdConnected s] (a b : s) :
-    Subtype.val '' uIoc a b = uIoc a.1 b.1 := by
-  simp [uIoc, (Subtype.mono_coe s).map_inf, (Subtype.mono_coe s).map_sup]
+theorem image_subtypeVal_uIoc [OrdConnected s] (a b : s) :
+    Subtype.val '' uIoc a b = uIoc a.val b.val := by
+  simp [uIoc, (Subtype.mono_coe (· ∈ s)).map_inf, (Subtype.mono_coe (· ∈ s)).map_sup]
+
+@[deprecated (since := "2026-11-10")] alias image_subtype_val_uIoc := image_subtypeVal_uIoc
 
 @[simp]
-theorem image_subtype_val_uIoo [OrdConnected s] (a b : s) :
-    Subtype.val '' uIoo a b = uIoo a.1 b.1 := by
-  simp [uIoo, (Subtype.mono_coe s).map_inf, (Subtype.mono_coe s).map_sup]
+theorem image_subtypeVal_uIoo [OrdConnected s] (a b : s) :
+    Subtype.val '' uIoo a b = uIoo a.val b.val := by
+  simp [uIoo, (Subtype.mono_coe (· ∈ s)).map_inf, (Subtype.mono_coe (· ∈ s)).map_sup]
+
+@[deprecated (since := "2026-11-10")] alias image_subtype_val_uIoo := image_subtypeVal_uIoo
 
 end LinearOrder
 

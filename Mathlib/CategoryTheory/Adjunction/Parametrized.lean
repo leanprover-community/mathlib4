@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Adjunction.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Adjunctions with a parameter
 
@@ -31,8 +34,8 @@ bifunctor `G' : C₁ᵒᵖ ⥤ C₃ ⥤ C₂` with `F ⊣₂ G'` (and similarly 
 left adjoints).
 
 ## References
-* https://ncatlab.org/nlab/show/two-variable+adjunction
 
+* https://ncatlab.org/nlab/show/two-variable+adjunction
 -/
 
 @[expose] public section
@@ -41,7 +44,7 @@ universe v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
-open Opposite Functor
+open Opposite CategoryTheory.Functor
 
 variable {C₁ : Type u₁} {C₂ : Type u₂} {C₃ : Type u₃}
   [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} C₃]
@@ -55,8 +58,8 @@ structure ParametrizedAdjunction where
   /-- a family of adjunctions -/
   adj (X₁ : C₁) : F.obj X₁ ⊣ G.obj (op X₁)
   unit_whiskerRight_map {X₁ Y₁ : C₁} (f : X₁ ⟶ Y₁) :
-    (adj X₁).unit ≫ whiskerRight (F.map f) _ = (adj Y₁).unit ≫ whiskerLeft _ (G.map f.op) :=
-      by cat_disch
+    (adj X₁).unit ≫ whiskerRight (F.map f) _ = (adj Y₁).unit ≫ whiskerLeft _ (G.map f.op) := by
+      cat_disch
 
 /-- The notation `F ⊣₂ G` stands for `ParametrizedAdjunction F G`
 representing that the bifunctor `F` is the left adjoint to `G`
@@ -96,7 +99,7 @@ lemma homEquiv_eq : adj₂.homEquiv = (adj₂.adj X₁).homEquiv X₂ X₃ := rf
 lemma homEquiv_naturality_one (f₁ : X₁ ⟶ Y₁) (g : (F.obj Y₁).obj X₂ ⟶ X₃) :
     adj₂.homEquiv ((F.map f₁).app X₂ ≫ g) =
       adj₂.homEquiv g ≫ (G.map f₁.op).app X₃ := by
-  have := NatTrans.congr_app (adj₂.unit_whiskerRight_map f₁) X₂
+  have := congr($(adj₂.unit_whiskerRight_map f₁).app X₂)
   dsimp at this
   simp only [homEquiv_eq, Adjunction.homEquiv_unit, Functor.comp_obj, Functor.map_comp,
     Category.assoc, NatTrans.naturality, reassoc_of% this]

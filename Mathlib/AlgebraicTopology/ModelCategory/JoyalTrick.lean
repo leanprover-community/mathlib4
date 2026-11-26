@@ -7,7 +7,6 @@ module
 
 public import Mathlib.AlgebraicTopology.ModelCategory.CategoryWithCofibrations
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
-public import Mathlib.CategoryTheory.MorphismProperty.Factorization
 
 /-!
 # A trick by Joyal
@@ -20,8 +19,8 @@ namely that cofibrations are stable under composition and cobase change.
 (The dual result is also formalized.)
 
 ## References
-* [John F. Jardine, Simplicial presheaves][jardine-1987]
 
+* [John F. Jardine, Simplicial presheaves][jardine-1987]
 -/
 
 public section

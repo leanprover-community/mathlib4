@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.Homology.Embedding.ExtendHomology
 public import Mathlib.Algebra.Homology.Embedding.TruncGE
-public import Mathlib.Algebra.Homology.Embedding.RestrictionHomology
-public import Mathlib.Algebra.Homology.QuasiIso
+
+import Mathlib.Algebra.Homology.Embedding.RestrictionHomology
 
 /-! # The homology of a canonical truncation
 
@@ -19,7 +19,6 @@ we relate the homology of `K : HomologicalComplex C c'` and of
 The main result is that `K.πTruncGE e : K ⟶ K.truncGE e` induces a
 quasi-isomorphism in degree `e.f i` for all `i`. (Note that the complex
 `K.truncGE e` is exact in degrees that are not in the image of `e.f`.)
-
 -/
 
 @[expose] public section
@@ -86,7 +85,7 @@ noncomputable def isLimitKernelFork :
       parallelPair.ext (K.truncGE'XIsoOpcycles e hj' hj)
         (K.truncGE'XIso e rfl (e.not_boundaryGE_next hjk))
         (by simp [K.truncGE'_d_eq_fromOpcycles e hjk hj' rfl hj]) (by simp)
-    exact (IsLimit.postcomposeHomEquiv e _).1
+    exact (IsLimit.postcomposeHomEquiv e _).toFun
       (IsLimit.ofIsoLimit (K.homologyIsKernel _ _ hk')
       (Fork.ext (Iso.refl _) (by simp [e, Fork.ι])))
   · have := K.isIso_homologyι _ _ hk'
@@ -97,6 +96,7 @@ noncomputable def isLimitKernelFork :
 /-- When `j` is at the boundary of the embedding `e` of complex shapes,
 this is a homology data for `K.truncGE' e` in degree `j`: the homology is
 given by `K.homology j'` where `e.f j = j'`. -/
+@[implicit_reducible]
 noncomputable def homologyData :
     ((K.truncGE' e).sc' i j k).HomologyData :=
   ShortComplex.HomologyData.ofIsLimitKernelFork _
@@ -127,7 +127,7 @@ instance (i' : ι') : (K.truncGE e).HasHomology i' := by
 
 /-- The right homology data which allows to show that `K.πTruncGE e`
 induces an isomorphism in homology in degrees `j'` such that `e.f j = j'` for some `j`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def rightHomologyMapData {i j k : ι} {j' : ι'} (hj' : e.f j = j')
     (hi : c.prev j = i) (hk : c.next j = k) (hj : e.BoundaryGE j) :
     ShortComplex.RightHomologyMapData ((shortComplexFunctor C c' j').map (K.πTruncGE e))
@@ -208,8 +208,7 @@ lemma acyclic_truncGE_iff_isSupportedOutside :
     (K.truncGE e).Acyclic ↔ K.IsSupportedOutside e := by
   constructor
   · intro hK
-    exact ⟨fun i =>
-      by simpa only [exactAt_iff_of_quasiIsoAt (K.πTruncGE e)] using hK (e.f i)⟩
+    exact ⟨fun i ↦ by simpa only [exactAt_iff_of_quasiIsoAt (K.πTruncGE e)] using hK (e.f i)⟩
   · intro hK i'
     by_cases hi' : ∃ i, e.f i = i'
     · obtain ⟨i, rfl⟩ := hi'
@@ -217,6 +216,11 @@ lemma acyclic_truncGE_iff_isSupportedOutside :
     · exact exactAt_of_isSupported _ e i' (by simpa using hi')
 
 variable {K L}
+
+lemma Acyclic.truncGE (hK : K.Acyclic) (e : c.Embedding c') [e.IsTruncGE] :
+    (K.truncGE e).Acyclic := by
+  rw [acyclic_truncGE_iff_isSupportedOutside]
+  exact ⟨fun _ ↦ hK _⟩
 
 lemma quasiIso_truncGEMap_iff :
     QuasiIso (truncGEMap φ e) ↔ ∀ (i : ι) (i' : ι') (_ : e.f i = i'), QuasiIsoAt φ i' := by

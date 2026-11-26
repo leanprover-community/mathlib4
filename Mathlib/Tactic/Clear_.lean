@@ -5,9 +5,12 @@ Authors: Joshua Clune
 -/
 module
 
-public import Mathlib.Init
-public meta import Lean.Meta.Tactic.Clear
 public meta import Lean.Elab.Tactic.Basic
+public meta import Lean.Meta.Tactic.Clear
+public import Mathlib.Init
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-! # `clear_` tactic -/
 

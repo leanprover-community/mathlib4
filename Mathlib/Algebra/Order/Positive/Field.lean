@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.Order.Positive.Ring
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Algebraic structures on the set of positive numbers
 
@@ -15,28 +18,30 @@ In this file we prove that the set of positive elements of a linear ordered fiel
 ordered commutative group.
 -/
 
-@[expose] public section
+public section
 
 
 variable {K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K]
 
 namespace Positive
 
-instance Subtype.inv : Inv { x : K // 0 < x } := ⟨fun x => ⟨x⁻¹, inv_pos.2 x.2⟩⟩
+instance Subtype.inv : Inv { x : K // 0 < x } := ⟨fun x => ⟨x⁻¹, inv_pos.2 x.property⟩⟩
 
 @[simp]
 theorem coe_inv (x : { x : K // 0 < x }) : ↑x⁻¹ = (x⁻¹ : K) :=
   rfl
 
 instance : Pow { x : K // 0 < x } ℤ :=
-  ⟨fun x n => ⟨(x : K) ^ n, zpow_pos x.2 _⟩⟩
+  ⟨fun x n => ⟨(x : K) ^ n, zpow_pos x.property _⟩⟩
 
 @[simp]
 theorem coe_zpow (x : { x : K // 0 < x }) (n : ℤ) : ↑(x ^ n) = (x : K) ^ n :=
   rfl
 
-instance : CommGroup { x : K // 0 < x } :=
-  { Positive.commMonoid with
-    inv_mul_cancel := fun a => Subtype.ext <| inv_mul_cancel₀ a.2.ne' }
+instance : CommGroup { x : K // 0 < x } where
+  inv_mul_cancel a := Subtype.ext <| inv_mul_cancel₀ a.property.ne'
+  zpow_zero' x := Subtype.ext <| zpow_zero _
+  zpow_succ' n x := Subtype.ext <| DivInvMonoid.zpow_succ' _ _
+  zpow_neg' n x := Subtype.ext <| DivInvMonoid.zpow_neg' _ _
 
 end Positive

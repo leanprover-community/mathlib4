@@ -6,22 +6,25 @@ Authors: Michael Stoll, Patrick Massot, Anatole Dedecker
 module
 
 public import Mathlib.Analysis.Normed.Field.Basic
-public import Mathlib.Analysis.Normed.Ring.Lemmas
-public import Mathlib.Order.Filter.IsBounded
 public import Mathlib.Topology.Algebra.UniformField
+
+import Mathlib.Analysis.Normed.Ring.Lemmas
+import Mathlib.Order.Filter.IsBounded
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # A normed field is a completable topological field
 -/
 
-@[expose] public section
+public section
 
 open SeminormedAddGroup IsUniformAddGroup Filter
 
 variable {F : Type*} [NormedField F]
 
 instance NormedField.instCompletableTopField : CompletableTopField F where
-  t0 := (inferInstanceAs <| T0Space _).t0
   nice f hc hn := by
     obtain ⟨δ, δ_pos, hδ⟩ := (disjoint_nhds_zero ..).mp <| disjoint_iff.mpr hn
     have f_bdd : f.IsBoundedUnder (· ≤ ·) (‖·⁻¹‖) :=

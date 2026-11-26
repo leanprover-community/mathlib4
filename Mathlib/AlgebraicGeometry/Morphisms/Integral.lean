@@ -9,8 +9,10 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Separated
 public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyClosed
 public import Mathlib.RingTheory.RingHom.Integral
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Integral morphisms of schemes
 
 A morphism of schemes `f : X ⟶ Y` is integral if the preimage
@@ -18,10 +20,9 @@ of an arbitrary affine open subset of `Y` is affine and the induced ring map is 
 
 It is equivalent to ask only that `Y` is covered by affine opens whose preimage is affine
 and the induced ring map is integral.
-
 -/
 
-@[expose] public section
+public section
 
 universe v u
 
@@ -35,15 +36,13 @@ affine and the induced ring hom on sections is integral. -/
 class IsIntegralHom {X Y : Scheme} (f : X ⟶ Y) : Prop extends IsAffineHom f where
   isIntegral_app (f) (U : Y.Opens) (hU : IsAffineOpen U) : (f.app U).hom.IsIntegral
 
-@[deprecated (since := "2025-10-15")]
-alias IsIntegralHom.integral_app := IsIntegralHom.isIntegral_app
-
 alias Scheme.Hom.isIntegral_app := IsIntegralHom.isIntegral_app
 
 namespace IsIntegralHom
 
 variable {X Y Z S : Scheme.{u}}
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance hasAffineProperty : HasAffineProperty @IsIntegralHom
     fun X _ f _ ↦ IsAffine X ∧ RingHom.IsIntegral (f.app ⊤).hom := by
   change HasAffineProperty @IsIntegralHom (affineAnd RingHom.IsIntegral)
@@ -69,12 +68,15 @@ instance : IsMultiplicative @IsIntegralHom where
 instance (f : X ⟶ Y) (g : Y ⟶ Z) [IsIntegralHom f] [IsIntegralHom g] : IsIntegralHom (f ≫ g) :=
   MorphismProperty.comp_mem _ _ _ ‹_› ‹_›
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (f : X ⟶ S) (g : Y ⟶ S) [IsIntegralHom g] : IsIntegralHom (Limits.pullback.fst f g) :=
   MorphismProperty.pullback_fst f g inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (f : X ⟶ S) (g : Y ⟶ S) [IsIntegralHom f] : IsIntegralHom (Limits.pullback.snd f g) :=
   MorphismProperty.pullback_snd f g inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (f : X ⟶ Y) (V : Y.Opens) [IsIntegralHom f] : IsIntegralHom (f ∣_ V) :=
   IsZariskiLocalAtTarget.restrict ‹_› V
 
@@ -89,14 +91,13 @@ lemma comp_iff {f : X ⟶ Y} {g : Y ⟶ Z} [IsIntegralHom g] :
     IsIntegralHom (f ≫ g) ↔ IsIntegralHom f :=
   ⟨fun _ ↦ .of_comp f g, fun _ ↦ inferInstance⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma SpecMap_iff {R S : CommRingCat} {φ : R ⟶ S} :
     IsIntegralHom (Spec.map φ) ↔ φ.hom.IsIntegral := by
   have := RingHom.toMorphismProperty_respectsIso_iff.mp RingHom.isIntegral_respectsIso
   rw [HasAffineProperty.iff_of_isAffine (P := @IsIntegralHom), and_iff_right]
   exacts [MorphismProperty.arrow_mk_iso_iff (RingHom.toMorphismProperty RingHom.IsIntegral)
     (arrowIsoΓSpecOfIsAffine φ).symm, inferInstance]
-
-instance : IsMultiplicative @IsIntegralHom where
 
 instance {U V X : Scheme.{u}} (f : U ⟶ X) (g : V ⟶ X) [IsIntegralHom f] [IsIntegralHom g] :
     IsIntegralHom (Limits.coprod.desc f g) := by
@@ -105,6 +106,7 @@ instance {U V X : Scheme.{u}} (f : U ⟶ X) (g : V ⟶ X) [IsIntegralHom f] [IsI
   algebraize [f, g]
   refine algebraMap_isIntegral_iff.mpr inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (priority := 100) (f : X ⟶ Y) [IsIntegralHom f] :
     UniversallyClosed f := by
   revert X Y f ‹IsIntegralHom f›
@@ -127,6 +129,7 @@ instance (priority := 100) (f : X ⟶ Y) [IsIntegralHom f] :
   rw [SpecMap_iff]
   exact PrimeSpectrum.isClosedMap_comap_of_isIntegral _
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma iff_universallyClosed_and_isAffineHom {X Y : Scheme.{u}} {f : X ⟶ Y} :
     IsIntegralHom f ↔ UniversallyClosed f ∧ IsAffineHom f := by
   refine ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨H₁, H₂⟩ ↦ ?_⟩
@@ -145,7 +148,7 @@ lemma iff_universallyClosed_and_isAffineHom {X Y : Scheme.{u}} {f : X ⟶ Y} :
   obtain ⟨φ, rfl⟩ : ∃ φ, Spec.map φ = f := ⟨_, Spec.map_preimage _⟩
   rw [SpecMap_iff]
   apply PrimeSpectrum.isIntegral_of_isClosedMap_comap_mapRingHom
-  algebraize [φ.1, Polynomial.mapRingHom φ.1]
+  algebraize [φ.hom', Polynomial.mapRingHom φ.hom']
   exact H₁.universally_isClosedMap (Spec.map (CommRingCat.ofHom Polynomial.C))
     (Spec.map (CommRingCat.ofHom Polynomial.C)) (Spec.map _)
     (isPullback_SpecMap_of_isPushout _ _ _ _

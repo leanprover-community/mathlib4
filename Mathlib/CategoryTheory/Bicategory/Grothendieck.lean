@@ -46,17 +46,17 @@ The name `Grothendieck` is reserved for the construction on covariant pseudofunc
 This is consistent with the convention for the Grothendieck construction on 1-functors
 `CategoryTheory.Grothendieck`.
 
-## Future work / TODO
+## TODO
 
 1. Once the bicategory of pseudofunctors has been defined, show that this construction forms a
-pseudofunctor from `LocallyDiscrete 𝒮 ⥤ᵖ Catᵒᵖ` to `Cat`.
+   pseudofunctor from `LocallyDiscrete 𝒮 ⥤ᵖ Catᵒᵖ` to `Cat`.
 2. Deduce the results in `CategoryTheory.Grothendieck` as a specialization of
    `Pseudofunctor.Grothendieck`.
 
 ## References
-[Vistoli2008] "Notes on Grothendieck Topologies, Fibered Categories and Descent Theory" by
-Angelo Vistoli
 
+[vistoli2004] "Notes on Grothendieck Topologies, Fibered Categories and Descent Theory" by
+Angelo Vistoli
 -/
 
 @[expose] public section
@@ -65,7 +65,7 @@ namespace CategoryTheory.Pseudofunctor
 
 universe w v₁ v₂ v₃ u₁ u₂ u₃
 
-open Functor Category Opposite Discrete Bicategory StrongTrans
+open CategoryTheory.Functor Category Opposite Discrete Bicategory StrongTrans
 
 variable {𝒮 : Type u₁} [Category.{v₁} 𝒮]
 
@@ -131,6 +131,7 @@ lemma Hom.congr {a b : ∫ F} {f g : a ⟶ b} (h : f = g) :
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] PrelaxFunctor.map₂_eqToHom in
 /-- The category structure on `∫ F`. -/
 instance category : Category (∫ F) where
@@ -165,6 +166,7 @@ attribute [local simp]
 variable {F} {G : Pseudofunctor (LocallyDiscrete 𝒮) Cat.{v₂, u₂}}
   {H : Pseudofunctor (LocallyDiscrete 𝒮) Cat.{v₂, u₂}}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Grothendieck construction is functorial: a strong natural transformation `α : F ⟶ G`
 induces a functor `Grothendieck.map : ∫ F ⥤ ∫ G`. -/
 @[simps!]
@@ -173,9 +175,9 @@ def map (α : F ⟶ G) : ∫ F ⥤ ∫ G where
     base := a.base
     fiber := (α.app ⟨a.base⟩).toFunctor.obj a.fiber }
   map {a b} f := {
-    base := f.1
-    fiber := (α.naturality f.1.toLoc).inv.toNatTrans.app a.fiber ≫
-      (α.app ⟨b.base⟩).toFunctor.map f.2 }
+    base := f.base
+    fiber := (α.naturality f.base.toLoc).inv.toNatTrans.app a.fiber ≫
+      (α.app ⟨b.base⟩).toFunctor.map f.fiber }
   map_id a := by
     ext
     · dsimp
@@ -188,6 +190,8 @@ def map (α : F ⟶ G) : ∫ F ⥤ ∫ G where
         NatTrans.naturality_assoc]
       simp [naturality_comp_inv_app, ← Functor.map_comp, ← reassoc_of% Cat.Hom₂.comp_app]
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma map_id_map {x y : ∫ F} (f : x ⟶ y) : (map (𝟙 F)).map f = f := by
   ext <;> simp
@@ -199,6 +203,7 @@ section
 
 variable (F)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism witnessing the pseudo-unity constraint of `Grothendieck.map`. -/
 def mapIdIso : map (𝟙 F) ≅ 𝟭 (∫ F) :=
   NatIso.ofComponents (fun _ ↦ eqToIso (by cat_disch))
@@ -208,6 +213,8 @@ lemma map_id_eq : map (𝟙 F) = 𝟭 (∫ F) :=
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism witnessing the pseudo-functoriality of `Grothendieck.map`. -/
 def mapCompIso (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) ≅ map α ⋙ map β :=
   NatIso.ofComponents (fun _ ↦ eqToIso (by cat_disch)) (fun f ↦ by
@@ -318,6 +325,7 @@ attribute [local simp]
 variable {F} {G : LocallyDiscrete 𝒮ᵒᵖ ⥤ᵖ Cat.{v₂, u₂}}
   {H : LocallyDiscrete 𝒮ᵒᵖ ⥤ᵖ Cat.{v₂, u₂}}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The CoGrothendieck construction is functorial: a strong natural transformation `α : F ⟶ G`
 induces a functor `CoGrothendieck.map : ∫ᶜ F ⥤ ∫ᶜ G`. -/
 @[simps!]
@@ -326,9 +334,9 @@ def map (α : F ⟶ G) : ∫ᶜ F ⥤ ∫ᶜ G where
     base := a.base
     fiber := (α.app ⟨op a.base⟩).toFunctor.obj a.fiber }
   map {a b} f := {
-    base := f.1
-    fiber := (α.app ⟨op a.base⟩).toFunctor.map f.2 ≫
-      (α.naturality f.1.op.toLoc).hom.toNatTrans.app b.fiber }
+    base := f.base
+    fiber := (α.app ⟨op a.base⟩).toFunctor.map f.fiber ≫
+      (α.naturality f.base.op.toLoc).hom.toNatTrans.app b.fiber }
   map_id a := by
     ext1
     · dsimp
@@ -343,8 +351,10 @@ def map (α : F ⟶ G) : ∫ᶜ F ⥤ ∫ᶜ G where
       slice_lhs 2 4 => simp [← Cat.Hom.toNatIso_inv, Cat.Hom.comp_toFunctor,
         ← Cat.Hom.toNatIso_hom, ← map_comp, Iso.inv_hom_id_app, comp_obj, map_id, comp_id]
       simp only [assoc, ← reassoc_of% Cat.Hom.comp_map,
-        (α.naturality f.base.op.toLoc).hom.toNatTrans.naturality_assoc]
+        Cat.Hom.comp_toFunctor, Functor.comp_obj, NatTrans.naturality_assoc]
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma map_id_map {x y : ∫ᶜ F} (f : x ⟶ y) : (map (𝟙 F)).map f = f := by
   ext <;> simp
@@ -356,6 +366,7 @@ section
 
 variable (F)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism witnessing the pseudo-unity constraint of `CoGrothendieck.map`. -/
 def mapIdIso : map (𝟙 F) ≅ 𝟭 (∫ᶜ F) :=
   NatIso.ofComponents (fun _ ↦ eqToIso (by cat_disch))
@@ -365,6 +376,8 @@ lemma map_id_eq : map (𝟙 F) = 𝟭 (∫ᶜ F) :=
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism witnessing the pseudo-functoriality of `CoGrothendieck.map`. -/
 def mapCompIso (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) ≅ map α ⋙ map β :=
   NatIso.ofComponents (fun _ ↦ eqToIso (by cat_disch)) (fun f ↦ by

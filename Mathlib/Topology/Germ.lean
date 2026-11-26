@@ -6,10 +6,11 @@ Authors: Patrick Massot
 module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
-public import Mathlib.Algebra.Module.LinearMap.Defs
 public import Mathlib.Algebra.Order.Hom.Ring
 public import Mathlib.Order.Filter.Germ.Basic
 public import Mathlib.Topology.LocallyConstant.Basic
+
+import Mathlib.Algebra.Module.LinearMap.Defs
 
 /-! # Germs of functions between topological spaces
 
@@ -26,7 +27,7 @@ with respect to the neighbourhood filter `𝓝 x`.
 * `RestrictGermPredicate`: given a predicate on germs `P : Π x : X, germ (𝓝 x) Y → Prop` and
   `A : set X`, build a new predicate on germs `restrictGermPredicate P A` such that
   `(∀ x, RestrictGermPredicate P A x f) ↔ ∀ᶠ x near A, P x f`;
-  `forall_restrictRermPredicate_iff` is this equivalence.
+  `forall_restrictGermPredicate_iff` is this equivalence.
 
 * `Filter.Germ.sliceLeft, sliceRight`: map the germ of functions `X × Y → Z` at `p = (x,y) ∈ X × Y`
   to the corresponding germ of functions `X → Z` at `x ∈ X` resp. `Y → Z` at `y ∈ Y`.
@@ -47,7 +48,13 @@ namespace Filter.Germ
 /-- The value associated to a germ at a point. This is the common value
 shared by all representatives at the given point. -/
 def value {X α : Type*} [TopologicalSpace X] {x : X} (φ : Germ (𝓝 x) α) : α :=
-  Quotient.liftOn' φ (fun f ↦ f x) fun f g h ↦ by dsimp only; rw [Eventually.self_of_nhds h]
+  Quotient.liftOn' φ (fun f ↦ f x) fun f g h ↦ by rw [Eventually.self_of_nhds h]
+
+@[simp]
+theorem value_ofFun (f : X → Y) (x : X) : value (f : Germ (𝓝 x) Y) = f x := rfl
+
+@[simp]
+theorem value_const (c : Y) (x : X) : value (c : Germ (𝓝 x) Y) = c := rfl
 
 theorem value_smul {α β : Type*} [SMul α β] (φ : Germ (𝓝 x) α)
     (ψ : Germ (𝓝 x) β) : (φ • ψ).value = φ.value • ψ.value :=
@@ -108,7 +115,7 @@ theorem restrictGermPredicate_congr {P : ∀ x : X, Germ (𝓝 x) Y → Prop}
     (hf : RestrictGermPredicate P A x f) (h : ∀ᶠ z in 𝓝ˢ A, g z = f z) :
     RestrictGermPredicate P A x g := by
   intro hx
-  apply ((hf hx).and <| (eventually_nhdsSet_iff_forall.mp h x hx).eventually_nhds).mono
+  apply ((hf hx).and (eventually_nhdsSet_iff_forall.mp h x hx).eventually_nhds).mono
   rintro y ⟨hy, h'y⟩
   rwa [Germ.coe_eq.mpr h'y]
 
@@ -147,7 +154,7 @@ theorem sliceRight_coe [TopologicalSpace Y] {y : Y} (f : X × Y → Z) :
 lemma isConstant_comp_subtype {s : Set X} {f : X → Y} {x : s}
     (hf : (f : Germ (𝓝 (x : X)) Y).IsConstant) :
     ((f ∘ Subtype.val : s → Y) : Germ (𝓝 x) Y).IsConstant :=
-  isConstant_comp_tendsto hf continuousAt_subtype_val
+  isConstant_comp_tendsto hf continuousAt_subtypeVal
 
 end Filter.Germ
 
@@ -174,7 +181,7 @@ lemma eq_of_germ_isConstant_on {s : Set X} (h : ∀ x ∈ s, (f : Germ (𝓝 x) 
   let i : s → X := fun x ↦ x
   change (f ∘ i) (⟨x, x_in⟩ : s) = (f ∘ i) (⟨x', x'_in⟩ : s)
   have : PreconnectedSpace s := Subtype.preconnectedSpace hs
-  exact eq_of_germ_isConstant (fun y ↦ Germ.isConstant_comp_subtype (h y y.2)) _ _
+  exact eq_of_germ_isConstant (fun y ↦ Germ.isConstant_comp_subtype (h y y.property)) _ _
 
 @[to_additive (attr := simp)]
 theorem Germ.coe_prod {α : Type*} (l : Filter α) (R : Type*) [CommMonoid R] {ι} (f : ι → α → R)

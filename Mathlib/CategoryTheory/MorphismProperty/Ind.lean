@@ -5,11 +5,12 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.CategoryTheory.Comma.LocallySmall
-public import Mathlib.CategoryTheory.Limits.Preserves.Over
 public import Mathlib.CategoryTheory.MorphismProperty.Comma
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 public import Mathlib.CategoryTheory.ObjectProperty.Ind
+
+import Mathlib.CategoryTheory.Comma.LocallySmall
+import Mathlib.CategoryTheory.Limits.Preserves.Over
 
 /-!
 # Ind and pro-properties
@@ -24,12 +25,12 @@ We show that `ind P` inherits stability properties from `P`.
 - `CategoryTheory.MorphismProperty.ind`: `f` satisfies `ind P` if `f` is a filtered colimit of
   morphisms in `P`.
 
-## Main results:
+## Main results
 
 - `CategoryTheory.MorphismProperty.ind_ind`: If `P` implies finitely presentable, then
   `P.ind.ind = P.ind`.
 
-## TODOs:
+## TODO
 
 - Dualise to obtain `pro P`.
 - Show `ind P` is stable under composition if `P` spreads out (Christian).
@@ -77,6 +78,8 @@ lemma le_ind : P ≤ ind.{w} P := by
 
 variable {P}
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 lemma ind_iff_ind_underMk {X Y : C} (f : X ⟶ Y) :
     ind.{w} P f ↔ ObjectProperty.ind.{w} P.underObj (CategoryTheory.Under.mk f) := by
   refine ⟨fun ⟨J, _, _, D, t, s, hs, hst⟩ ↦ ?_, fun ⟨J, _, _, pres, hpres⟩ ↦ ?_⟩
@@ -107,7 +110,7 @@ instance [P.RespectsLeft Q] : P.ind.RespectsLeft Q where
 instance [P.RespectsIso] : P.ind.RespectsIso where
   postcomp {X Y Z} i (hi : IsIso i) f := fun ⟨J, _, _, D, t, s, hs, hst⟩ ↦ by
     refine ⟨J, ‹_›, ‹_›, D, t, s ≫ (Functor.const J).map i, ?_, fun j ↦ ⟨(hst j).1, ?_⟩⟩
-    · exact (IsColimit.equivIsoColimit (Cocones.ext (asIso i))) hs
+    · exact (IsColimit.equivIsoColimit (Cocone.ext (asIso i))) hs
     · simp [reassoc_of% (hst j).2]
 
 lemma ind_underObj_pushout {X Y : C} (g : X ⟶ Y) [HasPushouts C] [P.IsStableUnderCobaseChange]
@@ -176,6 +179,7 @@ class PreIndSpreads (P : MorphismProperty C) : Prop where
 
 alias exists_isPushout_of_isFiltered := PreIndSpreads.exists_isPushout
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `P` ind-spreads and all under categories are finitely accessible, `ind P`
 is stable under composition if `P` is. -/
 @[stacks 0BSI "The stacks project lemma is for the special case of ind-étale ring homomorphisms."]

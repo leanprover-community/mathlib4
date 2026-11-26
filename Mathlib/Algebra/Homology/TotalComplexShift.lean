@@ -33,7 +33,6 @@ Depending on the order of the "composition" of the two isomorphisms
 two ways to identify `((shiftFunctor₁ C x).obj ((shiftFunctor₂ C y).obj K)).total (up ℤ)`
 and `(K.total (up ℤ))⟦x + y⟧`. The lemma `totalShift₁Iso_trans_totalShift₂Iso` shows that
 these two compositions of isomorphisms differ by the sign `(x * y).negOnePow`.
-
 -/
 
 @[expose] public section
@@ -194,8 +193,7 @@ lemma ι_totalShift₁Iso_hom_f (a b n : ℤ) (h : a + b = n) (a' : ℤ) (ha' : 
       (K.shiftFunctor₁XXIso a x a' ha' b).hom ≫ K.ιTotal (up ℤ) a' b n' (by dsimp; lia) ≫
         (CochainComplex.shiftFunctorObjXIso (K.total (up ℤ)) x n n' hn').inv := by
   subst ha' hn'
-  dsimp [totalShift₁Iso, totalShift₁XIso]
-  simp only [ι_totalDesc, comp_id, id_comp]
+  simp [totalShift₁Iso, totalShift₁XIso]
 
 @[reassoc]
 lemma ι_totalShift₁Iso_inv_f (a b n : ℤ) (h : a + b = n) (a' n' : ℤ)
@@ -207,8 +205,7 @@ lemma ι_totalShift₁Iso_inv_f (a b n : ℤ) (h : a + b = n) (a' n' : ℤ)
         ((shiftFunctor₁ C x).obj K).ιTotal (up ℤ) a b n h := by
   subst hn'
   obtain rfl : a = a' - x := by lia
-  dsimp [totalShift₁Iso, totalShift₁XIso, shiftFunctor₁XXIso, XXIsoOfEq]
-  simp only [id_comp, ι_totalDesc]
+  simp [totalShift₁Iso, totalShift₁XIso, shiftFunctor₁XXIso, XXIsoOfEq]
 
 variable {K L} in
 @[reassoc]
@@ -307,8 +304,7 @@ lemma ι_totalShift₂Iso_hom_f (a b n : ℤ) (h : a + b = n) (b' : ℤ) (hb' : 
         K.ιTotal (up ℤ) a b' n' (by dsimp; lia) ≫
           (CochainComplex.shiftFunctorObjXIso (K.total (up ℤ)) y n n' hn').inv := by
   subst hb' hn'
-  dsimp [totalShift₂Iso, totalShift₂XIso]
-  simp only [ι_totalDesc, comp_id, id_comp]
+  simp [totalShift₂Iso, totalShift₂XIso]
 
 @[reassoc]
 lemma ι_totalShift₂Iso_inv_f (a b n : ℤ) (h : a + b = n) (b' n' : ℤ)
@@ -320,8 +316,7 @@ lemma ι_totalShift₂Iso_inv_f (a b n : ℤ) (h : a + b = n) (b' n' : ℤ)
         ((shiftFunctor₂ C y).obj K).ιTotal (up ℤ) a b n h := by
   subst hn'
   obtain rfl : b = b' - y := by lia
-  dsimp [totalShift₂Iso, totalShift₂XIso, shiftFunctor₂XXIso, XXIsoOfEq]
-  simp only [id_comp, ι_totalDesc]
+  simp [totalShift₂Iso, totalShift₂XIso, shiftFunctor₂XXIso, XXIsoOfEq]
 
 variable {K L} in
 @[reassoc]
@@ -354,8 +349,9 @@ lemma totalShift₁Iso_trans_totalShift₂Iso :
       (shiftFunctorComm (CochainComplex C ℤ) x y).app _ := by
   ext n n₁ n₂ h
   dsimp at h ⊢
-  rw [Linear.comp_units_smul, ι_totalShift₁Iso_hom_f_assoc _ x n₁ n₂ n h _ rfl _ rfl,
-    ιTotal_map_assoc, ι_totalShift₂Iso_hom_f_assoc _ y n₁ n₂ n h _ rfl _ rfl,
+  rw [total.mapIso_hom, Iso.app_hom, Linear.comp_units_smul,
+    ι_totalShift₁Iso_hom_f_assoc _ x n₁ n₂ n h _ rfl _ rfl, ιTotal_map_assoc,
+    ι_totalShift₂Iso_hom_f_assoc _ y n₁ n₂ n h _ rfl _ rfl,
     Linear.units_smul_comp, Linear.comp_units_smul]
   dsimp [shiftFunctor₁₂CommIso]
   rw [id_comp, id_comp, id_comp, id_comp, comp_id,
@@ -377,6 +373,6 @@ lemma totalShift₁Iso_hom_totalShift₂Iso_hom :
           (((shiftFunctor₁ C x).obj K).totalShift₂Iso y).hom ≫
           (K.totalShift₁Iso x).hom⟦y⟧' ≫
           (shiftFunctorComm (CochainComplex C ℤ) x y).hom.app _) :=
-  congr_arg Iso.hom (totalShift₁Iso_trans_totalShift₂Iso K x y)
+  congr($(totalShift₁Iso_trans_totalShift₂Iso K x y).hom)
 
 end HomologicalComplex₂

@@ -5,10 +5,11 @@ Authors: Anne Baanen, Alex J. Best, Xavier Roblot
 -/
 module
 
-public import Mathlib.Data.Int.Associated
-public import Mathlib.Data.Int.NatAbs
 public import Mathlib.LinearAlgebra.Determinant
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Quotient
+
+import Mathlib.Data.Int.Associated
+import Mathlib.Data.Int.NatAbs
 
 /-! # Cardinal of quotient of free finite `ℤ`-modules by submodules of full rank
 
@@ -17,7 +18,6 @@ public import Mathlib.LinearAlgebra.FreeModule.Finite.Quotient
 * `Submodule.natAbs_det_basis_change`: let `b` be a `ℤ`-basis for a module `M` over `ℤ` and
   let `bN` be a basis for a submodule `N` of the same dimension. Then the cardinal of `M ⧸ N`
   is given by taking the determinant of `bN` over `b`.
-
 -/
 
 public section
@@ -102,6 +102,7 @@ theorem AddSubgroup.index_eq_natAbs_det {E : Type*} [AddCommGroup E] {ι : Type*
   have : Module.Finite ℤ E := Module.Finite.of_basis bE
   (Submodule.natAbs_det_basis_change bE N.toIntSubmodule bN).symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem AddSubgroup.relIndex_eq_natAbs_det {E : Type*} [AddCommGroup E]
     (L₁ L₂ : AddSubgroup E) (H : L₁ ≤ L₂) {ι : Type*} [DecidableEq ι] [Fintype ι]
     (b₁ : Basis ι ℤ L₁.toIntSubmodule) (b₂ : Basis ι ℤ L₂.toIntSubmodule) :
@@ -109,9 +110,7 @@ theorem AddSubgroup.relIndex_eq_natAbs_det {E : Type*} [AddCommGroup E]
   rw [relIndex, index_eq_natAbs_det b₂ _ (b₁.map (addSubgroupOfEquivOfLe H).toIntLinearEquiv.symm)]
   rfl
 
-@[deprecated (since := "2025-08-12")]
-alias AddSubgroup.relindex_eq_natAbs_det := AddSubgroup.relIndex_eq_natAbs_det
-
+set_option backward.isDefEq.respectTransparency false in
 theorem AddSubgroup.relIndex_eq_abs_det {E : Type*} [AddCommGroup E] [Module ℚ E]
     (L₁ L₂ : AddSubgroup E) (H : L₁ ≤ L₂) {ι : Type*} [DecidableEq ι] [Fintype ι]
     (b₁ b₂ : Basis ι ℚ E) (h₁ : L₁ = .closure (Set.range b₁)) (h₂ : L₂ = .closure (Set.range b₂)) :
@@ -122,8 +121,5 @@ theorem AddSubgroup.relIndex_eq_abs_det {E : Type*} [AddCommGroup E] [Module ℚ
   rw [Basis.det_apply, Basis.det_apply, RingHom.map_det]
   congr; ext
   simp [Basis.toMatrix_apply]
-
-@[deprecated (since := "2025-08-12")]
-alias AddSubgroup.relindex_eq_abs_det := AddSubgroup.relIndex_eq_abs_det
 
 end AddSubgroup

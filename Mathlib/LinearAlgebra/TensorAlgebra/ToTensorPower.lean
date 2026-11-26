@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.TensorAlgebra.Basic
 public import Mathlib.LinearAlgebra.TensorPower.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tensor algebras as direct sums of tensor powers
 
@@ -48,7 +51,7 @@ theorem toTensorAlgebra_gMul {i j} (a : (⨂[R]^i) M) (b : (⨂[R]^j) M) :
   clear! a b
   ext (a b)
   simp only [LinearMap.compMultilinearMap_apply, LinearMap.compr₂_apply, ← gMul_def,
-    TensorProduct.mk_apply, LinearEquiv.coe_coe, tprod_mul_tprod, toTensorAlgebra_tprod,
+    TensorProduct.mk_apply, LinearEquiv.coe_toLinearMap, tprod_mul_tprod, toTensorAlgebra_tprod,
     TensorAlgebra.tprod_apply, LinearMap.comp_apply, LinearMap.compl₂_apply]
   refine Eq.trans ?_ List.prod_append
   congr
@@ -98,12 +101,12 @@ theorem ofDirectSum_comp_toDirectSum :
 @[simp]
 theorem ofDirectSum_toDirectSum (x : TensorAlgebra R M) :
     ofDirectSum (TensorAlgebra.toDirectSum x) = x :=
-  AlgHom.congr_fun ofDirectSum_comp_toDirectSum x
+  congr($ofDirectSum_comp_toDirectSum x)
 
 @[simp]
 theorem mk_reindex_cast {n m : ℕ} (h : n = m) (x : ⨂[R]^n M) :
     GradedMonoid.mk (A := fun i => (⨂[R]^i) M) m
-    (PiTensorProduct.reindex R (fun _ ↦ M) (Equiv.cast <| congr_arg Fin h) x) =
+    (PiTensorProduct.reindex R (fun _ ↦ M) (Equiv.cast <| congr(Fin $h)) x) =
     GradedMonoid.mk n x :=
   Eq.symm (PiTensorProduct.gradedMonoid_eq_of_reindex_cast h rfl)
 
@@ -113,6 +116,7 @@ theorem mk_reindex_fin_cast {n m : ℕ} (h : n = m) (x : ⨂[R]^n M) :
     (PiTensorProduct.reindex R (fun _ ↦ M) (finCongr h) x) = GradedMonoid.mk n x := by
   rw [finCongr_eq_equivCast, mk_reindex_cast h]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The product of tensor products made of a single vector is the same as a single product of
 all the vectors. -/
 theorem _root_.TensorPower.list_prod_gradedMonoid_mk_single (n : ℕ) (x : Fin n → M) :
@@ -150,7 +154,7 @@ theorem toDirectSum_comp_ofDirectSum :
 @[simp]
 theorem toDirectSum_ofDirectSum (x : ⨁ n, ⨂[R]^n M) :
     TensorAlgebra.toDirectSum (ofDirectSum x) = x :=
-  AlgHom.congr_fun toDirectSum_comp_ofDirectSum x
+  congr($toDirectSum_comp_ofDirectSum x)
 
 /-- The tensor algebra is isomorphic to a direct sum of tensor powers. -/
 @[simps!]

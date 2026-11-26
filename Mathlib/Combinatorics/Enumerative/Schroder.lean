@@ -51,6 +51,7 @@ variable {n : ℕ}
 
 /-- The recursive definition of the sequence of the large Schröder numbers :
 `a (n + 1) = a n + ∑ i : Fin n.succ, a i * a (n - i)` -/
+@[oeis A006318]
 def largeSchroder : ℕ → ℕ
   | 0 => 1
   | n + 1 => largeSchroder n + ∑ i : Fin n.succ, largeSchroder i * largeSchroder (n - i)
@@ -74,6 +75,7 @@ theorem even_largeSchroder : ∀ {n : ℕ}, n ≠ 0 → Even (largeSchroder n)
     exact .mul_right (even_largeSchroder k.succ_ne_zero) _
 
 /-- The small Schröder number is equal to : `largeSchroder n = 2 * smallSchroder (n + 1), n ≥ 1` -/
+@[oeis A001003 "the sequence skips `n = 0`"]
 def smallSchroder : ℕ → ℕ
   | 0 => 1
   | 1 => 1
@@ -107,7 +109,10 @@ theorem smallSchroder_succ (hn : 1 < n) :
           ∑ i ∈ Ioo 0 (n + 1), (2 * (i + 1).smallSchroder) * (2 * (n + 2 - i).smallSchroder) := by
       congr! 2 with i hi
       simp at hi
-      rw [← two_mul_smallSchroder_succ, ← two_mul_smallSchroder_succ] <;> lia
+      rw [← two_mul_smallSchroder_succ, ← two_mul_smallSchroder_succ] <;>
+      · #adaptation_note /-- After https://github.com/leanprover/lean4/pull/13593
+        we need to re-enable model-based theory combination in `lia` for this to go through. -/
+        lia +mbtc
     _ = 6 * (n + 2).smallSchroder +
           4 * ∑ i ∈ Ioo 0 (n + 1), (i + 1).smallSchroder * (n + 2 - i).smallSchroder := by
       rw [← two_mul_smallSchroder_succ (by lia)]

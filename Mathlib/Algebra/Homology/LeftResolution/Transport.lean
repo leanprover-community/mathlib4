@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Homology.LeftResolution.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Transport left resolutions along equivalences
 
@@ -14,21 +17,18 @@ If `ι : C ⥤ A` is equipped with `Λ : LeftResolution ι` and
 `ι' : C' ⥤ A'` is a functor which corresponds to `ι` via
 equivalences of categories `A' ≌ A` and `C' ≌ C`, we
 define `Λ.transport .. : LeftResolution ι'`.
-
 -/
 
 @[expose] public section
 
 namespace CategoryTheory.Abelian
 
-open Category
-
 variable {A C : Type*} [Category* C] [Category* A]
   {A' C' : Type*} [Category* C'] [Category* A']
 
 namespace LeftResolution
 
-open Functor
+open CategoryTheory.Functor
 
 /-- Transport `LeftResolution` via equivalences of categories. -/
 def transport {ι : C ⥤ A} (Λ : LeftResolution ι) {ι' : C' ⥤ A'}

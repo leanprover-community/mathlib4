@@ -5,12 +5,13 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Module.Submodule.Invariant
 public import Mathlib.RepresentationTheory.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Invariant submodules of a group representation
-
 -/
 
 @[expose] public section
@@ -79,8 +80,8 @@ noncomputable def mapSubmodule : ρ.invtSubmodule ≃o Submodule k[G] ρ.asModul
     rw [invtSubmodule, Sublattice.mem_iInf]
     intro g v hv
     simp only [Submodule.orderIsoMapComap_symm_apply, Submodule.mem_comap] at hv ⊢
-    convert q.smul_mem (MonoidAlgebra.of k G g) hv using 1
-    rw [LinearEquiv.coe_coe, ← asModuleEquiv_symm_map_rho]⟩
+    convert! q.smul_mem (MonoidAlgebra.of k G g) hv using 1
+    rw [LinearEquiv.coe_toLinearMap, ← asModuleEquiv_symm_map_rho]⟩
   left_inv p := by ext; simp
   right_inv q := by ext; aesop
   map_rel_iff' {p q} :=

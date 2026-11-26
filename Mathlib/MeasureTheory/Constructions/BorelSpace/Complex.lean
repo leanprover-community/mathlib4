@@ -8,9 +8,12 @@ module
 public import Mathlib.Analysis.Complex.Basic
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-! # Equip `ℂ` with the Borel sigma-algebra -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

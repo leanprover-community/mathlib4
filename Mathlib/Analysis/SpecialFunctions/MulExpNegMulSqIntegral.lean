@@ -5,12 +5,12 @@ Authors: Jakob Stiefel
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.MulExpNegMulSq
 public import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
-public import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
-public import Mathlib.MeasureTheory.Integral.DominatedConvergence
+public import Mathlib.Analysis.SpecialFunctions.MulExpNegMulSq
 public import Mathlib.MeasureTheory.Measure.RegularityCompacts
 public import Mathlib.Topology.ContinuousMap.StoneWeierstrass
+
+import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
 
 /-!
 # Properties of the integral of `mulExpNegMulSq`
@@ -41,7 +41,7 @@ it is shown that a subalgebra of functions that separates points separates finit
 
 public section
 
-open MeasureTheory Real NNReal ENNReal BoundedContinuousFunction Filter
+open MeasureTheory Real ENNReal BoundedContinuousFunction Filter
 
 open scoped Topology
 
@@ -95,14 +95,12 @@ theorem tendsto_integral_mul_one_add_inv_smul_sq_pow (g : E →ᵇ ℝ) (hε : 0
       exact (mul_nonneg (le_of_lt hε) (mul_self_nonneg (norm g)))
     apply Eventually.of_forall
     intro x
-    simp only [smul_neg, BoundedContinuousFunction.coe_mul, Pi.mul_apply, pow_apply,
-      BoundedContinuousFunction.coe_add, BoundedContinuousFunction.coe_one, coe_neg,
-      BoundedContinuousFunction.coe_smul, smul_eq_mul, Pi.add_apply, Pi.one_apply, Pi.neg_apply,
-      norm_mul, norm_eq_abs, norm_pow]
+    simp only [Algebra.smul_mul_assoc, smul_neg, mul_apply, pow_apply, add_apply, one_apply,
+      neg_apply, smul_apply, smul_eq_mul, norm_mul, norm_eq_abs, norm_pow]
     refine (mul_le_mul_of_nonneg_right (norm_coe_le_norm g x) (pow_nonneg (abs_nonneg _) n)).trans
       <| mul_le_of_le_one_right (norm_nonneg _) ?_
     apply pow_le_one₀ (abs_nonneg _)
-    rw [mul_assoc, inv_mul_eq_div, abs_le]
+    rw [inv_mul_eq_div, abs_le]
     refine ⟨?_, (add_le_iff_nonpos_right 1).mpr (Left.neg_nonpos_iff.mpr
       (div_nonneg (mul_nonneg (le_of_lt hε) (mul_self_nonneg (g x))) (le_of_lt hnpos)))⟩
     apply le_trans (by linarith) (sub_nonneg_of_le ((div_le_one hnpos).mpr _))
@@ -175,14 +173,14 @@ theorem dist_integral_mulExpNegMulSq_comp_le (f : E →ᵇ ℝ)
         (toReal_pos ((Measure.measure_univ_ne_zero).mpr hP'0) (by finiteness))
   -- obtain K, a compact and closed set, which covers E up to a small area of measure at most ε
   -- w.r.t. both P and P'
-  obtain ⟨KP, _, hKPco, hKPcl, hKP⟩ := MeasurableSet.exists_isCompact_isClosed_diff_lt
+  obtain ⟨KP, _, hKPco, hKPcl, hKP⟩ := MeasurableSet.exists_isCompact_isClosed_sdiff_lt
     (MeasurableSet.univ) (measure_ne_top P Set.univ) (ofReal_pos.mpr hε).ne'
-  obtain ⟨KP', _, hKP'co, hKP'cl, hKP'⟩ := MeasurableSet.exists_isCompact_isClosed_diff_lt
+  obtain ⟨KP', _, hKP'co, hKP'cl, hKP'⟩ := MeasurableSet.exists_isCompact_isClosed_sdiff_lt
     (MeasurableSet.univ) (measure_ne_top P' Set.univ) (ofReal_pos.mpr hε).ne'
   let K := KP ∪ KP'
   have hKco := IsCompact.union hKPco hKP'co
   have hKcl := IsClosed.union hKPcl hKP'cl
-  simp only [← Set.compl_eq_univ_diff] at hKP hKP'
+  simp only [← Set.compl_eq_univ_sdiff] at hKP hKP'
   have hKPbound : P (KP ∪ KP')ᶜ < ε.toNNReal := lt_of_le_of_lt
         (measure_mono (Set.compl_subset_compl_of_subset (Set.subset_union_left))) hKP
   have hKP'bound : P' (KP ∪ KP')ᶜ < ε.toNNReal := lt_of_le_of_lt

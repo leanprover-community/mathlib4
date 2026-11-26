@@ -5,15 +5,15 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Init.Data.ULift
-public import Init.Data.Fin.Fold
-public import Init.Data.List.Nat.Pairwise
-public import Init.Data.List.Nat.Range
 public import Mathlib.NumberTheory.NumberField.Basic
 public import Mathlib.RingTheory.Localization.NormTrace
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Number field discriminant
+
 This file defines the discriminant of a number field.
 
 ## Main definitions
@@ -21,6 +21,7 @@ This file defines the discriminant of a number field.
 * `NumberField.discr`: the absolute discriminant of a number field.
 
 ## Tags
+
 number field, discriminant
 -/
 
@@ -65,7 +66,7 @@ theorem discr_eq_discr_of_algEquiv {L : Type*} [Field L] [NumberField L] (f : K 
 
 theorem discr_eq_discr_of_ringEquiv {L : Type*} [Field L] [NumberField L] (f : K ≃+* L) :
     discr K = discr L :=
-  discr_eq_discr_of_algEquiv _ <| AlgEquiv.ofRingEquiv (f := f) fun _ ↦ by simp
+  discr_eq_discr_of_algEquiv _ <| AlgEquiv.ofCommutes (e := f) fun _ ↦ by simp
 
 end NumberField
 
@@ -105,7 +106,6 @@ theorem Algebra.discr_eq_discr_of_toMatrix_coeff_isIntegral [NumberField K]
     intro i j
     convert h' i ((b.indexEquiv b').symm j)
     simp [Basis.toMatrix_apply]
-  classical
   rw [← (b.reindex (b.indexEquiv b')).toMatrix_map_vecMul b', discr_of_matrix_vecMul,
     ← one_mul (discr ℚ b), Basis.coe_reindex, discr_reindex]
   congr

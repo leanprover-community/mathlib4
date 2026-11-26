@@ -10,18 +10,22 @@ public import Mathlib.Data.Int.Interval
 
 /-!
 # Vertex operators
+
 In this file we introduce vertex operators as linear maps to Laurent series.
 
-## Definitions
+## Main definitions
+
 * `VertexOperator` is an `R`-linear map from an `R`-module `V` to `LaurentSeries V`.
 * `VertexOperator.ncoeff` is the coefficient of a vertex operator under normalized indexing.
 
 ## TODO
+
 * `HasseDerivative` : A divided-power derivative.
 * `Locality` : A weak form of commutativity.
 * `Residue products` : A family of products on `VertexOperator R V` parametrized by integers.
 
 ## References
+
 * [G. Mason, *Vertex rings and Pierce bundles*][mason2017]
 * [A. Matsuo, K. Nagatomo, *On axioms for a vertex algebra and locality of quantum
   fields*][matsuo1997]
@@ -64,9 +68,6 @@ scoped[VertexOperator] notation A "[[" n "]]" => ncoeff A n
 theorem coeff_eq_ncoeff (A : VertexOperator R V)
     (n : ℤ) : HVertexOperator.coeff A n = A[[-n - 1]] := by
   rw [ncoeff_apply, neg_sub, Int.sub_neg, add_sub_cancel_left]
-
-@[deprecated (since := "2025-08-30")] alias ncoeff_add := map_add
-@[deprecated (since := "2025-08-30")] alias ncoeff_smul := map_smul
 
 theorem ncoeff_eq_zero_of_lt_order (A : VertexOperator R V) (n : ℤ) (x : V)
     (h : -n - 1 < HahnSeries.order ((HahnModule.of R).symm (A x))) : (A[[n]]) x = 0 := by

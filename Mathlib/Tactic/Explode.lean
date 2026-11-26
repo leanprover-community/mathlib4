@@ -60,7 +60,7 @@ partial def explodeCore (e : Expr) (depth : Nat) (entries : Entries) (start : Bo
               if start
               then Status.sintro
               else if i == 0 then Status.intro else Status.cintro
-            thm      := ← addMessageContext <| arg
+            thm      := ← addMessageContext arg
             deps     := []
             useAsDep := ← select arg }
         entries' := entries''
@@ -265,7 +265,7 @@ elab "#explode " stx:term : command => withoutModifyingEnv <| Command.runTermEla
     addCompletionInfo <| .id stx theoremName (danglingDot := false) {} none
     let decl ← getConstInfo theoremName
     let c : Expr := .const theoremName (decl.levelParams.map mkLevelParam)
-    pure (m!"{MessageData.ofConst c} : {decl.type}", decl.value!)
+    pure (m!"{MessageData.ofConst c} : {decl.type}", decl.value! (allowOpaque := true))
   catch _ =>
     let e ← Term.elabTerm stx none
     Term.synthesizeSyntheticMVarsNoPostponing

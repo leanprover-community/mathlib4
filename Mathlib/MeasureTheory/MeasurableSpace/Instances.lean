@@ -5,10 +5,13 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.MeasureTheory.MeasurableSpace.Defs
-public import Mathlib.GroupTheory.GroupAction.IterateAct
 public import Mathlib.Data.Rat.Init
 public import Mathlib.Data.ZMod.Defs
+public import Mathlib.GroupTheory.GroupAction.IterateAct
+public import Mathlib.MeasureTheory.MeasurableSpace.Defs
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Measurable-space typeclass instances
@@ -17,7 +20,7 @@ This file provides measurable-space instances for a selection of standard counta
 in each case defining the Σ-algebra to be `⊤` (the discrete measurable-space structure).
 -/
 
-@[expose] public section
+public section
 
 instance Empty.instMeasurableSpace : MeasurableSpace Empty := ⊤
 

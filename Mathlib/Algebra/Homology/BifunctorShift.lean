@@ -15,19 +15,18 @@ public import Mathlib.CategoryTheory.Shift.CommShiftTwo
 In this file, given cochain complexes `K₁ : CochainComplex C₁ ℤ`, `K₂ : CochainComplex C₂ ℤ` and
 a functor `F : C₁ ⥤ C₂ ⥤ D`, we define an isomorphism of cochain complexes in `D`:
 - `CochainComplex.mapBifunctorShift₁Iso K₁ K₂ F x` of type
-`mapBifunctor (K₁⟦x⟧) K₂ F ≅ (mapBifunctor K₁ K₂ F)⟦x⟧` for `x : ℤ`.
+  `mapBifunctor (K₁⟦x⟧) K₂ F ≅ (mapBifunctor K₁ K₂ F)⟦x⟧` for `x : ℤ`.
 - `CochainComplex.mapBifunctorShift₂Iso K₁ K₂ F y` of type
-`mapBifunctor K₁ (K₂⟦y⟧) F ≅ (mapBifunctor K₁ K₂ F)⟦y⟧` for `y : ℤ`.
+  `mapBifunctor K₁ (K₂⟦y⟧) F ≅ (mapBifunctor K₁ K₂ F)⟦y⟧` for `y : ℤ`.
 
 In the lemma `CochainComplex.mapBifunctorShift₁Iso_trans_mapBifunctorShift₂Iso`, we obtain
 that the two ways to deduce an isomorphism
 `mapBifunctor (K₁⟦x⟧) (K₂⟦y⟧) F ≅ (mapBifunctor K₁ K₂ F)⟦x + y⟧` differ by the sign
 `(x * y).negOnePow`.
 
-These definitions and properties can be summarised by saysing that the bifunctor
+These definitions and properties can be summarised by saying that the bifunctor
 `F.map₂CochainComplex : CochainComplex C₁ ℤ ⥤ CochainComplex C₂ ℤ ⥤ CochainComplex D ℤ`
 commutes with shifts by `ℤ`.
-
 -/
 
 @[expose] public section
@@ -103,7 +102,8 @@ lemma ι_mapBifunctorShift₁Iso_hom_f (n₁ n₂ n : ℤ) (h : n₁ + n₂ = n)
         ιMapBifunctor K₁ K₂ F m₁ n₂ m (by lia) ≫
           (shiftFunctorObjXIso (mapBifunctor K₁ K₂ F) x n m hm).inv := by
   dsimp [mapBifunctorShift₁Iso]
-  simp only [HomologicalComplex₂.ιTotal_map_assoc,
+  simp only [HomologicalComplex₂.total.mapIso_hom,
+    HomologicalComplex₂.ιTotal_map_assoc,
     HomologicalComplex₂.ι_totalShift₁Iso_hom_f _ _ _ _ _ _ _ hm₁ _ hm]
   simp [HomologicalComplex₂.ιTotal, HomologicalComplex₂.shiftFunctor₁XXIso,
     HomologicalComplex.XIsoOfEq, eqToHom_map]
@@ -133,11 +133,7 @@ def mapBifunctorHomologicalComplexShift₂Iso :
     (HomologicalComplex₂.shiftFunctor₂ D y).obj
       (((F.mapBifunctorHomologicalComplex _ _).obj K₁).obj K₂) :=
   HomologicalComplex.Hom.isoOfComponents
-    (fun i₁ => HomologicalComplex.Hom.isoOfComponents (fun _ => Iso.refl _)) (by
-      intros
-      ext
-      dsimp
-      simp only [id_comp, comp_id])
+    (fun i₁ => HomologicalComplex.Hom.isoOfComponents (fun _ => Iso.refl _))
 
 instance : HasMapBifunctor K₁ (K₂⟦y⟧) F :=
   HomologicalComplex₂.hasTotal_of_iso (mapBifunctorHomologicalComplexShift₂Iso K₁ K₂ F y).symm _
@@ -159,7 +155,8 @@ lemma ι_mapBifunctorShift₂Iso_hom_f (n₁ n₂ n : ℤ) (h : n₁ + n₂ = n)
         ιMapBifunctor K₁ K₂ F n₁ m₂ m (by lia) ≫
         (shiftFunctorObjXIso (mapBifunctor K₁ K₂ F) y n m hm).inv := by
   dsimp [mapBifunctorShift₂Iso]
-  simp only [HomologicalComplex₂.ιTotal_map_assoc,
+  simp only [HomologicalComplex₂.total.mapIso_hom,
+    HomologicalComplex₂.ιTotal_map_assoc,
     HomologicalComplex₂.ι_totalShift₂Iso_hom_f _ _ _ _ _ _ _ hm₂ _ hm]
   simp [HomologicalComplex₂.ιTotal, HomologicalComplex₂.shiftFunctor₂XXIso,
     HomologicalComplex.XIsoOfEq, eqToHom_map]
@@ -190,6 +187,7 @@ lemma mapBifunctorShift₁Iso_trans_mapBifunctorShift₂Iso :
           (shiftFunctorComm (CochainComplex D ℤ) x y).app _) := by
   ext1
   dsimp [mapBifunctorShift₁Iso, mapBifunctorShift₂Iso]
+  simp only [HomologicalComplex₂.total.mapIso_hom]
   rw [Functor.map_comp, Functor.map_comp, assoc, assoc, assoc,
     ← HomologicalComplex₂.totalShift₁Iso_hom_naturality_assoc,
     HomologicalComplex₂.totalShift₁Iso_hom_totalShift₂Iso_hom,
@@ -201,8 +199,7 @@ lemma mapBifunctorShift₁Iso_trans_mapBifunctorShift₂Iso :
     ← HomologicalComplex₂.total.map_comp_assoc]
   congr 2
   ext a b
-  dsimp [HomologicalComplex₂.shiftFunctor₁₂CommIso]
-  simp only [id_comp]
+  simp [HomologicalComplex₂.shiftFunctor₁₂CommIso]
 
 end
 

@@ -5,9 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.Additive
-public import Mathlib.Algebra.Homology.ShortComplex.Abelian
 public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Left resolutions
@@ -20,7 +21,6 @@ This is used in order to construct a resolution functor
 `LeftResolution.chainComplexFunctor : A ⥤ ChainComplex C ℕ`.
 
 This shall be used in order to construct functorial flat resolutions.
-
 -/
 
 @[expose] public section
@@ -101,7 +101,7 @@ lemma exactAt_map_chainComplex_succ (n : ℕ) :
   rw [HomologicalComplex.exactAt_iff' _ (n + 2) (n + 1) n
     (ComplexShape.prev_eq' _ (by dsimp; lia)) (by simp),
     ShortComplex.exact_iff_epi_kernel_lift]
-  convert epi_comp (ι.map (Λ.chainComplexXIso X n).hom) (Λ.π.app _)
+  convert! epi_comp (ι.map (Λ.chainComplexXIso X n).hom) (Λ.π.app _)
   rw [← cancel_mono (kernel.ι _), kernel.lift_ι]
   simp [map_chainComplex_d]
 
@@ -118,8 +118,7 @@ noncomputable def chainComplexMap : Λ.chainComplex X ⟶ Λ.chainComplex Y :=
     (ι.map_injective (by
         dsimp
         simp only [Category.assoc, Functor.map_comp, map_chainComplex_d_1_0]
-        simp only [← ι.map_comp, ← ι.map_comp_assoc, Iso.inv_hom_id_assoc,
-          Iso.inv_hom_id, comp_id]
+        simp only [← ι.map_comp, ← ι.map_comp_assoc]
         simp))
     (fun n p ↦
       ⟨(Λ.chainComplexXIso X n).hom ≫ (Λ.F.map

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Group.Hom.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extensionality lemmas for monoid and group structures
 
@@ -14,7 +17,7 @@ In this file we prove extensionality lemmas for `Monoid` and higher algebraic st
 binary operation. Extensionality lemmas for structures that are lower in the hierarchy can be found
 in `Algebra.Group.Defs`.
 
-## Implementation details
+## Implementation notes
 
 To get equality of `npow` etc, we define a monoid homomorphism between two monoid structures on the
 same type, then apply lemmas like `MonoidHom.map_div`, `MonoidHom.map_pow` etc.
@@ -24,6 +27,7 @@ To refer to the `*` operator of a particular instance `i`, we use
 former uses `HMul.hMul` which is the canonical spelling.
 
 ## Tags
+
 monoid, group, extensionality
 -/
 
@@ -47,7 +51,7 @@ theorem Monoid.ext {M : Type u} ⦃m₁ m₂ : Monoid M⦄
   have : m₁.npow = m₂.npow := by
     ext n x
     exact @MonoidHom.map_pow M M m₁ m₂ f x n
-  rcases m₁ with @⟨@⟨⟨_⟩⟩, ⟨_⟩⟩
+  rcases m₁ with @⟨⟨_⟩, ⟨_⟩, _, _, _, ⟨_⟩⟩
   congr
 
 @[to_additive]
@@ -98,6 +102,14 @@ theorem CancelMonoid.ext {M : Type*} ⦃m₁ m₂ : CancelMonoid M⦄
   CancelMonoid.toLeftCancelMonoid_injective <| LeftCancelMonoid.ext h_mul
 
 @[to_additive]
+theorem CancelMonoid.toRightCancelMonoid_injective {M : Type u} :
+    Function.Injective (@CancelMonoid.toRightCancelMonoid M) := by
+  intro m₁ m₂ h
+  apply CancelMonoid.ext
+  exact congrArg (fun m : Monoid M => (letI := m; HMul.hMul : M → M → M)) <|
+    congrArg (@RightCancelMonoid.toMonoid M) h
+
+@[to_additive]
 theorem CancelCommMonoid.toCommMonoid_injective {M : Type u} :
     Function.Injective (@CancelCommMonoid.toCommMonoid M) := by
   rintro @⟨@⟨@⟨⟩⟩⟩ @⟨@⟨@⟨⟩⟩⟩ h
@@ -123,9 +135,10 @@ theorem DivInvMonoid.ext {M : Type*} ⦃m₁ m₂ : DivInvMonoid M⦄
     exact @MonoidHom.map_zpow' M M m₁ m₂ f (congr_fun h_inv) x m
   have : m₁.div = m₂.div := by
     ext a b
-    exact @map_div' _ _
-      (F := @MonoidHom _ _ (_) _) _ (id _) _ inferInstance f (congr_fun h_inv) a b
-  rcases m₁ with @⟨_, ⟨_⟩, ⟨_⟩⟩
+    exact (@div_eq_mul_inv _ m₁ a b).trans
+      (((congr_fun (congr_fun h_mul a) _).trans
+        (congr_arg _ (congr_fun h_inv b))).trans (@div_eq_mul_inv _ m₂ a b).symm)
+  rcases m₁ with @⟨_, ⟨_⟩, ⟨_⟩, ⟨_⟩⟩
   congr
 
 @[to_additive]

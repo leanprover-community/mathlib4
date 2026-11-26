@@ -29,7 +29,7 @@ rectangular box, box partition
 
 noncomputable section
 
-open Finset Function ENNReal NNReal Set
+open Finset Function NNReal Set
 
 namespace BoxIntegral
 
@@ -47,7 +47,7 @@ structure TaggedPrepartition (I : Box ι) extends Prepartition I where
 
 namespace TaggedPrepartition
 
-variable {I J J₁ J₂ : Box ι} (π : TaggedPrepartition I) {x : ι → ℝ}
+variable {I J : Box ι} (π : TaggedPrepartition I) {x : ι → ℝ}
 
 instance : Membership (Box ι) (TaggedPrepartition I) :=
   ⟨fun π J => J ∈ π.boxes⟩
@@ -72,7 +72,7 @@ theorem iUnion_toPrepartition : π.toPrepartition.iUnion = π.iUnion := rfl
 
 @[simp]
 theorem mem_iUnion : x ∈ π.iUnion ↔ ∃ J ∈ π, x ∈ J := by
-  convert Set.mem_iUnion₂
+  convert! Set.mem_iUnion₂
   rw [Box.mem_coe, mem_toPrepartition, exists_prop]
 
 theorem subset_iUnion (h : J ∈ π) : ↑J ⊆ π.iUnion :=
@@ -91,7 +91,7 @@ theorem isPartition_iff_iUnion_eq : IsPartition π ↔ π.iUnion = I :=
 /-- The tagged partition made of boxes of `π` that satisfy predicate `p`. -/
 @[simps! -fullyApplied]
 def filter (p : Box ι → Prop) : TaggedPrepartition I :=
-  ⟨π.1.filter p, π.2, π.3⟩
+  ⟨π.toPrepartition.filter p, π.tag, π.tag_mem_Icc⟩
 
 @[simp]
 theorem mem_filter {p : Box ι → Prop} : J ∈ π.filter p ↔ J ∈ π ∧ p J := by
@@ -248,7 +248,7 @@ theorem IsSubordinate.diam_le [Fintype ι] {π : TaggedPrepartition I} (h : π.I
   calc
     diam (Box.Icc J) ≤ diam (closedBall (π.tag J) (r <| π.tag J)) :=
       diam_mono (h J hJ) isBounded_closedBall
-    _ ≤ 2 * r (π.tag J) := diam_closedBall (le_of_lt (r _).2)
+    _ ≤ 2 * r (π.tag J) := diam_closedBall (le_of_lt (r _).property)
 
 /-- Tagged prepartition with single box and prescribed tag. -/
 @[simps! -fullyApplied]
@@ -317,11 +317,12 @@ theorem iUnion_disjUnion (h : Disjoint π₁.iUnion π₂.iUnion) :
 
 theorem disjUnion_tag_of_mem_left (h : Disjoint π₁.iUnion π₂.iUnion) (hJ : J ∈ π₁) :
     (π₁.disjUnion π₂ h).tag J = π₁.tag J :=
-  dif_pos hJ
+  dite_eq_left hJ
 
 theorem disjUnion_tag_of_mem_right (h : Disjoint π₁.iUnion π₂.iUnion) (hJ : J ∈ π₂) :
     (π₁.disjUnion π₂ h).tag J = π₂.tag J :=
-  dif_neg fun h₁ => h.le_bot ⟨π₁.subset_iUnion h₁ J.upper_mem, π₂.subset_iUnion hJ J.upper_mem⟩
+  dite_eq_right fun h₁ =>
+    h.le_bot ⟨π₁.subset_iUnion h₁ J.upper_mem, π₂.subset_iUnion hJ J.upper_mem⟩
 
 theorem IsSubordinate.disjUnion [Fintype ι] (h₁ : IsSubordinate π₁ r) (h₂ : IsSubordinate π₂ r)
     (h : Disjoint π₁.iUnion π₂.iUnion) : IsSubordinate (π₁.disjUnion π₂ h) r := by

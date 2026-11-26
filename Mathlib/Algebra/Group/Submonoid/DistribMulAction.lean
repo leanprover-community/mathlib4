@@ -8,11 +8,14 @@ module
 public import Mathlib.Algebra.Group.Submonoid.MulAction
 public import Mathlib.Algebra.GroupWithZero.Action.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Distributive actions by submonoids
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists RelIso Ring
 

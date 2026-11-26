@@ -6,8 +6,11 @@ Authors: Andrew Yang, Antoine Chambert-Loir
 module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Basic
-public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.Algebra.Ring.Action.Submonoid
+public import Mathlib.RingTheory.Ideal.Maps
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # More operations on subalgebras
@@ -41,20 +44,20 @@ variable (S' : Subalgebra R S)
 /-- Suppose we are given `∑ i, lᵢ * sᵢ = 1` ∈ `S`, and `S'` a subalgebra of `S` that contains
 `lᵢ` and `sᵢ`. To check that an `x : S` falls in `S'`, we only need to show that
 `sᵢ ^ n • x ∈ S'` for some `n` for each `sᵢ`. -/
-theorem mem_of_finset_sum_eq_one_of_pow_smul_mem
+theorem mem_of_finsetSum_eq_one_of_pow_smul_mem
     {ι : Type*} (ι' : Finset ι) (s : ι → S) (l : ι → S)
     (e : ∑ i ∈ ι', l i * s i = 1) (hs : ∀ i, s i ∈ S') (hl : ∀ i, l i ∈ S') (x : S)
     (H : ∀ i, ∃ n : ℕ, (s i ^ n : S) • x ∈ S') : x ∈ S' := by
   suffices x ∈ Subalgebra.toSubmodule (Algebra.ofId S' S).range by
     obtain ⟨x, rfl⟩ := this
-    exact x.2
+    exact x.property
   choose n hn using H
   let s' : ι → S' := fun x => ⟨s x, hs x⟩
   let l' : ι → S' := fun x => ⟨l x, hl x⟩
   have e' : ∑ i ∈ ι', l' i * s' i = 1 := by
     ext
     change S'.subtype (∑ i ∈ ι', l' i * s' i) = 1
-    simpa only [map_sum, map_mul] using e
+    simpa only [map_sum, map_mul] using! e
   have : Ideal.span (s' '' ι') = ⊤ := by
     rw [Ideal.eq_top_iff_one, ← e']
     apply sum_mem
@@ -73,24 +76,43 @@ theorem mem_of_span_eq_top_of_smul_pow_mem
     (s : Set S) (l : s →₀ S) (hs : Finsupp.linearCombination S ((↑) : s → S) l = 1)
     (hs' : s ⊆ S') (hl : ∀ i, l i ∈ S') (x : S) (H : ∀ r : s, ∃ n : ℕ, (r : S) ^ n • x ∈ S') :
     x ∈ S' :=
-  mem_of_finset_sum_eq_one_of_pow_smul_mem S' l.support (↑) l hs (fun x => hs' x.2) hl x H
+  mem_of_finsetSum_eq_one_of_pow_smul_mem S' l.support (↑) l hs (fun x => hs' x.property) hl x H
 
 end Subalgebra
 
 section MulSemiringAction
 
-variable (A B : Type*) [CommSemiring A] [Ring B] [Algebra A B]
+variable (A B B' : Type*) [CommSemiring A] [Ring B] [Semiring B'] [Algebra A B] [Algebra A B']
 variable (G : Type*) [Monoid G] [MulSemiringAction G B] [SMulCommClass G A B]
+  [MulSemiringAction G B'] [SMulCommClass G A B']
+
+/-- The set of fixed points under a group action, as a subring. -/
+def FixedPoints.subsemiring : Subsemiring B' where
+  __ := FixedPoints.addSubmonoid G B'
+  __ := FixedPoints.submonoid G B'
+
+instance : SMulCommClass G (FixedPoints.subsemiring B' G) B' :=
+  inferInstanceAs (SMulCommClass G (FixedPoints.submonoid G B') B')
 
 /-- The set of fixed points under a group action, as a subring. -/
 def FixedPoints.subring : Subring B where
   __ := FixedPoints.addSubgroup G B
   __ := FixedPoints.submonoid G B
 
+instance : SMulCommClass G (FixedPoints.subring B G) B :=
+  inferInstanceAs (SMulCommClass G (FixedPoints.subsemiring B G) B)
+
 /-- The set of fixed points under a group action, as a subalgebra. -/
-def FixedPoints.subalgebra : Subalgebra A B where
-  __ := FixedPoints.addSubgroup G B
-  __ := FixedPoints.submonoid G B
-  algebraMap_mem' r := by simp
+def FixedPoints.subalgebra : Subalgebra A B' where
+  __ := FixedPoints.subsemiring B' G
+  algebraMap_mem' r g := smul_algebraMap g r
+
+instance : SMulCommClass G (FixedPoints.subalgebra A B' G) B' :=
+  inferInstanceAs (SMulCommClass G (FixedPoints.subsemiring B' G) B')
+
+variable {A B' G} in
+theorem FixedPoints.mem_subalgebra {x : B'} :
+    x ∈ FixedPoints.subalgebra A B' G ↔ ∀ g : G, g • x = x :=
+  Iff.rfl
 
 end MulSemiringAction

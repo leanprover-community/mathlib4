@@ -149,17 +149,20 @@ theorem continuous_projRestricts (h : ∀ i, J i → K i) : Continuous (ProjRest
 theorem surjective_projRestricts (h : ∀ i, J i → K i) : Function.Surjective (ProjRestricts C h) :=
   (Homeomorph.surjective _).comp (Set.surjective_mapsTo_image_restrict _ _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (J) in
 theorem projRestricts_eq_id : ProjRestricts C (fun i (h : J i) ↦ h) = id := by
   ext ⟨x, y, hy, rfl⟩ i
-  simp +contextual only [π, Proj, ProjRestricts_coe, id_eq, if_true]
+  simp +contextual only [π, Proj, ProjRestricts_coe, id_eq, ite_true]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem projRestricts_eq_comp (hJK : ∀ i, J i → K i) (hKL : ∀ i, K i → L i) :
     ProjRestricts C hJK ∘ ProjRestricts C hKL = ProjRestricts C (fun i ↦ hKL i ∘ hJK i) := by
   ext x i
   simp only [π, Proj, Function.comp_apply, ProjRestricts_coe]
   simp_all
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem projRestricts_comp_projRestrict (h : ∀ i, J i → K i) :
     ProjRestricts C h ∘ ProjRestrict C K = ProjRestrict C J := by
   ext x i
@@ -176,22 +179,22 @@ def iso_map : C(π C J, (IndexFunctor.obj C J)) :=
     ext ⟨i, hi⟩
     simp [precomp, Proj, hi]⟩, by
     refine Continuous.subtype_mk (continuous_pi fun i ↦ ?_) _
-    exact (continuous_apply i.val).comp continuous_subtype_val⟩
+    exact (continuous_apply i.val).comp continuous_subtypeVal⟩
 
 lemma iso_map_bijective : Function.Bijective (iso_map C J) := by
   refine ⟨fun a b h ↦ ?_, fun a ↦ ?_⟩
   · ext i
     rw [Subtype.ext_iff] at h
     by_cases hi : J i
-    · exact congr_fun h ⟨i, hi⟩
+    · congrm $h ⟨i, hi⟩
     · rcases a with ⟨_, c, hc, rfl⟩
       rcases b with ⟨_, d, hd, rfl⟩
-      simp only [Proj, if_neg hi]
+      simp only [Proj, ite_eq_right hi]
   · refine ⟨⟨fun i ↦ if hi : J i then a.val ⟨i, hi⟩ else false, ?_⟩, ?_⟩
     · rcases a with ⟨_, y, hy, rfl⟩
       exact ⟨y, hy, rfl⟩
     · ext i
-      exact dif_pos i.prop
+      exact dite_eq_left i.prop
 
 variable {C}
 
@@ -219,9 +222,8 @@ def spanCone [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] (hC : IsCompact C
   { app s := ConcreteCategory.ofHom ⟨ProjRestrict C (· ∈ unop s), continuous_projRestrict _ _⟩
     naturality := by
       intro X Y h
-      simp only [Functor.const_obj_obj,
-        Functor.const_obj_map, Category.id_comp, ← projRestricts_comp_projRestrict C
-        (leOfHom h.unop)]
+      simp only [Functor.const_obj_map,
+        ← projRestricts_comp_projRestrict C (leOfHom h.unop)]
       rfl }
 
 /-- The isomorphism `spanFunctor hC ≅ indexFunctor hC` when `hC : IsCompact C`. -/
@@ -236,19 +238,19 @@ noncomputable def spanFunctorIsoIndexFunctor
         ext x
         have : iso_map C (· ∈ t) ∘ ProjRestricts C f =
             IndexFunctor.map C f ∘ iso_map C (· ∈ s) := by
-          ext _ i; exact dif_pos i.prop
-        exact congr_fun this x)
+          ext _ i; exact dite_eq_left i.prop
+        congrm $this x)
 
 /-- `spanCone` is a limit cone. -/
 noncomputable
 def spanCone_isLimit [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] (hC : IsCompact C) :
     CategoryTheory.Limits.IsLimit (spanCone hC) :=
   IsLimit.postcomposeHomEquiv (spanFunctorIsoIndexFunctor hC) _
-    (IsLimit.ofIsoLimit (indexCone_isLimit hC) (Cones.ext (Iso.refl _) (fun ⟨s⟩ ↦ by
+    (IsLimit.ofIsoLimit (indexCone_isLimit hC) (Cone.ext (Iso.refl _) (fun ⟨s⟩ ↦ by
       ext
       have : iso_map C (· ∈ s) ∘ ProjRestrict C (· ∈ s) = IndexFunctor.π_app C (· ∈ s) := by
-        ext _ i; exact dif_pos i.prop
-      exact congr_fun this.symm _)))
+        ext _ i; exact dite_eq_left i.prop
+      congrm $this.symm _)))
 
 end Projections
 
@@ -292,7 +294,7 @@ def e (i : I) : LocallyConstant C ℤ where
   isLocallyConstant := by
     rw [IsLocallyConstant.iff_continuous]
     exact (continuous_of_discreteTopology (f := fun (a : Bool) ↦ (if a then (1 : ℤ) else 0))).comp
-      ((continuous_apply i).comp continuous_subtype_val)
+      ((continuous_apply i).comp continuous_subtypeVal)
 
 variable [LinearOrder I]
 
@@ -311,6 +313,7 @@ namespace Products
 instance : LinearOrder (Products I) :=
   inferInstanceAs (LinearOrder {l : List I // l.IsChain (· > ·)})
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem lt_iff_lex_lt (l m : Products I) : l < m ↔ List.Lex (· < ·) l.val m.val := by
   simp
@@ -324,7 +327,7 @@ instance [WellFoundedLT I] : WellFoundedLT (Products I) := by
   infer_instance
 
 /-- The evaluation `e C i₁ ··· e C iᵣ : C → ℤ` of a formal product `[i₁, i₂, ..., iᵣ]`. -/
-def eval (l : Products I) := (l.1.map (e C)).prod
+def eval (l : Products I) := (l.val.map (e C)).prod
 
 /--
 The predicate on products which we prove picks out a basis of `LocallyConstant C ℤ`. We call such a
@@ -335,7 +338,7 @@ def isGood (l : Products I) : Prop :=
 
 theorem rel_head!_of_mem [Inhabited I] {i : I} {l : Products I} (hi : i ∈ l.val) :
     i ≤ l.val.head! :=
-  List.Pairwise.head!_le l.2.sortedGT.sortedGE.pairwise hi
+  List.Pairwise.head!_le l.property.sortedGT.sortedGE.pairwise hi
 
 theorem head!_le_of_lt [Inhabited I] {q l : Products I} (h : q < l) (hq : q.val ≠ []) :
     q.val.head! ≤ l.val.head! :=
@@ -350,7 +353,7 @@ namespace GoodProducts
 
 /-- Evaluation of good products. -/
 def eval (l : {l : Products I // l.isGood C}) : LocallyConstant C ℤ :=
-  Products.eval C l.1
+  Products.eval C l.val
 
 theorem injective : Function.Injective (eval C) := by
   intro ⟨a, ha⟩ ⟨b, hb⟩ h
@@ -371,7 +374,7 @@ def equiv_range : GoodProducts C ≃ range C :=
 theorem equiv_toFun_eq_eval : (equiv_range C).toFun = Set.rangeFactorization (eval C) := rfl
 
 theorem linearIndependent_iff_range : LinearIndependent ℤ (GoodProducts.eval C) ↔
-    LinearIndependent ℤ (fun (p : range C) ↦ p.1) := by
+    LinearIndependent ℤ (fun (p : range C) ↦ p.val) := by
   rw [← @Set.rangeFactorization_eq _ _ (GoodProducts.eval C), ← equiv_toFun_eq_eval C]
   exact linearIndependent_equiv (equiv_range C)
 
@@ -379,6 +382,7 @@ end GoodProducts
 
 namespace Products
 
+set_option backward.defeqAttrib.useBackward true in
 theorem eval_eq (l : Products I) (x : C) :
     l.eval C x = if ∀ i, i ∈ l.val → (x.val i = true) then 1 else 0 := by
   change LocallyConstant.evalMonoidHom x (l.eval C) = _
@@ -388,18 +392,19 @@ theorem eval_eq (l : Products I) (x : C) :
     apply List.prod_eq_one
     simp only [List.mem_map, Function.comp_apply]
     rintro _ ⟨i, hi, rfl⟩
-    exact if_pos (h i hi)
+    exact ite_eq_left (h i hi)
   · simp only [List.map_map, List.prod_eq_zero_iff, List.mem_map, Function.comp_apply]
-    push_neg at h
-    convert h with i
+    push Not at h
+    convert! h with i
     dsimp [LocallyConstant.evalMonoidHom, e]
     simp only [ite_eq_right_iff, one_ne_zero]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem evalFacProp {l : Products I} (J : I → Prop)
     (h : ∀ a, a ∈ l.val → J a) [∀ j, Decidable (J j)] :
     l.eval (π C J) ∘ ProjRestrict C J = l.eval C := by
   ext x
-  dsimp [ProjRestrict]
+  dsimp only [ProjRestrict, Function.comp_apply]
   rw [Products.eval_eq, Products.eval_eq]
   simp +contextual [h, Proj]
 
@@ -421,7 +426,7 @@ theorem prop_of_isGood {l : Products I} (J : I → Prop) [∀ j, Decidable (J j)
     rw [this]
     exact Submodule.zero_mem _
   ext ⟨_, _, _, rfl⟩
-  rw [eval_eq, if_neg fun h ↦ ?_, LocallyConstant.zero_apply]
+  rw [eval_eq, ite_eq_right fun h ↦ ?_, LocallyConstant.zero_apply]
   simpa [Proj, h'] using h i hi
 
 end Products
@@ -435,9 +440,8 @@ theorem GoodProducts.span_iff_products [WellFoundedLT I] :
   rintro f ⟨l, rfl⟩
   let L : Products I → Prop := fun m ↦ m.eval C ∈ span ℤ (Set.range (GoodProducts.eval C))
   suffices L l by assumption
-  apply IsWellFounded.induction (· < · : Products I → Products I → Prop)
+  apply WellFounded.induction' (· < · : Products I → Products I → Prop)
   intro l h
-  dsimp
   by_cases hl : l.isGood C
   · apply subset_span
     exact ⟨⟨l, hl⟩, rfl⟩
@@ -592,11 +596,11 @@ namespace Products
 
 theorem lt_ord_of_lt {l m : Products I} {o : Ordinal} (h₁ : m < l)
     (h₂ : ∀ i ∈ l.val, ord I i < o) : ∀ i ∈ m.val, ord I i < o :=
-  List.SortedGT.lt_ord_of_lt l.2.sortedGT m.2.sortedGT h₁ h₂
+  List.SortedGT.lt_ord_of_lt m.property.sortedGT h₁ h₂
 
 theorem eval_πs {l : Products I} {o : Ordinal} (hlt : ∀ i ∈ l.val, ord I i < o) :
     πs C o (l.eval (π C (ord I · < o))) = l.eval C := by
-  simpa only [← LocallyConstant.coe_inj] using evalFacProp C (ord I · < o) hlt
+  simpa only [← LocallyConstant.coe_inj] using! evalFacProp C (ord I · < o) hlt
 
 theorem eval_πs' {l : Products I} {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂)
     (hlt : ∀ i ∈ l.val, ord I i < o₁) :
@@ -607,18 +611,18 @@ theorem eval_πs' {l : Products I} {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂)
 
 theorem eval_πs_image {l : Products I} {o : Ordinal}
     (hl : ∀ i ∈ l.val, ord I i < o) : eval C '' { m | m < l } =
-    (πs C o) '' (eval (π C (ord I · < o)) '' { m | m < l }) := by
+    (πs C o) '' eval (π C (ord I · < o)) '' { m | m < l } := by
   ext f
-  simp only [Set.mem_image, Set.mem_setOf_eq, exists_exists_and_eq_and]
+  simp only [Set.mem_image, Set.mem_ofPred_eq, exists_exists_and_eq_and]
   apply exists_congr; intro m
   apply and_congr_right; intro hm
   rw [eval_πs C (lt_ord_of_lt hm hl)]
 
 theorem eval_πs_image' {l : Products I} {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂)
     (hl : ∀ i ∈ l.val, ord I i < o₁) : eval (π C (ord I · < o₂)) '' { m | m < l } =
-    (πs' C h) '' (eval (π C (ord I · < o₁)) '' { m | m < l }) := by
+    (πs' C h) '' eval (π C (ord I · < o₁)) '' { m | m < l } := by
   ext f
-  simp only [Set.mem_image, Set.mem_setOf_eq, exists_exists_and_eq_and]
+  simp only [Set.mem_image, Set.mem_ofPred_eq, exists_exists_and_eq_and]
   apply exists_congr; intro m
   apply and_congr_right; intro hm
   rw [eval_πs' C h (lt_ord_of_lt hm hl)]

@@ -8,8 +8,10 @@ module
 public import Mathlib.Topology.Category.LightProfinite.AsLimit
 public import Mathlib.Topology.Category.Profinite.Extend
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Extending cones in `LightProfinite`
 
 Let `(Sₙ)_{n : ℕᵒᵖ}` be a sequential inverse system of finite sets and let `S` be
@@ -69,6 +71,7 @@ example : functorOp c ⋙ CostructuredArrow.proj toLightProfinite.op ⟨c.pt⟩ 
 example : functor c ⋙ (StructuredArrow.post _ _ lightToProfinite) =
     Profinite.Extend.functor (lightToProfinite.mapCone c) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If the projection maps in the cone are epimorphic and the cone is limiting, then
 `LightProfinite.Extend.functor` is initial.
@@ -105,14 +108,9 @@ example below.
 def cone (S : LightProfinite) :
     Cone (StructuredArrow.proj S toLightProfinite ⋙ toLightProfinite ⋙ G) where
   pt := G.obj S
-  π := {
-    app := fun i ↦ G.map i.hom
-    naturality := fun _ _ f ↦ (by
-      have := f.w
-      simp only [const_obj_obj, StructuredArrow.left_eq_id, const_obj_map, Category.id_comp,
-        StructuredArrow.w] at this
-      simp only [const_obj_obj, comp_obj, StructuredArrow.proj_obj, const_obj_map, Category.id_comp,
-        Functor.comp_map, StructuredArrow.proj_map, ← map_comp, StructuredArrow.w]) }
+  π :=
+    { app i := G.map i.hom
+      naturality _ _ f := by simp [← Functor.map_comp] }
 
 example : G.mapCone c = (cone G c.pt).whisker (functor c) := rfl
 
@@ -146,8 +144,7 @@ def cocone (S : LightProfinite) :
     app := fun i ↦ G.map i.hom
     naturality := fun _ _ f ↦ (by
       have := f.w
-      simp only [op_obj, const_obj_obj, op_map, CostructuredArrow.right_eq_id, const_obj_map,
-        Category.comp_id] at this
+      simp only [op_obj, op_map] at this
       simp only [comp_obj, CostructuredArrow.proj_obj, op_obj, const_obj_obj, Functor.comp_map,
         CostructuredArrow.proj_map, op_map, ← map_comp, this, const_obj_map, Category.comp_id]) }
 

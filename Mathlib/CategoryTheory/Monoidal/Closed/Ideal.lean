@@ -5,13 +5,7 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
-public import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
 public import Mathlib.CategoryTheory.Monad.Limits
-public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
-public import Mathlib.CategoryTheory.Adjunction.Limits
-public import Mathlib.CategoryTheory.Adjunction.Reflective
 public import Mathlib.CategoryTheory.Monoidal.Closed.Cartesian
 public import Mathlib.CategoryTheory.Subterminal
 
@@ -73,8 +67,8 @@ open MonoidalClosed
 instance : ExponentialIdeal (subterminalInclusion C) := by
   apply ExponentialIdeal.mk'
   intro B A
-  refine ⟨⟨A ⟹ B.1, fun Z g h => ?_⟩, ⟨Iso.refl _⟩⟩
-  exact uncurry_injective (B.2 (MonoidalClosed.uncurry g) (MonoidalClosed.uncurry h))
+  refine ⟨⟨A ⟹ B.obj, fun Z g h => ?_⟩, ⟨Iso.refl _⟩⟩
+  exact uncurry_injective (B.property (MonoidalClosed.uncurry g) (MonoidalClosed.uncurry h))
 
 /-- If `D` is a reflective subcategory, the property of being an exponential ideal is equivalent to
 the presence of a natural isomorphism `i ⋙ exp A ⋙ leftAdjoint i ⋙ i ≅ i ⋙ exp A`, that is:
@@ -108,7 +102,7 @@ variable (i : D ⥤ C)
 
 /- This cannot be a local instance since it has free variables,
 it can instead be used as a have when needed.
-We assume HasFiniteProducts D as a hypothesis below, to avoid making this a local instance.
+We assume `HasFiniteProducts D` as a hypothesis below, to avoid making this a local instance.
 -/
 theorem reflective_products [Limits.HasFiniteProducts C] [Reflective i] :
     Limits.HasFiniteProducts D := ⟨fun _ => hasLimitsOfShape_of_reflective i⟩
@@ -145,16 +139,16 @@ abbrev CartesianMonoidalCategory.ofReflective [CartesianMonoidalCategory C] [Ref
         · change (reflector i ⋙ i).obj (i.obj X ⊗ i.obj Y) ≅ (𝟭 C).obj (i.obj X ⊗ i.obj Y)
           letI : IsIso ((reflectorAdjunction i).unit.app (i.obj X ⊗ i.obj Y)) := by
             apply Functor.essImage.unit_isIso
-            haveI := reflective_products i
+            have := reflective_products i
             use Limits.prod X Y
             constructor
             apply Limits.PreservesLimitPair.iso i _ _ |>.trans
             refine Limits.IsLimit.conePointUniqueUpToIso (limit.isLimit (pair (i.obj X) (i.obj Y)))
               (tensorProductIsBinaryProduct _ _)
           exact asIso ((reflectorAdjunction i).unit.app (i.obj X ⊗ i.obj Y)) |>.symm
-        · simp only [BinaryFan.fst, Cones.postcompose, pairComp]
+        · simp only [BinaryFan.fst, Cone.postcompose, pairComp]
           simp [← Functor.comp_map, ← NatTrans.naturality_assoc]
-        · simp only [BinaryFan.snd, Cones.postcompose, pairComp]
+        · simp only [BinaryFan.snd, Cone.postcompose, pairComp]
           simp [← Functor.comp_map, ← NatTrans.naturality_assoc] }
 
 variable [CartesianMonoidalCategory C] [Reflective i] [MonoidalClosed C]
@@ -183,7 +177,7 @@ instance (priority := 10) exponentialIdeal_of_preservesBinaryProducts
       prodComparison_natural_whiskerLeft_assoc, ← whiskerLeft_comp_assoc,
       ir.left_triangle_components, whiskerLeft_id, Category.id_comp]
     apply IsIso.hom_inv_id_assoc
-  haveI : IsSplitMono (η.app (A ⟹ i.obj B)) := IsSplitMono.mk' ⟨_, this⟩
+  have : IsSplitMono (η.app (A ⟹ i.obj B)) := IsSplitMono.mk' ⟨_, this⟩
   apply mem_essImage_of_unit_isSplitMono
 
 variable [ExponentialIdeal i]
@@ -196,6 +190,7 @@ takes in an explicit choice of lift of the essential image of `i` to `D`, in the
 `l : i.EssImageSubcategory ⥤ D` and natural isomorphism `φ : l ⋙ i ≅ i.essImage.ι`. When
 `l ⋙ i` is defeq to `i.essImage.ι`, images of exponential objects in `D` under `i` will be defeq
 to the respective exponential objects in `C`. -/
+@[instance_reducible]
 def cartesianClosedOfReflective' (l : i.EssImageSubcategory ⥤ D) (φ : l ⋙ i ≅ i.essImage.ι) :
     MonoidalClosed D where
   closed := fun B =>
@@ -221,10 +216,11 @@ Unlike `cartesianClosedOfReflective'` this construction lifts exponential object
 exponential objects in `D` by applying the reflector to them, even though they already lie in the
 essential image of `i`; if you need better control over definitional equality, use
 `cartesianClosedOfReflective'` instead. -/
+@[instance_reducible]
 def cartesianClosedOfReflective : MonoidalClosed D :=
   cartesianClosedOfReflective' i (i.essImage.ι ⋙ reflector i)
     (NatIso.ofComponents (fun X ↦
-      have := Functor.essImage.unit_isIso X.2
+      have := Functor.essImage.unit_isIso X.property
       (asIso ((reflectorAdjunction i).unit.app X.obj)).symm))
 
 variable [BraidedCategory C]
@@ -282,6 +278,7 @@ theorem bijection_symm_apply_id (A B : C) :
     prodComparison_snd]
     apply (reflectorAdjunction i).unit.naturality
 
+set_option backward.defeqAttrib.useBackward true in
 theorem bijection_natural (A B : C) (X X' : D) (f : (reflector i).obj (A ⊗ B) ⟶ X) (g : X ⟶ X') :
     bijection i _ _ _ (f ≫ g) = bijection i _ _ _ f ≫ g := by
   dsimp [bijection]

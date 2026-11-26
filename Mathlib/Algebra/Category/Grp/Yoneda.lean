@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Category.Grp.Basic
 public import Mathlib.Algebra.Group.Pi.Lemmas
 public import Mathlib.CategoryTheory.Yoneda
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Yoneda embeddings
 
@@ -34,7 +37,9 @@ coyoneda embedding. -/
 coyoneda embedding. -/]
 def CommGrpCat.coyonedaForget :
     coyoneda ⋙ (Functor.whiskeringRight _ _ _).obj (forget _) ≅ CategoryTheory.coyoneda :=
-  NatIso.ofComponents fun X ↦ NatIso.ofComponents fun Y ↦ { hom f := ofHom f, inv f := f.hom }
+  dsimp% NatIso.ofComponents fun X ↦ NatIso.ofComponents fun Y ↦ {
+    hom := ↾fun f ↦ ofHom f,
+    inv := ↾fun f ↦ f.hom }
 
 /-- The Hom bifunctor sending a type `X` and a commutative group `G` to the commutative group
 `X → G` with pointwise operations.
@@ -49,5 +54,5 @@ This is also the coyoneda embedding of `Type` into `AddCommGrpCat`-valued preshe
 groups. -/]
 def CommGrpCat.coyonedaType : (Type u)ᵒᵖ ⥤ CommGrpCat.{u} ⥤ CommGrpCat.{u} where
   obj X := { obj G := of <| X.unop → G
-             map f := ofHom <| Pi.monoidHom fun i ↦ f.hom.comp <| Pi.evalMonoidHom _ i }
-  map f := { app G := ofHom <| Pi.monoidHom fun i ↦ Pi.evalMonoidHom _ <| f.unop i }
+             map f := ofHom <| MonoidHom.pi fun i ↦ f.hom.comp <| Pi.evalMonoidHom _ i }
+  map f := { app G := ofHom <| MonoidHom.pi fun i ↦ Pi.evalMonoidHom _ <| f.unop i }

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.DirectSum.Module
 public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bases for direct sum of modules
 
@@ -19,7 +22,7 @@ Currently, to get a basis on `⨁ i, M i` from a basis on each `M i`, use `DFins
 (using that the types are defeq).
 -/
 
-@[expose] public section
+public section
 
 open DirectSum
 

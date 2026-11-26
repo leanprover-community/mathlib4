@@ -6,7 +6,8 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Topology.Sheaves.LocalPredicate
-public import Mathlib.Topology.Sheaves.Stalks
+
+import Mathlib.Topology.Sheaves.Skyscraper
 
 /-!
 # Sheafification of `Type`-valued presheaves
@@ -21,7 +22,8 @@ via `stalkToFiber` which evaluates a germ of a dependent function at a point.
 We construct a morphism `toSheafify` from a presheaf to (the underlying presheaf of)
 its sheafification, given by sending a section to its collection of germs.
 
-## Future work
+## TODO
+
 Show that the map induced on stalks by `toSheafify` is the inverse of `stalkToFiber`.
 
 Show sheafification is a functor from presheaves to sheaves,
@@ -34,7 +36,7 @@ following <https://stacks.math.columbia.edu/tag/007X>.
 assert_not_exists CommRingCat
 
 
-universe v
+universe v u
 
 noncomputable section
 
@@ -46,13 +48,13 @@ namespace TopCat.Presheaf
 
 namespace Sheafify
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 /--
 The prelocal predicate on functions into the stalks, asserting that the function is equal to a germ.
 -/
 def isGerm : PrelocalPredicate fun x => F.stalk x where
-  pred {U} f := ∃ g : F.obj (op U), ∀ x : U, f x = F.germ U x.1 x.2 g
-  res := fun i _ ⟨g, p⟩ => ⟨F.map i.op g, fun x ↦ (p (i x)).trans (F.germ_res_apply i x x.2 g).symm⟩
+  pred {U} f := ∃ g : F.obj (op U), ∀ x : U, f x = F.germ U x.val x.property g
+  res := fun i _ ⟨g, p⟩ =>
+    ⟨F.map i.op g, fun x ↦ (p (i x)).trans (F.germ_res_apply i x x.property g).symm⟩
 
 /-- The local predicate on functions into the stalks,
 asserting that the function is locally equal to a germ.
@@ -68,13 +70,13 @@ are locally equal to germs.
 def sheafify : Sheaf (Type v) X :=
   subsheafToTypes (Sheafify.isLocallyGerm F)
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 /-- The morphism from a presheaf to its sheafification,
 sending each section to its germs.
 (This forms the unit of the adjunction.)
 -/
-def toSheafify : F ⟶ F.sheafify.1 where
-  app U f := ⟨fun x => F.germ _ x x.2 f, PrelocalPredicate.sheafifyOf ⟨f, fun x => rfl⟩⟩
+def toSheafify : F ⟶ F.sheafify.obj where
+  app U := ↾fun f ↦ ⟨fun x => F.germ _ x x.property f, PrelocalPredicate.sheafifyOf
+    ⟨f, fun x => rfl⟩⟩
   naturality U U' f := by
     ext x
     apply Subtype.ext -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): Added `apply`
@@ -87,22 +89,20 @@ In `sheafifyStalkIso` we show this is an isomorphism.
 def stalkToFiber (x : X) : F.sheafify.presheaf.stalk x ⟶ F.stalk x :=
   TopCat.stalkToFiber (Sheafify.isLocallyGerm F) x
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 theorem stalkToFiber_surjective (x : X) : Function.Surjective (F.stalkToFiber x) := by
   apply TopCat.stalkToFiber_surjective
   intro t
-  obtain ⟨U, m, s, rfl⟩ := F.germ_exist _ t
+  obtain ⟨U, m, s, rfl⟩ := F.exists_germ_eq t
   use ⟨U, m⟩
   fconstructor
-  · exact fun y => F.germ _ _ y.2 s
+  · exact fun y => F.germ _ _ y.property s
   · exact ⟨PrelocalPredicate.sheafifyOf ⟨s, fun _ => rfl⟩, rfl⟩
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 theorem stalkToFiber_injective (x : X) : Function.Injective (F.stalkToFiber x) := by
   apply TopCat.stalkToFiber_injective
   intro U V fU hU fV hV e
-  rcases hU ⟨x, U.2⟩ with ⟨U', mU, iU, gU, wU⟩
-  rcases hV ⟨x, V.2⟩ with ⟨V', mV, iV, gV, wV⟩
+  rcases hU ⟨x, U.property⟩ with ⟨U', mU, iU, gU, wU⟩
+  rcases hV ⟨x, V.property⟩ with ⟨V', mV, iV, gV, wV⟩
   have wUx := wU ⟨x, mU⟩
   dsimp at wUx; rw [wUx] at e; clear wUx
   have wVx := wV ⟨x, mV⟩
@@ -115,10 +115,10 @@ theorem stalkToFiber_injective (x : X) : Function.Injective (F.stalkToFiber x) :
   · change W ⊓ (U' ⊓ V') ⟶ V.val
     exact Opens.infLERight _ _ ≫ Opens.infLERight _ _ ≫ iV
   · intro w
-    specialize wU ⟨w.1, w.2.2.1⟩
-    specialize wV ⟨w.1, w.2.2.2⟩
+    specialize wU ⟨w.val, w.property.2.1⟩
+    specialize wV ⟨w.val, w.property.2.2⟩
     refine wU.trans <| .trans ?_ wV.symm
-    rw [← F.germ_res iU' w w.2.1, ← F.germ_res iV' w w.2.1,
+    rw [← F.germ_res iU' w w.property.1, ← F.germ_res iV' w w.property.1,
       CategoryTheory.types_comp_apply, CategoryTheory.types_comp_apply, e']
 
 /-- The isomorphism between a stalk of the sheafification and the original stalk.
@@ -127,4 +127,19 @@ def sheafifyStalkIso (x : X) : F.sheafify.presheaf.stalk x ≅ F.stalk x :=
   (Equiv.ofBijective _ ⟨stalkToFiber_injective _ _, stalkToFiber_surjective _ _⟩).toIso
 
 -- PROJECT functoriality, and that sheafification is the left adjoint of the forgetful functor.
+end TopCat.Presheaf
+
+namespace TopCat.Presheaf
+
+variable (p₀ : X) (C : Type u) [Category.{v} C] [Limits.HasColimits C]
+  [Limits.HasTerminal C] (𝓕 : Presheaf C X) [HasWeakSheafify (Opens.grothendieckTopology X) C]
+
+/-- Given a presheaf `𝓕`, the induced map on stalks of `CategoryTheory.toSheafify`, `𝓕ₓ ⟶ 𝓕⁺ₓ`,
+is an isomorphism -/
+theorem stalkFunctor_map_unit_toSheafify_isIso : IsIso ((Presheaf.stalkFunctor C p₀).map
+    (CategoryTheory.toSheafify (Opens.grothendieckTopology X) 𝓕)) := by
+  classical
+  exact Adjunction.isIso_map_unit_of_isLeftAdjoint_comp (sheafificationAdjunction _ C)
+    (skyscraperSheafForgetAdjunction p₀)
+
 end TopCat.Presheaf

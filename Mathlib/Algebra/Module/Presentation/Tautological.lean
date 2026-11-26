@@ -13,7 +13,6 @@ public import Mathlib.Algebra.Module.Presentation.Basic
 Given an `A`-module `M`, we provide its tautological presentation:
 * there is a generator `[m]` for each `m : M`;
 * the relations are `[m₁] + [m₂] - [m₁ + m₂] = 0` and `a • [m] - [a • m] = 0`.
-
 -/
 
 @[expose] public section
@@ -40,6 +39,7 @@ noncomputable def tautologicalRelations : Relations A where
     | .add m₁ m₂ => Finsupp.single m₁ 1 + Finsupp.single m₂ 1 - Finsupp.single (m₁ + m₂) 1
     | .smul a m => a • Finsupp.single m 1 - Finsupp.single (a • m) 1
 
+set_option backward.isDefEq.respectTransparency false in
 variable {A M} in
 /-- Solutions of `tautologicalRelations A M` in an `A`-module `N` identify to `M →ₗ[A] N`. -/
 noncomputable def tautologicalRelationsSolutionEquiv {N : Type w} [AddCommGroup N] [Module A N] :

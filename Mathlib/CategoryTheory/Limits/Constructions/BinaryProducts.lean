@@ -5,10 +5,10 @@ Authors: Bhavik Mehta, Andrew Yang
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Constructing binary product from pullbacks and terminal object.
@@ -64,9 +64,9 @@ def isPullbackOfIsTerminalIsProduct {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) (h
     IsLimit (PullbackCone.mk _ _ (show h ≫ f = k ≫ g from H₁.hom_ext _ _)) := by
   apply PullbackCone.isLimitAux'
   intro s
-  use H₂.lift (BinaryFan.mk s.fst s.snd)
-  use H₂.fac (BinaryFan.mk s.fst s.snd) ⟨WalkingPair.left⟩
-  use H₂.fac (BinaryFan.mk s.fst s.snd) ⟨WalkingPair.right⟩
+  use BinaryFan.IsLimit.lift H₂ s.fst s.snd
+  use BinaryFan.IsLimit.lift_fst _ _ _
+  use BinaryFan.IsLimit.lift_snd _ _ _
   intro m h₁ h₂
   apply H₂.hom_ext
   rintro ⟨⟨⟩⟩
@@ -98,7 +98,7 @@ lemma preservesBinaryProducts_of_preservesTerminal_and_pullbacks [HasTerminal C]
     [HasPullbacks C] [PreservesLimitsOfShape (Discrete.{0} PEmpty) F]
     [PreservesLimitsOfShape WalkingCospan F] : PreservesLimitsOfShape (Discrete WalkingPair) F :=
   ⟨fun {K} =>
-    preservesLimit_of_preserves_limit_cone (limitConeOfTerminalAndPullbacks K).2
+    preservesLimit_of_preserves_limit_cone (limitConeOfTerminalAndPullbacks K).isLimit
       (by
         apply
           isBinaryProductOfIsTerminalIsPullback _ _ (isLimitOfHasTerminalOfPreservesLimit F)
@@ -170,9 +170,9 @@ def isPushoutOfIsInitialIsCoproduct {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) (h
     IsColimit (PushoutCocone.mk _ _ (show h ≫ f = k ≫ g from H₁.hom_ext _ _)) := by
   apply PushoutCocone.isColimitAux'
   intro s
-  use H₂.desc (BinaryCofan.mk s.inl s.inr)
-  use H₂.fac (BinaryCofan.mk s.inl s.inr) ⟨WalkingPair.left⟩
-  use H₂.fac (BinaryCofan.mk s.inl s.inr) ⟨WalkingPair.right⟩
+  use BinaryCofan.IsColimit.desc H₂ s.inl s.inr
+  use BinaryCofan.IsColimit.inl_desc H₂ _ _
+  use BinaryCofan.IsColimit.inr_desc H₂ _ _
   intro m h₁ h₂
   apply H₂.hom_ext
   rintro ⟨⟨⟩⟩
@@ -201,7 +201,7 @@ lemma preservesBinaryCoproducts_of_preservesInitial_and_pushouts [HasInitial C]
     [HasPushouts C] [PreservesColimitsOfShape (Discrete.{0} PEmpty) F]
     [PreservesColimitsOfShape WalkingSpan F] : PreservesColimitsOfShape (Discrete WalkingPair) F :=
   ⟨fun {K} =>
-    preservesColimit_of_preserves_colimit_cocone (colimitCoconeOfInitialAndPushouts K).2 (by
+    preservesColimit_of_preserves_colimit_cocone (colimitCoconeOfInitialAndPushouts K).isColimit (by
       apply
         isBinaryCoproductOfIsInitialIsPushout _ _
           (isColimitOfHasInitialOfPreservesColimit F)

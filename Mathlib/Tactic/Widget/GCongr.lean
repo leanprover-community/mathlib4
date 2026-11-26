@@ -5,12 +5,10 @@ Authors: Patrick Massot
 -/
 module
 
-public import Mathlib.Tactic.Basic
-public meta import Mathlib.Tactic.Basic
+public meta import ProofWidgets.Component.Basic
 public import Mathlib.Tactic.Widget.SelectPanelUtils
-public import ProofWidgets.Component.Basic
-public import ProofWidgets.Component.OfRpcMethod
 
+meta import ProofWidgets.Component.OfRpcMethod
 /-! # GCongr widget
 
 This file defines a `gcongr?` tactic that displays a widget panel allowing to generate
@@ -45,7 +43,7 @@ return (res, res, none)
 @[server_rpc_method]
 def GCongrSelectionPanel.rpc := mkSelectionPanelRPC makeGCongrString
   "Use shift-click to select sub-expressions in the goal that should become holes in gcongr."
-  "GCongr 🔍"
+  "GCongr 🔍️"
 
 /-- The gcongr widget. -/
 @[widget_module]

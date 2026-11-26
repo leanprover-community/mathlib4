@@ -8,11 +8,13 @@ module
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pullbacks in functor categories
 
 We prove the isomorphism `(pullback f g).obj d ≅ pullback (f.app d) (g.app d)`.
-
 -/
 
 @[expose] public section
@@ -41,6 +43,8 @@ def PullbackCone.combine (f : F ⟶ H) (g : G ⟶ H) (c : ∀ X, PullbackCone (f
     { app X := (c X).snd }
     (by ext; simp [(c _).condition])
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /--
 The pullback cone `combinePullbackCones` is limiting.
 -/
@@ -50,7 +54,7 @@ def PullbackCone.combineIsLimit (f : F ⟶ H) (g : G ⟶ H)
   evaluationJointlyReflectsLimits _ fun k ↦ by
     refine IsLimit.equivOfNatIsoOfIso ?_ _ _ ?_ (hc k)
     · exact cospanIsoMk (Iso.refl _) (Iso.refl _) (Iso.refl _)
-    · refine Cones.ext (Iso.refl _) ?_
+    · refine Cone.ext (Iso.refl _) ?_
       rintro (_ | _ | _)
       all_goals cat_disch
 

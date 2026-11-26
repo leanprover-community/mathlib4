@@ -5,8 +5,10 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Limits in full subcategories
@@ -14,7 +16,6 @@ public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
 If a property of objects `P` is closed under taking limits,
 then limits in `FullSubcategory P` can be constructed from limits in `C`.
 More precisely, the inclusion creates such limits.
-
 -/
 
 @[expose] public section
@@ -34,6 +35,7 @@ variable {J : Type w} [Category.{w'} J] {C : Type u} [Category.{v} C] {P : Objec
 
 /-- If a `J`-shaped diagram in `FullSubcategory P` has a limit cone in `C` whose cone point lives
     in the full subcategory, then this defines a limit in the full subcategory. -/
+@[instance_reducible]
 def createsLimitFullSubcategoryInclusion' (F : J ⥤ P.FullSubcategory)
     {c : Cone (F ⋙ P.ι)} (hc : IsLimit c) (h : P c.pt) :
     CreatesLimit F P.ι :=
@@ -41,6 +43,7 @@ def createsLimitFullSubcategoryInclusion' (F : J ⥤ P.FullSubcategory)
 
 /-- If a `J`-shaped diagram in `FullSubcategory P` has a limit in `C` whose cone point lives in the
     full subcategory, then this defines a limit in the full subcategory. -/
+@[instance_reducible]
 def createsLimitFullSubcategoryInclusion (F : J ⥤ P.FullSubcategory)
     [HasLimit (F ⋙ P.ι)] (h : P (limit (F ⋙ P.ι))) :
     CreatesLimit F P.ι :=
@@ -48,6 +51,7 @@ def createsLimitFullSubcategoryInclusion (F : J ⥤ P.FullSubcategory)
 
 /-- If a `J`-shaped diagram in `FullSubcategory P` has a colimit cocone in `C` whose cocone point
     lives in the full subcategory, then this defines a colimit in the full subcategory. -/
+@[instance_reducible]
 def createsColimitFullSubcategoryInclusion' (F : J ⥤ P.FullSubcategory)
     {c : Cocone (F ⋙ P.ι)} (hc : IsColimit c) (h : P c.pt) :
     CreatesColimit F P.ι :=
@@ -55,6 +59,7 @@ def createsColimitFullSubcategoryInclusion' (F : J ⥤ P.FullSubcategory)
 
 /-- If a `J`-shaped diagram in `FullSubcategory P` has a colimit in `C` whose cocone point lives in
     the full subcategory, then this defines a colimit in the full subcategory. -/
+@[instance_reducible]
 def createsColimitFullSubcategoryInclusion (F : J ⥤ P.FullSubcategory)
     [HasColimit (F ⋙ P.ι)]
     (h : P (colimit (F ⋙ P.ι))) :
@@ -64,6 +69,7 @@ def createsColimitFullSubcategoryInclusion (F : J ⥤ P.FullSubcategory)
 variable (P J)
 
 /-- If `P` is closed under limits of shape `J`, then the inclusion creates such limits. -/
+@[instance_reducible]
 def createsLimitFullSubcategoryInclusionOfClosed [P.IsClosedUnderLimitsOfShape J]
     (F : J ⥤ P.FullSubcategory) [HasLimit (F ⋙ P.ι)] :
     CreatesLimit F P.ι :=
@@ -85,6 +91,7 @@ instance hasLimitsOfShape_of_closedUnderLimits [P.IsClosedUnderLimitsOfShape J]
   { has_limit := fun F => hasLimit_of_closedUnderLimits J P F }
 
 /-- If `P` is closed under colimits of shape `J`, then the inclusion creates such colimits. -/
+@[instance_reducible]
 def createsColimitFullSubcategoryInclusionOfClosed [P.IsClosedUnderColimitsOfShape J]
     (F : J ⥤ P.FullSubcategory) [HasColimit (F ⋙ P.ι)] :
     CreatesColimit F P.ι :=

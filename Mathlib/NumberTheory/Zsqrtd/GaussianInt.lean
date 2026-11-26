@@ -5,9 +5,9 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Data.Complex.Basic
+public import Mathlib.Algebra.Order.Archimedean.Real.Basic
+public import Mathlib.Basic.Complex.Basic
 public import Mathlib.Data.Nat.Prime.Basic
-public import Mathlib.Data.Real.Archimedean
 public import Mathlib.NumberTheory.Zsqrtd.Basic
 
 /-!
@@ -84,22 +84,14 @@ theorem toComplex_def₂ (x : ℤ[i]) : (x : ℂ) = ⟨x.re, x.im⟩ := by
 @[simp]
 theorem intCast_re (x : ℤ[i]) : ((x.re : ℤ) : ℝ) = (x : ℂ).re := by simp [toComplex_def]
 
-@[deprecated (since := "2025-08-31")] alias to_real_re := intCast_re
-
 @[simp]
 theorem intCast_im (x : ℤ[i]) : ((x.im : ℤ) : ℝ) = (x : ℂ).im := by simp [toComplex_def]
-
-@[deprecated (since := "2025-08-31")] alias to_real_im := intCast_im
 
 @[simp]
 theorem re_toComplex (x y : ℤ) : ((⟨x, y⟩ : ℤ[i]) : ℂ).re = x := by simp [toComplex_def]
 
-@[deprecated (since := "2025-08-31")] alias toComplex_re := re_toComplex
-
 @[simp]
 theorem im_toComplex (x y : ℤ) : ((⟨x, y⟩ : ℤ[i]) : ℂ).im = y := by simp [toComplex_def]
-
-@[deprecated (since := "2025-08-31")] alias toComplex_im := im_toComplex
 
 theorem toComplex_add (x y : ℤ[i]) : ((x + y : ℤ[i]) : ℂ) = x + y :=
   toComplex.map_add _ _
@@ -147,7 +139,7 @@ theorem norm_nonneg (x : ℤ[i]) : 0 ≤ norm x :=
   Zsqrtd.norm_nonneg (by simp) _
 
 @[simp]
-theorem norm_eq_zero {x : ℤ[i]} : norm x = 0 ↔ x = 0 := by rw [← @Int.cast_inj ℝ _ _ _]; simp
+theorem norm_eq_zero {x : ℤ[i]} : norm x = 0 ↔ x = 0 := by rw [← Int.cast_inj (α := ℝ)]; simp
 
 theorem norm_pos {x : ℤ[i]} : 0 < norm x ↔ x ≠ 0 := by
   rw [lt_iff_le_and_ne, Ne, eq_comm, norm_eq_zero]; simp [norm_nonneg]
@@ -179,20 +171,14 @@ theorem toComplex_re_div (x y : ℤ[i]) : ((x / y : ℤ[i]) : ℂ).re = round (x
   rw [div_def, ← @Rat.round_cast ℝ _ _]
   simp [-Rat.round_cast, mul_assoc, div_eq_mul_inv, add_mul]
 
-@[deprecated (since := "2025-08-31")] alias toComplex_div_re := toComplex_re_div
-
 theorem toComplex_im_div (x y : ℤ[i]) : ((x / y : ℤ[i]) : ℂ).im = round (x / y : ℂ).im := by
   rw [div_def, ← @Rat.round_cast ℝ _ _, ← @Rat.round_cast ℝ _ _]
   simp [-Rat.round_cast, mul_assoc, div_eq_mul_inv, add_mul]
 
-@[deprecated (since := "2025-08-31")] alias toComplex_div_im := toComplex_im_div
-
 theorem normSq_le_normSq_of_re_le_of_im_le {x y : ℂ} (hre : |x.re| ≤ |y.re|)
-    (him : |x.im| ≤ |y.im|) : Complex.normSq x ≤ Complex.normSq y := by
-  rw [normSq_apply, normSq_apply, ← _root_.abs_mul_self, _root_.abs_mul, ←
-      _root_.abs_mul_self y.re, _root_.abs_mul y.re, ← _root_.abs_mul_self x.im,
-      _root_.abs_mul x.im, ← _root_.abs_mul_self y.im, _root_.abs_mul y.im]
-  gcongr
+    (him : |x.im| ≤ |y.im|) : normSq x ≤ normSq y := by
+  simp only [normSq_apply]
+  nlinarith [sq_le_sq.mpr hre, sq_le_sq.mpr him]
 
 theorem normSq_div_sub_div_lt_one (x y : ℤ[i]) :
     Complex.normSq ((x / y : ℂ) - ((x / y : ℤ[i]) : ℂ)) < 1 :=
@@ -259,12 +245,12 @@ theorem sq_add_sq_of_nat_prime_of_not_irreducible (p : ℕ) [hp : Fact p.Prime]
   have hpu : ¬IsUnit (p : ℤ[i]) :=
     mt norm_eq_one_iff.2 <| by
       rw [norm_natCast, Int.natAbs_mul, mul_eq_one]
-      exact fun h => (ne_of_lt hp.1.one_lt).symm h.1
+      exact fun h => (ne_of_lt hp.out.one_lt).symm h.1
   have hab : ∃ a b, (p : ℤ[i]) = a * b ∧ ¬IsUnit a ∧ ¬IsUnit b := by
     simpa [irreducible_iff, hpu, not_forall, not_or] using hpi
   let ⟨a, b, hpab, hau, hbu⟩ := hab
   have hnap : (norm a).natAbs = p :=
-    ((hp.1.mul_eq_prime_sq_iff (mt norm_eq_one_iff.1 hau) (mt norm_eq_one_iff.1 hbu)).1 <| by
+    ((hp.out.mul_eq_prime_sq_iff (mt norm_eq_one_iff.1 hau) (mt norm_eq_one_iff.1 hbu)).1 <| by
         rw [← Int.natCast_inj, Int.natCast_pow, sq, ← @norm_natCast (-1), hpab]; simp).1
   ⟨a.re.natAbs, a.im.natAbs, by simpa [natAbs_norm_eq, sq] using hnap⟩
 

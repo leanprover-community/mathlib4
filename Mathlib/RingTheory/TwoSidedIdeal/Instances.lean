@@ -5,14 +5,15 @@ Authors: euprunin
 -/
 module
 
-public import Mathlib.Algebra.Ring.Defs
-public import Mathlib.RingTheory.NonUnitalSubring.Defs
 public import Mathlib.RingTheory.TwoSidedIdeal.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Additional instances for two-sided ideals.
 -/
 
-@[expose] public section
+public section
 instance {R} [NonUnitalNonAssocRing R] : NonUnitalSubringClass (TwoSidedIdeal R) R where
   mul_mem _ hb := TwoSidedIdeal.mul_mem_left _ _ _ hb

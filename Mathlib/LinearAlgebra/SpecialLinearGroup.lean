@@ -5,10 +5,6 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.LinearAlgebra.Determinant
-public import Mathlib.LinearAlgebra.Dual.Basis
-public import Mathlib.LinearAlgebra.Matrix.Dual
-public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
 public import Mathlib.LinearAlgebra.Charpoly.BaseChange
 
 /-!
@@ -37,7 +33,6 @@ and its variant
 `Matrix.SpecialLinearGroup.toLin_equiv`,
 from `Matrix.SpecialLinearGroup n R` to `SpecialLinearGroup R V`,
 associated with a finite basis of `V`.
-
 -/
 
 @[expose] public section
@@ -79,7 +74,7 @@ theorem subsingleton_of_finrank_eq_one [Module.Free R V] (d1 : Module.finrank R 
     by_cases hx : x = 0
     · simp [hx]
     suffices ∀ (u : SpecialLinearGroup R V), (u : V →ₗ[R] V) = LinearMap.id by
-      simp only [LinearMap.ext_iff, LinearEquiv.coe_coe, LinearMap.id_coe, id_eq] at this
+      simp only [LinearMap.ext_iff, LinearEquiv.coe_toLinearMap, LinearMap.id_coe, id_eq] at this
       simp [this u, this v]
     intro u
     ext x
@@ -226,6 +221,20 @@ lemma mem_range_toGeneralLinearGroup_iff {u : LinearMap.GeneralLinearGroup R V} 
     exact v.prop
   · intro hu
     refine ⟨⟨u.toLinearEquiv, hu⟩, rfl⟩
+
+/-- The natural action of `SpecialLinearGroup R V` on `V`. -/
+instance : DistribMulAction (SpecialLinearGroup R V) V :=
+  DistribMulAction.compHom  _ (SpecialLinearGroup.toLinearEquiv)
+
+theorem _root_.SpecialLinearGroup.smul_def (g : SpecialLinearGroup R V) (v : V) :
+    g • v = g.toLinearEquiv • v := rfl
+
+theorem _root_.SpecialLinearGroup.toLinearEquiv_eq_coe (g : SpecialLinearGroup R V) :
+    g.toLinearEquiv = (g : V ≃ₗ[R] V) := rfl
+
+instance : SMulCommClass (SpecialLinearGroup R V) R V where
+  smul_comm g a v := by
+    simp [SpecialLinearGroup.smul_def]
 
 section baseChange
 
@@ -404,7 +413,8 @@ noncomputable def centerEquivRootsOfUnity_invFun
       rw [mem_rootsOfUnity', max_eq_left hV] at hr
       simpa [← Subtype.val_inj, ← Units.val_inj]⟩
 
-open Classical in
+set_option backward.isDefEq.respectTransparency false in
+open scoped Classical in
 /-- The isomorphism between the roots of unity and the center of the special linear group. -/
 noncomputable def centerEquivRootsOfUnity :
     (Subgroup.center (SpecialLinearGroup R V)) ≃*
@@ -519,7 +529,7 @@ section
 
 open Subgroup Matrix Matrix.SpecialLinearGroup
 
-variable {n : Type*} [Fintype n] [DecidableEq n] {R : Type*} [CommRing R]
+variable {R : Type*} [CommRing R]
 
 variable {V : Type*} [AddCommGroup V] [Module R V] [Module.Free R V] [Module.Finite R V]
 variable {ι : Type*} [Fintype ι] [DecidableEq ι] (b : Module.Basis ι R V)
@@ -555,7 +565,7 @@ theorem centerCongr_toLin_equiv_trans_centerEquivRootsOfUnity_eq (g) :
     set g' := ((Subgroup.centerCongr (Matrix.SpecialLinearGroup.toLin_equiv b)) g)
     ext x
     have := centerEquivRootsOfUnity_apply_apply g' x
-    simp only [smul_def, Units.smul_def] at this
+    simp only [Subgroup.smul_def, Units.smul_def] at this
     simp only [LinearMap.smul_apply, LinearMap.id_coe, id_eq]
     rw [this, ← LinearEquiv.coe_toLinearMap, hgg',
       Matrix.SpecialLinearGroup.toLin_equiv.toLinearMap_eq,

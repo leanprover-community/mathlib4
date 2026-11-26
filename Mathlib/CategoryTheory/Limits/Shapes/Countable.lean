@@ -5,10 +5,10 @@ Authors: Dagur Asgeirsson
 -/
 module
 
+public import Mathlib.CategoryTheory.Countable
 public import Mathlib.CategoryTheory.Limits.Final
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
-public import Mathlib.CategoryTheory.Countable
-public import Mathlib.Data.Countable.Defs
+
 /-!
 # Countable limits and colimits
 
@@ -19,11 +19,11 @@ limits, see `sequentialFunctor_initial`.
 
 ## Projects
 
-* There is a series of `proof_wanted` at the bottom of this file, implying that all cofiltered
-  limits over countable categories are isomorphic to sequential limits.
+* There is a series of `proof_wanted` in `Wanted/CategoryTheory/Limits/Shapes/Countable.lean`,
+  implying that all cofiltered limits over countable categories are isomorphic to sequential
+  limits.
 
 * Prove the dual result for filtered colimits.
-
 -/
 
 @[expose] public section
@@ -41,17 +41,30 @@ instance and `J : Type` has a limit.
 class HasCountableLimits : Prop where
   /-- `C` has all limits over any type `J` whose objects and morphisms lie in the same universe
   and which has countably many objects and morphisms -/
-  out (J : Type) [SmallCategory J] [CountableCategory J] : HasLimitsOfShape J C
+  out (J : Type) [SmallCategory J] [CountableCategory J] : HasLimitsOfShape J C := by infer_instance
 
+/--
+A category has all countable colimits if every functor `J ⥤ C` with a `CountableCategory J`
+instance and `J : Type` has a colimit.
+-/
+@[to_dual]
+class HasCountableColimits : Prop where
+  /-- `C` has all limits over any type `J` whose objects and morphisms lie in the same universe
+  and which has countably many objects and morphisms -/
+  out (J : Type) [SmallCategory J] [CountableCategory J] : HasColimitsOfShape J C
+
+@[to_dual]
 instance (priority := 100) hasFiniteLimits_of_hasCountableLimits [HasCountableLimits C] :
     HasFiniteLimits C where
   out J := HasCountableLimits.out J
 
+@[to_dual]
 instance (priority := 100) hasCountableLimits_of_hasLimits [HasLimits C] :
     HasCountableLimits C where
   out := inferInstance
 
 universe v in
+@[to_dual]
 instance [HasCountableLimits C] [Category.{v} J] [CountableCategory J] : HasLimitsOfShape J C :=
   have : HasLimitsOfShape (HomAsType J) C := HasCountableLimits.out (HomAsType J)
   hasLimitsOfShape_of_equivalence (homAsTypeEquiv J)
@@ -60,71 +73,32 @@ instance [HasCountableLimits C] [Category.{v} J] [CountableCategory J] : HasLimi
 class HasCountableProducts where
   out (J : Type) [Countable J] : HasProductsOfShape J C
 
+/-- A category has countable coproducts if it has all coproducts indexed by countable types. -/
+@[to_dual]
+class HasCountableCoproducts where
+  out (J : Type) [Countable J] : HasCoproductsOfShape J C
+
+@[to_dual]
 instance [HasCountableProducts C] (J : Type*) [Countable J] : HasProductsOfShape J C :=
   have : Countable (Shrink.{0} J) := Countable.of_equiv _ (equivShrink.{0} J)
   have : HasLimitsOfShape (Discrete (Shrink.{0} J)) C := HasCountableProducts.out _
   hasLimitsOfShape_of_equivalence (Discrete.equivalence (equivShrink.{0} J)).symm
 
+@[to_dual]
 instance (priority := 100) hasCountableProducts_of_hasProducts [HasProducts C] :
     HasCountableProducts C where
   out _ :=
     have : HasProducts.{0} C := has_smallest_products_of_hasProducts
     inferInstance
 
+@[to_dual]
 instance (priority := 100) hasCountableProducts_of_hasCountableLimits [HasCountableLimits C] :
     HasCountableProducts C where
   out _ := inferInstance
 
+@[to_dual]
 instance (priority := 100) hasFiniteProducts_of_hasCountableProducts [HasCountableProducts C] :
     HasFiniteProducts C where
-  out _ := inferInstance
-
-/--
-A category has all countable colimits if every functor `J ⥤ C` with a `CountableCategory J`
-instance and `J : Type` has a colimit.
--/
-class HasCountableColimits : Prop where
-  /-- `C` has all limits over any type `J` whose objects and morphisms lie in the same universe
-  and which has countably many objects and morphisms -/
-  out (J : Type) [SmallCategory J] [CountableCategory J] : HasColimitsOfShape J C
-
-instance (priority := 100) hasFiniteColimits_of_hasCountableColimits [HasCountableColimits C] :
-    HasFiniteColimits C where
-  out J := HasCountableColimits.out J
-
-instance (priority := 100) hasCountableColimits_of_hasColimits [HasColimits C] :
-    HasCountableColimits C where
-  out := inferInstance
-
--- See note [instance argument order]
-universe v in
-instance [HasCountableColimits C] (J : Type*) [Category.{v} J] [CountableCategory J] :
-    HasColimitsOfShape J C :=
-  have : HasColimitsOfShape (HomAsType J) C := HasCountableColimits.out (HomAsType J)
-  hasColimitsOfShape_of_equivalence (homAsTypeEquiv J)
-
-/-- A category has countable coproducts if it has all coproducts indexed by countable types. -/
-class HasCountableCoproducts where
-  out (J : Type) [Countable J] : HasCoproductsOfShape J C
-
-instance (priority := 100) hasCountableCoproducts_of_hasCoproducts [HasCoproducts C] :
-    HasCountableCoproducts C where
-  out _ :=
-    have : HasCoproducts.{0} C := has_smallest_coproducts_of_hasCoproducts
-    inferInstance
-
--- See note [instance argument order]
-instance [HasCountableCoproducts C] (J : Type*) [Countable J] : HasCoproductsOfShape J C :=
-  have : Countable (Shrink.{0} J) := Countable.of_equiv _ (equivShrink.{0} J)
-  have : HasColimitsOfShape (Discrete (Shrink.{0} J)) C := HasCountableCoproducts.out _
-  hasColimitsOfShape_of_equivalence (Discrete.equivalence (equivShrink.{0} J)).symm
-
-instance (priority := 100) hasCountableCoproducts_of_hasCountableColimits [HasCountableColimits C] :
-    HasCountableCoproducts C where
-  out _ := inferInstance
-
-instance (priority := 100) hasFiniteCoproducts_of_hasCountableCoproducts
-    [HasCountableCoproducts C] : HasFiniteCoproducts C where
   out _ := inferInstance
 
 section Preorder
@@ -157,7 +131,7 @@ noncomputable def sequentialFunctor : ℕ ⥤ J where
 theorem sequentialFunctor_final_aux (j : J) : ∃ (n : ℕ), j ≤ sequentialFunctor_obj J n := by
   obtain ⟨m, h⟩ := (exists_surjective_nat _).choose_spec j
   refine ⟨m + 1, ?_⟩
-  simpa only [h] using leOfHom (IsFilteredOrEmpty.cocone_objs ((exists_surjective_nat _).choose m)
+  simpa only [h] using! leOfHom (IsFilteredOrEmpty.cocone_objs ((exists_surjective_nat _).choose m)
     (sequentialFunctor_obj J m)).choose_spec.choose
 
 instance sequentialFunctor_final : (sequentialFunctor J).Final where
@@ -208,7 +182,7 @@ noncomputable def sequentialFunctor : ℕᵒᵖ ⥤ J where
 theorem sequentialFunctor_initial_aux (j : J) : ∃ (n : ℕ), sequentialFunctor_obj J n ≤ j := by
   obtain ⟨m, h⟩ := (exists_surjective_nat _).choose_spec j
   refine ⟨m + 1, ?_⟩
-  simpa only [h] using leOfHom (IsCofilteredOrEmpty.cone_objs ((exists_surjective_nat _).choose m)
+  simpa only [h] using! leOfHom (IsCofilteredOrEmpty.cone_objs ((exists_surjective_nat _).choose m)
     (sequentialFunctor_obj J m)).choose_spec.choose
 
 instance sequentialFunctor_initial : (sequentialFunctor J).Initial where
@@ -225,37 +199,6 @@ instance sequentialFunctor_initial : (sequentialFunctor J).Initial where
     · exact or_comm.1 (this J d n g inferInstance j i (le_of_lt h))
     · right
       exact ⟨CostructuredArrow.homMk (homOfLE h).op rfl⟩
-
-@[stacks 0032]
-proof_wanted preorder_of_cofiltered (J : Type*) [Category* J] [IsCofiltered J] :
-    ∃ (I : Type*) (_ : Preorder I) (_ : IsCofiltered I) (F : I ⥤ J), F.Initial
-
-/--
-The proof of `preorder_of_cofiltered` should give a countable `I` in the case that `J` is a
-countable category.
--/
-proof_wanted preorder_of_cofiltered_countable
-    (J : Type*) [SmallCategory J] [IsCofiltered J] [CountableCategory J] :
-    ∃ (I : Type) (_ : Preorder I) (_ : Countable I) (_ : IsCofiltered I) (F : I ⥤ J), F.Initial
-
-/--
-Put together `sequentialFunctor_initial` and `preorder_of_cofiltered_countable`.
--/
-proof_wanted hasCofilteredCountableLimits_of_hasSequentialLimits [HasLimitsOfShape ℕᵒᵖ C] :
-    ∀ (J : Type) [SmallCategory J] [IsCofiltered J] [CountableCategory J], HasLimitsOfShape J C
-
-/--
-This is the countable version of `CategoryTheory.Limits.has_limits_of_finite_and_cofiltered`, given
-all of the above.
--/
-proof_wanted hasCountableLimits_of_hasFiniteLimits_and_hasSequentialLimits [HasFiniteLimits C]
-  [HasLimitsOfShape ℕᵒᵖ C] : HasCountableLimits C
-
-/--
-For this we need to dualize this whole section.
--/
-proof_wanted hasCountableColimits_of_hasFiniteColimits_and_hasSequentialColimits
-  [HasFiniteColimits C] [HasLimitsOfShape ℕ C] : HasCountableColimits C
 
 end IsCofiltered
 

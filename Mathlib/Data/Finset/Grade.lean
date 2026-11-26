@@ -8,7 +8,9 @@ module
 public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.Order.Atoms
 public import Mathlib.Order.Grade
-public import Mathlib.Order.Nat
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Finsets and multisets form a graded order
@@ -22,7 +24,9 @@ proves that they form a `ℕ`-graded order.
 * `Finset.instGradeMinOrder_nat`: Finsets are `ℕ`-graded
 -/
 
-@[expose] public section
+open scoped Finset
+
+public section
 
 open Order
 
@@ -63,16 +67,16 @@ variable {s t : Finset α} {a : α}
 
 /-- Finsets form an order-connected suborder of multisets. -/
 lemma ordConnected_range_val : Set.OrdConnected (Set.range val : Set <| Multiset α) :=
-  ⟨by rintro _ _ _ ⟨s, rfl⟩ t ht; exact ⟨⟨t, Multiset.nodup_of_le ht.2 s.2⟩, rfl⟩⟩
+  ⟨by rintro _ _ _ ⟨s, rfl⟩ t ht; exact ⟨⟨t, Multiset.nodup_of_le ht.2 s.nodup⟩, rfl⟩⟩
 
 /-- Finsets form an order-connected suborder of sets. -/
 lemma ordConnected_range_coe : Set.OrdConnected (Set.range ((↑) : Finset α → Set α)) :=
   ⟨by rintro _ _ _ ⟨s, rfl⟩ t ht; exact ⟨_, (s.finite_toSet.subset ht.2).coe_toFinset⟩⟩
 
-@[simp] lemma val_wcovBy_val : s.1 ⩿ t.1 ↔ s ⩿ t :=
+@[simp] lemma val_wcovBy_val : s.val ⩿ t.val ↔ s ⩿ t :=
   ordConnected_range_val.apply_wcovBy_apply_iff ⟨⟨_, val_injective⟩, val_le_iff⟩
 
-@[simp] lemma val_covBy_val : s.1 ⋖ t.1 ↔ s ⋖ t :=
+@[simp] lemma val_covBy_val : s.val ⋖ t.val ↔ s ⋖ t :=
   ordConnected_range_val.apply_covBy_apply_iff ⟨⟨_, val_injective⟩, val_le_iff⟩
 
 @[simp] lemma coe_wcovBy_coe : (s : Set α) ⩿ t ↔ s ⩿ t :=
@@ -95,7 +99,7 @@ lemma _root_.CovBy.exists_finset_cons (h : s ⋖ t) : ∃ a, ∃ ha : a ∉ s, s
 lemma covBy_iff_exists_cons : s ⋖ t ↔ ∃ a, ∃ ha : a ∉ s, s.cons a ha = t :=
   ⟨CovBy.exists_finset_cons, by rintro ⟨a, ha, rfl⟩; exact covBy_cons _⟩
 
-lemma _root_.CovBy.card_finset (h : s ⋖ t) : s.card ⋖ t.card := (val_covBy_val.2 h).card_multiset
+lemma _root_.CovBy.card_finset (h : s ⋖ t) : #s ⋖ #t := (val_covBy_val.2 h).card_multiset
 
 section DecidableEq
 variable [DecidableEq α]
@@ -107,8 +111,8 @@ lemma covBy_insert (ha : a ∉ s) : s ⋖ insert a s :=
   (wcovBy_insert _ _).covBy_of_lt <| ssubset_insert ha
 
 omit [DecidableEq α] in
-@[simp] lemma empty_covBy_singleton (a : α) : ∅ ⋖ ({a} : Finset α) :=
-  by classical exact insert_empty_eq (β := Finset α) a ▸ covBy_insert <| notMem_empty a
+@[simp] lemma empty_covBy_singleton (a : α) : ∅ ⋖ ({a} : Finset α) := by
+  classical exact insert_empty_eq (β := Finset α) a ▸ covBy_insert <| notMem_empty a
 
 @[simp] lemma erase_covBy (ha : a ∈ s) : s.erase a ⋖ s := ⟨erase_ssubset ha, (erase_wcovBy _ _).2⟩
 
@@ -116,12 +120,12 @@ lemma _root_.CovBy.exists_finset_insert (h : s ⋖ t) : ∃ a ∉ s, insert a s 
   simpa using h.exists_finset_cons
 
 lemma _root_.CovBy.exists_finset_erase (h : s ⋖ t) : ∃ a ∈ t, t.erase a = s := by
-  simpa only [← coe_inj, coe_erase] using h.finset_coe.exists_set_sdiff_singleton
+  simpa only [← coe_inj, coe_erase] using! h.finset_coe.exists_set_sdiff_singleton
 
 lemma covBy_iff_exists_insert : s ⋖ t ↔ ∃ a ∉ s, insert a s = t := by
   simp only [← coe_covBy_coe, Set.covBy_iff_exists_insert, ← coe_inj, coe_insert, mem_coe]
 
-lemma covBy_iff_card_sdiff_eq_one : t ⋖ s ↔ t ⊆ s ∧ (s \ t).card = 1 := by
+lemma covBy_iff_card_sdiff_eq_one : t ⋖ s ↔ t ⊆ s ∧ #(s \ t) = 1 := by
   rw [covBy_iff_exists_insert]
   constructor
   · rintro ⟨a, ha, rfl⟩
@@ -137,7 +141,7 @@ lemma covBy_iff_exists_erase : s ⋖ t ↔ ∃ a ∈ t, t.erase a = s := by
 end DecidableEq
 
 @[simp] lemma isAtom_singleton (a : α) : IsAtom ({a} : Finset α) :=
-  ⟨singleton_ne_empty a, fun _ ↦ eq_empty_of_ssubset_singleton⟩
+  ⟨(singleton_nonempty a).ne_empty, fun _ ↦ eq_empty_of_ssubset_singleton⟩
 
 protected lemma isAtom_iff : IsAtom s ↔ ∃ a, s = {a} := by
   simp [← bot_covBy_iff, covBy_iff_exists_cons, eq_comm]
@@ -160,7 +164,7 @@ instance instGradeMinOrder_multiset : GradeMinOrder (Multiset α) (Finset α) wh
   covBy_grade _ _ := CovBy.finset_val
   isMin_grade s hs := by rw [isMin_iff_eq_bot.1 hs]; exact isMin_bot
 
-@[simp] lemma grade_multiset_eq (s : Finset α) : grade (Multiset α) s = s.1 := rfl
+@[simp] lemma grade_multiset_eq (s : Finset α) : grade (Multiset α) s = s.val := rfl
 
 instance instGradeMinOrder_nat : GradeMinOrder ℕ (Finset α) where
   grade := card
@@ -168,6 +172,6 @@ instance instGradeMinOrder_nat : GradeMinOrder ℕ (Finset α) where
   covBy_grade _ _ := CovBy.card_finset
   isMin_grade s hs := by rw [isMin_iff_eq_bot.1 hs]; exact isMin_bot
 
-@[simp] lemma grade_eq (s : Finset α) : grade ℕ s = s.card := rfl
+@[simp] lemma grade_eq (s : Finset α) : grade ℕ s = #s := rfl
 
 end Finset

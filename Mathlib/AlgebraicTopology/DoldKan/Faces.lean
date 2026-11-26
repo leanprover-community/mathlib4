@@ -8,8 +8,10 @@ module
 public import Mathlib.AlgebraicTopology.DoldKan.Homotopies
 public import Mathlib.Tactic.Ring
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Study of face maps for the Dold-Kan correspondence
 
 In this file, we obtain the technical lemmas that are used in the file
@@ -22,14 +24,15 @@ on two technical lemmas `HigherFacesVanish.comp_Hσ_eq` and
 `HigherFacesVanish.comp_Hσ_eq_zero`.
 
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
-
 -/
 
 @[expose] public section
 
 
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Category
-  CategoryTheory.Preadditive CategoryTheory.SimplicialObject Simplicial
+  CategoryTheory.Preadditive CategoryTheory.SimplicialObject
+
+open scoped Simplicial
 
 namespace AlgebraicTopology
 
@@ -177,7 +180,7 @@ theorem induction {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : HigherFac
     rfl
   -- now, we assume j ≠ a (i.e. a < j)
   have haj : a < j := (Ne.le_iff_lt hj₂).mp (by lia)
-  have ham : a ≤ m := by lia
+  have ham : a ≤ m := by grind
   rw [X.δ_comp_σ_of_gt', j.pred_succ]
   swap
   · rw [Fin.lt_def]

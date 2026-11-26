@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Notation.Support
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Support of a function
 
@@ -38,6 +41,11 @@ theorem mulSupport_pow [Monoid M] (f : α → M) (n : ℕ) :
   | succ n hfn =>
     simpa only [pow_succ'] using (mulSupport_mul f _).trans (union_subset Subset.rfl hfn)
 
+@[to_additive]
+theorem mulSupport_zpow_subset_support [DivInvMonoid M] (f : α → M) (g : α → ℤ) :
+    (mulSupport fun x ↦ f x ^ g x) ⊆ support g :=
+  fun _ ↦ mt fun h ↦ by simp [h]
+
 section DivisionMonoid
 
 variable [DivisionMonoid G] (f g : α → G)
@@ -49,9 +57,6 @@ theorem mulSupport_fun_inv : (mulSupport fun x => (f x)⁻¹) = mulSupport f :=
 @[to_additive (attr := simp)]
 theorem mulSupport_inv : mulSupport f⁻¹ = mulSupport f :=
   mulSupport_fun_inv f
-
-@[deprecated (since := "2025-07-31")] alias support_neg' := support_neg
-@[deprecated (since := "2025-07-31")] alias mulSupport_inv' := mulSupport_inv
 
 @[to_additive]
 theorem mulSupport_mul_inv : (mulSupport fun x => f x * (g x)⁻¹) ⊆ mulSupport f ∪ mulSupport g :=

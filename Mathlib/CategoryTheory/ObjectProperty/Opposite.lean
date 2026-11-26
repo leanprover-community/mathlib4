@@ -5,12 +5,14 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
 public import Mathlib.CategoryTheory.Opposites
+public import Mathlib.Order.CompleteLattice.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The opposite of a property of objects
-
 -/
 
 @[expose] public section
@@ -28,10 +30,12 @@ section
 variable [CategoryStruct.{v} C]
 
 /-- The property of objects of `Cᵒᵖ` corresponding to `P : ObjectProperty C`. -/
+@[implicit_reducible]
 protected def op (P : ObjectProperty C) : ObjectProperty Cᵒᵖ :=
   fun X ↦ P X.unop
 
 /-- The property of objects of `C` corresponding to `P : ObjectProperty Cᵒᵖ`. -/
+@[implicit_reducible]
 protected def unop (P : ObjectProperty Cᵒᵖ) : ObjectProperty C :=
   fun X ↦ P (op X)
 
@@ -42,6 +46,12 @@ lemma op_iff (P : ObjectProperty C) (X : Cᵒᵖ) :
 @[simp]
 lemma unop_iff (P : ObjectProperty Cᵒᵖ) (X : C) :
     P.unop X ↔ P (op X) := Iff.rfl
+
+instance (P : ObjectProperty C) [P.Nonempty] : P.op.Nonempty :=
+  ⟨op P.arbitrary, P.prop_arbitrary⟩
+
+instance (P : ObjectProperty Cᵒᵖ) [P.Nonempty] : P.unop.Nonempty :=
+  ⟨P.arbitrary.unop, P.prop_arbitrary⟩
 
 @[simp]
 lemma op_unop (P : ObjectProperty Cᵒᵖ) : P.unop.op = P := rfl
@@ -80,8 +90,8 @@ lemma unop_monotone_iff {P Q : ObjectProperty Cᵒᵖ} : P.unop ≤ Q.unop ↔ P
 /-- The bijection `Subtype P.op ≃ Subtype P` for `P : ObjectProperty C`. -/
 def subtypeOpEquiv (P : ObjectProperty C) :
     Subtype P.op ≃ Subtype P where
-  toFun x := ⟨x.1.unop, x.2⟩
-  invFun x := ⟨op x.1, x.2⟩
+  toFun x := ⟨x.val.unop, x.property⟩
+  invFun x := ⟨op x.val, x.property⟩
 
 @[simp]
 lemma op_ofObj {ι : Type*} (X : ι → C) : (ofObj X).op = ofObj (fun i ↦ op (X i)) := by
@@ -130,6 +140,28 @@ lemma op_isoClosure (P : ObjectProperty C) :
 lemma unop_isoClosure (P : ObjectProperty Cᵒᵖ) :
     P.isoClosure.unop = P.unop.isoClosure := by
   rw [← op_injective_iff, P.unop.op_isoClosure, op_unop, op_unop]
+
+/-- Given `P : ObjectProperty C`, this is the equivalence between `P.op.FullSubcategory`
+and `P.FullSubcategoryᵒᵖ`. -/
+@[simps]
+def opEquivalence (P : ObjectProperty C) : P.op.FullSubcategory ≌ P.FullSubcategoryᵒᵖ where
+  functor := (P.lift P.op.ι.leftOp (fun X ↦ X.unop.property)).rightOp
+  inverse := P.op.lift P.ι.op (fun X ↦ X.unop.property)
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
+  functor_unitIso_comp X := Quiver.Hom.unop_inj (by cat_disch)
+
+@[simp]
+lemma op_inf (P Q : ObjectProperty C) : (P ⊓ Q).op = P.op ⊓ Q.op := rfl
+
+@[simp]
+lemma op_sup (P Q : ObjectProperty C) : (P ⊔ Q).op = P.op ⊔ Q.op := rfl
+
+@[simp]
+lemma unop_inf (P Q : ObjectProperty Cᵒᵖ) : (P ⊓ Q).unop = P.unop ⊓ Q.unop := rfl
+
+@[simp]
+lemma unop_sup (P Q : ObjectProperty Cᵒᵖ) : (P ⊔ Q).unop = P.unop ⊔ Q.unop := rfl
 
 end
 

@@ -6,7 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.GuitartExact.Basic
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
+
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 
 /-!
 # Guitart exact squares involving `Over` categories
@@ -24,10 +25,9 @@ Over X ⥤ Over (F.obj X)
 
 We show that this square is Guitart exact if for all `Y : C`, the binary product `X ⨯ Y`
 exists and `F` commutes with it.
-
 -/
 
-@[expose] public section
+public section
 
 universe v₁ v₂ u₁ u₂
 

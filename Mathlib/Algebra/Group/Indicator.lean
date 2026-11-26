@@ -19,7 +19,7 @@ In this file, we prove basic results about the indicator of a set.
 - `Set.mulIndicator (s : Set α) (f : α → β) (a : α)` is `f a` if `a ∈ s` and is `1` otherwise.
 
 
-## Implementation note
+## Implementation notes
 
 In mathematics, an indicator function or a characteristic function is a function
 used to indicate membership of an element in a set `s`,
@@ -32,6 +32,7 @@ The indicator function is implemented non-computably, to avoid having to pass ar
 arguments. This is in contrast with the design of `Pi.single` or `Set.piecewise`.
 
 ## Tags
+
 indicator, characteristic
 -/
 
@@ -41,9 +42,10 @@ assert_not_exists MonoidWithZero
 
 open Function
 
-variable {α β M N : Type*}
+variable {α β γ M N : Type*}
 
 namespace Set
+
 section Monoid
 
 variable [MulOneClass M] {s t : Set α} {a : α}
@@ -174,18 +176,22 @@ theorem mulIndicator_compl (s : Set α) (f : α → G) :
 theorem mulIndicator_compl' (s : Set α) (f : α → G) :
     mulIndicator sᶜ f = f / mulIndicator s f := by rw [div_eq_mul_inv, mulIndicator_compl]
 
-@[to_additive indicator_diff']
-theorem mulIndicator_diff (h : s ⊆ t) (f : α → G) :
+@[to_additive indicator_sdiff']
+theorem mulIndicator_sdiff (h : s ⊆ t) (f : α → G) :
     mulIndicator (t \ s) f = mulIndicator t f * (mulIndicator s f)⁻¹ :=
   eq_mul_inv_of_mul_eq <| by
-    rw [Pi.mul_def, ← mulIndicator_union_of_disjoint, diff_union_self,
+    rw [Pi.mul_def, ← mulIndicator_union_of_disjoint, sdiff_union_self,
       union_eq_self_of_subset_right h]
     exact disjoint_sdiff_self_left
 
-@[to_additive indicator_diff]
-theorem mulIndicator_diff' (h : s ⊆ t) (f : α → G) :
+@[deprecated (since := "2026-06-03")] alias mulIndicator_diff := mulIndicator_sdiff
+
+@[to_additive indicator_sdiff]
+theorem mulIndicator_sdiff' (h : s ⊆ t) (f : α → G) :
     mulIndicator (t \ s) f = mulIndicator t f / mulIndicator s f := by
-  rw [mulIndicator_diff h, div_eq_mul_inv]
+  rw [mulIndicator_sdiff h, div_eq_mul_inv]
+
+@[deprecated (since := "2026-06-03")] alias mulIndicator_diff' := mulIndicator_sdiff'
 
 open scoped symmDiff in
 @[to_additive]
@@ -195,6 +201,19 @@ theorem apply_mulIndicator_symmDiff {g : G → β} (hg : ∀ x, g x⁻¹ = g x)
   by_cases hs : x ∈ s <;> by_cases ht : x ∈ t <;> simp [mem_symmDiff, *]
 
 end Group
+
+section One
+
+@[to_additive]
+lemma mulSupport_subset_subsingleton_of_disjoint_on_mulSupport [One β] {s : γ → Set α} (f : α → β)
+  (hs : Pairwise (Disjoint on (fun j ↦ s j ∩ f.mulSupport))) (i : α) (j : γ) (hj : i ∈ s j) :
+    (fun d ↦ (s d).mulIndicator f i).mulSupport ⊆ {j} := by
+  suffices ∀ j', j' ≠ j → {i} ⊆ s j → {i} ⊆ s j' → {i} ⊆ mulSupport f → False by by_contra; aesop
+  intro j' h hj hj' hi
+  simp only [Pairwise, Disjoint, Set.subset_inter_iff] at hs
+  simpa using hs h ⟨hj', hi⟩ ⟨hj, hi⟩
+
+end One
 
 /-! ### Relationship with `Pi.mulSingle`/`Pi.single` -/
 
@@ -215,6 +234,3 @@ end Set
 theorem map_mulIndicator {M N F : Type*} [One M] [One N] [FunLike F M N] [OneHomClass F M N] (f : F)
     (s : Set α) (g : α → M) (x : α) : f (s.mulIndicator g x) = s.mulIndicator (f ∘ g) x := by
   simp [Set.mulIndicator_comp_of_one]
-
-@[deprecated (since := "2025-12-08")] alias MonoidHom.map_mulIndicator := map_mulIndicator
-@[deprecated (since := "2025-12-08")] alias AddMonoidHom.map_indicator := map_indicator

@@ -5,14 +5,12 @@ Authors: Yaël Dillies, Andrew Yang
 -/
 module
 
-public import Mathlib.Order.SuccPred.WithBot
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 /-!
 # Constructible sets in the prime spectrum
 
 This file provides tooling for manipulating constructible sets in the prime spectrum of a ring.
-
 -/
 
 @[expose] public section
@@ -123,7 +121,7 @@ lemma exists_constructibleSetData_iff {s : Set (PrimeSpectrum R)} :
   | isCompact_basis i => exact isCompact_basicOpen _
   | sdiff i s hs =>
     have : Finite s := hs
-    refine ⟨{⟨i, Nat.card s, fun i ↦ ((Finite.equivFin s).symm i).1⟩}, ?_⟩
+    refine ⟨{⟨i, Nat.card s, fun i ↦ ((Finite.equivFin s).symm i).val⟩}, ?_⟩
     simp only [ConstructibleSetData.toSet, Finset.mem_singleton, BasicConstructibleSetData.toSet,
       Set.iUnion_iUnion_eq_left, basicOpen_eq_zeroLocus_compl, ← Set.compl_iInter₂,
         compl_sdiff_compl, ← zeroLocus_iUnion₂, Set.biUnion_of_singleton]
@@ -143,19 +141,19 @@ lemma exists_range_eq_of_isConstructible {R : Type u} [CommRing R]
     {s : Set (PrimeSpectrum R)} (hs : IsConstructible s) :
     ∃ (S : Type u) (_ : CommRing S) (f : R →+* S), Set.range (comap f) = s := by
   obtain ⟨s, rfl⟩ := exists_constructibleSetData_iff.mpr hs
-  refine ⟨Π i : s, Localization.Away (Ideal.Quotient.mk (Ideal.span (Set.range i.1.g)) i.1.f),
+  refine ⟨Π i : s, Localization.Away (Ideal.Quotient.mk (Ideal.span (Set.range i.val.g)) i.val.f),
     inferInstance, algebraMap _ _, ?_⟩
   rw [← iUnion_range_comap_comp_evalRingHom, ConstructibleSetData.toSet]
   simp_rw [← Finset.mem_coe, Set.biUnion_eq_iUnion]
   congr! with _ _ C
-  let I := Ideal.span (Set.range C.1.g)
-  let f := Ideal.Quotient.mk I C.1.f
+  let I := Ideal.span (Set.range C.val.g)
+  let f := Ideal.Quotient.mk I C.val.f
   trans comap (Ideal.Quotient.mk I) '' (Set.range (comap (algebraMap _ (Localization.Away f))))
   · rw [← Set.range_comp]; rfl
   · rw [localization_away_comap_range _ f, ← comap_basicOpen, TopologicalSpace.Opens.coe_comap,
       ContinuousMap.coe_mk, Set.image_preimage_eq_inter_range,
       range_comap_of_surjective _ _ Ideal.Quotient.mk_surjective, BasicConstructibleSetData.toSet,
-      Set.diff_eq_compl_inter, basicOpen_eq_zeroLocus_compl, Ideal.mk_ker, zeroLocus_span]
+      Set.sdiff_eq_compl_inter, basicOpen_eq_zeroLocus_compl, Ideal.mk_ker, zeroLocus_span]
 
 @[stacks 00I0 "(1)"]
 lemma isClosed_of_stableUnderSpecialization_of_isConstructible {R : Type*} [CommRing R]

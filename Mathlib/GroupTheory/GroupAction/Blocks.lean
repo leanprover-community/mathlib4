@@ -6,11 +6,12 @@ Authors: Antoine Chambert-Loir
 module
 
 public import Mathlib.Algebra.Pointwise.Stabilizer
-public import Mathlib.Data.Setoid.Partition
-public import Mathlib.GroupTheory.GroupAction.Pointwise
 public import Mathlib.GroupTheory.GroupAction.SubMulAction
 public import Mathlib.GroupTheory.Index
+public import Mathlib.Order.Setoid.Partition
 public import Mathlib.Tactic.IntervalCases
+
+import Mathlib.GroupTheory.GroupAction.Pointwise
 
 /-! # Blocks
 
@@ -46,7 +47,6 @@ The non-existence of nontrivial blocks is the definition of primitive actions.
 ## References
 
 We follow [Wielandt-1964].
-
 -/
 
 @[expose] public section
@@ -360,9 +360,15 @@ theorem IsBlock.image {H Y : Type*} [SMul H Y] {φ : G → H} (j : X →ₑ[φ] 
   exact fun g₁ g₂ hg ↦ disjoint_image_of_injective hj <| hB <| ne_of_apply_ne _ hg
 
 @[to_additive]
-theorem IsBlock.subtype_val_preimage {C : SubMulAction G X} (hB : IsBlock G B) :
+theorem IsBlock.subtypeVal_preimage {C : SubMulAction G X} (hB : IsBlock G B) :
     IsBlock G (Subtype.val ⁻¹' B : Set C) :=
   hB.preimage C.inclusion
+
+@[deprecated (since := "2026-11-10")]
+alias _root_.AddAction.IsBlock.subtype_val_preimage := _root_.AddAction.IsBlock.subtypeVal_preimage
+
+@[deprecated (since := "2026-11-10")]
+alias IsBlock.subtype_val_preimage := IsBlock.subtypeVal_preimage
 
 @[to_additive]
 theorem isBlock_subtypeVal {C : SubMulAction G X} {B : Set C} :
@@ -371,24 +377,7 @@ theorem isBlock_subtypeVal {C : SubMulAction G X} {B : Set C} :
   rw [← SubMulAction.inclusion.coe_eq, ← image_smul_set, ← image_smul_set, ne_eq,
     Set.image_eq_image C.inclusion_injective, disjoint_image_iff C.inclusion_injective]
 
-theorem _root_.AddAction.IsBlock.of_addSubgroup_of_conjugate
-    {G : Type*} [AddGroup G] {X : Type*} [AddAction G X] {B : Set X}
-    {H : AddSubgroup G} (hB : AddAction.IsBlock H B) (g : G) :
-    AddAction.IsBlock (H.map (AddAut.conj g).toMul.toAddMonoidHom) (g +ᵥ B) := by
-  rw [AddAction.isBlock_iff_vadd_eq_or_disjoint]
-  intro h'
-  obtain ⟨h, hH, hh⟩ := AddSubgroup.mem_map.mp (SetLike.coe_mem h')
-  simp only [AddEquiv.coe_toAddMonoidHom, AddAut.conj_apply] at hh
-  suffices h' +ᵥ (g +ᵥ B) = g +ᵥ (h +ᵥ B) by
-    simp only [this]
-    apply (hB.vadd_eq_or_disjoint ⟨h, hH⟩).imp
-    · intro hB'; congr
-    · exact Set.disjoint_image_of_injective (AddAction.injective g)
-  suffices (h' : G) +ᵥ (g +ᵥ B) = g +ᵥ (h +ᵥ B) by
-    exact this
-  rw [← hh, vadd_vadd, vadd_vadd]
-  simp
-
+@[to_additive]
 theorem IsBlock.of_subgroup_of_conjugate {H : Subgroup G} (hB : IsBlock H B) (g : G) :
     IsBlock (H.map (MulAut.conj g).toMonoidHom) (g • B) := by
   rw [isBlock_iff_smul_eq_or_disjoint]
@@ -405,18 +394,7 @@ theorem IsBlock.of_subgroup_of_conjugate {H : Subgroup G} (hB : IsBlock H B) (g 
   rw [← hh, smul_smul (g * h * g⁻¹) g B, smul_smul g h B, inv_mul_cancel_right]
 
 /-- A translate of a block is a block -/
-theorem _root_.AddAction.IsBlock.translate
-    {G : Type*} [AddGroup G] {X : Type*} [AddAction G X] (B : Set X)
-    (g : G) (hB : AddAction.IsBlock G B) :
-    AddAction.IsBlock G (g +ᵥ B) := by
-  rw [← AddAction.isBlock_top] at hB ⊢
-  rw [← AddSubgroup.map_comap_eq_self_of_surjective (G := G) ?_ ⊤]
-  · apply AddAction.IsBlock.of_addSubgroup_of_conjugate
-    rwa [AddSubgroup.comap_top]
-  · exact (AddAut.conj g).surjective
-
-/-- A translate of a block is a block -/
-@[to_additive existing]
+@[to_additive]
 theorem IsBlock.translate (g : G) (hB : IsBlock G B) :
     IsBlock G (g • B) := by
   rw [← isBlock_top] at hB ⊢
@@ -548,7 +526,7 @@ theorem IsBlock.of_orbit {H : Subgroup G} {a : X} (hH : stabilizer G a ≤ H) :
   rintro g ⟨-, ⟨-, ⟨h₁, rfl⟩, h⟩, h₂, rfl⟩
   suffices g ∈ H by
     rw [← Subgroup.coe_mk H g this, ← H.toSubmonoid.smul_def, smul_orbit (⟨g, this⟩ : H) a]
-  rw [← mul_mem_cancel_left h₂⁻¹.2, ← mul_mem_cancel_right h₁.2]
+  rw [← mul_mem_cancel_left h₂⁻¹.property, ← mul_mem_cancel_right h₁.property]
   apply hH
   simpa only [mem_stabilizer_iff, InvMemClass.coe_inv, mul_smul, inv_smul_eq_iff]
 
@@ -585,7 +563,7 @@ theorem stabilizer_orbit_eq {a : X} {H : Subgroup G} (hH : stabilizer G a ≤ H)
   · intro hg
     obtain ⟨-, ⟨b, rfl⟩, h⟩ := hg.symm ▸ mem_orbit_self a
     simp_rw [H.toSubmonoid.smul_def, ← mul_smul, ← mem_stabilizer_iff] at h
-    exact (mul_mem_cancel_right b.2).mp (hH h)
+    exact (mul_mem_cancel_right b.property).mp (hH h)
   · intro hg
     rw [mem_stabilizer_iff, ← Subgroup.coe_mk H g hg, ← Submonoid.smul_def (S := H.toSubmonoid)]
     apply smul_orbit (G := H)
@@ -608,7 +586,7 @@ def block_stabilizerOrderIso [htGX : IsPretransitive G X] (a : X) :
     (id (propext Subtype.mk_eq_mk)).mpr (stabilizer_orbit_eq hH)
   map_rel_iff' := by
     rintro ⟨B, ha, hB⟩; rintro ⟨B', ha', hB'⟩
-    simp only [Equiv.coe_fn_mk, Subtype.mk_le_mk, Set.le_eq_subset]
+    simp only [Equiv.coe_fn_mk, Subtype.mk_le_mk]
     constructor
     · rintro hBB' b hb
       obtain ⟨k, rfl⟩ := htGX.exists_smul_eq a b
@@ -633,11 +611,11 @@ instance (a : X) : BoundedOrder (BlockMem G a) where
   top := ⟨Set.univ, Set.mem_univ a, .univ⟩
   le_top := by
     rintro ⟨B, ha, hB⟩
-    simp only [Subtype.mk_le_mk, le_eq_subset, subset_univ]
+    simp only [Subtype.mk_le_mk, subset_univ]
   bot := ⟨{a}, Set.mem_singleton a, IsBlock.singleton⟩
   bot_le := by
     rintro ⟨B, ha, hB⟩
-    simp only [Subtype.mk_le_mk, Set.le_eq_subset, Set.singleton_subset_iff]
+    simp only [Subtype.mk_le_mk, Set.singleton_subset_iff]
     exact ha
 
 @[to_additive (attr := simp, norm_cast)]
@@ -679,8 +657,6 @@ theorem ncard_block_eq_relIndex (hB : IsBlock G B) {x : X} (hx : x ∈ B) :
     ext; rfl
   rw [Subgroup.relIndex, key, index_stabilizer, hB.orbit_stabilizer_eq hx]
 
-@[deprecated (since := "2025-08-12")] alias ncard_block_eq_relindex := ncard_block_eq_relIndex
-
 /-- The cardinality of the ambient space is the product of the cardinality of a block
   by the cardinality of the set of translates of that block -/
 @[to_additive
@@ -703,7 +679,7 @@ theorem ncard_dvd_card (hB : IsBlock G B) (hB_ne : B.Nonempty) :
 theorem eq_univ_of_card_lt [hX : Finite X] (hB : IsBlock G B) (hB' : Nat.card X < Set.ncard B * 2) :
     B = Set.univ := by
   rcases Set.eq_empty_or_nonempty B with rfl | hB_ne
-  · simp only [Set.ncard_empty, zero_mul, not_lt_zero'] at hB'
+  · simp at hB'
   have key := hB.ncard_block_mul_ncard_orbit_eq hB_ne
   rw [← key, mul_lt_mul_iff_of_pos_left (by rwa [Set.ncard_pos])] at hB'
   interval_cases (orbit G B).ncard
@@ -717,12 +693,7 @@ theorem eq_univ_of_card_lt [hX : Finite X] (hB : IsBlock G B) (hB' : Nat.card X 
 theorem subsingleton_of_card_lt [Finite X] (hB : IsBlock G B)
     (hB' : Nat.card X < 2 * Set.ncard (orbit G B)) :
     B.Subsingleton := by
-  suffices Set.ncard B < 2 by
-    rw [Nat.lt_succ_iff, Set.ncard_le_one_iff_eq] at this
-    cases this with
-    | inl h => rw [h]; exact Set.subsingleton_empty
-    | inr h =>
-      obtain ⟨a, ha⟩ := h; rw [ha]; exact Set.subsingleton_singleton
+  suffices Set.ncard B < 2 by simp_all
   cases Set.eq_empty_or_nonempty B with
   | inl h => rw [h, Set.ncard_empty]; simp
   | inr h =>
@@ -746,7 +717,7 @@ theorem of_subset (a : X) (hfB : B.Finite) :
   · simp [hfB_e]
   have hB'₀ : ∀ (k : G) (_ : a ∈ k • B), B' ≤ k • B := by
     intro k hk
-    exact Set.biInter_subset_of_mem hk
+    exact Set.iInter₂_subset k hk
   have hfB' : B'.Finite := by
     obtain ⟨b, hb : b ∈ B⟩ := hfB_ne
     obtain ⟨k, hk : k • b = a⟩ := exists_smul_eq G b a

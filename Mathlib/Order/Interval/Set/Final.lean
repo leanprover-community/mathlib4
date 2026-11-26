@@ -7,17 +7,19 @@ module
 
 public import Mathlib.CategoryTheory.Filtered.Final
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Final functors between intervals
-
 -/
 
-@[expose] public section
+public section
 
 universe u
 
 instance Set.Ici.subtype_functor_final {J : Type u} [LinearOrder J] (j : J) :
-    (Subtype.mono_coe (Set.Ici j)).functor.Final := by
+    (Subtype.mono_coe (· ∈ Set.Ici j)).functor.Final := by
   rw [Monotone.final_functor_iff]
   intro k
   exact ⟨⟨max j k, le_max_left _ _⟩, le_max_right _ _⟩

@@ -5,9 +5,12 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.CategoryTheory.ObjectProperty.Local
 public import Mathlib.CategoryTheory.ObjectProperty.Orthogonal
 public import Mathlib.CategoryTheory.Triangulated.Subcategory
-public import Mathlib.CategoryTheory.ObjectProperty.Local
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Orthogonal of triangulated subcategories
@@ -16,10 +19,9 @@ Let `P` be a triangulated subcategory of a pretriangulated category `C`. We show
 that `P.rightOrthogonal` (which consists of objects `Y` with no nonzero
 map `X ⟶ Y` with `X` satisfying `P`) is a triangulated subcategory. The dual result
 for `P.leftOrthogonal` is also obtained.
-
 -/
 
-@[expose] public section
+public section
 
 universe v v' u u'
 
@@ -111,7 +113,6 @@ lemma rightOrthogonal.map_bijective_of_isTriangulated
     obtain ⟨Z, s, hs, eq⟩ := hf
     exact (hY _ hs).1 eq
   · obtain ⟨φ, hφ⟩ := Localization.exists_rightFraction L P.trW g
-    have := Localization.inverts L P.trW φ.s φ.hs
     obtain ⟨α, hα⟩ := (hY _ φ.hs).2 φ.f
     refine ⟨α, ?_⟩
     rw [hφ, ← cancel_epi (L.map φ.s), MorphismProperty.RightFraction.map_s_comp_map,
@@ -128,7 +129,6 @@ lemma leftOrthogonal.map_bijective_of_isTriangulated
     obtain ⟨Z, s, hs, eq⟩ := hf
     exact (hX _ hs).1 eq
   · obtain ⟨φ, hφ⟩ := Localization.exists_leftFraction L P.trW g
-    have := Localization.inverts L P.trW φ.s φ.hs
     obtain ⟨α, hα⟩ := (hX _ φ.hs).2 φ.f
     refine ⟨α, ?_⟩
     rw [hφ, ← cancel_mono (L.map φ.s), MorphismProperty.LeftFraction.map_comp_map_s,

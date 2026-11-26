@@ -5,8 +5,8 @@ Authors: Sean Leather, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.List.AList
 public import Mathlib.Data.Finset.Sigma
+public import Mathlib.Data.List.AList
 public import Mathlib.Data.Part
 
 /-!
@@ -80,6 +80,7 @@ def AList.toFinmap (s : AList β) : Finmap β :=
 -- for `Quotient.mk`
 local notation:arg "⟦" a "⟧" => AList.toFinmap a
 
+set_option backward.isDefEq.respectTransparency false in
 theorem AList.toFinmap_eq {s₁ s₂ : AList β} :
     toFinmap s₁ = toFinmap s₂ ↔ s₁.entries ~ s₂.entries := by
   cases s₁
@@ -299,7 +300,7 @@ that `(lookup a).isSome ↔ a ∈ keys`. -/
 def keysLookupEquiv :
     Finmap β ≃ { f : Finset α × (∀ a, Option (β a)) // ∀ i, (f.2 i).isSome ↔ i ∈ f.1 } where
   toFun s := ⟨(s.keys, fun i => s.lookup i), fun _ => lookup_isSome⟩
-  invFun f := mk (f.1.1.sigma fun i => (f.1.2 i).toFinset).val <| by
+  invFun f := mk (f.val.1.sigma fun i => (f.val.2 i).toFinset).val <| by
     refine Multiset.nodup_keys.1 ((Finset.nodup _).map_on ?_)
     simp only [Finset.mem_val, Finset.mem_sigma, Option.mem_toFinset, Option.mem_def]
     rintro ⟨i, x⟩ ⟨_, hx⟩ ⟨j, y⟩ ⟨_, hy⟩ (rfl : i = j)
@@ -313,13 +314,13 @@ def keysLookupEquiv :
 
 @[simp] lemma keysLookupEquiv_symm_apply_keys :
     ∀ f : {f : Finset α × (∀ a, Option (β a)) // ∀ i, (f.2 i).isSome ↔ i ∈ f.1},
-      (keysLookupEquiv.symm f).keys = f.1.1 :=
+      (keysLookupEquiv.symm f).keys = f.val.1 :=
   keysLookupEquiv.surjective.forall.2 fun _ => by
     simp only [Equiv.symm_apply_apply, keysLookupEquiv_apply_coe_fst]
 
 @[simp] lemma keysLookupEquiv_symm_apply_lookup :
     ∀ (f : {f : Finset α × (∀ a, Option (β a)) // ∀ i, (f.2 i).isSome ↔ i ∈ f.1}) a,
-      (keysLookupEquiv.symm f).lookup a = f.1.2 a :=
+      (keysLookupEquiv.symm f).lookup a = f.val.2 a :=
   keysLookupEquiv.surjective.forall.2 fun _ _ => by
     simp only [Equiv.symm_apply_apply, keysLookupEquiv_apply_coe_snd]
 
@@ -504,7 +505,7 @@ theorem mem_union {a} {s₁ s₂ : Finmap β} : a ∈ s₁ ∪ s₂ ↔ a ∈ s�
 
 @[simp]
 theorem union_toFinmap (s₁ s₂ : AList β) : (toFinmap s₁) ∪ (toFinmap s₂) = toFinmap (s₁ ∪ s₂) := by
-  simp [(· ∪ ·), union]
+  simp [Union.union, union]
 
 theorem keys_union {s₁ s₂ : Finmap β} : (s₁ ∪ s₂).keys = s₁.keys ∪ s₂.keys :=
   induction_on₂ s₁ s₂ fun s₁ s₂ => Finset.ext <| by simp [keys]
@@ -586,7 +587,8 @@ section
 
 variable [DecidableEq α]
 
-instance : DecidableRel (@Disjoint α β) := fun x y => by dsimp only [Disjoint]; infer_instance
+instance : DecidableRel (@Disjoint α β) :=
+  fun s₁ s₂ ↦ inferInstanceAs <| Decidable (∀ x ∈ s₁, x ∉ s₂)
 
 theorem disjoint_union_left (x y z : Finmap β) :
     Disjoint (x ∪ y) z ↔ Disjoint x z ∧ Disjoint y z := by

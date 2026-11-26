@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Reflexive
 public import Mathlib.CategoryTheory.Limits.Shapes.SplitEqualizer
 public import Mathlib.CategoryTheory.Monad.Algebra
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Special equalizers associated to a comonad
 
@@ -21,7 +24,6 @@ comonadicity theorem).
 
 This file is adapted from `Mathlib/CategoryTheory/Monad/Coequalizer.lean`.
 Please try to keep them in sync.
-
 -/
 
 @[expose] public section
@@ -67,6 +69,7 @@ theorem CofreeEqualizer.condition :
       CofreeEqualizer.ι X ≫ CofreeEqualizer.bottomMap X :=
   Coalgebra.Hom.ext X.coassoc.symm
 
+set_option backward.defeqAttrib.useBackward true in
 instance : IsCoreflexivePair (CofreeEqualizer.topMap X) (CofreeEqualizer.bottomMap X) := by
   apply IsCoreflexivePair.mk' _ _ _
   · apply (cofree T).map (T.ε.app X.A)
@@ -83,13 +86,14 @@ equalizer.
 def beckCoalgebraFork : Fork (CofreeEqualizer.topMap X) (CofreeEqualizer.bottomMap X) :=
   Fork.ofι _ (CofreeEqualizer.condition X)
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The fork constructed is a limit. This shows that any coalgebra is a (coreflexive) equalizer of
 cofree coalgebras.
 -/
 def beckCoalgebraEqualizer : IsLimit (beckCoalgebraFork X) :=
   Fork.IsLimit.mk' _ fun s => by
-    have h₁ : s.ι.f ≫ (T : C ⥤ C).map X.a = s.ι.f ≫ T.δ.app X.A :=
-      congr_arg Comonad.Coalgebra.Hom.f s.condition
+    have h₁ : s.ι.f ≫ (T : C ⥤ C).map X.a = s.ι.f ≫ T.δ.app X.A := congr($(s.condition).f)
     have h₂ : s.pt.a ≫ (T : C ⥤ C).map s.ι.f = s.ι.f ≫ T.δ.app X.A := s.ι.h
     refine ⟨⟨s.ι.f ≫ T.ε.app _, ?_⟩, ?_, ?_⟩
     · dsimp
@@ -99,7 +103,7 @@ def beckCoalgebraEqualizer : IsLimit (beckCoalgebraFork X) :=
         reassoc_of% h₁, Comonad.left_counit]
       simp
     · ext
-      simpa [← T.ε.naturality_assoc, T.left_counit_assoc] using h₁ =≫ T.ε.app ((T : C ⥤ C).obj X.A)
+      simpa [← T.ε.naturality_assoc, T.left_counit_assoc] using! h₁ =≫ T.ε.app ((T : C ⥤ C).obj X.A)
     · intro m hm
       ext
       dsimp only

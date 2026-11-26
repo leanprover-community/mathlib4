@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.CWComplex.Classical.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finiteness notions on CW complexes
 
@@ -15,6 +18,7 @@ finite. We define constructors with relaxed conditions for CW complexes of finit
 finite CW complexes.
 
 ## Main definitions
+
 * `RelCWComplex.FiniteDimensional`: a CW complex is finite dimensional if it has only finitely many
   nonempty indexing types for the cells.
 * `RelCWComplex.FiniteType`: a CW complex is of finite type if it has only finitely many cells in
@@ -22,6 +26,7 @@ finite CW complexes.
 * `RelCWComplex.Finite`: a CW complex is finite if it is finite dimensional and of finite type.
 
 ## Main statements
+
 * `RelCWComplex.mkFiniteType`: if we want to construct a CW complex of finite type, we can relax the
   condition `mapsTo`.
 * `RelCWComplex.mkFinite`: if we want to construct a finite CW complex, we can relax the condition
@@ -42,11 +47,16 @@ class RelCWComplex.FiniteDimensional.{u} {X : Type u} [TopologicalSpace X] (C : 
   /-- For some natural number `n`, the type `cell C m` is empty for all `m ≥ n`. -/
   eventually_isEmpty_cell : ∀ᶠ n in Filter.atTop, IsEmpty (cell C n)
 
+alias CWComplex.FiniteDimensional.eventually_isEmpty_cell :=
+  RelCWComplex.FiniteDimensional.eventually_isEmpty_cell
+
 /-- A CW complex is of finite type if `cell C n` is finite for every `n`. -/
 class RelCWComplex.FiniteType.{u} {X : Type u} [TopologicalSpace X] (C : Set X) {D : Set X}
     [RelCWComplex C D] : Prop where
   /-- `cell C n` is finite for every `n`. -/
   finite_cell (n : ℕ) : Finite (cell C n)
+
+alias CWComplex.FiniteType.finite_cell := RelCWComplex.FiniteType.finite_cell
 
 /-- A CW complex is finite if it is finite dimensional and of finite type. -/
 class RelCWComplex.Finite {X : Type*} [TopologicalSpace X] (C : Set X) {D : Set X}
@@ -54,6 +64,7 @@ class RelCWComplex.Finite {X : Type*} [TopologicalSpace X] (C : Set X) {D : Set 
 
 variable {X : Type*} [TopologicalSpace X] (C : Set X) {D : Set X} [RelCWComplex C D]
 
+@[alias_in CWComplex]
 lemma RelCWComplex.finite_of_finiteDimensional_finiteType [FiniteDimensional C]
     [FiniteType C] : Finite C where
   eventually_isEmpty_cell := FiniteDimensional.eventually_isEmpty_cell
@@ -61,14 +72,13 @@ lemma RelCWComplex.finite_of_finiteDimensional_finiteType [FiniteDimensional C]
 
 namespace CWComplex
 
-export RelCWComplex (FiniteDimensional FiniteType Finite FiniteDimensional.eventually_isEmpty_cell
-  FiniteType.finite_cell finite_of_finiteDimensional_finiteType)
+export RelCWComplex (FiniteDimensional FiniteType Finite)
 
 end CWComplex
 
 /-- If we want to construct a relative CW complex of finite type, we can add the condition
 `finite_cell` and relax the condition `mapsTo`. -/
-@[simps -isSimp]
+@[simps -isSimp, instance_reducible]
 def RelCWComplex.mkFiniteType.{u} {X : Type u} [TopologicalSpace X] (C : Set X)
     (D : outParam (Set X))
     (cell : (n : ℕ) → Type u) (map : (n : ℕ) → (i : cell n) → PartialEquiv (Fin n → ℝ) X)
@@ -127,7 +137,7 @@ lemma RelCWComplex.finiteType_mkFiniteType.{u} {X : Type u} [TopologicalSpace X]
 
 /-- If we want to construct a CW complex of finite type, we can add the condition `finite_cell` and
 relax the condition `mapsTo`. -/
-@[simps -isSimp]
+@[simps -isSimp, instance_reducible]
 def CWComplex.mkFiniteType.{u} {X : Type u} [TopologicalSpace X] (C : Set X)
     (cell : (n : ℕ) → Type u) (map : (n : ℕ) → (i : cell n) → PartialEquiv (Fin n → ℝ) X)
     (finite_cell : ∀ (n : ℕ), _root_.Finite (cell n))
@@ -179,7 +189,7 @@ lemma CWComplex.finiteType_mkFiniteType.{u} {X : Type u} [TopologicalSpace X] (C
 /-- If we want to construct a finite relative CW complex we can add the conditions
 `eventually_isEmpty_cell` and `finite_cell`, relax the condition `mapsTo` and remove the condition
 `closed'`. -/
-@[simps -isSimp]
+@[simps -isSimp, instance_reducible]
 def RelCWComplex.mkFinite.{u} {X : Type u} [TopologicalSpace X] (C : Set X)
     (D : outParam (Set X)) (cell : (n : ℕ) → Type u)
     (map : (n : ℕ) → (i : cell n) → PartialEquiv (Fin n → ℝ) X)
@@ -212,7 +222,7 @@ def RelCWComplex.mkFinite.{u} {X : Type u} [TopologicalSpace X] (C : Set X)
     -- `A = A ∩ C = A ∩ (D ∪ ⋃ n, ⋃ j, closedCell n j)` is closed by assumption since `C` has only
     -- finitely many cells.
     rw [← inter_eq_left.2 asubc]
-    simp_rw [Filter.eventually_atTop, ge_iff_le] at eventually_isEmpty_cell
+    simp_rw [Filter.eventually_atTop] at eventually_isEmpty_cell
     obtain ⟨N, hN⟩ := eventually_isEmpty_cell
     suffices IsClosed (A ∩ (D ∪ ⋃ (n : {n : ℕ // n < N}), ⋃ j, ↑(map n j) '' closedBall 0 1)) by
       convert this using 2
@@ -224,7 +234,7 @@ def RelCWComplex.mkFinite.{u} {X : Type u} [TopologicalSpace X] (C : Set X)
       have : n < N := Decidable.byContradiction fun h ↦ (hN n (Nat.ge_of_not_lt h)).false i
       exact subset_iUnion₂ (s := fun _ i ↦ (map n i) '' closedBall 0 1) this i
     simp_rw [inter_union_distrib_left, inter_iUnion]
-    exact h.2.union (isClosed_iUnion_of_finite (fun n ↦ isClosed_iUnion_of_finite (h.1 n.1)))
+    exact h.2.union (isClosed_iUnion_of_finite (fun n ↦ isClosed_iUnion_of_finite (h.1 n.val)))
   isClosedBase := isClosedBase
   union' := union'
 
@@ -254,7 +264,7 @@ lemma RelCWComplex.finite_mkFinite.{u} {X : Type u} [TopologicalSpace X] (C : Se
 
 /-- If we want to construct a finite CW complex we can add the conditions `eventually_isEmpty_cell`
 and `finite_cell`, relax the condition `mapsTo` and remove the condition `closed'`. -/
-@[simps! -isSimp]
+@[simps! -isSimp, instance_reducible]
 def CWComplex.mkFinite.{u} {X : Type u} [TopologicalSpace X] (C : Set X)
     (cell : (n : ℕ) → Type u) (map : (n : ℕ) → (i : cell n) → PartialEquiv (Fin n → ℝ) X)
     (eventually_isEmpty_cell : ∀ᶠ n in Filter.atTop, IsEmpty (cell n))
@@ -306,15 +316,15 @@ variable {X : Type*} [TopologicalSpace X] {C D : Set X} [RelCWComplex C D]
 
 /-- If the collection of all cells (of any dimension) of a relative CW complex `C` is finite, then
 `C` is finite as a CW complex. -/
+@[alias_in CWComplex]
 lemma RelCWComplex.finite_of_finite_cells (finite : _root_.Finite (Σ n, cell C n)) : Finite C where
   eventually_isEmpty_cell := by
-    simp only [Filter.eventually_atTop, ge_iff_le]
+    simp only [Filter.eventually_atTop]
     cases isEmpty_or_nonempty (Σ n, cell C n)
     · exact ⟨0, by simp_all⟩
     -- We take the greatest `n` such that there is a `j : cell C n` and show that this fulfills
     -- the necessary conditions.
     have _ := Fintype.ofFinite (Σ n, cell C n)
-    classical
     let A := (Finset.univ : Finset (Σ n, cell C n)).image Sigma.fst
     use A.max' (Finset.image_nonempty.2 Finset.univ_nonempty) + 1
     intro m _
@@ -329,12 +339,13 @@ lemma RelCWComplex.finite_of_finite_cells (finite : _root_.Finite (Σ n, cell C 
 
 /-- If `C` is finite as a CW complex then the collection of all cells (of any dimension) is
 finite. -/
+@[alias_in CWComplex]
 lemma RelCWComplex.finite_cells_of_finite [finite : Finite C] : _root_.Finite (Σ n, cell C n) := by
   -- We show that there is a bijection between `Σ n, cell C n` and
   -- `Σ (m : {m : ℕ // m < n}), cell C m`.
   have h := finite.eventually_isEmpty_cell
   have _ := finite.finite_cell
-  simp only [Filter.eventually_atTop, ge_iff_le] at h
+  simp only [Filter.eventually_atTop] at h
   rcases h with ⟨n, hn⟩
   have (m) (j : cell C m) : m < n := by
     by_contra h
@@ -348,13 +359,8 @@ lemma RelCWComplex.finite_cells_of_finite [finite : Finite C] : _root_.Finite (�
   exact Finite.instSigma
 
 /-- A CW complex is finite iff the total number of its cells is finite. -/
+@[alias_in CWComplex]
 lemma RelCWComplex.finite_iff_finite_cells : Finite C ↔ _root_.Finite (Σ n, cell C n) :=
   ⟨fun h ↦ finite_cells_of_finite (finite := h), finite_of_finite_cells⟩
-
-namespace CWComplex
-
-export RelCWComplex (finite_of_finite_cells finite_cells_of_finite finite_iff_finite_cells)
-
-end CWComplex
 
 end Topology

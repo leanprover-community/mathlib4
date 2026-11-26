@@ -5,10 +5,9 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Sheafification
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.SheafEquiv
-/-!
 
+/-!
 # The constant sheaf
 
 We define the constant sheaf functor (the sheafification of the constant presheaf)
@@ -35,7 +34,7 @@ essential image of the constant sheaf functor.
 
 namespace CategoryTheory
 
-open Limits Opposite Category Functor Sheaf Adjunction
+open Limits Opposite Category CategoryTheory.Functor Sheaf Adjunction
 
 variable {C : Type*} [Category* C] (J : GrothendieckTopology C)
 variable (D : Type*) [Category* D]
@@ -61,6 +60,7 @@ variable [HasWeakSheafify J D]
 The functor which maps an object of `D` to the constant sheaf at that object, i.e. the
 sheafification of the constant presheaf.
 -/
+@[implicit_reducible]
 noncomputable def constantSheaf : D ⥤ Sheaf J D := Functor.const Cᵒᵖ ⋙ (presheafToSheaf J D)
 
 /-- The constant sheaf functor is left adjoint to evaluation at a terminal object. -/
@@ -138,8 +138,8 @@ The constant sheaf functor commutes up to isomorphism the equivalence of sheaf c
 by a dense subsite.
 -/
 noncomputable def equivCommuteConstant :
-    constantSheaf J D ⋙ (sheafEquiv G J K D).functor ≅ constantSheaf K D :=
-  ((constantSheafAdj J D hT).comp (sheafEquiv G J K D).toAdjunction).leftAdjointUniq
+    constantSheaf J D ⋙ (sheafEquiv J K G D).functor ≅ constantSheaf K D :=
+  ((constantSheafAdj J D hT).comp (sheafEquiv J K G D).toAdjunction).leftAdjointUniq
     (constantSheafAdj K D hT')
 
 variable (D) in
@@ -148,9 +148,9 @@ The constant sheaf functor commutes up to isomorphism the inverse equivalence of
 induced by a dense subsite.
 -/
 noncomputable def equivCommuteConstant' :
-    constantSheaf J D ≅ constantSheaf K D ⋙ (sheafEquiv G J K D).inverse :=
-  isoWhiskerLeft (constantSheaf J D) (sheafEquiv G J K D).unitIso ≪≫
-    isoWhiskerRight (equivCommuteConstant J D K G hT hT') (sheafEquiv G J K D).inverse
+    constantSheaf J D ≅ constantSheaf K D ⋙ (sheafEquiv J K G D).inverse :=
+  isoWhiskerLeft (constantSheaf J D) (sheafEquiv J K G D).unitIso ≪≫
+    isoWhiskerRight (equivCommuteConstant J D K G hT hT') (sheafEquiv J K G D).inverse
 
 /- TODO: find suitable assumptions for proving generalizations of `equivCommuteConstant` and
 `equivCommuteConstant'` above, to commute `constantSheaf` with pullback/pushforward of sheaves. -/
@@ -161,12 +161,12 @@ The property of a sheaf of being constant is invariant under equivalence of shea
 categories.
 -/
 lemma Sheaf.isConstant_iff_of_equivalence (F : Sheaf K D) :
-    ((sheafEquiv G J K D).inverse.obj F).IsConstant J ↔ IsConstant K F := by
+    ((sheafEquiv J K G D).inverse.obj F).IsConstant J ↔ IsConstant K F := by
   constructor
   · exact fun ⟨Y, ⟨i⟩⟩ ↦ ⟨_, ⟨(equivCommuteConstant J D K G hT hT').symm.app _ ≪≫
-      (sheafEquiv G J K D).functor.mapIso i ≪≫ (sheafEquiv G J K D).counitIso.app _⟩⟩
+      (sheafEquiv J K G D).functor.mapIso i ≪≫ (sheafEquiv J K G D).counitIso.app _⟩⟩
   · exact fun ⟨Y, ⟨i⟩⟩ ↦ ⟨_, ⟨(equivCommuteConstant' J D K G hT hT').app _ ≪≫
-      (sheafEquiv G J K D).inverse.mapIso i⟩⟩
+      (sheafEquiv J K G D).inverse.mapIso i⟩⟩
 
 end Equivalence
 
@@ -185,17 +185,18 @@ noncomputable def constantCommuteCompose :
     (sheafComposeNatIso J U (sheafificationAdjunction J D) (sheafificationAdjunction J B)).symm) ≪≫
       isoWhiskerRight (compConstIso _ _).symm _
 
-lemma constantCommuteCompose_hom_app_val (X : D) : ((constantCommuteCompose J U).hom.app X).val =
+lemma constantCommuteCompose_hom_app_hom (X : D) : ((constantCommuteCompose J U).hom.app X).hom =
     (sheafifyComposeIso J U ((const Cᵒᵖ).obj X)).inv ≫ sheafifyMap J (constComp Cᵒᵖ X U).hom := rfl
 
 /-- The counit of `constantSheafAdj` factors through the isomorphism `constantCommuteCompose`. -/
 lemma constantSheafAdj_counit_w {T : C} (hT : IsTerminal T) :
-    ((constantCommuteCompose J U).hom.app (F.val.obj ⟨T⟩)) ≫
+    ((constantCommuteCompose J U).hom.app (F.obj.obj ⟨T⟩)) ≫
       ((constantSheafAdj J B hT).counit.app ((sheafCompose J U).obj F)) =
         ((sheafCompose J U).map ((constantSheafAdj J D hT).counit.app F)) := by
   apply Sheaf.hom_ext
-  rw [comp_val, constantCommuteCompose_hom_app_val, assoc, Iso.inv_comp_eq]
-  apply sheafify_hom_ext _ _ _ ((sheafCompose J U).obj F).cond
+  dsimp
+  rw [constantCommuteCompose_hom_app_hom, assoc, Iso.inv_comp_eq]
+  apply sheafify_hom_ext _ _ _ ((sheafCompose J U).obj F).property
   ext x
   simp [NatTrans.comp_app] -- simp [NatTrans.comp_app] to unfold some definitions
   simp [← map_comp, ← NatTrans.comp_app] -- simp [← NatTrans.comp_app] to simplify some compositions

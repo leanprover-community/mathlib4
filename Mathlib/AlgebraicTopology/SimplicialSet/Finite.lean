@@ -7,21 +7,26 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.Dimension
 public import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplices
-public import Mathlib.Data.Finite.Sigma
+
+import Mathlib.Basic.Finite.Sigma
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Finite simplicial sets
 
 A simplicial set is finite (`SSet.Finite`) if it has finitely
 many nondegenerate simplices.
-
 -/
 
-@[expose] public section
+public section
 
 universe u
 
-open Simplicial CategoryTheory
+open CategoryTheory
+
+open scoped Simplicial
 
 namespace SSet
 
@@ -42,14 +47,15 @@ lemma finite_of_hasDimensionLT (d : ℕ) [X.HasDimensionLT d]
     (h : ∀ (i : ℕ) (_ : i < d), Finite (X.nonDegenerate i)) :
     X.Finite where
   finite := by
-    have (i : Fin d) : Finite (X.nonDegenerate i) := h i.1 i.2
+    have (i : Fin d) : Finite (X.nonDegenerate i) := h i.val i.isLt
     refine Finite.of_surjective (α := Σ (i : Fin d), X.nonDegenerate i)
       (f := fun ⟨i, x⟩ ↦ N.mk _ x.property) (fun x ↦ ?_)
     by_cases hj : x.dim < d
     · exact ⟨⟨⟨_, hj⟩, ⟨_, x.nonDegenerate⟩⟩, rfl⟩
     · have := x.nonDegenerate
-      simp [X.nonDegenerate_eq_bot_of_hasDimensionLT d x.dim (by simpa using hj)] at this
+      simp [X.nonDegenerate_eq_empty_of_hasDimensionLT d x.dim (by simpa using hj)] at this
 
+set_option backward.defeqAttrib.useBackward true in
 lemma hasDimensionLT_of_finite [X.Finite] :
     ∃ (d : ℕ), X.HasDimensionLT d := by
   have : Fintype X.N := Fintype.ofFinite _
@@ -73,8 +79,8 @@ lemma hasDimensionLT_of_finite [X.Finite] :
 instance [X.Finite] (n : SimplexCategoryᵒᵖ) : Finite (X.obj n) := by
   obtain ⟨n⟩ := n
   induction n using SimplexCategory.rec with | _ n
-  let φ : (Σ (m : Fin (n + 1)) (f : ⦋n⦌ ⟶ ⦋m.1⦌),
-    X.nonDegenerate m.1) → X _⦋n⦌ := fun ⟨m, f, x⟩ ↦ X.map f.op x.1
+  let φ : (Σ (m : Fin (n + 1)) (f : ⦋n⦌ ⟶ ⦋m.val⦌),
+    X.nonDegenerate m.val) → X _⦋n⦌ := fun ⟨m, f, x⟩ ↦ X.map f.op x.val
   have hφ : Function.Surjective φ := fun x ↦ by
     obtain ⟨m, f, hf, y, rfl⟩ := X.exists_nonDegenerate x
     have := SimplexCategory.le_of_epi f
@@ -84,7 +90,7 @@ instance [X.Finite] (n : SimplexCategoryᵒᵖ) : Finite (X.obj n) := by
 instance [X.Finite] (A : X.Subcomplex) : SSet.Finite A := by
   obtain ⟨d, _⟩ := X.hasDimensionLT_of_finite
   refine finite_of_hasDimensionLT _ d (fun i hi ↦ ?_)
-  apply Finite.of_injective (f := fun a ↦ a.1.1)
+  apply Finite.of_injective (f := fun a ↦ a.val.val)
   rintro ⟨⟨x, _⟩, _⟩ ⟨⟨y, _⟩, _⟩ rfl
   rfl
 

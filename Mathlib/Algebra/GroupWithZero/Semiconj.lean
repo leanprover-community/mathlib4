@@ -6,11 +6,14 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.GroupWithZero.Units.Basic
-public import Mathlib.Algebra.Group.Semiconj.Units
+
+import Mathlib.Algebra.Group.Semiconj.Units
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Lemmas about semiconjugate elements in a `GroupWithZero`.
-
 -/
 
 public section

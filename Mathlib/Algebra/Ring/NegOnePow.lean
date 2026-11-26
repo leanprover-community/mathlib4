@@ -5,9 +5,10 @@ Authors: Joël Riou, Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.Ring.Int.Parity
-public import Mathlib.Algebra.Ring.Int.Units
 public import Mathlib.Data.ZMod.IntUnitsPower
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Integer powers of (-1)
@@ -16,7 +17,6 @@ This file defines the map `negOnePow : ℤ → ℤˣ` which sends `n` to `(-1 : 
 
 The definition of `negOnePow` and some lemmas first appeared in contributions by
 Johan Commelin to the Liquid Tensor Experiment.
-
 -/
 
 @[expose] public section
@@ -27,6 +27,7 @@ assert_not_exists TwoSidedIdeal
 namespace Int
 
 /-- The map `ℤ → ℤˣ` which sends `n` to `(-1 : ℤˣ) ^ n`. -/
+@[implicit_reducible]
 def negOnePow (n : ℤ) : ℤˣ := (-1 : ℤˣ) ^ n
 
 lemma negOnePow_def (n : ℤ) : n.negOnePow = (-1 : ℤˣ) ^ n := rfl
@@ -78,7 +79,6 @@ lemma negOnePow_eq_neg_one_iff (n : ℤ) : n.negOnePow = -1 ↔ Odd n := by
     contradiction
   · exact negOnePow_odd n
 
-@[simp]
 theorem abs_negOnePow (n : ℤ) : |(n.negOnePow : ℤ)| = 1 := by
   rw [abs_eq_natAbs, Int.units_natAbs, Nat.cast_one]
 
@@ -113,5 +113,13 @@ lemma cast_negOnePow_natCast (R : Type*) [Ring R] (n : ℕ) : negOnePow n = (-1 
   obtain ⟨k, rfl | rfl⟩ := Nat.even_or_odd' n <;> simp [pow_succ, pow_mul]
 
 lemma coe_negOnePow_natCast (n : ℕ) : negOnePow n = (-1 : ℤ) ^ n := cast_negOnePow_natCast ..
+
+/-- The cast of `negOnePow n` to a ring equals `(-1) ^ n.natAbs`. -/
+@[simp]
+lemma coe_negOnePow (R : Type*) [Ring R] (n : ℤ) :
+    (n.negOnePow : R) = (-1 : R) ^ n.natAbs := by
+  cases n with
+  | ofNat n => exact cast_negOnePow_natCast R n
+  | negSucc n => simp [negOnePow_def, Units.val_pow_eq_pow_val]
 
 end Int

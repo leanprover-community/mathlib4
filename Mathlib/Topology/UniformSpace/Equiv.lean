@@ -6,8 +6,6 @@ Anatole Dedecker
 -/
 module
 
-public import Mathlib.Logic.Equiv.Fin.Basic
-public import Mathlib.Topology.UniformSpace.UniformEmbedding
 public import Mathlib.Topology.UniformSpace.Pi
 
 /-!
@@ -20,7 +18,6 @@ directions uniformly continuous. We denote uniform isomorphisms with the notatio
 
 * `UniformEquiv α β`: The type of uniform isomorphisms from `α` to `β`.
   This type can be denoted using the following notation: `α ≃ᵤ β`.
-
 -/
 
 @[expose] public section
@@ -51,6 +48,7 @@ variable [UniformSpace α] [UniformSpace β] [UniformSpace γ] [UniformSpace δ]
 theorem toEquiv_injective : Function.Injective (toEquiv : α ≃ᵤ β → α ≃ β)
   | ⟨e, h₁, h₂⟩, ⟨e', h₁', h₂'⟩, h => by simpa only [mk.injEq]
 
+@[macro_inline]
 instance : EquivLike (α ≃ᵤ β) α β where
   coe h := h.toEquiv
   inv h := h.toEquiv.symm
@@ -167,8 +165,8 @@ def changeInv (f : α ≃ᵤ β) (g : β → α) (hg : Function.RightInverse g f
       _ = f.symm x := by rw [hg x]
   { toFun := f
     invFun := g
-    left_inv := by convert f.left_inv
-    right_inv := by convert f.right_inv using 1
+    left_inv := by convert! f.left_inv
+    right_inv := by convert! f.right_inv using 1
     uniformContinuous_toFun := f.uniformContinuous
     uniformContinuous_invFun := by convert f.symm.uniformContinuous }
 
@@ -189,16 +187,31 @@ theorem preimage_symm (h : α ≃ᵤ β) : preimage h.symm = image h :=
   (funext h.toEquiv.image_eq_preimage_symm).symm
 
 @[simp]
-theorem image_preimage (h : α ≃ᵤ β) (s : Set β) : h '' (h ⁻¹' s) = s :=
+theorem image_preimage (h : α ≃ᵤ β) (s : Set β) : h '' h ⁻¹' s = s :=
   h.toEquiv.image_preimage s
 
 @[simp]
-theorem preimage_image (h : α ≃ᵤ β) (s : Set α) : h ⁻¹' (h '' s) = s :=
+theorem preimage_image (h : α ≃ᵤ β) (s : Set α) : h ⁻¹' h '' s = s :=
   h.toEquiv.preimage_image s
 
 theorem isUniformInducing (h : α ≃ᵤ β) : IsUniformInducing h :=
   IsUniformInducing.of_comp h.uniformContinuous h.symm.uniformContinuous <| by
     simp only [symm_comp_self, IsUniformInducing.id]
+
+@[simp]
+theorem comp_uniformContinuous_iff (h : α ≃ᵤ β) {f : γ → α} :
+    UniformContinuous (h ∘ f) ↔ UniformContinuous f :=
+  h.isUniformInducing.uniformContinuous_iff.symm
+
+@[simp]
+theorem comp_uniformContinuous_iff' (h : α ≃ᵤ β) {f : β → γ} :
+    UniformContinuous (f ∘ h) ↔ UniformContinuous f :=
+  ⟨fun hf ↦ by simpa [Function.comp_assoc, self_comp_symm] using hf.comp h.uniformContinuous_symm,
+    fun hf ↦ hf.comp h.uniformContinuous⟩
+
+theorem comp_uniformContinuousOn_iff (h : α ≃ᵤ β) (f : γ → α) (s : Set γ) :
+    UniformContinuousOn (h ∘ f) s ↔ UniformContinuousOn f s :=
+  h.isUniformInducing.uniformContinuousOn_iff.symm
 
 theorem comap_eq (h : α ≃ᵤ β) : UniformSpace.comap h ‹_› = ‹_› :=
   h.isUniformInducing.comap_uniformSpace
@@ -215,14 +228,14 @@ noncomputable def ofIsUniformEmbedding (f : α → β) (hf : IsUniformEmbedding 
   uniformContinuous_invFun := by
     rw [hf.isUniformInducing.uniformContinuous_iff, Equiv.invFun_as_coe,
       Equiv.self_comp_ofInjective_symm]
-    exact uniformContinuous_subtype_val
+    exact uniformContinuous_subtypeVal
   toEquiv := Equiv.ofInjective f hf.injective
 
 /-- If two sets are equal, then they are uniformly equivalent. -/
 def setCongr {s t : Set α} (h : s = t) : s ≃ᵤ t where
-  uniformContinuous_toFun := uniformContinuous_subtype_val.subtype_mk _
-  uniformContinuous_invFun := uniformContinuous_subtype_val.subtype_mk _
-  toEquiv := Equiv.setCongr h
+  uniformContinuous_toFun := uniformContinuous_subtypeVal.subtype_mk _
+  uniformContinuous_invFun := uniformContinuous_subtypeVal.subtype_mk _
+  toEquiv := Set.equivOfEq h
 
 /-- Product of two uniform isomorphisms. -/
 def prodCongr (h₁ : α ≃ᵤ β) (h₂ : γ ≃ᵤ δ) : α × γ ≃ᵤ β × δ where
@@ -261,6 +274,9 @@ theorem prodComm_symm : (prodComm α β).symm = prodComm β α :=
 theorem coe_prodComm : ⇑(prodComm α β) = Prod.swap :=
   rfl
 
+@[simp]
+theorem prodComm_trans_prodComm : (prodComm α β).trans (prodComm β α) = .refl _ := rfl
+
 /-- `(α × β) × γ` is uniformly isomorphic to `α × (β × γ)`. -/
 def prodAssoc : (α × β) × γ ≃ᵤ α × β × γ where
   uniformContinuous_toFun :=
@@ -273,14 +289,14 @@ def prodAssoc : (α × β) × γ ≃ᵤ α × β × γ where
 
 /-- `α × {*}` is uniformly isomorphic to `α`. -/
 @[simps! -fullyApplied apply]
-def prodPunit : α × PUnit ≃ᵤ α where
+def prodPUnit : α × PUnit ≃ᵤ α where
   toEquiv := Equiv.prodPUnit α
   uniformContinuous_toFun := uniformContinuous_fst
   uniformContinuous_invFun := uniformContinuous_id.prodMk uniformContinuous_const
 
 /-- `{*} × α` is uniformly isomorphic to `α`. -/
 def punitProd : PUnit × α ≃ᵤ α :=
-  (prodComm _ _).trans (prodPunit _)
+  (prodComm _ _).trans (prodPUnit _)
 
 @[simp]
 theorem coe_punitProd : ⇑(punitProd α) = Prod.snd :=
@@ -350,6 +366,24 @@ def ulift : ULift.{v, u} α ≃ᵤ α :=
       simp_rw [hf.uniformContinuous_iff]
       exact uniformContinuous_id }
 
+variable {α} in
+/-- `MulOpposite.op` as a uniform equivalence. -/
+@[to_additive (attr := simps! apply symm_apply toEquiv)
+/-- `AddOpposite.op` as a uniform equivalence. -/]
+def _root_.MulOpposite.opUniformEquiv : α ≃ᵤ αᵐᵒᵖ where
+  toEquiv := MulOpposite.opEquiv
+  uniformContinuous_toFun := MulOpposite.uniformContinuous_op
+  uniformContinuous_invFun := MulOpposite.uniformContinuous_unop
+
+variable {α} in
+@[to_additive (attr := simp)]
+theorem _root_.completeSpace_mulOpposite_iff : CompleteSpace αᵐᵒᵖ ↔ CompleteSpace α :=
+  MulOpposite.opUniformEquiv.symm.completeSpace_iff
+
+@[to_additive]
+instance _root_.CompleteSpace.mulOpposite [CompleteSpace α] : CompleteSpace αᵐᵒᵖ :=
+  completeSpace_mulOpposite_iff.2 ‹CompleteSpace α›
+
 end
 
 /-- If `ι` has a unique element, then `ι → α` is uniformly isomorphic to `α`. -/
@@ -375,9 +409,9 @@ def finTwoArrow (α : Type*) [UniformSpace α] : (Fin 2 → α) ≃ᵤ α × α 
 /-- A subset of a uniform space is uniformly isomorphic to its image under a uniform isomorphism.
 -/
 def image (e : α ≃ᵤ β) (s : Set α) : s ≃ᵤ e '' s where
-  uniformContinuous_toFun := (e.uniformContinuous.comp uniformContinuous_subtype_val).subtype_mk _
+  uniformContinuous_toFun := (e.uniformContinuous.comp uniformContinuous_subtypeVal).subtype_mk _
   uniformContinuous_invFun :=
-    (e.symm.uniformContinuous.comp uniformContinuous_subtype_val).subtype_mk _
+    (e.symm.uniformContinuous.comp uniformContinuous_subtypeVal).subtype_mk _
   toEquiv := e.toEquiv.image s
 
 /-- A uniform isomorphism `e : α ≃ᵤ β` lifts to subtypes `{ a : α // p a } ≃ᵤ { b : β // q b }`

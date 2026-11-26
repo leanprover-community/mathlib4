@@ -10,9 +10,11 @@ public import Mathlib.Order.Ideal
 
 /-!
 # Partial Isomorphisms
+
 This file defines partial isomorphisms between first-order structures.
 
 ## Main Definitions
+
 - `FirstOrder.Language.PartialEquiv` is defined so that `L.PartialEquiv M N`, annotated
   `M ≃ₚ[L] N`, is the type of equivalences between substructures of `M` and `N`. These can be
   ordered, with an order that is defined here in terms of a commutative square, but could also be
@@ -25,15 +27,15 @@ This file defines partial isomorphisms between first-order structures.
   element `m : M` in its domain.
 
 ## Main Results
+
 - `FirstOrder.Language.embedding_from_cg` shows that if structures `M` and `N` form an equivalence
   pair with `M` countably-generated, then any finite-generated partial equivalence between them
   can be extended to an embedding `M ↪[L] N`.
-- `FirstOrder.Language.equiv_from_cg` shows that if countably-generated structures `M` and `N` form
-  an equivalence pair in both directions, then any finite-generated partial equivalence between them
-  can be extended to an isomorphism `M ↪[L] N`.
+- `FirstOrder.Language.equiv_between_cg` shows that if countably-generated structures `M` and `N`
+  form an equivalence pair in both directions, then any finite-generated partial equivalence between
+  them can be extended to an isomorphism `M ≃[L] N`.
 - The proofs of these results are adapted in part from David Wärn's approach to countable dense
   linear orders, a special case of this phenomenon in the case where `L = Language.order`.
-
 -/
 
 @[expose] public section
@@ -152,7 +154,7 @@ private theorem le_antisymm (f g : M ≃ₚ[L] N) (le_fg : f ≤ g) (le_gf : g �
   let ⟨dom_f, cod_f, equiv_f⟩ := f
   cases _root_.le_antisymm (dom_le_dom le_fg) (dom_le_dom le_gf)
   cases _root_.le_antisymm (cod_le_cod le_fg) (cod_le_cod le_gf)
-  convert rfl
+  convert! rfl
   exact Equiv.injective_toEmbedding ((subtype _).comp_injective (subtype_toEquiv_inclusion le_fg))
 
 instance : PartialOrder (M ≃ₚ[L] N) where
@@ -160,6 +162,7 @@ instance : PartialOrder (M ≃ₚ[L] N) where
   le_trans := le_trans
   le_antisymm := private le_antisymm
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[gcongr] lemma symm_le_symm {f g : M ≃ₚ[L] N} (hfg : f ≤ g) : f.symm ≤ g.symm := by
   rw [le_iff]
   refine ⟨cod_le_cod hfg, dom_le_dom hfg, ?_⟩
@@ -344,6 +347,7 @@ theorem dom_partialEquivLimit : (partialEquivLimit S).dom = iSup (fun x ↦ (S x
 @[simp]
 theorem cod_partialEquivLimit : (partialEquivLimit S).cod = iSup (fun x ↦ (S x).cod) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma partialEquivLimit_comp_inclusion {i : ι} :
     (partialEquivLimit S).toEquiv.toEmbedding.comp (Substructure.inclusion (le_iSup _ i)) =
@@ -352,6 +356,7 @@ lemma partialEquivLimit_comp_inclusion {i : ι} :
   rw [Equiv_isup_symm_inclusion]
   congr
 
+set_option backward.isDefEq.respectTransparency false in
 theorem le_partialEquivLimit (i : ι) : S i ≤ partialEquivLimit S :=
   ⟨le_iSup (f := fun i ↦ (S i).dom) _, by
     #adaptation_note /-- https://github.com/leanprover/lean4/pull/5020
@@ -364,7 +369,7 @@ end DirectLimit
 
 section FGEquiv
 
-open PartialEquiv Set DirectLimit
+open PartialEquiv Set Language.DirectLimit
 
 variable (M) (N) (L)
 
@@ -373,7 +378,7 @@ abbrev FGEquiv := {f : M ≃ₚ[L] N // f.dom.FG}
 
 /-- Two structures `M` and `N` form an extension pair if the domain of any finitely-generated map
 from `M` to `N` can be extended to include any element of `M`. -/
-def IsExtensionPair : Prop := ∀ (f : L.FGEquiv M N) (m : M), ∃ g, m ∈ g.1.dom ∧ f ≤ g
+def IsExtensionPair : Prop := ∀ (f : L.FGEquiv M N) (m : M), ∃ g, m ∈ g.val.dom ∧ f ≤ g
 
 variable {M N L}
 
@@ -398,8 +403,7 @@ instance inhabited_self_FGEquiv : Inhabited (L.FGEquiv M M) :=
   ⟨⟨⟨⊥, ⊥, Equiv.refl L (⊥ : L.Substructure M)⟩, fg_bot⟩⟩
 
 instance inhabited_FGEquiv_of_IsEmpty_Constants_and_Relations
-    [IsEmpty L.Constants] [IsEmpty (L.Relations 0)] [L.Structure N] :
-    Inhabited (L.FGEquiv M N) :=
+    [IsEmpty L.Constants] [IsEmpty (L.Relations 0)] : Inhabited (L.FGEquiv M N) :=
   ⟨⟨⟨⊥, ⊥, {
       toFun := isEmptyElim
       invFun := isEmptyElim
@@ -415,10 +419,11 @@ instance inhabited_FGEquiv_of_IsEmpty_Constants_and_Relations
 
 /-- Maps to the symmetric finitely-generated partial equivalence. -/
 @[simps]
-def FGEquiv.symm (f : L.FGEquiv M N) : L.FGEquiv N M := ⟨f.1.symm, f.1.dom_fg_iff_cod_fg.1 f.2⟩
+def FGEquiv.symm (f : L.FGEquiv M N) : L.FGEquiv N M :=
+  ⟨f.val.symm, f.val.dom_fg_iff_cod_fg.1 f.property⟩
 
 lemma isExtensionPair_iff_cod : L.IsExtensionPair M N ↔
-    ∀ (f : L.FGEquiv N M) (m : M), ∃ g, m ∈ g.1.cod ∧ f ≤ g := by
+    ∀ (f : L.FGEquiv N M) (m : M), ∃ g, m ∈ g.val.cod ∧ f ≤ g := by
   refine Iff.intro ?_ ?_ <;>
   · intro h f m
     obtain ⟨g, h1, h2⟩ := h f.symm m
@@ -438,7 +443,7 @@ theorem isExtensionPair_iff_exists_embedding_closure_singleton_sup :
         and_self]
     · ext ⟨x, hx⟩
       rw [Embedding.subtype_equivRange] at ff'2
-      simp only [← ff'2, Embedding.comp_apply, Substructure.coe_inclusion, inclusion_mk,
+      simp only [← ff'2, Embedding.comp_apply, Substructure.coe_inclusion,
         Equiv.coe_toEmbedding, coe_subtype, PartialEquiv.toEmbedding_apply]
   · obtain ⟨f', eq_f'⟩ := h f.dom f_FG f.toEmbedding m
     refine ⟨⟨⟨closure L {m} ⊔ f.dom, f'.toHom.range, f'.equivRange⟩,
@@ -488,7 +493,7 @@ theorem embedding_from_cg (M_cg : Structure.CG L M) (g : L.FGEquiv M N)
       (le_partialEquivLimit S (Encodable.encode (⟨x, hx⟩ : X) + 1)) this
   have isTop : F.dom = ⊤ := by rwa [← top_le_iff, ← X_gen, Substructure.closure_le]
   exact ⟨toEmbeddingOfEqTop isTop,
-        by convert (le_partialEquivLimit S 0); apply Embedding.toPartialEquiv_toEmbedding⟩
+        by convert! (le_partialEquivLimit S 0); apply Embedding.toPartialEquiv_toEmbedding⟩
 
 /-- For two countably generated structure `M` and `N`, if any PartialEquiv
 between finitely generated substructures can be extended to any element in the domain and to
@@ -523,7 +528,7 @@ theorem equiv_between_cg (M_cg : Structure.CG L M) (N_cg : Structure.CG L N)
   have dom_top : F.dom = ⊤ := by rwa [← top_le_iff, ← X_gen, Substructure.closure_le]
   have cod_top : F.cod = ⊤ := by rwa [← top_le_iff, ← Y_gen, Substructure.closure_le]
   refine ⟨toEquivOfEqTop dom_top cod_top, ?_⟩
-  convert le_partialEquivLimit S 0
+  convert! le_partialEquivLimit S 0
   rw [toEquivOfEqTop_toEmbedding]
   apply Embedding.toPartialEquiv_toEmbedding
 

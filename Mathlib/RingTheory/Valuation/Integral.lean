@@ -8,13 +8,16 @@ module
 public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
 public import Mathlib.RingTheory.Valuation.ValuationRing
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integral elements over the ring of integers of a valuation
 
 The ring of integers is integrally closed inside the original ring.
 -/
 
-@[expose] public section
+public section
 
 
 universe u v w
@@ -60,7 +63,7 @@ theorem mem_of_integral {x : R} (hx : IsIntegral O x) : x ∈ v.integer :=
 
 protected theorem integralClosure : integralClosure O R = ⊥ :=
   bot_unique fun _ hr =>
-    let ⟨x, hx⟩ := hv.3 (hv.mem_of_integral hr)
+    let ⟨x, hx⟩ := hv.exists_of_le_one (hv.mem_of_integral hr)
     Algebra.mem_bot.2 ⟨x, hx⟩
 
 end CommRing
@@ -77,8 +80,6 @@ theorem isIntegrallyClosed : IsIntegrallyClosed O := by
   have : IsFractionRing O K := hv.isFractionRing
   exact
     (IsIntegrallyClosed.integralClosure_eq_bot_iff K).mp (Valuation.Integers.integralClosure hv)
-
-@[deprecated (since := "2025-09-04")] alias integrallyClosed := isIntegrallyClosed
 
 instance isIntegrallyClosed_integers (v : Valuation K Γ₀) :
     IsIntegrallyClosed v.integer :=

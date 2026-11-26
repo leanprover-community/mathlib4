@@ -7,6 +7,10 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Analysis.Normed.Lp.PiLp
+public import Mathlib.LinearAlgebra.Determinant
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Matrices are isomorphic with linear maps between Lp spaces
@@ -75,7 +79,7 @@ theorem toLpLin_symm_comp [Fintype o] [DecidableEq o]
 /-- `Matrix.toLinAlgEquiv'` adapted for `PiLp R _`. -/
 @[simps!]
 def toLpLinAlgEquiv : Matrix n n R ≃ₐ[R] Module.End R (WithLp p (n → R)) :=
-  .ofLinearEquiv (toLpLin p p) (toLpLin_one p) (toLpLin_mul p p p)
+  .ofLinearEquiv (toLpLin p p) (toLpLin_mul p p p)
 
 @[simp]
 theorem toLpLin_pow (A : Matrix n n R) (k : ℕ) : toLpLin p p (A ^ k) = toLpLin p p A ^ k :=
@@ -87,3 +91,8 @@ theorem toLpLin_symm_pow (A : Module.End R (WithLp p (n → R))) (k : ℕ) :
   map_pow (toLpLinAlgEquiv p).symm A k
 
 end Matrix
+
+@[simp]
+theorem LinearMap.det_toLpLin {ι R : Type*} [Fintype ι] [DecidableEq ι] [CommRing R] (p : ℝ≥0∞)
+    (m : Matrix ι ι R) : (m.toLpLin p p).det = m.det := by
+  simp [Matrix.toLpLin_eq_toLin]

@@ -8,17 +8,18 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.Projective
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # HasExt instance for Module Category
 
 If we assume `Small.{v} R`, the category `ModuleCat.{v} R` has enough projectives, which allows to
 introduce the instance `HasExt.{v} (ModuleCat.{v} R)`. As a result, `Ext`-groups in this category
 of modules are defined and belong to `Type v`.
-
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

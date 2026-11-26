@@ -7,8 +7,11 @@ module
 
 public import Mathlib.CategoryTheory.Adjunction.Basic
 public import Mathlib.CategoryTheory.HomCongr
-/-!
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
 # Restricting adjunctions
 
 `Adjunction.restrictFullyFaithful` shows that an adjunction can be restricted along fully faithful
@@ -77,7 +80,7 @@ lemma restrictFullyFaithful_homEquiv_apply {X : C} {Y : D} (f : L.obj X ⟶ Y) :
         R'.map (iD.map f) ≫ comm2.hom.app Y) := by
   -- This proof was just `simp [restrictFullyFaithful]` before https://github.com/leanprover-community/mathlib4/pull/16317
   apply hiC.map_injective
-  simp only [homEquiv_apply, Functor.comp_obj, Functor.map_comp, map_restrictFullyFaithful_unit_app,
+  simp only [homEquiv_apply, Functor.map_comp, map_restrictFullyFaithful_unit_app,
     Functor.id_obj, assoc, Functor.FullyFaithful.map_preimage]
   congr 2
   exact (comm2.hom.naturality _).symm

@@ -9,7 +9,6 @@ public import Mathlib.Data.ENat.Lattice
 public import Mathlib.Data.Set.Card
 
 /-!
-
 # Maximal length of chains
 
 This file contains lemmas to work with the maximal lengths of chains of arbitrary relations. See
@@ -26,7 +25,6 @@ This file contains lemmas to work with the maximal lengths of chains of arbitrar
 - `Set.chainHeight_mono`: If `s ⊆ t` then `s.chainHeight ≤ t.chainHeight`.
 - `Set.chainHeight_eq_of_relEmbedding`: If `f` is an relation embedding, then
   `(f '' s).chainHeight = s.chainHeight`.
-
 -/
 
 @[expose] public section
@@ -58,8 +56,9 @@ theorem exists_isChain_of_le_chainHeight {r} {s : Set α} (n : ℕ) (h : n ≤ s
   · exact ⟨∅, by simp [h']⟩
   · obtain ⟨t, ht₁, ht₂, ht₃⟩ : ∃ t ⊆ s, IsChain r t ∧ n ≤ t.encard := by
       contrapose! h
-      refine iSup_lt_iff.mpr ⟨n - 1, ?_, fun m ↦ ENat.le_sub_one_of_lt <| h m.1 m.2.1 m.2.2⟩
-      exact_mod_cast Nat.sub_one_lt h'
+      refine iSup_lt_iff.mpr
+        ⟨n - 1, ?_, fun m ↦ ENat.le_sub_one_of_lt <| h m.val m.property.1 m.property.2⟩
+      exact mod_cast Nat.sub_one_lt h'
     obtain ⟨u, hu₁, hu₂⟩ := exists_subset_encard_eq ht₃
     exact ⟨u, hu₁.trans ht₁, hu₂, ht₂.mono hu₁⟩
 
@@ -67,7 +66,7 @@ theorem exists_eq_chainHeight_of_chainHeight_ne_top (h : s.chainHeight r ≠ ⊤
     ∃ t ⊆ s, t.encard = s.chainHeight r ∧ IsChain r t := by
   have : Nonempty { t // t ⊆ s ∧ IsChain r t } := ⟨∅, by simp⟩
   obtain ⟨t, ht⟩ := exists_eq_iSup_of_lt_top (by rwa [← chainHeight_eq_iSup, lt_top_iff_ne_top])
-  exact ⟨t.1, t.2.1, ht, t.2.2⟩
+  exact ⟨t.val, t.property.1, ht, t.property.2⟩
 
 theorem exists_eq_chainHeight_of_finite (h : s.Finite) :
      ∃ t ⊆ s, t.encard = s.chainHeight r ∧ IsChain r t :=
@@ -88,7 +87,7 @@ theorem finite_of_chainHeight_ne_top {r} {s : Set α} (hc : IsChain r s) (h : s.
 
 theorem not_isChain_of_chainHeight_lt_encard (s t : Set α) (ht : t ⊆ s)
     (he : s.chainHeight r < t.encard) : ¬ IsChain r t := by
-  by_contra! hh
+  by_contra hh
   grw [encard_le_chainHeight_of_isChain _ _ ht hh] at he
   exact (lt_self_iff_false _).mp he
 
@@ -96,10 +95,10 @@ theorem chainHeight_eq_top_iff :
     s.chainHeight r = ⊤ ↔ ∀ n : ℕ, ∃ t ⊆ s, t.encard = n ∧ IsChain r t := by
   refine ⟨fun h _ ↦ exists_isChain_of_le_chainHeight _ (le_top.trans_eq h.symm), fun h ↦ ?_⟩
   contrapose! h
-  obtain ⟨n, hn⟩ := WithTop.ne_top_iff_exists.1 h
+  obtain ⟨n, hn⟩ := ENat.ne_top_iff_exists.mp h
   refine ⟨n + 1, fun l hl he ↦ not_isChain_of_chainHeight_lt_encard r s l hl ?_⟩
-  rw [← hn, some_eq_coe, he, Nat.cast_lt]
-  exact lt_add_one _
+  rw [← hn, he]
+  exact mod_cast lt_add_one _
 
 @[simp]
 theorem chainHeight_eq_zero_iff : s.chainHeight r = 0 ↔ s = ∅ := by
@@ -119,13 +118,13 @@ theorem one_le_chainHeight_iff : 1 ≤ s.chainHeight r ↔ s.Nonempty := by
   all_goals
   · intros
     by_contra! hh
-    simp_all [lt_one_iff_eq_zero]
+    simp_all
 
 @[simp]
 theorem chainHeight_of_isEmpty [IsEmpty α] : s.chainHeight r = 0 :=
   chainHeight_eq_zero_iff s r |>.mpr (Subsingleton.elim _ _)
 
-@[mono]
+@[gcongr, mono]
 theorem chainHeight_mono (s t : Set α) (h : s ⊆ t) : s.chainHeight r ≤ t.chainHeight r := by
   refine forall_natCast_le_iff_le.mp fun n hn ↦ ?_
   obtain ⟨a, ha₁, ha₂, ha₃⟩ := exists_isChain_of_le_chainHeight n hn
@@ -152,7 +151,7 @@ theorem chainHeight_eq_of_relEmbedding (e : r ↪r r') :
       ha₃.preimage_relEmbedding e
   · obtain ⟨a, ha₁, ha₂, ha₃⟩ := exists_isChain_of_le_chainHeight n hn
     rw [← ha₂, ← e.injective.encard_image]
-    exact encard_le_chainHeight_of_isChain _ _ (by grind) <| ha₃.image_relEmbedding e
+    exact encard_le_chainHeight_of_isChain _ _ (by grind) <| ha₃.image e
 
 theorem chainHeight_eq_of_relIso (e : r ≃r r') : (e '' s).chainHeight r' = s.chainHeight r :=
   chainHeight_eq_of_relEmbedding s e.toRelEmbedding

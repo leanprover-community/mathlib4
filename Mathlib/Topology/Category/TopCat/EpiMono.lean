@@ -6,7 +6,11 @@ Authors: Reid Barton
 module
 
 public import Mathlib.Topology.Category.TopCat.Adjunctions
-public import Mathlib.CategoryTheory.Functor.EpiMono
+
+import Mathlib.CategoryTheory.Functor.EpiMono
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Epi- and monomorphisms in `Top`
@@ -29,11 +33,10 @@ namespace TopCat
 
 theorem epi_iff_surjective {X Y : TopCat.{u}} (f : X ⟶ Y) : Epi f ↔ Function.Surjective f := by
   suffices Epi f ↔ Epi ((forget TopCat).map f) by
-    rw [this, CategoryTheory.epi_iff_surjective]
-    rfl
+    rw [this, CategoryTheory.ofHom_epi_iff_surjective]
   constructor
   · intro
-    infer_instance
+    apply Functor.map_epi -- was `infer_instance`
   · apply Functor.epi_of_epi_map
 
 theorem mono_iff_injective {X Y : TopCat.{u}} (f : X ⟶ Y) : Mono f ↔ Function.Injective f := by
@@ -42,7 +45,7 @@ theorem mono_iff_injective {X Y : TopCat.{u}} (f : X ⟶ Y) : Mono f ↔ Functio
     rfl
   constructor
   · intro
-    infer_instance
+    apply Functor.map_mono -- was `infer_instance`
   · apply Functor.mono_of_mono_map
 
 end TopCat

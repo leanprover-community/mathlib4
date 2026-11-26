@@ -5,10 +5,13 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 -/
 module
 
-public import Mathlib.RingTheory.Localization.FractionRing
-public import Mathlib.RingTheory.Localization.Ideal
-public import Mathlib.RingTheory.Noetherian.Defs
 public import Mathlib.RingTheory.EssentialFiniteness
+public import Mathlib.RingTheory.Localization.Ideal
+
+import Mathlib.RingTheory.Localization.FractionRing
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Submodules in localizations of commutative rings
@@ -18,6 +21,7 @@ public import Mathlib.RingTheory.EssentialFiniteness
 See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
 
 ## Tags
+
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
 -/
@@ -89,22 +93,22 @@ instance {R} [CommRing R] [IsNoetherianRing R] (S : Submonoid R) :
 
 lemma _root_.Algebra.EssFiniteType.isNoetherianRing
     (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
-    [Algebra.EssFiniteType R S] [IsNoetherianRing R] : IsNoetherianRing S := by
-  exact IsLocalization.isNoetherianRing (Algebra.EssFiniteType.submonoid R S) _
+    [Algebra.EssFiniteType R S] [IsNoetherianRing R] : IsNoetherianRing S :=
+  IsLocalization.isNoetherianRing (Algebra.EssFiniteType.submonoid R S) _
     (Algebra.FiniteType.isNoetherianRing R _)
 section NonZeroDivisors
 
 variable {R : Type*} [CommRing R] {M : Submonoid R}
   {S : Type*} [CommRing S] [Algebra R S] [IsLocalization M S]
 
-@[mono]
+@[gcongr, mono]
 theorem coeSubmodule_le_coeSubmodule (h : M ≤ nonZeroDivisors R) {I J : Ideal R} :
     coeSubmodule S I ≤ coeSubmodule S J ↔ I ≤ J :=
   -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to specify the value of `f` here:
   Submodule.map_le_map_iff_of_injective (f := Algebra.linearMap R S) (IsLocalization.injective _ h)
     _ _
 
-@[mono]
+@[gcongr, mono]
 theorem coeSubmodule_strictMono (h : M ≤ nonZeroDivisors R) :
     StrictMono (coeSubmodule S : Ideal R → Submodule R S) :=
   strictMono_of_le_iff_le fun _ _ => (coeSubmodule_le_coeSubmodule h).symm
@@ -179,12 +183,12 @@ section CommRing
 
 variable [CommRing R] [CommRing K] [Algebra R K] [IsFractionRing R K]
 
-@[simp, mono]
+@[simp, mono, gcongr]
 theorem coeSubmodule_le_coeSubmodule {I J : Ideal R} :
     coeSubmodule K I ≤ coeSubmodule K J ↔ I ≤ J :=
   IsLocalization.coeSubmodule_le_coeSubmodule le_rfl
 
-@[mono]
+@[gcongr, mono]
 theorem coeSubmodule_strictMono : StrictMono (coeSubmodule K : Ideal R → Submodule R K) :=
   strictMono_of_le_iff_le fun _ _ => coeSubmodule_le_coeSubmodule.symm
 

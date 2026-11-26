@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Equiv.Basic
 public import Mathlib.Algebra.Group.Units.Hom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Multiplicative and additive equivalence acting on units.
 -/
@@ -28,7 +31,7 @@ def toUnits [Group G] : G ≃* Gˣ where
 
 @[to_additive (attr := simp)]
 lemma toUnits_val_apply {G : Type*} [Group G] (x : Gˣ) : toUnits (x : G) = x := by
-  simp_rw [MulEquiv.apply_eq_iff_symm_apply, toUnits_symm_apply]
+  simp_rw [← MulEquiv.eq_symm_apply, toUnits_symm_apply]
 
 namespace Units
 
@@ -36,17 +39,19 @@ variable [Monoid M] [Monoid N]
 
 /-- A multiplicative equivalence of monoids defines a multiplicative equivalence
 of their groups of units. -/
+@[to_additive /-- An additive equivalence of additive monoids defines an additive equivalence
+of their groups of additive units. -/]
 def mapEquiv (h : M ≃* N) : Mˣ ≃* Nˣ :=
   { map h.toMonoidHom with
     invFun := map h.symm.toMonoidHom,
     left_inv := fun u => ext <| h.left_inv u,
     right_inv := fun u => ext <| h.right_inv u }
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem mapEquiv_symm (h : M ≃* N) : (mapEquiv h).symm = mapEquiv h.symm :=
   rfl
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem coe_mapEquiv (h : M ≃* N) (x : Mˣ) : (mapEquiv h x : N) = h x :=
   rfl
 

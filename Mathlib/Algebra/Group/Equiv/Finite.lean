@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Data.Fintype.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite types with addition/multiplications
 
@@ -19,17 +22,15 @@ addition/multiplication operator.
 * `Fintype.decidableEqMulEquivFintype`: `MulEquiv`s on finite types have decidable equality
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero MulAction
 
 open Function
 
-open Nat
-
 universe u v
 
-variable {α β γ : Type*}
+variable {α β : Type*}
 
 namespace Fintype
 

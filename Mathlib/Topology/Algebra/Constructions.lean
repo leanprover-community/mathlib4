@@ -5,15 +5,17 @@ Authors: Nicolò Cavalleri
 -/
 module
 
-public import Mathlib.Topology.Separation.Hausdorff
 public import Mathlib.Topology.Homeomorph.Lemmas
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Topological space structure on the opposite monoid and on the units group
 
 In this file we define `TopologicalSpace` structure on `Mᵐᵒᵖ`, `Mᵃᵒᵖ`, `Mˣ`, and `AddUnits M`.
 This file does not import definitions of a topological monoid and/or a continuous multiplicative
-action, so we postpone the proofs of `HasContinuousMul Mᵐᵒᵖ` etc. till we have these definitions.
+action, so we postpone the proofs of `ContinuousMul Mᵐᵒᵖ` etc. till we have these definitions.
 
 ## Tags
 
@@ -45,12 +47,11 @@ theorem continuous_unop : Continuous (unop : Mᵐᵒᵖ → M) :=
 theorem continuous_op : Continuous (op : M → Mᵐᵒᵖ) :=
   continuous_induced_rng.2 continuous_id
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `MulOpposite.op` as a homeomorphism. -/
 @[to_additive (attr := simps!) /-- `AddOpposite.op` as a homeomorphism. -/]
 def opHomeomorph : M ≃ₜ Mᵐᵒᵖ where
   toEquiv := opEquiv
-  continuous_toFun := continuous_op
-  continuous_invFun := continuous_unop
 
 @[to_additive]
 instance instT2Space [T2Space M] : T2Space Mᵐᵒᵖ := opHomeomorph.t2Space
@@ -120,7 +121,7 @@ instance instDiscreteTopology [DiscreteTopology M] : DiscreteTopology Mˣ :=
 @[to_additive] lemma topology_eq_inf :
     instTopologicalSpaceUnits =
       .induced (val : Mˣ → M) ‹_› ⊓ .induced (fun u ↦ ↑u⁻¹ : Mˣ → M) ‹_› := by
-  simp only [isInducing_embedProduct.1, instTopologicalSpaceProd, induced_inf,
+  simp only [isInducing_embedProduct.eq_induced, instTopologicalSpaceProd, induced_inf,
     instTopologicalSpaceMulOpposite, induced_compose]; rfl
 
 /-- An auxiliary lemma that can be used to prove that coercion `Mˣ → M` is a topological embedding.
@@ -128,7 +129,7 @@ Use `Units.isEmbedding_val₀`, `Units.isEmbedding_val`, or `toUnits_homeomorph`
 @[to_additive /-- An auxiliary lemma that can be used to prove that coercion `AddUnits M → M` is a
 topological embedding. Use `AddUnits.isEmbedding_val` or `toAddUnits_homeomorph` instead. -/]
 lemma isEmbedding_val_mk' {M : Type*} [Monoid M] [TopologicalSpace M] {f : M → M}
-    (hc : ContinuousOn f {x : M | IsUnit x}) (hf : ∀ u : Mˣ, f u.1 = ↑u⁻¹) :
+    (hc : ContinuousOn f {x : M | IsUnit x}) (hf : ∀ u : Mˣ, f u.val = ↑u⁻¹) :
     IsEmbedding (val : Mˣ → M) := by
   refine ⟨⟨?_⟩, val_injective⟩
   rw [topology_eq_inf, inf_eq_left, ← continuous_iff_le_induced,
@@ -179,5 +180,19 @@ lemma isOpenMap_map {f : M →* N} (hf_inj : Function.Injective f) (hf : IsOpenM
   refine ⟨fun ⟨a, b, h, ha, hb⟩ ↦ ⟨⟨a, b, hf_inj ?_, hf_inj ?_⟩, ?_⟩,
     fun ⟨x, hxV, hx⟩ ↦ ⟨x, x.inv, by simp [hxV, ← hx]⟩⟩
   all_goals simp_all
+
+@[to_additive]
+lemma _root_.Topology.IsInducing.units_map {f : M →* N} (hf : IsInducing f) :
+    IsInducing (map f) := by
+  refine .of_comp (continuous_map hf.continuous) continuous_embedProduct ?_
+  exact hf.prodMap (opHomeomorph.isInducing.comp <| hf.comp opHomeomorph.symm.isInducing)
+    |>.comp isInducing_embedProduct
+
+@[to_additive]
+lemma _root_.Topology.IsEmbedding.units_map {f : M →* N} (hf : IsEmbedding f) :
+    IsEmbedding (map f) := by
+  refine .of_comp (continuous_map hf.continuous) continuous_embedProduct ?_
+  exact hf.prodMap (opHomeomorph.isEmbedding.comp <| hf.comp opHomeomorph.symm.isEmbedding)
+    |>.comp isEmbedding_embedProduct
 
 end Units

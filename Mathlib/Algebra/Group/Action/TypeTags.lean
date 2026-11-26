@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Action.Defs
 public import Mathlib.Algebra.Group.TypeTags.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Additive and Multiplicative for group actions
 
@@ -16,13 +19,13 @@ public import Mathlib.Algebra.Group.TypeTags.Basic
 group action
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero MonoidHom
 
 open Function (Injective Surjective)
 
-variable {M α β γ : Type*}
+variable {α β γ : Type*}
 
 section
 

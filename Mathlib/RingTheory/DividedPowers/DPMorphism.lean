@@ -40,13 +40,13 @@ cohomology.
 ## References
 
 * [P. Berthelot, *Cohomologie cristalline des schémas de
-caractéristique $p$ > 0*][Berthelot-1974]
+  caractéristique $p$ > 0*][Berthelot-1974]
 
 * [P. Berthelot and A. Ogus, *Notes on crystalline
-cohomology*][BerthelotOgus-1978]
+  cohomology*][BerthelotOgus-1978]
 
 * [N. Roby, *Lois polynomes et lois formelles en théorie des
-modules*][Roby-1963]
+  modules*][Roby-1963]
 
 * [N. Roby, *Les algèbres à puissances dividées*][Roby-1965]
 -/
@@ -85,14 +85,14 @@ namespace IsDPMorphism
 variable {hI hJ} {C : Type*} [CommSemiring C] {K : Ideal C} (hK : DividedPowers K)
 
 theorem map_dpow {f : A →+* B} (hf : IsDPMorphism hI hJ f) {n : ℕ} {a : A} (ha : a ∈ I) :
-    f (hI.dpow n a) = hJ.dpow n (f a) := (hf.2 a ha).symm
+    f (hI.dpow n a) = hJ.dpow n (f a) := (hf.dpow_comp a ha).symm
 
 theorem comp {f : A →+* B} {g : B →+* C} (hg : IsDPMorphism hJ hK g) (hf : IsDPMorphism hI hJ f) :
     IsDPMorphism hI hK (g.comp f) := by
-  refine ⟨le_trans (map_map f g ▸ map_mono hf.1) hg.1, fun a ha ↦ ?_⟩
+  refine ⟨le_trans (map_map f g ▸ map_mono hf.ideal_comp) hg.ideal_comp, fun a ha ↦ ?_⟩
   simp only [RingHom.coe_comp, Function.comp_apply]
-  rw [← hf.2 a ha, hg.2]
-  exact hf.1 (mem_map_of_mem f ha)
+  rw [← hf.dpow_comp a ha, hg.dpow_comp]
+  exact hf.ideal_comp (mem_map_of_mem f ha)
 
 end IsDPMorphism
 
@@ -108,9 +108,10 @@ namespace DPMorphism
 variable {A B : Type*} [CommSemiring A] [CommSemiring B] {I : Ideal A} {J : Ideal B}
   (hI : DividedPowers I) (hJ : DividedPowers J)
 
+@[macro_inline]
 instance instFunLike : FunLike (DPMorphism hI hJ) A B where
   coe h := h.toRingHom
-  coe_injective' h h' hh' := by
+  coe_injective h h' hh' := by
     cases h; cases h'; congr
     dsimp at hh'; ext; rw [hh']
 
@@ -128,7 +129,7 @@ lemma isDPMorphism (f : DPMorphism hI hJ) : IsDPMorphism hI hJ f.toRingHom :=
 /-- A constructor for `DPMorphism` from a ring homomorphism `f : A →+* B` satisfying
   `IsDPMorphism hI hJ f`. -/
 def mk' {f : A →+* B} (hf : IsDPMorphism hI hJ f) : DPMorphism hI hJ :=
-  ⟨f, hf.1, hf.2⟩
+  ⟨f, hf.ideal_comp, hf.dpow_comp⟩
 
 variable (hI hJ)
 
@@ -139,7 +140,7 @@ set_option linter.style.whitespace false in -- manual alignment is not recognise
 def _root_.DividedPowers.ideal_from_ringHom {f : A →+* B} (hf : I.map f ≤ J) : Ideal A where
   carrier  := {x ∈ I | ∀ n : ℕ, f (hI.dpow n (x : A)) = hJ.dpow n (f (x : A))}
   add_mem' := fun hx hy ↦ by
-    simp only [mem_setOf_eq, map_add] at hx hy ⊢
+    simp only [mem_ofPred_eq, map_add] at hx hy ⊢
     refine ⟨I.add_mem hx.1 hy.1, fun n ↦ ?_⟩
     rw [hI.dpow_add hx.1 hy.1, map_sum,
       hJ.dpow_add (hf (mem_map_of_mem f hx.1)) (hf (mem_map_of_mem f hy.1))]
@@ -147,7 +148,7 @@ def _root_.DividedPowers.ideal_from_ringHom {f : A →+* B} (hf : I.map f ≤ J)
     ext k
     rw [map_mul, hx.2, hy.2]
   zero_mem' := by
-    simp only [mem_setOf_eq, Submodule.zero_mem, map_zero, true_and]
+    simp only [mem_ofPred_eq, Submodule.zero_mem, map_zero, true_and]
     intro n
     induction n with
     | zero => rw [hI.dpow_zero I.zero_mem, hJ.dpow_zero J.zero_mem, map_one]
@@ -208,9 +209,9 @@ theorem of_comp (f : A →+* B) (g : B →+* C) (heq : J = I.map f) (hf : IsDPMo
   apply on_span _ _ heq
   · rintro b ⟨a, ha, rfl⟩
     rw [← RingHom.comp_apply]
-    exact hh.1 (mem_map_of_mem _ ha)
+    exact hh.ideal_comp (mem_map_of_mem _ ha)
   · rintro n b ⟨a, ha, rfl⟩
-    rw [← RingHom.comp_apply, hh.2 a ha, RingHom.comp_apply, hf.2 a ha]
+    rw [← RingHom.comp_apply, hh.dpow_comp a ha, RingHom.comp_apply, hf.dpow_comp a ha]
 
 end IsDPMorphism
 
@@ -237,7 +238,7 @@ variable {A B : Type*} [CommSemiring A] [CommSemiring B] {I : Ideal A} {J : Idea
 theorem dpow_comp_from_gens {S : Set A} (hS : I = span S) (hS' : ∀ s ∈ S, f s ∈ J)
     (hdp : ∀ {n : ℕ}, ∀ a ∈ S, f (hI.dpow n a) = hJ.dpow n (f a)) :
     ∀ {n}, ∀ a ∈ I, hJ.dpow n (f a) = f (hI.dpow n a) :=
-  (IsDPMorphism.on_span hI hJ hS hS' hdp).2
+  (IsDPMorphism.on_span hI hJ hS hS' hdp).dpow_comp
 
 /-- If two divided power structures on the ideal `I` agree on a generating set, then they are
   equal.

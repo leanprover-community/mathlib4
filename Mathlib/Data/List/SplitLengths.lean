@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Order.MinMax
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Splitting a list to chunks of specified lengths
 
@@ -98,7 +101,7 @@ theorem splitLengths_length_getElem {α : Type*} (l : List α) (sz : List ℕ)
 
 theorem length_mem_splitLengths {α : Type*} (l : List α) (sz : List ℕ) (b : ℕ)
     (h : ∀ n ∈ sz, n ≤ b) : ∀ l₂ ∈ sz.splitLengths l, l₂.length ≤ b := by
-  rw [← List.forall_getElem]
+  rw [List.forall_mem_iff_forall_getElem]
   intro i hi
   have := length_splitLengths_getElem_le l sz (hi := hi)
   have := h (sz[i]'(by simpa using hi)) (getElem_mem ..)

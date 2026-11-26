@@ -5,26 +5,33 @@ Authors: Yuval Filmus
 -/
 module
 
-public import Mathlib.RingTheory.Polynomial.Chebyshev
-public import Mathlib.Data.Real.Basic
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-public import Mathlib.Algebra.Polynomial.Roots
 public import Mathlib.NumberTheory.Real.Irrational
+public import Mathlib.RingTheory.Polynomial.Chebyshev
+
 import Mathlib.Analysis.Calculus.Deriv.Polynomial
 import Mathlib.Analysis.SpecialFunctions.Arcosh
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Basic
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
 import Mathlib.NumberTheory.Niven
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Chebyshev polynomials over the reals: roots and extrema
 
 ## Main statements
 
-* T_n(x) ∈ [-1, 1] iff x ∈ [-1, 1]: `abs_eval_T_real_le_one_iff`
-* Zeroes of T and U: `roots_T_real`, `roots_U_real`
-* Local extrema of T: `isLocalExtr_T_real_iff`, `isExtrOn_T_real_iff`
-* Irrationality of zeroes of T other than zero: `irrational_of_isRoot_T_real`
+* `T_n(x) ∈ [-1, 1]` iff `x ∈ [-1, 1]`: `abs_eval_T_real_le_one_iff`
+* Zeroes of `T` and `U`: `roots_T_real`, `roots_U_real`
+* Local extrema of `T`: `isLocalExtr_T_real_iff`, `isExtrOn_T_real_iff`
+* Irrationality of zeroes of `T` other than zero: `irrational_of_isRoot_T_real`
+* `|T_n^{(k)} (x)| ≤ T_n^{(k)} (1)` for `x ∈ [-1, 1]`: `abs_iterate_derivative_T_real_le`
+
+## TODO
+
+Show that the bound on `T_n^{(k)} (x)` is achieved only at `x = ±1`
 -/
 
 public section
@@ -39,7 +46,15 @@ theorem eval_T_real_mem_Icc (n : ℤ) {x : ℝ} (hx : x ∈ Set.Icc (-1) 1) :
   grind [T_real_cos, cos_mem_Icc]
 
 theorem abs_eval_T_real_le_one (n : ℤ) {x : ℝ} (hx : |x| ≤ 1) :
-    |(T ℝ n).eval x| ≤ 1 := by grind [eval_T_real_mem_Icc]
+    |(T ℝ n).eval x| ≤ 1 := by
+  #adaptation_note /-- Before nightly-2026-04-07, this was just
+  `grind [eval_T_real_mem_Icc]`. `grind`'s e-matching now keeps the
+  `Polynomial.eval` produced by the lemma (which uses `instCommSemiring.toSemiring`)
+  and the `Polynomial.eval` propagated by abs unfolding (which uses `Real.semiring`)
+  as distinct atoms, even though they are `rfl`-equal, so the contradiction is
+  never found. -/
+  have h := eval_T_real_mem_Icc n (Set.mem_Icc.mpr (abs_le.mp hx))
+  exact abs_le.mpr (Set.mem_Icc.mp h)
 
 theorem one_le_eval_T_real (n : ℤ) {x : ℝ} (hx : 1 ≤ x) : 1 ≤ (T ℝ n).eval x := by
   rw [← cosh_arcosh hx]
@@ -97,7 +112,7 @@ theorem abs_eval_T_real_eq_one_iff {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
       gcongr
       exact div_le_one_of_le₀ (arccos_le_pi x) (by positivity)
     refine ⟨k, by simpa using hkn, ?_⟩
-    convert congr(cos ($hk.symm / n))
+    convert! congr(cos ($hk.symm / n))
     rw [mul_div_cancel_left₀ _ (by simpa), cos_arccos (by grind) (by grind)]
   · rintro ⟨k, hk, rfl⟩
     rw [T_real_cos, abs_cos_eq_one_iff]
@@ -120,11 +135,13 @@ theorem eval_T_real_eq_one_iff {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
     rw [hk₂, eval_T_real_cos_int_mul_pi_div hn, Int.cast_negOnePow_natCast] at hx
     exact (neg_one_pow_eq_one_iff_even (by grind)).mp hx
   · rintro ⟨k, hk₁, hk₂, hx⟩
-    rw [hx, eval_T_real_cos_int_mul_pi_div hn, Int.negOnePow_even k ((Int.even_coe_nat k).mpr hk₂)]
+    rw [hx, eval_T_real_cos_int_mul_pi_div hn, Int.negOnePow_even k ((Int.even_natCast k).mpr hk₂)]
     norm_cast
 
-theorem eval_T_real_eq_neg_one_iff {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
+theorem eval_T_real_eq_neg_one_iff (n : ℕ) (x : ℝ) :
     (T ℝ n).eval x = -1 ↔ ∃ k ≤ n, Odd k ∧ x = cos (k * π / n) := by
+  rcases eq_or_ne n 0 with rfl | hn
+  · norm_num
   constructor
   · intro hx
     obtain ⟨k, hk₁, hk₂⟩ := (abs_eval_T_real_eq_one_iff hn x).mp
@@ -134,7 +151,7 @@ theorem eval_T_real_eq_neg_one_iff {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
     rw [hk₂, eval_T_real_cos_int_mul_pi_div hn, Int.cast_negOnePow_natCast] at hx
     exact (neg_one_pow_eq_neg_one_iff_odd (by grind)).mp hx
   · rintro ⟨k, hk₁, hk₂, hx⟩
-    rw [hx, eval_T_real_cos_int_mul_pi_div hn, Int.negOnePow_odd k ((Int.odd_coe_nat k).mpr hk₂)]
+    rw [hx, eval_T_real_cos_int_mul_pi_div hn, Int.negOnePow_odd k ((Int.odd_natCast k).mpr hk₂)]
     norm_cast
 
 theorem roots_T_real_nodup (n : ℕ) :
@@ -203,8 +220,9 @@ theorem rootMultiplicity_U_real {n k : ℕ} (hk : k < n) :
   rw [← count_roots, roots_U_real, Multiset.count_eq_one_of_mem (by simp)]
   grind
 
-theorem isLocalMax_T_real {n k : ℕ} (hn : n ≠ 0) (hk₀ : 0 < k) (hk₁ : k < n) (hk₂ : Even k) :
+theorem isLocalMax_T_real {n k : ℕ} (hk₀ : 0 < k) (hk₁ : k < n) (hk₂ : Even k) :
     IsLocalMax (T ℝ n).eval (cos (k * π / n)) := by
+  have hn : n ≠ 0 := by lia
   have zero_lt : 0 < k * π / n := by positivity
   have lt_pi : k * π / n < π := calc
     k * π / n < n * π / n := by gcongr
@@ -219,9 +237,10 @@ theorem isLocalMax_T_real {n k : ℕ} (hn : n ≠ 0) (hk₀ : 0 < k) (hk₁ : k 
   · rw [← cos_zero]
     exact cos_lt_cos_of_nonneg_of_le_pi (le_refl 0) (le_of_lt lt_pi) zero_lt
 
-theorem isLocalMin_T_real {n k : ℕ} (hn : n ≠ 0) (hk₁ : k < n) (hk₂ : Odd k) :
+theorem isLocalMin_T_real {n k : ℕ} (hk₁ : k < n) (hk₂ : Odd k) :
     IsLocalMin (T ℝ n).eval (cos (k * π / n)) := by
   have k_pos : 0 < k := hk₂.pos
+  have hn : n ≠ 0 := by lia
   have zero_lt : 0 < k * π / n := by positivity
   have lt_pi : k * π / n < π := calc
     k * π / n < n * π / n := by gcongr
@@ -229,18 +248,18 @@ theorem isLocalMin_T_real {n k : ℕ} (hn : n ≠ 0) (hk₁ : k < n) (hk₂ : Od
   refine eventually_nhds_iff.mpr ⟨Set.Ioo (-1) 1, ?_, isOpen_Ioo, ?_, ?_⟩
   · intro x hx
     dsimp
-    rw [(eval_T_real_eq_neg_one_iff hn _).mpr ⟨k, le_of_lt hk₁, hk₂, rfl⟩]
+    rw [(eval_T_real_eq_neg_one_iff n _).mpr ⟨k, le_of_lt hk₁, hk₂, rfl⟩]
     refine (abs_le.mp (abs_eval_T_real_le_one n (by grind))).1
   · rw [← cos_pi]
     exact cos_lt_cos_of_nonneg_of_le_pi (le_of_lt zero_lt) (le_refl π) lt_pi
   · rw [← cos_zero]
     exact cos_lt_cos_of_nonneg_of_le_pi (le_refl 0) (le_of_lt lt_pi) zero_lt
 
-theorem isLocalExtr_T_real {n k : ℕ} (hn : n ≠ 0) (hk₀ : 0 < k) (hk₁ : k < n) :
+theorem isLocalExtr_T_real {n k : ℕ} (hk₀ : 0 < k) (hk₁ : k < n) :
     IsLocalExtr (T ℝ n).eval (cos (k * π / n)) := by
   cases k.even_or_odd
-  case inl hk₂ => exact .inr (isLocalMax_T_real hn hk₀ hk₁ hk₂)
-  case inr hk₂ => exact .inl (isLocalMin_T_real hn hk₁ hk₂)
+  case inl hk₂ => exact .inr (isLocalMax_T_real hk₀ hk₁ hk₂)
+  case inr hk₂ => exact .inl (isLocalMin_T_real hk₁ hk₂)
 
 theorem isLocalExtr_T_real_iff {n : ℕ} (hn : 2 ≤ n) (x : ℝ) :
     IsLocalExtr (T ℝ n).eval x ↔ ∃ k ∈ Finset.Ioo 0 n, x = cos (k * π / n) := by
@@ -252,7 +271,7 @@ theorem isLocalExtr_T_real_iff {n : ℕ} (hn : 2 ≤ n) (x : ℝ) :
     replace hx : x ∈ (U ℝ (n - 1)).roots :=
       (mem_roots (degree_ne_bot.mp (ne_of_eq_of_ne (by grind [degree_U_natCast])
         (WithBot.natCast_ne_bot (n - 1))))).mpr hx
-    rw [show (n - 1 : ℤ) = (n - 1 : ℕ) by grind, roots_U_real] at hx
+    rw [show (n - 1 : ℤ) = (n - 1 : ℕ) by grind, roots_U_real, Finset.mem_val] at hx
     obtain ⟨k, hk₁, hx⟩ := Finset.mem_image.mp hx
     refine ⟨k + 1, Finset.mem_Ioo.mpr ⟨k.zero_lt_succ, by grind⟩, ?_⟩
     rw [← hx]
@@ -260,25 +279,27 @@ theorem isLocalExtr_T_real_iff {n : ℕ} (hn : 2 ≤ n) (x : ℝ) :
     exact Nat.sub_add_cancel (Nat.one_le_of_lt hn)
   · rintro ⟨k, hk, hx⟩
     rw [hx]
-    exact isLocalExtr_T_real (Nat.ne_zero_of_lt hn)
-      (Finset.mem_Ioo.mp hk).1 (Finset.mem_Ioo.mp hk).2
+    exact isLocalExtr_T_real (Finset.mem_Ioo.mp hk).1 (Finset.mem_Ioo.mp hk).2
 
-theorem isMaxOn_T_real {n k : ℕ} (hn : n ≠ 0) (hk₁ : k ≤ n) (hk₂ : Even k) :
-    IsMaxOn (T ℝ n).eval (Set.Icc (-1) 1) (cos (k * π / n)) :=
-  isMaxOn_iff.mpr (fun x hx => le_of_le_of_eq (abs_le.mp (abs_eval_T_real_le_one n (by grind))).2
+theorem isMaxOn_T_real {n k : ℕ} (hk₁ : k ≤ n) (hk₂ : Even k) :
+    IsMaxOn (T ℝ n).eval (Set.Icc (-1) 1) (cos (k * π / n)) := by
+  rcases eq_or_ne n 0 with rfl | hn
+  · simp [isMaxOn_iff]
+  exact isMaxOn_iff.mpr (fun x hx => le_of_le_of_eq
+    (abs_le.mp (abs_eval_T_real_le_one n (by grind))).2
     ((eval_T_real_eq_one_iff hn _).mpr ⟨k, hk₁, hk₂, rfl⟩).symm)
 
-theorem isMinOn_T_real {n k : ℕ} (hn : n ≠ 0) (hk₁ : k ≤ n) (hk₂ : Odd k) :
+theorem isMinOn_T_real {n k : ℕ} (hk₁ : k ≤ n) (hk₂ : Odd k) :
     IsMinOn (T ℝ n).eval (Set.Icc (-1) 1) (cos (k * π / n)) :=
   isMinOn_iff.mpr (fun x hx => le_of_eq_of_le
-    ((eval_T_real_eq_neg_one_iff hn _).mpr ⟨k, hk₁, hk₂, rfl⟩)
+    ((eval_T_real_eq_neg_one_iff n _).mpr ⟨k, hk₁, hk₂, rfl⟩)
     (abs_le.mp (abs_eval_T_real_le_one n (by grind))).1)
 
-theorem isExtrOn_T_real {n k : ℕ} (hn : n ≠ 0) (hk : k ≤ n) :
+theorem isExtrOn_T_real {n k : ℕ} (hk : k ≤ n) :
     IsExtrOn (T ℝ n).eval (Set.Icc (-1) 1) (cos (k * π / n)) := by
   cases k.even_or_odd
-  case inl hk₂ => exact .inr (isMaxOn_T_real hn hk hk₂)
-  case inr hk₂ => exact .inl (isMinOn_T_real hn hk hk₂)
+  case inl hk₂ => exact .inr (isMaxOn_T_real hk hk₂)
+  case inr hk₂ => exact .inl (isMinOn_T_real hk hk₂)
 
 theorem isExtrOn_T_real_iff {n : ℕ} (hn : n ≠ 0) {x : ℝ} (hx : x ∈ Set.Icc (-1) 1) :
     IsExtrOn (T ℝ n).eval (Set.Icc (-1) 1) x ↔
@@ -290,20 +311,18 @@ theorem isExtrOn_T_real_iff {n : ℕ} (hn : n ≠ 0) {x : ℝ} (hx : x ∈ Set.I
     refine h.elim (fun h => ?_) (fun h => ?_)
     · refine le_abs.mpr (.inr (le_neg_of_le_neg ?_))
       have := isMinOn_iff.mp h (cos (1 * π / n)) (by grind [abs_cos_le_one])
-      rw [(eval_T_real_eq_neg_one_iff hn (cos (1 * π / n))).mpr ⟨1, Nat.one_le_iff_ne_zero.mpr hn,
+      rwa [(eval_T_real_eq_neg_one_iff n (cos (1 * π / n))).mpr ⟨1, Nat.one_le_iff_ne_zero.mpr hn,
         by simp⟩] at this
-      assumption
     · refine le_abs.mpr (.inl ?_)
       have := isMaxOn_iff.mp h (cos (0 * π / n)) (by simp)
-      rw [(eval_T_real_eq_one_iff hn _).mpr ⟨0, by simp, by simp⟩] at this
-      assumption
+      rwa [(eval_T_real_eq_one_iff hn _).mpr ⟨0, by simp, by simp⟩] at this
   · rintro ⟨k, hk, hx⟩
     rw [hx]
-    exact isExtrOn_T_real hn hk
+    exact isExtrOn_T_real hk
 
 theorem irrational_of_isRoot_T_real {n : ℕ} {x : ℝ} (hroot : (T ℝ n).IsRoot x) (hnz : x ≠ 0) :
     Irrational x := by
-  rw [← mem_roots (T_ne_zero ℝ n), roots_T_real] at hroot
+  rw [← mem_roots (T_ne_zero ℝ n), roots_T_real, Finset.mem_val] at hroot
   obtain ⟨k, hk₁, hk₂⟩ := Finset.mem_image.mp hroot
   have hn : n ≠ 0 := by grind
   suffices Irrational (cos ((Rat.divInt (2 * k + 1) (2 * n)) * π)) by
@@ -317,5 +336,24 @@ theorem irrational_of_isRoot_T_real {n : ℕ} {x : ℝ} (hroot : (T ℝ n).IsRoo
   have hn : 2 * k + 1 = n := Nat.eq_of_dvd_of_lt_two_mul (by simp) (Nat.gcd_eq_left_iff_dvd.mp <|
     Nat.eq_of_dvd_of_div_eq_one (Nat.gcd_dvd_left ..) (by grind [Rat.den_pos])) (by grind)
   rw_mod_cast [← hk₂, hn]; convert cos_pi_div_two using 2; push_cast; field_simp
+
+theorem abs_iterate_derivative_T_real_le (n : ℤ) (k : ℕ) {x : ℝ} (hx : |x| ≤ 1) :
+    |(derivative^[k] (T ℝ n)).eval x| ≤ (derivative^[k] (T ℝ n)).eval 1 := by
+  wlog hn : 0 ≤ n
+  · convert this (-n) k hx (by grind) using 1 <;> rw [T_neg]
+  lift n to ℕ using hn
+  have := T_iterate_derivative_mem_span_T (R := ℝ) n k
+  obtain ⟨f, hfsupp, hfderiv⟩ := Submodule.mem_span_set.mp this
+  replace hfderiv : ∑ p ∈ f.support, f p • p = derivative^[k] (T ℝ n) := by rw [← hfderiv]; rfl
+  have hf (y : ℝ) :
+      ∑ p ∈ f.support, f p • p.eval y = (derivative^[k] (T ℝ n)).eval y := by
+    rw [← hfderiv, Polynomial.eval_finsetSum]
+    simp_rw [Polynomial.eval_smul]
+  rw [← hf x, ← hf 1]
+  grw [Finset.abs_sum_le_sum_abs]
+  refine Finset.sum_le_sum (fun i hi => ?_)
+  obtain ⟨m, hm, hi⟩ := (Set.mem_image ..).mp (hfsupp hi)
+  grw [abs_nsmul, ← hi, abs_eval_T_real_le_one m hx]
+  simp
 
 end Polynomial.Chebyshev

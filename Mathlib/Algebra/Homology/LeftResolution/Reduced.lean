@@ -7,7 +7,11 @@ module
 
 public import Mathlib.Algebra.Homology.LeftResolution.Transport
 public import Mathlib.CategoryTheory.Idempotents.FunctorExtension
-public import Mathlib.CategoryTheory.MorphismProperty.Retract
+
+import Mathlib.CategoryTheory.MorphismProperty.Retract
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Left resolutions which preserve the zero object
@@ -31,7 +35,6 @@ on the elements of `M`. Then, `Λ.reduced.F.obj M` will be obtained
 from the free `R`-module on `M` by factoring out the direct factor
 corresponding to the submodule spanned by the generator corresponding
 to `0 : M` (TODO).
-
 -/
 
 @[expose] public section
@@ -48,14 +51,14 @@ namespace LeftResolution
 variable [Preadditive C] [Preadditive A] [ι.Additive]
 
 /-- Auxiliary definition for `LeftResolution.karoubi`. -/
-@[simps]
+@[simps, implicit_reducible]
 def karoubi.F' : A ⥤ Karoubi C where
   obj X := ⟨Λ.F.obj X, 𝟙 _ - Λ.F.map 0, by simp [← Functor.map_comp]⟩
   map {X Y} f := ⟨Λ.F.map f - Λ.F.map 0, by simp [← Functor.map_comp]⟩
   map_comp _ _ := by simp [← Functor.map_comp]
 
 /-- Auxiliary definition for `LeftResolution.karoubi`. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def karoubi.F : Karoubi A ⥤ Karoubi C := (functorExtension₁ A C).obj (karoubi.F' Λ)
 
 instance : (karoubi.F Λ).PreservesZeroMorphisms where
@@ -99,7 +102,7 @@ instance (X : Karoubi A) : Epi ((karoubi.π Λ).app X) :=
 /-- Given `ι : C ⥤ A`, this is the extension of `Λ : LeftResolution ι` to
 `LeftResolution ((functorExtension₂ C A).obj ι)`, where
 `(functorExtension₂ C A).obj ι : Karoubi C ⥤ Karoubi A` is the extension of `ι`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def karoubi : LeftResolution ((functorExtension₂ C A).obj ι) where
   F := karoubi.F Λ
   π := karoubi.π Λ

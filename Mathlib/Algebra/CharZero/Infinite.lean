@@ -8,12 +8,12 @@ module
 public import Mathlib.Algebra.CharZero.Defs
 public import Mathlib.Data.Fintype.EquivFin
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-! # A characteristic-zero semiring is infinite -/
 
-@[expose] public section
-
-
-open Set
+public section
 
 variable (M : Type*) [AddMonoidWithOne M] [CharZero M]
 

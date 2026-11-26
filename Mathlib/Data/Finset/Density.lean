@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Algebra.Order.Field.Rat
 public import Mathlib.Data.Fintype.Card
-public import Mathlib.Data.NNRat.Order
-public import Mathlib.Data.Rat.Cast.CharZero
 public import Mathlib.Tactic.Positivity.Basic
+
+import Mathlib.Algebra.Order.Ring.NNRat
+import Mathlib.Data.Rat.Cast.CharZero
 
 /-!
 # Density of a finite set
@@ -52,7 +53,7 @@ overengineering basic definitions is likely to hinder user experience.
 -- TODO
 -- assert_not_exists Ring
 
-open Function Multiset Nat
+open Function Nat
 
 variable {𝕜 α β : Type*} [Fintype α]
 
@@ -80,7 +81,7 @@ lemma dens_eq_card_div_card (s : Finset α) : dens s = s.card / Fintype.card α 
 @[simp] lemma dens_eq_zero : dens s = 0 ↔ s = ∅ := by
   simp +contextual [dens, Fintype.card_eq_zero_iff, eq_empty_of_isEmpty]
 
-lemma dens_ne_zero : dens s ≠ 0 ↔ s.Nonempty := dens_eq_zero.not.trans nonempty_iff_ne_empty.symm
+lemma dens_ne_zero : dens s ≠ 0 ↔ s.Nonempty := by simp
 
 @[simp] lemma dens_pos : 0 < dens s ↔ s.Nonempty := pos_iff_ne_zero.trans dens_ne_zero
 
@@ -107,7 +108,7 @@ lemma dens_map_le [Fintype β] (f : α ↪ β) : dens (s.map f) ≤ dens s := by
   simp_rw [dens, card_map]
   gcongr
   · exact mod_cast Fintype.card_pos
-  · exact Fintype.card_le_of_injective _ f.2
+  · exact Fintype.card_le_of_injective _ f.inj'
 
 @[simp] lemma dens_map_equiv [Fintype β] (e : α ≃ β) : (s.map e.toEmbedding).dens = s.dens := by
   simp [dens, Fintype.card_congr e]
@@ -167,7 +168,7 @@ lemma dens_inter_add_dens_union (s t : Finset α) :
     dens (s ∩ t) + dens (s ∪ t) = dens s + dens t := by rw [add_comm, dens_union_add_dens_inter]
 
 @[simp] lemma dens_union_of_disjoint (h : Disjoint s t) : dens (s ∪ t) = dens s + dens t := by
-  rw [← disjUnion_eq_union s t h, dens_disjUnion _ _ _]
+  rw [← disjUnion_eq_union s t h, dens_disjUnion]
 
 lemma dens_sdiff_add_dens_eq_dens (h : s ⊆ t) : dens (t \ s) + dens s = dens t := by
   simp [dens, ← card_sdiff_add_card_eq_card h, add_div]
@@ -194,7 +195,7 @@ lemma dens_filter_add_dens_filter_not_eq_dens {α : Type*} [Fintype α] {s : Fin
   rw [← dens_union_of_disjoint (disjoint_filter_filter_not ..), filter_union_filter_not_eq]
 
 lemma dens_union_le (s t : Finset α) : dens (s ∪ t) ≤ dens s + dens t :=
-  dens_union_add_dens_inter s t ▸ le_add_of_nonneg_right zero_le'
+  dens_union_add_dens_inter s t ▸ le_add_of_nonneg_right zero_le
 
 lemma dens_le_dens_sdiff_add_dens : dens s ≤ dens (s \ t) + dens t :=
   dens_sdiff_add_dens s _ ▸ dens_le_dens subset_union_left

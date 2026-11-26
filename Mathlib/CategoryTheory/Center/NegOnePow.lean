@@ -5,12 +5,14 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Center.Preadditive
 public import Mathlib.Algebra.Ring.NegOnePow
+public import Mathlib.CategoryTheory.Center.Preadditive
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Powers of `-1` in the center of a preadditive category
-
 -/
 
 public section
@@ -21,6 +23,7 @@ namespace CategoryTheory.CatCenter
 
 variable {C : Type u} [Category.{v} C] [Preadditive C]
 
+open scoped IsMulCommutative in
 @[simp]
 lemma app_neg_one_zpow (n : ℤ) (X : C) :
     ((-1) ^ n : (CatCenter C)ˣ).val.app X = n.negOnePow • 𝟙 X := by

@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Homology.ComplexShape
 public import Mathlib.Algebra.Ring.NegOnePow
 public import Mathlib.CategoryTheory.GradedObject.Trifunctor
 
-/-! Signs in constructions on homological complexes
+/-! # Signs in constructions on homological complexes
 
 In this file, we shall introduce various typeclasses which will allow
 the construction of the total complex of a bicomplex and of the
@@ -23,7 +23,6 @@ when suitable coproducts exist).
 In particular, we construct an instance of `TotalComplexShape c c c` when `c : ComplexShape I`
 and `I` is an additive monoid equipped with a group homomorphism `ε' : Multiplicative I → ℤˣ`
 satisfying certain properties (see `ComplexShape.TensorSigns`).
-
 -/
 
 @[expose] public section
@@ -121,12 +120,12 @@ class TensorSigns where
   ε' : Multiplicative I →* ℤˣ
   rel_add (p q r : I) (hpq : c.Rel p q) : c.Rel (p + r) (q + r)
   add_rel (p q r : I) (hpq : c.Rel p q) : c.Rel (r + p) (r + q)
-  ε'_succ (p q : I) (hpq : c.Rel p q) : ε' q = - ε' p
+  ε'_succ (p q : I) (hpq : c.Rel p q) : ε' (.ofAdd q) = - ε' (.ofAdd p)
 
 variable [TensorSigns c]
 
 /-- The signs which appear in the vertical differential of the total complex. -/
-abbrev ε (i : I) : ℤˣ := TensorSigns.ε' c i
+abbrev ε (i : I) : ℤˣ := TensorSigns.ε' c (.ofAdd i)
 
 lemma rel_add {p q : I} (hpq : c.Rel p q) (r : I) : c.Rel (p + r) (q + r) :=
   TensorSigns.rel_add _ _ _ hpq
@@ -163,26 +162,21 @@ instance : TotalComplexShape c c c where
     dsimp
     rw [neg_mul, one_mul, mul_one, c.ε_succ h, neg_neg]
 
+attribute [local simp] pow_add in
 instance : TensorSigns (ComplexShape.down ℕ) where
-  ε' := MonoidHom.mk' (fun (i : ℕ) => (-1 : ℤˣ) ^ i) (pow_add (-1 : ℤˣ))
+  ε' := MonoidHom.mk' (fun i => (-1 : ℤˣ) ^ i.toAdd) (by simp)
   rel_add p q r (hpq : q + 1 = p) := by dsimp; lia
   add_rel p q r (hpq : q + 1 = p) := by dsimp; lia
-  ε'_succ := by
-    rintro _ q rfl
-    dsimp
-    rw [pow_add, pow_one, mul_neg, mul_one, neg_neg]
+  ε'_succ := by rintro _ q rfl; simp
 
 @[simp]
 lemma ε_down_ℕ (n : ℕ) : (ComplexShape.down ℕ).ε n = (-1 : ℤˣ) ^ n := rfl
 
 instance : TensorSigns (ComplexShape.up ℤ) where
-  ε' := MonoidHom.mk' Int.negOnePow Int.negOnePow_add
+  ε' := MonoidHom.mk' (fun i ↦ Int.negOnePow i.toAdd) (by simp [Int.negOnePow_add])
   rel_add p q r (hpq : p + 1 = q) := by dsimp; lia
   add_rel p q r (hpq : p + 1 = q) := by dsimp; lia
-  ε'_succ := by
-    rintro p _ rfl
-    dsimp
-    rw [Int.negOnePow_succ]
+  ε'_succ := by rintro p _ rfl; simp [Int.negOnePow_succ]
 
 @[simp]
 lemma ε_up_ℤ (n : ℤ) : (ComplexShape.up ℤ).ε n = n.negOnePow := rfl
@@ -239,6 +233,7 @@ lemma associative_ε₂_eq_mul (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) :
 /-- The map `I₁ × I₂ × I₃ → j` that is obtained using `TotalComplexShape c₁ c₂ c₁₂`
 and `TotalComplexShape c₁₂ c₃ c` when `c₁ : ComplexShape I₁`, `c₂ : ComplexShape I₂`,
 `c₃ : ComplexShape I₃`, `c₁₂ : ComplexShape I₁₂` and `c : ComplexShape J`. -/
+@[implicit_reducible]
 def r : I₁ × I₂ × I₃ → J := fun ⟨i₁, i₂, i₃⟩ ↦ π c₁₂ c₃ c ⟨π c₁ c₂ c₁₂ ⟨i₁, i₂⟩, i₃⟩
 
 open CategoryTheory
@@ -272,6 +267,7 @@ end ComplexShape
 
 /-- The total complex shape for `c₂`, `c₁` and `c₁₂` that is deduced
 from a total complex shape for `c₁`, `c₂` and `c₁₂`. -/
+@[instance_reducible]
 def TotalComplexShape.symm [TotalComplexShape c₁ c₂ c₁₂] :
     TotalComplexShape c₂ c₁ c₁₂ where
   π := fun ⟨i₂, i₁⟩ ↦ ComplexShape.π c₁ c₂ c₁₂ ⟨i₁, i₂⟩
@@ -297,6 +293,7 @@ class TotalComplexShapeSymmetry [TotalComplexShape c₁ c₂ c₁₂] [TotalComp
 
 /-- The symmetry between the total complex shape for `c₁`, `c₂` and `c₁₂`,
 and its symmetric total complex shape. -/
+@[instance_reducible]
 def TotalComplexShape.symmSymmetry [TotalComplexShape c₁ c₂ c₁₂] :
     letI := TotalComplexShape.symm c₁ c₂ c₁₂
     TotalComplexShapeSymmetry c₁ c₂ c₁₂ :=
@@ -355,6 +352,7 @@ end ComplexShape
 
 /-- The obvious `TotalComplexShapeSymmetry c₂ c₁ c₁₂` deduced from a
 `TotalComplexShapeSymmetry c₁ c₂ c₁₂`. -/
+@[instance_reducible]
 def TotalComplexShapeSymmetry.symmetry [TotalComplexShape c₁ c₂ c₁₂]
     [TotalComplexShape c₂ c₁ c₁₂] [TotalComplexShapeSymmetry c₁ c₂ c₁₂] :
     TotalComplexShapeSymmetry c₂ c₁ c₁₂ where

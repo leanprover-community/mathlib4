@@ -7,8 +7,11 @@ module
 
 public import Mathlib.Algebra.Group.Basic
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
-public import Mathlib.CategoryTheory.Monoidal.End
 public import Mathlib.CategoryTheory.Monoidal.Discrete
+public import Mathlib.CategoryTheory.Monoidal.End
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Shift
@@ -20,22 +23,22 @@ each `n : ℤ` the functor `C ⥤ C` that re-indexes the terms, so the degree `i
 would be the degree `i+n`-th term of `C`.
 
 ## Main definitions
+
 * `HasShift`: A typeclass asserting the existence of a shift functor.
 * `shiftEquiv`: When the indexing monoid is a group, then the functor indexed by `n` and `-n` forms
   a self-equivalence of `C`.
 * `shiftComm`: When the indexing monoid is commutative, then shifts commute as well.
 
-## Implementation Notes
+## Implementation notes
 
 `[HasShift C A]` is implemented using monoidal functors from `Discrete A` to `C ⥤ C`.
 However, the API of monoidal functors is used only internally: one should use the API of
 shift functors which includes `shiftFunctor C a : C ⥤ C` for `a : A`,
-`shiftFunctorZero C A : shiftFunctor C (0 : A) ≅ 𝟭 C` and
+`shiftFunctorZero C A : shiftFunctor C 0 ≅ 𝟭 C` and
 `shiftFunctorAdd C i j : shiftFunctor C (i + j) ≅ shiftFunctor C i ⋙ shiftFunctor C j`
 (and its variant `shiftFunctorAdd'`). These isomorphisms satisfy some coherence properties
 which are stated in lemmas like `shiftFunctorAdd'_assoc`, `shiftFunctorAdd'_zero_add` and
 `shiftFunctorAdd'_add_zero`.
-
 -/
 
 @[expose] public section
@@ -43,7 +46,7 @@ which are stated in lemmas like `shiftFunctorAdd'_assoc`, `shiftFunctorAdd'_zero
 
 namespace CategoryTheory
 
-open Functor
+open CategoryTheory.Functor
 
 noncomputable section
 
@@ -61,7 +64,7 @@ variable (A C) [AddMonoid A]
 
 /-- A category has a shift indexed by an additive monoid `A`
 if there is a monoidal functor from `A` to `C ⥤ C`. -/
-class HasShift (C : Type u) (A : Type*) [Category.{v} C] [AddMonoid A] where
+class HasShift (C : Type u) (A : outParam (Type*)) [Category.{v} C] [AddMonoid A] where
   /-- a shift is a monoidal functor from `A` to `C ⥤ C` -/
   shift : Discrete A ⥤ C ⥤ C
   /-- `shift` is monoidal -/
@@ -138,17 +141,18 @@ instance (h : ShiftMkCore C A) : (Discrete.functor h.F).Monoidal :=
       associativity := by
         rintro ⟨m₁⟩ ⟨m₂⟩ ⟨m₃⟩
         ext X
-        simp [endofunctorMonoidalCategory, h.assoc_inv_app_assoc]
+        simp [h.assoc_inv_app_assoc]
       left_unitality := by
         rintro ⟨n⟩
         ext X
-        simp [endofunctorMonoidalCategory, h.zero_add_inv_app, ← Functor.map_comp]
+        simp [h.zero_add_inv_app, ← Functor.map_comp]
       right_unitality := by
         rintro ⟨n⟩
         ext X
-        simp [endofunctorMonoidalCategory, h.add_zero_inv_app] }
+        simp [h.add_zero_inv_app] }
 
 /-- Constructs a `HasShift C A` instance from `ShiftMkCore`. -/
+@[instance_reducible]
 def hasShiftMk (h : ShiftMkCore C A) : HasShift C A where
   shift := Discrete.functor h.F
 
@@ -158,6 +162,7 @@ section
 variable [HasShift C A]
 
 /-- The monoidal functor from `A` to `C ⥤ C` given a `HasShift` instance. -/
+@[implicit_reducible]
 def shiftMonoidalFunctor : Discrete A ⥤ C ⥤ C :=
   HasShift.shift
 
@@ -168,6 +173,7 @@ variable {A}
 open Functor.Monoidal
 
 /-- The shift autoequivalence, moving objects and morphisms 'up'. -/
+@[implicit_reducible]
 def shiftFunctor (i : A) : C ⥤ C :=
   (shiftMonoidalFunctor C A).obj ⟨i⟩
 
@@ -187,12 +193,16 @@ lemma shiftFunctorAdd'_eq_shiftFunctorAdd (i j : A) :
 
 variable (A) in
 /-- Shifting by zero is the identity functor. -/
-def shiftFunctorZero : shiftFunctor C (0 : A) ≅ 𝟭 C :=
+def shiftFunctorZero : shiftFunctor C 0 ≅ 𝟭 C :=
   (εIso (shiftMonoidalFunctor C A)).symm
 
 /-- Shifting by `a` such that `a = 0` identifies to the identity functor. -/
 def shiftFunctorZero' (a : A) (ha : a = 0) : shiftFunctor C a ≅ 𝟭 C :=
   eqToIso (by rw [ha]) ≪≫ shiftFunctorZero C A
+
+lemma shiftFunctorZero'_eq_shiftFunctorZero :
+    shiftFunctorZero' C 0 rfl = shiftFunctorZero C A := by
+  simp [shiftFunctorZero']
 
 end
 
@@ -212,12 +222,12 @@ lemma ShiftMkCore.shiftFunctorAdd_eq (h : ShiftMkCore C A) (a b : A) :
 
 set_option quotPrecheck false in
 /-- shifting an object `X` by `n` is obtained by the notation `X⟦n⟧` -/
-notation -- Any better notational suggestions?
+notation3 -- Any better notational suggestions?
 X "⟦" n "⟧" => (shiftFunctor _ n).obj X
 
 set_option quotPrecheck false in
 /-- shifting a morphism `f` by `n` is obtained by the notation `f⟦n⟧'` -/
-notation f "⟦" n "⟧'" => (shiftFunctor _ n).map f
+notation3 f "⟦" n "⟧'" => (shiftFunctor _ n).map f
 
 variable (C)
 variable [HasShift C A]
@@ -265,15 +275,14 @@ lemma shiftFunctorAdd_assoc (a₁ a₂ a₃ : A) :
       isoWhiskerLeft _ (shiftFunctorAdd C a₂ a₃) := by
   ext X
   simpa [shiftFunctorAdd'_eq_shiftFunctorAdd]
-    using NatTrans.congr_app (congr_arg Iso.hom
-      (shiftFunctorAdd'_assoc C a₁ a₂ a₃ _ _ _ rfl rfl rfl)) X
+    using congr($(shiftFunctorAdd'_assoc C a₁ a₂ a₃ _ _ _ rfl rfl rfl).hom.app X)
 
 variable {C}
 
 lemma shiftFunctorAdd'_zero_add_hom_app (a : A) (X : C) :
     (shiftFunctorAdd' C 0 a a (zero_add a)).hom.app X =
     ((shiftFunctorZero C A).inv.app X)⟦a⟧' := by
-  simpa using NatTrans.congr_app (congr_arg Iso.hom (shiftFunctorAdd'_zero_add C a)) X
+  simpa using congr($(shiftFunctorAdd'_zero_add C a).hom.app X)
 
 lemma shiftFunctorAdd_zero_add_hom_app (a : A) (X : C) :
     (shiftFunctorAdd C 0 a).hom.app X =
@@ -283,7 +292,7 @@ lemma shiftFunctorAdd_zero_add_hom_app (a : A) (X : C) :
 lemma shiftFunctorAdd'_zero_add_inv_app (a : A) (X : C) :
     (shiftFunctorAdd' C 0 a a (zero_add a)).inv.app X =
     ((shiftFunctorZero C A).hom.app X)⟦a⟧' := by
-  simpa using NatTrans.congr_app (congr_arg Iso.inv (shiftFunctorAdd'_zero_add C a)) X
+  simpa using congr($(shiftFunctorAdd'_zero_add C a).inv.app X)
 
 lemma shiftFunctorAdd_zero_add_inv_app (a : A) (X : C) : (shiftFunctorAdd C 0 a).inv.app X =
     ((shiftFunctorZero C A).hom.app X)⟦a⟧' ≫ eqToHom (by dsimp; rw [zero_add]) := by
@@ -292,7 +301,7 @@ lemma shiftFunctorAdd_zero_add_inv_app (a : A) (X : C) : (shiftFunctorAdd C 0 a)
 lemma shiftFunctorAdd'_add_zero_hom_app (a : A) (X : C) :
     (shiftFunctorAdd' C a 0 a (add_zero a)).hom.app X =
     (shiftFunctorZero C A).inv.app (X⟦a⟧) := by
-  simpa using NatTrans.congr_app (congr_arg Iso.hom (shiftFunctorAdd'_add_zero C a)) X
+  simpa using congr($(shiftFunctorAdd'_add_zero C a).hom.app X)
 
 lemma shiftFunctorAdd_add_zero_hom_app (a : A) (X : C) : (shiftFunctorAdd C a 0).hom.app X =
     eqToHom (by dsimp; rw [add_zero]) ≫ (shiftFunctorZero C A).inv.app (X⟦a⟧) := by
@@ -301,7 +310,7 @@ lemma shiftFunctorAdd_add_zero_hom_app (a : A) (X : C) : (shiftFunctorAdd C a 0)
 lemma shiftFunctorAdd'_add_zero_inv_app (a : A) (X : C) :
     (shiftFunctorAdd' C a 0 a (add_zero a)).inv.app X =
     (shiftFunctorZero C A).hom.app (X⟦a⟧) := by
-  simpa using NatTrans.congr_app (congr_arg Iso.inv (shiftFunctorAdd'_add_zero C a)) X
+  simpa using congr($(shiftFunctorAdd'_add_zero C a).inv.app X)
 
 lemma shiftFunctorAdd_add_zero_inv_app (a : A) (X : C) : (shiftFunctorAdd C a 0).inv.app X =
     (shiftFunctorZero C A).hom.app (X⟦a⟧) ≫ eqToHom (by dsimp; rw [add_zero]) := by
@@ -314,8 +323,7 @@ lemma shiftFunctorAdd'_assoc_hom_app (a₁ a₂ a₃ a₁₂ a₂₃ a₁₂₃ 
       ((shiftFunctorAdd' C a₁ a₂ a₁₂ h₁₂).hom.app X)⟦a₃⟧' =
     (shiftFunctorAdd' C a₁ a₂₃ a₁₂₃ (by rw [← h₂₃, ← add_assoc, h₁₂₃])).hom.app X ≫
       (shiftFunctorAdd' C a₂ a₃ a₂₃ h₂₃).hom.app (X⟦a₁⟧) := by
-  simpa using NatTrans.congr_app (congr_arg Iso.hom
-    (shiftFunctorAdd'_assoc C _ _ _ _ _ _ h₁₂ h₂₃ h₁₂₃)) X
+  simpa using congr($(shiftFunctorAdd'_assoc C _ _ _ _ _ _ h₁₂ h₂₃ h₁₂₃).hom.app X)
 
 @[reassoc]
 lemma shiftFunctorAdd'_assoc_inv_app (a₁ a₂ a₃ a₁₂ a₂₃ a₁₂₃ : A)
@@ -324,8 +332,7 @@ lemma shiftFunctorAdd'_assoc_inv_app (a₁ a₂ a₃ a₁₂ a₂₃ a₁₂₃ 
       (shiftFunctorAdd' C a₁₂ a₃ a₁₂₃ (by rw [← h₁₂, h₁₂₃])).inv.app X =
     (shiftFunctorAdd' C a₂ a₃ a₂₃ h₂₃).inv.app (X⟦a₁⟧) ≫
       (shiftFunctorAdd' C a₁ a₂₃ a₁₂₃ (by rw [← h₂₃, ← add_assoc, h₁₂₃])).inv.app X := by
-  simpa using NatTrans.congr_app (congr_arg Iso.inv
-    (shiftFunctorAdd'_assoc C _ _ _ _ _ _ h₁₂ h₂₃ h₁₂₃)) X
+  simpa using congr($(shiftFunctorAdd'_assoc C _ _ _ _ _ _ h₁₂ h₂₃ h₁₂₃).inv.app X)
 
 @[reassoc]
 lemma shiftFunctorAdd_assoc_hom_app (a₁ a₂ a₃ : A) (X : C) :
@@ -333,7 +340,7 @@ lemma shiftFunctorAdd_assoc_hom_app (a₁ a₂ a₃ : A) (X : C) :
       ((shiftFunctorAdd C a₁ a₂).hom.app X)⟦a₃⟧' =
     (shiftFunctorAdd' C a₁ (a₂ + a₃) (a₁ + a₂ + a₃) (add_assoc _ _ _).symm).hom.app X ≫
       (shiftFunctorAdd C a₂ a₃).hom.app (X⟦a₁⟧) := by
-  simpa using NatTrans.congr_app (congr_arg Iso.hom (shiftFunctorAdd_assoc C a₁ a₂ a₃)) X
+  simpa using congr($(shiftFunctorAdd_assoc C a₁ a₂ a₃).hom.app X)
 
 @[reassoc]
 lemma shiftFunctorAdd_assoc_inv_app (a₁ a₂ a₃ : A) (X : C) :
@@ -341,7 +348,7 @@ lemma shiftFunctorAdd_assoc_inv_app (a₁ a₂ a₃ : A) (X : C) :
       (shiftFunctorAdd C (a₁ + a₂) a₃).inv.app X =
     (shiftFunctorAdd C a₂ a₃).inv.app (X⟦a₁⟧) ≫
       (shiftFunctorAdd' C a₁ (a₂ + a₃) (a₁ + a₂ + a₃) (add_assoc _ _ _).symm).inv.app X := by
-  simpa using NatTrans.congr_app (congr_arg Iso.inv (shiftFunctorAdd_assoc C a₁ a₂ a₃)) X
+  simpa using congr($(shiftFunctorAdd_assoc C a₁ a₂ a₃).inv.app X)
 
 end Defs
 
@@ -364,10 +371,10 @@ theorem shift_shift' (i j : A) :
 variable (A)
 
 /-- Shifting by zero is the identity functor. -/
-abbrev shiftZero : X⟦(0 : A)⟧ ≅ X :=
+abbrev shiftZero : X⟦0⟧ ≅ X :=
   (shiftFunctorZero C A).app _
 
-theorem shiftZero' : f⟦(0 : A)⟧' = (shiftZero A X).hom ≫ f ≫ (shiftZero A Y).inv := by
+theorem shiftZero' : f⟦0⟧' = (shiftZero A X).hom ≫ f ≫ (shiftZero A Y).inv := by
   symm
   rw [Iso.app_inv, Iso.app_hom]
   apply NatIso.naturality_2
@@ -386,8 +393,9 @@ section AddGroup
 variable (C)
 variable [AddGroup A] [HasShift C A]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Shifting by `i` and shifting by `j` forms an equivalence when `i + j = 0`. -/
-@[simps]
+@[simps, implicit_reducible]
 def shiftEquiv' (i j : A) (h : i + j = 0) : C ≌ C where
   functor := shiftFunctor C i
   inverse := shiftFunctor C j
@@ -395,9 +403,11 @@ def shiftEquiv' (i j : A) (h : i + j = 0) : C ≌ C where
   counitIso := shiftFunctorCompIsoId C j i
     (by rw [← add_left_inj j, add_assoc, h, zero_add, add_zero])
   functor_unitIso_comp X := by
-    convert (equivOfTensorIsoUnit (shiftMonoidalFunctor C A) ⟨i⟩ ⟨j⟩ (Discrete.eqToIso h)
-      (Discrete.eqToIso (by dsimp; rw [← add_left_inj j, add_assoc, h, zero_add, add_zero]))
-      (Subsingleton.elim _ _)).functor_unitIso_comp X
+    convert!
+      (equivOfTensorIsoUnit (shiftMonoidalFunctor C A) ⟨i⟩ ⟨j⟩ (Discrete.eqToIso h)
+            (Discrete.eqToIso (by dsimp; rw [← add_left_inj j, add_assoc, h, zero_add, add_zero]))
+            (Subsingleton.elim _ _)).functor_unitIso_comp
+        X
     all_goals
       ext X
       dsimp [shiftFunctorCompIsoId, unitOfTensorIsoUnit,
@@ -426,6 +436,12 @@ abbrev shiftNegShift (i : A) : X⟦-i⟧⟦i⟧ ≅ X :=
   (shiftEquiv C i).counitIso.app X
 
 variable {X Y}
+
+@[reassoc (attr := simp)]
+lemma shiftFunctorCompIsoId_naturality_1 (i j : A) (hij : i + j = 0) :
+    (shiftFunctorCompIsoId C i j hij).inv.app X ≫ f⟦i⟧'⟦j⟧' ≫
+    (shiftFunctorCompIsoId C i j hij).hom.app Y = f :=
+  NatIso.naturality_1 (shiftFunctorCompIsoId C i j hij) f
 
 theorem shift_shift_neg' (i : A) :
     f⟦i⟧'⟦-i⟧' = (shiftFunctorCompIsoId C i (-i) (add_neg_cancel i)).hom.app X ≫
@@ -596,7 +612,7 @@ abbrev shiftComm (i j : A) : X⟦i⟧⟦j⟧ ≅ X⟦j⟧⟦i⟧ :=
 @[simp]
 theorem shiftComm_symm (i j : A) : (shiftComm X i j).symm = shiftComm X j i := by
   ext
-  exact NatTrans.congr_app (congr_arg Iso.hom (shiftFunctorComm_symm C i j)) X
+  congrm $(shiftFunctorComm_symm C i j).hom.app X
 
 variable {X Y}
 
@@ -728,6 +744,7 @@ end hasShift
 open hasShift in
 /-- Given a family of endomorphisms of `C` which are intertwined by a fully faithful `F : C ⥤ D`
 with shift functors on `D`, we can promote that family to shift functors on `C`. -/
+@[instance_reducible]
 def hasShift :
     HasShift C A :=
   hasShiftMk C A
@@ -749,7 +766,7 @@ def hasShift :
           dcongr_arg (fun a => (i a).hom.app X) (add_assoc m₁ m₂ m₃)]
         simp [shiftFunctorAdd', eqToHom_map])
       zero_add_hom_app := fun n X => hF.map_injective (by
-        have this := dcongr_arg (fun a => (i a).hom.app X) (zero_add n)
+        have := dcongr_arg (fun a => (i a).hom.app X) (zero_add n)
         rw [← cancel_mono ((i n).hom.app ((s 0).obj X))]
         simp only [comp_obj, map_add_hom_app, this, shiftFunctorAdd_zero_add_hom_app, id_obj,
           Category.assoc, eqToHom_trans_assoc, eqToHom_refl, Category.id_comp, Iso.inv_hom_id_app,

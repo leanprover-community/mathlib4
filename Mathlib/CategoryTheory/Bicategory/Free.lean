@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Free bicategories
 
@@ -317,6 +320,7 @@ def liftHom₂ : ∀ {a b : FreeBicategory B} {f g : a ⟶ b}, Hom₂ f g → (l
   | _, _, _, _, Hom₂.whisker_left f η => liftHom F f ◁ liftHom₂ η
   | _, _, _, _, Hom₂.whisker_right h η => liftHom₂ η ▷ liftHom F h
 
+set_option backward.isDefEq.respectTransparency.types false in
 attribute [local simp] whisker_exchange in
 theorem liftHom₂_congr {a b : FreeBicategory B} {f g : a ⟶ b} {η θ : Hom₂ f g} (H : Rel η θ) :
     liftHom₂ F η = liftHom₂ F θ := by induction H <;> (dsimp [liftHom₂]; cat_disch)

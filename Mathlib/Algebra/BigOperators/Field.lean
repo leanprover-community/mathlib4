@@ -6,8 +6,10 @@ Authors: Bhavik Mehta, Daniel Weber
 module
 
 public import Mathlib.Algebra.BigOperators.Ring.Finset
-public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Data.Finset.Density
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Results about big operators with values in a field
@@ -33,7 +35,8 @@ variable {α β : Type*} [Fintype β]
 
 @[simp]
 lemma dens_disjiUnion (s : Finset α) (t : α → Finset β) (h) :
-    (s.disjiUnion t h).dens = ∑ a ∈ s, (t a).dens := by simp [dens, sum_div]
+    (s.disjiUnion t h).dens = ∑ a ∈ s, (t a).dens := by
+  simp [dens, sum_div]
 
 variable {s : Finset α} {t : α → Finset β}
 

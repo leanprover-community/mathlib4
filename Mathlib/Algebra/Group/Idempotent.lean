@@ -6,11 +6,13 @@ Authors: Christopher Hoskin
 module
 
 public import Mathlib.Algebra.Group.Basic
-public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Group.Units.Defs
 public import Mathlib.Data.Subtype
 public import Mathlib.Tactic.Conv
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Idempotents
@@ -36,6 +38,8 @@ variable {M N S : Type*}
 
 /-- An element `a` is said to be idempotent if `a * a = a`. -/
 def IsIdempotentElem [Mul M] (a : M) : Prop := a * a = a
+
+lemma isIdempotentElem_iff [Mul M] {a : M} : IsIdempotentElem a ↔ a * a = a := Iff.rfl
 
 namespace IsIdempotentElem
 section Mul

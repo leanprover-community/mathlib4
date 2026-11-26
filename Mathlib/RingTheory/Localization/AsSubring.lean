@@ -6,17 +6,13 @@ Authors: Adam Topaz, Junyan Xu
 module
 
 public import Mathlib.RingTheory.Localization.LocalizationLocalization
-public import Mathlib.LinearAlgebra.FreeModule.Basic
-public import Mathlib.Algebra.Algebra.Subalgebra.Tower
 
 /-!
-
 # Localizations of domains as subalgebras of the fraction field.
 
 Given a domain `A` with fraction field `K`, and a submonoid `S` of `A` which
 does not contain zero, this file constructs the localization of `A` at `S`
 as a subalgebra of the field `K` over `A`.
-
 -/
 
 @[expose] public section
@@ -33,7 +29,7 @@ section CommRing
 variable [CommRing K] [Algebra A K] [IsFractionRing A K]
 
 theorem map_isUnit_of_le (hS : S ≤ A⁰) (s : S) : IsUnit (algebraMap A K s) := by
-  apply IsLocalization.map_units K (⟨s.1, hS s.2⟩ : A⁰)
+  apply IsLocalization.map_units K (⟨s.val, hS s.property⟩ : A⁰)
 
 /-- The canonical map from a localization of `A` at `S` to the fraction ring
   of `A`, given that `S ≤ A⁰`. -/
@@ -54,7 +50,7 @@ theorem mem_range_mapToFractionRing_iff (B : Type*) [CommRing B] [Algebra A B] [
   ⟨by
     rintro ⟨x, rfl⟩
     obtain ⟨a, s, rfl⟩ := IsLocalization.exists_mk'_eq S x
-    use a, s, s.2
+    use a, s, s.property
     apply IsLocalization.lift_mk', by
     rintro ⟨a, s, hs, rfl⟩
     use IsLocalization.mk' _ a ⟨s, hs⟩
@@ -90,7 +86,7 @@ noncomputable def subalgebra (hS : S ≤ A⁰) : Subalgebra A K :=
 namespace subalgebra
 
 instance isLocalization_subalgebra : IsLocalization S (subalgebra K S hS) := by
-  dsimp only [Localization.subalgebra]
+  dsimp +instances only [Localization.subalgebra]
   rw [Subalgebra.copy_eq]
   infer_instance
 
@@ -112,7 +108,7 @@ theorem mem_range_mapToFractionRing_iff_ofField (B : Type*) [CommRing B] [Algebr
     x ∈ (mapToFractionRing K S B hS).range ↔
       ∃ (a s : A) (_ : s ∈ S), x = algebraMap A K a * (algebraMap A K s)⁻¹ := by
   rw [mem_range_mapToFractionRing_iff]
-  convert Iff.rfl
+  convert! Iff.rfl
   congr
   rw [Units.val_inv_eq_inv_val]
   rfl
@@ -140,7 +136,7 @@ instance isLocalization_ofField : IsLocalization S (ofField K S hS) := by
 
 instance (S : Subalgebra A K) : IsFractionRing S K := by
   refine IsFractionRing.of_field S K fun z ↦ ?_
-  rcases IsFractionRing.div_surjective (A := A) z with ⟨x, y, _, eq⟩
+  rcases IsFractionRing.div_surjective A z with ⟨x, y, _, eq⟩
   exact ⟨algebraMap A S x, algebraMap A S y, eq.symm⟩
 
 instance isFractionRing_ofField : IsFractionRing (ofField K S hS) K :=

@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.Ideal.Nonunits
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Characteristic of quotient rings
 -/
@@ -33,7 +36,7 @@ theorem quotient (p : ℕ) [hp1 : Fact p.Prime] (hp2 : ↑p ∈ nonunits R) :
     map_natCast (Ideal.Quotient.mk (Ideal.span {(p : R)} : Ideal R)) p ▸
       Ideal.Quotient.eq_zero_iff_mem.2 (Ideal.subset_span <| Set.mem_singleton _)
   ringChar.of_eq <|
-    Or.resolve_left ((Nat.dvd_prime hp1.1).1 <| ringChar.dvd hp0) fun h1 =>
+    Or.resolve_left ((Nat.dvd_prime hp1.out).1 <| ringChar.dvd hp0) fun h1 =>
       hp2 <|
         isUnit_iff_dvd_one.2 <|
           Ideal.mem_span_singleton.1 <|
@@ -72,5 +75,5 @@ theorem Ideal.Quotient.index_eq_zero (I : Ideal R) : (↑I.toAddSubgroup.index :
   rw [AddSubgroup.index, Nat.card_eq]
   split_ifs with hq; swap
   · simp
-  letI : Fintype (R ⧸ I) := @Fintype.ofFinite _ hq
+  let : Fintype (R ⧸ I) := @Fintype.ofFinite _ hq
   exact Nat.cast_card_eq_zero (R ⧸ I)

@@ -5,8 +5,10 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Calculus.FDeriv.Equiv
 public import Mathlib.Analysis.Calculus.Deriv.Mul
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Derivative of `x ↦ f (cx)`
@@ -41,4 +43,4 @@ theorem derivWithin_comp_mul_left :
 
 variable (c f x) in
 theorem deriv_comp_mul_left : deriv (f <| c * ·) x = c • deriv f (c * x) := by
-  simp only [← smul_eq_mul, deriv, fderiv_comp_smul, ContinuousLinearMap.smul_apply]
+  simp only [← smul_eq_mul, deriv, fderiv_comp_smul, smul_apply]

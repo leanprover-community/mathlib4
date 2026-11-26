@@ -8,6 +8,9 @@ module
 public import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
 public import Mathlib.Topology.Algebra.Field
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuous actions related to intermediate fields
 
@@ -16,7 +19,7 @@ intermediate fields. The topology on intermediate fields is already defined
 in earlier file `Mathlib/Topology/Algebra/Field.lean` as the subspace topology.
 -/
 
-@[expose] public section
+public section
 
 variable {K L : Type*} [Field K] [Field L] [Algebra K L]
     [TopologicalSpace L] [IsTopologicalRing L]

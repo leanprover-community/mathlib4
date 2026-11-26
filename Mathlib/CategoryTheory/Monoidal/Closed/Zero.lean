@@ -6,8 +6,9 @@ Authors: Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Closed.Cartesian
-public import Mathlib.CategoryTheory.PUnit
-public import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # A Cartesian closed category with zero object is trivial
@@ -18,7 +19,6 @@ object and one morphism.
 ## References
 
 * https://mathoverflow.net/a/136480
-
 -/
 
 @[expose] public section
@@ -40,6 +40,7 @@ open scoped CartesianClosed
 /-- If a Cartesian closed category has an initial object which is isomorphic to the terminal object,
 then each homset has exactly one element.
 -/
+@[instance_reducible]
 def uniqueHomsetOfInitialIsoUnit [HasInitial C] (i : ⊥_ C ≅ 𝟙_ C) (X Y : C) : Unique (X ⟶ Y) :=
   Equiv.unique <|
     calc
@@ -50,6 +51,7 @@ def uniqueHomsetOfInitialIsoUnit [HasInitial C] (i : ⊥_ C ≅ 𝟙_ C) (X Y : 
 open scoped ZeroObject
 
 /-- If a Cartesian closed category has a zero object, each homset has exactly one element. -/
+@[instance_reducible]
 def uniqueHomsetOfZero [HasZeroObject C] (X Y : C) : Unique (X ⟶ Y) := by
   haveI : HasInitial C := HasZeroObject.hasInitial
   apply uniqueHomsetOfInitialIsoUnit _ X Y

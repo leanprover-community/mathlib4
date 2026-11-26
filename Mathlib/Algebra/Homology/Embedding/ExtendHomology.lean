@@ -6,8 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.Embedding.Extend
-public import Mathlib.Algebra.Homology.Embedding.IsSupported
-public import Mathlib.Algebra.Homology.QuasiIso
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Homology of the extension of a homological complex
@@ -16,7 +17,6 @@ Given an embedding `e : c.Embedding c'` and `K : HomologicalComplex C c`, we sha
 compute the homology of `K.extend e`. In degrees that are not in the image of `e.f`,
 the homology is obviously zero. When `e.f j = j`, we construct an isomorphism
 `(K.extend e).homology j' ≅ K.homology j`.
-
 -/
 
 @[expose] public section
@@ -29,7 +29,7 @@ variable {ι ι' : Type*} {c : ComplexShape ι} {c' : ComplexShape ι'}
   {C : Type*} [Category* C] [HasZeroMorphisms C]
   [HasZeroObject C]
 
-variable (K L M : HomologicalComplex C c) (φ : K ⟶ L) (φ' : L ⟶ M) (e : c.Embedding c')
+variable (K L : HomologicalComplex C c) (φ : K ⟶ L) (e : c.Embedding c')
 
 namespace extend
 
@@ -68,7 +68,7 @@ variable (cone : KernelFork (K.d j k)) (hcone : IsLimit cone)
 
 /-- The kernel fork of `(K.extend e).d j' k'` that is deduced from a kernel
 fork of `K.d j k `. -/
-@[simp]
+@[simps!, implicit_reducible]
 noncomputable def kernelFork : KernelFork ((K.extend e).d j' k') :=
   KernelFork.ofι (cone.ι ≫ (extendXIso K e hj').inv)
     (by rw [assoc, ← comp_d_eq_zero_iff K e hj' hk hk' cone.ι, cone.condition])
@@ -102,7 +102,6 @@ lemma lift_d_comp_eq_zero_iff' ⦃W : C⦄ (f' : K.X i ⟶ cone.pt)
       simp only [zero_comp, hf', K.shape _ _ hij]
     have h₂ : f'' = 0 := by
       apply Fork.IsLimit.hom_ext hcone
-      dsimp
       rw [← cancel_mono (extendXIso K e hj').inv, assoc, hf'', zero_comp, zero_comp,
         K.extend_d_to_eq_zero e i' j' j hj']
       rw [hi]
@@ -118,6 +117,7 @@ lemma lift_d_comp_eq_zero_iff ⦃W : C⦄ (φ : cone.pt ⟶ W) :
     (IsLimit.fac _ _ WalkingParallelPair.zero) _
 
 /-- Auxiliary definition for `extend.leftHomologyData`. -/
+@[implicit_reducible]
 noncomputable def cokernelCofork :
     CokernelCofork ((isLimitKernelFork K e hj' hk hk' cone hcone).lift
       (KernelFork.ofι ((K.extend e).d i' j') (d_comp_d _ _ _ _))) :=
@@ -136,7 +136,7 @@ end leftHomologyData
 open leftHomologyData in
 /-- The left homology data of `(K.extend e).sc' i' j' k'` that is deduced
 from a left homology data of `K.sc' i j k`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def leftHomologyData (h : (K.sc' i j k).LeftHomologyData) :
     ((K.extend e).sc' i' j' k').LeftHomologyData where
   K := h.K
@@ -160,7 +160,7 @@ variable (cocone : CokernelCofork (K.d i j)) (hcocone : IsColimit cocone)
 
 /-- The cokernel cofork of `(K.extend e).d i' j'` that is deduced from a cokernel
 cofork of `K.d i j`. -/
-@[simp]
+@[simps!, implicit_reducible]
 noncomputable def cokernelCofork : CokernelCofork ((K.extend e).d i' j') :=
   CokernelCofork.ofπ ((extendXIso K e hj').hom ≫ cocone.π) (by
     rw [← d_comp_eq_zero_iff K e hj' hi hi' cocone.π, cocone.condition])
@@ -205,7 +205,7 @@ lemma d_comp_desc_eq_zero_iff ⦃W : C⦄ (φ : W ⟶ cocone.pt) :
       φ ≫ ((isColimitCokernelCofork K e hj' hi hi' cocone hcocone).desc
       (CokernelCofork.ofπ ((K.extend e).d j' k') (d_comp_d _ _ _ _))) = 0 :=
   d_comp_desc_eq_zero_iff' K e hj' hk hk' cocone hcocone _ (hcocone.fac _ _) _ (by
-    simpa using (isColimitCokernelCofork K e hj' hi hi' cocone hcocone).fac _
+    simpa using! (isColimitCokernelCofork K e hj' hi hi' cocone hcocone).fac _
       WalkingParallelPair.one) _
 
 /-- Auxiliary definition for `extend.rightHomologyData`. -/
@@ -227,7 +227,7 @@ end rightHomologyData
 open rightHomologyData in
 /-- The right homology data of `(K.extend e).sc' i' j' k'` that is deduced
 from a right homology data of `K.sc' i j k`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def rightHomologyData (h : (K.sc' i j k).RightHomologyData) :
     ((K.extend e).sc' i' j' k').RightHomologyData where
   Q := h.Q
@@ -256,7 +256,7 @@ lemma rightHomologyData_g' (h : (K.sc' i j k).RightHomologyData) (hk'' : e.f k =
 
 /-- The homology data of `(K.extend e).sc' i' j' k'` that is deduced
 from a homology data of `K.sc' i j k`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def homologyData (h : (K.sc' i j k).HomologyData) :
     ((K.extend e).sc' i' j' k').HomologyData where
   left := leftHomologyData K e hj' hi hi' hk hk' h.left
@@ -265,7 +265,7 @@ noncomputable def homologyData (h : (K.sc' i j k).HomologyData) :
 
 /-- The homology data of `(K.extend e).sc j'` that is deduced
 from a homology data of `K.sc' i j k`. -/
-@[simps!]
+@[simps!, implicit_reducible]
 noncomputable def homologyData' (h : (K.sc' i j k).HomologyData) :
     ((K.extend e).sc j').HomologyData :=
   homologyData K e hj' hi rfl hk rfl h
@@ -327,12 +327,7 @@ lemma extend_exactAt_iff :
 lemma extendCyclesIso_hom_iCycles :
     (K.extendCyclesIso e hj').hom ≫ K.iCycles j =
       (K.extend e).iCycles j' ≫ (K.extendXIso e hj').hom := by
-  rw [← cancel_epi (K.extendCyclesIso e hj').inv, Iso.inv_hom_id_assoc]
-  dsimp [extendCyclesIso, iCycles]
-  rw [assoc, ShortComplex.LeftHomologyData.cyclesIso_inv_comp_iCycles_assoc]
-  dsimp
-  rw [assoc, Iso.inv_hom_id, comp_id,
-    ShortComplex.LeftHomologyData.cyclesIso_hom_comp_i]
+  simp [← cancel_epi (K.extendCyclesIso e hj').inv, iCycles, extendCyclesIso]
 
 @[reassoc (attr := simp)]
 lemma extendCyclesIso_inv_iCycles :
@@ -345,13 +340,8 @@ lemma extendCyclesIso_inv_iCycles :
 lemma homologyπ_extendHomologyIso_hom :
     (K.extend e).homologyπ j' ≫ (K.extendHomologyIso e hj').hom =
       (K.extendCyclesIso e hj').hom ≫ K.homologyπ j := by
-  dsimp [extendHomologyIso, homologyπ]
-  rw [ShortComplex.LeftHomologyData.homologyπ_comp_homologyIso_hom_assoc,
-    ← cancel_mono (K.sc j).homologyData.left.homologyIso.hom,
-    assoc, assoc, assoc, Iso.inv_hom_id, comp_id,
-    ShortComplex.LeftHomologyData.homologyπ_comp_homologyIso_hom]
-  dsimp [extendCyclesIso]
-  simp only [assoc, Iso.inv_hom_id_assoc]
+  dsimp [homologyπ, extendHomologyIso]
+  simp [← cancel_mono (K.sc j).homologyData.left.homologyIso.hom, extendCyclesIso]
 
 @[reassoc (attr := simp)]
 lemma homologyπ_extendHomologyIso_inv :
@@ -416,6 +406,7 @@ lemma quasiIsoAt_extendMap_iff :
 
 end
 
+variable {K L} in
 lemma quasiIso_extendMap_iff [∀ j, K.HasHomology j] [∀ j, L.HasHomology j] :
     QuasiIso (extendMap φ e) ↔ QuasiIso φ := by
   simp only [quasiIso_iff, ← fun j ↦ quasiIsoAt_extendMap_iff φ e (j := j) (hj' := rfl)]

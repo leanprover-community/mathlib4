@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Complex.Circle
 public import Mathlib.Geometry.Euclidean.Angle.Oriented.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Rotations by oriented angles.
 
@@ -16,7 +19,6 @@ This file defines rotations by oriented angles in real inner product spaces.
 ## Main definitions
 
 * `Orientation.rotation` is the rotation by an oriented angle with respect to an orientation.
-
 -/
 
 @[expose] public section
@@ -47,7 +49,7 @@ def rotationAux (θ : Real.Angle) : V →ₗᵢ[ℝ] V :=
     (by
       intro x y
       simp only [RCLike.conj_to_real, id, LinearMap.smul_apply, LinearMap.add_apply,
-        LinearMap.id_coe, LinearEquiv.coe_coe, LinearIsometryEquiv.coe_toLinearEquiv,
+        LinearMap.id_coe, LinearEquiv.coe_toLinearMap, LinearIsometryEquiv.coe_toLinearEquiv,
         Orientation.areaForm_rightAngleRotation_left, Orientation.inner_rightAngleRotation_left,
         Orientation.inner_rightAngleRotation_right, inner_add_left, inner_smul_left,
         inner_add_right, inner_smul_right]
@@ -65,18 +67,18 @@ def rotation (θ : Real.Angle) : V ≃ₗᵢ[ℝ] V :=
       Real.Angle.sin θ • (LinearIsometryEquiv.toLinearEquiv J).toLinearMap)
     (by
       ext x
-      convert congr_arg (fun t : ℝ => t • x) θ.cos_sq_add_sin_sq using 1
+      convert! congr($θ.cos_sq_add_sin_sq • x) using 1
       · simp only [o.rightAngleRotation_rightAngleRotation, o.rotationAux_apply,
-          Function.comp_apply, id, LinearEquiv.coe_coe, LinearIsometry.coe_toLinearMap,
+          Function.comp_apply, id, LinearEquiv.coe_toLinearMap, LinearIsometry.coe_toLinearMap,
           LinearIsometryEquiv.coe_toLinearEquiv, map_smul, map_sub, LinearMap.coe_comp,
           LinearMap.id_coe, LinearMap.smul_apply, LinearMap.sub_apply]
         module
       · simp)
     (by
       ext x
-      convert congr_arg (fun t : ℝ => t • x) θ.cos_sq_add_sin_sq using 1
+      convert! congr($θ.cos_sq_add_sin_sq • x) using 1
       · simp only [o.rightAngleRotation_rightAngleRotation, o.rotationAux_apply,
-          Function.comp_apply, id, LinearEquiv.coe_coe, LinearIsometry.coe_toLinearMap,
+          Function.comp_apply, id, LinearEquiv.coe_toLinearMap, LinearIsometry.coe_toLinearMap,
           LinearIsometryEquiv.coe_toLinearEquiv, map_add, map_smul, LinearMap.coe_comp,
           LinearMap.id_coe, LinearMap.smul_apply, LinearMap.sub_apply]
         module
@@ -105,7 +107,7 @@ theorem rotation_eq_matrix_toLin (θ : Real.Angle) {x : V} (hx : x ≠ 0) :
 /-- The determinant of `rotation` (as a linear map) is equal to `1`. -/
 @[simp]
 theorem det_rotation (θ : Real.Angle) : LinearMap.det (o.rotation θ).toLinearMap = 1 := by
-  haveI : Nontrivial V := nontrivial_of_finrank_eq_succ (@Fact.out (finrank ℝ V = 2) _)
+  have : Nontrivial V := nontrivial_of_finrank_eq_succ (@Fact.out (finrank ℝ V = 2) _)
   obtain ⟨x, hx⟩ : ∃ x, x ≠ (0 : V) := exists_ne (0 : V)
   rw [o.rotation_eq_matrix_toLin θ hx]
   simpa [sq] using θ.cos_sq_add_sin_sq
@@ -329,7 +331,7 @@ theorem oangle_eq_iff_eq_pos_smul_rotation_or_eq_zero {x y : V} (θ : Real.Angle
 theorem exists_linearIsometryEquiv_eq_of_det_pos {f : V ≃ₗᵢ[ℝ] V}
     (hd : 0 < LinearMap.det (f.toLinearEquiv : V →ₗ[ℝ] V)) :
     ∃ θ : Real.Angle, f = o.rotation θ := by
-  haveI : Nontrivial V := nontrivial_of_finrank_eq_succ (@Fact.out (finrank ℝ V = 2) _)
+  have : Nontrivial V := nontrivial_of_finrank_eq_succ (@Fact.out (finrank ℝ V = 2) _)
   obtain ⟨x, hx⟩ : ∃ x, x ≠ (0 : V) := exists_ne (0 : V)
   use o.oangle x (f x)
   apply LinearIsometryEquiv.toLinearEquiv_injective
@@ -421,7 +423,7 @@ theorem inner_smul_rotation_pi_div_two_smul_right (x : V) (r₁ r₂ : ℝ) :
 the second is a multiple of a `π / 2` rotation of that vector. -/
 theorem inner_eq_zero_iff_eq_zero_or_eq_smul_rotation_pi_div_two {x y : V} :
     ⟪x, y⟫ = 0 ↔ x = 0 ∨ ∃ r : ℝ, r • o.rotation (π / 2 : ℝ) x = y := by
-  wlog! +distrib H : x ≠ 0 ∧ y ≠ 0
+  by_cases! +distrib H : x = 0 ∨ y = 0
   · rcases H with (rfl | rfl) <;> simp
   simp only [← o.eq_zero_or_oangle_eq_iff_inner_eq_zero, H, ← neg_smul, false_or,
     o.oangle_eq_iff_eq_pos_smul_rotation_of_ne_zero H.1 H.2, ← o.neg_rotation_pi_div_two, smul_neg]

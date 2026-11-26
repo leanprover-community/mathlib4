@@ -5,10 +5,11 @@ Authors: Mitchell Horner
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Field
 public import Mathlib.Analysis.Convex.Deriv
-public import Mathlib.Analysis.Convex.Piecewise
-public import Mathlib.Analysis.Convex.Jensen
+public import Mathlib.RingTheory.Polynomial.Pochhammer
+
+import Mathlib.Algebra.BigOperators.Field
+import Mathlib.Analysis.Convex.Piecewise
 
 /-!
 # Pochhammer polynomials
@@ -39,16 +40,16 @@ variable {n : ℕ} {𝕜 : Type*} {k : 𝕜} [NontriviallyNormedField 𝕜]
 
 /-- `descPochhammer 𝕜 n` is differentiable. -/
 theorem differentiable_descPochhammer_eval : Differentiable 𝕜 (descPochhammer 𝕜 n).eval := by
-  simp [descPochhammer_eval_eq_prod_range, Differentiable.fun_finset_prod]
+  simp [descPochhammer_eval_eq_prod_range, Differentiable.fun_finsetProd]
 
 /-- `descPochhammer 𝕜 n` is continuous. -/
-theorem continuous_descPochhammer_eval : Continuous (descPochhammer 𝕜 n).eval := by
-  exact differentiable_descPochhammer_eval.continuous
+theorem continuous_descPochhammer_eval : Continuous (descPochhammer 𝕜 n).eval :=
+  differentiable_descPochhammer_eval.continuous
 
 lemma deriv_descPochhammer_eval_eq_sum_prod_range_erase (n : ℕ) (k : 𝕜) :
     deriv (descPochhammer 𝕜 n).eval k
       = ∑ i ∈ Finset.range n, ∏ j ∈ (Finset.range n).erase i, (k - j) := by
-  simp [descPochhammer_eval_eq_prod_range, deriv_fun_finset_prod]
+  simp [descPochhammer_eval_eq_prod_range, deriv_fun_finsetProd]
 
 /-- `deriv (descPochhammer ℝ n)` is monotone on `(n-1, ∞)`. -/
 lemma monotoneOn_deriv_descPochhammer_eval (n : ℕ) :
@@ -59,14 +60,11 @@ lemma monotoneOn_deriv_descPochhammer_eval (n : ℕ) :
     intro a ha b hb hab
     rw [Set.mem_Ioi, Nat.cast_add_one, add_sub_cancel_right] at ha hb
     simp_rw [deriv_descPochhammer_eval_eq_sum_prod_range_erase]
-    apply Finset.sum_le_sum; intro i hi
-    apply Finset.prod_le_prod
-    · intro j hj
-      rw [Finset.mem_erase, Finset.mem_range] at hj
-      apply sub_nonneg_of_le
-      exact ha.le.trans' (mod_cast Nat.le_pred_of_lt hj.2)
-    · intro j hj
-      rwa [← sub_le_sub_iff_right (j : ℝ)] at hab
+    gcongr with i hi
+    intro j hj
+    rw [Finset.mem_erase, Finset.mem_range] at hj
+    apply sub_nonneg_of_le
+    exact ha.le.trans' (mod_cast Nat.le_pred_of_lt hj.2)
 
 /-- `descPochhammer ℝ n` is convex on `[n-1, ∞)`. -/
 theorem convexOn_descPochhammer_eval (n : ℕ) :
@@ -92,14 +90,16 @@ private lemma convexOn_piecewise_Ici_descPochhammer_eval_zero (hn : n ≠ 0) :
   apply convexOn_univ_piecewise_Ici_of_monotoneOn_Ici_antitoneOn_Iic
     (convexOn_descPochhammer_eval n) (convexOn_const 0 (convex_Iic (n - 1 : ℝ)))
     (monotoneOn_descPochhammer_eval n) antitoneOn_const
-  simpa [← Nat.cast_pred hn] using descPochhammer_eval_coe_nat_of_lt (Nat.sub_one_lt_of_lt hn)
+  simpa [← Nat.cast_pred hn] using descPochhammer_eval_natCast_of_lt (Nat.sub_one_lt_of_lt hn)
 
 /-- Special case of **Jensen's inequality** for `Nat.descFactorial`. -/
 theorem descPochhammer_eval_le_sum_descFactorial
-    (hn : n ≠ 0) {ι : Type*} {t : Finset ι} (p : ι → ℕ) (w : ι → ℝ)
+    {ι : Type*} {t : Finset ι} (p : ι → ℕ) (w : ι → ℝ)
     (h₀ : ∀ i ∈ t, 0 ≤ w i) (h₁ : ∑ i ∈ t, w i = 1) (h_avg : n - 1 ≤ ∑ i ∈ t, w i * p i) :
     (descPochhammer ℝ n).eval (∑ i ∈ t, w i * p i)
       ≤ ∑ i ∈ t, w i * (p i).descFactorial n := by
+  rcases eq_or_ne n 0 with rfl | hn
+  · simp [h₁]
   let f : ℝ → ℝ := (Set.Ici (n - 1 : ℝ)).piecewise (descPochhammer ℝ n).eval 0
   suffices h_jensen : f (∑ i ∈ t, w i • p i) ≤ ∑ i ∈ t, w i • f (p i) by
     simpa only [smul_eq_mul, f, Set.piecewise_eq_of_mem (Set.Ici (n - 1 : ℝ)) _ _ h_avg,
@@ -108,13 +108,15 @@ theorem descPochhammer_eval_le_sum_descFactorial
 
 /-- Special case of **Jensen's inequality** for `Nat.choose`. -/
 theorem descPochhammer_eval_div_factorial_le_sum_choose
-    (hn : n ≠ 0) {ι : Type*} {t : Finset ι} (p : ι → ℕ) (w : ι → ℝ)
+    {ι : Type*} {t : Finset ι} (p : ι → ℕ) (w : ι → ℝ)
     (h₀ : ∀ i ∈ t, 0 ≤ w i) (h₁ : ∑ i ∈ t, w i = 1) (h_avg : n - 1 ≤ ∑ i ∈ t, w i * p i) :
     (descPochhammer ℝ n).eval (∑ i ∈ t, w i * p i) / n.factorial
       ≤ ∑ i ∈ t, w i * (p i).choose n := by
+  rcases eq_or_ne n 0 with rfl | hn
+  · simp [h₁]
   simp_rw [Nat.cast_choose_eq_descPochhammer_div,
     mul_div, ← Finset.sum_div, descPochhammer_eval_eq_descFactorial]
-  apply div_le_div_of_nonneg_right _ (Nat.cast_nonneg n.factorial)
-  exact descPochhammer_eval_le_sum_descFactorial hn p w h₀ h₁ h_avg
+  apply div_le_div_of_nonneg_right _ (by positivity)
+  exact descPochhammer_eval_le_sum_descFactorial p w h₀ h₁ h_avg
 
 end DescPochhammer

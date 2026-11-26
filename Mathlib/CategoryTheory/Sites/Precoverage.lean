@@ -5,13 +5,13 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Preserves.Creates.Pullbacks
-public import Mathlib.CategoryTheory.Sites.Sieves
-public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
+public import Mathlib.CategoryTheory.Sites.Sieves.Functoriality
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+
+import Mathlib.CategoryTheory.Limits.Preserves.Creates.Pullbacks
 
 /-!
-
 # Precoverages
 
 A precoverage `K` on a category `C` is a set of presieves associated to every object `X : C`,
@@ -31,7 +31,6 @@ These two are defined in later files. For precoverages, we define stability cond
   covering.
 - `CategoryTheory.Precoverage.IsStableUnderComposition`: Refining a covering presieve by covering
   presieves yields a covering presieve.
-
 -/
 
 @[expose] public section
@@ -81,7 +80,7 @@ instance : Bot (Precoverage C) where
 
 instance : CompleteLattice (Precoverage C) :=
   Function.Injective.completeLattice Precoverage.coverings (fun _ _ hab ↦ Precoverage.ext hab)
-    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl) rfl rfl
+    .rfl .rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl) rfl rfl
 
 /-- A precoverage has isomorphisms if singleton presieves by isomorphisms are covering. -/
 class HasIsos (J : Precoverage C) : Prop where
@@ -126,6 +125,8 @@ alias mem_coverings_of_isIso := HasIsos.mem_coverings_of_isIso
 alias sup_mem_coverings := IsStableUnderSup.sup_mem_coverings
 alias hasPullbacks_of_mem := HasPullbacks.hasPullbacks_of_mem
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option warning.simp.varHead false in
 attribute [local simp] Presieve.ofArrows.obj_idx Presieve.ofArrows.hom_idx in
 lemma mem_coverings_of_isPullback {J : Precoverage C} [IsStableUnderBaseChange J]
     {ι : Type w} {S : C} {X : ι → C}
@@ -136,7 +137,7 @@ lemma mem_coverings_of_isPullback {J : Precoverage C} [IsStableUnderBaseChange J
   -- We need to construct `max u v`-indexed families with the same presieves.
   -- Because `f` needs not be injective, the indexing type is a sum.
   let a (i : (Presieve.ofArrows X f).uncurry ⊕ (Presieve.ofArrows P p₁).uncurry) : ι :=
-    i.elim (fun i ↦ i.2.idx) (fun i ↦ i.2.idx)
+    i.elim (fun i ↦ i.property.idx) (fun i ↦ i.property.idx)
   convert_to Presieve.ofArrows (P ∘ a) (fun i ↦ p₁ (a i)) ∈ _
   · refine le_antisymm (fun Z g hg ↦ ?_) fun Z g ⟨i⟩ ↦ ⟨a i⟩
     exact .mk' (Sum.inr ⟨⟨_, _⟩, hg⟩) (by cat_disch) (by cat_disch)
@@ -146,6 +147,8 @@ lemma mem_coverings_of_isPullback {J : Precoverage C} [IsStableUnderBaseChange J
     refine le_antisymm (fun Z g ⟨i⟩ ↦ .mk _) fun Z g hg ↦ ?_
     exact .mk' (Sum.inl ⟨⟨_, _⟩, hg⟩) (by cat_disch) (by cat_disch)
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option warning.simp.varHead false in
 attribute [local simp] Presieve.ofArrows.obj_idx Presieve.ofArrows.hom_idx in
 lemma comp_mem_coverings {J : Precoverage C} [IsStableUnderComposition J] {ι : Type w}
     {S : C} {X : ι → C} (f : ∀ i, X i ⟶ S) (hf : Presieve.ofArrows X f ∈ J S)
@@ -155,15 +158,17 @@ lemma comp_mem_coverings {J : Precoverage C} [IsStableUnderComposition J] {ι : 
   -- We need to construct `max u v`-indexed families with the same presieves.
   -- Because `f` and `g` need not be injective, the indexing type is a sigma of sums.
   let ι' : Type (max u v) := (Presieve.ofArrows X f).uncurry
-  let σ' (i : ι') : Type (max u v) := (Presieve.ofArrows (Y i.2.idx) (g i.2.idx)).uncurry
+  let σ' (i : ι') : Type (max u v) :=
+    (Presieve.ofArrows (Y i.property.idx) (g i.property.idx)).uncurry
   let α : Type (max u v) :=
     (Presieve.ofArrows (fun p : Σ i, σ i ↦ Y _ p.2) (fun _ ↦ g _ _ ≫ f _)).uncurry
-  let τ' (a : α) : Type (max u v) := (Presieve.ofArrows (Y a.2.idx.1) (g a.2.idx.1)).uncurry
+  let τ' (a : α) : Type (max u v) :=
+    (Presieve.ofArrows (Y a.property.idx.1) (g a.property.idx.1)).uncurry
   let fib (i : ι' ⊕ α) := i.elim (fun i ↦ σ' i) (fun i ↦ Unit ⊕ τ' i)
-  let incl (p : ι' ⊕ α) : ι := p.elim (fun i ↦ i.2.idx) (fun i ↦ i.2.idx.1)
+  let incl (p : ι' ⊕ α) : ι := p.elim (fun i ↦ i.property.idx) (fun i ↦ i.property.idx.1)
   let fibincl (i : ι' ⊕ α) (j : fib i) : σ (incl i) := match i with
-    | .inl i => j.2.idx
-    | .inr i => j.elim (fun _ ↦ i.2.idx.2) (fun i ↦ i.2.idx)
+    | .inl i => j.property.idx
+    | .inr i => j.elim (fun _ ↦ i.property.idx.2) (fun i ↦ i.property.idx)
   convert_to Presieve.ofArrows _
       (fun p : Σ (i : ι' ⊕ α), fib i ↦ g (incl p.1) (fibincl _ p.2) ≫ f (incl p.1)) ∈ J.coverings S
   · refine le_antisymm (fun T u hu ↦ ?_) fun T u ⟨p⟩ ↦ .mk (Sigma.mk (incl p.1) (fibincl p.1 p.2))
@@ -207,6 +212,11 @@ instance (J K : Precoverage C) [IsStableUnderSup J] [IsStableUnderSup K] :
     IsStableUnderSup (J ⊓ K) where
   sup_mem_coverings hR hS := ⟨J.sup_mem_coverings hR.1 hS.1, K.sup_mem_coverings hR.2 hS.2⟩
 
+lemma hasPairwisePullbacks_of_mem (J : Precoverage C) [J.HasPullbacks] {X : C} {R : Presieve X}
+    (hR : R ∈ J X) :
+    R.HasPairwisePullbacks where
+  has_pullbacks h f _ := (J.hasPullbacks_of_mem f hR).hasPullback h
+
 section Functoriality
 
 variable {D : Type*} [Category* D] {F : C ⥤ D}
@@ -218,7 +228,7 @@ open Limits
 /-- If `J` is a precoverage on `D`, we obtain a precoverage on `C` by declaring a presieve on `D`
 to be covering if its image under `F` is. -/
 def comap (F : C ⥤ D) (J : Precoverage D) : Precoverage C where
-  coverings Y R := R.map F ∈ J (F.obj Y)
+  coverings Y := {R | R.map F ∈ J (F.obj Y)}
 
 @[simp]
 lemma mem_comap_iff {X : C} {R : Presieve X} :
@@ -236,6 +246,10 @@ lemma comap_comp {E : Type*} [Category* E] (F : C ⥤ D) (G : D ⥤ E) (J : Prec
   ext X R
   obtain ⟨ι, Y, f, rfl⟩ := R.exists_eq_ofArrows
   simp
+
+@[mono, gcongr]
+lemma comap_monotone : Monotone (comap F) :=
+  fun _ _ hJK _ _ hR ↦ hJK _ hR
 
 instance [HasIsos J] : HasIsos (J.comap F) where
   mem_coverings_of_isIso {S T} f hf := by simpa using mem_coverings_of_isIso (F.map f)
@@ -263,5 +277,49 @@ instance [CreatesLimitsOfShape WalkingCospan F] [HasPullbacks J] : HasPullbacks 
 end Functoriality
 
 end Precoverage
+
+section PreservesPullbacks
+
+variable {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D)
+
+open Limits
+
+/-- A functor `F` preserves pairwise pullbacks of a presieve `R` if for every pair
+of morphisms `f` and `g` in `R`, the pullback of `f` and `g` is preserved by `F`. -/
+class Functor.PreservesPairwisePullbacks (F : C ⥤ D) {X : C} (R : Presieve X) : Prop where
+  preservesLimit (R) ⦃Y Z : C⦄ ⦃f : Y ⟶ X⦄ ⦃g : Z ⟶ X⦄ : R f → R g →
+    PreservesLimit (cospan f g) F := by infer_instance
+
+alias Functor.preservesLimit_cospan_of_mem_presieve :=
+  Functor.PreservesPairwisePullbacks.preservesLimit
+
+instance [PreservesLimitsOfShape WalkingCospan F] {X : C} (R : Presieve X) :
+    F.PreservesPairwisePullbacks R where
+
+lemma Presieve.HasPairwisePullbacks.map_of_preservesPairwisePullbacks {X : C} (R : Presieve X)
+    [F.PreservesPairwisePullbacks R] [R.HasPairwisePullbacks] :
+    (R.map F).HasPairwisePullbacks where
+  has_pullbacks {Y Z} := fun {f} ⟨hf⟩ g ⟨hg⟩ ↦ by
+    have := Presieve.HasPairwisePullbacks.has_pullbacks hf hg
+    have := F.preservesLimit_cospan_of_mem_presieve _ hf hg
+    exact hasPullback_of_preservesPullback F _ _
+
+namespace Precoverage
+
+/-- Pullbacks are preserved by a functor `F : C ⥤ D` for the precoverage `J` on `C` if
+`F` preserves all pairwise pullbacks of presieves in `J`. -/
+class PullbacksPreservedBy (J : Precoverage C) (F : C ⥤ D) : Prop where
+  preservesPairwisePullbacks_of_mem ⦃X : C⦄ ⦃R : Presieve X⦄ :
+    R ∈ J X → F.PreservesPairwisePullbacks R := by infer_instance
+
+alias preservesPairwisePullbacks_of_mem :=
+  Precoverage.PullbacksPreservedBy.preservesPairwisePullbacks_of_mem
+
+instance (J : Precoverage C) (F : C ⥤ D) [PreservesLimitsOfShape WalkingCospan F] :
+    J.PullbacksPreservedBy F where
+
+end Precoverage
+
+end PreservesPullbacks
 
 end CategoryTheory

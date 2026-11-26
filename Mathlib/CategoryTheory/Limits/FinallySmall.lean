@@ -5,8 +5,13 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.Logic.Small.Set
 public import Mathlib.CategoryTheory.Filtered.Final
+
+import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
+import Mathlib.Logic.Small.Set
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Finally small categories
@@ -28,7 +33,7 @@ converse holds if `J` is filtered.
 
 @[expose] public section
 
-universe w v v₁ u u₁
+universe w w' v v₁ u u₁
 
 open CategoryTheory Functor
 
@@ -85,6 +90,11 @@ instance [Limits.HasTerminal J] : FinallySmall.{w} J :=
   have := Functor.final_const_terminal (C := PUnit.{w + 1}) (D := J)
   .mk' ((Functor.const PUnit.{w + 1}).obj (⊤_ J))
 
+instance {J' : Type*} [Category* J'] [FinallySmall.{w} J] [FinallySmall.{w'} J'] :
+    FinallySmall.{max w w'} (J × J') :=
+  finallySmall_of_final_of_essentiallySmall
+    ((fromFinalModel.{w} J).prod (fromFinalModel.{w'} J'))
+
 end FinallySmall
 
 section InitiallySmall
@@ -137,6 +147,18 @@ theorem initiallySmall_of_initial_of_essentiallySmall [EssentiallySmall.{w} K]
 instance [Limits.HasInitial J] : InitiallySmall.{w} J :=
   have := Functor.initial_const_initial (C := PUnit.{w + 1}) (D := J)
   .mk' ((Functor.const PUnit.{w + 1}).obj (⊥_ J))
+
+instance [LocallySmall.{w} J] [InitiallySmall.{w} J] (X : J) :
+    InitiallySmall.{w} (Over X) := by
+  have : InitiallySmall.{w} (CostructuredArrow (fromInitialModel.{w} J) X) :=
+    initiallySmall_of_essentiallySmall _
+  exact initiallySmall_of_initial_of_initiallySmall
+    (CostructuredArrow.toOver (fromInitialModel.{w} J) X)
+
+instance {J' : Type*} [Category* J'] [InitiallySmall.{w} J] [InitiallySmall.{w'} J'] :
+    InitiallySmall.{max w w'} (J × J') :=
+  initiallySmall_of_initial_of_essentiallySmall
+    ((fromInitialModel.{w} J).prod (fromInitialModel.{w'} J'))
 
 end InitiallySmall
 
@@ -193,6 +215,16 @@ theorem initiallySmall_of_small_weakly_initial_set [IsCofilteredOrEmpty J] (s : 
   refine Functor.initial_of_exists_of_isCofiltered_of_fullyFaithful _ (fun i => ?_)
   obtain ⟨j, hj₁, hj₂⟩ := hs i
   exact ⟨⟨j, hj₁⟩, hj₂⟩
+
+variable {J} in
+theorem initiallySmall_of_essentiallySmall_weakly_initial_objectProperty
+    [IsCofilteredOrEmpty J] (P : ObjectProperty J) [ObjectProperty.EssentiallySmall.{v} P]
+    (hP : ∀ i, ∃ j, P j ∧ Nonempty (j ⟶ i)) : InitiallySmall.{v} J := by
+  obtain ⟨Q, H, hQ⟩ := ObjectProperty.EssentiallySmall.exists_small_le'.{v} P
+  refine initiallySmall_of_small_weakly_initial_set {j | Q j} fun i ↦ ?_
+  obtain ⟨j, hj, ⟨f⟩⟩ := hP i
+  obtain ⟨k, hk, ⟨e⟩⟩ := hQ _ hj
+  exact ⟨k, hk, ⟨e.inv ≫ f⟩⟩
 
 theorem initiallySmall_iff_exists_small_weakly_initial_set [IsCofilteredOrEmpty J] :
     InitiallySmall.{v} J ↔ ∃ (s : Set J) (_ : Small.{v} s), ∀ i, ∃ j ∈ s, Nonempty (j ⟶ i) := by

@@ -5,9 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Localization.Resolution
-public import Mathlib.CategoryTheory.Localization.Opposite
 public import Mathlib.CategoryTheory.GuitartExact.Opposite
+public import Mathlib.CategoryTheory.Localization.Resolution
 
 /-!
 # Derivability structures
@@ -31,7 +30,7 @@ L₁|         | L₂
        F
 ```
 
-## Implementation details
+## Implementation notes
 
 In the field `guitartExact'` of the structure `LocalizerMorphism.IsRightDerivabilityStructure`,
 The condition that the square is Guitart exact is stated for the localization functors
@@ -51,16 +50,16 @@ not depend on the choice of the localization functors.
   functors in several variables
 
 ## References
-* [Bruno Kahn and Georges Maltsiniotis, *Structures de dérivabilité*][KahnMaltsiniotis2008]
 
+* [Bruno Kahn and Georges Maltsiniotis, *Structures de dérivabilité*][KahnMaltsiniotis2008]
 -/
 
-@[expose] public section
+public section
 universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
 
-open Category Localization Functor
+open Category Localization CategoryTheory.Functor
 
 variable {C₁ : Type u₁} {C₂ : Type u₂} [Category.{v₁} C₁] [Category.{v₂} C₂]
   {W₁ : MorphismProperty C₁} {W₂ : MorphismProperty C₂}
@@ -186,6 +185,29 @@ instance [W₁.ContainsIdentities] : (LocalizerMorphism.id W₁).IsLeftDerivabil
     (Iso.refl _)]
   dsimp
   exact TwoSquare.guitartExact_id' W₁.Q
+
+lemma isRightDerivabilityStructure_iff_op :
+    Φ.IsRightDerivabilityStructure ↔
+      Φ.op.IsLeftDerivabilityStructure := by
+  let F := Φ.localizedFunctor W₁.Q W₂.Q
+  let e : Φ.functor ⋙ W₂.Q ≅ W₁.Q ⋙ F := (Φ.catCommSq W₁.Q W₂.Q).iso
+  let e' : Φ.functor.op ⋙ W₂.Q.op ≅ W₁.Q.op ⋙ F.op := NatIso.op e.symm
+  have eq : TwoSquare.GuitartExact e'.inv ↔ TwoSquare.GuitartExact e.hom :=
+    TwoSquare.guitartExact_op_iff _
+  refine ⟨fun ⟨_, _⟩ ↦ ?_, fun _ ↦ ?_⟩
+  · simpa only [Φ.op.isLeftDerivabilityStructure_iff _ _ _ e', eq]
+  · have : Φ.HasRightResolutions := by
+      rw [hasRightResolutions_iff_op]
+      infer_instance
+    refine ⟨inferInstance, ?_⟩
+    rw [← eq]
+    exact Φ.op.guitartExact_of_isLeftDerivabilityStructure' _ _ _ e'
+
+instance [Φ.IsLeftDerivabilityStructure] : Φ.op.IsRightDerivabilityStructure := by
+  rwa [← isLeftDerivabilityStructure_iff_op]
+
+instance [Φ.IsRightDerivabilityStructure] : Φ.op.IsLeftDerivabilityStructure := by
+  rwa [← isRightDerivabilityStructure_iff_op]
 
 end LocalizerMorphism
 

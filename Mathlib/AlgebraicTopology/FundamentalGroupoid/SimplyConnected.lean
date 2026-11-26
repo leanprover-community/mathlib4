@@ -5,23 +5,26 @@ Authors: Praneeth Kolichala
 -/
 module
 
-public import Mathlib.AlgebraicTopology.FundamentalGroupoid.InducedMaps
+public import Mathlib.AlgebraicTopology.FundamentalGroupoid.FundamentalGroup
 public import Mathlib.Topology.Homotopy.Contractible
-public import Mathlib.CategoryTheory.PUnit
-public import Mathlib.AlgebraicTopology.FundamentalGroupoid.PUnit
+
+import Mathlib.AlgebraicTopology.FundamentalGroupoid.InducedMaps
+import Mathlib.AlgebraicTopology.FundamentalGroupoid.PUnit
+import Mathlib.CategoryTheory.PUnit
 
 /-!
 # Simply connected spaces
+
 This file defines simply connected spaces.
 A topological space is simply connected if its fundamental groupoid is equivalent to `Unit`.
 
 We also define the corresponding predicate for sets.
 
-## Main theorems
-  - `simply_connected_iff_unique_homotopic` - A space is simply connected if and only if it is
-    nonempty and there is a unique path up to homotopy between any two points
+## Main results
 
-  - `SimplyConnectedSpace.ofContractible` - A contractible space is simply connected
+- `simply_connected_iff_unique_homotopic` - A space is simply connected if and only if it is
+  nonempty and there is a unique path up to homotopy between any two points
+- `SimplyConnectedSpace.ofContractible` - A contractible space is simply connected
 -/
 
 @[expose] public section
@@ -38,9 +41,6 @@ variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 class SimplyConnectedSpace (X : Type*) [TopologicalSpace X] : Prop where
   equiv_unit : Nonempty (FundamentalGroupoid X ≌ Discrete Unit)
 
-@[deprecated (since := "2026-01-08")]
-alias simply_connected_def := simplyConnectedSpace_iff
-
 theorem simply_connected_iff_unique_homotopic (X : Type*) [TopologicalSpace X] :
     SimplyConnectedSpace X ↔
       Nonempty X ∧ ∀ x y : X, Nonempty (Unique (Path.Homotopic.Quotient x y)) := by
@@ -51,7 +51,7 @@ theorem simply_connected_iff_unique_homotopic (X : Type*) [TopologicalSpace X] :
 
 theorem ContinuousMap.HomotopyEquiv.simplyConnectedSpace [hY : SimplyConnectedSpace Y]
     (e : X ≃ₕ Y) : SimplyConnectedSpace X :=
-  ⟨hY.1.map (FundamentalGroupoidFunctor.equivOfHomotopyEquiv e).trans⟩
+  ⟨hY.equiv_unit.map (FundamentalGroupoidFunctor.equivOfHomotopyEquiv e).trans⟩
 
 theorem ContinuousMap.HomotopyEquiv.simplyConnectedSpace_iff (e : X ≃ₕ Y) :
     SimplyConnectedSpace X ↔ SimplyConnectedSpace Y :=
@@ -64,6 +64,11 @@ variable {X : Type*} [TopologicalSpace X] [SimplyConnectedSpace X]
 instance (x y : X) : Subsingleton (Path.Homotopic.Quotient x y) :=
   @Unique.instSubsingleton _ (Nonempty.some (by
     rw [simply_connected_iff_unique_homotopic] at *; tauto))
+
+instance (x : X) : Subsingleton (FundamentalGroup X x) where
+  allEq _ _ := by
+    ext : 1
+    apply Subsingleton.elim (α := Path.Homotopic.Quotient x x)
 
 instance (priority := 100) : PathConnectedSpace X :=
   let unique_homotopic := (simply_connected_iff_unique_homotopic X).mp inferInstance
@@ -94,9 +99,10 @@ theorem simply_connected_iff_paths_homotopic :
 theorem simply_connected_iff_paths_homotopic' :
     SimplyConnectedSpace Y ↔
       PathConnectedSpace Y ∧ ∀ {x y : Y} (p₁ p₂ : Path x y), Path.Homotopic p₁ p₂ := by
-  convert simply_connected_iff_paths_homotopic (Y := Y)
+  convert! simply_connected_iff_paths_homotopic (Y := Y)
   simp [Path.Homotopic.Quotient, Setoid.eq_top_iff]; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 open Path.Homotopic.Quotient in
 /-- A space is simply connected if and only if it is path-connected and every loop
     at any basepoint is null-homotopic (i.e., homotopic to the constant loop). -/
@@ -170,8 +176,8 @@ theorem isSimplyConnected_iff_exists_homotopy_refl_forall_mem {s : Set X} :
       source' := by simp
       target' := by simp
     } with ⟨F⟩
-    exact ⟨F.map (.restrict s (.id _)), fun t ↦ (F t).2⟩
-  · rcases h x (p.map continuous_subtype_val) (fun t ↦ (p t).2) with ⟨F, hF⟩
+    exact ⟨F.map (.restrict s (.id _)), fun t ↦ (F t).property⟩
+  · rcases h x (p.map continuous_subtypeVal) (fun t ↦ (p t).property) with ⟨F, hF⟩
     exact ⟨{
       toFun t := ⟨F t, hF t⟩
       map_zero_left := by simp

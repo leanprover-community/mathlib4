@@ -5,17 +5,17 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Ideal.Colon
+public import Mathlib.RingTheory.LocalProperties.Basic
 public import Mathlib.RingTheory.Localization.Finiteness
 public import Mathlib.RingTheory.Nakayama
 public import Mathlib.RingTheory.QuotSMulTop
 public import Mathlib.RingTheory.Spectrum.Prime.Basic
 
 /-!
-
 # Support of a module
 
 ## Main results
+
 - `Module.support`: The support of an `R`-module as a subset of `Spec R`.
 - `Module.mem_support_iff_exists_annihilator`: `p ∈ Supp M ↔ ∃ m, Ann(m) ≤ p`.
 - `Module.support_eq_empty_iff`: `Supp M = ∅ ↔ M = 0`
@@ -28,6 +28,7 @@ Also see `Mathlib/RingTheory/Spectrum/Prime/Module.lean` for other results
 depending on the Zariski topology.
 
 ## TODO
+
 - Connect to associated primes once we have them in mathlib.
 - Given an `R`-algebra `f : R → A` and a finite `R`-module `M`,
   `Supp_A (A ⊗ M) = f♯ ⁻¹ Supp M` where `f♯ : Spec A → Spec R`. (stacks#0BUR)
@@ -62,13 +63,13 @@ lemma Module.notMem_support_iff' :
 lemma Module.mem_support_iff' :
     p ∈ Module.support R M ↔ ∃ m : M, ∀ r ∉ p.asIdeal, r • m ≠ 0 := by
   rw [← @not_not (_ ∈ _), notMem_support_iff']
-  push_neg
+  push Not
   rfl
 
 lemma Module.mem_support_iff_exists_annihilator :
     p ∈ Module.support R M ↔ ∃ m : M, (R ∙ m).annihilator ≤ p.asIdeal := by
   rw [Module.mem_support_iff']
-  simp_rw [not_imp_not, SetLike.le_def, Submodule.mem_annihilator_span_singleton]
+  simp_rw [not_imp_not, le_iff_mem_imp_mem, Submodule.mem_annihilator_span_singleton]
 
 lemma Module.mem_support_mono {p q : PrimeSpectrum R} (H : p ≤ q) (hp : p ∈ Module.support R M) :
     q ∈ Module.support R M := by
@@ -81,9 +82,9 @@ lemma Module.mem_support_iff_of_span_eq_top {s : Set M} (hs : Submodule.span R s
   · contrapose
     rw [notMem_support_iff, LocalizedModule.subsingleton_iff_ker_eq_top, ← top_le_iff,
       ← hs, Submodule.span_le, Set.subset_def]
-    simp_rw [SetLike.le_def, Submodule.mem_annihilator_span_singleton, SetLike.mem_coe,
+    simp_rw [le_iff_mem_imp_mem, Submodule.mem_annihilator_span_singleton, SetLike.mem_coe,
       LocalizedModule.mem_ker_mkLinearMap_iff]
-    push_neg
+    push Not
     simp_rw [and_comm]
     exact id
   · intro ⟨m, _, hm⟩
@@ -95,7 +96,7 @@ lemma Module.annihilator_le_of_mem_support (hp : p ∈ Module.support R M) :
   exact le_trans ((Submodule.subtype _).annihilator_le_of_injective Subtype.val_injective) hm
 
 lemma LocalizedModule.subsingleton_iff_support_subset {f : R} :
-    Subsingleton (LocalizedModule (.powers f) M) ↔
+    Subsingleton (LocalizedModule.Away f M) ↔
       Module.support R M ⊆ PrimeSpectrum.zeroLocus {f} := by
   rw [LocalizedModule.subsingleton_iff]
   constructor
@@ -123,8 +124,7 @@ lemma Module.support_eq_empty_iff :
 
 lemma Module.nonempty_support_iff :
     (Module.support R M).Nonempty ↔ Nontrivial M := by
-  rw [Set.nonempty_iff_ne_empty, ne_eq,
-    Module.support_eq_empty_iff, ← not_subsingleton_iff_nontrivial]
+  simp [← Set.ne_empty_iff_nonempty, Module.support_eq_empty_iff, not_subsingleton_iff_nontrivial]
 
 lemma Module.nonempty_support_of_nontrivial [Nontrivial M] : (Module.support R M).Nonempty :=
   Module.nonempty_support_iff.mpr ‹_›
@@ -141,11 +141,14 @@ lemma Module.support_of_algebra {A : Type*} [Ring A] [Algebra R A] :
   · simpa [Algebra.smul_def, (show _ = _ from hx)] using hm _ hx'
   · exact hr (H ((Algebra.algebraMap_eq_smul_one _).trans e))
 
-lemma Module.support_of_noZeroSMulDivisors [IsDomain R] [IsTorsionFree R M] [Nontrivial M] :
+lemma Module.support_of_isTorsionFree [IsDomain R] [IsTorsionFree R M] [Nontrivial M] :
     Module.support R M = Set.univ := by
   simp only [Set.eq_univ_iff_forall, mem_support_iff', ne_eq, smul_eq_zero, not_or]
   obtain ⟨x, hx⟩ := exists_ne (0 : M)
   exact fun p ↦ ⟨x, fun r hr ↦ ⟨fun e ↦ hr (e ▸ p.asIdeal.zero_mem), hx⟩⟩
+
+@[deprecated (since := "2026-07-27")]
+alias Module.support_of_noZeroSMulDivisors := Module.support_of_isTorsionFree
 
 variable {N P : Type*} [AddCommGroup N] [Module R N] [AddCommGroup P] [Module R P]
 variable (f : M →ₗ[R] N) (g : N →ₗ[R] P)
@@ -196,10 +199,9 @@ open PrimeSpectrum
 
 lemma Module.mem_support_iff_of_finite :
     p ∈ Module.support R M ↔ Module.annihilator R M ≤ p.asIdeal := by
-  classical
   obtain ⟨s, hs⟩ := ‹Module.Finite R M›
   refine ⟨annihilator_le_of_mem_support, fun H ↦ (mem_support_iff_of_span_eq_top hs).mpr ?_⟩
-  simp only [SetLike.le_def, Submodule.mem_annihilator_span_singleton] at H ⊢
+  simp only [le_iff_mem_imp_mem, Submodule.mem_annihilator_span_singleton] at H ⊢
   contrapose! H
   choose x hx hx' using Subtype.forall'.mp H
   refine ⟨s.attach.prod x, ?_, ?_⟩
@@ -219,7 +221,7 @@ lemma Module.support_eq_zeroLocus :
 then `M[1/f] = 0` for some `p ∈ D(f)`. -/
 lemma LocalizedModule.exists_subsingleton_away (p : Ideal R) [p.IsPrime]
     [Subsingleton (LocalizedModule p.primeCompl M)] :
-    ∃ f ∉ p, Subsingleton (LocalizedModule (.powers f) M) := by
+    ∃ f ∉ p, Subsingleton (LocalizedModule.Away f M) := by
   have : ⟨p, inferInstance⟩ ∈ (Module.support R M)ᶜ := by
     simpa [Module.notMem_support_iff]
   rw [Module.support_eq_zeroLocus, ← Set.biUnion_of_singleton (Module.annihilator R M : Set R),
@@ -231,9 +233,15 @@ lemma LocalizedModule.exists_subsingleton_away (p : Ideal R) [p.IsPrime]
 lemma IsLocalizedModule.exists_subsingleton_away {M' : Type*} [AddCommMonoid M'] [Module R M']
     (l : M →ₗ[R] M') (p : Ideal R) [p.IsPrime] [IsLocalizedModule p.primeCompl l]
     [Subsingleton M'] :
-    ∃ f ∉ p, Subsingleton (LocalizedModule (.powers f) M) := by
+    ∃ f ∉ p, Subsingleton (LocalizedModule.Away f M) := by
   let e := IsLocalizedModule.iso p.primeCompl l
   have : Subsingleton (LocalizedModule p.primeCompl M) := e.subsingleton
+  exact LocalizedModule.exists_subsingleton_away p
+
+lemma Module.exists_localizedMap_away_surjective_of_localizedMap_atPrime_surjective (p : Ideal R)
+    [p.IsPrime] (φ : N →ₗ[R] M) (hφ : Function.Surjective (LocalizedModule.map p.primeCompl φ)) :
+    ∃ a ∉ p, Function.Surjective (LocalizedModule.map (Submonoid.powers a) φ) := by
+  simp_rw [φ.localizedMap_surjective_iff_subsingleton_localized_coker] at hφ ⊢
   exact LocalizedModule.exists_subsingleton_away p
 
 /-- `Supp(M/IM) = Supp(M) ∩ Z(I)`. -/
@@ -264,7 +272,7 @@ theorem Module.support_quotient (I : Ideal R) :
       exact Ideal.map_mono hp₂
     exact e.nontrivial
 
-open Pointwise in
+open scoped Pointwise in
 @[simp]
 theorem Module.support_quotSMulTop (x : R) :
     support R (QuotSMulTop x M) = support R M ∩ zeroLocus {x} :=

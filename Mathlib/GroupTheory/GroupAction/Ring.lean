@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.GroupWithZero.Action.Defs
 public import Mathlib.Algebra.Ring.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Commutativity and associativity of action of integers on rings
 
@@ -19,7 +22,7 @@ Those instances are in their own file only because they require much less import
 file they could go to. This is unfortunate and should be fixed by reorganising files.
 -/
 
-@[expose] public section
+public section
 
 open scoped Int
 

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExactSequences
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Smallness of Ext-groups from the existence of enough projectives
 
@@ -20,7 +23,6 @@ for a given category `C`, there may be different reasonable choices for the univ
 and if we have two `HasExt.{w₁}` and `HasExt.{w₂}` instances, we would have
 to specify the universe explicitly almost everywhere, which would be an inconvenience.
 So we must be very selective regarding `HasExt` instances.
-
 -/
 
 public section
@@ -45,7 +47,7 @@ lemma isSplitEpi_to_singleFunctor_obj_of_projective
   have : π.f i = α ≫ (singleObjXSelf (ComplexShape.up ℤ) i P).inv := by
     rw [← cancel_epi e.hom]
     dsimp [α, e]
-    rw [assoc, assoc, assoc, iCyclesIso_hom_inv_id_assoc,
+    rw [iCyclesIso_hom, assoc, assoc, assoc, iCyclesIso_hom_inv_id_assoc,
       homologyπ_naturality_assoc]
     dsimp [singleFunctor, singleFunctors]
     rw [homologyπ_singleObjHomologySelfIso_hom_assoc,
@@ -57,8 +59,7 @@ lemma isSplitEpi_to_singleFunctor_obj_of_projective
     id := by
       apply HomologicalComplex.from_single_hom_ext
       rw [comp_f, mkHomFromSingle_f, assoc, id_f, this, Projective.factorThru_comp_assoc,
-        id_comp, Iso.hom_inv_id]
-      rfl }⟩⟩
+        id_comp, Iso.hom_inv_id] }⟩⟩
 
 end CochainComplex
 
@@ -96,7 +97,7 @@ open DerivedCategory
 
 lemma eq_zero_of_projective [HasExt.{w} C] {P Y : C} {n : ℕ} [Projective P]
     (e : Ext P Y (n + 1)) : e = 0 := by
-  letI := HasDerivedCategory.standard C
+  let := HasDerivedCategory.standard C
   apply homEquiv.injective
   simp only [← cancel_mono (((singleFunctors C).shiftIso (n + 1) (-(n + 1)) 0
     (by lia)).hom.app _), zero_hom, Limits.zero_comp]
@@ -106,6 +107,20 @@ lemma eq_zero_of_projective [HasExt.{w} C] {P Y : C} {n : ℕ} [Projective P]
 lemma subsingleton_of_projective [HasExt.{w} C]
     (P Y : C) [Projective P] (n : ℕ) : Subsingleton (Ext.{w} P Y (n + 1)) :=
   subsingleton_of_forall_eq 0 Ext.eq_zero_of_projective
+
+attribute [local instance] Ext.subsingleton_of_projective in
+/-- For a short exact complex whose middle object is projective, the vanishing of
+`Ext S.X₃ M 1` is equivalent to surjectivity of precomposition along `S.f` on `Ext⁰`. -/
+lemma one_subsingleton_iff_of_projective [HasExt.{w} C] (X : C)
+    (S : ShortComplex C) (S_exact : S.ShortExact) (proj : Projective S.X₂) :
+    Subsingleton (Ext S.X₃ X 1) ↔
+      Function.Surjective ((Ext.mk₀ S.f).precomp X (add_zero 0)) := by
+  refine ⟨fun h x₁ ↦ Ext.contravariant_sequence_exact₁ S_exact _ x₁ (add_zero _)
+    (by subsingleton), fun h ↦ subsingleton_of_forall_eq 0 (fun x₃ ↦ ?_)⟩
+  obtain ⟨x₁, rfl⟩ := Ext.contravariant_sequence_exact₃ S_exact _ x₃
+    (by subsingleton) (add_zero 1)
+  obtain ⟨x₂, rfl⟩ := h x₁
+  simp
 
 end Abelian.Ext
 
@@ -121,7 +136,7 @@ instances, we would have to specify the universe explicitly almost
 everywhere, which would be an inconvenience. Then, we must be
 very selective regarding `HasExt` instances. -/
 lemma hasExt_of_enoughProjectives [LocallySmall.{w} C] [EnoughProjectives C] : HasExt.{w} C := by
-  letI := HasDerivedCategory.standard C
+  let := HasDerivedCategory.standard C
   have := hasExt_of_hasDerivedCategory C
   rw [hasExt_iff_small_ext.{w}]
   intro X Y n

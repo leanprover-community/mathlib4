@@ -8,17 +8,18 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 public import Mathlib.CategoryTheory.Idempotents.FunctorCategories
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Idempotent completeness of categories of simplicial objects
 
 In this file, we provide an instance expressing that `SimplicialObject C`
 and `CosimplicialObject C` are idempotent complete categories when the
 category `C` is.
-
 -/
 
-@[expose] public section
+public section
 
 
 namespace CategoryTheory

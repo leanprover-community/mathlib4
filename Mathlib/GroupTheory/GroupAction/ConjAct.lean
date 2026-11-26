@@ -24,13 +24,12 @@ As a generalization, this also allows:
 * `ConjAct Mˣ` to act on `M`, when `M` is a `Monoid`
 * `ConjAct G₀` to act on `G₀`, when `G₀` is a `GroupWithZero`
 
-## Implementation Notes
+## Implementation notes
 
 The scalar action in defined in this file can also be written using `MulAut.conj g • h`. This
 has the advantage of not using the type alias `ConjAct`, but the downside of this approach
 is that some theorems about the group actions will not apply when since this
 `MulAut.conj g • h` describes an action of `MulAut G` on `G`, and not an action of `G`.
-
 -/
 
 @[expose] public section
@@ -49,11 +48,11 @@ open MulAction Subgroup
 
 variable {M G}
 
-instance [Group G] : Group (ConjAct G) := ‹Group G›
+instance [DivInvMonoid G] : DivInvMonoid (ConjAct G) := inferInstanceAs <| DivInvMonoid G
 
-instance [DivInvMonoid G] : DivInvMonoid (ConjAct G) := ‹DivInvMonoid G›
+instance [Group G] : Group (ConjAct G) := inferInstanceAs <| Group G
 
-instance [Fintype G] : Fintype (ConjAct G) := ‹Fintype G›
+instance [Fintype G] : Fintype (ConjAct G) := inferInstanceAs <| Fintype G
 
 @[simp]
 theorem card [Fintype G] : Fintype.card (ConjAct G) = Fintype.card G :=
@@ -168,6 +167,13 @@ end Units
 
 variable [Group G]
 
+theorem coe_smul {G : Type*} [Group G] {H : Subgroup G} (g h : H) :
+    (ConjAct.toConjAct g • h).val = ConjAct.toConjAct g.val • h.val := by
+  rfl
+
+theorem toConjAct_inv_smul (g h : G) : toConjAct g⁻¹ • h = g⁻¹ * h * g := by
+  rw [toConjAct_smul, inv_inv]
+
 -- todo: this file is not in good order; I will refactor this after the PR
 
 instance : MulDistribMulAction (ConjAct G) G where
@@ -186,6 +192,9 @@ instance smulCommClass' [SMul α G] [SMulCommClass G α G] [IsScalarTower α G G
   SMulCommClass.symm _ _ _
 
 theorem smul_eq_mulAut_conj (g : ConjAct G) (h : G) : g • h = MulAut.conj (ofConjAct g) h :=
+  rfl
+
+theorem toConjAct_smul_eq_mulAut_conj (g h : G) : ConjAct.toConjAct g • h = MulAut.conj g h :=
   rfl
 
 /-- The set of fixed points of the conjugation action of `G` on itself is the center of `G`. -/
@@ -223,7 +232,7 @@ theorem _root_.Subgroup.centralizer_eq_comap_stabilizer (g : G) :
 /-- As normal subgroups are closed under conjugation, they inherit the conjugation action
   of the underlying group. -/
 instance Subgroup.conjAction {H : Subgroup G} [hH : H.Normal] : SMul (ConjAct G) H :=
-  ⟨fun g h => ⟨g • (h : G), hH.conj_mem h.1 h.2 (ofConjAct g)⟩⟩
+  ⟨fun g h => ⟨g • (h : G), hH.conj_mem h.val h.property (ofConjAct g)⟩⟩
 
 theorem Subgroup.val_conj_smul {H : Subgroup G} [H.Normal] (g : ConjAct G) (h : H) :
     ↑(g • h) = g • (h : G) :=
@@ -245,7 +254,7 @@ theorem _root_.MulAut.conjNormal_apply {H : Subgroup G} [H.Normal] (g : G) (h : 
 @[simp]
 theorem _root_.MulAut.conjNormal_symm_apply {H : Subgroup G} [H.Normal] (g : G) (h : H) :
     ↑((MulAut.conjNormal g).symm h) = g⁻¹ * h * g := by
-  change _ * _⁻¹⁻¹ = _
+  change _ * g⁻¹⁻¹ = _
   rw [inv_inv]
   rfl
 
@@ -276,10 +285,10 @@ units of the centralizer of `x : M`. -/
 def unitsCentralizerEquiv (x : Mˣ) :
     (Submonoid.centralizer ({↑x} : Set M))ˣ ≃* MulAction.stabilizer (ConjAct Mˣ) x :=
   MulEquiv.symm
-  { toFun := MonoidHom.toHomUnits <|
-      { toFun := fun u ↦ ⟨↑(ConjAct.ofConjAct u.1 : Mˣ), by
+  { toFun := MonoidHom.toHomUnits
+      { toFun := fun u ↦ ⟨↑(ConjAct.ofConjAct u.val : Mˣ), by
           rintro x ⟨rfl⟩
-          have : (u : ConjAct Mˣ) • x = x := u.2
+          have : (u : ConjAct Mˣ) • x = x := u.property
           rwa [ConjAct.smul_def, mul_inv_eq_iff_eq_mul, Units.ext_iff, eq_comm] at this⟩,
         map_one' := rfl,
         map_mul' := fun _ _ ↦ rfl }
@@ -287,7 +296,7 @@ def unitsCentralizerEquiv (x : Mˣ) :
       ⟨ConjAct.toConjAct (Units.map (Submonoid.centralizer ({↑x} : Set M)).subtype u), by
       change _ • _ = _
       simp only [ConjAct.smul_def, ConjAct.ofConjAct_toConjAct, mul_inv_eq_iff_eq_mul]
-      exact Units.ext <| (u.1.2 x <| Set.mem_singleton _).symm⟩
+      exact Units.ext (u.val.property x <| Set.mem_singleton _).symm⟩
     map_mul' := map_mul _ }
 
 end Units

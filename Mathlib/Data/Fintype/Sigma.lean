@@ -8,16 +8,14 @@ module
 public import Mathlib.Data.Finset.Sigma
 public import Mathlib.Data.Fintype.OfMap
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # fintype instances for sigma types
 -/
 
-@[expose] public section
-
-
-open Function
-
-open Nat
+public section
 
 universe u v
 

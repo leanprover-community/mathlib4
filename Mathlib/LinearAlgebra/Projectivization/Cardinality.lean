@@ -5,17 +5,19 @@ Authors: Judith Ludwig, Christian Merten
 -/
 module
 
-public import Mathlib.Algebra.Ring.GeomSum
-public import Mathlib.Data.Finite.Sum
-public import Mathlib.Data.Fintype.Units
 public import Mathlib.GroupTheory.GroupAction.Quotient
 public import Mathlib.LinearAlgebra.Projectivization.Basic
+
+import Mathlib.Algebra.GroupWithZero.Units.Fintype
+import Mathlib.Algebra.Ring.GeomSum
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Cardinality of projective spaces
 
 We compute the cardinality of `ℙ k V` if `k` is a finite field.
-
 -/
 
 @[expose] public section
@@ -32,6 +34,7 @@ variable (k V : Type*) [DivisionRing k] [AddCommGroup V] [Module k V]
 def equivQuotientOrbitRel : ℙ k V ≃ Quotient (MulAction.orbitRel kˣ { v : V // v ≠ 0 }) :=
   Quotient.congr (Equiv.refl _) (fun x y ↦ (Units.orbitRel_nonZero_iff k V x y).symm)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The non-zero elements of `V` are equivalent to the product of `ℙ k V` with the units of `k`. -/
 noncomputable def nonZeroEquivProjectivizationProdUnits : { v : V // v ≠ 0 } ≃ ℙ k V × kˣ :=
   let e := MulAction.selfEquivOrbitsQuotientProd <| fun b ↦ by
@@ -40,7 +43,7 @@ noncomputable def nonZeroEquivProjectivizationProdUnits : { v : V // v ≠ 0 } �
   e.trans (Equiv.prodCongrLeft (fun _ ↦ (equivQuotientOrbitRel k V).symm))
 
 instance isEmpty_of_subsingleton [Subsingleton V] : IsEmpty (ℙ k V) := by
-  have : IsEmpty { v : V // v ≠ 0 } := ⟨fun v ↦ v.2 (Subsingleton.elim v.1 0)⟩
+  have : IsEmpty { v : V // v ≠ 0 } := ⟨fun v ↦ v.property (Subsingleton.elim v.val 0)⟩
   simpa using (nonZeroEquivProjectivizationProdUnits k V).symm.isEmpty
 
 /-- If `V` is a finite `k`-module and `k` is finite, `ℙ k V` is finite. -/
@@ -71,14 +74,14 @@ lemma card : Nat.card V - 1 = Nat.card (ℙ k V) * (Nat.card k - 1) := by
   cases finite_or_infinite V with
   | inr h =>
     have := not_iff_not.mpr (finite_iff_of_finite k V)
-    push_neg at this
+    push Not at this
     have : Infinite (ℙ k V) := by rwa [this]
     simp
   | inl h =>
   classical
-  haveI : Fintype V := Fintype.ofFinite V
-  haveI : Fintype (ℙ k V) := Fintype.ofFinite (ℙ k V)
-  haveI : Fintype k := Fintype.ofFinite k
+  have : Fintype V := Fintype.ofFinite V
+  have : Fintype (ℙ k V) := Fintype.ofFinite (ℙ k V)
+  have : Fintype k := Fintype.ofFinite k
   have hV : Fintype.card { v : V // v ≠ 0 } = Fintype.card V - 1 := by simp
   simp_rw [← Fintype.card_eq_nat_card, ← Fintype.card_units (α := k), ← hV]
   rw [Fintype.card_congr (nonZeroEquivProjectivizationProdUnits k V), Fintype.card_prod]
@@ -110,7 +113,7 @@ lemma card_of_finrank [Finite k] {n : ℕ} (h : Module.finrank k V = n) :
     have : n = 0 := by
       rw [← h]
       apply Module.finrank_of_not_finite
-      contrapose! hf
+      contrapose hf
       simpa using Module.finite_of_finite k
     simp [this]
   have : 1 < Nat.card k := Finite.one_lt_card

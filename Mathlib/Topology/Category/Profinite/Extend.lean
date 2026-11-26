@@ -5,11 +5,14 @@ Authors: Dagur Asgeirsson
 -/
 module
 
+public import Mathlib.CategoryTheory.Filtered.Final
 public import Mathlib.Topology.Category.Profinite.AsLimit
 public import Mathlib.Topology.Category.Profinite.CofilteredLimit
-public import Mathlib.CategoryTheory.Filtered.Final
-/-!
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
 # Extending cones in `Profinite`
 
 Let `(Sᵢ)_{i : I}` be a family of finite sets indexed by a cofiltered category `I` and let `S` be
@@ -42,14 +45,13 @@ the profinite set when written as a cofiltered limit of finite sets.
 -/
 lemma exists_hom (hc : IsLimit c) {X : FintypeCat} (f : c.pt ⟶ toProfinite.obj X) :
     ∃ (i : I) (g : F.obj i ⟶ X), f = c.π.app i ≫ toProfinite.map g := by
-  let _ : TopologicalSpace X := ⊥
   have : DiscreteTopology (toProfinite.obj X) := ⟨rfl⟩
   let f' : LocallyConstant c.pt (toProfinite.obj X) :=
     ⟨f, (IsLocallyConstant.iff_continuous _).mpr f.hom.hom.continuous⟩
   obtain ⟨i, g, h⟩ := exists_locallyConstant.{_, u} c hc f'
-  refine ⟨i, ⟨(g : _ → _)⟩, ?_⟩
+  refine ⟨i, ⟨↾g⟩, ?_⟩
   ext x
-  exact LocallyConstant.congr_fun h x
+  congrm $h x
 
 namespace Extend
 
@@ -77,6 +79,7 @@ def functorOp : Iᵒᵖ ⥤ CostructuredArrow toProfinite.op ⟨c.pt⟩ :=
 -- We check that the opposite of the original diagram factors through `Profinite.Extend.functorOp`.
 example : functorOp c ⋙ CostructuredArrow.proj toProfinite.op ⟨c.pt⟩ ≅ F.op := Iso.refl _
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] uliftCategory in
 /--
 If the projection maps in the cone are epimorphic and the cone is limiting, then
@@ -95,8 +98,7 @@ lemma functor_initial (hc : IsLimit c) [∀ i, Epi (c.π.app i)] : Initial (func
     exact ⟨⟨i⟩, ⟨StructuredArrow.homMk g h.symm⟩⟩
   · intro ⟨_, X, (f : c.pt ⟶ _)⟩ ⟨i⟩ ⟨_, (s : F.obj i ⟶ X), (w : f = c.π.app i ≫ _)⟩
       ⟨_, (s' : F.obj i ⟶ X), (w' : f = c.π.app i ≫ _)⟩
-    simp only [StructuredArrow.hom_eq_iff,
-      StructuredArrow.comp_right]
+    simp only [StructuredArrow.ext_iff, StructuredArrow.comp_right]
     refine ⟨⟨i⟩, 𝟙 _, ?_⟩
     simp only [CategoryTheory.Functor.map_id]
     rw [w] at w'
@@ -162,8 +164,7 @@ def cocone (S : Profinite) :
     app := fun i ↦ G.map i.hom
     naturality := fun _ _ f ↦ (by
       have := f.w
-      simp only [op_obj, const_obj_obj, op_map, CostructuredArrow.right_eq_id, const_obj_map,
-        Category.comp_id] at this
+      simp only [op_obj, op_map] at this
       simp [← map_comp, this]) }
 
 example : G.mapCocone c.op = (cocone G c.pt).whisker (functorOp c) := rfl

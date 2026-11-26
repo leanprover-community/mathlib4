@@ -49,6 +49,9 @@ See the corresponding section at `Mathlib/RingTheory/Spectrum/Prime/Topology.lea
 
 variable {R : Type*} [CommSemiring R]
 
+instance : Coe (PrimeSpectrum R) (Ideal R) where
+  coe P := P.asIdeal
+
 instance : PartialOrder (PrimeSpectrum R) :=
   PartialOrder.lift asIdeal (@PrimeSpectrum.ext _ _)
 
@@ -64,8 +67,8 @@ variable (R) in
 /-- The prime spectrum is in bijection with the set of prime ideals. -/
 @[simps]
 def equivSubtype : PrimeSpectrum R ≃o {I : Ideal R // I.IsPrime} where
-  toFun I := ⟨I.asIdeal, I.2⟩
-  invFun I := ⟨I, I.2⟩
+  toFun I := ⟨I.asIdeal, I.isPrime⟩
+  invFun I := ⟨I, I.property⟩
   map_rel_iff' := .rfl
 
 end PrimeSpectrum

@@ -6,7 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 
 /-!
 # Horizontal maps in a pullback square have the same kernel
@@ -21,16 +21,15 @@ l|      |r
     b
 ```
 * If this is a pullback square, then the induced map `kernel t ⟶ kernel b`
-is an isomorphism.
+  is an isomorphism.
 * If this is a pushout square, then the induced map `cokernel t ⟶ cokernel b`
-is an isomorphism.
+  is an isomorphism.
 
 (Similar results for the (co)kernels of the vertical maps can be obtained
 by applying these results to the flipped square.)
-
 -/
 
-@[expose] public section
+public section
 
 universe v v' u u'
 
@@ -47,7 +46,7 @@ lemma isIso_kernel_map_of_isPullback [HasKernel t] [HasKernel b]
 
 lemma isIso_cokernel_map_of_isPushout [HasCokernel t] [HasCokernel b]
     (sq : IsPushout t l r b) :
-    IsIso (cokernel.map _ _ _ _ sq.w) :=
+    IsIso (cokernel.map _ _ _ _ sq.w.symm) :=
   ⟨cokernel.desc _ (sq.desc (cokernel.π t) 0 (by simp)) (by simp),
     by cat_disch, by ext; exact sq.hom_ext (by cat_disch) (by cat_disch)⟩
 

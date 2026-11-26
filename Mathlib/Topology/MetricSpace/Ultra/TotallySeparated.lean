@@ -9,6 +9,9 @@ public import Mathlib.Topology.Connected.TotallyDisconnected
 public import Mathlib.Topology.MetricSpace.Defs
 public import Mathlib.Topology.MetricSpace.Ultra.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ultrametric spaces are totally separated
 
@@ -19,7 +22,7 @@ In a metric space with an ultrametric, the space is totally separated, hence tot
 ultrametric, nonarchimedean, totally separated, totally disconnected
 -/
 
-@[expose] public section
+public section
 open Metric IsUltrametricDist
 
 instance {X : Type*} [MetricSpace X] [IsUltrametricDist X] : TotallySeparatedSpace X :=

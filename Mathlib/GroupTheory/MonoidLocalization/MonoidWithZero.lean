@@ -5,20 +5,19 @@ Authors: Amelia Livingston
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Hom
 public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-public import Mathlib.Algebra.GroupWithZero.Units.Basic
-public import Mathlib.GroupTheory.MonoidLocalization.Basic
-public import Mathlib.RingTheory.OreLocalization.Basic
+public import Mathlib.GroupTheory.MonoidLocalization.Maps
+
+import Mathlib.RingTheory.OreLocalization.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Localizations of commutative monoids with zeroes
-
 -/
 
 @[expose] public section
-
-open Function
 
 section CommMonoidWithZero
 
@@ -37,7 +36,7 @@ theorem LocalizationMap.subsingleton (f : LocalizationMap S N) (h : 0 ∈ S) : S
 
 theorem LocalizationMap.subsingleton_iff (f : LocalizationMap S N) : Subsingleton N ↔ 0 ∈ S :=
   ⟨fun _ ↦ have ⟨c, eq⟩ := f.exists_of_eq (Subsingleton.elim (f 0) (f 1))
-    by rw [mul_zero, mul_one] at eq; exact eq ▸ c.2, f.subsingleton⟩
+    by rw [mul_zero, mul_one] at eq; exact eq ▸ c.property, f.subsingleton⟩
 
 theorem LocalizationMap.nontrivial (f : LocalizationMap S N) (h : 0 ∉ S) : Nontrivial N := by
   rwa [← not_subsingleton_iff_nontrivial, f.subsingleton_iff]
@@ -54,12 +53,6 @@ instance : MonoidWithZeroHomClass (LocalizationMap S N) M N where
   map_zero f := by
     have ⟨ms, eq⟩ := f.surj 0
     rw [← zero_mul, map_mul, ← eq, zero_mul, mul_zero]
-
-@[deprecated (since := "2025-08-15")]
-alias LocalizationMap.toMonoidWithZeroHom := MonoidWithZeroHomClass.toMonoidWithZeroHom
-@[deprecated (since := "2025-08-01")] alias LocalizationWithZeroMap := LocalizationMap
-@[deprecated (since := "2025-08-01")]
-alias LocalizationWithZeroMap.toMonoidWithZeroHom := MonoidWithZeroHomClass.toMonoidWithZeroHom
 
 end Submonoid
 
@@ -108,7 +101,7 @@ lemma lift₀_def (f : LocalizationMap S N) (g : M →*₀ P) (hg : ∀ y : S, I
     ⇑(f.lift₀ g hg) = f.lift (g := g) hg := rfl
 
 lemma lift₀_apply (f : LocalizationMap S N) (g : M →*₀ P) (hg : ∀ y : S, IsUnit (g y)) (x) :
-    f.lift₀ g hg x = g (f.sec x).1 * (IsUnit.liftRight (g.restrict S) hg (f.sec x).2)⁻¹ := rfl
+    f.lift₀ g hg x = g (f.sec x).1 * (IsUnit.liftRight (g.domRestrict S) hg (f.sec x).2)⁻¹ := rfl
 
 /-- Given a Localization map `f : M →*₀ N` for a Submonoid `S ⊆ M`,
 if `M` is a cancellative monoid with zero, and all elements of `S` are
@@ -118,7 +111,7 @@ theorem isCancelMulZero (f : LocalizationMap S N) [IsCancelMulZero M] : IsCancel
     ← Commute.isRightRegular_iff (Commute.all _)]
   intro n hn
   have ⟨ms, eq⟩ := f.surj n
-  refine (eq ▸ f.map_isRegular (isCancelMulZero_iff_forall_isRegular.mp ‹_› ?_)).2.of_mul
+  refine (eq ▸ f.map_isRegular (isCancelMulZero_iff_forall_isRegular.mp ‹_› ?_)).right.of_mul
   refine fun h ↦ hn ?_
   rwa [h, map_zero, (f.map_units _).mul_left_eq_zero] at eq
 
@@ -152,18 +145,6 @@ theorem noZeroDivisors (f : LocalizationMap S N) [NoZeroDivisors M] : NoZeroDivi
     (eq ▸ f.map_nonZeroDivisors_le ⟨_, mem_nonZeroDivisors_of_ne_zero hs, rfl⟩)
 
 end LocalizationMap
-
-namespace LocalizationWithZeroMap
-
-@[deprecated (since := "2025-08-01")]
-alias isLeftRegular_of_le_isCancelMulZero := LocalizationMap.isCancelMulZero
-@[deprecated (since := "2025-08-01")]
-alias leftCancelMulZero_of_le_isLeftRegular := LocalizationMap.isCancelMulZero
-@[deprecated (since := "2025-08-01")] alias lift := LocalizationMap.lift₀
-@[deprecated (since := "2025-08-01")] alias lift_def := LocalizationMap.lift₀_def
-@[deprecated (since := "2025-08-01")] alias lift_apply := LocalizationMap.lift₀_apply
-
-end LocalizationWithZeroMap
 
 end Submonoid
 

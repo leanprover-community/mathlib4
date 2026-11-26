@@ -5,19 +5,22 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.Topology.Separation.Hausdorff
 public import Mathlib.Topology.Connected.TotallyDisconnected
-/-!
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
 # Separation and (dis)connectedness properties of topological spaces.
 
 This file provides an instance `T2Space X` given `TotallySeparatedSpace X`.
 
 ## TODO
+
 * Move the last part of `Topology/Separation` to this file.
 -/
 
-@[expose] public section
+public section
 
 
 variable {X : Type*} [TopologicalSpace X]

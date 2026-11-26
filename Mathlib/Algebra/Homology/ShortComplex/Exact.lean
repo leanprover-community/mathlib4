@@ -5,12 +5,13 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
 public import Mathlib.Algebra.Homology.ShortComplex.Abelian
-public import Mathlib.Algebra.Homology.ShortComplex.QuasiIso
+public import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
 public import Mathlib.CategoryTheory.Abelian.Opposite
-public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Exact short complexes
@@ -23,7 +24,6 @@ to the assertion `IsZero S.homology`.
 
 Almost by construction, this notion of exactness is self dual,
 see `Exact.op` and `Exact.unop`.
-
 -/
 
 @[expose] public section
@@ -92,12 +92,12 @@ variable {S}
 
 lemma HomologyData.exact_iff (h : S.HomologyData) :
     S.Exact ↔ IsZero h.left.H := by
-  haveI := HasHomology.mk' h
+  have := HasHomology.mk' h
   exact LeftHomologyData.exact_iff h.left
 
 lemma HomologyData.exact_iff' (h : S.HomologyData) :
     S.Exact ↔ IsZero h.right.H := by
-  haveI := HasHomology.mk' h
+  have := HasHomology.mk' h
   exact RightHomologyData.exact_iff h.right
 
 variable (S)
@@ -148,7 +148,7 @@ variable {S}
 
 lemma HomologyData.exact_iff_i_p_zero (h : S.HomologyData) :
     S.Exact ↔ h.left.i ≫ h.right.p = 0 := by
-  haveI := HasHomology.mk' h
+  have := HasHomology.mk' h
   rw [h.left.exact_iff, ← h.comm]
   constructor
   · intro z
@@ -171,8 +171,8 @@ lemma exact_iff_iCycles_pOpcycles_zero [S.HasHomology] :
 lemma exact_iff_kernel_ι_comp_cokernel_π_zero [S.HasHomology]
     [HasKernel S.g] [HasCokernel S.f] :
     S.Exact ↔ kernel.ι S.g ≫ cokernel.π S.f = 0 := by
-  haveI := HasLeftHomology.hasCokernel S
-  haveI := HasRightHomology.hasKernel S
+  have := HasLeftHomology.hasCokernel S
+  have := HasRightHomology.hasKernel S
   exact S.exact_iff_i_p_zero (LeftHomologyData.ofHasKernelOfHasCokernel S)
     (RightHomologyData.ofHasCokernelOfHasKernel S)
 
@@ -261,6 +261,12 @@ lemma Exact.isZero_of_both_zeros (ex : S.Exact) (hf : S.f = 0) (hg : S.g = 0) :
     IsZero S.X₂ :=
   (ShortComplex.HomologyData.ofZeros S hf hg).exact_iff.1 ex
 
+/-- In an exact short complex, if the two outer objects are zero objects, then so is the
+middle object. -/
+lemma Exact.isZero_of_both_isZero (ex : S.Exact) (hX₁ : IsZero S.X₁) (hX₃ : IsZero S.X₃) :
+    IsZero S.X₂ :=
+  ex.isZero_of_both_zeros (hX₁.eq_zero_of_src _) (hX₃.eq_zero_of_tgt _)
+
 end
 
 section Preadditive
@@ -289,8 +295,8 @@ lemma exact_iff_epi [HasZeroObject C] (hg : S.g = 0) :
   · intro h
     have := h.hasHomology
     simp only [exact_iff_isZero_homology] at h
-    haveI := S.isIso_iCycles hg
-    haveI : Epi S.toCycles := epi_of_isZero_cokernel' _ S.homologyIsCokernel h
+    have := S.isIso_iCycles hg
+    have : Epi S.toCycles := epi_of_isZero_cokernel' _ S.homologyIsCokernel h
     rw [← S.toCycles_i]
     apply epi_comp
   · intro
@@ -303,13 +309,13 @@ variable {S}
 
 lemma Exact.epi_f' (hS : S.Exact) (h : LeftHomologyData S) : Epi h.f' :=
   epi_of_isZero_cokernel' _ h.hπ (by
-    haveI := hS.hasHomology
+    have := hS.hasHomology
     dsimp
     simpa only [← h.exact_iff] using hS)
 
 lemma Exact.mono_g' (hS : S.Exact) (h : RightHomologyData S) : Mono h.g' :=
   mono_of_isZero_kernel' _ h.hι (by
-    haveI := hS.hasHomology
+    have := hS.hasHomology
     dsimp
     simpa only [← h.exact_iff] using hS)
 
@@ -339,7 +345,7 @@ lemma RightHomologyData.exact_iff_mono_g' [S.HasHomology] (h : RightHomologyData
 
 /-- Given an exact short complex `S` and a limit kernel fork `kf` for `S.g`, this is the
 left homology data for `S` with `K := kf.pt` and `H := 0`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def Exact.leftHomologyDataOfIsLimitKernelFork
     (hS : S.Exact) [HasZeroObject C] (kf : KernelFork S.g) (hkf : IsLimit kf) :
     S.LeftHomologyData where
@@ -361,7 +367,7 @@ noncomputable def Exact.leftHomologyDataOfIsLimitKernelFork
 
 /-- Given an exact short complex `S` and a colimit cokernel cofork `cc` for `S.f`, this is the
 right homology data for `S` with `Q := cc.pt` and `H := 0`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def Exact.rightHomologyDataOfIsColimitCokernelCofork
     (hS : S.Exact) [HasZeroObject C] (cc : CokernelCofork S.f) (hcc : IsColimit cc) :
     S.RightHomologyData where
@@ -544,7 +550,7 @@ lemma ext_s (s s' : S.Splitting) (h : s.s = s'.s) : s = s' := by
   congr
 
 /-- The left homology data on a short complex equipped with a splitting. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def leftHomologyData [HasZeroObject C] (s : S.Splitting) :
     LeftHomologyData S := by
   have hi := KernelFork.IsLimit.ofι S.f S.zero
@@ -568,7 +574,7 @@ noncomputable def leftHomologyData [HasZeroObject C] (s : S.Splitting) :
       hπ := hπ }
 
 /-- The right homology data on a short complex equipped with a splitting. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def rightHomologyData [HasZeroObject C] (s : S.Splitting) :
     RightHomologyData S := by
   have hp := CokernelCofork.IsColimit.ofπ S.g S.zero
@@ -591,7 +597,7 @@ noncomputable def rightHomologyData [HasZeroObject C] (s : S.Splitting) :
       hι := hι }
 
 /-- The homology data on a short complex equipped with a splitting. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def homologyData [HasZeroObject C] (s : S.Splitting) : S.HomologyData where
   left := s.leftHomologyData
   right := s.rightHomologyData
@@ -659,6 +665,14 @@ noncomputable def ofIsIsoOfIsZero (hf : IsIso S.f) (hg : IsZero S.X₃) : Splitt
   r := inv S.f
   s := 0
   s_g := hg.eq_of_src _ _
+
+/-- The obvious splitting of a short complex `S` when `S.X₁`, `S.X₂` and `S.X₃` are zero. -/
+def ofIsZero (h₁ : IsZero S.X₁) (h₂ : IsZero S.X₂) (h₃ : IsZero S.X₃) : Splitting S where
+  r := 0
+  s := 0
+  f_r := h₁.eq_of_src ..
+  s_g := h₃.eq_of_src ..
+  id := h₂.eq_of_src ..
 
 variable {S}
 
@@ -843,13 +857,9 @@ noncomputable def kernelSequence : ShortComplex C :=
 noncomputable def cokernelSequence : ShortComplex C :=
   ShortComplex.mk _ _ (cokernel.condition f)
 
-instance : Mono (kernelSequence f).f := by
-  dsimp
-  infer_instance
+instance : Mono (kernelSequence f).f := inferInstanceAs (Mono (kernel.ι f))
 
-instance : Epi (cokernelSequence f).g := by
-  dsimp
-  infer_instance
+instance : Epi (cokernelSequence f).g := inferInstanceAs (Epi (cokernel.π f))
 
 lemma kernelSequence_exact : (kernelSequence f).Exact :=
   exact_of_f_is_kernel _ (kernelIsKernel f)

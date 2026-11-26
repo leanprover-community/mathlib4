@@ -5,13 +5,12 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.GroupTheory.CoprodI
-public import Mathlib.GroupTheory.Coprod.Basic
 public import Mathlib.GroupTheory.Complement
+public import Mathlib.GroupTheory.Coprod.Basic
+public import Mathlib.GroupTheory.CoprodI
 
 /-!
-
-## Pushouts of Monoids and Groups
+# Pushouts of Monoids and Groups
 
 This file defines wide pushouts of monoids and groups and proves some properties
 of the amalgamated product of groups (i.e. the special case where all the maps
@@ -26,10 +25,10 @@ in the diagram are injective).
 
 - `Monoid.PushoutI.NormalWord`: a normal form for words in the pushout
 - `Monoid.PushoutI.of_injective`: if all the maps in the diagram are injective in a pushout of
-groups then so is `of`
+  groups then so is `of`
 - `Monoid.PushoutI.Reduced.eq_empty_of_mem_range`: For any word `w` in the coproduct,
-if `w` is reduced (i.e none its letters are in the image of the base monoid), and nonempty, then
-`w` itself is not in the image of the base monoid.
+  if `w` is reduced (i.e none its letters are in the image of the base monoid), and nonempty, then
+  `w` itself is not in the image of the base monoid.
 
 ## References
 
@@ -39,7 +38,6 @@ if `w` is reduced (i.e none its letters are in the image of the base monoid), an
 ## Tags
 
 amalgamated product, pushout, group
-
 -/
 
 @[expose] public section
@@ -104,7 +102,7 @@ def lift (f : ∀ i, G i →* K) (k : H →* K)
     (hf : ∀ i, (f i).comp (φ i) = k) :
     PushoutI φ →* K :=
   Con.lift _ (Coprod.lift (CoprodI.lift f) k) <| by
-    apply Con.conGen_le fun x y => ?_
+    apply Con.conGen_le.2 fun x y => ?_
     rintro ⟨i, x', rfl, rfl⟩
     simp only [DFunLike.ext_iff, MonoidHom.coe_comp, comp_apply] at hf
     simp [hf]
@@ -152,7 +150,7 @@ def homEquiv :
     (PushoutI φ →* K) ≃ { f : (Π i, G i →* K) × (H →* K) // ∀ i, (f.1 i).comp (φ i) = f.2 } :=
   { toFun := fun f => ⟨(fun i => f.comp (of i), f.comp (base φ)),
       fun i => by rw [MonoidHom.comp_assoc, of_comp_eq_base]⟩
-    invFun := fun f => lift f.1.1 f.1.2 f.2,
+    invFun := fun f => lift f.val.1 f.val.2 f.property,
     left_inv := fun _ => hom_ext (by simp [DFunLike.ext_iff])
       (by simp [DFunLike.ext_iff])
     right_inv := fun ⟨⟨_, _⟩, _⟩ => by simp [DFunLike.ext_iff, funext_iff] }
@@ -284,8 +282,8 @@ open Subgroup.IsComplement
 
 instance baseAction : MulAction H (NormalWord d) :=
   { smul := fun h w => { w with head := h * w.head },
-    one_smul := by simp [instHSMul]
-    mul_smul := by simp [instHSMul, mul_assoc] }
+    one_smul := by simp +instances [instHSMul]
+    mul_smul := by simp +instances [instHSMul, mul_assoc] }
 
 theorem base_smul_def' (h : H) (w : NormalWord d) :
     h • w = { w with head := h * w.head } := rfl
@@ -320,6 +318,7 @@ noncomputable def cons {i} (g : G i) (w : NormalWord d) (hmw : w.fstIdx ≠ some
       · simp
       · exact w.normalized _ _ (by assumption) }
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem prod_cons {i} (g : G i) (w : NormalWord d) (hmw : w.fstIdx ≠ some i)
     (hgr : g ∉ (φ i).range) : (cons g w hmw hgr).prod = of i g * w.prod := by
@@ -327,6 +326,7 @@ theorem prod_cons {i} (g : G i) (w : NormalWord d) (hmw : w.fstIdx ≠ some i)
 
 variable [DecidableEq ι] [∀ i, DecidableEq (G i)]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a word in `CoprodI`, if every letter is in the transversal and when
 we multiply by an element of the base group it still has this property,
 then the element of the base group we multiplied by was one. -/
@@ -356,9 +356,8 @@ theorem eq_one_of_smul_normalized (w : CoprodI.Word G) {i : ι} (h : H)
         equiv_mul_left_of_mem (d.compl i) ⟨_, rfl⟩, hhead, Subtype.ext_iff,
         Prod.ext_iff] at h
       rcases h with ⟨h₁, h₂⟩
-      rw [h₂, equiv_one (d.compl i) (one_mem _) (d.one_mem _)] at h₁
-      erw [mul_one] at h₁
-      simp only [((injective_iff_map_eq_one' _).1 (d.injective i))] at h₁
+      rw [h₂, coe_mul, ((d.compl i).coe_equiv_fst_eq_one_iff_mem (one_mem _)).mpr (d.one_mem _),
+        mul_one, Subtype.coe_mk, map_eq_one_iff (φ i) (d.injective i)] at h₁
       contradiction
     · rw [Word.equivPair_head]
       dsimp
@@ -366,7 +365,7 @@ theorem eq_one_of_smul_normalized (w : CoprodI.Word G) {i : ι} (h : H)
       · rcases hep with ⟨hnil, rfl⟩
         rw [head?_eq_some_head hnil]
         simp_all
-      · push_neg at hep
+      · push Not at hep
         by_cases hw : w.toList = []
         · simp [hw, Word.fstIdx]
         · simp [head?_eq_some_head hw, Word.fstIdx, hep hw]
@@ -404,8 +403,7 @@ theorem rcons_injective {i : ι} : Function.Injective (rcons (d := d) i) := by
   rintro ⟨⟨head₁, tail₁⟩, _⟩ ⟨⟨head₂, tail₂⟩, _⟩
   simp only [rcons, NormalWord.mk.injEq, EmbeddingLike.apply_eq_iff_eq,
     Word.Pair.mk.injEq, Pair.mk.injEq, and_imp]
-  intro h₁ h₂ h₃
-  subst h₂
+  rintro h₁ rfl h₃
   rw [← equiv_fst_mul_equiv_snd (d.compl i) head₁,
       ← equiv_fst_mul_equiv_snd (d.compl i) head₂,
     h₁, h₃]
@@ -440,11 +438,11 @@ noncomputable instance summandAction (i : ι) : MulAction (G i) (NormalWord d) :
       { equivPair i w with
         head := g * (equivPair i w).head }
     one_smul := fun _ => by
-      dsimp [instHSMul]
+      dsimp +instances [instHSMul]
       rw [one_mul]
       exact (equivPair i).symm_apply_apply _
     mul_smul := fun _ _ _ => by
-      dsimp [instHSMul]
+      dsimp +instances [instHSMul]
       simp [mul_assoc, Equiv.apply_symm_apply] }
 
 theorem summand_smul_def' {i : ι} (g : G i) (w : NormalWord d) :
@@ -452,6 +450,7 @@ theorem summand_smul_def' {i : ι} (g : G i) (w : NormalWord d) :
       { equivPair i w with
         head := g * (equivPair i w).head } := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance mulAction : MulAction (PushoutI φ) (NormalWord d) :=
   MulAction.ofEndHom <|
     lift
@@ -495,14 +494,14 @@ noncomputable def consRecOn {motive : NormalWord d → Sort _} (w : NormalWord d
     (base : ∀ (h : H) (w : NormalWord d), w.head = 1 → motive w → motive
       (base φ h • w)) : motive w := by
   rcases w with ⟨w, head, h3⟩
-  convert base head ⟨w, 1, h3⟩ rfl ?_
+  convert! base head ⟨w, 1, h3⟩ rfl ?_
   · simp [base_smul_def]
   · induction w using Word.consRecOn with
     | empty => exact empty
     | cons i g w h1 hg1 ih =>
-      convert cons i g ⟨w, 1, fun _ _ h => h3 _ _ (List.mem_cons_of_mem _ h)⟩
-        h1 (h3 _ _ List.mem_cons_self) ?_ rfl
-        (ih ?_)
+      convert
+        cons i g ⟨w, 1, fun _ _ h => h3 _ _ (List.mem_cons_of_mem _ h)⟩ h1
+          (h3 _ _ List.mem_cons_self) ?_ rfl (ih ?_)
       · simp only [Word.cons, NormalWord.cons, map_one, mul_one,
           (equiv_snd_eq_self_iff_mem (d.compl i) (one_mem _)).2
           (h3 _ _ List.mem_cons_self)]
@@ -560,12 +559,12 @@ noncomputable def equiv : PushoutI φ ≃ NormalWord d :=
 
 theorem prod_injective {ι : Type*} {G : ι → Type*} [(i : ι) → Group (G i)] {φ : (i : ι) → H →* G i}
     {d : Transversal φ} : Function.Injective (prod : NormalWord d → PushoutI φ) := by
-  letI := Classical.decEq ι
-  letI := fun i => Classical.decEq (G i)
-  classical exact equiv.symm.injective
+  let := Classical.decEq ι
+  let := fun i => Classical.decEq (G i)
+  exact equiv.symm.injective
 
 instance : FaithfulSMul (PushoutI φ) (NormalWord d) :=
-  ⟨fun h => by simpa using congr_arg prod (h empty)⟩
+  ⟨fun h => by simpa using congr(prod $(h empty))⟩
 
 instance (i : ι) : FaithfulSMul (G i) (NormalWord d) :=
   ⟨by simp [summand_smul_def']⟩
@@ -613,7 +612,6 @@ def Reduced (w : Word G) : Prop :=
 theorem Reduced.exists_normalWord_prod_eq (d : Transversal φ) {w : Word G} (hw : Reduced φ w) :
     ∃ w' : NormalWord d, w'.prod = ofCoprodI w.prod ∧
       w'.toList.map Sigma.fst = w.toList.map Sigma.fst := by
-  classical
   induction w using Word.consRecOn with
   | empty => exact ⟨empty, by simp, rfl⟩
   | cons i g w hIdx hg1 ih =>

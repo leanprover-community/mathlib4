@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Idempotents.Karoubi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extension of functors to the idempotent completion
 
@@ -19,7 +22,6 @@ We also construct an extension `functorExtension₂` of functors
 when `D` is idempotent complete, we get equivalences
 `karoubiUniversal₂ C D : C ⥤ D ≌ Karoubi C ⥤ Karoubi D`
 and `karoubiUniversal C D : C ⥤ D ≌ Karoubi C ⥤ D`.
-
 -/
 
 @[expose] public section
@@ -28,7 +30,7 @@ namespace CategoryTheory
 
 namespace Idempotents
 
-open Category Karoubi Functor
+open Category Karoubi CategoryTheory.Functor
 
 variable {C D E : Type*} [Category* C] [Category* D] [Category* E]
 
@@ -45,11 +47,12 @@ namespace FunctorExtension₁
 
 /-- The canonical extension of a functor `C ⥤ Karoubi D` to a functor
 `Karoubi C ⥤ Karoubi D` -/
-@[simps]
+@[simps, implicit_reducible]
 def obj (F : C ⥤ Karoubi D) : Karoubi C ⥤ Karoubi D where
   obj P :=
-    ⟨(F.obj P.X).X, (F.map P.p).f, by simpa only [F.map_comp, hom_ext_iff] using F.congr_map P.idem⟩
-  map f := ⟨(F.map f.f).f, by simpa only [F.map_comp, hom_ext_iff] using F.congr_map f.comm⟩
+    ⟨(F.obj P.X).X, (F.map P.p).f,
+     by simpa only [F.map_comp, hom_ext_iff] using! F.congr_map P.idem⟩
+  map f := ⟨(F.map f.f).f, by simpa only [F.map_comp, hom_ext_iff] using! F.congr_map f.comm⟩
 
 /-- Extension of a natural transformation `φ` between functors
 `C ⥤ Karoubi D` to a natural transformation between the
@@ -80,7 +83,7 @@ end FunctorExtension₁
 variable (C D E)
 
 /-- The canonical functor `(C ⥤ Karoubi D) ⥤ (Karoubi C ⥤ Karoubi D)` -/
-@[simps]
+@[simps, implicit_reducible]
 def functorExtension₁ : (C ⥤ Karoubi D) ⥤ Karoubi C ⥤ Karoubi D where
   obj := FunctorExtension₁.obj
   map := FunctorExtension₁.map
@@ -110,6 +113,7 @@ def functorExtension₁CompWhiskeringLeftToKaroubiIso :
       (fun {X Y} f => by simp))
     (by cat_disch)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The counit isomorphism of the equivalence `(C ⥤ Karoubi D) ≌ (Karoubi C ⥤ Karoubi D)`. -/
 def KaroubiUniversal₁.counitIso :
     (whiskeringLeft C (Karoubi C) (Karoubi D)).obj (toKaroubi C) ⋙ functorExtension₁ C D ≅ 𝟭 _ :=
@@ -119,27 +123,27 @@ def KaroubiUniversal₁.counitIso :
           { app := fun P =>
               { f := (G.map (decompId_p P)).f
                 comm := by
-                  simpa only [hom_ext_iff, G.map_comp, G.map_id] using
+                  simpa only [hom_ext_iff, G.map_comp, G.map_id] using!
                     G.congr_map
                       (show (toKaroubi C).map P.p ≫ P.decompId_p ≫ 𝟙 _ = P.decompId_p by simp) }
             naturality := fun P Q f => by
               simpa only [hom_ext_iff, G.map_comp]
-                using (G.congr_map (decompId_p_naturality f)).symm }
+                using! (G.congr_map (decompId_p_naturality f)).symm }
         inv :=
           { app := fun P =>
               { f := (G.map (decompId_i P)).f
                 comm := by
-                  simpa only [hom_ext_iff, G.map_comp, G.map_id] using
+                  simpa only [hom_ext_iff, G.map_comp, G.map_id] using!
                     G.congr_map
                       (show 𝟙 _ ≫ P.decompId_i ≫ (toKaroubi C).map P.p = P.decompId_i by simp) }
             naturality := fun P Q f => by
-              simpa only [hom_ext_iff, G.map_comp] using G.congr_map (decompId_i_naturality f) }
+              simpa only [hom_ext_iff, G.map_comp] using! G.congr_map (decompId_i_naturality f) }
         hom_inv_id := by
           ext P
-          simpa only [hom_ext_iff, G.map_comp, G.map_id] using G.congr_map P.decomp_p.symm
+          simpa only [hom_ext_iff, G.map_comp, G.map_id] using! G.congr_map P.decomp_p.symm
         inv_hom_id := by
           ext P
-          simpa only [hom_ext_iff, G.map_comp, G.map_id] using G.congr_map P.decompId.symm })
+          simpa only [hom_ext_iff, G.map_comp, G.map_id] using! G.congr_map P.decompId.symm })
     (fun {X Y} φ => by
       ext P
       dsimp
@@ -149,6 +153,7 @@ def KaroubiUniversal₁.counitIso :
 
 attribute [simps!] KaroubiUniversal₁.counitIso
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence of categories `(C ⥤ Karoubi D) ≌ (Karoubi C ⥤ Karoubi D)`. -/
 @[simps]
 def karoubiUniversal₁ : C ⥤ Karoubi D ≌ Karoubi C ⥤ Karoubi D where
@@ -169,7 +174,7 @@ def functorExtension₁Comp (F : C ⥤ Karoubi D) (G : D ⥤ Karoubi E) :
   Iso.refl _
 
 /-- The canonical functor `(C ⥤ D) ⥤ (Karoubi C ⥤ Karoubi D)` -/
-@[simps!]
+@[simps!, implicit_reducible]
 def functorExtension₂ : (C ⥤ D) ⥤ Karoubi C ⥤ Karoubi D :=
   (whiskeringRight C D (Karoubi D)).obj (toKaroubi D) ⋙ functorExtension₁ C D
 

@@ -6,8 +6,12 @@ Authors: David Loeffler
 module
 
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
-public import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 public import Mathlib.NumberTheory.ModularForms.JacobiTheta.OneVariable
+
+import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Manifold differentiability of the Jacobi theta function
@@ -25,5 +29,6 @@ public section
 
 open scoped UpperHalfPlane Manifold
 
-theorem mdifferentiable_jacobiTheta : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (jacobiTheta ∘ (↑) : ℍ → ℂ) :=
-  fun τ => (differentiableAt_jacobiTheta τ.2).mdifferentiableAt.comp τ τ.mdifferentiable_coe
+theorem mdifferentiable_jacobiTheta : MDiff (jacobiTheta ∘ (↑) : ℍ → ℂ) :=
+  fun τ => (differentiableAt_jacobiTheta τ.coe_im_pos).mdifferentiableAt.comp τ
+    τ.mdifferentiable_coe

@@ -7,10 +7,8 @@ module
 
 public import Mathlib.Algebra.Group.Submonoid.DistribMulAction
 public import Mathlib.GroupTheory.OreLocalization.Basic
-public import Mathlib.Algebra.GroupWithZero.Defs
 
 /-!
-
 # Localization over left Ore sets.
 
 This file proves results on the localization of rings (monoids with zeros) over a left Ore set.
@@ -22,8 +20,8 @@ This file proves results on the localization of rings (monoids with zeros) over 
 
 
 ## Tags
-localization, Ore, non-commutative
 
+localization, Ore, non-commutative
 -/
 
 @[expose] public section
@@ -68,8 +66,8 @@ section CommMonoidWithZero
 variable {R : Type*} [CommMonoidWithZero R] {S : Submonoid R} [OreSet S]
 
 instance : CommMonoidWithZero R[S⁻¹] where
-  __ := inferInstanceAs (MonoidWithZero R[S⁻¹])
-  __ := inferInstanceAs (CommMonoid R[S⁻¹])
+  __ := (inferInstance : MonoidWithZero R[S⁻¹])
+  __ := (inferInstance : CommMonoid R[S⁻¹])
 
 end CommMonoidWithZero
 
@@ -78,7 +76,7 @@ section DistribMulAction
 variable {R : Type*} [Monoid R] {S : Submonoid R} [OreSet S] {X : Type*} [AddMonoid X]
 variable [DistribMulAction R X]
 
-set_option backward.privateInPublic true in
+/-- Auxiliary definition for addition on the Ore localization. -/
 private def add'' (r₁ : X) (s₁ : S) (r₂ : X) (s₂ : S) : X[S⁻¹] :=
   (oreDenom (s₁ : R) s₂ • r₁ + oreNum (s₁ : R) s₂ • r₂) /ₒ (oreDenom (s₁ : R) s₂ * s₁)
 
@@ -103,7 +101,7 @@ private theorem add''_char (r₁ : X) (s₁ : S) (r₂ : X) (s₂ : S) (rb : R) 
 
 attribute [local instance] OreLocalization.oreEqv
 
-set_option backward.privateInPublic true in
+/-- Auxiliary definition for addition on the Ore localization, with one argument fixed. -/
 private def add' (r₂ : X) (s₂ : S) : X[S⁻¹] → X[S⁻¹] :=
   (--plus tilde
       Quotient.lift
@@ -116,17 +114,16 @@ private def add' (r₂ : X) (s₂ : S) : X[S⁻¹] → X[S⁻¹] :=
     rcases oreCondition rb sc with ⟨rd, sd, hd⟩
     -- s#, r#
     dsimp at *
-    rw [add''_char _ _ _ _ rc sc hc (sc * s₁').2]
+    rw [add''_char _ _ _ _ rc sc hc (sc * s₁').property]
     have : sd * sb * s₁ = rd * rc * s₂ := by
       rw [mul_assoc, hb', ← mul_assoc, hd, mul_assoc, hc, ← mul_assoc]
-    rw [add''_char _ _ _ _ (rd * rc : R) (sd * sb) this (sd * sb * s₁).2]
+    rw [add''_char _ _ _ _ (rd * rc : R) (sd * sb) this (sd * sb * s₁).property]
     rw [mul_smul, ← Submonoid.smul_def sb, hb, smul_smul, hd, oreDiv_eq_iff]
     use 1
     use rd
     simp only [mul_smul, smul_add, one_smul, OneMemClass.coe_one, one_mul, true_and]
     rw [this, hc, mul_assoc]
 
-set_option backward.privateInPublic true in
 /-- The addition on the Ore localization. -/
 @[irreducible]
 private def add : X[S⁻¹] → X[S⁻¹] → X[S⁻¹] := fun x =>
@@ -140,16 +137,15 @@ private def add : X[S⁻¹] → X[S⁻¹] → X[S⁻¹] := fun x =>
       rcases oreCondition rc sb with ⟨rd, sd, hd⟩
       have : rd * rb * s₁ = sd * sc * s₃ := by
         rw [mul_assoc, ← hb', ← mul_assoc, ← hd, mul_assoc, ← hc, mul_assoc]
-      rw [add''_char _ _ _ _ rc sc hc (sc * s₃).2]
-      rw [add''_char _ _ _ _ _ _ this.symm (sd * sc * s₃).2]
+      rw [add''_char _ _ _ _ rc sc hc (sc * s₃).property]
+      rw [add''_char _ _ _ _ _ _ this.symm (sd * sc * s₃).property]
       refine oreDiv_eq_iff.mpr ?_
       simp only [smul_add]
       use sd, 1
       simp only [one_smul, one_mul, mul_smul, ← hb, Submonoid.smul_def, ← mul_assoc, and_true]
       simp only [smul_smul, hd])
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
+@[no_expose]
 instance : Add X[S⁻¹] :=
   ⟨add⟩
 
@@ -167,7 +163,7 @@ theorem oreDiv_add_char' {r r' : X} (s s' : S) (rb : R) (sb : R)
 numerator and Ore denominator. -/
 theorem oreDiv_add_char {r r' : X} (s s' : S) (rb : R) (sb : S) (h : sb * s = rb * s') :
     r /ₒ s + r' /ₒ s' = (sb • r + rb • r') /ₒ (sb * s) :=
-  oreDiv_add_char' s s' rb sb h (sb * s).2
+  oreDiv_add_char' s s' rb sb h (sb * s).property
 
 /-- Another characterization of the addition on the Ore localization, bundling up all witnesses
 and conditions into a sigma type. -/
@@ -189,8 +185,8 @@ protected theorem add_assoc (x y z : X[S⁻¹]) : x + y + z = x + (y + z) := by
   simp only [smul_add, add_assoc]
   simp_rw [← add_oreDiv, ← OreLocalization.expand']
   congr 2
-  · rw [OreLocalization.expand r₂ s₂ ra (ha.symm ▸ (sa * s₁).2)]; congr; ext; exact ha
-  · rw [OreLocalization.expand r₃ s₃ rc (hc.symm ▸ (sc * (sa * s₁)).2)]; congr; ext; exact hc
+  · rw [OreLocalization.expand r₂ s₂ ra (ha.symm ▸ (sa * s₁).property)]; congr; ext; exact ha
+  · rw [OreLocalization.expand r₃ s₃ rc (hc.symm ▸ (sc * (sa * s₁)).property)]; congr; ext; exact hc
 
 @[simp]
 theorem zero_oreDiv (s : S) : (0 : X) /ₒ s = 0 := by
@@ -205,12 +201,10 @@ protected theorem add_zero (x : X[S⁻¹]) : x + 0 = x := by
   induction x
   rw [← zero_oreDiv, add_oreDiv]; simp
 
-set_option backward.privateInPublic true in
+/-- Scalar multiplication by natural numbers on the Ore localization. -/
 @[irreducible]
-private def nsmul : ℕ → X[S⁻¹] → X[S⁻¹] := nsmulRec
+def nsmul : ℕ → X[S⁻¹] → X[S⁻¹] := nsmulRec
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : AddMonoid X[S⁻¹] where
     add_assoc := OreLocalization.add_assoc
     zero_add := OreLocalization.zero_add
@@ -256,7 +250,7 @@ protected theorem add_comm (x y : X[S⁻¹]) : x + y = y + x := by
   induction x with | _ r s
   induction y with | _ r' s'
   rcases oreDivAddChar' r r' s s' with ⟨ra, sa, ha, ha'⟩
-  rw [ha', oreDiv_add_char' s' s _ _ ha.symm (ha ▸ (sa * s).2), add_comm]
+  rw [ha', oreDiv_add_char' s' s _ _ ha.symm (ha ▸ (sa * s).property), add_comm]
   congr; ext; exact ha
 
 instance instAddCommMonoidOreLocalization : AddCommMonoid X[S⁻¹] where
@@ -273,8 +267,6 @@ variable {X : Type*} [AddGroup X] [DistribMulAction R X]
 @[irreducible]
 protected def neg : X[S⁻¹] → X[S⁻¹] :=
   liftExpand (fun (r : X) (s : S) => -r /ₒ s) fun r t s ht => by
-    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
-    beta_reduce
     rw [← smul_neg, ← OreLocalization.expand]
 
 instance instNegOreLocalization : Neg X[S⁻¹] :=
@@ -304,8 +296,8 @@ variable {R : Type*} [Monoid R] {S : Submonoid R} [OreSet S]
 variable {X : Type*} [AddCommGroup X] [DistribMulAction R X]
 
 instance : AddCommGroup X[S⁻¹] where
-  __ := inferInstanceAs (AddGroup X[S⁻¹])
-  __ := inferInstanceAs (AddCommMonoid X[S⁻¹])
+  __ := (inferInstance : AddGroup X[S⁻¹])
+  __ := (inferInstance : AddCommMonoid X[S⁻¹])
 
 end AddCommGroup
 

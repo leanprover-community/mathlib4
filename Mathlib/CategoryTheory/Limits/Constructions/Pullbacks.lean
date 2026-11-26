@@ -5,9 +5,10 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Constructing pullbacks from binary products and equalizers
@@ -45,7 +46,7 @@ theorem hasLimit_cospan_of_hasLimit_pair_of_hasLimit_parallelPair {C : Type u} [
             exact PullbackCone.condition _)
           (by simp [π₁, e]) (by simp [π₂, e]) fun s m h₁ h₂ => by
           ext
-          · dsimp; simpa using h₁
+          · simpa using h₁
           · simpa using h₂ }
 
 section

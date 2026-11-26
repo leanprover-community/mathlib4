@@ -5,12 +5,14 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Topology.Algebra.Monoid
 public import Mathlib.LinearAlgebra.Finsupp.Pi
+public import Mathlib.Topology.Algebra.Monoid
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Continuity of the functoriality of `X → M` when `X` is finite
-
 -/
 
 public section
@@ -25,7 +27,7 @@ lemma continuous_map
   have := Fintype.ofFinite X
   refine continuous_pi (fun y ↦ ?_)
   simp only [FunOnFinite.map_apply_apply]
-  exact continuous_finset_sum _ (fun _ _ ↦ continuous_apply _)
+  exact continuous_finsetSum _ (fun _ _ ↦ continuous_apply _)
 
 lemma continuous_linearMap
     (R M : Type*) [Semiring R] [AddCommMonoid M]

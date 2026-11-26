@@ -5,20 +5,17 @@ Authors: Johan Commelin, Nick Kuhn, Arend Mellendijk, Christian Merten, Calle SÃ
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Tower
 public meta import Mathlib.Tactic.Attr.Core
 public meta import Mathlib.Tactic.ToAdditive
+public import Mathlib.Algebra.Algebra.Tower
 
 /-!
-
-## Algebraize tactic
+# Algebraize tactic
 
 This file defines the `algebraize` tactic. The basic functionality of this tactic is to
 automatically add `Algebra` instances given `RingHom`s. For example, `algebraize [f, g]` where
 `f : A â†’+* B` and `g : B â†’+* C` are `RingHom`s, will add the instances `Algebra A B` and
 `Algebra B C` corresponding to these `RingHom`s.
-
-## Further functionality
 
 When given a composition of `RingHom`s, e.g. `algebraize [g.comp f]`, the tactic will also try to
 add the instance `IsScalarTower A B C` if possible.
@@ -30,7 +27,7 @@ the instance `Algebra A B` and the corresponding property `Algebra.FiniteType A 
 which `RingHom` properties have a corresponding `Algebra` property through the `algebraize`
 attribute.
 
-## Algebraize attribute
+## The `algebraize` attribute
 
 The `algebraize` attribute is used to tag `RingHom` properties that can be converted to `Algebra`
 properties. It assumes that the tagged declaration has a name of the form `RingHom.Property` and
@@ -40,13 +37,14 @@ If not, the `Name` of the corresponding algebra property can be provided as opti
 specified declaration should be one of the following:
 
 1. An inductive type (i.e. the `Algebra` property itself), in this case it is assumed that the
-`RingHom` and the `Algebra` property are definitionally the same, and the tactic will construct the
-`Algebra` property by giving the `RingHom` property as a term. Due to how this is performed, we also
-need to assume that the `Algebra` property can be constructed only from the homomorphism, so it
-cannot have any other explicit arguments.
+   `RingHom` and the `Algebra` property are definitionally the same, and the tactic will construct
+   the `Algebra` property by giving the `RingHom` property as a term. Due to how this is performed,
+   we also need to assume that the `Algebra` property can be constructed only from the homomorphism,
+   so it cannot have any other explicit arguments.
 2. A lemma (or constructor) proving the `Algebra` property from the `RingHom` property. In this case
-it is assumed that the `RingHom` property is the final argument, and that no other explicit argument
-is needed. The tactic then constructs the `Algebra` property by applying the lemma or constructor.
+   it is assumed that the `RingHom` property is the final argument, and that no other explicit
+   argument is needed. The tactic then constructs the `Algebra` property by applying the lemma or
+   constructor.
 
 Here are three examples of properties tagged with the `algebraize` attribute:
 ```
@@ -68,7 +66,7 @@ class RingHom.Flat {R : Type u} {S : Type v} [CommRing R] [CommRing S] (f : R â†
   out : f.toAlgebra.Flat := by infer_instance
 ```
 
-## algebraize_only
+## `algebraize_only`
 
 To avoid searching through the local context and adding corresponding `Algebra` properties, use
 `algebraize_only` which only adds `Algebra` and `IsScalarTower` instances.
@@ -103,11 +101,12 @@ will help the `algebraize` tactic access the corresponding `Algebra` property.
 There are two cases for what declaration corresponding to this `Name` can be.
 
 1. An inductive type (i.e. the `Algebra` property itself), in this case it is assumed that the
-`RingHom` and the `Algebra` property are definitionally the same, and the tactic will construct the
-`Algebra` property by giving the `RingHom` property as a term.
+   `RingHom` and the `Algebra` property are definitionally the same, and the tactic will construct
+   the `Algebra` property by giving the `RingHom` property as a term.
 2. A lemma (or constructor) proving the `Algebra` property from the `RingHom` property. In this case
-it is assumed that the `RingHom` property is the final argument, and that no other explicit argument
-is needed. The tactic then constructs the `Algebra` property by applying the lemma or constructor.
+   it is assumed that the `RingHom` property is the final argument, and that no other explicit
+   argument is needed. The tactic then constructs the `Algebra` property by applying the lemma or
+   constructor.
 
 Finally, if no argument is provided to the `algebraize` attribute, it is assumed that the tagged
 declaration has name `RingHom.Property` and that the corresponding `Algebra` property has name

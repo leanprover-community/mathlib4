@@ -6,7 +6,6 @@ Authors: Geoffrey Irving
 module
 
 public import Mathlib.Analysis.Analytic.Constructions
-public import Mathlib.Analysis.Analytic.ChangeOrigin
 
 /-!
 # Properties of analyticity restricted to a set
@@ -24,8 +23,6 @@ ambient space, which allows us to relate `AnalyticWithinAt` to analyticity of a 
 -/
 
 public section
-
-noncomputable section
 
 open scoped Topology Filter ENNReal
 open Set Filter Metric
@@ -119,14 +116,14 @@ lemma hasFPowerSeriesWithinOnBall_iff_exists_hasFPowerSeriesOnBall [CompleteSpac
   · intro h
     refine ⟨fun y ↦ p.sum (y - x), ?_, ?_⟩
     · intro y ⟨ys,yb⟩
-      simp only [mem_eball, edist_eq_enorm_sub] at yb
+      simp only [mem_eball, eDist_eq_eNorm_sub] at yb
       have e0 := p.hasSum (x := y - x) ?_
       · have e1 := (h.hasSum (y := y - x) ?_ ?_)
         · simp only [add_sub_cancel] at e1
           exact e1.unique e0
         · simpa only [add_sub_cancel]
-        · simpa only [mem_eball, edist_zero_eq_enorm]
-      · simp only [mem_eball, edist_zero_eq_enorm]
+        · simpa only [mem_eball, edist_zero_right]
+      · simp only [mem_eball, edist_zero_right]
         exact lt_of_lt_of_le yb h.r_le
     · refine ⟨h.r_le, h.r_pos, ?_⟩
       intro y lt
@@ -140,7 +137,7 @@ lemma hasFPowerSeriesWithinOnBall_iff_exists_hasFPowerSeriesOnBall [CompleteSpac
     rw [hfg]
     · exact hg.hasSum lt
     · refine ⟨ys, ?_⟩
-      simpa only [mem_eball, edist_eq_enorm_sub, add_sub_cancel_left, sub_zero] using lt
+      simpa only [mem_eball, eDist_eq_eNorm_sub, add_sub_cancel_left, sub_zero] using lt
 
 /-- `f` has power series `p` at `x` iff some local extension of `f` has that series -/
 lemma hasFPowerSeriesWithinAt_iff_exists_hasFPowerSeriesAt [CompleteSpace F] {f : E → F}

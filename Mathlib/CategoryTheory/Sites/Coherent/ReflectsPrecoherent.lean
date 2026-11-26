@@ -8,8 +8,11 @@ module
 public import Mathlib.CategoryTheory.EffectiveEpi.Enough
 public import Mathlib.CategoryTheory.EffectiveEpi.Preserves
 public import Mathlib.CategoryTheory.Sites.Coherent.CoherentTopology
-/-!
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
 # Reflecting the property of being precoherent
 
 We prove that given a fully faithful functor `F : C ⥤ D` which preserves and reflects finite
@@ -26,6 +29,7 @@ variable {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D)
   [F.EffectivelyEnough]
   [Precoherent D] [F.Full] [F.Faithful]
 
+set_option backward.isDefEq.respectTransparency false in
 include F in
 lemma Functor.reflects_precoherent : Precoherent C where
   pullback {B₁ B₂} f α _ X₁ π₁ _ := by

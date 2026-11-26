@@ -5,8 +5,11 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.Opposite
 public import Mathlib.Algebra.Homology.Embedding.Restriction
+public import Mathlib.Algebra.Homology.Opposite
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Opposite categories of cochain complexes
@@ -15,7 +18,6 @@ We construct an equivalence of categories `CochainComplex.opEquivalence C`
 between `(CochainComplex C ℤ)ᵒᵖ` and `CochainComplex Cᵒᵖ ℤ`, and we show
 that two morphisms in `CochainComplex C ℤ` are homotopic iff they are
 homotopic as morphisms in `CochainComplex Cᵒᵖ ℤ`.
-
 -/
 
 @[expose] public section
@@ -29,7 +31,7 @@ variable (C : Type*) [Category* C]
 namespace ComplexShape
 
 /-- The embedding of the complex shape `up ℤ` in `down ℤ` given by `n ↦ -n`. -/
-@[simps]
+@[simps, implicit_reducible]
 def embeddingUpIntDownInt : (up ℤ).Embedding (down ℤ) where
   f n := -n
   injective_f _ _ := by simp
@@ -39,7 +41,7 @@ instance : embeddingUpIntDownInt.IsRelIff where
   rel' := by dsimp; lia
 
 /-- The embedding of the complex shape `down ℤ` in `up ℤ` given by `n ↦ -n`. -/
-@[simps]
+@[simps, implicit_reducible]
 def embeddingDownIntUpInt : (down ℤ).Embedding (up ℤ) where
   f n := -n
   injective_f _ _ := by simp
@@ -56,6 +58,7 @@ variable [HasZeroMorphisms C]
 
 attribute [local simp] HomologicalComplex.XIsoOfEq in
 /-- The equivalence of categories `ChainComplex C ℤ ≌ CochainComplex C ℤ`. -/
+@[implicit_reducible]
 def cochainComplexEquivalence :
     ChainComplex C ℤ ≌ CochainComplex C ℤ where
   functor := ComplexShape.embeddingUpIntDownInt.restrictionFunctor C
@@ -72,6 +75,7 @@ end ChainComplex
 namespace CochainComplex
 
 /-- The equivalence of categories `(CochainComplex C ℤ)ᵒᵖ ≌ CochainComplex Cᵒᵖ ℤ`. -/
+@[implicit_reducible]
 def opEquivalence [HasZeroMorphisms C] :
     (CochainComplex C ℤ)ᵒᵖ ≌ CochainComplex Cᵒᵖ ℤ :=
   (HomologicalComplex.opEquivalence C (.up ℤ)).trans
@@ -188,7 +192,7 @@ lemma exactAt_op {K : CochainComplex C ℤ} {n : ℤ} (hK : K.ExactAt n)
     (by grind [next])] at hK
 
 lemma acyclic_op {K : CochainComplex C ℤ} (hK : K.Acyclic) :
-   ((opEquivalence C).functor.obj (op K)).Acyclic :=
+    ((opEquivalence C).functor.obj (op K)).Acyclic :=
   fun n ↦ exactAt_op (hK (-n)) n
 
 end CochainComplex

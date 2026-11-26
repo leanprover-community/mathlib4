@@ -6,8 +6,10 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Analysis.Normed.Group.Uniform
-public import Mathlib.Topology.Algebra.GroupCompletion
 public import Mathlib.Topology.MetricSpace.Completion
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Completion of a normed group
@@ -19,7 +21,7 @@ In this file we prove that the completion of a (semi)normed group is a normed gr
 normed group, completion
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -41,16 +43,21 @@ instance [SeminormedAddCommGroup E] : NormedAddCommGroup (Completion E) where
   dist_eq x y := by
     induction x, y using Completion.induction_on₂
     · refine isClosed_eq (Completion.uniformContinuous_extension₂ _).continuous ?_
-      exact Continuous.comp Completion.continuous_extension continuous_sub
-    · rw [← Completion.coe_sub, norm_coe, Completion.dist_eq, dist_eq_norm]
+      exact Continuous.comp Completion.continuous_extension (continuous_neg.fst.add continuous_snd)
+    · rw [← Completion.coe_neg, ← Completion.coe_add, norm_coe, Completion.dist_eq,
+        dist_eq_norm_neg_add]
 
 @[simp]
-theorem nnnorm_coe {E} [SeminormedAddCommGroup E] (x : E) : ‖(x : Completion E)‖₊ = ‖x‖₊ := by
-  simp [nnnorm]
+theorem nnNorm_coe {E} [SeminormedAddCommGroup E] (x : E) : ‖(x : Completion E)‖₊ = ‖x‖₊ := by
+  simp [nnNorm]
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_coe := nnNorm_coe
 
 @[simp]
-lemma enorm_coe {E} [SeminormedAddCommGroup E] (x : E) : ‖(x : Completion E)‖ₑ = ‖x‖ₑ := by
-  simp [enorm]
+lemma eNorm_coe {E} [SeminormedAddCommGroup E] (x : E) : ‖(x : Completion E)‖ₑ = ‖x‖ₑ := by
+  simp [eNorm]
+
+@[deprecated (since := "2026-11-06")] alias enorm_coe := eNorm_coe
 
 end Completion
 

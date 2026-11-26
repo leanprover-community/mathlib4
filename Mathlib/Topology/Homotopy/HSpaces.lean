@@ -5,7 +5,6 @@ Authors: Filippo A. E. Nuccio, Junyan Xu
 -/
 module
 
-public import Mathlib.Topology.CompactOpen
 public import Mathlib.Topology.Homotopy.Basic
 public import Mathlib.Topology.Path
 
@@ -34,7 +33,8 @@ Some notable properties of `H-spaces` are
   definitionally equal to the product of `H-space` structures on `G` and `G'`.
 * The loop space based at every `x : X` carries a structure of an `H-space`.
 
-## To Do
+## TODO
+
 * Prove that for every `NormedAddTorsor Z` and every `z : Z`, the operation
   `fun x y ↦ midpoint x y` defines an `H-space` structure with `z` as a "neutral element".
 * Prove that `S^0`, `S^1`, `S^3` and `S^7` are the unique spheres that are `H-spaces`, where the
@@ -74,7 +74,7 @@ class HSpace (X : Type u) [TopologicalSpace X] where
 /-- The binary operation `hmul` on an `H`-space -/
 scoped[HSpaces] notation x "⋀" y => HSpace.hmul (x, y)
 
-open HSpaces
+open scoped HSpaces
 
 instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [TopologicalSpace Y] [HSpace X]
     [HSpace Y] : HSpace (X × Y) where
@@ -88,23 +88,27 @@ instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [Topological
     have hG : Continuous G := by fun_prop
     use! ⟨G, hG⟩
     · rintro ⟨x, y⟩
-      exact Prod.ext (HSpace.eHmul.1.2 x) (HSpace.eHmul.1.2 y)
+      exact Prod.ext (HSpace.eHmul.toHomotopy.map_zero_left x)
+        (HSpace.eHmul.toHomotopy.map_zero_left y)
     · rintro ⟨x, y⟩
-      exact Prod.ext (HSpace.eHmul.1.3 x) (HSpace.eHmul.1.3 y)
+      exact Prod.ext (HSpace.eHmul.toHomotopy.map_one_left x)
+        (HSpace.eHmul.toHomotopy.map_one_left y)
     · rintro t ⟨x, y⟩ h
       replace h := Prod.mk_inj.mp h
-      exact Prod.ext (HSpace.eHmul.2 t x h.1) (HSpace.eHmul.2 t y h.2)
+      exact Prod.ext (HSpace.eHmul.prop' t x h.1) (HSpace.eHmul.prop' t y h.2)
   hmulE := by
     let G : I × X × Y → X × Y := fun p => (HSpace.hmulE (p.1, p.2.1), HSpace.hmulE (p.1, p.2.2))
     have hG : Continuous G := by fun_prop
     use! ⟨G, hG⟩
     · rintro ⟨x, y⟩
-      exact Prod.ext (HSpace.hmulE.1.2 x) (HSpace.hmulE.1.2 y)
+      exact Prod.ext (HSpace.hmulE.toHomotopy.map_zero_left x)
+        (HSpace.hmulE.toHomotopy.map_zero_left y)
     · rintro ⟨x, y⟩
-      exact Prod.ext (HSpace.hmulE.1.3 x) (HSpace.hmulE.1.3 y)
+      exact Prod.ext (HSpace.hmulE.toHomotopy.map_one_left x)
+        (HSpace.hmulE.toHomotopy.map_one_left y)
     · rintro t ⟨x, y⟩ h
       replace h := Prod.mk_inj.mp h
-      exact Prod.ext (HSpace.hmulE.2 t x h.1) (HSpace.hmulE.2 t y h.2)
+      exact Prod.ext (HSpace.hmulE.prop' t x h.1) (HSpace.hmulE.prop' t y h.2)
 
 
 namespace IsTopologicalGroup
@@ -113,7 +117,7 @@ namespace IsTopologicalGroup
 lead to a diamond since a topological field would inherit two `HSpace` structures, one from the
 `MulOneClass` and one from the `AddZeroClass`. In the case of a group, we make
 `IsTopologicalGroup.hSpace` an instance." -/
-@[to_additive
+@[to_additive (attr := instance_reducible)
       /-- The definition `toHSpace` is not an instance because it comes together with a
       multiplicative version which would lead to a diamond since a topological field would inherit
       two `HSpace` structures, one from the `MulOneClass` and one from the `AddZeroClass`.
@@ -172,7 +176,7 @@ theorem qRight_zero_right (t : I) :
   simp only [qRight, coe_zero, add_zero, div_one]
   split_ifs
   · rw [Set.projIcc_of_mem _ ((mul_pos_mem_iff zero_lt_two).2 _)]
-    refine ⟨t.2.1, ?_⟩
+    refine ⟨t.property.1, ?_⟩
     tauto
   · rw [(Set.projIcc_eq_right _).2]
     · linarith
@@ -211,11 +215,11 @@ theorem delayReflRight_zero (γ : Path x y) : delayReflRight 0 γ = γ.trans (Pa
   split_ifs with h; swap
   on_goal 1 => conv_rhs => rw [← γ.target]
   all_goals apply congr_arg γ; ext1; rw [qRight_zero_right]
-  exacts [if_neg h, if_pos h]
+  exacts [ite_eq_right h, ite_eq_left h]
 
 theorem delayReflRight_one (γ : Path x y) : delayReflRight 1 γ = γ := by
   ext t
-  exact congr_arg γ (qRight_one_right t)
+  congrm γ $(qRight_one_right t)
 
 /-- This is the function on p. 475 of [serre1951], defining a homotopy from a path `γ` to the
 product path `e ∧ γ`. -/

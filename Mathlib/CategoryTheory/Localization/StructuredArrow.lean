@@ -5,9 +5,11 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Localization.HomEquiv
-public import Mathlib.CategoryTheory.Localization.Opposite
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
+public import Mathlib.CategoryTheory.Localization.HomEquiv
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Induction principles for structured and costructured arrows
@@ -21,7 +23,6 @@ and if `P` is stable by post-composition with the inverse of `L.map w` when `W w
 
 We obtain a similar lemma `Localization.induction_costructuredArrow` for
 costructured arrows.
-
 -/
 
 @[expose] public section
@@ -82,7 +83,7 @@ private lemma induction_structuredArrow'
   | cons f g hf =>
       obtain (g | ⟨w, hw⟩) := g
       · exact hP₁ g _ hf
-      · simpa only [← Construction.wInv_eq_isoOfHom_inv w hw] using hP₂ w hw _ hf
+      · simpa only [← Construction.wInv_eq_isoOfHom_inv w hw] using! hP₂ w hw _ hf
 
 end
 
@@ -133,7 +134,7 @@ lemma induction_costructuredArrow
   induction g' using induction_structuredArrow L.op W.op with
   | hP₀ => exact hP₀
   | hP₁ f φ hφ => exact hP₁ f.unop φ.unop hφ
-  | hP₂ w hw φ hφ => simpa [isoOfHom_op_inv L W w hw] using hP₂ w.unop hw φ.unop hφ
+  | hP₂ w hw φ hφ => simpa [isoOfHom_op_inv L W w hw] using! hP₂ w.unop hw φ.unop hφ
 
 end
 

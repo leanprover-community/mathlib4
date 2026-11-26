@@ -5,8 +5,11 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Shift.Adjunction
 public import Mathlib.CategoryTheory.Preadditive.Opposite
+public import Mathlib.CategoryTheory.Shift.Adjunction
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The (naive) shift on the opposite category
@@ -45,7 +48,6 @@ Given a `CommShift` structure on a functor `F`, we define a `CommShift` structur
 We also prove that, if an adjunction `F ⊣ G` is compatible with `CommShift` structures on
 `F` and `G`, then the opposite adjunction `G.op ⊣ F.op` is compatible with the opposite
 `CommShift` structures.
-
 -/
 
 @[expose] public section
@@ -62,6 +64,7 @@ namespace HasShift
 
 /-- Construction of the naive shift on the opposite category of a category `C`:
 the shiftfunctor by `n` is `(shiftFunctor C n).op`. -/
+@[implicit_reducible]
 def mkShiftCoreOp : ShiftMkCore Cᵒᵖ A where
   F n := (shiftFunctor C n).op
   zero := (NatIso.op (shiftFunctorZero C A)).symm
@@ -78,7 +81,7 @@ end HasShift
 
 /-- The category `OppositeShift C A` is the opposite category `Cᵒᵖ` equipped
 with the naive shift: `shiftFunctor (OppositeShift C A) n` is `(shiftFunctor C n).op`. -/
-@[nolint unusedArguments]
+@[nolint unusedArguments, implicit_reducible]
 def OppositeShift (A : Type*) [AddMonoid A] [HasShift C A] := Cᵒᵖ
 
 instance : Category (OppositeShift C A) := inferInstanceAs (Category Cᵒᵖ)
@@ -161,6 +164,7 @@ def OppositeShift.natTrans {G : C ⥤ D} (τ : F ⟶ G) :
 
 namespace Functor
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 Given a `CommShift` structure on `F`, this is the corresponding `CommShift` structure on
 `OppositeShift.functor F` (for the naive shifts on the opposite categories).
@@ -186,25 +190,26 @@ instance commShiftOp [CommShift F A] :
 lemma commShiftOp_iso_eq [CommShift F A] (a : A) :
     (OppositeShift.functor A F).commShiftIso a = (NatIso.op (F.commShiftIso a)).symm := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Given a `CommShift` structure on `OppositeShift.functor F` (for the naive shifts on the opposite
 categories), this is the corresponding `CommShift` structure on `F`.
 -/
-@[simps -isSimp]
+@[simps -isSimp, instance_reducible]
 def commShiftUnop
     [CommShift (OppositeShift.functor A F) A] : CommShift F A where
   commShiftIso a := NatIso.removeOp ((OppositeShift.functor A F).commShiftIso a).symm
   commShiftIso_zero := by
     rw [commShiftIso_zero]
     ext
-    simp only [comp_obj, NatIso.removeOp_hom, Iso.symm_hom, NatTrans.removeOp_app, op_obj,
+    simp only [NatIso.removeOp_hom, Iso.symm_hom, NatTrans.removeOp_app,
       CommShift.isoZero_inv_app, unop_comp, CommShift.isoZero_hom_app]
     erw [oppositeShiftFunctorZero_hom_app, oppositeShiftFunctorZero_inv_app]
     rfl
   commShiftIso_add a b := by
     rw [commShiftIso_add]
     ext
-    simp only [comp_obj, NatIso.removeOp_hom, Iso.symm_hom, NatTrans.removeOp_app, op_obj,
+    simp only [NatIso.removeOp_hom, Iso.symm_hom, NatTrans.removeOp_app,
       CommShift.isoAdd_inv_app, unop_comp, Category.assoc,
       CommShift.isoAdd_hom_app]
     erw [oppositeShiftFunctorAdd_hom_app, oppositeShiftFunctorAdd_inv_app]
@@ -223,9 +228,8 @@ instance commShift_op (τ : F ⟶ G) [NatTrans.CommShift τ A] :
     ext
     rw [← cancel_mono (((OppositeShift.functor A F).commShiftIso _).inv.app _),
       ← cancel_epi (((OppositeShift.functor A G).commShiftIso _).inv.app _)]
-    dsimp
-    simp only [assoc, Iso.inv_hom_id_app_assoc, Iso.hom_inv_id_app, Functor.comp_obj,
-      comp_id]
+    simp only [Functor.comp_obj, comp_app, Functor.whiskerRight_app, assoc,
+      Iso.inv_hom_id_app_assoc, Functor.whiskerLeft_app, Iso.hom_inv_id_app, comp_id]
     exact (op_inj_iff _ _).mpr (NatTrans.shift_app_comm τ _ (unop _))
 
 end NatTrans
@@ -238,6 +242,8 @@ variable (C) in
 -/
 def OppositeShift.natIsoId : 𝟭 (OppositeShift C A) ≅ OppositeShift.functor A (𝟭 C) := Iso.refl _
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /--
 The natural isomorphism `NatTrans.OppositeShift.natIsoId C A` commutes with shifts.
 -/
@@ -257,6 +263,7 @@ composition of `OppositeShift.functor F` and `OppositeShift.functor G`.
 def OppositeShift.natIsoComp : OppositeShift.functor A (F ⋙ G) ≅
     OppositeShift.functor A F ⋙ OppositeShift.functor A G := Iso.refl _
 
+set_option backward.isDefEq.respectTransparency false in
 instance [F.CommShift A] [G.CommShift A] :
     NatTrans.CommShift (OppositeShift.natIsoComp A F G).hom A where
   shift_comm _ := by

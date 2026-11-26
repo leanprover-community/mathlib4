@@ -5,15 +5,18 @@ Authors: Chris Birkbeck
 -/
 module
 
-public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Algebra.Group.EvenFunction
 public import Mathlib.Data.Int.Interval
+
+import Mathlib.Algebra.CharP.Defs
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Sums/products over integer intervals
 
 This file contains some lemmas about sums and products over integer intervals `Ixx`.
-
 -/
 
 public section
@@ -51,7 +54,7 @@ lemma prod_Ico_int_div (b : ℕ) {α : Type*} [CommGroup α] (f : ℤ → α) :
   | zero => simp
   | succ b ihb =>
     simp only [Nat.cast_add_one, Ico_succ_succ]
-    rw [prod_union (by aesop), prod_insert (by grind), prod_singleton, ihb, ← mul_assoc, mul_div]
+    rw [prod_union (by simp), prod_insert (by grind), prod_singleton, ihb, ← mul_assoc, mul_div]
     simp [mul_comm, mul_div, ← mul_assoc]
 
 end Finset

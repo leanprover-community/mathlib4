@@ -17,14 +17,14 @@ the data of objects `Dⱼ` and natural maps `sⱼ : Dⱼ ⟶ X` that make `X` th
 (See `Mathlib/CategoryTheory/Presentable/ColimitPresentation.lean` for the construction of a
 presentation of a colimit of objects that are equipped with presentations.)
 
-## Main definitions:
+## Main definitions
 
 - `CategoryTheory.Limits.ColimitPresentation`: A colimit presentation of `X` over `J` is a diagram
   `{Dᵢ}` in `C` and natural maps `sᵢ : Dᵢ ⟶ X` making `X` into the colimit of the `Dᵢ`.
 - `CategoryTheory.Limits.LimitPresentation`: A limit presentation of `X` over `J` is a diagram
   `{Dᵢ}` in `C` and natural maps `sᵢ : X ⟶ Dᵢ` making `X` into the limit of the `Dᵢ`.
 
-## TODOs:
+## TODO
 
 - Refactor `TransfiniteCompositionOfShape` so that it extends `ColimitPresentation`.
 -/
@@ -89,7 +89,7 @@ def map (P : ColimitPresentation J X) {D : Type*} [Category* D] (F : C ⥤ D)
     [PreservesColimitsOfShape J F] : ColimitPresentation J (F.obj X) where
   diag := P.diag ⋙ F
   ι := Functor.whiskerRight P.ι F ≫ (F.constComp _ _).hom
-  isColimit := (isColimitOfPreserves F P.isColimit).ofIsoColimit (Cocones.ext (.refl _) (by simp))
+  isColimit := (isColimitOfPreserves F P.isColimit).ofIsoColimit (Cocone.ext (.refl _) (by simp))
 
 /-- If `P` is a colimit presentation of `X`, it is possible to define another
 colimit presentation of `X` where `P.diag` is replaced by an isomorphic functor. -/
@@ -98,14 +98,14 @@ def changeDiag (P : ColimitPresentation J X) {F : J ⥤ C} (e : F ≅ P.diag) :
     ColimitPresentation J X where
   diag := F
   ι := e.hom ≫ P.ι
-  isColimit := (IsColimit.precomposeHomEquiv e _).2 P.isColimit
+  isColimit := (IsColimit.precomposeHomEquiv e _).invFun P.isColimit
 
 /-- Map a colimit presentation under an isomorphism. -/
 @[simps]
 def ofIso (P : ColimitPresentation J X) {Y : C} (e : X ≅ Y) : ColimitPresentation J Y where
   diag := P.diag
   ι := P.ι ≫ (Functor.const J).map e.hom
-  isColimit := P.isColimit.ofIsoColimit (Cocones.ext e fun _ ↦ rfl)
+  isColimit := P.isColimit.ofIsoColimit (Cocone.ext e fun _ ↦ rfl)
 
 /-- Change the index category of a colimit presentation. -/
 @[simps]
@@ -170,7 +170,7 @@ def map (P : LimitPresentation J X) {D : Type*} [Category* D] (F : C ⥤ D)
     [PreservesLimitsOfShape J F] : LimitPresentation J (F.obj X) where
   diag := P.diag ⋙ F
   π := (F.constComp _ _).inv ≫ Functor.whiskerRight P.π F
-  isLimit := (isLimitOfPreserves F P.isLimit).ofIsoLimit (Cones.ext (.refl _) (by simp))
+  isLimit := (isLimitOfPreserves F P.isLimit).ofIsoLimit (Cone.ext (.refl _) (by simp))
 
 /-- If `P` is a limit presentation of `X`, it is possible to define another
 limit presentation of `X` where `P.diag` is replaced by an isomorphic functor. -/
@@ -179,14 +179,14 @@ def changeDiag (P : LimitPresentation J X) {F : J ⥤ C} (e : F ≅ P.diag) :
     LimitPresentation J X where
   diag := F
   π := P.π ≫ e.inv
-  isLimit := (IsLimit.postcomposeHomEquiv e.symm _).2 P.isLimit
+  isLimit := (IsLimit.postcomposeHomEquiv e.symm _).invFun P.isLimit
 
 /-- Map a limit presentation under an isomorphism. -/
 @[simps]
 def ofIso (P : LimitPresentation J X) {Y : C} (e : X ≅ Y) : LimitPresentation J Y where
   diag := P.diag
   π := (Functor.const J).map e.inv ≫ P.π
-  isLimit := P.isLimit.ofIsoLimit (Cones.ext e)
+  isLimit := P.isLimit.ofIsoLimit (Cone.ext e)
 
 /-- Change the index category of a limit presentation. -/
 @[simps]

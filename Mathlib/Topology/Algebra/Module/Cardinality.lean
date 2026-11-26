@@ -5,11 +5,15 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Algebra.Module.Card
 public import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.SetTheory.Cardinal.Continuum
-public import Mathlib.SetTheory.Cardinal.CountableCover
-public import Mathlib.Topology.MetricSpace.Perfect
+
+import Mathlib.Algebra.Module.Card
+import Mathlib.SetTheory.Cardinal.CountableCover
+import Mathlib.Topology.MetricSpace.Perfect
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Cardinality of open subsets of vector spaces
@@ -89,8 +93,9 @@ lemma cardinal_eq_of_mem_nhds_zero
   have B : ∀ n, #(c ^ n • s :) = #s := by
     intro n
     have : (c ^ n • s :) ≃ s :=
-    { toFun := fun x ↦ ⟨(c ^ n)⁻¹ • x.1, (mem_smul_set_iff_inv_smul_mem₀ (cn_ne n) _ _).1 x.2⟩
-      invFun := fun x ↦ ⟨(c^n) • x.1, smul_mem_smul_set x.2⟩
+    { toFun := fun x ↦ ⟨(c ^ n)⁻¹ • x.val,
+        (mem_smul_set_iff_inv_smul_mem₀ (cn_ne n) _ _).1 x.property⟩
+      invFun := fun x ↦ ⟨(c^n) • x.val, smul_mem_smul_set x.property⟩
       left_inv := fun x ↦ by simp [smul_smul, mul_inv_cancel₀ (cn_ne n)]
       right_inv := fun x ↦ by simp [smul_smul, inv_mul_cancel₀ (cn_ne n)] }
     exact Cardinal.mk_congr this
@@ -106,7 +111,7 @@ theorem cardinal_eq_of_mem_nhds
   let t := g ⁻¹' s
   have : t ∈ 𝓝 0 := g.continuous.continuousAt.preimage_mem_nhds (by simpa [g] using hs)
   have A : #t = #E := cardinal_eq_of_mem_nhds_zero 𝕜 this
-  have B : #t = #s := Cardinal.mk_subtype_of_equiv s g.toEquiv
+  have B : #t = #s := Cardinal.mk_subtype_of_equiv (· ∈ s) g.toEquiv
   rwa [B] at A
 
 /-- In a topological vector space over a nontrivially normed field, any nonempty open set has

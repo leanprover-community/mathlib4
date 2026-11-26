@@ -8,13 +8,16 @@ module
 public import Mathlib.Algebra.Module.Prod
 public import Mathlib.Algebra.Module.Torsion.Free
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Product of torsion-free modules
 
 This file shows that the product of two torsion-free modules is torsion-free.
 -/
 
-@[expose] public section
+public section
 
 open Module
 

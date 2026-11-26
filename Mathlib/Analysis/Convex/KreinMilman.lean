@@ -49,7 +49,6 @@ matrices, permutation matrices being the extreme points.
 ## References
 
 See chapter 8 of [Barry Simon, *Convexity*][simon2011]
-
 -/
 
 public section
@@ -71,7 +70,7 @@ theorem IsCompact.extremePoints_nonempty (hscomp : IsCompact s) (hsnemp : s.None
     by_contra hyx
     obtain ⟨l, hl⟩ := geometric_hahn_banach_point_point hyx
     obtain ⟨z, hzt, hz⟩ :=
-      (hscomp.of_isClosed_subset htclos hst.1).exists_isMaxOn ⟨x, hxt⟩
+      (hscomp.of_isClosed_subset htclos hst.subset).exists_isMaxOn ⟨x, hxt⟩
         l.continuous.continuousOn
     have h : IsExposed ℝ t ({ z ∈ t | ∀ w ∈ t, l w ≤ l z }) := fun _ => ⟨l, rfl⟩
     rw [ht.eq_of_ge (y := ({ z ∈ t | ∀ w ∈ t, l w ≤ l z }))
@@ -82,11 +81,11 @@ theorem IsCompact.extremePoints_nonempty (hscomp : IsCompact s) (hsnemp : s.None
   · exact ⟨s, ⟨hsnemp, hscomp.isClosed, IsExtreme.rfl⟩, fun _ => False.elim⟩
   refine ⟨⋂₀ F, ⟨?_, isClosed_sInter fun t ht => (hFS ht).2.1,
     isExtreme_sInter hFnemp fun t ht => (hFS ht).2.2⟩, fun t ht => sInter_subset_of_mem ht⟩
-  haveI : Nonempty (↥F) := hFnemp.to_subtype
+  have : Nonempty (↥F) := hFnemp.to_subtype
   rw [sInter_eq_iInter]
   refine IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed _ (fun t u => ?_)
     (fun t => (hFS t.mem).1)
-    (fun t => hscomp.of_isClosed_subset (hFS t.mem).2.1 (hFS t.mem).2.2.1) fun t =>
+    (fun t => hscomp.of_isClosed_subset (hFS t.mem).2.1 (hFS t.mem).2.2.subset) fun t =>
       (hFS t.mem).2.1
   obtain htu | hut := hF.total t.mem u.mem
   exacts [⟨t, Subset.rfl, htu⟩, ⟨u, hut, Subset.rfl⟩]
@@ -114,12 +113,12 @@ lemma surjOn_extremePoints_image (f : E →ᴬ[ℝ] F) (hs : IsCompact s) :
   -- The fiber of `w` is nonempty and compact
   have ht : IsCompact {x ∈ s | f x = w} :=
     hs.inter_right <| isClosed_singleton.preimage f.continuous
-  have ht₀ : {x ∈ s | f x = w}.Nonempty := by simpa using extremePoints_subset hw
+  have ht₀ : {x ∈ s | f x = w}.Nonempty := by simpa using! extremePoints_subset hw
   -- Hence by the Krein-Milman lemma it has an extreme point `x`
   obtain ⟨x, ⟨hx, rfl⟩, hyt⟩ := ht.extremePoints_nonempty ht₀
   -- `f x = w` and `x` is an extreme point of `s`, so we're done
   refine mem_image_of_mem _ ⟨hx, fun y hy z hz hxyz ↦ ?_⟩
-  have := by simpa using image_openSegment _ f.toAffineMap y z
+  have := by simpa using! image_openSegment _ f.toAffineMap y z
   rw [mem_extremePoints] at hw
   have := hw.2 _ (mem_image_of_mem _ hy) _ (mem_image_of_mem _ hz) <| by
     rw [← this]; exact mem_image_of_mem _ hxyz

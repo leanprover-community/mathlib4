@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Vector.Basic
 public import Mathlib.Logic.Equiv.Finset
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Encodability of Pi types
 
@@ -30,11 +33,11 @@ variable {α : Type*}
 
 /-- If `α` is encodable, then so is `Vector α n`. -/
 instance List.Vector.encodable [Encodable α] {n} : Encodable (List.Vector α n) :=
-  Subtype.encodable
+  inferInstanceAs <| Encodable (Subtype _)
 
 /-- If `α` is countable, then so is `Vector α n`. -/
 instance List.Vector.countable [Countable α] {n} : Countable (List.Vector α n) :=
-  Subtype.countable
+  inferInstanceAs <| Countable (Subtype _)
 
 /-- If `α` is encodable, then so is `Fin n → α`. -/
 instance finArrow [Encodable α] {n} : Encodable (Fin n → α) :=

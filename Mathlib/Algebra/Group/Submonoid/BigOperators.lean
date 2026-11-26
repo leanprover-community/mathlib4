@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Group.Submonoid.Basic
 public import Mathlib.Algebra.Group.Support
 public import Mathlib.Data.Finset.NoncommProd
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Submonoids: membership criteria for products and sums
 
@@ -21,6 +24,7 @@ In this file we prove various facts about membership in a submonoid:
   to an additive submonoid, then so does their sum;
 
 ## Tags
+
 submonoid, submonoids
 -/
 
@@ -29,7 +33,7 @@ public section
 -- We don't need ordered structures to establish basic membership facts for submonoids
 assert_not_exists IsOrderedRing
 
-variable {M A B : Type*}
+variable {M B : Type*}
 
 section SubmonoidClass
 variable [Monoid M] [SetLike B M] [SubmonoidClass B M] {x : M} {S : B}
@@ -46,7 +50,7 @@ theorem coe_multiset_prod {M} [CommMonoid M] [SetLike B M] [SubmonoidClass B M] 
   (SubmonoidClass.subtype S : _ →* M).map_multiset_prod m
 
 @[to_additive (attr := norm_cast, simp)]
-theorem coe_finset_prod {ι M} [CommMonoid M] [SetLike B M] [SubmonoidClass B M] (f : ι → S)
+theorem coe_finsetProd {ι M} [CommMonoid M] [SetLike B M] [SubmonoidClass B M] (f : ι → S)
     (s : Finset ι) : ↑(∏ i ∈ s, f i) = (∏ i ∈ s, f i : M) :=
   map_prod (SubmonoidClass.subtype S) f s
 
@@ -78,7 +82,7 @@ submonoid. -/
       is in the `AddSubmonoid`. -/]
 theorem prod_mem {M : Type*} [CommMonoid M] [SetLike B M] [SubmonoidClass B M] {ι : Type*}
     {t : Finset ι} {f : ι → M} (h : ∀ c ∈ t, f c ∈ S) : (∏ c ∈ t, f c) ∈ S :=
-  multiset_prod_mem (t.1.map f) fun _x hx =>
+  multiset_prod_mem (t.val.map f) fun _x hx =>
     let ⟨i, hi, hix⟩ := Multiset.mem_map.1 hx
     hix ▸ h i hi
 
@@ -98,7 +102,7 @@ theorem coe_multiset_prod {M} [CommMonoid M] (S : Submonoid M) (m : Multiset S) 
   S.subtype.map_multiset_prod m
 
 @[to_additive (attr := norm_cast)]
-theorem coe_finset_prod {ι M} [CommMonoid M] (S : Submonoid M) (f : ι → S) (s : Finset ι) :
+theorem coe_finsetProd {ι M} [CommMonoid M] (S : Submonoid M) (f : ι → S) (s : Finset ι) :
     ↑(∏ i ∈ s, f i) = (∏ i ∈ s, f i : M) :=
   map_prod S.subtype f s
 
@@ -127,7 +131,7 @@ submonoid. -/
       is in the `AddSubmonoid`. -/]
 theorem prod_mem {M : Type*} [CommMonoid M] (S : Submonoid M) {ι : Type*} {t : Finset ι}
     {f : ι → M} (h : ∀ c ∈ t, f c ∈ S) : (∏ c ∈ t, f c) ∈ S :=
-  S.multiset_prod_mem (t.1.map f) fun _ hx =>
+  S.multiset_prod_mem (t.val.map f) fun _ hx =>
     let ⟨i, hi, hix⟩ := Multiset.mem_map.1 hx
     hix ▸ h i hi
 
@@ -154,7 +158,6 @@ lemma mem_closure_iff_exists_finset_subset {s : Set M} :
     induction hx using closure_induction with
     | one => exact ⟨0, ∅, by simp⟩
     | mem x hx =>
-      simp only at hx
       exact ⟨Pi.single x 1, {x}, by simp [hx, Pi.single_apply]⟩
     | mul x y _ _ hx hy =>
     obtain ⟨f, t, hts, hf, rfl⟩ := hx

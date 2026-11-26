@@ -3,6 +3,7 @@ Copyright (c) 2025 Jacob Reinhold. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jacob Reinhold
 -/
+module
 import Mathlib.CategoryTheory.MarkovCategory.Basic
 import Mathlib.CategoryTheory.CopyDiscardCategory.Cartesian
 import Mathlib.CategoryTheory.Monoidal.Types.Basic
@@ -18,7 +19,6 @@ Tests for the Markov category and copy-discard category implementation.
 * Comonoid laws: comultiplication and counit axioms
 * Markov category laws: naturality of discard and terminal unit
 * Simp automation for comonoid and discard naturality
-
 -/
 
 universe u

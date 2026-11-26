@@ -8,6 +8,9 @@ module
 public import Mathlib.Control.Functor.Multivariate
 public import Mathlib.Data.PFunctor.Univariate.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Multivariate polynomial functors.
 
@@ -112,8 +115,8 @@ end Const
 
 /-- Functor composition on polynomial functors -/
 def comp (P : MvPFunctor.{u} n) (Q : Fin2 n → MvPFunctor.{u} m) : MvPFunctor m where
-  A := Σ a₂ : P.1, ∀ i, P.2 a₂ i → (Q i).1
-  B a i := Σ (j : _) (b : P.2 a.1 j), (Q j).2 (a.snd j b) i
+  A := Σ a₂ : P.A, ∀ i, P.B a₂ i → (Q i).A
+  B a i := Σ (j : _) (b : P.B a.1 j), (Q j).B (a.snd j b) i
 
 variable {P} {Q : Fin2 n → MvPFunctor.{u} m} {α β : TypeVec.{u} m}
 
@@ -137,6 +140,7 @@ theorem comp.get_mk (x : P (fun i => Q i α)) : comp.get (comp.mk x) = x := by
 theorem comp.mk_get (x : comp P Q α) : comp.mk (comp.get x) = x := by
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-
 lifting predicates and relations
 -/
@@ -152,6 +156,7 @@ theorem liftP_iff {α : TypeVec n} (p : ∀ ⦃i⦄, α i → Prop) (x : P α) :
   use ⟨a, fun i j => ⟨f i j, pf i j⟩⟩
   rw [xeq]; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem liftP_iff' {α : TypeVec n} (p : ∀ ⦃i⦄, α i → Prop) (a : P.A) (f : P.B a ⟹ α) :
     @LiftP.{u} _ P.Obj _ α p ⟨a, f⟩ ↔ ∀ i x, p (f i x) := by
   simp only [liftP_iff]; constructor
@@ -175,17 +180,13 @@ theorem liftR_iff {α : TypeVec n} (r : ∀ ⦃i⦄, α i → α i → Prop) (x 
     intro i j
     exact (f i j).property
   rintro ⟨a, f₀, f₁, xeq, yeq, h⟩
-  use ⟨a, fun i j => ⟨(f₀ i j, f₁ i j), h i j⟩⟩
-  dsimp; constructor
-  · rw [xeq]
-    rfl
-  rw [yeq]; rfl
+  exact ⟨⟨a, fun i j => ⟨(f₀ i j, f₁ i j), h i j⟩⟩, xeq.symm, yeq.symm⟩
 
 open Set
 
 theorem supp_eq {α : TypeVec n} (a : P.A) (f : P.B a ⟹ α) (i) :
     @supp.{u} _ P.Obj _ α (⟨a, f⟩ : P α) i = f i '' univ := by
-  ext x; simp only [supp, image_univ, mem_range, mem_setOf_eq]
+  ext x; simp only [supp, image_univ, mem_range, mem_ofPred_eq]
   constructor <;> intro h
   · apply @h fun i x => ∃ y : P.B a i, f i y = x
     rw [liftP_iff']

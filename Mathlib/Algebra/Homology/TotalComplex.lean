@@ -5,10 +5,14 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Linear.Basic
 public import Mathlib.Algebra.Homology.ComplexShapeSigns
 public import Mathlib.Algebra.Homology.HomologicalBicomplex
-public import Mathlib.Algebra.Module.Basic
+public import Mathlib.CategoryTheory.Linear.Basic
+
+import Mathlib.Algebra.Module.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The total complex of a bicomplex
@@ -24,7 +28,6 @@ In particular, if `c := ComplexShape.up ℤ` and `K : HomologicalComplex₂ c c`
 `p + q = n`, and the differential on `(K.total c).X n` is induced by the sum of horizontal
 differentials `(K.X p).X q ⟶ (K.X (p + 1)).X q` and `(-1) ^ p` times the vertical
 differentials `(K.X p).X q ⟶ (K.X p).X (q + 1)`.
-
 -/
 
 @[expose] public section
@@ -250,7 +253,7 @@ lemma D₁_D₂ (i₁₂ i₁₂' i₁₂'' : I₁₂) :
     K.D₁ c₁₂ i₁₂ i₁₂' ≫ K.D₂ c₁₂ i₁₂' i₁₂'' = - K.D₂ c₁₂ i₁₂ i₁₂' ≫ K.D₁ c₁₂ i₁₂' i₁₂'' := by simp
 
 /-- The total complex of a bicomplex. -/
-@[simps -isSimp d]
+@[simps -isSimp d, implicit_reducible]
 noncomputable def total : HomologicalComplex C c₁₂ where
   X := K.toGradedObject.mapObj (ComplexShape.π c₁ c₂ c₁₂)
   d i₁₂ i₁₂' := K.D₁ c₁₂ i₁₂ i₁₂' + K.D₂ c₁₂ i₁₂ i₁₂'
@@ -286,11 +289,11 @@ noncomputable def ιTotalOrZero (i₁ : I₁) (i₂ : I₂) (i₁₂ : I₁₂) 
 
 lemma ιTotalOrZero_eq (i₁ : I₁) (i₂ : I₂) (i₁₂ : I₁₂)
     (h : ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂) = i₁₂) :
-    K.ιTotalOrZero c₁₂ i₁ i₂ i₁₂ = K.ιTotal c₁₂ i₁ i₂ i₁₂ h := dif_pos h
+    K.ιTotalOrZero c₁₂ i₁ i₂ i₁₂ = K.ιTotal c₁₂ i₁ i₂ i₁₂ h := dite_eq_left h
 
 lemma ιTotalOrZero_eq_zero (i₁ : I₁) (i₂ : I₂) (i₁₂ : I₁₂)
     (h : ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂) ≠ i₁₂) :
-    K.ιTotalOrZero c₁₂ i₁ i₂ i₁₂ = 0 := dif_neg h
+    K.ιTotalOrZero c₁₂ i₁ i₂ i₁₂ = 0 := dite_eq_right h
 
 @[reassoc (attr := simp)]
 lemma ι_D₁ (i₁₂ i₁₂' : I₁₂) (i₁ : I₁) (i₂ : I₂) (h : ComplexShape.π c₁ c₂ c₁₂ ⟨i₁, i₂⟩ = i₁₂) :

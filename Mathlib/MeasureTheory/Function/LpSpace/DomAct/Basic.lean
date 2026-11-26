@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Function.AEEqFun.DomAct
 public import Mathlib.MeasureTheory.Function.LpSpace.Indicator
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Action of `Mᵈᵐᵃ` on `Lᵖ` spaces
 
@@ -18,7 +21,7 @@ and `c : M`, then `(.mk c : Mᵈᵐᵃ) • [f]` is represented by the function 
 We also prove basic properties of this action.
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Filter
 open scoped ENNReal
@@ -37,7 +40,7 @@ instance : SMul Mᵈᵐᵃ (Lp E p μ) where
   smul c f := Lp.compMeasurePreserving (mk.symm c • ·) (measurePreserving_smul _ _) f
 
 @[to_additive (attr := simp)]
-theorem smul_Lp_val (c : Mᵈᵐᵃ) (f : Lp E p μ) : (c • f).1 = c • f.1 := rfl
+theorem smul_Lp_val (c : Mᵈᵐᵃ) (f : Lp E p μ) : (c • f).val = c • f.val := rfl
 
 @[to_additive]
 theorem smul_Lp_ae_eq (c : Mᵈᵐᵃ) (f : Lp E p μ) : c • f =ᵐ[μ] (f <| mk.symm c • ·) :=
@@ -104,12 +107,14 @@ theorem norm_smul_Lp (c : Mᵈᵐᵃ) (f : Lp E p μ) : ‖c • f‖ = ‖f‖ 
   Lp.norm_compMeasurePreserving _ _
 
 @[to_additive (attr := simp)]
-theorem nnnorm_smul_Lp (c : Mᵈᵐᵃ) (f : Lp E p μ) : ‖c • f‖₊ = ‖f‖₊ :=
+theorem nnNorm_smul_Lp (c : Mᵈᵐᵃ) (f : Lp E p μ) : ‖c • f‖₊ = ‖f‖₊ :=
   NNReal.eq <| Lp.norm_compMeasurePreserving _ _
+
+@[to_additive (attr := deprecated (since := "2026-10-31"))] alias nnnorm_smul_Lp := nnNorm_smul_Lp
 
 @[to_additive (attr := simp)]
 theorem dist_smul_Lp (c : Mᵈᵐᵃ) (f g : Lp E p μ) : dist (c • f) (c • g) = dist f g := by
-  simp only [dist, ← smul_Lp_sub, norm_smul_Lp]
+  simp only [dist, ← smul_Lp_neg, ← smul_Lp_add, norm_smul_Lp]
 
 @[to_additive (attr := simp)]
 theorem edist_smul_Lp (c : Mᵈᵐᵃ) (f g : Lp E p μ) : edist (c • f) (c • g) = edist f g := by

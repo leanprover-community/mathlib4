@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Module.Equiv.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The general linear group of linear maps
 
@@ -17,7 +20,6 @@ See also `Matrix.GeneralLinearGroup`
 ## Main definitions
 
 * `LinearMap.GeneralLinearGroup`
-
 -/
 
 @[expose] public section
@@ -72,6 +74,10 @@ theorem ofLinearEquiv_mul (f g : M ≃ₗ[R] M) :
 theorem ofLinearEquiv_inv (f : M ≃ₗ[R] M) :
     ofLinearEquiv (f⁻¹) = (ofLinearEquiv f)⁻¹ := by
   rfl
+
+@[simp]
+lemma ofLinearEquiv_smul (f : M ≃ₗ[R] M) (x : M) :
+    ofLinearEquiv f • x = f x := rfl
 
 variable (R M) in
 /-- The general linear group on `R` and `M` is multiplicatively equivalent to the type of linear

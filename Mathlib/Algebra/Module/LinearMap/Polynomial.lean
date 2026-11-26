@@ -5,12 +5,12 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.Monad
 public import Mathlib.LinearAlgebra.Charpoly.ToMatrix
-public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Univ
 public import Mathlib.RingTheory.TensorProduct.Finite
 public import Mathlib.RingTheory.TensorProduct.Free
+
+import Mathlib.Algebra.MvPolynomial.Monad
 
 /-!
 # Characteristic polynomials of linear families of endomorphisms
@@ -47,7 +47,7 @@ that evaluates on elements `x` of `L` to the characteristic polynomial of `φ x`
   if the `n`-th coefficient of the characteristic polynomial of `φ x` is non-zero,
   where `n` denotes the nil-rank of `φ`.
 
-## Implementation details
+## Implementation notes
 
 We show that `LinearMap.polyCharpoly` does not depend on the choice of basis of the target module.
 This is done via `LinearMap.polyCharpoly_eq_polyCharpolyAux`
@@ -61,7 +61,6 @@ The proof concludes because characteristic polynomials are independent of the ch
 ## References
 
 * [barnes1967]: "On Cartan subalgebras of Lie algebras" by D.W. Barnes.
-
 -/
 
 @[expose] public section
@@ -97,8 +96,7 @@ lemma toMvPolynomial_isHomogeneous (M : Matrix m n R) (i : m) :
   apply MvPolynomial.IsHomogeneous.sum
   rintro j -
   apply MvPolynomial.isHomogeneous_monomial _ _
-  simp [Finsupp.degree, Finsupp.support_single_ne_zero _ one_ne_zero, Finset.sum_singleton,
-    Finsupp.single_eq_same]
+  simp
 
 lemma toMvPolynomial_totalDegree_le (M : Matrix m n R) (i : m) :
     (M.toMvPolynomial i).totalDegree ≤ 1 := by
@@ -112,7 +110,7 @@ lemma toMvPolynomial_constantCoeff (M : Matrix m n R) (i : m) :
 
 @[simp]
 lemma toMvPolynomial_zero : (0 : Matrix m n R).toMvPolynomial = 0 := by
-  ext; simp only [toMvPolynomial, zero_apply, map_zero, Finset.sum_const_zero, Pi.zero_apply]
+  ext; simp only [toMvPolynomial, Matrix.zero_apply, map_zero, Finset.sum_const_zero, Pi.zero_apply]
 
 @[simp]
 lemma toMvPolynomial_one [DecidableEq n] : (1 : Matrix n n R).toMvPolynomial = X := by
@@ -126,14 +124,15 @@ lemma toMvPolynomial_one [DecidableEq n] : (1 : Matrix n n R).toMvPolynomial = X
 lemma toMvPolynomial_add (M N : Matrix m n R) :
     (M + N).toMvPolynomial = M.toMvPolynomial + N.toMvPolynomial := by
   ext i : 1
-  simp only [toMvPolynomial, add_apply, map_add, Finset.sum_add_distrib, Pi.add_apply]
+  simp only [toMvPolynomial, Matrix.add_apply, map_add, Finset.sum_add_distrib, Pi.add_apply]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma toMvPolynomial_mul (M : Matrix m n R) (N : Matrix n o R) (i : m) :
-    (M * N).toMvPolynomial i = bind₁ N.toMvPolynomial (M.toMvPolynomial i) := by
-  simp only [toMvPolynomial, mul_apply, map_sum, Finset.sum_comm (γ := o), bind₁, aeval,
+    (M * N).toMvPolynomial i = aeval N.toMvPolynomial (M.toMvPolynomial i) := by
+  simp only [toMvPolynomial, Matrix.mul_apply, map_sum, Finset.sum_comm (γ := o), aeval,
     AlgHom.coe_mk, coe_eval₂Hom, eval₂_monomial, algebraMap_apply, Algebra.algebraMap_self,
     RingHom.id_apply, C_apply, pow_zero, Finsupp.prod_single_index, pow_one, Finset.mul_sum,
-    monomial_mul, zero_add]
+    monomial_mul_monomial, zero_add]
 
 end Matrix
 
@@ -207,7 +206,7 @@ variable (b₁ : Basis ι₁ R M₁) (b₂ : Basis ι₂ R M₂) (b₃ : Basis �
 
 lemma toMvPolynomial_comp (g : M₂ →ₗ[R] M₃) (f : M₁ →ₗ[R] M₂) (i : ι₃) :
     (g ∘ₗ f).toMvPolynomial b₁ b₃ i =
-      bind₁ (f.toMvPolynomial b₁ b₂) (g.toMvPolynomial b₂ b₃ i) := by
+      aeval (f.toMvPolynomial b₁ b₂) (g.toMvPolynomial b₂ b₃ i) := by
   simp only [toMvPolynomial, toMatrix_comp b₁ b₂ b₃, Matrix.toMvPolynomial_mul]
   rfl
 
@@ -238,8 +237,10 @@ This definition does not depend on the choice of `bₘ`
 (see `LinearMap.polyCharpolyAux_basisIndep`). -/
 noncomputable
 def polyCharpolyAux : Polynomial (MvPolynomial ι R) :=
-  (charpoly.univ R ιM).map <| MvPolynomial.bind₁ (φ.toMvPolynomial b bₘ.end)
+  (charpoly.univ R ιM).map <|
+    (RingHomClass.toRingHom <| MvPolynomial.aeval (φ.toMvPolynomial b bₘ.end))
 
+set_option backward.defeqAttrib.useBackward true in
 open Algebra.TensorProduct MvPolynomial in
 lemma polyCharpolyAux_baseChange (A : Type*) [CommRing A] [Algebra R A] :
     polyCharpolyAux (tensorProduct _ _ _ _ ∘ₗ φ.baseChange A) (basis A b) (basis A bₘ) =
@@ -248,36 +249,36 @@ lemma polyCharpolyAux_baseChange (A : Type*) [CommRing A] [Algebra R A] :
   rw [← charpoly.univ_map_map _ (algebraMap R A)]
   simp only [Polynomial.map_map]
   congr 1
-  apply ringHom_ext
+  apply MvPolynomial.ringHom_ext
   · intro r
-    simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, map_C, bind₁_C_right]
+    simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply,
+      map_C, aeval_C, algebraMap_eq]
   · rintro ij
-    simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, map_X, bind₁_X_right]
-    classical
+    simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, map_X, aeval_X]
     rw [toMvPolynomial_comp _ (basis A (Basis.end bₘ)), ← toMvPolynomial_baseChange]
     suffices toMvPolynomial (M₂ := (Module.End A (TensorProduct R A M)))
         (basis A bₘ.end) (basis A bₘ).end (tensorProduct R A M M) ij = X ij by
-      rw [this, bind₁_X_right]
+      rw [this, aeval_X]
     simp only [toMvPolynomial, Matrix.toMvPolynomial]
     suffices ∀ kl,
         (toMatrix (basis A bₘ.end) (basis A bₘ).end) (tensorProduct R A M M) ij kl =
         if kl = ij then 1 else 0 by
       rw [Finset.sum_eq_single ij]
-      · rw [this, if_pos rfl, X]
+      · rw [this, ite_eq_left rfl, X]
       · rintro kl - H
-        rw [this, if_neg H, map_zero]
+        rw [this, ite_eq_right H, map_zero]
       · grind
     intro kl
     rw [toMatrix_apply, tensorProduct, TensorProduct.AlgebraTensorModule.lift_apply,
       basis_apply, TensorProduct.lift.tmul, coe_restrictScalars]
-    dsimp only [coe_mk, AddHom.coe_mk, smul_apply, baseChangeHom_apply]
+    dsimp only [coe_mk, AddHom.coe_mk, LinearMap.smul_apply, baseChangeHom_apply]
     rw [one_smul, Basis.baseChange_end, Basis.repr_self_apply]
 
 open LinearMap in
 lemma polyCharpolyAux_map_eq_toMatrix_charpoly (x : L) :
     (polyCharpolyAux φ b bₘ).map (MvPolynomial.eval (b.repr x)) =
       (toMatrix bₘ bₘ (φ x)).charpoly := by
-  rw [polyCharpolyAux, Polynomial.map_map, ← MvPolynomial.eval₂Hom_C_eq_bind₁,
+  rw [polyCharpolyAux, Polynomial.map_map, MvPolynomial.coe_aeval_eq_eval₂Hom,
     MvPolynomial.comp_eval₂Hom, charpoly.univ_map_eval₂Hom]
   congr
   ext
@@ -303,6 +304,7 @@ lemma polyCharpolyAux_coeff_eval [Module.Finite R M] [Module.Free R M] (x : L) (
   nontriviality R
   rw [← polyCharpolyAux_map_eq_charpoly φ b bₘ x, Polynomial.coeff_map]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma polyCharpolyAux_map_eval [Module.Finite R M] [Module.Free R M]
     (x : ι → R) :
     (polyCharpolyAux φ b bₘ).map (MvPolynomial.eval x) =
@@ -327,10 +329,11 @@ open Algebra.TensorProduct MvPolynomial in
 
 Proof strategy:
 1. Rewrite `polyCharpolyAux` as the (honest, ordinary) characteristic polynomial
-   of the basechange of `φ` to the multivariate polynomial ring `MvPolynomial ι R`.
+   of the base change of `φ` to the multivariate polynomial ring `MvPolynomial ι R`.
 2. Use that the characteristic polynomial of a linear map is independent of the choice of basis.
    This independence result is used transitively via
-   `LinearMap.polyCharpolyAux_map_aeval` and `LinearMap.polyCharpolyAux_map_eq_charpoly`. -/
+   `LinearMap.polyCharpolyAux_map_aeval` and `LinearMap.polyCharpolyAux_map_eq_charpoly`.
+-/
 lemma polyCharpolyAux_basisIndep {ιM' : Type*} [Fintype ιM'] [DecidableEq ιM']
     (bₘ' : Basis ιM' R M) :
     polyCharpolyAux φ b bₘ = polyCharpolyAux φ b bₘ' := by
@@ -362,8 +365,8 @@ def polyCharpoly : Polynomial (MvPolynomial ι R) :=
   φ.polyCharpolyAux b (Module.Free.chooseBasis R M)
 
 lemma polyCharpoly_eq_of_basis [DecidableEq ιM] (bₘ : Basis ιM R M) :
-    polyCharpoly φ b =
-    (charpoly.univ R ιM).map (MvPolynomial.bind₁ (φ.toMvPolynomial b bₘ.end)) := by
+    polyCharpoly φ b = (charpoly.univ R ιM).map
+      (RingHomClass.toRingHom <| MvPolynomial.aeval (φ.toMvPolynomial b bₘ.end)) := by
   rw [polyCharpoly, φ.polyCharpolyAux_basisIndep b (Module.Free.chooseBasis R M) bₘ,
     polyCharpolyAux]
 
@@ -411,10 +414,10 @@ lemma polyCharpoly_coeff_eq_zero_of_basis (b : Basis ι R L) (b' : Basis ι' R L
   rw [polyCharpoly, polyCharpolyAux, Polynomial.coeff_map] at H ⊢
   set B := (Module.Free.chooseBasis R M).end
   set g := toMvPolynomial b' b LinearMap.id
-  apply_fun (MvPolynomial.bind₁ g) at H
-  have : toMvPolynomial b' B φ = fun i ↦ (MvPolynomial.bind₁ g) (toMvPolynomial b B φ i) :=
+  apply_fun (MvPolynomial.aeval g) at H
+  have : toMvPolynomial b' B φ = fun i ↦ (MvPolynomial.aeval g) (toMvPolynomial b B φ i) :=
     funext <| toMvPolynomial_comp b' b B φ LinearMap.id
-  rwa [map_zero, RingHom.coe_coe, MvPolynomial.bind₁_bind₁, ← this] at H
+  rwa [map_zero, RingHom.coe_coe, MvPolynomial.comp_aeval_apply, ← this] at H
 
 lemma polyCharpoly_coeff_eq_zero_iff_of_basis (b : Basis ι R L) (b' : Basis ι' R L) (k : ℕ) :
     (polyCharpoly φ b).coeff k = 0 ↔ (polyCharpoly φ b').coeff k = 0 := by
@@ -436,7 +439,7 @@ def nilRankAux (φ : L →ₗ[R] Module.End R M) (b : Basis ι R L) : ℕ :=
 
 lemma polyCharpoly_coeff_nilRankAux_ne_zero [Nontrivial R] :
     (polyCharpoly φ b).coeff (nilRankAux φ b) ≠ 0 := by
-  apply Polynomial.trailingCoeff_nonzero_iff_nonzero.mpr
+  apply Polynomial.trailingCoeff_ne_zero.mpr
   apply polyCharpoly_ne_zero
 
 lemma nilRankAux_le [Nontrivial R] (b : Basis ι R L) (b' : Basis ι' R L) :
@@ -493,7 +496,7 @@ lemma nilRank_le_natTrailingDegree_charpoly (x : L) :
   intro h
   apply_fun (MvPolynomial.eval ((chooseBasis R L).repr x)) at h
   rw [polyCharpoly_coeff_eval, map_zero] at h
-  apply Polynomial.trailingCoeff_nonzero_iff_nonzero.mpr _ h
+  apply Polynomial.trailingCoeff_ne_zero.mpr _ h
   apply (LinearMap.charpoly_monic _).ne_zero
 
 end
@@ -505,12 +508,12 @@ and denote `n := nilRank φ`.
 An element `x : L` is *nil-regular* with respect to `φ`
 if the `n`-th coefficient of the characteristic polynomial of `φ x` is non-zero. -/
 def IsNilRegular (x : L) : Prop :=
-  Polynomial.coeff (φ x).charpoly (nilRank φ) ≠ 0
+  (φ x).charpoly.coeff (nilRank φ) ≠ 0
 
 variable (x : L)
 
 lemma isNilRegular_def :
-    IsNilRegular φ x ↔ (Polynomial.coeff (φ x).charpoly (nilRank φ) ≠ 0) := Iff.rfl
+    IsNilRegular φ x ↔ ((φ x).charpoly.coeff (nilRank φ) ≠ 0) := Iff.rfl
 
 lemma isNilRegular_iff_coeff_polyCharpoly_nilRank_ne_zero :
     IsNilRegular φ x ↔
@@ -528,7 +531,7 @@ lemma isNilRegular_iff_natTrailingDegree_charpoly_eq_nilRank [Nontrivial R] :
       (nilRank_le_natTrailingDegree_charpoly φ x)
   · intro h
     rw [← h]
-    apply Polynomial.trailingCoeff_nonzero_iff_nonzero.mpr
+    apply Polynomial.trailingCoeff_ne_zero.mpr
     apply (LinearMap.charpoly_monic _).ne_zero
 
 section IsDomain

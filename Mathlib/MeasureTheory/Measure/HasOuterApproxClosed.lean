@@ -8,6 +8,8 @@ module
 public import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
 public import Mathlib.Topology.MetricSpace.ThickenedIndicator
 
+import Mathlib.MeasureTheory.Integral.IntegrableOn
+
 /-!
 # Spaces where indicators of closed sets have decreasing approximations by continuous functions
 
@@ -33,12 +35,11 @@ convergence in distribution for random variables behave somewhat well in spaces 
   closed set tend to the measure of the set.
 * `ext_of_forall_lintegral_eq_of_IsFiniteMeasure`: Two finite measures are equal if the integrals
   of all bounded continuous functions with respect to both agree.
-
 -/
 
 @[expose] public section
 
-open BoundedContinuousFunction MeasureTheory Topology Metric Filter Set ENNReal NNReal
+open BoundedContinuousFunction MeasureTheory Filter Set ENNReal NNReal
 open scoped Topology ENNReal NNReal BoundedContinuousFunction
 
 section auxiliary
@@ -216,7 +217,7 @@ end HasOuterApproxClosed --namespace
 
 noncomputable instance (X : Type*) [TopologicalSpace X]
     [TopologicalSpace.PseudoMetrizableSpace X] : HasOuterApproxClosed X := by
-  letI : PseudoMetricSpace X := TopologicalSpace.pseudoMetrizableSpacePseudoMetric X
+  let : PseudoMetricSpace X := TopologicalSpace.pseudoMetrizableSpacePseudoMetric X
   refine ⟨fun F hF ↦ ?_⟩
   use fun n ↦ thickenedIndicator (δ := (1 : ℝ) / (n + 1)) Nat.one_div_pos_of_nat F
   refine ⟨?_, ⟨?_, ?_⟩⟩
@@ -242,7 +243,7 @@ theorem measure_isClosed_eq_of_forall_lintegral_eq_of_isFiniteMeasure {Ω : Type
   have ν_finite : IsFiniteMeasure ν := by
     constructor
     have whole := h 1
-    simp only [BoundedContinuousFunction.coe_one, Pi.one_apply, ENNReal.coe_one, lintegral_const,
+    simp only [FunLike.coe_one, Pi.one_apply, ENNReal.coe_one, lintegral_const,
       one_mul] at whole
     simp [← whole]
   have obs_μ := HasOuterApproxClosed.tendsto_lintegral_apprSeq F_closed μ

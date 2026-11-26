@@ -5,8 +5,8 @@ Authors: Junyan Xu, Andrew Yang
 -/
 module
 
-public import Mathlib.Topology.Sheaves.SheafCondition.Sites
 public import Mathlib.CategoryTheory.Sites.Pullback
+public import Mathlib.Topology.Sheaves.SheafCondition.Sites
 
 /-!
 # functors between categories of sheaves
@@ -17,12 +17,12 @@ on X to that of sheaves on Y, given a continuous map between
 topological spaces X and Y.
 
 ## Main definitions
+
 - `TopCat.Sheaf.pushforward`:
     The pushforward functor between sheaf categories over topological spaces.
 - `TopCat.Sheaf.pullback`: The pullback functor between sheaf categories over topological spaces.
 - `TopCat.Sheaf.pullbackPushforwardAdjunction`:
   The adjunction between pullback and pushforward for sheaves on topological spaces.
-
 -/
 
 @[expose] public section
@@ -48,8 +48,6 @@ namespace TopCat
 
 namespace Sheaf
 
-open Presheaf
-
 /-- The pushforward of a sheaf (by a continuous map) is a sheaf.
 -/
 theorem pushforward_sheaf_of_sheaf {F : X.Presheaf C} (h : F.IsSheaf) : (f _* F).IsSheaf :=
@@ -74,10 +72,10 @@ def pushforwardForgetIso (f : X ⟶ Y) :
 variable {C}
 
 @[simp] lemma pushforward_obj_val (f : X ⟶ Y) (F : X.Sheaf C) :
-    ((pushforward C f).obj F).1 = f _* F.1 := rfl
+    ((pushforward C f).obj F).obj = f _* F.obj := rfl
 
 @[simp] lemma pushforward_map (f : X ⟶ Y) {F F' : X.Sheaf C} (α : F ⟶ F') :
-    ((pushforward C f).map α).1 = (Presheaf.pushforward C f).map α.1 := rfl
+    ((pushforward C f).map α).hom = (Presheaf.pushforward C f).map α.hom := rfl
 
 variable (A : Type*) [Category.{w} A] {FA : A → A → Type*} {CA : A → Type w}
 variable [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory.{w} A FA] [HasColimits A]
@@ -110,3 +108,50 @@ instance : (pushforward A f).IsRightAdjoint := (pullbackPushforwardAdjunction A 
 end Sheaf
 
 end TopCat
+
+namespace Topology.IsOpenEmbedding
+
+open TopCat
+
+variable (A : Type*) [Category.{w} A]
+variable {f : X ⟶ Y} (hf : IsOpenEmbedding f)
+
+/--
+The "naive" sheaf pullback by an open embedding `f`: on the underlying presheaf, this is just
+composition by the functor `IsOpenMap.functor f` (sending an open `U` to `f '' U`).
+-/
+def sheafPullback : Y.Sheaf A ⥤ X.Sheaf A :=
+  haveI := Topology.IsOpenEmbedding.functor_isContinuous hf
+  hf.functor.sheafPushforwardContinuous _ _ _
+
+variable {FA : A → A → Type*} {CA : A → Type w}
+variable [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory.{w} A FA] [HasColimits A]
+variable [HasLimits A] [PreservesLimits (CategoryTheory.forget A)]
+variable [PreservesFilteredColimits (CategoryTheory.forget A)]
+variable [(CategoryTheory.forget A).ReflectsIsomorphisms]
+
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+/--
+The pullback of a sheaf by an open embedding `f` is isomorphic to its naive pullback
+`IsOpenEmbedding.sheafPullback`, i.e. to the composition by the functor `IsOpenMap.functor f`.
+Also, this is an isomorphism of functors.
+-/
+def sheafPullbackIso : Sheaf.pullback A f ≅ hf.sheafPullback A := by
+  refine Sheaf.pullbackIso A f ≪≫ NatIso.ofComponents (fun F ↦ ?_) (fun u ↦ ?_)
+  · exact (presheafToSheaf (Opens.grothendieckTopology ↑X) A).mapIso
+      (hf.isOpenMap.pullbackIso.app _) ≪≫
+      (fullyFaithfulSheafToPresheaf (Opens.grothendieckTopology X) A).preimageIso
+      (isoSheafify (Opens.grothendieckTopology X)
+      (TopCat.Presheaf.isSheaf_of_isOpenEmbedding hf F.property)).symm
+  · dsimp
+    rw [← Functor.map_comp_assoc, hf.isOpenMap.pullbackIso.hom.naturality, Sheaf.hom_ext_iff]
+    simp only [Functor.whiskeringLeft_obj_obj, Functor.whiskeringLeft_obj_map, Functor.map_comp,
+      isoSheafify_inv, Category.assoc]
+    rw [ObjectProperty.FullSubcategory.comp_hom, ObjectProperty.FullSubcategory.comp_hom,
+      ObjectProperty.FullSubcategory.comp_hom, ObjectProperty.FullSubcategory.comp_hom]
+    dsimp [sheafPullback, Functor.sheafPushforwardContinuous, Sheaf.forget]
+    simp only [sheafifyMap_sheafifyLift, Category.comp_id, sheafifyMap_sheafifyLift_assoc]
+    rw [CategoryTheory.sheafifyLift_comp]
+
+end Topology.IsOpenEmbedding

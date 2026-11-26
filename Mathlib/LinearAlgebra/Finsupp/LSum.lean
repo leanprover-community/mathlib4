@@ -9,7 +9,6 @@ public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 public import Mathlib.Algebra.Module.Equiv.Basic
 public import Mathlib.Algebra.Module.Submodule.LinearMap
 public import Mathlib.LinearAlgebra.Finsupp.Defs
-public import Mathlib.Tactic.ApplyFun
 
 /-!
 # Sums as a linear map
@@ -30,7 +29,7 @@ function with finite support, module, linear algebra
 
 noncomputable section
 
-open Set LinearMap Submodule
+open LinearMap Submodule
 
 namespace Finsupp
 
@@ -58,11 +57,10 @@ theorem sum_smul_index_linearMap' [Semiring R] [AddCommMonoid M] [Module R M] [A
 
 end SMul
 
-variable {α : Type*} {M N P : Type*} {R R₂ R₃ : Type*} {S : Type*}
-variable [Semiring R] [Semiring R₂] [Semiring R₃] [Semiring S]
+variable {α : Type*} {M N : Type*} {R R₂ : Type*} {S : Type*}
+variable [Semiring R] [Semiring R₂] [Semiring S]
 variable [AddCommMonoid M] [Module R M]
 variable [AddCommMonoid N] [Module R₂ N]
-variable [AddCommMonoid P] [Module R₃ P]
 
 variable {σ : R →+* R₂} {σ_inv : R₂ →+* R}
 
@@ -89,6 +87,7 @@ section LSum
 variable (S)
 variable [Module S N] [SMulCommClass R₂ S N]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Lift a family of linear maps `M →ₗ[R] N` indexed by `x : α` to a linear map from `α →₀ M` to
 `N` using `Finsupp.sum`. This is an upgraded version of `Finsupp.liftAddHom`.
 
@@ -181,7 +180,7 @@ This is `Finsupp.domCongr` as a `LinearEquiv`.
 See also `LinearMap.funCongrLeft` for the case of arbitrary functions. -/
 protected def domLCongr {α₁ α₂ : Type*} (e : α₁ ≃ α₂) : (α₁ →₀ M) ≃ₗ[R] α₂ →₀ M :=
   (Finsupp.domCongr e : (α₁ →₀ M) ≃+ (α₂ →₀ M)).toLinearEquiv <| by
-    simpa only [equivMapDomain_eq_mapDomain, domCongr_apply] using (lmapDomain M R e).map_smul
+    simpa only [equivMapDomain_eq_mapDomain, domCongr_apply] using! (lmapDomain M R e).map_smul
 
 @[simp]
 theorem domLCongr_apply {α₁ : Type*} {α₂ : Type*} (e : α₁ ≃ α₂) (v : α₁ →₀ M) :
@@ -276,7 +275,7 @@ theorem splittingOfFinsuppSurjective_splits (f : M →ₗ[R] α →₀ R) (s : S
 
 theorem leftInverse_splittingOfFinsuppSurjective (f : M →ₗ[R] α →₀ R) (s : Surjective f) :
     LeftInverse f (splittingOfFinsuppSurjective f s) := fun g =>
-  LinearMap.congr_fun (splittingOfFinsuppSurjective_splits f s) g
+  congr($(splittingOfFinsuppSurjective_splits f s) g)
 
 theorem splittingOfFinsuppSurjective_injective (f : M →ₗ[R] α →₀ R) (s : Surjective f) :
     Injective (splittingOfFinsuppSurjective f s) :=
@@ -301,7 +300,7 @@ theorem coe_finsupp_sum (t : ι →₀ γ) (g : ι → γ → M →ₛₗ[σ₁�
 @[simp]
 theorem finsupp_sum_apply (t : ι →₀ γ) (g : ι → γ → M →ₛₗ[σ₁₂] M₂) (b : M) :
     (t.sum g) b = t.sum fun i d => g i d b :=
-  sum_apply _ _ _
+  LinearMap.sum_apply _ _ _
 
 end Finsupp
 
@@ -320,14 +319,14 @@ variable [SMulCommClass R S S]
 there is an `R`-linear map from `ι →₀ N` to `S` which maps `{ n_i }` to the sum of `m_i * n_i`.
 This is used in the definition of linearly disjointness. -/
 def mulLeftMap {M : Submodule R S} (N : Submodule R S) {ι : Type*} (m : ι → M) :
-    (ι →₀ N) →ₗ[R] S := Finsupp.lsum R fun i ↦ (m i).1 • N.subtype
+    (ι →₀ N) →ₗ[R] S := Finsupp.lsum R fun i ↦ (m i).val • N.subtype
 
 theorem mulLeftMap_apply {M N : Submodule R S} {ι : Type*} (m : ι → M) (n : ι →₀ N) :
-    mulLeftMap N m n = Finsupp.sum n fun (i : ι) (n : N) ↦ (m i).1 * n.1 := rfl
+    mulLeftMap N m n = Finsupp.sum n fun (i : ι) (n : N) ↦ (m i).val * n.val := rfl
 
 @[simp]
 theorem mulLeftMap_apply_single {M N : Submodule R S} {ι : Type*} (m : ι → M) (i : ι) (n : N) :
-    mulLeftMap N m (Finsupp.single i n) = (m i).1 * n.1 := by
+    mulLeftMap N m (Finsupp.single i n) = (m i).val * n.val := by
   simp [mulLeftMap]
 
 end
@@ -338,23 +337,23 @@ variable [IsScalarTower R S S]
 there is an `R`-linear map from `ι →₀ M` to `S` which maps `{ m_i }` to the sum of `m_i * n_i`.
 This is used in the definition of linearly disjointness. -/
 def mulRightMap (M : Submodule R S) {N : Submodule R S} {ι : Type*} (n : ι → N) :
-    (ι →₀ M) →ₗ[R] S := Finsupp.lsum R fun i ↦ MulOpposite.op (n i).1 • M.subtype
+    (ι →₀ M) →ₗ[R] S := Finsupp.lsum R fun i ↦ MulOpposite.op (n i).val • M.subtype
 
 theorem mulRightMap_apply {M N : Submodule R S} {ι : Type*} (n : ι → N) (m : ι →₀ M) :
-    mulRightMap M n m = Finsupp.sum m fun (i : ι) (m : M) ↦ m.1 * (n i).1 := rfl
+    mulRightMap M n m = Finsupp.sum m fun (i : ι) (m : M) ↦ m.val * (n i).val := rfl
 
 @[simp]
 theorem mulRightMap_apply_single {M N : Submodule R S} {ι : Type*} (n : ι → N) (i : ι) (m : M) :
-    mulRightMap M n (Finsupp.single i m) = m.1 * (n i).1 := by
+    mulRightMap M n (Finsupp.single i m) = m.val * (n i).val := by
   simp [mulRightMap]
 
 theorem mulLeftMap_eq_mulRightMap_of_commute [SMulCommClass R S S]
     {M : Submodule R S} (N : Submodule R S) {ι : Type*} (m : ι → M)
-    (hc : ∀ (i : ι) (n : N), Commute (m i).1 n.1) : mulLeftMap N m = mulRightMap N m := by
+    (hc : ∀ (i : ι) (n : N), Commute (m i).val n.val) : mulLeftMap N m = mulRightMap N m := by
   ext i n; simp [(hc i n).eq]
 
 theorem mulLeftMap_eq_mulRightMap {S : Type*} [CommSemiring S] [Module R S] [SMulCommClass R R S]
-    [SMulCommClass R S S] [IsScalarTower R S S] {M : Submodule R S} (N : Submodule R S)
+    [IsScalarTower R S S] {M : Submodule R S} (N : Submodule R S)
     {ι : Type*} (m : ι → M) : mulLeftMap N m = mulRightMap N m :=
   mulLeftMap_eq_mulRightMap_of_commute N m fun _ _ ↦ mul_comm _ _
 

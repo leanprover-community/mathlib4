@@ -6,8 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.ExactSequence
-public import Mathlib.Algebra.Homology.ShortComplex.Limits
-public import Mathlib.CategoryTheory.Abelian.Refinements
+
+import Mathlib.CategoryTheory.Abelian.Refinements
 
 /-!
 # The snake lemma
@@ -44,7 +44,6 @@ here are slightly easier because of the use of the category `ShortComplex C`,
 the use of duality (which allows to construct only half of the sequence, and deducing
 the other half by arguing in the opposite category), and the use of "refinements"
 (see `CategoryTheory.Abelian.Refinements`) instead of a weak form of pseudo-elements.
-
 -/
 
 @[expose] public section
@@ -99,7 +98,7 @@ variable {C}
 variable (S : SnakeInput C)
 
 /-- The snake input in the opposite category that is deduced from a snake input. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def op : SnakeInput Cᵒᵖ where
   L₀ := S.L₃.op
   L₁ := S.L₂.op
@@ -110,8 +109,8 @@ noncomputable def op : SnakeInput Cᵒᵖ where
   v₀₁ := opMap S.v₂₃
   v₁₂ := opMap S.v₁₂
   v₂₃ := opMap S.v₀₁
-  w₀₂ := congr_arg opMap S.w₁₃
-  w₁₃ := congr_arg opMap S.w₀₂
+  w₀₂ := congr(opMap $S.w₁₃)
+  w₁₃ := congr(opMap $S.w₀₂)
   h₀ := isLimitForkMapOfIsLimit' (ShortComplex.opEquiv C).functor _
       (CokernelCofork.IsColimit.ofπOp _ _ S.h₃)
   h₃ := isColimitCoforkMapOfIsColimit' (ShortComplex.opEquiv C).functor _
@@ -222,7 +221,7 @@ lemma L₃_exact : S.L₃.Exact := S.op.L₀_exact.unop
 
 /-- The fiber product of `L₁.X₂` and `L₀.X₃` over `L₁.X₃`. This is an auxiliary
 object in the construction of the morphism `δ : L₀.X₃ ⟶ L₃.X₁`. -/
-noncomputable def P := pullback S.L₁.g S.v₀₁.τ₃
+noncomputable abbrev P := pullback S.L₁.g S.v₀₁.τ₃
 
 /-- The canonical map `P ⟶ L₂.X₂`. -/
 noncomputable def φ₂ : S.P ⟶ S.L₂.X₂ := pullback.fst _ _ ≫ S.v₁₂.τ₂
@@ -240,6 +239,7 @@ noncomputable def φ₁ : S.P ⟶ S.L₂.X₁ :=
 @[reassoc (attr := simp)] lemma φ₁_L₂_f : S.φ₁ ≫ S.L₂.f = S.φ₂ := S.L₂_exact.lift_f _ _
 
 /-- The short complex that is part of an exact sequence `L₁.X₁ ⟶ P ⟶ L₀.X₃ ⟶ 0`. -/
+@[simps, implicit_reducible]
 noncomputable def L₀' : ShortComplex C where
   X₁ := S.L₁.X₁
   X₂ := S.P
@@ -248,7 +248,7 @@ noncomputable def L₀' : ShortComplex C where
   g := pullback.snd _ _
   zero := by simp
 
-@[reassoc (attr := simp)] lemma L₁_f_φ₁ : S.L₀'.f ≫ S.φ₁ = S.v₁₂.τ₁ := by
+@[reassoc] lemma L₁_f_φ₁ : S.L₀'.f ≫ S.φ₁ = S.v₁₂.τ₁ := by
   dsimp only [L₀']
   simp only [← cancel_mono S.L₂.f, assoc, φ₁_L₂_f, φ₂, pullback.lift_fst_assoc,
     S.v₁₂.comm₁₂]
@@ -275,7 +275,7 @@ lemma snd_δ : (pullback.snd _ _ : S.P ⟶ _) ≫ S.δ = S.φ₁ ≫ S.v₂₃.�
   S.L₀'_exact.g_desc _ _
 
 /-- The pushout of `L₂.X₂` and `L₃.X₁` along `L₂.X₁`. -/
-noncomputable def P' := pushout S.L₂.f S.v₂₃.τ₁
+noncomputable abbrev P' := pushout S.L₂.f S.v₂₃.τ₁
 
 lemma snd_δ_inr : (pullback.snd _ _ : S.P ⟶ _) ≫ S.δ ≫ (pushout.inr _ _ : _ ⟶ S.P') =
     pullback.fst _ _ ≫ S.v₁₂.τ₂ ≫ pushout.inl _ _ := by
@@ -294,21 +294,17 @@ lemma L₀X₂ToP_comp_φ₁ : S.L₀X₂ToP ≫ S.φ₁ = 0 := by
     pullback.lift_fst_assoc, w₀₂_τ₂, zero_comp]
 
 lemma L₀_g_δ : S.L₀.g ≫ S.δ = 0 := by
-  rw [← L₀X₂ToP_comp_pullback_snd, assoc]
-  erw [S.L₀'_exact.g_desc]
-  rw [L₀X₂ToP_comp_φ₁_assoc, zero_comp]
+  rw [← L₀X₂ToP_comp_pullback_snd, assoc, S.snd_δ, L₀X₂ToP_comp_φ₁_assoc, zero_comp]
 
 lemma δ_L₃_f : S.δ ≫ S.L₃.f = 0 := by
-  rw [← cancel_epi S.L₀'.g]
-  erw [S.L₀'_exact.g_desc_assoc]
-  simp [S.v₂₃.comm₁₂, φ₂]
+  simp [← cancel_epi S.L₀'.g, S.v₂₃.comm₁₂, φ₂]
 
 /-- The short complex `L₀.X₂ ⟶ L₀.X₃ ⟶ L₃.X₁`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def L₁' : ShortComplex C := ShortComplex.mk _ _ S.L₀_g_δ
 
 /-- The short complex `L₀.X₃ ⟶ L₃.X₁ ⟶ L₃.X₂`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def L₂' : ShortComplex C := ShortComplex.mk _ _ S.δ_L₃_f
 
 /-- Exactness of `L₀.X₂ ⟶ L₀.X₃ ⟶ L₃.X₁`. -/
@@ -347,7 +343,7 @@ lemma op_δ : S.op.δ = S.δ.op := Quiver.Hom.unop_inj (by
     pushoutIsoUnopPullback_inr_hom, pullbackIsoUnopPushout_inv_snd_assoc,
     pushoutIsoUnopPullback_inl_hom, pullbackIsoUnopPushout_inv_fst_assoc]
   apply Quiver.Hom.op_inj
-  simpa only [op_comp, Quiver.Hom.op_unop, assoc] using S.op.snd_δ_inr)
+  simpa only [op_comp, Quiver.Hom.op_unop, assoc] using! S.op.snd_δ_inr)
 
 /-- The duality isomorphism `S.L₂'.op ≅ S.op.L₁'`. -/
 noncomputable def L₂'OpIso : S.L₂'.op ≅ S.op.L₁' :=
@@ -471,32 +467,30 @@ def functorL₀ : SnakeInput C ⥤ ShortComplex C where
   map f := f.f₀
 
 /-- The functor which sends `S : SnakeInput C` to its zeroth line `S.L₁`. -/
-@[simps]
+@[simps, implicit_reducible]
 def functorL₁ : SnakeInput C ⥤ ShortComplex C where
   obj S := S.L₁
   map f := f.f₁
 
 /-- The functor which sends `S : SnakeInput C` to its second line `S.L₂`. -/
-@[simps]
+@[simps, implicit_reducible]
 def functorL₂ : SnakeInput C ⥤ ShortComplex C where
   obj S := S.L₂
   map f := f.f₂
 
 /-- The functor which sends `S : SnakeInput C` to its third line `S.L₃`. -/
-@[simps]
+@[simps, implicit_reducible]
 def functorL₃ : SnakeInput C ⥤ ShortComplex C where
   obj S := S.L₃
   map f := f.f₃
 
 /-- The functor which sends `S : SnakeInput C` to the auxiliary object `S.P`,
 which is `pullback S.L₁.g S.v₀₁.τ₃`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def functorP : SnakeInput C ⥤ C where
   obj S := S.P
   map f := pullback.map _ _ _ _ f.f₁.τ₂ f.f₀.τ₃ f.f₁.τ₃ f.f₁.comm₂₃.symm
-      (congr_arg ShortComplex.Hom.τ₃ f.comm₀₁.symm)
-  map_id _ := by dsimp [P]; simp
-  map_comp _ _ := by dsimp [P]; cat_disch
+      congr(ShortComplex.Hom.τ₃ $f.comm₀₁.symm)
 
 @[reassoc]
 lemma naturality_φ₂ (f : S₁ ⟶ S₂) : S₁.φ₂ ≫ f.f₂.τ₂ = functorP.map f ≫ S₂.φ₂ := by
@@ -514,7 +508,7 @@ lemma naturality_δ (f : S₁ ⟶ S₂) : S₁.δ ≫ f.f₃.τ₁ = f.f₀.τ�
 
 /-- The functor which sends `S : SnakeInput C` to `S.L₁'` which is
 `S.L₀.X₂ ⟶ S.L₀.X₃ ⟶ S.L₃.X₁`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def functorL₁' : SnakeInput C ⥤ ShortComplex C where
   obj S := S.L₁'
   map f :=
@@ -526,7 +520,7 @@ noncomputable def functorL₁' : SnakeInput C ⥤ ShortComplex C where
 
 /-- The functor which sends `S : SnakeInput C` to `S.L₂'` which is
 `S.L₀.X₃ ⟶ S.L₃.X₁ ⟶ S.L₃.X₂`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def functorL₂' : SnakeInput C ⥤ ShortComplex C where
   obj S := S.L₂'
   map f :=
@@ -538,7 +532,7 @@ noncomputable def functorL₂' : SnakeInput C ⥤ ShortComplex C where
 
 /-- The functor which maps `S : SnakeInput C` to the diagram
 `S.L₀.X₁ ⟶ S.L₀.X₂ ⟶ S.L₀.X₃ ⟶ S.L₃.X₁ ⟶ S.L₃.X₂ ⟶ S.L₃.X₃`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def composableArrowsFunctor : SnakeInput C ⥤ ComposableArrows C 5 where
   obj S := S.composableArrows
   map f := ComposableArrows.homMk₅ f.f₀.τ₁ f.f₀.τ₂ f.f₀.τ₃ f.f₃.τ₁ f.f₃.τ₂ f.f₃.τ₃

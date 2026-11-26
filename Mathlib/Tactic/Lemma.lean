@@ -5,8 +5,10 @@ Authors: Mario Carneiro, Kyle Miller
 -/
 module
 
-public import Mathlib.Init
-public meta import Lean.Parser.Command
+public import Mathlib.Tactic.Linter.Header  --shake: keep
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Support for `lemma` as a synonym for `theorem`.

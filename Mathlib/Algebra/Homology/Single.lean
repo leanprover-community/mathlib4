@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Homology.HomologicalComplex
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Homological complexes supported in a single degree
 
@@ -18,7 +21,6 @@ In `ChainComplex.toSingle₀Equiv` we characterize chain maps to an
 `{ f : C.X 0 ⟶ X // C.d 1 0 ≫ f = 0 }`.
 (This is useful translating between a projective resolution and
 an augmented exact complex of projectives.)
-
 -/
 
 @[expose] public section
@@ -35,13 +37,14 @@ variable {ι : Type*} [DecidableEq ι] (c : ComplexShape ι)
 
 /-- The functor `V ⥤ HomologicalComplex V c` creating a chain complex supported in a single degree.
 -/
+@[implicit_reducible]
 noncomputable def single (j : ι) : V ⥤ HomologicalComplex V c where
   obj A :=
     { X := fun i => if i = j then A else 0
       d := fun _ _ => 0 }
   map f :=
-    { f := fun i => if h : i = j then eqToHom (by dsimp; rw [if_pos h]) ≫ f ≫
-              eqToHom (by dsimp; rw [if_pos h]) else 0 }
+    { f := fun i => if h : i = j then eqToHom (by dsimp; rw [ite_eq_left h]) ≫ f ≫
+              eqToHom (by dsimp; rw [ite_eq_left h]) else 0 }
   map_id A := by
     ext
     dsimp
@@ -49,11 +52,11 @@ noncomputable def single (j : ι) : V ⥤ HomologicalComplex V c where
     · subst h
       simp
     · #adaptation_note /-- nightly-2024-03-07
-      previously was `rw [if_neg h]; simp`, but that fails with "motive not type correct"
+      previously was `rw [ite_eq_right h]; simp`, but that fails with "motive not type correct"
       This is because dsimp does not simplify numerals;
       this note should be removable once https://github.com/leanprover/lean4/pull/8433 lands. -/
-      convert (id_zero (C := V)).symm
-      all_goals simp [if_neg h]
+      convert! (id_zero (C := V)).symm
+      all_goals simp [ite_eq_right h]
   map_comp f g := by
     ext
     dsimp
@@ -66,12 +69,12 @@ variable {V}
 
 @[simp]
 lemma single_obj_X_self (j : ι) (A : V) :
-    ((single V c j).obj A).X j = A := if_pos rfl
+    ((single V c j).obj A).X j = A := ite_eq_left rfl
 
 lemma isZero_single_obj_X (j : ι) (A : V) (i : ι) (hi : i ≠ j) :
     IsZero (((single V c j).obj A).X i) := by
   dsimp [single]
-  rw [if_neg hi]
+  rw [ite_eq_right hi]
   exact Limits.isZero_zero V
 
 /-- The object in degree `i` of `(single V c h).obj A` is just `A` when `i = j`. -/
@@ -92,7 +95,7 @@ theorem single_map_f_self (j : ι) {A B : V} (f : A ⟶ B) :
     ((single V c j).map f).f j = (singleObjXSelf c j A).hom ≫
       f ≫ (singleObjXSelf c j B).inv := by
   dsimp [single]
-  rw [dif_pos rfl]
+  rw [dite_eq_left rfl]
   rfl
 
 variable (V)
@@ -158,7 +161,7 @@ lemma mkHomToSingle_f {K : HomologicalComplex V c} {j : ι} {A : V} (φ : K.X j 
     (hφ : ∀ (i : ι), c.Rel i j → K.d i j ≫ φ = 0) :
     (mkHomToSingle φ hφ).f j = φ ≫ (singleObjXSelf c j A).inv := by
   dsimp [mkHomToSingle]
-  rw [dif_pos rfl, id_comp]
+  rw [dite_eq_left rfl, id_comp]
   rfl
 
 /-- Constructor for morphisms from a single homological complex. -/
@@ -182,7 +185,7 @@ lemma mkHomFromSingle_f {K : HomologicalComplex V c} {j : ι} {A : V} (φ : A �
     (hφ : ∀ (k : ι), c.Rel j k → φ ≫ K.d j k = 0) :
     (mkHomFromSingle φ hφ).f j = (singleObjXSelf c j A).hom ≫ φ := by
   dsimp [mkHomFromSingle]
-  rw [dif_pos rfl, comp_id]
+  rw [dite_eq_left rfl, comp_id]
   rfl
 
 instance (j : ι) : (single V c j).PreservesZeroMorphisms where
@@ -204,10 +207,8 @@ lemma single₀_obj_zero (A : V) :
 @[simp]
 lemma single₀_map_f_zero {A B : V} (f : A ⟶ B) :
     ((single₀ V).map f).f 0 = f := by
-  rw [HomologicalComplex.single_map_f_self]
-  dsimp [HomologicalComplex.singleObjXSelf, HomologicalComplex.singleObjXIsoOfEq]
-  rw [comp_id, id_comp]
-
+  simp [HomologicalComplex.single_map_f_self, HomologicalComplex.singleObjXSelf,
+    HomologicalComplex.singleObjXIsoOfEq]
 
 @[simp]
 lemma single₀ObjXSelf (X : V) :
@@ -221,9 +222,9 @@ are the same as morphisms `f : C.X 0 ⟶ X` such that `C.d 1 0 ≫ f = 0`.
 noncomputable def toSingle₀Equiv (C : ChainComplex V ℕ) (X : V) :
     (C ⟶ (single₀ V).obj X) ≃ { f : C.X 0 ⟶ X // C.d 1 0 ≫ f = 0 } where
   toFun φ := ⟨φ.f 0, by rw [← φ.comm 1 0, HomologicalComplex.single_obj_d, comp_zero]⟩
-  invFun f := HomologicalComplex.mkHomToSingle f.1 (fun i hi => by
+  invFun f := HomologicalComplex.mkHomToSingle f.val (fun i hi => by
     obtain rfl : i = 1 := by simpa using hi.symm
-    exact f.2)
+    exact f.property)
   left_inv φ := by cat_disch
   right_inv f := by simp
 
@@ -247,7 +248,7 @@ noncomputable def fromSingle₀Equiv (C : ChainComplex V ℕ) (X : V) :
 @[simp]
 lemma fromSingle₀Equiv_symm_apply_f_zero
     {C : ChainComplex V ℕ} {X : V} (f : X ⟶ C.X 0) :
-    ((fromSingle₀Equiv C X).symm f).f 0 = f := by
+    dsimp% ((fromSingle₀Equiv C X).symm f).f 0 = f := by
   simp [fromSingle₀Equiv]
 
 @[simp]
@@ -272,9 +273,8 @@ lemma single₀_obj_zero (A : V) :
 @[simp]
 lemma single₀_map_f_zero {A B : V} (f : A ⟶ B) :
     ((single₀ V).map f).f 0 = f := by
-  rw [HomologicalComplex.single_map_f_self]
-  dsimp [HomologicalComplex.singleObjXSelf, HomologicalComplex.singleObjXIsoOfEq]
-  rw [comp_id, id_comp]
+  simp [HomologicalComplex.single_map_f_self, HomologicalComplex.singleObjXSelf,
+    HomologicalComplex.singleObjXIsoOfEq]
 
 @[simp]
 lemma single₀ObjXSelf (X : V) :
@@ -287,9 +287,9 @@ are the same as morphisms `f : X ⟶ C.X 0` such that `f ≫ C.d 0 1 = 0`. -/
 noncomputable def fromSingle₀Equiv (C : CochainComplex V ℕ) (X : V) :
     ((single₀ V).obj X ⟶ C) ≃ { f : X ⟶ C.X 0 // f ≫ C.d 0 1 = 0 } where
   toFun φ := ⟨φ.f 0, by rw [φ.comm 0 1, HomologicalComplex.single_obj_d, zero_comp]⟩
-  invFun f := HomologicalComplex.mkHomFromSingle f.1 (fun i hi => by
+  invFun f := HomologicalComplex.mkHomFromSingle f.val (fun i hi => by
     obtain rfl : i = 1 := by simpa using hi.symm
-    exact f.2)
+    exact f.property)
   left_inv φ := by cat_disch
   right_inv := by cat_disch
 

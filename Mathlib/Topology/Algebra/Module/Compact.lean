@@ -5,18 +5,19 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
-public import Mathlib.RingTheory.Finiteness.Defs
-public import Mathlib.Topology.Algebra.Ring.Basic
 public import Mathlib.RingTheory.Noetherian.Defs
+public import Mathlib.Topology.Algebra.Ring.Basic
+
+import Mathlib.LinearAlgebra.Finsupp.LinearCombination
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
-
 # Compact submodules
-
 -/
 
-@[expose] public section
+public section
 
 variable {R M : Type*} [CommSemiring R] [TopologicalSpace R] [AddCommMonoid M] [Module R M]
 variable [TopologicalSpace M] [ContinuousAdd M] [ContinuousSMul R M]

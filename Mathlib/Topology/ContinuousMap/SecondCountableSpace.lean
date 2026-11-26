@@ -16,7 +16,7 @@ In this file we prove that `C(X, Y)` with compact-open topology has second count
 - `X` is a locally compact space;
 -/
 
-@[expose] public section
+public section
 
 open scoped Topology
 open Set Function Filter TopologicalSpace
@@ -41,8 +41,10 @@ theorem compactOpen_eq_generateFrom {S : Set (Set X)} {T : Set (Set Y)}
     obtain ⟨t, htT, htf, hTU, hKT⟩ : ∃ t ⊆ T, t.Finite ∧ (∀ V ∈ t, V ⊆ U) ∧ f '' K ⊆ ⋃₀ t := by
       rw [hT.open_eq_sUnion' hU, mapsTo_iff_image_subset, sUnion_eq_biUnion] at hfKU
       obtain ⟨t, ht, hfin, htK⟩ :=
-        (hK.image (map_continuous f)).elim_finite_subcover_image (fun V hV ↦ hT.isOpen hV.1) hfKU
-      refine ⟨t, fun _ h ↦ (ht h).1, hfin, fun _ h ↦ (ht h).2, ?_⟩
+        (hK.image (map_continuous f)).elim_finite_subcover_image
+          (b := {V | V ∈ T ∧ V ⊆ U}) (fun V hV ↦ hT.isOpen hV.1) hfKU
+      replace ht : ∀ V ∈ t, V ∈ T ∧ V ⊆ U := ht
+      refine ⟨t, fun _ h ↦ (ht _ h).1, hfin, fun _ h ↦ (ht _ h).2, ?_⟩
       rwa [sUnion_eq_biUnion]
     rw [image_subset_iff] at hKT
     obtain ⟨s, hsS, hsf, hKs, hst⟩ : ∃ s ⊆ S, s.Finite ∧ K ⊆ ⋃₀ s ∧ MapsTo f (⋃₀ s) (⋃₀ t) := by
@@ -58,7 +60,7 @@ theorem compactOpen_eq_generateFrom {S : Set (Set X)} {T : Set (Set Y)}
       rw [mapsTo_sUnion, forall_mem_image]
       exact fun x hx ↦ hLt x <| hsK x hx
     have hsub : (⋂ L ∈ s, {g : C(X, Y) | MapsTo g L (⋃₀ t)}) ⊆ {g | MapsTo g K U} := by
-      simp only [← setOf_forall, ← mapsTo_iUnion, ← sUnion_eq_biUnion]
+      simp only [← ofPred_forall, ← mapsTo_iUnion, ← sUnion_eq_biUnion]
       exact fun g hg ↦ hg.mono hKs (sUnion_subset hTU)
     refine mem_of_superset ((biInter_mem hsf).2 fun L hL ↦ ?_) hsub
     refine mem_iInf_of_mem _ <| mem_iInf_of_mem ?_ <| mem_principal_self _
@@ -76,7 +78,7 @@ theorem secondCountableTopology [SecondCountableTopology Y]
   is_open_generated_countable := by
     rcases hX with ⟨S, hScount, hScomp, hS⟩
     refine ⟨_, ?_, compactOpen_eq_generateFrom (S := S) hScomp (isBasis_countableBasis _) ?_⟩
-    · exact .image2 hScount (countable_setOf_finite_subset (countable_countableBasis Y)) _
+    · exact .image2 hScount (countable_ofPred_finite_subset (countable_countableBasis Y)) _
     · intro f x V hV hx
       apply hS
       exacts [isOpen_of_mem_countableBasis hV, hx]
@@ -84,14 +86,14 @@ theorem secondCountableTopology [SecondCountableTopology Y]
 instance instSecondCountableTopology [SecondCountableTopology X] [LocallyCompactSpace X]
     [SecondCountableTopology Y] : SecondCountableTopology C(X, Y) := by
   apply secondCountableTopology
-  have (U : countableBasis X) : LocallyCompactSpace U.1 :=
-    (isOpen_of_mem_countableBasis U.2).locallyCompactSpace
-  set K := fun U : countableBasis X ↦ CompactExhaustion.choice U.1
+  have (U : countableBasis X) : LocallyCompactSpace U.val :=
+    (isOpen_of_mem_countableBasis U.property).locallyCompactSpace
+  set K := fun U : countableBasis X ↦ CompactExhaustion.choice U.val
   use ⋃ U : countableBasis X, Set.range fun n ↦ K U n
   refine ⟨countable_iUnion fun _ ↦ countable_range _, ?_, ?_⟩
   · simp only [mem_iUnion, mem_range]
     rintro K ⟨U, n, rfl⟩
-    exact ((K U).isCompact _).image continuous_subtype_val
+    exact ((K U).isCompact _).image continuous_subtypeVal
   · intro f V hVo x hxV
     obtain ⟨U, hU, hxU, hUV⟩ : ∃ U ∈ countableBasis X, x ∈ U ∧ U ⊆ f ⁻¹' V := by
       rw [← (isBasis_countableBasis _).mem_nhds_iff]
@@ -100,10 +102,10 @@ instance instSecondCountableTopology [SecondCountableTopology X] [LocallyCompact
     lift U to countableBasis X using hU
     rcases (K U).exists_mem_nhds x with ⟨n, hn⟩
     refine ⟨K U n, mem_iUnion.2 ⟨U, mem_range_self _⟩, ?_, ?_⟩
-    · rw [← map_nhds_subtype_coe_eq_nhds x.2]
-      exacts [image_mem_map hn, (isOpen_of_mem_countableBasis U.2).mem_nhds x.2]
+    · rw [← map_nhds_subtypeVal_eq_nhds x.property]
+      exacts [image_mem_map hn, (isOpen_of_mem_countableBasis U.property).mem_nhds x.property]
     · rw [mapsTo_image_iff]
-      exact fun y _ ↦ hUV y.2
+      exact fun y _ ↦ hUV y.property
 
 instance instSeparableSpace [SecondCountableTopology X] [LocallyCompactSpace X]
     [SecondCountableTopology Y] : SeparableSpace C(X, Y) :=

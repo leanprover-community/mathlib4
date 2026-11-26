@@ -49,18 +49,28 @@ If `p` is invertible in `R`, this ring is isomorphic to `ℕ → R` (the product
 If `R` is a ring of characteristic `p`, then `WittVector p R` is a ring of characteristic `0`.
 The canonical example is `WittVector p (ZMod p)`,
 which is isomorphic to the `p`-adic integers `ℤ_[p]`. -/
-structure WittVector (p : ℕ) (R : Type*) where mk' ::
+structure WittVector (p : ℕ) (R : Type*) where
+  /-- Construct a Witt vector `mk p x : 𝕎 R` from a sequence `x` of elements of `R`. -/
+  mk (p) ::
   /-- `x.coeff n` is the `n`th coefficient of the Witt vector `x`.
 
   This concept does not have a standard name in the literature.
   -/
   coeff : ℕ → R
 
-/-- Construct a Witt vector `mk p x : 𝕎 R` from a sequence `x` of elements of `R`.
+/-- Construct a Witt vector `mk' x : 𝕎 R` from a sequence `x` of elements of `R`. -/
+@[deprecated WittVector.mk (since := "2026-09-03")]
+def WittVector.mk' {p : ℕ} {R : Type*} (coeff : ℕ → R) : WittVector p R := WittVector.mk p coeff
 
-This is preferred over `WittVector.mk'` because it has `p` explicit.
--/
-def WittVector.mk (p : ℕ) {R : Type*} (coeff : ℕ → R) : WittVector p R := mk' coeff
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prevents `mk p x` being printed as `{ coeff := x }` by `delabStructureInstance`. -/
+@[app_delab WittVector.mk]
+meta def WittVector.delabMk : Delab := delabApp
+
+end Notation
 
 variable {p : ℕ}
 
@@ -90,7 +100,7 @@ variable (p)
 theorem coeff_mk (x : ℕ → R) : (mk p x).coeff = x :=
   rfl
 
-/- These instances are not needed for the rest of the development,
+/-- These instances are not needed for the rest of the development,
 but it is interesting to establish early on that `WittVector p` is a lawful functor. -/
 instance : Functor (WittVector p) where
   map f v := mk p (f ∘ v.coeff)
@@ -209,55 +219,52 @@ section WittStructureSimplifications
 @[simp]
 theorem wittZero_eq_zero (n : ℕ) : wittZero p n = 0 := by
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
-  simp only [wittZero, wittStructureRat, bind₁, aeval_zero', constantCoeff_xInTermsOfW, map_zero,
+  simp only [wittZero, wittStructureRat, aeval_zero', constantCoeff_xInTermsOfW, map_zero,
     map_wittStructureInt]
 
 @[simp]
 theorem wittOne_zero_eq_one : wittOne p 0 = 1 := by
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
-  simp only [wittOne, wittStructureRat, xInTermsOfW_zero, map_one, bind₁_X_right,
-    map_wittStructureInt]
+  simp only [wittOne, wittStructureRat, xInTermsOfW_zero, map_one, aeval_X, map_wittStructureInt]
 
 @[simp]
 theorem wittOne_pos_eq_zero (n : ℕ) (hn : 0 < n) : wittOne p n = 0 := by
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
   simp only [wittOne, wittStructureRat, map_zero, map_one, map_wittStructureInt]
-  induction n using Nat.strong_induction_on with | h n IH => ?_
+  induction n using Nat.strong_induction_on with | ind n IH
   rw [xInTermsOfW_eq]
-  simp only [map_mul, map_sub, map_sum, map_pow, bind₁_X_right,
-    bind₁_C_right]
+  simp only [map_mul, map_sub, map_sum, map_pow, aeval_X, aeval_C, algebraMap_eq]
   rw [sub_mul, one_mul]
   rw [Finset.sum_eq_single 0]
-  · simp only [invOf_eq_inv, one_mul, tsub_zero, pow_zero]
-    simp only [one_pow, one_mul, xInTermsOfW_zero, sub_self, bind₁_X_right]
+  · simp
   · intro i hin hi0
     rw [Finset.mem_range] at hin
-    rw [IH _ hin (Nat.pos_of_ne_zero hi0), zero_pow (pow_ne_zero _ hp.1.ne_zero), mul_zero]
+    rw [IH _ hin (Nat.pos_of_ne_zero hi0), zero_pow (pow_ne_zero _ hp.out.ne_zero), mul_zero]
   · grind
 
 @[simp]
 theorem wittAdd_zero : wittAdd p 0 = X (0, 0) + X (1, 0) := by
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
   simp only [wittAdd, wittStructureRat, map_add, rename_X, xInTermsOfW_zero, map_X,
-    wittPolynomial_zero, bind₁_X_right, map_wittStructureInt]
+    wittPolynomial_zero, aeval_X, map_wittStructureInt]
 
 @[simp]
 theorem wittSub_zero : wittSub p 0 = X (0, 0) - X (1, 0) := by
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
   simp only [wittSub, wittStructureRat, map_sub, rename_X, xInTermsOfW_zero, map_X,
-    wittPolynomial_zero, bind₁_X_right, map_wittStructureInt]
+    wittPolynomial_zero, aeval_X, map_wittStructureInt]
 
 @[simp]
 theorem wittMul_zero : wittMul p 0 = X (0, 0) * X (1, 0) := by
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
   simp only [wittMul, wittStructureRat, rename_X, xInTermsOfW_zero, map_X, wittPolynomial_zero,
-    map_mul, bind₁_X_right, map_wittStructureInt]
+    map_mul, aeval_X, map_wittStructureInt]
 
 @[simp]
 theorem wittNeg_zero : wittNeg p 0 = -X (0, 0) := by
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
   simp only [wittNeg, wittStructureRat, rename_X, xInTermsOfW_zero, map_X, wittPolynomial_zero,
-    map_neg, bind₁_X_right, map_wittStructureInt]
+    map_neg, aeval_X, map_wittStructureInt]
 
 @[simp]
 theorem constantCoeff_wittAdd (n : ℕ) : constantCoeff (wittAdd p n) = 0 := by

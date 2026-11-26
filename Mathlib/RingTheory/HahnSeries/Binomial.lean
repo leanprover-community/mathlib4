@@ -10,14 +10,16 @@ public import Mathlib.RingTheory.PowerSeries.Binomial
 
 /-!
 # Binomial expansions of powers of Hahn Series
+
 We introduce binomial expansions using `embDomain`.
 
 ## Main Definitions
+
   * `HahnSeries.binomialFamily`
 
 ## Main results
-  * coefficients of powers of binomials
 
+  * coefficients of powers of binomials
 -/
 
 @[expose] public section
@@ -96,11 +98,11 @@ end SummableFamily
 open SummableFamily
 
 instance : Pow (orderTopSubOnePos Γ R) R where
-  pow x r := toOrderTopSubOnePos (orderTop_hsum_binomialFamily_pos x.2 r)
+  pow x r := toOrderTopSubOnePos (orderTop_hsum_binomialFamily_pos x.property r)
 
 @[simp]
 theorem binomial_power {x : orderTopSubOnePos Γ R} {r : R} :
-    x ^ r = toOrderTopSubOnePos (orderTop_hsum_binomialFamily_pos x.2 r) :=
+    x ^ r = toOrderTopSubOnePos (orderTop_hsum_binomialFamily_pos x.property r) :=
   rfl
 
 theorem pow_add {x : orderTopSubOnePos Γ R} {r s : R} : x ^ (r + s) = x ^ r * x ^ s := by
@@ -117,7 +119,7 @@ theorem coeff_toOrderTopSubOnePos_pow {g : Γ} (hg : 0 < g) (r s : R) (k : ℕ) 
   intro n hn
   rw [binomialFamily_apply, add_sub_cancel_left, coeff_smul, single_pow, coeff_single_of_ne,
     smul_zero]
-  · contrapose! hn
+  · contrapose hn
     apply (StrictMono.injective (nsmul_left_strictMono hg)) hn.symm
   · by_cases hr : r = 0 <;> simp [hr, hg]
 

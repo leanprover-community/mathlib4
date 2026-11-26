@@ -5,11 +5,14 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Subobject.Lattice
-public import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
-public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
 public import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
-public import Mathlib.Order.OrderIsoNat
+public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
+public import Mathlib.CategoryTheory.Subobject.Lattice
+
+import Mathlib.Order.OrderIsoNat
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Noetherian objects
@@ -24,7 +27,6 @@ closed under subobjects.
 
 * show that `isNoetherian` is a Serre class when `C` is an abelian category
   (TODO @joelriou)
-
 -/
 
 @[expose] public section
@@ -75,7 +77,7 @@ lemma isNoetherianObject_iff_not_strictMono :
   refine ⟨fun _ ↦ not_strictMono_of_wellFoundedGT, fun h ↦ ?_⟩
   dsimp only [IsNoetherianObject]
   rw [ObjectProperty.is_iff, isNoetherianObject, WellFoundedGT,
-    isWellFounded_iff, RelEmbedding.wellFounded_iff_isEmpty]
+    RelEmbedding.wellFounded_iff_isEmpty]
   exact ⟨fun f ↦ h f.toFun (fun a b h ↦ f.map_rel_iff.2 h)⟩
 
 variable {X} in
@@ -121,7 +123,7 @@ lemma isNoetherianObject_of_mono (i : X ⟶ Y) [Mono i] [IsNoetherianObject Y] :
   rw [isNoetherianObject_iff_monotone_chain_condition]
   intro f
   obtain ⟨n, hn⟩ := monotone_chain_condition_of_isNoetherianObject
-    ⟨_, (Subobject.map i).monotone.comp f.2⟩
+    ⟨_, (Subobject.map i).monotone.comp f.monotone'⟩
   exact ⟨n, fun m hm ↦ Subobject.map_obj_injective i (hn m hm)⟩
 
 instance : (isNoetherianObject (C := C)).IsClosedUnderSubobjects where

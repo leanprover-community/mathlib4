@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Homology.Single
 public import Mathlib.CategoryTheory.GradedObject.Monoidal
 public import Mathlib.CategoryTheory.Monoidal.Transport
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The monoidal category structure on homological complexes
 
@@ -21,7 +24,6 @@ coproducts and both left/right tensoring commute with these.
 
 In particular, we obtain a monoidal category structure on
 `ChainComplex C ℕ` when `C` is an additive monoidal category.
-
 -/
 
 @[expose] public section
@@ -145,8 +147,6 @@ end
 
 section
 
-variable [∀ X₁, PreservesColimit (Functor.empty.{0} C) ((curriedTensor C).obj X₁)]
-
 instance : GradedObject.HasTensor K.X (tensorUnit C c).X :=
   GradedObject.hasTensor_of_iso (Iso.refl _) (tensorUnitIso C c)
 
@@ -182,18 +182,17 @@ noncomputable def leftUnitor' :
     GradedObject.Monoidal.leftUnitor K.X
 
 lemma leftUnitor'_inv (i : I) :
-    (leftUnitor' K).inv i = (λ_ (K.X i)).inv ≫ ((singleObjXSelf c 0 (𝟙_ C)).inv ▷ (K.X i)) ≫
+    (leftUnitor' K).inv i = (λ_ (K.X i)).inv ≫ ((singleObjXSelf c 0 (𝟙_ C)).inv ▷ K.X i) ≫
       ιTensorObj (tensorUnit C c) K 0 i i (zero_add i) := by
   dsimp [leftUnitor']
+  simp only [GradedObject.Monoidal.tensorIso_inv, Iso.symm_inv, Iso.refl_inv]
   rw [GradedObject.Monoidal.leftUnitor_inv_apply, assoc, assoc, Iso.cancel_iso_inv_left,
     GradedObject.Monoidal.ι_tensorHom]
-  dsimp
+  dsimp [tensorUnitIso]
   rw [tensorHom_id, ← comp_whiskerRight_assoc]
   congr 2
-  rw [← cancel_epi (GradedObject.Monoidal.tensorUnit₀ (I := I)).hom, Iso.hom_inv_id_assoc]
-  dsimp [tensorUnitIso]
-  rw [dif_pos rfl]
-  rfl
+  rw [← cancel_epi (GradedObject.Monoidal.tensorUnit₀ (I := I)).hom]
+  cat_disch
 
 @[reassoc]
 lemma leftUnitor'_inv_comm (i j : I) :
@@ -219,8 +218,6 @@ end LeftUnitor
 
 section RightUnitor
 
-variable [∀ X₁, PreservesColimit (Functor.empty.{0} C) ((curriedTensor C).obj X₁)]
-
 /-- Auxiliary definition for `rightUnitor`. -/
 noncomputable def rightUnitor' :
     (tensorObj K (tensorUnit C c)).X ≅ K.X :=
@@ -231,15 +228,14 @@ lemma rightUnitor'_inv (i : I) :
     (rightUnitor' K).inv i = (ρ_ (K.X i)).inv ≫ ((K.X i) ◁ (singleObjXSelf c 0 (𝟙_ C)).inv) ≫
       ιTensorObj K (tensorUnit C c) i 0 i (add_zero i) := by
   dsimp [rightUnitor']
+  simp only [GradedObject.Monoidal.tensorIso_inv, Iso.refl_inv, Iso.symm_inv]
   rw [GradedObject.Monoidal.rightUnitor_inv_apply, assoc, assoc, Iso.cancel_iso_inv_left,
     GradedObject.Monoidal.ι_tensorHom]
-  dsimp
+  dsimp [tensorUnitIso]
   rw [id_tensorHom, ← whiskerLeft_comp_assoc]
   congr 2
-  rw [← cancel_epi (GradedObject.Monoidal.tensorUnit₀ (I := I)).hom, Iso.hom_inv_id_assoc]
-  dsimp [tensorUnitIso]
-  rw [dif_pos rfl]
-  rfl
+  rw [← cancel_epi (GradedObject.Monoidal.tensorUnit₀ (I := I)).hom]
+  cat_disch
 
 lemma rightUnitor'_inv_comm (i j : I) :
     (rightUnitor' K).inv i ≫ (tensorObj K (tensorUnit C c)).d i j =

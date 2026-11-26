@@ -5,10 +5,12 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.Embedding.Restriction
-public import Mathlib.Algebra.Homology.Embedding.Extend
 public import Mathlib.Algebra.Homology.Embedding.Boundary
-public import Mathlib.CategoryTheory.MorphismProperty.Basic
+public import Mathlib.Algebra.Homology.Embedding.Extend
+public import Mathlib.Algebra.Homology.Embedding.Restriction
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Relations between `extend` and `restriction`
@@ -20,8 +22,8 @@ and the subtype of morphisms `φ : K.restriction e ⟶ L` which satisfy a certai
 condition `e.HasLift φ`.
 
 ## TODO
-* obtain dual results for morphisms `L.extend e ⟶ K`.
 
+* obtain dual results for morphisms `L.extend e ⟶ K`.
 -/
 
 @[expose] public section
@@ -54,7 +56,7 @@ variable (φ : K.restriction e ⟶ L)
 
 variable {e}
 
-open Classical in
+open scoped Classical in
 /-- Auxiliary definition for `liftExtend`. -/
 noncomputable def f (i' : ι') : K.X i' ⟶ (L.extend e).X i' :=
   if hi' : ∃ i, e.f i = i' then
@@ -210,7 +212,7 @@ consisting of morphisms `φ` such that `e.HasLift φ`. -/
 noncomputable def homEquiv :
     (K ⟶ L.extend e) ≃ { φ : K.restriction e ⟶ L // e.HasLift φ } where
   toFun ψ := ⟨e.homRestrict ψ, e.homRestrict_hasLift ψ⟩
-  invFun φ := e.liftExtend φ.1 φ.2
+  invFun φ := e.liftExtend φ.val φ.property
   left_inv ψ := by simp
   right_inv φ := by simp
 

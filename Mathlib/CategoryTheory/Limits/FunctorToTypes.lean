@@ -6,7 +6,11 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-public import Mathlib.CategoryTheory.Limits.Types.Colimits
+
+import Mathlib.CategoryTheory.Limits.Types.Colimits
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Concrete description of (co)limits in functor categories
@@ -38,6 +42,6 @@ theorem jointly_surjective' [∀ k, HasColimit (F.flip.obj k)] (k : K) (x : (col
 
 theorem colimit.map_ι_apply [HasColimit F] (j : J) {k k' : K} {f : k ⟶ k'} {x} :
     (colimit F).map f ((colimit.ι F j).app _ x) = (colimit.ι F j).app _ ((F.obj j).map f x) :=
-  congrFun ((colimit.ι F j).naturality _).symm _
+  congr($(((colimit.ι F j).naturality _).symm) _)
 
 end CategoryTheory.FunctorToTypes

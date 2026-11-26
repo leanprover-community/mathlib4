@@ -6,8 +6,8 @@ Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 module
 
 public import Mathlib.Data.Finset.Defs
-public import Mathlib.Data.Multiset.Dedup
 public import Mathlib.Data.Multiset.Basic
+public import Mathlib.Data.Multiset.Dedup
 
 /-!
 # Deduplicating Multisets to make Finsets
@@ -17,7 +17,6 @@ This file concerns `Multiset.dedup` and `List.dedup` as a way to create `Finset`
 ## Tags
 
 finite sets, finset
-
 -/
 
 @[expose] public section
@@ -26,17 +25,17 @@ finite sets, finset
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
 assert_not_exists List.sublistsLen Multiset.powerset CompleteLattice IsOrderedMonoid
 
-open Multiset Subtype Function
+open Multiset Function
 
 universe u
 
-variable {α : Type*} {β : Type*} {γ : Type*}
+variable {α : Type*} {β : Type*}
 
 namespace Finset
 
 @[simp]
-theorem dedup_eq_self [DecidableEq α] (s : Finset α) : dedup s.1 = s.1 :=
-  s.2.dedup
+theorem dedup_eq_self [DecidableEq α] (s : Finset α) : dedup s.val = s.val :=
+  s.nodup.dedup
 
 end Finset
 
@@ -51,7 +50,7 @@ def toFinset (s : Multiset α) : Finset α :=
   ⟨_, nodup_dedup s⟩
 
 @[simp]
-theorem toFinset_val (s : Multiset α) : s.toFinset.1 = s.dedup :=
+theorem toFinset_val (s : Multiset α) : s.toFinset.val = s.dedup :=
   rfl
 
 theorem toFinset_eq {s : Multiset α} (n : Nodup s) : Finset.mk s n = s.toFinset :=
@@ -64,6 +63,10 @@ theorem Nodup.toFinset_inj {l l' : Multiset α} (hl : Nodup l) (hl' : Nodup l')
 @[simp, grind =]
 theorem mem_toFinset {a : α} {s : Multiset α} : a ∈ s.toFinset ↔ a ∈ s :=
   mem_dedup
+
+theorem coe_toFinset {s : Multiset α} : s.toFinset = {a | a ∈ s} := by
+  ext
+  simp
 
 @[simp]
 theorem toFinset_subset : s.toFinset ⊆ t.toFinset ↔ s ⊆ t := by
@@ -78,7 +81,7 @@ theorem toFinset_ssubset : s.toFinset ⊂ t.toFinset ↔ s ⊂ t := by
 theorem toFinset_dedup (m : Multiset α) : m.dedup.toFinset = m.toFinset := by
   simp_rw [toFinset, dedup_idem]
 
-instance isWellFounded_ssubset : IsWellFounded (Multiset β) (· ⊂ ·) := by
+instance isWellFounded_ssubset : @WellFounded (Multiset β) (· ⊂ ·) := by
   classical
   exact Subrelation.isWellFounded (InvImage _ toFinset) toFinset_ssubset.2
 
@@ -98,15 +101,14 @@ end Finset
 
 namespace List
 
-variable [DecidableEq α] {l l' : List α} {a : α} {f : α → β}
-  {s : Finset α} {t : Set β} {t' : Finset β}
+variable [DecidableEq α] {l l' : List α} {a : α} {s : Finset α}
 
 /-- `toFinset l` removes duplicates from the list `l` to produce a finset. -/
 def toFinset (l : List α) : Finset α :=
   Multiset.toFinset l
 
 @[simp]
-theorem toFinset_val (l : List α) : l.toFinset.1 = (l.dedup : Multiset α) :=
+theorem toFinset_val (l : List α) : l.toFinset.val = (l.dedup : Multiset α) :=
   rfl
 
 @[simp]
@@ -123,6 +125,10 @@ theorem mem_toFinset : a ∈ l.toFinset ↔ a ∈ l :=
 @[simp, norm_cast]
 theorem coe_toFinset (l : List α) : (l.toFinset : Set α) = { a | a ∈ l } :=
   Set.ext fun _ => List.mem_toFinset
+
+@[simp]
+theorem toFinset_dedup : l.dedup.toFinset = l.toFinset :=
+  Finset.eq_of_veq <| by simp
 
 theorem toFinset_surj_on : Set.SurjOn toFinset { l : List α | l.Nodup } Set.univ := by
   rintro ⟨⟨l⟩, hl⟩ _
@@ -161,7 +167,7 @@ section ToList
 
 /-- Produce a list of the elements in the finite set using choice. -/
 noncomputable def toList (s : Finset α) : List α :=
-  s.1.toList
+  s.val.toList
 
 theorem nodup_toList (s : Finset α) : s.toList.Nodup := by
   rw [toList, ← Multiset.coe_nodup, Multiset.coe_toList]
@@ -193,8 +199,6 @@ theorem exists_list_nodup_eq [DecidableEq α] (s : Finset α) :
 protected theorem perm_toList {f₁ f₂ : Finset α} : f₁.toList.Perm f₂.toList ↔ f₁ = f₂ where
   mp h := Finset.ext fun x => by simp [← Finset.mem_toList, h.mem_iff]
   mpr h := .of_eq <| congrArg Finset.toList h
-
-@[deprecated (since := "2025-08-05")] alias _root_.perm_toList := Finset.perm_toList
 
 end ToList
 

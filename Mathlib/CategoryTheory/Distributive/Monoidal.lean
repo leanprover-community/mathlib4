@@ -5,12 +5,12 @@ Authors: Sina Hazratpour
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
-public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 public import Mathlib.CategoryTheory.Monoidal.End
 public import Mathlib.CategoryTheory.Monoidal.Preadditive
+
+import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 
 /-!
 # Distributive monoidal categories
@@ -40,7 +40,7 @@ A distributive monoidal category is a monoidal category that is both left and ri
   in the functor categories is computed pointwise.
 
 - We show that any preadditive monoidal category with coproducts is distributive. This includes the
-examples of abelian groups, R-modules, and vector bundles.
+  examples of abelian groups, R-modules, and vector bundles.
 
 ## TODO
 
@@ -54,7 +54,6 @@ pointed types and the coproduct given by the wedge sum is distributive.
 * [Hans-Joachim Baues, Mamuka Jibladze, Andy Tonks, Cohomology of
   monoids in monoidal categories, in: Operads: Proceedings of Renaissance
   Conferences, Contemporary Mathematics 202, AMS (1997) 137-166][MR1268290]
-
 -/
 
 @[expose] public section
@@ -102,7 +101,7 @@ end IsMonoidalLeftDistrib
 
 namespace Distributive
 
-/-- Notation for the forward direction morphism of the canonical left distributivity isomorphism -/
+/-- Notation for the canonical left distributivity isomorphism -/
 scoped notation "∂L" => leftDistrib
 
 end Distributive
@@ -159,8 +158,8 @@ end IsMonoidalRightDistrib
 
 namespace Distributive
 
-/-- Notation for the forward direction morphism of the canonical right distributivity isomorphism -/
-notation "∂R" => rightDistrib
+/-- Notation for the canonical right distributivity isomorphism -/
+scoped notation "∂R" => rightDistrib
 
 end Distributive
 

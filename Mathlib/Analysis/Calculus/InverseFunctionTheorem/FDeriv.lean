@@ -5,8 +5,12 @@ Authors: Yury Kudryashov, Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.Calculus.FDeriv.Equiv
+public import Mathlib.Analysis.Calculus.FDeriv.Congr
 public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ApproximatesLinearOn
+
+import Mathlib.Algebra.Order.Field.Power
+import Mathlib.Analysis.Calculus.FDeriv.OfCompLeft
+import Mathlib.Topology.OpenPartialHomeomorph.Continuity
 
 /-!
 # Inverse function theorem
@@ -42,7 +46,7 @@ derivative, strictly differentiable, continuously differentiable, smooth, invers
 
 @[expose] public section
 
-open Function Set Filter Metric
+open Set Filter
 
 open scoped Topology NNReal
 
@@ -52,7 +56,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
-open Asymptotics Filter Metric Set
+open Asymptotics Filter Set
 
 open ContinuousLinearMap (id)
 
@@ -85,8 +89,8 @@ theorem map_nhds_eq_of_surj [CompleteSpace E] [CompleteSpace F] {f : E → F} {f
     (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) (h : f'.range = ⊤) :
     map f (𝓝 a) = 𝓝 (f a) := by
   let f'symm := f'.nonlinearRightInverseOfSurjective h
-  set c : ℝ≥0 := f'symm.nnnorm⁻¹ / 2 with hc
-  have f'symm_pos : 0 < f'symm.nnnorm := f'.nonlinearRightInverseOfSurjective_nnnorm_pos h
+  set c : ℝ≥0 := f'symm.nnNorm⁻¹ / 2 with hc
+  have f'symm_pos : 0 < f'symm.nnNorm := f'.nonlinearRightInverseOfSurjective_nnNorm_pos h
   have cpos : 0 < c := by simp [hc, inv_pos, f'symm_pos]
   obtain ⟨s, s_nhds, hs⟩ : ∃ s ∈ 𝓝 a, ApproximatesLinearOn f f' s c :=
     hf.approximates_deriv_on_nhds (Or.inr cpos)
@@ -102,7 +106,7 @@ theorem approximates_deriv_on_open_nhds (hf : HasStrictFDerivAt f (f' : E →L[�
   refine ((nhds_basis_opens a).exists_iff fun s t => ApproximatesLinearOn.mono_set).1 ?_
   exact
     hf.approximates_deriv_on_nhds <|
-      f'.subsingleton_or_nnnorm_symm_pos.imp id fun hf' => half_pos <| inv_pos.2 hf'
+      f'.subsingleton_or_nnNorm_symm_pos.imp id fun hf' => half_pos <| inv_pos.2 hf'
 
 variable (f)
 variable [CompleteSpace E]
@@ -116,12 +120,9 @@ def toOpenPartialHomeomorph (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
     ApproximatesLinearOn.toOpenPartialHomeomorph f
     (Classical.choose hf.approximates_deriv_on_open_nhds)
     (Classical.choose_spec hf.approximates_deriv_on_open_nhds).2.2
-    (f'.subsingleton_or_nnnorm_symm_pos.imp id fun hf' =>
+    (f'.subsingleton_or_nnNorm_symm_pos.imp id fun hf' =>
       NNReal.half_lt_self <| ne_of_gt <| inv_pos.2 hf')
     (Classical.choose_spec hf.approximates_deriv_on_open_nhds).2.1
-
-@[deprecated (since := "2025-08-29")] noncomputable alias
-  toPartialHomeomorph := toOpenPartialHomeomorph
 
 variable {f}
 
@@ -130,23 +131,13 @@ theorem toOpenPartialHomeomorph_coe (hf : HasStrictFDerivAt f (f' : E →L[𝕜]
     (hf.toOpenPartialHomeomorph f : E → F) = f :=
   rfl
 
-@[deprecated (since := "2025-08-29")] alias
-  toPartialHomeomorph_coe := toOpenPartialHomeomorph_coe
-
 theorem mem_toOpenPartialHomeomorph_source (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
     a ∈ (hf.toOpenPartialHomeomorph f).source :=
   (Classical.choose_spec hf.approximates_deriv_on_open_nhds).1
 
-@[deprecated (since := "2025-08-29")] alias
-  mem_toPartialHomeomorph_source := mem_toOpenPartialHomeomorph_source
-
 theorem image_mem_toOpenPartialHomeomorph_target (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
     f a ∈ (hf.toOpenPartialHomeomorph f).target :=
   (hf.toOpenPartialHomeomorph f).map_source hf.mem_toOpenPartialHomeomorph_source
-
-@[deprecated (since := "2025-08-29")] alias
-  image_mem_toPartialHomeomorph_target := image_mem_toOpenPartialHomeomorph_target
-
 
 theorem map_nhds_eq_of_equiv (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
     map f (𝓝 a) = 𝓝 (f a) :=

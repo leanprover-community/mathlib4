@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Subgroup.Defs
 public import Mathlib.Algebra.Group.Submonoid.DistribMulAction
 public import Mathlib.Algebra.Ring.Action.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Instances of `MulSemiringAction` for subobjects
 
@@ -17,10 +20,9 @@ are defined.
 
 Instances for `Subsemiring` and `Subring` are provided next to the other scalar actions instances
 for those subobjects.
-
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists RelIso
 
@@ -29,7 +31,7 @@ variable [Monoid M] [Group G] [Semiring R]
 
 instance (priority := low) [MulSemiringAction M R] {S : Type*} [SetLike S M] (s : S)
     [SubmonoidClass S M] : MulSemiringAction s R :=
-  { inferInstanceAs (DistribMulAction s R), inferInstanceAs (MulDistribMulAction s R) with }
+  { (inferInstance : DistribMulAction s R), (inferInstance : MulDistribMulAction s R) with }
 
 /-- A stronger version of `Submonoid.distribMulAction`. -/
 instance Submonoid.mulSemiringAction [MulSemiringAction M R] (H : Submonoid M) :

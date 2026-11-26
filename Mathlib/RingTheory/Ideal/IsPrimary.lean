@@ -6,8 +6,6 @@ Authors: Kenny Lau, Yakov Pechersky
 module
 
 public import Mathlib.RingTheory.IsPrimary
-public import Mathlib.RingTheory.Ideal.Maps
-public import Mathlib.RingTheory.Ideal.Operations
 
 /-!
 # Primary ideals
@@ -18,13 +16,12 @@ A proper ideal `I` is primary iff `xy ∈ I` implies `x ∈ I` or `y ∈ radical
 
 - `Ideal.IsPrimary`
 
-## Implementation details
+## Implementation notes
 
 Uses a specialized phrasing of `Submodule.IsPrimary` to have better API-piercing usage.
-
 -/
 
-@[expose] public section
+public section
 
 namespace Ideal
 
@@ -43,7 +40,7 @@ lemma isPrimary_iff {I : Ideal R} :
 
 theorem IsPrime.isPrimary {I : Ideal R} (hi : IsPrime I) : I.IsPrimary :=
   isPrimary_iff.mpr
-  ⟨hi.1, fun {_ _} hxy => (hi.mem_or_mem hxy).imp id fun hyi => le_radical hyi⟩
+  ⟨hi.ne_top', fun {_ _} hxy => (hi.mem_or_mem hxy).imp id fun hyi => le_radical hyi⟩
 
 theorem isPrime_radical {I : Ideal R} (hi : I.IsPrimary) : IsPrime (radical I) :=
   I.colon_univ ▸ hi.isPrime_radical_colon
@@ -58,7 +55,7 @@ theorem isPrimary_of_isMaximal_radical {I : Ideal R} (hi : IsMaximal (radical I)
     by_cases h : I + span {y} = ⊤
     · rw [← span_singleton_le_iff_mem, ← mul_top (span {x}), ← h, mul_add,
         span_singleton_mul_span_singleton, add_le_iff, span_singleton_le_iff_mem]
-      exact Or.inl ⟨mul_le_left, hxy⟩
+      exact Or.inl ⟨mul_le_right, hxy⟩
     · obtain ⟨m, hm, hy⟩ := exists_le_maximal (I + span {y}) h
       rw [add_le_iff, span_singleton_le_iff_mem, ← hm.isPrime.radical_le_iff] at hy
       exact Or.inr (hi.eq_of_le hm.ne_top hy.1 ▸ hy.2)
@@ -67,17 +64,11 @@ theorem IsPrimary.inf {I J : Ideal R} (hi : I.IsPrimary) (hj : J.IsPrimary)
     (hij : radical I = radical J) : (I ⊓ J).IsPrimary :=
   Submodule.IsPrimary.inf hi hj (by simpa)
 
-@[deprecated (since := "2025-01-19")]
-alias isPrimary_inf := IsPrimary.inf
-
 lemma isPrimary_finsetInf {ι} {s : Finset ι} {f : ι → Ideal R} {i : ι} (hi : i ∈ s)
     (hs : ∀ ⦃y⦄, y ∈ s → (f y).IsPrimary)
     (hs' : ∀ ⦃y⦄, y ∈ s → (f y).radical = (f i).radical) :
     IsPrimary (s.inf f) :=
   Submodule.isPrimary_finsetInf hi hs (by simpa)
-
-@[deprecated (since := "2026-01-19")]
-alias isPrimary_finset_inf := isPrimary_finsetInf
 
 lemma IsPrimary.comap {I : Ideal S} (hI : I.IsPrimary) (φ : R →+* S) : (I.comap φ).IsPrimary := by
   rw [isPrimary_iff] at hI ⊢

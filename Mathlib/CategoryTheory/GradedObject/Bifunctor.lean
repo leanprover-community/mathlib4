@@ -6,6 +6,10 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.GradedObject
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The action of bifunctors on graded objects
 
@@ -18,7 +22,6 @@ a functor
 In case `p : I × I → I` is the addition on a monoid and `F` is the tensor product on a monoidal
 category `C`, these definitions shall be used in order to construct a monoidal structure
 on `GradedObject I C` (TODO @joelriou).
-
 -/
 
 @[expose] public section
@@ -34,7 +37,7 @@ namespace GradedObject
 
 /-- Given a bifunctor `F : C₁ ⥤ C₂ ⥤ C₃` and types `I` and `J`, this is the obvious
 functor `GradedObject I C₁ ⥤ GradedObject J C₂ ⥤ GradedObject (I × J) C₃`. -/
-@[simps]
+@[simps, implicit_reducible]
 def mapBifunctor (I J : Type*) :
     GradedObject I C₁ ⥤ GradedObject J C₂ ⥤ GradedObject (I × J) C₃ where
   obj X :=
@@ -50,6 +53,7 @@ variable {I J K : Type*} (p : I × J → K)
 /-- Given a bifunctor `F : C₁ ⥤ C₂ ⥤ C₃`, graded objects `X : GradedObject I C₁` and
 `Y : GradedObject J C₂` and a map `p : I × J → K`, this is the `K`-graded object sending
 `k` to the coproduct of `(F.obj (X i)).obj (Y j)` for `p ⟨i, j⟩ = k`. -/
+@[implicit_reducible]
 noncomputable def mapBifunctorMapObj (X : GradedObject I C₁) (Y : GradedObject J C₂)
     [HasMap (((mapBifunctor F I J).obj X).obj Y) p] : GradedObject K C₃ :=
   (((mapBifunctor F I J).obj X).obj Y).mapObj p
@@ -130,7 +134,7 @@ noncomputable def mapBifunctorMapMapIso (e : X₁ ≅ X₂) (e' : Y₁ ≅ Y₂)
 
 instance (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) [IsIso f] [IsIso g] :
     IsIso (mapBifunctorMapMap F p f g) :=
-  (inferInstance : IsIso (mapBifunctorMapMapIso F p (asIso f) (asIso g)).hom)
+  inferInstanceAs <| IsIso (mapBifunctorMapMapIso F p (asIso f) (asIso g)).hom
 
 end
 

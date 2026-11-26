@@ -6,8 +6,11 @@ Authors: Sophie Morel
 module
 
 public import Mathlib.Algebra.Category.Grp.Colimits
-public import Mathlib.Algebra.Module.CharacterModule
-public import Mathlib.Algebra.Group.Equiv.Basic
+
+import Mathlib.Algebra.Module.CharacterModule
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Existence of "big" colimits in the category of additive commutative groups
@@ -15,7 +18,6 @@ public import Mathlib.Algebra.Group.Equiv.Basic
 If `F : J ⥤ AddCommGrpCat.{w}` is a functor, we show that `F` admits a colimit if and only
 if `Colimits.Quot F` (the quotient of the direct sum of the commutative groups `F.obj j`
 by the relations given by the morphisms in the diagram) is `w`-small.
-
 -/
 
 public section
@@ -30,6 +32,8 @@ variable {J : Type u} [Category.{v} J] {F : J ⥤ AddCommGrpCat.{w}} (c : Cocone
 
 open Colimits
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `c` is a cocone of `F` such that `Quot.desc F c` is bijective, then `c` is a colimit
 cocone of `F`.
@@ -44,10 +48,10 @@ lemma isColimit_iff_bijective_desc [DecidableEq J] :
     apply ofHom_injective
     refine hc.hom_ext (fun j ↦ ?_)
     ext x
-    rw [ConcreteCategory.comp_apply, ConcreteCategory.comp_apply, ← Quot.ι_desc _ c j x]
-    exact DFunLike.congr_fun eq (Quot.ι F j x)
+    erw [ConcreteCategory.comp_apply, ConcreteCategory.comp_apply, ← Quot.ι_desc _ c j x]
+    congrm $eq (Quot.ι F j x)
   · set c' : Cocone F :=
-      { pt := AddCommGrpCat.of (ULift (AddCircle (1 : ℚ)))
+      { pt := ↧(ULift (AddCircle (1 : ℚ)))
         ι :=
           { app j := AddCommGrpCat.ofHom (((@AddEquiv.ulift _ _).symm.toAddMonoidHom.comp χ).comp
                        (Quot.ι F j))

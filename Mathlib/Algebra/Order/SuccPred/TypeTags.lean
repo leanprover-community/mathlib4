@@ -5,17 +5,19 @@ Authors: Yakov Pechersky
 -/
 module
 
-public import Mathlib.Order.SuccPred.Archimedean
 public import Mathlib.Algebra.Order.Monoid.Unbundled.TypeTags
+public import Mathlib.Order.SuccPred.Archimedean
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Successor and predecessor on type tags
 
-This file declates successor and predecessor orders on type tags.
-
+This file declares successor and predecessor orders on type tags.
 -/
 
-@[expose] public section
+public section
 
 variable {X : Type*}
 

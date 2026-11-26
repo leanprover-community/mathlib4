@@ -5,11 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.ShortComplex.Exact
-public import Mathlib.CategoryTheory.Shift.ShiftSequence
-public import Mathlib.CategoryTheory.Triangulated.Functor
-public import Mathlib.CategoryTheory.Triangulated.Subcategory
 public import Mathlib.Algebra.Homology.ExactSequence
+public import Mathlib.CategoryTheory.Shift.ShiftSequence
+public import Mathlib.CategoryTheory.Triangulated.Subcategory
 
 /-! # Homological functors
 
@@ -42,8 +40,8 @@ called cohomological functors, while certain authors use "cohomological functors
 for "contravariant" functors (i.e. functors `Cᵒᵖ ⥤ A`).
 
 ## References
-* [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
 
+* [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
 -/
 
 @[expose] public section
@@ -139,7 +137,7 @@ noncomputable instance (priority := 100) [F.IsHomological] :
     let S := (ShortComplex.mk _ _ (biprod.inl_snd (X := X₁) (Y := X₂))).map F
     have : Mono S.f := by dsimp [S]; infer_instance
     have ex : S.Exact := F.map_distinguished_exact _ (binaryBiproductTriangle_distinguished X₁ X₂)
-    obtain ⟨g, rfl⟩ := ex.lift' f (by simpa using hf =≫ biprod.snd)
+    obtain ⟨g, rfl⟩ := ex.lift' f (by simpa using! hf =≫ biprod.snd)
     dsimp [S] at hf ⊢
     replace hf := hf =≫ biprod.fst
     simp only [assoc, biprodComparison_fst, zero_comp, ← F.map_comp, biprod.inl_fst,
@@ -174,21 +172,18 @@ noncomputable def homologySequenceδ
     (F.shift n₀).obj T.obj₃ ⟶ (F.shift n₁).obj T.obj₁ :=
   F.shiftMap T.mor₃ n₀ n₁ (by rw [add_comm 1, h])
 
-variable {T T'}
-
 @[reassoc]
 lemma homologySequenceδ_naturality
-    [F.ShiftSequence ℤ] (T T' : Triangle C) (φ : T ⟶ T') (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
+    [F.ShiftSequence ℤ] {T T' : Triangle C} (φ : T ⟶ T') (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
     (F.shift n₀).map φ.hom₃ ≫ F.homologySequenceδ T' n₀ n₁ h =
       F.homologySequenceδ T n₀ n₁ h ≫ (F.shift n₁).map φ.hom₁ := by
   dsimp only [homologySequenceδ]
   rw [← shiftMap_comp', ← φ.comm₃, shiftMap_comp]
 
-variable (T)
 variable [HasZeroObject C] [Preadditive C] [∀ (n : ℤ), (CategoryTheory.shiftFunctor C n).Additive]
   [Pretriangulated C] [Abelian A] [F.IsHomological]
-variable [F.ShiftSequence ℤ] (T T' : Triangle C) (hT : T ∈ distTriang C)
-  (hT' : T' ∈ distTriang C) (φ : T ⟶ T') (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁)
+variable [F.ShiftSequence ℤ] (T : Triangle C) (hT : T ∈ distTriang C)
+  (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁)
 
 section
 include hT
@@ -269,9 +264,6 @@ lemma mem_homologicalKernel_trW_iff {X Y : C} (f : X ⟶ Y) :
     apply isIso_of_mono_of_epi
   · intros
     constructor <;> infer_instance
-
-@[deprecated (since := "2025-07-21")]
-alias mem_homologicalKernel_W_iff := mem_homologicalKernel_trW_iff
 
 open ComposableArrows
 

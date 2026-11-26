@@ -6,15 +6,16 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.ShortComplex.Homology
-public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 public import Mathlib.CategoryTheory.Preadditive.Opposite
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Homology of preadditive categories
 
 In this file, it is shown that if `C` is a preadditive category, then
 `ShortComplex C` is a preadditive category.
-
 -/
 
 @[expose] public section
@@ -539,9 +540,9 @@ variable {φ₁ φ₂}
 lemma eq_add_nullHomotopic (h : Homotopy φ₁ φ₂) :
     φ₁ = φ₂ + nullHomotopic _ _ h.h₀ h.h₀_f h.h₁ h.h₂ h.h₃ h.g_h₃ := by
   ext
-  · dsimp; rw [h.comm₁]; abel
-  · dsimp; rw [h.comm₂]; abel
-  · dsimp; rw [h.comm₃]; abel
+  · simp [h.comm₁]; abel
+  · simp [h.comm₂]; abel
+  · simp [h.comm₃]; abel
 
 variable (S₁ S₂)
 
@@ -725,6 +726,23 @@ def trans (e : HomotopyEquiv S₁ S₂) (e' : HomotopyEquiv S₂ S₃) :
 end HomotopyEquiv
 
 end Homotopy
+
+section
+
+variable (S : ShortComplex C) [S.HasLeftHomology] {A : C}
+    (k k' : A ⟶ S.X₂) (hk : k ≫ S.g = 0) (hk' : k' ≫ S.g = 0)
+
+lemma add_liftCycles :
+    S.liftCycles k hk + S.liftCycles k' hk' =
+      S.liftCycles (k + k') (by rw [add_comp, hk, hk', add_zero]) := by
+  simp only [← cancel_mono S.iCycles, liftCycles_i, add_comp]
+
+lemma sub_liftCycles :
+    S.liftCycles k hk - S.liftCycles k' hk' =
+      S.liftCycles (k - k') (by rw [sub_comp, hk, hk', sub_zero]) := by
+  simp only [← cancel_mono S.iCycles, liftCycles_i, sub_comp]
+
+end
 
 end ShortComplex
 

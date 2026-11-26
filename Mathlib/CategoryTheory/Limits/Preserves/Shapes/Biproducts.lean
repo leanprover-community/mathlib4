@@ -6,7 +6,9 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Preservation of biproducts
@@ -19,7 +21,6 @@ classes `PreservesBiproduct` and `PreservesBinaryBiproduct`. We then
   images and show that the biproduct is preserved if one of them is an isomorphism,
 * give the canonical isomorphism between the image of a biproduct and the biproduct of the images
   in case that the biproduct is preserved.
-
 -/
 
 @[expose] public section
@@ -71,7 +72,7 @@ theorem mapBicone_whisker {K : Type w₂} {g : K ≃ J} {f : J → C} (c : Bicon
 end Bicone
 
 /-- The image of a binary bicone under a functor. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def mapBinaryBicone {X Y : C} (b : BinaryBicone X Y) : BinaryBicone (F.obj X) (F.obj Y) :=
   (BinaryBicones.functoriality _ _ F).obj b
 
@@ -85,7 +86,7 @@ namespace Limits
 
 section Bicone
 
-variable {J : Type w₁} {K : Type w₂}
+variable {J : Type w₁}
 
 /-- A functor `F` preserves biproducts of `f` if `F` maps every bilimit bicone over `f` to a
 bilimit bicone over `F.obj ∘ f`. -/
@@ -143,7 +144,7 @@ lemma preservesBiproducts_shrink (F : C ⥤ D) [PreservesZeroMorphisms F]
 
 instance (priority := 100) preservesFiniteBiproductsOfPreservesBiproducts (F : C ⥤ D)
     [PreservesZeroMorphisms F] [PreservesBiproducts.{w₁} F] : PreservesFiniteBiproducts F where
-  preserves {J} _ := by letI := preservesBiproducts_shrink.{0} F; infer_instance
+  preserves {J} _ := by let := preservesBiproducts_shrink.{0} F; infer_instance
 
 /-- A functor `F` preserves binary biproducts of `X` and `Y` if `F` maps every bilimit bicone over
 `X` and `Y` to a bilimit bicone over `F.obj X` and `F.obj Y`. -/
@@ -166,6 +167,8 @@ class PreservesBinaryBiproducts (F : C ⥤ D) [PreservesZeroMorphisms F] : Prop 
 
 attribute [inherit_doc PreservesBinaryBiproducts] PreservesBinaryBiproducts.preserves
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- A functor that preserves biproducts of a pair preserves binary biproducts. -/
 lemma preservesBinaryBiproduct_of_preservesBiproduct (F : C ⥤ D)
     [PreservesZeroMorphisms F] (X Y : C) [PreservesBiproduct (pairFunction X Y) F] :
@@ -175,13 +178,13 @@ lemma preservesBinaryBiproduct_of_preservesBiproduct (F : C ⥤ D)
         IsLimit.ofIsoLimit
             ((IsLimit.postcomposeHomEquiv (diagramIsoPair _) _).symm
               (isBilimitOfPreserves F (b.toBiconeIsBilimit.symm hb)).isLimit) <|
-          Cones.ext (Iso.refl _) fun j => by
+          Cone.ext (Iso.refl _) fun j => by
             rcases j with ⟨⟨⟩⟩ <;> simp
       isColimit :=
         IsColimit.ofIsoColimit
             ((IsColimit.precomposeInvEquiv (diagramIsoPair _) _).symm
               (isBilimitOfPreserves F (b.toBiconeIsBilimit.symm hb)).isColimit) <|
-          Cocones.ext (Iso.refl _) fun j => by
+          Cocone.ext (Iso.refl _) fun j => by
             rcases j with ⟨⟨⟩⟩ <;> simp }⟩
 
 /-- A functor that preserves biproducts of a pair preserves binary biproducts. -/

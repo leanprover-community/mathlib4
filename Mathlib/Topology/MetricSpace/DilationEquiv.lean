@@ -24,7 +24,7 @@ We also develop basic API about these equivalences.
 @[expose] public section
 
 open scoped NNReal ENNReal
-open Function Set Filter Bornology
+open Function Filter Bornology
 open Dilation (ratio ratio_ne_zero ratio_pos edist_eq)
 
 section Class
@@ -37,7 +37,7 @@ class DilationEquivClass [EquivLike F X Y] : Prop where
   edist_eq' : ∀ f : F, ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ x y : X, edist (f x) (f y) = r * edist x y
 
 instance (priority := 100) [EquivLike F X Y] [DilationEquivClass F X Y] : DilationClass F X Y :=
-  { inferInstanceAs (FunLike F X Y), ‹DilationEquivClass F X Y› with }
+  { (inferInstance : FunLike F X Y), ‹DilationEquivClass F X Y› with }
 
 end Class
 
@@ -54,9 +54,10 @@ section PseudoEMetricSpace
 
 variable {X Y Z : Type*} [PseudoEMetricSpace X] [PseudoEMetricSpace Y] [PseudoEMetricSpace Z]
 
+@[macro_inline]
 instance : EquivLike (X ≃ᵈ Y) X Y where
-  coe f := f.1
-  inv f := f.1.symm
+  coe f := f.toEquiv
+  inv f := f.toEquiv.symm
   left_inv f := f.left_inv'
   right_inv f := f.right_inv'
   coe_injective' := by rintro ⟨⟩ ⟨⟩ h -; congr; exact DFunLike.ext' h
@@ -72,7 +73,7 @@ protected theorem ext {e e' : X ≃ᵈ Y} (h : ∀ x, e x = e' x) : e = e' :=
 
 /-- Inverse `DilationEquiv`. -/
 def symm (e : X ≃ᵈ Y) : Y ≃ᵈ X where
-  toEquiv := e.1.symm
+  toEquiv := e.toEquiv.symm
   edist_eq' := by
     refine ⟨(ratio e)⁻¹, inv_ne_zero <| ratio_ne_zero e, e.surjective.forall₂.2 fun x y ↦ ?_⟩
     simp_rw [Equiv.toFun_as_coe, Equiv.symm_apply_apply, coe_toEquiv, edist_eq]
@@ -86,6 +87,12 @@ theorem symm_bijective : Function.Bijective (DilationEquiv.symm : (X ≃ᵈ Y) �
 
 @[simp] theorem apply_symm_apply (e : X ≃ᵈ Y) (x : Y) : e (e.symm x) = x := e.right_inv x
 @[simp] theorem symm_apply_apply (e : X ≃ᵈ Y) (x : X) : e.symm (e x) = x := e.left_inv x
+
+theorem symm_apply_eq (e : X ≃ᵈ Y) {x : X} {y : Y} : e.symm y = x ↔ y = e x :=
+  Equiv.symm_apply_eq _
+
+theorem eq_symm_apply (e : X ≃ᵈ Y) {x : X} {y : Y} : x = e.symm y ↔ e x = y :=
+  Equiv.eq_symm_apply _
 
 /-- See Note [custom simps projection]. -/
 def Simps.symm_apply (e : X ≃ᵈ Y) : Y → X := e.symm
@@ -106,7 +113,7 @@ def refl (X : Type*) [PseudoEMetricSpace X] : X ≃ᵈ X where
 /-- Composition of `DilationEquiv`s. -/
 @[simps! -fullyApplied apply]
 def trans (e₁ : X ≃ᵈ Y) (e₂ : Y ≃ᵈ Z) : X ≃ᵈ Z where
-  toEquiv := e₁.1.trans e₂.1
+  toEquiv := e₁.toEquiv.trans e₂.toEquiv
   __ := e₂.toDilation.comp e₁.toDilation
 
 @[simp] theorem refl_trans (e : X ≃ᵈ Y) : (refl X).trans e = e := rfl
@@ -118,9 +125,9 @@ def trans (e₁ : X ≃ᵈ Y) (e₂ : Y ≃ᵈ Z) : X ≃ᵈ Z where
 @[simp] theorem self_trans_symm (e : X ≃ᵈ Y) : e.trans e.symm = refl X :=
   DilationEquiv.ext e.symm_apply_apply
 
-protected theorem surjective (e : X ≃ᵈ Y) : Surjective e := e.1.surjective
-protected theorem bijective (e : X ≃ᵈ Y) : Bijective e := e.1.bijective
-protected theorem injective (e : X ≃ᵈ Y) : Injective e := e.1.injective
+protected theorem surjective (e : X ≃ᵈ Y) : Surjective e := e.toEquiv.surjective
+protected theorem bijective (e : X ≃ᵈ Y) : Bijective e := e.toEquiv.bijective
+protected theorem injective (e : X ≃ᵈ Y) : Injective e := e.toEquiv.injective
 
 @[simp]
 theorem ratio_trans (e : X ≃ᵈ Y) (e' : Y ≃ᵈ Z) : ratio (e.trans e') = ratio e * ratio e' := by
@@ -172,7 +179,7 @@ theorem ratio_zpow (e : X ≃ᵈ X) (n : ℤ) : ratio (e ^ n) = ratio e ^ n :=
 /-- `DilationEquiv.toEquiv` as a monoid homomorphism. -/
 @[simps]
 def toPerm : (X ≃ᵈ X) →* Equiv.Perm X where
-  toFun e := e.1
+  toFun e := e.toEquiv
   map_mul' _ _ := rfl
   map_one' := rfl
 
@@ -184,7 +191,7 @@ theorem coe_pow (e : X ≃ᵈ X) (n : ℕ) : ⇑(e ^ n) = e^[n] := by
 -- of `DilationEquivClass` assuming `IsometryEquivClass`.
 /-- Every isometry equivalence is a dilation equivalence of ratio `1`. -/
 def _root_.IsometryEquiv.toDilationEquiv (e : X ≃ᵢ Y) : X ≃ᵈ Y where
-  edist_eq' := ⟨1, one_ne_zero, by simpa using e.isometry⟩
+  edist_eq' := ⟨1, one_ne_zero, by simpa using! e.isometry⟩
   __ := e.toEquiv
 
 @[simp]

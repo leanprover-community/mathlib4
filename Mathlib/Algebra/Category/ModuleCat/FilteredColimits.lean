@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Category.Grp.FilteredColimits
 public import Mathlib.Algebra.Category.ModuleCat.Colimits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The forgetful functor from `R`-modules preserves filtered colimits.
 
@@ -19,7 +22,6 @@ In this file, we start with a ring `R`, a small filtered category `J` and a func
 (in `AddCommGrpCat`) carries the structure of an `R`-module, thereby showing that the forgetful
 functor `forget₂ (ModuleCat R) AddCommGrpCat` preserves filtered colimits. In particular, this
 implies that `forget (ModuleCat R)` preserves filtered colimits.
-
 -/
 
 @[expose] public section
@@ -29,7 +31,7 @@ universe v u
 
 noncomputable section
 
-open CategoryTheory CategoryTheory.Limits
+open CategoryTheory Limits ConcreteCategory
 
 open CategoryTheory.IsFiltered renaming max → max' -- avoid name collision with `_root_.max`.
 
@@ -74,7 +76,8 @@ theorem colimitSMulAux_eq_of_rel (r : R) (x y : Σ j, F.obj j)
   apply M.mk_eq
   obtain ⟨k, f, g, hfg⟩ := h
   use k, f, g
-  simp only [Functor.comp_obj, Functor.comp_map, forget_map] at hfg
+  simp only [Functor.comp_obj, Functor.comp_map, ConcreteCategory.hom_ofHom,
+    TypeCat.Fun.coe_mk] at hfg
   simp [hfg]
 
 /-- Scalar multiplication in the colimit. See also `colimitSMulAux`. -/
@@ -137,7 +140,7 @@ instance colimitModule : Module R (M F) :=
 
 /-- The bundled `R`-module giving the filtered colimit of a diagram. -/
 def colimit : ModuleCat.{max v u, u} R :=
-  ModuleCat.of R (M F)
+  ↧(M F)
 
 /-- The linear map from a given `R`-module in the diagram to the colimit module. -/
 def coconeMorphism (j : J) : F.obj j ⟶ colimit F :=
@@ -147,13 +150,15 @@ def coconeMorphism (j : J) : F.obj j ⟶ colimit F :=
     map_smul' := by solve_by_elim }
 
 /-- The cocone over the proposed colimit module. -/
+@[implicit_reducible]
 def colimitCocone : Cocone F where
   pt := colimit F
   ι :=
     { app := coconeMorphism F
-      naturality := fun _ _' f =>
-        hom_ext <| LinearMap.coe_injective
-          ((Types.TypeMax.colimitCocone (F ⋙ forget (ModuleCat R))).ι.naturality f) }
+      naturality _ _ f := by
+        ext
+        simpa using! (Types.TypeMax.colimitCocone
+          (F ⋙ forget (ModuleCat R))).ι.naturality_apply f _ }
 
 /-- Given a cocone `t` of `F`, the induced monoid linear map from the colimit to the cocone point.
 We already know that this is a morphism between additive groups. The only thing left to see is that
@@ -163,7 +168,7 @@ def colimitDesc (t : Cocone F) : colimit F ⟶ t.pt :=
   let h := (AddCommGrpCat.FilteredColimits.colimitCoconeIsColimit (F ⋙ forget₂ _ _))
   let f : colimit F →+ t.pt := (h.desc ((forget₂ _ _).mapCocone t)).hom
   have hf {j : J} (x : F.obj j) : f (M.mk _ ⟨j, x⟩) = t.ι.app j x :=
-    congr_fun ((forget _).congr_map (h.fac ((forget₂ _ _).mapCocone t) j)) x
+    congr_hom ((forget AddCommGrpCat).congr_map (h.fac ((forget₂ _ _).mapCocone t) j)) x
   ofHom
     { f with
       map_smul' := fun r x => by
@@ -172,7 +177,7 @@ def colimitDesc (t : Cocone F) : colimit F ⟶ t.pt :=
 
 @[reassoc (attr := simp)]
 lemma ι_colimitDesc (t : Cocone F) (j : J) :
-    (colimitCocone F).ι.app j ≫ colimitDesc F t = t.ι.app j :=
+    dsimp% (colimitCocone F).ι.app j ≫ colimitDesc F t = t.ι.app j :=
   (forget₂ _ AddCommGrpCat).map_injective
     ((AddCommGrpCat.FilteredColimits.colimitCoconeIsColimit (F ⋙ forget₂ _ _)).fac _ _)
 
@@ -182,8 +187,8 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone F) where
   fac t j := by simp
   uniq t _ h := by
     ext ⟨j, x⟩
-    exact (congr_fun ((forget _).congr_map (h j)) x).trans
-      (congr_fun ((forget _).congr_map (ι_colimitDesc F t j)) x).symm
+    exact (congr_hom ((forget (ModuleCat _)).congr_map (h j)) _).trans
+      (congr_hom ((forget (ModuleCat _)).congr_map (ι_colimitDesc F t j)) x).symm
 
 instance forget₂AddCommGroup_preservesFilteredColimits :
     PreservesFilteredColimits (forget₂ (ModuleCat.{u} R) AddCommGrpCat.{u}) where

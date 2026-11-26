@@ -5,8 +5,8 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Logic.Function.CompTypeclasses
 public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Logic.Function.CompTypeclasses
 
 /-!
 # Propositional typeclasses on several monoid homs
@@ -31,10 +31,9 @@ TODO :
 * probably rename MonoidHom.CompTriple as MonoidHomCompTriple
   (or, on the opposite, rename RingHomCompTriple as RingHom.CompTriple)
 * does one need AddHom.CompTriple ?
-
 -/
 
-@[expose] public section
+public section
 
 section MonoidHomCompTriple
 

@@ -5,14 +5,15 @@ Authors: Markus Himmel, Kim Morrison, Jakob von Raumer, Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Preadditive.Projective.Resolution
 public import Mathlib.Algebra.Homology.HomotopyCategory
+public import Mathlib.CategoryTheory.Preadditive.Projective.Resolution
 public import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Abelian categories with enough projectives have projective resolutions
 
 ## Main results
+
 When the underlying category is abelian:
 * `CategoryTheory.ProjectiveResolution.lift`: Given `P : ProjectiveResolution X` and
   `Q : ProjectiveResolution Y`, any morphism `X ⟶ Y` admits a lifting to a chain map
@@ -103,12 +104,12 @@ theorem lift_commutes {Y Z : C} (f : Y ⟶ Z) (P : ProjectiveResolution Y)
 lemma lift_commutes_zero {Y Z : C} (f : Y ⟶ Z)
     (P : ProjectiveResolution Y) (Q : ProjectiveResolution Z) :
     (lift f P Q).f 0 ≫ Q.π.f 0 = P.π.f 0 ≫ f :=
-  (HomologicalComplex.congr_hom (lift_commutes f P Q) 0).trans (by simp)
+  congr($(lift_commutes f P Q).f 0).trans (by simp)
 
 /-- An auxiliary definition for `liftHomotopyZero`. -/
 def liftHomotopyZeroZero {Y Z : C} {P : ProjectiveResolution Y} {Q : ProjectiveResolution Z}
     (f : P.complex ⟶ Q.complex) (comm : f ≫ Q.π = 0) : P.complex.X 0 ⟶ Q.complex.X 1 :=
-  Q.exact₀.liftFromProjective (f.f 0) (congr_fun (congr_arg HomologicalComplex.Hom.f comm) 0)
+  Q.exact₀.liftFromProjective (f.f 0) congr($(comm).f 0)
 
 @[reassoc (attr := simp)]
 lemma liftHomotopyZeroZero_comp {Y Z : C} {P : ProjectiveResolution Y} {Q : ProjectiveResolution Z}
@@ -232,6 +233,7 @@ def ProjectiveResolution.iso {X : C} (P : ProjectiveResolution X) :
       (HomotopyCategory.quotient _ _).obj P.complex :=
   HomotopyCategory.isoOfHomotopyEquiv (homotopyEquiv _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma ProjectiveResolution.iso_inv_naturality {X Y : C} (f : X ⟶ Y)
     (P : ProjectiveResolution X) (Q : ProjectiveResolution Y)
@@ -256,6 +258,7 @@ end
 
 variable [EnoughProjectives C]
 
+set_option backward.isDefEq.respectTransparency false in
 variable {C} in
 theorem exact_d_f {X Y : C} (f : X ⟶ Y) :
     (ShortComplex.mk (d f) f (by simp)).Exact := by
@@ -284,6 +287,7 @@ variable (Z : C)
 -- The construction of the projective resolution `of` would be very, very slow
 -- if it were not broken into separate definitions and lemmas
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Auxiliary definition for `ProjectiveResolution.of`. -/
 def ofComplex : ChainComplex C ℕ :=
   ChainComplex.mk' (Projective.over Z) (Projective.syzygies (Projective.π Z))
@@ -296,9 +300,8 @@ lemma ofComplex_d_1_0 :
 lemma ofComplex_exactAt_succ (n : ℕ) :
     (ofComplex Z).ExactAt (n + 1) := by
   rw [HomologicalComplex.exactAt_iff' _ (n + 1 + 1) (n + 1) n (by simp) (by simp)]
-  dsimp [ofComplex, HomologicalComplex.sc', HomologicalComplex.shortComplexFunctor',
-      ChainComplex.mk', ChainComplex.mk]
-  simp only [ChainComplex.of_d]
+  simp only [HomologicalComplex.sc', HomologicalComplex.shortComplexFunctor', ofComplex,
+    ChainComplex.mk', ChainComplex.mk, ChainComplex.of_d]
   -- TODO: this should just be apply exact_d_f so something is missing
   match n with
   | 0 => apply exact_d_f
@@ -307,10 +310,11 @@ lemma ofComplex_exactAt_succ (n : ℕ) :
 instance (n : ℕ) : Projective ((ofComplex Z).X n) := by
   obtain (_ | _ | _ | n) := n <;> apply Projective.projective_over
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In any abelian category with enough projectives,
 `ProjectiveResolution.of Z` constructs a projective resolution of the object `Z`.
 -/
-irreducible_def of : ProjectiveResolution Z where
+@[no_expose] def of : ProjectiveResolution Z where
   complex := ofComplex Z
   π := (ChainComplex.toSingle₀Equiv _ _).symm ⟨Projective.π Z, by
           rw [ofComplex_d_1_0, assoc, kernel.condition, comp_zero]⟩

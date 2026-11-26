@@ -8,7 +8,7 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 
 /-!
-# Split Equalizers
+# Split Equalizers and Coequalizers
 
 We define what it means for a triple of morphisms `f g : X ⟶ Y`, `ι : W ⟶ X` to be a split
 equalizer: there is a retraction `r` of `ι` and a retraction `t` of `g`, which additionally satisfy
@@ -24,9 +24,7 @@ A pair `f g : X ⟶ Y` has a `G`-split equalizer if `G f, G g` has a split equal
 
 These definitions and constructions are useful in particular for the comonadicity theorems.
 
-This file was adapted from `Mathlib/CategoryTheory/Limits/Shapes/SplitCoequalizer.lean`. Please try
-to keep them in sync.
-
+Everything about split equalizers is dualized to split coequalizers.
 -/
 
 @[expose] public section
@@ -76,19 +74,56 @@ structure IsSplitEqualizer {W : C} (ι : W ⟶ X) where
   /-- `f` composed with `rightRetraction` is `leftRetraction` composed with `ι` -/
   top_rightRetraction : f ≫ rightRetraction = leftRetraction ≫ ι := by cat_disch
 
+/-- A split coequalizer diagram consists of morphisms
+
+      f   π
+    X ⇉ Y → Z
+      g
+
+satisfying `f ≫ π = g ≫ π` together with morphisms
+
+      t   s
+    X ← Y ← Z
+
+satisfying `s ≫ π = 𝟙 Z`, `t ≫ g = 𝟙 Y` and `t ≫ f = π ≫ s`.
+
+The name "coequalizer" is appropriate, since any split coequalizer is a coequalizer, see
+`CategoryTheory.IsSplitCoequalizer.isCoequalizer`.
+Split coequalizers are also absolute, since a functor preserves all the structure above.
+-/
+@[to_dual (reorder := X Y)]
+structure IsSplitCoequalizer {Z : C} (π : Y ⟶ Z) where
+  /-- A map from the coequalizer to `Y` -/
+  rightSection : Z ⟶ Y
+  /-- A map in the opposite direction to `f` and `g` -/
+  leftSection : Y ⟶ X
+  /-- Composition of `π` with `f` and with `g` agree -/
+  condition : f ≫ π = g ≫ π := by cat_disch
+  /-- `rightSection` splits `π` -/
+  rightSection_π : rightSection ≫ π = 𝟙 Z := by cat_disch
+  /-- `leftSection` splits `g` -/
+  leftSection_bottom : leftSection ≫ g = 𝟙 Y := by cat_disch
+  /-- `leftSection` composed with `f` is `pi` composed with `rightSection` -/
+  leftSection_top : leftSection ≫ f = π ≫ rightSection := by cat_disch
+
+@[to_dual]
 instance {X : C} : Inhabited (IsSplitEqualizer (𝟙 X) (𝟙 X) (𝟙 X)) where
   default := { leftRetraction := 𝟙 X, rightRetraction := 𝟙 X }
 
 open IsSplitEqualizer
 
-attribute [reassoc] condition
-
-attribute [reassoc (attr := simp)] ι_leftRetraction bottom_rightRetraction top_rightRetraction
+set_option linter.translate.overwrite false
+attribute [to_dual existing (attr := reassoc)] condition
+attribute [to_dual existing (attr := reassoc (attr := simp)) rightSection_π] ι_leftRetraction
+attribute [to_dual existing (attr := reassoc (attr := simp)) leftSection_bottom]
+  bottom_rightRetraction
+attribute [to_dual existing (attr := reassoc (attr := simp)) leftSection_top] top_rightRetraction
 
 variable {f g}
 
 /-- Split equalizers are absolute: they are preserved by any functor. -/
-@[simps]
+@[to_dual (attr := simps)
+/-- Split coequalizers are absolute: they are preserved by any functor. -/]
 def IsSplitEqualizer.map {W : C} {ι : W ⟶ X} (q : IsSplitEqualizer f g ι) (F : C ⥤ D) :
     IsSplitEqualizer (F.map f) (F.map g) (F.map ι) where
   leftRetraction := F.map q.leftRetraction
@@ -103,23 +138,30 @@ section
 open Limits
 
 /-- A split equalizer clearly induces a fork. -/
-@[simps! pt]
+@[to_dual (attr := simps! pt) /-- A split coequalizer clearly induces a cofork. -/]
 def IsSplitEqualizer.asFork {W : C} {h : W ⟶ X} (t : IsSplitEqualizer f g h) :
     Fork f g := Fork.ofι h t.condition
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem IsSplitEqualizer.asFork_ι {W : C} {h : W ⟶ X} (t : IsSplitEqualizer f g h) :
     t.asFork.ι = h := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /--
 The fork induced by a split equalizer is an equalizer, justifying the name. In some cases it
 is more convenient to show a given fork is an equalizer by showing it is split.
 -/
+@[to_dual
+/--
+The cofork induced by a split coequalizer is a coequalizer, justifying the name. In some cases it
+is more convenient to show a given cofork is a coequalizer by showing it is split.
+-/]
 def IsSplitEqualizer.isEqualizer {W : C} {h : W ⟶ X} (t : IsSplitEqualizer f g h) :
     IsLimit t.asFork :=
   Fork.IsLimit.mk' _ fun s =>
     ⟨ s.ι ≫ t.leftRetraction,
-      by simp [- top_rightRetraction, ← t.top_rightRetraction, s.condition_assoc],
+      by simp [-top_rightRetraction, ← t.top_rightRetraction, s.condition_assoc],
       fun hm => by simp [← hm] ⟩
 
 end
@@ -134,27 +176,45 @@ class HasSplitEqualizer : Prop where
   splittable : ∃ (W : C) (h : W ⟶ X), Nonempty (IsSplitEqualizer f g h)
 
 /--
+The pair `f,g` is a split pair if there is an `h : Y ⟶ Z` so that `f, g, h` forms a split
+coequalizer in `C`.
+-/
+@[to_dual]
+class HasSplitCoequalizer : Prop where
+  /-- There is some split coequalizer -/
+  splittable : ∃ (Z : C) (h : Y ⟶ Z), Nonempty (IsSplitCoequalizer f g h)
+
+/--
 The pair `f,g` is a `G`-cosplit pair if there is an `h : W ⟶ G X` so that `G f, G g, h` forms a
 split equalizer in `D`.
 -/
+@[to_dual (rename := X ↔ Y) IsSplitPair
+/--
+The pair `f,g` is a `G`-split pair if there is an `h : G Y ⟶ Z` so that `G f, G g, h` forms a split
+coequalizer in `D`.
+-/]
 abbrev Functor.IsCosplitPair : Prop :=
   HasSplitEqualizer (G.map f) (G.map g)
 
 /-- Get the equalizer object from the typeclass `IsCosplitPair`. -/
+@[to_dual /-- Get the coequalizer object from the typeclass `IsSplitPair`. -/]
 noncomputable def HasSplitEqualizer.equalizerOfSplit [HasSplitEqualizer f g] : C :=
   (splittable (f := f) (g := g)).choose
 
 /-- Get the equalizer morphism from the typeclass `IsCosplitPair`. -/
+@[to_dual /-- Get the coequalizer morphism from the typeclass `IsSplitPair`. -/]
 noncomputable def HasSplitEqualizer.equalizerι [HasSplitEqualizer f g] :
     HasSplitEqualizer.equalizerOfSplit f g ⟶ X :=
   (splittable (f := f) (g := g)).choose_spec.choose
 
 /-- The equalizer morphism `equalizerι` gives a split equalizer on `f,g`. -/
+@[to_dual /-- The coequalizer morphism `coequalizerπ` gives a split coequalizer on `f,g`. -/]
 noncomputable def HasSplitEqualizer.isSplitEqualizer [HasSplitEqualizer f g] :
     IsSplitEqualizer f g (HasSplitEqualizer.equalizerι f g) :=
   Classical.choice (splittable (f := f) (g := g)).choose_spec.choose_spec
 
 /-- If `f, g` is cosplit, then `G f, G g` is cosplit. -/
+@[to_dual map_is_split_pair /-- If `f, g` is split, then `G f, G g` is split. -/]
 instance map_is_cosplit_pair [HasSplitEqualizer f g] : HasSplitEqualizer (G.map f) (G.map g) where
   splittable :=
     ⟨_, _, ⟨IsSplitEqualizer.map (HasSplitEqualizer.isSplitEqualizer f g) _⟩⟩
@@ -162,6 +222,7 @@ instance map_is_cosplit_pair [HasSplitEqualizer f g] : HasSplitEqualizer (G.map 
 namespace Limits
 
 /-- If a pair has a split equalizer, it has an equalizer. -/
+@[to_dual /-- If a pair has a split coequalizer, it has a coequalizer. -/]
 instance (priority := 1) hasEqualizer_of_hasSplitEqualizer [HasSplitEqualizer f g] :
     HasEqualizer f g :=
   HasLimit.mk ⟨_, (HasSplitEqualizer.isSplitEqualizer f g).isEqualizer⟩

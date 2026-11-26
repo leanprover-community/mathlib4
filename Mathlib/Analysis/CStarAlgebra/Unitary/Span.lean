@@ -6,8 +6,9 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
-public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unitary
-public import Mathlib.Analysis.Normed.Module.Normalize
+
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unitary
+import Mathlib.Analysis.Normed.Module.Normalize
 
 /-! # Unitary elements span C⋆-algebras
 
@@ -55,7 +56,8 @@ lemma IsSelfAdjoint.self_add_I_smul_cfcSqrt_sub_sq_mem_unitary (a : A) (ha : IsS
 @[simps]
 noncomputable def selfAdjoint.unitarySelfAddISMul (a : selfAdjoint A) (ha_norm : ‖a‖ ≤ 1) :
     unitary A :=
-  ⟨(a : A) + I • CFC.sqrt (1 - a ^ 2 : A), a.2.self_add_I_smul_cfcSqrt_sub_sq_mem_unitary _ ha_norm⟩
+  ⟨(a : A) + I • CFC.sqrt (1 - a ^ 2 : A),
+    a.property.self_add_I_smul_cfcSqrt_sub_sq_mem_unitary _ ha_norm⟩
 
 lemma selfAdjoint.star_coe_unitarySelfAddISMul (a : selfAdjoint A) (ha_norm : ‖a‖ ≤ 1) :
     (star (unitarySelfAddISMul a ha_norm) : A) = a - I • CFC.sqrt (1 - a ^ 2 : A) := by
@@ -69,15 +71,15 @@ lemma selfAdjoint.realPart_unitarySelfAddISMul (a : selfAdjoint A) (ha_norm : �
 elements precisely. The `let`s in the statement are intentional. -/
 lemma CStarAlgebra.norm_smul_two_inv_smul_add_four_unitary (x : A) (hx : x ≠ 0) :
     let u₁ : unitary A := selfAdjoint.unitarySelfAddISMul (ℜ (‖x‖⁻¹ • x))
-      (by simpa [norm_smul, inv_mul_le_one₀ (norm_pos_iff.2 hx)] using realPart.norm_le x)
+      (by simpa [norm_smul, inv_mul_le_one₀ (norm_pos_iff.2 hx)] using! realPart.norm_le x)
     let u₂ : unitary A := selfAdjoint.unitarySelfAddISMul (ℑ (‖x‖⁻¹ • x))
-      (by simpa [norm_smul, inv_mul_le_one₀ (norm_pos_iff.2 hx)] using imaginaryPart.norm_le x)
+      (by simpa [norm_smul, inv_mul_le_one₀ (norm_pos_iff.2 hx)] using! imaginaryPart.norm_le x)
     x = ‖x‖ • (2⁻¹ : ℝ) • (u₁ + star u₁ + I • (u₂ + star u₂) : A) := by
   intro u₁ u₂
   rw [smul_add, smul_comm _ I, Unitary.coe_star, Unitary.coe_star,
     ← realPart_apply_coe (u₁ : A), ← realPart_apply_coe (u₂ : A)]
   simpa only [u₁, u₂, selfAdjoint.realPart_unitarySelfAddISMul, realPart_add_I_smul_imaginaryPart]
-    using Eq.symm <| NormedSpace.norm_smul_normalize x
+    using! Eq.symm <| NormedSpace.norm_smul_normalize x
 
 end Ordered
 
@@ -107,4 +109,4 @@ lemma CStarAlgebra.span_unitary : span ℂ (unitary A : Set A) = ⊤ := by
   rw [eq_top_iff]
   rintro x -
   obtain ⟨u, c, rfl, h⟩ := CStarAlgebra.exists_sum_four_unitary x
-  exact sum_mem fun i _ ↦ smul_mem _ _ (subset_span (u i).2)
+  exact sum_mem fun i _ ↦ smul_mem _ _ (subset_span (u i).property)

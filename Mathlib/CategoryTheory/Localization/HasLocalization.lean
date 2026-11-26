@@ -7,7 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Localization.Predicate
 
-/-! Morphism properties equipped with a localized category
+/-! # Morphism properties equipped with a localized category
 
 If `C : Type u` is a category (with `[Category.{v} C]`), and
 `W : MorphismProperty C`, then the constructed localized
@@ -35,10 +35,9 @@ involve the localized category, but the proof does,
 it is no longer necessary to use a `HasLocalization`
 assumption, but one may use
 `HasLocalization.standard` in the proof instead.
-
 -/
 
-@[expose] public section
+@[expose] public noncomputable section
 
 universe w v u
 
@@ -64,17 +63,20 @@ variable [HasLocalization.{w} W]
 
 /-- The localized category for `W : MorphismProperty C`
 that is fixed by the `[HasLocalization W]` instance. -/
+@[implicit_reducible]
 def Localization' := HasLocalization.D W
 
 instance : Category W.Localization' := HasLocalization.hD
 
 /-- The localization functor `C ⥤ W.Localization'`
 that is fixed by the `[HasLocalization W]` instance. -/
+@[implicit_reducible]
 def Q' : C ⥤ W.Localization' := HasLocalization.L
 
 instance : W.Q'.IsLocalization W := HasLocalization.hL
 
 /-- The constructed localized category. -/
+@[instance_reducible]
 def HasLocalization.standard : HasLocalization.{max u v} W where
   L := W.Q
 

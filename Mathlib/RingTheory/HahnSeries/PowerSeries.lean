@@ -5,39 +5,45 @@ Authors: Aaron Anderson
 -/
 module
 
+public import Mathlib.Data.Finsupp.PWO
 public import Mathlib.RingTheory.HahnSeries.Multiplication
 public import Mathlib.RingTheory.PowerSeries.Basic
-public import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
-public import Mathlib.Data.Finsupp.PWO
+
+import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 
 /-!
 # Comparison between Hahn series and power series
+
 If `Γ` is ordered and `R` has zero, then `R⟦Γ⟧` consists of formal series over `Γ` with
 coefficients in `R`, whose supports are partially well-ordered. With further structure on `R` and
 `Γ`, we can add further structure on `R⟦Γ⟧`.  When `R` is a semiring and `Γ = ℕ`, then
 we get the more familiar semiring of formal power series with coefficients in `R`.
 
 ## Main Definitions
+
 * `toPowerSeries` the isomorphism from `R⟦ℕ⟧` to `PowerSeries R`.
 * `ofPowerSeries` the inverse, casting a `PowerSeries R` to a `R⟦ℕ⟧`.
 
-## Instances
+## Main statements
+
 * For `Finite σ`, the instance `NoZeroDivisors R⟦σ →₀ ℕ⟧`,
   deduced from the case of `MvPowerSeries`
   The case of `R⟦ℕ⟧` is taken care of by `instNoZeroDivisors`.
 
 ## TODO
+
 * Build an API for the variable `X` (defined to be `single 1 1 : R⟦Γ⟧`) in analogy to
   `X : R[X]` and `X : PowerSeries R`
 
 ## References
+
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
 -/
 
 @[expose] public section
 
 
-open Finset Function Pointwise Polynomial
+open Finset Function Polynomial
 
 noncomputable section
 
@@ -70,8 +76,8 @@ def toPowerSeries : R⟦ℕ⟧ ≃+* PowerSeries R where
     refine (sum_filter_ne_zero _).symm.trans <| (sum_congr ?_ fun _ _ ↦ rfl).trans <|
       sum_filter_ne_zero _
     ext m
-    simp only [mem_antidiagonal, mem_addAntidiagonal, and_congr_left_iff, mem_filter,
-      mem_support]
+    simp only [HasAntidiagonal.mem_antidiagonal, Finset.mem_antidiagonal, and_congr_left_iff,
+      mem_filter, mem_support]
     rintro h
     rw [and_iff_right (left_ne_zero_of_mul h), and_iff_right (right_ne_zero_of_mul h)]
 
@@ -85,7 +91,7 @@ theorem coeff_toPowerSeries_symm {f : PowerSeries R} {n : ℕ} :
 
 variable (Γ R) [Semiring Γ] [PartialOrder Γ] [IsStrictOrderedRing Γ]
 
-/-- Casts a power series as a Hahn series with coefficients from a `StrictOrderedSemiring`. -/
+/-- Casts a power series as a Hahn series with coefficients from a strictly ordered semiring. -/
 def ofPowerSeries : PowerSeries R →+* R⟦Γ⟧ :=
   (HahnSeries.embDomainRingHom (Nat.castAddMonoidHom Γ) Nat.strictMono_cast.injective fun _ _ =>
         Nat.cast_le).comp
@@ -98,16 +104,16 @@ theorem ofPowerSeries_injective : Function.Injective (ofPowerSeries Γ R) :=
 
 -- Not `@[simp]` since the RHS is more complicated and it makes linter failures elsewhere
 theorem ofPowerSeries_apply (x : PowerSeries R) :
-    ofPowerSeries Γ R x =
-      HahnSeries.embDomain
-        ⟨⟨((↑) : ℕ → Γ), Nat.strictMono_cast.injective⟩, by
-          simp only [Function.Embedding.coeFn_mk]
-          exact Nat.cast_le⟩
-        (toPowerSeries.symm x) :=
+    ofPowerSeries Γ R x = embDomain Nat.castOrderEmbedding (toPowerSeries.symm x) :=
   rfl
 
 theorem ofPowerSeries_apply_coeff (x : PowerSeries R) (n : ℕ) :
-    (ofPowerSeries Γ R x).coeff n = PowerSeries.coeff n x := by simp [ofPowerSeries_apply]
+    (ofPowerSeries Γ R x).coeff n = PowerSeries.coeff n x := by
+  trans (embDomain (Nat.castOrderEmbedding (α := Γ)) (toPowerSeries.symm x)).coeff
+    (Nat.castOrderEmbedding n)
+  · simp [ofPowerSeries_apply]
+  rw [embDomain_coeff]
+  simp
 
 @[simp]
 theorem ofPowerSeries_C (r : R) : ofPowerSeries Γ R (PowerSeries.C r) = HahnSeries.C r := by
@@ -140,7 +146,8 @@ theorem ofPowerSeries_X_pow {R} [Semiring R] (n : ℕ) :
     ofPowerSeries Γ R (PowerSeries.X ^ n) = single (n : Γ) 1 := by
   simp
 
--- Lemmas about converting hahn_series over fintype to and from mv_power_series
+set_option backward.isDefEq.respectTransparency false in
+-- Lemmas converting Hahn series over a finite index type to and from `MvPowerSeries`
 /-- The ring `R⟦σ →₀ ℕ⟧` is isomorphic to `MvPowerSeries σ R` for a `Finite` `σ`.
 We take the index set of the hahn series to be `Finsupp` rather than `pi`,
 even though we assume `Finite σ` as this is more natural for alignment with `MvPowerSeries`.
@@ -168,8 +175,8 @@ def toMvPowerSeries {σ : Type*} [Finite σ] : R⟦σ →₀ ℕ⟧ ≃+* MvPowe
       refine (sum_filter_ne_zero _).symm.trans <| (sum_congr ?_ fun _ _ ↦ rfl).trans <|
         sum_filter_ne_zero _
       ext m
-      simp only [and_congr_left_iff, mem_addAntidiagonal, mem_filter, mem_support,
-        Finset.mem_antidiagonal]
+      simp only [and_congr_left_iff, Finset.mem_antidiagonal, mem_filter, mem_support,
+        HasAntidiagonal.mem_antidiagonal]
       rintro h
       rw [and_iff_right (left_ne_zero_of_mul h), and_iff_right (right_ne_zero_of_mul h)]
 
@@ -199,14 +206,11 @@ variable (R) [CommSemiring R] {A : Type*} [Semiring A] [Algebra R A]
 @[simps!]
 def toPowerSeriesAlg : A⟦ℕ⟧ ≃ₐ[R] PowerSeries A :=
   { toPowerSeries with
-    commutes' := fun r => by
-      ext n
-      cases n <;> simp [algebraMap_apply, PowerSeries.algebraMap_apply] }
+    map_smul' _ _ := by ext; simp }
 
 variable (Γ) [Semiring Γ] [PartialOrder Γ] [IsStrictOrderedRing Γ]
 
-/-- Casting a power series as a Hahn series with coefficients from a `StrictOrderedSemiring`
-  is an algebra homomorphism. -/
+/-- Casting a power series as a Hahn series with coefficients from a strictly ordered semiring. -/
 @[simps!]
 def ofPowerSeriesAlg : PowerSeries A →ₐ[R] A⟦Γ⟧ :=
   (HahnSeries.embDomainAlgHom (Nat.castAddMonoidHom Γ) Nat.strictMono_cast.injective fun _ _ =>

@@ -23,7 +23,6 @@ public import Mathlib.Order.Interval.Set.Defs
 ## Tags
 
 finite sets, finset
-
 -/
 
 @[expose] public section
@@ -34,11 +33,11 @@ assert_not_exists List.sublistsLen Multiset.powerset CompleteLattice IsOrderedMo
 
 universe u
 
-variable {α : Type*} {β : Type*} {γ : Type*}
+variable {α : Type*}
 
 namespace Finset
 
-open Multiset Subtype Function
+open Multiset
 
 /-! ### range -/
 
@@ -47,15 +46,18 @@ section Range
 
 open Nat
 
-variable {n m l : ℕ}
+variable {n m : ℕ}
 
 /-- `range n` is the set of natural numbers less than `n`. -/
 def range (n : ℕ) : Finset ℕ :=
   ⟨_, nodup_range n⟩
 
 @[simp]
-theorem range_val (n : ℕ) : (range n).1 = Multiset.range n :=
+theorem range_val (n : ℕ) : (range n).val = Multiset.range n :=
   rfl
+
+@[simp] lemma _root_.Multiset.toFinset_range (n : ℕ) : (Multiset.range n).toFinset = .range n :=
+  Finset.val_injective (Finset.range n).nodup.dedup
 
 @[simp, grind =]
 theorem mem_range : m ∈ range n ↔ m < n :=
@@ -75,9 +77,6 @@ theorem range_one : range 1 = {0} :=
 
 theorem range_add_one : range (n + 1) = insert n (range n) := by grind
 
-@[deprecated range_add_one (since := "2025-09-08")]
-theorem range_succ : range (succ n) = insert n (range n) := range_add_one
-
 theorem notMem_range_self : n ∉ range n := by grind
 
 theorem self_mem_range_succ (n : ℕ) : n ∈ range (n + 1) := by grind
@@ -87,12 +86,13 @@ theorem range_subset {n s} : range n ⊆ s ↔ ∀ x, x < n → x ∈ s := by gr
 
 theorem subset_range {s n} : s ⊆ range n ↔ ∀ x, x ∈ s → x < n := by grind
 
-@[simp]
+@[simp, gcongr]
 theorem range_subset_range {n m} : range n ⊆ range m ↔ n ≤ m := by grind
 
 theorem range_mono : Monotone range := fun _ _ => range_subset_range.2
 
-@[gcongr] alias ⟨_, _root_.GCongr.finset_range_subset_of_le⟩ := range_subset_range
+theorem strictMono_range : StrictMono range :=
+  strictMono_nat_of_lt_succ fun _ ↦ by simp [ssubset_def]
 
 theorem mem_range_succ_iff {a b : ℕ} : a ∈ range b.succ ↔ a ≤ b := by grind
 
@@ -115,9 +115,6 @@ theorem range_eq_empty_iff : range n = ∅ ↔ n = 0 := by
 theorem nonempty_range_add_one : (range <| n + 1).Nonempty :=
   nonempty_range_iff.2 n.succ_ne_zero
 
-@[deprecated nonempty_range_add_one (since := "2025-09-08")]
-alias nonempty_range_succ := nonempty_range_add_one
-
 lemma range_nontrivial {n : ℕ} (hn : 1 < n) : (range n).Nontrivial := by
   rw [Finset.Nontrivial, Finset.coe_range]
   exact ⟨0, by grind, 1, hn, Nat.zero_ne_one⟩
@@ -133,7 +130,7 @@ open Finset
 
 /-- Equivalence between the set of natural numbers which are `≥ k` and `ℕ`, given by `n → n - k`. -/
 def notMemRangeEquiv (k : ℕ) : { n // n ∉ range k } ≃ ℕ where
-  toFun i := i.1 - k
+  toFun i := i.val - k
   invFun j := ⟨j + k, by simp⟩
   left_inv := by grind
   right_inv := by grind

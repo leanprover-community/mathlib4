@@ -5,15 +5,15 @@ Authors: Jujian Zhang
 -/
 module
 
+public import Mathlib.Algebra.Category.ModuleCat.EpiMono
 public import Mathlib.Algebra.Module.Injective
 public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
-public import Mathlib.Algebra.Category.ModuleCat.EpiMono
 
 /-!
 # Injective objects in the category of $R$-modules
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory
 
@@ -44,9 +44,7 @@ theorem injective_iff_injective_object :
 
 end Module
 
-
-instance ModuleCat.ulift_injective_of_injective.{v'}
-    [Small.{v} R] [AddCommGroup M] [Module R M]
+instance ModuleCat.ulift_injective_of_injective.{v'} [Small.{v} R]
     [CategoryTheory.Injective <| ModuleCat.of R M] :
     CategoryTheory.Injective <| ModuleCat.of R (ULift.{v'} M) :=
   Module.injective_object_of_injective_module

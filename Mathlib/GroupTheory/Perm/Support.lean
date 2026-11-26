@@ -5,11 +5,9 @@ Authors: Chris Hughes, Aaron Anderson, Yakov Pechersky
 -/
 module
 
-public import Mathlib.Algebra.Group.Commute.Basic
 public import Mathlib.Algebra.Group.End
 public import Mathlib.Data.Finset.NoncommProd
 public import Mathlib.Data.Fintype.Card
-public import Mathlib.Data.Fintype.EquivFin
 
 /-!
 # support of a permutation
@@ -21,14 +19,12 @@ In the following, `f g : Equiv.Perm α`.
 * `Equiv.Perm.Disjoint`: two permutations `f` and `g` are `Disjoint` if every element is fixed
   either by `f`, or by `g`.
   Equivalently, `f` and `g` are `Disjoint` iff their `support` are disjoint.
-* `Equiv.Perm.IsSwap`: `f = swap x y` for `x ≠ y`.
 * `Equiv.Perm.support`: the elements `x : α` that are not fixed by `f`.
 
 Assume `α` is a Fintype:
 * `Equiv.Perm.fixed_point_card_lt_of_ne_one f` says that `f` has
   strictly less than `Fintype.card α - 1` fixed points, unless `f = 1`.
   (Equivalently, `f.support` has at least 2 elements.)
-
 -/
 
 @[expose] public section
@@ -52,10 +48,10 @@ variable {f g h : Perm α}
 @[symm]
 theorem Disjoint.symm : Disjoint f g → Disjoint g f := by simp only [Disjoint, or_comm, imp_self]
 
-theorem Disjoint.symmetric : Symmetric (@Disjoint α) := fun _ _ => Disjoint.symm
+instance Disjoint.stdSymm : Std.Symm (α := Perm α) Disjoint where
+  symm _ _ := Disjoint.symm
 
-instance : Std.Symm (α := Perm α) Disjoint :=
-  ⟨Disjoint.symmetric⟩
+@[deprecated (since := "2026-06-10")] alias Disjoint.symmetric := Disjoint.stdSymm
 
 theorem disjoint_comm : Disjoint f g ↔ Disjoint g f :=
   ⟨Disjoint.symm, Disjoint.symm⟩
@@ -96,14 +92,14 @@ theorem Disjoint.inv_right (h : Disjoint f g) : Disjoint f g⁻¹ :=
 @[simp]
 theorem disjoint_inv_left_iff : Disjoint f⁻¹ g ↔ Disjoint f g := by
   refine ⟨fun h => ?_, Disjoint.inv_left⟩
-  convert h.inv_left
+  convert! h.inv_left
 
 @[simp]
 theorem disjoint_inv_right_iff : Disjoint f g⁻¹ ↔ Disjoint f g := by
   rw [disjoint_comm, disjoint_inv_left_iff, disjoint_comm]
 
-theorem Disjoint.mul_left (H1 : Disjoint f h) (H2 : Disjoint g h) : Disjoint (f * g) h := fun x =>
-  by cases H1 x <;> cases H2 x <;> simp [*]
+theorem Disjoint.mul_left (H1 : Disjoint f h) (H2 : Disjoint g h) : Disjoint (f * g) h := fun x ↦ by
+  cases H1 x <;> cases H2 x <;> simp [*]
 
 theorem Disjoint.mul_right (H1 : Disjoint f g) (H2 : Disjoint f h) : Disjoint f (g * h) := by
   rw [disjoint_comm]
@@ -137,44 +133,14 @@ theorem disjoint_prod_perm {l₁ l₂ : List (Perm α)} (hl : l₁.Pairwise Disj
 
 theorem nodup_of_pairwise_disjoint {l : List (Perm α)} (h1 : (1 : Perm α) ∉ l)
     (h2 : l.Pairwise Disjoint) : l.Nodup := by
-  refine List.Pairwise.imp_of_mem ?_ h2
-  intro τ σ h_mem _ h_disjoint _
-  subst τ
-  suffices (σ : Perm α) = 1 by
-    rw [this] at h_mem
-    exact h1 h_mem
-  exact ext fun a => or_self_iff.mp (h_disjoint a)
-
-theorem pow_apply_eq_self_of_apply_eq_self {x : α} (hfx : f x = x) : ∀ n : ℕ, (f ^ n) x = x
-  | 0 => rfl
-  | n + 1 => by rw [pow_succ, mul_apply, hfx, pow_apply_eq_self_of_apply_eq_self hfx n]
-
-theorem zpow_apply_eq_self_of_apply_eq_self {x : α} (hfx : f x = x) : ∀ n : ℤ, (f ^ n) x = x
-  | (n : ℕ) => pow_apply_eq_self_of_apply_eq_self hfx n
-  | Int.negSucc n => by rw [zpow_negSucc, inv_eq_iff_eq, pow_apply_eq_self_of_apply_eq_self hfx]
-
-theorem pow_apply_eq_of_apply_apply_eq_self {x : α} (hffx : f (f x) = x) :
-    ∀ n : ℕ, (f ^ n) x = x ∨ (f ^ n) x = f x
-  | 0 => Or.inl rfl
-  | n + 1 =>
-    (pow_apply_eq_of_apply_apply_eq_self hffx n).elim
-      (fun h => Or.inr (by rw [pow_succ', mul_apply, h]))
-      fun h => Or.inl (by rw [pow_succ', mul_apply, h, hffx])
-
-theorem zpow_apply_eq_of_apply_apply_eq_self {x : α} (hffx : f (f x) = x) :
-    ∀ i : ℤ, (f ^ i) x = x ∨ (f ^ i) x = f x
-  | (n : ℕ) => pow_apply_eq_of_apply_apply_eq_self hffx n
-  | Int.negSucc n => by
-    rw [zpow_negSucc, inv_eq_iff_eq, ← f.injective.eq_iff, ← mul_apply, ← pow_succ', eq_comm,
-      inv_eq_iff_eq, ← mul_apply, ← pow_succ, @eq_comm _ x, or_comm]
-    exact pow_apply_eq_of_apply_apply_eq_self hffx _
+  grind [List.Pairwise.imp_of_mem, disjoint_refl_iff]
 
 theorem Disjoint.mul_apply_eq_iff {σ τ : Perm α} (hστ : Disjoint σ τ) {a : α} :
     (σ * τ) a = a ↔ σ a = a ∧ τ a = a := by
   refine ⟨fun h => ?_, fun h => by rw [mul_apply, h.2, h.1]⟩
   rcases hστ a with hσ | hτ
   · exact ⟨hσ, σ.injective (h.trans hσ.symm)⟩
-  · exact ⟨(congr_arg σ hτ).symm.trans h, hτ⟩
+  · exact ⟨congr(σ $hτ).symm.trans h, hτ⟩
 
 theorem Disjoint.mul_eq_one_iff {σ τ : Perm α} (hστ : Disjoint σ τ) :
     σ * τ = 1 ↔ σ = 1 ∧ τ = 1 := by
@@ -191,42 +157,6 @@ theorem Disjoint.pow_disjoint_pow {σ τ : Perm α} (hστ : Disjoint σ τ) (m 
 
 end Disjoint
 
-section IsSwap
-
-variable [DecidableEq α]
-
-/-- `f.IsSwap` indicates that the permutation `f` is a transposition of two elements. -/
-def IsSwap (f : Perm α) : Prop :=
-  ∃ x y, x ≠ y ∧ f = swap x y
-
-@[simp]
-theorem ofSubtype_swap_eq {p : α → Prop} [DecidablePred p] (x y : Subtype p) :
-    ofSubtype (Equiv.swap x y) = Equiv.swap ↑x ↑y :=
-  Equiv.ext fun z => by
-    by_cases hz : p z
-    · rw [swap_apply_def, ofSubtype_apply_of_mem _ hz]
-      split_ifs with hzx hzy
-      · simp_rw [hzx, Subtype.coe_eta, swap_apply_left]
-      · simp_rw [hzy, Subtype.coe_eta, swap_apply_right]
-      · rw [swap_apply_of_ne_of_ne] <;>
-        simp [Subtype.ext_iff, *]
-    · rw [ofSubtype_apply_of_not_mem _ hz, swap_apply_of_ne_of_ne] <;> grind
-
-theorem IsSwap.of_subtype_isSwap {p : α → Prop} [DecidablePred p] {f : Perm (Subtype p)}
-    (h : f.IsSwap) : (ofSubtype f).IsSwap :=
-  let ⟨⟨x, hx⟩, ⟨y, hy⟩, hxy⟩ := h
-  ⟨x, y, by
-    simp only [Ne, Subtype.ext_iff] at hxy
-    exact hxy.1, by
-    rw [hxy.2, ofSubtype_swap_eq]⟩
-
-theorem ne_and_ne_of_swap_mul_apply_ne_self {f : Perm α} {x y : α} (hy : (swap x (f x) * f) y ≠ y) :
-    f y ≠ y ∧ y ≠ x := by
-  simp only [swap_apply_def, mul_apply, f.injective.eq_iff] at *
-  grind
-
-end IsSwap
-
 section support
 
 section Set
@@ -236,14 +166,12 @@ variable (p q : Perm α)
 lemma set_support_symm_eq : {x | p.symm x ≠ x} = {x | p x ≠ x} := by
   ext; simp [eq_symm_apply, eq_comm]
 
-@[deprecated (since := "2025-11-17")] alias set_support_inv_eq := set_support_symm_eq
-
 theorem set_support_apply_mem {p : Perm α} {a : α} :
     p a ∈ { x | p x ≠ x } ↔ a ∈ { x | p x ≠ x } := by simp
 
 theorem set_support_zpow_subset (n : ℤ) : { x | (p ^ n) x ≠ x } ⊆ { x | p x ≠ x } := by
   intro x
-  simp only [Set.mem_setOf_eq, Ne]
+  simp only [Set.mem_ofPred_eq, Ne]
   intro hx H
   simp [zpow_apply_eq_self_of_apply_eq_self H] at hx
 
@@ -252,16 +180,6 @@ theorem set_support_mul_subset : { x | (p * q) x ≠ x } ⊆ { x | p x ≠ x } �
   grind
 
 end Set
-
-@[simp]
-theorem apply_pow_apply_eq_iff (f : Perm α) (n : ℕ) {x : α} :
-    f ((f ^ n) x) = (f ^ n) x ↔ f x = x := by
-  rw [← mul_apply, Commute.self_pow f, mul_apply, apply_eq_iff_eq]
-
-@[simp]
-theorem apply_zpow_apply_eq_iff (f : Perm α) (n : ℤ) {x : α} :
-    f ((f ^ n) x) = (f ^ n) x ↔ f x = x := by
-  rw [← mul_apply, Commute.self_zpow f, mul_apply, apply_eq_iff_eq]
 
 variable [DecidableEq α] [Fintype α] {f g : Perm α}
 
@@ -299,8 +217,7 @@ theorem mem_support_iff_of_commute {g c : Perm α} (hgc : Commute g c) (x : α) 
   simp only [mem_support, not_iff_not, ← mul_apply]
   rw [← hgc, mul_apply, Equiv.apply_eq_iff_eq]
 
-theorem support_mul_le (f g : Perm α) : (f * g).support ≤ f.support ⊔ g.support := fun x => by
-  simp only [sup_eq_union]
+theorem support_mul_le (f g : Perm α) : (f * g).support ≤ f.support ∪ g.support := fun x => by
   rw [mem_union, mem_support, mem_support, mem_support, mul_apply, ← not_and_or, not_imp_not]
   rintro ⟨hf, hg⟩
   rw [hg, hf]
@@ -366,6 +283,10 @@ theorem support_ofSubtype {p : α → Prop} [DecidablePred p] (u : Perm (Subtype
   · simp only [forall_prop_of_true hx, ofSubtype_apply_of_mem u hx, ← Subtype.coe_inj]
   · simp only [forall_prop_of_false hx, ofSubtype_apply_of_not_mem u hx]
 
+theorem mem_support_ofSubtype {p : α → Prop} [DecidablePred p] (x : α) (u : Perm (Subtype p)) :
+    x ∈ (ofSubtype u).support ↔ ∃ (hx : p x), ⟨x, hx⟩ ∈ u.support := by
+  simp [support_ofSubtype]
+
 theorem mem_support_of_mem_noncommProd_support {α β : Type*} [DecidableEq β] [Fintype β]
     {s : Finset α} {f : α → Perm β}
     {comm : (s : Set α).Pairwise (Commute on f)} {x : β} (hx : x ∈ (s.noncommProd f comm).support) :
@@ -378,7 +299,7 @@ theorem mem_support_of_mem_noncommProd_support {α β : Type*} [DecidableEq β] 
   · intro a s ha ih comm hs
     rw [Finset.noncommProd_insert_of_notMem s a f comm ha]
     apply mt (Finset.mem_of_subset (support_mul_le _ _))
-    rw [Finset.sup_eq_union, Finset.notMem_union]
+    rw [Finset.notMem_union]
     exact ⟨hs a (s.mem_insert_self a), ih (fun a ha ↦ hs a (Finset.mem_insert_of_mem ha))⟩
 
 theorem pow_apply_mem_support {n : ℕ} {x : α} : (f ^ n) x ∈ f.support ↔ x ∈ f.support := by
@@ -408,10 +329,10 @@ theorem Disjoint.support_mul (h : Disjoint f g) : (f * g).support = f.support �
   rw [mem_union, mem_support, mem_support, mem_support, mul_apply, ← not_and_or, not_imp_not]
   exact
     (h a).elim (fun hf h => ⟨hf, f.apply_eq_iff_eq.mp (h.trans hf.symm)⟩) fun hg h =>
-      ⟨(congr_arg f hg).symm.trans h, hg⟩
+      ⟨congr(f $hg).symm.trans h, hg⟩
 
 theorem support_prod_of_pairwise_disjoint (l : List (Perm α)) (h : l.Pairwise Disjoint) :
-    l.prod.support = (l.map support).foldr (· ⊔ ·) ⊥ := by
+    l.prod.support = (l.map support).foldr (· ∪ ·) ⊥ := by
   induction l with
   | nil => simp
   | cons hd tl hl =>
@@ -436,7 +357,7 @@ theorem support_noncommProd {ι : Type*} {k : ι → Perm α} {s : Finset ι}
     apply hs _ _ (ne_of_mem_of_not_mem hj hi).symm <;>
       simp only [Finset.coe_insert, Set.mem_insert_iff, Finset.mem_coe, hj, or_true, true_or]
 
-theorem support_prod_le (l : List (Perm α)) : l.prod.support ≤ (l.map support).foldr (· ⊔ ·) ⊥ := by
+theorem support_prod_le (l : List (Perm α)) : l.prod.support ≤ (l.map support).foldr (· ∪ ·) ⊥ := by
   induction l with
   | nil => simp
   | cons hd tl hl =>
@@ -449,12 +370,7 @@ theorem support_zpow_le (σ : Perm α) (n : ℤ) : (σ ^ n).support ≤ σ.suppo
 
 @[simp]
 theorem support_swap {x y : α} (h : x ≠ y) : support (swap x y) = {x, y} := by
-  ext z
-  by_cases hx : z = x
-  any_goals simpa [hx] using h.symm
-  by_cases hy : z = y
-  · simpa [swap_apply_of_ne_of_ne, hx, hy] using h
-  · simp [swap_apply_of_ne_of_ne, hx, hy]
+  grind [support]
 
 theorem support_swap_iff (x y : α) : support (swap x y) = {x, y} ↔ x ≠ y := by
   refine ⟨fun h => ?_, fun h => support_swap h⟩
@@ -465,7 +381,7 @@ theorem support_swap_mul_swap {x y z : α} (h : List.Nodup [x, y, z]) :
     support (swap x y * swap y z) = {x, y, z} := by
   simp only [List.not_mem_nil, and_true, List.mem_cons, not_false_iff, List.nodup_cons,
     and_self_iff, List.nodup_nil] at h
-  push_neg at h
+  push Not at h
   apply le_antisymm
   · convert support_mul_le (swap x y) (swap y z) using 1
     rw [support_swap h.left.left, support_swap h.right.left]
@@ -476,20 +392,23 @@ theorem support_swap_mul_swap {x y z : α} (h : List.Nodup [x, y, z]) :
       simp [swap_apply_of_ne_of_ne, h.left.left, h.left.left.symm, h.left.right.symm,
         h.left.right.left.symm, h.right.left.symm]
 
-theorem support_swap_mul_ge_support_diff (f : Perm α) (x y : α) :
+theorem support_swap_mul_ge_support_sdiff (f : Perm α) (x y : α) :
     f.support \ {x, y} ≤ (swap x y * f).support := by
   intro
   simp only [and_imp, Perm.coe_mul, Function.comp_apply, Ne, mem_support, mem_insert, mem_sdiff,
     mem_singleton]
-  push_neg
+  push Not
   rintro ha ⟨hx, hy⟩ H
   rw [swap_apply_eq_iff, swap_apply_of_ne_of_ne hx hy] at H
   exact ha H
 
+@[deprecated (since := "2026-06-03")]
+alias support_swap_mul_ge_support_diff := support_swap_mul_ge_support_sdiff
+
 theorem support_swap_mul_eq (f : Perm α) (x : α) (h : f (f x) ≠ x) :
     (swap x (f x) * f).support = f.support \ {x} := by
   by_cases hx : f x = x
-  · simp [hx, sdiff_singleton_eq_erase, notMem_support.mpr hx, erase_eq_of_notMem]
+  · simp [hx, sdiff_singleton_eq_erase, notMem_support.mpr hx, erase_eq_of_notMem, pull_end]
   ext z
   by_cases hzx : z = x
   · simp [hzx]
@@ -593,7 +512,7 @@ theorem card_support_swap_mul {f : Perm α} {x : α} (hx : f x ≠ x) :
 
 theorem card_support_swap {x y : α} (hxy : x ≠ y) : #(swap x y).support = 2 :=
   show #(swap x y).support = #⟨x ::ₘ y ::ₘ 0, by simp [hxy]⟩ from
-    congr_arg card <| by simp [support_swap hxy, *, Finset.ext_iff]
+    congr(card $(by simp [support_swap hxy, *, Finset.ext_iff]))
 
 @[simp]
 theorem card_support_eq_two {f : Perm α} : #f.support = 2 ↔ IsSwap f := by

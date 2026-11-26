@@ -8,15 +8,16 @@ module
 public import Mathlib.Data.Finsupp.Single
 public import Mathlib.Data.Fintype.BigOperators
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Finiteness and infiniteness of `Finsupp`
 
 Some lemmas on the combination of `Finsupp`, `Fintype` and `Infinite`.
-
 -/
 
-@[expose] public section
+public section
 
 variable {ι α : Type*} [DecidableEq ι] [Fintype ι] [Zero α] [Fintype α]
 

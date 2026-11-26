@@ -5,7 +5,6 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.Rel.Cover
 public import Mathlib.Topology.MetricSpace.MetricSeparated
 public import Mathlib.Topology.MetricSpace.Thickening
 
@@ -31,10 +30,10 @@ open Set
 open scoped NNReal
 
 namespace Metric
-variable {X : Type*}
+variable {X Y : Type*}
 
 section PseudoEMetricSpace
-variable [PseudoEMetricSpace X] {ε δ : ℝ≥0} {s t N N₁ N₂ : Set X} {x : X}
+variable [PseudoEMetricSpace X] [PseudoEMetricSpace Y] {ε δ : ℝ≥0} {s t N N₁ N₂ : Set X} {x : X}
 
 instance : SetRel.IsRefl {(x, y) : X × X | edist x y ≤ ε} where refl := by simp
 instance : SetRel.IsSymm {(x, y) : X × X | edist x y ≤ ε} where symm := by simp [edist_comm]
@@ -64,6 +63,26 @@ nonrec lemma IsCover.anti (hst : s ⊆ t) (ht : IsCover ε t N) : IsCover ε s N
 lemma IsCover.mono_radius (hεδ : ε ≤ δ) (hε : IsCover ε s N) : IsCover δ s N :=
   hε.mono_entourage fun xy hxy ↦ by dsimp at *; exact le_trans hxy <| mod_cast hεδ
 
+lemma IsCover.image_lipschitz {f : X → Y} {s : Set X} {N : Set X} {ε K₂ : ℝ≥0}
+    (hs : IsCover ε s N) (hf : LipschitzWith K₂ f) : IsCover (K₂ * ε) (f '' s) (f '' N) := by
+  rintro _ ⟨x, hx, rfl⟩
+  obtain ⟨x₀, hx₀, hcover⟩ := hs hx
+  dsimp at *
+  exact ⟨f x₀, ⟨x₀, hx₀, by grind⟩, by grw [hf x x₀, hcover]⟩
+
+lemma IsCover.image_lipschitz_of_surjective {f : X → Y} {s : Set Y} {N : Set X} {ε K₂ : ℝ≥0}
+    (hs : IsCover ε (s.preimage f) N) (hf : LipschitzWith K₂ f) (hf_surj : f.Surjective) :
+    IsCover (K₂ * ε) s (f '' N) := by
+  have : IsCover (K₂ * ε) (f '' s.preimage f) (f '' N) := IsCover.image_lipschitz hs hf
+  simp_all only [image_preimage_eq]
+
+lemma _root_.Isometry.isCover_image_iff {f : X → Y} (hf : Isometry f) (C : Set X) :
+    IsCover ε (f '' s) (f '' C) ↔ IsCover ε s C := by
+  refine ⟨fun h x hx ↦ ?_, fun h ↦ by simpa using h.image_lipschitz hf.lipschitzWith⟩
+  obtain ⟨c, hc_mem, hc⟩ := h (Set.mem_image_of_mem _ hx)
+  obtain ⟨c', hc', rfl⟩ := hc_mem
+  exact ⟨c', hc', le_of_eq_of_le (hf.edist_eq _ _).symm hc⟩
+
 lemma IsCover.singleton_of_ediam_le (hA : ediam s ≤ ε) (hx : x ∈ s) :
     IsCover ε s ({x} : Set X) :=
   fun _ h_mem ↦ ⟨x, by simp, (edist_le_ediam_of_mem h_mem hx).trans hA⟩
@@ -89,10 +108,10 @@ lemma exists_finite_isCover_of_totallyBounded (hε : ε ≠ 0) (hs : TotallyBoun
   obtain ⟨N, hNA, hN_finite, hN⟩ := hs ε (by positivity)
   simp only [isCover_iff_subset_iUnion_closedEBall]
   refine ⟨N, by simpa, by simpa, ?_⟩
-  · refine hN.trans fun x hx ↦ ?_
-    simp only [Set.mem_iUnion, Metric.mem_eball, exists_prop, Metric.mem_closedEBall] at hx ⊢
-    obtain ⟨y, hyN, hy⟩ := hx
-    exact ⟨y, hyN, hy.le⟩
+  refine hN.trans fun x hx ↦ ?_
+  simp only [Set.mem_iUnion, Metric.mem_eball, exists_prop, Metric.mem_closedEBall] at hx ⊢
+  obtain ⟨y, hyN, hy⟩ := hx
+  exact ⟨y, hyN, hy.le⟩
 
 /-- A relatively compact set admits a finite cover. -/
 lemma exists_finite_isCover_of_isCompact_closure (hε : ε ≠ 0) (hs : IsCompact (closure s)) :
@@ -135,7 +154,7 @@ protected alias ⟨_, IsCover.closure⟩ := isCover_closure
 end PseudoMetricSpace
 
 section EMetricSpace
-variable [EMetricSpace X] {ε : ℝ≥0} {s N : Set X} {x : X}
+variable [EMetricSpace X] {ε : ℝ≥0} {s N : Set X}
 
 @[simp] lemma isCover_zero : IsCover 0 s N ↔ s ⊆ N := by
   simp [isCover_iff_subset_iUnion_closedEBall]
@@ -143,7 +162,7 @@ variable [EMetricSpace X] {ε : ℝ≥0} {s N : Set X} {x : X}
 end EMetricSpace
 
 section MetricSpace
-variable [MetricSpace X] [ProperSpace X] {ε : ℝ≥0} {s t N N₁ N₂ : Set X} {x : X}
+variable [MetricSpace X] [ProperSpace X] {ε : ℝ≥0} {s N : Set X} {x : X}
 
 /-- A closed set in a proper metric space which admits a compact cover is compact. -/
 lemma IsCover.isCompact (hsN : IsCover ε s N) (hs : IsClosed s) (hN : IsCompact N) :

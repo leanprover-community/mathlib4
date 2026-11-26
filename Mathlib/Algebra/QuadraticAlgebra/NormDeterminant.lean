@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.QuadraticAlgebra.Basic
 public import Mathlib.LinearAlgebra.Determinant
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Quadratic Algebra
 
@@ -34,7 +37,7 @@ theorem det_toLinearMap_eq_norm (z : QuadraticAlgebra R a b) :
   apply LinearEquiv.eq_symm_apply _ |>.mp
   ext1 w
   apply basis .. |>.repr.injective
-  apply DFunLike.coe_injective'
+  apply DFunLike.coe_injective
   rw [LinearMap.toMatrix_symm, Matrix.repr_toLin]
   ext i
   fin_cases i

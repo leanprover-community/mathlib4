@@ -8,13 +8,16 @@ module
 public import Mathlib.CategoryTheory.Filtered.Basic
 public import Mathlib.CategoryTheory.WithTerminal.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Further lemmas on `WithTerminal`
 
 These lemmas and instances need more imports.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

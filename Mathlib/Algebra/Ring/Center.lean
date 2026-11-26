@@ -8,9 +8,11 @@ module
 public import Mathlib.Algebra.Group.Center
 public import Mathlib.Data.Int.Cast.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Centers of rings
-
 -/
 
 public section

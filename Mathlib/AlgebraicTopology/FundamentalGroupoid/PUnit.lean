@@ -5,8 +5,11 @@ Authors: Praneeth Kolichala
 -/
 module
 
-public import Mathlib.CategoryTheory.PUnit
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.Basic
+public import Mathlib.CategoryTheory.PUnit
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Fundamental groupoid of punit
@@ -33,7 +36,7 @@ end Path
 namespace FundamentalGroupoid
 
 instance {x y : FundamentalGroupoid PUnit} : Subsingleton (x ⟶ y) := by
-  convert_to Subsingleton (Path.Homotopic.Quotient PUnit.unit PUnit.unit)
+  convert_to! Subsingleton (Path.Homotopic.Quotient PUnit.unit PUnit.unit)
   apply Quotient.instSubsingletonQuotient
 
 /-- Equivalence of groupoids between fundamental groupoid of punit and punit -/

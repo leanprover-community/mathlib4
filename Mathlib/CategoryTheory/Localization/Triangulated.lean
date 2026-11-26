@@ -5,10 +5,11 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Localization.CalculusOfFractions.ComposableArrows
 public import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Preadditive
-public import Mathlib.CategoryTheory.Triangulated.Functor
 public import Mathlib.CategoryTheory.Shift.Localization
+public import Mathlib.CategoryTheory.Triangulated.Functor
+
+import Mathlib.CategoryTheory.Localization.CalculusOfFractions.ComposableArrows
 
 /-! # Localization of triangulated categories
 
@@ -18,8 +19,8 @@ it is shown in this file that `D` can be equipped with a pretriangulated categor
 and that it is triangulated.
 
 ## References
-* [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
 
+* [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
 -/
 
 @[expose] public section
@@ -57,7 +58,7 @@ namespace Functor
 /-- Given a functor `C ⥤ D` from a pretriangulated category, this is the set of
 triangles in `D` that are in the essential image of distinguished triangles of `C`. -/
 def essImageDistTriang : Set (Triangle D) :=
-  fun T => ∃ (T' : Triangle C) (_ : T ≅ L.mapTriangle.obj T'), T' ∈ distTriang C
+  {T | ∃ (T' : Triangle C) (_ : T ≅ L.mapTriangle.obj T'), T' ∈ distTriang C}
 
 lemma essImageDistTriang_mem_of_iso {T₁ T₂ : Triangle D} (e : T₂ ≅ T₁)
     (h : T₁ ∈ L.essImageDistTriang) : T₂ ∈ L.essImageDistTriang := by
@@ -113,7 +114,7 @@ lemma complete_distinguished_essImageDistTriang_morphism
       Iso.hom_inv_id_triangle_hom₂_assoc, ← reassoc_of% comm₂',
       Iso.hom_inv_id_triangle_hom₃, comp_id]
   · rw [assoc, assoc, ← cancel_epi e₁.inv.hom₃, ← reassoc_of% comm₃,
-      Iso.inv_hom_id_triangle_hom₃_assoc, ← cancel_mono (e₂.hom.hom₁⟦(1 : ℤ)⟧'),
+      Iso.inv_hom_id_triangle_hom₃_assoc, ← cancel_mono (e₂.hom.hom₁⟦1⟧'),
       assoc, assoc, assoc, assoc, assoc, ← Functor.map_comp, ← Functor.map_comp, ← hφ₁,
       h₃, comm₃', Iso.inv_hom_id_triangle_hom₃_assoc]
 
@@ -128,14 +129,14 @@ variable (W : MorphismProperty C) [L.IsLocalization W]
 
 include W in
 lemma distinguished_cocone_triangle {X Y : D} (f : X ⟶ Y) :
-    ∃ (Z : D) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧),
+    ∃ (Z : D) (g : Y ⟶ Z) (h : Z ⟶ X⟦1⟧),
       Triangle.mk f g h ∈ L.essImageDistTriang := by
   have := essSurj_mapArrow L W
   obtain ⟨φ, ⟨e⟩⟩ : ∃ (φ : Arrow C), Nonempty (L.mapArrow.obj φ ≅ Arrow.mk f) :=
     ⟨_, ⟨Functor.objObjPreimageIso _ _⟩⟩
   obtain ⟨Z, g, h, H⟩ := Pretriangulated.distinguished_cocone_triangle φ.hom
   refine ⟨L.obj Z, e.inv.right ≫ L.map g,
-    L.map h ≫ (L.commShiftIso (1 : ℤ)).hom.app _ ≫ e.hom.left⟦(1 : ℤ)⟧', _, ?_, H⟩
+    L.map h ≫ (L.commShiftIso 1).hom.app _ ≫ e.hom.left⟦1⟧', _, ?_, H⟩
   refine Triangle.isoMk _ _ (Arrow.leftFunc.mapIso e.symm) (Arrow.rightFunc.mapIso e.symm)
     (Iso.refl _) e.inv.w.symm (by simp) ?_
   dsimp
@@ -145,6 +146,7 @@ lemma distinguished_cocone_triangle {X Y : D} (f : X ⟶ Y) :
 section
 variable [W.IsCompatibleWithTriangulation]
 
+set_option backward.defeqAttrib.useBackward true in
 include W in
 lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle D)
     (hT₁ : T₁ ∈ L.essImageDistTriang) (hT₂ : T₂ ∈ L.essImageDistTriang)
@@ -156,8 +158,6 @@ lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle D)
   obtain ⟨α, hα⟩ := exists_leftFraction L W a
   obtain ⟨β, hβ⟩ := (MorphismProperty.RightFraction.mk α.s α.hs T₂.mor₁).exists_leftFraction
   obtain ⟨γ, hγ⟩ := exists_leftFraction L W (b ≫ L.map β.s)
-  have := inverts L W β.s β.hs
-  have := inverts L W γ.s γ.hs
   dsimp at hβ
   obtain ⟨Z₂, σ, hσ, fac⟩ := (MorphismProperty.map_eq_iff_postcomp L W
     (α.f ≫ β.f ≫ γ.s) (T₁.mor₁ ≫ γ.f)).1 (by
@@ -190,6 +190,7 @@ lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle D)
 variable [HasZeroObject D] [Preadditive D] [∀ (n : ℤ), (shiftFunctor D n).Additive] [L.Additive]
 
 /-- The pretriangulated structure on the localized category. -/
+@[instance_reducible]
 def pretriangulated : Pretriangulated D where
   distinguishedTriangles := L.essImageDistTriang
   isomorphic_distinguished _ hT₁ _ e := L.essImageDistTriang_mem_of_iso e hT₁
@@ -252,7 +253,7 @@ lemma distTriang_iff (T : Triangle D) :
   constructor
   · intro hT
     let f := L.mapArrow.objPreimage T.mor₁
-    obtain ⟨Z, g : f.right ⟶ Z, h : Z ⟶ f.left⟦(1 : ℤ)⟧, mem⟩ :=
+    obtain ⟨Z, g : f.right ⟶ Z, h : Z ⟶ f.left⟦1⟧, mem⟩ :=
       Pretriangulated.distinguished_cocone_triangle f.hom
     exact ⟨_, (exists_iso_of_arrow_iso T _ hT (L.map_distinguished _ mem)
       (L.mapArrow.objObjPreimageIso T.mor₁).symm).choose, mem⟩

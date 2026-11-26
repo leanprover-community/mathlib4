@@ -5,7 +5,6 @@ Authors: Michael Jendrusch, Kim Morrison, Bhavik Mehta, Jakob von Raumer
 -/
 module
 
-public import Mathlib.CategoryTheory.EqToHom
 public import Mathlib.CategoryTheory.Functor.Trifunctor
 public import Mathlib.CategoryTheory.Products.Basic
 
@@ -16,6 +15,7 @@ A monoidal category is a category equipped with a tensor product, unitors, and a
 In the definition, we provide the tensor product as a pair of functions
 * `tensorObj : C → C → C`
 * `tensorHom : (X₁ ⟶ Y₁) → (X₂ ⟶ Y₂) → ((X₁ ⊗ X₂) ⟶ (Y₁ ⊗ Y₂))`
+
 and allow use of the overloaded notation `⊗` for both.
 The unitors and associator are provided componentwise.
 
@@ -31,6 +31,7 @@ e.g. `(λ_ (𝟙_ C)).hom = (ρ_ (𝟙_ C)).hom` in `CategoryTheory.Monoidal.Coh
 In the definition of monoidal categories, we also provide the whiskering operators:
 * `whiskerLeft (X : C) {Y₁ Y₂ : C} (f : Y₁ ⟶ Y₂) : X ⊗ Y₁ ⟶ X ⊗ Y₂`, denoted by `X ◁ f`,
 * `whiskerRight {X₁ X₂ : C} (f : X₁ ⟶ X₂) (Y : C) : X₁ ⊗ Y ⟶ X₂ ⊗ Y`, denoted by `f ▷ Y`.
+
 These are products of an object and a morphism (the terminology "whiskering"
 is borrowed from 2-category theory). The tensor product of morphisms `tensorHom` can be defined
 in terms of the whiskerings. There are two possible such definitions, which are related by
@@ -65,6 +66,7 @@ Currently, the simp lemmas don't rewrite `𝟙 X ⊗ₘ f` and `f ⊗ₘ 𝟙 Y`
 respectively, since it requires a huge refactoring. We hope to add these simp lemmas soon.
 
 ## References
+
 * Tensor categories, Etingof, Gelaki, Nikshych, Ostrik,
   http://www-math.mit.edu/~etingof/egnobookfinal.pdf
 * <https://stacks.math.columbia.edu/tag/0FFK>.
@@ -155,7 +157,7 @@ Tensor product does not need to be strictly associative on objects, but there is
 specified associator, `α_ X Y Z : (X ⊗ Y) ⊗ Z ≅ X ⊗ (Y ⊗ Z)`. There is a tensor unit `𝟙_ C`,
 with specified left and right unitor isomorphisms `λ_ X : 𝟙_ C ⊗ X ≅ X` and `ρ_ X : X ⊗ 𝟙_ C ≅ X`.
 These associators and unitors satisfy the pentagon and triangle equations. -/
-@[stacks 0FFK]
+@[stacks 0FFK, wikidata Q1945014]
 -- Porting note: The Mathport did not translate the temporary notation
 class MonoidalCategory (C : Type u) [𝒞 : Category.{v} C] extends MonoidalCategoryStruct C where
   tensorHom_def {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) :
@@ -219,7 +221,53 @@ attribute [reassoc (attr := simp)] MonoidalCategory.triangle
 
 namespace MonoidalCategory
 
-variable {C : Type u} [𝒞 : Category.{v} C] [MonoidalCategory C]
+/--
+A constructor for monoidal categories that requires `tensorHom` instead of `whiskerLeft` and
+`whiskerRight`.
+-/
+abbrev ofTensorHom {C : Type u} [Category.{v} C] [MonoidalCategoryStruct C]
+    (id_tensorHom_id : ∀ X₁ X₂ : C, tensorHom (𝟙 X₁) (𝟙 X₂) = 𝟙 (tensorObj X₁ X₂) := by
+      cat_disch)
+    (id_tensorHom : ∀ (X : C) {Y₁ Y₂ : C} (f : Y₁ ⟶ Y₂), tensorHom (𝟙 X) f = whiskerLeft X f := by
+      cat_disch)
+    (tensorHom_id : ∀ {X₁ X₂ : C} (f : X₁ ⟶ X₂) (Y : C), tensorHom f (𝟙 Y) = whiskerRight f Y := by
+      cat_disch)
+    (tensorHom_comp_tensorHom :
+      ∀ {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂),
+        (f₁ ⊗ₘ f₂) ≫ (g₁ ⊗ₘ g₂) = (f₁ ≫ g₁) ⊗ₘ (f₂ ≫ g₂) := by
+          cat_disch)
+    (associator_naturality :
+      ∀ {X₁ X₂ X₃ Y₁ Y₂ Y₃ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃),
+        tensorHom (tensorHom f₁ f₂) f₃ ≫ (associator Y₁ Y₂ Y₃).hom =
+          (associator X₁ X₂ X₃).hom ≫ tensorHom f₁ (tensorHom f₂ f₃) := by
+            cat_disch)
+    (leftUnitor_naturality :
+      ∀ {X Y : C} (f : X ⟶ Y),
+        tensorHom (𝟙 (𝟙_ C)) f ≫ (leftUnitor Y).hom = (leftUnitor X).hom ≫ f := by
+          cat_disch)
+    (rightUnitor_naturality :
+      ∀ {X Y : C} (f : X ⟶ Y),
+        tensorHom f (𝟙 (𝟙_ C)) ≫ (rightUnitor Y).hom = (rightUnitor X).hom ≫ f := by
+          cat_disch)
+    (pentagon :
+      ∀ W X Y Z : C,
+        tensorHom (associator W X Y).hom (𝟙 Z) ≫
+            (associator W (tensorObj X Y) Z).hom ≫ tensorHom (𝟙 W) (associator X Y Z).hom =
+          (associator (tensorObj W X) Y Z).hom ≫ (associator W X (tensorObj Y Z)).hom := by
+            cat_disch)
+    (triangle :
+      ∀ X Y : C,
+        (associator X (𝟙_ C) Y).hom ≫ tensorHom (𝟙 X) (leftUnitor Y).hom =
+          tensorHom (rightUnitor X).hom (𝟙 Y) := by
+            cat_disch) :
+      MonoidalCategory C where
+  tensorHom_def := by intros; simp [← id_tensorHom, ← tensorHom_id, tensorHom_comp_tensorHom]
+  whiskerLeft_id := by intros; simp [← id_tensorHom, ← id_tensorHom_id]
+  id_whiskerRight := by intros; simp [← tensorHom_id, id_tensorHom_id]
+  pentagon := by intros; simp [← id_tensorHom, ← tensorHom_id, pentagon]
+  triangle := by intros; simp [← id_tensorHom, ← tensorHom_id, triangle]
+
+variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
 
 @[simp]
 theorem id_tensorHom (X : C) {Y₁ Y₂ : C} (f : Y₁ ⟶ Y₂) :
@@ -405,7 +453,7 @@ lemma whiskerRightIso_symm {X Y : C} (f : X ≅ Y) (W : C) :
     (whiskerRightIso f W).symm = whiskerRightIso f.symm W := rfl
 
 /-- The tensor product of two isomorphisms is an isomorphism. -/
-@[simps]
+@[implicit_reducible, simps]
 def tensorIso {X Y X' Y' : C} (f : X ≅ Y)
     (g : X' ≅ Y') : X ⊗ X' ≅ Y ⊗ Y' where
   hom := f.hom ⊗ₘ g.hom
@@ -417,6 +465,12 @@ def tensorIso {X Y X' Y' : C} (f : X ≅ Y)
 scoped infixr:70 " ⊗ᵢ " => tensorIso
 -- TODO: Try setting this notation to `⊗` if the elaborator is improved and performs
 -- better than currently on overloaded notations.
+
+@[inherit_doc whiskerLeftIso]
+scoped infixr:81 " ◁ᵢ " => whiskerLeftIso
+
+@[inherit_doc whiskerRightIso]
+scoped infixl:81 " ▷ᵢ " => whiskerRightIso
 
 theorem tensorIso_def {X Y X' Y' : C} (f : X ≅ Y) (g : X' ≅ Y') :
     f ⊗ᵢ g = whiskerRightIso f X' ≪≫ whiskerLeftIso Y g :=
@@ -456,13 +510,13 @@ theorem dite_tensor {P : Prop} [Decidable P] {W X Y Z : C} (f : W ⟶ X) (g : P 
 
 @[simp]
 theorem whiskerLeft_eqToHom (X : C) {Y Z : C} (f : Y = Z) :
-    X ◁ eqToHom f = eqToHom (congr_arg₂ tensorObj rfl f) := by
+    X ◁ eqToHom f = eqToHom congr(tensorObj _ $f) := by
   cases f
   simp only [whiskerLeft_id, eqToHom_refl]
 
 @[simp]
 theorem eqToHom_whiskerRight {X Y : C} (f : X = Y) (Z : C) :
-    eqToHom f ▷ Z = eqToHom (congr_arg₂ tensorObj f rfl) := by
+    eqToHom f ▷ Z = eqToHom congr(tensorObj $f _) := by
   cases f
   simp only [id_whiskerRight, eqToHom_refl]
 
@@ -705,52 +759,6 @@ theorem tensor_hom_inv_id' {V W X Y Z : C} (f : V ⟶ W) [IsIso f] (g : X ⟶ Y)
 theorem tensor_inv_hom_id' {V W X Y Z : C} (f : V ⟶ W) [IsIso f] (g : X ⟶ Y) (h : Y ⟶ Z) :
     (g ⊗ₘ inv f) ≫ (h ⊗ₘ f) = (g ⊗ₘ 𝟙 W) ≫ (h ⊗ₘ 𝟙 W) := by simp
 
-/--
-A constructor for monoidal categories that requires `tensorHom` instead of `whiskerLeft` and
-`whiskerRight`.
--/
-abbrev ofTensorHom [MonoidalCategoryStruct C]
-    (id_tensorHom_id : ∀ X₁ X₂ : C, tensorHom (𝟙 X₁) (𝟙 X₂) = 𝟙 (tensorObj X₁ X₂) := by
-      cat_disch)
-    (id_tensorHom : ∀ (X : C) {Y₁ Y₂ : C} (f : Y₁ ⟶ Y₂), tensorHom (𝟙 X) f = whiskerLeft X f := by
-      cat_disch)
-    (tensorHom_id : ∀ {X₁ X₂ : C} (f : X₁ ⟶ X₂) (Y : C), tensorHom f (𝟙 Y) = whiskerRight f Y := by
-      cat_disch)
-    (tensorHom_comp_tensorHom :
-      ∀ {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂),
-        (f₁ ⊗ₘ f₂) ≫ (g₁ ⊗ₘ g₂) = (f₁ ≫ g₁) ⊗ₘ (f₂ ≫ g₂) := by
-          cat_disch)
-    (associator_naturality :
-      ∀ {X₁ X₂ X₃ Y₁ Y₂ Y₃ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃),
-        tensorHom (tensorHom f₁ f₂) f₃ ≫ (associator Y₁ Y₂ Y₃).hom =
-          (associator X₁ X₂ X₃).hom ≫ tensorHom f₁ (tensorHom f₂ f₃) := by
-            cat_disch)
-    (leftUnitor_naturality :
-      ∀ {X Y : C} (f : X ⟶ Y),
-        tensorHom (𝟙 (𝟙_ C)) f ≫ (leftUnitor Y).hom = (leftUnitor X).hom ≫ f := by
-          cat_disch)
-    (rightUnitor_naturality :
-      ∀ {X Y : C} (f : X ⟶ Y),
-        tensorHom f (𝟙 (𝟙_ C)) ≫ (rightUnitor Y).hom = (rightUnitor X).hom ≫ f := by
-          cat_disch)
-    (pentagon :
-      ∀ W X Y Z : C,
-        tensorHom (associator W X Y).hom (𝟙 Z) ≫
-            (associator W (tensorObj X Y) Z).hom ≫ tensorHom (𝟙 W) (associator X Y Z).hom =
-          (associator (tensorObj W X) Y Z).hom ≫ (associator W X (tensorObj Y Z)).hom := by
-            cat_disch)
-    (triangle :
-      ∀ X Y : C,
-        (associator X (𝟙_ C) Y).hom ≫ tensorHom (𝟙 X) (leftUnitor Y).hom =
-          tensorHom (rightUnitor X).hom (𝟙 Y) := by
-            cat_disch) :
-      MonoidalCategory C where
-  tensorHom_def := by intros; simp [← id_tensorHom, ← tensorHom_id, tensorHom_comp_tensorHom]
-  whiskerLeft_id := by intros; simp [← id_tensorHom, ← id_tensorHom_id]
-  id_whiskerRight := by intros; simp [← tensorHom_id, id_tensorHom_id]
-  pentagon := by intros; simp [← id_tensorHom, ← tensorHom_id, pentagon]
-  triangle := by intros; simp [← id_tensorHom, ← tensorHom_id, triangle]
-
 @[reassoc]
 theorem comp_tensor_id (f : W ⟶ X) (g : X ⟶ Y) : f ≫ g ⊗ₘ 𝟙 Z = (f ⊗ₘ 𝟙 Z) ≫ (g ⊗ₘ 𝟙 Z) := by
   simp
@@ -778,7 +786,7 @@ variable (C)
 attribute [local simp] whisker_exchange
 
 /-- The tensor product expressed as a functor. -/
-@[simps]
+@[simps, implicit_reducible]
 def tensor : C × C ⥤ C where
   obj X := X.1 ⊗ X.2
   map {X Y : C × C} (f : X ⟶ Y) := f.1 ⊗ₘ f.2
@@ -812,7 +820,7 @@ theorem rightAssocTensor_map {X Y} (f : X ⟶ Y) :
   rfl
 
 /-- The tensor product bifunctor `C ⥤ C ⥤ C` of a monoidal category. -/
-@[simps]
+@[simps, implicit_reducible]
 def curriedTensor : C ⥤ C ⥤ C where
   obj X :=
     { obj := fun Y => X ⊗ Y
@@ -891,7 +899,7 @@ abbrev tensoringLeft : C ⥤ C ⥤ C := curriedTensor C
 instance : (tensoringLeft C).Faithful where
   map_injective {X} {Y} f g h := by
     injections h
-    replace h := congr_fun h (𝟙_ C)
+    replace h := congr($h (𝟙_ C))
     simpa using h
 
 /-- Tensoring on the right, as a functor from `C` into endofunctors of `C`.
@@ -903,7 +911,7 @@ abbrev tensoringRight : C ⥤ C ⥤ C := (curriedTensor C).flip
 instance : (tensoringRight C).Faithful where
   map_injective {X} {Y} f g h := by
     injections h
-    replace h := congr_fun h (𝟙_ C)
+    replace h := congr($h (𝟙_ C))
     simpa using h
 
 variable {C}
@@ -931,7 +939,7 @@ section
 
 universe v₁ v₂ u₁ u₂
 
-open Prod
+open CategoryTheory.Prod
 
 variable (C₁ : Type u₁) [Category.{v₁} C₁] [MonoidalCategory.{v₁} C₁]
 variable (C₂ : Type u₂) [Category.{v₂} C₂] [MonoidalCategory.{v₂} C₂]
@@ -991,14 +999,14 @@ abbrev MonoidalCategory.fullSubcategory
     (tensorUnit : P (𝟙_ C))
     (tensorObj : ∀ X Y, P X → P Y → P (X ⊗ Y)) :
     MonoidalCategory P.FullSubcategory where
-  tensorObj X Y := ⟨X.1 ⊗ Y.1, tensorObj X.1 Y.1 X.2 Y.2⟩
+  tensorObj X Y := ⟨X.obj ⊗ Y.obj, tensorObj X.obj Y.obj X.property Y.property⟩
   whiskerLeft X _ _ f := homMk (X.obj ◁ f.hom)
   whiskerRight f X := homMk (f.hom ▷ X.obj)
   tensorHom f g := homMk (f.hom ⊗ₘ g.hom)
   tensorUnit := ⟨𝟙_ C, tensorUnit⟩
-  associator X Y Z := P.fullyFaithfulι.preimageIso (α_ X.1 Y.1 Z.1)
-  leftUnitor X := P.fullyFaithfulι.preimageIso (λ_ X.1)
-  rightUnitor X := P.fullyFaithfulι.preimageIso (ρ_ X.1)
+  associator X Y Z := P.fullyFaithfulι.preimageIso (α_ X.obj Y.obj Z.obj)
+  leftUnitor X := P.fullyFaithfulι.preimageIso (λ_ X.obj)
+  rightUnitor X := P.fullyFaithfulι.preimageIso (ρ_ X.obj)
   tensorHom_def _ _ := by ext; apply tensorHom_def
 
 end ObjectProperty

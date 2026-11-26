@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Logic.Function.Iterate
+public meta import Aesop
 public import Mathlib.Order.Monotone.Basic
 
 /-!

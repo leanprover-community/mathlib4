@@ -8,9 +8,13 @@ module
 public import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lifting bilinear forms to quotients
 -/
+
 @[expose] public section
 
 namespace LinearMap

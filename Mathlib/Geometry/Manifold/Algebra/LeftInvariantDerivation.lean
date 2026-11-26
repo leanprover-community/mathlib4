@@ -5,11 +5,10 @@ Authors: Nicolò Cavalleri
 -/
 module
 
-public import Mathlib.RingTheory.Derivation.Lie
 public import Mathlib.Geometry.Manifold.DerivationBundle
+public import Mathlib.RingTheory.Derivation.Lie
 
 /-!
-
 # Left invariant derivations
 
 In this file we define the concept of left invariant derivations for a Lie group. The concept is
@@ -35,7 +34,7 @@ noncomputable section
 
 open scoped LieGroup Manifold Derivation ContDiff
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞} {E : Type*} [NormedAddCommGroup E]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) (G : Type*)
   [TopologicalSpace G] [ChartedSpace H G] [Monoid G] [ContMDiffMul I ∞ G] (g h : G)
 
@@ -62,13 +61,14 @@ theorem toDerivation_injective :
     Function.Injective (toDerivation : LeftInvariantDerivation I G → _) :=
   fun X Y h => by cases X; cases Y; congr
 
+@[macro_inline]
 instance : FunLike (LeftInvariantDerivation I G) C^∞⟮I, G; 𝕜⟯ C^∞⟮I, G; 𝕜⟯ where
   coe f := f.toDerivation
-  coe_injective' _ _ h := toDerivation_injective <| DFunLike.ext' h
+  coe_injective _ _ h := toDerivation_injective <| DFunLike.ext' h
 
 instance : LinearMapClass (LeftInvariantDerivation I G) 𝕜 C^∞⟮I, G; 𝕜⟯ C^∞⟮I, G; 𝕜⟯ where
-  map_add f := map_add f.1
-  map_smulₛₗ f := map_smul f.1.1
+  map_add f := map_add f.toDerivation
+  map_smulₛₗ f := map_smul f.toDerivation.toLinearMap
 
 variable {r : 𝕜} {X Y : LeftInvariantDerivation I G} {f f' : C^∞⟮I, G; 𝕜⟯}
 
@@ -150,16 +150,18 @@ theorem lift_zero :
   rfl
 
 instance hasNatScalar : SMul ℕ (LeftInvariantDerivation I G) where
-  smul r X := ⟨r • X.1, fun g => by simp_rw [LinearMap.map_smul_of_tower _ r, left_invariant']⟩
+  smul r X := ⟨r • X.toDerivation, fun g => by
+    simp_rw [LinearMap.map_smul_of_tower _ r, left_invariant']⟩
 
 instance hasIntScalar : SMul ℤ (LeftInvariantDerivation I G) where
-  smul r X := ⟨r • X.1, fun g => by simp_rw [LinearMap.map_smul_of_tower _ r, left_invariant']⟩
+  smul r X := ⟨r • X.toDerivation, fun g => by
+    simp_rw [LinearMap.map_smul_of_tower _ r, left_invariant']⟩
 
 instance : AddCommGroup (LeftInvariantDerivation I G) :=
   coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ => rfl
 
 instance : SMul 𝕜 (LeftInvariantDerivation I G) where
-  smul r X := ⟨r • X.1, fun g => by
+  smul r X := ⟨r • X.toDerivation, fun g => by
     simp only [LinearMap.map_smul_of_tower, map_smul]; rw [left_invariant']⟩
 
 variable (r)
@@ -169,7 +171,7 @@ theorem coe_smul : ⇑(r • X) = r • ⇑X :=
   rfl
 
 @[simp]
-theorem lift_smul (k : 𝕜) : (k • X).1 = k • X.1 :=
+theorem lift_smul (k : 𝕜) : (k • X).toDerivation = k • X.toDerivation :=
   rfl
 
 variable (I G)
@@ -187,7 +189,7 @@ instance : Module 𝕜 (LeftInvariantDerivation I G) :=
 /-- Evaluation at a point for left invariant derivations. Same thing as for generic global
 derivations (`Derivation.evalAt`). -/
 def evalAt : LeftInvariantDerivation I G →ₗ[𝕜] PointDerivation I g where
-  toFun X := Derivation.evalAt g X.1
+  toFun X := Derivation.evalAt g X.toDerivation
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
@@ -201,6 +203,7 @@ theorem evalAt_coe : Derivation.evalAt g ↑X = evalAt g X :=
 theorem left_invariant : 𝒅ₕ (smoothLeftMul_one I g) (evalAt (1 : G) X) = evalAt g X :=
   X.left_invariant'' g
 
+set_option backward.isDefEq.respectTransparency false in
 theorem evalAt_mul : evalAt (g * h) X = 𝒅ₕ (L_apply I g h) (evalAt h X) := by
   ext f
   rw [← left_invariant, hfdifferential_apply, hfdifferential_apply, L_mul, fdifferential_comp,
@@ -213,12 +216,13 @@ theorem comp_L : (X f).comp (𝑳 I g) = X (f.comp (𝑳 I g)) := by
   rw [ContMDiffMap.comp_apply, L_apply, ← evalAt_apply, evalAt_mul, hfdifferential_apply,
     fdifferential_apply, evalAt_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Bracket (LeftInvariantDerivation I G) (LeftInvariantDerivation I G) where
   bracket X Y :=
     ⟨⁅(X : Derivation 𝕜 C^∞⟮I, G; 𝕜⟯ C^∞⟮I, G; 𝕜⟯), Y⁆, fun g => by
       ext f
-      have hX := Derivation.congr_fun (left_invariant' g X) (Y f)
-      have hY := Derivation.congr_fun (left_invariant' g Y) (X f)
+      have hX := congr($(left_invariant' g X) (Y f))
+      have hY := congr($(left_invariant' g Y) (X f))
       rw [hfdifferential_apply, fdifferential_apply, Derivation.evalAt_apply] at hX hY ⊢
       rw [comp_L] at hX hY
       rw [Derivation.commutator_apply, ContMDiffMap.coe_sub, Pi.sub_apply, coe_derivation]

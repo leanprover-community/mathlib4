@@ -8,12 +8,14 @@ module
 public import Mathlib.CategoryTheory.Preadditive.Basic
 public import Mathlib.CategoryTheory.SingleObj
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `SingleObj α` is preadditive when `α` is a ring.
-
 -/
 
-@[expose] public section
+public section
 
 
 namespace CategoryTheory

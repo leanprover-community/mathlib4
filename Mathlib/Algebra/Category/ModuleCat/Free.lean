@@ -5,8 +5,8 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.LinearAlgebra.Dimension.Free
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+public import Mathlib.LinearAlgebra.Dimension.Free
 
 /-!
 # Exact sequences with free modules
@@ -24,8 +24,8 @@ This file proves results about linear independence and span in exact sequences o
   short exact sequence `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` where `X₁` and `X₃` are free, `X₂` is free as well.
 
 ## Tags
-linear algebra, module, free
 
+linear algebra, module, free
 -/
 
 @[expose] public section
@@ -172,7 +172,7 @@ theorem free_shortExact [Module.Free R S.X₁] [Module.Free R S.X₃] :
 theorem free_shortExact_rank_add [Module.Free R S.X₁] [Module.Free R S.X₃]
     [StrongRankCondition R] :
     Module.rank R S.X₂ = Module.rank R S.X₁ + Module.rank R S.X₃ := by
-  haveI := free_shortExact hS'
+  have := free_shortExact hS'
   rw [Module.Free.rank_eq_card_chooseBasisIndex, Module.Free.rank_eq_card_chooseBasisIndex R S.X₁,
     Module.Free.rank_eq_card_chooseBasisIndex R S.X₃, Cardinal.add_def, Cardinal.eq]
   exact ⟨Basis.indexEquiv (Module.Free.chooseBasis R S.X₂) (Basis.ofShortExact hS'

@@ -6,10 +6,12 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.CategoryTheory.EffectiveEpi.Enough
-public import Mathlib.CategoryTheory.EffectiveEpi.Preserves
 public import Mathlib.CategoryTheory.Sites.Coherent.RegularTopology
-/-!
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
 # Reflecting the property of being preregular
 
 We prove that given a fully faithful functor `F : C ⥤ D`, with `Preregular D`, such that for every
@@ -26,6 +28,7 @@ variable {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D)
   [F.EffectivelyEnough]
   [Preregular D] [F.Full] [F.Faithful]
 
+set_option backward.isDefEq.respectTransparency false in
 include F in
 lemma Functor.reflects_preregular : Preregular C where
   exists_fac f g _ := by

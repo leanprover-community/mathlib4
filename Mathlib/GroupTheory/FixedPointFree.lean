@@ -7,6 +7,9 @@ module
 
 public import Mathlib.GroupTheory.Perm.Cycle.Type
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fixed-point-free automorphisms
 
@@ -71,6 +74,7 @@ theorem commute_all_of_involutive (hφ : FixedPointFree φ) (h2 : Function.Invol
   rwa [hφ.coe_eq_inv_of_involutive h2, inv_eq_iff_eq_inv, mul_inv_rev, inv_inv, inv_inv] at key
 
 /-- If a finite group admits a fixed-point-free involution, then it is commutative. -/
+@[instance_reducible]
 def commGroupOfInvolutive (hφ : FixedPointFree φ) (h2 : Function.Involutive φ) :
     CommGroup G := .mk (hφ.commute_all_of_involutive h2)
 

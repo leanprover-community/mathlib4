@@ -5,9 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.LiftingProperties.Basic
-public import Mathlib.CategoryTheory.Adjunction.Parametrized
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.PullbackObjObj
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Lifting properties and parametrized adjunctions
@@ -17,7 +18,6 @@ If we have a parametrized adjunction `adj₂ : F ⊣₂ G`,
 we show that `sq₁₂.ι` has the left lifting property with respect to
 `f₃` if and only if `f₂` has the left lifting property with respect
 to `sq₁₃.π`: this is the lemma `ParametrizedAdjunction.hasLiftingProperty_iff`.
-
 -/
 
 @[expose] public section
@@ -26,7 +26,7 @@ universe v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
-open Opposite Limits
+open Opposite
 
 variable {C₁ : Type u₁} {C₂ : Type u₂} {C₃ : Type u₃}
   [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} C₃]
@@ -109,6 +109,7 @@ lemma inr_arrowHomEquiv_symm_apply_left (β : Arrow.mk f₂ ⟶ Arrow.mk sq₁�
     adj₂.homEquiv.symm (β.right ≫ sq₁₃.fst) :=
   IsPushout.inr_desc _ _ _ _
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given a parametrized adjunction `F ⊣₂ G` between bifunctors, structures
 `sq₁₂ : F.PushoutObjObj f₁ f₂` and `sq₁₃ : G.PullbackObjObj f₁ f₃`,
 there are as many liftings for the commutative square given by a

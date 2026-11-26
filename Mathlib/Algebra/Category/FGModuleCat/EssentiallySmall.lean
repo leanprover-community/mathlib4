@@ -6,7 +6,9 @@ Authors: Kenny Lau
 module
 
 public import Mathlib.Algebra.Category.FGModuleCat.Basic
-public import Mathlib.RingTheory.Finiteness.Cardinality
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The category of finitely generated modules over a ring is essentially small
@@ -14,14 +16,13 @@ public import Mathlib.RingTheory.Finiteness.Cardinality
 This file proves that `FGModuleCat R`, the category of finitely generated modules over a ring `R`,
 is essentially small, by providing an explicit small model. However, for applications, it is
 recommended to use the standard `CategoryTheory.SmallModel (FGModuleCat R)` instead.
-
 -/
 
 @[expose] public section
 
 universe v w u
 
-variable (R : Type u) [CommRing R]
+variable (R : Type u) [Ring R]
 
 open CategoryTheory
 
@@ -43,20 +44,16 @@ variable {R} in
 of `Fin n → R` (i.e. `Rⁿ`) by the submodule `S` provided. -/
 def repr (x : FGModuleRepr R) : Type u :=
   _ ⧸ x.S
+deriving AddCommGroup, Module R
 
 instance : CoeSort (FGModuleRepr R) (Type u) :=
   ⟨repr⟩
 
-instance (x : FGModuleRepr R) : AddCommGroup x := by
-  unfold repr; infer_instance
-
-instance (x : FGModuleRepr R) : Module R x := by
-  unfold repr; infer_instance
-
-instance (x : FGModuleRepr R) : Module.Finite R x := by
-  unfold repr; infer_instance
+instance (x : FGModuleRepr R) : Module.Finite R x :=
+  inferInstanceAs <| Module.Finite R (_ ⧸ x.S)
 
 /-- A non-canonical representation of a finite module (as a quotient of `Rⁿ`). -/
+@[instance_reducible]
 noncomputable def ofFinite : FGModuleRepr R where
   n := (Module.Finite.exists_fin_quot_equiv R M).choose
   S := (Module.Finite.exists_fin_quot_equiv R M).choose_spec.choose

@@ -8,11 +8,14 @@ module
 public import Mathlib.Algebra.Regular.Basic
 public import Mathlib.Data.Fintype.Card
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite monoids are Dedekind-finite
 -/
 
-@[expose] public section
+public section
 
 instance (M) [Monoid M] [Finite M] : IsDedekindFiniteMonoid M where
   mul_eq_one_symm {a b} hab := by

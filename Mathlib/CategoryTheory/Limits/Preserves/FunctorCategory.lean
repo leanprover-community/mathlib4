@@ -5,12 +5,9 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
-public import Mathlib.CategoryTheory.Limits.Preserves.Finite
-public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
-public import Mathlib.CategoryTheory.Limits.Presheaf
-public import Mathlib.CategoryTheory.Limits.Yoneda
+public import Mathlib.CategoryTheory.Functor.KanExtension.Yoneda
+
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 
 /-!
 # Preservation of (co)limits in the functor category
@@ -27,7 +24,6 @@ public import Mathlib.CategoryTheory.Limits.Yoneda
 ## References
 
 https://ncatlab.org/nlab/show/commutativity+of+limits+and+colimits#preservation_by_functor_categories_and_localizations
-
 -/
 
 @[expose] public section
@@ -39,13 +35,12 @@ noncomputable section
 
 namespace CategoryTheory
 
-open Category Limits Functor
+open Category Limits CategoryTheory.Functor
 
 section
 
 variable {C : Type u} [Category.{v₁} C]
 variable {D : Type u₂} [Category.{u} D]
-variable {E : Type u} [Category.{v₂} E]
 
 /-- If `X × -` preserves colimits in `D` for any `X : D`, then the product functor `F ⨯ -` for
 `F : C ⥤ D` also preserves colimits.
@@ -67,7 +62,7 @@ lemma FunctorCategory.prod_preservesColimits [HasBinaryProducts D] [HasColimits 
           preserves := fun {c : Cocone K} (t : IsColimit c) => ⟨by
             apply evaluationJointlyReflectsColimits _ fun {k} => ?_
             change IsColimit ((prod.functor.obj F ⋙ (evaluation _ _).obj k).mapCocone c)
-            let this :=
+            let :=
               isColimitOfPreserves ((evaluation C D).obj k ⋙ prod.functor.obj (F.obj k)) t
             apply IsColimit.mapCoconeEquiv _ this
             apply (NatIso.ofComponents _ _).symm
@@ -129,6 +124,21 @@ instance whiskeringRight_preservesLimitsOfShape {C : Type*} [Category* C] {D : T
       apply evaluationJointlyReflectsLimits _ (fun k => ?_)
       change IsLimit (((evaluation _ _).obj k ⋙ F).mapCone c)
       exact isLimitOfPreserves _ hc⟩⟩⟩
+
+instance {C : Type*} [Category* C] {D : Type*}
+    [Category* D] {E : Type*} [Category* E] {J : Type*} [Category* J]
+    [HasLimitsOfShape J D] (F : D ⥤ E) [F.ReflectsIsomorphisms] [PreservesLimitsOfShape J F] :
+    ReflectsLimitsOfShape J ((whiskeringRight C D E).obj F) :=
+  reflectsLimitsOfShape_of_reflectsIsomorphisms
+
+instance {C : Type*} [Category* C] {D : Type*}
+    [Category* D] {E : Type*} [Category* E] {J : Type*} [Category* J]
+    [HasLimitsOfShape J E] (F : D ⥤ E) [ReflectsLimitsOfShape J F] :
+    ReflectsLimitsOfShape J ((whiskeringRight C D E).obj F) :=
+  ⟨fun {K} ↦ ⟨fun {c} hc ↦ ⟨by
+    apply evaluationJointlyReflectsLimits _ (fun k ↦ ?_)
+    apply isLimitOfReflects F
+    exact isLimitOfPreserves ((evaluation C E).obj k) hc⟩⟩⟩
 
 /-- Whiskering right and then taking a limit is the same as taking the limit and applying the
 functor. -/
@@ -201,13 +211,13 @@ instance whiskeringRightPreservesColimits {C : Type*} [Category* C] {D : Type*} 
     PreservesColimitsOfSize.{w, w'} ((whiskeringRight C D E).obj F) :=
   ⟨inferInstance⟩
 
-/-- If `Lan F.op : (Cᵒᵖ ⥤ Type*) ⥤ (Dᵒᵖ ⥤ Type*)` preserves limits of shape `J`, so will `F`. -/
+/-- If `F.op.lan : (Cᵒᵖ ⥤ Type*) ⥤ (Dᵒᵖ ⥤ Type*)` preserves limits of shape `J`, so will `F`. -/
 lemma preservesLimit_of_lan_preservesLimit {C D : Type u} [SmallCategory C]
     [SmallCategory D] (F : C ⥤ D) (J : Type u) [SmallCategory J]
     [PreservesLimitsOfShape J (F.op.lan : _ ⥤ Dᵒᵖ ⥤ Type u)] : PreservesLimitsOfShape J F :=
-  letI := preservesLimitsOfShape_of_natIso (J := J)
-    (Presheaf.compULiftYonedaIsoULiftYonedaCompLan.{u} F).symm
-  preservesLimitsOfShape_of_reflects_of_preserves F uliftYoneda.{u}
+  have := preservesLimitsOfShape_of_natIso (J := J)
+    (Presheaf.compShrinkYonedaIsoShrinkYonedaCompLan.{u} F).symm
+  preservesLimitsOfShape_of_reflects_of_preserves F shrinkYoneda.{u}
 
 /-- `F : C ⥤ D ⥤ E` preserves finite limits if it does for each `d : D`. -/
 lemma preservesFiniteLimits_of_evaluation {D : Type*} [Category* D] {E : Type*} [Category* E]

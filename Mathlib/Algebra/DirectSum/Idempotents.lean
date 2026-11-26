@@ -5,8 +5,11 @@ Authors: Yunzhou Xie, Jujian Zhang, Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Idempotents
 public import Mathlib.Algebra.DirectSum.Decomposition
+public import Mathlib.RingTheory.Idempotents
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Decomposition of the identity of a semiring into orthogonal idempotents
@@ -50,7 +53,7 @@ theorem completeOrthogonalIdempotents_idempotent [Fintype I] :
   complete := by
     apply (decompose V).injective
     refine DFunLike.ext _ _ fun i ↦ ?_
-    rw [decompose_sum, DFinsupp.finset_sum_apply]
+    rw [decompose_sum, DFinsupp.finsetSum_apply]
     simp [idempotent, of_apply]
 
 end OrthogonalIdempotents

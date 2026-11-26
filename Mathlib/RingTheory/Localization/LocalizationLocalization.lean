@@ -6,8 +6,11 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 module
 
 public import Mathlib.RingTheory.Localization.AtPrime.Basic
-public import Mathlib.RingTheory.Localization.Basic
-public import Mathlib.RingTheory.Localization.FractionRing
+
+import Mathlib.RingTheory.Localization.FractionRing
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Localizations of localizations
@@ -17,6 +20,7 @@ public import Mathlib.RingTheory.Localization.FractionRing
 See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
 
 ## Tags
+
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
 -/
@@ -137,7 +141,7 @@ theorem isLocalization_isLocalization_atPrime_isLocalization (p : Ideal S) [Hp :
     [IsLocalization.AtPrime T p] : IsLocalization.AtPrime T (p.comap (algebraMap R S)) := by
   apply localization_localization_isLocalization_of_has_all_units M p.primeCompl T
   intro x hx hx'
-  exact (Hp.1 : ¬_) (p.eq_top_of_isUnit_mem hx' hx)
+  exact (Hp.ne_top' : ¬_) (p.eq_top_of_isUnit_mem hx' hx)
 
 instance (p : Ideal (Localization M)) [p.IsPrime] : Algebra R (Localization.AtPrime p) :=
   inferInstance
@@ -201,7 +205,7 @@ theorem isLocalization_of_submonoid_le (M N : Submonoid R) (h : M ≤ N) [IsLoca
   surj y := by
     obtain ⟨⟨x, s⟩, e⟩ := IsLocalization.surj N y
     refine ⟨⟨algebraMap R S x, _, _, s.prop, rfl⟩, ?_⟩
-    simpa [← IsScalarTower.algebraMap_apply] using e
+    simpa [← IsScalarTower.algebraMap_apply] using! e
   exists_of_eq {x₁ x₂} := by
     obtain ⟨⟨y₁, s₁⟩, e₁⟩ := IsLocalization.surj M x₁
     obtain ⟨⟨y₂, s₂⟩, e₂⟩ := IsLocalization.surj M x₂
@@ -220,7 +224,7 @@ theorem isLocalization_of_submonoid_le (M N : Submonoid R) (h : M ≤ N) [IsLoca
         (IsLocalization.map_units S s₁).mul_left_inj,
         (IsLocalization.map_units S s₂).mul_left_inj] at this
       rw [h₂, h₁] at this
-      simpa only [mul_comm] using this
+      simpa only [mul_comm] using! this
     simp_rw [IsLocalization.eq_iff_exists N T, IsLocalization.eq_iff_exists M S]
     intro ⟨a, e⟩
     exact ⟨a, 1, by convert e using 1 <;> simp⟩
@@ -243,7 +247,7 @@ theorem isLocalization_of_is_exists_mul_mem (M N : Submonoid R) [IsLocalization 
 
 theorem mk'_eq_algebraMap_mk'_of_submonoid_le {M N : Submonoid R} (h : M ≤ N) [IsLocalization M S]
     [IsLocalization N T] [Algebra S T] [IsScalarTower R S T] (x : R) (y : {a : R // a ∈ M}) :
-    mk' T x ⟨y.1, h y.2⟩ = algebraMap S T (mk' S x y) :=
+    mk' T x ⟨y.val, h y.property⟩ = algebraMap S T (mk' S x y) :=
   mk'_eq_iff_eq_mul.mpr (by simp only [IsScalarTower.algebraMap_apply R S T, ← map_mul, mk'_spec])
 
 end LocalizationLocalization
@@ -256,6 +260,7 @@ variable {R : Type*} [CommRing R] (M : Submonoid R)
 
 open IsLocalization
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isFractionRing_of_isLocalization (S T : Type*) [CommRing S] [CommRing T] [Algebra R S]
     [Algebra R T] [Algebra S T] [IsScalarTower R S T] [IsLocalization M S] [IsFractionRing R T]
     (hM : M ≤ nonZeroDivisors R) : IsFractionRing S T := by
@@ -277,8 +282,8 @@ theorem isFractionRing_of_isLocalization (S T : Type*) [CommRing S] [CommRing T]
 theorem isFractionRing_of_isDomain_of_isLocalization [IsDomain R] (S T : Type*) [CommRing S]
     [CommRing T] [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
     [IsLocalization M S] [IsFractionRing R T] : IsFractionRing S T := by
-  haveI := IsFractionRing.nontrivial R T
-  haveI := (algebraMap S T).domain_nontrivial
+  have := IsFractionRing.nontrivial R T
+  have := (algebraMap S T).domain_nontrivial
   apply isFractionRing_of_isLocalization M S T
   intro x hx
   rw [mem_nonZeroDivisors_iff_ne_zero]

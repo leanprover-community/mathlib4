@@ -9,13 +9,15 @@ public meta import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
 public import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
 public import Mathlib.Tactic.CategoryTheory.MonoidalComp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Expressions for monoidal categories
 
 This file converts lean expressions representing morphisms in monoidal categories into `Mor₂Iso`
 or `Mor` terms. The converted expressions are used in the coherence tactics and the string diagram
 widgets.
-
 -/
 
 public meta section
@@ -432,6 +434,9 @@ def comp? (e : Expr) : MonoidalM (Option (Mor₁ × Mor₁)) := do
 
 /-- Construct a `Mor₁` expression from a Lean expression. -/
 partial def mor₁OfExpr (e : Expr) : MonoidalM Mor₁ := do
+  let e ← instantiateMVars e
+  if e.hasExprMVar then
+    throwError m!"expression contains metavariables:\n{e}"
   if let some f := (← get).cache.find? e then
     return f
   let f ←
@@ -504,7 +509,10 @@ partial def Mor₂OfExpr (e : Expr) : MonoidalM Mor₂ := do
 instance : BicategoryLike.MkMor₂ MonoidalM where
   ofExpr := Mor₂OfExpr
 
-instance : MonadCoherehnceHom MonoidalM where
+instance : MonadCoherenceHom MonoidalM where
   unfoldM α := Mor₂IsoOfExpr α.unfold
+
+@[deprecated (since := "2026-09-17")]
+alias instMonadCoherehnceHomMonoidalM := instMonadCoherenceHomMonoidalM
 
 end Mathlib.Tactic.Monoidal

@@ -5,10 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.SpecificLimits.Basic
-public import Mathlib.Topology.UrysohnsLemma
-public import Mathlib.Topology.Metrizable.Basic
 public import Mathlib.Topology.ContinuousMap.Bounded.Basic
+public import Mathlib.Topology.UrysohnsLemma
+
 /-!
 # Urysohn's Metrization Theorem
 
@@ -23,7 +22,7 @@ space structure.
 We use `ℕ →ᵇ ℝ`, not `lpSpace` for `l^∞` to avoid heavy imports.
 -/
 
-@[expose] public section
+public section
 
 open Filter Metric Set Topology
 open scoped BoundedContinuousFunction
@@ -42,17 +41,17 @@ theorem exists_isInducing_l_infty : ∃ f : X → ℕ →ᵇ ℝ, IsInducing f :
   rcases exists_countable_basis X with ⟨B, hBc, -, hB⟩
   let s : Set (Set X × Set X) := { UV ∈ B ×ˢ B | closure UV.1 ⊆ UV.2 }
   -- `s` is a countable set.
-  haveI : Encodable s := ((hBc.prod hBc).mono inter_subset_left).toEncodable
+  have : Encodable s := ((hBc.prod hBc).mono (sep_subset _ _)).toEncodable
   -- We don't have the space of bounded (possibly discontinuous) functions, so we equip `s`
   -- with the discrete topology and deal with `s →ᵇ ℝ` instead.
-  letI : TopologicalSpace s := ⊥
-  haveI : DiscreteTopology s := ⟨rfl⟩
+  let : TopologicalSpace s := ⊥
+  have : DiscreteTopology s := ⟨rfl⟩
   rsuffices ⟨f, hf⟩ : ∃ f : X → s →ᵇ ℝ, IsInducing f
   · exact ⟨fun x => (f x).extend (Encodable.encode' s) 0,
       (BoundedContinuousFunction.isometry_extend (Encodable.encode' s)
         (0 : ℕ →ᵇ ℝ)).isEmbedding.isInducing.comp hf⟩
-  have hd : ∀ UV : s, Disjoint (closure UV.1.1) UV.1.2ᶜ :=
-    fun UV => disjoint_compl_right.mono_right (compl_subset_compl.2 UV.2.2)
+  have hd : ∀ UV : s, Disjoint (closure UV.val.1) UV.val.2ᶜ :=
+    fun UV => disjoint_compl_right.mono_right (compl_subset_compl.2 UV.property.2)
   -- Choose a sequence of `εₙ > 0`, `n : s`, that is bounded above by `1` and tends to zero
   -- along the `cofinite` filter.
   obtain ⟨ε, ε01, hε⟩ : ∃ ε : s → ℝ, (∀ UV, ε UV ∈ Ioc (0 : ℝ) 1) ∧ Tendsto ε cofinite (𝓝 0) := by
@@ -62,10 +61,10 @@ theorem exists_isInducing_l_infty : ∃ f : X → ℕ →ᵇ ℝ, IsInducing f :
   /- For each `UV = (U, V) ∈ s` we use Urysohn's lemma to choose a function `f UV` that is equal to
     zero on `U` and is equal to `ε UV` on the complement to `V`. -/
   have : ∀ UV : s, ∃ f : C(X, ℝ),
-      EqOn f 0 UV.1.1 ∧ EqOn f (fun _ => ε UV) UV.1.2ᶜ ∧ ∀ x, f x ∈ Icc 0 (ε UV) := by
+      EqOn f 0 UV.val.1 ∧ EqOn f (fun _ => ε UV) UV.val.2ᶜ ∧ ∀ x, f x ∈ Icc 0 (ε UV) := by
     intro UV
     rcases exists_continuous_zero_one_of_isClosed isClosed_closure
-        (hB.isOpen UV.2.1.2).isClosed_compl (hd UV) with
+        (hB.isOpen UV.property.1.2).isClosed_compl (hd UV) with
       ⟨f, hf₀, hf₁, hf01⟩
     exact ⟨ε UV • f, fun x hx => by simp [hf₀ (subset_closure hx)], fun x hx => by simp [hf₁ hx],
       fun x => ⟨mul_nonneg (ε01 _).1.le (hf01 _).1, mul_le_of_le_one_right (ε01 _).1.le (hf01 _).2⟩⟩
@@ -84,7 +83,7 @@ theorem exists_isInducing_l_infty : ∃ f : X → ℕ →ᵇ ℝ, IsInducing f :
     `(U, V) ∈ T`. For `(U, V) ∉ T`, the same inequality is true because both `F y (U, V)` and
     `F x (U, V)` belong to the interval `[0, ε (U, V)]`. -/
     refine (nhds_basis_closedBall.comap _).ge_iff.2 fun δ δ0 => ?_
-    have h_fin : { UV : s | δ ≤ ε UV }.Finite := by simpa only [← not_lt] using hε (gt_mem_nhds δ0)
+    have h_fin : { UV : s | δ ≤ ε UV }.Finite := by simpa only [← not_lt] using! hε (gt_mem_nhds δ0)
     have : ∀ᶠ y in 𝓝 x, ∀ UV, δ ≤ ε UV → dist (F y UV) (F x UV) ≤ δ := by
       refine (eventually_all_finite h_fin).2 fun UV _ => ?_
       exact (f UV).continuous.tendsto x (closedBall_mem_nhds _ δ0)

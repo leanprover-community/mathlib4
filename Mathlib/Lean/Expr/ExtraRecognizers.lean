@@ -5,14 +5,17 @@ Authors: Kyle Miller
 -/
 module
 
+public import Lean.Expr
 public import Mathlib.Data.Set.CoeSort
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Additional Expr recognizers needing theory imports
-
 -/
 
-@[expose] public section
+public section
 
 namespace Lean.Expr
 

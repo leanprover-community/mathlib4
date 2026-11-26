@@ -7,17 +7,20 @@ module
 
 public import Mathlib.CategoryTheory.Preadditive.Projective.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Preservation of projective objects
 
 We define a typeclass `Functor.PreservesProjectiveObjects`.
 
-We restate the existing result that if `F ⊣ G` is an adjunction and `G` preserves monomorphisms,
+We restate the existing result that if `F ⊣ G` is an adjunction and `G` preserves epimorphisms,
 then `F` preserves projective objects. We show that the converse is true if the domain of `F` has
 enough projectives.
 -/
 
-@[expose] public section
+public section
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 

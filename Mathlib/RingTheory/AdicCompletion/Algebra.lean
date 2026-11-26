@@ -22,13 +22,12 @@ completion of any module is a module over the adic completion of the ring.
 - `AdicCompletion.liftRingHom`: given a compatible family of ring maps
   `R →+* S ⧸ I ^ n`, the lift ring map `R →+* AdicCompletion I S`.
 
-## Implementation details
+## Implementation notes
 
 We do not make a separate adic completion type in algebra case, to not duplicate all
 module-theoretic results on adic completions. This choice does cause some trouble though,
 since `I ^ n • ⊤` is not defeq to `I ^ n`. We try to work around most of the trouble by
 providing as much API as possible.
-
 -/
 
 @[expose] public section
@@ -57,12 +56,12 @@ theorem transitionMap_map_one {m n : ℕ} (hmn : m ≤ n) : transitionMap I R hm
 @[local simp]
 theorem transitionMap_map_mul {m n : ℕ} (hmn : m ≤ n) (x y : R ⧸ (I ^ n • ⊤ : Ideal R)) :
     transitionMap I R hmn (x * y) = transitionMap I R hmn x * transitionMap I R hmn y :=
-  Quotient.inductionOn₂' x y (fun _ _ ↦ rfl)
+  Quotient.inductionOn₂ x y (fun _ _ ↦ rfl)
 
 @[local simp]
 theorem transitionMap_map_pow {m n a : ℕ} (hmn : m ≤ n) (x : R ⧸ (I ^ n • ⊤ : Ideal R)) :
     transitionMap I R hmn (x ^ a) = transitionMap I R hmn x ^ a :=
-  Quotient.inductionOn' x (fun _ ↦ rfl)
+  Quotient.inductionOn x (fun _ ↦ rfl)
 
 /-- `AdicCompletion.transitionMap` as an algebra homomorphism. -/
 def transitionMapₐ {m n : ℕ} (hmn : m ≤ n) :
@@ -114,6 +113,9 @@ instance [Algebra S R] : Algebra S (AdicCompletion I R) where
   commutes' r x := Subtype.ext <| Algebra.commutes' r x.val
   smul_def' r x := Subtype.ext <| Algebra.smul_def' r x.val
 
+theorem algebraMap_apply [Algebra S R] (s : S) :
+    algebraMap S (AdicCompletion I R) s = of I R (algebraMap S R s) := rfl
+
 @[simp]
 theorem val_one (n : ℕ) : (1 : AdicCompletion I R).val n = 1 :=
   rfl
@@ -132,14 +134,17 @@ def evalₐ (n : ℕ) : AdicCompletion I R →ₐ[R] R ⧸ I ^ n :=
     (Ideal.quotientEquivAlgOfEq R h)
     (AlgHom.ofLinearMap (eval I R n) rfl (fun _ _ ↦ rfl))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem factor_evalₐ_eq_eval {n : ℕ} (x : AdicCompletion I R) (h : I ^ n ≤ I ^ n • ⊤) :
     Ideal.Quotient.factor h (evalₐ I n x) = eval I R n x := by
   simp [evalₐ]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem factor_eval_eq_evalₐ {n : ℕ} (x : AdicCompletion I R) (h : I ^ n • ⊤ ≤ I ^ n) :
     factor h (eval I R n x) = evalₐ I n x := by
   simp [evalₐ]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The composition map `R →+* AdicCompletion I R →+* R ⧸ I ^ n` equals to the natural quotient map.
 -/
@@ -152,9 +157,10 @@ theorem surjective_evalₐ (n : ℕ) : Function.Surjective (evalₐ I n) := by
   simp only [evalₐ, smul_eq_mul, Ideal.quotientEquivAlgOfEq_coe_eq_factorₐ,
     AlgHom.coe_comp]
   apply Function.Surjective.comp
-  · exact factor_surjective Ideal.mul_le_right
+  · exact factor_surjective Ideal.mul_le_left
   · exact eval_surjective I R n
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem evalₐ_mk (n : ℕ) (x : AdicCauchySequence I R) :
     evalₐ I n (mk I R x) = Ideal.Quotient.mk (I ^ n) (x.val n) := by
@@ -178,6 +184,11 @@ lemma factorₐ_evalₐ_one (x : AdicCompletion I R) :
     Ideal.Quotient.factor (show I ^ 1 ≤ I by simp) (evalₐ I 1 x) = evalOneₐ I x :=
   rfl
 
+lemma evalOneₐ_comp_algebraMap_eq_mk :
+    (AdicCompletion.evalOneₐ I).toRingHom.comp (algebraMap R (AdicCompletion I R)) =
+      (Ideal.Quotient.mk I) :=
+  rfl
+
 lemma evalOneₐ_surjective : Function.Surjective (evalOneₐ I) := by
   dsimp [evalOneₐ]
   exact (Ideal.Quotient.factor_surjective (show I ^ 1 ≤ I by simp)).comp
@@ -186,7 +197,7 @@ lemma evalOneₐ_surjective : Function.Surjective (evalOneₐ I) := by
 /-- `AdicCauchySequence I R` is an `R`-subalgebra of `ℕ → R`. -/
 def AdicCauchySequence.subalgebra : Subalgebra R (ℕ → R) :=
   Submodule.toSubalgebra (AdicCauchySequence.submodule I R)
-    (fun {m n} _ ↦ by simp; rfl)
+    (fun {m n} _ ↦ by simp)
     (fun x y hx hy {m n} hmn ↦ by
       simp only [Pi.mul_apply]
       exact SModEq.mul (hx hmn) (hy hmn))
@@ -239,6 +250,7 @@ theorem mul_apply (n : ℕ) (f g : AdicCauchySequence I R) : (f * g) n = f n * g
 def mkₐ : AdicCauchySequence I R →ₐ[R] AdicCompletion I R :=
   AlgHom.ofLinearMap (mk I R) rfl (fun _ _ ↦ rfl)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem evalₐ_mkₐ (n : ℕ) (x : AdicCauchySequence I R) :
     evalₐ I n (mkₐ I x) = Ideal.Quotient.mk (I ^ n) (x.val n) := by
@@ -263,11 +275,10 @@ good definitional behaviour for the module instance on adic completions -/
 instance : SMul (R ⧸ (I • ⊤ : Ideal R)) (M ⧸ (I • ⊤ : Submodule R M)) where
   smul r x :=
     Quotient.liftOn r (· • x) fun b₁ b₂ h ↦ by
-      refine Quotient.inductionOn' x (fun x ↦ ?_)
+      induction x using Submodule.Quotient.induction_on
       have h : b₁ - b₂ ∈ (I : Submodule R R) := by
         rwa [show I = I • ⊤ by simp, ← Submodule.quotientRel_def]
-      rw [← sub_eq_zero, ← sub_smul, Submodule.Quotient.mk''_eq_mk,
-        ← Submodule.Quotient.mk_smul, Submodule.Quotient.mk_eq_zero]
+      rw [← sub_eq_zero, ← sub_smul, ← Submodule.Quotient.mk_smul, Submodule.Quotient.mk_eq_zero]
       exact Submodule.smul_mem_smul h mem_top
 
 @[local simp]
@@ -278,8 +289,7 @@ theorem mk_smul_mk (r : R) (x : M) :
 
 theorem val_smul_eq_evalₐ_smul (n : ℕ) (r : AdicCompletion I R)
     (x : M ⧸ (I ^ n • ⊤ : Submodule R M)) : r.val n • x = evalₐ I n r • x := by
-  apply induction_on I R r (fun r ↦ ?_)
-  exact Quotient.inductionOn' x (fun x ↦ rfl)
+  induction r using induction_on; rfl
 
 instance : Module (R ⧸ (I • ⊤ : Ideal R)) (M ⧸ (I • ⊤ : Submodule R M)) :=
   Function.Surjective.moduleLeft (Ideal.Quotient.mk (I • ⊤ : Ideal R))
@@ -287,8 +297,7 @@ instance : Module (R ⧸ (I • ⊤ : Ideal R)) (M ⧸ (I • ⊤ : Submodule R 
 
 instance : IsScalarTower R (R ⧸ (I • ⊤ : Ideal R)) (M ⧸ (I • ⊤ : Submodule R M)) where
   smul_assoc r s x := by
-    refine Quotient.inductionOn' s (fun s ↦ ?_)
-    refine Quotient.inductionOn' x (fun x ↦ ?_)
+    induction s, x using Quotient.inductionOn₂ with | _ s x
     simp only [Submodule.Quotient.mk''_eq_mk]
     rw [← Submodule.Quotient.mk_smul, Ideal.Quotient.mk_eq_mk, mk_smul_mk, smul_assoc]
     rfl
@@ -327,6 +336,7 @@ instance : IsScalarTower R (AdicCompletion I R) (AdicCompletion I M) where
     ext n
     rw [smul_eval, val_smul_apply, val_smul_apply, smul_eval, smul_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A priori `AdicCompletion I R` has two `AdicCompletion I R`-module instances.
 Both agree definitionally. -/
 example : module I = @Algebra.toModule (AdicCompletion I R)
@@ -335,10 +345,9 @@ example : module I = @Algebra.toModule (AdicCompletion I R)
 
 section liftRingHom
 
-open Ideal Quotient
-
 variable {R S : Type*} [NonAssocSemiring R] [CommRing S] (I : Ideal S)
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The universal property of `AdicCompletion` for rings.
 The lift ring map `R →+* AdicCompletion I S` of a compatible family of
@@ -365,10 +374,12 @@ def liftRingHom (f : (n : ℕ) → R →+* S ⧸ I ^ n)
 variable (f : (n : ℕ) → R →+* S ⧸ I ^ n)
   (hf : ∀ {m n : ℕ} (hle : m ≤ n), (Ideal.Quotient.factorPow I hle).comp (f n) = f m)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem factor_eval_liftRingHom (n : ℕ) (x : R) (h : I ^ n • ⊤ ≤ I ^ n) :
     factor h (eval I S n (liftRingHom I f hf x)) = f n x := by
   simp [liftRingHom, eval]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem evalₐ_liftRingHom (n : ℕ) (x : R) :
     evalₐ I n (liftRingHom I f hf x) = f n x := by
@@ -389,9 +400,9 @@ def liftAlgHom (f : (n : ℕ) → A →ₐ[R] S ⧸ I ^ n)
     (hf : ∀ {m n : ℕ} (hle : m ≤ n),
       (Ideal.Quotient.factorₐ R (Ideal.pow_le_pow_right hle)).comp (f n) = f m) :
     A →ₐ[R] AdicCompletion I S where
-  __ := liftRingHom I (fun n ↦ (f n).toRingHom) <| fun hle ↦ by ext x; exact congr($(hf hle) x)
+  __ := liftRingHom I (fun n ↦ (f n).toRingHom) <| fun hle ↦ by ext x; congrm $(hf hle) x
   commutes' r := ext_evalₐ fun n ↦ by
-    simp [evalₐ_liftRingHom _ _ <| fun hle ↦ by ext x; exact congr($(hf hle) x)]
+    simp [evalₐ_liftRingHom _ _ <| fun hle ↦ by ext x; congrm $(hf hle) x]
 
 variable (f : (n : ℕ) → A →ₐ[R] S ⧸ I ^ n)
   (hf : ∀ {m n : ℕ} (hle : m ≤ n),
@@ -400,7 +411,7 @@ variable (f : (n : ℕ) → A →ₐ[R] S ⧸ I ^ n)
 @[simp]
 lemma evalₐ_liftAlgHom (n : ℕ) (x : A) :
     evalₐ I n (liftAlgHom I f hf x) = f n x :=
-  evalₐ_liftRingHom _ _ (fun hle ↦ by ext x; exact congr($(hf hle) x)) _ _
+  evalₐ_liftRingHom _ _ (fun hle ↦ by ext x; congrm $(hf hle) x) _ _
 
 @[simp]
 lemma evalOneₐ_liftAlgHom (x : A) :
@@ -418,7 +429,7 @@ its `I`-adic completion is an `S`-algebra isomorphism.
 noncomputable def ofAlgEquiv : S ≃ₐ[S] AdicCompletion I S where
   __ := ofLinearEquiv I S
   map_mul' _ _ := by ext; simp
-  commutes' _ := rfl
+  map_smul' _ _ := rfl
 
 @[simp]
 theorem ofAlgEquiv_apply (x : S) : ofAlgEquiv I x = of I S x := by
@@ -439,6 +450,7 @@ theorem mk_smul_top_ofAlgEquiv_symm (n : ℕ) (x : AdicCompletion I S) :
   nth_rw 2 [← of_ofAlgEquiv_symm I x]
   simp [-of_ofAlgEquiv_symm, eval]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mk_ofAlgEquiv_symm (n : ℕ) (x : AdicCompletion I S) :
     Ideal.Quotient.mk (I ^ n) ((ofAlgEquiv I).symm x) = evalₐ I n x := by

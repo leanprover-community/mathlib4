@@ -5,11 +5,11 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.Algebra.Homology.HomotopyCategory.Shift
+public import Mathlib.Algebra.Homology.QuasiIso
 public import Mathlib.CategoryTheory.Shift.InducedShiftSequence
 public import Mathlib.CategoryTheory.Shift.Localization
-public import Mathlib.Algebra.Homology.HomotopyCategory.Shift
-public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
-public import Mathlib.Algebra.Homology.QuasiIso
+public import Mathlib.CategoryTheory.Shift.ShiftedHom
 
 /-! # Compatibilities of the homology functor with the shift
 
@@ -18,7 +18,6 @@ the shift: there is a natural isomorphism `(K⟦n⟧).homology a ≅ K.homology 
 when `n + a = a'`. This is summarized by instances
 `(homologyFunctor C (ComplexShape.up ℤ) 0).ShiftSequence ℤ` in the `CochainComplex`
 and `HomotopyCategory` namespaces.
-
 -/
 
 @[expose] public section
@@ -71,9 +70,8 @@ lemma shiftShortComplexFunctorIso_add'_hom_app
         ((CategoryTheory.shiftFunctorAdd' (CochainComplex C ℤ) m n mn hmn).hom.app K) ≫
         (shiftShortComplexFunctorIso C n a a' ha').hom.app (K⟦m⟧) ≫
         (shiftShortComplexFunctorIso C m a' a'' ha'').hom.app K := by
-  ext <;> dsimp <;> simp only [← hmn, Int.negOnePow_add, shiftFunctorAdd'_hom_app_f',
-    XIsoOfEq_shift, Linear.comp_units_smul, Linear.units_smul_comp,
-    XIsoOfEq_hom_comp_XIsoOfEq_hom, smul_smul]
+  ext <;> dsimp <;>
+    simp [← hmn, Int.negOnePow_add, shiftFunctorAdd'_hom_app_f', XIsoOfEq_shift, smul_smul]
 
 variable [CategoryWithHomology C]
 
@@ -183,6 +181,10 @@ noncomputable instance :
     (homologyFunctor C (ComplexShape.up ℤ))
     (homologyFunctorFactors C (ComplexShape.up ℤ))
 
+@[simp]
+lemma shift_homologyFunctor (n : ℤ) :
+    (homologyFunctor C (.up ℤ) 0).shift n = homologyFunctor C (.up ℤ) n := rfl
+
 variable {C}
 
 lemma homologyShiftIso_hom_app (n a a' : ℤ) (ha' : n + a = a') (K : CochainComplex C ℤ) :
@@ -198,7 +200,7 @@ lemma homologyShiftIso_hom_app (n a a' : ℤ) (ha' : n + a = a') (K : CochainCom
 lemma homologyFunctor_shiftMap
     {K L : CochainComplex C ℤ} {n : ℤ} (f : K ⟶ L⟦n⟧) (a a' : ℤ) (h : n + a = a') :
     (homologyFunctor C (ComplexShape.up ℤ) 0).shiftMap
-      ((quotient _ _).map f ≫ ((quotient _ _).commShiftIso n).hom.app _) a a' h =
+      (ShiftedHom.map f (quotient _ _)) a a' h =
         (homologyFunctorFactors _ _ a).hom.app K ≫
           (HomologicalComplex.homologyFunctor C (ComplexShape.up ℤ) 0).shiftMap f a a' h ≫
             (homologyFunctorFactors _ _ a').inv.app L := by

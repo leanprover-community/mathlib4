@@ -5,21 +5,23 @@ Authors: Simon Hudon
 -/
 module
 
+public import Batteries.Data.Except
 public import Mathlib.Logic.Equiv.Defs
-public import Batteries.Lean.Except
 
-import Mathlib.Tactic.Attr.Register
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Monad
 
 ## Attributes
 
-* ext
-* functor_norm
-* monad_norm
+* `ext`
+* `functor_norm`
+* `monad_norm`
 
-## Implementation Details
+## Implementation notes
 
 Set of rewrite rules and automation for monads in general and
 `ReaderT`, `StateT`, `ExceptT` and `OptionT` in particular.
@@ -36,7 +38,6 @@ and use regular `functor_norm` rules as well.
 ## Tags
 
 functor, applicative, monad, simp
-
 -/
 
 @[expose] public section

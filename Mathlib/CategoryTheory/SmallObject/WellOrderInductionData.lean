@@ -6,9 +6,16 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Category.Preorder
-public import Mathlib.CategoryTheory.Functor.Category
 public import Mathlib.CategoryTheory.Types.Basic
 public import Mathlib.Order.SuccPred.Limit
+
+import Mathlib.CategoryTheory.Limits.Final.Type
+import Mathlib.Order.Interval.Set.Final
+import Mathlib.Order.Interval.Set.Limit
+import Mathlib.Order.LatticeIntervals
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Limits of inverse systems indexed by well-ordered types
@@ -25,7 +32,6 @@ to the type of compatible families of elements in `F.obj (op i)` for `i < j`.
 In other words, from `val₀ : F.obj (op ⊥)`, a term `d : F.WellOrderInductionData`
 allows the construction, by transfinite induction, of a section of `F`
 which restricts to `val₀`.
-
 -/
 
 @[expose] public section
@@ -52,10 +58,10 @@ structure WellOrderInductionData where
   /-- When `j` is a limit element, and `x` is a compatible family of elements
   in `F.obj (op i)` for all `i < j`, this is a lifting to `F.obj (op j)`. -/
   lift (j : J) (hj : Order.IsSuccLimit j)
-    (x : ((OrderHom.Subtype.val (· ∈ Set.Iio j)).monotone.functor.op ⋙ F).sections) :
+    (x : ((Set.Iio j).mono_coe.functor.op ⋙ F).sections) :
       F.obj (op j)
   map_lift (j : J) (hj : Order.IsSuccLimit j)
-    (x : ((OrderHom.Subtype.val (· ∈ Set.Iio j)).monotone.functor.op ⋙ F).sections)
+    (x : ((Set.Iio j).mono_coe.functor.op ⋙ F).sections)
     (i : J) (hi : i < j) :
         F.map (homOfLE hi.le).op (lift j hj x) = x.val (op ⟨i, hi⟩)
 
@@ -96,7 +102,7 @@ structure Extension (val₀ : F.obj (op ⊥)) (j : J) where
       { val := fun ⟨⟨k, hk⟩⟩ ↦ F.map (homOfLE (hk.le.trans hij)).op val
         property := fun f ↦ by
           dsimp
-          rw [← FunctorToTypes.map_comp_apply]
+          rw [← comp_apply, ← map_comp]
           rfl }
 
 namespace Extension
@@ -108,18 +114,18 @@ variable {d} {val₀ : F.obj (op ⊥)}
 def ofLE {j : J} (e : d.Extension val₀ j) {i : J} (hij : i ≤ j) : d.Extension val₀ i where
   val := F.map (homOfLE hij).op e.val
   map_zero := by
-    rw [← FunctorToTypes.map_comp_apply]
+    rw [← comp_apply, ← map_comp]
     exact e.map_zero
   map_succ k hk := by
-    rw [← FunctorToTypes.map_comp_apply, ← FunctorToTypes.map_comp_apply, ← op_comp, ← op_comp,
+    rw [← comp_apply, ← map_comp, ← comp_apply, ← map_comp, ← op_comp, ← op_comp,
       homOfLE_comp, homOfLE_comp, e.map_succ k (lt_of_lt_of_le hk hij)]
   map_limit k hk hki := by
-    rw [← FunctorToTypes.map_comp_apply, ← op_comp, homOfLE_comp,
+    rw [← comp_apply, ← map_comp, ← op_comp, homOfLE_comp,
       e.map_limit k hk (hki.trans hij)]
     congr
     ext ⟨l, hl⟩
     dsimp
-    rw [← FunctorToTypes.map_comp_apply]
+    rw [← comp_apply, ← map_comp]
     rfl
 
 lemma val_injective {j : J} {e e' : d.Extension val₀ j} (h : e.val = e'.val) : e = e' := by
@@ -135,27 +141,26 @@ instance [WellFoundedLT J] (j : J) : Subsingleton (d.Extension val₀ j) := by
     refine Subsingleton.intro (fun e₁ e₂ ↦ val_injective ?_)
     have h₁ := e₁.map_zero
     have h₂ := e₂.map_zero
-    simp only [homOfLE_refl, op_id, FunctorToTypes.map_id_apply] at h₁ h₂
+    simp only [homOfLE_refl, op_id, map_id, id_apply] at h₁ h₂
     rw [h₁, h₂]
   | succ i hi hi' =>
     refine Subsingleton.intro (fun e₁ e₂ ↦ val_injective ?_)
     have h₁ := e₁.map_succ i (Order.lt_succ_of_not_isMax hi)
     have h₂ := e₂.map_succ i (Order.lt_succ_of_not_isMax hi)
-    simp only [homOfLE_refl, op_id, FunctorToTypes.map_id_apply, homOfLE_leOfHom] at h₁ h₂
+    simp only [homOfLE_refl, op_id, map_id, id_apply, homOfLE_leOfHom] at h₁ h₂
     rw [h₁, h₂]
-    congr
-    exact congr_arg val (Subsingleton.elim (e₁.ofLE (Order.le_succ i)) (e₂.ofLE (Order.le_succ i)))
+    congr 1
+    exact congrArg val (Subsingleton.elim (e₁.ofLE (Order.le_succ i)) (e₂.ofLE (Order.le_succ i)))
   | isSuccLimit i hi hi' =>
     refine Subsingleton.intro (fun e₁ e₂ ↦ val_injective ?_)
     have h₁ := e₁.map_limit i hi (by rfl)
     have h₂ := e₂.map_limit i hi (by rfl)
-    simp only [homOfLE_refl, op_id, FunctorToTypes.map_id_apply, OrderHom.Subtype.val_coe,
-      comp_obj, op_obj, Monotone.functor_obj, homOfLE_leOfHom] at h₁ h₂
+    simp only [homOfLE_refl, op_id, map_id, id_apply, homOfLE_leOfHom] at h₁ h₂
     rw [h₁, h₂]
     congr
     ext ⟨⟨l, hl⟩⟩
     have := hi' l hl
-    exact congr_arg val (Subsingleton.elim (e₁.ofLE hl.le) (e₂.ofLE hl.le))
+    congrm val $(Subsingleton.elim (e₁.ofLE hl.le) (e₂.ofLE hl.le))
 
 lemma compatibility [WellFoundedLT J]
     {j : J} (e : d.Extension val₀ j) {i : J} (e' : d.Extension val₀ i) (h : i ≤ j) :
@@ -182,27 +187,26 @@ def succ {j : J} (e : d.Extension val₀ j) (hj : ¬IsMax j) :
   map_zero := by
     simp only [← e.map_zero]
     conv_rhs => rw [← d.map_succ j hj e.val]
-    rw [← FunctorToTypes.map_comp_apply]
+    rw [← comp_apply, ← map_comp]
     rfl
   map_succ i hi := by
     obtain hij | rfl := ((Order.lt_succ_iff_of_not_isMax hj).mp hi).lt_or_eq
     · rw [← homOfLE_comp ((Order.lt_succ_iff_of_not_isMax hj).mp hi) (Order.le_succ j), op_comp,
-        FunctorToTypes.map_comp_apply, d.map_succ, ← e.map_succ i hij,
+        map_comp, comp_apply, d.map_succ, ← e.map_succ i hij,
         ← homOfLE_comp (Order.succ_le_of_lt hij) (Order.le_succ j), op_comp,
-        FunctorToTypes.map_comp_apply, d.map_succ]
-    · simp only [homOfLE_refl, op_id, FunctorToTypes.map_id_apply, homOfLE_leOfHom,
-        d.map_succ]
+        map_comp, comp_apply, d.map_succ]
+    · simp only [homOfLE_refl, op_id, map_id, id_apply, homOfLE_leOfHom, d.map_succ]
   map_limit i hi hij := by
     obtain hij | rfl := hij.lt_or_eq
     · have hij' : i ≤ j := (Order.lt_succ_iff_of_not_isMax hj).mp hij
-      have := congr_arg (F.map (homOfLE hij').op) (d.map_succ j hj e.val)
-      rw [e.map_limit i hi, ← FunctorToTypes.map_comp_apply, ← op_comp, homOfLE_comp] at this
+      have := congr(F.map (homOfLE hij').op $(d.map_succ j hj e.val))
+      rw [e.map_limit i hi, ← comp_apply, ← map_comp, ← op_comp, homOfLE_comp] at this
       rw [this]
       congr
       ext ⟨⟨l, hl⟩⟩
       dsimp
       conv_lhs => rw [← d.map_succ j hj e.val]
-      rw [← FunctorToTypes.map_comp_apply]
+      rw [← comp_apply, ← map_comp]
       rfl
     · exfalso
       exact hj hi.isMax
@@ -216,20 +220,19 @@ def limit (j : J) (hj : Order.IsSuccLimit j)
     d.Extension val₀ j where
   val := d.lift j hj
     { val := fun ⟨i, hi⟩ ↦ (e i hi).val
-      property := fun f ↦ by apply compatibility }
+      property := fun f ↦ by dsimp; apply compatibility }
   map_zero := by
     rw [d.map_lift _ _ _ _ (by simpa [bot_lt_iff_ne_bot] using hj.not_isMin)]
-    simpa only [homOfLE_refl, op_id, FunctorToTypes.map_id_apply] using
-      (e ⊥ (by simpa [bot_lt_iff_ne_bot] using hj.not_isMin)).map_zero
+    simpa using (e ⊥ (by simpa [bot_lt_iff_ne_bot] using hj.not_isMin)).map_zero
   map_succ i hi := by
-    convert (e (Order.succ i) ((Order.IsSuccLimit.succ_lt_iff hj).mpr hi)).map_succ i
-      (by
-        simp only [Order.lt_succ_iff_not_isMax, not_isMax_iff]
-        exact ⟨_, hi⟩) using 1
+    convert
+      (e (Order.succ i) ((Order.IsSuccLimit.succ_lt_iff hj).mpr hi)).map_succ i
+        (by
+          simp only [Order.lt_succ_iff_not_isMax, not_isMax_iff]
+          exact ⟨_, hi⟩) using 1
     · dsimp
-      rw [FunctorToTypes.map_id_apply,
-        d.map_lift _ _ _ _ ((Order.IsSuccLimit.succ_lt_iff hj).mpr hi)]
-    · congr
+      rw [map_id, id_apply, d.map_lift _ _ _ _ ((Order.IsSuccLimit.succ_lt_iff hj).mpr hi)]
+    · congr 1
       rw [d.map_lift _ _ _ _ hi]
       symm
       apply compatibility
@@ -237,17 +240,16 @@ def limit (j : J) (hj : Order.IsSuccLimit j)
     obtain hij' | rfl := hij.lt_or_eq
     · have := (e i hij').map_limit i hi (by rfl)
       dsimp at this ⊢
-      rw [FunctorToTypes.map_id_apply] at this
+      rw [map_id, id_apply] at this
       rw [d.map_lift _ _ _ _ hij']
       dsimp
       rw [this]
       congr
-      dsimp
       ext ⟨⟨l, hl⟩⟩
       rw [map_lift _ _ _ _ _ (hl.trans hij')]
       apply compatibility
     · dsimp
-      rw [FunctorToTypes.map_id_apply]
+      rw [map_id, id_apply]
       congr
       ext ⟨⟨l, hl⟩⟩
       rw [d.map_lift _ _ _ _ hl]
@@ -275,12 +277,66 @@ noncomputable def sectionsMk (val₀ : F.obj (op ⊥)) : F.sections where
 
 lemma sectionsMk_val_op_bot (val₀ : F.obj (op ⊥)) :
     (d.sectionsMk val₀).val (op ⊥) = val₀ := by
-  simpa using (default : d.Extension val₀ ⊥).map_zero
+  simpa using! (default : d.Extension val₀ ⊥).map_zero
 
 include d in
 lemma surjective :
     Function.Surjective ((fun s ↦ s (op ⊥)) ∘ Subtype.val : F.sections → F.obj (op ⊥)) :=
   fun val₀ ↦ ⟨d.sectionsMk val₀, d.sectionsMk_val_op_bot val₀⟩
+
+variable (t : J) in
+/-- Given a `F.WellOrderInductionData`, and a non-limit element, construct a
+`WellOrderInductionData` on the restriction of `F` to elements `≥ t`.
+This is used as a way to construct sections of `F` from non-minimal elements. -/
+private noncomputable def restrictIci (d : F.WellOrderInductionData)
+    (t : J) (ht : ¬ Order.IsSuccLimit t) :
+    ((Set.Ici t).mono_coe.functor.op ⋙ F).WellOrderInductionData :=
+  have hj' (j : Set.Ici t) (hj : Order.IsSuccLimit j) :
+      Order.IsSuccLimit j.val := Set.Ici.isSuccLimit_coe j hj
+  letI φ (j : Set.Ici t) : Set.Iio j → Set.Iio j.val := fun u ↦ ⟨u, u.property⟩
+  haveI hφ (j : Set.Ici t) : Monotone (φ j) := by tauto
+  haveI hφ' (j : Set.Ici t) (hj : Order.IsSuccLimit j) : (hφ j).functor.Final := by
+    simp only [Monotone.final_functor_iff, Subtype.exists, Set.mem_Iio, Set.mem_Ici,
+      Subtype.forall, Subtype.mk_le_mk, exists_prop, exists_and_right, φ]
+    refine fun j₁ a ↦ ⟨max t (Order.succ j₁), ⟨?_, ?_⟩, ?_⟩
+    all_goals grind [Order.IsSuccLimit.succ_lt, Subtype.mk_lt_mk, Order.le_succ]
+  { succ j hj p :=
+      (F.map (homOfLE (by dsimp; rw [coe_succ_of_mem (by grind [Order.le_succ])])).op)
+        (d.succ j.val (fun h ↦ hj (fun _ h' ↦ h h')) p)
+    map_succ u hu v := by
+      dsimp
+      rw [← ConcreteCategory.comp_apply, ← F.map_comp, ← op_comp]
+      apply d.map_succ
+    lift j hj s :=
+      haveI := hφ' j hj
+      d.lift j (Set.Ici.isSuccLimit_coe _ hj)
+        ((sectionsEquivOfInitial (hφ j).functor.op _).symm s)
+    map_lift j hj s i hi := by
+      have := hφ' j hj
+      dsimp
+      rw [dsimp% d.map_lift j (Set.Ici.isSuccLimit_coe _ hj)
+        ((sectionsEquivOfInitial (hφ j).functor.op _).symm s) i hi]
+      obtain ⟨t, rfl⟩ := (sectionsEquivOfInitial (hφ j).functor.op
+        ((Set.mono_coe _).functor.op ⋙ F)).surjective s
+      simp [dsimp% (sectionsEquivOfInitial (hφ j).functor.op
+        ((Set.mono_coe _).functor.op ⋙ F)).symm_apply_apply t, φ] }
+
+omit [OrderBot J] in
+include d in
+lemma surjective' (t : J) (ht : ¬ Order.IsSuccLimit t) :
+    Function.Surjective ((fun s ↦ s (op t)) ∘ Subtype.val : F.sections → F.obj (op t)) := by
+  -- The idea is to apply `surjective` to Set.Ici t
+  let _ : OrderBot (Set.Ici t) := Set.Ici.orderBot
+  let F' : (Set.Ici t)ᵒᵖ ⥤ Type v := (Set.Ici t).mono_coe.functor.op ⋙ F
+  let d' : F'.WellOrderInductionData := d.restrictIci t ht
+  intro u
+  obtain ⟨s, hs⟩ := d'.surjective u
+  have : (Set.Ici t).mono_coe.functor.op.Initial := Functor.initial_op_of_final _
+  let e : F.sections ≃ F'.sections := Equiv.ofBijective _ <|
+    (Set.Ici t).mono_coe.functor.op.bijective_sectionsPrecomp F
+  use ⟨e.symm s, by simp⟩
+  rw [← hs]
+  exact congr($(e.apply_symm_apply s).val (op ⊥))
 
 end WellOrderInductionData
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Subgroup.Pointwise
 public import Mathlib.Algebra.GroupWithZero.Submonoid.Pointwise
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subgroups in a group with zero
 -/
@@ -55,6 +58,7 @@ variable [Monoid M] [AddGroup A] [DistribMulAction M A] {a : M}
 /-- The action on an additive subgroup corresponding to applying the action to every element.
 
 This is available as an instance in the `Pointwise` locale. -/
+@[instance_reducible]
 protected def pointwiseMulAction : MulAction M (AddSubgroup A) where
   smul a S := S.map (DistribMulAction.toAddMonoidEnd _ A a)
   one_smul S :=

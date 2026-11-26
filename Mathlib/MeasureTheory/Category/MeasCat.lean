@@ -5,8 +5,8 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.GiryMonad
 public import Mathlib.CategoryTheory.Monad.Algebra
+public import Mathlib.MeasureTheory.Measure.GiryMonad
 public import Mathlib.Topology.Category.TopCat.Basic
 
 /-!
@@ -60,18 +60,19 @@ theorem coe_of (X : Type u) [MeasurableSpace X] : (of X : Type u) = X :=
 instance : LargeCategory MeasCat where
   Hom X Y := { f : X → Y // Measurable f }
   id X := ⟨id, measurable_id⟩
-  comp f g := ⟨g.1 ∘ f.1, g.2.comp f.2⟩
+  comp f g := ⟨g.val ∘ f.val, g.property.comp f.property⟩
 
+@[macro_inline]
 instance (X Y : MeasCat) : FunLike ({ f : X → Y // Measurable f }) X Y where
   coe f := f
-  coe_injective' _ _ := Subtype.ext
+  coe_injective _ _ := Subtype.ext
 
 instance : ConcreteCategory MeasCat ({ f : · → · // Measurable f }) where
   hom f := f
   ofHom f := f
 
 instance : Inhabited MeasCat :=
-  ⟨MeasCat.of Empty⟩
+  ⟨↧Empty⟩
 
 /-- `Measure X` is the measurable space of measures over the measurable space `X`. It is the
 weakest measurable space, s.t. `fun μ ↦ μ s` is measurable for all measurable sets `s` in `X`. An
@@ -83,8 +84,8 @@ In probability theory, the `MeasCat`-morphisms `X → Prob X` are (sub-)Markov k
 the restriction of `Measure` to (sub-)probability spaces.)
 -/
 def Measure : MeasCat ⥤ MeasCat where
-  obj X := of (@MeasureTheory.Measure X.1 X.2)
-  map f := ⟨Measure.map (⇑f), Measure.measurable_map f.1 f.2⟩
+  obj X := of (@MeasureTheory.Measure X.carrier X.str)
+  map f := ⟨Measure.map (⇑f), Measure.measurable_map f.val f.property⟩
   map_id X := Subtype.ext <| funext fun μ => @Measure.map_id X.carrier X.str μ
   map_comp := fun ⟨_, hf⟩ ⟨_, hg⟩ => Subtype.ext <| funext fun _ => (Measure.map_map hg hf).symm
 
@@ -92,11 +93,11 @@ def Measure : MeasCat ⥤ MeasCat where
 def Giry : CategoryTheory.Monad MeasCat where
   toFunctor := Measure
   η :=
-    { app := fun X => ⟨@Measure.dirac X.1 X.2, Measure.measurable_dirac⟩
+    { app := fun X => ⟨@Measure.dirac X.carrier X.str, Measure.measurable_dirac⟩
       naturality :=
-        fun _ _ ⟨_, hf⟩ => Subtype.ext <| funext fun a => (Measure.map_dirac hf a).symm }
+        fun _ _ ⟨_, hf⟩ => Subtype.ext <| funext fun a => (Measure.map_dirac' hf a).symm }
   μ :=
-    { app := fun X => ⟨@Measure.join X.1 X.2, Measure.measurable_join⟩
+    { app := fun X => ⟨@Measure.join X.carrier X.str, Measure.measurable_join⟩
       naturality := fun _ _ ⟨_, hf⟩ => Subtype.ext <| funext fun μ => Measure.join_map_map hf μ }
   assoc _ := Subtype.ext <| funext fun _ => Measure.join_map_join _
   left_unit _ := Subtype.ext <| funext fun _ => Measure.join_dirac _
@@ -105,7 +106,7 @@ def Giry : CategoryTheory.Monad MeasCat where
 /-- An example of an algebra on `Measure`: the nonnegative Lebesgue integral is a hom, behaving
 nicely under the monad operations. -/
 def Integral : Giry.Algebra where
-  A := MeasCat.of ℝ≥0∞
+  A := ↧ℝ≥0∞
   a := ⟨fun m : MeasureTheory.Measure ℝ≥0∞ ↦ ∫⁻ x, x ∂m, Measure.measurable_lintegral measurable_id⟩
   unit := Subtype.ext <| funext fun _ : ℝ≥0∞ => lintegral_dirac' _ measurable_id
   assoc := Subtype.ext <| funext fun μ : MeasureTheory.Measure (MeasureTheory.Measure ℝ≥0∞) ↦
@@ -117,8 +118,18 @@ end MeasCat
 
 instance TopCat.hasForgetToMeasCat : HasForget₂ TopCat.{u} MeasCat.{u} where
   forget₂.obj X := @MeasCat.of _ (borel X)
-  forget₂.map f := ⟨f.1, f.hom.2.borel_measurable⟩
+  forget₂.map f := ⟨f.hom', Continuous.borel_measurable (by fun_prop)⟩
 
 /-- The Borel functor, the canonical embedding of topological spaces into measurable spaces. -/
 abbrev Borel : TopCat.{u} ⥤ MeasCat.{u} :=
   forget₂ TopCat.{u} MeasCat.{u}
+
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prints `MeasCat.of X` as `↧X`. -/
+@[app_delab MeasCat.of]
+meta def MeasCat.delabOf : Delab := CategoryTheory.delabOf
+
+end Notation

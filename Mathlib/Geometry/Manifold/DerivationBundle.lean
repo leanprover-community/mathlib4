@@ -8,8 +8,10 @@ module
 public import Mathlib.Geometry.Manifold.Algebra.SmoothFunctions
 public import Mathlib.RingTheory.Derivation.Basic
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Derivation bundle
 
 In this file we define the derivations at a point of a manifold on the algebra of smooth functions.
@@ -41,6 +43,7 @@ Denoted as `C^n⟮I, M; 𝕜⟯⟨x⟩` within the `Derivation` namespace. -/
 @[nolint unusedArguments]
 def PointedContMDiffMap (_ : M) :=
   C^n⟮I, M; 𝕜⟯
+deriving FunLike, CommRing, Algebra 𝕜
 
 @[inherit_doc]
 scoped[Derivation] notation "C^" n "⟮" I ", " M "; " 𝕜 "⟯⟨" x "⟩" => PointedContMDiffMap 𝕜 I M n x
@@ -51,20 +54,11 @@ namespace PointedContMDiffMap
 
 open scoped Derivation
 
-instance instFunLike {x : M} : FunLike C^∞⟮I, M; 𝕜⟯⟨x⟩ M 𝕜 :=
-  ContMDiffMap.instFunLike
-
-instance {x : M} : CommRing C^∞⟮I, M; 𝕜⟯⟨x⟩ :=
-  ContMDiffMap.commRing
-
-instance {x : M} : Algebra 𝕜 C^∞⟮I, M; 𝕜⟯⟨x⟩ :=
-  ContMDiffMap.algebra
-
 instance {x : M} : Inhabited C^∞⟮I, M; 𝕜⟯⟨x⟩ :=
   ⟨0⟩
 
 instance {x : M} : Algebra C^∞⟮I, M; 𝕜⟯⟨x⟩ C^∞⟮I, M; 𝕜⟯ :=
-  Algebra.id C^∞⟮I, M; 𝕜⟯
+  inferInstanceAs <| Algebra C^∞⟮I, M; 𝕜⟯ C^∞⟮I, M; 𝕜⟯
 
 instance {x : M} : IsScalarTower 𝕜 C^∞⟮I, M; 𝕜⟯⟨x⟩ C^∞⟮I, M; 𝕜⟯ :=
   IsScalarTower.right
@@ -73,7 +67,7 @@ variable {I}
 
 /-- `ContMDiffMap.evalRingHom` gives rise to an algebra structure of `C^∞⟮I, M; 𝕜⟯` on `𝕜`. -/
 instance evalAlgebra {x : M} : Algebra C^∞⟮I, M; 𝕜⟯⟨x⟩ 𝕜 :=
-  (ContMDiffMap.evalRingHom x : C^∞⟮I, M; 𝕜⟯⟨x⟩ →+* 𝕜).toAlgebra
+  fast_instance% (ContMDiffMap.evalRingHom x : C^∞⟮I, M; 𝕜⟯⟨x⟩ →+* 𝕜).toAlgebra
 
 /-- With the `evalAlgebra` algebra structure evaluation is actually an algebra morphism. -/
 def eval (x : M) : C^∞⟮I, M; 𝕜⟯ →ₐ[C^∞⟮I, M; 𝕜⟯⟨x⟩] 𝕜 :=
@@ -82,6 +76,7 @@ def eval (x : M) : C^∞⟮I, M; 𝕜⟯ →ₐ[C^∞⟮I, M; 𝕜⟯⟨x⟩] �
 theorem smul_def (x : M) (f : C^∞⟮I, M; 𝕜⟯⟨x⟩) (k : 𝕜) : f • k = f x * k :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance (x : M) : IsScalarTower 𝕜 C^∞⟮I, M; 𝕜⟯⟨x⟩ 𝕜 where
   smul_assoc k f h := by
     rw [smul_def, smul_def, ContMDiffMap.coe_smul, Pi.smul_apply, smul_eq_mul, smul_eq_mul,
@@ -112,6 +107,7 @@ namespace Derivation
 
 variable {I}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The evaluation at a point as a linear map. -/
 def evalAt (x : M) : Derivation 𝕜 C^∞⟮I, M; 𝕜⟯ C^∞⟮I, M; 𝕜⟯ →ₗ[C^∞⟮I, M; 𝕜⟯⟨x⟩]
   PointDerivation I x := (ContMDiffFunction.evalAt I x).compDer
@@ -125,6 +121,7 @@ variable {I} {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Ty
   [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*} [TopologicalSpace M']
   [ChartedSpace H' M']
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The heterogeneous differential as a linear map, denoted as `𝒅ₕ` within the `Manifold` namespace.
 Instead of taking a function as an argument, this
 differential takes `h : f x = y`. It is particularly handy for situations where the points

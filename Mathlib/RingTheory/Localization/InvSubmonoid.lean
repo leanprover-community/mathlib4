@@ -9,6 +9,9 @@ public import Mathlib.GroupTheory.Submonoid.Inverses
 public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.Localization.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Submonoid of inverses
 
@@ -22,6 +25,7 @@ public import Mathlib.RingTheory.Localization.Defs
 See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
 
 ## Tags
+
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
 -/
@@ -70,20 +74,21 @@ theorem mul_toInvSubmonoid (m : M) : algebraMap R S m * (toInvSubmonoid M S m : 
 
 @[simp]
 theorem smul_toInvSubmonoid (m : M) : m • (toInvSubmonoid M S m : S) = 1 := by
-  convert mul_toInvSubmonoid M S m
+  convert! mul_toInvSubmonoid M S m
   ext
   rw [← Algebra.smul_def]
   rfl
 
 variable {S}
 
--- `surj'` was taken, so use `surj''` instead
--- TODO: this can be fixed after the deprecations of 2025-09-04 are removed.
-theorem surj'' (z : S) : ∃ (r : R) (m : M), z = r • (toInvSubmonoid M S m : S) := by
+theorem surj' (z : S) : ∃ (r : R) (m : M), z = r • (toInvSubmonoid M S m : S) := by
   rcases IsLocalization.surj M z with ⟨⟨r, m⟩, e : z * _ = algebraMap R S r⟩
   refine ⟨r, m, ?_⟩
   rw [Algebra.smul_def, ← e, mul_assoc]
   simp
+
+@[deprecated surj' (since := "2026-08-20")]
+alias surj'' := surj'
 
 theorem toInvSubmonoid_eq_mk' (x : M) : (toInvSubmonoid M S x : S) = mk' S 1 x := by
   rw [← (IsLocalization.map_units S x).mul_left_inj]
@@ -92,7 +97,7 @@ theorem toInvSubmonoid_eq_mk' (x : M) : (toInvSubmonoid M S x : S) = mk' S 1 x :
 theorem mem_invSubmonoid_iff_exists_mk' (x : S) :
     x ∈ invSubmonoid M S ↔ ∃ m : M, mk' S 1 m = x := by
   simp_rw [← toInvSubmonoid_eq_mk']
-  exact ⟨fun h => ⟨_, congr_arg Subtype.val (toInvSubmonoid_surjective M S ⟨x, h⟩).choose_spec⟩,
+  exact ⟨fun h => ⟨_, congr($((toInvSubmonoid_surjective M S ⟨x, h⟩).choose_spec).val)⟩,
     fun h => h.choose_spec ▸ (toInvSubmonoid M S h.choose).prop⟩
 
 variable (S)
@@ -100,12 +105,12 @@ variable (S)
 theorem span_invSubmonoid : Submodule.span R (invSubmonoid M S : Set S) = ⊤ := by
   rw [eq_top_iff]
   rintro x -
-  rcases IsLocalization.surj'' M x with ⟨r, m, rfl⟩
+  rcases IsLocalization.surj' M x with ⟨r, m, rfl⟩
   exact Submodule.smul_mem _ _ (Submodule.subset_span (toInvSubmonoid M S m).prop)
 
 theorem finiteType_of_monoid_fg [Monoid.FG M] : Algebra.FiniteType R S := by
   have := Monoid.fg_of_surjective _ (toInvSubmonoid_surjective M S)
-  rw [Monoid.fg_iff_submonoid_fg] at this
+  rw [Monoid.FG, Submonoid.isMulFG_iff] at this
   rcases this with ⟨s, hs⟩
   refine ⟨⟨s, ?_⟩⟩
   rw [eq_top_iff]

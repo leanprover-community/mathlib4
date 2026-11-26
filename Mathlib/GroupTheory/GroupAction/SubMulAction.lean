@@ -6,14 +6,11 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Algebra.Group.Subgroup.Actions
-public import Mathlib.Algebra.Module.Defs
-public import Mathlib.Data.SetLike.Basic
-public import Mathlib.Data.Setoid.Basic
 public import Mathlib.GroupTheory.GroupAction.Defs
 public import Mathlib.GroupTheory.GroupAction.Hom
+public import Mathlib.Order.Setoid.Basic
 
 /-!
-
 # Sets invariant to a `MulAction`
 
 In this file we define `SubMulAction R M`; a subset of a `MulAction R M` which is closed with
@@ -31,7 +28,7 @@ For most uses, typically `Submodule R M` is more powerful.
 
 ## Tags
 
-submodule, mul_action
+submodule, multiplicative action
 -/
 
 @[expose] public section
@@ -66,7 +63,8 @@ class VAddMemClass (S : Type*) (R : outParam Type*) (M : Type*) [VAdd R M] [SetL
 
 attribute [to_additive] SMulMemClass
 
-attribute [aesop 90% (rule_sets := [SetLike])] SMulMemClass.smul_mem VAddMemClass.vadd_mem
+attribute [aesop 90% (rule_sets := [SetLike]), membership .]
+  SMulMemClass.smul_mem VAddMemClass.vadd_mem
 
 /-- Not registered as an instance because `R` is an `outParam` in `SMulMemClass S R M`. -/
 lemma AddSubmonoidClass.nsmulMemClass {S M : Type*} [AddMonoid M] [SetLike S M]
@@ -90,7 +88,7 @@ variable [SMul R M] [SetLike S M] [hS : SMulMemClass S R M] (s : S)
 /-- A subset closed under the scalar action inherits that action. -/
 @[to_additive /-- A subset closed under the additive action inherits that action. -/]
 instance (priority := 50) smul : SMul R s :=
-  ⟨fun r x => ⟨r • x.1, smul_mem r x.2⟩⟩
+  ⟨fun r x => ⟨r • x.val, smul_mem r x.property⟩⟩
 
 @[to_additive] instance (priority := 50) [SMul T M] [SMulMemClass S T M] [SMulCommClass T R M] :
     SMulCommClass T R s where
@@ -100,7 +98,7 @@ instance (priority := 50) smul : SMul R s :=
   left_cancel' x _ _ eq := Subtype.ext <| IsLeftCancelSMul.left_cancel x _ _ congr($eq)
 
 @[to_additive] instance (priority := 50) [IsCancelSMul R M] : IsCancelSMul R s where
-  right_cancel' _ _ x eq := IsCancelSMul.right_cancel _ _ x.1 congr($eq)
+  right_cancel' _ _ x eq := IsCancelSMul.right_cancel _ _ x.val congr($eq)
 
 /-- This can't be an instance because Lean wouldn't know how to find `N`, but we can still use
 this to manually derive `SMulMemClass` on specific types. -/
@@ -126,13 +124,28 @@ theorem mk_smul_mk (r : R) (x : M) (hx : x ∈ s) : r • (⟨x, hx⟩ : s) = �
   rfl
 
 @[to_additive]
-theorem smul_def (r : R) (x : s) : r • x = ⟨r • x, smul_mem r x.2⟩ :=
+theorem smul_def (r : R) (x : s) : r • x = ⟨r • x, smul_mem r x.property⟩ :=
   rfl
 
 @[simp]
 theorem forall_smul_mem_iff {R M S : Type*} [Monoid R] [MulAction R M] [SetLike S M]
     [SMulMemClass S R M] {N : S} {x : M} : (∀ a : R, a • x ∈ N) ↔ x ∈ N :=
   ⟨fun h => by simpa using h 1, fun h a => SMulMemClass.smul_mem a h⟩
+
+open scoped Pointwise in
+@[to_additive]
+theorem smul_subset_self {S R M : Type*} [SetLike S M] [SMul R M] [SMulMemClass S R M]
+    (r : R) (s : S) : (r • s : Set M) ⊆ s := by
+  rintro _ ⟨x, hx, rfl⟩
+  simpa using SMulMemClass.smul_mem (r : R) hx
+
+open scoped Pointwise in
+@[to_additive (attr := simp)]
+theorem units_smul {S R M : Type*} [SetLike S M] [Monoid R] [MulAction R M] [SMulMemClass S R M]
+    (s : S) (r : Rˣ) : r • s = (s : Set M) := by
+  apply subset_antisymm (smul_subset_self _ s)
+  rintro x hx
+  exact ⟨r⁻¹ • x, SMulMemClass.smul_mem (↑r⁻¹ : R) hx, by simp [← Units.smul_def]⟩
 
 end SMul
 
@@ -145,10 +158,10 @@ variable {N α : Type*} [SetLike S α] [SMul M N] [SMul M α] [Monoid N]
 /-- A subset closed under the scalar action inherits that action. -/
 @[to_additive /-- A subset closed under the additive action inherits that action. -/]
 instance (priority := 50) smul' : SMul M s where
-  smul r x := ⟨r • x.1, smul_one_smul N r x.1 ▸ smul_mem _ x.2⟩
+  smul r x := ⟨r • x.val, smul_one_smul N r x.val ▸ smul_mem _ x.property⟩
 
 instance (priority := 50) : IsScalarTower M N s where
-  smul_assoc m n x := Subtype.ext (smul_assoc m n x.1)
+  smul_assoc m n x := Subtype.ext (smul_assoc m n x.val)
 
 @[to_additive (attr := simp, norm_cast)]
 protected theorem val_smul_of_tower (r : M) (x : s) : (↑(r • x) : α) = r • (x : α) :=
@@ -161,7 +174,7 @@ theorem mk_smul_of_tower_mk (r : M) (x : α) (hx : x ∈ s) :
 
 @[to_additive]
 theorem smul_of_tower_def (r : M) (x : s) :
-    r • x = ⟨r • x, smul_one_smul N r x.1 ▸ smul_mem _ x.2⟩ :=
+    r • x = ⟨r • x, smul_one_smul N r x.val ▸ smul_mem _ x.property⟩ :=
   rfl
 
 @[to_additive] instance (priority := 50) [SMulCommClass M N α] : SMulCommClass M N s where
@@ -196,6 +209,8 @@ variable [SMul R M]
 @[to_additive]
 instance : SetLike (SubMulAction R M) M :=
   ⟨SubMulAction.carrier, fun p q h => by cases p; cases q; congr⟩
+
+@[to_additive] instance : PartialOrder (SubMulAction R M) := .ofSetLike (SubMulAction R M)
 
 @[to_additive]
 instance : SMulMemClass (SubMulAction R M) R M where smul_mem := smul_mem' _
@@ -254,8 +269,8 @@ instance : InfSet (SubMulAction R M) :=
 
 @[to_additive]
 instance : CompleteLattice (SubMulAction R M) :=
-  SetLike.coe_injective.completeLattice _ (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ => rfl) rfl rfl
+  SetLike.coe_injective.completeLattice _ .rfl .rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
+    (fun _ ↦ rfl) rfl rfl
 
 @[to_additive (attr := simp)]
 theorem mem_iSup {ι : Sort*} {p : ι → SubMulAction R M} {x : M} :
@@ -284,7 +299,7 @@ theorem smul_mem (r : R) (h : x ∈ p) : r • x ∈ p :=
   p.smul_mem' r h
 
 @[to_additive]
-instance : SMul R p where smul c x := ⟨c • x.1, smul_mem _ c x.2⟩
+instance : SMul R p where smul c x := ⟨c • x.val, smul_mem _ c x.property⟩
 
 variable {p} in
 @[to_additive (attr := norm_cast, simp)]
@@ -358,7 +373,7 @@ theorem smul_of_tower_mem (s : S) {x : M} (h : x ∈ p) : s • x ∈ p := by
   exact p.smul_mem _ h
 
 @[to_additive]
-instance smul' : SMul S p where smul c x := ⟨c • x.1, smul_of_tower_mem _ c x.2⟩
+instance smul' : SMul S p where smul c x := ⟨c • x.val, smul_of_tower_mem _ c x.property⟩
 
 @[to_additive]
 instance isScalarTower : IsScalarTower S R p where
@@ -408,11 +423,6 @@ end
 theorem val_image_orbit {p : SubMulAction R M} (m : p) :
     Subtype.val '' MulAction.orbit R m = MulAction.orbit R (m : M) :=
   (Set.range_comp _ _).symm
-
-/- -- Previously, the relatively useless :
-lemma orbit_of_sub_mul {p : SubMulAction R M} (m : p) :
-    (mul_action.orbit R m : set M) = MulAction.orbit R (m : M) := rfl
--/
 
 @[to_additive]
 theorem val_preimage_orbit {p : SubMulAction R M} (m : p) :
@@ -482,8 +492,8 @@ section AddCommGroup
 
 variable [Ring R] [AddCommGroup M]
 variable [Module R M]
-variable (p p' : SubMulAction R M)
-variable {r : R} {x y : M}
+variable (p : SubMulAction R M)
+variable {x : M}
 
 theorem neg_mem (hx : x ∈ p) : -x ∈ p := by
   rw [← neg_one_smul R]
@@ -496,7 +506,7 @@ theorem neg_mem_iff : -x ∈ p ↔ x ∈ p :=
     exact neg_mem _ h, neg_mem _⟩
 
 instance : Neg p :=
-  ⟨fun x => ⟨-x.1, neg_mem _ x.2⟩⟩
+  ⟨fun x => ⟨-x.val, neg_mem _ x.property⟩⟩
 
 @[simp, norm_cast]
 theorem val_neg (x : p) : ((-x : p) : M) = -x :=
@@ -510,7 +520,7 @@ namespace SubMulAction
 
 variable [GroupWithZero S] [Monoid R] [MulAction R M]
 variable [SMul S R] [MulAction S M] [IsScalarTower S R M]
-variable (p : SubMulAction R M) {s : S} {x y : M}
+variable (p : SubMulAction R M) {s : S} {x : M}
 
 theorem smul_mem_iff (s0 : s ≠ 0) : s • x ∈ p ↔ x ∈ p :=
   p.smul_mem_iff' (Units.mk0 s s0)
@@ -562,7 +572,7 @@ def nonZeroSubMul : SubMulAction Rˣ M where
   smul_mem' := by simp [Units.smul_def]
 
 instance : MulAction Rˣ { x : M // x ≠ 0 } :=
-  SubMulAction.mulAction' (nonZeroSubMul R M)
+  inferInstanceAs <| MulAction Rˣ (nonZeroSubMul R M)
 
 @[simp]
 lemma smul_coe (a : Rˣ) (x : { x : M // x ≠ 0 }) :
@@ -585,7 +595,7 @@ lemma smul_mem_fixedPoints_of_normal [hH : H.Normal]
     g • a ∈ MulAction.fixedPoints H α := by
   intro h
   rw [Subgroup.smul_def, ← inv_smul_eq_iff, smul_smul, smul_smul]
-  exact ha ⟨_, hH.conj_mem' _ h.2 _⟩
+  exact ha ⟨_, hH.conj_mem' _ h.property _⟩
 
 /-- The set of fixed points of a normal subgroup is stable under the group action. -/
 @[to_additive /-- The set of fixed points of a normal subgroup is stable under the group action. -/]
@@ -594,7 +604,7 @@ def fixedPointsSubMulOfNormal [hH : H.Normal] : SubMulAction G α where
   smul_mem' := smul_mem_fixedPoints_of_normal
 
 instance [hH : H.Normal] : MulAction G (MulAction.fixedPoints H α) :=
-  SubMulAction.mulAction' fixedPointsSubMulOfNormal
+  inferInstanceAs <| MulAction G fixedPointsSubMulOfNormal
 
 @[simp]
 lemma coe_smul_fixedPoints_of_normal [hH : H.Normal]

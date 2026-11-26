@@ -11,6 +11,7 @@ public import Mathlib.Control.Bitraversable.Basic
 # Bitraversable Lemmas
 
 ## Main definitions
+
   * tfst - traverse on first functor argument
   * tsnd - traverse on second functor argument
 
@@ -30,11 +31,9 @@ with the applicatives `id` and `comp`
 ## Tags
 
 traversable bitraversable functor bifunctor applicative
-
-
 -/
 
-@[expose] public section
+public section
 
 
 universe u

@@ -5,7 +5,7 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Algebra.Group.Monoid
 
 /-!
 # The natural numbers form a monoid
@@ -15,7 +15,7 @@ This file contains the additive and multiplicative monoid instances on the natur
 See note [foundational algebra order theory].
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero DenselyOrdered
 
@@ -54,10 +54,10 @@ instance instCommMonoid : CommMonoid ℕ where
 -- typeclass search, but it is better practice to not rely on algebraic order theory to prove
 -- purely algebraic results on concrete types. Eg the results can be made available earlier.
 
-instance instIsMulTorsionFree : IsMulTorsionFree ℕ where
+instance : HasUniqueRoots ℕ where
   pow_left_injective _ h _ _ := (Nat.pow_left_inj h).mp
 
-instance instIsAddTorsionFree : IsAddTorsionFree ℕ where
+instance : HasUniqueDiv ℕ where
   nsmul_right_injective _n hn _x _y hxy := Nat.mul_left_cancel (Nat.pos_of_ne_zero hn) hxy
 
 /-!

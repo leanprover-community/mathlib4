@@ -6,7 +6,6 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Analysis.Quaternion
-public import Mathlib.Analysis.Normed.Algebra.Exponential
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Series
 
 /-!
@@ -21,7 +20,6 @@ This file contains results about `NormedSpace.exp` on `Quaternion ℝ`.
 * `Quaternion.exp_of_re_eq_zero`: the special case when the quaternion has a zero real part.
 * `Quaternion.norm_exp`: the norm of the quaternion exponential is the norm of the exponential of
   the real part.
-
 -/
 
 public section
@@ -42,7 +40,7 @@ theorem expSeries_even_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) (n : �
       ↑((-1 : ℝ) ^ n * ‖q‖ ^ (2 * n) / (2 * n)!) := by
   rw [expSeries_apply_eq]
   have hq2 : q ^ 2 = -normSq q := sq_eq_neg_normSq.mpr hq
-  letI k : ℝ := ↑(2 * n)!
+  let k : ℝ := ↑(2 * n)!
   calc
     k⁻¹ • q ^ (2 * n) = k⁻¹ • (-normSq q) ^ n := by rw [pow_mul, hq2]
     _ = k⁻¹ • ↑((-1 : ℝ) ^ n * ‖q‖ ^ (2 * n)) := ?_
@@ -75,7 +73,7 @@ theorem expSeries_odd_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) (n : ℕ
     norm_cast
   · rw [smul_smul]
     congr 1
-    simp_rw [pow_succ, mul_div_assoc, div_div_cancel_left' hqn]
+    simp_rw [pow_succ, mul_div_assoc, div_div_cancel_left₀ hqn]
     ring
 
 /-- Auxiliary result; if the power series corresponding to `Real.cos` and `Real.sin` evaluated

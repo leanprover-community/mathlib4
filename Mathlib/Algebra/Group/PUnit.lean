@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Group.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `PUnit` is a commutative group
 
@@ -14,7 +17,7 @@ This file collects facts about algebraic structures on the one-element type, e.g
 commutative ring.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero
 

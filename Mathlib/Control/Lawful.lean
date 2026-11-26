@@ -5,7 +5,10 @@ Authors: Sebastian Ullrich
 -/
 module
 
-public import Mathlib.Tactic.Basic
+import Mathlib.Init
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Functor Laws, applicative laws, and monad Laws

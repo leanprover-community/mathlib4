@@ -8,13 +8,16 @@ module
 public import Mathlib.Algebra.GroupWithZero.Action.Prod
 public import Mathlib.Algebra.Module.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Prod instances for module and multiplicative actions
 
 This file defines instances for binary product of modules
 -/
 
-@[expose] public section
+public section
 
 
 variable {R : Type*} {M : Type*} {N : Type*}

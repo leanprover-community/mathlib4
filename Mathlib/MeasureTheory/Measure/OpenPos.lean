@@ -6,7 +6,7 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-public import Mathlib.MeasureTheory.Measure.Typeclasses.NoAtoms
+public import Mathlib.MeasureTheory.Measure.Typeclasses.NullSingletonClass
 public import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
 
 /-!
@@ -16,10 +16,9 @@ In this file we define a typeclass for measures that are positive on nonempty op
 `MeasureTheory.Measure.IsOpenPosMeasure`. Examples include (additive) Haar measures, as well as
 measures that have positive density with respect to a Haar measure. We also prove some basic facts
 about these measures.
-
 -/
 
-@[expose] public section
+public section
 
 
 open Topology ENNReal MeasureTheory
@@ -51,7 +50,7 @@ instance (priority := 100) [Nonempty X] : NeZero μ :=
   ⟨measure_univ_pos.mp <| isOpen_univ.measure_pos μ univ_nonempty⟩
 
 theorem _root_.IsOpen.measure_pos_iff (hU : IsOpen U) : 0 < μ U ↔ U.Nonempty :=
-  ⟨fun h => nonempty_iff_ne_empty.2 fun he => h.ne' <| he.symm ▸ measure_empty, hU.measure_pos μ⟩
+  ⟨fun h => ne_empty_iff_nonempty.1 fun he => h.ne' <| he.symm ▸ measure_empty, hU.measure_pos μ⟩
 
 theorem _root_.IsOpen.measure_eq_zero_iff (hU : IsOpen U) : μ U = 0 ↔ U = ∅ := by
   simpa only [not_lt, nonpos_iff_eq_zero, not_nonempty_iff_eq_empty] using
@@ -217,7 +216,7 @@ theorem measure_closedBall_pos (x : X) {r : ℝ} (hr : 0 < r) : 0 < μ (closedBa
   (measure_ball_pos μ x hr).trans_le (measure_mono ball_subset_closedBall)
 
 @[simp] lemma measure_closedBall_pos_iff {X : Type*} [MetricSpace X] {m : MeasurableSpace X}
-    (μ : Measure X) [IsOpenPosMeasure μ] [NoAtoms μ] {x : X} {r : ℝ} :
+    (μ : Measure X) [IsOpenPosMeasure μ] [NullSingletonClass μ] {x : X} {r : ℝ} :
     0 < μ (closedBall x r) ↔ 0 < r := by
   refine ⟨fun h ↦ ?_, measure_closedBall_pos μ x⟩
   contrapose! h
@@ -238,22 +237,16 @@ theorem measure_closedEBall_pos (x : X) {r : ℝ≥0∞} (hr : r ≠ 0) : 0 < μ
 
 end Metric
 
-@[deprecated (since := "2026-01-24")]
-alias EMetric.measure_ball_pos := Metric.measure_eball_pos
-
-@[deprecated (since := "2026-01-24")]
-alias EMetric.measure_closedBall_pos := Metric.measure_closedEBall_pos
-
 section MeasureZero
 /-! ## Meagre sets and measure zero
 In general, neither of meagre and measure zero implies the other.
 - The set of Liouville numbers is a Lebesgue measure zero subset of ℝ, but is not meagre.
-(In fact, its complement is meagre. See `Real.disjoint_residual_ae`.)
+  (In fact, its complement is meagre. See `Real.disjoint_residual_ae`.)
 
 - The complement of the set of Liouville numbers in $[0,1]$ is meagre and has measure 1.
-For another counterexample, for all $α ∈ (0,1)$, there is a generalised Cantor set $C ⊆ [0,1]$
-of measure `α`. Cantor sets are nowhere dense (hence meagre). Taking a countable union of
-fat Cantor sets whose measure approaches 1 even yields a meagre set of measure 1.
+  For another counterexample, for all $α ∈ (0,1)$, there is a generalised Cantor set $C ⊆ [0,1]$
+  of measure `α`. Cantor sets are nowhere dense (hence meagre). Taking a countable union of
+  fat Cantor sets whose measure approaches 1 even yields a meagre set of measure 1.
 
 However, with respect to a measure which is positive on non-empty open sets, *closed* measure
 zero sets are nowhere dense and σ-compact measure zero sets in a Hausdorff space are meagre.

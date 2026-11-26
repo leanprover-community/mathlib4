@@ -88,7 +88,7 @@ theorem skolem₁_reduct_isElementary (S : (L.sum L.skolem₁).Substructure M) :
   · exact Classical.epsilon_spec (p := fun a => BoundedFormula.Realize φ default
           (Fin.snoc (Subtype.val ∘ x) a)) ⟨a, h⟩
   · exact S.fun_mem (LHom.sumInr.onFunction φ) ((↑) ∘ x) (by
-      exact fun i => (x i).2)
+      exact fun i => (x i).property)
 
 /-- Any `L.sum L.skolem₁`-substructure is an elementary `L`-substructure. -/
 noncomputable def elementarySkolem₁Reduct (S : (L.sum L.skolem₁).Substructure M) :
@@ -110,8 +110,12 @@ instance Substructure.elementarySkolem₁Reduct.instSmall :
   rw [coeSort_elementarySkolem₁Reduct]
   infer_instance
 
+omit [Nonempty M]
+
 theorem exists_small_elementarySubstructure : ∃ S : L.ElementarySubstructure M, Small.{max u v} S :=
-  ⟨Substructure.elementarySkolem₁Reduct ⊥, inferInstance⟩
+  (isEmpty_or_nonempty M).elim
+    (fun _ => ⟨⊤, Countable.toSmall _⟩)
+    (fun _ => ⟨Substructure.elementarySkolem₁Reduct ⊥, inferInstance⟩)
 
 variable {M}
 
@@ -127,6 +131,8 @@ theorem exists_elementarySubstructure_card_eq (s : Set M) (κ : Cardinal.{w'}) (
   obtain ⟨s', hs'⟩ := Cardinal.le_mk_iff_exists_set.1 h4
   rw [← aleph0_le_lift.{_, w}] at h1
   rw [← hs'] at h1 h2 ⊢
+  have : Nonempty M := nonempty_ulift.1 (Cardinal.mk_ne_zero_iff.1
+    (aleph0_pos.trans_le (h1.trans (Cardinal.mk_subtype_le _))).ne')
   refine
     ⟨elementarySkolem₁Reduct (closure (L.sum L.skolem₁) (s ∪ Equiv.ulift '' s')),
       (s.subset_union_left).trans subset_closure, ?_⟩

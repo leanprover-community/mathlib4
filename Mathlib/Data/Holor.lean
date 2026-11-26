@@ -5,9 +5,9 @@ Authors: Alexander Bentkamp
 -/
 module
 
-public import Mathlib.Data.Nat.Find
-public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Algebra.Module.Pi
+public import Mathlib.Data.Nat.Find
 
 /-!
 # Basic properties of holors
@@ -51,22 +51,22 @@ variable {ds₁ ds₂ ds₃ : List ℕ}
 
 /-- Take the first elements of a `HolorIndex`. -/
 def take : ∀ {ds₁ : List ℕ}, HolorIndex (ds₁ ++ ds₂) → HolorIndex ds₁
-  | ds, is => ⟨List.take (length ds) is.1, forall₂_take_append is.1 ds ds₂ is.2⟩
+  | ds, is => ⟨List.take (length ds) is.val, forall₂_take_append is.val ds ds₂ is.property⟩
 
 /-- Drop the first elements of a `HolorIndex`. -/
 def drop : ∀ {ds₁ : List ℕ}, HolorIndex (ds₁ ++ ds₂) → HolorIndex ds₂
-  | ds, is => ⟨List.drop (length ds) is.1, forall₂_drop_append is.1 ds ds₂ is.2⟩
+  | ds, is => ⟨List.drop (length ds) is.val, forall₂_drop_append is.val ds ds₂ is.property⟩
 
 theorem cast_type (is : List ℕ) (eq : ds₁ = ds₂) (h : Forall₂ (· < ·) is ds₁) :
-    (cast (congr_arg HolorIndex eq) ⟨is, h⟩).val = is := by subst eq; rfl
+    (cast congr(HolorIndex $eq) ⟨is, h⟩).val = is := by subst eq; rfl
 
 /-- Right associator for `HolorIndex` -/
 def assocRight : HolorIndex (ds₁ ++ ds₂ ++ ds₃) → HolorIndex (ds₁ ++ (ds₂ ++ ds₃)) :=
-  cast (congr_arg HolorIndex (append_assoc ds₁ ds₂ ds₃))
+  cast congr(HolorIndex $(append_assoc ds₁ ds₂ ds₃))
 
 /-- Left associator for `HolorIndex` -/
 def assocLeft : HolorIndex (ds₁ ++ (ds₂ ++ ds₃)) → HolorIndex (ds₁ ++ ds₂ ++ ds₃) :=
-  cast (congr_arg HolorIndex (append_assoc ds₁ ds₂ ds₃).symm)
+  cast congr(HolorIndex $((append_assoc ds₁ ds₂ ds₃).symm))
 
 theorem take_take : ∀ t : HolorIndex (ds₁ ++ ds₂ ++ ds₃), t.assocRight.take = t.take.take
   | ⟨is, h⟩ =>
@@ -101,23 +101,30 @@ instance [Add α] : Add (Holor α ds) :=
 instance [Neg α] : Neg (Holor α ds) :=
   ⟨fun a t => -a t⟩
 
-instance [AddSemigroup α] : AddSemigroup (Holor α ds) := Pi.addSemigroup
+instance [AddSemigroup α] : AddSemigroup (Holor α ds) :=
+  inferInstanceAs <| AddSemigroup (HolorIndex ds → α)
 
-instance [AddCommSemigroup α] : AddCommSemigroup (Holor α ds) := Pi.addCommSemigroup
+instance [AddCommSemigroup α] : AddCommSemigroup (Holor α ds) :=
+  inferInstanceAs <| AddCommSemigroup (HolorIndex ds → α)
 
-instance [AddMonoid α] : AddMonoid (Holor α ds) := Pi.addMonoid
+instance [AddMonoid α] : AddMonoid (Holor α ds) :=
+  inferInstanceAs <| AddMonoid (HolorIndex ds → α)
 
-instance [AddCommMonoid α] : AddCommMonoid (Holor α ds) := Pi.addCommMonoid
+instance [AddCommMonoid α] : AddCommMonoid (Holor α ds) :=
+  inferInstanceAs <| AddCommMonoid (HolorIndex ds → α)
 
-instance [AddGroup α] : AddGroup (Holor α ds) := Pi.addGroup
+instance [AddGroup α] : AddGroup (Holor α ds) :=
+  inferInstanceAs <| AddGroup (HolorIndex ds → α)
 
-instance [AddCommGroup α] : AddCommGroup (Holor α ds) := Pi.addCommGroup
+instance [AddCommGroup α] : AddCommGroup (Holor α ds) :=
+  inferInstanceAs <| AddCommGroup (HolorIndex ds → α)
 
 -- scalar product
 instance [Mul α] : SMul α (Holor α ds) :=
   ⟨fun a x => fun t => a * x t⟩
 
-instance [Semiring α] : Module α (Holor α ds) := Pi.module _ _ _
+instance [Semiring α] : Module α (Holor α ds) :=
+  inferInstanceAs <| Module α (HolorIndex ds → α)
 
 /-- The tensor product of two holors. -/
 def mul [Mul α] (x : Holor α ds₁) (y : Holor α ds₂) : Holor α (ds₁ ++ ds₂) := fun t =>
@@ -126,17 +133,18 @@ def mul [Mul α] (x : Holor α ds₁) (y : Holor α ds₂) : Holor α (ds₁ ++ 
 local infixl:70 " ⊗ " => mul
 
 theorem cast_type (eq : ds₁ = ds₂) (a : Holor α ds₁) :
-    cast (congr_arg (Holor α) eq) a = fun t => a (cast (congr_arg HolorIndex eq.symm) t) := by
+    cast congr(Holor α $eq) a = fun t => a (cast congr(HolorIndex $eq.symm) t) := by
   subst eq; rfl
 
 /-- Right associator for `Holor` -/
 def assocRight : Holor α (ds₁ ++ ds₂ ++ ds₃) → Holor α (ds₁ ++ (ds₂ ++ ds₃)) :=
-  cast (congr_arg (Holor α) (append_assoc ds₁ ds₂ ds₃))
+  cast congr(Holor α $(append_assoc ds₁ ds₂ ds₃))
 
 /-- Left associator for `Holor` -/
 def assocLeft : Holor α (ds₁ ++ (ds₂ ++ ds₃)) → Holor α (ds₁ ++ ds₂ ++ ds₃) :=
-  cast (congr_arg (Holor α) (append_assoc ds₁ ds₂ ds₃).symm)
+  cast congr(Holor α $((append_assoc ds₁ ds₂ ds₃).symm))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mul_assoc0 [Semigroup α] (x : Holor α ds₁) (y : Holor α ds₂) (z : Holor α ds₃) :
     x ⊗ y ⊗ z = (x ⊗ (y ⊗ z)).assocLeft :=
   funext fun t : HolorIndex (ds₁ ++ ds₂ ++ ds₃) => by
@@ -164,6 +172,7 @@ nonrec theorem zero_mul {α : Type} [MulZeroClass α] (x : Holor α ds₂) : (0 
 nonrec theorem mul_zero {α : Type} [MulZeroClass α] (x : Holor α ds₁) : x ⊗ (0 : Holor α ds₂) = 0 :=
   funext fun t => mul_zero (x (HolorIndex.take t))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mul_scalar_mul [Mul α] (x : Holor α []) (y : Holor α ds) :
     x ⊗ y = x ⟨[], Forall₂.nil⟩ • y := by
   simp +unfoldPartialApp [mul, SMul.smul, HolorIndex.take, HolorIndex.drop,
@@ -172,15 +181,15 @@ theorem mul_scalar_mul [Mul α] (x : Holor α []) (y : Holor α ds) :
 -- holor slices
 /-- A slice is a subholor consisting of all entries with initial index i. -/
 def slice (x : Holor α (d :: ds)) (i : ℕ) (h : i < d) : Holor α ds := fun is : HolorIndex ds =>
-  x ⟨i :: is.1, Forall₂.cons h is.2⟩
+  x ⟨i :: is.val, Forall₂.cons h is.property⟩
 
 /-- The 1-dimensional "unit" holor with 1 in the `j`th position. -/
 def unitVec [Monoid α] [AddMonoid α] (d : ℕ) (j : ℕ) : Holor α [d] := fun ti =>
-  if ti.1 = [j] then 1 else 0
+  if ti.val = [j] then 1 else 0
 
 theorem holor_index_cons_decomp (p : HolorIndex (d :: ds) → Prop) :
     ∀ t : HolorIndex (d :: ds),
-      (∀ i is, ∀ h : t.1 = i :: is, p ⟨i :: is, by rw [← h]; exact t.2⟩) → p t
+      (∀ i is, ∀ h : t.val = i :: is, p ⟨i :: is, by rw [← h]; exact t.property⟩) → p t
   | ⟨[], hforall₂⟩, _ => absurd (forall₂_nil_left_iff.1 hforall₂) (cons_ne_nil d ds)
   | ⟨i :: is, _⟩, hp => hp i is rfl
 
@@ -188,14 +197,15 @@ theorem holor_index_cons_decomp (p : HolorIndex (d :: ds) → Prop) :
 theorem slice_eq (x : Holor α (d :: ds)) (y : Holor α (d :: ds)) (h : slice x = slice y) : x = y :=
   funext fun t : HolorIndex (d :: ds) =>
     holor_index_cons_decomp (fun t => x t = y t) t fun i is hiis =>
-      have hiisdds : Forall₂ (· < ·) (i :: is) (d :: ds) := by rw [← hiis]; exact t.2
+      have hiisdds : Forall₂ (· < ·) (i :: is) (d :: ds) := by rw [← hiis]; exact t.property
       have hid : i < d := (forall₂_cons.1 hiisdds).1
       have hisds : Forall₂ (· < ·) is ds := (forall₂_cons.1 hiisdds).2
       calc
-        x ⟨i :: is, _⟩ = slice x i hid ⟨is, hisds⟩ := congr_arg x (Subtype.ext rfl)
+        x ⟨i :: is, _⟩ = slice x i hid ⟨is, hisds⟩ := congr(x $(Subtype.ext rfl))
         _ = slice y i hid ⟨is, hisds⟩ := by rw [h]
-        _ = y ⟨i :: is, _⟩ := congr_arg y (Subtype.ext rfl)
+        _ = y ⟨i :: is, _⟩ := congr(y $(Subtype.ext rfl))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem slice_unitVec_mul [Semiring α] {i : ℕ} {j : ℕ} (hid : i < d) (x : Holor α ds) :
     slice (unitVec d j ⊗ x) i hid = if i = j then x else 0 :=
   funext fun t : HolorIndex ds =>
@@ -211,7 +221,7 @@ theorem slice_zero [Zero α] (i : ℕ) (hid : i < d) : slice (0 : Holor α (d ::
 
 theorem slice_sum [AddCommMonoid α] {β : Type} (i : ℕ) (hid : i < d) (s : Finset β)
     (f : β → Holor α (d :: ds)) : (∑ x ∈ s, slice (f x) i hid) = slice (∑ x ∈ s, f x) i hid := by
-  letI := Classical.decEq β
+  let := Classical.decEq β
   refine Finset.induction_on s ?_ ?_
   · simp [slice_zero]
   · intro _ _ h_not_in ih
@@ -242,13 +252,14 @@ theorem sum_unitVec_mul_slice [Semiring α] (x : Holor α (d :: ds)) :
   it is the tensor product of 1-dimensional holors. -/
 inductive CPRankMax1 [Mul α] : ∀ {ds}, Holor α ds → Prop
   | nil (x : Holor α []) : CPRankMax1 x
-  | cons {d} {ds} (x : Holor α [d]) (y : Holor α ds) : CPRankMax1 y → CPRankMax1 (x ⊗ y)
+  | cons {d : ℕ} {ds : List ℕ} (x : Holor α [d]) (y : Holor α ds) :
+    CPRankMax1 y → CPRankMax1 (x ⊗ y)
 
 /-- `CPRankMax N x` means `x` has CP rank at most `N`, that is,
   it can be written as the sum of N holors of rank at most 1. -/
 inductive CPRankMax [Mul α] [AddMonoid α] : ℕ → ∀ {ds}, Holor α ds → Prop
-  | zero {ds} : CPRankMax 0 (0 : Holor α ds)
-  | succ (n) {ds} (x : Holor α ds) (y : Holor α ds) :
+  | zero {ds : List ℕ} : CPRankMax 0 (0 : Holor α ds)
+  | succ (n : ℕ) {ds : List ℕ} (x : Holor α ds) (y : Holor α ds) :
     CPRankMax1 x → CPRankMax n y → CPRankMax (n + 1) (x + y)
 
 theorem cprankMax_nil [Mul α] [AddMonoid α] (x : Holor α nil) : CPRankMax 1 x := by
@@ -300,19 +311,20 @@ theorem cprankMax_upper_bound [Semiring α] : ∀ {ds}, ∀ x : Holor α ds, CPR
   | d :: ds, x => by
     have h_summands :
       ∀ i : { x // x ∈ Finset.range d },
-        CPRankMax ds.prod (unitVec d i.1 ⊗ slice x i.1 (mem_range.1 i.2)) :=
-      fun i => cprankMax_mul _ _ _ (cprankMax_upper_bound (slice x i.1 (mem_range.1 i.2)))
+        CPRankMax ds.prod (unitVec d i.val ⊗ slice x i.val (mem_range.1 i.property)) :=
+      fun i => cprankMax_mul _ _ _ (cprankMax_upper_bound (slice x i.val (mem_range.1 i.property)))
     have h_dds_prod : (List.cons d ds).prod = Finset.card (Finset.range d) * prod ds := by
       simp [Finset.card_range]
     have :
       CPRankMax (Finset.card (Finset.attach (Finset.range d)) * prod ds)
         (∑ i ∈ Finset.attach (Finset.range d),
-          unitVec d i.val ⊗ slice x i.val (mem_range.1 i.2)) :=
+          unitVec d i.val ⊗ slice x i.val (mem_range.1 i.property)) :=
       cprankMax_sum (Finset.range d).attach _ fun i _ => h_summands i
     have h_cprankMax_sum :
       CPRankMax (Finset.card (Finset.range d) * prod ds)
         (∑ i ∈ Finset.attach (Finset.range d),
-          unitVec d i.val ⊗ slice x i.val (mem_range.1 i.2)) := by rwa [Finset.card_attach] at this
+          unitVec d i.val ⊗ slice x i.val (mem_range.1 i.property)) := by
+      rwa [Finset.card_attach] at this
     rw [← sum_unitVec_mul_slice x]
     rw [h_dds_prod]
     exact h_cprankMax_sum

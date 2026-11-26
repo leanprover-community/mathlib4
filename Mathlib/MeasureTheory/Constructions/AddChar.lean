@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.AddChar
 public import Mathlib.MeasureTheory.MeasurableSpace.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Measurable space instance for additive characters
 
@@ -19,7 +22,7 @@ discrete measurable space.
 Give the definition in the correct generality.
 -/
 
-@[expose] public section
+public section
 
 namespace AddChar
 variable {A M : Type*} [AddMonoid A] [Monoid M] [MeasurableSpace A] [MeasurableSpace M]

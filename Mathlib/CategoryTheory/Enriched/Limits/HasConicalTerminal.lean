@@ -7,11 +7,14 @@ module
 
 public import Mathlib.CategoryTheory.Enriched.Limits.HasConicalProducts
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Existence of conical terminal objects
 -/
 
-@[expose] public section
+public section
 
 universe w v' v u u'
 

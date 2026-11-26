@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Module.Opposite
 public import Mathlib.Algebra.Ring.Associator
-public import Mathlib.GroupTheory.GroupAction.Ring
+
 /-!
 # Pre-Lie rings and algebras
 
@@ -22,6 +22,7 @@ Everything holds for the algebra versions where `L` is also an `R`-Module over a
 `R`.
 
 ## Main definitions
+
   All are a defined as a `NonUnitalNonAssocRing` whose `associator` satisfies an identity.
   * `LeftPreLieRing`
   * `RightPreLieRing`
@@ -29,20 +30,23 @@ Everything holds for the algebra versions where `L` is also an `R`-Module over a
   * `RightPreLieAlgebra`
 
 ## Main results
+
   * Every `LeftPreLieRing` is a `RightPreLieRing` with the opposite multiplication.
 
 ## Implementation notes
+
 There are left and right versions of the structures, equivalent via `ᵐᵒᵖ`.
 Perhaps one could be favored but there is no real reason to.
 
 ## References
+
 [F. Chapoton, M. Livernet, *Pre-Lie algebras and the rooted trees operad*][chapoton_livernet_2001]
 [D. Manchon, *A short survey on pre-Lie algebras*][manchon_2011]
 [J.-M. Oudom, D. Guin, *On the Lie enveloping algebra of a pre-Lie algebra*][oudom_guin_2008]
 <https://ncatlab.org/nlab/show/pre-Lie+algebra>
 -/
 
-@[expose] public section
+public section
 
 /-- `LeftPreLieRing`s are `NonUnitalNonAssocRing`s such that the `associator` is symmetric in the
 first two variables. -/

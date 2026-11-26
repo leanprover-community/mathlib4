@@ -5,9 +5,13 @@ Authors: Yaël Dillies
 -/
 module
 
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Data.Finset.Lattice.Fold
 public import Mathlib.Data.Fintype.Vector
 public import Mathlib.Data.Multiset.Sym
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Symmetric powers of a finset
@@ -37,7 +41,7 @@ variable {α β : Type*}
 /-- `s.sym2` is the finset of all unordered pairs of elements from `s`.
 It is the image of `s ×ˢ s` under the quotient `α × α → Sym2 α`. -/
 @[simps]
-protected def sym2 (s : Finset α) : Finset (Sym2 α) := ⟨s.1.sym2, s.2.sym2⟩
+protected def sym2 (s : Finset α) : Finset (Sym2 α) := ⟨s.val.sym2, s.nodup.sym2⟩
 
 section
 variable {s t : Finset α} {a b : α}
@@ -63,7 +67,7 @@ theorem sym2_insert [DecidableEq α] (a : α) (s : Finset α) :
   obtain ha | ha := Decidable.em (a ∈ s)
   · simp only [insert_eq_of_mem ha, right_eq_union, image_subset_iff]
     simp_all
-  · simpa [map_eq_image] using sym2_cons a s ha
+  · simpa [map_eq_image] using! sym2_cons a s ha
 
 theorem sym2_map (f : α ↪ β) (s : Finset α) : (s.map f).sym2 = s.sym2.map (.sym2Map f) :=
   val_injective <| s.val.sym2_map _
@@ -130,32 +134,26 @@ end
 
 variable {s t : Finset α} {a b : α}
 
-theorem sym2_eq_image [DecidableEq α] : s.sym2 = (s ×ˢ s).image Sym2.mk := by
-  ext z
-  refine z.ind fun x y ↦ ?_
-  grind
+theorem sym2_eq_image [DecidableEq α] : s.sym2 = (s ×ˢ s).image Sym2.mk.uncurry := by
+  ext ⟨a, b⟩; simp; grind
 
-theorem isDiag_mk_of_mem_diag {a : α × α} (h : a ∈ s.diag) : (Sym2.mk a).IsDiag :=
-  (Sym2.isDiag_iff_proj_eq _).2 (mem_diag.1 h).2
+theorem isDiag_mk_of_mem_diag {a b : α} (h : (a, b) ∈ s.diag) : s(a, b).IsDiag := by
+  simp at *; grind
 
-theorem not_isDiag_mk_of_mem_offDiag {a : α × α} (h : a ∈ s.offDiag) :
-    ¬ (Sym2.mk a).IsDiag := by
-  rw [Sym2.isDiag_iff_proj_eq]
-  exact (mem_offDiag.1 h).2.2
+theorem not_isDiag_mk_of_mem_offDiag {a b : α} (h : (a, b) ∈ s.offDiag) : ¬ s(a, b).IsDiag := by
+  simp at *; grind
 
 section Sym2
-
-variable {m : Sym2 α}
 
 @[simp]
 theorem diag_mem_sym2_mem_iff : (∀ b, b ∈ Sym2.diag a → b ∈ s) ↔ a ∈ s := by
   rw [← mem_sym2_iff]
-  exact mk_mem_sym2_iff.trans <| and_self_iff
+  exact mk_mem_sym2_iff.trans and_self_iff
 
 theorem diag_mem_sym2_iff : Sym2.diag a ∈ s.sym2 ↔ a ∈ s := by simp [diag_mem_sym2_mem_iff]
 
 theorem image_diag_union_image_offDiag [DecidableEq α] :
-    s.diag.image Sym2.mk ∪ s.offDiag.image Sym2.mk = s.sym2 := by
+    s.diag.image Sym2.mk.uncurry ∪ s.offDiag.image Sym2.mk.uncurry = s.sym2 := by
   rw [← image_union, diag_union_offDiag, sym2_eq_image]
 
 end Sym2
@@ -197,7 +195,26 @@ theorem mem_sym_iff {m : Sym α n} : m ∈ s.sym n ↔ ∀ a ∈ m, a ∈ s := b
       ⟨a, h _ <| Sym.mem_cons_self _ _,
         mem_image_of_mem _ <| ih.2 fun b hb ↦ h _ <| Sym.mem_cons_of_mem hb⟩
 
--- @[simp] /- adaption note for https://github.com/leanprover/lean4/pull/8419: the simpNF complained -/
+lemma sym_map [DecidableEq β] {n : ℕ} (g : α ↪ β) (s : Finset α) :
+    (s.map g).sym n = (s.sym n).map ⟨Sym.map g, Sym.map_injective g.injective _⟩ := by
+  ext d
+  simp only [mem_sym_iff, mem_map, Function.Embedding.coeFn_mk]
+  refine ⟨fun hd ↦ ?_, fun ⟨b, hb, hd'⟩ d' hd ↦ ?_⟩
+  · let g' : {x // x ∈ d} → α := fun ⟨x, hx⟩ ↦ (hd x hx).choose
+    refine ⟨(fun p ↦ Sym.map g' p) d.attach, ?_, ?_⟩
+    · simp only [Sym.mem_map, Sym.mem_attach, true_and, Subtype.exists, forall_exists_index, g']
+      intro i e he hi
+      rw [← hi]
+      exact (hd e he).choose_spec.1
+    · simp only [Sym.map_map, Function.comp_apply, g']
+      convert! Sym.attach_map_coe d with ⟨x, hx⟩ hx'
+      exact (hd x hx).choose_spec.2
+  · rw [← hd', Sym.mem_map] at hd
+    obtain ⟨a, ha, rfl⟩ := hd
+    exact ⟨a, hb a ha, rfl⟩
+
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/8419: the simpNF complained -/
+-- @[simp]
 theorem sym_empty (n : ℕ) : (∅ : Finset α).sym (n + 1) = ∅ := rfl
 
 theorem replicate_mem_sym (ha : a ∈ s) (n : ℕ) : Sym.replicate n a ∈ s.sym n :=
@@ -219,7 +236,7 @@ theorem eq_empty_of_sym_eq_empty (h : s.sym n = ∅) : s = ∅ := by
 @[simp]
 theorem sym_eq_empty : s.sym n = ∅ ↔ n ≠ 0 ∧ s = ∅ := by
   cases n
-  · exact iff_of_false (singleton_ne_empty _) fun h ↦ (h.1 rfl).elim
+  · simp
   · refine ⟨fun h ↦ ⟨Nat.succ_ne_zero _, eq_empty_of_sym_eq_empty h⟩, ?_⟩
     rintro ⟨_, rfl⟩
     exact sym_empty _
@@ -260,9 +277,10 @@ theorem sym_filterNe_mem {m : Sym α n} (a : α) (h : m ∈ s.sym n) :
   for `0 ≤ i ≤ n`. -/
 @[simps]
 def symInsertEquiv (h : a ∉ s) : (insert a s).sym n ≃ Σ i : Fin (n + 1), s.sym (n - i) where
-  toFun m := ⟨_, (m.1.filterNe a).2, by convert sym_filterNe_mem a m.2; rw [erase_insert h]⟩
-  invFun m := ⟨m.2.1.fill a m.1, sym_fill_mem a m.2.2⟩
-  left_inv m := Subtype.ext <| m.1.fill_filterNe a
+  toFun m := ⟨_, (m.val.filterNe a).2, by
+    convert sym_filterNe_mem a m.property; rw [erase_insert h]⟩
+  invFun m := ⟨m.2.val.fill a m.1, sym_fill_mem a m.2.property⟩
+  left_inv m := Subtype.ext <| m.val.fill_filterNe a
   right_inv := fun ⟨i, m, hm⟩ ↦ by
     refine Function.Injective.sigma_map (β₂ := ?_) (f₂ := ?_)
         (Function.injective_id) (fun i ↦ ?_) ?_
@@ -271,6 +289,17 @@ def symInsertEquiv (h : a ∉ s) : (insert a s).sym n ≃ Σ i : Fin (n + 1), s.
     · exact Subtype.coe_injective
     refine Eq.trans ?_ (Sym.filter_ne_fill a _ ?_)
     exacts [rfl, h ∘ mem_sym_iff.1 hm a]
+
+@[to_additive]
+theorem val_prod_eq_prod_count_pow [CommMonoid α] {n : ℕ} {k : Sym α n}
+    {s : Finset α} (hk : k ∈ s.sym n) :
+    k.val.prod = ∏ d ∈ s, d ^ Multiset.count d k := by
+  rw [Finset.prod_multiset_count_of_subset _ s]
+  · apply Finset.prod_congr rfl (by simp)
+  intro x hx
+  simp only [Sym.val_eq_coe, Multiset.mem_toFinset, Sym.mem_coe] at hx
+  simp only [Finset.mem_sym_iff] at hk
+  exact hk x hx
 
 end Sym
 

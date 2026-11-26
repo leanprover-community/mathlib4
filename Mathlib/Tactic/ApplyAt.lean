@@ -9,6 +9,9 @@ public meta import Lean.Elab.Tactic.ElabTerm
 public meta import Mathlib.Lean.Meta.Basic
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Apply at
 
@@ -28,6 +31,7 @@ metavariables/goals for any terms of `αⱼ` for `j = 1, …, i-1`,
 then replaces the type of `i` with `αᵢ₊₁ → ⋯ → αₙ` by applying those metavariables and the
 original `i`.
 -/
+@[nolint tacticAlt]
 elab "apply " t:term " at " i:ident : tactic => withSynthesize <| withMainContext do
   let f ← elabTermForApply t
   let some ldecl := (← getLCtx).findFromUserName? i.getId

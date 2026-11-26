@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
 public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Lebesgue
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Radon-Nikodym derivatives of vector measures
 
@@ -34,8 +37,8 @@ theorem withDensityᵥ_rnDeriv_eq (s : SignedMeasure α) (μ : Measure α) [Sigm
     rw [withDensityᵥ_apply (integrable_rnDeriv _ _) hi, rnDeriv_def, integral_sub,
       setIntegral_toReal_rnDeriv h.1 i, setIntegral_toReal_rnDeriv h.2 i]
     · conv_rhs => rw [← s.toSignedMeasure_toJordanDecomposition]
-      erw [VectorMeasure.sub_apply]
-      rw [toSignedMeasure_apply_measurable hi, toSignedMeasure_apply_measurable hi, measureReal_def,
+      rw [JordanDecomposition.toSignedMeasure, _root_.sub_apply,
+        toSignedMeasure_apply_measurable hi, toSignedMeasure_apply_measurable hi, measureReal_def,
         measureReal_def]
     all_goals
       refine Integrable.integrableOn ?_

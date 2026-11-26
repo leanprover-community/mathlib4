@@ -24,7 +24,7 @@ We prove versions of the first mean value theorem for set integrals.
 first mean value theorem, set integral
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory
 
@@ -78,10 +78,10 @@ theorem exists_eq_const_mul_setIntegral_of_ae_nonneg
             apply hg1.mono
             intro x hx
             simp [hx]
-          simpa using integral_congr_ae heq_ae
+          simpa using! integral_congr_ae heq_ae
         rw [← heq, heq_zero]
       _ = _ := by simp [hν0, hg1]
-  · have hν0' : (ν s).toReal ≠ 0 := by simpa using hν0
+  · have hν0' : (ν s).toReal ≠ 0 := by simpa using! hν0
     have hνfin : ν s ≠ ⊤ := by intro this; apply hν0'; simp [this]
     have hν0'' : ν s ≠ 0 := by intro this; apply hν0'; simp [this]
     have hint : IntegrableOn f s ν := by
@@ -96,7 +96,7 @@ theorem exists_eq_const_mul_setIntegral_of_ae_nonneg
       have hνrs : ν.restrict s = (μ.restrict s).withDensity ρ := by
         ext t ht
         simp [ht, ν, hs_meas]
-      simpa [IntegrableOn, hνrs] using h_Int
+      simpa [IntegrableOn, hνrs] using! h_Int
     obtain ⟨c, hc, h_ave⟩ := exists_eq_setAverage hs_conn hf hint hνfin hν0''
     refine ⟨c, hc, ?_⟩
     calc

@@ -7,14 +7,16 @@ module
 
 public import Mathlib.Algebra.Field.Opposite
 public import Mathlib.Algebra.Star.Basic
-public import Mathlib.Data.NNRat.Defs
 public import Mathlib.Data.Rat.Cast.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-# *-ring structure on ℚ and ℚ≥0.
+# \*-ring structure on `ℚ` and `ℚ≥0`.
 -/
 
-@[expose] public section
+public section
 
 instance Rat.instStarRing : StarRing ℚ := starRingOfComm
 instance NNRat.instStarRing : StarRing ℚ≥0 := starRingOfComm
@@ -27,8 +29,8 @@ open MulOpposite
 
 @[simp, norm_cast]
 lemma star_nnratCast [DivisionSemiring R] [StarRing R] (q : ℚ≥0) : star (q : R) = q :=
-  (congr_arg unop <| map_nnratCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) q).trans (unop_nnratCast _)
+  congr(unop $(map_nnratCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) q)).trans (unop_nnratCast _)
 
 @[simp, norm_cast]
 theorem star_ratCast [DivisionRing R] [StarRing R] (r : ℚ) : star (r : R) = r :=
-  (congr_arg unop <| map_ratCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) r).trans (unop_ratCast _)
+  congr(unop $(map_ratCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) r)).trans (unop_ratCast _)

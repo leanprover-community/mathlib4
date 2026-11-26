@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.GradedAlgebra.Basic
 public import Mathlib.RingTheory.Noetherian.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The properties of a graded Noetherian ring.
 
@@ -15,7 +18,7 @@ This file proves that the 0-th grade of a Noetherian ring is
 also a Noetherian ring.
 -/
 
-@[expose] public section
+public section
 
 variable {ι A σ : Type*}
 variable [Ring A] [IsNoetherianRing A]

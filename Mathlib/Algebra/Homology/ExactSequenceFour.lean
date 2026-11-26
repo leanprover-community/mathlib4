@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Homology.ExactSequence
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Exact sequences with four terms
 
@@ -16,7 +19,6 @@ this is the isomorphism from the cokernel of `S.map' k (k + 1)`
 to the kernel of `S.map' (k + 2) (k + 3)`. This is intended
 to be used for exact sequences in abelian categories, but the
 construction works for preadditive balanced categories.
-
 -/
 
 @[expose] public section
@@ -110,7 +112,6 @@ lemma epi_cokerToKer' (hS' : (S.sc hS (k + 1)).Exact) :
     Epi (hS.cokerToKer' k hk cc kf hcc hkf) := by
   have := hS'.hasZeroObject
   have := hS'.hasHomology
-  have : Epi cc.π := ⟨fun _ _ => Cofork.IsColimit.hom_ext hcc⟩
   let h := hS'.leftHomologyDataOfIsLimitKernelFork kf hkf
   have := h.exact_iff_epi_f'.1 hS'
   have fac : cc.π ≫ hS.cokerToKer' k hk cc kf hcc hkf = h.f' := by
@@ -122,7 +123,6 @@ lemma mono_cokerToKer' (hS' : (S.sc hS k).Exact) :
     Mono (hS.cokerToKer' k hk cc kf hcc hkf) := by
   have := hS'.hasZeroObject
   have := hS'.hasHomology
-  have : Mono kf.ι := ⟨fun _ _ => Fork.IsLimit.hom_ext hkf⟩
   let h := hS'.rightHomologyDataOfIsColimitCokernelCofork cc hcc
   have := h.exact_iff_mono_g'.1 hS'
   have fac : hS.cokerToKer' k hk cc kf hcc hkf ≫ kf.ι = h.g' := by

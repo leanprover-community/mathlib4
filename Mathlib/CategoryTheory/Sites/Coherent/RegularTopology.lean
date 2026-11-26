@@ -6,8 +6,11 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.CategoryTheory.Sites.Coherent.RegularSheaves
-/-!
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
 # Description of the covering sieves of the regular topology
 
 This file characterises the covering sieves of the regular topology.
@@ -18,11 +21,9 @@ This file characterises the covering sieves of the regular topology.
   regular topology if and only if it contains an effective epi.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.regularTopology
-
-open Limits
 
 variable {C : Type*} [Category* C] [Preregular C] {X : C}
 

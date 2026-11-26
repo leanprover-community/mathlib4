@@ -5,8 +5,11 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Shift.CommShift
 public import Mathlib.CategoryTheory.Localization.Linear
+public import Mathlib.CategoryTheory.Shift.CommShift
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Localization of the linearity of the shift functors
@@ -15,10 +18,9 @@ If `L : C ⥤ D` is a localization functor with respect to `W : MorphismProperty
 and both `C` and `D` have been equipped with `R`-linear category structures
 such that `L` is `R`-linear and the shift functors on `C` are `R`-linear,
 then the shift functors on `D` are `R`-linear.
-
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

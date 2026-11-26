@@ -5,8 +5,8 @@ Authors: Floris van Doorn, Yaël Dillies
 -/
 module
 
-public import Mathlib.Topology.Sets.Opens
 public import Mathlib.Topology.Clopen
+public import Mathlib.Topology.Sets.Opens
 
 /-!
 # Closed sets
@@ -43,7 +43,9 @@ namespace Closeds
 
 instance : SetLike (Closeds α) α where
   coe := Closeds.carrier
-  coe_injective' s t h := by cases s; cases t; congr
+  coe_injective s t h := by cases s; cases t; congr
+
+instance : PartialOrder (Closeds α) := fast_instance% .ofSetLike (Closeds α)
 
 instance : CanLift (Set α) (Closeds α) (↑) IsClosed where
   prf s hs := ⟨⟨s, hs⟩, rfl⟩
@@ -94,7 +96,7 @@ def gi : GaloisInsertion (@Closeds.closure α _) (↑) where
   choice_eq _s hs := SetLike.coe_injective <| subset_closure.antisymm hs
 
 instance instCompleteLattice : CompleteLattice (Closeds α) :=
-  CompleteLattice.copy
+  fast_instance% CompleteLattice.copy
     (GaloisInsertion.liftCompleteLattice gi)
     -- le
     _ rfl
@@ -103,14 +105,15 @@ instance instCompleteLattice : CompleteLattice (Closeds α) :=
     -- bot
     ⟨∅, isClosed_empty⟩ (SetLike.coe_injective closure_empty.symm)
     -- sup
-    (fun s t => ⟨s ∪ t, s.2.union t.2⟩)
-    (funext fun s => funext fun t => SetLike.coe_injective (s.2.union t.2).closure_eq.symm)
+    (fun s t => ⟨s ∪ t, s.isClosed'.union t.isClosed'⟩)
+    (funext fun s => funext fun t =>
+      SetLike.coe_injective (s.isClosed'.union t.isClosed').closure_eq.symm)
     -- inf
-    (fun s t => ⟨s ∩ t, s.2.inter t.2⟩) rfl
+    (fun s t => ⟨s ∩ t, s.isClosed'.inter t.isClosed'⟩) rfl
     -- sSup
     _ rfl
     -- sInf
-    (fun S => ⟨⋂ s ∈ S, ↑s, isClosed_biInter fun s _ => s.2⟩)
+    (fun S => ⟨⋂ s ∈ S, ↑s, isClosed_biInter fun s _ => s.isClosed'⟩)
     (funext fun _ => SetLike.coe_injective sInf_image.symm)
 
 /-- The type of closed sets is inhabited, with default element the empty set. -/
@@ -141,8 +144,8 @@ theorem coe_bot : (↑(⊥ : Closeds α) : Set α) = ∅ :=
 theorem coe_eq_empty {s : Closeds α} : (s : Set α) = ∅ ↔ s = ⊥ :=
   SetLike.coe_injective.eq_iff' rfl
 
-theorem coe_nonempty {s : Closeds α} : (s : Set α).Nonempty ↔ s ≠ ⊥ :=
-  nonempty_iff_ne_empty.trans coe_eq_empty.not
+theorem coe_nonempty {s : Closeds α} : (s : Set α).Nonempty ↔ s ≠ ⊥ := by
+  simp [← ne_empty_iff_nonempty]
 
 @[simp, norm_cast]
 theorem coe_sInf {S : Set (Closeds α)} : (↑(sInf S) : Set α) = ⋂ i ∈ S, ↑i :=
@@ -173,27 +176,20 @@ theorem coe_iInf {ι} (s : ι → Closeds α) : ((⨅ i, s i : Closeds α) : Set
   ext; simp
 
 theorem iInf_def {ι} (s : ι → Closeds α) :
-    ⨅ i, s i = ⟨⋂ i, s i, isClosed_iInter fun i => (s i).2⟩ := by ext1; simp
+    ⨅ i, s i = ⟨⋂ i, s i, isClosed_iInter fun i => (s i).isClosed'⟩ := by ext1; simp
 
 @[simp]
 theorem iInf_mk {ι} (s : ι → Set α) (h : ∀ i, IsClosed (s i)) :
     (⨅ i, ⟨s i, h i⟩ : Closeds α) = ⟨⋂ i, s i, isClosed_iInter h⟩ :=
   iInf_def _
 
-/-- Closed sets in a topological space form a coframe. -/
-def coframeMinimalAxioms : Coframe.MinimalAxioms (Closeds α) where
+instance instCoframe : Coframe (Closeds α) := fast_instance% .ofMinimalAxioms {
   iInf_sup_le_sup_sInf a s :=
-    (SetLike.coe_injective <| by simp only [coe_sup, coe_iInf, coe_sInf, Set.union_iInter₂]).le
-
-instance instCoframe : Coframe (Closeds α) := .ofMinimalAxioms coframeMinimalAxioms
+    (SetLike.coe_injective <| by simp only [coe_sup, coe_iInf, coe_sInf, Set.union_iInter₂]).le }
 
 @[simps]
 instance [T1Space α] : Singleton α (Closeds α) where
   singleton x := ⟨{x}, isClosed_singleton⟩
-
-/-- The term of `TopologicalSpace.Closeds α` corresponding to a singleton. -/
-@[deprecated "Use `{x}` instead" (since := "2025-11-23")]
-abbrev singleton [T1Space α] (x : α) : Closeds α := {x}
 
 @[simp]
 theorem mk_singleton [T1Space α] {x : α} :
@@ -214,17 +210,34 @@ theorem singleton_inj [T1Space α] {x y : α} : ({x} : Closeds α) = {y} ↔ x =
 def preimage (s : Closeds β) {f : α → β} (hf : Continuous f) : Closeds α :=
   ⟨f ⁻¹' s, s.isClosed.preimage hf⟩
 
+instance : SProd (Closeds α) (Closeds β) (Closeds (α × β)) where
+  sprod s t := ⟨s ×ˢ t, s.isClosed.prod t.isClosed⟩
+
+@[simp]
+theorem coe_prod (s : Closeds α) (t : Closeds β) :
+    (s ×ˢ t : Closeds (α × β)) = (s : Set α) ×ˢ (t : Set β) :=
+  rfl
+
+@[simp]
+theorem mem_prod {s : Closeds α} {t : Closeds β} {x : α × β} : x ∈ s ×ˢ t ↔ x.1 ∈ s ∧ x.2 ∈ t :=
+  Iff.rfl
+
+@[simp]
+theorem singleton_prod_singleton [T1Space α] [T1Space β] (x : α) (y : β) :
+    ({x} ×ˢ {y} : Closeds (α × β)) = {(x, y)} :=
+  Closeds.ext Set.singleton_prod_singleton
+
 end Closeds
 
 /-- The complement of a closed set as an open set. -/
 @[simps]
 def Closeds.compl (s : Closeds α) : Opens α :=
-  ⟨sᶜ, s.2.isOpen_compl⟩
+  ⟨sᶜ, s.isClosed'.isOpen_compl⟩
 
 /-- The complement of an open set as a closed set. -/
 @[simps]
 def Opens.compl (s : Opens α) : Closeds α :=
-  ⟨sᶜ, s.2.isClosed_compl⟩
+  ⟨sᶜ, s.is_open'.isClosed_compl⟩
 
 nonrec theorem Closeds.compl_compl (s : Closeds α) : s.compl.compl = s :=
   Closeds.ext (compl_compl (s : Set α))
@@ -264,7 +277,8 @@ variable {α}
 
 lemma Closeds.coe_eq_singleton_of_isAtom [T0Space α] {s : Closeds α} (hs : IsAtom s) :
     ∃ a, (s : Set α) = {a} := by
-  refine minimal_nonempty_closed_eq_singleton s.2 (coe_nonempty.2 hs.1) fun t hts ht ht' ↦ ?_
+  refine minimal_nonempty_closed_eq_singleton s.isClosed' (coe_nonempty.2 hs.1)
+    fun t hts ht ht' ↦ ?_
   lift t to Closeds α using ht'
   exact SetLike.coe_injective.eq_iff.2 <| (hs.le_iff_eq <| coe_nonempty.1 ht).1 hts
 
@@ -300,7 +314,9 @@ namespace Clopens
 
 instance : SetLike (Clopens α) α where
   coe s := s.carrier
-  coe_injective' s t h := by cases s; cases t; congr
+  coe_injective s t h := by cases s; cases t; congr
+
+instance : PartialOrder (Clopens α) := fast_instance% .ofSetLike (Clopens α)
 
 theorem isClopen (s : Clopens α) : IsClopen (s : Set α) :=
   s.isClopen'
@@ -346,14 +362,14 @@ instance : Compl (Clopens α) := ⟨fun s => ⟨sᶜ, s.isClopen.compl⟩⟩
 @[simp, norm_cast] lemma coe_himp (s t : Clopens α) : ↑(s ⇨ t) = (s ⇨ t : Set α) := rfl
 @[simp, norm_cast] lemma coe_compl (s : Clopens α) : (↑sᶜ : Set α) = (↑s)ᶜ := rfl
 
-instance : BooleanAlgebra (Clopens α) :=
-  SetLike.coe_injective.booleanAlgebra _ coe_sup coe_inf coe_top coe_bot coe_compl coe_sdiff
-    coe_himp
+instance : BooleanAlgebra (Clopens α) := fast_instance%
+  SetLike.coe_injective.booleanAlgebra _ .rfl .rfl coe_sup coe_inf coe_top coe_bot coe_compl
+    coe_sdiff coe_himp
 
 instance : Inhabited (Clopens α) := ⟨⊥⟩
 
 instance : SProd (Clopens α) (Clopens β) (Clopens (α × β)) where
-  sprod s t := ⟨s ×ˢ t, s.2.prod t.2⟩
+  sprod s t := ⟨s ×ˢ t, s.isClopen'.prod t.isClopen'⟩
 
 @[simp]
 protected lemma mem_prod {s : Clopens α} {t : Clopens β} {x : α × β} :
@@ -386,18 +402,16 @@ namespace IrreducibleCloseds
 
 instance : SetLike (IrreducibleCloseds α) α where
   coe := IrreducibleCloseds.carrier
-  coe_injective' s t h := by cases s; cases t; congr
+  coe_injective s t h := by cases s; cases t; congr
+
+instance : PartialOrder (IrreducibleCloseds α) := fast_instance% .ofSetLike (IrreducibleCloseds α)
 
 instance : CanLift (Set α) (IrreducibleCloseds α) (↑) (fun s ↦ IsIrreducible s ∧ IsClosed s) where
   prf s hs := ⟨⟨s, hs.1, hs.2⟩, rfl⟩
 
 theorem isIrreducible (s : IrreducibleCloseds α) : IsIrreducible (s : Set α) := s.isIrreducible'
 
-@[deprecated (since := "2025-10-14")] alias is_irreducible' := isIrreducible
-
 theorem isClosed (s : IrreducibleCloseds α) : IsClosed (s : Set α) := s.isClosed'
-
-@[deprecated (since := "2025-10-14")] alias is_closed' := isClosed
 
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : IrreducibleCloseds α) : Set α := s
@@ -415,10 +429,6 @@ theorem coe_mk (s : Set α) (h : IsIrreducible s) (h' : IsClosed s) : (mk s h h'
 @[simps]
 instance [T1Space α] : Singleton α (IrreducibleCloseds α) where
   singleton x := ⟨{x}, isIrreducible_singleton, isClosed_singleton⟩
-
-/-- The term of `TopologicalSpace.IrreducibleCloseds α` corresponding to a singleton. -/
-@[deprecated "Use `{x}` instead" (since := "2025-11-23")]
-abbrev singleton [T1Space α] (x : α) : IrreducibleCloseds α := {x}
 
 @[simp]
 theorem mk_singleton [T1Space α] {x : α} :
@@ -441,8 +451,8 @@ The equivalence between `IrreducibleCloseds α` and `{x : Set α // IsIrreducibl
 -/
 @[simps apply symm_apply]
 def equivSubtype : IrreducibleCloseds α ≃ { x : Set α // IsIrreducible x ∧ IsClosed x } where
-  toFun a  := ⟨a.1, a.2, a.3⟩
-  invFun a := ⟨a.1, a.2.1, a.2.2⟩
+  toFun a  := ⟨a.carrier, a.isIrreducible', a.isClosed'⟩
+  invFun a := ⟨a.val, a.property.1, a.property.2⟩
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /--
@@ -450,8 +460,8 @@ The equivalence between `IrreducibleCloseds α` and `{x : Set α // IsClosed x �
 -/
 @[simps apply symm_apply]
 def equivSubtype' : IrreducibleCloseds α ≃ { x : Set α // IsClosed x ∧ IsIrreducible x } where
-  toFun a  := ⟨a.1, a.3, a.2⟩
-  invFun a := ⟨a.1, a.2.2, a.2.1⟩
+  toFun a  := ⟨a.carrier, a.isClosed', a.isIrreducible'⟩
+  invFun a := ⟨a.val, a.property.2, a.property.1⟩
 
 variable (α) in
 /-- The equivalence `IrreducibleCloseds α ≃ { x : Set α // IsIrreducible x ∧ IsClosed x }` is an
@@ -497,6 +507,32 @@ lemma map_injective_of_isInducing {f : β → α} (hf : IsInducing f) :
 lemma map_strictMono_of_isInducing {f : β → α} (hf : IsInducing f) :
     StrictMono (map f hf.continuous) :=
   Monotone.strictMono_of_injective (map_mono hf.continuous) (map_injective_of_isInducing hf)
+
+set_option backward.isDefEq.respectTransparency false in
+/--
+Given `f : U → X` a continuous open embedding, the irreducible closeds of `U` are order isomorphic
+to the irreducible closeds of `X` nontrivially intersecting the range of `f`.
+-/
+noncomputable
+def orderIsoOfIsOpenEmbedding (f : β → α) (h : IsOpenEmbedding f) :
+    IrreducibleCloseds β ≃o {V : IrreducibleCloseds α | (f ⁻¹' V).Nonempty} where
+  toFun T := ⟨map f h.continuous T,
+    nonempty_preimage_closure_image h.continuous T T.isIrreducible'.nonempty⟩
+  invFun V :=
+    { carrier := f ⁻¹' V
+      isIrreducible' := ⟨V.property, V.val.isIrreducible'.isPreirreducible.preimage h⟩
+      isClosed' := V.val.isClosed'.preimage h.continuous }
+  left_inv V := by
+    ext
+    simp [h.isOpenMap.preimage_closure_image h.injective h.continuous _ V.isClosed]
+  right_inv V := by
+    ext
+    simp [closure_image_preimage_of_isPreirreducible f h.isOpenMap V V.property
+      V.val.isIrreducible'.2 V.val.isClosed']
+  map_rel_iff' {a b} := by
+    refine ⟨fun hle ↦ ?_, fun hle ↦ map_mono h.continuous hle⟩
+    simpa [← h.isEmbedding.closure_eq_preimage_closure_image, a.isClosed.closure_eq,
+      b.isClosed.closure_eq] using Set.preimage_mono (f := f) hle
 
 end IrreducibleCloseds
 

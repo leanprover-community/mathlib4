@@ -6,10 +6,13 @@ Authors: Kenny Lau
 module
 
 public import Mathlib.Algebra.EuclideanDomain.Int
-public import Mathlib.Algebra.MvPolynomial.Eval
 public import Mathlib.RingTheory.Adjoin.Basic
 public import Mathlib.RingTheory.Polynomial.Basic
-public import Mathlib.RingTheory.PrincipalIdealDomain
+
+import Mathlib.RingTheory.PrincipalIdealDomain
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Adjoining elements to form subalgebras
@@ -24,7 +27,6 @@ This file develops the basic theory of finitely-generated subalgebras.
 ## Tags
 
 adjoin, algebra, finitely-generated algebra
-
 -/
 
 @[expose] public section
@@ -32,13 +34,13 @@ adjoin, algebra, finitely-generated algebra
 
 universe u v w
 
-open Subsemiring Ring Submodule
+open Ring Submodule
 
-open Pointwise
+open scoped Pointwise
 
 namespace Algebra
 
-variable {R : Type u} {A : Type v} {B : Type w} [CommSemiring R] [CommSemiring A] [Algebra R A]
+variable {R : Type u} {A : Type v} [CommSemiring R] [CommSemiring A] [Algebra R A]
   {s t : Set A}
 
 theorem fg_trans (h1 : (adjoin R s).toSubmodule.FG) (h2 : (adjoin (adjoin R s) t).toSubmodule.FG) :
@@ -69,8 +71,8 @@ theorem fg_trans (h1 : (adjoin R s).toSubmodule.FG) (h2 : (adjoin (adjoin R s) t
     rw [this, Finsupp.sum]
     refine sum_mem ?_
     intro z hz
-    change (l z).1 * _ ∈ _
-    have : (l z).1 ∈ Subalgebra.toSubmodule (adjoin R s) := (l z).2
+    change (l z).val * _ ∈ _
+    have : (l z).val ∈ Subalgebra.toSubmodule (adjoin R s) := (l z).property
     rw [← hp', ← Set.image_id p, Finsupp.mem_span_image_iff_linearCombination R] at this
     rcases this with ⟨l2, hlp, hl⟩
     have := @Finsupp.linearCombination_apply A A R
@@ -141,6 +143,7 @@ theorem FG.map {S : Subalgebra R A} (f : A →ₐ[R] B) (hs : S.FG) : (S.map f).
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 theorem fg_of_fg_map (S : Subalgebra R A) (f : A →ₐ[R] B) (hf : Function.Injective f)
     (hs : (S.map f).FG) : S.FG :=
   let ⟨s, hs⟩ := hs
@@ -192,8 +195,8 @@ end Semiring
 
 section Ring
 
-variable {R : Type u} {A : Type v} {B : Type w}
-variable [CommRing R] [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
+variable {R : Type u} {A : Type v}
+variable [CommRing R] [CommRing A] [Algebra R A]
 
 theorem isNoetherianRing_of_fg {S : Subalgebra R A} (HS : S.FG) [IsNoetherianRing R] :
     IsNoetherianRing S :=

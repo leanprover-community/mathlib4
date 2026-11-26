@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.EnoughInjectives
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ext in Grothendieck abelian categories
 
@@ -24,10 +27,9 @@ choice for the universe where the `Ext`-groups in `C` should be defined.
 In this situation, we make `HasExt.{w} C` an instance.
 As a result, when `X` and `Y` are objects in `C` and `n : ℕ`,
 we have `Ext X Y n : Type w`.
-
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

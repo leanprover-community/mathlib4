@@ -7,13 +7,17 @@ module
 
 public import Mathlib.Data.DFinsupp.Defs
 public import Mathlib.Logic.Encodable.Pi
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Encodable` and `Countable` instances for `Π₀ i, α i`
 
 In this file we provide instances for `Encodable (Π₀ i, α i)` and `Countable (Π₀ i, α i)`.
 -/
 
-@[expose] public section
+public section
 
 variable {ι : Type*} {α : ι → Type*} [∀ i, Zero (α i)]
 

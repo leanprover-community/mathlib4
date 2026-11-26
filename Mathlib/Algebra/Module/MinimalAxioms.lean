@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Module.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Minimal Axioms for a Module
 
@@ -17,10 +20,9 @@ This file defines a constructor to define a `Module` structure on a Type with an
 
 * `Module.ofMinimalAxioms`: Define a `Module` structure on a Type with an
   AddCommGroup by proving a minimized set of axioms
-
 -/
 
-@[expose] public section
+public section
 
 universe u v
 

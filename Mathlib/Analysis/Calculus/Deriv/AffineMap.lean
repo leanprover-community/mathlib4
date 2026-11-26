@@ -5,9 +5,10 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Calculus.Deriv.Add
 public import Mathlib.Analysis.Calculus.Deriv.Linear
-public import Mathlib.LinearAlgebra.AffineSpace.AffineMap
+
+import Mathlib.Analysis.Calculus.Deriv.Add
+
 /-!
 # Derivatives of affine maps
 
@@ -20,7 +21,7 @@ from dimension 1 to a domain in higher dimension.
 Add theorems about `deriv`s and `fderiv`s of `ContinuousAffineMap`s once they will be ported to
 Mathlib 4.
 
-## Keywords
+## Tags
 
 affine map, derivative, differentiability
 -/
@@ -29,18 +30,15 @@ public section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  (f : 𝕜 →ᵃ[𝕜] E) {a b : E} {L : Filter 𝕜} {s : Set 𝕜} {x : 𝕜}
+  (f : 𝕜 →ᵃ[𝕜] E) {a b : E} {L : Filter (𝕜 × 𝕜)} {s : Set 𝕜} {x : 𝕜}
 
 namespace AffineMap
 
-theorem hasStrictDerivAt : HasStrictDerivAt f (f.linear 1) x := by
-  rw [f.decomp]
-  exact f.linear.hasStrictDerivAt.add_const (f 0)
-
-theorem hasDerivAtFilter : HasDerivAtFilter f (f.linear 1) x L := by
+theorem hasDerivAtFilter : HasDerivAtFilter f (f.linear 1) L := by
   rw [f.decomp]
   exact f.linear.hasDerivAtFilter.add_const (f 0)
 
+theorem hasStrictDerivAt : HasStrictDerivAt f (f.linear 1) x := f.hasDerivAtFilter
 theorem hasDerivWithinAt : HasDerivWithinAt f (f.linear 1) s x := f.hasDerivAtFilter
 theorem hasDerivAt : HasDerivAt f (f.linear 1) x := f.hasDerivAtFilter
 

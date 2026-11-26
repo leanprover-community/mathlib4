@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.RootSystem.IsValuedIn
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Invariant and root-positive bilinear forms on root pairings
 
@@ -31,7 +34,6 @@ positive semi-definite on weight space and positive-definite on the span of root
 * `RootPairing.coxeterWeight_nonneg`: All pairs of roots have non-negative Coxeter weight.
 * `RootPairing.coxeterWeight_zero_iff_isOrthogonal` : A Coxeter weight vanishes iff the roots are
   orthogonal.
-
 -/
 
 @[expose] public section
@@ -139,11 +141,13 @@ def posForm :
     · simpa
     · simpa)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma algebraMap_posForm {x y : span S (range P.root)} :
     algebraMap S R (B.posForm x y) = B.form x y := by
   change Algebra.linearMap S R _ = _
   simp [posForm]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma algebraMap_apply_eq_form_iff {x y : span S (range P.root)} {s : S} :
     algebraMap S R s = B.form x y ↔ s = B.posForm x y := by
   simp [RootPositiveForm.posForm]
@@ -170,7 +174,7 @@ def rootLength (i : ι) : S :=
   B.posForm (P.rootSpanMem S i) (P.rootSpanMem S i)
 
 lemma rootLength_pos (i : ι) : 0 < B.rootLength i := by
-  simpa using B.zero_lt_posForm_apply_root i
+  simpa using! B.zero_lt_posForm_apply_root i
 
 @[simp]
 lemma rootLength_reflectionPerm_self (i : ι) :
@@ -184,7 +188,7 @@ lemma rootLength_reflectionPerm_self (i : ι) :
 lemma pairingIn_mul_eq_pairingIn_mul_swap :
     P.pairingIn S j i * B.rootLength i = P.pairingIn S i j * B.rootLength j := by
   simpa only [← (algebraMap_injective S R).eq_iff, algebraMap_pairingIn, map_mul,
-    B.algebraMap_rootLength] using B.toInvariantForm.pairing_mul_eq_pairing_mul_swap i j
+    B.algebraMap_rootLength] using! B.toInvariantForm.pairing_mul_eq_pairing_mul_swap i j
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 @[simp]
