@@ -360,10 +360,8 @@ theorem cauchyIndex_congr_of_eval_denom_ne_zero {f : K⟮X⟯} {a₁ a₂ b₁ b
   refine Finset.sum_congr (Finset.filter_congr fun x hx => ?_) fun _ _ => rfl
   have hx0 : f.denom.eval x = 0 := (mem_roots'.mp (Multiset.mem_toFinset.mp hx)).2
   refine ⟨fun h => ⟨?_, ?_⟩, fun h => ⟨ha.trans_lt h.1, h.2.trans_le hb⟩⟩
-  · by_contra hxa
-    exact hfa x ⟨h.1, not_lt.mp hxa⟩ hx0
-  · by_contra hxb
-    exact hfb x ⟨not_lt.mp hxb, h.2⟩ hx0
+  · exact lt_of_not_ge fun hxa ↦ hfa x ⟨h.1, hxa⟩ hx0
+  · exact lt_of_not_ge fun hxb ↦ hfb x ⟨hxb, h.2⟩ hx0
 
 /-- Dividing by a polynomial `g` of constant sign `s` on `(a, b)` multiplies the Cauchy index on
 `(a, b)` by `s`. -/
