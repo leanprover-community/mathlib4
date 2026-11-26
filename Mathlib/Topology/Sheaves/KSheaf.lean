@@ -63,7 +63,7 @@ structure of cocone over the diagram defined by the `P.obj (op L)` for `L` a com
 neighbourhood of `K` -/
 @[simps, implicit_reducible]
 def coconeOfCompacts (P : KPresheaf A X) (K : Compacts X) :
-    Cocone ((Set.mono_coe K.compactNhds).functor.op ⋙ P) where
+    Cocone ((Set.subtypeVal_monotone K.compactNhds).functor.op ⋙ P) where
   pt := P.obj (op K)
   ι.app K' := P.map <| opHomOfLE (Compacts.subset_of_mem_compactNhds K'.unop.prop)
   ι.naturality _ _ _ := by
@@ -86,7 +86,7 @@ compact neighbourhoods and not all the compacts neighbourhoods. -/
 @[no_expose]
 noncomputable def descOfOpenClosure (P : KPresheaf A X) (K : Compacts X)
     (h : (IsColimit (P.coconeOfCompacts K))) {Z : A}
-    (ι : K.openRcNhdsToCompactNhds_mono.functor.op ⋙ (Set.mono_coe _).functor.op ⋙ P ⟶
+    (ι : K.openRcNhdsToCompactNhds_mono.functor.op ⋙ (Set.subtypeVal_monotone _).functor.op ⋙ P ⟶
       (Functor.const _).obj Z) :
     P.obj (op K) ⟶ Z :=
   ((Functor.Final.isColimitWhiskerEquiv
@@ -95,7 +95,7 @@ noncomputable def descOfOpenClosure (P : KPresheaf A X) (K : Compacts X)
 @[reassoc (attr := simp)]
 lemma map_comp_descOfOpenClosure (P : KPresheaf A X) {K : Compacts X} (V : K.openRcNhds)
     (h : (IsColimit (P.coconeOfCompacts K))) {Z : A}
-    (ι : K.openRcNhdsToCompactNhds_mono.functor.op ⋙ (Set.mono_coe _).functor.op ⋙ P ⟶
+    (ι : K.openRcNhdsToCompactNhds_mono.functor.op ⋙ (Set.subtypeVal_monotone _).functor.op ⋙ P ⟶
       (Functor.const _).obj Z) :
     dsimp% P.map (op (homOfLE (V.property.2.trans subset_closure))) ≫ P.descOfOpenClosure K h ι =
       ι.app (op V) :=
@@ -160,7 +160,7 @@ noncomputable def isColimit (P : KSheaf A X) (K : Compacts X) :
 `P.obj (op K)` by only using the open relatively compact neighbourhoods and not
 all the compacts neighbourhoods. -/
 noncomputable def descOfOpenClosure (P : KSheaf A X) (K : Compacts X) {Z : A}
-    (ι : K.openRcNhdsToCompactNhds_mono.functor.op ⋙ (Set.mono_coe _).functor.op ⋙ P.obj ⟶
+    (ι : K.openRcNhdsToCompactNhds_mono.functor.op ⋙ (Set.subtypeVal_monotone _).functor.op ⋙ P.obj ⟶
       (Functor.const _).obj Z) :
     P.obj.obj (op K) ⟶ Z := P.obj.descOfOpenClosure K (P.isColimit K) ι
 

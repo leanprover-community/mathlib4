@@ -370,14 +370,14 @@ lemma isMin_coe : IsMin (a : α) ↔ IsMin a where
 variable [Preorder 𝕆]
 
 instance [GradeOrder 𝕆 α] (s : Flag α) : GradeOrder 𝕆 s :=
-  .liftRight _ (Subtype.strictMono_coe _) fun _ _ ↦ coe_covBy_coe.2
+  .liftRight _ (Subtype.val_strictMono _) fun _ _ ↦ coe_covBy_coe.2
 
 @[to_dual]
 instance [GradeMinOrder 𝕆 α] (s : Flag α) : GradeMinOrder 𝕆 s :=
-  .liftRight _ (Subtype.strictMono_coe _) (fun _ _ ↦ coe_covBy_coe.2) fun _ ↦ isMin_coe.2
+  .liftRight _ (Subtype.val_strictMono _) (fun _ _ ↦ coe_covBy_coe.2) fun _ ↦ isMin_coe.2
 
 instance [GradeBoundedOrder 𝕆 α] (s : Flag α) : GradeBoundedOrder 𝕆 s :=
-  .liftRight _ (Subtype.strictMono_coe _) (fun _ _ ↦ coe_covBy_coe.2) (fun _ ↦ isMin_coe.2)
+  .liftRight _ (Subtype.val_strictMono _) (fun _ _ ↦ coe_covBy_coe.2) (fun _ ↦ isMin_coe.2)
     fun _ ↦ isMax_coe.2
 
 @[simp, norm_cast] lemma grade_coe [GradeOrder 𝕆 α] (a : s) : grade 𝕆 (a : α) = grade 𝕆 a := rfl

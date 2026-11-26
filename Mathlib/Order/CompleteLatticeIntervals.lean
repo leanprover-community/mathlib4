@@ -123,7 +123,7 @@ end InfSet
 theorem Subtype.isLUB_of_csSup_image_mem [ConditionallyCompleteLattice α] {s : Set α} {t : Set s}
     (ht : t.Nonempty) (h_bdd : BddAbove t) (h : sSup ((↑) '' t : Set α) ∈ s) :
     IsLUB t ⟨sSup ((↑) '' t : Set α), h⟩ :=
-  .of_image Subtype.coe_le_coe (isLUB_csSup (ht.image _) ((Subtype.mono_coe _).map_bddAbove h_bdd))
+  .of_image Subtype.coe_le_coe (isLUB_csSup (ht.image _) ((val_monotone _).map_bddAbove h_bdd))
 
 section OrdConnected
 
@@ -156,8 +156,8 @@ theorem Set.OrdConnected.csSup_image_mem {s : Set α} [hs : OrdConnected s] ⦃t
   obtain ⟨c, hct⟩ : ∃ c, c ∈ t := ht
   obtain ⟨B, hB⟩ : ∃ B, B ∈ upperBounds t := h_bdd
   refine hs.out c.property B.property ⟨?_, ?_⟩
-  · exact (Subtype.mono_coe (· ∈ s)).le_csSup_image hct ⟨B, hB⟩
-  · exact (Subtype.mono_coe (· ∈ s)).csSup_image_le ⟨c, hct⟩ hB
+  · exact (Subtype.val_monotone (· ∈ s)).le_csSup_image hct ⟨B, hB⟩
+  · exact (Subtype.val_monotone (· ∈ s)).csSup_image_le ⟨c, hct⟩ hB
 
 /-- The `sInf` function on a nonempty `OrdConnected` set `s` in a conditionally complete linear
 order takes values within `s`, for all nonempty bounded-below subsets of `s`. -/
@@ -166,8 +166,8 @@ theorem Set.OrdConnected.csInf_image_mem {s : Set α} [hs : OrdConnected s] ⦃t
   obtain ⟨c, hct⟩ : ∃ c, c ∈ t := ht
   obtain ⟨B, hB⟩ : ∃ B, B ∈ lowerBounds t := h_bdd
   refine hs.out B.property c.property ⟨?_, ?_⟩
-  · exact (Subtype.mono_coe (· ∈ s)).le_csInf_image ⟨c, hct⟩ hB
-  · exact (Subtype.mono_coe (· ∈ s)).csInf_image_le hct ⟨B, hB⟩
+  · exact (Subtype.val_monotone (· ∈ s)).le_csInf_image ⟨c, hct⟩ hB
+  · exact (Subtype.val_monotone (· ∈ s)).csInf_image_le hct ⟨B, hB⟩
 
 /-- A nonempty `OrdConnected` set in a conditionally complete linear order is naturally a
 conditionally complete linear order. -/
@@ -212,7 +212,7 @@ noncomputable instance Set.Icc.completeLattice [ConditionallyCompleteLattice α]
     split_ifs with hS
     · subst hS; simp only [isLUB_empty_iff, isBot_iff_eq_bot]; rfl
     · exact .of_image Subtype.coe_le_coe <| isLUB_csSup ((Set.ne_empty_iff_nonempty.mp hS).image _)
-        ((Subtype.mono_coe _).map_bddAbove (OrderTop.bddAbove S))
+        ((Subtype.val_monotone _).map_bddAbove (OrderTop.bddAbove S))
   sInf S := if hS : S = ∅ then ⟨b, Fact.out, le_rfl⟩ else ⟨sInf ((↑) '' S), by
     rw [← Set.not_nonempty_iff_eq_empty, not_not] at hS
     refine ⟨le_csInf (hS.image Subtype.val) (fun _ ⟨c, _, hc⟩ ↦ hc ▸ c.property.1), ?_⟩
@@ -222,7 +222,7 @@ noncomputable instance Set.Icc.completeLattice [ConditionallyCompleteLattice α]
     split_ifs with hS
     · subst hS; simp only [isGLB_empty_iff, isTop_iff_eq_top]; rfl
     · exact .of_image Subtype.coe_le_coe <| isGLB_csInf ((Set.ne_empty_iff_nonempty.mp hS).image _)
-        ((Subtype.mono_coe _).map_bddBelow (OrderBot.bddBelow S))
+        ((Subtype.val_monotone _).map_bddBelow (OrderBot.bddBelow S))
 
 /-- Complete linear order structure on `Set.Icc` -/
 noncomputable instance [ConditionallyCompleteLinearOrder α] {a b : α} [Fact (a ≤ b)] :

@@ -293,7 +293,7 @@ variable (κ₁ κ₂) {C : Type u} [Category.{v} C] {X : C}
 variable [IsCardinalAccessibleCategory C κ₁]
 
 public instance (A : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J)) :
-    HasColimit (A.val.mono_coe.functor ⋙ p.diag) := by
+    HasColimit (A.val.subtypeVal_monotone.functor ⋙ p.diag) := by
   have : IsCardinalFiltered A.val κ₁ := A.prop.1
   have := HasCardinalFilteredColimits.hasColimitsOfShape  C κ₁
   infer_instance
@@ -333,20 +333,20 @@ that is `κ₁`-directed and of cardinality `< κ₂`, this is
 the colimit of the restriction of the diagram `p.diag` to `A`. -/
 public noncomputable abbrev colimit
     (A : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J)) : C :=
-  Limits.colimit (A.val.mono_coe.functor ⋙ p.diag)
+  Limits.colimit (A.val.subtypeVal_monotone.functor ⋙ p.diag)
 
 /-- The inclusions in `colimit`. -/
 public noncomputable abbrev colimit.ι
     (A : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J)) (a : J) (ha : a ∈ A.val) :
     p.diag.obj a ⟶ colimit κ₁ κ₂ p A :=
-  Limits.colimit.ι (A.val.mono_coe.functor ⋙ p.diag) ⟨a, ha⟩
+  Limits.colimit.ι (A.val.subtypeVal_monotone.functor ⋙ p.diag) ⟨a, ha⟩
 
 omit [Fact κ₂.IsRegular] in
 @[reassoc (attr := simp)]
 lemma colimit.w (A : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J))
     {a b : J} (hab : a ≤ b) (ha : a ∈ A.val) (hb : b ∈ A.val) :
     p.diag.map (homOfLE hab) ≫ colimit.ι κ₁ κ₂ p A b hb = colimit.ι κ₁ κ₂ p A a ha :=
-  Limits.colimit.w (A.val.mono_coe.functor ⋙ p.diag)
+  Limits.colimit.w (A.val.subtypeVal_monotone.functor ⋙ p.diag)
     (j' := ⟨a, ha⟩) (j := ⟨b, hb⟩) (homOfLE hab)
 
 /-- The functoriality of `colimit` with respect to the subset `A`. -/

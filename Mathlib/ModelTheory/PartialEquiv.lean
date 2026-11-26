@@ -484,7 +484,7 @@ theorem embedding_from_cg (M_cg : Structure.CG L M) (g : L.FGEquiv M N)
   let D : X → Order.Cofinal (FGEquiv L M N) := fun x ↦ H.definedAtLeft x
   let S : ℕ →o M ≃ₚ[L] N :=
     ⟨Subtype.val ∘ (Order.sequenceOfCofinals g D),
-      (Subtype.mono_coe _).comp (Order.sequenceOfCofinals.monotone _ _)⟩
+      (Subtype.val_monotone _).comp (Order.sequenceOfCofinals.monotone _ _)⟩
   let F := DirectLimit.partialEquivLimit S
   have _ : X ⊆ F.dom := by
     intro x hx
@@ -513,7 +513,7 @@ theorem equiv_between_cg (M_cg : Structure.CG L M) (N_cg : Structure.CG L N)
     Sum.recOn p (fun x ↦ ext_dom.definedAtLeft x) (fun y ↦ ext_cod.definedAtRight y)
   let S : ℕ →o M ≃ₚ[L] N :=
     ⟨Subtype.val ∘ (Order.sequenceOfCofinals g D),
-      (Subtype.mono_coe _).comp (Order.sequenceOfCofinals.monotone _ _)⟩
+      (Subtype.val_monotone _).comp (Order.sequenceOfCofinals.monotone _ _)⟩
   let F := @DirectLimit.partialEquivLimit L M N _ _ ℕ _ _ _ S
   have _ : X ⊆ F.dom := by
     intro x hx

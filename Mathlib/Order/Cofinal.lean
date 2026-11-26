@@ -81,7 +81,7 @@ theorem IsCofinal.image {f : α → β} {s : Set α} (hs : IsCofinal s)
 /-- A cofinal subset of a cofinal subset is cofinal. -/
 theorem IsCofinal.trans {s : Set α} {t : Set s} (hs : IsCofinal s) (ht : IsCofinal t) :
     IsCofinal (Subtype.val '' t) :=
-  ht.image (Subtype.mono_coe _) (by simpa)
+  ht.image (Subtype.val_monotone _) (by simpa)
 
 theorem GaloisConnection.isCofinal_range {f : β → α} {g : α → β} (h : GaloisConnection f g) :
     IsCofinal (range g) :=

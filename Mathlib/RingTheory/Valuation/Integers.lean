@@ -279,7 +279,7 @@ lemma not_denselyOrdered_of_isPrincipalIdealRing [IsPrincipalIdealRing O] (hv : 
       simpa only [Subtype.exists, Subtype.mk_lt_mk, mem_range, exists_and_left] using
         H.dense ⟨v (algebraMap O F x), mem_range_self _⟩ ⟨1, 1, v.map_one⟩ hx₁
     use y, hy1
-    rwa [← (Subtype.strictMono_coe _).lt_iff_lt] at hy2
+    rwa [← (Subtype.val_strictMono _).lt_iff_lt] at hy2
   obtain ⟨z, rfl⟩ := hv.exists_of_le_one hy₁.le
   exact hy.not_ge <| hx ⟨hy₁, mem_range_self _⟩
 

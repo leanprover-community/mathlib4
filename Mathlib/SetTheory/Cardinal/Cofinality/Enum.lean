@@ -125,10 +125,10 @@ theorem enum_anti {hs : IsCofinal s} {t : Set α} {x : α} (h : s ⊆ t) :
 /-- A characterization of `Order.enum s _`: it is the unique strictly monotone function
 with range `s`. -/
 theorem enum_eq_iff {f : α → α} : Subtype.val ∘ enum s hs = f ↔ StrictMono f ∧ range f = s := by
-  have H := (Subtype.strictMono_coe _).comp (enum s hs).strictMono
+  have H := (Subtype.val_strictMono _).comp (enum s hs).strictMono
   constructor
   · rintro rfl
-    use (Subtype.strictMono_coe _).comp (enum s hs).strictMono
+    use (Subtype.val_strictMono _).comp (enum s hs).strictMono
     simp
   · rintro ⟨hf, rfl⟩
     rw [← StrictMono.range_inj_of_wellFoundedLT H hf]
@@ -139,7 +139,7 @@ theorem enum_range {f : α → α} (hf : StrictMono f) :
     enum (range f) (isCofinal_range_of_strictMono hf) = hf.orderIso := by
   ext x
   apply congrFun (enum_eq_iff.2 ⟨?_, ?_⟩)
-  · exact (Subtype.strictMono_coe _).comp (OrderIso.strictMono _)
+  · exact (Subtype.val_strictMono _).comp (OrderIso.strictMono _)
   · simp
 
 theorem enum_bot {α : Type*} [ConditionallyCompleteLinearOrderBot α] [WellFoundedLT α]
@@ -153,7 +153,7 @@ theorem enum_bot {α : Type*} [ConditionallyCompleteLinearOrderBot α] [WellFoun
 
 See also `Order.isNormal_enum_iff_isClub`. -/
 theorem isNormal_enum_iff_dirSupClosed : IsNormal (Subtype.val ∘ enum s hs) ↔ DirSupClosed s := by
-  rw [isNormal_iff_dirSupClosed_range ((Subtype.strictMono_coe _).comp (enum s hs).strictMono)]
+  rw [isNormal_iff_dirSupClosed_range ((Subtype.val_strictMono _).comp (enum s hs).strictMono)]
   simp
 
 end Order

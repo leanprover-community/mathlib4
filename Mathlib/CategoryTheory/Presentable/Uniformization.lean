@@ -49,7 +49,7 @@ lemma Cardinal.SharplyLT.exists_retract_of_isCardinalPresentable
     (isColimit κ₁ κ₂ p) (𝟙 X)
   exact ⟨colimit κ₁ κ₂ p K,
     { i := i, r := colimit.π κ₁ κ₂ p K }, K.val,
-    inferInstance, K.prop.1, K.prop.2, ⟨.colimit (K.val.mono_coe.functor ⋙ p.diag)
+    inferInstance, K.prop.1, K.prop.2, ⟨.colimit (K.val.subtypeVal_monotone.functor ⋙ p.diag)
       (fun _ ↦ p.prop_diag_obj _)⟩⟩
 
 namespace CategoryTheory

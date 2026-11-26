@@ -70,7 +70,7 @@ theorem arcsin_sin {x : ℝ} (hx₁ : -(π / 2) ≤ x) (hx₂ : x ≤ π / 2) : 
   arcsin_sin' ⟨hx₁, hx₂⟩
 
 theorem strictMonoOn_arcsin : StrictMonoOn arcsin (Icc (-1) 1) :=
-  (Subtype.strictMono_coe _).comp_strictMonoOn <|
+  (Subtype.val_strictMono _).comp_strictMonoOn <|
     sinOrderIso.symm.strictMono.strictMonoOn_IccExtend _
 
 @[gcongr]
@@ -79,7 +79,7 @@ theorem arcsin_lt_arcsin {x y : ℝ} (hx : -1 ≤ x) (hlt : x < y) (hy : y ≤ 1
   strictMonoOn_arcsin ⟨hx, hlt.le.trans hy⟩ ⟨hx.trans hlt.le, hy⟩ hlt
 
 theorem monotone_arcsin : Monotone arcsin :=
-  (Subtype.mono_coe _).comp <| sinOrderIso.symm.monotone.IccExtend _
+  (Subtype.val_monotone _).comp <| sinOrderIso.symm.monotone.IccExtend _
 
 @[gcongr]
 theorem arcsin_le_arcsin {x y : ℝ} (h : x ≤ y) : arcsin x ≤ arcsin y := monotone_arcsin h
