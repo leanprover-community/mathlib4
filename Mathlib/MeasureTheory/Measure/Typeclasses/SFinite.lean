@@ -694,10 +694,10 @@ and this is not a σ-finite measure.
 protected theorem SigmaFinite.comap (μ : Measure α) [SigmaFinite μ] {f : β → α}
     (hf : Measurable f) : SigmaFinite (μ.comap f) :=
   ⟨⟨μ.toFiniteSpanningSetsIn.comap (mapsTo_univ _ _) fun n ↦
-    hf <| μ.toFiniteSpanningSetsIn.set_mem n⟩⟩
+    (hf <| μ.toFiniteSpanningSetsIn.set_mem n).nullMeasurableSet⟩⟩
 
 instance {p : α → Prop} [SigmaFinite μ] : SigmaFinite (μ.comap ((↑) : Subtype p → α)) :=
-  .comap μ measurable_subtype_coe
+  .comap μ measurable_subtypeVal
 
 lemma _root_.MeasurableEmbedding.sigmaFinite_map {f : α → β} (hf : MeasurableEmbedding f)
     [SigmaFinite μ] :
