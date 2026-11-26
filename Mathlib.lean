@@ -6133,6 +6133,7 @@ public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Summable
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.UniformConvergence
 public import Mathlib.NumberTheory.ModularForms.Identities
 public import Mathlib.NumberTheory.ModularForms.JacobiTheta.Bounds
+public import Mathlib.NumberTheory.ModularForms.JacobiTheta.JacobiIdentity
 public import Mathlib.NumberTheory.ModularForms.JacobiTheta.Manifold
 public import Mathlib.NumberTheory.ModularForms.JacobiTheta.OneVariable
 public import Mathlib.NumberTheory.ModularForms.JacobiTheta.TwoVariable
