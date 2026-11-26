@@ -2962,6 +2962,7 @@ public import Mathlib.CategoryTheory.Idempotents.Karoubi
 public import Mathlib.CategoryTheory.Idempotents.KaroubiKaroubi
 public import Mathlib.CategoryTheory.Idempotents.SimplicialObject
 public import Mathlib.CategoryTheory.InducedCategory
+public import Mathlib.CategoryTheory.Inserter.Accessible
 public import Mathlib.CategoryTheory.Inserter.Basic
 public import Mathlib.CategoryTheory.Inserter.Limits
 public import Mathlib.CategoryTheory.IsConnected
@@ -6220,7 +6221,6 @@ public import Mathlib.NumberTheory.Padics.ValuativeRel
 public import Mathlib.NumberTheory.Padics.WithVal
 public import Mathlib.NumberTheory.Pell
 public import Mathlib.NumberTheory.PellMatiyasevic
-public import Mathlib.NumberTheory.PerfectPowers
 public import Mathlib.NumberTheory.PowModTotient
 public import Mathlib.NumberTheory.PrimeCounting
 public import Mathlib.NumberTheory.PrimesCongruentOne
@@ -8629,6 +8629,7 @@ public import Mathlib.Topology.Sheaves.Flasque
 public import Mathlib.Topology.Sheaves.Forget
 public import Mathlib.Topology.Sheaves.Functors
 public import Mathlib.Topology.Sheaves.Init
+public import Mathlib.Topology.Sheaves.KPresheaf
 public import Mathlib.Topology.Sheaves.KSheaf
 public import Mathlib.Topology.Sheaves.Limits
 public import Mathlib.Topology.Sheaves.LocalPredicate
