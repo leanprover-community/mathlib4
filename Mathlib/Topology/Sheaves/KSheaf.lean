@@ -86,8 +86,8 @@ noncomputable def isColimit (P : KSheaf A X) (K : Compacts X) :
 `P.obj (op K)` by only using the open relatively compact neighbourhoods and not
 all the compacts neighbourhoods. -/
 noncomputable def descOfOpenClosure (P : KSheaf A X) (K : Compacts X) {Z : A}
-    (ι : K.openRcNhdsToCompactNhds_mono.functor.op ⋙ (Set.subtypeVal_monotone _).functor.op ⋙ P.obj ⟶
-      (Functor.const _).obj Z) :
+    (ι : K.openRcNhdsToCompactNhds_mono.functor.op ⋙ (Set.subtypeVal_monotone _).functor.op ⋙
+      P.obj ⟶ (Functor.const _).obj Z) :
     P.obj.obj (op K) ⟶ Z := P.obj.descOfOpenClosure K (P.isColimit K) ι
 
 @[ext]
