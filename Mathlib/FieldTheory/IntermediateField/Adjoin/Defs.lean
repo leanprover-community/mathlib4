@@ -30,14 +30,14 @@ section AdjoinDef
 variable (F : Type*) [Field F] {E : Type*} [Field E] [Algebra F E] (S : Set E)
 
 /-- `adjoin F S` extends a field `F` by adjoining a set `S ⊆ E`. -/
-@[stacks 09FZ "first part"]
-def adjoin : IntermediateField F E :=
-  { Subfield.closure (Set.range (algebraMap F E) ∪ S) with
-    algebraMap_mem' := fun x => Subfield.subset_closure (Or.inl (Set.mem_range_self x)) }
+@[stacks 09FZ "first part", no_expose]
+def adjoin : IntermediateField F E where
+  __ := Subfield.closure (Set.range (algebraMap F E) ∪ S)
+  algebraMap_mem' := fun x => Subfield.subset_closure (Or.inl (Set.mem_range_self x))
 
 @[simp]
 theorem adjoin_toSubfield :
-    (adjoin F S).toSubfield = Subfield.closure (Set.range (algebraMap F E) ∪ S) := rfl
+    (adjoin F S).toSubfield = Subfield.closure (Set.range (algebraMap F E) ∪ S) := (rfl)
 
 variable {F S} in
 theorem mem_adjoin_iff_div {x : E} : x ∈ adjoin F S ↔
