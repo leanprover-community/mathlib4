@@ -50,7 +50,6 @@ structure Hom2 {a b : Bᵒᵖ} (f g : a ⟶ b) where
 
 open Hom2
 
-@[simps!]
 instance homCategory (a b : Bᵒᵖ) : Category.{w} (a ⟶ b) where
   Hom f g := Hom2 f g
   id f := op2' (𝟙 f.unop)
@@ -77,10 +76,12 @@ theorem op2_comp {a b : B} {f g h : a ⟶ b} (η : f ⟶ g) (θ : g ⟶ h) :
 theorem op2_id {a b : B} {f : a ⟶ b} : op2 (𝟙 f) = 𝟙 f.op :=
   rfl
 
+@[simp]
 theorem unop2_comp {a b : Bᵒᵖ} {f g h : a ⟶ b} (η : f ⟶ g) (θ : g ⟶ h) :
     unop2 (η ≫ θ) = unop2 η ≫ unop2 θ :=
   rfl
 
+@[simp]
 theorem unop2_id {a b : Bᵒᵖ} {f : a ⟶ b} : unop2 (𝟙 f) = 𝟙 f.unop :=
   rfl
 

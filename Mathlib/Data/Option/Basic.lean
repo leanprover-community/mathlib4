@@ -87,6 +87,7 @@ theorem bind_eq_bind' {α β : Type u} {f : α → Option β} {x : Option α} : 
 theorem map_coe {α β} {a : α} {f : α → β} : f <$> (a : Option α) = ↑(f a) :=
   rfl
 
+@[deprecated map_some (since := "2026-11-26")]
 theorem map_coe' {a : α} {f : α → β} : Option.map f (a : Option α) = ↑(f a) :=
   rfl
 

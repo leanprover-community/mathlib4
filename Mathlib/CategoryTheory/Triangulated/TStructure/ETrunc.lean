@@ -73,10 +73,6 @@ lemma eTruncLT_obj_bot : t.eTruncLT.obj ⊥ = 0 := rfl
 @[simp]
 lemma eTruncLT_obj_coe (n : ℤ) : t.eTruncLT.obj n = t.truncLT n := rfl
 
-@[simp]
-lemma eTruncLT_map_eq_truncLTι (n : ℤ) :
-    t.eTruncLT.map (homOfLE (show (n : EInt) ≤ ⊤ by simp)) = t.truncLTι n := rfl
-
 instance (i : EInt) : (t.eTruncLT.obj i).Additive := by
   induction i using WithBotTop.rec
   all_goals dsimp; infer_instance
@@ -148,8 +144,12 @@ noncomputable abbrev eTruncLTι (i : EInt) : t.eTruncLT.obj i ⟶ 𝟭 _ :=
   t.eTruncLT.map (homOfLE (le_top))
 
 @[simp] lemma eTruncLT_ι_bot : t.eTruncLTι ⊥ = 0 := rfl
-lemma eTruncLT_ι_coe (n : ℤ) : t.eTruncLTι n = t.truncLTι n := rfl
+@[simp] lemma eTruncLT_ι_coe (n : ℤ) : t.eTruncLTι n = t.truncLTι n := rfl
 @[simp] lemma eTruncLT_ι_top : t.eTruncLTι ⊤ = 𝟙 _ := rfl
+
+@[deprecated eTruncLT_ι_coe (since := "2026-11-26")]
+lemma eTruncLT_map_eq_truncLTι (n : ℤ) :
+    t.eTruncLT.map (homOfLE (show (n : EInt) ≤ ⊤ by simp)) = t.truncLTι n := rfl
 
 @[reassoc]
 lemma eTruncLTι_naturality (i : EInt) {X Y : C} (f : X ⟶ Y) :

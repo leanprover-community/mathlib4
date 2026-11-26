@@ -189,6 +189,7 @@ lemma toFiniteMeasure_apply (μ : ProbabilityMeasure Ω) (s : Set Ω) :
 theorem toMeasure_comp_toFiniteMeasure_eq_toMeasure (ν : ProbabilityMeasure Ω) :
     (ν.toFiniteMeasure : Measure Ω) = (ν : Measure Ω) := rfl
 
+@[deprecated coeFn_toFiniteMeasure (since := "2026-11-26")]
 theorem coeFn_comp_toFiniteMeasure_eq_coeFn (ν : ProbabilityMeasure Ω) :
     (ν.toFiniteMeasure : Set Ω → ℝ≥0) = (ν : Set Ω → ℝ≥0) := rfl
 
@@ -199,7 +200,7 @@ theorem toFiniteMeasure_apply_eq_apply (ν : ProbabilityMeasure Ω) (s : Set Ω)
 @[simp]
 theorem ennreal_coeFn_eq_coeFn_toMeasure (ν : ProbabilityMeasure Ω) (s : Set Ω) :
     (ν s : ℝ≥0∞) = (ν : Measure Ω) s := by
-  rw [← coeFn_comp_toFiniteMeasure_eq_coeFn, FiniteMeasure.ennreal_coeFn_eq_coeFn_toMeasure,
+  rw [← coeFn_toFiniteMeasure, FiniteMeasure.ennreal_coeFn_eq_coeFn_toMeasure,
     toMeasure_comp_toFiniteMeasure_eq_toMeasure]
 
 @[simp]
@@ -210,11 +211,11 @@ theorem null_iff_toMeasure_null (ν : ProbabilityMeasure Ω) (s : Set Ω) :
 
 @[gcongr]
 theorem apply_mono (μ : ProbabilityMeasure Ω) {s₁ s₂ : Set Ω} (h : s₁ ⊆ s₂) : μ s₁ ≤ μ s₂ := by
-  rw [← coeFn_comp_toFiniteMeasure_eq_coeFn]
+  rw [← coeFn_toFiniteMeasure]
   exact FiniteMeasure.apply_mono _ h
 
 theorem apply_union_le (μ : ProbabilityMeasure Ω) {s₁ s₂ : Set Ω} : μ (s₁ ∪ s₂) ≤ μ s₁ + μ s₂ := by
-  rw [← coeFn_comp_toFiniteMeasure_eq_coeFn]
+  rw [← coeFn_toFiniteMeasure]
   exact FiniteMeasure.apply_union_le _
 
 /-- Continuity from below: the measure of the union of a sequence of (not necessarily measurable)
@@ -488,7 +489,7 @@ theorem self_eq_mass_smul_normalize : μ = μ.mass • μ.normalize.toFiniteMeas
   apply eq_of_forall_apply_eq
   intro s _s_mble
   rw [μ.self_eq_mass_mul_normalize s, smul_apply, smul_eq_mul,
-    ProbabilityMeasure.coeFn_comp_toFiniteMeasure_eq_coeFn]
+    ProbabilityMeasure.coeFn_toFiniteMeasure]
 
 theorem normalize_eq_of_ne_zero (nonzero : μ ≠ 0) (s : Set Ω) : μ.normalize s = μ.mass⁻¹ * μ s := by
   simp only [μ.self_eq_mass_mul_normalize, μ.mass_ne_zero_iff.mpr nonzero, inv_mul_cancel_left₀,
