@@ -275,6 +275,38 @@ instance functor : Functor Ultrafilter where map := @Ultrafilter.map
 
 instance monad : Monad Ultrafilter where map := @Ultrafilter.map
 
+/-- The curry (or tensor product) `U.curry V` of two ultrafilters: a set `s` belongs to it iff
+for `U`-almost every `a`, the slice `{b | (a, b) ∈ s}` belongs to `V`.
+
+It lifts `Filter.curry` (see `Ultrafilter.coe_curry`). Unlike `↑U ×ˢ ↑V`, which is in general
+not an ultrafilter, it decides every set of `α × β`. -/
+def curry (U : Ultrafilter α) (V : Ultrafilter β) : Ultrafilter (α × β) :=
+  U.bind fun a ↦ V.map (a, ·)
+
+@[simp, norm_cast]
+theorem coe_curry (U : Ultrafilter α) (V : Ultrafilter β) :
+    (U.curry V : Filter (α × β)) = (U : Filter α).curry V :=
+  rfl
+
+theorem mem_curry {U : Ultrafilter α} {V : Ultrafilter β} {s : Set (α × β)} :
+    s ∈ U.curry V ↔ ∀ᶠ a in (U : Filter α), ∀ᶠ b in (V : Filter β), (a, b) ∈ s :=
+  Iff.rfl
+
+@[simp]
+theorem pure_curry_pure (a : α) (b : β) :
+    (pure a : Ultrafilter α).curry (pure b) = pure (a, b) :=
+  rfl
+
+@[simp]
+theorem map_fst_curry (U : Ultrafilter α) (V : Ultrafilter β) :
+    (U.curry V).map Prod.fst = U :=
+  ext fun s ↦ by simp [mem_map, mem_curry]
+
+@[simp]
+theorem map_snd_curry (U : Ultrafilter α) (V : Ultrafilter β) :
+    (U.curry V).map Prod.snd = V :=
+  ext fun s ↦ by simp [mem_map, mem_curry]
+
 section
 
 attribute [local instance] Filter.monad Filter.lawfulMonad
