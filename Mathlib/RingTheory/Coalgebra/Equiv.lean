@@ -35,7 +35,7 @@ structure CoalgEquiv (R : Type*) [CommSemiring R] (A B : Type*)
     [AddCommMonoid A] [AddCommMonoid B] [Module R A] [Module R B]
     [CoalgebraStruct R A] [CoalgebraStruct R B] extends A →ₗc[R] B, A ≃ₗ[R] B where
 
-attribute [nolint docBlame] CoalgEquiv.toCoalgHom
+attribute [nolint docBlame, coe] CoalgEquiv.toCoalgHom
 attribute [nolint docBlame] CoalgEquiv.toLinearEquiv
 
 @[inherit_doc CoalgEquiv]
@@ -106,7 +106,7 @@ instance : CoalgEquivClass (A ≃ₗc[R] B) R A B where
 
 instance : CoeOut (A ≃ₗc[R] B) (A ≃ₗ[R] B) where coe := toLinearEquiv
 
-@[simp]
+@[simp, norm_cast]
 theorem toCoalgHom_inj {e₁ e₂ : A ≃ₗc[R] B} : e₁.toCoalgHom = e₂.toCoalgHom ↔ e₁ = e₂ :=
   toCoalgHom_injective.eq_iff
 

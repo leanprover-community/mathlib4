@@ -41,6 +41,8 @@ structure BialgHom (R A B : Type*) [CommSemiring R]
 /-- Reinterpret a `BialgHom` as a `MonoidHom` -/
 add_decl_doc BialgHom.toMonoidHom
 
+attribute [coe] BialgHom.toCoalgHom
+
 @[inherit_doc BialgHom]
 infixr:25 " →ₐc " => BialgHom _
 
@@ -147,14 +149,14 @@ theorem coe_mks {f : A → B} (h₀ h₁ h₂ h₃ h₄ h₅) :
     ⇑(⟨⟨⟨⟨f, h₀⟩, h₁⟩, h₂, h₃⟩, h₄, h₅⟩ : A →ₐc[R] B) = f :=
   rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem toCoalgHom_mk {f : A →ₗc[R] B} (h h₁) :
     (⟨f, h, h₁⟩ : A →ₐc[R] B).toCoalgHom = f := by
   rfl
 
 @[deprecated (since := "2026-11-22")] alias coe_coalgHom_mk := toCoalgHom_mk
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_toCoalgHom (f : A →ₐc[R] B) : ⇑f.toCoalgHom = f :=
   rfl
 
