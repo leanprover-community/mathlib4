@@ -53,9 +53,9 @@ The main steps of the proof are as follows.
 ## Definitions
 
 * `ArithmeticFunction.vonMangoldt.residueClass a` (see above).
-* `ArithmeticFunction.vonMangoldt.continuousOn_LFunctionResidueClassAux` (see above).
+* `ArithmeticFunction.vonMangoldt.LFunctionResidueClassAux a` (see above).
 
-## Main Result
+## Main results
 
 We give two versions of **Dirichlet's Theorem**:
 * `Nat.infinite_setOfPred_prime_and_eq_mod` states that the set of primes `p`
