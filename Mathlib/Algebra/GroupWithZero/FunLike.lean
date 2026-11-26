@@ -25,7 +25,7 @@ typeclass searches.
 
 namespace FunLike
 
-variable {F α β R : Type*}
+variable {F α R : Type*} {β : α → Type*}
 
 section Comp
 
@@ -47,16 +47,16 @@ end Comp
 
 section SMulWithZero
 
-variable [FunLike F α β] [Zero β] [Zero F] [IsZeroApply F]
+variable [DFunLike F α β] [∀ a, Zero (β a)] [Zero F] [IsZeroApply F]
 
 /-- A `FunLike` type with `(r • f) x = r • f x` is a `SMulWithZero` if `β` is a `SMulWithZero`. -/
-protected abbrev smulWithZero [Zero R] [SMulWithZero R β] [SMul R F] [IsSMulApply R F] :
+protected abbrev smulWithZero [Zero R] [∀ a, SMulWithZero R (β a)] [SMul R F] [IsSMulApply R F] :
     SMulWithZero R F :=
   Function.Injective.smulWithZero ⟨_, FunLike.coe_zero⟩ DFunLike.coe_injective FunLike.coe_smul
 
 /-- A `FunLike` type with `(r • f) x = r • f x` is a `MulActionWithZero` if `β` is a
 `MulActionWithZero`. -/
-protected abbrev mulActionWithZero [MonoidWithZero R] [MulActionWithZero R β] [SMul R F]
+protected abbrev mulActionWithZero [MonoidWithZero R] [∀ a, MulActionWithZero R (β a)] [SMul R F]
     [IsSMulApply R F] :
     MulActionWithZero R F :=
   Function.Injective.mulActionWithZero ⟨_, FunLike.coe_zero⟩ DFunLike.coe_injective FunLike.coe_smul
@@ -65,30 +65,30 @@ end SMulWithZero
 
 section PointwiseMul
 
-variable [FunLike F α β] [Zero F] [One F] [Mul F] [Pow F ℕ]
+variable [DFunLike F α β] [Zero F] [One F] [Mul F] [Pow F ℕ]
 
 /-- A `FunLike` type with `(f * g) x = f x * g x` is a `MulZeroClass` if `β` is a `MulZeroClass`. -/
-protected abbrev mulZeroClass [MulZeroClass β] [IsZeroApply F] [IsMulApply F] :
+protected abbrev mulZeroClass [∀ a, MulZeroClass (β a)] [IsZeroApply F] [IsMulApply F] :
     MulZeroClass F :=
   DFunLike.coe_injective.mulZeroClass _ coe_zero coe_mul
 
 /-- A `FunLike` type with `(f * g) x = f x * g x` is a `MulZeroOneClass` if `β` is a
 `MulZeroOneClass`. -/
-protected abbrev mulZeroOneClass [MulZeroOneClass β] [IsZeroApply F] [IsMulApply F]
+protected abbrev mulZeroOneClass [∀ a, MulZeroOneClass (β a)] [IsZeroApply F] [IsMulApply F]
     [IsOneApply F] :
     MulZeroOneClass F :=
   DFunLike.coe_injective.mulZeroOneClass _ coe_zero coe_one coe_mul
 
 /-- A `FunLike` type with `(f * g) x = f x * g x` is a `MonoidWithZero` if `β` is a
 `MonoidWithZero`. -/
-protected abbrev monoidWithZero [MonoidWithZero β] [IsZeroApply F] [IsMulApply F]
+protected abbrev monoidWithZero [∀ a, MonoidWithZero (β a)] [IsZeroApply F] [IsMulApply F]
     [IsOneApply F] [IsPowApply ℕ F] :
     MonoidWithZero F :=
   DFunLike.coe_injective.monoidWithZero _ coe_zero coe_one coe_mul coe_pow
 
 /-- A `FunLike` type with `(f * g) x = f x * g x` is a `CommMonoidWithZero` if `β` is a
 `CommMonoidWithZero`. -/
-protected abbrev commMonoidWithZero [CommMonoidWithZero β] [IsZeroApply F] [IsMulApply F]
+protected abbrev commMonoidWithZero [∀ a, CommMonoidWithZero (β a)] [IsZeroApply F] [IsMulApply F]
     [IsOneApply F] [IsPowApply ℕ F] :
     CommMonoidWithZero F :=
   DFunLike.coe_injective.commMonoidWithZero _ coe_zero coe_one coe_mul
@@ -96,7 +96,7 @@ protected abbrev commMonoidWithZero [CommMonoidWithZero β] [IsZeroApply F] [IsM
 
 /-- A `FunLike` type with `(f * g) x = f x * g x` is a `SemigroupWithZero` if `β` is a
 `SemigroupWithZero`. -/
-protected abbrev semigroupWithZero [SemigroupWithZero β] [IsZeroApply F] [IsMulApply F] :
+protected abbrev semigroupWithZero [∀ a, SemigroupWithZero (β a)] [IsZeroApply F] [IsMulApply F] :
     SemigroupWithZero F :=
   DFunLike.coe_injective.semigroupWithZero _ coe_zero coe_mul
 
