@@ -140,7 +140,7 @@ theorem not_bddAbove_setOfPred_isPrincipal (op : Ordinal → Ordinal → Ordinal
     ¬ BddAbove { o | IsPrincipal op o } :=
   (isCofinal_setOfPred_isPrincipal op).not_bddAbove
 
-@[deprecated (since := "2026-07-09")]
+@[deprecated isCofinal_setOfPred_isPrincipal +typeChanged (since := "2026-07-09")]
 alias not_bddAbove_setOf_isPrincipal := not_bddAbove_setOfPred_isPrincipal
 
 /-! ### Additive principal ordinals -/
