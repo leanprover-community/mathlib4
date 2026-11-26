@@ -36,7 +36,7 @@ All definitions and theorems are in the `DirichletCharacter` namespace.
   differentiable everywhere.
 * `IsPrimitive.completedLFunction_one_sub`: the **functional equation** for Dirichlet L-functions,
   showing that if `χ` is primitive modulo `N`, then
-  `completedLFunction χ s = N ^ (s - 1 / 2) * rootNumber χ * completedLFunction χ⁻¹ s`.
+  `completedLFunction χ (1 - s) = N ^ (s - 1 / 2) * rootNumber χ * completedLFunction χ⁻¹ s`.
 -/
 
 @[expose] public section
