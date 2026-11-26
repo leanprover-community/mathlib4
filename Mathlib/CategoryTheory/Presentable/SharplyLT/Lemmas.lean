@@ -100,6 +100,12 @@ lemma exists_of_small {ι : Type*} [Small.{u} ι] (κ : ι → Cardinal.{u})
   exact ⟨Order.succ (2 ^ κ₀), ⟨isRegular_succ (hκ₀.trans (cantor _).le)⟩,
     fun i ↦ succ_two_pow_of_le (h i) hκ₀⟩
 
+lemma exists_single (κ : Cardinal.{u}) [Fact κ.IsRegular] :
+    ∃ (κ' : Cardinal.{u}) (_ : Fact κ'.IsRegular),
+      SharplyLT κ κ' := by
+  obtain ⟨κ', f, h⟩ := exists_of_small (fun (_ : Unit) ↦ κ)
+  exact ⟨κ', f, h ()⟩
+
 lemma exists_of_pair (κ₁ κ₂ : Cardinal.{u})
     [Fact κ₁.IsRegular] [Fact κ₂.IsRegular] :
     ∃ (κ' : Cardinal.{u}) (_ : Fact κ'.IsRegular),
