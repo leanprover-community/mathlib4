@@ -735,6 +735,7 @@ public import Mathlib.Algebra.Homology.SpectralObject.Page
 public import Mathlib.Algebra.Homology.SpectralObject.SpectralSequence
 public import Mathlib.Algebra.Homology.SpectralSequence.Basic
 public import Mathlib.Algebra.Homology.SpectralSequence.ComplexShape
+public import Mathlib.Algebra.Homology.SpectralSequence.ConvergenceStripes
 public import Mathlib.Algebra.Homology.SpectralSequence.EdgeStep
 public import Mathlib.Algebra.Homology.SpectralSequence.EdgeSteps
 public import Mathlib.Algebra.Homology.SpectralSequence.PageInfinity
