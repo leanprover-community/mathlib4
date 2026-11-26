@@ -188,7 +188,7 @@ private lemma tonelliIterate_bounds (hf : IsPeanoODE f tmin tmax t₀ x₀ r L) 
   | zero =>
     exact
       ⟨fun _ _ ↦ by simp [mem_closedBall],
-        (LipschitzWith.const x₀).weaken L.2 |>.lipschitzOnWith⟩
+        (LipschitzWith.const x₀).weaken L.property |>.lipschitzOnWith⟩
   | succ k hk =>
     have h_delayed : MapsTo (delayedInput t₀ tmax n) (Icc t₀ tmax) (Icc t₀ tmax) :=
       mapsTo_delayedInput n hf.t₀_mem.2
