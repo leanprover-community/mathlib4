@@ -100,15 +100,21 @@ theorem polarₗᵢ_comp_adjoint (T : E →L[ℂ] F) :
 `T : E →L[ℂ] F` such  that `T = U ∘ T.abs`, linearly isometric from the range `T.abs.range` of
 `T.abs` to the orthogonal of the kernel `T.kerᗮ` of `T` and extended by zero from `T.abs.range`
 to `E`. -/
+@[expose]
 def polar (T : E →L[ℂ] F) : E →L[ℂ] F :=
   T.polarₗᵢ.toContinuousLinearMap ∘L T.abs.range.topologicalClosure.orthogonalProjectionOnto
+
+theorem polar_def (T : E →L[ℂ] F) :
+    T.polar = T.polarₗᵢ.toContinuousLinearMap ∘L
+      T.abs.range.topologicalClosure.orthogonalProjectionOnto :=
+  rfl
 
 theorem apply_eq_zero_tfae (T : E →L[ℂ] F) (x : E) :
     List.TFAE [T x = 0, T.polar x = 0, T.abs x = 0] := by
   tfae_have 1 ↔ 3 := by
     rw [← norm_eq_zero (a := T x), ← norm_eq_zero (a := T.abs x), norm_abs_apply]
   have hT : T.polar x = 0 ↔ (∀ u ∈ T.abs.range, ⟪u, x⟫_ℂ = 0) := by
-    rw [polar, ContinuousLinearMap.comp_apply, LinearIsometry.coe_toContinuousLinearMap,
+    rw [polar_def, ContinuousLinearMap.comp_apply, LinearIsometry.coe_toContinuousLinearMap,
       map_eq_zero_iff _ T.polarₗᵢ.injective, Submodule.orthogonalProjectionOnto_eq_zero_iff,
       Submodule.orthogonal_closure, Submodule.mem_orthogonal]
   tfae_have 2 → 3 := by
@@ -143,22 +149,21 @@ theorem polar_comp_polar_adjoint_eq_starProjection (T : E →L[ℂ] F) :
   have h : T.abs.range.topologicalClosure.orthogonalProjectionOnto
       ∘L T.abs.range.topologicalClosure.subtypeL = ContinuousLinearMap.id ℂ _ := by
     ext x; simp
-  unfold polar
-  simp_rw +singlePass [adjoint_comp, comp_assoc, Submodule.adjoint_orthogonalProjectionOnto]
-  rw [← comp_assoc T.abs.range.topologicalClosure.orthogonalProjectionOnto, h]
-  simp [polarₗᵢ_comp_adjoint]
+  simp_rw +singlePass [polar_def, adjoint_comp, comp_assoc,
+    Submodule.adjoint_orthogonalProjectionOnto]
+  simp [← comp_assoc T.abs.range.topologicalClosure.orthogonalProjectionOnto, h,
+    polarₗᵢ_comp_adjoint]
 
 theorem polar_adjoint_comp_polar_eq_starProjection (T : E →L[ℂ] F) :
     T.polar.adjoint ∘L T.polar = T.abs.range.topologicalClosure.starProjection := by
-  unfold polar
-  simp_rw +singlePass [adjoint_comp, comp_assoc,
+  simp_rw +singlePass [polar_def, adjoint_comp, comp_assoc,
     ← comp_assoc T.polarₗᵢ.toContinuousLinearMap.adjoint]
   simp [Submodule.adjoint_orthogonalProjectionOnto, one_def, id_comp]
   rfl
 
 theorem polar_comp_abs (T : E →L[ℂ] F) : T.polar ∘L T.abs = T := by
   ext x
-  simp only [polar, ContinuousLinearMap.comp_apply]
+  simp only [polar_def, ContinuousLinearMap.comp_apply]
   nth_rw 4 [← polarₗᵢ_apply]
   simp only [LinearIsometry.coe_toContinuousLinearMap, LinearIsometry.map_eq_iff]
   exact Submodule.orthogonalProjectionOnto_mem_subspace_eq_self
@@ -251,7 +256,7 @@ theorem adjoint_polar (T : E →L[ℂ] F) : T.adjoint.polar = T.polar.adjoint :=
 
 theorem norm_polar_le_one (T : E →L[ℂ] F) : ‖T.polar‖ ≤ 1 := by
   refine ContinuousLinearMap.opNorm_le_bound _ zero_le_one fun x => ?_
-  rw [one_mul, polar, ContinuousLinearMap.comp_apply,
+  rw [one_mul, polar_def, ContinuousLinearMap.comp_apply,
     LinearIsometry.coe_toContinuousLinearMap, LinearIsometry.norm_map]
   exact Submodule.norm_orthogonalProjectionOnto_apply_le _ x
 
