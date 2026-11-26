@@ -133,12 +133,16 @@ theorem ContDiff.deriv' (h : ContDiff 𝕜 (n + 1) f) : ContDiff 𝕜 n (deriv f
 theorem ContDiff.iterate_deriv :
     ∀ (n : ℕ) {f : 𝕜 → F}, ContDiff 𝕜 ∞ f → ContDiff 𝕜 ∞ (deriv^[n] f)
   | 0, _, hf => hf
-  | n + 1, _, hf => ContDiff.iterate_deriv n (contDiff_infty_iff_deriv.mp hf).2
+  | n + 1, _, hf => by
+    rw [Function.iterate_succ_apply]
+    exact ContDiff.iterate_deriv n (contDiff_infty_iff_deriv.mp hf).2
 
 @[fun_prop]
 theorem ContDiff.iterate_deriv' (n : ℕ) :
     ∀ (k : ℕ) {f : 𝕜 → F}, ContDiff 𝕜 (n + k : ℕ) f → ContDiff 𝕜 n (deriv^[k] f)
   | 0, _, hf => hf
-  | k + 1, _, hf => ContDiff.iterate_deriv' _ k (contDiff_succ_iff_deriv.mp hf).2.2
+  | k + 1, _, hf => by
+    rw [Function.iterate_succ_apply]
+    exact ContDiff.iterate_deriv' _ k (contDiff_succ_iff_deriv.mp hf).2.2
 
 end

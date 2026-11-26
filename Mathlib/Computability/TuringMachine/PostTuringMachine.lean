@@ -704,7 +704,10 @@ theorem stepAux_move (d : Dir) (q : Stmt Bool (Λ' Γ Λ σ) σ) (v : σ) (T : T
 theorem supportsStmt_move {S : Finset (Λ' Γ Λ σ)} {d : Dir} {q : Stmt Bool (Λ' Γ Λ σ) σ} :
     SupportsStmt S (move n d q) = SupportsStmt S q := by
   suffices ∀ {i}, SupportsStmt S ((Stmt.move d)^[i] q) = _ from this
-  intro i; induction i generalizing q <;> simp only [*, iterate]; rfl
+  intro i
+  induction i generalizing q with
+  | zero => rfl
+  | succ i ih => exact ih
 
 theorem supportsStmt_write {S : Finset (Λ' Γ Λ σ)} {l : List Bool} {q : Stmt Bool (Λ' Γ Λ σ) σ} :
     SupportsStmt S (write l q) = SupportsStmt S q := by

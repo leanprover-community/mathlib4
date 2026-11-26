@@ -150,8 +150,8 @@ def coreE₂Cohomological :
   le₁₂ pq := by simp
   le₂₃ r pq hr := by simp; lia
   hc := by rintro r pq _ rfl _; dsimp; lia
-  hc₀₂ := by rintro r pq hr rfl _; simp; lia
-  hc₁₃ := by rintro r pq hr rfl _; simp; lia
+  hc₀₂ := by rintro r pq hr rfl _; simp; lia -filterFacts
+  hc₁₃ := by rintro r pq hr rfl _; simp; lia -filterFacts
   antitone_i₀ r r' pq hr hrr' := by simp; lia
   monotone_i₃ r r' pq hr hrr' := by simp; lia
   i₀_prev := by
@@ -159,13 +159,13 @@ def coreE₂Cohomological :
     dsimp
     #adaptation_note /-- After https://github.com/leanprover/lean4/pull/13593
     we need to re-enable model-based theory combination in `lia` for this to go through. -/
-    lia +mbtc
+    lia +mbtc -filterFacts
   i₃_next := by
     rintro r r' hr pq rfl _ _
     dsimp
     #adaptation_note /-- After https://github.com/leanprover/lean4/pull/13593
     we need to re-enable model-based theory combination in `lia` for this to go through. -/
-    lia +mbtc
+    lia +mbtc -filterFacts
 
 /-- The data which allows to construct an `E₂`-cohomological spectral sequence
 indexed by `ℕ × ℕ` from a spectral object indexed by `EInt`. (Note: additional
@@ -188,24 +188,24 @@ def coreE₂CohomologicalNat :
     simp only [ComplexShape.spectralSequenceNat_rel_iff] at hpq
     #adaptation_note /-- After https://github.com/leanprover/lean4/pull/13593
     we need to re-enable model-based theory combination in `lia` for this to go through. -/
-    lia +mbtc
+    lia +mbtc -filterFacts
   hc₁₃ r pq pq' hpq hr := by
     simp only [ComplexShape.spectralSequenceNat_rel_iff] at hpq
     #adaptation_note /-- After https://github.com/leanprover/lean4/pull/13593
     we need to re-enable model-based theory combination in `lia` for this to go through. -/
-    lia +mbtc
+    lia +mbtc -filterFacts
   antitone_i₀ r r' pq hr hrr' := by simp; lia
   monotone_i₃ r r' pq hr hrr' := by simp; lia
   i₀_prev r r' pq pq' hpq hrr' hr := by
     simp only [ComplexShape.spectralSequenceNat_rel_iff] at hpq
     #adaptation_note /-- After https://github.com/leanprover/lean4/pull/13593
     we need to re-enable model-based theory combination in `lia` for this to go through. -/
-    lia +mbtc
+    lia +mbtc -filterFacts
   i₃_next r r' pq pq' hpq hrr' hr := by
     simp only [ComplexShape.spectralSequenceNat_rel_iff] at hpq
     #adaptation_note /-- After https://github.com/leanprover/lean4/pull/13593
     we need to re-enable model-based theory combination in `lia` for this to go through. -/
-    lia +mbtc
+    lia +mbtc -filterFacts
 
 /-- The data which allows to construct an `E₂`-cohomological spectral sequence
 indexed by `ℤ × Fin l` from a spectral object indexed by `Fin (l + 1)`. -/
@@ -274,24 +274,24 @@ def coreE₂HomologicalNat :
     simp only [ComplexShape.spectralSequenceNat_rel_iff] at hpq
     #adaptation_note /-- After https://github.com/leanprover/lean4/pull/13593
     we need to re-enable model-based theory combination in `lia` for this to go through. -/
-    lia +mbtc
+    lia +mbtc -filterFacts
   hc₁₃ r pq pq' hpq hr := by
     simp only [ComplexShape.spectralSequenceNat_rel_iff] at hpq
     #adaptation_note /-- After https://github.com/leanprover/lean4/pull/13593
     we need to re-enable model-based theory combination in `lia` for this to go through. -/
-    lia +mbtc
+    lia +mbtc -filterFacts
   antitone_i₀ r r' pq hr hrr' := by simp; lia
   monotone_i₃ r r' pq hr hrr' := by simp; lia
   i₀_prev r r' pq pq' hpq hrr' hr := by
     simp only [ComplexShape.spectralSequenceNat_rel_iff] at hpq
     #adaptation_note /-- After https://github.com/leanprover/lean4/pull/13593
     we need to re-enable model-based theory combination in `lia` for this to go through. -/
-    lia +mbtc
+    lia +mbtc -filterFacts
   i₃_next r r' pq pq' hpq hrr' hr := by
     simp only [ComplexShape.spectralSequenceNat_rel_iff] at hpq
     #adaptation_note /-- After https://github.com/leanprover/lean4/pull/13593
     we need to re-enable model-based theory combination in `lia` for this to go through. -/
-    lia +mbtc
+    lia +mbtc -filterFacts
 
 variable (X : SpectralObject C ι) (data : SpectralSequenceDataCore ι c r₀)
 

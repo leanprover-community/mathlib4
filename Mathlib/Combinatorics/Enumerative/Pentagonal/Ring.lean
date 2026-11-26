@@ -159,7 +159,13 @@ public theorem tprod_one_sub_pow {x : R} (hx : IsTopologicallyNilpotent x)
   rw [hrhs.hasSum_iff_tendsto_nat, (map_add_atTop_eq_nat 1).symm]
   apply tendsto_map'
   have h1 (k : ℕ) : pentagonal (k + 1) = ((k + 1) * (3 * k + 2) / 2) := by grind [pentagonal_def]
-  have h2 (k : ℕ) : pentagonal (-k) = (k * (3 * k + 1) / 2) := by grind [pentagonal_neg]
+  have h2 (k : ℕ) : pentagonal (-k) = (k * (3 * k + 1) / 2) := by
+    #adaptation_note /-- Since leanprover/lean4#16680, the local E-matching theorem built from
+    `h1` is instantiated from its preprocessed type. With `h1` in the context this `grind`
+    exhausts its `instances`, `ematch` and `ringSteps` budgets, and the declaration then runs
+    out of heartbeats. -/
+    clear h1
+    grind [pentagonal_neg]
   simp_rw [h1, h2, Function.comp_def, ← h]
   rw [← tendsto_sub_nhds_zero_iff]
   simpa [powMulProdOneSubPow] using htail.neg

@@ -80,7 +80,7 @@ def MVarId.rintroWithPats (g : MVarId) (patterns : List (TSyntax `rintroPat))
     return ([g], patterns)
   let (pats, remaining) := patterns.splitAt n
   let pats := pats.toArray
-  let pats := (n - pats.size).repeat (·.push (Unhygienic.run `(rintroPat| _))) pats
+  let pats := (n - pats.size).iterate (·.push (Unhygienic.run `(rintroPat| _))) pats
   return (← RCases.rintro pats none g |>.run', remaining)
 
 end Lean

@@ -36,11 +36,6 @@ universe u v
 
 variable {α : Type u} {β : Type v}
 
-/-- Iterate a function. -/
-def Nat.iterate {α : Sort u} (op : α → α) : ℕ → α → α
-  | 0, a => a
-  | succ k, a => iterate op k (op a)
-
 @[inherit_doc Nat.iterate]
 notation:max f "^[" n "]" => Nat.iterate f n
 
@@ -57,12 +52,14 @@ theorem iterate_zero : f^[0] = id :=
 theorem iterate_zero_apply (x : α) : f^[0] x = x :=
   rfl
 
+theorem iterate_succ_apply (n : ℕ) (x : α) : f^[n.succ] x = f^[n] (f x) := by
+  induction n generalizing x with
+  | zero => rfl
+  | succ n ih => exact congrArg f (ih x)
+
 @[simp]
 theorem iterate_succ (n : ℕ) : f^[n.succ] = f^[n] ∘ f :=
-  rfl
-
-theorem iterate_succ_apply (n : ℕ) (x : α) : f^[n.succ] x = f^[n] (f x) :=
-  rfl
+  funext (iterate_succ_apply f n)
 
 @[simp]
 theorem iterate_id (n : ℕ) : (id : α → α)^[n] = id :=
@@ -97,10 +94,10 @@ theorem iterate_invariant {g : α → β} (h : g ∘ f = g) (n : ℕ) : g ∘ f^
   | m + 1 => by rwa [iterate_succ, ← comp_assoc, iterate_invariant h m]
 
 theorem Injective.iterate (Hinj : Injective f) (n : ℕ) : Injective f^[n] :=
-  Nat.recOn n injective_id fun _ ihn ↦ ihn.comp Hinj
+  Nat.recOn n injective_id fun _ ihn ↦ Hinj.comp ihn
 
 theorem Surjective.iterate (Hsurj : Surjective f) (n : ℕ) : Surjective f^[n] :=
-  Nat.recOn n surjective_id fun _ ihn ↦ ihn.comp Hsurj
+  Nat.recOn n surjective_id fun _ ihn ↦ Hsurj.comp ihn
 
 theorem Bijective.iterate (Hbij : Bijective f) (n : ℕ) : Bijective f^[n] :=
   ⟨Hbij.1.iterate n, Hbij.2.iterate n⟩
@@ -109,7 +106,7 @@ namespace Semiconj
 
 theorem iterate_right {f : α → β} {ga : α → α} {gb : β → β} (h : Semiconj f ga gb) (n : ℕ) :
     Semiconj f ga^[n] gb^[n] :=
-  Nat.recOn n id_right fun _ ihn ↦ ihn.comp_right h
+  Nat.recOn n id_right fun _ ihn ↦ h.comp_right ihn
 
 theorem iterate_left {g : ℕ → α → α} (H : ∀ n, Semiconj f (g n) (g <| n + 1)) (n k : ℕ) :
     Semiconj f^[n] (g k) (g <| n + k) := by
@@ -118,8 +115,8 @@ theorem iterate_left {g : ℕ → α → α} (H : ∀ n, Semiconj f (g n) (g <| 
     rw [Nat.zero_add]
     exact id_left
   | succ n ihn =>
-    rw [Nat.add_right_comm, Nat.add_assoc]
-    exact (H k).trans (ihn (k + 1))
+    rw [Nat.succ_add]
+    exact (ihn k).trans (H (n + k))
 
 end Semiconj
 
@@ -163,15 +160,14 @@ end Commute
 
 theorem Semiconj₂.iterate {f : α → α} {op : α → α → α} (hf : Semiconj₂ f op op) (n : ℕ) :
     Semiconj₂ f^[n] op op :=
-  Nat.recOn n (Semiconj₂.id_left op) fun _ ihn ↦ ihn.comp hf
+  Nat.recOn n (Semiconj₂.id_left op) fun _ ihn ↦ hf.comp ihn
 
 variable (f)
 
-theorem iterate_succ' (n : ℕ) : f^[n.succ] = f ∘ f^[n] := by
-  rw [iterate_succ, (Commute.self_iterate f n).comp_eq]
+theorem iterate_succ' (n : ℕ) : f^[n.succ] = f ∘ f^[n] :=
+  rfl
 
-theorem iterate_succ_apply' (n : ℕ) (x : α) : f^[n.succ] x = f (f^[n] x) := by
-  rw [iterate_succ']
+theorem iterate_succ_apply' (n : ℕ) (x : α) : f^[n.succ] x = f (f^[n] x) :=
   rfl
 
 theorem iterate_pred_comp_of_pos {n : ℕ} (hn : 0 < n) : f^[n.pred] ∘ f = f^[n] := by
@@ -186,7 +182,7 @@ def Iterate.rec (motive : α → Sort*) {a : α} (arg : motive a)
     {f : α → α} (app : ∀ a, motive a → motive (f a)) (n : ℕ) : motive (f^[n] a) :=
   match n with
   | 0 => arg
-  | m + 1 => Iterate.rec motive (app _ arg) app m
+  | m + 1 => app _ (Iterate.rec motive arg app m)
 
 theorem Iterate.rec_zero (motive : α → Sort*) {f : α → α} (app : ∀ a, motive a → motive (f a))
     {a : α} (arg : motive a) : Iterate.rec motive arg app 0 = arg :=

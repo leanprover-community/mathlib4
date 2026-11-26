@@ -447,7 +447,7 @@ theorem inv_subtypePerm (f : Perm α) (hf) :
 set_option backward.privateInPublic true in
 private theorem pow_aux (hf : ∀ x, p (f x) ↔ p x) : ∀ {n : ℕ} (x), p ((f ^ n) x) ↔ p x
   | 0, _ => Iff.rfl
-  | _ + 1, _ => (pow_aux hf (f _)).trans (hf _)
+  | _ + 1, _ => (hf _).trans (pow_aux hf _)
 
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in

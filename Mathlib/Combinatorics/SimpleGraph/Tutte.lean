@@ -305,7 +305,7 @@ lemma exists_isTutteViolator (h : ∀ (M : G.Subgraph), ¬M.IsPerfectMatching)
       rwa [edge_le_iff (v := a.val.val) (w := c), not_or])
     have hcnex : x.val.val ≠ c := by rintro rfl; exact hc.2 hxa.symm
     obtain ⟨Mcon, hMcon⟩ := tutte_exists_isPerfectMatching_of_near_matchings hxa
-      hxb hnadjxb (fun hadj ↦ hc.2 hadj) (by lia) hcnex hc.1 hbnec hG1 hG2
+      hxb hnadjxb (fun hadj ↦ hc.2 hadj) (by lia -filterFacts) hcnex hc.1 hbnec hG1 hG2
     exact hMatchingFree Mcon hMcon
 
 /-- **Tutte's theorem**

@@ -193,7 +193,7 @@ variable {μ : Measure α} {f : α → α} {s : Set α}
 protected theorem iterate (hf : MeasurePreserving f μ μ) :
     ∀ n, MeasurePreserving f^[n] μ μ
   | 0 => .id μ
-  | n + 1 => (MeasurePreserving.iterate hf n).comp hf
+  | n + 1 => hf.comp (MeasurePreserving.iterate hf n)
 
 open scoped symmDiff in
 lemma measure_symmDiff_preimage_iterate_le

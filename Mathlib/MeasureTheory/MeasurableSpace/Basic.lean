@@ -301,7 +301,7 @@ variable {m : MeasurableSpace α}
 @[fun_prop]
 theorem Measurable.iterate {f : α → α} (hf : Measurable f) : ∀ n, Measurable f^[n]
   | 0 => measurable_id
-  | n + 1 => (Measurable.iterate hf n).comp hf
+  | n + 1 => hf.comp (Measurable.iterate hf n)
 
 variable {mβ : MeasurableSpace β}
 

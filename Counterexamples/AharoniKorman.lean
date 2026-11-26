@@ -707,7 +707,7 @@ lemma apply_eq_of_line_eq_step (f : SpinalMap C) {n xl yl xh yh : ℕ}
       card_chainBetween h₂l.1 h₁l.2, card_chainBetween h₁h.1 h₂h.2]
     · lia
     · simp [disjoint_left, chainBetween, *]
-      lia
+      lia -filterFacts
   -- It is easy to see that our chain `B` lives entirely within `int`
   have hB : B ⊆ int := by
     refine Finset.image_subset_image ?_

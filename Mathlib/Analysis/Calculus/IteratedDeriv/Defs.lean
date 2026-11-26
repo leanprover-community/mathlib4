@@ -211,7 +211,9 @@ theorem iteratedDerivWithin_eq_iterate {x : 𝕜} :
 taking the `n`-th derivative of the derivative. -/
 theorem iteratedDerivWithin_succ' :
     iteratedDerivWithin (n + 1) f s = (iteratedDerivWithin n (derivWithin f s) s) := by
-  ext x; rw [iteratedDerivWithin_eq_iterate, iteratedDerivWithin_eq_iterate]; rfl
+  ext x
+  rw [iteratedDerivWithin_eq_iterate, iteratedDerivWithin_eq_iterate]
+  exact congrFun (Function.iterate_succ_apply _ _ _) x
 
 /-- `C^{n + 1}` is equivalent to `C^n` and the `n`-th derivative being `C^1`. -/
 theorem contDiffOn_nat_succ_iff_contDiffOn_one_iteratedDerivWithin {n : ℕ}

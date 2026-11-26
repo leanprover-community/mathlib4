@@ -333,7 +333,7 @@ lemma lequivCongrLeft_lof [DecidableEq ι] [DecidableEq κ] {e : ι ≃ κ}
   subst hik hxy
   ext j
   simp [lof_eq_of, of_apply]
-  lia
+  lia -filterFacts
 
 lemma lequivCongrLeft_symm_lof [DecidableEq ι] [DecidableEq κ] {h : ι ≃ κ}
     {k : κ} {x : M (h.symm k)} :

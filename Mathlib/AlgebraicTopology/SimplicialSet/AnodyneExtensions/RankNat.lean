@@ -54,11 +54,11 @@ variable {y : P.II} (hy : Acc P.AncestralRel y)
 
 /-- Auxiliary definition for `SSet.Subcomplex.Pairing.Rank`. -/
 noncomputable def rank' : ℕ :=
-  Acc.recOn hy (fun y _ r ↦ ⨆ (x : { x // P.AncestralRel x y }), r x x.property + 1)
+  Acc.recOn' hy (fun y _ r ↦ ⨆ (x : { x // P.AncestralRel x y }), r x x.property + 1)
 
 lemma rank'_eq :
     P.rank' hy = ⨆ (x : { x // P.AncestralRel x y }), P.rank' (hy.inv x.property) + 1 := by
-  change P.rank' (Acc.intro y fun _ => hy.inv) = _
+  rw [rank', Acc.recOn', Acc.rec'_eq]
   rfl
 
 lemma rank'_lt {x : P.II} (r : P.AncestralRel x y) :

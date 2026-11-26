@@ -62,7 +62,7 @@ variable {x y : ℝ≥0} {n : ℕ}
 lemma agmSequences_zero : agmSequences x y 0 = (sqrt (x * y), (x + y) / 2) := rfl
 
 lemma agmSequences_succ : agmSequences x y (n + 1) = agmSequences (sqrt (x * y)) ((x + y) / 2) n :=
-  rfl
+  iterate_succ_apply _ _ _
 
 lemma agmSequences_succ' :
     agmSequences x y (n + 1) =
@@ -106,7 +106,9 @@ lemma agmSequences_monotone_and_antitone :
   intro n
   induction n generalizing x y with
   | zero => exact le_gm_and_am_le (sqrt_mul_le_half_add ..)
-  | succ n ih => exact Prod.mk_le_mk.mp ih
+  | succ n ih =>
+    rw [agmSequences_succ (n := n), agmSequences_succ (n := n + 1)]
+    exact ih
 
 lemma agmSequences_fst_monotone : Monotone fun n ↦ (agmSequences x y n).1 :=
   agmSequences_monotone_and_antitone.1
@@ -122,7 +124,9 @@ lemma agmSequences_fst_le_snd (n m : ℕ) : (agmSequences x y n).1 ≤ (agmSeque
   intro k
   induction k generalizing x y with
   | zero => exact sqrt_mul_le_half_add ..
-  | succ n ih => exact ih
+  | succ n ih =>
+    rw [agmSequences_succ]
+    exact ih
 
 lemma agmSequences_fst_lt_snd_of_ne (h : x ≠ y) (n m : ℕ) :
     (agmSequences x y n).1 < (agmSequences x y m).2 := by

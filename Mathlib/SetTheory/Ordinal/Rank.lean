@@ -30,11 +30,11 @@ variable {r : α → α → Prop}
 smallest ordinal greater than the ranks of all elements below it (i.e. elements `b` such that
 `r b a`). -/
 noncomputable def rank (h : Acc r a) : Ordinal.{u} :=
-  Acc.recOn h fun a _h ih => ⨆ b : { b // r b a }, Order.succ (ih b b.property)
+  Acc.recOn' h fun a _h ih => ⨆ b : { b // r b a }, Order.succ (ih b b.property)
 
 theorem rank_eq (h : Acc r a) :
     h.rank = ⨆ b : { b // r b a }, Order.succ (h.inv b.property).rank := by
-  change (Acc.intro a fun _ => h.inv).rank = _
+  rw [rank, Acc.recOn', Acc.rec'_eq]
   rfl
 
 /-- if `r a b` then the rank of `a` is less than the rank of `b`. -/
