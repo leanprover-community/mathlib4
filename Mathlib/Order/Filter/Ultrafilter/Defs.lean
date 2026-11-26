@@ -276,6 +276,7 @@ instance functor : Functor Ultrafilter where map := @Ultrafilter.map
 
 instance monad : Monad Ultrafilter where map := @Ultrafilter.map
 
+/-- The `Filter.curry` of two ultrafilters is an ultrafilter. -/
 def curry (U : Ultrafilter α) (V : Ultrafilter β) : Ultrafilter (α × β) :=
   ofComplNotMemIff (Filter.curry U V) <| by simp [mem_curry_iff]
 
