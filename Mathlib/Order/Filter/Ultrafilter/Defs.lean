@@ -6,8 +6,9 @@ Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov
 module
 
 public import Mathlib.Order.Filter.Map
-import Mathlib.Order.Filter.Curry
 public import Mathlib.Order.ZornAtoms
+
+import Mathlib.Order.Filter.Curry
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
