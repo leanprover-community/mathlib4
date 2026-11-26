@@ -747,12 +747,10 @@ such that `positivity` successfully recognises both `a` and `b`. -/
   | none =>
     match ← core zα pα? a, ← core zα pα? b with
     | .nonzero pa, .nonzero pb =>
-      let _a ← synthInstanceQ q(GroupWithZero $α)
       assumeInstancesCommute
       pure (.nonzero q(div_ne_zero $pa $pb))
     | _, _ => pure .none
   | some pα =>
-    let _a ← synthInstanceQ q(GroupWithZero $α)
     let _a ← synthInstanceQ q(PosMulReflectLT $α)
     assumeInstancesCommute
     let ra ← core zα pα a; let rb ← core zα pα b
@@ -778,12 +776,10 @@ meta def evalInv : PositivityExt where eval {u α} zα pα? e := do
   | none =>
     match ← core zα pα? a with
     | .nonzero pa =>
-      let _a ← synthInstanceQ q(GroupWithZero $α)
       assumeInstancesCommute
       pure (.nonzero q(inv_ne_zero $pa))
     | _ => pure .none
   | some pα =>
-    let _a ← synthInstanceQ q(GroupWithZero $α)
     let _a ← synthInstanceQ q(PartialOrder $α)
     let _a ← synthInstanceQ q(PosMulReflectLT $α)
     assumeInstancesCommute
