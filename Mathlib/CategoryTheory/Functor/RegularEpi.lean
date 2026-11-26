@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Pullbacks
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of type-valued sheaves is a regular epi category
 

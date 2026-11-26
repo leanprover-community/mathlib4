@@ -6,13 +6,13 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.Order.Star.Int
-public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.LinearAlgebra.Matrix.Cartan.Basic
 public import Mathlib.LinearAlgebra.RootSystem.Base
 
 import Mathlib.Algebra.CharZero.Infinite
 import Mathlib.Algebra.Module.Submodule.Union
 import Mathlib.LinearAlgebra.Determinant
+import Mathlib.LinearAlgebra.Matrix.Block
 import Mathlib.LinearAlgebra.Matrix.ZMatrix
 
 /-!
@@ -20,7 +20,8 @@ import Mathlib.LinearAlgebra.Matrix.ZMatrix
 
 This file contains definitions and basic results about Cartan matrices of root pairings / systems.
 
-## Main definitions:
+## Main definitions
+
 * `RootPairing.Base.cartanMatrix`: the Cartan matrix of a crystallographic root pairing, with
   respect to a base `b`.
 * `RootPairing.Base.cartanMatrix_nondegenerate`: the Cartan matrix is non-degenerate.
@@ -89,7 +90,8 @@ lemma cartanMatrixIn_nondegenerate [IsDomain R] [NeZero (2 : R)] [FaithfulSMul S
   obtain ⟨B, hB⟩ : ∃ B : P.InvariantForm, B.form.Nondegenerate :=
     ⟨P.toInvariantForm, P.rootForm_nondegenerate⟩
   replace hB : ((2 : R) • B.form.toMatrix b.toWeightBasis).Nondegenerate := by
-    rwa [Matrix.Nondegenerate.smul_iff two_ne_zero, LinearMap.BilinForm.nondegenerate_toMatrix_iff]
+    rwa [Matrix.nondegenerate_smul_iff (.of_ne_zero two_ne_zero),
+      LinearMap.BilinForm.nondegenerate_toMatrix_iff]
   have aux : (Matrix.diagonal fun i : b.support ↦ B.form (P.root i) (P.root i)).Nondegenerate := by
     rw [Matrix.nondegenerate_iff_det_ne_zero, Matrix.det_diagonal, Finset.prod_ne_zero_iff]
     aesop
@@ -258,7 +260,7 @@ lemma induction_on_cartanMatrix [P.IsReduced] [P.IsIrreducible]
   have hq : ∀ k, q ∈ invtSubmodule (P.reflection k) := by
     rw [← b.forall_mem_support_invtSubmodule_iff]
     refine fun k hkb ↦ (mem_invtSubmodule _).mpr fun x hx ↦ ?_
-    rw [Submodule.mem_comap, LinearEquiv.coe_coe, reflection_apply]
+    rw [Submodule.mem_comap, LinearEquiv.coe_toLinearMap, reflection_apply]
     apply q.sub_mem hx
     by_cases hk : P.root k ∈ q
     · exact q.smul_mem _ hk

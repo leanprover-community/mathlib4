@@ -6,15 +6,16 @@ Authors: Johan Commelin, Eric Wieser
 module
 
 public import Mathlib.Data.Nat.Totient
-public import Mathlib.LinearAlgebra.Dimension.Localization
 public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.LinearAlgebra.Matrix.Diagonal
 public import Mathlib.LinearAlgebra.Matrix.DotProduct
-public import Mathlib.LinearAlgebra.Matrix.Dual
-public import Mathlib.LinearAlgebra.Matrix.Nondegenerate
-public import Mathlib.RingTheory.SimpleModule.Basic
+
+import Mathlib.LinearAlgebra.Dimension.Localization
+import Mathlib.LinearAlgebra.Matrix.Dual
+import Mathlib.LinearAlgebra.Matrix.Nondegenerate
+import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Rank of matrices
@@ -395,7 +396,7 @@ theorem rank_eq_finrank_range_toLin [Fintype n] [Finite m] [DecidableEq n] {M₁
   have aux₂ := Basis.equiv_apply (Pi.basisFun R n) i v₂
   rw [toLin_eq_toLin', toLin'_apply'] at aux₁
   rw [Pi.basisFun_apply] at aux₁ aux₂
-  simp only [e₁, e₂, LinearMap.comp_apply, LinearEquiv.coe_coe, Equiv.refl_apply,
+  simp only [e₁, e₂, LinearMap.comp_apply, LinearEquiv.coe_toLinearMap, Equiv.refl_apply,
     aux₁, aux₂, LinearMap.coe_single, toLin_self, map_sum, map_smul, Basis.equiv_apply]
 
 theorem rank_le_card_height [Fintype m] [Semiring R] [StrongRankCondition R]

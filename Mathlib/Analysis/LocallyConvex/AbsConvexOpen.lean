@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Convex.Gauge
 public import Mathlib.Analysis.LocallyConvex.AbsConvex
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Absolutely convex open sets
 

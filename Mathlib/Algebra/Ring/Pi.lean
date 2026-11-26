@@ -8,8 +8,12 @@ module
 public import Mathlib.Algebra.Group.Pi.Lemmas
 public import Mathlib.Algebra.GroupWithZero.Pi
 public import Mathlib.Algebra.Ring.CompTypeclasses
-public import Mathlib.Data.Int.Cast.Pi
-public import Mathlib.Data.Nat.Cast.Pi
+
+import Mathlib.Data.Int.Cast.Pi
+import Mathlib.Data.Nat.Cast.Pi
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Pi instances for ring

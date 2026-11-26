@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Ring.Equiv
 
 import Mathlib.Algebra.Ring.Divisibility.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about Euclidean domains
 

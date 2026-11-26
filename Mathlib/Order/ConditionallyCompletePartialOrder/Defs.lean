@@ -5,9 +5,10 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Order.Bounds.Defs
 public import Mathlib.Order.Directed
 public import Mathlib.Order.SetNotation
+
+import Mathlib.Order.Bounds.Defs
 
 /-! # Conditionally complete partial orders
 

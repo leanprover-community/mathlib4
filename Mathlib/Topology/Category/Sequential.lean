@@ -6,8 +6,12 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.Topology.Category.TopCat.Basic
-public import Mathlib.Topology.Instances.Discrete
 public import Mathlib.Topology.Sequences
+
+import Mathlib.Topology.Instances.Discrete
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The category of sequential topological spaces

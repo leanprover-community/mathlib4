@@ -6,16 +6,16 @@ Authors: Salvatore Mercuri
 module
 
 public import Mathlib.Analysis.Normed.Field.Instances
-public import Mathlib.Analysis.Normed.Field.Lemmas
 public import Mathlib.Analysis.Normed.Field.TransferInstance
 public import Mathlib.Analysis.Normed.Module.Completion
 public import Mathlib.Analysis.Normed.Ring.WithAbs
 public import Mathlib.FieldTheory.Separable
-public import Mathlib.Topology.MetricSpace.Completion
 
 import Mathlib.Analysis.Normed.Field.Instances
+import Mathlib.Analysis.Normed.Field.Lemmas
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Topology.Algebra.UniformField
+import Mathlib.Topology.MetricSpace.Completion
 
 /-!
 # WithAbs for fields

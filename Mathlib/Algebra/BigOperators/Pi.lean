@@ -9,9 +9,9 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Lemmas
 public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
 public import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 public import Mathlib.Algebra.Group.Action.Pi
-public import Mathlib.Algebra.Group.IsApply
 public import Mathlib.Algebra.Ring.Pi
 
+import Mathlib.Algebra.Group.IsApply
 import Mathlib.Data.Fintype.Basic
 
 /-!

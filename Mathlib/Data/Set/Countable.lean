@@ -18,7 +18,7 @@ and prove basic properties of this definition.
 Note that this definition does not provide a computable encoding.
 For a noncomputable conversion to `Encodable s`, use `Set.Countable.nonempty_encodable`.
 
-## Keywords
+## Tags
 
 sets, countable set
 -/

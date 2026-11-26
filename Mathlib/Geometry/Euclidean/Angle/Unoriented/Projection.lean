@@ -10,6 +10,9 @@ public import Mathlib.Geometry.Euclidean.Projection
 
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.RightAngle
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Angles and orthogonal projection.
 

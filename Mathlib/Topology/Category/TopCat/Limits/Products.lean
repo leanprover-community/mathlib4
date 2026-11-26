@@ -10,6 +10,9 @@ public import Mathlib.Topology.Category.TopCat.EpiMono
 public import Mathlib.Topology.Category.TopCat.Limits.Basic
 public import Mathlib.Topology.Homeomorph.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Products and coproducts in the category of topological spaces
 -/

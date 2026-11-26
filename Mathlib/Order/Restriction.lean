@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Finset.Update
 public import Mathlib.Order.Interval.Finset.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Restriction of a function indexed by a preorder
 
@@ -22,6 +25,7 @@ We also provide versions where the intervals are seen as finite sets, see `Preor
 and `Preorder.frestrictLe₂`.
 
 ## Main definitions
+
 * `Preorder.restrictLe a f`: Restricts the function `f` to the variables indexed by elements `≤ a`.
 -/
 

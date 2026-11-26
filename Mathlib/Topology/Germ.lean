@@ -6,10 +6,11 @@ Authors: Patrick Massot
 module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
-public import Mathlib.Algebra.Module.LinearMap.Defs
 public import Mathlib.Algebra.Order.Hom.Ring
 public import Mathlib.Order.Filter.Germ.Basic
 public import Mathlib.Topology.LocallyConstant.Basic
+
+import Mathlib.Algebra.Module.LinearMap.Defs
 
 /-! # Germs of functions between topological spaces
 
