@@ -83,7 +83,8 @@ F(S) --> F(T) ---> F(K)
 G(T) ------------> G(K)
         G(v)
 ```
-where u : S → T and v : T ⟶ K are maps of κ-presentable objects, one can find a factorization
+where S and T are κ-presentable objects and u : S → T and v : T ⟶ K are morphisms,
+one can find a factorization
 ```
 F(S) --> F(T) ---> F(U) --> F(K)
  |          F(v')   | σ      | Φ
@@ -91,19 +92,20 @@ F(S) --> F(T) ---> F(U) --> F(K)
 G(T) ------------> G(U) --> F(K)
          G(v')
 ```
+where U is κ-presentable.
 
-The main technical ingredient is that if one uses κ-presentability naively, one
-only produces a diagram of the shape
-
+The main technical difficulty is that if one uses κ-presentability naively, one
+only produces a diagram of shape
 ```
 F(S) --> F(T) ---> F(ξ₀) --> F(K)
  |          F(v')   | ψ₀       | Φ
  v                  v          v
 G(T) ------------> G(ξ₁) --> F(K)
 ```
+where `ξ₀` and `ξ₁` are not necessarily the same object.
 
 To turn the middle vertical map into an inserter, one must iterate the construction of such diagrams
-to construct a chain `U₀ ⟶ U₁ ⟶ …` by transfinite induction, equipped with natural structure maps
+to construct a chain `ξ₀ ⟶ ξ₁ ⟶ …` by transfinite induction, equipped with natural structure maps
 `ψᵢ : F(ξᵢ) ⟶ G(ξᵢ₊₁)`.
 Once the chain becomes long enough, one can take its colimit to stabilize those maps:
 the ordinal Λ that appears in the hypothesis of the main theorem quantifies this "long enough".
@@ -136,20 +138,57 @@ local macro "iio% " i:term:max j:term:max : term => `((⟨$i, by valid⟩ : Set.
 /-- `iic% i j` builds i as a term of `Set.Iic j` using `valid` to discharge the side goal. -/
 local macro "iic% " i:term:max j:term:max : term => `((⟨$i, by valid⟩ : Set.Iic $j))
 
-/-- A structure that encodes the chain to be constructed
-Lemma 4.5 of [positselski2024].
+/-- A structure that partially encodes the chain to be constructed for the proof of
+Lemma 4.5 from [positselski2024], with its requirements.
 
-To realize the induction, we transform `j ↦ PartialChainUpTo … j` into a
-presheaf on `j` so that we can use `Functor.WellOrderInductionData`.
-From a section of the presheaf, we can extract the chain out of `Λ` that we are looking for. -/
+Given an inserter `F(E) ⟶ G(E)`, a regular cardinal κ and an element `i` in a `SuccOrder Λ`,
+the structure `PartialChainUpTo κ Λ E j` encodes the data of a
+functorial assignment `j ↦ ξⱼ` (for `j ≤ i`) of κ-presentable objects of `K`
+equipped with a structure map to `E`.
+
+This assignment is equipped with a structure map `ψⱼₖ : F(ξⱼ) ⟶ G(ξₖ)` for all
+`j < k ≤ i`, such that
+
+- the square
+  ```
+    F(ξⱼ) --> F(E)
+  ψⱼᵢ |        |
+      v        v
+    G(ξᵢ) --> G(E)
+  ```
+  commutes for all `j < i`;
+- the triangle
+  ```
+          ψⱼₖ
+    F(ξⱼ) --> G(ξₖ)
+      \      /
+    ψⱼₗ\    / ψₖₗ
+        v  v
+        G(ξₗ)
+  ```
+  commutes for all `j ≤ k < l ≤ i`;
+- the triangle
+  ```
+          ψⱼₖ
+    F(ξⱼ) --> G(ξₖ)
+      \      /
+    ψⱼₗ\    / G(ξ(k ≤ l))
+        v  v
+        G(ξₗ)
+  ```
+  commutes for all `j < k ≤ l ≤ i`.
+
+Later, we transform the assignment `j ↦ PartialChainUpTo κ Λ E j` into a
+presheaf of types on `Λ` so that we can use `Functor.WellOrderInductionData`.
+From a section of that presheaf, we will extract the chain out of `Λ`. -/
 @[ext]
 structure PartialChainUpTo (Λ : Type*) [Preorder Λ] [SuccOrder Λ]
     (E : Inserter F G) (i : Λ) where
-  /-- Corresponds to all the previously constructed ξᵢ's -/
+  /-- A functorial assignment `j ↦ ξⱼ` (for `j ≤ i`) of κ-presentable objects of `K`
+  equipped with a structure map to the underlying object of the inserter `E`. -/
   ξ : Set.Iic i ⥤ CostructuredArrow (isCardinalPresentable K κ).ι E.obj
-  /-- A structure map ψⱼ : F.obj ξⱼ ⟶ G.obj ξₖ for all j < k ≤ i.
-  In particular, this bundles a map F.obj ξᵢ₋₁ ⟶ G.obj ξᵢ when indices
-  allow it. -/
+  /-- A structure map `ψⱼₖ : F(ξⱼ) ⟶ G(ξₖ) for all `j < k ≤ i`.
+  In particular, this bundles a map `F(ξᵢ₋₁) ⟶ G(ξᵢ)` when indices allow it. -/
   ψ (j k : Λ) (hj : j < k := by valid) (hk : k ≤ i := by valid) :
     F.obj (ξ.obj (iic% j i)).left.obj ⟶ G.obj (ξ.obj (iic% k i)).left.obj
   sq₁ (j : Λ) (hj : j < i := by valid) :
