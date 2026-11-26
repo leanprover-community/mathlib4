@@ -4893,6 +4893,7 @@ public import Mathlib.Geometry.Manifold.ContMDiff.Defs
 public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 public import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
 public import Mathlib.Geometry.Manifold.ContMDiffMap
+public import Mathlib.Geometry.Manifold.ContMDiffTransitions
 public import Mathlib.Geometry.Manifold.DerivationBundle
 public import Mathlib.Geometry.Manifold.Diffeomorph
 public import Mathlib.Geometry.Manifold.GroupLieAlgebra
@@ -4909,7 +4910,6 @@ public import Mathlib.Geometry.Manifold.IntegralCurve.ExistUnique
 public import Mathlib.Geometry.Manifold.IntegralCurve.Transform
 public import Mathlib.Geometry.Manifold.IntegralCurve.UniformTime
 public import Mathlib.Geometry.Manifold.IsManifold.Basic
-public import Mathlib.Geometry.Manifold.ContMDiffTransitions
 public import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
 public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
 public import Mathlib.Geometry.Manifold.LocalDiffeomorph
