@@ -2524,6 +2524,7 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.EulerSineProd
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.InverseDeriv
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Meromorphic
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Poussin
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Series
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Sinc
 public import Mathlib.Analysis.SpecificLimits.ArithmeticGeometric
