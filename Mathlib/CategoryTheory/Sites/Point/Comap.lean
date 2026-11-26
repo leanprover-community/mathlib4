@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Sites.CoverPreserving
 public import Mathlib.CategoryTheory.Sites.Point.Skyscraper
 public import Mathlib.CategoryTheory.Sites.Pullback
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Inverse image of a point by a continuous functor
 

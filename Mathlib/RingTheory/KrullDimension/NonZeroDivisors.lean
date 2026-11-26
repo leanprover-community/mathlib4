@@ -16,6 +16,7 @@ import Mathlib.RingTheory.Spectrum.Prime.RingHom
 # Krull dimension and non-zero-divisors
 
 ## Main results
+
 - `ringKrullDim_quotient_succ_le_of_nonZeroDivisor`: If `r` is not a zero divisor, then
   `dim R/r + 1 ≤ dim R`.
 - `ringKrullDim_succ_le_ringKrullDim_polynomial`: `dim R + 1 ≤ dim R[X]`.
@@ -40,7 +41,7 @@ lemma ringKrullDim_quotient_succ_le_of_nonZeroDivisor
   · rw [hr', ringKrullDim_eq_bot_of_subsingleton]
     simp
   have : Nonempty (PrimeSpectrum.zeroLocus (R := R) (Ideal.span {r})) := by
-    rwa [Set.nonempty_coe_sort, Set.nonempty_iff_ne_empty, ne_eq,
+    rwa [Set.nonempty_coe_sort, ← Set.ne_empty_iff_nonempty, ne_eq,
       PrimeSpectrum.zeroLocus_empty_iff_eq_top]
   have := Ideal.Quotient.nontrivial_iff.mpr hr'
   have := (Ideal.Quotient.mk (Ideal.span {r})).domain_nontrivial
@@ -48,11 +49,11 @@ lemma ringKrullDim_quotient_succ_le_of_nonZeroDivisor
     Order.krullDim_eq_iSup_length, ← WithBot.coe_one, ← WithBot.coe_add,
     ENat.iSup_add, WithBot.coe_le_coe, iSup_le_iff]
   intro l
-  obtain ⟨p, hp, hp'⟩ := Ideal.exists_minimalPrimes_le (J := l.head.1.asIdeal) bot_le
+  obtain ⟨p, hp, hp'⟩ := Ideal.exists_minimalPrimes_le (J := l.head.val.asIdeal) bot_le
   let p' : PrimeSpectrum R := ⟨p, hp.1.1⟩
   have hp' : p' < l.head := lt_of_le_of_ne hp' fun h ↦ Set.disjoint_iff.mp
     (Ideal.disjoint_nonZeroDivisors_of_mem_minimalPrimes hp)
-    ⟨show r ∈ p by simpa [← h] using l.head.2, hr⟩
+    ⟨show r ∈ p by simpa [← h] using l.head.property, hr⟩
   refine le_trans ?_ (le_iSup _ ((l.map Subtype.val (fun _ _ ↦ id)).cons p' hp'))
   simp
 
@@ -104,7 +105,8 @@ lemma ringKrullDim_add_enatCard_le_ringKrullDim_mvPolynomial (σ : Type*) :
     rw [ENat.WithBot.eq_top_iff_forall_ge]
     intro n
     let ι := Infinite.natEmbedding σ ∘ Fin.val (n := n + 1)
-    have := Function.invFun_surjective (f := ι) ((Infinite.natEmbedding σ).2.comp Fin.val_injective)
+    have := Function.invFun_surjective (f := ι)
+      ((Infinite.natEmbedding σ).inj'.comp Fin.val_injective)
     refine le_trans ?_ (ringKrullDim_le_of_surjective
       (rename (R := R) _).toRingHom (rename_surjective _ this))
     refine le_trans ?_ (ringKrullDim_add_natCard_le_ringKrullDim_mvPolynomial _)

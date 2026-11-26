@@ -113,7 +113,7 @@ noncomputable def pointedToTwoPFst : Pointed.{u} ⥤ TwoP where
   map f := ⟨Option.map f.toFun, congr_arg _ f.map_point, rfl⟩
   map_comp f g := by
     ext : 3
-    exact (Option.map_comp_map f.1 g.1).symm
+    exact (Option.map_comp_map f.toFun g.toFun).symm
 
 /-- The functor from `Pointed` to `TwoP` which adds a first point. -/
 @[simps]
@@ -122,7 +122,7 @@ noncomputable def pointedToTwoPSnd : Pointed.{u} ⥤ TwoP where
   map f := ⟨Option.map f.toFun, rfl, congr_arg _ f.map_point⟩
   map_comp f g := by
     ext : 3
-    exact (Option.map_comp_map f.1 g.1).symm
+    exact (Option.map_comp_map f.toFun g.toFun).symm
 
 @[simp]
 theorem pointedToTwoPFst_comp_swap : pointedToTwoPFst ⋙ TwoP.swap = pointedToTwoPSnd :=

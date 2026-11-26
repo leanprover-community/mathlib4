@@ -15,6 +15,7 @@ import Mathlib.RingTheory.Ideal.IdempotentFG
 # Standard etale maps
 
 ## Main definitions
+
 - `StandardEtalePair`:
   A pair `f g : R[X]` such that `f` is monic and `f'` is invertible in `R[X][1/g]`.
 - `StandardEtalePair`: The standard etale algebra corresponding to a `StandardEtalePair`.
@@ -140,7 +141,7 @@ lemma inv_aeval_X_g :
 @[simps]
 def homEquiv : (P.Ring →ₐ[R] S) ≃ { x : S // P.HasMap x } where
   toFun f := ⟨f P.X, hasMap_X.map f⟩
-  invFun x := P.lift x.1 x.2
+  invFun x := P.lift x.val x.property
   left_inv f := P.hom_ext (by simp)
   right_inv x := by simp
 
@@ -184,7 +185,7 @@ instance : Algebra.FormallyEtale R P.Ring := by
   intro x hx
   obtain ⟨ε, ⟨hεI, hε⟩, H⟩ := P.existsUnique_hasMap_of_hasMap_quotient_of_sq_eq_bot I hI _ hx
   exact ⟨⟨x + ε, hε⟩, by simpa, fun y hy ↦
-    Subtype.ext (sub_eq_iff_eq_add'.mp (H _ ⟨hy, by simpa using y.2⟩))⟩
+    Subtype.ext (sub_eq_iff_eq_add'.mp (H _ ⟨hy, by simpa using y.property⟩))⟩
 
 instance : Algebra.Etale R P.Ring where
   finitePresentation := .quotient (Submodule.fg_span (by simp))
@@ -423,10 +424,10 @@ lemma IsStandardEtale.of_isLocalizationAway [IsStandardEtale R S]
     P'.equivAwayAdjoinRoot.trans ((IsLocalization.algEquiv (.powers (AdjoinRoot.mk P.f (p * P.g)))
       (Localization.Away (AdjoinRoot.mk P.f (p * P.g))) _).restrictScalars R)
   let e₂ : Localization.Away (algebraMap _ S' (AdjoinRoot.mk P.f p)) ≃ₐ[R] Sₛ :=
-    { __ := IsLocalization.ringEquivOfRingEquiv _ _ _ H,
-      commutes' r := by
+    .ofCommutes (IsLocalization.ringEquivOfRingEquiv _ _ _ H)
+      fun r ↦ by
         simp [IsScalarTower.algebraMap_apply R S' (Localization.Away _),
-          - AlgEquiv.symm_toRingEquiv, IsScalarTower.algebraMap_eq R S Sₛ] }
+          - AlgEquiv.symm_toRingEquiv, IsScalarTower.algebraMap_eq R S Sₛ]
   exact .of_equiv (e₁.trans e₂)
 
 /-- If `T` is an etale algebra, and a standard etale algebra surjects onto `T`, then

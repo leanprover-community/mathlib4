@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Quaternion
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Quaternions as a normed algebra
 
@@ -162,7 +165,7 @@ lemma norm_toLp_equivTuple (x : ℍ) : ‖WithLp.toLp 2 (equivTuple ℝ x)‖ = 
 def linearIsometryEquivTuple : ℍ ≃ₗᵢ[ℝ] EuclideanSpace ℝ (Fin 4) :=
   { (QuaternionAlgebra.linearEquivTuple (-1 : ℝ) (0 : ℝ) (-1 : ℝ)).trans
       (WithLp.linearEquiv 2 ℝ (Fin 4 → ℝ)).symm with
-    toFun := fun a => !₂[a.1, a.2, a.3, a.4]
+    toFun := fun a => !₂[a.re, a.imI, a.imJ, a.imK]
     invFun := fun a => ⟨a 0, a 1, a 2, a 3⟩
     norm_map' := norm_toLp_equivTuple }
 

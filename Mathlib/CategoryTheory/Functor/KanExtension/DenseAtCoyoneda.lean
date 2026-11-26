@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Functor.KanExtension.DenseAtYoneda
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The co-Yoneda embedding is dense
 
@@ -40,10 +43,10 @@ as a colimit (indexed by `P.Elementsᵒᵖ`) of corepresentable presheaves
 noncomputable def shrinkCoyonedaCocone :
     Cocone ((π P).op ⋙ shrinkCoyoneda.{w}) where
   pt := P
-  ι.app x := shrinkCoyonedaEquiv.symm x.unop.2
+  ι.app x := shrinkCoyonedaEquiv.symm x.unop.val
   ι.naturality x y f := by
     dsimp
-    simp only [← f.unop.2, shrinkCoyonedaEquiv_symm_map.{w}, Category.comp_id]
+    simp only [← f.unop.map_val, shrinkCoyonedaEquiv_symm_map.{w}, Category.comp_id]
 
 @[reassoc]
 lemma shrinkYoneda_map_app_shrinkCoyonedaCocone_ι_app_app
@@ -60,7 +63,7 @@ becomes a colimit after applying the evaluation functor at any `X : C`. -/
 @[no_expose]
 noncomputable def isColimitShrinkCoyonedaCoconeObj (X : C) :
     IsColimit (((evaluation _ _).obj X).mapCocone (shrinkCoyonedaCocone.{w} P)) := by
-  refine (IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_).1
+  refine (IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_).toFun
     (IsColimit.whiskerEquivalence
       (isColimitShrinkYonedaCoconeObj ((opOpEquivalence C).functor ⋙ P) (op (op X)))
       ((opOpEquivalence C).congrElements P).op)

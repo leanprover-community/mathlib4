@@ -80,7 +80,7 @@ and that the topology for a general `𝓕` is indeed the expected inductive limi
   group with `A i` an open subgroup. Assume also that all but finitely many `A i`s are compact.
   Then the restricted product `Πʳ i, [R i, A i]` is a locally compact group.
 
-## Implementation details
+## Implementation notes
 
 Outside of principal filters and the cofinite filter, the topology we define on the restricted
 product does not seem well-behaved. While declaring a single instance is practical, it may conflict
@@ -233,10 +233,10 @@ lemma continuous_rng_of_principal_iff_forall {X : Type*} [TopologicalSpace X]
 
 /-- The obvious bijection between `Πʳ i, [R i, A i]_[⊤]` and `Π i, A i` is a homeomorphism. -/
 def homeoTop : (Π i, A i) ≃ₜ (Πʳ i, [R i, A i]_[⊤]) where
-  toFun f := ⟨fun i ↦ f i, fun i ↦ (f i).2⟩
-  invFun f i := ⟨f i, f.2 i⟩
+  toFun f := ⟨fun i ↦ f i, fun i ↦ (f i).property⟩
+  invFun f i := ⟨f i, f.property i⟩
   continuous_toFun := continuous_rng_of_top.mpr <| continuous_pi fun i ↦
-    continuous_subtype_val.comp <| continuous_apply i
+    continuous_subtypeVal.comp <| continuous_apply i
   continuous_invFun := continuous_pi fun i ↦ continuous_induced_rng.mpr <| continuous_eval i
 
 /-- The obvious bijection between `Πʳ i, [R i, A i]_[⊥]` and `Π i, R i` is a homeomorphism. -/
@@ -269,7 +269,7 @@ theorem weaklyLocallyCompactSpace_of_principal [∀ i, WeaklyLocallyCompactSpace
     have QU : (↑) ⁻¹' U ⊆ ((↑) ⁻¹' Q : Set (Πʳ i, [R i, A i]_[𝓟 S])) := fun y H i _ ↦ by
       dsimp only
       split_ifs with hi
-      · exact y.2 hi
+      · exact y.property hi
       · exact H i hi
     refine ⟨((↑) ⁻¹' Q), ?_, mem_of_superset ?_ QU⟩
     · refine isEmbedding_coe_of_principal.isCompact_preimage_iff ?_ |>.mpr Q_compact
@@ -343,31 +343,31 @@ variable (hAopen : ∀ i, IsOpen (A i))
 
 include hAopen in
 theorem isOpen_forall_imp_mem_of_principal {S : Set ι} (hS : cofinite ≤ 𝓟 S) {p : ι → Prop} :
-    IsOpen {f : Πʳ i, [R i, A i]_[𝓟 S] | ∀ i, p i → f.1 i ∈ A i} := by
+    IsOpen {f : Πʳ i, [R i, A i]_[𝓟 S] | ∀ i, p i → f.val i ∈ A i} := by
   rw [le_principal_iff] at hS
   convert
       isOpen_set_pi (hS.inter_of_left {i | p i}) (fun i _ ↦ hAopen i) |>.preimage continuous_coe
     with f
   refine ⟨fun H i hi ↦ H i hi.2, fun H i hiT ↦ ?_⟩
   by_cases hiS : i ∈ S
-  · exact f.2 hiS
+  · exact f.property hiS
   · exact H i ⟨hiS, hiT⟩
 
 include hAopen in
 theorem isOpen_forall_mem_of_principal {S : Set ι} (hS : cofinite ≤ 𝓟 S) :
-    IsOpen {f : Πʳ i, [R i, A i]_[𝓟 S] | ∀ i, f.1 i ∈ A i} := by
+    IsOpen {f : Πʳ i, [R i, A i]_[𝓟 S] | ∀ i, f.val i ∈ A i} := by
   convert! isOpen_forall_imp_mem_of_principal hAopen hS (p := fun _ ↦ True)
   simp
 
 include hAopen in
 theorem isOpen_forall_imp_mem {p : ι → Prop} :
-    IsOpen {f : Πʳ i, [R i, A i] | ∀ i, p i → f.1 i ∈ A i} := by
+    IsOpen {f : Πʳ i, [R i, A i] | ∀ i, p i → f.val i ∈ A i} := by
   simp_rw +instances [topologicalSpace_eq_iSup cofinite, isOpen_iSup_iff, isOpen_coinduced]
   exact fun S hS ↦ isOpen_forall_imp_mem_of_principal hAopen hS
 
 include hAopen in
 theorem isOpen_forall_mem :
-    IsOpen {f : Πʳ i, [R i, A i] | ∀ i, f.1 i ∈ A i} := by
+    IsOpen {f : Πʳ i, [R i, A i] | ∀ i, f.val i ∈ A i} := by
   simp_rw +instances [topologicalSpace_eq_iSup cofinite, isOpen_iSup_iff, isOpen_coinduced]
   exact fun S hS ↦ isOpen_forall_mem_of_principal hAopen hS
 
@@ -408,7 +408,7 @@ theorem weaklyLocallyCompactSpace_of_cofinite [∀ i, WeaklyLocallyCompactSpace 
     WeaklyLocallyCompactSpace (Πʳ i, [R i, A i]) where
   exists_compact_mem_nhds := fun x ↦ by
     set S := {i | IsCompact (A i) ∧ x i ∈ A i}
-    have hS : cofinite ≤ 𝓟 S := le_principal_iff.mpr (hAcompact.and x.2)
+    have hS : cofinite ≤ 𝓟 S := le_principal_iff.mpr (hAcompact.and x.property)
     have hSx : ∀ i ∈ S, x i ∈ A i := fun i hi ↦ hi.2
     have hSA : ∀ i ∈ S, IsCompact (A i) := fun i hi ↦ hi.1
     have := weaklyLocallyCompactSpace_of_principal hS hSA
@@ -436,7 +436,7 @@ theorem continuous_dom_prod_right {X Y : Type*} [TopologicalSpace X] [Topologica
   simp_rw [continuous_iff_continuousAt, ContinuousAt]
   rintro ⟨x, y⟩
   set S : Set ι := {i | x i ∈ A i}
-  have hS : cofinite ≤ 𝓟 S := le_principal_iff.mpr x.2
+  have hS : cofinite ≤ 𝓟 S := le_principal_iff.mpr x.property
   have hxS : ∀ i ∈ S, x i ∈ A i := fun i hi ↦ hi
   rcases exists_inclusion_eq_of_eventually R A hS hxS with ⟨x', hxx'⟩
   rw [← hxx', nhds_prod_eq, nhds_eq_map_inclusion hAopen hS x',
@@ -457,7 +457,7 @@ theorem continuous_dom_prod_left {X Y : Type*} [TopologicalSpace X] [Topological
   simp_rw [continuous_iff_continuousAt, ContinuousAt]
   rintro ⟨y, x⟩
   set S : Set ι := {i | x i ∈ A i}
-  have hS : cofinite ≤ 𝓟 S := le_principal_iff.mpr x.2
+  have hS : cofinite ≤ 𝓟 S := le_principal_iff.mpr x.property
   have hxS : ∀ i ∈ S, x i ∈ A i := fun i hi ↦ hi
   rcases exists_inclusion_eq_of_eventually R A hS hxS with ⟨x', hxx'⟩
   rw [← hxx', nhds_prod_eq, nhds_eq_map_inclusion hAopen hS x',

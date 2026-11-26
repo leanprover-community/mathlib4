@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integral closure as a characteristic predicate
 

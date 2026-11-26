@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.ExteriorPower.Basis
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bilinear forms on exterior powers
 
@@ -33,7 +36,7 @@ variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 public protected def exteriorPower : LinearMap.BilinForm R (⋀[R]^n M) :=
   (pairingDual R M n).comp (map n B)
 
-@[simp] lemma bilinForm_ιMulti_ιMulti (v w : Fin n → M) :
+@[simp] public lemma bilinForm_ιMulti_ιMulti (v w : Fin n → M) :
     B.exteriorPower n (ιMulti R n v) (ιMulti R n w) = (Matrix.of fun i j ↦ B (v j) (w i)).det := by
   simp [LinearMap.BilinForm.exteriorPower]
 

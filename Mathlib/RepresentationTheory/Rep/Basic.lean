@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Category.ModuleCat.Colimits
 public import Mathlib.RepresentationTheory.Action
 public import Mathlib.RepresentationTheory.Equiv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Rep k G` is the category of `k`-linear representations of `G`.
 
@@ -116,7 +119,7 @@ variable {A B} in
 
 variable {A B} in
 lemma hom_comm_apply (f : A ⟶ B) (g : G) (a : A) : f.hom (A.ρ g a) = B.ρ g (f.hom a) := by
-  simpa using congr($(f.hom.2 g) a)
+  simpa using congr($(f.hom.isIntertwining' g) a)
 
 variable {Z : Type w} [AddCommGroup Z] [Module k Z] {τ : Representation k G Z}
 
@@ -481,7 +484,7 @@ variable (k G)
 def RepToAction : Rep.{w} k G ⥤ Action (ModuleCat.{w} k) G where
   obj X := ⟨.of k X, (ModuleCat.endRingEquiv (.of k X)).symm.toMonoidHom.comp X.ρ⟩
   map f := ⟨f.toModuleCatHom, fun g ↦ ModuleCat.hom_ext <| by
-    simp [ModuleCat.endRingEquiv, f.hom.2]⟩
+    simp [ModuleCat.endRingEquiv, f.hom.isIntertwining']⟩
 
 lemma RepToAction_obj (X : Rep.{w} k G) : (RepToAction k G).obj X =
   ⟨.of k X, (ModuleCat.endRingEquiv (.of k X)).symm.toMonoidHom.comp X.ρ⟩ := rfl
@@ -934,8 +937,8 @@ abbrev freeLiftLEquiv :
   homLinearEquiv _ _ ≪≫ₗ Representation.freeLiftLEquiv A.ρ α
 
 lemma free_ext (f g : free k G α ⟶ A)
-    (h : ∀ i : α, f.hom (single i (.single 1 1)) = g.hom (single i (.single 1 1))) : f = g := by
-  exact (freeLiftLEquiv k G α A).injective (funext_iff.2 h)
+    (h : ∀ i : α, f.hom (single i (.single 1 1)) = g.hom (single i (.single 1 1))) : f = g :=
+  (freeLiftLEquiv k G α A).injective (funext_iff.2 h)
 
 variable {A}
 section

@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Group.Even
 public import Mathlib.Algebra.Group.Pi.Lemmas
 public import Mathlib.Algebra.Notation.Support
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Miscellaneous lemmas on big operators
 
@@ -46,15 +49,16 @@ lemma mulSupport_prod (s : Finset ι) (f : ι → κ → M) :
   simp only [mulSupport_subset_iff', Set.mem_iUnion, not_exists, notMem_mulSupport]
   exact fun x ↦ prod_eq_one
 
+-- TODO : add multiset sum version
 @[to_additive]
 lemma isSquare_prod {s : Finset ι} (f : ι → M) (h : ∀ c ∈ s, IsSquare (f c)) :
     IsSquare (∏ i ∈ s, f i) := by
   rw [isSquare_iff_exists_sq]
-  use (∏ (x : s), ((isSquare_iff_exists_sq _).mp (h _ x.2)).choose)
+  use (∏ (x : s), ((isSquare_iff_exists_sq _).mp (h _ x.property)).choose)
   rw [@sq, ← Finset.prod_mul_distrib, ← Finset.prod_coe_sort]
   congr
   ext i
   rw [← @sq]
-  exact ((isSquare_iff_exists_sq _).mp (h _ i.2)).choose_spec
+  exact ((isSquare_iff_exists_sq _).mp (h _ i.property)).choose_spec
 
 end Finset

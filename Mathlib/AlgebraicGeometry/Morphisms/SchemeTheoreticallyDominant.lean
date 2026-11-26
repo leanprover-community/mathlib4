@@ -14,6 +14,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Flat
 In this file, we define scheme-theoretically dominant morphisms as morphisms with trivial kernel.
 
 ## Main results
+
 - `AlgebraicGeometry.IsSchemeTheoreticallyDominant`:
   The class of scheme-theoretically dominant morphisms.
 - `AlgebraicGeometry.isSchemeTheoreticallyDominant_iff_isDominant`:
@@ -94,7 +95,7 @@ instance IsSchemeTheoreticallyDominant.pullbackSnd (f : X ⟶ S) (g : Y ⟶ S)
   rw [isSchemeTheoreticallyDominant_iff]
   let h𝒰 := Y.isBasis_affineOpens.isOpenCover_mem_and_le
     (S.isBasis_affineOpens.isOpenCover.comap g.base.hom)
-  refine Scheme.IdealSheafData.ext_of_iSup_eq_top (fun U ↦ ⟨_, by exact U.2.1⟩) h𝒰 ?_
+  refine Scheme.IdealSheafData.ext_of_iSup_eq_top (fun U ↦ ⟨_, by exact U.property.1⟩) h𝒰 ?_
   rintro ⟨⟨V, ⟨U, hU⟩⟩, hV, hVU : V ≤ g ⁻¹ᵁ U⟩
   simp only [Scheme.Hom.ker_apply, Scheme.IdealSheafData.ideal_bot, Pi.bot_apply, ← le_bot_iff]
   intro x hx

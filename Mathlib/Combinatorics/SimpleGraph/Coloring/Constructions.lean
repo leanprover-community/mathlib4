@@ -7,8 +7,12 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Bipartite
 public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
-public import Mathlib.Combinatorics.SimpleGraph.CycleGraph
 public import Mathlib.Data.Fin.Parity
+
+import Mathlib.Combinatorics.SimpleGraph.CycleGraph
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Concrete colorings of common graphs
@@ -39,7 +43,7 @@ theorem IsBipartite.pathGraph (n : ℕ) : (pathGraph n).IsBipartite := by
 
 /-- Embedding of `pathGraph 2` into the first two elements of `pathGraph n` for `2 ≤ n` -/
 def pathGraph_two_embedding (n : ℕ) (h : 2 ≤ n) : pathGraph 2 ↪g pathGraph n where
-  toFun v := ⟨v, trans v.2 h⟩
+  toFun v := ⟨v, trans v.isLt h⟩
   inj' := by
     rintro v w
     rw [Fin.mk.injEq]
@@ -70,7 +74,7 @@ theorem Walk.three_le_chromaticNumber_of_odd_loop {α} {G : SimpleGraph α} {u :
   have h' : G.chromaticNumber ≤ 2 := Order.le_of_lt_add_one h
   let c : G.Coloring (Fin 2) := (chromaticNumber_le_iff_colorable.mp h').some
   let c' : G.Coloring Bool := recolorOfEquiv G finTwoEquiv c
-  simp [c'.odd_length_iff_not_congr]
+  simp [c'.even_length_iff_congr]
 
 /-- Bicoloring of a cycle graph of even size -/
 def cycleGraph.bicoloring_of_even (n : ℕ) (h : Even n) : Coloring (cycleGraph n) Bool :=

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.TensorProduct.Tower
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lifting linear maps from base-changed modules
 

@@ -119,11 +119,9 @@ theorem card (h : n ≠ 0) : Nat.card (GaloisField p n) = p ^ n := by
   rw [Nat.card_eq_fintype_card, Module.card_fintype b, ← Module.finrank_eq_card_basis b,
     ZMod.card, finrank p h]
 
+@[deprecated splits_X_pow_char_sub_X +typeChanged (since := "2026-11-15")]
 theorem splits_zmod_X_pow_sub_X : Splits (X ^ p - X : (ZMod p)[X]) := by
-  have h1 : roots (X ^ p - X : (ZMod p)[X]) = Finset.univ.val := by
-    simpa using FiniteField.roots_X_pow_card_sub_X (ZMod p)
-  rw [splits_iff_card_roots, h1, ← Finset.card_def, Finset.card_univ,
-    natDegree_X_pow_sub_X h_prime.out.one_lt, ZMod.card]
+  exact splits_X_pow_char_sub_X _ p
 
 /-- A Galois field with exponent 1 is equivalent to `ZMod` -/
 def equivZmodP : GaloisField p 1 ≃ₐ[ZMod p] ZMod p :=
@@ -162,7 +160,7 @@ theorem _root_.FiniteField.splits_X_pow_nat_card_sub_X [Finite K] :
 
 theorem _root_.FiniteField.isSplittingField_of_nat_card_eq (h : Nat.card K = p ^ n) :
     IsSplittingField (ZMod p) K (X ^ p ^ n - X) := by
-  have : Finite K := (Nat.card_pos_iff.mp (h ▸ pow_pos h_prime.1.pos n)).2
+  have : Finite K := (Nat.card_pos_iff.mp (h ▸ pow_pos h_prime.out.pos n)).2
   have : Fintype K := Fintype.ofFinite K
   rw [← h, Nat.card_eq_fintype_card]
   exact FiniteField.isSplittingField_sub K (ZMod p)
@@ -234,7 +232,7 @@ theorem norm_surjective : Function.Surjective (Algebra.norm K (S := K')) := fun 
   obtain rfl | ne := eq_or_ne k 0
   · exact ⟨0, Algebra.norm_zero ..⟩
   have ⟨x, eq⟩ := unitsMap_norm_surjective K K' (Units.mk0 k ne)
-  exact ⟨x, congr($(eq).1)⟩
+  exact ⟨x, congr($(eq).val)⟩
 
 end norm
 

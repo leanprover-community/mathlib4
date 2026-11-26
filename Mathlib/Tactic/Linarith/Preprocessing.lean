@@ -22,7 +22,7 @@ In particular, `linarith` works over comparisons of the form `t R 0`, where `R â
 It assumes that expressions in `t` have integer coefficients and that the type of `t` has
 well-behaved subtraction.
 
-## Implementation details
+## Implementation notes
 
 A `GlobalPreprocessor` is a function `List Expr â†’ TacticM (List Expr)`. Users can add custom
 preprocessing steps by adding them to the `LinarithConfig` object. `Linarith.defaultPreprocessors`

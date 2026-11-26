@@ -5,10 +5,11 @@ Authors: Andrew Yang, Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Filtered.Connected
-public import Mathlib.CategoryTheory.Limits.Connected
 public import Mathlib.CategoryTheory.Limits.Final
 public import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
+
+import Mathlib.CategoryTheory.Filtered.Connected
+import Mathlib.CategoryTheory.Limits.Connected
 
 /-!
 # Relation of morphism properties with limits
@@ -239,7 +240,7 @@ theorem overPullbackMap [IsStableUnderBaseChange P] {S S' : C} (f : S' ⟶ S)
     P ((Over.pullback f).map g).left :=
   pullbackLift_fst_snd f (g.w.symm) H
 
-attribute [local instance] hasPullback_symmetry_of_hasPullbacksAlong in
+attribute [local instance] hasPullback_symmetry in
 theorem pullbackMap
     [IsStableUnderBaseChange P] [P.IsStableUnderComposition] {S X X' Y Y' : C} {f : X ⟶ S}
     [HasPullbacksAlong f] {g : Y ⟶ S} {f' : X' ⟶ S} {g' : Y' ⟶ S} {i₁ : X ⟶ X'}
@@ -350,7 +351,7 @@ theorem underPushoutMap [IsStableUnderCobaseChange P] {S S' : C} (f : S' ⟶ S)
   pushoutDesc_inl_inr f g.w.symm H
 
 set_option backward.isDefEq.respectTransparency false in
-attribute [local instance] hasPushouts_symmetry_of_hasPushoutsAlong in
+attribute [local instance] hasPushout_symmetry in
 theorem pushoutMap
     [IsStableUnderCobaseChange P] [P.IsStableUnderComposition] {S X X' Y Y' : C} {f : S ⟶ X}
     {g : S ⟶ Y} {f' : S ⟶ X'} {g' : S ⟶ Y'} {i₁ : X ⟶ X'} [HasPushoutsAlong f]

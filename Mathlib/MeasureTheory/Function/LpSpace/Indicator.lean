@@ -11,6 +11,9 @@ public import Mathlib.Order.Filter.IndicatorFunction
 
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Indicator of a set as an element of `Lp`
 
@@ -255,7 +258,7 @@ protected def Lp.const : E →+ Lp E p μ where
 lemma Lp.coeFn_const : Lp.const p μ c =ᵐ[μ] Function.const α c :=
   AEEqFun.coeFn_const α c
 
-@[simp] lemma Lp.const_val : (Lp.const p μ c).1 = AEEqFun.const α c := rfl
+@[simp] lemma Lp.const_val : (Lp.const p μ c).val = AEEqFun.const α c := rfl
 
 @[simp]
 lemma MemLp.toLp_const : MemLp.toLp _ (memLp_const c) = Lp.const p μ c := rfl

@@ -452,7 +452,7 @@ instance Lp.SecondCountableTopology [IsSeparable μ] [TopologicalSpace.Separable
   -- in `u` and `𝒜₀` associates the corresponding sum.
   let key (n : ℕ) (d : Fin n → u) (s : Fin n → 𝒜₀) : (Lp E p μ) :=
     ∑ i, indicatorConstLp p (h𝒜₀.measurable (s i) (Subtype.mem (s i))).nullMeasurableSet
-      (s i).2.2 (d i : E)
+      (s i).property.2 (d i : E)
   let D := {s : Lp E p μ | ∃ n d t, s = key n d t}
   refine ⟨D, ?_, ?_⟩
   · -- Countability directly follows from countability of `u` and `𝒜₀`. The function `f` below

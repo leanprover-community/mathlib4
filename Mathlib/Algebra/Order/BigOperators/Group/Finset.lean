@@ -10,12 +10,12 @@ public import Mathlib.Algebra.Order.BigOperators.Group.Multiset
 public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Algebra.Order.Hom.Basic
 public import Mathlib.Algebra.Order.Monoid.Multiset
-public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 public import Mathlib.Data.Fintype.Card
 public import Mathlib.Data.Multiset.Powerset
 public import Mathlib.Tactic.Bound.Attribute
 
 import Mathlib.Algebra.Order.Monoid.OrderDual
+import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

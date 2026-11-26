@@ -52,10 +52,10 @@ section Map
 /-- When `f` is an embedding of `α` in `β` and `s` is a finset in `α`, then `s.map f` is the image
 finset in `β`. The embedding condition guarantees that there are no duplicates in the image. -/
 def map (f : α ↪ β) (s : Finset α) : Finset β :=
-  ⟨s.1.map f, s.2.map f.2⟩
+  ⟨s.val.map f, s.nodup.map f.inj'⟩
 
 @[simp]
-theorem map_val (f : α ↪ β) (s : Finset α) : (map f s).1 = s.1.map f :=
+theorem map_val (f : α ↪ β) (s : Finset α) : (map f s).val = s.val.map f :=
   rfl
 
 @[simp]
@@ -76,7 +76,7 @@ theorem mem_map_equiv {f : α ≃ β} {b : β} : b ∈ s.map f.toEmbedding ↔ f
 
 @[simp 1100]
 theorem mem_map' (f : α ↪ β) {a} {s : Finset α} : f a ∈ s.map f ↔ a ∈ s :=
-  mem_map_of_injective f.2
+  mem_map_of_injective f.inj'
 
 @[simp 1100]
 theorem mem_map_mk (f : α → β) {a : α} {s : Finset α} (hf : Function.Injective f) :
@@ -256,7 +256,7 @@ variable (f s) in
 /-- A `Finset` is in bijection with its image under an `Embedding`. -/
 @[simps!]
 noncomputable def equivMap : s ≃ s.map f :=
-  .ofBijective (fun x ↦ ⟨f x, s.mem_map_of_mem f x.2⟩) (⟨fun x y ↦ by simp, fun ⟨x, hx⟩ ↦ by
+  .ofBijective (fun x ↦ ⟨f x, s.mem_map_of_mem f x.property⟩) (⟨fun x y ↦ by simp, fun ⟨x, hx⟩ ↦ by
     obtain ⟨x, hxs, rfl⟩ := mem_map.mp hx
     exact ⟨⟨x, hxs⟩, rfl⟩⟩)
 
@@ -276,10 +276,10 @@ variable [DecidableEq β]
 
 /-- `image f s` is the forward image of `s` under `f`. -/
 def image (f : α → β) (s : Finset α) : Finset β :=
-  (s.1.map f).toFinset
+  (s.val.map f).toFinset
 
 @[simp]
-theorem image_val (f : α → β) (s : Finset α) : (image f s).1 = (s.1.map f).dedup :=
+theorem image_val (f : α → β) (s : Finset α) : (image f s).val = (s.val.map f).dedup :=
   rfl
 
 @[simp]
@@ -299,7 +299,7 @@ lemma forall_mem_image {p : β → Prop} : (∀ y ∈ s.image f, p y) ↔ ∀ �
 lemma exists_mem_image {p : β → Prop} : (∃ y ∈ s.image f, p y) ↔ ∃ x ∈ s, p (f x) := by simp
 
 theorem map_eq_image (f : α ↪ β) (s : Finset α) : s.map f = s.image f :=
-  eq_of_veq (s.map f).2.dedup.symm
+  eq_of_veq (s.map f).nodup.dedup.symm
 
 -- Not `@[simp]` since `mem_image` already gets most of the way there.
 theorem mem_image_const : c ∈ s.image (const α b) ↔ s.Nonempty ∧ b = c := by
@@ -364,8 +364,8 @@ theorem image_toFinset [DecidableEq α] {s : Multiset α} :
     s.toFinset.image f = (s.map f).toFinset :=
   ext fun _ => by simp only [mem_image, Multiset.mem_toFinset, Multiset.mem_map]
 
-theorem image_val_of_injOn (H : Set.InjOn f s) : (image f s).1 = s.1.map f :=
-  (s.2.map_on H).dedup
+theorem image_val_of_injOn (H : Set.InjOn f s) : (image f s).val = s.val.map f :=
+  (s.nodup.map_on H).dedup
 
 @[simp]
 theorem image_id [DecidableEq α] : s.image id = s :=
@@ -441,16 +441,16 @@ theorem image_subset_image_iff {t : Finset α} (hf : Injective f) :
 /-- Variant of `Finset.image_subset_image_iff` under an `InjOn` rather than `Injective`
 hypothesis. -/
 theorem image_subset_image_iff_of_injOn {s₁ s₂ : Finset α} (ht : (s : Set α).InjOn f)
-    (h₁ : s₁ ⊆ s) (h₂ : s₂ ⊆ s) : s₁.image f ⊆ s₂.image f ↔ s₁ ⊆ s₂ := by
-  exact mod_cast ht.image_subset_image_iff (mod_cast h₁) (mod_cast h₂)
+    (h₁ : s₁ ⊆ s) (h₂ : s₂ ⊆ s) : s₁.image f ⊆ s₂.image f ↔ s₁ ⊆ s₂ :=
+  mod_cast ht.image_subset_image_iff (mod_cast h₁) (mod_cast h₂)
 
 /-- Variant of `Finset.image_inj` under an `InjOn` rather than `Injective` hypothesis. -/
 theorem image_eq_image_iff_of_injOn {s₁ s₂ : Finset α} (ht : (s : Set α).InjOn f)
-    (h₁ : s₁ ⊆ s) (h₂ : s₂ ⊆ s) : s₁.image f = s₂.image f ↔ s₁ = s₂ := by
-  exact mod_cast ht.image_eq_image_iff (mod_cast h₁) (mod_cast h₂)
+    (h₁ : s₁ ⊆ s) (h₂ : s₂ ⊆ s) : s₁.image f = s₂.image f ↔ s₁ = s₂ :=
+  mod_cast ht.image_eq_image_iff (mod_cast h₁) (mod_cast h₂)
 
-lemma image_ssubset_image {t : Finset α} (hf : Injective f) : s.image f ⊂ t.image f ↔ s ⊂ t := by
-  exact lt_iff_lt_of_le_iff_le' (image_subset_image_iff hf) (image_subset_image_iff hf)
+lemma image_ssubset_image {t : Finset α} (hf : Injective f) : s.image f ⊂ t.image f ↔ s ⊂ t :=
+  lt_iff_lt_of_le_iff_le' (image_subset_image_iff hf) (image_subset_image_iff hf)
 
 theorem coe_image_subset_range : ↑(s.image f) ⊆ Set.range f :=
   calc
@@ -548,14 +548,15 @@ set_option backward.isDefEq.respectTransparency false in
 lemma attach_cons (a : α) (s : Finset α) (ha) :
     attach (cons a s ha) =
       cons ⟨a, mem_cons_self a s⟩
-        ((attach s).map ⟨fun x ↦ ⟨x.1, mem_cons_of_mem x.2⟩, fun x y => by simp⟩)
+        ((attach s).map ⟨fun x ↦ ⟨x.val, mem_cons_of_mem x.property⟩, fun x y => by simp⟩)
           (by simpa) := by ext ⟨x, hx⟩; simpa using hx
 
 @[simp]
 theorem attach_insert [DecidableEq α] (s : Finset α) (a : α) :
     attach (insert a s) =
       insert (⟨a, mem_insert_self a s⟩ : { x // x ∈ insert a s })
-        ((attach s).image fun x => ⟨x.1, mem_insert_of_mem x.2⟩) := by ext ⟨x, hx⟩; simpa using hx
+        ((attach s).image fun x => ⟨x.val, mem_insert_of_mem x.property⟩) := by
+  ext ⟨x, hx⟩; simpa using hx
 
 @[simp]
 theorem disjoint_image {s t : Finset α} {f : α → β} (hf : Injective f) :
@@ -569,7 +570,7 @@ theorem image_const {s : Finset α} (h : s.Nonempty) (b : β) : (s.image fun _ =
 theorem map_erase [DecidableEq α] (f : α ↪ β) (s : Finset α) (a : α) :
     (s.erase a).map f = (s.map f).erase (f a) := by
   simp_rw [map_eq_image]
-  exact s.image_erase f.2 a
+  exact s.image_erase f.inj' a
 
 theorem iterate_image [DecidableEq α] (f : α → α) (n : ℕ) :
     (Finset.image f)^[n] s = s.image f^[n] := by
@@ -598,7 +599,7 @@ variable (f : α → Option β) (s' : Finset α) {s t : Finset α}
   {f_inj : ∀ a a' b, b ∈ f a → b ∈ f a' → a = a'}
 
 @[simp]
-theorem filterMap_val : (filterMap f s' f_inj).1 = s'.1.filterMap f := rfl
+theorem filterMap_val : (filterMap f s' f_inj).val = s'.val.filterMap f := rfl
 
 @[simp]
 theorem filterMap_empty : (∅ : Finset α).filterMap f f_inj = ∅ := rfl
@@ -634,7 +635,7 @@ section Subtype
 elements belong to `s`. -/
 protected def subtype {α} (p : α → Prop) [DecidablePred p] (s : Finset α) : Finset (Subtype p) :=
   (s.filter p).attach.map
-    ⟨fun x => ⟨x.1, by simpa using (Finset.mem_filter.1 x.2).2⟩,
+    ⟨fun x => ⟨x.val, by simpa using (Finset.mem_filter.1 x.property).2⟩,
      fun _ _ H => Subtype.ext <| Subtype.mk.inj H⟩
 
 set_option backward.isDefEq.respectTransparency false in
@@ -674,7 +675,7 @@ the subtype. -/
 theorem property_of_mem_map_subtype {p : α → Prop} (s : Finset { x // p x }) {a : α}
     (h : a ∈ s.map (Embedding.subtype _)) : p a := by
   rcases mem_map.1 h with ⟨x, _, rfl⟩
-  exact x.2
+  exact x.property
 
 /-- If a `Finset` of a subtype is converted to the main type with
 `Embedding.subtype`, the result does not contain any value that does
@@ -734,7 +735,11 @@ end Finset
 
 theorem Multiset.toFinset_map [DecidableEq α] [DecidableEq β] (f : α → β) (m : Multiset α) :
     (m.map f).toFinset = m.toFinset.image f :=
-  Finset.val_inj.1 (Multiset.dedup_map_dedup_eq _ _).symm
+  Finset.image_toFinset.symm
+
+theorem List.toFinset_map [DecidableEq α] [DecidableEq β] (f : α → β) (l : List α) :
+    (l.map f).toFinset = l.toFinset.image f :=
+  Multiset.toFinset_map f l
 
 namespace Equiv
 

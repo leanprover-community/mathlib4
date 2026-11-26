@@ -5,11 +5,12 @@ Authors: Zhouhang Zhou, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Combinatorics.Enumerative.InclusionExclusion
 public import Mathlib.MeasureTheory.Function.LocallyIntegrable
 public import Mathlib.MeasureTheory.Integral.Bochner.SumMeasure
 public import Mathlib.Topology.ContinuousMap.Compact
 public import Mathlib.Topology.MetricSpace.ThickenedIndicator
+
+import Mathlib.Combinatorics.Enumerative.InclusionExclusion
 
 /-!
 # Set integral

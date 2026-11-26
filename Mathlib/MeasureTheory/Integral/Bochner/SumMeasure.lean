@@ -10,6 +10,9 @@ public import Mathlib.MeasureTheory.Integral.IntegrableOn
 
 import Mathlib.Analysis.Normed.Module.FiniteDimension
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integral with respect to a sum of measures
 
@@ -131,9 +134,9 @@ theorem hasSum_integral_measure (hf : Integrable f (Measure.sum μ)) :
   obtain ⟨ν, hν⟩ : ∃ ν, (∑ i ∈ s, μ i) + ν = Measure.sum μ := by
     refine ⟨Measure.sum fun i : ↥(sᶜ : Set ι) ↦ μ i, ?_⟩
     simpa only [← Measure.sum_coe_finset] using! Measure.sum_add_sum_compl (s : Set ι) μ
-  rw [Metric.mem_ball, ← coe_nndist, NNReal.coe_lt_coe, ← ENNReal.coe_lt_coe, ← hν]
+  rw [Metric.mem_ball, ← coe_nnDist, NNReal.coe_lt_coe, ← ENNReal.coe_lt_coe, ← hν]
   rw [← hν, integrable_add_measure] at hf
-  refine (nndist_integral_add_measure_le_lintegral hf.1 hf.2).trans_lt ?_
+  refine (nnDist_integral_add_measure_le_lintegral hf.1 hf.2).trans_lt ?_
   rw [← hν, lintegral_add_measure, lintegral_finsetSum_measure] at hs
   exact lt_of_add_lt_add_left hs
 
@@ -187,10 +190,10 @@ theorem setIntegral_countable (f : X → E) {s : Set X} (hs : s.Countable) (hf :
     ∫ x in s, f x ∂μ = ∑' x : s, μ.real {(x : X)} • f x := by
   have hi : Countable { x // x ∈ s } := Iff.mpr countable_coe_iff hs
   have hf' : Integrable (fun (x : s) ↦ f x) (Measure.comap Subtype.val μ) := by
-    rw [IntegrableOn, ← map_comap_subtype_coe, integrable_map_measure] at hf
+    rw [IntegrableOn, ← map_comap_subtypeVal, integrable_map_measure] at hf
     · apply hf
     · exact Integrable.aestronglyMeasurable hf
-    · exact Measurable.aemeasurable measurable_subtype_coe
+    · exact Measurable.aemeasurable measurable_subtypeVal
     · exact Countable.measurableSet hs
   rw [← integral_subtype_comap hs.measurableSet, integral_countable hf']
   congr 1 with a : 1

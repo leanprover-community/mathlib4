@@ -10,6 +10,9 @@ public import Mathlib.Analysis.SpecialFunctions.Arsinh
 
 import Mathlib.Geometry.Euclidean.Inversion.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Metric on the upper half-plane
 
@@ -322,7 +325,7 @@ theorem isometry_pos_mul (a : { x : ℝ // 0 < x }) : Isometry (a • · : ℍ �
   simp only [dist_eq, coe_pos_real_smul, pos_real_im]; congr 2
   rw [dist_smul₀, mul_mul_mul_comm, Real.sqrt_mul (mul_self_nonneg _), Real.sqrt_mul_self_eq_abs,
     Real.norm_eq_abs, mul_left_comm]
-  exact mul_div_mul_left _ _ (mt _root_.abs_eq_zero.1 a.2.ne')
+  exact mul_div_mul_left _ _ (mt _root_.abs_eq_zero.1 a.property.ne')
 
 /-- `SL(2, ℝ)` acts on the upper half plane as an isometry. -/
 instance : IsIsometricSMul SL(2, ℝ) ℍ :=
