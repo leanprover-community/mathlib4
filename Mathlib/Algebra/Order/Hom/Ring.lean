@@ -164,9 +164,12 @@ theorem toOrderAddMonoidHom_eq_coe (f : α →+*o β) : f.toOrderAddMonoidHom = 
 theorem coe_toOrderMonoidWithZeroHom (f : α →+*o β) :
     ⇑f.toOrderMonoidWithZeroHom = f := rfl
 
-theorem toOrderMonoidWithZeroHom_eq_coe (f : α →+*o β) :
+theorem toOrderMonoidWithZeroHom_eq_ofClass (f : α →+*o β) :
     f.toOrderMonoidWithZeroHom = .ofClass f :=
   rfl
+
+@[deprecated (since := "2026-11-26")] alias toOrderMonoidWithZeroHom_eq_coe :=
+  toOrderMonoidWithZeroHom_eq_ofClass
 
 @[simp]
 theorem coe_toRingHom (f : α →+*o β) : ⇑(f : α →+* β) = f :=
