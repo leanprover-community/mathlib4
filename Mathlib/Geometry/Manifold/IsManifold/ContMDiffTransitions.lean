@@ -41,6 +41,8 @@ This file shows that, for this structure, if `f` satisfies a certain condition
 * Show the converse: if `f` is a `C^n` local diffeomorphism for this structure, then
   `ContMDiffTransitions I n f` holds.
 * Use this to construct manifold structures on quotients `M ⧸ G` by suitable group actions.
+* Define `Filter.Germ.ContMDiffAt` and prove `contMDiffTransitions_iff_exists_germ`, showing that
+  it suffices to ask for `σ` as a germ at `x`.
 
 ## Tags
 
