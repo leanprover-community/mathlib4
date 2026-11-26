@@ -370,7 +370,7 @@ public theorem ae_tendsTo_birkhoffAverage_condExp (hf : MeasurePreserving f μ �
 section Invariant
 
 omit [IsProbabilityMeasure μ] [CompleteSpace E] in
-public lemma comp_eq_condExp_invariants : μ[g | invariants f] ∘ f = μ[g | invariants f] := by
+public lemma condExp_invariants_comp_eq_self : μ[g | invariants f] ∘ f = μ[g | invariants f] := by
   borelize E
   exact comp_eq_of_measurable_invariants stronglyMeasurable_condExp.measurable
 

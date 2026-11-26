@@ -171,6 +171,7 @@ noncomputable section BirkhoffSup
 def birkhoffSumSup (f : α → α) (g : α → ℝ) (x : α) : EReal :=
   ⨆ n, ↑(birkhoffSum f g n x)
 
+@[fun_prop]
 lemma measurable_birkhoffSumSup [MeasurableSpace α] (hf : Measurable f) (hg : Measurable g) :
     Measurable (birkhoffSumSup f g) := by
   fun_prop [birkhoffSumSup]
