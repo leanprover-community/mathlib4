@@ -5,6 +5,7 @@ Authors: David Fox
 -/
 module
 
+public import Mathlib.Analysis.SpecialFunctions.Exponential
 public import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.Topology.Algebra.InfiniteSum.Order
 
@@ -54,3 +55,40 @@ theorem besselISeries_summable (n : ℕ) (x : ℝ) :
   rw [mul_comm (Nat.factorial n : ℝ) (Nat.factorial k : ℝ)]
   refine mul_le_mul_of_nonneg_left ?_ (by positivity)
   exact_mod_cast Nat.factorial_le (Nat.le_add_right n k)
+
+/-- Upper bound for the modified Bessel series: `I_n(x) ≤ (x/2)^n · exp((x/2)^2)`
+for `x ≥ 0`. Proof: dominate each series term by dropping `(n+k)!` from the
+denominator (using `(n+k)! ≥ 1`), and sum the resulting exponential series.
+This gives the geometric decay in the Bessel order that underlies
+summability. -/
+theorem besselISeries_le_exp_bound (n : ℕ) (x : ℝ) (hx : 0 ≤ x) :
+    besselISeries n x ≤ (x / 2) ^ n * Real.exp ((x / 2) ^ 2) := by
+  have hx2 : (0 : ℝ) ≤ x / 2 := div_nonneg hx two_pos.le
+  have hsumm : Summable (fun k : ℕ =>
+      (x / 2) ^ (n + 2 * k) / ((↑k.factorial) * (↑(n + k).factorial))) :=
+    besselISeries_summable n x
+  have hsumm_dom : Summable (fun k : ℕ =>
+      (x / 2) ^ n * (((x / 2) ^ 2) ^ k / ↑k.factorial)) :=
+    (Real.summable_pow_div_factorial ((x / 2) ^ 2)).mul_left _
+  have hterm : ∀ k : ℕ,
+      (x / 2) ^ (n + 2 * k) / ((↑k.factorial : ℝ) * ↑(n + k).factorial)
+        ≤ (x / 2) ^ n * (((x / 2) ^ 2) ^ k / ↑k.factorial) := fun k => by
+    rw [pow_add, pow_mul]
+    have hkpos : (0 : ℝ) < ↑k.factorial := by exact_mod_cast Nat.factorial_pos k
+    have hA : (0 : ℝ) ≤ (x / 2) ^ n * ((x / 2) ^ 2) ^ k := by positivity
+    have hle : (↑k.factorial : ℝ) ≤ ↑k.factorial * ↑(n + k).factorial :=
+      le_mul_of_one_le_right hkpos.le
+        (by exact_mod_cast Nat.one_le_iff_ne_zero.mpr (Nat.factorial_ne_zero _))
+    calc (x / 2) ^ n * ((x / 2) ^ 2) ^ k / (↑k.factorial * ↑(n + k).factorial)
+        ≤ (x / 2) ^ n * ((x / 2) ^ 2) ^ k / ↑k.factorial :=
+          div_le_div_of_nonneg_left hA hkpos hle
+      _ = (x / 2) ^ n * (((x / 2) ^ 2) ^ k / ↑k.factorial) := by ring
+  calc besselISeries n x
+      = ∑' k : ℕ, (x / 2) ^ (n + 2 * k) / ((↑k.factorial) * (↑(n + k).factorial)) := rfl
+    _ ≤ ∑' k : ℕ, (x / 2) ^ n * (((x / 2) ^ 2) ^ k / ↑k.factorial) :=
+        Summable.tsum_le_tsum hterm hsumm hsumm_dom
+    _ = (x / 2) ^ n * ∑' k : ℕ, ((x / 2) ^ 2) ^ k / ↑k.factorial := tsum_mul_left
+    _ = (x / 2) ^ n * Real.exp ((x / 2) ^ 2) := by
+        congr 1
+        rw [Real.exp_eq_exp_ℝ]
+        exact NormedSpace.expSeries_div_hasSum_exp ((x / 2) ^ 2) |>.tsum_eq
