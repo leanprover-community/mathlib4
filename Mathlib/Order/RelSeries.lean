@@ -12,6 +12,7 @@ public import Mathlib.Basic.Rel
 public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Data.Fintype.Pi
 public import Mathlib.Data.Fintype.Sigma
+public import Mathlib.Logic.Function.Const
 
 import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.Order.OrderIsoNat
@@ -243,9 +244,6 @@ theorem length_ne_zero [r.IsIrrefl] : s.length ≠ 0 ↔ (Set.range s).Nontrivia
   ext
   simpa [Nat.pos_iff_ne_zero]
 
-@[simp] theorem nontrivial_setRange_iff [r.IsIrrefl] : (Set.range s).Nontrivial ↔ s.length ≠ 0 :=
-  length_ne_zero.symm
-
 theorem length_ne_zero' [r.IsIrrefl] : s.length ≠ 0 ↔ s.toFinset.Nontrivial := by
   simp [length_ne_zero, ← coe_toFinset_eq_setRange]
 
@@ -261,9 +259,8 @@ theorem length_pos' [r.IsIrrefl] : 0 < s.length ↔ s.toFinset.Nontrivial := by
 lemma length_eq_zero [r.IsIrrefl] : s.length = 0 ↔ (Set.range s).Subsingleton := by
   rw [← not_ne_iff, length_ne_zero, Set.not_nontrivial_iff]
 
-@[simp] theorem subsingleton_setRange_iff [r.IsIrrefl] :
-    (Set.range s).Subsingleton ↔ s.length = 0 :=
-  length_eq_zero.symm
+@[simp] theorem isConst_iff [r.IsIrrefl] : Function.IsConst s ↔ s.length = 0 := by
+  simp [length_eq_zero]
 
 /-- Start of a series, i.e. for `a₀ -r→ a₁ -r→ ... -r→ aₙ`, its head is `a₀`.
 
