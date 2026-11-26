@@ -164,6 +164,7 @@ theorem coeFn_injective : @Function.Injective (M₁ →SL[σ₁₂] M₂) (M₁ 
 
 /-- Reinterpret a continuous linear map `M₁ →SL[σ₁₂] M₂` as
 a continuous morphism of additive monoids `M₁ →ₜ+ M₂`. -/
+@[coe]
 def toContinuousAddMonoidHom (f : M₁ →SL[σ₁₂] M₂) : M₁ →ₜ+ M₂ := .ofClass f
 
 @[simp]
@@ -174,7 +175,7 @@ theorem toContinuousAddMonoidHom_injective :
       (toContinuousAddMonoidHom : (M₁ →SL[σ₁₂] M₂) → ContinuousAddMonoidHom M₁ M₂) :=
   (DFunLike.coe_injective.of_comp_iff _).1 DFunLike.coe_injective
 
-@[simp]
+@[simp, norm_cast]
 theorem toContinuousAddMonoidHom_inj {f g : M₁ →SL[σ₁₂] M₂} :
     f.toContinuousAddMonoidHom = g.toContinuousAddMonoidHom ↔ f = g :=
   toContinuousAddMonoidHom_injective.eq_iff
@@ -354,7 +355,7 @@ theorem toLinearMap_zero : ((0 : M₁ →SL[σ₁₂] M₂) : M₁ →ₛₗ[σ�
 
 @[deprecated (since := "2026-05-20")] alias coe_zero' := FunLike.coe_zero
 
-@[simp]
+@[simp, norm_cast]
 theorem toContinuousAddMonoidHom_zero :
     (0 : M₁ →SL[σ₁₂] M₂).toContinuousAddMonoidHom = 0 := rfl
 
@@ -405,7 +406,7 @@ theorem toLinearMap_one : ((1 : M₁ →L[R₁] M₁) : M₁ →ₗ[R₁] M₁) 
 @[simp] lemma mk_id : mk (.id : M₁ →ₗ[R₁] M₁) continuous_id = .id _ _ := rfl
 @[simp] lemma mk_one : mk (1 : M₁ →ₗ[R₁] M₁) continuous_id = 1 := rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem toContinuousAddMonoidHom_id :
     (ContinuousLinearMap.id R₁ M₁).toContinuousAddMonoidHom = .id _ := rfl
 
@@ -438,7 +439,7 @@ theorem toLinearMap_add (f g : M₁ →SL[σ₁₂] M₂) : (↑(f + g) : M₁ �
 
 @[deprecated (since := "2026-05-20")] alias coe_add' := FunLike.coe_add
 
-@[simp]
+@[simp, norm_cast]
 theorem toContinuousAddMonoidHom_add (f g : M₁ →SL[σ₁₂] M₂) :
     (f + g).toContinuousAddMonoidHom =
       f.toContinuousAddMonoidHom + g.toContinuousAddMonoidHom := rfl
@@ -487,7 +488,7 @@ theorem coe_comp (h : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂)
 
 @[deprecated (since := "2026-05-20")] alias coe_comp' := coe_comp
 
-@[simp]
+@[simp, norm_cast]
 theorem toContinuousAddMonoidHom_comp (h : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂) :
     (h ∘SL f).toContinuousAddMonoidHom =
       h.toContinuousAddMonoidHom.comp f.toContinuousAddMonoidHom := rfl
@@ -851,7 +852,7 @@ theorem toLinearMap_neg (f : M →SL[σ₁₂] M₂) : (↑(-f) : M →ₛₗ[σ
 
 @[deprecated (since := "2026-05-20")] alias coe_neg' := FunLike.coe_neg
 
-@[simp]
+@[simp, norm_cast]
 theorem toContinuousAddMonoidHom_neg (f : M →SL[σ₁₂] M₂) :
     (-f).toContinuousAddMonoidHom = -f.toContinuousAddMonoidHom := rfl
 
@@ -872,7 +873,7 @@ theorem toLinearMap_sub (f g : M →SL[σ₁₂] M₂) : (↑(f - g) : M →ₛ�
 
 @[deprecated (since := "2026-05-20")] alias coe_sub' := FunLike.coe_sub
 
-@[simp]
+@[simp, norm_cast]
 theorem toContinuousAddMonoidHom_sub (f g : M →SL[σ₁₂] M₂) :
     (f - g).toContinuousAddMonoidHom =
       f.toContinuousAddMonoidHom - g.toContinuousAddMonoidHom := rfl
