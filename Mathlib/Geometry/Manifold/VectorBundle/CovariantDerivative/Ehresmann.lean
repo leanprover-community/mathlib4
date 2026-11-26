@@ -324,10 +324,10 @@ lemma horiz_vert_direct_sum [ContMDiffVectorBundle 1 F V I]
   let t := trivializationAt F V v.proj
   let Tvt := t.deriv I v
   have hcov := cov.isCovariantDerivativeOn_pushCovDer t
-  rw [t.comap_vert (mem_baseSet_trivializationAt F V v.proj), comap_trivializationAt_horiz]
+  rw [t.comap_vert FiberBundle.mem_trivializationAt_proj_source, comap_trivializationAt_horiz]
   apply LinearMap.comap_isCompl
   · apply t.bijective_deriv
-    exact FiberBundle.mem_baseSet_trivializationAt' v.proj
+    exact FiberBundle.mem_trivializationAt_proj_source
   · apply hcov.horiz_vert_direct_sum
 
 variable {cov : CovariantDerivative I F V} [IsManifold I 1 M]
@@ -367,7 +367,7 @@ lemma mem_horiz_iff_exists [FiniteDimensional 𝕜 E]
   have hcov := cov.isCovariantDerivativeOn_pushCovDer t
   have hvproj : v.proj ∈ t.baseSet := FiberBundle.mem_baseSet_trivializationAt' v.proj
   have hTvtw : (Tvt w).1 = u :=
-    t.mfderiv_proj_fst_deriv hvproj w |>.symm
+    t.mfderiv_proj_fst_deriv FiberBundle.mem_trivializationAt_proj_source w |>.symm
   simp_rw [cov.comap_trivializationAt_horiz v, ← t_def, ← Tvt_def, Submodule.mem_comap,
            hcov.mem_horiz_iff_exists]
   constructor
@@ -383,10 +383,10 @@ lemma mem_horiz_iff_exists [FiniteDimensional 𝕜 E]
       simp only [ContinuousLinearMap.coe_comp, Function.comp_apply, ContinuousLinearMap.prod_apply,
         ContinuousLinearMap.coe_id', id_eq]
       erw [mfderivs]
-      rw [t.mfderiv_proj_fst_deriv hvproj]
+      rw [t.mfderiv_proj_fst_deriv FiberBundle.mem_trivializationAt_proj_source]
       have : (((Trivialization.deriv I t v) w).1, (Tvt w).2) = Tvt w := rfl
       erw [this, Tvt_def, t.funToSec_proj_eq hvproj sval]
-      exact t.derivInv_deriv_apply hvproj w
+      exact t.derivInv_deriv_apply FiberBundle.mem_trivializationAt_proj_source w
     · rw [ContinuousLinearMap.coe_coe] at covs
       simp [t.pushCovDer_funToSec cov, ← hTvtw, covs]
   · rintro ⟨σ, σdiff, σval, mfderivσ, covσ⟩

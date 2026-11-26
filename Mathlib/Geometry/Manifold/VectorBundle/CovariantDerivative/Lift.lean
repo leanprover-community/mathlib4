@@ -16,7 +16,7 @@ TODO: add a more complete doc-string
 
 @[expose] public section
 
-open Bundle Filter Module Topology Set
+open Bundle Filter Module Topology Set FiberBundle
 
 open scoped Bundle Manifold ContDiff
 
@@ -109,7 +109,7 @@ lemma CovariantDerivative.lift_vec_mem_horiz {v : TotalSpace F V} (u : TangentSp
   -- TODO: cleanup
   simp only [proj, IsCovariantDerivativeOn.lift_vec_apply, ContinuousLinearMap.coe_comp,
              Function.comp_apply]
-  rw [t.deriv_derivInv_apply (FiberBundle.mem_baseSet_trivializationAt' v.proj)]
+  rw [t.deriv_derivInv_apply mem_trivializationAt_proj_source]
   simp
 
 @[simp]
@@ -137,16 +137,16 @@ lemma CovariantDerivative.lift_vec_eq_iff {v : TotalSpace F V} (u : TangentSpace
     let t := trivializationAt F V v.proj
     have hcov := cov.isCovariantDerivativeOn_pushCovDer t
     have mem := FiberBundle.mem_baseSet_trivializationAt F V v.proj
-    apply (t.bijective_deriv mem).1
+    apply (t.bijective_deriv mem_trivializationAt_proj_source).1
     unfold CovariantDerivative.lift_vec
     simp only [ContinuousLinearMap.coe_comp, Function.comp_apply]
-    rw [t.deriv_derivInv_apply mem]
+    rw [t.deriv_derivInv_apply mem_trivializationAt_proj_source]
     rw [hcov.lift_vec_eq_iff]
     constructor
     · rw [cov.coe_proj, Function.comp_apply, Function.comp_apply] at h
       apply t.injective_symm mem
       rw [h, t.symm_map_zero 𝕜 mem]
-    · rw [← h', t.mfderiv_proj_fst_deriv mem]
+    · rw [← h', t.mfderiv_proj_fst_deriv mem_trivializationAt_proj_source]
 
 lemma CovariantDerivative.lift_vec_eq_iff' {v : TotalSpace F V} (u : TangentSpace% v.proj)
     (w : TangentSpace% v) :
@@ -164,6 +164,7 @@ lemma CovariantDerivative.lift_vec_eq [IsManifold I 1 M] [FiniteDimensional 𝕜
     (u : TangentSpace% v.proj) :
     haveI hcov := cov.isCovariantDerivativeOn_pushCovDer e
     cov.lift_vec v u = e.derivInv I v (hcov.lift_vec v.proj (e v).2 u) := by
+  have hv' : v ∈ e.source := e.mem_source.mpr hv
   apply (cov.lift_vec_eq_iff' _ _).mpr ⟨?_, ?_⟩
   · rw [cov.mem_horiz_iff_exists]
     have hcov := cov.isCovariantDerivativeOn_pushCovDer e
@@ -181,14 +182,14 @@ lemma CovariantDerivative.lift_vec_eq [IsManifold I 1 M] [FiniteDimensional 𝕜
                  ContinuousLinearMap.prod_apply, ContinuousLinearMap.coe_id', id_eq]
       congr 2
       · simp [e.funToSec_proj_eq hv sval]
-      · simp [e.mfderiv_proj_fst_deriv, hv]
-      · simp only [hv, e.mfderiv_proj_derivInv_apply, ContinuousLinearMap.toLinearMap_neg,
-                   LinearMap.neg_apply, ContinuousLinearMap.coe_coe]
+      · simp [e.mfderiv_proj_fst_deriv, hv']
+      · simp only [hv', e.mfderiv_proj_derivInv_apply, ContinuousLinearMap.toLinearMap_neg,
+          LinearMap.neg_apply, ContinuousLinearMap.coe_coe]
         rw [proj_lift] at mfderivs ⊢
         erw [mfderivs]
         simp
     · rw [proj_lift] at covs
-      simp [e.pushCovDer_funToSec cov, e.mfderiv_proj_fst_deriv hv, e.deriv_derivInv_apply hv, covs]
-  · simp [hv]
+      simp [e.pushCovDer_funToSec cov, e.mfderiv_proj_fst_deriv, e.deriv_derivInv_apply, covs, hv']
+  · simp [hv']
 
 end

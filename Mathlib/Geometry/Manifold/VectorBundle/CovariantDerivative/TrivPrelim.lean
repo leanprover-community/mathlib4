@@ -36,6 +36,16 @@ def equivTangentSpaceProd (p : M × M')
   ContinuousLinearEquiv.refl ..
 
 -- TODO: redefine `equivTangentBundleProd` using the above declaration.
+
+lemma mfderiv_of_eq (f : M → M') {x y : M} (h : x = y) :
+    mfderiv% f y ∘L (tangentSpaceCast I x y).toContinuousLinearMap =
+    (tangentSpaceCast I' (f x) (f y)).toContinuousLinearMap ∘L mfderiv% f x := by
+  subst h
+  rfl
+
+@[simp]
+lemma tangentSpaceCast_comp_symm (x y : M) : (tangentSpaceCast I x y).trans (tangentSpaceCast I y x)
+= .refl _ (TangentSpace% x) := rfl
 end
 
 namespace Bundle.Trivialization
@@ -61,13 +71,6 @@ lemma mdifferentiableAt'
     {x : M} (hx : x ∈ e.baseSet) (v : V x) :
     MDiffAt e v :=
   e.mdifferentiableAt (IB := I) (e.coe_mem_source.mpr hx)
-
-lemma mdifferentiableAt_invFun
-    [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
-    {x : M} (hx : x ∈ e.baseSet) (f : F) :
-    MDiffAt e.invFun (x, f) := by
-  apply ContMDiffAt.mdifferentiableAt ?_ zero_ne_one.symm
-  exact e.contMDiffAt_symm (e.mk_mem_target.mpr hx)
 
 open NormedSpace
 
@@ -98,6 +101,64 @@ def invFunCast (v : TotalSpace F V)
     : TangentSpace% (e.toOpenPartialHomeomorph.symm (e v)) ≃L[𝕜] TangentSpace% v :=
   tangentSpaceCast (I.prod 𝓘(𝕜, F)) (e.toOpenPartialHomeomorph.symm (e v)) v
 
+omit [(x : M) → AddCommGroup (V x)]
+     [(x : M) → TopologicalSpace (V x)] [FiberBundle F V] [MemTrivializationAtlas e] in
+lemma symm_comp_self {v} (hv : v ∈ e.source) :
+      e.toOpenPartialHomeomorph.symm ∘ e =ᶠ[𝓝 v] id := by
+    have : ∀ᶠ v' in 𝓝 v, v' ∈ e.source :=
+      e.open_source.eventually_mem hv
+    apply this.mono fun v' hv' ↦ ?_
+    simp only [Function.comp_apply, hv', symm_apply_apply, id_eq]
+
+-- Good
+@[simp]
+lemma mfderiv_symm_comp_self
+    [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
+    {v} (hv : v ∈ e.source) :
+    e.invFunCast I v ∘L mfderiv% e.toOpenPartialHomeomorph.symm (e v) ∘L mfderiv% e v
+    = .id _ (TangentSpace% v) := by
+  have hv'' : e v ∈ e.target := e.map_source hv -- FIXME: inlining this give a different type to D₁
+  have D₁ := e.mdifferentiableAt_symm I hv''
+  have D₂ : MDiffAt e v := e.mdifferentiableAt _ hv
+  simp [← mfderiv_comp v D₁ D₂, (e.symm_comp_self hv).mfderiv_eq]
+  rfl
+
+omit [(x : M) → AddCommGroup (V x)]
+     [(x : M) → TopologicalSpace (V x)] [FiberBundle F V] [MemTrivializationAtlas e] in
+lemma self_comp_symm {v} (hv : v ∈ e.source) :
+      e ∘ e.toOpenPartialHomeomorph.symm =ᶠ[𝓝 (e v)] id := by
+    have : ∀ᶠ y in 𝓝 (e v), y ∈ e.target :=
+      e.open_target.eventually_mem (e.map_source hv)
+    apply this.mono fun v' hv' ↦ ?_
+    simp [hv']
+
+@[simp]
+lemma mfderiv_self_comp_symm --FIXME bad
+    [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
+   {v} (hv : v ∈ e.source) :
+   mfderiv% e (e.toOpenPartialHomeomorph.symm (e v))
+    ∘L mfderiv% e.toOpenPartialHomeomorph.symm (e v) = .id 𝕜 _ := by
+  have D₁ := e.mdifferentiableAt_symm I (e.map_source hv)
+  have D₂ := e.mdifferentiableAt I hv
+  rw [← e.symm_apply_apply hv] at D₂
+  rw [← mfderiv_comp (e v) D₂ D₁, (e.self_comp_symm hv).mfderiv_eq]
+  simp
+  rfl
+
+@[simp]
+lemma mfderiv_invFunCast
+    [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
+    {v : TotalSpace F V} (hv : v ∈ e.source) :
+    mfderiv% e v ∘L (e.invFunCast I v).toContinuousLinearMap ∘L
+    mfderiv% e.toOpenPartialHomeomorph.symm (e v) = .id _ (TangentSpace% (e v))  := by
+  unfold invFunCast
+  have D₁ := e.mdifferentiableAt_symm I (e.map_source hv)
+  have D₂ := e.mdifferentiableAt I hv
+  rw [← e.symm_apply_apply hv] at D₂
+  rw [← ContinuousLinearMap.comp_assoc,
+      mfderiv_of_eq (I.prod 𝓘(𝕜, F)) (I.prod 𝓘(𝕜, F)) e (e.symm_apply_apply hv),
+      ContinuousLinearMap.comp_assoc, ← mfderiv_comp (e v) D₂ D₁, (e.self_comp_symm hv).mfderiv_eq]
+  simp
 
 /-- The derivative of the inverse of the trivialization `e` at `v`, seen as a continuous linear
 map from $T_{π(v)}M × F$ rather than $T_{e(v)}(M × F)$, by composing by the suitable
@@ -134,33 +195,20 @@ variable {I}
 -- #check PartialEquiv
 -- #check e.toPartialEquiv.left_inv
 
+-- Good
 @[simp]
 lemma derivInv_deriv
     [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
-    {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet) :
+    {v : TotalSpace F V} (hv : v ∈ e.source) :
     (e.derivInv I v) ∘L (e.deriv I v) = .id 𝕜 _ := by
-  ext w
-  simp only [derivInv, deriv, ContinuousLinearMap.comp_apply, ContinuousLinearEquiv.coe_coe,
-    ContinuousLinearEquiv.symm_apply_apply, ContinuousLinearMap.id_apply]
-  have hv' := (mem_source e).mpr hv
-  have hv'' : e v ∈ e.target := e.map_source hv' -- FIXME: inlining this give a different type to D₁
-  have D₁ := e.mdifferentiableAt_symm I hv''
-  have D₂ : MDiffAt e v := e.mdifferentiableAt' (I := I) hv v.2
-  have comp := congr($(mfderiv_comp v D₁ D₂) w)
-  simp only [Function.comp_apply, ContinuousLinearMap.comp_apply] at comp
-  rw [← comp]
-  have : e.toOpenPartialHomeomorph.symm ∘ e =ᶠ[𝓝 v] id := by -- TODO: extract lemma
-    have : ∀ᶠ v' in 𝓝 v, v' ∈ e.source := by
-      exact e.open_source.eventually_mem ((mem_source e).mpr hv)
-    apply this.mono fun v' hv' ↦ ?_
-    simp only [Function.comp_apply, hv', symm_apply_apply, id_eq]
-  simp [this.mfderiv_eq]
+  simp [deriv, derivInv, ← e.mfderiv_symm_comp_self I hv]
   rfl
 
+-- Good
 @[simp]
 lemma derivInv_deriv_apply
     [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
-    {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet)
+    {v : TotalSpace F V} (hv : v ∈ e.source)
     (u : TangentSpace% v) :
     (e.derivInv I v (e.deriv I v u)) = u :=
   show ((e.derivInv I v) ∘L (e.deriv I v)) u = u by simp [hv]
@@ -168,68 +216,58 @@ lemma derivInv_deriv_apply
 @[simp]
 lemma mfderiv_proj_fst_deriv
     [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
-    {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet)
+    {v : TotalSpace F V} (hv : v ∈ e.source)
     (u : TangentSpace% v) :
     mfderiv (I.prod 𝓘(𝕜, F)) I TotalSpace.proj v u = (e.deriv I v u).1 := by
-  have := e.fst_comp_eventuallyEq hv
+  --have := e.fst_comp_eventuallyEq hv
   stop
   rw [← this.mfderiv_eq, mfderiv_comp v mdifferentiableAt_fst (e.mdifferentiableAt (I := I) hv v.2)]
   simp
   rfl -- TODO: understand why `simp` does not handle `ContinuousLinearMap.fst`
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma mfderiv_proj_derivInv_apply
     [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
-    {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet)
+    {v : TotalSpace F V} (hv : v ∈ e.source)
     (u : TangentSpace% v) :
     mfderiv (I.prod 𝓘(𝕜, F)) I TotalSpace.proj v (e.derivInv I v u) = u.1 := by
-  have D₁ := e.mdifferentiableAt_invFun (I := I) hv (e v).2
-  rw [e.mk_proj_snd' hv] at D₁
-  have diff : MDifferentiableAt (I.prod 𝓘(𝕜, F)) I TotalSpace.proj v :=
+  have D₁ := e.mdifferentiableAt_symm I (e.map_source hv)
+  have diff : MDiffAt (TotalSpace.proj : TotalSpace F V → M) v :=
     mdifferentiableAt_proj _
-  have eq : e.invFun (e v) = v := by simp [e.mem_source.mpr hv]
+  have eq : e.toOpenPartialHomeomorph.symm (e v) = v := by simp [hv]
   rw [← eq] at diff
   have := mfderiv_comp (e v) diff D₁
-  have C : (TotalSpace.proj ∘ e.invFun) =ᶠ[𝓝 (e v)] Prod.fst := by
-    filter_upwards [e.baseSet_prod_univ_mem_nhds hv] with ⟨x, f⟩ ⟨hx, hf⟩
+  have C : (TotalSpace.proj ∘ e.toOpenPartialHomeomorph.symm) =ᶠ[𝓝 (e v)] Prod.fst := by
+    have := e.baseSet_prod_univ_mem_nhds ((mem_source e).1 hv)
+    filter_upwards [e.baseSet_prod_univ_mem_nhds ((mem_source e).1 hv)] with ⟨x, f⟩ ⟨hx, hf⟩
     simp [hx]
   rw [C.mfderiv_eq, eq] at this
   have := congr($this u).symm
-  change mfderiv (I.prod 𝓘(𝕜, F)) I TotalSpace.proj v _ = _ at this
-  -- Why all this pain??
-  convert! this
-  ext x
-  simp
-  rfl
+  simpa
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma deriv_derivInv
     [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
-    {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet) :
-    (e.deriv I v) ∘L (e.derivInv I v) = .id 𝕜 _ := by
-  have D₁ := e.mdifferentiableAt_invFun (I := I) hv (e v).2
-  rw [e.mk_proj_snd' hv] at D₁
-  have D₂ : MDifferentiableAt _ _ e v := e.mdifferentiableAt' (I := I) hv v.2
-  have : e.invFun (e v) = v := by simp [e.mem_source.mpr hv]
-  rw [← this] at D₂
-  have comp := mfderiv_comp (e v) D₂ D₁
-  rw [(comp_invFun_eventuallyEq e hv).mfderiv_eq, mfderiv_id] at comp
-  symm
-  convert! comp <;> rw [this]
+    {v : TotalSpace F V} (hv : v ∈ e.source) :
+    (e.deriv I v) ∘L (e.derivInv I v) = .id 𝕜 ((TangentSpace% v.proj × F)) := by
+  unfold deriv derivInv
+  rw [ContinuousLinearMap.comp_assoc]
+  conv =>
+    enter [1, 2]
+    simp only [← ContinuousLinearMap.comp_assoc, e.mfderiv_invFunCast I hv]
+  simp
 
 @[simp]
 lemma deriv_derivInv_apply
     [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
-    {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet)
+    {v : TotalSpace F V} (hv : v ∈ e.source)
     (u : TangentSpace% v.proj × F) :
     e.deriv I v (e.derivInv I v u) = u :=
   show ((e.deriv I v) ∘L (e.derivInv I v)) u = u by simp [hv]
 
 lemma bijective_deriv
     [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
-    {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet) :
+    {v : TotalSpace F V} (hv : v ∈ e.source) :
     Function.Bijective (e.deriv I v) := by
    refine Function.bijective_iff_has_inverse.mpr ?_
    use e.derivInv I v
@@ -243,6 +281,7 @@ lemma mfderiv_total_funToSec
     mfderiv% (T% (e.funToSec s)) x =
       e.derivInv I (e.funToSec s x) ∘L .prod (.id 𝕜 <| TangentSpace% x) (mfderiv% s x) := by
   -- TODO build a world where this proof is not pure pain.
+  stop
   rw [(e.totalSpace_mk_funToSec hx s).mfderiv_eq,
       mfderiv_comp x (e.mdifferentiableAt_invFun (I := I) hx (s x))]
   · congr 2
@@ -263,10 +302,11 @@ noncomputable def _root_.Bundle.vert (v : TotalSpace F V) :
 
 lemma comap_vert
     [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
-    {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet) :
+    {v : TotalSpace F V} (hv : v ∈ e.source) :
     Bundle.vert v = Submodule.comap (e.deriv I v).toLinearMap
       (Submodule.prod ⊥ ⊤) := by
   ext x
+  stop
   have : Prod.fst ∘ e =ᶠ[𝓝 v] TotalSpace.proj := e.fst_comp_eventuallyEq hv
   unfold vert
   stop
