@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Convex.Extreme
 public import Mathlib.Geometry.Convex.Cone.Pointed
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Faces of pointed cones
 
@@ -41,7 +44,7 @@ variable {R M N : Type*}
 section Semiring
 
 variable [Semiring R] [PartialOrder R] [IsOrderedRing R]
-variable [AddCommGroup M] [Module R M]
+variable [AddCommMonoid M] [Module R M]
 
 /-- A sub-cone `F` of a pointed cone `C` is a face of `C` if any two points of `C` with a strictly
 positive combination in `F` are also in `F`. -/
@@ -123,7 +126,7 @@ theorem add_mem_iff_mem (hF : F.IsFaceOf C) {x y : M} (hx : x ∈ C) (hy : y ∈
 theorem mem_of_sum_mem {ι : Type*} [Fintype ι] {f : ι → M} (hF : F.IsFaceOf C)
     (hsC : ∀ i : ι, f i ∈ C) (hs : ∑ i : ι, f i ∈ F) (i : ι) : f i ∈ F := by classical
   apply hF.mem_of_add_mem_left (hsC i) (sum_mem (fun j (_ : j ∈ Finset.univ.erase i) ↦ hsC j))
-  simp [hs]
+  simp [hs, Finset.erase]
 
 theorem sum_mem_iff_mem {ι : Type*} [Fintype ι] {f : ι → M} (hF : F.IsFaceOf C)
     (hsC : ∀ i, f i ∈ C) : ∑ i, f i ∈ F ↔ ∀ i, f i ∈ F :=

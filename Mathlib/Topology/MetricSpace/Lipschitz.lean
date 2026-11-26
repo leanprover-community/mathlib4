@@ -43,7 +43,7 @@ variable {α : Type u} {β : Type v} {γ : Type w} {ι : Type x}
 
 theorem lipschitzWith_iff_dist_le_mul [PseudoMetricSpace α] [PseudoMetricSpace β] {K : ℝ≥0}
     {f : α → β} : LipschitzWith K f ↔ ∀ x y, dist (f x) (f y) ≤ K * dist x y := by
-  simp only [LipschitzWith, edist_nndist, dist_nndist]
+  simp only [LipschitzWith, eDist_nnDist, dist_nnDist]
   norm_cast
 
 alias ⟨LipschitzWith.dist_le_mul, LipschitzWith.of_dist_le_mul⟩ := lipschitzWith_iff_dist_le_mul
@@ -51,7 +51,7 @@ alias ⟨LipschitzWith.dist_le_mul, LipschitzWith.of_dist_le_mul⟩ := lipschitz
 theorem lipschitzOnWith_iff_dist_le_mul [PseudoMetricSpace α] [PseudoMetricSpace β] {K : ℝ≥0}
     {s : Set α} {f : α → β} :
     LipschitzOnWith K f s ↔ ∀ x ∈ s, ∀ y ∈ s, dist (f x) (f y) ≤ K * dist x y := by
-  simp only [LipschitzOnWith, edist_nndist, dist_nndist]
+  simp only [LipschitzOnWith, eDist_nnDist, dist_nnDist]
   norm_cast
 
 alias ⟨LipschitzOnWith.dist_le_mul, LipschitzOnWith.of_dist_le_mul⟩ :=
@@ -95,8 +95,10 @@ protected theorem iff_le_add_mul {f : α → ℝ} {K : ℝ≥0} :
     LipschitzWith K f ↔ ∀ x y, f x ≤ f y + K * dist x y :=
   ⟨LipschitzWith.le_add_mul, LipschitzWith.of_le_add_mul K⟩
 
-theorem nndist_le (hf : LipschitzWith K f) (x y : α) : nndist (f x) (f y) ≤ K * nndist x y :=
+theorem nnDist_le (hf : LipschitzWith K f) (x y : α) : nnDist (f x) (f y) ≤ K * nnDist x y :=
   hf.dist_le_mul x y
+
+@[deprecated (since := "2026-11-07")] alias nndist_le := nnDist_le
 
 theorem dist_le_mul_of_le (hf : LipschitzWith K f) (hr : dist x y ≤ r) : dist (f x) (f y) ≤ K * r :=
   (hf.dist_le_mul x y).trans <| by gcongr
@@ -322,10 +324,10 @@ theorem LipschitzOnWith.extend_real {f : α → ℝ} {s : Set α} {K : ℝ≥0} 
     dsimp
     rw [sub_le_iff_le_add, add_assoc, ← mul_add, add_comm (dist y t)]
     calc
-      f z ≤ f t + K * dist z t := hf.le_add_mul hz t.2
+      f z ≤ f t + K * dist z t := hf.le_add_mul hz t.property
       _ ≤ f t + K * (dist y z + dist y t) := by gcongr; apply dist_triangle_left
   have E : EqOn f g s := fun x hx => by
-    refine le_antisymm (le_ciInf fun y => hf.le_add_mul hx y.2) ?_
+    refine le_antisymm (le_ciInf fun y => hf.le_add_mul hx y.property) ?_
     simpa only [add_zero, Subtype.coe_mk, mul_zero, dist_self] using ciInf_le (B x) ⟨x, hx⟩
   refine ⟨g, LipschitzWith.of_le_add_mul K fun x y => ?_, E⟩
   rw [← sub_le_iff_le_add]
@@ -350,6 +352,6 @@ theorem LipschitzOnWith.extend_pi [Fintype ι] {f : α → ι → ℝ} {s : Set 
     exact this.extend_real
   choose g hg using this
   refine ⟨fun x i => g i x, LipschitzWith.of_dist_le_mul fun x y => ?_, fun x hx ↦ ?_⟩
-  · exact (dist_pi_le_iff (mul_nonneg K.2 dist_nonneg)).2 fun i => (hg i).1.dist_le_mul x y
+  · exact (dist_pi_le_iff (mul_nonneg K.property dist_nonneg)).2 fun i => (hg i).1.dist_le_mul x y
   · ext1 i
     exact (hg i).2 hx

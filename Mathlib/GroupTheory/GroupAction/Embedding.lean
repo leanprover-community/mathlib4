@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Algebra.Group.Action.Basic
 public import Mathlib.Algebra.Group.Action.FunLike
-public import Mathlib.Algebra.Group.Action.Pi
 public import Mathlib.Algebra.Group.Opposite
+
+import Mathlib.Algebra.Group.Action.Pi
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

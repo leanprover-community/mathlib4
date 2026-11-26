@@ -10,11 +10,14 @@ public meta import Lean.Elab.Command
 public meta import Lean.HeadIndex
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The `#find` command and tactic.
 
 The `#find` command finds definitions & lemmas using pattern matching on the type. For instance:
-```lean
+```lean +error
 #find _ + _ = _ + _
 #find ?n + _ = _ + ?n
 #find (_ : Nat) + _ = _ + _
@@ -22,6 +25,13 @@ The `#find` command finds definitions & lemmas using pattern matching on the typ
 ```
 Inside tactic proofs, there is a `#find` tactic with the same syntax,
 or the `find` tactic which looks for lemmas which are `apply`able against the current goal.
+
+## Implementation notes
+
+The code blocks in this file use either the `lean +error` or `code lean` roles, since it is not yet
+possible to forward-reference anything but declaration names. In other words, the docstring for
+commands or tactics cannot reference the command or tactic being declared. (And in fact the `#find`
+docstring would cause a panic in Lean if it tries to run the command.)
 -/
 
 public meta section
@@ -97,7 +107,7 @@ match any conjunction.
 which are `apply`able against the current goal.
 
 Examples:
-```lean
+```lean +error
 #find _ + _ = _ + _
 #find ?n + _ = _ + ?n
 #find (_ : Nat) + _ = _ + _
@@ -130,7 +140,7 @@ In other words, `find` lists definitions and theorems that are `apply`able again
 For a command or tactic that takes the type to search for as an argument, see `#find`.
 
 Example:
-```lean
+```lean +error
 example : True := by
   find
   -- True.intro: True
@@ -151,7 +161,7 @@ There is also the `find` tactic which looks for lemmas which are `apply`able aga
 goal.
 
 Examples:
-```lean
+```code lean
 #find _ + _ = _ + _
 #find ?n + _ = _ + ?n
 #find (_ : Nat) + _ = _ + _

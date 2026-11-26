@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Comma.Arrow
 public import Mathlib.Order.CompleteBooleanAlgebra
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of morphisms
 
@@ -300,9 +303,9 @@ lemma toSet_max (W₁ W₂ : MorphismProperty C) :
 
 /-- The family of morphisms indexed by `P.toSet` which corresponds
 to `P : MorphismProperty C`, see `MorphismProperty.ofHoms_homFamily`. -/
-def homFamily (f : P.toSet) : f.1.left ⟶ f.1.right := f.1.hom
+def homFamily (f : P.toSet) : f.val.left ⟶ f.val.right := f.val.hom
 
-lemma homFamily_apply (f : P.toSet) : P.homFamily f = f.1.hom := rfl
+lemma homFamily_apply (f : P.toSet) : P.homFamily f = f.val.hom := rfl
 
 @[simp]
 lemma homFamily_arrow_mk {X Y : C} (f : X ⟶ Y) (hf : P f) :

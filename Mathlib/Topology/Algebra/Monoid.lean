@@ -6,9 +6,10 @@ Authors: Johannes Hölzl, Mario Carneiro, Mitchell Lee
 module
 
 public import Mathlib.Algebra.BigOperators.Finprod
-public import Mathlib.Topology.Algebra.Monoid.Defs
 public import Mathlib.Topology.Algebra.MulAction
 public import Mathlib.Topology.ContinuousMap.Basic
+
+import Mathlib.Topology.Algebra.Monoid.Defs
 
 /-!
 # Theory of topological monoids
@@ -1003,7 +1004,7 @@ theorem continuous_finprod_cond {f : ι → X → M} {p : ι → Prop} (hc : ∀
     (hf : LocallyFinite fun i => mulSupport (f i)) :
     Continuous fun x => ∏ᶠ (i) (_ : p i), f i x := by
   simp only [← finprod_subtype_eq_finprod_cond]
-  exact continuous_finprod (fun i => hc i i.2) (hf.comp_injective Subtype.coe_injective)
+  exact continuous_finprod (fun i => hc i i.property) (hf.comp_injective Subtype.coe_injective)
 
 end
 

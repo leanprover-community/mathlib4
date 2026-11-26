@@ -15,7 +15,8 @@ public import Mathlib.RingTheory.LocalProperties.Reduced
 
 We provide some basic properties of schemes
 
-## Main definition
+## Main definitions
+
 * `AlgebraicGeometry.IsIntegral`: A scheme is integral if it is nontrivial and all nontrivial
   components of the structure sheaf are integral domains.
 * `AlgebraicGeometry.IsReduced`: A scheme is reduced if all the components of the structure sheaf
@@ -149,7 +150,7 @@ theorem IsReduced.iff_of_openCover (𝒰 : X.OpenCover) : IsReduced X ↔ ∀ i,
 theorem reduce_to_affine_global (P : ∀ {X : Scheme} (_ : X.Opens), Prop)
     {X : Scheme} (U : X.Opens)
     (h₁ : ∀ (X : Scheme) (U : X.Opens),
-      (∀ x : U, ∃ (V : _) (_ : x.1 ∈ V) (_ : V ⟶ U), P V) → P U)
+      (∀ x : U, ∃ (V : _) (_ : x.val ∈ V) (_ : V ⟶ U), P V) → P U)
     (h₂ : ∀ (X Y) (f : X ⟶ Y) [IsOpenImmersion f],
       ∃ (U : X.Opens) (V : Y.Opens), U = ⊤ ∧ V = f.opensRange ∧ (P U → P V))
     (h₃ : ∀ R : CommRingCat, P (X := Spec R) ⊤) : P U := by

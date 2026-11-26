@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Pushforward
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf
 public import Mathlib.CategoryTheory.Sites.Over
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pushforward of sheaves of modules
 

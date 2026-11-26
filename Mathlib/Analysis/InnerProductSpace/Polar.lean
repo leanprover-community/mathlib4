@@ -15,10 +15,10 @@ This file defines the polar decomposition for a continuous linear map `T : E →
 between (potentially distinct) Hilbert spaces `E` and `F`.
 
 ## Main definitions
- - `ContinuousLinearMap.polarₚₗᵢ` the linear isometry `U : T.abs.range → T.kerᗮ` such that
-   `T = U ∘ T.abs`.
+ - `ContinuousLinearMap.polarₗᵢ` the linear isometry `U : T.abs.range.topologicalClosure →ₗᵢ[ℂ] F`
+    such that `T = U ∘ T.abs`.
  - `ContinuousLinearMap.polar` the partial linear isometry `U : E →L[ℂ] F` for a continuous
-   linear map `T : E →L[ℂ] F` gotten by extending the map `ContinuousLinearMap.polarₚₗᵢ` by zero.
+   linear map `T : E →L[ℂ] F` gotten by extending the map `ContinuousLinearMap.polarₗᵢ` by zero.
 
 -/
 
@@ -35,89 +35,73 @@ variable {E F : Type*}
 
 section Polar
 
-/-- The polar `U` is a linear isometry from the range `T.abs.range` of `T.abs` to the
-orthogonal of the kernel `T.kerᗮ` of the continuous linear map `T : E →L[ℂ] F` such that
-`T = U ∘ T.abs`. -/
-def polarₚₗᵢ (T : E →L[ℂ] F) : T.abs.range.topologicalClosure →ₗᵢ[ℂ] F :=
-  LinearMap.extendOfIsometry
-    ((Submodule.liftQ _ T (le_of_eq_of_le T.ker_abs fun ⦃x⦄ a ↦ a))
-      ∘ₗ (T.abs.quotKerEquivRange).symm.toLinearMap)
+private def polarₗᵢAux (T : E →L[ℂ] F) : T.abs.range →ₗ[ℂ] F :=
+  Submodule.liftQ _ T (le_of_eq_of_le T.ker_abs fun _ a ↦ a)
+    ∘ₗ T.abs.quotKerEquivRange.symm.toLinearMap
+
+@[simp]
+private theorem polarₗᵢAux_apply (T : E →L[ℂ] F) (x : E) (h : T.abs x ∈ T.abs.range) :
+    polarₗᵢAux T ⟨T.abs x, h⟩ = T x :=
+  congrArg _ (T.abs.quotKerEquivRange_symm_apply_image x h)
+
+private theorem denseRange_inclusion (T : E →L[ℂ] F) :
+    DenseRange (Submodule.inclusion T.abs.range.le_topologicalClosure) :=
+  (denseRange_inclusion_iff T.abs.range.le_topologicalClosure).mpr
+    (Submodule.topologicalClosure_coe _).subset
+
+/-- The polar `U` is a linear isometry from the range `T.abs.range` of `T.abs` to the orthogonal of
+the kernel `T.kerᗮ` of the continuous linear map `T : E →L[ℂ] F` such that `T = U ∘ T.abs`. -/
+def polarₗᵢ (T : E →L[ℂ] F) : T.abs.range.topologicalClosure →ₗᵢ[ℂ] F :=
+  T.polarₗᵢAux.extendOfIsometry
     (e := Submodule.inclusion T.abs.range.le_topologicalClosure)
-    (by
-      erw [denseRange_inclusion_iff (by
-        simpa [← SetLike.coe_subset_coe] using T.abs.range.le_topologicalClosure)]
-      simp)
+    T.denseRange_inclusion
     (by
       rintro ⟨_, x, rfl⟩
-      simp only [LinearMap.comp_apply, LinearEquiv.coe_coe]
-      erw [T.abs.quotKerEquivRange_symm_apply_image x]
       simp [norm_abs_apply])
 
-theorem polarₚₗᵢ_apply (T : E →L[ℂ] F) (x : E) :
-    T.polarₚₗᵢ ⟨T.abs x, T.abs.range.le_topologicalClosure ⟨x, rfl⟩⟩ = T x := by
-  change T.polarₚₗᵢ (Submodule.inclusion T.abs.range.le_topologicalClosure ⟨T.abs x, ⟨x, rfl⟩⟩) = _
-  simp only [polarₚₗᵢ]
-  erw [LinearMap.extendOfIsometry_eq, LinearMap.comp_apply,
-    T.abs.quotKerEquivRange_symm_apply_image x]
-  simp
+theorem polarₗᵢ_apply (T : E →L[ℂ] F) (x : E) :
+    T.polarₗᵢ ⟨T.abs x, T.abs.range.le_topologicalClosure ⟨x, rfl⟩⟩ = T x := by
+  rw [← Submodule.inclusion_apply T.abs.range.le_topologicalClosure
+    ⟨T.abs x, LinearMap.mem_range_self _ x⟩]
+  simp [polarₗᵢ]
 
-theorem range_polarₚₗᵢ (T : E →L[ℂ] F) :
-    T.polarₚₗᵢ.toContinuousLinearMap.range = T.range.topologicalClosure := by
+theorem range_polarₗᵢ (T : E →L[ℂ] F) :
+    T.polarₗᵢ.range = T.range.topologicalClosure := by
   apply le_antisymm
   · rintro _ ⟨m, rfl⟩
     rw [← SetLike.mem_coe, Submodule.topologicalClosure_coe]
-    have hd : DenseRange (Submodule.inclusion T.abs.range.le_topologicalClosure) := by
-      erw [denseRange_inclusion_iff (by
-        simpa [← SetLike.coe_subset_coe] using T.abs.range.le_topologicalClosure)]
-      simp
-    refine hd.induction_on m
-      (isClosed_closure.preimage T.polarₚₗᵢ.toContinuousLinearMap.continuous) ?_
+    refine T.denseRange_inclusion.induction_on m
+      (isClosed_closure.preimage T.polarₗᵢ.toContinuousLinearMap.continuous) ?_
     rintro ⟨_, x, rfl⟩
-    exact subset_closure ⟨x, (T.polarₚₗᵢ_apply x).symm ▸ rfl⟩
-  · exact Submodule.topologicalClosure_minimal _
-      (by
-        rintro _ ⟨x, rfl⟩
-        exact ⟨⟨T.abs x, T.abs.range.le_topologicalClosure ⟨x, rfl⟩⟩, T.polarₚₗᵢ_apply x⟩)
-      T.polarₚₗᵢ.isometry.isClosedEmbedding.isClosed_range
+    exact subset_closure ⟨x, T.polarₗᵢ_apply x ▸ rfl⟩
+  · refine Submodule.topologicalClosure_minimal _ ?_
+      T.polarₗᵢ.isometry.isClosedEmbedding.isClosed_range
+    rintro _ ⟨x, rfl⟩
+    exact ⟨⟨T.abs x, T.abs.range.le_topologicalClosure ⟨x, rfl⟩⟩, T.polarₗᵢ_apply x⟩
 
-theorem polarₚₗᵢ_adjoint_comp (T : E →L[ℂ] F) :
-    T.polarₚₗᵢ.toContinuousLinearMap.adjoint ∘L T.polarₚₗᵢ.toContinuousLinearMap
-     = ContinuousLinearMap.id ℂ _ := by
-  refine ContinuousLinearMap.ext fun x => ext_inner_right ℂ fun y => ?_
-  erw [comp_apply, ContinuousLinearMap.adjoint_inner_left]
-  simp [LinearIsometry.inner_map_map T.polarₚₗᵢ x y]
-
-theorem polarₚₗᵢ_comp_adjoint (T : E →L[ℂ] F) :
-    T.polarₚₗᵢ.toContinuousLinearMap ∘L T.polarₚₗᵢ.toContinuousLinearMap.adjoint
-     = T.range.topologicalClosure.starProjection := by
-  have : (T.polarₚₗᵢ.toContinuousLinearMap.range).HasOrthogonalProjection := by
-    rw [range_polarₚₗᵢ]; infer_instance
-  refine ContinuousLinearMap.ext fun x => ?_
-  conv_lhs => erw [← Submodule.starProjection_add_starProjection_orthogonal
-    (K := T.range.topologicalClosure) x]
-  have h0 : T.polarₚₗᵢ.toContinuousLinearMap.adjoint
-      ((T.polarₚₗᵢ.toContinuousLinearMap.range : Submodule ℂ F)ᗮ.starProjection x) = 0 :=
-    ext_inner_right ℂ fun m => by
-      rw [ContinuousLinearMap.adjoint_inner_left, inner_zero_left]
-      simp only [LinearIsometry.toLinearMap_toContinuousLinearMap,
-        LinearIsometry.coe_toContinuousLinearMap]
-      exact Submodule.inner_left_of_mem_orthogonal (K := T.polarₚₗᵢ.range) ⟨m, rfl⟩
-        (Submodule.starProjection_apply_mem (T.polarₚₗᵢ.range)ᗮ x)
-  simp only [← T.range_polarₚₗᵢ, LinearIsometry.toLinearMap_toContinuousLinearMap, map_add,
-    comp_apply, LinearIsometry.coe_toContinuousLinearMap]
-  erw [h0, map_zero, add_zero]
-  obtain ⟨m, hm⟩ := Submodule.starProjection_apply_mem
-    (T.polarₚₗᵢ.toContinuousLinearMap.range : Submodule ℂ F) x
-  erw [← hm, LinearIsometry.toLinearMap_toContinuousLinearMap, LinearIsometry.coe_toLinearMap,
-    LinearIsometry.map_eq_iff, ← comp_apply, T.polarₚₗᵢ_adjoint_comp]
+theorem polarₗᵢ_adjoint_comp (T : E →L[ℂ] F) :
+    T.polarₗᵢ.toContinuousLinearMap.adjoint ∘L T.polarₗᵢ.toContinuousLinearMap = .id ℂ _ := by
+  ext
+  refine ext_inner_right ℂ fun y ↦ ?_
   simp
+
+theorem polarₗᵢ_comp_adjoint (T : E →L[ℂ] F) :
+    T.polarₗᵢ.toContinuousLinearMap ∘L T.polarₗᵢ.toContinuousLinearMap.adjoint
+     = T.range.topologicalClosure.starProjection := by
+  ext
+  refine (Submodule.eq_starProjection_of_mem_of_inner_eq_zero ?_ fun _ hy ↦ ?_).symm
+  · simp_rw [← range_polarₗᵢ]
+    simp
+  · simp_rw [← range_polarₗᵢ] at hy
+    obtain ⟨_, rfl⟩ := hy
+    simp [inner_sub_left, adjoint_inner_left]
 
 /-- The polar `U : E →L[ℂ] F` is a partial linear isometry of the continuous linear map
 `T : E →L[ℂ] F` such  that `T = U ∘ T.abs`, linearly isometric from the range `T.abs.range` of
 `T.abs` to the orthogonal of the kernel `T.kerᗮ` of `T` and extended by zero from `T.abs.range`
 to `E`. -/
 def polar (T : E →L[ℂ] F) : E →L[ℂ] F :=
-  T.polarₚₗᵢ.toContinuousLinearMap ∘L T.abs.range.topologicalClosure.orthogonalProjectionOnto
+  T.polarₗᵢ.toContinuousLinearMap ∘L T.abs.range.topologicalClosure.orthogonalProjectionOnto
 
 theorem apply_eq_zero_tfae (T : E →L[ℂ] F) (x : E) :
     List.TFAE [T x = 0, T.polar x = 0, T.abs x = 0] := by
@@ -125,9 +109,8 @@ theorem apply_eq_zero_tfae (T : E →L[ℂ] F) (x : E) :
     rw [← norm_eq_zero (a := T x), ← norm_eq_zero (a := T.abs x), norm_abs_apply]
   have hT : T.polar x = 0 ↔ (∀ u ∈ T.abs.range, ⟪u, x⟫_ℂ = 0) := by
     rw [polar, ContinuousLinearMap.comp_apply, LinearIsometry.coe_toContinuousLinearMap,
-    map_eq_zero_iff _ T.polarₚₗᵢ.injective,
-    Submodule.orthogonalProjectionOnto_eq_zero_iff, Submodule.orthogonal_closure,
-    Submodule.mem_orthogonal]
+      map_eq_zero_iff _ T.polarₗᵢ.injective, Submodule.orthogonalProjectionOnto_eq_zero_iff,
+      Submodule.orthogonal_closure, Submodule.mem_orthogonal]
   tfae_have 2 → 3 := by
     rw [hT]
     intro h
@@ -141,15 +124,15 @@ theorem apply_eq_zero_tfae (T : E →L[ℂ] F) (x : E) :
     simp [← ContinuousLinearMap.adjoint_inner_right, h]
   tfae_finish
 
-theorem polar_eq_zero_iff (T : E →L[ℂ] F) (x : E) : T.polar x = 0 ↔ T x = 0 := by
-  exact ((T.apply_eq_zero_tfae x).out 2 1)
+theorem polar_eq_zero_iff (T : E →L[ℂ] F) (x : E) : T.polar x = 0 ↔ T x = 0 :=
+  (T.apply_eq_zero_tfae x).out 2 1
 
-theorem abs_eq_zero_iff (T : E →L[ℂ] F) (x : E) : T.abs x = 0 ↔ T x = 0 := by
-  exact ((T.apply_eq_zero_tfae x).out 3 1)
+theorem abs_eq_zero_iff (T : E →L[ℂ] F) (x : E) : T.abs x = 0 ↔ T x = 0 :=
+  (T.apply_eq_zero_tfae x).out 3 1
 
 theorem polar_eq_zero_iff_abs_eq_zero (T : E →L[ℂ] F) (x : E) :
-    T.polar x = 0 ↔ T.abs x = 0 := by
-  exact ((T.apply_eq_zero_tfae x).out 2 3)
+    T.polar x = 0 ↔ T.abs x = 0 :=
+  (T.apply_eq_zero_tfae x).out 2 3
 
 theorem ker_polar_eq (T : E →L[ℂ] F) : T.polar.ker = T.ker := by
   ext x
@@ -163,20 +146,20 @@ theorem polar_comp_polar_adjoint_eq_starProjection (T : E →L[ℂ] F) :
   unfold polar
   simp_rw +singlePass [adjoint_comp, comp_assoc, Submodule.adjoint_orthogonalProjectionOnto]
   rw [← comp_assoc T.abs.range.topologicalClosure.orthogonalProjectionOnto, h]
-  simp [polarₚₗᵢ_comp_adjoint]
+  simp [polarₗᵢ_comp_adjoint]
 
 theorem polar_adjoint_comp_polar_eq_starProjection (T : E →L[ℂ] F) :
     T.polar.adjoint ∘L T.polar = T.abs.range.topologicalClosure.starProjection := by
   unfold polar
   simp_rw +singlePass [adjoint_comp, comp_assoc,
-    ← comp_assoc T.polarₚₗᵢ.toContinuousLinearMap.adjoint]
+    ← comp_assoc T.polarₗᵢ.toContinuousLinearMap.adjoint]
   simp [Submodule.adjoint_orthogonalProjectionOnto, one_def, id_comp]
   rfl
 
 theorem polar_comp_abs (T : E →L[ℂ] F) : T.polar ∘L T.abs = T := by
   ext x
   simp only [polar, ContinuousLinearMap.comp_apply]
-  nth_rw 4 [← polarₚₗᵢ_apply]
+  nth_rw 4 [← polarₗᵢ_apply]
   simp only [LinearIsometry.coe_toContinuousLinearMap, LinearIsometry.map_eq_iff]
   exact Submodule.orthogonalProjectionOnto_mem_subspace_eq_self
     ⟨T.abs x, T.abs.range.le_topologicalClosure (by simp)⟩

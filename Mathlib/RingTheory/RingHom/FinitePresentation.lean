@@ -12,6 +12,9 @@ import Mathlib.RingTheory.Finiteness.FinitePresentationLocal
 import Mathlib.RingTheory.Localization.Away.AdjoinRoot
 import Mathlib.RingTheory.Localization.Finiteness
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The meta properties of finitely-presented ring homomorphisms.
 

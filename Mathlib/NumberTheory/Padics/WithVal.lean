@@ -11,6 +11,9 @@ public import Mathlib.NumberTheory.Padics.PadicIntegers
 public import Mathlib.Topology.Algebra.Valued.WithVal
 public import Mathlib.Topology.GDelta.MetrizableSpace
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equivalence between `ℚ_[p]` and `(Rat.padicValuation p).Completion`
 

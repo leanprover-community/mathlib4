@@ -8,12 +8,16 @@ module
 public import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
 public import Mathlib.NumberTheory.NumberField.Discriminant.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Discriminant of cyclotomic fields
 
 We compute the discriminant of a `p ^ n`-th cyclotomic extension.
 
 ## Main results
+
 * `IsCyclotomicExtension.discr_odd_prime` : if `p` is an odd prime such that
   `IsCyclotomicExtension {p} K L` and `Irreducible (cyclotomic p K)`, then
   `discr K (hζ.powerBasis K).basis = (-1) ^ ((p - 1) / 2) * p ^ (p - 2)` for any
@@ -168,7 +172,7 @@ theorem discr_prime_pow [hcycl : IsCyclotomicExtension {p ^ k} K L] [hp : Fact p
         simp only [map_neg, map_one, Function.comp_apply, Fin.val_eq_zero, _root_.pow_zero]
         suffices (e.symm i : ℕ) = 0 by simp [this]
         rw [← Nat.lt_one_iff]
-        convert (e.symm i).2
+        convert (e.symm i).isLt
         rw [this]
       · simp only [discr, traceMatrix_apply, Matrix.det_unique, Fin.default_eq_zero, Fin.val_zero,
           _root_.pow_zero, traceForm_apply, mul_one]

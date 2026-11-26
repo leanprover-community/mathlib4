@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.Adjunctions
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The free presheaf of modules on a presheaf of sets
 

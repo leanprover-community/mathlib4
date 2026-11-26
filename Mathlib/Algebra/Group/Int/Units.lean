@@ -5,10 +5,11 @@ Authors: Jeremy Avigad
 -/
 module
 
-public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.Int.Defs
 public import Mathlib.Algebra.Group.Nat.Units
 public import Mathlib.Tactic.Tauto
+
+import Mathlib.Algebra.Group.Basic
 
 /-!
 # Units in the integers

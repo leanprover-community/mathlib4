@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Idempotents.FunctorExtension
 
 import Mathlib.CategoryTheory.MorphismProperty.Retract
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Left resolutions which preserve the zero object
 

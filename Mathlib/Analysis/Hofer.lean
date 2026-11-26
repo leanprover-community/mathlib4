@@ -15,7 +15,7 @@ application to the bubbling-off analysis for holomorphic curves in symplectic to
 We are *very* far away from having these applications, but the proof here is a nice
 example of a proof needing to construct a sequence by induction in the middle of the proof.
 
-## References:
+## References
 
 * H. Hofer and C. Viterbo, *The Weinstein conjecture in the presence of holomorphic spheres*
 -/

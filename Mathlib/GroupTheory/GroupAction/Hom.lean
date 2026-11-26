@@ -599,7 +599,7 @@ structure DistribMulActionHom (A : Type*) [AddMonoid A] [DistribMulAction M A] (
     [AddMonoid B] [DistribMulAction N B] extends A →ₑ[φ] B, A →+ B
 
 /-- Equivariant monoid homomorphisms. -/
-@[to_additive (dont_translate := M N) DistribMulActionHom]
+@[to_additive (dont_translate := M N) DistribMulActionHom, to_additive_dont_translate]
 structure MulDistribMulActionHom extends A →ₑ[φ] B, A →* B
 
 /-- Reinterpret an equivariant additive monoid homomorphism as an additive monoid homomorphism. -/
@@ -780,30 +780,35 @@ theorem id_apply (x : A) : MulDistribMulActionHom.id M x = x := by
 
 variable {M C ψ χ}
 
-instance _root_.DistriMulActionHom.instZero {A : Type*} [AddMonoid A] [DistribMulAction M A]
+instance _root_.DistribMulActionHom.instZero {A : Type*} [AddMonoid A] [DistribMulAction M A]
     {B : Type*} [AddMonoid B] [DistribMulAction N B] : Zero (A →ₑ+[φ] B) :=
   ⟨{ (0 : A →+ B) with map_smul' := fun m _ => by simp }⟩
 
-@[to_additive (dont_translate := M)]
+@[to_additive (dont_translate := M) instOneId]
 instance : One (A →*[M] A) :=
   ⟨MulDistribMulActionHom.id M⟩
 
 @[simp]
-theorem _root_.DistriMulActionHom.coe_zero {A : Type*} [AddMonoid A] [DistribMulAction M A]
+theorem _root_.DistribMulActionHom.coe_zero {A : Type*} [AddMonoid A] [DistribMulAction M A]
     {B : Type*} [AddMonoid B] [DistribMulAction N B] : ⇑(0 : A →ₑ+[φ] B) = 0 :=
   rfl
 
-@[to_additive (attr := simp) (dont_translate := M)]
+@[to_additive (attr := simp) (dont_translate := M) coe_one]
 theorem coe_one : ⇑(1 : A →*[M] A) = id :=
   rfl
 
-theorem _root_.DistriMulActionHom.zero_apply {A : Type*} [AddMonoid A] [DistribMulAction M A]
+theorem _root_.DistribMulActionHom.zero_apply {A : Type*} [AddMonoid A] [DistribMulAction M A]
     {B : Type*} [AddMonoid B] [DistribMulAction N B] (a : A) : (0 : A →ₑ+[φ] B) a = 0 :=
   rfl
 
-@[to_additive (dont_translate := M)]
+@[to_additive (dont_translate := M) one_apply]
 theorem one_apply (a : A) : (1 : A →*[M] A) a = a :=
   rfl
+
+@[deprecated (since := "2026-11-21")]
+protected alias _root_.DistriMulActionHom.coe_zero := DistribMulActionHom.coe_zero
+@[deprecated (since := "2026-11-21")]
+protected alias _root_.DistriMulActionHom.zero_apply := DistribMulActionHom.zero_apply
 
 instance {A : Type*} [AddMonoid A] [DistribMulAction M A]
     {B : Type*} [AddMonoid B] [DistribMulAction N B] :

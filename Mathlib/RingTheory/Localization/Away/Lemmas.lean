@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.Localization.Away.Basic
 public import Mathlib.RingTheory.Localization.Submodule
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # More lemmas on localization away
 
@@ -28,7 +31,7 @@ noncomputable def mulNumerator (s : Set R)
     {Rₜ : s → Type*} [∀ t, CommRing (Rₜ t)] [∀ t, Algebra R (Rₜ t)]
     [∀ t, IsLocalization.Away t.val (Rₜ t)]
     (p : (t : s) → Set (Rₜ t)) (x : (t : s) × p t) : R :=
-  x.1 * (IsLocalization.Away.sec x.1.1 x.2.1).1
+  x.1 * (IsLocalization.Away.sec x.1.val x.2.val).1
 
 lemma span_range_mulNumerator_eq_top {s : Set R}
     (hsone : Ideal.span s = ⊤) {Rₜ : s → Type*} [∀ t, CommRing (Rₜ t)] [∀ t, Algebra R (Rₜ t)]

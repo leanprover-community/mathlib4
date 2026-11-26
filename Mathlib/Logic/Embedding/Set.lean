@@ -47,7 +47,7 @@ def optionElim {α β} (f : α ↪ β) (x : β) (h : x ∉ Set.range f) : Option
 @[simps]
 def optionEmbeddingEquiv (α β) : (Option α ↪ β) ≃ Σ f : α ↪ β, ↥(Set.range f)ᶜ where
   toFun f := ⟨Embedding.some.trans f, f none, fun ⟨x, hx⟩ ↦ Option.some_ne_none x <| f.injective hx⟩
-  invFun f := f.1.optionElim f.2 f.2.2
+  invFun f := f.1.optionElim f.2 f.2.property
   left_inv f := ext <| by rintro (_ | _) <;> simp
   right_inv := fun ⟨f, y, hy⟩ ↦ by ext <;> simp
 
@@ -73,7 +73,7 @@ namespace Set
 /-- The injection map is an embedding between subsets. -/
 @[simps apply_coe]
 def embeddingOfSubset {α} (s t : Set α) (h : s ⊆ t) : s ↪ t :=
-  ⟨fun x ↦ ⟨x.1, h x.2⟩, fun ⟨x, hx⟩ ⟨y, hy⟩ h ↦ by
+  ⟨fun x ↦ ⟨x.val, h x.property⟩, fun ⟨x, hx⟩ ⟨y, hy⟩ h ↦ by
     congr
     injection h⟩
 
@@ -154,7 +154,7 @@ open scoped Function -- required for scoped `on` notation
 the natural injection from the sigma-type `(i : ι) × ↑(s i)` to `α`. -/
 @[simps] def Function.Embedding.sigmaSet {s : ι → Set α} (h : Pairwise (Disjoint on s)) :
     (i : ι) × s i ↪ α where
-  toFun x := x.2.1
+  toFun x := x.2.val
   inj' := by
     rintro ⟨i, x, hx⟩ ⟨j, -, hx'⟩ rfl
     obtain rfl : i = j := h.eq (not_disjoint_iff.2 ⟨_, hx, hx'⟩)
@@ -162,7 +162,7 @@ the natural injection from the sigma-type `(i : ι) × ↑(s i)` to `α`. -/
 
 set_option warning.simp.otherHead false in
 @[norm_cast] lemma Function.Embedding.coe_sigmaSet {s : ι → Set α} (h) :
-    (Function.Embedding.sigmaSet h : ((i : ι) × s i) → α) = fun x ↦ x.2.1 := rfl
+    (Function.Embedding.sigmaSet h : ((i : ι) × s i) → α) = fun x ↦ x.2.val := rfl
 
 @[simp] theorem Function.Embedding.sigmaSet_preimage {s : ι → Set α}
     (h : Pairwise (Disjoint on s)) (i : ι) (r : Set α) :

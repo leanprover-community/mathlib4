@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.DerivedCategory.Basic
 public import Mathlib.Algebra.Homology.HomotopyCategory.ShortExact
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The distinguished triangle attached to a short exact sequence of cochain complexes
 

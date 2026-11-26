@@ -7,13 +7,16 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integer powers of square matrices
 
 In this file, we define integer power of matrices, relying on
 the nonsingular inverse definition for negative powers.
 
-## Implementation details
+## Implementation notes
 
 The main definition is a direct recursive call on the integer inductive type,
 as provided by the `DivInvMonoid.Pow` default implementation.

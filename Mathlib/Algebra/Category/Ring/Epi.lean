@@ -14,6 +14,7 @@ import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 # Epimorphisms in `CommRingCat`
 
 ## Main results
+
 - `RingHom.surjective_iff_epi_and_finite`: surjective <=> epi + finite
 -/
 
@@ -35,8 +36,8 @@ lemma CommRingCat.epi_iff_epi {R S : Type u} [CommRing R] [CommRing S] [Algebra 
     exact RingHom.congr_fun (congrArg Hom.hom this)
   · refine fun H ↦ ⟨fun {T} f g e ↦ ?_⟩
     let : Algebra R T := (ofHom (algebraMap R S) ≫ g).hom.toAlgebra
-    let f' : S →ₐ[R] T := ⟨f.hom, RingHom.congr_fun (congrArg Hom.hom e)⟩
-    let g' : S →ₐ[R] T := ⟨g.hom, fun _ ↦ rfl⟩
+    let f' : S →ₐ[R] T := { f.hom with commutes' x := congr(Hom.hom $e x) }
+    let g' : S →ₐ[R] T := { g.hom with commutes' _ := rfl }
     ext s
     simpa using! congr(Algebra.TensorProduct.lift f' g' (fun _ _ ↦ .all _ _) $(H s))
 
