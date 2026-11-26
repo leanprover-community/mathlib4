@@ -33,13 +33,13 @@ Euler-Mascheroni constant will follow in a subsequent PR.
 * `zeta_eq_tsum_one_div_nat_add_one_cpow` : for `1 < re s`, we have
   `ζ(s) = ∑' (n : ℕ), 1 / (n + 1) ^ s`.
 * `completedRiemannZeta₀_one_sub`, `completedRiemannZeta_one_sub`, and `riemannZeta_one_sub` :
-  functional equation relating values at `s` and `1 - s`
+  functional equation relating values at `s` and `1 - s`.
 
 For special-value formulae expressing `ζ (2 * k)` and `ζ (1 - 2 * k)` in terms of Bernoulli numbers
 see `Mathlib/NumberTheory/LSeries/HurwitzZetaValues.lean`. For computation of the constant term as
 `s → 1`, see `Mathlib/NumberTheory/Harmonic/ZetaAsymp.lean`.
 
-## Outline of proofs:
+## Outline of proofs
 
 These results are mostly special cases of more general results for even Hurwitz zeta functions
 proved in `Mathlib/NumberTheory/LSeries/HurwitzZetaEven.lean`.
