@@ -10,6 +10,9 @@ public import Mathlib.Combinatorics.SimpleGraph.Matching
 
 import Mathlib.Combinatorics.Hall.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Hall's Marriage Theorem
 
@@ -68,7 +71,7 @@ theorem exists_isMatching_of_forall_ncard_le (h₁ : G.IsBipartiteWith p₁ p₂
     rw [Set.ncard_coe_finset, Finset.card_image_of_injective _ Subtype.val_injective] at this
     simpa [← Set.ncard_coe_finset, neighborFinset_def]
   have (x : p₁) : f x ∉ p₁ := h₁.disjoint |>.notMem_of_mem_right <|
-    isBipartiteWith_neighborSet_subset h₁ x.2 <| Set.mem_toFinset.mp <| hf₂ x
+    isBipartiteWith_neighborSet_subset h₁ x.property <| Set.mem_toFinset.mp <| hf₂ x
   use hall_subgraph f this (fun v ↦ G.mem_neighborFinset _ _ |>.mp <| hf₂ v)
   refine ⟨by simp, fun v hv ↦ ?_⟩
   simp only [Set.mem_union, Set.mem_range, Subtype.exists] at hv ⊢
@@ -120,7 +123,7 @@ theorem exists_isPerfectMatching_of_forall_ncard_le
   classical
   obtain ⟨b, hb₁, hb₂⟩ := exists_bijective_of_forall_ncard_le h₁ h₂
   use hall_subgraph (fun v ↦ b v) (fun v ↦ h₁.disjoint.notMem_of_mem_right (b v).property) hb₂
-  have : p₁ ∪ Set.range (fun v ↦ (b v).1) = Set.univ := by
+  have : p₁ ∪ Set.range (fun v ↦ (b v).val) = Set.univ := by
     rw [Set.range_comp', hb₁.surjective.range_eq, Subtype.coe_image_univ]
     exact union_eq_univ_of_forall_ncard_le h₁ h₂
   refine ⟨fun v _ ↦ ?_, Subgraph.isSpanning_iff.mpr this⟩

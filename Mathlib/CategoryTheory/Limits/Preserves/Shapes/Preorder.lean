@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.HasIterationOfShape
 public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Preservation of well order continuous functors
 

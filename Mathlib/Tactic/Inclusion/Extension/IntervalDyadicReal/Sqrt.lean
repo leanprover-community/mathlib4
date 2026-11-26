@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Real.Sqrt
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Rational
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sqrt extension for tactic `dyadic_interval`
 
@@ -78,12 +81,11 @@ theorem le_upperSqrt {ub : Dyadic} {prec : ℕ} {x : ℝ} (hx : x ≤ Dyadic.toR
 
 @[inclusion_op interval_dyadic_real]
 theorem sqrt_mem {x : ℝ} {I : Interval Dyadic} (prec : ℕ) (hx : x ∈ I) : √x ∈ sqrt I prec := by
-  have hx₀ : Dyadic.toReal 0 ≤ √x := by simp [Dyadic.toReal]
   rw [mem_iff_mem_map, Interval.mem_map_iff] at hx
   rw [mem_iff_mem_map]
   rcases I with ⟨_ | lb, _ | ub⟩ <;> simp only [sqrt]
-  · simpa [Interval.map] using hx₀
-  · simpa [Interval.map] using ⟨hx₀, le_upperSqrt (hx.right ub rfl)⟩
+  · simp [Interval.map]
+  · simpa [Interval.map] using le_upperSqrt (hx.right ub rfl)
   · simpa [Interval.map] using lowerSqrt_le (hx.left lb rfl)
   · simpa [Interval.map] using ⟨lowerSqrt_le (hx.left lb rfl), le_upperSqrt (hx.right ub rfl)⟩
 

@@ -256,14 +256,14 @@ theorem MulAction.continuousSMul_compHom
 
 @[to_additive]
 instance Submonoid.continuousSMul {S : Submonoid M} : ContinuousSMul S X :=
-  IsInducing.id.continuousSMul continuous_subtype_val rfl
+  IsInducing.id.continuousSMul continuous_subtypeVal rfl
 
 /-- A `SubMulAction` inherits the continuity of the action of each element. -/
 @[to_additive /-- A `SubAddAction` inherits the continuity of the action of each element. -/]
 instance SubMulAction.continuousConstSMul {M X : Type*} [TopologicalSpace X] [Monoid M]
     [MulAction M X] [ContinuousConstSMul M X] (p : SubMulAction M X) :
     ContinuousConstSMul M p :=
-  ⟨fun c ↦ ((continuous_const_smul c).comp continuous_subtype_val).subtype_mk _⟩
+  ⟨fun c ↦ ((continuous_const_smul c).comp continuous_subtypeVal).subtype_mk _⟩
 
 /-- The units of `R` act continuously on the nonzero elements of `M` when they act continuously
 on `M`. -/

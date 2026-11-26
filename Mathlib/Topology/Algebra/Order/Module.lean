@@ -20,7 +20,7 @@ public section
 variable {R α : Type*} [Semiring R] [PartialOrder R] [SMul R α] [TopologicalSpace α]
 
 instance [ContinuousConstSMul R α] : ContinuousConstSMul (Nonneg R) α where
-  continuous_const_smul r := continuous_const_smul r.1
+  continuous_const_smul r := continuous_const_smul r.val
 
 instance [TopologicalSpace R] [ContinuousSMul R α] : ContinuousSMul (Nonneg R) α where
-  continuous_smul := continuous_smul (M := R).comp <| continuous_subtype_val.prodMap continuous_id
+  continuous_smul := continuous_smul (M := R).comp <| continuous_subtypeVal.prodMap continuous_id

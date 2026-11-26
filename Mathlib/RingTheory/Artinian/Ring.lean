@@ -29,7 +29,7 @@ itself, or simply Artinian if it is both left and right Artinian.
 * `IsArtinianRing.isNilpotent_jacobson`: the Jacobson radical of a commutative Artinian ring
   is a nilpotent ideal.
 
-## Implementation Details
+## Implementation notes
 
 The predicate `IsArtinianRing` is defined in `Mathlib/RingTheory/Artinian/Ring.lean` instead,
 so that we can apply basic API on Artinian modules to division rings without a heavy import.

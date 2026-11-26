@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Action.End
 public import Mathlib.GroupTheory.GroupAction.SubMulAction
 public import Mathlib.GroupTheory.QuotientGroup.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # MulAction and MulDistribMulAction of quotient group on fixed points
 
@@ -27,7 +30,7 @@ variable {H : Subgroup G} [H.Normal]
 instance : MulAction (G ⧸ H) (fixedPoints H A) :=
   ofEndHom <|
     QuotientGroup.lift H (toEndHom : G →* Function.End (fixedPoints H A))
-    (fun g hg ↦ by funext a; ext; exact a.2 ⟨g, hg⟩)
+    (fun g hg ↦ by funext a; ext; exact a.property ⟨g, hg⟩)
 
 @[simp]
 lemma coe_quotient_smul_fixedPoints (g : G) (a : fixedPoints H A) :
@@ -51,7 +54,7 @@ variable {H : Subgroup G} [H.Normal]
 
 instance : MulDistribMulAction (G ⧸ H) (FixedPoints.submonoid H A) where
   __ := (inferInstance : MulAction (G ⧸ H) (fixedPoints H A))
-  smul_mul g a b := g.induction_on fun g ↦ Subtype.ext (smul_mul g a.1 b.1)
+  smul_mul g a b := g.induction_on fun g ↦ Subtype.ext (smul_mul g a.val b.val)
   smul_one g := g.induction_on fun g ↦ Subtype.ext (smul_one g)
 
 open scoped FixedPoints

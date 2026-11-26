@@ -17,6 +17,7 @@ These notions agree on Hausdorff spaces. They are both referred to as compactly 
 the literature while the compact coherentification is often called the k-ification.
 
 ## Main definitions
+
 * `CompactlyCoherentSpace`: A compactly coherent space is a topological space in which a set `A` is
   open iff for every compact set `B`, the intersection `A ∩ B` is open in `B`.
 * `CompactCoherentification`: For a topological space `X` one can define
@@ -24,6 +25,7 @@ the literature while the compact coherentification is often called the k-ificati
   `A ∩ B` is open in `B`.
 
 ## Main results
+
 * `CompactlyCoherentSpace.of_weaklyLocallyCompactSpace`: every weakly locally compact space is a
   compactly coherent space.
 * `CompactlyCoherentSpace.of_sequentialSpace`: every sequential space is a compactly coherent space.
@@ -38,6 +40,7 @@ the literature while the compact coherentification is often called the k-ificati
   `CompactCoherentification X` to `CompactCoherentification Y`.
 
 ## References
+
 * [J. Munkres, *Topology*][Munkres2000]
 * <https://en.wikipedia.org/wiki/Compactly_generated_space>
 -/
@@ -102,7 +105,7 @@ lemma isOpen_iff_forall_compactSpace [CompactlyCoherentSpace X] (s : Set X) :
   refine ⟨fun hs _ _ _ _ hf ↦ hs.preimage hf, fun hs ↦ isOpen_iff |>.mpr ?_⟩
   intro K hK
   have : CompactSpace K := isCompact_iff_compactSpace.mp hK
-  exact hs K Subtype.val continuous_subtype_val
+  exact hs K Subtype.val continuous_subtypeVal
 
 /-- A topological space `X` is compactly coherent if a set `s` is open when `f ⁻¹' s?` is open for
 every continuous map `f : K → X`, where `K` is compact. -/
@@ -245,7 +248,7 @@ instance instCompactlyCoherentSpace : CompactlyCoherentSpace (𝐤X) := by
   refine .of_isOpen_forall_compactSpace fun U hU ↦ isOpen_iff.mpr fun K hK ↦ ?_
   rw [← preimage_comp]
   have : CompactSpace K := isCompact_iff_compactSpace.mp hK
-  exact hU K _ (continuous_rng_of_compactSpace.mpr continuous_subtype_val)
+  exact hU K _ (continuous_rng_of_compactSpace.mpr continuous_subtypeVal)
 
 /-- The compact coherentification preserves the topology of k-spaces. -/
 protected def homeo [CompactlyCoherentSpace X] : X ≃ₜ 𝐤X where

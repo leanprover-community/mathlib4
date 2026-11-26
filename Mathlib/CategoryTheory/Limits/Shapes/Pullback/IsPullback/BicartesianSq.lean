@@ -189,7 +189,6 @@ theorem zero_right (X : C) : IsPushout (0 : X ⟶ 0) (𝟙 X) (0 : (0 : C) ⟶ 0
             have c :=
               @PushoutCocone.coequalizer_ext _ _ _ _ _ _ _ s _ 0 (𝟙 _)
                 (by simp [eq_iff_true_of_subsingleton]) (by simpa using PushoutCocone.condition s)
-            dsimp at c
             simpa using c }⟩ }
 
 /-- The square with `0 : 0 ⟶ 0` on the bottom and `𝟙 X` on the top is a pushout square. -/

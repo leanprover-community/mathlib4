@@ -339,7 +339,6 @@ instance instCanLift : CanLift C(X, R) C(X, R)₀ (↑) (fun f ↦ f 0 = 0) wher
   prf f hf := ⟨⟨f, hf⟩, rfl⟩
 
 /-- The coercion `C(X, R)₀ → C(X, R)` bundled as a non-unital star algebra homomorphism. -/
-@[simps]
 def toContinuousMapHom [StarRing R] [ContinuousStar R] : C(X, R)₀ →⋆ₙₐ[R] C(X, R) where
   toFun f := f
   map_smul' _ _ := rfl
@@ -347,6 +346,11 @@ def toContinuousMapHom [StarRing R] [ContinuousStar R] : C(X, R)₀ →⋆ₙₐ
   map_add' _ _ := rfl
   map_mul' _ _ := rfl
   map_star' _ := rfl
+
+@[deprecated "This is proved by `simp`" (since := "2026-10-06")]
+lemma toContinuousMapHom_apply_apply [StarRing R] [ContinuousStar R] (f : C(X, R)₀) (a : X) :
+    (toContinuousMapHom f) a = f a :=
+  rfl
 
 @[simp] lemma coe_toContinuousMapHom [StarRing R] [ContinuousStar R] :
     ⇑(toContinuousMapHom (X := X) (R := R)) = (↑) :=
@@ -542,9 +546,11 @@ def toContinuousMapZero (g : C(X, R)) : C(X, R)₀ where
 lemma toContinuousMapZero_apply (g : C(X, R)) (x : X) : g.toContinuousMapZero x = g x - g 0 := rfl
 
 @[simp]
-lemma coe_toContinuousMapZero (g : C(X, R)) :
+lemma ofClass_toContinuousMapZero (g : C(X, R)) :
     (g.toContinuousMapZero : C(X, R)) = g - const X (g 0) :=
   rfl
+
+@[deprecated (since := "2026-11-24")] alias coe_toContinuousMapZero := ofClass_toContinuousMapZero
 
 @[simp]
 lemma toContinuousMapZero_const (r : R) : (const X r).toContinuousMapZero = 0 := by ext; simp

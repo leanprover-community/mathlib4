@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicGeometry.OrderOfVanishing.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Order of vanishing at a point whose local ring is a discrete valuation ring
 

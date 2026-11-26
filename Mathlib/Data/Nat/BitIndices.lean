@@ -12,6 +12,9 @@ import Mathlib.Algebra.BigOperators.Ring.List
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.Sub.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bit Indices
 

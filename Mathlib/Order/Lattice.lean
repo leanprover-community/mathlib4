@@ -650,7 +650,7 @@ See note [reducible non-instances]. -/]
 protected abbrev semilatticeSup [SemilatticeSup α] {P : α → Prop}
     (Psup : ∀ ⦃x y⦄, P x → P y → P (x ⊔ y)) :
     SemilatticeSup { x : α // P x } where
-  sup x y := ⟨x.1 ⊔ y.1, Psup x.2 y.2⟩
+  sup x y := ⟨x.val ⊔ y.val, Psup x.property y.property⟩
   le_sup_left _ _ := le_sup_left
   le_sup_right _ _ := le_sup_right
   sup_le _ _ _ h1 h2 := sup_le h1 h2

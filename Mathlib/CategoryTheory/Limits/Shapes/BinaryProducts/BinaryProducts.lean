@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Comma.Over.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.BinaryFan
 public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Binary (co)products
 
@@ -21,6 +24,7 @@ We include lemmas for simplifying equations involving projections and coprojecti
 braiding and associating isomorphisms, and the product comparison morphism.
 
 ## References
+
 * [Stacks: Products of pairs](https://stacks.math.columbia.edu/tag/001R)
 * [Stacks: coproducts of pairs](https://stacks.math.columbia.edu/tag/04AN)
 -/

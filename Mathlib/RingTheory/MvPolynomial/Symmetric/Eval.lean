@@ -12,6 +12,9 @@ import Mathlib.Data.Multiset.Fintype
 import Mathlib.RingTheory.Polynomial.ScaleRoots
 import Mathlib.RingTheory.Polynomial.Vieta
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Evaluating symmetric polynomials
 
@@ -96,7 +99,7 @@ theorem aevalMultiset_mem (B : Subalgebra R S)
     (h : ∀ i < Fintype.card σ, m.esymm (i + 1) ∈ B) :
     aevalMultiset σ R m p ∈ B := by
   rw [aevalMultiset_apply, MvPolynomial.aeval_def]
-  exact MvPolynomial.eval₂_mem (fun _ _ ↦ B.algebraMap_mem _) fun i ↦ h _ i.2
+  exact MvPolynomial.eval₂_mem (fun _ _ ↦ B.algebraMap_mem _) fun i ↦ h _ i.isLt
 
 end CommSemiring
 

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Nat.Notation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-! # Definition and notation for positive natural numbers -/
 
 @[expose] public section
@@ -27,4 +30,4 @@ instance coePNatNat : Coe ℕ+ ℕ :=
   ⟨PNat.val⟩
 
 instance : Repr ℕ+ :=
-  ⟨fun n n' => reprPrec n.1 n'⟩
+  ⟨fun n n' => reprPrec n.val n'⟩

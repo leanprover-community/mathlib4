@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Polynomial.Laurent
 public import Mathlib.RingTheory.Coalgebra.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The coalgebra structure on monoid algebras
 

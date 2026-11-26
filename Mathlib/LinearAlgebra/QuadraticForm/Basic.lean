@@ -7,7 +7,8 @@ module
 
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
-public import Mathlib.LinearAlgebra.SesquilinearForm.Orthogonal
+
+import Mathlib.LinearAlgebra.SesquilinearForm.Orthogonal
 
 /-!
 # Quadratic maps
@@ -458,7 +459,7 @@ instance : AddCommMonoid (QuadraticMap R M N) := fast_instance% FunLike.addCommM
 /-- Evaluation on a particular element of the module `M` is an additive map on quadratic maps. -/
 @[simps! apply]
 def evalAddMonoidHom (m : M) : QuadraticMap R M N →+ N :=
-  (Pi.evalAddMonoidHom _ m).comp (FunLike.coeAddMonoidHom _ _ _)
+  (Pi.evalAddMonoidHom _ m).comp (FunLike.coeAddMonoidHom _ _ fun _ ↦ N)
 
 @[deprecated (since := "2026-07-27")] alias coeFn_sum := FunLike.coe_sum
 

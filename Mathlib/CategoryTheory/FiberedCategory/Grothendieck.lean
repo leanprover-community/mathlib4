@@ -18,6 +18,7 @@ We also provide a `HasFibers` instance to `∫ᶜ F`, such that the fiber over `
 category `F(S)`.
 
 ## References
+
 [vistoli2004] "Notes on Grothendieck Topologies, Fibered Categories and Descent Theory" by
 Angelo Vistoli
 -/
@@ -126,7 +127,7 @@ set_option backward.defeqAttrib.useBackward true in
 noncomputable instance : (Fiber.inducedFunctor (comp_const F S)).EssSurj := by
   apply essSurj_of_surj
   intro Y
-  have hYS : (fiberInclusion.obj Y).base = S := by simpa using! Y.2
+  have hYS : (fiberInclusion.obj Y).base = S := by simpa using! Y.property
   use hYS ▸ (fiberInclusion.obj Y).fiber
   apply fiberInclusion_obj_inj
   ext <;> simp [hYS]

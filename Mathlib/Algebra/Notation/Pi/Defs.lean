@@ -6,8 +6,9 @@ Authors: Simon Hudon, Patrick Massot, Eric Wieser
 module
 
 public import Mathlib.Algebra.Notation.Defs
-public import Mathlib.Logic.Function.Defs
 public import Mathlib.Tactic.Push.Attr
+
+import Mathlib.Logic.Function.Defs
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

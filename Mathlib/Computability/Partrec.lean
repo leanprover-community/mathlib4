@@ -85,13 +85,13 @@ end Rfind
 /-- Find the smallest `n` satisfying `p n`, where all `p k` for `k < n` are defined as false.
 Returns a `Part`. -/
 def rfind (p : ℕ →. Bool) : Part ℕ :=
-  ⟨_, fun h => (rfindX p h).1⟩
+  ⟨_, fun h => (rfindX p h).val⟩
 
 theorem rfind_spec {p : ℕ →. Bool} {n : ℕ} (h : n ∈ rfind p) : true ∈ p n :=
-  h.snd ▸ (rfindX p h.fst).2.1
+  h.snd ▸ (rfindX p h.fst).property.1
 
 theorem rfind_min {p : ℕ →. Bool} {n : ℕ} (h : n ∈ rfind p) : ∀ {m : ℕ}, m < n → false ∈ p m :=
-  @(h.snd ▸ @((rfindX p h.fst).2.2))
+  @(h.snd ▸ @((rfindX p h.fst).property.2))
 
 @[simp]
 theorem rfind_dom {p : ℕ →. Bool} :
