@@ -36,7 +36,7 @@ instance AffineSubspace.nonempty_map {E : AffineSubspace k P₁} [Ene : Nonempty
   obtain ⟨x, hx⟩ := id Ene
   exact ⟨⟨φ x, AffineSubspace.mem_map.mpr ⟨x, hx, rfl⟩⟩⟩
 
-theorem AffineMap.restrict.linear_aux {φ : P₁ →ᵃ[k] P₂} {E : AffineSubspace k P₁}
+protected theorem AffineMap.restrict.linear_aux {φ : P₁ →ᵃ[k] P₂} {E : AffineSubspace k P₁}
     {F : AffineSubspace k P₂} (hEF : E.map φ ≤ F) : E.direction ≤ F.direction.comap φ.linear := by
   rw [← Submodule.map_le_iff_le_comap, ← AffineSubspace.map_direction]
   exact AffineSubspace.direction_le hEF
