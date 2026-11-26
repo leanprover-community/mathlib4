@@ -50,7 +50,7 @@ def divergentSet : Set α := {x | birkhoffSumSup f g x = ⊤}
 lemma divergentSet_invariant : f x ∈ divergentSet f g ↔ x ∈ divergentSet f g := by
   simp only [divergentSet, birkhoffSumSup, Set.mem_ofPred_eq]
   conv_rhs => rw [← sup_iSup_nat_succ]
-  simp only [birkhoffSum_apply_zero, EReal.coe_zero, birkhoffSum_apply_succ', EReal.coe_add,
+  simp only [birkhoffSum_zero_apply, EReal.coe_zero, birkhoffSum_succ_apply', EReal.coe_add,
     max_eq_top, EReal.zero_ne_top, false_or, ← EReal.add_iSup]
   rw [EReal.add_eq_top_iff_eq_top_right (by simp) (by simp)]
 
@@ -109,7 +109,7 @@ lemma measurable_divergentSet (hf : Measurable f) (hg : Measurable g) :
 
 lemma measurable_invariants_divergentSet (hf : Measurable f) (hg : Measurable g) :
     MeasurableSet[invariants f] (divergentSet f g) :=
-  ⟨measurable_divergentSet hf hg, funext fun _ ↦ propext divergentSet_invariant⟩
+  ⟨measurable_divergentSet hf hg, Set.ext fun _ ↦ divergentSet_invariant⟩
 
 @[fun_prop]
 lemma integrable_birkhoffMaxDiff (hf : MeasurePreserving f μ μ) (hg : Integrable g μ) :
