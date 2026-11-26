@@ -228,19 +228,15 @@ theorem tendstoInDistribution_inv_sqrt_smul_sum_sub
 /-- **Multivariate Central Limit Theorem:** Given a sequence of random variables
 `X : ℕ → Ω → EuclideanSpace ℝ ι` that are independent, identically distributed, centered,
 square-integrable and with covariance matrix `S`, and a random variable
-`Y : Ω' → EuclideanSpace ℝ ι` following `multivariateGaussian P[X 0] S`, the sequence
+`Y : Ω' → EuclideanSpace ℝ ι` following `multivariateGaussian 0 S`, the sequence
 `n ↦ (√n)⁻¹ • ∑ k ∈ Finset.range n, X k` converges to `Y` in distribution. -/
 theorem tendstoInDistribution_inv_sqrt_smul_sum
-    {S : Matrix ι ι ℝ}
-    (hY : HasLaw Y (multivariateGaussian P[X 0] S) P') (h0 : P[X 0] = 0)
-    (h1 : ∀ i j, cov[(X 0 · i), (X 0 · j); P] = S i j)
-    (hX : MemLp (X 0) 2 P)
-    (hindep : iIndepFun X P)
-    (hident : ∀ (i : ℕ), IdentDistrib (X i) (X 0) P P) :
+    {S : Matrix ι ι ℝ} (hY : HasLaw Y (multivariateGaussian 0 S) P') (h0 : P[X 0] = 0)
+    (h1 : ∀ i j, cov[(X 0 · i), (X 0 · j); P] = S i j) (hX : MemLp (X 0) 2 P)
+    (hindep : iIndepFun X P) (hident : ∀ (i : ℕ), IdentDistrib (X i) (X 0) P P) :
     TendstoInDistribution (fun (n : ℕ) ω ↦ (√n)⁻¹ • ∑ k ∈ Finset.range n, X k ω) atTop Y
       (fun _ ↦ P) P' := by
-  simpa [h0] using
-    tendstoInDistribution_inv_sqrt_smul_sum_sub (by simpa [h0] using hY) h1 hX hindep hident
+  simpa [h0] using tendstoInDistribution_inv_sqrt_smul_sum_sub hY h1 hX hindep hident
 
 /-- **Multivariate Central Limit Theorem:** Given a sequence of random variables
 `X : ℕ → Ω → EuclideanSpace ℝ ι` that are independent, identically distributed, centered and with
