@@ -248,7 +248,7 @@ structure PositivityKey where
   deriving Inhabited, BEq
 
 instance : Ord PositivityKey where
-  compare a b := a.1.quickCmp b.1 |>.then (compare a.2 b.2)
+  compare a b := a.head.quickCmp b.head |>.then (compare a.arity b.arity)
 
 /-- Structure recording the data for a `positivity` lemma. -/
 structure PositivityLemma where
