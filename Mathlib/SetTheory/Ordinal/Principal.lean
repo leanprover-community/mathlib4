@@ -135,6 +135,7 @@ theorem isCofinal_setOfPred_isPrincipal (op : Ordinal → Ordinal → Ordinal) :
     rw [Function.iterate_succ', ← add_one_le_iff]
     exact Ordinal.le_iSup (fun y : Set.Iio _ ×ˢ _ ↦ _) ⟨_, Set.mk_mem_prod ha (hb.trans_le h)⟩
 
+@[deprecated isCofinal_setOfPred_isPrincipal +typeChanged (since := "2026-11-26")]
 theorem not_bddAbove_setOfPred_isPrincipal (op : Ordinal → Ordinal → Ordinal) :
     ¬ BddAbove { o | IsPrincipal op o } :=
   (isCofinal_setOfPred_isPrincipal op).not_bddAbove
