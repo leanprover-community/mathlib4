@@ -310,6 +310,7 @@ namespace OrderMonoidIso
 
 variable [Preorder α] [Preorder β] [MulZeroOneClass α] [MulZeroOneClass β]
 
+/-- Reinterpret an `OrderMonoidIso` as an `OrderMonoidWithZeroHom`. -/
 def toOrderMonoidWithZeroHom (f : α ≃*o β) : α →*₀o β := .ofClass f
 
 @[simp]

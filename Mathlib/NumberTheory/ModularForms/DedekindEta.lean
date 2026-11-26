@@ -27,8 +27,7 @@ import Mathlib.Analysis.Calculus.LogDerivUniformlyOn
 
 @[expose] public section
 
-open Set Function Complex
-open UpperHalfPlane hiding I
+open Set Function Complex UpperHalfPlane
 open scoped Real
 
 local notation "𝕢" => Periodic.qParam
