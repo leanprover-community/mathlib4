@@ -15,7 +15,7 @@ In this file we define various instances related to groups for `FunLike` types.
 
 For example given a `FunLike F α β` with `IsMulApply F` and `Semigroup β`, then `F` is naturally
 a semigroup. Note that currently, these are not registered as instances, but only `abbrev`s to
-avoid long typeclass searches.
+avoid long typeclass searches. See note [IsApply classes].
 
 Moreover, we define the homomorphism `FunLike.coeMulHom : F →* (a : α) → β a` that acts by coercion.
 This definition is mainly needed to define a module instance on `F`.

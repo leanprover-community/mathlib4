@@ -18,7 +18,7 @@ There are two different variants: either the multiplication is given by composit
 pointwise multiplication.
 
 Note that currently, these are not registered as instances, but only `abbrev`s to avoid long
-typeclass searches.
+typeclass searches. See note [IsApply classes].
 -/
 
 @[expose] public section

@@ -20,7 +20,7 @@ negation are given by the pointwise operations, and moreover we provide classes 
 the identity and multiplication acting as composition.
 
 The algebraic `FunLike` typeclasses provide a `simp` lemma of the form `add_apply` and a `norm_cast`
-lemma `coe_add`.
+lemma `coe_add`. See note [IsApply classes] for how these classes are intended to be used.
 
 The following pointwise `Is*Apply` typeclasses are available:
 * `IsZeroApply`, `IsOneApply`: `0 x = 0` and `1 x = 1`, respectively
@@ -89,12 +89,12 @@ but with endomorphism-like operations for multiplication.
 These instances give access to generic lemmas for morphisms applied to elements of the domain,
 such as `add_apply`, `smul_apply`, `pow_apply` (tagged with `simp`, `grind =`), as well as their
 unapplied variants `FunLike.coe_add`, `FunLike.coe_smul`, etc. (tagged with `simp`, `norm_cast`).
-This obviates the needs for type-specific lemmas like `ContinuousMap.add_apply` or
+This obviates the need for type-specific lemmas like `ContinuousMap.add_apply` or
 `LinearMap.coe_add`. Pre-existing type-specific lemmas should be deprecated (and `protected`) in
 favor of the generic ones.
 
 In addition to generic `simp` lemmas, the `Is*Apply` classes also provide means to transfer
-algebraic structures from bare functions to bundled morphisms via this forgetful functor.
+algebraic structures from bare functions to bundled morphisms via the coercion to functions.
 These are simply applications of `Function.Injective.addCommMonoid` (or similar) to the coercion
 to function `DFunLike.coe` (using `DFunLike.coe_injective`). These are registered in the `FunLike`
 namespace as `FunLike.addCommMonoid`.
