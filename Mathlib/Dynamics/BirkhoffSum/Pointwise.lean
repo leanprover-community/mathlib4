@@ -51,7 +51,7 @@ lemma divergentSet_invariant : f x ∈ divergentSet f g ↔ x ∈ divergentSet f
   simp only [divergentSet, birkhoffSumSup, Set.mem_ofPred_eq]
   conv_rhs => rw [← sup_iSup_nat_succ]
   simp only [birkhoffSum_zero_apply, EReal.coe_zero, birkhoffSum_succ_apply', EReal.coe_add,
-    max_eq_top, EReal.zero_ne_top, false_or, ← EReal.coe_add_iSup]
+    max_eq_top, EReal.zero_ne_top, false_or, ← EReal.add_iSup]
   rw [EReal.add_eq_top_iff_eq_top_right (by simp) (by simp)]
 
 lemma birkhoffMax_tendsto_atTop_of_mem_divergentSet (hx : x ∈ divergentSet f g) :
