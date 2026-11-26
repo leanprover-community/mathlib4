@@ -29,8 +29,7 @@ Proof uses dimension formula of modular forms of level 1, and the (Serre derivat
 are obtained by showing that the limit of both sides at `i∞` agree.
 -/
 
-open UpperHalfPlane hiding I
-open Real Complex Filter EisensteinSeries ModularForm
+open UpperHalfPlane Real Complex Filter EisensteinSeries ModularForm
 open scoped Manifold MatrixGroups Topology
 
 namespace Derivative
