@@ -407,7 +407,7 @@ lemma isBasis_sigma {ι : Type*} {α : ι → Type*} [∀ i, TopologicalSpace (�
 lemma IsBasis.of_isInducing {B : Set (Opens β)} (H : IsBasis B) {f : α → β} (h : IsInducing f) :
     IsBasis { ⟨f ⁻¹' U, U.2.preimage h.continuous⟩ | U ∈ B } := by
   simp only [IsBasis] at H ⊢
-  convert! H.isInducing h
+  convert! h.isTopologicalBasis H
   ext; simp
 
 @[simp]

@@ -55,7 +55,9 @@ we show that a strong anodyne extension is an anodyne extension.
 
 universe u
 
-open CategoryTheory HomotopicalAlgebra Simplicial
+open CategoryTheory HomotopicalAlgebra
+
+open scoped Simplicial
 
 namespace SSet
 

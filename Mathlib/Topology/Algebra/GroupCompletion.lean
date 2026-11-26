@@ -16,7 +16,7 @@ on the completion of an abelian group endowed with a compatible uniform structur
 Then the instance `UniformSpace.Completion.isUniformAddGroup` proves this group structure is
 compatible with the completed uniform structure. The compatibility condition is `IsUniformAddGroup`.
 
-## Main declarations:
+## Main declarations
 
 Beyond the instances explained above (that don't have to be explicitly invoked),
 the main constructions deal with continuous group morphisms.

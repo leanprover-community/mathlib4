@@ -25,7 +25,9 @@ to use the assumption `[Mono f]` instead of `[Cofibration f]`.
 
 @[expose] public section
 
-open CategoryTheory HomotopicalAlgebra MorphismProperty Simplicial
+open CategoryTheory HomotopicalAlgebra MorphismProperty
+
+open scoped Simplicial
 
 universe u
 

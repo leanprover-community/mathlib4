@@ -31,7 +31,9 @@ public import Mathlib.Tactic.Abel
 
 noncomputable section
 
-open Uniformity Topology Filter Pointwise
+open Filter Pointwise
+
+open scoped Uniformity Topology
 
 section IsUniformGroup
 

@@ -474,7 +474,7 @@ theorem _root_.TopologicalSpace.IsTopologicalBasis.compacts
     IsTopologicalBasis <|
       (fun u => {K : Compacts α | ↑K ⊆ ⋃₀ u ∧ ∀ U ∈ u, (↑K ∩ U).Nonempty}) ''
       {u | u.Finite ∧ u ⊆ B} := by
-  refine hB.vietoris.isInducing isEmbedding_coe.isInducing
+  refine isEmbedding_coe.isInducing.isTopologicalBasis hB.vietoris
     |>.isTopologicalBasis_of_exists_subset ?_ ?_ <;> simp_rw [forall_mem_image]
   · intro u ⟨hu, huB⟩
     simp_rw [ofPred_and, ofPred_forall]
@@ -893,7 +893,7 @@ theorem _root_.TopologicalSpace.IsTopologicalBasis.nonemptyCompacts
     IsTopologicalBasis <|
       (fun u => {K : NonemptyCompacts α | ↑K ⊆ ⋃₀ u ∧ ∀ U ∈ u, (↑K ∩ U).Nonempty}) ''
       {u | u.Finite ∧ u.Nonempty ∧ u ⊆ B} := by
-  refine hB.compacts.isInducing isEmbedding_toCompacts.isInducing
+  refine isEmbedding_toCompacts.isInducing.isTopologicalBasis hB.compacts
     |>.isTopologicalBasis_of_exists_subset ?_ ?_ <;> simp_rw [forall_mem_image]
   · rintro u ⟨hu, -, huB⟩
     simp_rw [ofPred_and, ofPred_forall]

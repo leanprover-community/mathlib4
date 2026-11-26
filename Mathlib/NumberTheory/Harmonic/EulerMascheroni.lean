@@ -38,7 +38,9 @@ It follows that both sequences tend to a common limit `γ`, and we have the ineq
 
 @[expose] public section
 
-open Filter Topology
+open Filter
+
+open scoped Topology
 
 namespace Real
 

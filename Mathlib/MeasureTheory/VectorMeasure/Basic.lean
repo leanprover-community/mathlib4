@@ -695,13 +695,15 @@ theorem mapRange_smul {v : VectorMeasure α M} {f : M →ₗ[R] N} (hf : Continu
 
 variable [ContinuousAdd M] [ContinuousAdd N]
 
-/-- Given a continuous linear map `f : M → N`, `mapRangeₗ` is the linear map mapping the
+/-- Given a continuous linear map `f : M → N`, `mapRangeL` is the linear map mapping the
 vector measure `v` on `M` to the vector measure `f ∘ v` on `N`. -/
-def mapRangeₗ {α : Type*} [MeasurableSpace α] (f : M →ₗ[R] N) (hf : Continuous f) :
+def mapRangeL {α : Type*} [MeasurableSpace α] (f : M →L[R] N) :
     VectorMeasure α M →ₗ[R] VectorMeasure α N where
-  toFun v := v.mapRange f.toAddMonoidHom hf
-  map_add' _ _ := mapRange_add hf
-  map_smul' _ _ := mapRange_smul hf
+  toFun v := v.mapRange f.toAddMonoidHom f.continuous
+  map_add' _ _ := mapRange_add f.continuous
+  map_smul' _ _ := mapRange_smul f.continuous
+
+@[deprecated (since := "2026-08-14")] alias mapRangeₗ := mapRangeL
 
 end Module
 

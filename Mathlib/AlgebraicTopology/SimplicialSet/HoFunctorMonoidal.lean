@@ -422,7 +422,7 @@ objects of `hoFunctor.obj X`. -/
 def hoFunctor.unitHomEquiv (X : SSet.{u}) :
     (𝟙_ SSet ⟶ X) ≃ Cat.chosenTerminal ⥤ hoFunctor.obj X :=
   (SSet.unitHomEquiv X).trans <|
-    (hoFunctor.obj.equiv.{u} X).symm.trans Cat.fromChosenTerminalEquiv.symm
+    HomotopyCategory.objEquiv.symm.trans Cat.fromChosenTerminalEquiv.symm
 
 theorem hoFunctor.unitHomEquiv_eq (X : SSet.{u}) (x : 𝟙_ SSet ⟶ X) :
     hoFunctor.unitHomEquiv X x =

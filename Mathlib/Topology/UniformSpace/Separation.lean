@@ -98,7 +98,9 @@ uniform space, separated space, Hausdorff space, separation quotient
 
 @[expose] public section
 
-open Filter Set Function Topology Uniformity UniformSpace
+open Filter Set Function UniformSpace
+
+open scoped Topology Uniformity
 
 noncomputable section
 

@@ -18,9 +18,9 @@ public import Mathlib.RingTheory.Spectrum.Prime.Chevalley
 A morphism of schemes `f : X ⟶ Y` is locally of finite presentation if for each affine `U ⊆ Y` and
 `V ⊆ f ⁻¹' U`, The induced map `Γ(Y, U) ⟶ Γ(X, V)` is of finite presentation.
 
-A morphism of schemes is of finite presentation if it is both locally of finite presentation and
-quasi-compact. We do not provide a separate declaration for this, instead simply assume both
-conditions.
+A morphism of schemes is of finite presentation if it is locally of finite presentation,
+quasi-compact, and quasi-separated. We do not provide a separate declaration for this, instead
+simply assume all conditions.
 
 We show that these properties are local, and are stable under compositions.
 

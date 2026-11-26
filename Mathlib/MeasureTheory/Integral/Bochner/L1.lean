@@ -5,7 +5,7 @@ Authors: Zhouhang Zhou, Yury Kudryashov, Sébastien Gouëzel, Rémy Degenne
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.SetToL1
+public import Mathlib.MeasureTheory.Integral.SetToL1.L1
 
 /-!
 # Bochner integral

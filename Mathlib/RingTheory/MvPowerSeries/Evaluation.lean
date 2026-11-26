@@ -45,7 +45,7 @@ Under `Continuous φ` and `HasEval a`, the following lemmas furnish the properti
 
 namespace MvPowerSeries
 
-open Topology
+open scoped Topology
 
 open Filter MvPolynomial RingHom Set TopologicalSpace UniformSpace
 

@@ -28,7 +28,9 @@ oscillation, oscillationWithin
 
 @[expose] public section
 
-open Topology Metric Set ENNReal
+open Metric Set ENNReal
+
+open scoped Topology
 
 universe u v
 

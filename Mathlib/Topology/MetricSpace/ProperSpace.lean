@@ -10,7 +10,7 @@ public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 public import Mathlib.Topology.MetricSpace.Pseudo.Pi
 public import Mathlib.Topology.Order.IsLUB
 
-/-! ## Proper spaces
+/-! # Proper spaces
 
 ## Main definitions and results
 * `ProperSpace α`: a `PseudoMetricSpace` where all closed balls are compact

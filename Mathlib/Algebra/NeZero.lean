@@ -5,7 +5,7 @@ Authors: Eric Rodriguez
 -/
 module
 
-public import Mathlib.Logic.Basic
+public import Mathlib.Basic.Logic.Basic
 public import Mathlib.Order.Defs.PartialOrder
 
 /-!

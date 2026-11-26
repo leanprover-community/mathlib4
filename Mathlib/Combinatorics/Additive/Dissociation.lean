@@ -79,7 +79,7 @@ lemma not_mulDissociated_iff_exists_disjoint :
 
 @[to_additive (attr := simp)] lemma MulEquiv.mulDissociated_preimage (e : β ≃* α) :
     MulDissociated (e ⁻¹' s) ↔ MulDissociated s := by
-  simp [MulDissociated, InjOn, ← (Equiv.Finset.congr e.toEquiv).forall_congr_right,
+  simp [MulDissociated, InjOn, ← e.toEquiv.finsetCongr.forall_congr_right,
     ← e.apply_eq_iff_eq, (Finset.map_injective _).eq_iff]
 
 @[to_additive (attr := simp)] lemma mulDissociated_inv : MulDissociated s⁻¹ ↔ MulDissociated s :=

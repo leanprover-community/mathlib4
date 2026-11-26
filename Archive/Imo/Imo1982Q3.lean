@@ -3,8 +3,11 @@ Copyright (c) 2024 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios, Alex Brodbelt
 -/
-import Mathlib.Algebra.Order.Field.GeomSum
-import Mathlib.Data.NNReal.Basic
+module
+
+public import Mathlib.Algebra.Order.Field.GeomSum
+public import Mathlib.Data.NNReal.Basic
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset -- for `Finset.sq_sum_div_le_sum_sq_div`
 
 /-!
 # IMO 1982 Q3
@@ -26,6 +29,8 @@ website. For part a, we use Sedrakyan's lemma to show the sum is bounded below b
 $\frac{4n}{n + 1}$, which can be made arbitrarily close to $4$ by taking large $n$. For part b, we
 show the sequence $x_n = 2^{-n}$ satisfies the desired inequality.
 -/
+
+@[expose] public section
 
 open Finset NNReal
 

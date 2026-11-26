@@ -29,7 +29,9 @@ in `Mathlib/AlgebraicTopology/SimplicialSet/Coskeletal.lean`.
 
 universe v u
 
-open CategoryTheory Simplicial SimplexCategory
+open CategoryTheory SimplexCategory
+
+open scoped Simplicial
 
 namespace SSet
 namespace Truncated

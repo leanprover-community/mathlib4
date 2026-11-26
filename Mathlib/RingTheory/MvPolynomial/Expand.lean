@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.MvPolynomial.Expand
 public import Mathlib.RingTheory.MvPolynomial.Basic
 public import Mathlib.Algebra.CharP.Frobenius
+public import Mathlib.FieldTheory.Finite.Basic
 
 /-!
 # Results on `MvPolynomial.expand`
@@ -37,5 +38,14 @@ theorem map_iterateFrobenius_expand (f : MvPolynomial σ R) (n : ℕ) :
     conv_lhs => rw [pow_succ, pow_mul, ← n_ih]
     simp_rw [← map_frobenius_expand p, pow_succ', add_comm k, iterateFrobenius_add,
       ← map_map, ← map_expand, ← expand_mul, iterateFrobenius_one]
+
+theorem _root_.FiniteField.MvPolynomial.expand_card {K : Type*} [Field K] [Fintype K]
+    (f : MvPolynomial σ K) : expand (Fintype.card K) f = f ^ Fintype.card K := by
+  obtain ⟨p, hp⟩ := CharP.exists K
+  rcases FiniteField.card K p with ⟨⟨n, npos⟩, ⟨hp, hn⟩⟩
+  have : Fact p.Prime := ⟨hp⟩
+  dsimp at hn
+  rw [hn, ← map_iterateFrobenius_expand p, iterateFrobenius_eq_pow,
+    FiniteField.frobenius_pow hn, RingHom.one_def, map_id]
 
 end MvPolynomial

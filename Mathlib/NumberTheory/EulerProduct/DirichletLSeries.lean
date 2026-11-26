@@ -82,7 +82,9 @@ lemma tsum_dirichletSummand {N : ℕ} (χ : DirichletCharacter ℂ N) (hs : 1 < 
   simp only [dirichletSummandHom, cpow_neg, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, LSeries,
     LSeries.term_of_ne_zero' (ne_zero_of_one_lt_re hs), div_eq_mul_inv]
 
-open Filter Nat Topology EulerProduct
+open Filter Nat EulerProduct
+
+open scoped Topology
 
 /-- The Euler product for the Riemann ζ function, valid for `s.re > 1`.
 This version is stated in terms of `HasProd`. -/

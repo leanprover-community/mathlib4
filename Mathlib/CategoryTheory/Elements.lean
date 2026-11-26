@@ -140,7 +140,7 @@ namespace CategoryOfElements
 variable (F : C ⥤ Type w)
 
 /-- The functor out of the category of elements which forgets the element. -/
-@[simps]
+@[implicit_reducible, simps]
 def π : F.Elements ⥤ C where
   obj X := X.1
   map f := f.val
@@ -158,7 +158,7 @@ instance : (π F).ReflectsIsomorphisms where
 
 /-- A natural transformation between functors induces a functor between the categories of elements.
 -/
-@[simps]
+@[implicit_reducible, simps]
 def map {F₁ F₂ : C ⥤ Type w} (α : F₁ ⟶ F₂) : F₁.Elements ⥤ F₂.Elements where
   obj t := ⟨t.1, α.app t.1 t.2⟩
   map {t₁ t₂} k := ⟨k.1, by simpa [map_snd] using (NatTrans.naturality_apply α k.1 t₁.2).symm⟩

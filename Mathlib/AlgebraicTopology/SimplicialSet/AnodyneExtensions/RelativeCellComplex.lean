@@ -31,7 +31,9 @@ set_option backward.defeqAttrib.useBackward true
 
 universe v u
 
-open CategoryTheory HomotopicalAlgebra Simplicial Limits Opposite
+open CategoryTheory HomotopicalAlgebra Limits Opposite
+
+open scoped Simplicial
 
 namespace SSet.Subcomplex.Pairing.RankFunction
 

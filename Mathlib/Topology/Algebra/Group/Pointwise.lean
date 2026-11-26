@@ -5,7 +5,8 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 module
 
-public import Mathlib.Topology.Algebra.Group.Basic
+public import Mathlib.Topology.Algebra.Group.ContinuousDiv
+public import Mathlib.Topology.Algebra.Group.Subgroup
 public import Mathlib.Topology.Maps.Proper.Basic
 
 /-!

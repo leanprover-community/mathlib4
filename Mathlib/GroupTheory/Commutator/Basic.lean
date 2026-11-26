@@ -85,6 +85,22 @@ theorem commutatorElement_mul_right_eq_mul_conj (a b c : G) :
   simp [mul_assoc, commutatorElement_def]
 
 @[to_additive]
+theorem Commute.commutatorElement_pow_left {a b : G} (h : Commute a ⁅a, b⁆) (n : ℕ) :
+    ⁅a, b⁆ ^ n = ⁅a ^ n, b⁆ := by
+  induction n with
+  | zero => simp
+  | succ n ih => rw [pow_succ, pow_succ', commutatorElement_mul_left_eq_conj_mul, ← ih,
+      (h.pow_right n).eq, mul_inv_cancel_right]
+
+@[to_additive]
+theorem Commute.commutatorElement_pow_right {a b : G} (h : Commute b ⁅a, b⁆) (n : ℕ) :
+    ⁅a, b⁆ ^ n = ⁅a, b ^ n⁆ := by
+  induction n with
+  | zero => simp
+  | succ n ih => rw [pow_succ', pow_succ', commutatorElement_mul_right_eq_mul_conj, ←ih,
+        (h.pow_right n).right_comm, mul_inv_cancel_right]
+
+@[to_additive]
 theorem commutatorElement_inv_left (a b : G) : ⁅a⁻¹, b⁆ = a⁻¹ * ⁅b, a⁆ * a := by
   simp [mul_assoc, commutatorElement_def]
 
@@ -150,6 +166,14 @@ theorem commutator_le : ⁅H₁, H₂⁆ ≤ H₃ ↔ ∀ g₁ ∈ H₁, ∀ g�
 @[to_additive]
 theorem commutator_mono (h₁ : H₁ ≤ K₁) (h₂ : H₂ ≤ K₂) : ⁅H₁, H₂⁆ ≤ ⁅K₁, K₂⁆ :=
   commutator_le.mpr fun _g₁ hg₁ _g₂ hg₂ => commutator_mem_commutator (h₁ hg₁) (h₂ hg₂)
+
+@[to_additive (attr := gcongr)]
+theorem commutator_mono_left (h : H₁ ≤ H₂) : ⁅H₁, K⁆ ≤ ⁅H₂, K⁆ :=
+  commutator_mono h le_rfl
+
+@[to_additive (attr := gcongr)]
+theorem commutator_mono_right (h : K₁ ≤ K₂) : ⁅H, K₁⁆ ≤ ⁅H, K₂⁆ :=
+  commutator_mono le_rfl h
 
 @[to_additive]
 theorem commutator_eq_bot_iff_le_centralizer : ⁅H₁, H₂⁆ = ⊥ ↔ H₁ ≤ centralizer H₂ := by
@@ -275,6 +299,10 @@ theorem commutator_le_sup : ⁅H₁, H₂⁆ ≤ H₁ ⊔ H₂ :=
   commutator_le.mpr <| by grind [mul_assoc, mul_mem, mul_mem_sup, inv_mem]
 
 @[to_additive]
+theorem commutator_le_of_le (h₁ : K₁ ≤ K) (h₂ : K₂ ≤ K) : ⁅K₁, K₂⁆ ≤ K :=
+  (commutator_le_sup K₁ K₂).trans (sup_le h₁ h₂)
+
+@[to_additive]
 theorem normalizer_commutator_ge_left : H₁ ≤ normalizer (⁅H₁, H₂⁆ : Subgroup G) := by
   apply le_normalizer_closure_iff.mpr
   rintro g hg _ ⟨g₁, hg₁, g₂, hg₂, rfl⟩
@@ -310,6 +338,43 @@ theorem commutator_le_map_commutator {f : G →* G'} {K₁ K₂ : Subgroup G'} (
   (commutator_mono h₁ h₂).trans (ge_of_eq (map_commutator H₁ H₂ f))
 
 variable (H₁ H₂)
+
+@[to_additive]
+private theorem commutator_sup_right_of_normal (H K N : Subgroup G) [(⁅H, N⁆ ⊔ ⁅K, N⁆).Normal] :
+    ⁅H ⊔ K, N⁆ = ⁅H, N⁆ ⊔ ⁅K, N⁆ := by
+  refine le_antisymm ?_
+    (sup_le (commutator_mono_left le_sup_left) (commutator_mono_left le_sup_right))
+  have hH : ⁅H, N⁆ ≤ ⁅H, N⁆ ⊔ ⁅K, N⁆ := le_sup_left
+  have hK : ⁅K, N⁆ ≤ ⁅H, N⁆ ⊔ ⁅K, N⁆ := le_sup_right
+  rw [← QuotientGroup.ker_mk' (⁅H, N⁆ ⊔ ⁅K, N⁆), ← Subgroup.map_eq_bot_iff,
+    map_commutator, Subgroup.commutator_eq_bot_iff_le_centralizer] at hH hK ⊢
+  rw [map_sup]
+  exact sup_le hH hK
+
+@[to_additive]
+theorem commutator_sup_right (H K N : Subgroup G) [N.Normal] : ⁅H ⊔ K, N⁆ = ⁅H, N⁆ ⊔ ⁅K, N⁆ := by
+  let M := H ⊔ K ⊔ N
+  have hHM : H ≤ M := le_sup_of_le_left le_sup_left
+  have hKM : K ≤ M := le_sup_of_le_left le_sup_right
+  have hNM : N ≤ M := le_sup_right
+  have hHNM : ⁅H, N⁆ ≤ M := commutator_le_of_le hHM hNM
+  have hKNM : ⁅K, N⁆ ≤ M := commutator_le_of_le hKM hNM
+  suffices (⁅H.subgroupOf M, N.subgroupOf M⁆ ⊔ ⁅K.subgroupOf M, N.subgroupOf M⁆).Normal by
+    simpa [← map_subtype_inj, map_sup, map_commutator, hHM, hKM, hNM] using
+      commutator_sup_right_of_normal (H.subgroupOf M) (K.subgroupOf M) (N.subgroupOf M)
+  suffices M ≤ normalizer (⁅H, N⁆ ⊔ ⁅K, N⁆ : Subgroup G) by
+    convert Subgroup.normal_subgroupOf_of_le_normalizer this
+    simp [← map_subtype_inj, map_sup, map_commutator, hHM, hKM, hNM, hHNM, hKNM]
+  have hHKN : ⁅H, N⁆ ⊔ ⁅K, N⁆ ≤ N := sup_le (commutator_le_right H N) (commutator_le_right K N)
+  refine sup_le (sup_le ?_ ?_) ?_
+  · grw [le_normalizer_iff_commutator_le_right, hHKN, ← le_sup_left]
+  · grw [le_normalizer_iff_commutator_le_right, hHKN, ← le_sup_right]
+  · grw [← inf_normalizer_le_normalizer_sup, ← normalizer_commutator_ge_right,
+      ← normalizer_commutator_ge_right, inf_idem]
+
+@[to_additive]
+theorem commutator_sup_left (N H K : Subgroup G) [N.Normal] : ⁅N, H ⊔ K⁆ = ⁅N, H⁆ ⊔ ⁅N, K⁆ := by
+  simp_rw [commutator_comm N, commutator_sup_right]
 
 @[to_additive]
 instance commutator_characteristic [h₁ : Characteristic H₁] [h₂ : Characteristic H₂] :

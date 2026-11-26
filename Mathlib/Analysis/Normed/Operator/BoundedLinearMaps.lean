@@ -5,10 +5,12 @@ Authors: Patrick Massot, Johannes Hölzl
 -/
 module
 
+public import Mathlib.Analysis.Asymptotics.Prod
 public import Mathlib.Analysis.Normed.Module.Multilinear.Basic
-public import Mathlib.Analysis.Normed.Ring.Units
 public import Mathlib.Analysis.Normed.Operator.Mul
+public import Mathlib.Analysis.Normed.Ring.Units
 public import Mathlib.Tactic.CrossRefAttribute
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Invertible
 
 /-!
 # Bounded linear maps
@@ -57,7 +59,7 @@ artifact, really.
 
 noncomputable section
 
-open Topology
+open scoped Topology
 
 open Filter (Tendsto)
 
@@ -523,7 +525,7 @@ theorem Continuous.continuousLinearMapCoprod
 
 end
 
-namespace ContinuousLinearEquiv
+section OpenEquiv
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -539,7 +541,8 @@ In this section we establish that the set of continuous linear equivalences betw
 spaces is an open subset of the space of linear maps between them.
 -/
 
-protected theorem isOpen [CompleteSpace E] : IsOpen (range ((↑) : (E ≃L[𝕜] F) → E →L[𝕜] F)) := by
+protected theorem ContinuousLinearEquiv.isOpen [CompleteSpace E] :
+    IsOpen (range ((↑) : (E ≃L[𝕜] F) → E →L[𝕜] F)) := by
   rw [isOpen_iff_mem_nhds, forall_mem_range]
   refine fun e => IsOpen.mem_nhds ?_ (mem_range_self _)
   let O : (E →L[𝕜] F) → E →L[𝕜] E := fun f => (e.symm : F →L[𝕜] E).comp f
@@ -554,8 +557,16 @@ protected theorem isOpen [CompleteSpace E] : IsOpen (range ((↑) : (E ≃L[𝕜
     ext x
     simp [O, hw]
 
-protected theorem nhds [CompleteSpace E] (e : E ≃L[𝕜] F) :
+protected theorem ContinuousLinearEquiv.nhds [CompleteSpace E] (e : E ≃L[𝕜] F) :
     range ((↑) : (E ≃L[𝕜] F) → E →L[𝕜] F) ∈ 𝓝 (e : E →L[𝕜] F) :=
   IsOpen.mem_nhds ContinuousLinearEquiv.isOpen (by simp)
 
-end ContinuousLinearEquiv
+theorem ContinuousLinearMap.isOpen_setOfPred_isInvertible [CompleteSpace E] :
+    IsOpen {T : E →L[𝕜] F | T.IsInvertible} :=
+  ContinuousLinearEquiv.isOpen
+
+protected theorem ContinuousLinearMap.IsInvertible.eventually_nhds [CompleteSpace E]
+    {T : E →L[𝕜] F} (hT : T.IsInvertible) : ∀ᶠ S in 𝓝 T, S.IsInvertible :=
+  ContinuousLinearMap.isOpen_setOfPred_isInvertible.eventually_mem hT
+
+end OpenEquiv

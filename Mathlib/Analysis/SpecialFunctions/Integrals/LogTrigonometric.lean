@@ -18,7 +18,9 @@ involves the dilogarithm, this can be seen as computing special values of `Li₂
 
 public section
 
-open Filter Interval Real
+open Filter Real
+
+open scoped Interval
 
 /-
 Helper lemma for `integral_log_sin_zero_pi_div_two`: The integral of `log ∘ sin` on `0 … π` is

@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.Group.Defs
 public import Mathlib.Algebra.Notation.Pi.Basic
+public import Mathlib.Basic.Unique
 public import Mathlib.Data.Sum.Basic
-public import Mathlib.Logic.Unique
 public import Mathlib.Tactic.Spread
 
 /-!
@@ -63,6 +63,11 @@ instance commSemigroup [∀ i, CommSemigroup (f i)] : CommSemigroup (∀ i, f i)
 instance mulOneClass [∀ i, MulOneClass (f i)] : MulOneClass (∀ i, f i) where
   one_mul := by intros; ext; exact one_mul _
   mul_one := by intros; ext; exact mul_one _
+
+@[to_additive]
+instance [∀ i, MulOneClass (f i)] [∀ i, IsDedekindFiniteMonoid (f i)] :
+    IsDedekindFiniteMonoid (∀ i, f i) where
+  mul_eq_one_symm := by simp [funext_iff, mul_eq_one_comm]
 
 @[to_additive]
 instance invOneClass [∀ i, InvOneClass (f i)] : InvOneClass (∀ i, f i) where

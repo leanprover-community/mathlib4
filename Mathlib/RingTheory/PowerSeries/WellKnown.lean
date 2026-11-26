@@ -82,6 +82,15 @@ theorem mk_one_mul_one_sub_eq_one : (mk 1 : S⟦X⟧) * (1 - X) = 1 := by
   | succ n => simp [sub_mul]
 
 /--
+`(1 - X + X ^ 2 - ...) * (1 + X) = 1`.
+
+This is the image of `PowerSeries.mk_one_mul_one_sub_eq_one` under `PowerSeries.rescale (-1)`.
+-/
+theorem mk_neg_one_pow_mul_one_add_eq_one : (mk fun n ↦ (-1 : S) ^ n) * (1 + X) = 1 := by
+  have := congrArg (rescale (-1 : S)) (mk_one_mul_one_sub_eq_one S)
+  simpa [rescale_mk, rescale_neg_one_X, sub_neg_eq_add] using this
+
+/--
 Note that `mk 1` is the constant function `1` so the power series `1 + X + X^2 + ...`. This theorem
 states that for any `d : ℕ`, `(1 + X + X^2 + ... : S⟦X⟧) ^ (d + 1)` is equal to the power series
 `mk fun n => Nat.choose (d + n) d : S⟦X⟧`.

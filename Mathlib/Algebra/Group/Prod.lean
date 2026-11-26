@@ -86,6 +86,11 @@ instance instMulOneClass [MulOneClass M] [MulOneClass N] : MulOneClass (M × N) 
   mul_one _ := by ext <;> exact mul_one _
 
 @[to_additive]
+instance [MulOneClass M] [MulOneClass N] [IsDedekindFiniteMonoid M] [IsDedekindFiniteMonoid N] :
+    IsDedekindFiniteMonoid (M × N) where
+  mul_eq_one_symm := by simp [mul_eq_one_comm]
+
+@[to_additive]
 instance instMonoid [Monoid M] [Monoid N] : Monoid (M × N) :=
   { npow := fun z a => ⟨NPow.npow z a.1, NPow.npow z a.2⟩,
     npow_zero := fun _ => Prod.ext (Monoid.npow_zero _) (Monoid.npow_zero _),

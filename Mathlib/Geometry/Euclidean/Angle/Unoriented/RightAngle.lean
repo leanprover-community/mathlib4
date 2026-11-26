@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joseph Myers
+Authors: Joseph Myers, Daniel Liao
 -/
 module
 
@@ -23,6 +23,7 @@ triangle unnecessarily.
 ## References
 
 * https://en.wikipedia.org/wiki/Pythagorean_theorem
+* https://en.wikipedia.org/wiki/Geometric_mean_theorem
 
 -/
 
@@ -466,5 +467,46 @@ theorem dist_div_tan_angle_of_angle_eq_pi_div_two {p₁ p₂ p₃ : P} (h : ∠ 
   rw [eq_comm, ← @vsub_ne_zero V, ← @vsub_eq_zero_iff_eq V, or_comm] at h0
   rw [angle, dist_eq_norm_vsub V p₁ p₂, dist_eq_norm_vsub' V p₃ p₂, ← vsub_add_vsub_cancel p₁ p₂ p₃,
     add_comm, norm_div_tan_angle_add_of_inner_eq_zero h h0]
+
+/-- **Geometric mean theorem** (or right triangle altitude theorem), if-and-only-if form: if
+`p₄` lies strictly between `p₁` and `p₃` and `∠ p₁ p₄ p₂` is a right angle (so that `p₄` is the
+foot of the altitude from `p₂` in the triangle `p₁ p₂ p₃`), then the square of `dist p₂ p₄`
+equals the product of `dist p₁ p₄` and `dist p₃ p₄` if and only if the angle at `p₂` is a right
+angle. -/
+theorem dist_sq_eq_dist_mul_dist_iff_angle_eq_pi_div_two {p₁ p₂ p₃ p₄ : P}
+    (hf : Sbtw ℝ p₁ p₄ p₃) (hc : ∠ p₁ p₄ p₂ = π / 2) :
+    dist p₂ p₄ ^ 2 = dist p₁ p₄ * dist p₃ p₄ ↔ ∠ p₁ p₂ p₃ = π / 2 := by
+  rw [angle, ← inner_eq_zero_iff_angle_eq_pi_div_two] at hc ⊢
+  obtain ⟨-, r, hr, hw⟩ := angle_eq_pi_iff.mp hf.angle₁₂₃_eq_pi
+  rw [dist_eq_norm_vsub V p₂ p₄, dist_eq_norm_vsub V p₁ p₄, dist_eq_norm_vsub V p₃ p₄,
+    ← vsub_sub_vsub_cancel_right p₁ p₂ p₄, ← vsub_sub_vsub_cancel_right p₃ p₂ p₄, hw]
+  set u := p₁ -ᵥ p₄
+  set v := p₂ -ᵥ p₄
+  have hc' : ⟪v, u⟫ = 0 := (real_inner_comm u v).trans hc
+  have hexp : ⟪u - v, r • u - v⟫ = ‖v‖ ^ 2 - ‖u‖ * (-r * ‖u‖) := by
+    simp only [inner_sub_left, inner_sub_right, real_inner_smul_right, hc, hc',
+      real_inner_self_eq_norm_sq]
+    ring
+  rw [hexp, norm_smul, Real.norm_eq_abs, abs_of_neg hr, sub_eq_zero, eq_comm]
+
+/-- **Geometric mean theorem** (or right triangle altitude theorem): in a right-angled triangle
+`p₁ p₂ p₃` with the right angle at `p₂`, the square of the altitude `dist p₂ p₄` to the
+hypotenuse is the product of the two segments `dist p₁ p₄` and `dist p₃ p₄` into which its foot
+`p₄` divides the hypotenuse. -/
+theorem dist_sq_eq_dist_mul_dist_of_angle_eq_pi_div_two {p₁ p₂ p₃ p₄ : P} (hf : Sbtw ℝ p₁ p₄ p₃)
+    (hc : ∠ p₁ p₄ p₂ = π / 2) (h : ∠ p₁ p₂ p₃ = π / 2) :
+    dist p₂ p₄ ^ 2 = dist p₁ p₄ * dist p₃ p₄ :=
+  (dist_sq_eq_dist_mul_dist_iff_angle_eq_pi_div_two hf hc).mpr h
+
+/-- Geometric mean relation for a leg of a right-angled triangle: under the hypotheses of the
+geometric mean theorem, the square of the leg `dist p₁ p₂` is the product of the hypotenuse
+`dist p₁ p₃` and its segment `dist p₁ p₄` adjacent to that leg. -/
+theorem dist_sq_eq_dist_mul_dist_of_angle_eq_pi_div_two' {p₁ p₂ p₃ p₄ : P} (hf : Sbtw ℝ p₁ p₄ p₃)
+    (hc : ∠ p₁ p₄ p₂ = π / 2) (h : ∠ p₁ p₂ p₃ = π / 2) :
+    dist p₁ p₂ ^ 2 = dist p₁ p₃ * dist p₁ p₄ := by
+  rw [pow_two, (dist_sq_eq_dist_sq_add_dist_sq_iff_angle_eq_pi_div_two p₁ p₄ p₂).mpr hc,
+    ← pow_two (dist p₂ p₄), dist_sq_eq_dist_mul_dist_of_angle_eq_pi_div_two hf hc h,
+    dist_eq_add_dist_of_angle_eq_pi hf.angle₁₂₃_eq_pi]
+  ring
 
 end EuclideanGeometry

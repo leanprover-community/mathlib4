@@ -130,6 +130,63 @@ def flatPath (c : Container) (repo : String) : Bool :=
 end Container
 
 /--
+Trimmed value of an environment variable. An empty or whitespace-only value
+means unset.
+
+CI wires the cache variables from a GitHub Actions `vars` lookup. That lookup
+yields an empty string for an undefined variable, and such a value selects the
+same behavior as an absent one.
+-/
+def nonEmptyEnvValue (value? : Option String) : Option String :=
+  (value?.map (·.trimAscii.copy)).filter (!·.isEmpty)
+
+/-- Reads `name` from the environment through `nonEmptyEnvValue`. -/
+def getEnvNonEmpty (name : String) : IO (Option String) := do
+  return nonEmptyEnvValue (← IO.getEnv name)
+
+/--
+Value of an environment variable that names a base URL. The same empty rule as
+`nonEmptyEnvValue` applies, and the base also loses its trailing slashes, so a
+later `/{path}` follows a single separator.
+-/
+def normalizeBaseURL (value? : Option String) : Option String :=
+  (value?.map fun v => (v.trimAscii.dropEndWhile '/').copy).filter (!·.isEmpty)
+
+/-- Default base URL for cache reads: the direct address of the Azure Blob
+Storage account. -/
+def defaultGetBaseURL : String := "https://lakecache.blob.core.windows.net"
+
+/--
+Base URL for cache reads: `MATHLIB_CACHE_BASE_URL` if set, otherwise
+`defaultGetBaseURL`. `normalizeBaseURL` reads the value, so it arrives trimmed,
+free of trailing slashes, and unset when empty.
+
+A read URL is `{base}/{azureContainerName}/{key}`, the namespace the Azure
+account serves. Any host that mirrors that namespace is therefore a valid base.
+This override differs from `MATHLIB_CACHE_GET_URL`. That variable serves
+external consumers: it names one flat endpoint and bypasses the container
+lookup chain. `MATHLIB_CACHE_BASE_URL` serves internal consumers, that is,
+CI and contributors to the mathlib4 repository. It keeps the lookup chain and
+rebases each container read under the given host.
+
+Only reads follow this base. Uploads, marker writes, and the blob-listing
+query authenticate against Azure and use `Container.azureURL` directly.
+-/
+def getBaseURLFrom (envValue? : Option String) : String :=
+  (normalizeBaseURL envValue?).getD defaultGetBaseURL
+
+/--
+Base URL for cache reads, resolved from the environment.
+Written on top of the pure function above, which is separate to be testable.
+-/
+def getBaseURL : IO String := do
+  return getBaseURLFrom (← IO.getEnv "MATHLIB_CACHE_BASE_URL")
+
+/-- Read URL for a container: `{getBaseURL}/{azureContainerName}`. -/
+def Container.getURL (c : Container) : IO String := do
+  return s!"{← getBaseURL}/{c.azureContainerName}"
+
+/--
 Comma-separated list parser for `--cache-from=a,b,c`.
 
 Returns `none` if any element is unrecognized.

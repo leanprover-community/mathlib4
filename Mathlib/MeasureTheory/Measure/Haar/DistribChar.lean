@@ -36,6 +36,7 @@ variable {G A : Type*} [Group G] [AddCommGroup A] [DistribMulAction G A] [Topolo
   [IsTopologicalAddGroup A] [LocallyCompactSpace A] [ContinuousConstSMul G A] {g : G}
 
 variable (A) in
+set_option backward.isDefEq.respectTransparency false in
 /-- The distributive Haar character of a group `G` acting distributively on a group `A` is the
 unique positive real number `Δ(g)` such that `μ (g • s) = Δ(g) * μ s` for all Haar
 measures `μ : Measure A`, set `s : Set A` and `g : G`. -/

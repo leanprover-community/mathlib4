@@ -134,14 +134,13 @@ instance : IsCyclic <| valueGroup (.ofClass v) := by
   rw [← generator_zpowers_eq_valueGroup]
   exact isCyclic_zpowers (generator v)
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance : v.IsNontrivial := by
   apply IsNontrivial.mk
   by_contra! h1
   have hvalueGroup : valueGroup (.ofClass v) = ⊥ := by
-    simp only [valueGroup, valueMonoid, Submonoid.coe_set_mk, Subsemigroup.coe_set_mk,
-      closure_eq_bot_iff, subset_singleton_iff, mem_preimage, mem_range, forall_exists_index,
-      Units.ext_iff]
+    simp only [valueGroup, valueMonoid, MonoidWithZeroHom.coe_ofClass, Submonoid.coe_set_mk,
+      Subsemigroup.coe_set_mk, closure_eq_bot_iff, subset_singleton_iff, mem_preimage, mem_range,
+      forall_exists_index]
     intro y x
     specialize h1 x
     aesop
@@ -325,7 +324,6 @@ theorem IsUniformizer.of_associated {π₁ π₂ : K₀} (h1 : IsUniformizer v �
   have : v (u.1 : K) = 1 := (Integers.isUnit_iff_valuation_eq_one <| integer.integers v).mp u.isUnit
   rwa [IsUniformizer.iff, ← hu, Subring.coe_mul, map_mul, this, mul_one, ← IsUniformizer.iff]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- If two elements of `K₀` are uniformizers, then they are associated. -/
 theorem associated_of_isUniformizer {π₁ π₂ : K₀} (h1 : IsUniformizer v π₁)
     (h2 : IsUniformizer v π₂) : Associated π₁ π₂ := by
@@ -369,7 +367,6 @@ theorem exists_pow_Uniformizer {r : K₀} (hr : r ≠ 0) (π : Uniformizer v) :
   rw [IsUnit.unit_spec, Subring.coe_pow, ha, ← mul_assoc, zpow_neg, hn, zpow_natCast,
     mul_inv_cancel₀ (pow_ne_zero _ π.ne_zero), one_mul]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Uniformizer.is_generator (π : Uniformizer v) :
     maximalIdeal v.valuationSubring = Ideal.span {π.1} := by
   apply (maximalIdeal.isMaximal _).eq_of_le
@@ -391,7 +388,6 @@ theorem IsUniformizer.is_generator {π : v.valuationSubring} (hπ : IsUniformize
     maximalIdeal v.valuationSubring = Ideal.span {π} :=
   Uniformizer.is_generator ⟨π, hπ⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem pow_Uniformizer_is_pow_generator (π : Uniformizer v) (n : ℕ) :
     maximalIdeal v.valuationSubring ^ n = Ideal.span {π.1 ^ n} := by
   rw [← Ideal.span_singleton_pow, Uniformizer.is_generator]
@@ -410,7 +406,6 @@ theorem valuationSubring_not_isField [Nontrivial (valueGroup (.ofClass v))]
   rw [← isUnit_iff_exists_inv] at h
   exact hπ.not_isUnit h
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isUniformizer_of_maximalIdeal_eq_span [v.IsRankOneDiscrete] {r : K₀}
     (hr : maximalIdeal v.valuationSubring = Ideal.span {r}) :
     IsUniformizer v r := by
@@ -424,7 +419,6 @@ theorem isUniformizer_of_maximalIdeal_eq_span [v.IsRankOneDiscrete] {r : K₀}
   rw [Uniformizer.is_generator ⟨π, hπ⟩, span_singleton_eq_span_singleton] at hr
   exact hπ.of_associated hr
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ideal_isPrincipal [IsCyclic (valueGroup (.ofClass v))]
     [Nontrivial (valueGroup (.ofClass v))] (I : Ideal K₀) : I.IsPrincipal := by
   suffices ∀ P : Ideal K₀, P.IsPrime → Submodule.IsPrincipal P by

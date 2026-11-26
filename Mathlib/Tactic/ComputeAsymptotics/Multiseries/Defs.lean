@@ -43,7 +43,9 @@ in the basis `[b₂, ..., bₙ]` (`basis_tl`).
 
 namespace Tactic.ComputeAsymptotics
 
-open Filter Stream' Topology
+open Filter Stream'
+
+open scoped Topology
 
 /-- List of functions used to construct monomials in multiseries. -/
 abbrev Basis := List (ℝ → ℝ)

@@ -37,6 +37,8 @@ and bounded at infinity.
   `τ` in the upper half plane.
 * `ModularForm.qExpansionRingHom` defines the ring homomorphism from the graded ring of
   modular forms to power series given by taking `q`-expansions.
+* `ModularForm.qExpansionAlgHom` upgrades it to a `ℂ`-algebra homomorphism, when `Γ` consists of
+  matrices of determinant one.
 * `UpperHalfPlane.qExpansion_coeff_unique` shows that q-expansion coefficients are uniquely
   determined.
 * There are also more specialized versions of some of these lemmas in the `ModularFormClass`
@@ -119,16 +121,9 @@ end UpperHalfPlane
 namespace SlashInvariantFormClass
 
 theorem periodic_comp_ofComplex [SlashInvariantFormClass F Γ k] (hΓ : h ∈ Γ.strictPeriods) :
-    Periodic (f ∘ ofComplex) h := by
-  intro w
-  by_cases! hw : 0 < im w
-  · have : 0 < im (w + h) := by simp [hw]
-    simp only [comp_apply, ofComplex_apply_of_im_pos this, ofComplex_apply_of_im_pos hw]
-    convert! SlashInvariantForm.vAdd_apply_of_mem_strictPeriods f ⟨w, hw⟩ hΓ using 2
-    ext
-    simp [add_comm]
-  · have : im (w + h) ≤ 0 := by simpa using hw
-    simp [ofComplex_apply_of_im_nonpos this, ofComplex_apply_of_im_nonpos hw]
+    Periodic (f ∘ ofComplex) h :=
+  UpperHalfPlane.periodic_comp_ofComplex fun τ ↦
+    SlashInvariantForm.vAdd_apply_of_mem_strictPeriods f τ hΓ
 
 protected theorem eq_cuspFunction [SlashInvariantFormClass F Γ k] (τ : ℍ)
     (hΓ : h ∈ Γ.strictPeriods) (hh : h ≠ 0) : cuspFunction h f (𝕢 h τ) = f τ :=
@@ -259,23 +254,29 @@ private lemma hasFPowerSeriesOnBall_update {f : ℍ → ℂ} (hh : 0 < h) {c : �
         using hasSum_cuspFunction_of_hasSum_punctured hh hf hy hy'
 
 /-- A function on the upper half plane that is given everywhere by a convergent `q`-expansion with
-non-negative exponents, `f τ = ∑' m, c m * 𝕢 h τ ^ m`, is bounded at `i∞`. This is a converse to
-`hasSum_qExpansion`: there, boundedness is a hypothesis used to produce the `q`-expansion, while
-here convergence of the `q`-expansion is enough to deduce boundedness. -/
-theorem isBoundedAtImInfty_of_hasSum_qExpansion {f : ℍ → ℂ} {c : ℕ → ℂ} (hh : 0 < h)
-    (hf : ∀ τ : ℍ, HasSum (fun m ↦ c m • 𝕢 h τ ^ m) (f τ)) : IsBoundedAtImInfty f := by
+non-negative exponents, `f τ = ∑' m, c m * 𝕢 h τ ^ m`, tends to the constant term of its
+`q`-expansion at `i∞`. -/
+theorem tendsto_atImInfty_of_hasSum_qExpansion {f : ℍ → ℂ} {c : ℕ → ℂ} (hh : 0 < h)
+    (hf : ∀ τ : ℍ, HasSum (fun m ↦ c m • 𝕢 h τ ^ m) (f τ)) :
+    Tendsto f atImInfty (𝓝 (c 0)) := by
   have hfeq : f = fun τ : ℍ ↦ update (cuspFunction h f) 0 (c 0) (𝕢 h τ) := by
     funext τ
     rw [update_of_ne (Periodic.qParam_ne_zero _)]
     exact (hf τ).unique (hasSum_cuspFunction_of_hasSum_punctured hh hf
       (Periodic.norm_qParam_lt_one hh τ.im_pos) (exp_ne_zero _))
-  have htend : Tendsto f atImInfty (𝓝 (c 0)) := by
-    rw [hfeq]
-    simpa [update_self, Function.comp_def] using
-      (hasFPowerSeriesOnBall_update hh hf).hasFPowerSeriesAt.continuousAt.tendsto.comp
-        (qParam_tendsto_atImInfty hh)
+  rw [hfeq]
+  simpa [update_self, Function.comp_def] using
+    (hasFPowerSeriesOnBall_update hh hf).hasFPowerSeriesAt.continuousAt.tendsto.comp
+      (qParam_tendsto_atImInfty hh)
+
+/-- A function on the upper half plane that is given everywhere by a convergent `q`-expansion with
+non-negative exponents, `f τ = ∑' m, c m * 𝕢 h τ ^ m`, is bounded at `i∞`. This is a converse to
+`hasSum_qExpansion`: there, boundedness is a hypothesis used to produce the `q`-expansion, while
+here convergence of the `q`-expansion is enough to deduce boundedness. -/
+theorem isBoundedAtImInfty_of_hasSum_qExpansion {f : ℍ → ℂ} {c : ℕ → ℂ} (hh : 0 < h)
+    (hf : ∀ τ : ℍ, HasSum (fun m ↦ c m • 𝕢 h τ ^ m) (f τ)) : IsBoundedAtImInfty f :=
   -- `IsBoundedAtImInfty f = BoundedAtFilter atImInfty f = (f =O[atImInfty] 1)` by definition.
-  exact htend.isBigO_one ℝ
+  (tendsto_atImInfty_of_hasSum_qExpansion hh hf).isBigO_one ℝ
 
 lemma hasFPowerSeriesOnBall_cuspFunction {f : ℍ → ℂ} {c : ℕ → ℂ} (hh : 0 < h)
     (hfanalytic : AnalyticAt ℂ (cuspFunction h f) 0)
@@ -382,6 +383,13 @@ protected lemma qExpansion_coeff_eq_intervalIntegral [ModularFormClass F Γ k]
   have : Fact (IsCusp OnePoint.infty Γ) := ⟨Γ.isCusp_of_mem_strictPeriods hh hΓ⟩
   qExpansion_coeff_eq_intervalIntegral hh (periodic_comp_ofComplex f hΓ)
     (holo f) (bdd_at_infty f) n ht
+
+/-- A modular form tends to the constant term of its `q`-expansion at `i∞`. -/
+protected theorem tendsto_atImInfty [ModularFormClass F Γ k] (hh : 0 < h)
+    (hΓ : h ∈ Γ.strictPeriods) : Tendsto f atImInfty (𝓝 ((qExpansion h f).coeff 0)) :=
+  have : Fact (IsCusp OnePoint.infty Γ) := ⟨Γ.isCusp_of_mem_strictPeriods hh hΓ⟩
+  tendsto_atImInfty_of_hasSum_qExpansion hh
+    (hasSum_qExpansion hh (periodic_comp_ofComplex f hΓ) (holo f) (bdd_at_infty f))
 
 /-- Version of `exp_decay_sub_atImInfty` stating a less precise result but easier to apply in
 practice (not specifying the growth rate precisely).
@@ -645,6 +653,21 @@ def qExpansionAddHom (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (k : ℤ) :
   map_zero' := qExpansion_zero h
   map_add' f g := ModularForm.qExpansion_add hh hΓ f g
 
+@[simp]
+lemma qExpansionAddHom_apply (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (k : ℤ)
+    (f : ModularForm Γ k) : qExpansionAddHom hh hΓ k f = qExpansion h f := rfl
+
+/-- The `q`-expansion map is injective on modular forms of a fixed weight. -/
+lemma qExpansion_injective (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) {k : ℤ} :
+    Function.Injective (fun f : ModularForm Γ k ↦ qExpansion h f) :=
+  (injective_iff_map_eq_zero (qExpansionAddHom hh hΓ k)).mpr
+    fun f hf ↦ (ModularForm.qExpansion_eq_zero_iff hh hΓ f).mp hf
+
+@[simp]
+lemma qExpansion_inj (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) {k : ℤ} {f g : ModularForm Γ k} :
+    qExpansion h f = qExpansion h g ↔ f = g :=
+  (qExpansion_injective hh hΓ).eq_iff
+
 open scoped DirectSum in
 /-- The qExpansion map as a map from the graded ring of modular forms to power series over `ℂ`. -/
 def qExpansionRingHom (h) [Γ.HasDetPlusMinusOne] (hh : 0 < h)
@@ -657,6 +680,31 @@ lemma qExpansionRingHom_apply [Γ.HasDetPlusMinusOne] (hh : 0 < h)
     (hΓ : h ∈ Γ.strictPeriods) (k : ℤ) (f : ModularForm Γ k) :
     qExpansionRingHom h hh hΓ (DirectSum.of _ k f) = qExpansion h f :=
   DirectSum.toSemiring_of ..
+
+open scoped DirectSum in
+/-- The qExpansion map as a `ℂ`-algebra map from the graded ring of modular forms to power series
+over `ℂ`. -/
+def qExpansionAlgHom (h) [Γ.HasDetOne] (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) :
+    (⨁ k, ModularForm Γ k) →ₐ[ℂ] PowerSeries ℂ :=
+  DirectSum.toAlgebra ℂ _
+    (fun _ ↦
+      { toFun f := qExpansion h f
+        map_add' f g := ModularForm.qExpansion_add hh hΓ f g
+        map_smul' c f := ModularForm.qExpansion_smul hh hΓ c f })
+    ModularForm.qExpansion_one (ModularForm.qExpansion_mul hh hΓ)
+
+@[simp]
+lemma qExpansionAlgHom_apply [Γ.HasDetOne] (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods)
+    (k : ℤ) (f : ModularForm Γ k) :
+    qExpansionAlgHom h hh hΓ (DirectSum.of _ k f) = qExpansion h f :=
+  DirectSum.toSemiring_of _ ModularForm.qExpansion_one (ModularForm.qExpansion_mul hh hΓ) k f
+
+open scoped DirectSum in
+@[simp]
+lemma qExpansionAlgHom_toRingHom (h) [Γ.HasDetOne] (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) :
+    (qExpansionAlgHom h hh hΓ : (⨁ k, ModularForm Γ k) →+* PowerSeries ℂ) =
+      qExpansionRingHom h hh hΓ :=
+  rfl
 
 lemma qExpansion_of_mul [Γ.HasDetPlusMinusOne] (hh : 0 < h)
     (hΓ : h ∈ Γ.strictPeriods) (a b : ℤ) (f : ModularForm Γ a) (g : ModularForm Γ b) :

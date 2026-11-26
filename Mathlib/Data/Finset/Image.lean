@@ -746,65 +746,54 @@ See `Equiv.image` for the `Set` version. -/
     s ≃ s.image e :=
   e.subtypeEquiv <| by simp
 
-/-- The subtypes corresponding to equal finsets are equivalent.
-
-See also `Equiv.setCongr`. -/
-@[simps!] def finsetCongr {s t : Finset α} (h : s = t) :
-    s ≃ t :=
-  .subtypeEquivProp <| by simp [h]
-
-@[simp] lemma finsetCongr_refl {s : Finset α} : finsetCongr (s := s) rfl = .refl _ := rfl
-
-lemma finsetCongr_symm {s t : Finset α} (h : s = t) :
-    finsetCongr h.symm = (finsetCongr h).symm := rfl
-
-lemma finsetCongr_trans {s t u : Finset α} (h : s = t) (h' : t = u) :
-    finsetCongr (h.trans h') = (finsetCongr h).trans (finsetCongr h') :=
-  rfl
-
-namespace Finset
-
 /-- If `α` is equivalent to `β`, then `Finset α` is equivalent to `Finset β`.
 
-See also `Equiv.Set.congr`. -/
-protected def congr (e : α ≃ β) : Finset α ≃ Finset β where
+See also `Equiv.setCongr`. -/
+def finsetCongr (e : α ≃ β) : Finset α ≃ Finset β where
   toFun s := s.map e.toEmbedding
   invFun s := s.map e.symm.toEmbedding
   left_inv s := by simp [Finset.map_map]
   right_inv s := by simp [Finset.map_map]
 
 @[simp]
-theorem congr_apply (e : α ≃ β) (s : Finset α) : Equiv.Finset.congr e s = s.map e.toEmbedding :=
+theorem finsetCongr_apply (e : α ≃ β) (s : Finset α) : finsetCongr e s = s.map e.toEmbedding :=
   rfl
 
-@[deprecated (since := "2026-08-11")] alias finsetCongr_apply := congr_apply
-
 @[simp]
-theorem congr_refl : Equiv.Finset.congr (Equiv.refl α) = Equiv.refl _ := by
+theorem finsetCongr_refl : finsetCongr (Equiv.refl α) = Equiv.refl _ := by
   ext
   simp
 
-@[deprecated (since := "2026-08-11")] alias finsetCongr_refl := congr_refl
+lemma finsetCongr_symm (e : α ≃ β) : (finsetCongr e).symm = finsetCongr e.symm := rfl
 
-@[simp]
-theorem congr_symm (e : α ≃ β) : (Equiv.Finset.congr e).symm = Equiv.Finset.congr e.symm :=
-  rfl
-
-@[deprecated (since := "2026-08-11")] alias finsetCongr_symm := congr_symm
-
-@[simp]
-theorem congr_trans (e : α ≃ β) (e' : β ≃ γ) :
-    (Equiv.Finset.congr e).trans (Equiv.Finset.congr e') = Equiv.Finset.congr (e.trans e') := by
+lemma finsetCongr_trans (e : α ≃ β) (e' : β ≃ γ) :
+    (finsetCongr e).trans (finsetCongr e') = finsetCongr (e.trans e') := by
   ext
   simp [-Finset.mem_map, -Equiv.trans_toEmbedding]
 
-@[deprecated (since := "2026-08-11")] alias finsetCongr_trans := congr_trans
-
-theorem congr_toEmbedding (e : α ≃ β) :
-    (Equiv.Finset.congr e).toEmbedding = (Finset.mapEmbedding e.toEmbedding).toEmbedding :=
+theorem finsetCongr_toEmbedding (e : α ≃ β) :
+    (finsetCongr e).toEmbedding = (Finset.mapEmbedding e.toEmbedding).toEmbedding :=
   rfl
 
-@[deprecated (since := "2026-08-11")] alias finsetCongr_toEmbedding := congr_toEmbedding
+namespace Finset
+
+@[deprecated (since := "2026-08-21")] alias congr_toEmbedding := Equiv.finsetCongr_toEmbedding
+
+/-- The subtypes corresponding to equal finsets are equivalent.
+
+See also `Equiv.Set.congr`. -/
+@[simps!] protected def congr {s t : Finset α} (h : s = t) :
+    s ≃ t :=
+  .subtypeEquivProp <| by simp [h]
+
+@[simp] lemma congr_refl {s : Finset α} : Equiv.Finset.congr (s := s) rfl = .refl _ := rfl
+
+lemma congr_symm {s t : Finset α} (h : s = t) :
+    Equiv.Finset.congr h.symm = (Equiv.Finset.congr h).symm := rfl
+
+lemma congr_trans {s t u : Finset α} (h : s = t) (h' : t = u) :
+    Finset.congr (h.trans h') = (Equiv.Finset.congr h).trans (Equiv.Finset.congr h') :=
+  rfl
 
 end Finset
 

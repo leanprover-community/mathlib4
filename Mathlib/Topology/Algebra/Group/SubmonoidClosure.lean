@@ -5,9 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
+public import Mathlib.Algebra.Order.Group.Int
 public import Mathlib.Order.Filter.AtTopBot.Group
-public import Mathlib.Topology.Algebra.Group.Basic
+public import Mathlib.Topology.Algebra.Group.Subgroup
 
 /-!
 # Topological closure of the submonoid closure

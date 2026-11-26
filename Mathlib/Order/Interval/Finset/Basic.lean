@@ -41,7 +41,7 @@ assert_not_exists MonoidWithZero Finset.sum
 
 open Function OrderDual
 
-open FinsetInterval
+open scoped FinsetInterval
 
 variable {ι α : Type*} {a a₁ a₂ b b₁ b₂ c x : α}
 

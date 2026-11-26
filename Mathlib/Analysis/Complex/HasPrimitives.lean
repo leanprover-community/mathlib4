@@ -33,8 +33,9 @@ TODO: Extend to holomorphic functions on simply connected domains.
 
 noncomputable section
 
-open Complex MeasureTheory Metric Set Topology
-open scoped Interval
+open Complex MeasureTheory Metric Set
+
+open scoped Topology Interval
 
 namespace Complex
 

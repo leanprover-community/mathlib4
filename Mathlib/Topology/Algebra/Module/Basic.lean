@@ -130,9 +130,11 @@ lemma TopologicalSpace.IsSeparable.span {R M : Type*} [AddCommMonoid M] [Semirin
 
 namespace Submodule
 
-instance topologicalAddGroup {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
+instance isTopologicalAddGroup {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
     [TopologicalSpace M] [IsTopologicalAddGroup M] (S : Submodule R M) : IsTopologicalAddGroup S :=
   inferInstanceAs (IsTopologicalAddGroup S.toAddSubgroup)
+
+@[deprecated (since := "2026-08-21")] alias topologicalAddGroup := isTopologicalAddGroup
 
 end Submodule
 
@@ -327,8 +329,11 @@ theorem isQuotientMap_mkQ : IsQuotientMap S.mkQ := isQuotientMap_quot_mk
 @[continuity, fun_prop]
 theorem continuous_mkQ : Continuous S.mkQ := continuous_quot_mk
 
-instance topologicalAddGroup_quotient [IsTopologicalAddGroup M] : IsTopologicalAddGroup (M ⧸ S) :=
+instance isTopologicalAddGroup_quotient [IsTopologicalAddGroup M] : IsTopologicalAddGroup (M ⧸ S) :=
   inferInstanceAs <| IsTopologicalAddGroup (M ⧸ S.toAddSubgroup)
+
+@[deprecated (since := "2026-08-21")]
+alias topologicalAddGroup_quotient := isTopologicalAddGroup_quotient
 
 instance continuousSMul_quotient [TopologicalSpace R] [IsTopologicalAddGroup M]
     [ContinuousSMul R M] : ContinuousSMul R (M ⧸ S) where

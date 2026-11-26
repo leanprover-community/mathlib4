@@ -116,8 +116,10 @@ circle homeomorphism, rotation number
 
 @[expose] public section
 
-open Filter Set Int Topology
+open Filter Set Int
 open Function hiding Commute
+
+open scoped Topology
 
 /-!
 ### Definition and monoid structure

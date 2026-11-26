@@ -202,16 +202,29 @@ instance intermediateField [Finite G] [hGKL : IsGaloisGroup G K L] :
   have := hGKL.isGalois
   .of_mulEquiv_algEquiv e fun _ _ ↦ rfl
 
-include K in
-/-- If `G` is a Galois group on `L/K` and `L/E/K` is a tower of field extensions,
-then the fixing subgroup of the image of `E` in `L` is a Galois group on `L/E`. -/
-theorem of_isScalarTower [Finite G] [IsGaloisGroup G K L] (E : Type*) [Field E] [Algebra K E]
-    [Algebra E L] [IsScalarTower K E L] :
-    IsGaloisGroup (fixingSubgroup G (Set.range (algebraMap E L))) E L := by
-  rw [← IsScalarTower.toAlgHom_fieldRange K E L]
-  refine IsGaloisGroup.of_ringEquiv _ _ _ L
-    (AlgHom.equivFieldRange (IsScalarTower.toAlgHom K E L)).toRingEquiv.symm fun ⟨_, ⟨x, rfl⟩⟩ ↦ ?_
-  simp [AlgEquiv.symm_apply_eq, Subtype.ext_iff]
+attribute [local instance] FractionRing.liftAlgebra in
+/-- If `G` is a finite Galois group for `B / R` and `R ⊆ A ⊆ B` is a tower of commutative domains
+with `A` integrally closed, then the fixing subgroup of the image of `A` in `B` is a Galois group
+for `B / A`. -/
+theorem of_isScalarTower [Finite G] (R B A : Type*) [CommRing R] [CommRing B] [CommRing A]
+    [IsDomain B] [Algebra R A] [Algebra A B] [Algebra R B] [IsScalarTower R A B]
+    [FaithfulSMul A B] [MulSemiringAction G B] [IsGaloisGroup G R B] [IsIntegrallyClosed A] :
+    IsGaloisGroup (fixingSubgroup G (Set.range (algebraMap A B))) A B := by
+  let R := (algebraMap R A).range
+  have : IsDomain A := IsDomain.of_faithfulSMul A B
+  have := Algebra.IsInvariant.isIntegral R B G
+  have : Algebra.IsIntegral A B := .tower_top R
+  let F := FractionRing A
+  let K := FractionRing R
+  let L := FractionRing B
+  let : MulSemiringAction G L := IsFractionRing.mulSemiringAction G B L
+  rw [IsFractionRing.fixingSubgroup_range_algebraMap G F L]
+  have : IsGaloisGroup (fixingSubgroup G (Set.range (algebraMap F L))) F L := by
+    rw [← IsScalarTower.toAlgHom_fieldRange K F L]
+    exact IsGaloisGroup.of_ringEquiv _ _ _ L
+      (AlgHom.equivFieldRange (IsScalarTower.toAlgHom K F L)).toRingEquiv.symm
+        fun ⟨_, ⟨x, rfl⟩⟩ ↦ by simp [AlgEquiv.symm_apply_eq, Subtype.ext_iff]
+  exact IsGaloisGroup.of_isFractionRing _ A B F L
 
 @[simp]
 theorem card_fixingSubgroup_eq_finrank [Finite G] [IsGaloisGroup G K L] :

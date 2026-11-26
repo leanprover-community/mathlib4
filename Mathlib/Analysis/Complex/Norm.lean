@@ -17,7 +17,9 @@ public import Mathlib.Data.Complex.Basic
 
 noncomputable section
 
-open ComplexConjugate Set
+open Set
+
+open scoped ComplexConjugate
 
 namespace Complex
 variable {z : ℂ}

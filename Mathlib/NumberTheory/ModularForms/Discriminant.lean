@@ -36,7 +36,9 @@ function, and proves its key properties including invariance under the generator
 * [F. Diamond and J. Shurman, *A First Course in Modular Forms*][diamondshurman2005], section 1.2
 -/
 
-open Function Complex SlashInvariantForm MatrixGroups Filter
+open Function Complex SlashInvariantForm Filter
+
+open scoped MatrixGroups
 
 open UpperHalfPlane hiding I
 

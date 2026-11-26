@@ -6,12 +6,13 @@ Authors: Frédéric Dupuis
 module
 
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
-public import Mathlib.Analysis.CStarAlgebra.Unitization
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
-public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
-public import Mathlib.Topology.ContinuousMap.ContinuousSqrt
 
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
+import Mathlib.Analysis.CStarAlgebra.Unitization
+import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Isometric
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Isometric
+import Mathlib.Topology.ContinuousMap.ContinuousSqrt
 
 /-! # Facts about star-ordered rings that depend on the continuous functional calculus
 
@@ -483,6 +484,45 @@ lemma star_left_conjugate_le_norm_smul (a b : A) (hb : IsSelfAdjoint b := by cfc
 lemma star_right_conjugate_le_norm_smul (a b : A) (hb : IsSelfAdjoint b := by cfc_tac) :
     a * b * star a ≤ ‖b‖ • (a * star a) := by
   simpa using star_left_conjugate_le_norm_smul (star a) b
+
+theorem norm_posPart_mono {a b : A} (hab : a ≤ b) : ‖a⁺‖ ≤ ‖b⁺‖ := by
+  by_cases! ha : ¬ IsSelfAdjoint a
+  · simp [CFC.posPart_def, cfcₙ_apply_of_not_predicate, ha, mt (IsSelfAdjoint.of_le hab) ha]
+  have hb : IsSelfAdjoint b := ha.of_ge hab
+  have h : a ≤ b⁺ := hab.trans CFC.le_posPart
+  have key := IsSelfAdjoint.conjugate_le_conjugate h (CFC.posPart_nonneg a).isSelfAdjoint
+  nth_rw 2 [← CFC.posPart_sub_negPart a] at key
+  simp only [mul_sub, CFC.posPart_mul_negPart, sub_zero] at key
+  obtain (ha' | ha') := eq_zero_or_norm_pos (a⁺)
+  · simp [ha']
+  suffices ‖a⁺‖ ^ 3 ≤ ‖a⁺‖ * ‖b⁺‖ * ‖a⁺‖ by simpa [pow_succ, ha']
+  calc
+    ‖a⁺‖ ^ 3 = ‖a⁺ * a⁺ * a⁺‖ := by
+      conv_rhs => rw [← cfcₙ_id' ℝ a⁺, ← cfcₙ_mul .., ← cfcₙ_mul ..]
+      simp [← pow_three', norm_cfcₙ_pow ℝ a⁺ 3]
+    _ ≤ ‖a⁺ * b⁺ * a⁺‖ := norm_le_norm_of_le_of_nonneg key
+    _ ≤ ‖a⁺‖ * ‖b⁺‖ * ‖a⁺‖ := norm_mul₃_le ..
+
+theorem norm_negPart_anti {a b : A} (hab : a ≤ b) : ‖b⁻‖ ≤ ‖a⁻‖ := by
+  rw [← neg_neg a, ← neg_le] at hab
+  simpa using norm_posPart_mono hab
+
+theorem _root_.IsSelfAdjoint.norm_le_max_of_le_of_le {a b c : A}
+    (hab : a ≤ b) (hbc : b ≤ c) (hb : IsSelfAdjoint b := by cfc_tac) :
+    ‖b‖ ≤ max ‖a‖ ‖c‖ := calc
+  ‖b‖ = max ‖b⁻‖ ‖b⁺‖ := by rw [hb.norm_eq_max_norm_posPart_negPart b, max_comm]
+  _ ≤ max ‖a⁻‖ ‖c⁺‖ := by grw [norm_negPart_anti hab, norm_posPart_mono hbc]
+  _ ≤ max ‖a‖ ‖c‖ := by gcongr <;> simp
+
+open scoped ComplexStarModule in
+/-- A set in a non-unital C⋆-algebra which is bounded above and below is
+bounded in norm. -/
+lemma isBounded_of_bddAbove_of_bddBelow {s : Set A} (hbd : BddAbove s) (hbd' : BddBelow s) :
+    Bornology.IsBounded s := by
+  obtain ⟨a, ha⟩ := hbd'
+  obtain ⟨b, hb⟩ := hbd
+  refine (Metric.isBounded_iff_subset_closedBall a).mpr ⟨‖b - a‖, fun x hx ↦ ?_⟩
+  aesop (add simp [dist_eq_norm, norm_le_norm_of_le_of_nonneg, mem_lowerBounds, mem_upperBounds])
 
 /-- The set of nonnegative elements in a C⋆-algebra is closed. -/
 lemma isClosed_nonneg : IsClosed {a : A | 0 ≤ a} := by

@@ -27,7 +27,9 @@ public section
 
 open Filter Finset Asymptotics
 
-open Asymptotics Polynomial Topology
+open Asymptotics Polynomial
+
+open scoped Topology
 
 namespace Polynomial
 

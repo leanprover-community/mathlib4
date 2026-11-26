@@ -70,7 +70,7 @@ lemma geom_sum_pos_and_lt_one (hx : x < 0) (hx' : 0 < x + 1) (hn : 1 < n) :
   intro n _ ihn
   rw [geom_sum_succ, add_lt_iff_neg_right, ← neg_lt_iff_pos_add', neg_mul_eq_neg_mul]
   exact
-    ⟨mul_lt_one_of_nonneg_of_lt_one_left (neg_nonneg.2 hx.le) (neg_lt_iff_pos_add'.2 hx') ihn.2.le,
+    ⟨by grw [ihn.2, mul_one, neg_le_iff_add_nonneg', hx']; exact neg_pos.2 hx,
       mul_neg_of_neg_of_pos hx ihn.1⟩
 
 lemma geom_sum_alternating_of_lt_neg_one (hx : x + 1 < 0) (hn : 1 < n) :

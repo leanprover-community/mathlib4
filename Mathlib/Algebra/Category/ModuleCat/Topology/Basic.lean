@@ -352,12 +352,12 @@ topology making it into a topological module. This is left adjoint to the forget
 def withModuleTopology : ModuleCat R ⥤ TopModuleCat R where
   obj X :=
     letI := moduleTopology R X
-    letI := IsModuleTopology.topologicalAddGroup R X
+    letI := IsModuleTopology.isTopologicalAddGroup R X
     .of R X
   map {X Y} f :=
     letI := moduleTopology R X
     letI := moduleTopology R Y
-    letI := IsModuleTopology.topologicalAddGroup R Y
+    letI := IsModuleTopology.isTopologicalAddGroup R Y
     ⟨f.hom, IsModuleTopology.continuous_of_linearMap f.hom⟩
 
 set_option backward.isDefEq.respectTransparency false in

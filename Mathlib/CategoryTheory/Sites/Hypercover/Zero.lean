@@ -6,7 +6,6 @@ Authors: Christian Merten
 module
 
 public import Mathlib.CategoryTheory.Sites.Precoverage
-public import Mathlib.CategoryTheory.Limits.Shapes.Products
 
 /-!
 # 0-hypercovers

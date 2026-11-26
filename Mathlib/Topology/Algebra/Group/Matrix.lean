@@ -8,7 +8,7 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.FinTwo
 public import Mathlib.Topology.Algebra.Algebra
-public import Mathlib.Topology.Algebra.Group.Pointwise
+public import Mathlib.Topology.Algebra.Group.Units
 public import Mathlib.Topology.Instances.Matrix
 
 /-!
@@ -122,10 +122,12 @@ lemma _root_.Topology.IsClosedEmbedding.specialLinearGroup_map [T1Space R]
 instance instT1Space [T1Space R] : T1Space (SL n R) := isClosedEmbedding_val.isEmbedding.t1Space
 
 /-- The special linear group over a topological ring is a topological group. -/
-instance topologicalGroup : IsTopologicalGroup (SL n R) where
+instance isTopologicalGroup : IsTopologicalGroup (SL n R) where
   continuous_inv := continuous_induced_rng.mpr continuous_induced_dom.matrix_adjugate
   continuous_mul := continuous_induced_rng.mpr <|
     (continuous_induced_dom.comp continuous_fst).mul (continuous_induced_dom.comp continuous_snd)
+
+@[deprecated (since := "2026-08-21")] alias topologicalGroup := isTopologicalGroup
 
 /-!
 ### Mapping `SL(n, R)` to `GL(n, R)`

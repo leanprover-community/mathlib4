@@ -33,7 +33,9 @@ inner product space, Hilbert space, norm
 
 noncomputable section
 
-open RCLike Real Filter Topology ComplexConjugate Finsupp
+open RCLike Real Filter Topology Finsupp
+
+open scoped ComplexConjugate
 
 open LinearMap (BilinForm)
 
@@ -635,6 +637,12 @@ theorem inner_sum_smul_sum_smul_of_sum_eq_zero {ι₁ : Type*} {s₁ : Finset ι
     Finset.sum_add_distrib, ← Finset.mul_sum, ← Finset.sum_mul, h₁, h₂, zero_mul,
     mul_zero, Finset.sum_const_zero, zero_add, zero_sub, Finset.mul_sum, neg_div,
     Finset.sum_div, mul_div_assoc, mul_assoc]
+
+/-- `⟪x, y⟫ = 0` if and only if `re ⟪c • x, y⟫ = 0` for every `c : 𝕜` -/
+theorem inner_eq_zero_iff_forall_re_inner_smul_left {x y : E} :
+    ⟪x, y⟫ = 0 ↔ ∀ c : 𝕜, re ⟪c • x, y⟫ = 0 := by
+  refine ⟨fun h c ↦ by simp [inner_smul_left, h], fun h ↦ ?_⟩
+  simpa [inner_smul_left, RCLike.conj_mul, -inner_conj_symm] using h ⟪x, y⟫
 
 end Norm_Seminormed
 

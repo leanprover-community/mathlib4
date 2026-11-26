@@ -23,7 +23,7 @@ We show that `π_0 X x` is equivalent to the path-connected components, and
 that `π_1 X x` is equivalent to the fundamental group at `x`.
 We provide a group instance using path composition and show commutativity when `n > 1`.
 
-## definitions
+## Definitions
 
 * `GenLoop N x` is the type of continuous functions `I^N → X` that send the boundary to `x`,
 * `HomotopyGroup.Pi n X x` denoted `π_ n X x` is the quotient of `GenLoop (Fin n) x` by
@@ -31,7 +31,8 @@ We provide a group instance using path composition and show commutativity when `
 * group instance `Group (π_(n+1) X x)`,
 * commutative group instance `CommGroup (π_(n+2) X x)`.
 
-TODO:
+## TODO
+
 * `Ω^M (Ω^N X) ≃ₜ Ω^(M⊕N) X`, and `Ω^M X ≃ₜ Ω^N X` when `M ≃ N`. Similarly for `π_`.
 * Examples with `𝕊^n`: `π_n (𝕊^n) = ℤ`, `π_m (𝕊^n)` trivial for `m < n`.
 * Actions of π_1 on π_n.

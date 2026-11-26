@@ -18,7 +18,9 @@ respect to some affine basis.
 @[expose] public section
 
 
-open Affine Matrix
+open Matrix
+
+open scoped Affine
 
 open Set
 

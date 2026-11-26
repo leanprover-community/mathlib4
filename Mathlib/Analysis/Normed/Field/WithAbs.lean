@@ -83,11 +83,19 @@ instance : UniformContinuousConstSMul R (WithAbs w) where
 
 end CommRing
 
+variable {K L : Type*} [Field K] [Field L] [Algebra K L] (v : AbsoluteValue K ℝ)
+  (w : AbsoluteValue L ℝ) [w.LiesOver v]
+
+theorem isometry_map : Isometry (WithAbs.map v w (algebraMap K L)) := by
+  rw [← AbsoluteValue.LiesOver.under_eq w v, AddMonoidHomClass.isometry_iff_norm]
+  simp_rw [map_apply, norm_eq_apply_ofAbs]
+  simp [AbsoluteValue.under_def]
+
+end WithAbs
+
 /-!
 ### The completion of a field at an absolute value.
 -/
-
-end WithAbs
 
 namespace AbsoluteValue
 
@@ -102,6 +110,52 @@ namespace Completion
 
 noncomputable instance : Coe K v.Completion where
   coe k : v.Completion := ↑(toAbs v k)
+
+section Algebra
+
+variable {L : Type*} [Field L] [Algebra K L] (w : AbsoluteValue L ℝ) [w.LiesOver v]
+
+/-- If `w` lies over `v` with completions `K_v` and `L_w`, then there is a unique `K_v`-algebra
+structure on `L_w` satisfying both `IsScalarTower K K_v L_w` and `ContinuousSMul K_v L_w`,
+see `AbsoluteValue.Completion.algebraMap_eq` and `AbsoluteValue.Completion.algebra_eq`. -/
+@[instance_reducible]
+noncomputable def algebraOfLiesOver : Algebra v.Completion w.Completion :=
+  (UniformSpace.Completion.mapRingHom (WithAbs.map v w (algebraMap K L))
+    (WithAbs.isometry_map v w).continuous).toAlgebra
+
+instance : letI := algebraOfLiesOver v w
+    IsScalarTower K v.Completion w.Completion :=
+  let := algebraOfLiesOver v w
+  IsScalarTower.of_algebraMap_eq fun x ↦ (UniformSpace.Completion.mapRingHom_coe
+    (WithAbs.isometry_map v w).continuous (WithAbs.toAbs v x)).symm
+
+instance : letI := algebraOfLiesOver v w
+    ContinuousSMul v.Completion w.Completion :=
+  let := algebraOfLiesOver v w
+  continuousSMul_of_algebraMap v.Completion w.Completion
+    (UniformSpace.Completion.isometry_mapRingHom (WithAbs.isometry_map v w)).continuous
+
+variable [Algebra v.Completion w.Completion] [IsScalarTower K v.Completion w.Completion]
+  [ContinuousSMul v.Completion w.Completion]
+
+open UniformSpace.Completion in
+theorem algebraMap_eq : algebraMap v.Completion w.Completion =
+    UniformSpace.Completion.mapRingHom (WithAbs.map v w (algebraMap K L))
+      (WithAbs.isometry_map v w).continuous := by
+  refine DFunLike.ext' (extension_unique ?_ ?_ ?_).symm
+  · exact (uniformContinuous_coe (WithAbs w)).comp (isometry_map v w).uniformContinuous
+  · exact uniformContinuous_addMonoidHom_of_continuous (continuous_algebraMap _ _)
+  · exact fun _ ↦ IsScalarTower.algebraMap_apply ..
+
+theorem algebraMap_apply (x : v.Completion) :
+    algebraMap v.Completion w.Completion x = UniformSpace.Completion.mapRingHom
+      (WithAbs.map v w (algebraMap K L)) (WithAbs.isometry_map v w).continuous x := by
+  rw [algebraMap_eq]
+
+theorem algebra_eq : ‹_› = algebraOfLiesOver v w :=
+  Algebra.algebra_ext _ _ (algebraMap_apply v w)
+
+end Algebra
 
 variable {L : Type*} [NormedField L] [CompleteSpace L] {f : WithAbs v →+* L} {v}
 

@@ -17,7 +17,9 @@ the monotone convergence theorem that use this subtraction in their proofs.
 
 public section
 
-open Filter ENNReal Topology
+open Filter ENNReal
+
+open scoped Topology
 
 namespace MeasureTheory
 

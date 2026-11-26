@@ -13,7 +13,7 @@ public import Mathlib.Topology.EMetricSpace.Defs
 public import Mathlib.Topology.UniformSpace.Basic
 
 /-!
-## Pseudo-metric spaces
+# Pseudo-metric spaces
 
 This file defines pseudo-metric spaces: these differ from metric spaces by not imposing the
 condition `dist x y = 0 → x = y`.

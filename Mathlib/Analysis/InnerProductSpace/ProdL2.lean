@@ -145,8 +145,8 @@ def quotientEquivOrthogonal : (E ⧸ K) ≃ₗᵢ[𝕜] ↥Kᗮ where
   __ := K.quotientEquivOfIsCompl Kᗮ K.isCompl_orthogonal
   norm_map' y := by
     set f := K.quotientEquivOfIsCompl Kᗮ K.isCompl_orthogonal
-    rw [coe_norm, ← norm_orthogonalProjectionOnto_apply Kᗮ (f y).2,
-      orthogonalProjectionOnto_orthogonal, coe_norm, starProjection_minimal, eq_comm]
+    rw [← norm_coe, ← norm_orthogonalProjectionOnto_apply Kᗮ (f y).2,
+      orthogonalProjectionOnto_orthogonal, ← norm_coe, starProjection_minimal, eq_comm]
     have h : ‖Quotient.mk (f y).val‖ = sInf ((fun (x : E) ↦ ‖(f y).val + x‖) '' K.toAddSubgroup) :=
       quotient_norm_mk_eq K.toAddSubgroup (f y).1
     convert! h using 2

@@ -8,6 +8,8 @@ module
 public import Mathlib.NumberTheory.Padics.PadicNumbers
 public import Mathlib.RingTheory.DiscreteValuationRing.Basic
 
+import Mathlib.Tactic.Bound
+
 /-!
 # p-adic integers
 
@@ -81,7 +83,7 @@ def subring : Subring ℚ_[p] where
   zero_mem' := by simp
   one_mem' := by simp
   add_mem' hx hy := (Padic.nonarchimedean _ _).trans <| max_le_iff.2 ⟨hx, hy⟩
-  mul_mem' hx hy := (padicNormE.mul _ _).trans_le <| mul_le_one₀ hx (norm_nonneg _) hy
+  mul_mem' hx hy := (padicNormE.mul _ _).trans_le <| by bound
   neg_mem' hx := (norm_neg _).trans_le hx
 
 @[simp]
@@ -210,6 +212,7 @@ variable {p}
 
 /-! ### Norm -/
 
+@[bound]
 theorem norm_le_one (z : ℤ_[p]) : ‖z‖ ≤ 1 := z.2
 
 theorem nonarchimedean (q r : ℤ_[p]) : ‖q + r‖ ≤ max ‖q‖ ‖r‖ := Padic.nonarchimedean _ _
@@ -381,7 +384,7 @@ theorem norm_lt_one_add {z1 z2 : ℤ_[p]} (hz1 : ‖z1‖ < 1) (hz2 : ‖z2‖ <
 theorem norm_lt_one_mul {z1 z2 : ℤ_[p]} (hz2 : ‖z2‖ < 1) : ‖z1 * z2‖ < 1 :=
   calc
     ‖z1 * z2‖ = ‖z1‖ * ‖z2‖ := by simp
-    _ < 1 := mul_lt_one_of_nonneg_of_lt_one_right (norm_le_one _) (norm_nonneg _) hz2
+    _ < 1 := (mul_le_of_le_one_left (norm_nonneg _) (norm_le_one _)).trans_lt hz2
 
 theorem mem_nonunits {z : ℤ_[p]} : z ∈ nonunits ℤ_[p] ↔ ‖z‖ < 1 := by
   simp [norm_le_one z, nonunits, isUnit_iff]

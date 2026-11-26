@@ -31,7 +31,9 @@ discussion.
 
 namespace Complex
 
-open ComplexConjugate Filter Function MeromorphicOn Metric Real Set Topology
+open Filter Function MeromorphicOn Metric Real Set
+
+open scoped ComplexConjugate Topology
 
 variable {R : ℝ} {w : ℂ}
 

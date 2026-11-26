@@ -12,7 +12,7 @@ public import Mathlib.Data.Finset.Pairwise
 public import Mathlib.Data.Fintype.Pigeonhole
 public import Mathlib.Data.Fintype.Powerset
 public import Mathlib.Order.Lattice.Nat
-public import Mathlib.SetTheory.Cardinal.Finite
+public import Mathlib.SetTheory.Cardinal.NatCard
 public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
@@ -747,6 +747,34 @@ lemma exists_isNClique_cliqueNum : ∃ s, G.IsNClique G.cliqueNum s := by
   by_cases h : BddAbove {n | ∃ s, G.IsNClique n s}
   · exact Nat.sSup_mem ⟨0, by simp⟩ h
   · simp [cliqueNum, h]
+
+variable (G) in
+@[simp]
+theorem cliqueNum_of_isEmpty [IsEmpty α] : G.cliqueNum = 0 :=
+  Nat.le_zero.mp <| csSup_le' fun n ⟨s, h⟩ ↦ by simp [s.eq_empty_of_isEmpty, ← h.card_eq]
+
+variable (G) in
+theorem cliqueNum_le_natCard [Finite α] : G.cliqueNum ≤ Nat.card α :=
+  csSup_le' fun _ ⟨s, h⟩ ↦ s.card_le_natCard |>.trans_eq' h.card_eq
+
+variable (G) in
+theorem cliqueNum_le_enatCard : G.cliqueNum ≤ ENat.card α := by
+  cases finite_or_infinite α
+  · grw [ENat.card_eq_coe_natCard, Nat.cast_le, cliqueNum_le_natCard]
+  · simp
+
+variable (α) in
+@[simp]
+theorem cliqueNum_top : (⊤ : SimpleGraph α).cliqueNum = Nat.card α := by
+  cases finite_or_infinite α
+  · have := Fintype.ofFinite α
+    apply cliqueNum_le_natCard _ |>.antisymm
+    grw [Nat.card_eq_fintype_card, ← Finset.card_univ, IsClique.card_le_cliqueNum]
+    apply IsClique.top
+  · rw [Nat.card_eq_zero_of_infinite]
+    apply Set.Infinite.Nat.sSup_eq_zero
+    rw [Set.eq_univ_of_forall (Finset.exists_card_eq · |>.imp fun _ hn ↦ ⟨.top _, hn⟩)]
+    exact Set.infinite_univ
 
 theorem cliqueNum_induce_le [Finite α] (s : Set α) :
     (G.induce s).cliqueNum ≤ G.cliqueNum := by

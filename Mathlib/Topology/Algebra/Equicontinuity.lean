@@ -17,7 +17,7 @@ public section
 
 open Function
 
-open UniformConvergence
+open scoped UniformConvergence
 
 @[to_additive]
 theorem equicontinuous_of_equicontinuousAt_one {ι G M hom : Type*} [TopologicalSpace G]

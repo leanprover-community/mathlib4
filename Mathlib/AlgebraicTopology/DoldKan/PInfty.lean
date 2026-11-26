@@ -27,7 +27,9 @@ projection on the normalized Moore subcomplex, with kernel the degenerate subcom
 
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Preadditive
-  CategoryTheory.SimplicialObject CategoryTheory.Idempotents Opposite Simplicial DoldKan
+  CategoryTheory.SimplicialObject CategoryTheory.Idempotents Opposite
+
+open scoped Simplicial DoldKan
 
 namespace AlgebraicTopology
 

@@ -131,6 +131,8 @@ The trust model does not attempt to defend against:
   branch builds the cache binary itself.
 - **Compromised storage tenant** — admin-level compromise defeats the access
   grants.
+- **Substituted read endpoint** — a host named by `MATHLIB_CACHE_GET_URL`
+  chooses the bytes it serves, and it carries the storage tenant's trust.
 - **Sandbox escape via kernel vulnerability** — invalidates Layer 3.
 - **Maintainer trust on the trusted branches** — write access to a branch the
   cache binary is built from can land a bad tool, workflow, or toolchain.

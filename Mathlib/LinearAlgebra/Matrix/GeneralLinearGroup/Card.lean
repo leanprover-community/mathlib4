@@ -62,6 +62,15 @@ end LinearIndependent
 
 namespace Matrix
 
+/-- The cardinal of a matrix. -/
+theorem card_matrix {m n α} [Finite m] [Finite n] :
+    Nat.card (Matrix m n α) = Nat.card α ^ (Nat.card n * Nat.card m) := by
+  simp [Matrix, Nat.card_fun, ← pow_mul]
+
+theorem enatCard_matrix {m n α} :
+    ENat.card (Matrix m n α) = ENat.card α ^ (ENat.card n * ENat.card m) := by
+  simp [Matrix, ENat.card_fun, ←ENat.epow_mul]
+
 section field
 
 variable {𝔽 : Type*} [Field 𝔽] [Fintype 𝔽]

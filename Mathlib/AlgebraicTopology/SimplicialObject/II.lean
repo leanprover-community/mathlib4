@@ -31,7 +31,9 @@ by Gabriel and Zisman.
 
 @[expose] public section
 
-open CategoryTheory Simplicial Opposite
+open CategoryTheory Opposite
+
+open scoped Simplicial
 
 namespace SimplexCategory
 

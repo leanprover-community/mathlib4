@@ -52,7 +52,6 @@ instance sectionsMonoid : Monoid (F ⋙ forget MonCat.{u}).sections :=
 
 variable [Small.{u} (Functor.sections (F ⋙ forget MonCat))]
 
-set_option backward.inferInstanceAs.wrap.data false in
 @[to_additive]
 noncomputable instance limitMonoid :
     Monoid (Types.Small.limitCone.{v, u} (F ⋙ forget MonCat.{u})).pt :=

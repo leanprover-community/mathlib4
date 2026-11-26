@@ -3,13 +3,15 @@ Copyright (c) 2024 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Archimedean.Real.Basic
-import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
-import Mathlib.Algebra.Order.ToIntervalMod
-import Mathlib.Tactic.Peel
-import Mathlib.Tactic.Recall
+module
+
+public import Mathlib.Algebra.BigOperators.Intervals
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Order.Archimedean.Real.Basic
+public import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
+public import Mathlib.Algebra.Order.ToIntervalMod
+public import Mathlib.Tactic.Peel
+public import Mathlib.Tactic.Recall
 
 /-!
 # IMO 2024 Q1
@@ -25,6 +27,8 @@ We follow Solution 3 from the
 First reducing modulo 2, any answer that is not a multiple of 2 is inductively shown to be
 contained in a decreasing sequence of intervals, with empty intersection.
 -/
+
+@[expose] public section
 
 open Finset
 

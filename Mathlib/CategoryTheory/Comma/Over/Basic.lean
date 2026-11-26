@@ -173,7 +173,7 @@ section
 variable (X)
 
 /-- The forgetful functor mapping an arrow to its domain. -/
-@[stacks 001G]
+@[stacks 001G, implicit_reducible]
 def forget : Over X ⥤ T :=
   Comma.fst _ _
 
@@ -521,7 +521,6 @@ def iteratedSliceForwardIsoPost (f : Over X) :
 
 open Limits
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 variable {X} in
 /-- If `X : T` is terminal, then the over category of `X` is equivalent to `T`. -/
@@ -1325,7 +1324,6 @@ def ofCostructuredArrowProjEquivalence.functor (F : T ⥤ D) (Y : D) (X : T) :
       (fun g => by exact g.hom) (fun m => by have := m.w; cat_disch)) _ _
     (fun f => f.left.hom) (by simp)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The inverse functor of `ofCostructuredArrowProjEquivalence.functor`. -/
 @[simps!]
@@ -1360,7 +1358,6 @@ def ofDiagEquivalence.functor (X : T × T) :
     _ _
     (fun f => f.hom.2) (fun m => by have := congrArg (·.2) m.w; cat_disch)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The inverse functor of `ofDiagEquivalence.functor`. -/
 @[simps!]

@@ -6,8 +6,9 @@ Authors: Yury Kudryashov, Yaël Dillies
 module
 
 public import Mathlib.Algebra.Group.Defs
-public import Mathlib.Order.OrderDual
+public import Mathlib.Algebra.Notation.Defs
 public import Mathlib.Order.Lex
+public import Mathlib.Order.OrderDual
 
 /-!
 # Group structure on the order type synonyms

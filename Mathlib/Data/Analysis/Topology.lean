@@ -29,7 +29,7 @@ open Set
 
 open Filter hiding Realizer
 
-open Topology
+open scoped Topology
 
 /-- A `Ctop α σ` is a realization of a topology (basis) on `α`,
   represented by a type `σ` together with operations for the top element and

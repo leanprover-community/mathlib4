@@ -164,7 +164,7 @@ end Module
 
 end OrderedSemiring
 
-open Convex
+open scoped Convex
 
 section OrderedRing
 

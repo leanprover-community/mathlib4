@@ -27,7 +27,9 @@ sums to `a * b` (`HasSum.mul_of_nonarchimedean`).
 
 public section
 
-open Filter Topology
+open Filter
+
+open scoped Topology
 
 namespace NonarchimedeanGroup
 

@@ -75,74 +75,91 @@ theorem eventually_finset_ball {ι : Type*} {S : Finset ι} {p : α → ∀ i �
 
 namespace Filter
 
-theorem EventuallyLE.countable_iUnion [Countable ι] {s t : ι → Set α} (h : ∀ i, s i ≤ᶠ[l] t i) :
+theorem EventuallySubset.countable_iUnion [Countable ι] {s t : ι → Set α} (h : ∀ i, s i ≤ᶠ[l] t i) :
     ⋃ i, s i ≤ᶠ[l] ⋃ i, t i :=
   (eventually_countable_forall.2 h).mono fun _ hst hs => mem_iUnion.2 <| (mem_iUnion.1 hs).imp hst
 
 @[deprecated (since := "2026-03-03")] alias _root_.EventuallyLE.countable_iUnion :=
-  EventuallyLE.countable_iUnion
+  EventuallySubset.countable_iUnion
 
-theorem EventuallyEq.countable_iUnion [Countable ι] {s t : ι → Set α} (h : ∀ i, s i =ᶠ[l] t i) :
+theorem EventuallyEqSet.countable_iUnion [Countable ι] {s t : ι → Set α} (h : ∀ i, s i =ᶠ[l] t i) :
     ⋃ i, s i =ᶠ[l] ⋃ i, t i :=
-  (EventuallyLE.countable_iUnion fun i => (h i).le).antisymm
-    (EventuallyLE.countable_iUnion fun i => (h i).symm.le)
+  (EventuallySubset.countable_iUnion fun i => (h i).subset).antisymm
+    (EventuallySubset.countable_iUnion fun i => (h i).symm.subset)
 
 @[deprecated (since := "2026-03-03")] alias _root_.EventuallyEq.countable_iUnion :=
-  EventuallyEq.countable_iUnion
+  EventuallyEqSet.countable_iUnion
 
-theorem EventuallyLE.countable_bUnion {ι : Type*} {S : Set ι} (hS : S.Countable)
+theorem EventuallySubset.countable_bUnion {ι : Type*} {S : Set ι} (hS : S.Countable)
     {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi ≤ᶠ[l] t i hi) :
     ⋃ i ∈ S, s i ‹_› ≤ᶠ[l] ⋃ i ∈ S, t i ‹_› := by
   simp only [biUnion_eq_iUnion]
   have := hS.toEncodable
-  exact EventuallyLE.countable_iUnion fun i => h i i.2
+  exact EventuallySubset.countable_iUnion fun i => h i i.2
 
 @[deprecated (since := "2026-03-03")] alias _root_.EventuallyLE.countable_bUnion :=
-  EventuallyLE.countable_bUnion
+  EventuallySubset.countable_bUnion
 
-theorem EventuallyEq.countable_bUnion {ι : Type*} {S : Set ι} (hS : S.Countable)
+theorem EventuallyEqSet.countable_bUnion {ι : Type*} {S : Set ι} (hS : S.Countable)
     {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi =ᶠ[l] t i hi) :
     ⋃ i ∈ S, s i ‹_› =ᶠ[l] ⋃ i ∈ S, t i ‹_› :=
-  (EventuallyLE.countable_bUnion hS fun i hi => (h i hi).le).antisymm
-    (EventuallyLE.countable_bUnion hS fun i hi => (h i hi).symm.le)
+  (EventuallySubset.countable_bUnion hS fun i hi => (h i hi).subset).antisymm
+    (EventuallySubset.countable_bUnion hS fun i hi => (h i hi).symm.subset)
 
 @[deprecated (since := "2026-03-03")] alias _root_.EventuallyEq.countable_bUnion :=
-  EventuallyEq.countable_bUnion
+  EventuallyEqSet.countable_bUnion
 
-theorem EventuallyLE.countable_iInter [Countable ι] {s t : ι → Set α} (h : ∀ i, s i ≤ᶠ[l] t i) :
+theorem EventuallySubset.countable_iInter [Countable ι] {s t : ι → Set α} (h : ∀ i, s i ≤ᶠ[l] t i) :
     ⋂ i, s i ≤ᶠ[l] ⋂ i, t i :=
   (eventually_countable_forall.2 h).mono fun _ hst hs =>
     mem_iInter.2 fun i => hst _ (mem_iInter.1 hs i)
 
 @[deprecated (since := "2026-03-03")] alias _root_.EventuallyLE.countable_iInter :=
-  EventuallyLE.countable_iInter
+  EventuallySubset.countable_iInter
 
-theorem EventuallyEq.countable_iInter [Countable ι] {s t : ι → Set α} (h : ∀ i, s i =ᶠ[l] t i) :
+theorem EventuallyEqSet.countable_iInter [Countable ι] {s t : ι → Set α} (h : ∀ i, s i =ᶠ[l] t i) :
     ⋂ i, s i =ᶠ[l] ⋂ i, t i :=
-  (EventuallyLE.countable_iInter fun i => (h i).le).antisymm
-    (EventuallyLE.countable_iInter fun i => (h i).symm.le)
+  (EventuallySubset.countable_iInter fun i => (h i).subset).antisymm
+    (EventuallySubset.countable_iInter fun i => (h i).symm.subset)
 
 @[deprecated (since := "2026-03-03")] alias _root_.EventuallyEq.countable_iInter :=
-  EventuallyEq.countable_iInter
+  EventuallyEqSet.countable_iInter
 
-theorem EventuallyLE.countable_bInter {ι : Type*} {S : Set ι} (hS : S.Countable)
+theorem EventuallySubset.countable_bInter {ι : Type*} {S : Set ι} (hS : S.Countable)
     {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi ≤ᶠ[l] t i hi) :
     ⋂ i ∈ S, s i ‹_› ≤ᶠ[l] ⋂ i ∈ S, t i ‹_› := by
   simp only [biInter_eq_iInter]
   have := hS.toEncodable
-  exact EventuallyLE.countable_iInter fun i => h i i.2
+  exact EventuallySubset.countable_iInter fun i => h i i.2
 
 @[deprecated (since := "2026-03-03")] alias _root_.EventuallyLE.countable_bInter :=
-  EventuallyLE.countable_bInter
+  EventuallySubset.countable_bInter
 
-theorem EventuallyEq.countable_bInter {ι : Type*} {S : Set ι} (hS : S.Countable)
+theorem EventuallyEqSet.countable_bInter {ι : Type*} {S : Set ι} (hS : S.Countable)
     {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi =ᶠ[l] t i hi) :
     ⋂ i ∈ S, s i ‹_› =ᶠ[l] ⋂ i ∈ S, t i ‹_› :=
-  (EventuallyLE.countable_bInter hS fun i hi => (h i hi).le).antisymm
-    (EventuallyLE.countable_bInter hS fun i hi => (h i hi).symm.le)
+  (EventuallySubset.countable_bInter hS fun i hi => (h i hi).subset).antisymm
+    (EventuallySubset.countable_bInter hS fun i hi => (h i hi).symm.subset)
 
 @[deprecated (since := "2026-03-03")] alias _root_.EventuallyEq.countable_bInter :=
-  EventuallyEq.countable_bInter
+  EventuallyEqSet.countable_bInter
+
+@[deprecated (since := "2026-08-14")]
+alias EventuallyLE.countable_iUnion := EventuallySubset.countable_iUnion
+@[deprecated (since := "2026-08-14")]
+alias EventuallyEq.countable_iUnion := EventuallyEqSet.countable_iUnion
+@[deprecated (since := "2026-08-14")]
+alias EventuallyLE.countable_bUnion := EventuallySubset.countable_bUnion
+@[deprecated (since := "2026-08-14")]
+alias EventuallyEq.countable_bUnion := EventuallyEqSet.countable_bUnion
+@[deprecated (since := "2026-08-14")]
+alias EventuallyLE.countable_iInter := EventuallySubset.countable_iInter
+@[deprecated (since := "2026-08-14")]
+alias EventuallyEq.countable_iInter := EventuallyEqSet.countable_iInter
+@[deprecated (since := "2026-08-14")]
+alias EventuallyLE.countable_bInter := EventuallySubset.countable_bInter
+@[deprecated (since := "2026-08-14")]
+alias EventuallyEq.countable_bInter := EventuallyEqSet.countable_bInter
 
 /-- Construct a filter with countable intersection property. This constructor deduces
 `Filter.univ_sets` and `Filter.inter_sets` from the countable intersection property. -/
