@@ -26,14 +26,14 @@ open scoped Nat
 /-- Power series of the modified Bessel function of the first kind, integer order
 `n ≥ 0`: `I_n(x) = ∑_{k≥0} (x/2)^(n+2k) / (k! · (n+k)!)`. This is the genuine
 series (not a stand-in); `noncomputable` only because it is a real `tsum`. -/
-noncomputable def besselI_series (n : ℕ) (x : ℝ) : ℝ :=
+noncomputable def besselISeries (n : ℕ) (x : ℝ) : ℝ :=
   ∑' k : ℕ, (x / 2) ^ (n + 2 * k) / ((Nat.factorial k : ℝ) * (Nat.factorial (n + k) : ℝ))
 
-/-- The defining series of `besselI_series` is summable for every order `n` and
+/-- The defining series of `besselISeries` is summable for every order `n` and
 every real argument `x`. Proof: dominate term-by-term (in absolute value) by
 `(|x/2|^n / n!) · (|x/2|^2)^k / k!`, a constant multiple of the exponential
 series `∑ y^k/k!`, using `(n+k)! ≥ n!`. -/
-theorem besselI_series_summable (n : ℕ) (x : ℝ) :
+theorem besselISeries_summable (n : ℕ) (x : ℝ) :
     Summable (fun k : ℕ =>
       (x / 2) ^ (n + 2 * k) / ((Nat.factorial k : ℝ) * (Nat.factorial (n + k) : ℝ))) := by
   set t : ℝ := x / 2
