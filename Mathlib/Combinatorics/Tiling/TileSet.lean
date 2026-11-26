@@ -393,7 +393,7 @@ lemma mem_symmetryGroup_smul_iff' {t : TileSet ps ιₜ} {g g' : G} :
 
 lemma symmetryGroup_le_stabilizer_range (t : TileSet ps ιₜ) :
     t.symmetryGroup ≤ MulAction.stabilizer G (Set.range t) := by
-  simp_rw [SetLike.le_def, mem_symmetryGroup_iff_exists, MulAction.mem_stabilizer_iff]
+  simp_rw [IsMemLE.le_iff_mem_imp_mem, mem_symmetryGroup_iff_exists, MulAction.mem_stabilizer_iff]
   rintro g ⟨f, hf⟩
   nth_rewrite 2 [← hf]
   simp
@@ -401,7 +401,7 @@ lemma symmetryGroup_le_stabilizer_range (t : TileSet ps ιₜ) :
 lemma symmetryGroup_eq_stabilizer_range_of_injective (t : TileSet ps ιₜ) (h : Injective t) :
     t.symmetryGroup = MulAction.stabilizer G (Set.range t) := by
   refine le_antisymm t.symmetryGroup_le_stabilizer_range ?_
-  simp_rw [SetLike.le_def, mem_symmetryGroup_iff_exists, MulAction.mem_stabilizer_iff]
+  simp_rw [IsMemLE.le_iff_mem_imp_mem, mem_symmetryGroup_iff_exists, MulAction.mem_stabilizer_iff]
   intro g hg
   rw [← range_smul] at hg
   exact ⟨equivOfRangeEqOfInjective hg ((injective_smul_iff g).2 h) h, by simp⟩
