@@ -6552,6 +6552,7 @@ public import Mathlib.Order.SuccPred.Fin
 public import Mathlib.Order.SuccPred.InitialSeg
 public import Mathlib.Order.SuccPred.Int
 public import Mathlib.Order.SuccPred.IntervalSucc
+public import Mathlib.Order.SuccPred.Lex
 public import Mathlib.Order.SuccPred.Limit
 public import Mathlib.Order.SuccPred.LinearLocallyFinite
 public import Mathlib.Order.SuccPred.Nat
