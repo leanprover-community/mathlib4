@@ -57,7 +57,8 @@ def IsSemisimple := IsSemisimpleModule R[X] (AEval' f)
 /-- A weaker version of semisimplicity that only prescribes behaviour on finitely-generated
 submodules. -/
 def IsFinitelySemisimple : Prop :=
-  ∀ p (hp : p ∈ invtSubmodule f), Module.Finite R p → IsSemisimple (LinearMap.restrict f hp)
+  ∀ p (hp : p ∈ invtSubmodule f), Module.Finite R p → IsSemisimple (LinearMap.restrict f
+    ((mem_invtSubmodule_iff_mapsTo f).mp hp))
 
 variable {f}
 
@@ -76,9 +77,10 @@ lemma isSemisimple_iff :
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma isSemisimple_restrict_iff (p) (hp : p ∈ invtSubmodule f) :
-    IsSemisimple (LinearMap.restrict f hp) ↔
+    IsSemisimple (LinearMap.restrict f ((mem_invtSubmodule_iff_mapsTo f).mp hp)) ↔
     ∀ q ∈ f.invtSubmodule, q ≤ p → ∃ r ≤ p, r ∈ f.invtSubmodule ∧ Disjoint q r ∧ q ⊔ r = p := by
-  let e : Submodule R[X] (AEval' (f.restrict hp)) ≃o Iic (AEval.mapSubmodule R M f ⟨p, hp⟩) :=
+  let e : Submodule R[X] (AEval' (f.restrict ((mem_invtSubmodule_iff_mapsTo f).mp hp)))
+     ≃o Iic (AEval.mapSubmodule R M f ⟨p, hp⟩) :=
     (Submodule.orderIsoMapComap <| AEval.restrict_equiv_mapSubmodule f p hp).trans
       (Submodule.mapIic _)
   simp_rw [IsSemisimple, isSemisimpleModule_iff, e.complementedLattice_iff, disjoint_iff,
@@ -93,7 +95,8 @@ invariant submodule.
 See also `Module.End.isFinitelySemisimple_iff`. -/
 lemma isFinitelySemisimple_iff' :
     f.IsFinitelySemisimple ↔ ∀ p (hp : p ∈ invtSubmodule f),
-      Module.Finite R p → IsSemisimple (LinearMap.restrict f hp) :=
+      Module.Finite R p →
+        IsSemisimple (LinearMap.restrict f ((mem_invtSubmodule_iff_mapsTo f).mp hp)) :=
   Iff.rfl
 
 /-- A characterisation of `Module.End.IsFinitelySemisimple` using only the lattice of submodules of
@@ -101,7 +104,8 @@ lemma isFinitelySemisimple_iff' :
 lemma isFinitelySemisimple_iff :
     f.IsFinitelySemisimple ↔ ∀ p ∈ invtSubmodule f, Module.Finite R p → ∀ q ∈ invtSubmodule f,
       q ≤ p → ∃ r, r ≤ p ∧ r ∈ invtSubmodule f ∧ Disjoint q r ∧ q ⊔ r = p := by
-  simp_rw [isFinitelySemisimple_iff', isSemisimple_restrict_iff]
+  rw [isFinitelySemisimple_iff']
+  exact forall₂_congr fun p hp ↦ by rw [isSemisimple_restrict_iff p hp]
 
 @[simp]
 lemma isSemisimple_zero [IsSemisimpleModule R M] : IsSemisimple (0 : Module.End R M) := by
@@ -129,10 +133,10 @@ lemma eq_zero_of_isNilpotent_isSemisimple (hn : IsNilpotent f) (hs : f.IsSemisim
   rw [← RingHom.mem_ker, ← AEval.annihilator_eq_ker_aeval (M := M)] at h0 ⊢
   exact hs.annihilator_isRadical _ _ ⟨n, h0⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma eq_zero_of_isNilpotent_of_isFinitelySemisimple
     (hn : IsNilpotent f) (hs : IsFinitelySemisimple f) : f = 0 := by
-  have (p) (hp₁ : p ∈ f.invtSubmodule) (hp₂ : Module.Finite R p) : f.restrict hp₁ = 0 := by
+  have (p) (hp₁ : p ∈ f.invtSubmodule) (hp₂ : Module.Finite R p) :
+      f.restrict ((mem_invtSubmodule_iff_mapsTo f).mp hp₁) = 0 := by
     specialize hs p hp₁ hp₂
     replace hn : IsNilpotent (f.restrict hp₁) := isNilpotent.restrict hp₁ hn
     exact eq_zero_of_isNilpotent_isSemisimple hn hs

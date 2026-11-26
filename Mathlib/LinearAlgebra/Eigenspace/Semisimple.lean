@@ -42,7 +42,7 @@ lemma apply_eq_of_mem_of_comm_of_isFinitelySemisimple_of_isNil
   obtain ⟨l, -, hm⟩ := hm
   rw [← f.mem_genEigenspace_nat] at hm
   set p := f.genEigenspace μ l
-  have h₁ : ∀ x ∈ p, g x ∈ p := mapsTo_genEigenspace_of_comm hfg μ l
+  have h₁ : MapsTo g p p := mapsTo_genEigenspace_of_comm hfg μ l
   have h₂ : MapsTo (g - algebraMap R (End R M) μ) p p :=
     mapsTo_genEigenspace_of_comm (hfg.sub_right <| Algebra.commute_algebraMap_right μ f) μ l
   have h₃ : MapsTo (f - g) p p :=

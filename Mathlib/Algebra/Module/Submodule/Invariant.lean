@@ -173,9 +173,9 @@ protected lemma isCompl_iff {p q : f.invtSubmodule} :
   obtain ⟨q, hq⟩ := q
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma map_subtype_mem_of_mem_invtSubmodule {p : Submodule R M} (hp : p ∈ f.invtSubmodule)
-    {q : Submodule R p} (hq : q ∈ invtSubmodule (LinearMap.restrict f hp)) :
+    {q : Submodule R p} (hq : q ∈ invtSubmodule (LinearMap.restrict f
+    ((mem_invtSubmodule_iff_mapsTo f).mp hp))) :
     Submodule.map p.subtype q ∈ f.invtSubmodule := by
   rintro - ⟨⟨x, hx⟩, hx', rfl⟩
   specialize hq hx'

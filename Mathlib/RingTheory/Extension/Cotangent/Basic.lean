@@ -372,8 +372,9 @@ The induced map on the first homology of the (naive) cotangent complex.
 @[simps!]
 def H1Cotangent.map (f : Hom P P') : P.H1Cotangent →ₗ[S] P'.H1Cotangent := by
   refine (Cotangent.map f).restrict (p := LinearMap.ker P.cotangentComplex)
-    (q := (LinearMap.ker P'.cotangentComplex).restrictScalars S) fun x hx ↦ ?_
-  simp only [LinearMap.mem_ker, Submodule.restrictScalars_mem] at hx ⊢
+    (q := (LinearMap.ker P'.cotangentComplex).restrictScalars S) ?_
+  intro x hx
+  simp only [SetLike.mem_coe, LinearMap.mem_ker, Submodule.coe_restrictScalars] at hx ⊢
   apply_fun (CotangentSpace.map f) at hx
   rw [CotangentSpace.map_cotangentComplex] at hx
   rw [hx]

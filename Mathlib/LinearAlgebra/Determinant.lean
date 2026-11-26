@@ -803,7 +803,8 @@ theorem LinearMap.det_eq_det_mul_det (e : V →ₗ[R] V) (he : W ≤ W.comap e) 
   let n := Module.Free.ChooseBasisIndex R (V ⧸ W)
   let bQ : Basis n R (V ⧸ W) := Module.Free.chooseBasis R (V ⧸ W)
   let b := sumQuot bW bQ
-  let A : Matrix m m R := LinearMap.toMatrix bW bW (e.restrict he)
+  let A : Matrix m m R := LinearMap.toMatrix bW bW (e.restrict
+    ((End.mem_invtSubmodule_iff_mapsTo e).mp he))
   let B : Matrix m n R := Matrix.of fun i l ↦
     ((sumQuot bW bQ).repr (e ((sumQuot bW bQ) (Sum.inr l)))) (Sum.inl i)
   let D : Matrix n n R := LinearMap.toMatrix bQ bQ (W.mapQ W e he)

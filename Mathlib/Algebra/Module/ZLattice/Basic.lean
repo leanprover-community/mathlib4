@@ -740,8 +740,8 @@ theorem ZLattice.comap_comp {G : Type*} [NormedAddCommGroup G] [NormedSpace K G]
 def ZLattice.comap_equiv (e : F ≃ₗ[K] E) :
     L ≃ₗ[ℤ] (ZLattice.comap K L e.toLinearMap) :=
   LinearEquiv.ofBijective
-    ((e.symm.toLinearMap.restrictScalars ℤ).restrict
-      (fun _ h ↦ by simpa [← SetLike.mem_coe] using h))
+    ((e.symm.toLinearMap.restrictScalars ℤ).restrict (Set.mapsTo_iff_subset_preimage.mpr
+      (fun _ h ↦ by simpa [← SetLike.mem_coe] using h)))
     ⟨fun _ _ h ↦ Subtype.ext_iff.mpr (e.symm.injective congr($(h).val)),
     fun ⟨x, hx⟩ ↦ ⟨⟨e x, by rwa [← SetLike.mem_coe, ZLattice.coe_comap] at hx⟩,
       by simp [Subtype.ext_iff]⟩⟩
