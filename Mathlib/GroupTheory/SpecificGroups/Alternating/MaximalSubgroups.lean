@@ -5,9 +5,7 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.GroupTheory.GroupAction.SubMulAction
 public import Mathlib.GroupTheory.Perm.MaximalSubgroups
-public import Mathlib.GroupTheory.SpecificGroups.Alternating
 
 /-! # Maximal subgroups of the alternating group
 
@@ -33,7 +31,6 @@ Compare with `Equiv.Perm.isCoatom_stabilizer` for the case of the permutation gr
 The argument is taken from [M. Liebeck, C. Praeger, J. Saxl,
 *A classification of the maximal subgroups of the finite
 alternating and symmetric groups*, 1987][LiebeckPraegerSaxl-1987].
-
 -/
 
 public section
@@ -92,7 +89,7 @@ theorem stabilizer.surjective_toPerm {s : Set α} (hs : sᶜ.Nontrivial) :
     intro _
     simp only [mem_smul_set]
     rintro ⟨x, hx, rfl⟩
-    convert! hx
+    convert hx
     rw [Perm.smul_def, ← Perm.notMem_support]
     exact (Set.disjoint_left.mp hk_support) hx
   intro g

@@ -300,7 +300,7 @@ instance fintypeInsert (a : α) (s : Set α) [DecidableEq α] [Fintype s] :
 @[instance_reducible]
 def fintypeInsertOfNotMem {a : α} (s : Set α) [Fintype s] (h : a ∉ s) :
     Fintype (insert a s : Set α) :=
-  Fintype.ofFinset ⟨a ::ₘ s.toFinset.1, s.toFinset.nodup.cons (by simp [h])⟩ <| by simp
+  Fintype.ofFinset ⟨a ::ₘ s.toFinset.val, s.toFinset.nodup.cons (by simp [h])⟩ <| by simp
 
 /-- A `Fintype` structure on `insert a s` when inserting a pre-existing element. -/
 @[instance_reducible]
@@ -327,7 +327,7 @@ a `Fintype` instance, then `s` has a `Fintype` structure as well. -/
 @[instance_reducible]
 def fintypeOfFintypeImage (s : Set α) {f : α → β} {g} (I : IsPartialInv f g) [Fintype (f '' s)] :
     Fintype s :=
-  Fintype.ofFinset ⟨_, (f '' s).toFinset.2.filterMap g <| injective_of_isPartialInv_right I⟩
+  Fintype.ofFinset ⟨_, (f '' s).toFinset.nodup.filterMap g <| injective_of_isPartialInv_right I⟩
     (by simp [I.eq])
 
 instance fintypeMap {α β} [DecidableEq β] :
@@ -413,7 +413,7 @@ theorem List.finite_toSet (l : List α) : { x | x ∈ l }.Finite :=
 /-- `Finset α` is order isomorphic to the type of finite sets in `α`. -/
 @[simps] noncomputable def OrderIso.finsetSetFinite : Finset α ≃o {s : Set α // s.Finite} where
   toFun s := ⟨s, s.finite_toSet⟩
-  invFun s := s.2.toFinset
+  invFun s := s.property.toFinset
   left_inv _ := by simp
   right_inv _ := by simp
   map_rel_iff' := .rfl
@@ -502,6 +502,7 @@ theorem finite_univ_iff : (@univ α).Finite ↔ Finite α := (Equiv.Set.univ α)
 
 alias ⟨_root_.Finite.of_finite_univ, _⟩ := finite_univ_iff
 
+@[gcongr]
 theorem Finite.subset {s : Set α} (hs : s.Finite) {t : Set α} (ht : t ⊆ s) : t.Finite := by
   have := hs.to_subtype
   exact Finite.Set.subset _ ht
@@ -556,7 +557,7 @@ theorem finite_empty : (∅ : Set α).Finite :=
   toFinite _
 
 protected theorem Infinite.nonempty {s : Set α} (h : s.Infinite) : s.Nonempty :=
-  nonempty_iff_ne_empty.2 <| by
+  ne_empty_iff_nonempty.1 <| by
     rintro rfl
     exact h finite_empty
 
@@ -761,10 +762,11 @@ theorem seq_of_forall_finite_exists {γ : Type*} {P : γ → Set γ → Prop}
     (h : ∀ t : Set γ, t.Finite → ∃ c, P c t) : ∃ u : ℕ → γ, ∀ n, P (u n) (u '' Iio n) := by
   have : Nonempty γ := (h ∅ finite_empty).nonempty
   choose! c hc using h
-  set f : (n : ℕ) → (g : (m : ℕ) → m < n → γ) → γ := fun n g => c (range fun k : Iio n => g k.1 k.2)
+  set f : (n : ℕ) → (g : (m : ℕ) → m < n → γ) → γ :=
+    fun n g => c (range fun k : Iio n => g k.val k.property)
   set u : ℕ → γ := fun n ↦ Nat.strongRecOn n f
   refine ⟨u, fun n ↦ ?_⟩
-  convert! hc (u '' Iio n) ((finite_lt_nat _).image _)
+  convert hc (u '' Iio n) ((finite_lt_nat _).image _)
   rw [image_eq_range]
   exact Nat.strongRecOn_eq f n
 
@@ -837,6 +839,9 @@ theorem infinite_univ_iff : (@univ α).Infinite ↔ Infinite α := by
 
 theorem infinite_univ [h : Infinite α] : (@univ α).Infinite :=
   infinite_univ_iff.2 h
+
+theorem Infinite.to_type (hs : s.Infinite) : Infinite α :=
+  infinite_univ_iff.mp <| hs.mono s.subset_univ
 
 lemma Infinite.exists_notMem_finite (hs : s.Infinite) (ht : t.Finite) : ∃ a, a ∈ s ∧ a ∉ t := by
   by_contra! h; exact hs <| ht.subset h

@@ -5,9 +5,13 @@ Authors: Sébastien Gouëzel, Yaël Dillies
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Bounded
 public import Mathlib.Analysis.Normed.Group.Uniform
 public import Mathlib.Topology.MetricSpace.Thickening
+
+import Mathlib.Analysis.Normed.Group.Bounded
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Properties of pointwise addition of sets in normed groups
@@ -27,9 +31,11 @@ section SeminormedGroup
 
 variable [SeminormedGroup E] {s t : Set E}
 
+namespace Bornology
+
 -- note: we can't use `LipschitzOnWith.isBounded_image2` here without adding `[IsIsometricSMul E E]`
 @[to_additive]
-theorem Bornology.IsBounded.mul (hs : IsBounded s) (ht : IsBounded t) : IsBounded (s * t) := by
+theorem IsBounded.mul (hs : IsBounded s) (ht : IsBounded t) : IsBounded (s * t) := by
   obtain ⟨Rs, hRs⟩ : ∃ R, ∀ x ∈ s, ‖x‖ ≤ R := hs.exists_norm_le'
   obtain ⟨Rt, hRt⟩ : ∃ R, ∀ x ∈ t, ‖x‖ ≤ R := ht.exists_norm_le'
   refine isBounded_iff_forall_norm_le'.2 ⟨Rs + Rt, ?_⟩
@@ -37,20 +43,53 @@ theorem Bornology.IsBounded.mul (hs : IsBounded s) (ht : IsBounded t) : IsBounde
   exact norm_mul_le_of_le' (hRs x hx) (hRt y hy)
 
 @[to_additive]
-theorem Bornology.IsBounded.of_mul (hst : IsBounded (s * t)) : IsBounded s ∨ IsBounded t := by
+theorem IsBounded.of_mul (hst : IsBounded (s * t)) : IsBounded s ∨ IsBounded t := by
   symm
   exact AntilipschitzWith.isBounded_of_image2_left _
     (fun x => (isometry_mul_left x).antilipschitzWith)
     (by rwa [image2_swap])
 
 @[to_additive]
-theorem Bornology.IsBounded.inv : IsBounded s → IsBounded s⁻¹ := by
+theorem IsBounded.inv : IsBounded s → IsBounded s⁻¹ := by
   simp_rw [isBounded_iff_forall_norm_le', ← image_inv_eq_inv, forall_mem_image, norm_inv']
   exact id
 
 @[to_additive]
-theorem Bornology.IsBounded.div (hs : IsBounded s) (ht : IsBounded t) : IsBounded (s / t) :=
+theorem IsBounded.div (hs : IsBounded s) (ht : IsBounded t) : IsBounded (s / t) :=
   div_eq_mul_inv s t ▸ hs.mul ht.inv
+
+end Bornology
+
+open Bornology
+
+variable (E) in
+@[to_additive (attr := simp) bddBelow_range_norm]
+lemma bddBelow_range_norm' : BddBelow (range (‖·‖ : E → ℝ)) :=
+  ⟨0, by rintro - ⟨x, rfl⟩; positivity⟩
+
+@[to_additive bddAbove_image_norm_iff]
+lemma bddAbove_image_norm_iff' :
+    BddAbove ((‖·‖) '' s) ↔ IsBounded s := by
+  simp [isBounded_iff_forall_norm_le', bddAbove_def]
+
+alias ⟨BddAbove.isBounded_of_norm', Bornology.IsBounded.bddAbove_norm'⟩ := bddAbove_image_norm_iff'
+
+attribute [to_additive BddAbove.isBounded_of_norm] BddAbove.isBounded_of_norm'
+attribute [to_additive Bornology.IsBounded.bddAbove_norm] Bornology.IsBounded.bddAbove_norm'
+
+namespace Bornology
+
+@[to_additive isBounded_image_norm_iff]
+lemma isBounded_image_norm_iff' : IsBounded ((‖·‖) '' s) ↔ IsBounded s := by
+  rw [isBounded_iff_bddBelow_bddAbove, bddAbove_image_norm_iff']
+  simp [(bddBelow_range_norm' E).mono]
+
+alias ⟨IsBounded.of_norm', IsBounded.norm'⟩ := isBounded_image_norm_iff'
+
+attribute [to_additive IsBounded.of_norm] IsBounded.of_norm'
+attribute [to_additive IsBounded.norm] IsBounded.norm'
+
+end Bornology
 
 end SeminormedGroup
 
@@ -134,11 +173,11 @@ theorem ball_one_div_singleton : ball 1 δ / {x} = ball x⁻¹ δ := by
 
 @[to_additive]
 theorem smul_ball_one : x • ball (1 : E) δ = ball x δ := by
-  rw [smul_ball, smul_eq_mul, mul_one]
+  rw [Metric.smul_ball, smul_eq_mul, mul_one]
 
 @[to_additive (attr := simp 1100)]
 theorem singleton_mul_closedBall : {x} * closedBall y δ = closedBall (x * y) δ := by
-  simp_rw [singleton_mul, ← smul_eq_mul, image_smul, smul_closedBall]
+  simp_rw [singleton_mul, ← smul_eq_mul, image_smul, Metric.smul_closedBall]
 
 @[to_additive (attr := simp 1100)]
 theorem singleton_div_closedBall : {x} / closedBall y δ = closedBall (x / y) δ := by
@@ -170,7 +209,7 @@ theorem smul_closedBall_one : x • closedBall (1 : E) δ = closedBall x δ := b
 
 @[to_additive (attr := simp 1100)]
 theorem singleton_mul_sphere : {x} * sphere y δ = sphere (x * y) δ := by
-  simp_rw [singleton_mul, ← smul_eq_mul, image_smul, smul_sphere]
+  simp_rw [singleton_mul, ← smul_eq_mul, image_smul, Metric.smul_sphere]
 
 @[to_additive (attr := simp 1100)]
 theorem singleton_div_sphere : {x} / sphere y δ = sphere (x / y) δ := by

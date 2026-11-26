@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
 public import Mathlib.CategoryTheory.Triangulated.SpectralObject
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The spectral object with values in the homotopy category
 
@@ -17,7 +20,6 @@ category of `ℤ`-indexed cochain complexes `C` that is indexed
 by the category `CochainComplex C ℤ`.
 (It follows that to any functor `ι ⥤ CochainComplex C ℤ` (e.g. a filtered
 complex), there is an associated spectral object indexed by `ι`.)
-
 -/
 
 @[expose] public section
@@ -31,7 +33,7 @@ variable (C : Type*) [Category* C] [Preadditive C]
 
 /-- The functor `ComposableArrows (CochainComplex C ℤ) 1 ⥤ CochainComplex C ℤ` which
 sends a morphism of cochain complexes to its mapping cone. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def composableArrowsFunctor :
     ComposableArrows (CochainComplex C ℤ) 1 ⥤ CochainComplex C ℤ where
   obj f := CochainComplex.mappingCone (f.map' 0 1)
@@ -39,7 +41,6 @@ noncomputable def composableArrowsFunctor :
   map_id _ := map_id _
   map_comp _ _ := map_comp _ _ _ _ _ _ _ _ _
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The spectral object with values in `(HomotopyCategory C (.up ℤ)` that
 is indexed by `CochainComplex C ℤ`. -/
 @[simps]

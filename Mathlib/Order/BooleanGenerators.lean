@@ -29,7 +29,6 @@ A set of *Boolean generators* in a compactly generated complete lattice is a sub
   if `S` generates the entire lattice, then it is distributive.
 * `IsCompactlyGenerated.BooleanGenerators.booleanAlgebraOfSSupEqTop`:
   if `S` generates the entire lattice, then it is a Boolean algebra.
-
 -/
 
 @[expose] public section

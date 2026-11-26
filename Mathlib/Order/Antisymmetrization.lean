@@ -5,9 +5,11 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Logic.Relation
 public import Mathlib.Order.Hom.Basic
 public import Mathlib.Tactic.Tauto
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Turning a preorder into a partial order
@@ -27,7 +29,7 @@ such that `a ≤ b` and `b ≤ a`.
 
 @[expose] public section
 
-open Function OrderDual
+open Function OrderDual Relation
 
 variable {α β : Type*} {a b c d : α}
 
@@ -154,7 +156,7 @@ protected theorem Antisymmetrization.ind {p : Antisymmetrization α r → Prop} 
 @[elab_as_elim]
 protected theorem Antisymmetrization.induction_on {p : Antisymmetrization α r → Prop}
     (a : Antisymmetrization α r) (h : ∀ a, p <| toAntisymmetrization r a) : p a :=
-  Quotient.inductionOn' a h
+  Quotient.inductionOn a h
 
 @[simp]
 theorem toAntisymmetrization_ofAntisymmetrization (a : Antisymmetrization α r) :
@@ -268,10 +270,10 @@ instance instPartialOrderAntisymmetrization : PartialOrder (Antisymmetrization �
     Quotient.lift₂ (· < ·) fun (_ _ _ _ : α) h₁ h₂ =>
       propext ⟨fun h => h₁.2.trans_lt <| h.trans_le h₂.1, fun h =>
                 h₁.1.trans_lt <| h.trans_le h₂.2⟩
-  le_refl a := Quotient.inductionOn' a le_refl
-  le_trans a b c := Quotient.inductionOn₃' a b c fun _ _ _ => le_trans
-  lt_iff_le_not_ge a b := Quotient.inductionOn₂' a b fun _ _ => lt_iff_le_not_ge
-  le_antisymm a b := Quotient.inductionOn₂' a b fun _ _ hab hba => Quotient.sound' ⟨hab, hba⟩
+  le_refl a := Quotient.inductionOn a le_refl
+  le_trans a b c := Quotient.inductionOn₃ a b c fun _ _ _ => le_trans
+  lt_iff_le_not_ge a b := Quotient.inductionOn₂ a b fun _ _ => lt_iff_le_not_ge
+  le_antisymm a b := Quotient.inductionOn₂ a b fun _ _ hab hba => Quotient.sound' ⟨hab, hba⟩
 
 theorem antisymmetrization_fibration :
     Relation.Fibration (· < ·) (· < ·) (toAntisymmetrization (α := α) (· ≤ ·)) := by
@@ -307,7 +309,7 @@ set_option backward.isDefEq.respectTransparency false in
 instance [DecidableLE α] [DecidableLT α] [@Std.Total α (· ≤ ·)] :
     LinearOrder (Antisymmetrization α (· ≤ ·)) :=
   { instPartialOrderAntisymmetrization with
-    le_total := fun a b => Quotient.inductionOn₂' a b <| total_of (· ≤ ·),
+    le_total := fun a b => Quotient.inductionOn₂ a b <| total_of (· ≤ ·),
     toDecidableLE := fun _ _ => show Decidable (Quotient.liftOn₂' _ _ _ _) from inferInstance,
     toDecidableLT := fun _ _ => show Decidable (Quotient.liftOn₂' _ _ _ _) from inferInstance }
 
@@ -345,7 +347,7 @@ theorem liftFun_antisymmRel (f : α →o β) :
 -/
 protected def OrderHom.antisymmetrization (f : α →o β) :
     Antisymmetrization α (· ≤ ·) →o Antisymmetrization β (· ≤ ·) :=
-  ⟨Quotient.map' f <| liftFun_antisymmRel f, fun a b => Quotient.inductionOn₂' a b f.mono⟩
+  ⟨Quotient.map' f <| liftFun_antisymmRel f, fun a b => Quotient.inductionOn₂ a b f.mono⟩
 
 @[simp]
 theorem OrderHom.coe_antisymmetrization (f : α →o β) :
@@ -374,9 +376,9 @@ def OrderIso.dualAntisymmetrization :
     (Antisymmetrization α (· ≤ ·))ᵒᵈ ≃o Antisymmetrization αᵒᵈ (· ≤ ·) where
   toFun := (Quotient.map' id) fun _ _ => And.symm
   invFun := (Quotient.map' id) fun _ _ => And.symm
-  left_inv a := Quotient.inductionOn' a fun a => by simp_rw [Quotient.map'_mk'', id]
-  right_inv a := Quotient.inductionOn' a fun a => by simp_rw [Quotient.map'_mk'', id]
-  map_rel_iff' := @fun a b => Quotient.inductionOn₂' a b fun _ _ => Iff.rfl
+  left_inv a := Quotient.inductionOn a fun a => by simp_rw [Quotient.map'_mk'', id]
+  right_inv a := Quotient.inductionOn a fun a => by simp_rw [Quotient.map'_mk'', id]
+  map_rel_iff' := @fun a b => Quotient.inductionOn₂ a b fun _ _ => Iff.rfl
 
 @[simp]
 theorem OrderIso.dualAntisymmetrization_apply (a : α) :
@@ -393,8 +395,6 @@ theorem OrderIso.dualAntisymmetrization_symm_apply (a : α) :
 end Preorder
 
 section SymmGen
-
-open Relation
 
 variable {r : α → α → Prop}
 
@@ -445,6 +445,36 @@ theorem AntisymmRel.symmGen_congr_right (h : AntisymmRel (· ≤ ·) b c) :
   AntisymmRel.rfl.symmGen_congr h
 
 end SymmGen
+
+section Minimal
+
+variable [Preorder α] {P : α → Prop}
+
+theorem Minimal.antisymmRel_of_ge (ha : Minimal P a) (hb : P b) (hge : b ≤ a) :
+    AntisymmRel (· ≤ ·) a b :=
+  ⟨ha.le_of_le hb hge, hge⟩
+
+theorem Maximal.antisymmRel_of_le (ha : Maximal P a) (hb : P b) (hle : a ≤ b) :
+    AntisymmRel (· ≤ ·) a b :=
+  ⟨hle, ha.le_of_ge hb hle⟩
+
+theorem Minimal.antisymmRel_of_symmGen (ha : Minimal P a) (hb : Minimal P b)
+    (hab : SymmGen (· ≤ ·) a b) : AntisymmRel (· ≤ ·) a b :=
+  hab.elim (fun h ↦ (hb.antisymmRel_of_ge ha.prop h).symm) (ha.antisymmRel_of_ge hb.prop)
+
+theorem Maximal.antisymmRel_of_symmGen (ha : Maximal P a) (hb : Maximal P b)
+    (hab : SymmGen (· ≤ ·) a b) : AntisymmRel (· ≤ ·) a b :=
+  hab.elim (ha.antisymmRel_of_le hb.prop) (fun h ↦ (hb.antisymmRel_of_le ha.prop h).symm)
+
+end Minimal
+
+theorem Minimal.eq_of_symmGen [PartialOrder α] {P : α → Prop} (ha : Minimal P a)
+    (hb : Minimal P b) (hab : SymmGen (· ≤ ·) a b) : a = b :=
+  (ha.antisymmRel_of_symmGen hb hab).eq
+
+theorem Maximal.eq_of_symmGen [PartialOrder α] {P : α → Prop} (ha : Maximal P a)
+    (hb : Maximal P b) (hab : SymmGen (· ≤ ·) a b) : a = b :=
+  (ha.antisymmRel_of_symmGen hb hab).eq
 
 section Prod
 

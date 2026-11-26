@@ -5,10 +5,9 @@ Authors: Patrick Massot, Michael Rothgang
 -/
 module
 
-public import Mathlib.Geometry.Manifold.Algebra.Monoid
-public import Mathlib.Geometry.Manifold.Notation
 public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
-public import Mathlib.Geometry.Manifold.VectorBundle.ContMDiffSection
+
+import Mathlib.Geometry.Manifold.VectorBundle.ContMDiffSection
 
 /-!
 # Local frames in a vector bundle
@@ -91,8 +90,8 @@ Local frames use the junk value pattern: they are defined on all of `M`, but the
 only meaningful on the set on which they are a local frame.
 
 ## Tags
-vector bundle, local frame, smoothness
 
+vector bundle, local frame, smoothness
 -/
 
 @[expose] public section

@@ -5,10 +5,13 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.MeasureTheory.MeasurableSpace.Defs
-public import Mathlib.GroupTheory.GroupAction.IterateAct
 public import Mathlib.Data.Rat.Init
 public import Mathlib.Data.ZMod.Defs
+public import Mathlib.GroupTheory.GroupAction.IterateAct
+public import Mathlib.MeasureTheory.MeasurableSpace.Defs
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Measurable-space typeclass instances
@@ -50,7 +53,7 @@ instance IterateMulAct.instDiscreteMeasurableSpace {α : Type*} {f : α → α} 
 instance (priority := 100) Subsingleton.measurableSingletonClass
     {α} [MeasurableSpace α] [Subsingleton α] : MeasurableSingletonClass α := by
   refine ⟨fun i => ?_⟩
-  convert! MeasurableSet.univ
+  convert MeasurableSet.univ
   simp [Set.eq_univ_iff_forall, eq_iff_true_of_subsingleton]
 
 instance Bool.instMeasurableSingletonClass : MeasurableSingletonClass Bool := ⟨fun _ => trivial⟩

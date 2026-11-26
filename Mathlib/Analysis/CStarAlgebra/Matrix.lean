@@ -8,8 +8,6 @@ module
 public import Mathlib.Analysis.CStarAlgebra.Classes
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
 public import Mathlib.Analysis.Matrix.Normed
-public import Mathlib.Analysis.RCLike.Basic
-public import Mathlib.LinearAlgebra.UnitaryGroup
 public import Mathlib.Topology.UniformSpace.Matrix
 
 /-!
@@ -28,11 +26,10 @@ This transports the operator norm on `EuclideanSpace 𝕜 n →L[𝕜] Euclidean
 
 * `entry_norm_bound_of_unitary`: the entries of a unitary matrix are uniformly bound by `1`.
 
-## Implementation details
+## Implementation notes
 
 We take care to ensure the topology and uniformity induced by `Matrix.instMetricSpaceL2Op`
 coincide with the existing topology and uniformity on matrices.
-
 -/
 
 @[expose] public section
@@ -113,7 +110,7 @@ lemma continuous_uncurry_toEuclideanCLM :
   refine Continuous.comp (by fun_prop) <| continuous_pi fun i ↦ ?_
   simp only [LinearEquiv.toEquiv_symm, Equiv.symm_symm, Equiv.invFun_as_coe,
     LinearEquiv.coe_symm_toEquiv, toMatrix'_symm, OrthonormalBasis.coe_toBasis_repr,
-    LinearEquiv.coe_coe, LinearEquiv.trans_apply, LinearIsometryEquiv.coe_toLinearEquiv,
+    LinearEquiv.coe_toLinearMap, LinearEquiv.trans_apply, LinearIsometryEquiv.coe_toLinearEquiv,
     linearEquiv_apply, AddEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe,
     addEquiv_apply, toLin'_apply, LinearEquiv.symm_mk, coe_mk, AddHom.coe_mk, LinearEquiv.coe_mk,
     LinearEquiv.coe_toEquiv, Finsupp.linearEquivFunOnFinite_apply,
@@ -135,7 +132,8 @@ lemma ofLp_toEuclideanCLM (A : Matrix n n 𝕜) (x : EuclideanSpace 𝕜 n) :
 open scoped RealInnerProductSpace in
 lemma inner_toEuclideanCLM (A : Matrix n n ℝ) (x y : EuclideanSpace ℝ n) :
     ⟪x, toEuclideanCLM (𝕜 := ℝ) A y⟫ = x ⬝ᵥ A *ᵥ y := by
-  simp only [toEuclideanCLM, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearEquiv.coe_coe,
+  simp only [toEuclideanCLM, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom,
+    LinearEquiv.coe_toLinearMap,
     LinearEquiv.invFun_eq_symm, LinearMap.coe_toContinuousLinearMap_symm, StarAlgEquiv.trans_apply,
     LinearMap.toMatrixOrthonormal_symm_apply, LinearMap.toMatrix_symm, StarAlgEquiv.coe_mk,
     StarRingEquiv.coe_mk, RingEquiv.coe_mk, Equiv.coe_fn_mk, LinearMap.coe_toContinuousLinearMap',
@@ -152,7 +150,7 @@ structure provided by `Matrix.instMetricSpaceL2Op` and `Matrix.instNormedAddComm
 @[instance_reducible]
 def l2OpNormedAddCommGroupAux : NormedAddCommGroup (Matrix m n 𝕜) :=
   @NormedAddCommGroup.induced ((Matrix m n 𝕜) ≃ₗ[𝕜] (EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 m)) _
-    _ _ _ ContinuousLinearMap.toNormedAddCommGroup.toNormedAddGroup _ _ <|
+    _ _ _ ContinuousLinearMap.toNormedAddCommGroup.toNormedAddGroup _ _
     (toEuclideanLin.trans toContinuousLinearMap).injective
 
 /-- An auxiliary definition used only to construct the true `NormedRing` (and `Metric`) structure
@@ -232,9 +230,9 @@ lemma l2_opNorm_mul (A : Matrix m n 𝕜) (B : Matrix n l 𝕜) :
   simp only [l2_opNorm_def]
   have := (toEuclideanLin (n := n) (m := m) (𝕜 := 𝕜) ≪≫ₗ toContinuousLinearMap) A
     |>.opNorm_comp_le <| (toEuclideanLin (n := l) (m := n) (𝕜 := 𝕜) ≪≫ₗ toContinuousLinearMap) B
-  convert! this
+  convert this
   ext1 x
-  exact congr(toLp 2 ($(Matrix.toLin'_mul A B) x))
+  congrm toLp 2 ($(Matrix.toLin'_mul A B) x)
 
 lemma l2_opNNNorm_mul (A : Matrix m n 𝕜) (B : Matrix n l 𝕜) : ‖A * B‖₊ ≤ ‖A‖₊ * ‖B‖₊ :=
   l2_opNorm_mul A B
@@ -286,7 +284,9 @@ lemma cstar_norm_def (A : Matrix n n 𝕜) : ‖A‖ = ‖toEuclideanCLM (n := n
 
 /-- This is the same as `Matrix.l2_opNNNorm_def`, but with a more bundled RHS for square
 matrices. -/
-lemma cstar_nnnorm_def (A : Matrix n n 𝕜) : ‖A‖₊ = ‖toEuclideanCLM (n := n) (𝕜 := 𝕜) A‖₊ := rfl
+lemma cstar_nnNorm_def (A : Matrix n n 𝕜) : ‖A‖₊ = ‖toEuclideanCLM (n := n) (𝕜 := 𝕜) A‖₊ := rfl
+
+@[deprecated (since := "2026-10-31")] alias cstar_nnnorm_def := cstar_nnNorm_def
 
 /-- The normed algebra structure on `Matrix n n 𝕜` arising from the operator norm given by the
 identification with (continuous) linear endomorphisms of `EuclideanSpace 𝕜 n`. -/

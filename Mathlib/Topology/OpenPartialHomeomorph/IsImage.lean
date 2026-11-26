@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Topology.OpenPartialHomeomorph.Continuity
+
 /-!
 # Partial homeomorphisms: Images of sets
 
@@ -264,7 +265,7 @@ theorem restr_univ {e : OpenPartialHomeomorph X Y} : e.restr univ = e :=
 @[simp, grind =]
 theorem restr_source_inter (s : Set X) : e.restr (e.source ∩ s) = e.restr s := by
   refine OpenPartialHomeomorph.ext _ _ (fun x => rfl) (fun x => rfl) ?_
-  simp [e.open_source.interior_eq, ← inter_assoc]
+  simp [e.open_source.interior_eq]
 
 end restrOpen
 

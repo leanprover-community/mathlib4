@@ -25,9 +25,9 @@ a bijection between the type of `X`-continuous maps `Y × Z → T` and the type 
 topological spaces `Y`, `Z` and `T`.
 
 ## References
+
 * [Martín Escardó, Jimmie Lawson and Alex Simpson, *Comparing Cartesian closed
   categories of (core) compactly generated spaces*][escardo-lawson-simpson-2004]
-
 -/
 universe v v' v'' t u
 

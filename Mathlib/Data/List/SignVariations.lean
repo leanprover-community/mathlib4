@@ -5,8 +5,11 @@ Authors: Tomaz Mascarenhas
 -/
 module
 
-public import Mathlib.Data.List.Destutter
 public import Mathlib.Basic.Sign.Basic
+public import Mathlib.Data.List.Destutter
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Sign variations of a list

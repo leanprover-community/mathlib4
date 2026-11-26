@@ -6,8 +6,9 @@ Authors: Jacob Reinhold
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Comon_
-public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-public import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The category of commutative comonoids in a braided monoidal category.

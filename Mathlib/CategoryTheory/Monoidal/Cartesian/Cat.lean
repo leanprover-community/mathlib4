@@ -6,6 +6,10 @@ Authors: Nicolas Rolland
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Chosen finite products in `Cat`
 

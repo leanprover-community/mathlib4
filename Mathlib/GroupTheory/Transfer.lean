@@ -7,7 +7,6 @@ module
 
 public import Mathlib.GroupTheory.Complement
 public import Mathlib.GroupTheory.Sylow
-public import Mathlib.Data.ZMod.QuotientGroup
 
 /-!
 # The Transfer Homomorphism
@@ -21,6 +20,7 @@ In this file we construct the transfer homomorphism.
 - `transferCenterPow`: The transfer homomorphism `G →* center G`.
 
 ## Main results
+
 - `transferCenterPow_apply`:
   The transfer homomorphism `G →* center G` is given by `g ↦ g ^ (center G).index`.
 - `ker_transferSylow_isComplement'`: Burnside's transfer (or normal `p`-complement) theorem:
@@ -45,8 +45,8 @@ variable (R S T : H.LeftTransversal) [FiniteIndex H]
 /-- The difference of two left transversals -/
 @[to_additive /-- The difference of two left transversals -/]
 def diff : A :=
-  let α := S.2.leftQuotientEquiv
-  let β := T.2.leftQuotientEquiv
+  let α := S.property.leftQuotientEquiv
+  let β := T.property.leftQuotientEquiv
   let _ := H.fintypeQuotientOfFiniteIndex
   ∏ q : G ⧸ H, ϕ
       ⟨(α q : G)⁻¹ * β q,
@@ -58,8 +58,7 @@ theorem diff_mul_diff : diff ϕ R S * diff ϕ S T = diff ϕ R T :=
   prod_mul_distrib.symm.trans
     (prod_congr rfl fun q _ =>
       (ϕ.map_mul _ _).symm.trans
-        (congr_arg ϕ
-          (by simp_rw [Subtype.ext_iff, coe_mul, mul_assoc, mul_inv_cancel_left])))
+        congr(ϕ $(by simp_rw [Subtype.ext_iff, coe_mul, mul_assoc, mul_inv_cancel_left])))
 
 @[to_additive]
 theorem diff_self : diff ϕ T T = 1 :=
@@ -112,19 +111,19 @@ def transferTransversal : H.LeftTransversal :=
   ⟨transferSet H g, isComplement_range_left (coe_transferFunction g)⟩
 
 lemma transferTransversal_apply (q : G ⧸ H) :
-    ↑((transferTransversal H g).2.leftQuotientEquiv q) = transferFunction H g q :=
+    ↑((transferTransversal H g).property.leftQuotientEquiv q) = transferFunction H g q :=
   IsComplement.leftQuotientEquiv_apply (coe_transferFunction g) q
 
 lemma transferTransversal_apply' (q : orbitRel.Quotient (zpowers g) (G ⧸ H))
     (k : ZMod (minimalPeriod (g • ·) q.out)) :
-    ↑((transferTransversal H g).2.leftQuotientEquiv (g ^ (cast k : ℤ) • q.out)) =
+    ↑((transferTransversal H g).property.leftQuotientEquiv (g ^ (cast k : ℤ) • q.out)) =
       g ^ (cast k : ℤ) * q.out.out := by
   rw [transferTransversal_apply, transferFunction_apply, ← quotientEquivSigmaZMod_symm_apply,
     apply_symm_apply]
 
 lemma transferTransversal_apply'' (q : orbitRel.Quotient (zpowers g) (G ⧸ H))
     (k : ZMod (minimalPeriod (g • ·) q.out)) :
-    ↑((g • transferTransversal H g).2.leftQuotientEquiv (g ^ (cast k : ℤ) • q.out)) =
+    ↑((g • transferTransversal H g).property.leftQuotientEquiv (g ^ (cast k : ℤ) • q.out)) =
       if k = 0 then g ^ minimalPeriod (g • ·) q.out * q.out.out
       else g ^ (cast k : ℤ) * q.out.out := by
   rw [smul_apply_eq_smul_apply_inv_smul, transferTransversal_apply, transferFunction_apply, ←
@@ -191,7 +190,7 @@ theorem transfer_eq_pow_aux (g : G)
   let := fintypeOfIndexNeZero hH
   classical
     replace key : ∀ (k : ℕ) (g₀ : G), g₀⁻¹ * g ^ k * g₀ ∈ H → g ^ k ∈ H := fun k g₀ hk =>
-      (congr_arg (· ∈ H) (key k g₀ hk)).mp hk
+      congr($(key k g₀ hk) ∈ H).mp hk
     replace key : ∀ q : G ⧸ H, g ^ Function.minimalPeriod (g • ·) q ∈ H := fun q =>
       key (Function.minimalPeriod (g • ·) q) q.out
         (QuotientGroup.out_conj_pow_minimalPeriod_mem H g q)
@@ -246,7 +245,8 @@ include hP
 open scoped IsMulCommutative in
 /-- The homomorphism `G →* P` in Burnside's transfer theorem. -/
 def transferSylow [P.FiniteIndex] : G →* P :=
-  haveI : IsMulCommutative P := ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.2) a a.2)⟩⟩
+  haveI : IsMulCommutative P :=
+    ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.property) a a.property)⟩⟩
   transfer (MonoidHom.id P)
 
 variable [Fact p.Prime] [Finite (Sylow p G)]
@@ -255,7 +255,7 @@ variable [Fact p.Prime] [Finite (Sylow p G)]
 theorem transferSylow_eq_pow_aux (g : G) (hg : g ∈ P) (k : ℕ) (g₀ : G)
     (h : g₀⁻¹ * g ^ k * g₀ ∈ P) : g₀⁻¹ * g ^ k * g₀ = g ^ k := by
   have : IsMulCommutative P :=
-    ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.2) a a.2)⟩⟩
+    ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.property) a a.property)⟩⟩
   replace hg := P.pow_mem hg k
   obtain ⟨n, hn, h⟩ := P.conj_eq_normalizer_conj_of_mem (g ^ k) g₀ hg h
   exact h.trans (Commute.inv_mul_cancel (hP hn (g ^ k) hg).symm)
@@ -266,12 +266,13 @@ open scoped IsMulCommutative in
 theorem transferSylow_eq_pow (g : G) (hg : g ∈ P) :
     transferSylow P hP g =
       ⟨g ^ P.index, transfer_eq_pow_aux g (transferSylow_eq_pow_aux P hP g hg)⟩ :=
-  haveI : IsMulCommutative P := ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.2) a a.2)⟩⟩
+  haveI : IsMulCommutative P :=
+    ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.property) a a.property)⟩⟩
   transfer_eq_pow _ _ <| transferSylow_eq_pow_aux P hP g hg
 
 theorem transferSylow_domRestrict_eq_pow : ⇑((transferSylow P hP).domRestrict (P : Subgroup G)) =
     (fun x : P => x ^ (P : Subgroup G).index) :=
-  funext fun g => transferSylow_eq_pow P hP g g.2
+  funext fun g => transferSylow_eq_pow P hP g g.property
 
 @[deprecated (since := "2026-07-19")]
 alias transferSylow_restrict_eq_pow := transferSylow_domRestrict_eq_pow
@@ -280,7 +281,7 @@ alias transferSylow_restrict_eq_pow := transferSylow_domRestrict_eq_pow
 complement. -/
 theorem ker_transferSylow_isComplement' : IsComplement' (transferSylow P hP).ker P := by
   have hf : Function.Bijective ((transferSylow P hP).domRestrict (P : Subgroup G)) :=
-    (transferSylow_domRestrict_eq_pow P hP).symm ▸ (P.2.powEquiv' P.not_dvd_index).bijective
+    (transferSylow_domRestrict_eq_pow P hP).symm ▸ (P.isPGroup.powEquiv' P.not_dvd_index).bijective
   rw [Function.Bijective, ← range_eq_top, domRestrict_range] at hf
   have := range_eq_top.mp (top_le_iff.mp (hf.2.ge.trans
     (map_le_range (transferSylow P hP) P)))
@@ -321,7 +322,7 @@ theorem normalizer_le_centralizer (hP : IsCyclic P) :
   have key := card_dvd_of_injective _ (QuotientGroup.kerLift_injective P.normalizerMonoidHom)
   rw [normalizerMonoidHom_ker, ← index, ← relIndex] at key
   refine relIndex_eq_one.mp (Nat.eq_one_of_dvd_coprimes ?_ dvd_rfl key)
-  obtain ⟨k, hk⟩ := P.2.exists_card_eq
+  obtain ⟨k, hk⟩ := P.isPGroup.exists_card_eq
   rcases eq_zero_or_pos k with h0 | h0
   · rw [hP.card_mulAut, hk, h0, pow_zero, Nat.totient_one]
     apply Nat.coprime_one_right
@@ -348,7 +349,7 @@ theorem isComplement' (hP : IsCyclic P) :
   by_cases hn : Nat.card G = 1
   · have := (Nat.card_eq_one_iff_unique.mp hn).1
     rw [Subsingleton.elim (MonoidHom.transferSylow P (hP.normalizer_le_centralizer rfl)).ker ⊥,
-      Subsingleton.elim P.1 ⊤]
+      Subsingleton.elim P.toSubgroup ⊤]
     exact isComplement'_bot_top
   have := Fact.mk (Nat.minFac_prime hn)
   exact MonoidHom.ker_transferSylow_isComplement' P (hP.normalizer_le_centralizer rfl)

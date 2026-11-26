@@ -5,9 +5,11 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 module
 
-public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 public import Mathlib.Algebra.Group.TypeTags.Basic
-public import Mathlib.Order.BoundedOrder.Basic
+public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-! # Ordered monoid structures on `Multiplicative α` and `Additive α`. -/
 
