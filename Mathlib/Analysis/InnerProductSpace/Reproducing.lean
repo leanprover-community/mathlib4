@@ -560,7 +560,6 @@ instance instRKHSSubmodule : RKHS 𝕜 H₀ X V where
   coeCLM_injective := coeCLM_injective.comp H₀.subtype_injective
 
 omit [CompleteSpace H] [CompleteSpace V] [CompleteSpace H₀] in
-@[simp]
 lemma coe_subtypeVal (f : H₀) : ⇑(f : H) = f := rfl
 
 @[deprecated (since := "2026-11-26")] alias coe_coe := coe_subtypeVal
@@ -569,7 +568,7 @@ lemma kerFun_submodule (x : X) :
     kerFun H₀ x = H₀.orthogonalProjectionOnto.comp (kerFun H x) := by
   ext1
   refine ext_inner_right 𝕜 fun v ↦ ?_
-  simp
+  simp [coe_subtypeVal]
 
 lemma kernel_submodule (x y : X) :
     kernel H₀ x y = (kerFun H x).adjoint ∘L (H₀.starProjection.comp (kerFun H y)) := by
