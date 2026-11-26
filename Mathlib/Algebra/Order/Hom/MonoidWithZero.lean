@@ -140,7 +140,7 @@ theorem coe_toMonoidWithZeroHom (f : α →*₀o β) : ⇑(f : α →*₀ β) = 
 @[deprecated (since := "2026-09-15")] alias coe_monoidWithZeroHom := coe_toMonoidWithZeroHom
 
 @[simp]
-theorem coe_toOrderMonoidHom (f : α →*₀o β) : ⇑(f : α →*o β) = f :=
+theorem coe_toOrderMonoidHom (f : α →*₀o β) : ⇑f.toOrderMonoidHom = f :=
   rfl
 
 @[deprecated (since := "2026-09-15")] alias coe_orderMonoidHom := coe_toOrderMonoidHom
@@ -153,8 +153,8 @@ theorem toMonoidWithZeroHom_injective : Injective (toMonoidWithZeroHom : _ → �
 
 /-- Copy of an `OrderMonoidWithZeroHom` with a new `toFun` equal to the old one. Useful to fix
 definitional equalities. -/
-protected def copy (f : α →*₀o β) (f' : α → β) (h : f' = f) : α →*o β :=
-  { f.toOrderMonoidHom.copy f' h, f.toMonoidWithZeroHom.copy f' h with toFun := f' }
+protected def copy (f : α →*₀o β) (f' : α → β) (h : f' = f) : α →*₀o β :=
+  { f.toOrderMonoidHom.copy f' h, f.toMonoidWithZeroHom.copy f' h with }
 
 @[simp]
 theorem coe_copy (f : α →*₀o β) (f' : α → β) (h : f' = f) : ⇑(f.copy f' h) = f' :=
@@ -180,7 +180,7 @@ variable {α}
 
 /-- Composition of `OrderMonoidWithZeroHom`s as an `OrderMonoidWithZeroHom`. -/
 def comp (f : β →*₀o γ) (g : α →*₀o β) : α →*₀o γ :=
-  { (f : β →*₀ γ).comp (g : α →*₀ β), (f : β →*o γ).comp (g : α →*o β) with }
+  { (f : β →*₀ γ).comp (g : α →*₀ β), f.toOrderMonoidHom.comp g.toOrderMonoidHom with }
 
 @[simp]
 theorem coe_comp (f : β →*₀o γ) (g : α →*₀o β) : (f.comp g : α → γ) = f ∘ g :=
@@ -202,7 +202,7 @@ alias ofClass_comp := toMonoidWithZeroHom_comp
 
 @[simp]
 theorem toOrderMonoidHom_comp (f : β →*₀o γ) (g : α →*₀o β) :
-    (f.comp g : α →*o γ) = (f : β →*o γ).comp g :=
+    (f.comp g).toOrderMonoidHom = f.toOrderMonoidHom.comp g.toOrderMonoidHom :=
   rfl
 
 @[deprecated (since := "2026-09-15")]
@@ -270,9 +270,11 @@ theorem ofClass_eq_toMonoidWithZeroHom (f : α →*₀o β) : .ofClass f = (f : 
 @[deprecated "Use `← ofClass_eq_toMonoidWithZeroHom` instead." (since := "2026-09-15")]
 alias toMonoidWithZeroHom_eq_ofClass := ofClass_eq_toMonoidWithZeroHom
 
-@[simp]
-theorem toOrderMonoidHom_eq_coe (f : α →*₀o β) : f.toOrderMonoidHom = f :=
+theorem toOrderMonoidHom_eq_ofClass (f : α →*₀o β) : f.toOrderMonoidHom = .ofClass f :=
   rfl
+
+@[deprecated (since := "2026-11-26")] alias toOrderMonoidHom_eq_coe :=
+  toOrderMonoidHom_eq_ofClass
 
 end LinearOrderedCommMonoidWithZero
 
