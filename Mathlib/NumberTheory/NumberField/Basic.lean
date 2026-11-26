@@ -5,32 +5,37 @@ Authors: Ashvni Narayanan, Anne Baanen
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Rat
 public import Mathlib.Algebra.CharZero.AddMonoidHom
-public import Mathlib.Algebra.Ring.Int.Parity
-public import Mathlib.Algebra.Ring.Int.Units
 public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
+public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients.Basic
+
+import Mathlib.Algebra.Algebra.Rat
 
 /-!
 # Number fields
+
 This file defines a number field and the ring of integers corresponding to it.
 
 ## Main definitions
+
 - `NumberField` defines a number field as a field which has characteristic zero and is finite
   dimensional over ℚ.
 - `RingOfIntegers` defines the ring of integers (or number ring) corresponding to a number field
   as the integral closure of ℤ in the number field.
 
 ## Implementation notes
+
 The definitions that involve a field of fractions choose a canonical field of fractions,
 but are independent of that choice.
 
 ## References
+
 * [D. Marcus, *Number Fields*][marcus1977number]
 * [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
 * [P. Samuel, *Algebraic Theory of Numbers*][samuel1967]
 
 ## Tags
+
 number field, ring of integers
 -/
 
@@ -85,7 +90,7 @@ theorem of_ringEquiv (e : K ≃+* L) [NumberField K] : NumberField L :=
   letI := CharZero.of_addMonoidHom e.toAddMonoidHom (by simp) e.injective
   {
     to_charZero := inferInstance
-    to_finiteDimensional := (SemilinearEquivClass.semilinearEquiv e : K ≃ₗ[ℚ] L).finiteDimensional
+    to_finiteDimensional := (.ofClass e : K ≃ₗ[ℚ] L).finiteDimensional
   }
 
 /-- The ring of integers (or number ring) corresponding to a number field
@@ -97,6 +102,7 @@ much more effective use of the discrimination tree than instances of the form
 `SMul (Subtype _) (Subtype _)`.
 The drawback is we have to copy over instances manually.
 -/
+@[wikidata Q1358313]
 def RingOfIntegers : Type _ :=
   integralClosure ℤ K
 deriving CommRing, IsDomain, Nontrivial
@@ -172,10 +178,11 @@ lemma mk_eq_mk (x y : K) (hx hy) : (⟨x, hx⟩ : 𝓞 K) = ⟨y, hy⟩ ↔ x = 
 @[simp] lemma neg_mk (x : K) (hx) : (-⟨x, hx⟩ : 𝓞 K) = ⟨-x, neg_mem hx⟩ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The ring homomorphism `(𝓞 K) →+* (𝓞 L)` given by restricting a ring homomorphism
   `f : K →+* L` to `𝓞 K`. -/
 def mapRingHom {K L : Type*} [Field K] [Field L] (f : K →+* L) : (𝓞 K) →+* (𝓞 L) where
-  toFun k := ⟨f k.val, map_isIntegral_int f k.2⟩
+  toFun k := ⟨f k.val, map_isIntegral_int f k.property⟩
   map_zero' := by ext; simp only [map_mk, map_zero]
   map_one' := by ext; simp only [map_mk, map_one]
   map_add' x y := by ext; simp only [map_mk, map_add]
@@ -189,8 +196,8 @@ theorem mapRingHom_apply {K L : Type*} [Field K] [Field L] (f : K →+* L) (x : 
   a ring isomorphism `e : K ≃+* L` to `𝓞 K`. -/
 def mapRingEquiv {K L : Type*} [Field K] [Field L] (e : K ≃+* L) : (𝓞 K) ≃+* (𝓞 L) :=
   RingEquiv.ofRingHom (mapRingHom e) (mapRingHom e.symm)
-    (RingHom.ext fun x => ext (EquivLike.right_inv e x.1))
-      (RingHom.ext fun x => ext (EquivLike.left_inv e x.1))
+    (RingHom.ext fun x => ext (EquivLike.right_inv e x.val))
+      (RingHom.ext fun x => ext (EquivLike.left_inv e x.val))
 
 @[simp]
 theorem mapRingEquiv_apply {K L : Type*} [Field K] [Field L] (e : K ≃+* L) (x : 𝓞 K) :
@@ -218,15 +225,15 @@ def mapAlgHom {k K L F : Type*} [Field k] [Field K] [Field L] [Algebra k K]
     [Algebra k L] [FunLike F K L] [AlgHomClass F k K L] (f : F) : (𝓞 K) →ₐ[𝓞 k] (𝓞 L) where
   toRingHom := mapRingHom f
   commutes' x := SetCoe.ext (AlgHomClass.commutes
-    ((AlgHomClass.toAlgHom f).restrictScalars (𝓞 k)) x)
+    ((AlgHom.ofClass f).restrictScalars (𝓞 k)) x)
 
 /-- The isomorphism of algebras `(𝓞 K) ≃ₐ[𝓞 k] (𝓞 L)` given by restricting
   an isomorphism of algebras `e : K ≃ₐ[k] L` to `𝓞 K`. -/
 def mapAlgEquiv {k K L E : Type*} [Field k] [Field K] [Field L] [Algebra k K]
     [Algebra k L] [EquivLike E K L] [AlgEquivClass E k K L] (e : E) : (𝓞 K) ≃ₐ[𝓞 k] (𝓞 L) :=
-  AlgEquiv.ofAlgHom (mapAlgHom e) (mapAlgHom (AlgEquivClass.toAlgEquiv e : K ≃ₐ[k] L).symm)
-    (AlgHom.ext fun x => ext (EquivLike.right_inv e x.1))
-      (AlgHom.ext fun x => ext (EquivLike.left_inv e x.1))
+  AlgEquiv.ofAlgHom (mapAlgHom e) (mapAlgHom (AlgEquiv.ofClass e).symm)
+    (AlgHom.ext fun x => ext (EquivLike.right_inv e x.val))
+      (AlgHom.ext fun x => ext (EquivLike.left_inv e x.val))
 
 instance inst_isScalarTower (k K L : Type*) [Field k] [Field K] [Field L]
     [Algebra k K] [Algebra k L] [Algebra K L] [IsScalarTower k K L] :
@@ -263,7 +270,7 @@ theorem minpoly_coe (x : 𝓞 K) :
   minpoly.algebraMap_eq RingOfIntegers.coe_injective x
 
 theorem isIntegral_coe (x : 𝓞 K) : IsIntegral ℤ (algebraMap _ K x) :=
-  x.2
+  x.property
 
 theorem isIntegral (x : 𝓞 K) : IsIntegral ℤ x := by
   obtain ⟨P, hPm, hP⟩ := x.isIntegral_coe
@@ -314,6 +321,8 @@ instance : IsDedekindDomain (𝓞 K) :=
 
 instance : Free ℤ (𝓞 K) :=
   IsIntegralClosure.module_free ℤ ℚ K (𝓞 K)
+
+instance : Ring.HasFiniteQuotients (𝓞 K) := .of_module_finite ℤ _
 
 instance : IsLocalization (Algebra.algebraMapSubmonoid (𝓞 K) ℤ⁰) K :=
   IsIntegralClosure.isLocalization_of_isSeparable ℤ ℚ K (𝓞 K)
@@ -441,6 +450,6 @@ namespace AdjoinRoot
 is a number field. -/
 instance {f : Polynomial ℚ} [hf : Fact (Irreducible f)] : NumberField (AdjoinRoot f) where
   to_charZero := charZero_of_injective_algebraMap (algebraMap ℚ _).injective
-  to_finiteDimensional := by convert! (AdjoinRoot.powerBasis hf.out.ne_zero).finite
+  to_finiteDimensional := by convert (AdjoinRoot.powerBasis hf.out.ne_zero).finite
 
 end AdjoinRoot

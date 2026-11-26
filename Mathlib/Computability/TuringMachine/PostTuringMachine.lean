@@ -5,12 +5,10 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Computability.TuringMachine.Tape
 public import Mathlib.Computability.StateTransition
-public import Mathlib.Data.Finset.Prod
+public import Mathlib.Computability.TuringMachine.Tape
 public import Mathlib.Data.Finset.Option
-public import Mathlib.Data.Fintype.Defs
-public import Mathlib.Data.PFun
+public import Mathlib.Data.Finset.Prod
 public import Mathlib.Data.Vector.Basic
 
 /-!
@@ -157,7 +155,7 @@ instance Cfg.inhabited : Inhabited (Cfg Γ Λ) := ⟨⟨default, default⟩⟩
 
 /-- Execution semantics of the Turing machine. -/
 def step (M : Machine Γ Λ) : Cfg Γ Λ → Option (Cfg Γ Λ) :=
-  fun ⟨q, T⟩ ↦ (M q T.1).map fun ⟨q', a⟩ ↦ ⟨q', match a with
+  fun ⟨q, T⟩ ↦ (M q T.head).map fun ⟨q', a⟩ ↦ ⟨q', match a with
     | Stmt.move d => T.move d
     | Stmt.write a => T.write a⟩
 
@@ -229,14 +227,14 @@ theorem Machine.map_step {S : Set Λ} (f₂₁ : Function.RightInverse f₁ f₂
   | ⟨q, T⟩, h => by
     unfold step Machine.map Cfg.map
     simp only [Turing.Tape.map_fst, g₂₁ q h, f₂₁ _]
-    rcases M q T.1 with (_ | ⟨q', d | a⟩); · rfl
+    rcases M q T.head with (_ | ⟨q', d | a⟩); · rfl
     · simp only [Option.map_some, Tape.map_move f₁]
       rfl
     · simp only [Option.map_some, Tape.map_write]
       rfl
 
 theorem map_init (g₁ : PointedMap Λ Λ') (l : List Γ) : (init l).map f₁ g₁ = init (l.map f₁) :=
-  congr (congr_arg Cfg.mk g₁.map_pt) (Tape.map_mk₁ _ _)
+  congr(Cfg.mk $g₁.map_pt $(Tape.map_mk₁ _ _))
 
 theorem Machine.map_respects (g₁ : PointedMap Λ Λ') (g₂ : Λ' → Λ) {S} (ss : Supports M S)
     (f₂₁ : Function.RightInverse f₁ f₂) (g₂₁ : ∀ q ∈ S, g₂ (g₁ q) = q) :
@@ -339,10 +337,10 @@ variable {Γ Λ σ}
 /-- The semantics of TM1 evaluation. -/
 def stepAux [Inhabited Γ] : Stmt Γ Λ σ → σ → Tape Γ → Cfg Γ Λ σ
   | move d q, v, T => stepAux q v (T.move d)
-  | write a q, v, T => stepAux q v (T.write (a T.1 v))
-  | load s q, v, T => stepAux q (s T.1 v) T
-  | branch p q₁ q₂, v, T => cond (p T.1 v) (stepAux q₁ v T) (stepAux q₂ v T)
-  | goto l, v, T => ⟨some (l T.1 v), v, T⟩
+  | write a q, v, T => stepAux q v (T.write (a T.head v))
+  | load s q, v, T => stepAux q (s T.head v) T
+  | branch p q₁ q₂, v, T => cond (p T.head v) (stepAux q₁ v T) (stepAux q₂ v T)
+  | goto l, v, T => ⟨some (l T.head v), v, T⟩
   | halt, v, T => ⟨none, v, T⟩
 
 /-- The state transition function. -/
@@ -436,7 +434,7 @@ theorem step_supports (M : Λ → Stmt Γ Λ σ) {S : Finset Λ} (ss : Supports 
     simp only [step, Option.mem_def, Option.some.injEq] at h₁; subst c'
     revert h₂; induction M l₁ generalizing v T with intro hs
     | branch p q₁' q₂' IH₁ IH₂ =>
-      unfold stepAux; cases p T.1 v
+      unfold stepAux; cases p T.head v
       · exact IH₂ _ _ hs.2
       · exact IH₁ _ _ hs.1
     | goto => exact Finset.some_mem_insertNone.2 (hs _ _)
@@ -533,11 +531,11 @@ theorem tr_respects [Inhabited Γ] :
     | write _ _ IH => exact TransGen.head rfl (IH _ _)
     | load _ _ IH => exact (reaches₁_eq (by rfl)).2 (IH _ _)
     | branch p _ _ IH₁ IH₂ =>
-      unfold TM1.stepAux; cases e : p T.1 v
+      unfold TM1.stepAux; cases e : p T.head v
       · exact (reaches₁_eq (by simp only [TM0.step, tr, trAux, e]; rfl)).2 (IH₂ _ _)
       · exact (reaches₁_eq (by simp only [TM0.step, tr, trAux, e]; rfl)).2 (IH₁ _ _)
     | _ =>
-      exact TransGen.single (congr_arg some (congr (congr_arg TM0.Cfg.mk rfl) (Tape.write_self T)))
+      exact TransGen.single congr(some (TM0.Cfg.mk _ $(Tape.write_self T)))
 
 theorem tr_eval [Inhabited Γ] (l : List Γ) : TM0.eval (tr M) l = TM1.eval M l :=
   (congr_arg _ (tr_eval' _ _ _ (tr_respects M) ⟨some _, _, _⟩)).trans
@@ -635,13 +633,13 @@ theorem exists_enc_dec [Inhabited Γ] [Finite Γ] :
     ∃ (n : ℕ) (enc : Γ → List.Vector Bool n) (dec : List.Vector Bool n → Γ),
       enc default = List.Vector.replicate n false ∧ ∀ a, dec (enc a) = a := by
   rcases Finite.exists_equiv_fin Γ with ⟨n, ⟨e⟩⟩
-  letI : DecidableEq Γ := e.decidableEq
+  let : DecidableEq Γ := e.decidableEq
   let G : Fin n ↪ Fin n → Bool :=
     ⟨fun a b ↦ a = b, fun a b h ↦
-      Bool.of_decide_true <| (congr_fun h b).trans <| Bool.decide_true rfl⟩
+      Bool.of_decide_true <| congr($h b).trans <| Bool.decide_true rfl⟩
   let H := (e.toEmbedding.trans G).trans (Equiv.vectorEquivFin _ _).symm.toEmbedding
   let enc := H.setValue default (List.Vector.replicate n false)
-  exact ⟨_, enc, Function.invFun enc, H.setValue_eq _ _, Function.leftInverse_invFun enc.2⟩
+  exact ⟨_, enc, Function.invFun enc, H.setValue_eq _ _, Function.leftInverse_invFun enc.inj'⟩
 
 variable (Γ)
 variable (Λ σ : Type*)
@@ -774,7 +772,7 @@ theorem trTape'_move_left (L R : ListBlank Γ) :
   | nil => cases e; rfl
   | cons b l₁ IH =>
     simp only [List.length, iterate_succ_apply]
-    convert! IH e
+    convert IH e
     simp only [ListBlank.tail_cons, ListBlank.append, Tape.move_left_mk', ListBlank.head_cons]
 
 theorem trTape'_move_right (L R : ListBlank Γ) :
@@ -795,7 +793,7 @@ theorem stepAux_write (q : Stmt Bool (Λ' Γ Λ σ) σ) (v : σ) (a b : Γ) (L R
   suffices ∀ {L' R'} (l₁ l₂ l₂' : List Bool) (_ : l₂'.length = l₂.length),
       stepAux (write l₂ q) v (Tape.mk' (ListBlank.append l₁ L') (ListBlank.append l₂' R')) =
       stepAux q v (Tape.mk' (L'.append (List.reverseAux l₂ l₁)) R') by
-    exact this [] _ _ ((enc b).2.trans (enc a).2.symm)
+    exact this [] _ _ ((enc b).property.trans (enc a).property.symm)
   clear a b L R
   intro L' R' l₁ l₂ l₂' e
   induction l₂ generalizing l₁ l₂' with
@@ -821,8 +819,8 @@ theorem stepAux_read (f : Γ → Stmt Bool (Λ' Γ Λ σ) σ) (v : σ) (L R : Li
       stepAux (readAux i f) v (Tape.mk' (ListBlank.append l₁ L') (ListBlank.append l₂ R')) =
       stepAux (f ⟨l₂, h⟩) v (Tape.mk' (ListBlank.append (l₂.reverseAux l₁) L') R') by
     intro f
-    exact this n f (L.flatMap (fun x => (enc x).1.reverse) _)
-      (R.flatMap (fun x => (enc x).1) _) [] _ (enc a).2
+    exact this n f (L.flatMap (fun x => (enc x).val.reverse) _)
+      (R.flatMap (fun x => (enc x).val) _) [] _ (enc a).property
   clear f L a R
   rintro _ f L' R' l₁ l₂ rfl
   induction l₂ generalizing l₁ with
@@ -994,11 +992,11 @@ def tr : Λ' Γ Λ → TM1.Stmt Γ (Λ' Γ Λ) Unit
 
 /-- The configuration translation. -/
 def trCfg : TM0.Cfg Γ Λ → TM1.Cfg Γ (Λ' Γ Λ) Unit
-  | ⟨q, T⟩ => ⟨cond (M q T.1).isSome (some (Λ'.normal q)) none, (), T⟩
+  | ⟨q, T⟩ => ⟨cond (M q T.head).isSome (some (Λ'.normal q)) none, (), T⟩
 
 theorem tr_respects : Respects (TM0.step M) (TM1.step (tr M)) fun a b ↦ trCfg M a = b :=
   fun_respects.2 fun ⟨q, T⟩ ↦ by
-    rcases e : M q T.1 with - | val
+    rcases e : M q T.head with - | val
     · simp only [TM0.step, trCfg, e]; exact Eq.refl none
     obtain ⟨q', s⟩ := val
     simp only [FRespects, TM0.step, trCfg, e, Option.isSome, cond, Option.map_some]

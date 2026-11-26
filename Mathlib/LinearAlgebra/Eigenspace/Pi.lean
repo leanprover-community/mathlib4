@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Simultaneous eigenvectors and eigenvalues for families of endomorphisms
 
@@ -17,13 +20,13 @@ endomorphism are invariant under the action of all members of the family. It is 
 for commuting endomorphisms but there are important more general situations where it also holds
 (e.g., representations of nilpotent Lie algebras).
 
-## Main definitions / results
+## Main definitions and statements
+
 * `Module.End.independent_iInf_maxGenEigenspace_of_forall_mapsTo`: the simultaneous generalised
   eigenspaces of a compatible family of endomorphisms are independent.
 * `Module.End.iSup_iInf_maxGenEigenspace_eq_top_of_forall_mapsTo`: in finite dimensions, the
   simultaneous generalised eigenspaces of a compatible family of endomorphisms span if the same
   is true of each map individually.
-
 -/
 
 public section
@@ -48,7 +51,7 @@ lemma _root_.Submodule.inf_iInf_maxGenEigenspace_of_forall_mapsTo {μ : ι → R
     p ⊓ ⨅ i, (f i).maxGenEigenspace (μ i) =
       (⨅ i, maxGenEigenspace ((f i).restrict (hfp i)) (μ i)).map p.subtype := by
   cases isEmpty_or_nonempty ι
-  · simp [iInf_of_isEmpty]
+  · simp
   · simp_rw [inf_iInf, p.inf_genEigenspace _ (hfp _), Submodule.map_iInf _ p.injective_subtype]
 
 /-- Given a family of endomorphisms `i ↦ f i`, a family of candidate eigenvalues `i ↦ μ i`, and a
@@ -125,7 +128,7 @@ lemma independent_iInf_maxGenEigenspace_of_forall_mapsTo
   obtain ⟨k, hk : (g ^ k) y = 0⟩ := (mem_iInf_maxGenEigenspace_iff _ _ _).mp hy l
   have aux (f : End R M) (φ : R) (k : ℕ) (p : Submodule R M) (hp : MapsTo f p p) :
       MapsTo ((f - algebraMap R (Module.End R M) φ) ^ k) p p := by
-    rw [Module.End.coe_pow]
+    rw [FunLike.coe_pow_eq_iterate]
     exact MapsTo.iterate (fun m hm ↦ p.sub_mem (hp hm) (p.smul_mem _ hm)) k
   refine ⟨k, Submodule.mem_inf.mp ⟨?_, ?_⟩⟩
   · refine aux (f l) (χ₂ l) k (⨅ i, (f i).maxGenEigenspace (χ₁ i)) ?_ hx
@@ -161,8 +164,8 @@ lemma iSup_iInf_maxGenEigenspace_eq_top_of_forall_mapsTo [FiniteDimensional K M]
   · replace hy : ∀ φ, finrank K ((f i).maxGenEigenspace φ) < n := fun φ ↦ by
       simp_rw [not_exists, ← lt_top_iff_ne_top] at hy; exact h_dim ▸ Submodule.finrank_lt (hy φ).ne
     have hi (j : ι) (φ : K) :
-        MapsTo (f j) ((f i).maxGenEigenspace φ) ((f i).maxGenEigenspace φ) := by
-      exact h j i φ
+        MapsTo (f j) ((f i).maxGenEigenspace φ) ((f i).maxGenEigenspace φ) :=
+      h j i φ
     replace ih (φ : K) :
         ⨆ χ : ι → K, ⨅ j, maxGenEigenspace ((f j).restrict (hi j φ)) (χ j) = ⊤ := by
       apply ih _ (hy φ)

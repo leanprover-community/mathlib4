@@ -10,6 +10,9 @@ public import Mathlib.Analysis.Matrix.Normed
 public import Mathlib.Topology.Algebra.Group.Matrix
 public import Mathlib.Topology.Algebra.ProperAction.CompactlyGenerated
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Transitivity and properness of actions
 
@@ -32,6 +35,7 @@ theorem num_continuous : Continuous ↿num := by unfold num; fun_prop
 @[fun_prop]
 theorem denom_continuous : Continuous ↿denom := by unfold denom; fun_prop
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma continuous_toSL2R : Continuous toSL2R := by
   apply continuous_induced_rng.mpr
   simp only [Function.comp_def, coe_toSL2R]
@@ -71,30 +75,30 @@ section proper_orbit_map
 
 /-- Preliminary lemma for compactness of the orbit map. -/
 private lemma cdsq_le {K : Set ℍ} (hK : IsCompact K) :
-    ∃ A, ∀ g : SL(2, ℝ), g • I ∈ K → g 1 0 ^ 2 + g 1 1 ^ 2 ≤ A := by
+    ∃ A, ∀ g : SL(2, ℝ), g • .I ∈ K → g 1 0 ^ 2 + g 1 1 ^ 2 ≤ A := by
   rcases K.eq_empty_or_nonempty with rfl | hKne; · simp
   obtain ⟨δ, hδ, hδK⟩ : ∃ δ > 0, ∀ z ∈ K, δ ≤ z.im :=
     match hK.exists_isMinOn hKne continuous_im.continuousOn with | ⟨z, _, h⟩ => ⟨_, z.im_pos, h⟩
   refine ⟨1 / δ, fun g hg ↦ ?_⟩
-  specialize hδK (g • I) hg
+  specialize hδK (g • .I) hg
   simp only [MulAction.compHom_smul_def, im_smul_eq_div_normSq, Matrix.SpecialLinearGroup.det_mapGL,
     Units.val_one, abs_one, I_im, mul_one] at hδK
-  rw [le_div_iff₀ (normSq_denom_pos (Matrix.SpecialLinearGroup.mapGL ℝ g) (show I.im ≠ 0 by simp)),
-    mul_comm, ← le_div_iff₀ hδ] at hδK
+  rw [le_div_iff₀ (normSq_denom_pos (Matrix.SpecialLinearGroup.mapGL ℝ g)
+    (show (.I : ℍ).im ≠ 0 by simp)), mul_comm, ← le_div_iff₀ hδ] at hδK
   simpa [Complex.normSq, add_comm, denom, sq] using hδK
 
 /-- Preliminary lemma for compactness of the orbit map. -/
 private lemma absq_le {K : Set ℍ} (hK : IsCompact K) :
-    ∃ A : ℝ, ∀ g : SL(2, ℝ), g • I ∈ K → g 0 0 ^ 2 + g 0 1 ^ 2 ≤ A := by
+    ∃ A : ℝ, ∀ g : SL(2, ℝ), g • .I ∈ K → g 0 0 ^ 2 + g 0 1 ^ 2 ≤ A := by
   let S : SL(2, ℝ) := ⟨!![0, -1; 1, 0], by simp⟩
   obtain ⟨A, hA⟩ := cdsq_le (K := S • K) (hK.image <| continuous_const_smul S)
   refine ⟨A, fun g hg ↦ ?_⟩
-  convert! hA (S * g) (by rwa [mul_smul, Set.smul_mem_smul_set_iff]) using 1
+  convert hA (S * g) (by rwa [mul_smul, Set.smul_mem_smul_set_iff]) using 1
   rw [Matrix.SpecialLinearGroup.coe_mul, Matrix.eta_fin_two g.val, Matrix.mul_fin_two]
   simp
 
 /-- The orbit map `g ↦ g • I` is a proper map `SL(2, ℝ) → ℍ`. -/
-lemma isProperMap_smul_I : IsProperMap fun g : SL(2, ℝ) ↦ g • I := by
+lemma isProperMap_smul_I : IsProperMap fun g : SL(2, ℝ) ↦ (g • .I : ℍ) := by
   refine isProperMap_iff_isCompact_preimage.mpr ⟨by fun_prop, fun K hK ↦ ?_⟩
   obtain ⟨A, hA⟩ := absq_le hK
   obtain ⟨A', hA'⟩ := cdsq_le hK
@@ -105,10 +109,7 @@ lemma isProperMap_smul_I : IsProperMap fun g : SL(2, ℝ) ↦ g • I := by
     convert! ProperSpace.isCompact_closedBall (0 : Matrix (Fin 2) (Fin 2) ℝ) (max √A √A')
     simp only [le_sup_iff, Fin.forall_fin_two, Fin.isValue, Metric.closedBall, dist_zero_right,
       Matrix.norm_def, pi_norm_le_iff_of_nonempty, Real.norm_eq_abs]
-    #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
-    (replacing grind's canonicalizer with a type-directed normalizer), `ext` was not necessary.
-    The cause of this might be `Matrix` function application defeq abuse. -/
-    ext; grind
+    grind
   have := Matrix.SpecialLinearGroup.isClosedEmbedding_val.isCompact_preimage this
   refine this.of_isClosed_subset (hK.isClosed.preimage <| by fun_prop) (fun g hg ↦ ?_)
   intro i j
@@ -126,7 +127,7 @@ end proper_orbit_map
 /-- Any discrete subgroup of `SL(2, ℝ)` acts properly discontinuously on `ℍ`. -/
 instance instProperlyDiscontinuousSL2RSubgroup (𝒢 : Subgroup SL(2, ℝ)) [DiscreteTopology 𝒢] :
     ProperlyDiscontinuousSMul 𝒢 ℍ := by
-  have : IsClosed (𝒢 : Set SL(2, ℝ)) := Subgroup.isClosed_of_discrete
+  have : IsClosed (𝒢 : Set SL(2, ℝ)) := Subgroup.isClosed_of_discreteTopology
   rw [properlyDiscontinuousSMul_iff_properSMul]
   infer_instance
 

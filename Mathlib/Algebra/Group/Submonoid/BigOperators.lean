@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Group.Submonoid.Basic
 public import Mathlib.Algebra.Group.Support
 public import Mathlib.Data.Finset.NoncommProd
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Submonoids: membership criteria for products and sums
 
@@ -21,6 +24,7 @@ In this file we prove various facts about membership in a submonoid:
   to an additive submonoid, then so does their sum;
 
 ## Tags
+
 submonoid, submonoids
 -/
 
@@ -29,7 +33,7 @@ public section
 -- We don't need ordered structures to establish basic membership facts for submonoids
 assert_not_exists IsOrderedRing
 
-variable {M A B : Type*}
+variable {M B : Type*}
 
 section SubmonoidClass
 variable [Monoid M] [SetLike B M] [SubmonoidClass B M] {x : M} {S : B}
@@ -49,12 +53,6 @@ theorem coe_multiset_prod {M} [CommMonoid M] [SetLike B M] [SubmonoidClass B M] 
 theorem coe_finsetProd {ι M} [CommMonoid M] [SetLike B M] [SubmonoidClass B M] (f : ι → S)
     (s : Finset ι) : ↑(∏ i ∈ s, f i) = (∏ i ∈ s, f i : M) :=
   map_prod (SubmonoidClass.subtype S) f s
-
-@[deprecated (since := "2026-04-08")]
-alias _root_.AddSubmonoidClass.coe_finset_sum := _root_.AddSubmonoidClass.coe_finsetSum
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-alias coe_finset_prod := coe_finsetProd
 
 end SubmonoidClass
 
@@ -84,7 +82,7 @@ submonoid. -/
       is in the `AddSubmonoid`. -/]
 theorem prod_mem {M : Type*} [CommMonoid M] [SetLike B M] [SubmonoidClass B M] {ι : Type*}
     {t : Finset ι} {f : ι → M} (h : ∀ c ∈ t, f c ∈ S) : (∏ c ∈ t, f c) ∈ S :=
-  multiset_prod_mem (t.1.map f) fun _x hx =>
+  multiset_prod_mem (t.val.map f) fun _x hx =>
     let ⟨i, hi, hix⟩ := Multiset.mem_map.1 hx
     hix ▸ h i hi
 
@@ -107,12 +105,6 @@ theorem coe_multiset_prod {M} [CommMonoid M] (S : Submonoid M) (m : Multiset S) 
 theorem coe_finsetProd {ι M} [CommMonoid M] (S : Submonoid M) (f : ι → S) (s : Finset ι) :
     ↑(∏ i ∈ s, f i) = (∏ i ∈ s, f i : M) :=
   map_prod S.subtype f s
-
-@[deprecated (since := "2026-04-08")]
-alias _root_.AddSubmonoid.coe_finset_sum := _root_.AddSubmonoid.coe_finsetSum
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-alias coe_finset_prod := coe_finsetProd
 
 /-- Product of a list of elements in a submonoid is in the submonoid. -/
 @[to_additive /-- Sum of a list of elements in an `AddSubmonoid` is in the `AddSubmonoid`. -/]
@@ -139,7 +131,7 @@ submonoid. -/
       is in the `AddSubmonoid`. -/]
 theorem prod_mem {M : Type*} [CommMonoid M] (S : Submonoid M) {ι : Type*} {t : Finset ι}
     {f : ι → M} (h : ∀ c ∈ t, f c ∈ S) : (∏ c ∈ t, f c) ∈ S :=
-  S.multiset_prod_mem (t.1.map f) fun _ hx =>
+  S.multiset_prod_mem (t.val.map f) fun _ hx =>
     let ⟨i, hi, hix⟩ := Multiset.mem_map.1 hx
     hix ▸ h i hi
 

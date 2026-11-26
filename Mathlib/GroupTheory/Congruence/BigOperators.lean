@@ -5,16 +5,15 @@ Authors: Amelia Livingston
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
-public import Mathlib.Algebra.BigOperators.Group.List.Lemmas
-public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Algebra.BigOperators.Finsupp.Basic
 public import Mathlib.Data.DFinsupp.BigOperators
-public import Mathlib.GroupTheory.Congruence.Basic
+public import Mathlib.GroupTheory.Congruence.Hom
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Interactions between `∑, ∏` and `(Add)Con`
-
 -/
 
 public section
@@ -94,7 +93,6 @@ protected theorem dfinsuppProd {ι : Type*} {β : ι → Type*} {M : Type*}
     c (f.prod h) (g.prod h') := by
   refine Quotient.exact (show c.mk' _ = c.mk' _ from ?_)
   rw [map_dfinsuppProd, map_dfinsuppProd]
-  classical
   exact DFinsupp.prod_congr_of_eq_on_union
     (fun _ _ => Quotient.sound <| H _)
     (fun _ _ => Quotient.sound <| hf _) (fun _ _ => Quotient.sound <| hf' _)
@@ -124,11 +122,5 @@ protected theorem _root_.AddCon.coe_dfinsuppSumAddHom {ι : Type*} {β : ι → 
   classical
   simp_rw [← AddCon.coe_mk', DFinsupp.sumAddHom_apply, map_dfinsuppSum]
   rfl
-
-@[deprecated (since := "2026-04-08")]
-protected alias _root_.AddCon.finset_sum := AddCon.finsetSum
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-protected alias finset_prod := Con.finsetProd
 
 end Con

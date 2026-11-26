@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Order.Monoid.Defs
 
 /-!
 # Ordered scalar multiplication and vector addition
+
 This file defines ordered scalar multiplication and vector addition, and proves some properties.
 In the additive case, a motivating example is given by the additive action of `ℤ` on subsets of
 reals that are closed under integer translation.  The order compatibility allows for a treatment of
@@ -17,13 +18,8 @@ the `R((z))`-module structure on `(z ^ s) V((z))` for an `R`-module `V`, using t
 series.  In the multiplicative case, a standard example is the action of non-negative rationals on
 an ordered field.
 
-## Implementation notes
-* Because these classes mix the algebra and order hierarchies, we write them as `Prop`-valued
-  mixins.
-* Despite the file name, Ordered AddTorsors are not defined as a separate class.  To implement them,
-  combine `[AddTorsor G P]` with `[IsOrderedCancelVAdd G P]`
+## Main definitions
 
-## Definitions
 * IsOrderedSMul : inequalities are preserved by scalar multiplication.
 * IsOrderedVAdd : inequalities are preserved by translation.
 * IsCancelSMul : the scalar multiplication version of cancellative multiplication
@@ -32,6 +28,7 @@ an ordered field.
 * IsOrderedCancelVAdd : inequalities are preserved and reflected by translation.
 
 ## Instances
+
 * `IsOrderedMonoid.toIsOrderedSMul`
 * `IsOrderedAddMonoid.toIsOrderedVAdd`
 * `IsOrderedSMul.toCovariantClassLeft`
@@ -43,15 +40,21 @@ an ordered field.
 * `IsOrderedCancelSMul.toContravariantClassLeft`
 * `IsOrderedCancelVAdd.toContravariantClassLeft`
 
+## Implementation notes
+
+* Because these classes mix the algebra and order hierarchies, we write them as `Prop`-valued
+  mixins.
+* Despite the file name, Ordered AddTorsors are not defined as a separate class.  To implement them,
+  combine `[AddTorsor G P]` with `[IsOrderedCancelVAdd G P]`
+
 ## TODO
+
 * (lex) prod instances
 * Pi instances
 * WithTop (in a different file?)
 -/
 
 public section
-
-open Function
 
 variable {G P : Type*}
 

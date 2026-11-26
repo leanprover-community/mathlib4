@@ -5,10 +5,11 @@ Authors: Aaron Anderson, Gabin Kolly
 -/
 module
 
-public import Mathlib.Data.Fintype.Order
-public import Mathlib.Order.Closure
-public import Mathlib.ModelTheory.Semantics
 public import Mathlib.ModelTheory.Encoding
+public import Mathlib.ModelTheory.Semantics
+public import Mathlib.Order.Closure
+
+import Mathlib.Data.Fintype.Order
 
 /-!
 # First-Order Substructures
@@ -107,7 +108,7 @@ attribute [coe] Substructure.carrier
 instance instSetLike : SetLike (L.Substructure M) M :=
   ⟨Substructure.carrier, fun p q h => by cases p; cases q; congr⟩
 
-instance : PartialOrder (L.Substructure M) := .ofSetLike (L.Substructure M) M
+instance : PartialOrder (L.Substructure M) := .ofSetLike (L.Substructure M)
 
 /-- See Note [custom simps projection] -/
 def Simps.coe (S : L.Substructure M) : Set M :=
@@ -246,7 +247,7 @@ theorem notMem_of_notMem_closure {P : M} (hP : P ∉ closure L s) : P ∉ s := f
   hP (subset_closure h)
 
 @[simp]
-theorem closed (S : L.Substructure M) : (closure L).closed (S : Set M) :=
+theorem closed (S : L.Substructure M) : (S : Set M) ∈ (closure L).closed :=
   congr rfl ((closure L).eq_of_le Set.Subset.rfl fun _x xS => mem_closure.2 fun _T hT => hT xS)
 
 open Set
@@ -275,7 +276,7 @@ theorem coe_closure_eq_range_term_realize :
   rw [← SetLike.ext'_iff]
   refine closure_eq_of_le (fun x hx => ⟨var ⟨x, hx⟩, rfl⟩) (le_sInf fun S' hS' => ?_)
   rintro _ ⟨t, rfl⟩
-  exact t.realize_mem _ fun i => hS' i.2
+  exact t.realize_mem _ fun i => hS' i.property
 
 instance small_closure [Small.{u} s] : Small.{u} (closure L s) := by
   rw [← SetLike.coe_sort_coe, Substructure.coe_closure_eq_range_term_realize]
@@ -321,7 +322,7 @@ lemma mem_closure_iff_of_isRelational [L.IsRelational] (s : Set M) (m : M) :
 
 theorem _root_.Set.Countable.substructure_closure
     [Countable (Σ l, L.Functions l)] (h : s.Countable) : Countable.{w + 1} (closure L s) := by
-  haveI : Countable s := h.to_subtype
+  have : Countable s := h.to_subtype
   rw [← mk_le_aleph0_iff, ← lift_le_aleph0]
   exact lift_card_closure_le_card_term.trans mk_le_aleph0
 
@@ -331,15 +332,16 @@ variable {L} (S)
 is preserved under function symbols, then `p` holds for all elements of the closure of `s`. -/
 @[elab_as_elim]
 theorem closure_induction {p : M → Prop} {x} (h : x ∈ closure L s) (Hs : ∀ x ∈ s, p x)
-    (Hfun : ∀ {n : ℕ} (f : L.Functions n), ClosedUnder f (setOf p)) : p x :=
-  (@closure_le L M _ ⟨setOf p, fun {_} => Hfun⟩ _).2 Hs h
+    (Hfun : ∀ {n : ℕ} (f : L.Functions n), ClosedUnder f (Set.ofPred p)) : p x :=
+  (@closure_le L M _ ⟨Set.ofPred p, fun {_} => Hfun⟩ _).2 Hs h
 
 /-- If `s` is a dense set in a structure `M`, `Substructure.closure L s = ⊤`, then in order to prove
 that some predicate `p` holds for all `x : M` it suffices to verify `p x` for `x ∈ s`, and verify
 that `p` is preserved under function symbols. -/
 @[elab_as_elim]
 theorem dense_induction {p : M → Prop} (x : M) {s : Set M} (hs : closure L s = ⊤)
-    (Hs : ∀ x ∈ s, p x) (Hfun : ∀ {n : ℕ} (f : L.Functions n), ClosedUnder f (setOf p)) : p x := by
+    (Hs : ∀ x ∈ s, p x) (Hfun : ∀ {n : ℕ} (f : L.Functions n), ClosedUnder f (Set.ofPred p)) :
+    p x := by
   have : ∀ x ∈ closure L s, p x := fun x hx => closure_induction hx Hs fun {n} => Hfun
   simpa [hs] using this x
 
@@ -378,7 +380,7 @@ theorem closure_insert (s : Set M) (m : M) : closure L (insert m s) = closure L 
 
 instance small_bot : Small.{u} (⊥ : L.Substructure M) := by
   rw [← closure_empty]
-  haveI : Small.{u} (∅ : Set M) := small_subsingleton _
+  have : Small.{u} (∅ : Set M) := small_subsingleton _
   exact Substructure.small_closure
 
 theorem iSup_eq_closure {ι : Sort*} (S : ι → L.Substructure M) :
@@ -392,7 +394,7 @@ theorem mem_iSup_of_directed {ι : Type*} [hι : Nonempty ι] {S : ι → L.Subs
   suffices x ∈ closure L (⋃ i, (S i : Set M)) → ∃ i, x ∈ S i by
     simpa only [closure_iUnion, closure_eq (S _)] using this
   refine fun hx ↦ closure_induction hx (fun _ ↦ mem_iUnion.1) (fun f v hC ↦ ?_)
-  simp_rw [Set.mem_setOf] at *
+  simp_rw [Set.mem_ofPred] at *
   have ⟨i, hi⟩ := hS.finite_le (fun i ↦ Classical.choose (hC i))
   refine ⟨i, (S i).fun_mem f v (fun j ↦ hi j (Classical.choose_spec (hC j)))⟩
 
@@ -400,7 +402,7 @@ theorem mem_iSup_of_directed {ι : Type*} [hι : Nonempty ι] {S : ι → L.Subs
 theorem mem_sSup_of_directedOn {S : Set (L.Substructure M)} (Sne : S.Nonempty)
     (hS : DirectedOn (· ≤ ·) S) {x : M} :
     x ∈ sSup S ↔ ∃ s ∈ S, x ∈ s := by
-  haveI : Nonempty S := Sne.to_subtype
+  have : Nonempty S := Sne.to_subtype
   simp only [sSup_eq_iSup', mem_iSup_of_directed hS.directed_val, Subtype.exists, exists_prop]
 
 variable (L) (M)
@@ -626,7 +628,7 @@ theorem comap_strictMono_of_surjective : StrictMono (comap f) :=
 end GaloisInsertion
 
 instance inducedStructure {S : L.Substructure M} : L.Structure S where
-  funMap {_} f x := ⟨funMap f fun i => x i, S.fun_mem f (fun i => x i) fun i => (x i).2⟩
+  funMap {_} f x := ⟨funMap f fun i => x i, S.fun_mem f (fun i => x i) fun i => (x i).property⟩
   RelMap {_} r x := RelMap r fun i => (x i : M)
 
 /-- The natural embedding of an `L.Substructure` of `M` into `M`. -/
@@ -686,6 +688,7 @@ namespace LHom
 
 variable {L' : Language} [L'.Structure M]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Reduces the language of a substructure along a language hom. -/
 def substructureReduct (φ : L →ᴸ L') [φ.IsExpansionOn M] :
     L'.Substructure M ↪o L.Substructure M where
@@ -722,7 +725,7 @@ def withConstants (S : L.Substructure M) {A : Set M} (h : A ⊆ S) : L[[A]].Subs
     obtain f | f := f
     · exact S.fun_mem f
     · cases n
-      · exact fun _ _ => h f.2
+      · exact fun _ _ => h f.property
       · exact isEmptyElim f
 
 variable {A : Set M} {s : Set M} (h : A ⊆ S)
@@ -866,6 +869,7 @@ def domRestrict (f : M ↪[L] N) (p : L.Substructure M) : p ↪[L] N :=
 theorem domRestrict_apply (f : M ↪[L] N) (p : L.Substructure M) (x : p) : f.domRestrict p x = f x :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A first-order embedding `f : M → N` whose values lie in a substructure `p ⊆ N` can be restricted
 to an embedding `M → p`. -/
 def codRestrict (p : L.Substructure N) (f : M ↪[L] N) (h : ∀ c, f c ∈ p) : M ↪[L] p where
@@ -903,13 +907,13 @@ theorem subtype_comp_codRestrict (f : M ↪[L] N) (p : L.Substructure N) (h : �
 noncomputable def substructureEquivMap (f : M ↪[L] N) (s : L.Substructure M) :
     s ≃[L] s.map f.toHom where
   toFun := codRestrict (s.map f.toHom) (f.domRestrict s) fun ⟨m, hm⟩ => ⟨m, hm, rfl⟩
-  invFun n := ⟨Classical.choose n.2, (Classical.choose_spec n.2).1⟩
+  invFun n := ⟨Classical.choose n.property, (Classical.choose_spec n.property).1⟩
   left_inv := fun ⟨m, hm⟩ =>
     Subtype.mk_eq_mk.2
       (f.injective
         (Classical.choose_spec
             (codRestrict (s.map f.toHom) (f.domRestrict s) (fun ⟨m, hm⟩ => ⟨m, hm, rfl⟩)
-                ⟨m, hm⟩).2).2)
+                ⟨m, hm⟩).property).2)
   right_inv := fun ⟨_, hn⟩ => Subtype.mk_eq_mk.2 (Classical.choose_spec hn).2
   map_fun' {n} f x := by simp
   map_rel' {n} R x := by simp
@@ -927,9 +931,9 @@ theorem subtype_substructureEquivMap (f : M ↪[L] N) (s : L.Substructure M) :
 /-- The equivalence between the domain and the range of an embedding `f`. -/
 @[simps toEquiv_apply] noncomputable def equivRange (f : M ↪[L] N) : M ≃[L] f.toHom.range where
   toFun := codRestrict f.toHom.range f f.toHom.mem_range_self
-  invFun n := Classical.choose n.2
-  left_inv m :=
-    f.injective (Classical.choose_spec (codRestrict f.toHom.range f f.toHom.mem_range_self m).2)
+  invFun n := Classical.choose n.property
+  left_inv m := f.injective
+    (Classical.choose_spec (codRestrict f.toHom.range f f.toHom.mem_range_self m).property)
   right_inv := fun ⟨_, hn⟩ => Subtype.mk_eq_mk.2 (Classical.choose_spec hn)
   map_fun' {n} f x := by simp
   map_rel' {n} R x := by simp
@@ -957,7 +961,7 @@ namespace Substructure
 
 /-- The embedding associated to an inclusion of substructures. -/
 def inclusion {S T : L.Substructure M} (h : S ≤ T) : S ↪[L] T :=
-  S.subtype.codRestrict _ fun x => h x.2
+  S.subtype.codRestrict _ fun x => h x.property
 
 @[simp]
 theorem inclusion_self (S : L.Substructure M) : inclusion (le_refl S) = Embedding.refl L S := rfl

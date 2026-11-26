@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Rudy Peterson
 module
 
 public import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
+public import Mathlib.Data.Multiset.Fold
 
 /-!
 # Bind operation for multisets
@@ -156,6 +157,10 @@ theorem card_bind : card (s.bind f) = (s.map (card ∘ f)).sum := by simp [bind]
 theorem bind_congr {f g : α → Multiset β} {m : Multiset α} :
     (∀ a ∈ m, f a = g a) → bind m f = bind m g := by simp +contextual [bind]
 
+@[congr]
+theorem bind_congr' {f g : α → Multiset β} {m m' : Multiset α} (hm : m = m') :
+    (∀ a ∈ m, f a = g a) → bind m f = bind m' g := by subst hm; exact bind_congr
+
 theorem bind_hcongr {β' : Type v} {m : Multiset α} {f : α → Multiset β} {f' : α → Multiset β'}
     (h : β = β') (hf : ∀ a ∈ m, f a ≍ f' a) : bind m f ≍ bind m f' := by
   subst h
@@ -246,7 +251,7 @@ theorem le_bind {α β : Type*} {f : α → Multiset β} (S : Multiset α) {x : 
 @[simp]
 theorem attach_bind_coe (s : Multiset α) (f : α → Multiset β) :
     (s.attach.bind fun i => f i) = s.bind f :=
-  congr_arg join <| attach_map_val' _ _
+  congr(join $(attach_map_val' ..))
 
 variable {f s t}
 

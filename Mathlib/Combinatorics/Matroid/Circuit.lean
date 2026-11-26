@@ -38,7 +38,7 @@ In matroids arising from graphs, circuits correspond to graphical cycles.
 * `Matroid.IsBase.mem_fundCocircuit_iff_mem_fundCircuit` : `e` is in the fundamental circuit
   for `B` and `f` iff `f` is in the fundamental cocircuit for `B` and `e`.
 
-## Implementation Details
+## Implementation notes
 
 Since `Matroid.fundCircuit M e I` is only sensible if `I` is independent and `e ∈ M.closure I \ I`,
 to avoid hypotheses being explicitly included in the definition,
@@ -51,7 +51,7 @@ These make the useful statement `e ∈ M.fundCircuit e I ⊆ insert e I` true un
 
 @[expose] public section
 
-variable {α : Type*} {M : Matroid α} {C C' I X Y R : Set α} {e f x y : α}
+variable {α : Type*} {M : Matroid α} {C C' I X Y R : Set α} {e f x : α}
 
 open Set
 
@@ -107,7 +107,7 @@ lemma isCircuit_iff_forall_ssubset : M.IsCircuit C ↔ M.Dep C ∧ ∀ ⦃I⦄, 
   exact fun h ↦ ⟨fun h' I hIC ↦ ((not_dep_iff (hIC.subset.trans h.subset_ground)).1 (h' hIC)),
     fun h I hIC ↦ (h hIC).not_dep⟩
 
-lemma isCircuit_antichain : IsAntichain (· ⊆ ·) (setOf M.IsCircuit) :=
+lemma isCircuit_antichain : IsAntichain (· ⊆ ·) (Set.ofPred M.IsCircuit) :=
   fun _ hC _ hC' hne hss ↦ hne <| (IsCircuit.minimal hC').eq_of_subset hC.dep hss
 
 lemma IsCircuit.eq_of_not_indep_subset (hC : M.IsCircuit C) (hX : ¬ M.Indep X) (hXC : X ⊆ C) :
@@ -256,7 +256,7 @@ lemma Indep.fundCircuit_isCircuit (hI : M.Indep I) (hecl : e ∈ M.closure I) (h
   · simp [show ∃ x ⊆ I, e ∈ M.closure x ∧ e ∉ x from ⟨I, by simp [hecl, heI]⟩]
   · rw [hI.closure_sInter_eq_biInter_closure_of_forall_subset ⟨I, by simpa⟩ (by simp +contextual)]
     simp
-  simp only [mem_sInter, mem_setOf_eq, and_imp]
+  simp only [mem_sInter, mem_ofPred_eq, and_imp]
   exact fun f hf hecl ↦ (hf _ (sdiff_subset.trans aux) hecl).2 rfl
 
 lemma Indep.mem_fundCircuit_iff (hI : M.Indep I) (hecl : e ∈ M.closure I) (heI : e ∉ I) :
@@ -666,7 +666,7 @@ lemma IsCircuit.isCocircuit_inter_nontrivial (hC : M.IsCircuit C) (hK : M.IsCoci
 
 lemma IsCircuit.isCocircuit_disjoint_or_nontrivial_inter (hC : M.IsCircuit C)
     (hK : M.IsCocircuit K) : Disjoint C K ∨ (C ∩ K).Nontrivial := by
-  rw [or_iff_not_imp_left, disjoint_iff_inter_eq_empty, ← ne_eq, ← nonempty_iff_ne_empty]
+  rw [or_iff_not_imp_left, disjoint_iff_inter_eq_empty, ← ne_eq, ne_empty_iff_nonempty]
   exact hC.isCocircuit_inter_nontrivial hK
 
 lemma dual_rankPos_iff_exists_isCircuit : M✶.RankPos ↔ ∃ C, M.IsCircuit C := by

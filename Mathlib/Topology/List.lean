@@ -5,15 +5,18 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Topology.Constructions
-public import Mathlib.Order.Filter.ListTraverse
-public import Mathlib.Tactic.AdaptationNote
-public import Mathlib.Topology.Algebra.Monoid.Defs
 public import Mathlib.Data.Vector.Basic
+public import Mathlib.Topology.Algebra.Monoid.Defs
+
+import Mathlib.Order.Filter.ListTraverse
+import Mathlib.Tactic.AdaptationNote
+import Mathlib.Topology.Constructions
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Topology on lists and vectors
-
 -/
 
 @[expose] public section
@@ -21,7 +24,7 @@ public import Mathlib.Data.Vector.Basic
 
 open TopologicalSpace Set Filter
 
-open Topology
+open scoped Topology
 
 variable {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 
@@ -53,9 +56,9 @@ theorem nhds_list (as : List α) : 𝓝 as = traverse 𝓝 as := by
           ⟨u::v, List.Forall₂.cons hu hv,
             Subset.trans (Set.seq_mono (Set.image_mono hut) hvss) hus⟩
     rcases this with ⟨v, hv, hvs⟩
-    have : sequence v ∈ traverse 𝓝 l :=
+    have : ∀ᶠ y in traverse 𝓝 l, y ∈ sequence v :=
       mem_traverse _ _ <| hv.imp fun a s ⟨hs, ha⟩ => IsOpen.mem_nhds hs ha
-    refine mem_of_superset this fun u hu ↦ ?_
+    refine Eventually.mono this fun u hu ↦ ?_
     have hu := (List.mem_traverse _ _).1 hu
     have : List.Forall₂ (fun a s => IsOpen s ∧ a ∈ s) u v := by
       refine List.Forall₂.flip ?_
@@ -180,7 +183,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem tendsto_cons {n : ℕ} {a : α} {l : Vector α n} :
     Tendsto (fun p : α × Vector α n => p.1 ::ᵥ p.2) (𝓝 a ×ˢ 𝓝 l) (𝓝 (a ::ᵥ l)) := by
   rw [tendsto_subtype_rng, Vector.cons_val]
-  exact tendsto_fst.cons (Tendsto.comp continuousAt_subtype_val tendsto_snd)
+  exact tendsto_fst.cons (Tendsto.comp continuousAt_subtypeVal tendsto_snd)
 
 set_option backward.isDefEq.respectTransparency false in
 theorem tendsto_insertIdx {n : ℕ} {i : Fin (n + 1)} {a : α} :
@@ -190,7 +193,7 @@ theorem tendsto_insertIdx {n : ℕ} {i : Fin (n + 1)} {a : α} :
   | ⟨l, hl⟩ => by
     rw [insertIdx, tendsto_subtype_rng]
     simp only [insertIdx_val]
-    exact List.tendsto_insertIdx tendsto_fst (Tendsto.comp continuousAt_subtype_val tendsto_snd : _)
+    exact List.tendsto_insertIdx tendsto_fst (Tendsto.comp continuousAt_subtypeVal tendsto_snd : _)
 
 /-- Continuity of `Vector.insertIdx`. -/
 theorem continuous_insertIdx' {n : ℕ} {i : Fin (n + 1)} :
@@ -208,7 +211,7 @@ theorem continuousAt_eraseIdx {n : ℕ} {i : Fin (n + 1)} :
   | ⟨l, hl⟩ => by
     rw [ContinuousAt, Vector.eraseIdx, tendsto_subtype_rng]
     simp only [Vector.eraseIdx_val]
-    exact Tendsto.comp List.tendsto_eraseIdx continuousAt_subtype_val
+    exact Tendsto.comp List.tendsto_eraseIdx continuousAt_subtypeVal
 
 theorem continuous_eraseIdx {n : ℕ} {i : Fin (n + 1)} :
     Continuous (Vector.eraseIdx i : Vector α (n + 1) → Vector α n) :=

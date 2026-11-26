@@ -6,7 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Sheafification
-public import Mathlib.CategoryTheory.Sites.Localization
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The category of sheaves of modules as a localization of presheaves of modules
@@ -17,7 +19,6 @@ which become isomorphisms after sheafification
 (see the file `Mathlib/CategoryTheory/Sites/Localization.lean`), we show that
 the sheafification functor from presheaves of modules to sheaves of modules
 is a localization functor.
-
 -/
 
 public section

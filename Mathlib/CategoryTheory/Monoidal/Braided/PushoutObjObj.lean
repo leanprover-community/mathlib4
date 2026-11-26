@@ -8,13 +8,15 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.PullbackObjObj
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pushout-tensor-products and the braiding
 
 In this file, we introduce a definition `Functor.PushoutObjObj.flipTensor`
 which switches the two morphisms involved in pushout-tensor-products
 in a braided category.
-
 -/
 
 @[expose] public section
@@ -35,10 +37,5 @@ obtain a similar structure for `f₂` and `f₁`. -/
 @[simps!]
 def flipTensor : (curriedTensor C).PushoutObjObj f₂ f₁ :=
   sq.flip.ofNatIso (BraidedCategory.curriedBraidingNatIso _).symm
-
-set_option backward.defeqAttrib.useBackward true in
-@[simp]
-lemma flipTensor_ι : dsimp% sq.flipTensor.ι = sq.ι ≫ (β_ _ _).inv := by
-  simp [flipTensor]
 
 end CategoryTheory.Functor.PushoutObjObj

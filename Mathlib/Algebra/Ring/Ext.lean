@@ -6,7 +6,8 @@ Authors: Raghuram Sundararajan
 module
 
 public import Mathlib.Algebra.Ring.Defs
-public import Mathlib.Algebra.Group.Ext
+
+import Mathlib.Algebra.Group.Ext
 
 /-!
 # Extensionality lemmas for rings and similar structures
@@ -16,7 +17,7 @@ In this file we prove extensionality lemmas for the ring-like structures defined
 extensionality lemmas take the form of asserting that two algebraic structures on a type are equal
 whenever the addition and multiplication defined by them are both the same.
 
-## Implementation details
+## Implementation notes
 
 We follow `Mathlib/Algebra/Group/Ext.lean` in using the term `(letI := i; HMul.hMul : R → R → R)` to
 refer to the multiplication specified by a typeclass instance `i` on a type `R` (and similarly for
@@ -26,6 +27,7 @@ Since `Mathlib/Algebra/Group/Ext.lean` proved several injectivity lemmas, we do 
 sometimes we don't need them to prove extensionality.
 
 ## Tags
+
 semiring, ring, extensionality
 -/
 
@@ -141,7 +143,7 @@ defined in `Mathlib/Algebra/GroupWithZero/Defs.lean` as well. -/
     congrArg (fun inst => (inst.toMulZeroClass).toZero.zero) h
   have h_one' : (inst₁.toMulZeroOneClass).toMulOneClass.toOne
                 = (inst₂.toMulZeroOneClass).toMulOneClass.toOne := by
-    congr 2; ext : 1; exact h_mul
+    congr 1; ext : 1; exact h_mul
   have h_one : (inst₁.toMulZeroOneClass).toMulOneClass.toOne.one
                = (inst₂.toMulZeroOneClass).toMulOneClass.toOne.one :=
     congrArg (@One.one R) h_one'
@@ -201,10 +203,13 @@ theorem toNonUnitalSemiring_injective :
   · exact congrArg (·.toAdd.add x y) h
   · exact congrArg (·.toMul.mul x y) h
 
-theorem toNonUnitalNonAssocring_injective :
+theorem toNonUnitalNonAssocRing_injective :
     Function.Injective (@toNonUnitalNonAssocRing R) := by
   intro _ _ _
   ext <;> congr
+
+@[deprecated (since := "2026-09-17")]
+alias toNonUnitalNonAssocring_injective := toNonUnitalNonAssocRing_injective
 
 end NonUnitalRing
 
@@ -256,7 +261,7 @@ namespace NonAssocRing
   have h₃ : inst₁.toAddCommGroupWithOne = inst₂.toAddCommGroupWithOne :=
     AddCommGroupWithOne.ext h_add (congrArg (·.toOne.one) h₂)
   cases inst₁; cases inst₂
-  congr <;> solve | injection h₁ | injection h₂ | injection h₃
+  injection h₃; congr
 
 theorem toNonAssocSemiring_injective :
     Function.Injective (@toNonAssocSemiring R) := by
@@ -265,10 +270,13 @@ theorem toNonAssocSemiring_injective :
   · exact congrArg (·.toAdd.add x y) h
   · exact congrArg (·.toMul.mul x y) h
 
-theorem toNonUnitalNonAssocring_injective :
+theorem toNonUnitalNonAssocRing_injective :
     Function.Injective (@toNonUnitalNonAssocRing R) := by
   intro _ _ _
   ext <;> congr
+
+@[deprecated (since := "2026-09-17")]
+alias toNonUnitalNonAssocring_injective := toNonUnitalNonAssocRing_injective
 
 end NonAssocRing
 
@@ -281,7 +289,7 @@ namespace Semiring
     inst₁ = inst₂ := by
   -- Show that enough substructures are equal.
   have h₀ : inst₁.toAddCommMonoid = inst₂.toAddCommMonoid := by
-    ext : 1 <;> assumption
+    ext : 1; assumption
   have h₁ : inst₁.toNonUnitalSemiring = inst₂.toNonUnitalSemiring := by
     ext : 1 <;> assumption
   have h₂ : inst₁.toNonAssocSemiring = inst₂.toNonAssocSemiring := by
@@ -290,7 +298,7 @@ namespace Semiring
     ext : 1; exact h_mul
   -- Split into fields and prove they are equal using the above.
   cases inst₁; cases inst₂
-  congr <;> solve | injection h₁ | injection h₂
+  congr; solve | injection h₁ | injection h₂
 
 theorem toNonUnitalSemiring_injective :
     Function.Injective (@toNonUnitalSemiring R) := by

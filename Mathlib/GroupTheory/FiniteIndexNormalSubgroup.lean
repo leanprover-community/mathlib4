@@ -7,6 +7,9 @@ module
 
 public import Mathlib.GroupTheory.Index
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite-index normal subgroups
 
@@ -48,11 +51,11 @@ theorem toSubgroup_injective : Function.Injective
 
 @[to_additive]
 instance : SetLike (FiniteIndexNormalSubgroup G) G where
-  coe U := U.1
+  coe U := U.toSubgroup
   coe_injective _ _ h := toSubgroup_injective <| SetLike.ext' h
 
 @[to_additive]
-instance : PartialOrder (FiniteIndexNormalSubgroup G) := .ofSetLike (FiniteIndexNormalSubgroup G) G
+instance : PartialOrder (FiniteIndexNormalSubgroup G) := .ofSetLike (FiniteIndexNormalSubgroup G)
 
 @[to_additive]
 instance : SubgroupClass (FiniteIndexNormalSubgroup G) G where

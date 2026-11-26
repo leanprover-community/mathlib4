@@ -6,9 +6,11 @@ Authors: Anne Baanen
 module
 
 public import Mathlib.Algebra.Algebra.Bilinear
-public import Mathlib.LinearAlgebra.Basis.Defs
 public import Mathlib.LinearAlgebra.Basis.Submodule
 public import Mathlib.RingTheory.Ideal.Span
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The basis of ideals
@@ -35,6 +37,7 @@ noncomputable def basisSpanSingleton (b : Basis ι R S) {x : S} (hx : x ≠ 0) :
             simp [mem_span_singleton', mul_comm]) ≪≫ₗ
       (Submodule.restrictScalarsEquiv R S S (Ideal.span ({x} : Set S))).restrictScalars R
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem basisSpanSingleton_apply (b : Basis ι R S) {x : S} (hx : x ≠ 0) (i : ι) :
     (basisSpanSingleton b hx i : S) = x * b i := by

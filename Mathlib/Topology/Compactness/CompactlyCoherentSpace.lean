@@ -6,7 +6,6 @@ Authors: Floris van Doorn, Hannah Scholz
 module
 
 public import Mathlib.Topology.Coherent
-public import Mathlib.Topology.Compactness.Compact
 public import Mathlib.Topology.Separation.Hausdorff
 
 /-!
@@ -18,6 +17,7 @@ These notions agree on Hausdorff spaces. They are both referred to as compactly 
 the literature while the compact coherentification is often called the k-ification.
 
 ## Main definitions
+
 * `CompactlyCoherentSpace`: A compactly coherent space is a topological space in which a set `A` is
   open iff for every compact set `B`, the intersection `A ∩ B` is open in `B`.
 * `CompactCoherentification`: For a topological space `X` one can define
@@ -25,6 +25,7 @@ the literature while the compact coherentification is often called the k-ificati
   `A ∩ B` is open in `B`.
 
 ## Main results
+
 * `CompactlyCoherentSpace.of_weaklyLocallyCompactSpace`: every weakly locally compact space is a
   compactly coherent space.
 * `CompactlyCoherentSpace.of_sequentialSpace`: every sequential space is a compactly coherent space.
@@ -39,6 +40,7 @@ the literature while the compact coherentification is often called the k-ificati
   `CompactCoherentification X` to `CompactCoherentification Y`.
 
 ## References
+
 * [J. Munkres, *Topology*][Munkres2000]
 * <https://en.wikipedia.org/wiki/Compactly_generated_space>
 -/
@@ -103,7 +105,7 @@ lemma isOpen_iff_forall_compactSpace [CompactlyCoherentSpace X] (s : Set X) :
   refine ⟨fun hs _ _ _ _ hf ↦ hs.preimage hf, fun hs ↦ isOpen_iff |>.mpr ?_⟩
   intro K hK
   have : CompactSpace K := isCompact_iff_compactSpace.mp hK
-  exact hs K Subtype.val continuous_subtype_val
+  exact hs K Subtype.val continuous_subtypeVal
 
 /-- A topological space `X` is compactly coherent if a set `s` is open when `f ⁻¹' s?` is open for
 every continuous map `f : K → X`, where `K` is compact. -/
@@ -146,7 +148,7 @@ variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 instance instTopologicalSpace :
     TopologicalSpace (𝐤X) :=
   .coinduced (.mk X)
-    (⨆ (K : Set X) (_ : IsCompact K), .coinduced (Subtype.val (p := K))
+    (⨆ (K : Set X) (_ : IsCompact K), .coinduced (Subtype.val (p := (· ∈ K)))
       (inferInstanceAs <| TopologicalSpace K))
 
 /-- A set `A` in the compact coherentification is open iff for all compact sets `K`,
@@ -161,13 +163,12 @@ the intersection `K ∩ A` is closed in `K`. -/
 lemma isClosed_iff {A : Set (𝐤X)} :
     IsClosed A ↔ ∀ (K : Set X), IsCompact K → IsClosed (K ↓∩ .mk X ⁻¹' A) := by
   simp_rw [isClosed_coinduced, isClosed_iSup_iff, ← isClosed_coinduced]
-  rfl
 
 lemma continuous_dom_iff {f : 𝐤X → Y} :
     Continuous f ↔
       (∀ (K : Set X), IsCompact K → ContinuousOn (f ∘ CompactCoherentification.mk X) K) := by
   simp_rw [continuous_coinduced_dom, continuous_iSup_dom, continuous_coinduced_dom,
-    continuousOn_iff_continuous_restrict]
+    continuousOn_iff_continuous_domRestrict]
   rfl
 
 lemma continuous_mk_symm : Continuous (CompactCoherentification.mk X).symm := by
@@ -186,7 +187,7 @@ lemma isOpenMap_mk : IsOpenMap (CompactCoherentification.mk X) := by
 
 lemma continuousOn_isCompact_mk {K : Set X} (hK : IsCompact K) :
     ContinuousOn (CompactCoherentification.mk X) K := by
-  rw [continuousOn_iff_continuous_restrict]
+  rw [continuousOn_iff_continuous_domRestrict]
   exact ⟨fun U hU ↦ isOpen_iff.mp hU K hK⟩
 
 lemma continuousOn_rng_of_isCompact {f : X → 𝐤Y} {K : Set X}
@@ -224,7 +225,7 @@ lemma continuous_mk_comp_iff_of_compactSpace [CompactSpace X] {f : X → Y} :
 
 lemma continuousOn_mk_comp_iff_of_Compact {A : Set X} (hA : IsCompact A) {f : X → Y} :
     ContinuousOn ((CompactCoherentification.mk Y) ∘ f) A ↔ ContinuousOn f A := by
-  simp_rw [continuousOn_iff_continuous_restrict]
+  simp_rw [continuousOn_iff_continuous_domRestrict]
   let := isCompact_iff_compactSpace.1 hA
   exact continuous_mk_comp_iff_of_compactSpace
 
@@ -247,7 +248,7 @@ instance instCompactlyCoherentSpace : CompactlyCoherentSpace (𝐤X) := by
   refine .of_isOpen_forall_compactSpace fun U hU ↦ isOpen_iff.mpr fun K hK ↦ ?_
   rw [← preimage_comp]
   have : CompactSpace K := isCompact_iff_compactSpace.mp hK
-  exact hU K _ (continuous_rng_of_compactSpace.mpr continuous_subtype_val)
+  exact hU K _ (continuous_rng_of_compactSpace.mpr continuous_subtypeVal)
 
 /-- The compact coherentification preserves the topology of k-spaces. -/
 protected def homeo [CompactlyCoherentSpace X] : X ≃ₜ 𝐤X where

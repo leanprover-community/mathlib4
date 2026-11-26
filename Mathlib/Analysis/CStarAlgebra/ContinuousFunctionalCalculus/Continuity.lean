@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
 public import Mathlib.Topology.MetricSpace.UniformConvergence
-public import Mathlib.Topology.UniformSpace.CompactConvergence
 
 /-! # Continuity of the continuous functional calculus in each variable
 
@@ -59,7 +58,6 @@ results in the variable `a` come in two flavors: those for `RCLike 𝕜` and tho
   both variables (i.e., continuous in its uncurried form) on this set of pairs when the function
   space is equipped with the topology of uniform convergence on `s`.
 + Versions of all of the above for non-unital algebras, and versions over `ℝ≥0` as well.
-
 -/
 
 public section
@@ -93,13 +91,13 @@ theorem tendsto_cfc_fun {l : Filter X} {F : X → R → R} {f : R → R} {a : A}
     rw [← tendsto_comap'_iff (i := ((↑) : s → X)) (by simpa)]
     conv =>
       enter [1, x]
-      rw [Function.comp_apply, cfc_apply (hf := x.2)]
+      rw [Function.comp_apply, cfc_apply (hf := x.property)]
     rw [cfc_apply ..]
     apply cfcHom_continuous _ |>.tendsto _ |>.comp
-    rw [hf.tendsto_restrict_iff_tendstoUniformlyOn Subtype.property]
+    rw [hf.tendsto_domRestrict_iff_tendstoUniformlyOn Subtype.property]
     intro t
     simp only [eventually_comap, Subtype.forall]
-    peel h_tendsto t with ht x _
+    gconvert h_tendsto t with ht x
     simp_all
   · simpa [cfc_apply_of_not_predicate a ha] using tendsto_const_nhds
 
@@ -150,7 +148,7 @@ end Generic
 
 section Isometric
 
-variable {X R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R] [MetricSpace R]
+variable {R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R] [MetricSpace R]
     [IsTopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A]
     [MetricSpace A] [Algebra R A] [IsometricContinuousFunctionalCalculus R A p]
 
@@ -220,7 +218,7 @@ theorem continuous_cfcHomSuperset_left
     apply continuous_of_uniform_approx_of_continuous
     rw [Metric.uniformity_basis_dist_le.forall_iff (by aesop)]
     intro ε hε
-    simp only [Set.mem_setOf_eq, dist_eq_norm]
+    simp only [Set.mem_ofPred_eq, dist_eq_norm]
     obtain ⟨g, hg, g_cont⟩ := frequently_iff.mp hf (Metric.closedBall_mem_nhds f hε)
     simp only [Metric.mem_closedBall, dist_comm g, dist_eq_norm] at hg
     refine ⟨_, g_cont, fun x ↦ ?_⟩
@@ -235,12 +233,14 @@ satisfying the predicate `p` (associated to `𝕜`) and whose `𝕜`-spectrum is
 theorem continuousOn_cfc {s : Set 𝕜} (hs : IsCompact s) (f : 𝕜 → 𝕜)
     (hf : ContinuousOn f s := by cfc_cont_tac) :
     ContinuousOn (cfc f) {a | p a ∧ spectrum 𝕜 a ⊆ s} :=
-  continuousOn_iff_continuous_restrict.mpr <| by
+  continuousOn_iff_continuous_domRestrict.mpr <| by
     convert!
-      continuous_cfcHomSuperset_left hs ⟨_, hf.restrict⟩ ((↑) : {a | p a ∧ spectrum 𝕜 a ⊆ s} → A)
-        continuous_subtype_val (fun x ↦ x.2.2) with
+      continuous_cfcHomSuperset_left hs ⟨_, hf.domRestrict⟩
+        ((↑) : {a | p a ∧ spectrum 𝕜 a ⊆ s} → A)
+        continuous_subtypeVal (fun x ↦ x.property.2) with
       x
-    rw [cfcHomSuperset_apply, Set.restrict_apply, cfc_apply _ _ x.2.1 (hf.mono x.2.2)]
+    rw [cfcHomSuperset_apply, Set.domRestrict_apply,
+      cfc_apply _ _ x.property.1 (hf.mono x.property.2)]
     congr!
 
 open UniformOnFun in
@@ -350,7 +350,7 @@ theorem ContinuousOn.cfc_of_mem_nhdsSet [CompleteSpace A] [TopologicalSpace X] {
   simp only [nhdsSet_iUnion, mem_iSup] at hs'
   have (x : t) : ∃ S, IsCompact S ∧ (∀ᶠ (x' : A) in 𝓝 (a x), spectrum 𝕜 x' ⊆ S) ∧ S ⊆ s := by
     obtain ⟨S, ⟨hS₁, hS₂⟩, hS₃⟩ :=
-      spectrum.isCompact (𝕜 := 𝕜) (a x) |>.nhdsSet_basis_isCompact.mem_iff.mp (hs' x x.2)
+      spectrum.isCompact (𝕜 := 𝕜) (a x) |>.nhdsSet_basis_isCompact.mem_iff.mp (hs' x x.property)
     refine ⟨S, hS₂, ?_, hS₃⟩
     exact upperHemicontinuous_spectrum 𝕜 A |>.upperHemicontinuousAt (a x) _ hS₁ |>.mono
       fun _ ↦ subset_of_mem_nhdsSet
@@ -406,7 +406,6 @@ section NNReal
 variable {X A : Type*} [NormedRing A] [StarRing A]
     [NormedAlgebra ℝ A] [IsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
     [ContinuousStar A] [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A]
-    [T2Space A] [IsSemitopologicalRing A]
 
 variable (A) in
 /-- A version of `continuousOn_cfc` over `ℝ≥0` instead of `RCLike 𝕜`. -/
@@ -422,7 +421,7 @@ theorem continuousOn_cfc_nnreal {s : Set ℝ≥0} (hs : IsCompact s)
     intro x hx
     simpa
   refine continuousOn_cfc A (hs.image NNReal.continuous_coe) _ hf |>.mono fun a ha ↦ ?_
-  simp only [Set.mem_setOf_eq, nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts] at ha ⊢
+  simp only [Set.mem_ofPred_eq, nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts] at ha ⊢
   rw [← SpectrumRestricts] at ha
   refine ⟨ha.1.1, ?_⟩
   rw [← ha.1.2.algebraMap_image]
@@ -449,7 +448,7 @@ theorem continuousOn_cfc_nnreal_setProd_nhdsSet [CompleteSpace A] {s : Set ℝ�
   refine continuousOn_of_locally_continuousOn fun (f, a) ⟨hf, ha, has⟩ ↦ ?_
   have hs := ContinuousFunctionalCalculus.isCompact_spectrum (R := ℝ≥0) a
   obtain ⟨k, ⟨hka, hk⟩, hks⟩ := hs.nhdsSet_basis_isCompact.mem_iff.mp has
-  have := (upperHemicontinuous_spectrum_nnreal A).isOpen k
+  have := (upperHemicontinuous_spectrum_nnReal A).isOpen k
   refine ⟨Set.univ ×ˢ {x | k ∈ 𝓝ˢ (spectrum ℝ≥0 x)}, isOpen_univ.prod this, by simpa, ?_⟩
   conv in cfc _ => equals cfc (toFun {k} (ofFun {k} (toFun {t | IsCompact t ∧ t ⊆ s} fa.1))) => rfl
   refine continuousOn_cfc_nnreal_setProd hk |>.comp'
@@ -524,7 +523,7 @@ spectra of `a x` for all `x ∈ t`, then `fun x ↦ cfc f (a x)` is continuous o
 This is weaker than `ContinuousOn.cfc_nnreal` since it requires `f` to be continuous on a
 *neighborhood* of the spectra, but in practice it is often easier to apply because `s` is not
 required to be compact, nor does it require an indexed family of compact sets. This is proven using
-`ContinuousOn.cfc_nnreal` and `upperHemicontinuous_spectrum_nnreal` to produce the necessary family
+`ContinuousOn.cfc_nnreal` and `upperHemicontinuous_spectrum_nnReal` to produce the necessary family
 of compact sets. -/
 theorem ContinuousOn.cfc_nnreal_of_mem_nhdsSet [CompleteSpace A] [TopologicalSpace X] {s : Set ℝ≥0}
     (f : ℝ≥0 → ℝ≥0) {a : X → A} {t : Set X} (hs : s ∈ 𝓝ˢ (⋃ x ∈ t, spectrum ℝ≥0 (a x)))
@@ -535,9 +534,9 @@ theorem ContinuousOn.cfc_nnreal_of_mem_nhdsSet [CompleteSpace A] [TopologicalSpa
   simp only [nhdsSet_iUnion, mem_iSup] at hs'
   have (x : t) : ∃ S, IsCompact S ∧ (∀ᶠ (x' : A) in 𝓝 (a x), spectrum ℝ≥0 x' ⊆ S) ∧ S ⊆ s := by
     obtain ⟨S, ⟨hS₁, hS₂⟩, hS₃⟩ :=
-      spectrum.isCompact_nnreal (a x) |>.nhdsSet_basis_isCompact.mem_iff.mp (hs' x x.2)
+      spectrum.isCompact_nnReal (a x) |>.nhdsSet_basis_isCompact.mem_iff.mp (hs' x x.property)
     refine ⟨S, hS₂, ?_, hS₃⟩
-    exact upperHemicontinuous_spectrum_nnreal A |>.upperHemicontinuousAt (a x) _ hS₁ |>.mono
+    exact upperHemicontinuous_spectrum_nnReal A |>.upperHemicontinuousAt (a x) _ hS₁ |>.mono
       fun _ ↦ subset_of_mem_nhdsSet
   choose S hS₁ hS₂ hS₃ using this
   classical
@@ -576,7 +575,7 @@ for all `x` and `s` is a common neighborhood of the spectra of `a x` for all `x`
 This is weaker than `Continuous.cfc_nnreal` since it requires `f` to be continuous on a
 *neighborhood* of the spectra, but in practice it is often easier to apply because `s` is not
 required to be compact, nor does it require an indexed family of compact sets. This is proven using
-`Continuous.cfc_nnreal` and `upperHemicontinuous_spectrum_nnreal` to produce the necessary family
+`Continuous.cfc_nnreal` and `upperHemicontinuous_spectrum_nnReal` to produce the necessary family
 of compact sets. -/
 theorem Continuous.cfc_nnreal_of_mem_nhdsSet [CompleteSpace A] [TopologicalSpace X] {s : Set ℝ≥0}
     (f : ℝ≥0 → ℝ≥0) {a : X → A} (hs : s ∈ 𝓝ˢ (⋃ x, spectrum ℝ≥0 (a x))) (ha_cont : Continuous a)
@@ -613,25 +612,24 @@ theorem tendsto_cfcₙ_fun {l : Filter X} {F : X → R → R} {f : R → R} {a :
   obtain (rfl | hl) := l.eq_or_neBot
   · simp
   have hf := h_tendsto.continuousOn hF.frequently
-  have hf0 : f 0 = 0 := Eq.symm <|
-    tendsto_nhds_unique (tendsto_const_nhds.congr' <| .symm hF0) <|
-    h_tendsto.tendsto_at (quasispectrum.zero_mem R a)
+  have hf0 : f 0 = 0 := tendsto_nhds_unique_of_eventuallyEq
+    (h_tendsto.tendsto_at (quasispectrum.zero_mem R a)) tendsto_const_nhds hF0
   by_cases ha : p a
   · let s : Set X := {x | ContinuousOn (F x) (quasispectrum R a) ∧ F x 0 = 0}
     have hs : s ∈ l := hF.and hF0
     rw [← tendsto_comap'_iff (i := ((↑) : s → X)) (by simpa)]
     conv =>
       enter [1, x]
-      rw [Function.comp_apply, cfcₙ_apply (hf := x.2.1) (hf0 := x.2.2)]
+      rw [Function.comp_apply, cfcₙ_apply (hf := x.property.1) (hf0 := x.property.2)]
     rw [cfcₙ_apply ..]
     apply cfcₙHom_continuous _ |>.tendsto _ |>.comp
     rw [ContinuousMapZero.isEmbedding_toContinuousMap.isInducing.tendsto_nhds_iff]
-    change Tendsto (fun x : s ↦ (⟨_, x.2.1.restrict⟩ : C(quasispectrum R a, R))) _
-      (𝓝 ⟨_, hf.restrict⟩)
-    rw [hf.tendsto_restrict_iff_tendstoUniformlyOn (fun x ↦ x.2.1)]
+    change Tendsto (fun x : s ↦ (⟨_, x.property.1.domRestrict⟩ : C(quasispectrum R a, R))) _
+      (𝓝 ⟨_, hf.domRestrict⟩)
+    rw [hf.tendsto_domRestrict_iff_tendstoUniformlyOn (fun x ↦ x.property.1)]
     intro t
     simp only [eventually_comap, Subtype.forall]
-    peel h_tendsto t with ht x _
+    gconvert h_tendsto t with ht x
     simp_all
   · simpa [cfcₙ_apply_of_not_predicate a ha] using tendsto_const_nhds
 
@@ -687,7 +685,7 @@ end Generic
 
 section Isometric
 
-variable {X R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R] [MetricSpace R] [Nontrivial R]
+variable {R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R] [MetricSpace R] [Nontrivial R]
     [IsTopologicalSemiring R] [ContinuousStar R] [NonUnitalRing A] [StarRing A]
     [MetricSpace A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
     [NonUnitalIsometricContinuousFunctionalCalculus R A p]
@@ -754,7 +752,7 @@ theorem continuous_cfcₙHomSuperset_left
     apply continuous_of_uniform_approx_of_continuous
     rw [Metric.uniformity_basis_dist_le.forall_iff (by aesop)]
     intro ε hε
-    simp only [Set.mem_setOf_eq, dist_eq_norm]
+    simp only [Set.mem_ofPred_eq, dist_eq_norm]
     obtain ⟨g, hg, g_cont⟩ := frequently_iff.mp hf (Metric.closedBall_mem_nhds f hε)
     simp only [Metric.mem_closedBall, dist_comm g, dist_eq_norm] at hg
     refine ⟨_, g_cont, fun x ↦ ?_⟩
@@ -771,14 +769,15 @@ theorem continuousOn_cfcₙ {s : Set 𝕜} (hs : IsCompact s) (f : 𝕜 → 𝕜
     (hf : ContinuousOn f s := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac) :
     ContinuousOn (cfcₙ f · : A → A) {a | p a ∧ quasispectrum 𝕜 a ⊆ s} := by
   by_cases hs0 : 0 ∈ s
-  · rw [continuousOn_iff_continuous_restrict]
+  · rw [continuousOn_iff_continuous_domRestrict]
     convert!
-      continuous_cfcₙHomSuperset_left hs (hs0 := ⟨hs0⟩) ⟨⟨_, hf.restrict⟩, hf0⟩ (X :=
-        {a : A | p a ∧ quasispectrum 𝕜 a ⊆ s}) continuous_subtype_val (fun x ↦ x.2.2) with
+      continuous_cfcₙHomSuperset_left hs (hs0 := ⟨hs0⟩) ⟨⟨_, hf.domRestrict⟩, hf0⟩ (X :=
+        {a : A | p a ∧ quasispectrum 𝕜 a ⊆ s}) continuous_subtypeVal (fun x ↦ x.property.2) with
       x
-    rw [cfcₙHomSuperset_apply, Set.restrict_apply, cfcₙ_apply _ _ (hf.mono x.2.2) hf0 x.2.1]
+    rw [cfcₙHomSuperset_apply, Set.domRestrict_apply,
+      cfcₙ_apply _ _ (hf.mono x.property.2) hf0 x.property.1]
     congr!
-  · convert! continuousOn_empty _
+  · convert continuousOn_empty _ using 1
     rw [Set.eq_empty_iff_forall_notMem]
     exact fun a ha ↦ hs0 <| ha.2 <| quasispectrum.zero_mem 𝕜 a
 
@@ -895,7 +894,8 @@ theorem ContinuousOn.cfcₙ_of_mem_nhdsSet [CompleteSpace A] [TopologicalSpace X
   simp only [nhdsSet_iUnion, mem_iSup] at hs'
   have (x : t) : ∃ S, IsCompact S ∧ (∀ᶠ (x' : A) in 𝓝 (a x), quasispectrum 𝕜 x' ⊆ S) ∧ S ⊆ s := by
     obtain ⟨S, ⟨hS₁, hS₂⟩, hS₃⟩ :=
-      quasispectrum.isCompact (𝕜 := 𝕜) (a x) |>.nhdsSet_basis_isCompact.mem_iff.mp (hs' x x.2)
+      quasispectrum.isCompact (𝕜 := 𝕜) (a x) |>.nhdsSet_basis_isCompact.mem_iff.mp
+        (hs' x x.property)
     refine ⟨S, hS₂, ?_, hS₃⟩
     exact upperHemicontinuous_quasispectrum 𝕜 A |>.upperHemicontinuousAt (a x) _ hS₁ |>.mono
       fun _ ↦ subset_of_mem_nhdsSet
@@ -956,7 +956,6 @@ variable {X A : Type*} [NonUnitalNormedRing A] [StarRing A]
     [NormedSpace ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] [ContinuousStar A]
     [NonUnitalIsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
     [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A]
-    [T2Space A] [IsSemitopologicalRing A]
 
 variable (A) in
 /-- A version of `continuousOn_cfcₙ` over `ℝ≥0` instead of `RCLike 𝕜`. -/
@@ -973,7 +972,7 @@ theorem continuousOn_cfcₙ_nnreal {s : Set ℝ≥0} (hs : IsCompact s) (f : ℝ
     intro x hx
     simpa
   refine continuousOn_cfcₙ A (hs.image NNReal.continuous_coe) _ hf |>.mono fun a ha ↦ ?_
-  simp only [Set.mem_setOf_eq, nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts] at ha ⊢
+  simp only [Set.mem_ofPred_eq, nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts] at ha ⊢
   refine ⟨ha.1.1, ?_⟩
   rw [← ha.1.2.algebraMap_image]
   exact Set.image_mono ha.2
@@ -999,7 +998,7 @@ theorem continuousOn_cfcₙ_nnreal_setProd_nhdsSet [CompleteSpace A] {s : Set �
   refine continuousOn_of_locally_continuousOn fun (f, a) ⟨hf, ha, has⟩ ↦ ?_
   have hs := NonUnitalContinuousFunctionalCalculus.isCompact_quasispectrum (R := ℝ≥0) a
   obtain ⟨k, ⟨hka, hk⟩, hks⟩ := hs.nhdsSet_basis_isCompact.mem_iff.mp has
-  have := (upperHemicontinuous_quasispectrum_nnreal A).isOpen k
+  have := (upperHemicontinuous_quasispectrum_nnReal A).isOpen k
   refine ⟨Set.univ ×ˢ {x | k ∈ 𝓝ˢ (quasispectrum ℝ≥0 x)}, isOpen_univ.prod this, by simpa, ?_⟩
   conv in cfcₙ _ =>
     equals cfcₙ (toFun {k} (ofFun {k} (toFun {t | IsCompact t ∧ t ⊆ s} fa.1))) => rfl
@@ -1077,7 +1076,7 @@ quasispectra of `a x` for all `x ∈ t`, then `fun x ↦ cfcₙ f (a x)` is cont
 This is weaker than `ContinuousOn.cfcₙ_nnreal` since it requires `f` to be continuous on a
 *neighborhood* of the quasispectra, but in practice it is often easier to apply because `s` is not
 required to be compact, nor does it require an indexed family of compact sets. This is proven using
-`ContinuousOn.cfcₙ_nnreal` and `upperHemicontinuous_quasispectrum_nnreal` to produce the necessary
+`ContinuousOn.cfcₙ_nnreal` and `upperHemicontinuous_quasispectrum_nnReal` to produce the necessary
 family of compact sets. -/
 theorem ContinuousOn.cfcₙ_nnreal_of_mem_nhdsSet [CompleteSpace A] [TopologicalSpace X] {s : Set ℝ≥0}
     (f : ℝ≥0 → ℝ≥0) {a : X → A} {t : Set X} (hs : s ∈ 𝓝ˢ (⋃ x ∈ t, quasispectrum ℝ≥0 (a x)))
@@ -1088,9 +1087,9 @@ theorem ContinuousOn.cfcₙ_nnreal_of_mem_nhdsSet [CompleteSpace A] [Topological
   simp only [nhdsSet_iUnion, mem_iSup] at hs'
   have (x : t) : ∃ S, IsCompact S ∧ (∀ᶠ (x' : A) in 𝓝 (a x), quasispectrum ℝ≥0 x' ⊆ S) ∧ S ⊆ s := by
     obtain ⟨S, ⟨hS₁, hS₂⟩, hS₃⟩ :=
-      quasispectrum.isCompact_nnreal (a x) |>.nhdsSet_basis_isCompact.mem_iff.mp (hs' x x.2)
+      quasispectrum.isCompact_nnReal (a x) |>.nhdsSet_basis_isCompact.mem_iff.mp (hs' x x.property)
     refine ⟨S, hS₂, ?_, hS₃⟩
-    exact upperHemicontinuous_quasispectrum_nnreal A |>.upperHemicontinuousAt (a x) _ hS₁ |>.mono
+    exact upperHemicontinuous_quasispectrum_nnReal A |>.upperHemicontinuousAt (a x) _ hS₁ |>.mono
       fun _ ↦ subset_of_mem_nhdsSet
   choose S hS₁ hS₂ hS₃ using this
   classical
@@ -1131,7 +1130,7 @@ then `fun x ↦ cfcₙ f (a x)` is continuous.
 This is weaker than `Continuous.cfcₙ_nnreal` since it requires `f` to be continuous on a
 *neighborhood* of the quasispectra, but in practice it is often easier to apply because `s` is not
 required to be compact, nor does it require an indexed family of compact sets. This is proven using
-`Continuous.cfcₙ_nnreal` and `upperHemicontinuous_quasispectrum_nnreal` to produce the necessary
+`Continuous.cfcₙ_nnreal` and `upperHemicontinuous_quasispectrum_nnReal` to produce the necessary
 family of compact sets. -/
 theorem Continuous.cfcₙ_nnreal_of_mem_nhdsSet [CompleteSpace A] [TopologicalSpace X] {s : Set ℝ≥0}
     (f : ℝ≥0 → ℝ≥0) {a : X → A} (hs : s ∈ 𝓝ˢ (⋃ x, quasispectrum ℝ≥0 (a x)))

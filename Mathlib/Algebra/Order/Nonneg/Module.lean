@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Module.RingHom
 public import Mathlib.Algebra.Order.Module.Defs
 public import Mathlib.Algebra.Order.Nonneg.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Modules over nonnegative elements
 
@@ -24,7 +27,7 @@ assert_not_exists Finset
 
 variable {R S M : Type*}
 
-local notation3 "R≥0" => {c : R // 0 ≤ c}
+local notation3 "R≥0" => Nonneg R
 
 namespace Nonneg
 variable [Semiring R] [PartialOrder R]

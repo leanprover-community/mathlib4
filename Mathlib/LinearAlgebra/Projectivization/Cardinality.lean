@@ -5,17 +5,19 @@ Authors: Judith Ludwig, Christian Merten
 -/
 module
 
-public import Mathlib.Algebra.Ring.GeomSum
-public import Mathlib.Algebra.GroupWithZero.Units.Fintype
-public import Mathlib.Data.Finite.Sum
 public import Mathlib.GroupTheory.GroupAction.Quotient
 public import Mathlib.LinearAlgebra.Projectivization.Basic
+
+import Mathlib.Algebra.GroupWithZero.Units.Fintype
+import Mathlib.Algebra.Ring.GeomSum
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Cardinality of projective spaces
 
 We compute the cardinality of `ℙ k V` if `k` is a finite field.
-
 -/
 
 @[expose] public section
@@ -41,7 +43,7 @@ noncomputable def nonZeroEquivProjectivizationProdUnits : { v : V // v ≠ 0 } �
   e.trans (Equiv.prodCongrLeft (fun _ ↦ (equivQuotientOrbitRel k V).symm))
 
 instance isEmpty_of_subsingleton [Subsingleton V] : IsEmpty (ℙ k V) := by
-  have : IsEmpty { v : V // v ≠ 0 } := ⟨fun v ↦ v.2 (Subsingleton.elim v.1 0)⟩
+  have : IsEmpty { v : V // v ≠ 0 } := ⟨fun v ↦ v.property (Subsingleton.elim v.val 0)⟩
   simpa using (nonZeroEquivProjectivizationProdUnits k V).symm.isEmpty
 
 /-- If `V` is a finite `k`-module and `k` is finite, `ℙ k V` is finite. -/
@@ -77,9 +79,9 @@ lemma card : Nat.card V - 1 = Nat.card (ℙ k V) * (Nat.card k - 1) := by
     simp
   | inl h =>
   classical
-  haveI : Fintype V := Fintype.ofFinite V
-  haveI : Fintype (ℙ k V) := Fintype.ofFinite (ℙ k V)
-  haveI : Fintype k := Fintype.ofFinite k
+  have : Fintype V := Fintype.ofFinite V
+  have : Fintype (ℙ k V) := Fintype.ofFinite (ℙ k V)
+  have : Fintype k := Fintype.ofFinite k
   have hV : Fintype.card { v : V // v ≠ 0 } = Fintype.card V - 1 := by simp
   simp_rw [← Fintype.card_eq_nat_card, ← Fintype.card_units (α := k), ← hV]
   rw [Fintype.card_congr (nonZeroEquivProjectivizationProdUnits k V), Fintype.card_prod]

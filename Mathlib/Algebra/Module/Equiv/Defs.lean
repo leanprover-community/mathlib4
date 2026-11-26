@@ -8,6 +8,8 @@ module
 
 public import Mathlib.Algebra.Module.LinearMap.Defs
 
+import Mathlib.Algebra.Group.IsApply
+
 /-!
 # (Semi)linear equivalences
 
@@ -115,10 +117,11 @@ instance (priority := 100) [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
 variable {F}
 
 /-- Reinterpret an element of a type of semilinear equivalences as a semilinear equivalence. -/
-@[coe]
-def semilinearEquiv [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
+def _root_.LinearEquiv.ofClass [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
     [EquivLike F M M₂] [SemilinearEquivClass F σ M M₂] (f : F) : M ≃ₛₗ[σ] M₂ :=
   { (f : M ≃+ M₂), (f : M →ₛₗ[σ] M₂) with }
+
+@[deprecated (since := "2026-11-22")] alias semilinearEquiv := LinearEquiv.ofClass
 
 end SemilinearEquivClass
 
@@ -140,6 +143,7 @@ instance : Coe (M ≃ₛₗ[σ] M₂) (M →ₛₗ[σ] M₂) :=
 
 -- This exists for compatibility, previously `≃ₗ[R]` extended `≃` instead of `≃+`.
 /-- The equivalence of types underlying a linear equivalence. -/
+@[implicit_reducible]
 def toEquiv (e : M ≃ₛₗ[σ] M₂) : M ≃ M₂ := e.toAddEquiv.toEquiv
 
 theorem toEquiv_injective :
@@ -159,6 +163,7 @@ theorem toLinearMap_injective : Injective (toLinearMap : (M ≃ₛₗ[σ] M₂) 
 theorem toLinearMap_inj {e₁ e₂ : M ≃ₛₗ[σ] M₂} : (↑e₁ : M →ₛₗ[σ] M₂) = e₂ ↔ e₁ = e₂ :=
   toLinearMap_injective.eq_iff
 
+@[macro_inline]
 instance : EquivLike (M ≃ₛₗ[σ] M₂) M M₂ where
   coe e := e.toFun
   inv := LinearEquiv.invFun
@@ -170,8 +175,10 @@ instance : SemilinearEquivClass (M ≃ₛₗ[σ] M₂) σ M M₂ where
   map_add := (·.map_add')
   map_smulₛₗ := (·.map_smul')
 
-theorem toLinearMap_eq_coe {e : M ≃ₛₗ[σ] M₂} : e.toLinearMap = SemilinearMapClass.semilinearMap e :=
+theorem toLinearMap_eq_ofClass {e : M ≃ₛₗ[σ] M₂} : e.toLinearMap = .ofClass e :=
   rfl
+
+@[deprecated (since := "2026-09-03")] alias toLinearMap_eq_coe := toLinearMap_eq_ofClass
 
 @[simp]
 theorem coe_mk {f invFun left_inv right_inv} :
@@ -181,6 +188,11 @@ theorem coe_injective : @Injective (M ≃ₛₗ[σ] M₂) (M → M₂) DFunLike.
   DFunLike.coe_injective
 
 @[simp]
+protected lemma coe_ofClass {F : Type*} [EquivLike F M M₂]
+    [SemilinearEquivClass F σ M M₂] (f : F) :
+    ⇑(.ofClass f : M ≃ₛₗ[σ] M₂) = f := rfl
+
+@[deprecated LinearEquiv.coe_ofClass +typeChanged (since := "2026-11-22")]
 lemma _root_.SemilinearEquivClass.semilinearEquiv_apply {F : Type*} [EquivLike F M M₂]
     [SemilinearEquivClass F σ M M₂] (f : F) (x : M) :
     SemilinearEquivClass.semilinearEquiv (M₂ := M₂) f x = f x := rfl
@@ -197,17 +209,14 @@ variable {module_M : Module R M} {module_S_M₂ : Module S M₂} {σ : R →+* S
 variable {re₁ : RingHomInvPair σ σ'} {re₂ : RingHomInvPair σ' σ}
 variable (e e' : M ≃ₛₗ[σ] M₂)
 
-@[simp, norm_cast]
-theorem coe_coe : ⇑(e : M →ₛₗ[σ] M₂) = e :=
-  rfl
-
 @[simp]
 theorem coe_toEquiv : ⇑(e.toEquiv) = e :=
   rfl
 
-@[simp]
-theorem coe_toLinearMap : ⇑e.toLinearMap = e :=
-  rfl
+@[simp, norm_cast]
+theorem coe_toLinearMap : ⇑e.toLinearMap = e := rfl
+
+@[deprecated (since := "2026-11-23")] protected alias coe_coe := coe_toLinearMap
 
 theorem toFun_eq_coe : e.toFun = e := by dsimp
 
@@ -223,7 +232,7 @@ protected theorem congr_arg {x x'} : x = x' → e x = e x' :=
   DFunLike.congr_arg e
 
 protected theorem congr_fun (h : e = e') (x : M) : e x = e' x :=
-  DFunLike.congr_fun h x
+  congr($h x)
 
 end
 
@@ -243,7 +252,7 @@ theorem refl_apply [Module R M] (x : M) : refl R M x = x :=
   rfl
 
 /-- Linear equivalences are symmetric. -/
-@[symm]
+@[symm, implicit_reducible]
 def symm (e : M ≃ₛₗ[σ] M₂) : M₂ ≃ₛₗ[σ'] M :=
   { e.toLinearMap.inverse e.invFun e.left_inv e.right_inv,
     e.toEquiv.symm with
@@ -445,7 +454,7 @@ theorem comp_toLinearMap_eq_iff (f g : M₃ →ₛₗ[σ₃₁] M₁) :
 @[simp]
 theorem eq_comp_toLinearMap_iff (f g : M₂ →ₛₗ[σ₂₃] M₃) :
     f.comp e₁₂.toLinearMap = g.comp e₁₂.toLinearMap ↔ f = g := by
-  refine ⟨fun h => ?_, fun a ↦ congrFun (congrArg LinearMap.comp a) e₁₂.toLinearMap⟩
+  refine ⟨fun h => ?_, fun a ↦ congr(LinearMap.comp $a e₁₂.toLinearMap)⟩
   rw [(eq_comp_toLinearMap_symm g (f.comp e₁₂.toLinearMap)).mpr h.symm, eq_comp_toLinearMap_symm]
 
 lemma comp_symm_cancel_left (e : M₁ ≃ₛₗ[σ₁₂] M₂) (f : M₃ →ₛₗ[σ₃₂] M₂) :
@@ -541,8 +550,7 @@ theorem coe_symm_mk [Module R M] [Module R M₂]
 @[simp]
 theorem coe_symm_mk' [Module R M] [Module R M₂]
     {f inv_fun left_inv right_inv} :
-    ⇑(⟨f, inv_fun, left_inv, right_inv⟩ : M ≃ₗ[R] M₂).symm = inv_fun :=
-  rfl
+    ⇑(⟨f, inv_fun, left_inv, right_inv⟩ : M ≃ₗ[R] M₂).symm = inv_fun := rfl
 
 protected theorem bijective : Function.Bijective e :=
   e.toEquiv.bijective
@@ -586,7 +594,7 @@ def _root_.RingEquiv.toSemilinearEquiv (f : R ≃+* S) :
 
 @[simp]
 lemma _root_.RingEquiv.symm_toSemilinearEquiv_symm_apply (f : R ≃+* S) (x : R) :
-  f.symm.toSemilinearEquiv.symm (σ' := RingHomClass.toRingHom f) x = f x := rfl
+  dsimp% f.symm.toSemilinearEquiv.symm x = f x := rfl
 
 variable [AddCommMonoid M]
 
@@ -616,7 +624,8 @@ instance : SMul Sˣ (V ≃ₗ[R] W) where smul α e :=
     left_inv _ := by simp [LinearMapClass.map_smul_of_tower e.symm, smul_smul]
     right_inv _ := by simp [smul_smul] }
 
-@[simp] theorem smul_apply (α : Sˣ) (e : V ≃ₗ[R] W) (x : V) : (α • e) x = (α : S) • e x := rfl
+@[simp]
+protected theorem smul_apply (α : Sˣ) (e : V ≃ₗ[R] W) (x : V) : (α • e) x = (α : S) • e x := rfl
 
 theorem symm_smul_apply (e : V ≃ₗ[R] W) (α : Sˣ) (x : W) :
     (α • e).symm x = (↑α⁻¹ : S) • e.symm x := rfl

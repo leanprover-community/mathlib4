@@ -5,8 +5,8 @@ Authors: Yaël Dillies
 -/
 module
 
+public import Mathlib.Basic.TwoPointing
 public import Mathlib.CategoryTheory.Category.Bipointed
-public import Mathlib.Data.TwoPointing
 
 /-!
 # The category of two-pointed types
@@ -25,8 +25,6 @@ This defines `TwoP`, the category of two-pointed types.
 open CategoryTheory Option
 
 universe u
-
-variable {α β : Type*}
 
 
 /-- The category of two-pointed types. -/
@@ -86,6 +84,9 @@ noncomputable def swap : TwoP ⥤ TwoP where
         map_fst := f.hom.map_snd
         map_snd := f.hom.map_fst }
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The equivalence between `TwoP` and itself induced by `Prod.swap` both ways. -/
 @[simps!]
 noncomputable def swapEquiv : TwoP ≌ TwoP where
@@ -112,7 +113,7 @@ noncomputable def pointedToTwoPFst : Pointed.{u} ⥤ TwoP where
   map f := ⟨Option.map f.toFun, congr_arg _ f.map_point, rfl⟩
   map_comp f g := by
     ext : 3
-    exact (Option.map_comp_map f.1 g.1).symm
+    exact (Option.map_comp_map f.toFun g.toFun).symm
 
 /-- The functor from `Pointed` to `TwoP` which adds a first point. -/
 @[simps]
@@ -121,7 +122,7 @@ noncomputable def pointedToTwoPSnd : Pointed.{u} ⥤ TwoP where
   map f := ⟨Option.map f.toFun, rfl, congr_arg _ f.map_point⟩
   map_comp f g := by
     ext : 3
-    exact (Option.map_comp_map f.1 g.1).symm
+    exact (Option.map_comp_map f.toFun g.toFun).symm
 
 @[simp]
 theorem pointedToTwoPFst_comp_swap : pointedToTwoPFst ⋙ TwoP.swap = pointedToTwoPSnd :=

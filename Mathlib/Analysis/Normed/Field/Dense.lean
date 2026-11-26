@@ -5,8 +5,9 @@ Authors: Jiedong Jiang
 -/
 module
 
-public import Mathlib.Analysis.Normed.Field.Approximation
 public import Mathlib.Analysis.Normed.Field.Krasner
+
+import Mathlib.Analysis.Normed.Field.Approximation
 
 /-!
 # Transfer algebraic properties from dense subfields
@@ -16,10 +17,12 @@ zero can be inherited from its dense subfields. Let `K` be a dense subfield of a
 field `L`.
 
 ## Main results
+
 - `IsAlgClosed.of_denseRange` : If `K` is an algebraically closed dense subfield of a complete
 nonarchimedean normed field `L` of characteristic zero, then `L` is also algebraically closed.
 
 ## TODO
+
 Show that
 1. if `K` is perfect, then `L` is perfect;
 2. if `L` is separably closed, then `K` is separably closed;
@@ -29,10 +32,12 @@ algebraically closed.
 2 and 3 will be easy to implement once we establish the result that every polynomial can be
 approximated by a *separable* polynomial.
 
-## Reference
+## References
+
 [Notes](https://math.stanford.edu/%7Econrad/248APage/handouts/algclosurecomp.pdf) by Brian Conrad.
 
 ## Tags
+
 Normed field, algebraically closedness
 -/
 
@@ -51,8 +56,8 @@ theorem IsAlgClosed.of_denseRange {K L : Type*} [Field K] [NontriviallyNormedFie
   intro f fmon firr
   have fnatdeg0 : f.natDegree ≠ 0 := (Irreducible.natDegree_pos firr).ne'
   let F := f.SplittingField
-  letI : NormedField F := spectralNorm.normedField L F
-  letI : NormedAlgebra L F := spectralNorm.normedAlgebra L F
+  let : NormedField F := spectralNorm.normedField L F
+  let : NormedAlgebra L F := spectralNorm.normedAlgebra L F
   let a := rootOfSplits (SplittingField.splits f)
       (by simpa using degree_ne_of_natDegree_ne fnatdeg0)
   have fa0 : f.aeval a = 0 := by

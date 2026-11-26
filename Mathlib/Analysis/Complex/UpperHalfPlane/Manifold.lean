@@ -9,12 +9,12 @@ public import Mathlib.Analysis.Complex.CauchyIntegral
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
 public import Mathlib.Analysis.Meromorphic.Order
 public import Mathlib.Geometry.Manifold.Algebra.Structures
-public import Mathlib.Geometry.Manifold.ContMDiff.Atlas
-import Mathlib.Geometry.Manifold.Notation
-public import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
-public import Mathlib.LinearAlgebra.Complex.Determinant
-public import Mathlib.RingTheory.Complex
 public import Mathlib.RingTheory.Norm.Transitivity
+
+import Mathlib.Geometry.Manifold.ContMDiff.Atlas
+import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
+import Mathlib.LinearAlgebra.Complex.Determinant
+import Mathlib.RingTheory.Complex
 
 /-!
 # Manifold structure on the upper half plane.
@@ -124,7 +124,8 @@ lemma eq_zero_of_frequently {f : ℍ → ℂ} (hf : MDiff f) {τ : ℍ} (hτ : �
   rw [mdifferentiable_iff] at hf
   have := hf.analyticOnNhd isOpen_upperHalfPlaneSet
   ext w
-  convert! this.eqOn_zero_of_preconnected_of_frequently_eq_zero (z₀ := ↑τ) ?_ τ.2 ?_ w.im_pos
+  convert this.eqOn_zero_of_preconnected_of_frequently_eq_zero (z₀ := ↑τ)
+    ?_ τ.coe_im_pos ?_ w.im_pos
   · rw [Function.comp_apply, ofComplex_apply]
   · exact (Complex.isConnected_of_upperHalfPlane subset_rfl (by grind)).isPreconnected
   · contrapose! hτ
@@ -135,13 +136,13 @@ lemma eq_zero_of_frequently {f : ℍ → ℂ} (hf : MDiff f) {τ : ℍ} (hτ : �
 
 lemma mul_eq_zero_iff {f g : ℍ → ℂ} (hf : MDiff f) (hg : MDiff g) : f * g = 0 ↔ f = 0 ∨ g = 0 :=
   ⟨fun hfg ↦ (frequently_or_distrib.mp <| .of_forall <| by simpa using congrFun hfg).imp
-    (eq_zero_of_frequently (τ := I) hf) (eq_zero_of_frequently hg), by grind⟩
+    (eq_zero_of_frequently (τ := .I) hf) (eq_zero_of_frequently hg), by grind⟩
 
 lemma prod_eq_zero_iff {ι : Type*} {f : ι → ℍ → ℂ} {s : Finset ι}
     (hf : ∀ i ∈ s, MDiff (f i)) :
     ∏ i ∈ s, f i = 0 ↔ ∃ i ∈ s, f i = 0 := by
   refine ⟨fun h0 ↦ ?_, fun ⟨i, hi, hi'⟩ ↦ Finset.prod_eq_zero hi hi'⟩
-  have : ∃ᶠ τ in 𝓝[≠] I, ∏ i ∈ s, f i τ = 0 := .of_forall <| by simpa using congrFun h0
+  have : ∃ᶠ τ in 𝓝[≠] .I, ∏ i ∈ s, f i τ = 0 := .of_forall <| by simpa using congrFun h0
   simp only [Finset.prod_eq_zero_iff, Finset.frequently_exists] at this
   exact this.imp fun i hi ↦ ⟨hi.1, eq_zero_of_frequently (hf i hi.1) hi.2⟩
 
@@ -192,7 +193,7 @@ lemma deriv_smul_ne_zero {g : GL (Fin 2) ℝ} (hg : 0 < g.val.det) (τ : ℍ) :
     deriv (fun z ↦ ↑(g • ofComplex z) : ℂ → ℂ) τ ≠ 0 := by
   rw [deriv_smul hg]
   apply div_ne_zero
-  · exact_mod_cast hg.ne'
+  · exact mod_cast hg.ne'
   · exact pow_ne_zero _ (denom_ne_zero g τ)
 
 lemma analyticAt_smul {g : GL (Fin 2) ℝ} (hg : 0 < g.val.det) (τ : ℍ) :
@@ -200,7 +201,7 @@ lemma analyticAt_smul {g : GL (Fin 2) ℝ} (hg : 0 < g.val.det) (τ : ℍ) :
   refine DifferentiableOn.analyticAt (fun z hz ↦ ?_) (isOpen_upperHalfPlaneSet.mem_nhds τ.im_pos)
   apply DifferentiableAt.differentiableWithinAt
   simpa [mdifferentiableAt_iff] using!
-    (mdifferentiable_coe.comp <| (mdifferentiable_smul hg)).mdifferentiableAt (x := ⟨z, hz⟩)
+    (mdifferentiable_coe.comp (mdifferentiable_smul hg)).mdifferentiableAt (x := ⟨z, hz⟩)
 
 lemma meromorphicOrderAt_comp_smul {f : ℍ → ℂ} {τ : ℍ} {g : GL (Fin 2) ℝ} (hg : 0 < g.val.det) :
     meromorphicOrderAt (fun z ↦ f (g • ofComplex z)) τ =

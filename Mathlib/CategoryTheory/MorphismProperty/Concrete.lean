@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.MorphismProperty.Composition
 public import Mathlib.CategoryTheory.MorphismProperty.Factorization
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Morphism properties defined in concrete categories
 
@@ -20,7 +23,6 @@ We introduce type-classes `HasSurjectiveInjectiveFactorization` and
 `HasFunctorialSurjectiveInjectiveFactorization` expressing that in a concrete category `C`,
 all morphisms can be factored (resp. factored functorially) as a surjective map
 followed by an injective map.
-
 -/
 
 @[expose] public section
@@ -52,7 +54,7 @@ theorem bijective_eq_sup :
 instance : (MorphismProperty.injective C).IsMultiplicative where
   id_mem X := by
     delta MorphismProperty.injective
-    convert! injective_id
+    convert injective_id
     aesop
   comp_mem f g hf hg := by
     delta MorphismProperty.injective
@@ -62,7 +64,7 @@ instance : (MorphismProperty.injective C).IsMultiplicative where
 instance : (MorphismProperty.surjective C).IsMultiplicative where
   id_mem X := by
     delta MorphismProperty.surjective
-    convert! surjective_id
+    convert surjective_id
     aesop
   comp_mem f g hf hg := by
     delta MorphismProperty.surjective
@@ -72,7 +74,7 @@ instance : (MorphismProperty.surjective C).IsMultiplicative where
 instance : (MorphismProperty.bijective C).IsMultiplicative where
   id_mem X := by
     delta MorphismProperty.bijective
-    convert! bijective_id
+    convert bijective_id
     aesop
   comp_mem f g hf hg := by
     delta MorphismProperty.bijective
@@ -118,18 +120,15 @@ open ConcreteCategory
 map followed by an injective map. -/
 def functorialSurjectiveInjectiveFactorizationData :
     FunctorialSurjectiveInjectiveFactorizationData (Type u) where
-  Z :=
-    { obj := fun f => Subtype (Set.range f.hom.hom)
-      map := fun φ => ↾fun y => ⟨φ.right y.1, by
-        obtain ⟨_, x, rfl⟩ := y
-        exact ⟨φ.left x, congr_hom φ.w x⟩ ⟩ }
+  Z.obj f := Set.range f.hom.hom
+  Z.map φ := ↾fun y ↦ ⟨φ.right y.val, by obtain ⟨_, x, rfl⟩ := y; exact ⟨φ.left x, congr_hom φ.w x⟩⟩
   i :=
     { app := fun f => ↾fun x => ⟨f.hom x, ⟨x, rfl⟩⟩
       naturality := fun f g φ => by
         ext x
         exact congr_hom φ.w x }
   p :=
-    { app := fun _ => ↾fun y => y.1
+    { app := fun _ => ↾fun y => y.val
       naturality := by intros; rfl; }
   fac := rfl
   hi := by

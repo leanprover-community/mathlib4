@@ -6,11 +6,14 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.Basic
-public import Mathlib.CategoryTheory.Functor.RegularEpi
+
+import Mathlib.CategoryTheory.Functor.RegularEpi
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The category of simplicial sets is a regular epi category
-
 -/
 
 public section

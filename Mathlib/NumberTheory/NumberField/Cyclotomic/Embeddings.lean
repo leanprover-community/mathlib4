@@ -8,12 +8,17 @@ module
 public import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cyclotomic extensions of `ℚ` are totally complex number fields.
+
 We prove that cyclotomic extensions of `ℚ` are totally complex, meaning that
 `NrRealPlaces K = 0` if `IsCyclotomicExtension {n} ℚ K` and `2 < n`.
 
 ## Main results
+
 * `nrRealPlaces_eq_zero`: If `K` is an `n`-th cyclotomic extension of `ℚ`, where `2 < n`,
   then there are no real places of `K`.
 -/
@@ -58,9 +63,9 @@ theorem nrComplexPlaces_eq_totient_div_two [h : IsCyclotomicExtension {n} ℚ K]
     simp [hk, key, ← two_mul]
   · have : φ n = 1 := by
       by_cases h1 : 1 < n
-      · convert! totient_two
+      · convert totient_two
         exact (eq_of_le_of_not_lt (succ_le_of_lt h1) hn).symm
-      · convert! totient_one
+      · convert totient_one
         exact eq_of_le_of_not_lt (not_lt.mp h1) (by simp [NeZero.ne _])
     rw [this]
     apply nrComplexPlaces_eq_zero_of_finrank_eq_one

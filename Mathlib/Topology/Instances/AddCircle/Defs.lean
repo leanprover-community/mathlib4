@@ -9,9 +9,12 @@ public import Mathlib.Algebra.Order.ToIntervalMod
 public import Mathlib.Algebra.Ring.AddAut
 public import Mathlib.Data.Nat.Totient
 public import Mathlib.GroupTheory.Divisible
-public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
+public import Mathlib.Topology.Algebra.Group.ZPow
+public import Mathlib.Topology.Algebra.OpenSubgroup
 public import Mathlib.Topology.Algebra.Order.Field
 public import Mathlib.Topology.OpenPartialHomeomorph.Defs
+
+import Mathlib.Algebra.GroupWithZero.Action.Regular
 import Mathlib.Algebra.Order.Interval.Set.Group
 import Mathlib.GroupTheory.QuotientGroup.ModEq
 
@@ -23,7 +26,7 @@ We define the additive circle `AddCircle p` as the quotient `𝕜 ⧸ ℤ ∙ p`
 See also `Circle` and `Real.Angle`.  For the normed group structure on `AddCircle`, see
 `AddCircle.NormedAddCommGroup` in a later file.
 
-## Main definitions and results:
+## Main definitions and results
 
 * `AddCircle`: the additive circle `𝕜 ⧸ ℤ ∙ p` for some period `p : 𝕜`
 * `UnitAddCircle`: the special case `ℝ ⧸ ℤ`
@@ -38,7 +41,7 @@ See also `Circle` and `Real.Angle`.  For the normed group structure on `AddCircl
   and `f a = f (a + p)` for some `a`, then there is a continuous function `AddCircle p → B`
   which agrees with `f` on `Icc a (a + p)`.
 
-## Implementation notes:
+## Implementation notes
 
 Although the most important case is `𝕜 = ℝ` we wish to support other types of scalars, such as
 the rational circle `AddCircle (1 : ℚ)`, and so we set things up more generally.
@@ -48,7 +51,6 @@ the rational circle `AddCircle (1 : ℚ)`, and so we set things up more generall
 * Link with periodicity
 * Lie group structure
 * Exponential equivalence to `Circle`
-
 -/
 
 @[expose] public section
@@ -99,16 +101,10 @@ theorem continuousWithinAt_toIcoMod_Ici : ContinuousWithinAt (toIcoMod hp a) (Ic
   continuousWithinAt_id.sub <|
     (continuousWithinAt_toIcoDiv_Ici hp a x).smul continuousWithinAt_const
 
-@[deprecated (since := "2026-01-04")]
-alias continuous_right_toIcoMod := continuousWithinAt_toIcoMod_Ici
-
 /-- `toIocMod` is continuous on the right at every point. -/
 theorem continuousWithinAt_toIocMod_Iic : ContinuousWithinAt (toIocMod hp a) (Iic x) x :=
   continuousWithinAt_id.sub <|
     (continuousWithinAt_toIocDiv_Iic hp a x).smul continuousWithinAt_const
-
-@[deprecated (since := "2026-01-04")]
-alias continuous_left_toIocMod := continuousWithinAt_toIocMod_Iic
 
 /-- At every point `x`, for all `y < x` sufficiently close to `x`,
 we have `toIcoDiv hp a y = toIocDiv hp a x`.
@@ -177,7 +173,7 @@ theorem toIcoMod_eventuallyEq_toIocMod (hx : ¬x ≡ a [PMOD p]) :
   refine IsOpen.mem_nhds ?_ ?_
   · rw [Ico_eq_locus_Ioc_eq_iUnion_Ioo]
     exact isOpen_iUnion fun i => isOpen_Ioo
-  · rwa [mem_setOf_eq, ← not_modEq_iff_toIcoMod_eq_toIocMod hp, AddCommGroup.modEq_comm]
+  · rwa [mem_ofPred_eq, ← not_modEq_iff_toIcoMod_eq_toIocMod hp, AddCommGroup.modEq_comm]
 
 theorem continuousAt_toIcoMod (hx : ¬x ≡ a [PMOD p]) : ContinuousAt (toIcoMod hp a) x :=
   continuousAt_id.sub <| tendsto_nhds_of_eventually_eq <|
@@ -238,10 +234,11 @@ section Torsion
 open QuotientAddGroup Cardinal in
 theorem card_torsion_le_of_isSMulRegular (n : ℕ) (h0 : n ≠ 0) (hn : IsSMulRegular 𝕜 n) :
     {x : AddCircle p | n • x = 0}.encard ≤ n := by
-  have (x : {x : AddCircle p | n • x = 0}) : ∃ (k : Fin n) (y : 𝕜), y = x.1 ∧ n • y = k.1 • p := by
+  have (x : {x : AddCircle p | n • x = 0}) :
+      ∃ (k : Fin n) (y : 𝕜), y = x.val ∧ n • y = k.val • p := by
     obtain ⟨x, hx⟩ := x
     obtain ⟨y, rfl⟩ := mk_surjective x
-    rw [Set.mem_setOf, ← mk_nsmul, eq_zero_iff] at hx
+    rw [Set.mem_ofPred, ← mk_nsmul, eq_zero_iff] at hx
     have ⟨m', hm⟩ := hx
     have : NeZero n := ⟨h0⟩
     rw [← (Int.divModEquiv n).symm_apply_apply m', Int.divModEquiv_symm_apply] at hm
@@ -262,11 +259,11 @@ theorem finite_torsion_of_isSMulRegular (n : ℕ) (hn : IsSMulRegular 𝕜 n) :
   nontriviality 𝕜
   obtain rfl | h0 := eq_or_ne n 0
   exacts [hn.not_zero.elim, ENat.card_lt_top.mp <|
-    (card_torsion_le_of_isSMulRegular p n h0 hn).trans_lt <| ENat.coe_lt_top n]
+    (card_torsion_le_of_isSMulRegular p n h0 hn).trans_lt <| ENat.natCast_lt_top n]
 
 theorem card_torsion_le_of_isSMulRegular_int (n : ℤ) (h0 : n ≠ 0) (hn : IsSMulRegular 𝕜 n) :
     {x : AddCircle p | n • x = 0}.encard ≤ n.natAbs := by
-  convert!
+  convert
     card_torsion_le_of_isSMulRegular p _ (Int.natAbs_ne_zero.mpr h0)
       (IsSMulRegular.natAbs_iff.mpr hn) using 1
   simp
@@ -276,7 +273,7 @@ theorem finite_torsion_of_isSMulRegular_int (n : ℤ) (hn : IsSMulRegular 𝕜 n
   nontriviality 𝕜
   obtain rfl | h0 := eq_or_ne n 0
   exacts [hn.not_zero.elim, ENat.card_lt_top.mp <|
-    (card_torsion_le_of_isSMulRegular_int p n h0 hn).trans_lt <| ENat.coe_lt_top _]
+    (card_torsion_le_of_isSMulRegular_int p n h0 hn).trans_lt <| ENat.natCast_lt_top _]
 
 end Torsion
 
@@ -285,9 +282,12 @@ variable [LinearOrder 𝕜] [IsOrderedAddMonoid 𝕜]
 theorem finite_torsion {n : ℕ} (hn : 0 < n) : { u : AddCircle p | n • u = 0 }.Finite :=
   finite_torsion_of_isSMulRegular _ _ <| .of_right_eq_zero_of_smul fun _ ↦ by simp [hn.ne']
 
-theorem finite_setOf_addOrderOf_eq {n : ℕ} (hn : 0 < n) :
+theorem finite_setOfPred_addOrderOf_eq {n : ℕ} (hn : 0 < n) :
     {u : AddCircle p | addOrderOf u = n}.Finite :=
   (finite_torsion p hn).subset fun _ h ↦ ((addOrderOf_eq_iff hn).mp h).1
+
+@[deprecated (since := "2026-07-09")]
+alias finite_setOf_addOrderOf_eq := finite_setOfPred_addOrderOf_eq
 
 theorem coe_eq_zero_of_pos_iff (hp : 0 < p) {x : 𝕜} (hx : 0 < x) :
     (x : AddCircle p) = 0 ↔ ∃ n : ℕ, n • p = x := by
@@ -298,6 +298,18 @@ theorem coe_eq_zero_of_pos_iff (hp : 0 < p) {x : 𝕜} (hx : 0 < x) :
       simpa only [← neg_nonneg, ← zsmul_neg, zsmul_neg'] using zsmul_nonneg hp.le (neg_nonneg.2 hx)
     exact ⟨n.toNat, by rw [← natCast_zsmul, Int.toNat_of_nonneg hx.le]⟩
   · exact ⟨(n : ℤ), by simp⟩
+
+/-- The quotient map `𝕜 → AddCircle p` is injective on `[a, a + p)`. -/
+theorem injOn_coe_Ico (a : 𝕜) : InjOn ((↑) : 𝕜 → AddCircle p) (Ico a (a + p)) := by
+  rintro x ⟨hx₀, hx⟩ y ⟨hy₀, hy⟩ hxy
+  have hp : 0 < p := by grind only
+  obtain ⟨n, hn⟩ : ∃ n : ℤ, n • p = x - y := by rw [← coe_eq_zero_iff, coe_sub, hxy, sub_self]
+  have : |x - y| < p := by grind
+  rw [← hn, abs_zsmul, abs_of_pos hp] at this
+  simp_all [sub_eq_zero, eq_comm]
+
+instance [hp : Fact (0 < p)] [DenselyOrdered 𝕜] : Infinite (AddCircle p) :=
+  .of_injective _ (zero_add p ▸ injOn_coe_Ico p 0).injective
 
 variable [hp : Fact (0 < p)] (a : 𝕜) [Archimedean 𝕜]
 
@@ -314,20 +326,20 @@ def equivIoc : AddCircle p ≃ Ioc a (a + p) :=
 /-- Given a function on `𝕜`, return the unique function on `AddCircle p` agreeing with `f` on
 `[a, a + p)`. -/
 def liftIco (f : 𝕜 → B) : AddCircle p → B :=
-  restrict _ f ∘ AddCircle.equivIco p a
+  domRestrict _ f ∘ AddCircle.equivIco p a
 
 /-- Given a function on `𝕜`, return the unique function on `AddCircle p` agreeing with `f` on
 `(a, a + p]`. -/
 def liftIoc (f : 𝕜 → B) : AddCircle p → B :=
-  restrict _ f ∘ AddCircle.equivIoc p a
+  domRestrict _ f ∘ AddCircle.equivIoc p a
 
 variable {p a}
 
 theorem equivIco_coe_eq {x : 𝕜} (hx : x ∈ Ico a (a + p)) : (equivIco p a) x = ⟨x, hx⟩ := by
-  rw [Equiv.apply_eq_iff_eq_symm_apply, equivIco, QuotientAddGroup.equivIcoMod_symm_apply]
+  rw [← Equiv.eq_symm_apply, equivIco, QuotientAddGroup.equivIcoMod_symm_apply]
 
 theorem equivIoc_coe_eq {x : 𝕜} (hx : x ∈ Ioc a (a + p)) : (equivIoc p a) x = ⟨x, hx⟩ := by
-  rw [Equiv.apply_eq_iff_eq_symm_apply, equivIoc, QuotientAddGroup.equivIocMod_symm_apply]
+  rw [← Equiv.eq_symm_apply, equivIoc, QuotientAddGroup.equivIocMod_symm_apply]
 
 @[simp]
 lemma coe_equivIco {y : AddCircle p} :
@@ -388,13 +400,13 @@ lemma liftIoc_comp_apply {α β : Type*} {f : 𝕜 → α} {g : α → β} {a : 
 
 lemma eq_coe_Ico (a : AddCircle p) : ∃ b ∈ Ico 0 p, ↑b = a := by
   let b := QuotientAddGroup.equivIcoMod hp.out 0 a
-  exact ⟨b.1, by simpa only [zero_add] using b.2,
+  exact ⟨b.val, by simpa only [zero_add] using b.property,
     (QuotientAddGroup.equivIcoMod hp.out 0).symm_apply_apply a⟩
 
 /-- `Ioc` version of `eq_coe_Ico`. -/
 lemma eq_coe_Ioc (a : AddCircle p) : ∃ b ∈ Ioc 0 p, ↑b = a := by
   let b := QuotientAddGroup.equivIocMod hp.out 0 a
-  exact ⟨b.1, by simpa only [zero_add] using b.2,
+  exact ⟨b.val, by simpa only [zero_add] using b.property,
     (QuotientAddGroup.equivIocMod hp.out 0).symm_apply_apply a⟩
 
 lemma coe_eq_zero_iff_of_mem_Ico (ha : a ∈ Ico 0 p) :
@@ -411,11 +423,11 @@ variable [TopologicalSpace 𝕜]
 
 @[continuity]
 theorem continuous_equivIco_symm : Continuous (equivIco p a).symm :=
-  continuous_quotient_mk'.comp continuous_subtype_val
+  continuous_quotient_mk'.comp continuous_subtypeVal
 
 @[continuity]
 theorem continuous_equivIoc_symm : Continuous (equivIoc p a).symm :=
-  continuous_quotient_mk'.comp continuous_subtype_val
+  continuous_quotient_mk'.comp continuous_subtypeVal
 
 variable [OrderTopology 𝕜] {x : AddCircle p}
 
@@ -442,7 +454,7 @@ theorem continuousAt_equivIoc (hx : x ≠ a) : ContinuousAt (equivIoc p a) x := 
       (left_mem_Ico.mpr (lt_add_of_pos_right a hp.out))).mp hx')
   map_target' := by
     intro x hx
-    exact (eq_left_or_mem_Ioo_of_mem_Ico (equivIco p a x).2).resolve_left
+    exact (eq_left_or_mem_Ioo_of_mem_Ico (equivIco p a x).property).resolve_left
       (hx ∘ ((equivIco p a).symm_apply_apply x).symm.trans ∘ congrArg _)
   left_inv' :=
     fun x hx ↦ congrArg _ ((equivIco p a).apply_symm_apply ⟨x, Ioo_subset_Ico_self hx⟩)
@@ -450,9 +462,9 @@ theorem continuousAt_equivIoc (hx : x ≠ a) : ContinuousAt (equivIoc p a) x := 
   open_source := isOpen_Ioo
   open_target := isOpen_compl_singleton
   continuousOn_toFun := (AddCircle.continuous_mk' p).continuousOn
-  continuousOn_invFun := by
-    exact continuousOn_of_forall_continuousAt
-      (fun _ ↦ continuousAt_subtype_val.comp ∘ continuousAt_equivIco p a)
+  continuousOn_invFun :=
+    continuousOn_of_forall_continuousAt
+      (fun _ ↦ continuousAt_subtypeVal.comp ∘ continuousAt_equivIco p a)
 
 end Continuity
 
@@ -499,7 +511,7 @@ variable [Field 𝕜] (p q : 𝕜)
 /-- The rescaling equivalence between additive circles with different periods. -/
 def equivAddCircle (hp : p ≠ 0) (hq : q ≠ 0) : AddCircle p ≃+ AddCircle q :=
   QuotientAddGroup.congr _ _ (AddAut.mulRight <| (Units.mk0 p hp)⁻¹ * Units.mk0 q hq) <| by
-    rw [AddMonoidHom.map_zmultiples, AddMonoidHom.coe_coe, AddAut.mulRight_apply, Units.val_mul,
+    rw [AddMonoidHom.map_zmultiples, AddMonoidHom.coe_ofClass, AddAut.mulRight_apply, Units.val_mul,
       Units.val_mk0, Units.val_inv_eq_inv_val, Units.val_mk0, mul_inv_cancel_left₀ hp]
 
 @[simp]
@@ -511,6 +523,12 @@ theorem equivAddCircle_apply_mk (hp : p ≠ 0) (hq : q ≠ 0) (x : 𝕜) :
 theorem equivAddCircle_symm_apply_mk (hp : p ≠ 0) (hq : q ≠ 0) (x : 𝕜) :
     (equivAddCircle p q hp hq).symm (x : 𝕜) = (x * (q⁻¹ * p) : 𝕜) :=
   rfl
+
+theorem equivAddCircle_eq [LinearOrder 𝕜] [IsOrderedAddMonoid 𝕜] [Archimedean 𝕜]
+    [hp : Fact (0 < p)] (hq : q ≠ 0) :
+    ⇑(equivAddCircle p q hp.out.ne' hq)
+      = fun x ↦ ((equivIco p 0 x : 𝕜) * (p⁻¹ * q) : AddCircle q) := by
+  grind [coe_equivIco, equivAddCircle_apply_mk]
 
 section
 variable [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜]
@@ -530,6 +548,12 @@ theorem homeomorphAddCircle_apply_mk (hp : p ≠ 0) (hq : q ≠ 0) (x : 𝕜) :
 theorem homeomorphAddCircle_symm_apply_mk (hp : p ≠ 0) (hq : q ≠ 0) (x : 𝕜) :
     (homeomorphAddCircle p q hp hq).symm (x : 𝕜) = (x * (q⁻¹ * p) : 𝕜) :=
   rfl
+
+@[continuity, fun_prop]
+theorem continuous_equivAddCircle (hp : p ≠ 0) (hq : q ≠ 0) :
+    Continuous ⇑(equivAddCircle p q hp hq) :=
+  (homeomorphAddCircle ..).continuous
+
 end
 
 lemma natCast_div_mul_eq_nsmul (r : 𝕜) (m : ℕ) :
@@ -591,7 +615,7 @@ theorem gcd_mul_addOrderOf_div_eq {n : ℕ} (m : ℕ) (hn : 0 < n) :
 
 theorem addOrderOf_div_of_gcd_eq_one {m n : ℕ} (hn : 0 < n) (h : m.gcd n = 1) :
     addOrderOf (↑(↑m / ↑n * p) : AddCircle p) = n := by
-  convert! gcd_mul_addOrderOf_div_eq p m hn
+  convert gcd_mul_addOrderOf_div_eq p m hn
   rw [h, one_mul]
 
 theorem addOrderOf_div_of_gcd_eq_one' {m : ℤ} {n : ℕ} (hn : 0 < n) (h : m.natAbs.gcd n = 1) :
@@ -625,7 +649,7 @@ protected theorem nsmul_eq_zero_iff {u : AddCircle p} {n : ℕ} (h : 0 < n) :
     mul_div_cancel_right₀ p h0] at ha
   rw [← ha, coe_add, ← Int.cast_natCast, Int.natMod, Int.toNat_of_nonneg, zsmul_eq_mul,
     mul_div_right_comm, eq_comm, add_eq_right, ← zsmul_eq_mul, coe_zsmul, coe_period, smul_zero]
-  exact Int.emod_nonneg _ (by exact_mod_cast h.ne')
+  exact Int.emod_nonneg _ (mod_cast h.ne')
 
 theorem addOrderOf_eq_pos_iff {u : AddCircle p} {n : ℕ} (h : 0 < n) :
     addOrderOf u = n ↔ ∃ m < n, m.gcd n = 1 ∧ ↑(↑m / ↑n * p) = u := by
@@ -636,7 +660,7 @@ theorem addOrderOf_eq_pos_iff {u : AddCircle p} {n : ℕ} (h : 0 < n) :
   obtain ⟨m, hm, hk⟩ := (AddCircle.nsmul_eq_zero_iff h).mp
     (addOrderOf_nsmul_eq_zero (k : AddCircle p))
   refine ⟨m, hm, mul_right_cancel₀ h.ne' ?_, hk⟩
-  convert! gcd_mul_addOrderOf_div_eq p m h using 1
+  convert gcd_mul_addOrderOf_div_eq p m h using 1
   · rw [hk]
   · apply one_mul
 
@@ -669,8 +693,8 @@ def setAddOrderOfEquiv {n : ℕ} (hn : 0 < n) :
         refine ⟨fun m₁ m₂ h => Subtype.ext ?_, fun u => ?_⟩
         · simp_rw [Subtype.mk_eq_mk, natCast_div_mul_eq_nsmul] at h
           refine nsmul_injOn_Iio_addOrderOf ?_ ?_ h <;> rw [addOrderOf_period_div hn]
-          exacts [m₁.2.1, m₂.2.1]
-        · obtain ⟨m, hmn, hg, he⟩ := (addOrderOf_eq_pos_iff hn).mp u.2
+          exacts [m₁.property.1, m₂.property.1]
+        · obtain ⟨m, hmn, hg, he⟩ := (addOrderOf_eq_pos_iff hn).mp u.property
           exact ⟨⟨m, hmn, hg⟩, Subtype.ext he⟩)
 
 @[simp]
@@ -680,12 +704,12 @@ theorem card_addOrderOf_eq_totient {n : ℕ} :
   · simp only [Nat.totient_zero, addOrderOf_eq_zero_iff]
     rcases em (∃ u : AddCircle p, ¬IsOfFinAddOrder u) with (⟨u, hu⟩ | h)
     · have : Infinite { u : AddCircle p // ¬IsOfFinAddOrder u } := by
-        rw [← coe_setOf, infinite_coe_iff]
+        rw [← coe_ofPred, infinite_coe_iff]
         exact infinite_not_isOfFinAddOrder hu
       exact Nat.card_eq_zero_of_infinite
     · have : IsEmpty { u : AddCircle p // ¬IsOfFinAddOrder u } := by simpa [isEmpty_subtype] using h
       exact Nat.card_of_isEmpty
-  · rw [← coe_setOf, Nat.card_congr (setAddOrderOfEquiv p hn),
+  · rw [← coe_ofPred, Nat.card_congr (setAddOrderOfEquiv p hn),
       n.totient_eq_card_lt_and_coprime]
     simp only [Nat.gcd_comm]
 
@@ -773,7 +797,7 @@ def homeoIccQuot [TopologicalSpace 𝕜] [OrderTopology 𝕜] : 𝕋 ≃ₜ Quot
     · apply continuousWithinAt_toIocMod_Iic
     · apply continuousWithinAt_toIcoMod_Ici
   continuous_invFun :=
-    continuous_quot_lift _ ((AddCircle.continuous_mk' p).comp continuous_subtype_val)
+    continuous_quot_lift _ ((AddCircle.continuous_mk' p).comp continuous_subtypeVal)
 
 /-! We now show that a continuous function on `[a, a + p]` satisfying `f a = f (a + p)` is the
 pullback of a continuous function on `AddCircle p`, by first showing that
@@ -793,7 +817,7 @@ theorem liftIoc_eq_liftIco {f : 𝕜 → B} (hf : f a = f (a + p)) :
 
 theorem liftIco_eq_lift_Icc {f : 𝕜 → B} (h : f a = f (a + p)) :
     liftIco p a f =
-      Quot.lift (restrict (Icc a <| a + p) f)
+      Quot.lift (domRestrict (Icc a <| a + p) f)
           (by
             rintro _ _ ⟨_⟩
             exact h) ∘
@@ -802,7 +826,7 @@ theorem liftIco_eq_lift_Icc {f : 𝕜 → B} (h : f a = f (a + p)) :
 
 theorem liftIoc_eq_lift_Icc {f : 𝕜 → B} (h : f a = f (a + p)) :
     liftIoc p a f =
-      Quot.lift (restrict (Icc a <| a + p) f)
+      Quot.lift (domRestrict (Icc a <| a + p) f)
           (by
             rintro _ _ ⟨_⟩
             exact h) ∘
@@ -822,7 +846,7 @@ theorem liftIco_continuous [TopologicalSpace B] {f : 𝕜 → B} (hf : f a = f (
     (hc : ContinuousOn f <| Icc a (a + p)) : Continuous (liftIco p a f) := by
   rw [liftIco_eq_lift_Icc hf]
   refine Continuous.comp ?_ (homeoIccQuot p a).continuous_toFun
-  exact continuous_coinduced_dom.mpr (continuousOn_iff_continuous_restrict.mp hc)
+  exact continuous_coinduced_dom.mpr (continuousOn_iff_continuous_domRestrict.mp hc)
 
 theorem liftIco_zero_continuous [TopologicalSpace B] {f : 𝕜 → B} (hf : f 0 = f p)
     (hc : ContinuousOn f <| Icc 0 p) : Continuous (liftIco p 0 f) :=
@@ -832,7 +856,7 @@ theorem liftIoc_continuous [TopologicalSpace B] {f : 𝕜 → B} (hf : f a = f (
     (hc : ContinuousOn f <| Icc a (a + p)) : Continuous (liftIoc p a f) := by
   rw [liftIoc_eq_lift_Icc hf]
   refine Continuous.comp ?_ (homeoIccQuot p a).continuous_toFun
-  exact continuous_coinduced_dom.mpr (continuousOn_iff_continuous_restrict.mp hc)
+  exact continuous_coinduced_dom.mpr (continuousOn_iff_continuous_domRestrict.mp hc)
 
 theorem liftIoc_zero_continuous [TopologicalSpace B] {f : 𝕜 → B} (hf : f 0 = f p)
     (hc : ContinuousOn f <| Icc 0 p) : Continuous (liftIoc p 0 f) :=

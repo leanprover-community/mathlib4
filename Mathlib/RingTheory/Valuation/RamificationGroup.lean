@@ -5,8 +5,10 @@ Authors: Michail Karatarakis
 -/
 module
 
-public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 public import Mathlib.RingTheory.Valuation.ValuationSubring
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Ramification groups

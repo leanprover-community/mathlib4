@@ -5,15 +5,16 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexOp
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Pairing
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The opposite of a pairing
 
 Let `A` be a subcomplex of a simplicial set `X`. If `P` is a pairing of `A`,
 we construct a pairing `P.op` for the subcomplex `A.op` of `X.op`.
-
 -/
 
 @[expose] public section
@@ -26,7 +27,7 @@ variable {X : SSet.{u}} {A : X.Subcomplex} (P : A.Pairing)
 
 /-- If `P` is a pairing for a subcomplex `A` of a simplicial set `X`,
 this is the corresponding pairing of `A.op`. -/
-@[simps I II]
+@[implicit_reducible, simps I II]
 def op : A.op.Pairing where
   I := Subcomplex.N.opEquiv ⁻¹' P.I
   II := Subcomplex.N.opEquiv ⁻¹' P.II
@@ -35,20 +36,18 @@ def op : A.op.Pairing where
   p := (N.opEquiv.subtypeEquiv (by simp)).trans
     (P.p.trans (N.opEquiv.symm.subtypeEquiv (by simp)))
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma op_p (x : P.II) :
-    dsimp% P.op.p ⟨Subcomplex.N.opEquiv.symm x.1, x.2⟩ =
+    dsimp% P.op.p ⟨Subcomplex.N.opEquiv.symm x.val, x.property⟩ =
       ⟨Subcomplex.N.opEquiv.symm (P.p x), by simp⟩ := rfl
 
-set_option backward.defeqAttrib.useBackward true in
 lemma op_ancestralRel_iff (x y : P.II) :
-    P.op.AncestralRel ⟨Subcomplex.N.opEquiv.symm x.1, x.2⟩
-      ⟨Subcomplex.N.opEquiv.symm y.1, y.2⟩ ↔ P.AncestralRel x y :=
-  and_congr (not_congr (by aesop)) (by simp)
+    P.op.AncestralRel ⟨Subcomplex.N.opEquiv.symm x.val, x.property⟩
+      ⟨Subcomplex.N.opEquiv.symm y.val, y.property⟩ ↔ P.AncestralRel x y :=
+  and_congr (not_congr (by simp [Subtype.ext_iff])) (by simp)
 
 instance [P.IsProper] : P.op.IsProper where
-  isUniquelyCodimOneFace x := (P.isUniquelyCodimOneFace ⟨_, x.2⟩).op
+  isUniquelyCodimOneFace x := (P.isUniquelyCodimOneFace ⟨_, x.property⟩).op
 
 instance [P.IsRegular] : P.op.IsRegular where
   wf := by
@@ -56,7 +55,7 @@ instance [P.IsRegular] : P.op.IsRegular where
     rw [wellFounded_iff_isEmpty_descending_chain] at hP ⊢
     by_contra!
     obtain ⟨f, hf⟩ := this
-    refine hP.false ⟨fun n ↦ ⟨_, (f n).2⟩, fun n ↦ ?_⟩
+    refine hP.false ⟨fun n ↦ ⟨_, (f n).property⟩, fun n ↦ ?_⟩
     simpa [← P.op_ancestralRel_iff] using hf n
 
 end SSet.Subcomplex.Pairing

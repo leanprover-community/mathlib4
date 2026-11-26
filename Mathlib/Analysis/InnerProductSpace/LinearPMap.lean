@@ -7,12 +7,10 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
 public import Mathlib.Analysis.InnerProductSpace.ProdL2
-public import Mathlib.Analysis.Normed.Operator.Extend
-public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Extend
 public import Mathlib.Topology.Algebra.Module.LinearPMap
 
 /-!
-
 # Partially defined linear operators on Hilbert spaces
 
 We will develop the basics of the theory of unbounded operators on Hilbert spaces.
@@ -90,11 +88,11 @@ This definition is needed to construct the adjoint operator and the preferred ve
 def adjointDomain : Submodule 𝕜 F where
   carrier := {y | Continuous ((innerₛₗ 𝕜 y).comp T.toFun)}
   zero_mem' := by
-    rw [Set.mem_setOf_eq, LinearMap.map_zero, LinearMap.zero_comp]
+    rw [Set.mem_ofPred_eq, LinearMap.map_zero, LinearMap.zero_comp]
     exact continuous_zero
-  add_mem' hx hy := by rw [Set.mem_setOf_eq, LinearMap.map_add] at *; exact hx.add hy
+  add_mem' hx hy := by rw [Set.mem_ofPred_eq, LinearMap.map_add] at *; exact hx.add hy
   smul_mem' a x hx := by
-    rw [Set.mem_setOf_eq, LinearMap.map_smulₛₗ] at *
+    rw [Set.mem_ofPred_eq, LinearMap.map_smulₛₗ] at *
     exact hx.const_smul (conj a)
 
 /-- The operator `fun x ↦ ⟪y, T x⟫` considered as a continuous linear operator
@@ -115,8 +113,8 @@ variable {T}
 @[simp]
 theorem adjointDomainMkCLMExtend_apply (hT : Dense (T.domain : Set E)) (y : T.adjointDomain)
     (x : T.domain) : adjointDomainMkCLMExtend T y (x : E) = ⟪(y : F), T x⟫ :=
-  ContinuousLinearMap.extend_eq _ hT.denseRange_val
-    isUniformEmbedding_subtype_val.isUniformInducing _
+  ContinuousLinearMap.extend_eq _ hT.denseRange_subtypeVal
+    isUniformEmbedding_subtypeVal.isUniformInducing _
 
 variable [CompleteSpace E]
 
@@ -169,15 +167,16 @@ theorem mem_adjoint_domain_of_exists (y : F) (h : ∃ w : E, ∀ x : T.domain, �
   convert this
   exact funext fun x => (hw x).symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem adjoint_apply_of_not_dense (hT : ¬Dense (T.domain : Set E)) (y : T†.domain) : T† y = 0 := by
   classical
   change (if hT : Dense (T.domain : Set E) then adjointAux hT else 0) y = _
-  simp only [hT, not_false_iff, dif_neg, LinearMap.zero_apply]
+  simp only [hT, not_false_iff, dite_eq_right, LinearMap.zero_apply]
 
 theorem adjoint_apply_of_dense (y : T†.domain) : T† y = adjointAux hT y := by
   classical
   change (if hT : Dense (T.domain : Set E) then adjointAux hT else 0) y = _
-  simp only [hT, dif_pos]
+  simp only [hT, dite_eq_left]
 
 include hT in
 theorem adjoint_apply_eq (y : T†.domain) {x₀ : E} (hx₀ : ∀ x : T.domain, ⟪x₀, x⟫ = ⟪(y : F), T x⟫) :
@@ -206,6 +205,7 @@ namespace ContinuousLinearMap
 variable [CompleteSpace E] [CompleteSpace F]
 variable (A : E →L[𝕜] F) {p : Submodule 𝕜 E}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Restricting `A` to a dense submodule and taking the `LinearPMap.adjoint` is the same
 as taking the `ContinuousLinearMap.adjoint` interpreted as a `LinearPMap`. -/
 theorem toPMap_adjoint_eq_adjoint_toPMap_of_dense (hp : Dense (p : Set E)) :
@@ -271,7 +271,7 @@ def adjoint (g : Submodule 𝕜 (E × F)) : Submodule 𝕜 (F × E) :=
 theorem mem_adjoint_iff (g : Submodule 𝕜 (E × F)) (x : F × E) :
     x ∈ g.adjoint ↔
     ∀ a b, (a, b) ∈ g → inner 𝕜 b x.fst - inner 𝕜 a x.snd = 0 := by
-  simp only [Submodule.adjoint, mem_map, mem_orthogonal, LinearEquiv.coe_coe,
+  simp only [Submodule.adjoint, mem_map, mem_orthogonal, LinearEquiv.coe_toLinearMap,
     LinearEquiv.trans_apply, LinearEquiv.skewSwap_symm_apply, coe_symm_linearEquiv, Prod.exists,
     prod_inner_apply, ofLp_fst, ofLp_snd, forall_exists_index, and_imp, coe_linearEquiv]
   constructor
@@ -332,7 +332,7 @@ theorem adjoint_isClosed (hT : Dense (T.domain : Set E)) :
     T†.IsClosed := by
   rw [IsClosed, adjoint_graph_eq_graph_adjoint hT, Submodule.adjoint]
   simp only [Submodule.map_coe]
-  rw [LinearEquiv.coe_coe, LinearEquiv.image_eq_preimage_symm]
+  rw [LinearEquiv.coe_toLinearMap, LinearEquiv.image_eq_preimage_symm]
   exact (Submodule.isClosed_orthogonal _).preimage (WithLp.prod_continuous_toLp _ _ _)
 
 /-- Every self-adjoint `LinearPMap` is closed. -/

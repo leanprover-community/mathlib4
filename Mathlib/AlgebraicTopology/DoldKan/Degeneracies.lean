@@ -6,11 +6,12 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.DoldKan.Decomposition
-public import Mathlib.Tactic.FinCases
 public import Mathlib.Tactic.Linarith
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Behaviour of `P_infty` with respect to degeneracies
 
 For any `X : SimplicialObject C` where `C` is an abelian category,
@@ -25,14 +26,15 @@ if `X : SimplicialObject C` with `C` a preadditive category,
 statement vanishing statement `σ_comp_P_eq_zero` for the `P q`.
 
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
-
 -/
 
 public section
 
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
-  CategoryTheory.Preadditive Simplicial
+  CategoryTheory.Preadditive
+
+open scoped Simplicial
 
 namespace AlgebraicTopology
 
@@ -56,7 +58,6 @@ theorem HigherFacesVanish.comp_σ {Y : C} {X : SimplicialObject C} {n b q : ℕ}
     rw [Fin.lt_def, Fin.val_succ]
     linarith
 
-set_option backward.isDefEq.respectTransparency false in
 theorem σ_comp_P_eq_zero (X : SimplicialObject C) {n q : ℕ} (i : Fin (n + 1)) (hi : n + 1 ≤ i + q) :
     dsimp% X.σ i ≫ (P q).f (n + 1) = 0 := by
   induction q generalizing i with
@@ -97,7 +98,7 @@ theorem σ_comp_P_eq_zero (X : SimplicialObject C) {n q : ℕ} (i : Fin (n + 1))
         dsimp only [AlternatingFaceMapComplex.obj_X, Nat.succ_eq_add_one, HomologicalComplex.comp_f,
           HomologicalComplex.add_f_apply, HomologicalComplex.id_f]
         rw [← assoc, v.comp_P_eq_self, Preadditive.comp_add,
-          comp_id, v.comp_Hσ_eq hi, assoc, ← Fin.succ_mk _ _ i.2,
+          comp_id, v.comp_Hσ_eq hi, assoc, ← Fin.succ_mk _ _ i.isLt,
           SimplicialObject.δ_comp_σ_succ_assoc,
           Fin.eta, decomposition_Q n q, sum_comp, sum_comp, Finset.sum_eq_zero, add_zero,
           add_neg_eq_zero]
@@ -123,7 +124,6 @@ theorem σ_comp_PInfty (X : SimplicialObject C) {n : ℕ} (i : Fin (n + 1)) :
   rw [PInfty_f, σ_comp_P_eq_zero X i]
   simp only [le_add_iff_nonneg_left, zero_le]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem degeneracy_comp_PInfty (X : SimplicialObject C) (n : ℕ) {Δ' : SimplexCategory}
     (θ : ⦋n⦌ ⟶ Δ') (hθ : ¬Mono θ) : dsimp% X.map θ.op ≫ PInfty.f n = 0 := by
@@ -171,7 +171,6 @@ lemma DegeneraciesVanish.comp
   · simp
   · simp [degeneraciesVanish_succ_iff, hf.σ_comp_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (X) in
 lemma degeneraciesVanishPInfty_f (n : ℕ) :
     DegeneraciesVanish ((PInfty (X := X)).f n) := by
@@ -179,7 +178,6 @@ lemma degeneraciesVanishPInfty_f (n : ℕ) :
   · simp
   · simp [degeneraciesVanish_succ_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma degeneraciesVanish_iff_QInfty_f_comp (f : X _⦋n⦌ ⟶ T) :
     DegeneraciesVanish f ↔ QInfty.f n ≫ f = 0 := by
   obtain _ | n := n

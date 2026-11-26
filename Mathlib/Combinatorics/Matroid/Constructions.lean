@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Combinatorics.Matroid.Minor.Restrict
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Some constructions of matroids
 
@@ -23,12 +26,11 @@ For `E : Set α`, ...
 * `freeOn E` is the 'free matroid' whose ground set `E` is the only base.
 * For `I ⊆ E`, `uniqueBaseOn I E` is the matroid with ground set `E` in which `I` is the only base.
 
-## Implementation details
+## Implementation notes
 
 To avoid the tedious process of certifying the matroid axioms for each of these easy examples,
 we bootstrap the definitions starting with `emptyOn α` (which `simp` can prove is a matroid)
 and then construct the other examples using duality and restriction.
-
 -/
 
 @[expose] public section
@@ -122,7 +124,7 @@ theorem Finite.loopyOn_finite (hE : E.Finite) : Matroid.Finite (loopyOn E) :=
   exact fun _ h _ ↦ h
 
 theorem empty_isBase_iff : M.IsBase ∅ ↔ M = loopyOn M.E := by
-  simp only [isBase_iff_maximal_indep, Maximal, empty_indep, le_eq_subset, empty_subset,
+  simp only [isBase_iff_maximal_indep, Maximal, empty_indep, empty_subset,
     subset_empty_iff, true_implies, true_and, ext_iff_indep, loopyOn_ground,
     loopyOn_indep_iff]
   exact ⟨fun h I _ ↦ ⟨@h _, fun hI ↦ by simp [hI]⟩, fun h I hI ↦ (h hI.subset_ground).1 hI⟩
@@ -266,7 +268,7 @@ instance uniqueBaseOn_finitary : Finitary (uniqueBaseOn I E) := by
   exact fun e heK ↦ singleton_subset_iff.1 <| hK _ (by simpa) (by simp)
 
 lemma uniqueBaseOn_rankPos (hIE : I ⊆ E) (hI : I.Nonempty) : RankPos (uniqueBaseOn I E) where
-  empty_not_isBase := by simpa [uniqueBaseOn_isBase_iff hIE] using Ne.symm <| hI.ne_empty
+  empty_not_isBase := by simpa [uniqueBaseOn_isBase_iff hIE] using Ne.symm hI.ne_empty
 
 end uniqueBaseOn
 

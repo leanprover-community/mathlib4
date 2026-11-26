@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Homology.QuasiIso
 public import Mathlib.Algebra.Homology.SingleHomology
 public import Mathlib.CategoryTheory.Preadditive.Projective.Preserves
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Projective resolutions
 
@@ -16,7 +19,6 @@ A projective resolution `P : ProjectiveResolution Z` of an object `Z : C` consis
 an `ℕ`-indexed chain complex `P.complex` of projective objects,
 along with a quasi-isomorphism `P.π` from `C` to the chain complex consisting just
 of `Z` in degree zero.
-
 -/
 
 @[expose] public section
@@ -103,6 +105,7 @@ theorem complex_d_succ_comp (n : ℕ) :
 noncomputable def cokernelCofork : CokernelCofork (P.complex.d 1 0) :=
   CokernelCofork.ofπ _ P.complex_d_comp_π_f_zero
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- `Z` is the cokernel of `P.complex.X 1 ⟶ P.complex.X 0` when `P : ProjectiveResolution Z`. -/
 noncomputable def isColimitCokernelCofork : IsColimit (P.cokernelCofork) := by
@@ -150,7 +153,6 @@ namespace Hom
 
 attribute [reassoc (attr := simp)] hom_f_zero_comp_π_f_zero
 
-set_option backward.isDefEq.respectTransparency false in
 variable {I I'} in
 @[reassoc (attr := simp)]
 lemma hom_comp_π {f : Z ⟶ Z'} (φ : Hom P P' f) :
@@ -167,7 +169,6 @@ open Limits
 variable {C : Type u} [Category* C] [HasZeroObject C] [Preadditive C]
   {D : Type u'} [Category.{v'} D] [HasZeroObject D] [Preadditive D] [CategoryWithHomology D]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An additive functor `F` which preserves homology and sends projective objects to projective
 objects sends a projective resolution of `Z` to a projective resolution of `F.obj Z`. -/
 @[simps complex π]

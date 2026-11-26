@@ -3,9 +3,11 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.NumberTheory.ArithmeticFunction.Misc
-import Mathlib.NumberTheory.LucasLehmer
-import Mathlib.Tactic.NormNum.Prime
+module
+
+public import Mathlib.NumberTheory.ArithmeticFunction.Misc
+public import Mathlib.NumberTheory.LucasLehmer
+public import Mathlib.Tactic.NormNum.Prime
 
 /-!
 # Perfect Numbers
@@ -21,9 +23,11 @@ Euler proved the converse, that if `n` is even and perfect, then there exists `k
   `n = 2 ^ k * (2 ^ (k + 1) - 1)` and `2 ^ (k + 1) - 1` is prime.
 
 ## References
+
 https://en.wikipedia.org/wiki/Euclid%E2%80%93Euler_theorem
 -/
 
+public section
 
 namespace Theorems100
 

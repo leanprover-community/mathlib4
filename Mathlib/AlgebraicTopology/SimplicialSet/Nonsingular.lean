@@ -22,17 +22,19 @@ to the notion of "polyhedral complex" which appears in the article
 exists a monomorphism `X ⟶ nerve T` where `T` is a partially ordered type.
 
 ## References
+
 * [Vegard Fjellbo and John Rognes,
   *Exponentials of non-singular simplicial sets*][fjellbo-rognes-2022]
 * [J. F. Jardine, *Simplicial approximation*][jardine-2004]
-
 -/
 
 public section
 
 universe u
 
-open CategoryTheory MonoidalCategory Simplicial Opposite
+open CategoryTheory Opposite
+
+open scoped MonoidalCategory Simplicial
 
 namespace SSet
 
@@ -121,7 +123,7 @@ lemma Nonsingular.isIso_toOfSimplex [X.Nonsingular]
   rw [Subcomplex.isIso_toOfSimplex_iff]
   exact Nonsingular.mono' x hx
 
-/-- If `x : X _⦋n⦌` is a nondegenerate simplex of a nonsingular simplcial set,
+/-- If `x : X _⦋n⦌` is a nondegenerate simplex of a nonsingular simplicial set,
 this is the isomorphism `Δ[n] ≅ Subcomplex.ofSimplex x` induced by `x`. -/
 @[expose, simps! hom]
 noncomputable def Nonsingular.iso
@@ -136,7 +138,7 @@ variable [X.Nonsingular] {x y z : X.N} (h : x ≤ y)
 
 include h in
 lemma existsUnique_of_le :
-    ∃! (f : ⦋x.dim⦌ ⟶ ⦋y.dim⦌), Mono f ∧ X.map f.op y.1.2 = x.1.2 :=
+    ∃! (f : ⦋x.dim⦌ ⟶ ⦋y.dim⦌), Mono f ∧ X.map f.op y.toS.simplex = x.toS.simplex :=
   existsUnique_of_exists_of_unique (by
     obtain ⟨f, _, hf⟩ := le_iff_exists_mono.1 h
     exact ⟨f, inferInstance, hf⟩) (fun f₁ f₂ ⟨_, hf₁⟩ ⟨_, hf₂⟩ ↦ by

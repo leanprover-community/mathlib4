@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Sites.Hypercover.One
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Characterization of sheaves using 1-hypercovers
 
@@ -29,9 +32,9 @@ that if `C : Type u` and `Category.{v} C`, then
 `GrothendieckTopology.IsGeneratedByOneHypercovers.{max u v} J` holds.
 
 ## TODO
+
 * Show that functors which preserve 1-hypercovers are continuous.
 * Refactor `DenseSubsite` using `1`-hypercovers.
-
 -/
 
 @[expose] public section
@@ -154,6 +157,7 @@ end OneHypercoverFamily
 abbrev IsGeneratedByOneHypercovers : Prop :=
   OneHypercoverFamily.IsGenerating.{w} (J := J) ⊤
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : IsGeneratedByOneHypercovers.{max u v} J where
   le S hS := ⟨Cover.oneHypercover ⟨S, hS⟩, by simp, by simp⟩
 

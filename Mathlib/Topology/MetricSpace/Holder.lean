@@ -5,9 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.MetricSpace.Lipschitz
-public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 public import Mathlib.Analysis.Convex.NNReal
+public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 
 /-!
 # Hölder continuous functions
@@ -32,7 +31,6 @@ for `r` to ensure that `d ^ r` is monotone in `d`. It might be a good idea to us
 ## Tags
 
 Hölder continuity, Lipschitz continuity
-
 -/
 
 @[expose] public section
@@ -217,24 +215,27 @@ then it is `(C, r * t₁ + s * t₂)`-Hölder for all `t₁ t₂ : ℝ≥0` such
 lemma interpolate_const {C s t₁ t₂ : ℝ≥0} {A : Set X}
     (hf₁ : HolderOnWith C r f A) (hf₂ : HolderOnWith C s f A) (ht : t₁ + t₂ = 1) :
     HolderOnWith C (r * t₁ + s * t₂) f A := by
-  convert! hf₁.interpolate hf₂ ht
+  convert hf₁.interpolate hf₂ ht
   simp [← NNReal.rpow_add_of_nonneg, ← NNReal.coe_add, ht]
 
 variable (f) in
 /-- For fixed `f : X → Y`, `A : Set X` and `C : ℝ≥0`, the set of all parameters `r : ℝ≥0` such that
 `f` is `(C, r)`-Hölder on `A` is convex. -/
-lemma _root_.convex_setOf_holderOnWith (C : ℝ≥0) (A : Set X) :
+lemma _root_.convex_setOfPred_holderOnWith (C : ℝ≥0) (A : Set X) :
     Convex ℝ≥0 {r | HolderOnWith C r f A} := by
   intro r hr s hs _ _ _ _ ht
   rw [smul_eq_mul, smul_eq_mul, ← mul_comm r, ← mul_comm s]
   exact hr.interpolate_const hs ht
+
+@[deprecated (since := "2026-07-09")]
+alias _root_.convex_setOf_holderOnWith := _root_.convex_setOfPred_holderOnWith
 
 lemma of_le_of_le {C₁ C₂ s t : ℝ≥0} {A : Set X}
     (hf₁ : HolderOnWith C₁ r f A) (hf₂ : HolderOnWith C₂ s f A) (hrt : r ≤ t)
     (hts : t ≤ s) : HolderOnWith (max C₁ C₂) t f A := by
   replace hf₁ := hf₁.mono_const (le_max_left C₁ C₂)
   replace hf₂ := hf₂.mono_const (le_max_right C₁ C₂)
-  exact convex_setOf_holderOnWith f (max C₁ C₂) A |>.segment_subset hf₁ hf₂
+  exact convex_setOfPred_holderOnWith f (max C₁ C₂) A |>.segment_subset hf₁ hf₂
     (NNReal.Icc_subset_segment ⟨hrt, hts⟩)
 
 end HolderOnWith
@@ -243,7 +244,7 @@ namespace HolderWith
 
 variable {C r : ℝ≥0} {f : X → Y}
 
-theorem restrict_iff {s : Set X} : HolderWith C r (s.restrict f) ↔ HolderOnWith C r f s := by
+theorem restrict_iff {s : Set X} : HolderWith C r (s.domRestrict f) ↔ HolderOnWith C r f s := by
   simp [HolderWith, HolderOnWith]
 
 protected alias ⟨_, _root_.HolderOnWith.holderWith⟩ := restrict_iff
@@ -318,10 +319,13 @@ lemma interpolate_const {C s t₁ t₂ : ℝ≥0}
 variable (f) in
 /-- For fixed `f : X → Y` and `C : ℝ≥0`, the set of all parameters `r : ℝ≥0` such that
 `f` is `(C, r)`-Hölder is convex. -/
-lemma _root_.convex_setOf_holderWith (C : ℝ≥0) :
+lemma _root_.convex_setOfPred_holderWith (C : ℝ≥0) :
     Convex ℝ≥0 {r | HolderWith C r f} := by
   simp_rw [← holderOnWith_univ]
-  exact convex_setOf_holderOnWith f C _
+  exact convex_setOfPred_holderOnWith f C _
+
+@[deprecated (since := "2026-07-09")]
+alias _root_.convex_setOf_holderWith := _root_.convex_setOfPred_holderWith
 
 lemma of_le_of_le {C₁ C₂ s t : ℝ≥0}
     (hf₁ : HolderWith C₁ r f) (hf₂ : HolderWith C₂ s f) (hrt : r ≤ t)
@@ -338,23 +342,27 @@ variable [PseudoMetricSpace X] [PseudoMetricSpace Y] {C r : ℝ≥0} {f : X → 
 
 namespace HolderOnWith
 
-theorem nndist_le_of_le (hf : HolderOnWith C r f s) (hx : x ∈ s) (hy : y ∈ s)
-    {d : ℝ≥0} (hd : nndist x y ≤ d) : nndist (f x) (f y) ≤ C * d ^ (r : ℝ) := by
-  rw [← ENNReal.coe_le_coe, ← edist_nndist, ENNReal.coe_mul,
+theorem nnDist_le_of_le (hf : HolderOnWith C r f s) (hx : x ∈ s) (hy : y ∈ s)
+    {d : ℝ≥0} (hd : nnDist x y ≤ d) : nnDist (f x) (f y) ≤ C * d ^ (r : ℝ) := by
+  rw [← ENNReal.coe_le_coe, ← eDist_nnDist, ENNReal.coe_mul,
     ENNReal.coe_rpow_of_nonneg _ r.coe_nonneg]
   apply hf.edist_le_of_le hx hy
-  rwa [edist_nndist, ENNReal.coe_le_coe]
+  rwa [eDist_nnDist, ENNReal.coe_le_coe]
 
-theorem nndist_le (hf : HolderOnWith C r f s) (hx : x ∈ s) (hy : y ∈ s) :
-    nndist (f x) (f y) ≤ C * nndist x y ^ (r : ℝ) :=
-  hf.nndist_le_of_le hx hy le_rfl
+@[deprecated (since := "2026-11-07")] alias nndist_le_of_le := nnDist_le_of_le
+
+theorem nnDist_le (hf : HolderOnWith C r f s) (hx : x ∈ s) (hy : y ∈ s) :
+    nnDist (f x) (f y) ≤ C * nnDist x y ^ (r : ℝ) :=
+  hf.nnDist_le_of_le hx hy le_rfl
+
+@[deprecated (since := "2026-11-07")] alias nndist_le := nnDist_le
 
 theorem dist_le_of_le (hf : HolderOnWith C r f s) (hx : x ∈ s) (hy : y ∈ s)
     {d : ℝ} (hd : dist x y ≤ d) : dist (f x) (f y) ≤ C * d ^ (r : ℝ) := by
   lift d to ℝ≥0 using dist_nonneg.trans hd
-  rw [dist_nndist] at hd ⊢
+  rw [dist_nnDist] at hd ⊢
   norm_cast at hd ⊢
-  exact hf.nndist_le_of_le hx hy hd
+  exact hf.nnDist_le_of_le hx hy hd
 
 theorem dist_le (hf : HolderOnWith C r f s) (hx : x ∈ s) (hy : y ∈ s) :
     dist (f x) (f y) ≤ C * dist x y ^ (r : ℝ) :=
@@ -364,13 +372,17 @@ end HolderOnWith
 
 namespace HolderWith
 
-theorem nndist_le_of_le (hf : HolderWith C r f) {x y : X} {d : ℝ≥0} (hd : nndist x y ≤ d) :
-    nndist (f x) (f y) ≤ C * d ^ (r : ℝ) :=
-  (hf.holderOnWith univ).nndist_le_of_le (mem_univ x) (mem_univ y) hd
+theorem nnDist_le_of_le (hf : HolderWith C r f) {x y : X} {d : ℝ≥0} (hd : nnDist x y ≤ d) :
+    nnDist (f x) (f y) ≤ C * d ^ (r : ℝ) :=
+  (hf.holderOnWith univ).nnDist_le_of_le (mem_univ x) (mem_univ y) hd
 
-theorem nndist_le (hf : HolderWith C r f) (x y : X) :
-    nndist (f x) (f y) ≤ C * nndist x y ^ (r : ℝ) :=
-  hf.nndist_le_of_le le_rfl
+@[deprecated (since := "2026-11-07")] alias nndist_le_of_le := nnDist_le_of_le
+
+theorem nnDist_le (hf : HolderWith C r f) (x y : X) :
+    nnDist (f x) (f y) ≤ C * nnDist x y ^ (r : ℝ) :=
+  hf.nnDist_le_of_le le_rfl
+
+@[deprecated (since := "2026-11-07")] alias nndist_le := nnDist_le
 
 theorem dist_le_of_le (hf : HolderWith C r f) {x y : X} {d : ℝ} (hd : dist x y ≤ d) :
     dist (f x) (f y) ≤ C * d ^ (r : ℝ) :=

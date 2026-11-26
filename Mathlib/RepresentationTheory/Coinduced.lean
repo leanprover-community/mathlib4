@@ -6,8 +6,6 @@ Authors: Amelia Livingston
 module
 
 public import Mathlib.CategoryTheory.Preadditive.Projective.Preserves
-public import Mathlib.RepresentationTheory.Intertwining
-public import Mathlib.RepresentationTheory.Rep.Basic
 public import Mathlib.RepresentationTheory.Rep.Res
 
 /-!
@@ -40,7 +38,6 @@ coinduction functor and hence that the coinduction functor preserves limits.
 * `Rep.resCoindAdjunction k φ`: given a monoid homomorphism `φ : G →* H`, this is the adjunction
   between the restriction functor `Rep k H ⥤ Rep k G` along `φ` and the coinduction functor
   along `φ`.
-
 -/
 
 @[expose] public section
@@ -69,6 +66,7 @@ def coindV : Submodule k (H → A) where
 lemma mem_coindV (f : H → A) : f ∈ coindV φ σ ↔ ∀ (g : G) (h : H), f (φ g * h) = σ g (f h) :=
   Iff.rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 If `ρ : Representation k G A` and `φ : G →* H` then `coind φ ρ` is the representation
 coinduced by `ρ` along `φ`, defined as the following action of `H` on the submodule `coindV φ ρ`
@@ -84,6 +82,7 @@ def coind : Representation k H (coindV φ ρ) where
   map_one' := by ext; simp
   map_mul' _ _ := by ext; simp [mul_assoc]
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable {σ ρ} in
 /-- Given a monoid homomorphism `φ : G →* H` and an intertwining map `f : σ ⟶ ρ`, there is a
   natural intertwining map `coind φ σ ⟶ coind φ ρ` given by postcomposition by `f`. -/
@@ -92,7 +91,7 @@ def coindMap (f : σ.IntertwiningMap ρ) : (coind φ σ).IntertwiningMap (coind 
     simp only [mem_coindV, LinearMap.compLeft_apply, Function.comp_apply,
       IntertwiningMap.toLinearMap_apply] at h ⊢
     intro g h0
-    simpa [h] using LinearMap.ext_iff.1 (f.2 g) (x h0)
+    simpa [h] using LinearMap.ext_iff.1 (f.isIntertwining' g) (x h0)
   isIntertwining' h := by ext; simp
 
 lemma coindMap_coe_apply (f : σ.IntertwiningMap ρ) (x : coindV φ σ) :
@@ -100,7 +99,7 @@ lemma coindMap_coe_apply (f : σ.IntertwiningMap ρ) (x : coindV φ σ) :
 
 @[simp]
 lemma coindMap_coe_apply_apply (f : σ.IntertwiningMap ρ) (x : coindV φ σ) (h : H) :
-    ((coindMap φ f) x).1 h = f (x.1 h) := rfl
+    ((coindMap φ f) x).val h = f (x.val h) := rfl
 
 end Representation
 
@@ -136,20 +135,20 @@ noncomputable def coindFunctor : Rep.{t} k G ⥤ Rep k H where
 instance {G : Type v'} [Group G] (S : Subgroup G) :
     (coindFunctor k S.subtype).PreservesEpimorphisms where
   preserves {X Y} f := (epi_iff_surjective _).2 fun y => by
-    letI := QuotientGroup.rightRel S
+    let := QuotientGroup.rightRel S
     choose! s hs using (Rep.epi_iff_surjective f).1 ‹_›
     choose! i hi using Quotient.mk'_surjective (α := G)
     let γ (g : G) : S := ⟨g * (i (Quotient.mk' g))⁻¹,
       (QuotientGroup.rightRel_apply.1 (Quotient.eq'.1 (hi (Quotient.mk' g))))⟩
-    have hmk (s : S) (g : G) : Quotient.mk' (s.1 * g) = Quotient.mk' g :=
+    have hmk (s : S) (g : G) : Quotient.mk' (s.val * g) = Quotient.mk' g :=
       Quotient.eq'.2 (QuotientGroup.rightRel_apply.2 (by simp))
-    have hγ (s : S) (g : G) : γ (s.1 * g) = s * γ g := by ext; simp [mul_assoc, γ, hmk]
-    let x (g : G) : X := X.ρ (γ g) (s (y.1 (i (Quotient.mk' g))))
+    have hγ (s : S) (g : G) : γ (s.val * g) = s * γ g := by ext; simp [mul_assoc, γ, hmk]
+    let x (g : G) : X := X.ρ (γ g) (s (y.val (i (Quotient.mk' g))))
     refine ⟨⟨x, fun _ _ => ?_⟩, Subtype.ext <| funext fun g => ?_⟩
-    · simp [x, ← Module.End.mul_apply, ← map_mul, hmk, hγ]
+    · simp [x, ← mul_apply_eq_comp, ← map_mul, hmk, hγ]
     · simp only [coindFunctor_obj, coindFunctor_map, hom_ofHom,
         Representation.coindMap_coe_apply_apply, hom_comm_apply, x]
-      simp_all [← y.2 (γ g), γ]
+      simp_all [← y.property (γ g), γ]
 
 end Coind
 section Coind'
@@ -164,7 +163,7 @@ noncomputable def _root_.Representation.coind' :
     Representation k H (res φ (leftRegular k H) ⟶ A) where
   toFun h :=
   { toFun f := (resFunctor φ).map ((leftRegularHomEquiv (leftRegular k H)).symm.toLinearMap
-      (Finsupp.single h 1)) ≫ f
+      (.single h 1)) ≫ f
     map_add' _ _ := rfl
     map_smul' _ _ := rfl }
   map_one' := by
@@ -211,7 +210,8 @@ to the `G`-representation morphisms `k[H] ⟶ A`. -/
 @[simps]
 noncomputable def coindVEquiv :
     A.ρ.coindV φ ≃ₗ[k] (res φ (leftRegular k H) ⟶ A) where
-  toFun f := Rep.ofHom ⟨linearCombination _ f.1, fun g ↦ by dsimp; ext; simp [f.2 g]⟩
+  toFun f := Rep.ofHom ⟨linearCombination _ f.val ∘ₗ (MonoidAlgebra.coeffLinearEquiv _).toLinearMap,
+    fun g ↦ by dsimp; ext; simp [f.property g]⟩
   map_add' _ _ := coind'_ext φ <| by simp [Rep.add_hom]
   map_smul' _ _ := coind'_ext φ <| by simp [smul_hom]
   invFun f := ⟨fun h ↦ f.hom.toLinearMap (.single h 1), fun g h ↦ by
@@ -221,6 +221,7 @@ noncomputable def coindVEquiv :
   left_inv x := by simp
   right_inv x := coind'_ext φ fun _ => by simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `coind φ A` and `coind' φ A` are isomorphic representations, with the underlying
 `k`-linear equivalence given by `coindVEquiv`. -/
 noncomputable def coindIso : coind φ A ≅ coind' φ A :=
@@ -239,6 +240,7 @@ end CoindIso
 
 noncomputable section Adjunction
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The morphism induced by the adjunction between `res φ` and `coind φ` sending a morphism
   `f : res φ B ⟶ A` to the morphism `B ⟶ coind φ A` given by the underlying linear map sending
   `b : B.V` to the function sending `h : H` to `f ((B.ρ h) b)`. -/
@@ -249,7 +251,7 @@ def resCoindToHom (B : Rep k H) (A : Rep k G) (f : res φ B ⟶ A) : B ⟶ (coin
 
 @[simp]
 lemma resCoindToHom_hom_apply_coe (B : Rep k H) (A : Rep k G) (f : res φ B ⟶ A) (c : ↑B.V)
-    (i : H) : (DFunLike.coe (F := no_index (_)) (resCoindToHom φ B A f).hom c).1 i =
+    (i : H) : (DFunLike.coe (F := no_index (_)) (resCoindToHom φ B A f).hom c).val i =
     (Hom.hom f) ((B.ρ i) c) := rfl
 
 -- this `no_index` is to prevent simp discrimination tree from acting weird, i.e before
@@ -265,6 +267,7 @@ info: _.1 (@DFunLike.coe _ _.1 _ _ (@ConcreteCategory.hom (Rep _ _ _ _) _ _ _ _ 
 
 attribute [pp_with_univ] Rep coind
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a monoid homomorphism `φ : G →* H`, an `H`-representation `B`, and a `G`-representation
 `A`, there is a `k`-linear equivalence between the `G`-representation morphisms `res φ B ⟶ A` and
 the `H`-representation morphisms `B ⟶ coind φ A`.
@@ -281,7 +284,7 @@ def resCoindHomEquiv (B : Rep.{max w t} k H) (A : Rep.{max w t} k G) :
   invFun f := Rep.ofHom ⟨LinearMap.proj 1 ∘ₗ (A.ρ.coindV φ).subtype ∘ₗ f.hom.toLinearMap,
     fun g => by
       ext x
-      have := ((f.hom x).2 g 1).symm
+      have := ((f.hom x).property g 1).symm
       have := hom_comm_apply f (φ g) x
       simp_all⟩
   left_inv x := by ext; simp

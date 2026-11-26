@@ -5,9 +5,9 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
-public import Mathlib.Topology.Algebra.Module.Spaces.CompactConvergenceCLM
 public import Mathlib.Analysis.Normed.Module.FiniteDimension
+public import Mathlib.Topology.Algebra.Module.Spaces.CompactConvergenceCLM
+
 /-!
 # Montel spaces
 
@@ -24,17 +24,17 @@ space would be `[MontelSpace 𝕜 E] [BarrelledSpace 𝕜 E]`.
   [F. Trèves][treves1967].
 
 ## References
-* [F. Trèves, *Topological vector spaces, distributions and kernels*][treves1967]
 
+* [F. Trèves, *Topological vector spaces, distributions and kernels*][treves1967]
 -/
 
 @[expose] public section
 
-open Filter Topology Set ContinuousLinearMap Bornology
+open Filter Set ContinuousLinearMap Bornology
 
 section Definition
 
-variable {𝕜 E F : Type*}
+variable {𝕜 E : Type*}
 variable [SeminormedRing 𝕜] [Zero E] [SMul 𝕜 E]
   [TopologicalSpace E]
 
@@ -62,7 +62,7 @@ section Normed
 
 namespace MontelSpace
 
-variable {𝕜 E F : Type*}
+variable {𝕜 E : Type*}
 variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace 𝕜]
   [hM : MontelSpace 𝕜 E]
 
@@ -105,7 +105,8 @@ def _root_.ContinuousLinearEquiv.toCompactConvergenceCLM [T1Space E] [MontelSpac
     (E →SL[σ] F) ≃L[𝕜₂] E →SL_c[σ] F where
   __ := LinearEquiv.toCompactConvergenceCLM σ E F
   continuous_toFun := by
-    simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearEquiv.coe_coe, continuous_def]
+    simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearEquiv.coe_toLinearMap,
+      continuous_def]
     intro s hs
     apply hs.mono
     apply UniformConvergenceCLM.topologicalSpace_mono

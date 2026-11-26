@@ -5,10 +5,8 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.Geometry.Manifold.VectorBundle.Basic
-public import Mathlib.Topology.VectorBundle.Hom
 public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
-public import Mathlib.Geometry.Manifold.Notation
+public import Mathlib.Topology.VectorBundle.Hom
 
 /-! # Homs of `C^n` vector bundles over the same base space
 
@@ -62,26 +60,30 @@ theorem contMDiffOn_continuousLinearMapCoordChange
 
 variable [∀ x, IsTopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜 (E₂ x)]
 
-set_option backward.isDefEq.respectTransparency false in
-theorem hom_chart (y₀ y : LE₁E₂) :
+@[simp]
+theorem chartAt_hom (y₀ y : LE₁E₂) :
     chartAt (ModelProd HB (F₁ →L[𝕜] F₂)) y₀ y =
-      (chartAt HB y₀.1 y.1, inCoordinates F₁ E₁ F₂ E₂ y₀.1 y.1 y₀.1 y.1 y.2) := by
+      (chartAt HB y₀.proj y.proj,
+        inCoordinates F₁ E₁ F₂ E₂ y₀.proj y.proj y₀.proj y.proj y.snd) := by
   rw [FiberBundle.chartedSpace_chartAt, trans_apply, OpenPartialHomeomorph.prod_apply,
     Trivialization.coe_coe, OpenPartialHomeomorph.refl_apply, Function.id_def,
     hom_trivializationAt_apply]
+@[deprecated (since := "2026-10-16")] alias hom_chart := chartAt_hom
 
 theorem contMDiffWithinAt_hom_bundle (f : M → LE₁E₂) {s : Set M} {x₀ : M} :
     CMDiffAt[s] n f x₀ ↔
-      CMDiffAt[s] n (fun x ↦ (f x).1) x₀ ∧
+      CMDiffAt[s] n (fun x ↦ (f x).proj) x₀ ∧
         CMDiffAt[s] n
-          (fun x ↦ inCoordinates F₁ E₁ F₂ E₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) x₀ :=
-  contMDiffWithinAt_totalSpace
+          (fun x ↦
+            inCoordinates F₁ E₁ F₂ E₂ (f x₀).proj (f x).proj (f x₀).proj (f x).proj (f x).snd) x₀ :=
+  contMDiffWithinAt_totalSpace_iff
 
 theorem contMDiffAt_hom_bundle (f : M → LE₁E₂) {x₀ : M} :
     CMDiffAt n f x₀ ↔
-      CMDiffAt n (fun x ↦ (f x).1) x₀ ∧ CMDiffAt n
-        (fun x ↦ inCoordinates F₁ E₁ F₂ E₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) x₀ :=
-  contMDiffAt_totalSpace
+      CMDiffAt n (fun x ↦ (f x).proj) x₀ ∧ CMDiffAt n
+        (fun x ↦
+          inCoordinates F₁ E₁ F₂ E₂ (f x₀).proj (f x).proj (f x₀).proj (f x).proj (f x).snd) x₀ :=
+  contMDiffAt_totalSpace_iff
 
 end
 
@@ -93,23 +95,24 @@ theorem mdifferentiableOn_continuousLinearMapCoordChange
     [MemTrivializationAtlas e₂] [MemTrivializationAtlas e₂'] :
     MDiff[e₁.baseSet ∩ e₂.baseSet ∩ (e₁'.baseSet ∩ e₂'.baseSet)]
       (continuousLinearMapCoordChange (RingHom.id 𝕜) e₁ e₁' e₂ e₂') := by
-  have h₁ := contMDiffOn_coordChangeL (IB := IB) e₁' e₁ (n := 1) |>.mdifferentiableOn one_ne_zero
-  have h₂ := contMDiffOn_coordChangeL (IB := IB) e₂ e₂' (n := 1) |>.mdifferentiableOn one_ne_zero
-  refine (h₁.mono ?_).cle_arrowCongr (h₂.mono ?_) <;> mfld_set_tac
+  apply ContMDiffOn.mdifferentiableOn _ one_ne_zero
+  exact contMDiffOn_continuousLinearMapCoordChange
 
 variable [∀ x, IsTopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜 (E₂ x)]
 
 theorem mdifferentiableWithinAt_hom_bundle (f : M → LE₁E₂) {s : Set M} {x₀ : M} :
     MDiffAt[s] f x₀ ↔
-      MDiffAt[s] (fun x ↦ (f x).1) x₀ ∧
+      MDiffAt[s] (fun x ↦ (f x).proj) x₀ ∧
         MDiffAt[s]
-          (fun x ↦ inCoordinates F₁ E₁ F₂ E₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) x₀ :=
+          (fun x ↦
+            inCoordinates F₁ E₁ F₂ E₂ (f x₀).proj (f x).proj (f x₀).proj (f x).proj (f x).snd) x₀ :=
   mdifferentiableWithinAt_totalSpace IB ..
 
 theorem mdifferentiableAt_hom_bundle (f : M → LE₁E₂) {x₀ : M} :
     MDiffAt f x₀ ↔
-      MDiffAt (fun x ↦ (f x).1) x₀ ∧
-        MDiffAt (fun x ↦ inCoordinates F₁ E₁ F₂ E₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) x₀ :=
+      MDiffAt (fun x ↦ (f x).proj) x₀ ∧
+        MDiffAt (fun x ↦
+          inCoordinates F₁ E₁ F₂ E₂ (f x₀).proj (f x).proj (f x₀).proj (f x).proj (f x).snd) x₀ :=
   mdifferentiableAt_totalSpace ..
 
 end
@@ -130,6 +133,46 @@ instance ContMDiffVectorBundle.continuousLinearMap :
   (Bundle.ContinuousLinearMap.vectorPrebundle (RingHom.id 𝕜) F₁ E₁ F₂ E₂).contMDiffVectorBundle IB
 
 end
+
+section symmL
+
+variable {𝕜 B F₁ : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
+  {EB : Type*} [NormedAddCommGroup EB] [NormedSpace 𝕜 EB] {HB : Type*} [TopologicalSpace HB]
+  {IB : ModelWithCorners 𝕜 EB HB} [TopologicalSpace B] [ChartedSpace HB B]
+  {E₁ : B → Type*} [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜 (E₁ x)]
+  [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁]
+  [TopologicalSpace (TotalSpace F₁ E₁)] [∀ x, TopologicalSpace (E₁ x)]
+  [∀ x, IsTopologicalAddGroup (E₁ x)] [∀ x, ContinuousSMul 𝕜 (E₁ x)]
+  [FiberBundle F₁ E₁] [VectorBundle 𝕜 F₁ E₁]
+
+/-- Let `e` be a trivialization of a `C^n` vector bundle `E₁` over `B`. Then `m ↦ e.symmL 𝕜 m`
+defines a section of the bundle of continuous linear maps `F₁ →L[𝕜] E₁` over `B`, and this section
+is `C^n` at any point in `e.baseSet`. -/
+lemma Bundle.Trivialization.contMDiffAt_symmL [ContMDiffVectorBundle n F₁ E₁ IB]
+    (e : Trivialization F₁ (TotalSpace.proj : TotalSpace F₁ E₁ → B)) [MemTrivializationAtlas e]
+    {x : B} (hx : x ∈ e.baseSet) :
+    ContMDiffAt IB (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₁)) n
+      (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₁) m (e.symmL 𝕜 m)) x := by
+  have hx' : x ∈ (trivializationAt F₁ E₁ x).baseSet := mem_baseSet_trivializationAt F₁ E₁ x
+  refine contMDiffAt_totalSpace_iff.mpr ⟨contMDiffAt_id, ?_⟩
+  apply (contMDiffAt_coordChangeL hx hx').congr_of_eventuallyEq
+  filter_upwards [e.open_baseSet.mem_nhds hx,
+    (trivializationAt F₁ E₁ x).open_baseSet.mem_nhds hx'] with b hb hb'
+  ext v
+  simp [hom_trivializationAt_apply, ContinuousLinearMap.inCoordinates,
+    coordChangeL_apply' e _ ⟨hb, hb'⟩, coe_linearMapAt_of_mem _ hb',
+    e.symmL_apply hb, e.mk_symm hb]
+
+/-- Let `e` be a trivialization of a `C^n` vector bundle `E₁` over `B`. Then `m ↦ e.symmL 𝕜 m`
+defines a section of the bundle of continuous linear maps `F₁ →L[𝕜] E₁` over `B`, and this section
+is `C^n` on `e.baseSet`. -/
+lemma Bundle.Trivialization.contMDiffOn_symmL [ContMDiffVectorBundle n F₁ E₁ IB]
+    (e : Trivialization F₁ (TotalSpace.proj : TotalSpace F₁ E₁ → B)) [MemTrivializationAtlas e] :
+    ContMDiffOn IB (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₁)) n
+      (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₁) m (e.symmL 𝕜 m)) e.baseSet :=
+  fun _ hx ↦ (e.contMDiffAt_symmL hx).contMDiffWithinAt
+
+end symmL
 
 section
 
@@ -180,7 +223,7 @@ lemma ContMDiffWithinAt.clm_apply_of_inCoordinates
     (hv : CMDiffAt[s] n (fun m ↦ (v m : TotalSpace F₁ E₁)) m₀) (hb₂ : CMDiffAt[s] n b₂ m₀) :
     CMDiffAt[s] n (fun m ↦ (ϕ m (v m) : TotalSpace F₂ E₂)) m₀ := by
   rw [← contMDiffWithinAt_insert_self] at hϕ hv hb₂ ⊢
-  rw [contMDiffWithinAt_totalSpace] at hv ⊢
+  rw [contMDiffWithinAt_totalSpace_iff] at hv ⊢
   refine ⟨hb₂, ?_⟩
   apply (ContMDiffWithinAt.clm_apply hϕ hv.2).congr_of_eventuallyEq_of_mem ?_ (mem_insert m₀ s)
   have A : ∀ᶠ m in 𝓝[insert m₀ s] m₀, b₁ m ∈ (trivializationAt F₁ E₁ (b₁ m₀)).baseSet := by

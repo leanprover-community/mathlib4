@@ -96,7 +96,7 @@ theorem intersecting_iff_eq_empty_of_subsingleton [Subsingleton α] (s : Set α)
   refine
     subsingleton_of_subsingleton.intersecting.trans
       ⟨not_imp_comm.2 fun h => subsingleton_of_subsingleton.eq_singleton_of_mem ?_, ?_⟩
-  · obtain ⟨a, ha⟩ := nonempty_iff_ne_empty.2 h
+  · obtain ⟨a, ha⟩ := ne_empty_iff_nonempty.1 h
     rwa [Subsingleton.elim ⊥ a]
   · rintro rfl
     exact (Set.singleton_nonempty _).ne_empty.symm
@@ -104,12 +104,11 @@ theorem intersecting_iff_eq_empty_of_subsingleton [Subsingleton α] (s : Set α)
 /-- Maximal intersecting families are upper sets. -/
 protected theorem Intersecting.isUpperSet (hs : s.Intersecting)
     (h : ∀ t : Set α, t.Intersecting → s ⊆ t → s = t) : IsUpperSet s := by
-  classical
-    rintro a b hab ha
-    rw [h (Insert.insert b s) _ (subset_insert _ _)]
-    · exact mem_insert _ _
-    exact
-      hs.insert (mt (eq_bot_mono hab) <| hs.ne_bot ha) fun c hc hbc => hs ha hc <| hbc.mono_left hab
+  rintro a b hab ha
+  rw [h (Insert.insert b s) _ (subset_insert _ _)]
+  · exact mem_insert _ _
+  exact
+    hs.insert (mt (eq_bot_mono hab) <| hs.ne_bot ha) fun c hc hbc => hs ha hc <| hbc.mono_left hab
 
 /-- Maximal intersecting families are upper sets. Finset version. -/
 theorem Intersecting.isUpperSet' {s : Finset α} (hs : (s : Set α).Intersecting)
@@ -153,9 +152,8 @@ theorem Intersecting.disjoint_map_compl {s : Finset α} (hs : (s : Set α).Inter
 
 theorem Intersecting.card_le [Fintype α] {s : Finset α} (hs : (s : Set α).Intersecting) :
     2 * #s ≤ Fintype.card α := by
-  classical
-    refine (s.disjUnion _ hs.disjoint_map_compl).card_le_univ.trans_eq' ?_
-    rw [Nat.two_mul, card_disjUnion, card_map]
+  refine (s.disjUnion _ hs.disjoint_map_compl).card_le_univ.trans_eq' ?_
+  rw [Nat.two_mul, card_disjUnion, card_map]
 
 variable [Nontrivial α] [Fintype α] {s : Finset α}
 
@@ -179,7 +177,7 @@ theorem Intersecting.is_max_iff_card_eq (hs : (s : Set α).Intersecting) :
     have := h {⊤} (by rw [coe_singleton]; exact intersecting_singleton.2 top_ne_bot)
     rw [compl_bot] at ha
     rw [coe_eq_empty.1 ((hs.isUpperSet' h).top_notMem.1 ha.2)] at this
-    exact Finset.singleton_ne_empty _ (this <| Finset.empty_subset _).symm
+    exact (Finset.singleton_nonempty _).ne_empty (this <| Finset.empty_subset _).symm
 
 theorem Intersecting.exists_card_eq (hs : (s : Set α).Intersecting) :
     ∃ t, s ⊆ t ∧ 2 * #t = Fintype.card α ∧ (t : Set α).Intersecting := by

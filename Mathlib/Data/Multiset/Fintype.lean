@@ -5,8 +5,11 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Data.Fintype.Card
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Data.Fintype.Card
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Multiset coercion to type
@@ -66,7 +69,7 @@ instance instCoeSortMultisetType.instCoeOutToType : CoeOut m α :=
 theorem coe_mk {x : α} {i : Fin (m.count x)} : ↑(m.mkToType x i) = x :=
   rfl
 
-@[simp] lemma coe_mem {x : m} : ↑x ∈ m := Multiset.count_pos.mp (by have := x.2.2; lia)
+@[simp] lemma coe_mem {x : m} : ↑x ∈ m := Multiset.count_pos.mp (by have := x.2.isLt; lia)
 
 @[simp]
 protected theorem forall_coe (p : m → Prop) :
@@ -78,6 +81,7 @@ protected theorem exists_coe (p : m → Prop) :
     (∃ x : m, p x) ↔ ∃ (x : α) (i : Fin (m.count x)), p ⟨x, i⟩ :=
   Sigma.exists
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Fintype { p : α × ℕ | p.2 < m.count p.1 } :=
   Fintype.ofFinset
     (m.toFinset.disjiUnion
@@ -86,7 +90,7 @@ instance : Fintype { p : α × ℕ | p.2 < m.count p.1 } :=
     (by
       rintro ⟨x, i⟩
       simp_rw [Finset.mem_disjiUnion, Multiset.mem_toFinset, Finset.mem_map, Finset.mem_range,
-        Function.Embedding.coeFn_mk, Prod.mk_inj, Set.mem_setOf_eq]
+        Function.Embedding.coeFn_mk, Prod.mk_inj, Set.mem_ofPred_eq]
       simp only [← and_assoc, exists_eq_right, and_iff_right_iff_imp]
       exact fun h ↦ Multiset.count_pos.mp (by lia))
 
@@ -110,23 +114,28 @@ theorem mem_of_mem_toEnumFinset {p : α × ℕ} (h : p ∈ m.toEnumFinset) : p.1
 @[simp] lemma map_toEnumFinset_fst (m : Multiset α) : m.toEnumFinset.val.map Prod.fst = m := by
   ext a; simp [count_map, ← Finset.filter_val, eq_comm (a := a)]
 
+@[to_additive]
+theorem prod_map_eq_prod_toEnumFinset {M : Type*} [CommMonoid M] (m : Multiset α) (f : α → M) :
+    (m.map f).prod = ∏ i ∈ m.toEnumFinset, f i.1 := by
+  grind [m.map_toEnumFinset_fst, map_map, Finset.prod_map_val]
+
 @[simp] lemma image_toEnumFinset_fst (m : Multiset α) :
     m.toEnumFinset.image Prod.fst = m.toFinset := by
   rw [Finset.image, Multiset.map_toEnumFinset_fst]
 
 @[simp] lemma map_fst_le_of_subset_toEnumFinset {s : Finset (α × ℕ)} (hsm : s ⊆ m.toEnumFinset) :
-    s.1.map Prod.fst ≤ m := by
+    s.val.map Prod.fst ≤ m := by
   simp_rw [le_iff_count, count_map]
   rintro a
-  obtain ha | ha := (s.1.filter fun x ↦ a = x.1).card.eq_zero_or_pos
+  obtain ha | ha := (s.val.filter fun x ↦ a = x.1).card.eq_zero_or_pos
   · rw [ha]
     exact Nat.zero_le _
-  obtain ⟨n, han, hn⟩ : ∃ n ≥ card (s.1.filter fun x ↦ a = x.1) - 1, (a, n) ∈ s := by
+  obtain ⟨n, han, hn⟩ : ∃ n ≥ card (s.val.filter fun x ↦ a = x.1) - 1, (a, n) ∈ s := by
     by_contra! h
-    replace h : {x ∈ s | x.1 = a} ⊆ {a} ×ˢ .range (card (s.1.filter fun x ↦ a = x.1) - 1) := by
+    replace h : {x ∈ s | x.1 = a} ⊆ {a} ×ˢ .range (card (s.val.filter fun x ↦ a = x.1) - 1) := by
       simpa +contextual [forall_comm (β := _ = a), Finset.subset_iff,
         imp_not_comm, not_le, Nat.lt_sub_iff_add_lt] using h
-    have : card (s.1.filter fun x ↦ a = x.1) ≤ card (s.1.filter fun x ↦ a = x.1) - 1 := by
+    have : card (s.val.filter fun x ↦ a = x.1) ≤ card (s.val.filter fun x ↦ a = x.1) - 1 := by
       simpa [Finset.card, eq_comm] using Finset.card_mono h
     lia
   exact Nat.le_of_pred_lt (han.trans_lt <| by simpa using hsm hn)
@@ -160,11 +169,11 @@ def coeEquiv (m : Multiset α) : m ≃ m.toEnumFinset where
   toFun x :=
     ⟨m.coeEmbedding x, by
       rw [Multiset.mem_toEnumFinset]
-      exact x.2.2⟩
+      exact x.2.isLt⟩
   invFun x :=
-    ⟨x.1.1, x.1.2, by
+    ⟨x.val.1, x.val.2, by
       rw [← Multiset.mem_toEnumFinset]
-      exact x.2⟩
+      exact x.property⟩
 
 @[simp]
 theorem toEmbedding_coeEquiv_trans (m : Multiset α) :
@@ -194,6 +203,7 @@ theorem map_univ_comp_coe {β : Type*} (m : Multiset α) (f : α → β) :
     ((Finset.univ : Finset m).val.map (f ∘ (fun x : m ↦ (x : α)))) = m.map f := by
   rw [← Multiset.map_map, Multiset.map_univ_coe]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_univ {β : Type*} (m : Multiset α) (f : α → β) :
     ((Finset.univ : Finset m).val.map fun (x : m) ↦ f (x : α)) = m.map f := by
@@ -225,7 +235,7 @@ theorem prod_eq_prod_toEnumFinset [CommMonoid α] (m : Multiset α) :
 @[to_additive]
 theorem prod_toEnumFinset {β : Type*} [CommMonoid β] (m : Multiset α) (f : α → ℕ → β) :
     ∏ x ∈ m.toEnumFinset, f x.1 x.2 = ∏ x : m, f x x.2 := by
-  rw [Fintype.prod_equiv m.coeEquiv (fun x ↦ f x x.2) fun x ↦ f x.1.1 x.1.2]
+  rw [Fintype.prod_equiv m.coeEquiv (fun x ↦ f x x.2) fun x ↦ f x.val.1 x.val.2]
   · rw [← m.toEnumFinset.prod_coe_sort fun x ↦ f x.1 x.2]
   · intro x
     rfl
@@ -242,6 +252,7 @@ instance : IsEmpty (0 : Multiset α) := Fintype.card_eq_zero_iff.mp (by simp)
 
 instance : IsEmpty (∅ : Multiset α) := Fintype.card_eq_zero_iff.mp (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 `v ::ₘ m` is equivalent to `Option m` by mapping one `v` to `none` and everything else to `m`.
 -/
@@ -250,9 +261,9 @@ def consEquiv {v : α} : v ::ₘ m ≃ Option m where
     by_cases hv : x.1 = v
     · simp only [hv, true_and] at h ⊢
       apply lt_of_le_of_ne (Nat.le_of_lt_add_one _) h
-      convert! x.2.2 using 1
+      convert x.2.isLt using 1
       simp [hv]
-    · convert! x.2.2 using 1
+    · convert x.2.isLt using 1
       exact (count_cons_of_ne hv _).symm
     ⟩⟩
   invFun x := x.elim ⟨v, ⟨m.count v, by simp⟩⟩ (fun x ↦ ⟨x.1, x.2.castLE (count_le_count_cons ..)⟩)
@@ -270,7 +281,7 @@ def consEquiv {v : α} : v ::ₘ m ≃ Option m where
     · simp only [Option.elim_some, Fin.val_castLE, Fin.eta, Sigma.eta, dite_eq_ite,
         ite_eq_right_iff, reduceCtorEq, imp_false, not_and]
       rintro rfl
-      exact x.2.2.ne
+      exact x.2.isLt.ne
 
 @[simp]
 lemma consEquiv_symm_none {v : α} :
@@ -316,10 +327,10 @@ def mapEquivAux (m : Multiset α) (f : α → β) :
 One of the possible equivalences from `Multiset.mapEquivAux`, selected using choice.
 -/
 noncomputable def mapEquiv (s : Multiset α) (f : α → β) : s ≃ s.map f :=
-  (Multiset.mapEquivAux s f).out.1
+  (Multiset.mapEquivAux s f).out.val
 
 @[simp]
 theorem mapEquiv_apply (s : Multiset α) (f : α → β) (v : s) : s.mapEquiv f v = f v :=
-  (Multiset.mapEquivAux s f).out.2 v
+  (Multiset.mapEquivAux s f).out.property v
 
 end Multiset

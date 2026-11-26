@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.Group.OrderIso
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Definitions of Archimedean monoids
 
@@ -71,7 +74,7 @@ theorem exists_nat_ge (x : R) : ∃ n : ℕ, x ≤ n := by
 end OrderedSemiring
 
 section StrictOrderedSemiring
-variable [Semiring R] [PartialOrder R] [IsStrictOrderedRing R] [Archimedean R] {y : R}
+variable [Semiring R] [PartialOrder R] [IsStrictOrderedRing R] [Archimedean R]
 
 theorem exists_nat_gt (x : R) : ∃ n : ℕ, x < n :=
   (exists_lt_nsmul zero_lt_one x).imp fun n hn ↦ by rwa [← nsmul_one]

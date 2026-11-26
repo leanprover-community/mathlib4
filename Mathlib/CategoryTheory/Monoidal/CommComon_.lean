@@ -6,8 +6,9 @@ Authors: Jacob Reinhold
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Comon_
-public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-public import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The category of commutative comonoids in a braided monoidal category.
@@ -29,7 +30,7 @@ universe v₁ v₂ v₃ u₁ u₂ u₃ u
 
 namespace CategoryTheory
 
-open MonoidalCategory ComonObj Functor
+open MonoidalCategory ComonObj
 
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C] [BraidedCategory.{v₁} C]
 
@@ -66,8 +67,6 @@ def trivial : CommComon C := mk (𝟙_ C)
 
 instance : Inhabited (CommComon C) :=
   ⟨trivial C⟩
-
-variable {M : CommComon C}
 
 instance : Category (CommComon C) :=
   inferInstanceAs (Category (InducedCategory _ CommComon.toComon))

@@ -15,6 +15,7 @@ Provides a recursor for FinEnum types like `Fintype.truncRecEmptyOption`, but ca
 non-truncated data.
 
 ## TODO
+
 * recreate rest of `Mathlib/Data/Fintype/Option.lean`
 -/
 
@@ -24,7 +25,7 @@ namespace FinEnum
 universe u v
 
 /-- Inserting an `Option.none` anywhere in an enumeration yields another enumeration. -/
-@[implicit_reducible]
+@[instance_reducible]
 def insertNone (α : Type u) [FinEnum α] (i : Fin (card α + 1)) : FinEnum (Option α) where
   card := card α + 1
   equiv := equiv.optionCongr.trans <| finSuccEquiv' i |>.symm

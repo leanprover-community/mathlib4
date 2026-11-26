@@ -23,8 +23,6 @@ namespace Stream'.WSeq
 
 variable {α : Type u}
 
-open Function
-
 /-- A weak sequence is *productive* if it never stalls forever - there are
 always a finite number of `think`s between `cons` constructors.
 The sequence itself is allowed to be infinite though. -/
@@ -32,7 +30,7 @@ class Productive (s : WSeq α) : Prop where
   get?_terminates : ∀ n, (get? s n).Terminates
 
 theorem productive_iff (s : WSeq α) : Productive s ↔ ∀ n, (get? s n).Terminates :=
-  ⟨fun h => h.1, fun h => ⟨h⟩⟩
+  ⟨fun h => h.get?_terminates, fun h => ⟨h⟩⟩
 
 instance get?_terminates (s : WSeq α) [h : Productive s] : ∀ n, (get? s n).Terminates :=
   h.get?_terminates

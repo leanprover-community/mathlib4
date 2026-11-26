@@ -5,7 +5,6 @@ Authors: Bhavik Mehta, Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Functor.Currying
 public import Mathlib.CategoryTheory.Subobject.FactorThru
 public import Mathlib.CategoryTheory.Subobject.WellPowered
 public import Mathlib.Data.Finset.Lattice.Fold
@@ -27,7 +26,6 @@ noncomputable section
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
 
 variable {C : Type u₁} [Category.{v₁} C] {X Y Z : C}
-variable {D : Type u₂} [Category.{v₂} D]
 
 namespace CategoryTheory
 
@@ -129,7 +127,6 @@ section Inf
 
 variable [HasPullbacks C]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- When `[HasPullbacks C]`, `MonoOver A` has "intersections", functorial in both arguments.
 
 As `MonoOver A` is only a preorder, this doesn't satisfy the axioms of `SemilatticeInf`,
@@ -156,7 +153,6 @@ def infLERight {A : C} (f g : MonoOver A) : (inf.obj f).obj g ⟶ g :=
   homMk _ pullback.condition
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- A morphism version of the `le_inf` axiom. -/
 def leInf {A : C} (f g h : MonoOver A) : (h ⟶ f) → (h ⟶ g) → (h ⟶ (inf.obj f).obj g) :=
   fun k₁ k₂ ↦ homMk (pullback.lift k₂.hom.left k₁.hom.left (by simp))
@@ -185,7 +181,6 @@ def leSupRight {A : C} (f g : MonoOver A) : g ⟶ (sup.obj f).obj g := by
   erw [Category.assoc, image.fac, coprod.inr_desc]
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 /-- A morphism version of `sup_le`. -/
 def supLe {A : C} (f g h : MonoOver A) : (f ⟶ h) → (g ⟶ h) → ((sup.obj f).obj g ⟶ h) := by
   intro k₁ k₂
@@ -207,7 +202,7 @@ section OrderTop
 instance orderTop {X : C} : OrderTop (Subobject X) where
   top := Quotient.mk'' ⊤
   le_top := by
-    refine Quotient.ind' fun f => ?_
+    refine Quotient.ind fun f => ?_
     exact ⟨MonoOver.leTop f⟩
 
 instance {X : C} : Inhabited (Subobject X) :=
@@ -278,7 +273,7 @@ variable [HasInitial C] [InitialMonoClass C]
 instance orderBot {X : C} : OrderBot (Subobject X) where
   bot := Quotient.mk'' ⊥
   bot_le := by
-    refine Quotient.ind' fun f => ?_
+    refine Quotient.ind fun f => ?_
     exact ⟨MonoOver.botLE f⟩
 
 theorem bot_eq_initial_to {B : C} : (⊥ : Subobject B) = Subobject.mk (initial.to B) :=
@@ -351,13 +346,13 @@ def inf {A : C} : Subobject A ⥤ Subobject A ⥤ Subobject A :=
   ThinSkeleton.map₂ MonoOver.inf
 
 theorem inf_le_left {A : C} (f g : Subobject A) : (inf.obj f).obj g ≤ f :=
-  Quotient.inductionOn₂' f g fun _ _ => ⟨MonoOver.infLELeft _ _⟩
+  Quotient.inductionOn₂ f g fun _ _ => ⟨MonoOver.infLELeft _ _⟩
 
 theorem inf_le_right {A : C} (f g : Subobject A) : (inf.obj f).obj g ≤ g :=
-  Quotient.inductionOn₂' f g fun _ _ => ⟨MonoOver.infLERight _ _⟩
+  Quotient.inductionOn₂ f g fun _ _ => ⟨MonoOver.infLERight _ _⟩
 
 theorem le_inf {A : C} (h f g : Subobject A) : h ≤ f → h ≤ g → h ≤ (inf.obj f).obj g :=
-  Quotient.inductionOn₃' h f g
+  Quotient.inductionOn₃ h f g
     (by
       rintro f g h ⟨k⟩ ⟨l⟩
       exact ⟨MonoOver.leInf _ _ _ k l⟩)
@@ -391,7 +386,7 @@ theorem inf_factors {A B : C} {X Y : Subobject B} (f : A ⟶ B) :
     (X ⊓ Y).Factors f ↔ X.Factors f ∧ Y.Factors f :=
   ⟨fun h => ⟨factors_left_of_inf_factors h, factors_right_of_inf_factors h⟩, by
     revert X Y
-    apply Quotient.ind₂'
+    apply Quotient.ind₂
     rintro X Y ⟨⟨g₁, rfl⟩, ⟨g₂, hg₂⟩⟩
     exact ⟨_, pullback.lift_snd_assoc _ _ hg₂ _⟩⟩
 
@@ -441,7 +436,14 @@ theorem finset_inf_arrow_factors {I : Type*} {B : C} (s : Finset I) (P : I → S
 theorem inf_eq_map_pullback' {A : C} (f₁ : MonoOver A) (f₂ : Subobject A) :
     (Subobject.inf.obj (Quotient.mk'' f₁)).obj f₂ =
       (Subobject.map f₁.arrow).obj ((Subobject.pullback f₁.arrow).obj f₂) := by
-  induction f₂ using Quotient.inductionOn'
+  induction f₂ using Quotient.inductionOn
+  rfl
+
+theorem exists_pullback_eq_inf_of_mono [HasImages C] (f : X ⟶ Y) [Mono f] (Y' : Subobject Y) :
+    («exists» f).obj ((pullback f).obj Y') = Y' ⊓ mk f := by
+  rw [exists_iso_map]
+  change (map (MonoOver.mk f).arrow).obj ((pullback (MonoOver.mk f).arrow).obj Y') = _
+  rw [← inf_eq_map_pullback', inf_comm]
   rfl
 
 theorem inf_eq_map_pullback {A : C} (f₁ : Subobject A) (f₂ : Subobject A) :
@@ -465,7 +467,7 @@ theorem inf_def {B : C} (m m' : Subobject B) : m ⊓ m' = (inf.obj m).obj m' :=
 theorem inf_pullback {X Y : C} (g : X ⟶ Y) (f₁ f₂) :
     (pullback g).obj (f₁ ⊓ f₂) = (pullback g).obj f₁ ⊓ (pullback g).obj f₂ := by
   revert f₁
-  apply Quotient.ind'
+  apply Quotient.ind
   intro f₁
   erw [inf_def, inf_def, inf_eq_map_pullback', inf_eq_map_pullback', ← pullback_comp, ←
     map_pullback pullback.condition (pullbackIsPullback f₁.arrow g), ← pullback_comp,
@@ -476,7 +478,7 @@ theorem inf_pullback {X Y : C} (g : X ⟶ Y) (f₁ f₂) :
 theorem inf_map {X Y : C} (g : Y ⟶ X) [Mono g] (f₁ f₂) :
     (map g).obj (f₁ ⊓ f₂) = (map g).obj f₁ ⊓ (map g).obj f₂ := by
   revert f₁
-  apply Quotient.ind'
+  apply Quotient.ind
   intro f₁
   erw [inf_def, inf_def, inf_eq_map_pullback', inf_eq_map_pullback', ← map_comp]
   dsimp
@@ -494,10 +496,10 @@ def sup {A : C} : Subobject A ⥤ Subobject A ⥤ Subobject A :=
 
 instance semilatticeSup {B : C} : SemilatticeSup (Subobject B) where
   sup := fun m n => (sup.obj m).obj n
-  le_sup_left := fun m n => Quotient.inductionOn₂' m n fun _ _ => ⟨MonoOver.leSupLeft _ _⟩
-  le_sup_right := fun m n => Quotient.inductionOn₂' m n fun _ _ => ⟨MonoOver.leSupRight _ _⟩
+  le_sup_left := fun m n => Quotient.inductionOn₂ m n fun _ _ => ⟨MonoOver.leSupLeft _ _⟩
+  le_sup_right := fun m n => Quotient.inductionOn₂ m n fun _ _ => ⟨MonoOver.leSupRight _ _⟩
   sup_le := fun m n k =>
-    Quotient.inductionOn₃' m n k fun _ _ _ ⟨i⟩ ⟨j⟩ => ⟨MonoOver.supLe _ _ _ i j⟩
+    Quotient.inductionOn₃ m n k fun _ _ _ ⟨i⟩ ⟨j⟩ => ⟨MonoOver.supLe _ _ _ i j⟩
 
 theorem sup_factors_of_factors_left {A B : C} {X Y : Subobject B} {f : A ⟶ B} (P : X.Factors f) :
     (X ⊔ Y).Factors f :=
@@ -506,6 +508,31 @@ theorem sup_factors_of_factors_left {A B : C} {X Y : Subobject B} {f : A ⟶ B} 
 theorem sup_factors_of_factors_right {A B : C} {X Y : Subobject B} {f : A ⟶ B} (P : Y.Factors f) :
     (X ⊔ Y).Factors f :=
   factors_of_le f le_sup_right P
+
+/-- If `C` has binary coproducts and `f g : Subobject A`, then `f ⨿ g ⟶ A` factors as
+  `f ⨿ g ⟶ f ⊔ g ⟶ A` -/
+@[simps, implicit_reducible]
+def supMonoFactorisation {A : C} (f g : Subobject A) :
+    MonoFactorisation (coprod.desc f.arrow g.arrow) where
+  I := underlying.obj (f ⊔ g)
+  m := (f ⊔ g).arrow
+  e := coprod.desc (f.ofLE (f ⊔ g) le_sup_left) (g.ofLE (f ⊔ g) le_sup_right)
+
+/-- If `C` has binary coproducts, then `f ⊔ g` is an image of `f ⨿ g ⟶ A`. -/
+def supIsImage {A : C} (f g : Subobject A) :
+    IsImage (supMonoFactorisation f g) where
+  lift F := by
+    refine (f ⊔ g).ofLEMk F.m (sup_le ?_ ?_)
+    · refine le_mk_of_comm (coprod.inl ≫ F.e) ?_
+      simp only [assoc, MonoFactorisation.fac, coprod.inl_desc]
+    · refine le_mk_of_comm (coprod.inr ≫ F.e) ?_
+      simp only [assoc, MonoFactorisation.fac, coprod.inr_desc]
+
+/-- If `C` has binary coproducts, then `f ⊔ g ≅ image (f ⨿ g ⟶ A)`. -/
+@[simps!]
+def supIsoImage {A : C} (f g : Subobject A) :
+    underlying.obj (f ⊔ g) ≅ image (coprod.desc f.arrow g.arrow) :=
+  IsImage.isoExt (supIsImage ..) <| Image.isImage _
 
 variable [HasInitial C] [InitialMonoClass C]
 
@@ -662,7 +689,6 @@ theorem symm_apply_mem_iff_mem_image {α β : Type*} (e : α ≃ β) (s : Set α
     rintro ⟨a, m, rfl⟩
     simpa using m⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sSup_le {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈ s, g ≤ f) :
     sSup s ≤ f := by
   fapply le_of_comm
@@ -730,7 +756,7 @@ def subobjectOrderIso {X : C} (Y : Subobject X) : Subobject (Y : C) ≃o Set.Iic
   toFun Z :=
     ⟨Subobject.mk (Z.arrow ≫ Y.arrow),
       Set.mem_Iic.mpr (le_of_comm ((underlyingIso _).hom ≫ Z.arrow) (by simp))⟩
-  invFun Z := Subobject.mk (ofLE _ _ Z.2)
+  invFun Z := Subobject.mk (ofLE _ _ Z.property)
   left_inv Z := mk_eq_of_comm _ (underlyingIso _) (by cat_disch)
   right_inv Z := Subtype.ext (mk_eq_of_comm _ (underlyingIso _) (by simp [← Iso.eq_inv_comp]))
   map_rel_iff' {W Z} := by

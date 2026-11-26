@@ -21,6 +21,7 @@ With this convention, this transformation is also equivalent to `AffineSubspace.
 when `r` is a unit.
 
 ## Main declarations
+
 * `AffineSubspace.shift` defines the shift transformation.
 * `AffineSubspace.shift_eq` shows the shift transformation is equivalent to translation.
 * `AffineSubspace.shift_eq_map_homothety` shows the shift transformation is equivalent to homothety.
@@ -37,7 +38,7 @@ namespace AffineSubspace
 section Ring
 variable [Ring k] [AddCommGroup V] [AddTorsor V P] [Module k V]
 
-open Classical in
+open scoped Classical in
 /-- `AffineSubspace.shift s c r` is an affine subspace parallel to `s`, where an arbitrary point on
 `s` is moved towards `c` with linear interpolation by `r`. When `r = 0`, that point is moved onto
 `c`. When `r = 1`, that point stays at the original position. A different choice of the point will
@@ -59,6 +60,7 @@ theorem direction_shift (s : AffineSubspace k P) (c : P) (r : k) :
   have h : Nonempty s := by simpa using! h
   simp [shift, h]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem shift_top (c : P) (r : k) : shift ⊤ c r = ⊤ := by
   simp [shift, AffineEquiv.surjective]
@@ -96,6 +98,15 @@ theorem shift_one (s : AffineSubspace k P) (c : P) : s.shift c 1 = s := by
   · simp [h]
   have h : Nonempty s := by simpa using! h
   simp [shift, h]
+
+theorem vadd_mem_shift {s : AffineSubspace k P} {p : P} (hp : p ∈ s) (c : P) (r : k) :
+    (1 - r) • (c -ᵥ p) +ᵥ p ∈ s.shift c r := by
+  simpa [shift_eq ⟨p, hp⟩] using hp
+
+theorem lineMap_mem_shift {s : AffineSubspace k P} {p : P} (hp : p ∈ s) (c : P) (r : k) :
+    lineMap c p r ∈ s.shift c r := by
+  rw [← lineMap_apply_one_sub, lineMap_apply]
+  exact vadd_mem_shift hp c r
 
 /-- Consider a point `A` with barycentric coordinates associated to a collection of points `P`.
 If the coordinate associated to one of the points `Pᵢ` is `r`, then the point `A` is on the span
@@ -230,6 +241,7 @@ private theorem closedInterior_inter_shift_aux {n : ℕ} (i : Fin n) {x : k} (hx
     intro j
     by_cases hji : j = i <;> aesop
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A parallel cross-section of a simplex is the image of the base under a homothety. -/
 theorem closedInterior_inter_shift_eq_homothety {n : ℕ} [NeZero n] (s : Affine.Simplex k P n)
     (i : Fin (n + 1)) {x : k} (hx : x ∈ Set.Icc 0 1) :

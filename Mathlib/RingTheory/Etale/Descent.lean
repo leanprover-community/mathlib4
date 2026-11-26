@@ -5,9 +5,10 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.RingTheory.RingHom.Etale
 public import Mathlib.RingTheory.Finiteness.Descent
-public import Mathlib.RingTheory.Extension.Cotangent.BaseChange
+public import Mathlib.RingTheory.RingHom.Etale
+
+import Mathlib.RingTheory.Extension.Cotangent.BaseChange
 
 /-!
 # Etale descends along faithfully flat ring maps
@@ -23,14 +24,15 @@ base change.
 
 We also provide the corresponding `RingHom.CodescendsAlong` lemmas.
 
-## TODOs
+## TODO
 
 - The lemma `Algebra.FormallySmooth.of_formallySmooth_tensorProduct_of_faithfullyFlat` has an
   additional `Algebra.FinitePresentation` assumption, because the proof uses that a flat module
   of finite presentation is projective and the former descends. This also holds without
   the finite presentation assumption, but requires showing that projectivity descends
   along faithfully flat base change, which is due to Raynaud and Gruson
-  (see https://stacks.math.columbia.edu/tag/058B).
+  (see https://stacks.math.columbia.edu/tag/058B). See `Wanted/RingTheory/Etale/Descent.lean`
+  for the precise statement.
 -/
 
 public section
@@ -51,14 +53,6 @@ lemma FormallyUnramified.of_formallyUnramified_tensorProduct_of_faithfullyFlat
     (KaehlerDifferential.tensorKaehlerEquivBase R T S (T ⊗[R] S)).subsingleton
   exact Module.FaithfullyFlat.lTensor_reflects_triviality R T _
 
-/-- Formally smooth algebras descend along faithfully flat base change. See the TODO
-in the module docstring. -/
-proof_wanted FormallySmooth.of_formallySmooth_tensorProduct_of_faithfullyFlat
-    {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
-    (T : Type*) [CommRing T] [Algebra R T] [Module.FaithfullyFlat R T]
-    [FormallySmooth T (T ⊗[R] S)] :
-    FormallySmooth R S
-
 lemma Smooth.of_smooth_tensorProduct_of_faithfullyFlat [Smooth T (T ⊗[R] S)] :
     Smooth R S := by
   have : Algebra.FinitePresentation R S := .of_finitePresentation_tensorProduct_of_faithfullyFlat T
@@ -67,7 +61,7 @@ lemma Smooth.of_smooth_tensorProduct_of_faithfullyFlat [Smooth T (T ⊗[R] S)] :
   constructor
   · let _ : Algebra T (S ⊗[R] T) := TensorProduct.rightAlgebra
     let e : S ⊗[R] T ≃ₐ[T] T ⊗[R] S :=
-      .ofRingEquiv (f := TensorProduct.comm R S T) <| by simp [RingHom.algebraMap_toAlgebra]
+      .ofCommutes (e := TensorProduct.comm R S T) <| by simp [RingHom.algebraMap_toAlgebra]
     have : FormallySmooth T (S ⊗[R] T) := .of_equiv e.symm
     let e' : (S ⊗[R] T) ⊗[S] Ω[S⁄R] ≃ₗ[S ⊗[R] T] Ω[S ⊗[R] T⁄T] :=
       KaehlerDifferential.tensorKaehlerEquiv R T S (S ⊗[R] T)

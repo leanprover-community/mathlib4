@@ -9,6 +9,9 @@ public import Mathlib.LinearAlgebra.Matrix.Charpoly.LinearMap
 public import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
 public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integral closure of a subring.
 
@@ -24,7 +27,7 @@ Let `R` be a `CommRing` and let `A` be an R-algebra.
 @[expose] public section
 
 
-open Polynomial Submodule
+open Submodule
 
 section
 
@@ -36,6 +39,10 @@ theorem Subalgebra.isIntegral_iff (S : Subalgebra R B) :
     Algebra.IsIntegral R S ↔ ∀ x ∈ S, IsIntegral R x :=
   Algebra.isIntegral_def.trans <| .trans
     (forall_congr' fun _ ↦ (isIntegral_algHom_iff S.val Subtype.val_injective).symm) Subtype.forall
+
+instance Subalgebra.isIntegral [Algebra.IsIntegral R B] (S : Subalgebra R B) :
+    Algebra.IsIntegral R S :=
+  S.isIntegral_iff.mpr fun x _ => Algebra.IsIntegral.isIntegral x
 
 section
 
@@ -114,11 +121,11 @@ theorem isIntegral_of_smul_mem_submodule [IsDomain A] {M : Type*} [AddCommGroup 
     change Function.Injective f.toLinearMap
     rw [← LinearMap.ker_eq_bot, eq_bot_iff]
     intro s hs
-    have : s.1 • a = 0 := congr_arg Subtype.val (LinearMap.congr_fun hs ⟨a, ha₁⟩)
+    have : s.val • a = 0 := congr($hs ⟨a, ha₁⟩)
     exact Subtype.ext ((smul_eq_zero_iff_left ha₂).1 this)
   change IsIntegral R (A'.val ⟨x, hx⟩)
   rw [isIntegral_algHom_iff A'.val Subtype.val_injective, ← isIntegral_algHom_iff f this]
-  haveI : Module.Finite R N := by rwa [Module.Finite.iff_fg]
+  have : Module.Finite R N := by rwa [Module.Finite.iff_fg]
   apply Algebra.IsIntegral.isIntegral
 
 variable {f}
@@ -126,7 +133,7 @@ variable {f}
 @[stacks 00GK]
 theorem RingHom.Finite.to_isIntegral (h : f.Finite) : f.IsIntegral :=
   letI := f.toAlgebra
-  fun _ ↦ IsIntegral.of_mem_of_fg ⊤ h.1 _ trivial
+  fun _ ↦ IsIntegral.of_mem_of_fg ⊤ h.fg_top _ trivial
 
 alias RingHom.IsIntegral.of_finite := RingHom.Finite.to_isIntegral
 
@@ -134,7 +141,7 @@ variable (f)
 
 theorem RingHom.IsIntegralElem.of_mem_closure {x y z : S} (hx : f.IsIntegralElem x)
     (hy : f.IsIntegralElem y) (hz : z ∈ Subring.closure ({x, y} : Set S)) : f.IsIntegralElem z := by
-  letI : Algebra R S := f.toAlgebra
+  let : Algebra R S := f.toAlgebra
   have := (IsIntegral.fg_adjoin_singleton hx).mul (IsIntegral.fg_adjoin_singleton hy)
   rw [← Algebra.adjoin_union_coe_submodule, Set.singleton_union] at this
   exact
@@ -202,10 +209,11 @@ theorem IsIntegral.smul {R} [CommSemiring R] [Algebra R B] [Algebra S B] [Algebr
   .of_mem_of_fg _ hx.fg_adjoin_singleton _ <| by
     rw [← algebraMap_smul S]; apply Subalgebra.smul_mem; exact Algebra.subset_adjoin rfl
 
-theorem isIntegral_intCast (a : ℤ) : IsIntegral ℤ (a : B) :=
-  isIntegral_algebraMap
+theorem isIntegral_intCast (n : ℤ) : IsIntegral R (n : B) := by
+  rw [← map_intCast (_ : R →+* B) n]
+  exact isIntegral_algebraMap
 
-theorem isIntegral_natCast (a : ℕ) : IsIntegral ℤ (a : B) := by
+theorem isIntegral_natCast (a : ℕ) : IsIntegral R (a : B) := by
   rw [← Int.cast_natCast]
   exact isIntegral_intCast a
 
@@ -251,7 +259,7 @@ variable (R A B)
 instance Algebra.IsIntegral.tensorProduct [CommRing B]
     [Algebra R A] [Algebra R B] [int : Algebra.IsIntegral R B] :
     Algebra.IsIntegral A (A ⊗[R] B) where
-  isIntegral p := p.induction_on isIntegral_zero (fun _ s ↦ .tmul _ <| int.1 s) (fun _ _ ↦ .add)
+  isIntegral p := p.inductionOn (fun _ s ↦ .tmul _ <| int.isIntegral s) (fun _ _ ↦ .add)
 
 end TensorProduct
 
@@ -261,7 +269,7 @@ variable {G R K : Type*} [CommRing R] [CommRing K] [Algebra R K]
   [Group G] [MulSemiringAction G K] [SMulCommClass G R K]
 
 instance : MulSemiringAction G (integralClosure R K) where
-  smul := fun g x ↦ ⟨g • (x : K), x.2.map (MulSemiringAction.toAlgHom R K g)⟩
+  smul := fun g x ↦ ⟨g • (x : K), x.property.map (MulSemiringAction.toAlgHom R K g)⟩
   one_smul x := by ext; exact one_smul G (x : K)
   mul_smul g h x := by ext; exact mul_smul g h (x : K)
   smul_zero g := by ext; exact smul_zero g

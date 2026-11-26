@@ -52,7 +52,6 @@ When `M = N` and `φ = MonoidHom.id M`, we provide the backward compatible notat
 The notation for `MulActionHom` and `AddActionHom` is the same, because it is unlikely
 that it could lead to confusion — unless one needs types `M` and `X` with simultaneous
 instances of `Mul M`, `Add M`, `SMul M X` and `VAdd M X`…
-
 -/
 
 @[expose] public section
@@ -141,7 +140,7 @@ abbrev MulActionHomClass (F : Type*) (M : outParam Type*)
     (X Y : outParam Type*) [SMul M X] [SMul M Y] [FunLike F X Y] :=
   MulActionSemiHomClass F (@id M) X Y
 
-@[to_additive] instance : FunLike (MulActionHom φ X Y) X Y where
+@[to_additive (attr := macro_inline)] instance : FunLike (MulActionHom φ X Y) X Y where
   coe := MulActionHom.toFun
   coe_injective f g h := by cases f; cases g; congr
 
@@ -228,7 +227,7 @@ lemma _root_.FaithfulSMul.of_injective
 variable {ψ χ} (M N)
 
 /-- The identity map as an equivariant map. -/
-@[to_additive (attr := implicit_reducible) /-- The identity map as an equivariant map. -/]
+@[to_additive (attr := instance_reducible) /-- The identity map as an equivariant map. -/]
 protected def id : X →[M] X :=
   ⟨fun x ↦ x, fun _ _ => rfl⟩
 
@@ -249,7 +248,7 @@ variable {φ ψ χ X Y Z}
 -- attribute [instance] CompTriple.id_comp CompTriple.comp_id
 
 /-- Composition of two equivariant maps. -/
-@[to_additive (attr := implicit_reducible) /-- Composition of two equivariant maps. -/]
+@[to_additive (attr := instance_reducible) /-- Composition of two equivariant maps. -/]
 def comp (g : Y →ₑ[ψ] Z) (f : X →ₑ[φ] Y) [κ : CompTriple φ ψ χ] :
     X →ₑ[χ] Z :=
   ⟨fun x ↦ g (f x), fun m x =>
@@ -413,8 +412,6 @@ end MulActionHom
 
 namespace MulActionHom
 
-section
-
 variable {R M N X Y : Type*} {σ : M → N}
 
 attribute [local simp] map_smulₛₗ smul_sub
@@ -535,7 +532,47 @@ instance [SMul M X] [Monoid N] [Ring Y] [MulSemiringAction N Y] :
 instance [SMul M X] [Monoid N] [CommRing Y] [MulSemiringAction N Y] :
     CommRing (X →ₑ[σ] Y) where
 
-end
+namespace End
+
+/-- For a monoid `M` acting on a type `X`, the `M`-equivariant functions from `X` to itself
+form a monoid under composition. -/
+@[to_additive /-- For an additive monoid `M` acting on a type `X`, the `M`-equivariant functions
+from `X` to itself form an additive monoid under composition. -/]
+local instance [SMul M X] : Monoid (X →[M] X) where
+  mul f g := f.comp g
+  mul_assoc _ _ _ := rfl
+  one := .id _
+  one_mul _ := rfl
+  mul_one _ := rfl
+
+@[to_additive (attr := simp)] theorem mul_def [SMul M X] {f g : X →[M] X} : f * g = f.comp g := rfl
+
+/-- The `M`-equivariant functions from a monoid `M` to itself are exactly
+right multiplications by elements of `M`. See also `RingEquiv.moduleEndSelf`. -/
+@[to_additive (attr := simps)
+/-- The `M`-equivariant functions from an additive monoid `M` to itself are exactly
+right additions by elements of `M`. -/]
+def equivMulOpposite [Monoid M] : (M →[M] M) ≃* Mᵐᵒᵖ where
+  toFun f := .op (f 1)
+  invFun m := .mk (· * m.unop) fun _ _ ↦ mul_assoc ..
+  left_inv f := by ext m; change m • f 1 = _; rw [← map_smul, smul_eq_mul, mul_one]
+  right_inv := mul_one
+  map_mul' f g := congr_arg MulOpposite.op <| by
+    dsimp [← smul_eq_mul]; simp_rw [← map_smul, smul_eq_mul, mul_one]; rfl
+
+/-- The functions from a monoid `M` to itself equivariant with respect to the right `M`-action
+are exactly left multiplications by elements of `M`. See also `RingEquiv.moduleEndSelfOp`. -/
+@[to_additive (attr := simps)
+/-- The functions from an additive monoid `M` to itself equivariant with respect to
+the right `M`-action are exactly left additions by elements of `M`. -/]
+def mulOppositeEquiv [Monoid M] : (M →[Mᵐᵒᵖ] M) ≃* M where
+  toFun f := f 1
+  invFun m := .mk (m * ·) fun _ _ ↦ (mul_assoc ..).symm
+  left_inv f := by ext m; change MulOpposite.op m • f 1 = _; simp [← map_smul]
+  right_inv := mul_one
+  map_mul' f g := show _ = MulOpposite.op (g 1) • f 1 by simp [← map_smul]
+
+end End
 
 end MulActionHom
 
@@ -553,7 +590,7 @@ variable (C : Type*) [Monoid C] [MulDistribMulAction P C]
 variable (A' : Type*) [Group A'] [MulDistribMulAction M A']
 variable (B' : Type*) [Group B'] [MulDistribMulAction N B']
 
-set_option linter.translateOverwrite false in
+set_option linter.translate.overwrite false in
 attribute [to_additive existing (dont_translate := M) DistribMulAction]
   MulDistribMulAction
 
@@ -562,7 +599,7 @@ structure DistribMulActionHom (A : Type*) [AddMonoid A] [DistribMulAction M A] (
     [AddMonoid B] [DistribMulAction N B] extends A →ₑ[φ] B, A →+ B
 
 /-- Equivariant monoid homomorphisms. -/
-@[to_additive (dont_translate := M N) DistribMulActionHom]
+@[to_additive (dont_translate := M N) DistribMulActionHom, to_additive_dont_translate]
 structure MulDistribMulActionHom extends A →ₑ[φ] B, A →* B
 
 /-- Reinterpret an equivariant additive monoid homomorphism as an additive monoid homomorphism. -/
@@ -634,7 +671,7 @@ abbrev MulDistribMulActionHomClass (F : Type*) (M : outParam Type*)
 
 namespace MulDistribMulActionHom
 
-@[to_additive (dont_translate := M N)]
+@[to_additive (attr := macro_inline) (dont_translate := M N)]
 instance : FunLike (A →ₑ*[φ] B) A B where
   coe m := m.toFun
   coe_injective f g h := by
@@ -732,7 +769,7 @@ protected theorem map_smulₑ (f : A →ₑ*[φ] B) (m : M) (x : A) : f (m • x
 variable (M)
 
 /-- The identity map as an equivariant monoid homomorphism. -/
-@[to_additive (dont_translate := M) (attr := implicit_reducible)
+@[to_additive (dont_translate := M) (attr := instance_reducible)
 /-- The identity map as an equivariant additive monoid homomorphism. -/]
 protected def id : A →*[M] A :=
   ⟨MulActionHom.id _, rfl, fun _ _ => rfl⟩
@@ -743,30 +780,35 @@ theorem id_apply (x : A) : MulDistribMulActionHom.id M x = x := by
 
 variable {M C ψ χ}
 
-instance _root_.DistriMulActionHom.instZero {A : Type*} [AddMonoid A] [DistribMulAction M A]
+instance _root_.DistribMulActionHom.instZero {A : Type*} [AddMonoid A] [DistribMulAction M A]
     {B : Type*} [AddMonoid B] [DistribMulAction N B] : Zero (A →ₑ+[φ] B) :=
   ⟨{ (0 : A →+ B) with map_smul' := fun m _ => by simp }⟩
 
-@[to_additive (dont_translate := M)]
+@[to_additive (dont_translate := M) instOneId]
 instance : One (A →*[M] A) :=
   ⟨MulDistribMulActionHom.id M⟩
 
 @[simp]
-theorem _root_.DistriMulActionHom.coe_zero {A : Type*} [AddMonoid A] [DistribMulAction M A]
+theorem _root_.DistribMulActionHom.coe_zero {A : Type*} [AddMonoid A] [DistribMulAction M A]
     {B : Type*} [AddMonoid B] [DistribMulAction N B] : ⇑(0 : A →ₑ+[φ] B) = 0 :=
   rfl
 
-@[to_additive (attr := simp) (dont_translate := M)]
+@[to_additive (attr := simp) (dont_translate := M) coe_one]
 theorem coe_one : ⇑(1 : A →*[M] A) = id :=
   rfl
 
-theorem _root_.DistriMulActionHom.zero_apply {A : Type*} [AddMonoid A] [DistribMulAction M A]
+theorem _root_.DistribMulActionHom.zero_apply {A : Type*} [AddMonoid A] [DistribMulAction M A]
     {B : Type*} [AddMonoid B] [DistribMulAction N B] (a : A) : (0 : A →ₑ+[φ] B) a = 0 :=
   rfl
 
-@[to_additive (dont_translate := M)]
+@[to_additive (dont_translate := M) one_apply]
 theorem one_apply (a : A) : (1 : A →*[M] A) a = a :=
   rfl
+
+@[deprecated (since := "2026-11-21")]
+protected alias _root_.DistriMulActionHom.coe_zero := DistribMulActionHom.coe_zero
+@[deprecated (since := "2026-11-21")]
+protected alias _root_.DistriMulActionHom.zero_apply := DistribMulActionHom.zero_apply
 
 instance {A : Type*} [AddMonoid A] [DistribMulAction M A]
     {B : Type*} [AddMonoid B] [DistribMulAction N B] :
@@ -774,7 +816,7 @@ instance {A : Type*} [AddMonoid A] [DistribMulAction M A]
   ⟨0⟩
 
 /-- Composition of two equivariant monoid homomorphisms. -/
-@[to_additive (dont_translate := M N P) (attr := implicit_reducible)
+@[to_additive (dont_translate := M N P) (attr := instance_reducible)
 /-- Composition of two equivariant additive monoid homomorphisms. -/]
 def comp [κ : MonoidHom.CompTriple φ ψ χ]
     (g : B →ₑ*[ψ] C) (f : A →ₑ*[φ] B) : A →ₑ*[χ] C :=
@@ -815,7 +857,6 @@ section Semiring
 
 variable (R : Type*) [Semiring R] [MulSemiringAction M R]
 variable (S : Type*) [Semiring S] [MulSemiringAction N S]
-variable (T : Type*) [Semiring T] [MulSemiringAction P T]
 
 variable {R S N'}
 variable [AddMonoid N'] [DistribMulAction S N']
@@ -875,6 +916,7 @@ abbrev MulSemiringActionHomClass
 
 namespace MulSemiringActionHom
 
+@[macro_inline]
 instance : FunLike (R →ₑ+*[φ] S) R S where
   coe m := m.toFun
   coe_injective f g h := by
@@ -950,7 +992,7 @@ namespace MulSemiringActionHom
 variable (M) {R}
 
 /-- The identity map as an equivariant ring homomorphism. -/
-@[implicit_reducible]
+@[instance_reducible]
 protected def id : R →+*[M] R :=
   ⟨DistribMulActionHom.id _, rfl, (fun _ _ => rfl)⟩
 
@@ -969,7 +1011,7 @@ variable {R S T}
 variable {φ φ' ψ χ}
 
 /-- Composition of two equivariant additive ring homomorphisms. -/
-@[implicit_reducible]
+@[instance_reducible]
 def comp (g : S →ₑ+*[ψ] T) (f : R →ₑ+*[φ] S) [κ : MonoidHom.CompTriple φ ψ χ] : R →ₑ+*[χ] T :=
   { DistribMulActionHom.comp (g : S →ₑ+[ψ] T) (f : R →ₑ+[φ] S),
     RingHom.comp (g : S →+* T) (f : R →+* S) with }

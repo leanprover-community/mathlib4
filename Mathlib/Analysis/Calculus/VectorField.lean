@@ -27,7 +27,6 @@ In addition to comprehensive API on these two notions, the main results are the 
   is the Lie bracket of the pullbacks, when the second derivative is symmetric.
 * `VectorField.leibniz_identity_lieBracket` is the Leibniz
   identity `[U, [V, W]] = [[U, V], W] + [V, [U, W]]`.
-
 -/
 
 @[expose] public section
@@ -138,7 +137,7 @@ lemma lieBracket_smul_right {f : E → 𝕜} (hf : DifferentiableAt 𝕜 f x)
     (hW : DifferentiableAt 𝕜 W x) :
     lieBracket 𝕜 V (fun y ↦ f y • W y) x =
       (fderiv 𝕜 f x) (V x) • (W x) + (f x) • lieBracket 𝕜 V W x := by
-  simp_rw [← differentiableWithinAt_univ, ← lieBracketWithin_univ, fderiv] at hW hf ⊢
+  simp_rw [← differentiableWithinAt_univ, ← lieBracketWithin_univ, ← fderivWithin_univ] at hW hf ⊢
   exact lieBracketWithin_smul_right hf hW uniqueDiffWithinAt_univ
 
 /--
@@ -214,12 +213,12 @@ lemma lieBracket_add_right (hW : DifferentiableAt 𝕜 W x) (hW₁ : Differentia
   rw [fderiv_add hW hW₁, add_apply]
   abel
 
-/-- The differentiation operator along `[W, V]`
-is the commutator of the differentiation operators along `W` and `V`. -/
+/-- The differentiation operator along `[V, W]`
+is the commutator of the differentiation operators along `V` and `W`. -/
 lemma fderivWithin_apply_lieBracket_of_isSymmSndFDerivWithinAt {f : E → F}
     (hf : ContDiffWithinAt 𝕜 2 f s x) (hsymm : IsSymmSndFDerivWithinAt 𝕜 f s x)
     (hs : UniqueDiffOn 𝕜 s) (hxs : x ∈ s)
-    (hW : DifferentiableWithinAt 𝕜 W s x) (hV : DifferentiableWithinAt 𝕜 V s x) :
+    (hV : DifferentiableWithinAt 𝕜 V s x) (hW : DifferentiableWithinAt 𝕜 W s x) :
     fderivWithin 𝕜 f s x (lieBracketWithin 𝕜 V W s x) =
       fderivWithin 𝕜 (fun x ↦ fderivWithin 𝕜 f s x (W x)) s x (V x) -
         fderivWithin 𝕜 (fun x ↦ fderivWithin 𝕜 f s x (V x)) s x (W x) := by
@@ -229,36 +228,35 @@ lemma fderivWithin_apply_lieBracket_of_isSymmSndFDerivWithinAt {f : E → F}
   rw [fderivWithin_clm_apply, fderivWithin_clm_apply] <;> try assumption
   simp [lieBracketWithin, hsymm (V _) (W _)]
 
-/-- The differentiation operator along `[W, V]`
-is the commutator of the differentiation operators along `W` and `V`. -/
+/-- The differentiation operator along `[V, W]`
+is the commutator of the differentiation operators along `V` and `W`. -/
 lemma fderiv_apply_lieBracket_of_isSymmSndFDerivAt {f : E → F}
     (hf : ContDiffAt 𝕜 2 f x) (hsymm : IsSymmSndFDerivAt 𝕜 f x)
-    (hW : DifferentiableAt 𝕜 W x) (hV : DifferentiableAt 𝕜 V x) :
+    (hV : DifferentiableAt 𝕜 V x) (hW : DifferentiableAt 𝕜 W x) :
     fderiv 𝕜 f x (lieBracket 𝕜 V W x) =
       fderiv 𝕜 (fun x ↦ fderiv 𝕜 f x (W x)) x (V x) -
         fderiv 𝕜 (fun x ↦ fderiv 𝕜 f x (V x)) x (W x) := by
   simp only [← fderivWithin_univ, ← lieBracketWithin_univ, ← contDiffWithinAt_univ,
     ← isSymmSndFDerivWithinAt_univ, ← differentiableWithinAt_univ] at *
-  exact fderivWithin_apply_lieBracket_of_isSymmSndFDerivWithinAt hf hsymm (by simp) (by simp)
-    hW hV
+  exact fderivWithin_apply_lieBracket_of_isSymmSndFDerivWithinAt hf hsymm (by simp) (by simp) hV hW
 
-/-- The differentiation operator along `[W, V]`
-is the commutator of the differentiation operators along `W` and `V`. -/
+/-- The differentiation operator along `[V, W]`
+is the commutator of the differentiation operators along `V` and `W`. -/
 lemma fderivWithin_apply_lieBracket {f : E → F} {n : ℕ∞ω}
     (hf : ContDiffWithinAt 𝕜 n f s x) (hn : minSmoothness 𝕜 2 ≤ n)
     (hs : UniqueDiffOn 𝕜 s) (hxs' : x ∈ closure (interior s)) (hxs : x ∈ s)
-    (hW : DifferentiableWithinAt 𝕜 W s x) (hV : DifferentiableWithinAt 𝕜 V s x) :
+    (hV : DifferentiableWithinAt 𝕜 V s x) (hW : DifferentiableWithinAt 𝕜 W s x) :
     fderivWithin 𝕜 f s x (lieBracketWithin 𝕜 V W s x) =
       fderivWithin 𝕜 (fun x ↦ fderivWithin 𝕜 f s x (W x)) s x (V x) -
         fderivWithin 𝕜 (fun x ↦ fderivWithin 𝕜 f s x (V x)) s x (W x) := by
   apply fderivWithin_apply_lieBracket_of_isSymmSndFDerivWithinAt <;> try assumption
   exacts [hf.of_le <| le_minSmoothness.trans hn, hf.isSymmSndFDerivWithinAt hn hs hxs' hxs]
 
-/-- The differentiation operator along `[W, V]`
-is the commutator of the differentiation operators along `W` and `V`. -/
+/-- The differentiation operator along `[V, W]`
+is the commutator of the differentiation operators along `V` and `W`. -/
 lemma fderiv_apply_lieBracket {f : E → F} {n : ℕ∞ω}
     (hf : ContDiffAt 𝕜 n f x) (hn : minSmoothness 𝕜 2 ≤ n)
-    (hW : DifferentiableAt 𝕜 W x) (hV : DifferentiableAt 𝕜 V x) :
+    (hV : DifferentiableAt 𝕜 V x) (hW : DifferentiableAt 𝕜 W x) :
     fderiv 𝕜 f x (lieBracket 𝕜 V W x) =
       fderiv 𝕜 (fun x ↦ fderiv 𝕜 f x (W x)) x (V x) -
         fderiv 𝕜 (fun x ↦ fderiv 𝕜 f x (V x)) x (W x) := by
@@ -648,7 +646,7 @@ lemma pullbackWithin_lieBracketWithin_of_isSymmSndFDerivWithinAt
 second derivative. Version in a complete space. One could also give a version avoiding
 completeness but requiring that `f` is a local diffeomorphism. Variant where unique
 differentiability and the invariance property are only required in a smaller set `u`. -/
-lemma pullbackWithin_lieBracketWithin_of_isSymmSndFDerivWithinAt_of_eventuallyEq
+lemma pullbackWithin_lieBracketWithin_of_isSymmSndFDerivWithinAt_of_eventuallyEqSet
     {f : E → F} {V W : F → F} {x : E} {t : Set F} {u : Set E}
     (hf : IsSymmSndFDerivWithinAt 𝕜 f s x) (h'f : ContDiffWithinAt 𝕜 2 f s x)
     (hV : DifferentiableWithinAt 𝕜 V t (f x)) (hW : DifferentiableWithinAt 𝕜 W t (f x))
@@ -673,6 +671,10 @@ lemma pullbackWithin_lieBracketWithin_of_isSymmSndFDerivWithinAt_of_eventuallyEq
       simp [pullbackWithin, hy]
   _ = lieBracketWithin 𝕜 (pullbackWithin 𝕜 f V s) (pullbackWithin 𝕜 f W s) s x :=
     lieBracketWithin_congr_set hus
+
+@[deprecated (since := "2026-08-14")]
+alias pullbackWithin_lieBracketWithin_of_isSymmSndFDerivWithinAt_of_eventuallyEq :=
+  pullbackWithin_lieBracketWithin_of_isSymmSndFDerivWithinAt_of_eventuallyEqSet
 
 /-- The Lie bracket commutes with taking pullbacks. This requires the function to have symmetric
 second derivative. Version in a complete space. One could also give a version avoiding

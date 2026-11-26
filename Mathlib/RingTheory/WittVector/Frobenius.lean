@@ -5,14 +5,12 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.Algebra.ZMod
-public import Mathlib.Data.Nat.Multiplicity
-public import Mathlib.FieldTheory.Perfect
-public import Mathlib.RingTheory.WittVector.Basic
 public import Mathlib.RingTheory.WittVector.IsPoly
 
+import Mathlib.Algebra.Algebra.ZMod
+
 /-!
-## The Frobenius operator
+# The Frobenius operator
 
 If `R` has characteristic `p`, then there is a ring endomorphism `frobenius R p`
 that raises `r : R` to the power `p`.
@@ -29,7 +27,7 @@ We therefore have to define the polynomials by hand, and check that they have th
 In case `R` has characteristic `p`, we show in `frobenius_eq_map_frobenius`
 that `WittVector.frobeniusFun` is equal to `WittVector.map (frobenius R p)`.
 
-### Main definitions and results
+## Main definitions and results
 
 * `frobeniusPoly`: the polynomials that describe the coefficients of `frobeniusFun`;
 * `frobeniusFun`: the Frobenius endomorphism on Witt vectors;
@@ -67,12 +65,17 @@ in terms of the coefficients of `x`.
 These polynomials actually have integral coefficients,
 see `frobeniusPoly` and `map_frobeniusPoly`. -/
 def frobeniusPolyRat (n : ℕ) : MvPolynomial ℕ ℚ :=
-  bind₁ (wittPolynomial p ℚ ∘ fun n => n + 1) (xInTermsOfW p ℚ n)
+  aeval (wittPolynomial p ℚ ∘ fun n => n + 1) (xInTermsOfW p ℚ n)
 
-theorem bind₁_frobeniusPolyRat_wittPolynomial (n : ℕ) :
-    bind₁ (frobeniusPolyRat p) (wittPolynomial p ℚ n) = wittPolynomial p ℚ (n + 1) := by
+theorem aeval_frobeniusPolyRat_wittPolynomial (n : ℕ) :
+    aeval (frobeniusPolyRat p) (wittPolynomial p ℚ n) = wittPolynomial p ℚ (n + 1) := by
   delta frobeniusPolyRat
-  rw [← bind₁_bind₁, bind₁_xInTermsOfW_wittPolynomial, bind₁_X_right, Function.comp_apply]
+  rw [← comp_aeval_apply, aeval_xInTermsOfW_wittPolynomial, aeval_X, Function.comp_apply]
+
+@[deprecated aeval_frobeniusPolyRat_wittPolynomial +typeChanged (since := "2026-09-09")]
+theorem bind₁_frobeniusPolyRat_wittPolynomial (n : ℕ) :
+    bind₁ (frobeniusPolyRat p) (wittPolynomial p ℚ n) = wittPolynomial p ℚ (n + 1) :=
+  aeval_frobeniusPolyRat_wittPolynomial p n
 
 local notation "v" => multiplicity
 
@@ -127,8 +130,8 @@ theorem map_frobeniusPoly.key₂ {n i j : ℕ} (hi : i ≤ n) (hj : j < p ^ (n -
       add_assoc, tsub_right_comm, add_comm i,
       tsub_add_cancel_of_le (le_tsub_of_add_le_right ((le_tsub_iff_left hi).mp h₁))]
   have hle : p ^ m ≤ j + 1 := h ▸ Nat.le_of_dvd j.succ_pos (pow_multiplicity_dvd _ _)
-  exact ⟨(Nat.pow_le_pow_iff_right hp.1.one_lt).1 (hle.trans hj),
-     Nat.le_of_lt_succ ((m.lt_pow_self hp.1.one_lt).trans_le hle)⟩
+  exact ⟨(Nat.pow_le_pow_iff_right hp.out.one_lt).1 (hle.trans hj),
+     Nat.le_of_lt_succ ((m.lt_pow_self hp.out.one_lt).trans_le hle)⟩
 
 theorem map_frobeniusPoly (n : ℕ) :
     MvPolynomial.map (Int.castRingHom ℚ) (frobeniusPoly p n) = frobeniusPolyRat p n := by
@@ -137,9 +140,9 @@ theorem map_frobeniusPoly (n : ℕ) :
   refine Nat.strong_induction_on n ?_; clear n
   intro n IH
   rw [xInTermsOfW_eq]
-  simp only [map_sum, map_sub, map_mul, map_pow (bind₁ _), bind₁_C_right]
+  simp only [map_sum, map_sub, map_mul, map_pow (aeval _), aeval_C, algebraMap_eq]
   have h1 : (p : ℚ) ^ n * ⅟(p : ℚ) ^ n = 1 := by rw [← mul_pow, mul_invOf_self, one_pow]
-  rw [bind₁_X_right, Function.comp_apply, wittPolynomial_eq_sum_C_mul_X_pow, sum_range_succ,
+  rw [aeval_X, Function.comp_apply, wittPolynomial_eq_sum_C_mul_X_pow, sum_range_succ,
     sum_range_succ, tsub_self, add_tsub_cancel_left, pow_zero, pow_one, pow_one, sub_mul, add_mul,
     add_mul, mul_right_comm, mul_right_comm (C ((p : ℚ) ^ (n + 1))), ← C_mul, ← C_mul, pow_succ',
     mul_assoc (p : ℚ) ((p : ℚ) ^ n), h1, mul_one, C_1, one_mul, add_comm _ (X n ^ p), add_assoc,
@@ -164,7 +167,7 @@ theorem map_frobeniusPoly (n : ℕ) :
   simp only [mul_assoc]
   apply congr_arg
   apply congr_arg
-  rw [← C_eq_coe_nat]
+  rw [← C_eq_natCast]
   simp only [← map_pow, ← C_mul]
   rw [C_inj]
   simp only [invOf_eq_inv, eq_intCast, inv_pow, Int.cast_natCast, Nat.cast_mul, Int.cast_mul]
@@ -172,7 +175,7 @@ theorem map_frobeniusPoly (n : ℕ) :
   push_cast
   linear_combination (norm := skip) -p / p ^ n / p ^ (n - i - v p (j + 1))
     * (p ^ (n - i)).choose (j + 1) * congr((p : ℚ) ^ $(map_frobeniusPoly.key₂ p hi.le hj))
-  field [hp.1.ne_zero]
+  field [hp.out.ne_zero]
 
 theorem frobeniusPoly_zmod (n : ℕ) :
     MvPolynomial.map (Int.castRingHom (ZMod p)) (frobeniusPoly p n) = X n ^ p := by
@@ -180,11 +183,16 @@ theorem frobeniusPoly_zmod (n : ℕ) :
   simp only [Int.cast_natCast, add_zero, eq_intCast, ZMod.natCast_self, zero_mul, C_0]
 
 @[simp]
-theorem bind₁_frobeniusPoly_wittPolynomial (n : ℕ) :
-    bind₁ (frobeniusPoly p) (wittPolynomial p ℤ n) = wittPolynomial p ℤ (n + 1) := by
+theorem aeval_frobeniusPoly_wittPolynomial (n : ℕ) :
+    aeval (frobeniusPoly p) (wittPolynomial p ℤ n) = wittPolynomial p ℤ (n + 1) := by
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
-  simp only [map_bind₁, map_frobeniusPoly, bind₁_frobeniusPolyRat_wittPolynomial,
+  simp only [map_aeval_eq_aeval_map_map, map_frobeniusPoly, aeval_frobeniusPolyRat_wittPolynomial,
     map_wittPolynomial]
+
+@[deprecated aeval_frobeniusPoly_wittPolynomial +typeChanged (since := "2026-09-09")]
+theorem bind₁_frobeniusPoly_wittPolynomial (n : ℕ) :
+    bind₁ (frobeniusPoly p) (wittPolynomial p ℤ n) = wittPolynomial p ℤ (n + 1) :=
+  aeval_frobeniusPoly_wittPolynomial p n
 
 variable {p}
 
@@ -208,8 +216,8 @@ instance frobeniusFun_isPoly : IsPoly p fun R _ Rcr => @frobeniusFun p R _ Rcr :
 @[ghost_simps]
 theorem ghostComponent_frobeniusFun (n : ℕ) (x : 𝕎 R) :
     ghostComponent n (frobeniusFun x) = ghostComponent (n + 1) x := by
-  simp only [ghostComponent_apply, frobeniusFun, coeff_mk, ← bind₁_frobeniusPoly_wittPolynomial,
-    aeval_bind₁]
+  simp only [ghostComponent_apply, frobeniusFun, ← aeval_frobeniusPoly_wittPolynomial,
+    comp_aeval_apply]
 
 /-- If `R` has characteristic `p`, then there is a ring endomorphism
 that raises `r : R` to the power `p`.
@@ -257,7 +265,7 @@ variable [CharP R p]
 @[simp]
 theorem coeff_frobenius_charP (x : 𝕎 R) (n : ℕ) : coeff (frobenius x) n = x.coeff n ^ p := by
   rw [coeff_frobenius]
-  letI : Algebra (ZMod p) R := ZMod.algebra _ _
+  let : Algebra (ZMod p) R := ZMod.algebra _ _
   -- outline of the calculation, proofs follow below
   calc
     aeval (fun k => x.coeff k) (frobeniusPoly p n) =

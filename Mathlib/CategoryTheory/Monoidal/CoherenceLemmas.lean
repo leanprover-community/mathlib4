@@ -12,7 +12,8 @@ public import Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence
 
 These lemmas are all proved `by coherence`.
 
-## Future work
+## TODO
+
 Investigate whether these lemmas are really needed,
 or if they can be replaced by use of the `coherence` tactic.
 -/
@@ -20,7 +21,7 @@ or if they can be replaced by use of the `coherence` tactic.
 public section
 
 
-open CategoryTheory Category Iso
+open CategoryTheory
 
 namespace CategoryTheory.MonoidalCategory
 

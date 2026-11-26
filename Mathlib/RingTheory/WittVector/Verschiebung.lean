@@ -5,11 +5,10 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.RingTheory.WittVector.Basic
 public import Mathlib.RingTheory.WittVector.IsPoly
 
 /-!
-## The Verschiebung operator
+# The Verschiebung operator
 
 ## References
 
@@ -38,14 +37,14 @@ by inserting 0 as the 0th coefficient.
 `verschiebungFun` is the underlying function of the additive monoid hom `WittVector.verschiebung`.
 -/
 def verschiebungFun (x : 𝕎 R) : 𝕎 R :=
-  @mk' p _ fun n => if n = 0 then 0 else x.coeff (n - 1)
+  mk p fun n => if n = 0 then 0 else x.coeff (n - 1)
 
 theorem verschiebungFun_coeff (x : 𝕎 R) (n : ℕ) :
     (verschiebungFun x).coeff n = if n = 0 then 0 else x.coeff (n - 1) := by
   simp only [verschiebungFun]
 
 theorem verschiebungFun_coeff_zero (x : 𝕎 R) : (verschiebungFun x).coeff 0 = 0 := by
-  rw [verschiebungFun_coeff, if_pos rfl]
+  rw [verschiebungFun_coeff, ite_eq_left rfl]
 
 @[simp]
 theorem verschiebungFun_coeff_succ (x : 𝕎 R) (n : ℕ) :
@@ -62,8 +61,9 @@ theorem ghostComponent_zero_verschiebungFun [hp : Fact p.Prime] (x : 𝕎 R) :
 theorem ghostComponent_verschiebungFun [hp : Fact p.Prime] (x : 𝕎 R) (n : ℕ) :
     ghostComponent (n + 1) (verschiebungFun x) = p * ghostComponent n x := by
   simp only [ghostComponent_apply, aeval_wittPolynomial]
-  rw [Finset.sum_range_succ', verschiebungFun_coeff, if_pos rfl,
-    zero_pow (pow_ne_zero _ hp.1.ne_zero), mul_zero, add_zero, Finset.mul_sum, Finset.sum_congr rfl]
+  rw [Finset.sum_range_succ', verschiebungFun_coeff, ite_eq_left rfl,
+    zero_pow (pow_ne_zero _ hp.out.ne_zero), mul_zero, add_zero, Finset.mul_sum,
+    Finset.sum_congr rfl]
   rintro i -
   simp only [pow_succ', verschiebungFun_coeff_succ, Nat.succ_sub_succ_eq_sub, mul_assoc]
 
@@ -81,7 +81,7 @@ theorem aeval_verschiebung_poly' (x : 𝕎 R) (n : ℕ) :
     aeval x.coeff (verschiebungPoly n) = (verschiebungFun x).coeff n := by
   rcases n with - | n
   · simp only [verschiebungPoly, ite_true, map_zero, verschiebungFun_coeff_zero]
-  · rw [verschiebungPoly, verschiebungFun_coeff_succ, if_neg n.succ_ne_zero, aeval_X,
+  · rw [verschiebungPoly, verschiebungFun_coeff_succ, ite_eq_right n.succ_ne_zero, aeval_X,
       add_tsub_cancel_right]
 
 variable (p)
@@ -164,17 +164,17 @@ theorem aeval_verschiebungPoly (x : 𝕎 R) (n : ℕ) :
   aeval_verschiebung_poly' x n
 
 @[simp]
-theorem bind₁_verschiebungPoly_wittPolynomial (n : ℕ) :
-    bind₁ verschiebungPoly (wittPolynomial p ℤ n) =
+theorem aeval_verschiebungPoly_wittPolynomial (n : ℕ) :
+    aeval verschiebungPoly (wittPolynomial p ℤ n) =
       if n = 0 then 0 else p * wittPolynomial p ℤ (n - 1) := by
   apply MvPolynomial.funext
   intro x
   split_ifs with hn
-  · simp only [hn, wittPolynomial_zero, bind₁_X_right, verschiebungPoly_zero, map_zero]
+  · simp only [hn, wittPolynomial_zero, aeval_X, verschiebungPoly_zero, map_zero]
   · obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hn
     rw [Nat.succ_eq_add_one, add_tsub_cancel_right]
     simp only [map_mul]
-    rw [map_natCast, hom_bind₁]
+    rw [map_natCast, map_aeval]
     calc
       _ = ghostComponent (n + 1) (verschiebung <| mk p x) := by
        apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
@@ -182,6 +182,13 @@ theorem bind₁_verschiebungPoly_wittPolynomial (n : ℕ) :
        simp only [← aeval_verschiebungPoly]
        exact eval₂Hom_congr (RingHom.ext_int _ _) rfl rfl
       _ = _ := by rw [ghostComponent_verschiebung]; rfl
+
+@[deprecated aeval_verschiebungPoly_wittPolynomial +typeChanged (since := "2026-09-09")]
+theorem bind₁_verschiebungPoly_wittPolynomial (n : ℕ) :
+    bind₁ verschiebungPoly (wittPolynomial p ℤ n) =
+      if n = 0 then 0 else p * wittPolynomial p ℤ (n - 1) :=
+  aeval_verschiebungPoly_wittPolynomial n
+
 
 end
 

@@ -5,9 +5,12 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Triangulated.Triangulated
 public import Mathlib.CategoryTheory.ComposableArrows.Basic
 public import Mathlib.CategoryTheory.Shift.CommShift
+public import Mathlib.CategoryTheory.Triangulated.Triangulated
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Triangulated functors
@@ -18,7 +21,6 @@ functor `F.mapTriangle : Triangle C ⥤ Triangle D` on the categories of
 triangles. When `C` and `D` are pretriangulated, a triangulated functor
 is such a functor `F` which also sends distinguished triangles to
 distinguished triangles: this defines the typeclass `Functor.IsTriangulated`.
-
 -/
 
 @[expose] public section
@@ -35,13 +37,12 @@ variable {C D E : Type*} [Category* C] [Category* D] [Category* E]
   [HasShift C ℤ] [HasShift D ℤ] [HasShift E ℤ]
   (F : C ⥤ D) [F.CommShift ℤ] (G : D ⥤ E) [G.CommShift ℤ]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The functor `Triangle C ⥤ Triangle D` that is induced by a functor `F : C ⥤ D`
 which commutes with shift by `ℤ`. -/
-@[simps]
+@[simps, implicit_reducible]
 def mapTriangle : Triangle C ⥤ Triangle D where
   obj T := Triangle.mk (F.map T.mor₁) (F.map T.mor₂)
-    (F.map T.mor₃ ≫ (F.commShiftIso (1 : ℤ)).hom.app T.obj₁)
+    (F.map T.mor₃ ≫ (F.commShiftIso 1).hom.app T.obj₁)
   map f :=
     { hom₁ := F.map f.hom₁
       hom₂ := F.map f.hom₂
@@ -56,12 +57,10 @@ def mapTriangle : Triangle C ⥤ Triangle D where
 instance [Faithful F] : Faithful F.mapTriangle where
   map_injective {X Y} f g h := by
     ext <;> apply F.map_injective
-    · exact congr_arg TriangleMorphism.hom₁ h
-    · exact congr_arg TriangleMorphism.hom₂ h
-    · exact congr_arg TriangleMorphism.hom₃ h
+    · congrm TriangleMorphism.hom₁ $h
+    · congrm TriangleMorphism.hom₂ $h
+    · congrm TriangleMorphism.hom₃ $h
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance [Full F] [Faithful F] : Full F.mapTriangle where
   map_surjective {X Y} f :=
     ⟨{hom₁ := F.preimage f.hom₁
@@ -72,7 +71,7 @@ instance [Full F] [Faithful F] : Full F.mapTriangle where
       comm₂ := F.map_injective
         (by simpa only [mapTriangle_obj, map_comp, map_preimage] using! f.comm₂)
       comm₃ := F.map_injective (by
-        rw [← cancel_mono ((F.commShiftIso (1 : ℤ)).hom.app Y.obj₁)]
+        rw [← cancel_mono ((F.commShiftIso 1).hom.app Y.obj₁)]
         simpa only [mapTriangle_obj, map_comp, assoc, commShiftIso_hom_naturality,
           map_preimage, Triangle.mk_mor₃] using! f.comm₃) }, by cat_disch⟩
 
@@ -80,8 +79,6 @@ section Additive
 
 variable [Preadditive C] [Preadditive D] [F.Additive]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor `F.mapTriangle` commutes with the shift. -/
 noncomputable def mapTriangleCommShiftIso (n : ℤ) :
     Triangle.shiftFunctor C n ⋙ F.mapTriangle ≅ F.mapTriangle ⋙ Triangle.shiftFunctor D n :=
@@ -92,8 +89,7 @@ noncomputable def mapTriangleCommShiftIso (n : ℤ) :
       simp only [map_units_smul, map_comp, Linear.units_smul_comp, assoc,
         Linear.comp_units_smul, ← F.commShiftIso_hom_naturality_assoc]
       rw [F.map_shiftFunctorComm_hom_app T.obj₁ 1 n]
-      simp only [comp_obj, assoc, Iso.inv_hom_id_app_assoc,
-        ← Functor.map_comp, Iso.inv_hom_id_app, map_id, comp_id])) (by cat_disch)
+      simp)) (by cat_disch)
 
 attribute [simps!] mapTriangleCommShiftIso
 
@@ -101,9 +97,7 @@ attribute [local simp] map_zsmul comp_zsmul zsmul_comp
   commShiftIso_zero commShiftIso_add commShiftIso_comp_hom_app
   shiftFunctorAdd'_eq_shiftFunctorAdd
 
-set_option backward.defeqAttrib.useBackward true in
 -- Split out from the following instance for faster elaboration.
-set_option backward.privateInPublic true in
 private theorem mapTriangleCommShiftIso_add
     [∀ (n : ℤ), (shiftFunctor C n).Additive]
     [∀ (n : ℤ), (shiftFunctor D n).Additive] (n m : ℤ) :
@@ -112,15 +106,11 @@ private theorem mapTriangleCommShiftIso_add
         (F.mapTriangleCommShiftIso n) (F.mapTriangleCommShiftIso m) := by
   ext <;> simp
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 noncomputable instance [∀ (n : ℤ), (shiftFunctor C n).Additive]
     [∀ (n : ℤ), (shiftFunctor D n).Additive] : (F.mapTriangle).CommShift ℤ where
   commShiftIso := F.mapTriangleCommShiftIso
-  commShiftIso_add _ _ := mapTriangleCommShiftIso_add ..
+  commShiftIso_add _ _ := private mapTriangleCommShiftIso_add ..
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- `F.mapTriangle` commutes with the rotation of triangles. -/
 @[simps!]
 def mapTriangleRotateIso :
@@ -128,36 +118,30 @@ def mapTriangleRotateIso :
       Pretriangulated.rotate C ⋙ F.mapTriangle :=
   NatIso.ofComponents
     (fun T => Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _)
-      ((F.commShiftIso (1 : ℤ)).symm.app _)
+      ((F.commShiftIso 1).symm.app _)
       (by simp) (by simp) (by simp)) (by cat_disch)
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- `F.mapTriangle` commutes with the inverse of the rotation of triangles. -/
 @[simps!]
 noncomputable def mapTriangleInvRotateIso :
     F.mapTriangle ⋙ Pretriangulated.invRotate D ≅
       Pretriangulated.invRotate C ⋙ F.mapTriangle :=
   NatIso.ofComponents
-    (fun T => Triangle.isoMk _ _ ((F.commShiftIso (-1 : ℤ)).symm.app _) (Iso.refl _) (Iso.refl _)
+    (fun T => Triangle.isoMk _ _ ((F.commShiftIso (-1)).symm.app _) (Iso.refl _) (Iso.refl _)
       (by simp) (by simp) (by simp)) (by cat_disch)
 
 
-set_option backward.defeqAttrib.useBackward true in
 variable (C) in
 /-- The canonical isomorphism `(𝟭 C).mapTriangle ≅ 𝟭 (Triangle C)`. -/
 @[simps!]
 def mapTriangleIdIso : (𝟭 C).mapTriangle ≅ 𝟭 _ :=
   NatIso.ofComponents (fun T ↦ Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _))
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The canonical isomorphism `(F ⋙ G).mapTriangle ≅ F.mapTriangle ⋙ G.mapTriangle`. -/
 @[simps!]
 def mapTriangleCompIso : (F ⋙ G).mapTriangle ≅ F.mapTriangle ⋙ G.mapTriangle :=
   NatIso.ofComponents (fun T => Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _))
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Two isomorphic functors `F₁` and `F₂` induce isomorphic functors
 `F₁.mapTriangle` and `F₂.mapTriangle` if the isomorphism `F₁ ≅ F₂` is compatible
 with the shifts. -/
@@ -167,7 +151,7 @@ def mapTriangleIso {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂) [F₁.CommShift ℤ
   NatIso.ofComponents (fun T =>
     Triangle.isoMk _ _ (e.app _) (e.app _) (e.app _) (by simp) (by simp) (by
       dsimp
-      simp only [assoc, NatTrans.shift_app_comm e.hom (1 : ℤ) T.obj₁,
+      simp only [assoc, NatTrans.shift_app_comm e.hom 1 T.obj₁,
         NatTrans.naturality_assoc])) (by cat_disch)
 
 end Additive
@@ -191,7 +175,6 @@ namespace IsTriangulated
 
 open ZeroObject
 
-set_option backward.defeqAttrib.useBackward true in
 instance (priority := 100) [F.IsTriangulated] : PreservesZeroMorphisms F where
   map_zero X Y := by
     have h₁ : (0 : X ⟶ Y) = 0 ≫ 𝟙 0 ≫ 0 := by simp
@@ -203,8 +186,6 @@ instance (priority := 100) [F.IsTriangulated] : PreservesZeroMorphisms F where
       infer_instance
     rw [h₁, F.map_comp, F.map_comp, F.map_id, h₂, zero_comp, comp_zero]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance [F.IsTriangulated] :
     PreservesLimitsOfShape (Discrete WalkingPair) F := by
   suffices ∀ (X₁ X₃ : C), IsIso (prodComparison F X₁ X₃) by
@@ -245,7 +226,6 @@ instance [F.IsTriangulated] [G.IsTriangulated] : (F ⋙ G).IsTriangulated where
 
 end IsTriangulated
 
-set_option backward.defeqAttrib.useBackward true in
 lemma map_distinguished_iff [F.IsTriangulated] [Full F] [Faithful F] (T : Triangle C) :
     (F.mapTriangle.obj T ∈ distTriang D) ↔ T ∈ distTriang C := by
   refine ⟨fun hT ↦ ?_, F.map_distinguished T⟩
@@ -316,13 +296,12 @@ namespace Octahedron
 
 variable {X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ : C}
   {u₁₂ : X₁ ⟶ X₂} {u₂₃ : X₂ ⟶ X₃} {u₁₃ : X₁ ⟶ X₃} {comm : u₁₂ ≫ u₂₃ = u₁₃}
-  {v₁₂ : X₂ ⟶ Z₁₂} {w₁₂ : Z₁₂ ⟶ X₁⟦(1 : ℤ)⟧} {h₁₂ : Triangle.mk u₁₂ v₁₂ w₁₂ ∈ distTriang C}
-  {v₂₃ : X₃ ⟶ Z₂₃} {w₂₃ : Z₂₃ ⟶ X₂⟦(1 : ℤ)⟧} {h₂₃ : Triangle.mk u₂₃ v₂₃ w₂₃ ∈ distTriang C}
-  {v₁₃ : X₃ ⟶ Z₁₃} {w₁₃ : Z₁₃ ⟶ X₁⟦(1 : ℤ)⟧} {h₁₃ : Triangle.mk u₁₃ v₁₃ w₁₃ ∈ distTriang C}
+  {v₁₂ : X₂ ⟶ Z₁₂} {w₁₂ : Z₁₂ ⟶ X₁⟦1⟧} {h₁₂ : Triangle.mk u₁₂ v₁₂ w₁₂ ∈ distTriang C}
+  {v₂₃ : X₃ ⟶ Z₂₃} {w₂₃ : Z₂₃ ⟶ X₂⟦1⟧} {h₂₃ : Triangle.mk u₂₃ v₂₃ w₂₃ ∈ distTriang C}
+  {v₁₃ : X₃ ⟶ Z₁₃} {w₁₃ : Z₁₃ ⟶ X₁⟦1⟧} {h₁₃ : Triangle.mk u₁₃ v₁₃ w₁₃ ∈ distTriang C}
   (h : Octahedron comm h₁₂ h₂₃ h₁₃)
   (F : C ⥤ D) [F.CommShift ℤ] [F.IsTriangulated]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The image of an octahedron by a triangulated functor. -/
 @[simps]
 def map : Octahedron (by dsimp; rw [← F.map_comp, comm])
@@ -362,8 +341,6 @@ lemma isTriangulated_of_essSurj_mapComposableArrows_two
     (comm₂₃ := ComposableArrows.naturality' e.inv 1 2)
     (H := (someOctahedron rfl h₁₂' h₂₃' h₁₃').map F) ..⟩
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma IsTriangulated.of_fully_faithful_triangulated_functor
     (F : C ⥤ D) [F.CommShift ℤ]
     [F.IsTriangulated] [F.Full] [F.Faithful] [IsTriangulated D] :
@@ -378,10 +355,10 @@ lemma IsTriangulated.of_fully_faithful_triangulated_functor
         m₃ := F.preimage H.m₃
         comm₁ := F.map_injective (by simpa using H.comm₁)
         comm₂ := F.map_injective (by
-          simpa [← cancel_mono ((F.commShiftIso (1 : ℤ)).hom.app X₁)] using H.comm₂)
+          simpa [← cancel_mono ((F.commShiftIso 1).hom.app X₁)] using H.comm₂)
         comm₃ := F.map_injective (by simpa using H.comm₃)
         comm₄ := F.map_injective (by
-          simpa [← cancel_mono ((F.commShiftIso (1 : ℤ)).hom.app X₂)] using H.comm₄)
+          simpa [← cancel_mono ((F.commShiftIso 1).hom.app X₂)] using H.comm₄)
         mem := by simpa [← F.map_distinguished_iff] using H.mem }⟩
 
 end CategoryTheory

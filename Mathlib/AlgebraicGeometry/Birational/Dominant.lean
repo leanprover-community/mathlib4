@@ -6,8 +6,8 @@ Authors: Justus Springer
 module
 
 public import Mathlib.AlgebraicGeometry.Birational.RationalMap
-/-!
 
+/-!
 # Dominant rational maps
 
 This file defines `RationalMap.IsDominant` and establishes its connection to
@@ -17,10 +17,9 @@ This file defines `RationalMap.IsDominant` and establishes its connection to
 
 - `Scheme.RationalMap.IsDominant`: a rational map is dominant if some (equivalently, any)
   representative partial map has dominant underlying morphism.
-
 -/
 
-@[expose] public section
+public section
 
 universe u
 
@@ -36,7 +35,7 @@ namespace PartialMap
 
 set_option backward.defeqAttrib.useBackward true in
 /-- Restricting a dominant partial map to a dense open yields a dominant partial map. -/
-lemma isDominant_restrict_hom (f : X.PartialMap Y) [IsDominant f.hom] (U : X.Opens)
+instance isDominant_restrict_hom (f : X.PartialMap Y) [IsDominant f.hom] (U : X.Opens)
     (hU : Dense (U : Set X)) (hU' : U ≤ f.domain) : IsDominant (f.restrict U hU hU').hom := by
   dsimp only [restrict_domain, restrict_hom]
   have : IsDominant (X.homOfLE hU') := Opens.isDominant_homOfLE hU hU'

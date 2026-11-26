@@ -13,7 +13,7 @@ public import Mathlib.LinearAlgebra.Projectivization.Basic
 In this file we define subspaces of a projective space, and show that the subspaces of a projective
 space form a complete lattice under inclusion.
 
-## Implementation Details
+## Implementation notes
 
 A subspace of a projective space ℙ K V is defined to be a structure consisting of a subset of
 ℙ K V such that if two nonzero vectors in V determine points in ℙ K V which are in the subset, and
@@ -60,7 +60,7 @@ instance : SetLike (Subspace K V) (ℙ K V) where
     cases B
     simp
 
-instance : PartialOrder (Subspace K V) := .ofSetLike (Subspace K V) (ℙ K V)
+instance : PartialOrder (Subspace K V) := .ofSetLike (Subspace K V)
 
 @[simp]
 theorem mem_carrier_iff (A : Subspace K V) (x : ℙ K V) : x ∈ A.carrier ↔ x ∈ A :=
@@ -74,19 +74,35 @@ theorem mem_add (T : Subspace K V) (v w : V) (hv : v ≠ 0) (hw : w ≠ 0) (hvw 
 /-- The span of a set of points in a projective space is defined inductively to be the set of points
 which contains the original set, and contains all points determined by the (nonzero) sum of two
 nonzero vectors, each of which determine points in the span. -/
-inductive spanCarrier (S : Set (ℙ K V)) : Set (ℙ K V)
-  | of (x : ℙ K V) (hx : x ∈ S) : spanCarrier S x
-  | mem_add (v w : V) (hv : v ≠ 0) (hw : w ≠ 0) (hvw : v + w ≠ 0) :
-      spanCarrier S (Projectivization.mk K v hv) →
-      spanCarrier S (Projectivization.mk K w hw) → spanCarrier S (Projectivization.mk K (v + w) hvw)
+private inductive MemSpan (S : Set (ℙ K V)) : ℙ K V → Prop
+  | of_mem (x : ℙ K V) (hx : x ∈ S) : MemSpan S x
+  | add (v w : V) (hv : v ≠ 0) (hw : w ≠ 0) (hvw : v + w ≠ 0) :
+      MemSpan S (Projectivization.mk K v hv) →
+      MemSpan S (Projectivization.mk K w hw) → MemSpan S (Projectivization.mk K (v + w) hvw)
 
 /-- The span of a set of points in projective space is a subspace. -/
+@[no_expose]
 def span (S : Set (ℙ K V)) : Subspace K V where
-  carrier := spanCarrier S
-  mem_add' v w hv hw hvw := spanCarrier.mem_add v w hv hw hvw
+  carrier := {x | MemSpan S x}
+  mem_add' v w hv hw hvw := .add v w hv hw hvw
 
 /-- The span of a set of points contains the set of points. -/
-theorem subset_span (S : Set (ℙ K V)) : S ⊆ span S := fun _x hx => spanCarrier.of _ hx
+theorem subset_span (S : Set (ℙ K V)) : S ⊆ span S := fun _x hx => .of_mem _ hx
+
+/-- An induction principle for membership of `span S`. If `motive` holds of all points of `S` and is
+preserved under taking the point determined by the (non-zero) sum of two non-zero vectors, then it
+holds of all points of `span S`. -/
+@[elab_as_elim]
+lemma span_induction {S : Set (ℙ K V)} {motive : ∀ x, x ∈ span S → Prop}
+    (of_mem : ∀ (x) (hx : x ∈ S), motive x (subset_span S hx))
+    (add : ∀ (v w : V) (hv : v ≠ 0) (hw : w ≠ 0) (hvw : v + w ≠ 0)
+      (hv' : Projectivization.mk K v hv ∈ span S)
+      (hw' : Projectivization.mk K w hw ∈ span S), motive _ hv' → motive _ hw' →
+      motive (Projectivization.mk K (v + w) hvw) ((span S).mem_add v w hv hw hvw hv' hw'))
+    {x : ℙ K V} (hx : x ∈ span S) : motive x hx := by
+  induction hx with
+  | of_mem _ hx => exact of_mem _ hx
+  | add v w hv hw hvw _ _ ih₁ ih₂ => exact add v w hv hw hvw _ _ ih₁ ih₂
 
 /-- The span of a set of points is a Galois insertion between sets of points of a projective space
 and subspaces of the projective space. -/
@@ -95,9 +111,9 @@ def gi : GaloisInsertion (span : Set (ℙ K V) → Subspace K V) SetLike.coe whe
   gc A B :=
     ⟨fun h => le_trans (subset_span _) h, by
       intro h x hx
-      induction hx with
-      | of => apply h; assumption
-      | mem_add => apply B.mem_add; assumption'⟩
+      induction hx using span_induction with
+      | of_mem => apply h; assumption
+      | add => apply B.mem_add; assumption'⟩
   le_l_u _ := subset_span _
   choice_eq _ _ := rfl
 
@@ -105,12 +121,6 @@ def gi : GaloisInsertion (span : Set (ℙ K V) → Subspace K V) SetLike.coe whe
 @[simp]
 theorem span_coe (W : Subspace K V) : span ↑W = W :=
   GaloisInsertion.l_u_eq gi W
-
-/-- The infimum of two subspaces exists. -/
-instance instInf : Min (Subspace K V) :=
-  ⟨fun A B =>
-    ⟨A ⊓ B, fun _v _w hv hw _hvw h1 h2 =>
-      ⟨A.mem_add _ _ hv hw _ h1.1 h2.1, B.mem_add _ _ hv hw _ h1.2 h2.2⟩⟩⟩
 
 /-- Infimums of arbitrary collections of subspaces exist. -/
 instance instInfSet : InfSet (Subspace K V) :=
@@ -120,15 +130,21 @@ instance instInfSet : InfSet (Subspace K V) :=
       exact s.mem_add v w hv hw _ (h1 s ⟨s, hs, rfl⟩) (h2 s ⟨s, hs, rfl⟩)⟩⟩
 
 /-- The subspaces of a projective space form a complete lattice. -/
-instance : CompleteLattice (Subspace K V) :=
-  { __ := completeLatticeOfInf (Subspace K V)
-      (by
-        refine fun s => ⟨fun a ha x hx => hx _ ⟨a, ha, rfl⟩, fun a ha x hx E => ?_⟩
-        rintro ⟨E, hE, rfl⟩
-        exact ha hE hx)
-    inf_le_left := fun A B _ hx => (@inf_le_left _ _ A B) hx
-    inf_le_right := fun A B _ hx => (@inf_le_right _ _ A B) hx
-    le_inf := fun _ _ _ h1 h2 _ hx => (le_inf h1 h2) hx }
+instance : CompleteLattice (Subspace K V) where
+  __ := completeLatticeOfInf (Subspace K V)
+    (by
+      refine fun s => ⟨fun a ha x hx => hx _ ⟨a, ha, rfl⟩, fun a ha x hx E => ?_⟩
+      rintro ⟨E, hE, rfl⟩
+      exact ha hE hx)
+  bot := ⟨∅, fun _ _ _ _ _ h _ => h.elim⟩
+  bot_le _ := Set.empty_subset _
+  top := ⟨Set.univ, fun _ _ _ _ _ _ _ => trivial⟩
+  le_top _ := Set.subset_univ _
+  inf A B := ⟨A ∩ B, fun _v _w hv hw _hvw h1 h2 =>
+    ⟨A.mem_add _ _ hv hw _ h1.1 h2.1, B.mem_add _ _ hv hw _ h1.2 h2.2⟩⟩
+  inf_le_left _ _ := Set.inter_subset_left
+  inf_le_right _ _ := Set.inter_subset_right
+  le_inf _ _ _ := Set.subset_inter
 
 instance subspaceInhabited : Inhabited (Subspace K V) where default := ⊤
 
@@ -139,7 +155,7 @@ theorem span_empty : span (∅ : Set (ℙ K V)) = ⊥ := gi.gc.l_bot
 /-- The span of the entire projective space is the top of the lattice of subspaces. -/
 @[simp]
 theorem span_univ : span (Set.univ : Set (ℙ K V)) = ⊤ := by
-  rw [eq_top_iff, SetLike.le_def]
+  rw [eq_top_iff, le_iff_mem_imp_mem]
   intro x _hx
   exact subset_span _ (Set.mem_univ x)
 
@@ -222,11 +238,11 @@ def submodule : Projectivization.Subspace K V ≃o Submodule K V where
       exact s.mem_add _ _ hx₂ hy₂ hxy (hx₁ hx₂) (hy₁ hy₂)
     zero_mem' h := h.irrefl.elim
     smul_mem' c x h₁ h₂ := by
-      convert! h₁ (right_ne_zero_of_smul h₂) using 1
+      convert h₁ (right_ne_zero_of_smul h₂) using 1
       rw [Projectivization.mk_eq_mk_iff']
       exact ⟨c, rfl⟩ }
   invFun s :=
-  { carrier := setOf <| Projectivization.lift (↑· ∈ s) <| by
+  { carrier := Set.ofPred <| Projectivization.lift (↑· ∈ s) <| by
       rintro ⟨-, h⟩ ⟨y, -⟩ c rfl
       exact Iff.eq <| s.smul_mem_iff <| left_ne_zero_of_smul h
     mem_add' _ _ _ _ _ h₁ h₂ := s.add_mem h₁ h₂ }
@@ -248,11 +264,8 @@ theorem mem_submodule_iff (s : Projectivization.Subspace K V) {v : V} (hv : v �
   ⟨fun h => h hv, fun h _ => h⟩
 
 @[simp]
-lemma bot_coe : ((⊥ : Subspace K V) : Set (Projectivization K V)) = ∅ := by
-  ext x
-  simp only [SetLike.mem_coe, Set.mem_empty_iff_false, iff_false]
-  induction x using ind with | h v hv =>
-  rwa [← Subspace.mem_submodule_iff _ hv, Subspace.submodule.map_bot, Submodule.mem_bot]
+lemma bot_coe : ((⊥ : Subspace K V) : Set (Projectivization K V)) = ∅ :=
+  rfl
 
 end Subspace
 

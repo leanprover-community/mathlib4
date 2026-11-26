@@ -82,6 +82,7 @@ lemma injective_toCircle : Injective (toCircle : ZMod N → Circle) :=
 /-- The additive character from `ZMod N` to `ℂ`, sending `j mod N` to `exp (2 * π * I * j / N)`. -/
 noncomputable def stdAddChar : AddChar (ZMod N) ℂ := Circle.coeHom.compAddChar toCircle
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma stdAddChar_coe (j : ℤ) :
     stdAddChar (j : ZMod N) = exp (2 * π * I * j / N) := by simp [stdAddChar, toCircle_intCast]
 

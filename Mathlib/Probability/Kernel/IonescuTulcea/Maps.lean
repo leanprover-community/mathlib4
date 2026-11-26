@@ -21,18 +21,18 @@ section Definitions
 
 section LinearOrder
 
-variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [DecidableLE ι] {X : ι → Type*}
+variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] {X : ι → Type*}
 
 /-- Gluing `Ioc a b` and `Ioc b c` into `Ioc a c`. -/
 def IocProdIoc (a b c : ι) (x : (Π i : Ioc a b, X i) × (Π i : Ioc b c, X i)) (i : Ioc a c) : X i :=
   if h : i ≤ b
-    then x.1 ⟨i, mem_Ioc.2 ⟨(mem_Ioc.1 i.2).1, h⟩⟩
-    else x.2 ⟨i, mem_Ioc.2 ⟨not_le.1 h, (mem_Ioc.1 i.2).2⟩⟩
+    then x.1 ⟨i, mem_Ioc.2 ⟨(mem_Ioc.1 i.property).1, h⟩⟩
+    else x.2 ⟨i, mem_Ioc.2 ⟨not_le.1 h, (mem_Ioc.1 i.property).2⟩⟩
 
 @[fun_prop]
 lemma measurable_IocProdIoc [∀ i, MeasurableSpace (X i)] {a b c : ι} :
     Measurable (IocProdIoc (X := X) a b c) := by
-  refine measurable_pi_lambda _ (fun i ↦ ?_)
+  refine .of_eval (fun i ↦ ?_)
   by_cases h : i ≤ b
   · simpa [IocProdIoc, h] using measurable_fst.eval
   · simpa [IocProdIoc, h] using measurable_snd.eval
@@ -44,45 +44,45 @@ coordinate followed by a restriction, see `IicProdIoc_le`. -/
 def IicProdIoc (a b : ι) (x : (Π i : Iic a, X i) × (Π i : Ioc a b, X i)) (i : Iic b) : X i :=
   if h : i ≤ a
     then x.1 ⟨i, mem_Iic.2 h⟩
-    else x.2 ⟨i, mem_Ioc.2 ⟨not_le.1 h, mem_Iic.1 i.2⟩⟩
+    else x.2 ⟨i, mem_Ioc.2 ⟨not_le.1 h, mem_Iic.1 i.property⟩⟩
 
 /-- When `IicProdIoc` is only partially applied (i.e. `IicProdIoc a b x` but not
 `IicProdIoc a b x i`) `simp [IicProdIoc]` won't unfold the definition.
 This lemma allows to unfold it by writing `simp [IicProdIoc_def]`. -/
 lemma IicProdIoc_def (a b : ι) :
-    IicProdIoc (X := X) a b = fun x i ↦ if h : i.1 ≤ a then x.1 ⟨i, mem_Iic.2 h⟩
-      else x.2 ⟨i, mem_Ioc.2 ⟨not_le.1 h, mem_Iic.1 i.2⟩⟩ := rfl
+    IicProdIoc (X := X) a b = fun x i ↦ if h : i.val ≤ a then x.1 ⟨i, mem_Iic.2 h⟩
+      else x.2 ⟨i, mem_Ioc.2 ⟨not_le.1 h, mem_Iic.1 i.property⟩⟩ := rfl
 
 lemma frestrictLe₂_comp_IicProdIoc {a b : ι} (hab : a ≤ b) :
     (frestrictLe₂ hab) ∘ (IicProdIoc (X := X) a b) = Prod.fst := by
   ext x i
-  simp [IicProdIoc, mem_Iic.1 i.2]
+  simp [IicProdIoc, mem_Iic.1 i.property]
 
 lemma restrict₂_comp_IicProdIoc (a b : ι) :
     (restrict₂ Ioc_subset_Iic_self) ∘ (IicProdIoc (X := X) a b) = Prod.snd := by
   ext x i
-  simp [IicProdIoc, not_le.2 (mem_Ioc.1 i.2).1]
+  simp [IicProdIoc, not_le.2 (mem_Ioc.1 i.property).1]
 
 @[simp]
 lemma IicProdIoc_self (a : ι) : IicProdIoc (X := X) a a = Prod.fst := by
   ext x i
-  simp [IicProdIoc, mem_Iic.1 i.2]
+  simp [IicProdIoc, mem_Iic.1 i.property]
 
 lemma IicProdIoc_le {a b : ι} (hba : b ≤ a) :
     IicProdIoc (X := X) a b = (frestrictLe₂ hba) ∘ Prod.fst := by
   ext x i
-  simp [IicProdIoc, (mem_Iic.1 i.2).trans hba]
+  simp [IicProdIoc, (mem_Iic.1 i.property).trans hba]
 
 lemma IicProdIoc_comp_restrict₂ {a b : ι} :
     (restrict₂ Ioc_subset_Iic_self) ∘ (IicProdIoc (X := X) a b) = Prod.snd := by
   ext x i
-  simp [IicProdIoc, not_le.2 (mem_Ioc.1 i.2).1]
+  simp [IicProdIoc, not_le.2 (mem_Ioc.1 i.property).1]
 
 variable [∀ i, MeasurableSpace (X i)]
 
 @[fun_prop]
 lemma measurable_IicProdIoc {m n : ι} : Measurable (IicProdIoc (X := X) m n) := by
-  refine measurable_pi_lambda _ (fun i ↦ ?_)
+  refine .of_eval (fun i ↦ ?_)
   by_cases h : i ≤ m
   · simpa [IicProdIoc, h] using measurable_fst.eval
   · simpa [IicProdIoc, h] using measurable_snd.eval
@@ -94,16 +94,17 @@ equivalence. -/
 def IicProdIoc {a b : ι} (hab : a ≤ b) :
     ((Π i : Iic a, X i) × (Π i : Ioc a b, X i)) ≃ᵐ Π i : Iic b, X i where
   toFun x i := if h : i ≤ a then x.1 ⟨i, mem_Iic.2 h⟩
-    else x.2 ⟨i, mem_Ioc.2 ⟨not_le.1 h, mem_Iic.1 i.2⟩⟩
-  invFun x := ⟨fun i ↦ x ⟨i.1, Iic_subset_Iic.2 hab i.2⟩, fun i ↦ x ⟨i.1, Ioc_subset_Iic_self i.2⟩⟩
+    else x.2 ⟨i, mem_Ioc.2 ⟨not_le.1 h, mem_Iic.1 i.property⟩⟩
+  invFun x := ⟨fun i ↦ x ⟨i.val, Iic_subset_Iic.2 hab i.property⟩,
+    fun i ↦ x ⟨i.val, Ioc_subset_Iic_self i.property⟩⟩
   left_inv := fun x ↦ by
     ext i
-    · simp [mem_Iic.1 i.2]
-    · simp [not_le.2 (mem_Ioc.1 i.2).1]
+    · simp [mem_Iic.1 i.property]
+    · simp [not_le.2 (mem_Ioc.1 i.property).1]
   right_inv := fun x ↦ funext fun i ↦ by
-    by_cases hi : i.1 ≤ a <;> simp [hi]
+    by_cases hi : i.val ≤ a <;> simp [hi]
   measurable_toFun := by
-    refine measurable_pi_lambda _ (fun x ↦ ?_)
+    refine .of_eval (fun x ↦ ?_)
     by_cases h : x ≤ a
     · simpa [h] using measurable_fst.eval
     · simpa [h] using measurable_snd.eval
@@ -125,11 +126,11 @@ def IicProdIoi (a : ι) :
   invFun := fun x ↦ (fun i ↦ x i, fun i ↦ x i)
   left_inv := fun x ↦ by
     ext i
-    · simp [mem_Iic.1 i.2]
-    · simp [not_le.2 <| Set.mem_Ioi.1 i.2]
+    · simp [mem_Iic.1 i.property]
+    · simp [not_le.2 <| Set.mem_Ioi.1 i.property]
   right_inv := fun x ↦ by simp
   measurable_toFun := by
-    refine measurable_pi_lambda _ (fun i ↦ ?_)
+    refine .of_eval (fun i ↦ ?_)
     by_cases hi : i ≤ a <;> simp only [Equiv.coe_fn_mk, hi, ↓reduceDIte]
     · exact measurable_fst.eval
     · exact measurable_snd.eval
@@ -144,13 +145,13 @@ variable {X : ℕ → Type*} [∀ n, MeasurableSpace (X n)]
 
 /-- Identifying `{a + 1}` with `Ioc a (a + 1)`, as a measurable equiv on dependent functions. -/
 def MeasurableEquiv.piSingleton (a : ℕ) : X (a + 1) ≃ᵐ Π i : Ioc a (a + 1), X i where
-  toFun x i := (Nat.mem_Ioc_succ.1 i.2).symm ▸ x
+  toFun x i := (Nat.mem_Ioc_succ.1 i.property).symm ▸ x
   invFun x := x ⟨a + 1, right_mem_Ioc.2 a.lt_succ_self⟩
   left_inv := fun x ↦ by simp
   right_inv := fun x ↦ funext fun i ↦ by cases Nat.mem_Ioc_succ' i; rfl
   measurable_toFun := by
     simp_rw [eqRec_eq_cast]
-    refine measurable_pi_lambda _ (fun i ↦ (MeasurableEquiv.cast _ ?_).measurable)
+    refine .of_eval (fun i ↦ (MeasurableEquiv.cast _ ?_).measurable)
     cases Nat.mem_Ioc_succ' i; rfl
 
 end Nat
@@ -159,7 +160,7 @@ end Definitions
 
 section Lemmas
 
-variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [DecidableLE ι] {X : ι → Type*}
+variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] {X : ι → Type*}
 
 lemma _root_.IocProdIoc_preimage {a b c : ι} (hab : a ≤ b) (hbc : b ≤ c)
     (s : (i : Ioc a c) → Set (X i)) :
@@ -180,10 +181,10 @@ lemma _root_.IicProdIoc_preimage {a b : ι} (hab : a ≤ b) (s : (i : Iic b) →
   simp only [Set.mem_preimage, Set.mem_pi, Set.mem_univ, IicProdIoc_def, forall_const,
     Subtype.forall, mem_Iic, Set.mem_prod, frestrictLe₂_apply, restrict₂, mem_Ioc]
   refine ⟨fun h ↦ ⟨fun i hi ↦ ?_, fun i ⟨hi1, hi2⟩ ↦ ?_⟩, fun ⟨h1, h2⟩ i hi ↦ ?_⟩
-  · convert! h i (hi.trans hab)
-    rw [dif_pos hi]
-  · convert! h i hi2
-    rw [dif_neg (not_le.2 hi1)]
+  · convert h i (hi.trans hab)
+    rw [dite_eq_left hi]
+  · convert h i hi2
+    rw [dite_eq_right (not_le.2 hi1)]
   · split_ifs with hi3
     · exact h1 i hi3
     · exact h2 i ⟨not_le.1 hi3, hi⟩

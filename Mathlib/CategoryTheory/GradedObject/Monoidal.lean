@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.GradedObject.Unitor
 public import Mathlib.Data.Fintype.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The monoidal category structures on graded objects
 
@@ -22,7 +25,6 @@ preservation of certain coproducts by the tensor products in `C`, we
 obtain a monoidal category structure on `GradedObject I C`.
 In particular, if `C` has finite coproducts to which the tensor
 product commutes, we obtain a monoidal category structure on `GradedObject ℕ C`.
-
 -/
 
 @[expose] public section
@@ -326,7 +328,7 @@ abbrev _root_.CategoryTheory.GradedObject.HasLeftTensor₃ObjExt (j : I) := Pres
   (Discrete.functor fun (i : { i : (I × I × I) | i.1 + i.2.1 + i.2.2 = j }) ↦
     (((mapTrifunctor (bifunctorComp₂₃ (curriedTensor C)
       (curriedTensor C)) I I I).obj X₁).obj X₂).obj X₃ i)
-   ((curriedTensor C).obj Z)
+    ((curriedTensor C).obj Z)
 
 variable {X₁ X₂ X₃}
 variable [HasTensor X₂ X₃] [HasTensor X₁ (tensorObj X₂ X₃)]
@@ -467,6 +469,7 @@ section TensorUnit
 variable [DecidableEq I] [HasInitial C]
 
 /-- The unit of the tensor product on graded objects is `(single₀ I).obj (𝟙_ C)`. -/
+@[implicit_reducible]
 noncomputable def tensorUnit : GradedObject I C := (single₀ I).obj (𝟙_ C)
 
 /-- The canonical isomorphism `tensorUnit 0 ≅ 𝟙_ C` -/
@@ -555,7 +558,6 @@ variable [DecidableEq I] [HasInitial C]
   [HasTensor (tensorObj X₁ tensorUnit) X₃] [HasTensor X₁ (tensorObj tensorUnit X₃)]
   [HasGoodTensor₁₂Tensor X₁ tensorUnit X₃] [HasGoodTensorTensor₂₃ X₁ tensorUnit X₃]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma triangle :
     (associator X₁ tensorUnit X₃).hom ≫ tensorHom (𝟙 X₁) (leftUnitor X₃).hom =
       tensorHom (rightUnitor X₁).hom (𝟙 X₃) := by
@@ -611,7 +613,7 @@ instance (n : ℕ) : Finite ({ i : (ℕ × ℕ × ℕ) | i.1 + i.2.1 + i.2.2 = n
     (⟨⟨i₁, by lia⟩, ⟨i₂, by lia⟩, ⟨i₃, by lia⟩⟩ :
       Fin (n + 1) × Fin (n + 1) × Fin (n + 1))) ?_
   intro _ _ h
-  exact Subtype.ext (congrArg (fun x => (x.1.1, x.2.1.1, x.2.2.1)) h)
+  exact Subtype.ext (congrArg (fun x => (x.1.val, x.2.1.val, x.2.2.val)) h)
 
 /-!
 The monoidal category structure on `GradedObject ℕ C` can be inferred

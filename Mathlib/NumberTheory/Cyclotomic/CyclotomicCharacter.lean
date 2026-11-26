@@ -5,14 +5,14 @@ Authors: Kevin Buzzard, Hanneke Wiersema, Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Ring.Aut
+public import Mathlib.FieldTheory.KrullTopology
 public import Mathlib.NumberTheory.Padics.RingHoms
 public import Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
-public import Mathlib.RingTheory.RootsOfUnity.Minpoly
-public import Mathlib.FieldTheory.KrullTopology
+
+import Mathlib.RingTheory.RootsOfUnity.Minpoly
+import Mathlib.Topology.Algebra.Group.Units
 
 /-!
-
 # The cyclotomic character
 
 Let `L` be an integral domain and let `n : ℕ+` be a positive integer. If `μₙ` is the
@@ -42,7 +42,7 @@ of `1` in `L`.
 
   Note: This is defined to be the trivial character if `L` does not have enough roots of unity.
 
-## Implementation note
+## Implementation notes
 
 In theory this could be set up as some theory about monoids, being a character
 on monoid isomorphisms, but under the hypotheses that the `n`-th roots of unity
@@ -71,9 +71,7 @@ universe u
 variable {L : Type u} [CommRing L] [IsDomain L]
 
 /-
-
 ## The mod n theory
-
 -/
 
 variable (n : ℕ) [NeZero n]
@@ -102,7 +100,7 @@ theorem modularCyclotomicCharacter.pow_dvd_aux_pow_sub_aux_pow
     (g : L ≃+* L) (p : ℕ) [Fact p.Prime] [∀ i, HasEnoughRootsOfUnity L (p ^ i)]
     {i k : ℕ} (hi : k ≤ i) : (p : ℤ) ^ k ∣ aux g (p ^ i) - aux g (p ^ k) := by
   obtain ⟨i, rfl⟩ := exists_add_of_le hi
-  obtain ⟨ζ, hζ⟩ := HasEnoughRootsOfUnity.exists_primitiveRoot L (p ^ (k + i))
+  obtain ⟨ζ, hζ⟩ := HasEnoughRootsOfUnity.exists_isPrimitiveRoot L (p ^ (k + i))
   have h := hζ.pow (a := p ^ i) (Nat.pos_of_neZero _) (Nat.pow_add' _ _ _)
   have h_unit : (h.isUnit NeZero.out).unit =
       (hζ.isUnit NeZero.out).unit ^ (p ^ i) := by ext; rfl
@@ -131,7 +129,6 @@ local notation "χ₀" => modularCyclotomicCharacter.toFun
 /-- The formula which characterises the output of `modularCyclotomicCharacter g n`. -/
 theorem toFun_spec (g : L ≃+* L) {n : ℕ} [NeZero n] (t : rootsOfUnity n L) :
     g (t : Lˣ) = (t ^ (χ₀ n g).val : Lˣ) := by
-  have : NeZero (Nat.card (rootsOfUnity n L)) := ⟨Nat.card_pos.ne'⟩
   rw [modularCyclotomicCharacter.aux_spec g n t, ← zpow_natCast, modularCyclotomicCharacter.toFun,
     ZMod.val_intCast, ← Subgroup.coe_zpow]
   exact Units.ext_iff.1 <| SetCoe.ext_iff.2 <|
@@ -169,7 +166,6 @@ lemma id : χ₀ n (RingEquiv.refl L) = 1 := by
 
 lemma comp (g h : L ≃+* L) : χ₀ n (g * h) =
     χ₀ n g * χ₀ n h := by
-  have : NeZero (Nat.card (rootsOfUnity n L)) := ⟨Nat.card_pos.ne'⟩
   refine (toFun_unique n (g * h) _ <| fun ζ ↦ ?_).symm
   change g (h (ζ : Lˣ)) = _
   rw [toFun_spec, ← Subgroup.coe_pow, toFun_spec, mul_comm, Subgroup.coe_pow, ← pow_mul,
@@ -214,7 +210,7 @@ of unity. -/
 noncomputable def modularCyclotomicCharacter {n : ℕ} [NeZero n]
     (hn : Nat.card { x // x ∈ rootsOfUnity n L } = n) :
     (L ≃+* L) →* (ZMod n)ˣ :=
-  (Units.mapEquiv <| (ZMod.ringEquivCongr hn).toMulEquiv).toMonoidHom.comp
+  (Units.mapEquiv (ZMod.ringEquivCongr hn).toMulEquiv).toMonoidHom.comp
   (modularCyclotomicCharacter' L n)
 
 namespace modularCyclotomicCharacter
@@ -248,15 +244,14 @@ lemma IsPrimitiveRoot.autToPow_eq_modularCyclotomicCharacter (n : ℕ) [NeZero n
   apply ZMod.val_injective
   apply hμ.pow_inj (ZMod.val_lt _) (ZMod.val_lt _)
   simpa only [autToPow_spec R hμ g, modularCyclotomicCharacter, RingEquiv.toMulEquiv_eq_coe,
-    MulEquiv.toMonoidHom_eq_coe, modularCyclotomicCharacter', MonoidHom.coe_comp, MonoidHom.coe_coe,
-    Function.comp_apply, Units.coe_mapEquiv, MonoidHom.coe_toHomUnits, MonoidHom.coe_mk,
-    OneHom.coe_mk, RingEquiv.coe_toMulEquiv, ZMod.ringEquivCongr_val, AlgEquiv.coe_ringEquiv]
-    using modularCyclotomicCharacter.toFun_spec'' g hμ
+    MulEquiv.toMonoidHom_eq_coe, modularCyclotomicCharacter', MonoidHom.coe_comp,
+    MonoidHom.coe_ofClass, Function.comp_apply, Units.coe_mapEquiv, MonoidHom.coe_toHomUnits,
+    MonoidHom.coe_mk, OneHom.coe_mk, RingEquiv.coe_toMulEquiv, ZMod.ringEquivCongr_val,
+    AlgEquiv.coe_toRingEquiv] using modularCyclotomicCharacter.toFun_spec'' g hμ
 
 /-
 
 ## The p-adic theory
-
 -/
 
 open modularCyclotomicCharacter in
@@ -280,7 +275,7 @@ theorem toFun_apply :
     cyclotomicCharacter.toFun p g =
       PadicInt.ofIntSeq _ (PadicInt.isCauSeq_padicNorm_of_pow_dvd_sub
         (aux g <| p ^ ·) _ fun i ↦ pow_dvd_aux_pow_sub_aux_pow g p i.le_succ) :=
-  dif_pos fun _ ↦ HasEnoughRootsOfUnity.exists_primitiveRoot _ _
+  dite_eq_left fun _ ↦ HasEnoughRootsOfUnity.exists_isPrimitiveRoot _ _
 
 open modularCyclotomicCharacter in
 theorem toZModPow_toFun (n : ℕ) :
@@ -293,8 +288,8 @@ theorem toZModPow_toFun (n : ℕ) :
   simp [modularCyclotomicCharacter, modularCyclotomicCharacter', modularCyclotomicCharacter.toFun]
 
 theorem toFun_spec (g : L ≃+* L) {n : ℕ} (t : rootsOfUnity (p ^ n) L) :
-    g (t : Lˣ) = t.1 ^ ((χ p g).toZModPow n).val := by
-  rw [toZModPow_toFun, ← modularCyclotomicCharacter.spec (ht := t.2)]
+    g (t : Lˣ) = t.val ^ ((χ p g).toZModPow n).val := by
+  rw [toZModPow_toFun, ← modularCyclotomicCharacter.spec (ht := t.property)]
 
 end cyclotomicCharacter
 
@@ -311,16 +306,16 @@ noncomputable def cyclotomicCharacter (p : ℕ) [Fact p.Prime] :
   { toFun g := cyclotomicCharacter.toFun p g
     map_one' := by
       by_cases H : ∀ (i : ℕ), ∃ ζ : L, IsPrimitiveRoot ζ (p ^ i)
-      · haveI _ (i) : HasEnoughRootsOfUnity L (p ^ i) := ⟨H i, rootsOfUnity.isCyclic _ _⟩
+      · have _ (i) : HasEnoughRootsOfUnity L (p ^ i) := ⟨H i, rootsOfUnity.isCyclic _ _⟩
         refine PadicInt.ext_of_toZModPow.mp fun n ↦ ?_
         simp [cyclotomicCharacter.toZModPow_toFun]
-      · simp [cyclotomicCharacter.toFun, dif_neg H]
+      · simp [cyclotomicCharacter.toFun, dite_eq_right H]
     map_mul' f g := by
       by_cases H : ∀ (i : ℕ), ∃ ζ : L, IsPrimitiveRoot ζ (p ^ i)
-      · haveI _ (i) : HasEnoughRootsOfUnity L (p ^ i) := ⟨H i, rootsOfUnity.isCyclic _ _⟩
+      · have _ (i) : HasEnoughRootsOfUnity L (p ^ i) := ⟨H i, rootsOfUnity.isCyclic _ _⟩
         refine PadicInt.ext_of_toZModPow.mp fun n ↦ ?_
         simp [cyclotomicCharacter.toZModPow_toFun]
-      · simp [cyclotomicCharacter.toFun, dif_neg H] }
+      · simp [cyclotomicCharacter.toFun, dite_eq_right H] }
 
 theorem cyclotomicCharacter.spec (p : ℕ) [Fact p.Prime] {n : ℕ}
     [∀ i, HasEnoughRootsOfUnity L (p ^ i)] (g : L ≃+* L) (t : L) (ht : t ^ p ^ n = 1) :
@@ -339,9 +334,9 @@ lemma cyclotomicCharacter.continuous (p : ℕ) [Fact p.Prime]
     (K L : Type*) [Field K] [Field L] [Algebra K L] :
     Continuous ((cyclotomicCharacter L p).comp (MulSemiringAction.toRingAut Gal(L/K) L)) := by
   by_cases H : ∀ (i : ℕ), ∃ ζ : L, IsPrimitiveRoot ζ (p ^ i); swap
-  · simp only [cyclotomicCharacter, cyclotomicCharacter.toFun, dif_neg H, MonoidHom.coe_comp]
+  · simp only [cyclotomicCharacter, cyclotomicCharacter.toFun, dite_eq_right H, MonoidHom.coe_comp]
     exact continuous_const (y := 1)
-  haveI _ (i) : HasEnoughRootsOfUnity L (p ^ i) := ⟨H i, rootsOfUnity.isCyclic _ _⟩
+  have _ (i) : HasEnoughRootsOfUnity L (p ^ i) := ⟨H i, rootsOfUnity.isCyclic _ _⟩
   choose ζ hζ using H
   refine Continuous.of_coeHom_comp ?_
   apply continuous_of_continuousAt_one
@@ -350,7 +345,7 @@ lemma cyclotomicCharacter.continuous (p : ℕ) [Fact p.Prime]
   intro ε hε
   obtain ⟨k, hk', hk⟩ : ∃ k : ℕ, k ≠ 0 ∧ p ^ (-k : ℤ) < ε := by
     obtain ⟨k, hk⟩ := PadicInt.exists_pow_neg_lt p hε
-    exact ⟨k + 1, by simp, lt_of_le_of_lt (by gcongr <;> simp [‹Fact p.Prime›.1.one_le]) hk⟩
+    exact ⟨k + 1, by simp, lt_of_le_of_lt (by gcongr <;> simp [‹Fact p.Prime›.out.one_le]) hk⟩
   refine ⟨_, ⟨_, ⟨(K⟮ζ k⟯), adjoin.finiteDimensional ?_, rfl⟩, rfl⟩, ?_⟩
   · exact ((hζ k).isIntegral (Nat.pos_of_neZero _)).tower_top
   · intro σ hσ
@@ -364,4 +359,4 @@ lemma cyclotomicCharacter.continuous (p : ℕ) [Fact p.Prime]
     obtain ⟨i, hi, rfl⟩ := ((hζ k).isUnit_unit NeZero.out).eq_pow_of_mem_rootsOfUnity ht
     rw [ZMod.val_one'', pow_one]
     · exact hσ ⟨ζ k ^ i, pow_mem (mem_adjoin_simple_self K (ζ k)) _⟩
-    · exact (one_lt_pow₀ ‹Fact p.Prime›.1.one_lt hk').ne'
+    · exact (one_lt_pow₀ ‹Fact p.Prime›.out.one_lt hk').ne'

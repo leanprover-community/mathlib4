@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.ModelCategory.Basic
 public import Mathlib.CategoryTheory.Adjunction.Limits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Transport a model category via an equivalence
 
@@ -20,7 +23,6 @@ are the inverse images of the corresponding properties of
 morphisms by the functor `e.functor : C ⥤ D`. Under these
 assumptions, we show that the model category axioms for `C`
 hold if they hold for `D`.
-
 -/
 
 @[expose] public section
@@ -35,7 +37,7 @@ with a `CategoryWithFibrations` instance (and similarly for cofibrations and wea
 equivalences), and that the three properties of morphisms (fibrations, cofibrations,
 weak equivalences) in `C` coincide with the inverse images by `e.functor : C ⥤ D`
 of the corresponding properties of morphisms in `D`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def ModelCategory.transport
     {C D : Type*} [Category* C] [Category* D] [ModelCategory D]
     [CategoryWithCofibrations C] [CategoryWithFibrations C]

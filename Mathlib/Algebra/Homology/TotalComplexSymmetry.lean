@@ -19,7 +19,6 @@ then there is an isomorphism `K.totalFlipIso c : K.flip.total c ≅ K.total c`.
 Moreover, if we also have `[TotalComplexShapeSymmetry c₂ c₁ c]` and that the signs
 are compatible `[TotalComplexShapeSymmetrySymmetry c₁ c₂ c]`, then the isomorphisms
 `K.totalFlipIso c` and `K.flip.totalFlipIso c` are inverse to each other.
-
 -/
 
 @[expose] public section
@@ -52,7 +51,6 @@ variable [K.HasTotal c] [DecidableEq J]
 
 attribute [local simp] smul_smul
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `totalFlipIso`. -/
 noncomputable def totalFlipIsoX (j : J) : (K.flip.total c).X j ≅ (K.total c).X j where
   hom := K.flip.totalDesc (fun i₂ i₁ h => ComplexShape.σ c₁ c₂ c i₁ i₂ • K.ιTotal c i₁ i₂ j (by
@@ -62,8 +60,6 @@ noncomputable def totalFlipIsoX (j : J) : (K.flip.total c).X j ≅ (K.total c).X
   hom_inv_id := by ext; simp
   inv_hom_id := by ext; simp
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma totalFlipIsoX_hom_D₁ (j j' : J) :
     (K.totalFlipIsoX c j).hom ≫ K.D₁ c j j' =
@@ -85,8 +81,6 @@ lemma totalFlipIsoX_hom_D₁ (j j' : J) :
     · rw [K.d₁_eq_zero _ _ _ _ h₂, K.flip.d₂_eq_zero _ _ _ _ h₂, smul_zero, zero_comp]
   · rw [K.D₁_shape _ _ _ h₀, K.flip.D₂_shape c _ _ h₀, zero_comp, comp_zero]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma totalFlipIsoX_hom_D₂ (j j' : J) :
     (K.totalFlipIsoX c j).hom ≫ K.D₂ c j j' =
@@ -108,7 +102,6 @@ lemma totalFlipIsoX_hom_D₂ (j j' : J) :
     · rw [K.d₂_eq_zero _ _ _ _ h₂, K.flip.d₁_eq_zero _ _ _ _ h₂, smul_zero, zero_comp]
   · rw [K.D₂_shape _ _ _ h₀, K.flip.D₁_shape c _ _ h₀, zero_comp, comp_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The symmetry isomorphism `K.flip.total c ≅ K.total c` of the total complex of a
 bicomplex when we have `[TotalComplexShapeSymmetry c₁ c₂ c]`. -/
 noncomputable def totalFlipIso : K.flip.total c ≅ K.total c :=

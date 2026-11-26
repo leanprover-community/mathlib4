@@ -6,14 +6,16 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+public import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Initial and terminal objects in the category of functors
 
 We show that if a functor `F : C ⥤ D` is such that `F.obj X`
 is terminal for all `X`, then `F` is a terminal object.
-
 -/
 
 @[expose] public section

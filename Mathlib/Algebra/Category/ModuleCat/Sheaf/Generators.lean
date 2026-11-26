@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Free
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PushforwardContinuous
 public import Mathlib.CategoryTheory.Sites.CoversTop.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Generating sections of sheaves of modules
 
@@ -24,7 +27,6 @@ define sheaves of modules of finite type.
 ## References
 
 * https://stacks.math.columbia.edu/tag/01B4
-
 -/
 
 @[expose] public section
@@ -124,12 +126,12 @@ noncomputable
 def LocalGeneratorsData.shrink {M : SheafOfModules.{u} R} (q : M.LocalGeneratorsData) :
     LocalGeneratorsData.{u'} M where
   I := Set.range q.X
-  X i := q.X i.2.choose
+  X i := q.X i.property.choose
   coversTop X := by
     refine J.superset_covering (fun Y hY H ↦ ?_) (q.coversTop X)
     obtain ⟨i, ⟨hi⟩⟩ := (Sieve.mem_ofObjects_iff ..).mp H
     exact ⟨⟨_, i, rfl⟩, ⟨hi ≫ eqToHom (by grind)⟩⟩
-  generators i := q.generators i.2.choose
+  generators i := q.generators i.property.choose
 
 variable {M} in
 /-- The data of local generators of a sheaf of modules is finite type if
