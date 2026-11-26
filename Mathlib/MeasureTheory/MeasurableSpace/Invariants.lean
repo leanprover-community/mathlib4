@@ -57,7 +57,7 @@ theorem le_invariants_iterate (f : α → α) (n : ℕ) :
     invariants f ≤ invariants (f^[n]) := by
   induction n with
   | zero => simp [invariants_le]
-  | succ n ihn => exact le_trans (le_inf ihn le_rfl) (inf_le_invariants_comp _ _)
+  | succ n ihn => exact le_trans (le_inf le_rfl ihn) (inf_le_invariants_comp _ _)
 
 variable {β : Type*} [MeasurableSpace β]
 

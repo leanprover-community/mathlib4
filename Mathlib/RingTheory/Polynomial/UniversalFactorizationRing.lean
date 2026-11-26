@@ -274,7 +274,7 @@ lemma pderiv_inr_universalFactorizationMap_X (i j) :
   · obtain h | h := lt_or_ge j.val i.val
     · rw [Finset.sum_eq_zero, ite_eq_left h]
       simp only [Finset.mem_antidiagonal]
-      lia
+      lia -filterFacts
     rw [Finset.sum_eq_single ⟨j.val - i.val, i.val⟩, ite_eq_right h.not_gt]
     · simp
     · simp only [Finset.mem_antidiagonal, ne_eq, ite_eq_right_iff, Prod.forall, Prod.mk.injEq]

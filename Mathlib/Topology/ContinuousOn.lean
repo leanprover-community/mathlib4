@@ -755,7 +755,7 @@ theorem continuousWithinAt_id {s : Set α} {x : α} : ContinuousWithinAt id s x 
 protected theorem ContinuousOn.iterate {f : α → α} {s : Set α} (hcont : ContinuousOn f s)
     (hmaps : MapsTo f s s) : ∀ n, ContinuousOn (f^[n]) s
   | 0 => continuousOn_id
-  | (n + 1) => (hcont.iterate hmaps n).comp hcont hmaps
+  | (n + 1) => hcont.comp (hcont.iterate hmaps n) (hmaps.iterate n)
 
 section Fin
 variable {n : ℕ} {X : Fin (n + 1) → Type*} [∀ i, TopologicalSpace (X i)]

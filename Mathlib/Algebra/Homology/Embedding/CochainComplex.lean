@@ -421,7 +421,7 @@ noncomputable def truncGEXIso (n i : ℤ) (hi : n < i := by lia) :
       rw [Int.natAbs_of_nonneg (by lia), add_sub_cancel])
     (fun h ↦ by
       rw [boundaryGE_embeddingUpIntGE_iff, Int.natAbs_eq_zero] at h
-      lia)
+      lia -filterFacts)
 
 /-- When `K` is a cochain complex indexed by `ℤ` and `i < n`, this is
 the isomorphism `(K.truncLE n).X i ≅ K.X i`. -/
@@ -432,7 +432,7 @@ noncomputable def truncLEXIso (n i : ℤ) (hi : i < n := by lia) :
       rw [Int.natAbs_of_nonneg (by lia), sub_sub_cancel])
     (fun h ↦ by
       rw [boundaryLE_embeddingUpIntLE_iff, Int.natAbs_eq_zero] at h
-      lia)
+      lia -filterFacts)
 
 /-- When `K` is a cochain complex indexed by `ℤ`, this is the isomorphism
 `(K.truncGE n).X n ≅ K.opcycles n`. -/

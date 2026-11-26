@@ -532,7 +532,7 @@ theorem LinearIndependent.of_pairwise_dual_eq_zero_one (v : ι → M) (f : ι �
     LinearIndependent R v := by
   refine linearIndependent_iff'.mpr fun s g hrel i hi ↦ ?_
   have aux (j : ι) (hjs : j ∈ s) (hji : j ≠ i) : g j * (f i) (v j) = 0 := by simp [h1 hji.symm]
-  simpa [s.sum_eq_single i aux (by lia), h2 i] using congr(f i $hrel)
+  simpa [s.sum_eq_single i aux (by lia -filterFacts), h2 i] using congr(f i $hrel)
 
 end Module
 

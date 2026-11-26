@@ -435,7 +435,6 @@ lemma dist_iterate_iterate_next_le_of_lipschitzWith (hf : IsPicardLindelof f t�
   rw [Finset.mul_sum, Finset.sum_mul]
   apply dist_le_range_sum_of_dist_le (f := fun i ↦ (next hf hx)^[m]^[i] α)
   intro i hi
-  rw [iterate_succ_apply]
   apply le_trans <| hm.dist_iterate_succ_le_geometric α i
   rw [mul_assoc, mul_comm ((C : ℝ) ^ i), ← mul_assoc]
   gcongr

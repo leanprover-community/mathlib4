@@ -102,11 +102,12 @@ where
   /-- The positive case of `Int.inductionOn'`. -/
   pos : ∀ n : ℕ, motive (b + n)
   | 0 => cast (by simp) zero
-  | n + 1 => cast (by lia) <| succ _ (Int.le_add_of_nonneg_right (natCast_nonneg _)) (pos n)
+  | n + 1 =>
+    cast (by congr 1; lia) <| succ _ (Int.le_add_of_nonneg_right (natCast_nonneg _)) (pos n)
   /-- The negative case of `Int.inductionOn'`. -/
   neg : ∀ n : ℕ, motive (b + -[n+1])
   | 0 => pred _ Int.le_rfl zero
-  | n + 1 => cast (by lia) <| pred _ (by lia) (neg n)
+  | n + 1 => cast (by congr 1; lia) <| pred _ (by lia) (neg n)
 
 variable {z b zero succ pred}
 

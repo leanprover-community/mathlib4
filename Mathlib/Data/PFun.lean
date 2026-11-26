@@ -324,7 +324,7 @@ def fixInduction {C : α → Sort*} {f : α →. β ⊕ α} {b : β} {a : α} (h
   have h₂ := (Part.mem_assert_iff.1 h).snd
   generalize_proofs at h₂
   clear h
-  induction ‹Acc (Sum.inr · ∈ f ·) a› with | intro a ha IH => _
+  induction ‹Acc (Sum.inr · ∈ f ·) a› using Acc.rec' with | intro a ha IH => _
   have h : b ∈ f.fix a := Part.mem_assert_iff.2 ⟨⟨a, ha⟩, h₂⟩
   exact H a h fun a' fa' => IH a' fa' (Part.mem_assert_iff.1 (fix_fwd h fa')).snd
 
@@ -334,7 +334,8 @@ theorem fixInduction_spec {C : α → Sort*} {f : α →. β ⊕ α} {b : β} {a
   unfold fixInduction
   generalize_proofs
   induction ‹Acc _ _›
-  rfl
+  dsimp only
+  rw [Acc.rec'_eq]
 
 /-- Another induction lemma for `b ∈ f.fix a` which allows one to prove a predicate `P` holds for
 `a` given that `f a` inherits `P` from `a` and `P` holds for preimages of `b`.

@@ -123,7 +123,7 @@ theorem Continuous.comp' {g : Y → Z} (hg : Continuous g) (hf : Continuous f) :
 
 @[fun_prop]
 theorem Continuous.iterate {f : X → X} (h : Continuous f) (n : ℕ) : Continuous f^[n] :=
-  Nat.recOn n continuous_id fun _ ihn => ihn.comp h
+  Nat.recOn n continuous_id fun _ ihn => h.comp ihn
 
 nonrec theorem ContinuousAt.comp {g : Y → Z} (hg : ContinuousAt g (f x))
     (hf : ContinuousAt f x) : ContinuousAt (g ∘ f) x :=
@@ -179,7 +179,7 @@ theorem continuousAt_id' (y) : ContinuousAt (fun x : X => x) y := continuousAt_i
 
 theorem ContinuousAt.iterate {f : X → X} (hf : ContinuousAt f x) (hx : f x = x) (n : ℕ) :
     ContinuousAt f^[n] x :=
-  Nat.recOn n continuousAt_id fun _n ihn ↦ ihn.comp_of_eq hf hx
+  Nat.recOn n continuousAt_id fun _n ihn ↦ hf.comp_of_eq ihn (Function.iterate_fixed hx _)
 
 theorem continuous_iff_isClosed : Continuous f ↔ ∀ s, IsClosed s → IsClosed (f ⁻¹' s) :=
   continuous_def.trans <| compl_surjective.forall.trans <| by

@@ -288,6 +288,7 @@ theorem iterated_kk (h₁ : (𝒜 : Set (Finset (Fin n))).Sized r) (h₂ : #𝒞
   induction k generalizing r 𝒜 𝒞 with
   | zero => simpa
   | succ _ ih =>
+    rw [Function.iterate_succ_apply, Function.iterate_succ_apply]
     refine ih h₁.shadow (kruskal_katona h₁ h₂ h₃) ?_
     convert h₃.shadow
 

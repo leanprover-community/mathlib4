@@ -92,7 +92,7 @@ protected theorem comp {g : β → γ} {f : α → β} (hg : QuasiMeasurePreserv
 protected theorem iterate {f : α → α} (hf : QuasiMeasurePreserving f μa μa) :
     ∀ n, QuasiMeasurePreserving f^[n] μa μa
   | 0 => QuasiMeasurePreserving.id μa
-  | n + 1 => (hf.iterate n).comp hf
+  | n + 1 => hf.comp (hf.iterate n)
 
 protected theorem congr (hf : QuasiMeasurePreserving f μa μb) {f' : α → β}
     (h : f =ᵐ[μa] f') : QuasiMeasurePreserving f' μa μb := by

@@ -320,7 +320,7 @@ theorem mk_eq_iff (x y : ℕ × K) :
   · intro H
     replace H := Quot.eqvGen_exact H
     induction H with
-    | rel x y H => obtain ⟨n, x⟩ := H; exact ⟨0, rfl⟩
+    | rel x y H => obtain ⟨n, x⟩ := H; exact ⟨0, Function.iterate_succ_apply _ _ _⟩
     | refl H => exact ⟨0, rfl⟩
     | symm x y H ih => obtain ⟨w, ih⟩ := ih; exact ⟨w, ih.symm⟩
     | trans x y z H1 H2 ih1 ih2 =>

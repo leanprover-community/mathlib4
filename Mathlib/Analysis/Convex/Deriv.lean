@@ -240,7 +240,7 @@ lemma convexOn_of_hasDerivWithinAt2_nonneg {D : Set ℝ} (hD : Convex ℝ D) {f 
     exact fun x hx ↦ (hf'' _ hx).differentiableWithinAt
   · rintro x hx
     convert hf''₀ _ hx
-    dsimp
+    dsimp only [Function.iterate_succ_apply', Function.iterate_zero_apply]
     rw [deriv_eqOn isOpen_interior (fun y hy ↦ ?_) hx]
     exact (hf'' _ hy).congr this <| by rw [this hy]
 
@@ -256,7 +256,7 @@ lemma concaveOn_of_hasDerivWithinAt2_nonpos {D : Set ℝ} (hD : Convex ℝ D) {f
     exact fun x hx ↦ (hf'' _ hx).differentiableWithinAt
   · rintro x hx
     convert hf''₀ _ hx
-    dsimp
+    dsimp only [Function.iterate_succ_apply', Function.iterate_zero_apply]
     rw [deriv_eqOn isOpen_interior (fun y hy ↦ ?_) hx]
     exact (hf'' _ hy).congr this <| by rw [this hy]
 

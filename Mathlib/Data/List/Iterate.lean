@@ -60,7 +60,8 @@ theorem iterate_add (f : α → α) (a : α) (m n : ℕ) :
     iterate f a (m + n) = iterate f a m ++ iterate f (f^[m] a) n := by
   induction m generalizing a with
   | zero => simp
-  | succ n ih => rw [iterate, add_right_comm, iterate, ih, Nat.iterate, cons_append]
+  | succ n ih =>
+    rw [iterate, add_right_comm, iterate, ih, Function.iterate_succ_apply, cons_append]
 
 theorem take_iterate (f : α → α) (a : α) (m n : ℕ) :
     take m (iterate f a n) = iterate f a (min m n) := by

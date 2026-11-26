@@ -84,7 +84,7 @@ protected theorem iterate {f : α → α} (hf : LeftOrdContinuous f) (n : ℕ) :
     LeftOrdContinuous f^[n] :=
   match n with
   | 0 => LeftOrdContinuous.id α
-  | (n + 1) => (LeftOrdContinuous.iterate hf n).comp hf
+  | (n + 1) => hf.comp (LeftOrdContinuous.iterate hf n)
 
 end Preorder
 

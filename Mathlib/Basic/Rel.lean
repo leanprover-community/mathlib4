@@ -421,7 +421,7 @@ lemma right_subset_comp [R.IsRefl] {S : SetRel α β} : S ⊆ R ○ S := by
 
 lemma subset_iterate_comp [R.IsRefl] {S : SetRel α β} : ∀ {n}, S ⊆ (R ○ ·)^[n] S
   | 0 => .rfl
-  | _n + 1 => right_subset_comp.trans subset_iterate_comp
+  | _n + 1 => subset_iterate_comp.trans right_subset_comp
 
 lemma self_subset_image [R.IsRefl] (s : Set α) : s ⊆ R.image s :=
   fun x hx => ⟨x, hx, R.rfl⟩

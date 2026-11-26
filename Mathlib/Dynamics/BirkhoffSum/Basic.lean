@@ -60,8 +60,10 @@ theorem birkhoffSum_succ (f : α → α) (g : α → M) (n : ℕ) :
   funext <| birkhoffSum_succ_apply f g n
 
 theorem birkhoffSum_succ_apply' (f : α → α) (g : α → M) (n : ℕ) (x : α) :
-    birkhoffSum f g (n + 1) x = g x + birkhoffSum f g n (f x) :=
-  (sum_range_succ' _ _).trans (add_comm _ _)
+    birkhoffSum f g (n + 1) x = g x + birkhoffSum f g n (f x) := by
+  have h : ∀ k, f^[k + 1] x = f^[k] (f x) := fun k ↦ iterate_succ_apply f k x
+  simp only [birkhoffSum, sum_range_succ' (fun k ↦ g (f^[k] x)) n, h, iterate_zero_apply]
+  exact add_comm _ _
 
 theorem birkhoffSum_succ' (f : α → α) (g : α → M) (n : ℕ) :
     birkhoffSum f g (n + 1) = g + birkhoffSum f g n ∘ f :=

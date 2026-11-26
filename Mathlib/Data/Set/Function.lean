@@ -153,7 +153,7 @@ theorem mapsTo_id (s : Set α) : MapsTo id s s := fun _ => id
 
 theorem MapsTo.iterate {f : α → α} {s : Set α} (h : MapsTo f s s) : ∀ n, MapsTo f^[n] s s
   | 0 => fun _ => id
-  | n + 1 => (MapsTo.iterate h n).comp h
+  | n + 1 => h.comp (MapsTo.iterate h n)
 
 theorem MapsTo.iterate_restrict {f : α → α} {s : Set α} (h : MapsTo f s s) (n : ℕ) :
     (h.restrict f s s)^[n] = (h.iterate n).restrict _ _ _ := by
@@ -319,7 +319,7 @@ lemma InjOn.comp_iff (hf : InjOn f s) : InjOn (g ∘ f) s ↔ InjOn g (f '' s) :
 lemma InjOn.iterate {f : α → α} {s : Set α} (h : InjOn f s) (hf : MapsTo f s s) :
     ∀ n, InjOn f^[n] s
   | 0 => injOn_id _
-  | (n + 1) => (h.iterate hf n).comp h hf
+  | (n + 1) => h.comp (h.iterate hf n) (hf.iterate n)
 
 lemma injOn_of_subsingleton [Subsingleton α] (f : α → β) (s : Set α) : InjOn f s :=
   (injective_of_subsingleton _).injOn
@@ -531,7 +531,7 @@ lemma surjOn_comp_iff : SurjOn (g ∘ f) s p ↔ SurjOn g (f '' s) p :=
 
 lemma SurjOn.iterate {f : α → α} {s : Set α} (h : SurjOn f s s) : ∀ n, SurjOn f^[n] s s
   | 0 => surjOn_id _
-  | (n + 1) => (h.iterate n).comp h
+  | (n + 1) => h.comp (h.iterate n)
 
 lemma SurjOn.comp_left (hf : SurjOn f s t) (g : β → γ) : SurjOn (g ∘ f) s (g '' t) := by
   rw [SurjOn, image_comp g f]; exact image_mono hf
@@ -719,7 +719,7 @@ theorem bijOn_image_image {p₁ : α → γ} {p₂ : β → δ} {g : γ → δ} 
 
 lemma BijOn.iterate {f : α → α} {s : Set α} (h : BijOn f s s) : ∀ n, BijOn f^[n] s s
   | 0 => s.bijOn_id
-  | (n + 1) => (h.iterate n).comp h
+  | (n + 1) => h.comp (h.iterate n)
 
 lemma bijOn_of_subsingleton' [Subsingleton α] [Subsingleton β] (f : α → β)
     (h : s.Nonempty ↔ t.Nonempty) : BijOn f s t :=

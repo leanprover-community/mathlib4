@@ -431,7 +431,7 @@ theorem trajContent_tendsto_zero {A : ℕ → Set (Π n, X n)}
       ext i
       simp only [updateFinset, mem_Iic, frestrictLe_apply, dite_eq_ite, update, z]
       split_ifs with h1 h2 h3 h4 h5
-      any_goals lia
+      any_goals lia -filterFacts
       cases h2
       rw [iterateInduction, dite_eq_right (by lia)]
   -- We now want to prove that the integral of `χₙ`, which is equal to the `trajContent`

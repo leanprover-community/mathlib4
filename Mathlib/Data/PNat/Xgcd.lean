@@ -238,7 +238,7 @@ theorem start_v (a b : ℕ+) : (start a b).v = ⟨a, b⟩ := by
   have := b.pos
   #adaptation_note /-- After https://github.com/leanprover/lean4/pull/13593
   we need to re-enable model-based theory combination in `lia` for this to go through. -/
-  lia +mbtc
+  lia +mbtc -filterFacts
 
 /-- `finish` happens when the reducing process ends. -/
 def finish : XgcdType :=

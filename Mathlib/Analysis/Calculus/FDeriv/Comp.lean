@@ -239,12 +239,12 @@ variable (x)
 @[fun_prop]
 protected theorem Differentiable.iterate (hf : Differentiable 𝕜 f) (n : ℕ) :
     Differentiable 𝕜 f^[n] :=
-  Nat.recOn n differentiable_id fun _ ihn => ihn.comp hf
+  Nat.recOn n differentiable_id fun _ ihn => hf.comp ihn
 
 @[fun_prop]
 protected theorem DifferentiableOn.iterate (hf : DifferentiableOn 𝕜 f s) (hs : MapsTo f s s)
     (n : ℕ) : DifferentiableOn 𝕜 f^[n] s :=
-  Nat.recOn n differentiableOn_id fun _ ihn => ihn.comp hf hs
+  Nat.recOn n differentiableOn_id fun n ihn => hf.comp ihn (hs.iterate n)
 
 variable {x}
 
