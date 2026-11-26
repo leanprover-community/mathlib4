@@ -19,7 +19,7 @@ Technically, this is done by transporting the existing definition for `Arithmeti
 see `LSeries.convolution`. We show that these definitions agree (`LSeries.convolution_def`).
 
 We then consider the case `R = ℂ` and show that `L (f ⍟ g) = L f * L g` on the common domain
-of convergence of the L-series `L f`  and `L g` of `f` and `g`; see `LSeries_convolution`
+of convergence of the L-series `L f` and `L g` of `f` and `g`; see `LSeries_convolution`
 and `LSeries_convolution'`.
 -/
 
