@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Ring.Defs
 
 import Mathlib.Algebra.Group.Semiconj.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Semirings and rings
 

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.NatIso
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Full and faithful functors
 
@@ -16,6 +19,7 @@ contains the data of the inverse map `(F.obj X ⟶ F.obj Y) ⟶ (X ⟶ Y)` of th
 map induced on morphisms by a functor `F`.
 
 ## Main definitions and results
+
 * Use `F.map_injective` to retrieve the fact that `F.map` is injective when `[Faithful F]`.
 * Similarly, `F.map_surjective` states that `F.map` is surjective when `[Full F]`.
 * Use `F.preimage` to obtain preimages of morphisms when `[Full F]`.

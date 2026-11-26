@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
 public import Mathlib.LinearAlgebra.Semisimple
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Eigenspaces of semisimple linear endomorphisms
 

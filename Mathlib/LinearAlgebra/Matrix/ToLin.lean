@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Algebra.Subalgebra.Tower
 public import Mathlib.Algebra.Module.Projective
 public import Mathlib.Basic.Finite.Sum
 public import Mathlib.Data.Matrix.Block
+public import Mathlib.Data.Matrix.ColumnRowPartitioned
 public import Mathlib.LinearAlgebra.Basis.Fin
 public import Mathlib.LinearAlgebra.Basis.Prod
 public import Mathlib.LinearAlgebra.Basis.SMul
@@ -915,11 +916,54 @@ theorem toMatrix_distrib_mul_action_toLinearMap (x : R) :
     Basis.repr_self, Finsupp.smul_single_one, Finsupp.single_eq_pi_single, Matrix.diagonal_apply,
     Pi.single_apply]
 
-lemma LinearMap.toMatrix_prodMap [DecidableEq m] [DecidableEq (n ⊕ m)]
-    (φ₁ : Module.End R M₁) (φ₂ : Module.End R M₂) :
-    toMatrix (v₁.prod v₂) (v₁.prod v₂) (φ₁.prodMap φ₂) =
-      Matrix.fromBlocks (toMatrix v₁ v₁ φ₁) 0 0 (toMatrix v₂ v₂ φ₂) := by
-  ext (i | i) (j | j) <;> simp [toMatrix]
+variable {m' n' M₁' M₂' : Type*} [Finite n'] [Finite m'] [AddCommMonoid M₁'] [AddCommMonoid M₂']
+  [Module R M₁'] [Module R M₂'] (v₁' : Basis n' R M₁') (v₂' : Basis m' R M₂')
+
+/-- Disambiguation: This statement is about `LinearMap.prod`. For the statement about maps between
+product modules see `LinearMap.toMatrix_prod_eq_fromBlocks`. -/
+lemma LinearMap.toMatrix_prod_eq_fromRows (φ : M₁ →ₗ[R] M₁') (φ₂ : M₁ →ₗ[R] M₂') :
+    toMatrix v₁ (v₁'.prod v₂') (φ.prod φ₂) =
+      fromRows (toMatrix v₁ v₁' φ) (toMatrix v₁ v₂' φ₂) := by
+  ext (i | i) j <;> simp [toMatrix_apply]
+
+lemma Matrix.toLin_fromRows (A : Matrix n' n R) (B : Matrix m' n R) :
+    toLin v₁ (v₁'.prod v₂') (A.fromRows B) = (toLin v₁ v₁' A).prod (toLin v₁ v₂' B) := by
+  apply (toMatrix v₁ (v₁'.prod v₂')).injective
+  simp [toMatrix_prod_eq_fromRows]
+
+variable [DecidableEq m]
+
+lemma LinearMap.toMatrix_coprod (φ : M₁ →ₗ[R] M₁') (φ₂ : M₂ →ₗ[R] M₁') :
+    toMatrix (v₁.prod v₂) v₁' (φ.coprod φ₂) =
+      fromCols (toMatrix v₁ v₁' φ) (toMatrix v₂ v₁' φ₂) := by
+  ext i (j | j) <;> simp [toMatrix_apply]
+
+lemma Matrix.toLin_fromCols (A : Matrix n' n R) (B : Matrix n' m R) :
+    toLin (v₁.prod v₂) v₁' (A.fromCols B) = (toLin v₁ v₁' A).coprod (toLin v₂ v₁' B) := by
+  apply (toMatrix (v₁.prod v₂) v₁').injective
+  simp [toMatrix_coprod]
+
+/-- Disambiguation: This statement is about maps between product modules. For the statement about
+`LinearMap.prod` see `LinearMap.toMatrix_prod_eq_fromRows`. -/
+lemma LinearMap.toMatrix_prod_eq_fromBlocks (φ : M₁ × M₂ →ₗ[R] M₁' × M₂') :
+    toMatrix (v₁.prod v₂) (v₁'.prod v₂') φ =
+      fromBlocks (toMatrix v₁ v₁' (fst R M₁' M₂' ∘ₗ φ ∘ₗ inl R M₁ M₂))
+        (toMatrix v₂ v₁' (fst R M₁' M₂' ∘ₗ φ ∘ₗ inr R M₁ M₂))
+        (toMatrix v₁ v₂' (snd R M₁' M₂' ∘ₗ φ ∘ₗ inl R M₁ M₂))
+        (toMatrix v₂ v₂' (snd R M₁' M₂' ∘ₗ φ ∘ₗ inr R M₁ M₂)) := by
+  ext (i | i) (j | j) <;> simp [toMatrix_apply]
+
+lemma Matrix.toLin_fromBlocks (A : Matrix n' n R) (B : Matrix n' m R) (C : Matrix m' n R)
+    (D : Matrix m' m R) : toLin (v₁.prod v₂) (v₁'.prod v₂') (fromBlocks A B C D) =
+      LinearMap.coprod (LinearMap.prod (toLin v₁ v₁' A) (toLin v₁ v₂' C))
+        (LinearMap.prod (toLin v₂ v₁' B) (toLin v₂ v₂' D)) := by
+  apply (toMatrix (v₁.prod v₂) (v₁'.prod v₂')).injective
+  simp [toMatrix_prod_eq_fromBlocks]
+
+lemma LinearMap.toMatrix_prodMap (φ₁ : M₁ →ₗ[R] M₁') (φ₂ : M₂ →ₗ[R] M₂') :
+    toMatrix (v₁.prod v₂) (v₁'.prod v₂') (φ₁.prodMap φ₂) =
+      fromBlocks (toMatrix v₁ v₁' φ₁) 0 0 (toMatrix v₂ v₂' φ₂) := by
+  simp [toMatrix_prod_eq_fromBlocks, LinearMap.ext_iff]
 
 end ToMatrix
 

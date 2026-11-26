@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Category.AlgCat.Basic
 public import Mathlib.Algebra.Category.CoalgCat.Basic
 public import Mathlib.RingTheory.Bialgebra.Equiv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of bialgebras over a commutative ring
 
@@ -129,7 +132,7 @@ theorem forget₂_algebra_map (X Y : BialgCat R) (f : X ⟶ Y) :
 instance hasForgetToCoalgebra : HasForget₂ (BialgCat R) (CoalgCat R) where
   forget₂ :=
     { obj := fun X => ↧X
-      map := fun {_ _} f => CoalgCat.ofHom f.toBialgHom }
+      map := fun {_ _} f => CoalgCat.ofHom f.toBialgHom.toCoalgHom }
 
 @[simp]
 theorem forget₂_coalgebra_obj (X : BialgCat R) :
@@ -138,7 +141,7 @@ theorem forget₂_coalgebra_obj (X : BialgCat R) :
 
 @[simp]
 theorem forget₂_coalgebra_map (X Y : BialgCat R) (f : X ⟶ Y) :
-    (forget₂ (BialgCat R) (CoalgCat R)).map f = CoalgCat.ofHom f.toBialgHom :=
+    (forget₂ (BialgCat R) (CoalgCat R)).map f = CoalgCat.ofHom f.toBialgHom.toCoalgHom :=
   rfl
 
 end BialgCat
@@ -155,8 +158,8 @@ variable [Bialgebra R X] [Bialgebra R Y] [Bialgebra R Z]
 `BialgEquiv`. -/
 @[simps]
 def toBialgIso (e : X ≃ₐc[R] Y) : BialgCat.of R X ≅ BialgCat.of R Y where
-  hom := BialgCat.ofHom e
-  inv := BialgCat.ofHom e.symm
+  hom := BialgCat.ofHom e.toBialgHom
+  inv := BialgCat.ofHom e.symm.toBialgHom
   hom_inv_id := Hom.ext <| DFunLike.ext _ _ e.left_inv
   inv_hom_id := Hom.ext <| DFunLike.ext _ _ e.right_inv
 
@@ -188,7 +191,7 @@ def toBialgEquiv (i : X ≅ Y) : X ≃ₐc[R] Y :=
     right_inv := fun x => congr($(i.inv_hom_id).toBialgHom x) }
 
 @[simp] theorem toBialgEquiv_toBialgHom (i : X ≅ Y) :
-    (i.toBialgEquiv : X →ₐc[R] Y) = i.hom.toBialgHom' := rfl
+    i.toBialgEquiv.toBialgHom = i.hom.toBialgHom' := rfl
 
 @[simp] theorem toBialgEquiv_refl : toBialgEquiv (.refl X) = .refl _ _ :=
   rfl

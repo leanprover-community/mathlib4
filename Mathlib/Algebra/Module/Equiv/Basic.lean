@@ -583,13 +583,13 @@ See also `LinearEquiv.arrowCongr` for the linear version of this isomorphism. -/
   invFun f := (e₂.symm.comp f).comp e₁.toLinearMap
   left_inv f := by
     ext x
-    simp only [symm_apply_apply, Function.comp_apply, coe_comp, coe_coe]
+    simp only [symm_apply_apply, Function.comp_apply, coe_comp, coe_toLinearMap]
   right_inv f := by
     ext x
-    simp only [Function.comp_apply, apply_symm_apply, coe_comp, coe_coe]
+    simp only [Function.comp_apply, apply_symm_apply, coe_comp, coe_toLinearMap]
   map_add' f g := by
     ext x
-    simp only [map_add, LinearMap.add_apply, Function.comp_apply, coe_comp, coe_coe]
+    simp only [map_add, LinearMap.add_apply, Function.comp_apply, coe_comp, coe_toLinearMap]
 
 /-- If `M` and `M₂` are linearly isomorphic then the endomorphism rings of `M` and `M₂`
 are isomorphic.

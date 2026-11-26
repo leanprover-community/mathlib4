@@ -9,6 +9,9 @@ public import Mathlib.Probability.Kernel.Composition.CompNotation
 public import Mathlib.Probability.Kernel.Composition.MeasureCompProd
 public import Mathlib.Probability.Kernel.WithDensity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Composition of kernels and measures with density
 

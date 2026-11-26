@@ -14,7 +14,7 @@ import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 
 This file contains results about bases in normed affine spaces.
 
-## Main definitions:
+## Main definitions
 
 * `continuous_barycentric_coord`
 * `isOpenMap_barycentric_coord`

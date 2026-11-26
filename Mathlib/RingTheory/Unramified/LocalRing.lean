@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.Unramified.Field
 # Unramified algebras over local rings
 
 ## Main results
+
 - `Algebra.FormallyUnramified.iff_map_maximalIdeal_eq`:
   Let `R` be a local ring, `A` be a local `R`-algebra essentially of finite type.
   Then `A/R` is unramified if and only if `κA/κR` is separable, and `m_R S = m_S`.

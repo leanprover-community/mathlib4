@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Conj
 public import Mathlib.Algebra.GroupWithZero.Units.Fintype
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Conjugacy of elements of finite groups
 -/

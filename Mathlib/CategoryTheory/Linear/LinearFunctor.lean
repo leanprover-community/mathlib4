@@ -16,7 +16,7 @@ import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 An additive functor between two `R`-linear categories is called *linear*
 if the induced map on hom types is a morphism of `R`-modules.
 
-## Implementation details
+## Implementation notes
 
 `Functor.Linear` is a `Prop`-valued class, defined by saying that
 for every two objects `X` and `Y`, the map

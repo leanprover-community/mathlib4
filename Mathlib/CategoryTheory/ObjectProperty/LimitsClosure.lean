@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
 public import Mathlib.Order.TransfiniteIteration
 public import Mathlib.SetTheory.Cardinal.HasCardinalLT
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Closure of a property of objects under limits of certain shapes
 

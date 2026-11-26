@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 public import Mathlib.Topology.Category.TopCat.Limits.Products
 public import Mathlib.Topology.UnitInterval
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The cartesian monoidal structure on `TopCat`
 

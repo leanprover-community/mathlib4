@@ -12,10 +12,14 @@ public import Mathlib.RingTheory.Valuation.Archimedean
 public import Mathlib.Topology.Algebra.Valued.NormedValued
 public import Mathlib.Topology.Algebra.Valued.ValuedField
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Necessary and sufficient conditions for a locally compact valued field
 
 ## Main Definitions
+
 * `totallyBounded_iff_finite_residueField`: when the valuation ring is a DVR,
   it is totally bounded iff the residue field is finite.
 

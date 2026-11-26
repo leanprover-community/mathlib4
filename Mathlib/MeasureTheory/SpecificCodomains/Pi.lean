@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integrability in a product space
 
