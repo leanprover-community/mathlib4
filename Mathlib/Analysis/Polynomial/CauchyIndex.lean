@@ -342,9 +342,7 @@ theorem cauchyIndex_add_jump_add_cauchyIndex (f : K⟮X⟯) {a r b : K} (har : a
     rw [Finset.filter_eq']
     split_ifs with h
     · simp
-    · rw [Finset.sum_empty]
-      refine jump_eq_zero_of_eval_denom_ne_zero fun h0 => h ?_
-      simp [f.denom_ne_zero, h0]
+    · exact jump_eq_zero_of_eval_denom_ne_zero fun h0 ↦ h (by simp [f.denom_ne_zero, h0])
   simp only [cauchyIndex, hr, Finset.sum_filter, ← Finset.sum_add_distrib]
   refine (Finset.sum_congr rfl fun x _ => ?_).symm
   rcases lt_trichotomy x r with h | rfl | h
