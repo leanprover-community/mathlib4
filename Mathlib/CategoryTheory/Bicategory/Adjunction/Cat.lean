@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Adjunction.Mates
 public import Mathlib.CategoryTheory.Bicategory.Adjunction.Adj
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Adjunctions in `Cat`
 

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Sites.ConstantSheaf
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Global sections of sheaves
 

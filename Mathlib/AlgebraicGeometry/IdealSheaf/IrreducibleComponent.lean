@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
 public import Mathlib.AlgebraicGeometry.Noetherian
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subscheme structure on an irreducible component
 
@@ -17,7 +20,8 @@ irreducible component is not already reduced. Instead, we take the closed subsch
 the kernel of the restriction to the complement of the union of the other irreducible components.
 For example, if `X` is irreducible then this will give back the original scheme `X`.
 
-## Main definition
+## Main definitions
+
 * `AlgebraicGeometry.Scheme.irreducibleComponentIdeal`: The ideal sheaf data associated to an
   irreducible component of a Noetherian scheme.
 * `AlgebraicGeometry.Scheme.irreducibleComponent`: The subscheme structure on an irreducible

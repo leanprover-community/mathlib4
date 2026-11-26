@@ -5,9 +5,10 @@ Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Subalgebra.Pointwise
 public import Mathlib.RingTheory.DedekindDomain.Basic
 public import Mathlib.RingTheory.FractionalIdeal.Inverse
+
+import Mathlib.Algebra.Algebra.Subalgebra.Pointwise
 
 /-!
 # Dedekind domains and invertible ideals
@@ -22,7 +23,7 @@ Further results on the structure of ideals in a Dedekind domain are found in
 - `isDedekindDomain_iff_mul_inv_cancel` shows an integral domain is
   a Dedekind domain iff every nonzero fractional ideal is invertible.
 
-## Main results:
+## Main results
 
 - `isDedekindDomain_iff_mul_inv_cancel`
 - `Ideal.uniqueFactorizationMonoid`

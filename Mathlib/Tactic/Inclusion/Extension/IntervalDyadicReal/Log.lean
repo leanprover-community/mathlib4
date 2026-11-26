@@ -13,7 +13,7 @@ public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Rational
 
 This file implements `Real.log` extension for the tactic `dyadic_interval`.
 
-## Implementation details
+## Implementation notes
 
 We first define `Inclusion.IntervalDyadicReal.smallArtanh`, which computes `artanh` of a small
 rational number `num / den` using the binary splitting method. Then we use the identity

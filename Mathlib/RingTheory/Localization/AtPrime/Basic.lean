@@ -8,8 +8,9 @@ module
 public import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
 public import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-public import Mathlib.RingTheory.Localization.Basic
 public import Mathlib.RingTheory.Localization.Ideal
+
+import Mathlib.RingTheory.Localization.Basic
 
 /-!
 # Localizations of commutative rings at the complement of a prime ideal
@@ -30,6 +31,7 @@ public import Mathlib.RingTheory.Localization.Ideal
 See `RingTheory.Localization.Basic` for a design overview.
 
 ## Tags
+
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
 -/

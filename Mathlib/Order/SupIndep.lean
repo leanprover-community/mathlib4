@@ -405,7 +405,7 @@ theorem iSupIndep.comp' {ι ι' : Sort*} {t : ι → α} {f : ι' → ι} (ht : 
 
 theorem iSupIndep.sSupIndep_range (ht : iSupIndep t) : sSupIndep <| range t := by
   rw [sSupIndep_iff]
-  rw [← coe_comp_rangeFactorization t] at ht
+  rw [← subtypeVal_comp_rangeFactorization t] at ht
   exact ht.comp' rangeFactorization_surjective
 
 @[simp]

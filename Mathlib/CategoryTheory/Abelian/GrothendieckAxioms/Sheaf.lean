@@ -12,6 +12,9 @@ public import Mathlib.CategoryTheory.Sites.Equivalence
 import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.FunctorCategory
 import Mathlib.CategoryTheory.Generator.Sheaf
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # AB axioms in sheaf categories
 

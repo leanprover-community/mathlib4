@@ -11,6 +11,9 @@ public import Mathlib.MeasureTheory.Measure.WithDensity
 import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
 import Mathlib.MeasureTheory.Measure.Decomposition.Hahn
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Results about subtraction of finite measures
 

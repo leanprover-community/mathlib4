@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Measure.AddContent
 public import Mathlib.Topology.Compactness.CompactSystem
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # σ-additivity of inner regular contents
 

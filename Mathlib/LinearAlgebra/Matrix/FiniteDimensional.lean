@@ -9,6 +9,9 @@ public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The finite-dimensional space of matrices
 

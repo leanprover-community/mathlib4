@@ -5,14 +5,18 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Group.Action.Pi
 public import Mathlib.Algebra.Order.AbsoluteValue.Basic
 public import Mathlib.Algebra.Order.Field.Basic
 public import Mathlib.Algebra.Order.Group.MinMax
 public import Mathlib.Algebra.Ring.FunLike
-public import Mathlib.Algebra.Ring.Pi
 public import Mathlib.GroupTheory.GroupAction.Ring
 public import Mathlib.Order.Setoid.Basic
+
+import Mathlib.Algebra.Group.Action.Pi
+import Mathlib.Algebra.Ring.Pi
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Cauchy sequences

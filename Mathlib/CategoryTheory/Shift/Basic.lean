@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 public import Mathlib.CategoryTheory.Monoidal.Discrete
 public import Mathlib.CategoryTheory.Monoidal.End
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Shift
 
@@ -20,12 +23,13 @@ each `n : ℤ` the functor `C ⥤ C` that re-indexes the terms, so the degree `i
 would be the degree `i+n`-th term of `C`.
 
 ## Main definitions
+
 * `HasShift`: A typeclass asserting the existence of a shift functor.
 * `shiftEquiv`: When the indexing monoid is a group, then the functor indexed by `n` and `-n` forms
   a self-equivalence of `C`.
 * `shiftComm`: When the indexing monoid is commutative, then shifts commute as well.
 
-## Implementation Notes
+## Implementation notes
 
 `[HasShift C A]` is implemented using monoidal functors from `Discrete A` to `C ⥤ C`.
 However, the API of monoidal functors is used only internally: one should use the API of
