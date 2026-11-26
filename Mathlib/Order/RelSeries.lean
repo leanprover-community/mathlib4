@@ -243,8 +243,14 @@ theorem length_ne_zero [r.IsIrrefl] : s.length ≠ 0 ↔ (Set.range s).Nontrivia
   ext
   simpa [Nat.pos_iff_ne_zero]
 
+@[simp] theorem nontrivial_setRange_iff [r.IsIrrefl] : (Set.range s).Nontrivial ↔ s.length ≠ 0 :=
+  length_ne_zero.symm
+
 theorem length_ne_zero' [r.IsIrrefl] : s.length ≠ 0 ↔ s.toFinset.Nontrivial := by
   simp [length_ne_zero, ← coe_toFinset_eq_setRange]
+
+@[simp] theorem nontrivial_toFinset_iff [r.IsIrrefl] : s.toFinset.Nontrivial ↔ s.length ≠ 0 :=
+  length_ne_zero'.symm
 
 theorem length_pos [r.IsIrrefl] : 0 < s.length ↔ (Set.range s).Nontrivial :=
   Nat.pos_iff_ne_zero.trans length_ne_zero
@@ -254,6 +260,10 @@ theorem length_pos' [r.IsIrrefl] : 0 < s.length ↔ s.toFinset.Nontrivial := by
 
 lemma length_eq_zero [r.IsIrrefl] : s.length = 0 ↔ (Set.range s).Subsingleton := by
   rw [← not_ne_iff, length_ne_zero, Set.not_nontrivial_iff]
+
+@[simp] theorem subsingleton_setRange_iff [r.IsIrrefl] :
+    (Set.range s).Subsingleton ↔ s.length = 0 :=
+  length_eq_zero.symm
 
 /-- Start of a series, i.e. for `a₀ -r→ a₁ -r→ ... -r→ aₙ`, its head is `a₀`.
 
