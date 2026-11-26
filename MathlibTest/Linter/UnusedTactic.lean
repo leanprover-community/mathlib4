@@ -311,30 +311,6 @@ example : True := by
 
 end allowing_more_unused_tactics
 
-section ignore_tactic_kind
-
-syntax (name := doEmitWarningStx) "doEmitWarning" tactic : command
-macro_rules
-  | `(command| doEmitWarning $tac) => `(command| example : True := by $tac ; constructor)
-
-syntax (name := doNotEmitWarningStx) "doNotEmitWarning" tactic : command
-macro_rules
-  | `(command| doNotEmitWarning $tac) => `(command| example : True := by $tac ; constructor)
-
--- `#eval` instead of `initialize` so that the effect can be tested in this file
-#eval Mathlib.Linter.UnusedTactic.addIgnoreTacticKind ``doNotEmitWarningStx
-
-/--
-warning: Unused tactic linter: `congr` does not change the goal.
-
-Note: This linter can be disabled with `set_option linter.unusedTactic false`
--/
-#guard_msgs in doEmitWarning congr
-
-#guard_msgs in doNotEmitWarning congr
-
-end ignore_tactic_kind
-
 -- Lint subtactics in `t <;> [t1, ...]`, ignore padding `skip`s
 /--
 warning: Unused tactic linter: `all_goals` can be removed.
@@ -345,6 +321,18 @@ Note: This linter can be disabled with `set_option linter.unusedTactic false`
 example : True ∧ True := by
   constructor <;> [skip; all_goals trivial]
   trivial
+
+-- Allowing subtactics has the desired effect of silencing the linter
+namespace TestIgnoredKinds
+
+scoped allow_unused_subtactics_inside Batteries.Tactic.seq_focus
+
+#guard_msgs in
+example : True ∧ True := by
+  constructor <;> [skip; all_goals trivial]
+  trivial
+
+end TestIgnoredKinds
 
 -- The linter is not silenced by `set_option ... in`.
 /--
