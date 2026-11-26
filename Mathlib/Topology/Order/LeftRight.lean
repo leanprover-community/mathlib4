@@ -18,7 +18,7 @@ In this file we prove a few lemmas about left and right continuous functions:
   (with `(a, ∞)` and with `[a, ∞)`) are equivalent;
 * `continuousWithinAt_Iio_iff_Iic`: two definitions of left continuity
   (with `(-∞, a)` and with `(-∞, a]`) are equivalent;
-* `continuousAt_iff_continuous_left_right`, `continuousAt_iff_continuous_left'_right` :
+* `continuousAt_iff_continuous_left_right`, `continuousAt_iff_continuous_left'_right'` :
   a function is continuous at `a` if and only if it is left and right continuous at `a`.
 
 ## Tags
@@ -144,13 +144,10 @@ theorem continuousAt_iff_continuous_left_right {a : α} {f : α → β} :
   simp only [ContinuousWithinAt, ContinuousAt, ← tendsto_sup, nhdsLE_sup_nhdsGE]
 
 @[to_dual none]
-theorem continuousAt_iff_continuous_left'_right {a : α} {f : α → β} :
+theorem continuousAt_iff_continuous_left'_right' {a : α} {f : α → β} :
     ContinuousAt f a ↔ ContinuousWithinAt f (Iio a) a ∧ ContinuousWithinAt f (Ioi a) a := by
   rw [continuousWithinAt_Ioi_iff_Ici, continuousWithinAt_Iio_iff_Iic,
     continuousAt_iff_continuous_left_right]
-
-@[deprecated (since := "2026-11-23")]
-alias continuousAt_iff_continuous_left'_right' := continuousAt_iff_continuous_left'_right
 
 @[to_dual none]
 theorem continuousWithinAt_iff_continuous_left_right {a : α} {f : α → β} :
@@ -159,14 +156,10 @@ theorem continuousWithinAt_iff_continuous_left_right {a : α} {f : α → β} :
   simp only [ContinuousWithinAt, ← tendsto_sup, nhdsWithinLE_sup_nhdsWithinGE]
 
 @[to_dual none]
-theorem continuousWithinAt_iff_continuous_left'_right {a : α} {f : α → β} :
+theorem continuousWithinAt_iff_continuous_left'_right' {a : α} {f : α → β} :
     ContinuousWithinAt f s a ↔
       ContinuousWithinAt f (s ∩ Iio a) a ∧ ContinuousWithinAt f (s ∩ Ioi a) a := by
   rw [continuousWithinAt_inter_Ioi_iff_Ici, continuousWithinAt_inter_Iio_iff_Iic,
     continuousWithinAt_iff_continuous_left_right]
-
-@[deprecated (since := "2026-11-23")]
-alias continuousWithinAt_iff_continuous_left'_right' :=
-  continuousWithinAt_iff_continuous_left'_right
 
 end TopologicalSpace

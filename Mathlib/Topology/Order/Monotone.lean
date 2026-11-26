@@ -158,7 +158,7 @@ theorem MonotoneOn.countable_not_continuousWithinAt (hf : MonotoneOn f s) :
   rintro x ⟨hx, h'x⟩
   simp only [mem_compl_iff, mem_ofPred_eq, not_and, not_not] at hx h'x ⊢
   intro xs
-  exact continuousWithinAt_iff_continuous_left'_right.2 ⟨h'x xs, hx xs⟩
+  exact continuousWithinAt_iff_continuous_left'_right'.2 ⟨h'x xs, hx xs⟩
 
 /-- In a second countable space, the set of points where a monotone function is not continuous
 is at most countable. -/
