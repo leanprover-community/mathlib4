@@ -15,7 +15,7 @@ public import Mathlib.Tactic.Linter.Header  -- shake: keep
 
 This environment linter checks each global data-carrying instance,
 and tries to synthesize another instance that provides the same data.
-If these instances are not definitionally equal at instances transparency,
+If these instances are not definitionally equal at `implicit` transparency,
 then it gives a warning.
 -/
 
@@ -25,51 +25,56 @@ namespace Mathlib.Linter.InstanceDiamonds
 
 open Lean Meta
 
-/-- Given an instance `inst` of class `cls`, return its data-carrying projections that are
-reached through instance projections. Only return the leaf projections.
-Assume that `inst` is a data-carrying instance.
+/--
+Given an instance `inst` of a data-carrying type class `cls`,
+return its data-carrying projections that are reached through instance projections.
+Only return the leaf projections.
 
 For example for `inst : CommMonoid M`, we return the projections
 `inst.toMul : Mul M`, `inst.toOne : One M` and `inst.toNPow : NPow M`.
 -/
-partial def getInstanceDataProjections (cls : Name) (inst : Expr) (acc : Array Expr := #[]) :
-    StateRefT NameSet MetaM (Array Expr) := do
-  let some info := getStructureInfo? (← getEnv) cls | return acc
-  let type ← whnf (← inferType inst)
-  let .const _ us := type.getForallBody.getAppFn |
+partial def getInstanceDataProjections (cls : Name) (inst : Expr) (env : Environment)
+    (acc : Array Expr) : StateRefT NameSet MetaM (Array Expr) := do
+  let some info := getStructureInfo? env cls | return acc
+  (← whnf (← inferType inst)).withApp fun clsConst clsArgs ↦ do
+  let .const _ us := clsConst |
     throwError "internal instance diamonds error: `{inst}` is not an instance"
   let mut acc := acc
   let mut anyParent := false
-  for info in info.parentInfo do
-    let parent := info.structName
-    if (← get).contains parent then continue
-    modify (·.insert parent)
-    if (← getConstInfo parent).type.getForallBody.isProp then continue
-    unless ← isInstance info.projFn do continue
-    let proj := .app (mkAppN (.const info.projFn us) type.getAppArgs) inst
-    acc ← getInstanceDataProjections parent proj acc
-    anyParent := true
+  for { structName, projFn, .. } in info.parentInfo do
+    if !wasOriginallyTheorem env projFn && isInstanceCore env projFn then
+      anyParent := true
+      unless (← get).contains structName do
+        modify (·.insert structName)
+        let proj := .app (mkAppN (.const projFn us) clsArgs) inst
+        acc ← getInstanceDataProjections structName proj env acc
   if !anyParent then
     acc := acc.push inst
   return acc
 
-/-- Try to synthesize an instance with the same type as `e`, and if it is not definitionally
-equal to `e`, return a warning message. -/
+/--
+Try to synthesize an instance with the same type as `e`, and if it is not definitionally
+equal to `e`, return a warning message.
+-/
 def compareWithSynthesized (e : Expr) : MetaM (Option MessageData) := do
   let type ← inferType e
   let .some inst ← trySynthInstance type | return none
   if ← withImplicit <| isDefEq e inst then
     return none
   if ← withDefault <| isDefEq e inst then
-    return m!"The instance{indentExpr e} : {← inferType e}\n\
-      is not definitionally equal (at implicit transparency) to{indentExpr inst}"
+    return m!"This equality does not hold at implicit transparency:\n\
+      `({e} : {← inferType e}) = {inst}`"
   else
-    -- TODO: Also warn about proper diamonds
+    -- TODO: Also warn about proper diamonds:
+    -- return m!"This equality does not hold definitionally, causing an instance diamond:\n\
+    --   `({e} : {← inferType e}) = {inst}`"
     return none
 
-/-- If `declName` is an instance, and is not a theorem, then temporarily remove it from the
+/--
+If `declName` is an instance, and is not a theorem, then temporarily remove it from the
 global instances, and compare each of its projections with the instance that is found by
-type class search. -/
+type class search.
+-/
 def findDiamonds (declName : Name) : MetaM (Option MessageData) := do
   let env ← getEnv
   unless isInstanceCore env declName do return none
@@ -83,7 +88,7 @@ def findDiamonds (declName : Name) : MetaM (Option MessageData) := do
     let inst := mkAppN (.const declName (cinfo.levelParams.map .param)) xs
     let mut firstMsg : Option MessageData := none
     let mut later : Array Expr := #[]
-    for proj in ← (getInstanceDataProjections cls inst).run' {} do
+    for proj in ← (getInstanceDataProjections cls inst env #[]).run' {} do
       if let some msg ← compareWithSynthesized proj then
         if firstMsg.isNone then
           firstMsg := some msg
