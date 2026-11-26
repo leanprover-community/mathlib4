@@ -261,7 +261,7 @@ def ωScottContinuous (f : α → β) : Prop :=
 
 lemma _root_.UpperScottContinuous.ωScottContinuous (hf : UpperScottContinuous f) :
     ωScottContinuous f :=
-  hf.UpperScottContinuous.upperScottContinuousOn
+  hf.upperScottContinuousOn
 
 @[deprecated (since := "2026-11-08")]
 alias _root_.ScottContinuous.ωScottContinuous := UpperScottContinuous.ωScottContinuous
