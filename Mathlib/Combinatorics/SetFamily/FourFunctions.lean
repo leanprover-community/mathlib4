@@ -13,6 +13,7 @@ import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Pi
 import Mathlib.Order.Birkhoff
 import Mathlib.Order.Booleanisation
+import Mathlib.Order.Lattice.PentagonDiamond
 import Mathlib.Order.Sublattice
 import Mathlib.Tactic.Positivity.Basic
 
@@ -36,14 +37,13 @@ The two versions of the four functions theorem are
 
 We deduce a number of corollaries:
 * `Finset.le_card_infs_mul_card_sups`: Daykin inequality. `|s| |t| ≤ |s ⊼ t| |s ⊻ t|`
+* `DistribLattice.ofLeCardInfsMulCardSups`: Daykin's converse. A lattice in which the Daykin
+  inequality holds is distributive.
 * `holley`: Holley inequality.
 * `fkg`: Fortuin-Kasteleyn-Ginibre inequality.
 * `Finset.card_le_card_diffs`: Marica-Schönheim inequality. `|s| ≤ |{a \ b | a, b ∈ s}|`
 
 ## TODO
-
-Prove that lattices in which `Finset.le_card_infs_mul_card_sups` holds are distributive. See
-Daykin, *A lattice is distributive iff |A| |B| <= |A ∨ B| |A ∧ B|*
 
 Prove the Fishburn-Shepp inequality.
 
@@ -52,7 +52,8 @@ earlier file and give it a proper API.
 
 ## References
 
-[*Applications of the FKG Inequality and Its Relatives*, Graham][Graham1983]
+* [*Applications of the FKG Inequality and Its Relatives*, Graham][Graham1983]
+* [*A lattice is distributive iff |A| |B| ≤ |A ∨ B| |A ∧ B|*, Daykin][Daykin1977]
 -/
 
 public section
@@ -333,14 +334,48 @@ lemma four_functions_theorem [DecidableEq α] (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ 
   · simpa [extend_apply' _ _ _ hs] using! mul_nonneg
       (extend_nonneg (fun a : L ↦ h₃ a) le_rfl _) (extend_nonneg (fun a : L ↦ h₄ a) le_rfl _)
 
-/-- An inequality of Daykin. Interestingly, any lattice in which this inequality holds is
-distributive. -/
+/-- An inequality of Daykin. Conversely, any lattice in which this inequality holds is distributive:
+see `DistribLattice.ofLeCardInfsMulCardSups`. -/
 lemma Finset.le_card_infs_mul_card_sups [DecidableEq α] (s t : Finset α) :
     #s * #t ≤ #(s ⊼ t) * #(s ⊻ t) := by
   simpa using four_functions_theorem (1 : α → ℕ) 1 1 1 zero_le_one zero_le_one zero_le_one
     zero_le_one (fun _ _ ↦ le_rfl) s t
 
-variable [Fintype α]
+end DistribLattice
+
+section Lattice
+variable [Lattice α] [DecidableEq α]
+
+/-- **Daykin's converse**: a lattice in which `|s| |t| ≤ |s ⊼ t| |s ⊻ t|` holds for all finsets `s`
+and `t` is distributive. Only the case `|s| = 2`, `|t| = 1` is needed. -/
+lemma inf_sup_le_of_forall_card_mul_card_le_card_infs_mul_card_sups
+    (h : ∀ s t : Finset α, #s * #t ≤ #(s ⊼ t) * #(s ⊻ t)) (a b c : α) :
+    a ⊓ (b ⊔ c) ≤ a ⊓ b ⊔ a ⊓ c := by
+  refine inf_sup_le_of_eq_of_inf_eq_sup_eq (fun a b c hi hs ↦ ?_) a b c
+  by_contra hbc
+  simpa [card_pair hbc, image_insert, hi, hs] using h {b, c} {a}
+
+-- See note [reducible non-instances]
+/-- **Daykin's converse**: prove distributivity of an existing lattice from the Daykin inequality
+`|s| |t| ≤ |s ⊼ t| |s ⊻ t|`. -/
+abbrev DistribLattice.ofLeCardInfsMulCardSups
+    (h : ∀ s t : Finset α, #s * #t ≤ #(s ⊼ t) * #(s ⊻ t)) : DistribLattice α :=
+  .ofInfSupLe <| inf_sup_le_of_forall_card_mul_card_le_card_infs_mul_card_sups h
+
+/-- A lattice is distributive if and only if the Daykin inequality `|s| |t| ≤ |s ⊼ t| |s ⊻ t|`
+holds for all finsets `s` and `t`. -/
+lemma forall_card_mul_card_le_card_infs_mul_card_sups_iff :
+    (∀ s t : Finset α, #s * #t ≤ #(s ⊼ t) * #(s ⊻ t)) ↔
+      ∀ a b c : α, a ⊓ (b ⊔ c) ≤ a ⊓ b ⊔ a ⊓ c := by
+  refine ⟨inf_sup_le_of_forall_card_mul_card_le_card_infs_mul_card_sups, fun h ↦ ?_⟩
+  let := DistribLattice.ofInfSupLe h
+  exact le_card_infs_mul_card_sups
+
+end Lattice
+
+section DistribLattice
+variable [DistribLattice α] [CommSemiring β] [LinearOrder β] [IsStrictOrderedRing β]
+  [ExistsAddOfLE β] (f f₁ f₂ f₃ f₄ g μ : α → β) [Fintype α]
 
 /-- Special case of the **Four Functions Theorem** when `s = t = univ`. -/
 lemma four_functions_theorem_univ (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h₃ : 0 ≤ f₃) (h₄ : 0 ≤ f₄)
