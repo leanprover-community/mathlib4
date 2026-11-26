@@ -11,7 +11,11 @@ public import Mathlib.Tactic.SuppressCompilation
 
 import Mathlib.CategoryTheory.Idempotents.HomologicalComplex
 
-/-! # The counit isomorphism of the Dold-Kan equivalence
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# The counit isomorphism of the Dold-Kan equivalence
 
 The purpose of this file is to construct natural isomorphisms
 `N₁Γ₀ : Γ₀ ⋙ N₁ ≅ toKaroubi (ChainComplex C ℕ)`

@@ -8,7 +8,11 @@ module
 public import Mathlib.CategoryTheory.Sites.CompatibleSheafification
 public import Mathlib.CategoryTheory.Sites.Localization
 
-/-! # Functors which preserve sheafification
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Functors which preserve sheafification
 
 In this file, given a Grothendieck topology `J` on `C` and `F : A ⥤ B`,
 we define a type class `J.PreservesSheafification F`. We say that `F` preserves

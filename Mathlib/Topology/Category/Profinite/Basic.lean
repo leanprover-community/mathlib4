@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.FintypeCat
 public import Mathlib.Topology.Category.CompHaus.Basic
 public import Mathlib.Topology.LocallyConstant.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of Profinite Types
 
@@ -200,7 +203,7 @@ def limitConeIsLimit {J : Type v} [SmallCategory J] (F : J ⥤ Profinite.{max u 
           simp [← h]
           rfl))
 
-/-- The adjunction between CompHaus.to_Profinite and Profinite.to_CompHaus -/
+/-- The adjunction between CompHaus.to\_Profinite and Profinite.to\_CompHaus -/
 def toProfiniteAdjToCompHaus : CompHaus.toProfinite ⊣ profiniteToCompHaus :=
   Adjunction.adjunctionOfEquivLeft _ _
 

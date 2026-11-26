@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
 public import Mathlib.Order.Interval.Set.OrdConnectedLinear
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Chains of roots
 
@@ -103,20 +106,24 @@ alias setOf_root_add_zsmul_eq_Icc_of_linearIndependent :=
 variable (i j)
 
 open scoped Classical in
-/-- If `α = P.root i` and `β = P.root j` are linearly independent, this is the value `p ≥ 0` where
+/--
+If `α = P.root i` and `β = P.root j` are linearly independent, this is the value `p ≥ 0` where
 `β - q • α, ..., β - α, β, β + α, ..., β + p • α` is the `α`-chain through `β`.
 
-In the absence of linear independence, it takes a junk value. -/
+In the absence of linear independence, it takes a junk value.
+-/
 def chainTopCoeff : ℕ :=
   if h : LinearIndependent R ![P.root i, P.root j]
     then (P.setOfPred_root_add_zsmul_eq_Icc_of_linearIndependent h).choose_spec.2.choose.toNat
     else 0
 
 open scoped Classical in
-/-- If `α = P.root i` and `β = P.root j` are linearly independent, this is the value `q ≥ 0` where
+/--
+If `α = P.root i` and `β = P.root j` are linearly independent, this is the value `q ≥ 0` where
 `β - q • α, ..., β - α, β, β + α, ..., β + p • α` is the `α`-chain through `β`.
 
-In the absence of linear independence, it takes a junk value. -/
+In the absence of linear independence, it takes a junk value.
+-/
 def chainBotCoeff : ℕ :=
   if h : LinearIndependent R ![P.root i, P.root j]
     then (-(P.setOfPred_root_add_zsmul_eq_Icc_of_linearIndependent h).choose).toNat
@@ -359,10 +366,12 @@ omit h
 variable (i j)
 
 open scoped Classical in
-/-- If `α = P.root i` and `β = P.root j` are linearly independent, this is the index of the root
+/--
+If `α = P.root i` and `β = P.root j` are linearly independent, this is the index of the root
 `β + p • α` where `β - q • α, ..., β - α, β, β + α, ..., β + p • α` is the `α`-chain through `β`.
 
-In the absence of linear independence, it takes a junk value. -/
+In the absence of linear independence, it takes a junk value.
+-/
 def chainTopIdx : ι :=
   if h : LinearIndependent R ![P.root i, P.root j]
     then (P.root_add_nsmul_mem_range_iff_le_chainTopCoeff h).mpr
@@ -370,10 +379,12 @@ def chainTopIdx : ι :=
     else j
 
 open scoped Classical in
-/-- If `α = P.root i` and `β = P.root j` are linearly independent, this is the index of the root
+/--
+If `α = P.root i` and `β = P.root j` are linearly independent, this is the index of the root
 `β - q • α` where `β - q • α, ..., β - α, β, β + α, ..., β + p • α` is the `α`-chain through `β`.
 
-In the absence of linear independence, it takes a junk value. -/
+In the absence of linear independence, it takes a junk value.
+-/
 def chainBotIdx : ι :=
   if h : LinearIndependent R ![P.root i, P.root j]
     then (P.root_sub_nsmul_mem_range_iff_le_chainBotCoeff h).mpr

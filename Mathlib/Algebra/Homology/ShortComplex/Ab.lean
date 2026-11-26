@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 
 import Mathlib.GroupTheory.QuotientGroup.Finite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Homology and exactness of short complexes of abelian groups
 
@@ -24,9 +27,9 @@ other categories like `ModuleCat`.
 
 ## Main definitions
 
-- `ShortComplex.abHomologyIso` identifies the homology of a short complex of abelian
+* `ShortComplex.abHomologyIso` identifies the homology of a short complex of abelian
   groups to an explicit quotient.
-- `ShortComplex.ab_exact_iff` expresses that a short complex of abelian groups `S`
+* `ShortComplex.ab_exact_iff` expresses that a short complex of abelian groups `S`
   is exact iff any element in the kernel of `S.g` belongs to the image of `S.f`.
 -/
 

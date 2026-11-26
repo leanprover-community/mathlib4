@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicGeometry.Cover.MorphismProperty
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Open covers of schemes
 
@@ -14,11 +17,11 @@ This file provides the basic API for open covers of schemes.
 
 ## Main definitions
 
-- `AlgebraicGeometry.Scheme.OpenCover`: The type of open covers of a scheme `X`,
+* `AlgebraicGeometry.Scheme.OpenCover`: The type of open covers of a scheme `X`,
   consisting of a family of open immersions into `X`,
   and for each `x : X` an open immersion (indexed by `f x`) that covers `x`.
-- `AlgebraicGeometry.Scheme.affineCover`: `X.affineCover` is a choice of an affine cover of `X`.
-- `AlgebraicGeometry.Scheme.AffineOpenCover`: The type of affine open covers of a scheme `X`.
+* `AlgebraicGeometry.Scheme.affineCover`: `X.affineCover` is a choice of an affine cover of `X`.
+* `AlgebraicGeometry.Scheme.AffineOpenCover`: The type of affine open covers of a scheme `X`.
 -/
 
 @[expose] public section

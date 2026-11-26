@@ -15,6 +15,9 @@ public import Mathlib.LinearAlgebra.Finsupp.LSum
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Positivity.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Convex spaces
 
@@ -48,7 +51,8 @@ open Finsupp
 namespace Convexity
 variable {R X Y Z I J K : Type*}
 
-/-- The space of nonnegative functions `X → R` which take finitely many non-zero values summing
+/--
+The space of nonnegative functions `X → R` which take finitely many non-zero values summing
 to 1.
 
 One can interpret this as the standard simplex in `R^⊕X` (`R^X` for finite `X`), with the embedding
@@ -56,7 +60,8 @@ being the map `weights : StdSimplex R X → R^⊕X`.
 
 Note in particular that, in the common case where `X := M` is a `R`-module, `StdSimplex R M` is NOT
 the standard simplex in `M`. Indeed, the notion of a standard simplex depends on a choice of basis,
-and `M` isn't given one. -/
+and `M` isn't given one.
+-/
 structure StdSimplex (R : Type u) [LE R] [AddCommMonoid R] [One R] (X : Type v) extends
     weights : X →₀ R where
   /-- All weights are non-negative. -/
@@ -64,7 +69,7 @@ structure StdSimplex (R : Type u) [LE R] [AddCommMonoid R] [One R] (X : Type v) 
   /-- The weights sum to 1. -/
   total : weights.sum (fun _ r => r) = 1
 
-/-- The weights of an element of the standard simplex` as a `Finsupp`. -/
+/-- The weights of an element of the standard simplex`as a`Finsupp\`. -/
 add_decl_doc StdSimplex.weights
 
 attribute [simp] StdSimplex.total StdSimplex.nonneg
@@ -390,9 +395,11 @@ class ConvexSpace (R : Type u) (X : Type v)
   sConvexComb [inst₁] [inst₂] [inst₃] (f : StdSimplex R X) : X
   /-- A convex combination of a single point is that point. -/
   sConvexComb_single (x : X) : sConvexComb (.single x) = x
-  /-- Associativity of convex combination (monadic join law).
+  /--
+  Associativity of convex combination (monadic join law).
 
-  Use `sConvexComb_sConvexComb` instead. -/
+  Use `sConvexComb_sConvexComb` instead.
+  -/
   assoc (f : StdSimplex R (StdSimplex R X)) :
     sConvexComb (f.map sConvexComb) = sConvexComb f.join
 
@@ -482,10 +489,12 @@ abbrev ConvexSpace.mk {X : Type*} (sConvexComb : StdSimplex R X → X)
   ⟨sConvexComb, single, assoc⟩
 
 variable (R) in
-/-- A map between convex spaces is affine if it preserves convex combinations.
+/--
+A map between convex spaces is affine if it preserves convex combinations.
 
- Note that this generalises the notion of affine maps between affine spaces.
- See `AffineMap.isAffineMap` for one direction. -/
+Note that this generalises the notion of affine maps between affine spaces.
+See `AffineMap.isAffineMap` for one direction.
+-/
  -- TODO: Prove the other direction.
 @[fun_prop]
 structure IsAffineMap (f : X → Y) : Prop where
@@ -548,9 +557,11 @@ lemma iConvexComb_reindex (s : StdSimplex R I) (f : I ≃ J) (g : I → X) :
     s.iConvexComb g = (s.map f).iConvexComb (g ∘ f.symm) := by
   simp [iConvexComb_map]
 
-/-- Flattening nested `iConvexComb`s.
+/--
+Flattening nested `iConvexComb`s.
 
-See `iConvexComb_assoc'` and `iConvexComb_assoc` for non-dependent versions. -/
+See `iConvexComb_assoc'` and `iConvexComb_assoc` for non-dependent versions.
+-/
 lemma iConvexComb_assoc''
     {J : I → Type*} (s : StdSimplex R I) (f : Π i, StdSimplex R (J i)) (g : Π i, J i → X) :
     s.iConvexComb (fun i ↦ (f i).iConvexComb (g i)) =
@@ -560,10 +571,12 @@ lemma iConvexComb_assoc''
   congr 1
   simp [map_sConvexComb, map_map, Sigma.uncurry]
 
-/-- Flattening nested `iConvexComb`s.
+/--
+Flattening nested `iConvexComb`s.
 
 See `iConvexComb_assoc''` for a more dependent version, and `iConvexComb_assoc`
-for a less dependent one. -/
+for a less dependent one.
+-/
 lemma iConvexComb_assoc' {J : Type*} (s : StdSimplex R I) (f : I → StdSimplex R J)
     (g : I → J → X) :
     s.iConvexComb (fun i ↦ (f i).iConvexComb (g i)) =
@@ -573,9 +586,11 @@ lemma iConvexComb_assoc' {J : Type*} (s : StdSimplex R I) (f : I → StdSimplex 
   congr 1
   simp [map_sConvexComb, map_map, Function.uncurry]
 
-/-- Flattening nested `iConvexComb`s.
+/--
+Flattening nested `iConvexComb`s.
 
-See `iConvexComb_assoc'`, `iConvexComb_assoc''` for more dependent versions. -/
+See `iConvexComb_assoc'`, `iConvexComb_assoc''` for more dependent versions.
+-/
 lemma iConvexComb_assoc {J : Type*} (s : StdSimplex R I) (f : I → StdSimplex R J)
     (g : J → X) :
     s.iConvexComb (fun i ↦ (f i).iConvexComb g) = (s.iConvexComb f).iConvexComb g := by
@@ -588,15 +603,19 @@ variable {R S X I J : Type*} [PartialOrder R] [Semiring R] [IsStrictOrderedRing 
   [Semiring S] [IsStrictOrderedRing S] [ConvexSpace R X] [ConvexSpace S X]
 
 variable (R S X) in
-/-- `IsConvexCombComm R S X` indicates that the `R`-convex and `S`-convex space structures on `X`
+/--
+`IsConvexCombComm R S X` indicates that the `R`-convex and `S`-convex space structures on `X`
 commute, namely for `R`-convex combinations to be `S`-affine.
 
-This is the convex space analogue of `SMulCommClass`. -/
+This is the convex space analogue of `SMulCommClass`.
+-/
 class IsConvexCombComm : Prop where
-  /-- `R`-convex combinations commute with `S`-convex combinations of `Fin n`-indexed families.
+  /--
+  `R`-convex combinations commute with `S`-convex combinations of `Fin n`-indexed families.
 
   This is stated for `Fin n` so that the class does not depend on an extra universe parameter.
-  Use `Convexity.iConvexComb_comm` instead, which works for arbitrary index types. -/
+Use `Convexity.iConvexComb_comm` instead, which works for arbitrary index types.
+  -/
   protected iConvexComb_comm' {n : ℕ} (f : StdSimplex R (Fin n → X)) (g : StdSimplex S (Fin n)) :
     f.iConvexComb (fun e ↦ g.iConvexComb e) = g.iConvexComb (fun i ↦ f.iConvexComb (· i))
 
@@ -614,9 +633,11 @@ lemma iConvexComb_comm [IsConvexCombComm R S X] (f : StdSimplex R I) (g : StdSim
   simpa [map_map] using IsConvexCombComm.iConvexComb_comm' (f.map fun i j ↦ e i (b j)) g
 
 variable (R S X) in
-/-- Commutativity of convex combinations is a symmetric relation.
+/--
+Commutativity of convex combinations is a symmetric relation.
 
-This is not an instance as it would cause loops. -/
+This is not an instance as it would cause loops.
+-/
 protected lemma IsConvexCombComm.symm [IsConvexCombComm R S X] : IsConvexCombComm S R X where
   iConvexComb_comm' f g := (iConvexComb_comm g f fun i e ↦ e i).symm
 
@@ -809,12 +830,14 @@ end Convexity
 namespace Mathlib.Meta.Positivity
 open Lean Meta Qq Convexity
 
-/-- Extension for the `positivity` tactic: the weights of a `StdSimplex` are always nonnegative
+/--
+Extension for the `positivity` tactic: the weights of a `StdSimplex` are always nonnegative
 (in the sense of `0 ≤ w.weights`),
 and even positive (in the sense of `0 < w.weights`, not `∀ i, 0 < w.weights i`) when `R` is
 nontrivial.
 
-This handles `w.weights`; see `evalStdSimplexWeightsApply` for the applied `w.weights i`. -/
+This handles `w.weights`; see `evalStdSimplexWeightsApply` for the applied `w.weights i`.
+-/
 @[positivity StdSimplex.weights _]
 meta def evalStdSimplexWeights : PositivityExt where eval {_u α} _zα pα? e :=
   -- FIXME: `PartialOrder α` shouldn't be necessary since we know `α = X →₀ R` and `PartialOrder R`.
@@ -830,9 +853,11 @@ meta def evalStdSimplexWeights : PositivityExt where eval {_u α} _zα pα? e :=
   | .some _instNontrivial => pure <| .positive q(StdSimplex.weights_pos $w)
   | _ => pure <| .nonnegative q(StdSimplex.nonneg $w)
 
-/-- Extension for the `positivity` tactic: the weights of a `StdSimplex` are always nonnegative.
+/--
+Extension for the `positivity` tactic: the weights of a `StdSimplex` are always nonnegative.
 
-This handles `w.weights i`; see `evalStdSimplexWeights` for the unapplied `w.weights`. -/
+This handles `w.weights i`; see `evalStdSimplexWeights` for the unapplied `w.weights`.
+-/
 @[positivity StdSimplex.weights _ _]
 meta def evalStdSimplexWeightsApply : PositivityExt where eval {_u α} _zα pα? e :=
   -- FIXME: `PartialOrder α` shouldn't be necessary since we know `α = X →₀ R` and `PartialOrder R`.

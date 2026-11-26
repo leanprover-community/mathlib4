@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.Polynomial.Cyclotomic.Basic
 public import Mathlib.RingTheory.RootsOfUnity.Minpoly
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Roots of cyclotomic polynomials.
 
@@ -216,9 +219,11 @@ open Polynomial
 variable {K : Type*} [Field K] [CharZero K]
 variable {p : ℕ} {ζ : K}
 
-/-- For a prime `p`, a ℚ-linear combination `∑_{i < p} αᵢ ζⁱ` vanishes if and only if all
+/--
+For a prime `p`, a ℚ-linear combination `∑_{i < p} αᵢ ζⁱ` vanishes if and only if all
 coefficients `αᵢ` are equal. This follows from the irreducibility of the `p`-th cyclotomic
-polynomial. See de Launey–Flannery, *Algebraic Design Theory*, Lemma 2.8.5. -/
+polynomial. See de Launey–Flannery, _Algebraic Design Theory_, Lemma 2.8.5.
+-/
 lemma sum_eq_zero_iff_forall_eq (hp : p.Prime) (hζ : IsPrimitiveRoot ζ p) (α : Fin p → ℚ) :
     ∑ i, α i * ζ ^ i.val = 0 ↔ ∀ i j, α i = α j := by
   have : Fact p.Prime := ⟨hp⟩

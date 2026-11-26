@@ -9,6 +9,9 @@ public meta import Aesop
 public import Mathlib.Data.Set.Subsingleton
 public import Mathlib.Tactic.ToAdditive
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Partial values of a type
 
@@ -24,6 +27,7 @@ translate back and forth between a partial value with a decidable domain and an 
 ## Main declarations
 
 `Option`-like declarations:
+
 * `Part.none`: The partial value whose domain is `False`.
 * `Part.some a`: The partial value whose domain is `True` and whose value is `a`.
 * `Part.ofOption`: Converts an `Option α` to a `Part α` by sending `none` to `none` and `some a` to
@@ -32,11 +36,13 @@ translate back and forth between a partial value with a decidable domain and an 
 * `Part.equivOption`: Classical equivalence between `Part α` and `Option α`.
 
 Monadic structure:
+
 * `Part.bind`: `o.bind f` has value `(f (o.get _)).get _` (`f o` morally) and is defined when `o`
   and `f (o.get _)` are defined.
 * `Part.map`: Maps the value and keeps the same domain.
 
 Other:
+
 * `Part.restrict`: `Part.restrict p o` replaces the domain of `o : Part α` by `p : Prop` so long as
   `p → o.Dom`.
 * `Part.assert`: `assert p f` appends `p` to the domains of the values of a partial function.

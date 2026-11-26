@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite resolutions by objects satisfying `P : ObjectProperty C`
 
@@ -43,14 +46,16 @@ open Limits
 
 variable {C : Type u} [Category.{v} C] [HasZeroMorphisms C]
 
-/-- Let `C` be a category, `P : ObjectProperty C` be a property of objects of `C`.
+/--
+Let `C` be a category, `P : ObjectProperty C` be a property of objects of `C`.
 We say that `X : C` has a `P`-resolution of length `n` if there exists an
 exact sequence `0 ⟶ Eₙ ⟶ ⋯ ⟶ E₀ ⟶ X ⟶ 0` such that each `Eᵢ : C` satisfies `P`.
 
 Rather than defining `hasFiniteResolutionOfLength` in terms of explicit exact sequences,
 we define it inductively: `X` has a `P`-resolution of length `0` if `X` satisfies `P`, and
 it has a `P`-resolution of length `n + 1` if there exists a short exact sequence
-`0 ⟶ K ⟶ E ⟶ X ⟶ 0` such that `E` satisfies `P` and `K` has a `P`-resolution of length `n`. -/
+`0 ⟶ K ⟶ E ⟶ X ⟶ 0` such that `E` satisfies `P` and `K` has a `P`-resolution of length `n`.
+-/
 inductive hasFiniteResolutionOfLength (P : ObjectProperty C) : ℕ → ObjectProperty C
   | zero (X : C) (hX : P X) : hasFiniteResolutionOfLength P 0 X
   | succ (S : ShortComplex C) (n : ℕ) (hS : S.ShortExact) (h₂ : P S.X₂)

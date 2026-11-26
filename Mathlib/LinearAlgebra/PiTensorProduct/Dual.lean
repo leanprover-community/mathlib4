@@ -9,6 +9,9 @@ public import Mathlib.LinearAlgebra.Dual.Basis
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 public import Mathlib.LinearAlgebra.PiTensorProduct.Basis
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tensor products of dual spaces
 
@@ -17,7 +20,6 @@ public import Mathlib.LinearAlgebra.PiTensorProduct.Basis
 * `PiTensorProduct.dualDistrib`: The canonical linear map from `⨂[R] i, Dual R (M i)` to
   `Dual R (⨂[R] i, M i)`, sending `⨂ₜ[R] i, f i` to the composition of
   `PiTensorProduct.map f` with the linear equivalence `⨂[R] i, R →ₗ R` given by multiplication.
-
 * `PiTensorProduct.dualDistribEquiv`: A linear equivalence between `⨂[R] i, Dual R (M i)`
   and `Dual R (⨂[R] i, M i)` when all `M i` are finite free modules. If
   `f : (i : ι) → Dual R (M i)`, then this equivalence sends `⨂ₜ[R] i, f i` to the composition of

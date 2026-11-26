@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
 public import Mathlib.Tactic.Ring
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Set of factors
 
@@ -110,9 +113,11 @@ def bcount (p : { a : Associates α // Irreducible a }) :
 
 variable [∀ p : Associates α, Decidable (Irreducible p)] {p : Associates α}
 
-/-- `count p s` is the multiplicity of the irreducible `p` in the FactorSet `s`.
+/--
+`count p s` is the multiplicity of the irreducible `p` in the FactorSet `s`.
 
-If `p` is not irreducible, `count p s` is defined to be `0`. -/
+If `p` is not irreducible, `count p s` is defined to be `0`.
+-/
 def count (p : Associates α) : FactorSet α → ℕ :=
   if hp : Irreducible p then bcount ⟨p, hp⟩ else 0
 
@@ -136,10 +141,12 @@ def BfactorSetMem : { a : Associates α // Irreducible a } → FactorSet α → 
   | _, ⊤ => True
   | p, some l => p ∈ l
 
-/-- `FactorSetMem p s` is the predicate that the irreducible `p` is a member of
+/--
+`FactorSetMem p s` is the predicate that the irreducible `p` is a member of
 `s : FactorSet α`.
 
-If `p` is not irreducible, `p` is not a member of any `FactorSet`. -/
+If `p` is not irreducible, `p` is not a member of any `FactorSet`.
+-/
 def FactorSetMem (s : FactorSet α) (p : Associates α) : Prop :=
   letI : Decidable (Irreducible p) := Classical.dec _
   if hp : Irreducible p then BfactorSetMem ⟨p, hp⟩ s else False

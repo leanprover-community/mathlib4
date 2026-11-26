@@ -11,6 +11,9 @@ public import Mathlib.Topology.UrysohnsLemma
 
 import Mathlib.Topology.ShrinkingLemma
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuous partition of unity
 
@@ -46,7 +49,7 @@ Note that `g i x = ∏ᶠ j < i, (1 - f j x) - ∏ᶠ j ≤ i, (1 - f j x)`, so 
 `∑ᶠ i, g i x` cancel, and we get `∑ᶠ i, g i x = 1 - ∏ᶠ i, (1 - f i x)`, and the latter product
 equals zero because one of `f i x` is equal to one.
 
-We say that a partition of unity or a bump function covering `f` is *subordinate* to a family of
+We say that a partition of unity or a bump function covering `f` is _subordinate_ to a family of
 sets `U i`, `i : ι`, if the closure of the support of each `f i` is included in `U i`. We use
 Urysohn's Lemma to prove that a locally finite open covering of a normal topological space admits a
 subordinate bump function covering (hence, a subordinate partition of unity), see
@@ -84,7 +87,8 @@ open scoped Topology
 
 noncomputable section
 
-/-- A continuous partition of unity on a set `s : Set X` is a collection of continuous functions
+/--
+A continuous partition of unity on a set `s : Set X` is a collection of continuous functions
 `f i` such that
 
 * the supports of `f i` form a locally finite family of sets, i.e., for every point `x : X` there
@@ -109,7 +113,8 @@ structure PartitionOfUnity (ι X : Type*) [TopologicalSpace X] (s : Set X := uni
   /-- the functions sum up to at most one, globally -/
   sum_le_one' : ∀ x, ∑ᶠ i, toFun i x ≤ 1
 
-/-- A `BumpCovering ι X s` is an indexed family of functions `f i`, `i : ι`, such that
+/--
+A `BumpCovering ι X s` is an indexed family of functions `f i`, `i : ι`, such that
 
 * the supports of `f i` form a locally finite family of sets, i.e., for every point `x : X` there
   exists a neighborhood `U ∋ x` such that all but finitely many functions `f i` are zero on `U`;
@@ -488,7 +493,8 @@ theorem eventuallyEq_one (x : X) (hx : x ∈ s) : f (f.ind x hx) =ᶠ[𝓝 x] 1 
 theorem ind_apply (x : X) (hx : x ∈ s) : f (f.ind x hx) x = 1 :=
   (f.eventuallyEq_one x hx).eq_of_nhds
 
-/-- Partition of unity defined by a `BumpCovering`. We use this auxiliary definition to prove some
+/--
+Partition of unity defined by a `BumpCovering`. We use this auxiliary definition to prove some
 properties of the new family of functions before bundling it into a `PartitionOfUnity`. Do not use
 this definition, use `BumpCovering.toPartitionOfUnity` instead.
 
@@ -497,7 +503,8 @@ words, `g i x = ∏ᶠ j < i, (1 - f j x) - ∏ᶠ j ≤ i, (1 - f j x)`, so
 `∑ᶠ i, g i x = 1 - ∏ᶠ j, (1 - f j x)`. If `x ∈ s`, then one of `f j x` equals one, hence the product
 of `1 - f j x` vanishes, and `∑ᶠ i, g i x = 1`.
 
-In order to avoid an assumption `LinearOrder ι`, we use `WellOrderingRel` instead of `(<)`. -/
+In order to avoid an assumption `LinearOrder ι`, we use `WellOrderingRel` instead of `(<)`.
+-/
 def toPOUFun (i : ι) (x : X) : ℝ :=
   f i x * ∏ᶠ (j) (_ : WellOrderingRel j i), (1 - f j x)
 
@@ -549,14 +556,16 @@ theorem continuous_toPOUFun (i : ι) : Continuous (f.toPOUFun i) := by
   simp only [mulSupport_one_sub]
   exact f.locallyFinite
 
-/-- The partition of unity defined by a `BumpCovering`.
+/--
+The partition of unity defined by a `BumpCovering`.
 
 The partition of unity is given by the formula `g i x = f i x * ∏ᶠ j < i, (1 - f j x)`. In other
 words, `g i x = ∏ᶠ j < i, (1 - f j x) - ∏ᶠ j ≤ i, (1 - f j x)`, so
 `∑ᶠ i, g i x = 1 - ∏ᶠ j, (1 - f j x)`. If `x ∈ s`, then one of `f j x` equals one, hence the product
 of `1 - f j x` vanishes, and `∑ᶠ i, g i x = 1`.
 
-In order to avoid an assumption `LinearOrder ι`, we use `WellOrderingRel` instead of `(<)`. -/
+In order to avoid an assumption `LinearOrder ι`, we use `WellOrderingRel` instead of `(<)`.
+-/
 def toPartitionOfUnity : PartitionOfUnity ι X s where
   toFun i := ⟨f.toPOUFun i, f.continuous_toPOUFun i⟩
   locallyFinite' := f.locallyFinite.subset f.support_toPOUFun_subset
@@ -642,11 +651,13 @@ theorem exists_isSubordinate_of_locallyFinite_t2space [LocallyCompactSpace X] [T
 
 end PartitionOfUnity
 
-/-- A variation of **Urysohn's lemma**.
+/--
+A variation of *Urysohn's lemma*.
 
 In a locally compact T2 space `X`, for a compact set `t` and a finite family of open sets `{s i}_i`
 such that `t ⊆ ⋃ i, s i`, there is a family of compactly supported continuous functions `{f i}_i`
-supported in `s i`, `∑ i, f i x = 1` on `t` and `0 ≤ f i x ≤ 1`. -/
+supported in `s i`, `∑ i, f i x = 1` on `t` and `0 ≤ f i x ≤ 1`.
+-/
 theorem exists_continuous_sum_one_of_isOpen_isCompact [T2Space X] [LocallyCompactSpace X]
     {n : ℕ} {t : Set X} {s : Fin n → Set X} (hs : ∀ (i : Fin n), IsOpen (s i)) (htcp : IsCompact t)
     (hst : t ⊆ ⋃ i, s i) :

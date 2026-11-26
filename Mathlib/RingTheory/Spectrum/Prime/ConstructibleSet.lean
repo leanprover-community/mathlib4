@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Constructible sets in the prime spectrum
 
@@ -67,10 +70,12 @@ lemma toSet_map (φ : R →+* S) (C : BasicConstructibleSetData R) :
 end BasicConstructibleSetData
 
 variable (R) in
-/-- The data of a constructible set `s` in the prime spectrum of a ring is finitely many tuples
+/--
+The data of a constructible set `s` in the prime spectrum of a ring is finitely many tuples
 `(f, g₁, ..., gₙ)` such that `s = ⋃ (f, g₁, ..., gₙ), V(g₁, ..., gₙ) \ V(f)`.
 
-To obtain `s` from its data, use `PrimeSpectrum.ConstructibleSetData.toSet`. -/
+To obtain `s` from its data, use `PrimeSpectrum.ConstructibleSetData.toSet`.
+-/
 abbrev ConstructibleSetData := Finset (BasicConstructibleSetData R)
 
 namespace ConstructibleSetData

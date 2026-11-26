@@ -9,6 +9,9 @@ public import Mathlib.Data.Num.Basic
 public import Mathlib.Data.Ordering.Basic
 public import Mathlib.Data.Tree.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Binary tree get operation
 
@@ -17,7 +20,8 @@ These definitions were moved from the main file to avoid a dependency on `Num`.
 
 ## References
 
-<https://leanprover-community.github.io/archive/stream/113488-general/topic/tactic.20question.html#170999997>
+[
+https://leanprover-community.github.io/archive/stream/113488-general/topic/tactic.20question.html#170999997](https://leanprover-community.github.io/archive/stream/113488-general/topic/tactic.20question.html#170999997)
 -/
 
 @[expose] public section
@@ -43,11 +47,14 @@ def indexOf (lt : α → α → Prop) [DecidableRel lt] (x : α) : BinaryTree α
 abbrev _root_.Tree.indexOf (lt : α → α → Prop) [DecidableRel lt] (x : α) : Tree α → Option PosNum :=
   BinaryTree.indexOf lt x
 
-/-- Retrieves an element uniquely determined by a `PosNum` from the tree,
+/--
+Retrieves an element uniquely determined by a `PosNum` from the tree,
 taking the following path to get to the element:
-- `bit0` - go to left child
-- `bit1` - go to right child
-- `PosNum.one` - retrieve from here -/
+
+* `bit0` - go to left child
+* `bit1` - go to right child
+* `PosNum.one` - retrieve from here
+-/
 def get : PosNum → BinaryTree α → Option α
   | _, nil => none
   | PosNum.one, node a _t₁ _t₂ => some a

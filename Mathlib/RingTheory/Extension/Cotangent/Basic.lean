@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Module.FinitePresentation
 public import Mathlib.RingTheory.Extension.Presentation.Basic
 public import Mathlib.RingTheory.Kaehler.Polynomial
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Naive cotangent complex associated to a presentation.
 
@@ -17,18 +20,18 @@ defined by `I`), we may define the (naive) cotangent complex `I/I² → ⨁ᵢ S
 
 ## Main results
 
-- `Algebra.Extension.Cotangent`: The conormal space `I/I²`. (Defined in `Generators/Basic`)
-- `Algebra.Extension.CotangentSpace`: The cotangent space `⨁ᵢ S dxᵢ`.
-- `Algebra.Generators.cotangentSpaceBasis`: The canonical basis on `⨁ᵢ S dxᵢ`.
-- `Algebra.Extension.CotangentComplex`: The map `I/I² → ⨁ᵢ S dxᵢ`.
-- `Algebra.Extension.toKaehler`: The projection `⨁ᵢ S dxᵢ → Ω[S/R]`.
-- `Algebra.Extension.toKaehler_surjective`: The map `⨁ᵢ S dxᵢ → Ω[S/R]` is surjective.
-- `Algebra.Extension.exact_cotangentComplex_toKaehler`: `I/I² → ⨁ᵢ S dxᵢ → Ω[S/R]` is exact.
-- `Algebra.Extension.Hom.Sub`: If `f` and `g` are two maps between presentations, `f - g` induces
+* `Algebra.Extension.Cotangent`: The conormal space `I/I²`. (Defined in `Generators/Basic`)
+* `Algebra.Extension.CotangentSpace`: The cotangent space `⨁ᵢ S dxᵢ`.
+* `Algebra.Generators.cotangentSpaceBasis`: The canonical basis on `⨁ᵢ S dxᵢ`.
+* `Algebra.Extension.CotangentComplex`: The map `I/I² → ⨁ᵢ S dxᵢ`.
+* `Algebra.Extension.toKaehler`: The projection `⨁ᵢ S dxᵢ → Ω[S/R]`.
+* `Algebra.Extension.toKaehler_surjective`: The map `⨁ᵢ S dxᵢ → Ω[S/R]` is surjective.
+* `Algebra.Extension.exact_cotangentComplex_toKaehler`: `I/I² → ⨁ᵢ S dxᵢ → Ω[S/R]` is exact.
+* `Algebra.Extension.Hom.Sub`: If `f` and `g` are two maps between presentations, `f - g` induces
   a map `⨁ᵢ S dxᵢ → I/I²` that makes `f` and `g` homotopic.
-- `Algebra.Extension.H1Cotangent`: The first homology of the (naive) cotangent complex
+* `Algebra.Extension.H1Cotangent`: The first homology of the (naive) cotangent complex
   of `S` over `R`, induced by a given presentation.
-- `Algebra.H1Cotangent`: `H¹(L_{S/R})`,
+* `Algebra.H1Cotangent`: `H¹(L_{S/R})`,
   the first homology of the (naive) cotangent complex of `S` over `R`.
 
 ## Implementation notes

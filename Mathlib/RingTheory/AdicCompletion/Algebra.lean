@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Algebra.Pi
 public import Mathlib.Algebra.Module.Torsion.Basic
 public import Mathlib.RingTheory.AdicCompletion.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Algebra instance on adic completion
 
@@ -17,9 +20,8 @@ completion of any module is a module over the adic completion of the ring.
 
 ## Main definitions
 
-- `evalₐ`: the canonical algebra map from the adic completion to `R ⧸ I ^ n`.
-
-- `AdicCompletion.liftRingHom`: given a compatible family of ring maps
+* `evalₐ`: the canonical algebra map from the adic completion to `R ⧸ I ^ n`.
+* `AdicCompletion.liftRingHom`: given a compatible family of ring maps
   `R →+* S ⧸ I ^ n`, the lift ring map `R →+* AdicCompletion I S`.
 
 ## Implementation notes
@@ -124,10 +126,12 @@ theorem val_one (n : ℕ) : (1 : AdicCompletion I R).val n = 1 :=
 theorem val_mul (n : ℕ) (x y : AdicCompletion I R) : (x * y).val n = x.val n * y.val n :=
   rfl
 
-/-- The canonical algebra map from the adic completion to `R ⧸ I ^ n`.
+/--
+The canonical algebra map from the adic completion to `R ⧸ I ^ n`.
 
 This is `AdicCompletion.eval` postcomposed with the algebra isomorphism
-`R ⧸ (I ^ n • ⊤) ≃ₐ[R] R ⧸ I ^ n`. -/
+`R ⧸ (I ^ n • ⊤) ≃ₐ[R] R ⧸ I ^ n`.
+-/
 def evalₐ (n : ℕ) : AdicCompletion I R →ₐ[R] R ⧸ I ^ n :=
   have h : (I ^ n • ⊤ : Ideal R) = I ^ n := by ext x; simp
   AlgHom.comp

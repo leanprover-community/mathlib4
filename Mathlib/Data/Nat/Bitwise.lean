@@ -16,6 +16,9 @@ import Mathlib.Tactic.AdaptationNote
 
 import all Init.Data.Nat.Bitwise.Basic  -- for unfolding `bitwise`
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bitwise operations on natural numbers
 

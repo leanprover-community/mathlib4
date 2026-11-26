@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Fourier.ZMod
 public import Mathlib.Analysis.Normed.Module.Connected
 public import Mathlib.NumberTheory.LSeries.RiemannZeta
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # L-series of functions on `ZMod N`
 
@@ -25,7 +28,7 @@ for general functions; for the specific case of Dirichlet characters see
 ## Main definitions
 
 * `ZMod.LFunction Φ s`: the meromorphic continuation of the function `∑ n : ℕ, Φ n * n ^ (-s)`.
-* `ZMod.completedLFunction Φ s`: the completed L-function, which for *almost* all `s` is equal to
+* `ZMod.completedLFunction Φ s`: the completed L-function, which for _almost_ all `s` is equal to
   `LFunction Φ s` multiplied by an Archimedean Gamma-factor.
 
 Note that `ZMod.completedLFunction Φ s` is only mathematically well-defined if `Φ` is either even

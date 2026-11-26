@@ -12,6 +12,9 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexEvaluation
 import Mathlib.CategoryTheory.MorphismProperty.FunctorCategory
 import Mathlib.CategoryTheory.Types.Monomorphisms
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The skeleton of a simplicial set
 
@@ -188,6 +191,7 @@ namespace relativeCellComplexOfMono
 /-!
 The main next technical result is that if `i : X ⟶ Y` is a monomorphism
 of simplicial sets and `d : ℕ`, there is a pushout square:
+
 ```
                                 t i d
 ∐ fun (c : Cell i d) ↦ ∂Δ[d] ----------> skeletonOfMono i d

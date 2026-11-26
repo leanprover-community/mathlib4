@@ -12,6 +12,9 @@ import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.Algebra.Category.ModuleCat.Products
 import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `forget₂ (FGModuleCat K) (ModuleCat K)` creates all finite limits.
 

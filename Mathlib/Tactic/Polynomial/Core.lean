@@ -10,6 +10,9 @@ public import Mathlib.Init
 
 meta import Lean.Compiler.IR.CompilerM
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Setup for the `polynomial` tactic
 
@@ -33,9 +36,11 @@ initialize polynomialPreExt : SimpExtension ←
     The `polynomial_pre` simp attribute uses preprocessing lemmas \
     to turn specialized functions into `algebraMap`s"
 
-/-- `polynomial_post` marks a theorem to be used by the `polynomial_nf` tactic as a postprocessing
-lemma. Used only by polynomial_nf. These serve the purpose of rewriting expressions in `algebra`
-normal form into a more readable form. e.g. `a • X` -> `algebraMap _ _ a * X` -> `C a * X`. -/
+/--
+`polynomial_post` marks a theorem to be used by the `polynomial_nf` tactic as a postprocessing
+lemma. Used only by polynomial\_nf. These serve the purpose of rewriting expressions in `algebra`
+normal form into a more readable form. e.g. `a • X` -> `algebraMap _ _ a * X` -> `C a * X`.
+-/
 initialize polynomialPostExt : SimpExtension ←
   registerSimpAttr `polynomial_post "\
     The `polynomial_post` simp attribute uses postprocessing lemmas \

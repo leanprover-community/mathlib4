@@ -8,7 +8,11 @@ module
 public import Mathlib.Algebra.Homology.Embedding.Basic
 public import Mathlib.Algebra.Homology.Opposite
 
-/-! # Support of homological complexes
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Support of homological complexes
 
 Given an embedding `e : c.Embedding c'` of complex shapes, we say
 that `K : HomologicalComplex C c'` is supported (resp. strictly supported) on `e`

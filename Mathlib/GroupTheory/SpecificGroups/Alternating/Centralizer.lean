@@ -8,24 +8,24 @@ module
 public import Mathlib.GroupTheory.Perm.Centralizer
 public import Mathlib.GroupTheory.SpecificGroups.Alternating
 
-/-! # Centralizer of an element in the alternating group
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Centralizer of an element in the alternating group
 
 Given a finite type `α`, our goal is to compute the cardinality of conjugacy classes
 in `alternatingGroup α`.
 
 * `AlternatingGroup.card_of_cycleType_mul_eq m` and `AlternatingGroup.card_of_cycleType m`
   compute the number of even permutations of given cycle type.
-
 * `Equiv.Perm.OnCycleFactors.odd_of_centralizer_le_alternatingGroup` :
   if `Subgroup.centralizer {g} ≤ alternatingGroup α`, then all members of the `g.cycleType` are odd.
-
 * `Equiv.Perm.card_le_of_centralizer_le_alternating` :
   if `Subgroup.centralizer {g} ≤ alternatingGroup α`, then the cardinality of α
   is at most `g.cycleType.sum` plus one.
-
 * `Equiv.Perm.count_le_one_of_centralizer_le_alternating` :
   if `Subgroup.centralizer {g} ≤ alternatingGroup α`, then `g.cycleType` has no repetitions.
-
 * `Equiv.Perm.centralizer_le_alternating_iff` :
   the previous three conditions are necessary and sufficient
   for having `Subgroup.centralizer {g} ≤ alternatingGroup α`.

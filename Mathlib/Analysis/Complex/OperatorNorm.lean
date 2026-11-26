@@ -9,7 +9,11 @@ public import Mathlib.Analysis.Complex.Basic
 public import Mathlib.Analysis.Normed.Operator.NormedSpace
 public import Mathlib.LinearAlgebra.Complex.Determinant
 
-/-! # The basic continuous linear maps associated to `ℂ`
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# The basic continuous linear maps associated to `ℂ`
 
 The continuous linear maps `Complex.reCLM` (real part), `Complex.imCLM` (imaginary part),
 `Complex.conjCLE` (conjugation), and `Complex.ofRealCLM` (inclusion of `ℝ`) were introduced in

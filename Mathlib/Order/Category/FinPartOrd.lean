@@ -8,12 +8,15 @@ module
 public import Mathlib.CategoryTheory.FintypeCat
 public import Mathlib.Order.Category.PartOrd
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of finite partial orders
 
 This defines `FinPartOrd`, the category of finite partial orders.
 
-Note: `FinPartOrd` is *not* a subcategory of `BddOrd` because finite orders are not necessarily
+Note: `FinPartOrd` is _not_ a subcategory of `BddOrd` because finite orders are not necessarily
 bounded.
 
 ## TODO

@@ -7,6 +7,10 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
 
+set_option doc.verso true
+set_option doc.verso.module false
+set_option doc.verso.suggestions false
+
 /-!
 # Pi
 

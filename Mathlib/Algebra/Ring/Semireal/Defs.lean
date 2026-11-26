@@ -7,22 +7,25 @@ module
 
 public import Mathlib.Algebra.Ring.SumsOfSquares
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Semireal rings
 
-A semireal ring is a commutative ring (with unit) in which `-1` is *not* a sum of squares.
+A semireal ring is a commutative ring (with unit) in which `-1` is _not_ a sum of squares.
 
 For instance, linearly ordered rings are semireal, because sums of squares are positive and `-1` is
 not.
 
 ## Main declaration
 
-- `IsSemireal`: the predicate asserting that a commutative ring `R` is semireal.
+* `IsSemireal`: the predicate asserting that a commutative ring `R` is semireal.
 
 ## References
 
-- *An introduction to real algebra*, by T.Y. Lam. Rocky Mountain J. Math. 14(4): 767-814 (1984).
-  [lam_1984](https://doi.org/10.1216/RMJ-1984-14-4-767)
+* _An introduction to real algebra_, by T.Y. Lam. Rocky Mountain J. Math. 14(4): 767-814 (1984).
+  [lam\_1984](https://doi.org/10.1216/RMJ-1984-14-4-767)
 -/
 
 public section
@@ -30,7 +33,7 @@ public section
 variable (R : Type*)
 
 /--
-A semireal ring is a commutative ring (with unit) in which `-1` is *not* a sum of
+A semireal ring is a commutative ring (with unit) in which `-1` is _not_ a sum of
 squares. We define the predicate `IsSemireal R` for structures `R` equipped with
 a multiplication, an addition, a multiplicative unit and an additive unit.
 -/

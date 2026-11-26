@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Matrix.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # One by one matrices
 
@@ -15,8 +18,8 @@ canonical map that sends a one by one matrix `!![a]` to `a`.
 
 ## Main results
 
-- `Matrix.uniqueRingEquiv`
-- `Matrix.uniqueAlgEquiv`
+* `Matrix.uniqueRingEquiv`
+* `Matrix.uniqueAlgEquiv`
 
 ## Tags
 

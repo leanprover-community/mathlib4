@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.MorphismProperty.Representable
 
 import Mathlib.CategoryTheory.Sites.LocallyBijective
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Representability of schemes is a local property
 
@@ -18,8 +21,9 @@ locally representable.
 
 ## Main result
 
-- `AlgebraicGeometry.Scheme.LocalRepresentability.isRepresentable`:
+* `AlgebraicGeometry.Scheme.LocalRepresentability.isRepresentable`:
   Suppose
+
   * F is a `Type u`-valued sheaf on `Sch` with respect to the Zariski topology
   * X : ι → Sch is a family of schemes
   * f : Π i, yoneda.obj (X i) ⟶ F is a family of relatively representable open immersions
@@ -169,15 +173,18 @@ instance : IsIso (yonedaGluedToSheaf hf) := by
   rw [← Sheaf.isLocallyBijective_iff_isIso (yonedaGluedToSheaf hf)]
   constructor <;> infer_instance
 
-/-- The isomorphism between `yoneda.obj (glueData hf).glued` and `F`.
+/--
+The isomorphism between `yoneda.obj (glueData hf).glued` and `F`.
 
-This implies that `F` is representable. -/
+This implies that `F` is representable.
+-/
 noncomputable def yonedaIsoSheaf :
     zariskiTopology.yoneda.obj (glueData hf).glued ≅ F :=
   asIso (yonedaGluedToSheaf hf)
 
 /--
 Suppose
+
 * F is a `Type u`-valued sheaf on `Sch` with respect to the Zariski topology
 * X : ι → Sch is a family of schemes
 * f : Π i, yoneda.obj (X i) ⟶ F is a family of relatively representable open immersions
@@ -193,6 +200,7 @@ def representableBy : F.obj.RepresentableBy (glueData hf).glued :=
 include hf in
 /--
 Suppose
+
 * F is a `Type u`-valued sheaf on `Sch` with respect to the Zariski topology
 * X : ι → Sch is a family of schemes
 * f : Π i, yoneda.obj (X i) ⟶ F is a family of relatively representable open immersions

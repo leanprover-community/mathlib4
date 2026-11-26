@@ -8,14 +8,17 @@ module
 public import Mathlib.Analysis.Normed.Field.UnitBall
 public import Mathlib.Analysis.Normed.Module.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Multiplicative actions of/on balls and spheres
 
 Let `E` be a normed vector space over a normed field `𝕜`. In this file we define the following
 multiplicative actions.
 
-- The closed unit ball in `𝕜` acts on open balls and closed balls centered at `0` in `E`.
-- The unit sphere in `𝕜` acts on open balls, closed balls, and spheres centered at `0` in `E`.
+* The closed unit ball in `𝕜` acts on open balls and closed balls centered at `0` in `E`.
+* The unit sphere in `𝕜` acts on open balls, closed balls, and spheres centered at `0` in `E`.
 -/
 
 public section

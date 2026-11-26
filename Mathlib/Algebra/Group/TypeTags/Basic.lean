@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Torsion
 public import Mathlib.Algebra.Notation.Pi.Basic
 public import Mathlib.Logic.Equiv.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Type tags that turn additive structures into multiplicative, and vice versa
 
@@ -492,7 +495,8 @@ instance [Mul α] [IsMulCommutative α] : IsAddCommutative (Additive α) where
 instance [Add α] [IsAddCommutative α] : IsMulCommutative (Multiplicative α) where
   is_comm := ⟨fun a b ↦ congrArg Multiplicative.ofAdd (add_comm' a.toAdd b.toAdd)⟩
 
-/-- If `α` has some multiplicative structure and coerces to a function,
+/--
+If `α` has some multiplicative structure and coerces to a function,
 then `Additive α` should also coerce to the same function.
 
 This allows `Additive` to be used on bundled function types with a multiplicative structure, which
@@ -502,7 +506,8 @@ instance Additive.coeToFun {α : Type*} {β : α → Sort*} [CoeFun α β] :
     CoeFun (Additive α) fun a => β a.toMul :=
   ⟨fun a => CoeFun.coe a.toMul⟩
 
-/-- If `α` has some additive structure and coerces to a function,
+/--
+If `α` has some additive structure and coerces to a function,
 then `Multiplicative α` should also coerce to the same function.
 
 This allows `Multiplicative` to be used on bundled function types with an additive structure, which

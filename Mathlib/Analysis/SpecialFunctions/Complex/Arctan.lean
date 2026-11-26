@@ -9,13 +9,16 @@ public import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
 
 import Mathlib.Algebra.Order.Interval.Set.Group
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Complex arctangent
 
 This file defines the complex arctangent `Complex.arctan` as
-$$\arctan z = -\frac i2 \log \frac{1 + zi}{1 - zi}$$
+$$`\arctan z = -\frac i2 \log \frac{1 + zi}{1 - zi}`
 and shows that it extends `Real.arctan` to the complex plane. Its Taylor series expansion
-$$\arctan z = \frac{(-1)^n}{2n + 1} z^{2n + 1},\ |z|<1$$
+$$`\arctan z = \frac{(-1)^n}{2n + 1} z^{2n + 1},\ |z|<1`
 is proved in `Complex.hasSum_arctan`.
 -/
 

@@ -7,10 +7,14 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pasting lemma
 
 This file proves the pasting lemma for pullbacks. That is, given the following diagram:
+
 ```
   X₁ - f₁ -> X₂ - f₂ -> X₃
   |          |          |
@@ -18,6 +22,7 @@ This file proves the pasting lemma for pullbacks. That is, given the following d
   ∨          ∨          ∨
   Y₁ - g₁ -> Y₂ - g₂ -> Y₃
 ```
+
 if the right square is a pullback, then the left square is a pullback iff the big square is a
 pullback.
 
@@ -74,7 +79,9 @@ variable (t₂ : PullbackCone g₂ i₃) {i₂ : t₂.pt ⟶ Y₂} (t₁ : Pullb
 
 variable {t₁} {t₂}
 
-/-- Given
+/--
+Given
+
 ```
 X₁ - f₁ -> X₂ - f₂ -> X₃
 |          |          |
@@ -82,6 +89,7 @@ i₁         i₂         i₃
 ↓          ↓          ↓
 Y₁ - g₁ -> Y₂ - g₂ -> Y₃
 ```
+
 Then the big square is a pullback if both the small squares are.
 -/
 @[to_dual
@@ -117,7 +125,9 @@ def pasteHorizIsPullback (H : IsLimit t₂) (H' : IsLimit t₁) : IsLimit (t₂.
 
 variable (t₁)
 
-/-- Given
+/--
+Given
+
 ```
 X₁ - f₁ -> X₂ - f₂ -> X₃
 |          |          |
@@ -125,6 +135,7 @@ i₁         i₂         i₃
 ↓          ↓          ↓
 Y₁ - g₁ -> Y₂ - g₂ -> Y₃
 ```
+
 Then the left square is a pullback if the right square and the big square are.
 -/
 @[to_dual
@@ -221,7 +232,9 @@ def PullbackCone.pasteHorizFlip : (t₂.pasteHoriz t₁ hi₂).flip ≅ (t₂.fl
 
 variable {t₁} {t₂}
 
-/-- Given
+/--
+Given
+
 ```
 Y₃ - i₃ -> X₃
 |          |
@@ -233,6 +246,7 @@ g₁         f₁
 ∨          ∨
 Y₁ - i₁ -> X₁
 ```
+
 The big square is a pullback if both the small squares are.
 -/
 @[to_dual
@@ -252,7 +266,9 @@ def pasteVertIsPullback (H₁ : IsLimit t₁) (H₂ : IsLimit t₂) : IsLimit (t
 
 variable (t₂)
 
-/-- Given
+/--
+Given
+
 ```
 Y₃ - i₃ -> X₃
 |          |
@@ -264,6 +280,7 @@ g₁         f₁
 ∨          ∨
 Y₁ - i₁ -> X₁
 ```
+
 The top square is a pullback if the bottom square and the big square are.
 -/
 @[to_dual

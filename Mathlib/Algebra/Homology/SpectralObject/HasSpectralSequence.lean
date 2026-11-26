@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Homology.SpectralSequence.ComplexShape
 public import Mathlib.Order.Fin.Clamp
 public import Mathlib.Order.WithBotTop
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Shapes of spectral sequences obtained from a spectral object
 
@@ -429,9 +432,11 @@ section
 
 variable (Y : SpectralObject C EInt)
 
-/-- The conditions on a spectral object indexed by `EInt` which allow
+/--
+The conditions on a spectral object indexed by `EInt` which allow
 to obtain a (convergent) third quadrant `E₂` cohomological spectral sequence,
-or a (convergent) first quadrant `E₂` *homological* spectral sequence -/
+or a (convergent) first quadrant `E₂` _homological_ spectral sequence
+-/
 class IsThirdQuadrant where
   isZero₁ (i j : EInt) (hij : i ≤ j) (hi : (0 : ℤ) < i) (n : ℤ) :
     IsZero ((Y.H n).obj (mk₁ (homOfLE hij)))

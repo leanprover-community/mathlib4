@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialObject.Op
 public import Mathlib.AlgebraicTopology.SimplicialSet.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The covariant involution of the category of simplicial sets
 
@@ -15,7 +18,6 @@ In this file, we define the covariant involution `opFunctor : SSet ⥤ SSet`
 of the category of simplicial sets that is induced by the
 covariant involution `SimplexCategory.op : SimplexCategory ⥤ SimplexCategory`.
 We use an abbreviation `X.op` for `opFunctor.obj X`.
-
 
 ## TODO
 

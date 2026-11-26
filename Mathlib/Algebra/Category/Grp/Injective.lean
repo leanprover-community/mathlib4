@@ -12,6 +12,9 @@ public import Mathlib.RingTheory.PrincipalIdealDomain
 
 import Mathlib.Algebra.EuclideanDomain.Int
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Injective objects in the category of abelian groups
 
@@ -21,7 +24,7 @@ in `Mathlib/Algebra/Category/Grp/EnoughInjectives.lean`.
 
 ## Main results
 
-- `AddCommGrpCat.injective_of_divisible` : a divisible group is also an injective object.
+* `AddCommGrpCat.injective_of_divisible` : a divisible group is also an injective object.
 -/
 
 public section

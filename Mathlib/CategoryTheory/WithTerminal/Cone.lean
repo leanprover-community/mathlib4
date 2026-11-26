@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Comma.Over.Basic
 public import Mathlib.CategoryTheory.WithTerminal.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Relations between `Cone`, `WithTerminal` and `Over`
 
@@ -31,12 +34,14 @@ variable {J : Type w} [Category.{w'} J]
 namespace CategoryTheory.WithTerminal
 variable {X : C} {K : J ⥤ Over X} {F : C ⥤ D} {t : Cone K}
 
-/-- The category of functors `J ⥤ Over X` can be seen as part of a comma category,
+/--
+The category of functors `J ⥤ Over X` can be seen as part of a comma category,
 namely the comma category constructed from the identity of the category of functors
 `J ⥤ C` and the functor that maps `X : C` to the constant functor `J ⥤ C`.
 
 Given a functor `K : J ⥤ Over X`, it is mapped to a natural transformation from the
-obvious functor `J ⥤ C` to the constant functor `X`. -/
+obvious functor `J ⥤ C` to the constant functor `X`.
+-/
 @[simps]
 def commaFromOver : (J ⥤ Over X) ⥤ Comma (𝟭 (J ⥤ C)) (Functor.const J) where
   obj K := {
@@ -147,12 +152,14 @@ instance (X : C) [HasLimitsOfSize.{w, w'} C] : HasLimitsOfSize.{w, w'} (Over X) 
 namespace WithInitial
 variable {X : C} {K : J ⥤ Under X} {F : C ⥤ D} {t : Cocone K}
 
-/-- The category of functors `J ⥤ Under X` can be seen as part of a comma category,
+/--
+The category of functors `J ⥤ Under X` can be seen as part of a comma category,
 namely the comma category constructed from the identity of the category of functors
 `J ⥤ C` and the functor that maps `X : C` to the constant functor `J ⥤ C`.
 
 Given a functor `K : J ⥤ Under X`, it is mapped to a natural transformation to the
-obvious functor `J ⥤ C` from the constant functor `X`. -/
+obvious functor `J ⥤ C` from the constant functor `X`.
+-/
 @[simps]
 def commaFromUnder : (J ⥤ Under X) ⥤ Comma (Functor.const J) (𝟭 (J ⥤ C)) where
   obj K := {

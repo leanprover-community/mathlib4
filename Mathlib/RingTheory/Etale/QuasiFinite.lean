@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.ZariskisMainTheorem
 
 import Mathlib.RingTheory.Ideal.Quotient.Over
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Etale local structure of finite maps
 
@@ -17,7 +20,7 @@ We construct etale neighborhoods that split fibers of finite algebras.
 
 ## Main results
 
-- `Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq`:
+* `Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq`:
   Let `S` be a module-finite `R`-algebra, and `q` a prime lying over `p`.
   We may construct an etale `R`-algebra `R'` and a prime `P` lying over `p` with `κ(P) = κ(p)`,
   such that `R' ⊗[R] S = A × B` and there exists a unique prime in `A` lying over `P`.

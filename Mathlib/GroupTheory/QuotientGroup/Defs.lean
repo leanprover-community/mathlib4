@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Group.Subgroup.Ker
 public import Mathlib.GroupTheory.Congruence.Hom
 public import Mathlib.GroupTheory.Coset.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Quotients of groups by normal subgroups
 
@@ -105,14 +108,18 @@ theorem mk'_eq_mk' {x y : G} : mk' N x = mk' N y ↔ ∃ z ∈ N, x * z = y :=
   QuotientGroup.eq.trans <| by
     simp only [← _root_.eq_inv_mul_iff_mul_eq, exists_eq_right]
 
-/-- Two `MonoidHom`s from a quotient group are equal if their compositions with
+/--
+Two `MonoidHom`s from a quotient group are equal if their compositions with
 `QuotientGroup.mk'` are equal.
 
-See note [partially-applied ext lemmas]. -/
-@[to_additive (attr := ext 1100) /-- Two `AddMonoidHom`s from an additive quotient group are equal
+See note \[partially-applied ext lemmas\].
+-/
+@[to_additive (attr := ext 1100) /--
+                                 Two `AddMonoidHom`s from an additive quotient group are equal
 if their compositions with `AddQuotientGroup.mk'` are equal.
 
-See note [partially-applied ext lemmas]. -/]
+                                 See note \[partially-applied ext lemmas\].
+                                 -/]
 theorem monoidHom_ext ⦃f g : G ⧸ N →* M⦄ (h : f.comp (mk' N) = g.comp (mk' N)) : f = g :=
   MonoidHom.ext fun x => QuotientGroup.induction_on x (DFunLike.congr_fun h :)
 

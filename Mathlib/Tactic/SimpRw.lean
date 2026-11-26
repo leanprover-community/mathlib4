@@ -7,6 +7,10 @@ module
 
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.module false
+set_option doc.verso.suggestions false
+
 /-!
 # The `simp_rw` tactic
 
@@ -68,7 +72,8 @@ namespace Mathlib.Tactic
 open Lean Elab.Tactic
 open Parser.Tactic (optConfig rwRuleSeq location getConfigItems)
 
-/-- A version of `withRWRulesSeq` (in core) that doesn't attempt to find equation lemmas, and simply
+/--
+A version of `withRWRulesSeq` (in core) that doesn't attempt to find equation lemmas, and simply
 passes the rw rules on to `x`.
 
 In this case, `x` passes the rules to `simp only`, and `simp only` already finds the equation
@@ -93,6 +98,8 @@ def withSimpRWRulesSeq (rwRulesSeqStx : Syntax)
         -- let processId (id : Syntax) : TacticM Unit := do
         x symm term
 
+
+set_option doc.verso false
 /--
 `simp_rw` functions as a mix of `simp` and `rw`. Like `rw`, it applies each
 rewrite rule in the given order, but like `simp` it repeatedly applies these
@@ -136,4 +143,6 @@ elab s:"simp_rw " cfg:optConfig rws:rwRuleSeq g:(location)? : tactic => focus do
       else
         `(tactic| simp%$e $cfg only [$e:term] $g ?))
 
+
+set_option doc.verso true
 end Mathlib.Tactic

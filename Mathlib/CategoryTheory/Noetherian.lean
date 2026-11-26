@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Subobject.ArtinianObject
 public import Mathlib.CategoryTheory.Subobject.NoetherianObject
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Artinian and Noetherian categories
 

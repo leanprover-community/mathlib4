@@ -8,11 +8,14 @@ module
 public import Mathlib.Algebra.Group.Commute.Basic
 public import Mathlib.Algebra.Group.SelfInv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Torsion-free monoids and groups
 
 This file proves lemmas about torsion-free monoids.
-A monoid `M` is *torsion-free* if `n • · : M → M` is injective for all non-zero natural numbers `n`.
+A monoid `M` is _torsion-free_ if `n • · : M → M` is injective for all non-zero natural numbers `n`.
 -/
 
 public section
@@ -96,14 +99,18 @@ theorem IsMulTorsionFree.pow_right_inj (ha : a ≠ 1) {n m : ℕ} : a ^ n = a ^ 
 
 end CancelMonoid
 
-/-- A commutative torsion-free monoid has unique roots.
+/--
+A commutative torsion-free monoid has unique roots.
 
 This is not an instance, to avoid an expensive instance loop with
-`HasUniqueRoots M → IsMulTorsionFree M`. -/
-@[to_additive /-- A commutative torsion-free additive monoid has unique divisibility.
+`HasUniqueRoots M → IsMulTorsionFree M`.
+-/
+@[to_additive /--
+              A commutative torsion-free additive monoid has unique divisibility.
 
-This is not an instance, to avoid an expensive instance loop with
-`HasUniqueDiv M → IsAddTorsionFree M`. -/]
+              This is not an instance, to avoid an expensive instance loop with
+`HasUniqueDiv M → IsAddTorsionFree M`.
+              -/]
 lemma IsMulTorsionFree.hasUniqueRoots [CommMonoid M] [IsMulTorsionFree M] : HasUniqueRoots M where
   pow_left_injective _ hn _ _ := (Commute.all _ _).eq_of_pow_eq_pow hn
 

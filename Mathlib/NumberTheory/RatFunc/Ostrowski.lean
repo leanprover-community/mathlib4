@@ -7,6 +7,9 @@ module
 
 public import Mathlib.FieldTheory.RatFunc.Valuation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ostrowski's theorem for `K(X)`
 
@@ -17,11 +20,11 @@ valuation at infinity `FunctionField.inftyValuation K`.
 
 ## Main results
 
-- `RatFunc.valuation_isEquiv_infty_or_adic`: Ostrowski's theorem for `K(X)`.
+* `RatFunc.valuation_isEquiv_infty_or_adic`: Ostrowski's theorem for `K(X)`.
 
 ## TODO
 
-- Show that a nontrivial valuation `v`, trivial on `K`, is a rank one discrete valuation. (*)
+* Show that a nontrivial valuation `v`, trivial on `K`, is a rank one discrete valuation. (\*)
 -/
 
 @[expose] public noncomputable section

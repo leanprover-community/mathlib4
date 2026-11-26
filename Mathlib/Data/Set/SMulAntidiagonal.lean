@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.AddTorsor
 public import Mathlib.Order.WellFoundedSet
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Antidiagonal for scalar multiplication
 

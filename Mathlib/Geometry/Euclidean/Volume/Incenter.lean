@@ -10,8 +10,10 @@ public import Mathlib.Geometry.Euclidean.Volume.Def
 
 import Mathlib.Geometry.Euclidean.Volume.Basic
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Incenters, excenters, and volumes of simplices
 
 This file explores the interaction between incenters, excenters, and volumes of simplices. It shows
@@ -28,7 +30,6 @@ be calculated using exradius.
   the dimension.
 * `Affine.Simplex.volume_eq_inradius_mul`: the volume of the simplex is the product of
   `Affine.Simplex.inradius` and the surface area, divided by the dimension.
-
 -/
 
 @[expose] public section

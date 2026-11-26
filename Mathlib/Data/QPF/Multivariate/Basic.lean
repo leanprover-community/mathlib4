@@ -7,6 +7,10 @@ module
 
 public import Mathlib.Data.PFunctor.Multivariate.Basic
 
+set_option doc.verso true
+set_option doc.verso.module false
+set_option doc.verso.suggestions false
+
 /-!
 # Multivariate quotients of polynomial functors.
 

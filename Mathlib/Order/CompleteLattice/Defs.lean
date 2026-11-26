@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.Bounds.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Definition of complete lattices
 
@@ -24,6 +27,7 @@ This file contains the definition of complete lattices with suprema/infima of ar
 ## Naming conventions
 
 In lemma names,
+
 * `sSup` is called `sSup`
 * `sInf` is called `sInf`
 * `⨆ i, s i` is called `iSup`
@@ -55,7 +59,8 @@ instance OrderDual.supSet (α) [h : InfSet α] : SupSet αᵒᵈ :=
 instance OrderDual.orderSupSet (α) [Preorder α] [OrderInfSet α] : OrderSupSet αᵒᵈ where
   isLUB_sSup_of_isLUB _ _ := IsGLB.isGLB_sInf (α := α)
 
-/-- Note that we rarely use `CompleteSemilatticeSup`
+/--
+Note that we rarely use `CompleteSemilatticeSup`
 (in fact, any such object is always a `CompleteLattice`, so it's usually best to start there).
 
 Nevertheless it is sometimes a useful intermediate step in constructions.
@@ -64,7 +69,8 @@ class CompleteSemilatticeSup (α : Type*) extends PartialOrder α, SupSet α whe
   /-- Every set has a least upper bound. -/
   isLUB_sSup : ∀ s : Set α, IsLUB s (sSup s)
 
-/-- Note that we rarely use `CompleteSemilatticeInf`
+/--
+Note that we rarely use `CompleteSemilatticeInf`
 (in fact, any such object is always a `CompleteLattice`, so it's usually best to start there).
 
 Nevertheless it is sometimes a useful intermediate step in constructions.
@@ -152,11 +158,13 @@ attribute [to_dual self (reorder := toSupSet toInfSet, isLUB_sSup isGLB_sInf)] C
 instance (priority := 100) CompleteLattice.toPartialOrder' [CompleteLattice α] : PartialOrder α :=
   inferInstance
 
-/-- Create a `CompleteLattice` from a `PartialOrder` and `InfSet`
+/--
+Create a `CompleteLattice` from a `PartialOrder` and `InfSet`
 that returns the greatest lower bound of a set. Usually this constructor provides
 poor definitional equalities.  If other fields are known explicitly, they should be
 provided; for example, if `inf` is known explicitly, construct the `CompleteLattice`
 instance as
+
 ```
 instance : CompleteLattice my_T where
   inf := better_inf
@@ -189,7 +197,8 @@ def completeLatticeOfInf (α : Type*) [H1 : PartialOrder α] [H2 : InfSet α]
   isGLB_sInf := isGLB_sInf
   isLUB_sSup s := isGLB_upperBounds.mp (isGLB_sInf _)
 
-/-- Any `CompleteSemilatticeInf` is in fact a `CompleteLattice`.
+/--
+Any `CompleteSemilatticeInf` is in fact a `CompleteLattice`.
 
 Note that this construction has bad definitional properties:
 see the doc-string on `completeLatticeOfInf`.
@@ -199,11 +208,13 @@ def completeLatticeOfCompleteSemilatticeInf (α : Type*) [CompleteSemilatticeInf
     CompleteLattice α :=
   completeLatticeOfInf α fun s => isGLB_sInf s
 
-/-- Create a `CompleteLattice` from a `PartialOrder` and `SupSet`
+/--
+Create a `CompleteLattice` from a `PartialOrder` and `SupSet`
 that returns the least upper bound of a set. Usually this constructor provides
 poor definitional equalities.  If other fields are known explicitly, they should be
 provided; for example, if `inf` is known explicitly, construct the `CompleteLattice`
 instance as
+
 ```
 instance : CompleteLattice my_T where
   inf := better_inf
@@ -234,7 +245,8 @@ def completeLatticeOfSup (α : Type*) [H1 : PartialOrder α] [H2 : SupSet α]
   isLUB_sSup := isLUB_sSup
   isGLB_sInf s := isLUB_lowerBounds.mp (isLUB_sSup _)
 
-/-- Any `CompleteSemilatticeSup` is in fact a `CompleteLattice`.
+/--
+Any `CompleteSemilatticeSup` is in fact a `CompleteLattice`.
 
 Note that this construction has bad definitional properties:
 see the doc-string on `completeLatticeOfSup`.

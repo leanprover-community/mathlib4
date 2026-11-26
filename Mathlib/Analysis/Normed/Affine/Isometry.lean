@@ -11,6 +11,9 @@ public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Analysis.Normed.Operator.LinearIsometry
 public import Mathlib.Topology.Algebra.AffineSubspace
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Affine isometries
 
@@ -872,7 +875,8 @@ section isometryEquivMap
 variable {V₁' P₁' : Type*} [SeminormedAddCommGroup V₁'] [NormedSpace 𝕜 V₁'] [MetricSpace P₁']
   [NormedAddTorsor V₁' P₁']
 
-/-- Restricts an affine isometry to an affine isometry equivalence between a nonempty affine
+/--
+Restricts an affine isometry to an affine isometry equivalence between a nonempty affine
 subspace `E` and its image.
 
 This is an isometry version of `AffineSubspace.equivMap`, having a stronger premise and a stronger

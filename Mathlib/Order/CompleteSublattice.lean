@@ -9,6 +9,9 @@ public import Mathlib.Data.Set.Functor
 public import Mathlib.Order.Hom.CompleteLattice
 public import Mathlib.Order.Sublattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Complete Sublattices
 
@@ -195,9 +198,11 @@ end CompleteSublattice
 
 namespace CompleteLatticeHom
 
-/-- The range of a `CompleteLatticeHom` is a `CompleteSublattice`.
+/--
+The range of a `CompleteLatticeHom` is a `CompleteSublattice`.
 
-See Note [range copy pattern]. -/
+See Note \[range copy pattern\].
+-/
 protected def range : CompleteSublattice β :=
   (CompleteSublattice.map f ⊤).copy (range f) image_univ.symm
 

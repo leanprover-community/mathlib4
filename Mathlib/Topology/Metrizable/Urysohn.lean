@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.ContinuousMap.Bounded.Basic
 public import Mathlib.Topology.UrysohnsLemma
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Urysohn's Metrization Theorem
 
@@ -106,9 +109,11 @@ theorem exists_isInducing_l_infty : ∃ f : X → ℕ →ᵇ ℝ, IsInducing f :
     rw [hF, hF, hfε UV hy, hf0 UV hxU, Pi.zero_apply, dist_zero_right]
     exact le_abs_self _
 
-/-- *Urysohn's metrization theorem* (Tychonoff's version):
+/--
+_Urysohn's metrization theorem_ (Tychonoff's version):
 a regular topological space with second countable topology `X` is metrizable,
-i.e., there exists a pseudometric space structure that generates the same topology. -/
+i.e., there exists a pseudometric space structure that generates the same topology.
+-/
 instance (priority := 90) PseudoMetrizableSpace.of_regularSpace_secondCountableTopology :
     PseudoMetrizableSpace X :=
   let ⟨_, hf⟩ := exists_isInducing_l_infty X
@@ -122,9 +127,11 @@ variable (X : Type*) [TopologicalSpace X] [T3Space X] [SecondCountableTopology X
 theorem exists_embedding_l_infty : ∃ f : X → ℕ →ᵇ ℝ, IsEmbedding f :=
   let ⟨f, hf⟩ := exists_isInducing_l_infty X; ⟨f, hf.isEmbedding⟩
 
-/-- *Urysohn's metrization theorem* (Tychonoff's version): a T₃ topological space with second
+/--
+_Urysohn's metrization theorem_ (Tychonoff's version): a T₃ topological space with second
 countable topology `X` is metrizable, i.e., there exists a metric space structure that generates the
-same topology. -/
+same topology.
+-/
 instance (priority := 90) metrizableSpace_of_t3_secondCountable : MetrizableSpace X :=
   let ⟨_, hf⟩ := exists_embedding_l_infty X
   hf.metrizableSpace

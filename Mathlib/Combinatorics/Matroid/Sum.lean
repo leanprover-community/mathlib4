@@ -7,10 +7,13 @@ module
 
 public import Mathlib.Combinatorics.Matroid.Map
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sums of matroids
 
-The *sum* `M` of a collection `M₁, M₂, ..` of matroids is a matroid on the disjoint union of
+The _sum_ `M` of a collection `M₁, M₂, ..` of matroids is a matroid on the disjoint union of
 the ground sets of the summands, in which the independent sets are precisely the unions of
 independent sets of the summands.
 
@@ -22,16 +25,12 @@ To this end, we define five separate versions of the sum construction.
 
 * For an indexed collection `M : (i : ι) → Matroid (α i)` of matroids on different types,
   `Matroid.sigma M` is the sum of the `M i`, as a matroid on the sigma type `(Σ i, α i)`.
-
 * For an indexed collection `M : ι → Matroid α` of matroids on the same type,
   `Matroid.sum' M` is the sum of the `M i`, as a matroid on the product type `ι × α`.
-
 * For an indexed collection `M : ι → Matroid α` of matroids on the same type, and a
   proof `h : Pairwise (Disjoint on fun i ↦ (M i).E)` that they have disjoint ground sets,
   `Matroid.disjointSigma M h` is the sum of the `M` as a `Matroid α` with ground set `⋃ i, (M i).E`.
-
 * `Matroid.sum (M : Matroid α) (N : Matroid β)` is the sum of `M` and `N` as a matroid on `α ⊕ β`.
-
 * If `M N : Matroid α` and `h : Disjoint M.E N.E`, then `Matroid.disjointSum M N h` is the sum
   of `M` and `N` as a `Matroid α` with ground set `M.E ∪ N.E`.
 

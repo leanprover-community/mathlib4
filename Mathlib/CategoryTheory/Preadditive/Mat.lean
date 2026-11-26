@@ -11,6 +11,9 @@ public import Mathlib.CategoryTheory.Preadditive.SingleObj
 public import Mathlib.Data.Matrix.DMatrix
 public import Mathlib.Data.Matrix.Mul
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Matrices over a category.
 
@@ -158,7 +161,8 @@ open CategoryTheory.Limits
 
 set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
-/-- We now prove that `Mat_ C` has finite biproducts.
+/--
+We now prove that `Mat_ C` has finite biproducts.
 
 Be warned, however, that `Mat_ C` is not necessarily Krull-Schmidt,
 and so the internal indexing of a biproduct may have nothing to do with the external indexing,

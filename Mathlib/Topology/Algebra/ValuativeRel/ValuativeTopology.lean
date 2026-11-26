@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
 public import Mathlib.Topology.Algebra.LinearTopology
 public import Mathlib.Topology.Algebra.Valued.ValuationTopology
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The topology on a ring induced by a valuation
 
@@ -21,13 +24,14 @@ In this file, we define the non-Archimedean topology induced by a valuation on a
   valuation.
 * `ValuativeRel.uniformSpace`: The uniform structure introduced by a `ValuativeRel`.
 
-*NOTE* (2026-03-17): The `Valued` instance on a ring `R` would be
+_NOTE_ (2026-03-17): The `Valued` instance on a ring `R` would be
 replaced by `[ValuativeRel R] [UniformSpace R] [IsValuativeTopology R] [IsUniformAddGroup R]`
 (or `[ValuativeRel R] [TopologicalSpace R] [IsValuativeTopology R]` when the uniformity is
 not relevant). Additional input `(v : Valuation R Γ₀) [v.Compatible]` can be introduced whenever
 a specific compatible valuation is chosen.
 
 The canonical way to introduce the topological structure from a chosen valuation is:
+
 1. First define the `ValuativeRel` structure using `ValuativeRel.ofValuation`;
 2. Then define the `UniformSpace` structure using `ValuativeRel.uniformSpace`.
 -/

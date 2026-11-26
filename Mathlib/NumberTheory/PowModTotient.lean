@@ -7,6 +7,9 @@ module
 
 public import Mathlib.FieldTheory.Finite.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Modular exponentiation with the totient function
 
@@ -21,8 +24,8 @@ function when the base is coprime to the modulus.
 
 ## TODO
 
-- Extend to results in cases where the base is not coprime to the modulus.
-- Write a tactic or simproc that can automatically reduce exponents
+* Extend to results in cases where the base is not coprime to the modulus.
+* Write a tactic or simproc that can automatically reduce exponents
   or towers of exponents using these results.
 -/
 

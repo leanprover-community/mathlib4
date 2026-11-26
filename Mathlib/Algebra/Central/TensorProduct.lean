@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.Flat.Basic
 
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about tensor products of central algebras
 
@@ -18,10 +21,10 @@ algebra and `B, C` nontrivial, then both `B` and `C` are central algebras.
 
 ## Main Results
 
-- `Algebra.IsCentral.left_of_tensor_of_field`: If `B` `C` are `K`-algebras where `K` is a field,
+* `Algebra.IsCentral.left_of_tensor_of_field`: If `B` `C` are `K`-algebras where `K` is a field,
   `C` is nontrivial and `B ⊗[K] C` is a central algebra over `K`, then `B` is a
   central algebra over `K`.
-- `Algebra.IsCentral.right_of_tensor_of_field`: If `B` `C` are `K`-algebras where `K` is a field,
+* `Algebra.IsCentral.right_of_tensor_of_field`: If `B` `C` are `K`-algebras where `K` is a field,
   `B` is nontrivial and `B ⊗[K] C` is a central algebra over `K`, then `C` is a
   central algebra over `K`.
 

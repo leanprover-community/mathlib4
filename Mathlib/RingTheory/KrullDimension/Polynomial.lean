@@ -11,6 +11,9 @@ import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
 import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Krull dimension of polynomial ring
 
@@ -22,6 +25,7 @@ This file proves properties of the Krull dimension of the polynomial ring over a
   `R` is less than `2 * (ringKrullDim R) + 1`.
 
 For noetherian rings:
+
 * `Polynomial.ringKrullDim_of_isNoetherianRing`: the Krull dimension of `R[X]` is `dim R + 1`.
 * `MvPolynomial.ringKrullDim_of_isNoetherianRing`: the Krull dimension of `R[X₁, ..., Xₙ]` is
   `dim R + n`.

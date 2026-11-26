@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.QuasiIso
 public import Mathlib.CategoryTheory.Abelian.FunctorCategory
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Complexes in functor categories
 

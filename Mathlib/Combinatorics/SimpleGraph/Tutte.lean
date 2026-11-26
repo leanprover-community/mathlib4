@@ -9,6 +9,9 @@ public import Mathlib.Combinatorics.SimpleGraph.UniversalVerts
 
 import Mathlib.Combinatorics.SimpleGraph.Metric
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tutte's theorem
 
@@ -66,12 +69,14 @@ lemma IsTutteViolator.mono {u : Set V} (h : G ≤ G') (ht : G'.IsTutteViolator u
   canonicalizer; a minimization would help. The original proof was: `lia` -/
   exact lt_of_lt_of_le ht this
 
-/-- Given a graph in which the universal vertices do not violate Tutte's condition,
+/--
+Given a graph in which the universal vertices do not violate Tutte's condition,
 if the graph decomposes into cliques, there exists a matching that covers
 everything except some universal vertices.
 
 This lemma is marked private, because
-it is strictly weaker than `IsPerfectMatching.exists_of_isClique_supp`. -/
+it is strictly weaker than `IsPerfectMatching.exists_of_isClique_supp`.
+-/
 private lemma Subgraph.IsMatching.exists_verts_compl_subset_universalVerts
     (h : ¬IsTutteViolator G G.universalVerts)
     (h' : ∀ (K : G.deleteUniversalVerts.coe.ConnectedComponent),
@@ -262,10 +267,12 @@ private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
       hab.symm hnbc hxa.ne.symm hle (aux (by simp))
 
 set_option backward.isDefEq.respectTransparency.types false in
-/-- From a graph on an even number of vertices with no perfect matching, we can remove an odd number
+/--
+From a graph on an even number of vertices with no perfect matching, we can remove an odd number
 of vertices such that there are more odd components in the resulting graph than vertices we removed.
 
-This is the sufficiency side of Tutte's theorem. -/
+This is the sufficiency side of Tutte's theorem.
+-/
 lemma exists_isTutteViolator (h : ∀ (M : G.Subgraph), ¬M.IsPerfectMatching)
     (hvEven : Even (Nat.card V)) :
     ∃ u, G.IsTutteViolator u := by
@@ -308,11 +315,13 @@ lemma exists_isTutteViolator (h : ∀ (M : G.Subgraph), ¬M.IsPerfectMatching)
       hxb hnadjxb (fun hadj ↦ hc.2 hadj) (by lia) hcnex hc.1 hbnec hG1 hG2
     exact hMatchingFree Mcon hMcon
 
-/-- **Tutte's theorem**
+/--
+*Tutte's theorem*
 
 A graph has a perfect matching if and only if: For every subset `u` of vertices, removing this
 subset induces at most `u.ncard` components of odd size. This is formally stated using the
-predicate `IsTutteViolator`, which is satisfied exactly when this condition does not hold. -/
+predicate `IsTutteViolator`, which is satisfied exactly when this condition does not hold.
+-/
 theorem tutte : (∃ M : Subgraph G, M.IsPerfectMatching) ↔ ∀ u, ¬ G.IsTutteViolator u := by
   refine ⟨by rintro ⟨M, hM⟩; apply not_isTutteViolator_of_isPerfectMatching hM, ?_⟩
   contrapose!

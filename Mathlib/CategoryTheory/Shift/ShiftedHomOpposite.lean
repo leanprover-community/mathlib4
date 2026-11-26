@@ -8,7 +8,11 @@ module
 public import Mathlib.CategoryTheory.Shift.ShiftedHom
 public import Mathlib.CategoryTheory.Triangulated.Opposite.Basic
 
-/-! # Shifted morphisms in the opposite category
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Shifted morphisms in the opposite category
 
 If `C` is a category equipped with a shift by `ℤ`, `X` and `Y` are objects
 of `C`, and `n : ℤ`, we define a bijection

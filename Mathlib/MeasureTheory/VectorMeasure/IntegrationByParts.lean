@@ -11,6 +11,9 @@ public import Mathlib.MeasureTheory.VectorMeasure.WithDensityVec
 
 import Mathlib.MeasureTheory.VectorMeasure.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integration by parts for vector measures associated to bounded variation functions
 
@@ -182,8 +185,10 @@ theorem vectorMeasure_bilinear_comp_eq'
     ext_of_Icc _ _ (fun a b hab ↦ by simp [hab])
   rw [this, hg.vectorMeasure_bilinear_comp_eq hf, add_comm, B.flip_flip]
 
-/-- *Integration by parts* for Stieltjes vector measure, between `f.leftLim dg` and `g.rightLim df`.
-Version with a general pairing function `B`, and over a general integration set `s`. -/
+/--
+_Integration by parts_ for Stieltjes vector measure, between `f.leftLim dg` and `g.rightLim df`.
+Version with a general pairing function `B`, and over a general integration set `s`.
+-/
 theorem setIntegral_leftLim_vectorMeasure_eq_sub
     (hf : BoundedVariationOn f univ) (hg : BoundedVariationOn g univ) :
     ∫ᵛ x in s, f.leftLim x ∂[B; hg.vectorMeasure] = (hf.bilinear_comp hg B).vectorMeasure s
@@ -191,8 +196,10 @@ theorem setIntegral_leftLim_vectorMeasure_eq_sub
   rw [hf.vectorMeasure_bilinear_comp_eq hg]
   simp [VectorMeasure.withDensity_apply, hf.leftLim.integrable, hg.rightLim.integrable]
 
-/-- *Integration by parts* for Stieltjes vector measure, between `f.rightLim dg` and `g.leftLim df`.
-Version with a general pairing function `B`, and over a general integration set `s`. -/
+/--
+_Integration by parts_ for Stieltjes vector measure, between `f.rightLim dg` and `g.leftLim df`.
+Version with a general pairing function `B`, and over a general integration set `s`.
+-/
 theorem setIntegral_rightLim_vectorMeasure_eq_sub
     (hf : BoundedVariationOn f univ) (hg : BoundedVariationOn g univ) :
     ∫ᵛ x in s, f.rightLim x ∂[B; hg.vectorMeasure] = (hf.bilinear_comp hg B).vectorMeasure s
@@ -200,8 +207,10 @@ theorem setIntegral_rightLim_vectorMeasure_eq_sub
   rw [hf.vectorMeasure_bilinear_comp_eq' hg]
   simp [VectorMeasure.withDensity_apply, hf.rightLim.integrable, hg.leftLim.integrable]
 
-/-- *Integration by parts* for Stieltjes vector measure, between `f.leftLim dg` and `g.rightLim df`.
-Version with a general pairing function `B`, over an interval `[a, b]`. -/
+/--
+_Integration by parts_ for Stieltjes vector measure, between `f.leftLim dg` and `g.rightLim df`.
+Version with a general pairing function `B`, over an interval `[a, b]`.
+-/
 theorem setIntegral_Icc_leftLim_vectorMeasure_eq_sub
     (hf : BoundedVariationOn f univ) (hg : BoundedVariationOn g univ) (hab : a ≤ b) :
     ∫ᵛ x in Icc a b, f.leftLim x ∂[B; hg.vectorMeasure] =
@@ -210,8 +219,10 @@ theorem setIntegral_Icc_leftLim_vectorMeasure_eq_sub
   rw [hf.setIntegral_leftLim_vectorMeasure_eq_sub hg]
   simp [hab, hf, hg]
 
-/-- *Integration by parts* for Stieltjes vector measure, between `f.rightLim dg` and `g.leftLim df`.
-Version with a general pairing function `B`, over an interval `[a, b]`. -/
+/--
+_Integration by parts_ for Stieltjes vector measure, between `f.rightLim dg` and `g.leftLim df`.
+Version with a general pairing function `B`, over an interval `[a, b]`.
+-/
 theorem setIntegral_Icc_rightLim_vectorMeasure_eq_sub
     (hf : BoundedVariationOn f univ) (hg : BoundedVariationOn g univ) (hab : a ≤ b) :
     ∫ᵛ x in Icc a b, f.rightLim x ∂[B; hg.vectorMeasure] =
@@ -220,8 +231,10 @@ theorem setIntegral_Icc_rightLim_vectorMeasure_eq_sub
   rw [hf.setIntegral_rightLim_vectorMeasure_eq_sub hg]
   simp [hab, hf, hg]
 
-/-- *Integration by parts* for Stieltjes vector measure, between `f.leftLim dg` and `g.rightLim df`.
-Version with a general pairing function `B`, over an interval `(a, b]`. -/
+/--
+_Integration by parts_ for Stieltjes vector measure, between `f.leftLim dg` and `g.rightLim df`.
+Version with a general pairing function `B`, over an interval `(a, b]`.
+-/
 theorem setIntegral_Ioc_leftLim_vectorMeasure_eq_sub
     (hf : BoundedVariationOn f univ) (hg : BoundedVariationOn g univ) (hab : a ≤ b) :
     ∫ᵛ x in Ioc a b, f.leftLim x ∂[B; hg.vectorMeasure] =
@@ -230,8 +243,10 @@ theorem setIntegral_Ioc_leftLim_vectorMeasure_eq_sub
   rw [hf.setIntegral_leftLim_vectorMeasure_eq_sub hg]
   simp [hab, hf, hg]
 
-/-- *Integration by parts* for Stieltjes vector measure, between `f.rightLim dg` and `g.leftLim df`.
-Version with a general pairing function `B`, over an interval `(a, b]`. -/
+/--
+_Integration by parts_ for Stieltjes vector measure, between `f.rightLim dg` and `g.leftLim df`.
+Version with a general pairing function `B`, over an interval `(a, b]`.
+-/
 theorem setIntegral_Ioc_rightLim_vectorMeasure_eq_sub
     (hf : BoundedVariationOn f univ) (hg : BoundedVariationOn g univ) (hab : a ≤ b) :
     ∫ᵛ x in Ioc a b, f.rightLim x ∂[B; hg.vectorMeasure] =
@@ -240,8 +255,10 @@ theorem setIntegral_Ioc_rightLim_vectorMeasure_eq_sub
   rw [hf.setIntegral_rightLim_vectorMeasure_eq_sub hg]
   simp [hab, hf, hg]
 
-/-- *Integration by parts* for Stieltjes vector measure, between `f.leftLim dg` and `g.rightLim df`.
-Version with a general pairing function `B`, over an interval `[a, b)`. -/
+/--
+_Integration by parts_ for Stieltjes vector measure, between `f.leftLim dg` and `g.rightLim df`.
+Version with a general pairing function `B`, over an interval `[a, b)`.
+-/
 theorem setIntegral_Ico_leftLim_vectorMeasure_eq_sub
     (hf : BoundedVariationOn f univ) (hg : BoundedVariationOn g univ) (hab : a ≤ b) :
     ∫ᵛ x in Ico a b, f.leftLim x ∂[B; hg.vectorMeasure] =
@@ -250,8 +267,10 @@ theorem setIntegral_Ico_leftLim_vectorMeasure_eq_sub
   rw [hf.setIntegral_leftLim_vectorMeasure_eq_sub hg]
   simp [hab, hf, hg]
 
-/-- *Integration by parts* for Stieltjes vector measure, between `f.rightLim dg` and `g.leftLim df`.
-Version with a general pairing function `B`, over an interval `[a, b)`. -/
+/--
+_Integration by parts_ for Stieltjes vector measure, between `f.rightLim dg` and `g.leftLim df`.
+Version with a general pairing function `B`, over an interval `[a, b)`.
+-/
 theorem setIntegral_Ico_rightLim_vectorMeasure_eq_sub
     (hf : BoundedVariationOn f univ) (hg : BoundedVariationOn g univ) (hab : a ≤ b) :
     ∫ᵛ x in Ico a b, f.rightLim x ∂[B; hg.vectorMeasure] =
@@ -260,8 +279,10 @@ theorem setIntegral_Ico_rightLim_vectorMeasure_eq_sub
   rw [hf.setIntegral_rightLim_vectorMeasure_eq_sub hg]
   simp [hab, hf, hg]
 
-/-- *Integration by parts* for Stieltjes vector measure, between `f.leftLim dg` and `g.rightLim df`.
-Version with a general pairing function `B`, over an interval `(a, b)`. -/
+/--
+_Integration by parts_ for Stieltjes vector measure, between `f.leftLim dg` and `g.rightLim df`.
+Version with a general pairing function `B`, over an interval `(a, b)`.
+-/
 theorem setIntegral_Ioo_leftLim_vectorMeasure_eq_sub
     (hf : BoundedVariationOn f univ) (hg : BoundedVariationOn g univ) (hab : a < b) :
     ∫ᵛ x in Ioo a b, f.leftLim x ∂[B; hg.vectorMeasure] =
@@ -270,8 +291,10 @@ theorem setIntegral_Ioo_leftLim_vectorMeasure_eq_sub
   rw [hf.setIntegral_leftLim_vectorMeasure_eq_sub hg]
   simp [hab, hf, hg]
 
-/-- *Integration by parts* for Stieltjes vector measure, between `f.rightLim dg` and `g.leftLim df`.
-Version with a general pairing function `B`, over an interval `(a, b)`. -/
+/--
+_Integration by parts_ for Stieltjes vector measure, between `f.rightLim dg` and `g.leftLim df`.
+Version with a general pairing function `B`, over an interval `(a, b)`.
+-/
 theorem setIntegral_Ioo_rightLim_vectorMeasure_eq_sub
     (hf : BoundedVariationOn f univ) (hg : BoundedVariationOn g univ) (hab : a < b) :
     ∫ᵛ x in Ioo a b, f.rightLim x ∂[B; hg.vectorMeasure] =
@@ -280,8 +303,10 @@ theorem setIntegral_Ioo_rightLim_vectorMeasure_eq_sub
   rw [hf.setIntegral_rightLim_vectorMeasure_eq_sub hg]
   simp [hab, hf, hg]
 
-/-- *Integration by parts* for Stieltjes vector measure, between `f.leftLim dg` and `g.rightLim df`.
-Version for scalar multiplication, over an interval `[a, b]`. -/
+/--
+_Integration by parts_ for Stieltjes vector measure, between `f.leftLim dg` and `g.rightLim df`.
+Version for scalar multiplication, over an interval `[a, b]`.
+-/
 theorem setIntegral_Icc_leftLim_smul_vectorMeasure_eq_sub {f : α → ℝ}
     (hf : BoundedVariationOn f univ) (hg : BoundedVariationOn g univ) (hab : a ≤ b) :
     ∫ᵛ x in Icc a b, f.leftLim x ∂•hg.vectorMeasure =
@@ -289,8 +314,10 @@ theorem setIntegral_Icc_leftLim_smul_vectorMeasure_eq_sub {f : α → ℝ}
       - ∫ᵛ x in Icc a b, g.rightLim x ∂<• hf.vectorMeasure :=
   setIntegral_Icc_leftLim_vectorMeasure_eq_sub hf hg hab
 
-/-- *Integration by parts* for Stieltjes vector measure, between `f.rightLim dg` and `g.leftLim df`.
-Version for scalar multiplication, over an interval `[a, b]`. -/
+/--
+_Integration by parts_ for Stieltjes vector measure, between `f.rightLim dg` and `g.leftLim df`.
+Version for scalar multiplication, over an interval `[a, b]`.
+-/
 theorem setIntegral_Icc_rightLim_smul_vectorMeasure_eq_sub {f : α → ℝ}
     (hf : BoundedVariationOn f univ) (hg : BoundedVariationOn g univ) (hab : a ≤ b) :
     ∫ᵛ x in Icc a b, f.rightLim x ∂•hg.vectorMeasure =
@@ -298,8 +325,10 @@ theorem setIntegral_Icc_rightLim_smul_vectorMeasure_eq_sub {f : α → ℝ}
       - ∫ᵛ x in Icc a b, g.leftLim x ∂<• hf.vectorMeasure :=
   setIntegral_Icc_rightLim_vectorMeasure_eq_sub hf hg hab
 
-/-- *Integration by parts* for Stieltjes vector measure, between `f.leftLim dg` and `g.rightLim df`.
-Version for scalar multiplication, over an interval `(a, b]`. -/
+/--
+_Integration by parts_ for Stieltjes vector measure, between `f.leftLim dg` and `g.rightLim df`.
+Version for scalar multiplication, over an interval `(a, b]`.
+-/
 theorem setIntegral_Ioc_leftLim_smul_vectorMeasure_eq_sub {f : α → ℝ}
     (hf : BoundedVariationOn f univ) (hg : BoundedVariationOn g univ) (hab : a ≤ b) :
     ∫ᵛ x in Ioc a b, f.leftLim x ∂• hg.vectorMeasure =
@@ -307,8 +336,10 @@ theorem setIntegral_Ioc_leftLim_smul_vectorMeasure_eq_sub {f : α → ℝ}
       - ∫ᵛ x in Ioc a b, g.rightLim x ∂<• hf.vectorMeasure :=
   setIntegral_Ioc_leftLim_vectorMeasure_eq_sub hf hg hab
 
-/-- *Integration by parts* for Stieltjes vector measure, between `f.rightLim dg` and `g.leftLim df`.
-Version for scalar multiplication, over an interval `(a, b]`. -/
+/--
+_Integration by parts_ for Stieltjes vector measure, between `f.rightLim dg` and `g.leftLim df`.
+Version for scalar multiplication, over an interval `(a, b]`.
+-/
 theorem setIntegral_Ioc_rightLim_smul_vectorMeasure_eq_sub {f : α → ℝ}
     (hf : BoundedVariationOn f univ) (hg : BoundedVariationOn g univ) (hab : a ≤ b) :
     ∫ᵛ x in Ioc a b, f.rightLim x ∂• hg.vectorMeasure =
@@ -316,8 +347,10 @@ theorem setIntegral_Ioc_rightLim_smul_vectorMeasure_eq_sub {f : α → ℝ}
       - ∫ᵛ x in Ioc a b, g.leftLim x ∂<• hf.vectorMeasure :=
   setIntegral_Ioc_rightLim_vectorMeasure_eq_sub hf hg hab
 
-/-- *Integration by parts* for Stieltjes vector measure, between `f.leftLim dg` and `g.rightLim df`.
-Version for scalar multiplication, over an interval `[a, b)`. -/
+/--
+_Integration by parts_ for Stieltjes vector measure, between `f.leftLim dg` and `g.rightLim df`.
+Version for scalar multiplication, over an interval `[a, b)`.
+-/
 theorem setIntegral_Ico_leftLim_smul_vectorMeasure_eq_sub {f : α → ℝ}
     (hf : BoundedVariationOn f univ) (hg : BoundedVariationOn g univ) (hab : a ≤ b) :
     ∫ᵛ x in Ico a b, f.leftLim x ∂• hg.vectorMeasure =
@@ -325,8 +358,10 @@ theorem setIntegral_Ico_leftLim_smul_vectorMeasure_eq_sub {f : α → ℝ}
       - ∫ᵛ x in Ico a b, g.rightLim x ∂<• hf.vectorMeasure :=
   setIntegral_Ico_leftLim_vectorMeasure_eq_sub hf hg hab
 
-/-- *Integration by parts* for Stieltjes vector measure, between `f.rightLim dg` and `g.leftLim df`.
-Version for scalar multiplication, over an interval `[a, b)`. -/
+/--
+_Integration by parts_ for Stieltjes vector measure, between `f.rightLim dg` and `g.leftLim df`.
+Version for scalar multiplication, over an interval `[a, b)`.
+-/
 theorem setIntegral_Ico_rightLim_smul_vectorMeasure_eq_sub {f : α → ℝ}
     (hf : BoundedVariationOn f univ) (hg : BoundedVariationOn g univ) (hab : a ≤ b) :
     ∫ᵛ x in Ico a b, f.rightLim x ∂• hg.vectorMeasure =
@@ -334,8 +369,10 @@ theorem setIntegral_Ico_rightLim_smul_vectorMeasure_eq_sub {f : α → ℝ}
       - ∫ᵛ x in Ico a b, g.leftLim x ∂<• hf.vectorMeasure :=
   setIntegral_Ico_rightLim_vectorMeasure_eq_sub hf hg hab
 
-/-- *Integration by parts* for Stieltjes vector measure, between `f.leftLim dg` and `g.rightLim df`.
-Version for scalar multiplication, over an interval `(a, b)`. -/
+/--
+_Integration by parts_ for Stieltjes vector measure, between `f.leftLim dg` and `g.rightLim df`.
+Version for scalar multiplication, over an interval `(a, b)`.
+-/
 theorem setIntegral_Ioo_leftLim_smul_vectorMeasure_eq_sub {f : α → ℝ}
     (hf : BoundedVariationOn f univ) (hg : BoundedVariationOn g univ) (hab : a < b) :
     ∫ᵛ x in Ioo a b, f.leftLim x ∂• hg.vectorMeasure =
@@ -343,8 +380,10 @@ theorem setIntegral_Ioo_leftLim_smul_vectorMeasure_eq_sub {f : α → ℝ}
       - ∫ᵛ x in Ioo a b, g.rightLim x ∂<• hf.vectorMeasure :=
   setIntegral_Ioo_leftLim_vectorMeasure_eq_sub hf hg hab
 
-/-- *Integration by parts* for Stieltjes vector measure, between `f.rightLim dg` and `g.leftLim df`.
-Version for scalar multiplication, over an interval `(a, b)`. -/
+/--
+_Integration by parts_ for Stieltjes vector measure, between `f.rightLim dg` and `g.leftLim df`.
+Version for scalar multiplication, over an interval `(a, b)`.
+-/
 theorem setIntegral_Ioo_rightLim_smul_vectorMeasure_eq_sub {f : α → ℝ}
     (hf : BoundedVariationOn f univ) (hg : BoundedVariationOn g univ) (hab : a < b) :
     ∫ᵛ x in Ioo a b, f.rightLim x ∂• hg.vectorMeasure =

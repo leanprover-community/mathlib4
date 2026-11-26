@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Module.Rat
 public import Mathlib.Algebra.Star.SelfAdjoint
 public import Mathlib.LinearAlgebra.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The star operation, bundled as a star-linear equiv
 
@@ -20,12 +23,12 @@ This file also provides some lemmas that need `Algebra.Module.Basic` imported to
 
 ## TODO
 
-- Define `starLinearEquiv` for noncommutative `R`. We only the commutative case for now since,
+* Define `starLinearEquiv` for noncommutative `R`. We only the commutative case for now since,
   in the noncommutative case, the ring hom needs to reverse the order of multiplication. This
   requires a ring hom of type `R →+* Rᵐᵒᵖ`, which is very undesirable in the commutative case.
   One way out would be to define a new typeclass `IsOp R S` and have an instance `IsOp R R`
   for commutative `R`.
-- Also note that such a definition involving `Rᵐᵒᵖ` or `is_op R S` would require adding
+* Also note that such a definition involving `Rᵐᵒᵖ` or `is_op R S` would require adding
   the appropriate `RingHomInvPair` instances to be able to define the semilinear
   equivalence.
 -/

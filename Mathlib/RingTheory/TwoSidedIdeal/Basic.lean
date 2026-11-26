@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.Congruence.Opposite
 public import Mathlib.Tactic.Abel
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Two Sided Ideals
 
@@ -147,12 +150,13 @@ lemma zsmul_mem {x} (n : ℤ) (hx : x ∈ I) : n • x ∈ I := _root_.zsmul_mem
 
 /--
 The "set-theoretic-way" of constructing a two-sided ideal by providing:
-- the underlying set `S`;
-- a proof that `0 ∈ S`;
-- a proof that `x + y ∈ S` if `x ∈ S` and `y ∈ S`;
-- a proof that `-x ∈ S` if `x ∈ S`;
-- a proof that `x * y ∈ S` if `y ∈ S`;
-- a proof that `x * y ∈ S` if `x ∈ S`.
+
+* the underlying set `S`;
+* a proof that `0 ∈ S`;
+* a proof that `x + y ∈ S` if `x ∈ S` and `y ∈ S`;
+* a proof that `-x ∈ S` if `x ∈ S`;
+* a proof that `x * y ∈ S` if `y ∈ S`;
+* a proof that `x * y ∈ S` if `x ∈ S`.
 -/
 def mk' (carrier : Set R)
     (zero_mem : 0 ∈ carrier)

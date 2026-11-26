@@ -8,10 +8,13 @@ module
 public import Mathlib.Order.Filter.SmallSets
 public import Mathlib.Topology.ContinuousOn
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Locally finite families of sets
 
-We say that a family of sets in a topological space is *locally finite* if at every point `x : X`,
+We say that a family of sets in a topological space is _locally finite_ if at every point `x : X`,
 there is a neighborhood of `x` which meets only finitely many sets in the family.
 
 In this file we give the definition and prove basic properties of locally finite families of sets.
@@ -138,12 +141,14 @@ theorem iInter_compl_mem_nhds (hf : LocallyFinite f) (hc : ∀ i, IsClosed (f i)
     rwa [← isOpen_compl_iff, compl_iUnion, iInter_subtype] at this
   exact (hf.comp_injective Subtype.val_injective).isClosed_iUnion fun i => hc _
 
-/-- Let `f : ℕ → Π a, β a` be a sequence of (dependent) functions on a topological space. Suppose
+/--
+Let `f : ℕ → Π a, β a` be a sequence of (dependent) functions on a topological space. Suppose
 that the family of sets `s n = {x | f (n + 1) x ≠ f n x}` is locally finite. Then there exists a
 function `F : Π a, β a` such that for any `x`, we have `f n x = F x` on the product of an infinite
 interval `[N, +∞)` and a neighbourhood of `x`.
 
-We formulate the conclusion in terms of the product of filter `Filter.atTop` and `𝓝 x`. -/
+We formulate the conclusion in terms of the product of filter `Filter.atTop` and `𝓝 x`.
+-/
 theorem exists_forall_eventually_eq_prod {π : X → Sort*} {f : ℕ → ∀ x : X, π x}
     (hf : LocallyFinite fun n => { x | f (n + 1) x ≠ f n x }) :
     ∃ F : ∀ x : X, π x, ∀ x, ∀ᶠ p : ℕ × X in atTop ×ˢ 𝓝 x, f p.1 p.2 = F p.2 := by

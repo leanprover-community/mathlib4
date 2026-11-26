@@ -9,6 +9,9 @@ public meta import Mathlib.Lean.Expr.Basic
 public meta import Mathlib.Tactic.ToDual
 public import Mathlib.Order.Hom.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The `apply_fun` tactic.
 
@@ -177,6 +180,8 @@ def applyFunTarget (f : Term) (using? : Option Term) (g : MVarId) : TacticM (Lis
     return [g'.mvarId!, ginj.mvarId!] ++ gs
   | _ => applyFunTargetFailure f
 
+
+set_option doc.verso false
 /--
 Apply a function to an equality or inequality in either a local hypothesis or the goal.
 
@@ -216,6 +221,8 @@ placeholders. Named placeholders (like `?a` or `?_`) will produce new goals.
 -/
 syntax (name := applyFun) "apply_fun " term (location)? (" using " term)? : tactic
 
+
+set_option doc.verso true
 elab_rules : tactic | `(tactic| apply_fun $f $[$loc]? $[using $P]?) => do
   withLocation (expandOptLocation (Lean.mkOptionalNode loc))
     (atLocal := fun h ↦ do replaceMainGoal <| ← applyFunHyp f P h (← getMainGoal))

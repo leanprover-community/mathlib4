@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.Regular.IsSMulRegular
 
 import Mathlib.RingTheory.Nakayama
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Regular sequences and weakly regular sequences
 
@@ -278,13 +281,16 @@ lemma cons' {r : R} {rs : List R} (h1 : IsSMulRegular M r)
     IsWeaklyRegular M (r :: rs) :=
   (isWeaklyRegular_cons_iff' M r rs).mpr ⟨h1, h2⟩
 
-/-- Weakly regular sequences can be inductively characterized by:
+/--
+Weakly regular sequences can be inductively characterized by:
+
 * The empty sequence is weakly regular on any module.
 * If `r` is regular on `M` and `rs` is a weakly regular sequence on `M⧸rM` then
   the sequence obtained from `rs` by prepending `r` is weakly regular on `M`.
 
 This is the induction principle produced by the inductive definition above.
-The motive will usually be valued in `Prop`, but `Sort*` works too. -/
+The motive will usually be valued in `Prop`, but `Sort*` works too.
+-/
 @[induction_eliminator]
 def recIterModByRegular
     {motive : (M : Type v) → [AddCommGroup M] → [Module R M] → (rs : List R) →
@@ -407,13 +413,16 @@ lemma cons' {r : R} {rs : List R} (h1 : IsSMulRegular M r)
     IsRegular M (r :: rs) :=
   (isRegular_cons_iff' M r rs).mpr ⟨h1, h2⟩
 
-/-- Regular sequences can be inductively characterized by:
+/--
+Regular sequences can be inductively characterized by:
+
 * The empty sequence is regular on any nonzero module.
 * If `r` is regular on `M` and `rs` is a regular sequence on `M⧸rM` then the
   sequence obtained from `rs` by prepending `r` is regular on `M`.
 
 This is the induction principle produced by the inductive definition above.
-The motive will usually be valued in `Prop`, but `Sort*` works too. -/
+The motive will usually be valued in `Prop`, but `Sort*` works too.
+-/
 @[induction_eliminator]
 def recIterModByRegular
     {motive : (M : Type v) → [AddCommGroup M] → [Module R M] → (rs : List R) →

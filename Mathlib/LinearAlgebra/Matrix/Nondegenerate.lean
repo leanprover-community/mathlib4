@@ -9,6 +9,9 @@ public import Mathlib.LinearAlgebra.Matrix.Adjugate
 
 import Mathlib.Algebra.Star.Pi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Matrices associated with non-degenerate bilinear forms
 
@@ -40,9 +43,11 @@ def SeparatingRight : Prop :=
 def SeparatingLeft : Prop :=
   (∀ v, (∀ w, v ⬝ᵥ M *ᵥ w = 0) → v = 0)
 
-/-- A matrix `M` is nondegenerate if it is both left-separating and right-separating.
+/--
+A matrix `M` is nondegenerate if it is both left-separating and right-separating.
 
-See also `Matrix.Nonsingular`. -/
+See also `Matrix.Nonsingular`.
+-/
 @[mk_iff]
 structure Nondegenerate (M : Matrix m n R) : Prop where
   separatingLeft : SeparatingLeft M
@@ -362,7 +367,8 @@ theorem Nondegenerate.of_det_mem_nonZeroDivisors (hM : M.det ∈ R⁰) : M.Nonde
   separatingLeft := .of_det_mem_nonZeroDivisors hM
   separatingRight := separatingLeft_transpose_iff.mp <| .of_det_mem_nonZeroDivisors <| by simpa
 
-/-- If `M` is square and has nonzero determinant, then `M` as a bilinear form on `n → R` is
+/--
+If `M` is square and has nonzero determinant, then `M` as a bilinear form on `n → R` is
 nondegenerate. The "iff" implication, `nondegenerate_iff_det_ne_zero`, is proved in a later file.
 
 See also `LinearMap.BilinForm.Nondegenerate.of_det_ne_zero`.

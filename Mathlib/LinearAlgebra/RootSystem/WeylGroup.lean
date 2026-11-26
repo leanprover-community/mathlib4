@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.RootSystem.Hom
 public import Mathlib.RepresentationTheory.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Weyl group of a root pairing
 

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Polynomial.FieldDivision
 public import Mathlib.LinearAlgebra.Vandermonde
 public import Mathlib.RingTheory.Polynomial.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lagrange interpolation
 
@@ -528,7 +531,8 @@ variable {s : Finset ι} {v : ι → R}
 
 open Finset Polynomial
 
-/-- `nodal s v` is the unique monic polynomial whose roots are the nodes defined by `v` and `s`.
+/--
+`nodal s v` is the unique monic polynomial whose roots are the nodes defined by `v` and `s`.
 
 That is, the roots of `nodal s v` are exactly the image of `v` on `s`,
 with appropriate multiplicity.

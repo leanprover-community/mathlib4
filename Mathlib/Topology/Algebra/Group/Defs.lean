@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Algebra.Monoid.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Definitions about topological groups
 
@@ -15,10 +18,10 @@ as well as their additive versions.
 
 These classes say that the corresponding operations are continuous:
 
-- `ContinuousInv G` says that `(·⁻¹)` is continuous on `G`;
-- `IsTopologicalGroup G` says that `(· * ·)` is continuous on `G × G`
+* `ContinuousInv G` says that `(·⁻¹)` is continuous on `G`;
+* `IsTopologicalGroup G` says that `(· * ·)` is continuous on `G × G`
   and `(·⁻¹)` is continuous on `G`;
-- `ContinuousDiv G` says that `(· / ·)` is continuous on `G`.
+* `ContinuousDiv G` says that `(· / ·)` is continuous on `G`.
 
 For groups, `ContinuousDiv G` is equivalent to `IsTopologicalGroup G`,
 but we use the additive version `ContinuousSub` for types like `NNReal`,
@@ -91,21 +94,25 @@ theorem ContinuousOn.inv (hf : ContinuousOn f s) : ContinuousOn f⁻¹ s := fun 
 
 end ContinuousInv
 
-/-- A topological (additive) group is a group in which the addition and negation operations are
+/--
+A topological (additive) group is a group in which the addition and negation operations are
 continuous.
 
 When you declare an instance that does not already have a `UniformSpace` instance,
 you should also provide an instance of `UniformSpace` and `IsUniformAddGroup` using
-`IsTopologicalAddGroup.rightUniformSpace` and `isUniformAddGroup_of_addCommGroup`. -/
+`IsTopologicalAddGroup.rightUniformSpace` and `isUniformAddGroup_of_addCommGroup`.
+-/
 class IsTopologicalAddGroup (G : Type u) [TopologicalSpace G] [AddGroup G] : Prop
     extends ContinuousAdd G, ContinuousNeg G
 
-/-- A topological group is a group in which the multiplication and inversion operations are
+/--
+A topological group is a group in which the multiplication and inversion operations are
 continuous.
 
 When you declare an instance that does not already have a `UniformSpace` instance,
 you should also provide an instance of `UniformSpace` and `IsUniformGroup` using
-`IsTopologicalGroup.rightUniformSpace` and `isUniformGroup_of_commGroup`. -/
+`IsTopologicalGroup.rightUniformSpace` and `isUniformGroup_of_commGroup`.
+-/
 @[to_additive]
 class IsTopologicalGroup (G : Type*) [TopologicalSpace G] [Group G] : Prop
     extends ContinuousMul G, ContinuousInv G

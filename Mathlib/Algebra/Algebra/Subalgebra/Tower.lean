@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.RingTheory.Ideal.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subalgebras in towers of algebras
 
@@ -108,9 +111,11 @@ theorem restrictScalars_injective :
     Function.Injective (restrictScalars R : Subalgebra S A → Subalgebra R A) := fun U V H ↦
   ext fun x ↦ by rw [← mem_restrictScalars R, H, mem_restrictScalars]
 
-/-- Produces an `R`-algebra map from `U.restrictScalars R` given an `S`-algebra map from `U`.
+/--
+Produces an `R`-algebra map from `U.restrictScalars R` given an `S`-algebra map from `U`.
 
-This is a special case of `AlgHom.restrictScalars` that can be helpful in elaboration. -/
+This is a special case of `AlgHom.restrictScalars` that can be helpful in elaboration.
+-/
 @[simp]
 def ofRestrictScalars (U : Subalgebra S A) (f : U →ₐ[S] B) : U.restrictScalars R →ₐ[R] B :=
   f.restrictScalars R

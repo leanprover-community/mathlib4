@@ -9,7 +9,11 @@ public import Mathlib.Analysis.CStarAlgebra.Classes
 public import Mathlib.Topology.ContinuousMap.Compact
 public import Mathlib.Topology.ContinuousMap.ZeroAtInfty
 
-/-! # C⋆-algebras of continuous functions
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# C⋆-algebras of continuous functions
 
 We place these here because, for reasons related to the import hierarchy, they cannot be placed in
 earlier files.

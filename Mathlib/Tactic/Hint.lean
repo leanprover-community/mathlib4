@@ -9,6 +9,9 @@ public meta import Batteries.Control.Nondet.Basic
 public import Batteries.Linter.UnreachableTactic
 public import Mathlib.Tactic.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The `hint` tactic.
 
@@ -64,6 +67,7 @@ initialize
 
 /--
 Construct a suggestion for a tactic.
+
 * Check the passed `MessageLog` for an info message beginning with "Try this: ".
 * If found, use that as the suggestion.
 * Otherwise use the provided syntax.

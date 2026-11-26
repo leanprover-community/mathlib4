@@ -7,11 +7,14 @@ module
 
 public import Mathlib.Topology.Separation.Hausdorff
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Idempotents in topological semigroups
 
 This file provides a sufficient condition for a semigroup `M` to contain an idempotent (i.e. an
-element `m` such that `m * m = m `), namely that `M` is a nonempty compact Hausdorff space where
+element `m` such that `m * m = m  `), namely that `M` is a nonempty compact Hausdorff space where
 right-multiplication by constants is continuous.
 
 We also state a corresponding lemma guaranteeing that a subset of `M` contains an idempotent.

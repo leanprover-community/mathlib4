@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The retract argument
 
@@ -20,7 +23,7 @@ and `W₁.rlp = W₂` if `W₂` is.
 
 ## References
 
-- https://ncatlab.org/nlab/show/weak+factorization+system#retract_argument
+* https://ncatlab.org/nlab/show/weak+factorization+system#retract\_argument
 -/
 
 @[expose] public section

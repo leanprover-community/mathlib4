@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.HahnSeries.Summable
 public import Mathlib.RingTheory.PowerSeries.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Evaluation of power series in Hahn Series
 
@@ -46,9 +49,11 @@ variable [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ] [Comm
 
 variable [CommRing V] [Algebra R V]
 
-/-- A summable family given by scalar multiples of powers of a positive order Hahn series.
+/--
+A summable family given by scalar multiples of powers of a positive order Hahn series.
 
-The scalar multiples are given by the coefficients of a power series. -/
+The scalar multiples are given by the coefficients of a power series.
+-/
 abbrev powerSeriesFamily (x : V⟦Γ⟧) (f : PowerSeries R) : SummableFamily Γ V ℕ :=
   smulFamily (fun n => f.coeff n) (powers x)
 

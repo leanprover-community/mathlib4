@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.W.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Examples of W-types
 
@@ -112,9 +115,11 @@ section List
 
 variable (γ : Type u)
 
-/-- The constructors for lists.
+/--
+The constructors for lists.
 There is "one constructor `cons x` for each `x : γ`",
 since we view `List γ` as
+
 ```
 | nil : List γ
 | cons x₀ : List γ → List γ

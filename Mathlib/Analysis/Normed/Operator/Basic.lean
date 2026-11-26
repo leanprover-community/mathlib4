@@ -12,6 +12,9 @@ public import Mathlib.Analysis.Normed.Operator.LinearIsometry
 public import Mathlib.Tactic.SuppressCompilation
 public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Operator norm on the space of continuous linear maps
 
@@ -345,11 +348,13 @@ alias opNorm_le_iff_lipschitz := opNorm_le_iff_lipschitzWith
 @[deprecated (since := "2026-09-27")]
 alias opNorm_le_of_lipschitz := opNorm_le_of_lipschitzWith
 
-/-- Operator seminorm on the space of continuous (semi)linear maps, as `Seminorm`.
+/--
+Operator seminorm on the space of continuous (semi)linear maps, as `Seminorm`.
 
 We use this seminorm to define a `SeminormedGroup` structure on `E →SL[σ] F`,
 but we have to override the projection `UniformSpace`
-so that it is definitionally equal to the one coming from the topologies on `E` and `F`. -/
+so that it is definitionally equal to the one coming from the topologies on `E` and `F`.
+-/
 protected noncomputable def seminorm : Seminorm 𝕜₂ (E →SL[σ₁₂] F) :=
   .ofSMulLE norm opNorm_zero opNorm_add_le opNorm_smul_le
 

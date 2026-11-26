@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
 public import Mathlib.AlgebraicGeometry.PullbackCarrier
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functorial constructions of ideal sheaves
 
@@ -15,9 +18,9 @@ We define the pullback and pushforward of ideal sheaves in this file.
 
 ## Main definitions
 
-- `AlgebraicGeometry.Scheme.IdealSheafData.comap`: The pullback of an ideal sheaf.
-- `AlgebraicGeometry.Scheme.IdealSheafData.map`: The pushforward of an ideal sheaf.
-- `AlgebraicGeometry.Scheme.IdealSheafData.map_gc`:
+* `AlgebraicGeometry.Scheme.IdealSheafData.comap`: The pullback of an ideal sheaf.
+* `AlgebraicGeometry.Scheme.IdealSheafData.map`: The pushforward of an ideal sheaf.
+* `AlgebraicGeometry.Scheme.IdealSheafData.map_gc`:
   The Galois connection between pullback and pushforward.
 -/
 

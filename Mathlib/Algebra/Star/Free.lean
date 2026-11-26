@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.FreeAlgebra
 public import Mathlib.Algebra.Star.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # A \*-algebra structure on the free algebra.
 

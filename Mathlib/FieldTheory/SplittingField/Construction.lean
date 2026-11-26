@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.CharP.Algebra
 public import Mathlib.FieldTheory.SplittingField.IsSplittingField
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Splitting fields
 
@@ -57,7 +60,7 @@ theorem irreducible_factor (f : K[X]) : Irreducible (factor f) := by
   · exact (Classical.choose_spec H).1
   · exact irreducible_X
 
-/-- See note [fact non-instances]. -/
+/-- See note \[fact non-instances\]. -/
 theorem fact_irreducible_factor (f : K[X]) : Fact (Irreducible (factor f)) :=
   ⟨irreducible_factor f⟩
 
@@ -102,7 +105,8 @@ theorem natDegree_removeFactor (f : K[X]) : f.removeFactor.natDegree = f.natDegr
 theorem natDegree_removeFactor' {f : K[X]} {n : ℕ} (hfn : f.natDegree = n + 1) :
     f.removeFactor.natDegree = n := by rw [natDegree_removeFactor, hfn, n.add_sub_cancel]
 
-/-- Auxiliary construction to a splitting field of a polynomial, which removes
+/--
+Auxiliary construction to a splitting field of a polynomial, which removes
 `n` (arbitrarily-chosen) factors.
 
 It constructs the type, proves that is a field and algebra over the base field.

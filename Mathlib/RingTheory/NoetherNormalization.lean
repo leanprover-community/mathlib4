@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 import Mathlib.Algebra.MvPolynomial.Monad
 import Mathlib.Data.List.Indexes
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Noether normalization lemma
 
@@ -20,6 +23,7 @@ This file contains a proof by Nagata of the Noether normalization lemma.
 Let `A` be a finitely generated algebra over a field `k`.
 Then there exists a natural number `s` and an injective homomorphism
 from `k[X_0, X_1, ..., X_(s-1)]` to `A` such that `A` is integral over `k[X_0, X_1, ..., X_(s-1)]`.
+
 
 ## Strategy of the proof
 
@@ -34,10 +38,10 @@ See `degreeOf_varChange_ne_of_ne`.
 Secondly, we construct the following maps: let `I` be an ideal containing `f` and
 let `φ : k[X_0,...X_{n-1}] ≃ₐ[k] k[X_1,...X_n][X]` be the natural isomorphism.
 
-- `hom1 : k[X_0,...X_{n-1}] →ₐ[k[X_0,...X_{n-1}]] k[X_1,...X_n][X]/φ(T(I))`
-- `eqv1 : k[X_1,...X_n][X]/φ(T(I)) ≃ₐ[k] k[X_0,...,X_n]/T(I)`
-- `eqv2 : k[X_0,...,X_n]/T(I) ≃ₐ[k] k[X_0,...,X_n]/I`
-- `hom2 : k[X_0,...X_(n-1)] →ₐ[k] k[X_0,...X_n]/I`
+* `hom1 : k[X_0,...X_{n-1}] →ₐ[k[X_0,...X_{n-1}]] k[X_1,...X_n][X]/φ(T(I))`
+* `eqv1 : k[X_1,...X_n][X]/φ(T(I)) ≃ₐ[k] k[X_0,...,X_n]/T(I)`
+* `eqv2 : k[X_0,...,X_n]/T(I) ≃ₐ[k] k[X_0,...,X_n]/I`
+* `hom2 : k[X_0,...X_(n-1)] →ₐ[k] k[X_0,...X_n]/I`
 
 `hom1` is integral because `φ(T(I))` contains a monic polynomial. See `hom1_isIntegral`.
 `hom2` is integral because it's the composition of integral maps. See `hom2_isIntegral`.
@@ -46,12 +50,12 @@ Finally We use induction to prove there is an injective map from `k[X_0,...,X_{s
 to `k[X_0,...,X_(n-1)]/I`.The case `n=0` is trivial.
 For `n+1`, if `I = 0` there is nothing to do.
 Otherwise, `hom2` induces a map `φ` by quotient kernel.
-We use the inductive hypothesis on k[X_1,...,X_n] and the kernel of `hom2` to get `s, g`.
+We use the inductive hypothesis on k\[X\_1,...,X\_n\] and the kernel of `hom2` to get `s, g`.
 Composing `φ` and `g` we get the desired map since both `φ` and `g` are injective and integral.
 
 ## References
 
-* <https://stacks.math.columbia.edu/tag/00OW>
+* [https://stacks.math.columbia.edu/tag/00OW](https://stacks.math.columbia.edu/tag/00OW)
 
 ## TODO
 

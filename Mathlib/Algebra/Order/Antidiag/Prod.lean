@@ -9,6 +9,10 @@ public import Mathlib.Algebra.Group.TypeTags.Basic
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 public import Mathlib.Order.Interval.Finset.Defs
 
+set_option doc.verso true
+set_option doc.verso.module false
+set_option doc.verso.suggestions false
+
 /-! # Antidiagonal with values in general types
 
 We define a type class `Finset.HasAntidiagonal A` which contains a function
@@ -132,13 +136,17 @@ section CancelMonoid
 
 variable [CancelMonoid A] [HasMulAntidiagonal A] {p q : A × A} {n : A}
 
-/-- A point in the mulAntidiagonal is determined by its first coordinate.
+/--
+A point in the mulAntidiagonal is determined by its first coordinate.
 
-See also `Finset.mulAntidiagonal_congr'`. -/
+See also `Finset.mulAntidiagonal_congr'`.
+-/
 @[to_additive
-/-- A point in the antidiagonal is determined by its first coordinate.
+/--
+A point in the antidiagonal is determined by its first coordinate.
 
-See also `Finset.antidiagonal_congr'`. -/]
+See also `Finset.antidiagonal_congr'`.
+-/]
 theorem mulAntidiagonal_congr (hp : p ∈ mulAntidiagonal n) (hq : q ∈ mulAntidiagonal n) :
     p = q ↔ p.1 = q.1 := by
   refine ⟨congr_arg Prod.fst, fun h ↦ Prod.ext h ((mul_right_inj q.fst).mp ?_)⟩
@@ -158,12 +166,16 @@ end CancelMonoid
 section CancelCommMonoid
 variable [CancelCommMonoid A] [HasMulAntidiagonal A] {p q : A × A} {n : A}
 
-/-- A point in the mulAntidiagonal is determined by its second coordinate.
+/--
+A point in the mulAntidiagonal is determined by its second coordinate.
 
-See also `Finset.mulAntidiagonal_congr`. -/
-@[to_additive /-- A point in the antidiagonal is determined by its second coordinate.
+See also `Finset.mulAntidiagonal_congr`.
+-/
+@[to_additive /--
+              A point in the antidiagonal is determined by its second coordinate.
 
-See also `Finset.antidiagonal_congr`. -/]
+              See also `Finset.antidiagonal_congr`.
+              -/]
 lemma mulAntidiagonal_congr' (hp : p ∈ mulAntidiagonal n) (hq : q ∈ mulAntidiagonal n) :
     p = q ↔ p.2 = q.2 := by
   rw [← Prod.swap_inj]
@@ -248,14 +260,18 @@ variable {A : Type*}
   [CommMagma A] [PartialOrder A] [CanonicallyOrderedMul A]
   [LocallyFiniteOrderBot A] [DecidableEq A]
 
-/-- In a canonically ordered multiplicative type, the mulAntidiagonal can be constructed by
+/--
+In a canonically ordered multiplicative type, the mulAntidiagonal can be constructed by
 filtering.
 
-Note that this is not an instance, as for sometimes a more efficient algorithm is available. -/
+Note that this is not an instance, as for sometimes a more efficient algorithm is available.
+-/
 @[to_additive
-/-- In a canonically ordered additive type, the antidiagonal can be construct by filtering.
+/--
+In a canonically ordered additive type, the antidiagonal can be construct by filtering.
 
-Note that this is not an instance, as for some times a more efficient algorithm is available. -/]
+Note that this is not an instance, as for some times a more efficient algorithm is available.
+-/]
 abbrev mulAntidiagonalOfLocallyFinite : HasMulAntidiagonal A where
   mulAntidiagonal n := {uv ∈ Iic n ×ˢ Iic n | uv.fst * uv.snd = n}
   mem_mulAntidiagonal {n} {a} := by

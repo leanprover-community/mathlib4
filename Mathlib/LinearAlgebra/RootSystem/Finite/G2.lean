@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.RootSystem.Base
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of the `𝔤₂` root system.
 
@@ -39,6 +42,7 @@ stronger assumptions on the coefficients than here.
 ## TODO
 
 Once sufficient API for `RootPairing.Base` has been developed:
+
 * Add `def EmbeddedG2.toBase [P.EmbeddedG2] : P.Base` with `support := {long P, short P}`
 * Given `P` satisfying `[P.IsG2]`, distinct elements of a base must pair to `-3` (in one order).
 -/
@@ -146,6 +150,8 @@ lemma chainBotCoeff_add_chainTopCoeff_le_two [P.IsNotG2] :
   have := IsNotG2.pairingIn_mem_zero_one_two (P := P) (P.chainTopIdx i j) i
   aesop
 
+
+set_option doc.verso false
 /-- For a reduced, crystallographic, irreducible root pairing other than `𝔤₂`, if the sum of two
 roots is a root, they cannot make an acute angle.
 
@@ -166,17 +172,21 @@ lemma pairingIn_le_zero_of_root_add_mem [P.IsNotG2] (h : P.root i + P.root j ∈
   rw [← P.chainBotCoeff_sub_chainTopCoeff aux₁]
   lia
 
+
+set_option doc.verso true
 lemma zero_le_pairingIn_of_root_sub_mem [P.IsNotG2] (h : P.root i - P.root j ∈ range P.root) :
     0 ≤ P.pairingIn ℤ i j := by
   replace h : P.root i + P.root (P.reflectionPerm j j) ∈ range P.root := by simpa [← sub_eq_add_neg]
   simpa using P.pairingIn_le_zero_of_root_add_mem h
 
-/-- For a reduced, crystallographic, irreducible root pairing other than `𝔤₂`, if the sum of two
+/--
+For a reduced, crystallographic, irreducible root pairing other than `𝔤₂`, if the sum of two
 roots is a root, the bottom chain coefficient is either one or zero according to whether they are
 perpendicular.
 
 To see that this lemma fails for `𝔤₂`, let `α` (short) and `β` (long) be a base. Then the roots
-`α` and `α + β` provide a counterexample. -/
+`α` and `α + β` provide a counterexample.
+-/
 lemma chainBotCoeff_if_one_zero [P.IsNotG2] (h : P.root i + P.root j ∈ range P.root) :
     P.chainBotCoeff i j = if P.pairingIn ℤ i j = 0 then 1 else 0 := by
   have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
@@ -534,9 +544,11 @@ variable [P.IsIrreducible]
   have aux := isOrthogonal_short_and_long P hk
   rcases hij with rfl | rfl <;> tauto
 
-/-- The distinguished basis carried by an `EmbeddedG2`.
+/--
+The distinguished basis carried by an `EmbeddedG2`.
 
-In fact this is a `RootPairing.Base`. TODO Upgrade to this stronger statement. -/
+In fact this is a `RootPairing.Base`. TODO Upgrade to this stronger statement.
+-/
 def basis : Module.Basis (Fin 2) R M :=
   have : LinearIndependent R ![EmbeddedG2.shortRoot P, EmbeddedG2.longRoot P] := by
     have := pairing_long_short P

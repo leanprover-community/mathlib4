@@ -15,6 +15,9 @@ import Mathlib.LinearAlgebra.Determinant
 import Mathlib.LinearAlgebra.Matrix.Block
 import Mathlib.LinearAlgebra.Matrix.ZMatrix
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cartan matrices for root systems
 
@@ -47,9 +50,11 @@ namespace RootPairing.Base
 variable (S : Type*) [CommRing S] [Algebra S R]
   {P : RootPairing ι R M N} [P.IsValuedIn S] (b : P.Base)
 
-/-- The Cartan matrix of a root pairing, taking values in `S`, with respect to a base `b`.
+/--
+The Cartan matrix of a root pairing, taking values in `S`, with respect to a base `b`.
 
-See also `RootPairing.Base.cartanMatrix`. -/
+See also `RootPairing.Base.cartanMatrix`.
+-/
 def cartanMatrixIn :
     Matrix b.support b.support S :=
   .of fun i j ↦ P.pairingIn S i j

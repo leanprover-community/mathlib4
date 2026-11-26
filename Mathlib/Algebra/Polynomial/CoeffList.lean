@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Polynomial.Reverse
 
 import Mathlib.Algebra.Polynomial.EraseLead
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # A list of coefficients of a polynomial
 
@@ -171,7 +174,8 @@ theorem coeffList_eraseLead (h : P ≠ 0) :
     · simp
       lia
 
-/-- Construct a polynomial from a little-endian (i.e. constant term first) coefficient list.
+/--
+Construct a polynomial from a little-endian (i.e. constant term first) coefficient list.
 
 `ofCoeffList [c₀, c₁, ...] = C c₀ + C c₁ * X + ...`
 

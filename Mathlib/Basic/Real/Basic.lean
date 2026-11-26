@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Order.CauSeq.Completion
 public import Mathlib.Algebra.Order.Ring.Rat
 public import Mathlib.Data.Rat.Cast.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Real numbers from Cauchy sequences
 
@@ -189,11 +192,13 @@ def ringEquivCauchy : ℝ ≃+* CauSeq.Completion.Cauchy (abs : ℚ → ℚ) :=
     map_add' := cauchy_add
     map_mul' := cauchy_mul }
 
-/-! Extra instances to short-circuit type class resolution.
+/-!
+Extra instances to short-circuit type class resolution.
 
 These short-circuits have an additional property of ensuring that a computable path is found; if
 `Field ℝ` is found first, then decaying it to these typeclasses would result in a `noncomputable`
-version of them. -/
+version of them.
+-/
 
 instance instRing : Ring ℝ := by infer_instance
 
@@ -479,7 +484,8 @@ noncomputable instance decidableLE (a b : ℝ) : Decidable (a ≤ b) := by infer
 
 noncomputable instance decidableEq (a b : ℝ) : Decidable (a = b) := by infer_instance
 
-/-- Show an underlying Cauchy sequence for real numbers.
+/--
+Show an underlying Cauchy sequence for real numbers.
 
 The representative chosen is the one passed in the VM to `Quot.mk`, so two Cauchy sequences
 converging to the same number may be printed differently.

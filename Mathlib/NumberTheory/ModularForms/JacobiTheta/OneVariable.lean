@@ -8,11 +8,15 @@ module
 public import Mathlib.Analysis.Complex.UpperHalfPlane.MoebiusAction
 public import Mathlib.NumberTheory.ModularForms.JacobiTheta.TwoVariable
 
-/-! # Jacobi's theta function
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Jacobi's theta function
 
 This file defines the one-variable Jacobi theta function
 
-$$\theta(\tau) = \sum_{n \in \mathbb{Z}} \exp (i \pi n ^ 2 \tau),$$
+$$`\theta(\tau) = \sum_{n \in \mathbb{Z}} \exp (i \pi n ^ 2 \tau),`
 
 and proves the modular transformation properties `θ (τ + 2) = θ τ` and
 `θ (-1 / τ) = (-I * τ) ^ (1 / 2) * θ τ`, using Poisson's summation formula for the latter. We also

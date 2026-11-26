@@ -9,7 +9,11 @@ public import Mathlib.Order.Lattice.Nat
 
 import Mathlib.Algebra.Order.Group.Nat
 
-/-! # Periods of words (Lists)
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Periods of words (Lists)
 
 This file defines the notion of a period of a word (list) and proves the Periodicity Lemma.
 

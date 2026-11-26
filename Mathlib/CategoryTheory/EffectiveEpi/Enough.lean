@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.EffectiveEpi.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Effectively enough objects in the image of a functor
 
@@ -35,7 +38,7 @@ structure EffectivePresentation (X : D) where
   effectiveEpi : EffectiveEpi f
 
 /--
-`D` has *effectively enough objects* with respect to the functor `F` if every object has an
+`D` has _effectively enough objects_ with respect to the functor `F` if every object has an
 effective presentation.
 -/
 class EffectivelyEnough : Prop where

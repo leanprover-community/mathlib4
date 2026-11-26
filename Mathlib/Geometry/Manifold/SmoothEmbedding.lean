@@ -7,7 +7,11 @@ module
 
 public import Mathlib.Geometry.Manifold.Immersion
 
-/-! # Smooth embeddings
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Smooth embeddings
 
 In this file, we define `C^n` embeddings between `C^n` manifolds.
 This will be useful to define embedded submanifolds.

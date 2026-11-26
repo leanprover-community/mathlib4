@@ -13,12 +13,16 @@ import Mathlib.LinearAlgebra.Matrix.Dual
 import Mathlib.LinearAlgebra.RootSystem.Irreducible
 import Mathlib.LinearAlgebra.RootSystem.Reduced
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Realisations of Cartan Matrices
 
 Let `R` be an integral domain of characteristic zero, and let `M` and `N` be `R`-modules in perfect
 pairing. Then, given vectors `r₁, r₂, …, rₗ` in `M` and `c₁, c₂, …, cₗ` in `N`, the following two
 propositions are equivalent:
+
 1. The vectors `rᵢ`, `cᵢ` are the simple roots and coroots of a finite, reduced, crystallographic
    root pairing (i.e., a reduced root datum except we do not require `R = ℤ`).
 2. The matrix `Aᵢⱼ = ⟨cⱼ, rᵢ⟩` is a finite-type Cartan matrix.

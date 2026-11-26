@@ -7,7 +7,11 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
 
-/-! # Beta distributions over ℝ
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Beta distributions over ℝ
 
 Define the beta distribution over the reals.
 

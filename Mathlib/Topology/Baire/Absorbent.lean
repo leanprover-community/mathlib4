@@ -10,6 +10,9 @@ public import Mathlib.Topology.Bornology.Absorbs
 
 import Mathlib.Topology.Baire.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Absorbent sets in Baire spaces
 
@@ -25,12 +28,14 @@ open scoped Pointwise Topology
 variable {G₀ E : Type*} [GroupWithZero G₀] [Bornology G₀] [TopologicalSpace E]
   [MulAction G₀ E] [ContinuousConstSMul G₀ E]
 
-/-- In a (nonempty) Baire space, a closed absorbent set has nonempty interior, provided the
+/--
+In a (nonempty) Baire space, a closed absorbent set has nonempty interior, provided the
 `cobounded` filter of the acting group with zero is countably generated and nontrivial (`NeBot`).
 
 The dilations `a n • s` along a sequence `a n` drawn from a countable basis of `cobounded G₀` cover
 the space, so by Baire one of them — and hence `s` itself, via the homeomorphism `a n • ·` — has
-nonempty interior. -/
+nonempty interior.
+-/
 theorem Absorbent.interior_nonempty [BaireSpace E] [Nonempty E]
     [(cobounded G₀).IsCountablyGenerated] [NeBot (cobounded G₀)]
     {s : Set E} (hs : Absorbent G₀ s) (hc : IsClosed s) : (interior s).Nonempty := by

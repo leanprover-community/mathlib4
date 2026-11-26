@@ -8,7 +8,11 @@ module
 public import Mathlib.CategoryTheory.Comma.Over.Pullback
 public import Mathlib.CategoryTheory.Sites.Equivalence
 
-/-! # Localization
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Localization
 
 In this file, given a Grothendieck topology `J` on a category `C` and `X : C`, we construct
 a Grothendieck topology `J.over X` on the category `Over X`. In order to do this,

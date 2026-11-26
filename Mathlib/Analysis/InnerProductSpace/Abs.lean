@@ -11,6 +11,9 @@ public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Abs
 
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Isometric
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Absolute value
 
@@ -30,8 +33,7 @@ modulus. The name `ContinuousLinearMap.abs` has been chosen to be consistent wit
 
 ## TODO
 
-- generalize from `T : E →L[ℂ] F` to `T : E →L[𝕜] F` once CFC becomes available for the latter.
-
+* generalize from `T : E →L[ℂ] F` to `T : E →L[𝕜] F` once CFC becomes available for the latter.
 -/
 
 public section

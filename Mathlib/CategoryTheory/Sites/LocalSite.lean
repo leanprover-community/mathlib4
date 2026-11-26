@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Limits.Elements
 public import Mathlib.CategoryTheory.Sites.GlobalSections
 public import Mathlib.CategoryTheory.Sites.Point.Skyscraper
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Local sites
 
@@ -85,14 +88,16 @@ noncomputable def point [LocallySmall.{w} C] [J.IsLocalSite] : Point.{w} J where
 
 variable [LocallySmall.{w} C] [J.IsLocalSite] (A : Type u') [Category.{v'} A]
 
-/-- The right adjoint to the global sections functor that exists over any local site. This is
+/--
+The right adjoint to the global sections functor that exists over any local site. This is
 implemented as the skyscraper functor associated to `point.{w} J`, but can be thought of
 as taking any object `X : A` to the sheaf that sends each `Y : C` to the product over copies of `A`
 indexed by the points `⊤_ C ⟶ Y` of `Y`.
 
 Note this takes in an extra universe parameter `w` that does not appear in the output type
 `A ⥤ Sheaf J A` but is required for the construction; it should always be given explicitly when
-referring to this functor, as in e.g. `coconstantSheaf.{w} J A`. -/
+referring to this functor, as in e.g. `coconstantSheaf.{w} J A`.
+-/
 noncomputable def coconstantSheaf [HasProducts.{w} A] : A ⥤ Sheaf J A :=
   (point.{w} J).skyscraperSheafFunctor
 

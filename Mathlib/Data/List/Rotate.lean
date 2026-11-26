@@ -10,6 +10,9 @@ public import Mathlib.Data.Quot
 
 import Mathlib.Data.List.Nodup
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # List rotation
 
@@ -505,7 +508,8 @@ theorem comp_isRotated_sublist :
     refine ⟨lR ++ lL, isRotated_append.symm, ?_⟩
     simpa [rotate_eq_drop_append_take hn] using hR.append hL
 
-/-- List of all cyclic permutations of `l`.
+/--
+List of all cyclic permutations of `l`.
 The `cyclicPermutations` of a nonempty list `l` will always contain `List.length l` elements.
 This implies that under certain conditions, there are duplicates in `List.cyclicPermutations l`.
 The `n`th entry is equal to `l.rotate n`, proven in `List.get_cyclicPermutations`.
@@ -515,7 +519,8 @@ The proof that every cyclic permutant of `l` is in the list is `List.mem_cyclicP
      cyclicPermutations [1, 2, 3, 2, 4] =
        [[1, 2, 3, 2, 4], [2, 3, 2, 4, 1], [3, 2, 4, 1, 2],
         [2, 4, 1, 2, 3], [4, 1, 2, 3, 2]]
-``` -/
+```
+-/
 def cyclicPermutations : List α → List (List α)
   | [] => [[]]
   | l@(_ :: _) => dropLast (zipWith (· ++ ·) (tails l) (inits l))

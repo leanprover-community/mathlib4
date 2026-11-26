@@ -10,6 +10,9 @@ public import Mathlib.Basic.Complex.Basic
 public import Mathlib.Data.Nat.Prime.Basic
 public import Mathlib.NumberTheory.Zsqrtd.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Gaussian integers
 
@@ -25,6 +28,7 @@ The homomorphism `GaussianInt.toComplex` into the complex numbers is also define
 ## See also
 
 See `NumberTheory.Zsqrtd.QuadraticReciprocity` for:
+
 * `prime_iff_mod_four_eq_three_of_nat_prime`:
   A prime natural number is prime in `ℤ[i]` if and only if it is `3` mod `4`
 

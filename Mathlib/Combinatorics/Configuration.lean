@@ -10,6 +10,9 @@ public import Mathlib.LinearAlgebra.Projectivization.Constructions
 
 import Mathlib.Combinatorics.Hall.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Configurations of Points and lines
 
@@ -63,13 +66,16 @@ set_option synthInstance.checkSynthOrder false in
 instance : Membership (Dual L) (Dual P) :=
   ⟨Function.swap (Membership.mem : L → P → Prop)⟩
 
-/-- A configuration is nondegenerate if:
-  1) there does not exist a line that passes through all of the points,
-  2) there does not exist a point that is on all of the lines,
-  3) there is at most one line through any two points,
-  4) any two lines have at most one intersection point.
+/--
+A configuration is nondegenerate if:
 
-  Conditions 3 and 4 are equivalent. -/
+1. there does not exist a line that passes through all of the points,
+2. there does not exist a point that is on all of the lines,
+3. there is at most one line through any two points,
+4. any two lines have at most one intersection point.
+
+Conditions 3 and 4 are equivalent.
+-/
 class Nondegenerate : Prop where
   exists_point : ∀ l : L, ∃ p, p ∉ l
   exists_line : ∀ p, ∃ l : L, p ∉ l

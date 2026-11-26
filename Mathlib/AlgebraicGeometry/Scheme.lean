@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicGeometry.Spec
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of schemes
 
@@ -76,7 +79,7 @@ abbrev Hom.toLRSHom {X Y : Scheme.{u}} (f : X.Hom Y) :
     X.toLocallyRingedSpace ⟶ Y.toLocallyRingedSpace :=
   f.toLRSHom'
 
-/-- See Note [custom simps projection] -/
+/-- See Note \[custom simps projection\] -/
 def Hom.Simps.toLRSHom {X Y : Scheme.{u}} (f : X.Hom Y) :
     X.toLocallyRingedSpace ⟶ Y.toLocallyRingedSpace :=
   f.toLRSHom
@@ -169,10 +172,12 @@ namespace Hom
 
 variable {X Y : Scheme.{u}} (f : X ⟶ Y) {U U' : Y.Opens} {V V' : X.Opens}
 
-/-- Given a morphism of schemes `f : X ⟶ Y`, and open `U ⊆ Y`,
+/--
+Given a morphism of schemes `f : X ⟶ Y`, and open `U ⊆ Y`,
 this is the induced map `Γ(Y, U) ⟶ Γ(X, f ⁻¹ᵁ U)`.
 
-This is treated as a suffix in lemma names. -/
+This is treated as a suffix in lemma names.
+-/
 abbrev app (U : Y.Opens) : Γ(Y, U) ⟶ Γ(X, f ⁻¹ᵁ U) :=
   f.c.app (op U)
 
@@ -186,10 +191,12 @@ lemma naturality (i : op U' ⟶ op U) :
     Y.presheaf.map i ≫ f.app U = f.app U' ≫ X.presheaf.map ((Opens.map f.base).map i.unop).op :=
   f.c.naturality i
 
-/-- Given a morphism of schemes `f : X ⟶ Y`, and open sets `U ⊆ Y`, `V ⊆ f ⁻¹' U`,
+/--
+Given a morphism of schemes `f : X ⟶ Y`, and open sets `U ⊆ Y`, `V ⊆ f ⁻¹' U`,
 this is the induced map `Γ(Y, U) ⟶ Γ(X, V)`.
 
-This is treated as a suffix in lemma names. -/
+This is treated as a suffix in lemma names.
+-/
 def appLE (U : Y.Opens) (V : X.Opens) (e : V ≤ f ⁻¹ᵁ U) : Γ(Y, U) ⟶ Γ(X, V) :=
   f.app U ≫ X.presheaf.map (homOfLE e).op
 

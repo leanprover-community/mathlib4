@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 
 import Mathlib.CategoryTheory.Functor.Category
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Inserter categories
 
@@ -26,7 +29,7 @@ building block for bicategorical limits of categories.
 
 ## References
 
-* [nLab, *inserter*](https://ncatlab.org/nlab/show/inserter).
+* [nLab, _inserter_](https://ncatlab.org/nlab/show/inserter).
 
 ## TODO
 
@@ -41,9 +44,11 @@ namespace CategoryTheory
 
 variable {C D : Type*} [Category* C] [Category* D]
 
-/-- The *inserter* of a pair of parallel functors `F G : C ⥤ D` is the
+/--
+The _inserter_ of a pair of parallel functors `F G : C ⥤ D` is the
 category of arrows `F.obj K ⟶ G.obj K`, with morphisms `K ⟶ K'` making the
-obvious square commute as morphims. -/
+obvious square commute as morphims.
+-/
 structure Inserter (F G : C ⥤ D) where
   /-- the object of `C` underlying the object -/
   {obj : C}

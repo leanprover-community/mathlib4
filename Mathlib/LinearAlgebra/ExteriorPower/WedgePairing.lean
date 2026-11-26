@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.Basis
 public import Mathlib.LinearAlgebra.PerfectPairing.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Wedge pairing on exterior powers
 
@@ -16,10 +19,10 @@ is a scalar-valued bilinear map. We construct this here and prove that it is a p
 
 ## Main definitions and statements
 
- * `exteriorPower.wedge`: the bilinear map `∧^k × ∧^l → ∧^(k + l)`
- * `exteriorPower.wedgePairing`: the bilinear map `∧^k × ∧^l → R` when `k + l` = top degree
- * `exteriorPower.instIsPerfPairWedgePairing`: the proof that `exteriorPower.wedgePairing` is
-   perfect.
+* `exteriorPower.wedge`: the bilinear map `∧^k × ∧^l → ∧^(k + l)`
+* `exteriorPower.wedgePairing`: the bilinear map `∧^k × ∧^l → R` when `k + l` = top degree
+* `exteriorPower.instIsPerfPairWedgePairing`: the proof that `exteriorPower.wedgePairing` is
+  perfect.
 -/
 
 public noncomputable section

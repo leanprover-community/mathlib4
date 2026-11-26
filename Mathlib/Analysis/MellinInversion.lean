@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Fourier.Inversion
 public import Mathlib.Analysis.MellinTransform
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Mellin inversion formula
 
@@ -15,7 +18,7 @@ We derive the Mellin inversion formula as a consequence of the Fourier inversion
 
 ## Main results
 
-- `mellin_inversion`: The inverse Mellin transform of the Mellin transform applied to `x > 0` is x.
+* `mellin_inversion`: The inverse Mellin transform of the Mellin transform applied to `x > 0` is x.
 -/
 
 public section

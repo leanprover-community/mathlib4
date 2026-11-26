@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.EffectiveEpi.Comp
 public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functors preserving effective epimorphisms
 
@@ -17,7 +20,7 @@ epimorphic families.
 
 ## TODO
 
-- Find nice sufficient conditions in terms of preserving/reflecting (co)limits, to preserve/reflect
+* Find nice sufficient conditions in terms of preserving/reflecting (co)limits, to preserve/reflect
   effective epis, similar to `CategoryTheory.preserves_epi_of_preservesColimit`.
 -/
 

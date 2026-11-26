@@ -9,6 +9,9 @@ public import Mathlib.Geometry.Euclidean.Sphere.Power
 
 import Mathlib.Geometry.Euclidean.Triangle
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ptolemy's theorem
 
@@ -25,18 +28,19 @@ both a strict version, where all vertices must be distinct, and a weak version, 
 vertices may be equal, would be useful; Ptolemy's theorem should then use the weak one).
 
 An API needs to be built around that concept, which would include:
-- strict cyclic implies weak cyclic,
-- weak cyclic and consecutive points distinct implies strict cyclic,
-- weak/strict cyclic implies weak/strict cyclic for any subsequence,
-- any three points on a sphere are weakly or strictly cyclic according to whether they are distinct,
-- any number of points on a sphere intersected with a two-dimensional affine subspace are cyclic in
+
+* strict cyclic implies weak cyclic,
+* weak cyclic and consecutive points distinct implies strict cyclic,
+* weak/strict cyclic implies weak/strict cyclic for any subsequence,
+* any three points on a sphere are weakly or strictly cyclic according to whether they are distinct,
+* any number of points on a sphere intersected with a two-dimensional affine subspace are cyclic in
   some order,
-- a list of points is cyclic if and only if its reversal is,
-- a list of points is cyclic if and only if any cyclic permutation is, while other permutations
+* a list of points is cyclic if and only if its reversal is,
+* a list of points is cyclic if and only if any cyclic permutation is, while other permutations
   are not when the points are distinct,
-- a point P where the diagonals of a cyclic polygon cross exists (and is unique) with weak/strict
+* a point P where the diagonals of a cyclic polygon cross exists (and is unique) with weak/strict
   betweenness depending on weak/strict cyclicity,
-- four points on a sphere with such a point P are cyclic in the appropriate order,
+* four points on a sphere with such a point P are cyclic in the appropriate order,
 
 and so on.
 -/

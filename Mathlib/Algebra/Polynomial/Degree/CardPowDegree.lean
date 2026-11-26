@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.AbsoluteValue.Euclidean
 public import Mathlib.Algebra.Polynomial.FieldDivision
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Absolute value on polynomials over a finite field.
 
@@ -37,9 +40,11 @@ open AbsoluteValue
 
 open Polynomial
 
-/-- `cardPowDegree` is the absolute value on `𝔽_q[t]` sending `f` to `q ^ degree f`.
+/--
+`cardPowDegree` is the absolute value on `𝔽_q[t]` sending `f` to `q ^ degree f`.
 
-`cardPowDegree 0` is defined to be `0`. -/
+`cardPowDegree 0` is defined to be `0`.
+-/
 noncomputable def cardPowDegree : AbsoluteValue Fq[X] ℤ :=
   have card_pos : 0 < Fintype.card Fq := Fintype.card_pos_iff.mpr inferInstance
   have pow_pos : ∀ n, 0 < (Fintype.card Fq : ℤ) ^ n := fun n =>

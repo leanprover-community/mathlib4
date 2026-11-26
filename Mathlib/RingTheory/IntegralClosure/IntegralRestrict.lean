@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.Localization.Finiteness
 public import Mathlib.RingTheory.Localization.NormTrace
 public import Mathlib.RingTheory.Norm.Transitivity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Restriction of various maps between fields to integrally closed subrings.
 
@@ -20,10 +23,10 @@ We call this the AKLB setup.
 
 ## Main definitions
 
-- `galRestrict`: The restriction `Aut(L/K) → Aut(B/A)` as an `MulEquiv` in an AKLB setup.
-- `Algebra.intTrace`: The trace map of a finite extension of integrally closed domains `B/A` is
+* `galRestrict`: The restriction `Aut(L/K) → Aut(B/A)` as an `MulEquiv` in an AKLB setup.
+* `Algebra.intTrace`: The trace map of a finite extension of integrally closed domains `B/A` is
   defined to be the restriction of the trace map of `Frac(B)/Frac(A)`.
-- `Algebra.intNorm`: The norm map of a finite extension of integrally closed domains `B/A` is
+* `Algebra.intNorm`: The norm map of a finite extension of integrally closed domains `B/A` is
   defined to be the restriction of the norm map of `Frac(B)/Frac(A)`.
 -/
 

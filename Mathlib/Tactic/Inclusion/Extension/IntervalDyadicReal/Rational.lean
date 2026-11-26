@@ -9,8 +9,11 @@ public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Basic
 
 import Mathlib.Data.Rat.Cast.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-# Rational enclosures for interval_dyadic_real
+# Rational enclosures for interval\_dyadic\_real
 
 This file defines inclusion operations for the `interval_dyadic_real` inclusion family which
 define dyadic interval enclosures for rational numbers.

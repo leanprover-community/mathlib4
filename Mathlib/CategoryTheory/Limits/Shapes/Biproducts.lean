@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Biproducts and binary biproducts
 
@@ -56,7 +59,9 @@ variable {C : Type uC} [Category.{uC'} C] [HasZeroMorphisms C]
 variable {D : Type uD} [Category.{uD'} D] [HasZeroMorphisms D]
 
 open scoped Classical in
-/-- A `c : Bicone F` is:
+/--
+A `c : Bicone F` is:
+
 * an object `c.pt` and
 * morphisms `π j : pt ⟶ F j` and `ι j : F j ⟶ pt` for each `j`,
 * such that `ι j ≫ π j'` is the identity when `j = j'` and zero otherwise.
@@ -629,12 +634,14 @@ instance Sigma.map_mono {f g : J → C} [HasBiproduct f] [HasBiproduct g] (p : �
     (biproduct.isoCoproduct _).hom by aesop]
   infer_instance
 
-/-- Two biproducts which differ by an equivalence in the indexing type,
+/--
+Two biproducts which differ by an equivalence in the indexing type,
 and up to isomorphism in the factors, are isomorphic.
 
 Unfortunately there are two natural ways to define each direction of this isomorphism
 (because it is true for both products and coproducts separately).
-We give the alternative definitions as lemmas below. -/
+We give the alternative definitions as lemmas below.
+-/
 @[simps]
 def biproduct.whiskerEquiv {f : J → C} {g : K → C} (e : J ≃ K) (w : ∀ j, g (e j) ≅ f j)
     [HasBiproduct f] [HasBiproduct g] : ⨁ f ≅ ⨁ g where

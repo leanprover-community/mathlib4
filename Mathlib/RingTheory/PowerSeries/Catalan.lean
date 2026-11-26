@@ -8,11 +8,14 @@ module
 public import Mathlib.Combinatorics.Enumerative.Catalan.Basic
 public import Mathlib.RingTheory.PowerSeries.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Catalan Power Series
 
 We introduce the Catalan generating function as a formal power series over `ℕ`:
-  `catalanSeries = ∑_{n ≥ 0} catalan n * X^n`
+`catalanSeries = ∑_{n ≥ 0} catalan n * X^n`
 
 ## Main Definitions
 

@@ -9,10 +9,13 @@ public import Mathlib.LinearAlgebra.Isomorphisms
 public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 public import Mathlib.Topology.Maps.Strict.Group
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Strict linear maps
 
-In this file, we study continuous linear maps which are *strict* in the sense of
+In this file, we study continuous linear maps which are _strict_ in the sense of
 `Topology.IsStrictMap`. So far, all the results in this file are direct
 adaptations from the theory of strict homomorphisms of topological additive groups.
 -/

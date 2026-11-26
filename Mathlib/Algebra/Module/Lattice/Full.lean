@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Module.Lattice.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Full lattices
 
@@ -14,13 +17,13 @@ A lattice in an `A`-module `V` is full if its `A`-span is all of `V`.
 
 ## Main definitions
 
-- `Submodule.IsFullLattice`: a `Submodule.IsLattice` whose `A`-span is `V`.
+* `Submodule.IsFullLattice`: a `Submodule.IsLattice` whose `A`-span is `V`.
 
 ## Main statements
 
-- `Module.Basis.extendOfIsFullLattice`: an `R`-basis of a full lattice is an `A`-basis of `V`.
-- `Submodule.IsFullLattice.rank`: a full lattice has `R`-rank the `A`-rank of `V`.
-- `Submodule.IsFullLattice.inf`: over a fraction field, the intersection of two full lattices is
+* `Module.Basis.extendOfIsFullLattice`: an `R`-basis of a full lattice is an `A`-basis of `V`.
+* `Submodule.IsFullLattice.rank`: a full lattice has `R`-rank the `A`-rank of `V`.
+* `Submodule.IsFullLattice.inf`: over a fraction field, the intersection of two full lattices is
   again a full lattice.
 -/
 

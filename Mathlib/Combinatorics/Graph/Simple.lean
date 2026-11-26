@@ -8,6 +8,9 @@ module
 public import Mathlib.Combinatorics.Graph.Subgraph
 public import Mathlib.Combinatorics.SimpleGraph.Maps
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Simple graphs
 
@@ -15,10 +18,10 @@ This file defines two type classes for graphs `Graph α β`: `Loopless` and `Sim
 
 ## Main definitions
 
-- `Loopless`: a graph is loopless if it has no loops
-- `Simple`: a graph is simple if it has no multiple edges between the same pair of vertices
-- `toSimpleGraph`: a function that constructs a `SimpleGraph V(G)` from a Graph `G`
-- `ofSimpleGraph`: a function that constructs a `Graph α (Sym2 α)` from a `SimpleGraph α`
+* `Loopless`: a graph is loopless if it has no loops
+* `Simple`: a graph is simple if it has no multiple edges between the same pair of vertices
+* `toSimpleGraph`: a function that constructs a `SimpleGraph V(G)` from a Graph `G`
+* `ofSimpleGraph`: a function that constructs a `Graph α (Sym2 α)` from a `SimpleGraph α`
 
 TODO: Show `ofSimpleGraph (toSimpleGraph G)` is isomorphic to `G` when isomorphism on `Graph` is
 defined.

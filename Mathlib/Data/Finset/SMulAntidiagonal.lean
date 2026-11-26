@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 public import Mathlib.Data.Set.SMulAntidiagonal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Antidiagonal for scalar multiplication as a `Finset`.
 

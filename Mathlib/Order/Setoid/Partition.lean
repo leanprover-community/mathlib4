@@ -9,11 +9,15 @@ public import Mathlib.Order.Partition.Finpartition
 
 import Mathlib.Data.Set.Finite.Range
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equivalence relations: partitions
 
 This file comprises properties of equivalence relations viewed as partitions.
 There are two implementations of partitions here:
+
 * A collection `c : Set (Set α)` of sets is a partition of `α` if `∅ ∉ c` and each element `a : α`
   belongs to a unique set `b ∈ c`. This is expressed as `IsPartition c`
 * An indexed partition is a map `s : ι → Set α` whose image is a partition. This is
@@ -309,14 +313,16 @@ theorem Finpartition.isPartition_parts {α} (f : Finpartition (Set.univ : Set α
     Setoid.eqv_classes_of_disjoint_union (f.parts.sup_id_set_eq_sUnion.symm.trans f.sup_parts)
       f.supIndep.pairwiseDisjoint⟩
 
-/-- Constructive information associated with a partition of a type `α` indexed by another type `ι`,
+/--
+Constructive information associated with a partition of a type `α` indexed by another type `ι`,
 `s : ι → Set α`.
 
 `IndexedPartition.index` sends an element to its index, while `IndexedPartition.some` sends
 an index to an element of the corresponding set.
 
 This type is primarily useful for definitional control of `s` - if this is not needed, then
-`Setoid.ker index` by itself may be sufficient. -/
+`Setoid.ker index` by itself may be sufficient.
+-/
 structure IndexedPartition {ι α : Type*} (s : ι → Set α) where
   /-- two indexes are equal if they are equal in membership -/
   eq_of_mem : ∀ {x i j}, x ∈ s i → x ∈ s j → i = j

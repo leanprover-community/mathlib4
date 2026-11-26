@@ -9,6 +9,9 @@ public import Mathlib.NumberTheory.ClassNumber.AdmissibleCardPowDegree
 public import Mathlib.NumberTheory.ClassNumber.Finite
 public import Mathlib.NumberTheory.FunctionField
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Class numbers of function fields
 
@@ -18,7 +21,7 @@ on the class number.
 
 ## Main definitions
 
-- `FunctionField.classNumber`: the class number of a function field is the (finite)
+* `FunctionField.classNumber`: the class number of a function field is the (finite)
   cardinality of the class group of its ring of integers
 -/
 

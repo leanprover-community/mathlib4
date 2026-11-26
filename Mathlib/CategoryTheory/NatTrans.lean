@@ -8,6 +8,9 @@ module
 public import Mathlib.Tactic.CategoryTheory.Map
 public import Mathlib.Tactic.CategoryTheory.Reassoc
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Natural transformations
 
@@ -24,6 +27,7 @@ See also `CategoryTheory.FunctorCat`, where we provide the category structure on
 functors and natural transformations.
 
 Introduces notations
+
 * `τ.app X` for the components of natural transformations,
 * `F ⟶ G` for the type of natural transformations between functors `F` and `G`
   (this and the next require `CategoryTheory.FunctorCat`),
@@ -43,7 +47,8 @@ universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 set_option linter.translate.warnInvalid false in
-/-- `NatTrans F G` represents a natural transformation between functors `F` and `G`.
+/--
+`NatTrans F G` represents a natural transformation between functors `F` and `G`.
 
 The field `app` provides the components of the natural transformation.
 
@@ -102,7 +107,9 @@ attribute [grind =] vcomp_app
 
 end
 
-/-- The diagram
+/--
+The diagram
+
 ```
     F(f)      F(g)      F(h)
 F X ----> F Y ----> F U ----> F V
@@ -112,6 +119,7 @@ F X ----> F Y ----> F U ----> F V
 G X ----> G Y ----> G U ----> G V
     G(f)      G(g)      G(h)
 ```
+
 commutes.
 -/
 example {F G : C ⥤ D} (α : NatTrans F G) {X Y U V : C} (f : X ⟶ Y) (g : Y ⟶ U) (h : U ⟶ V) :

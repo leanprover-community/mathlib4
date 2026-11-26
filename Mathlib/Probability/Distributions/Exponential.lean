@@ -7,7 +7,11 @@ module
 
 public import Mathlib.Probability.Distributions.Gamma
 
-/-! # Exponential distributions over ℝ
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Exponential distributions over ℝ
 
 Define the Exponential measure over the reals.
 

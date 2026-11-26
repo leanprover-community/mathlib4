@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Algebra.Group.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subgroups of topological groups
 
@@ -120,15 +123,19 @@ instance Subgroup.isMulCommutative_topologicalClosure [T2Space G] (s : Subgroup 
   s.toSubmonoid.isMulCommutative_topologicalClosure
 
 open scoped IsMulCommutative in
-/-- If a subgroup of a topological group is commutative, then so is its topological closure.
+/--
+If a subgroup of a topological group is commutative, then so is its topological closure.
 
-See note [reducible non-instances]. -/
+See note \[reducible non-instances\].
+-/
 @[to_additive (attr := deprecated Subgroup.isMulCommutative_topologicalClosure
   +typeChanged (since := "2026-07-29"))
-  /-- If a subgroup of an additive topological group is commutative, then so is its
+  /--
+  If a subgroup of an additive topological group is commutative, then so is its
 topological closure.
 
-See note [reducible non-instances]. -/]
+  See note \[reducible non-instances\].
+  -/]
 abbrev Subgroup.commGroupTopologicalClosure [T2Space G] (s : Subgroup G)
     (hs : ∀ x y : s, x * y = y * x) : CommGroup s.topologicalClosure :=
   haveI : IsMulCommutative s := ⟨⟨hs⟩⟩
@@ -162,19 +169,23 @@ theorem Subgroup.properlyDiscontinuousSMul_of_tendsto_cofinite (S : Subgroup G)
       simp only [image_smul, mem_eq_mem, coe_subtype, mem_preimage, mem_image, Prod.exists]
       exact Set.smul_inter_nonempty_iff' }
 
-/-- A subgroup `S` of a topological group `G` acts on `G` properly discontinuously on the right, if
+/--
+A subgroup `S` of a topological group `G` acts on `G` properly discontinuously on the right, if
 it is discrete in the sense that `S ∩ K` is finite for all compact `K`. (See also
 `DiscreteTopology`.)
 
 If `G` is Hausdorff, this can be combined with `t2Space_of_properlyDiscontinuousSMul_of_t2Space`
-to show that the quotient group `G ⧸ S` is Hausdorff. -/
+to show that the quotient group `G ⧸ S` is Hausdorff.
+-/
 @[to_additive
-  /-- A subgroup `S` of an additive topological group `G` acts on `G` properly discontinuously
-  on the right, if it is discrete in the sense that `S ∩ K` is finite for all compact `K`.
-  (See also `DiscreteTopology`.)
+  /--
+  A subgroup `S` of an additive topological group `G` acts on `G` properly discontinuously
+on the right, if it is discrete in the sense that `S ∩ K` is finite for all compact `K`.
+(See also `DiscreteTopology`.)
 
   If `G` is Hausdorff, this can be combined with `t2Space_of_properlyDiscontinuousVAdd_of_t2Space`
-  to show that the quotient group `G ⧸ S` is Hausdorff. -/]
+to show that the quotient group `G ⧸ S` is Hausdorff.
+  -/]
 theorem Subgroup.properlyDiscontinuousSMul_opposite_of_tendsto_cofinite (S : Subgroup G)
     (hS : Tendsto S.subtype cofinite (cocompact G)) : ProperlyDiscontinuousSMul S.op G :=
   { finite_disjoint_inter_image := by

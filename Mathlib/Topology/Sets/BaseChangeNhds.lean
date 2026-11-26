@@ -11,13 +11,16 @@ public import Mathlib.Topology.Category.TopCat.Opens
 public import Mathlib.Topology.Maps.Proper.Basic
 public import Mathlib.Topology.Sets.Compacts
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Base changes among different families of neighbourhoods
 
 This file builds base changes for `.compactsInside`, `openNhds`.
 
 It also contains the evidences that `openRcNhds_to_openNhds`and
- `openRcNhds_to_compactNhds` are initials functors.
+`openRcNhds_to_compactNhds` are initials functors.
 -/
 
 @[expose] public section

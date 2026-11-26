@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Category.ModuleCat.Topology.Homology
 public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 public import Mathlib.RepresentationTheory.Continuous.TopRep
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuous cohomology
 
@@ -17,9 +20,9 @@ We define continuous cohomology as the homology of the homogeneous cochain compl
 
 ## Main definitions
 
-- `TopRep.homogeneousCochains`:
+* `TopRep.homogeneousCochains`:
   The functor taking an `R`-linear `G`-representation to the complex of homogeneous cochains.
-- `continuousCohomology`:
+* `continuousCohomology`:
   The functor taking an `R`-linear `G`-representation to its `n`-th continuous cohomology.
 
 ## Implementation notes
@@ -37,9 +40,9 @@ See `TopRep.d`.
 
 ## TODO
 
-- Show that it coincides with `groupCohomology` for discrete groups.
-- Give the usual description of cochains in terms of `n`-ary functions for locally compact groups.
-- Show that short exact sequences induce long exact sequences in certain scenarios.
+* Show that it coincides with `groupCohomology` for discrete groups.
+* Give the usual description of cochains in terms of `n`-ary functions for locally compact groups.
+* Show that short exact sequences induce long exact sequences in certain scenarios.
 -/
 
 @[expose] public section

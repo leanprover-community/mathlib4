@@ -10,7 +10,11 @@ public import Mathlib.RingTheory.PrincipalIdealDomain
 
 import Mathlib.Algebra.EuclideanDomain.Int
 
-/-! # ℤ[√d]
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# ℤ\[√d\]
 
 The ring of integers adjoined with a square root of `d : ℤ`.
 

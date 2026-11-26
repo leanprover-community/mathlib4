@@ -10,12 +10,15 @@ public import Mathlib.Order.Filter.Cofinite
 
 import Mathlib.Algebra.Group.Pointwise.Set.Finite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Antidiagonal tendsto
 
 `tendsto_sup'_antidiagonal_cofinite`: If a function `f : M × M → R` on a Finset `M`, that has the
-  antidiagonal property, tends to a filter `F` under the cofinite filter then so does the function
-  assigning to `x : M` its supremum of its antidiagonal.
+antidiagonal property, tends to a filter `F` under the cofinite filter then so does the function
+assigning to `x : M` its supremum of its antidiagonal.
 -/
 
 public section

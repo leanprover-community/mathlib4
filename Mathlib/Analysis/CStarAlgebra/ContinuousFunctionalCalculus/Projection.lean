@@ -9,10 +9,15 @@ public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnit
 
 import Mathlib.FieldTheory.IsAlgClosed.Spectrum
 
-/-! # Continuous functional calculus and projections
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Continuous functional calculus and projections
 
 This file collects some results related to projections, idempotents,
-and the continuous functional calculus. -/
+and the continuous functional calculus.
+-/
 
 public section
 

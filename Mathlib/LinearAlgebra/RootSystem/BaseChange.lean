@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Algebra.Rat
 public import Mathlib.LinearAlgebra.PerfectPairing.Restrict
 public import Mathlib.LinearAlgebra.RootSystem.IsValuedIn
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Base change for root pairings
 
@@ -37,10 +40,12 @@ open Submodule (span injective_subtype span subset_span span_setOfPred_mem_eq_to
 
 namespace RootPairing
 
-/-- We say a root pairing is balanced if the root span and coroot span are perfectly
+/--
+We say a root pairing is balanced if the root span and coroot span are perfectly
 complementary.
 
-All root systems are balanced and all finite root pairings over a field are balanced. -/
+All root systems are balanced and all finite root pairings over a field are balanced.
+-/
 class IsBalanced {ι R M N : Type*} [AddCommGroup M] [AddCommGroup N]
     [CommRing R] [Module R M] [Module R N] (P : RootPairing ι R M N) : Prop where
   isPerfectCompl : P.toLinearMap.IsPerfectCompl (P.rootSpan R) (P.corootSpan R)
@@ -65,9 +70,11 @@ section SubfieldValued
 variable [P.IsValuedIn K]
 
 set_option backward.isDefEq.respectTransparency.types false in
-/-- Restriction of scalars for a root pairing taking values in a subfield.
+/--
+Restriction of scalars for a root pairing taking values in a subfield.
 
-See also `RootPairing.restrictScalars`. -/
+See also `RootPairing.restrictScalars`.
+-/
 def restrictScalars' :
     RootPairing ι K (span K (range P.root)) (span K (range P.coroot)) where
   toLinearMap := .restrictScalarsRange₂ (R := L)

@@ -9,6 +9,9 @@ public import Mathlib.Topology.Sheaves.LocalPredicate
 
 import Mathlib.Topology.Sheaves.Skyscraper
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sheafification of `Type`-valued presheaves
 
@@ -28,7 +31,7 @@ Show that the map induced on stalks by `toSheafify` is the inverse of `stalkToFi
 
 Show sheafification is a functor from presheaves to sheaves,
 and that it is the left adjoint of the forgetful functor,
-following <https://stacks.math.columbia.edu/tag/007X>.
+following [https://stacks.math.columbia.edu/tag/007X](https://stacks.math.columbia.edu/tag/007X).
 -/
 
 @[expose] public section

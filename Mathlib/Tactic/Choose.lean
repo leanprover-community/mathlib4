@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Logic.Function.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `choose` tactic
 
@@ -44,7 +47,8 @@ def mkSometimes (u : Level) (α nonemp p : Expr) :
 
 @[deprecated (since := "2026-05-27")] alias mk_sometimes := mkSometimes
 
-/-- Results of searching for nonempty instances,
+/--
+Results of searching for nonempty instances,
 to eliminate dependencies on propositions (`choose!`).
 `success` means we found at least one instance;
 `failure ts` means we didn't find instances for any `t ∈ ts`.
@@ -84,11 +88,14 @@ structure ChooseArg where
 syntax chooseBinder := binderIdent <|> Batteries.ExtendedBinder.extBinderParenthesized
 
 open Batteries.ExtendedBinder in
-/-- Parse a `choose` argument from `chooseBinder` syntax. Accepts:
-- `x` - plain identifier
-- `_` - anonymous
-- `(x : T)` - identifier with type annotation
-- `(_ : T)` - anonymous with type annotation -/
+/--
+Parse a `choose` argument from `chooseBinder` syntax. Accepts:
+
+* `x` - plain identifier
+* `_` - anonymous
+* `(x : T)` - identifier with type annotation
+* `(_ : T)` - anonymous with type annotation
+-/
 def parseChooseArg (stx : TSyntax ``chooseBinder) : MetaM ChooseArg := do
   match stx with
   | `(chooseBinder| $id:binderIdent) => return parseBinderIdent id
@@ -104,17 +111,19 @@ where
     | `(binderIdent| $h:ident) => ⟨h, h.getId, none⟩
     | _ => ⟨id, `_, none⟩
 
-/-- Changes `(h : ∀ xs, ∃ a:α, p a) ⊢ g` to `(d : ∀ xs, a) ⊢ (s : ∀ xs, p (d xs)) → g` and
+/--
+Changes `(h : ∀ xs, ∃ a:α, p a) ⊢ g` to `(d : ∀ xs, a) ⊢ (s : ∀ xs, p (d xs)) → g` and
 `(h : ∀ xs, p xs ∧ q xs) ⊢ g` to `(d : ∀ xs, p xs) ⊢ (s : ∀ xs, q xs) → g`.
 `choose1` returns a tuple of
 
-- the error result (see `ElimStatus`)
-- the data new free variable that was "chosen"
-- the new goal (which contains the spec of the data as domain of an arrow type)
+* the error result (see `ElimStatus`)
+* the data new free variable that was "chosen"
+* the new goal (which contains the spec of the data as domain of an arrow type)
 
 If `nondep` is true and `α` is inhabited, then it will remove the dependency of `d` on
 all propositional assumptions in `xs`. For example if `ys` are propositions then
-`(h : ∀ xs ys, ∃ a:α, p a) ⊢ g` becomes `(d : ∀ xs, a) (s : ∀ xs ys, p (d xs)) ⊢ g`. -/
+`(h : ∀ xs ys, ∃ a:α, p a) ⊢ g` becomes `(d : ∀ xs, a) (s : ∀ xs ys, p (d xs)) ⊢ g`.
+-/
 def choose1 (g : MVarId) (nondep : Bool) (h : Option Expr) (data : Name) :
     MetaM (ElimStatus × Expr × MVarId) := do
   let (g, h) ← match h with
@@ -236,7 +245,6 @@ def elabChoose (nondep : Bool) (h : Option Expr) :
   into context a function `a : X → Y → A`, `b : X → Y → B` and two assumptions:
   `h : ∀ (x : X) (y : Y), P x y (a x y) (b x y)` and
   `h' : ∀ (x : X) (y : Y), Q x y (a x y) (b x y)`. It also works with dependent versions.
-
 * `choose! a b h h' using hyp` does the same, except that it will remove dependency of
   the functions on propositional arguments if possible. For example if `Y` is a proposition
   and `A` and `B` are nonempty in the above example then we will instead get
@@ -249,11 +257,13 @@ which will effectively cause `choose` to start with an `intro hyp`.
 
 Like `intro`, the `choose` tactic supports type annotations to specify the expected type
 of the introduced variables. This is useful for documentation and for catching mistakes early:
+
 ```
 example (h : ∃ n : ℕ, n > 0) : True := by
   choose (n : ℕ) (hn : n > 0) using h
   trivial
 ```
+
 If the provided type does not match the actual type, an error is raised.
 
 Examples:

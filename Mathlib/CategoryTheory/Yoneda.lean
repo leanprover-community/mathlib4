@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Functor.Hom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Yoneda embedding
 
@@ -151,7 +154,9 @@ instance yoneda_full : (yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁).Full :=
 instance yoneda_faithful : (yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁).Faithful :=
   fullyFaithful.faithful
 
-/-- Extensionality via Yoneda. The typical usage would be
+/--
+Extensionality via Yoneda. The typical usage would be
+
 ```
 -- Goal is `X ≅ Y`
 apply Yoneda.ext
@@ -217,7 +222,9 @@ instance coyoneda_full : (coyoneda : Cᵒᵖ ⥤ C ⥤ Type v₁).Full :=
 instance coyoneda_faithful : (coyoneda : Cᵒᵖ ⥤ C ⥤ Type v₁).Faithful :=
   fullyFaithful.faithful
 
-/-- Extensionality via Coyoneda. The typical usage would be
+/--
+Extensionality via Coyoneda. The typical usage would be
+
 ```
 -- Goal is `X ≅ Y`
 apply Coyoneda.ext
@@ -276,10 +283,12 @@ end Coyoneda
 
 namespace Functor
 
-/-- The data which expresses that a functor `F : Cᵒᵖ ⥤ Type v` is representable by `Y : C`.
+/--
+The data which expresses that a functor `F : Cᵒᵖ ⥤ Type v` is representable by `Y : C`.
 
 In the situation where `F` factors through a concrete category, it may be more convenient to use
-the API in the file `Mathlib/CategoryTheory/ConcreteCategory/Representable.lean`. -/
+the API in the file `Mathlib/CategoryTheory/ConcreteCategory/Representable.lean`.
+-/
 structure RepresentableBy (F : Cᵒᵖ ⥤ Type v) (Y : C) where
   /-- the natural bijection `(X ⟶ Y) ≃ F.obj (op X)`. -/
   homEquiv {X : C} : (X ⟶ Y) ≃ F.obj (op X)

@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Bicategory.Basic
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extensions and lifts in bicategories
 
@@ -40,7 +43,9 @@ universe w v u
 
 variable {B : Type u} [Bicategory.{w, v} B] {a b c : B}
 
-/-- Triangle diagrams for (left) extensions.
+/--
+Triangle diagrams for (left) extensions.
+
 ```
   b
   △ \
@@ -94,7 +99,9 @@ instance : Inhabited (LeftExtension (𝟙 a) g) := ⟨alongId g⟩
 def ofCompId (t : LeftExtension f (g ≫ 𝟙 c)) : LeftExtension f g :=
   mk t.extension ((ρ_ g).inv ≫ t.unit)
 
-/-- Whisker a 1-morphism to an extension.
+/--
+Whisker a 1-morphism to an extension.
+
 ```
   b
   △ \
@@ -202,8 +209,10 @@ section Paste
 
 variable {d : B} {f : a ⟶ b} {g : a ⟶ c} {h : b ⟶ d}
 
-/-- Given a left extension `t` of `g` along `f` and a left extension `s` of `t` along `h`, we
+/--
+Given a left extension `t` of `g` along `f` and a left extension `s` of `t` along `h`, we
 obtain a left extension `t.paste s` of `g` along `f ≫ h`.
+
 ```
   b                 d                    d
   △ \               △ \                  △ \
@@ -238,7 +247,9 @@ end Paste
 
 end LeftExtension
 
-/-- Triangle diagrams for (left) lifts.
+/--
+Triangle diagrams for (left) lifts.
+
 ```
             b
           ◹ |
@@ -292,7 +303,9 @@ instance : Inhabited (LeftLift (𝟙 a) g) := ⟨alongId g⟩
 def ofIdComp (t : LeftLift f (𝟙 c ≫ g)) : LeftLift f g :=
   mk t.lift ((λ_ _).inv ≫ t.unit)
 
-/-- Whisker a 1-morphism to a lift.
+/--
+Whisker a 1-morphism to a lift.
+
 ```
                     b
                   ◹ |
@@ -400,8 +413,10 @@ section Paste
 
 variable {d : B} {f : b ⟶ a} {g : d ⟶ a} {h : c ⟶ b}
 
-/-- Given a left lift `t` of `g` along `f` and a left lift `s` of `t` along `h`, we obtain a
+/--
+Given a left lift `t` of `g` along `f` and a left lift `s` of `t` along `h`, we obtain a
 left lift `t.paste s` of `g` along `h ≫ f`.
+
 ```
             b                 c                     c
           ◹ |               ◹ |                   ◹ |
@@ -436,7 +451,9 @@ end Paste
 
 end LeftLift
 
-/-- Triangle diagrams for (right) extensions.
+/--
+Triangle diagrams for (right) extensions.
+
 ```
   b
   △ \
@@ -490,7 +507,9 @@ instance : Inhabited (RightExtension (𝟙 a) g) := ⟨alongId g⟩
 def ofCompId (t : RightExtension f (g ≫ 𝟙 c)) : RightExtension f g :=
   mk t.extension (t.counit ≫ (ρ_ g).hom)
 
-/-- Whisker a 1-morphism to an extension.
+/--
+Whisker a 1-morphism to an extension.
+
 ```
   b
   △ \
@@ -598,8 +617,10 @@ section Paste
 
 variable {d : B} {f : a ⟶ b} {g : a ⟶ c} {h : b ⟶ d}
 
-/-- Given a right extension `t` of `g` along `f` and a right extension `s` of `t` along `h`, we
+/--
+Given a right extension `t` of `g` along `f` and a right extension `s` of `t` along `h`, we
 obtain a right extension `t.paste s` of `g` along `f ≫ h`.
+
 ```
   b                 d                    d
   △ \               △ \                  △ \
@@ -635,7 +656,9 @@ end Paste
 
 end RightExtension
 
-/-- Triangle diagrams for (right) lifts.
+/--
+Triangle diagrams for (right) lifts.
+
 ```
             b
           ◹ |
@@ -689,7 +712,9 @@ instance : Inhabited (RightLift (𝟙 a) g) := ⟨alongId g⟩
 def ofIdComp (t : RightLift f (𝟙 c ≫ g)) : RightLift f g :=
   mk t.lift (t.counit ≫ (λ_ _).hom)
 
-/-- Whisker a 1-morphism to a lift.
+/--
+Whisker a 1-morphism to a lift.
+
 ```
                     b
                   ◹ |
@@ -798,8 +823,10 @@ section Paste
 
 variable {d : B} {f : b ⟶ a} {g : d ⟶ a} {h : c ⟶ b}
 
-/-- Given a right lift `t` of `g` along `f` and a right lift `s` of `t` along `h`, we obtain a
+/--
+Given a right lift `t` of `g` along `f` and a right lift `s` of `t` along `h`, we obtain a
 right lift `t.paste s` of `g` along `h ≫ f`.
+
 ```
             b                 c                     c
           ◹ |               ◹ |                   ◹ |

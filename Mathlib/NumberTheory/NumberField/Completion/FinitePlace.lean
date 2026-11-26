@@ -15,6 +15,9 @@ import Mathlib.Algebra.FiniteSupport.Basic
 import Mathlib.Algebra.Order.Archimedean.Submonoid
 import Mathlib.RingTheory.Valuation.Archimedean
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite places of number fields
 
@@ -37,8 +40,8 @@ a number field. This is so that `ℤ` and `𝓞 ℚ` can be used interchangeably
   unfolded.
 * `NumberField.FinitePlace.hasFiniteMulSupport`: the `v`-adic absolute value of a non-zero element
   of `K` is different from 1 for at most finitely many `v`.
-*  The valuation subrings of the field at the `v`-valuation and it's adic completion are
-   discrete valuation rings.
+* The valuation subrings of the field at the `v`-valuation and it's adic completion are
+  discrete valuation rings.
 
 ## Tags
 

@@ -9,6 +9,9 @@ public import Mathlib.FieldTheory.Galois.Notation
 public import Mathlib.FieldTheory.IntermediateField.Basic
 public import Mathlib.FieldTheory.Minpoly.Field
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Normal field extensions
 
@@ -16,7 +19,7 @@ In this file we define normal field extensions.
 
 ## Main Definitions
 
-- `Normal F K` where `K` is a field extension of `F`.
+* `Normal F K` where `K` is a field extension of `F`.
 -/
 
 @[expose] public section
@@ -27,9 +30,11 @@ open Polynomial IsScalarTower
 
 variable (F K : Type*) [Field F] [Field K] [Algebra F K]
 
-/-- Typeclass for normal field extensions: an algebraic extension of fields `K/F` is *normal*
+/--
+Typeclass for normal field extensions: an algebraic extension of fields `K/F` is _normal_
 if the minimal polynomial of every element `x` in `K` splits in `K`, i.e. every `F`-conjugate
-of `x` is in `K`. -/
+of `x` is in `K`.
+-/
 @[stacks 09HM]
 class Normal : Prop extends Algebra.IsAlgebraic F K where
   splits' (x : K) : Splits ((minpoly F x).map (algebraMap F K))

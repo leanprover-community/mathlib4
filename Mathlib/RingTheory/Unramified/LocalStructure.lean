@@ -12,6 +12,9 @@ public import Mathlib.RingTheory.ZariskisMainTheorem
 import Mathlib.RingTheory.LocalRing.ResidueField.Instances
 import Mathlib.RingTheory.Unramified.LocalRing
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Local structure of unramified algebras
 
@@ -23,15 +26,15 @@ As a corollary, we also obtain results about the local structure of etale and sm
 
 ## Main definition and results
 
-- `HasStandardEtaleSurjectionOn`: The predicate
+* `HasStandardEtaleSurjectionOn`: The predicate
   "there exists a standard etale algebra `A` over `R` that surjects onto `S[1/f]`".
-- `Algebra.IsUnramifiedAt.exists_hasStandardEtaleSurjectionOn`:
+* `Algebra.IsUnramifiedAt.exists_hasStandardEtaleSurjectionOn`:
   If `S` is a finite type `R`-algebra that is unramified at a prime `p`, then
   there exists a standard etale algebra over `R` that surjects onto `S[1/f]` for some `f ∉ p`.
-- `Algebra.IsEtaleAt.exists_isStandardEtale`:
+* `Algebra.IsEtaleAt.exists_isStandardEtale`:
   If `S` is a finitely presented `R`-algebra that is etale at a prime `p`, then
   `S[1/f]` is standard etale for some `f ∉ p`.
-- `Algebra.IsSmoothAt.exists_isStandardEtale_mvPolynomial`:
+* `Algebra.IsSmoothAt.exists_isStandardEtale_mvPolynomial`:
   If `S` is a finitely presented `R`-algebra that is smooth at a prime `p`, then
   there exists some `f ∉ p` such that `S[1/f]` is `R`-isomorphic to a standard etale algebra
   over `R[x₁,...,xₙ]`.

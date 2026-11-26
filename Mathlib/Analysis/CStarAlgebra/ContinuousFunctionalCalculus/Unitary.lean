@@ -8,7 +8,11 @@ module
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital
 public import Mathlib.Analysis.Complex.Basic
 
-/-! # Conditions on unitary elements imposed by the continuous functional calculus
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Conditions on unitary elements imposed by the continuous functional calculus
 
 ## Main theorems
 

@@ -13,6 +13,9 @@ import Mathlib.NumberTheory.Cyclotomic.Discriminant
 import Mathlib.RingTheory.Polynomial.Eisenstein.IsIntegral
 import Mathlib.RingTheory.Prime
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ring of integers of cyclotomic fields
 
@@ -204,9 +207,11 @@ lemma finite_quotient_toInteger_sub_one [NumberField K] {k : ℕ} (hk : 1 < k)
   simp only [Ideal.span_singleton_eq_bot, sub_eq_zero] at h
   exact hζ.ne_one hk (RingOfIntegers.ext_iff.1 h)
 
-/-- We have that `𝓞 K ⧸ Ideal.span {ζ - 1}` has cardinality equal to the norm of `ζ - 1`.
+/--
+We have that `𝓞 K ⧸ Ideal.span {ζ - 1}` has cardinality equal to the norm of `ζ - 1`.
 
-See the results below to compute this norm in various cases. -/
+See the results below to compute this norm in various cases.
+-/
 lemma card_quotient_toInteger_sub_one [NumberField K] {k : ℕ} [NeZero k]
     (hζ : IsPrimitiveRoot ζ k) :
     Nat.card (𝓞 K ⧸ Ideal.span {hζ.toInteger - 1}) =

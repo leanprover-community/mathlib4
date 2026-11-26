@@ -10,10 +10,13 @@ public import Mathlib.CategoryTheory.Linear.Basic
 
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Linear Functors
 
-An additive functor between two `R`-linear categories is called *linear*
+An additive functor between two `R`-linear categories is called _linear_
 if the induced map on hom types is a morphism of `R`-modules.
 
 ## Implementation notes

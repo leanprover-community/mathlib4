@@ -12,7 +12,11 @@ public import Mathlib.Tactic.Rify
 
 import Mathlib.Tactic.Qify
 
-/-! # `norm_num` extension for `Irrational`
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# `norm_num` extension for `Irrational`
 
 This module defines a `norm_num` extension for `Irrational x ^ y` for rational `x` and `y`. It also
 supports `Irrational √x` expressions.

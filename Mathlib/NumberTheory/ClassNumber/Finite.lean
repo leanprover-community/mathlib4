@@ -13,6 +13,9 @@ public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 import Mathlib.LinearAlgebra.Matrix.AbsoluteValue
 import Mathlib.RingTheory.Norm.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Class numbers of global fields
 
@@ -21,7 +24,7 @@ finiteness of the class group for number fields and function fields.
 
 ## Main definitions
 
-- `ClassGroup.fintypeOfAdmissibleOfAlgebraic`: if `R` has an admissible absolute value,
+* `ClassGroup.fintypeOfAdmissibleOfAlgebraic`: if `R` has an admissible absolute value,
   its integral closure has a finite class group
 -/
 
@@ -138,7 +141,8 @@ section IsAdmissible
 variable {abv}
 variable (adm : abv.IsAdmissible)
 
-/-- If we have a large enough set of elements in `R^ι`, then there will be a pair
+/--
+If we have a large enough set of elements in `R^ι`, then there will be a pair
 whose remainders are close together. We'll show that all sets of cardinality
 at least `cardM bS adm` elements satisfy this condition.
 
@@ -323,7 +327,8 @@ theorem mkMMem_surjective [IsDedekindDomain S] [Algebra.IsAlgebraic R S] :
   exact ⟨⟨J, J_dvd⟩, mk0_eq_mk0.symm⟩
 
 open scoped Classical in
-/-- The **class number theorem**: the class group of an integral closure `S` of `R` in an
+/--
+The *class number theorem*: the class group of an integral closure `S` of `R` in an
 algebraic extension `L` is finite if there is an admissible absolute value.
 
 See also `ClassGroup.fintypeOfAdmissibleOfFinite` where `L` is a finite
@@ -344,7 +349,8 @@ noncomputable def fintypeOfAdmissibleOfAlgebraic [IsDedekindDomain S]
           rw [Equiv.refl_apply, Ideal.span_le, Set.singleton_subset_iff]; rfl)))
     (ClassGroup.mkMMem bS adm) (ClassGroup.mkMMem_surjective bS adm)
 
-/-- The main theorem: the class group of an integral closure `S` of `R` in a
+/--
+The main theorem: the class group of an integral closure `S` of `R` in a
 finite extension `L` of `K = Frac(R)` is finite if there is an admissible
 absolute value.
 

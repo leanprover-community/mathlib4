@@ -7,15 +7,18 @@ module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.Preimmersion
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Stalks of a Scheme
 
 ## Main definitions and results
 
-- `AlgebraicGeometry.Scheme.fromSpecStalk`: The canonical morphism `Spec 𝒪_{X, x} ⟶ X`.
-- `AlgebraicGeometry.Scheme.range_fromSpecStalk`: The range of the map `Spec 𝒪_{X, x} ⟶ X` is
+* `AlgebraicGeometry.Scheme.fromSpecStalk`: The canonical morphism `Spec 𝒪_{X, x} ⟶ X`.
+* `AlgebraicGeometry.Scheme.range_fromSpecStalk`: The range of the map `Spec 𝒪_{X, x} ⟶ X` is
   exactly the `y`s that specialize to `x`.
-- `AlgebraicGeometry.SpecToEquivOfLocalRing`:
+* `AlgebraicGeometry.SpecToEquivOfLocalRing`:
   Given a local ring `R` and scheme `X`, morphisms `Spec R ⟶ X` corresponds to pairs
   `(x, f)` where `x : X` and `f : 𝒪_{X, x} ⟶ R` is a local ring homomorphism.
 -/
@@ -281,7 +284,8 @@ instance isLocalHom_stalkClosedPointTo :
     IsLocalHom (stalkClosedPointTo f).hom :=
   inferInstanceAs <| IsLocalHom (f.stalkMap (closedPoint R) ≫ (stalkClosedPointIso R).hom).hom
 
-/-- Copy of `isLocalHom_stalkClosedPointTo` which unbundles the comm ring.
+/--
+Copy of `isLocalHom_stalkClosedPointTo` which unbundles the comm ring.
 
 Useful for use in combination with `CommRingCat.of K` for a field `K`.
 -/

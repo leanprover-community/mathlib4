@@ -9,11 +9,14 @@ public import Mathlib.RingTheory.Trace.Basic
 
 import Mathlib.RingTheory.Norm.Transitivity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Discriminant of a family of vectors
 
 Given an `A`-algebra `B` and `b`, an `ι`-indexed family of elements of `B`, we define the
-*discriminant* of `b` as the determinant of the matrix whose `(i j)`-th element is the trace of
+_discriminant_ of `b` as the determinant of the matrix whose `(i j)`-th element is the trace of
 `b i * b j`.
 
 ## Main definition

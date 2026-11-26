@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.Jacobson.Ideal
 
 import Mathlib.RingTheory.Finiteness.Nakayama
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Nakayama's lemma
 
@@ -22,13 +25,11 @@ This file contains some alternative statements of Nakayama's Lemma as found in
   generalising to the Jacobson of any ideal.
 * `Submodule.eq_bot_of_le_smul_of_le_jacobson` - Statement (2) in
   [Stacks: Nakayama's Lemma](https://stacks.math.columbia.edu/tag/00DV).
-
 * `Submodule.sup_smul_eq_sup_smul_of_le_smul_of_le_jacobson` - A version of (4) in
   [Stacks: Nakayama's Lemma](https://stacks.math.columbia.edu/tag/00DV),
   generalising to the Jacobson of any ideal.
 * `Submodule.smul_le_of_le_smul_of_le_jacobson` - Statement (4) in
   [Stacks: Nakayama's Lemma](https://stacks.math.columbia.edu/tag/00DV).
-
 * `Submodule.exists_injOn_mkQ_image_span_eq_of_span_eq_map_mkQ_of_le_jacobson` -
   Statement (8) in
   [Stacks: Nakayama's Lemma](https://stacks.math.columbia.edu/tag/00DV).
@@ -241,7 +242,7 @@ lemma eq_of_map_mkQ_eq_map_mkQ_of_le_jacobson_bot
   exact eq_of_map_mkQ_eq_map_mkQ_of_le_jacobson hN hIjac hmaple
 
 /--
-**Nakayama's Lemma** - Statement (8) in
+*Nakayama's Lemma* - Statement (8) in
 [Stacks 00DV](https://stacks.math.columbia.edu/tag/00DV).
 
 If `N` is a finitely generated `R`-submodule of `M`,

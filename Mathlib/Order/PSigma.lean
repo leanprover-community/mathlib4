@@ -11,6 +11,9 @@ public import Mathlib.Order.Lattice
 public import Mathlib.Order.Lex
 public import Mathlib.Order.Sigma.Lex
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lexicographic order on a sigma type
 
@@ -25,6 +28,7 @@ there.
 ## See also
 
 Related files are:
+
 * `Data.Finset.Colex`: Colexicographic order on finite sets.
 * `Data.List.Lex`: Lexicographic order on lists.
 * `Data.Pi.Lex`: Lexicographic order on `Πₗ i, α i`.

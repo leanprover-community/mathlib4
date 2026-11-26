@@ -8,14 +8,17 @@ module
 public import Mathlib.CategoryTheory.MorphismProperty.Comma
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Adjunction of pushforward and pullback in `P.Over Q X`
 
 Under suitable assumptions on `P`, `Q` and `f`,
 a morphism `f : X ⟶ Y` defines two functors:
 
-- `Over.map`: post-composition with `f`
-- `Over.pullback`: base-change along `f`
+* `Over.map`: post-composition with `f`
+* `Over.pullback`: base-change along `f`
 
 such that `Over.map` is the left adjoint to `Over.pullback`.
 -/
