@@ -276,7 +276,7 @@ theorem coe_closure_eq_range_term_realize :
   rw [← SetLike.ext'_iff]
   refine closure_eq_of_le (fun x hx => ⟨var ⟨x, hx⟩, rfl⟩) (le_sInf fun S' hS' => ?_)
   rintro _ ⟨t, rfl⟩
-  exact t.realize_mem _ fun i => hS' i.2
+  exact t.realize_mem _ fun i => hS' i.property
 
 instance small_closure [Small.{u} s] : Small.{u} (closure L s) := by
   rw [← SetLike.coe_sort_coe, Substructure.coe_closure_eq_range_term_realize]
@@ -628,7 +628,7 @@ theorem comap_strictMono_of_surjective : StrictMono (comap f) :=
 end GaloisInsertion
 
 instance inducedStructure {S : L.Substructure M} : L.Structure S where
-  funMap {_} f x := ⟨funMap f fun i => x i, S.fun_mem f (fun i => x i) fun i => (x i).2⟩
+  funMap {_} f x := ⟨funMap f fun i => x i, S.fun_mem f (fun i => x i) fun i => (x i).property⟩
   RelMap {_} r x := RelMap r fun i => (x i : M)
 
 /-- The natural embedding of an `L.Substructure` of `M` into `M`. -/
@@ -725,7 +725,7 @@ def withConstants (S : L.Substructure M) {A : Set M} (h : A ⊆ S) : L[[A]].Subs
     obtain f | f := f
     · exact S.fun_mem f
     · cases n
-      · exact fun _ _ => h f.2
+      · exact fun _ _ => h f.property
       · exact isEmptyElim f
 
 variable {A : Set M} {s : Set M} (h : A ⊆ S)
@@ -907,13 +907,13 @@ theorem subtype_comp_codRestrict (f : M ↪[L] N) (p : L.Substructure N) (h : �
 noncomputable def substructureEquivMap (f : M ↪[L] N) (s : L.Substructure M) :
     s ≃[L] s.map f.toHom where
   toFun := codRestrict (s.map f.toHom) (f.domRestrict s) fun ⟨m, hm⟩ => ⟨m, hm, rfl⟩
-  invFun n := ⟨Classical.choose n.2, (Classical.choose_spec n.2).1⟩
+  invFun n := ⟨Classical.choose n.property, (Classical.choose_spec n.property).1⟩
   left_inv := fun ⟨m, hm⟩ =>
     Subtype.mk_eq_mk.2
       (f.injective
         (Classical.choose_spec
             (codRestrict (s.map f.toHom) (f.domRestrict s) (fun ⟨m, hm⟩ => ⟨m, hm, rfl⟩)
-                ⟨m, hm⟩).2).2)
+                ⟨m, hm⟩).property).2)
   right_inv := fun ⟨_, hn⟩ => Subtype.mk_eq_mk.2 (Classical.choose_spec hn).2
   map_fun' {n} f x := by simp
   map_rel' {n} R x := by simp
@@ -931,9 +931,9 @@ theorem subtype_substructureEquivMap (f : M ↪[L] N) (s : L.Substructure M) :
 /-- The equivalence between the domain and the range of an embedding `f`. -/
 @[simps toEquiv_apply] noncomputable def equivRange (f : M ↪[L] N) : M ≃[L] f.toHom.range where
   toFun := codRestrict f.toHom.range f f.toHom.mem_range_self
-  invFun n := Classical.choose n.2
-  left_inv m :=
-    f.injective (Classical.choose_spec (codRestrict f.toHom.range f f.toHom.mem_range_self m).2)
+  invFun n := Classical.choose n.property
+  left_inv m := f.injective
+    (Classical.choose_spec (codRestrict f.toHom.range f f.toHom.mem_range_self m).property)
   right_inv := fun ⟨_, hn⟩ => Subtype.mk_eq_mk.2 (Classical.choose_spec hn)
   map_fun' {n} f x := by simp
   map_rel' {n} R x := by simp
@@ -961,7 +961,7 @@ namespace Substructure
 
 /-- The embedding associated to an inclusion of substructures. -/
 def inclusion {S T : L.Substructure M} (h : S ≤ T) : S ↪[L] T :=
-  S.subtype.codRestrict _ fun x => h x.2
+  S.subtype.codRestrict _ fun x => h x.property
 
 @[simp]
 theorem inclusion_self (S : L.Substructure M) : inclusion (le_refl S) = Embedding.refl L S := rfl

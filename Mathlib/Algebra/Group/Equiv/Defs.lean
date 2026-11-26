@@ -15,6 +15,7 @@ In this file we define two extensions of `Equiv` called `AddEquiv` and `MulEquiv
 datatypes representing isomorphisms of `AddMonoid`s/`AddGroup`s and `Monoid`s/`Group`s.
 
 ## Main definitions
+
 * `≃*` (`MulEquiv`), `≃+` (`AddEquiv`): bundled equivalences that preserve multiplication/addition
   (and are therefore monoid and group isomorphisms).
 * `MulEquivClass`, `AddEquivClass`: classes for types containing bundled equivalences that
@@ -418,6 +419,10 @@ theorem symm_trans_self (e : M ≃* N) : e.symm.trans e = refl N :=
 theorem self_trans_symm (e : M ≃* N) : e.trans e.symm = refl M :=
   DFunLike.ext _ _ e.symm_apply_apply
 
+@[to_additive]
+theorem isMulCommutative (e : M ≃* N) : IsMulCommutative M ↔ IsMulCommutative N :=
+  ⟨fun _ ↦ e.surjective.isMulCommutative, fun _ ↦ e.symm.surjective.isMulCommutative⟩
+
 end trans
 
 /-- `MulEquiv.symm` defines an equivalence between `α ≃* β` and `β ≃* α`. -/
@@ -498,8 +503,9 @@ protected theorem map_eq_one_iff (h : M ≃* N) {x : M} : h x = 1 ↔ x = 1 :=
 theorem map_ne_one_iff (h : M ≃* N) {x : M} : h x ≠ 1 ↔ x ≠ 1 :=
   EmbeddingLike.map_ne_one_iff
 
+-- TODO: Make simp once `toEquiv` is simp nf
 /-- A bijective `Semigroup` homomorphism is an isomorphism -/
-@[to_additive (attr := simps! apply)
+@[to_additive (attr := simps! apply, simps -isSimp toEquiv)
 /-- A bijective `AddSemigroup` homomorphism is an isomorphism -/]
 noncomputable def ofBijective {M N F} [Mul M] [Mul N] [FunLike F M N] [MulHomClass F M N]
     (f : F) (hf : Bijective f) : M ≃* N :=

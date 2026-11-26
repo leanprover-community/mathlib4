@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.ObjectProperty.Shift
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of objects on preadditive categories equipped with shift
 
@@ -18,7 +21,6 @@ then the shift functors on the full subcategory associated
 to `P` are additive if the shift functors on `C` are.
 
 This instance is put in a separate file in order to reduce imports.
-
 -/
 
 public section

@@ -7,8 +7,10 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Final
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Conditions for `parallelPair` to be initial
 
 In this file we give sufficient conditions on a category `C` and parallel morphisms `f g : X ⟶ Y`

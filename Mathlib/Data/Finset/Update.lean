@@ -94,7 +94,7 @@ lemma updateFinset_updateFinset_of_subset {s t : Finset ι} (hst : s ⊆ t)
 lemma restrict_updateFinset_of_subset {s t : Finset ι} (hst : s ⊆ t) (x : Π i, π i)
     (y : Π i : t, π i) : s.restrict (updateFinset x t y) = restrict₂ hst y := by
   ext i
-  simp [updateFinset, dite_eq_left (hst i.2)]
+  simp [updateFinset, dite_eq_left (hst i.property)]
 
 lemma restrict_updateFinset {s : Finset ι} (x : Π i, π i) (y : Π i : s, π i) :
     s.restrict (updateFinset x s y) = y := by

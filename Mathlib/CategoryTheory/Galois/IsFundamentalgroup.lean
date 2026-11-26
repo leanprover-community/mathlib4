@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Galois.Topology
 import Mathlib.Topology.Algebra.OpenSubgroup
 
 /-!
-
 # Universal property of fundamental group
 
 Let `C` be a Galois category with fiber functor `F`. While in informal mathematics, we tend to
@@ -44,7 +43,6 @@ Given this data, we define `toAut F G : G →* Aut F` in the natural way.
 
 - Develop further equivalent conditions, in particular, relate the condition `non_trivial` with
   `G` being a `T2Space`.
-
 -/
 
 @[expose] public section

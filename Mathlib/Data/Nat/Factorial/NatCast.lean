@@ -9,12 +9,14 @@ public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.CharP.Invertible
 public import Mathlib.Data.Finset.NatAntidiagonal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Invertibility of factorials
 
 This file contains lemmas providing sufficient conditions for the cast of `n!` to a (semi)ring `A`
 to be a unit.
-
 -/
 
 public section

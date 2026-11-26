@@ -7,12 +7,13 @@ module
 
 public import Mathlib.CategoryTheory.EffectiveEpi.Basic
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Composition of effective epimorphisms
 
 This file provides `EffectiveEpi` instances for certain compositions.
-
 -/
 
 @[expose] public section

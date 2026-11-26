@@ -8,13 +8,15 @@ module
 public import Mathlib.RingTheory.Bialgebra.Equiv
 public import Mathlib.RingTheory.Coalgebra.TensorProduct
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tensor products of bialgebras
 
 We define the data in the monoidal structure on the category of bialgebras - e.g. the bialgebra
 instance on a tensor product of bialgebras, and the tensor product of two `BialgHom`s as a
 `BialgHom`. This is done by combining the corresponding API for coalgebras and algebras.
-
 -/
 
 public noncomputable section
@@ -104,7 +106,7 @@ theorem assoc_symm_tmul (x : A) (y : C) (z : D) :
 
 @[simp]
 theorem assoc_toCoalgEquiv :
-    (Bialgebra.TensorProduct.assoc R S A C D : _ ≃ₗc[S] _) =
+    (Bialgebra.TensorProduct.assoc R S A C D).toCoalgEquiv =
     Coalgebra.TensorProduct.assoc R S A C D := rfl
 
 @[simp]
@@ -120,7 +122,7 @@ bialgebra equivalence. -/
 
 @[simp]
 theorem lid_toCoalgEquiv :
-    (Bialgebra.TensorProduct.lid R B : R ⊗[R] B ≃ₗc[R] B) = Coalgebra.TensorProduct.lid R B := rfl
+    (Bialgebra.TensorProduct.lid R B).toCoalgEquiv = Coalgebra.TensorProduct.lid R B := rfl
 
 @[simp]
 theorem lid_toAlgEquiv :
@@ -144,7 +146,7 @@ bialgebra equivalence. -/
 
 @[simp]
 theorem rid_toCoalgEquiv :
-    (TensorProduct.rid R S A : A ⊗[R] R ≃ₗc[S] A) = Coalgebra.TensorProduct.rid R S A := rfl
+    (TensorProduct.rid R S A).toCoalgEquiv = Coalgebra.TensorProduct.rid R S A := rfl
 
 @[simp]
 theorem rid_toAlgEquiv :

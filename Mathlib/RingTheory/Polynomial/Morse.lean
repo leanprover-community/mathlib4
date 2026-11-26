@@ -34,7 +34,6 @@ Such polynomials are called *Morse functions* in Section 4.4 of [serre-galois].
 ## References
 
 * [J. P. Serre, *Topics in Galois Theory*][serre-galois], Section 4.4
-
 -/
 
 public section
@@ -70,7 +69,8 @@ theorem Splits.toPermHom_apply_eq_one_or_isSwap_of_ncard_le_of_mem_inertia
   simp only [Equiv.swap_apply_def, MulAction.toPermHom_apply, MulAction.toPerm_apply]
   split_ifs with hz hz'
   · subst hz
-    have key := hp (g • g • x) (g • g • x).2 (g • x) (g • x).2 (g • x) (g • x).2 x x.2
+    have key := hp (g • g • x) (g • g • x).property (g • x) (g • x).property
+      (g • x) (g • x).property x x.property
       (by simp [hπ]) (by simp [hπ]) (by simpa [← rootSet.coe_smul]) (by simpa [← rootSet.coe_smul])
     grind [rootSet.coe_smul]
   · simp [hz']

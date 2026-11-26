@@ -12,13 +12,15 @@ public import Mathlib.Algebra.Homology.DerivedCategory.KInjective
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexSingle
 public import Mathlib.CategoryTheory.Abelian.Injective.Extend
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Computing `Ext` using an injective resolution
 
 Given an injective resolution `R` of an object `Y` in an abelian category `C`,
 we provide an API in order to construct elements in `Ext X Y n` in terms
 of the complex `R.cocomplex` and to make computations in the `Ext`-group.
-
 -/
 
 @[expose] public section

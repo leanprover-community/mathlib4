@@ -46,7 +46,6 @@ See also `CategoryTheory.Functor.Elements` for the category of elements of a fun
 
 * https://stacks.math.columbia.edu/tag/02XV
 * https://ncatlab.org/nlab/show/Grothendieck+construction
-
 -/
 
 @[expose] public section
@@ -228,8 +227,8 @@ variable (F)
 /-- The forgetful functor from `Grothendieck F` to the source category. -/
 @[simps!]
 def forget : Grothendieck F ⥤ C where
-  obj X := X.1
-  map f := f.1
+  obj X := X.base
+  map f := f.base
 
 end
 

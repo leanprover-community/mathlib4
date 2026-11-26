@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
 public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # A closed monoidal category is enriched in itself
 
@@ -20,7 +23,6 @@ a `C`-category structure coming from another source (e.g. the type of simplicial
 see `Mathlib/AlgebraicTopology/SimplicialCategory/SimplicialObject.lean`).
 
 All structure field values are defined in `Mathlib/CategoryTheory/Closed/Monoidal.lean`.
-
 -/
 
 public section

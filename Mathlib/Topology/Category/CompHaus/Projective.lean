@@ -22,10 +22,9 @@ Let `X` be a compact Hausdorff space.
 * `CompHaus.projectivePresentation`: the natural map `Ultrafilter X → X`
   is a projective presentation
 
-## Reference
+## References
 
 See [miraglia2006introduction] Chapter 21 for a proof that `CompHaus` has enough projectives.
-
 -/
 
 @[expose] public section

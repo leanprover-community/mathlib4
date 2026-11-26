@@ -21,7 +21,6 @@ Turing machine for evaluating these functions. This amounts to a constructive pr
 ## Main definitions
 
 * `PartrecToTM2.tr`: A TM2 Turing machine which can evaluate `code` programs
-
 -/
 
 @[expose] public section
@@ -153,7 +152,6 @@ section
 
 open ToPartrec
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The alphabet for the stacks in the program. `bit0` and `bit1` are used to represent `ℕ` values
 as lists of binary digits, `cons` is used to separate `List ℕ` values, and `consₗ` is used to
 separate `List (List ℕ)` values. See the section documentation. -/

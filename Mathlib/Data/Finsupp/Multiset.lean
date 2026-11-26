@@ -16,7 +16,6 @@ public import Mathlib.Order.Preorder.Finsupp
 This defines `Finsupp.toMultiset` the equivalence between `α →₀ ℕ` and `Multiset α`, along
 with `Multiset.toFinsupp` the reverse equivalence and `Finsupp.orderIsoMultiset` (the equivalence
 promoted to an order isomorphism).
-
 -/
 
 @[expose] public section
@@ -220,7 +219,7 @@ variable (ι)
 
 /-- The order on `ι →₀ ℕ` is well-founded. -/
 theorem lt_wf : WellFounded (@LT.lt (ι →₀ ℕ) _) :=
-  Subrelation.wf (sum_id_lt_of_lt _ _) <| InvImage.wf _ Nat.lt_wfRel.2
+  Subrelation.wf (sum_id_lt_of_lt _ _) <| InvImage.wf _ Nat.lt_wfRel.wf
 
 -- TODO: generalize to `[WellFoundedRelation α] → WellFoundedRelation (ι →₀ α)`
 instance : WellFoundedRelation (ι →₀ ℕ) where

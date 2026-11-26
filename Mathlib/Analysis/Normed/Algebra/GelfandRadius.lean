@@ -5,9 +5,9 @@ Authors: Thomas Browning
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.DenselyOrdered
 public import Mathlib.Analysis.Subadditive
 
+import Mathlib.Algebra.Order.Group.DenselyOrdered
 import Mathlib.Data.Fintype.Order
 
 /-!
@@ -25,7 +25,6 @@ and proves basic properties.
 * `tendsto_gelfandRadius`: the sequence `‖a ^ k‖ ^ (1 / k)` converges to `gelfandRadius`.
 * `gelfandRadius_add_le`: `gelfandRadius` is subadditive.
 * `gelfandRadius_mul_le`: `gelfandRadius` is submultiplicative.
-
 -/
 
 public section

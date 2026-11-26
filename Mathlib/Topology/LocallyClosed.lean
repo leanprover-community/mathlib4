@@ -38,7 +38,6 @@ These are defined earlier, but most of their API should be in this file.
   4. The coborder `(closure s \ s)ᶜ` is open.
   5. `s` is the intersection of an open set and `closure s`.
   6. `s` is open in the closure of `s`.
-
 -/
 
 public section
@@ -178,7 +177,7 @@ lemma isLocallyClosedAt_tfae (s : Set X) (x : X) :
     rw [nhds_basis_opens' x |>.exists_iff this] at H
     obtain ⟨U, ⟨U_mem, U_open⟩, H⟩ := H
     rw [← closure_subset_iff_isClosed,
-      ← U_open.isOpenMap_subtype_val.preimage_closure_eq_closure_preimage (by fun_prop),
+      ← U_open.isOpenMap_subtypeVal.preimage_closure_eq_closure_preimage (by fun_prop),
       Subtype.preimage_val_subset_preimage_val_iff] at H
     exact ⟨U, U_mem, by simpa using H⟩
   tfae_have 3 ↔ 4 := by grind [subset_closure]
@@ -190,8 +189,8 @@ lemma isLocallyClosedAt_tfae (s : Set X) (x : X) :
       eventuallyEqSet_iff, eventually_iff_exists_mem]
     grind
   tfae_have 4 ↔ 6 := by simp [eventuallyEqSet_iff, eventually_iff_exists_mem, Set.ext_iff]
-  tfae_have 6 → 7 := fun H ↦ H.symm.le
-  tfae_have 7 → 6 := fun H ↦ EventuallyLE.antisymm (.of_forall subset_closure) H
+  tfae_have 6 → 7 := fun H ↦ H.symm.subset
+  tfae_have 7 → 6 := fun H ↦ EventuallySubset.antisymm (.of_forall subset_closure) H
   tfae_have 7 ↔ 8 := by
     simp_rw [← eventually_mem_set, eventually_nhdsWithin_iff]
     rfl

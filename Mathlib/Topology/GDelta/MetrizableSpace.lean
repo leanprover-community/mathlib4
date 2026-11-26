@@ -8,14 +8,17 @@ module
 public import Mathlib.Topology.Metrizable.Basic
 public import Mathlib.Topology.Separation.GDelta
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Gδ` sets and metrizable spaces
 
 ## Main results
+
 We prove that metrizable spaces are T6.
 We prove that the continuity set of a function from a topological space to a metrizable space is a
 Gδ set.
-
 -/
 
 public section
