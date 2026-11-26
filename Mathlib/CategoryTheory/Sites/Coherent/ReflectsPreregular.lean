@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.EffectiveEpi.Enough
 public import Mathlib.CategoryTheory.Sites.Coherent.RegularTopology
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Reflecting the property of being preregular
 

@@ -13,6 +13,9 @@ public import Mathlib.RingTheory.FinitePresentation
 
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteMultiequalizer
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finitely presentable objects in `Under R` with `R : CommRingCat`
 

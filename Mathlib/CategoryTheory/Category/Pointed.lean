@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Adjunction.Basic
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of pointed types
 

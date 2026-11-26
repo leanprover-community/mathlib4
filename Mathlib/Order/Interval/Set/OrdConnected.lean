@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Order.Antichain
 public import Mathlib.Order.Interval.Set.OrderEmbedding
-public import Mathlib.Order.SetNotation
+
+import Mathlib.Order.SetNotation
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

@@ -11,6 +11,9 @@ public import Mathlib.Order.Lattice.Nat
 
 import Mathlib.Algebra.Order.Group.Nat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite intervals of multisets
 

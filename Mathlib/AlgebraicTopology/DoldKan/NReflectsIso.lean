@@ -10,6 +10,9 @@ public import Mathlib.AlgebraicTopology.DoldKan.FunctorN
 public import Mathlib.CategoryTheory.Idempotents.HomologicalComplex
 public import Mathlib.CategoryTheory.Idempotents.KaroubiKaroubi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # N₁ and N₂ reflect isomorphisms
 

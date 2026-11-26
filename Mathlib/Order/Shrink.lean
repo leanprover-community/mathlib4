@@ -8,6 +8,9 @@ module
 public import Mathlib.Logic.Small.Defs
 public import Mathlib.Order.SuccPred.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Order instances on Shrink
 

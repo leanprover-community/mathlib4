@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
 public import Mathlib.CategoryTheory.MorphismProperty.Comma
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pairs of simplicial sets
 

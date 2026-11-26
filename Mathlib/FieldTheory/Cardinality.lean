@@ -13,6 +13,9 @@ import Mathlib.Algebra.MonoidAlgebra.Cardinal
 import Mathlib.Data.Rat.Encodable
 import Mathlib.FieldTheory.Finite.GaloisField
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cardinality of Fields
 

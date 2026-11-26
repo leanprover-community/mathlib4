@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
 
 import Mathlib.Algebra.Polynomial.Monic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integral elements of ℂ
 

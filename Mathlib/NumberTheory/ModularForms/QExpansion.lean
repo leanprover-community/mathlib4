@@ -52,7 +52,7 @@ and bounded at infinity.
   the present file does not import Fourier theory.
 -/
 
-assert_not_exists fourierCoeffOn -- guard against import creep
+assert_not_exists AddCircle.fourierCoeffOn -- guard against import creep
 
 @[expose] public noncomputable section
 

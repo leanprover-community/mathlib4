@@ -101,7 +101,7 @@ instance rTensor_nontrivial
       Submodule.mem_annihilator_span_singleton, I] using hr
   have injective_inc : Function.Injective inc := LinearMap.ker_eq_bot.1 <| eq_bot_iff.2 <| by
     intro r hr
-    induction r using Quotient.inductionOn' with | h r =>
+    induction r using Quotient.inductionOn with | h r =>
     simpa only [Submodule.Quotient.mk''_eq_mk, Submodule.mem_bot, Submodule.Quotient.mk_eq_zero,
       Submodule.mem_annihilator_span_singleton, LinearMap.mem_ker, Submodule.liftQ_apply,
       LinearMap.flip_apply, LinearMap.lsmul_apply, I, inc] using hr
@@ -399,6 +399,25 @@ lemma lTensor_surjective_iff_surjective [Module.FaithfullyFlat R M] :
 lemma lTensor_bijective_iff_bijective [Module.FaithfullyFlat R M] :
     Function.Bijective (f.lTensor M) ↔ Function.Bijective f := by
   simp [Function.Bijective]
+
+@[simp] lemma _root_.LinearMap.baseChange_injective_iff {A : Type*} [Ring A] [Algebra R A]
+    [FaithfullyFlat R A] {f : M →ₗ[R] N} :
+    Function.Injective (f.baseChange A) ↔ Function.Injective f :=
+  lTensor_injective_iff_injective R A f
+
+@[simp] lemma _root_.LinearMap.baseChange_surjective_iff {A : Type*} [Ring A] [Algebra R A]
+    [FaithfullyFlat R A] {f : M →ₗ[R] N} :
+    Function.Surjective (f.baseChange A) ↔ Function.Surjective f :=
+  lTensor_surjective_iff_surjective R A f
+
+@[simp] lemma _root_.LinearMap.baseChange_bijective_iff {A : Type*} [Ring A] [Algebra R A]
+    [FaithfullyFlat R A] {f : M →ₗ[R] N} :
+    Function.Bijective (f.baseChange A) ↔ Function.Bijective f :=
+  lTensor_bijective_iff_bijective R A f
+
+@[simp] lemma _root_.LinearMap.isUnit_baseChange_iff {A : Type*} [Ring A] [Algebra R A]
+    [FaithfullyFlat R A] {f : M →ₗ[R] M} : IsUnit (f.baseChange A) ↔ IsUnit f := by
+  simp [End.isUnit_iff]
 
 end
 

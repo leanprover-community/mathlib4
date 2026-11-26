@@ -37,12 +37,13 @@ to interact with the actual construction, the mere existence of the equivalence 
 triangle should generally be sufficient.
 
 ## Main results
+
 * `overEquivPresheafCostructuredArrow`:
   the equivalence `Over A ≌ (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v`
 * `CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow`: the natural isomorphism
   `CostructuredArrow.toOver yoneda A ⋙ (overEquivPresheafCostructuredArrow A).functor ≅ yoneda`
 
-## Implementation details
+## Implementation notes
 
 The proof needs to introduce "correction terms" in various places in order to overcome DTT issues,
 and these need to be canceled against each other when appropriate. It is important to deal with
@@ -53,13 +54,16 @@ leads to manageable goals containing only a small number of correction terms. Ge
 the form `F.map (eqToHom _)` for these correction terms and try to push them as far outside as
 possible.
 
-## Future work
+## TODO
+
 * If needed, it should be possible to show that the equivalence is natural in `A`.
 
 ## References
+
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Lemma 1.4.12
 
 ## Tags
+
 presheaf, over category, coyoneda
 -/
 

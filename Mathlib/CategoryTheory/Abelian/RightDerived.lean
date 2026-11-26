@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Abelian.Injective.Resolution
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Right-derived functors
 
@@ -28,6 +31,7 @@ natural transformations between the original additive functors,
 and show how to compute the components.
 
 ## Main results
+
 * `Functor.isZero_rightDerived_obj_injective_succ`: injective objects have no higher
   right derived functor.
 * `NatTrans.rightDerived`: the natural transformation between right derived functors
@@ -150,7 +154,6 @@ lemma Functor.isZero_rightDerived_obj_injective_succ
   erw [← HomologicalComplex.exactAt_iff_isZero_homology]
   exact ShortComplex.exact_of_isZero_X₂ _ (F.map_isZero (by apply isZero_zero))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- We can compute a right derived functor on a morphism using a descent of that morphism
 to a cochain map between chosen injective resolutions.
 -/
@@ -246,7 +249,6 @@ lemma rightDerived_app_eq
     ((NatTrans.mapHomologicalComplex α (ComplexShape.up ℕ)).app P.cocomplex)]
   simp only [Functor.comp_map, Iso.hom_inv_id_app_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `P : InjectiveResolution X` and `F` is an additive functor, this is
 the canonical morphism from `F.obj X` to the cycles in degree `0` of
 `(F.mapHomologicalComplex _).obj P.cocomplex`. -/
@@ -265,7 +267,6 @@ lemma toRightDerivedZero'_comp_iCycles {C} [Category* C] [Abelian C] {X : C}
       HomologicalComplex.iCycles _ _ = F.map (P.ι.f 0) := by
   simp [toRightDerivedZero']
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma toRightDerivedZero'_naturality {C} [Category* C] [Abelian C] {X Y : C} (f : X ⟶ Y)
     (P : InjectiveResolution X) (Q : InjectiveResolution Y)

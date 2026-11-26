@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Objects that are local with respect to a property of morphisms
 

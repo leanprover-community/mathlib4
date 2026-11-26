@@ -8,6 +8,9 @@ module
 public meta import Mathlib.Tactic.Inclusion.Core.Expr
 public meta import Mathlib.Tactic.Inclusion.Core.Extensions
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Constructing inclusions
 

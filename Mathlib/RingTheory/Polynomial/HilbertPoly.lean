@@ -14,6 +14,9 @@ import Mathlib.Algebra.Polynomial.Eval.SMul
 import Mathlib.Order.Interval.Set.Infinite
 import Mathlib.Tactic.FieldSimp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Hilbert polynomials
 

@@ -9,6 +9,9 @@ public import Mathlib.AlgebraicTopology.ExtraDegeneracy
 
 import Mathlib.Algebra.Module.BigOperators
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The alternating constant complex
 

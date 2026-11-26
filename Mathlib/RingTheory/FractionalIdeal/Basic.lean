@@ -5,8 +5,9 @@ Authors: Anne Baanen, Filippo A. E. Nuccio
 -/
 module
 
-public import Mathlib.RingTheory.Localization.Integer
 public import Mathlib.RingTheory.Localization.Submodule
+
+import Mathlib.RingTheory.Localization.Integer
 
 /-!
 # Fractional ideals
@@ -14,6 +15,7 @@ public import Mathlib.RingTheory.Localization.Submodule
 This file defines fractional ideals of an integral domain and proves basic facts about them.
 
 ## Main definitions
+
 Let `S` be a submonoid of an integral domain `R` and `P` the localization of `R` at `S`.
 * `IsFractional` defines which `R`-submodules of `P` are fractional ideals
 * `FractionalIdeal S P` is the type of fractional ideals in `P`

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Constructor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functorial resolutions give derivability structures
 

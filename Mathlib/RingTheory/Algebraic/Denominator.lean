@@ -6,7 +6,8 @@ Authors: Michail Karatarakis
 module
 
 public import Mathlib.RingTheory.Algebraic.Integral
-public import Mathlib.RingTheory.Ideal.Colon
+
+import Mathlib.RingTheory.Ideal.Colon
 
 /-!
 # Denominators of elements of an algebra

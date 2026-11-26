@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
 public import Mathlib.CategoryTheory.SmallObject.Iteration.Nonempty
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The transfinite iteration of a successor structure
 

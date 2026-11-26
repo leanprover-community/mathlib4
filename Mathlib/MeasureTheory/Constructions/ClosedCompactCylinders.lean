@@ -6,8 +6,9 @@ Authors: Rémy Degenne, Peter Pfaffelhuber
 module
 
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-public import Mathlib.MeasureTheory.Constructions.Cylinders
 public import Mathlib.Topology.Compactness.CompactSystem
+
+import Mathlib.MeasureTheory.Constructions.Cylinders
 
 /-! # Cylinders with closed compact bases
 

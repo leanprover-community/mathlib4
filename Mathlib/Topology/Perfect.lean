@@ -32,7 +32,7 @@ including a version of the Cantor-Bendixson Theorem.
   A closed set in a second countable space can be written as the union of a countable set and a
   perfect set.
 
-## Implementation Notes
+## Implementation notes
 
 We do not require perfect sets to be nonempty.
 

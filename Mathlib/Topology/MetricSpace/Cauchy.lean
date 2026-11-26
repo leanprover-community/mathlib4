@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.EMetricSpace.Basic
 public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cauchy sequences in (pseudo-)metric spaces
 
@@ -110,7 +113,7 @@ theorem cauchySeq_bdd {u : ℕ → α} (hu : CauchySeq u) : ∃ R > 0, ∀ m n, 
   rsuffices ⟨R, R0, H⟩ : ∃ R > 0, ∀ n, dist (u n) (u N) < R
   · exact ⟨_, add_pos R0 R0, fun m n =>
       lt_of_le_of_lt (dist_triangle_right _ _ _) (add_lt_add (H m) (H n))⟩
-  let R := Finset.sup (Finset.range N) fun n => nndist (u n) (u N)
+  let R := Finset.sup (Finset.range N) fun n => nnDist (u n) (u N)
   refine ⟨↑R + 1, add_pos_of_nonneg_of_pos R.property zero_lt_one, fun n => ?_⟩
   rcases le_or_gt N n with h | h
   · exact lt_of_lt_of_le (hN _ h) (le_add_of_nonneg_left R.property)
