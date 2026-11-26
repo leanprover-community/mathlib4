@@ -14,7 +14,7 @@ Hardy's `Z` function is the real-valued function on `ℝ` whose zeros are exactl
 the zeros of `ζ` on the critical line. It is defined here by dividing the completed zeta
 function `Λ` on the critical line by the modulus of its archimedean factor:
 
-$$ Z(t) = \frac{\Lambda(1/2 + it)}{|\Gamma_{\mathbb{R}}(1/2 + it)|}. $$
+\[ Z(t) = \frac{\Lambda(1/2 + it)}{|\Gamma_{\mathbb{R}}(1/2 + it)|}. \]
 
 The numerator is real, by `completedRiemannZeta_conj` together with the functional equation
 `completedRiemannZeta_one_sub`, and the denominator is a positive real, so `Z` is real-valued.
