@@ -6,16 +6,17 @@ Authors: Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.MeasureTheory.Measure.Restrict
-public import Mathlib.Topology.DiscreteSubset
+
+import Mathlib.MeasureTheory.Measure.Interval
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Measures having value zero on singletons
 
-## TODO
-
-Add a `NoAtoms` class defined as
-`∀ s, MeasurableSet s → 0 < μ s → ∃ t ⊆ s, MeasurableSet t ∧ 0 < μ t ∧ μ t < μ s`.
-This implies `NullSingletonClass` but the converse is not true.
+See `Mathlib/MeasureTheory/Measure/Typeclasses/NoAtoms.lean` for the stronger notion of a measure
+without atoms, `MeasureTheory.NoAtoms`.
 -/
 
 public section
@@ -29,9 +30,6 @@ variable {α : Type*} {m0 : MeasurableSpace α} {μ : Measure α} {s : Set α}
 /-- Measure `μ` has value zero on singletons. -/
 class NullSingletonClass {m0 : MeasurableSpace α} (μ : Measure α) : Prop where
   measure_singleton : ∀ x, μ {x} = 0
-
-@[deprecated (since := "2026-06-09")]
-alias NoAtoms := NullSingletonClass
 
 export MeasureTheory.NullSingletonClass (measure_singleton)
 
@@ -94,7 +92,7 @@ theorem exists_accPt_of_nullSingletonClass {X : Type*} [TopologicalSpace X] [Mea
     {μ : Measure X} [NullSingletonClass μ] {E : Set X} [SeparableSpace E] (hE : 0 < μ E) :
     ∃ x, AccPt x (𝓟 E) := by
   by_contra! h
-  haveI : DiscreteTopology E := discreteTopology_of_noAccPts fun x _ => h x
+  have : DiscreteTopology E := discreteTopology_of_noAccPts fun x _ => h x
   exact hE.ne' <| (Set.countable_coe_iff.mp <| separableSpace_iff_countable.mp ‹_›).measure_zero μ
 
 @[deprecated (since := "2026-06-09")]
@@ -154,7 +152,7 @@ theorem restrict_Ico_eq_restrict_Ioc : μ.restrict (Ico a b) = μ.restrict (Ioc 
 
 end
 
-open Interval
+open scoped Interval
 
 open scoped Interval in
 theorem uIoc_ae_eq_interval [LinearOrder α] {a b : α} : Ι a b =ᵐ[μ] [[a, b]] :=

@@ -6,7 +6,11 @@ Authors: Robert Y. Lewis, Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Normed.Field.Basic
-public import Mathlib.Topology.MetricSpace.Cauchy
+
+import Mathlib.Topology.MetricSpace.Cauchy
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Completeness in terms of `Cauchy` filters vs `isCauSeq` sequences
@@ -20,7 +24,9 @@ public section
 
 universe u v
 
-open Set Filter Topology
+open Set Filter
+
+open scoped Topology
 
 variable {β : Type v}
 
@@ -91,9 +97,9 @@ instance (priority := 100) completeSpace_of_cauSeq_isComplete [CauSeq.IsComplete
   apply complete_of_cauchySeq_tendsto
   intro u hu
   have C : IsCauSeq norm u := isCauSeq_iff_cauchySeq.2 hu
-  exists CauSeq.lim ⟨u, C⟩
+  exists (CauSeq.mk u C).lim
   rw [Metric.tendsto_atTop]
   intro ε εpos
-  obtain ⟨N, hN⟩ := (CauSeq.equiv_lim ⟨u, C⟩) _ εpos
+  obtain ⟨N, hN⟩ := (CauSeq.mk u C).equiv_lim _ εpos
   exists N
-  simpa [dist_eq_norm] using hN
+  simpa [dist_eq_norm]

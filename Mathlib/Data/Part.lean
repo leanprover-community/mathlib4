@@ -5,9 +5,9 @@ Authors: Mario Carneiro, Jeremy Avigad, Simon Hudon
 -/
 module
 
-public import Mathlib.Algebra.Notation.Defs
+public meta import Aesop
 public import Mathlib.Data.Set.Subsingleton
-public import Mathlib.Logic.Equiv.Defs
+public import Mathlib.Tactic.ToAdditive
 
 /-!
 # Partial values of a type
@@ -22,6 +22,7 @@ translate back and forth between a partial value with a decidable domain and an 
 `Option α` and `Part α` are classically equivalent. In general, `Part α` is bigger than `Option α`.
 
 ## Main declarations
+
 `Option`-like declarations:
 * `Part.none`: The partial value whose domain is `False`.
 * `Part.some a`: The partial value whose domain is `True` and whose value is `a`.
@@ -42,6 +43,7 @@ Other:
 * `Part.unwrap`: Gets the value of a partial value regardless of its domain. Unsound.
 
 ## Notation
+
 For `a : α`, `o : Part α`, `a ∈ o` means that `o` is defined and equal to `a`. Formally, it means
 `o.Dom` and `o.get _ = a`.
 -/
@@ -99,6 +101,7 @@ theorem mem_eq (a : α) (o : Part α) : (a ∈ o) = ∃ h, o.get h = a :=
 theorem dom_iff_mem : ∀ {o : Part α}, o.Dom ↔ ∃ y, y ∈ o
   | ⟨_, f⟩ => ⟨fun h => ⟨f h, h, rfl⟩, fun ⟨_, h, rfl⟩ => h⟩
 
+@[simp, grind →]
 theorem get_mem {o : Part α} (h) : get o h ∈ o :=
   ⟨_, rfl⟩
 
@@ -131,9 +134,11 @@ def some (a : α) : Part α :=
 theorem some_dom (a : α) : (some a).Dom :=
   trivial
 
+@[grind <=]
 theorem mem_unique : ∀ {a b : α} {o : Part α}, a ∈ o → b ∈ o → a = b
   | _, _, ⟨_, _⟩, ⟨_, rfl⟩, ⟨_, rfl⟩ => rfl
 
+@[grind <=]
 theorem mem_right_unique : ∀ {a : α} {o p : Part α}, a ∈ o → a ∈ p → o = p
   | _, _, _, ⟨ho, _⟩, ⟨hp, _⟩ => ext' (iff_of_true ho hp) (by simp [*])
 
@@ -229,11 +234,11 @@ theorem eq_of_mem {a b : Part α} (ha : a.Dom) (hb : a.get ha ∈ b) : a = b := 
 
 @[simp]
 theorem none_toOption [Decidable (@none α).Dom] : (none : Part α).toOption = Option.none :=
-  dif_neg id
+  dite_eq_right id
 
 @[simp]
 theorem some_toOption (a : α) [Decidable (some a).Dom] : (some a).toOption = Option.some a :=
-  dif_pos trivial
+  dite_eq_left trivial
 
 instance noneDecidable : Decidable (@none α).Dom :=
   instDecidableFalse
@@ -248,11 +253,11 @@ def getOrElse (a : Part α) [Decidable a.Dom] (d : α) :=
 
 theorem getOrElse_of_dom (a : Part α) (h : a.Dom) [Decidable a.Dom] (d : α) :
     getOrElse a d = a.get h :=
-  dif_pos h
+  dite_eq_left h
 
 theorem getOrElse_of_not_dom (a : Part α) (h : ¬a.Dom) [Decidable a.Dom] (d : α) :
     getOrElse a d = d :=
-  dif_neg h
+  dite_eq_right h
 
 @[simp]
 theorem getOrElse_none (d : α) [Decidable (none : Part α).Dom] : getOrElse none d = d :=
@@ -276,7 +281,7 @@ theorem toOption_eq_some_iff {o : Part α} [Decidable o.Dom] {a : α} :
   rw [← Option.mem_def, mem_toOption]
 
 protected theorem Dom.toOption {o : Part α} [Decidable o.Dom] (h : o.Dom) : o.toOption = o.get h :=
-  dif_pos h
+  dite_eq_left h
 
 theorem toOption_eq_none_iff {a : Part α} [Decidable a.Dom] : a.toOption = Option.none ↔ ¬a.Dom :=
   Ne.dite_eq_right_iff fun _ => Option.some_ne_none _
@@ -503,10 +508,10 @@ instance : LawfulMonad
   map_const := by simp [Functor.mapConst, Functor.map]
   --Porting TODO : In Lean3 these were automatic by a tactic
   seqLeft_eq x y := ext'
-    (by simp [SeqLeft.seqLeft, Part.bind, assert, Seq.seq, const, (· <$> ·), and_comm])
+    (by simp [SeqLeft.seqLeft, Part.bind, assert, Seq.seq, (· <$> ·), and_comm])
     (fun _ _ => rfl)
   seqRight_eq x y := ext'
-    (by simp [SeqRight.seqRight, Part.bind, assert, Seq.seq, const, (· <$> ·)])
+    (by simp [SeqRight.seqRight, Part.bind, assert, Seq.seq, (· <$> ·)])
     (fun _ _ => rfl)
   pure_seq x y := ext'
     (by simp [Seq.seq, Part.bind, assert, (· <$> ·), pure])

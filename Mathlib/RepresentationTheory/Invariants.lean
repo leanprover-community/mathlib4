@@ -5,9 +5,11 @@ Authors: Antoine Labelle
 -/
 module
 
-public import Mathlib.RepresentationTheory.Intertwining
 public import Mathlib.RepresentationTheory.FDRep
 public import Mathlib.RepresentationTheory.Rep.Res
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Subspace of invariants a group representation
@@ -40,20 +42,20 @@ noncomputable def average : k[G] := ⅟(Fintype.card G : k) • ∑ g : G, of k 
 
 /-- `average k G` is invariant under left multiplication by elements of `G`. -/
 @[simp]
-theorem mul_average_left (g : G) : ↑(Finsupp.single g 1) * average k G = average k G := by
+theorem mul_average_left (g : G) : .single g 1 * average k G = average k G := by
   simp only [mul_one, Finset.mul_sum, Algebra.mul_smul_comm, average, MonoidAlgebra.of_apply,
     MonoidAlgebra.single_mul_single]
-  set f : G → k[G] := fun x => Finsupp.single x 1
+  set f : G → k[G] := fun x => .single x 1
   change ⅟(Fintype.card G : k) • ∑ x : G, f (g * x) = ⅟(Fintype.card G : k) • ∑ x : G, f x
   rw [Function.Bijective.sum_comp (Group.mulLeft_bijective g) _]
 
 /-- `average k G` is invariant under right multiplication by elements of `G`.
 -/
 @[simp]
-theorem mul_average_right (g : G) : average k G * ↑(Finsupp.single g 1) = average k G := by
+theorem mul_average_right (g : G) : average k G * .single g 1 = average k G := by
   simp only [mul_one, Finset.sum_mul, Algebra.smul_mul_assoc, average, MonoidAlgebra.of_apply,
     MonoidAlgebra.single_mul_single]
-  set f : G → k[G] := fun x => Finsupp.single x 1
+  set f : G → k[G] := fun x => .single x 1
   change ⅟(Fintype.card G : k) • ∑ x : G, f (x * g) = ⅟(Fintype.card G : k) • ∑ x : G, f x
   rw [Function.Bijective.sum_comp (Group.mulRight_bijective g) _]
 
@@ -72,7 +74,7 @@ variable (ρ : Representation k G V) (σ : Representation k G W)
 /-- The subspace of invariants, consisting of the vectors fixed by all elements of `G`.
 -/
 def invariants : Submodule k V where
-  carrier := setOf fun v => ∀ g : G, ρ g v = v
+  carrier := Set.ofPred fun v => ∀ g : G, ρ g v = v
   zero_mem' g := by simp only [map_zero]
   add_mem' hv hw g := by simp only [hv g, hw g, map_add]
   smul_mem' r v hv g := by simp only [hv g, map_smulₛₗ, RingHom.id_apply]
@@ -130,7 +132,7 @@ noncomputable def averageMap : V →ₗ[k] V :=
 /-- The `averageMap` sends elements of `V` to the subspace of invariants.
 -/
 theorem averageMap_invariant (v : V) : averageMap ρ v ∈ invariants ρ := fun g => by
-  rw [averageMap, ← asAlgebraHom_single_one, ← Module.End.mul_apply, ← map_mul (asAlgebraHom ρ),
+  rw [averageMap, ← asAlgebraHom_single_one, ← mul_apply_eq_comp, ← map_mul (asAlgebraHom ρ),
     mul_average_left]
 
 /-- The `averageMap` acts as the identity on the subspace of invariants.
@@ -202,10 +204,10 @@ variable (X Y) in
 homomorphisms from `X` to `Y`. -/
 @[simps]
 def invariantsEquivRepHom : (linHom X.ρ Y.ρ).invariants ≃ₗ[k] X ⟶ Y where
-  toFun f := Rep.ofHom ⟨f.val, fun g ↦ (mem_invariants_iff_comm _ g).1 <| f.2 g⟩
+  toFun f := Rep.ofHom ⟨f.val, fun g ↦ (mem_invariants_iff_comm _ g).1 <| f.property g⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-  invFun f := ⟨f.hom, fun g => (mem_invariants_iff_comm _ g).2 <| f.hom.2 g⟩
+  invFun f := ⟨f.hom, fun g => (mem_invariants_iff_comm _ g).2 <| f.hom.isIntertwining' g⟩
 
 end Rep
 
@@ -248,7 +250,7 @@ variable (k G)
 /-- The functor sending a representation to its submodule of invariants. -/
 @[implicit_reducible, simps! obj_carrier map_hom]
 noncomputable def invariantsFunctor : Rep.{w} k G ⥤ ModuleCat k where
-  obj A := ModuleCat.of k A.ρ.invariants
+  obj A := ↧A.ρ.invariants
   map {A B} f := ModuleCat.ofHom <| (f.hom ∘ₗ A.ρ.invariants.subtype).codRestrict
     B.ρ.invariants fun ⟨c, hc⟩ g => by
       have := (hom_comm_apply f g c).symm
@@ -261,19 +263,20 @@ instance : (invariantsFunctor k G).Linear k where
 variable {G} in
 /-- Given a normal subgroup S ≤ G, this is the functor sending a `G`-representation `A` to the
 `G ⧸ S`-representation it induces on `A^S`. -/
+@[implicit_reducible, simps]
 noncomputable def quotientToInvariantsFunctor (S : Subgroup G) [S.Normal] :
     Rep.{w} k G ⥤ Rep k (G ⧸ S) where
   obj X := X.quotientToInvariants S
   map {X Y} f := Rep.ofHom ⟨((invariantsFunctor k S).map ((Rep.resFunctor S.subtype).map f)).hom,
     fun g ↦ QuotientGroup.induction_on g fun g ↦ by ext; simp [hom_comm_apply]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction between the functor equipping a module with the trivial representation, and
 the functor sending a representation to its submodule of invariants. -/
 @[simps]
 noncomputable def invariantsAdjunction : trivialFunctor k G ⊣ invariantsFunctor k G where
   unit := { app _ := ModuleCat.ofHom <| LinearMap.id.codRestrict _ <| by simp [trivialFunctor] }
-  counit := { app X := Rep.ofHom ⟨Submodule.subtype _, fun g ↦ by ext x; exact (x.2 g).symm⟩ }
+  counit :=
+    { app X := Rep.ofHom ⟨Submodule.subtype _, fun g ↦ by ext x; exact (x.property g).symm⟩ }
 
 @[simp]
 lemma invariantsAdjunction_homEquiv_apply_hom

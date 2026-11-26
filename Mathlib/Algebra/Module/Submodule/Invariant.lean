@@ -5,11 +5,13 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Module.Equiv.Basic
 public import Mathlib.Algebra.Module.Submodule.Map
 public import Mathlib.LinearAlgebra.Span.Defs
 public import Mathlib.Order.Sublattice
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The lattice of invariant submodules
@@ -19,7 +21,6 @@ a module. Its utility stems primarily from those occasions on which we wish to t
 lattice structure of invariant submodules.
 
 See also `Mathlib/Algebra/Polynomial/Module/AEval.lean`.
-
 -/
 
 @[expose] public section
@@ -38,7 +39,7 @@ def invtSubmodule : Sublattice (Submodule R M) where
     ⟨le_trans hp <| Submodule.comap_mono le_sup_left,
     le_trans hq <| Submodule.comap_mono le_sup_right⟩
   infClosed' p hp q hq := by
-    simp only [Set.mem_setOf_eq, Submodule.comap_inf, le_inf_iff]
+    simp only [Set.mem_ofPred_eq, Submodule.comap_inf, le_inf_iff]
     exact ⟨inf_le_of_left_le hp, inf_le_of_right_le hq⟩
 
 lemma mem_invtSubmodule {p : Submodule R M} :
@@ -68,6 +69,10 @@ lemma invtSubmodule_inf_invtSubmodule_le_invtSubmodule_add :
     f.invtSubmodule ⊓ g.invtSubmodule ≤ (f + g).invtSubmodule :=
   fun p ⟨hfp, hgp⟩ _ hx ↦ p.add_mem (hfp hx) (hgp hx)
 
+protected lemma add {p} {f g : End R M} (hf : p ∈ f.invtSubmodule) (hg : p ∈ g.invtSubmodule) :
+    p ∈ invtSubmodule (f + g) :=
+  invtSubmodule_inf_invtSubmodule_le_invtSubmodule_add _ _ ⟨hf, hg⟩
+
 section CommRing
 
 variable {R S : Type*} [Semiring R] [Semiring S] [Module R M] [Module S M]
@@ -78,8 +83,8 @@ lemma invtSubmodule_le_invtSubmodule_smul (c : S) : f.invtSubmodule ≤ (c • f
 
 @[simp]
 lemma invtSubmodule_smul (c : Sˣ) : (c • f).invtSubmodule = f.invtSubmodule := by
-  apply le_antisymm ?_ (invtSubmodule_le_invtSubmodule_smul f c.1)
-  grw [invtSubmodule_le_invtSubmodule_smul (c.1 • f) c⁻¹.1]
+  apply le_antisymm ?_ (invtSubmodule_le_invtSubmodule_smul f c.val)
+  grw [invtSubmodule_le_invtSubmodule_smul (c.val • f) c⁻¹.val]
   simp [smul_smul]
 
 end CommRing
@@ -99,10 +104,12 @@ lemma sup_mem {p q : Submodule R M} (hp : p ∈ f.invtSubmodule) (hq : q ∈ f.i
 variable (f)
 
 @[simp]
-protected lemma top_mem : ⊤ ∈ f.invtSubmodule := by simp [invtSubmodule]
+protected lemma top_mem : ⊤ ∈ f.invtSubmodule :=
+  (mem_invtSubmodule _).mpr le_top
 
 @[simp]
-protected lemma bot_mem : ⊥ ∈ f.invtSubmodule := by simp [invtSubmodule]
+protected lemma bot_mem : ⊥ ∈ f.invtSubmodule :=
+  (mem_invtSubmodule _).mpr bot_le
 
 instance : BoundedOrder (f.invtSubmodule) where
   top := ⟨⊤, invtSubmodule.top_mem f⟩
@@ -113,12 +120,12 @@ instance : BoundedOrder (f.invtSubmodule) where
 @[simp]
 protected lemma zero :
     (0 : End R M).invtSubmodule = ⊤ :=
-  eq_top_iff.mpr fun x ↦ by simp [invtSubmodule]
+  eq_top_iff.mpr fun x ↦ by simp [mem_invtSubmodule]
 
 @[simp]
 protected lemma id :
     invtSubmodule (LinearMap.id : End R M) = ⊤ :=
-  eq_top_iff.mpr fun x ↦ by simp [invtSubmodule]
+  eq_top_iff.mpr fun x ↦ by simp [mem_invtSubmodule]
 
 @[simp]
 protected lemma one :
@@ -127,11 +134,11 @@ protected lemma one :
 
 protected lemma mk_eq_bot_iff {p : Submodule R M} (hp : p ∈ f.invtSubmodule) :
     (⟨p, hp⟩ : f.invtSubmodule) = ⊥ ↔ p = ⊥ :=
-  Subtype.mk_eq_bot_iff (by simp [invtSubmodule]) _
+  Subtype.mk_eq_bot_iff (by simp [mem_invtSubmodule]) _
 
 protected lemma mk_eq_top_iff {p : Submodule R M} (hp : p ∈ f.invtSubmodule) :
     (⟨p, hp⟩ : f.invtSubmodule) = ⊤ ↔ p = ⊤ :=
-  Subtype.mk_eq_top_iff (by simp [invtSubmodule]) _
+  Subtype.mk_eq_top_iff (by simp [mem_invtSubmodule]) _
 
 @[simp]
 protected lemma disjoint_mk_iff {p q : Submodule R M}
@@ -175,14 +182,16 @@ lemma map_subtype_mem_of_mem_invtSubmodule {p : Submodule R M} (hp : p ∈ f.inv
     {q : Submodule R p} (hq : q ∈ invtSubmodule (LinearMap.restrict f hp)) :
     Submodule.map p.subtype q ∈ f.invtSubmodule := by
   rintro - ⟨⟨x, hx⟩, hx', rfl⟩
-  specialize hq hx'
-  rw [Submodule.mem_comap, LinearMap.restrict_apply] at hq
-  simpa [hq] using hp hx
+  exact ⟨_, hq hx', rfl⟩
 
 protected lemma comp {p : Submodule R M} {g : End R M}
     (hf : p ∈ f.invtSubmodule) (hg : p ∈ g.invtSubmodule) :
     p ∈ invtSubmodule (f ∘ₗ g) :=
   fun _ hx ↦ hf (hg hx)
+
+protected lemma mul {p : Submodule R M} {g : End R M}
+    (hf : p ∈ f.invtSubmodule) (hg : p ∈ g.invtSubmodule) :
+    p ∈ invtSubmodule (f * g) := fun _ hx ↦ hf (hg hx)
 
 @[simp] lemma _root_.LinearEquiv.map_mem_invtSubmodule_conj_iff {R M N : Type*} [CommSemiring R]
     [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N] {f : End R M}

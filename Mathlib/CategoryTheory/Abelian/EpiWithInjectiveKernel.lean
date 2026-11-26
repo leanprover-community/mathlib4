@@ -6,9 +6,10 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
-public import Mathlib.CategoryTheory.MorphismProperty.Retract
-public import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
 public import Mathlib.CategoryTheory.Preadditive.Injective.LiftingProperties
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Epimorphisms with an injective kernel
@@ -19,7 +20,6 @@ abelian category. We show that this property of morphisms is multiplicative.
 This shall be used in the file `Mathlib/Algebra/Homology/Factorizations/Basic.lean` in
 order to define morphisms of cochain complexes which satisfy this property
 degreewise.
-
 -/
 
 @[expose] public section
@@ -99,7 +99,6 @@ instance : (epiWithInjectiveKernel : MorphismProperty C).IsMultiplicative where
               BinaryBicone.inl_snd_assoc, BinaryBicone.inr_snd_assoc, zero_add]
             abel }
 
-set_option backward.defeqAttrib.useBackward true in
 instance : (epiWithInjectiveKernel (C := C)).IsStableUnderRetracts where
   of_retract := by
     rintro X' Y' X Y f' f r ⟨_, hf⟩
@@ -108,7 +107,7 @@ instance : (epiWithInjectiveKernel (C := C)).IsStableUnderRetracts where
     let r' : Retract (kernel f') (kernel f) :=
       { i := kernel.map _ _ r.i.left r.i.right (Arrow.w r.i).symm
         r := kernel.map _ _ r.r.left r.r.right (Arrow.w r.r).symm
-        retract := by ext; simp [dsimp% r.left.retract] }
+        retract := by ext; simp }
     exact ⟨inferInstance, r'.injective⟩
 
 lemma epiWithInjectiveKernel.hasLiftingProperty

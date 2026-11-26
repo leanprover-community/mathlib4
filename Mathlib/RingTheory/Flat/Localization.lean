@@ -8,12 +8,16 @@ module
 public import Mathlib.RingTheory.Flat.Stability
 public import Mathlib.RingTheory.LocalProperties.Exactness
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Flatness and localization
 
 In this file we show that localizations are flat, and flatness is a local property.
 
-## Main result
+## Main results
+
 * `IsLocalization.flat`: a localization of a commutative ring is flat over it.
 * `Module.flat_iff_of_isLocalization` : Let `Rₚ` a localization of a commutative ring `R`
   and `M` be a module over `Rₚ`. Then `M` is flat over `R` if and only if `M` is flat over `Rₚ`.
@@ -32,13 +36,14 @@ variable {R : Type*} (S : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S]
 variable (p : Submonoid R) [IsLocalization p S]
 variable (M : Type*) [AddCommMonoid M] [Module R M] [Module S M] [IsScalarTower R S M]
 
+set_option backward.isDefEq.respectTransparency.types false in
 include p in
 theorem IsLocalization.flat : Module.Flat R S := by
   refine Module.Flat.iff_lTensor_injectiveₛ.mpr fun P _ _ N ↦ ?_
   have h := ((range N.subtype).isLocalizedModule S p (TensorProduct.mk R S P 1)).isBaseChange _ S
   let e := (LinearEquiv.ofInjective _ Subtype.val_injective).lTensor S ≪≫ₗ h.equiv.restrictScalars R
   have : N.subtype.lTensor S = Submodule.subtype _ ∘ₗ e.toLinearMap := by
-    ext; change _ = (h.equiv _).1; simp [h.equiv_tmul, TensorProduct.smul_tmul']
+    ext; change _ = (h.equiv _).val; simp [h.equiv_tmul, TensorProduct.smul_tmul']
   simpa [this] using! e.injective
 
 instance Localization.flat [Module.Flat R S] (p : Submonoid S) : Module.Flat R (Localization p) :=
@@ -83,7 +88,7 @@ variable (s : Set S) (spn : Ideal.span s = ⊤)
   [∀ r : s, Module S (Mₛ r)]
   [∀ r : s, IsScalarTower R S (Mₛ r)]
   (g : ∀ r : s, M →ₗ[S] Mₛ r)
-  [∀ r : s, IsLocalizedModule.Away r.1 (g r)]
+  [∀ r : s, IsLocalizedModule.Away r.val (g r)]
 include spn
 
 include g in
@@ -97,7 +102,7 @@ theorem flat_of_isLocalized_span (H : ∀ r : s, Module.Flat R (Mₛ r)) :
   simpa [IsLocalizedModule.map_lTensor] using H r N
 
 theorem flat_of_localized_span
-    (h : ∀ r : s, Flat S (LocalizedModule.Away r.1 M)) :
+    (h : ∀ r : s, Flat S (LocalizedModule.Away r.val M)) :
     Flat S M :=
   flat_of_isLocalized_span _ _ _ spn _ (fun _ ↦ mkLinearMap _ _) h
 
@@ -105,9 +110,9 @@ end Module
 
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
 
-instance [Module.Flat A B] (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime] [P.LiesOver p]
+instance [Module.Flat A B] (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime]
     [Algebra (Localization.AtPrime p) (Localization.AtPrime P)]
-    [Localization.AtPrime.IsLiesOverAlgebra p P] :
+    [IsScalarTower A (Localization.AtPrime p) (Localization.AtPrime P)] :
     Module.Flat (Localization.AtPrime p) (Localization.AtPrime P) := by
   rw [Module.flat_iff_of_isLocalization (Localization.AtPrime p) p.primeCompl]
   exact Module.Flat.trans A B (Localization.AtPrime P)

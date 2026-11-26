@@ -5,10 +5,14 @@ Authors: Yaël Dillies, Sara Rousta
 -/
 module
 
-public import Mathlib.Logic.Equiv.Set
 public import Mathlib.Order.Interval.Set.OrderEmbedding
-public import Mathlib.Order.SetNotation
-public import Mathlib.Order.WellFounded
+
+import Mathlib.Logic.Equiv.Set
+import Mathlib.Order.SetNotation
+import Mathlib.Order.WellFounded
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Properties of unbundled upper/lower sets
@@ -47,7 +51,7 @@ theorem IsUpperSet.compl (hs : IsUpperSet s) : IsLowerSet sᶜ := fun _a _b h hb
 @[to_dual (attr := simp)]
 theorem isUpperSet_compl : IsUpperSet sᶜ ↔ IsLowerSet s :=
   ⟨fun h => by
-    convert! h.compl
+    convert h.compl
     rw [compl_compl], IsLowerSet.compl⟩
 
 @[to_dual]
@@ -118,9 +122,6 @@ section Preorder
 
 variable [Preorder α] [Preorder β] {s : Set α} {p : α → Prop} (a : α)
 
-@[to_dual] theorem isUpperSet_Ici : IsUpperSet (Ici a) := fun _ _ => ge_trans
-@[to_dual] theorem isUpperSet_Ioi : IsUpperSet (Ioi a) := fun _ _ => flip lt_of_lt_of_le
-
 @[to_dual]
 theorem isUpperSet_iff_Ici_subset : IsUpperSet s ↔ ∀ ⦃a⦄, a ∈ s → Ici a ⊆ s := by
   simp [IsUpperSet, subset_def, @forall_comm (_ ∈ s)]
@@ -131,13 +132,9 @@ theorem isUpperSet_iff_Ici_subset : IsUpperSet s ↔ ∀ ⦃a⦄, a ∈ s → Ic
 theorem IsUpperSet.Ioi_subset (h : IsUpperSet s) ⦃a⦄ (ha : a ∈ s) : Ioi a ⊆ s :=
   Ioi_subset_Ici_self.trans <| h.Ici_subset ha
 
+@[to_dual]
 theorem IsUpperSet.ordConnected (h : IsUpperSet s) : s.OrdConnected :=
   ⟨fun _ ha _ _ => Icc_subset_Ici_self.trans <| h.Ici_subset ha⟩
-
--- `to_dual` cannot yet reorder arguments of arguments
-@[to_dual existing]
-theorem IsLowerSet.ordConnected (h : IsLowerSet s) : s.OrdConnected :=
-  ⟨fun _ _ _ hb => Icc_subset_Iic_self.trans <| h.Iic_subset hb⟩
 
 @[to_dual]
 theorem IsUpperSet.preimage (hs : IsUpperSet s) {f : β → α} (hf : Monotone f) :
@@ -170,12 +167,16 @@ theorem Set.antitone_mem : Antitone (· ∈ s) ↔ IsLowerSet s :=
   forall_comm
 
 @[simp]
-theorem isUpperSet_setOf : IsUpperSet { a | p a } ↔ Monotone p :=
+theorem isUpperSet_setOfPred : IsUpperSet { a | p a } ↔ Monotone p :=
   Iff.rfl
 
+@[deprecated (since := "2026-07-09")] alias isUpperSet_setOf := isUpperSet_setOfPred
+
 @[simp]
-theorem isLowerSet_setOf : IsLowerSet { a | p a } ↔ Antitone p :=
+theorem isLowerSet_setOfPred : IsLowerSet { a | p a } ↔ Antitone p :=
   forall_comm
+
+@[deprecated (since := "2026-07-09")] alias isLowerSet_setOf := isLowerSet_setOfPred
 
 @[to_dual]
 lemma IsUpperSet.upperBounds_subset (hs : IsUpperSet s) : s.Nonempty → upperBounds s ⊆ s :=
@@ -211,11 +212,11 @@ theorem IsUpperSet.not_bddAbove (hs : IsUpperSet s) : s.Nonempty → ¬BddAbove 
 
 @[to_dual]
 theorem not_bddAbove_Ici : ¬BddAbove (Ici a) :=
-  (isUpperSet_Ici _).not_bddAbove nonempty_Ici
+  (IsUpperSet.Ici _).not_bddAbove nonempty_Ici
 
 @[to_dual]
 theorem not_bddAbove_Ioi : ¬BddAbove (Ioi a) :=
-  (isUpperSet_Ioi _).not_bddAbove nonempty_Ioi
+  (IsUpperSet.Ioi _).not_bddAbove nonempty_Ioi
 
 end NoMaxOrder
 
@@ -247,8 +248,8 @@ theorem IsUpperSet.total (hs : IsUpperSet s) (ht : IsUpperSet t) : s ⊆ t ∨ t
 theorem IsUpperSet.eq_empty_or_Ici [WellFoundedLT α] (h : IsUpperSet s) :
     s = ∅ ∨ ∃ a, s = Ici a := by
   refine or_iff_not_imp_left.2 fun ha ↦ ?_
-  obtain ⟨a, ha⟩ := Set.nonempty_iff_ne_empty.2 ha
-  exact ⟨_, ext fun b ↦ ⟨wellFounded_lt.min_le, (h · <| wellFounded_lt.min_mem _ ⟨a, ha⟩)⟩⟩
+  obtain ⟨a, ha⟩ := Set.ne_empty_iff_nonempty.1 ha
+  exact ⟨_, ext fun b ↦ ⟨WellFoundedLT.min_le, (h · <| wellFounded_lt.min_mem _ ⟨a, ha⟩)⟩⟩
 
 @[to_dual]
 theorem IsLowerSet.eq_univ_or_Iio [WellFoundedLT α] (h : IsLowerSet s) :

@@ -5,10 +5,12 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.UniformSpace.CompleteSeparated
 public import Mathlib.Topology.EMetricSpace.Lipschitz
-public import Mathlib.Topology.MetricSpace.Basic
 public import Mathlib.Topology.MetricSpace.Bounded
+public import Mathlib.Topology.UniformSpace.CompleteSeparated
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Antilipschitz functions
@@ -39,7 +41,7 @@ def AntilipschitzWith [PseudoEMetricSpace α] [PseudoEMetricSpace β] (K : ℝ�
 
 protected lemma AntilipschitzWith.edist_lt_top [PseudoEMetricSpace α] [PseudoMetricSpace β]
     {K : ℝ≥0} {f : α → β} (h : AntilipschitzWith K f) (x y : α) : edist x y < ⊤ :=
-  (h x y).trans_lt <| ENNReal.mul_lt_top ENNReal.coe_lt_top (edist_lt_top _ _)
+  (h x y).trans_lt <| by finiteness
 
 theorem AntilipschitzWith.edist_ne_top [PseudoEMetricSpace α] [PseudoMetricSpace β] {K : ℝ≥0}
     {f : α → β} (h : AntilipschitzWith K f) (x y : α) : edist x y ≠ ⊤ :=
@@ -49,17 +51,25 @@ section Metric
 
 variable [PseudoMetricSpace α] [PseudoMetricSpace β] {K : ℝ≥0} {f : α → β}
 
-theorem antilipschitzWith_iff_le_mul_nndist :
-    AntilipschitzWith K f ↔ ∀ x y, nndist x y ≤ K * nndist (f x) (f y) := by
-  simp only [AntilipschitzWith, edist_nndist]
+theorem antilipschitzWith_iff_le_mul_nnDist :
+    AntilipschitzWith K f ↔ ∀ x y, nnDist x y ≤ K * nnDist (f x) (f y) := by
+  simp only [AntilipschitzWith, eDist_nnDist]
   norm_cast
 
-alias ⟨AntilipschitzWith.le_mul_nndist, AntilipschitzWith.of_le_mul_nndist⟩ :=
-  antilipschitzWith_iff_le_mul_nndist
+@[deprecated (since := "2026-11-07")]
+alias antilipschitzWith_iff_le_mul_nndist := antilipschitzWith_iff_le_mul_nnDist
+
+alias ⟨AntilipschitzWith.le_mul_nnDist, AntilipschitzWith.of_le_mul_nnDist⟩ :=
+  antilipschitzWith_iff_le_mul_nnDist
+
+@[deprecated (since := "2026-11-07")]
+alias AntilipschitzWith.le_mul_nndist := AntilipschitzWith.le_mul_nnDist
+@[deprecated (since := "2026-11-07")]
+alias AntilipschitzWith.of_le_mul_nndist := AntilipschitzWith.of_le_mul_nnDist
 
 theorem antilipschitzWith_iff_le_mul_dist :
     AntilipschitzWith K f ↔ ∀ x y, dist x y ≤ K * dist (f x) (f y) := by
-  simp only [antilipschitzWith_iff_le_mul_nndist, dist_nndist]
+  simp only [antilipschitzWith_iff_le_mul_nnDist, dist_nnDist]
   norm_cast
 
 alias ⟨AntilipschitzWith.le_mul_dist, AntilipschitzWith.of_le_mul_dist⟩ :=
@@ -67,12 +77,14 @@ alias ⟨AntilipschitzWith.le_mul_dist, AntilipschitzWith.of_le_mul_dist⟩ :=
 
 namespace AntilipschitzWith
 
-theorem mul_le_nndist (hf : AntilipschitzWith K f) (x y : α) :
-    K⁻¹ * nndist x y ≤ nndist (f x) (f y) := by
-  simpa only [div_eq_inv_mul] using NNReal.div_le_of_le_mul' (hf.le_mul_nndist x y)
+theorem mul_le_nnDist (hf : AntilipschitzWith K f) (x y : α) :
+    K⁻¹ * nnDist x y ≤ nnDist (f x) (f y) := by
+  simpa only [div_eq_inv_mul] using NNReal.div_le_of_le_mul' (hf.le_mul_nnDist x y)
+
+@[deprecated (since := "2026-11-07")] alias mul_le_nndist := mul_le_nnDist
 
 theorem mul_le_dist (hf : AntilipschitzWith K f) (x y : α) :
-    (K⁻¹ * dist x y : ℝ) ≤ dist (f x) (f y) := mod_cast hf.mul_le_nndist x y
+    (K⁻¹ * dist x y : ℝ) ≤ dist (f x) (f y) := mod_cast hf.mul_le_nnDist x y
 
 end AntilipschitzWith
 
@@ -118,21 +130,22 @@ theorem comp {Kg : ℝ≥0} {g : β → γ} (hg : AntilipschitzWith Kg g) {Kf : 
     _ ≤ Kf * (Kg * edist (g (f x)) (g (f y))) := mul_right_mono (hg _ _)
     _ = _ := by rw [ENNReal.coe_mul, mul_assoc]; rfl
 
-theorem restrict (hf : AntilipschitzWith K f) (s : Set α) : AntilipschitzWith K (s.restrict f) :=
-  fun x y => hf x y
+theorem domRestrict (hf : AntilipschitzWith K f) (s : Set α) :
+    AntilipschitzWith K (s.domRestrict f) := fun x y => hf x y
+
+@[deprecated (since := "2026-07-19")] alias restrict := domRestrict
 
 theorem codRestrict (hf : AntilipschitzWith K f) {s : Set β} (hs : ∀ x, f x ∈ s) :
     AntilipschitzWith K (s.codRestrict f hs) := fun x y => hf x y
 
-theorem to_rightInvOn' {s : Set α} (hf : AntilipschitzWith K (s.restrict f)) {g : β → α}
+theorem to_rightInvOn' {s : Set α} (hf : AntilipschitzWith K (s.domRestrict f)) {g : β → α}
     {t : Set β} (g_maps : MapsTo g t s) (g_inv : RightInvOn g f t) :
-    LipschitzWith K (t.restrict g) := fun x y => by
-  simpa only [restrict_apply, g_inv x.mem, g_inv y.mem, Subtype.edist_mk_mk]
+    LipschitzWith K (t.domRestrict g) := fun x y => by
+  simpa only [domRestrict_apply, g_inv x.mem, g_inv y.mem, Subtype.edist_mk_mk]
     using! hf ⟨g x, g_maps x.mem⟩ ⟨g y, g_maps y.mem⟩
 
 theorem to_rightInvOn (hf : AntilipschitzWith K f) {g : β → α} {t : Set β} (h : RightInvOn g f t) :
-    LipschitzWith K (t.restrict g) :=
-  (hf.restrict univ).to_rightInvOn' (mapsTo_univ g t) h
+    LipschitzWith K (t.domRestrict g) := (hf.domRestrict univ).to_rightInvOn' (mapsTo_univ g t) h
 
 theorem to_rightInverse (hf : AntilipschitzWith K f) {g : β → α} (hg : Function.RightInverse g f) :
     LipschitzWith K g := by
@@ -182,8 +195,10 @@ theorem isClosedEmbedding {α : Type*} {β : Type*} [EMetricSpace α] [EMetricSp
     IsClosedEmbedding f :=
   { (hf.isUniformEmbedding hfc).isEmbedding with isClosed_range := hf.isClosed_range hfc }
 
-theorem subtype_coe (s : Set α) : AntilipschitzWith 1 ((↑) : s → α) :=
-  AntilipschitzWith.id.restrict s
+theorem subtypeVal (s : Set α) : AntilipschitzWith 1 ((↑) : s → α) :=
+  AntilipschitzWith.id.domRestrict s
+
+@[deprecated (since := "2026-11-10")] alias subtype_coe := subtypeVal
 
 @[nontriviality]
 theorem of_subsingleton [Subsingleton α] {K : ℝ≥0} : AntilipschitzWith K f := fun x y => by
@@ -198,7 +213,7 @@ protected theorem subsingleton {α β} [EMetricSpace α] [PseudoEMetricSpace β]
 protected theorem pos {α} [EMetricSpace α] [Nontrivial α] {f : α → β}
     (hf : AntilipschitzWith K f) : 0 < K := by
   by_contra! h₀
-  obtain rfl : K = 0 := by rwa [le_zero_iff] at h₀
+  obtain rfl := h₀.eq_zero
   exact not_subsingleton α hf.subsingleton
 
 end AntilipschitzWith
@@ -227,7 +242,7 @@ protected theorem properSpace {α : Type*} [MetricSpace α] {K : ℝ≥0} {f : �
   have A : IsClosed K := isClosed_closedBall.preimage f_cont
   have B : IsBounded K := hK.isBounded_preimage isBounded_closedBall
   have : IsCompact K := isCompact_iff_isClosed_bounded.2 ⟨A, B⟩
-  convert! this.image f_cont
+  convert this.image f_cont
   exact (hf.image_preimage _).symm
 
 theorem isBounded_of_image2_left (f : α → β → γ) {K₁ : ℝ≥0}

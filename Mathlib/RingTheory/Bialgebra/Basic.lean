@@ -91,10 +91,10 @@ variable {R : Type u} {A : Type v}
 variable [CommSemiring R] [Semiring A] [Bialgebra R A]
 
 lemma counit_mul (a b : A) : counit (R := R) (a * b) = counit a * counit b :=
-  DFunLike.congr_fun (DFunLike.congr_fun mul_compr₂_counit a) b
+  congr($mul_compr₂_counit a b)
 
 lemma comul_mul (a b : A) : comul (R := R) (a * b) = comul a * comul b :=
-  DFunLike.congr_fun (DFunLike.congr_fun mul_compr₂_comul a) b
+  congr($mul_compr₂_comul a b)
 
 attribute [simp] counit_one comul_one counit_mul comul_mul
 
@@ -103,7 +103,7 @@ is an `R`-algebra with a coalgebra structure, then `Bialgebra.mk'`
 consumes proofs that the counit and comultiplication preserve
 the identity and multiplication, and produces a bialgebra
 structure on `A`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def mk' (R : Type u) (A : Type v) [CommSemiring R] [Semiring A]
     [Algebra R A] [C : Coalgebra R A] (counit_one : C.counit 1 = 1)
     (counit_mul : ∀ {a b}, C.counit (a * b) = C.counit a * C.counit b)

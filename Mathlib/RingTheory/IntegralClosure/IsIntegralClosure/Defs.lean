@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integral closure as a characteristic predicate
 
@@ -29,3 +32,7 @@ class IsIntegralClosure (A R B : Type*) [CommRing R] [CommSemiring A] [CommRing 
   [Algebra A B] : Prop where
   algebraMap_injective (A R B) : Function.Injective (algebraMap A B)
   isIntegral_iff : ∀ {x : B}, IsIntegral R x ↔ ∃ y, algebraMap A B y = x
+
+theorem IsIntegralClosure.faithfulSMul (R A B : Type*) [CommRing R] [CommSemiring A] [CommRing B]
+    [Algebra R B] [Algebra A B] [IsIntegralClosure A R B] : FaithfulSMul A B :=
+  (faithfulSMul_iff_algebraMap_injective A B).mpr (algebraMap_injective A R B)

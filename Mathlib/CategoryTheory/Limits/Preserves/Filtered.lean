@@ -5,11 +5,15 @@ Authors: Kim Morrison, Justus Springer
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 public import Mathlib.CategoryTheory.Filtered.Basic
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Preservation of filtered colimits and cofiltered limits.
+
 Typically forgetful functors from algebraic categories preserve filtered colimits
 (although not general colimits). See e.g. `Mathlib/Algebra/Category/MonCat/FilteredColimits.lean`.
 
@@ -17,7 +21,6 @@ Note also that using the results in the file `Mathlib/CategoryTheory/Presentable
 in order to show that a functor preserves filtered colimits, it would be
 sufficient to check that it preserves colimits indexed by nonempty directed
 types.
-
 -/
 
 public section
@@ -78,7 +81,7 @@ lemma preservesFilteredColimitsOfSize_of_univLE (F : C ⥤ D) [UnivLE.{w, w'}]
       PreservesFilteredColimitsOfSize.{w, w₂} F where
   preserves_filtered_colimits J _ _ := by
     let e := ((ShrinkHoms.equivalence.{w'} J).trans <| Shrink.equivalence _).symm
-    haveI := IsFiltered.of_equivalence e.symm
+    have := IsFiltered.of_equivalence e.symm
     exact preservesColimitsOfShape_of_equiv e F
 
 /--
@@ -134,7 +137,7 @@ lemma reflectsFilteredColimitsOfSize_of_univLE (F : C ⥤ D) [UnivLE.{w, w'}]
       ReflectsFilteredColimitsOfSize.{w, w₂} F where
   reflects_filtered_colimits J _ _ := by
     let e := ((ShrinkHoms.equivalence.{w'} J).trans <| Shrink.equivalence _).symm
-    haveI := IsFiltered.of_equivalence e.symm
+    have := IsFiltered.of_equivalence e.symm
     exact reflectsColimitsOfShape_of_equiv e F
 
 /--
@@ -194,7 +197,7 @@ lemma preservesCofilteredLimitsOfSize_of_univLE (F : C ⥤ D) [UnivLE.{w, w'}]
       PreservesCofilteredLimitsOfSize.{w, w₂} F where
   preserves_cofiltered_limits J _ _ := by
     let e := ((ShrinkHoms.equivalence.{w'} J).trans <| Shrink.equivalence _).symm
-    haveI := IsCofiltered.of_equivalence e.symm
+    have := IsCofiltered.of_equivalence e.symm
     exact preservesLimitsOfShape_of_equiv e F
 
 /--
@@ -250,7 +253,7 @@ lemma reflectsCofilteredLimitsOfSize_of_univLE (F : C ⥤ D) [UnivLE.{w, w'}]
       ReflectsCofilteredLimitsOfSize.{w, w₂} F where
   reflects_cofiltered_limits J _ _ := by
     let e := ((ShrinkHoms.equivalence.{w'} J).trans <| Shrink.equivalence _).symm
-    haveI := IsCofiltered.of_equivalence e.symm
+    have := IsCofiltered.of_equivalence e.symm
     exact reflectsLimitsOfShape_of_equiv e F
 
 /--

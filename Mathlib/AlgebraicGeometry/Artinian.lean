@@ -5,8 +5,8 @@ Authors: Brian Nugent
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Noetherian
 public import Mathlib.AlgebraicGeometry.Morphisms.Immersion
+public import Mathlib.AlgebraicGeometry.Noetherian
 public import Mathlib.RingTheory.HopkinsLevitzki
 
 /-!
@@ -34,7 +34,6 @@ We define and prove basic properties about Artinian and locally Artinian Schemes
 
 * `AlgebraicGeometry.Scheme.isArtinianScheme_Spec`: A commutative ring R is Artinian if and only if
   Spec R is Artinian.
-
 -/
 
 public section
@@ -61,7 +60,7 @@ instance IsLocallyArtinian.isLocallyNoetherian [h : IsLocallyArtinian X] :
 
 instance IsLocallyArtinian.isArtinianRing_of_isAffine [h : IsLocallyArtinian X] [IsAffine X] :
     IsArtinianRing Γ(X, ⊤) :=
-  h.1 ⟨⊤, isAffineOpen_top X⟩
+  h.isArtinianRing_presheaf_obj ⟨⊤, isAffineOpen_top X⟩
 
 lemma IsLocallyArtinian.of_topologicalKrullDim_le_zero
     [IsLocallyNoetherian X] (h : topologicalKrullDim X ≤ 0) : IsLocallyArtinian X where
@@ -70,7 +69,7 @@ lemma IsLocallyArtinian.of_topologicalKrullDim_le_zero
     rw [isArtinianRing_iff_krullDimLE_zero, Ring.KrullDimLE, Order.krullDimLE_iff, ← ringKrullDim,
       Nat.cast_zero, ← PrimeSpectrum.topologicalKrullDim_eq_ringKrullDim Γ(X, U)]
     change topologicalKrullDim (Spec Γ(X, U)) ≤ 0
-    rw [← IsHomeomorph.topologicalKrullDim_eq _ U.2.isoSpec.hom.homeomorph.isHomeomorph]
+    rw [← IsHomeomorph.topologicalKrullDim_eq _ U.property.isoSpec.hom.homeomorph.isHomeomorph]
     exact (topologicalKrullDim_subspace_le X U).trans h
 
 theorem IsLocallyArtinian.of_isLocallyNoetherian_of_discreteTopology
@@ -83,7 +82,7 @@ private lemma IsLocallyArtinian.of_isOpenImmersion [IsOpenImmersion f] [IsLocall
     IsLocallyArtinian X where
   isArtinianRing_presheaf_obj U :=
     have : IsArtinianRing ↑Γ(Y, f ''ᵁ ↑U) :=
-      IsLocallyArtinian.isArtinianRing_presheaf_obj ⟨_, U.2.image_of_isOpenImmersion f⟩
+      IsLocallyArtinian.isArtinianRing_presheaf_obj ⟨_, U.property.image_of_isOpenImmersion f⟩
     (f.appIso U).commRingCatIsoToRingEquiv.surjective.isArtinianRing
 
 instance [IsLocallyArtinian X] {U : X.Opens} : IsLocallyArtinian U := .of_isOpenImmersion U.ι
@@ -100,10 +99,7 @@ instance (priority := low) IsLocallyArtinian.discreteTopology [IsLocallyArtinian
   have : IsArtinianRing Γ(X, W) := IsLocallyArtinian.isArtinianRing_presheaf_obj ⟨_, hW1⟩
   have : DiscreteTopology (Spec Γ(X, W)) := inferInstanceAs (DiscreteTopology (PrimeSpectrum _))
   have : DiscreteTopology W := hW1.isoSpec.hom.homeomorph.symm.discreteTopology
-  simpa using (isOpen_discrete ({⟨x, hW2⟩} : Set W)).trans W.2
-
-@[deprecated (since := "2026-01-14")]
-alias IsLocallyArtinian.discreteTopology_of_isAffine := IsLocallyArtinian.discreteTopology
+  simpa using (isOpen_discrete ({⟨x, hW2⟩} : Set W)).trans W.is_open'
 
 theorem IsLocallyArtinian.iff_isLocallyNoetherian_and_discreteTopology :
     IsLocallyArtinian X ↔ IsLocallyNoetherian X ∧ DiscreteTopology X :=
@@ -131,6 +127,7 @@ theorem isLocallyArtinian_iff_openCover (𝒰 : X.OpenCover) :
     obtain ⟨i, x, rfl⟩ := 𝒰.exists_eq x
     simpa using (𝒰.f i).isOpenEmbedding.isOpenMap _ (isOpen_discrete {x})
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem isLocallyArtinian_iff_of_isOpenCover {ι : Type*} {U : ι → X.Opens}
     (hU : TopologicalSpace.IsOpenCover U) (hU' : ∀ i, IsAffineOpen (U i)) :
     IsLocallyArtinian X ↔ ∀ i, IsArtinianRing Γ(X, U i) := by
@@ -141,6 +138,7 @@ theorem isLocallyArtinian_iff_of_isOpenCover {ι : Type*} {U : ι → X.Opens}
 
 instance (priority := low) {X : Scheme} [IsEmpty X] : IsLocallyArtinian X where
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (priority := low) {X : Scheme} [DiscreteTopology X] [IsReduced X] :
     IsLocallyArtinian X := by
   wlog hX : Subsingleton X generalizing X

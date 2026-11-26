@@ -6,7 +6,6 @@ Authors: Floris van Doorn, Hannah Scholz
 module
 
 public import Mathlib.Topology.CWComplex.Classical.Finite
-public import Mathlib.Analysis.Normed.Module.RCLike.Real
 
 /-!
 # Subcomplexes
@@ -15,14 +14,16 @@ In this file we discuss subcomplexes of CW complexes.
 The definition of subcomplexes is in the file `Mathlib/Topology/CWComplex/Classical/Basic.lean`.
 
 ## Main results
+
 * `RelCWComplex.Subcomplex.instRelCWComplex`: a subcomplex of a (relative) CW complex is again a
   (relative) CW complex.
 
 ## References
+
 * [K. Jänich, *Topology*][Janich1984]
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -58,7 +59,7 @@ lemma RelCWComplex.Subcomplex.union_closedCell [T2Space X] [RelCWComplex C D] (E
     D ∪ ⋃ (n : ℕ) (j : E.I n), closedCell (C := C) n j = E := by
   apply subset_antisymm
   · apply union_subset E.base_subset
-    exact iUnion₂_subset fun n i ↦ closedCell_subset_of_mem E i.2
+    exact iUnion₂_subset fun n i ↦ closedCell_subset_of_mem E i.property
   · rw [← E.union]
     apply union_subset_union_right
     apply iUnion₂_mono fun n i ↦ ?_
@@ -70,12 +71,16 @@ lemma CWComplex.Subcomplex.union_closedCell [T2Space X] [CWComplex C] (E : Subco
   (empty_union _).symm.trans (RelCWComplex.Subcomplex.union_closedCell E)
 
 @[alias_in CWComplex.Subcomplex]
-lemma RelCWComplex.Subcomplex.disjoint_openCell_subcomplex_of_not_mem [RelCWComplex C D]
+lemma RelCWComplex.Subcomplex.disjoint_openCell_subcomplex_of_notMem [RelCWComplex C D]
     (E : Subcomplex C) {n : ℕ} {i : cell C n} (h : i ∉ E.I n) : Disjoint (openCell n i) E := by
   simp_rw [← union, disjoint_union_right, disjoint_iUnion_right]
   exact ⟨disjointBase n i , fun _ _ ↦ disjoint_openCell_of_ne (by lia)⟩
 
-open Classical in
+@[deprecated (since := "2026-09-28")]
+alias RelCWComplex.Subcomplex.disjoint_openCell_subcomplex_of_not_mem :=
+  RelCWComplex.Subcomplex.disjoint_openCell_subcomplex_of_notMem
+
+open scoped Classical in
 /-- A subcomplex is again a CW complex. -/
 @[simps]
 instance RelCWComplex.Subcomplex.instRelCWComplex [T2Space X] [RelCWComplex C D]
@@ -103,16 +108,16 @@ instance RelCWComplex.Subcomplex.instRelCWComplex [T2Space X] [RelCWComplex C D]
     specialize hJ h
     obtain ⟨m, hmn, j, hj, hxj⟩ := hJ
     suffices j ∈ E.I m from ⟨m, hmn, j, this, hj, openCell_subset_closedCell _ _ hxj⟩
-    have : x ∈ (E : Set X) := E.cellFrontier_subset_of_mem i.2 hx
+    have : x ∈ (E : Set X) := E.cellFrontier_subset_of_mem i.property hx
     by_contra hj'
-    exact E.disjoint_openCell_subcomplex_of_not_mem hj' |>.notMem_of_mem_left hxj this
+    exact E.disjoint_openCell_subcomplex_of_notMem hj' |>.notMem_of_mem_left hxj this
   closed' A hA h := by
     apply isClosed_of_disjoint_openCell_or_isClosed_inter_closedCell
       (subset_trans hA (subset_complex (C := C) E)) h.2
     intro n _ j
     by_cases hj : j ∈ E.I n
     · exact Or.intro_right _ (h.1 n ⟨j, hj⟩)
-    · exact Or.intro_left _ ((disjoint_openCell_subcomplex_of_not_mem E hj).symm.mono_left hA)
+    · exact Or.intro_left _ ((disjoint_openCell_subcomplex_of_notMem E hj).symm.mono_left hA)
   isClosedBase := isClosedBase (C := C)
   union' := union_closedCell E
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Algebra.Equiv
 public import Mathlib.Algebra.Ring.TransferInstance
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Transfer algebraic structures across `Equiv`s
 
@@ -22,6 +25,7 @@ variable {R α β : Type*} [CommSemiring R]
 namespace Equiv
 variable (e : α ≃ β)
 
+-- See note [instance transfer via equivalence]
 variable (R) in
 /-- Transfer `Algebra` across an `Equiv` -/
 protected abbrev algebra (e : α ≃ β) [Semiring β] :
@@ -30,7 +34,7 @@ protected abbrev algebra (e : α ≃ β) [Semiring β] :
   letI := Equiv.semiring e
   letI := e.smul R
   { algebraMap :=
-    { toFun r := e.symm (algebraMap R β r)
+    { toFun r := e.invFun (algebraMap R β r)
       __ := e.ringEquiv.symm.toRingHom.comp (algebraMap R β) }
     commutes' r x :=
       show e.symm ((e (e.symm (algebraMap R β r)) * e x)) =
@@ -49,17 +53,14 @@ variable (R) in
 /-- An equivalence `e : α ≃ β` gives an algebra equivalence `α ≃ₐ[R] β`
 where the `R`-algebra structure on `α` is
 the one obtained by transporting an `R`-algebra structure on `β` back along `e`. -/
-def algEquiv (e : α ≃ β) [Semiring β] [Algebra R β] : by
-    let semiring := Equiv.semiring e
-    let algebra := Equiv.algebra R e
-    exact α ≃ₐ[R] β := by
+def algEquiv (e : α ≃ β) [Semiring β] [Algebra R β] :
+    let := Equiv.semiring e
+    let := Equiv.algebra R e
+    α ≃ₐ[R] β := by
   intros
-  exact
-    { Equiv.ringEquiv e with
-      commutes' := fun r => by
-        apply e.symm.injective
-        simp only [RingEquiv.toEquiv_eq_coe, toFun_as_coe, EquivLike.coe_coe, ringEquiv_apply,
-          symm_apply_apply, algebraMap_def] }
+  exact .ofCommutes (Equiv.ringEquiv e) fun r => by
+    apply e.symm.injective
+    simp only [ringEquiv_apply, symm_apply_apply, algebraMap_def]
 
 @[simp]
 theorem algEquiv_apply (e : α ≃ β) [Semiring β] [Algebra R β] (a : α) : (algEquiv R e) a = e a :=

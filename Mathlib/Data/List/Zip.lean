@@ -5,8 +5,14 @@ Authors: Mario Carneiro, Kenny Lau
 -/
 module
 
-public import Mathlib.Data.List.Forall2
-public import Mathlib.Data.Nat.Basic
+public import Mathlib.Data.List.Basic
+public import Mathlib.Logic.OpClass
+
+import Mathlib.Data.List.Forall2
+import Mathlib.Data.Nat.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # zip & unzip
@@ -58,12 +64,18 @@ theorem unzip_swap (l : List (α × β)) : unzip (l.map Prod.swap) = (unzip l).s
   simp only [unzip_eq_map, map_map]
   rfl
 
-@[congr]
 theorem zipWith_congr (f g : α → β → γ) (la : List α) (lb : List β)
     (h : List.Forall₂ (fun a b => f a b = g a b) la lb) : zipWith f la lb = zipWith g la lb := by
   induction h with
   | nil => rfl
   | cons hfg _ ih => exact congr_arg₂ _ hfg ih
+
+@[congr]
+theorem zipWith_congr' (f g : α → β → γ) (la la' : List α) (lb lb' : List β)
+    (hla : la = la') (hlb : lb = lb')
+    (h : List.Forall₂ (fun a b => f a b = g a b) la lb) : zipWith f la lb = zipWith g la' lb' := by
+  subst hla hlb
+  exact zipWith_congr f g la lb h
 
 theorem zipWith_zipWith_left (f : δ → γ → ε) (g : α → β → δ) :
     ∀ (la : List α) (lb : List β) (lc : List γ),
@@ -71,7 +83,7 @@ theorem zipWith_zipWith_left (f : δ → γ → ε) (g : α → β → δ) :
   | [], _, _ => rfl
   | _ :: _, [], _ => rfl
   | _ :: _, _ :: _, [] => rfl
-  | _ :: as, _ :: bs, _ :: cs => congr_arg (cons _) <| zipWith_zipWith_left f g as bs cs
+  | _ :: as, _ :: bs, _ :: cs => congr(cons _ $(zipWith_zipWith_left f g as bs cs))
 
 theorem zipWith_zipWith_right (f : α → δ → ε) (g : β → γ → δ) :
     ∀ (la : List α) (lb : List β) (lc : List γ),
@@ -79,28 +91,28 @@ theorem zipWith_zipWith_right (f : α → δ → ε) (g : β → γ → δ) :
   | [], _, _ => rfl
   | _ :: _, [], _ => rfl
   | _ :: _, _ :: _, [] => rfl
-  | _ :: as, _ :: bs, _ :: cs => congr_arg (cons _) <| zipWith_zipWith_right f g as bs cs
+  | _ :: as, _ :: bs, _ :: cs => congr(cons _ $(zipWith_zipWith_right f g as bs cs))
 
 @[simp]
 theorem zipWith3_same_left (f : α → α → β → γ) :
     ∀ (la : List α) (lb : List β), zipWith3 f la la lb = zipWith (fun a b => f a a b) la lb
   | [], _ => rfl
   | _ :: _, [] => rfl
-  | _ :: as, _ :: bs => congr_arg (cons _) <| zipWith3_same_left f as bs
+  | _ :: as, _ :: bs => congr(cons _ $(zipWith3_same_left f as bs))
 
 @[simp]
 theorem zipWith3_same_mid (f : α → β → α → γ) :
     ∀ (la : List α) (lb : List β), zipWith3 f la lb la = zipWith (fun a b => f a b a) la lb
   | [], _ => rfl
   | _ :: _, [] => rfl
-  | _ :: as, _ :: bs => congr_arg (cons _) <| zipWith3_same_mid f as bs
+  | _ :: as, _ :: bs => congr(cons _ $(zipWith3_same_mid f as bs))
 
 @[simp]
 theorem zipWith3_same_right (f : α → β → β → γ) :
     ∀ (la : List α) (lb : List β), zipWith3 f la lb lb = zipWith (fun a b => f a b b) la lb
   | [], _ => rfl
   | _ :: _, [] => rfl
-  | _ :: as, _ :: bs => congr_arg (cons _) <| zipWith3_same_right f as bs
+  | _ :: as, _ :: bs => congr(cons _ $(zipWith3_same_right f as bs))
 
 instance (f : α → α → β) [IsSymmOp f] : IsSymmOp (zipWith f) :=
   ⟨fun _ _ => zipWith_comm_of_comm IsSymmOp.symm_op⟩

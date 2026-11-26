@@ -5,8 +5,9 @@ Authors: Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Analysis.CStarAlgebra.PositiveLinearMap
 public import Mathlib.Analysis.CStarAlgebra.CStarMatrix
+
+import Mathlib.Algebra.Order.Module.PositiveLinearMap
 
 /-! # Completely positive maps
 
@@ -40,7 +41,7 @@ open scoped CStarAlgebra
 
 /--
 A linear map `φ : A₁ →ₗ[ℂ] A₂`  is called *completely positive (CP)* if
-`CStarMatrix.mapₗ (Fin k) (Fin k) φ` (i.e. applying `φ` to all entries of a k × k matrix) is also
+`CStarMatrix.map (Fin k) (Fin k) φ` (i.e. applying `φ` to all entries of a k × k matrix) is also
 positive for every `k ∈ ℕ`.
 
 Note that `Fin k` here is hardcoded to avoid having to quantify over types and introduce a new
@@ -51,11 +52,11 @@ structure CompletelyPositiveMap (A₁ : Type*) (A₂ : Type*) [NonUnitalCStarAlg
     [NonUnitalCStarAlgebra A₂] [PartialOrder A₁] [PartialOrder A₂] [StarOrderedRing A₁]
     [StarOrderedRing A₂] extends A₁ →ₗ[ℂ] A₂ where
   map_cstarMatrix_nonneg' (k : ℕ) (M : CStarMatrix (Fin k) (Fin k) A₁) (hM : 0 ≤ M) :
-      0 ≤ M.map toLinearMap
+      0 ≤ M.map toFun
 
 /--
 A linear map `φ : A₁ →ₗ[ℂ] A₂`  is called *completely positive (CP)* if
-`CStarMatrix.mapₗ (Fin k) (Fin k) φ` (i.e. applying `φ` to all entries of a k × k matrix) is also
+`CStarMatrix.map (Fin k) (Fin k) φ` (i.e. applying `φ` to all entries of a k × k matrix) is also
 positive for every `k ∈ ℕ`.
 
 Note that `Fin k` here is hardcoded to avoid having to quantify over types and introduce a new
@@ -79,16 +80,12 @@ variable {F A₁ A₂ : Type*} [NonUnitalCStarAlgebra A₁]
 
 /-- Reinterpret an element of a type of completely positive maps as a completely positive linear
   map. -/
-@[coe]
-def toCompletelyPositiveLinearMap [CompletelyPositiveMapClass F A₁ A₂] (f : F) : A₁ →CP A₂ :=
+def _root_.CompletelyPositiveMap.ofClass [CompletelyPositiveMapClass F A₁ A₂] (f : F) : A₁ →CP A₂ :=
   { (f : A₁ →ₗ[ℂ] A₂) with
     map_cstarMatrix_nonneg' := CompletelyPositiveMapClass.map_cstarMatrix_nonneg' f }
 
-/-- Reinterpret an element of a type of completely positive maps as a completely positive linear
-map. -/
-instance instCoeToCompletelyPositiveMap [CompletelyPositiveMapClass F A₁ A₂] :
-    CoeHead F (A₁ →CP A₂) where
-  coe f := toCompletelyPositiveLinearMap f
+@[deprecated (since := "2026-11-22")] alias toCompletelyPositiveLinearMap :=
+  CompletelyPositiveMap.ofClass
 
 set_option backward.isDefEq.respectTransparency false in
 open CStarMatrix in
@@ -111,6 +108,7 @@ variable {A₁ A₂ : Type*} [NonUnitalCStarAlgebra A₁]
   [NonUnitalCStarAlgebra A₂] [PartialOrder A₁] [PartialOrder A₂] [StarOrderedRing A₁]
   [StarOrderedRing A₂]
 
+@[macro_inline]
 instance : FunLike (A₁ →CP A₂) A₁ A₂ where
   coe f := f.toFun
   coe_injective f g h := by
@@ -127,13 +125,18 @@ instance : LinearMapClass (A₁ →CP A₂) ℂ A₁ A₂ where
 instance : CompletelyPositiveMapClass (A₁ →CP A₂) A₁ A₂ where
   map_cstarMatrix_nonneg' f := f.map_cstarMatrix_nonneg'
 
+@[simp]
+protected lemma coe_ofClass {F : Type*} [FunLike F A₁ A₂] [LinearMapClass F ℂ A₁ A₂]
+    [CompletelyPositiveMapClass F A₁ A₂] (f : F) :
+    ⇑(ofClass f) = f := rfl
+
 open CStarMatrix in
 lemma map_cstarMatrix_nonneg {n : Type*} [Fintype n] (φ : A₁ →CP A₂) (M : CStarMatrix n n A₁)
     (hM : 0 ≤ M) : 0 ≤ M.map φ := by
   let k := Fintype.card n
   let e := Fintype.equivFinOfCardEq (rfl : Fintype.card n = k)
   have hmain : 0 ≤ (reindexₐ ℂ A₁ e M).mapₗ (φ : A₁ →ₗ[ℂ] A₂) := by
-    simp only [mapₗ, LinearMap.coe_coe, LinearMap.coe_mk, AddHom.coe_mk]
+    simp only [mapₗ, LinearMap.coe_ofClass, LinearMap.coe_mk, AddHom.coe_mk]
     exact CompletelyPositiveMapClass.map_cstarMatrix_nonneg' _ k _ (map_nonneg _ hM)
   rw [← mapₗ_reindexₐ] at hmain
   simpa [reindexₐ_symm] using map_nonneg (reindexₐ ℂ A₂ e).symm hmain
@@ -150,7 +153,7 @@ open CStarMatrix CFC in
 /-- Non-unital star algebra homomorphisms are completely positive. -/
 instance instCompletelyPositiveMapClass : CompletelyPositiveMapClass F A₁ A₂ where
   map_cstarMatrix_nonneg' φ k M hM := by
-    change 0 ≤ (mapₙₐ (φ : A₁ →⋆ₙₐ[ℂ] A₂)) M
+    change 0 ≤ mapₙₐ (.ofClass φ) M
     exact map_nonneg _ hM
 
 end NonUnitalStarAlgHomClass

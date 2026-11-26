@@ -11,13 +11,14 @@ public import Mathlib.AlgebraicGeometry.Sites.Small
 public import Mathlib.CategoryTheory.Limits.Elements
 public import Mathlib.CategoryTheory.Sites.Point.Basic
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # The étale site
 
 In this file we define the big étale site, i.e. the étale topology as a Grothendieck topology
 on the category of schemes.
-
 -/
 
 @[expose] public section
@@ -50,6 +51,7 @@ category of schemes étale over `X` induced from the étale topology on `Scheme.
 def smallEtaleTopology (X : Scheme.{u}) : GrothendieckTopology X.Etale :=
   X.smallGrothendieckTopology (P := @Etale)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The pretopology generating the small étale site. -/
 def smallEtalePretopology (X : Scheme.{u}) : Pretopology X.Etale :=
   X.smallPretopology (Q := @Etale) (P := @Etale)
@@ -77,7 +79,7 @@ lemma ofArrows_mem_smallEtaleTopology_iff
     let V : Cover (precoverage @Etale) W.left :=
       Cover.mkOfCovers W.left (fun w ↦ (Z (i w)).left)
         (fun w ↦ (f (i w)).left) (fun w ↦ ⟨_, _, hz w⟩) inferInstance
-    letI : Cover.Over X V :=
+    let : Cover.Over X V :=
       { over w := ⟨(Z (i w)).hom⟩
         isOver_map w := by cat_disch }
     have (w : W.left) : Etale (V.X w ↘ X) := (Z (i w)).prop

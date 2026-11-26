@@ -7,10 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 public import Mathlib.LinearAlgebra.Matrix.Nondegenerate
-public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
-public import Mathlib.LinearAlgebra.Matrix.ToLin
-public import Mathlib.RingTheory.Localization.FractionRing
-public import Mathlib.RingTheory.Localization.Integer
+public import Mathlib.LinearAlgebra.Matrix.Nonsingular
+
+import Mathlib.RingTheory.Localization.Integer
 
 /-!
 # Matrices and linear equivalences
@@ -29,22 +28,40 @@ to linear equivs.
 ## Tags
 
 matrix, linear equivalence, linear isomorphism, determinant, inverse
-
 -/
 
 @[expose] public section
 
 open Module
 
-variable {n : Type*} [Fintype n]
+variable {m n R : Type*}
 
 namespace Matrix
+
+theorem SeparatingLeft.card_le [Fintype m] [Fintype n] [Ring R] [StrongRankCondition R]
+    {N : Matrix m n R} (hN : N.SeparatingLeft) : Fintype.card m ≤ Fintype.card n :=
+  card_le_of_injective R (vecMulLinear N) hN.vecMul_injective
+
+theorem SeparatingRight.card_le [Fintype m] [Fintype n] [Ring R] [StrongRankCondition Rᵐᵒᵖ]
+    {N : Matrix m n R} (hN : N.SeparatingRight) : Fintype.card n ≤ Fintype.card m :=
+  SeparatingLeft.card_le ((separatingLeft_map_op_iff (M := Nᵀ)).mpr (by simpa using hN))
+
+/-- Nondegenerate matrices are square. -/
+theorem Nondegenerate.nonempty_equiv [Finite m] [Finite n] [Ring R]
+    [StrongRankCondition R] [StrongRankCondition Rᵐᵒᵖ]
+    {N : Matrix m n R} (hN : N.Nondegenerate) : Nonempty (m ≃ n) :=
+  have := Fintype.ofFinite m
+  have := Fintype.ofFinite n
+  ⟨Fintype.equivOfCardEq (le_antisymm
+    (SeparatingLeft.card_le hN.separatingLeft) (SeparatingRight.card_le hN.separatingRight))⟩
+
+variable [Fintype n]
 
 section LinearEquiv
 
 open LinearMap
 
-variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+variable {M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 
 section ToLinearEquiv'
 
@@ -132,18 +149,18 @@ private theorem exists_mulVec_eq_zero_iff' {A : Type*} (K : Type*) [DecidableEq 
   rw [← RingHom.map_det, IsFractionRing.to_map_eq_zero_iff] at this
   refine Iff.trans ?_ this; constructor <;> rintro ⟨v, hv, mul_eq⟩
   · refine ⟨fun i => algebraMap _ _ (v i), mt (fun h => funext fun i => ?_) hv, ?_⟩
-    · exact IsFractionRing.to_map_eq_zero_iff.mp (congr_fun h i)
+    · exact IsFractionRing.to_map_eq_zero_iff.mp congr($h i)
     · ext i
       refine (RingHom.map_mulVec _ _ _ i).symm.trans ?_
       rw [mul_eq, Pi.zero_apply, map_zero, Pi.zero_apply]
-  · letI := Classical.decEq K
+  · let := Classical.decEq K
     obtain ⟨⟨b, hb⟩, ba_eq⟩ :=
       IsLocalization.exist_integer_multiples_of_finset (nonZeroDivisors A) (Finset.univ.image v)
     choose f hf using ba_eq
     refine
       ⟨fun i => f _ (Finset.mem_image.mpr ⟨i, Finset.mem_univ i, rfl⟩),
         mt (fun h => funext fun i => ?_) hv, ?_⟩
-    · have := congr_arg (algebraMap A K) (congr_fun h i)
+    · have := congr(algebraMap A K ($h i))
       rw [hf, Subtype.coe_mk, Pi.zero_apply, map_zero, Algebra.smul_def, mul_eq_zero,
         IsFractionRing.to_map_eq_zero_iff] at this
       exact this.resolve_left (nonZeroDivisors.ne_zero hb)
@@ -158,6 +175,7 @@ private theorem exists_mulVec_eq_zero_iff' {A : Type*} (K : Type*) [DecidableEq 
           RingHom.mapMatrix_apply, Pi.smul_apply, smul_eq_mul, Algebra.smul_def]
       · rw [mulVec_smul, mul_eq, Pi.smul_apply, Pi.zero_apply, smul_zero]
 
+section IsDomain
 variable {A : Type*} [CommRing A] [IsDomain A] {M N : Matrix n n A}
 
 theorem exists_mulVec_eq_zero_iff [DecidableEq n] : (∃ v ≠ 0, M *ᵥ v = 0) ↔ M.det = 0 :=
@@ -170,55 +188,80 @@ theorem nondegenerate_iff_det_ne_zero [DecidableEq n] : Nondegenerate M ↔ M.de
   grind [nondegenerate_iff_forall_vecMul_and_mulVec_eq_zero, exists_mulVec_eq_zero_iff,
     exists_vecMul_eq_zero_iff]
 
+alias ⟨Nondegenerate.det_ne_zero, _⟩ := nondegenerate_iff_det_ne_zero
+
 lemma separatingLeft_iff_det_ne_zero [DecidableEq n] : SeparatingLeft M ↔ M.det ≠ 0 := by
   grind [separatingLeft_iff_forall_vecMul_eq_zero, exists_vecMul_eq_zero_iff]
 
 lemma separatingRight_iff_det_ne_zero [DecidableEq n] : SeparatingRight M ↔ M.det ≠ 0 := by
   grind [separatingRight_iff_forall_mulVec_eq_zero, exists_mulVec_eq_zero_iff]
 
+end IsDomain
+
 omit [Fintype n] in
-theorem nondegenerate_iff_separatingLeft [Finite n] : M.Nondegenerate ↔ M.SeparatingLeft := by
-  classical
+theorem separatingLeft_iff_separatingRight [Finite n] {M : Matrix n n R} :
+    M.SeparatingLeft ↔ M.SeparatingRight := by
   have := Fintype.ofFinite n
-  rw [nondegenerate_iff_det_ne_zero, separatingLeft_iff_det_ne_zero]
-
-alias ⟨_, SeparatingLeft.nondegenerate⟩ := nondegenerate_iff_separatingLeft
-
-omit [Fintype n] in
-theorem nondegenerate_iff_separatingRight [Finite n] : M.Nondegenerate ↔ M.SeparatingRight := by
-  classical
-  have := Fintype.ofFinite n
-  rw [nondegenerate_iff_det_ne_zero, separatingRight_iff_det_ne_zero]
-
-alias ⟨_, SeparatingRight.nondegenerate⟩ := nondegenerate_iff_separatingRight
-
-omit [Fintype n] in
-theorem separatingLeft_iff_separatingRight [Finite n] : M.SeparatingLeft ↔ M.SeparatingRight :=
-  nondegenerate_iff_separatingLeft.symm.trans nondegenerate_iff_separatingRight
+  rw [separatingLeft_iff_vecMul_injective, separatingRight_iff_mulVec_injective,
+    vecMul_injective_iff, mulVec_injective_iff, ← linearIndependent_col_iff_row]
 
 alias ⟨SeparatingLeft.separatingRight, SeparatingRight.separatingLeft⟩ :=
   separatingLeft_iff_separatingRight
 
-theorem Nondegenerate.mul_iff_right (h : N.Nondegenerate) :
-    (M * N).Nondegenerate ↔ M.Nondegenerate := by
-  classical
-  simp only [nondegenerate_iff_det_ne_zero, det_mul] at h ⊢
-  exact mul_ne_zero_iff_right h
+omit [Fintype n] in
+theorem nondegenerate_iff_separatingLeft [Finite n] {M : Matrix n n R} :
+    M.Nondegenerate ↔ M.SeparatingLeft := by
+  rw [nondegenerate_iff, ← separatingLeft_iff_separatingRight, and_self]
 
-theorem Nondegenerate.mul_iff_left (h : M.Nondegenerate) :
-    (M * N).Nondegenerate ↔ N.Nondegenerate := by
-  classical
-  simp only [nondegenerate_iff_det_ne_zero, det_mul] at h ⊢
-  exact mul_ne_zero_iff_left h
+alias ⟨_, SeparatingLeft.nondegenerate⟩ := nondegenerate_iff_separatingLeft
 
 omit [Fintype n] in
-theorem Nondegenerate.smul_iff [Finite n] {t : A} (h : t ≠ 0) :
-    (t • M).Nondegenerate ↔ M.Nondegenerate := by
-  have := Fintype.ofFinite
-  rw [nondegenerate_def, nondegenerate_def]
-  simp [smul_mulVec, mul_eq_zero_iff_left h]
+theorem nondegenerate_iff_separatingRight [Finite n] {M : Matrix n n R} :
+    M.Nondegenerate ↔ M.SeparatingRight := by
+  rw [nondegenerate_iff, separatingLeft_iff_separatingRight, and_self]
 
-alias ⟨Nondegenerate.det_ne_zero, Nondegenerate.of_det_ne_zero⟩ := nondegenerate_iff_det_ne_zero
+alias ⟨_, SeparatingRight.nondegenerate⟩ := nondegenerate_iff_separatingRight
+
+theorem nondegenerate_iff_nonsingular [DecidableEq n] {M : Matrix n n R} :
+    M.Nondegenerate ↔ M.Nonsingular := by
+  rw [nondegenerate_iff, separatingLeft_iff_vecMul_injective,
+    separatingRight_iff_mulVec_injective, vecMul_injective_iff, mulVec_injective_iff,
+    linearIndependent_row_iff, linearIndependent_col_iff, and_self]
+
+alias ⟨Nondegenerate.nonsingular, Nonsingular.nondegenerate⟩ := nondegenerate_iff_nonsingular
+
+omit [Fintype n] in
+theorem Nondegenerate.mul_iff_right {l m : Type*} [Finite l] [Fintype m] [Finite n]
+    {M : Matrix l m R} {N : Matrix m n R} (h : N.Nondegenerate) :
+    (M * N).Nondegenerate ↔ M.Nondegenerate := by
+  by_cases! Subsingleton R
+  · simp [nondegenerate_iff, SeparatingLeft, SeparatingRight, Subsingleton.eq_zero]
+  obtain ⟨e₂⟩ := h.nonempty_equiv
+  by_cases hlm : Nonempty (l ≃ m)
+  · obtain ⟨e₁⟩ := hlm
+    classical
+    rw [← nondegenerate_submatrix_iff e₁.symm.bijective e₂.bijective (M := M * N),
+      ← nondegenerate_submatrix_iff e₁.symm.bijective Function.bijective_id (M := M)]
+    simp [submatrix_mul (e₂ := id), nondegenerate_iff_nonsingular, nonsingular_mul_iff,
+      (h.submatrix _ e₂.bijective).nonsingular]
+  · refine iff_of_false (fun hMN ↦ hlm ?_) (fun hM ↦ hlm hM.nonempty_equiv)
+    obtain ⟨e₁⟩ := hMN.nonempty_equiv
+    exact ⟨e₁.trans e₂.symm⟩
+
+omit [Fintype n] in
+theorem Nondegenerate.mul_iff_left {l m : Type*} [Finite l] [Fintype m] [Finite n]
+    {M : Matrix l m R} {N : Matrix m n R} (h : M.Nondegenerate) :
+    (M * N).Nondegenerate ↔ N.Nondegenerate := by
+  rw [← nondegenerate_transpose_iff (M := M * N), transpose_mul,
+    Nondegenerate.mul_iff_right h.transpose, nondegenerate_transpose_iff]
+
+omit [Fintype n] in
+@[deprecated nondegenerate_smul_iff +typeChanged (since := "2026-11-24")]
+theorem Nondegenerate.smul_iff
+    {A : Type*} [CommRing A] [IsDomain A] [Finite n] {t : A} (h : t ≠ 0)
+    {M : Matrix n n A} :
+    (t • M).Nondegenerate ↔ M.Nondegenerate :=
+  nondegenerate_smul_iff <| .of_ne_zero h
 
 end Nondegenerate
 
@@ -248,7 +291,7 @@ lemma det_ne_zero_of_sum_col_pos [DecidableEq n]
     · obtain ⟨j₀, -, h_j₀⟩ := Finset.exists_mem_eq_sup' Finset.univ_nonempty v
       refine ⟨j₀, ?_⟩
       rw [← mul_le_mul_iff_right₀ (h_j₀ ▸ h_sup), Finset.mul_sum, mul_zero]
-      rw [show 0 = ∑ i, v i * A i j₀ from (congrFun h_vA j₀).symm]
+      rw [show 0 = ∑ i, v i * A i j₀ from congr($h_vA j₀).symm]
       refine Finset.sum_le_sum (fun i hi => ?_)
       by_cases h : i = j₀
       · rw [h]

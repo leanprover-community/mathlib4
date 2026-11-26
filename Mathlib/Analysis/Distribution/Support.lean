@@ -5,8 +5,8 @@ Authors: Moritz Doll, Anatole Dedecker
 -/
 module
 
-public import Mathlib.Analysis.Distribution.TemperedDistribution
 public import Mathlib.Analysis.Distribution.Distribution
+public import Mathlib.Analysis.Distribution.TemperedDistribution
 
 /-! # Support of distributions
 
@@ -19,20 +19,21 @@ These definitions work independently of a specific class of distributions (class
 compactly supported) and all basic properties are proved in an abstract setting using `FunLike`.
 
 ## Main definitions
+
 * `IsVanishingOn`: A distribution vanishes on a set if it acts trivially on all test functions
   supported in that subset.
 * `dsupport`: The support of a distribution is the intersection of all closed sets for which that
   distribution vanishes on the complement of the set.
 
 ## Main statements
+
 * `dsupport_delta`: The support of the delta distribution is a single point. Available for tempered
   and classical distributions.
-
 -/
 
 @[expose] public noncomputable section
 
-variable {ι α β 𝕜 E F F₁ F₂ R V : Type*}
+variable {ι α β E F V : Type*}
 
 open scoped Topology
 
@@ -42,7 +43,7 @@ section IsVanishingOn
 
 variable [FunLike F α β] [TopologicalSpace α] [Zero β]
 
-variable {f g : F → V} {s s₁ s₂ : Set α}
+variable {f : F → V} {s s₁ s₂ : Set α}
 
 /-! ### Vanishing of distributions -/
 
@@ -84,7 +85,7 @@ section Zero
 
 variable [FunLike F α β] [TopologicalSpace α] [Zero β] [Zero V]
 
-variable {f g : F → V} {s s₁ s₂ : Set α}
+variable {f g : F → V} {s : Set α}
 
 /-- The distributional support of `f` is the intersection of all closed sets `s` such that `f`
 vanishes on the complement of `s`.
@@ -99,7 +100,7 @@ theorem mem_dsupport_iff (x : α) :
 
 /-- The complement of the support is the largest open set on which `f` vanishes. -/
 theorem dsupport_compl_eq : (dsupport f)ᶜ = ⋃₀ { a | IsVanishingOn f a ∧ IsOpen a } := by
-  simp [dsupport, Set.compl_sInter, Set.compl_image_set_of]
+  simp [dsupport, Set.compl_sInter, Set.compl_image_ofPred]
 
 @[simp high]
 theorem notMem_dsupport_iff (x : α) :
@@ -189,7 +190,7 @@ theorem smulLeftCLM (hf : IsVanishingOn f s) {g : E → ℂ} (hg : g.HasTemperat
   rw [SchwartzMap.smulLeftCLM_apply hg]
   exact (tsupport_smul_subset_right g u).trans hu
 
-@[deprecated (since := "2026-06-27")] alias Distribution.IsVanishingOn.smulLeftCLM :=
+@[deprecated (since := "2026-07-01")] alias _root_.Distribution.IsVanishingOn.smulLeftCLM :=
   Distribution.TemperedDistribution.IsVanishingOn.smulLeftCLM
 
 open LineDeriv
@@ -225,7 +226,7 @@ theorem dsupport_smulLeftCLM_subset {g : E → ℂ} (hg : g.HasTemperateGrowth) 
     dsupport (smulLeftCLM F g f) ⊆ dsupport f := by
   gcongr; fun_prop
 
-@[deprecated (since := "2026-06-27")] alias Distribution.dsupport_smulLeftCLM_subset :=
+@[deprecated (since := "2026-07-01")] alias _root_.Distribution.dsupport_smulLeftCLM_subset :=
   Distribution.TemperedDistribution.dsupport_smulLeftCLM_subset
 
 open LineDeriv
@@ -259,7 +260,9 @@ end TemperedDistribution
 
 /-! ## Classical distributions -/
 
-open TopologicalSpace Distributions
+open TopologicalSpace
+
+open scoped Distributions
 
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Opens E}

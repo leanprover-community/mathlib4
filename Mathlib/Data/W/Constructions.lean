@@ -17,6 +17,7 @@ inductively with constructors from `α` and arities of each constructor `a : α`
 This file contains `Nat` and `List` as examples of W types.
 
 ## Main results
+
 * `WType.equivNat`: the construction of the naturals as a W-type is equivalent to `Nat`
 * `WType.equivList`: the construction of lists on a type `γ` as a W-type is equivalent to `List γ`
 -/
@@ -148,6 +149,7 @@ def toList : WType (Listβ γ) → List γ
   | WType.mk Listα.nil _ => []
   | WType.mk (Listα.cons hd) f => hd :: (f PUnit.unit).toList
 
+set_option backward.isDefEq.respectTransparency false in
 theorem leftInverse_list : Function.LeftInverse (ofList γ) (toList _)
   | WType.mk Listα.nil f => by
     simp only [toList, ofList, mk.injEq, heq_eq_eq, true_and]

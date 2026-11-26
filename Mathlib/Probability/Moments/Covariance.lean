@@ -5,10 +5,13 @@ Authors: Rémy Degenne, Etienne Marion
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.Probability.Independence.Basic
-import Mathlib.Probability.Independence.Integration
 public import Mathlib.Probability.Notation
+
+import Mathlib.Probability.Independence.Integration
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Covariance
@@ -28,7 +31,6 @@ We define the covariance of two real-valued random variables.
 
 * `cov[X, Y; μ] = covariance X Y μ`
 * `cov[X, Y] = covariance X Y volume`
-
 -/
 
 @[expose] public section
@@ -152,9 +154,6 @@ lemma covariance_fun_div_left (c : ℝ) :
 lemma covariance_fun_div_right (c : ℝ) :
     cov[X, fun ω ↦ Y ω / c; μ] = cov[X, Y; μ] / c := by
   simp_rw [← inv_mul_eq_div, covariance_const_mul_right]
-
-@[deprecated (since := "2025-11-29")] alias covariance_mul_left := covariance_const_mul_left
-@[deprecated (since := "2025-11-29")] alias covariance_mul_right := covariance_const_mul_right
 
 @[simp]
 lemma covariance_neg_left : cov[-X, Y; μ] = -cov[X, Y; μ] := by

@@ -5,14 +5,15 @@ Authors: Sangwoo Jo (aka Jason), Guy Leroy, Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Divisibility.Basic
-public import Mathlib.Algebra.Group.Commute.Units
-public import Mathlib.Algebra.Group.Int.Defs
-public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Algebra.GroupWithZero.Semiconj
 public import Mathlib.Data.Set.Operations
 public import Mathlib.Order.Basic
 public import Mathlib.Order.Bounds.Defs
+
+import Mathlib.Algebra.Divisibility.Basic
+import Mathlib.Algebra.Group.Commute.Units
+import Mathlib.Algebra.Group.Int.Defs
+import Mathlib.Algebra.Group.Nat.Defs
 
 /-!
 # Extended GCD and divisibility over ℤ
@@ -45,7 +46,7 @@ def xgcdAux : ℕ → ℤ → ℤ → ℕ → ℤ → ℤ → ℕ × ℤ × ℤ 
   | 0 => (r', s', t')
   | succ k =>
     let q := r' / succ k
-    ih (r' % succ k) (mod_lt _ <| (succ_pos _).gt) (s' - q * s) (t' - q * t) (succ k) s t
+    ih (r' % succ k) (mod_lt _ (succ_pos _).gt) (s' - q * s) (t' - q * t) (succ k) s t
 
 @[simp]
 theorem xgcd_zero_left {s t r' s' t'} : xgcdAux 0 s t r' s' t' = (r', s', t') := by
@@ -250,8 +251,8 @@ theorem gcd_least_linear {a b : ℤ} (ha : a ≠ 0) :
     IsLeast { n : ℕ | 0 < n ∧ ∃ x y : ℤ, ↑n = a * x + b * y } (a.gcd b) := by
   simp_rw [← gcd_dvd_iff]
   constructor
-  · simpa [and_true, dvd_refl, Set.mem_setOf_eq] using gcd_pos_of_ne_zero_left b ha
-  · simp only [lowerBounds, and_imp, Set.mem_setOf_eq]
+  · simpa [and_true, dvd_refl, Set.mem_ofPred_eq] using gcd_pos_of_ne_zero_left b ha
+  · simp only [lowerBounds, and_imp, Set.mem_ofPred_eq]
     exact fun n hn_pos hn => Nat.le_of_dvd hn_pos hn
 
 end Int

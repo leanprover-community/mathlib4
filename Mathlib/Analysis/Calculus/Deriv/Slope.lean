@@ -22,7 +22,7 @@ We also prove some estimates on the upper/lower limits of the slope in terms of 
 For a more detailed overview of one-dimensional derivatives in mathlib, see the module docstring of
 `Mathlib/Analysis/Calculus/Deriv/Basic.lean`.
 
-## Keywords
+## Tags
 
 derivative, slope
 -/
@@ -240,8 +240,6 @@ theorem HasDerivWithinAt.liminf_right_slope_le (hf : HasDerivWithinAt f f' (Ici 
 end Real
 
 section RealSpace
-
-open Metric
 
 variable {E : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : ℝ → E} {f' : E} {s : Set ℝ}
   {x r : ℝ}

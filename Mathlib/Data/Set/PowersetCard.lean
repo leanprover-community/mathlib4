@@ -5,9 +5,9 @@ Authors: Daniel Morrison, Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Data.ENat.Lattice
-public import Mathlib.Data.Set.Card
 public import Mathlib.SetTheory.Cardinal.NatCard
+
+import Mathlib.Data.ENat.Lattice
 
 /-! # Combinations
 
@@ -19,7 +19,6 @@ Combinations in a type are finite subsets of given cardinality.
 
 * `Set.powersetCard.card` proves that the `Nat.card`-cardinality
   of this set is equal to `(Nat.card α).choose n`.
-
 -/
 
 @[expose] public section
@@ -40,11 +39,11 @@ open Finset Set Function
 @[simp]
 theorem mem_iff {s : Finset α} :
     s ∈ powersetCard α n ↔ s.card = n := by
-  rw [powersetCard, Set.mem_setOf_eq]
+  rw [powersetCard, Set.mem_ofPred_eq]
 
 instance : SetLike (powersetCard α n) α := SetLike.instSubtype
 
-instance : PartialOrder (Set.powersetCard α n) := .ofSetLike (Set.powersetCard α n) α
+instance : PartialOrder (Set.powersetCard α n) := .ofSetLike (Set.powersetCard α n)
 
 @[simp]
 theorem coe_coe {s : powersetCard α n} :
@@ -58,6 +57,14 @@ theorem card_eq (s : Set.powersetCard α n) : (s : Finset α).card = n := s.prop
 @[simp]
 theorem ncard_eq (s : Set.powersetCard α n) : (s : Set α).ncard = n := by
   rw [← coe_coe, Set.ncard_coe_finset, s.prop]
+
+theorem nonempty_iff : Nonempty (Set.powersetCard α n) ↔ n ≤ ENat.card α := by
+  refine ⟨fun ⟨s⟩ ↦ ?_, fun h ↦ ?_⟩
+  · rw [← card_eq s, ← encard_coe_eq_coe_finsetCard]
+    exact encard_le_card
+  · obtain ⟨t, -, ht⟩ := exists_subset_encard_eq (s := Set.univ) (k := n) (by simpa)
+    exact ⟨⟨(finite_of_encard_eq_coe ht).toFinset, by
+      rwa [mem_iff, ← ENat.natCast_inj, ← Set.Finite.encard_eq_coe_toFinset_card]⟩⟩
 
 theorem coe_nonempty_iff {s : Set.powersetCard α n} :
     (s : Set α).Nonempty ↔ 1 ≤ n := by
@@ -73,13 +80,13 @@ theorem eq_iff_subset {s t : Set.powersetCard α n} : s = t ↔ (s : Finset α) 
 theorem exists_mem_notMem (hn : 1 ≤ n) (hα : n < ENat.card α) {a b : α} (hab : a ≠ b) :
     ∃ s : powersetCard α n, a ∈ s ∧ b ∉ s := by
   have ha' : n ≤ Set.encard {b}ᶜ := by
-    rwa [← (Set.encard_add_encard_compl {b}).trans (Set.encard_univ α), Set.encard_singleton,
-      add_comm, ENat.lt_add_one_iff' (ENat.coe_ne_top n)] at hα
+    rwa [← encard_add_encard_compl, encard_singleton, add_comm,
+      ENat.lt_add_one_iff' (ENat.natCast_ne_top n)] at hα
   obtain ⟨s, has, has', hs⟩ :=
     Set.exists_superset_subset_encard_eq (s := {a}) (by simp [Ne.symm hab]) (by simpa) ha'
   have : Set.Finite s := Set.finite_of_encard_eq_coe hs
   exact ⟨⟨Set.Finite.toFinset this, by
-    rwa [mem_iff, ← ENat.coe_inj, ← this.encard_eq_coe_toFinset_card]⟩,
+    rwa [mem_iff, ← ENat.natCast_inj, ← this.encard_eq_coe_toFinset_card]⟩,
       by simpa using has, by simpa using has'⟩
 
 theorem exists_mem_notMem_iff_ne (s t : Set.powersetCard α n) : s ≠ t ↔ ∃ a ∈ s, a ∉ t := by
@@ -164,8 +171,8 @@ variable [DecidableEq α] [Fintype α] {m : ℕ} (hm : m + n = Fintype.card α)
 
 /-- Complement of `Finset`s as an equivalence on `Set.powersetCard`. -/
 def compl : powersetCard α n ≃ powersetCard α m where
-  toFun s := ⟨(sᶜ : Finset α), by simp [Finset.card_compl, mem_iff.mp s.2]; omega⟩
-  invFun t := ⟨(tᶜ : Finset α), by simp [Finset.card_compl, mem_iff.mp t.2]; omega⟩
+  toFun s := ⟨sᶜ, by lia [mem_iff, card_compl]⟩
+  invFun t := ⟨tᶜ, by lia [mem_iff, card_compl]⟩
   left_inv s := by simp
   right_inv t := by simp
 
@@ -182,6 +189,11 @@ theorem mem_compl {s : powersetCard α n} {a : α} :
   Finset.mem_compl
 
 theorem compl_symm : (compl hm).symm = compl ((n.add_comm m).trans hm) := rfl
+
+variable (hm) in
+lemma disjoint_iff_eq_compl {s : powersetCard α m} {t : powersetCard α n} :
+    Disjoint s.val t.val ↔ s = powersetCard.compl hm t := by
+  rw [powersetCard.eq_iff_subset, powersetCard.coe_compl, Finset.subset_compl_iff_disjoint_right]
 
 end compl
 
@@ -240,7 +252,6 @@ instance instInfinite [NeZero n] [Infinite α] : Infinite (powersetCard α n) :=
 
 protected theorem card :
     Nat.card (powersetCard α n) = (Nat.card α).choose n := by
-  classical
   cases fintypeOrInfinite α
   · simp [coe_finset]
   · rcases n with _ | n
@@ -276,15 +287,20 @@ theorem nontrivial' (h1 : 0 < n) (h2 : n < Nat.card α) :
   simp [ENat.card_eq_coe_natCard α, h2]
 
 @[simp]
-theorem eq_empty_iff [Finite α] :
-    powersetCard α n = ∅ ↔ Nat.card α < n := by
-  rw [← Set.ncard_eq_zero, ← _root_.Nat.card_coe_set_eq, powersetCard.card, Nat.choose_eq_zero_iff]
+theorem eq_empty_iff : powersetCard α n = ∅ ↔ ENat.card α < n := by
+  rw [← not_nonempty_iff_eq_empty', nonempty_iff, not_le]
 
-theorem nontrivial_iff [Finite α] :
-    Nontrivial (powersetCard α n) ↔ 0 < n ∧ n < Nat.card α := by
-  rw [← Finite.one_lt_card_iff_nontrivial, powersetCard.card, Nat.one_lt_iff_ne_zero_and_ne_one,
-    ne_eq, Nat.choose_eq_zero_iff, ne_eq, Nat.choose_eq_one_iff]
-  grind
+theorem nontrivial_iff : Nontrivial (powersetCard α n) ↔ 0 < n ∧ n < ENat.card α := by
+  cases finite_or_infinite α
+  · rw [ENat.card_eq_coe_natCard, Nat.cast_lt, ← Finite.one_lt_card_iff_nontrivial,
+      powersetCard.card, Nat.one_lt_iff_ne_zero_and_ne_one, ne_eq, Nat.choose_eq_zero_iff, ne_eq,
+      Nat.choose_eq_one_iff]
+    grind
+  · refine ⟨fun h ↦ ⟨Nat.pos_of_ne_zero ?_, by simp⟩, fun h ↦ nontrivial h.1 h.2⟩
+    rintro rfl
+    obtain ⟨s, t, hst⟩ := exists_pair_ne (powersetCard α 0)
+    exact hst <| Subtype.ext <|
+      (Finset.card_eq_zero.mp (card_eq s)).trans (Finset.card_eq_zero.mp (card_eq t)).symm
 
 /-- The bijection between the product of `(n : ℕ)` and the finsets of `α` of cardinality `n` and
 `Finset α`. -/

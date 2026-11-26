@@ -27,6 +27,7 @@ Define connected orders (the transitive symmetric closure of `≤` is everything
 (co)directed orders are connected.
 
 ## References
+
 * [Gierz et al, *A Compendium of Continuous Lattices*][GierzEtAl1980]
 -/
 
@@ -67,6 +68,28 @@ theorem directedOn_image {s : Set β} {f : β → α} :
     DirectedOn r (f '' s) ↔ DirectedOn (f ⁻¹'o r) s := by
   simp only [DirectedOn, Set.mem_image, exists_exists_and_eq_and, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂, Order.Preimage]
+
+@[to_dual directedOn_ge_image]
+theorem Monotone.directedOn_le_image [LinearOrder α] [Preorder β] {f : α → β} (hf : Monotone f)
+    (s : Set α) : DirectedOn (· ≤ ·) (f '' s) := by
+  rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩
+  exact ⟨_, Set.mem_image_of_mem _ (max_rec' _ hx hy), hf (le_max_left x y), hf (le_max_right x y)⟩
+
+@[to_dual directedOn_ge_image]
+theorem Antitone.directedOn_le_image [LinearOrder α] [Preorder β] {f : α → β} (hf : Antitone f)
+    (s : Set α) : DirectedOn (· ≤ ·) (f '' s) := by
+  rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩
+  exact ⟨_, Set.mem_image_of_mem _ (min_rec' _ hx hy), hf (min_le_left x y), hf (min_le_right x y)⟩
+
+@[to_dual directedOn_ge_range]
+theorem Monotone.directedOn_le_range [LinearOrder α] [Preorder β] {f : α → β} (hf : Monotone f) :
+    DirectedOn (· ≤ ·) (.range f) := by
+  simpa using hf.directedOn_le_image .univ
+
+@[to_dual directedOn_ge_range]
+theorem Antitone.directedOn_le_range [LinearOrder α] [Preorder β] {f : α → β} (hf : Antitone f) :
+    DirectedOn (· ≤ ·) (.range f) := by
+  simpa using hf.directedOn_le_image .univ
 
 theorem DirectedOn.mono' {s : Set α} (hs : DirectedOn r s)
     (h : ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → r a b → r' a b) : DirectedOn r' s := fun _ hx _ hy =>
@@ -220,7 +243,14 @@ lemma directedOn_iff_isDirectedOrder [LE α] {s : Set α} :
 @[to_dual]
 alias ⟨DirectedOn.isDirectedOrder, DirectedOn.of_isDirectedOrder⟩ := directedOn_iff_isDirectedOrder
 
+theorem DirectedOn.empty : DirectedOn r ∅ :=
+  fun _ ↦ False.elim
+
 section Reflexive
+
+theorem Set.Subsingleton.directedOn [Std.Refl r] {s : Set α} (h : s.Subsingleton) :
+    DirectedOn r s :=
+  fun a ha _ hb ↦ ⟨a, ha, refl a, h ha hb ▸ refl a⟩
 
 protected theorem DirectedOn.insert [Std.Refl r] (a : α) {s : Set α} (hd : DirectedOn r s)
     (ha : ∀ b ∈ s, ∃ c ∈ s, a ≼ c ∧ b ≼ c) : DirectedOn r (insert a s) := by
@@ -234,7 +264,7 @@ protected theorem DirectedOn.insert [Std.Refl r] (a : α) {s : Set α} (hd : Dir
     exact ⟨w, Set.mem_insert_of_mem _ hws, hwr⟩
 
 theorem directedOn_singleton [Std.Refl r] (a : α) : DirectedOn r ({a} : Set α) :=
-  fun x hx _ hy => ⟨x, hx, refl _, hx.symm ▸ hy.symm ▸ refl _⟩
+  Set.subsingleton_singleton.directedOn
 
 theorem directedOn_pair [Std.Refl r] {a b : α} (hab : a ≼ b) : DirectedOn r ({a, b} : Set α) :=
   (directedOn_singleton _).insert _ fun c hc => ⟨c, hc, hc.symm ▸ hab, refl _⟩
@@ -301,7 +331,7 @@ protected theorem IsMax.not_isMin [IsDirectedOrder β] {b : β} (hb : IsMax b) :
   intro hb'
   obtain ⟨a, c, hac⟩ := exists_lt_of_directed_le β
   have := hb.isTop a
-  obtain rfl := (hb' <| this).antisymm this
+  obtain rfl := (hb' this).antisymm this
   exact hb'.not_lt hac
 
 @[to_dual]

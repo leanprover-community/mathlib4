@@ -34,7 +34,8 @@ The general theory should be built assuming `[IsContinuousRiemannianBundle F E]`
 the tangent bundle. As instances related to Riemannian bundles are both costly and quite specific,
 they are scoped to the `Bundle` namespace.
 
-## Keywords
+## Tags
+
 Vector bundle, Riemannian metric
 -/
 
@@ -69,7 +70,6 @@ section Trivial
 
 variable {F₁ : Type*} [NormedAddCommGroup F₁] [InnerProductSpace ℝ F₁]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A trivial vector bundle, in which the model fiber has an inner product,
 is a Riemannian bundle. -/
 instance : IsContinuousRiemannianBundle F₁ (Bundle.Trivial B F₁) := by
@@ -498,7 +498,7 @@ that the bundle is a continuous Riemannian bundle. -/
 instance (g : ContinuousRiemannianMetric F E) :
     letI : RiemannianBundle E := ⟨g.toRiemannianMetric⟩;
     IsContinuousRiemannianBundle F E := by
-  letI : RiemannianBundle E := ⟨g.toRiemannianMetric⟩
+  let : RiemannianBundle E := ⟨g.toRiemannianMetric⟩
   exact ⟨⟨g.inner, g.continuous, fun b v w ↦ rfl⟩⟩
 
 end Construction

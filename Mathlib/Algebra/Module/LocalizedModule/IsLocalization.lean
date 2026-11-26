@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Algebra.Bilinear
 public import Mathlib.Algebra.Module.LocalizedModule.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equivalence between `IsLocalizedModule` and `IsLocalization`
 -/

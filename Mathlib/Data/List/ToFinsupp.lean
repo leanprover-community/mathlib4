@@ -7,11 +7,9 @@ module
 
 public import Mathlib.Algebra.Group.Embedding
 public import Mathlib.Algebra.Group.Finsupp
-public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Data.List.GetD
 
 /-!
-
 # Lists as finsupp
 
 ## Main definitions
@@ -26,7 +24,7 @@ public import Mathlib.Data.List.GetD
   as a finitely supported function, is equal to the sum of `Finsupp.single` produced by mapping over
   `List.enum l`.
 
-## Implementation details
+## Implementation notes
 
 The functions defined here rely on a decidability predicate that each element in the list
 can be decidably determined to be not equal to zero or that one can decide one is out of the
@@ -99,7 +97,7 @@ theorem toFinsupp_append {R : Type*} [AddZeroClass R] (l₁ l₂ : List R)
   simp only [toFinsupp_apply, Finsupp.add_apply]
   cases lt_or_ge n l₁.length with
   | inl h =>
-    rw [getD_append _ _ _ _ h, Finsupp.embDomain_notin_range, add_zero]
+    rw [getD_append _ _ _ _ h, Finsupp.embDomain_of_notMem_range, add_zero]
     rintro ⟨k, rfl : length l₁ + k = n⟩
     lia
   | inr h =>

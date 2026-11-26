@@ -29,7 +29,6 @@ equalizer diagrams.
 * [MM92]: *Sheaves in geometry and logic*, Saunders MacLane, and Ieke Moerdijk:
   Chapter III, Section 4.
 * https://stacks.math.columbia.edu/tag/00VL (sheaves on a pretopology or site)
-
 -/
 
 @[expose] public section
@@ -68,12 +67,13 @@ lemma FirstObj.ext (z₁ z₂ : FirstObj P R) (h : ∀ (Y : C) (f : Y ⟶ X)
 
 variable (P R)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Show that `FirstObj` is isomorphic to `FamilyOfElements`. -/
 @[simps]
 def firstObjEqFamily : FirstObj P R ≅ (R.FamilyOfElements P) where
   hom := ↾fun t _ _ hf ↦
     Pi.π (fun f : Σ Y, { f : Y ⟶ X // R f } => P.obj (op f.1)) ⟨_, _, hf⟩ t
-  inv := Pi.lift fun f => ↾fun x => x _ f.2.2
+  inv := Pi.lift fun f => ↾fun x => x _ f.2.property
 
 instance : Inhabited (FirstObj P (⊥ : Presieve X)) :=
   (firstObjEqFamily P _).toEquiv.inhabited
@@ -87,7 +87,7 @@ of the Stacks entry.
 -/
 @[stacks 00VM "This is the left morphism of the fork diagram there."]
 def forkMap : P.obj (op X) ⟶ FirstObj P R :=
-  Pi.lift fun f => P.map f.2.1.op
+  Pi.lift fun f => P.map f.2.val.op
 
 /-!
 This section establishes the equivalence between the sheaf condition of Equation (3) [MM92] and
@@ -118,7 +118,7 @@ variable (P S)
 /-- The map `p` of Equations (3,4) [MM92]. -/
 def firstMap : FirstObj P (S : Presieve X) ⟶ SecondObj P S :=
   Pi.lift fun fg =>
-    Pi.π _ (⟨_, _, S.downward_closed fg.2.2.2.2 fg.2.2.1⟩ : Σ Y, { f : Y ⟶ X // S f })
+    Pi.π _ (⟨_, _, S.downward_closed fg.2.2.2.property fg.2.2.1⟩ : Σ Y, { f : Y ⟶ X // S f })
 
 instance : Inhabited (SecondObj P (⊥ : Sieve X)) :=
   ⟨firstMap _ _ default⟩
@@ -148,6 +148,7 @@ theorem compatible_iff (x : FirstObj P S.arrows) :
     rw [Types.limit_ext_iff'] at t
     simpa [firstMap, secondMap] using t ⟨⟨Y, Z, g, f, hf⟩⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `P` is a sheaf for `S`, iff the fork given by `w` is an equalizer. -/
 theorem equalizer_sheaf_condition :
     Presieve.IsSheafFor P (S : Presieve X) ↔ Nonempty (IsLimit (Fork.ofι _ (w P S))) := by
@@ -188,14 +189,14 @@ contains the data used to check a family of elements for a presieve is compatibl
 @[simp, stacks 00VM "This is the rightmost object of the fork diagram there."]
 def SecondObj : Type (max v u) :=
   ∏ᶜ fun fg : (Σ Y, { f : Y ⟶ X // R f }) × Σ Z, { g : Z ⟶ X // R g } =>
-    haveI := Presieve.HasPairwisePullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
-    P.obj (op (pullback fg.1.2.1 fg.2.2.1))
+    haveI := Presieve.HasPairwisePullbacks.has_pullbacks fg.1.2.property fg.2.2.property
+    P.obj (op (pullback fg.1.2.val fg.2.2.val))
 
 /-- The map `pr₀*` of the Stacks entry. -/
 @[stacks 00VM "This is the map `pr₀*` there."]
 def firstMap : FirstObj P R ⟶ SecondObj P R :=
   Pi.lift fun fg =>
-    haveI := Presieve.HasPairwisePullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
+    haveI := Presieve.HasPairwisePullbacks.has_pullbacks fg.1.2.property fg.2.2.property
     Pi.π _ _ ≫ P.map (pullback.fst _ _).op
 
 instance [HasPullbacks C] : Inhabited (SecondObj P (⊥ : Presieve X)) :=
@@ -205,16 +206,15 @@ instance [HasPullbacks C] : Inhabited (SecondObj P (⊥ : Presieve X)) :=
 @[stacks 00VM "This is the map `pr₁*` there."]
 def secondMap : FirstObj P R ⟶ SecondObj P R :=
   Pi.lift fun fg =>
-    haveI := Presieve.HasPairwisePullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
+    haveI := Presieve.HasPairwisePullbacks.has_pullbacks fg.1.2.property fg.2.2.property
     Pi.π _ _ ≫ P.map (pullback.snd _ _).op
 
-set_option backward.isDefEq.respectTransparency false in
 theorem w : forkMap P R ≫ firstMap P R = forkMap P R ≫ secondMap P R := by
   dsimp
   ext fg
   simp only [firstMap, secondMap, forkMap]
   simp only [limit.lift_π, limit.lift_π_assoc, assoc, Fan.mk_π_app]
-  haveI := Presieve.HasPairwisePullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
+  have := Presieve.HasPairwisePullbacks.has_pullbacks fg.1.2.property fg.2.2.property
   rw [← P.map_comp, ← op_comp, pullback.condition]
   simp
 
@@ -235,6 +235,7 @@ theorem compatible_iff (x : FirstObj P R) :
     rw [Types.limit_ext_iff'] at t
     simpa [firstMap, secondMap] using t ⟨⟨⟨Y, f, hf⟩, Z, g, hg⟩⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `P` is a sheaf for `R`, iff the fork given by `w` is an equalizer. -/
 @[stacks 00VM]
 theorem sheaf_condition : R.IsSheafFor P ↔ Nonempty (IsLimit (Fork.ofι _ (w P R))) := by
@@ -258,7 +259,7 @@ theorem sheaf_condition : R.IsSheafFor P ↔ Nonempty (IsLimit (Fork.ofι _ (w P
 
 namespace Arrows
 
-variable (P : Cᵒᵖ ⥤ Type w) {X : C} (R : Presieve X) (S : Sieve X)
+variable (P : Cᵒᵖ ⥤ Type w) {X : C} (S : Sieve X)
 
 open Presieve
 
@@ -315,7 +316,6 @@ each pullback.
 def secondMap : FirstObj P X ⟶ SecondObj P X π :=
   Pi.lift fun _ => Pi.π _ _ ≫ P.map (pullback.snd _ _).op
 
-set_option backward.isDefEq.respectTransparency false in
 theorem w : forkMap P X π ≫ firstMap P X π = forkMap P X π ≫ secondMap P X π := by
   ext x ij
   dsimp [forkMap, firstMap, secondMap]

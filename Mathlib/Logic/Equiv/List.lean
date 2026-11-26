@@ -5,7 +5,10 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Logic.Denumerable
+public import Mathlib.Basic.Denumerable
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Equivalences involving `List`-like types
@@ -64,7 +67,7 @@ instance _root_.List.encodable : Encodable (List α) :=
   ⟨encodeList, decodeList, decodeList_encodeList_eq_self⟩
 
 instance _root_.List.countable {α : Type*} [Countable α] : Countable (List α) := by
-  haveI := Encodable.ofCountable α
+  have := Encodable.ofCountable α
   infer_instance
 
 @[simp]
@@ -106,7 +109,7 @@ instance _root_.Finset.countable [Countable α] : Countable (Finset α) :=
   Finset.val_injective.countable
 
 /-- A listable type with decidable equality is encodable. -/
-@[implicit_reducible]
+@[instance_reducible]
 def encodableOfList [DecidableEq α] (l : List α) (H : ∀ x, x ∈ l) : Encodable α :=
   ⟨fun a => idxOf a l, (l[·]?), fun _ => getElem?_idxOf (H _)⟩
 
@@ -114,12 +117,12 @@ def encodableOfList [DecidableEq α] (l : List α) (H : ∀ x, x ∈ l) : Encoda
 preserve computability. -/
 def _root_.Fintype.truncEncodable (α : Type*) [DecidableEq α] [Fintype α] : Trunc (Encodable α) :=
   @Quot.recOnSubsingleton _ _ (fun s : Multiset α => (∀ x : α, x ∈ s) → Trunc (Encodable α)) _
-    Finset.univ.1 (fun l H => Trunc.mk <| encodableOfList l H) Finset.mem_univ
+    Finset.univ.val (fun l H => Trunc.mk <| encodableOfList l H) Finset.mem_univ
 
 /-- A noncomputable way to arbitrarily choose an ordering on a finite type.
 It is not made into a global instance, since it involves an arbitrary choice.
 This can be locally made into an instance with `attribute [local instance] Fintype.toEncodable`. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def _root_.Fintype.toEncodable (α : Type*) [Fintype α] : Encodable α := by
   classical exact (Fintype.truncEncodable α).out
 
@@ -127,7 +130,7 @@ end Encodable
 
 namespace Denumerable
 
-variable {α : Type*} {β : Type*} [Denumerable α] [Denumerable β]
+variable {α : Type*} [Denumerable α]
 
 open Encodable
 

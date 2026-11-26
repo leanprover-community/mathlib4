@@ -5,12 +5,9 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.Defs
 public import Mathlib.GroupTheory.GroupAction.SubMulAction
-public import Mathlib.Algebra.Group.Submonoid.Basic
 
 /-!
-
 # Submodules of a module
 
 In this file we define
@@ -33,7 +30,7 @@ open Function
 
 universe u'' u' u v w
 
-variable {G : Type u''} {S : Type u'} {R : Type u} {M : Type v} {ι : Type w}
+variable {G : Type u''} {S : Type u'} {R : Type u} {M : Type v}
 
 /-- A submodule of a module is one which is closed under vector operations.
   This is a sufficient condition for the subset of vectors in the submodule
@@ -55,7 +52,7 @@ instance setLike : SetLike (Submodule R M) M where
   coe s := s.carrier
   coe_injective p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
 
-instance : PartialOrder (Submodule R M) := .ofSetLike (Submodule R M) M
+instance : PartialOrder (Submodule R M) := .ofSetLike (Submodule R M)
 
 initialize_simps_projections Submodule (carrier → coe, as_prefix coe)
 
@@ -179,7 +176,7 @@ instance (priority := 75) toModule : Module R S' := fast_instance%
 
 /-- This can't be an instance because Lean wouldn't know how to find `R`, but we can still use
 this to manually derive `Module` on specific types. -/
-@[implicit_reducible]
+@[instance_reducible]
 def toModule' (S R' R A : Type*) [Semiring R] [NonUnitalNonAssocSemiring A]
     [Module R A] [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A]
     [SetLike S A] [AddSubmonoidClass S A] [SMulMemClass S R A] (s : S) :
@@ -198,7 +195,7 @@ variable [Semiring R] [AddCommMonoid M]
 -- We can infer the module structure implicitly from the bundled submodule,
 -- rather than via typeclass resolution.
 variable {module_M : Module R M}
-variable {p q : Submodule R M}
+variable {p : Submodule R M}
 variable {r : R} {x y : M}
 variable (p)
 
@@ -236,7 +233,7 @@ lemma smul_mem_iff_of_isUnit (hr : IsUnit r) :
   smul_mem_iff'' p
 
 instance add : Add p :=
-  ⟨fun x y => ⟨x.1 + y.1, add_mem x.2 y.2⟩⟩
+  ⟨fun x y => ⟨x.val + y.val, add_mem x.property y.property⟩⟩
 
 instance zero : Zero p :=
   ⟨⟨0, zero_mem _⟩⟩
@@ -245,7 +242,7 @@ instance inhabited : Inhabited p :=
   ⟨0⟩
 
 instance smul [SMul S R] [SMul S M] [IsScalarTower S R M] : SMul S p :=
-  ⟨fun c x => ⟨c • x.1, smul_of_tower_mem _ c x.2⟩⟩
+  ⟨fun c x => ⟨c • x.val, smul_of_tower_mem _ c x.property⟩⟩
 
 instance isScalarTower [SMul S R] [SMul S M] [IsScalarTower S R M] : IsScalarTower S R p :=
   p.toSubMulAction.isScalarTower
@@ -289,7 +286,7 @@ theorem coe_mk (x : M) (hx : x ∈ p) : ((⟨x, hx⟩ : p) : M) = x :=
   rfl
 
 theorem coe_mem (x : p) : (x : M) ∈ p :=
-  x.2
+  x.property
 
 variable (p)
 
@@ -313,7 +310,7 @@ section AddCommGroup
 variable [Ring R] [AddCommGroup M]
 variable {module_M : Module R M}
 variable (p p' : Submodule R M)
-variable {r : R} {x y : M}
+variable {x y : M}
 
 instance addSubgroupClass [Module R M] : AddSubgroupClass (Submodule R M) M :=
   { Submodule.addSubmonoidClass with neg_mem := fun p {_} => p.toSubMulAction.neg_mem }

@@ -5,7 +5,6 @@ Authors: Kim Morrison
 -/
 module
 
-public import Lean.Meta.Tactic.TryThis
 public meta import Batteries.Control.Nondet.Basic
 public import Batteries.Linter.UnreachableTactic
 public import Mathlib.Tactic.Basic
@@ -17,7 +16,8 @@ The `hint` tactic tries the kitchen sink:
 it runs every tactic registered via the `register_hint <prio> tac` command
 on the current goal, and reports which ones succeed.
 
-## Future work
+## TODO
+
 It would be nice to run the tactics in parallel.
 -/
 

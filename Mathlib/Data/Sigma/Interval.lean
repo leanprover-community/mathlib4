@@ -5,8 +5,8 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.Sigma.Order
 public import Mathlib.Order.Interval.Finset.Defs
+public import Mathlib.Order.Sigma
 
 /-!
 # Finite intervals in a sigma type
@@ -78,19 +78,19 @@ variable (i : ι) (a b : α i)
 
 @[simp]
 theorem Icc_mk_mk : Icc (⟨i, a⟩ : Sigma α) ⟨i, b⟩ = (Icc a b).map (Embedding.sigmaMk i) :=
-  dif_pos rfl
+  dite_eq_left rfl
 
 @[simp]
 theorem Ico_mk_mk : Ico (⟨i, a⟩ : Sigma α) ⟨i, b⟩ = (Ico a b).map (Embedding.sigmaMk i) :=
-  dif_pos rfl
+  dite_eq_left rfl
 
 @[simp]
 theorem Ioc_mk_mk : Ioc (⟨i, a⟩ : Sigma α) ⟨i, b⟩ = (Ioc a b).map (Embedding.sigmaMk i) :=
-  dif_pos rfl
+  dite_eq_left rfl
 
 @[simp]
 theorem Ioo_mk_mk : Ioo (⟨i, a⟩ : Sigma α) ⟨i, b⟩ = (Ioo a b).map (Embedding.sigmaMk i) :=
-  dif_pos rfl
+  dite_eq_left rfl
 
 end LocallyFiniteOrder
 

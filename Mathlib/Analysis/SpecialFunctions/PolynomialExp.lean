@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
+public import Mathlib.Algebra.Polynomial.Eval.Defs
 public import Mathlib.Analysis.SpecialFunctions.Exp
 
 /-!
@@ -16,14 +17,16 @@ In this file we prove that $\lim_{x\to\infty}\frac{P(x)}{e^x}=0$ for any polynom
 
 Add more similar lemmas: limit at `-∞`, versions with $e^{cx}$ etc.
 
-## Keywords
+## Tags
 
 polynomial, limit, exponential
 -/
 
 public section
 
-open Filter Topology Real
+open Filter Real
+
+open scoped Topology
 
 namespace Polynomial
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.Quasicategory.Basic
 public import Mathlib.AlgebraicTopology.SimplicialSet.StrictSegal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Strict Segal simplicial sets are quasicategories
 
@@ -24,11 +27,12 @@ public section
 universe u
 
 open CategoryTheory
-open Simplicial SimplicialObject SimplexCategory
+open SimplicialObject SimplexCategory
+
+open scoped Simplicial
 
 namespace SSet.StrictSegal
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Any `StrictSegal` simplicial set is a `Quasicategory`. -/
 theorem quasicategory {X : SSet.{u}} (sx : StrictSegal X) : Quasicategory X := by

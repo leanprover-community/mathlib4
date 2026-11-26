@@ -5,15 +5,15 @@ Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Ne
 -/
 module
 
-public import Mathlib.Algebra.Ring.Defs
-public import Mathlib.Algebra.Opposites
 public import Mathlib.Algebra.GroupWithZero.InjSurj
+public import Mathlib.Algebra.Opposites
+public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Data.Int.Cast.Basic
 
 /-!
 # Pulling back rings along injective maps, and pushing them forward along surjective maps
 
-## Implementation note
+## Implementation notes
 
 The `nsmul` and `zsmul` assumptions on any transfer definition for an algebraic structure involving
 both addition and multiplication (e.g. `AddMonoidWithOne`) is `∀ n x, f (n • x) = n • f x`, which is
@@ -147,7 +147,7 @@ protected abbrev semiring [Semiring R] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (natCast : ∀ n : ℕ, f n = n) : Semiring S where
-  toNonUnitalSemiring := hf.nonUnitalSemiring f zero add mul nsmul
+  toAddCommMonoid := hf.addCommMonoid f zero add (swap nsmul)
   __ := hf.nonAssocSemiring f zero one add mul nsmul natCast
   __ := hf.monoidWithZero f zero one mul npow
 

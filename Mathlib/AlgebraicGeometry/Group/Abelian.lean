@@ -5,18 +5,19 @@ Authors: Andrew Yang, Christian Merten
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.AlgClosed.Basic
 public import Mathlib.AlgebraicGeometry.Geometrically.Integral
 public import Mathlib.AlgebraicGeometry.ZariskisMainTheorem
-public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp
+
+import Mathlib.AlgebraicGeometry.AlgClosed.Basic
+import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp
 
 /-!
 # Abelian varieties
 
 ## Main results
+
 - `AlgebraicGeometry.isCommMonObj_of_isProper_of_geometricallyIntegral`:
   A proper geometrically integral group scheme over a field is commutative.
-
 -/
 
 public section
@@ -31,11 +32,9 @@ variable {K : Type u} [Field K] {X : Scheme.{u}}
 
 open MonoidalCategory CartesianMonoidalCategory MonObj
 
-set_option backward.isDefEq.respectTransparency false in
 instance (G : Over (Spec (.of K))) [GrpObj G] : IsClosedImmersion η[G].left :=
   isClosedImmersion_of_comp_eq_id (Y := Spec (.of K)) G.hom η[G].left (by simp)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem isCommMonObj_of_isProper_of_isIntegral_tensorObj_of_isAlgClosed [IsAlgClosed K]
     (G : Over (Spec (.of K))) [IsProper G.hom] [IsIntegral (G ⊗ G).left] [GrpObj G] :
@@ -68,7 +67,7 @@ theorem isCommMonObj_of_isProper_of_isIntegral_tensorObj_of_isAlgClosed [IsAlgCl
       · exact (((lift η[G] η[G]).left.isClosedMap _ hpoint).preimage γ.left.continuous).isOpen_compl
       · exact (η[G].left.isClosedMap _ hpoint).preimage (fst G G).left.continuous
     obtain ⟨⟨c, hc⟩, e⟩ := (pointEquivClosedPoint (G ⊗ G).hom).surjective ⟨c₀, hc₃⟩
-    obtain rfl : c point = c₀ := congr(($e).1)
+    obtain rfl : c point = c₀ := congr(($e).val)
     let fc : 𝟙_ (Over S) ⟶ 𝟙_ (Over S) ⊗ G := lift (𝟙 _) (Over.homMk c hc ≫ snd G G)
     have : c ≫ pullback.fst G.hom G.hom = η[G].left :=
       ext_of_apply_closedPoint_eq G.hom (by simpa) (by simp) (by simpa)
@@ -82,10 +81,10 @@ theorem isCommMonObj_of_isProper_of_isIntegral_tensorObj_of_isAlgClosed [IsAlgCl
       dsimp [-Scheme.Hom.comp_base, γ]
       simp only [pullback.lift_fst]
       exact (Set.finite_singleton _).subset H)
-  have H (x : U) : ((pullback.fst G.hom G.hom) ⁻¹' {x.1} ∩ Set.range ⇑γ.left).Finite := by
+  have H (x : U) : ((pullback.fst G.hom G.hom) ⁻¹' {x.val} ∩ Set.range ⇑γ.left).Finite := by
     refine ((((γ.left.imageι ≫ (fst G G).left) ∣_ U).finite_preimage_singleton x).image
       (Scheme.Opens.ι _ ≫ γ.left.imageι)).subset ?_
-    have : U.ι ⁻¹' {x.1} = {x} := by ext; simp
+    have : U.ι ⁻¹' {x.val} = {x} := by ext; simp
     rw [← this, ← Set.preimage_comp, ← TopCat.coe_comp, ← Scheme.Hom.comp_base,
       morphismRestrict_ι, ← Category.assoc, Scheme.Hom.comp_base (_ ≫ _) (fst G G).left,
       TopCat.coe_comp, Set.preimage_comp, Set.image_preimage_eq_inter_range]
@@ -93,7 +92,7 @@ theorem isCommMonObj_of_isProper_of_isIntegral_tensorObj_of_isAlgClosed [IsAlgCl
     dsimp
     rw [Set.image_preimage_eq_inter_range, Scheme.IdealSheafData.range_subschemeι,
       Scheme.Hom.support_ker, ← Set.inter_assoc, ← Set.preimage_inter,
-      Set.singleton_inter_of_mem x.2, IsClosed.closure_eq
+      Set.singleton_inter_of_mem x.property, IsClosed.closure_eq
       (by exact γ.left.isClosedMap.isClosed_range)]
   -- It suffices to check set-theoretic equality on closed points of `U ×[k] G`.
   refine ext_of_apply_eq G.hom _
@@ -112,7 +111,7 @@ theorem isCommMonObj_of_isProper_of_isIntegral_tensorObj_of_isAlgClosed [IsAlgCl
         γ.left.isClosedMap ((H ⟨_, hyU⟩).subset (Set.image_subset_iff.mpr fun _ ↦ by
           simp [← Scheme.Hom.comp_apply, -Scheme.Hom.comp_base, γ])) ?_ ?_
       · let α : G ⊗ G ⟶ G ⊗ G := toUnit _ ≫ x ⊗ₘ 𝟙 _
-        convert!
+        convert
           ((IrreducibleSpace.isIrreducible_univ _).image α.left
               α.left.continuous.continuousOn).isPreirreducible
         rw [Over.tensorHom_left]
@@ -122,12 +121,11 @@ theorem isCommMonObj_of_isProper_of_isIntegral_tensorObj_of_isAlgClosed [IsAlgCl
         · simp [xe, ← Scheme.Hom.comp_apply, -Scheme.Hom.comp_base]
         · simp only [xe, γ, ← Scheme.Hom.comp_apply, ← Over.comp_left]
           congr 6; ext <;> simp
-    convert! congr((snd G G).left $this) using 1
+    convert congr((snd G G).left $this) using 1
     · simp [γ, ← Scheme.Hom.comp_apply]
     · simp [xe, ← Scheme.Hom.comp_apply, -Scheme.Hom.comp_base]
   · simp
 
-set_option backward.defeqAttrib.useBackward true in
 /-- A proper geometrically integral group scheme over a field is commutative. -/
 @[stacks 0BFD]
 theorem isCommMonObj_of_isProper_of_geometricallyIntegral

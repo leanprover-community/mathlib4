@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.Contraction
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The coevaluation map on finite-dimensional vector spaces
 
@@ -17,7 +20,7 @@ from `K` to `V ⊗ Dual K V` which corresponds to the identity function on `V`.
 
 coevaluation, dual module, tensor product
 
-## Future work
+## TODO
 
 * Prove that this is independent of the choice of basis on `V`.
 -/
@@ -63,7 +66,7 @@ theorem contractLeft_assoc_coevaluation :
         (TensorProduct.assoc K _ _ _).symm.toLinearMap ∘ₗ
           (coevaluation K V).lTensor (Module.Dual K V) =
       (TensorProduct.lid K _).symm.toLinearMap ∘ₗ (TensorProduct.rid K _).toLinearMap := by
-  letI := Classical.decEq (Basis.ofVectorSpaceIndex K V)
+  let := Classical.decEq (Basis.ofVectorSpaceIndex K V)
   apply TensorProduct.ext
   apply (Basis.ofVectorSpace K V).dualBasis.ext; intro j; apply LinearMap.ext_ring
   rw [LinearMap.compr₂ₛₗ_apply, LinearMap.compr₂ₛₗ_apply, TensorProduct.mk_apply]
@@ -73,7 +76,7 @@ theorem contractLeft_assoc_coevaluation :
   rw [TensorProduct.tmul_sum, map_sum]; simp only [assoc_symm_tmul]
   rw [map_sum]; simp only [LinearMap.rTensor_tmul, contractLeft_apply]
   simp only [Basis.coe_dualBasis, Basis.coord_apply, Basis.repr_self_apply, TensorProduct.ite_tmul]
-  rw [Finset.sum_ite_eq']; simp only [Finset.mem_univ, if_true]
+  rw [Finset.sum_ite_eq']; simp only [Finset.mem_univ, ite_true]
 
 /-- This lemma corresponds to one of the coherence laws for duals in rigid categories, see
   `CategoryTheory.Monoidal.Rigid`. -/
@@ -81,7 +84,7 @@ theorem contractLeft_assoc_coevaluation' :
     (contractLeft K V).lTensor _ ∘ₗ
         (TensorProduct.assoc K _ _ _).toLinearMap ∘ₗ (coevaluation K V).rTensor V =
       (TensorProduct.rid K _).symm.toLinearMap ∘ₗ (TensorProduct.lid K _).toLinearMap := by
-  letI := Classical.decEq (Basis.ofVectorSpaceIndex K V)
+  let := Classical.decEq (Basis.ofVectorSpaceIndex K V)
   apply TensorProduct.ext
   apply LinearMap.ext_ring; apply (Basis.ofVectorSpace K V).ext; intro j
   rw [LinearMap.compr₂ₛₗ_apply, LinearMap.compr₂ₛₗ_apply, TensorProduct.mk_apply]
@@ -91,6 +94,6 @@ theorem contractLeft_assoc_coevaluation' :
   rw [TensorProduct.sum_tmul, map_sum]; simp only [assoc_tmul]
   rw [map_sum]; simp only [LinearMap.lTensor_tmul, contractLeft_apply]
   simp only [Basis.coord_apply, Basis.repr_self_apply, TensorProduct.tmul_ite]
-  rw [Finset.sum_ite_eq]; simp only [Finset.mem_univ, if_true]
+  rw [Finset.sum_ite_eq]; simp only [Finset.mem_univ, ite_true]
 
 end coevaluation

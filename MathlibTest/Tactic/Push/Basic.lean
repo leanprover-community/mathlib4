@@ -35,6 +35,10 @@ example {r : ℕ → Prop} : ∀ n : ℕ, p ∨ r n ∧ q ∧ n = 1 := by
   guard_target =ₛ ∀ n : ℕ, p ∨ r n ∧ q ∧ n = 1
   exact test_sorry
 
+/-- info: ∃ f, (∀ (x : ℕ) (x_1 : x > 0), f x x_1 > 0) ∧ ∀ (x : ℕ) (x_1 : x > 0), x = f x x_1 -/
+#guard_msgs in
+#push ∀ _, _ => ∀ ε > 0, ∃ δ > 0, ε = δ
+
 example {r : ℕ → Prop} : ∃ n : ℕ, p ∨ r n ∨ q ∧ n = 1 := by
   push ∃ n, _
   guard_target =ₛ p ∨ (∃ n, r n) ∨ q ∧ True
@@ -51,11 +55,11 @@ info: DiscrTree branch for Or:
   (node
    (* => (node
      (False => (node #[or_false:1000]))
-     (And => (node (* => (node (* => (node #[or_and_left:1000]))))))
+     (And => (chain * => (chain * => (node #[or_and_left:1000]))))
      (True => (node #[or_true:1000]))))
-   (False => (node (* => (node #[false_or:1000]))))
-   (And => (node (* => (node (* => (node (* => (node #[and_or_right:1000]))))))))
-   (True => (node (* => (node #[true_or:1000])))))
+   (False => (chain * => (node #[false_or:1000])))
+   (And => (chain * => (chain * => (chain * => (node #[and_or_right:1000])))))
+   (True => (chain * => (node #[true_or:1000]))))
 -/
 #guard_msgs in
 #push_discr_tree Or

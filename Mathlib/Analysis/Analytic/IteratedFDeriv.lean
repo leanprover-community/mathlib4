@@ -6,8 +6,11 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Calculus.ContDiff.Operations
-public import Mathlib.Analysis.Calculus.ContDiff.CPolynomial
-public import Mathlib.Data.Fintype.Perm
+
+import Mathlib.Analysis.Calculus.ContDiff.CPolynomial
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The iterated derivative of an analytic function
@@ -128,6 +131,7 @@ lemma ContinuousMultilinearMap.iteratedFDeriv_comp_diagonal
   obtain ⟨y, rfl⟩ := σ.equivOfFiniteSelfEmbedding.surjective i
   simp [Function.Embedding.equivOfFiniteSelfEmbedding, g]
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma HasFPowerSeriesWithinOnBall.iteratedFDerivWithin_eq_sum_of_subset
     (h : HasFPowerSeriesWithinOnBall f p s x r) (h' : AnalyticOn 𝕜 f s)
     (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s)

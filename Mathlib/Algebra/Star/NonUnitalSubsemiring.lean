@@ -5,10 +5,11 @@ Authors: Christopher Hoskin
 -/
 module
 
-public import Mathlib.Algebra.Ring.Defs
-public import Mathlib.Algebra.Group.Subsemigroup.Basic
-public import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 public import Mathlib.Algebra.Star.Center
+public import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Non-unital Star Subsemirings
@@ -18,14 +19,13 @@ In this file we define `NonUnitalStarSubsemiring`s and the usual operations on t
 ## Implementation
 
 This file is heavily inspired by `Mathlib/Algebra/Star/NonUnitalSubalgebra.lean`.
-
 -/
 
 @[expose] public section
 
 universe v w w'
 
-variable {A : Type v} {B : Type w} {C : Type w'}
+variable {A : Type v}
 
 /-- A sub star semigroup is a subset of a magma which is closed under the `star`. -/
 structure SubStarSemigroup (M : Type v) [Mul M] [Star M] : Type v

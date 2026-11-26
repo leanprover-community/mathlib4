@@ -13,10 +13,10 @@ public import Mathlib.Topology.Compactness.LocallyFinite
 # Sigma-compactness in topological spaces
 
 ## Main definitions
+
 * `IsSigmaCompact`: a set that is the union of countably many compact sets.
 * `SigmaCompactSpace X`: `X` is a σ-compact topological space; i.e., is the union
   of a countable collection of compact subspaces.
-
 -/
 
 @[expose] public section
@@ -145,7 +145,7 @@ class SigmaCompactSpace (X : Type*) [TopologicalSpace X] : Prop where
 
 /-- A topological space is σ-compact iff `univ` is σ-compact. -/
 lemma isSigmaCompact_univ_iff : IsSigmaCompact (univ : Set X) ↔ SigmaCompactSpace X :=
-  ⟨fun h => ⟨h⟩, fun h => h.1⟩
+  ⟨fun h => ⟨h⟩, fun h => h.isSigmaCompact_univ⟩
 
 /-- In a σ-compact space, `univ` is σ-compact. -/
 lemma isSigmaCompact_univ [h : SigmaCompactSpace X] : IsSigmaCompact (univ : Set X) :=
@@ -199,7 +199,9 @@ variable [SigmaCompactSpace X]
 open SigmaCompactSpace
 
 /-- A choice of compact covering for a `σ`-compact space, chosen to be monotone. -/
-def compactCovering : ℕ → Set X :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def compactCovering : ℕ → Set X :=
   accumulate exists_compact_covering.choose
 
 theorem isCompact_compactCovering (n : ℕ) : IsCompact (compactCovering X n) :=
@@ -280,7 +282,7 @@ protected theorem LocallyFinite.countable_univ {f : ι → Set X} (hf : LocallyF
 
 /-- If `f : ι → Set X` is a locally finite covering of a σ-compact topological space by nonempty
 sets, then the index type `ι` is encodable. -/
-@[implicit_reducible]
+@[instance_reducible]
 protected noncomputable def LocallyFinite.encodable {ι : Type*} {f : ι → Set X}
     (hf : LocallyFinite f) (hne : ∀ i, (f i).Nonempty) : Encodable ι :=
   @Encodable.ofEquiv _ _ (hf.countable_univ hne).toEncodable (Equiv.Set.univ _).symm
@@ -331,11 +333,12 @@ structure CompactExhaustion (X : Type*) [TopologicalSpace X] where
 
 namespace CompactExhaustion
 
+@[macro_inline]
 instance : FunLike (CompactExhaustion X) ℕ (Set X) where
   coe := toFun
   coe_injective | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, rfl => rfl
 
-instance : RelHomClass (CompactExhaustion X) LE.le HasSubset.Subset where
+instance : OrderHomClass (CompactExhaustion X) ℕ (Set X) where
   map_rel f _ _ h := monotone_nat_of_le_succ
     (fun n ↦ (f.subset_interior_succ' n).trans interior_subset) h
 
@@ -378,7 +381,7 @@ theorem exists_superset_of_isCompact {s : Set X} (hs : IsCompact s) : ∃ n, s �
     exact mem_iUnion.2 ⟨k + 1, K.subset_interior_succ _ hk⟩
   · exact Monotone.directed_le fun _ _ h ↦ interior_mono <| K.subset h
 
-open Classical in
+open scoped Classical in
 /-- The minimal `n` such that `x ∈ K n`. -/
 protected noncomputable def find (x : X) : ℕ :=
   Nat.find (K.exists_mem x)
@@ -417,10 +420,10 @@ noncomputable def choice (X : Type*) [TopologicalSpace X] [WeaklyLocallyCompactS
   apply Classical.choice
   let K : ℕ → { s : Set X // IsCompact s } := fun n =>
     Nat.recOn n ⟨∅, isCompact_empty⟩ fun n s =>
-      ⟨(exists_compact_superset s.2).choose ∪ compactCovering X n,
-        (exists_compact_superset s.2).choose_spec.1.union (isCompact_compactCovering _ _)⟩
-  refine ⟨⟨fun n ↦ (K n).1, fun n => (K n).2, fun n ↦ ?_, ?_⟩⟩
-  · exact Subset.trans (exists_compact_superset (K n).2).choose_spec.2
+      ⟨(exists_compact_superset s.property).choose ∪ compactCovering X n,
+        (exists_compact_superset s.property).choose_spec.1.union (isCompact_compactCovering _ _)⟩
+  refine ⟨⟨fun n ↦ (K n).val, fun n => (K n).property, fun n ↦ ?_, ?_⟩⟩
+  · exact Subset.trans (exists_compact_superset (K n).property).choose_spec.2
       (interior_mono subset_union_left)
   · refine univ_subset_iff.1 (iUnion_compactCovering X ▸ ?_)
     exact iUnion_mono' fun n => ⟨n + 1, subset_union_right⟩

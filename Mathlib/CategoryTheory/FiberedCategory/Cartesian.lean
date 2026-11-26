@@ -34,6 +34,7 @@ difference between the two is that the latter is more flexible with respect to n
 equalities.
 
 ## References
+
 * [A. Grothendieck, M. Raynaud, *SGA 1*](https://arxiv.org/abs/math/0206203)
 * [Stacks: Fibred Categories](https://stacks.math.columbia.edu/tag/02XJ)
 -/
@@ -390,7 +391,7 @@ instance domainUniqueUpToIso_inv_isHomLift (h : f' = g.hom ≫ f) (φ : a ⟶ b)
 instance domainUniqueUpToIso_hom_isHomLift (h : f' = g.hom ≫ f) (φ : a ⟶ b) (φ' : a' ⟶ b)
     [IsStronglyCartesian p f φ] [IsStronglyCartesian p f' φ'] :
     IsHomLift p g.inv (domainIsoOfBaseIso p h φ φ').inv := by
-  haveI : p.IsHomLift ((fun x ↦ g.inv ≫ x) (g.hom ≫ f)) φ := by
+  have : p.IsHomLift ((fun x ↦ g.inv ≫ x) (g.hom ≫ f)) φ := by
     simpa using IsCartesian.toIsHomLift
   simpa using IsStronglyCartesian.map_isHomLift p f' φ' (congrArg (g.inv ≫ ·) h.symm) φ
 

@@ -6,16 +6,19 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Module.Presentation.Basic
-public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 public import Mathlib.LinearAlgebra.FreeModule.Basic
-public import Mathlib.Logic.UnivLE
+
+import Mathlib.Basic.UnivLE
+import Mathlib.LinearAlgebra.Finsupp.VectorSpace
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Presentation of free modules
 
 A module is free iff it admits a presentation with generators but no relation,
 see `Module.free_iff_exists_presentation`.
-
 -/
 
 @[expose] public section

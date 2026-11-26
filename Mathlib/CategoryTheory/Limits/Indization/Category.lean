@@ -7,12 +7,12 @@ module
 
 public import Mathlib.CategoryTheory.Functor.Flat
 public import Mathlib.CategoryTheory.Limits.Constructions.Filtered
-public import Mathlib.CategoryTheory.Limits.FullSubcategory
 public import Mathlib.CategoryTheory.Limits.ExactFunctor
 public import Mathlib.CategoryTheory.Limits.Indization.Equalizers
 public import Mathlib.CategoryTheory.Limits.Indization.LocallySmall
-public import Mathlib.CategoryTheory.Limits.Indization.Products
-public import Mathlib.CategoryTheory.Limits.Preserves.Presheaf
+
+import Mathlib.CategoryTheory.Limits.Indization.Products
+import Mathlib.CategoryTheory.Limits.Preserves.Presheaf
 
 /-!
 # The category of Ind-objects
@@ -53,6 +53,7 @@ Note that:
 * the functor `C ⥤ Ind C` preserves finite colimits, but not infinite colimits in general.
 
 ## References
+
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Chapter 6
 -/
 
@@ -62,7 +63,7 @@ universe w v u
 
 namespace CategoryTheory
 
-open Limits Functor
+open Limits CategoryTheory.Functor
 
 variable {C : Type u} [Category.{v} C]
 
@@ -178,7 +179,7 @@ instance : PreservesLimits (Ind.yoneda (C := C)) :=
   preservesLimits_of_reflects_of_preserves Ind.yoneda (Ind.inclusion C)
 
 theorem Ind.isIndObject_inclusion_obj (X : Ind C) : IsIndObject ((Ind.inclusion C).obj X) :=
-  X.2
+  X.property
 
 /-- Pick a presentation of an ind-object `X` using choice. -/
 noncomputable def Ind.presentation (X : Ind C) : IndObjectPresentation ((Ind.inclusion C).obj X) :=
@@ -277,20 +278,22 @@ noncomputable def IndParallelPairPresentation.parallelPairIsoParallelPairCompInd
 instance [HasColimitsOfShape WalkingParallelPair C] :
     HasColimitsOfShape WalkingParallelPair (Ind C) := by
   refine ⟨fun F => ?_⟩
-  obtain ⟨P⟩ := nonempty_indParallelPairPresentation (F.obj WalkingParallelPair.zero).2
-    (F.obj WalkingParallelPair.one).2 (Ind.inclusion _ |>.map <| F.map WalkingParallelPairHom.left)
+  obtain ⟨P⟩ := nonempty_indParallelPairPresentation (F.obj WalkingParallelPair.zero).property
+    (F.obj WalkingParallelPair.one).property
+    (Ind.inclusion _ |>.map <| F.map WalkingParallelPairHom.left)
     (Ind.inclusion _ |>.map <| F.map WalkingParallelPairHom.right)
   exact hasColimit_of_iso (diagramIsoParallelPair _ ≪≫ P.parallelPairIsoParallelPairCompIndYoneda)
 
 instance [HasFiniteColimits C] : HasColimits (Ind C) :=
   has_colimits_of_hasCoequalizers_and_coproducts
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A way to understand morphisms in `Ind C`: every morphism is induced by a natural transformation
 of diagrams. -/
 theorem Ind.exists_nonempty_arrow_mk_iso_ind_lim {A B : Ind C} {f : A ⟶ B} :
     ∃ (I : Type v) (_ : SmallCategory I) (_ : IsFiltered I) (F G : I ⥤ C) (φ : F ⟶ G),
       Nonempty (Arrow.mk f ≅ Arrow.mk ((Ind.lim _).map φ)) := by
-  obtain ⟨P⟩ := nonempty_indParallelPairPresentation A.2 B.2
+  obtain ⟨P⟩ := nonempty_indParallelPairPresentation A.property B.property
     (Ind.inclusion _ |>.map f) (Ind.inclusion _ |>.map f)
   refine ⟨P.I, inferInstance, inferInstance, P.F₁, P.F₂, P.φ, ⟨Arrow.isoMk ?_ ?_ ?_⟩⟩
   · exact P.parallelPairIsoParallelPairCompIndYoneda.app WalkingParallelPair.zero

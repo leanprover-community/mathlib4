@@ -6,8 +6,11 @@ Authors: Christian Merten
 module
 
 public import Mathlib.Algebra.Category.MonCat.Basic
-public import Mathlib.CategoryTheory.ShrinkYoneda
 public import Mathlib.Algebra.Group.Shrink
+public import Mathlib.CategoryTheory.ShrinkYoneda
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Shrinking a functor to `MonCat`
@@ -32,7 +35,7 @@ monoids are `w`-small. -/
 @[simps, pp_with_univ]
 noncomputable def MonCat.shrinkFunctor (F : C ⥤ MonCat.{w'}) [∀ X, Small.{w} (F.obj X)] :
     C ⥤ MonCat.{w} where
-  obj X := MonCat.of (Shrink.{w} (F.obj X))
+  obj X := ↧(Shrink.{w} (F.obj X))
   map {X Y} f := MonCat.ofHom <|
     (Shrink.mulEquiv.symm.toMonoidHom.comp (F.map f).hom).comp Shrink.mulEquiv.toMonoidHom
 

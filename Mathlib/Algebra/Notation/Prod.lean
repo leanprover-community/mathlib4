@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Notation.Defs
 public import Mathlib.Data.Prod.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Arithmetic operators on (pairwise) product types
 
@@ -15,14 +18,13 @@ This file provides only the notation for (componentwise) `0`, `1`, `+`, `*`, `â€
 (pairwise) product types. See `Mathlib/Algebra/Group/Prod.lean` for the `Monoid` and `Group`
 instances. There is also an instance of the `Star` notation typeclass, but no default notation is
 included.
-
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Monoid DenselyOrdered
 
-variable {G H M N P R S : Type*}
+variable {G H M N R S : Type*}
 
 namespace Prod
 

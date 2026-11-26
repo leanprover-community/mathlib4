@@ -5,10 +5,11 @@ Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 -/
 module
 
-public import Mathlib.Order.Filter.Bases.Basic
 public import Mathlib.Order.Filter.AtTopBot.Tendsto
+public import Mathlib.Order.Filter.Bases.Basic
 public import Mathlib.Order.Nat
-public import Mathlib.Tactic.Subsingleton
+
+import Mathlib.Tactic.Subsingleton
 
 /-!
 # Basic results on `Filter.atTop` and `Filter.atBot` filters
@@ -20,7 +21,7 @@ public section
 
 assert_not_exists Finset
 
-variable {ι ι' α β γ : Type*}
+variable {ι ι' α β : Type*}
 
 open Set
 
@@ -34,7 +35,7 @@ theorem hasAntitoneBasis_atTop [Nonempty α] : (@atTop α _).HasAntitoneBasis Ic
   .iInf_principal fun _ _ ↦ Ici_subset_Ici.2
 
 theorem atTop_basis [Nonempty α] : (@atTop α _).HasBasis (fun _ => True) Ici :=
-  hasAntitoneBasis_atTop.1
+  hasAntitoneBasis_atTop.toHasBasis
 
 @[to_dual existing]
 lemma atBot_basis {α : Type*} [Preorder α] [IsCodirectedOrder α] [Nonempty α] :
@@ -146,7 +147,8 @@ variable [Preorder α] [IsDirectedOrder α] {F : Filter β} {u : α → β}
 @[to_dual inf_map_atBot_neBot_iff]
 theorem inf_map_atTop_neBot_iff [Nonempty α] :
     NeBot (F ⊓ map u atTop) ↔ ∀ U ∈ F, ∀ N, ∃ n, N ≤ n ∧ u n ∈ U := by
-  simp_rw [inf_neBot_iff_frequently_left, frequently_map, frequently_atTop]; rfl
+  simp_rw [inf_neBot_iff_frequently_left, frequently_map, frequently_atTop]
+  exact ⟨fun h U hU ↦ h (p := (· ∈ U)) hU, fun h p hp ↦ h {x | p x} hp⟩
 
 variable [Preorder β]
 
@@ -166,6 +168,13 @@ theorem exists_lt_of_tendsto_atTop [NoMaxOrder β] (h : Tendsto u atTop atTop) (
   exact ⟨a', ha', lt_of_lt_of_le hb' ha''⟩
 
 end IsDirected
+
+theorem Tendsto.exists_le_lt_succ [LinearOrder α] [NoMaxOrder α] {c : ℕ → α}
+    (hc : Tendsto c atTop atTop) {a : ℕ} {x : α} (hx : c a ≤ x) :
+    ∃ k ≥ a, c k ≤ x ∧ x < c (k + 1) := by
+  by_contra! h
+  obtain ⟨k, hak, hk⟩ := exists_lt_of_tendsto_atTop hc a x
+  exact (Nat.le_induction (motive := fun k _ ↦ c k ≤ x) hx h k hak).not_gt hk
 
 section IsDirected
 variable [Nonempty α] [Preorder α] [IsDirectedOrder α] {f : α → β} {l : Filter β}
@@ -372,7 +381,7 @@ end NeBot
 
 theorem HasAntitoneBasis.eventually_subset [Preorder ι] {l : Filter α} {s : ι → Set α}
     (hl : l.HasAntitoneBasis s) {t : Set α} (ht : t ∈ l) : ∀ᶠ i in atTop, s i ⊆ t :=
-  let ⟨i, _, hi⟩ := hl.1.mem_iff.1 ht
+  let ⟨i, _, hi⟩ := hl.toHasBasis.mem_iff.1 ht
   (eventually_ge_atTop i).mono fun _j hj => (hl.antitone hj).trans hi
 
 protected theorem HasAntitoneBasis.tendsto [Preorder ι] {l : Filter α} {s : ι → Set α}
@@ -383,7 +392,7 @@ theorem HasAntitoneBasis.comp_mono [Nonempty ι] [Preorder ι] [IsDirectedOrder 
     {l : Filter α}
     {s : ι' → Set α} (hs : l.HasAntitoneBasis s) {φ : ι → ι'} (φ_mono : Monotone φ)
     (hφ : Tendsto φ atTop atTop) : l.HasAntitoneBasis (s ∘ φ) :=
-  ⟨hs.1.to_hasBasis
+  ⟨hs.toHasBasis.to_hasBasis
       (fun n _ => (hφ.eventually_ge_atTop n).exists.imp fun _m hm => ⟨trivial, hs.antitone hm⟩)
       fun n _ => ⟨φ n, trivial, Subset.rfl⟩,
     hs.antitone.comp_monotone φ_mono⟩

@@ -7,13 +7,17 @@ module
 
 public import Mathlib.AlgebraicGeometry.Properties
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Function field of integral schemes
 
 We define the function field of an irreducible scheme as the stalk of the generic point.
 This is a field when the scheme is integral.
 
-## Main definition
+## Main definitions
+
 * `AlgebraicGeometry.Scheme.functionField`: The function field of an integral scheme.
 * `AlgebraicGeometry.Scheme.germToFunctionField`: The canonical map from a component into the
   function field. This map is injective.
@@ -59,24 +63,30 @@ theorem germ_injective_of_isIntegral [IsIntegral X] {U : X.Opens} (x : X) (hx : 
   rw [← (X.presheaf.germ U x hx).hom.map_zero] at hy
   obtain ⟨W, hW, iU, iV, e⟩ := X.presheaf.germ_eq _ hx hx _ _ hy
   cases Subsingleton.elim iU iV
-  haveI : Nonempty W := ⟨⟨_, hW⟩⟩
+  have : Nonempty W := ⟨⟨_, hW⟩⟩
   exact map_injective_of_isIntegral X iU e
+
+instance [IsIntegral X] {U : X.Opens} (x : U) : FaithfulSMul Γ(X, U) (X.presheaf.stalk x) :=
+  (faithfulSMul_iff_algebraMap_injective _ _).mpr (germ_injective_of_isIntegral X x x.property)
 
 theorem Scheme.germToFunctionField_injective [IsIntegral X] (U : X.Opens) [Nonempty U] :
     Function.Injective (X.germToFunctionField U) :=
   germ_injective_of_isIntegral _ _ _
 
+instance [IsIntegral X] (U : X.Opens) [Nonempty U] : FaithfulSMul Γ(X, U) X.functionField :=
+  (faithfulSMul_iff_algebraMap_injective _ _).mpr (X.germToFunctionField_injective U)
+
 theorem genericPoint_eq_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [IsOpenImmersion f]
     [hX : IrreducibleSpace X] [IrreducibleSpace Y] :
     f (genericPoint X) = genericPoint Y := by
   apply ((genericPoint_spec Y).eq _).symm
-  convert! (genericPoint_spec X).image f.continuous
+  convert (genericPoint_spec X).image f.continuous
   symm
   rw [← Set.univ_subset_iff]
-  convert! subset_closure_inter_of_isPreirreducible_of_isOpen _ f.isOpenEmbedding.isOpen_range _
+  convert subset_closure_inter_of_isPreirreducible_of_isOpen _ f.isOpenEmbedding.isOpen_range _
   · rw [Set.univ_inter, Set.image_univ]
   · apply PreirreducibleSpace.isPreirreducible_univ (X := Y)
-  · exact ⟨_, trivial, Set.mem_range_self hX.2.some⟩
+  · exact ⟨_, trivial, Set.mem_range_self hX.toNonempty.some⟩
 
 noncomputable instance stalkFunctionFieldAlgebra [IrreducibleSpace X] (x : X) :
     Algebra (X.presheaf.stalk x) X.functionField := by
@@ -88,8 +98,15 @@ instance functionField_isScalarTower [IrreducibleSpace X] (U : X.Opens) (x : U)
     [Nonempty U] : IsScalarTower Γ(X, U) (X.presheaf.stalk x) X.functionField := by
   apply IsScalarTower.of_algebraMap_eq'
   simp_rw [RingHom.algebraMap_toAlgebra]
-  change _ = (X.presheaf.germ U x x.2 ≫ _).hom
+  change _ = (X.presheaf.germ U x x.property ≫ _).hom
   rw [X.presheaf.germ_stalkSpecializes]
+
+@[simp]
+lemma Scheme.algebraMap_germ_eq_germToFunctionField [IrreducibleSpace X]
+    {U : X.Opens} [Nonempty U] {x : X} (hx : x ∈ U) (f : Γ(X, U)) :
+    algebraMap (X.presheaf.stalk x) X.functionField (X.presheaf.germ U x hx f) =
+      X.germToFunctionField U f := by
+  simp [RingHom.algebraMap_toAlgebra, ← ConcreteCategory.comp_apply]
 
 noncomputable instance (R : CommRingCat.{u}) [IsDomain R] :
     Algebra R (Spec R).functionField :=
@@ -108,7 +125,7 @@ theorem genericPoint_eq_bot_of_affine (R : CommRingCat) [IsDomain R] :
 
 instance functionField_isFractionRing_of_affine (R : CommRingCat.{u}) [IsDomain R] :
     IsFractionRing R (Spec R).functionField := by
-  convert! StructureSheaf.IsLocalization.to_stalk R (genericPoint (Spec R))
+  convert StructureSheaf.IsLocalization.to_stalk R (genericPoint (Spec R))
   delta IsFractionRing IsLocalization.AtPrime
   -- Porting note: `congr` does not work for `Iff`
   apply Eq.to_iff
@@ -142,7 +159,7 @@ theorem functionField_isFractionRing_of_isAffineOpen [IsIntegral X] (U : X.Opens
     (hU : IsAffineOpen U) [Nonempty U] :
     IsFractionRing Γ(X, U) X.functionField := by
   delta IsFractionRing Scheme.functionField
-  convert!
+  convert
     hU.isLocalization_stalk
       ⟨genericPoint X,
         (((genericPoint_spec X).mem_open_set_iff U.isOpen).mpr (by simpa using ‹Nonempty U›))⟩
@@ -170,5 +187,28 @@ instance [IsIntegral X] (x : X) :
 
 instance [IsIntegral X] {x : X} : IsDomain (X.presheaf.stalk x) :=
   Function.Injective.isDomain _ (IsFractionRing.injective (X.presheaf.stalk x) (X.functionField))
+
+/--
+For `f` an element of the function field of `X`, there exists some open set `U ⊆ X` such that
+`f` is a unit in `Γ(X, U)`.
+-/
+lemma exists_isUnit_germ_eq [IsIntegral X] (f : X.functionField) (hf : f ≠ 0) :
+    ∃ U ∈ X.affineOpens, ∃ f' : Γ(X, U), ∃ _ : Nonempty U,
+      X.germToFunctionField U f' = f ∧ IsUnit f' := by
+  obtain ⟨U, hU, g, hg⟩ := X.presheaf.exists_germ_eq f
+  obtain ⟨_, ⟨A, hA, rfl⟩, hxA, hAU⟩ :=
+    X.isBasis_affineOpens.exists_subset_of_mem_open hU U.isOpen
+  have : Nonempty A := ⟨_, hxA⟩
+  let gA : Γ(X, A) := X.presheaf.map (homOfLE hAU).op g
+  have h_germ_gA : X.presheaf.germ A (genericPoint X) hxA gA = f := by
+    simp only [← hg, ← X.presheaf.germ_res_apply (homOfLE hAU) (genericPoint X) hxA g, gA]
+    rfl
+  have hxV : genericPoint X ∈ X.basicOpen gA := by
+    rwa [Scheme.mem_basicOpen X gA (genericPoint X) hxA, h_germ_gA, isUnit_iff_ne_zero]
+  have : Nonempty (X.basicOpen gA) := ⟨⟨_, hxV⟩⟩
+  refine ⟨X.basicOpen gA, hA.basicOpen gA,
+    X.presheaf.map (X.basicOpen_le gA).hom.op gA, ‹_›, ?_,
+    X.toRingedSpace.isUnit_res_basicOpen gA⟩
+  simpa using h_germ_gA
 
 end AlgebraicGeometry

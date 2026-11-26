@@ -5,8 +5,12 @@ Authors: Yoh Tanimoto
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Continuity
 public import Mathlib.Analysis.Normed.MulAction
+
+import Mathlib.Analysis.Normed.Group.Continuity
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The null subgroup in a seminormed commutative group
@@ -25,7 +29,6 @@ If `E` is a vector space over `𝕜` with an appropriate continuous action, we a
 subspace as a submodule of `E`.
 
 * `nullSubmodule` : the subspace of elements `x` with `‖x‖ = 0`.
-
 -/
 
 @[expose] public section
@@ -42,7 +45,7 @@ def nullSubgroup : Subgroup M where
     refine (norm_mul_le' x y).trans_eq ?_
     rw [hx, hy, add_zero]
   one_mem' := norm_one'
-  inv_mem' {x} (hx : ‖x‖ = 0) := by simpa only [Set.mem_setOf_eq, norm_inv'] using hx
+  inv_mem' {x} (hx : ‖x‖ = 0) := by simpa only [Set.mem_ofPred_eq, norm_inv'] using hx
 
 @[to_additive]
 lemma isClosed_nullSubgroup : IsClosed (nullSubgroup M : Set M) := by

@@ -6,20 +6,20 @@ Authors: Jz Pan
 module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.MulOpposite
-public import Mathlib.Algebra.Algebra.Subalgebra.Rank
-public import Mathlib.Algebra.Polynomial.Basis
 public import Mathlib.LinearAlgebra.LinearDisjoint
 public import Mathlib.LinearAlgebra.TensorProduct.Subalgebra
-public import Mathlib.RingTheory.Adjoin.Dimension
 public import Mathlib.RingTheory.Algebraic.Basic
 public import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
-public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 public import Mathlib.RingTheory.Norm.Defs
 public import Mathlib.RingTheory.TensorProduct.Nontrivial
 public import Mathlib.RingTheory.Trace.Defs
 
-/-!
+import Mathlib.Algebra.Algebra.Subalgebra.Rank
+import Mathlib.Algebra.Polynomial.Basis
+import Mathlib.RingTheory.Adjoin.Dimension
+import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 
+/-!
 # Linearly disjoint subalgebras
 
 This file contains basics about linearly disjoint subalgebras.
@@ -128,7 +128,6 @@ assuming `S` is commutative.
 ## Tags
 
 linearly disjoint, linearly independent, tensor product
-
 -/
 
 @[expose] public section
@@ -169,12 +168,12 @@ theorem LinearDisjoint.of_subsingleton_top [Subsingleton S] : A.LinearDisjoint B
 
 /-- Linear disjointness is symmetric if elements in the module commute. -/
 theorem LinearDisjoint.symm_of_commute (H : A.LinearDisjoint B)
-    (hc : ∀ (a : A) (b : B), Commute a.1 b.1) : B.LinearDisjoint A :=
+    (hc : ∀ (a : A) (b : B), Commute a.val b.val) : B.LinearDisjoint A :=
   Submodule.LinearDisjoint.symm_of_commute H hc
 
 /-- Linear disjointness is symmetric if elements in the module commute. -/
 theorem linearDisjoint_comm_of_commute
-    (hc : ∀ (a : A) (b : B), Commute a.1 b.1) : A.LinearDisjoint B ↔ B.LinearDisjoint A :=
+    (hc : ∀ (a : A) (b : B), Commute a.val b.val) : A.LinearDisjoint B ↔ B.LinearDisjoint A :=
   ⟨fun H ↦ H.symm_of_commute hc, fun H ↦ H.symm_of_commute fun _ _ ↦ (hc _ _).symm⟩
 
 namespace LinearDisjoint
@@ -244,7 +243,7 @@ protected def mulMap :=
   (AlgEquiv.ofInjective (A.mulMap B) H.injective).trans (equivOfEq _ _ (mulMap_range A B))
 
 @[simp]
-theorem val_mulMap_tmul (a : A) (b : B) : (H.mulMap (a ⊗ₜ[R] b) : S) = a.1 * b.1 := rfl
+theorem val_mulMap_tmul (a : A) (b : B) : (H.mulMap (a ⊗ₜ[R] b) : S) = a.val * b.val := rfl
 
 /--
 If `A` and `B` are linearly disjoint subalgebras in a commutative algebra `S` over `R`
@@ -356,11 +355,11 @@ lemma mulLeftMap_ker_eq_bot_iff_linearIndependent_op {ι : Type*} (a : ι → A)
     (Finsupp.mapRange.linearEquiv (linearEquivOp B)).toLinearMap
   suffices i = j by
     change Function.Injective i ↔ _
-    simp_rw [this, j, LinearMap.coe_comp, LinearEquiv.coe_coe, EquivLike.comp_injective,
+    simp_rw [this, j, LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, EquivLike.comp_injective,
       EquivLike.injective_comp, LinearMap.coe_restrictScalars]
   ext
   simp only [LinearMap.coe_comp, Function.comp_apply, Finsupp.lsingle_apply, coe_val,
-    Finsupp.mapRange.linearEquiv_toLinearMap, LinearEquiv.coe_coe,
+    Finsupp.mapRange.linearEquiv_toLinearMap, LinearEquiv.coe_toLinearMap,
     MulOpposite.coe_opLinearEquiv_symm, LinearMap.coe_restrictScalars,
     Finsupp.mapRange.linearMap_apply, Finsupp.mapRange_single, Finsupp.linearCombination_single,
     MulOpposite.unop_smul, MulOpposite.unop_op, i, j]
@@ -417,13 +416,13 @@ then for any family of `R`-linearly independent elements of `A`,
 they are also `B`-linearly independent. -/
 theorem linearIndependent_left_of_flat_of_commute (H : A.LinearDisjoint B) [Module.Flat R B]
     {ι : Type*} {a : ι → A} (ha : LinearIndependent R a)
-    (hc : ∀ (a : A) (b : B), Commute a.1 b.1) : LinearIndependent B (A.val ∘ a) :=
+    (hc : ∀ (a : A) (b : B), Commute a.val b.val) : LinearIndependent B (A.val ∘ a) :=
   (H.symm_of_commute hc).linearIndependent_right_of_flat ha
 
 /-- If a basis of `A` is also `B`-linearly independent, if elements in `A` and `B` commute,
 then `A` and `B` are linearly disjoint. -/
 theorem of_basis_left_of_commute {ι : Type*} (a : Basis ι R A)
-    (H : LinearIndependent B (A.val ∘ a)) (hc : ∀ (a : A) (b : B), Commute a.1 b.1) :
+    (H : LinearIndependent B (A.val ∘ a)) (hc : ∀ (a : A) (b : B), Commute a.val b.val) :
     A.LinearDisjoint B :=
   (of_basis_right B A a H).symm_of_commute fun _ _ ↦ (hc _ _).symm
 
@@ -434,7 +433,8 @@ variable {A B} in
 also `R`-linearly independent. -/
 theorem linearIndependent_mul_of_flat_left (H : A.LinearDisjoint B) [Module.Flat R A]
     {κ ι : Type*} {a : κ → A} {b : ι → B} (ha : LinearIndependent R a)
-    (hb : LinearIndependent R b) : LinearIndependent R fun (i : κ × ι) ↦ (a i.1).1 * (b i.2).1 :=
+    (hb : LinearIndependent R b) :
+    LinearIndependent R fun (i : κ × ι) ↦ (a i.1).val * (b i.2).val :=
   Submodule.LinearDisjoint.linearIndependent_mul_of_flat_left H ha hb
 
 variable {A B} in
@@ -444,7 +444,8 @@ variable {A B} in
 also `R`-linearly independent. -/
 theorem linearIndependent_mul_of_flat_right (H : A.LinearDisjoint B) [Module.Flat R B]
     {κ ι : Type*} {a : κ → A} {b : ι → B} (ha : LinearIndependent R a)
-    (hb : LinearIndependent R b) : LinearIndependent R fun (i : κ × ι) ↦ (a i.1).1 * (b i.2).1 :=
+    (hb : LinearIndependent R b) :
+    LinearIndependent R fun (i : κ × ι) ↦ (a i.1).val * (b i.2).val :=
   Submodule.LinearDisjoint.linearIndependent_mul_of_flat_right H ha hb
 
 variable {A B} in
@@ -455,14 +456,15 @@ also `R`-linearly independent. -/
 theorem linearIndependent_mul_of_flat (H : A.LinearDisjoint B)
     (hf : Module.Flat R A ∨ Module.Flat R B)
     {κ ι : Type*} {a : κ → A} {b : ι → B} (ha : LinearIndependent R a)
-    (hb : LinearIndependent R b) : LinearIndependent R fun (i : κ × ι) ↦ (a i.1).1 * (b i.2).1 :=
+    (hb : LinearIndependent R b) :
+    LinearIndependent R fun (i : κ × ι) ↦ (a i.1).val * (b i.2).val :=
   Submodule.LinearDisjoint.linearIndependent_mul_of_flat H hf ha hb
 
 /-- If `{ a_i }` is an `R`-basis of `A`, if `{ b_j }` is an `R`-basis of `B`,
 such that the family `{ a_i * b_j }` in `S` is `R`-linearly independent,
 then `A` and `B` are linearly disjoint. -/
 theorem of_basis_mul {κ ι : Type*} (a : Basis κ R A) (b : Basis ι R B)
-    (H : LinearIndependent R fun (i : κ × ι) ↦ (a i.1).1 * (b i.2).1) : A.LinearDisjoint B :=
+    (H : LinearIndependent R fun (i : κ × ι) ↦ (a i.1).val * (b i.2).val) : A.LinearDisjoint B :=
   Submodule.LinearDisjoint.of_basis_mul _ _ a b H
 
 variable {A B}
@@ -489,7 +491,7 @@ theorem of_le_of_flat_left {A' B' : Subalgebra R S}
     A'.LinearDisjoint B' := (H.of_le_right_of_flat hb).of_le_left_of_flat ha
 
 theorem rank_inf_eq_one_of_commute_of_flat_of_inj (hf : Module.Flat R A ∨ Module.Flat R B)
-    (hc : ∀ (a b : ↥(A ⊓ B)), Commute a.1 b.1)
+    (hc : ∀ (a b : ↥(A ⊓ B)), Commute a.val b.val)
     (hinj : Function.Injective (algebraMap R S)) : Module.rank R ↥(A ⊓ B) = 1 := by
   nontriviality R
   refine le_antisymm (Submodule.LinearDisjoint.rank_inf_le_one_of_commute_of_flat H hf hc) ?_
@@ -503,19 +505,19 @@ theorem rank_inf_eq_one_of_commute_of_flat_of_inj (hf : Module.Flat R A ∨ Modu
   exact Submodule.rank_mono (bot_le : (⊥ : Subalgebra R S) ≤ A ⊓ B)
 
 theorem rank_inf_eq_one_of_commute_of_flat_left_of_inj [Module.Flat R A]
-    (hc : ∀ (a b : ↥(A ⊓ B)), Commute a.1 b.1)
+    (hc : ∀ (a b : ↥(A ⊓ B)), Commute a.val b.val)
     (hinj : Function.Injective (algebraMap R S)) : Module.rank R ↥(A ⊓ B) = 1 :=
   H.rank_inf_eq_one_of_commute_of_flat_of_inj (Or.inl ‹_›) hc hinj
 
 theorem rank_inf_eq_one_of_commute_of_flat_right_of_inj [Module.Flat R B]
-    (hc : ∀ (a b : ↥(A ⊓ B)), Commute a.1 b.1)
+    (hc : ∀ (a b : ↥(A ⊓ B)), Commute a.val b.val)
     (hinj : Function.Injective (algebraMap R S)) : Module.rank R ↥(A ⊓ B) = 1 :=
   H.rank_inf_eq_one_of_commute_of_flat_of_inj (Or.inr ‹_›) hc hinj
 
 end
 
 theorem rank_eq_one_of_commute_of_flat_of_self_of_inj (H : A.LinearDisjoint A) [Module.Flat R A]
-    (hc : ∀ (a b : A), Commute a.1 b.1)
+    (hc : ∀ (a b : A), Commute a.val b.val)
     (hinj : Function.Injective (algebraMap R S)) : Module.rank R A = 1 := by
   rw [← inf_of_le_left (le_refl A)] at hc ⊢
   exact H.rank_inf_eq_one_of_commute_of_flat_left_of_inj hc hinj
@@ -593,9 +595,9 @@ theorem exists_field_of_isDomain_of_injective (A : Type v) [CommRing A] (B : Typ
 theorem of_isField (H : IsField (A ⊗[R] B)) : A.LinearDisjoint B := by
   nontriviality S
   rw [linearDisjoint_iff_injective]
-  letI : Field (A ⊗[R] B) := H.toField
+  let : Field (A ⊗[R] B) := H.toField
   -- need this otherwise `RingHom.injective` does not work
-  letI : NonAssocRing (A ⊗[R] B) := Ring.toNonAssocRing
+  let : NonAssocRing (A ⊗[R] B) := Ring.toNonAssocRing
   exact RingHom.injective _
 
 /-- If `A ⊗[R] B` is a field, then for any `R`-algebra `S`
@@ -617,7 +619,7 @@ theorem _root_.Algebra.TensorProduct.not_isField_of_transcendental
     (A : Type v) [CommRing A] (B : Type w) [CommRing B] [Algebra R A] [Algebra R B]
     [Module.Flat R A] [Module.Flat R B] [Algebra.Transcendental R A] [Algebra.Transcendental R B] :
     ¬IsField (A ⊗[R] B) := fun H ↦ by
-  letI := H.toField
+  let := H.toField
   obtain ⟨a, hta⟩ := ‹Algebra.Transcendental R A›
   obtain ⟨b, htb⟩ := ‹Algebra.Transcendental R B›
   have ha : Function.Injective (algebraMap R A) := Algebra.injective_of_transcendental
@@ -626,10 +628,10 @@ theorem _root_.Algebra.TensorProduct.not_isField_of_transcendental
   let fb : B →ₐ[R] A ⊗[R] B := Algebra.TensorProduct.includeRight
   have hfa : Function.Injective fa := Algebra.TensorProduct.includeLeft_injective hb
   have hfb : Function.Injective fb := Algebra.TensorProduct.includeRight_injective ha
-  haveI := hfa.isDomain fa.toRingHom
-  haveI := hfb.isDomain fb.toRingHom
-  haveI := ha.isDomain _
-  haveI : Module.Flat R (toSubmodule fa.range) :=
+  have := hfa.isDomain fa.toRingHom
+  have := hfb.isDomain fb.toRingHom
+  have := ha.isDomain _
+  have : Module.Flat R (toSubmodule fa.range) :=
     .of_linearEquiv (AlgEquiv.ofInjective fa hfa).symm.toLinearEquiv
   have key1 : Module.rank R ↥(fa.range ⊓ fb.range) ≤ 1 :=
     (include_range R A B).rank_inf_le_one_of_flat_left
@@ -641,7 +643,7 @@ theorem _root_.Algebra.TensorProduct.not_isField_of_transcendental
   have htab : Function.Injective gab := hfa.comp hta
   algebraize_only [ga.toRingHom, gb.toRingHom]
   let f := Algebra.TensorProduct.mapOfCompatibleSMul R[X] R R A B
-  haveI := Algebra.TensorProduct.nontrivial_of_algebraMap_injective_of_isDomain R[X] A B hta htb
+  have := Algebra.TensorProduct.nontrivial_of_algebraMap_injective_of_isDomain R[X] A B hta htb
   have hf : Function.Injective f := RingHom.injective _
   have key2 : gab.range ≤ fa.range ⊓ fb.range := by
     simp_rw [gab, ga, ← aeval_algHom]
@@ -651,7 +653,7 @@ theorem _root_.Algebra.TensorProduct.not_isField_of_transcendental
     refine ⟨⟨a, by simp [fa]⟩, ⟨b, hf ?_⟩⟩
     simp_rw [fb, Algebra.TensorProduct.includeRight_apply, f,
       Algebra.TensorProduct.mapOfCompatibleSMul_tmul]
-    convert! ← (TensorProduct.smul_tmul (R := R[X]) (R' := R[X]) (M := A) (N := B) X 1 1).symm <;>
+    convert ← (TensorProduct.smul_tmul (R := R[X]) (R' := R[X]) (M := A) (N := B) X 1 1).symm <;>
       (simp_rw [Algebra.smul_def, mul_one]; exact aeval_X _)
   have key3 := (Subalgebra.inclusion key2).comp (AlgEquiv.ofInjective gab htab).toAlgHom
     |>.toLinearMap.lift_rank_le_of_injective
@@ -706,7 +708,7 @@ include H in
 free modules, then the rank of `A ⊔ B` is equal to the product of the rank of `A` and `B`. -/
 theorem finrank_sup_of_free [Module.Free R A] [Module.Free R B] :
     Module.finrank R ↥(A ⊔ B) = Module.finrank R A * Module.finrank R B := by
-  simpa only [map_mul] using! congr(Cardinal.toNat $(H.rank_sup_of_free))
+  simpa only [map_mul] using! congr($(H.rank_sup_of_free).toNat)
 
 /-- In a commutative ring, if `A` and `B` are subalgebras which are free modules of finite rank,
 such that rank of `A ⊔ B` is equal to the product of the rank of `A` and `B`,
@@ -723,7 +725,7 @@ theorem of_finrank_sup_of_free [Module.Free R A] [Module.Free R B]
     (LinearEquiv.ofFinrankEq (A ⊗[R] B) _ (by simp)).toLinearMap
   replace hj : Function.Injective j' := by simpa [j']
   have hf : Function.Surjective (mulMap' A B).toLinearMap := mulMap'_surjective A B
-  haveI := Subalgebra.finite_sup A B
+  have := Subalgebra.finite_sup A B
   rw [linearDisjoint_iff, Submodule.linearDisjoint_iff]
   exact Subtype.val_injective.comp (OrzechProperty.injective_of_surjective_of_injective j' _ hj hf)
 
@@ -761,9 +763,9 @@ theorem of_finrank_coprime_of_free [Module.Free R A] [Module.Free R B]
   · rw [h2, Nat.coprime_zero_right] at H
     rw [eq_bot_of_finrank_one H]
     exact bot_left _
-  haveI := Module.finite_of_finrank_pos (Nat.pos_of_ne_zero h1)
-  haveI := Module.finite_of_finrank_pos (Nat.pos_of_ne_zero h2)
-  haveI := finite_sup A B
+  have := Module.finite_of_finrank_pos (Nat.pos_of_ne_zero h1)
+  have := Module.finite_of_finrank_pos (Nat.pos_of_ne_zero h2)
+  have := finite_sup A B
   have : Module.finrank R A ≤ Module.finrank R ↥(A ⊔ B) :=
     LinearMap.finrank_le_finrank_of_injective <|
       Submodule.inclusion_injective (show toSubmodule A ≤ toSubmodule (A ⊔ B) by simp)
@@ -834,11 +836,11 @@ variable [Field R] [Ring S] [Algebra R S]
 variable {A B : Subalgebra R S}
 
 theorem inf_eq_bot_of_commute (H : A.LinearDisjoint B)
-    (hc : ∀ (a b : ↥(A ⊓ B)), Commute a.1 b.1) : A ⊓ B = ⊥ :=
+    (hc : ∀ (a b : ↥(A ⊓ B)), Commute a.val b.val) : A ⊓ B = ⊥ :=
   eq_bot_of_rank_le_one (Submodule.LinearDisjoint.rank_inf_le_one_of_commute_of_flat_left H hc)
 
 theorem eq_bot_of_commute_of_self (H : A.LinearDisjoint A)
-    (hc : ∀ (a b : A), Commute a.1 b.1) : A = ⊥ := by
+    (hc : ∀ (a b : A), Commute a.val b.val) : A = ⊥ := by
   rw [← inf_of_le_left (le_refl A)] at hc ⊢
   exact H.inf_eq_bot_of_commute hc
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.DFinsupp.BigOperators
 public import Mathlib.Data.DFinsupp.Order
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equivalence between `Multiset` and `ℕ`-valued finitely supported functions
 
@@ -60,6 +63,7 @@ theorem toDFinsupp_apply (s : Multiset α) (a : α) : Multiset.toDFinsupp s a = 
 theorem toDFinsupp_support (s : Multiset α) : s.toDFinsupp.support = s.toFinset :=
   Finset.filter_true_of_mem fun _ hx ↦ count_ne_zero.mpr <| Multiset.mem_toFinset.1 hx
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toDFinsupp_replicate (a : α) (n : ℕ) :
     toDFinsupp (Multiset.replicate n a) = DFinsupp.single a n := by

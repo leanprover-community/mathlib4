@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Reflexive
 public import Mathlib.CategoryTheory.Limits.Shapes.SplitEqualizer
 public import Mathlib.CategoryTheory.Monad.Algebra
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Special equalizers associated to a comonad
 
@@ -21,7 +24,6 @@ comonadicity theorem).
 
 This file is adapted from `Mathlib/CategoryTheory/Monad/Coequalizer.lean`.
 Please try to keep them in sync.
-
 -/
 
 @[expose] public section
@@ -68,7 +70,6 @@ theorem CofreeEqualizer.condition :
   Coalgebra.Hom.ext X.coassoc.symm
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance : IsCoreflexivePair (CofreeEqualizer.topMap X) (CofreeEqualizer.bottomMap X) := by
   apply IsCoreflexivePair.mk' _ _ _
   · apply (cofree T).map (T.ε.app X.A)
@@ -92,8 +93,7 @@ cofree coalgebras.
 -/
 def beckCoalgebraEqualizer : IsLimit (beckCoalgebraFork X) :=
   Fork.IsLimit.mk' _ fun s => by
-    have h₁ : s.ι.f ≫ (T : C ⥤ C).map X.a = s.ι.f ≫ T.δ.app X.A :=
-      congr_arg Comonad.Coalgebra.Hom.f s.condition
+    have h₁ : s.ι.f ≫ (T : C ⥤ C).map X.a = s.ι.f ≫ T.δ.app X.A := congr($(s.condition).f)
     have h₂ : s.pt.a ≫ (T : C ⥤ C).map s.ι.f = s.ι.f ≫ T.δ.app X.A := s.ι.h
     refine ⟨⟨s.ι.f ≫ T.ε.app _, ?_⟩, ?_, ?_⟩
     · dsimp

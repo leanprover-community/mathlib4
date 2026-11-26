@@ -6,7 +6,6 @@ Authors: Nicolò Cavalleri
 module
 
 public import Mathlib.Geometry.Manifold.Algebra.Monoid
-import Mathlib.Geometry.Manifold.Notation
 
 /-!
 # Lie groups
@@ -28,6 +27,7 @@ that Lie groups here are not necessarily finite dimensional.
 
 
 ## Main results
+
 * `ContMDiff.inv`, `ContMDiff.div` and variants: point-wise inversion and division of maps `M → G`
   is `C^n`.
 * `ContMDiff.inv₀` and variants: if `ContMDiffInv₀ I n N`, point-wise inversion of `C^n`

@@ -66,7 +66,7 @@ def gi : GaloisInsertion (adjoin F : Set E → IntermediateField F E)
     (fun (x : IntermediateField F E) => (x : Set E)) where
   choice s hs := (adjoin F s).copy s <| le_antisymm (gc.le_u_l s) hs
   gc := IntermediateField.gc
-  le_l_u S := (IntermediateField.gc (S : Set E) (adjoin F S)).1 <| le_rfl
+  le_l_u S := (IntermediateField.gc (S : Set E) (adjoin F S)).1 le_rfl
   choice_eq _ _ := copy_eq _ _ _
 
 instance : CompleteLattice (IntermediateField F E) where
@@ -295,6 +295,10 @@ theorem _root_.AlgHom.fieldRange_eq_map (f : E →ₐ[F] K) :
     f.fieldRange = IntermediateField.map f ⊤ :=
   SetLike.ext' Set.image_univ.symm
 
+/-- The image of `⊤` under an algebra homomorphism is its field range. -/
+theorem map_top (f : E →ₐ[F] K) : (⊤ : IntermediateField F E).map f = f.fieldRange :=
+  f.fieldRange_eq_map.symm
+
 theorem _root_.AlgHom.map_fieldRange {L : Type*} [Field L] [Algebra F L]
     (f : E →ₐ[F] K) (g : K →ₐ[F] L) : f.fieldRange.map g = (g.comp f).fieldRange :=
   SetLike.ext' (Set.range_comp g f).symm
@@ -330,7 +334,7 @@ instance adjoin.fieldCoe : CoeTC F (adjoin F S) where
 @[simp, aesop safe 20 (rule_sets := [SetLike])]
 theorem subset_adjoin : S ⊆ adjoin F S := fun _ hx => Subfield.subset_closure (Or.inr hx)
 
-@[aesop 80% (rule_sets := [SetLike])]
+@[aesop 80% (rule_sets := [SetLike]), membership .]
 theorem mem_adjoin_of_mem {S : Set E} {s : E} (hs : s ∈ S) : s ∈ adjoin F S := subset_adjoin F S hs
 
 theorem notMem_of_notMem_adjoin {S : Set E} {s : E} (hs : s ∉ adjoin F S) : s ∉ S := fun h =>
@@ -360,6 +364,9 @@ theorem adjoin_univ (F E : Type*) [Field F] [Field E] [Algebra F E] :
     adjoin F (Set.univ : Set E) = ⊤ :=
   eq_top_iff.mpr <| subset_adjoin _ _
 
+theorem adjoin_union {S T : Set E} : adjoin F (S ∪ T) = adjoin F S ⊔ adjoin F T :=
+  gc.l_sup
+
 /-- If `K` is a field with `F ⊆ K` and `S ⊆ K` then `adjoin F S ≤ K`. -/
 theorem adjoin_le_subfield {K : Subfield E} (HF : Set.range (algebraMap F E) ⊆ K) (HS : S ⊆ K) :
     (adjoin F S).toSubfield ≤ K := by
@@ -385,15 +392,18 @@ theorem adjoin_adjoin_left (T : Set E) :
       (fun x hx ↦ Subfield.subset_closure <| .inl ⟨⟨x, Subfield.subset_closure (.inr hx)⟩, rfl⟩)
       (fun x hx ↦ Subfield.subset_closure <| .inr hx)
 
+/-- Adjoining is idempotent: adjoining an adjoin is the same as a single adjoin. -/
+@[simp]
+lemma adjoin_adjoin_right {K : Type*} [Field K] [Algebra K F] [Algebra K E] [IsScalarTower K F E] :
+    adjoin F (adjoin K S) = adjoin F S := by
+  refine le_antisymm ?_ (adjoin.mono F S (adjoin K S) (subset_adjoin K S))
+  rw [adjoin_le_iff, ← (adjoin F S).coe_restrictScalars K, SetLike.coe_subset_coe]
+  simp
+
 @[simp]
 theorem adjoin_insert_adjoin (x : E) :
-    adjoin F (insert x (adjoin F S : Set E)) = adjoin F (insert x S) :=
-  le_antisymm
-    (adjoin_le_iff.mpr
-      (Set.insert_subset_iff.mpr
-        ⟨subset_adjoin _ _ (Set.mem_insert _ _),
-          adjoin_le_iff.mpr (subset_adjoin_of_subset_right _ _ (Set.subset_insert _ _))⟩))
-    (by grw [← subset_adjoin])
+    adjoin F (insert x (adjoin F S : Set E)) = adjoin F (insert x S) := by
+  simp_rw [← Set.singleton_union, adjoin_union, adjoin_adjoin_right]
 
 /-- `F[S][T] = F[T][S]` -/
 theorem adjoin_adjoin_comm (T : Set E) :
@@ -412,7 +422,7 @@ theorem lift_adjoin (K : IntermediateField F E) (S : Set K) :
   adjoin_map _ _ _
 
 theorem lift_adjoin_simple (K : IntermediateField F E) (α : K) :
-    lift (adjoin F {α}) = adjoin F {α.1} := by
+    lift (adjoin F {α}) = adjoin F {α.val} := by
   simp only [lift_adjoin, Set.image_singleton]
 
 @[simp]
@@ -446,9 +456,6 @@ theorem extendScalars_adjoin {K : IntermediateField F E} {S : Set E} (h : K ≤ 
   exact le_antisymm (adjoin.mono F S _ Set.subset_union_right) <| adjoin_le_iff.2 <|
     Set.union_subset h (subset_adjoin F S)
 
-theorem adjoin_union {S T : Set E} : adjoin F (S ∪ T) = adjoin F S ⊔ adjoin F T :=
-  gc.l_sup
-
 theorem restrictScalars_adjoin_eq_sup (K : IntermediateField F E) (S : Set E) :
     restrictScalars F (adjoin K S) = K ⊔ adjoin F S := by
   rw [restrictScalars_adjoin, adjoin_union, adjoin_self]
@@ -475,13 +482,13 @@ theorem restrictScalars_adjoin_of_algEquiv
   simp [hi]
 
 @[elab_as_elim]
-theorem adjoin_induction {s : Set E} {p : ∀ x ∈ adjoin F s, Prop}
-    (mem : ∀ x hx, p x (subset_adjoin _ _ hx))
-    (algebraMap : ∀ x, p (algebraMap F E x) (algebraMap_mem _ _))
-    (add : ∀ x y hx hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
-    (inv : ∀ x hx, p x hx → p x⁻¹ (inv_mem hx))
-    (mul : ∀ x y hx hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
-    {x} (h : x ∈ adjoin F s) : p x h :=
+theorem adjoin_induction {s : Set E} {motive : ∀ x ∈ adjoin F s, Prop}
+    (mem : ∀ x hx, motive x (subset_adjoin _ _ hx))
+    (algebraMap : ∀ x, motive (algebraMap F E x) (algebraMap_mem _ _))
+    (add : ∀ x y hx hy, motive x hx → motive y hy → motive (x + y) (add_mem hx hy))
+    (inv : ∀ x hx, motive x hx → motive x⁻¹ (inv_mem hx))
+    (mul : ∀ x y hx hy, motive x hx → motive y hy → motive (x * y) (mul_mem hx hy))
+    {x} (h : x ∈ adjoin F s) : motive x h :=
   Subfield.closure_induction
     (fun x hx ↦ Or.casesOn hx (fun ⟨x, hx⟩ ↦ hx ▸ algebraMap x) (mem x))
     (by simp_rw [← (Algebra.algebraMap F E).map_one]; exact algebraMap 1) add
@@ -496,9 +503,9 @@ theorem adjoin_algHom_ext {s : Set E} ⦃φ₁ φ₂ : adjoin F s →ₐ[F] K⦄
     (h : ∀ x hx, φ₁ ⟨x, subset_adjoin _ _ hx⟩ = φ₂ ⟨x, subset_adjoin _ _ hx⟩) :
     φ₁ = φ₂ :=
   AlgHom.ext fun ⟨x, hx⟩ ↦ adjoin_induction _ h (fun _ ↦ φ₂.commutes _ ▸ φ₁.commutes _)
-    (fun _ _ _ _ h₁ h₂ ↦ by convert! congr_arg₂ (· + ·) h₁ h₂ <;> rw [← map_add] <;> rfl)
+    (fun _ _ _ _ h₁ h₂ ↦ by convert congr_arg₂ (· + ·) h₁ h₂ <;> rw [← map_add] <;> rfl)
     (fun _ _ ↦ eq_on_inv₀ _ _)
-    (fun _ _ _ _ h₁ h₂ ↦ by convert! congr_arg₂ (· * ·) h₁ h₂ <;> rw [← map_mul] <;> rfl)
+    (fun _ _ _ _ h₁ h₂ ↦ by convert congr_arg₂ (· * ·) h₁ h₂ <;> rw [← map_mul] <;> rfl)
     hx
 
 theorem algHom_ext_of_eq_adjoin {S : IntermediateField F E} {s : Set E} (hS : S = adjoin F s)
@@ -591,11 +598,11 @@ variable {A B C : Type*} [Field A] [Field B] [Field C] [Algebra A B] [Algebra B 
 /-- Ring homomorphism between `A⟮b⟯` and `A⟮↑b⟯`. -/
 def RingHom.adjoinAlgebraMap : A⟮b⟯ →+* A⟮((algebraMap B C) b)⟯ :=
   RingHom.codRestrict (((Algebra.ofId B C).restrictScalars A).comp (IntermediateField.val A⟮b⟯)) _
-   (fun x ↦ by
-    rw [show (algebraMap B C) b = (Algebra.ofId B C).restrictScalars A b by rfl,
-      ← Set.image_singleton, ← IntermediateField.adjoin_map A {b}]
-    use x
-    simp)
+    (fun x ↦ by
+      rw [show (algebraMap B C) b = (Algebra.ofId B C).restrictScalars A b by rfl,
+        ← Set.image_singleton, ← IntermediateField.adjoin_map A {b}]
+      use x
+      simp)
 
 instance : Algebra A⟮b⟯ A⟮(algebraMap B C) b⟯ :=
   RingHom.toAlgebra (RingHom.adjoinAlgebraMap _)
@@ -627,8 +634,8 @@ theorem adjoin_one : F⟮(1 : E)⟯ = ⊥ :=
   adjoin_simple_eq_bot_iff.mpr (one_mem ⊥)
 
 @[simp]
-theorem adjoin_intCast (n : ℤ) : F⟮(n : E)⟯ = ⊥ := by
-  exact adjoin_simple_eq_bot_iff.mpr (intCast_mem ⊥ n)
+theorem adjoin_intCast (n : ℤ) : F⟮(n : E)⟯ = ⊥ :=
+  adjoin_simple_eq_bot_iff.mpr (intCast_mem ⊥ n)
 
 @[simp]
 theorem adjoin_natCast (n : ℕ) : F⟮(n : E)⟯ = ⊥ :=
@@ -680,20 +687,23 @@ theorem _root_.Field.fg_iff_fg_top_bot :
   simp [Field.fg_iff, fg_def, Set.exists_finite_iff_finset,
     ← toSubfield_inj, Subfield.algebraMap_ofSubfield, Subfield.closure_union]
 
-theorem induction_on_adjoin_finset (S : Finset E) (P : IntermediateField F E → Prop) (base : P ⊥)
-    (ih : ∀ (K : IntermediateField F E), ∀ x ∈ S, P K → P (K⟮x⟯.restrictScalars F)) :
-    P (adjoin F S) := by
+theorem induction_on_adjoin_finset (S : Finset E)
+    {motive : IntermediateField F E → Prop} (bot : motive ⊥)
+    (adjoin_simple : ∀ (K : IntermediateField F E),
+      ∀ x ∈ S, motive K → motive (K⟮x⟯.restrictScalars F)) :
+    motive (adjoin F S) := by
   classical
   refine Finset.induction_on' S ?_ (fun _ _ ha _ _ h => ?_)
-  · simp [base]
+  · simp [bot]
   · rw [Finset.coe_insert, Set.insert_eq, Set.union_comm, ← adjoin_adjoin_left]
-    exact ih (adjoin F _) _ ha h
+    exact adjoin_simple (adjoin F _) _ ha h
 
-theorem induction_on_adjoin_fg (P : IntermediateField F E → Prop) (base : P ⊥)
-    (ih : ∀ (K : IntermediateField F E) (x : E), P K → P (K⟮x⟯.restrictScalars F))
-    (K : IntermediateField F E) (hK : K.FG) : P K := by
+theorem induction_on_adjoin_fg {motive : IntermediateField F E → Prop} (bot : motive ⊥)
+    (adjoin_simple : ∀ (K : IntermediateField F E)
+      (x : E), motive K → motive (K⟮x⟯.restrictScalars F))
+    (K : IntermediateField F E) (hK : K.FG) : motive K := by
   obtain ⟨S, rfl⟩ := hK
-  exact induction_on_adjoin_finset S P base fun K x _ hK => ih K x hK
+  exact induction_on_adjoin_finset S bot fun K x _ hK => adjoin_simple K x hK
 
 end Induction
 
@@ -715,8 +725,65 @@ theorem map_comap_eq_self_of_surjective {f : L →ₐ[K] L'} (hf : Function.Surj
     (S : IntermediateField K L') : (S.comap f).map f = S :=
   SetLike.coe_injective (Set.image_preimage_eq _ hf)
 
-theorem comap_map (f : L →ₐ[K] L') (S : IntermediateField K L) : (S.map f).comap f = S :=
-  SetLike.coe_injective (Set.preimage_image_eq _ f.injective)
+section GaloisCoinsertion
+
+variable {ι : Sort*} (f : L →ₐ[K] L')
+
+theorem comap_inf_map (S T : IntermediateField K L) : (S.map f ⊓ T.map f).comap f = S ⊓ T :=
+  (gciMapComap f).u_inf_l _ _
+
+theorem comap_iInf_map (S : ι → IntermediateField K L) : (⨅ i, (S i).map f).comap f = ⨅ i, S i :=
+  (gciMapComap f).u_iInf_l _
+
+theorem comap_sup_map (S T : IntermediateField K L) : (S.map f ⊔ T.map f).comap f = S ⊔ T :=
+  (gciMapComap f).u_sup_l _ _
+
+theorem comap_iSup_map (S : ι → IntermediateField K L) : (⨆ i, (S i).map f).comap f = ⨆ i, S i :=
+  (gciMapComap f).u_iSup_l _
+
+theorem comap_inf (S T : IntermediateField K L') : (S ⊓ T).comap f = S.comap f ⊓ T.comap f :=
+  (gc_map_comap f).u_inf
+
+theorem comap_iInf (S : ι → IntermediateField K L') : (⨅ i, S i).comap f = ⨅ i, (S i).comap f :=
+  (gc_map_comap f).u_iInf
+
+@[simp]
+theorem comap_top : (⊤ : IntermediateField K L').comap f = ⊤ :=
+  (gc_map_comap f).u_top
+
+/-- `comap f` preserves the supremum of two intermediate fields lying in the range of `f`. -/
+theorem comap_sup {S T : IntermediateField K L'} (hS : S ≤ f.fieldRange) (hT : T ≤ f.fieldRange) :
+    (S ⊔ T).comap f = S.comap f ⊔ T.comap f := by
+  rw [← map_comap_eq_self hS, ← map_comap_eq_self hT, comap_sup_map, comap_map, comap_map]
+
+/-- `comap f` preserves the supremum of a family of intermediate fields lying in the range
+of `f`. -/
+theorem comap_iSup {S : ι → IntermediateField K L'} (hS : ∀ i, S i ≤ f.fieldRange) :
+    (⨆ i, S i).comap f = ⨆ i, (S i).comap f := by
+  simp [← comap_iSup_map f, map_comap_eq_self, hS]
+
+end GaloisCoinsertion
+
+section val
+
+variable {S T : IntermediateField K L}
+
+theorem comap_eq_top_iff {f : L →ₐ[K] L'} {T : IntermediateField K L'} :
+    T.comap f = ⊤ ↔ f.fieldRange ≤ T := by
+  rw [eq_top_iff, ← map_le_iff_le_comap, map_top]
+
+@[simp]
+theorem comap_val_eq_top : T.comap S.val = ⊤ ↔ S ≤ T := by
+  rw [comap_eq_top_iff, fieldRange_val]
+
+@[simp]
+theorem comap_val_self (S : IntermediateField K L) : S.comap S.val = ⊤ :=
+  comap_val_eq_top.mpr le_rfl
+
+theorem map_comap_val (S T : IntermediateField K L) : (T.comap S.val).map S.val = S ⊓ T := by
+  rw [map_comap_eq, fieldRange_val, inf_comm]
+
+end val
 
 end IntermediateField
 
@@ -734,7 +801,7 @@ theorem extendScalars_self : extendScalars (le_refl F) = ⊥ := by
   rw [mem_extendScalars, IntermediateField.mem_bot]
   refine ⟨fun h ↦ ⟨⟨x, h⟩, rfl⟩, ?_⟩
   rintro ⟨y, rfl⟩
-  exact y.2
+  exact y.property
 
 @[simp]
 theorem extendScalars_top : extendScalars (le_top : F ≤ ⊤) = ⊤ :=

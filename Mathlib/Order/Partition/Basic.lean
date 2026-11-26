@@ -5,7 +5,6 @@ Authors: Peter Nelson
 -/
 module
 
-public import Mathlib.Data.SetLike.Basic
 public import Mathlib.Order.SupIndep
 
 /-!
@@ -57,7 +56,6 @@ proved separately.
 
 * Link this to `Finpartition`.
 * Show that when `α` is a frame `Partition α` also has finite joins, i.e. that it is a lattice.
-
 -/
 
 @[expose] public section
@@ -126,7 +124,7 @@ lemma le_of_mem (P : Partition s) (hx : x ∈ P) : x ≤ s :=
   (le_sSup hx).trans_eq P.sSup_eq
 
 lemma parts_nonempty (P : Partition s) (hs : s ≠ ⊥) : (P : Set α).Nonempty :=
-  nonempty_iff_ne_empty.2 fun hP ↦ by simp [← P.sSup_eq, hP, sSup_empty] at hs
+  ne_empty_iff_nonempty.1 fun hP ↦ by simp [← P.sSup_eq, hP, sSup_empty] at hs
 
 @[simp]
 lemma bot_notMem (P : Partition s) : ⊥ ∉ P :=
@@ -152,19 +150,19 @@ lemma mem_copy_iff (hst : s = t) : x ∈ P.copy hst ↔ x ∈ P := Iff.rfl
 /-- The natural equivalence between the subtype of parts and the subtype of parts of a copy. -/
 @[simps!]
 def partscopyEquiv (P : Partition s) (hst : s = t) : ↥(P.copy hst) ≃ ↥P :=
-  Equiv.setCongr rfl
+  Set.equivOfEq rfl
 
 /-- A constructor for `Partition s` that removes `⊥` from the set of parts. -/
 @[simps]
-def removeBot (P : Set α) (indep : _root_.sSupIndep P) (sSup_eq : sSup P = s) : Partition s where
+def removeBot (P : Set α) (indep : _root_.sSupIndep P) (hsSup : sSup P = s) : Partition s where
   parts := P \ {⊥}
   sSupIndep' := indep.mono sdiff_subset
   bot_notMem' := by simp
-  sSup_eq' := by simp [← sSup_eq]
+  sSup_eq' := by simp [← hsSup]
 
 @[simp]
-lemma mem_removeBot (P : Set α) (indep : _root_.sSupIndep P) (sSup_eq : sSup P = s) :
-    x ∈ removeBot P indep sSup_eq ↔ x ∈ P ∧ x ≠ ⊥ := Iff.rfl
+lemma mem_removeBot (P : Set α) (indep : _root_.sSupIndep P) (hsSup : sSup P = s) :
+    x ∈ removeBot P indep hsSup ↔ x ∈ P ∧ x ≠ ⊥ := Iff.rfl
 
 @[simp]
 lemma notMem_of_bot (P : Partition (⊥ : α)) (x : α) : x ∉ P := by
@@ -407,7 +405,7 @@ lemma mem_iff_exists_partOf : s ∈ P ↔ ∃ x ∈ u, partOf P x = s :=
 
 lemma partOf_nonempty_iff : (P.partOf x).Nonempty ↔ x ∈ u := by
   refine ⟨fun ⟨y, hy⟩ ↦ hy.left_mem, fun h ↦ ?_⟩
-  simpa [nonempty_iff_ne_empty] using P.ne_bot_of_mem (partOf_mem h)
+  simpa using P.ne_bot_of_mem (partOf_mem h)
 
 @[simp]
 lemma partOf_eq_empty_iff : P.partOf x = ∅ ↔ x ∉ u := by
@@ -517,7 +515,7 @@ theorem apply_apply (hf : IsRepFun P f) (hg : IsRepFun P g) (x : α) : f (g x) =
 
 /-- Any partially defined representative function extends to a complete one. -/
 lemma exists_extend_partial (P : Partition u) (f₀ : t → α)
-    (h_notMem : ∀ x : t, x.1 ∉ u → f₀ x = x) (h_mem : ∀ x : t, x.1 ∈ u → P.Rel x (f₀ x))
+    (h_notMem : ∀ x : t, x.val ∉ u → f₀ x = x) (h_mem : ∀ x : t, x.val ∈ u → P.Rel x (f₀ x))
     (h_eq : ∀ x y : t, P.Rel x y → f₀ x = f₀ y) : ∃ f, IsRepFun P f ∧ ∀ x : t, f x = f₀ x := by
   classical
   set f : α → α := fun a ↦ if ha : a ∈ u then
@@ -528,14 +526,14 @@ lemma exists_extend_partial (P : Partition u) (f₀ : t → α)
     · exact h.choose_spec.trans <| h_mem h.choose h.choose_spec.right_mem
     push Not at h
     exact P.rep_rel (P.partOf_mem ha) (P.mem_partOf ha)
-  · simp_rw [hfdef, dif_pos hab.left_mem, dif_pos hab.right_mem]
+  · simp_rw [hfdef, dite_eq_left hab.left_mem, dite_eq_left hab.right_mem]
     split_ifs with h₁ h₂ h₂
     · exact h_eq _ _ <| (hab.symm.trans h₁.choose_spec).symm.trans h₂.choose_spec
     · exact h₂ ⟨_, hab.symm.trans h₁.choose_spec⟩ |>.elim
     · exact h₁ ⟨_, hab.trans h₂.choose_spec⟩ |>.elim
     congr 1
     rwa [← rel_iff_partOf_eq_partOf_of_mem _ hab.left_mem hab.right_mem]
-  obtain (ha | ha) := em (a.1 ∈ u) |>.symm
+  obtain (ha | ha) := em (a.val ∈ u) |>.symm
   · simp [hfdef, ha, h_notMem _ ha]
   simp only [hfdef, ha, ↓reduceDIte]
   split_ifs with h
@@ -546,7 +544,8 @@ lemma exists_extend_partial (P : Partition u) (f₀ : t → α)
 equal to the identity on `t`. -/
 lemma exists_extend_partial' (P : Partition u)
     (h : ∀ ⦃x y⦄, x ∈ t → y ∈ t → P.Rel x y → x = y) : ∃ f, IsRepFun P f ∧ EqOn f id t := by
-  simpa using! exists_extend_partial P (fun x : t ↦ x) (by simp) (by simp) (fun x y ↦ h x.2 y.2)
+  simpa using! exists_extend_partial P (fun x : t ↦ x) (by simp) (by simp)
+    (fun x y ↦ h x.property y.property)
 
 /-- Every partition has a representative function. -/
 lemma nonempty (P : Partition u) : ∃ f, IsRepFun P f := by

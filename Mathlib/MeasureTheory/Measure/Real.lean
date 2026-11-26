@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
 public import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Measures as real-valued functions
 
@@ -54,8 +57,6 @@ theorem measureReal_zero_apply (s : Set α) : (0 : Measure α).real s = 0 := rfl
 
 @[simp] theorem measureReal_empty : μ.real ∅ = 0 := by simp [Measure.real]
 
-@[deprecated (since := "2025-11-22")] alias measureReal_univ_eq_one := probReal_univ
-
 @[simp]
 theorem measureReal_univ_pos [IsFiniteMeasure μ] [NeZero μ] : 0 < μ.real Set.univ :=
   ENNReal.toReal_pos (NeZero.ne (μ Set.univ)) (by finiteness)
@@ -68,7 +69,7 @@ theorem ofReal_measureReal (h : μ s ≠ ∞ := by finiteness) : ENNReal.ofReal 
   simp [measureReal_def, h]
 
 theorem nonempty_of_measureReal_ne_zero (h : μ.real s ≠ 0) : s.Nonempty :=
-  nonempty_iff_ne_empty.2 fun h' ↦ h <| h'.symm ▸ measureReal_empty
+  ne_empty_iff_nonempty.1 fun h' ↦ h <| h'.symm ▸ measureReal_empty
 
 @[simp] theorem measureReal_ennreal_smul_apply (c : ℝ≥0∞) :
     (c • μ).real s = c.toReal * μ.real s := by
@@ -90,6 +91,12 @@ theorem map_measureReal_apply [MeasurableSpace β] {f : α → β} (hf : Measura
 @[gcongr] theorem measureReal_mono (h : s₁ ⊆ s₂) (h₂ : μ s₂ ≠ ∞ := by finiteness) :
     μ.real s₁ ≤ μ.real s₂ :=
   ENNReal.toReal_mono h₂ (measure_mono h)
+
+theorem measureReal_mono_ae (h : s₁ ≤ᵐ[μ] s₂) (h₂ : μ s₂ ≠ ∞ := by finiteness) :
+    μ.real s₁ ≤ μ.real s₂ :=
+  ENNReal.toReal_mono h₂ (measure_mono_ae h)
+
+alias _root_.Filter.EventuallySubset.measureReal_le := measureReal_mono_ae
 
 theorem measureReal_eq_measureReal_iff {m : MeasurableSpace β} {ν : Measure β} {t : Set β}
     (h₁ : μ s ≠ ∞ := by finiteness) (h₂ : ν t ≠ ∞ := by finiteness) :
@@ -351,7 +358,7 @@ theorem le_measureReal_sdiff (h : μ s₂ ≠ ∞ := by finiteness) :
   simp only [tsub_le_iff_left]
   calc
     μ.real s₁ ≤ μ.real (s₂ ∪ s₁) := measureReal_le_measureReal_union_right h
-    _ = μ.real (s₂ ∪ s₁ \ s₂) := congr_arg μ.real union_sdiff_self.symm
+    _ = μ.real (s₂ ∪ s₁ \ s₂) := congr(μ.real $union_sdiff_self.symm)
     _ ≤ μ.real s₂ + μ.real (s₁ \ s₂) := measureReal_union_le _ _
 
 @[deprecated (since := "2026-06-03")] alias le_measureReal_diff := le_measureReal_sdiff
@@ -449,7 +456,7 @@ theorem exists_nonempty_inter_of_measureReal_univ_lt_sum_measureReal [IsFiniteMe
     (fun i mi ↦ (h i mi).nullMeasurableSet)
   simp only [Measure.real] at H
   apply (ENNReal.toReal_lt_toReal (by finiteness) _).1
-  · convert! H
+  · convert H
     rw [ENNReal.toReal_sum (by finiteness)]
   · exact (ENNReal.sum_lt_top.mpr (fun i hi ↦ measure_lt_top ..)).ne
 
@@ -495,7 +502,7 @@ open Lean Meta Qq Function
 @[positivity MeasureTheory.Measure.real _ _]
 meta def evalMeasureReal : PositivityExt where eval {_ _} _zα pα? e :=
   match pα? with | none => pure .none | some _ => do
-  let .app (.app _ a) b ← whnfR e | throwError "not measureReal"
+  let .app (.app _ a) b ← whnf e | throwError "not measureReal"
   let p ← mkAppOptM ``MeasureTheory.measureReal_nonneg #[none, none, a, b]
   pure (.nonnegative p)
 

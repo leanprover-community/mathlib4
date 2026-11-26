@@ -5,9 +5,9 @@ Authors: Christian Merten
 -/
 module
 
+public import Mathlib.CategoryTheory.Filtered.Basic
 public import Mathlib.CategoryTheory.Quotient
 public import Mathlib.CategoryTheory.Sites.Hypercover.One
-public import Mathlib.CategoryTheory.Filtered.Basic
 
 /-!
 # The category of `1`-hypercovers up to homotopy
@@ -251,6 +251,7 @@ namespace OneHypercover
 variable {S : C} {E : OneHypercover.{w} J S} {F : OneHypercover.{w'} J S}
 variable [HasPullbacks C]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given two refinement morphism `f, g : E ⟶ F`, this is a `1`-hypercover `W` that
 admits a morphism `h : W ⟶ E` such that `h ≫ f` and `h ≫ g` are homotopic. Hence
 they become equal after quotienting out by homotopy. -/
@@ -302,15 +303,14 @@ variable {S : C}
 
 instance : Nonempty (J.HOneHypercover S) := ⟨⟨Nonempty.some inferInstance⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `C` has pullbacks, the category of `1`-hypercovers up to homotopy is cofiltered. -/
 instance isCofiltered_of_hasPullbacks [HasPullbacks C] : IsCofiltered (J.HOneHypercover S) where
   cone_objs {E F} :=
-    ⟨⟨E.1.inter F.1⟩, Quot.mk _ (PreOneHypercover.interFst _ _),
+    ⟨⟨E.as.inter F.as⟩, Quot.mk _ (PreOneHypercover.interFst _ _),
       Quot.mk _ (PreOneHypercover.interSnd _ _), ⟨⟩⟩
   cone_maps {X Y} f g := by
-    obtain ⟨(f : X.1 ⟶ Y.1), rfl⟩ := (toHOneHypercover J S).map_surjective f
-    obtain ⟨(g : X.1 ⟶ Y.1), rfl⟩ := (toHOneHypercover J S).map_surjective g
+    obtain ⟨(f : X.as ⟶ Y.as), rfl⟩ := (toHOneHypercover J S).map_surjective f
+    obtain ⟨(g : X.as ⟶ Y.as), rfl⟩ := (toHOneHypercover J S).map_surjective g
     obtain ⟨W, h, ⟨H⟩⟩ := OneHypercover.exists_nonempty_homotopy f g
     use (toHOneHypercover J S).obj W, (toHOneHypercover J S).map h
     rw [← Functor.map_comp, ← Functor.map_comp]

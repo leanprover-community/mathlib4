@@ -332,11 +332,11 @@ export MeasurableNeg (measurable_neg)
 instance (priority := 100) measurableDiv_of_mul_inv (G : Type*) [MeasurableSpace G]
     [DivInvMonoid G] [MeasurableMul G] [MeasurableInv G] : MeasurableDiv G where
   measurable_const_div c := by
-    convert! measurable_inv.const_mul c using 1
+    convert measurable_inv.const_mul c using 1
     ext1
     apply div_eq_mul_inv
   measurable_div_const c := by
-    convert! measurable_id.mul_const c⁻¹ using 1
+    convert measurable_id.mul_const c⁻¹ using 1
     ext1
     apply div_eq_mul_inv
 
@@ -438,6 +438,9 @@ class MeasurableConstVAdd (M α : Type*) [VAdd M α] [MeasurableSpace α] : Prop
 class MeasurableConstSMul (M α : Type*) [SMul M α] [MeasurableSpace α] : Prop where
   measurable_const_smul : ∀ c : M, Measurable (c • · : α → α) := by measurability
 
+attribute [fun_prop] MeasurableConstVAdd.measurable_const_vadd
+  MeasurableConstSMul.measurable_const_smul
+
 /-- We say that the action of `M` on `α` has `MeasurableVAdd` if for each `c` the map `x ↦ c +ᵥ x`
 is a measurable function and for each `x` the map `c ↦ c +ᵥ x` is a measurable function. -/
 class MeasurableVAdd (M α : Type*) [VAdd M α] [MeasurableSpace M] [MeasurableSpace α]
@@ -457,7 +460,7 @@ class MeasurableVAdd₂ (M α : Type*) [VAdd M α] [MeasurableSpace M] [Measurab
     Prop where
   measurable_vadd : Measurable (Function.uncurry (· +ᵥ ·) : M × α → α)
 
-/-- We say that the action of `M` on `α` has `Measurable_SMul₂` if the map
+/-- We say that the action of `M` on `α` has `MeasurableSMul₂` if the map
 `(c, x) ↦ c • x` is a measurable function. -/
 @[to_additive MeasurableVAdd₂]
 class MeasurableSMul₂ (M α : Type*) [SMul M α] [MeasurableSpace M] [MeasurableSpace α] :
@@ -488,7 +491,7 @@ instance Submonoid.instMeasurableConstSMul {M α} [MeasurableSpace α] [Monoid M
 @[to_additive]
 instance Submonoid.instMeasurableSMul {M α} [MeasurableSpace M] [MeasurableSpace α] [Monoid M]
     [MulAction M α] [MeasurableSMul M α] (s : Submonoid M) : MeasurableSMul s α where
-  measurable_smul_const x := (measurable_smul_const (M := M) x).comp measurable_subtype_coe
+  measurable_smul_const x := (measurable_smul_const (M := M) x).comp measurable_subtypeVal
 
 @[to_additive]
 instance Subgroup.instMeasurableConstSMul {G α} [MeasurableSpace α] [Group G] [MulAction G α]
@@ -522,7 +525,8 @@ instance Pi.instMeasurableConstSMul {ι : Type*} {α : ι → Type*} [∀ i, SMu
   measurable_const_smul _ := measurable_pi_iff.2 fun i ↦ (measurable_pi_apply i).const_smul _
 
 /-- If a scalar is central, then its right action is measurable when its left action is. -/
-@[to_additive]
+@[to_additive /-- If a vector is central, then its right action is measurable when its left
+action is. -/]
 nonrec instance MulOpposite.instMeasurableConstSMul [SMul M α] [SMul Mᵐᵒᵖ α] [IsCentralScalar M α]
     [MeasurableConstSMul M α] : MeasurableConstSMul Mᵐᵒᵖ α where
   measurable_const_smul := by simpa using measurable_const_smul
@@ -723,7 +727,8 @@ instance MulOpposite.instMeasurableMul₂ {M : Type*} [Mul M] [MeasurableSpace M
       ((measurable_mul_unop.comp measurable_snd).mul (measurable_mul_unop.comp measurable_fst))⟩
 
 /-- If a scalar is central, then its right action is measurable when its left action is. -/
-@[to_additive]
+@[to_additive /-- If a vector is central, then its right action is measurable when its left
+action is. -/]
 nonrec instance MeasurableSMul.op {M α} [MeasurableSpace M] [MeasurableSpace α] [SMul M α]
     [SMul Mᵐᵒᵖ α] [IsCentralScalar M α] [MeasurableSMul M α] : MeasurableSMul Mᵐᵒᵖ α where
   measurable_smul_const x :=
@@ -837,7 +842,7 @@ theorem Finset.measurable_prod (s : Finset ι) (hf : ∀ i ∈ s, Measurable (f 
 lemma Finset.measurable_prod_apply {f : ι → α → β → M} {g : α → β} {s : Finset ι}
     (hf : ∀ i ∈ s, Measurable ↿(f i)) (hg : Measurable g) :
     Measurable fun a ↦ (∏ i ∈ s, f i a) (g a) := by
-  simp only [prod_apply]; fun_prop
+  simp only [Finset.prod_apply]; fun_prop
 
 @[to_additive (attr := fun_prop)]
 theorem Finset.aemeasurable_prod (s : Finset ι) (hf : ∀ i ∈ s, AEMeasurable (f i) μ) :

@@ -5,9 +5,8 @@ Authors: Junyan Xu, Jiedong Jiang
 -/
 module
 
-public import Mathlib.FieldTheory.Normal.Closure
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
-public import Mathlib.FieldTheory.IntermediateField.Algebraic
+public import Mathlib.FieldTheory.Normal.Closure
 
 /-!
 # Relative Algebraic Closure
@@ -18,13 +17,12 @@ In this file we construct the relative algebraic closure of a field extension.
 
 - `algebraicClosure F E` is the relative algebraic closure (i.e. the maximal algebraic subextension)
   of the field extension `E / F`, which is defined to be the integral closure of `F` in `E`.
-
 -/
 
 @[expose] public section
 noncomputable section
 
-open Polynomial FiniteDimensional IntermediateField Field
+open Polynomial IntermediateField Field
 
 variable (F E : Type*) [Field F] [Field E] [Algebra F E]
 variable {K : Type*} [Field K] [Algebra F K]
@@ -107,7 +105,7 @@ variable (F E K)
 
 /-- The algebraic closure of `F` in `E` is algebraic over `F`. -/
 instance isAlgebraic : Algebra.IsAlgebraic F (algebraicClosure F E) :=
-  ⟨fun x ↦ isAlgebraic_iff.mpr x.2.isAlgebraic⟩
+  ⟨fun x ↦ isAlgebraic_iff.mpr x.property.isAlgebraic⟩
 
 /-- The algebraic closure of `F` in `E` is the integral closure of `F` in `E`. -/
 instance isIntegralClosure : IsIntegralClosure (algebraicClosure F E) F E :=
@@ -138,8 +136,8 @@ if and only if it is algebraic over `F`. -/
 theorem le_algebraicClosure_iff (L : IntermediateField F E) :
     L ≤ algebraicClosure F E ↔ Algebra.IsAlgebraic F L :=
   ⟨fun h ↦ ⟨fun x ↦ by simpa only [IsAlgebraic, ne_eq, ← aeval_algebraMap_eq_zero_iff E,
-    IntermediateField.algebraMap_apply,
-    Algebra.algebraMap_self, RingHomCompTriple.comp_apply, mem_algebraicClosure_iff] using h x.2⟩,
+    IntermediateField.algebraMap_apply, Algebra.algebraMap_self, RingHomCompTriple.comp_apply,
+    mem_algebraicClosure_iff] using h x.property⟩,
     fun _ ↦ le_algebraicClosure _ _ _⟩
 
 namespace algebraicClosure

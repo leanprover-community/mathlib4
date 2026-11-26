@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.Group.Synonym
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-! # Unbundled ordered monoid structures on the order dual. -/
 
 public section
@@ -27,7 +30,7 @@ instance mulLeftReflectLE [LE α] [Mul α] [MulLeftReflectLE α] : MulLeftReflec
 
 @[to_additive]
 instance mulLeftMono [LE α] [Mul α] [c : MulLeftMono α] : MulLeftMono αᵒᵈ :=
-  ⟨c.1.flip⟩
+  ⟨c.elim.flip⟩
 
 @[to_additive]
 instance mulRightReflectLE [LE α] [Mul α] [MulRightReflectLE α] : MulRightReflectLE αᵒᵈ where
@@ -36,22 +39,22 @@ instance mulRightReflectLE [LE α] [Mul α] [MulRightReflectLE α] : MulRightRef
 
 @[to_additive]
 instance mulRightMono [LE α] [Mul α] [c : MulRightMono α] : MulRightMono αᵒᵈ :=
-  ⟨c.1.flip⟩
+  ⟨c.elim.flip⟩
 
 @[to_additive]
 instance mulLeftReflectLT [LT α] [Mul α] [c : MulLeftReflectLT α] : MulLeftReflectLT αᵒᵈ :=
-  ⟨c.1.flip⟩
+  ⟨c.elim.flip⟩
 
 @[to_additive]
 instance mulLeftStrictMono [LT α] [Mul α] [c : MulLeftStrictMono α] : MulLeftStrictMono αᵒᵈ :=
-  ⟨c.1.flip⟩
+  ⟨c.elim.flip⟩
 
 @[to_additive]
 instance mulRightReflectLT [LT α] [Mul α] [c : MulRightReflectLT α] : MulRightReflectLT αᵒᵈ :=
-  ⟨c.1.flip⟩
+  ⟨c.elim.flip⟩
 
 @[to_additive]
 instance mulRightStrictMono [LT α] [Mul α] [c : MulRightStrictMono α] : MulRightStrictMono αᵒᵈ :=
-  ⟨c.1.flip⟩
+  ⟨c.elim.flip⟩
 
 end OrderDual

@@ -6,12 +6,12 @@ Authors: Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.Data.Int.Interval
-public import Mathlib.Data.Int.ConditionallyCompleteOrder
+public import Mathlib.Order.Int.ConditionallyCompleteOrder
 public import Mathlib.Topology.Instances.Discrete
 public import Mathlib.Topology.MetricSpace.Bounded
-public import Mathlib.Order.Filter.AtTopBot.Archimedean
-public import Mathlib.Topology.MetricSpace.Basic
-public import Mathlib.Topology.Order.Bornology
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Topology on the integers
@@ -68,9 +68,6 @@ instance : ProperSpace ℤ :=
 
 instance : IsOrderBornology ℤ :=
   .of_isCompactIcc 0 (by simp [Int.closedBall_eq_Icc]) (by simp [Int.closedBall_eq_Icc])
-
-@[deprecated (since := "2026-04-07")]
-alias cobounded_eq := IsOrderBornology.cobounded_eq
 
 @[simp]
 theorem cofinite_eq : (cofinite : Filter ℤ) = atBot ⊔ atTop := by

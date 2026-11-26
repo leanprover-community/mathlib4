@@ -5,7 +5,6 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Tactic.CategoryTheory.Reassoc
 public import Mathlib.CategoryTheory.Comma.Over.Basic
 
 /-!
@@ -19,12 +18,12 @@ This is analogous to how we view ringhoms as structures via the `Algebra` typecl
 
 For other applications use unbundled arrows or `CategoryTheory.Over`.
 
-## Main definition
+## Main definitions
+
 - `CategoryTheory.OverClass`: `OverClass X S` equips `X` with a morphism into `S`.
   `X ↘ S : X ⟶ S` is the structure morphism.
 - `CategoryTheory.HomIsOver`:
   `HomIsOver f S` asserts that `f` commutes with the structure morphisms.
-
 -/
 
 @[expose] public section
@@ -173,6 +172,7 @@ instance {f : X ⟶ Y} [IsIso f] [HomIsOver f S] : HomIsOver (inv f) S where
 
 end OverClass
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Reinterpret an isomorphism over an object `S` into an isomorphism in the category over `S`. -/
 @[simps]
 def Iso.asOver (e : X ≅ Y) [HomIsOver e.hom S] : OverClass.asOver X S ≅ OverClass.asOver Y S where

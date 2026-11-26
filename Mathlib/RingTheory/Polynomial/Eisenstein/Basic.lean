@@ -5,28 +5,32 @@ Authors: Riccardo Brasca
 -/
 module
 
-public import Mathlib.RingTheory.Ideal.BigOperators
 public import Mathlib.RingTheory.Polynomial.Eisenstein.Criterion
 public import Mathlib.RingTheory.Polynomial.ScaleRoots
 
+import Mathlib.RingTheory.Ideal.BigOperators
+
 /-!
 # Eisenstein polynomials
+
 Given an ideal `𝓟` of a commutative semiring `R`, we say that a polynomial `f : R[X]` is
 *Eisenstein at `𝓟`* if `f.leadingCoeff ∉ 𝓟`, `∀ n, n < f.natDegree → f.coeff n ∈ 𝓟` and
 `f.coeff 0 ∉ 𝓟 ^ 2`. In this file we gather miscellaneous results about Eisenstein polynomials.
 
 ## Main definitions
+
 * `Polynomial.IsEisensteinAt f 𝓟`: the property of being Eisenstein at `𝓟`.
 
 ## Main results
+
 * `Polynomial.IsEisensteinAt.irreducible`: if a primitive `f` satisfies `f.IsEisensteinAt 𝓟`,
   where `𝓟.IsPrime`, then `f` is irreducible.
 
-## Implementation details
+## Implementation notes
+
 We also define a notion `IsWeaklyEisensteinAt` requiring only that
 `∀ n < f.natDegree → f.coeff n ∈ 𝓟`. This makes certain results slightly more general and it is
 useful since it is sometimes better behaved (for example it is stable under `Polynomial.map`).
-
 -/
 
 public section
@@ -107,14 +111,12 @@ theorem exists_mem_adjoin_mul_eq_pow_natDegree {x : S} (hx : aeval x f = 0) (hmo
     exact mem_span_singleton.1 (by simpa using hf.mem hn)
   choose! φ hφ using this
   conv_rhs at hx =>
-    congr
-    congr
-    · skip
-    ext i
-    rw [coeff_map, hφ i.1 (lt_of_lt_of_le i.2 natDegree_map_le), map_mul, mul_assoc]
+    enter [1, 2, i]
+    rw [coeff_map, hφ i.val (lt_of_lt_of_le i.isLt natDegree_map_le), map_mul, mul_assoc]
   rw [hx, ← mul_sum, neg_eq_neg_one_mul, ← mul_assoc (-1 : S), mul_comm (-1 : S), mul_assoc]
   refine
-    ⟨-1 * ∑ i : Fin (f.map (algebraMap R S)).natDegree, (algebraMap R S) (φ i.1) * x ^ i.1, ?_, rfl⟩
+    ⟨-1 * ∑ i : Fin (f.map (algebraMap R S)).natDegree, (algebraMap R S) (φ i.val) * x ^ i.val,
+      ?_, rfl⟩
   exact
     Subalgebra.mul_mem _ (Subalgebra.neg_mem _ (Subalgebra.one_mem _))
       (Subalgebra.sum_mem _ fun i _ =>

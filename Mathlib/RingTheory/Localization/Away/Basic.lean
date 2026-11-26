@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.Localization.Basic
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Localizations away from an element
 
@@ -26,6 +29,7 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
 See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
 
 ## Tags
+
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
 -/
@@ -146,8 +150,8 @@ variable {g : R →+* P}
 `z : S` to `g y * (g x)⁻ⁿ`, where `y : R, n : ℕ` are such that `z = F y * (F x)⁻ⁿ`. -/
 noncomputable def lift (hg : IsUnit (g x)) : S →+* P :=
   IsLocalization.lift fun y : Submonoid.powers x =>
-    show IsUnit (g y.1) by
-      obtain ⟨n, hn⟩ := y.2
+    show IsUnit (g y.val) by
+      obtain ⟨n, hn⟩ := y.property
       rw [← hn, g.map_pow]
       exact IsUnit.map (powMonoidHom n : P →* P) hg
 
@@ -158,6 +162,26 @@ theorem lift_eq (hg : IsUnit (g x)) (a : R) : lift x hg (algebraMap R S a) = g a
 @[simp]
 theorem lift_comp (hg : IsUnit (g x)) : (lift x hg).comp (algebraMap R S) = g :=
   IsLocalization.lift_comp _
+
+section liftAlgHom
+
+variable {A : Type*} [CommSemiring A] [Algebra A R] [Algebra A S] [Algebra A P]
+  [IsScalarTower A R S] {f : R →ₐ[A] P} (hf : IsUnit (f x))
+include hf
+
+/-- `AlgHom` version of `IsLocalization.Away.lift`. -/
+noncomputable def liftAlgHom : S →ₐ[A] P where
+  __ := lift x hf
+  commutes' r := by simp [IsScalarTower.algebraMap_apply A R S]
+
+theorem liftAlgHom_toRingHom : (liftAlgHom x hf : S →ₐ[A] P).toRingHom = lift x hf := rfl
+
+@[simp]
+theorem coe_liftAlgHom : ⇑(liftAlgHom x hf : S →ₐ[A] P) = lift x hf := rfl
+
+theorem liftAlgHom_apply (s : S) : liftAlgHom x hf s = lift x hf s := rfl
+
+end liftAlgHom
 
 /-- Given `x y : R` and localizations `S`, `P` away from `x` and `y * x`
 respectively, the homomorphism induced from `S` to `P`. -/
@@ -226,13 +250,15 @@ instance (x : R) [IsLocalization.Away (algebraMap R A x) Aₚ] :
     IsLocalization (Algebra.algebraMapSubmonoid A (.powers x)) Aₚ := by
   simpa
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given an algebra map `f : A →ₐ[R] B` and an element `a : A`, we may construct a map
 `Aₐ →ₐ[R] Bₐ`. -/
-noncomputable def mapₐ (f : A →ₐ[R] B) (a : A) [Away a Aₚ] [Away (f a) Bₚ] : Aₚ →ₐ[R] Bₚ :=
-  ⟨map Aₚ Bₚ f.toRingHom a, fun r ↦ by
+noncomputable def mapₐ (f : A →ₐ[R] B) (a : A) [Away a Aₚ] [Away (f a) Bₚ] : Aₚ →ₐ[R] Bₚ where
+  __ := map Aₚ Bₚ f.toRingHom a
+  commutes' r := by
     dsimp only [AlgHom.toRingHom_eq_coe, map, RingHom.coe_coe, OneHom.toFun_eq_coe]
     rw [IsScalarTower.algebraMap_apply R A Aₚ, IsScalarTower.algebraMap_eq R B Bₚ]
-    simp⟩
+    simp
 
 @[simp]
 lemma mapₐ_apply (f : A →ₐ[R] B) (a : A) [Away a Aₚ] [Away (f a) Bₚ] (x : Aₚ) :
@@ -306,7 +332,7 @@ lemma commutes {R : Type*} [CommSemiring R] (S₁ S₂ T : Type*) [CommSemiring 
     [IsLocalization.Away x S₁] [IsLocalization.Away y S₂]
     [IsLocalization.Away (algebraMap R S₂ x) T] :
     IsLocalization.Away (algebraMap R S₁ y) T := by
-  convert! IsLocalization.commutes S₁ S₂ T (Submonoid.powers x) (Submonoid.powers y)
+  convert IsLocalization.commutes S₁ S₂ T (Submonoid.powers x) (Submonoid.powers y)
   ext x
   simp
 
@@ -535,36 +561,39 @@ noncomputable abbrev awayMapₐ (f : A →ₐ[R] B) (a : A) :
   IsLocalization.Away.mapₐ _ _ f a
 
 theorem algebraMap_injective_of_span_eq_top (s : Set R) (span_eq : Ideal.span s = ⊤) :
-    Function.Injective (algebraMap R <| Π a : s, Away a.1) := fun x y eq ↦ by
+    Function.Injective (algebraMap R <| Π a : s, Away a.val) := fun x y eq ↦ by
   suffices Module.eqIdeal R x y = ⊤ by simpa [Module.eqIdeal] using (Ideal.eq_top_iff_one _).mp this
   by_contra ne
   have ⟨r, hrs, disj⟩ := Ideal.exists_disjoint_powers_of_span_eq_top s span_eq _ ne
   let r : s := ⟨r, hrs⟩
-  have ⟨⟨_, n, rfl⟩, eq⟩ := (IsLocalization.eq_iff_exists (.powers r.1) _).mp (congr_fun eq r)
+  have ⟨⟨_, n, rfl⟩, eq⟩ := (IsLocalization.eq_iff_exists (.powers r.val) _).mp congr($eq r)
   exact Set.disjoint_left.mp disj eq ⟨n, rfl⟩
 
 /-- The sheaf condition for the structure sheaf on `Spec R`
 for a covering of the whole prime spectrum by basic opens. -/
 theorem existsUnique_algebraMap_eq_of_span_eq_top (s : Set R) (span_eq : Ideal.span s = ⊤)
-    (f : Π a : s, Away a.1) (h : ∀ a b : s,
-      Away.awayToAwayRight (P := Away (a * b : R)) a.1 b (f a) = Away.awayToAwayLeft b.1 a (f b)) :
+    (f : Π a : s, Away a.val) (h : ∀ a b : s,
+      Away.awayToAwayRight (P := Away (a * b : R)) a.val b (f a) =
+        Away.awayToAwayLeft b.val a (f b)) :
     ∃! r : R, ∀ a : s, algebraMap R _ r = f a := by
   have mem := (Ideal.eq_top_iff_one _).mp span_eq; clear span_eq
   wlog finset_eq : ∃ t : Finset R, t = s generalizing s
   · have ⟨t, hts, mem⟩ := Submodule.mem_span_finite_of_mem_span mem
-    have ⟨r, eq, uniq⟩ := this t (fun a ↦ f ⟨a, hts a.2⟩)
-      (fun a b ↦ h ⟨a, hts a.2⟩ ⟨b, hts b.2⟩) mem ⟨_, rfl⟩
-    refine ⟨r, fun a ↦ ?_, fun _ eq ↦ uniq _ fun a ↦ eq ⟨a, hts a.2⟩⟩
-    replace hts := Set.insert_subset a.2 hts
+    have ⟨r, eq, uniq⟩ := this t (fun a ↦ f ⟨a, hts a.property⟩)
+      (fun a b ↦ h ⟨a, hts a.property⟩ ⟨b, hts b.property⟩) mem ⟨_, rfl⟩
+    refine ⟨r, fun a ↦ ?_, fun _ eq ↦ uniq _ fun a ↦ eq ⟨a, hts a.property⟩⟩
+    replace hts := Set.insert_subset a.property hts
     classical
-    have ⟨r', eq, _⟩ := this ({a.1} ∪ t) (fun a ↦ f ⟨a, hts a.2⟩) (fun a b ↦
-      h ⟨a, hts a.2⟩ ⟨b, hts b.2⟩) (Ideal.span_mono (fun _ ↦ .inr) mem) ⟨{a.1} ∪ t, by simp⟩
-    exact (congr_arg _ (uniq _ fun b ↦ eq ⟨b, .inr b.2⟩).symm).trans (eq ⟨a, .inl rfl⟩)
+    have ⟨r', eq, _⟩ := this ({a.val} ∪ t) (fun a ↦ f ⟨a, hts a.property⟩) (fun a b ↦
+      h ⟨a, hts a.property⟩ ⟨b, hts b.property⟩)
+      (Ideal.span_mono (fun _ h ↦ Set.mem_union_right _ h) mem) ⟨{a.val} ∪ t, by simp⟩
+    exact (congr_arg _ (uniq _ fun b ↦ eq ⟨b, Set.mem_union_right _ b.property⟩).symm).trans
+      (eq ⟨a, Set.mem_union_left _ rfl⟩)
   have span_eq := (Ideal.eq_top_iff_one _).mpr mem
   refine existsUnique_of_exists_of_unique ?_ fun x y hx hy ↦
     algebraMap_injective_of_span_eq_top s span_eq (funext fun a ↦ (hx a).trans (hy a).symm)
   obtain ⟨s, rfl⟩ := finset_eq
-  choose n r eq using fun a ↦ Away.surj a.1 (f a)
+  choose n r eq using fun a ↦ Away.surj a.val (f a)
   let N := s.attach.sup n
   let r a := a ^ (N - n a) * r a
   have eq a : f a * algebraMap R _ (a ^ N) = algebraMap R _ (r a) := by
@@ -572,25 +601,25 @@ theorem existsUnique_algebraMap_eq_of_span_eq_top (s : Set R) (span_eq : Ideal.s
       Nat.sub_add_cancel (Finset.le_sup <| s.mem_attach a)]
   have eq2 a b : ∃ N', (a * b) ^ N' * (r a * b ^ N) = (a * b) ^ N' * (r b * a ^ N) :=
     Away.exists_of_eq (S := Away (a * b : R)) _ <| by
-      simp_rw [map_mul, ← Away.awayToAwayRight_eq (S := Away a.1) a.1 b (r a),
-        ← Away.awayToAwayLeft_eq (S := Away b.1) b.1 a (r b), ← eq, map_mul,
+      simp_rw [map_mul, ← Away.awayToAwayRight_eq (S := Away a.val) a.val b (r a),
+        ← Away.awayToAwayLeft_eq (S := Away b.val) b.val a (r b), ← eq, map_mul,
         Away.awayToAwayRight_eq, Away.awayToAwayLeft_eq, h, mul_assoc, ← map_mul, mul_comm]
   choose N' hN' using eq2
   let N' := (s ×ˢ s).attach.sup fun a ↦ N'
-    ⟨_, (Finset.mem_product.mp a.2).1⟩ ⟨_, (Finset.mem_product.mp a.2).2⟩
+    ⟨_, (Finset.mem_product.mp a.property).1⟩ ⟨_, (Finset.mem_product.mp a.property).2⟩
   have eq2 a b : (a * b) ^ N' * (r a * b ^ N) = (a * b) ^ N' * (r b * a ^ N) := by
-    dsimp only [N']; rw [← Nat.sub_add_cancel (Finset.le_sup <| (Finset.mem_attach _ ⟨⟨a, b⟩,
-      Finset.mk_mem_product a.2 b.2⟩)), pow_add, mul_assoc, hN', ← mul_assoc]
+    dsimp only [N']; rw [← Nat.sub_add_cancel (Finset.le_sup (Finset.mem_attach _ ⟨⟨a, b⟩,
+      Finset.mk_mem_product a.property b.property⟩)), pow_add, mul_assoc, hN', ← mul_assoc]
   let N := N' + N
   let r a := a ^ N' * r a
   have eq a : f a * algebraMap R _ (a ^ N) = algebraMap R _ (r a) := by
     rw [map_mul, ← eq, mul_left_comm, ← map_mul, ← pow_add]
   have eq2 a b : r a * b ^ N = r b * a ^ N := by
     rw [pow_add, mul_mul_mul_comm, ← mul_pow, eq2,
-      mul_comm a.1, mul_pow, mul_mul_mul_comm, ← pow_add]
+      mul_comm a.val, mul_pow, mul_mul_mul_comm, ← pow_add]
   have ⟨c, eq1⟩ := (Submodule.mem_span_range_iff_exists_fun _).mp <|
-    (Ideal.eq_top_iff_one _).mp <| (Set.image_eq_range _ _ ▸ Ideal.span_pow_eq_top _ span_eq N)
-  refine ⟨∑ b, c b * r b, fun a ↦ ((Away.algebraMap_isUnit a.1).pow N).mul_left_inj.mp ?_⟩
+    (Ideal.eq_top_iff_one _).mp (Set.image_eq_range _ _ ▸ Ideal.span_pow_eq_top _ span_eq N)
+  refine ⟨∑ b, c b * r b, fun a ↦ ((Away.algebraMap_isUnit a.val).pow N).mul_left_inj.mp ?_⟩
   simp_rw [← map_pow, eq, ← map_mul, Finset.sum_mul, mul_assoc, eq2 _ a, mul_left_comm (c _),
     ← Finset.mul_sum, ← smul_eq_mul (a := c _), eq1, mul_one]
 
@@ -601,8 +630,6 @@ theorem Away.isDomain [IsDomain R] {x : R} (hx : x ≠ 0) : IsDomain (Localizati
 end Localization
 
 end CommSemiring
-
-open Localization
 
 variable {R : Type*} [CommSemiring R]
 
@@ -618,7 +645,7 @@ noncomputable def selfZPow (m : ℤ) : B :=
   if _ : 0 ≤ m then algebraMap _ _ x ^ m.natAbs else mk' _ (1 : R) (Submonoid.pow x m.natAbs)
 
 theorem selfZPow_of_nonneg {n : ℤ} (hn : 0 ≤ n) : selfZPow x B n = algebraMap R B x ^ n.natAbs :=
-  dif_pos hn
+  dite_eq_left hn
 
 @[simp]
 theorem selfZPow_natCast (d : ℕ) : selfZPow x B d = algebraMap R B x ^ d :=
@@ -630,7 +657,7 @@ theorem selfZPow_zero : selfZPow x B 0 = 1 := by
 
 theorem selfZPow_of_neg {n : ℤ} (hn : n < 0) :
     selfZPow x B n = mk' _ (1 : R) (Submonoid.pow x n.natAbs) :=
-  dif_neg hn.not_ge
+  dite_eq_right hn.not_ge
 
 theorem selfZPow_of_nonpos {n : ℤ} (hn : n ≤ 0) :
     selfZPow x B n = mk' _ (1 : R) (Submonoid.pow x n.natAbs) := by
@@ -642,6 +669,7 @@ theorem selfZPow_of_nonpos {n : ℤ} (hn : n ≤ 0) :
 theorem selfZPow_neg_natCast (d : ℕ) : selfZPow x B (-d) = mk' _ (1 : R) (Submonoid.pow x d) := by
   simp [selfZPow_of_nonpos _ _ (neg_nonpos.mpr (Int.natCast_nonneg d))]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem selfZPow_sub_natCast {n m : ℕ} :
     selfZPow x B (n - m) = mk' _ (x ^ n) (Submonoid.pow x m) := by
@@ -670,6 +698,7 @@ theorem selfZPow_add {n m : ℤ} : selfZPow x B (n + m) = selfZPow x B n * selfZ
     ext
     simp [pow_add]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem selfZPow_mul_neg (d : ℤ) : selfZPow x B d * selfZPow x B (-d) = 1 := by
   by_cases! hd : d ≤ 0
   · rw [selfZPow_of_nonpos x B hd, selfZPow_of_nonneg, ← map_pow, Int.natAbs_neg,
@@ -702,9 +731,9 @@ variable [Algebra R B] [IsLocalization.Away x B] [IsDomain R] [WfDvdMonoid R]
 theorem exists_reduced_fraction' {b : B} (hb : b ≠ 0) (hx : Irreducible x) :
     ∃ (a : R) (n : ℤ), ¬x ∣ a ∧ selfZPow x B n * algebraMap R B a = b := by
   obtain ⟨⟨a₀, y⟩, H⟩ := surj (Submonoid.powers x) b
-  obtain ⟨d, hy⟩ := (Submonoid.mem_powers_iff y.1 x).mp y.2
+  obtain ⟨d, hy⟩ := (Submonoid.mem_powers_iff y.val x).mp y.property
   have ha₀ : a₀ ≠ 0 := by
-    haveI := isDomain_of_le_nonZeroDivisors B
+    have := isDomain_of_le_nonZeroDivisors B
       (powers_le_nonZeroDivisors_of_noZeroDivisors hx.ne_zero)
     simp only [← hy, map_pow] at H
     apply ((injective_iff_map_eq_zero' (algebraMap R B)).mp _ a₀).mpr.mt
