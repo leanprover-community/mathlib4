@@ -252,8 +252,7 @@ theorem tendstoInDistribution_inv_sqrt_smul_sum_stdGaussian
   apply tendstoInDistribution_inv_sqrt_smul_sum (S := 1) (by simpa) h0 h1 _ hindep hident
   refine MemLp.of_eval_piLp fun i ↦ ?_
   have hXi : AEStronglyMeasurable (fun ω ↦ X 0 ω i) P :=
-    ((PiLp.continuous_ofLp 2 _).comp_aestronglyMeasurable
-      (hident 0).aemeasurable_fst.aestronglyMeasurable).eval
+    (hident 0).aemeasurable_fst.aestronglyMeasurable.eval_piLp i
   apply memLp_two_of_variance_ne_zero hXi
   rw [← covariance_self hXi.aemeasurable, h1]
   simp
