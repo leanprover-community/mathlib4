@@ -907,10 +907,10 @@ theorem rangeFactorization_eq {f : ι → β} : Subtype.val ∘ rangeFactorizati
   funext fun _ => rfl
 
 @[simp]
-theorem subtyleVal_rangeFactorization (f : ι → β) (a : ι) : (rangeFactorization f a : β) = f a :=
+theorem subtypeVal_rangeFactorization (f : ι → β) (a : ι) : (rangeFactorization f a : β) = f a :=
   rfl
 
-@[deprecated (since := "2026-11-26")] alias rangeFactorization_coe := subtyleVal_rangeFactorization
+@[deprecated (since := "2026-11-26")] alias rangeFactorization_coe := subtypeVal_rangeFactorization
 
 @[simp]
 theorem subtypeVal_comp_rangeFactorization (f : ι → β) : (↑) ∘ rangeFactorization f = f := rfl
@@ -973,7 +973,7 @@ theorem range_inclusion (h : s ⊆ t) : range (inclusion h) = { x : t | (x : α)
 theorem leftInverse_rangeSplitting (f : α → β) :
     LeftInverse (rangeFactorization f) (rangeSplitting f) := fun x => by
   ext
-  simp only [subtyleVal_rangeFactorization]
+  simp only [subtypeVal_rangeFactorization]
   apply apply_rangeSplitting
 
 theorem rangeSplitting_injective (f : α → β) : Injective (rangeSplitting f) :=
