@@ -190,6 +190,32 @@ lemma ker_ne_bot_of_finrank_lt [FiniteDimensional K V] [FiniteDimensional K V₂
   suffices 0 < finrank K (LinearMap.ker f) from Submodule.one_le_finrank_iff.mp this
   lia
 
+/-- Rank–nullity for the restriction of `f` to a subspace `p`:
+`dim (f p) + dim (p ⊓ ker f) = dim p`.
+This is the `finrank` version of `LinearMap.rank_map_add_rank_inf_ker`. -/
+theorem finrank_map_add_finrank_inf_ker [FiniteDimensional K V] (f : V →ₗ[K] V₂)
+    (p : Submodule K V) :
+    finrank K (p.map f) + finrank K ↥(p ⊓ ker f) = finrank K p := by
+  have h := (f.domRestrict p).finrank_range_add_finrank_ker
+  rw [range_domRestrict, ker_domRestrict,
+    ← Submodule.finrank_map_subtype_eq p ((ker f).comap p.subtype),
+    Submodule.map_comap_subtype] at h
+  exact h
+
+/-- **Frobenius rank inequality** for linear maps:
+`rank (f g) + rank (g h) ≤ rank g + rank (f g h)`. -/
+theorem finrank_range_comp_add_finrank_range_comp_le [FiniteDimensional K V]
+    {V₀ V₁ : Type*} [AddCommGroup V₀] [Module K V₀] [AddCommGroup V₁] [Module K V₁]
+    (f : V →ₗ[K] V₂) (g : V₁ →ₗ[K] V) (h : V₀ →ₗ[K] V₁) :
+    finrank K (range (f ∘ₗ g)) + finrank K (range (g ∘ₗ h)) ≤
+      finrank K (range g) + finrank K (range (f ∘ₗ g ∘ₗ h)) := by
+  have h₁ := finrank_map_add_finrank_inf_ker f (range g)
+  have h₂ := finrank_map_add_finrank_inf_ker f (range (g ∘ₗ h))
+  have hle : finrank K ↥(range (g ∘ₗ h) ⊓ ker f) ≤ finrank K ↥(range g ⊓ ker f) :=
+    Submodule.finrank_mono (inf_le_inf_right _ (range_comp_le_range h g))
+  rw [range_comp g f, range_comp (g ∘ₗ h) f]
+  omega
+
 end DivisionRing
 
 end LinearMap
