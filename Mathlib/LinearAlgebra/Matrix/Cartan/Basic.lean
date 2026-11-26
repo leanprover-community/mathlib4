@@ -148,8 +148,10 @@ def C (n : ℕ) : Matrix (Fin n) (Fin n) ℤ :=
     else 0
 
 /-- The Cartan matrix of type Dₙ (rank n, corresponding to so(2n)).
-Note that inversely to Bourbaki's ordering, nodes 0 and 1 are the short arms, joined to node 2.
-See ```theorem D_three``` and ```theorem D_four``` for clarification. -/
+
+Note that rows are columns have the opposite ordering to Bourbaki. Thus the first three nodes in the
+corresponding Dynkin diagram are the non-linear part of the diagram. See `CartanMatrix.D_three` and
+`CartanMatrix.D_four`. -/
 def D (n : ℕ) : Matrix (Fin n) (Fin n) ℤ :=
   Matrix.of fun i j =>
     if i = j then 2
@@ -227,13 +229,13 @@ theorem B_two : B 2 = !![ 2, -2;
 theorem C_two : C 2 = !![ 2, -1;
                          -2,  2] := by decide
 
-theorem D_three : D 3 = !![ 2, 0, -1;
-                            0, 2, -1;
-                           -1, -1, 2] := by decide
+theorem D_three : D 3 = !![ 2,  0, -1;
+                            0,  2, -1;
+                           -1, -1,  2] := by decide
 
 theorem D_three' : (D 3).reindex c[1, 2] c[1, 2] = A 3 := by decide
 
-theorem D_four : D 4 = !![ 2,  0,  -1, 0;
+theorem D_four : D 4 = !![ 2,  0, -1,  0;
                            0,  2, -1,  0;
                           -1, -1,  2, -1;
                            0,  0, -1,  2] := by decide
