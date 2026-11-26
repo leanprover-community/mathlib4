@@ -65,7 +65,7 @@ instance (priority := 100) toBialgHomClass : BialgHomClass F R A B where
 
 /-- Reinterpret an element of a type of bialgebra equivalences as a bialgebra equivalence. -/
 def _root_.BialgEquiv.ofClass (f : F) : A ≃ₐc[R] B :=
-  { (f : A ≃ₗc[R] B), (.ofClass f : A →ₐc[R] B) with }
+  { CoalgEquiv.ofClass f, BialgHom.ofClass f with }
 
 @[deprecated (since := "2026-11-22")] alias toBialgEquiv := BialgEquiv.ofClass
 
@@ -138,11 +138,13 @@ instance : CoeOut (A ≃ₐc[R] B) (A ≃ₐ[R] B) where coe := toAlgEquiv
 theorem toBialgHom_inj {e₁ e₂ : A ≃ₐc[R] B} : e₁.toBialgHom = e₂.toBialgHom ↔ e₁ = e₂ :=
   toBialgHom_injective.eq_iff
 
-@[simp] lemma coe_mk (e : A ≃ₗc[R] B) (h) : mk e h = e := rfl
+@[simp] lemma toCoalgEquiv_mk (e : A ≃ₗc[R] B) (h) : (mk e h).toCoalgEquiv = e := rfl
+
+@[deprecated (since := "2026-11-22")] alias coe_mk := toCoalgEquiv_mk
 
 @[simp]
 protected lemma coe_ofClass {F : Type*} [EquivLike F A B] [BialgEquivClass F R A B] (f : F) :
-    ⇑(.ofClass f : A ≃ₐc[R] B) = f := rfl
+    ⇑(ofClass f) = f := rfl
 
 end
 
@@ -157,9 +159,10 @@ variable (e e' : A ≃ₐc[R] B)
 theorem coe_coe : ⇑(.ofClass e : A →ₐc[R] B) = e :=
   rfl
 
-@[simp]
-theorem toCoalgEquiv_eq_coe (f : A ≃ₐc[R] B) : f.toCoalgEquiv = f :=
+theorem toCoalgEquiv_eq_ofClass (f : A ≃ₐc[R] B) : f.toCoalgEquiv = .ofClass f :=
   rfl
+
+@[deprecated (since := "2026-11-22")] alias toCoalgEquiv_eq_coe := toCoalgEquiv_eq_ofClass
 
 theorem toBialgHom_eq_ofClass (f : A ≃ₐc[R] B) : f.toBialgHom = .ofClass f :=
   rfl
@@ -167,7 +170,7 @@ theorem toBialgHom_eq_ofClass (f : A ≃ₐc[R] B) : f.toBialgHom = .ofClass f :
 @[deprecated (since := "2026-11-22")] alias toBialgHom_eq_coe := toBialgHom_eq_ofClass
 
 @[simp]
-theorem coe_toCoalgEquiv : ⇑(e : A ≃ₗc[R] B) = e :=
+theorem coe_toCoalgEquiv : ⇑e.toCoalgEquiv = e :=
   rfl
 
 @[simp]
@@ -178,8 +181,7 @@ theorem coe_toBialgHom : ⇑e.toBialgHom = e :=
 theorem coe_toAlgEquiv : ⇑(e : A ≃ₐ[R] B) = e :=
   rfl
 
-theorem toCoalgEquiv_toCoalgHom :
-    ((e : A ≃ₗc[R] B) : A →ₗc[R] B) = e.toBialgHom := rfl
+theorem toCoalgEquiv_toCoalgHom : e.toCoalgEquiv.toCoalgHom = e.toBialgHom.toCoalgHom := rfl
 
 section
 
@@ -219,7 +221,7 @@ def refl : A ≃ₐc[R] A :=
   { CoalgEquiv.refl R A, BialgHom.id R A with }
 
 @[simp]
-theorem refl_toCoalgEquiv : refl R A = CoalgEquiv.refl R A := rfl
+theorem refl_toCoalgEquiv : (refl R A).toCoalgEquiv = CoalgEquiv.refl R A := rfl
 
 @[simp]
 theorem refl_toBialgHom : (refl R A).toBialgHom = BialgHom.id R A :=
@@ -228,11 +230,11 @@ theorem refl_toBialgHom : (refl R A).toBialgHom = BialgHom.id R A :=
 /-- Bialgebra equivalences are symmetric. -/
 @[symm]
 def symm (e : A ≃ₐc[R] B) : B ≃ₐc[R] A :=
-  { (e : A ≃ₗc[R] B).symm, (e : A ≃* B).symm with }
+  { e.toCoalgEquiv.symm, (e : A ≃* B).symm with }
 
 @[simp]
 theorem symm_toCoalgEquiv (e : A ≃ₐc[R] B) :
-    e.symm = (e : A ≃ₗc[R] B).symm := rfl
+    e.symm.toCoalgEquiv = e.toCoalgEquiv.symm := rfl
 
 theorem invFun_eq_symm : e.invFun = e.symm :=
   rfl
@@ -256,11 +258,11 @@ variable {e₁₂ : A ≃ₐc[R] B} {e₂₃ : B ≃ₐc[R] C}
 /-- Bialgebra equivalences are transitive. -/
 @[trans, simps! apply]
 def trans (e₁₂ : A ≃ₐc[R] B) (e₂₃ : B ≃ₐc[R] C) : A ≃ₐc[R] C :=
-  { (e₁₂ : A ≃ₗc[R] B).trans (e₂₃ : B ≃ₗc[R] C), (e₁₂ : A ≃* B).trans (e₂₃ : B ≃* C) with }
+  { e₁₂.toCoalgEquiv.trans e₂₃.toCoalgEquiv, (e₁₂ : A ≃* B).trans (e₂₃ : B ≃* C) with }
 
 @[simp]
 theorem trans_toCoalgEquiv :
-    (e₁₂.trans e₂₃ : A ≃ₗc[R] C) = (e₁₂ : A ≃ₗc[R] B).trans (e₂₃ : B ≃ₗc[R] C) := rfl
+    (e₁₂.trans e₂₃).toCoalgEquiv = e₁₂.toCoalgEquiv.trans e₂₃.toCoalgEquiv := rfl
 
 @[simp]
 theorem trans_toBialgHom :

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.GCDMonoid.Basic
 public import Mathlib.Algebra.Order.Monoid.Multiset
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Unique factorization and normalization
 

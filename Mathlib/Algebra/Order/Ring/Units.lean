@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Ring.Subring.Units
 public import Mathlib.GroupTheory.Index
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-! # Lemmas about units of ordered rings -/
 
 public section
