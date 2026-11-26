@@ -139,8 +139,8 @@ variable [HopfAlgebra R X] [HopfAlgebra R Y] [HopfAlgebra R Z]
 `BialgEquiv`. -/
 @[simps]
 def toHopfAlgIso (e : X ≃ₐc[R] Y) : HopfAlgCat.of R X ≅ HopfAlgCat.of R Y where
-  hom := HopfAlgCat.ofHom e
-  inv := HopfAlgCat.ofHom e.symm
+  hom := HopfAlgCat.ofHom e.toBialgHom
+  inv := HopfAlgCat.ofHom e.symm.toBialgHom
   hom_inv_id := Hom.ext <| DFunLike.ext _ _ e.left_inv
   inv_hom_id := Hom.ext <| DFunLike.ext _ _ e.right_inv
 
@@ -173,7 +173,7 @@ def toHopfAlgEquiv (i : X ≅ Y) : X ≃ₐc[R] Y :=
     right_inv := fun x => congr($(i.inv_hom_id).toBialgHom x) }
 
 @[simp] theorem toHopfAlgEquiv_toBialgHom (i : X ≅ Y) :
-    (i.toHopfAlgEquiv : X →ₐc[R] Y) = i.hom.toBialgHom' := rfl
+    i.toHopfAlgEquiv.toBialgHom = i.hom.toBialgHom' := rfl
 
 @[simp] theorem toHopfAlgEquiv_refl : toHopfAlgEquiv (.refl X) = .refl _ _ :=
   rfl

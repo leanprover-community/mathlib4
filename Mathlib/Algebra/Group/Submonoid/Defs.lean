@@ -9,6 +9,9 @@ module
 public import Mathlib.Algebra.Group.Subsemigroup.Defs
 public import Mathlib.Data.Set.Insert
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Submonoids: definition
 

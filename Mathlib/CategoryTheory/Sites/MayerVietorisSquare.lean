@@ -14,6 +14,9 @@ public import Mathlib.CategoryTheory.Sites.Abelian
 
 import Mathlib.CategoryTheory.Sites.Adjunction
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Mayer-Vietoris squares
 
