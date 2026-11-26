@@ -196,15 +196,31 @@ def comp (P₂ : PFunctor.{uA₂, uB₂}) (P₁ : PFunctor.{uA₁, uB₁}) :
   A := Σ a₂ : P₂.A, P₂.B a₂ → P₁.A
   B a₂a₁ := Σ u : P₂.B a₂a₁.1, P₁.B (a₂a₁.2 u)
 
+namespace comp
+
+variable {P₂ : PFunctor.{uA₂, uB₂}} {P₁ : PFunctor.{uA₁, uB₁}} {α : Type u} {β : Type v} (f : α → β)
+
 /-- Constructor for composition -/
-def comp.mk (P₂ : PFunctor.{uA₂, uB₂}) (P₁ : PFunctor.{uA₁, uB₁}) {α : Type v} (x : P₂ (P₁ α)) :
-    comp P₂ P₁ α :=
+@[implicit_reducible]
+def mk (x : P₂ (P₁ α)) : comp P₂ P₁ α :=
   .mk ⟨x.fst, Obj.fst ∘ x.snd⟩ fun a₂a₁ => (x.snd a₂a₁.1).snd a₂a₁.2
 
 /-- Destructor for composition -/
-def comp.get (P₂ : PFunctor.{uA₂, uB₂}) (P₁ : PFunctor.{uA₁, uB₁}) {α : Type v} (x : comp P₂ P₁ α) :
-    P₂ (P₁ α) :=
+@[implicit_reducible]
+def get (x : comp P₂ P₁ α) : P₂ (P₁ α) :=
   .mk x.fst.1 fun a₂ => .mk (x.fst.2 a₂) fun a₁ => x.snd ⟨a₂, a₁⟩
+
+@[simp]
+theorem map_mk (x : P₂ (P₁ α)) :
+    map (comp P₂ P₁) f (comp.mk x) = comp.mk (map P₂ (map P₁ f) x) := rfl
+
+@[simp]
+theorem get_mk (x : P₂ (P₁ α)) : comp.get (comp.mk x) = x := rfl
+
+@[simp]
+theorem mk_get (x : comp P₂ P₁ α) : comp.mk (comp.get x) = x := rfl
+
+end comp
 
 end PFunctor
 
