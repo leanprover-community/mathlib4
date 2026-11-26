@@ -514,6 +514,10 @@ theorem _root_.Irreducible.separable_of_natCast_natDegree_ne_zero {f : F[X]} (hf
   simp [separable_iff_derivative_ne_zero hf, ← degree_eq_bot.ne,
     degree_derivative_of_isSMulRegular h]
 
+theorem _root_.Irreducible.separable_of_not_dvd {f : F[X]} (hf : Irreducible f)
+    (h : ¬ ringChar F ∣ f.natDegree) : f.Separable :=
+  hf.separable_of_natCast_natDegree_ne_zero <| (ringChar.spec F _).not.mpr h
+
 theorem _root_.Irreducible.separable [CharZero F] {f : F[X]} (hf : Irreducible f) :
     f.Separable :=
   hf.separable_of_natCast_natDegree_ne_zero (by simpa using hf.natDegree_pos.ne')
@@ -665,15 +669,23 @@ theorem IsSeparable.of_isIntegral_of_natCast_natDegree_ne_zero {x : K} (hx : IsI
     (h : ((minpoly F x).natDegree : F) ≠ 0) : IsSeparable F x :=
   (minpoly.irreducible hx).separable_of_natCast_natDegree_ne_zero h
 
+variable {F} in
+theorem IsSeparable.of_isIntegral_of_not_dvd {x : K} (hx : IsIntegral F x)
+    (h : ¬ ringChar F ∣ (minpoly F x).natDegree) : IsSeparable F x :=
+  (minpoly.irreducible hx).separable_of_not_dvd h
+
 theorem IsSeparable.of_algebraIsIntegral_of_natCast_natDegree_ne_zero [Algebra.IsIntegral F K]
     {x : K} (h : ((minpoly F x).natDegree : F) ≠ 0) : IsSeparable F x :=
   .of_isIntegral_of_natCast_natDegree_ne_zero (Algebra.IsIntegral.isIntegral x) h
 
+theorem IsSeparable.of_algebraIsIntegral_of_not_dvd [Algebra.IsIntegral F K] {x : K}
+    (h : ¬ ringChar F ∣ (minpoly F x).natDegree) : IsSeparable F x :=
+  .of_isIntegral_of_not_dvd (Algebra.IsIntegral.isIntegral x) h
+
 theorem Algebra.IsSeparable.of_isIntegral_of_finrank_lt [Algebra.IsIntegral F K] [Module.Finite F K]
     (h : Module.finrank F K < ringChar F) :
     Algebra.IsSeparable F K where
-  isSeparable' x := .of_algebraIsIntegral_of_natCast_natDegree_ne_zero _ <| by
-    rw [ne_eq, ringChar.spec]
+  isSeparable' x := .of_algebraIsIntegral_of_not_dvd _ <| by
     apply Nat.not_dvd_of_pos_of_lt (minpoly.natDegree_pos <| IsIntegral.isIntegral x)
     grw [minpoly.natDegree_le, h]
 
