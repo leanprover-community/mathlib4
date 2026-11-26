@@ -7,7 +7,7 @@ Authors: Michael Rothgang, Pepa Montero, Archibald Browne, Enrique Díaz, Juan J
 module
 
 public import Mathlib.Geometry.Manifold.Algebra.SMul
-public import Mathlib.Geometry.Manifold.IsManifold.ContMDiffTransitions
+public import Mathlib.Geometry.Manifold.ContMDiffTransitions
 public import Mathlib.Topology.Covering.Quotient
 
 /-!
