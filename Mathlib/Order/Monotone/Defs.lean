@@ -493,26 +493,26 @@ end Preorder
 
 end LinearOrder
 
-theorem Subtype.subtypeVal_mono [Preorder α] (p : α → Prop) : Monotone ((↑) : Subtype p → α) :=
+theorem Subtype.val_monotone [Preorder α] (p : α → Prop) : Monotone ((↑) : Subtype p → α) :=
   fun _ _ ↦ id
 
-@[deprecated (since := "2026-11-26")] alias Subtype.mono_coe := Subtype.subtypeVal_mono
+@[deprecated (since := "2026-11-26")] alias Subtype.mono_coe := Subtype.val_monotone
 
-lemma Set.subtypeVal_mono [Preorder α] (A : Set α) :
+lemma Set.subtypeVal_monotone [Preorder α] (A : Set α) :
     Monotone (fun (a : A) ↦ a.val) :=
-  Subtype.subtypeVal_mono _
+  Subtype.val_monotone _
 
-@[deprecated (since := "2026-11-26")] alias Set.mono_coe := Set.subtypeVal_mono
+@[deprecated (since := "2026-11-26")] alias Set.mono_coe := Set.subtypeVal_monotone
 
-theorem Subtype.subtypeVal_strictMono [Preorder α] (p : α → Prop) :
+theorem Subtype.val_strictMono [Preorder α] (p : α → Prop) :
     StrictMono ((↑) : Subtype p → α) :=
   fun _ _ ↦ id
 
-@[deprecated (since := "2026-11-26")] alias Subtype.strictMono_coe := Subtype.subtypeVal_strictMono
+@[deprecated (since := "2026-11-26")] alias Subtype.strictMono_coe := Subtype.val_strictMono
 
 theorem Set.subtypeVal_strictMono [Preorder α] (A : Set α) :
     StrictMono (fun (a : A) ↦ a.val) :=
-  Subtype.subtypeVal_strictMono _
+  Subtype.val_strictMono _
 
 @[deprecated (since := "2026-11-26")] alias Set.strictMono_coe := Set.subtypeVal_strictMono
 
