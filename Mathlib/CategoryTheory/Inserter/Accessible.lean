@@ -187,8 +187,7 @@ structure PartialChainUpTo (Λ : Type*) [Preorder Λ] [SuccOrder Λ]
   /-- A functorial assignment `j ↦ ξⱼ` (for `j ≤ i`) of κ-presentable objects of `K`
   equipped with a structure map to the underlying object of the inserter `E`. -/
   ξ : Set.Iic i ⥤ CostructuredArrow (isCardinalPresentable K κ).ι E.obj
-  /-- A structure map `ψⱼₖ : F(ξⱼ) ⟶ G(ξₖ) for all `j < k ≤ i`.
-  In particular, this bundles a map `F(ξᵢ₋₁) ⟶ G(ξᵢ)` when indices allow it. -/
+  /-- A structure map `ψⱼₖ : F(ξⱼ) ⟶ G(ξₖ) for all `j < k ≤ i`. -/
   ψ (j k : Λ) (hj : j < k := by valid) (hk : k ≤ i := by valid) :
     F.obj (ξ.obj (iic% j i)).left.obj ⟶ G.obj (ξ.obj (iic% k i)).left.obj
   sq₁ (j : Λ) (hj : j < i := by valid) :
@@ -231,15 +230,14 @@ lemma congr_ψ {E : Inserter F G} {i : Λ} {b b' : PartialChainUpTo κ Λ E i}
   subst h
   simp
 
-lemma sq₂ {i : Λ} {E : Inserter F G} (d : PartialChainUpTo κ Λ E i)
-    (j k l m : Λ)
+lemma sq₂ {i : Λ} {E : Inserter F G} (d : PartialChainUpTo κ Λ E i) (j k l m : Λ)
     (hjk : j < k := by valid) (hkm : k ≤ m := by valid) (hjl : j ≤ l := by valid)
     (hlm : l < m := by valid) (hm : m ≤ i := by valid) :
     F.map (d.ξ.map (homOfLE hjl)).left.hom ≫ d.ψ l m =
     d.ψ j k ≫ G.map (d.ξ.map (homOfLE hkm)).left.hom := by
   rw [← d.t₂ j k m, ← d.t₁ j l m]
 
-/-- Restricts a PartialChainUpTo to a lower index, turning PartialChainUpTo into a presheaf. -/
+/-- Restricts a `PartialChainUpTo` to a lower index, turning `PartialChainUpTo` into a presheaf. -/
 @[implicit_reducible]
 def trunc (E : Inserter F G)
     {i i' : Λ} (hii' : i ≤ i') (d : PartialChainUpTo κ Λ E i') :
@@ -257,20 +255,20 @@ def trunc (E : Inserter F G)
   t₂ j k l hjk hkl hl := d.t₂ j k l
 
 /-- Turning `i ↦ PartialChainUpTo κ Λ E i` into a functor. A section of this functor bundles an
-extension of the ξ and ψ fields to all indices in Λ. -/
+extension of the `ξ` and `ψ` fields to all indices in `Λ`. -/
 abbrev functor (E : Inserter F G) : Λᵒᵖ ⥤ Type _ where
   obj i := PartialChainUpTo κ Λ E i.unop
   map f := TypeCat.ofHom <| trunc κ Λ E (leOfHom f.unop)
 
 /- TODOs (@robin-carlier):
-  - Provide lemmas to satisfy `Functor.WellOrderInductionData.ofExists` for functor above.
-  - Prove Lemma 4.5 of [positselski2024] using this
+  - Provide lemmas to satisfy `Functor.WellOrderInductionData.ofExists` for `functor` above.
+  - Prove Lemma 4.5 of [positselski2024] using this.
   - Use the lemma to show that given an inserter E, the canonical functor
     ```
       CostructuredArrow ((isCardinalPresentable K κ).inverseImage (Inserter.proj F G)).ι E ⥤
         CostructuredArrow (isCardinalPresentable K κ).ι E.obj
     ```
-    is final and that its source category is κ-filtered
+    is final and that its source category is κ-filtered.
 -/
 
 end PartialChainUpTo
