@@ -121,8 +121,7 @@ def cos (I : Interval Dyadic) (prec : ℕ) : Interval Dyadic :=
       let k := Nat.clog 2 ⌈b.toRat⌉₊ + Nat.sqrt prec
       let p := prec + 2 * k + 8
       let taylor (x : Dyadic) := cosShiftRightTaylor x k (p / (2 * Nat.sqrt prec + 1) + 1) p
-      roundOut (cosDoubling k
-        (if a = b then taylor b else ⟨(taylor b).lb, (taylor a).ub⟩) p) (prec + 1)
+      roundOut (cosDoubling k ⟨(taylor b).lb, (taylor a).ub⟩ p) (prec + 1)
   | _, _ => Interval.Icc (-1 : Dyadic) (1 : Dyadic)
 
 @[inclusion_op interval_dyadic_real]
@@ -144,7 +143,7 @@ theorem cos_mem {x : ℝ} {I : Interval Dyadic} (hx : x ∈ I) (prec : ℕ) :
   have hb : b.toReal ≤ 2 ^ k := (Rat.cast_le.mpr (Nat.ceil_le.mp
     ((Nat.clog_le_iff_le_pow one_lt_two).mp (by lia : _ ≤ k)))).trans_eq (by norm_cast)
   have hπ := (div_le_one_of_le₀ hb (by positivity)).trans (one_le_two.trans Real.two_le_pi)
-  rw [← Real.cos_abs, ite_eq_right_iff.mpr fun h ↦ h ▸ rfl]
+  rw [← Real.cos_abs]
   refine roundOut_mem (cosDoubling_mem (Interval.mem_Icc_of_le
     (cosShiftRightTaylor_mem (ha.trans (hax.trans hxb)) hb _ _) ?_ ?_
     (cosShiftRightTaylor_mem ha ((hax.trans hxb).trans hb) _ _)) _) _ <;>
