@@ -3,19 +3,22 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Spectrum.Prime.Topology
-import Mathlib.RingTheory.SurjectiveOnStalks
+module
+
+public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 /-!
-
 # Lemmas regarding the prime spectrum of tensor products
 
 ## Main result
+
 - `PrimeSpectrum.isEmbedding_tensorProductTo_of_surjectiveOnStalks`:
-  If `R →+* T` is surjective on stalks (see Mathlib/RingTheory/SurjectiveOnStalks.lean),
+  If `R →+* T` is surjective on stalks (see `Mathlib/RingTheory/SurjectiveOnStalks.lean`),
   then `Spec(S ⊗[R] T) → Spec S × Spec T` is a topological embedding
   (where `Spec S × Spec T` is the Cartesian product with the product topology).
 -/
+
+@[expose] public section
 
 variable (R S T : Type*) [CommRing R] [CommRing S] [Algebra R S]
 variable [CommRing T] [Algebra R T]
@@ -30,7 +33,7 @@ def PrimeSpectrum.tensorProductTo (x : PrimeSpectrum (S ⊗[R] T)) :
 
 @[fun_prop]
 lemma PrimeSpectrum.continuous_tensorProductTo : Continuous (tensorProductTo R S T) :=
-  (comap _).2.prodMk (comap _).2
+  (continuous_comap _).prodMk (continuous_comap _)
 
 variable (hRT : (algebraMap R T).SurjectiveOnStalks)
 include hRT
@@ -51,9 +54,10 @@ lemma PrimeSpectrum.isEmbedding_tensorProductTo_of_surjectiveOnStalks_aux
   have h₄ : a ∉ p₂.asIdeal.comap (algebraMap S (S ⊗[R] T)) :=
     fun h ↦ h₂ (Ideal.mul_mem_right _ _ h)
   replace h₃ : t ∉ p₁.asIdeal.comap g := by
-    rwa [show p₁.asIdeal.comap g = p₂.asIdeal.comap g from congr($h.2.1)]
+    rwa [show p₁.asIdeal.comap g = p₂.asIdeal.comap g from congr($h.2.asIdeal)]
   replace h₄ : a ∉ p₁.asIdeal.comap (algebraMap S (S ⊗[R] T)) := by
-    rwa [show p₁.asIdeal.comap (algebraMap S (S ⊗[R] T)) = p₂.asIdeal.comap _ from congr($h.1.1)]
+    rwa [show p₁.asIdeal.comap (algebraMap S (S ⊗[R] T)) = p₂.asIdeal.comap _ from
+      congr($h.1.asIdeal)]
   exact p₁.asIdeal.primeCompl.mul_mem h₄ h₃ h₁
 
 lemma PrimeSpectrum.isEmbedding_tensorProductTo_of_surjectiveOnStalks :
@@ -68,7 +72,7 @@ lemma PrimeSpectrum.isEmbedding_tensorProductTo_of_surjectiveOnStalks :
   rintro J (hJ : f ∉ J.asIdeal)
   obtain ⟨t, r, a, ht, e⟩ := hRT.exists_mul_eq_tmul f
     (J.asIdeal.comap g) inferInstance
-  refine ⟨_, ?_, ⟨_, (basicOpen a).2.prod (basicOpen t).2, rfl⟩, ?_⟩
+  refine ⟨_, ?_, ⟨_, (basicOpen a).is_open'.prod (basicOpen t).is_open', rfl⟩, ?_⟩
   · rintro x ⟨hx₁ : a ⊗ₜ[R] (1 : T) ∉ x.asIdeal, hx₂ : (1 : S) ⊗ₜ[R] t ∉ x.asIdeal⟩
       (hx₃ : f ∈ x.asIdeal)
     apply x.asIdeal.primeCompl.mul_mem hx₁ hx₂

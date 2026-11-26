@@ -3,7 +3,12 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Iso
+module
+
+public import Mathlib.CategoryTheory.Iso
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Extension of `reassoc` to isomorphisms.
@@ -20,12 +25,14 @@ This is useful for generating lemmas which the simplifier can use even on expres
 that are already right associated.
 -/
 
+public meta section
+
 open Lean Meta Elab Tactic
-open Mathlib.Tactic
+open CategoryTheory
 
-namespace CategoryTheory
+namespace Mathlib.Tactic.Reassoc
 
-theorem Iso.eq_whisker {C : Type*} [Category C]
+theorem Iso.eq_whisker {C : Type*} [Category* C]
     {X Y : C} {f g : X ≅ Y} (w : f = g) {Z : C} (h : Y ≅ Z) :
     f ≪≫ h = g ≪≫ h := by rw [w]
 
@@ -53,4 +60,4 @@ def reassocExprIso (e : Expr) : MetaM (Expr × Array MVarId) := do
 
 initialize registerReassocExpr reassocExprIso
 
-end CategoryTheory
+end Mathlib.Tactic.Reassoc

@@ -3,10 +3,13 @@ Copyright (c) 2021 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Floris van Doorn
 -/
+module
+
+public import Mathlib.Analysis.Normed.Module.Connected
+public import Mathlib.Analysis.Normed.Module.Convex
+public import Mathlib.Topology.Algebra.ContinuousAffineEquiv
+
 import Mathlib.Algebra.CharP.Invertible
-import Mathlib.Analysis.Normed.Module.Convex
-import Mathlib.Analysis.NormedSpace.Connected
-import Mathlib.LinearAlgebra.AffineSpace.ContinuousAffineEquiv
 
 /-!
 # Ample subsets of real vector spaces
@@ -16,6 +19,7 @@ component have full convex hull. Ample sets are an important ingredient for defi
 differential relations.
 
 ## Main results
+
 - `ampleSet_empty` and `ampleSet_univ`: the empty set and `univ` are ample
 - `AmpleSet.union`: the union of two ample sets is ample
 - `AmpleSet.{pre}image`: being ample is invariant under continuous affine equivalences;
@@ -29,14 +33,17 @@ differential relations.
 
 A priori, the definition of ample subset asks for a vector space structure and a topology on the
 ambient type without any link between those structures. In practice, we care most about using these
-for finite dimensional vector spaces with their natural topology.
+for finite-dimensional vector spaces with their natural topology.
 
 All vector spaces in the file are real vector spaces. While the definition generalises to other
 connected fields, that is not useful in practice.
 
 ## Tags
+
 ample set
 -/
+
+@[expose] public section
 
 /-! ## Definition and invariance -/
 

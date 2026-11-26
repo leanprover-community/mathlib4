@@ -3,11 +3,15 @@ Copyright (c) 2024 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer
 -/
+module
+
+public import Mathlib.CategoryTheory.Limits.Final
+
 import Mathlib.CategoryTheory.Filtered.OfColimitCommutesFiniteLimit
 import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
+import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
 import Mathlib.CategoryTheory.Limits.Preserves.Grothendieck
-import Mathlib.CategoryTheory.Limits.Final
 
 /-!
 # Inferring Filteredness from Filteredness of Costructured Arrow Categories
@@ -15,14 +19,15 @@ import Mathlib.CategoryTheory.Limits.Final
 ## References
 
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Proposition 3.1.8
-
 -/
+
+public section
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
-open Limits Functor
+open Limits CategoryTheory.Functor
 
 section Small
 
@@ -62,9 +67,9 @@ theorem isFiltered_of_isFiltered_costructuredArrow (L : A ⥤ T) (R : B ⥤ T)
       ((sB.inverse ⋙ R ⋙ sT.functor).obj ⟨b⟩) ≌ CostructuredArrow L (R.obj b) := fun b =>
     (CostructuredArrow.pre sA.inverse (L ⋙ sT.functor) _).asEquivalence.trans
       (CostructuredArrow.post L sT.functor _).asEquivalence.symm
-  haveI : ∀ b, IsFiltered (CostructuredArrow _ ((sB.inverse ⋙ R ⋙ sT.functor).obj b)) :=
-    fun b => IsFiltered.of_equivalence (sC b.1).symm
-  haveI := isFiltered_of_isFiltered_costructuredArrow_small
+  have : ∀ b, IsFiltered (CostructuredArrow _ ((sB.inverse ⋙ R ⋙ sT.functor).obj b)) :=
+    fun b => IsFiltered.of_equivalence (sC <| ULift.down b).symm
+  have := isFiltered_of_isFiltered_costructuredArrow_small
     (sA.inverse ⋙ L ⋙ sT.functor) (sB.inverse ⋙ R ⋙ sT.functor)
   exact IsFiltered.of_equivalence sA.symm
 

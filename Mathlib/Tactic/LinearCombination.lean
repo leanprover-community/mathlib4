@@ -3,13 +3,14 @@ Copyright (c) 2022 Abby J. Goldberg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Abby J. Goldberg, Mario Carneiro, Heather Macbeth
 -/
-import Mathlib.Tactic.LinearCombination.Lemmas
-import Mathlib.Tactic.Positivity.Core
-import Mathlib.Tactic.Ring
-import Mathlib.Tactic.Ring.Compare
+module
+
+public import Mathlib.Tactic.LinearCombination.Lemmas
+public import Mathlib.Tactic.Positivity.Core
+public import Mathlib.Tactic.Ring.Compare
 
 /-!
-# linear_combination Tactic
+# `linear_combination` Tactic
 
 In this file, the `linear_combination` tactic is created.  This tactic, which
 works over `CommRing`s, attempts to simplify the target by creating a linear combination
@@ -20,7 +21,7 @@ normalization tactic.
 Over ordered algebraic objects (such as `LinearOrderedCommRing`), taking linear combinations of
 inequalities is also supported.
 
-## Implementation Notes
+## Implementation notes
 
 This tactic works by creating a weighted sum of the given equations with the
 given coefficients.  Then, it subtracts the right side of the weighted sum
@@ -32,8 +33,9 @@ Lastly, calls a normalization tactic on this target.
 ## References
 
 * <https://leanprover.zulipchat.com/#narrow/stream/239415-metaprogramming-.2F.20tactics/topic/Linear.20algebra.20tactic/near/213928196>
-
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.LinearCombination
 open Lean
@@ -155,7 +157,7 @@ partial def expandLinearCombo (ty : Option Expr) (stx : Syntax.Term) :
 def elabLinearCombination (tk : Syntax)
     (norm? : Option Syntax.Tactic) (exp? : Option Syntax.NumLit) (input : Option Syntax.Term) :
     Tactic.TacticM Unit := Tactic.withMainContext <| Tactic.focus do
-  let eType ← withReducible <| (← Tactic.getMainGoal).getType'
+  let eType ← withReducible (← Tactic.getMainGoal).getType'
   let (goalRel, ty, _) ← eType.ineq?
   -- build the specified linear combination of the hypotheses
   let (hypRel, p) ← match input with
@@ -168,7 +170,7 @@ def elabLinearCombination (tk : Syntax)
       Prod.mk eq <$> `(Eq.refl 0)
     | .proof hypRel p => pure (hypRel, p)
   -- look up the lemma for the central `refine` in `linear_combination`
-  let (reduceLem, newGoalRel) : Name × Ineq := ← do
+  let (reduceLem, newGoalRel) : Name × Ineq ← do
     match Ineq.relImpRelData hypRel goalRel with
     | none => throwError "cannot prove an equality from inequality hypotheses"
     | some n => pure n

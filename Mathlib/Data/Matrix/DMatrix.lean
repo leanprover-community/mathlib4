@@ -3,12 +3,19 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.Group.Pi.Basic
+module
+
+public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Algebra.Group.Pi.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Dependent-typed matrices
 -/
+
+@[expose] public section
 
 
 universe u u' v w z

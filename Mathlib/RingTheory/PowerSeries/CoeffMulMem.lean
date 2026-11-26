@@ -3,12 +3,14 @@ Copyright (c) 2025 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.RingTheory.Ideal.Operations
+module
+
+public import Mathlib.RingTheory.PowerSeries.Basic
+
 import Mathlib.RingTheory.Ideal.BigOperators
-import Mathlib.RingTheory.PowerSeries.Basic
+import Mathlib.RingTheory.Ideal.Operations
 
 /-!
-
 # Some results on the coefficients of multiplication of two power series
 
 ## Main results
@@ -30,8 +32,9 @@ import Mathlib.RingTheory.PowerSeries.Basic
   if for all `i ≤ n` (resp. for all `i`), the `i`-th coefficients of power series `f` are
   in ideal `I`, then for all `i ≤ n` (resp. for all `i`), the `i`-th coefficients of `f * g` are
   in `I`.
-
 -/
+
+public section
 
 namespace PowerSeries
 
@@ -41,8 +44,8 @@ theorem coeff_mul_mem_ideal_mul_ideal_of_coeff_mem_ideal (hf : ∀ i ≤ n, coef
     (hg : ∀ i ≤ n, coeff i g ∈ J) : ∀ i ≤ n, coeff i (f * g) ∈ I * J := fun i hi ↦ by
   rw [coeff_mul]
   exact Ideal.sum_mem _ fun p hp ↦ Ideal.mul_mem_mul
-    (hf _ ((Finset.antidiagonal.fst_le hp).trans hi))
-    (hg _ ((Finset.antidiagonal.snd_le hp).trans hi))
+    (hf _ ((Finset.HasAntidiagonal.antidiagonal.fst_le hp).trans hi))
+    (hg _ ((Finset.HasAntidiagonal.antidiagonal.snd_le hp).trans hi))
 
 theorem coeff_mul_mem_ideal_mul_ideal_of_coeff_mem_ideal' (hf : ∀ i, coeff i f ∈ I)
     (hg : ∀ i, coeff i g ∈ J) : ∀ i, coeff i (f * g) ∈ I * J :=

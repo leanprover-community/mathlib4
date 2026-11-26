@@ -3,16 +3,25 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yaël Dillies
 -/
-import Mathlib.Algebra.Field.GeomSum
-import Mathlib.Algebra.Order.Archimedean.Basic
+module
+
+public import Mathlib.Algebra.Field.GeomSum
+public import Mathlib.Algebra.Order.Archimedean.Defs
+public import Mathlib.Algebra.Order.CauSeq.Basic
+
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.CauSeq.Basic
+import Mathlib.Data.Rat.Floor
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Cauchy sequences and big operators
 
 This file proves some more lemmas about basic Cauchy sequences that involve finite sums.
 -/
+
+public section
 
 open Finset IsAbsoluteValue
 
@@ -46,7 +55,7 @@ lemma of_abv_le (n : ℕ) (hm : ∀ m, n ≤ m → abv (f m) ≤ a m) :
     simp only [Nat.succ_add, Nat.succ_eq_add_one, Finset.sum_range_succ_comm]
     simp only [add_assoc, sub_eq_add_neg]
     simp only [sub_eq_add_neg] at hi
-    grw [abv_add abv, hm _ (by omega), hi]
+    grw [abv_add abv, hm _ (by lia), hi]
 
 lemma of_abv (hf : IsCauSeq abs fun m ↦ ∑ n ∈ range m, abv (f n)) :
     IsCauSeq abv fun m ↦ ∑ n ∈ range m, f n :=
@@ -170,7 +179,7 @@ lemma of_decreasing_bounded (f : ℕ → α) {a : α} {m : ℕ} (ham : ∀ n ≥
         rhs
         rw [← Nat.succ_pred_eq_of_pos (Nat.pos_of_ne_zero hl0), succ_nsmul, sub_add,
           add_sub_cancel_right]
-    _ < f j + ε := add_lt_add_right (hl j (le_trans hi.1 hj)) _
+    _ < f j + ε := by gcongr; exact hl _ <| hi.1.trans hj
 
 lemma of_mono_bounded (f : ℕ → α) {a : α} {m : ℕ} (ham : ∀ n ≥ m, |f n| ≤ a)
     (hnm : ∀ n ≥ m, f n ≤ f n.succ) : IsCauSeq abs f :=

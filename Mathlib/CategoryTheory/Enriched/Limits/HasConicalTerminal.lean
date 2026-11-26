@@ -3,11 +3,18 @@ Copyright (c) 2025 Jon Eugster. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Jon Eugster, Emily Riehl
 -/
-import Mathlib.CategoryTheory.Enriched.Limits.HasConicalProducts
+module
+
+public import Mathlib.CategoryTheory.Enriched.Limits.HasConicalProducts
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Existence of conical terminal objects
 -/
+
+public section
 
 universe w v' v u u'
 

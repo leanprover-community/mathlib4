@@ -3,11 +3,18 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Algebra.Order.Ring.Abs
+module
+
+public import Mathlib.Algebra.Order.Ring.Abs
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Lemmas about units in `ℤ`, which interact with the order structure.
 -/
+
+public section
 
 
 namespace Int

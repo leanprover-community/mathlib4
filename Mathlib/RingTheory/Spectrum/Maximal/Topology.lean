@@ -3,8 +3,12 @@ Copyright (c) 2022 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.RingTheory.Spectrum.Maximal.Basic
-import Mathlib.RingTheory.Spectrum.Prime.Topology
+module
+
+public import Mathlib.RingTheory.Spectrum.Prime.Topology
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The Zariski topology on the maximal spectrum of a commutative (semi)ring
@@ -14,6 +18,8 @@ import Mathlib.RingTheory.Spectrum.Prime.Topology
 The Zariski topology on the maximal spectrum is defined as the subspace topology induced by the
 natural inclusion into the prime spectrum to avoid API duplication for zero loci.
 -/
+
+public section
 
 
 noncomputable section

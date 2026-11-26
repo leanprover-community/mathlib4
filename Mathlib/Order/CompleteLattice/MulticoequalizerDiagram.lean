@@ -3,11 +3,17 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Order.CompleteLattice.Lemmas
-import Mathlib.CategoryTheory.Category.Preorder
-import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
-import Mathlib.CategoryTheory.CommSq
-import Mathlib.Tactic.FinCases
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
+public import Mathlib.Order.Hom.CompleteLattice
+public import Mathlib.Order.Hom.Lattice
+
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.SetLike
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Multicoequalizer diagrams in complete lattices
@@ -25,10 +31,11 @@ we introduce a property `MulticoequalizerDiagram x u v` which says that `x` is
 the supremum of `u`, and that for all `i` and `j`, `v i j` is the minimum of `u i` and `u j`.
 Again, when `T := Set X`, we shall show (TODO) that we obtain a multicoequalizer diagram
 in the category of types.
-
 -/
 
-universe u
+@[expose] public section
+
+universe u v
 
 open CategoryTheory Limits
 
@@ -44,8 +51,8 @@ variable {T : Type u} (x₁ x₂ x₃ x₄ : T) [Lattice T]
 /-- A bi-Cartesian square in a lattice consists of elements `x₁`, `x₂`, `x₃` and `x₄`
 such that `x₂ ⊔ x₃ = x₄` and `x₂ ⊓ x₃ = x₁`. -/
 structure BicartSq : Prop where
-  max_eq : x₂ ⊔ x₃ = x₄
-  min_eq : x₂ ⊓ x₃ = x₁
+  sup_eq : x₂ ⊔ x₃ = x₄
+  inf_eq : x₂ ⊓ x₃ = x₁
 
 attribute [grind cases] BicartSq
 
@@ -64,6 +71,11 @@ lemma le₃₄ : x₃ ≤ x₄ := by grind
 lemma commSq : CommSq (homOfLE sq.le₁₂) (homOfLE sq.le₁₃)
     (homOfLE sq.le₂₄) (homOfLE sq.le₃₄) := ⟨rfl⟩
 
+lemma map {S : Type v} [Lattice S] (f : LatticeHom T S) :
+    BicartSq (f x₁) (f x₂) (f x₃) (f x₄) where
+  sup_eq := by rw [← map_sup, sq.sup_eq]
+  inf_eq := by rw [← map_inf, sq.inf_eq]
+
 end BicartSq
 
 end Lattice
@@ -77,11 +89,12 @@ variable {T : Type u} [CompleteLattice T] {ι : Type*} (x : T) (u : ι → T) (v
 and for any `i` and `j`, `v i j` is the minimum of `u i` and `u j`. -/
 structure MulticoequalizerDiagram : Prop where
   iSup_eq : ⨆ (i : ι), u i = x
-  min_eq (i j : ι) : v i j = u i ⊓ u j
+  eq_inf (i j : ι) : v i j = u i ⊓ u j
 
 namespace MulticoequalizerDiagram
 
-attribute [local grind] MulticoequalizerDiagram MultispanShape.prod_fst MultispanShape.prod_snd
+attribute [local grind] MulticoequalizerDiagram
+attribute [local grind =] MultispanShape.prod_fst MultispanShape.prod_snd
 
 variable {x u v} (d : MulticoequalizerDiagram x u v)
 
@@ -104,6 +117,12 @@ def multicofork : Multicofork d.multispanIndex :=
   Multicofork.ofπ _ x (fun i ↦ homOfLE (by grind [multispanIndex_right, le_iSup_iff]))
     (fun _ ↦ rfl)
 
+include d in
+lemma map {S : Type v} [CompleteLattice S] (f : CompleteLatticeHom T S) :
+    MulticoequalizerDiagram (f x) (fun i ↦ f (u i)) (fun i j ↦ f (v i j)) where
+  iSup_eq := by rw [← d.iSup_eq,map_iSup]
+  eq_inf i j := by rw [d.eq_inf,map_inf]
+
 end MulticoequalizerDiagram
 
 end CompleteLattice
@@ -114,11 +133,5 @@ lemma Lattice.BicartSq.multicoequalizerDiagram {T : Type u} [CompleteLattice T]
       (fun i ↦ bif i then x₃ else x₂)
       (fun i j ↦ bif i then bif j then x₃ else x₁
         else bif j then x₁ else x₂) where
-  iSup_eq := by rw [← sq.max_eq, sup_comm, sup_eq_iSup]
-  min_eq i j := by
-    #adaptation_note
-    /--
-    On `nightly-2025-09-10`, we need to disable the `ac` module due to an internal grind error.
-    This is likely the same problem as at https://github.com/leanprover/lean4/pull/10317
-    -/
-    grind -ac [inf_idem, inf_comm]
+  iSup_eq := by rw [← sq.sup_eq, sup_comm, sup_eq_iSup]
+  eq_inf i j := by grind

@@ -3,10 +3,15 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Simon Hudon, Sébastien Gouëzel, Kim Morrison, Thomas Murrills
 -/
-import Lean.Elab.Eval
-import Lean.Elab.Tactic.BuiltinTactic
-import Mathlib.Init
-import Lean.Meta.Tactic.TryThis
+module
+
+public meta import Lean.Elab.Eval
+public meta import Lean.Elab.Tactic.BuiltinTactic
+public meta import Lean.Meta.Tactic.TryThis
+public import Mathlib.Init
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Success If Fail With Message
@@ -16,6 +21,8 @@ This file implements a tactic that succeeds only if its argument fails with a sp
 It's mostly useful in tests, where we want to make sure that tactics fail in certain ways under
 circumstances.
 -/
+
+public meta section
 
 open Lean Meta Elab Tactic
 
@@ -30,7 +37,7 @@ syntax (name := successIfFailWithMsg) "success_if_fail_with_msg " term:max tacti
 /-- Evaluates `tacs` and succeeds only if `tacs` both fails and throws an error equal (as a string)
 to `msg`. -/
 def successIfFailWithMessage {s α : Type} {m : Type → Type} [Monad m] [MonadLiftT BaseIO m]
-    [MonadLiftT MetaM m] [MonadBacktrack s m] [MonadError m] (msg : String) (tacs : m α)
+    [MonadLiftT CoreM m] [MonadBacktrack s m] [MonadError m] (msg : String) (tacs : m α)
     (msgref : Option Syntax := none) (ref : Option Syntax := none) : m Unit := do
   let s ← saveState
   let err ←
@@ -38,10 +45,10 @@ def successIfFailWithMessage {s α : Type} {m : Type → Type} [Monad m] [MonadL
     catch err => pure (some (← err.toMessageData.toString))
   restoreState s
   if let some err := err then
-    unless msg.trim == err.trim do
+    unless msg.trimAscii == err.trimAscii do
       if let some msgref := msgref then
         let suggestion : TryThis.Suggestion :=
-          { suggestion := s!"\"{err.trim}\""
+          { suggestion := s!"\"{err.trimAscii}\""
             toCodeActionTitle? := some (fun _ => "Update with tactic error message")}
         TryThis.addSuggestion msgref suggestion (header := "Update with tactic error message: ")
 

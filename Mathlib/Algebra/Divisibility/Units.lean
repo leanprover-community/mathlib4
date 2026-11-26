@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Amelia Livingston, Yury Kudryashov,
 Neil Strickland, Aaron Anderson
 -/
-import Mathlib.Algebra.Divisibility.Basic
-import Mathlib.Algebra.Group.Units.Basic
+module
+
+public import Mathlib.Algebra.Divisibility.Basic
+public import Mathlib.Algebra.Group.Units.Basic
 
 /-!
 # Divisibility and units
@@ -14,8 +16,9 @@ import Mathlib.Algebra.Group.Units.Basic
 
 * `IsRelPrime x y`: that `x` and `y` are relatively prime, defined to mean that the only common
   divisors of `x` and `y` are the units.
-
 -/
+
+@[expose] public section
 
 variable {α : Type*}
 
@@ -148,7 +151,11 @@ def IsRelPrime [Monoid α] (x y : α) : Prop := ∀ ⦃d⦄, d ∣ x → d ∣ y
 variable [CommMonoid α] {x y z : α}
 
 @[symm] theorem IsRelPrime.symm (H : IsRelPrime x y) : IsRelPrime y x := fun _ hx hy ↦ H hy hx
-theorem symmetric_isRelPrime : Symmetric (IsRelPrime : α → α → Prop) := fun _ _ ↦ .symm
+
+instance symm_isRelPrime : Std.Symm (IsRelPrime : α → α → Prop) where
+  symm _ _ := .symm
+
+@[deprecated (since := "2026-06-10")] alias symmetric_isRelPrime := symm_isRelPrime
 
 theorem isRelPrime_comm : IsRelPrime x y ↔ IsRelPrime y x :=
   ⟨IsRelPrime.symm, IsRelPrime.symm⟩

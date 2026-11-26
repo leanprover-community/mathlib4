@@ -3,10 +3,13 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Tactic.ProxyType
-import Mathlib.Data.Fintype.Basic
-import Mathlib.Data.Fintype.Sigma
-import Mathlib.Data.Fintype.Sum
+module
+
+public meta import Lean.Elab.Deriving.Util
+public meta import Mathlib.Tactic.ToAdditive
+public meta import Mathlib.Tactic.ToDual
+public import Mathlib.Data.Fintype.OfMap  -- shake: keep (metaprogram output dependency)
+public import Mathlib.Tactic.ProxyType
 
 /-!
 # The `Fintype` derive handler
@@ -67,6 +70,8 @@ A difference is that the Mathlib 3 version does not explicitly construct the tot
 and instead it opts to construct the underlying `Finset` as a disjoint union of the `Finset.univ`
 for each individual constructor's proxy type.
 -/
+
+public meta section
 
 namespace Mathlib.Deriving.Fintype
 open Lean Elab Lean.Parser.Term
@@ -169,7 +174,9 @@ def mkFintypeEnum (declName : Name) : CommandElabM Unit := do
   trace[Elab.Deriving.fintype] "defining fintype instance"
   let cmd ← `(command|
     instance : Fintype $(mkIdent declName) where
-      elems := Finset.mk $(mkIdent enumListName) $(mkIdent enumListNodupName)
+      -- `id` makes the proof elaborate at the expected type `(↑enumList).Nodup`, so the `rw` below
+      -- type-checks under `implicit` transparency (see #44243).
+      elems := Finset.mk $(mkIdent enumListName) (id $(mkIdent enumListNodupName))
       complete := by
         intro x
         rw [Finset.mem_mk, Multiset.mem_coe, List.mem_iff_getElem?]

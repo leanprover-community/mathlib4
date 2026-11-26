@@ -3,9 +3,16 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Group.Action.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.Basic
+public import Mathlib.Algebra.Group.Action.FunLike
+public import Mathlib.Algebra.Group.Opposite
+
 import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Algebra.Group.Opposite
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Group actions on embeddings
@@ -15,6 +22,8 @@ instances defined by `Pi.mulAction`.
 
 Note that unlike the `Pi` instance, this requires `G` to be a group.
 -/
+
+public section
 
 assert_not_exists MonoidWithZero
 
@@ -29,33 +38,46 @@ instance smul [Group G] [MulAction G β] : SMul G (α ↪ β) :=
   ⟨fun g f => f.trans (MulAction.toPerm g).toEmbedding⟩
 
 @[to_additive]
+instance [Group G] [MulAction G β] : IsSMulApply G (α ↪ β) where
+
+@[to_additive]
 theorem smul_def [Group G] [MulAction G β] (g : G) (f : α ↪ β) :
     g • f = f.trans (MulAction.toPerm g).toEmbedding :=
   rfl
 
-@[to_additive (attr := simp)]
-theorem smul_apply [Group G] [MulAction G β] (g : G) (f : α ↪ β) (a : α) : (g • f) a = g • f a :=
+@[deprecated vadd_apply +typeChanged (since := "2026-11-10")]
+protected theorem vadd_apply [AddGroup G] [AddAction G β] (g : G) (f : α ↪ β) (a : α) :
+    (g +ᵥ f) a = g +ᵥ f a :=
   rfl
 
-@[to_additive]
+@[to_additive existing, deprecated smul_apply +typeChanged (since := "2026-11-10")]
+protected theorem smul_apply [Group G] [MulAction G β] (g : G) (f : α ↪ β) (a : α) :
+    (g • f) a = g • f a :=
+  rfl
+
+@[deprecated FunLike.coe_vadd +typeChanged (since := "2026-11-10")]
+theorem coe_vadd [AddGroup G] [AddAction G β] (g : G) (f : α ↪ β) : ⇑(g +ᵥ f) = g +ᵥ ⇑f :=
+  rfl
+
+@[to_additive existing, deprecated FunLike.coe_smul +typeChanged (since := "2026-11-10")]
 theorem coe_smul [Group G] [MulAction G β] (g : G) (f : α ↪ β) : ⇑(g • f) = g • ⇑f :=
   rfl
 
 instance [Group G] [Group G'] [SMul G G'] [MulAction G β] [MulAction G' β]
     [IsScalarTower G G' β] : IsScalarTower G G' (α ↪ β) :=
-  ⟨fun x y z => Function.Embedding.ext fun i => smul_assoc x y (z i)⟩
+  FunLike.isScalarTower
 
 @[to_additive]
 instance [Group G] [Group G'] [MulAction G β] [MulAction G' β] [SMulCommClass G G' β] :
     SMulCommClass G G' (α ↪ β) :=
-  ⟨fun x y z => Function.Embedding.ext fun i => smul_comm x y (z i)⟩
+  FunLike.smulCommClass
 
 instance [Group G] [MulAction G β] [MulAction Gᵐᵒᵖ β] [IsCentralScalar G β] :
     IsCentralScalar G (α ↪ β) :=
-  ⟨fun _ _ => Function.Embedding.ext fun _ => op_smul_eq_smul _ _⟩
+  FunLike.isCentralScalar
 
 @[to_additive]
 instance [Group G] [MulAction G β] : MulAction G (α ↪ β) :=
-  DFunLike.coe_injective.mulAction _ coe_smul
+  fast_instance% FunLike.mulAction
 
 end Function.Embedding

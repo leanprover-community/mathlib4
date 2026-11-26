@@ -1,6 +1,6 @@
-import Mathlib.Analysis.InnerProductSpace.PiL2
+module
 
-set_option linter.style.commandStart false
+public import Mathlib.Analysis.InnerProductSpace.PiL2
 
 #guard_expr !₂[] = WithLp.toLp 2 (V := ∀ _ : Fin 0, _) ![]
 #guard_expr !₂[1, 2, 3] = WithLp.toLp 2 (V := ∀ _ : Fin 3, ℕ) ![1, 2, 3]
@@ -12,7 +12,6 @@ section delaborator
 #guard_msgs in
 #check !₂[1, 2, 3]
 
-set_option pp.mvars false in
 /-- info: !₀[] : WithLp 0 (Fin 0 → ?_) -/
 #guard_msgs in
 #check !₀[]

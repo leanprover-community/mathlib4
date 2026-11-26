@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Analysis.Convex.Exposed
-import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
-import Mathlib.Topology.Algebra.ContinuousAffineMap
+module
+
+public import Mathlib.Analysis.Convex.Exposed
+public import Mathlib.Analysis.LocallyConvex.Separation
+public import Mathlib.Topology.Algebra.ContinuousAffineMap
 
 /-!
 # The Krein-Milman theorem
@@ -47,8 +49,9 @@ matrices, permutation matrices being the extreme points.
 ## References
 
 See chapter 8 of [Barry Simon, *Convexity*][simon2011]
-
 -/
+
+public section
 
 open Set
 
@@ -56,18 +59,18 @@ variable {E F : Type*} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [T2S
   [IsTopologicalAddGroup E] [ContinuousSMul ℝ E] [LocallyConvexSpace ℝ E] {s : Set E}
   [AddCommGroup F] [Module ℝ F] [TopologicalSpace F] [T1Space F]
 
-/-- **Krein-Milman lemma**: In a LCTVS, any nonempty compact set has an extreme point. -/
+/-- **Krein-Milman lemma**: In an LCTVS, any nonempty compact set has an extreme point. -/
 theorem IsCompact.extremePoints_nonempty (hscomp : IsCompact s) (hsnemp : s.Nonempty) :
     (s.extremePoints ℝ).Nonempty := by
   let S : Set (Set E) := { t | t.Nonempty ∧ IsClosed t ∧ IsExtreme ℝ s t }
   rsuffices ⟨t, ht⟩ : ∃ t, Minimal (· ∈ S) t
-  · obtain ⟨⟨x,hxt⟩, htclos, hst⟩ := ht.prop
+  · obtain ⟨⟨x, hxt⟩, htclos, hst⟩ := ht.prop
     refine ⟨x, IsExtreme.mem_extremePoints ?_⟩
     rwa [← eq_singleton_iff_unique_mem.2 ⟨hxt, fun y hyB => ?_⟩]
     by_contra hyx
     obtain ⟨l, hl⟩ := geometric_hahn_banach_point_point hyx
     obtain ⟨z, hzt, hz⟩ :=
-      (hscomp.of_isClosed_subset htclos hst.1).exists_isMaxOn ⟨x, hxt⟩
+      (hscomp.of_isClosed_subset htclos hst.subset).exists_isMaxOn ⟨x, hxt⟩
         l.continuous.continuousOn
     have h : IsExposed ℝ t ({ z ∈ t | ∀ w ∈ t, l w ≤ l z }) := fun _ => ⟨l, rfl⟩
     rw [ht.eq_of_ge (y := ({ z ∈ t | ∀ w ∈ t, l w ≤ l z }))
@@ -78,16 +81,16 @@ theorem IsCompact.extremePoints_nonempty (hscomp : IsCompact s) (hsnemp : s.None
   · exact ⟨s, ⟨hsnemp, hscomp.isClosed, IsExtreme.rfl⟩, fun _ => False.elim⟩
   refine ⟨⋂₀ F, ⟨?_, isClosed_sInter fun t ht => (hFS ht).2.1,
     isExtreme_sInter hFnemp fun t ht => (hFS ht).2.2⟩, fun t ht => sInter_subset_of_mem ht⟩
-  haveI : Nonempty (↥F) := hFnemp.to_subtype
+  have : Nonempty (↥F) := hFnemp.to_subtype
   rw [sInter_eq_iInter]
   refine IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed _ (fun t u => ?_)
     (fun t => (hFS t.mem).1)
-    (fun t => hscomp.of_isClosed_subset (hFS t.mem).2.1 (hFS t.mem).2.2.1) fun t =>
+    (fun t => hscomp.of_isClosed_subset (hFS t.mem).2.1 (hFS t.mem).2.2.subset) fun t =>
       (hFS t.mem).2.1
   obtain htu | hut := hF.total t.mem u.mem
   exacts [⟨t, Subset.rfl, htu⟩, ⟨u, hut, Subset.rfl⟩]
 
-/-- **Krein-Milman theorem**: In a LCTVS, any compact convex set is the closure of the convex hull
+/-- **Krein-Milman theorem**: In an LCTVS, any compact convex set is the closure of the convex hull
 of its extreme points. -/
 theorem closure_convexHull_extremePoints (hscomp : IsCompact s) (hAconv : Convex ℝ s) :
     closure (convexHull ℝ <| s.extremePoints ℝ) = s := by
@@ -110,12 +113,13 @@ lemma surjOn_extremePoints_image (f : E →ᴬ[ℝ] F) (hs : IsCompact s) :
   -- The fiber of `w` is nonempty and compact
   have ht : IsCompact {x ∈ s | f x = w} :=
     hs.inter_right <| isClosed_singleton.preimage f.continuous
-  have ht₀ : {x ∈ s | f x = w}.Nonempty := by simpa using extremePoints_subset hw
+  have ht₀ : {x ∈ s | f x = w}.Nonempty := by simpa using! extremePoints_subset hw
   -- Hence by the Krein-Milman lemma it has an extreme point `x`
   obtain ⟨x, ⟨hx, rfl⟩, hyt⟩ := ht.extremePoints_nonempty ht₀
   -- `f x = w` and `x` is an extreme point of `s`, so we're done
   refine mem_image_of_mem _ ⟨hx, fun y hy z hz hxyz ↦ ?_⟩
-  have := by simpa using image_openSegment _ f.toAffineMap y z
-  have := hw.2 (mem_image_of_mem _ hy) (mem_image_of_mem _ hz) <| by
+  have := by simpa using! image_openSegment _ f.toAffineMap y z
+  rw [mem_extremePoints] at hw
+  have := hw.2 _ (mem_image_of_mem _ hy) _ (mem_image_of_mem _ hz) <| by
     rw [← this]; exact mem_image_of_mem _ hxyz
   exact hyt ⟨hy, this.1⟩ ⟨hz, this.2⟩ hxyz

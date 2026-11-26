@@ -3,16 +3,19 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Aurélien Saue, Mario Carneiro
 -/
-import Lean.Elab.PreDefinition.Basic
-import Lean.Elab.Tactic.ElabTerm
-import Lean.Meta.Tactic.Intro
-import Mathlib.Lean.Expr.Basic
-import Batteries.Tactic.OpenPrivate
+module
+
+public meta import Batteries.Lean.Expr
+public meta import Lean.Elab.PreDefinition.Basic
+public meta import Lean.Elab.Tactic.ElabTerm
+public meta import Lean.Elab.Tactic.RCases
+public import Mathlib.Init
 
 /-!
 # Generally useful tactics.
-
 -/
+
+public meta section
 
 open Lean.Elab.Tactic
 
@@ -29,9 +32,9 @@ def toModifiers (nm : Name) (newDoc : Option (TSyntax `Lean.Parser.Command.docCo
   let env ← getEnv
   let d ← getConstInfo nm
   let mods : Modifiers :=
-  { docString? := newDoc.map (·, doc.verso.get (← getOptions))
+  { docString? := newDoc
     visibility :=
-    if isPrivateNameExport nm then
+    if isPrivateName nm then
       Visibility.private
     else
       Visibility.regular
@@ -69,29 +72,16 @@ def toPreDefinition (nm newNm : Name) (newType newValue : Expr)
 def setProtected {m : Type → Type} [MonadEnv m] (nm : Name) : m Unit :=
   modifyEnv (addProtected · nm)
 
-/-- Introduce variables, giving them names from a specified list. -/
-def MVarId.introsWithBinderIdents
-    (g : MVarId) (ids : List (TSyntax ``binderIdent)) (maxIntros? : Option Nat := none) :
-    MetaM (List (TSyntax ``binderIdent) × Array FVarId × MVarId) := do
-  let type ← g.getType
-  let type ← instantiateMVars type
-  let n := getIntrosSize type
-  let n := match maxIntros? with | none => n | some maxIntros => min n maxIntros
+/-- Introduce variables, using rintro patterns from a specified list. -/
+def MVarId.rintroWithPats (g : MVarId) (patterns : List (TSyntax `rintroPat))
+    (numIntros? : Option Nat := none) : MetaM (List MVarId × List (TSyntax `rintroPat)) := do
+  let n ← numIntros?.getDM (return getIntrosSize (← instantiateMVars (← g.getType)))
   if n == 0 then
-    return (ids, #[], g)
-  let mut ids := ids
-  let mut names := #[]
-  for _ in [0:n] do
-    names := names.push (ids.headD (Unhygienic.run `(binderIdent| _)))
-    ids := ids.tail
-  let (xs, g) ← g.introN n <| names.toList.map fun stx =>
-    match stx.raw with
-    | `(binderIdent| $n:ident) => n.getId
-    | _ => `_
-  g.withContext do
-    for n in names, fvar in xs do
-      (Expr.fvar fvar).addLocalVarInfoForBinderIdent n
-  return (ids, xs, g)
+    return ([g], patterns)
+  let (pats, remaining) := patterns.splitAt n
+  let pats := pats.toArray
+  let pats := (n - pats.size).repeat (·.push (Unhygienic.run `(rintroPat| _))) pats
+  return (← RCases.rintro pats none g |>.run', remaining)
 
 end Lean
 

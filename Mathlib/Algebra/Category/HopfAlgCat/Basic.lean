@@ -3,8 +3,13 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Category.BialgCat.Basic
-import Mathlib.RingTheory.HopfAlgebra.Basic
+module
+
+public import Mathlib.Algebra.Category.BialgCat.Basic
+public import Mathlib.RingTheory.HopfAlgebra.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The category of Hopf algebras over a commutative ring
@@ -13,8 +18,9 @@ We introduce the bundled category `HopfAlgCat` of Hopf algebras over a fixed com
 `R` along with the forgetful functor to `BialgCat`.
 
 This file mimics `Mathlib/LinearAlgebra/QuadraticForm/QuadraticModuleCat.lean`.
-
 -/
+
+@[expose] public section
 
 open CategoryTheory
 
@@ -24,11 +30,13 @@ variable (R : Type u) [CommRing R]
 
 /-- The category of `R`-Hopf algebras. -/
 structure HopfAlgCat where
+  _mkInternal ::
   /-- The underlying type. -/
   carrier : Type v
   [instRing : Ring carrier]
   [instHopfAlgebra : HopfAlgebra R carrier]
 
+initialize_simps_projections HopfAlgCat (-instRing, -instHopfAlgebra)
 attribute [instance] HopfAlgCat.instHopfAlgebra HopfAlgCat.instRing
 
 variable {R}
@@ -45,6 +53,11 @@ variable (R) in
 abbrev of (X : Type v) [Ring X] [HopfAlgebra R X] :
     HopfAlgCat R where
   carrier := X
+
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `HopfAlgCat.of R X` as `↧X`. -/
+@[app_delab HopfAlgCat.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
 
 @[simp]
 lemma of_comul {X : Type v} [Ring X] [HopfAlgebra R X] :
@@ -99,12 +112,12 @@ lemma hom_ext {X Y : HopfAlgCat.{v} R} (f g : X ⟶ Y) (h : f.toBialgHom = g.toB
 
 instance hasForgetToBialgebra : HasForget₂ (HopfAlgCat R) (BialgCat R) where
   forget₂ :=
-    { obj := fun X => BialgCat.of R X
+    { obj := fun X => ↧X
       map := fun {_ _} f => BialgCat.ofHom f.toBialgHom }
 
 @[simp]
 theorem forget₂_bialgebra_obj (X : HopfAlgCat R) :
-    (forget₂ (HopfAlgCat R) (BialgCat R)).obj X = BialgCat.of R X :=
+    (forget₂ (HopfAlgCat R) (BialgCat R)).obj X = ↧X :=
   rfl
 
 @[simp]
@@ -126,8 +139,8 @@ variable [HopfAlgebra R X] [HopfAlgebra R Y] [HopfAlgebra R Z]
 `BialgEquiv`. -/
 @[simps]
 def toHopfAlgIso (e : X ≃ₐc[R] Y) : HopfAlgCat.of R X ≅ HopfAlgCat.of R Y where
-  hom := HopfAlgCat.ofHom e
-  inv := HopfAlgCat.ofHom e.symm
+  hom := HopfAlgCat.ofHom e.toBialgHom
+  inv := HopfAlgCat.ofHom e.symm.toBialgHom
   hom_inv_id := Hom.ext <| DFunLike.ext _ _ e.left_inv
   inv_hom_id := Hom.ext <| DFunLike.ext _ _ e.right_inv
 
@@ -156,11 +169,11 @@ variable {X Y Z : HopfAlgCat.{v} R}
 def toHopfAlgEquiv (i : X ≅ Y) : X ≃ₐc[R] Y :=
   { i.hom.toBialgHom with
     invFun := i.inv.toBialgHom
-    left_inv := fun x => BialgHom.congr_fun (congr_arg HopfAlgCat.Hom.toBialgHom i.3) x
-    right_inv := fun x => BialgHom.congr_fun (congr_arg HopfAlgCat.Hom.toBialgHom i.4) x }
+    left_inv := fun x => congr($(i.hom_inv_id).toBialgHom x)
+    right_inv := fun x => congr($(i.inv_hom_id).toBialgHom x) }
 
 @[simp] theorem toHopfAlgEquiv_toBialgHom (i : X ≅ Y) :
-    (i.toHopfAlgEquiv : X →ₐc[R] Y) = i.hom.1 := rfl
+    i.toHopfAlgEquiv.toBialgHom = i.hom.toBialgHom' := rfl
 
 @[simp] theorem toHopfAlgEquiv_refl : toHopfAlgEquiv (.refl X) = .refl _ _ :=
   rfl
@@ -180,4 +193,4 @@ instance HopfAlgCat.forget_reflects_isos :
   reflects {X Y} f _ := by
     let i := asIso ((forget (HopfAlgCat.{v} R)).map f)
     let e : X ≃ₐc[R] Y := { f.toBialgHom, i.toEquiv with }
-    exact ⟨e.toHopfAlgIso.isIso_hom.1⟩
+    exact ⟨e.toHopfAlgIso.isIso_hom.out⟩

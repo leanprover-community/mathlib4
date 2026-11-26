@@ -3,13 +3,18 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-import Batteries.Tactic.Alias
-import Mathlib.Tactic.Lemma
-import Mathlib.Tactic.TypeStar
+module
+
+import Mathlib.Init
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Helper definitions and instances for `Ordering`
 -/
+
+@[expose] public section
 
 universe u
 
@@ -29,13 +34,6 @@ def Compares [LT α] : Ordering → α → α → Prop
 @[simp] lemma compares_eq [LT α] (a b : α) : Compares eq a b = (a = b) := rfl
 
 @[simp] lemma compares_gt [LT α] (a b : α) : Compares gt a b = (a > b) := rfl
-
-/-- `o₁.dthen fun h => o₂(h)` is like `o₁.then o₂` but `o₂` is allowed to depend on
-`h : o₁ = .eq`. -/
-@[macro_inline] def dthen :
-    (o : Ordering) → (o = .eq → Ordering) → Ordering
-  | .eq, f => f rfl
-  | o, _ => o
 
 end Ordering
 

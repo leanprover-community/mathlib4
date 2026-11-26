@@ -3,13 +3,16 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Lean.Elab.Command
+module
+
+public meta import Lean.Elab.Command
+public meta import Lean.Parser.Term
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-import Mathlib.Tactic.Linter.Header
+public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 
 /-!
-#  The "multiGoal" linter
+# The "multiGoal" linter
 
 The "multiGoal" linter emits a warning where there is more than a single goal in scope.
 There is an exception: a tactic that closes *all* remaining goals is allowed.
@@ -37,12 +40,14 @@ TODO:
   Maybe revisit usages of `on_goal` and also nested `induction` and `cases`.
 -/
 
+meta section
+
 open Lean Elab Linter
 
 namespace Mathlib.Linter
 
 /-- The "multiGoal" linter emits a warning when there are multiple active goals. -/
-register_option linter.style.multiGoal : Bool := {
+public register_option linter.style.multiGoal : Bool := {
   defValue := false
   descr := "enable the multiGoal linter"
 }
@@ -54,52 +59,48 @@ even though there are multiple active goals.
 Reasons for admitting a kind in `exclusions` include
 * the tactic focuses on one goal, e.g. `·`, `focus`, `on_goal i =>`, ...;
 * the tactic is reordering the goals, e.g. `swap`, `rotate_left`, ...;
-* the tactic is structuring a proof, e.g. `skip`, `<;>`, ...;
-* the tactic is creating new goals, e.g. `constructor`, `cases`, `induction`, ....
+* parentheses `(...)`;
+* the tactic does nothing, e.g. `skip`
 
 There is some overlap in scope between `ignoreBranch` and `exclusions`.
 
 Tactic combinators like `repeat` or `try` are a mix of both.
 -/
 abbrev exclusions : Std.HashSet SyntaxNodeKind := .ofArray #[
-    -- structuring a proof
-    ``Lean.Parser.Term.cdot,
+    -- we don't lint on tactic sequences, but on the tactics themselves
+    ``Lean.Parser.Tactic.tacticSeq1Indented,
+    ``Lean.Parser.Tactic.tacticSeq,
+    -- focus on a goal
     ``cdot,
     ``cdotTk,
     ``Lean.Parser.Tactic.tacticSeqBracketed,
-    `«;»,
-    `«<;>»,
-    ``Lean.Parser.Tactic.«tactic_<;>_»,
-    `«{»,
-    `«]»,
-    `null,
-    `then,
-    `else,
+    ``Lean.Parser.Tactic.case,
+    ``Lean.Parser.Tactic.case',
     ``Lean.Parser.Tactic.«tacticNext_=>_»,
-    ``Lean.Parser.Tactic.tacticSeq1Indented,
-    ``Lean.Parser.Tactic.tacticSeq,
+    ``Lean.Parser.Tactic.focus,
+    -- parentheses
+    ``Lean.Parser.Tactic.paren,
+    -- `null` appears inside `rw [...]` sequences, where we allow multiple goals.
+    `null,
+    -- conv mode
+    ``Lean.Parser.Tactic.Conv.«conv·_»,
+    -- grind interactive mode
+    ``Lean.Parser.Tactic.Grind.«grind·_»,
+    ``Lean.Parser.Tactic.Grind.grindSeqBracketed,
+    ``Lean.Parser.Tactic.Grind.skip,
+    ``Lean.Parser.Tactic.Grind.focus,
+    ``Lean.Parser.Tactic.Grind.next,
     -- re-ordering goals
     `Batteries.Tactic.tacticSwap,
     ``Lean.Parser.Tactic.rotateLeft,
     ``Lean.Parser.Tactic.rotateRight,
-    ``Lean.Parser.Tactic.skip,
-    `Batteries.Tactic.«tacticOn_goal-_=>_»,
-    `Mathlib.Tactic.«tacticSwap_var__,,»,
-    -- tactic combinators
+    `Batteries.Tactic.«tacticOn_goal_=>_»,
+    `Batteries.Tactic.«tacticPick_goal_»,
+    -- tactics that act on multiple goals
     ``Lean.Parser.Tactic.tacticRepeat_,
-    ``Lean.Parser.Tactic.tacticTry_,
-    -- creating new goals
-    ``Lean.Parser.Tactic.paren,
-    ``Lean.Parser.Tactic.case,
-    ``Lean.Parser.Tactic.constructor,
     `Mathlib.Tactic.tacticAssumption',
-    ``Lean.Parser.Tactic.induction,
-    ``Lean.Parser.Tactic.cases,
-    ``Lean.Parser.Tactic.intros,
-    ``Lean.Parser.Tactic.injections,
-    ``Lean.Parser.Tactic.substVars,
-    `Batteries.Tactic.«tacticPick_goal-_»,
-    ``Lean.Parser.Tactic.case',
+    -- tactics that don't do anything
+    ``Lean.Parser.Tactic.skip,
     `«tactic#adaptation_note_»,
     `tacticSleep_heartbeats_
   ]
@@ -107,22 +108,23 @@ abbrev exclusions : Std.HashSet SyntaxNodeKind := .ofArray #[
 /-- The `SyntaxNodeKind`s in `ignoreBranch` correspond to tactics that disable the linter from
 their first application until the corresponding proof branch is closed.
 Reasons for ignoring these tactics include
-* the linter gets confused by the proof management, e.g. `conv`;
 * the tactics are *intended* to act on multiple goals, e.g. `repeat`, `any_goals`, `all_goals`, ...
 
 There is some overlap in scope between `exclusions` and `ignoreBranch`.
 -/
 abbrev ignoreBranch : Std.HashSet SyntaxNodeKind := .ofArray #[
-    ``Lean.Parser.Tactic.Conv.conv,
-    `Mathlib.Tactic.Conv.convLHS,
-    `Mathlib.Tactic.Conv.convRHS,
     ``Lean.Parser.Tactic.first,
+    ``Lean.Parser.Tactic.tacticRepeat_,
     ``Lean.Parser.Tactic.repeat',
     ``Lean.Parser.Tactic.tacticIterate____,
     ``Lean.Parser.Tactic.anyGoals,
     ``Lean.Parser.Tactic.allGoals,
-    ``Lean.Parser.Tactic.focus,
     ``Lean.Parser.Tactic.failIfSuccess,
+    ``Lean.Parser.Tactic.Grind.anyGoals,
+    ``Lean.Parser.Tactic.Grind.allGoals,
+    ``Lean.Parser.Tactic.Grind.first,
+    ``Lean.Parser.Tactic.Grind.failIfSuccess,
+    ``Lean.Parser.Tactic.Grind.grindRepeat_,
     `Mathlib.Tactic.successIfFailWithMsg
   ]
 
@@ -140,14 +142,18 @@ def getManyGoals : InfoTree → Array (Syntax × Nat × Nat × Nat)
   | .node info args =>
     let kargs := (args.map getManyGoals).toArray.flatten
     if let .ofTacticInfo info := info then
-      if ignoreBranch.contains info.stx.getKind then #[]
-      -- Ideal case: one goal, and it might or might not be closed.
-      else if info.goalsBefore.length == 1 && info.goalsAfter.length ≤ 1 then kargs
-      else if let .original .. := info.stx.getHeadInfo then
-        let backgroundGoals := info.goalsAfter.filter (info.goalsBefore.contains ·)
-        if backgroundGoals.length != 0 && !exclusions.contains info.stx.getKind then
-          kargs.push (info.stx,
-                      info.goalsBefore.length, info.goalsAfter.length, backgroundGoals.length)
+      -- Exclude atoms, such as `<;>` or `;`.
+      if let .node _ kind _ := info.stx then
+        if ignoreBranch.contains kind then #[]
+        else if exclusions.contains kind then kargs
+        -- Ideal case: one goal, and it might or might not be closed.
+        else if info.goalsBefore.length == 1 && info.goalsAfter.length ≤ 1 then kargs
+        else if let .original .. := info.stx.getHeadInfo then
+          let backgroundGoals := info.goalsAfter.filter (info.goalsBefore.contains ·)
+          if !backgroundGoals.isEmpty then
+            kargs.push (info.stx,
+                        info.goalsBefore.length, info.goalsAfter.length, backgroundGoals.length)
+          else kargs
         else kargs
       else kargs
     else kargs

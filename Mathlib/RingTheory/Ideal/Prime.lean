@@ -3,10 +3,15 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.RingTheory.Ideal.Lattice
+module
+
+public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+public import Mathlib.RingTheory.Ideal.Lattice
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
-
 # Prime ideals
 
 This file contains the definition of `Ideal.IsPrime` for prime ideals.
@@ -16,14 +21,16 @@ This file contains the definition of `Ideal.IsPrime` for prime ideals.
 Support right ideals, and two-sided ideals over non-commutative rings.
 -/
 
+@[expose] public section
+
 
 universe u v w
 
-variable {α : Type u} {β : Type v} {F : Type w}
+variable {α : Type u}
 
-open Set Function
+open Set
 
-open Pointwise
+open scoped Pointwise
 
 section Semiring
 
@@ -32,6 +39,7 @@ namespace Ideal
 variable [Semiring α] (I : Ideal α) {a b : α}
 
 /-- An ideal `P` of a ring `R` is prime if `P ≠ R` and `xy ∈ P → x ∈ P ∨ y ∈ P` -/
+@[wikidata Q863912]
 class IsPrime (I : Ideal α) : Prop where
   /-- The prime ideal is not the entire ring. -/
   ne_top' : I ≠ ⊤
@@ -39,25 +47,26 @@ class IsPrime (I : Ideal α) : Prop where
   mem_or_mem' : ∀ {x y : α}, x * y ∈ I → x ∈ I ∨ y ∈ I
 
 theorem isPrime_iff {I : Ideal α} : IsPrime I ↔ I ≠ ⊤ ∧ ∀ {x y : α}, x * y ∈ I → x ∈ I ∨ y ∈ I :=
-  ⟨fun h => ⟨h.1, h.2⟩, fun h => ⟨h.1, h.2⟩⟩
+  ⟨fun h => ⟨h.ne_top', h.mem_or_mem'⟩, fun h => ⟨h.1, h.2⟩⟩
 
 theorem IsPrime.ne_top {I : Ideal α} (hI : I.IsPrime) : I ≠ ⊤ :=
-  hI.1
+  hI.ne_top'
+
+lemma notMem_of_isUnit (I : Ideal α) [I.IsPrime] {x : α} (hx : IsUnit x) : x ∉ I :=
+  fun h ↦ ‹I.IsPrime›.ne_top (eq_top_of_isUnit_mem _ h hx)
 
 theorem IsPrime.one_notMem {I : Ideal α} (hI : I.IsPrime) : 1 ∉ I :=
-  mt (eq_top_iff_one I).2 hI.1
+  notMem_of_isUnit _ isUnit_one
 
 theorem one_notMem (I : Ideal α) [hI : I.IsPrime] : 1 ∉ I :=
   hI.one_notMem
 
 theorem IsPrime.mem_or_mem {I : Ideal α} (hI : I.IsPrime) {x y : α} : x * y ∈ I → x ∈ I ∨ y ∈ I :=
-  hI.2
+  hI.mem_or_mem'
 
 theorem IsPrime.mul_notMem {I : Ideal α} (hI : I.IsPrime) {x y : α} :
     x ∉ I → y ∉ I → x * y ∉ I := fun hx hy h ↦
   hy ((hI.mem_or_mem h).resolve_left hx)
-
-@[deprecated (since := "2025-05-23")] alias IsPrime.mul_not_mem := IsPrime.mul_notMem
 
 theorem IsPrime.mem_or_mem_of_mul_eq_zero {I : Ideal α} (hI : I.IsPrime) {x y : α} (h : x * y = 0) :
     x ∈ I ∨ y ∈ I :=
@@ -81,7 +90,7 @@ theorem not_isPrime_iff {I : Ideal α} :
       ⟨fun ⟨x, y, hxy, hx, hy⟩ => ⟨x, hx, y, hy, hxy⟩, fun ⟨x, hx, y, hy, hxy⟩ =>
         ⟨x, y, hxy, hx, hy⟩⟩
 
-theorem bot_prime [Nontrivial α] [NoZeroDivisors α] : (⊥ : Ideal α).IsPrime :=
+instance isPrime_bot [Nontrivial α] [NoZeroDivisors α] : (⊥ : Ideal α).IsPrime :=
   ⟨fun h => one_ne_zero (α := α) (by rwa [Ideal.eq_top_iff_one, Submodule.mem_bot] at h), fun h =>
     mul_eq_zero.mp (by simpa only [Submodule.mem_bot] using h)⟩
 
@@ -95,6 +104,14 @@ theorem IsPrime.pow_mem_iff_mem {I : Ideal α} (hI : I.IsPrime) {r : α} (n : �
     r ^ n ∈ I ↔ r ∈ I :=
   ⟨hI.mem_of_pow_mem n, fun hr => I.pow_mem_of_mem hr n hn⟩
 
+lemma IsPrime.mul_mem_left_iff {I : Ideal α} [I.IsTwoSided] [I.IsPrime]
+    {x y : α} (hx : x ∉ I) : x * y ∈ I ↔ y ∈ I := by
+  grind [Ideal.IsPrime.mul_mem_iff_mem_or_mem]
+
+lemma IsPrime.mul_mem_right_iff {I : Ideal α} [I.IsTwoSided] [I.IsPrime]
+    {x y : α} (hx : y ∉ I) : x * y ∈ I ↔ x ∈ I := by
+  rw [Ideal.IsPrime.mul_mem_iff_mem_or_mem] <;> aesop
+
 /-- The complement of a prime ideal `P ⊆ R` is a submonoid of `R`. -/
 def primeCompl (P : Ideal α) [hp : P.IsPrime] : Submonoid α where
   carrier := (Pᶜ : Set α)
@@ -105,6 +122,53 @@ def primeCompl (P : Ideal α) [hp : P.IsPrime] : Submonoid α where
 theorem mem_primeCompl_iff {P : Ideal α} [P.IsPrime] {x : α} :
     x ∈ P.primeCompl ↔ x ∉ P := Iff.rfl
 
+theorem primeCompl_bot [Nontrivial α] [NoZeroDivisors α] :
+    (⊥ : Ideal α).primeCompl = nonZeroDivisors α := by
+  ext
+  simp
+
+variable (S : Set (Ideal α)) (hS : ∀ P ∈ S, P.IsPrime)
+
+/-- The elements lying outside every ideal in a set of prime ideals form a submonoid. -/
+@[no_expose]
+def sInfPrimeCompl : Submonoid α :=
+  ⨅ P ∈ S, P.primeCompl (hp := hS P (by assumption))
+
+lemma sInfPrimeCompl_def :
+    sInfPrimeCompl S hS = ⨅ P ∈ S, P.primeCompl (hp := hS P (by assumption)) := by rfl
+
+@[simp]
+theorem mem_sInfPrimeCompl_iff {x : α} : x ∈ sInfPrimeCompl S hS ↔ ∀ P ∈ S, x ∉ P := by
+  simp [sInfPrimeCompl_def]
+
+@[simp]
+theorem sInfPrimeCompl_empty :
+    sInfPrimeCompl ∅ (by simp : ∀ P ∈ (∅ : Set (Ideal α)), P.IsPrime) = ⊤ := by
+  ext
+  simp
+
+@[simp]
+theorem sInfPrimeCompl_singleton (P : Ideal α) [P.IsPrime] :
+    sInfPrimeCompl {P} (by simp_all) = P.primeCompl := by
+  ext
+  simp
+
+theorem sInfPrimeCompl_union {S T : Set (Ideal α)} (hST : ∀ P ∈ S ∪ T, P.IsPrime) :
+    sInfPrimeCompl (S ∪ T) hST =
+      sInfPrimeCompl S (fun P hP ↦ hST P (Set.mem_union_left T hP)) ⊓
+      sInfPrimeCompl T (fun P hP ↦ hST P (Set.mem_union_right S hP)) := by
+  aesop
+
+theorem sInfPrimeCompl_le_primeCompl {P : Ideal α} (hP : P ∈ S) :
+    sInfPrimeCompl S hS ≤ P.primeCompl (hp := hS P hP) :=
+  fun _ hx ↦ (mem_sInfPrimeCompl_iff S hS).mp hx P hP
+
+theorem sInfPrimeCompl_anti {S T : Set (Ideal α)} (hST : S ⊆ T) (hP : ∀ P ∈ T, P.IsPrime) :
+    sInfPrimeCompl T hP ≤ sInfPrimeCompl S (fun P hPS ↦ hP P (hST hPS)) := by
+  intro x hx
+  rw [mem_sInfPrimeCompl_iff] at hx ⊢
+  exact fun P hp ↦ hx P (hST hp)
+
 end Ideal
 
 end Semiring
@@ -112,7 +176,7 @@ end Semiring
 section Ring
 
 theorem IsDomain.of_bot_isPrime (A : Type*) [Ring A] [hbp : (⊥ : Ideal A).IsPrime] : IsDomain A :=
-  @NoZeroDivisors.to_isDomain A _ ⟨1, 0, fun h => hbp.one_notMem h⟩ ⟨fun h => hbp.2 h⟩
+  @NoZeroDivisors.to_isDomain A _ ⟨1, 0, fun h => hbp.one_notMem h⟩ ⟨fun h => hbp.mem_or_mem' h⟩
 
 end Ring
 
@@ -123,7 +187,7 @@ variable {K : Type u} [DivisionSemiring K] (I : Ideal K)
 namespace Ideal
 
 theorem eq_bot_of_prime [h : I.IsPrime] : I = ⊥ :=
-  or_iff_not_imp_right.mp I.eq_bot_or_top h.1
+  or_iff_not_imp_right.mp I.eq_bot_or_top h.ne_top'
 
 end Ideal
 

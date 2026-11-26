@@ -3,14 +3,21 @@ Copyright (c) 2025 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Algebra.SeparationQuotient.Basic
-import Mathlib.RingTheory.Finiteness.Basic
+module
+
+public import Mathlib.RingTheory.Finiteness.Basic
+public import Mathlib.Topology.Algebra.SeparationQuotient.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Separation quotient is a finite module
 
 In this file we show that the separation quotient of a finite module is a finite module.
 -/
+
+public section
 
 /-- The separation quotient of a finite module is a finite module. -/
 instance SeparationQuotient.instModuleFinite

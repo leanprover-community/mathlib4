@@ -3,11 +3,15 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Homology.Single
+module
+
+public import Mathlib.Algebra.Homology.Single
 
 /-!
 # Augmentation and truncation of `ℕ`-indexed (co)chain complexes.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -23,7 +27,7 @@ namespace ChainComplex
 /-- The truncation of an `ℕ`-indexed chain complex,
 deleting the object at `0` and shifting everything else down.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def truncate [HasZeroMorphisms V] : ChainComplex V ℕ ⥤ ChainComplex V ℕ where
   obj C :=
     { X := fun i => C.X (i + 1)
@@ -58,7 +62,7 @@ def augment (C : ChainComplex V ℕ) {X : V} (f : C.X 0 ⟶ X) (w : C.d 1 0 ≫ 
     | _ + 2, 0, _ => rfl
     | 0, _, _ => rfl
     | i + 1, j + 1, h => by
-      simp only; exact C.shape i j (Nat.succ_ne_succ.1 h)
+      simp only; exact C.shape i j (Nat.succ_ne_succ_iff.1 h)
   d_comp_d'
     | _, _, 0, rfl, rfl => w
     | _, _, k + 1, rfl, rfl => C.d_comp_d _ _ _
@@ -119,17 +123,17 @@ theorem chainComplex_d_succ_succ_zero (C : ChainComplex V ℕ) (i : ℕ) : C.d (
 def augmentTruncate (C : ChainComplex V ℕ) :
     augment (truncate.obj C) (C.d 1 0) (C.d_comp_d _ _ _) ≅ C where
   hom :=
-    { f := fun | 0 => 𝟙 _ | _+1 => 𝟙 _
+    { f := fun | 0 => 𝟙 _ | _ + 1 => 𝟙 _
       comm' := fun i j => by
         match i with
-        | 0 | 1 | n+2 =>
+        | 0 | 1 | n + 2 =>
           rcases j with - | j <;> dsimp [augment, truncate] <;> simp
     }
   inv :=
-    { f := fun | 0 => 𝟙 _ | _+1 => 𝟙 _
+    { f := fun | 0 => 𝟙 _ | _ + 1 => 𝟙 _
       comm' := fun i j => by
         match i with
-          | 0 | 1 | n+2 =>
+          | 0 | 1 | n + 2 =>
           rcases j with - | j <;> dsimp [augment, truncate] <;> simp
     }
   hom_inv_id := by
@@ -176,7 +180,7 @@ namespace CochainComplex
 /-- The truncation of an `ℕ`-indexed cochain complex,
 deleting the object at `0` and shifting everything else down.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def truncate [HasZeroMorphisms V] : CochainComplex V ℕ ⥤ CochainComplex V ℕ where
   obj C :=
     { X := fun i => C.X (i + 1)
@@ -207,20 +211,15 @@ def augment (C : CochainComplex V ℕ) {X : V} (f : X ⟶ C.X 0) (w : f ≫ C.d 
     | i + 1, j + 1 => C.d i j
     | _, _ => 0
   shape i j s := by
-    simp? at s says simp only [ComplexShape.up_Rel] at s
-    rcases j with (_ | _ | j) <;> cases i <;> try simp
-    · contradiction
-    · rw [C.shape]
-      simp only [ComplexShape.up_Rel]
-      contrapose! s
-      rw [← s]
+    rcases j with (_ | _ | j) <;> cases i <;> simp_all
   d_comp_d' i j k hij hjk := by
-    rcases k with (_ | _ | k) <;> rcases j with (_ | _ | j) <;> cases i <;> try simp
-    cases k
-    · exact w
-    · rw [C.shape, comp_zero]
-      simp only [ComplexShape.up_Rel, zero_add]
-      exact (Nat.one_lt_succ_succ _).ne
+    have (k : ℕ) : f ≫ C.d 0 (k + 1) = 0 := by
+      cases k
+      · exact w
+      · rw [C.shape, comp_zero]
+        simp only [ComplexShape.up_Rel, zero_add]
+        exact (Nat.one_lt_succ_succ _).ne
+    rcases k with (_ | _ | k) <;> rcases j with (_ | _ | j) <;> cases i <;> simp [this]
 
 @[simp]
 theorem augment_X_zero (C : CochainComplex V ℕ) {X : V} (f : X ⟶ C.X 0) (w : f ≫ C.d 0 1 = 0) :
@@ -282,11 +281,11 @@ theorem cochainComplex_d_succ_succ_zero (C : CochainComplex V ℕ) (i : ℕ) : C
 def augmentTruncate (C : CochainComplex V ℕ) :
     augment (truncate.obj C) (C.d 0 1) (C.d_comp_d _ _ _) ≅ C where
   hom :=
-    { f := fun | 0 => 𝟙 _ | _+1 => 𝟙 _
+    { f := fun | 0 => 𝟙 _ | _ + 1 => 𝟙 _
       comm' := fun i j => by
         rcases j with (_ | _ | j) <;> cases i <;> aesop }
   inv :=
-    { f := fun | 0 => 𝟙 _ | _+1 => 𝟙 _
+    { f := fun | 0 => 𝟙 _ | _ + 1 => 𝟙 _
       comm' := fun i j => by
         rcases j with (_ | _ | j) <;> rcases i with - | i <;> aesop }
 

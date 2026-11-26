@@ -3,13 +3,18 @@ Copyright (c) 2018 Mario Carneiro, Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kevin Buzzard
 -/
-import Mathlib.Algebra.Ring.Idempotent
-import Mathlib.Order.Basic
-import Mathlib.RingTheory.Finiteness.Nakayama
+module
+
+public import Mathlib.RingTheory.Finiteness.Nakayama
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
-## Lemmas on idempotent finitely generated ideals
+# Lemmas on idempotent finitely generated ideals
 -/
+
+public section
 
 
 namespace Ideal

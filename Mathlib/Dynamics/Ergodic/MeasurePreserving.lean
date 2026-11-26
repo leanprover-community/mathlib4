@@ -3,13 +3,15 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Measure.AEMeasurable
-import Mathlib.Order.Filter.EventuallyConst
+module
+
+public import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
+public import Mathlib.Order.Filter.EventuallyConst
 
 /-!
-# Measure preserving maps
+# Measure-preserving maps
 
-We say that `f : α → β` is a measure preserving map w.r.t. measures `μ : Measure α` and
+We say that `f : α → β` is a measure-preserving map w.r.t. measures `μ : Measure α` and
 `ν : Measure β` if `f` is measurable and `map f μ = ν`. In this file we define the predicate
 `MeasureTheory.MeasurePreserving` and prove its basic properties.
 
@@ -23,20 +25,21 @@ Isabelle formalization.
 
 ## Tags
 
-measure preserving map, measure
+measure-preserving map, measure
 -/
+
+public section
 
 open MeasureTheory.Measure Function Set
 open scoped ENNReal
 
-variable {α β γ δ : Type*} [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
-  [MeasurableSpace δ]
+variable {α β γ : Type*} [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
 
 namespace MeasureTheory
 
-variable {μa : Measure α} {μb : Measure β} {μc : Measure γ} {μd : Measure δ}
+variable {μa : Measure α} {μb : Measure β} {μc : Measure γ}
 
-/-- `f` is a measure preserving map w.r.t. measures `μa` and `μb` if `f` is measurable
+/-- `f` is a measure-preserving map w.r.t. measures `μa` and `μb` if `f` is measurable
 and `map f μa = μb`. -/
 structure MeasurePreserving (f : α → β)
   (μa : Measure α := by volume_tac) (μb : Measure β := by volume_tac) : Prop where
@@ -53,7 +56,13 @@ protected theorem id (μ : Measure α) : MeasurePreserving id μ μ :=
   ⟨measurable_id, map_id⟩
 
 protected theorem aemeasurable {f : α → β} (hf : MeasurePreserving f μa μb) : AEMeasurable f μa :=
-  hf.1.aemeasurable
+  hf.measurable.aemeasurable
+
+protected theorem congr {f f' : α → β} (hf : MeasurePreserving f μa μb) (hf' : Measurable f')
+    (h : f =ᵐ[μa] f') : MeasurePreserving f' μa μb := by
+  refine ⟨hf', ?_⟩
+  rw [Measure.map_congr h.symm]
+  exact hf.map_eq
 
 @[nontriviality]
 theorem of_isEmpty [IsEmpty β] (f : α → β) (μa : Measure α) (μb : Measure β) :
@@ -84,11 +93,23 @@ theorem aemeasurable_comp_iff {f : α → β} (hf : MeasurePreserving f μa μb)
 
 protected theorem quasiMeasurePreserving {f : α → β} (hf : MeasurePreserving f μa μb) :
     QuasiMeasurePreserving f μa μb :=
-  ⟨hf.1, hf.2.absolutelyContinuous⟩
+  ⟨hf.measurable.aemeasurable, hf.map_eq.absolutelyContinuous⟩
 
 protected theorem comp {g : β → γ} {f : α → β} (hg : MeasurePreserving g μb μc)
     (hf : MeasurePreserving f μa μb) : MeasurePreserving (g ∘ f) μa μc :=
-  ⟨hg.1.comp hf.1, by rw [← map_map hg.1 hf.1, hf.2, hg.2]⟩
+  ⟨hg.measurable.comp hf.measurable, by
+    rw [← map_map hg.measurable hf.measurable, hf.map_eq, hg.map_eq]⟩
+
+protected theorem map_of_comp {f : α → β} {g : β → γ} (hgf : MeasurePreserving (g ∘ f) μa μc)
+    (hg : Measurable g) (hf : Measurable f) :
+    MeasurePreserving g (μa.map f) μc :=
+  ⟨hg, (map_map hg hf).trans hgf.map_eq⟩
+
+protected theorem of_semiconj {f : α → β} {ga : α → α} {gb : β → β}
+    (hfm : MeasurePreserving f μa μb) (hga : MeasurePreserving ga μa μa) (hf : Semiconj f ga gb)
+    (hgb : Measurable gb) : MeasurePreserving gb μb μb := by
+  have := hf.comp_eq ▸ hfm.comp hga |>.map_of_comp hgb hfm.measurable
+  rwa [hfm.map_eq] at this
 
 /-- An alias of `MeasureTheory.MeasurePreserving.comp` with a convenient defeq and argument order
 for `MeasurableEquiv` -/
@@ -122,7 +143,7 @@ protected theorem sfinite {f : α → β} (hf : MeasurePreserving f μa μb) [SF
 theorem measure_preimage {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}
     (hs : NullMeasurableSet s μb) : μa (f ⁻¹' s) = μb s := by
   rw [← hf.map_eq] at hs ⊢
-  rw [map_apply₀ hf.1.aemeasurable hs]
+  rw [map_apply₀ hf.measurable.aemeasurable hs]
 
 theorem measureReal_preimage {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}
     (hs : NullMeasurableSet s μb) : μa.real (f ⁻¹' s) = μb.real s := by
@@ -154,8 +175,8 @@ theorem aeconst_comp [MeasurableSingletonClass γ] {f : α → β} (hf : Measure
 
 theorem aeconst_preimage {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}
     (hs : NullMeasurableSet s μb) :
-    Filter.EventuallyConst (f ⁻¹' s) (ae μa) ↔ Filter.EventuallyConst s (ae μb) :=
-  aeconst_comp hf hs.mem
+    (ae μa).EventuallyEmptyOrUniv (f ⁻¹' s) ↔ (ae μb).EventuallyEmptyOrUniv s :=
+  aeconst_comp hf hs.mem.nullMeasurable
 
 theorem add_measure {f μa' μb'} (hf : MeasurePreserving f μa μb)
     (hf' : MeasurePreserving f μa' μb') : MeasurePreserving f (μa + μa') (μb + μb') where
@@ -165,7 +186,7 @@ theorem add_measure {f μa' μb'} (hf : MeasurePreserving f μa μb)
 theorem smul_measure {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] {f : α → β}
     (hf : MeasurePreserving f μa μb) (c : R) : MeasurePreserving f (c • μa) (c • μb) where
   measurable := hf.measurable
-  map_eq := by rw [Measure.map_smul, hf.map_eq]
+  map_eq := by rw [Measure.map_smul _ hf.aemeasurable, hf.map_eq]
 
 variable {μ : Measure α} {f : α → α} {s : Set α}
 
@@ -182,7 +203,7 @@ lemma measure_symmDiff_preimage_iterate_le
   | zero => simp
   | succ n ih =>
     simp only [add_smul, one_smul]
-    grw [← ih, measure_symmDiff_le s (f^[n] ⁻¹' s) (f^[n+1] ⁻¹' s)]
+    grw [← ih, measure_symmDiff_le s (f^[n] ⁻¹' s) (f^[n + 1] ⁻¹' s)]
     replace hs : NullMeasurableSet (s ∆ (f ⁻¹' s)) μ :=
       hs.symmDiff <| hs.preimage hf.quasiMeasurePreserving
     rw [iterate_succ', preimage_comp, ← preimage_symmDiff, (hf.iterate n).measure_preimage hs]
@@ -216,10 +237,13 @@ theorem exists_mem_iterate_mem [IsFiniteMeasure μ] (hf : MeasurePreserving f μ
 
 end MeasurePreserving
 
-lemma measurePreserving_subtype_coe {s : Set α} (hs : MeasurableSet s) :
+lemma measurePreserving_subtypeVal {s : Set α} (hs : MeasurableSet s) :
     MeasurePreserving (Subtype.val : s → α) (μa.comap Subtype.val) (μa.restrict s) where
-  measurable := measurable_subtype_coe
-  map_eq := map_comap_subtype_coe hs _
+  measurable := measurable_subtypeVal
+  map_eq := map_comap_subtypeVal hs _
+
+@[deprecated (since := "2026-11-10")]
+alias measurePreserving_subtype_coe := measurePreserving_subtypeVal
 
 namespace MeasurableEquiv
 

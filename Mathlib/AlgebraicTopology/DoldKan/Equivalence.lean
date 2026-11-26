@@ -3,11 +3,11 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.DoldKan.EquivalencePseudoabelian
-import Mathlib.AlgebraicTopology.DoldKan.Normalized
+module
+
+public import Mathlib.AlgebraicTopology.DoldKan.EquivalencePseudoabelian
 
 /-!
-
 # The Dold-Kan correspondence
 
 The Dold-Kan correspondence states that for any abelian category `A`, there is
@@ -89,7 +89,7 @@ obtained by composing the previous equivalence with the equivalences
 `Karoubi (ChainComplex C ℕ) ≌ ChainComplex C ℕ`. Instead, we polish this construction
 in `Compatibility.lean` by ensuring good definitional properties of the equivalence (e.g.
 the inverse functor is definitionally equal to
-`Γ₀' : ChainComplex C ℕ ⥤ SimplicialObject C`) and
+`Γ₀ : ChainComplex C ℕ ⥤ SimplicialObject C`, which is induced by `Γ₀'`) and
 showing compatibilities for the unit and counit isomorphisms.
 
 In this file `Equivalence.lean`, assuming the category `A` is abelian, we obtain
@@ -114,17 +114,19 @@ TODO: dualise all of this as `CosimplicialObject A ⥤ CochainComplex A ℕ`. (I
 what is the best way to do this. The exact design may be decided when it is needed.)
 
 ## References
+
 * [Albrecht Dold, Homology of Symmetric Products and Other Functors of Complexes][dold1958]
 * [Paul G. Goerss, John F. Jardine, Simplicial Homotopy Theory][goerss-jardine-2009]
-
 -/
+
+@[expose] public section
 
 
 noncomputable section
 
 open CategoryTheory Category Idempotents
 
-variable {A : Type*} [Category A] [Abelian A]
+variable {A : Type*} [Category* A] [Abelian A]
 
 namespace CategoryTheory
 
@@ -142,6 +144,9 @@ def N : SimplicialObject A ⥤ ChainComplex A ℕ :=
 def Γ : ChainComplex A ℕ ⥤ SimplicialObject A :=
   Idempotents.DoldKan.Γ
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The comparison isomorphism between `normalizedMooreComplex A` and
 the functor `Idempotents.DoldKan.N` from the pseudoabelian case -/
 @[simps!]

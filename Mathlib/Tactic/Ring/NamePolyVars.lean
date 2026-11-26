@@ -3,7 +3,9 @@ Copyright (c) 2025 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.Algebra.MvPolynomial.Basic
+module
+
+public import Mathlib.Algebra.MvPolynomial.Basic  -- shake: keep (tactic dependency)
 
 /-!
 The command `name_poly_vars` names variables in
@@ -20,6 +22,8 @@ name_poly_vars X, Y, Z over R
 #check Y -- Y : MvPolynomial (Fin 3) R
 ```
 -/
+
+public meta section
 
 open Lean Elab Command
 
@@ -40,7 +44,7 @@ name_poly_vars X, Y, Z over R
 #check Y -- Y : MvPolynomial (Fin 3) R
 ```
 -/
-syntax (name := namePolyVarsOver) "name_poly_vars " ident,+ " over " term : command
+syntax (name := namePolyVarsOver) "name_poly_vars" (ppSpace ident),+ " over " term : command
 
 @[command_elab namePolyVarsOver, inherit_doc namePolyVarsOver]
 def elabNameVariablesOver : CommandElab

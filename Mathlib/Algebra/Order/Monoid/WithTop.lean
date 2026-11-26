@@ -3,23 +3,27 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+module
+
+public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 
 /-! # Adjoining top/bottom elements to ordered monoids.
 -/
+
+public section
 
 universe u
 
 variable {α : Type u}
 
-open Function
-
 namespace WithTop
 
-instance isOrderedAddMonoid [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α] :
+@[to_dual]
+instance [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α] :
     IsOrderedAddMonoid (WithTop α) where
   add_le_add_left _ _ := add_le_add_left
+  add_le_add_right _ _ := add_le_add_right
 
 instance canonicallyOrderedAdd [Add α] [Preorder α] [CanonicallyOrderedAdd α] :
     CanonicallyOrderedAdd (WithTop α) where
@@ -36,10 +40,6 @@ end WithTop
 
 namespace WithBot
 
-instance isOrderedAddMonoid [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α] :
-    IsOrderedAddMonoid (WithBot α) :=
-  { add_le_add_left := fun _ _ h c => add_le_add_left h c }
-
 protected theorem le_self_add [Add α] [LE α] [CanonicallyOrderedAdd α]
     {x : WithBot α} (hx : x ≠ ⊥) (y : WithBot α) :
     y ≤ y + x := by
@@ -50,7 +50,7 @@ protected theorem le_self_add [Add α] [LE α] [CanonicallyOrderedAdd α]
   · rw [← WithBot.coe_add, WithBot.coe_le_coe]
     exact le_self_add
 
-protected theorem le_add_self [AddCommMagma α] [LE α] [CanonicallyOrderedAdd α]
+protected theorem le_add_self [Add α] [LE α] [CanonicallyOrderedAdd α]
     {x : WithBot α} (hx : x ≠ ⊥) (y : WithBot α) :
     y ≤ x + y := by
   induction x
@@ -59,5 +59,17 @@ protected theorem le_add_self [AddCommMagma α] [LE α] [CanonicallyOrderedAdd �
   · simp
   · rw [← WithBot.coe_add, WithBot.coe_le_coe]
     exact le_add_self
+
+@[simp]
+protected theorem top_add_of_ne_bot [PartialOrder α] [OrderTop α] [Add α] [CanonicallyOrderedAdd α]
+    {a : WithBot α} (h : a ≠ ⊥) : ⊤ + a = ⊤ := by
+  lift a to α using h
+  exact WithBot.coe_inj.mpr (by simp [eq_top_iff])
+
+@[simp]
+protected theorem add_top_of_ne_bot [PartialOrder α] [OrderTop α] [Add α] [CanonicallyOrderedAdd α]
+    {a : WithBot α} (h : a ≠ ⊥) : a + ⊤ = ⊤ := by
+  lift a to α using h
+  exact WithBot.coe_inj.mpr (by simp [eq_top_iff])
 
 end WithBot

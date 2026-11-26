@@ -3,11 +3,11 @@ Copyright (c) 2021 Jakob Scholbach. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob Scholbach
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.FieldTheory.Separable
+module
+
+public import Mathlib.FieldTheory.Separable
 
 /-!
-
 # Separable degree
 
 This file contains basics about the separable degree of a polynomial.
@@ -32,6 +32,8 @@ This file contains basics about the separable degree of a polynomial.
 
 separable degree, degree, polynomial
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -127,7 +129,7 @@ theorem IsSeparableContraction.degree_eq [hF : ExpChar F q] (g : F[X])
   · rcases hg with ⟨hg, m, hm⟩
     let g' := Classical.choose hf
     obtain ⟨hg', m', hm'⟩ := Classical.choose_spec hf
-    haveI : Fact q.Prime := ⟨by assumption⟩
+    have : Fact q.Prime := ⟨by assumption⟩
     refine contraction_degree_eq_or_insep q g g' m m' ?_ hg hg'
     rw [hm, hm']
 

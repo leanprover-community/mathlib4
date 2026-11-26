@@ -3,11 +3,18 @@ Copyright (c) 2022 Joshua Clune. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joshua Clune
 -/
-import Mathlib.Init
-import Lean.Meta.Tactic.Clear
-import Lean.Elab.Tactic.Basic
+module
+
+public meta import Lean.Elab.Tactic.Basic
+public meta import Lean.Meta.Tactic.Clear
+public import Mathlib.Init
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-! # `clear_` tactic -/
+
+public meta section
 
 namespace Mathlib.Tactic
 open Lean Meta Elab.Tactic

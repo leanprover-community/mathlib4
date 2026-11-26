@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Andrew Yang
 -/
-import Mathlib.CategoryTheory.ComposableArrows
-import Mathlib.CategoryTheory.Localization.CalculusOfFractions
+module
+
+public import Mathlib.CategoryTheory.ComposableArrows.Basic
+public import Mathlib.CategoryTheory.Localization.CalculusOfFractions
 
 /-! # Essential surjectivity of the functor induced on composable arrows
 
@@ -12,18 +14,21 @@ Assuming that `L : C ⥤ D` is a localization functor for a class of morphisms `
 that has a calculus of left *or* right fractions, we show in this file
 that the functor `L.mapComposableArrows n : ComposableArrows C n ⥤ ComposableArrows D n`
 is essentially surjective for any `n : ℕ`.
-
 -/
+
+public section
 
 namespace CategoryTheory
 
 namespace Localization
 
-variable {C D : Type*} [Category C] [Category D] (L : C ⥤ D) (W : MorphismProperty C)
+variable {C D : Type*} [Category* C] [Category* D] (L : C ⥤ D) (W : MorphismProperty C)
   [L.IsLocalization W]
 
 open ComposableArrows
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 lemma essSurj_mapComposableArrows_of_hasRightCalculusOfFractions
     [W.HasRightCalculusOfFractions] (n : ℕ) :
     (L.mapComposableArrows n).EssSurj where

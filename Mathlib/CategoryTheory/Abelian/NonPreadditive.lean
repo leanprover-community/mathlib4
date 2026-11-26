@@ -3,18 +3,17 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
-import Mathlib.CategoryTheory.Limits.Shapes.Kernels
-import Mathlib.CategoryTheory.Limits.Shapes.NormalMono.Equalizers
-import Mathlib.CategoryTheory.Abelian.Images
-import Mathlib.CategoryTheory.Preadditive.Basic
+module
+
+public import Mathlib.CategoryTheory.Abelian.Images
+public import Mathlib.CategoryTheory.Limits.Shapes.NormalMono.Equalizers
+public import Mathlib.CategoryTheory.Preadditive.Basic
 
 /-!
 # Every NonPreadditiveAbelian category is preadditive
 
-In mathlib, we define an abelian category as a preadditive category with a zero object,
-kernels and cokernels, products and coproducts and in which every monomorphism and epimorphism is
-normal.
+In mathlib, we define an abelian category as a preadditive category with finite products,
+kernels and cokernels, and in which every monomorphism and epimorphism is normal.
 
 While virtually every interesting abelian category has a natural preadditive structure (which is why
 it is included in the definition), preadditivity is not actually needed: Every category that has
@@ -39,14 +38,15 @@ categories, and will be used there.
 The construction is non-trivial and it is quite remarkable that this abelian group structure can
 be constructed purely from the existence of a few limits and colimits. Even more remarkably,
 since abelian categories admit exactly one preadditive structure (see
-`subsingletonPreadditiveOfHasBinaryBiproducts`), the construction manages to exactly
+`subsingleton_preadditive_of_hasBinaryBiproducts`), the construction manages to exactly
 reconstruct any natural preadditive structure the category may have.
 
 ## References
 
 * [F. Borceux, *Handbook of Categorical Algebra 2*][borceux-vol2]
-
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -63,8 +63,12 @@ universe v u
 
 variable (C : Type u) [Category.{v} C]
 
-/-- We call a category `NonPreadditiveAbelian` if it has a zero object, kernels, cokernels, binary
-products and coproducts, and every monomorphism and every epimorphism is normal. -/
+/-- We call a category `NonPreadditiveAbelian` if it has a zero object, kernels, cokernels, finite
+products and coproducts, and every monomorphism and every epimorphism is normal.
+
+Notice that every such category is abelian (see `CategoryTheory.NonPreadditiveAbelian.preadditive`),
+so in practice it is preferable to work directly with `Abelian`.
+-/
 class NonPreadditiveAbelian extends HasZeroMorphisms C, IsNormalMonoCategory C,
     IsNormalEpiCategory C where
   [has_zero_object : HasZeroObject C]
@@ -109,7 +113,7 @@ instance : Epi (Abelian.factorThruImage f) :=
   _ fun R (g : I ⟶ R) (hpg : p ≫ g = 0) => by
   -- Since C is abelian, u := ker g ≫ i is the kernel of some morphism h.
   let u := kernel.ι g ≫ i
-  haveI hu := normalMonoOfMono u
+  have hu := normalMonoOfMono u
   let h := hu.g
   -- By hypothesis, p factors through the kernel of g via some t.
   obtain ⟨t, ht⟩ := kernel.lift' g p hpg
@@ -130,7 +134,7 @@ instance : Epi (Abelian.factorThruImage f) :=
   -- i factors through u = ker h via some s.
   obtain ⟨s, hs⟩ := NormalMono.lift' u i hih
   have hs' : (s ≫ kernel.ι g) ≫ i = 𝟙 I ≫ i := by rw [Category.assoc, hs, Category.id_comp]
-  haveI : Epi (kernel.ι g) := epi_of_epi_fac ((cancel_mono _).1 hs')
+  have : Epi (kernel.ι g) := epi_of_epi_fac ((cancel_mono _).1 hs')
   -- ker g is an epimorphism, but ker g ≫ g = 0 = ker g ≫ 0, so g = 0 as required.
   exact zero_of_epi_comp _ (kernel.condition g)
 
@@ -145,7 +149,7 @@ instance : Mono (Abelian.factorThruCoimage f) :=
   NormalEpiCategory.mono_of_cancel_zero _ fun R (g : R ⟶ I) (hgi : g ≫ i = 0) => by
     -- Since C is abelian, u := p ≫ coker g is the cokernel of some morphism h.
     let u := p ≫ cokernel.π g
-    haveI hu := normalEpiOfEpi u
+    have hu := normalEpiOfEpi u
     let h := hu.g
     -- By hypothesis, i factors through the cokernel of g via some t.
     obtain ⟨t, ht⟩ := cokernel.desc' g i hgi
@@ -166,7 +170,7 @@ instance : Mono (Abelian.factorThruCoimage f) :=
     -- p factors through u = coker h via some s.
     obtain ⟨s, hs⟩ := NormalEpi.desc' u p hhp
     have hs' : p ≫ cokernel.π g ≫ s = p ≫ 𝟙 I := by rw [← Category.assoc, hs, Category.comp_id]
-    haveI : Mono (cokernel.π g) := mono_of_mono_fac ((cancel_epi _).1 hs')
+    have : Mono (cokernel.π g) := mono_of_mono_fac ((cancel_epi _).1 hs')
     -- coker g is a monomorphism, but g ≫ coker g = 0 = 0 ≫ coker g, so g = 0 as required.
     exact zero_of_comp_mono _ (cokernel.condition g)
 
@@ -223,7 +227,7 @@ instance mono_r {A : C} : Mono (r A) := by
   have hyy : y = 0 := by
     erw [← Category.comp_id y, ← Limits.prod.lift_snd (𝟙 A) (𝟙 A), ← Category.assoc, hy,
       Category.assoc, prod.lift_snd, HasZeroMorphisms.comp_zero]
-  haveI : Mono (prod.lift (𝟙 A) (0 : A ⟶ A)) := mono_of_mono_fac (prod.lift_fst _ _)
+  have : Mono (prod.lift (𝟙 A) (0 : A ⟶ A)) := mono_of_mono_fac (prod.lift_fst _ _)
   apply (cancel_mono (prod.lift (𝟙 A) (0 : A ⟶ A))).1
   rw [← hy, hyy, zero_comp, zero_comp]
 
@@ -234,9 +238,9 @@ instance epi_r {A : C} : Epi (r A) := by
     · intro s
       apply Limits.prod.hom_ext <;> simp
     · intro s m h
-      haveI : Mono (prod.lift (𝟙 A) (0 : A ⟶ A)) := mono_of_mono_fac (prod.lift_fst _ _)
+      have : Mono (prod.lift (𝟙 A) (0 : A ⟶ A)) := mono_of_mono_fac (prod.lift_fst _ _)
       apply (cancel_mono (prod.lift (𝟙 A) (0 : A ⟶ A))).1
-      convert h
+      convert! h
       apply Limits.prod.hom_ext <;> simp
   let hp2 : IsColimit (CokernelCofork.ofπ (Limits.prod.snd : A ⨯ A ⟶ A) hlp) :=
     epiIsCokernelOfKernel _ hp1
@@ -294,6 +298,7 @@ section
 
 -- We write `f - g` for `prod.lift f g ≫ σ`.
 /-- Subtraction of morphisms in a `NonPreadditiveAbelian` category. -/
+@[instance_reducible]
 def hasSub {X Y : C} : Sub (X ⟶ Y) :=
   ⟨fun f g => prod.lift f g ≫ σ⟩
 
@@ -301,6 +306,7 @@ attribute [local instance] hasSub
 
 -- We write `-f` for `0 - f`.
 /-- Negation of morphisms in a `NonPreadditiveAbelian` category. -/
+@[instance_reducible]
 def hasNeg {X Y : C} : Neg (X ⟶ Y) where
   neg := fun f => 0 - f
 
@@ -308,6 +314,7 @@ attribute [local instance] hasNeg
 
 -- We write `f + g` for `f - (-g)`.
 /-- Addition of morphisms in a `NonPreadditiveAbelian` category. -/
+@[instance_reducible]
 def hasAdd {X Y : C} : Add (X ⟶ Y) :=
   ⟨fun f g => f - -g⟩
 
@@ -322,8 +329,7 @@ theorem neg_def {X Y : C} (a : X ⟶ Y) : -a = 0 - a := rfl
 theorem sub_zero {X Y : C} (a : X ⟶ Y) : a - 0 = a := by
   rw [sub_def]
   conv_lhs =>
-    congr; congr; rw [← Category.comp_id a]
-    case a.g => rw [show 0 = a ≫ (0 : Y ⟶ Y) by simp]
+    rw [← Category.comp_id a, show 0 = a ≫ (0 : Y ⟶ Y) by simp]
   rw [← prod.comp_lift, Category.assoc, lift_σ, Category.comp_id]
 
 theorem sub_self {X Y : C} (a : X ⟶ Y) : a - a = 0 := by
@@ -345,7 +351,7 @@ theorem neg_sub {X Y : C} (a b : X ⟶ Y) : -a - b = -b - a := by
 theorem neg_neg {X Y : C} (a : X ⟶ Y) : - -a = a := by
   rw [neg_def, neg_def]
   conv_lhs =>
-    congr; rw [← sub_self a]
+    enter [1]; rw [← sub_self a]
   rw [sub_sub_sub, sub_zero, sub_self, sub_zero]
 
 theorem add_comm {X Y : C} (a b : X ⟶ Y) : a + b = b + a := by
@@ -353,9 +359,7 @@ theorem add_comm {X Y : C} (a b : X ⟶ Y) : a + b = b + a := by
   conv_lhs => rw [← neg_neg a]
   rw [neg_def, neg_def, neg_def, sub_sub_sub]
   conv_lhs =>
-    congr
-    next => skip
-    rw [← neg_def, neg_sub]
+    enter [2]; rw [← neg_def, neg_sub]
   rw [sub_sub_sub, add_def, ← neg_def, neg_neg b, neg_def]
 
 theorem add_neg {X Y : C} (a b : X ⟶ Y) : a + -b = a - b := by rw [add_def, neg_neg]
@@ -376,7 +380,7 @@ theorem sub_add {X Y : C} (a b c : X ⟶ Y) : a - b + c = a - (b - c) := by
 
 theorem add_assoc {X Y : C} (a b c : X ⟶ Y) : a + b + c = a + (b + c) := by
   conv_lhs =>
-    congr; rw [add_def]
+    enter [1]; rw [add_def]
   rw [sub_add, ← add_neg, neg_sub', neg_neg]
 
 theorem add_zero {X Y : C} (a : X ⟶ Y) : a + 0 = a := by rw [add_def, neg_def, sub_self, sub_zero]
@@ -394,14 +398,12 @@ theorem add_comp (X Y Z : C) (f g : X ⟶ Y) (h : Y ⟶ Z) : (f + g) ≫ h = f �
   rw [add_def, sub_comp, neg_def, sub_comp, zero_comp, add_def, neg_def]
 
 /-- Every `NonPreadditiveAbelian` category is preadditive. -/
+@[instance_reducible]
 def preadditive : Preadditive C where
   homGroup X Y :=
-    { add := (· + ·)
-      add_assoc := add_assoc
-      zero := 0
+    { add_assoc := add_assoc
       zero_add := neg_neg
       add_zero := add_zero
-      neg f := -f
       neg_add_cancel := neg_add_cancel
       sub_eq_add_neg f g := (add_neg f g).symm
       add_comm := add_comm

@@ -3,8 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomotopyCategory.Shift
-import Mathlib.Algebra.Homology.TotalComplex
+module
+
+public import Mathlib.Algebra.Homology.HomotopyCategory.Shift
+public import Mathlib.Algebra.Homology.TotalComplex
+public import Mathlib.Tactic.Linarith
 
 /-!
 # Behaviour of the total complex with respect to shifts
@@ -30,8 +33,9 @@ Depending on the order of the "composition" of the two isomorphisms
 two ways to identify `((shiftFunctor₁ C x).obj ((shiftFunctor₂ C y).obj K)).total (up ℤ)`
 and `(K.total (up ℤ))⟦x + y⟧`. The lemma `totalShift₁Iso_trans_totalShift₂Iso` shows that
 these two compositions of isomorphisms differ by the sign `(x * y).negOnePow`.
-
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -39,7 +43,7 @@ open CategoryTheory Category ComplexShape Limits
 
 namespace HomologicalComplex₂
 
-variable (C : Type*) [Category C] [Preadditive C]
+variable (C : Type*) [Category* C] [Preadditive C]
 
 /-- The shift on bicomplexes obtained by shifting the first indices (and changing the
 sign of differentials). -/
@@ -78,21 +82,21 @@ instance : ((shiftFunctor₁ C x).obj K).HasTotal (up ℤ) := fun n =>
   hasCoproduct_of_equiv_of_iso (K.toGradedObject.mapObjFun (π (up ℤ) (up ℤ) (up ℤ)) (n + x)) _
     { toFun := fun ⟨⟨a, b⟩, h⟩ => ⟨⟨a + x, b⟩, by
         simp only [Set.mem_preimage, π_def, Set.mem_singleton_iff] at h ⊢
-        omega⟩
+        lia⟩
       invFun := fun ⟨⟨a, b⟩, h⟩ => ⟨(a - x, b), by
         simp only [Set.mem_preimage, π_def, Set.mem_singleton_iff] at h ⊢
-        omega⟩
+        lia⟩
       left_inv := by
         rintro ⟨⟨a, b⟩, h⟩
         ext
         · dsimp
-          omega
+          lia
         · rfl
       right_inv := by
         intro ⟨⟨a, b⟩, h⟩
         ext
         · dsimp
-          omega
+          lia
         · rfl }
     (fun _ => Iso.refl _)
 
@@ -100,10 +104,10 @@ instance : ((shiftFunctor₂ C y).obj K).HasTotal (up ℤ) := fun n =>
   hasCoproduct_of_equiv_of_iso (K.toGradedObject.mapObjFun (π (up ℤ) (up ℤ) (up ℤ)) (n + y)) _
     { toFun := fun ⟨⟨a, b⟩, h⟩ => ⟨⟨a, b + y⟩, by
         simp only [Set.mem_preimage, π_def, Set.mem_singleton_iff] at h ⊢
-        omega⟩
+        lia⟩
       invFun := fun ⟨⟨a, b⟩, h⟩ => ⟨(a, b - y), by
         simp only [Set.mem_preimage, π_def, Set.mem_singleton_iff] at h ⊢
-        omega⟩
+        lia⟩
       left_inv _ := by simp
       right_inv _ := by simp }
     (fun _ => Iso.refl _)
@@ -119,16 +123,16 @@ instance : ((shiftFunctor₁ C x ⋙ shiftFunctor₂ C y).obj K).HasTotal (up �
 /-- Auxiliary definition for `totalShift₁Iso`. -/
 noncomputable def totalShift₁XIso (n n' : ℤ) (h : n + x = n') :
     (((shiftFunctor₁ C x).obj K).total (up ℤ)).X n ≅ (K.total (up ℤ)).X n' where
-  hom := totalDesc _ (fun p q hpq => K.ιTotal (up ℤ) (p + x) q n' (by dsimp at hpq ⊢; omega))
+  hom := totalDesc _ (fun p q hpq => K.ιTotal (up ℤ) (p + x) q n' (by dsimp at hpq ⊢; lia))
   inv := totalDesc _ (fun p q hpq =>
     (K.XXIsoOfEq _ _ _ (Int.sub_add_cancel p x) rfl).inv ≫
       ((shiftFunctor₁ C x).obj K).ιTotal (up ℤ) (p - x) q n
-        (by dsimp at hpq ⊢; omega))
+        (by dsimp at hpq ⊢; lia))
   hom_inv_id := by
     ext p q h
     dsimp
     simp only [ι_totalDesc_assoc, CochainComplex.shiftFunctor_obj_X', ι_totalDesc, comp_id]
-    exact ((shiftFunctor₁ C x).obj K).XXIsoOfEq_inv_ιTotal _ (by omega) rfl _ _
+    exact ((shiftFunctor₁ C x).obj K).XXIsoOfEq_inv_ιTotal _ (by lia) rfl _ _
   inv_hom_id := by
     ext
     dsimp
@@ -144,8 +148,8 @@ lemma D₁_totalShift₁XIso_hom (n₀ n₁ n₀' n₁' : ℤ) (h₀ : n₀ + x 
     dsimp at h hpq
     dsimp [totalShift₁XIso]
     rw [ι_D₁_assoc, Linear.comp_units_smul, ι_totalDesc_assoc, ι_D₁,
-      ((shiftFunctor₁ C x).obj K).d₁_eq _ rfl _ _ (by dsimp; omega),
-      K.d₁_eq _ (show p + x + 1 = p + 1 + x by omega) _ _ (by dsimp; omega)]
+      ((shiftFunctor₁ C x).obj K).d₁_eq _ rfl _ _ (by dsimp; lia),
+      K.d₁_eq _ (show p + x + 1 = p + 1 + x by lia) _ _ (by dsimp; lia)]
     dsimp
     rw [one_smul, Category.assoc, ι_totalDesc, one_smul, Linear.units_smul_comp]
   · rw [D₁_shape _ _ _ _ h, zero_comp, D₁_shape, comp_zero, smul_zero]
@@ -161,8 +165,8 @@ lemma D₂_totalShift₁XIso_hom (n₀ n₁ n₀' n₁' : ℤ) (h₀ : n₀ + x 
     dsimp at h hpq
     dsimp [totalShift₁XIso]
     rw [ι_D₂_assoc, Linear.comp_units_smul, ι_totalDesc_assoc, ι_D₂,
-      ((shiftFunctor₁ C x).obj K).d₂_eq _ _ rfl _ (by dsimp; omega),
-      K.d₂_eq _ _ rfl _ (by dsimp; omega), smul_smul,
+      ((shiftFunctor₁ C x).obj K).d₂_eq _ _ rfl _ (by dsimp; lia),
+      K.d₂_eq _ _ rfl _ (by dsimp; lia), smul_smul,
       Linear.units_smul_comp, Category.assoc, ι_totalDesc]
     dsimp
     congr 1
@@ -186,11 +190,10 @@ noncomputable def totalShift₁Iso :
 lemma ι_totalShift₁Iso_hom_f (a b n : ℤ) (h : a + b = n) (a' : ℤ) (ha' : a' = a + x)
     (n' : ℤ) (hn' : n' = n + x) :
     ((shiftFunctor₁ C x).obj K).ιTotal (up ℤ) a b n h ≫ (K.totalShift₁Iso x).hom.f n =
-      (K.shiftFunctor₁XXIso a x a' ha' b).hom ≫ K.ιTotal (up ℤ) a' b n' (by dsimp; omega) ≫
+      (K.shiftFunctor₁XXIso a x a' ha' b).hom ≫ K.ιTotal (up ℤ) a' b n' (by dsimp; lia) ≫
         (CochainComplex.shiftFunctorObjXIso (K.total (up ℤ)) x n n' hn').inv := by
   subst ha' hn'
-  dsimp [totalShift₁Iso, totalShift₁XIso]
-  simp only [ι_totalDesc, comp_id, id_comp]
+  simp [totalShift₁Iso, totalShift₁XIso]
 
 @[reassoc]
 lemma ι_totalShift₁Iso_inv_f (a b n : ℤ) (h : a + b = n) (a' n' : ℤ)
@@ -198,12 +201,11 @@ lemma ι_totalShift₁Iso_inv_f (a b n : ℤ) (h : a + b = n) (a' n' : ℤ)
     K.ιTotal (up ℤ) a' b n' ha' ≫
       (CochainComplex.shiftFunctorObjXIso (K.total (up ℤ)) x n n' hn').inv ≫
         (K.totalShift₁Iso x).inv.f n =
-      (K.shiftFunctor₁XXIso a x a' (by omega) b).inv ≫
+      (K.shiftFunctor₁XXIso a x a' (by lia) b).inv ≫
         ((shiftFunctor₁ C x).obj K).ιTotal (up ℤ) a b n h := by
   subst hn'
-  obtain rfl : a = a' - x := by omega
-  dsimp [totalShift₁Iso, totalShift₁XIso, shiftFunctor₁XXIso, XXIsoOfEq]
-  simp only [id_comp, ι_totalDesc]
+  obtain rfl : a = a' - x := by lia
+  simp [totalShift₁Iso, totalShift₁XIso, shiftFunctor₁XXIso, XXIsoOfEq]
 
 variable {K L} in
 @[reassoc]
@@ -221,16 +223,16 @@ lemma totalShift₁Iso_hom_naturality [L.HasTotal (up ℤ)] :
 noncomputable def totalShift₂XIso (n n' : ℤ) (h : n + y = n') :
     (((shiftFunctor₂ C y).obj K).total (up ℤ)).X n ≅ (K.total (up ℤ)).X n' where
   hom := totalDesc _ (fun p q hpq => (p * y).negOnePow • K.ιTotal (up ℤ) p (q + y) n'
-    (by dsimp at hpq ⊢; omega))
+    (by dsimp at hpq ⊢; lia))
   inv := totalDesc _ (fun p q hpq => (p * y).negOnePow •
     (K.XXIsoOfEq _ _ _ rfl (Int.sub_add_cancel q y)).inv ≫
-      ((shiftFunctor₂ C y).obj K).ιTotal (up ℤ) p (q - y) n (by dsimp at hpq ⊢; omega))
+      ((shiftFunctor₂ C y).obj K).ιTotal (up ℤ) p (q - y) n (by dsimp at hpq ⊢; lia))
   hom_inv_id := by
     ext p q h
     dsimp
     simp only [ι_totalDesc_assoc, Linear.units_smul_comp, ι_totalDesc, smul_smul,
       Int.units_mul_self, one_smul, comp_id]
-    exact ((shiftFunctor₂ C y).obj K).XXIsoOfEq_inv_ιTotal _ rfl (by omega) _ _
+    exact ((shiftFunctor₂ C y).obj K).XXIsoOfEq_inv_ιTotal _ rfl (by lia) _ _
   inv_hom_id := by
     ext
     dsimp
@@ -248,8 +250,8 @@ lemma D₁_totalShift₂XIso_hom (n₀ n₁ n₀' n₁' : ℤ) (h₀ : n₀ + y 
     dsimp at h hpq
     dsimp [totalShift₂XIso]
     rw [ι_D₁_assoc, Linear.comp_units_smul, ι_totalDesc_assoc, Linear.units_smul_comp,
-      ι_D₁, smul_smul, ((shiftFunctor₂ C y).obj K).d₁_eq _ rfl _ _ (by dsimp; omega),
-      K.d₁_eq _ rfl _ _ (by dsimp; omega)]
+      ι_D₁, smul_smul, ((shiftFunctor₂ C y).obj K).d₁_eq _ rfl _ _ (by dsimp; lia),
+      K.d₁_eq _ rfl _ _ (by dsimp; lia)]
     dsimp
     rw [one_smul, one_smul, Category.assoc, ι_totalDesc, Linear.comp_units_smul,
       ← Int.negOnePow_add]
@@ -268,15 +270,15 @@ lemma D₂_totalShift₂XIso_hom (n₀ n₁ n₀' n₁' : ℤ) (h₀ : n₀ + y 
     dsimp at h hpq
     dsimp [totalShift₂XIso]
     rw [ι_D₂_assoc, Linear.comp_units_smul, ι_totalDesc_assoc, Linear.units_smul_comp,
-      smul_smul, ι_D₂, ((shiftFunctor₂ C y).obj K).d₂_eq _ _ rfl _ (by dsimp; omega),
-      K.d₂_eq _ _ (show q + y + 1 = q + 1 + y by omega) _ (by dsimp; omega),
+      smul_smul, ι_D₂, ((shiftFunctor₂ C y).obj K).d₂_eq _ _ rfl _ (by dsimp; lia),
+      K.d₂_eq _ _ (show q + y + 1 = q + 1 + y by lia) _ (by dsimp; lia),
       Linear.units_smul_comp, Category.assoc, smul_smul, ι_totalDesc]
     dsimp
     rw [Linear.units_smul_comp, Linear.comp_units_smul, smul_smul, smul_smul,
       ← Int.negOnePow_add, ← Int.negOnePow_add, ← Int.negOnePow_add,
       ← Int.negOnePow_add]
     congr 2
-    omega
+    lia
   · rw [D₂_shape _ _ _ _ h, zero_comp, D₂_shape, comp_zero, smul_zero]
     simp_all only [up_Rel]
     grind
@@ -299,11 +301,10 @@ lemma ι_totalShift₂Iso_hom_f (a b n : ℤ) (h : a + b = n) (b' : ℤ) (hb' : 
     (n' : ℤ) (hn' : n' = n + y) :
     ((shiftFunctor₂ C y).obj K).ιTotal (up ℤ) a b n h ≫ (K.totalShift₂Iso y).hom.f n =
       (a * y).negOnePow • (K.shiftFunctor₂XXIso a b y b' hb').hom ≫
-        K.ιTotal (up ℤ) a b' n' (by dsimp; omega) ≫
+        K.ιTotal (up ℤ) a b' n' (by dsimp; lia) ≫
           (CochainComplex.shiftFunctorObjXIso (K.total (up ℤ)) y n n' hn').inv := by
   subst hb' hn'
-  dsimp [totalShift₂Iso, totalShift₂XIso]
-  simp only [ι_totalDesc, comp_id, id_comp]
+  simp [totalShift₂Iso, totalShift₂XIso]
 
 @[reassoc]
 lemma ι_totalShift₂Iso_inv_f (a b n : ℤ) (h : a + b = n) (b' n' : ℤ)
@@ -311,12 +312,11 @@ lemma ι_totalShift₂Iso_inv_f (a b n : ℤ) (h : a + b = n) (b' n' : ℤ)
     K.ιTotal (up ℤ) a b' n' hb' ≫
       (CochainComplex.shiftFunctorObjXIso (K.total (up ℤ)) y n n' hn').inv ≫
         (K.totalShift₂Iso y).inv.f n =
-      (a * y).negOnePow • (K.shiftFunctor₂XXIso a b y b' (by omega)).inv ≫
+      (a * y).negOnePow • (K.shiftFunctor₂XXIso a b y b' (by lia)).inv ≫
         ((shiftFunctor₂ C y).obj K).ιTotal (up ℤ) a b n h := by
   subst hn'
-  obtain rfl : b = b' - y := by omega
-  dsimp [totalShift₂Iso, totalShift₂XIso, shiftFunctor₂XXIso, XXIsoOfEq]
-  simp only [id_comp, ι_totalDesc]
+  obtain rfl : b = b' - y := by lia
+  simp [totalShift₂Iso, totalShift₂XIso, shiftFunctor₂XXIso, XXIsoOfEq]
 
 variable {K L} in
 @[reassoc]
@@ -349,16 +349,17 @@ lemma totalShift₁Iso_trans_totalShift₂Iso :
       (shiftFunctorComm (CochainComplex C ℤ) x y).app _ := by
   ext n n₁ n₂ h
   dsimp at h ⊢
-  rw [Linear.comp_units_smul,ι_totalShift₁Iso_hom_f_assoc _ x n₁ n₂ n h _ rfl _ rfl,
-    ιTotal_map_assoc, ι_totalShift₂Iso_hom_f_assoc _ y n₁ n₂ n h _ rfl _ rfl,
+  rw [total.mapIso_hom, Iso.app_hom, Linear.comp_units_smul,
+    ι_totalShift₁Iso_hom_f_assoc _ x n₁ n₂ n h _ rfl _ rfl, ιTotal_map_assoc,
+    ι_totalShift₂Iso_hom_f_assoc _ y n₁ n₂ n h _ rfl _ rfl,
     Linear.units_smul_comp, Linear.comp_units_smul]
   dsimp [shiftFunctor₁₂CommIso]
   rw [id_comp, id_comp, id_comp, id_comp, comp_id,
-    ι_totalShift₂Iso_hom_f _ y (n₁ + x) n₂ (n + x) (by omega) _ rfl _ rfl, smul_smul,
+    ι_totalShift₂Iso_hom_f _ y (n₁ + x) n₂ (n + x) (by lia) _ rfl _ rfl, smul_smul,
     ← Int.negOnePow_add, add_mul, add_comm (x * y)]
   dsimp
   rw [id_comp, comp_id,
-    ι_totalShift₁Iso_hom_f_assoc _ x n₁ (n₂ + y) (n + y) (by omega) _ rfl (n + x + y) (by omega),
+    ι_totalShift₁Iso_hom_f_assoc _ x n₁ (n₂ + y) (n + y) (by lia) _ rfl (n + x + y) (by lia),
     CochainComplex.shiftFunctorComm_hom_app_f]
   dsimp
   rw [Iso.inv_hom_id, comp_id, id_comp]
@@ -372,6 +373,6 @@ lemma totalShift₁Iso_hom_totalShift₂Iso_hom :
           (((shiftFunctor₁ C x).obj K).totalShift₂Iso y).hom ≫
           (K.totalShift₁Iso x).hom⟦y⟧' ≫
           (shiftFunctorComm (CochainComplex C ℤ) x y).hom.app _) :=
-  congr_arg Iso.hom (totalShift₁Iso_trans_totalShift₂Iso K x y)
+  congr($(totalShift₁Iso_trans_totalShift₂Iso K x y).hom)
 
 end HomologicalComplex₂

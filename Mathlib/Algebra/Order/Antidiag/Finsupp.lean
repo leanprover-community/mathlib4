@@ -4,8 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Eric Wieser, Bhavik Mehta,
   Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Antidiag.Pi
-import Mathlib.Data.Finsupp.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Finsupp.Basic
+public import Mathlib.Algebra.Order.Antidiag.Pi
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Antidiagonal of finitely supported functions as finsets
@@ -23,8 +28,11 @@ We define it using `Finset.piAntidiag s n`, the corresponding antidiagonal in `�
 
 * `Finset.finsuppAntidiag s n`: Finset of all finitely supported functions `f : ι →₀ μ` with support
   contained in `s` and such that the sum of its values equals `n : μ`.
-
 -/
+
+@[expose] public section
+
+assert_not_exists Field
 
 open Finsupp Function
 
@@ -37,8 +45,8 @@ variable [DecidableEq ι] [AddCommMonoid μ] [HasAntidiagonal μ] [DecidableEq �
 
 /-- The finset of functions `ι →₀ μ` with support contained in `s` and sum equal to `n`. -/
 def finsuppAntidiag (s : Finset ι) (n : μ) : Finset (ι →₀ μ) :=
-  (piAntidiag s n).attach.map ⟨fun f ↦ ⟨s.filter (f.1 · ≠ 0), f.1, by
-    simpa using (mem_piAntidiag.1 f.2).2⟩, fun _ _ hfg ↦ Subtype.ext (congr_arg (⇑) hfg)⟩
+  (piAntidiag s n).attach.map ⟨fun f ↦ ⟨s.filter (f.val · ≠ 0), f.val, by
+    simpa using (mem_piAntidiag.1 f.property).2⟩, fun _ _ hfg ↦ Subtype.ext (congr_arg (⇑) hfg)⟩
 
 @[simp] lemma mem_finsuppAntidiag : f ∈ finsuppAntidiag s n ↔ s.sum f = n ∧ f.support ⊆ s := by
   simp [finsuppAntidiag, ← DFunLike.coe_fn_eq, subset_iff]
@@ -50,7 +58,7 @@ lemma mem_finsuppAntidiag' :
   rw [sum_of_support_subset (N := μ) f hf (fun _ x ↦ x) fun _ _ ↦ rfl]
 
 @[simp] lemma finsuppAntidiag_empty_zero : finsuppAntidiag (∅ : Finset ι) (0 : μ) = {0} := by
-  ext f; simp [finsuppAntidiag, ← DFunLike.coe_fn_eq (g := f), eq_comm]
+  ext f; simp
 
 @[simp] lemma finsuppAntidiag_empty_of_ne_zero (hn : n ≠ 0) :
     finsuppAntidiag (∅ : Finset ι) n = ∅ :=
@@ -82,6 +90,7 @@ theorem mem_finsuppAntidiag_insert {a : ι} {s : Finset ι}
       intro x hx
       rw [update_of_ne (ne_of_mem_of_not_mem hx h) n1 ⇑g]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem finsuppAntidiag_insert {a : ι} {s : Finset ι}
     (h : a ∉ s) (n : μ) :
     finsuppAntidiag (insert a s) n = (antidiagonal n).biUnion
@@ -96,14 +105,23 @@ theorem finsuppAntidiag_insert {a : ι} {s : Finset ι}
           · replace hf := mt (hf.2 ·) h
             replace hg := mt (hg.2 ·) h
             rw [notMem_support_iff.mp hf, notMem_support_iff.mp hg]
-          · simpa only [coe_update, Function.update, dif_neg hx] using hfg x)⟩) := by
+          · simpa only [coe_update, Function.update, dite_eq_right hx] using hfg x)⟩) := by
   ext f
   rw [mem_finsuppAntidiag_insert h, mem_biUnion]
   simp_rw [mem_map, mem_attach, true_and, Subtype.exists, Embedding.coeFn_mk, exists_prop, and_comm,
     eq_comm]
 
+@[gcongr]
+theorem finsuppAntidiag_mono {s t : Finset ι} (h : s ⊆ t) (n : μ) :
+    finsuppAntidiag s n ⊆ finsuppAntidiag t n := by
+  intro a
+  simp_rw [mem_finsuppAntidiag']
+  rintro ⟨hsum, hmem⟩
+  exact ⟨hsum, hmem.trans h⟩
+
 variable [AddCommMonoid μ'] [HasAntidiagonal μ'] [DecidableEq μ']
 
+set_option backward.isDefEq.respectTransparency false in
 -- This should work under the assumption that e is an embedding and an AddHom
 lemma mapRange_finsuppAntidiag_subset {e : μ ≃+ μ'} {s : Finset ι} {n : μ} :
     (finsuppAntidiag s n).map (mapRange.addEquiv e).toEmbedding ⊆ finsuppAntidiag s (e n) := by
@@ -139,7 +157,7 @@ variable [DecidableEq ι] [DecidableEq μ] [AddCommMonoid μ] [PartialOrder μ]
   [CanonicallyOrderedAdd μ] [HasAntidiagonal μ]
 
 @[simp] lemma finsuppAntidiag_zero (s : Finset ι) : finsuppAntidiag s (0 : μ) = {0} := by
-  ext f; simp [finsuppAntidiag, ← DFunLike.coe_fn_eq (g := f), -mem_piAntidiag, eq_comm]
+  ext f; simp [finsuppAntidiag, ← DFunLike.coe_fn_eq (g := f), eq_comm]
 
 end CanonicallyOrderedAddCommMonoid
 end Finset

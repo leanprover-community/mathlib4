@@ -3,8 +3,14 @@ Copyright (c) 2023 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
+module
+
+public meta import Aesop
+
 import Mathlib.Init
-import Aesop
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Matroid Rule Set

@@ -3,12 +3,19 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Bicategory.Basic
-import Mathlib.CategoryTheory.Monoidal.Category
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Basic
+public import Mathlib.CategoryTheory.Monoidal.Category
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Endomorphisms of an object in a bicategory, as a monoidal category.
 -/
+
+public section
 
 universe w v u
 
@@ -41,7 +48,7 @@ instance (X : C) : MonoidalCategory (X ⟶ X) where
   associator f g h := α_ f g h
   leftUnitor f := λ_ f
   rightUnitor f := ρ_ f
-  tensor_comp := by
+  tensorHom_comp_tensorHom := by
     intros
     dsimp only
     rw [Bicategory.whiskerLeft_comp, Bicategory.comp_whiskerRight, Category.assoc, Category.assoc,

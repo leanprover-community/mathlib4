@@ -3,15 +3,21 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Order.SuccPred.Archimedean
-import Mathlib.Algebra.Order.Monoid.Unbundled.TypeTags
+module
+
+public import Mathlib.Algebra.Order.Monoid.Unbundled.TypeTags
+public import Mathlib.Order.SuccPred.Archimedean
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Successor and predecessor on type tags
 
-This file declates successor and predecessor orders on type tags.
-
+This file declares successor and predecessor orders on type tags.
 -/
+
+public section
 
 variable {X : Type*}
 

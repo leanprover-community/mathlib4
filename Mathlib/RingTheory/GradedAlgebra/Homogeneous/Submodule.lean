@@ -3,8 +3,10 @@ Copyright (c) 2021 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Eric Wieser
 -/
-import Mathlib.RingTheory.GradedAlgebra.Basic
-import Mathlib.Algebra.GradedMulAction
+module
+
+public import Mathlib.Algebra.GradedMulAction
+public import Mathlib.RingTheory.GradedAlgebra.Basic
 
 /-!
 # Homogeneous submodules of a graded module
@@ -22,7 +24,7 @@ For any `p : Submodule A M`:
 ## Implementation notes
 
 The **notion** of homogeneous submodule does not rely on a graded ring, only a decomposition of the
-the module. However, most interesting properties of homogeneous submodules do rely on the base ring
+module. However, most interesting properties of homogeneous submodules do rely on the base ring
 being a graded ring. For technical reasons, we make `HomogeneousSubmodule` depend on a graded ring.
 For example, if the definition of a homogeneous submodule does not depend on a graded ring, the
 instance that `HomogeneousSubmodule` is a complete lattice cannot be synthesized due to
@@ -33,7 +35,9 @@ synthesization order.
 graded algebra, homogeneous
 -/
 
-open SetLike DirectSum Pointwise Set
+@[expose] public section
+
+open SetLike DirectSum Set
 
 variable {ιA ιM σA σM A M : Type*}
 
@@ -71,9 +75,11 @@ variable [VAdd ιA ιM] [GradedSMul 𝒜 ℳ]
 
 instance : SetLike (HomogeneousSubmodule 𝒜 ℳ) M where
   coe X := X.toSubmodule
-  coe_injective' := by
+  coe_injective := by
     rintro ⟨p, hp⟩ ⟨q, hq⟩ (h : (p : Set M) = q)
     simpa using h
+
+instance : PartialOrder (HomogeneousSubmodule 𝒜 ℳ) := .ofSetLike (HomogeneousSubmodule 𝒜 ℳ)
 
 instance : AddSubmonoidClass (HomogeneousSubmodule 𝒜 ℳ) M where
   zero_mem p := p.toSubmodule.zero_mem
@@ -96,7 +102,7 @@ theorem HomogeneousSubmodule.toSubmodule_injective :
 
 instance HomogeneousSubmodule.setLike : SetLike (HomogeneousSubmodule 𝒜 ℳ) M where
   coe p := p.toSubmodule
-  coe_injective' _ _ h := HomogeneousSubmodule.toSubmodule_injective 𝒜 ℳ <| SetLike.coe_injective h
+  coe_injective _ _ h := HomogeneousSubmodule.toSubmodule_injective 𝒜 ℳ <| SetLike.coe_injective h
 
 @[ext]
 theorem HomogeneousSubmodule.ext
@@ -112,7 +118,7 @@ theorem HomogeneousSubmodule.ext' {I J : HomogeneousSubmodule 𝒜 ℳ}
   ext
   rw [I.isHomogeneous.mem_iff, J.isHomogeneous.mem_iff]
   apply forall_congr'
-  exact fun i ↦ h i _ (decompose ℳ _ i).2
+  exact fun i ↦ h i _ (decompose ℳ _ i).property
 
 @[simp]
 theorem HomogeneousSubmodule.mem_toSubmodule_iff {I : HomogeneousSubmodule 𝒜 ℳ} {x : M} :

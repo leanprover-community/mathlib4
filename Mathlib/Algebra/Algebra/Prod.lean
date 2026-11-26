@@ -3,9 +3,12 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.Algebra.Equiv
-import Mathlib.Algebra.Algebra.Hom
-import Mathlib.Algebra.Module.Prod
+module
+
+public import Mathlib.Algebra.Algebra.Equiv
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The R-algebra structure on products of R-algebras
@@ -20,6 +23,8 @@ The R-algebra structure on `(i : I) → A i` when each `A i` is an R-algebra.
 * `AlgHom.prod`
 * `AlgEquiv.prodUnique` and `AlgEquiv.uniqueProd`
 -/
+
+@[expose] public section
 
 
 variable {R A B C : Type*}
@@ -73,7 +78,7 @@ theorem snd_apply (a) : snd R A B a = a.2 := rfl
 
 variable {R}
 
-/-- The `Pi.prod` of two morphisms is a morphism. -/
+/-- The `Function.prod` of two morphisms is a morphism. -/
 @[simps!]
 def prod (f : A →ₐ[R] B) (g : A →ₐ[R] C) : A →ₐ[R] B × C :=
   { f.toRingHom.prod g.toRingHom with
@@ -81,7 +86,7 @@ def prod (f : A →ₐ[R] B) (g : A →ₐ[R] C) : A →ₐ[R] B × C :=
       simp only [toRingHom_eq_coe, RingHom.toFun_eq_coe, RingHom.prod_apply, coe_toRingHom,
         commutes, Prod.algebraMap_apply] }
 
-theorem coe_prod (f : A →ₐ[R] B) (g : A →ₐ[R] C) : ⇑(f.prod g) = Pi.prod f g :=
+theorem coe_prod (f : A →ₐ[R] B) (g : A →ₐ[R] C) : ⇑(f.prod g) = Function.prod f g :=
   rfl
 
 @[simp]
@@ -120,8 +125,9 @@ variable {S T A B : Type*} [Semiring A] [Semiring B]
   [Semiring S] [Semiring T] [Algebra R S] [Algebra R T] [Algebra R A] [Algebra R B]
 
 /-- Product of algebra isomorphisms. -/
-def prodCongr (l : S ≃ₐ[R] A) (r : T ≃ₐ[R] B) : (S × T) ≃ₐ[R] A × B :=
-  .ofRingEquiv (f := RingEquiv.prodCongr l r) <| by simp
+def prodCongr (l : S ≃ₐ[R] A) (r : T ≃ₐ[R] B) : (S × T) ≃ₐ[R] A × B where
+  __ := RingEquiv.prodCongr l r
+  map_smul' := by simp
 
 variable (l : S ≃ₐ[R] A) (r : T ≃ₐ[R] B)
 
@@ -143,7 +149,7 @@ def prodUnique [Unique B] : (A × B) ≃ₐ[R] A where
   toFun := Prod.fst
   invFun x := (x, 0)
   __ := (RingEquiv.prodZeroRing A B).symm
-  commutes' _ := rfl
+  map_smul' _ _ := rfl
 
 /-- Multiplying by the trivial algebra from the left does not change the structure.
 This is the `AlgEquiv` version of `LinearEquiv.uniqueProd` and `RingEquiv.zeroRingProd.symm`.
@@ -153,6 +159,6 @@ def uniqueProd [Unique B] : (B × A) ≃ₐ[R] A where
   toFun := Prod.snd
   invFun x := (0, x)
   __ := (RingEquiv.zeroRingProd A B).symm
-  commutes' _ := rfl
+  map_smul' _ _ := rfl
 
 end AlgEquiv

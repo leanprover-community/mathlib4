@@ -3,9 +3,11 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
-import Mathlib.MeasureTheory.Measure.Haar.OfBasis
-import Mathlib.Probability.Independence.Basic
+module
+
+public import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
+public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
+public import Mathlib.Probability.Independence.Basic
 
 /-!
 # Probability density function
@@ -41,18 +43,14 @@ random variables with this distribution.
 * `MeasureTheory.pdf.IsUniform.integral_eq` : If `X` follows the uniform distribution with
   its pdf having support `s`, then `X` has expectation `(λ s)⁻¹ * ∫ x in s, x dx` where `λ`
   is the Lebesgue measure.
-
-## TODO
-
-Ultimately, we would also like to define characteristic functions to describe distributions as
-it exists for all random variables. However, to define this, we will need Fourier transforms
-which we currently do not have.
 -/
+
+@[expose] public section
 
 
 open scoped MeasureTheory NNReal ENNReal
 
-open TopologicalSpace MeasureTheory.Measure
+open TopologicalSpace MeasureTheory Measure ProbabilityTheory
 
 noncomputable section
 
@@ -84,7 +82,6 @@ theorem hasPDF_iff_of_aemeasurable (hX : AEMeasurable X ℙ) :
   simp only [hX, true_and]
 
 variable (X ℙ μ) in
-@[measurability]
 theorem HasPDF.aemeasurable [HasPDF X ℙ μ] : AEMeasurable X ℙ := HasPDF.aemeasurable' μ
 
 instance HasPDF.haveLebesgueDecomposition [HasPDF X ℙ μ] : (map X ℙ).HaveLebesgueDecomposition μ :=
@@ -92,11 +89,16 @@ instance HasPDF.haveLebesgueDecomposition [HasPDF X ℙ μ] : (map X ℙ).HaveLe
 
 theorem HasPDF.absolutelyContinuous [HasPDF X ℙ μ] : map X ℙ ≪ μ := HasPDF.absolutelyContinuous'
 
-/-- A random variable that `HasPDF` is quasi-measure preserving. -/
-theorem HasPDF.quasiMeasurePreserving_of_measurable (X : Ω → E) (ℙ : Measure Ω) (μ : Measure E)
-    [HasPDF X ℙ μ] (h : Measurable X) : QuasiMeasurePreserving X ℙ μ :=
-  { measurable := h
+/-- A random variable that `HasPDF` is quasi-measure-preserving. -/
+theorem HasPDF.quasiMeasurePreserving (X : Ω → E) (ℙ : Measure Ω) (μ : Measure E) [HasPDF X ℙ μ] :
+    QuasiMeasurePreserving X ℙ μ :=
+  { aemeasurable := HasPDF.aemeasurable X ℙ μ
     absolutelyContinuous := HasPDF.absolutelyContinuous .. }
+
+@[deprecated HasPDF.quasiMeasurePreserving +typeChanged (since := "2026-09-06")]
+theorem HasPDF.quasiMeasurePreserving_of_measurable (X : Ω → E) (ℙ : Measure Ω) (μ : Measure E)
+    [HasPDF X ℙ μ] (_h : Measurable X) : QuasiMeasurePreserving X ℙ μ :=
+  HasPDF.quasiMeasurePreserving X ℙ μ
 
 theorem HasPDF.congr (hXY : X =ᵐ[ℙ] Y) [hX : HasPDF X ℙ μ] : HasPDF Y ℙ μ :=
   ⟨(HasPDF.aemeasurable X ℙ μ).congr hXY, ℙ.map_congr hXY ▸ hX.haveLebesgueDecomposition,
@@ -124,32 +126,14 @@ def pdf {_ : MeasurableSpace Ω} (X : Ω → E) (ℙ : Measure Ω) (μ : Measure
 theorem pdf_def {_ : MeasurableSpace Ω} {ℙ : Measure Ω} {μ : Measure E} {X : Ω → E} :
     pdf X ℙ μ = (map X ℙ).rnDeriv μ := rfl
 
-theorem pdf_of_not_aemeasurable {_ : MeasurableSpace Ω} {ℙ : Measure Ω} {μ : Measure E}
-    {X : Ω → E} (hX : ¬AEMeasurable X ℙ) : pdf X ℙ μ =ᵐ[μ] 0 := by
-  rw [pdf_def, map_of_not_aemeasurable hX]
-  exact rnDeriv_zero μ
-
 theorem pdf_of_not_haveLebesgueDecomposition {_ : MeasurableSpace Ω} {ℙ : Measure Ω}
     {μ : Measure E} {X : Ω → E} (h : ¬(map X ℙ).HaveLebesgueDecomposition μ) : pdf X ℙ μ = 0 :=
   rnDeriv_of_not_haveLebesgueDecomposition h
 
-theorem aemeasurable_of_pdf_ne_zero {m : MeasurableSpace Ω} {ℙ : Measure Ω} {μ : Measure E}
-    (X : Ω → E) (h : ¬pdf X ℙ μ =ᵐ[μ] 0) : AEMeasurable X ℙ := by
-  contrapose! h
-  exact pdf_of_not_aemeasurable h
-
-theorem hasPDF_of_pdf_ne_zero {m : MeasurableSpace Ω} {ℙ : Measure Ω} {μ : Measure E} {X : Ω → E}
-    (hac : map X ℙ ≪ μ) (hpdf : ¬pdf X ℙ μ =ᵐ[μ] 0) : HasPDF X ℙ μ := by
-  refine ⟨?_, ?_, hac⟩
-  · exact aemeasurable_of_pdf_ne_zero X hpdf
-  · contrapose! hpdf
-    have := pdf_of_not_haveLebesgueDecomposition hpdf
-    filter_upwards using congrFun this
-
-@[measurability]
+@[fun_prop]
 theorem measurable_pdf {m : MeasurableSpace Ω} (X : Ω → E) (ℙ : Measure Ω)
-    (μ : Measure E := by volume_tac) : Measurable (pdf X ℙ μ) := by
-  exact measurable_rnDeriv _ _
+    (μ : Measure E := by volume_tac) : Measurable (pdf X ℙ μ) :=
+  measurable_rnDeriv _ _
 
 theorem withDensity_pdf_le_map {_ : MeasurableSpace Ω} (X : Ω → E) (ℙ : Measure Ω)
     (μ : Measure E := by volume_tac) : μ.withDensity (pdf X ℙ μ) ≤ map X ℙ :=
@@ -246,8 +230,9 @@ theorem quasiMeasurePreserving_hasPDF (hg : QuasiMeasurePreserving g μ ν)
     (hmap : (map g (map X ℙ)).HaveLebesgueDecomposition ν) : HasPDF (g ∘ X) ℙ ν := by
   have hgm : AEMeasurable g (map X ℙ) := hg.aemeasurable.mono_ac HasPDF.absolutelyContinuous
   rw [hasPDF_iff, ← AEMeasurable.map_map_of_aemeasurable hgm (HasPDF.aemeasurable X ℙ μ)]
-  refine ⟨hg.measurable.comp_aemeasurable (HasPDF.aemeasurable _ _ μ), hmap, ?_⟩
-  exact (HasPDF.absolutelyContinuous.map hg.1).trans hg.2
+  refine ⟨hgm.comp_aemeasurable (HasPDF.aemeasurable _ _ μ), hmap, ?_⟩
+  exact HasPDF.absolutelyContinuous.map_of_aemeasurable hg.aemeasurable
+    |>.trans hg.absolutelyContinuous
 
 theorem quasiMeasurePreserving_hasPDF' [SFinite ℙ] [SigmaFinite ν]
     (hg : QuasiMeasurePreserving g μ ν) : HasPDF (g ∘ X) ℙ ν :=
@@ -281,19 +266,17 @@ theorem integral_mul_eq_integral [HasPDF X ℙ] : ∫ x, x * (pdf X ℙ volume x
 theorem hasFiniteIntegral_mul {f : ℝ → ℝ} {g : ℝ → ℝ≥0∞} (hg : pdf X ℙ =ᵐ[volume] g)
     (hgi : ∫⁻ x, ‖f x‖ₑ * g x ≠ ∞) :
     HasFiniteIntegral fun x => f x * (pdf X ℙ volume x).toReal := by
-  rw [hasFiniteIntegral_iff_enorm]
+  rw [hasFiniteIntegral_iff_eNorm]
   have : (fun x => ‖f x‖ₑ * g x) =ᵐ[volume] fun x => ‖f x * (pdf X ℙ volume x).toReal‖ₑ := by
     refine ae_eq_trans ((ae_eq_refl _).fun_mul (ae_eq_trans hg.symm ofReal_toReal_ae_eq.symm)) ?_
-    simp_rw [← smul_eq_mul, enorm_smul, smul_eq_mul]
+    simp_rw [← smul_eq_mul, eNorm_smul, smul_eq_mul]
     refine .fun_mul (ae_eq_refl _) ?_
-    simp only [Real.enorm_eq_ofReal ENNReal.toReal_nonneg, ae_eq_refl]
+    simp only [Real.eNorm_eq_ofReal ENNReal.toReal_nonneg, ae_eq_refl]
   rwa [lt_top_iff_ne_top, ← lintegral_congr_ae this]
 
 end Real
 
 section TwoVariables
-
-open ProbabilityTheory
 
 variable {F : Type*} [MeasurableSpace F] {ν : Measure F} {X : Ω → E} {Y : Ω → F}
 
@@ -321,3 +304,44 @@ end TwoVariables
 end pdf
 
 end MeasureTheory
+
+section Group
+
+namespace ProbabilityTheory
+
+variable {Ω G : Type*} {mΩ : MeasurableSpace Ω} {ℙ : Measure Ω} [Group G] {mG : MeasurableSpace G}
+  [MeasurableMul₂ G] [MeasurableInv G] {μ : Measure G} [IsMulLeftInvariant μ] {X Y : Ω → G}
+
+@[to_additive]
+theorem IndepFun.mul_hasPDF' [SFinite μ] [HasPDF X ℙ μ] [HasPDF Y ℙ μ]
+    (σX : SigmaFinite (ℙ.map X)) (σY : SigmaFinite (ℙ.map Y)) (hXY : IndepFun X Y ℙ) :
+    HasPDF (X * Y) ℙ μ := by
+  have : AEMeasurable X ℙ := HasPDF.aemeasurable' μ
+  have : AEMeasurable Y ℙ := HasPDF.aemeasurable' μ
+  rw [hasPDF_iff_of_aemeasurable (by fun_prop),
+    hXY.map_mul_eq_map_mconv_map₀' (by fun_prop) (by fun_prop) σX σY]
+  refine ⟨?_, mconv_absolutelyContinuous HasPDF.absolutelyContinuous⟩
+  apply HaveLebesgueDecomposition.mconv <;> exact HasPDF.absolutelyContinuous
+
+@[to_additive]
+theorem IndepFun.mul_hasPDF [SFinite μ] [HasPDF X ℙ μ] [HasPDF Y ℙ μ] [IsFiniteMeasure ℙ]
+  (hXY : IndepFun X Y ℙ) : HasPDF (X * Y) ℙ μ := by
+  apply hXY.mul_hasPDF' <;> apply IsFiniteMeasure.toSigmaFinite
+
+@[to_additive]
+theorem IndepFun.pdf_mul_eq_mlconvolution_pdf' [SigmaFinite μ] [HasPDF X ℙ μ] [HasPDF Y ℙ μ]
+    (σX : SigmaFinite (ℙ.map X)) (σY : SigmaFinite (ℙ.map Y)) (hXY : IndepFun X Y ℙ) :
+    pdf (X * Y) ℙ μ =ᵐ[μ] pdf X ℙ μ ⋆ₘₗ[μ] pdf Y ℙ μ := by
+  rw [pdf, hXY.map_mul_eq_map_mconv_map₀' (HasPDF.aemeasurable' μ) (HasPDF.aemeasurable' μ) σX σY]
+  apply rnDeriv_mconv' <;> exact HasPDF.absolutelyContinuous
+
+@[to_additive]
+theorem IndepFun.pdf_mul_eq_mlconvolution_pdf [SFinite μ] [HasPDF X ℙ μ] [HasPDF Y ℙ μ]
+    [IsFiniteMeasure ℙ] (hXY : IndepFun X Y ℙ) :
+    pdf (X * Y) ℙ μ =ᵐ[μ] pdf X ℙ μ ⋆ₘₗ[μ] pdf Y ℙ μ := by
+  rw [pdf, hXY.map_mul_eq_map_mconv_map₀ (HasPDF.aemeasurable' μ) (HasPDF.aemeasurable' μ)]
+  apply rnDeriv_mconv <;> exact HasPDF.absolutelyContinuous
+
+end ProbabilityTheory
+
+end Group

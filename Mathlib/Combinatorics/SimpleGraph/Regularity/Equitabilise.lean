@@ -3,8 +3,11 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
+module
+
+public import Mathlib.Order.Partition.Equipartition
+
 import Mathlib.Algebra.Order.Ring.Canonical
-import Mathlib.Order.Partition.Equipartition
 
 /-!
 # Equitabilising a partition
@@ -26,6 +29,8 @@ This file allows to blow partitions up into parts of controlled size. Given a pa
 [Yaël Dillies, Bhavik Mehta, *Formalising Szemerédi’s Regularity Lemma in Lean*][srl_itp]
 -/
 
+@[expose] public section
+
 
 open Finset Nat
 
@@ -46,7 +51,7 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = #s) :
   -- Get rid of the easy case `m = 0`
   obtain rfl | m_pos := m.eq_zero_or_pos
   · refine ⟨⊥, by simp, ?_, by simpa [Finset.filter_true_of_mem] using hs.symm⟩
-    simp only [le_zero_iff, card_eq_zero, mem_biUnion, mem_filter, id,
+    simp only [nonpos_iff_eq_zero, card_eq_zero, mem_biUnion, mem_filter,
       and_assoc, sdiff_eq_empty_iff_subset, subset_iff]
     exact fun x hx a ha =>
       ⟨{a}, mem_map_of_mem _ (P.le hx ha), singleton_subset_iff.2 ha, mem_singleton_self _⟩
@@ -80,7 +85,7 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = #s) :
     least one part `u` of `P` has size `m + 1` (in which case we take `t` to be an arbitrary subset
     of `u` of size `n`). The rest of each branch is just tedious calculations to satisfy the
     induction hypothesis. -/
-  by_cases h : ∀ u ∈ P.parts, #u < m + 1
+  by_cases! h : ∀ u ∈ P.parts, #u < m + 1
   · obtain ⟨t, hts, htn⟩ := exists_subset_card_eq (hn₂.trans_eq hs)
     have ht : t.Nonempty := by rwa [← card_pos, htn]
     have hcard : ite (0 < a) (a - 1) a * m + ite (0 < a) b (b - 1) * (m + 1) = #(s \ t) := by
@@ -94,11 +99,10 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = #s) :
     · exact fun x hx => (card_le_card sdiff_subset).trans (Nat.lt_succ_iff.1 <| h _ hx)
     simp_rw [extend_parts, filter_insert, htn, n, m.succ_ne_self.symm.ite_eq_right_iff]
     split_ifs with ha
-    · rw [hR₃, if_pos ha]
-    rw [card_insert_of_notMem, hR₃, if_neg ha, tsub_add_cancel_of_le]
+    · rw [hR₃, ite_eq_left ha]
+    rw [card_insert_of_notMem, hR₃, ite_eq_right ha, tsub_add_cancel_of_le]
     · exact hab.resolve_left ha
     · intro H; exact ht.ne_empty (le_sdiff_right.1 <| R.le <| filter_subset _ _ H)
-  push_neg at h
   obtain ⟨u, hu₁, hu₂⟩ := h
   obtain ⟨t, htu, htn⟩ := exists_subset_card_eq (hn₁.trans hu₂)
   have ht : t.Nonempty := by rwa [← card_pos, htn]
@@ -114,7 +118,7 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = #s) :
   · conv in _ ∈ _ => rw [← insert_erase hu₁]
     simp only [mem_insert, forall_eq_or_imp, extend_parts]
     refine ⟨?_, fun x hx => (card_le_card ?_).trans <| hR₂ x ?_⟩
-    · simp only [filter_insert, if_pos htu, biUnion_insert, id]
+    · simp only [filter_insert, ite_eq_left htu, biUnion_insert, id]
       obtain rfl | hut := eq_or_ne u t
       · rw [sdiff_eq_empty_iff_subset.2 subset_union_left]
         exact bot_le
@@ -132,8 +136,8 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = #s) :
             P.disjoint (mem_of_mem_erase hx) hu₁ <| ne_of_mem_erase hx).sdiff_eq_left⟩
   simp only [extend_parts, filter_insert, htn, hn, m.succ_ne_self.symm.ite_eq_right_iff]
   split_ifs with h
-  · rw [hR₃, if_pos h]
-  · rw [card_insert_of_notMem, hR₃, if_neg h, Nat.sub_add_cancel (hab.resolve_left h)]
+  · rw [hR₃, ite_eq_left h]
+  · rw [card_insert_of_notMem, hR₃, ite_eq_right h, Nat.sub_add_cancel (hab.resolve_left h)]
     intro H; exact ht.ne_empty (le_sdiff_right.1 <| R.le <| filter_subset _ _ H)
 
 variable (h : a * m + b * (m + 1) = #s)

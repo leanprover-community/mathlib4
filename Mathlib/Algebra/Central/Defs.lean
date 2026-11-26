@@ -3,8 +3,9 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
+module
 
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 
 /-!
 # Central Algebras
@@ -51,9 +52,11 @@ where `FiniteDimensional k D` is almost always assumed in most references, but s
 need this assumption.
 
 ## Tags
-central algebra, center, simple ring, central simple algebra
 
+central algebra, center, simple ring, central simple algebra
 -/
+
+public section
 
 universe u v
 
@@ -64,4 +67,3 @@ the center of `D` is the image of `K` in `D`.
 class Algebra.IsCentral
     (K : Type u) [CommSemiring K] (D : Type v) [Semiring D] [Algebra K D] : Prop where
   out : Subalgebra.center K D ≤ ⊥
-

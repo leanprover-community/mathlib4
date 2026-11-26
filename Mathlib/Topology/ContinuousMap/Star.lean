@@ -3,14 +3,17 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Nicolò Cavalleri
 -/
-import Mathlib.Topology.Algebra.Star
-import Mathlib.Algebra.Star.StarAlgHom
-import Mathlib.Topology.ContinuousMap.Algebra
+module
+
+public import Mathlib.Algebra.Star.StarAlgHom
+public import Mathlib.Topology.Algebra.Star
+public import Mathlib.Topology.ContinuousMap.Algebra
 
 /-!
 # Star structures on continuous maps.
-
 -/
+
+@[expose] public section
 
 namespace ContinuousMap
 
@@ -24,7 +27,6 @@ If `β` is a ⋆-ring, then `C(α, β)` inherits a ⋆-ring structure.
 
 If `β` is a ⋆-ring and a ⋆-module over `R`, then the space of continuous functions from `α` to `β`
 is a ⋆-module over `R`.
-
 -/
 
 

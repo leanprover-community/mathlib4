@@ -3,9 +3,10 @@ Copyright (c) 2024 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.FieldTheory.AlgebraicClosure
-import Mathlib.RingTheory.Algebraic.Integral
-import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
+module
+
+public import Mathlib.FieldTheory.AlgebraicClosure
+public import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
 
 /-!
 # Algebraic independence persists to the algebraic closure
@@ -19,6 +20,8 @@ import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
 * `AlgebraicIndependent.algebraicClosure`: an algebraically independent family remains
   algebraically independent over the algebraic closure.
 -/
+
+public section
 
 open Function Algebra
 
@@ -50,8 +53,9 @@ theorem extendScalars [alg : Algebra.IsAlgebraic R S] : AlgebraicIndependent S x
     have := Algebra.IsAlgebraic.nontrivial R S
     have := hx.algebraMap_injective.nontrivial
     exact adjoin_induction (fun _ h ↦ isAlgebraic_algebraMap (⟨_, subset_adjoin h⟩ : Rt))
-      (fun z ↦ ((alg.1 z).algHom (IsScalarTower.toAlgHom R S A)).extendScalars fun _ _ eq ↦ by
-        exact hx.algebraMap_injective congr($eq.1)) (fun _ _ _ _ ↦ .add) (fun _ _ _ _ ↦ .mul) hy⟩
+      (fun z ↦ ((alg.isAlgebraic z).algHom (IsScalarTower.toAlgHom R S A)).extendScalars
+        fun _ _ eq ↦ by exact hx.algebraMap_injective congr($(eq).val))
+      (fun _ _ _ _ ↦ .add) (fun _ _ _ _ ↦ .mul) hy⟩
   change Transcendental St (x i)
   exact (hx.transcendental_adjoin hi).extendScalars _
 

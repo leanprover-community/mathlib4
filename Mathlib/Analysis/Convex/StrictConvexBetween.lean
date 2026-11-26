@@ -3,20 +3,25 @@ Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Analysis.Convex.Between
-import Mathlib.Analysis.Convex.StrictConvexSpace
-import Mathlib.Analysis.Normed.Affine.AddTorsor
-import Mathlib.Analysis.Normed.Affine.Isometry
+module
+
+public import Mathlib.Analysis.Convex.Between
+public import Mathlib.Analysis.Convex.StrictConvexSpace
+public import Mathlib.Analysis.Normed.Affine.AddTorsor
+public import Mathlib.Analysis.Normed.Affine.Isometry
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Betweenness in affine spaces for strictly convex spaces
 
 This file proves results about betweenness for points in an affine space for a strictly convex
 space.
-
 -/
 
-open Metric
+@[expose] public section
+
 open scoped Convex
 
 variable {V P : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
@@ -119,7 +124,7 @@ lemma eq_lineMap_of_dist_eq_mul_of_dist_eq_mul (hxy : dist x y = r * dist x z)
   · rw [← dist_ne_zero] at hne
     obtain ⟨a, b, _, hb, _, H⟩ := this
     rw [smul_zero, zero_add] at H
-    have H' := congr_arg norm H
+    have H' := congr(norm $H)
     rw [norm_smul, Real.norm_of_nonneg hb, ← dist_eq_norm_vsub', ← dist_eq_norm_vsub', hxy,
       mul_left_inj' hne] at H'
     rw [AffineMap.lineMap_apply, ← H', H, vsub_vadd]

@@ -3,13 +3,21 @@ Copyright (c) 2024 PFR contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: PFR contributors
 -/
-import Mathlib.Algebra.Notation.Indicator
+module
+
+public import Mathlib.Algebra.Notation.Indicator
+public import Mathlib.Topology.Clopen
+
 import Mathlib.Topology.Piecewise
-import Mathlib.Topology.Clopen
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Continuity of indicator functions
 -/
+
+public section
 
 open Set
 open scoped Topology

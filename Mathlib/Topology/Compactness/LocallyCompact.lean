@@ -3,12 +3,20 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Topology.Compactness.Compact
+module
+
+public import Mathlib.Topology.Compactness.Compact
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Locally compact spaces
 
 This file contains basic results about locally compact spaces.
 -/
+
+public section
 
 open Set Filter Topology TopologicalSpace
 
@@ -116,9 +124,9 @@ instance Pi.locallyCompactSpace [∀ i, CompactSpace (X i)] : LocallyCompactSpac
       rw [← Set.univ_pi_ite]
       refine isCompact_univ_pi fun i => ?_
       by_cases h : i ∈ s
-      · rw [if_pos h]
+      · rw [ite_eq_left h]
         exact hc i
-      · rw [if_neg h]
+      · rw [ite_eq_right h]
         exact CompactSpace.isCompact_univ⟩
 
 instance Function.locallyCompactSpace_of_finite [Finite ι] [LocallyCompactSpace Y] :
@@ -160,6 +168,17 @@ lemma exists_mem_nhdsSet_isCompact_mapsTo [LocallyCompactPair X Y] {f : X → Y}
   exact ⟨_, hKs, s.isCompact_biUnion fun x hx ↦ hVc x (hsK x hx), mapsTo_iUnion₂.2 fun x hx ↦
     hVU x (hsK x hx)⟩
 
+/-- If `(K, Y)` is a locally compact pair, where `K ⊆ X` carries the subspace topology, then for
+every continuous `f : X → Y`, every `x ∈ K` and every neighbourhood `V` of `f x` there is a compact
+set `L ⊆ X`, which is a neighbourhood of `x` within `K`, such that `f` maps `L` into `V`. -/
+theorem exists_mem_nhdsWithin_isCompact_mapsTo {K : Set X} [LocallyCompactPair K Y] {f : X → Y}
+    (hf : Continuous f) {x : X} (hx : x ∈ K) {V : Set Y} (hV : V ∈ 𝓝 (f x)) :
+    ∃ L ∈ 𝓝[K] x, IsCompact L ∧ MapsTo f L V := by
+  obtain ⟨L, hL, hLc, hLV⟩ :=
+    exists_mem_nhds_isCompact_mapsTo (x := ⟨x, hx⟩) (hf.comp continuous_subtypeVal) hV
+  exact ⟨(↑) '' L, mem_nhds_subtype_iff_nhdsWithin.1 hL, hLc.image continuous_subtypeVal,
+    mapsTo_image_iff.2 hLV⟩
+
 /-- In a locally compact space, for every containment `K ⊆ U` of a compact set `K` in an open
   set `U`, there is a compact neighborhood `L` such that `K ⊆ L ⊆ U`: equivalently, there is a
   compact `L` such that `K ⊆ interior L` and `L ⊆ U`.
@@ -169,6 +188,15 @@ theorem exists_compact_between [LocallyCompactSpace X] {K U : Set X} (hK : IsCom
     (hU : IsOpen U) (h_KU : K ⊆ U) : ∃ L, IsCompact L ∧ K ⊆ interior L ∧ L ⊆ U :=
   let ⟨L, hKL, hL, hLU⟩ := exists_mem_nhdsSet_isCompact_mapsTo continuous_id hK hU h_KU
   ⟨L, hL, subset_interior_iff_mem_nhdsSet.2 hKL, hLU⟩
+
+/-- In a (possibly non-Hausdorff) locally compact space, for every compact set `K`,
+`𝓝ˢ K` has a basis consisting of compact sets. -/
+theorem IsCompact.nhdsSet_basis_isCompact [LocallyCompactSpace X] {K : Set X} (hK : IsCompact K) :
+    (𝓝ˢ K).HasBasis (fun L ↦ L ∈ 𝓝ˢ K ∧ IsCompact L) id := by
+  rw [hasBasis_self, (hasBasis_nhdsSet _).forall_iff (by grind)]
+  intro U ⟨hU, h_KU⟩
+  obtain ⟨L, hL, hKL, hLU⟩ := exists_compact_between hK hU h_KU
+  exact ⟨L, by rwa [← subset_interior_iff_mem_nhdsSet], hL, hLU⟩
 
 theorem IsOpenQuotientMap.locallyCompactSpace [LocallyCompactSpace X] {f : X → Y}
     (hf : IsOpenQuotientMap f) : LocallyCompactSpace Y where

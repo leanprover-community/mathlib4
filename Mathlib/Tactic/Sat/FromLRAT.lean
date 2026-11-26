@@ -3,8 +3,10 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.Tactic.ByContra
+module
+
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Tactic.Push
 
 /-!
 # `lrat_proof` command
@@ -39,6 +41,8 @@ foo : ∀ (a a_1 : Prop), (¬a ∧ ¬a_1 ∨ a ∧ ¬a_1) ∨ ¬a ∧ a_1 ∨ a 
 * You can use the `include_str` macro in place of the two strings
   to load CNF / LRAT files from disk.
 -/
+
+@[expose] public meta section
 
 open Lean hiding Literal
 open Std (HashMap)
@@ -92,9 +96,9 @@ structure Fmla.subsumes (f f' : Fmla) : Prop where
 
 theorem Fmla.subsumes_self (f : Fmla) : f.subsumes f := ⟨fun _ h ↦ h⟩
 theorem Fmla.subsumes_left (f f₁ f₂ : Fmla) (H : f.subsumes (f₁.and f₂)) : f.subsumes f₁ :=
-  ⟨fun _ h ↦ H.1 _ <| List.mem_append.2 <| Or.inl h⟩
+  ⟨fun _ h ↦ H.prop _ <| List.mem_append.2 <| Or.inl h⟩
 theorem Fmla.subsumes_right (f f₁ f₂ : Fmla) (H : f.subsumes (f₁.and f₂)) : f.subsumes f₂ :=
-  ⟨fun _ h ↦ H.1 _ <| List.mem_append.2 <| Or.inr h⟩
+  ⟨fun _ h ↦ H.prop _ <| List.mem_append.2 <| Or.inr h⟩
 
 /-- A valuation is an assignment of values to all the propositional variables. -/
 def Valuation := Nat → Prop
@@ -111,6 +115,7 @@ all literals in the clause are falsified. -/
 def Valuation.satisfies (v : Valuation) : Clause → Prop
   | [] => False
   | l::c => v.neg l → v.satisfies c
+termination_by structural ps => ps
 
 /-- `v.satisfies_fmla f` asserts that formula `f` is satisfied by the valuation.
 A formula is satisfied if all clauses in it are satisfied. -/
@@ -124,7 +129,7 @@ def Fmla.proof (f : Fmla) (c : Clause) : Prop :=
 /-- If `f` subsumes `c` (i.e. `c ∈ f`), then `f.proof c`. -/
 theorem Fmla.proof_of_subsumes {f : Fmla} {c : Clause}
     (H : Fmla.subsumes f (Fmla.one c)) : f.proof c :=
-  fun _ h ↦ h.1 _ <| H.1 _ <| List.Mem.head ..
+  fun _ h ↦ h.prop _ <| H.prop _ <| List.Mem.head ..
 
 /-- The core unit-propagation step.
 
@@ -146,6 +151,7 @@ This is used to introduce assumptions about the first `n` values of `v` during r
 def Valuation.implies (v : Valuation) (p : Prop) : List Prop → Nat → Prop
   | [], _ => p
   | a::as, n => (v n ↔ a) → v.implies p as (n + 1)
+termination_by structural ps => ps
 
 /-- `Valuation.mk [a, b, c]` is a valuation which is `a` at 0, `b` at 1 and `c` at 2, and false
 everywhere else. -/
@@ -153,6 +159,7 @@ def Valuation.mk : List Prop → Valuation
   | [], _ => False
   | a::_, 0 => a
   | _::as, n + 1 => mk as n
+termination_by structural ps => ps
 
 /-- The fundamental relationship between `mk` and `implies`:
 `(mk ps).implies p ps 0` is equivalent to `p`. -/
@@ -167,7 +174,7 @@ theorem Valuation.mk_implies {p} {as ps} (as₁) : as = List.reverseAux as₁ ps
       ∀ bs, mk (as₁.reverseAux bs) n' ↔ mk bs n from this 0 _ rfl (a::as)
     induction as₁ with
     | nil => simp
-    | cons b as₁ ih => simpa using fun n bs ↦ ih (n + 1) _ (Nat.succ_add ..) _
+    | cons b as₁ ih => simpa using! fun n bs ↦ ih (n + 1) _ (Nat.succ_add ..) _
 
 /-- Asserts that `¬⟦f⟧_v` implies `p`. -/
 structure Fmla.reify (v : Valuation) (f : Fmla) (p : Prop) : Prop where
@@ -180,15 +187,15 @@ Equivalently, there exists a valuation `v` which agrees with `ps`,
 and every such valuation yields `¬⟦f⟧_v` because `f` is unsatisfiable. -/
 theorem Fmla.refute {p : Prop} {ps} (f : Fmla) (hf : f.proof [])
     (hv : ∀ v, Valuation.implies v (Fmla.reify v f p) ps 0) : p :=
-  (Valuation.mk_implies [] rfl (hv _)).1 (hf _)
+  (Valuation.mk_implies [] rfl (hv _)).prop (hf _)
 
 /-- Negation turns AND into OR, so `¬⟦f₁ ∧ f₂⟧_v ≡ ¬⟦f₁⟧_v ∨ ¬⟦f₂⟧_v`. -/
 theorem Fmla.reify_or {f₁ : Fmla} {a : Prop} {f₂ : Fmla} {b : Prop}
     (h₁ : Fmla.reify v f₁ a) (h₂ : Fmla.reify v f₂ b) : Fmla.reify v (f₁.and f₂) (a ∨ b) := by
   refine ⟨fun H ↦ by_contra fun hn ↦ H ⟨fun c h ↦ by_contra fun hn' ↦ ?_⟩⟩
   rcases List.mem_append.1 h with h | h
-  · exact hn <| Or.inl <| h₁.1 fun Hc ↦ hn' <| Hc.1 _ h
-  · exact hn <| Or.inr <| h₂.1 fun Hc ↦ hn' <| Hc.1 _ h
+  · exact hn <| Or.inl <| h₁.prop fun Hc ↦ hn' <| Hc.prop _ h
+  · exact hn <| Or.inr <| h₂.prop fun Hc ↦ hn' <| Hc.prop _ h
 
 /-- Asserts that `¬⟦c⟧_v` implies `p`. -/
 structure Clause.reify (v : Valuation) (c : Clause) (p : Prop) : Prop where
@@ -197,7 +204,7 @@ structure Clause.reify (v : Valuation) (c : Clause) (p : Prop) : Prop where
 /-- Reification of a single clause formula. -/
 theorem Fmla.reify_one {c : Clause} {a : Prop} (h : Clause.reify v c a) :
     Fmla.reify v (Fmla.one c) a :=
-  ⟨fun H ↦ h.1 fun h ↦ H ⟨fun | _, List.Mem.head .. => h⟩⟩
+  ⟨fun H ↦ h.prop fun h ↦ H ⟨fun | _, List.Mem.head .. => h⟩⟩
 
 /-- Asserts that `¬⟦l⟧_v` implies `p`. -/
 structure Literal.reify (v : Valuation) (l : Literal) (p : Prop) : Prop where
@@ -207,7 +214,7 @@ structure Literal.reify (v : Valuation) (l : Literal) (p : Prop) : Prop where
 theorem Clause.reify_and {l : Literal} {a : Prop} {c : Clause} {b : Prop}
     (h₁ : Literal.reify v l a) (h₂ : Clause.reify v c b) :
     Clause.reify v (Clause.cons l c) (a ∧ b) :=
-  ⟨fun H ↦ ⟨h₁.1 (by_contra fun hn ↦ H hn.elim), h₂.1 fun h ↦ H fun _ ↦ h⟩⟩
+  ⟨fun H ↦ ⟨h₁.prop (by_contra fun hn ↦ H hn.elim), h₂.prop fun h ↦ H fun _ ↦ h⟩⟩
 
 /-- The reification of the empty clause is `True`: `¬⟦⊥⟧_v ≡ True`. -/
 theorem Clause.reify_zero : Clause.reify v Clause.nil True := ⟨fun _ ↦ trivial⟩
@@ -215,7 +222,7 @@ theorem Clause.reify_zero : Clause.reify v Clause.nil True := ⟨fun _ ↦ trivi
 /-- The reification of a singleton clause `¬⟦l⟧_v ≡ ¬⟦l⟧_v`. -/
 theorem Clause.reify_one {l : Literal} {a : Prop}
     (h₁ : Literal.reify v l a) : Clause.reify v (Clause.nil.cons l) a :=
-  ⟨fun H ↦ ((Clause.reify_and h₁ Clause.reify_zero).1 H).1⟩
+  ⟨fun H ↦ ((Clause.reify_and h₁ Clause.reify_zero).prop H).1⟩
 
 /-- The reification of a positive literal `¬⟦a⟧_v ≡ ¬a`. -/
 theorem Literal.reify_pos {a : Prop} {n : ℕ} (h : v n ↔ a) : (Literal.pos n).reify v ¬a := ⟨mt h.2⟩
@@ -437,15 +444,15 @@ partial def buildReify (ctx ctx' proof : Expr) (nvars : Nat) : Expr × Expr := I
     pr := mkLambda `h default ty pr
   pr := mkLambda `v default (mkConst ``Sat.Valuation) pr
   let mut e := e.lowerLooseBVars (nvars+1) (nvars+1)
-  let cons := mkApp (mkConst ``List.cons [levelZero]) (mkSort levelZero)
-  let nil := mkApp (mkConst ``List.nil [levelZero]) (mkSort levelZero)
+  let cons := mkApp (mkConst ``List.cons [.zero]) (mkSort .zero)
+  let nil := mkApp (mkConst ``List.nil [.zero]) (mkSort .zero)
   let rec mkPS depth e
   | 0 => e
   | n + 1 => mkPS (depth+1) (mkApp2 cons (mkBVar depth) e) n
   pr := mkApp5 (mkConst ``Sat.Fmla.refute) e (mkPS 0 nil nvars) ctx proof pr
   for _ in [0:nvars] do
-    e := mkForall `a default (mkSort levelZero) e
-    pr := mkLambda `a default (mkSort levelZero) pr
+    e := mkForall `a default (mkSort .zero) e
+    pr := mkLambda `a default (mkSort .zero) pr
   pure (e, pr)
 where
   /-- The `v` variable under the `a1 ... an, v, h1 ... hn` context -/
@@ -549,7 +556,7 @@ but not the reification theorem. Returns:
   * `proof`: A proof of `ctx.proof []`
 -/
 def fromLRATAux (cnf lrat : String) (name : Name) : MetaM (Nat × Expr × Expr × Expr) := do
-  let Parsec.ParseResult.success _ (nvars, arr) := Parser.parseDimacs cnf.mkIterator
+  let Parsec.ParseResult.success _ (nvars, arr) := Parser.parseDimacs ⟨_, cnf.startPos⟩
     | throwError "parse CNF failed"
   if arr.isEmpty then throwError "empty CNF"
   let ctx' := buildConj arr 0 arr.size
@@ -563,7 +570,7 @@ def fromLRATAux (cnf lrat : String) (name : Name) : MetaM (Nat × Expr × Expr �
     safety      := DefinitionSafety.safe
   }
   let ctx := mkConst ctxName
-  let Parsec.ParseResult.success _ steps := Parser.parseLRAT lrat.mkIterator
+  let Parsec.ParseResult.success _ steps := Parser.parseLRAT ⟨_, lrat.startPos⟩
     | throwError "parse LRAT failed"
   let proof ← buildProof arr ctx ctx' steps
   let declName ← mkAuxDeclName (name ++ `proof)
@@ -613,15 +620,14 @@ foo : ∀ (a a_1 : Prop), (¬a ∧ ¬a_1 ∨ a ∧ ¬a_1) ∨ ¬a ∧ a_1 ∨ a 
 -/
 elab "lrat_proof " n:(ident <|> "example")
     ppSpace cnf:term:max ppSpace lrat:term:max : command => do
-  let name := (← getCurrNamespace) ++ if n.1.isIdent then n.1.getId else `_example
+  let name := (← getCurrNamespace) ++ if n.raw.isIdent then n.raw.getId else `_example
   Command.liftTermElabM do
     let cnf ← unsafe evalTerm String (mkConst ``String) cnf
     let lrat ← unsafe evalTerm String (mkConst ``String) lrat
     let go := do
       fromLRAT cnf lrat name
-      withSaveInfoContext do
-        Term.addTermInfo' n (mkConst name) (isBinder := true)
-    if n.1.isIdent then go else withoutModifyingEnv go
+      addTermInfo' n (← mkConstWithLevelParams name) (isBinder := true) |>.run'
+    if n.raw.isIdent then go else withoutModifyingEnv go
 
 lrat_proof example
   -- The CNF file

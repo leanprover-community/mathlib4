@@ -3,21 +3,29 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
+module
+
+public import Mathlib.Algebra.Polynomial.Eval.Defs
+
 import Mathlib.Algebra.Polynomial.Degree.Support
-import Mathlib.Algebra.Polynomial.Eval.Defs
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Evaluating polynomials and scalar multiplication
 
 ## Main results
+
 * `eval₂_smul`, `eval_smul`, `map_smul`, `comp_smul`: the functions preserve scalar multiplication
 * `Polynomial.leval`: `Polynomial.eval` as linear map
-
 -/
+
+@[expose] public section
 
 noncomputable section
 
-open Finset AddMonoidAlgebra
+open Finset
 
 open Polynomial
 
@@ -25,7 +33,7 @@ namespace Polynomial
 
 universe u v w y
 
-variable {R : Type u} {S : Type v} {T : Type w} {ι : Type y} {a b : R} {m n : ℕ}
+variable {R : Type u} {S : Type v}
 
 section Semiring
 
@@ -34,7 +42,7 @@ variable [Semiring R] {p q r : R[X]}
 section
 
 variable [Semiring S]
-variable (f : R →+* S) (x : S)
+variable (x : S)
 
 @[simp]
 theorem eval₂_smul (g : R →+* S) (p : R[X]) (x : S) {s : R} :

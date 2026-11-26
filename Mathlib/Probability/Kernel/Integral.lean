@@ -3,13 +3,19 @@ Copyright (c) 2022 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Integral.Bochner.Basic
-import Mathlib.Probability.Kernel.Basic
+module
+
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+public import Mathlib.Probability.Kernel.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Bochner integrals of kernels
-
 -/
+
+public section
 
 open MeasureTheory
 
@@ -73,11 +79,11 @@ end Deterministic
 
 section Const
 
-@[simp]
+@[deprecated const_apply +typeChanged (since := "2026-10-06")]
 theorem integral_const {μ : Measure β} : ∫ x, f x ∂const α μ a = ∫ x, f x ∂μ := by
   rw [const_apply]
 
-@[simp]
+@[deprecated const_apply +typeChanged (since := "2026-10-06")]
 theorem setIntegral_const {μ : Measure β} {s : Set β} :
     ∫ x in s, f x ∂const α μ a = ∫ x in s, f x ∂μ := by rw [const_apply]
 

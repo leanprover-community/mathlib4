@@ -3,8 +3,11 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
 -/
+module
+
+public import Mathlib.Data.Finset.Image
+
 import Mathlib.Data.Finset.Basic
-import Mathlib.Data.Finset.Image
 
 /-!
 # Cardinality of a finite set
@@ -26,28 +29,30 @@ This defines the cardinality of a `Finset` and provides induction principles for
 * `Finset.eraseInduction`
 -/
 
+@[expose] public section
+
 assert_not_exists Monoid
 
 open Function Multiset Nat
 
-variable {α β R : Type*}
+variable {α β : Type*}
 
 namespace Finset
 
-variable {s t : Finset α} {a b : α}
+variable {s t : Finset α} {a b c : α}
 
 /-- `s.card` is the number of elements of `s`, aka its cardinality.
 
 The notation `#s` can be accessed in the `Finset` locale. -/
 def card (s : Finset α) : ℕ :=
-  Multiset.card s.1
+  Multiset.card s.val
 
 @[inherit_doc] scoped prefix:arg "#" => Finset.card
 
-theorem card_def (s : Finset α) : #s = Multiset.card s.1 :=
+theorem card_def (s : Finset α) : #s = Multiset.card s.val :=
   rfl
 
-@[simp] lemma card_val (s : Finset α) : Multiset.card s.1 = #s := rfl
+@[simp] lemma card_val (s : Finset α) : Multiset.card s.val = #s := rfl
 
 @[simp]
 theorem card_mk {m nodup} : #(⟨m, nodup⟩ : Finset α) = Multiset.card m :=
@@ -69,8 +74,8 @@ local grind_pattern card_le_card => #s, #t
 theorem card_mono : Monotone (@card α) := by apply card_le_card
 
 @[simp] lemma card_eq_zero : #s = 0 ↔ s = ∅ := Multiset.card_eq_zero.trans val_eq_zero
-lemma card_ne_zero : #s ≠ 0 ↔ s.Nonempty := card_eq_zero.ne.trans nonempty_iff_ne_empty.symm
-@[simp] lemma card_pos : 0 < #s ↔ s.Nonempty := Nat.pos_iff_ne_zero.trans card_ne_zero
+lemma card_ne_zero : #s ≠ 0 ↔ s.Nonempty := by simp
+@[simp, grind =] lemma card_pos : 0 < #s ↔ s.Nonempty := Nat.pos_iff_ne_zero.trans card_ne_zero
 @[simp] lemma one_le_card : 1 ≤ #s ↔ s.Nonempty := card_pos
 
 alias ⟨_, Nonempty.card_pos⟩ := card_pos
@@ -98,8 +103,6 @@ variable [DecidableEq α]
 @[simp, grind =]
 theorem card_insert_of_notMem (h : a ∉ s) : #(insert a s) = #s + 1 := by
   grind [=_ cons_eq_insert]
-
-@[deprecated (since := "2025-05-23")] alias card_insert_of_not_mem := card_insert_of_notMem
 
 theorem card_insert_of_mem (h : a ∈ s) : #(insert a s) = #s := by rw [insert_eq_of_mem h]
 
@@ -132,8 +135,17 @@ theorem card_insert_eq_ite : #(insert a s) = if a ∈ s then #s else #s + 1 := b
 @[simp]
 theorem card_pair_eq_one_or_two : #{a, b} = 1 ∨ #{a, b} = 2 := by grind
 
-theorem card_pair (h : a ≠ b) : #{a, b} = 2 := by
-  simp [h]
+/-- A two-element finset `{a, b}` has cardinality `2` iff `a ≠ b`. The reverse direction is
+`Finset.card_pair`. -/
+theorem card_pair_eq_two_iff : #{a, b} = 2 ↔ a ≠ b := by
+  aesop (add simp card_insert_eq_ite)
+
+alias ⟨_, card_pair⟩ := card_pair_eq_two_iff
+
+/-- A three-element finset `{a, b, c}` has cardinality `3` iff `a`, `b`, `c` are pairwise
+distinct. -/
+theorem card_triple_eq_three_iff : #{a, b, c} = 3 ↔ a ≠ b ∧ a ≠ c ∧ b ≠ c := by
+  aesop (add simp card_insert_eq_ite)
 
 /-- $\#(s \setminus \{a\}) = \#s - 1$ if $a \in s$. -/
 @[simp, grind =]
@@ -182,7 +194,7 @@ theorem Multiset.toFinset_card_le : #m.toFinset ≤ Multiset.card m :=
 
 theorem Multiset.toFinset_card_of_nodup {m : Multiset α} (h : m.Nodup) :
     #m.toFinset = Multiset.card m :=
-  congr_arg card <| Multiset.dedup_eq_self.mpr h
+  congr(card $(Multiset.dedup_eq_self.mpr h))
 
 theorem Multiset.dedup_card_eq_card_iff_nodup {m : Multiset α} :
     card m.dedup = card m ↔ m.Nodup :=
@@ -190,6 +202,9 @@ theorem Multiset.dedup_card_eq_card_iff_nodup {m : Multiset α} :
 
 theorem Multiset.toFinset_card_eq_card_iff_nodup {m : Multiset α} :
     #m.toFinset = card m ↔ m.Nodup := dedup_card_eq_card_iff_nodup
+
+theorem nodup_iff_le_length_dedup : m.Nodup ↔ m.card ≤ m.dedup.card := by
+  rw [← dedup_card_eq_card_iff_nodup, card_le_card m.dedup_le |>.ge_iff_eq]
 
 theorem List.card_toFinset : #l.toFinset = l.dedup.length :=
   rfl
@@ -199,6 +214,11 @@ theorem List.toFinset_card_le : #l.toFinset ≤ l.length :=
 
 theorem List.toFinset_card_of_nodup {l : List α} (h : l.Nodup) : #l.toFinset = l.length :=
   Multiset.toFinset_card_of_nodup h
+
+lemma List.Nodup.card_eq_countP {l : List α} {P : α → Prop} [DecidablePred P] (h : l.Nodup) :
+    (l.toFinset.filter P).card = countP P l := by
+  rw [l.countP_eq_length_filter, l.filter_toFinset P]
+  exact toFinset_card_of_nodup (h.filter P)
 
 end ToMultiset
 
@@ -211,7 +231,7 @@ theorem length_toList (s : Finset α) : s.toList.length = #s := by
   rw [toList, ← Multiset.coe_card, Multiset.coe_toList, card_def]
 
 theorem card_image_le [DecidableEq β] : #(s.image f) ≤ #s := by
-  simpa only [card_map] using (s.1.map f).toFinset_card_le
+  simpa only [card_map] using! (s.val.map f).toFinset_card_le
 
 grind_pattern card_image_le => #(s.image f)
 grind_pattern card_image_le => s.image f, #s
@@ -222,7 +242,7 @@ theorem card_image_of_injOn [DecidableEq β] (H : Set.InjOn f s) : #(s.image f) 
 theorem injOn_of_card_image_eq [DecidableEq β] (H : #(s.image f) = #s) : Set.InjOn f s := by
   rw [card_def, card_def, image, toFinset] at H
   dsimp only at H
-  have : (s.1.map f).dedup = s.1.map f := by
+  have : (s.val.map f).dedup = s.val.map f := by
     refine Multiset.eq_of_le_of_card_le (Multiset.dedup_le _) ?_
     simp only [H, Multiset.card_map, le_rfl]
   rw [Multiset.dedup_eq_self] at this
@@ -244,8 +264,8 @@ theorem fiber_card_ne_zero_iff_mem_image (s : Finset α) (f : α → β) [Decida
 
 lemma card_filter_le_iff (s : Finset α) (P : α → Prop) [DecidablePred P] (n : ℕ) :
     #(s.filter P) ≤ n ↔ ∀ s' ⊆ s, n < #s' → ∃ a ∈ s', ¬ P a :=
-  (s.1.card_filter_le_iff P n).trans ⟨fun H s' hs' h ↦ H s'.1 (by simp_all) h,
-    fun H s' hs' h ↦ H ⟨s', nodup_of_le hs' s.2⟩ (fun _ hx ↦ Multiset.subset_of_le hs' hx) h⟩
+  (s.val.card_filter_le_iff P n).trans ⟨fun H s' hs' h ↦ H s'.val (by simp_all) h,
+    fun H s' hs' h ↦ H ⟨s', nodup_of_le hs' s.nodup⟩ (fun _ hx ↦ Multiset.subset_of_le hs' hx) h⟩
 
 @[simp, grind =]
 theorem card_map (f : α ↪ β) : #(s.map f) = #s :=
@@ -262,7 +282,7 @@ theorem card_filter_le (s : Finset α) (p : α → Prop) [DecidablePred p] :
 grind_pattern card_filter_le => #(s.filter p)
 grind_pattern card_filter_le => s.filter p, #s
 
-theorem eq_of_subset_of_card_le {s t : Finset α} (h : s ⊆ t) (h₂ : #t ≤ #s) : s = t :=
+theorem eq_of_subset_of_card_le (h : s ⊆ t) (h₂ : #t ≤ #s) : s = t :=
   eq_of_veq <| Multiset.eq_of_le_of_card_le (val_le_iff.mpr h) h₂
 
 theorem eq_iff_card_le_of_subset (hst : s ⊆ t) : #t ≤ #s ↔ s = t :=
@@ -275,7 +295,7 @@ theorem eq_iff_card_ge_of_superset (hst : s ⊆ t) : #t ≤ #s ↔ t = s :=
   (eq_iff_card_le_of_subset hst).trans eq_comm
 
 theorem subset_iff_eq_of_card_le (h : #t ≤ #s) : s ⊆ t ↔ s = t :=
-  ⟨fun hst => eq_of_subset_of_card_le hst h, Eq.subset'⟩
+  ⟨fun hst => eq_of_subset_of_card_le hst h, Eq.subset⟩
 
 theorem map_eq_of_subset {f : α ↪ α} (hs : s.map f ⊆ s) : s.map f = s :=
   eq_of_subset_of_card_le hs (card_map _).ge
@@ -307,7 +327,7 @@ theorem card_eq_of_bijective (f : ∀ i, i < n → α) (hf : ∀ a ∈ s, ∃ i,
     (hf' : ∀ i (h : i < n), f i h ∈ s)
     (f_inj : ∀ i j (hi : i < n) (hj : j < n), f i hi = f j hj → i = j) : #s = n := by
   classical
-  have : s = (range n).attach.image fun i => f i.1 (mem_range.1 i.2) := by
+  have : s = (range n).attach.image fun i => f i.val (mem_range.1 i.property) := by
     ext a
     suffices _ : a ∈ s ↔ ∃ (i : _) (hi : i ∈ range n), f i (mem_range.1 hi) = a by
       simpa only [mem_image, mem_attach, true_and, Subtype.exists]
@@ -315,13 +335,13 @@ theorem card_eq_of_bijective (f : ∀ i, i < n → α) (hf : ∀ a ∈ s, ∃ i,
     · intro ha; obtain ⟨i, hi, rfl⟩ := hf a ha; use i, mem_range.2 hi
     · rintro ⟨i, hi, rfl⟩; apply hf'
   calc
-    #s = #((range n).attach.image fun i => f i.1 (mem_range.1 i.2)) := by rw [this]
+    #s = #((range n).attach.image fun i => f i.val (mem_range.1 i.property)) := by rw [this]
     _ = #(range n).attach := ?_
     _ = #(range n) := card_attach
     _ = n := card_range n
   apply card_image_of_injective
   intro ⟨i, hi⟩ ⟨j, hj⟩ eq
-  exact Subtype.eq <| f_inj i j (mem_range.1 hi) (mem_range.1 hj) eq
+  exact Subtype.ext <| f_inj i j (mem_range.1 hi) (mem_range.1 hj) eq
 
 variable {t : Finset β}
 
@@ -339,7 +359,7 @@ lemma card_bij (i : ∀ a ∈ s, β) (hi : ∀ a ha, i a ha ∈ t)
   classical
   calc
     #s = #s.attach := card_attach.symm
-    _ = #(s.attach.image fun a ↦ i a.1 a.2) := Eq.symm ?_
+    _ = #(s.attach.image fun a ↦ i a.val a.property) := Eq.symm ?_
     _ = #t := ?_
   · apply card_image_of_injective
     intro ⟨_, _⟩ ⟨_, _⟩ h
@@ -375,7 +395,7 @@ The difference with `Finset.card_bij` is that the bijection is a non-dependent f
 being allowed to use membership of the domain. -/
 lemma card_nbij (i : α → β) (hi : Set.MapsTo i s t) (i_inj : (s : Set α).InjOn i)
     (i_surj : (s : Set α).SurjOn i t) : #s = #t :=
-  card_bij (fun a _ ↦ i a) hi i_inj (by simpa using i_surj)
+  card_bij (fun a _ ↦ i a) hi i_inj (by simpa using! i_surj)
 
 /-- Given a bijection from a finite set `s` to a finite set `t`, the cardinalities of `s` and `t`
 are equal.
@@ -412,7 +432,7 @@ lemma card_le_card_of_injOn (f : α → β) (hf : Set.MapsTo f s t) (f_inj : (s 
   classical
   calc
     #s = #(s.image f) := (card_image_of_injOn f_inj).symm
-    _  ≤ #t           := card_le_card <| image_subset_iff.2 hf
+    _ ≤ #t := card_le_card <| image_subset_iff.2 hf
 
 lemma card_le_card_of_injective {f : s → t} (hf : f.Injective) : #s ≤ #t := by
   rcases s.eq_empty_or_nonempty with rfl | ⟨a₀, ha₀⟩
@@ -432,18 +452,38 @@ grind_pattern card_le_card_of_injective => f.Injective, #t
 lemma card_le_card_of_surjOn (f : α → β) (hf : Set.SurjOn f s t) : #t ≤ #s := by
   classical unfold Set.SurjOn at hf; exact (card_le_card (mod_cast hf)).trans card_image_le
 
+lemma card_le_card_of_surjective {f : s → t} (hf : f.Surjective) : #t ≤ #s := by
+  rcases t.eq_empty_or_nonempty with rfl | ⟨b₀, hb₀⟩
+  · simp
+  · classical apply card_le_card_of_surjOn (fun a ↦ if ha : a ∈ s then (f ⟨a, ha⟩ : β) else b₀)
+    intro b hb
+    obtain ⟨⟨a, ha⟩, hab⟩ := hf ⟨b, hb⟩
+    grind
+
+grind_pattern card_le_card_of_surjective => f.Surjective, #s
+grind_pattern card_le_card_of_surjective => f.Surjective, #t
+
 /-- If there are more pigeons than pigeonholes, then there are two pigeons in the same pigeonhole.
 
 See also `Set.exists_ne_map_eq_of_encard_lt_of_maps_to` and
 `Set.exists_ne_map_eq_of_ncard_lt_of_maps_to`. -/
 theorem exists_ne_map_eq_of_card_lt_of_maps_to (hc : #t < #s) {f : α → β}
     (hf : Set.MapsTo f s t) : ∃ x ∈ s, ∃ y ∈ s, x ≠ y ∧ f x = f y := by
-  classical
   by_contra! hz
   refine hc.not_ge (card_le_card_of_injOn f hf ?_)
   intro x hx y hy
   contrapose
   exact hz x hx y hy
+
+/-- a special case of `Finset.exists_ne_map_eq_of_card_lt_of_maps_to` where `t` is `s.image f` -/
+theorem exists_ne_map_eq_of_card_image_lt [DecidableEq β] {f : α → β} (hc : #(s.image f) < #s) :
+    ∃ x ∈ s, ∃ y ∈ s, x ≠ y ∧ f x = f y :=
+  exists_ne_map_eq_of_card_lt_of_maps_to hc (coe_image (β := β) ▸ Set.mapsTo_image f s)
+
+/-- a variant of `Finset.exists_ne_map_eq_of_card_image_lt` using `Set.InjOn` -/
+theorem not_injOn_of_card_image_lt [DecidableEq β] {f : α → β} (hc : #(s.image f) < #s) :
+    ¬ Set.InjOn f s :=
+  mt card_image_of_injOn hc.ne
 
 /--
 See also `Finset.card_le_card_of_injOn`, which is a more general version of this lemma.
@@ -463,8 +503,8 @@ See `Finset.surj_on_of_inj_on_of_card_le` for the version where `f` is a depende
 lemma surjOn_of_injOn_of_card_le (f : α → β) (hf : Set.MapsTo f s t) (hinj : Set.InjOn f s)
     (hst : #t ≤ #s) : Set.SurjOn f s t := by
   classical
-  suffices s.image f = t by simp [← this, Set.SurjOn]
-  have : s.image f ⊆ t := by aesop (add simp Finset.subset_iff)
+  suffices s.image f = t by rw [Finset.surjOn_iff_subset_image, this]
+  have : s.image f ⊆ t := hf.finsetImage_subset
   exact eq_of_subset_of_card_le this (hst.trans_eq (card_image_of_injOn hinj).symm)
 
 /--
@@ -475,12 +515,13 @@ See `Finset.surjOn_of_injOn_of_card_le` for the version where `f` is a non-depen
 lemma surj_on_of_inj_on_of_card_le (f : ∀ a ∈ s, β) (hf : ∀ a ha, f a ha ∈ t)
     (hinj : ∀ a₁ a₂ ha₁ ha₂, f a₁ ha₁ = f a₂ ha₂ → a₁ = a₂) (hst : #t ≤ #s) :
     ∀ b ∈ t, ∃ a ha, b = f a ha := by
-  let f' : s → β := fun a ↦ f a a.2
-  have hinj' : Set.InjOn f' s.attach := fun x hx y hy hxy ↦ Subtype.ext (hinj _ _ x.2 y.2 hxy)
+  let f' : s → β := fun a ↦ f a a.property
+  have hinj' : Set.InjOn f' s.attach := fun x hx y hy hxy ↦
+    Subtype.ext (hinj _ _ x.property y.property hxy)
   have hmapsto' : Set.MapsTo f' s.attach t := fun x hx ↦ hf _ _
   intro b hb
   obtain ⟨a, ha, rfl⟩ := surjOn_of_injOn_of_card_le _ hmapsto' hinj' (by rwa [card_attach]) hb
-  exact ⟨a, a.2, rfl⟩
+  exact ⟨a, a.property, rfl⟩
 
 /--
 Given a surjective map `f` from a finite set `s` to another finite set `t`, if `s` is no larger
@@ -494,7 +535,7 @@ lemma injOn_of_surjOn_of_card_le (f : α → β) (hf : Set.MapsTo f s t) (hsurj 
   have : #(s.image f) = #t := by rw [this]
   have : #(s.image f) ≤ #s := card_image_le
   rw [← card_image_iff]
-  omega
+  lia
 
 /--
 Given a surjective map `f` defined on a finite set `s` to another finite set `t`, if `s` is no
@@ -504,10 +545,14 @@ See `Finset.injOn_of_surjOn_of_card_le` for the version where `f` is a non-depen
 theorem inj_on_of_surj_on_of_card_le (f : ∀ a ∈ s, β) (hf : ∀ a ha, f a ha ∈ t)
     (hsurj : ∀ b ∈ t, ∃ a ha, f a ha = b) (hst : #s ≤ #t) ⦃a₁⦄ (ha₁ : a₁ ∈ s) ⦃a₂⦄
     (ha₂ : a₂ ∈ s) (ha₁a₂ : f a₁ ha₁ = f a₂ ha₂) : a₁ = a₂ := by
-  let f' : s → β := fun a ↦ f a a.2
+  let f' : s → β := fun a ↦ f a a.property
   have hsurj' : Set.SurjOn f' s.attach t := fun x hx ↦ by simpa [f'] using hsurj x hx
   have hinj' := injOn_of_surjOn_of_card_le f' (fun x hx ↦ hf _ _) hsurj' (by simpa)
   exact congrArg Subtype.val (@hinj' ⟨a₁, ha₁⟩ (by simp) ⟨a₂, ha₂⟩ (by simp) ha₁a₂)
+
+lemma image_eq_iff_bijOn_of_card [DecidableEq β] (h : #s ≤ #t) :
+    s.image f = t ↔ Set.BijOn f s t := by
+  grind [injOn_of_surjOn_of_card_le, Set.BijOn, image_eq_iff_surjOn_mapsTo]
 
 end bij
 
@@ -559,13 +604,15 @@ theorem card_sdiff_of_subset (h : s ⊆ t) : #(t \ s) = #t - #s := by
 theorem card_sdiff : #(t \ s) = #t - #(s ∩ t) := by
   rw [← card_sdiff_of_subset] <;> grind
 
-theorem card_sdiff_add_card_eq_card {s t : Finset α} (h : s ⊆ t) : #(t \ s) + #s = #t := by grind
+theorem card_sdiff_add_card_eq_card (h : s ⊆ t) : #(t \ s) + #s = #t := by grind
 
-theorem le_card_sdiff (s t : Finset α) : #t - #s ≤ #(t \ s) :=
+lemma card_sub_card_eq (s t : Finset α) : #t - #s = #(t \ s) - #(s \ t) :=
   calc
-    #t - #s ≤ #t - #(s ∩ t) := by grind
-    _ = #(t \ (s ∩ t)) := by grind
-    _ ≤ #(t \ s) := by grind
+    #t - #s = #t - #(s ∩ t) - #(s \ t) := by grind
+    _ = #(t \ (s ∩ t)) - #(s \ t) := by grind
+    _ = #(t \ s) - #(s \ t) := by grind
+
+theorem le_card_sdiff (s t : Finset α) : #t - #s ≤ #(t \ s) := by grind
 
 grind_pattern le_card_sdiff => #(t \ s), #t
 grind_pattern le_card_sdiff => #(t \ s), #s
@@ -576,15 +623,11 @@ theorem card_sdiff_add_card (s t : Finset α) : #(s \ t) + #t = #(s ∪ t) := by
   rw [← card_union_of_disjoint sdiff_disjoint, sdiff_union_self_eq_union]
 
 theorem sdiff_nonempty_of_card_lt_card (h : #s < #t) : (t \ s).Nonempty := by
-  rw [nonempty_iff_ne_empty, Ne, sdiff_eq_empty_iff_subset]
-  exact fun h' ↦ h.not_ge (card_le_card h')
+  grind
 
 omit [DecidableEq α] in
 theorem exists_mem_notMem_of_card_lt_card (h : #s < #t) : ∃ e, e ∈ t ∧ e ∉ s := by
   classical simpa [Finset.Nonempty] using sdiff_nonempty_of_card_lt_card h
-
-@[deprecated (since := "2025-05-23")]
-alias exists_mem_not_mem_of_card_lt_card := exists_mem_notMem_of_card_lt_card
 
 @[simp]
 lemma card_sdiff_add_card_inter (s t : Finset α) :
@@ -611,16 +654,16 @@ theorem inter_nonempty_of_card_lt_card_add_card (hts : t ⊆ s) (hus : u ⊆ s)
     (hstu : #s < #t + #u) : (t ∩ u).Nonempty := by
   contrapose! hstu
   calc
-    _ = #(t ∪ u) := by simp [← card_union_add_card_inter, not_nonempty_iff_eq_empty.1 hstu]
+    _ = #(t ∪ u) := by simp [← card_union_add_card_inter, hstu]
     _ ≤ #s := by gcongr; exact union_subset hts hus
 
 end Lattice
 
-theorem filter_card_add_filter_neg_card_eq_card
+theorem card_filter_add_card_filter_not
     (p : α → Prop) [DecidablePred p] [∀ x, Decidable (¬p x)] :
     #(s.filter p) + #(s.filter fun a ↦ ¬ p a) = #s := by
   classical
-  rw [← card_union_of_disjoint (disjoint_filter_filter_neg _ _ _), filter_union_filter_neg_eq]
+  rw [← card_union_of_disjoint (disjoint_filter_filter_not _ _ _), filter_union_filter_not_eq]
 
 /-- Given a subset `s` of a set `t`, of sizes at most and at least `n` respectively, there exists a
 set `u` of size `n` which is both a superset of `s` and a subset of `t`. -/
@@ -629,7 +672,7 @@ lemma exists_subsuperset_card_eq (hst : s ⊆ t) (hsn : #s ≤ n) (hnt : n ≤ #
   classical
   refine Nat.decreasingInduction' ?_ hnt ⟨t, by simp [hst]⟩
   intro k _ hnk ⟨u, hu₁, hu₂, hu₃⟩
-  obtain ⟨a, ha⟩ : (u \ s).Nonempty := by rw [← card_pos]; grind
+  obtain ⟨a, ha⟩ : (u \ s).Nonempty := by grind
   exact ⟨u.erase a, by grind⟩
 
 /-- We can shrink a set to any smaller size. -/
@@ -642,11 +685,9 @@ theorem le_card_iff_exists_subset_card : n ≤ #s ↔ ∃ t ⊆ s, #t = n := by
 
 theorem exists_subset_or_subset_of_two_mul_lt_card [DecidableEq α] {X Y : Finset α} {n : ℕ}
     (hXY : 2 * n < #(X ∪ Y)) : ∃ C : Finset α, n < #C ∧ (C ⊆ X ∨ C ⊆ Y) := by
-  have h₁ : #(X ∩ (Y \ X)) = 0 := Finset.card_eq_zero.mpr (by grind)
-  have h₂ : #(X ∪ Y) = #X + #(Y \ X) := by grind
-  obtain h | h : n < #X ∨ n < #(Y \ X) := by grind
-  · exact ⟨X, by grind⟩
-  · exact ⟨Y \ X, by grind⟩
+  grind =>
+    have : #(X ∪ Y) = #X + #(Y \ X)
+    finish
 
 /-! ### Explicit description of a finset from its card -/
 
@@ -655,15 +696,20 @@ theorem card_eq_one : #s = 1 ↔ ∃ a, s = {a} := by
   cases s
   simp only [Multiset.card_eq_one, Finset.card, ← val_inj, singleton_val]
 
-theorem exists_eq_insert_iff [DecidableEq α] {s t : Finset α} :
+theorem card_eq_one_iff_existsUnique : #s = 1 ↔ ∃! a, a ∈ s := by
+  simp [card_eq_one, Finset.singleton_iff_unique_mem]
+
+theorem exists_eq_insert_iff [DecidableEq α] :
     (∃ a ∉ s, insert a s = t) ↔ s ⊆ t ∧ #s + 1 = #t := by
   constructor
   · grind
   · rintro ⟨hst, h⟩
     obtain ⟨a, ha⟩ : ∃ a, t \ s = {a} := card_eq_one.mp (by grind)
-    exact
-      ⟨a, fun hs => (by grind : a ∉ {a}) <| mem_singleton_self _, by
-        rw [insert_eq, ← ha, sdiff_union_of_subset hst]⟩
+    grind =>
+      have : a ∈ t \ s
+      have h : insert a s ⊆ t
+      have := eq_of_subset_of_card_le h
+      instantiate
 
 theorem card_le_one : #s ≤ 1 ↔ ∀ a ∈ s, ∀ b ∈ s, a = b := by
   obtain rfl | ⟨x, hx⟩ := s.eq_empty_or_nonempty
@@ -677,6 +723,10 @@ theorem card_le_one_iff : #s ≤ 1 ↔ ∀ {a b}, a ∈ s → b ∈ s → a = b 
 
 theorem card_le_one_iff_subsingleton_coe : #s ≤ 1 ↔ Subsingleton (s : Type _) :=
   card_le_one.trans (s : Set α).subsingleton_coe.symm
+
+/-- A finset has cardinality at most 1 iff its underlying set is subsingleton. -/
+theorem card_le_one_iff_subsingleton : #s ≤ 1 ↔ (s : Set α).Subsingleton := by
+  rw [card_le_one_iff_subsingleton_coe, ← Set.subsingleton_coe, SetLike.coe_sort_coe]
 
 theorem card_le_one_iff_subset_singleton [Nonempty α] : #s ≤ 1 ↔ ∃ x : α, s ⊆ {x} := by
   refine ⟨fun H => ?_, ?_⟩
@@ -697,9 +747,7 @@ theorem card_le_one_of_subsingleton [Subsingleton α] (s : Finset α) : #s ≤ 1
   Finset.card_le_one_iff.2 fun {_ _ _ _} => Subsingleton.elim _ _
 
 theorem one_lt_card : 1 < #s ↔ ∃ a ∈ s, ∃ b ∈ s, a ≠ b := by
-  rw [← not_iff_not]
-  push_neg
-  exact card_le_one
+  contrapose!; exact card_le_one
 
 theorem one_lt_card_iff : 1 < #s ↔ ∃ a b, a ∈ s ∧ b ∈ s ∧ a ≠ b := by
   rw [one_lt_card]
@@ -709,7 +757,19 @@ theorem one_lt_card_iff_nontrivial : 1 < #s ↔ s.Nontrivial := by
   rw [← not_iff_not, not_lt, Finset.Nontrivial, ← Set.nontrivial_coe_sort,
     not_nontrivial_iff_subsingleton, card_le_one_iff_subsingleton_coe, coe_sort_coe]
 
-@[deprecated (since := "2025-08-14")] alias exists_ne_of_one_lt_card := exists_mem_ne
+lemma Nontrivial.one_lt_card (hs : s.Nontrivial) : 1 < #s := s.one_lt_card_iff_nontrivial.mpr hs
+
+lemma Nontrivial.two_le_card (hs : s.Nontrivial) : 2 ≤ #s := s.one_lt_card_iff_nontrivial.mpr hs
+
+/-- Given an injective map `f : α → β` for finite sets `s ⊂ α` and `t ⊂ β` such that `t` has
+    cardinality one more than `s`, there exists a unique element of `t` not in `f(s)`. -/
+theorem existsUnique_notMem_image_of_injOn_of_card_eq_add_one
+    {t : Finset β} [DecidableEq β]
+    (hf : Set.InjOn f s) (hf' : Set.MapsTo f s t) (h : #t = #s + 1) :
+    ∃! x, x ∈ t ∧ x ∉ s.image f := by
+  have : #(t \ s.image f) = 1 := by
+    grind [card_sdiff_of_subset hf'.finsetImage_subset, card_image_of_injOn hf]
+  simpa [card_eq_one_iff_existsUnique] using this
 
 /-- If a Finset in a Pi type is nontrivial (has at least two elements), then
   its projection to some factor is nontrivial, and the fibers of the projection
@@ -855,7 +915,7 @@ def strongDownwardInduction {p : Finset α → Sort*} {n : ℕ}
   | s =>
     H s fun {t} ht h =>
       have := Finset.card_lt_card h
-      have : n - #t < n - #s := by omega
+      have : n - #t < n - #s := by lia
       strongDownwardInduction H t ht
   termination_by s => n - #s
 
@@ -881,7 +941,7 @@ theorem strongDownwardInductionOn_eq {p : Finset α → Sort*} (s : Finset α)
 theorem lt_wf {α} : WellFounded (@LT.lt (Finset α) _) :=
   have H : Subrelation (@LT.lt (Finset α) _) (InvImage (· < ·) card) := fun {_ _} hxy =>
     card_lt_card hxy
-  Subrelation.wf H <| InvImage.wf _ <| (Nat.lt_wfRel).2
+  Subrelation.wf H <| InvImage.wf _ (Nat.lt_wfRel).wf
 
 /--
 To prove a proposition for an arbitrary `Finset α`,
@@ -895,5 +955,39 @@ only requires removing single elements at a time.
 theorem eraseInduction [DecidableEq α] {p : Finset α → Prop}
     (H : (S : Finset α) → (∀ s ∈ S, p (S.erase s)) → p S) (S : Finset α) : p S :=
   S.strongInduction fun S ih => H S fun _ hs => ih _ (erase_ssubset hs)
+
+/--
+Given a function `f` which sends the finite set `s` to itself, the sequence of images of `s` under
+iterates of `f` is eventually constant. Furthermore, the sequence of images stabilises in fewer
+than `#s` steps.
+-/
+theorem image_iterate_stabilises_lt_card [DecidableEq α] {f : α → α} {s : Finset α}
+    (hs : Set.MapsTo f s s) (hs₀ : s.Nonempty) :
+    ∃ n < #s, ∀ m, n ≤ m → s.image f^[m] = s.image f^[n] := by
+  let g (i : ℕ) : Finset α := s.image f^[i]
+  have (i : ℕ) : 0 < #(g i) := (hs₀.image _).card_pos
+  have hg : Antitone g := antitone_nat_of_succ_le <| fun i ↦ by
+    simp_rw [g, Function.iterate_succ, ← image_image]
+    grw [hs.finsetImage_subset]
+  have eq_iff (i j : ℕ) : #(g i) - 1 = #(g j) - 1 ↔ g i = g j := by
+    wlog hij : j ≤ i generalizing i j
+    · grind
+    exact ⟨fun h ↦ eq_of_subset_of_card_le (hg hij) (by grind), by grind⟩
+  have hG : Antitone (fun i ↦ #(g i) - 1) := fun i j h ↦ by dsimp; gcongr #?_ - 1; exact hg h
+  rcases Nat.stabilises_of_antitone hG (by grind [=_ image_image, iterate_succ']) with ⟨n, hn, hn'⟩
+  exact ⟨n, by grind⟩
+
+/--
+Given a function `f` which sends the finite set `s` to itself, the sequence of images of `s` under
+iterates of `f` is eventually constant. Furthermore, the sequence of images stabilises in at most
+`#s` steps.
+-/
+theorem image_iterate_stabilises_le_card [DecidableEq α] {f : α → α} {s : Finset α}
+    (hs : Set.MapsTo f s s) :
+    ∃ n ≤ #s, ∀ m, n ≤ m → s.image f^[m] = s.image f^[n] := by
+  obtain rfl | hs₀ := s.eq_empty_or_nonempty
+  · simp
+  obtain ⟨n, hn', hn⟩ := image_iterate_stabilises_lt_card hs hs₀
+  exact ⟨n, hn'.le, hn⟩
 
 end Finset

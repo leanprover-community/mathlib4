@@ -3,8 +3,13 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Geometry.Euclidean.Inversion.Basic
-import Mathlib.Geometry.Euclidean.PerpBisector
+module
+
+public import Mathlib.Geometry.Euclidean.Inversion.Basic
+public import Mathlib.Geometry.Euclidean.PerpBisector
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Image of a hyperplane under inversion
@@ -19,12 +24,14 @@ the center to itself, not to a point at infinity.
 
 We also prove that the inversion sends an affine subspace passing through the center to itself.
 
-## Keywords
+## Tags
 
 inversion
 -/
 
-open Metric Function AffineMap Set AffineSubspace
+public section
+
+open Metric AffineMap Set AffineSubspace
 open scoped Topology
 
 variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]

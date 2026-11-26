@@ -3,9 +3,15 @@ Copyright (c) 2025 Oliver Butterley. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Butterley
 -/
-import Mathlib.Data.Finset.Range
-import Mathlib.Data.Set.Lattice
+module
+
+public import Mathlib.Data.Finset.Range
+public import Mathlib.Data.Set.Lattice.Indexed
+
 import Mathlib.Order.Interval.Set.LinearOrder
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Extra lemmas about unions of intervals
@@ -14,6 +20,8 @@ This file contains lemmas about finite unions of intervals which can't be includ
 concerning infinite unions in `Mathlib/Order/Interval/Set/Disjoint.lean` because we use
 `Finset.range`.
 -/
+
+public section
 
 open Set
 

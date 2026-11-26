@@ -3,11 +3,11 @@ Copyright (c) 2025 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.GCDMonoid.Finset
-import Mathlib.Algebra.GCDMonoid.Nat
-import Mathlib.Data.Matrix.Mul
-import Mathlib.Data.Rat.Cast.CharZero
+module
+
+public import Mathlib.Algebra.GCDMonoid.Finset
+public import Mathlib.Data.Matrix.Mul
+public import Mathlib.Data.Rat.Cast.CharZero
 
 /-!
 # Lemmas on integer matrices
@@ -24,9 +24,11 @@ Here we collect some results about matrices over `ℚ` and `ℤ`.
 Consider generalizing these constructions to matrices over localizations of rings (or semirings).
 -/
 
+@[expose] public section
+
 namespace Matrix
 
-variable {m n : Type*} [Fintype m] [Fintype n]
+variable {l m n : Type*} [Fintype m]
 
 /-!
 ## Casts
@@ -36,21 +38,24 @@ suitable types are bare functions, not ring homs, so we cannot apply `Matrix.map
 them.
 -/
 
-lemma map_mul_natCast {α : Type*} [NonAssocSemiring α] (A B : Matrix n n ℕ) :
+lemma map_mul_natCast {α : Type*} [NonAssocSemiring α] (A : Matrix l m ℕ) (B : Matrix m n ℕ) :
     map (A * B) ((↑) : ℕ → α) = map A (↑) * map B (↑) :=
   Matrix.map_mul (f := Nat.castRingHom α)
 
-lemma map_mul_intCast {α : Type*} [NonAssocRing α] (A B : Matrix n n ℤ) :
+lemma map_mul_intCast {α : Type*} [NonAssocRing α] (A : Matrix l m ℤ) (B : Matrix m n ℤ) :
     map (A * B) ((↑) : ℤ → α) = map A (↑) * map B (↑) :=
   Matrix.map_mul (f := Int.castRingHom α)
 
-lemma map_mul_ratCast {α : Type*} [DivisionRing α] [CharZero α] (A B : Matrix n n ℚ) :
+lemma map_mul_ratCast {α : Type*} [DivisionRing α] [CharZero α]
+    (A : Matrix l m ℚ) (B : Matrix m n ℚ) :
     map (A * B) ((↑) : ℚ → α) = map A (↑) * map B (↑) :=
   Matrix.map_mul (f := Rat.castHom α)
 
 /-!
 ## Denominator of a rational matrix
 -/
+
+variable [Fintype n]
 
 /-- The denominator of a matrix of rationals (as a `Nat`, defined as the LCM of the denominators of
 the entries). -/
@@ -73,7 +78,7 @@ lemma den_dvd_iff {A : Matrix m n ℚ} {r : ℕ} :
 lemma num_div_den (A : Matrix m n ℚ) (i : m) (j : n) :
     A.num i j / A.den = A i j := by
   obtain ⟨k, hk⟩ := den_dvd_iff.mp (dvd_refl A.den) i j
-  rw [Matrix.num, map_apply, smul_apply, smul_eq_mul, mul_comm,
+  rw [Matrix.num, map_apply, Matrix.smul_apply, smul_eq_mul, mul_comm,
     div_eq_iff <| Nat.cast_ne_zero.mpr A.den_ne_zero, hk, Nat.cast_mul, ← mul_assoc,
     Rat.mul_den_eq_num, ← Int.cast_natCast k, ← Int.cast_mul, Rat.num_intCast]
 

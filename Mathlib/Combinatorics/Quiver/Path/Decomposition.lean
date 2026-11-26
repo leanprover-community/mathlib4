@@ -3,8 +3,14 @@ Copyright (c) 2025 Matteo Cipollina. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matteo Cipollina
 -/
+module
+
+public import Mathlib.Combinatorics.Quiver.Path
+
 import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Combinatorics.Quiver.Path
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Path Decomposition and Boundary Crossing
@@ -12,6 +18,8 @@ import Mathlib.Combinatorics.Quiver.Path
 This section provides lemmas for decomposing non-empty paths and for reasoning about paths that
 cross the boundary of a given set of vertices `S`.
 -/
+
+public section
 namespace Quiver.Path
 
 section BoundaryEdges
@@ -21,7 +29,7 @@ variable {V : Type*} [Quiver V]
 /-- A path from a vertex not in `S` to a vertex in `S` must cross the boundary. -/
 theorem exists_notMem_mem_hom_path_path_of_notMem_mem {a b : V} (p : Path a b) (S : Set V)
     (ha_not_in_S : a ∉ S) (hb_in_S : b ∈ S) :
-    ∃ᵉ (u ∉ S) (v ∈ S) (e : u ⟶ v) (p₁ : Path a u) (p₂ : Path v b),
+    ∃ u ∉ S, ∃ v ∈ S, ∃ e : u ⟶ v, ∃ p₁ : Path a u, ∃ p₂ : Path v b,
       p = p₁.comp (e.toPath.comp p₂) := by
   induction h_len : p.length generalizing a b S ha_not_in_S hb_in_S with
   | zero =>
@@ -41,9 +49,8 @@ theorem exists_notMem_mem_hom_path_path_of_notMem_mem {a b : V} (p : Path a b) (
 
 theorem exists_mem_notMem_hom_path_path_of_notMem_mem {a b : V} (p : Path a b) (S : Set V)
     (ha_in_S : a ∈ S) (hb_not_in_S : b ∉ S) :
-    ∃ᵉ (u ∈ S) (v ∉ S) (e : u ⟶ v) (p₁ : Path a u) (p₂ : Path v b),
+    ∃ u ∈ S, ∃ v ∉ S, ∃ e : u ⟶ v, ∃ p₁ : Path a u, ∃ p₂ : Path v b,
       p = p₁.comp (e.toPath.comp p₂) := by
-  classical
   have ha_not_in_compl : a ∉ Sᶜ := by simpa
   have hb_in_compl : b ∈ Sᶜ := by simpa
   obtain ⟨u, hu_not_in_compl, v, hv_in_compl, e, p₁, p₂, hp⟩ :=

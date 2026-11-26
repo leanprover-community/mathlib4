@@ -3,7 +3,9 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Hom.BoundedLattice
+module
+
+public import Mathlib.Order.Hom.BoundedLattice
 
 /-!
 # Heyting algebra morphisms
@@ -26,6 +28,8 @@ be satisfied by itself and all stricter types.
 * `CoheytingHomClass`
 * `BiheytingHomClass`
 -/
+
+@[expose] public section
 
 
 open Function
@@ -236,9 +240,10 @@ namespace HeytingHom
 
 variable [HeytingAlgebra α] [HeytingAlgebra β] [HeytingAlgebra γ] [HeytingAlgebra δ]
 
+@[macro_inline]
 instance instFunLike : FunLike (HeytingHom α β) α β where
   coe f := f.toFun
-  coe_injective' f g h := by obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f; obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g; congr
+  coe_injective f g h := by obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f; obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g; congr
 
 instance instHeytingHomClass : HeytingHomClass (HeytingHom α β) α β where
   map_sup f := f.map_sup'
@@ -341,9 +346,10 @@ namespace CoheytingHom
 
 variable [CoheytingAlgebra α] [CoheytingAlgebra β] [CoheytingAlgebra γ] [CoheytingAlgebra δ]
 
+@[macro_inline]
 instance : FunLike (CoheytingHom α β) α β where
   coe f := f.toFun
-  coe_injective' f g h := by obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f; obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g; congr
+  coe_injective f g h := by obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f; obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g; congr
 
 instance : CoheytingHomClass (CoheytingHom α β) α β where
   map_sup f := f.map_sup'
@@ -446,9 +452,10 @@ namespace BiheytingHom
 
 variable [BiheytingAlgebra α] [BiheytingAlgebra β] [BiheytingAlgebra γ] [BiheytingAlgebra δ]
 
+@[macro_inline]
 instance : FunLike (BiheytingHom α β) α β where
   coe f := f.toFun
-  coe_injective' f g h := by obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f; obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g; congr
+  coe_injective f g h := by obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f; obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g; congr
 
 instance : BiheytingHomClass (BiheytingHom α β) α β where
   map_sup f := f.map_sup'

@@ -3,8 +3,12 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.Prod
-import Mathlib.CategoryTheory.Functor.Currying
+module
+
+public import Mathlib.CategoryTheory.Localization.Prod
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Lifting of bifunctors
@@ -24,15 +28,16 @@ If `L₁ : C₁ ⥤ D₁` and `L₂ : C₂ ⥤ D₂` are localization functors f
 respectively, and `F : C₁ ⥤ C₂ ⥤ E` satisfies `MorphismProperty.IsInvertedBy₂ W₁ W₂ F`,
 we introduce `Localization.lift₂ F hF L₁ L₂ : D₁ ⥤ D₂ ⥤ E` which is a bifunctor
 which lifts `F`.
-
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
-open Category Functor
+open Category CategoryTheory.Functor
 
-variable {C₁ C₂ D₁ D₂ E E' : Type*} [Category C₁] [Category C₂]
-  [Category D₁] [Category D₂] [Category E] [Category E']
+variable {C₁ C₂ D₁ D₂ E E' : Type*} [Category* C₁] [Category* C₂]
+  [Category* D₁] [Category* D₂] [Category* E] [Category* E']
 
 namespace MorphismProperty
 
@@ -63,10 +68,9 @@ class Lifting₂ (L₁ : C₁ ⥤ D₁) (L₂ : C₂ ⥤ D₂) (W₁ : MorphismP
 variable (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂)
   (F : C₁ ⥤ C₂ ⥤ E) (F' : D₁ ⥤ D₂ ⥤ E) [Lifting₂ L₁ L₂ W₁ W₂ F F']
 
-@[deprecated (since := "2025-08-22")] alias Lifting₂.iso' := Lifting.iso
-
 /-- If `Lifting₂ L₁ L₂ W₁ W₂ F F'` holds, then `Lifting L₂ W₂ (F.obj X₁) (F'.obj (L₁.obj X₁))`
 holds for any `X₁ : C₁`. -/
+@[instance_reducible]
 noncomputable def Lifting₂.fst (X₁ : C₁) :
     Lifting L₂ W₂ (F.obj X₁) (F'.obj (L₁.obj X₁)) where
   iso := ((evaluation _ _).obj X₁).mapIso (Lifting₂.iso L₁ L₂ W₁ W₂ F F')
@@ -76,11 +80,12 @@ noncomputable instance Lifting₂.flip : Lifting₂ L₂ L₁ W₂ W₁ F.flip F
 
 /-- If `Lifting₂ L₁ L₂ W₁ W₂ F F'` holds, then
 `Lifting L₁ W₁ (F.flip.obj X₂) (F'.flip.obj (L₂.obj X₂))` holds for any `X₂ : C₂`. -/
+@[instance_reducible]
 noncomputable def Lifting₂.snd (X₂ : C₂) :
     Lifting L₁ W₁ (F.flip.obj X₂) (F'.flip.obj (L₂.obj X₂)) :=
   Lifting₂.fst L₂ L₁ W₂ W₁ F.flip F'.flip X₂
 
-noncomputable instance Lifting₂.uncurry [Lifting₂ L₁ L₂ W₁ W₂ F F'] :
+noncomputable instance Lifting₂.uncurry :
     Lifting (L₁.prod L₂) (W₁.prod W₂) (uncurry.obj F) (uncurry.obj F') where
   iso := Functor.uncurry.mapIso (Lifting₂.iso L₁ L₂ W₁ W₂ F F')
 
@@ -98,6 +103,7 @@ variable (F : C₁ ⥤ C₂ ⥤ E) {W₁ : MorphismProperty C₁} {W₂ : Morphi
 to `W₁ : MorphismProperty C₁` and `W₂ : MorphismProperty C₂` respectively,
 and a bifunctor `F : C₁ ⥤ C₂ ⥤ E` which inverts `W₁` and `W₂`, this is
 the induced localized bifunctor `D₁ ⥤ D₂ ⥤ E`. -/
+@[implicit_reducible]
 noncomputable def lift₂ : D₁ ⥤ D₂ ⥤ E :=
   curry.obj (lift (uncurry.obj F) hF (L₁.prod L₂))
 
@@ -132,12 +138,30 @@ variable (L₁ : C₁ ⥤ D₁) (L₂ : C₂ ⥤ D₂)
   (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂)
   [L₁.IsLocalization W₁] [L₂.IsLocalization W₂]
   [W₁.ContainsIdentities] [W₂.ContainsIdentities]
+  (F : C₁ ⥤ C₂ ⥤ E) (F' : D₁ ⥤ D₂ ⥤ E)
+  [Lifting₂ L₁ L₂ W₁ W₂ F F']
+
+noncomputable instance Lifting₂.compRight {E' : Type*} [Category* E'] (G : E ⥤ E') :
+    Lifting₂ L₁ L₂ W₁ W₂
+      (F ⋙ (whiskeringRight _ _ _).obj G)
+      (F' ⋙ (whiskeringRight _ _ _).obj G) :=
+  ⟨isoWhiskerRight (iso L₁ L₂ W₁ W₂ F F') ((whiskeringRight _ _ _).obj G)⟩
+
+end
+
+section
+
+variable (L₁ : C₁ ⥤ D₁) (L₂ : C₂ ⥤ D₂)
+  (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂)
+  [L₁.IsLocalization W₁] [L₂.IsLocalization W₂]
+  [W₁.ContainsIdentities] [W₂.ContainsIdentities]
   (F₁ F₂ : C₁ ⥤ C₂ ⥤ E) (F₁' F₂' : D₁ ⥤ D₂ ⥤ E)
   [Lifting₂ L₁ L₂ W₁ W₂ F₁ F₁'] [Lifting₂ L₁ L₂ W₁ W₂ F₂ F₂']
 
 /-- The natural transformation `F₁' ⟶ F₂'` of bifunctors induced by a
 natural transformation `τ : F₁ ⟶ F₂` when `Lifting₂ L₁ L₂ W₁ W₂ F₁ F₁'`
 and `Lifting₂ L₁ L₂ W₁ W₂ F₂ F₂'` hold. -/
+@[implicit_reducible]
 noncomputable def lift₂NatTrans (τ : F₁ ⟶ F₂) : F₁' ⟶ F₂' :=
   fullyFaithfulUncurry.preimage
     (liftNatTrans (L₁.prod L₂) (W₁.prod W₂) (uncurry.obj F₁)
@@ -162,6 +186,7 @@ theorem natTrans₂_ext {τ τ' : F₁' ⟶ F₂'}
 /-- The natural isomorphism `F₁' ≅ F₂'` of bifunctors induced by a
 natural isomorphism `e : F₁ ≅ F₂` when `Lifting₂ L₁ L₂ W₁ W₂ F₁ F₁'`
 and `Lifting₂ L₁ L₂ W₁ W₂ F₂ F₂'` hold. -/
+@[simps, implicit_reducible]
 noncomputable def lift₂NatIso (e : F₁ ≅ F₂) : F₁' ≅ F₂' where
   hom := lift₂NatTrans L₁ L₂ W₁ W₂ F₁ F₂ F₁' F₂' e.hom
   inv := lift₂NatTrans L₁ L₂ W₁ W₂ F₂ F₁ F₂' F₁' e.inv

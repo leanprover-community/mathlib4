@@ -3,18 +3,25 @@ Copyright (c) 2019 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Logic.Equiv.Defs
+module
+
+public import Batteries.Data.Except
+public import Mathlib.Logic.Equiv.Defs
+
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Monad
 
 ## Attributes
 
-* ext
-* functor_norm
-* monad_norm
+* `ext`
+* `functor_norm`
+* `monad_norm`
 
-## Implementation Details
+## Implementation notes
 
 Set of rewrite rules and automation for monads in general and
 `ReaderT`, `StateT`, `ExceptT` and `OptionT` in particular.
@@ -31,8 +38,9 @@ and use regular `functor_norm` rules as well.
 ## Tags
 
 functor, applicative, monad, simp
-
 -/
+
+@[expose] public section
 
 universe u v
 variable {α β σ : Type u}

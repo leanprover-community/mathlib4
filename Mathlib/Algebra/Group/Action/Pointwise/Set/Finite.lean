@@ -3,11 +3,18 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Action.Basic
-import Mathlib.Algebra.Group.Pointwise.Set.Scalar
-import Mathlib.Data.Set.Finite.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.Basic
+public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
+public import Mathlib.Data.Set.Finite.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-! # Finiteness lemmas for pointwise operations on sets -/
+
+public section
 
 open scoped Pointwise
 

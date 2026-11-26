@@ -3,10 +3,15 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-import Mathlib.Data.List.Defs
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Data.List.Defs
+public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Tactic.Common
 
 /-!
+# The type `List.Vector`
+
 The type `List.Vector` represents lists with fixed length.
 
 TODO: The API of `List.Vector` is quite incomplete relative to `Vector`,
@@ -14,6 +19,8 @@ and in particular does not use `x[i]` (that is `GetElem` notation) as the prefer
 Any combination of reducing the use of `List.Vector` in Mathlib, or modernising its API,
 would be welcome.
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -61,6 +68,7 @@ def head : Vector α (Nat.succ n) → α
   | ⟨a :: _, _⟩ => a
 
 /-- The head of a vector obtained by prepending is the element prepended. -/
+@[simp, grind =]
 theorem head_cons (a : α) : ∀ v : Vector α n, head (cons a v) = a
   | ⟨_, _⟩ => rfl
 
@@ -70,6 +78,7 @@ def tail : Vector α n → Vector α (n - 1)
   | ⟨_ :: v, h⟩ => ⟨v, congrArg pred h⟩
 
 /-- The tail of a vector obtained by prepending is the vector prepended. to -/
+@[simp, grind =]
 theorem tail_cons (a : α) : ∀ v : Vector α n, tail (cons a v) = v
   | ⟨_, _⟩ => rfl
 
@@ -81,11 +90,11 @@ theorem cons_head_tail : ∀ v : Vector α (succ n), cons (head v) (tail v) = v
 
 /-- The list obtained from a vector. -/
 def toList (v : Vector α n) : List α :=
-  v.1
+  v.val
 
 /-- nth element of a vector, indexed by a `Fin` type. -/
 def get (l : Vector α n) (i : Fin n) : α :=
-  l.1.get <| i.cast l.2.symm
+  l.val.get <| i.cast l.property.symm
 
 instance {n m : Nat} : HAppend (Vector α n) (Vector α m) (Vector α (n + m)) where
   hAppend | ⟨l₁, h₁⟩, ⟨l₂, h₂⟩ => ⟨l₁ ++ l₂, by simp [*]⟩
@@ -94,11 +103,6 @@ lemma append_def {n m : Nat} :
     (HAppend.hAppend : Vector α n → Vector α m → Vector α (n + m)) =
       fun | ⟨l₁, h₁⟩, ⟨l₂, h₂⟩ => ⟨l₁ ++ l₂, by simp [*]⟩ :=
   rfl
-
-/-- Appending a vector to another. -/
-@[deprecated "use `++` instead" (since := "2025-06-05")]
-def append {n m : Nat} : Vector α n → Vector α m → Vector α (n + m)
-  | ⟨l₁, h₁⟩, ⟨l₂, h₂⟩ => ⟨l₁ ++ l₂, by simp [*]⟩
 
 /-- Elimination rule for `Vector`. -/
 @[elab_as_elim]
@@ -125,7 +129,7 @@ theorem map_cons (f : α → β) (a : α) : ∀ v : Vector α n, map f (cons a v
 /-- Map a vector under a partial function. -/
 def pmap (f : (a : α) → p a → β) :
     (v : Vector α n) → (∀ x ∈ v.toList, p x) → Vector β n
-  | ⟨l, h⟩, hp => ⟨List.pmap f l hp, by simp [h]⟩
+  | ⟨l, h⟩, hp => ⟨List.pmap f l hp, h ▸ length_pmap⟩
 
 @[simp]
 theorem pmap_nil (f : (a : α) → p a → β) (hp : ∀ x ∈ nil.toList, p x) :
@@ -149,7 +153,7 @@ def take (i : ℕ) : Vector α n → Vector α (min i n)
 
 /-- Remove the element at position `i` from a vector of length `n`. -/
 def eraseIdx (i : Fin n) : Vector α n → Vector α (n - 1)
-  | ⟨l, p⟩ => ⟨List.eraseIdx l i.1, by rw [l.length_eraseIdx_of_lt] <;> rw [p]; exact i.2⟩
+  | ⟨l, p⟩ => ⟨List.eraseIdx l i.val, by rw [l.length_eraseIdx_of_lt] <;> rw [p]; exact i.isLt⟩
 
 /-- Vector of length `n` from a function on `Fin n`. -/
 def ofFn : ∀ {n}, (Fin n → α) → Vector α n
@@ -205,7 +209,7 @@ protected theorem eq {n : ℕ} : ∀ a1 a2 : Vector α n, toList a1 = toList a2 
 
 /-- A vector of length `0` is a `nil` vector. -/
 protected theorem eq_nil (v : Vector α 0) : v = nil :=
-  v.eq nil (List.eq_nil_of_length_eq_zero v.2)
+  v.eq nil (List.eq_nil_of_length_eq_zero v.property)
 
 /-- Vector of length from a list `v`
 with witness that `v` has length `n` maps to `v` under `toList`. -/
@@ -221,7 +225,7 @@ theorem toList_nil : toList nil = @List.nil α :=
 /-- The length of the list to which a vector of length `n` maps is `n`. -/
 @[simp]
 theorem toList_length (v : Vector α n) : (toList v).length = n :=
-  v.2
+  v.property
 
 /-- `toList` of `cons` of a vector and an element is
 the `cons` of the list obtained by `toList` and the element -/
@@ -232,10 +236,7 @@ theorem toList_cons (a : α) (v : Vector α n) : toList (cons a v) = a :: toList
 /-- Appending of vectors corresponds under `toList` to appending of lists. -/
 @[simp]
 theorem toList_append {n m : ℕ} (v : Vector α n) (w : Vector α m) :
-    toList (v ++ w) = toList v ++ toList w := by
-  cases v
-  cases w
-  rfl
+    toList (v ++ w) = toList v ++ toList w := rfl
 
 /-- `drop` of vectors corresponds under `toList` to `drop` of lists. -/
 @[simp]

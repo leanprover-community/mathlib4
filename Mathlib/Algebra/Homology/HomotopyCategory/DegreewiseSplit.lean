@@ -3,7 +3,12 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomotopyCategory.Pretriangulated
+module
+
+public import Mathlib.Algebra.Homology.HomotopyCategory.Pretriangulated
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Degreewise split exact sequences of cochain complexes
@@ -13,8 +18,9 @@ The main result of this file is the lemma
 that a triangle in `HomotopyCategory C (ComplexShape.up ℤ)`
 is distinguished iff it is isomorphic to the triangle attached to a
 degreewise split short exact sequence of cochain complexes.
-
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -36,14 +42,14 @@ variable (S : ShortComplex (CochainComplex C ℤ))
 /-- The `1`-cocycle attached to a degreewise split short exact sequence of cochain complexes. -/
 def cocycleOfDegreewiseSplit : Cocycle S.X₃ S.X₁ 1 :=
   Cocycle.mk
-    (Cochain.mk (fun p q _ => (σ p).s ≫ S.X₂.d p q ≫ (σ q).r)) 2 (by omega) (by
+    (Cochain.mk (fun p q _ => (σ p).s ≫ S.X₂.d p q ≫ (σ q).r)) 2 (by lia) (by
       ext p _ rfl
       have := mono_of_mono_fac (σ (p + 2)).f_r
       have r_f := fun n => (σ n).r_f
       have s_g := fun n => (σ n).s_g
       dsimp at this r_f s_g ⊢
-      rw [δ_v 1 2 (by omega) _ p (p + 2) (by omega) (p + 1) (p + 1)
-        (by omega) (by omega), Cochain.mk_v, Cochain.mk_v,
+      rw [δ_v 1 2 (by lia) _ p (p + 2) (by lia) (p + 1) (p + 1)
+        (by lia) (by lia), Cochain.mk_v, Cochain.mk_v,
         show Int.negOnePow 2 = 1 by rfl, one_smul, assoc, assoc,
         ← cancel_mono (S.f.f (p + 2)), add_comp, assoc, assoc, assoc,
         assoc, assoc, assoc, zero_comp, ← S.f.comm, reassoc_of% (r_f (p + 1)),
@@ -60,12 +66,12 @@ def homOfDegreewiseSplit : S.X₃ ⟶ S.X₁⟦(1 : ℤ)⟧ :=
 @[simp]
 lemma homOfDegreewiseSplit_f (n : ℤ) :
     (homOfDegreewiseSplit S σ).f n =
-      (cocycleOfDegreewiseSplit S σ).1.v n (n + 1) rfl := by
+      (cocycleOfDegreewiseSplit S σ).val.v n (n + 1) rfl := by
   simp [homOfDegreewiseSplit, Cochain.rightShift_v _ _ _ _ _ _ _ _ rfl]
 
 /-- The triangle in `CochainComplex C ℤ` attached to a degreewise split short exact sequence
 of cochain complexes. -/
-@[simps! obj₁ obj₂ obj₃ mor₁ mor₂ mor₃]
+@[simps! obj₁ obj₂ obj₃ mor₁ mor₂ mor₃, implicit_reducible]
 def triangleOfDegreewiseSplit : Triangle (CochainComplex C ℤ) :=
   Triangle.mk S.f S.g (homOfDegreewiseSplit S σ)
 
@@ -81,10 +87,10 @@ variable [HasBinaryBiproducts C]
 when `p + 1 = q`. -/
 noncomputable def mappingConeHomOfDegreewiseSplitXIso (p q : ℤ) (hpq : p + 1 = q) :
     (mappingCone (homOfDegreewiseSplit S σ)).X p ≅ S.X₂.X q where
-  hom := (mappingCone.fst (homOfDegreewiseSplit S σ)).1.v p q hpq ≫ (σ q).s -
+  hom := (mappingCone.fst (homOfDegreewiseSplit S σ)).val.v p q hpq ≫ (σ q).s -
     (mappingCone.snd (homOfDegreewiseSplit S σ)).v p p (add_zero p) ≫
-      by exact (Cochain.ofHom S.f).v (p + 1) q (by omega)
-  inv := S.g.f q ≫ (mappingCone.inl (homOfDegreewiseSplit S σ)).v q p (by omega) -
+      by exact (Cochain.ofHom S.f).v (p + 1) q (by lia)
+  inv := S.g.f q ≫ (mappingCone.inl (homOfDegreewiseSplit S σ)).v q p (by lia) -
     by exact (σ q).r ≫ (S.X₁.XIsoOfEq hpq.symm).hom ≫
       (mappingCone.inr (homOfDegreewiseSplit S σ)).f p
   hom_inv_id := by
@@ -122,7 +128,7 @@ noncomputable def mappingConeHomOfDegreewiseSplitIso :
     have s_g := (σ (p + 1)).s_g
     dsimp at r_f s_g ⊢
     simp only [mappingConeHomOfDegreewiseSplitXIso, mappingCone.ext_from_iff _ _ _ rfl,
-      mappingCone.inl_v_d_assoc _ (p + 1) _ (p + 1 + 1) (by linarith) (by omega),
+      mappingCone.inl_v_d_assoc _ (p + 1) _ (p + 1 + 1) (by linarith) (by lia),
       cocycleOfDegreewiseSplit, r_f, Int.reduceNeg, Cochain.ofHom_v, sub_comp, assoc,
       Hom.comm, comp_sub, mappingCone.inl_v_fst_v_assoc, mappingCone.inl_v_snd_v_assoc,
       shiftFunctor_obj_X', zero_comp, sub_zero, homOfDegreewiseSplit_f,
@@ -138,20 +144,15 @@ noncomputable def mappingConeHomOfDegreewiseSplitIso :
 lemma shift_f_comp_mappingConeHomOfDegreewiseSplitIso_inv :
     S.f⟦(1 : ℤ)⟧' ≫ (mappingConeHomOfDegreewiseSplitIso S σ).inv = -mappingCone.inr _ := by
   ext n
-  have h := (σ (n + 1)).f_r
-  dsimp at h
-  dsimp [mappingConeHomOfDegreewiseSplitXIso]
-  rw [id_comp, comp_sub, ← comp_f_assoc, S.zero, zero_f, zero_comp, zero_sub, reassoc_of% h]
+  simp [mappingConeHomOfDegreewiseSplitXIso, ← comp_f_assoc,
+    reassoc_of% dsimp% (σ (n + 1)).f_r]
 
 @[reassoc (attr := simp)]
 lemma mappingConeHomOfDegreewiseSplitIso_inv_comp_triangle_mor₃ :
     (mappingConeHomOfDegreewiseSplitIso S σ).inv ≫
       (mappingCone.triangle (homOfDegreewiseSplit S σ)).mor₃ = -S.g⟦(1 : ℤ)⟧' := by
   ext n
-  dsimp [mappingConeHomOfDegreewiseSplitXIso]
-  simp only [Int.reduceNeg, id_comp, sub_comp, assoc, mappingCone.inl_v_triangle_mor₃_f,
-    shiftFunctor_obj_X, shiftFunctorObjXIso, XIsoOfEq_rfl, Iso.refl_inv, comp_neg, comp_id,
-    mappingCone.inr_f_triangle_mor₃_f, comp_zero, sub_zero]
+  simp [mappingConeHomOfDegreewiseSplitXIso]
 
 /-- The canonical isomorphism of triangles
 `(triangleOfDegreewiseSplit S σ).rotate.rotate ≅ mappingCone.triangle (homOfDegreewiseSplit S σ)`
@@ -160,11 +161,6 @@ noncomputable def triangleOfDegreewiseSplitRotateRotateIso :
     (triangleOfDegreewiseSplit S σ).rotate.rotate ≅
       mappingCone.triangle (homOfDegreewiseSplit S σ) :=
   Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (mappingConeHomOfDegreewiseSplitIso S σ).symm
-    (by dsimp; simp only [comp_id, id_comp])
-    (by dsimp; simp only [neg_comp, shift_f_comp_mappingConeHomOfDegreewiseSplitIso_inv,
-      neg_neg, id_comp])
-    (by dsimp; simp only [CategoryTheory.Functor.map_id, comp_id,
-      mappingConeHomOfDegreewiseSplitIso_inv_comp_triangle_mor₃])
 
 /-- The canonical isomorphism between `(trianglehOfDegreewiseSplit S σ).rotate.rotate` and
 `mappingCone.triangleh (homOfDegreewiseSplit S σ)` when `S` is a degreewise split
@@ -183,7 +179,7 @@ variable {K L : CochainComplex C ℤ} (φ : K ⟶ L)
 
 /-- Given a morphism of cochain complexes `φ`, this is the short complex
 given by `(triangle φ).rotate`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def triangleRotateShortComplex : ShortComplex (CochainComplex C ℤ) :=
   ShortComplex.mk (triangle φ).rotate.mor₁ (triangle φ).rotate.mor₂ (by simp)
 
@@ -192,13 +188,13 @@ cochain complexes. -/
 @[simps]
 noncomputable def triangleRotateShortComplexSplitting (n : ℤ) :
     ((triangleRotateShortComplex φ).map (eval _ _ n)).Splitting where
-  s := -(inl φ).v (n + 1) n (by omega)
+  s := -(inl φ).v (n + 1) n (by lia)
   r := (snd φ).v n n (add_zero n)
   id := by simp [ext_from_iff φ _ _ rfl]
 
 @[simp]
 lemma cocycleOfDegreewiseSplit_triangleRotateShortComplexSplitting_v (p : ℤ) :
-    (cocycleOfDegreewiseSplit _ (triangleRotateShortComplexSplitting φ)).1.v p _ rfl =
+    (cocycleOfDegreewiseSplit _ (triangleRotateShortComplexSplitting φ)).val.v p _ rfl =
       -φ.f _ := by
   simp [cocycleOfDegreewiseSplit, d_snd_v φ p (p + 1) rfl]
 
@@ -221,6 +217,28 @@ noncomputable def trianglehRotateIsoTrianglehOfDegreewiseSplit :
 
 end mappingCone
 
+lemma trianglehOfDegreewiseSplit_distinguished [HasZeroObject C]
+    (σ : ∀ n, (S.map (eval _ _ n)).Splitting) :
+    trianglehOfDegreewiseSplit S σ ∈ distTriang _ := by
+  rw [rotate_distinguished_triangle, rotate_distinguished_triangle]
+  refine isomorphic_distinguished _ ?_ _
+    (CochainComplex.trianglehOfDegreewiseSplitRotateRotateIso S σ)
+  exact ⟨_, _, _, ⟨Iso.refl _⟩⟩
+
+lemma homotopyEquivalences_shortComplexF_iff_of_splitting [HasZeroObject C]
+    (σ : ∀ n, (S.map (eval _ _ n)).Splitting) :
+    homotopyEquivalences _ _ S.f ↔ Nonempty (Homotopy (𝟙 S.X₃) 0) := by
+  rw [← HomotopyCategory.isZero_quotient_obj_iff,
+    ← isIso_quotient_map_iff_homotopyEquivalences]
+  exact (Triangle.isZero₃_iff_isIso₁ _ (trianglehOfDegreewiseSplit_distinguished S σ)).symm
+
+lemma homotopyEquivalences_shortComplexG_iff_of_splitting [HasZeroObject C]
+    (σ : ∀ n, (S.map (eval _ _ n)).Splitting) :
+    homotopyEquivalences _ _ S.g ↔ Nonempty (Homotopy (𝟙 S.X₁) 0) := by
+  rw [← HomotopyCategory.isZero_quotient_obj_iff,
+    ← isIso_quotient_map_iff_homotopyEquivalences]
+  exact (Triangle.isZero₁_iff_isIso₂ _ (trianglehOfDegreewiseSplit_distinguished S σ)).symm
+
 end CochainComplex
 
 namespace HomotopyCategory
@@ -238,10 +256,7 @@ lemma distinguished_iff_iso_trianglehOfDegreewiseSplit
     exact ⟨_, _, ⟨(triangleRotation _).counitIso.symm.app _ ≪≫ (rotate _).mapIso e ≪≫
       CochainComplex.mappingCone.trianglehRotateIsoTrianglehOfDegreewiseSplit φ⟩⟩
   · rintro ⟨S, σ, ⟨e⟩⟩
-    rw [rotate_distinguished_triangle, rotate_distinguished_triangle]
-    refine isomorphic_distinguished _ ?_ _
-      ((rotate _ ⋙ rotate _).mapIso e ≪≫
-        CochainComplex.trianglehOfDegreewiseSplitRotateRotateIso S σ)
-    exact ⟨_, _, _, ⟨Iso.refl _⟩⟩
+    exact isomorphic_distinguished _
+      (CochainComplex.trianglehOfDegreewiseSplit_distinguished S σ) _ e
 
 end HomotopyCategory

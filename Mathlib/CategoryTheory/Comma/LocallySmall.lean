@@ -3,10 +3,13 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
-import Mathlib.CategoryTheory.Comma.Over.Basic
-import Mathlib.CategoryTheory.EssentiallySmall
+public import Mathlib.CategoryTheory.Comma.Over.Basic
+public import Mathlib.CategoryTheory.EssentiallySmall
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Comma categories are locally small
@@ -14,8 +17,9 @@ import Mathlib.CategoryTheory.EssentiallySmall
 We introduce instances showing that the various comma categories
 are locally small when the relevant categories that are
 involved are locally small.
-
 -/
+
+public section
 
 universe w v₁ v₂ v₃ u₁ u₂ u₃
 

@@ -3,12 +3,15 @@ Copyright (c) 2022 Antoine Labelle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle
 -/
-import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-import Mathlib.CategoryTheory.Monoidal.Linear
-import Mathlib.CategoryTheory.Monoidal.Transport
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.CategoryTheory.Linear.LinearFunctor
-import Mathlib.CategoryTheory.Closed.Monoidal
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
+public import Mathlib.CategoryTheory.Monoidal.Linear
+public import Mathlib.CategoryTheory.Monoidal.Transport
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Full monoidal subcategories
@@ -22,8 +25,11 @@ When `C` is also braided/symmetric, the full monoidal subcategory also inherits 
 braided/symmetric structure.
 
 ## TODO
+
 * Add monoidal/braided versions of `ObjectProperty.Lift`
 -/
+
+public section
 
 
 universe u v
@@ -73,14 +79,14 @@ variable (P : ObjectProperty C) [P.IsMonoidal]
 
 @[simps]
 instance : MonoidalCategoryStruct P.FullSubcategory where
-  tensorObj X Y := ⟨X.1 ⊗ Y.1, prop_tensor X.2 Y.2⟩
-  whiskerLeft X _ _ f := X.1 ◁ f
-  whiskerRight {X₁ X₂} (f : X₁.1 ⟶ X₂.1) Y := (f ▷ Y.1 :)
-  tensorHom f g := f ⊗ₘ g
+  tensorObj X Y := ⟨X.obj ⊗ Y.obj, prop_tensor X.property Y.property⟩
+  whiskerLeft X _ _ f := ObjectProperty.homMk (X.obj ◁ f.hom)
+  whiskerRight f Y := ObjectProperty.homMk (f.hom ▷ Y.obj)
+  tensorHom f g := ObjectProperty.homMk (f.hom ⊗ₘ g.hom)
   tensorUnit := ⟨𝟙_ C, P.prop_unit⟩
-  associator X Y Z := P.isoMk (α_ X.1 Y.1 Z.1)
-  leftUnitor X :=  P.isoMk (λ_ X.1)
-  rightUnitor X := P.isoMk (ρ_ X.1)
+  associator X Y Z := P.isoMk (α_ X.obj Y.obj Z.obj)
+  leftUnitor X := P.isoMk (λ_ X.obj)
+  rightUnitor X := P.isoMk (ρ_ X.obj)
 
 /--
 When `P : ObjectProperty C` is monoidal, the full subcategory for `P` inherits the
@@ -116,7 +122,7 @@ instance [MonoidalPreadditive C] : MonoidalPreadditive P.FullSubcategory :=
 variable (R : Type*) [Ring R] [Linear R C]
 
 instance [MonoidalPreadditive C] [MonoidalLinear R C] : MonoidalLinear R P.FullSubcategory :=
-  monoidalLinearOfFaithful R P.ι
+  .ofFaithful R P.ι
 
 end
 
@@ -145,7 +151,7 @@ variable [BraidedCategory C]
 /-- The braided structure on a full subcategory inherited by the braided structure on `C`.
 -/
 instance fullBraidedSubcategory : BraidedCategory (FullSubcategory P) :=
-  .ofFaithful P.ι fun X Y ↦ P.isoMk (β_ X.1 Y.1)
+  .ofFaithful P.ι fun X Y ↦ P.isoMk (β_ X.obj Y.obj)
 
 /-- The forgetful braided functor from a full braided subcategory into the original category
 ("forgetting" the condition).
@@ -166,7 +172,7 @@ section Symmetric
 variable [SymmetricCategory C]
 
 instance fullSymmetricSubcategory : SymmetricCategory P.FullSubcategory :=
-  symmetricCategoryOfFaithful P.ι
+  .ofFaithful P.ι
 
 end Symmetric
 
@@ -176,19 +182,10 @@ variable [MonoidalClosed C] [P.IsMonoidalClosed]
 
 instance fullMonoidalClosedSubcategory : MonoidalClosed (FullSubcategory P) where
   closed X :=
-    { rightAdj := P.lift (P.ι ⋙ ihom X.1)
-        fun Y => P.prop_ihom X.2 Y.2
+    { rightAdj := P.lift (P.ι ⋙ ihom X.obj) (fun Y => P.prop_ihom X.property Y.property)
       adj :=
-        { unit :=
-          { app := fun Y => (ihom.coev X.1).app Y.1
-            naturality := fun _ _ f => ihom.coev_naturality X.1 f }
-          counit :=
-          { app := fun Y => (ihom.ev X.1).app Y.1
-            naturality := fun _ _ f => ihom.ev_naturality X.1 f }
-          left_triangle_components := fun X ↦
-            by simp [FullSubcategory.comp_def, FullSubcategory.id_def]
-          right_triangle_components := fun Y ↦
-            by simp [FullSubcategory.comp_def, FullSubcategory.id_def] } }
+        { unit := { app Y := ObjectProperty.homMk ((ihom.coev X.obj).app Y.obj) }
+          counit := { app Y := ObjectProperty.homMk ((ihom.ev X.obj).app Y.obj) } } }
 
 @[simp]
 theorem ihom_obj (X Y : P.FullSubcategory) :
@@ -196,15 +193,12 @@ theorem ihom_obj (X Y : P.FullSubcategory) :
   rfl
 
 @[simp]
-theorem ihom_map (X : P.FullSubcategory) {Y Z : P.FullSubcategory}
-    (f : Y ⟶ Z) : (ihom X).map f = (ihom X.obj).map f :=
+theorem ihom_map_hom (X : P.FullSubcategory) {Y Z : P.FullSubcategory}
+    (f : Y ⟶ Z) : ((ihom X).map f).hom = (ihom X.obj).map f.hom :=
   rfl
 
 end Closed
 
 end ObjectProperty
-
-@[deprecated (since := "2025-03-05")]
-alias MonoidalCategory.MonoidalPredicate := ObjectProperty.IsMonoidal
 
 end CategoryTheory

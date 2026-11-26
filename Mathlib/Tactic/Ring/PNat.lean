@@ -3,8 +3,15 @@ Copyright (c) 2023 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Tactic.Ring.Basic
-import Mathlib.Data.PNat.Basic
+module
+
+public meta import Mathlib.Data.PNat.Basic
+public meta import Mathlib.Tactic.Ring.Basic
+public import Mathlib.Data.PNat.Basic
+public import Mathlib.Tactic.Ring.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Additional instances for `ring` over `PNat`
@@ -12,6 +19,8 @@ import Mathlib.Data.PNat.Basic
 This adds some instances which enable `ring` to work on `PNat` even though it is not a commutative
 semiring, by lifting to `Nat`.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.Ring
 
@@ -33,13 +42,13 @@ instance {n} : CSLiftVal (Nat.toPNat' n) (n.pred + 1) := ⟨rfl⟩
 instance {n k} : CSLiftVal (PNat.divExact n k) (n.div k + 1) := ⟨rfl⟩
 
 instance {n n' k k'} [h1 : CSLiftVal (n : ℕ+) n'] [h2 : CSLiftVal (k : ℕ+) k'] :
-    CSLiftVal (n + k) (n' + k') := ⟨by simp [h1.1, h2.1, CSLift.lift]⟩
+    CSLiftVal (n + k) (n' + k') := ⟨by simp [h1.eq, h2.eq, CSLift.lift]⟩
 
 instance {n n' k k'} [h1 : CSLiftVal (n : ℕ+) n'] [h2 : CSLiftVal (k : ℕ+) k'] :
-    CSLiftVal (n * k) (n' * k') := ⟨by simp [h1.1, h2.1, CSLift.lift]⟩
+    CSLiftVal (n * k) (n' * k') := ⟨by simp [h1.eq, h2.eq, CSLift.lift]⟩
 
 instance {n n' k} [h1 : CSLiftVal (n : ℕ+) n'] :
-    CSLiftVal (n ^ k) (n' ^ k) := ⟨by simp [h1.1, CSLift.lift]⟩
+    CSLiftVal (n ^ k) (n' ^ k) := ⟨by simp [h1.eq, CSLift.lift]⟩
 
 end Ring
 

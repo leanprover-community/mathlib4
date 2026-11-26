@@ -1,4 +1,7 @@
-import Mathlib.Tactic.Eqns
+module
+
+public import Mathlib.Tactic.Eqns
+
 def transpose {m n} (A : m → n → Nat) : n → m → Nat
   | i, j => A j i
 
@@ -27,7 +30,7 @@ theorem t_def' : t = 1 := by rw [t]
 -- attribute [eqns t_def] t
 
 /--
-warning: declaration uses 'sorry'
+warning: declaration uses `sorry`
 -/
 #guard_msgs in
 -- the above should error as the above equation would not have changed the output of the below

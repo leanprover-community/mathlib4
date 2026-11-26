@@ -3,12 +3,19 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Data.Set.Operations
+module
+
+public import Lean.Expr
+public import Mathlib.Data.Set.CoeSort
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Additional Expr recognizers needing theory imports
-
 -/
+
+public section
 
 namespace Lean.Expr
 

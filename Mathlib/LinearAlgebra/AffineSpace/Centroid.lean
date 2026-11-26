@@ -3,7 +3,9 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.LinearAlgebra.AffineSpace.Combination
+module
+
+public import Mathlib.LinearAlgebra.AffineSpace.Combination
 
 /-!
 # Centroid of a Finite Set of Points in Affine Space
@@ -18,14 +20,15 @@ ring.
 
 * `centroid`: the centroid of a `Finset` of points, defined as the affine combination using
   `centroidWeights`.
-
 -/
+
+@[expose] public section
 
 assert_not_exists Affine.Simplex
 
 noncomputable section
 
-open Affine
+open scoped Affine
 
 namespace Finset
 
@@ -92,14 +95,13 @@ theorem centroid_singleton (p : ι → P) (i : ι) : ({i} : Finset ι).centroid 
 
 /-- The centroid of two points, expressed directly as adding a vector
 to a point. -/
-theorem centroid_pair [DecidableEq ι] [Invertible (2 : k)] (p : ι → P) (i₁ i₂ : ι) :
+theorem centroid_pair [DecidableEq ι] [NeZero (2 : k)] (p : ι → P) (i₁ i₂ : ι) :
     ({i₁, i₂} : Finset ι).centroid k p = (2⁻¹ : k) • (p i₂ -ᵥ p i₁) +ᵥ p i₁ := by
   by_cases h : i₁ = i₂
   · simp [h]
   · have hc : (#{i₁, i₂} : k) ≠ 0 := by
       rw [card_insert_of_notMem (notMem_singleton.2 h), card_singleton]
-      norm_num
-      exact Invertible.ne_zero _
+      simpa using NeZero.ne _
     rw [centroid_def,
       affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one _ _ _
         (sum_centroidWeights_eq_one_of_cast_card_ne_zero _ hc) (p i₁)]
@@ -107,7 +109,7 @@ theorem centroid_pair [DecidableEq ι] [Invertible (2 : k)] (p : ι → P) (i₁
 
 /-- The centroid of two points indexed by `Fin 2`, expressed directly
 as adding a vector to the first point. -/
-theorem centroid_pair_fin [Invertible (2 : k)] (p : Fin 2 → P) :
+theorem centroid_pair_fin [NeZero (2 : k)] (p : Fin 2 → P) :
     univ.centroid k p = (2⁻¹ : k) • (p 1 -ᵥ p 0) +ᵥ p 0 := by
   rw [univ_fin2]
   convert centroid_pair k p 0 1
@@ -204,6 +206,15 @@ theorem centroid_eq_of_inj_on_of_image_eq {p : ι → P}
     s.centroid k p = s₂.centroid k p₂ := by
   classical rw [s.centroid_eq_centroid_image_of_inj_on k hi rfl,
       s₂.centroid_eq_centroid_image_of_inj_on k hi₂ he]
+
+/-- The centroid commutes with translation by a constant point.
+Subtracting a fixed point `p₀` from the centroid is the same as taking the centroid of
+the family translated by `-ᵥ p₀` -/
+theorem centroid_vsub_const [CharZero k] {p : ι → P} {p₀ : P} (hs : s.Nonempty) :
+    Finset.centroid k s p -ᵥ p₀ = Finset.centroid k s (fun i => p i -ᵥ p₀) := by
+  have h := s.sum_centroidWeights_eq_one_of_nonempty k hs
+  simp only [centroid_def]
+  grind [sum_smul_vsub_const_eq_affineCombination_vsub, affineCombination_eq_linear_combination]
 
 end Finset
 

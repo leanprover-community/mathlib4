@@ -3,7 +3,12 @@ Copyright (c) 2025 Monica Omar. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Monica Omar
 -/
-import Mathlib.RingTheory.Coalgebra.Basic
+module
+
+public import Mathlib.RingTheory.Coalgebra.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # MulOpposite of coalgebras
@@ -11,6 +16,8 @@ import Mathlib.RingTheory.Coalgebra.Basic
 Suppose `R` is a commutative semiring, and `A` is an `R`-coalgebra,
 then `Aᵐᵒᵖ` is an `R`-coalgebra, where we define the comultiplication and counit maps naturally.
 -/
+
+public section
 
 namespace MulOpposite
 
@@ -35,7 +42,7 @@ lemma counit_def [CoalgebraStruct R A] :
 noncomputable instance [Coalgebra R A] : Coalgebra R Aᵐᵒᵖ where
   coassoc := ext fun _ => by
     rw [comul_def, rTensor_comp, rTensor_comp]
-    simp only [coe_comp, LinearEquiv.coe_coe, Function.comp_apply, lTensor_map, rTensor_def]
+    simp only [coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply, lTensor_map, rTensor_def]
     simp_rw [← map_map_assoc, map_map, comp_assoc, ← lTensor_comp_rTensor]
     simp [lTensor_tensor, comp_assoc]
   rTensor_counit_comp_comul := ext fun _ => by

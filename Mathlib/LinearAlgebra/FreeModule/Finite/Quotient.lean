@@ -3,11 +3,13 @@ Copyright (c) 2025 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Xavier Roblot
 -/
-import Mathlib.Data.ZMod.QuotientRing
-import Mathlib.LinearAlgebra.Dimension.Constructions
-import Mathlib.LinearAlgebra.FreeModule.PID
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.LinearAlgebra.Quotient.Pi
+module
+
+public import Mathlib.Data.ZMod.QuotientRing
+public import Mathlib.LinearAlgebra.Dimension.Constructions
+public import Mathlib.LinearAlgebra.FreeModule.PID
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+public import Mathlib.LinearAlgebra.Quotient.Pi
 
 /-! # Quotient of submodules of full rank in free finite modules over PIDs
 
@@ -15,8 +17,9 @@ import Mathlib.LinearAlgebra.Quotient.Pi
 
 * `Submodule.quotientEquivPiSpan`: `M ⧸ N`, if `M` is free finite module over a PID `R` and `N`
   is a submodule of full rank, can be written as a product of quotients of `R` by principal ideals.
-
 -/
+
+@[expose] public section
 
 open Module
 open scoped DirectSum
@@ -46,7 +49,7 @@ noncomputable def quotientEquivPiSpan (N : Submodule R M) (b : Basis ι R M)
     simp_rw [ab.mem_submodule_iff', ab, ab_eq]
     have : ∀ (c : ι → R) (i), b'.repr (∑ j : ι, c j • a j • b' j) i = a i * c i := by
       intro c i
-      simp only [← MulAction.mul_smul, b'.repr_sum_self, mul_comm]
+      simp only [← mul_smul, b'.repr_sum_self, mul_comm]
     constructor
     · rintro ⟨c, rfl⟩ i
       exact ⟨c i, this c i⟩
@@ -59,14 +62,14 @@ noncomputable def quotientEquivPiSpan (N : Submodule R M) (b : Basis ι R M)
   have : Submodule.map (b'.equivFun : M →ₗ[R] ι → R) N = N' := by
     ext x
     simp only [N', Submodule.mem_map, Submodule.mem_pi, mem_span_singleton, Set.mem_univ,
-      mem_I_iff, smul_eq_mul, forall_true_left, LinearEquiv.coe_coe,
+      mem_I_iff, smul_eq_mul, forall_true_left, LinearEquiv.coe_toLinearMap,
       Basis.equivFun_apply, mul_comm _ (a _), eq_comm (b := (x _))]
     constructor
     · rintro ⟨y, hy, rfl⟩ i
       exact hy i
     · rintro hdvd
       refine ⟨∑ i, x i • b' i, fun i => ?_, ?_⟩ <;> rw [b'.repr_sum_self]
-      · exact hdvd i
+      exact hdvd i
   refine (Submodule.Quotient.equiv N N' b'.equivFun this).trans (re₂₃ := inferInstance)
     (re₃₂ := inferInstance) ?_
   classical
@@ -98,15 +101,12 @@ theorem finiteQuotientOfFreeOfRankEq [Module.Free ℤ M] [Module.Finite ℤ M]
     ⟨Int.natAbs_ne_zero.mpr (smithNormalFormCoeffs_ne_zero b h i)⟩
   exact Finite.of_equiv (Π i, ZMod (a i).natAbs) e.symm
 
-@[deprecated (since := "2025-03-15")] alias fintypeQuotientOfFreeOfRankEq :=
-  finiteQuotientOfFreeOfRankEq
-
 theorem finiteQuotient_iff [Module.Free ℤ M] [Module.Finite ℤ M] (N : Submodule ℤ M) :
     Finite (M ⧸ N) ↔ Module.finrank ℤ N = Module.finrank ℤ M := by
   refine ⟨fun h ↦ le_antisymm (finrank_le N) <|
     ((LinearMap.lsmul ℤ M (Nat.card (M ⧸ N))).codRestrict N
       fun x ↦ ?_).finrank_le_finrank_of_injective ?_, fun h ↦ finiteQuotientOfFreeOfRankEq N h⟩
-  · simpa using AddSubgroup.nsmul_index_mem N.toAddSubgroup x
+  · simpa using! AddSubgroup.nsmul_index_mem N.toAddSubgroup x
   · refine (LinearMap.lsmul_injective ?_).codRestrict _
     exact Int.ofNat_ne_zero.mpr <| Nat.card_ne_zero.mpr
       ⟨Set.nonempty_iff_univ_nonempty.mpr Set.univ_nonempty, h⟩

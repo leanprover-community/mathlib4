@@ -3,17 +3,19 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-import Mathlib.Algebra.Ring.Subring.MulOpposite
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.Algebra.Ring.Subring.MulOpposite
 
 /-!
-
 # Subalgebras of opposite rings
 
 For every ring `A` over a commutative ring `R`, we construct an equivalence between
 subalgebras of `A / R` and that of `Aᵐᵒᵖ / R`.
-
 -/
+
+@[expose] public section
 
 namespace Subalgebra
 
@@ -145,13 +147,13 @@ def linearEquivOp (S : Subalgebra R A) : S ≃ₗ[R] S.op where
 @[simps!]
 def algEquivOpMop (S : Subalgebra R A) : S ≃ₐ[R] (S.op)ᵐᵒᵖ where
   __ := S.toSubsemiring.ringEquivOpMop
-  commutes' _ := rfl
+  map_smul' _ _ := rfl
 
 /-- Bijection between `MulOpposite` of a subalgebra `S` and its opposite. -/
 @[simps!]
 def mopAlgEquivOp (S : Subalgebra R A) : Sᵐᵒᵖ ≃ₐ[R] S.op where
   __ := S.toSubsemiring.mopRingEquivOp
-  commutes' _ := rfl
+  map_smul' _ _ := rfl
 
 end Semiring
 

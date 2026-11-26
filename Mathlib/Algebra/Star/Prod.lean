@@ -3,16 +3,22 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Ring.Prod
-import Mathlib.Algebra.Star.Basic
+module
+
+public import Mathlib.Algebra.Ring.Prod
+public import Mathlib.Algebra.Star.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Basic Results about Star on Product Type
 
 This file provides basic results about the star on product types defined in
 `Mathlib/Algebra/Notation/Prod.lean`.
-
 -/
+
+public section
 
 
 universe u v w
@@ -36,14 +42,28 @@ instance [AddMonoid R] [AddMonoid S] [StarAddMonoid R] [StarAddMonoid S] :
 
 instance [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S] [StarRing R] [StarRing S] :
     StarRing (R × S) :=
-  { inferInstanceAs (StarAddMonoid (R × S)),
-    inferInstanceAs (StarMul (R × S)) with }
+  { (inferInstance : StarAddMonoid (R × S)),
+    (inferInstance : StarMul (R × S)) with }
 
 instance {α : Type w} [SMul α R] [SMul α S] [Star α] [Star R] [Star S]
     [StarModule α R] [StarModule α S] : StarModule α (R × S) where
   star_smul _ _ := Prod.ext (star_smul _ _) (star_smul _ _)
 
 end Prod
+
+namespace IsStarOrtho
+
+open scoped StarRing
+
+variable [NonUnitalSemiring R] [StarRing R] [NonUnitalSemiring S] [StarRing S]
+
+lemma prod_iff {x y : R × S} : x ⋆⟂ y ↔ x.1 ⋆⟂ y.1 ∧ x.2 ⋆⟂ y.2 := by
+  aesop (add simp [isStarOrtho_iff, Prod.ext_iff])
+
+protected lemma prod {a b : R} {x y : S} (hab : a ⋆⟂ b) (hxy : x ⋆⟂ y) : (a, x) ⋆⟂ (b, y) :=
+  prod_iff.mpr ⟨hab, hxy⟩
+
+end IsStarOrtho
 
 theorem Units.embed_product_star [Monoid R] [StarMul R] (u : Rˣ) :
     Units.embedProduct R (star u) = star (Units.embedProduct R u) :=

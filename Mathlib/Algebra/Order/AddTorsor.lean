@@ -3,11 +3,14 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Algebra.Order.Monoid.Defs
+module
+
+public import Mathlib.Algebra.Group.Action.Defs
+public import Mathlib.Algebra.Order.Monoid.Defs
 
 /-!
 # Ordered scalar multiplication and vector addition
+
 This file defines ordered scalar multiplication and vector addition, and proves some properties.
 In the additive case, a motivating example is given by the additive action of `ℤ` on subsets of
 reals that are closed under integer translation.  The order compatibility allows for a treatment of
@@ -15,13 +18,8 @@ the `R((z))`-module structure on `(z ^ s) V((z))` for an `R`-module `V`, using t
 series.  In the multiplicative case, a standard example is the action of non-negative rationals on
 an ordered field.
 
-## Implementation notes
-* Because these classes mix the algebra and order hierarchies, we write them as `Prop`-valued
-  mixins.
-* Despite the file name, Ordered AddTorsors are not defined as a separate class.  To implement them,
-  combine `[AddTorsor G P]` with `[IsOrderedCancelVAdd G P]`
+## Main definitions
 
-## Definitions
 * IsOrderedSMul : inequalities are preserved by scalar multiplication.
 * IsOrderedVAdd : inequalities are preserved by translation.
 * IsCancelSMul : the scalar multiplication version of cancellative multiplication
@@ -30,24 +28,33 @@ an ordered field.
 * IsOrderedCancelVAdd : inequalities are preserved and reflected by translation.
 
 ## Instances
-* OrderedCommMonoid.toIsOrderedSMul
-* OrderedAddCommMonoid.toIsOrderedVAdd
-* IsOrderedSMul.toCovariantClassLeft
-* IsOrderedVAdd.toCovariantClassLeft
-* IsOrderedCancelSMul.toCancelSMul
-* IsOrderedCancelVAdd.toCancelVAdd
-* OrderedCancelCommMonoid.toIsOrderedCancelSMul
-* OrderedCancelAddCommMonoid.toIsOrderedCancelVAdd
-* IsOrderedCancelSMul.toContravariantClassLeft
-* IsOrderedCancelVAdd.toContravariantClassLeft
+
+* `IsOrderedMonoid.toIsOrderedSMul`
+* `IsOrderedAddMonoid.toIsOrderedVAdd`
+* `IsOrderedSMul.toCovariantClassLeft`
+* `IsOrderedVAdd.toCovariantClassLeft`
+* `IsOrderedCancelSMul.toCancelSMul`
+* `IsOrderedCancelVAdd.toCancelVAdd`
+* `IsOrderedCancelMonoid.toIsOrderedCancelSMul`
+* `IsOrderedCancelAddMonoid.toIsOrderedCancelVAdd`
+* `IsOrderedCancelSMul.toContravariantClassLeft`
+* `IsOrderedCancelVAdd.toContravariantClassLeft`
+
+## Implementation notes
+
+* Because these classes mix the algebra and order hierarchies, we write them as `Prop`-valued
+  mixins.
+* Despite the file name, Ordered AddTorsors are not defined as a separate class.  To implement them,
+  combine `[AddTorsor G P]` with `[IsOrderedCancelVAdd G P]`
 
 ## TODO
+
 * (lex) prod instances
 * Pi instances
 * WithTop (in a different file?)
 -/
 
-open Function
+public section
 
 variable {G P : Type*}
 
@@ -69,11 +76,11 @@ instance [LE G] [LE P] [SMul G P] [IsOrderedSMul G P] : CovariantClass G P (· �
   elim := fun a _ _ bc ↦ IsOrderedSMul.smul_le_smul_left _ _ bc a
 
 @[to_additive]
-instance [CommMonoid G] [PartialOrder G] [IsOrderedMonoid G] : IsOrderedSMul G G where
-  smul_le_smul_left _ _ := mul_le_mul_left'
-  smul_le_smul_right _ _ := mul_le_mul_right'
+instance [CommMonoid G] [Preorder G] [IsOrderedMonoid G] : IsOrderedSMul G G where
+  smul_le_smul_left _ _ := mul_le_mul_right
+  smul_le_smul_right _ _ := mul_le_mul_left
 
-@[to_additive]
+@[to_additive (attr := gcongr)]
 theorem IsOrderedSMul.smul_le_smul [LE G] [Preorder P] [SMul G P] [IsOrderedSMul G P]
     {a b : G} {c d : P} (hab : a ≤ b) (hcd : c ≤ d) : a • c ≤ b • d :=
   (IsOrderedSMul.smul_le_smul_left _ _ hcd _).trans (IsOrderedSMul.smul_le_smul_right _ _ hab _)
@@ -84,17 +91,6 @@ theorem Monotone.smul {γ : Type*} [Preorder G] [Preorder P] [Preorder γ] [SMul
     Monotone fun x => f x • g x :=
   fun _ _ hab => (IsOrderedSMul.smul_le_smul_left _ _ (hg hab) _).trans
     (IsOrderedSMul.smul_le_smul_right _ _ (hf hab) _)
-
-/-- A vector addition is cancellative if it is pointwise injective on the left and right. -/
-class IsCancelVAdd (G P : Type*) [VAdd G P] : Prop where
-  protected left_cancel : ∀ (a : G) (b c : P), a +ᵥ b = a +ᵥ c → b = c
-  protected right_cancel : ∀ (a b : G) (c : P), a +ᵥ c = b +ᵥ c → a = b
-
-/-- A scalar multiplication is cancellative if it is pointwise injective on the left and right. -/
-@[to_additive]
-class IsCancelSMul (G P : Type*) [SMul G P] : Prop where
-  protected left_cancel : ∀ (a : G) (b c : P), a • b = a • c → b = c
-  protected right_cancel : ∀ (a b : G) (c : P), a • c = b • c → a = b
 
 /-- An ordered cancellative vector addition is an ordered vector addition that is cancellative. -/
 class IsOrderedCancelVAdd (G P : Type*) [LE G] [LE P] [VAdd G P] : Prop
@@ -113,13 +109,13 @@ class IsOrderedCancelSMul (G P : Type*) [LE G] [LE P] [SMul G P] : Prop
 @[to_additive]
 instance [PartialOrder G] [PartialOrder P] [SMul G P] [IsOrderedCancelSMul G P] :
     IsCancelSMul G P where
-  left_cancel a b c h := (IsOrderedCancelSMul.le_of_smul_le_smul_left a b c h.le).antisymm
+  left_cancel' a b c h := (IsOrderedCancelSMul.le_of_smul_le_smul_left a b c h.le).antisymm
     (IsOrderedCancelSMul.le_of_smul_le_smul_left a c b h.ge)
-  right_cancel a b c h := (IsOrderedCancelSMul.le_of_smul_le_smul_right a b c h.le).antisymm
+  right_cancel' a b c h := (IsOrderedCancelSMul.le_of_smul_le_smul_right a b c h.le).antisymm
     (IsOrderedCancelSMul.le_of_smul_le_smul_right b a c h.ge)
 
 @[to_additive]
-instance [CommMonoid G] [PartialOrder G] [IsOrderedCancelMonoid G] : IsOrderedCancelSMul G G where
+instance [CommMonoid G] [Preorder G] [IsOrderedCancelMonoid G] : IsOrderedCancelSMul G G where
   le_of_smul_le_smul_left _ _ _ := le_of_mul_le_mul_left'
   le_of_smul_le_smul_right _ _ _ := le_of_mul_le_mul_right'
 

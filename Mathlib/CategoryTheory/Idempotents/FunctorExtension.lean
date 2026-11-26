@@ -3,7 +3,12 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Idempotents.Karoubi
+module
+
+public import Mathlib.CategoryTheory.Idempotents.Karoubi
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Extension of functors to the idempotent completion
@@ -17,16 +22,17 @@ We also construct an extension `functorExtension₂` of functors
 when `D` is idempotent complete, we get equivalences
 `karoubiUniversal₂ C D : C ⥤ D ≌ Karoubi C ⥤ Karoubi D`
 and `karoubiUniversal C D : C ⥤ D ≌ Karoubi C ⥤ D`.
-
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
 namespace Idempotents
 
-open Category Karoubi Functor
+open Category Karoubi CategoryTheory.Functor
 
-variable {C D E : Type*} [Category C] [Category D] [Category E]
+variable {C D E : Type*} [Category* C] [Category* D] [Category* E]
 
 /-- A natural transformation between functors `Karoubi C ⥤ D` is determined
 by its value on objects coming from `C`. -/
@@ -41,15 +47,16 @@ namespace FunctorExtension₁
 
 /-- The canonical extension of a functor `C ⥤ Karoubi D` to a functor
 `Karoubi C ⥤ Karoubi D` -/
-@[simps]
+@[simps, implicit_reducible]
 def obj (F : C ⥤ Karoubi D) : Karoubi C ⥤ Karoubi D where
   obj P :=
-    ⟨(F.obj P.X).X, (F.map P.p).f, by simpa only [F.map_comp, hom_ext_iff] using F.congr_map P.idem⟩
-  map f := ⟨(F.map f.f).f, by simpa only [F.map_comp, hom_ext_iff] using F.congr_map f.comm⟩
+    ⟨(F.obj P.X).X, (F.map P.p).f,
+     by simpa only [F.map_comp, hom_ext_iff] using! F.congr_map P.idem⟩
+  map f := ⟨(F.map f.f).f, by simpa only [F.map_comp, hom_ext_iff] using! F.congr_map f.comm⟩
 
 /-- Extension of a natural transformation `φ` between functors
-`C ⥤ karoubi D` to a natural transformation between the
-extension of these functors to `karoubi C ⥤ karoubi D` -/
+`C ⥤ Karoubi D` to a natural transformation between the
+extension of these functors to `Karoubi C ⥤ Karoubi D` -/
 @[simps]
 def map {F G : C ⥤ Karoubi D} (φ : F ⟶ G) : obj F ⟶ obj G where
   app P :=
@@ -76,7 +83,7 @@ end FunctorExtension₁
 variable (C D E)
 
 /-- The canonical functor `(C ⥤ Karoubi D) ⥤ (Karoubi C ⥤ Karoubi D)` -/
-@[simps]
+@[simps, implicit_reducible]
 def functorExtension₁ : (C ⥤ Karoubi D) ⥤ Karoubi C ⥤ Karoubi D where
   obj := FunctorExtension₁.obj
   map := FunctorExtension₁.map
@@ -94,7 +101,7 @@ def functorExtension₁ : (C ⥤ Karoubi D) ⥤ Karoubi C ⥤ Karoubi D where
     simp only [assoc]
 
 /-- The natural isomorphism expressing that functors `Karoubi C ⥤ Karoubi D` obtained
-using `functorExtension₁` actually extends the original functors `C ⥤ Karoubi D`. -/
+using `functorExtension₁` actually extend the original functors `C ⥤ Karoubi D`. -/
 @[simps!]
 def functorExtension₁CompWhiskeringLeftToKaroubiIso :
     functorExtension₁ C D ⋙ (whiskeringLeft C (Karoubi C) (Karoubi D)).obj (toKaroubi C) ≅ 𝟭 _ :=
@@ -106,6 +113,7 @@ def functorExtension₁CompWhiskeringLeftToKaroubiIso :
       (fun {X Y} f => by simp))
     (by cat_disch)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The counit isomorphism of the equivalence `(C ⥤ Karoubi D) ≌ (Karoubi C ⥤ Karoubi D)`. -/
 def KaroubiUniversal₁.counitIso :
     (whiskeringLeft C (Karoubi C) (Karoubi D)).obj (toKaroubi C) ⋙ functorExtension₁ C D ≅ 𝟭 _ :=
@@ -115,27 +123,27 @@ def KaroubiUniversal₁.counitIso :
           { app := fun P =>
               { f := (G.map (decompId_p P)).f
                 comm := by
-                  simpa only [hom_ext_iff, G.map_comp, G.map_id] using
+                  simpa only [hom_ext_iff, G.map_comp, G.map_id] using!
                     G.congr_map
                       (show (toKaroubi C).map P.p ≫ P.decompId_p ≫ 𝟙 _ = P.decompId_p by simp) }
             naturality := fun P Q f => by
               simpa only [hom_ext_iff, G.map_comp]
-                using (G.congr_map (decompId_p_naturality f)).symm }
+                using! (G.congr_map (decompId_p_naturality f)).symm }
         inv :=
           { app := fun P =>
               { f := (G.map (decompId_i P)).f
                 comm := by
-                  simpa only [hom_ext_iff, G.map_comp, G.map_id] using
+                  simpa only [hom_ext_iff, G.map_comp, G.map_id] using!
                     G.congr_map
                       (show 𝟙 _ ≫ P.decompId_i ≫ (toKaroubi C).map P.p = P.decompId_i by simp) }
             naturality := fun P Q f => by
-              simpa only [hom_ext_iff, G.map_comp] using G.congr_map (decompId_i_naturality f) }
+              simpa only [hom_ext_iff, G.map_comp] using! G.congr_map (decompId_i_naturality f) }
         hom_inv_id := by
           ext P
-          simpa only [hom_ext_iff, G.map_comp, G.map_id] using G.congr_map P.decomp_p.symm
+          simpa only [hom_ext_iff, G.map_comp, G.map_id] using! G.congr_map P.decomp_p.symm
         inv_hom_id := by
           ext P
-          simpa only [hom_ext_iff, G.map_comp, G.map_id] using G.congr_map P.decompId.symm })
+          simpa only [hom_ext_iff, G.map_comp, G.map_id] using! G.congr_map P.decompId.symm })
     (fun {X Y} φ => by
       ext P
       dsimp
@@ -145,6 +153,7 @@ def KaroubiUniversal₁.counitIso :
 
 attribute [simps!] KaroubiUniversal₁.counitIso
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence of categories `(C ⥤ Karoubi D) ≌ (Karoubi C ⥤ Karoubi D)`. -/
 @[simps]
 def karoubiUniversal₁ : C ⥤ Karoubi D ≌ Karoubi C ⥤ Karoubi D where
@@ -165,12 +174,12 @@ def functorExtension₁Comp (F : C ⥤ Karoubi D) (G : D ⥤ Karoubi E) :
   Iso.refl _
 
 /-- The canonical functor `(C ⥤ D) ⥤ (Karoubi C ⥤ Karoubi D)` -/
-@[simps!]
+@[simps!, implicit_reducible]
 def functorExtension₂ : (C ⥤ D) ⥤ Karoubi C ⥤ Karoubi D :=
   (whiskeringRight C D (Karoubi D)).obj (toKaroubi D) ⋙ functorExtension₁ C D
 
 /-- The natural isomorphism expressing that functors `Karoubi C ⥤ Karoubi D` obtained
-using `functorExtension₂` actually extends the original functors `C ⥤ D`. -/
+using `functorExtension₂` actually extend the original functors `C ⥤ D`. -/
 @[simps!]
 def functorExtension₂CompWhiskeringLeftToKaroubiIso :
     functorExtension₂ C D ⋙ (whiskeringLeft C (Karoubi C) (Karoubi D)).obj (toKaroubi C) ≅
@@ -242,6 +251,29 @@ theorem whiskeringLeft_obj_preimage_app {F G : Karoubi C ⥤ D}
   congr
 
 end IsIdempotentComplete
+
+variable {C D} in
+/-- The precomposition of functors with `toKaroubi C` is fully faithful. -/
+def whiskeringLeftObjToKaroubiFullyFaithful :
+    ((Functor.whiskeringLeft C (Karoubi C) D).obj (toKaroubi C)).FullyFaithful where
+  preimage {F G} τ :=
+    { app P := F.map P.decompId_i ≫ τ.app P.X ≫ G.map P.decompId_p
+      naturality X Y f := by
+        dsimp at τ ⊢
+        have h₁ : f ≫ Y.decompId_i = X.decompId_i ≫ (toKaroubi C).map f.f := by simp
+        have h₂ := τ.naturality f.f
+        have h₃ : X.decompId_p ≫ f = (toKaroubi C).map f.f ≫ Y.decompId_p := by simp
+        dsimp at h₂
+        rw [Category.assoc, Category.assoc, ← F.map_comp_assoc,
+          h₁, F.map_comp_assoc, reassoc_of% h₂, ← G.map_comp, ← h₃, G.map_comp] }
+  preimage_map {F G} τ := by ext X; exact (natTrans_eq _ _).symm
+  map_preimage {F G} τ := by
+    ext X
+    dsimp
+    rw [Karoubi.decompId_i_toKaroubi, Karoubi.decompId_p_toKaroubi,
+      Functor.map_id, Category.id_comp]
+    change _ ≫ G.map (𝟙 _) = _
+    simp
 
 end Idempotents
 

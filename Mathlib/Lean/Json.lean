@@ -3,12 +3,19 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+module
 
-import Mathlib.Init
+public import Lean.Data.Json.FromToJson.Basic
+public import Mathlib.Init
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Json serialization typeclass for `PUnit` & `Fin n` & `Subtype p`
 -/
+
+public section
 
 universe u
 

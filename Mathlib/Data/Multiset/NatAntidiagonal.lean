@@ -3,8 +3,13 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Data.List.NatAntidiagonal
-import Mathlib.Data.Multiset.MapFold
+module
+
+public import Mathlib.Data.List.NatAntidiagonal
+public import Mathlib.Data.Multiset.MapFold
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Antidiagonals in ℕ × ℕ as multisets
@@ -18,6 +23,8 @@ generally for sums going from `0` to `n`.
 This refines file `Data.List.NatAntidiagonal` and is further refined by file
 `Data.Finset.NatAntidiagonal`.
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 

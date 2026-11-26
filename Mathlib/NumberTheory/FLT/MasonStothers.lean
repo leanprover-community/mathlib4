@@ -3,7 +3,9 @@ Copyright (c) 2024 Jineon Baek and Seewoo Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jineon Baek, Seewoo Lee
 -/
-import Mathlib.RingTheory.Polynomial.Radical
+module
+
+public import Mathlib.RingTheory.Polynomial.Radical
 
 /-!
 # Mason-Stothers theorem
@@ -15,10 +17,11 @@ we have `max {deg(a), deg(b), deg(c)} + 1 ≤ deg(rad(abc))` or `a' = b' = c' = 
 Proof is based on this online note by Franz Lemmermeyer http://www.fen.bilkent.edu.tr/~franz/ag05/ag-02.pdf,
 which is essentially based on Noah Snyder's paper "An Alternative Proof of Mason's Theorem",
 but slightly different.
-
 -/
 
-open Polynomial UniqueFactorizationMonoid UniqueFactorizationDomain EuclideanDomain
+public section
+
+open Polynomial UniqueFactorizationMonoid EuclideanDomain
 
 variable {k : Type*} [Field k] [DecidableEq k]
 
@@ -44,16 +47,16 @@ private theorem abc_subcall {a b c w : k[X]} {hw : w ≠ 0} (wab : w = wronskian
       rw [mul_comm _ (radical _), radical_mul_divRadical]
     _ = abc_dr.natDegree + abc_r.natDegree := by
       rw [← Polynomial.natDegree_mul (divRadical_ne_zero abc_nz) radical_ne_zero]
-    _ < a.natDegree + b.natDegree + abc_r.natDegree := by
-      exact Nat.add_lt_add_right abc_dr_ndeg_lt _
+    _ < a.natDegree + b.natDegree + abc_r.natDegree :=
+      Nat.add_lt_add_right abc_dr_ndeg_lt _
 
 /-- **Polynomial ABC theorem.** -/
 protected theorem Polynomial.abc
     {a b c : k[X]} (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠ 0)
     (hab : IsCoprime a b) (hsum : a + b + c = 0) :
-    ( natDegree a + 1 ≤ (radical (a * b * c)).natDegree ∧
+    (natDegree a + 1 ≤ (radical (a * b * c)).natDegree ∧
       natDegree b + 1 ≤ (radical (a * b * c)).natDegree ∧
-      natDegree c + 1 ≤ (radical (a * b * c)).natDegree ) ∨
+      natDegree c + 1 ≤ (radical (a * b * c)).natDegree) ∨
       derivative a = 0 ∧ derivative b = 0 ∧ derivative c = 0 := by
   set w := wronskian a b with wab
   have hbc : IsCoprime b c := by

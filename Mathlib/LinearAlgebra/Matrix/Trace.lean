@@ -3,10 +3,10 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
-import Mathlib.Data.Matrix.Basis
-import Mathlib.Data.Matrix.Block
-import Mathlib.LinearAlgebra.Matrix.Notation
-import Mathlib.LinearAlgebra.Matrix.RowCol
+module
+
+public import Mathlib.Data.Matrix.Block
+public import Mathlib.LinearAlgebra.Matrix.Notation
 
 /-!
 # Trace of a matrix
@@ -19,8 +19,9 @@ See also `LinearAlgebra.Trace` for the trace of an endomorphism.
 ## Tags
 
 matrix, trace, diagonal
-
 -/
+
+@[expose] public section
 
 
 open Matrix
@@ -106,7 +107,7 @@ theorem trace_sum (s : Finset ι) (f : ι → Matrix n n R) :
 
 theorem _root_.AddMonoidHom.map_trace [AddCommMonoid S] {F : Type*} [FunLike F R S]
     [AddMonoidHomClass F R S] (f : F) (A : Matrix n n R) :
-    f (trace A) = trace ((f : R →+ S).mapMatrix A) :=
+    f (trace A) = trace (A.map f) :=
   map_sum f (fun i => diag A i) Finset.univ
 
 lemma trace_blockDiagonal [DecidableEq p] (M : p → Matrix n n R) :
@@ -117,6 +118,20 @@ lemma trace_blockDiagonal' [DecidableEq p] {m : p → Type*} [∀ i, Fintype (m 
     (M : ∀ i, Matrix (m i) (m i) R) :
     trace (blockDiagonal' M) = ∑ i, trace (M i) := by
   simp [blockDiagonal', trace, Finset.sum_sigma']
+
+@[simp]
+lemma trace_fromBlocks (A : Matrix n n R) (B : Matrix n m R) (C : Matrix m n R) (D : Matrix m m R) :
+    trace (fromBlocks A B C D) = trace A + trace D := by
+  simp [trace, fromBlocks]
+
+@[simp]
+lemma trace_comp (M : Matrix n n (Matrix m m R)) : trace (comp n n m m R M) = trace (trace M) := by
+  simp [trace, Fintype.sum_prod_type, Finset.sum_comm (α := n)]
+
+@[simp]
+lemma trace_trace_comp_symm (M : Matrix (n × m) (n × m) R) :
+    trace (trace ((comp n n m m R).symm M)) = trace M := by
+  rw [← trace_comp, Equiv.apply_symm_apply]
 
 end AddCommMonoid
 
@@ -162,13 +177,34 @@ theorem trace_mul_cycle' [NonUnitalCommSemiring R] (A : Matrix m n R) (B : Matri
     (C : Matrix p m R) : trace (A * (B * C)) = trace (C * (A * B)) := by
   rw [← Matrix.mul_assoc, trace_mul_comm]
 
+/-- The trace of a positive power of `A * B` is unchanged when the factors are reversed.
+The matrices `A` and `B` may be rectangular.
+
+This requires a positive exponent because the identity does not hold at exponent zero when the index
+types have different cardinalities. -/
+theorem trace_mul_pow_comm_of_ne_zero [CommSemiring R] [DecidableEq m] [DecidableEq n]
+    (A : Matrix m n R) (B : Matrix n m R) {k : ℕ} (hk : k ≠ 0) :
+    trace ((A * B) ^ k) = trace ((B * A) ^ k) := by
+  match k with
+  | k + 1 =>
+    rw [pow_succ, ← Matrix.mul_assoc, trace_mul_cycle, ← Matrix.mul_pow_mul, Matrix.mul_assoc,
+      ← pow_succ]
+
+/-- For square matrices, the trace of any power of `A * B` is unchanged when the factors
+are reversed.
+
+Unlike the rectangular version `trace_mul_pow_comm_of_ne_zero`, this also holds at exponent zero. -/
+theorem trace_mul_pow_comm [CommSemiring R] [DecidableEq n] (A B : Matrix n n R) (k : ℕ) :
+    trace ((A * B) ^ k) = trace ((B * A) ^ k) :=
+  match k with
+  | 0 => rfl
+  | k + 1 => trace_mul_pow_comm_of_ne_zero A B k.add_one_ne_zero
+
 @[simp]
 theorem trace_replicateCol_mul_replicateRow {ι : Type*} [Unique ι] [NonUnitalNonAssocSemiring R]
     (a b : n → R) : trace (replicateCol ι a * replicateRow ι b) = a ⬝ᵥ b := by
   apply Finset.sum_congr rfl
-  simp [mul_apply]
-
-@[deprecated (since := "2025-03-20")] alias trace_col_mul_row := trace_replicateCol_mul_replicateRow
+  simp [Matrix.mul_apply]
 
 @[simp]
 theorem trace_vecMulVec [NonUnitalNonAssocSemiring R] (a b : n → R) :
@@ -193,7 +229,8 @@ theorem trace_units_conj (M : (Matrix m m R)ˣ) (N : Matrix m m R) :
     trace ((M : Matrix _ _ _) * N * (↑M⁻¹ : Matrix _ _ _)) = trace N := by
   rw [trace_mul_cycle, Units.inv_mul, one_mul]
 
-set_option linter.docPrime false in
+/-- The trace is invariant under conjugation by a unit, variant of `Matrix.trace_units_conj`
+with the inverse on the left. -/
 -- TODO(https://github.com/leanprover-community/mathlib4/issues/6607): fix elaboration so that the ascription isn't needed
 theorem trace_units_conj' (M : (Matrix m m R)ˣ) (N : Matrix m m R) :
     trace ((↑M⁻¹ : Matrix _ _ _) * N * (↑M : Matrix _ _ _)) = trace N :=
@@ -216,7 +253,7 @@ theorem trace_fin_one (A : Matrix (Fin 1) (Fin 1) R) : trace A = A 0 0 :=
   add_zero _
 
 theorem trace_fin_two (A : Matrix (Fin 2) (Fin 2) R) : trace A = A 0 0 + A 1 1 :=
-  congr_arg (_ + ·) (add_zero (A 1 1))
+  congr(_ + $(add_zero (A 1 1)))
 
 theorem trace_fin_three (A : Matrix (Fin 3) (Fin 3) R) : trace A = A 0 0 + A 1 1 + A 2 2 := by
   rw [← add_zero (A 2 2), add_assoc]
@@ -239,34 +276,34 @@ end Fin
 
 section single
 
-variable {l m n : Type*} {R α : Type*} [DecidableEq l] [DecidableEq m] [DecidableEq n]
+variable {m n : Type*} {R α : Type*} [DecidableEq m] [DecidableEq n]
 variable [Fintype n] [AddCommMonoid α] (i j : n) (c : α)
 
 @[simp]
 theorem trace_single_eq_of_ne (h : i ≠ j) : trace (single i j c) = 0 := by
   simp [trace, h]
 
-@[deprecated (since := "2025-05-05")]
-alias StdBasisMatrix.trace_zero := trace_single_eq_of_ne
-
 @[simp]
 theorem trace_single_eq_same : trace (single i i c) = c := by
   simp [trace]
 
-@[deprecated (since := "2025-05-05")]
-alias StdBasisMatrix.trace_eq := trace_single_eq_same
-
 theorem trace_single_mul [NonUnitalNonAssocSemiring R] [Fintype m]
     (i : n) (j : m) (a : R) (x : Matrix m n R) :
     (single i j a * x).trace = a • x j i := by
-  simp [trace, mul_apply, single, ite_and]
+  simp [trace, Matrix.mul_apply, single, ite_and]
 
 theorem trace_mul_single [NonUnitalNonAssocSemiring R] [Fintype m]
     (x : Matrix m n R) (i : n) (j : m) (a : R) :
     (x * single i j a).trace = MulOpposite.op a • x j i := by
-  simp [trace, mul_apply, single, ite_and]
+  simp [trace, Matrix.mul_apply, single, ite_and]
 
 end single
+
+theorem trace_surjective [AddCommMonoid R] [Nonempty n] :
+    Function.Surjective (trace : Matrix n n R → R) := fun r ↦ by
+  classical
+  inhabit n
+  exact ⟨single default default r, trace_single_eq_same default r⟩
 
 /-- Matrices `A` and `B` are equal iff `(x * A).trace = (x * B).trace` for all `x`. -/
 theorem ext_iff_trace_mul_left [NonAssocSemiring R] {A B : Matrix m n R} :

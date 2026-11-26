@@ -3,9 +3,11 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Thomas Read, Andrew Yang, Dagur Asgeirsson, Joël Riou
 -/
-import Mathlib.CategoryTheory.Adjunction.Mates
-/-!
+module
 
+public import Mathlib.CategoryTheory.Adjunction.Mates
+
+/-!
 # Uniqueness of adjoints
 
 This file shows that adjoints are unique up to natural isomorphism.
@@ -17,12 +19,13 @@ This file shows that adjoints are unique up to natural isomorphism.
 
 * `Adjunction.rightAdjointUniq` : If `G` and `G'` are both right adjoint to `F`, then they are
   naturally isomorphic.
-
 -/
+
+@[expose] public section
 
 open CategoryTheory Functor
 
-variable {C D : Type*} [Category C] [Category D]
+variable {C D : Type*} [Category* C] [Category* D]
 
 namespace CategoryTheory.Adjunction
 

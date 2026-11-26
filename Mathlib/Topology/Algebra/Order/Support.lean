@@ -3,8 +3,14 @@ Copyright (c) 2025 Yoh Tanimoto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yoh Tanimoto
 -/
+module
+
+public import Mathlib.Topology.Algebra.Support
+
 import Mathlib.Algebra.Order.Group.Indicator
-import Mathlib.Topology.Algebra.Support
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The topological support of sup and inf of functions
@@ -12,8 +18,9 @@ import Mathlib.Topology.Algebra.Support
 In a topological space `X` and a space `M` with `Sup` structure, for `f g : X → M` with compact
 support, we show that `f ⊔ g` has compact support. Similarly, in `β` with `Inf` structure, `f ⊓ g`
 has compact support if so do `f` and `g`.
-
 -/
+
+public section
 
 variable {X M : Type*} [TopologicalSpace X] [One M]
 

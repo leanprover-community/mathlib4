@@ -3,13 +3,13 @@ Copyright (c) 2024 Newell Jensen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Newell Jensen, Mitchell Lee, Óscar Álvarez
 -/
-import Mathlib.Algebra.Group.Subgroup.Pointwise
-import Mathlib.Algebra.Ring.Int.Parity
-import Mathlib.GroupTheory.Coxeter.Matrix
-import Mathlib.GroupTheory.PresentedGroup
+module
+
+public import Mathlib.GroupTheory.Coxeter.Matrix
+public import Mathlib.GroupTheory.PresentedGroup
+public import Mathlib.Tactic.Ring
+
 import Mathlib.Tactic.NormNum.DivMod
-import Mathlib.Tactic.Ring
-import Mathlib.Tactic.Use
 
 /-!
 # Coxeter groups and Coxeter systems
@@ -19,7 +19,7 @@ This file defines Coxeter groups and Coxeter systems.
 Let `B` be a (possibly infinite) type, and let $M = (M_{i,i'})_{i, i' \in B}$ be a matrix
 of natural numbers. Further assume that $M$ is a *Coxeter matrix* (`CoxeterMatrix`); that is, $M$ is
 symmetric and $M_{i,i'} = 1$ if and only if $i = i'$. The *Coxeter group* associated to $M$
-(`CoxeterMatrix.group`) has the presentation
+(`CoxeterMatrix.Group`) has the presentation
 $$\langle \{s_i\}_{i \in B} \vert \{(s_i s_{i'})^{M_{i, i'}}\}_{i, i' \in B} \rangle.$$
 The elements $s_i$ are called the *simple reflections* (`CoxeterMatrix.simple`) of the Coxeter
 group. Note that every simple reflection is an involution.
@@ -39,7 +39,7 @@ product $s_{i_1} \cdots s_{i_\ell} \in W$ (`CoxeterSystem.wordProd`). Every elem
 product of some word (`CoxeterSystem.wordProd_surjective`). The words that alternate between two
 elements of $B$ (`CoxeterSystem.alternatingWord`) are particularly important.
 
-## Implementation details
+## Implementation notes
 
 Much of the literature on Coxeter groups conflates the set $S = \{s_i : i \in B\} \subseteq W$ of
 simple reflections with the set $B$ that indexes the simple reflections. This is usually permissible
@@ -61,7 +61,7 @@ reflections unless necessary; instead, we state our results in terms of $B$ wher
 
 ## References
 
-* [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 4--6*](bourbaki1968) chapter IV
+* [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 4--6*][bourbaki1968] chapter IV
   pages 4--5, 13--15
 
 * [J. Baez, *Coxeter and Dynkin Diagrams*](https://math.ucr.edu/home/baez/twf_dynkin.pdf)
@@ -81,8 +81,9 @@ reflections unless necessary; instead, we state our results in terms of $B$ wher
 ## Tags
 
 coxeter system, coxeter group
-
 -/
+
+@[expose] public section
 
 open Function Set List
 
@@ -104,12 +105,10 @@ def relationsSet : Set (FreeGroup B) := range <| uncurry M.relation
 
 /-- The Coxeter group associated to a Coxeter matrix $M$; that is, the group
 $$\langle \{s_i\}_{i \in B} \vert \{(s_i s_{i'})^{M_{i, i'}}\}_{i, i' \in B} \rangle.$$ -/
-protected def Group : Type _ := PresentedGroup M.relationsSet
+protected abbrev Group : Type _ := PresentedGroup M.relationsSet
 
-instance : Group M.Group := QuotientGroup.Quotient.group _
-
-/-- The simple reflection of the Coxeter group `M.group` at the index `i`. -/
-def simple (i : B) : M.Group := PresentedGroup.of i
+/-- The simple reflection of the Coxeter group `M.Group` at the index `i`. -/
+abbrev simple (i : B) : M.Group := PresentedGroup.of i
 
 theorem reindex_relationsSet :
     (M.reindex e).relationsSet =
@@ -132,13 +131,16 @@ def reindexGroupEquiv : (M.reindex e).Group ≃* M.Group :=
     (by
       rw [reindex_relationsSet,
         Subgroup.map_normalClosure _ _ (by simpa using (FreeGroup.freeGroupCongr e).surjective),
-        MonoidHom.coe_coe])
+        MonoidHom.coe_ofClass])
 
 theorem reindexGroupEquiv_apply_simple (i : B') :
     (M.reindexGroupEquiv e) ((M.reindex e).simple i) = M.simple (e.symm i) := rfl
 
 theorem reindexGroupEquiv_symm_apply_simple (i : B) :
     (M.reindexGroupEquiv e).symm (M.simple i) = (M.reindex e).simple (e i) := rfl
+
+theorem subgroupClosure_range_simple : Subgroup.closure (range M.simple) = ⊤ :=
+  PresentedGroup.closure_range_of _
 
 end CoxeterMatrix
 
@@ -184,7 +186,12 @@ protected def map (e : W ≃* H) : CoxeterSystem M H := ⟨e.symm.trans cs.mulEq
 /-! ### Simple reflections -/
 
 /-- The simple reflection of `W` at the index `i`. -/
-def simple (i : B) : W := cs.mulEquiv.symm (PresentedGroup.of i)
+def simple (i : B) : W := cs.mulEquiv.symm (M.simple i)
+
+@[simp] theorem mulEquiv_symm_simple (i : B) : cs.mulEquiv.symm (M.simple i) = cs.simple i := rfl
+
+@[simp] theorem mulEquiv_simple (i : B) : cs.mulEquiv (cs.simple i) = M.simple i :=
+  cs.mulEquiv.apply_symm_apply _
 
 @[simp]
 theorem _root_.CoxeterMatrix.toCoxeterSystem_simple (M : CoxeterMatrix B) :
@@ -198,11 +205,9 @@ local prefix:100 "s" => cs.simple
 
 @[simp]
 theorem simple_mul_simple_self (i : B) : s i * s i = 1 := by
-  have : (FreeGroup.of i) * (FreeGroup.of i) ∈ M.relationsSet := ⟨(i, i), by simp [relation]⟩
-  have : (PresentedGroup.mk _ (FreeGroup.of i * FreeGroup.of i) : M.Group) = 1 :=
+  have : .of i * .of i ∈ M.relationsSet := ⟨(i, i), by simp [relation]⟩
+  have : PresentedGroup.mk _ (.of i * .of i) = 1 :=
     (QuotientGroup.eq_one_iff _).mpr (Subgroup.subset_normalClosure this)
-  unfold simple
-  rw [← map_mul, PresentedGroup.of, map_mul]
   exact map_mul_eq_one cs.mulEquiv.symm this
 
 @[simp]
@@ -224,25 +229,31 @@ theorem simple_mul_simple_pow (i i' : B) : (s i * s i') ^ M i i' = 1 := by
   have : (FreeGroup.of i * FreeGroup.of i') ^ M i i' ∈ M.relationsSet := ⟨(i, i'), rfl⟩
   have : (PresentedGroup.mk _ ((FreeGroup.of i * FreeGroup.of i') ^ M i i') : M.Group) = 1 :=
     (QuotientGroup.eq_one_iff _).mpr (Subgroup.subset_normalClosure this)
-  unfold simple
-  rw [← map_mul, ← map_pow]
+  simp_rw [← mulEquiv_symm_simple, ← map_mul, ← map_pow]
   exact (MulEquiv.map_eq_one_iff cs.mulEquiv.symm).mpr this
 
 @[simp] theorem simple_mul_simple_pow' (i i' : B) : (s i' * s i) ^ M i i' = 1 :=
   M.symmetric i' i ▸ cs.simple_mul_simple_pow i' i
 
 /-- The simple reflections of `W` generate `W` as a group. -/
-theorem subgroup_closure_range_simple : Subgroup.closure (range cs.simple) = ⊤ := by
-  have : cs.simple = cs.mulEquiv.symm ∘ PresentedGroup.of := rfl
-  rw [this, Set.range_comp, ← MulEquiv.coe_toMonoidHom, ← MonoidHom.map_closure,
-    PresentedGroup.closure_range_of, ← MonoidHom.range_eq_map]
+theorem subgroupClosure_range_simple : Subgroup.closure (range cs.simple) = ⊤ := by
+  unfold simple
+  rw [Set.range_comp', ← MulEquiv.coe_toMonoidHom, ← MonoidHom.map_closure,
+    CoxeterMatrix.subgroupClosure_range_simple, Subgroup.map_top]
   exact MonoidHom.range_eq_top.2 (MulEquiv.surjective _)
 
+@[deprecated (since := "2026-11-08")]
+alias subgroup_closure_range_simple := subgroupClosure_range_simple
+
+open scoped Pointwise in
 /-- The simple reflections of `W` generate `W` as a monoid. -/
-theorem submonoid_closure_range_simple : Submonoid.closure (range cs.simple) = ⊤ := by
+theorem submonoidClosure_range_simple : Submonoid.closure (range cs.simple) = ⊤ := by
   have : range cs.simple = range cs.simple ∪ (range cs.simple)⁻¹ := by
     simp_rw [inv_range, inv_simple, union_self]
-  rw [this, ← Subgroup.closure_toSubmonoid, subgroup_closure_range_simple, Subgroup.top_toSubmonoid]
+  rw [this, ← Subgroup.closure_toSubmonoid, subgroupClosure_range_simple, Subgroup.top_toSubmonoid]
+
+@[deprecated (since := "2026-11-08")]
+alias submonoid_closure_range_simple := submonoidClosure_range_simple
 
 /-! ### Induction principles for Coxeter systems -/
 
@@ -250,7 +261,7 @@ theorem submonoid_closure_range_simple : Submonoid.closure (range cs.simple) = �
 preserved under multiplication, then it holds for all elements of `W`. -/
 theorem simple_induction {p : W → Prop} (w : W) (simple : ∀ i : B, p (s i)) (one : p 1)
     (mul : ∀ w w' : W, p w → p w' → p (w * w')) : p w := by
-  have := cs.submonoid_closure_range_simple.symm ▸ Submonoid.mem_top w
+  have := cs.submonoidClosure_range_simple.symm ▸ Submonoid.mem_top w
   exact Submonoid.closure_induction (fun x ⟨i, hi⟩ ↦ hi ▸ simple i) one (fun _ _ _ _ ↦ mul _ _)
     this
 
@@ -260,7 +271,7 @@ theorem simple_induction_left {p : W → Prop} (w : W) (one : p 1)
     (mul_simple_left : ∀ (w : W) (i : B), p w → p (s i * w)) : p w := by
   let p' : (w : W) → w ∈ Submonoid.closure (Set.range cs.simple) → Prop :=
     fun w _ ↦ p w
-  have := cs.submonoid_closure_range_simple.symm ▸ Submonoid.mem_top w
+  have := cs.submonoidClosure_range_simple.symm ▸ Submonoid.mem_top w
   induction this using Submonoid.closure_induction_left with
   | one => exact one
   | mul_left i mi y my ih =>
@@ -273,7 +284,7 @@ theorem simple_induction_right {p : W → Prop} (w : W) (one : p 1)
     (mul_simple_right : ∀ (w : W) (i : B), p w → p (w * s i)) : p w := by
   let p' : ((w : W) → w ∈ Submonoid.closure (Set.range cs.simple) → Prop) :=
     fun w _ ↦ p w
-  have := cs.submonoid_closure_range_simple.symm ▸ Submonoid.mem_top w
+  have := cs.submonoidClosure_range_simple.symm ▸ Submonoid.mem_top w
   induction this using Submonoid.closure_induction_right with
   | one => exact one
   | mul_right y my i mi ih =>
@@ -285,7 +296,7 @@ theorem simple_induction_right {p : W → Prop} (w : W) (one : p 1)
 /-- If two homomorphisms with domain `W` agree on all simple reflections, then they are equal. -/
 theorem ext_simple {G : Type*} [MulOneClass G] {φ₁ φ₂ : W →* G} (h : ∀ i : B, φ₁ (s i) = φ₂ (s i)) :
     φ₁ = φ₂ :=
-  MonoidHom.eq_of_eqOn_denseM cs.submonoid_closure_range_simple (fun _ ⟨i, hi⟩ ↦ hi ▸ h i)
+  MonoidHom.eq_of_eqOn_denseM cs.submonoidClosure_range_simple (fun _ ⟨i, hi⟩ ↦ hi ▸ h i)
 
 /-- The proposition that the values of the function `f : B → G` satisfy the Coxeter relations
 corresponding to the matrix `M`. -/
@@ -308,15 +319,10 @@ private def restrictUnit {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M
   val_inv := pow_one (f i * f i) ▸ M.diagonal i ▸ hf i i
   inv_val := pow_one (f i * f i) ▸ M.diagonal i ▸ hf i i
 
-private theorem toMonoidHom_apply_symm_apply (a : PresentedGroup (M.relationsSet)) :
-    (MulEquiv.toMonoidHom cs.mulEquiv : W →* PresentedGroup (M.relationsSet))
-    ((MulEquiv.symm cs.mulEquiv) a) = a := calc
-  _ = cs.mulEquiv ((MulEquiv.symm cs.mulEquiv) a) := by rfl
-  _ = _                                           := by rw [MulEquiv.apply_symm_apply]
-
 /-- The universal mapping property of Coxeter systems. For any monoid `G`,
 functions `f : B → G` whose values satisfy the Coxeter relations are equivalent to
 monoid homomorphisms `f' : W → G`. -/
+@[no_expose]
 def lift {G : Type*} [Monoid G] : {f : B → G // IsLiftable M f} ≃ (W →* G) where
   toFun f := MonoidHom.comp (Units.coeHom G) (cs.groupLift
     (show ∀ i i', ((restrictUnit f.property) i * (restrictUnit f.property) i') ^ M i i' = 1 from
@@ -325,39 +331,33 @@ def lift {G : Type*} [Monoid G] : {f : B → G // IsLiftable M f} ≃ (W →* G)
     rw [comp_apply, comp_apply, ← map_mul, ← map_pow, simple_mul_simple_pow, map_one]⟩
   left_inv f := by
     ext i
-    simp only [MonoidHom.comp_apply, comp_apply, groupLift, simple]
-    rw [← MonoidHom.toFun_eq_coe, toMonoidHom_apply_symm_apply, PresentedGroup.toGroup.of,
-      OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, Units.coeHom_apply, restrictUnit]
+    simp [groupLift, restrictUnit]
   right_inv ι := by
     apply cs.ext_simple
-    intro i
-    dsimp only
-    rw [groupLift, simple, MonoidHom.comp_apply, MonoidHom.comp_apply, toMonoidHom_apply_symm_apply,
-      PresentedGroup.toGroup.of, CoxeterSystem.restrictUnit, Units.coeHom_apply]
-    simp only [comp_apply, simple]
+    simp [groupLift, restrictUnit]
 
 @[simp]
 theorem lift_apply_simple {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M f) (i : B) :
-    cs.lift ⟨f, hf⟩ (s i) = f i := congrFun (congrArg Subtype.val (cs.lift.left_inv ⟨f, hf⟩)) i
+    cs.lift ⟨f, hf⟩ (s i) = f i := congr($(cs.lift.left_inv ⟨f, hf⟩).val i)
 
 /-- If two Coxeter systems on the same group `W` have the same Coxeter matrix `M : Matrix B B ℕ`
 and the same simple reflection map `B → W`, then they are identical. -/
-theorem simple_determines_coxeterSystem :
-    Injective (simple : CoxeterSystem M W → B → W) := by
+theorem injective_simple : Injective (simple : CoxeterSystem M W → B → W) := by
   intro cs1 cs2 h
   apply CoxeterSystem.ext
   apply MulEquiv.toMonoidHom_injective
   apply cs1.ext_simple
-  intro i
   nth_rw 2 [h]
-  simp [simple]
+  simp
+
+@[deprecated (since := "2026-11-08")] alias simple_determines_coxeterSystem := injective_simple
 
 /-! ### Words -/
 
 /-- The product of the simple reflections of `W` corresponding to the indices in `ω`. -/
 def wordProd (ω : List B) : W := prod (map cs.simple ω)
 
-local prefix:100 "π" => cs.wordProd
+local prefix:100 "π " => cs.wordProd
 
 @[simp] theorem wordProd_nil : π [] = 1 := by simp [wordProd]
 
@@ -386,8 +386,8 @@ theorem wordProd_surjective : Surjective cs.wordProd := by
 /-- The word of length `m` that alternates between `i` and `i'`, ending with `i'`. -/
 def alternatingWord (i i' : B) (m : ℕ) : List B :=
   match m with
-  | 0    => []
-  | m+1  => (alternatingWord i' i m).concat i'
+  | 0 => []
+  | m + 1 => (alternatingWord i' i m).concat i'
 
 /-- The word of length `M i i'` that alternates between `i` and `i'`, ending with `i'`. -/
 abbrev braidWord (M : CoxeterMatrix B) (i i' : B) : List B := alternatingWord i i' (M i i')
@@ -416,18 +416,19 @@ lemma getElem_alternatingWord (i j : B) (p k : ℕ) (hk : k < p) :
     (alternatingWord i j p)[k]'(by simp [hk]) = (if Even (p + k) then i else j) := by
   revert k
   induction p with
-  | zero => grind [not_lt_zero']
+  | zero => grind
   | succ n h => grind [CoxeterSystem.alternatingWord_succ']
 
 lemma getElem_alternatingWord_swapIndices (i j : B) (p k : ℕ) (h : k + 1 < p) :
-     (alternatingWord i j p)[k+1]'(by simp [h]) =
-     (alternatingWord j i p)[k]'(by simp; omega) := by
-  rw [getElem_alternatingWord i j p (k+1) (by omega), getElem_alternatingWord j i p k (by omega)]
+     (alternatingWord i j p)[k + 1]'(by simp [h]) =
+     (alternatingWord j i p)[k]'(by simp; lia) := by
+  rw [getElem_alternatingWord i j p (k + 1) (by lia),
+    getElem_alternatingWord j i p k (by lia)]
   by_cases h_even : Even (p + k)
-  · rw [if_pos h_even, ← add_assoc]
+  · rw [ite_eq_left h_even, ← add_assoc]
     simp only [ite_eq_right_iff, isEmpty_Prop, Nat.not_even_iff_odd, Even.add_one h_even,
       IsEmpty.forall_iff]
-  · rw [if_neg h_even, ← add_assoc]
+  · rw [ite_eq_right h_even, ← add_assoc]
     simp [Odd.add_one (Nat.not_even_iff_odd.mp h_even)]
 
 lemma listTake_alternatingWord (i j : B) (p k : ℕ) (h : k < 2 * p) :
@@ -437,26 +438,26 @@ lemma listTake_alternatingWord (i j : B) (p k : ℕ) (h : k < 2 * p) :
     | zero =>
       simp only [take_zero, Even.zero, ↓reduceIte, alternatingWord]
     | succ k h' =>
-      have hk : k < 2 * p := by omega
+      have hk : k < 2 * p := by lia
       apply h' at hk
       by_cases h_even : Even k
       · simp only [h_even, ↓reduceIte] at hk
         simp only [Nat.not_even_iff_odd.mpr (Even.add_one h_even), ↓reduceIte]
-        rw [← List.take_concat_get (by simp; omega), alternatingWord_succ, ← hk]
+        rw [← List.take_concat_get (by simp; lia), alternatingWord_succ, ← hk]
         apply congr_arg
-        rw [getElem_alternatingWord i j (2*p) k (by omega)]
+        rw [getElem_alternatingWord i j (2 * p) k (by lia)]
         simp [(by apply Nat.even_add.mpr; simp [h_even] : Even (2 * p + k))]
       · simp only [h_even, ↓reduceIte] at hk
-        simp only [(by simp at h_even; exact Odd.add_one h_even : Even (k + 1)), ↓reduceIte]
-        rw [← List.take_concat_get (by simp; omega), alternatingWord_succ, hk]
+        simp only [Odd.add_one (by simpa using h_even), ↓reduceIte]
+        rw [← List.take_concat_get (by simp; lia), alternatingWord_succ, hk]
         apply congr_arg
-        rw [getElem_alternatingWord i j (2*p) k (by omega)]
+        rw [getElem_alternatingWord i j (2 * p) k (by lia)]
         simp [(by apply Nat.odd_add.mpr; simp [h_even] : Odd (2 * p + k))]
 
 lemma listTake_succ_alternatingWord (i j : B) (p : ℕ) (k : ℕ) (h : k + 1 < 2 * p) :
     List.take (k + 1) (alternatingWord i j (2 * p)) =
     i :: (List.take k (alternatingWord j i (2 * p))) := by
-  rw [listTake_alternatingWord j i p k (by omega), listTake_alternatingWord i j p (k+1) h]
+  rw [listTake_alternatingWord j i p k (by lia), listTake_alternatingWord i j p (k + 1) h]
   by_cases h_even : Even k
   · simp [Nat.not_even_iff_odd.mpr (Even.add_one h_even), alternatingWord_succ', h_even]
   · simp [(by rw [Nat.not_even_iff_odd] at h_even; exact Odd.add_one h_even : Even (k + 1)),
@@ -478,7 +479,7 @@ theorem prod_alternatingWord_eq_mul_pow (i i' : B) (m : ℕ) :
 
 theorem prod_alternatingWord_eq_prod_alternatingWord_sub (i i' : B) (m : ℕ) (hm : m ≤ M i i' * 2) :
     π (alternatingWord i i' m) = π (alternatingWord i' i (M i i' * 2 - m)) := by
-  simp_rw [prod_alternatingWord_eq_mul_pow, ← Int.even_coe_nat]
+  simp_rw [prod_alternatingWord_eq_mul_pow, ← Int.even_natCast]
   /- Rewrite everything in terms of an integer m' which is equal to m.
   The resulting equation holds for all integers m'. -/
   simp_rw [← zpow_natCast, Int.natCast_ediv, Int.ofNat_sub hm]
@@ -486,22 +487,20 @@ theorem prod_alternatingWord_eq_prod_alternatingWord_sub (i i' : B) (m : ℕ) (h
   clear hm
   push_cast
   rcases Int.even_or_odd' m' with ⟨k, rfl | rfl⟩
-  · rw [if_pos (by use k; ring), if_pos (by use -k + (M i i'); ring), mul_comm 2 k, ← sub_mul]
+  · rw [ite_eq_left (by use k; ring), ite_eq_left (by use -k + (M i i'); ring), mul_comm 2 k,
+      ← sub_mul]
     repeat rw [Int.mul_ediv_cancel _ (by simp)]
     rw [zpow_sub, zpow_natCast, simple_mul_simple_pow' cs i i', ← inv_zpow]
     simp
   · have : ¬Even (2 * k + 1) := Int.not_even_iff_odd.2 ⟨k, rfl⟩
-    rw [if_neg this]
+    rw [ite_eq_right this]
     have : ¬Even (↑(M i i') * 2 - (2 * k + 1)) :=
       Int.not_even_iff_odd.2 ⟨↑(M i i') - k - 1, by ring⟩
-    rw [if_neg this]
+    rw [ite_eq_right this]
     rw [(by ring : ↑(M i i') * 2 - (2 * k + 1) = -1 + (-k + ↑(M i i')) * 2),
       (by ring : 2 * k + 1 = 1 + k * 2)]
     repeat rw [Int.add_mul_ediv_right _ _ (by simp)]
-    norm_num
-    rw [zpow_add, zpow_add, zpow_natCast, simple_mul_simple_pow', zpow_neg, ← inv_zpow, zpow_neg,
-      ← inv_zpow]
-    simp [← mul_assoc]
+    simp [zpow_add, simple_mul_simple_pow', ← inv_zpow, ← mul_assoc]
 
 /-- The two words of length `M i i'` that alternate between `i` and `i'` have the same product.
 This is known as the "braid relation" or "Artin-Tits relation". -/

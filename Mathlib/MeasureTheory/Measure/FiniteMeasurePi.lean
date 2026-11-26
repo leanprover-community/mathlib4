@@ -3,7 +3,12 @@ Copyright (c) 2025 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Measure.LevyProkhorovMetric
+module
+
+public import Mathlib.MeasureTheory.Measure.LevyProkhorovMetric
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Products of finite measures and probability measures
@@ -23,10 +28,11 @@ the underlying space is metrizable and separable.
 
 `MeasureTheory.ProbabilityMeasure.continuous_pi`: the product probability measure depends
 continuously on the factors.
-
 -/
 
-open MeasureTheory Topology Metric Filter Set ENNReal NNReal
+@[expose] public section
+
+open MeasureTheory Metric Filter Set ENNReal NNReal
 
 open scoped Topology ENNReal NNReal BoundedContinuousFunction
 
@@ -100,7 +106,7 @@ theorem continuous_pi [∀ i, TopologicalSpace (α i)] [∀ i, SecondCountableTo
   apply this.tendsto_probabilityMeasure_of_tendsto_of_mem
   · rintro - ⟨s, rfl, smeas, hs⟩
     exact MeasurableSet.univ_pi smeas
-  · letI : ∀ i, PseudoMetricSpace (α i) :=
+  · let : ∀ i, PseudoMetricSpace (α i) :=
       fun i ↦ TopologicalSpace.pseudoMetrizableSpacePseudoMetric (α i)
     intro u u_open x xu
     obtain ⟨ε, εpos, hε⟩ : ∃ ε > 0, ball x ε ⊆ u := Metric.isOpen_iff.1 u_open x xu
@@ -117,7 +123,7 @@ theorem continuous_pi [∀ i, TopologicalSpace (α i)] [∀ i, SecondCountableTo
       _ ⊆ u := by rwa [← ball_pi _ εpos]
   · rintro - ⟨s, rfl, smeas, hs⟩
     simp only [pi_pi]
-    apply tendsto_finset_prod _ (fun i hi ↦ ?_)
+    apply tendsto_finsetProd _ (fun i hi ↦ ?_)
     exact tendsto_measure_of_null_frontier_of_tendsto (Tendsto.apply_nhds (fun ⦃U⦄ a ↦ a) i) (hs i)
 
 end ProbabilityMeasure

@@ -3,12 +3,13 @@ Copyright (c) 2021 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import Mathlib.GroupTheory.MonoidLocalization.Basic
-import Mathlib.RingTheory.OreLocalization.Ring
-import Mathlib.Topology.Algebra.Ring.Basic
+module
+
+public import Mathlib.GroupTheory.MonoidLocalization.Basic
+public import Mathlib.RingTheory.OreLocalization.Ring
+public import Mathlib.Topology.Algebra.Ring.Basic
 
 /-!
-
 # Localization of topological rings
 
 The topological localization of a topological commutative ring `R` at a submonoid `M` is the ring
@@ -19,8 +20,9 @@ to the equivalence class of `(x, 1)` in the localization of `R` at an `M`.
 
 - `Localization.ringTopology`: The localization of a topological commutative ring at a submonoid
   is a topological ring.
-
 -/
+
+@[expose] public section
 
 
 variable {R : Type*} [CommRing R] [TopologicalSpace R] {M : Submonoid R}

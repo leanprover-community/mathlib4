@@ -3,14 +3,15 @@ Copyright (c) 2019 Johannes Hölzl, Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Zhouhang Zhou
 -/
-import Mathlib.Dynamics.Ergodic.MeasurePreserving
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
-import Mathlib.MeasureTheory.Integral.Lebesgue.Add
-import Mathlib.Order.Filter.Germ.Basic
-import Mathlib.Topology.ContinuousMap.Algebra
+module
+
+public import Mathlib.Dynamics.Ergodic.MeasurePreserving
+public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Add
+public import Mathlib.Order.Filter.Germ.Basic
+public import Mathlib.Topology.ContinuousMap.Algebra
 
 /-!
-
 # Almost everywhere equal functions
 
 We build a space of equivalence classes of functions, where two functions are treated as identical
@@ -53,7 +54,7 @@ See `Mathlib/MeasureTheory/Function/L1Space/AEEqFun.lean` for `L¹` space.
                  is implemented as `f.toFun`.
                  For each operation `op` in `L⁰`, there is a lemma called `coe_fn_op`,
                  characterizing, say, `(f op g : α → β)`.
-* `AEEqFun.mk`:  To constructs an `L⁰` function `α →ₘ β` from an almost everywhere strongly
+* `AEEqFun.mk`:  To construct an `L⁰` function `α →ₘ β` from an almost everywhere strongly
                  measurable function `f : α → β`, use `ae_eq_fun.mk`
 * `comp`:        Use `comp g f` to get `[g ∘ f]` from `g : β → γ` and `[f] : α →ₘ γ` when `g` is
                  continuous. Use `compMeasurable` if `g` is only measurable (this requires the
@@ -65,15 +66,18 @@ See `Mathlib/MeasureTheory/Function/L1Space/AEEqFun.lean` for `L¹` space.
 ## Tags
 
 function space, almost everywhere equal, `L⁰`, ae_eq_fun
-
 -/
+
+@[expose] public section
 
 -- Guard against import creep
 assert_not_exists InnerProductSpace
 
 noncomputable section
 
-open Topology Set Filter TopologicalSpace ENNReal EMetric MeasureTheory Function
+open Set Filter TopologicalSpace ENNReal MeasureTheory Function
+
+open scoped Topology
 
 variable {α β γ δ : Type*} [MeasurableSpace α] {μ ν : Measure α}
 
@@ -86,6 +90,7 @@ variable (β)
 
 /-- The equivalence relation of being almost everywhere equal for almost everywhere strongly
 measurable functions. -/
+@[instance_reducible]
 def Measure.aeEqSetoid (μ : Measure α) : Setoid { f : α → β // AEStronglyMeasurable f μ } :=
   ⟨fun f g => (f : α → β) =ᵐ[μ] g, fun {f} => ae_eq_refl f.val, fun {_ _} => ae_eq_symm,
     fun {_ _ _} => ae_eq_trans⟩
@@ -125,7 +130,7 @@ then we choose that one. -/
 def cast (f : α →ₘ[μ] β) : α → β :=
   if h : ∃ (b : β), f = mk (const α b) aestronglyMeasurable_const then
     const α <| Classical.choose h else
-    AEStronglyMeasurable.mk _ (Quotient.out f : { f : α → β // AEStronglyMeasurable f μ }).2
+    AEStronglyMeasurable.mk _ (Quotient.out f : { f : α → β // AEStronglyMeasurable f μ }).property
 
 /-- A measurable representative of an `AEEqFun` [f] -/
 instance instCoeFun : CoeFun (α →ₘ[μ] β) fun _ => α → β := ⟨cast⟩
@@ -178,7 +183,7 @@ theorem coeFn_mk (f : α → β) (hf) : (mk f hf : α →ₘ[μ] β) =ᵐ[μ] f 
 
 @[elab_as_elim]
 theorem induction_on (f : α →ₘ[μ] β) {p : (α →ₘ[μ] β) → Prop} (H : ∀ f hf, p (mk f hf)) : p f :=
-  Quotient.inductionOn' f <| Subtype.forall.2 H
+  Quotient.inductionOn f <| Subtype.forall.2 H
 
 @[elab_as_elim]
 theorem induction_on₂ {α' β' : Type*} [MeasurableSpace α'] [TopologicalSpace β'] {μ' : Measure α'}
@@ -197,21 +202,19 @@ theorem induction_on₃ {α' β' : Type*} [MeasurableSpace α'] [TopologicalSpac
 end
 
 /-!
-### Composition of an a.e. equal function with a (quasi) measure preserving function
+### Composition of an a.e. equal function with a (quasi-)measure-preserving function
 -/
 
 section compQuasiMeasurePreserving
 
 variable [TopologicalSpace γ] [MeasurableSpace β] {ν : MeasureTheory.Measure β} {f : α → β}
 
-open MeasureTheory.Measure (QuasiMeasurePreserving)
-
-/-- Composition of an almost everywhere equal function and a quasi measure preserving function.
+/-- Composition of an almost everywhere equal function and a quasi-measure-preserving function.
 
 See also `AEEqFun.compMeasurePreserving`. -/
 def compQuasiMeasurePreserving (g : β →ₘ[ν] γ) (f : α → β) (hf : QuasiMeasurePreserving f μ ν) :
     α →ₘ[μ] γ :=
-  Quotient.liftOn' g (fun g ↦ mk (g ∘ f) <| g.2.comp_quasiMeasurePreserving hf) fun _ _ h ↦
+  Quotient.liftOn' g (fun g ↦ mk (g ∘ f) <| g.property.comp_quasiMeasurePreserving hf) fun _ _ h ↦
     mk_eq_mk.2 <| h.comp_tendsto hf.tendsto_ae
 
 @[simp]
@@ -230,6 +233,37 @@ theorem coeFn_compQuasiMeasurePreserving (g : β →ₘ[ν] γ) (hf : QuasiMeasu
   rw [compQuasiMeasurePreserving_eq_mk]
   apply coeFn_mk
 
+theorem compQuasiMeasurePreserving_congr (g : β →ₘ[ν] γ) (hf : QuasiMeasurePreserving f μ ν)
+    {f' : α → β} (h : f =ᵐ[μ] f') :
+    compQuasiMeasurePreserving g f hf = compQuasiMeasurePreserving g f' (hf.congr h) := by
+  ext
+  grw [coeFn_compQuasiMeasurePreserving, coeFn_compQuasiMeasurePreserving, h]
+
+@[simp]
+theorem compQuasiMeasurePreserving_id (g : β →ₘ[ν] γ) :
+    compQuasiMeasurePreserving g id (.id ν) = g := by
+  ext
+  exact coeFn_compQuasiMeasurePreserving _ _
+
+theorem compQuasiMeasurePreserving_comp {γ : Type*} {mγ : MeasurableSpace γ}
+    {ξ : Measure γ} (g : γ →ₘ[ξ] δ) {f : β → γ} (hf : QuasiMeasurePreserving f ν ξ) {f' : α → β}
+    (hf' : QuasiMeasurePreserving f' μ ν) :
+    compQuasiMeasurePreserving g (f ∘ f') (hf.comp hf') =
+    compQuasiMeasurePreserving (compQuasiMeasurePreserving g f hf) f' hf' := by
+  ext
+  grw [coeFn_compQuasiMeasurePreserving, coeFn_compQuasiMeasurePreserving,
+    coeFn_compQuasiMeasurePreserving, comp_assoc]
+
+theorem compQuasiMeasurePreserving_iterate (g : α →ₘ[μ] γ) {f : α → α}
+    (hf : QuasiMeasurePreserving f μ μ) (n : ℕ) :
+    (compQuasiMeasurePreserving · f hf)^[n] g =
+    compQuasiMeasurePreserving g (f^[n]) (hf.iterate n) := by
+  induction n with
+  | zero => simp
+  | succ n hind =>
+    nth_rewrite 1 [add_comm]
+    simp [iterate_add, hind, ← compQuasiMeasurePreserving_comp]
+
 end compQuasiMeasurePreserving
 
 section compMeasurePreserving
@@ -237,7 +271,7 @@ section compMeasurePreserving
 variable [TopologicalSpace γ] [MeasurableSpace β] {ν : MeasureTheory.Measure β}
   {f : α → β} {g : β → γ}
 
-/-- Composition of an almost everywhere equal function and a quasi measure preserving function.
+/-- Composition of an almost everywhere equal function and a quasi-measure-preserving function.
 
 This is an important special case of `AEEqFun.compQuasiMeasurePreserving`. We use a separate
 definition so that lemmas that need `f` to be measure preserving can be `@[simp]` lemmas. -/
@@ -259,6 +293,28 @@ theorem coeFn_compMeasurePreserving (g : β →ₘ[ν] γ) (hf : MeasurePreservi
     g.compMeasurePreserving f hf =ᵐ[μ] g ∘ f :=
   g.coeFn_compQuasiMeasurePreserving _
 
+theorem compMeasurePreserving_congr (g : β →ₘ[ν] γ) (hf : MeasurePreserving f μ ν)
+    {f' : α → β} (hf' : Measurable f') (h : f =ᵐ[μ] f') :
+    compMeasurePreserving g f hf = compMeasurePreserving g f' (hf.congr hf' h) :=
+  compQuasiMeasurePreserving_congr _ _ h
+
+@[simp]
+theorem compMeasurePreserving_id (g : β →ₘ[ν] γ) :
+    compMeasurePreserving g id (.id ν) = g :=
+  compQuasiMeasurePreserving_id _
+
+theorem compMeasurePreserving_comp {γ : Type*} {mγ : MeasurableSpace γ}
+    {ξ : Measure γ} (g : γ →ₘ[ξ] δ) {f : β → γ} (hf : MeasurePreserving f ν ξ) {f' : α → β}
+    (hf' : MeasurePreserving f' μ ν) :
+    compMeasurePreserving g (f ∘ f') (hf.comp hf') =
+    compMeasurePreserving (compMeasurePreserving g f hf) f' hf' :=
+  compQuasiMeasurePreserving_comp _ _ _
+
+theorem compMeasurePreserving_iterate (g : α →ₘ[μ] γ) {f : α → α}
+    (hf : MeasurePreserving f μ μ) (n : ℕ) :
+    (compMeasurePreserving · f hf)^[n] g = compMeasurePreserving g (f^[n]) (hf.iterate n) :=
+  compQuasiMeasurePreserving_iterate _ _ _
+
 end compMeasurePreserving
 
 variable [TopologicalSpace β] [TopologicalSpace γ]
@@ -267,7 +323,7 @@ variable [TopologicalSpace β] [TopologicalSpace γ]
 return the equivalence class of `g ∘ f`, i.e., the almost everywhere equal function
 `[g ∘ f] : α →ₘ γ`. -/
 def comp (g : β → γ) (hg : Continuous g) (f : α →ₘ[μ] β) : α →ₘ[μ] γ :=
-  Quotient.liftOn' f (fun f => mk (g ∘ (f : α → β)) (hg.comp_aestronglyMeasurable f.2))
+  Quotient.liftOn' f (fun f => mk (g ∘ (f : α → β)) (hg.comp_aestronglyMeasurable f.property))
     fun _ _ H => mk_eq_mk.2 <| H.fun_comp g
 
 @[simp]
@@ -294,7 +350,7 @@ theorem coeFn_comp (g : β → γ) (hg : Continuous g) (f : α →ₘ[μ] β) : 
 
 theorem comp_compQuasiMeasurePreserving
     {β : Type*} [MeasurableSpace β] {ν} (g : γ → δ) (hg : Continuous g)
-    (f : β →ₘ[ν] γ) {φ : α → β} (hφ : Measure.QuasiMeasurePreserving φ μ ν) :
+    (f : β →ₘ[ν] γ) {φ : α → β} (hφ : QuasiMeasurePreserving φ μ ν) :
     (comp g hg f).compQuasiMeasurePreserving φ hφ =
       comp g hg (f.compQuasiMeasurePreserving φ hφ) := by
   rcases f; rfl
@@ -309,7 +365,8 @@ return the equivalence class of `g ∘ f`, i.e., the almost everywhere equal fun
 `[g ∘ f] : α →ₘ γ`. This requires that `γ` has a second countable topology. -/
 def compMeasurable (g : β → γ) (hg : Measurable g) (f : α →ₘ[μ] β) : α →ₘ[μ] γ :=
   Quotient.liftOn' f
-    (fun f' => mk (g ∘ (f' : α → β)) (hg.comp_aemeasurable f'.2.aemeasurable).aestronglyMeasurable)
+    (fun f' => mk (g ∘ (f' : α → β))
+      (hg.comp_aemeasurable f'.property.aemeasurable).aestronglyMeasurable)
     fun _ _ H => mk_eq_mk.2 <| H.fun_comp g
 
 @[simp]
@@ -333,7 +390,7 @@ end CompMeasurable
 
 /-- The class of `x ↦ (f x, g x)`. -/
 def pair (f : α →ₘ[μ] β) (g : α →ₘ[μ] γ) : α →ₘ[μ] β × γ :=
-  Quotient.liftOn₂' f g (fun f g => mk (fun x => (f.1 x, g.1 x)) (f.2.prodMk g.2))
+  Quotient.liftOn₂' f g (fun f g => mk (fun x => (f.val x, g.val x)) (f.property.prodMk g.property))
     fun _f _g _f' _g' Hf Hg => mk_eq_mk.2 <| Hf.prodMk Hg
 
 @[simp]
@@ -436,7 +493,7 @@ theorem toGerm_injective : Injective (toGerm : (α →ₘ[μ] β) → Germ (ae �
 
 @[simp]
 theorem compQuasiMeasurePreserving_toGerm {β : Type*} [MeasurableSpace β] {f : α → β} {ν}
-    (g : β →ₘ[ν] γ) (hf : Measure.QuasiMeasurePreserving f μ ν) :
+    (g : β →ₘ[ν] γ) (hf : QuasiMeasurePreserving f μ ν) :
     (g.compQuasiMeasurePreserving f hf).toGerm = g.toGerm.compTendsto f hf.tendsto_ae := by
   rcases g; rfl
 
@@ -457,10 +514,12 @@ theorem compMeasurable_toGerm [MeasurableSpace β] [BorelSpace β] [PseudoMetriz
     (compMeasurable g hg f).toGerm = f.toGerm.map g :=
   induction_on f fun f _ => by simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem comp₂_toGerm (g : β → γ → δ) (hg : Continuous (uncurry g)) (f₁ : α →ₘ[μ] β)
     (f₂ : α →ₘ[μ] γ) : (comp₂ g hg f₁ f₂).toGerm = f₁.toGerm.map₂ g f₂.toGerm :=
   induction_on₂ f₁ f₂ fun f₁ _ f₂ _ => by simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem comp₂Measurable_toGerm [PseudoMetrizableSpace β] [MeasurableSpace β] [BorelSpace β]
     [PseudoMetrizableSpace γ] [SecondCountableTopologyEither β γ]
     [MeasurableSpace γ] [BorelSpace γ] [PseudoMetrizableSpace δ] [SecondCountableTopology δ]
@@ -589,6 +648,7 @@ def const (b : β) : α →ₘ[μ] β :=
 theorem coeFn_const (b : β) : (const α b : α →ₘ[μ] β) =ᵐ[μ] Function.const α b :=
   coeFn_mk _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the measure is nonzero, we can strengthen `coeFn_const` to get an equality. -/
 @[simp]
 theorem coeFn_const_eq [NeZero μ] (b : β) (x : α) : (const α b : α →ₘ[μ] β) x = b := by
@@ -599,6 +659,12 @@ theorem coeFn_const_eq [NeZero μ] (b : β) (x : α) : (const α b : α →ₘ[�
   set b' := Classical.choose h
   simp_rw [const, mk_eq_mk, EventuallyEq, ← const_def, eventually_const] at this
   rw [Function.const, this]
+
+theorem coeFn_const_eq' (b : β) : ∃ b', ((const α b : α →ₘ[μ] β) : α → β) = fun _ ↦ b' := by
+  simp only [cast]
+  split_ifs with h
+  case neg => exact h.elim ⟨b, rfl⟩
+  exact ⟨Classical.choose h, by ext; simp⟩
 
 variable {α}
 
@@ -723,6 +789,24 @@ end Monoid
 @[to_additive existing]
 instance instCommMonoid [CommMonoid γ] [ContinuousMul γ] : CommMonoid (α →ₘ[μ] γ) :=
   toGerm_injective.commMonoid toGerm one_toGerm mul_toGerm pow_toGerm
+
+@[to_additive]
+theorem coeFn_finsetProd [CommMonoid γ] [ContinuousMul γ]
+    {ι : Type*} (s : Finset ι) (f : ι → α →ₘ[μ] γ) :
+    ⇑(∏ i ∈ s, f i) =ᵐ[μ] ∏ i ∈ s, ⇑(f i) := by
+  classical
+  induction s using Finset.induction with
+  | empty => simp [coeFn_one]
+  | insert a s ha ih =>
+    simp only [ha, not_false_eq_true, Finset.prod_insert]
+    grw [coeFn_mul, ih]
+
+@[to_additive]
+theorem coeFn_fun_finsetProd [CommMonoid γ] [ContinuousMul γ]
+    {ι : Type*} (s : Finset ι) (f : ι → α →ₘ[μ] γ) :
+    ⇑(∏ i ∈ s, f i) =ᵐ[μ] fun x ↦ ∏ i ∈ s, f i x := by
+  grw [coeFn_finsetProd]
+  filter_upwards with x using by simp
 
 section Group
 
@@ -885,13 +969,11 @@ variable [LinearOrder γ] [OrderClosedTopology γ] [Zero γ]
 
 /-- Positive part of an `AEEqFun`. -/
 def posPart (f : α →ₘ[μ] γ) : α →ₘ[μ] γ :=
-  comp (fun x => max x 0) (continuous_id.max continuous_const) f
+  comp (fun x => max x 0) (by fun_prop) f
 
 @[simp]
 theorem posPart_mk (f : α → γ) (hf) :
-    posPart (mk f hf : α →ₘ[μ] γ) =
-      mk (fun x => max (f x) 0)
-        ((continuous_id.max continuous_const).comp_aestronglyMeasurable hf) :=
+    posPart (mk f hf : α →ₘ[μ] γ) = mk (fun x ↦ max (f x) 0) (by fun_prop) :=
   rfl
 
 theorem coeFn_posPart (f : α →ₘ[μ] γ) : ⇑(posPart f) =ᵐ[μ] fun a => max (f a) 0 :=

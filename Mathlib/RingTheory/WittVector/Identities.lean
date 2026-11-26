@@ -3,12 +3,15 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.RingTheory.WittVector.Frobenius
-import Mathlib.RingTheory.WittVector.Verschiebung
+module
+
+public import Mathlib.RingTheory.WittVector.Frobenius
+public import Mathlib.RingTheory.WittVector.Verschiebung
+
 import Mathlib.RingTheory.WittVector.MulP
 
 /-!
-## Identities between operations on the ring of Witt vectors
+# Identities between operations on the ring of Witt vectors
 
 In this file we derive common identities between the Frobenius and Verschiebung operators.
 
@@ -25,6 +28,8 @@ In this file we derive common identities between the Frobenius and Verschiebung 
 * [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
 -/
 
+public section
+
 
 namespace WittVector
 
@@ -33,9 +38,7 @@ variable {p : ℕ} {R : Type*} [hp : Fact p.Prime] [CommRing R]
 -- type as `\bbW`
 local notation "𝕎" => WittVector p
 
-noncomputable section
-
--- Porting note: `ghost_calc` failure: `simp only []` and the manual instances had to be added.
+-- Porting note: `ghost_calc` failure: the manual instances had to be added.
 /-- The composition of Frobenius and Verschiebung is multiplication by `p`. -/
 theorem frobenius_verschiebung (x : 𝕎 R) : frobenius (verschiebung x) = x * p := by
   have : IsPoly p fun {R} [CommRing R] x ↦ frobenius (verschiebung x) :=
@@ -75,22 +78,26 @@ theorem coeff_p [CharP R p] (i : ℕ) : (p : 𝕎 R).coeff i = if i = 1 then 1 e
 
 @[simp]
 theorem coeff_p_zero [CharP R p] : (p : 𝕎 R).coeff 0 = 0 := by
-  rw [coeff_p, if_neg]
+  rw [coeff_p, ite_eq_right]
   exact zero_ne_one
 
 @[simp]
-theorem coeff_p_one [CharP R p] : (p : 𝕎 R).coeff 1 = 1 := by rw [coeff_p, if_pos rfl]
+theorem coeff_p_one [CharP R p] : (p : 𝕎 R).coeff 1 = 1 := by rw [coeff_p, ite_eq_left rfl]
 
-theorem p_nonzero [Nontrivial R] [CharP R p] : (p : 𝕎 R) ≠ 0 := by
+theorem p_ne_zero [Nontrivial R] [CharP R p] : (p : 𝕎 R) ≠ 0 := by
   intro h
   simpa only [h, zero_coeff, zero_ne_one] using coeff_p_one p R
 
-theorem FractionRing.p_nonzero [Nontrivial R] [CharP R p] : (p : FractionRing (𝕎 R)) ≠ 0 := by
-  simpa using (IsFractionRing.injective (𝕎 R) (FractionRing (𝕎 R))).ne (WittVector.p_nonzero _ _)
+@[deprecated (since := "2026-10-13")] alias p_nonzero := p_ne_zero
+
+theorem FractionRing.p_ne_zero [Nontrivial R] [CharP R p] : (p : FractionRing (𝕎 R)) ≠ 0 := by
+  simpa using (IsFractionRing.injective (𝕎 R) (FractionRing (𝕎 R))).ne (WittVector.p_ne_zero _ _)
+
+@[deprecated (since := "2026-10-13")] alias FractionRing.p_nonzero := FractionRing.p_ne_zero
 
 variable {p R}
 
--- Porting note: `ghost_calc` failure: `simp only []` and the manual instances had to be added.
+-- Porting note: `ghost_calc` failure: the manual instances had to be added.
 /-- The “projection formula” for Frobenius and Verschiebung. -/
 theorem verschiebung_mul_frobenius (x y : 𝕎 R) :
     verschiebung (x * frobenius y) = verschiebung x * y := by
@@ -170,7 +177,8 @@ theorem iterate_verschiebung_mul_left (x y : 𝕎 R) (i : ℕ) :
   induction i generalizing y with
   | zero => simp
   | succ i ih =>
-    rw [iterate_succ_apply', ← verschiebung_mul_frobenius, ih, iterate_succ_apply']; rfl
+    rw [iterate_succ_apply', ← verschiebung_mul_frobenius, ih, iterate_succ_apply',
+      iterate_succ_apply]
 
 section CharP
 
@@ -224,7 +232,5 @@ theorem iterate_verschiebung_iterate_frobenius (x : 𝕎 R) (n : ℕ) :
     rw [iterate_succ_apply', ih, pow_succ, comp_apply, verschiebung_frobenius, mul_assoc]
 
 end CharP
-
-end
 
 end WittVector

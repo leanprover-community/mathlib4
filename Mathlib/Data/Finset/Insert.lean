@@ -3,10 +3,13 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Finset.Dedup
-import Mathlib.Data.Finset.Empty
-import Mathlib.Data.Multiset.FinsetOps
+module
+
+public import Mathlib.Data.Finset.Attr
+public import Mathlib.Data.Finset.Dedup
+public import Mathlib.Data.Finset.Empty
+public import Mathlib.Data.Multiset.FinsetOps
+public import Mathlib.Util.Delaborators
 
 /-!
 # Constructing finite sets by adding one element
@@ -27,12 +30,13 @@ all ways to construct a `Finset` by adding one element.
 ## Tags
 
 finite sets, finset
-
 -/
+
+@[expose] public section
 
 -- Assert that we define `Finset` without the material on `List.sublists`.
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
-assert_not_exists List.sublistsLen Multiset.powerset CompleteLattice OrderedCommMonoid
+assert_not_exists List.sublistsLen Multiset.powerset CompleteLattice IsOrderedMonoid
 
 open Multiset Subtype Function
 
@@ -62,7 +66,7 @@ instance : Singleton α (Finset α) :=
   ⟨fun a => ⟨{a}, nodup_singleton a⟩⟩
 
 @[simp]
-theorem singleton_val (a : α) : ({a} : Finset α).1 = {a} :=
+theorem singleton_val (a : α) : ({a} : Finset α).val = {a} :=
   rfl
 
 @[simp, grind =]
@@ -74,8 +78,6 @@ theorem eq_of_mem_singleton {x y : α} (h : x ∈ ({y} : Finset α)) : x = y :=
 
 theorem notMem_singleton {a b : α} : a ∉ ({b} : Finset α) ↔ a ≠ b :=
   not_congr mem_singleton
-
-@[deprecated (since := "2025-05-23")] alias not_mem_singleton := notMem_singleton
 
 theorem mem_singleton_self (a : α) : a ∈ ({a} : Finset α) :=
   mem_singleton.mpr rfl
@@ -96,9 +98,12 @@ theorem singleton_inj : ({a} : Finset α) = {b} ↔ a = b :=
 theorem singleton_nonempty (a : α) : ({a} : Finset α).Nonempty :=
   ⟨a, mem_singleton_self a⟩
 
-@[simp]
+@[deprecated singleton_nonempty +typeChanged (since := "2026-11-11")]
 theorem singleton_ne_empty (a : α) : ({a} : Finset α) ≠ ∅ :=
   (singleton_nonempty a).ne_empty
+
+@[deprecated singleton_nonempty +typeChanged (since := "2026-11-14")]
+theorem empty_ne_singleton (a : α) : ∅ ≠ ({a} : Finset α) := by simp
 
 theorem empty_ssubset_singleton : (∅ : Finset α) ⊂ {a} :=
   (singleton_nonempty _).empty_ssubset
@@ -107,27 +112,23 @@ theorem empty_ssubset_singleton : (∅ : Finset α) ⊂ {a} :=
 theorem coe_singleton (a : α) : (({a} : Finset α) : Set α) = {a} := by grind
 
 @[simp, norm_cast]
-theorem coe_eq_singleton {s : Finset α} {a : α} : (s : Set α) = {a} ↔ s = {a} := by grind
+theorem coe_eq_singleton {s : Finset α} {a : α} : (s : Set α) = {a} ↔ s = {a} := by
+  rw [← coe_singleton, coe_inj]
 
 @[norm_cast]
-lemma coe_subset_singleton : (s : Set α) ⊆ {a} ↔ s ⊆ {a} := by grind
+lemma coe_subset_singleton : (s : Set α) ⊆ {a} ↔ s ⊆ {a} := by
+  rw [← coe_singleton, coe_subset]
 
 @[norm_cast]
-lemma singleton_subset_coe : {a} ⊆ (s : Set α) ↔ {a} ⊆ s := by grind
+lemma singleton_subset_coe : {a} ⊆ (s : Set α) ↔ {a} ⊆ s := by
+  rw [← coe_singleton, coe_subset]
 
 theorem eq_singleton_iff_unique_mem {s : Finset α} {a : α} : s = {a} ↔ a ∈ s ∧ ∀ x ∈ s, x = a := by
   grind
 
 theorem eq_singleton_iff_nonempty_unique_mem {s : Finset α} {a : α} :
     s = {a} ↔ s.Nonempty ∧ ∀ x ∈ s, x = a := by
-  constructor
-  · rintro rfl
-    simp
-  · rintro ⟨hne, h_uniq⟩
-    rw [eq_singleton_iff_unique_mem]
-    refine ⟨?_, h_uniq⟩
-    rw [← h_uniq hne.choose hne.choose_spec]
-    exact hne.choose_spec
+  grind [singleton_nonempty]
 
 theorem nonempty_iff_eq_singleton_default [Unique α] {s : Finset α} :
     s.Nonempty ↔ s = {default} := by
@@ -167,13 +168,16 @@ theorem eq_empty_of_ssubset_singleton {s : Finset α} {x : α} (hs : s ⊂ {x}) 
 /-- A finset is nontrivial if it has at least two elements. -/
 protected abbrev Nontrivial (s : Finset α) : Prop := (s : Set α).Nontrivial
 
+@[grind =]
+theorem nontrivial_def {s : Finset α} : s.Nontrivial ↔ ∃ a, a ∈ s ∧ ∃ b, b ∈ s ∧ a ≠ b := Iff.rfl
+
 nonrec lemma Nontrivial.nonempty (hs : s.Nontrivial) : s.Nonempty := hs.nonempty
 
 @[simp]
-theorem not_nontrivial_empty : ¬ (∅ : Finset α).Nontrivial := by simp [Finset.Nontrivial]
+theorem not_nontrivial_empty : ¬(∅ : Finset α).Nontrivial := by simp [Finset.Nontrivial]
 
 @[simp]
-theorem not_nontrivial_singleton : ¬ ({a} : Finset α).Nontrivial := by simp [Finset.Nontrivial]
+theorem not_nontrivial_singleton : ¬({a} : Finset α).Nontrivial := by simp [Finset.Nontrivial]
 
 theorem Nontrivial.ne_singleton (hs : s.Nontrivial) : s ≠ {a} := by
   rintro rfl; exact not_nontrivial_singleton hs
@@ -197,7 +201,7 @@ lemma Nontrivial.not_subset_singleton (hs : s.Nontrivial) : ¬s ⊆ {a} :=
   mod_cast hs.coe.not_subset_singleton
 
 instance instNontrivial [Nonempty α] : Nontrivial (Finset α) :=
-  ‹Nonempty α›.elim fun a => ⟨⟨{a}, ∅, singleton_ne_empty _⟩⟩
+  ‹Nonempty α›.elim fun a => ⟨⟨{a}, ∅, (singleton_nonempty _).ne_empty⟩⟩
 
 instance [IsEmpty α] : Unique (Finset α) where
   default := ∅
@@ -205,7 +209,7 @@ instance [IsEmpty α] : Unique (Finset α) where
 
 instance (i : α) : Unique ({i} : Finset α) where
   default := ⟨i, mem_singleton_self i⟩
-  uniq j := Subtype.ext <| mem_singleton.mp j.2
+  uniq j := Subtype.ext <| mem_singleton.mp j.property
 
 @[simp]
 lemma default_singleton (i : α) : ((default : ({i} : Finset α)) : α) = i := rfl
@@ -219,7 +223,7 @@ instance Nontrivial.instDecidablePred : DecidablePred (Finset.Nontrivial (α := 
       (h : s.Nodup) → Decidable (Finset.Nontrivial ⟨s, h⟩))
     s.val (fun l h => match l with
       | [] => isFalse (by simp)
-      | [_] => isFalse (by simp [Finset.toSet])
+      | [_] => isFalse (by simp [SetLike.coe])
       | a :: b :: _ => isTrue ⟨a, by simp, b, by simp,
         List.ne_of_not_mem_cons (List.nodup_cons.mp h).left⟩) s.nodup
 
@@ -236,7 +240,7 @@ variable {s t : Finset α} {a b : α}
 `insert a s` when it is defined, but unlike `insert a s` it does not require `DecidableEq α`,
 and the union is guaranteed to be disjoint. -/
 def cons (a : α) (s : Finset α) (h : a ∉ s) : Finset α :=
-  ⟨a ::ₘ s.1, nodup_cons.2 ⟨h, s.2⟩⟩
+  ⟨a ::ₘ s.val, nodup_cons.2 ⟨h, s.nodup⟩⟩
 
 @[simp, grind =]
 theorem mem_cons {h} : b ∈ s.cons a h ↔ b = a ∨ b ∈ s :=
@@ -249,13 +253,11 @@ theorem mem_cons_self (a : α) (s : Finset α) {h} : a ∈ cons a s h :=
   Multiset.mem_cons_self _ _
 
 @[simp]
-theorem cons_val (h : a ∉ s) : (cons a s h).1 = a ::ₘ s.1 :=
+theorem cons_val (h : a ∉ s) : (cons a s h).val = a ::ₘ s.val :=
   rfl
 
 theorem eq_of_mem_cons_of_notMem (has : a ∉ s) (h : b ∈ cons a s has) (hb : b ∉ s) : b = a :=
   (mem_cons.1 h).resolve_right hb
-
-@[deprecated (since := "2025-05-23")] alias eq_of_mem_cons_of_not_mem := eq_of_mem_cons_of_notMem
 
 theorem mem_of_mem_cons_of_ne {s : Finset α} {a : α} {has} {i : α}
     (hi : i ∈ cons a s has) (hia : i ≠ a) : i ∈ s :=
@@ -263,6 +265,10 @@ theorem mem_of_mem_cons_of_ne {s : Finset α} {a : α} {has} {i : α}
 
 theorem forall_mem_cons (h : a ∉ s) (p : α → Prop) :
     (∀ x, x ∈ cons a s h → p x) ↔ p a ∧ ∀ x, x ∈ s → p x := by
+  grind
+
+theorem exists_mem_cons (h : a ∉ s) (p : α → Prop) :
+    (∃ x, x ∈ cons a s h ∧ p x) ↔ p a ∨ ∃ x, x ∈ s ∧ p x := by
   grind
 
 /-- Useful in proofs by induction. -/
@@ -282,7 +288,8 @@ theorem cons_empty (a : α) : cons a ∅ (notMem_empty _) = {a} := rfl
 theorem cons_nonempty (h : a ∉ s) : (cons a s h).Nonempty :=
   ⟨a, mem_cons.2 <| Or.inl rfl⟩
 
-@[simp] theorem cons_ne_empty (h : a ∉ s) : cons a s h ≠ ∅ := (cons_nonempty _).ne_empty
+@[deprecated cons_nonempty +typeChanged (since := "2026-11-11")]
+theorem cons_ne_empty (h : a ∉ s) : cons a s h ≠ ∅ := (cons_nonempty _).ne_empty
 
 @[simp]
 theorem nonempty_mk {m : Multiset α} {hm} : (⟨m, hm⟩ : Finset α).Nonempty ↔ m ≠ 0 := by
@@ -345,29 +352,28 @@ variable [DecidableEq α] {s t : Finset α} {a b : α} {f : α → β}
 
 /-- `insert a s` is the set `{a} ∪ s` containing `a` and the elements of `s`. -/
 instance : Insert α (Finset α) :=
-  ⟨fun a s => ⟨_, s.2.ndinsert a⟩⟩
+  ⟨fun a s => ⟨_, s.nodup.ndinsert a⟩⟩
 
-theorem insert_def (a : α) (s : Finset α) : insert a s = ⟨_, s.2.ndinsert a⟩ :=
+theorem insert_def (a : α) (s : Finset α) : insert a s = ⟨_, s.nodup.ndinsert a⟩ :=
   rfl
 
 @[simp]
-theorem insert_val (a : α) (s : Finset α) : (insert a s).1 = ndinsert a s.1 :=
+theorem insert_val (a : α) (s : Finset α) : (insert a s).val = ndinsert a s.val :=
   rfl
 
-theorem insert_val' (a : α) (s : Finset α) : (insert a s).1 = dedup (a ::ₘ s.1) := by
+theorem insert_val' (a : α) (s : Finset α) : (insert a s).val = dedup (a ::ₘ s.val) := by
   rw [dedup_cons, dedup_eq_self]; rfl
 
-theorem insert_val_of_notMem {a : α} {s : Finset α} (h : a ∉ s) : (insert a s).1 = a ::ₘ s.1 := by
+theorem insert_val_of_notMem {a : α} {s : Finset α} (h : a ∉ s) :
+    (insert a s).val = a ::ₘ s.val := by
   rw [insert_val, ndinsert_of_notMem h]
-
-@[deprecated (since := "2025-05-23")] alias insert_val_of_not_mem := insert_val_of_notMem
 
 @[simp, grind =]
 theorem mem_insert : a ∈ insert b s ↔ a = b ∨ a ∈ s :=
   mem_ndinsert
 
 theorem mem_insert_self (a : α) (s : Finset α) : a ∈ insert a s :=
-  mem_ndinsert_self a s.1
+  mem_ndinsert_self a s.val
 
 theorem mem_insert_of_mem (h : a ∈ s) : a ∈ insert b s :=
   mem_ndinsert_of_mem h
@@ -377,9 +383,6 @@ theorem mem_of_mem_insert_of_ne (h : b ∈ insert a s) : b ≠ a → b ∈ s :=
 
 theorem eq_of_mem_insert_of_notMem (ha : b ∈ insert a s) (hb : b ∉ s) : b = a :=
   (mem_insert.1 ha).resolve_right hb
-
-@[deprecated (since := "2025-05-23")]
-alias eq_of_mem_insert_of_not_mem := eq_of_mem_insert_of_notMem
 
 /-- A version of `LawfulSingleton.insert_empty_eq` that works with `dsimp`. -/
 @[simp] lemma insert_empty : insert a (∅ : Finset α) = {a} := rfl
@@ -429,7 +432,7 @@ theorem insert_idem (a : α) (s : Finset α) : insert a (insert a s) = insert a 
 theorem insert_nonempty (a : α) (s : Finset α) : (insert a s).Nonempty :=
   ⟨a, mem_insert_self a s⟩
 
-@[simp]
+@[deprecated insert_nonempty +typeChanged (since := "2026-11-11")]
 theorem insert_ne_empty (a : α) (s : Finset α) : insert a s ≠ ∅ :=
   (insert_nonempty a s).ne_empty
 
@@ -437,10 +440,8 @@ instance (i : α) (s : Finset α) : Nonempty ((insert i s : Finset α) : Set α)
   (Finset.coe_nonempty.mpr (s.insert_nonempty i)).to_subtype
 
 theorem ne_insert_of_notMem (s t : Finset α) {a : α} (h : a ∉ s) : s ≠ insert a t := by
-  contrapose! h
+  contrapose h
   simp [h]
-
-@[deprecated (since := "2025-05-23")] alias ne_insert_of_not_mem := ne_insert_of_notMem
 
 theorem insert_subset_iff : insert a s ⊆ t ↔ a ∈ t ∧ s ⊆ t := by grind
 
@@ -454,7 +455,7 @@ theorem insert_subset_insert (a : α) {s t : Finset α} (h : s ⊆ t) : insert a
   grind
 
 @[simp] lemma insert_subset_insert_iff (ha : a ∉ s) : insert a s ⊆ insert a t ↔ s ⊆ t := by
-  simp_rw [← coe_subset]; simp [-coe_subset, ha]
+  simp_rw [← coe_subset]; simp [ha]
 
 theorem insert_inj (ha : a ∉ s) : insert a s = insert b s ↔ a = b :=
   ⟨fun h => eq_of_mem_insert_of_notMem (h ▸ mem_insert_self _ _) ha, congr_arg (insert · s)⟩
@@ -536,8 +537,8 @@ lemma Nonempty.exists_cons_eq {α} {s : Finset α} (hs : s.Nonempty) : ∃ t a h
 /-- Inserting an element to a finite set is equivalent to the option type. -/
 def subtypeInsertEquivOption {t : Finset α} {x : α} (h : x ∉ t) :
     { i // i ∈ insert x t } ≃ Option { i // i ∈ t } where
-  toFun y := if h : ↑y = x then none else some ⟨y, (mem_insert.mp y.2).resolve_left h⟩
-  invFun y := (y.elim ⟨x, mem_insert_self _ _⟩) fun z => ⟨z, mem_insert_of_mem z.2⟩
+  toFun y := if h : ↑y = x then none else some ⟨y, (mem_insert.mp y.property).resolve_left h⟩
+  invFun y := (y.elim ⟨x, mem_insert_self _ _⟩) fun z => ⟨z, mem_insert_of_mem z.property⟩
   left_inv y := by grind
   right_inv := by rintro (_ | y) <;> grind
 
@@ -552,7 +553,7 @@ def prodPiInsert (f : α → Type*) {a : α} (x : f a × Π i ∈ s, f i) : (Π 
     if h : i = a then cast (congrArg f h.symm) x.1 else x.2 i (mem_of_mem_insert_of_ne hi h)
 
 /-- The equivalence between pi types on insert and the product. -/
-def insertPiProdEquiv [DecidableEq α] {s : Finset α} (f : α → Type*) {a : α} (has : a ∉ s) :
+def insertPiProdEquiv {s : Finset α} (f : α → Type*) {a : α} (has : a ∉ s) :
     (Π i ∈ insert a s, f i) ≃ f a × Π i ∈ s, f i where
   toFun := insertPiProd f
   invFun := prodPiInsert f
@@ -616,7 +617,7 @@ theorem toFinset_eq_empty_iff (l : List α) : l.toFinset = ∅ ↔ l = nil := by
 
 @[simp]
 theorem toFinset_nonempty_iff (l : List α) : l.toFinset.Nonempty ↔ l ≠ [] := by
-  simp [Finset.nonempty_iff_ne_empty]
+  simp [← Finset.ne_empty_iff_nonempty]
 
 end List
 

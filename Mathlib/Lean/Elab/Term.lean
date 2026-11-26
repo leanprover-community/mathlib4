@@ -1,14 +1,22 @@
 /-
 Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kyle Miller
+Authors: Kyle Miller, Thomas R. Murrills
 -/
-import Mathlib.Init
-import Lean.Elab.SyntheticMVars
+module
+
+public import Mathlib.Init
+
+meta import Lean.Elab.Term
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Additions to `Lean.Elab.Term`
 -/
+
+public meta section
 
 namespace Lean.Elab.Term
 

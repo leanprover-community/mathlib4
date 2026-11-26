@@ -3,9 +3,13 @@ Copyright (c) 2025 Bernhard Reinke. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bernhard Reinke
 -/
-import Mathlib.Algebra.Ring.Basic
-import Mathlib.Algebra.Ring.Opposite
-import Mathlib.Tactic.Abel
+module
+
+public import Mathlib.Algebra.Ring.Opposite
+public import Mathlib.Tactic.Abel
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Associator in a ring
@@ -19,6 +23,8 @@ We prove variants of this statement also for the `AddMonoidHom` bundled version 
 as well as the bundled version of `mulLeft₃` and `mulRight₃`, the multiplications `(x * y) * z` and
 `x * (y * z)`.
 -/
+
+@[expose] public section
 
 variable {R : Type*}
 

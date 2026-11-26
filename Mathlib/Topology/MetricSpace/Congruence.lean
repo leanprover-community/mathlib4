@@ -3,7 +3,9 @@ Copyright (c) 2024 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid, Newell Jensen
 -/
-import Mathlib.Topology.MetricSpace.Pseudo.Defs
+module
+
+public import Mathlib.Topology.MetricSpace.Dilation
 
 /-!
 # Congruences
@@ -26,11 +28,14 @@ For more details see the [Zulip discussion](https://leanprover.zulipchat.com/#na
 * `v₁ ≅ v₂`: for `Congruent v₁ v₂`.
 -/
 
-variable {ι ι' : Type*} {P₁ P₂ P₃ : Type*} {v₁ : ι → P₁} {v₂ : ι → P₂} {v₃ : ι → P₃}
+@[expose] public section
+
+variable {ι ι' : Type*} {P₁ P₂ P₃ P₄ : Type*} {v₁ : ι → P₁} {v₂ : ι → P₂} {v₃ : ι → P₃}
 
 section PseudoEMetricSpace
 
-variable [PseudoEMetricSpace P₁] [PseudoEMetricSpace P₂] [PseudoEMetricSpace P₃]
+variable [PseudoEMetricSpace P₁] [PseudoEMetricSpace P₂]
+variable [PseudoEMetricSpace P₃] [PseudoEMetricSpace P₄]
 
 /-- A congruence between indexed sets of vertices v₁ and v₂.
 Use `open scoped Congruent` to access the `v₁ ≅ v₂` notation. -/
@@ -92,6 +97,32 @@ lemma index_map (h : v₁ ≅ v₂) (f : ι' → ι) : (v₁ ∘ f) ≅ (v₂ �
   simpa [(EquivLike.toEquiv f).right_inv i₁, (EquivLike.toEquiv f).right_inv i₂]
     using edist_eq h ((EquivLike.toEquiv f).symm i₁) ((EquivLike.toEquiv f).symm i₂)
 
+/-- Families with at most a single point are always congruent. -/
+@[nontriviality, simp]
+lemma of_subsingleton_index [Subsingleton ι] : v₁ ≅ v₂ :=
+  fun i j => by simp [Subsingleton.elim i j]
+
+lemma comp_left {f : P₁ → P₃} (hf : Isometry f) (h : v₁ ≅ v₂) : f ∘ v₁ ≅ v₂ :=
+  .trans (fun _ _ ↦ hf _ _) h
+
+lemma comp_right {f : P₂ → P₃} (hf : Isometry f) (h : v₁ ≅ v₂) : v₁ ≅ f ∘ v₂ :=
+  .trans h (.symm <| fun _ _ ↦ hf _ _)
+
+@[simp]
+lemma comp_left_iff {f : P₁ → P₃} (hf : Isometry f) : f ∘ v₁ ≅ v₂ ↔ v₁ ≅ v₂ :=
+  ⟨.trans <| .comp_right hf (.refl _), .comp_left hf⟩
+
+@[simp]
+lemma comp_right_iff {f : P₂ → P₃} (hf : Isometry f) : v₁ ≅ f ∘ v₂ ↔ v₁ ≅ v₂ := by
+  rw [congruent_comm, comp_left_iff hf, congruent_comm]
+
+/-- Two sets of vertices remain congruent under a dilation if the dilations have equal ratios. -/
+lemma comp_dilation {F₁ F₂}
+    [FunLike F₁ P₁ P₃] [DilationClass F₁ P₁ P₃] [FunLike F₂ P₂ P₄] [DilationClass F₂ P₂ P₄]
+    {f₁ : F₁} {f₂ : F₂} (h : v₁ ≅ v₂) (hf : Dilation.ratio f₁ = Dilation.ratio f₂) :
+    f₁ ∘ v₁ ≅ f₂ ∘ v₂ :=
+  fun i j => by simp [hf, h i j]
+
 end Congruent
 
 end PseudoEMetricSpace
@@ -101,38 +132,47 @@ section PseudoMetricSpace
 variable [PseudoMetricSpace P₁] [PseudoMetricSpace P₂]
 
 /-- Congruence holds if and only if all non-negative distances are the same. -/
-lemma congruent_iff_nndist_eq :
-    Congruent v₁ v₂ ↔ ∀ i₁ i₂, nndist (v₁ i₁) (v₁ i₂) = nndist (v₂ i₁) (v₂ i₂) :=
-  forall₂_congr (fun _ _ ↦ by rw [edist_nndist, edist_nndist]; norm_cast)
+lemma congruent_iff_nnDist_eq :
+    Congruent v₁ v₂ ↔ ∀ i₁ i₂, nnDist (v₁ i₁) (v₁ i₂) = nnDist (v₂ i₁) (v₂ i₂) :=
+  forall₂_congr (fun _ _ ↦ by rw [eDist_nnDist, eDist_nnDist]; norm_cast)
+
+@[deprecated (since := "2026-11-07")] alias congruent_iff_nndist_eq := congruent_iff_nnDist_eq
 
 /-- Congruence holds if and only if all non-negative distances between points with different
 indices are the same. -/
-lemma congruent_iff_pairwise_nndist_eq :
-    Congruent v₁ v₂ ↔ Pairwise fun i₁ i₂ ↦ nndist (v₁ i₁) (v₁ i₂) = nndist (v₂ i₁) (v₂ i₂) := by
-  simp_rw [congruent_iff_pairwise_edist_eq, edist_nndist]
-  exact_mod_cast Iff.rfl
+lemma congruent_iff_pairwise_nnDist_eq :
+    Congruent v₁ v₂ ↔ Pairwise fun i₁ i₂ ↦ nnDist (v₁ i₁) (v₁ i₂) = nnDist (v₂ i₁) (v₂ i₂) := by
+  simp_rw [congruent_iff_pairwise_edist_eq, eDist_nnDist]
+  exact mod_cast Iff.rfl
+
+@[deprecated (since := "2026-11-07")]
+alias congruent_iff_pairwise_nndist_eq := congruent_iff_pairwise_nnDist_eq
 
 /-- Congruence holds if and only if all distances are the same. -/
 lemma congruent_iff_dist_eq :
     Congruent v₁ v₂ ↔ ∀ i₁ i₂, dist (v₁ i₁) (v₁ i₂) = dist (v₂ i₁) (v₂ i₂) :=
-  congruent_iff_nndist_eq.trans
-    (forall₂_congr (fun _ _ ↦ by rw [dist_nndist, dist_nndist]; norm_cast))
+  congruent_iff_nnDist_eq.trans
+    (forall₂_congr (fun _ _ ↦ by rw [dist_nnDist, dist_nnDist]; norm_cast))
 
 /-- Congruence holds if and only if all non-negative distances between points with different
 indices are the same. -/
 lemma congruent_iff_pairwise_dist_eq :
     Congruent v₁ v₂ ↔ Pairwise fun i₁ i₂ ↦ dist (v₁ i₁) (v₁ i₂) = dist (v₂ i₁) (v₂ i₂) := by
-  simp_rw [congruent_iff_pairwise_nndist_eq, dist_nndist]
-  exact_mod_cast Iff.rfl
+  simp_rw [congruent_iff_pairwise_nnDist_eq, dist_nnDist]
+  exact mod_cast Iff.rfl
 
 namespace Congruent
 
-/-- A congruence preserves non-negative distance. Forward direction of `congruent_iff_nndist_eq`. -/
-alias ⟨nndist_eq, _⟩ := congruent_iff_nndist_eq
+/-- A congruence preserves non-negative distance. Forward direction of `congruent_iff_nnDist_eq`. -/
+alias ⟨nnDist_eq, _⟩ := congruent_iff_nnDist_eq
+
+@[deprecated (since := "2026-11-07")] alias nndist_eq := nnDist_eq
 
 /-- Congruence follows from preserved non-negative distance. Backward direction of
-`congruent_iff_nndist_eq`. -/
-alias ⟨_, of_nndist_eq⟩ := congruent_iff_nndist_eq
+`congruent_iff_nnDist_eq`. -/
+alias ⟨_, of_nnDist_eq⟩ := congruent_iff_nnDist_eq
+
+@[deprecated (since := "2026-11-07")] alias of_nndist_eq := of_nnDist_eq
 
 /-- A congruence preserves distance. Forward direction of `congruent_iff_dist_eq`. -/
 alias ⟨dist_eq, _⟩ := congruent_iff_dist_eq
@@ -141,12 +181,16 @@ alias ⟨dist_eq, _⟩ := congruent_iff_dist_eq
 alias ⟨_, of_dist_eq⟩ := congruent_iff_dist_eq
 
 /-- A congruence pairwise preserves non-negative distance. Forward direction of
-`congruent_iff_pairwise_nndist_eq`. -/
-alias ⟨pairwise_nndist_eq, _⟩ := congruent_iff_pairwise_nndist_eq
+`congruent_iff_pairwise_nnDist_eq`. -/
+alias ⟨pairwise_nnDist_eq, _⟩ := congruent_iff_pairwise_nnDist_eq
+
+@[deprecated (since := "2026-11-07")] alias pairwise_nndist_eq := pairwise_nnDist_eq
 
 /-- Congruence follows from pairwise preserved non-negative distance. Backward direction of
-`congruent_iff_pairwise_nndist_eq`. -/
-alias ⟨_, of_pairwise_nndist_eq⟩ := congruent_iff_pairwise_nndist_eq
+`congruent_iff_pairwise_nnDist_eq`. -/
+alias ⟨_, of_pairwise_nnDist_eq⟩ := congruent_iff_pairwise_nnDist_eq
+
+@[deprecated (since := "2026-11-07")] alias of_pairwise_nndist_eq := of_pairwise_nnDist_eq
 
 /-- A congruence pairwise preserves distance. Forward direction of
 `congruent_iff_pairwise_dist_eq`. -/

@@ -3,8 +3,10 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
 -/
-import Mathlib.Data.Finset.Card
-import Mathlib.Data.Int.Cast.Basic
+module
+
+public import Mathlib.Data.Finset.Card
+public import Mathlib.Data.Int.Cast.Basic
 
 /-!
 # Cardinality of a finite set and subtraction
@@ -20,13 +22,15 @@ cardinality as element of an `AddGroupWithOne`.
 * `Finset.cast_card_sdiff`: cardinality of `t \ s` is the difference of cardinalities if `s ⊆ t`.
 -/
 
-assert_not_exists MonoidWithZero OrderedCommMonoid
+public section
+
+assert_not_exists MonoidWithZero IsOrderedMonoid
 
 open Nat
 
 namespace Finset
 
-variable {α R : Type*} {s t : Finset α} {a b : α}
+variable {α R : Type*} {s t : Finset α} {a : α}
 variable [DecidableEq α] [AddGroupWithOne R]
 
 /-- $\#(s \setminus \{a\}) = \#s - 1$ if $a \in s$.

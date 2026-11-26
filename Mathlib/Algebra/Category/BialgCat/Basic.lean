@@ -3,9 +3,14 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Category.CoalgCat.Basic
-import Mathlib.Algebra.Category.AlgCat.Basic
-import Mathlib.RingTheory.Bialgebra.Equiv
+module
+
+public import Mathlib.Algebra.Category.AlgCat.Basic
+public import Mathlib.Algebra.Category.CoalgCat.Basic
+public import Mathlib.RingTheory.Bialgebra.Equiv
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The category of bialgebras over a commutative ring
@@ -14,8 +19,9 @@ We introduce the bundled category `BialgCat` of bialgebras over a fixed commutat
 along with the forgetful functors to `CoalgCat` and `AlgCat`.
 
 This file mimics `Mathlib/LinearAlgebra/QuadraticForm/QuadraticModuleCat.lean`.
-
 -/
+
+@[expose] public section
 
 open CategoryTheory
 
@@ -30,6 +36,7 @@ structure BialgCat where
   [instRing : Ring carrier]
   [instBialgebra : Bialgebra R carrier]
 
+initialize_simps_projections BialgCat (-instRing, -instBialgebra)
 attribute [instance] BialgCat.instBialgebra BialgCat.instRing
 
 variable {R}
@@ -48,10 +55,17 @@ def of (X : Type v) [Ring X] [Bialgebra R X] :
     BialgCat R where
   carrier := X
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `BialgCat.of R X` as `↧X`. -/
+@[app_delab BialgCat.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma of_comul {X : Type v} [Ring X] [Bialgebra R X] :
     Coalgebra.comul (A := of R X) = Coalgebra.comul (R := R) (A := X) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma of_counit {X : Type v} [Ring X] [Bialgebra R X] :
     Coalgebra.counit (A := of R X) = Coalgebra.counit (R := R) (A := X) := rfl
@@ -100,21 +114,14 @@ lemma hom_ext {X Y : BialgCat.{v} R} (f g : X ⟶ Y) (h : f.toBialgHom = g.toBia
     Hom.toBialgHom (𝟙 M) = BialgHom.id _ _ :=
   rfl
 
-instance hasForget : HasForget.{v} (BialgCat.{v} R) where
-  forget :=
-    { obj := fun M => M
-      map := fun f => f.toBialgHom }
-  forget_faithful :=
-    { map_injective := fun {_ _} => DFunLike.coe_injective.comp <| Hom.toBialgHom_injective _ _ }
-
 instance hasForgetToAlgebra : HasForget₂ (BialgCat R) (AlgCat R) where
   forget₂ :=
-    { obj := fun X => AlgCat.of R X
+    { obj := fun X => ↧X
       map := fun {X Y} f => AlgCat.ofHom f.toBialgHom }
 
 @[simp]
 theorem forget₂_algebra_obj (X : BialgCat R) :
-    (forget₂ (BialgCat R) (AlgCat R)).obj X = AlgCat.of R X :=
+    (forget₂ (BialgCat R) (AlgCat R)).obj X = ↧X :=
   rfl
 
 @[simp]
@@ -124,12 +131,12 @@ theorem forget₂_algebra_map (X Y : BialgCat R) (f : X ⟶ Y) :
 
 instance hasForgetToCoalgebra : HasForget₂ (BialgCat R) (CoalgCat R) where
   forget₂ :=
-    { obj := fun X => CoalgCat.of R X
+    { obj := fun X => ↧X
       map := fun {_ _} f => CoalgCat.ofHom f.toBialgHom }
 
 @[simp]
 theorem forget₂_coalgebra_obj (X : BialgCat R) :
-    (forget₂ (BialgCat R) (CoalgCat R)).obj X = CoalgCat.of R X :=
+    (forget₂ (BialgCat R) (CoalgCat R)).obj X = ↧X :=
   rfl
 
 @[simp]
@@ -151,8 +158,8 @@ variable [Bialgebra R X] [Bialgebra R Y] [Bialgebra R Z]
 `BialgEquiv`. -/
 @[simps]
 def toBialgIso (e : X ≃ₐc[R] Y) : BialgCat.of R X ≅ BialgCat.of R Y where
-  hom := BialgCat.ofHom e
-  inv := BialgCat.ofHom e.symm
+  hom := BialgCat.ofHom e.toBialgHom
+  inv := BialgCat.ofHom e.symm.toBialgHom
   hom_inv_id := Hom.ext <| DFunLike.ext _ _ e.left_inv
   inv_hom_id := Hom.ext <| DFunLike.ext _ _ e.right_inv
 
@@ -180,11 +187,11 @@ variable {X Y Z : BialgCat.{v} R}
 def toBialgEquiv (i : X ≅ Y) : X ≃ₐc[R] Y :=
   { i.hom.toBialgHom with
     invFun := i.inv.toBialgHom
-    left_inv := fun x => BialgHom.congr_fun (congr_arg BialgCat.Hom.toBialgHom i.3) x
-    right_inv := fun x => BialgHom.congr_fun (congr_arg BialgCat.Hom.toBialgHom i.4) x }
+    left_inv := fun x => congr($(i.hom_inv_id).toBialgHom x)
+    right_inv := fun x => congr($(i.inv_hom_id).toBialgHom x) }
 
 @[simp] theorem toBialgEquiv_toBialgHom (i : X ≅ Y) :
-    (i.toBialgEquiv : X →ₐc[R] Y) = i.hom.1 := rfl
+    i.toBialgEquiv.toBialgHom = i.hom.toBialgHom' := rfl
 
 @[simp] theorem toBialgEquiv_refl : toBialgEquiv (.refl X) = .refl _ _ :=
   rfl
@@ -204,4 +211,4 @@ instance BialgCat.forget_reflects_isos :
   reflects {X Y} f _ := by
     let i := asIso ((forget (BialgCat.{v} R)).map f)
     let e : X ≃ₐc[R] Y := { f.toBialgHom, i.toEquiv with }
-    exact ⟨e.toBialgIso.isIso_hom.1⟩
+    exact ⟨e.toBialgIso.isIso_hom.out⟩

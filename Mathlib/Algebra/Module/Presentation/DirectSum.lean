@@ -3,9 +3,13 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Module.Presentation.Basic
-import Mathlib.Algebra.DirectSum.Module
-import Mathlib.Data.Finsupp.ToDFinsupp
+module
+
+public import Mathlib.Algebra.DirectSum.Module
+public import Mathlib.Algebra.Module.Presentation.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Presentation of a direct sum
@@ -14,8 +18,9 @@ If `M : ι → Type _` is a family of `A`-modules, then the data of a presentati
 of each `M i`, we obtain a presentation of the module `⨁ i, M i`.
 In particular, from a presentation of an `A`-module `M`, we get
 a presentation of `ι →₀ M`.
-
 -/
+
+@[expose] public section
 
 universe w' w₀ w₁ w v u
 
@@ -80,6 +85,7 @@ namespace IsPresentation
 variable {solution : ∀ (i : ι), (relations i).Solution (M i)}
   (h : ∀ i, (solution i).IsPresentation)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The direct sum admits a presentation by generators and relations. -/
 noncomputable def directSum.isRepresentationCore :
     Solution.IsPresentationCore.{w'} (directSum solution) where

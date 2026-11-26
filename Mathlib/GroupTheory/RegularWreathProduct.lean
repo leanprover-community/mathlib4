@@ -3,11 +3,12 @@ Copyright (c) 2025 Francisco Silva. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Francisco Silva
 -/
+module
 
-import Mathlib.GroupTheory.Sylow
-import Mathlib.Algebra.Group.PUnit
-import Mathlib.Data.Finite.Perm
-import Mathlib.Algebra.Group.End
+public import Mathlib.Algebra.Group.PUnit
+public import Mathlib.Data.Finite.Perm
+public import Mathlib.Data.Nat.Multiplicity
+public import Mathlib.GroupTheory.Sylow
 
 /-!
 # Regular wreath product
@@ -31,8 +32,11 @@ operation `⟨a₁, a₂⟩ * ⟨b₁, b₂⟩ = ⟨a₁ * (fun x ↦ b₁ (a₂
 This file introduces the global notation `D ≀ᵣ Q` for `RegularWreathProduct D Q`.
 
 ## Tags
+
 group, regular wreath product, sylow p-subgroup
 -/
+
+@[expose] public section
 
 variable (D Q : Type*) [Group D] [Group Q]
 
@@ -51,12 +55,13 @@ namespace RegularWreathProduct
 variable {D Q}
 
 instance : Mul (D ≀ᵣ Q) where
-  mul a b := ⟨a.1 * (fun x ↦ b.1 (a.2⁻¹ * x)), a.2 * b.2⟩
+  mul a b := ⟨a.left * (fun x ↦ b.left (a.right⁻¹ * x)), a.right * b.right⟩
 
-lemma mul_def (a b : D ≀ᵣ Q) : a * b = ⟨a.1 * fun x ↦ b.1 (a.2⁻¹ * x), a.2 * b.2⟩ := rfl
+lemma mul_def (a b : D ≀ᵣ Q) :
+    a * b = ⟨a.left * fun x ↦ b.left (a.right⁻¹ * x), a.right * b.right⟩ := rfl
 
 @[simp]
-theorem mul_left (a b : D ≀ᵣ Q) : (a * b).1 = a.1 * fun x ↦ b.1 (a.2⁻¹ * x) := rfl
+theorem mul_left (a b : D ≀ᵣ Q) : (a * b).left = a.left * fun x ↦ b.left (a.right⁻¹ * x) := rfl
 
 @[simp]
 theorem mul_right (a b : D ≀ᵣ Q) : (a * b).right = a.right * b.right := rfl
@@ -70,7 +75,7 @@ theorem one_left : (1 : D ≀ᵣ Q).left = 1 := rfl
 theorem one_right : (1 : D ≀ᵣ Q).right = 1 := rfl
 
 instance : Inv (RegularWreathProduct D Q) where
-  inv x := ⟨fun k ↦ x.1⁻¹ (x.2 * k), x.2⁻¹⟩
+  inv x := ⟨fun k ↦ x.left⁻¹ (x.right * k), x.right⁻¹⟩
 
 @[simp]
 theorem inv_left (a : D ≀ᵣ Q) : a⁻¹.left = fun x ↦ a.left⁻¹ (a.right * x) := rfl
@@ -146,7 +151,8 @@ instance : SMul (D ≀ᵣ Q) (Λ × Q) where
   smul w p := ⟨(w.left (w.right * p.2)) • p.1, w.right * p.2⟩
 
 @[simp]
-lemma smul_def {w : D ≀ᵣ Q} {p : Λ × Q} : w • p = ⟨(w.1 (w.2 * p.2)) • p.1, w.2 * p.2⟩ := rfl
+lemma smul_def {w : D ≀ᵣ Q} {p : Λ × Q} :
+    w • p = ⟨(w.left (w.right * p.2)) • p.1, w.right * p.2⟩ := rfl
 
 instance : MulAction (D ≀ᵣ Q) (Λ × Q) where
   one_smul := by simp
@@ -210,9 +216,9 @@ theorem IteratedWreathProduct.card [Finite G] : Nat.card (IteratedWreathProduct 
 variable [Group G]
 
 instance : Group (IteratedWreathProduct G n) := by
- induction n with
- | zero => rw [IteratedWreathProduct_zero]; infer_instance
- | succ n ih => rw [IteratedWreathProduct_succ]; infer_instance
+  induction n with
+  | zero => rw [IteratedWreathProduct_zero]; infer_instance
+  | succ n ih => rw [IteratedWreathProduct_succ]; infer_instance
 
 /-- The homomorphism from `IteratedWreathProduct G n` to `Perm (Fin n → G)`. -/
 def iteratedWreathToPermHom (G : Type*) [Group G] :
@@ -249,8 +255,7 @@ noncomputable def Sylow.mulEquivIteratedWreathProduct (p : ℕ) [hp : Fact (Nat.
   let g := (MonoidHom.ofInjective hf).symm
   let P' : Sylow p (Equiv.Perm α) := Sylow.ofCard (MonoidHom.range f) (by
     rw [Nat.card_congr g.toEquiv, IteratedWreathProduct.card, hG, Nat.card_perm, hα,
-        ← Nat.multiplicity_eq_factorization hp.out (p ^ n).factorial_ne_zero,
-        Nat.Prime.multiplicity_factorial_pow hp.out])
+        ← Nat.multiplicity_eq_factorization hp.out, Nat.Prime.multiplicity_factorial_pow hp.out])
   exact (P.equiv P').trans g
 
 end iterated

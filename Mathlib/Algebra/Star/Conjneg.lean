@@ -3,9 +3,14 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Algebra.Star.Pi
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Pi
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+public import Mathlib.Algebra.Star.Pi
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Conjugation-negation operator
@@ -15,6 +20,8 @@ This file defines the conjugation-negation operator, useful in Fourier analysis.
 The way this operator enters the picture is that the adjoint of convolution with a function `f` is
 convolution with `conjneg f`.
 -/
+
+@[expose] public section
 
 open Function
 open scoped ComplexConjugate
@@ -63,6 +70,7 @@ lemma conjneg_ne_one : conjneg f ≠ 1 ↔ f ≠ 1 := conjneg_eq_one.not
 lemma sum_conjneg [Fintype G] (f : G → R) : ∑ a, conjneg f a = ∑ a, conj (f a) :=
   Fintype.sum_equiv (Equiv.neg _) _ _ fun _ ↦ rfl
 
+open scoped Pointwise in
 @[simp] lemma support_conjneg (f : G → R) : support (conjneg f) = -support f := by
   ext; simp [starRingEnd_apply]
 

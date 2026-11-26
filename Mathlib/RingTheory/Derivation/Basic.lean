@@ -3,8 +3,14 @@ Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Andrew Yang
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Derivative
+module
+
+public import Mathlib.Algebra.GroupWithZero.Action.FunLike
+public import Mathlib.Algebra.Module.FunLike
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Algebra.Polynomial.Derivative
+
+import Mathlib.Algebra.Group.Action.FunLike
 
 /-!
 # Derivations
@@ -18,18 +24,19 @@ This file defines derivation. A derivation `D` from the `R`-algebra `A` to the `
 - `Derivation.llcomp`: We may compose linear maps and derivations to obtain a derivation,
   and the composition is bilinear.
 
-See `RingTheory.Derivation.Lie` for
-- `derivation.lie_algebra`: The `R`-derivations from `A` to `A` form a lie algebra over `R`.
+See `Mathlib/RingTheory/Derivation/Lie.lean` for
+- `Derivation.instLieAlgebra`: The `R`-derivations from `A` to `A` form a Lie algebra over `R`.
 
-and `RingTheory.Derivation.ToSquareZero` for
+and `Mathlib/RingTheory/Derivation/ToSquareZero.lean` for
 - `derivationToSquareZeroEquivLift`: The `R`-derivations from `A` into a square-zero ideal `I`
   of `B` corresponds to the lifts `A →ₐ[R] B` of the map `A →ₐ[R] B ⧸ I`.
 
 ## Future project
 
 - Generalize derivations into bimodules.
-
 -/
+
+@[expose] public section
 
 open Algebra
 
@@ -59,9 +66,10 @@ variable [Module A M] [Module B M] [Module R M]
 
 variable (D : Derivation R A M) {D1 D2 : Derivation R A M} (r : R) (a b : A)
 
+@[macro_inline]
 instance : FunLike (Derivation R A M) A M where
   coe D := D.toFun
-  coe_injective' D1 D2 h := by cases D1; cases D2; congr; exact DFunLike.coe_injective h
+  coe_injective D1 D2 h := by cases D1; cases D2; congr; exact DFunLike.coe_injective h
 
 instance : AddMonoidHomClass (Derivation R A M) A M where
   map_add D := D.toLinearMap.map_add'
@@ -97,7 +105,7 @@ theorem ext (H : ∀ a, D1 a = D2 a) : D1 = D2 :=
   DFunLike.ext _ _ H
 
 theorem congr_fun (h : D1 = D2) (a : A) : D1 a = D2 a :=
-  DFunLike.congr_fun h a
+  congr($h a)
 
 protected theorem map_add : D (a + b) = D a + D b :=
   map_add D a b
@@ -124,8 +132,7 @@ theorem map_one_eq_zero : D 1 = 0 :=
 
 @[simp]
 theorem map_algebraMap : D (algebraMap R A r) = 0 := by
-  rw [← mul_one r, RingHom.map_mul, RingHom.map_one, ← smul_def, map_smul, map_one_eq_zero,
-    smul_zero]
+  rw [← mul_one r, map_mul, map_one, ← smul_def, map_smul, map_one_eq_zero, smul_zero]
 
 @[simp]
 theorem map_natCast (n : ℕ) : D (n : A) = 0 := by
@@ -136,7 +143,7 @@ theorem leibniz_pow (n : ℕ) : D (a ^ n) = n • a ^ (n - 1) • D a := by
   induction n with
   | zero => rw [pow_zero, map_one_eq_zero, zero_smul]
   | succ n ihn =>
-    rcases (zero_le n).eq_or_lt with (rfl | hpos)
+    rcases eq_zero_or_pos n with (rfl | hpos)
     · simp
     · have : a * a ^ (n - 1) = a ^ n := by rw [← pow_succ', Nat.sub_add_cancel hpos]
       simp only [pow_succ', leibniz, ihn, smul_comm a n (_ : M), smul_smul a, add_smul, this,
@@ -167,7 +174,9 @@ instance : Zero (Derivation R A M) :=
       map_one_eq_zero' := rfl
       leibniz' := fun a b => by simp only [add_zero, LinearMap.zero_apply, smul_zero] }⟩
 
-@[simp]
+instance : IsZeroApply (Derivation R A M) where
+
+@[deprecated FunLike.coe_zero +typeChanged (since := "2026-10-26")]
 theorem coe_zero : ⇑(0 : Derivation R A M) = 0 :=
   rfl
 
@@ -175,7 +184,8 @@ theorem coe_zero : ⇑(0 : Derivation R A M) = 0 :=
 theorem coe_zero_linearMap : ↑(0 : Derivation R A M) = (0 : A →ₗ[R] M) :=
   rfl
 
-theorem zero_apply (a : A) : (0 : Derivation R A M) a = 0 :=
+@[deprecated zero_apply +typeChanged (since := "2026-10-26")]
+protected theorem zero_apply (a : A) : (0 : Derivation R A M) a = 0 :=
   rfl
 
 instance : Add (Derivation R A M) :=
@@ -185,7 +195,9 @@ instance : Add (Derivation R A M) :=
       leibniz' := fun a b => by
         simp only [leibniz, LinearMap.add_apply, coeFn_coe, smul_add, add_add_add_comm] }⟩
 
-@[simp]
+instance : IsAddApply (Derivation R A M) where
+
+@[deprecated FunLike.coe_add +typeChanged (since := "2026-10-26")]
 theorem coe_add (D1 D2 : Derivation R A M) : ⇑(D1 + D2) = D1 + D2 :=
   rfl
 
@@ -193,7 +205,8 @@ theorem coe_add (D1 D2 : Derivation R A M) : ⇑(D1 + D2) = D1 + D2 :=
 theorem coe_add_linearMap (D1 D2 : Derivation R A M) : ↑(D1 + D2) = (D1 + D2 : A →ₗ[R] M) :=
   rfl
 
-theorem add_apply : (D1 + D2) a = D1 a + D2 a :=
+@[deprecated add_apply +typeChanged (since := "2026-10-26")]
+protected theorem add_apply : (D1 + D2) a = D1 a + D2 a :=
   rfl
 
 instance : Inhabited (Derivation R A M) :=
@@ -207,12 +220,14 @@ variable [Monoid T] [DistribMulAction T M] [SMulCommClass R T M] [SMulCommClass 
 
 instance : SMul S (Derivation R A M) :=
   ⟨fun r D =>
-    { toLinearMap := r • D.1
+    { toLinearMap := r • D.toLinearMap
       map_one_eq_zero' := by rw [LinearMap.smul_apply, coeFn_coe, D.map_one_eq_zero, smul_zero]
       leibniz' := fun a b => by simp only [LinearMap.smul_apply, coeFn_coe, leibniz, smul_add,
         smul_comm r (_ : A) (_ : M)] }⟩
 
-@[simp]
+instance : IsSMulApply S (Derivation R A M) where
+
+@[deprecated FunLike.coe_smul +typeChanged (since := "2026-10-26")]
 theorem coe_smul (r : S) (D : Derivation R A M) : ⇑(r • D) = r • ⇑D :=
   rfl
 
@@ -220,39 +235,50 @@ theorem coe_smul (r : S) (D : Derivation R A M) : ⇑(r • D) = r • ⇑D :=
 theorem coe_smul_linearMap (r : S) (D : Derivation R A M) : ↑(r • D) = r • (D : A →ₗ[R] M) :=
   rfl
 
-theorem smul_apply (r : S) (D : Derivation R A M) : (r • D) a = r • D a :=
+@[deprecated smul_apply +typeChanged (since := "2026-10-26")]
+protected theorem smul_apply (r : S) (D : Derivation R A M) : (r • D) a = r • D a :=
   rfl
 
-instance : AddCommMonoid (Derivation R A M) :=
-  coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => rfl
+instance : AddCommMonoid (Derivation R A M) := fast_instance% FunLike.addCommMonoid
+
+/-- `coe` as an `AddMonoidHom`. -/
+def coeAddMonoidHom : Derivation R A M →+ A →ₗ[R] M where
+  toFun := (↑)
+  map_zero' := rfl
+  map_add' _ _ := rfl
+
+@[simp]
+lemma coeAddMonoidHom_apply (D : Derivation R A M) : coeAddMonoidHom D = D := rfl
 
 /-- `coeFn` as an `AddMonoidHom`. -/
+@[deprecated FunLike.coeAddMonoidHom +typeChanged (since := "2026-10-26")]
 def coeFnAddMonoidHom : Derivation R A M →+ A → M where
   toFun := (⇑)
   map_zero' := coe_zero
   map_add' := coe_add
 
-@[simp]
+@[deprecated FunLike.coeAddMonoidHom_apply +typeChanged (since := "2026-10-26")]
 lemma coeFnAddMonoidHom_apply (D : Derivation R A M) : coeFnAddMonoidHom D = D := rfl
 
-instance : DistribMulAction S (Derivation R A M) :=
-  Function.Injective.distribMulAction coeFnAddMonoidHom coe_injective coe_smul
+instance : DistribMulAction S (Derivation R A M) := fast_instance% FunLike.distribMulAction
 
 instance [DistribMulAction Sᵐᵒᵖ M] [IsCentralScalar S M] :
-    IsCentralScalar S (Derivation R A M) where
-  op_smul_eq_smul _ _ := ext fun _ => op_smul_eq_smul _ _
+    IsCentralScalar S (Derivation R A M) := FunLike.isCentralScalar
 
 instance [SMul S T] [IsScalarTower S T M] : IsScalarTower S T (Derivation R A M) :=
-  ⟨fun _ _ _ => ext fun _ => smul_assoc _ _ _⟩
+  FunLike.isScalarTower
 
 instance [SMulCommClass S T M] : SMulCommClass S T (Derivation R A M) :=
-  ⟨fun _ _ _ => ext fun _ => smul_comm _ _ _⟩
+  FunLike.smulCommClass
+
+theorem coe_sum_linearMap {ι : Type*} (t : Finset ι) (f : ι → Derivation R A M) :
+    ∑ i ∈ t, f i = ∑ i ∈ t, (f i : A →ₗ[R] M) :=
+  _root_.map_sum coeAddMonoidHom f t
 
 end Scalar
 
 instance instModule {S : Type*} [Semiring S] [Module S M] [SMulCommClass R S M]
-    [SMulCommClass S A M] : Module S (Derivation R A M) :=
-  Function.Injective.module S coeFnAddMonoidHom coe_injective coe_smul
+    [SMulCommClass S A M] : Module S (Derivation R A M) := fast_instance% FunLike.module
 
 section PushForward
 
@@ -263,15 +289,15 @@ variable (f : M →ₗ[A] N) (e : M ≃ₗ[A] N)
 
 /-- We can push forward derivations using linear maps, i.e., the composition of a derivation with a
 linear map is a derivation. Furthermore, this operation is linear on the spaces of derivations. -/
-def _root_.LinearMap.compDer : Derivation R A M →ₗ[R] Derivation R A N where
+def _root_.LinearMap.compDer : Derivation R A M →ₗ[A] Derivation R A N where
   toFun D :=
     { toLinearMap := (f : M →ₗ[R] N).comp (D : A →ₗ[R] M)
       map_one_eq_zero' := by simp only [LinearMap.comp_apply, coeFn_coe, map_one_eq_zero, map_zero]
       leibniz' := fun a b => by
-        simp only [coeFn_coe, LinearMap.comp_apply, LinearMap.map_add, leibniz,
+        simp only [coeFn_coe, LinearMap.comp_apply, map_add, leibniz,
           LinearMap.coe_restrictScalars, LinearMap.map_smul] }
   map_add' D₁ D₂ := by ext; exact LinearMap.map_add _ _ _
-  map_smul' r D := by dsimp; ext; exact LinearMap.map_smul (f : M →ₗ[R] N) _ _
+  map_smul' r D := by ext; simp
 
 @[simp]
 theorem coe_to_linearMap_comp : (f.compDer D : A →ₗ[R] N) = (f : M →ₗ[R] N).comp (D : A →ₗ[R] M) :=
@@ -283,13 +309,13 @@ theorem coe_comp : (f.compDer D : A → N) = (f : M →ₗ[R] N).comp (D : A →
 
 /-- The composition of a derivation with a linear map as a bilinear map -/
 @[simps]
-def llcomp : (M →ₗ[A] N) →ₗ[A] Derivation R A M →ₗ[R] Derivation R A N where
+def llcomp : (M →ₗ[A] N) →ₗ[A] Derivation R A M →ₗ[A] Derivation R A N where
   toFun f := f.compDer
   map_add' f₁ f₂ := by ext; rfl
   map_smul' r D := by ext; rfl
 
 /-- Pushing a derivation forward through a linear equivalence is an equivalence. -/
-def _root_.LinearEquiv.compDer : Derivation R A M ≃ₗ[R] Derivation R A N :=
+def _root_.LinearEquiv.compDer : Derivation R A M ≃ₗ[A] Derivation R A N :=
   { e.toLinearMap.compDer with
     invFun := e.symm.toLinearMap.compDer
     left_inv := fun D => by ext a; exact e.symm_apply_apply (D a)
@@ -316,6 +342,17 @@ def compAlgebraMap [Algebra A B] [IsScalarTower R A B] [IsScalarTower A B M]
   map_one_eq_zero' := by simp
   leibniz' a b := by simp
   toLinearMap := d.toLinearMap.comp (IsScalarTower.toAlgHom R A B).toLinearMap
+
+variable (R A B M) in
+/-- For a tower `R → A → B → M`, the precomposition defined in `compAlgebraMap`
+is a `B`-linear map. -/
+@[simps!]
+def compAlgebraMapL [Algebra A B] [IsScalarTower R A B] [IsScalarTower A B M]
+    [IsScalarTower R B M] :
+    Derivation R B M →ₗ[B] Derivation R A M where
+  toFun d := d.compAlgebraMap A
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
 
 section RestrictScalars
 
@@ -430,7 +467,7 @@ variable {A : Type*} [CommRing A] [Algebra R A]
 section
 
 variable {M : Type*} [AddCommGroup M] [Module A M] [Module R M]
-variable (D : Derivation R A M) {D1 D2 : Derivation R A M} (r : R) (a b : A)
+variable (D : Derivation R A M) {D1 D2 : Derivation R A M} (a b : A)
 
 protected theorem map_neg : D (-a) = -D a :=
   map_neg D a
@@ -483,7 +520,7 @@ lemma leibniz_zpow (a : K) (n : ℤ) : D (a ^ n) = n • a ^ (n - 1) • D a := 
     simp only [zpow_natCast, leibniz_pow, natCast_zsmul]
     rw [← zpow_natCast]
     congr
-    omega
+    lia
   · rw [h, zpow_neg, zpow_natCast, leibniz_inv, leibniz_pow, inv_pow, ← pow_mul, ← zpow_natCast,
       ← zpow_natCast, ← Nat.cast_smul_eq_nsmul K, ← Int.cast_smul_eq_zsmul K, smul_smul, smul_smul,
       smul_smul]
@@ -492,7 +529,7 @@ lemma leibniz_zpow (a : K) (n : ℤ) : D (a ^ n) = n • a ^ (n - 1) • D a := 
     rw [← zpow_sub₀ ha]
     congr 3
     · norm_cast
-    omega
+    lia
 
 end Field
 
@@ -501,7 +538,9 @@ instance : Neg (Derivation R A M) :=
     mk' (-D) fun a b => by
       simp only [LinearMap.neg_apply, smul_neg, neg_add_rev, leibniz, coeFn_coe, add_comm]⟩
 
-@[simp]
+instance : IsNegApply (Derivation R A M) where
+
+@[deprecated FunLike.coe_smul +typeChanged (since := "2026-10-26")]
 theorem coe_neg (D : Derivation R A M) : ⇑(-D) = -D :=
   rfl
 
@@ -509,7 +548,8 @@ theorem coe_neg (D : Derivation R A M) : ⇑(-D) = -D :=
 theorem coe_neg_linearMap (D : Derivation R A M) : ↑(-D) = (-D : A →ₗ[R] M) :=
   rfl
 
-theorem neg_apply : (-D) a = -D a :=
+@[deprecated neg_apply +typeChanged (since := "2026-10-26")]
+protected theorem neg_apply : (-D) a = -D a :=
   rfl
 
 instance : Sub (Derivation R A M) :=
@@ -517,7 +557,9 @@ instance : Sub (Derivation R A M) :=
     mk' (D1 - D2 : A →ₗ[R] M) fun a b => by
       simp only [LinearMap.sub_apply, leibniz, coeFn_coe, smul_sub, add_sub_add_comm]⟩
 
-@[simp]
+instance : IsSubApply (Derivation R A M) where
+
+@[deprecated FunLike.coe_smul +typeChanged (since := "2026-10-26")]
 theorem coe_sub (D1 D2 : Derivation R A M) : ⇑(D1 - D2) = D1 - D2 :=
   rfl
 
@@ -525,11 +567,11 @@ theorem coe_sub (D1 D2 : Derivation R A M) : ⇑(D1 - D2) = D1 - D2 :=
 theorem coe_sub_linearMap (D1 D2 : Derivation R A M) : ↑(D1 - D2) = (D1 - D2 : A →ₗ[R] M) :=
   rfl
 
-theorem sub_apply : (D1 - D2) a = D1 a - D2 a :=
+@[deprecated sub_apply +typeChanged (since := "2026-10-26")]
+protected theorem sub_apply : (D1 - D2) a = D1 a - D2 a :=
   rfl
 
-instance : AddCommGroup (Derivation R A M) :=
-  coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ => rfl
+instance : AddCommGroup (Derivation R A M) := fast_instance% FunLike.addCommGroup
 
 end
 

@@ -3,11 +3,12 @@ Copyright (c) 2021 Shing Tak Lam. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam
 -/
-import Mathlib.Algebra.Star.Unitary
+module
+
+public import Mathlib.Algebra.Star.Unitary
+public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+
 import Mathlib.Data.Matrix.Reflection
-import Mathlib.LinearAlgebra.GeneralLinearGroup
-import Mathlib.LinearAlgebra.Matrix.ToLin
-import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 
 /-!
 # The Unitary Group
@@ -35,8 +36,9 @@ We also define the orthogonal group `Matrix.orthogonalGroup n R`, where `R` is a
 ## Tags
 
 matrix group, group, unitary group, orthogonal group
-
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -44,6 +46,53 @@ universe u v
 namespace Matrix
 
 open LinearMap Matrix
+
+/-! ### Statements which hold over non-commutative rings. -/
+section
+variable {m n R : Type*}
+variable [DecidableEq m] [DecidableEq n] [Fintype m] [Fintype n] [Semiring R] [StarRing R]
+
+/-- Diagonal matrices are unitary if their entries are. -/
+@[simp]
+theorem diagonal_mem_unitary {d : n → R} :
+    diagonal d ∈ unitary (Matrix n n R) ↔ d ∈ unitary (n → R) := by
+  simp_rw [Unitary.mem_iff, star_eq_conjTranspose, diagonal_conjTranspose,
+    diagonal_mul_diagonal, diagonal_eq_one, Pi.star_def, Pi.mul_def]
+
+@[simp]
+theorem natCast_mem_unitary [Nonempty n] {k : ℕ} :
+    ↑k ∈ unitary (Matrix n n R) ↔ ↑k ∈ unitary R :=
+  diagonal_mem_unitary.trans Pi.const_mem_unitary_iff
+
+@[simp]
+theorem ofNat_mem_unitary [Nonempty n] {k : ℕ} [k.AtLeastTwo] :
+    ofNat(k) ∈ unitary (Matrix n n R) ↔ ofNat(k) ∈ unitary R :=
+  natCast_mem_unitary
+
+/-- A reindexed unitary matrix is unitary. -/
+@[simp]
+theorem submatrix_equiv_mem_unitary {A : Matrix m m R} {e₁ e₂ : n ≃ m} :
+    A.submatrix e₁ e₂ ∈ unitary (Matrix n n R) ↔ A ∈ unitary (Matrix m m R) := by
+  simp [Unitary.mem_iff, star_eq_conjTranspose]
+
+open scoped Kronecker in
+/-- The kronecker product of two unitary matrices is unitary. -/
+theorem kronecker_mem_unitary {U₁ : Matrix n n R} {U₂ : Matrix m m R}
+    (hU₁ : U₁ ∈ unitary (Matrix n n R)) (hU₂ : U₂ ∈ unitary (Matrix m m R)) :
+    U₁ ⊗ₖ U₂ ∈ unitary (Matrix (n × m) (n × m) R) := by
+  simp_rw [Unitary.mem_iff, star_eq_conjTranspose, conjTranspose_kronecker']
+  constructor <;> ext <;> simp only [Matrix.mul_apply, submatrix_apply, kroneckerMap_apply,
+    Prod.fst_swap, conjTranspose_apply, ← star_apply, Prod.snd_swap, ← mul_assoc]
+  · simp_rw [mul_assoc _ (star U₁ _ _), ← Finset.univ_product_univ, Finset.sum_product]
+    rw [Finset.sum_comm]
+    simp_rw [← Finset.sum_mul, ← Finset.mul_sum, ← Matrix.mul_apply, hU₁.1, Matrix.one_apply,
+      mul_boole, ite_mul, zero_mul, Finset.sum_ite_irrel, ← Matrix.mul_apply, hU₂.1,
+      Matrix.one_apply, Finset.sum_const_zero, ← ite_and, Prod.eq_iff_fst_eq_snd_eq]
+  · simp_rw [mul_assoc _ _ (star U₂ _ _), ← Finset.univ_product_univ, Finset.sum_product,
+      ← Finset.sum_mul, ← Finset.mul_sum, ← Matrix.mul_apply, hU₂.2, Matrix.one_apply, mul_boole,
+      ite_mul, zero_mul, Finset.sum_ite_irrel, ← Matrix.mul_apply, hU₁.2, Matrix.one_apply,
+      Finset.sum_const_zero, ← ite_and, Prod.eq_iff_fst_eq_snd_eq, and_comm]
+end
 
 section
 
@@ -76,30 +125,26 @@ theorem mem_unitaryGroup_iff' : A ∈ Matrix.unitaryGroup n α ↔ star A * A = 
 theorem det_of_mem_unitary {A : Matrix n n α} (hA : A ∈ Matrix.unitaryGroup n α) :
     A.det ∈ unitary α := by
   constructor
-  · simpa [star, det_transpose] using congr_arg det hA.1
-  · simpa [star, det_transpose] using congr_arg det hA.2
+  · simpa [star, det_transpose] using congr(det $(hA.1))
+  · simpa [star, det_transpose] using congr(det $(hA.2))
 
-open scoped Kronecker in
-/-- The kronecker product of two unitary matrices is unitary.
+section TensorProduct
+variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+  [StarRing A] [StarRing B] [StarRing R] [StarModule R A] [StarModule R B]
 
-This is stated for `unitary` instead of `unitaryGroup` as it holds even for
-non-commutative coefficients. -/
-theorem kronecker_mem_unitary {R m : Type*} [Semiring R] [StarRing R] [Fintype m]
-    [DecidableEq m] {U₁ : Matrix n n R} {U₂ : Matrix m m R}
-    (hU₁ : U₁ ∈ unitary (Matrix n n R)) (hU₂ : U₂ ∈ unitary (Matrix m m R)) :
-    U₁ ⊗ₖ U₂ ∈ unitary (Matrix (n × m) (n × m) R) := by
-  simp_rw [unitary.mem_iff, star_eq_conjTranspose, conjTranspose_kronecker']
-  constructor <;> ext <;> simp only [mul_apply, submatrix_apply, kroneckerMap_apply, Prod.fst_swap,
-    conjTranspose_apply, ← star_apply, Prod.snd_swap, ← mul_assoc]
-  · simp_rw [mul_assoc _ (star U₁ _ _), ← Finset.univ_product_univ, Finset.sum_product]
-    rw [Finset.sum_comm]
-    simp_rw [← Finset.sum_mul, ← Finset.mul_sum, ← Matrix.mul_apply, hU₁.1, Matrix.one_apply,
-      mul_boole, ite_mul, zero_mul, Finset.sum_ite_irrel, ← Matrix.mul_apply, hU₂.1,
-      Matrix.one_apply, Finset.sum_const_zero, ← ite_and, Prod.eq_iff_fst_eq_snd_eq]
-  · simp_rw [mul_assoc _ _ (star U₂ _ _), ← Finset.univ_product_univ, Finset.sum_product,
-      ← Finset.sum_mul, ← Finset.mul_sum, ← Matrix.mul_apply, hU₂.2, Matrix.one_apply, mul_boole,
-      ite_mul, zero_mul, Finset.sum_ite_irrel, ← Matrix.mul_apply, hU₁.2, Matrix.one_apply,
-      Finset.sum_const_zero, ← ite_and, and_comm, Prod.eq_iff_fst_eq_snd_eq]
+open scoped TensorProduct Kronecker
+
+theorem _root_.Unitary.tmul_mem {U : A} {V : B} (hU : U ∈ unitary A) (hV : V ∈ unitary B) :
+    U ⊗ₜ[R] V ∈ unitary (A ⊗[R] B) := by
+  simp [Unitary.mem_iff, hU, hV, Algebra.TensorProduct.one_def]
+
+theorem kroneckerTMul_mem_unitary {m : Type*} [Fintype m] [DecidableEq m] {U : Matrix m m A}
+    {V : Matrix n n B} (hU : U ∈ unitary (Matrix m m A)) (hV : V ∈ unitary (Matrix n n B)) :
+    U ⊗ₖₜ[R] V ∈ unitary (Matrix (m × n) (m × n) (A ⊗[R] B)) := by
+  simp_rw [Unitary.mem_iff, star_eq_conjTranspose] at hU hV ⊢
+  simp [conjTranspose_kroneckerTMul, ← mul_kroneckerTMul_mul, hU, hV]
+
+end TensorProduct
 
 namespace UnitaryGroup
 
@@ -114,21 +159,21 @@ After the group structure on `Matrix.unitaryGroup n` is defined, we show in
 `Matrix.UnitaryGroup.toLinearEquiv` that this gives a linear equivalence.
 -/
 def toLin' (A : unitaryGroup n α) :=
-  A.1.mulVecLin
+  A.val.mulVecLin
 
 theorem ext_iff (A B : unitaryGroup n α) : A = B ↔ ∀ i j, A i j = B i j :=
-  Subtype.ext_iff.trans ⟨fun h i j => congr_fun (congr_fun h i) j, Matrix.ext⟩
+  Subtype.ext_iff.trans ⟨fun h i j => congr($h i j), Matrix.ext⟩
 
 @[ext]
 theorem ext (A B : unitaryGroup n α) : (∀ i j, A i j = B i j) → A = B :=
   (UnitaryGroup.ext_iff A B).mpr
 
-theorem star_mul_self (A : unitaryGroup n α) : star A.1 * A.1 = 1 :=
-  A.2.1
+theorem star_mul_self (A : unitaryGroup n α) : star A.val * A.val = 1 :=
+  A.property.1
 
 @[simp]
 theorem det_isUnit (A : unitaryGroup n α) : IsUnit (A : Matrix n n α).det :=
-  isUnit_iff_isUnit_det _ |>.mp <| (unitary.toUnits A).isUnit
+  isUnit_iff_isUnit_det _ |>.mp <| (Unitary.toUnits A).isUnit
 
 section CoeLemmas
 
@@ -138,9 +183,9 @@ variable (A B : unitaryGroup n α)
 
 @[simp] theorem inv_apply : ⇑A⁻¹ = (star A : Matrix n n α) := rfl
 
-@[simp] theorem mul_val : ↑(A * B) = A.1 * B.1 := rfl
+@[simp] theorem mul_val : ↑(A * B) = A.val * B.val := rfl
 
-@[simp] theorem mul_apply : ⇑(A * B) = A.1 * B.1 := rfl
+@[simp] theorem mul_apply : ⇑(A * B) = A.val * B.val := rfl
 
 @[simp] theorem one_val : ↑(1 : unitaryGroup n α) = (1 : Matrix n n α) := rfl
 
@@ -148,7 +193,7 @@ variable (A B : unitaryGroup n α)
 
 @[simp]
 theorem toLin'_mul : toLin' (A * B) = (toLin' A).comp (toLin' B) :=
-  Matrix.mulVecLin_mul A.1 B.1
+  Matrix.mulVecLin_mul A.val B.val
 
 @[simp]
 theorem toLin'_one : toLin' (1 : unitaryGroup n α) = LinearMap.id :=
@@ -179,7 +224,7 @@ def toLinearEquiv (A : unitaryGroup n α) : (n → α) ≃ₗ[α] n → α :=
 def toGL (A : unitaryGroup n α) : GeneralLinearGroup α (n → α) :=
   GeneralLinearGroup.ofLinearEquiv (toLinearEquiv A)
 
-theorem coe_toGL (A : unitaryGroup n α) : (toGL A).1 = toLin' A := rfl
+theorem coe_toGL (A : unitaryGroup n α) : (toGL A).val = toLin' A := rfl
 
 @[simp]
 theorem toGL_one : toGL (1 : unitaryGroup n α) = 1 := Units.ext <| by
@@ -195,6 +240,32 @@ theorem toGL_mul (A B : unitaryGroup n α) : toGL (A * B) = toGL A * toGL B := U
 `LinearMap.GeneralLinearGroup n α`. -/
 def embeddingGL : unitaryGroup n α →* GeneralLinearGroup α (n → α) :=
   ⟨⟨fun A => toGL A, toGL_one⟩, toGL_mul⟩
+
+theorem _root_.Matrix.transpose_mem_unitaryGroup_iff {U : Matrix n n α} :
+    Uᵀ ∈ unitaryGroup n α ↔ U ∈ unitaryGroup n α := by
+  conv_rhs => rw [mem_unitaryGroup_iff']
+  rw [mem_unitaryGroup_iff, show star Uᵀ = (star U)ᵀ by rfl, ← transpose_mul, ← transpose_inj]
+  simp
+
+theorem _root_.Matrix.map_star_mem_unitaryGroup_iff {U : Matrix n n α} :
+    U.map star ∈ unitaryGroup n α ↔ U ∈ unitaryGroup n α := by
+  simp [← conjTranspose_transpose, transpose_mem_unitaryGroup_iff, ← star_eq_conjTranspose]
+
+/-- The transpose of a unitary matrix as a unitary matrix. -/
+@[simps] def transpose (U : unitaryGroup n α) : unitaryGroup n α :=
+  ⟨Uᵀ, transpose_mem_unitaryGroup_iff.mpr (SetLike.coe_mem _)⟩
+
+/-- The `Matrix.map star` of a unitary matrix (i.e., taking the `star` of
+each element in the matrix) as a unitary matrix. -/
+@[simps] def map_star (U : unitaryGroup n α) : unitaryGroup n α :=
+  ⟨(U : Matrix n n α).map star, map_star_mem_unitaryGroup_iff.mpr (SetLike.coe_mem _)⟩
+
+theorem map_star_inv_eq_transpose (U : unitaryGroup n α) :
+    (map_star U)⁻¹ = UnitaryGroup.transpose U := by ext; simp
+
+theorem transpose_inv_eq_map_star (U : unitaryGroup n α) :
+    (UnitaryGroup.transpose U)⁻¹ = map_star U := by
+  simp [← map_star_inv_eq_transpose]
 
 end UnitaryGroup
 
@@ -217,11 +288,12 @@ theorem mem_specialUnitaryGroup_iff :
 
 instance : StarMul (specialUnitaryGroup n α) where
   star A := ⟨star A, by simpa using A.prop.1, by have := A.prop.2; simp_all [star_eq_conjTranspose]⟩
-  star_mul A B := Subtype.ext <| star_mul A.1 B.1
-  star_involutive A := Subtype.ext <| star_involutive A.1
+  star_mul A B := Subtype.ext <| star_mul A.val B.val
+  star_involutive A := Subtype.ext <| star_involutive A.val
 
 @[simp, norm_cast]
-theorem specialUnitaryGroup.coe_star (A : specialUnitaryGroup n α) : (star A).1 = star A.1 := rfl
+theorem specialUnitaryGroup.coe_star (A : specialUnitaryGroup n α) :
+    (star A).val = star A.val := rfl
 
 instance : Inv (specialUnitaryGroup n α) where inv := star
 
@@ -284,15 +356,7 @@ lemma of_mem_specialOrthogonalGroup_fin_two_iff {a b c d : R} :
     c * a + d * b = 0 ∧ c * c + d * d = 1) ∧ a * d - b * c = 1
   · simp [Matrix.mem_specialOrthogonalGroup_iff, Matrix.mem_orthogonalGroup_iff,
       ← Matrix.ext_iff, Fin.forall_fin_succ, Matrix.vecHead, Matrix.vecTail]
-  refine ⟨?_, ?_⟩
-  · rintro ⟨⟨⟨h₀, h₁⟩, -, h₂⟩, h₃⟩
-    refine ⟨?_, ?_, ?_⟩
-    · linear_combination - a * h₂ + c * h₁ + d * h₃
-    · linear_combination - c * h₀ + a * h₁ - b * h₃
-    · linear_combination h₀
-  · rintro ⟨rfl, rfl, H⟩
-    ring_nf at H ⊢
-    tauto
+  grind
 
 lemma mem_specialOrthogonalGroup_fin_two_iff {M : Matrix (Fin 2) (Fin 2) R} :
     M ∈ Matrix.specialOrthogonalGroup (Fin 2) R ↔

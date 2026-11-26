@@ -3,13 +3,21 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Order.Bounds.Basic
-import Mathlib.Algebra.Order.Monoid.Defs
+module
+
+public import Mathlib.Algebra.Order.Monoid.Defs
+public import Mathlib.Order.Bounds.Basic
+
 import Mathlib.Algebra.Order.Group.Unbundled.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Least upper bound and the greatest lower bound in linear ordered additive commutative groups
 -/
+
+public section
 
 section LinearOrderedAddCommGroup
 

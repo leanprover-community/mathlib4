@@ -3,12 +3,18 @@ Copyright (c) 2021 Alex J. Best. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Yaël Dillies
 -/
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Group.Pointwise.Set.Scalar
-import Mathlib.Algebra.GroupWithZero.Action.Defs
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
-import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Order.Interval.Set.OrderIso
+module
+
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.Group.Action.Defs
+public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Order.Interval.Set.OrderIso
+
+import Mathlib.Algebra.Order.GroupWithZero.OrderIso
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Pointwise operations on ordered algebraic objects
@@ -16,7 +22,9 @@ import Mathlib.Order.Interval.Set.OrderIso
 This file contains lemmas about the effect of pointwise operations on sets with an order structure.
 -/
 
-open Function Set
+public section
+
+open Set
 open scoped Pointwise
 
 namespace LinearOrderedField

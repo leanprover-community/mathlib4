@@ -3,13 +3,19 @@ Copyright (c) 2024 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Order.Star.Basic
-import Mathlib.Algebra.Star.Prod
-import Mathlib.Algebra.Ring.Prod
+module
+
+public import Mathlib.Algebra.Order.Star.Basic
+public import Mathlib.Algebra.Star.Prod
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Products of star-ordered rings
 -/
+
+public section
 
 variable {α β : Type*}
 

@@ -3,9 +3,14 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Category.BialgCat.Monoidal
-import Mathlib.Algebra.Category.HopfAlgCat.Basic
-import Mathlib.RingTheory.HopfAlgebra.TensorProduct
+module
+
+public import Mathlib.Algebra.Category.BialgCat.Monoidal
+public import Mathlib.Algebra.Category.HopfAlgCat.Basic
+public import Mathlib.RingTheory.HopfAlgebra.TensorProduct
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The monoidal structure on the category of Hopf algebras
@@ -17,19 +22,21 @@ Here, we use this to declare a `MonoidalCategory` instance on the category of Ho
 the existing monoidal structure on `BialgCat`.
 -/
 
+@[expose] public section
+
 universe u
 
 namespace HopfAlgCat
-open CategoryTheory MonoidalCategory TensorProduct
+open CategoryTheory TensorProduct
 
 variable (R : Type u) [CommRing R]
 
 @[simps] noncomputable instance instMonoidalCategoryStruct :
     MonoidalCategoryStruct.{u} (HopfAlgCat R) where
   tensorObj X Y := of R (X ⊗[R] Y)
-  whiskerLeft X _ _ f := ofHom (f.1.lTensor X)
-  whiskerRight f X := ofHom (f.1.rTensor X)
-  tensorHom f g := ofHom (Bialgebra.TensorProduct.map f.1 g.1)
+  whiskerLeft X _ _ f := ofHom (f.toBialgHom'.lTensor X)
+  whiskerRight f X := ofHom (f.toBialgHom'.rTensor X)
+  tensorHom f g := ofHom (Bialgebra.TensorProduct.map f.toBialgHom' g.toBialgHom')
   tensorUnit := of R R
   associator X Y Z := (Bialgebra.TensorProduct.assoc R R X Y Z).toHopfAlgIso
   leftUnitor X := (Bialgebra.TensorProduct.lid R X).toHopfAlgIso

@@ -3,9 +3,13 @@ Copyright (c) 2024 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
-import Mathlib.Tactic.CategoryTheory.Coherence.PureCoherence
-import Mathlib.CategoryTheory.Category.Basic
+module
+
+public meta import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
+public meta import Mathlib.Tactic.ToDual
+public import Mathlib.CategoryTheory.Category.Basic
+public import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
+public import Mathlib.Tactic.CategoryTheory.Coherence.PureCoherence
 
 /-!
 # The Core function for `monoidal` and `bicategory` tactics
@@ -18,8 +22,9 @@ and bicategories. Using `main`, we will define the following tactics:
 The `main` first normalizes the both sides using `eval`, then compares the corresponding components.
 It closes the goal at non-structural parts with `rfl` and the goal at structural parts by
 `pureCoherence`.
-
 -/
+
+public meta section
 
 open Lean Meta Elab
 open CategoryTheory Mathlib.Tactic.BicategoryLike
@@ -40,7 +45,7 @@ def normalForm (ρ : Type) [Context ρ]
   mvarId.withContext do
     let e ← instantiateMVars <| ← mvarId.getType
     withTraceNode nm (fun _ => return m!"normalize: {e}") do
-      let some (_, e₁, e₂) := (← whnfR <| ← instantiateMVars <| e).eq?
+      let some (_, e₁, e₂) := (← whnfR <| ← instantiateMVars e).eq?
         | throwError "{nm}_nf requires an equality goal"
       let ctx : ρ ← mkContext e₁
       CoherenceM.run (ctx := ctx) do
@@ -90,7 +95,7 @@ def List.splitEvenOdd {α : Type u} : List α → List α × List α
 /-- The core function for `monoidal` and `bicategory` tactics. -/
 def main (ρ : Type) [Context ρ] [MonadMor₁ (CoherenceM ρ)] [MonadMor₂Iso (CoherenceM ρ)]
     [MonadNormalExpr (CoherenceM ρ)] [MkEval (CoherenceM ρ)] [MkMor₂ (CoherenceM ρ)]
-    [MonadMor₂ (CoherenceM ρ)] [MonadCoherehnceHom (CoherenceM ρ)]
+    [MonadMor₂ (CoherenceM ρ)] [MonadCoherenceHom (CoherenceM ρ)]
     [MonadNormalizeNaturality (CoherenceM ρ)] [MkEqOfNaturality (CoherenceM ρ)]
     (nm : Name) (mvarId : MVarId) : MetaM (List MVarId) :=
   mvarId.withContext do

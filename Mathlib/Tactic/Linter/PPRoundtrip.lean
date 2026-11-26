@@ -3,16 +3,22 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+module
 
-import Lean.Elab.Command
-import Mathlib.Init
+public meta import Lean.Elab.Command
+public import Mathlib.Init
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
-#  The "ppRoundtrip" linter
+# The "ppRoundtrip" linter
 
 The "ppRoundtrip" linter emits a warning when the syntax of a command differs substantially
 from the pretty-printed version of itself.
 -/
+
+meta section
 open Lean Elab Command Linter
 
 namespace Mathlib.Linter
@@ -26,7 +32,7 @@ However, it may not always be successful.
 It also prints both the source code and the "expected code" in a 5-character radius from
 the first difference.
 -/
-register_option linter.ppRoundtrip : Bool := {
+public register_option linter.ppRoundtrip : Bool := {
   defValue := false
   descr := "enable the ppRoundtrip linter"
 }
@@ -43,7 +49,7 @@ After that, it applies some pre-emptive changes:
 * `notation3` is not followed by a pretty-printer space, so we add it here (https://github.com/leanprover-community/mathlib4/pull/15515).
 -/
 def polishPP (s : String) : String :=
-  let s := s.split (·.isWhitespace)
+  let s := s.splitToList (·.isWhitespace)
   (" ".intercalate (s.filter (!·.isEmpty)))
     |>.replace "/-!" "/-! "
     |>.replace "``` " "```  " -- avoid losing an existing space after the triple back-ticks
@@ -56,13 +62,13 @@ def polishPP (s : String) : String :=
 For this reason, `polishSource s` performs more conservative changes:
 it only replace all whitespace starting from a linebreak (`\n`) with a single whitespace. -/
 def polishSource (s : String) : String × Array Nat :=
-  let split := s.split (· == '\n')
+  let split := s.splitToList (· == '\n')
   let preWS := split.foldl (init := #[]) fun p q =>
-    let txt := q.trimLeft.length
+    let txt := q.trimAsciiStart.copy.length
     (p.push (q.length - txt)).push txt
   let preWS := preWS.eraseIdxIfInBounds 0
-  let s := (split.map .trimLeft).filter (· != "")
-  (" ".intercalate (s.filter (!·.isEmpty)), preWS)
+  let s := (split.map String.trimAsciiStart).filter (· != "".toSlice)
+  (" ".toSlice.intercalate (s.filter (!·.isEmpty)), preWS)
 
 /-- `posToShiftedPos lths diff` takes as input an array `lths` of natural numbers,
 and one further natural number `diff`.
@@ -84,7 +90,7 @@ def posToShiftedPos (lths : Array Nat) (diff : Nat) : Nat := Id.run do
 
 /-- `zoomString str centre offset` returns the substring of `str` consisting of the `offset`
 characters around the `centre`th character. -/
-def zoomString (str : String) (centre offset : Nat) : Substring :=
+def zoomString (str : String) (centre offset : Nat) : Substring.Raw :=
   { str := str, startPos := ⟨centre - offset⟩, stopPos := ⟨centre + offset⟩ }
 
 /-- `capSourceInfo s p` "shortens" all end-position information in the `SourceInfo` `s` to be
@@ -92,9 +98,9 @@ at most `p`, trimming down also the relevant substrings. -/
 def capSourceInfo (s : SourceInfo) (p : Nat) : SourceInfo :=
   match s with
     | .original leading pos trailing endPos =>
-      .original leading pos {trailing with stopPos := ⟨min endPos.1 p⟩} ⟨min endPos.1 p⟩
+      .original leading pos {trailing with stopPos := ⟨min endPos.byteIdx p⟩} ⟨min endPos.byteIdx p⟩
     | .synthetic pos endPos canonical =>
-      .synthetic pos ⟨min endPos.1 p⟩ canonical
+      .synthetic pos ⟨min endPos.byteIdx p⟩ canonical
     | .none => s
 
 /-- `capSyntax stx p` applies `capSourceInfo · s` to all `SourceInfo`s in all
@@ -107,8 +113,9 @@ partial
 def capSyntax (stx : Syntax) (p : Nat) : Syntax :=
   match stx with
     | .node si k args => .node (capSourceInfo si p) k (args.map (capSyntax · p))
-    | .atom si val => .atom (capSourceInfo si p) (val.take p)
-    | .ident si r v pr => .ident (capSourceInfo si p) { r with stopPos := ⟨min r.stopPos.1 p⟩ } v pr
+    | .atom si val => .atom (capSourceInfo si p) (val.take p).copy
+    | .ident si r v pr =>
+      .ident (capSourceInfo si p) { r with stopPos := ⟨min r.stopPos.byteIdx p⟩ } v pr
     | s => s
 
 namespace PPRoundtrip
@@ -119,7 +126,7 @@ def ppRoundtrip : Linter where run := withSetOptionIn fun stx ↦ do
       return
     if (← MonadState.get).messages.hasErrors then
       return
-    let stx := capSyntax stx (stx.getTailPos?.getD default).1
+    let stx := capSyntax stx (stx.getTailPos?.getD default).byteIdx
     let origSubstring := stx.getSubstring?.getD default
     let (real, lths) := polishSource origSubstring.toString
     let fmt ← (liftCoreM do PrettyPrinter.ppCategory `command stx <|> (do
@@ -131,11 +138,11 @@ def ppRoundtrip : Linter where run := withSetOptionIn fun stx ↦ do
     let st := polishPP fmt.pretty
     if st != real then
       let diff := real.firstDiffPos st
-      let pos := posToShiftedPos lths diff.1 + origSubstring.startPos.1
+      let pos := posToShiftedPos lths diff.byteIdx + origSubstring.startPos.byteIdx
       let f := origSubstring.str.drop (pos)
-      let extraLth := (f.takeWhile (· != st.get diff)).length
-      let srcCtxt := zoomString real diff.1 5
-      let ppCtxt  := zoomString st diff.1 5
+      let extraLth := (f.takeWhile (· != diff.get st)).copy.length
+      let srcCtxt := zoomString real diff.byteIdx 5
+      let ppCtxt  := zoomString st diff.byteIdx 5
       Linter.logLint linter.ppRoundtrip (.ofRange ⟨⟨pos⟩, ⟨pos + extraLth + 1⟩⟩)
         m!"source context\n'{srcCtxt}'\n'{ppCtxt}'\npretty-printed context"
 

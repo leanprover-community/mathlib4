@@ -3,8 +3,13 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.GroupTheory.MonoidLocalization.Basic
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Membership
+public import Mathlib.GroupTheory.MonoidLocalization.Maps
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Localizing commutative monoids away from an element
@@ -13,13 +18,14 @@ We treat the special case of localizing away from an element in the sections
 `AwayMap` and `Away`.
 
 ## Tags
+
 localization, monoid localization, quotient monoid, congruence relation, characteristic predicate,
 commutative monoid, grothendieck group
 -/
 
-assert_not_exists MonoidWithZero
+@[expose] public section
 
-open Function
+assert_not_exists MonoidWithZero
 
 section CommMonoid
 
@@ -52,8 +58,8 @@ noncomputable def AwayMap.invSelf : N := F.mk' 1 ⟨x, mem_powers _⟩
 `z : N` to `g y * (g x)⁻ⁿ`, where `y : M, n : ℕ` are such that `z = F y * (F x)⁻ⁿ`. -/
 noncomputable def AwayMap.lift (hg : IsUnit (g x)) : N →* P :=
   Submonoid.LocalizationMap.lift F fun y ↦
-    show IsUnit (g y.1) by
-      obtain ⟨n, hn⟩ := y.2
+    show IsUnit (g y.val) by
+      obtain ⟨n, hn⟩ := y.property
       rw [← hn, g.map_pow]
       exact IsUnit.pow n hg
 
@@ -70,7 +76,7 @@ respectively, the homomorphism induced from `N` to `P`. -/
 noncomputable def awayToAwayRight (y : M) (G : AwayMap (x * y) P) : N →* P :=
   F.lift x <|
     show IsUnit (G x) from
-      isUnit_of_mul_eq_one (G x) (G.mk' y ⟨x * y, mem_powers _⟩) <| by
+      .of_mul_eq_one (G.mk' y ⟨x * y, mem_powers _⟩) <| by
         rw [mul_mk'_eq_mk'_of_mul, mk'_self]
 
 end AwayMap
@@ -97,8 +103,8 @@ noncomputable def AwayMap.negSelf : B :=
 `z : B` to `g y - n • g x`, where `y : A, n : ℕ` are such that `z = F y - n • F x`. -/
 noncomputable def AwayMap.lift (hg : IsAddUnit (g x)) : B →+ C :=
   AddSubmonoid.LocalizationMap.lift F fun y ↦
-    show IsAddUnit (g y.1) by
-      obtain ⟨n, hn⟩ := y.2
+    show IsAddUnit (g y.val) by
+      obtain ⟨n, hn⟩ := y.property
       rw [← hn]
       dsimp
       rw [g.map_nsmul]
@@ -117,7 +123,7 @@ respectively, the homomorphism induced from `B` to `C`. -/
 noncomputable def awayToAwayRight (y : A) (G : AwayMap (x + y) C) : B →+ C :=
   F.lift x <|
     show IsAddUnit (G x) from
-      isAddUnit_of_add_eq_zero (G x) (G.mk' y ⟨x + y, mem_multiples _⟩) <| by
+      .of_add_eq_zero (G.mk' y ⟨x + y, mem_multiples _⟩) <| by
         rw [add_mk'_eq_mk'_of_add, mk'_self]
 
 end AwayMap

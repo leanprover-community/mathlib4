@@ -1,6 +1,8 @@
-import Mathlib.Control.Random
-import Mathlib.Tactic.NormNum
-import Batteries.Lean.LawfulMonad
+module
+
+public meta import Mathlib.Control.Random
+public import Batteries.Lean.LawfulMonad
+public import Mathlib.Tactic.NormNum
 
 open Random
 
@@ -86,7 +88,7 @@ info: GOOD
 -/
 #guard_msgs in
 #eval show IO _ from do
-  IO.runRandWith 257 <| do
+  IO.runRandWith 257 do
     let mut count := 0
     for _ in [:10000] do
       if (← randFin : Fin 3) == 1 then count := count + 1
@@ -100,7 +102,7 @@ info: GOOD
 -/
 #guard_msgs in
 #eval show IO _ from do
-  IO.runRandWith 257 <| do
+  IO.runRandWith 257 do
     let mut count := 0
     for _ in [:10000] do
       if (← randFin : Fin 2) == 0 then count := count + 1
@@ -114,7 +116,7 @@ info: GOOD
 -/
 #guard_msgs in
 #eval show IO _ from do
-  IO.runRandWith 257 <| do
+  IO.runRandWith 257 do
     let mut count := 0
     for _ in [:10000] do
       if (← randFin : Fin 10) == 5 then count := count + 1

@@ -3,13 +3,19 @@ Copyright (c) 2024 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.Types.Colimits
-import Mathlib.CategoryTheory.Limits.Filtered
-import Mathlib.CategoryTheory.Limits.Yoneda
+module
+
+public import Mathlib.CategoryTheory.Limits.Filtered
+public import Mathlib.CategoryTheory.Limits.Yoneda
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # If colimits of shape `K` commute with finite limits, then `K` is filtered.
 -/
+
+public section
 
 universe v u
 

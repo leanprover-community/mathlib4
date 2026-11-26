@@ -3,9 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.Sum
-import Mathlib.Data.Sum.Order
-import Mathlib.Order.Interval.Finset.Defs
+module
+
+public import Mathlib.Order.Interval.Finset.Defs
+public import Mathlib.Order.Sum.Order
 
 /-!
 # Finite intervals in a disjoint union
@@ -13,6 +14,8 @@ import Mathlib.Order.Interval.Finset.Defs
 This file provides the `LocallyFiniteOrder` instance for the disjoint sum and linear sum of two
 orders and calculates the cardinality of their finite intervals.
 -/
+
+@[expose] public section
 
 
 open Function Sum
@@ -85,7 +88,7 @@ theorem sumLift₂_nonempty :
     (sumLift₂ f g a b).Nonempty ↔
       (∃ a₁ b₁, a = inl a₁ ∧ b = inl b₁ ∧ (f a₁ b₁).Nonempty) ∨
         ∃ a₂ b₂, a = inr a₂ ∧ b = inr b₂ ∧ (g a₂ b₂).Nonempty := by
-  simp only [nonempty_iff_ne_empty, Ne, sumLift₂_eq_empty, not_and_or, not_forall, exists_prop]
+  simp only [← ne_empty_iff_nonempty, Ne, sumLift₂_eq_empty, not_and_or, not_forall, exists_prop]
 
 theorem sumLift₂_mono (h₁ : ∀ a b, f₁ a b ⊆ g₁ a b) (h₂ : ∀ a b, f₂ a b ⊆ g₂ a b) :
     ∀ a b, sumLift₂ f₁ f₂ a b ⊆ sumLift₂ g₁ g₂ a b
@@ -145,7 +148,7 @@ lemma mem_sumLexLift :
     · exact fun h ↦ (notMem_empty _ h).elim
     · rw [sumLexLift, mem_map]
       rintro ⟨c, hc, rfl⟩
-      exact Or.inr (Or.inr <| Or.inr <| ⟨a, b, c, rfl, rfl, rfl, hc⟩)
+      exact Or.inr (Or.inr <| Or.inr ⟨a, b, c, rfl, rfl, rfl, hc⟩)
   · rintro (⟨a, b, c, rfl, rfl, rfl, hc⟩ | ⟨a, b, c, rfl, rfl, rfl, hc⟩ |
       ⟨a, b, c, rfl, rfl, rfl, hc⟩ | ⟨a, b, c, rfl, rfl, rfl, hc⟩)
     · exact mem_map_of_mem _ hc
@@ -191,7 +194,7 @@ lemma sumLexLift_nonempty :
       (∃ a₁ b₁, a = inl a₁ ∧ b = inl b₁ ∧ (f₁ a₁ b₁).Nonempty) ∨
         (∃ a₁ b₂, a = inl a₁ ∧ b = inr b₂ ∧ ((g₁ a₁ b₂).Nonempty ∨ (g₂ a₁ b₂).Nonempty)) ∨
           ∃ a₂ b₂, a = inr a₂ ∧ b = inr b₂ ∧ (f₂ a₂ b₂).Nonempty := by
-  simp only [nonempty_iff_ne_empty, Ne, sumLexLift_eq_empty, not_and_or, exists_prop, not_forall]
+  simp only [← ne_empty_iff_nonempty, Ne, sumLexLift_eq_empty, not_and_or, exists_prop, not_forall]
 
 end SumLexLift
 end Finset
@@ -326,12 +329,6 @@ section LocallyFiniteOrder
 variable [Preorder α] [Preorder β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
 variable [LocallyFiniteOrderTop α] [LocallyFiniteOrderBot β]
 
-/-- Throwaway tactic. -/
-local elab "simp_lex" : tactic => do
-  Lean.Elab.Tactic.evalTactic <| ← `(tactic|
-    refine toLex.surjective.forall₃.2 ?_;
-    rintro (a | a) (b | b) (c | c) <;> simp)
-
 instance locallyFiniteOrder : LocallyFiniteOrder (α ⊕ₗ β) where
   finsetIcc a b :=
     (sumLexLift Icc Icc (fun a _ => Ici a) (fun _ => Iic) (ofLex a) (ofLex b)).map toLex.toEmbedding
@@ -341,10 +338,10 @@ instance locallyFiniteOrder : LocallyFiniteOrder (α ⊕ₗ β) where
     (sumLexLift Ioc Ioc (fun a _ => Ioi a) (fun _ => Iic) (ofLex a) (ofLex b)).map toLex.toEmbedding
   finsetIoo a b :=
     (sumLexLift Ioo Ioo (fun a _ => Ioi a) (fun _ => Iio) (ofLex a) (ofLex b)).map toLex.toEmbedding
-  finset_mem_Icc := by simp_lex
-  finset_mem_Ico := by simp_lex
-  finset_mem_Ioc := by simp_lex
-  finset_mem_Ioo := by simp_lex
+  finset_mem_Icc := by simp
+  finset_mem_Ico := by simp
+  finset_mem_Ioc := by simp
+  finset_mem_Ioo := by simp
 
 variable (a a₁ a₂ : α) (b b₁ b₂ : β)
 
@@ -434,8 +431,8 @@ a diamond with this instance, and constructs data from data. We should consider 
 example [Fintype α] [Preorder α] [Preorder β] [OrderBot α] [OrderBot β] [OrderTop α]
     [LocallyFiniteOrder α] [LocallyFiniteOrder β] :
     LocallyFiniteOrder.toLocallyFiniteOrderBot = instLocallyFiniteOrderBot (α := α) (β := β) := by
-  try with_reducible_and_instances rfl -- fails
-  try rfl -- fails
+  fail_if_success with_reducible_and_instances rfl -- fails
+  fail_if_success rfl -- fails
   exact Subsingleton.elim _ _
 
 section LocallyFiniteOrderTop

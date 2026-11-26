@@ -3,7 +3,9 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Interval.Finset.Basic
+module
+
+public import Mathlib.Order.Interval.Finset.Basic
 
 /-!
 # Intervals as multisets
@@ -30,6 +32,8 @@ In a `LocallyFiniteOrderBot`,
 
 Do we really need this file at all? (March 2024)
 -/
+
+@[expose] public section
 
 
 variable {α : Type*}
@@ -179,22 +183,14 @@ theorem right_mem_Ioc : b ∈ Ioc a b ↔ a < b :=
 theorem left_notMem_Ioc : a ∉ Ioc a b :=
   Finset.left_notMem_Ioc
 
-@[deprecated (since := "2025-05-23")] alias left_not_mem_Ioc := left_notMem_Ioc
-
 theorem left_notMem_Ioo : a ∉ Ioo a b :=
   Finset.left_notMem_Ioo
-
-@[deprecated (since := "2025-05-23")] alias left_not_mem_Ioo := left_notMem_Ioo
 
 theorem right_notMem_Ico : b ∉ Ico a b :=
   Finset.right_notMem_Ico
 
-@[deprecated (since := "2025-05-23")] alias right_not_mem_Ico := right_notMem_Ico
-
 theorem right_notMem_Ioo : b ∉ Ioo a b :=
   Finset.right_notMem_Ioo
-
-@[deprecated (since := "2025-05-23")] alias right_not_mem_Ioo := right_notMem_Ioo
 
 theorem Ico_filter_lt_of_le_left [DecidablePred (· < c)] (hca : c ≤ a) :
     ((Ico a b).filter fun x => x < c) = ∅ := by
@@ -235,12 +231,12 @@ theorem Icc_self (a : α) : Icc a a = {a} := by rw [Icc, Finset.Icc_self, Finset
 
 theorem Ico_cons_right (h : a ≤ b) : b ::ₘ Ico a b = Icc a b := by
   classical
-    rw [Ico, ← Finset.insert_val_of_notMem right_notMem_Ico, Finset.Ico_insert_right h]
+    rw [Ico, ← Finset.insert_val_of_notMem right_notMem_Ico, Finset.insert_right_Ico h]
     rfl
 
 theorem Ioo_cons_left (h : a < b) : a ::ₘ Ioo a b = Ico a b := by
   classical
-    rw [Ioo, ← Finset.insert_val_of_notMem left_notMem_Ioo, Finset.Ioo_insert_left h]
+    rw [Ioo, ← Finset.insert_val_of_notMem left_notMem_Ioo, Finset.insert_left_Ioo h]
     rfl
 
 theorem Ico_disjoint_Ico {a b c d : α} (h : b ≤ c) : Disjoint (Ico a b) (Ico c d) :=
@@ -297,11 +293,11 @@ theorem Ico_filter_le (a b c : α) : ((Ico a b).filter fun x => c ≤ x) = Ico (
 
 @[simp]
 theorem Ico_sub_Ico_left (a b c : α) : Ico a b - Ico a c = Ico (max a c) b := by
-  rw [Ico, Ico, Ico, ← Finset.sdiff_val, Finset.Ico_diff_Ico_left]
+  rw [Ico, Ico, Ico, ← Finset.sdiff_val, Finset.Ico_sdiff_Ico_left]
 
 @[simp]
 theorem Ico_sub_Ico_right (a b c : α) : Ico a b - Ico c b = Ico a (min b c) := by
-  rw [Ico, Ico, Ico, ← Finset.sdiff_val, Finset.Ico_diff_Ico_right]
+  rw [Ico, Ico, Ico, ← Finset.sdiff_val, Finset.Ico_sdiff_Ico_right]
 
 end LinearOrder
 end Multiset

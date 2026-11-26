@@ -3,11 +3,18 @@ Copyright (c) 2025 Jon Eugster. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Jon Eugster, Emily Riehl
 -/
-import Mathlib.CategoryTheory.Enriched.Limits.HasConicalLimits
+module
+
+public import Mathlib.CategoryTheory.Enriched.Limits.HasConicalLimits
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Existence of conical products
 -/
+
+public section
 
 universe w v' v u u'
 
@@ -32,7 +39,7 @@ variable {C : Type u} [Category.{v} C] [EnrichedOrdinaryCategory V C]
 abbrev HasConicalProduct {I : Type w} (f : I → C) :=
   HasConicalLimit V (Discrete.functor f)
 
-/-- ensure products exists from the existence of conical products -/
-example [HasConicalProducts.{w} V C] : HasProducts.{w} C := inferInstance
+/-- Products exists when conical products exist. -/
+instance [HasConicalProducts.{w} V C] : HasProducts.{w} C where
 
 end CategoryTheory.Enriched

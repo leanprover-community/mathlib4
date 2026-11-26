@@ -3,9 +3,11 @@ Copyright (c) 2024 Elliot Dean Young and Jiazhen Xia. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiazhen Xia, Elliot Dean Young, Joël Riou
 -/
-import Mathlib.Topology.Category.TopCat.Limits.Basic
-import Mathlib.Topology.Category.TopCat.Sphere
-import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
+module
+
+public import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
+public import Mathlib.Topology.Category.TopCat.Limits.Basic
+public import Mathlib.Topology.Category.TopCat.Sphere
 
 /-!
 # CW-complexes
@@ -21,7 +23,7 @@ This file defines (relative) CW-complexes using a categorical approach.
 
 * `CWComplex`: A CW-complex is a relative CW-complex whose `sk 0` (i.e., $(-1)$-skeleton) is empty.
 
-## Implementation Notes
+## Implementation notes
 
 This file provides a categorical approach to CW complexes,
 defining them via colimits and transfinite compositions.
@@ -41,6 +43,8 @@ The two approaches are equivalent but serve different purposes:
   `Mathlib/Topology/CWComplex/Classical/Basic.lean`.
   Currently there is no way to move between the two definitions.
 -/
+
+public section
 
 open TopCat
 

@@ -3,9 +3,11 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Basic
+
 import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
-import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.Tactic.CategoryTheory.Elementwise
 
 /-!
 # Colimits in ModuleCat
@@ -14,6 +16,7 @@ Let `C` be a concrete category and `F : J ⥤ C` a filtered diagram in `C`. We d
 about `colimit F` when objects and morphisms in `C` have some algebraic structures.
 
 ## Main results
+
 - `CategoryTheory.Limits.Concrete.colimit_rep_eq_zero`: Let `C` be a category where its objects have
   zero elements and morphisms preserve zero. If `x : Fⱼ` is mapped to `0` in the colimit, then
   there exists a `i ⟶ j` such that `x` restricted to `i` is already `0`.
@@ -24,12 +27,14 @@ about `colimit F` when objects and morphisms in `C` have some algebraic structur
   and `x : Fᵢ` we have `r • x = 0` implies `x = 0`, then if `r • x = 0` for `x : colimit F`, then
   `x = 0`.
 
-## Implementation details
+## Implementation notes
 
 For now, we specialize our results to `C = ModuleCat R`, which is the only place they are used.
 In the future they might be generalized by assuming a `HasForget₂ C (ModuleCat R)` instance,
 plus assertions that the module structures induced by `HasForget₂` coincide.
 -/
+
+public section
 
 universe t w v u r
 
@@ -54,7 +59,7 @@ end zero
 section module
 
 /--
-if `r` has no zero smul divisors for all small-enough sections, then `r` has no zero smul divisors
+If `r` has no zero smul divisors for all small-enough sections, then `r` has no zero smul divisors
 in the colimit.
 -/
 lemma colimit_no_zero_smul_divisor

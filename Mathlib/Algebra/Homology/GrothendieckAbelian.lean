@@ -3,9 +3,16 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
-import Mathlib.CategoryTheory.Generator.HomologicalComplex
-import Mathlib.Algebra.Homology.HomologicalComplexAbelian
+module
+
+public import Mathlib.Algebra.Homology.HomologicalComplexAbelian
+public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
+public import Mathlib.CategoryTheory.Generator.HomologicalComplex
+
+import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Homological complexes in a Grothendieck abelian category
@@ -14,8 +21,9 @@ Let `c : ComplexShape ι` be a complex shape with no loop, and
 such that `Small.{w} ι`. Then, if `C` is a Grothendieck abelian
 category (with `IsGrothendieckAbelian.{w} C`), the category
 `HomologicalComplex C c` is Grothendieck abelian.
-
 -/
+
+public section
 
 universe w w' t v u
 
@@ -36,7 +44,7 @@ instance locallySmall [LocallySmall.{w} C] [Small.{w} ι] :
     have hemb : Function.Injective emb := fun f g h ↦ by
       ext i
       obtain ⟨i, rfl⟩ := (equivShrink.{w} _).symm.surjective i
-      simpa [emb] using congr_fun h i
+      simpa [emb] using congr($h i)
     apply small_of_injective hemb
 
 instance [HasFilteredColimitsOfSize.{w, w'} C] :
@@ -49,10 +57,10 @@ instance hasExactColimitsOfShape (J : Type w) [Category.{w'} J] [HasFiniteLimits
   preservesFiniteLimits :=
     ⟨fun K _ _ ↦ ⟨fun {F} ↦ ⟨fun hc ↦ ⟨isLimitOfEval _ _ (fun i ↦ by
       let e := preservesColimitNatIso (J := J) (eval C c i)
-      exact (IsLimit.postcomposeHomEquiv (Functor.isoWhiskerLeft F e) _).1
+      exact (IsLimit.postcomposeHomEquiv (Functor.isoWhiskerLeft F e) _).toFun
         (IsLimit.ofIsoLimit
           (isLimitOfPreserves ((Functor.whiskeringRight J _ _).obj (eval C c i) ⋙ colim) hc)
-          (Cones.ext (e.symm.app _) (fun k ↦ (NatIso.naturality_2 e.symm _).symm))))⟩⟩⟩⟩
+          (Cone.ext (e.symm.app _) (fun k ↦ (NatIso.naturality_2 e.symm _).symm))))⟩⟩⟩⟩
 
 instance ab5OfSize [HasFilteredColimitsOfSize.{w', w} C] [HasFiniteLimits C]
     [AB5OfSize.{w', w} C] :

@@ -3,10 +3,14 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.DoldKan.PInfty
+module
+
+public import Mathlib.AlgebraicTopology.DoldKan.PInfty
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
-
 # Construction of functors N for the Dold-Kan correspondence
 
 In this file, we construct functors `N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ)`
@@ -27,8 +31,9 @@ When the category `C` is abelian, a relation between `N₁` and the
 normalized Moore complex functor shall be obtained in `Normalized.lean`.
 
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
-
 -/
+
+@[expose] public section
 
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Idempotents
@@ -39,11 +44,11 @@ namespace AlgebraicTopology
 
 namespace DoldKan
 
-variable {C : Type*} [Category C] [Preadditive C]
+variable {C : Type*} [Category* C] [Preadditive C]
 
 /-- The functor `SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ)` which maps
 `X` to the formal direct factor of `K[X]` defined by `PInfty`. -/
-@[simps]
+@[simps, implicit_reducible]
 def N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ) where
   obj X :=
     { X := AlternatingFaceMapComplex.obj X

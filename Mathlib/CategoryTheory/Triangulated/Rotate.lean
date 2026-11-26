@@ -3,16 +3,18 @@ Copyright (c) 2021 Luke Kershaw. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Luke Kershaw
 -/
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.CategoryTheory.Triangulated.Basic
+module
+
+public import Mathlib.CategoryTheory.Triangulated.Basic
 
 /-!
 # Rotate
 
 This file adds the ability to rotate triangles and triangle morphisms.
 It also shows that rotation gives an equivalence on the category of triangles.
-
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -45,7 +47,7 @@ applying `rotate` gives a triangle of the form:
   Y  ───> Z  ───>  X⟦1⟧ ───> Y⟦1⟧
 ```
 -/
-@[simps!]
+@[simps!, implicit_reducible]
 def Triangle.rotate (T : Triangle C) : Triangle C :=
   Triangle.mk T.mor₂ T.mor₃ (-T.mor₁⟦1⟧')
 
@@ -64,10 +66,10 @@ applying `invRotate` gives a triangle that can be thought of as:
 (note that this diagram doesn't technically fit the definition of triangle, as `Z⟦-1⟧⟦1⟧` is
 not necessarily equal to `Z`, but it is isomorphic, by the `counitIso` of `shiftEquiv C 1`)
 -/
-@[simps!]
+@[simps!, implicit_reducible]
 def Triangle.invRotate (T : Triangle C) : Triangle C :=
-  Triangle.mk (-T.mor₃⟦(-1 : ℤ)⟧' ≫ (shiftEquiv C (1 : ℤ)).unitIso.inv.app _) (T.mor₁)
-    (T.mor₂ ≫ (shiftEquiv C (1 : ℤ)).counitIso.inv.app _ )
+  Triangle.mk (-T.mor₃⟦-1⟧' ≫ (shiftEquiv C 1).unitIso.inv.app _) (T.mor₁)
+    (T.mor₂ ≫ (shiftEquiv C 1).counitIso.inv.app _)
 
 end
 
@@ -79,7 +81,7 @@ variable (C)
 
 /-- Rotating triangles gives an endofunctor on the category of triangles in `C`.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def rotate : Triangle C ⥤ Triangle C where
   obj := Triangle.rotate
   map f :=
@@ -92,7 +94,7 @@ def rotate : Triangle C ⥤ Triangle C where
 
 /-- The inverse rotation of triangles gives an endofunctor on the category of triangles in `C`.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def invRotate : Triangle C ⥤ Triangle C where
   obj := Triangle.invRotate
   map f :=
@@ -113,19 +115,19 @@ variable [∀ n : ℤ, Functor.Additive (shiftFunctor C n)]
 @[simps!]
 def rotCompInvRot : 𝟭 (Triangle C) ≅ rotate C ⋙ invRotate C :=
   NatIso.ofComponents fun T => Triangle.isoMk _ _
-    ((shiftEquiv C (1 : ℤ)).unitIso.app T.obj₁) (Iso.refl _) (Iso.refl _)
+    ((shiftEquiv C 1).unitIso.app T.obj₁) (Iso.refl _) (Iso.refl _)
 
 /-- The counit isomorphism of the auto-equivalence of categories `triangleRotation C` of
 `Triangle C` given by the rotation of triangles. -/
 @[simps!]
 def invRotCompRot : invRotate C ⋙ rotate C ≅ 𝟭 (Triangle C) :=
   NatIso.ofComponents fun T => Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _)
-    ((shiftEquiv C (1 : ℤ)).counitIso.app T.obj₃)
+    ((shiftEquiv C 1).counitIso.app T.obj₃)
 
 variable (C) in
 /-- Rotating triangles gives an auto-equivalence on the category of triangles in `C`.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def triangleRotation : Equivalence (Triangle C) (Triangle C) where
   functor := rotate C
   inverse := invRotate C

@@ -3,16 +3,22 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+module
+
+public import Mathlib.RingTheory.Finiteness.Defs
+
 import Mathlib.LinearAlgebra.Prod
-import Mathlib.RingTheory.Finiteness.Defs
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Finitely generated product (sub)modules
-
 -/
 
+public section
+
 open Function (Surjective)
-open Finsupp
 
 namespace Submodule
 
@@ -42,7 +48,7 @@ variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R
 instance prod [hM : Module.Finite R M] [hN : Module.Finite R N] : Module.Finite R (M × N) :=
   ⟨by
     rw [← Submodule.prod_top]
-    exact hM.1.prod hN.1⟩
+    exact hM.fg_top.prod hN.fg_top⟩
 
 end Finite
 

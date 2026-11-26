@@ -3,8 +3,10 @@ Copyright (c) 2023 Moritz Doll, Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Gabriel Ebner, Damiano Testa, Kyle Miller
 -/
-import Mathlib.Tactic.TermCongr
-import Mathlib.Tactic.WithoutCDot
+module
+
+public import Mathlib.Tactic.Relation.Rfl
+public import Mathlib.Tactic.TermCongr
 
 /-!
 # The `congrm` tactic
@@ -14,6 +16,8 @@ is a convenient frontend for `congr(...)` congruence quotations.
 Roughly, `congrm e` is `refine congr(e')`, where `e'` is `e` with every `?m` placeholder
 replaced by `$(?m)`.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic
 open Lean Parser Elab Tactic Meta
@@ -54,6 +58,8 @@ If the goal is an equality, `congrm e` is equivalent to `refine congr(e')` where
 built from `e` by replacing each placeholder `?m` by `$(?m)`.
 The pattern `e` is allowed to contain `$(...)` expressions to immediately substitute
 equality proofs into the congruence, just like for congruence quotations.
+
+[More documentation on `congr()` and `congrm`.](https://leanprover-community.github.io/extras/congr.html)
 -/
 syntax (name := congrM) "congrm " term : tactic
 
@@ -71,11 +77,11 @@ elab_rules : tactic
     trace[Tactic.congrm] "pattern: {pattern}"
     -- Chain together transformations as needed to convert the goal to an Eq if possible.
     liftMetaTactic fun g => do
-      return [← (← g.iffOfEq).liftReflToEq]
+      return [← liftReflToEq (← g.iffOfEq)]
     -- Apply `congr(...)`
     withMainContext do
       let gStx ← Term.exprToSyntax (← getMainTarget)
       -- Gives the expected type to `refine` as a workaround for its elaboration order.
-      evalTactic <| ← `(tactic| refine without_cdot(congr($(⟨pattern⟩)) : $gStx))
+      evalTactic <| ← `(tactic| refine (congr($(⟨pattern⟩)) : $gStx))
 
 end Mathlib.Tactic

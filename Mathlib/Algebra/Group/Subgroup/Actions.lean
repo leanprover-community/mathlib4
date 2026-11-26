@@ -3,8 +3,13 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Group.Submonoid.DistribMulAction
-import Mathlib.GroupTheory.Subgroup.Center
+module
+
+public import Mathlib.Algebra.Group.Submonoid.DistribMulAction
+public import Mathlib.GroupTheory.Subgroup.Center
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Actions by `Subgroup`s
@@ -12,9 +17,11 @@ import Mathlib.GroupTheory.Subgroup.Center
 These are just copies of the definitions about `Submonoid` starting from `Submonoid.mulAction`.
 
 ## Tags
-subgroup, subgroups
 
+subgroup, subgroups
 -/
+
+public section
 
 
 namespace Subgroup
@@ -23,10 +30,9 @@ variable {G α β : Type*} [Group G]
 section MulAction
 variable [MulAction G α] {S : Subgroup G}
 
-/-- The action by a subgroup is the action by the underlying group. -/
-@[to_additive
-/-- The additive action by an add_subgroup is the action by the underlying `AddGroup`. -/]
-instance instMulAction : MulAction S α := inferInstanceAs (MulAction S.toSubmonoid α)
+/-- This shortcut instance provides a speedup. -/
+@[to_additive /-- This shortcut instance provides a speedup. -/]
+instance : MulAction S α := inferInstance
 
 @[to_additive] lemma smul_def (g : S) (m : α) : g • m = (g : G) • m := rfl
 
@@ -72,3 +78,8 @@ instance center.smulCommClass_right : SMulCommClass G (center G) G :=
   Submonoid.center.smulCommClass_right
 
 end Subgroup
+
+open MonoidHom in
+lemma MonoidWithZeroHom.comap_mker {M N P : Type*} [MulZeroOneClass M] [MulZeroOneClass N]
+    [MulZeroOneClass P] (g : N →*₀ P) (f : M →*₀ N) :
+    Submonoid.comap f (mker g) = mker (g.comp f) := rfl

@@ -3,14 +3,21 @@ Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.Data.Opposite
-import Mathlib.Data.Set.Operations
+module
+
+public import Mathlib.Basic.Opposite
+public import Mathlib.Data.Set.Operations
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The opposite of a set
 
 The opposite of a set `s` is simply the set obtained by taking the opposite of each member of `s`.
 -/
+
+@[expose] public section
 
 variable {α : Type*}
 
@@ -49,7 +56,7 @@ theorem unop_op (s : Set αᵒᵖ) : s.unop.op = s := rfl
 /-- The members of the opposite of a set are in bijection with the members of the set itself. -/
 @[simps]
 def opEquiv_self (s : Set α) : s.op ≃ s :=
-  ⟨fun x ↦ ⟨unop x, x.2⟩, fun x ↦ ⟨op x, x.2⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩
+  ⟨fun x ↦ ⟨unop x, x.property⟩, fun x ↦ ⟨op x, x.property⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩
 
 /-- Taking opposites as an equivalence of powersets. -/
 @[simps]

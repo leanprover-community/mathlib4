@@ -3,9 +3,14 @@ Copyright (c) 2024 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.FieldTheory.Minpoly.Field
-import Mathlib.Algebra.Polynomial.Module.AEval
-import Mathlib.Algebra.Module.Torsion
+module
+
+public import Mathlib.Algebra.Module.Torsion.Basic
+public import Mathlib.Algebra.Polynomial.Module.AEval
+public import Mathlib.FieldTheory.Minpoly.Field
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Polynomial modules in finite dimensions
@@ -13,12 +18,14 @@ import Mathlib.Algebra.Module.Torsion
 This file is a place to collect results about the `R[X]`-module structure induced on an `R`-module
 by an `R`-linear endomorphism, which require the concept of finite-dimensionality.
 
-## Main results:
+## Main results
+
 * `Module.AEval.isTorsion_of_finiteDimensional`: if a vector space `M` with coefficients in a field
   `K` carries a natural `K`-linear endomorphism which belongs to a finite-dimensional algebra
   over `K`, then the induced `K[X]`-module structure on `M` is pure torsion.
-
 -/
+
+public section
 
 open Polynomial
 

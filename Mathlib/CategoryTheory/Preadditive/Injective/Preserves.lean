@@ -3,7 +3,12 @@ Copyright (c) 2025 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Preadditive.Injective.Basic
+module
+
+public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Preservation of injective objects
@@ -14,6 +19,8 @@ We restate the existing result that if `F ⊣ G` is an adjunction and `F` preser
 then `G` preserves injective objects. We show that the converse is true if the codomain of `F` has
 enough injectives.
 -/
+
+public section
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 

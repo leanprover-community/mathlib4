@@ -3,15 +3,17 @@ Copyright (c) 2023 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Init.Data.ULift
-import Init.Data.Fin.Fold
-import Init.Data.List.Nat.Pairwise
-import Init.Data.List.Nat.Range
-import Mathlib.NumberTheory.NumberField.Basic
-import Mathlib.RingTheory.Localization.NormTrace
+module
+
+public import Mathlib.NumberTheory.NumberField.Basic
+public import Mathlib.RingTheory.Localization.NormTrace
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Number field discriminant
+
 This file defines the discriminant of a number field.
 
 ## Main definitions
@@ -19,8 +21,11 @@ This file defines the discriminant of a number field.
 * `NumberField.discr`: the absolute discriminant of a number field.
 
 ## Tags
+
 number field, discriminant
 -/
+
+public section
 
 open Module
 
@@ -61,7 +66,7 @@ theorem discr_eq_discr_of_algEquiv {L : Type*} [Field L] [NumberField L] (f : K 
 
 theorem discr_eq_discr_of_ringEquiv {L : Type*} [Field L] [NumberField L] (f : K ≃+* L) :
     discr K = discr L :=
-  discr_eq_discr_of_algEquiv _ <| AlgEquiv.ofRingEquiv (f := f) fun _ ↦ by simp
+  discr_eq_discr_of_algEquiv _ <| AlgEquiv.ofCommutes (e := f) fun _ ↦ by simp
 
 end NumberField
 
@@ -83,7 +88,7 @@ theorem numberField_discr : discr ℚ = 1 := by
         AddEquiv.coe_toIntLinearEquiv, Basis.singleton_apply,
         show (AddEquiv.symm ↑ringOfIntegersEquiv) (1 : ℤ) = ringOfIntegersEquiv.symm 1 by rfl,
         map_one, mul_one]
-    _ = 1 := by rw [Algebra.trace_eq_matrix_trace b]; norm_num
+    _ = 1 := by rw [Algebra.trace_eq_matrix_trace b]; simp
 
 alias _root_.NumberField.discr_rat := numberField_discr
 
@@ -101,7 +106,6 @@ theorem Algebra.discr_eq_discr_of_toMatrix_coeff_isIntegral [NumberField K]
     intro i j
     convert h' i ((b.indexEquiv b').symm j)
     simp [Basis.toMatrix_apply]
-  classical
   rw [← (b.reindex (b.indexEquiv b')).toMatrix_map_vecMul b', discr_of_matrix_vecMul,
     ← one_mul (discr ℚ b), Basis.coe_reindex, discr_reindex]
   congr
@@ -114,11 +118,10 @@ theorem Algebra.discr_eq_discr_of_toMatrix_coeff_isIntegral [NumberField K]
     obtain ⟨r', hr'⟩ := IsIntegrallyClosed.isIntegral_iff.1 this
     refine isUnit_iff_exists_inv.2 ⟨r', ?_⟩
     suffices algebraMap ℤ ℚ (r * r') = 1 by
-      rw [← RingHom.map_one (algebraMap ℤ ℚ)] at this
+      rw [← map_one (algebraMap ℤ ℚ)] at this
       exact (IsFractionRing.injective ℤ ℚ) this
-    rw [RingHom.map_mul, hr, hr', ← Matrix.det_mul,
-      Basis.toMatrix_mul_toMatrix_flip, Matrix.det_one]
-  rw [← RingHom.map_one (algebraMap ℤ ℚ), ← hr]
+    rw [map_mul, hr, hr', ← Matrix.det_mul, Basis.toMatrix_mul_toMatrix_flip, Matrix.det_one]
+  rw [← map_one (algebraMap ℤ ℚ), ← hr]
   rcases Int.isUnit_iff.1 hunit with hp | hm
   · simp [hp]
   · simp [hm]

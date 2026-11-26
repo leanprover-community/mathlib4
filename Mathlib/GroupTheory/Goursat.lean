@@ -3,9 +3,14 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Graph
-import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.GroupTheory.QuotientGroup.Defs
+module
+
+public import Mathlib.Algebra.Group.Graph
+public import Mathlib.Algebra.Group.Subgroup.Basic
+public import Mathlib.GroupTheory.QuotientGroup.Defs
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Goursat's lemma for subgroups
@@ -19,6 +24,8 @@ the graph of an isomorphism `G ⧸ G' ≃ H ⧸ H'`.
 `G'` and `H'` can be explicitly constructed as `Subgroup.goursatFst I` and `Subgroup.goursatSnd I`
 respectively.
 -/
+
+@[expose] public section
 
 open Function Set
 

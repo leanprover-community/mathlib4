@@ -3,9 +3,13 @@ Copyright (c) 2023 Ruben Van de Velde. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ruben Van de Velde
 -/
+module
 
-import Mathlib.Algebra.MvPolynomial.Eval
-import Mathlib.Topology.Algebra.Ring.Basic
+public import Mathlib.Algebra.MvPolynomial.Eval
+public import Mathlib.Topology.Algebra.Ring.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Multivariate polynomials and continuity
@@ -18,6 +22,8 @@ In this file we prove the following lemma:
 
 multivariate polynomial, continuity
 -/
+
+public section
 
 variable {X σ : Type*} [TopologicalSpace X] [CommSemiring X] [IsTopologicalSemiring X]
   (p : MvPolynomial σ X)

@@ -3,8 +3,10 @@ Copyright (c) 2025 Ben Eltschig. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ben Eltschig
 -/
-import Mathlib.CategoryTheory.Adjunction.Triple
-import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Triple
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 
 /-!
 # Adjoint quadruples
@@ -18,6 +20,7 @@ Currently the only two results are the following:
   are epimorphisms iff the components of the natural transformation `F ⟶ R` are monomorphisms.
 * When `L` and `G` are fully faithful, the components of the induced natural transformation `L ⟶ G`
   are epimorphisms iff the components of the natural transformation `R ⟶ F` are monomorphisms.
+
 This is in particular relevant for the adjoint quadruples `π₀ ⊣ disc ⊣ Γ ⊣ codisc` that appear in
 cohesive topoi, and can be found e.g. as proposition 2.7
 [here](https://ncatlab.org/nlab/show/cohesive+topos).
@@ -28,6 +31,8 @@ some of the functors are fully faithful. We opt to include only those typeclass 
 needed for the theorem statements, so some lemmas require only e.g. `F` to be fully faithful when
 really this means `F` and `R` both must be.
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits Functor Adjunction Triple
 

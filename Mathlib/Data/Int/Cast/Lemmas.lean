@@ -3,9 +3,10 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Group.TypeTags.Hom
-import Mathlib.Algebra.Ring.Int.Defs
-import Mathlib.Algebra.Ring.Parity
+module
+
+public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Algebra.Ring.Parity
 
 /-!
 # Cast of integers (additional theorems)
@@ -21,11 +22,13 @@ which were not available in the import dependencies of `Data.Int.Cast.Basic`.
 * `castRingHom`: `cast` bundled as a `RingHom`.
 -/
 
-assert_not_exists RelIso OrderedCommMonoid Field
+@[expose] public section
+
+assert_not_exists RelIso IsOrderedMonoid Field
 
 open Additive Function Multiplicative Nat
 
-variable {F ι α β : Type*}
+variable {F α β : Type*}
 
 namespace Int
 
@@ -34,11 +37,6 @@ def ofNatHom : ℕ →+* ℤ :=
   Nat.castRingHom ℤ
 
 section cast
-
-@[simp, norm_cast]
-theorem cast_ite [IntCast α] (P : Prop) [Decidable P] (m n : ℤ) :
-    ((ite P m n : ℤ) : α) = ite P (m : α) (n : α) :=
-  apply_ite _ _ _ _
 
 /-- `coe : ℤ → α` as an `AddMonoidHom`. -/
 def castAddHom (α : Type*) [AddGroupWithOne α] : ℤ →+ α where
@@ -58,7 +56,7 @@ variable [CharZero α] {m n : ℤ}
 @[simp] lemma cast_eq_zero : (n : α) = 0 ↔ n = 0 where
   mp h := by
     cases n
-    · rw [ofNat_eq_coe, Int.cast_natCast] at h
+    · rw [ofNat_eq_natCast, Int.cast_natCast] at h
       exact congr_arg _ (Nat.cast_eq_zero.1 h)
     · rw [cast_negSucc, neg_eq_zero, Nat.cast_eq_zero] at h
       contradiction
@@ -82,6 +80,7 @@ variable [NonAssocRing α]
 
 variable (α) in
 /-- `coe : ℤ → α` as a `RingHom`. -/
+@[instance_reducible]
 def castRingHom : ℤ →+* α where
   toFun := Int.cast
   map_zero' := cast_zero
@@ -226,17 +225,17 @@ variable {M : Type*} [Monoid M]
 
 @[ext]
 theorem ext_mint {f g : Multiplicative ℤ →* M} (h1 : f (ofAdd 1) = g (ofAdd 1)) : f = g :=
-  MonoidHom.toAdditive''.injective <| AddMonoidHom.ext_int <| Additive.toMul.injective h1
+  MonoidHom.toAdditiveRight.injective <| AddMonoidHom.ext_int <| Additive.toMul.injective h1
 
 /-- If two `MonoidHom`s agree on `-1` and the naturals then they are equal. -/
 @[ext]
 theorem ext_int {f g : ℤ →* M} (h_neg_one : f (-1) = g (-1))
     (h_nat : f.comp Int.ofNatHom.toMonoidHom = g.comp Int.ofNatHom.toMonoidHom) : f = g := by
   ext (x | x)
-  · exact (DFunLike.congr_fun h_nat x :)
+  · exact (congr($h_nat x) :)
   · rw [Int.negSucc_eq, ← neg_one_mul, f.map_mul, g.map_mul]
     congr 1
-    exact mod_cast (DFunLike.congr_fun h_nat (x + 1) :)
+    exact mod_cast (congr($h_nat (x + 1)) :)
 
 end MonoidHom
 
@@ -259,10 +258,8 @@ theorem ext_int' [MonoidWithZero α] [FunLike F ℤ α] [MonoidWithZeroHomClass 
     (h_neg_one : f (-1) = g (-1)) (h_pos : ∀ n : ℕ, 0 < n → f n = g n) : f = g :=
   (DFunLike.ext _ _) fun n =>
     haveI :=
-      DFunLike.congr_fun
-        (@MonoidWithZeroHom.ext_int _ _ (f : ℤ →*₀ α) (g : ℤ →*₀ α) h_neg_one <|
-          MonoidWithZeroHom.ext_nat (h_pos _))
-        n
+      congr($(@MonoidWithZeroHom.ext_int _ _ (.ofClass f) (.ofClass g) h_neg_one <|
+          MonoidWithZeroHom.ext_nat (h_pos _)) n)
     this
 
 section Group
@@ -281,11 +278,16 @@ def zmultiplesHom : β ≃ (ℤ →+ β) where
 /-- Monoid homomorphisms from `Multiplicative ℤ` are defined by the image
 of `Multiplicative.ofAdd 1`. -/
 def zpowersHom : α ≃ (Multiplicative ℤ →* α) :=
-  ofMul.trans <| (zmultiplesHom _).trans <| AddMonoidHom.toMultiplicative''
+  ofMul.trans <| (zmultiplesHom _).trans AddMonoidHom.toMultiplicativeLeft
 
 @[simp] lemma zmultiplesHom_apply (x : β) (n : ℤ) : zmultiplesHom β x n = n • x := rfl
 
 @[simp] lemma zmultiplesHom_symm_apply (f : ℤ →+ β) : (zmultiplesHom β).symm f = f 1 := rfl
+
+variable {β} in
+lemma zmultiplesHom_injective [IsAddTorsionFree β] {x : β} (hx : x ≠ 0) :
+    Function.Injective (zmultiplesHom β x) :=
+  (injective_iff_map_eq_zero _).2 fun _ hn ↦ (IsAddTorsionFree.zsmul_eq_zero_iff_left hx).1 hn
 
 @[simp] lemma zpowersHom_apply (x : α) (n : Multiplicative ℤ) :
     zpowersHom α x n = x ^ n.toAdd := rfl
@@ -346,7 +348,7 @@ theorem eq_intCast' (f : ℤ →+* α) : f = Int.castRingHom α :=
   RingHom.ext <| eq_intCast f
 
 theorem ext_int {R : Type*} [NonAssocSemiring R] (f g : ℤ →+* R) : f = g :=
-  coe_addMonoidHom_injective <| AddMonoidHom.ext_int <| f.map_one.trans g.map_one.symm
+  toAddMonoidHom_injective <| AddMonoidHom.ext_int <| f.map_one.trans g.map_one.symm
 
 instance Int.subsingleton_ringHom {R : Type*} [NonAssocSemiring R] : Subsingleton (ℤ →+* R) :=
   ⟨RingHom.ext_int⟩

@@ -3,11 +3,17 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Ring.Int
-import Mathlib.Data.Nat.Cast.Order.Basic
+module
+
+public import Mathlib.Data.Nat.Cast.Order.Basic
+public import Mathlib.Order.UpperLower.Basic
+
+import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Order.Interval.Set.OrdConnected
 import Mathlib.Order.Nat
-import Mathlib.Order.UpperLower.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Images of intervals under `Nat.cast : ℕ → ℤ`
@@ -15,6 +21,8 @@ import Mathlib.Order.UpperLower.Basic
 In this file we prove that the image of each `Set.Ixx` interval under `Nat.cast : ℕ → ℤ`
 is the corresponding interval in `ℤ`.
 -/
+
+public section
 
 open Set
 
@@ -43,9 +51,9 @@ theorem image_cast_int_Iio (a : ℕ) : (↑) '' Iio a = Ico (0 : ℤ) a := by
   rw [← Ico_bot, image_cast_int_Ico]; rfl
 
 theorem image_cast_int_Ici (a : ℕ) : (↑) '' Ici a = Ici (a : ℤ) :=
-  (castOrderEmbedding (α := ℤ)).image_Ici (by simp [isUpperSet_Ici]) a
+  (castOrderEmbedding (α := ℤ)).image_Ici (by simp [IsUpperSet.Ici]) a
 
 theorem image_cast_int_Ioi (a : ℕ) : (↑) '' Ioi a = Ioi (a : ℤ) :=
-  (castOrderEmbedding (α := ℤ)).image_Ioi (by simp [isUpperSet_Ici]) a
+  (castOrderEmbedding (α := ℤ)).image_Ioi (by simp [IsUpperSet.Ici]) a
 
 end Nat

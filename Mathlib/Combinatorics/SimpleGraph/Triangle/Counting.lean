@@ -3,9 +3,12 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Combinatorics.SimpleGraph.Clique
-import Mathlib.Combinatorics.SimpleGraph.Regularity.Uniform
-import Mathlib.Data.Real.Basic
+module
+
+public import Mathlib.Basic.Real.Basic
+public import Mathlib.Combinatorics.SimpleGraph.Clique
+public import Mathlib.Combinatorics.SimpleGraph.Regularity.Uniform
+
 import Mathlib.Tactic.Linarith
 
 /-!
@@ -17,6 +20,8 @@ In this file, we prove the triangle counting lemma.
 
 [Yaël Dillies, Bhavik Mehta, *Formalising Szemerédi’s Regularity Lemma in Lean*][srl_itp]
 -/
+
+public section
 
 -- TODO: This instance is bad because it creates data out of a Prop
 attribute [-instance] decidableEq_of_subsingleton
@@ -124,7 +129,7 @@ lemma triangle_counting'
     rw [Nat.cast_add]
     gcongr
   rintro a _ b _ t
-  rw [Function.onFun, disjoint_left]
+  rw [Function.onFun, Finset.disjoint_left]
   simp only [Prod.forall, mem_image, not_exists, Prod.mk_inj,
     exists_imp, and_imp, not_and]
   aesop
@@ -133,11 +138,11 @@ variable [DecidableEq α]
 
 private lemma triple_eq_triple_of_mem (hst : Disjoint s t) (hsu : Disjoint s u) (htu : Disjoint t u)
     {x₁ x₂ y₁ y₂ z₁ z₂ : α} (h : ({x₁, y₁, z₁} : Finset α) = {x₂, y₂, z₂})
-    (hx₁ : x₁ ∈ s) (hx₂ : x₂ ∈ s) (hy₁ : y₁ ∈ t) (hy₂ : y₂ ∈ t) (hz₁ : z₁ ∈ u) (hz₂ : z₂ ∈ u) :
+    (hx₁ : x₁ ∈ s) (hx₂ : x₂ ∈ s) (hy₁ : y₁ ∈ t) (hz₂ : z₂ ∈ u) :
     (x₁, y₁, z₁) = (x₂, y₂, z₂) := by
   simp only [Finset.Subset.antisymm_iff, subset_iff, mem_insert, mem_singleton, forall_eq_or_imp,
     forall_eq] at h
-  grind [disjoint_left]
+  grind [Finset.disjoint_left]
 
 variable [Fintype α]
 

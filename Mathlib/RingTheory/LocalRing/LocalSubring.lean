@@ -3,18 +3,22 @@ Copyright (c) 2024 Andrew Yang, Yaël Dillies, Javier López-Contreras. All righ
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Yaël Dillies, Javier López-Contreras
 -/
-import Mathlib.Tactic.FieldSimp
-import Mathlib.RingTheory.LocalRing.RingHom.Basic
-import Mathlib.RingTheory.Localization.AtPrime.Basic
+module
 
+public import Mathlib.RingTheory.LocalRing.RingHom.Basic
+public import Mathlib.RingTheory.Localization.AtPrime.Basic
+public import Mathlib.Tactic.FieldSimp
 
 /-!
 # Local subrings of fields
 
-# Main result
+## Main results
+
 - `LocalSubring` : The class of local subrings of a commutative ring.
 - `LocalSubring.ofPrime`: The localization of a subring as a `LocalSubring`.
 -/
+
+@[expose] public section
 
 open IsLocalRing Set
 
@@ -46,17 +50,17 @@ lemma toSubring_injective : Function.Injective (toSubring (R := R)) := by
 /-- Copy of a local subring with a new `carrier` equal to the old one.
 Useful to fix definitional equalities. -/
 protected def copy (S : LocalSubring R) (s : Set R) (hs : s = ↑S.toSubring) : LocalSubring R :=
-  LocalSubring.mk (S.toSubring.copy s hs) (isLocalRing := hs ▸ S.2)
+  LocalSubring.mk (S.toSubring.copy s hs) (isLocalRing := hs ▸ S.isLocalRing)
 
 /-- The image of a `LocalSubring` as a `LocalSubring`. -/
 @[simps! toSubring]
 def map [Nontrivial S] (f : R →+* S) (s : LocalSubring R) : LocalSubring S :=
-  mk (s.1.map f)
+  mk (s.toSubring.map f)
 
 /-- The range of a ring homomorphism from a local ring as a `LocalSubring`. -/
 @[simps! toSubring]
 def range [IsLocalRing R] [Nontrivial S] (f : R →+* S) : LocalSubring S :=
-  .copy (map f (mk ⊤)) f.range (by ext x; exact congr(x ∈ $(Set.image_univ.symm)))
+  .copy (map f (mk ⊤)) f.range (by ext x; congrm x ∈ $Set.image_univ.symm)
 
 /--
 The domination order on local subrings.
@@ -64,7 +68,7 @@ The domination order on local subrings.
 -/
 @[stacks 00I9]
 instance : PartialOrder (LocalSubring R) where
-  le A B := ∃ h : A.1 ≤ B.1, IsLocalHom (Subring.inclusion h)
+  le A B := ∃ h : A.toSubring ≤ B.toSubring, IsLocalHom (Subring.inclusion h)
   le_refl a := ⟨le_rfl, ⟨fun _ ↦ id⟩⟩
   le_trans A B C h₁ h₂ := ⟨h₁.1.trans h₂.1, @RingHom.isLocalHom_comp _ _ _ _ _ _ _ _ h₂.2 h₁.2⟩
   le_antisymm A B h₁ h₂ := toSubring_injective (le_antisymm h₁.1 h₂.1)
@@ -96,6 +100,7 @@ instance : Algebra A (ofPrime A P).toSubring := (Subring.inclusion (le_ofPrime A
 
 instance : IsScalarTower A (ofPrime A P).toSubring K := .of_algebraMap_eq (fun _ ↦ rfl)
 
+set_option backward.isDefEq.respectTransparency false in
 -- see https://github.com/leanprover-community/mathlib4/issues/29041
 set_option linter.unusedSimpArgs false in
 /-- The localization of a subring at a prime is indeed isomorphic to its abstract localization. -/
@@ -104,12 +109,12 @@ def ofPrimeEquiv : Localization.AtPrime P ≃ₐ[A] (ofPrime A P).toSubring := b
   refine AlgEquiv.ofInjective (IsLocalization.liftAlgHom (M := P.primeCompl)
     (S := Localization.AtPrime P) (f := Algebra.ofId A K) _) ?_
   intro x y e
-  obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective P.primeCompl x
-  obtain ⟨y, t, rfl⟩ := IsLocalization.mk'_surjective P.primeCompl y
-  have H (x : P.primeCompl) : x.1 ≠ 0 := by aesop
-  have : x.1 = y.1 * t.1.1⁻¹ * s.1.1 := by
+  obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq P.primeCompl x
+  obtain ⟨y, t, rfl⟩ := IsLocalization.exists_mk'_eq P.primeCompl y
+  have H : ∀ x : P.primeCompl, x.val ≠ 0 := by rintro ⟨x, hx⟩ rfl; aesop
+  have : x.val = y.val * t.val.val⁻¹ * s.val.val := by
     simpa [IsLocalization.lift_mk', Algebra.ofId_apply, H,
-      Algebra.algebraMap_ofSubring_apply, IsUnit.coe_liftRight] using congr($e * s.1.1)
+      Algebra.algebraMap_ofSubsemiring_apply, IsUnit.coe_liftRight] using congr($e * s.val.val)
   rw [IsLocalization.mk'_eq_iff_eq]
   congr 1
   ext

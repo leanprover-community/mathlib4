@@ -1,9 +1,14 @@
 /-
-Copyright (c) 2022. All rights reserved.
+Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Yuma Mizuno, Oleksandr Manzyuk
 -/
-import Mathlib.CategoryTheory.Monoidal.Category
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Category
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Monoidal composition `⊗≫` (composition up to associators)
@@ -27,8 +32,9 @@ are quite tedious, and we usually don't want to see them.
 The monoidal composition `⊗≫` is designed to solve such a problem. In this case, we can define the
 desired morphism as `𝟙 _ ⊗≫ V₁ ◁ R V₂ V₃ ▷ V₄ ▷ V₅ ⊗≫ 𝟙 _`, where the first and the second `𝟙 _`
 are completed as `𝟙 (V₁ ⊗ V₂ ⊗ V₃ ⊗ V₄ ⊗ V₅)` and `𝟙 (V₁ ⊗ V₃ ⊗ V₂ ⊗ V₄ ⊗ V₅)`, respectively.
-
 -/
+
+@[expose] public section
 
 universe v u
 

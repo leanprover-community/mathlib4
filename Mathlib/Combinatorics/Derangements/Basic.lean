@@ -3,10 +3,11 @@ Copyright (c) 2021 Henry Swanson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henry Swanson
 -/
-import Mathlib.Dynamics.FixedPoints.Basic
-import Mathlib.GroupTheory.Perm.Option
-import Mathlib.Logic.Equiv.Defs
-import Mathlib.Logic.Equiv.Option
+module
+
+public import Mathlib.Dynamics.FixedPoints.Defs
+public import Mathlib.GroupTheory.Perm.Option
+
 import Mathlib.Tactic.ApplyFun
 
 /-!
@@ -16,7 +17,7 @@ In this file we define `derangements α`, the set of derangements on a type `α`
 
 We also define some equivalences involving various subtypes of `Perm α` and `derangements α`:
 * `derangementsOptionEquivSigmaAtMostOneFixedPoint`: An equivalence between
-  `derangements (Option α)` and the sigma-type `Σ a : α, {f : Perm α // fixed_points f ⊆ a}`.
+  `derangements (Option α)` and the sigma-type `Σ a : α, {f : Perm α // fixedPoints f ⊆ a}`.
 * `derangementsRecursionEquiv`: An equivalence between `derangements (Option α)` and the
   sigma-type `Σ a : α, (derangements (({a}ᶜ : Set α) : Type*) ⊕ derangements α)` which is later
   used to inductively count the number of derangements.
@@ -24,6 +25,8 @@ We also define some equivalences involving various subtypes of `Perm α` and `de
 In order to prove the above, we also prove some results about the effect of `Equiv.removeNone`
 on derangements: `RemoveNone.fiber_none` and `RemoveNone.fiber_some`.
 -/
+
+@[expose] public section
 
 
 open Equiv Function
@@ -35,8 +38,8 @@ def derangements (α : Type*) : Set (Perm α) :=
 variable {α β : Type*}
 
 theorem mem_derangements_iff_fixedPoints_eq_empty {f : Perm α} :
-    f ∈ derangements α ↔ fixedPoints f = ∅ :=
-  Set.eq_empty_iff_forall_notMem.symm
+    f ∈ derangements α ↔ fixedPoints f = ∅ := by
+  simp [derangements, Set.eq_empty_iff_forall_notMem, IsFixedPt]
 
 /-- If `α` is equivalent to `β`, then `derangements α` is equivalent to `derangements β`. -/
 def Equiv.derangementsCongr (e : α ≃ β) : derangements α ≃ derangements β :=
@@ -116,6 +119,7 @@ theorem RemoveNone.mem_fiber (a : Option α) (f : Perm α) :
       ∃ F : Perm (Option α), F ∈ derangements (Option α) ∧ F none = a ∧ removeNone F = f := by
   simp [RemoveNone.fiber, derangements]
 
+@[simp]
 theorem RemoveNone.fiber_none : RemoveNone.fiber (@none α) = ∅ := by
   rw [Set.eq_empty_iff_forall_notMem]
   intro f hyp
@@ -167,15 +171,12 @@ variable [DecidableEq α]
 of "permutations with `a` the only possible fixed point". -/
 def derangementsOptionEquivSigmaAtMostOneFixedPoint :
     derangements (Option α) ≃ Σ a : α, { f : Perm α | fixedPoints f ⊆ {a} } := by
-  have fiber_none_is_false : Equiv.RemoveNone.fiber (@none α) → False := by
-    rw [Equiv.RemoveNone.fiber_none]
-    exact IsEmpty.false
   calc
     derangements (Option α) ≃ Equiv.Perm.decomposeOption '' derangements (Option α) :=
       Equiv.image _ _
     _ ≃ Σ a : Option α, ↥(Equiv.RemoveNone.fiber a) := setProdEquivSigma _
     _ ≃ Σ a : α, ↥(Equiv.RemoveNone.fiber (some a)) :=
-      sigmaOptionEquivOfSome _ fiber_none_is_false
+      sigmaOptionEquivOfSome _ <| by simp
     _ ≃ Σ a : α, { f : Perm α | fixedPoints f ⊆ {a} } := by
       simp_rw [Equiv.RemoveNone.fiber_some]
       rfl

@@ -3,11 +3,17 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+module
 
-import Mathlib.Data.Set.Image
-import Mathlib.Order.TypeTags
+public import Mathlib.Data.Set.Image
+public import Mathlib.Order.TypeTags
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-! # `Set.range` on `WithBot` and `WithTop` -/
+
+public section
 
 open Set
 

@@ -3,7 +3,12 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomologicalComplex
+module
+
+public import Mathlib.Algebra.Homology.HomologicalComplex
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Bicomplexes
@@ -18,13 +23,14 @@ for each `i₁ : I₁`, `K.X i₁` is a column of `K`.
 In this file, we obtain the equivalence of categories
 `HomologicalComplex₂.flipEquivalence : HomologicalComplex₂ C c₁ c₂ ≌ HomologicalComplex₂ C c₂ c₁`
 which is obtained by exchanging the horizontal and vertical directions.
-
 -/
+
+@[expose] public section
 
 
 open CategoryTheory Limits
 
-variable (C : Type*) [Category C] [HasZeroMorphisms C]
+variable (C : Type*) [Category* C] [HasZeroMorphisms C]
   {I₁ I₂ : Type*} (c₁ : ComplexShape I₁) (c₂ : ComplexShape I₂)
 
 /-- Given a category `C` and two complex shapes `c₁` and `c₂` on types `I₁` and `I₂`,
@@ -41,6 +47,7 @@ open HomologicalComplex
 variable {C c₁ c₂}
 
 /-- The graded object indexed by `I₁ × I₂` induced by a bicomplex. -/
+@[implicit_reducible]
 def toGradedObject (K : HomologicalComplex₂ C c₁ c₂) :
     GradedObject (I₁ × I₂) C :=
   fun ⟨i₁, i₂⟩ => (K.X i₁).X i₂
@@ -62,9 +69,7 @@ def toGradedObjectFunctor : HomologicalComplex₂ C c₁ c₂ ⥤ GradedObject (
   map φ := toGradedObjectMap φ
 
 instance : (toGradedObjectFunctor C c₁ c₂).Faithful where
-  map_injective {_ _ φ₁ φ₂} h := by
-    ext i₁ i₂
-    exact congr_fun h ⟨i₁, i₂⟩
+  map_injective {_ _ φ₁ φ₂} h := by ext i₁ i₂; congrm $h ⟨i₁, i₂⟩
 
 section OfGradedObject
 
@@ -81,7 +86,7 @@ variable (X : GradedObject (I₁ × I₂) C)
 
 /-- Constructor for bicomplexes taking as inputs a graded object, horizontal differentials
 and vertical differentials satisfying suitable relations. -/
-@[simps]
+@[simps, implicit_reducible]
 def ofGradedObject :
     HomologicalComplex₂ C c₁ c₂ where
   X i₁ :=
@@ -106,8 +111,8 @@ end OfGradedObject
 
 /-- Constructor for a morphism `K ⟶ L` in the category `HomologicalComplex₂ C c₁ c₂` which
 takes as inputs a morphism `f : K.toGradedObject ⟶ L.toGradedObject` and
-the compatibilites with both horizontal and vertical differentials. -/
-@[simps!]
+the compatibilities with both horizontal and vertical differentials. -/
+@[simps!, implicit_reducible]
 def homMk {K L : HomologicalComplex₂ C c₁ c₂}
     (f : K.toGradedObject ⟶ L.toGradedObject)
     (comm₁ : ∀ i₁ i₁' i₂, c₁.Rel i₁ i₁' →
@@ -144,7 +149,7 @@ lemma comm_f {K L : HomologicalComplex₂ C c₁ c₂} (f : K ⟶ L) (i₁ i₁'
 /-- Flip a complex of complexes over the diagonal,
 exchanging the horizontal and vertical directions.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def flip (K : HomologicalComplex₂ C c₁ c₂) : HomologicalComplex₂ C c₂ c₁ where
   X i :=
     { X := fun j => (K.X j).X i
@@ -161,7 +166,7 @@ lemma flip_flip (K : HomologicalComplex₂ C c₁ c₂) : K.flip.flip = K := rfl
 variable (C c₁ c₂)
 
 /-- Flipping a complex of complexes over the diagonal, as a functor. -/
-@[simps]
+@[simps, implicit_reducible]
 def flipFunctor :
     HomologicalComplex₂ C c₁ c₂ ⥤ HomologicalComplex₂ C c₂ c₁ where
   obj K := K.flip
@@ -188,7 +193,7 @@ def flipEquivalenceCounitIso :
     (by simp)) (by cat_disch)) (by cat_disch)
 
 /-- Flipping a complex of complexes over the diagonal, as an equivalence of categories. -/
-@[simps]
+@[simps, implicit_reducible]
 def flipEquivalence :
     HomologicalComplex₂ C c₁ c₂ ≌ HomologicalComplex₂ C c₂ c₁ where
   functor := flipFunctor C c₁ c₂

@@ -3,7 +3,9 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Data.Nat.Choose.Factorization
+module
+
+public import Mathlib.Data.Nat.Choose.Factorization
 
 /-!
 # Natural number multiplicity
@@ -43,6 +45,8 @@ Derive results from the corresponding ones `Mathlib.Data.Nat.Factorization.Multi
 Legendre, p-adic
 -/
 
+public section
+
 open Finset
 
 namespace Nat
@@ -56,26 +60,21 @@ theorem emultiplicity_eq_card_pow_dvd {m n b : ℕ} (hm : m ≠ 1) (hn : 0 < n) 
   calc
     emultiplicity m n = #(Ico 1 <| multiplicity m n + 1) := by
       simp [fin.emultiplicity_eq_multiplicity]
-    _ = #{i ∈ Ico 1 b | m ^ i ∣ n} :=
-      congr_arg _ <|
-        congr_arg card <|
-          Finset.ext fun i => by
-            simp only [mem_Ico, Nat.lt_succ_iff,
-              fin.pow_dvd_iff_le_multiplicity, mem_filter,
-              and_assoc, and_congr_right_iff, iff_and_self]
-            intro hi h
-            rw [← fin.pow_dvd_iff_le_multiplicity] at h
-            rcases m with - | m
-            · rw [zero_pow, zero_dvd_iff] at h
-              exacts [(hn.ne' h).elim, one_le_iff_ne_zero.1 hi]
-            refine LE.le.trans_lt ?_ hb
-            exact le_log_of_pow_le (one_lt_iff_ne_zero_and_ne_one.2 ⟨m.succ_ne_zero, hm⟩)
-                (le_of_dvd hn h)
+    _ = #{i ∈ Ico 1 b | m ^ i ∣ n} := by
+      congrm card $(Finset.ext fun i => ?_)
+      simp only [mem_Ico, Nat.lt_succ_iff, ← fin.pow_dvd_iff_le_multiplicity, mem_filter, and_assoc,
+        and_congr_right_iff, iff_and_self]
+      intro hi h
+      rcases m with - | m
+      · rw [zero_pow, zero_dvd_iff] at h
+        exacts [(hn.ne' h).elim, one_le_iff_ne_zero.1 hi]
+      refine LE.le.trans_lt ?_ hb
+      exact le_log_of_pow_le (one_lt_iff_ne_zero_and_ne_one.2 ⟨m.succ_ne_zero, hm⟩) (le_of_dvd hn h)
 
 namespace Prime
 
 theorem emultiplicity_one {p : ℕ} (hp : p.Prime) : emultiplicity p 1 = 0 :=
-  emultiplicity_of_one_right hp.prime.not_unit
+  emultiplicity_of_one_right hp.prime.not_isUnit
 
 theorem emultiplicity_mul {p m n : ℕ} (hp : p.Prime) :
     emultiplicity p (m * n) = emultiplicity p m + emultiplicity p n :=
@@ -89,7 +88,7 @@ theorem emultiplicity_self {p : ℕ} (hp : p.Prime) : emultiplicity p p = 1 :=
   (Nat.finiteMultiplicity_iff.2 ⟨hp.ne_one, hp.pos⟩).emultiplicity_self
 
 theorem emultiplicity_pow_self {p n : ℕ} (hp : p.Prime) : emultiplicity p (p ^ n) = n :=
-  _root_.emultiplicity_pow_self hp.ne_zero hp.prime.not_unit n
+  _root_.emultiplicity_pow_self hp.ne_zero hp.prime.not_isUnit n
 
 /-- **Legendre's Theorem**
 
@@ -117,10 +116,11 @@ theorem sub_one_mul_multiplicity_factorial {n p : ℕ} (hp : p.Prime) :
     (p - 1) * multiplicity p n ! =
     n - (p.digits n).sum := by
   simp only [multiplicity_eq_of_emultiplicity_eq_some <|
-      emultiplicity_factorial hp <| lt_succ_of_lt <| lt.base (log p n),
+      emultiplicity_factorial hp <| lt_succ_of_lt <| Nat.lt_add_one (log p n),
     ← Finset.sum_Ico_add' _ 0 _ 1, Ico_zero_eq_range, ←
     sub_one_mul_sum_log_div_pow_eq_sub_sum_digits]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The multiplicity of `p` in `(p * (n + 1))!` is one more than the sum
   of the multiplicities of `p` in `(p * n)!` and `n + 1`. -/
 theorem emultiplicity_factorial_mul_succ {n p : ℕ} (hp : p.Prime) :
@@ -129,7 +129,7 @@ theorem emultiplicity_factorial_mul_succ {n p : ℕ} (hp : p.Prime) :
   have h0 : 2 ≤ p := hp.two_le
   have h1 : 1 ≤ p * n + 1 := Nat.le_add_left _ _
   have h2 : p * n + 1 ≤ p * (n + 1) := by linarith
-  have h3 : p * n + 1 ≤ p * (n + 1) + 1 := by omega
+  have h3 : p * n + 1 ≤ p * (n + 1) + 1 := by lia
   have hm : emultiplicity p (p * n)! ≠ ⊤ := by
     rw [Ne, emultiplicity_eq_top, Classical.not_not, Nat.finiteMultiplicity_iff]
     exact ⟨hp.ne_one, factorial_pos _⟩
@@ -156,23 +156,22 @@ theorem emultiplicity_factorial_mul {n p : ℕ} (hp : p.Prime) :
     congr 1
     rw [add_comm, add_assoc]
 
-/- The multiplicity of a prime `p` in `p ^ n` is the sum of `p ^ i`, where `i` ranges between `0`
-  and `n - 1`. -/
+/-- The multiplicity of a prime `p` in `p ^ n` is the sum of `p ^ i`, where `i` ranges between `0`
+and `n - 1`. -/
 theorem multiplicity_factorial_pow {n p : ℕ} (hp : p.Prime) :
     multiplicity p (p ^ n).factorial = ∑ i ∈ Finset.range n, p ^ i := by
-  rw [← ENat.coe_inj, ← (Nat.finiteMultiplicity_iff.2
+  rw [← ENat.natCast_inj, ← (Nat.finiteMultiplicity_iff.2
       ⟨hp.ne_one, (p ^ n).factorial_pos⟩).emultiplicity_eq_multiplicity]
   induction n with
   | zero => simp [hp.emultiplicity_one]
   | succ n h =>
-    rw [pow_succ', hp.emultiplicity_factorial_mul, h, Finset.sum_range_succ, ENat.coe_add]
+    rw [pow_succ', hp.emultiplicity_factorial_mul, h, Finset.sum_range_succ, ENat.natCast_add]
 
 /-- A prime power divides `n!` iff it is at most the sum of the quotients `n / p ^ i`.
   This sum is expressed over the set `Ico 1 b` where `b` is any bound greater than `log p n` -/
 theorem pow_dvd_factorial_iff {p : ℕ} {n r b : ℕ} (hp : p.Prime) (hbn : log p n < b) :
     p ^ r ∣ n ! ↔ r ≤ ∑ i ∈ Ico 1 b, n / p ^ i := by
-  rw [← WithTop.coe_le_coe, ENat.some_eq_coe, ← hp.emultiplicity_factorial hbn,
-    pow_dvd_iff_le_emultiplicity]
+  rw [← ENat.natCast_le_natCast, ← hp.emultiplicity_factorial hbn, pow_dvd_iff_le_emultiplicity]
 
 theorem emultiplicity_factorial_le_div_pred {p : ℕ} (hp : p.Prime) (n : ℕ) :
     emultiplicity p n ! ≤ (n / (p - 1) : ℕ) := by
@@ -217,7 +216,7 @@ theorem emultiplicity_le_emultiplicity_choose_add {p : ℕ} (hp : p.Prime) :
   | n + 1, k + 1 => by
     rw [← hp.emultiplicity_mul]
     refine emultiplicity_le_emultiplicity_of_dvd_right ?_
-    rw [← succ_mul_choose_eq]
+    rw [← add_one_mul_choose_eq]
     exact dvd_mul_right _ _
 
 variable {p n k : ℕ}
@@ -273,7 +272,7 @@ theorem emultiplicity_two_factorial_lt : ∀ {n : ℕ} (_ : n ≠ 0), emultiplic
     by_cases hn : n = 0
     · subst hn
       simp only [ne_eq, bit_eq_zero_iff, true_and, Bool.not_eq_false] at h
-      simp only [bit, h, cond_true, mul_zero, zero_add, factorial_one]
+      simp only [bit, h, Bool.cond_true, mul_zero, zero_add, factorial_one]
       rw [Prime.emultiplicity_one]
       · exact zero_lt_one
       · decide

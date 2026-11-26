@@ -3,8 +3,12 @@ Copyright (c) 2022 Michail Karatarakis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michail Karatarakis
 -/
-import Mathlib.RingTheory.LocalRing.ResidueField.Basic
-import Mathlib.RingTheory.Valuation.ValuationSubring
+module
+
+public import Mathlib.RingTheory.Valuation.ValuationSubring
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Ramification groups
@@ -13,6 +17,8 @@ The decomposition subgroup and inertia subgroups.
 
 TODO: Define higher ramification groups in lower numbering
 -/
+
+@[expose] public section
 
 
 namespace ValuationSubring

@@ -3,16 +3,22 @@ Copyright (c) 2024 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Products
+module
+
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # (Co)products in functor categories
 
 Given `f : α → D ⥤ C`, we prove the isomorphisms
 `(∏ᶜ f).obj d ≅ ∏ᶜ (fun s => (f s).obj d)` and `(∐ f).obj d ≅ ∐ (fun s => (f s).obj d)`.
-
 -/
+
+@[expose] public section
 
 universe w v v₁ v₂ u u₁ u₂
 
@@ -22,6 +28,8 @@ variable {C : Type u} [Category.{v} C] {D : Type u₁} [Category.{v₁} D]
   {α : Type w}
 
 section Product
+
+instance [HasProducts.{w} C] : HasProducts.{w} (D ⥤ C) where
 
 variable [HasLimitsOfShape (Discrete α) C]
 
@@ -43,6 +51,8 @@ theorem piObjIso_inv_comp_π (f : α → D ⥤ C) (d : D) (s : α) :
 end Product
 
 section Coproduct
+
+instance [HasCoproducts.{w} C] : HasCoproducts.{w} (D ⥤ C) where
 
 variable [HasColimitsOfShape (Discrete α) C]
 

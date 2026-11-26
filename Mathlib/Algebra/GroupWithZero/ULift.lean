@@ -3,8 +3,13 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Group.ULift
-import Mathlib.Algebra.GroupWithZero.InjSurj
+module
+
+public import Mathlib.Algebra.Group.ULift
+public import Mathlib.Algebra.GroupWithZero.InjSurj
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # `ULift` instances for groups and monoids with zero
@@ -13,6 +18,8 @@ This file defines instances for group and monoid with zero and related structure
 
 (Recall `ULift α` is just a "copy" of a type `α` in a higher universe.)
 -/
+
+public section
 
 assert_not_exists Ring
 

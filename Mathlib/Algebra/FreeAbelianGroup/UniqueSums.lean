@@ -3,14 +3,21 @@ Copyright (c) 2025 Yaël Dillies, Paul Lezeau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Paul Lezeau
 -/
-import Mathlib.Algebra.FreeAbelianGroup.Finsupp
-import Mathlib.Algebra.Group.UniqueProds.Basic
+module
+
+public import Mathlib.Algebra.FreeAbelianGroup.Finsupp
+public import Mathlib.Algebra.Group.UniqueProds.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Free abelian groups have unique sums
 -/
 
+public section
+
 assert_not_exists Cardinal StarModule
 
-instance {σ : Type*} : TwoUniqueSums (FreeAbelianGroup σ) :=
-  (FreeAbelianGroup.equivFinsupp σ).twoUniqueSums_iff.mpr inferInstance
+instance {σ : Type*} : TwoUniqueSums (FreeAddCommGroup σ) :=
+  (FreeAddCommGroup.equivFinsupp σ).twoUniqueSums_iff.mpr inferInstance

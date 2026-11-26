@@ -3,11 +3,13 @@ Copyright (c) 2025 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+module
+
+public import Mathlib.Analysis.CStarAlgebra.SpecialFunctions.PosPart
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Positive
 
 import Mathlib.Algebra.Order.Module.PositiveLinearMap
-import Mathlib.Analysis.CStarAlgebra.Classes
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
-import Mathlib.Analysis.CStarAlgebra.SpecialFunctions.PosPart
 
 /-! # Positive linear maps in C⋆-algebras
 
@@ -24,51 +26,37 @@ This file develops the API for positive linear maps over C⋆-algebras.
   https://math.stackexchange.com/questions/426487/why-is-every-positive-linear-map-between-c-algebras-bounded
 -/
 
+public section
+
 open scoped NNReal
 
-variable {A₁ A₂ B₁ B₂ : Type*}
-
-section CFC
-
-variable [NonUnitalRing A₁] [Module ℂ A₁] [SMulCommClass ℝ A₁ A₁] [IsScalarTower ℝ A₁ A₁]
-  [StarRing A₁] [TopologicalSpace A₁] [NonUnitalContinuousFunctionalCalculus ℝ A₁ IsSelfAdjoint]
-  [PartialOrder A₁] [StarOrderedRing A₁]
-
-variable [NonUnitalRing A₂] [Module ℂ A₂] [StarRing A₂] [PartialOrder A₂] [StarOrderedRing A₂]
-
-@[aesop safe apply (rule_sets := [CStarAlgebra])]
-lemma map_isSelfAdjoint (f : A₁ →ₚ[ℂ] A₂) (a : A₁) (ha : IsSelfAdjoint a) :
-    IsSelfAdjoint (f a) := by
-  rw [← CFC.posPart_sub_negPart a ha]
-  cfc_tac
-
-end CFC
-
+variable {A₁ A₂ A₃ B₁ B₂ : Type*}
 
 section CStarAlgebra
 
 namespace PositiveLinearMap
 
-variable [NonUnitalCStarAlgebra A₁] [NonUnitalCStarAlgebra A₂] [PartialOrder A₁]
-  [StarOrderedRing A₁] [PartialOrder A₂] [StarOrderedRing A₂]
+variable [NonUnitalCStarAlgebra A₁] [NonUnitalCStarAlgebra A₂] [NonUnitalCStarAlgebra A₃]
+  [PartialOrder A₁] [StarOrderedRing A₁] [PartialOrder A₂] [StarOrderedRing A₂]
+  [PartialOrder A₃] [StarOrderedRing A₃]
   [CStarAlgebra B₁] [CStarAlgebra B₂] [PartialOrder B₁] [PartialOrder B₂]
   [StarOrderedRing B₁]
 
 lemma apply_le_of_isSelfAdjoint (f : B₁ →ₚ[ℂ] B₂) (x : B₁) (hx : IsSelfAdjoint x) :
     f x ≤ f (algebraMap ℝ B₁ ‖x‖) := by
   gcongr
-  exact IsSelfAdjoint.le_algebraMap_norm_self hx
+  exact IsSelfAdjoint.le_algebraMap_norm_self _
 
 lemma norm_apply_le_of_nonneg [StarOrderedRing B₂] (f : B₁ →ₚ[ℂ] B₂) (x : B₁) (hx : 0 ≤ x) :
     ‖f x‖ ≤ ‖f 1‖ * ‖x‖ := by
   have h : ‖‖x‖‖ = ‖x‖ := by simp
   rw [mul_comm, ← h, ← norm_smul ‖x‖ (f 1)]
   clear h
-  refine CStarAlgebra.norm_le_norm_of_nonneg_of_le (f.map_nonneg hx) ?_
+  refine CStarAlgebra.norm_le_norm_of_le_of_nonneg ?_
   rw [← Complex.coe_smul, ← LinearMapClass.map_smul f]
   gcongr
   rw [← Algebra.algebraMap_eq_smul_one]
-  exact IsSelfAdjoint.le_algebraMap_norm_self <| .of_nonneg hx
+  exact IsSelfAdjoint.le_algebraMap_norm_self _
 
 open Complex Filter in
 /--
@@ -87,7 +75,6 @@ lemma exists_norm_apply_le (f : A₁ →ₚ[ℂ] A₂) : ∃ C : ℝ≥0, ∀ a,
     simp only [norm_smul, norm_pow, norm_I, one_pow, one_mul]
     apply Finset.sum_le_sum (g := fun _ ↦ C * ‖x‖) (fun i _ ↦ ?_) |>.trans <| by simp [mul_assoc]
     apply hmain _ (hy_nonneg i) |>.trans
-    simp only
     gcongr
     exact hy_norm i
   -- Let's proceed by contradiction
@@ -118,9 +105,9 @@ lemma exists_norm_apply_le (f : A₁ →ₚ[ℂ] A₂) : ∃ C : ℝ≥0, ∀ a,
   trans ‖f ((2 : ℝ) ^ (-n : ℤ) • x n)‖
   · have := hx n |>.le
     rw [pow_mul', sq] at this
-    simpa [norm_smul] using (le_inv_mul_iff₀' (show 0 < (2 : ℝ) ^ n by positivity)).mpr this
+    simpa [norm_smul] using (le_inv_mul_iff₀ (show 0 < (2 : ℝ) ^ n by positivity)).mpr this
   · have (m : ℕ) : 0 ≤ ((2 : ℝ) ^ (-(m : ℤ)) • x m) := smul_nonneg (by positivity) (hx_nonneg m)
-    refine CStarAlgebra.norm_le_norm_of_nonneg_of_le (f.map_nonneg (this n)) ?_
+    refine CStarAlgebra.norm_le_norm_of_le_of_nonneg ?_ (f.map_nonneg (this n))
     gcongr
     exact x_summable.le_tsum n fun m _ ↦ this m
 
@@ -128,19 +115,61 @@ instance {F : Type*} [FunLike F A₁ A₂] [LinearMapClass F ℂ A₁ A₂] [Ord
     ContinuousLinearMapClass F ℂ A₁ A₂ where
   map_continuous f := by
     have hbound : ∃ C : ℝ, ∀ a, ‖f a‖ ≤ C * ‖a‖ := by
-      obtain ⟨C, h⟩ := exists_norm_apply_le (f : A₁ →ₚ[ℂ] A₂)
+      obtain ⟨C, h⟩ := exists_norm_apply_le (.ofClass f)
       exact ⟨C, h⟩
     exact (LinearMap.mkContinuousOfExistsBound (f : A₁ →ₗ[ℂ] A₂) hbound).continuous
 
-instance {F : Type*} [FunLike F A₁ A₂] [LinearMapClass F ℂ A₁ A₂] [OrderHomClass F A₁ A₂] :
-    StarHomClass F A₁ A₂ where
-  map_star f a := by
-    obtain ⟨y, hy_nonneg, hy_norm, hy⟩ := CStarAlgebra.exists_sum_four_nonneg a
-    have hy' : ∀ x : Fin 4, star (y x) = y x := fun x => by
-      rw [IsSelfAdjoint.star_eq (hy_nonneg x).isSelfAdjoint]
-    have hy'' : ∀ x : Fin 4, star (f (y x)) = f (y x) := fun x => by
-      rw [IsSelfAdjoint.star_eq (map_nonneg f (hy_nonneg x)).isSelfAdjoint]
-    simp [hy, hy', hy'']
+/-- Lift a positive linear map between C⋆-algebras to a positive continuous linear map. -/
+@[expose]
+def toPositiveContinuousLinearMap (f : A₁ →ₚ[ℂ] A₂) : A₁ →P[ℂ] A₂ where
+  toPositiveLinearMap := f
+  cont := by dsimp; fun_prop
+
+variable {f f₁ f₂ : A₁ →ₚ[ℂ] A₂} {g : A₂ →ₚ[ℂ] A₃}
+
+@[simp] theorem toPositiveContinuousLinearMap_apply (x : A₁) :
+    f.toPositiveContinuousLinearMap x = f x := rfl
+
+@[simp] theorem toPositiveContinuousLinearMap_zero :
+    (0 : A₁ →ₚ[ℂ] A₂).toPositiveContinuousLinearMap = 0 := rfl
+
+@[simp] lemma toPositiveContinuousLinearMap_id :
+    (PositiveLinearMap.id ℂ A₁).toPositiveContinuousLinearMap = .id ℂ A₁ := rfl
+
+@[simp] lemma toPositiveContinuousLinearMap_comp :
+    (g.comp f).toPositiveContinuousLinearMap =
+      g.toPositiveContinuousLinearMap.comp f.toPositiveContinuousLinearMap :=
+  rfl
+
+@[simp] lemma toPositiveContinuousLinearMap_add :
+    (f₁ + f₂).toPositiveContinuousLinearMap =
+      f₁.toPositiveContinuousLinearMap + f₂.toPositiveContinuousLinearMap :=
+  rfl
+
+/-- Lift a positive linear map between C⋆-algebras to a continuous linear map. -/
+abbrev toContinuousLinearMap (f : A₁ →ₚ[ℂ] A₂) : A₁ →L[ℂ] A₂ :=
+  f.toPositiveContinuousLinearMap.toContinuousLinearMap
+
+@[simp]
+theorem toContinuousLinearMap_apply (x : A₁) : f.toContinuousLinearMap x = f x := rfl
+
+@[simp] theorem toContinuousLinearMap_zero : (0 : A₁ →ₚ[ℂ] A₂).toContinuousLinearMap = 0 := rfl
+
+@[simp] theorem toLinearMap_toContinuousLinearMap :
+    f.toContinuousLinearMap.toLinearMap = f.toLinearMap := rfl
+
+@[simp] lemma toContinuousLinearMap_id :
+    (PositiveLinearMap.id ℂ A₁).toContinuousLinearMap = .id ℂ A₁ := rfl
+
+@[simp] lemma toContinuousLinearMap_comp :
+    (g.comp f).toContinuousLinearMap =
+      g.toContinuousLinearMap.comp f.toContinuousLinearMap :=
+  rfl
+
+@[simp] lemma toContinuousLinearMap_add :
+    (f₁ + f₂).toContinuousLinearMap =
+      f₁.toContinuousLinearMap + f₂.toContinuousLinearMap :=
+  rfl
 
 end PositiveLinearMap
 

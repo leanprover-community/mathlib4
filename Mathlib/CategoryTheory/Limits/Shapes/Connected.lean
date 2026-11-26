@@ -3,16 +3,21 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.IsConnected
-import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
+module
+
+public import Mathlib.CategoryTheory.IsConnected
+public import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
-
 # Connected shapes
 
 In this file we prove that various shapes are connected.
-
 -/
+
+public section
 
 namespace CategoryTheory
 

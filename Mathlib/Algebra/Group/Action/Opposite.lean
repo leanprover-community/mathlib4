@@ -3,8 +3,10 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Algebra.Group.Opposite
+module
+
+public import Mathlib.Algebra.Group.Action.Defs
+public import Mathlib.Algebra.Group.Opposite
 
 /-!
 # Scalar actions on and by `Mᵐᵒᵖ`
@@ -13,7 +15,7 @@ This file defines the actions on the opposite type `SMul R Mᵐᵒᵖ`, and acti
 type, `SMul Rᵐᵒᵖ M`.
 
 Note that `MulOpposite.smul` is provided in an earlier file as it is needed to
-provide the `AddMonoid.nsmul` and `AddCommGroup.zsmul` fields.
+provide the `NSMul.nsmul` and `ZSMul.zsmul` fields.
 
 ## Notation
 
@@ -24,6 +26,8 @@ With `open scoped RightActions`, this provides:
 * `v +ᵥ> p` as an alias for `v +ᵥ p`
 * `p <+ᵥ v` as an alias for `AddOpposite.op v +ᵥ p`
 -/
+
+public section
 
 assert_not_exists MonoidWithZero Units FaithfulSMul MonoidHom
 
@@ -86,7 +90,7 @@ scoped notation3:74 r:75 " •> " m:74 => r • m
 In lemma names this is still called `op_smul`. -/
 scoped notation3:73 m:73 " <• " r:74 => MulOpposite.op r • m
 
-/-- With `open scoped RightActions`, an alternative symbol for left actions, `r • m`.
+/-- With `open scoped RightActions`, an alternative symbol for left actions, `r +ᵥ m`.
 
 In lemma names this is still called `vadd`. -/
 scoped notation3:74 r:75 " +ᵥ> " m:74 => r +ᵥ m
@@ -155,7 +159,6 @@ instance CommSemigroup.isCentralScalar [CommSemigroup α] : IsCentralScalar α �
 /-- Like `Monoid.toMulAction`, but multiplies on the right. -/
 @[to_additive /-- Like `AddMonoid.toAddAction`, but adds on the right. -/]
 instance Monoid.toOppositeMulAction [Monoid α] : MulAction αᵐᵒᵖ α where
-  smul := (· • ·)
   one_smul := mul_one
   mul_smul _ _ _ := (mul_assoc _ _ _).symm
 

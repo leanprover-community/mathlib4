@@ -3,12 +3,13 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
+module
 
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Field.Subfield.Defs
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-import Mathlib.Algebra.Ring.Subring.Basic
-import Mathlib.RingTheory.SimpleRing.Basic
+public import Mathlib.Algebra.Field.Subfield.Defs
+public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+public import Mathlib.RingTheory.SimpleRing.Basic
+
+import Mathlib.Order.CompleteLattice.Finset
 
 /-!
 # Subfields
@@ -57,8 +58,11 @@ Lattice inclusion (e.g. `≤` and `⊓`) is used rather than set notation (`⊆`
 `∈` is defined as membership of a subfield's underlying set.
 
 ## Tags
+
 subfield, subfields
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -91,7 +95,7 @@ protected theorem sum_mem {ι : Type*} {t : Finset ι} {f : ι → K} (h : ∀ c
 
 end DerivedFromSubfieldClass
 
-/-! # top -/
+/-! ### top -/
 
 
 /-- The subfield of `K` containing all elements of `K`. -/
@@ -105,7 +109,7 @@ instance : Inhabited (Subfield K) :=
 theorem mem_top (x : K) : x ∈ (⊤ : Subfield K) :=
   Set.mem_univ x
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_top : ((⊤ : Subfield K) : Set K) = Set.univ :=
   rfl
 
@@ -113,7 +117,7 @@ theorem coe_top : ((⊤ : Subfield K) : Set K) = Set.univ :=
 def topEquiv : (⊤ : Subfield K) ≃+* K :=
   Subsemiring.topEquiv
 
-/-! # comap -/
+/-! ### comap -/
 
 
 variable (f : K →+* L)
@@ -138,7 +142,7 @@ theorem comap_comap (s : Subfield M) (g : L →+* M) (f : K →+* L) :
     (s.comap g).comap f = s.comap (g.comp f) :=
   rfl
 
-/-! # map -/
+/-! ### map -/
 
 
 /-- The image of a subfield along a ring homomorphism is a subfield. -/
@@ -148,7 +152,7 @@ def map (s : Subfield K) : Subfield L :=
       rintro _ ⟨x, hx, rfl⟩
       exact ⟨x⁻¹, s.inv_mem hx, map_inv₀ f x⟩ }
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_map : (s.map f : Set L) = f '' s :=
   rfl
 
@@ -156,6 +160,13 @@ theorem coe_map : (s.map f : Set L) = f '' s :=
 theorem mem_map {f : K →+* L} {s : Subfield K} {y : L} : y ∈ s.map f ↔ ∃ x ∈ s, f x = y := by
   unfold map
   simp only [mem_mk, Subring.mem_map, mem_toSubring]
+
+-- Higher priority to apply before `mem_map`.
+@[simp 1100]
+theorem map_mem_map (f : K →+* L) {s : Subfield K} {x : K} : f x ∈ s.map f ↔ x ∈ s :=
+  calc
+    _ ↔ f x ∈ (s.map f : Set L) := Iff.rfl
+    _ ↔ _ := by simp [Function.Injective.mem_set_image (f := f) f.injective]
 
 theorem map_map (g : L →+* M) (f : K →+* L) : (s.map f).map g = s.map (g.comp f) :=
   SetLike.ext' <| Set.image_image _ _ _
@@ -167,20 +178,25 @@ theorem map_le_iff_le_comap {f : K →+* L} {s : Subfield K} {t : Subfield L} :
 theorem gc_map_comap (f : K →+* L) : GaloisConnection (map f) (comap f) := fun _ _ =>
   map_le_iff_le_comap
 
+/-- `map f` and `comap f` form a `GaloisCoinsertion`, since a ring homomorphism out of a field is
+injective. -/
+def gciMapComap (f : K →+* L) : GaloisCoinsertion (map f) (comap f) :=
+  (gc_map_comap f).toGaloisCoinsertion fun S x ↦ by simp
+
 end Subfield
 
 namespace RingHom
 
 variable (g : L →+* M) (f : K →+* L)
 
-/-! # range -/
+/-! ### range -/
 
 
 /-- The range of a ring homomorphism, as a subfield of the target. See Note [range copy pattern]. -/
 def fieldRange : Subfield L :=
   ((⊤ : Subfield K).map f).copy (Set.range f) Set.image_univ.symm
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_fieldRange : (f.fieldRange : Set L) = Set.range f :=
   rfl
 
@@ -191,6 +207,10 @@ theorem mem_fieldRange {f : K →+* L} {y : L} : y ∈ f.fieldRange ↔ ∃ x, f
 theorem fieldRange_eq_map : f.fieldRange = Subfield.map f ⊤ := by
   ext
   simp
+
+/-- The image of `⊤` under a ring homomorphism is its field range. -/
+theorem _root_.Subfield.map_top : (⊤ : Subfield K).map f = f.fieldRange :=
+  (fieldRange_eq_map f).symm
 
 theorem map_fieldRange : f.fieldRange.map g = (g.comp f).fieldRange := by
   simpa only [fieldRange_eq_map] using (⊤ : Subfield K).map_map g f
@@ -212,7 +232,7 @@ end RingHom
 
 namespace Subfield
 
-/-! # inf -/
+/-! ### inf -/
 
 
 /-- The inf of two subfields is their intersection. -/
@@ -223,7 +243,7 @@ instance : Min (Subfield K) :=
         Subring.mem_inf.mpr
           ⟨s.inv_mem (Subring.mem_inf.mp hx).1, t.inv_mem (Subring.mem_inf.mp hx).2⟩ }⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_inf (p p' : Subfield K) : ((p ⊓ p' : Subfield K) : Set K) = p.carrier ∩ p'.carrier :=
   rfl
 
@@ -242,25 +262,25 @@ instance : InfSet (Subfield K) :=
 
 @[simp, norm_cast]
 theorem coe_sInf (S : Set (Subfield K)) : ((sInf S : Subfield K) : Set K) = ⋂ s ∈ S, ↑s :=
-  show ((sInf (Subfield.toSubring '' S) : Subring K) : Set K) = ⋂ s ∈ S, ↑s by
-    simp
+  show ((sInf (Subfield.toSubring '' S) : Subring K) : Set K) = ⋂ s ∈ S, ↑s by simp
 
-theorem mem_sInf {S : Set (Subfield K)} {x : K} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p :=
-  Subring.mem_sInf.trans
-    ⟨fun h p hp => h p.toSubring ⟨p, hp, rfl⟩, fun h _ ⟨p', hp', p_eq⟩ => p_eq ▸ h p' hp'⟩
+@[simp]
+theorem mem_sInf {S : Set (Subfield K)} {x : K} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p := by
+  simpa only [Set.mem_iInter] using! Set.ext_iff.1 (coe_sInf S) x
 
 @[simp, norm_cast]
 theorem coe_iInf {ι : Sort*} {S : ι → Subfield K} : (↑(⨅ i, S i) : Set K) = ⋂ i, S i := by
   simp only [iInf, coe_sInf, Set.biInter_range]
 
-theorem mem_iInf {ι : Sort*} {S : ι → Subfield K} {x : K} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
+@[simp]
+theorem mem_iInf {ι : Sort*} {S : ι → Subfield K} {x : K} : x ∈ ⨅ i, S i ↔ ∀ i, x ∈ S i := by
   simp only [iInf, mem_sInf, Set.forall_mem_range]
 
 @[simp]
 theorem sInf_toSubring (s : Set (Subfield K)) :
     (sInf s).toSubring = ⨅ t ∈ s, Subfield.toSubring t := by
   ext x
-  simp [mem_sInf, ← sInf_image, Subring.mem_sInf]
+  simp [mem_sInf]
 
 theorem isGLB_sInf (S : Set (Subfield K)) : IsGLB S (sInf S) := by
   have : ∀ {s t : Subfield K}, (s : Set K) ≤ t ↔ s ≤ t := by simp [SetLike.coe_subset_coe]
@@ -278,7 +298,7 @@ instance : CompleteLattice (Subfield K) :=
     inf_le_right := fun _ _ _ => And.right
     le_inf := fun _ _ _ h₁ h₂ _ hx => ⟨h₁ hx, h₂ hx⟩ }
 
-/-! # subfield closure of a subset -/
+/-! ### subfield closure of a subset -/
 
 /-- The `Subfield` generated by a set. -/
 def closure (s : Set K) : Subfield K := sInf {S | s ⊆ S}
@@ -290,7 +310,7 @@ theorem mem_closure {x : K} {s : Set K} : x ∈ closure s ↔ ∀ S : Subfield K
 @[simp, aesop safe 20 (rule_sets := [SetLike])]
 theorem subset_closure {s : Set K} : s ⊆ closure s := fun _ hx => mem_closure.2 fun _ hS => hS hx
 
-@[aesop 80% (rule_sets := [SetLike])]
+@[aesop 80% (rule_sets := [SetLike]), membership .]
 theorem mem_closure_of_mem {s : Set K} {x : K} (hx : x ∈ s) : x ∈ closure s := subset_closure hx
 
 theorem subring_closure_le (s : Set K) : Subring.closure s ≤ (closure s).toSubring :=
@@ -298,8 +318,6 @@ theorem subring_closure_le (s : Set K) : Subring.closure s ≤ (closure s).toSub
 
 theorem notMem_of_notMem_closure {s : Set K} {P : K} (hP : P ∉ closure s) : P ∉ s := fun h =>
   hP (subset_closure h)
-
-@[deprecated (since := "2025-05-23")] alias not_mem_of_not_mem_closure := notMem_of_notMem_closure
 
 /-- A subfield `t` includes `closure s` if and only if it includes `s`. -/
 @[simp]
@@ -320,14 +338,15 @@ theorem closure_eq_of_le {s : Set K} {t : Subfield K} (h₁ : s ⊆ t) (h₂ : t
 of `s`, and is preserved under addition, negation, and multiplication, then `p` holds for all
 elements of the closure of `s`. -/
 @[elab_as_elim]
-theorem closure_induction {s : Set K} {p : ∀ x ∈ closure s, Prop}
-    (mem : ∀ x hx, p x (subset_closure hx))
-    (one : p 1 (one_mem _)) (add : ∀ x y hx hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
-    (neg : ∀ x hx, p x hx → p (-x) (neg_mem hx)) (inv : ∀ x hx, p x hx → p x⁻¹ (inv_mem hx))
-    (mul : ∀ x y hx hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
-    {x} (h : x ∈ closure s) : p x h :=
+theorem closure_induction {s : Set K} {motive : ∀ x ∈ closure s, Prop}
+    (mem : ∀ x hx, motive x (subset_closure hx)) (one : motive 1 (one_mem _))
+    (add : ∀ x y hx hy, motive x hx → motive y hy → motive (x + y) (add_mem hx hy))
+    (neg : ∀ x hx, motive x hx → motive (-x) (neg_mem hx))
+    (inv : ∀ x hx, motive x hx → motive x⁻¹ (inv_mem hx))
+    (mul : ∀ x y hx hy, motive x hx → motive y hy → motive (x * y) (mul_mem hx hy))
+    {x} (h : x ∈ closure s) : motive x h :=
   letI : Subfield K :=
-    { carrier := {x | ∃ hx, p x hx}
+    { carrier := {x | ∃ hx, motive x hx}
       mul_mem' := by rintro _ _ ⟨_, hx⟩ ⟨_, hy⟩; exact ⟨_, mul _ _ _ _ hx hy⟩
       one_mem' := ⟨_, one⟩
       add_mem' := by rintro _ _ ⟨_, hx⟩ ⟨_, hy⟩; exact ⟨_, add _ _ _ _ hx hy⟩
@@ -397,6 +416,57 @@ theorem map_bot (f : K →+* L) : (⊥ : Subfield K).map f = ⊥ :=
 theorem comap_top (f : K →+* L) : (⊤ : Subfield L).comap f = ⊤ :=
   (gc_map_comap f).u_top
 
+theorem map_comap_eq (f : K →+* L) (s : Subfield L) : (s.comap f).map f = s ⊓ f.fieldRange :=
+  SetLike.coe_injective Set.image_preimage_eq_inter_range
+
+theorem map_comap_eq_self
+    {f : K →+* L} {s : Subfield L} (h : s ≤ f.fieldRange) : (s.comap f).map f = s := by
+  simpa only [inf_of_le_left h] using map_comap_eq f s
+
+theorem map_comap_eq_self_of_surjective
+    {f : K →+* L} (hf : Function.Surjective f) (s : Subfield L) : (s.comap f).map f = s :=
+  SetLike.coe_injective (Set.image_preimage_eq _ hf)
+
+section GaloisCoinsertion
+
+variable {ι : Sort*} (f : K →+* L)
+
+theorem comap_map (s : Subfield K) : (s.map f).comap f = s :=
+  (gciMapComap f).u_l_eq _
+
+theorem comap_surjective : Function.Surjective (comap f) :=
+  (gciMapComap f).u_surjective
+
+theorem map_injective : Function.Injective (map f) :=
+  (gciMapComap f).l_injective
+
+theorem comap_inf_map (S T : Subfield K) : (S.map f ⊓ T.map f).comap f = S ⊓ T :=
+  (gciMapComap f).u_inf_l _ _
+
+theorem comap_iInf_map (S : ι → Subfield K) : (⨅ i, (S i).map f).comap f = ⨅ i, S i :=
+  (gciMapComap f).u_iInf_l _
+
+theorem comap_sup_map (S T : Subfield K) : (S.map f ⊔ T.map f).comap f = S ⊔ T :=
+  (gciMapComap f).u_sup_l _ _
+
+theorem comap_iSup_map (S : ι → Subfield K) : (⨆ i, (S i).map f).comap f = ⨆ i, S i :=
+  (gciMapComap f).u_iSup_l _
+
+theorem map_le_map_iff {S T : Subfield K} : S.map f ≤ T.map f ↔ S ≤ T :=
+  (gciMapComap f).l_le_l_iff
+
+/-- `comap f` preserves the supremum of two subfields lying in the range of `f`. -/
+theorem comap_sup {S T : Subfield L} (hS : S ≤ f.fieldRange) (hT : T ≤ f.fieldRange) :
+    (S ⊔ T).comap f = S.comap f ⊔ T.comap f := by
+  rw [← map_comap_eq_self hS, ← map_comap_eq_self hT, comap_sup_map, comap_map, comap_map]
+
+/-- `comap f` preserves the supremum of a family of subfields lying in the range of `f`. -/
+theorem comap_iSup {S : ι → Subfield L} (hS : ∀ i, S i ≤ f.fieldRange) :
+    (⨆ i, S i).comap f = ⨆ i, (S i).comap f := by
+  simp [← comap_iSup_map f, map_comap_eq_self, hS]
+
+end GaloisCoinsertion
+
 /-- The underlying set of a non-empty directed sSup of subfields is just a union of the subfields.
   Note that this fails without the directedness assumption (the union of two subfields is
   typically not a subfield) -/
@@ -416,14 +486,38 @@ theorem coe_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subfield K} (h
 
 theorem mem_sSup_of_directedOn {S : Set (Subfield K)} (Sne : S.Nonempty) (hS : DirectedOn (· ≤ ·) S)
     {x : K} : x ∈ sSup S ↔ ∃ s ∈ S, x ∈ s := by
-  haveI : Nonempty S := Sne.to_subtype
+  have : Nonempty S := Sne.to_subtype
   simp only [sSup_eq_iSup', mem_iSup_of_directed hS.directed_val, Subtype.exists, exists_prop]
 
 theorem coe_sSup_of_directedOn {S : Set (Subfield K)} (Sne : S.Nonempty)
     (hS : DirectedOn (· ≤ ·) S) : (↑(sSup S) : Set K) = ⋃ s ∈ S, ↑s :=
   Set.ext fun x => by simp [mem_sSup_of_directedOn Sne hS]
 
+theorem coe_iSup_eq_iUnion_finset_coe_biSup {ι : Type*} (S : ι → Subfield K) :
+    ((⨆ i, S i : Subfield K) : Set K) = ⋃ s : Finset ι, (⨆ i ∈ s, S i : Subfield K) := by
+  rw [iSup_eq_iSup_finset, coe_iSup_of_directed <| Monotone.directed_le fun _ _ ↦ biSup_mono]
+
+theorem isMulCommutative_closure {s : Set K} (hs : s.Pairwise Commute) :
+    IsMulCommutative (closure s) :=
+  have : (closure s : Set K) ≤ s.centralizer.centralizer := fun _ hx ↦
+    closure_induction (fun _ h ↦ Set.subset_centralizer_centralizer h)
+      Set.one_mem_centralizer (fun _ _ _ _ ↦ Set.add_mem_centralizer)
+      (fun _ _ ↦ Set.neg_mem_centralizer) (fun _ _ ↦ Set.inv_mem_centralizer₀)
+      (fun _ _ _ _ ↦ Set.mul_mem_centralizer) hx
+  .of_setLike_mul_comm fun _ h₁ _ h₂ ↦
+    Set.centralizer_centralizer_comm_of_comm hs _ (this h₁) _ (this h₂)
+
+instance {S : Type*} [SetLike S K] [MulMemClass S K] (s : S) [IsMulCommutative s] :
+    IsMulCommutative (closure (s : Set K)) :=
+  isMulCommutative_closure fun _ hi _ hj _ ↦ setLike_mul_comm hi hj
+
 end Subfield
+
+variable (L) in
+/-- A field is finitely generated if it is the closure of a finite subset. -/
+@[mk_iff fg_iff]
+protected class Field.FG : Prop where
+  finitely_generated : ∃ S : Finset L, Subfield.closure (S : Set L) = ⊤
 
 namespace RingHom
 
@@ -465,6 +559,9 @@ def eqLocusField (f g : K →+* L) : Subfield K where
   inv_mem' _ := eq_on_inv₀ f g
   carrier := { x | f x = g x }
 
+@[simp]
+theorem mem_eqLocusField {f g : K →+* L} {x : K} : x ∈ f.eqLocusField g ↔ f x = g x := Iff.rfl
+
 /-- If two ring homomorphisms are equal on a set, then they are equal on its subfield closure. -/
 theorem eqOn_field_closure {f g : K →+* L} {s : Set K} (h : Set.EqOn f g s) :
     Set.EqOn f g (closure s) :=
@@ -497,7 +594,7 @@ open RingHom
 
 /-- The ring homomorphism associated to an inclusion of subfields. -/
 def inclusion {S T : Subfield K} (h : S ≤ T) : S →+* T :=
-  S.subtype.codRestrict _ fun x => h x.2
+  S.subtype.codRestrict _ fun x => h x.property
 
 @[simp]
 theorem fieldRange_subtype (s : Subfield K) : s.subtype.fieldRange = s :=
@@ -512,7 +609,7 @@ variable {s t : Subfield K}
 /-- Makes the identity isomorphism from a proof two subfields of a multiplicative
     monoid are equal. -/
 def subfieldCongr (h : s = t) : s ≃+* t :=
-  { Equiv.setCongr <| SetLike.ext'_iff.1 h with
+  { Set.equivOfEq <| SetLike.ext'_iff.1 h with
     map_mul' := fun _ _ => rfl
     map_add' := fun _ _ => rfl }
 
@@ -539,7 +636,10 @@ protected theorem prod_mem {ι : Type*} {t : Finset ι} {f : ι → K} (h : ∀ 
   prod_mem h
 
 instance toAlgebra : Algebra s K :=
-  RingHom.toAlgebra s.subtype
+  inferInstance
+
+theorem algebraMap_ofSubfield : algebraMap s K = s.subtype :=
+  rfl
 
 /-- The `Subfield` generated by a set in a field. -/
 private def commClosure (s : Set K) : Subfield K where
@@ -575,27 +675,30 @@ theorem mem_closure_iff {s : Set K} {x} :
 
 end Commutative
 
+section Subtype
+
+variable {s t : Subfield K}
+
+theorem comap_eq_top_iff {f : K →+* L} {t : Subfield L} :
+    t.comap f = ⊤ ↔ f.fieldRange ≤ t := by
+  rw [eq_top_iff, ← map_le_iff_le_comap, map_top]
+
+@[simp]
+theorem comap_subtype_eq_top : t.comap s.subtype = ⊤ ↔ s ≤ t := by
+  rw [comap_eq_top_iff, fieldRange_subtype]
+
+@[simp]
+theorem comap_subtype_self (s : Subfield K) : s.comap s.subtype = ⊤ :=
+  comap_subtype_eq_top.mpr le_rfl
+
+theorem map_comap_subtype (s t : Subfield K) : (t.comap s.subtype).map s.subtype = s ⊓ t := by
+  rw [map_comap_eq, fieldRange_subtype, inf_comm]
+
+end Subtype
+
 end Subfield
 
-namespace Subfield
-
-theorem map_comap_eq (f : K →+* L) (s : Subfield L) : (s.comap f).map f = s ⊓ f.fieldRange :=
-  SetLike.coe_injective Set.image_preimage_eq_inter_range
-
-theorem map_comap_eq_self
-    {f : K →+* L} {s : Subfield L} (h : s ≤ f.fieldRange) : (s.comap f).map f = s := by
-  simpa only [inf_of_le_left h] using map_comap_eq f s
-
-theorem map_comap_eq_self_of_surjective
-    {f : K →+* L} (hf : Function.Surjective f) (s : Subfield L) : (s.comap f).map f = s :=
-  SetLike.coe_injective (Set.image_preimage_eq _ hf)
-
-theorem comap_map (f : K →+* L) (s : Subfield K) : (s.map f).comap f = s :=
-  SetLike.coe_injective (Set.preimage_image_eq _ f.injective)
-
-end Subfield
-
-/-! ## Actions by `Subfield`s
+/-! ### Actions by `Subfield`s
 
 These are just copies of the definitions about `Subsemiring` starting from
 `Subsemiring.MulAction`.

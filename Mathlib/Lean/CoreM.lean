@@ -3,11 +3,19 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Init
+module
+
+public import Lean.CoreM
+public import Mathlib.Init
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Additional functions using `CoreM` state.
 -/
+
+public section
 
 open Lean Core
 

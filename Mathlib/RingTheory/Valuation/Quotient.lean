@@ -3,8 +3,13 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Johan Commelin, Patrick Massot
 -/
-import Mathlib.RingTheory.Ideal.Quotient.Operations
-import Mathlib.RingTheory.Valuation.Basic
+module
+
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.RingTheory.Valuation.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The valuation on a quotient ring
@@ -12,8 +17,9 @@ import Mathlib.RingTheory.Valuation.Basic
 The support of a valuation `v : Valuation R Γ₀` is `supp v`. If `J` is an ideal of `R`
 with `h : J ⊆ supp v` then the induced valuation
 on `R / J` = `Ideal.Quotient J` is `onQuot v h`.
-
 -/
+
+@[expose] public section
 
 
 namespace Valuation
@@ -35,8 +41,8 @@ def onQuot {J : Ideal R} (hJ : J ≤ supp v) : Valuation (R ⧸ J) Γ₀ where
   toFun := v.onQuotVal hJ
   map_zero' := v.map_zero
   map_one' := v.map_one
-  map_mul' xbar ybar := Quotient.ind₂' v.map_mul xbar ybar
-  map_add_le_max' xbar ybar := Quotient.ind₂' v.map_add xbar ybar
+  map_mul' xbar ybar := Quotient.ind₂ v.map_mul xbar ybar
+  map_add_le_max' xbar ybar := Quotient.ind₂ v.map_add xbar ybar
 
 @[simp]
 theorem onQuot_comap_eq {J : Ideal R} (hJ : J ≤ supp v) :
@@ -77,8 +83,6 @@ namespace AddValuation
 variable {R Γ₀ : Type*}
 variable [CommRing R] [LinearOrderedAddCommMonoidWithTop Γ₀]
 variable (v : AddValuation R Γ₀)
-
--- attribute [local reducible] AddValuation -- Porting note: reducible not supported
 
 /-- If `hJ : J ⊆ supp v` then `onQuotVal hJ` is the induced function on `R / J` as a function.
 Note: it's just the function; the valuation is `onQuot hJ`. -/

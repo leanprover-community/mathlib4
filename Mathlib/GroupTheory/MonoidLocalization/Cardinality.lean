@@ -3,16 +3,21 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.GroupTheory.MonoidLocalization.Basic
-import Mathlib.GroupTheory.OreLocalization.Cardinality
+module
+
+public import Mathlib.GroupTheory.MonoidLocalization.Basic
+public import Mathlib.GroupTheory.OreLocalization.Cardinality
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
-
 # Cardinality of localizations of commutative monoids
 
 This file contains some results on cardinality of localizations.
-
 -/
+
+public section
 
 universe u
 

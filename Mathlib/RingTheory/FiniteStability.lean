@@ -3,18 +3,24 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
+module
+
+public import Mathlib.RingTheory.FinitePresentation
+public import Mathlib.RingTheory.TensorProduct.MvPolynomial
+
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-import Mathlib.RingTheory.FinitePresentation
-import Mathlib.RingTheory.TensorProduct.MvPolynomial
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
-
 # Stability of finiteness conditions in commutative algebra
 
 In this file we show that `Algebra.FiniteType` and `Algebra.FinitePresentation` are
 stable under base change.
-
 -/
+
+public section
 
 open scoped TensorProduct
 

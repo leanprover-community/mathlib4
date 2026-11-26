@@ -3,8 +3,12 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
+module
 
-import Mathlib.Init
+public import Mathlib.Init
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Typeclasses for commuting heterogeneous operations
@@ -19,6 +23,8 @@ They express the property that permuting arguments of type `α` does not change 
 * `LeftCommutative`: for `op : α → β → β`, `op a₁ (op a₂ b) = op a₂ (op a₁ b)`.
 * `RightCommutative`: for `op : β → α → β`, `op (op b a₁) a₂ = op (op b a₂) a₁`.
 -/
+
+public section
 
 universe u v
 

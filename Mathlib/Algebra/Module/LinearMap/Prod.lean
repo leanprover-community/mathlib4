@@ -3,10 +3,15 @@ Copyright (c) 2019 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
 -/
+module
 
-import Mathlib.Algebra.Module.Prod
+public import Mathlib.Algebra.Module.LinearMap.Defs
+public import Mathlib.Algebra.Module.Prod
+
 import Mathlib.Tactic.Abel
-import Mathlib.Algebra.Module.LinearMap.Defs
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Addition and subtraction are linear maps from the product space
@@ -14,9 +19,11 @@ import Mathlib.Algebra.Module.LinearMap.Defs
 Note that these results use `IsLinearMap`, which is mostly discouraged.
 
 ## Tags
-linear algebra, vector space, module
 
+linear algebra, vector space, module
 -/
+
+public section
 
 variable {R : Type*} {M : Type*} [Semiring R]
 

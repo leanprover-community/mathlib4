@@ -3,13 +3,21 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Jireh Loreaux
 -/
-import Mathlib.Algebra.GroupWithZero.Hom
+module
+
+public import Mathlib.Algebra.GroupWithZero.Hom
+public import Mathlib.Algebra.Ring.Defs
+
 import Mathlib.Algebra.GroupWithZero.InjSurj
-import Mathlib.Algebra.Ring.Defs
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Pulling back rings along injective maps, and pushing them forward along surjective maps
 -/
+
+public section
 
 open Function
 

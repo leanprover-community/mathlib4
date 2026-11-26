@@ -3,8 +3,9 @@ Copyright (c) 2024 Miguel Marco. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Miguel Marco
 -/
-import Mathlib.Data.Set.Function
-import Mathlib.Data.Set.Functor
+module
+
+public import Mathlib.Data.Set.Functor
 
 /-!
 # Sets in subtypes
@@ -36,6 +37,8 @@ Theorem names refer to `↓∩` as `preimage_val`.
 
 subsets
 -/
+
+public section
 
 open Set
 
@@ -81,11 +84,13 @@ lemma image_val_union : (↑(D ∪ E) : Set α) = ↑D ∪ ↑E := image_union _
 lemma image_val_inter : (↑(D ∩ E) : Set α) = ↑D ∩ ↑E := image_inter Subtype.val_injective
 
 @[simp]
-lemma image_val_diff : (↑(D \ E) : Set α) = ↑D \ ↑E := image_diff Subtype.val_injective _ _
+lemma image_val_sdiff : (↑(D \ E) : Set α) = ↑D \ ↑E := image_sdiff Subtype.val_injective _ _
+
+@[deprecated (since := "2026-06-03")] alias image_val_diff := image_val_sdiff
 
 @[simp]
 lemma image_val_compl : ↑(Dᶜ) = A \ ↑D := by
-  rw [compl_eq_univ_diff, image_val_diff, image_univ, Subtype.range_coe_subtype, setOf_mem_eq]
+  rw [compl_eq_univ_sdiff, image_val_sdiff, image_univ, Subtype.range_coe_subtype, ofPred_mem_eq]
 
 @[simp]
 lemma image_val_sUnion : ↑(⋃₀ T) = ⋃₀ { (B : Set α) | B ∈ T} := by
@@ -102,21 +107,13 @@ lemma image_val_sInter (hT : T.Nonempty) : (↑(⋂₀ T) : Set α) = ⋂₀ { (
 lemma image_val_iInter [Nonempty ι] : (↑(⋂ i, t i) : Set α) = ⋂ i, (↑(t i) : Set α) :=
   Subtype.val_injective.injOn.image_iInter_eq
 
-@[simp]
-lemma image_val_union_self_right_eq : A ∪ ↑D = A :=
-  union_eq_left.2 image_val_subset
+lemma image_val_union_self_right_eq : A ∪ ↑D = A := by simp
 
-@[simp]
-lemma image_val_union_self_left_eq : ↑D ∪ A = A :=
-  union_eq_right.2 image_val_subset
+lemma image_val_union_self_left_eq : ↑D ∪ A = A := by simp
 
-@[simp]
-lemma image_val_inter_self_right_eq_coe : A ∩ ↑D = ↑D :=
-  inter_eq_right.2 image_val_subset
+lemma image_val_inter_self_right_eq_coe : A ∩ ↑D = ↑D := by simp
 
-@[simp]
-lemma image_val_inter_self_left_eq_coe : ↑D ∩ A = ↑D :=
-  inter_eq_left.2 image_val_subset
+lemma image_val_inter_self_left_eq_coe : ↑D ∩ A = ↑D := by simp
 
 lemma subset_preimage_val_image_val_iff : D ⊆ A ↓∩ ↑E ↔ D ⊆ E := by
   rw [preimage_image_eq _ Subtype.val_injective]
@@ -130,7 +127,7 @@ lemma image_val_injective : Function.Injective ((↑) : Set A → Set α) :=
 lemma subset_of_image_val_subset_image_val (h : (↑D : Set α) ⊆ ↑E) : D ⊆ E :=
   (image_subset_image_iff Subtype.val_injective).1 h
 
-@[mono]
+@[gcongr, mono]
 lemma image_val_mono (h : D ⊆ E) : (↑D : Set α) ⊆ ↑E :=
   (image_subset_image_iff Subtype.val_injective).2 h
 

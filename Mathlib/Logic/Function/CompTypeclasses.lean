@@ -3,8 +3,9 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.Tactic.TypeStar
-import Mathlib.Tactic.Lemma
+module
+
+import Mathlib.Init
 
 /-!
 # Propositional typeclasses on several maps
@@ -18,8 +19,9 @@ by Frédéric Dupuis and Heather Macbeth for linear maps.
 
 TODO :
 * align with RingHomCompTriple
-
 -/
+
+public section
 
 section CompTriple
 
@@ -47,7 +49,7 @@ instance instId_comp {M N : Type*} {φ : M → N} {ψ : N → N} [IsId ψ] :
     CompTriple φ ψ φ where
   comp_eq := by simp only [IsId.eq_id, Function.id_comp]
 
-/-- `φ`, `ψ` and `ψ ∘ φ` for` a `CompTriple` -/
+/-- `φ`, `ψ` and `ψ ∘ φ` for a `CompTriple`. -/
 theorem comp {M N P : Type*}
     {φ : M → N} {ψ : N → P} :
     CompTriple φ ψ (ψ.comp φ) where

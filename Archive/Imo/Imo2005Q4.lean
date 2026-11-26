@@ -3,7 +3,9 @@ Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.FieldTheory.Finite.Basic
+module
+
+public import Mathlib.FieldTheory.Finite.Basic
 
 /-!
 # IMO 2005 Q4
@@ -14,6 +16,8 @@ Problem: Determine all positive integers relatively prime to all the terms of th
 This is quite an easy problem, in which the key point is a modular arithmetic calculation with
 the sequence `a n` relative to an arbitrary prime.
 -/
+
+@[expose] public section
 
 namespace IMO2005Q4
 
@@ -30,7 +34,7 @@ theorem find_specified_factor {p : ℕ} (hp : Nat.Prime p) (hp2 : p ≠ 2) (hp3 
     at hp2 hp3
   have : Int.gcd p 6 = 1 := Nat.coprime_mul_iff_right.2 ⟨hp2, hp3⟩
   -- Nat arithmetic needed to deal with powers
-  have hp' : p - 1 = p - 2 + 1 := Eq.symm <| Nat.succ_pred <| (tsub_pos_of_lt hp.one_lt).ne'
+  have hp' : p - 1 = p - 2 + 1 := Eq.symm <| Nat.succ_pred (tsub_pos_of_lt hp.one_lt).ne'
   -- Thus it suffices to show that `6 * a (p - 2) ≡ 0 [ZMOD p]`
   rw [← Int.modEq_zero_iff_dvd, ← Int.ediv_one p, ← Nat.cast_one, ← this]
   refine Int.ModEq.cancel_left_div_gcd (Nat.cast_pos.2 hp.pos) ?_
@@ -63,7 +67,7 @@ theorem imo2005_q4 {k : ℕ} (hk : 0 < k) : (∀ n : ℕ, 1 ≤ n → IsCoprime 
   replace h : ∀ n, 1 ≤ n → ¬(p : ℤ) ∣ a n := fun n hn ↦ by
     have : IsCoprime (a n) p :=
       .of_isCoprime_of_dvd_right (h n hn) (Int.natCast_dvd_natCast.mpr k.minFac_dvd)
-    rwa [isCoprime_comm,(Nat.prime_iff_prime_int.mp hp).coprime_iff_not_dvd] at this
+    rwa [isCoprime_comm, (Nat.prime_iff_prime_int.mp hp).coprime_iff_not_dvd] at this
   -- For `p = 2` and `p = 3`, take `n = 1` and `n = 2`, respectively
   by_cases hp2 : p = 2
   · rw [hp2] at h

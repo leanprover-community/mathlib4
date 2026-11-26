@@ -3,11 +3,23 @@ Copyright (c) 2023 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid
 -/
-import Mathlib.Init
-import Lean.Meta.Tactic.Util
-import Lean.SubExpr
+module
 
-/-! This file defines some functions for dealing with `SubExpr.GoalsLocation`. -/
+public import Lean.Meta.Tactic.Util
+public import Lean.SubExpr
+
+import Mathlib.Init
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Utilities for `SubExpr.GoalsLocation`
+
+This file defines some functions for dealing with `SubExpr.GoalsLocation`.
+-/
+
+public section
 
 namespace Lean.SubExpr.GoalsLocation
 /-- The root expression of the position specified by the `GoalsLocation`. -/

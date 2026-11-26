@@ -3,16 +3,23 @@ Copyright (c) 2023 David Renshaw. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Renshaw
 -/
+module
+
+public meta import Lean.Elab.Command
+public meta import Lean.Util.CollectAxioms
 
 import Mathlib.Init
-import Lean.Util.CollectAxioms
-import Lean.Elab.Command
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Defines the `assert_no_sorry` command.
 
 Throws an error if the given identifier uses sorryAx.
 -/
+
+public meta section
 
 open Lean Meta Elab Command
 

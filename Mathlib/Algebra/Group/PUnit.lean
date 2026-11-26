@@ -3,7 +3,12 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Group.Defs
+module
+
+public import Mathlib.Algebra.Group.Defs
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # `PUnit` is a commutative group
@@ -11,6 +16,8 @@ import Mathlib.Algebra.Group.Defs
 This file collects facts about algebraic structures on the one-element type, e.g. that it is a
 commutative ring.
 -/
+
+public section
 
 assert_not_exists MonoidWithZero
 

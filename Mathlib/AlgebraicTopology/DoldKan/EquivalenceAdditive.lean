@@ -3,16 +3,19 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.DoldKan.NCompGamma
+module
 
-/-! The Dold-Kan equivalence for additive categories.
+public import Mathlib.AlgebraicTopology.DoldKan.NCompGamma
+
+/-! # The Dold-Kan equivalence for additive categories.
 
 This file defines `Preadditive.DoldKan.equivalence` which is the equivalence
 of categories `Karoubi (SimplicialObject C) ≌ Karoubi (ChainComplex C ℕ)`.
 
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
-
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -20,7 +23,7 @@ noncomputable section
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
   CategoryTheory.Idempotents AlgebraicTopology.DoldKan
 
-variable {C : Type*} [Category C] [Preadditive C]
+variable {C : Type*} [Category* C] [Preadditive C]
 
 namespace CategoryTheory
 
@@ -42,6 +45,7 @@ the Dold-Kan equivalence for additive categories. -/
 def Γ : Karoubi (ChainComplex C ℕ) ⥤ Karoubi (SimplicialObject C) :=
   Γ₂
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Dold-Kan equivalence `Karoubi (SimplicialObject C) ≌ Karoubi (ChainComplex C ℕ)`
 for additive categories. -/
 @[simps]

@@ -3,8 +3,13 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Interval.Finset.Basic
-import Mathlib.Data.Fintype.BigOperators
+module
+
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Order.Interval.Finset.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Intervals in a pi type
@@ -12,6 +17,8 @@ import Mathlib.Data.Fintype.BigOperators
 This file shows that (dependent) functions to locally finite orders equipped with the pointwise
 order are locally finite and calculates the cardinality of their intervals.
 -/
+
+public section
 
 
 open Finset Fintype

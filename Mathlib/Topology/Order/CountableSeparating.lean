@@ -3,8 +3,13 @@ Copyright (c) 2025 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Order.Basic
-import Mathlib.Order.Filter.CountableSeparatingOn
+module
+
+public import Mathlib.Order.Filter.CountableSeparatingOn
+public import Mathlib.Topology.Order.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Countably many infinite intervals separate points
@@ -14,6 +19,8 @@ the points can be separated by countably many infinite intervals.
 We prove 4 versions of this statement (one for each of the infinite intervals),
 as well as provide convenience corollaries about `Filter.EventuallyEq`.
 -/
+
+public section
 
 open Set
 
@@ -29,7 +36,7 @@ instance range_Iio : HasCountableSeparatingOn X (· ∈ range Iio) s := by
   rcases TopologicalSpace.exists_countable_dense X with ⟨s, hsc, hsd⟩
   set t := s ∪ {x | ∃ y, y ⋖ x}
   refine ⟨Iio '' t, .image ?_ _, ?_, ?_⟩
-  · exact hsc.union countable_setOf_covBy_left
+  · exact hsc.union countable_setOfPred_covBy_left
   · exact image_subset_range _ _
   · rintro x - y - h
     by_contra! hne
@@ -48,7 +55,7 @@ instance range_Ioi : HasCountableSeparatingOn X (· ∈ range Ioi) s :=
   .range_Iio (X := Xᵒᵈ)
 
 instance range_Iic : HasCountableSeparatingOn X (· ∈ range Iic) s :=
-  let ⟨t, htc, ht_sub, ht⟩ := (range_Ioi (X := X) (s := s)).1
+  let ⟨t, htc, ht_sub, ht⟩ := (range_Ioi (X := X) (s := s)).exists_countable_separating
   ⟨compl '' t, htc.image _, by simpa [← compl_inj_iff (x := Ioi _)] using ht_sub,
     by simpa [not_iff_not]⟩
 

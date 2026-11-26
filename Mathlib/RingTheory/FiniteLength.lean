@@ -3,7 +3,12 @@ Copyright (c) 2024 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.RingTheory.Artinian.Module
+module
+
+public import Mathlib.RingTheory.Artinian.Module
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Modules of finite length
@@ -18,6 +23,8 @@ We do not make `IsFiniteLength` a class, instead we use `[IsNoetherian R M] [IsA
 
 Finite length, Composition series
 -/
+
+public section
 
 variable (R : Type*) [Ring R]
 
@@ -46,7 +53,7 @@ variable (R M) in
 theorem exists_compositionSeries_of_isNoetherian_isArtinian [IsNoetherian R M] [IsArtinian R M] :
     ∃ s : CompositionSeries (Submodule R M), s.head = ⊥ ∧ s.last = ⊤ := by
   obtain ⟨f, f0, n, hn⟩ := exists_covBy_seq_of_wellFoundedLT_wellFoundedGT (Submodule R M)
-  exact ⟨⟨n, fun i ↦ f i, fun i ↦ hn.2 i i.2⟩, f0.eq_bot, hn.1.eq_top⟩
+  exact ⟨⟨n, fun i ↦ f i, fun i ↦ hn.2 i i.isLt⟩, f0.eq_bot, hn.1.eq_top⟩
 
 theorem isFiniteLength_of_exists_compositionSeries
     (h : ∃ s : CompositionSeries (Submodule R M), s.head = ⊥ ∧ s.last = ⊤) :
@@ -70,7 +77,7 @@ theorem isFiniteLength_iff_isNoetherian_isArtinian :
     IsFiniteLength R M ↔ IsNoetherian R M ∧ IsArtinian R M :=
   open scoped IsSimpleOrder in
   ⟨fun h ↦ h.rec (fun {M} _ _ _ ↦ ⟨inferInstance, inferInstance⟩) fun M _ _ {N} _ _ ⟨_, _⟩ ↦
-    ⟨(isNoetherian_iff_submodule_quotient N).mpr ⟨‹_›, isNoetherian_iff'.mpr inferInstance⟩,
+    ⟨(isNoetherian_iff_submodule_quotient N).mpr ⟨‹_›, inferInstance⟩,
       (isArtinian_iff_submodule_quotient N).mpr ⟨‹_›, inferInstance⟩⟩,
     fun ⟨_, _⟩ ↦ isFiniteLength_of_exists_compositionSeries
       (exists_compositionSeries_of_isNoetherian_isArtinian R M)⟩
@@ -102,7 +109,7 @@ theorem IsSemisimpleModule.finite_tfae [IsSemisimpleModule R M] :
   tfae_finish
 
 instance [IsSemisimpleModule R M] [Module.Finite R M] : IsArtinian R M :=
-  (IsSemisimpleModule.finite_tfae.out 0 2).mp ‹_›
+  (IsSemisimpleModule.finite_tfae.out 1 3).mp ‹_›
 
 variable {f : M →ₗ[R] N}
 
@@ -116,7 +123,7 @@ lemma IsFiniteLength.of_surjective (H : IsFiniteLength R M) (hf : Function.Surje
     IsFiniteLength R N := by
   rw [isFiniteLength_iff_isNoetherian_isArtinian] at H ⊢
   cases H
-  exact ⟨isNoetherian_of_surjective _ f (LinearMap.range_eq_top.mpr hf),
+  exact ⟨isNoetherian_of_surjective f (LinearMap.range_eq_top.mpr hf),
     isArtinian_of_surjective _ f hf⟩
 
 /- The following instances are now automatic:

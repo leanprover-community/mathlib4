@@ -3,8 +3,13 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Lorenzo Luccioli
 -/
-import Mathlib.Probability.Kernel.Composition.MeasureCompProd
-import Mathlib.Probability.Kernel.RadonNikodym
+module
+
+public import Mathlib.Probability.Kernel.Composition.MeasureCompProd
+public import Mathlib.Probability.Kernel.RadonNikodym
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Absolute continuity of the composition of measures and kernels
@@ -22,8 +27,9 @@ or mutually singular.
 ## Main statements
 
 * `absolutelyContinuous_compProd_iff'`: `μ ⊗ₘ κ ≪ ν ⊗ₘ η ↔ μ ≪ ν ∧ ∀ᵐ a ∂μ, κ a ≪ η a`.
-
 -/
+
+public section
 
 open ProbabilityTheory Filter
 

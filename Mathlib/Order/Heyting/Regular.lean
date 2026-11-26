@@ -3,7 +3,9 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.GaloisConnection.Basic
+module
+
+public import Mathlib.Order.GaloisConnection.Basic
 
 /-!
 # Heyting regular elements
@@ -25,6 +27,10 @@ by simply double-negating all propositions. This is practical for synthetic comp
 * [Francis Borceux, *Handbook of Categorical Algebra III*][borceux-vol3]
 -/
 
+@[expose] public section
+
+-- We want the theorems in this file to be intuitionistic.
+set_option linter.unusedDecidableInType false
 
 open Function
 
@@ -32,9 +38,9 @@ variable {α : Type*}
 
 namespace Heyting
 
-section HasCompl
+section Compl
 
-variable [HasCompl α] {a : α}
+variable [Compl α] {a : α}
 
 /-- An element of a Heyting algebra is regular if its double complement is itself. -/
 def IsRegular (a : α) : Prop :=
@@ -46,7 +52,7 @@ protected theorem IsRegular.eq : IsRegular a → aᶜᶜ = a :=
 instance IsRegular.decidablePred [DecidableEq α] : @DecidablePred α IsRegular := fun _ =>
   ‹DecidableEq α› _ _
 
-end HasCompl
+end Compl
 
 section HeytingAlgebra
 
@@ -81,8 +87,8 @@ abbrev _root_.BooleanAlgebra.ofRegular (h : ∀ a : α, IsRegular (a ⊔ aᶜ)) 
     GeneralizedHeytingAlgebra.toDistribLattice with
     himp_eq := fun _ _ =>
       eq_of_forall_le_iff fun _ => le_himp_iff.trans (this _).le_sup_right_iff_inf_left_le.symm
-    inf_compl_le_bot := fun _ => (this _).1.le_bot
-    top_le_sup_compl := fun _ => (this _).2.top_le }
+    inf_compl_le_bot := fun _ => (this _).disjoint.le_bot
+    top_le_sup_compl := fun _ => (this _).codisjoint.top_le }
 
 variable (α)
 
@@ -116,12 +122,12 @@ instance bot : Bot (Regular α) :=
   ⟨⟨⊥, isRegular_bot⟩⟩
 
 instance inf : Min (Regular α) :=
-  ⟨fun a b => ⟨a ⊓ b, a.2.inf b.2⟩⟩
+  ⟨fun a b => ⟨a ⊓ b, a.property.inf b.property⟩⟩
 
 instance himp : HImp (Regular α) :=
-  ⟨fun a b => ⟨a ⇨ b, a.2.himp b.2⟩⟩
+  ⟨fun a b => ⟨a ⇨ b, a.property.himp b.property⟩⟩
 
-instance hasCompl : HasCompl (Regular α) :=
+instance : Compl (Regular α) :=
   ⟨fun a => ⟨aᶜ, isRegular_compl _⟩⟩
 
 @[simp, norm_cast]
@@ -147,8 +153,8 @@ theorem coe_compl (a : Regular α) : (↑aᶜ : α) = (a : α)ᶜ :=
 instance : Inhabited (Regular α) :=
   ⟨⊥⟩
 
-instance : SemilatticeInf (Regular α) :=
-  coe_injective.semilatticeInf _ coe_inf
+instance : PartialOrder (Regular α) :=
+  PartialOrder.lift _ coe_injective
 
 instance boundedOrder : BoundedOrder (Regular α) :=
   BoundedOrder.lift ((↑) : Regular α → α) (fun _ _ => id) coe_top coe_bot
@@ -172,19 +178,19 @@ theorem coe_toRegular (a : α) : (toRegular a : α) = aᶜᶜ :=
 
 @[simp]
 theorem toRegular_coe (a : Regular α) : toRegular (a : α) = a :=
-  coe_injective a.2
+  coe_injective a.property
 
 /-- The Galois insertion between `Regular.toRegular` and `coe`. -/
 def gi : GaloisInsertion toRegular ((↑) : Regular α → α) where
   choice a ha := ⟨a, ha.antisymm le_compl_compl⟩
   gc _ b :=
-    coe_le_coe.symm.trans <|
-      ⟨le_compl_compl.trans, fun h => (compl_anti <| compl_anti h).trans_eq b.2⟩
+    coe_le_coe.symm.trans
+      ⟨le_compl_compl.trans, fun h => (compl_anti <| compl_anti h).trans_eq b.property⟩
   le_l_u _ := le_compl_compl
   choice_eq _ ha := coe_injective <| le_compl_compl.antisymm ha
 
 instance lattice : Lattice (Regular α) :=
-  gi.liftLattice
+  { gi.liftLattice with inf := (· ⊓ ·) }
 
 @[simp, norm_cast]
 theorem coe_sup (a b : Regular α) : (↑(a ⊔ b) : α) = ((a : α) ⊔ b)ᶜᶜ :=
@@ -192,7 +198,7 @@ theorem coe_sup (a b : Regular α) : (↑(a ⊔ b) : α) = ((a : α) ⊔ b)ᶜ�
 
 instance : BooleanAlgebra (Regular α) :=
   { Regular.lattice, Regular.boundedOrder, Regular.himp,
-    Regular.hasCompl with
+    Regular.instCompl with
     le_sup_inf := fun a b c =>
       coe_le_coe.1 <| by
         dsimp
@@ -226,6 +232,6 @@ theorem isRegular_of_boolean : ∀ a : α, IsRegular a :=
 
 /-- A decidable proposition is intuitionistically Heyting-regular. -/
 theorem isRegular_of_decidable (p : Prop) [Decidable p] : IsRegular p :=
-  propext <| Decidable.not_not
+  propext Decidable.not_not
 
 end Heyting

@@ -3,10 +3,9 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Lean.Expr.Basic
-import Mathlib.Lean.Meta.CongrTheorems
-import Mathlib.Logic.Basic
-import Mathlib.Tactic.CongrExclamation
+module
+
+public import Mathlib.Lean.Meta.CongrTheorems
 
 /-! # `congr(...)` congruence quotations
 
@@ -47,6 +46,8 @@ it eagerly wants to solve for instance arguments. The current version is able to
 expected LHS and RHS to fill in arguments before solving for instance arguments.
 -/
 
+public meta section
+
 universe u
 
 namespace Mathlib.Tactic.TermCongr
@@ -75,6 +76,8 @@ This can potentially break tactics that are sensitive to metadata or reducible f
 Please report anything that goes wrong with `congr(...)` lemmas on Zulip.
 
 For debugging, you can set `set_option trace.Elab.congr true`.
+
+[More documentation on `congr()` and `congrm`.](https://leanprover-community.github.io/extras/congr.html)
 -/
 syntax (name := termCongr) "congr(" withoutForbidden(ppDedentIfGrouped(term)) ")" : term
 
@@ -104,8 +107,8 @@ We need to decouple these to support letting the proof's elaboration be deferred
 we know whether we want an iff, eq, or heq, while also allowing it to choose
 to elaborate as an iff, eq, or heq.
 Later, the congruence generator handles any discrepancies.
-See `Mathlib/Tactic/TermCongr/CongrResult.lean`. -/
-@[reducible, nolint unusedArguments]
+See `CongrResult` below. -/
+@[reducible, nolint unusedArguments, expose]
 def cHole {α : Sort u} (val : α) {p : Prop} (_pf : p) : α := val
 
 /-- For error reporting purposes, make the hole pretty print as its value.
@@ -120,7 +123,7 @@ Saves the current mvarCounter as a proxy for age. We use this to avoid
 reprocessing old congruence holes that happened to leak into the local context. -/
 def mkCHole (forLhs : Bool) (val pf : Expr) : MetaM Expr := do
   -- Create a metavariable to bump the mvarCounter.
-  discard <| mkFreshTypeMVar
+  discard mkFreshTypeMVar
   let d : MData := KVMap.empty
     |>.insert congrHoleForLhsKey forLhs
     |>.insert congrHoleIndex (← getMCtx).mvarCounter
@@ -317,7 +320,7 @@ def CongrResult.trans (res1 res2 : CongrResult) : CongrResult where
         | .eq => do mkEqTrans (← res1.eq) (← res2.eq)
         | .heq => do mkHEqTrans (← res1.heq) (← res2.heq)
 
-/-- Make a `CongrResult` from a LHS, a RHS, and a proof of an Iff, Eq, or HEq.
+/-- Make a `CongrResult` from an LHS, an RHS, and a proof of an Iff, Eq, or HEq.
 The proof is allowed to have a metavariable for its type.
 Validates the inputs and throws errors in the `pf?` function.
 
@@ -390,7 +393,7 @@ def CongrResult.defeq (res : CongrResult) : MetaM CongrResult := do
       throwError "Cannot generate congruence because we need{indentD res.lhs}\n\
         to be definitionally equal to{indentD res.rhs}"
     -- Propagate types into any proofs that we're dropping:
-    discard <| res.eq
+    discard res.eq
     return {res with pf? := none}
 
 /-- Tries to make a congruence between `lhs` and `rhs` automatically.
@@ -503,7 +506,7 @@ partial def mkCongrOfAux (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr)
       trace[Elab.congr] "lam"
       let resDom ← mkCongrOfAux (depth + 1) mvarCounterSaved lhs.bindingDomain! rhs.bindingDomain!
       -- We do not yet support congruences in the binding domain for lambdas.
-      discard <| resDom.defeq
+      discard resDom.defeq
       withLocalDecl lhs.bindingName! lhs.bindingInfo! resDom.lhs fun x => do
         let lhsb := lhs.bindingBody!.instantiate1 x
         let rhsb := rhs.bindingBody!.instantiate1 x
@@ -528,7 +531,7 @@ partial def mkCongrOfAux (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr)
           return CongrResult.mk' lhs rhs (← mkImpCongr (← resDom.eq) (← resBody.eq))
       else
         -- We do not yet support congruences in the binding domain for dependent pi types.
-        discard <| resDom.defeq
+        discard resDom.defeq
         withLocalDecl lhs.bindingName! lhs.bindingInfo! resDom.lhs fun x => do
           let lhsb := lhs.bindingBody!.instantiate1 x
           let rhsb := rhs.bindingBody!.instantiate1 x
@@ -556,7 +559,7 @@ partial def mkCongrOfAux (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr)
       unless n1 == n2 && i1 == i2 do
         throwCongrEx lhs rhs "Incompatible primitive projections"
       let res ← mkCongrOfAux (depth + 1) mvarCounterSaved e1 e2
-      discard <| res.defeq
+      discard res.defeq
       return {lhs := lhs.updateProj! res.lhs, rhs := rhs.updateProj! res.rhs, pf? := none}
     | _, _ =>
       trace[Elab.congr] "base case"

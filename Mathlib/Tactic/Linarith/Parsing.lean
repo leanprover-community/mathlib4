@@ -3,7 +3,11 @@ Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-import Mathlib.Tactic.Linarith.Datatypes
+module
+
+public meta import Mathlib.Algebra.GroupWithZero.Nat
+public meta import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Tactic.Linarith.Datatypes
 
 /-!
 # Parsing input expressions into linear form
@@ -27,30 +31,9 @@ This is ultimately converted into a `Linexp` in the obvious way.
 `linearFormsAndMaxVar` is the main entry point into this file. Everything else is contained.
 -/
 
+public meta section
+
 open Std (TreeMap)
-
-namespace Std.TreeMap
-
--- This will be replaced by a `BEq` instance implemented in the standard library,
--- likely in Q4 2025.
-
-/-- Returns true if the two maps have the same size and the same keys and values
-(with keys compared using the ordering, and values compared using `BEq`). -/
-def beq {α β : Type*} [BEq β] {c : α → α → Ordering} (m₁ m₂ : TreeMap α β c) : Bool :=
-  m₁.size == m₂.size && Id.run do
-    -- This could be made more efficient by simultaneously traversing both maps.
-    for (k, v) in m₁ do
-      if let some v' := m₂[k]? then
-        if v != v' then
-          return false
-      else
-        return false
-    return true
-
-instance {α β : Type*} [BEq β] {c : α → α → Ordering} : BEq (TreeMap α β c) := ⟨beq⟩
-
-end Std.TreeMap
-
 
 section
 open Lean Elab Tactic Meta
@@ -79,13 +62,10 @@ local instance {α β : Type*} {c : α → α → Ordering} [Add β] [Zero β] [
 
 namespace Mathlib.Tactic.Linarith
 
-/-- A local abbreviation for `TreeMap` so we don't need to write `Ord.compare` each time. -/
-abbrev Map (α β) [Ord α] := TreeMap α β Ord.compare
-
 /-! ### Parsing datatypes -/
 
 /-- Variables (represented by natural numbers) map to their power. -/
-abbrev Monom : Type := Map ℕ ℕ
+abbrev Monom : Type := TreeMap ℕ ℕ
 
 /-- `1` is represented by the empty monomial, the product of no variables. -/
 def Monom.one : Monom := TreeMap.empty
@@ -100,7 +80,7 @@ instance : Ord Monom where
   compare x y := if x.lt y then .lt else if x == y then .eq else .gt
 
 /-- Linear combinations of monomials are represented by mapping monomials to coefficients. -/
-abbrev Sum : Type := Map Monom ℤ
+abbrev Sum : Type := TreeMap Monom ℤ
 
 /-- `1` is represented as the singleton sum of the monomial `Monom.one` with coefficient 1. -/
 def Sum.one : Sum := TreeMap.empty.insert Monom.one 1
@@ -217,7 +197,7 @@ The output `TreeMap ℕ ℤ` has the same structure as `s : Sum`,
 but each monomial key is replaced with its index according to `map`.
 If any new monomials are encountered, they are assigned variable numbers and `map` is updated.
 -/
-def elimMonom (s : Sum) (m : Map Monom ℕ) : Map Monom ℕ × Map ℕ ℤ :=
+def elimMonom (s : Sum) (m : TreeMap Monom ℕ) : TreeMap Monom ℕ × TreeMap ℕ ℤ :=
   s.foldr (fun mn coeff ⟨map, out⟩ ↦
     match map[mn]? with
     | some n => ⟨map, out.insert n coeff⟩
@@ -233,8 +213,8 @@ into a `comp` object.
 `e_map` maps atomic expressions to indices; `monom_map` maps monomials to indices.
 Both of these are updated during processing and returned.
 -/
-def toComp (red : TransparencyMode) (e : Expr) (e_map : ExprMap) (monom_map : Map Monom ℕ) :
-    MetaM (Comp × ExprMap × Map Monom ℕ) := do
+def toComp (red : TransparencyMode) (e : Expr) (e_map : ExprMap) (monom_map : TreeMap Monom ℕ) :
+    MetaM (Comp × ExprMap × TreeMap Monom ℕ) := do
   let (iq, e) ← parseCompAndExpr e
   let (m', comp') ← linearFormOfExpr red e_map e
   let ⟨nm, mm'⟩ := elimMonom comp' monom_map
@@ -245,8 +225,8 @@ def toComp (red : TransparencyMode) (e : Expr) (e_map : ExprMap) (monom_map : Ma
 `toCompFold red e_map exprs monom_map` folds `toComp` over `exprs`,
 updating `e_map` and `monom_map` as it goes.
 -/
-def toCompFold (red : TransparencyMode) : ExprMap → List Expr → Map Monom ℕ →
-    MetaM (List Comp × ExprMap × Map Monom ℕ)
+def toCompFold (red : TransparencyMode) : ExprMap → List Expr → TreeMap Monom ℕ →
+    MetaM (List Comp × ExprMap × TreeMap Monom ℕ)
 | m, [],     mm => return ([], m, mm)
 | m, (h::t), mm => do
     let (c, m', mm') ← toComp red h m mm

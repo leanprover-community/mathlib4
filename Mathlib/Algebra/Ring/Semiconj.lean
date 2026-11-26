@@ -3,8 +3,14 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Neil Strickland
 -/
+module
+
+public import Mathlib.Algebra.Ring.Defs
+
 import Mathlib.Algebra.Group.Semiconj.Defs
-import Mathlib.Algebra.Ring.Defs
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Semirings and rings
@@ -15,15 +21,14 @@ the difference being that the former is about `+` and `*` separately, while
 the present file is about their interaction.
 
 For the definitions of semirings and rings see `Mathlib/Algebra/Ring/Defs.lean`.
-
 -/
+
+public section
 
 
 universe u
 
 variable {R : Type u}
-
-open Function
 
 namespace SemiconjBy
 

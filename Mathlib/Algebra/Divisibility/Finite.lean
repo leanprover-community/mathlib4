@@ -3,13 +3,19 @@ Copyright (c) 2025 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+module
 
-import Mathlib.Algebra.Divisibility.Basic
-import Mathlib.Data.Fintype.Defs
+public import Mathlib.Algebra.Divisibility.Basic
+public import Mathlib.Data.Fintype.Defs
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Divisibility in finite types
 -/
+
+public section
 
 variable {M : Type*} [Semigroup M]
 

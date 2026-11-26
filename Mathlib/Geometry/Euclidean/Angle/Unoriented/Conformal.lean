@@ -3,15 +3,21 @@ Copyright (c) 2021 Yourong Zang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yourong Zang
 -/
-import Mathlib.Analysis.Calculus.Conformal.NormedSpace
-import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
+module
+
+public import Mathlib.Analysis.Calculus.Conformal.NormedSpace
+public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Angles and conformal maps
 
 This file proves that conformal maps preserve angles.
-
 -/
+
+public section
 
 
 namespace InnerProductGeometry

@@ -3,7 +3,10 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Logic.Function.Conjugate
+module
+
+public import Mathlib.Data.Nat.Notation
+public import Mathlib.Logic.Function.Conjugate
 
 /-!
 # Iterations of a function
@@ -24,8 +27,9 @@ In this file we prove simple properties of `Nat.iterate f n` a.k.a. `f^[n]`:
 
 * `iterate_fixed`, `Function.Semiconj.iterate_*`, `Function.Semiconj₂.iterate`:
   if `f` fixes a point (resp., semiconjugates unary/binary operations), then so does `f^[n]`.
-
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -38,7 +42,7 @@ def Nat.iterate {α : Sort u} (op : α → α) : ℕ → α → α
   | succ k, a => iterate op k (op a)
 
 @[inherit_doc Nat.iterate]
-notation:max f "^["n"]" => Nat.iterate f n
+notation:max f "^[" n "]" => Nat.iterate f n
 
 namespace Function
 

@@ -3,10 +3,11 @@ Copyright (c) 2021 Shing Tak Lam. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam
 -/
-import Mathlib.Topology.Homotopy.Basic
+module
+
+public import Mathlib.Topology.Homotopy.Basic
 
 /-!
-
 # Homotopy equivalences between topological spaces
 
 In this file, we define homotopy equivalences between topological spaces `X` and `Y` as a pair of
@@ -21,8 +22,9 @@ to `ContinuousMap.id`.
 
 We introduce the notation `X ≃ₕ Y` for `ContinuousMap.HomotopyEquiv X Y` in the `ContinuousMap`
 locale.
-
 -/
+
+@[expose] public section
 
 universe u v w x
 
@@ -37,11 +39,11 @@ are both homotopic to corresponding identity maps.
 -/
 @[ext]
 structure HomotopyEquiv (X : Type u) (Y : Type v) [TopologicalSpace X] [TopologicalSpace Y] where
-  /-- The forward map of an homotopy.
+  /-- The forward map of a homotopy.
 
   Do NOT use directly. Use the coercion instead. -/
   toFun : C(X, Y)
-  /-- The backward map of an homotopy.
+  /-- The backward map of a homotopy.
 
   Do NOT use `e.invFun` directly. Use the coercion of `e.symm` instead. -/
   invFun : C(Y, X)
@@ -52,17 +54,7 @@ structure HomotopyEquiv (X : Type u) (Y : Type v) [TopologicalSpace X] [Topologi
 
 namespace HomotopyEquiv
 
-/-- Coercion of a `HomotopyEquiv` to function. While the Lean 4 way is to unfold coercions, this
-auxiliary definition will make porting of Lean 3 code easier.
-
-Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: drop this definition. -/
-@[coe] def toFun' (e : X ≃ₕ Y) : X → Y := e.toFun
-
-instance : CoeFun (X ≃ₕ Y) fun _ => X → Y := ⟨toFun'⟩
-
-@[simp]
-theorem toFun_eq_coe (h : HomotopyEquiv X Y) : (h.toFun : X → Y) = h :=
-  rfl
+instance : CoeFun (X ≃ₕ Y) fun _ => X → Y := ⟨fun f => f.toFun⟩
 
 @[continuity]
 theorem continuous (h : HomotopyEquiv X Y) : Continuous h :=

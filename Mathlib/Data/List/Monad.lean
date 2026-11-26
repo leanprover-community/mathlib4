@@ -3,12 +3,20 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
+module
+
+public import Batteries.Control.AlternativeMonad
 
 import Mathlib.Init
-import Batteries.Control.AlternativeMonad
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Monad instances for `List`
 -/
+
+public section
 
 universe u
 

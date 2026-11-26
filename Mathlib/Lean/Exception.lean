@@ -3,8 +3,11 @@ Copyright (c) 2022 Edward Ayers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Edward Ayers
 -/
+module
+
+public import Lean.Exception
+
 import Mathlib.Init
-import Lean.Exception
 
 /-!
 # Additional methods for working with `Exception`s
@@ -12,8 +15,9 @@ import Lean.Exception
 This file contains two additional methods for working with `Exception`s
 * `successIfFail`, a generalisation of `fail_if_success` to arbitrary `MonadError`s
 * `isFailedToSynthesize`: check if an exception is of the "failed to synthesize" form
-
 -/
+
+public section
 
 open Lean
 

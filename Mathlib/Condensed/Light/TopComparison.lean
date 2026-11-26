@@ -3,16 +3,21 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Condensed.Light.Basic
-import Mathlib.Condensed.TopComparison
+module
+
+public import Mathlib.Condensed.Light.Basic
+public import Mathlib.Condensed.TopComparison
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
-
 # The functor from topological spaces to light condensed sets
 
 We define the functor `topCatToLightCondSet : TopCat.{u} ⥤ LightCondSet.{u}`.
-
 -/
+
+public section
 
 universe u
 

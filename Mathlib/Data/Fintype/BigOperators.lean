@@ -3,20 +3,27 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
-import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
-import Mathlib.Algebra.BigOperators.Option
-import Mathlib.Data.Fintype.Option
-import Mathlib.Data.Fintype.Prod
-import Mathlib.Data.Fintype.Sigma
-import Mathlib.Data.Fintype.Sum
-import Mathlib.Data.Fintype.Vector
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
+public import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
+public import Mathlib.Algebra.BigOperators.Option
+public import Mathlib.Data.Fintype.Option
+public import Mathlib.Data.Fintype.Sigma
+public import Mathlib.Data.Fintype.Sum
+public import Mathlib.Data.Fintype.Vector
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
+# Big operators over a fintype
+
 Results about "big operations" over a `Fintype`, and consequent
 results about cardinalities of certain types.
 
-## Implementation note
+## Implementation notes
+
 This content had previously been in `Data.Fintype.Basic`, but was moved here to avoid
 requiring `Algebra.BigOperators` (and hence many other imports) as a
 dependency of `Fintype`.
@@ -25,9 +32,9 @@ However many of the results here really belong in `Algebra.BigOperators.Group.Fi
 and should be moved at some point.
 -/
 
-assert_not_exists MulAction
+public section
 
-open Mathlib
+assert_not_exists MulAction
 
 universe u v
 
@@ -100,7 +107,7 @@ theorem Fintype.prod_option (f : Option α → M) : ∏ i, f i = f none * ∏ i,
 
 @[to_additive]
 theorem Fintype.prod_eq_mul_prod_subtype_ne [DecidableEq α] (f : α → M) (a : α) :
-    ∏ i, f i = f a * ∏ i : {i // i ≠ a}, f i.1 := by
+    ∏ i, f i = f a * ∏ i : {i // i ≠ a}, f i.val := by
   simp_rw [← (Equiv.optionSubtypeNe a).prod_comp, prod_option, Equiv.optionSubtypeNe_none,
     Equiv.optionSubtypeNe_some]
 
@@ -201,6 +208,22 @@ theorem card_vector [Fintype α] (n : ℕ) :
     Fintype.card (List.Vector α n) = Fintype.card α ^ n := by
   rw [Fintype.ofEquiv_card]; simp
 
+/-- The number of strings of length `s` in any finite set is at most `D^s`. -/
+lemma Finset.card_filter_length_eq_le [Fintype α] {T : Finset (List α)} {s : ℕ} :
+    (T.filter (fun x => x.length = s)).card ≤ (Fintype.card α) ^ s := by
+  classical
+  calc
+    _ ≤ (Finset.univ.image List.ofFn).card := by
+          apply Finset.card_le_card
+          intro a ha
+          let hlen := Finset.mem_filter.mp ha
+          exact Finset.mem_image.mpr ⟨
+              (fun j : Fin s => a.get ⟨j.val, by simp [hlen]⟩),
+              by simp,
+              List.ext_get (by simp [hlen]) (by simp)⟩
+    _ = Fintype.card α ^ s := by
+          simp [card_image_of_injective univ List.ofFn_injective]
+
 /-- It is equivalent to compute the product of a function over `Fin n` or `Finset.range n`. -/
 @[to_additive /-- It is equivalent to sum a function over `fin n` or `finset.range n`. -/]
 theorem Fin.prod_univ_eq_prod_range [CommMonoid α] (f : ℕ → α) (n : ℕ) :
@@ -215,7 +238,7 @@ theorem Finset.prod_fin_eq_prod_range [CommMonoid β] {n : ℕ} (c : Fin n → �
     ∏ i, c i = ∏ i ∈ Finset.range n, if h : i < n then c ⟨i, h⟩ else 1 := by
   rw [← Fin.prod_univ_eq_prod_range, Finset.prod_congr rfl]
   rintro ⟨i, hi⟩ _
-  simp only [hi, dif_pos]
+  simp only [hi, dite_eq_left]
 
 @[to_additive]
 theorem Finset.prod_toFinset_eq_subtype {M : Type*} [CommMonoid M] [Fintype α] (p : α → Prop)
@@ -226,11 +249,11 @@ theorem Finset.prod_toFinset_eq_subtype {M : Type*} [CommMonoid M] [Fintype α] 
 nonrec theorem Fintype.prod_dite [Fintype α] {p : α → Prop} [DecidablePred p] [CommMonoid β]
     (f : ∀ a, p a → β) (g : ∀ a, ¬p a → β) :
     (∏ a, dite (p a) (f a) (g a)) =
-    (∏ a : { a // p a }, f a a.2) * ∏ a : { a // ¬p a }, g a a.2 := by
+    (∏ a : { a // p a }, f a a.property) * ∏ a : { a // ¬p a }, g a a.property := by
   simp only [prod_dite]
   congr 1
-  · exact (Equiv.subtypeEquivRight <| by simp).prod_comp fun x : { x // p x } => f x x.2
-  · exact (Equiv.subtypeEquivRight <| by simp).prod_comp fun x : { x // ¬p x } => g x x.2
+  · exact (Equiv.subtypeEquivRight <| by simp).prod_comp fun x : { x // p x } => f x x.property
+  · exact (Equiv.subtypeEquivRight <| by simp).prod_comp fun x : { x // ¬p x } => g x x.property
 
 section
 

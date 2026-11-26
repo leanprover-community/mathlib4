@@ -3,8 +3,11 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.ModelCategory.Basic
-import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
+module
+
+public import Mathlib.AlgebraicTopology.ModelCategory.Basic
+public import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 /-!
 # The factorization lemma by K. S. Brown
@@ -23,15 +26,17 @@ morphisms `i`, `p` and `s` are weak equivalences.
 between fibrant objects.)
 
 ## References
-* [Brown, Kenneth S., *Abstract homotopy theory and generalized sheaf cohomology*, §I.1][brown-1973]
 
+* [Brown, Kenneth S., *Abstract homotopy theory and generalized sheaf cohomology*, §I.1][brown-1973]
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits MorphismProperty
 
 namespace HomotopicalAlgebra
 
-variable {C : Type*} [Category C] [ModelCategory C]
+variable {C : Type*} [Category* C] [ModelCategory C]
   {X Y : C} (f : X ⟶ Y)
 
 /-- Given a morphism `f : X ⟶ Y` in a model category,

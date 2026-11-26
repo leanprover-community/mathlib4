@@ -3,8 +3,13 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Logic.Small.Basic
-import Mathlib.Data.Vector.Basic
+module
+
+public import Mathlib.Data.Vector.Basic
+public import Mathlib.Logic.Small.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Instances for `Small (List α)` and `Small (Vector α)`.
@@ -12,6 +17,8 @@ import Mathlib.Data.Vector.Basic
 These must not be in `Logic.Small.Basic` as this is very low in the import hierarchy,
 and is used by category theory files which do not need everything imported by `Data.Vector.Basic`.
 -/
+
+public section
 
 
 universe u v

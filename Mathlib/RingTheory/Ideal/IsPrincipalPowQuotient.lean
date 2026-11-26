@@ -3,9 +3,14 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.LinearAlgebra.Isomorphisms
-import Mathlib.RingTheory.Ideal.Operations
-import Mathlib.RingTheory.Ideal.Quotient.Defs
+module
+
+public import Mathlib.LinearAlgebra.Isomorphisms
+public import Mathlib.RingTheory.Ideal.Operations
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Quotients of powers of principal ideals
@@ -16,15 +21,16 @@ This file deals with taking quotients of powers of principal ideals.
 
 * `Ideal.quotEquivPowQuotPowSucc`: for a principal ideal `I`, `R ⧸ I ≃ₗ[R] I ^ n ⧸ I ^ (n + 1)`
 
-## Implementation details
+## Implementation notes
 
 At site of usage, calling `LinearEquiv.toEquiv` can cause timeouts in the search for a complex
 synthesis like `Module 𝒪[K] 𝓀[k]`, so the plain equiv versions are provided.
 
 These equivs are defined here as opposed to in the quotients file since they cannot be
 formed as ring equivs.
-
 -/
+
+@[expose] public section
 
 
 namespace Ideal
@@ -44,7 +50,7 @@ def quotEquivPowQuotPowSucc (h : I.IsPrincipal) (h' : I ≠ ⊥) (n : ℕ) :
   let ϖ := h.principal.choose
   have hI : I = Ideal.span {ϖ} := h.principal.choose_spec
   have hϖ : ϖ ^ n ∈ I ^ n := hI ▸ (Ideal.pow_mem_pow (Ideal.mem_span_singleton_self _) n)
-  let g : R →ₗ[R] (I ^ n : Ideal R) := (LinearMap.mulRight R ϖ^n).codRestrict _ fun x ↦ by
+  let g : R →ₗ[R] (I ^ n : Ideal R) := (LinearMap.mulRight R ϖ ^ n).codRestrict _ fun x ↦ by
     simp only [LinearMap.pow_mulRight, LinearMap.mulRight_apply]
     -- TODO: change argument of Ideal.pow_mem_of_mem
     exact Ideal.mul_mem_left _ _ hϖ
@@ -61,7 +67,7 @@ def quotEquivPowQuotPowSucc (h : I.IsPrincipal) (h' : I ≠ ⊥) (n : ℕ) :
       rw [mul_comm, pow_succ, mul_assoc, mul_right_inj' (pow_ne_zero _ _)] at hy
       · rw [hI, Ideal.mem_span_singleton]
         exact ⟨y, hy⟩
-      · contrapose! h'
+      · contrapose h'
         rw [hI, h', Ideal.span_singleton_eq_bot]
   let e : (R ⧸ I) ≃ₗ[R] R ⧸ (LinearMap.ker (f.comp g)) :=
     Submodule.quotEquivOfEq I (LinearMap.ker (f ∘ₗ g)) this

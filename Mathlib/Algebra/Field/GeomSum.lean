@@ -3,8 +3,10 @@ Copyright (c) 2019 Neil Strickland. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Neil Strickland
 -/
-import Mathlib.Algebra.Field.Basic
-import Mathlib.Algebra.Ring.GeomSum
+module
+
+public import Mathlib.Algebra.Field.Basic
+public import Mathlib.Algebra.Ring.GeomSum
 
 /-!
 # Partial sums of geometric series in a field
@@ -22,11 +24,13 @@ Several variants are recorded, generalising in particular to the case of a divis
 which `x` and `y` commute.
 -/
 
+public section
+
 assert_not_exists IsOrderedRing
 
-variable {R K : Type*}
+variable {K : Type*}
 
-open Finset MulOpposite
+open Finset
 
 section DivisionRing
 variable [DivisionRing K] {x y : K}
@@ -64,8 +68,8 @@ lemma geom_sum_inv (hx1 : x ≠ 1) (hx0 : x ≠ 0) (n : ℕ) :
         inv_mul_cancel₀ hx0]
   rw [geom_sum_eq h₁, div_eq_iff_mul_eq h₂, ← mul_right_inj' h₃, ← mul_assoc, ← mul_assoc,
     mul_inv_cancel₀ h₃]
-  simp [mul_add, add_mul, mul_inv_cancel₀ hx0, mul_assoc, h₄, sub_eq_add_neg, add_comm,
-    add_left_comm]
+  simp only [inv_pow, sub_eq_add_neg, mul_add, one_mul, mul_neg, add_mul, mul_inv_cancel₀ hx0,
+    neg_mul, mul_assoc, mul_one, add_comm, neg_add_rev, neg_neg, h₄, add_left_comm]
   rw [add_comm _ (-x), add_assoc, add_assoc _ _ 1]
 
 end DivisionRing

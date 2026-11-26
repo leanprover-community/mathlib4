@@ -3,8 +3,15 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
-import Mathlib.LinearAlgebra.Dimension.LinearMap
-import Mathlib.LinearAlgebra.Matrix.ToLin
+module
+
+public import Mathlib.LinearAlgebra.Dimension.LinearMap
+public import Mathlib.LinearAlgebra.Matrix.ToLin
+
+import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Diagonal matrices
@@ -14,11 +21,11 @@ diagonal matrix (`range`, `ker` and `rank`).
 
 ## Tags
 
-matrix, diagonal, linear_map
+matrix, diagonal, linear map
 -/
 
+public section
 
-noncomputable section
 
 open LinearMap Matrix Set Submodule Matrix
 
@@ -56,12 +63,9 @@ variable {m : Type*} [Fintype m] {K : Type u} [Semifield K]
 theorem ker_mulVecLin_diagonal [DecidableEq m] (w : m → K) :
     ker (diagonal w).mulVecLin =
       ⨆ i ∈ { i | w i = 0 }, LinearMap.range (LinearMap.single K (fun _ => K) i) := by
-  rw [← comap_bot, ← iInf_ker_proj, comap_iInf]
-  have := fun i : m => ker_comp (diagonal w).mulVecLin (proj i)
-  simp only [comap_iInf, ← this, proj_diagonal, ker_smul']
-  have : univ ⊆ { i : m | w i = 0 } ∪ { i : m | w i = 0 }ᶜ := by rw [Set.union_compl_self]
-  exact (iSup_range_single_eq_iInf_ker_proj K (fun _ : m => K) disjoint_compl_right this
-    (Set.toFinite _)).symm
+  rw [← comap_bot]
+  simpa [← ker_comp, proj_diagonal, ker_smul', ← iInf_ker_proj] using
+    (iSup_range_single_eq_iInf_ker_proj K _ isCompl_compl {i | w i = 0}.toFinite).symm
 
 @[deprecated ker_mulVecLin_diagonal (since := "2025-05-09")]
 theorem ker_diagonal_toLin' [DecidableEq m] (w : m → K) :
@@ -72,7 +76,7 @@ theorem ker_diagonal_toLin' [DecidableEq m] (w : m → K) :
 theorem range_diagonal [DecidableEq m] (w : m → K) :
     LinearMap.range (diagonal w).mulVecLin =
       ⨆ i ∈ { i | w i ≠ 0 }, LinearMap.range (LinearMap.single K (fun _ => K) i) := by
-  dsimp only [mem_setOf_eq]
+  dsimp only [mem_ofPred_eq]
   rw [← Submodule.map_top, ← iSup_range_single, Submodule.map_iSup]
   congr; funext i
   rw [← LinearMap.range_comp, diagonal_comp_single, ← range_smul']
@@ -89,13 +93,11 @@ variable {m : Type*} [Fintype m] {K : Type u} [Field K]
 
 theorem rank_diagonal [DecidableEq m] [DecidableEq K] (w : m → K) :
     LinearMap.rank (diagonal w).mulVecLin = Fintype.card { i // w i ≠ 0 } := by
-  have hu : univ ⊆ { i : m | w i = 0 }ᶜ ∪ { i : m | w i = 0 } := by rw [Set.compl_union_self]
-  have hd : Disjoint { i : m | w i ≠ 0 } { i : m | w i = 0 } := disjoint_compl_left
-  have B₁ := iSup_range_single_eq_iInf_ker_proj K (fun _ : m => K) hd hu (Set.toFinite _)
-  have B₂ := iInfKerProjEquiv K (fun _ ↦ K) hd hu
+  have hIJ : IsCompl { i : m | w i ≠ 0 } { i : m | w i = 0 } :=
+    (isCompl_compl (x := {i : m | w i = 0})).symm
+  have B₁ := iSup_range_single_eq_iInf_ker_proj K (fun _ : m => K) hIJ (Set.toFinite _)
   rw [LinearMap.rank, range_diagonal, B₁, ← @rank_fun' K]
-  apply LinearEquiv.rank_eq
-  apply B₂
+  exact iInfKerProjEquiv K (fun _ ↦ K) hIJ.disjoint hIJ.codisjoint.top_le |>.rank_eq
 
 end Field
 

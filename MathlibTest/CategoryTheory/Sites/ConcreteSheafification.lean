@@ -1,3 +1,4 @@
+module
 import Mathlib.Algebra.Category.ModuleCat.Colimits
 import Mathlib.Algebra.Category.ModuleCat.Limits
 import Mathlib.Algebra.Category.ModuleCat.FilteredColimits
@@ -6,8 +7,6 @@ import Mathlib.CategoryTheory.Sites.Equivalence
 universe u
 
 open CategoryTheory
-
-attribute [local instance] Types.instFunLike Types.instConcreteCategory
 
 section Small
 
@@ -29,8 +28,9 @@ example (R : Type (u + 1)) [Ring R] : HasSheafify J (ModuleCat.{u+1} R) := infer
 
 variable [EssentiallySmall.{u} C]
 
-example : HasSheafify J (Type u) := inferInstance
+example : HasSheafify J (Type u) := hasSheafifyEssentiallySmallSite _ _
 
-example (R : Type u) [Ring R] : HasSheafify J (ModuleCat.{u} R) := inferInstance
+example (R : Type u) [Ring R] : HasSheafify J (ModuleCat.{u} R) :=
+  hasSheafifyEssentiallySmallSite _ _
 
 end Large

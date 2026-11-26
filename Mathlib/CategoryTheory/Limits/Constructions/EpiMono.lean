@@ -3,9 +3,12 @@ Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Mono
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Relating monomorphisms and epimorphisms to limits and colimits
@@ -13,8 +16,9 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
 If `F` preserves (resp. reflects) pullbacks, then it preserves (resp. reflects) monomorphisms.
 
 We also provide the dual version for epimorphisms.
-
 -/
+
+public section
 
 
 universe v₁ v₂ u₁ u₂

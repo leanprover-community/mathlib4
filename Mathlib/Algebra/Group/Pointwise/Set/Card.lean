@@ -3,13 +3,20 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Action.Basic
-import Mathlib.Algebra.Group.Pointwise.Set.Finite
-import Mathlib.Data.Set.Card
+module
+
+public import Mathlib.Algebra.Group.Action.Basic
+public import Mathlib.Algebra.Group.Pointwise.Set.Finite
+public import Mathlib.Data.Set.Card
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Cardinalities of pointwise operations on sets
 -/
+
+public section
 
 assert_not_exists Field
 
@@ -46,7 +53,7 @@ lemma _root_.Cardinal.mk_inv (s : Set G) : #↥(s⁻¹) = #s := by
 
 @[to_additive (attr := simp)]
 lemma encard_inv (s : Set G) : s⁻¹.encard = s.encard := by
-  simp [← toENat_cardinalMk]
+  simp [← ENat.card_coe_set_eq, ← Cardinal.toENat_mk]
 
 @[to_additive (attr := simp)]
 lemma ncard_inv (s : Set G) : s⁻¹.ncard = s.ncard := by simp [ncard]
@@ -80,7 +87,7 @@ lemma _root_.Cardinal.mk_smul_set (a : G) (s : Set α) : #↥(a • s) = #s :=
 
 @[to_additive (attr := simp)]
 lemma encard_smul_set (a : G) (s : Set α) : (a • s).encard = s.encard := by
-  simp [← toENat_cardinalMk]
+  simp [← ENat.card_coe_set_eq, ← Cardinal.toENat_mk]
 
 @[to_additive (attr := simp)]
 lemma ncard_smul_set (a : G) (s : Set α) : (a • s).ncard = s.ncard := by simp [ncard]

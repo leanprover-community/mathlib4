@@ -3,8 +3,11 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Algebra.ConstMulAction
-import Mathlib.Topology.Maps.Proper.Basic
+module
+
+public import Mathlib.Topology.Algebra.ConstMulAction
+public import Mathlib.Topology.Maps.Proper.Basic
+
 /-!
 # Actions by proper maps
 
@@ -20,6 +23,8 @@ We also provide 4 instances:
 - for the action on `X × Y`;
 - for the action on `∀ i, X i`.
 -/
+
+public section
 
 /-- A mixin typeclass saying that the `(c +ᵥ ·)` is a proper map for all `c`.
 
@@ -39,7 +44,7 @@ class ProperConstSMul (M X : Type*) [SMul M X] [TopologicalSpace X] : Prop where
 /-- `(c • ·)` is a proper map. -/
 @[to_additive /-- `(c +ᵥ ·)` is a proper map. -/]
 theorem isProperMap_smul {M : Type*} (c : M) (X : Type*) [SMul M X] [TopologicalSpace X]
-    [h : ProperConstSMul M X] : IsProperMap ((c • ·) : X → X) := h.1 c
+    [h : ProperConstSMul M X] : IsProperMap ((c • ·) : X → X) := h.isProperMap_smul c
 
 /-- The preimage of a compact set under `(c • ·)` is a compact set. -/
 @[to_additive /-- The preimage of a compact set under `(c +ᵥ ·)` is a compact set. -/]

@@ -3,16 +3,17 @@ Copyright (c) 2024 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne, Paul Lezeau
 -/
-import Mathlib.CategoryTheory.FiberedCategory.Fiber
-import Mathlib.CategoryTheory.FiberedCategory.Fibered
+module
+
+public import Mathlib.CategoryTheory.FiberedCategory.Fiber
+public import Mathlib.CategoryTheory.FiberedCategory.Fibered
 
 /-!
-
 # Fibers of functors
 
 In this file we introduce a typeclass `HasFibers` for a functor `p : 𝒳 ⥤ 𝒮`, consisting of:
 - A collection of categories `Fib S` for every `S` in `𝒮` (the fiber categories)
-- Functors `ι : Fib S ⥤ 𝒳` such that `ι ⋙ p = const (Fib S) S
+- Functors `ι : Fib S ⥤ 𝒳` such that `ι ⋙ p = const (Fib S) S`
 - The induced functor `Fib S ⥤ Fiber p S` is an equivalence.
 
 We also provide a canonical `HasFibers` instance, which uses the standard fibers `Fiber p S`
@@ -31,7 +32,8 @@ is an element of `F(S)`. The fiber category `Fiber p S` is then equivalent to th
 `Fib S` with objects `a` in `F(S)`. In this case, the `HasFibers` instance is given by the
 categories `F(S)` and the functor `ι` sends `a : F(S)` to `(S, a)` in the fibered category.
 
-## Main API
+## Main definitions and statements
+
 The following API is developed so that the fibers from a `HasFibers` instance can be used
 analogously to the standard fibers.
 
@@ -45,8 +47,9 @@ analogously to the standard fibers.
   morphism in the fiber category.
 - `fiber_factorization` is the statement that any morphism in `𝒳` can be factored as a morphism in
   some fiber followed by a pullback.
-
 -/
+
+@[expose] public section
 
 universe v₃ u₃ v₂ u₂ v₁ u₁
 
@@ -58,7 +61,6 @@ variable {𝒮 : Type u₁} {𝒳 : Type u₂} [Category.{v₁} 𝒮] [Category.
 collection of categories `Fib S` for every `S : 𝒮` (the fiber categories), each equipped with a
 functors `ι : Fib S ⥤ 𝒳` which map constantly to `S` on the base such that the induced functor
 `Fib S ⥤ Fiber p S` is an equivalence. -/
-@[nolint checkUnivs]
 class HasFibers (p : 𝒳 ⥤ 𝒮) where
   /-- The type of objects of the category `Fib S` for each `S`. -/
   Fib (S : 𝒮) : Type u₃
@@ -74,6 +76,7 @@ class HasFibers (p : 𝒳 ⥤ 𝒮) where
 namespace HasFibers
 
 /-- The `HasFibers` on `p : 𝒳 ⥤ 𝒮` given by the fibers of `p` -/
+@[instance_reducible]
 def canonical (p : 𝒳 ⥤ 𝒮) : HasFibers p where
   Fib := Fiber p
   ι S := fiberInclusion
@@ -84,7 +87,7 @@ section
 
 variable (p : 𝒳 ⥤ 𝒮) [HasFibers p] (S : 𝒮)
 
-attribute [instance] category
+attribute [instance_reducible, instance] category
 
 /-- The induced functor from `Fib p S` to the standard fiber. -/
 @[simps!]
@@ -100,7 +103,7 @@ lemma inducedFunctor_comp : ι S = (inducedFunctor p S) ⋙ fiberInclusion :=
 
 instance : Functor.IsEquivalence (inducedFunctor p S) := equiv S
 
-instance : Functor.Faithful (ι (p:=p) S) :=
+instance : Functor.Faithful (ι (p := p) S) :=
   Functor.Faithful.of_iso (inducedFunctor.natIso p S).symm
 
 end
@@ -131,6 +134,7 @@ noncomputable def Fib.homMk {S : 𝒮} {a b : Fib p S} (φ : (ι S).obj a ⟶ (�
     [IsHomLift p (𝟙 S) φ] : a ⟶ b :=
   (inducedFunctor _ S).preimage (Fiber.homMk p S φ)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma Fib.map_homMk {S : 𝒮} {a b : Fib p S} (φ : (ι S).obj a ⟶ (ι S).obj b)
     [IsHomLift p (𝟙 S) φ] : (ι S).map (homMk φ) = φ := by
@@ -160,7 +164,7 @@ noncomputable def Fib.mkIsoSelf {S : 𝒮} {a : 𝒳} (ha : p.obj a = S) :
 
 instance Fib.mkIsoSelfIsHomLift {S : 𝒮} {a : 𝒳} (ha : p.obj a = S) :
     IsHomLift p (𝟙 S) (Fib.mkIsoSelf ha).hom :=
-  (Functor.objObjPreimageIso (inducedFunctor p S) (Fiber.mk ha)).hom.2
+  (Functor.objObjPreimageIso (inducedFunctor p S) (Fiber.mk ha)).hom.property
 
 section
 
@@ -176,6 +180,7 @@ noncomputable def pullbackMap : (ι R).obj (mkPullback f ha) ⟶ a :=
   (Fib.mkIsoSelf (domain_eq p f (IsPreFibered.pullbackMap ha f))).hom ≫
     (IsPreFibered.pullbackMap ha f)
 
+set_option backward.isDefEq.respectTransparency false in
 instance pullbackMap.isCartesian : IsCartesian p f (pullbackMap f ha) := by
   conv in f => rw [← id_comp f]
   simp only [id_comp, pullbackMap]

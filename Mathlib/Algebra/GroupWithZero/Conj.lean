@@ -3,12 +3,19 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Algebra.Group.Conj
-import Mathlib.Algebra.GroupWithZero.Units.Basic
+module
+
+public import Mathlib.Algebra.Group.Conj
+public import Mathlib.Algebra.GroupWithZero.Units.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Conjugacy in a group with zero
 -/
+
+public section
 
 assert_not_exists Multiset Ring
 -- TODO

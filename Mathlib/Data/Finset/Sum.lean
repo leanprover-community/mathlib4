@@ -3,9 +3,14 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Data.Finset.Card
-import Mathlib.Data.Finset.Fold
-import Mathlib.Data.Multiset.Sum
+module
+
+public import Mathlib.Data.Finset.Card
+public import Mathlib.Data.Finset.Fold
+public import Mathlib.Data.Multiset.Sum
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Disjoint sum of finsets
@@ -20,6 +25,7 @@ the `Finset.sum` operation which computes the additive sum.
 * `Finset.toRight`: Given a finset of elements `α ⊕ β`, extracts all the elements of the form `β`.
 -/
 
+@[expose] public section
 
 open Function Multiset Sum
 
@@ -29,10 +35,10 @@ variable {α β γ : Type*} (s : Finset α) (t : Finset β)
 
 /-- Disjoint sum of finsets. -/
 def disjSum : Finset (α ⊕ β) :=
-  ⟨s.1.disjSum t.1, s.2.disjSum t.2⟩
+  ⟨s.val.disjSum t.val, s.nodup.disjSum t.nodup⟩
 
 @[simp]
-theorem val_disjSum : (s.disjSum t).1 = s.1.disjSum t.1 :=
+theorem val_disjSum : (s.disjSum t).val = s.val.disjSum t.val :=
   rfl
 
 @[simp]
@@ -96,9 +102,6 @@ theorem disjSum_strictMono_left (t : Finset β) : StrictMono fun s : Finset α =
 theorem disjSum_strictMono_right (s : Finset α) :
     StrictMono (s.disjSum : Finset β → Finset (α ⊕ β)) := fun _ _ =>
   disjSum_ssubset_disjSum_of_subset_of_ssubset Subset.rfl
-
-@[deprecated (since := "2025-06-11")]
-alias disj_sum_strictMono_right := disjSum_strictMono_right
 
 @[simp] lemma disjSum_inj {α β : Type*} {s₁ s₂ : Finset α} {t₁ t₂ : Finset β} :
     s₁.disjSum t₁ = s₂.disjSum t₂ ↔ s₁ = s₂ ∧ t₁ = t₂ := by

@@ -3,16 +3,18 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
+module
 
-import Mathlib.Init
+public import Mathlib.Init
 
 /-!
 # `nth_rewrite` tactic
 
 The tactic `nth_rewrite` and `nth_rw` are variants of `rewrite` and `rw` that only performs the
 `n`th possible rewrite.
-
 -/
+
+public meta section
 namespace Mathlib.Tactic
 
 open Lean Elab Tactic Meta Parser.Tactic

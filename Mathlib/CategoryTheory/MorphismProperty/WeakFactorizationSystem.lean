@@ -3,7 +3,12 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.MorphismProperty.RetractArgument
+module
+
+public import Mathlib.CategoryTheory.MorphismProperty.RetractArgument
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Weak factorization systems
@@ -15,9 +20,11 @@ that `W₁` is exactly `W₂.llp`, `W₂` is exactly `W₁.rlp`,
 and any morphism in `C` can be factored a `i ≫ p` with `W₁ i` and `W₂ p`.
 
 ## References
-* https://ncatlab.org/nlab/show/weak+factorization+system
 
+* https://ncatlab.org/nlab/show/weak+factorization+system
 -/
+
+public section
 
 universe v u
 

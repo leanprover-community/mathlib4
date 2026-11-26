@@ -3,18 +3,24 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.Algebra.Algebra.Pi
-import Mathlib.LinearAlgebra.TensorProduct.Pi
-import Mathlib.LinearAlgebra.TensorProduct.Prod
-import Mathlib.RingTheory.TensorProduct.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.LinearAlgebra.TensorProduct.Pi
+public import Mathlib.LinearAlgebra.TensorProduct.Prod
+public import Mathlib.RingTheory.TensorProduct.Maps
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Tensor product and products of algebras
 
 In this file we examine the behaviour of the tensor product with (finite) products. This
 is a direct application of `Mathlib/LinearAlgebra/TensorProduct/Pi.lean` to the algebra case.
-
 -/
+
+@[expose] public section
 
 open TensorProduct
 
@@ -32,9 +38,7 @@ variable {R S A B} in
 lemma piRightHom_mul (x y : A ⊗[R] ∀ i, B i) :
     piRightHom R S A B (x * y) = piRightHom R S A B x * piRightHom R S A B y := by
   induction x
-  · simp
   · induction y
-    · simp
     · ext j
       simp
     · simp_all [mul_add]
@@ -49,7 +53,7 @@ variable [Fintype ι] [DecidableEq ι]
 
 /-- Tensor product of rings commutes with finite products on the right. -/
 def piRight : A ⊗[R] (∀ i, B i) ≃ₐ[S] ∀ i, A ⊗[R] B i :=
-  AlgEquiv.ofLinearEquiv (_root_.TensorProduct.piRight R S A B) (by simp) (by simp)
+  AlgEquiv.ofLinearEquiv (_root_.TensorProduct.piRight R S A B) (by simp)
 
 @[simp]
 lemma piRight_tmul (x : A) (f : ∀ i, B i) :
@@ -77,7 +81,6 @@ variable (B C : Type*) [Semiring B] [Semiring C] [Algebra R B] [Algebra R C]
 /-- Tensor product of rings commutes with binary products on the right. -/
 nonrec def prodRight : A ⊗[R] (B × C) ≃ₐ[S] A ⊗[R] B × A ⊗[R] C :=
   AlgEquiv.ofLinearEquiv (TensorProduct.prodRight R S A B C)
-    (by simp [Algebra.TensorProduct.one_def])
     (LinearMap.map_mul_of_map_mul_tmul (fun _ _ _ _ ↦ by simp))
 
 lemma prodRight_tmul (a : A) (x : B × C) : prodRight R S A B C (a ⊗ₜ x) = (a ⊗ₜ x.1, a ⊗ₜ x.2) :=
@@ -100,3 +103,12 @@ lemma prodRight_symm_tmul (a : A) (b : B) (c : C) :
 end
 
 end Algebra.TensorProduct
+
+theorem TensorProduct.piScalarRight_symm_algebraMap
+    (R : Type*) [CommSemiring R] (S : Type*) [CommSemiring S] [Algebra R S]
+    (ι : Type*) [Fintype ι] [DecidableEq ι]
+    {N : Type*} [Semiring N] [Algebra R N] [Module S N] [IsScalarTower R S N]
+    (x : ι → R) :
+    (TensorProduct.piScalarRight R S N ι).symm (algebraMap _ _ x) = 1 ⊗ₜ[R] x := by
+  simp [Algebra.algebraMap_eq_smul_one, Pi.smul_def', LinearEquiv.symm_apply_eq,
+    piScalarRight_apply, piScalarRightHom_tmul]

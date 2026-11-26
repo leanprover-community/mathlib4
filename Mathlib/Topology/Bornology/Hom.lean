@@ -3,7 +3,12 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Topology.Bornology.Basic
+module
+
+public import Mathlib.Topology.Bornology.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Locally bounded maps
@@ -21,6 +26,8 @@ be satisfied by itself and all stricter types.
 
 * `LocallyBoundedMapClass`
 -/
+
+@[expose] public section
 
 
 open Bornology Filter Function Set
@@ -73,9 +80,10 @@ namespace LocallyBoundedMap
 
 variable [Bornology α] [Bornology β] [Bornology γ] [Bornology δ]
 
+@[macro_inline]
 instance : FunLike (LocallyBoundedMap α β) α β where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     cases f
     cases g
     congr

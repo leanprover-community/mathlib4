@@ -3,9 +3,15 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Embedding.AreComplementary
-import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
-import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
+module
+
+public import Mathlib.Algebra.Homology.Embedding.AreComplementary
+public import Mathlib.Algebra.Homology.Embedding.StupidTrunc
+public import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
+public import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Truncations on cochain complexes indexed by the integers.
@@ -15,14 +21,15 @@ In this file, we introduce abbreviations for the canonical truncations
 complexes indexed by `ℤ`, as well as the conditions
 `CochainComplex.IsStrictlyLE`, `CochainComplex.IsStrictlyGE`,
 `CochainComplex.IsLE`, and `CochainComplex.IsGE`.
-
 -/
+
+@[expose] public section
 
 open CategoryTheory Category Limits ComplexShape ZeroObject
 
 namespace CochainComplex
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 open HomologicalComplex
 
@@ -49,6 +56,22 @@ noncomputable def ιTruncLE (n : ℤ) : K.truncLE n ⟶ K :=
 /-- The canonical map `K ⟶ K.truncGE n` for `K : CochainComplex C ℤ`. -/
 noncomputable def πTruncGE (n : ℤ) : K ⟶ K.truncGE n :=
   HomologicalComplex.πTruncGE K (embeddingUpIntGE n)
+
+lemma quasiIsoAt_ιTruncLE (n q : ℤ) (hq : q ≤ n) :
+    QuasiIsoAt (K.ιTruncLE n) q := by
+  obtain ⟨k, rfl⟩ := Int.le.dest hq
+  exact HomologicalComplex.quasiIsoAt_ιTruncLE (j := k) _ _ (by simp)
+
+lemma quasiIsoAt_πTruncGE (n q : ℤ) (hq : n ≤ q) :
+    QuasiIsoAt (K.πTruncGE n) q := by
+  obtain ⟨k, rfl⟩ := Int.le.dest hq
+  exact HomologicalComplex.quasiIsoAt_πTruncGE (j := k) _ _ (by simp)
+
+instance (n : ℤ) : QuasiIsoAt (K.πTruncGE n) n :=
+  quasiIsoAt_πTruncGE _ _ _ (by lia)
+
+instance (n : ℤ) : QuasiIsoAt (K.ιTruncLE n) n :=
+  quasiIsoAt_ιTruncLE _ _ _ (by lia)
 
 section
 
@@ -88,36 +111,36 @@ abbrev IsGE (n : ℤ) := K.IsSupported (embeddingUpIntGE n)
 /-- The condition that a cochain complex `K` is (cohomologically) `≤ n`. -/
 abbrev IsLE (n : ℤ) := K.IsSupported (embeddingUpIntLE n)
 
-lemma isZero_of_isStrictlyGE (n i : ℤ) (hi : i < n) [K.IsStrictlyGE n] :
+lemma isZero_of_isStrictlyGE (n i : ℤ) (hi : i < n := by lia) [K.IsStrictlyGE n] :
     IsZero (K.X i) :=
   isZero_X_of_isStrictlySupported K (embeddingUpIntGE n) i
     (by simpa only [notMem_range_embeddingUpIntGE_iff] using hi)
 
-lemma isZero_of_isStrictlyLE (n i : ℤ) (hi : n < i) [K.IsStrictlyLE n] :
+lemma isZero_of_isStrictlyLE (n i : ℤ) (hi : n < i := by lia) [K.IsStrictlyLE n] :
     IsZero (K.X i) :=
   isZero_X_of_isStrictlySupported K (embeddingUpIntLE n) i
     (by simpa only [notMem_range_embeddingUpIntLE_iff] using hi)
 
-lemma exactAt_of_isGE (n i : ℤ) (hi : i < n) [K.IsGE n] :
+lemma exactAt_of_isGE (n i : ℤ) (hi : i < n := by lia) [K.IsGE n] :
     K.ExactAt i :=
   exactAt_of_isSupported K (embeddingUpIntGE n) i
     (by simpa only [notMem_range_embeddingUpIntGE_iff] using hi)
 
-lemma exactAt_of_isLE (n i : ℤ) (hi : n < i) [K.IsLE n] :
+lemma exactAt_of_isLE (n i : ℤ) (hi : n < i := by lia) [K.IsLE n] :
     K.ExactAt i :=
   exactAt_of_isSupported K (embeddingUpIntLE n) i
     (by simpa only [notMem_range_embeddingUpIntLE_iff] using hi)
 
-lemma isZero_of_isGE (n i : ℤ) (hi : i < n) [K.IsGE n] [K.HasHomology i] :
+lemma isZero_of_isGE (n i : ℤ) (hi : i < n := by lia) [K.IsGE n] [K.HasHomology i] :
     IsZero (K.homology i) :=
   (K.exactAt_of_isGE n i hi).isZero_homology
 
-lemma isZero_of_isLE (n i : ℤ) (hi : n < i) [K.IsLE n] [K.HasHomology i] :
+lemma isZero_of_isLE (n i : ℤ) (hi : n < i := by lia) [K.IsLE n] [K.HasHomology i] :
     IsZero (K.homology i) :=
   (K.exactAt_of_isLE n i hi).isZero_homology
 
 lemma isStrictlyGE_iff (n : ℤ) :
-    K.IsStrictlyGE n ↔ ∀ (i : ℤ) (_ : i < n), IsZero (K.X i) := by
+    K.IsStrictlyGE n ↔ ∀ (i : ℤ) (_ : i < n := by lia), IsZero (K.X i) := by
   constructor
   · intro _ i hi
     exact K.isZero_of_isStrictlyGE n i hi
@@ -160,29 +183,25 @@ lemma isStrictlyLE_of_le (p q : ℤ) (hpq : p ≤ q) [K.IsStrictlyLE p] :
     K.IsStrictlyLE q := by
   rw [isStrictlyLE_iff]
   intro i hi
-  apply K.isZero_of_isStrictlyLE p
-  omega
+  exact K.isZero_of_isStrictlyLE p _
 
 lemma isStrictlyGE_of_ge (p q : ℤ) (hpq : p ≤ q) [K.IsStrictlyGE q] :
     K.IsStrictlyGE p := by
   rw [isStrictlyGE_iff]
   intro i hi
-  apply K.isZero_of_isStrictlyGE q
-  omega
+  exact K.isZero_of_isStrictlyGE q _
 
 lemma isLE_of_le (p q : ℤ) (hpq : p ≤ q) [K.IsLE p] :
     K.IsLE q := by
   rw [isLE_iff]
   intro i hi
-  apply K.exactAt_of_isLE p
-  omega
+  exact K.exactAt_of_isLE p _
 
 lemma isGE_of_ge (p q : ℤ) (hpq : p ≤ q) [K.IsGE q] :
     K.IsGE p := by
   rw [isGE_iff]
   intro i hi
-  apply K.exactAt_of_isGE q
-  omega
+  exact K.exactAt_of_isGE q _
 
 section
 
@@ -204,9 +223,33 @@ lemma isGE_of_iso (n : ℤ) [K.IsGE n] : L.IsGE n := by
 
 end
 
+@[simp]
+lemma isStrictlySupported_embeddingUpNat_iff_isStrictlyGE_zero :
+    K.IsStrictlySupported embeddingUpNat ↔ K.IsStrictlyGE 0 := by
+  rw [← embeddingUpIntGE_zero]
+
+@[simp]
+lemma isStrictlySupported_embeddingDownNat_iff_isStrictlyLE_zero :
+    K.IsStrictlySupported embeddingDownNat ↔ K.IsStrictlyLE 0 := by
+  rw [← embeddingUpIntLE_zero]
+
+instance [K.IsStrictlyGE 0] : K.IsStrictlySupported embeddingUpNat := by
+  rwa [isStrictlySupported_embeddingUpNat_iff_isStrictlyGE_zero]
+
+instance [K.IsStrictlyLE 0] : K.IsStrictlySupported embeddingDownNat := by
+  rwa [isStrictlySupported_embeddingDownNat_iff_isStrictlyLE_zero]
+
 section
 
 variable [HasZeroObject C]
+
+instance (X : CochainComplex C ℕ) :
+    CochainComplex.IsStrictlyGE (X.extend embeddingUpNat) 0 where
+  isZero _ _ := isZero_extend_X _ _ _ (by aesop)
+
+instance (X : ChainComplex C ℕ) :
+    CochainComplex.IsStrictlyLE (X.extend embeddingDownNat) 0 where
+  isZero _ _ := isZero_extend_X _ _ _ (by aesop)
 
 /-- A cochain complex that is both strictly `≤ n` and `≥ n` is isomorphic to
 a complex `(single _ _ n).obj M` for some object `M`. -/
@@ -214,28 +257,28 @@ lemma exists_iso_single (n : ℤ) [K.IsStrictlyGE n] [K.IsStrictlyLE n] :
     ∃ (M : C), Nonempty (K ≅ (single _ _ n).obj M) :=
   ⟨K.X n, ⟨{
       hom := mkHomToSingle (𝟙 _) (fun i (hi : i + 1 = n) ↦
-        (K.isZero_of_isStrictlyGE n i (by omega)).eq_of_src _ _)
+        (K.isZero_of_isStrictlyGE n i (by lia)).eq_of_src _ _)
       inv := mkHomFromSingle (𝟙 _) (fun i (hi : n + 1 = i) ↦
-        (K.isZero_of_isStrictlyLE n i (by omega)).eq_of_tgt _ _)
+        (K.isZero_of_isStrictlyLE n i (by lia)).eq_of_tgt _ _)
       hom_inv_id := by
         ext i
         obtain hi | rfl | hi := lt_trichotomy i n
-        · apply (K.isZero_of_isStrictlyGE n i (by omega)).eq_of_src
+        · apply (K.isZero_of_isStrictlyGE n i (by lia)).eq_of_src
         · simp
-        · apply (K.isZero_of_isStrictlyLE n i (by omega)).eq_of_tgt
+        · apply (K.isZero_of_isStrictlyLE n i (by lia)).eq_of_tgt
       inv_hom_id := by aesop }⟩⟩
 
 instance (A : C) (n : ℤ) :
     IsStrictlyGE ((single C (ComplexShape.up ℤ) n).obj A) n := by
   rw [isStrictlyGE_iff]
   intro i hi
-  exact isZero_single_obj_X _ _ _ _ (by omega)
+  exact isZero_single_obj_X _ _ _ _ (by lia)
 
 instance (A : C) (n : ℤ) :
     IsStrictlyLE ((single C (ComplexShape.up ℤ) n).obj A) n := by
   rw [isStrictlyLE_iff]
   intro i hi
-  exact isZero_single_obj_X _ _ _ _ (by omega)
+  exact isZero_single_obj_X _ _ _ _ (by lia)
 
 variable [∀ i, K.HasHomology i] [∀ i, L.HasHomology i] (n : ℤ)
 
@@ -273,7 +316,7 @@ lemma quasiIso_truncGEMap_iff :
     obtain ⟨k, rfl⟩ := Int.le.dest hi
     exact h k _ rfl
   · rintro h i i' rfl
-    exact h _ (by dsimp; omega)
+    exact h _ (by dsimp; lia)
 
 lemma quasiIso_truncLEMap_iff :
     QuasiIso (truncLEMap φ n) ↔ ∀ (i : ℤ) (_ : i ≤ n), QuasiIsoAt φ i := by
@@ -281,9 +324,37 @@ lemma quasiIso_truncLEMap_iff :
   constructor
   · intro h i hi
     obtain ⟨k, rfl⟩ := Int.le.dest hi
-    exact h k _ (by dsimp; omega)
+    exact h k _ (by dsimp; lia)
   · rintro h i i' rfl
-    exact h _ (by dsimp; omega)
+    exact h _ (by dsimp; lia)
+
+instance [K.IsStrictlyGE 0] : IsIso (K.ιStupidTrunc embeddingUpNat) := by
+  have : K.IsStrictlySupported embeddingUpNat := by
+    rwa [isStrictlySupported_embeddingUpNat_iff_isStrictlyGE_zero]
+  infer_instance
+
+instance [K.IsStrictlyLE 0] : IsIso (K.πStupidTrunc embeddingDownNat) := by
+  have : K.IsStrictlySupported embeddingDownNat := by
+    rwa [isStrictlySupported_embeddingDownNat_iff_isStrictlyLE_zero]
+  infer_instance
+
+end
+
+section
+
+variable {D : Type*} [Category* D] [HasZeroMorphisms D]
+
+lemma isStrictlyGE_mapHomologicalComplex_obj_iff
+    (F : C ⥤ D) [F.Faithful] [F.PreservesZeroMorphisms] (n : ℤ) :
+    CochainComplex.IsStrictlyGE ((F.mapHomologicalComplex (.up ℤ)).obj K) n ↔
+      K.IsStrictlyGE n :=
+  isStrictlySupported_mapHomologicalComplex_obj_iff ..
+
+lemma isStrictlyLE_mapHomologicalComplex_obj_iff
+    (F : C ⥤ D) [F.Faithful] [F.PreservesZeroMorphisms] (n : ℤ) :
+    CochainComplex.IsStrictlyLE ((F.mapHomologicalComplex (.up ℤ)).obj K) n ↔
+      K.IsStrictlyLE n :=
+  isStrictlySupported_mapHomologicalComplex_obj_iff ..
 
 end
 
@@ -305,13 +376,13 @@ lemma isStrictlyLE_shift (n : ℤ) [K.IsStrictlyLE n] (a n' : ℤ) (h : a + n' =
     (K⟦a⟧).IsStrictlyLE n' := by
   rw [isStrictlyLE_iff]
   intro i hi
-  exact IsZero.of_iso (K.isZero_of_isStrictlyLE n _ (by omega)) (K.shiftFunctorObjXIso a i _ rfl)
+  exact IsZero.of_iso (K.isZero_of_isStrictlyLE n _ (by lia)) (K.shiftFunctorObjXIso a i _ rfl)
 
 lemma isStrictlyGE_shift (n : ℤ) [K.IsStrictlyGE n] (a n' : ℤ) (h : a + n' = n) :
     (K⟦a⟧).IsStrictlyGE n' := by
   rw [isStrictlyGE_iff]
   intro i hi
-  exact IsZero.of_iso (K.isZero_of_isStrictlyGE n _ (by omega)) (K.shiftFunctorObjXIso a i _ rfl)
+  exact IsZero.of_iso (K.isZero_of_isStrictlyGE n _ (by lia)) (K.shiftFunctorObjXIso a i _ rfl)
 
 section
 
@@ -321,20 +392,75 @@ lemma isLE_shift (n : ℤ) [K.IsLE n] (a n' : ℤ) (h : a + n' = n) : (K⟦a⟧)
   rw [isLE_iff]
   intro i hi
   rw [exactAt_iff_isZero_homology]
-  exact IsZero.of_iso (K.isZero_of_isLE n (a + i) (by omega))
+  exact IsZero.of_iso (K.isZero_of_isLE n (a + i) (by lia))
     (((homologyFunctor C _ (0 : ℤ)).shiftIso a i _ rfl).app K)
 
 lemma isGE_shift (n : ℤ) [K.IsGE n] (a n' : ℤ) (h : a + n' = n) : (K⟦a⟧).IsGE n' := by
   rw [isGE_iff]
   intro i hi
   rw [exactAt_iff_isZero_homology]
-  exact IsZero.of_iso (K.isZero_of_isGE n (a + i) (by omega))
+  exact IsZero.of_iso (K.isZero_of_isGE n (a + i) (by lia))
     (((homologyFunctor C _ (0 : ℤ)).shiftIso a i _ rfl).app K)
 
 end
 
 end Preadditive
 
+section HasZeroMorphisms
+
+variable {C : Type*} [Category C] [HasZeroMorphisms C] [HasZeroObject C]
+  (K L : CochainComplex C ℤ) (φ : K ⟶ L) (e : K ≅ L)
+  [∀ (i : ℤ), K.HasHomology i] [∀ (i : ℤ), L.HasHomology i] (n : ℤ)
+
+/-- When `K` is a cochain complex indexed by `ℤ` and `n < i`, this is
+the isomorphism `(K.truncGE n).X i ≅ K.X i`. -/
+noncomputable def truncGEXIso (n i : ℤ) (hi : n < i := by lia) :
+    (K.truncGE n).X i ≅ K.X i :=
+  HomologicalComplex.truncGEXIso K (embeddingUpIntGE n) (i := (i - n).natAbs) (by
+      dsimp
+      rw [Int.natAbs_of_nonneg (by lia), add_sub_cancel])
+    (fun h ↦ by
+      rw [boundaryGE_embeddingUpIntGE_iff, Int.natAbs_eq_zero] at h
+      lia)
+
+/-- When `K` is a cochain complex indexed by `ℤ` and `i < n`, this is
+the isomorphism `(K.truncLE n).X i ≅ K.X i`. -/
+noncomputable def truncLEXIso (n i : ℤ) (hi : i < n := by lia) :
+    (K.truncLE n).X i ≅ K.X i :=
+  HomologicalComplex.truncLEXIso K (embeddingUpIntLE n) (i := (n - i).natAbs) (by
+      dsimp
+      rw [Int.natAbs_of_nonneg (by lia), sub_sub_cancel])
+    (fun h ↦ by
+      rw [boundaryLE_embeddingUpIntLE_iff, Int.natAbs_eq_zero] at h
+      lia)
+
+/-- When `K` is a cochain complex indexed by `ℤ`, this is the isomorphism
+`(K.truncGE n).X n ≅ K.opcycles n`. -/
+noncomputable def truncGEXIsoOpcycles (n : ℤ) :
+    (K.truncGE n).X n ≅ K.opcycles n :=
+  HomologicalComplex.truncGEXIsoOpcycles K (embeddingUpIntGE n) (i := 0) (by simp)
+    (by rw [boundaryGE_embeddingUpIntGE_iff])
+
+/-- When `K` is a cochain complex indexed by `ℤ`, this is the isomorphism
+`(K.truncLE n).X n ≅ K.cycles n`. -/
+noncomputable def truncLEXIsoCycles (n : ℤ) :
+    (K.truncLE n).X n ≅ K.cycles n :=
+  HomologicalComplex.truncLEXIsoCycles K (embeddingUpIntLE n) (i := 0) (by simp)
+    (by rw [boundaryLE_embeddingUpIntLE_iff])
+
+lemma acyclic_truncGE_iff (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁ := by lia) :
+    (K.truncGE n₁).Acyclic ↔ K.IsLE n₀ := by
+  dsimp [truncGE]
+  rw [acyclic_truncGE_iff_isSupportedOutside,
+    (Embedding.embeddingUpInt_areComplementary n₀ n₁ h).isSupportedOutside₂_iff]
+
+lemma acyclic_truncLE_iff (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁ := by lia) :
+    (K.truncLE n₀).Acyclic ↔ K.IsGE n₁ := by
+  dsimp [truncLE]
+  rw [acyclic_truncLE_iff_isSupportedOutside,
+    (Embedding.embeddingUpInt_areComplementary n₀ n₁ h).isSupportedOutside₁_iff]
+
+end HasZeroMorphisms
 
 section Abelian
 
@@ -348,18 +474,32 @@ lemma shortComplexTruncLE_shortExact (n : ℤ) :
     (K.shortComplexTruncLE n).ShortExact := by
   apply HomologicalComplex.shortComplexTruncLE_shortExact
 
-variable (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁)
+variable (n₀ n₁ : ℤ)
 
 /-- The canonical morphism `(K.shortComplexTruncLE n₀).X₃ ⟶ K.truncGE n₁`. -/
-noncomputable abbrev shortComplexTruncLEX₃ToTruncGE :
+noncomputable abbrev shortComplexTruncLEX₃ToTruncGE (h : n₀ + 1 = n₁ := by lia) :
     (K.shortComplexTruncLE n₀).X₃ ⟶ K.truncGE n₁ :=
   HomologicalComplex.shortComplexTruncLEX₃ToTruncGE K
     (Embedding.embeddingUpInt_areComplementary n₀ n₁ h)
 
 @[reassoc]
-lemma g_shortComplexTruncLEX₃ToTruncGE :
+lemma g_shortComplexTruncLEX₃ToTruncGE (h : n₀ + 1 = n₁ := by lia) :
     (K.shortComplexTruncLE n₀).g ≫ K.shortComplexTruncLEX₃ToTruncGE n₀ n₁ h = K.πTruncGE n₁ := by
   apply HomologicalComplex.g_shortComplexTruncLEX₃ToTruncGE
+
+lemma injective_opcycles [Injective (K.X n₀)] [Injective (K.X n₁)]
+    [K.IsStrictlyGE n₀] (hK : K.ExactAt n₀) (h : n₀ + 1 = n₁ := by lia) :
+    Injective (K.opcycles n₁) := by
+  let S : ShortComplex C := ShortComplex.mk (K.d n₀ n₁) (K.pOpcycles n₁) (by simp)
+  have : Mono S.f := by
+    let T := K.sc' (n₀ - 1) n₀ n₁
+    have hT : T.Exact := by
+      rwa [← K.exactAt_iff' (n₀ - 1) n₀ n₁ (by simp) (by simpa)]
+    exact hT.mono_g ((K.isZero_of_isStrictlyGE n₀ _).eq_of_src ..)
+  have hS : S.ShortExact :=
+    { exact := S.exact_of_g_is_cokernel (K.opcyclesIsCokernel n₀ n₁ (by simp [← h])) }
+  exact Retract.injective
+    { i := _, r := _, retract := (hS.splittingOfInjective).s_g }
 
 end Abelian
 

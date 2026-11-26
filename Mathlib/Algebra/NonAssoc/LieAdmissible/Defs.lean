@@ -3,8 +3,12 @@ Copyright (c) 2025 Nikolas Tapia. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nikolas Tapia
 -/
-import Mathlib.Algebra.Lie.Basic
-import Mathlib.Algebra.NonAssoc.PreLie.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Lie.Basic
+public import Mathlib.Algebra.NonAssoc.PreLie.Basic
+
 /-!
 # Lie admissible rings and algebras
 
@@ -15,26 +19,29 @@ associator x y z + associator z x y + associator y z x =
   associator y x z + associator z y x + associator x z y
 ```
 
-## Main definitions:
-  * `LieAdmissibleRing`
-  * `LieAdmissibleAlgebra`
+## Main definitions and results
 
-## Main results
-  * `LieAdmissibleRing.instLieRing`: a Lie-admissible ring as a Lie ring
-  * `LeftPreLieRing.instLieAdmissibleRing`: a left pre-Lie ring as a Lie admissible ring
-  * `RightPreLieRing.instLieAdmissibleRing`: a right pre-Lie ring as a Lie admissible ring
-  * `LieAdmissibleAlgebra.instLieAlgebra`: a Lie-admissible algebra as a Lie algebra
-  * `LeftPreLieAlgebra.instLieAdmissibleAlgebra`: a left pre-Lie ring as a Lie admissible algebra
-  * `RightPreLieAlgebra.instLieAdmissibleAlgebra`: a right pre-Lie ring as a Lie admissible algebra
+* `LieAdmissibleRing`
+* `LieAdmissibleAlgebra`
+* `LieAdmissibleRing.instLieRing`: a Lie-admissible ring as a Lie ring
+* `LeftPreLieRing.instLieAdmissibleRing`: a left pre-Lie ring as a Lie admissible ring
+* `RightPreLieRing.instLieAdmissibleRing`: a right pre-Lie ring as a Lie admissible ring
+* `LieAdmissibleAlgebra.instLieAlgebra`: a Lie-admissible algebra as a Lie algebra
+* `LeftPreLieAlgebra.instLieAdmissibleAlgebra`: a left pre-Lie ring as a Lie admissible algebra
+* `RightPreLieAlgebra.instLieAdmissibleAlgebra`: a right pre-Lie ring as a Lie admissible algebra
 
-## Implementation Notes
+## Implementation notes
+
 Algebras are implemented as extending `Module`, `IsScalarTower` and `SMulCommClass` following the
 documentation of `Algebra`.
 
 ## References
+
 [Munthe-Kaas, H.Z., Lundervold, A. **On Post-Lie Algebras, Lie–Butcher Series and Moving
 Frames.**][munthe-kaas_lundervold_2013]
 -/
+
+public section
 
 /-- A `LieAdmissibleRing` is a `NonUnitalNonAssocRing` such that the canonical bracket
 `⁅x, y⁆ := x * y - y * x` turns it into a `LieRing`. This is expressed by an associator identity. -/
@@ -80,13 +87,11 @@ instance instLieAlgebra [LieAdmissibleRing L] [LieAdmissibleAlgebra R L] : LieAl
 
 end LieAdmissibleAlgebra
 
-end instances
-
 namespace LeftPreLieRing
 
-variable {L : Type*} [LeftPreLieRing L]
+variable [LeftPreLieRing L]
 
-/-- `LeftPreLieRings` are examples of `LieAdmissibleRings` by the commutatitvity assumption on the
+/-- `LeftPreLieRings` are examples of `LieAdmissibleRings` by the commutativity assumption on the
 associator. -/
 instance instLieAdmissibleRing : LieAdmissibleRing L where
   assoc_def x y z := by
@@ -99,7 +104,7 @@ end LeftPreLieRing
 
 namespace LeftPreLieAlgebra
 
-variable {R L : Type*} [CommRing R] [LeftPreLieRing L] [LeftPreLieAlgebra R L]
+variable [LeftPreLieRing L] [LeftPreLieAlgebra R L]
 
 instance instLieAdmissibleAlgebra : LieAdmissibleAlgebra R L where
 
@@ -107,9 +112,9 @@ end LeftPreLieAlgebra
 
 namespace RightPreLieRing
 
-variable {L : Type*} [RightPreLieRing L]
+variable [RightPreLieRing L]
 
-/-- `RightPreLieRings` are examples of `LieAdmissibleRings` by the commutatitvity assumption on
+/-- `RightPreLieRings` are examples of `LieAdmissibleRings` by the commutativity assumption on
 the associator. -/
 instance instLieAdmissibleRing : LieAdmissibleRing L where
   assoc_def x y z := by
@@ -122,8 +127,35 @@ end RightPreLieRing
 
 namespace RightPreLieAlgebra
 
-variable {R L : Type*} [CommRing R] [RightPreLieRing L] [RightPreLieAlgebra R L]
+variable [RightPreLieRing L] [RightPreLieAlgebra R L]
 
 instance instLieAdmissibleAlgebra : LieAdmissibleAlgebra R L where
 
 end RightPreLieAlgebra
+
+namespace Ring
+
+variable [Ring L]
+
+/-- Every ring is Lie-admissible.
+See note [reducible non-instances]. -/
+abbrev instLieAdmissibleRing : LieAdmissibleRing L where
+  assoc_def := by
+    suffices ∀ a b c : L, associator a b c = 0 by simp
+    simp
+
+end Ring
+
+namespace Algebra
+
+variable [Ring L] [Algebra R L]
+attribute [local instance] Ring.instLieAdmissibleRing
+
+/-- Every algebra is Lie-admissible.
+See note [reducible non-instances]. -/
+abbrev instLieAdmissibleAlgebra : LieAdmissibleAlgebra R L where
+  smul_comm := by simp
+
+end Algebra
+
+end instances

@@ -3,18 +3,23 @@ Copyright (c) 2025 Moisés Herradón Cueto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moisés Herradón Cueto
 -/
-import Mathlib.CategoryTheory.FinCategory.Basic
-import Mathlib.CategoryTheory.WithTerminal.Basic
-import Mathlib.Data.Fintype.Option
+module
+
+public import Mathlib.CategoryTheory.FinCategory.Basic
+public import Mathlib.CategoryTheory.WithTerminal.Basic
+public import Mathlib.Data.Fintype.Option
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
-
 # `WithTerminal C` and `WithInitial C` are finite whenever `C` is
 
 If `C` has finitely many objects, then so do `WithTerminal C` and `WithInitial C`,
 and likewise if `C` has finitely many morphisms as well.
-
 -/
+
+@[expose] public section
 
 
 universe v u

@@ -3,15 +3,23 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Sum
-import Mathlib.Data.Fintype.EquivFin
+module
+
+public import Mathlib.Data.Finset.Sum
+public import Mathlib.Data.Fintype.EquivFin
+
 import Mathlib.Logic.Embedding.Set
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-## Instances
+# Fintypes and sum types
 
 We provide the `Fintype` instance for the sum of two fintypes.
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -61,6 +69,7 @@ theorem Fintype.card_sum [Fintype α] [Fintype β] :
   card_disjSum _ _
 
 /-- If the subtype of all-but-one elements is a `Fintype` then the type itself is a `Fintype`. -/
+@[instance_reducible]
 def fintypeOfFintypeNe (a : α) (_ : Fintype { b // b ≠ a }) : Fintype α :=
   Fintype.ofBijective (Sum.elim ((↑) : { b // b = a } → α) ((↑) : { b // b ≠ a } → α)) <| by
     classical exact (Equiv.sumCompl (· = a)).bijective
@@ -70,7 +79,7 @@ theorem image_subtype_ne_univ_eq_image_erase [Fintype α] [DecidableEq β] (k : 
   apply subset_antisymm
   · rw [image_subset_iff]
     intro i _
-    apply mem_erase_of_ne_of_mem i.2 (mem_image_of_mem _ (mem_univ _))
+    apply mem_erase_of_ne_of_mem i.property (mem_image_of_mem _ (mem_univ _))
   · intro i hi
     rw [mem_image]
     rcases mem_image.1 (erase_subset _ _ hi) with ⟨a, _, ha⟩
@@ -116,12 +125,12 @@ theorem Set.MapsTo.exists_equiv_extend_of_card_eq [Fintype α] {t : Finset β}
     (hfs : Set.InjOn f s) : ∃ g : α ≃ t, ∀ i ∈ s, (g i : β) = f i := by
   classical
     let s' : Finset α := s.toFinset
-    have hfst' : s'.image f ⊆ t := by simpa [s', ← Finset.coe_subset] using hfst
-    have hfs' : Set.InjOn f s' := by simpa [s'] using hfs
+    have hfst' : s'.image f ⊆ t := by simpa [s', ← Finset.coe_subset] using! hfst
+    have hfs' : Set.InjOn f s' := by simpa [s'] using! hfs
     obtain ⟨g, hg⟩ := Finset.exists_equiv_extend_of_card_eq hαt hfst' hfs'
     refine ⟨g, fun i hi => ?_⟩
     apply hg
-    simpa [s'] using hi
+    simpa [s'] using! hi
 
 theorem Fintype.card_subtype_or (p q : α → Prop) [Fintype { x // p x }] [Fintype { x // q x }]
     [Fintype { x // p x ∨ q x }] :
@@ -137,12 +146,13 @@ theorem Fintype.card_subtype_or_disjoint (p q : α → Prop) (h : Disjoint p q) 
     convert Fintype.card_congr (subtypeOrEquiv p q h)
     simp
 
-section
+theorem Fintype.card_subtype_eq_or_eq_of_ne {α : Type*} [Fintype α] [DecidableEq α] {a b : α}
+    (h : a ≠ b) : Fintype.card { c : α // c = a ∨ c = b } = 2 :=
+  Fintype.card_subtype_or_disjoint _ _ fun _ ha hb _ hc ↦ ha _ hc ▸ hb _ hc ▸ h <| rfl
 
+attribute [local instance] Fintype.ofFinite in
 @[simp]
 theorem infinite_sum : Infinite (α ⊕ β) ↔ Infinite α ∨ Infinite β := by
   refine ⟨fun H => ?_, fun H => H.elim (@Sum.infinite_of_left α β) (@Sum.infinite_of_right α β)⟩
-  contrapose! H; haveI := fintypeOfNotInfinite H.1; haveI := fintypeOfNotInfinite H.2
-  exact Infinite.false
-
-end
+  contrapose! H; cases H
+  infer_instance

@@ -3,23 +3,28 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.Homology
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.CategoryTheory.Preadditive.Opposite
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.Homology
+public import Mathlib.CategoryTheory.Preadditive.Opposite
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Homology of preadditive categories
 
 In this file, it is shown that if `C` is a preadditive category, then
 `ShortComplex C` is a preadditive category.
-
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
 open Category Limits Preadditive
 
-variable {C : Type*} [Category C] [Preadditive C]
+variable {C : Type*} [Category* C] [Preadditive C]
 
 namespace ShortComplex
 
@@ -535,9 +540,9 @@ variable {φ₁ φ₂}
 lemma eq_add_nullHomotopic (h : Homotopy φ₁ φ₂) :
     φ₁ = φ₂ + nullHomotopic _ _ h.h₀ h.h₀_f h.h₁ h.h₂ h.h₃ h.g_h₃ := by
   ext
-  · dsimp; rw [h.comm₁]; abel
-  · dsimp; rw [h.comm₂]; abel
-  · dsimp; rw [h.comm₃]; abel
+  · simp [h.comm₁]; abel
+  · simp [h.comm₂]; abel
+  · simp [h.comm₃]; abel
 
 variable (S₁ S₂)
 
@@ -668,7 +673,7 @@ lemma homologyMap_congr (h : Homotopy φ₁ φ₂) [S₁.HasHomology] [S₂.HasH
 
 end Homotopy
 
-/-- An homotopy equivalence between two short complexes `S₁` and `S₂` consists
+/-- A homotopy equivalence between two short complexes `S₁` and `S₂` consists
 of morphisms `hom : S₁ ⟶ S₂` and `inv : S₂ ⟶ S₁` such that both compositions
 `hom ≫ inv` and `inv ≫ hom` are homotopic to the identity. -/
 @[ext]
@@ -721,6 +726,23 @@ def trans (e : HomotopyEquiv S₁ S₂) (e' : HomotopyEquiv S₂ S₃) :
 end HomotopyEquiv
 
 end Homotopy
+
+section
+
+variable (S : ShortComplex C) [S.HasLeftHomology] {A : C}
+    (k k' : A ⟶ S.X₂) (hk : k ≫ S.g = 0) (hk' : k' ≫ S.g = 0)
+
+lemma add_liftCycles :
+    S.liftCycles k hk + S.liftCycles k' hk' =
+      S.liftCycles (k + k') (by rw [add_comp, hk, hk', add_zero]) := by
+  simp only [← cancel_mono S.iCycles, liftCycles_i, add_comp]
+
+lemma sub_liftCycles :
+    S.liftCycles k hk - S.liftCycles k' hk' =
+      S.liftCycles (k - k') (by rw [sub_comp, hk, hk', sub_zero]) := by
+  simp only [← cancel_mono S.iCycles, liftCycles_i, sub_comp]
+
+end
 
 end ShortComplex
 

@@ -3,8 +3,13 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
-import Mathlib.RingTheory.GradedAlgebra.Basic
+module
+
+public import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
+public import Mathlib.RingTheory.GradedAlgebra.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Results about the grading structure of the exterior algebra
@@ -14,6 +19,8 @@ Many of these results are copied with minimal modification from the tensor algeb
 The main result is `ExteriorAlgebra.gradedAlgebra`, which says that the exterior algebra is a
 ℕ-graded algebra.
 -/
+
+@[expose] public section
 
 namespace ExteriorAlgebra
 
@@ -57,7 +64,7 @@ theorem GradedAlgebra.liftι_eq (i : ℕ) (x : ⋀[R]^i M) :
   dsimp only [Subtype.coe_mk, DirectSum.lof_eq_of]
   induction hx using Submodule.pow_induction_on_left' with
   | algebraMap => simp_rw [AlgHom.commutes, DirectSum.algebraMap_apply]; rfl
-  | add _ _ _ _ _ ihx ihy => simp_rw [map_add, ihx, ihy, ← AddMonoidHom.map_add]; rfl
+  | add _ _ _ _ _ ihx ihy => simp_rw [map_add, ihx, ihy, ← map_add]; rfl
   | mem_mul _ hm _ _ _ ih =>
       obtain ⟨_, rfl⟩ := hm
       simp_rw [map_mul, ih, GradedAlgebra.liftι, lift_ι_apply, GradedAlgebra.ι_apply R M,
@@ -93,5 +100,17 @@ lemma ιMulti_span :
     refine Submodule.span_mono fun _ hx ↦ ?_
     obtain ⟨y, rfl⟩ := hx
     exact ⟨⟨_, y⟩, rfl⟩
+
+/-- The projection from the exterior algebra onto the exterior power `⋀[R]^i M`. -/
+def toExteriorPower (i : ℕ) : ExteriorAlgebra R M →ₗ[R] ⋀[R]^i M :=
+  (DFinsupp.lapply i).comp (GradedAlgebra.liftι R M).toLinearMap
+
+@[simp]
+lemma toExteriorPower_coe (i : ℕ) (x : ⋀[R]^i M) : toExteriorPower R M i x = x := by
+  simp [toExteriorPower, GradedAlgebra.liftι_eq]
+
+lemma toExteriorPower_coe_of_ne {i j : ℕ} (h : j ≠ i) (x : ⋀[R]^j M) :
+    toExteriorPower R M i x = 0 := by
+  simp [toExteriorPower, GradedAlgebra.liftι_eq, DirectSum.of_eq_of_ne _ _ _ h.symm]
 
 end ExteriorAlgebra

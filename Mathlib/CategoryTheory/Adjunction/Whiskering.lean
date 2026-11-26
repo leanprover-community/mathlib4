@@ -3,23 +3,29 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.CategoryTheory.Whiskering
-import Mathlib.CategoryTheory.Adjunction.Basic
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
+# Whiskering of adjunctions
 
 Given categories `C D E`, functors `F : D ⥤ E` and `G : E ⥤ D` with an adjunction
 `F ⊣ G`, we provide the induced adjunction between the functor categories `C ⥤ D` and `C ⥤ E`,
 and the functor categories `E ⥤ C` and `D ⥤ C`.
-
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory.Adjunction
 
-open CategoryTheory Functor
+open CategoryTheory CategoryTheory.Functor
 
-variable (C : Type*) {D E : Type*} [Category C] [Category D] [Category E] {F : D ⥤ E} {G : E ⥤ D}
+variable (C : Type*) {D E : Type*} [Category* C] [Category* D] [Category* E] {F : D ⥤ E} {G : E ⥤ D}
 
 /-- Given an adjunction `F ⊣ G`, this provides the natural adjunction
   `(whiskeringRight C _ _).obj F ⊣ (whiskeringRight C _ _).obj G`. -/

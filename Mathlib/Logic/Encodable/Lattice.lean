@@ -3,21 +3,26 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Logic.Encodable.Basic
-import Mathlib.Logic.Pairwise
-import Mathlib.Data.Set.Subsingleton
+module
+
+public import Mathlib.Logic.Encodable.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Lattice operations on encodable types
 
 Lemmas about lattice and set operations on encodable types
 
-## Implementation Notes
+## Implementation notes
 
 This is a separate file, to avoid unnecessary imports in basic files.
 
 Previously some of these results were in the `MeasureTheory` folder.
 -/
+
+public section
 
 open Set
 

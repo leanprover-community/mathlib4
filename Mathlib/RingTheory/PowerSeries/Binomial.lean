@@ -3,31 +3,42 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.RingTheory.Binomial
-import Mathlib.RingTheory.PowerSeries.WellKnown
+module
+
+public import Mathlib.RingTheory.Binomial
+public import Mathlib.RingTheory.PowerSeries.WellKnown
+public import Mathlib.Tactic.SuppressCompilation
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Binomial Power Series
+
 We introduce formal power series of the form `(1 + X) ^ r`, where `r` is an element of a
 commutative binomial ring `R`.
 
 ## Main Definitions
+
 * `PowerSeries.binomialSeries`: A power series expansion of `(1 + X) ^ r`, where `r` is an element
   of a commutative binomial ring `R`.
 
 ## Main Results
+
 * `PowerSeries.binomial_add`: Adding exponents yields multiplication of series.
 * `PowerSeries.binomialSeries_nat`: when `r` is a natural number, we get `(1 + X) ^ r`.
 * `PowerSeries.rescale_neg_one_invOneSubPow`: The image of `(1 - X) ^ (-d)` under the map
   `X ↦ (-X)` is `(1 + X) ^ (-d)`
 
 ## TODO
+
 * When `A` is a commutative `R`-algebra, the exponentiation action makes the multiplicative group
   `1 + XA[[X]]` into an `R`-module.
-
 -/
 
-open Finset BigOperators
+@[expose] public section
+
+open Finset
 
 suppress_compilation
 
@@ -85,7 +96,7 @@ lemma rescale_neg_one_invOneSubPow [CommRing A] (d : ℕ) :
     simp only [invOneSubPow, coeff_mk, Nat.cast_add, Nat.cast_one, neg_add_rev, Int.reduceNeg,
       zsmul_eq_mul, mul_one]
     rw [show (-1 : ℤ) + -d = -(d + 1) by abel, Ring.choose_neg, Nat.choose_symm_add, Units.smul_def,
-      show (d : ℤ) + 1 + n - 1 = d + n by omega, ← Nat.cast_add, Ring.choose_natCast]
+      show (d : ℤ) + 1 + n - 1 = d + n by lia, ← Nat.cast_add, Ring.choose_natCast]
     norm_cast
 
 end PowerSeries

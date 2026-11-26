@@ -3,12 +3,14 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Ring.Nat
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.Order.Ring.Nat
 
 /-!
-# Double countings
+# Double counting
 
 This file gathers a few double counting arguments.
 
@@ -32,6 +34,8 @@ and `t`.
 For the formulation of double-counting arguments where a bipartite graph is considered as a
 bipartite simple graph `G : SimpleGraph V`, see `Mathlib/Combinatorics/SimpleGraph/Bipartite.lean`.
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -199,6 +203,16 @@ theorem card_le_card_of_forall_subsingleton' (ht : ∀ b ∈ t, ∃ a, a ∈ s �
     (hs : ∀ a ∈ s, ({ b ∈ t | r a b } : Set β).Subsingleton) : #t ≤ #s :=
   card_le_card_of_forall_subsingleton (swap r) ht hs
 
+/-- Given a finite collection of finite subsets $B_1, \ldots, B_k$
+and, for every $x \in \bigcup_i B_i$, let $C_x$ be the set of indices
+of the $B_i$'s that contain $x$.  Then, $\sum_i |B_i| = \sum_x |C_x|$. -/
+lemma sum_card_eq_sum_biUnion_card [Fintype α] [DecidableEq α] [DecidableEq β]
+    (B : α → Finset β) (s : Finset α) :
+    ∑ j ∈ s, #(B j) = ∑ x ∈ s.biUnion B, #{j | j ∈ s ∧ x ∈ B j} := by
+  convert sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow (fun j x => x ∈ B j)
+  · grind [bipartiteAbove]
+  · grind [bipartiteBelow]
+
 end Bipartite
 
 end Finset
@@ -209,10 +223,10 @@ variable [Fintype α] [Fintype β] {r : α → β → Prop}
 
 theorem card_le_card_of_leftTotal_unique (h₁ : LeftTotal r) (h₂ : LeftUnique r) :
     Fintype.card α ≤ Fintype.card β :=
-  card_le_card_of_forall_subsingleton r (by simpa using h₁) fun _ _ _ ha₁ _ ha₂ ↦ h₂ ha₁.2 ha₂.2
+  card_le_card_of_forall_subsingleton r (by simpa using! h₁) fun _ _ _ ha₁ _ ha₂ ↦ h₂ ha₁.2 ha₂.2
 
 theorem card_le_card_of_rightTotal_unique (h₁ : RightTotal r) (h₂ : RightUnique r) :
     Fintype.card β ≤ Fintype.card α :=
-  card_le_card_of_forall_subsingleton' r (by simpa using h₁) fun _ _ _ ha₁ _ ha₂ ↦ h₂ ha₁.2 ha₂.2
+  card_le_card_of_forall_subsingleton' r (by simpa using! h₁) fun _ _ _ ha₁ _ ha₂ ↦ h₂ ha₁.2 ha₂.2
 
 end Fintype

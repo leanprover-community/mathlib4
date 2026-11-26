@@ -3,8 +3,11 @@ Copyright (c) 2025 Yongshun Ye. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yongshun Ye
 -/
+module
+
+public import Mathlib.Data.Nat.Prime.Defs
+
 import Mathlib.Data.Nat.GCD.Basic
-import Mathlib.Data.Nat.Prime.Defs
 
 /-!
 # Lemmas related to `Nat.Prime` and `lcm`
@@ -17,8 +20,9 @@ These lemmas are kept separate from `Mathlib/Data/Nat/GCD/Basic.lean` in order t
 - `Nat.Prime.dvd_or_dvd_of_dvd_lcm`: If `p ∣ lcm a b`, then `p ∣ a ∨ p ∣ b`.
 - `Nat.Prime.dvd_lcm`: `p ∣ lcm a b ↔ p ∣ a ∨ p ∣ b`.
 - `Nat.Prime.not_dvd_lcm`: If `p ∤ a` and `p ∤ b`, then `p ∤ lcm a b`.
-
 -/
+
+public section
 
 namespace Nat
 
@@ -28,7 +32,7 @@ variable {p a b : ℕ} (hp : Prime p)
 include hp
 
 theorem dvd_or_dvd_of_dvd_lcm (h : p ∣ lcm a b) : p ∣ a ∨ p ∣ b :=
-  (dvd_mul hp).mp (h.trans (lcm_dvd_mul a b))
+  dvd_or_dvd hp (h.trans (lcm_dvd_mul a b))
 
 theorem dvd_lcm : p ∣ lcm a b ↔ p ∣ a ∨ p ∣ b :=
   ⟨hp.dvd_or_dvd_of_dvd_lcm, (Or.elim · (dvd_lcm_of_dvd_left · _) (dvd_lcm_of_dvd_right · _))⟩

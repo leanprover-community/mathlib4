@@ -3,11 +3,17 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Johan Commelin
 -/
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Ring.NegOnePow
-import Mathlib.Tactic.NormNum
+module
+
+public import Mathlib.Algebra.Ring.NegOnePow
+public import Mathlib.Tactic.NormNum
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-! # Integer powers of `-1` in a field -/
+
+public section
 
 namespace Int
 

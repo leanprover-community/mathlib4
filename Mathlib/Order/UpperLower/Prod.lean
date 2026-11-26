@@ -3,7 +3,12 @@ Copyright (c) 2022 Yaël Dillies, Sara Rousta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Sara Rousta
 -/
-import Mathlib.Order.UpperLower.Closure
+module
+
+public import Mathlib.Order.UpperLower.Closure
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Upper and lower set product
@@ -15,6 +20,8 @@ defines said product over the types `UpperSet` and `LowerSet` and proves some of
 
 * `×ˢ` is notation for `UpperSet.prod` / `LowerSet.prod`.
 -/
+
+@[expose] public section
 
 open Set
 
@@ -42,7 +49,7 @@ variable (s s₁ s₂ : UpperSet α) (t t₁ t₂ : UpperSet β) {x : α × β}
 
 /-- The product of two upper sets as an upper set. -/
 def prod : UpperSet (α × β) :=
-  ⟨s ×ˢ t, s.2.prod t.2⟩
+  ⟨s ×ˢ t, s.upper'.prod t.upper'⟩
 
 instance instSProd : SProd (UpperSet α) (UpperSet β) (UpperSet (α × β)) where
   sprod := UpperSet.prod
@@ -95,7 +102,7 @@ theorem prod_sup_prod : s₁ ×ˢ t₁ ⊔ s₂ ×ˢ t₂ = (s₁ ⊔ s₂) ×ˢ
 
 variable {s s₁ s₂ t t₁ t₂}
 
-@[mono]
+@[gcongr, mono]
 theorem prod_mono : s₁ ≤ s₂ → t₁ ≤ t₂ → s₁ ×ˢ t₁ ≤ s₂ ×ˢ t₂ :=
   Set.prod_mono
 
@@ -133,7 +140,7 @@ namespace LowerSet
 variable (s s₁ s₂ : LowerSet α) (t t₁ t₂ : LowerSet β) {x : α × β}
 
 /-- The product of two lower sets as a lower set. -/
-def prod : LowerSet (α × β) := ⟨s ×ˢ t, s.2.prod t.2⟩
+def prod : LowerSet (α × β) := ⟨s ×ˢ t, s.lower'.prod t.lower'⟩
 
 instance instSProd : SProd (LowerSet α) (LowerSet β) (LowerSet (α × β)) where
   sprod := LowerSet.prod

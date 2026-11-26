@@ -3,12 +3,18 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Vector.Basic
-import Mathlib.Logic.Equiv.List
+module
+
+public import Mathlib.Logic.Equiv.List
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Equivalences involving `Array`
 -/
+
+@[expose] public section
 
 
 namespace Equiv

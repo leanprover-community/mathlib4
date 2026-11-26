@@ -3,17 +3,22 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
+module
 
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
-import Mathlib.MeasureTheory.Integral.Lebesgue.Add
+public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Add
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Finitely strongly measurable functions with value in ENNReal
 
 A measurable function with finite Lebesgue integral can be approximated by simple functions
 whose support has finite measure.
-
 -/
+
+public section
 
 open MeasureTheory
 open scoped ENNReal

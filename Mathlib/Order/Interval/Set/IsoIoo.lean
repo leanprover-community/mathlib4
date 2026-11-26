@@ -3,9 +3,14 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Order.Monotone.Odd
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Tactic.FieldSimp
+module
+
+public import Mathlib.Algebra.Order.Field.Basic
+public import Mathlib.Order.Monotone.Odd
+public import Mathlib.Tactic.FieldSimp
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Order isomorphism between a linear ordered field and `(-1, 1)`
@@ -13,6 +18,8 @@ import Mathlib.Tactic.FieldSimp
 In this file we provide an order isomorphism `orderIsoIooNegOneOne` between the open interval
 `(-1, 1)` in a linear ordered field and the whole field.
 -/
+
+@[expose] public section
 
 open Set
 
@@ -35,5 +42,5 @@ def orderIsoIooNegOneOne (k : Type*) [Field k] [LinearOrder k] [IsStrictOrderedR
       simp [abs_of_nonneg, mul_add, mul_comm x y, div_lt_div_iff₀, hx.trans_lt (lt_one_add _),
         hy.trans_lt (lt_one_add _), *]
   · refine fun x ↦ Subtype.ext ?_
-    have : 0 < 1 - |(x : k)| := sub_pos.2 (abs_lt.2 x.2)
+    have : 0 < 1 - |(x : k)| := sub_pos.2 (abs_lt.2 x.property)
     simp [field, abs_div, abs_of_pos this]

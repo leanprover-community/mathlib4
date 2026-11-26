@@ -3,9 +3,13 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Linear.LinearFunctor
-import Mathlib.CategoryTheory.Triangulated.Rotate
-import Mathlib.Algebra.Ring.NegOnePow
+module
+
+public import Mathlib.Algebra.Ring.NegOnePow
+public import Mathlib.CategoryTheory.Triangulated.Rotate
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The shift on the category of triangles
@@ -17,8 +21,9 @@ identifies with the shift by `1`.
 
 The shift on the category of triangles was also obtained by Adam Topaz,
 Johan Commelin and Andrew Yang during the Liquid Tensor Experiment.
-
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -40,7 +45,7 @@ attribute [local simp] Triangle.eqToHom_hom₁ Triangle.eqToHom_hom₂ Triangle.
 /-- The shift functor `Triangle C ⥤ Triangle C` by `n : ℤ` sends a triangle
 to the triangle obtained by shifting the objects by `n` in `C` and by
 multiplying the three morphisms by `(-1)^n`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def Triangle.shiftFunctor (n : ℤ) : Triangle C ⥤ Triangle C where
   obj T := Triangle.mk (n.negOnePow • T.mor₁⟦n⟧') (n.negOnePow • T.mor₂⟦n⟧')
     (n.negOnePow • T.mor₃⟦n⟧' ≫ (shiftFunctorComm C 1 n).hom.app T.obj₁)
@@ -57,9 +62,7 @@ noncomputable def Triangle.shiftFunctor (n : ℤ) : Triangle C ⥤ Triangle C wh
       comm₃ := by
         dsimp
         rw [Linear.units_smul_comp, Linear.comp_units_smul, ← Functor.map_comp_assoc, ← f.comm₃,
-          Functor.map_comp, assoc, assoc]
-        erw [(shiftFunctorComm C 1 n).hom.naturality]
-        rfl }
+          Functor.map_comp, assoc, assoc, dsimp% (shiftFunctorComm C 1 n).hom.naturality] }
 
 /-- The canonical isomorphism `Triangle.shiftFunctor C 0 ≅ 𝟭 (Triangle C)`. -/
 @[simps!]
@@ -72,7 +75,7 @@ noncomputable def Triangle.shiftFunctorZero : Triangle.shiftFunctor C 0 ≅ 𝟭
         simp only [one_smul, assoc, shiftFunctorComm_zero_hom_app,
           ← Functor.map_comp, Iso.inv_hom_id_app, Functor.id_obj, Functor.map_id,
           comp_id, NatTrans.naturality, Functor.id_map]))
-    (by cat_disch)
+      (by cat_disch)
 
 /-- The canonical isomorphism
 `Triangle.shiftFunctor C n ≅ Triangle.shiftFunctor C a ⋙ Triangle.shiftFunctor C b`
@@ -99,12 +102,11 @@ noncomputable def Triangle.shiftFunctorAdd' (a b n : ℤ) (h : a + b = n) :
         subst h
         dsimp
         rw [Linear.units_smul_comp, Linear.comp_units_smul, Functor.map_units_smul,
-          Linear.units_smul_comp, Linear.comp_units_smul, smul_smul, assoc,
-          Functor.map_comp, assoc]
-        erw [← NatTrans.naturality_assoc]
+          Linear.units_smul_comp, Linear.comp_units_smul, smul_smul, assoc, Functor.map_comp, assoc,
+          ← dsimp% (CategoryTheory.shiftFunctorAdd' C a b (a + b) rfl).hom.naturality_assoc]
         simp only [shiftFunctorAdd'_eq_shiftFunctorAdd, Int.negOnePow_add,
           shiftFunctorComm_hom_app_comp_shift_shiftFunctorAdd_hom_app, add_comm a]))
-    (by cat_disch)
+    (by intros; ext <;> simp)
 
 /-- Rotating triangles three times identifies with the shift by `1`. -/
 noncomputable def rotateRotateRotateIso :
@@ -123,7 +125,7 @@ noncomputable def invRotateInvRotateInvRotateIso :
       (by simp)
       (by
         dsimp [shiftFunctorCompIsoId]
-        simp [shiftFunctorComm_eq C _ _ _ (add_neg_cancel (1 : ℤ))]))
+        simp [shiftFunctorComm_eq C _ _ _ (add_neg_cancel 1)]))
     (by cat_disch)
 
 /-- The inverse of the rotation of triangles can be expressed using a double
@@ -155,10 +157,12 @@ noncomputable instance : HasShift (Triangle C) ℤ :=
       assoc_hom_app := fun a b c T => by
         ext
         all_goals
-          dsimp
+        · dsimp
+          simp only [shiftFunctorAdd'_hom_app_hom₁, mk_obj₁,
+            shiftFunctorAdd'_hom_app_hom₂, mk_obj₂,
+            shiftFunctorAdd'_hom_app_hom₃, mk_obj₃]
           rw [← shiftFunctorAdd'_assoc_hom_app a b c _ _ _ rfl rfl (add_assoc a b c)]
-          dsimp only [CategoryTheory.shiftFunctorAdd']
-          simp }
+          simp [CategoryTheory.shiftFunctorAdd'] }
 
 @[simp]
 lemma shiftFunctor_eq (n : ℤ) :

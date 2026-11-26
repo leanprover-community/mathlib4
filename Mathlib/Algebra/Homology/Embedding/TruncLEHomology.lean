@@ -3,11 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Embedding.TruncGEHomology
-import Mathlib.Algebra.Homology.Embedding.TruncLE
-import Mathlib.Algebra.Homology.HomologySequence
-import Mathlib.Algebra.Homology.ShortComplex.Abelian
-import Mathlib.Algebra.Homology.HomologicalComplexAbelian
+module
+
+public import Mathlib.Algebra.Homology.Embedding.TruncGEHomology
+public import Mathlib.Algebra.Homology.Embedding.TruncLE
+public import Mathlib.Algebra.Homology.HomologicalComplexAbelian
+public import Mathlib.Algebra.Homology.HomologySequence
 
 /-! # The homology of a canonical truncation
 
@@ -23,15 +24,16 @@ All the results are obtained by dualising the results in the file `Embedding.Tru
 
 Moreover, if `C` is an abelian category, we introduce the cokernel
 sequence `K.shortComplexTruncLE e` of the monomorphism `K.ιTruncLE e`.
-
 -/
+
+@[expose] public section
 
 open CategoryTheory Category Limits
 
 namespace HomologicalComplex
 
 variable {ι ι' : Type*} {c : ComplexShape ι} {c' : ComplexShape ι'}
-  {C : Type*} [Category C]
+  {C : Type*} [Category* C]
 
 section
 
@@ -63,7 +65,7 @@ instance (i' : ι') : (K.truncLE e).HasHomology i' :=
 lemma quasiIsoAt_ιTruncLE {j : ι} {j' : ι'} (hj' : e.f j = j') :
     QuasiIsoAt (K.ιTruncLE e) j' := by
   have := K.op.quasiIsoAt_πTruncGE e.op hj'
-  exact inferInstanceAs (QuasiIsoAt ((unopFunctor _ _ ).map (K.op.πTruncGE e.op).op) j')
+  exact inferInstanceAs (QuasiIsoAt ((unopFunctor _ _).map (K.op.πTruncGE e.op).op) j')
 
 instance (i : ι) : QuasiIsoAt (K.ιTruncLE e) (e.f i) := K.quasiIsoAt_ιTruncLE e rfl
 
@@ -79,6 +81,11 @@ lemma acyclic_truncLE_iff_isSupportedOutside :
 
 variable {K L}
 
+lemma Acyclic.truncLE (hK : K.Acyclic) (e : c.Embedding c') [e.IsTruncLE] :
+    (K.truncLE e).Acyclic := by
+  rw [acyclic_truncLE_iff_isSupportedOutside]
+  exact ⟨fun _ ↦ hK _⟩
+
 lemma quasiIso_truncLEMap_iff :
     QuasiIso (truncLEMap φ e) ↔ ∀ (i : ι) (i' : ι') (_ : e.f i = i'), QuasiIsoAt φ i' := by
   rw [← quasiIso_opFunctor_map_iff]
@@ -92,7 +99,7 @@ section
 variable [Abelian C] (K : HomologicalComplex C c') (e : c.Embedding c') [e.IsTruncLE]
 
 /-- The cokernel sequence of the monomorphism `K.ιTruncLE e`. -/
-@[simps X₁ X₂ f]
+@[simps X₁ X₂ f, implicit_reducible]
 noncomputable def shortComplexTruncLE : ShortComplex (HomologicalComplex C c') :=
   ShortComplex.mk (K.ιTruncLE e) _ (cokernel.condition _)
 
@@ -151,8 +158,7 @@ lemma shortComplexTruncLE_X₃_isSupportedOutside :
         dsimp [shortComplexTruncLE]
         rw [← homologyMap_comp, cokernel.condition, homologyMap_zero]
       · simp
-    · have : IsIso (homologyMap (K.shortComplexTruncLE e).f (e.f i)) :=
-        by dsimp; infer_instance
+    · have : IsIso (homologyMap (K.shortComplexTruncLE e).f (e.f i)) := by dsimp; infer_instance
       rw [IsZero.iff_id_eq_zero, ← cancel_epi (homologyMap (K.shortComplexTruncLE e).g (e.f i)),
         comp_id, comp_zero, ← cancel_epi (homologyMap (K.shortComplexTruncLE e).f (e.f i)),
         comp_zero, ← homologyMap_comp, ShortComplex.zero, homologyMap_zero]

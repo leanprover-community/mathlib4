@@ -3,10 +3,16 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Bhavik Mehta, Oliver Nash
 -/
-import Mathlib.Data.Nat.Lattice
-import Mathlib.Data.Int.ConditionallyCompleteOrder
+module
+
+public import Mathlib.Order.Int.ConditionallyCompleteOrder
+public import Mathlib.Order.Lattice.Nat
+
 import Mathlib.Data.Int.Interval
-import Mathlib.Data.Int.SuccPred
+import Mathlib.Order.SuccPred.Int
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Order-connected subsets of linear orders
@@ -15,7 +21,8 @@ In this file we provide some results about order-connected subsets of linear ord
 some convenience lemmas for characterising closed intervals in certain concrete types such as `ℤ`,
 `ℕ`, and `Fin n`.
 
-## Main results:
+## Main results
+
 * `Set.ordConnected_iff_disjoint_Ioo_empty`: a characterisation of `Set.OrdConnected` for
   locally-finite linear orders.
 * `Set.Nonempty.ordConnected_iff_of_bdd`: a characterisation of closed intervals for locally-finite
@@ -25,6 +32,8 @@ some convenience lemmas for characterising closed intervals in certain concrete 
 * `Set.Nonempty.eq_Icc_iff_nat`: characterisation of closed intervals for `ℕ`.
 * `Set.Nonempty.eq_Icc_iff_int`: characterisation of closed intervals for `ℤ`.
 -/
+
+public section
 
 variable {α : Type*} {I : Set α}
 
@@ -48,7 +57,7 @@ lemma Set.Nonempty.ordConnected_iff_of_bdd' [ConditionallyCompleteLinearOrder α
 for which this result holds). However at the time of writing it is not clear what weaker
 assumption(s) should replace it. -/
 lemma Set.ordConnected_iff_disjoint_Ioo_empty [LinearOrder α] [LocallyFiniteOrder α] :
-    I.OrdConnected ↔ ∀ᵉ (x ∈ I) (y ∈ I), Disjoint (Ioo x y) I → Ioo x y = ∅ := by
+    I.OrdConnected ↔ ∀ x ∈ I, ∀ y ∈ I, Disjoint (Ioo x y) I → Ioo x y = ∅ := by
   simp_rw [← Set.subset_compl_iff_disjoint_right]
   refine ⟨fun h' x hx y hy hxy ↦ ?_, fun h' ↦ ordConnected_of_Ioo fun x hx y hy hxy z hz ↦ ?_⟩
   · suffices ∀ z, x < z → y ≤ z by ext z; simpa using this z
@@ -70,10 +79,10 @@ lemma Set.ordConnected_iff_disjoint_Ioo_empty [LinearOrder α] [LocallyFiniteOrd
 
 lemma Set.Nonempty.eq_Icc_iff_nat {I : Set ℕ}
     (h₀ : I.Nonempty) (h₂ : BddAbove I) :
-    I = Icc (sInf I) (sSup I) ↔ ∀ᵉ (x ∈ I) (y ∈ I), Disjoint (Ioo x y) I → y ≤ x + 1 := by
+    I = Icc (sInf I) (sSup I) ↔ ∀ x ∈ I, ∀ y ∈ I, Disjoint (Ioo x y) I → y ≤ x + 1 := by
   simp [← h₀.ordConnected_iff_of_bdd (OrderBot.bddBelow I) h₂, ordConnected_iff_disjoint_Ioo_empty]
 
 lemma Set.Nonempty.eq_Icc_iff_int {I : Set ℤ}
     (h₀ : I.Nonempty) (h₁ : BddBelow I) (h₂ : BddAbove I) :
-    I = Icc (sInf I) (sSup I) ↔ ∀ᵉ (x ∈ I) (y ∈ I), Disjoint (Ioo x y) I → y ≤ x + 1 := by
-  simp [← h₀.ordConnected_iff_of_bdd h₁ h₂, ordConnected_iff_disjoint_Ioo_empty, Int.succ]
+    I = Icc (sInf I) (sSup I) ↔ ∀ x ∈ I, ∀ y ∈ I, Disjoint (Ioo x y) I → y ≤ x + 1 := by
+  simp [← h₀.ordConnected_iff_of_bdd h₁ h₂, ordConnected_iff_disjoint_Ioo_empty]

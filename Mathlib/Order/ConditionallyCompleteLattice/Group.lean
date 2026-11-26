@@ -3,14 +3,21 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+module
+
+public import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
+public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+
 import Mathlib.Algebra.Order.Group.Unbundled.Basic
-import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Conditionally complete lattices and groups.
-
 -/
+
+public section
 
 open Set
 

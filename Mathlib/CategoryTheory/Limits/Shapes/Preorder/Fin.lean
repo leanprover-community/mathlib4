@@ -3,8 +3,13 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
-import Mathlib.Order.Fin.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
+public import Mathlib.Order.Fin.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Limits and colimits indexed by `Fin`
@@ -14,8 +19,9 @@ and `Fin.last n` is a terminal object. This allows to compute
 limits and colimits indexed by `Fin (n + 1)`, see
 `limitOfDiagramInitial` and `colimitOfDiagramTerminal`
 in the file `Limits.Shapes.IsTerminal`.
-
 -/
+
+@[expose] public section
 
 universe v v' u u' w
 

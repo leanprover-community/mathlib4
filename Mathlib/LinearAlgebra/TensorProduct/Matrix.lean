@@ -3,9 +3,14 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.Matrix.Kronecker
-import Mathlib.LinearAlgebra.Matrix.ToLin
-import Mathlib.LinearAlgebra.TensorProduct.Basis
+module
+
+public import Mathlib.LinearAlgebra.Matrix.Kronecker
+public import Mathlib.LinearAlgebra.Matrix.ToLin
+public import Mathlib.LinearAlgebra.TensorProduct.Basis
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Connections between `TensorProduct` and `Matrix`
@@ -16,6 +21,8 @@ where the correspondence is induced by `Basis.tensorProduct`
 Notably, `TensorProduct.toMatrix_map` shows that taking the tensor product of linear maps is
 equivalent to taking the Kronecker product of their matrix representations.
 -/
+
+public section
 
 open Matrix Module LinearMap
 open scoped Kronecker
@@ -53,7 +60,7 @@ theorem TensorProduct.toMatrix_comm :
     toMatrix (bM.tensorProduct bN) (bN.tensorProduct bM) (TensorProduct.comm R M N) =
       (1 : Matrix (ι × κ) (ι × κ) R).submatrix Prod.swap _root_.id := by
   ext ⟨i, j⟩ ⟨i', j'⟩
-  simp only [toMatrix_apply, Basis.tensorProduct_apply, LinearEquiv.coe_coe, comm_tmul,
+  simp only [toMatrix_apply, Basis.tensorProduct_apply, LinearEquiv.coe_toLinearMap, comm_tmul,
     Basis.tensorProduct_repr_tmul_apply, Basis.repr_self, Finsupp.single_apply, @eq_comm _ i',
     @eq_comm _ j', smul_eq_mul, mul_ite, mul_one, mul_zero, ← ite_and, and_comm, submatrix_apply,
     Matrix.one_apply, Prod.swap_prod_mk, id_eq, Prod.mk.injEq]
@@ -64,7 +71,7 @@ theorem TensorProduct.toMatrix_assoc :
         (TensorProduct.assoc R M N P) =
       (1 : Matrix (ι × κ × τ) (ι × κ × τ) R).submatrix _root_.id (Equiv.prodAssoc _ _ _) := by
   ext ⟨i, j, k⟩ ⟨⟨i', j'⟩, k'⟩
-  simp only [toMatrix_apply, Basis.tensorProduct_apply, LinearEquiv.coe_coe, assoc_tmul,
+  simp only [toMatrix_apply, Basis.tensorProduct_apply, LinearEquiv.coe_toLinearMap, assoc_tmul,
     Basis.tensorProduct_repr_tmul_apply, Basis.repr_self, Finsupp.single_apply, @eq_comm _ k',
     @eq_comm _ j', smul_eq_mul, mul_ite, mul_one, mul_zero, ← ite_and, @eq_comm _ i',
     submatrix_apply, Matrix.one_apply, id_eq, Equiv.prodAssoc_apply, Prod.mk.injEq]

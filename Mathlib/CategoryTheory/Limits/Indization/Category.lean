@@ -3,11 +3,14 @@ Copyright (c) 2024 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.Constructions.Filtered
-import Mathlib.CategoryTheory.Limits.FullSubcategory
-import Mathlib.CategoryTheory.Limits.ExactFunctor
-import Mathlib.CategoryTheory.Limits.Indization.Equalizers
-import Mathlib.CategoryTheory.Limits.Indization.LocallySmall
+module
+
+public import Mathlib.CategoryTheory.Functor.Flat
+public import Mathlib.CategoryTheory.Limits.Constructions.Filtered
+public import Mathlib.CategoryTheory.Limits.ExactFunctor
+public import Mathlib.CategoryTheory.Limits.Indization.Equalizers
+public import Mathlib.CategoryTheory.Limits.Indization.LocallySmall
+
 import Mathlib.CategoryTheory.Limits.Indization.Products
 import Mathlib.CategoryTheory.Limits.Preserves.Presheaf
 
@@ -50,14 +53,17 @@ Note that:
 * the functor `C ⥤ Ind C` preserves finite colimits, but not infinite colimits in general.
 
 ## References
+
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Chapter 6
 -/
+
+@[expose] public section
 
 universe w v u
 
 namespace CategoryTheory
 
-open Limits Functor
+open Limits CategoryTheory.Functor
 
 variable {C : Type u} [Category.{v} C]
 
@@ -114,10 +120,13 @@ noncomputable def Ind.yonedaCompInclusion : Ind.yoneda ⋙ Ind.inclusion C ≅ C
     (isoWhiskerRight (Ind.equivalence C).counitIso (ObjectProperty.ι _))
 
 noncomputable instance {J : Type v} [SmallCategory J] [IsFiltered J] :
+    ObjectProperty.IsClosedUnderColimitsOfShape (IsIndObject (C := C)) J :=
+  .mk' (by
+    rintro _ ⟨F, hF⟩
+    exact isIndObject_colimit _ _ hF)
+
+noncomputable instance {J : Type v} [SmallCategory J] [IsFiltered J] :
     CreatesColimitsOfShape J (Ind.inclusion C) :=
-  letI _ : CreatesColimitsOfShape J (ObjectProperty.ι (IsIndObject (C := C))) :=
-    createsColimitsOfShapeFullSubcategoryInclusion (closedUnderColimitsOfShape_of_colimit
-      (isIndObject_colimit _ _))
   inferInstanceAs <|
     CreatesColimitsOfShape J ((Ind.equivalence C).functor ⋙ ObjectProperty.ι _)
 
@@ -126,10 +135,13 @@ instance : HasFilteredColimits (Ind C) where
     hasColimitsOfShape_of_hasColimitsOfShape_createsColimitsOfShape (Ind.inclusion C)
 
 noncomputable instance {J : Type v} [HasLimitsOfShape (Discrete J) C] :
+    ObjectProperty.IsClosedUnderLimitsOfShape (IsIndObject (C := C)) (Discrete J) :=
+  .mk' (by
+    rintro _ ⟨F, hF⟩
+    exact isIndObject_limit_of_discrete_of_hasLimitsOfShape _ hF)
+
+noncomputable instance {J : Type v} [HasLimitsOfShape (Discrete J) C] :
     CreatesLimitsOfShape (Discrete J) (Ind.inclusion C) :=
-  letI _ : CreatesLimitsOfShape (Discrete J) (ObjectProperty.ι (IsIndObject (C := C))) :=
-    createsLimitsOfShapeFullSubcategoryInclusion (closedUnderLimitsOfShape_of_limit
-      (isIndObject_limit_of_discrete_of_hasLimitsOfShape _))
   inferInstanceAs <|
     CreatesLimitsOfShape (Discrete J) ((Ind.equivalence C).functor ⋙ ObjectProperty.ι _)
 
@@ -139,10 +151,6 @@ instance {J : Type v} [HasLimitsOfShape (Discrete J) C] :
 
 noncomputable instance [HasLimitsOfShape WalkingParallelPair C] :
     CreatesLimitsOfShape WalkingParallelPair (Ind.inclusion C) :=
-  letI _ : CreatesLimitsOfShape WalkingParallelPair
-      (ObjectProperty.ι (IsIndObject (C := C))) :=
-    createsLimitsOfShapeFullSubcategoryInclusion
-      (closedUnderLimitsOfShape_walkingParallelPair_isIndObject)
   inferInstanceAs <|
     CreatesLimitsOfShape WalkingParallelPair
       ((Ind.equivalence C).functor ⋙ ObjectProperty.ι _)
@@ -153,7 +161,7 @@ instance [HasLimitsOfShape WalkingParallelPair C] :
 
 noncomputable instance [HasFiniteLimits C] : CreatesFiniteLimits (Ind.inclusion C) :=
   letI _ : CreatesFiniteProducts (Ind.inclusion C) :=
-    { creates _ _ := createsLimitsOfShapeOfEquiv (Discrete.equivalence Equiv.ulift) _  }
+    { creates _ _ := createsLimitsOfShapeOfEquiv (Discrete.equivalence Equiv.ulift) _ }
   createsFiniteLimitsOfCreatesEqualizersAndFiniteProducts (Ind.inclusion C)
 
 instance [HasFiniteLimits C] : HasFiniteLimits (Ind C) :=
@@ -171,7 +179,7 @@ instance : PreservesLimits (Ind.yoneda (C := C)) :=
   preservesLimits_of_reflects_of_preserves Ind.yoneda (Ind.inclusion C)
 
 theorem Ind.isIndObject_inclusion_obj (X : Ind C) : IsIndObject ((Ind.inclusion C).obj X) :=
-  X.2
+  X.property
 
 /-- Pick a presentation of an ind-object `X` using choice. -/
 noncomputable def Ind.presentation (X : Ind C) : IndObjectPresentation ((Ind.inclusion C).obj X) :=
@@ -270,25 +278,27 @@ noncomputable def IndParallelPairPresentation.parallelPairIsoParallelPairCompInd
 instance [HasColimitsOfShape WalkingParallelPair C] :
     HasColimitsOfShape WalkingParallelPair (Ind C) := by
   refine ⟨fun F => ?_⟩
-  obtain ⟨P⟩ := nonempty_indParallelPairPresentation (F.obj WalkingParallelPair.zero).2
-    (F.obj WalkingParallelPair.one).2 (Ind.inclusion _ |>.map <| F.map WalkingParallelPairHom.left)
+  obtain ⟨P⟩ := nonempty_indParallelPairPresentation (F.obj WalkingParallelPair.zero).property
+    (F.obj WalkingParallelPair.one).property
+    (Ind.inclusion _ |>.map <| F.map WalkingParallelPairHom.left)
     (Ind.inclusion _ |>.map <| F.map WalkingParallelPairHom.right)
   exact hasColimit_of_iso (diagramIsoParallelPair _ ≪≫ P.parallelPairIsoParallelPairCompIndYoneda)
 
 instance [HasFiniteColimits C] : HasColimits (Ind C) :=
   has_colimits_of_hasCoequalizers_and_coproducts
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A way to understand morphisms in `Ind C`: every morphism is induced by a natural transformation
 of diagrams. -/
 theorem Ind.exists_nonempty_arrow_mk_iso_ind_lim {A B : Ind C} {f : A ⟶ B} :
     ∃ (I : Type v) (_ : SmallCategory I) (_ : IsFiltered I) (F G : I ⥤ C) (φ : F ⟶ G),
       Nonempty (Arrow.mk f ≅ Arrow.mk ((Ind.lim _).map φ)) := by
-  obtain ⟨P⟩ := nonempty_indParallelPairPresentation A.2 B.2
+  obtain ⟨P⟩ := nonempty_indParallelPairPresentation A.property B.property
     (Ind.inclusion _ |>.map f) (Ind.inclusion _ |>.map f)
   refine ⟨P.I, inferInstance, inferInstance, P.F₁, P.F₂, P.φ, ⟨Arrow.isoMk ?_ ?_ ?_⟩⟩
   · exact P.parallelPairIsoParallelPairCompIndYoneda.app WalkingParallelPair.zero
   · exact P.parallelPairIsoParallelPairCompIndYoneda.app WalkingParallelPair.one
-  · simpa using
+  · simpa using!
       (P.parallelPairIsoParallelPairCompIndYoneda.hom.naturality WalkingParallelPairHom.left).symm
 
 section Small

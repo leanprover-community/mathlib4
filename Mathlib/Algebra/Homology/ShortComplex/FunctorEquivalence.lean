@@ -3,7 +3,12 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.Basic
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Short complexes in functor categories
@@ -11,14 +16,15 @@ import Mathlib.Algebra.Homology.ShortComplex.Basic
 In this file, it is shown that if `J` and `C` are two categories (such
 that `C` has zero morphisms), then there is an equivalence of categories
 `ShortComplex.functorEquivalence J C : ShortComplex (J ⥤ C) ≌ J ⥤ ShortComplex C`.
-
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
-open Limits Functor
+open Limits CategoryTheory.Functor
 
-variable (J C : Type*) [Category J] [Category C] [HasZeroMorphisms C]
+variable (J C : Type*) [Category* J] [Category* C] [HasZeroMorphisms C]
 
 namespace ShortComplex
 
@@ -27,7 +33,7 @@ namespace FunctorEquivalence
 attribute [local simp] ShortComplex.Hom.comm₁₂ ShortComplex.Hom.comm₂₃
 
 /-- The obvious functor `ShortComplex (J ⥤ C) ⥤ J ⥤ ShortComplex C`. -/
-@[simps]
+@[simps, implicit_reducible]
 def functor : ShortComplex (J ⥤ C) ⥤ J ⥤ ShortComplex C where
   obj S :=
     { obj := fun j => S.map ((evaluation J C).obj j)
@@ -36,7 +42,7 @@ def functor : ShortComplex (J ⥤ C) ⥤ J ⥤ ShortComplex C where
     { app := fun j => ((evaluation J C).obj j).mapShortComplex.map φ }
 
 /-- The obvious functor `(J ⥤ ShortComplex C) ⥤ ShortComplex (J ⥤ C)`. -/
-@[simps]
+@[simps, implicit_reducible]
 def inverse : (J ⥤ ShortComplex C) ⥤ ShortComplex (J ⥤ C) where
   obj F :=
     { f := whiskerLeft F π₁Toπ₂
@@ -66,7 +72,7 @@ def counitIso : inverse J C ⋙ functor J C ≅ 𝟭 _ :=
 end FunctorEquivalence
 
 /-- The obvious equivalence `ShortComplex (J ⥤ C) ≌ J ⥤ ShortComplex C`. -/
-@[simps]
+@[simps, implicit_reducible]
 def functorEquivalence : ShortComplex (J ⥤ C) ≌ J ⥤ ShortComplex C where
   functor := FunctorEquivalence.functor J C
   inverse := FunctorEquivalence.inverse J C

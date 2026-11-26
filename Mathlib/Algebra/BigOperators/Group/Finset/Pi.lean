@@ -3,20 +3,24 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Fintype.Pi
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+module
 
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Data.Fintype.Pi
+
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Products over `univ.pi`
-
 -/
 
-assert_not_exists MonoidWithZero MulAction OrderedCommMonoid
+public section
+
+assert_not_exists MonoidWithZero MulAction IsOrderedMonoid
 
 variable {ι β : Type*}
-
-open Fin Function
 
 namespace Finset
 

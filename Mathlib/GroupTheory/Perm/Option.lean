@@ -3,12 +3,19 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.Fintype.Option
-import Mathlib.GroupTheory.Perm.Sign
+module
+
+public import Mathlib.Data.Fintype.Option
+public import Mathlib.GroupTheory.Perm.Sign
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Permutations of `Option α`
 -/
+
+@[expose] public section
 
 
 open Equiv

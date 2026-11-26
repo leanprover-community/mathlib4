@@ -3,9 +3,14 @@ Copyright (c) 2024 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Comma.Presheaf.Basic
-import Mathlib.CategoryTheory.Limits.Preserves.Yoneda
-import Mathlib.CategoryTheory.Limits.Over
+module
+
+public import Mathlib.CategoryTheory.Comma.Presheaf.Basic
+public import Mathlib.CategoryTheory.Limits.Over
+public import Mathlib.CategoryTheory.Limits.Preserves.Yoneda
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Relative Yoneda preserves certain colimits
@@ -14,6 +19,8 @@ In this file we turn the statement `yonedaYonedaColimit` from
 `CategoryTheory.Limits.Preserves.Yoneda` from a functor `F : J ⥤ Cᵒᵖ ⥤ Type v` into a statement
 about families of presheaves over `A`, i.e., functors `F : J ⥤ Over A`.
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

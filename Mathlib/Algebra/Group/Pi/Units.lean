@@ -3,12 +3,19 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Group.Equiv.Defs
-import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Algebra.Group.Units.Defs
-import Mathlib.Util.Delaborators
+module
+
+public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Algebra.Group.Units.Defs
+public import Mathlib.Util.Delaborators
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-! # Units in pi types -/
+
+@[expose] public section
 
 variable {ι : Type*} {M : ι → Type*} [∀ i, Monoid (M i)] {x : Π i, M i}
 
@@ -30,8 +37,12 @@ lemma Pi.isUnit_iff :
   exact Classical.skolem (p := fun i y ↦ x i * y = 1 ∧ y * x i = 1).symm
 
 @[to_additive]
+instance Pi.instSubsingletonUnits [∀ i, Subsingleton (M i)ˣ] : Subsingleton (∀ i, M i)ˣ :=
+  .units_of_isUnit <| by simp [Pi.isUnit_iff, funext_iff]
+
+@[to_additive]
 alias ⟨IsUnit.apply, _⟩ := Pi.isUnit_iff
 
 @[to_additive]
-lemma IsUnit.val_inv_apply (hx : IsUnit x) (i : ι) : (hx.unit⁻¹).1 i = (hx.apply i).unit⁻¹ := by
+lemma IsUnit.val_inv_apply (hx : IsUnit x) (i : ι) : (hx.unit⁻¹).val i = (hx.apply i).unit⁻¹ := by
   rw [← Units.inv_eq_val_inv, ← MulEquiv.val_inv_piUnits_apply]; congr; ext; rfl

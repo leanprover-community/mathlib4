@@ -3,7 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.MorphismProperty.Basic
+module
+
+public import Mathlib.CategoryTheory.MorphismProperty.Composition
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Categories with classes of fibrations, cofibrations, weak equivalences
@@ -11,8 +16,9 @@ import Mathlib.CategoryTheory.MorphismProperty.Basic
 We introduce typeclasses `CategoryWithFibrations`, `CategoryWithCofibrations` and
 `CategoryWithWeakEquivalences` to express that a category `C` is equipped with
 classes of morphisms named "fibrations", "cofibrations" or "weak equivalences".
-
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -47,6 +53,7 @@ section Fib
 variable [CategoryWithFibrations C]
 
 /-- The class of fibrations in a category with fibrations. -/
+@[implicit_reducible]
 def fibrations : MorphismProperty C := CategoryWithFibrations.fibrations
 
 variable {C}
@@ -65,6 +72,7 @@ section Cof
 variable [CategoryWithCofibrations C]
 
 /-- The class of cofibrations in a category with cofibrations. -/
+@[implicit_reducible]
 def cofibrations : MorphismProperty C := CategoryWithCofibrations.cofibrations
 
 variable {C}
@@ -83,6 +91,7 @@ section W
 variable [CategoryWithWeakEquivalences C]
 
 /-- The class of weak equivalences in a category with weak equivalences. -/
+@[implicit_reducible]
 def weakEquivalences : MorphismProperty C := CategoryWithWeakEquivalences.weakEquivalences
 
 variable {C}
@@ -148,5 +157,140 @@ lemma mem_trivialCofibrations_iff :
   rfl
 
 end TrivCof
+
+section
+
+variable [CategoryWithCofibrations C]
+
+instance : CategoryWithFibrations Cᵒᵖ where
+  fibrations := (cofibrations C).op
+
+lemma fibrations_op : fibrations Cᵒᵖ = (cofibrations C).op := rfl
+lemma cofibrations_eq_unop : cofibrations C = (fibrations Cᵒᵖ).unop := rfl
+
+variable {C}
+
+lemma fibration_op_iff : Fibration f.op ↔ Cofibration f := by
+  simp [cofibration_iff, fibration_iff, cofibrations_eq_unop]
+
+lemma cofibration_unop_iff {X Y : Cᵒᵖ} (f : X ⟶ Y) :
+    Cofibration f.unop ↔ Fibration f := by
+  simp [cofibration_iff, fibration_iff, cofibrations_eq_unop]
+
+instance [Cofibration f] : Fibration f.op := by
+  rwa [fibration_op_iff]
+
+instance {X Y : Cᵒᵖ} (f : X ⟶ Y) [Fibration f] : Cofibration f.unop := by
+  rwa [cofibration_unop_iff]
+
+end
+
+section
+
+variable [CategoryWithFibrations C]
+
+instance : CategoryWithCofibrations Cᵒᵖ where
+  cofibrations := (fibrations C).op
+
+lemma cofibrations_op : cofibrations Cᵒᵖ = (fibrations C).op := rfl
+lemma fibrations_eq_unop : fibrations C = (cofibrations Cᵒᵖ).unop := rfl
+
+variable {C}
+
+lemma cofibration_op_iff : Cofibration f.op ↔ Fibration f := by
+  simp [cofibration_iff, fibration_iff, fibrations_eq_unop]
+
+lemma fibration_unop_iff {X Y : Cᵒᵖ} (f : X ⟶ Y) :
+    Fibration f.unop ↔ Cofibration f := by
+  simp [cofibration_iff, fibration_iff, fibrations_eq_unop]
+
+instance [Fibration f] : Cofibration f.op := by
+  rwa [cofibration_op_iff]
+
+instance {X Y : Cᵒᵖ} (f : X ⟶ Y) [Cofibration f] : Fibration f.unop := by
+  rwa [fibration_unop_iff]
+
+end
+
+section
+
+variable [CategoryWithWeakEquivalences C]
+
+instance : CategoryWithWeakEquivalences Cᵒᵖ where
+  weakEquivalences := (weakEquivalences C).op
+
+lemma weakEquivalences_op : weakEquivalences Cᵒᵖ = (weakEquivalences C).op := rfl
+lemma weakEquivalences_eq_unop : weakEquivalences C = (weakEquivalences Cᵒᵖ).unop := rfl
+
+variable {C}
+
+lemma weakEquivalences_op_iff : WeakEquivalence f.op ↔ WeakEquivalence f := by
+  simp [weakEquivalence_iff, weakEquivalences_op]
+
+lemma weakEquivalences_unop_iff {X Y : Cᵒᵖ} (f : X ⟶ Y) :
+    WeakEquivalence f.unop ↔ WeakEquivalence f :=
+  (weakEquivalences_op_iff f.unop).symm
+
+instance [WeakEquivalence f] : WeakEquivalence f.op := by
+  rwa [weakEquivalences_op_iff]
+
+instance {X Y : Cᵒᵖ} (f : X ⟶ Y) [WeakEquivalence f] : WeakEquivalence f.unop := by
+  rwa [weakEquivalences_unop_iff]
+
+end
+
+section
+
+variable [CategoryWithWeakEquivalences C] [CategoryWithCofibrations C]
+
+lemma trivialFibrations_op : trivialFibrations Cᵒᵖ = (trivialCofibrations C).op := rfl
+lemma trivialCofibrations_eq_unop : trivialCofibrations C = (trivialFibrations Cᵒᵖ).unop := rfl
+
+end
+
+section
+
+variable [CategoryWithWeakEquivalences C] [CategoryWithFibrations C]
+
+lemma trivialCofibrations_op : trivialCofibrations Cᵒᵖ = (trivialFibrations C).op := rfl
+lemma trivialFibrations_eq_unop : trivialFibrations C = (trivialCofibrations Cᵒᵖ).unop := rfl
+
+end
+
+section ObjectProperty
+
+variable [CategoryWithWeakEquivalences C] {P : ObjectProperty C}
+
+instance : CategoryWithWeakEquivalences P.FullSubcategory where
+  weakEquivalences := (weakEquivalences C).inverseImage P.ι
+
+instance [(weakEquivalences C).HasTwoOutOfThreeProperty] :
+    (weakEquivalences P.FullSubcategory).HasTwoOutOfThreeProperty :=
+  inferInstanceAs ((weakEquivalences C).inverseImage P.ι).HasTwoOutOfThreeProperty
+
+instance [(weakEquivalences C).IsMultiplicative] :
+    (weakEquivalences P.FullSubcategory).IsMultiplicative :=
+  inferInstanceAs ((weakEquivalences C).inverseImage P.ι).IsMultiplicative
+
+instance [(weakEquivalences C).RespectsIso] :
+    (weakEquivalences P.FullSubcategory).RespectsIso :=
+  inferInstanceAs ((weakEquivalences C).inverseImage P.ι).RespectsIso
+
+lemma weakEquivalence_iff_of_objectProperty
+    {X Y : P.FullSubcategory} (f : X ⟶ Y) :
+    WeakEquivalence f ↔ WeakEquivalence f.hom := by
+  simp only [weakEquivalence_iff]
+  rfl
+
+instance {X Y : P.FullSubcategory} (f : X ⟶ Y) [WeakEquivalence f] :
+    WeakEquivalence f.hom := by
+  rwa [← weakEquivalence_iff_of_objectProperty]
+
+instance {X Y : P.FullSubcategory} (f : X ⟶ Y) [WeakEquivalence f] :
+    WeakEquivalence (P.ι.map f) := by
+  dsimp
+  infer_instance
+
+end ObjectProperty
 
 end HomotopicalAlgebra

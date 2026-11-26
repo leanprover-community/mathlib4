@@ -3,22 +3,27 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.Exact
-import Mathlib.CategoryTheory.Preadditive.Injective.Basic
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.Exact
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Short exact short complexes
 
 A short complex `S : ShortComplex C` is short exact (`S.ShortExact`) when it is exact,
 `S.f` is a mono and `S.g` is an epi.
-
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
 open Category Limits ZeroObject
 
-variable {C D : Type*} [Category C] [Category D]
+variable {C D : Type*} [Category* C] [Category* D]
 
 namespace ShortComplex
 
@@ -214,6 +219,15 @@ end ShortExact
 
 end Preadditive
 
+/-- `ShortComplex.ShortExact` as an object property. -/
+abbrev shortExact (C : Type*) [Category* C] [Limits.HasZeroMorphisms C] :
+    ObjectProperty (ShortComplex C) :=
+  ShortComplex.ShortExact
+
 end ShortComplex
+
+/-- The category of short exact sequences. -/
+abbrev ShortExactSequence (C : Type*) [Category* C] [Limits.HasZeroMorphisms C] :=
+  (ShortComplex.shortExact C).FullSubcategory
 
 end CategoryTheory

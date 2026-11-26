@@ -3,8 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+module
+
+public import Mathlib.Topology.NhdsSet
+
 import Mathlib.Topology.Continuous
-import Mathlib.Topology.NhdsSet
 
 /-!
 # Separated neighbourhoods
@@ -25,7 +28,11 @@ formulating separation axioms for topological spaces.
 * [Willard's *General Topology*][zbMATH02107988]
 -/
 
-open Function Set Filter Topology TopologicalSpace
+@[expose] public section
+
+open Set Filter TopologicalSpace
+
+open scoped Topology
 
 universe u v
 
@@ -82,8 +89,8 @@ theorem hasSeparatingCovers_iff_separatedNhds {s t : Set X} :
     intro m xinvm
     have n_le_m : n ≤ m := by
       by_contra m_gt_n
-      exact xinun.2 (subset_closure (mem_biUnion (le_of_lt (not_le.mp m_gt_n)) xinvm))
-    exact subset_closure (mem_biUnion n_le_m xinun.1)
+      exact xinun.2 (subset_closure (mem_iUnion₂_of_mem (le_of_lt (not_le.mp m_gt_n)) xinvm))
+    exact subset_closure (mem_iUnion₂_of_mem n_le_m xinun.1)
   · rintro ⟨U, V, U_open, V_open, h_sub_U, k_sub_V, UV_dis⟩
     exact
       ⟨⟨fun _ ↦ U,

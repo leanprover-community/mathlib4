@@ -3,8 +3,13 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Shift.CommShift
-import Mathlib.CategoryTheory.Localization.Linear
+module
+
+public import Mathlib.CategoryTheory.Localization.Linear
+public import Mathlib.CategoryTheory.Shift.CommShift
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Localization of the linearity of the shift functors
@@ -13,15 +18,16 @@ If `L : C ⥤ D` is a localization functor with respect to `W : MorphismProperty
 and both `C` and `D` have been equipped with `R`-linear category structures
 such that `L` is `R`-linear and the shift functors on `C` are `R`-linear,
 then the shift functors on `D` are `R`-linear.
-
 -/
+
+public section
 
 namespace CategoryTheory
 
 namespace Shift
 
-variable (R : Type*) [Ring R] {C : Type _} [Category C] [Preadditive C] [Linear R C]
-  {D : Type*} [Category D] [Preadditive D] [Linear R D]
+variable (R : Type*) [Ring R] {C : Type _} [Category* C] [Preadditive C] [Linear R C]
+  {D : Type*} [Category* D] [Preadditive D] [Linear R D]
   {M : Type*} [AddMonoid M] [HasShift C M]
   [∀ (n : M), (shiftFunctor C n).Linear R]
   (L : C ⥤ D) (W : MorphismProperty C)

@@ -3,11 +3,18 @@ Copyright (c) 2016 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Tactic.TypeStar
+module
+
+import Mathlib.Init
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # `ULift` and `PLift`
 -/
+
+public section
 
 theorem ULift.down_injective {α : Type*} : Function.Injective (@ULift.down α)
   | ⟨a⟩, ⟨b⟩, _ => by congr

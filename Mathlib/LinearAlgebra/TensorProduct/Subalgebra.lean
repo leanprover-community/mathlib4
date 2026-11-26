@@ -3,11 +3,12 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.LinearAlgebra.TensorProduct.Submodule
-import Mathlib.RingTheory.TensorProduct.Basic
+module
+
+public import Mathlib.LinearAlgebra.TensorProduct.Submodule
+public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
-
 # Some results on tensor product of subalgebras
 
 ## Linear maps induced by multiplication for subalgebras
@@ -29,8 +30,9 @@ mainly used in the definition of linearly disjointness.
   and `Algebra.TensorProduct.rid`, as `i(R)` is not necessarily isomorphic to `R`.
 
   They are `Subalgebra` versions of `Submodule.lTensorOne` and `Submodule.rTensorOne`.
-
 -/
+
+@[expose] public section
 
 open scoped TensorProduct
 
@@ -56,15 +58,13 @@ This is the `Subalgebra` version of `Submodule.lTensorOne` -/
 def lTensorBot : (⊥ : Subalgebra R S) ⊗[R] A ≃ₐ[R] A := by
   refine Algebra.TensorProduct.algEquivOfLinearEquivTensorProduct (toSubmodule A).lTensorOne ?_ ?_
   · rintro x y a b
-    obtain ⟨x', hx⟩ := Algebra.mem_bot.1 x.2
+    obtain ⟨x', hx⟩ := Algebra.mem_bot.1 x.property
     replace hx : algebraMap R _ x' = x := Subtype.val_injective hx
-    obtain ⟨y', hy⟩ := Algebra.mem_bot.1 y.2
+    obtain ⟨y', hy⟩ := Algebra.mem_bot.1 y.property
     replace hy : algebraMap R _ y' = y := Subtype.val_injective hy
-    rw [← hx, ← hy, ← map_mul]
-    erw [(toSubmodule A).lTensorOne_tmul x' a,
-      (toSubmodule A).lTensorOne_tmul y' b,
-      (toSubmodule A).lTensorOne_tmul (x' * y') (a * b)]
-    rw [Algebra.mul_smul_comm, Algebra.smul_mul_assoc, smul_smul, mul_comm x' y']
+    rw [← hx, ← hy, ← map_mul, (toSubmodule A).lTensorOne_tmul x' a,
+      (toSubmodule A).lTensorOne_tmul y' b, (toSubmodule A).lTensorOne_tmul (x' * y') (a * b),
+      Algebra.mul_smul_comm, Algebra.smul_mul_assoc, smul_smul, mul_comm x' y']
   · exact Submodule.lTensorOne_one_tmul _
 
 variable {A}
@@ -89,15 +89,13 @@ This is the `Subalgebra` version of `Submodule.rTensorOne` -/
 def rTensorBot : A ⊗[R] (⊥ : Subalgebra R S) ≃ₐ[R] A := by
   refine Algebra.TensorProduct.algEquivOfLinearEquivTensorProduct (toSubmodule A).rTensorOne ?_ ?_
   · rintro a b x y
-    obtain ⟨x', hx⟩ := Algebra.mem_bot.1 x.2
+    obtain ⟨x', hx⟩ := Algebra.mem_bot.1 x.property
     replace hx : algebraMap R _ x' = x := Subtype.val_injective hx
-    obtain ⟨y', hy⟩ := Algebra.mem_bot.1 y.2
+    obtain ⟨y', hy⟩ := Algebra.mem_bot.1 y.property
     replace hy : algebraMap R _ y' = y := Subtype.val_injective hy
-    rw [← hx, ← hy, ← map_mul]
-    erw [(toSubmodule A).rTensorOne_tmul x' a,
-      (toSubmodule A).rTensorOne_tmul y' b,
-      (toSubmodule A).rTensorOne_tmul (x' * y') (a * b)]
-    rw [Algebra.mul_smul_comm, Algebra.smul_mul_assoc, smul_smul, mul_comm x' y']
+    rw [← hx, ← hy, ← map_mul, (toSubmodule A).rTensorOne_tmul x' a,
+      (toSubmodule A).rTensorOne_tmul y' b, (toSubmodule A).rTensorOne_tmul (x' * y') (a * b),
+      Algebra.mul_smul_comm, Algebra.smul_mul_assoc, smul_smul, mul_comm x' y']
   · exact Submodule.rTensorOne_tmul_one _
 
 @[simp]
@@ -129,15 +127,16 @@ namespace Algebra.TensorProduct
 
 variable (R S T)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `R`-algebras `S,T`, there is a natural `R`-linear isomorphism from `S ⊗[R] T` to
 `S' ⊗[R] T'` where `S',T'` are the images of `S,T` in `S ⊗[R] T` respectively.
 This is promoted to an `R`-algebra isomorphism `Algebra.TensorProduct.algEquivIncludeRange`. -/
 def linearEquivIncludeRange :
     S ⊗[R] T ≃ₗ[R] (includeLeft : S →ₐ[R] S ⊗[R] T).range ⊗[R]
-      (includeRight : T →ₐ[R] S ⊗[R] T).range := .ofLinear
+      (includeRight : T →ₐ[R] S ⊗[R] T).range := .ofLinearMap
   (_root_.TensorProduct.map
     includeLeft.toLinearMap.rangeRestrict includeRight.toLinearMap.rangeRestrict)
-  ((LinearMap.range includeLeft).mulMap (LinearMap.range includeRight))
+  (includeLeft.toLinearMap.range.mulMap includeRight.toLinearMap.range)
   (_root_.TensorProduct.ext' <| by
     rintro ⟨x', x, rfl : x ⊗ₜ 1 = x'⟩ ⟨y', y, rfl : 1 ⊗ₜ y = y'⟩
     rw [LinearMap.comp_apply, LinearMap.id_apply]
@@ -157,7 +156,7 @@ theorem linearEquivIncludeRange_toLinearMap :
 
 theorem linearEquivIncludeRange_symm_toLinearMap :
     (linearEquivIncludeRange R S T).symm.toLinearMap =
-      (LinearMap.range includeLeft).mulMap (LinearMap.range includeRight) := rfl
+      includeLeft.toLinearMap.range.mulMap includeRight.toLinearMap.range := rfl
 
 @[simp]
 theorem linearEquivIncludeRange_tmul (x y) :
@@ -167,7 +166,7 @@ theorem linearEquivIncludeRange_tmul (x y) :
 
 @[simp]
 theorem linearEquivIncludeRange_symm_tmul (x y) :
-    (linearEquivIncludeRange R S T).symm (x ⊗ₜ[R] y) = x.1 * y.1 := rfl
+    (linearEquivIncludeRange R S T).symm (x ⊗ₜ[R] y) = x.val * y.val := rfl
 
 /-- Given `R`-algebras `S,T`, there is a natural `R`-algebra isomorphism from `S ⊗[R] T` to
 `S' ⊗[R] T'` where `S',T'` are the images of `S,T` in `S ⊗[R] T` respectively. -/
@@ -188,7 +187,7 @@ theorem algEquivIncludeRange_tmul (x y) :
 
 @[simp]
 theorem algEquivIncludeRange_symm_tmul (x y) :
-    (algEquivIncludeRange R S T).symm (x ⊗ₜ[R] y) = x.1 * y.1 := rfl
+    (algEquivIncludeRange R S T).symm (x ⊗ₜ[R] y) = x.val * y.val := rfl
 
 end Algebra.TensorProduct
 
@@ -213,7 +212,7 @@ theorem Algebra.TensorProduct.algEquivIncludeRange_symm_toAlgHom :
 namespace Subalgebra
 
 @[simp]
-theorem mulMap_tmul (a : A) (b : B) : mulMap A B (a ⊗ₜ[R] b) = a.1 * b.1 := rfl
+theorem mulMap_tmul (a : A) (b : B) : mulMap A B (a ⊗ₜ[R] b) = a.val * b.val := rfl
 
 theorem mulMap_map_comp_eq (f : S →ₐ[R] T) :
     (mulMap (A.map f) (B.map f)).comp
@@ -245,10 +244,10 @@ def mulMap' : A ⊗[R] B →ₐ[R] ↥(A ⊔ B) :=
 
 variable {A B} in
 @[simp]
-theorem val_mulMap'_tmul (a : A) (b : B) : (mulMap' A B (a ⊗ₜ[R] b) : S) = a.1 * b.1 := rfl
+theorem val_mulMap'_tmul (a : A) (b : B) : (mulMap' A B (a ⊗ₜ[R] b) : S) = a.val * b.val := rfl
 
 theorem mulMap'_surjective : Function.Surjective (mulMap' A B) := by
-  simp_rw [mulMap', AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe,
+  simp_rw [mulMap', AlgHom.coe_comp, AlgEquiv.coe_toAlgHom,
     EquivLike.comp_surjective, AlgHom.rangeRestrict_surjective]
 
 end Subalgebra

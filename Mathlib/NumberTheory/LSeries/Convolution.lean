@@ -3,10 +3,12 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
+module
+
+public import Mathlib.NumberTheory.ArithmeticFunction.Defs
+public import Mathlib.NumberTheory.LSeries.Convergence
+
 import Mathlib.Algebra.BigOperators.Field
-import Mathlib.Analysis.Normed.Ring.InfiniteSum
-import Mathlib.NumberTheory.ArithmeticFunction
-import Mathlib.NumberTheory.LSeries.Convergence
 
 /-!
 # Dirichlet convolution of sequences and products of L-series
@@ -20,6 +22,8 @@ We then consider the case `R = ℂ` and show that `L (f ⍟ g) = L f * L g` on t
 of convergence of the L-series `L f`  and `L g` of `f` and `g`; see `LSeries_convolution`
 and `LSeries_convolution'`.
 -/
+
+@[expose] public section
 
 open scoped LSeries.notation
 
@@ -74,6 +78,7 @@ lemma ArithmeticFunction.coe_mul {R : Type*} [Semiring R] (f g : ArithmeticFunct
 
 namespace LSeries
 
+set_option backward.isDefEq.respectTransparency false in
 lemma convolution_def {R : Type*} [Semiring R] (f g : ℕ → R) :
     f ⍟ g = fun n ↦ ∑ p ∈ n.divisorsAntidiagonal, f p.1 * g p.2 := by
   ext n
@@ -100,7 +105,7 @@ lemma term_convolution (f g : ℕ → ℂ) (s : ℂ) (n : ℕ) :
   refine Finset.sum_congr rfl fun p hp ↦ ?_
   have ⟨hp₁, hp₂⟩ := ne_zero_of_mem_divisorsAntidiagonal hp
   rw [term_of_ne_zero hp₁, term_of_ne_zero hp₂, mul_comm_div, div_div, ← mul_div_assoc,
-    ← natCast_mul_natCast_cpow, ← cast_mul, mul_comm p.2, (mem_divisorsAntidiagonal.mp hp).1]
+    ← natCast_mul_cpow, ← cast_mul, mul_comm p.2, (mem_divisorsAntidiagonal.mp hp).1]
 
 open Set in
 /-- We give an expression of the `LSeries.term` of the convolution of two functions

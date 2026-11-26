@@ -3,13 +3,16 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Sébastien Gouëzel
 -/
-import Mathlib.Analysis.InnerProductSpace.Continuous
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Continuous
+public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
 
 /-!
 # Inner products of strongly measurable functions are strongly measurable.
-
 -/
+
+public section
 
 variable {α 𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 

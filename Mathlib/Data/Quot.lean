@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Logic.Relation
-import Mathlib.Logic.Unique
-import Mathlib.Util.Notation3
+module
+
+public import Mathlib.Basic.Unique
+public import Mathlib.Logic.Relation
+public import Mathlib.Util.Notation3
 
 /-!
 # Quotient types
@@ -16,6 +18,8 @@ This module extends the core library's treatment of quotient types (`Init.Core`)
 
 quotient
 -/
+
+@[expose] public section
 
 variable {α : Sort*} {β : Sort*}
 
@@ -32,10 +36,10 @@ instance : CoeFun (Setoid α) (fun _ ↦ α → α → Prop) where
   coe := @Setoid.r _
 
 theorem ext {α : Sort*} : ∀ {s t : Setoid α}, (∀ a b, s a b ↔ t a b) → s = t
-  | ⟨r, _⟩, ⟨p, _⟩, Eq =>
-  by have : r = p := funext fun a ↦ funext fun b ↦ propext <| Eq a b
-     subst this
-     rfl
+  | ⟨r, _⟩, ⟨p, _⟩, Eq => by
+    have : r = p := funext fun a ↦ funext fun b ↦ propext <| Eq a b
+    subst this
+    rfl
 
 end Setoid
 
@@ -272,7 +276,9 @@ theorem Quot.eq {α : Type*} {r : α → α → Prop} {x y : α} :
     Quot.mk r x = Quot.mk r y ↔ Relation.EqvGen r x y :=
   ⟨Quot.eqvGen_exact, Quot.eqvGen_sound⟩
 
-@[simp]
+-- This should not be a `@[simp]` lemma,
+-- as this prevents us from using `simp` reliably in the quotient,
+-- because this might bump us back out from equality to the underlying relation.
 theorem Quotient.eq {r : Setoid α} {x y : α} : Quotient.mk r x = ⟦y⟧ ↔ r x y :=
   ⟨Quotient.exact, Quotient.sound⟩
 
@@ -335,12 +341,20 @@ theorem Quot.mk_surjective {r : α → α → Prop} : Function.Surjective (Quot.
 /-- `Quotient.mk` is a surjective function. -/
 theorem Quotient.mk_surjective {s : Setoid α} :
     Function.Surjective (Quotient.mk s) :=
-  Quot.exists_rep
+  Quot.mk_surjective
 
 /-- `Quotient.mk'` is a surjective function. -/
 theorem Quotient.mk'_surjective [s : Setoid α] :
     Function.Surjective (Quotient.mk' : α → Quotient s) :=
-  Quot.exists_rep
+  Quot.mk_surjective
+
+theorem Quot.map_surjective {ra : α → α → Prop} {rb : β → β → Prop} {f : α → β}
+    (h : ∀ ⦃a b : α⦄, ra a b → rb (f a) (f b)) (hf : f.Surjective) : Quot.map f h |>.Surjective :=
+  surjective_lift _ |>.mpr <| .comp Quot.mk_surjective hf
+
+theorem Quotient.map_surjective {sa : Setoid α} {sb : Setoid β} {f : α → β}
+    (h : ∀ ⦃a b : α⦄, a ≈ b → f a ≈ f b) (hf : f.Surjective) : Quotient.map f h |>.Surjective :=
+  lift_surjective _ _ <| .comp Quot.mk_surjective hf
 
 /-- Choose an element of the equivalence class using the axiom of choice.
   Sound but noncomputable. -/
@@ -441,6 +455,7 @@ theorem true_equivalence : @Equivalence α fun _ _ ↦ True :=
 /-- Always-true relation as a `Setoid`.
 
 Note that in later files the preferred spelling is `⊤ : Setoid α`. -/
+@[instance_reducible]
 def trueSetoid : Setoid α :=
   ⟨_, true_equivalence⟩
 
@@ -600,14 +615,14 @@ protected theorem liftOn₂'_mk'' (f : α → β → γ) (h) (a : α) (b : β) :
 
 /-- A version of `Quotient.ind` taking `{s : Setoid α}` as an implicit argument instead of an
 instance argument. -/
-@[elab_as_elim]
+@[elab_as_elim, deprecated Quotient.ind (since := "2026-11-25")]
 protected theorem ind' {p : Quotient s₁ → Prop} (h : ∀ a, p (Quotient.mk'' a)) (q : Quotient s₁) :
     p q :=
   Quotient.ind h q
 
 /-- A version of `Quotient.ind₂` taking `{s₁ : Setoid α} {s₂ : Setoid β}` as implicit arguments
 instead of instance arguments. -/
-@[elab_as_elim]
+@[elab_as_elim, deprecated Quotient.ind₂ (since := "2026-11-25")]
 protected theorem ind₂' {p : Quotient s₁ → Quotient s₂ → Prop}
     (h : ∀ a₁ a₂, p (Quotient.mk'' a₁) (Quotient.mk'' a₂))
     (q₁ : Quotient s₁) (q₂ : Quotient s₂) : p q₁ q₂ :=
@@ -615,14 +630,14 @@ protected theorem ind₂' {p : Quotient s₁ → Quotient s₂ → Prop}
 
 /-- A version of `Quotient.inductionOn` taking `{s : Setoid α}` as an implicit argument instead
 of an instance argument. -/
-@[elab_as_elim]
+@[elab_as_elim, deprecated Quotient.inductionOn (since := "2026-11-25")]
 protected theorem inductionOn' {p : Quotient s₁ → Prop} (q : Quotient s₁)
     (h : ∀ a, p (Quotient.mk'' a)) : p q :=
   Quotient.inductionOn q h
 
 /-- A version of `Quotient.inductionOn₂` taking `{s₁ : Setoid α} {s₂ : Setoid β}` as implicit
 arguments instead of instance arguments. -/
-@[elab_as_elim]
+@[elab_as_elim, deprecated Quotient.inductionOn₂ (since := "2026-11-25")]
 protected theorem inductionOn₂' {p : Quotient s₁ → Quotient s₂ → Prop} (q₁ : Quotient s₁)
     (q₂ : Quotient s₂)
     (h : ∀ a₁ a₂, p (Quotient.mk'' a₁) (Quotient.mk'' a₂)) : p q₁ q₂ :=
@@ -630,7 +645,7 @@ protected theorem inductionOn₂' {p : Quotient s₁ → Quotient s₂ → Prop}
 
 /-- A version of `Quotient.inductionOn₃` taking `{s₁ : Setoid α} {s₂ : Setoid β} {s₃ : Setoid γ}`
 as implicit arguments instead of instance arguments. -/
-@[elab_as_elim]
+@[elab_as_elim, deprecated Quotient.inductionOn₃ (since := "2026-11-25")]
 protected theorem inductionOn₃' {p : Quotient s₁ → Quotient s₂ → Quotient s₃ → Prop}
     (q₁ : Quotient s₁) (q₂ : Quotient s₂) (q₃ : Quotient s₃)
     (h : ∀ a₁ a₂ a₃, p (Quotient.mk'' a₁) (Quotient.mk'' a₂) (Quotient.mk'' a₃)) :
@@ -639,7 +654,7 @@ protected theorem inductionOn₃' {p : Quotient s₁ → Quotient s₂ → Quoti
 
 /-- A version of `Quotient.recOnSubsingleton` taking `{s₁ : Setoid α}` as an implicit argument
 instead of an instance argument. -/
-@[elab_as_elim]
+@[elab_as_elim, deprecated Quotient.recOnSubsingleton (since := "2026-11-25")]
 protected def recOnSubsingleton' {φ : Quotient s₁ → Sort*} [∀ a, Subsingleton (φ ⟦a⟧)]
     (q : Quotient s₁)
     (f : ∀ a, φ (Quotient.mk'' a)) : φ q :=
@@ -647,7 +662,7 @@ protected def recOnSubsingleton' {φ : Quotient s₁ → Sort*} [∀ a, Subsingl
 
 /-- A version of `Quotient.recOnSubsingleton₂` taking `{s₁ : Setoid α} {s₂ : Setoid α}`
 as implicit arguments instead of instance arguments. -/
-@[elab_as_elim]
+@[elab_as_elim, deprecated Quotient.recOnSubsingleton₂ (since := "2026-11-25")]
 protected def recOnSubsingleton₂' {φ : Quotient s₁ → Quotient s₂ → Sort*}
     [∀ a b, Subsingleton (φ ⟦a⟧ ⟦b⟧)]
     (q₁ : Quotient s₁) (q₂ : Quotient s₂) (f : ∀ a₁ a₂, φ (Quotient.mk'' a₁) (Quotient.mk'' a₂)) :
@@ -763,13 +778,5 @@ end Quotient
 
 @[simp]
 lemma Equivalence.quot_mk_eq_iff {α : Type*} {r : α → α → Prop} (h : Equivalence r) (x y : α) :
-    Quot.mk r x = Quot.mk r y ↔ r x y := by
-  constructor
-  · rw [Quot.eq]
-    intro hxy
-    induction hxy with
-    | rel _ _ H => exact H
-    | refl _ => exact h.refl _
-    | symm _ _ _ H => exact h.symm H
-    | trans _ _ _ _ _ h₁₂ h₂₃ => exact h.trans h₁₂ h₂₃
-  · exact Quot.sound
+    Quot.mk r x = Quot.mk r y ↔ r x y :=
+  Quotient.eq (r := ⟨r, h⟩)

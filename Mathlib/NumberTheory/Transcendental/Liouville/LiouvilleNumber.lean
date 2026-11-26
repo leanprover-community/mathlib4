@@ -3,10 +3,11 @@ Copyright (c) 2020 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Jujian Zhang
 -/
-import Mathlib.NumberTheory.Transcendental.Liouville.Basic
+module
+
+public import Mathlib.NumberTheory.Transcendental.Liouville.Basic
 
 /-!
-
 # Liouville constants
 
 This file contains a construction of a family of Liouville numbers, indexed by a natural number $m$.
@@ -22,13 +23,15 @@ if the series does not converge, then the sum of the series is defined to be zer
 
 We prove that, for $m \in \mathbb{N}$ satisfying $2 \le m$, Liouville's constant associated to $m$
 is a transcendental number. Classically, the Liouville number for $m = 2$ is the one called
-``Liouville's constant''.
+"Liouville's constant".
 
 ## Implementation notes
 
 The indexing $m$ is eventually a natural number satisfying $2 ≤ m$. However, we prove the first few
 lemmas for $m \in \mathbb{R}$.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -131,7 +134,7 @@ theorem aux_calc (n : ℕ) {m : ℝ} (hm : 2 ≤ m) :
       -- the first factors satisfy the inequality `sub_one_div_inv_le_two`
       gcongr; exact sub_one_div_inv_le_two hm
     _ = 2 / m ^ (n + 1)! := mul_one_div 2 _
-    _ = 2 / m ^ (n ! * (n + 1)) := (congr_arg (2 / ·) (congr_arg (Pow.pow m) (mul_comm _ _)))
+    _ = 2 / m ^ (n ! * (n + 1)) := congr(2 / m ^ $(mul_comm ..))
     _ ≤ 1 / (m ^ n !) ^ n := by
       -- Clear denominators and massage*
       rw [← pow_mul, div_le_div_iff₀, one_mul, mul_add_one, pow_add, mul_comm 2]

@@ -3,8 +3,15 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.Group.Submonoid.Defs
-import Mathlib.Algebra.Order.Archimedean.Basic
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Defs
+public import Mathlib.Algebra.Order.Archimedean.Defs
+
+import Mathlib.Data.Rat.Floor
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Submonoids of archimedean monoids
@@ -20,6 +27,8 @@ submonoid of the ambient group.
   archimedean additive group retains the archimedean property when restricted to the additive
   submonoid.
 -/
+
+public section
 
 assert_not_exists Finset
 

@@ -3,13 +3,19 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Algebra.Group.Int.Defs
-import Mathlib.Algebra.Group.Nat.Even
-import Mathlib.Data.Int.Sqrt
+module
+
+public import Mathlib.Algebra.Group.Int.Defs
+public import Mathlib.Algebra.Group.Nat.Even
+public import Mathlib.Data.Int.Sqrt
+
+import Mathlib.Tactic.Attr.Core
 
 /-!
 # Parity of integers
 -/
+
+public section
 
 open Nat
 
@@ -66,8 +72,10 @@ lemma even_sub : Even (m - n) ↔ (Even m ↔ Even n) := by grind
 lemma even_pow' {n : ℕ} (h : n ≠ 0) : Even (m ^ n) ↔ Even m := by grind
 
 @[simp, norm_cast, grind =]
-lemma even_coe_nat (n : ℕ) : Even (n : ℤ) ↔ Even n := by
+lemma even_natCast (n : ℕ) : Even (n : ℤ) ↔ Even n := by
   rw_mod_cast [even_iff, Nat.even_iff]
+
+@[deprecated (since := "2026-10-13")] alias even_coe_nat := even_natCast
 
 lemma two_mul_ediv_two_of_even : Even n → 2 * (n / 2) = n := by grind
 
@@ -85,9 +93,9 @@ theorem isSquare_sign_iff {z : ℤ} : IsSquare z.sign ↔ 0 ≤ z := by
   | zero => simpa using ⟨0, by simp⟩
   | succ => norm_cast; simp
   | pred =>
-    rw [sign_eq_neg_one_of_neg (by omega), ← neg_add', Int.neg_nonneg]
+    rw [sign_eq_neg_one_of_neg (by lia), ← neg_add', Int.neg_nonneg]
     norm_cast
-    simp only [reduceNeg, le_zero_eq, Nat.add_eq_zero, succ_ne_self, and_false, iff_false]
+    simp only [reduceNeg, le_zero_eq, Nat.add_eq_zero_iff, succ_ne_self, and_false, iff_false]
     rintro ⟨a | a, ⟨⟩⟩
 
 end Int

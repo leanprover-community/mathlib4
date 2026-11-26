@@ -3,8 +3,13 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau
 -/
-import Mathlib.Algebra.Group.Int.Defs
-import Mathlib.Algebra.Order.Group.Unbundled.Basic
+module
+
+public import Mathlib.Algebra.Group.Int.Defs
+public import Mathlib.Algebra.Order.Group.Unbundled.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Intervals in ℤ
@@ -16,6 +21,8 @@ less than `n`.
 
 This could be unified with `Data.List.Intervals`. See the TODOs there.
 -/
+
+@[expose] public section
 
 namespace Int
 

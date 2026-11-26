@@ -3,12 +3,19 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Group.Submonoid.Pointwise
-import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Pointwise
+public import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Submonoids in a group with zero
 -/
+
+@[expose] public section
 
 assert_not_exists Ring
 
@@ -55,17 +62,16 @@ variable [DistribMulAction M A]
 /-- The action on an additive submonoid corresponding to applying the action to every element.
 
 This is available as an instance in the `Pointwise` locale. -/
+@[instance_reducible]
 protected def pointwiseMulAction : MulAction M (AddSubmonoid A) where
   smul a S := S.map (DistribMulAction.toAddMonoidEnd _ A a)
   one_smul S :=
-    (congr_arg (fun f : AddMonoid.End A => S.map f) (MonoidHom.map_one _)).trans S.map_id
-  mul_smul _ _ S :=
-    (congr_arg (fun f : AddMonoid.End A => S.map f) (MonoidHom.map_mul _ _ _)).trans
-      (S.map_map _ _).symm
+    congr(S.map $(map_one _)).trans S.map_id
+  mul_smul _ _ S := congr(S.map $(map_mul ..)).trans (S.map_map _ _).symm
 
 scoped[Pointwise] attribute [instance] AddSubmonoid.pointwiseMulAction
 
-@[simp]
+@[simp, norm_cast]
 lemma coe_pointwise_smul (m : M) (S : AddSubmonoid A) : ↑(m • S) = m • (S : Set A) := rfl
 
 lemma smul_mem_pointwise_smul (a : A) (m : M) (S : AddSubmonoid A) : a ∈ S → m • a ∈ m • S :=

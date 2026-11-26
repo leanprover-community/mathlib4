@@ -4,13 +4,19 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kevin Buzzard, Kim Morrison, Johan Commelin, Chris Hughes,
   Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Group.Hom.Defs
+module
+
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Group.Hom.Defs
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Additional lemmas about monoid and group homomorphisms
-
 -/
+
+@[expose] public section
 
 -- `NeZero` cannot be additivised, hence its theory should be developed outside of the
 -- `Algebra.Group` folder.
@@ -59,11 +65,15 @@ def invMonoidHom : α →* α where
   map_one' := inv_one
   map_mul' := mul_inv
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem coe_invMonoidHom : (invMonoidHom : α → α) = Inv.inv := rfl
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem invMonoidHom_apply (a : α) : invMonoidHom a = a⁻¹ := rfl
+
+@[to_additive (attr := simp)]
+theorem invMonoidHom_comp_invMonoidHom : (invMonoidHom (α := α)).comp invMonoidHom = .id _ := by
+  ext; simp
 
 end DivisionCommMonoid
 
@@ -76,13 +86,24 @@ namespace OneHom
 instance [One M] [MulOneClass N] : Mul (OneHom M N) where
   mul f g :=
     { toFun m := f m * g m
-      map_one' := by simp}
+      map_one' := by simp }
 
-@[to_additive (attr := norm_cast)]
+@[to_additive]
+instance [One M] [MulOneClass N] : IsMulApply (OneHom M N) where
+
+@[deprecated FunLike.coe_add +typeChanged (since := "2026-11-10")]
+theorem _root_.ZeroHom.coe_add [Zero M] [AddZeroClass N] (f g : ZeroHom M N) :
+    ⇑(f + g) = ⇑f + ⇑g := rfl
+
+@[to_additive existing, deprecated FunLike.coe_mul +typeChanged (since := "2026-11-10")]
 theorem coe_mul {M N} [One M] [MulOneClass N] (f g : OneHom M N) : ⇑(f * g) = ⇑f * ⇑g := rfl
 
-@[to_additive (attr := simp)]
-theorem mul_apply {M N} [One M] [MulOneClass N] (f g : OneHom M N) (x : M) :
+@[deprecated add_apply +typeChanged (since := "2026-11-10")]
+protected theorem _root_.ZeroHom.add_apply [Zero M] [AddZeroClass N] (f g : ZeroHom M N) (x : M) :
+    (f + g) x = f x + g x := rfl
+
+@[to_additive existing, deprecated mul_apply +typeChanged (since := "2026-11-10")]
+protected theorem mul_apply {M N} [One M] [MulOneClass N] (f g : OneHom M N) (x : M) :
     (f * g) x = f x * g x := rfl
 
 @[to_additive]
@@ -96,13 +117,23 @@ theorem mul_comp [One M] [One N] [MulOneClass P] (g₁ g₂ : OneHom N P) (f : O
 instance [One M] [InvOneClass N] : Inv (OneHom M N) where
   inv f :=
     { toFun m := (f m)⁻¹
-      map_one' := by simp}
+      map_one' := by simp }
 
-@[to_additive (attr := norm_cast)]
+@[to_additive]
+instance [One M] [InvOneClass N] : IsInvApply (OneHom M N) where
+
+@[deprecated FunLike.coe_neg +typeChanged (since := "2026-11-10")]
+theorem _root_.ZeroHom.coe_neg [Zero M] [NegZeroClass N] (f : ZeroHom M N) : ⇑(-f) = -⇑f := rfl
+
+@[to_additive existing, deprecated FunLike.coe_inv +typeChanged (since := "2026-11-10")]
 theorem coe_inv {M N} [One M] [InvOneClass N] (f : OneHom M N) : ⇑(f⁻¹) = (⇑f)⁻¹ := rfl
 
-@[to_additive (attr := simp)]
-theorem inv_apply {M N} [One M] [InvOneClass N] (f : OneHom M N) (x : M) :
+@[deprecated neg_apply +typeChanged (since := "2026-11-10")]
+protected theorem _root_.ZeroHom.neg_apply [Zero M] [NegZeroClass N] (f : ZeroHom M N) (x : M) :
+    (-f) x = -f x := rfl
+
+@[to_additive existing, deprecated inv_apply +typeChanged (since := "2026-11-10")]
+protected theorem inv_apply {M N} [One M] [InvOneClass N] (f : OneHom M N) (x : M) :
     f⁻¹ x = (f x)⁻¹ := rfl
 
 @[to_additive]
@@ -118,11 +149,22 @@ instance [One M] [DivisionMonoid N] : Div (OneHom M N) where
     { toFun m := f m / g m
       map_one' := by simp }
 
-@[to_additive (attr := norm_cast)]
+@[to_additive]
+instance [One M] [DivisionMonoid N] : IsDivApply (OneHom M N) where
+
+@[deprecated FunLike.coe_sub +typeChanged (since := "2026-11-10")]
+theorem _root_.ZeroHom.coe_sub [Zero M] [SubtractionMonoid N] (f g : ZeroHom M N) :
+    ⇑(f - g) = ⇑f - ⇑g := rfl
+
+@[to_additive existing, deprecated FunLike.coe_div +typeChanged (since := "2026-11-10")]
 theorem coe_div {M N} [One M] [DivisionMonoid N] (f g : OneHom M N) : ⇑(f / g) = ⇑f / ⇑g := rfl
 
-@[to_additive (attr := simp)]
-theorem div_apply {M N} [One M] [DivisionMonoid N] (f g : OneHom M N) (x : M) :
+@[deprecated sub_apply +typeChanged (since := "2026-11-10")]
+protected theorem _root_.ZeroHom.sub_apply [Zero M] [SubtractionMonoid N]
+  (f g : ZeroHom M N) (x : M) : (f - g) x = f x - g x := rfl
+
+@[to_additive existing, deprecated div_apply +typeChanged (since := "2026-11-10")]
+protected theorem div_apply {M N} [One M] [DivisionMonoid N] (f g : OneHom M N) (x : M) :
     (f / g) x = f x / g x := rfl
 
 @[to_additive]
@@ -156,7 +198,7 @@ theorem mul_comp [Mul M] [Mul N] [CommSemigroup P] (g₁ g₂ : N →ₙ* P) (f 
 theorem comp_mul [Mul M] [CommSemigroup N] [CommSemigroup P] (g : N →ₙ* P) (f₁ f₂ : M →ₙ* N) :
     g.comp (f₁ * f₂) = g.comp f₁ * g.comp f₂ := by
   ext
-  simp only [mul_apply, Function.comp_apply, map_mul, coe_comp]
+  simp
 
 end MulHom
 
@@ -248,7 +290,8 @@ lemma mul_comp [MulOneClass P] (g₁ g₂ : M →* N) (f : P →* M) :
 @[to_additive]
 lemma comp_mul [CommMonoid P] (g : N →* P) (f₁ f₂ : M →* N) :
     g.comp (f₁ * f₂) = g.comp f₁ * g.comp f₂ := by
-  ext; simp only [mul_apply, Function.comp_apply, map_mul, coe_comp]
+  ext
+  simp
 
 end Mul
 
@@ -270,7 +313,7 @@ theorem inv_comp (φ : N →* G) (ψ : M →* N) : φ⁻¹.comp ψ = (φ.comp ψ
 @[to_additive (attr := simp)]
 theorem comp_inv (φ : G →* H) (ψ : M →* G) : φ.comp ψ⁻¹ = (φ.comp ψ)⁻¹ := by
   ext
-  simp only [Function.comp_apply, inv_apply, map_inv, coe_comp]
+  simp
 
 /-- If `f` and `g` are monoid homomorphisms to a commutative group, then `f / g` is the homomorphism
 sending `x` to `(f x) / (g x)`. -/
@@ -287,16 +330,19 @@ lemma div_comp (f g : N →* G) (h : M →* N) : (f / g).comp h = f.comp h / g.c
 
 @[to_additive (attr := simp)]
 lemma comp_div (f : G →* H) (g h : M →* G) : f.comp (g / h) = f.comp g / f.comp h := by
-  ext; simp only [Function.comp_apply, div_apply, map_div, coe_comp]
+  ext
+  simp
 
 end InvDiv
 
 /-- If `H` is commutative and `G →* H` is injective, then `G` is commutative. -/
+@[instance_reducible]
 def commGroupOfInjective [Group G] [CommGroup H] (f : G →* H) (hf : Function.Injective f) :
     CommGroup G :=
   ⟨by simp_rw [← hf.eq_iff, map_mul, mul_comm, implies_true]⟩
 
 /-- If `G` is commutative and `G →* H` is surjective, then `H` is commutative. -/
+@[instance_reducible]
 def commGroupOfSurjective [CommGroup G] [Group H] (f : G →* H) (hf : Function.Surjective f) :
     CommGroup H :=
   ⟨by simp_rw [hf.forall₂, ← map_mul, mul_comm, implies_true]⟩

@@ -3,9 +3,11 @@ Copyright (c) 2024 Felix Weilacher. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Felix Weilacher
 -/
-import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Logic.Equiv.PartialEquiv
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.Defs
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+public import Mathlib.Logic.Equiv.PartialEquiv
 
 /-!
 # Equidecompositions
@@ -28,7 +30,7 @@ bijection `f : A ≃ B` such that for some `S : Finset G`, `f a ∈ S • a` for
 We take this as our definition as it is easier to work with. It is implemented as an element
 `PartialEquiv X X` with source `A` and target `B`.
 
-## Implementation Notes
+## Implementation notes
 
 * Equidecompositions are implemented as elements of `PartialEquiv X X` together with a
   `Finset` of elements of the acting group and a proof that every point in the source is moved
@@ -47,10 +49,11 @@ We take this as our definition as it is easier to work with. It is implemented a
   prove that its induced equivalence relation is equidecomposability.
 * Prove the definition of equidecomposition used here is equivalent to the more familiar one
   using partitions.
-
 -/
 
-variable {X G : Type*} {A B C : Set X}
+@[expose] public section
+
+variable {X G : Type*} {A B : Set X}
 
 open Function Set Pointwise PartialEquiv
 
@@ -107,7 +110,7 @@ theorem IsDecompOn.mono {f f' : X → X} {A A' : Set X} {S : Finset G} (h : IsDe
   exact h a (hA' ha)
 
 /-- The restriction of an equidecomposition as an equidecomposition. -/
-@[simps!]
+@[simps! -isSimp]
 def restr (f : Equidecomp X G) (A : Set X) : Equidecomp X G where
   toPartialEquiv := f.toPartialEquiv.restr A
   isDecompOn' := ⟨f.witness,
@@ -148,7 +151,7 @@ variable {X} {G}
 open scoped Classical in
 theorem IsDecompOn.comp' {g f : X → X} {B A : Set X} {T S : Finset G}
     (hg : IsDecompOn g B T) (hf : IsDecompOn f A S) :
-    IsDecompOn (g ∘ f) (A ∩ f ⁻¹' B) (T * S)  := by
+    IsDecompOn (g ∘ f) (A ∩ f ⁻¹' B) (T * S) := by
   intro _ ⟨aA, aB⟩
   rcases hf _ aA with ⟨γ, γ_mem, hγ⟩
   rcases hg _ aB with ⟨δ, δ_mem, hδ⟩
@@ -158,8 +161,8 @@ theorem IsDecompOn.comp' {g f : X → X} {B A : Set X} {T S : Finset G}
 open scoped Classical in
 theorem IsDecompOn.comp {g f : X → X} {B A : Set X} {T S : Finset G}
     (hg : IsDecompOn g B T) (hf : IsDecompOn f A S) (h : MapsTo f A B) :
-    IsDecompOn (g ∘ f) A (T * S)  := by
-  rw [left_eq_inter.mpr h]
+    IsDecompOn (g ∘ f) A (T * S) := by
+  rw [left_eq_inter.mpr h.subset_preimage]
   exact hg.comp' hf
 
 /-- The composition of two equidecompositions as an equidecomposition. -/
@@ -201,6 +204,14 @@ theorem right_inv {f : Equidecomp X G} {x : X} (h : x ∈ f.target) :
 
 @[simp]
 theorem symm_symm (f : Equidecomp X G) : f.symm.symm = f := rfl
+
+theorem symm_apply_eq (f : Equidecomp X G) {x y} (hx : x ∈ f.toPartialEquiv.target)
+    (hy : y ∈ f.toPartialEquiv.source) : f.symm x = y ↔ x = f y :=
+  f.toPartialEquiv.symm_apply_eq hy hx
+
+theorem eq_symm_apply (f : Equidecomp X G) {x y} (hx : x ∈ f.toPartialEquiv.target)
+    (hy : y ∈ f.toPartialEquiv.source) : y = f.symm x ↔ f y = x :=
+  f.toPartialEquiv.eq_symm_apply hy hx
 
 theorem symm_involutive : Function.Involutive (symm : Equidecomp X G → _) := symm_symm
 

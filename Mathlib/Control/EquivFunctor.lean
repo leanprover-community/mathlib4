@@ -3,8 +3,13 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Logic.Equiv.Defs
-import Mathlib.Tactic.Convert
+module
+
+public import Mathlib.Logic.Equiv.Defs
+public import Mathlib.Tactic.Convert
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Functions functorial with respect to equivalences
@@ -14,6 +19,8 @@ coherently mapping equivalences to equivalences.
 
 In categorical language, it is an endofunctor of the "core" of the category `Type`.
 -/
+
+@[expose] public section
 
 
 universe u₀ u₁ u₂ v₀ v₁ v₂
@@ -47,10 +54,10 @@ def mapEquiv : f α ≃ f β where
   toFun := EquivFunctor.map e
   invFun := EquivFunctor.map e.symm
   left_inv x := by
-    convert (congr_fun (EquivFunctor.map_trans' e e.symm) x).symm
+    convert! (congr_fun (EquivFunctor.map_trans' e e.symm) x).symm
     simp
   right_inv y := by
-    convert (congr_fun (EquivFunctor.map_trans' e.symm e) y).symm
+    convert! (congr_fun (EquivFunctor.map_trans' e.symm e) y).symm
     simp
 
 @[simp]

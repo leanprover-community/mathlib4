@@ -3,17 +3,23 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.Algebra.MvPolynomial.Cardinal
+module
+
+public import Mathlib.Algebra.MvPolynomial.Cardinal
+public import Mathlib.RingTheory.Localization.Cardinality
+public import Mathlib.RingTheory.MvPolynomial
+
 import Mathlib.RingTheory.Algebraic.LinearIndependent
 import Mathlib.RingTheory.Algebraic.MvPolynomial
-import Mathlib.RingTheory.Localization.Cardinality
-import Mathlib.RingTheory.MvPolynomial
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Rank of multivariate rational function field
 -/
 
-noncomputable section
+public section
 
 universe u v
 

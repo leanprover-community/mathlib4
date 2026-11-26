@@ -3,9 +3,15 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.GradedObject.Associator
+module
+
+public import Mathlib.Algebra.Homology.Bifunctor
+public import Mathlib.CategoryTheory.GradedObject.Associator
+
 import Mathlib.CategoryTheory.Linear.LinearFunctor
-import Mathlib.Algebra.Homology.Bifunctor
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The associator for actions of bifunctors on homological complexes
@@ -31,8 +37,9 @@ commutation of certain functors to certain coproducts.
 
 The main application of these results shall be the construction of
 the associator for the monoidal category structure on homological complexes.
-
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -41,7 +48,7 @@ open CategoryTheory Category Limits
 namespace HomologicalComplex
 
 variable {C₁ C₂ C₁₂ C₂₃ C₃ C₄ : Type*}
-  [Category C₁] [Category C₂] [Category C₃] [Category C₄] [Category C₁₂] [Category C₂₃]
+  [Category* C₁] [Category* C₂] [Category* C₃] [Category* C₄] [Category* C₁₂] [Category* C₂₃]
   [HasZeroMorphisms C₁] [HasZeroMorphisms C₂] [HasZeroMorphisms C₃]
   [Preadditive C₁₂] [Preadditive C₂₃] [Preadditive C₄]
   {F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂} {G : C₁₂ ⥤ C₃ ⥤ C₄}
@@ -155,11 +162,11 @@ noncomputable def ιOrZero (i₁ : ι₁) (i₂ : ι₂) (i₃ : ι₃) (j : ι�
 lemma ιOrZero_eq (i₁ : ι₁) (i₂ : ι₂) (i₃ : ι₃) (j : ι₄)
     (h : ComplexShape.r c₁ c₂ c₃ c₁₂ c₄ (i₁, i₂, i₃) = j) :
     ιOrZero F₁₂ G K₁ K₂ K₃ c₁₂ c₄ i₁ i₂ i₃ j =
-      ι F₁₂ G K₁ K₂ K₃ c₁₂ c₄ i₁ i₂ i₃ j h := dif_pos h
+      ι F₁₂ G K₁ K₂ K₃ c₁₂ c₄ i₁ i₂ i₃ j h := dite_eq_left h
 
 lemma ιOrZero_eq_zero (i₁ : ι₁) (i₂ : ι₂) (i₃ : ι₃) (j : ι₄)
     (h : ComplexShape.r c₁ c₂ c₃ c₁₂ c₄ (i₁, i₂, i₃) ≠ j) :
-    ιOrZero F₁₂ G K₁ K₂ K₃ c₁₂ c₄ i₁ i₂ i₃ j = 0 := dif_neg h
+    ιOrZero F₁₂ G K₁ K₂ K₃ c₁₂ c₄ i₁ i₂ i₃ j = 0 := dite_eq_right h
 
 variable {F₁₂ G K₁ K₂ K₃ c₁₂ c₄} in
 @[ext]
@@ -217,7 +224,7 @@ lemma d₁_eq_zero (i₁ : ι₁) (i₂ : ι₂) (i₃ : ι₃) (j : ι₄) (h :
 lemma d₁_eq {i₁ i₁' : ι₁} (h₁ : c₁.Rel i₁ i₁') (i₂ : ι₂) (i₃ : ι₃) (j : ι₄) :
     d₁ F₁₂ G K₁ K₂ K₃ c₁₂ c₄ i₁ i₂ i₃ j =
     (ComplexShape.ε₁ c₁₂ c₃ c₄ (ComplexShape.π c₁ c₂ c₁₂ ⟨i₁, i₂⟩, i₃) *
-      ComplexShape.ε₁ c₁ c₂ c₁₂ (i₁, i₂) ) •
+      ComplexShape.ε₁ c₁ c₂ c₁₂ (i₁, i₂)) •
     (G.map ((F₁₂.map (K₁.d i₁ i₁')).app (K₂.X i₂))).app (K₃.X i₃) ≫
       ιOrZero F₁₂ G K₁ K₂ K₃ c₁₂ c₄ i₁' i₂ i₃ j := by
   obtain rfl := c₁.next_eq' h₁
@@ -443,11 +450,11 @@ noncomputable def ιOrZero (i₁ : ι₁) (i₂ : ι₂) (i₃ : ι₃) (j : ι�
 lemma ιOrZero_eq (i₁ : ι₁) (i₂ : ι₂) (i₃ : ι₃) (j : ι₄)
     (h : ComplexShape.r c₁ c₂ c₃ c₁₂ c₄ (i₁, i₂, i₃) = j) :
     ιOrZero F G₂₃ K₁ K₂ K₃ c₁₂ c₂₃ c₄ i₁ i₂ i₃ j =
-      ι F G₂₃ K₁ K₂ K₃ c₁₂ c₂₃ c₄ i₁ i₂ i₃ j h := dif_pos h
+      ι F G₂₃ K₁ K₂ K₃ c₁₂ c₂₃ c₄ i₁ i₂ i₃ j h := dite_eq_left h
 
 lemma ιOrZero_eq_zero (i₁ : ι₁) (i₂ : ι₂) (i₃ : ι₃) (j : ι₄)
     (h : ComplexShape.r c₁ c₂ c₃ c₁₂ c₄ (i₁, i₂, i₃) ≠ j) :
-    ιOrZero F G₂₃ K₁ K₂ K₃ c₁₂ c₂₃ c₄ i₁ i₂ i₃ j = 0 := dif_neg h
+    ιOrZero F G₂₃ K₁ K₂ K₃ c₁₂ c₂₃ c₄ i₁ i₂ i₃ j = 0 := dite_eq_right h
 
 variable [HasGoodTrifunctor₂₃Obj F G₂₃ K₁ K₂ K₃ c₁₂ c₂₃ c₄]
 
@@ -602,7 +609,7 @@ lemma ι_D₁ :
         rfl
     · rw [mapBifunctor.d₁_eq_zero' _ _ _ _ h₁ _ _ h₂, comp_zero,
         ιOrZero_eq_zero _ _ _ _ _ _ _ _ _ _ _ _
-          (by simpa only [← ComplexShape.assoc c₁ c₂ c₃ c₁₂ c₂₃ c₄] using h₂),
+          (by simpa only [← ComplexShape.assoc c₁ c₂ c₃ c₁₂ c₂₃ c₄] using! h₂),
         comp_zero, smul_zero]
   · rw [mapBifunctor.d₁_eq_zero _ _ _ _ _ _ _ h₁,
       d₁_eq_zero _ _ _ _ _ _ _ _ _ _ _ _ h₁, comp_zero]
@@ -800,7 +807,7 @@ noncomputable def mapBifunctorAssociator :
       mapBifunctor K₁ (mapBifunctor K₂ K₃ G₂₃ c₂₃) F c₄ :=
   Hom.isoOfComponents (mapBifunctorAssociatorX associator K₁ K₂ K₃ c₁₂ c₂₃ c₄) (by
     intro j j' _
-    simp only [mapBifunctor₁₂.d_eq, mapBifunctor₂₃.d_eq  _ _ _ _ _ c₁₂,
+    simp only [mapBifunctor₁₂.d_eq, mapBifunctor₂₃.d_eq _ _ _ _ _ c₁₂,
       Preadditive.add_comp, Preadditive.comp_add,
       mapBifunctorAssociatorX_hom_D₁, mapBifunctorAssociatorX_hom_D₂,
       mapBifunctorAssociatorX_hom_D₃])

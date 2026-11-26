@@ -3,8 +3,13 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.LinearAlgebra.AffineSpace.Basis
-import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+module
+
+public import Mathlib.LinearAlgebra.AffineSpace.Basis
+public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Matrix results for barycentric co-ordinates
@@ -13,8 +18,12 @@ Results about the matrix of barycentric co-ordinates for a family of points in a
 respect to some affine basis.
 -/
 
+@[expose] public section
 
-open Affine Matrix
+
+open Matrix
+
+open scoped Affine
 
 open Set
 
@@ -64,7 +73,7 @@ theorem affineIndependent_of_toMatrix_right_inv [Fintype ι] [Finite ι'] [Decid
       ← Finset.univ.affineCombination_eq_linear_combination _ _ hw₂,
       ← Function.comp_def (b.coord j) p, ← Finset.univ.map_affineCombination p w₁ hw₁,
       ← Finset.univ.map_affineCombination p w₂ hw₂, hweq]
-  replace hweq' := congr_arg (fun w => w ᵥ* A) hweq'
+  replace hweq' := congr($hweq' ᵥ* A)
   simpa only [Matrix.vecMul_vecMul, hA, Matrix.vecMul_one] using hweq'
 
 /-- Given a family of points `p : ι' → P` and an affine basis `b`, if the matrix whose rows are the
@@ -95,25 +104,25 @@ theorem affineSpan_eq_top_of_toMatrix_left_inv [Finite ι] [Fintype ι'] [Decida
   rw [hbi]
   exact affineCombination_mem_affineSpan hAi p
 
-variable [Fintype ι] (b₂ : AffineBasis ι k P)
-
 /-- A change of basis formula for barycentric coordinates.
 
 See also `AffineBasis.toMatrix_inv_vecMul_toMatrix`. -/
 @[simp]
-theorem toMatrix_vecMul_coords (x : P) : b₂.coords x ᵥ* b.toMatrix b₂ = b.coords x := by
+theorem toMatrix_vecMul_coords [Fintype ι'] (b₂ : AffineBasis ι' k P) (x : P) :
+    b₂.coords x ᵥ* b.toMatrix b₂ = b.coords x := by
   ext j
   change _ = b.coord j x
   conv_rhs => rw [← b₂.affineCombination_coord_eq_self x]
   rw [Finset.map_affineCombination _ _ _ (b₂.sum_coord_apply_eq_one x)]
   simp [Matrix.vecMul, dotProduct, toMatrix_apply, coords]
 
-variable [DecidableEq ι]
-
-theorem toMatrix_mul_toMatrix : b.toMatrix b₂ * b₂.toMatrix b = 1 := by
+theorem toMatrix_mul_toMatrix [Fintype ι] [DecidableEq ι'] (b₂ : AffineBasis ι' k P) :
+    b.toMatrix b₂ * b₂.toMatrix b = 1 := by
   ext l m
   change (b.coords (b₂ l) ᵥ* b₂.toMatrix b) m = _
   rw [toMatrix_vecMul_coords, coords_apply, ← toMatrix_apply, toMatrix_self]
+
+variable [Fintype ι] [DecidableEq ι] (b₂ : AffineBasis ι k P)
 
 theorem isUnit_toMatrix : IsUnit (b.toMatrix b₂) :=
   ⟨{  val := b.toMatrix b₂

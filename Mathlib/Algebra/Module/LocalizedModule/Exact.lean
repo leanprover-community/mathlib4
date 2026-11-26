@@ -3,8 +3,10 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Jujian Zhang
 -/
-import Mathlib.Algebra.Exact
-import Mathlib.Algebra.Module.LocalizedModule.Basic
+module
+
+public import Mathlib.Algebra.Exact.Basic
+public import Mathlib.Algebra.Module.LocalizedModule.Basic
 
 /-!
 # Localization of modules is an exact functor
@@ -13,8 +15,9 @@ import Mathlib.Algebra.Module.LocalizedModule.Basic
 
 - `LocalizedModule.map_exact`: Localization of modules is an exact functor.
 - `IsLocalizedModule.map_exact`: A variant expressed in terms of `IsLocalizedModule`.
-
 -/
+
+public section
 
 section
 
@@ -38,7 +41,7 @@ lemma LocalizedModule.map_exact (g : M₀ →ₗ[R] M₁) (h : M₁ →ₗ[R] M�
       (fun m s hy ↦ by
         rw [map_LocalizedModules, ← zero_mk 1, mk_eq, one_smul, smul_zero] at hy
         obtain ⟨a, aS, ha⟩ := Subtype.exists.1 hy
-        rw [smul_zero, mk_smul, ← LinearMap.map_smul, ex (a • m)] at ha
+        rw [smul_zero, mk_smul, ← map_smul, ex (a • m)] at ha
         rcases ha with ⟨x, hx⟩
         use mk x (⟨a, aS⟩ * s)
         rw [map_LocalizedModules, hx, ← mk_cancel_common_left ⟨a, aS⟩ s m, mk_smul])

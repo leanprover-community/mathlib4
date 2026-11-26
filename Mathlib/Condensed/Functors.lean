@@ -3,11 +3,14 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Ulift
-import Mathlib.CategoryTheory.Sites.Coherent.CoherentSheaves
-import Mathlib.CategoryTheory.Sites.Whiskering
-import Mathlib.Condensed.Basic
-import Mathlib.Topology.Category.Stonean.Basic
+module
+
+public import Mathlib.Condensed.Explicit
+
+import Mathlib.CategoryTheory.Sites.PreservesLimits
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Functors from categories of topological spaces to condensed sets
@@ -19,8 +22,9 @@ sets.
 
 * `compHausToCondensed : CompHaus.{u} ⥤ CondensedSet.{u}` is essentially the yoneda presheaf
   functor. We also define `profiniteToCondensed` and `stoneanToCondensed`.
-
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -30,7 +34,7 @@ section Universes
 
 /-- Increase the size of the target category of condensed sets. -/
 def Condensed.ulift : Condensed.{u} (Type u) ⥤ CondensedSet.{u} :=
-  sheafCompose (coherentTopology CompHaus) uliftFunctor.{u+1, u}
+  sheafCompose (coherentTopology CompHaus) uliftFunctor.{u + 1, u}
 
 instance : Condensed.ulift.Full := show (sheafCompose _ _).Full from inferInstance
 
@@ -74,5 +78,8 @@ instance : compHausToCondensed'.Faithful :=
 instance : compHausToCondensed.Full := inferInstanceAs (_ ⋙ _).Full
 
 instance : compHausToCondensed.Faithful := inferInstanceAs (_ ⋙ _).Faithful
+
+instance : PreservesFiniteCoproducts compHausToCondensed.{u} :=
+  inferInstanceAs <| PreservesFiniteCoproducts (coherentTopology _).uliftYoneda
 
 end Topology

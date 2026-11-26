@@ -3,9 +3,11 @@ Copyright (c) 2024 Yongle Hu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yongle Hu
 -/
-import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
-import Mathlib.RingTheory.LocalProperties.Basic
-import Mathlib.RingTheory.Spectrum.Maximal.Localization
+module
+
+public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
+public import Mathlib.RingTheory.LocalProperties.Basic
+public import Mathlib.RingTheory.Spectrum.Maximal.Localization
 
 /-!
 # `IsIntegrallyClosed` is a local property
@@ -17,6 +19,8 @@ In this file, we prove that `IsIntegrallyClosed` is a local property.
 * `IsIntegrallyClosed.of_localization_maximal` : An integral domain `R` is integral closed
   if `Rₘ` is integral closed for any maximal ideal `m` of `R`.
 -/
+
+public section
 
 open scoped nonZeroDivisors
 
@@ -52,11 +56,11 @@ theorem IsIntegrallyClosed.of_localization_submonoid [IsDomain R] {ι : Type*} (
   $\bigcap_{\mathfrak{p} \in S} R_{\mathfrak{p}} = R$ and for every $\mathfrak{p} \in S$,
   $R_{\mathfrak{p}}$ is integrally closed. -/
 theorem IsIntegrallyClosed.of_localization [IsDomain R] (S : Set (PrimeSpectrum R))
-    (h : ∀ p ∈ S, IsIntegrallyClosed (Localization.AtPrime p.1))
-    (hs : ⨅ p ∈ S, (Localization.subalgebra (FractionRing R) p.1.primeCompl
-      p.1.primeCompl_le_nonZeroDivisors) = ⊥) : IsIntegrallyClosed R := by
-  apply IsIntegrallyClosed.of_localization_submonoid (fun p : S ↦ p.1.1.primeCompl)
-    (fun p ↦ p.1.1.primeCompl_le_nonZeroDivisors) (fun p ↦ h p.1 p.2)
+    (h : ∀ p ∈ S, IsIntegrallyClosed (Localization.AtPrime p.asIdeal))
+    (hs : ⨅ p ∈ S, (Localization.subalgebra (FractionRing R) p.asIdeal.primeCompl
+      p.asIdeal.primeCompl_le_nonZeroDivisors) = ⊥) : IsIntegrallyClosed R := by
+  apply IsIntegrallyClosed.of_localization_submonoid (fun p : S ↦ p.val.asIdeal.primeCompl)
+    (fun p ↦ p.val.asIdeal.primeCompl_le_nonZeroDivisors) (fun p ↦ h p.val p.property)
   ext x
   simp only [← hs, Algebra.mem_iInf, Subtype.forall]
 
@@ -71,9 +75,20 @@ theorem IsIntegrallyClosed.of_localization_maximal [IsDomain R]
   · rintro ⟨p, rfl⟩
     exact h p.asIdeal (Ring.ne_bot_of_isMaximal_of_not_isField p.isMaximal hf)
   · rw [iInf_range]
-    convert MaximalSpectrum.iInf_localization_eq_bot R (FractionRing R)
+    convert! MaximalSpectrum.iInf_localization_eq_bot R (FractionRing R)
     rw [subalgebra.ofField_eq, MaximalSpectrum.toPrimeSpectrum]
 
 theorem isIntegrallyClosed_ofLocalizationMaximal :
     OfLocalizationMaximal fun R _ => ([IsDomain R] → IsIntegrallyClosed R) :=
   fun _ _ h _ ↦ IsIntegrallyClosed.of_localization_maximal fun p _ hpm ↦ h p hpm
+
+variable
+  (Rₚ : ∀ (P : Ideal R) [P.IsMaximal], Type*)
+  [∀ (P : Ideal R) [P.IsMaximal], CommRing (Rₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], Algebra R (Rₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], IsLocalization.AtPrime (Rₚ P) P]
+
+theorem IsIntegrallyClosed.of_isLocalization_maximal [IsDomain R]
+    (h : ∀ (P : Ideal R) [P.IsMaximal], IsIntegrallyClosed (Rₚ P)) :
+    IsIntegrallyClosed R := .of_localization_maximal
+  (fun P _ _ ↦ .of_equiv <| ringEquivOfRingEquiv (Rₚ P) _ (RingEquiv.refl R) P.primeCompl.map_id)

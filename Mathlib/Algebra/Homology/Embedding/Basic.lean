@@ -3,10 +3,13 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ComplexShape
-import Mathlib.Algebra.Ring.Int.Defs
-import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.Tactic.ByContra
+module
+
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Algebra.Homology.ComplexShape
+public import Mathlib.Algebra.Ring.Int.Defs
+
+import Mathlib.Tactic.Push
 
 /-! # Embeddings of complex shapes
 
@@ -27,28 +30,29 @@ category of an abelian category (TODO).
 ## Description of the API
 
 - The extension functor `e.extendFunctor C : HomologicalComplex C c ⥤ HomologicalComplex C c'`
-(extending by the zero object outside of the image of `e.f`) is defined in
-the file `Embedding.Extend`;
+  (extending by the zero object outside of the image of `e.f`) is defined in
+  the file `Embedding.Extend`;
 - assuming `e.IsRelIff`, the restriction functor
-`e.restrictionFunctor C : HomologicalComplex C c' ⥤ HomologicalComplex C c`
-is defined in the file `Embedding.Restriction`;
+  `e.restrictionFunctor C : HomologicalComplex C c' ⥤ HomologicalComplex C c`
+  is defined in the file `Embedding.Restriction`;
 - the stupid truncation functor
-`e.stupidTruncFunctor C : HomologicalComplex C c' ⥤ HomologicalComplex C c'`
-which is the composition of the two previous functors is defined in the file
-`Embedding.StupidTrunc`.
+  `e.stupidTruncFunctor C : HomologicalComplex C c' ⥤ HomologicalComplex C c'`
+  which is the composition of the two previous functors is defined in the file
+  `Embedding.StupidTrunc`.
 - assuming `e.IsTruncGE`, we have truncation functors
-`e.truncGE'Functor C : HomologicalComplex C c' ⥤ HomologicalComplex C c` and
-`e.truncGEFunctor C : HomologicalComplex C c' ⥤ HomologicalComplex C c'`
-(see the file `Embedding.TruncGE`), and a natural
-transformation `e.πTruncGENatTrans : 𝟭 _ ⟶ e.truncGEFunctor C` which is a quasi-isomorphism
-in degrees in the image of `e.f` (TODO);
+  `e.truncGE'Functor C : HomologicalComplex C c' ⥤ HomologicalComplex C c` and
+  `e.truncGEFunctor C : HomologicalComplex C c' ⥤ HomologicalComplex C c'`
+  (see the file `Embedding.TruncGE`), and a natural
+  transformation `e.πTruncGENatTrans : 𝟭 _ ⟶ e.truncGEFunctor C` which is a quasi-isomorphism
+  in degrees in the image of `e.f` (TODO);
 - assuming `e.IsTruncLE`, we have truncation functors
-`e.truncLE'Functor C : HomologicalComplex C c' ⥤ HomologicalComplex C c` and
-`e.truncLEFunctor C : HomologicalComplex C c' ⥤ HomologicalComplex C c'`, and a natural
-transformation `e.ιTruncLENatTrans : e.truncGEFunctor C ⟶ 𝟭 _` which is a quasi-isomorphism
-in degrees in the image of `e.f` (TODO);
-
+  `e.truncLE'Functor C : HomologicalComplex C c' ⥤ HomologicalComplex C c` and
+  `e.truncLEFunctor C : HomologicalComplex C c' ⥤ HomologicalComplex C c'`, and a natural
+  transformation `e.ιTruncLENatTrans : e.truncGEFunctor C ⟶ 𝟭 _` which is a quasi-isomorphism
+  in degrees in the image of `e.f` (TODO);
 -/
+
+@[expose] public section
 
 assert_not_exists Nat.instAddMonoidWithOne Nat.instMulZeroClass
 
@@ -57,8 +61,9 @@ variable {ι ι' : Type*} (c : ComplexShape ι) (c' : ComplexShape ι')
 namespace ComplexShape
 
 /-- An embedding of a complex shape `c : ComplexShape ι` into a complex shape
-`c' : ComplexShape ι'` consists of a injective map `f : ι → ι'` which satisfies
+`c' : ComplexShape ι'` consists of an injective map `f : ι → ι'` which satisfies
 a compatibility with respect to the relations `c.Rel` and `c'.Rel`. -/
+@[ext]
 structure Embedding where
   /-- the map between the underlying types of indices -/
   f : ι → ι'
@@ -71,7 +76,7 @@ variable {c c'}
 variable (e : Embedding c c')
 
 /-- The opposite embedding in `Embedding c.symm c'.symm` of `e : Embedding c c'`. -/
-@[simps]
+@[simps, implicit_reducible]
 def op : Embedding c.symm c'.symm where
   f := e.f
   injective_f := e.injective_f
@@ -98,13 +103,13 @@ variable (f : ι → ι') (hf : Function.Injective f)
 
 /-- Constructor for embeddings between complex shapes when we have an equivalence
 `∀ (i₁ i₂ : ι), c.Rel i₁ i₂ ↔ c'.Rel (f i₁) (f i₂)`. -/
-@[simps]
+@[simps, implicit_reducible]
 def mk' : Embedding c c' where
   f := f
   injective_f := hf
   rel h := (iff _ _).1 h
 
-instance : (mk' c c' f hf iff).IsRelIff where
+instance IsRelIff.mk' : (mk' c c' f hf iff).IsRelIff where
   rel' _ _ h := (iff _ _).2 h
 
 end
@@ -133,7 +138,7 @@ instance [e.IsTruncGE] : e.op.IsTruncLE where
 instance [e.IsTruncLE] : e.op.IsTruncGE where
   mem_next h := e.mem_prev h
 
-open Classical in
+open scoped Classical in
 /-- The map `ι' → Option ι` which sends `e.f i` to `some i` and the other elements to `none`. -/
 noncomputable def r (i' : ι') : Option ι :=
   if h : ∃ (i : ι), e.f i = i'
@@ -145,11 +150,11 @@ lemma r_eq_some {i : ι} {i' : ι'} (hi : e.f i = i') :
   have h : ∃ (i : ι), e.f i = i' := ⟨i, hi⟩
   have : h.choose = i := e.injective_f (h.choose_spec.trans (hi.symm))
   dsimp [r]
-  rw [dif_pos ⟨i, hi⟩, this]
+  rw [dite_eq_left ⟨i, hi⟩, this]
 
 lemma r_eq_none (i' : ι') (hi : ∀ i, e.f i ≠ i') :
     e.r i' = none :=
-  dif_neg (by
+  dite_eq_right (by
     rintro ⟨i, hi'⟩
     exact hi i hi')
 
@@ -171,26 +176,25 @@ section
 variable {A : Type*} [AddCommSemigroup A] [IsRightCancelAdd A] [One A]
 
 /-- The embedding from `up' a` to itself via (· + b). -/
-@[simps!]
+@[simps!, implicit_reducible]
 def embeddingUp'Add (a b : A) : Embedding (up' a) (up' a) :=
   Embedding.mk' _ _ (· + b)
     (fun _ _ h => by simpa using h)
     (by dsimp; simp_rw [add_right_comm _ b a, add_right_cancel_iff, implies_true])
 
-instance (a b : A) : (embeddingUp'Add a b).IsRelIff := by dsimp [embeddingUp'Add]; infer_instance
+instance (a b : A) : (embeddingUp'Add a b).IsRelIff := .mk' ..
 
 instance (a b : A) : (embeddingUp'Add a b).IsTruncGE where
   mem_next {j _} h := ⟨j + a, (add_right_comm _ _ _).trans h⟩
 
 /-- The embedding from `down' a` to itself via (· + b). -/
-@[simps!]
+@[simps!, implicit_reducible]
 def embeddingDown'Add (a b : A) : Embedding (down' a) (down' a) :=
   Embedding.mk' _ _ (· + b)
     (fun _ _ h => by simpa using h)
     (by dsimp; simp_rw [add_right_comm _ b a, add_right_cancel_iff, implies_true])
 
-instance (a b : A) : (embeddingDown'Add a b).IsRelIff := by
-  dsimp [embeddingDown'Add]; infer_instance
+instance (a b : A) : (embeddingDown'Add a b).IsRelIff := .mk' ..
 
 instance (a b : A) : (embeddingDown'Add a b).IsTruncLE where
   mem_prev {_ x} h := ⟨x + a, (add_right_comm _ _ _).trans h⟩
@@ -198,79 +202,79 @@ instance (a b : A) : (embeddingDown'Add a b).IsTruncLE where
 end
 
 /-- The obvious embedding from `up ℕ` to `up ℤ`. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def embeddingUpNat : Embedding (up ℕ) (up ℤ) :=
   Embedding.mk' _ _ (fun n => n)
     (fun _ _ h => by simpa using h)
-    (by dsimp; omega)
+    (by dsimp; lia)
 
-instance : embeddingUpNat.IsRelIff := by dsimp [embeddingUpNat]; infer_instance
+instance : embeddingUpNat.IsRelIff := .mk' ..
 
 instance : embeddingUpNat.IsTruncGE where
   mem_next {j _} h := ⟨j + 1, h⟩
 
 /-- The embedding from `down ℕ` to `up ℤ` with sends `n` to `-n`. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def embeddingDownNat : Embedding (down ℕ) (up ℤ) :=
   Embedding.mk' _ _ (fun n => -n)
     (fun _ _ h => by simpa using h)
-    (by dsimp; omega)
+    (by dsimp; lia)
 
-instance : embeddingDownNat.IsRelIff := by dsimp [embeddingDownNat]; infer_instance
+instance : embeddingDownNat.IsRelIff := .mk' ..
 
 instance : embeddingDownNat.IsTruncLE where
-  mem_prev {i j} h := ⟨j + 1, by dsimp at h ⊢; omega⟩
+  mem_prev {i j} h := ⟨j + 1, by dsimp at h ⊢; lia⟩
 
 variable (p : ℤ)
 
 /-- The embedding from `up ℕ` to `up ℤ` which sends `n : ℕ` to `p + n`. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def embeddingUpIntGE : Embedding (up ℕ) (up ℤ) :=
   Embedding.mk' _ _ (fun n => p + n)
-    (fun _ _ h => by dsimp at h; omega)
-    (by dsimp; omega)
+    (fun _ _ h => by dsimp at h; lia)
+    (by dsimp; lia)
 
-instance : (embeddingUpIntGE p).IsRelIff := by dsimp [embeddingUpIntGE]; infer_instance
+instance : (embeddingUpIntGE p).IsRelIff := .mk' ..
 
 instance : (embeddingUpIntGE p).IsTruncGE where
-  mem_next {j _} h := ⟨j + 1, by dsimp at h ⊢; omega⟩
+  mem_next {j _} h := ⟨j + 1, by dsimp at h ⊢; lia⟩
 
 /-- The embedding from `down ℕ` to `up ℤ` which sends `n : ℕ` to `p - n`. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def embeddingUpIntLE : Embedding (down ℕ) (up ℤ) :=
   Embedding.mk' _ _ (fun n => p - n)
-    (fun _ _ h => by dsimp at h; omega)
-    (by dsimp; omega)
+    (fun _ _ h => by dsimp at h; lia)
+    (by dsimp; lia)
 
-instance : (embeddingUpIntLE p).IsRelIff := by dsimp [embeddingUpIntLE]; infer_instance
+instance : (embeddingUpIntLE p).IsRelIff := .mk' ..
 
 instance : (embeddingUpIntLE p).IsTruncLE where
-  mem_prev {_ k} h := ⟨k + 1, by dsimp at h ⊢; omega⟩
+  mem_prev {_ k} h := ⟨k + 1, by dsimp at h ⊢; lia⟩
+
+lemma embeddingUpIntGE_zero : embeddingUpIntGE 0 = embeddingUpNat := by
+  aesop
+
+lemma embeddingUpIntLE_zero : embeddingUpIntLE 0 = embeddingDownNat := by
+  aesop
 
 lemma notMem_range_embeddingUpIntLE_iff (n : ℤ) :
     (∀ (i : ℕ), (embeddingUpIntLE p).f i ≠ n) ↔ p < n := by
   constructor
   · intro h
-    by_contra!
-    exact h (p - n).natAbs (by simp; omega)
+    by_contra
+    exact h (p - n).natAbs (by simp; lia)
   · intros
     dsimp
-    omega
-
-@[deprecated (since := "2025-05-23")]
-alias not_mem_range_embeddingUpIntLE_iff := notMem_range_embeddingUpIntLE_iff
+    lia
 
 lemma notMem_range_embeddingUpIntGE_iff (n : ℤ) :
     (∀ (i : ℕ), (embeddingUpIntGE p).f i ≠ n) ↔ n < p := by
   constructor
   · intro h
-    by_contra!
-    exact h (n - p).natAbs (by simp; omega)
+    by_contra
+    exact h (n - p).natAbs (by simp; lia)
   · intros
     dsimp
-    omega
-
-@[deprecated (since := "2025-05-23")]
-alias not_mem_range_embeddingUpIntGE_iff := notMem_range_embeddingUpIntGE_iff
+    lia
 
 end ComplexShape

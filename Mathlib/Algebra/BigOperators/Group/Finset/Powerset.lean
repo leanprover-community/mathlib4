@@ -3,17 +3,23 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Data.Finset.Powerset
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Data.Finset.Powerset
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Big operators
 
 In this file we prove theorems about products and sums over a `Finset.powerset`.
-
 -/
 
-variable {α β γ : Type*}
+public section
+
+variable {α β : Type*}
 
 variable {s : Finset α} {a : α}
 
@@ -38,11 +44,12 @@ of `s`, and over all subsets of `s` to which one adds `x`. -/
 subsets of `s`, and over all subsets of `s` to which one adds `x`. -/]
 lemma prod_powerset_cons (ha : a ∉ s) (f : Finset α → β) :
     ∏ t ∈ (s.cons a ha).powerset, f t = (∏ t ∈ s.powerset, f t) *
-      ∏ t ∈ s.powerset.attach, f (cons a t <| notMem_mono (mem_powerset.1 t.2) ha) := by
+      ∏ t ∈ s.powerset.attach, f (cons a t <| notMem_mono (mem_powerset.1 t.property) ha) := by
   classical
   simp_rw [cons_eq_insert]
   rw [prod_powerset_insert ha, prod_attach _ fun t ↦ f (insert a t)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A product over `powerset s` is equal to the double product over sets of subsets of `s` with
 `#s = k`, for `k = 0, ..., #s`. -/
 @[to_additive /-- A sum over `powerset s` is equal to the double sum over sets of subsets of `s`

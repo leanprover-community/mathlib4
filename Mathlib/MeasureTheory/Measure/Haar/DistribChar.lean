@@ -3,7 +3,9 @@ Copyright (c) 2024 Andrew Yang, Yaël Dillies, Javier López-Contreras. All righ
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Yaël Dillies, Javier López-Contreras
 -/
-import Mathlib.MeasureTheory.Measure.Haar.Unique
+module
+
+public import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 /-!
 # The distributive character of Haar measures
@@ -24,6 +26,8 @@ multiplicative instead of distributive.
 [Zulip](https://leanprover.zulipchat.com/#narrow/channel/217875-Is-there-code-for-X.3F/topic/canonical.20norm.20coming.20from.20Haar.20measure/near/480050592)
 -/
 
+@[expose] public section
+
 open MeasureTheory.Measure
 open scoped NNReal Pointwise ENNReal
 
@@ -32,6 +36,7 @@ variable {G A : Type*} [Group G] [AddCommGroup A] [DistribMulAction G A] [Topolo
   [IsTopologicalAddGroup A] [LocallyCompactSpace A] [ContinuousConstSMul G A] {g : G}
 
 variable (A) in
+set_option backward.isDefEq.respectTransparency false in
 /-- The distributive Haar character of a group `G` acting distributively on a group `A` is the
 unique positive real number `Δ(g)` such that `μ (g • s) = Δ(g) * μ s` for all Haar
 measures `μ : Measure A`, set `s : Set A` and `g : G`. -/

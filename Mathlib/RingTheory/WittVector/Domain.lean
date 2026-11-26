@@ -3,10 +3,11 @@ Copyright (c) 2022 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-import Mathlib.RingTheory.WittVector.Identities
+module
+
+public import Mathlib.RingTheory.WittVector.Identities
 
 /-!
-
 # Witt vectors over a domain
 
 This file builds to the proof `WittVector.instIsDomain`,
@@ -28,15 +29,14 @@ the 0th component of which must be nonzero.
 
 * `WittVector.iterate_verschiebung_mul_coeff` : an identity from [Haze09]
 * `WittVector.instIsDomain`
-
 -/
+
+@[expose] public section
 
 
 noncomputable section
 
 namespace WittVector
-
-open Function
 
 variable {p : ℕ} {R : Type*}
 
@@ -53,7 +53,7 @@ local notation "𝕎" => WittVector p -- type as `\bbW`
 This is mainly useful as an auxiliary construction for `WittVector.verschiebung_nonzero`.
 -/
 def shift (x : 𝕎 R) (n : ℕ) : 𝕎 R :=
-  @mk' p R fun i => x.coeff (n + i)
+  mk p fun i => x.coeff (n + i)
 
 theorem shift_coeff (x : 𝕎 R) (n k : ℕ) : (x.shift n).coeff k = x.coeff (n + k) :=
   rfl
@@ -107,7 +107,6 @@ instance [CharP R p] [NoZeroDivisors R] : NoZeroDivisors (𝕎 R) :=
     rcases verschiebung_nonzero ha with ⟨na, wa, hwa0, rfl⟩
     rcases verschiebung_nonzero hb with ⟨nb, wb, hwb0, rfl⟩
     refine ne_of_apply_ne (fun x => x.coeff (na + nb)) ?_
-    dsimp only
     rw [iterate_verschiebung_mul_coeff, zero_coeff]
     exact mul_ne_zero (pow_ne_zero _ hwa0) (pow_ne_zero _ hwb0)⟩
 

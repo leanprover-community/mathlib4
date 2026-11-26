@@ -3,8 +3,13 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Data.Finsupp.Basic
-import Mathlib.Data.List.AList
+module
+
+public import Mathlib.Data.Finsupp.Basic
+public import Mathlib.Data.List.AList
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Connections between `Finsupp` and `AList`
@@ -14,8 +19,9 @@ import Mathlib.Data.List.AList
 * `Finsupp.toAList`
 * `AList.lookupFinsupp`: converts an association list into a finitely supported function
   via `AList.lookup`, sending absent keys to zero.
-
 -/
+
+@[expose] public section
 
 
 namespace Finsupp
@@ -57,7 +63,7 @@ absent keys to zero. -/
 noncomputable def lookupFinsupp (l : AList fun _x : α => M) : α →₀ M where
   support := by
     haveI := Classical.decEq α; haveI := Classical.decEq M
-    exact (l.1.filter fun x => Sigma.snd x ≠ 0).keys.toFinset
+    exact (l.entries.filter fun x => Sigma.snd x ≠ 0).keys.toFinset
   toFun a :=
     haveI := Classical.decEq α
     (l.lookup a).getD 0
@@ -74,7 +80,7 @@ theorem lookupFinsupp_apply [DecidableEq α] (l : AList fun _x : α => M) (a : �
 
 @[simp]
 theorem lookupFinsupp_support [DecidableEq α] [DecidableEq M] (l : AList fun _x : α => M) :
-    l.lookupFinsupp.support = (l.1.filter fun x => Sigma.snd x ≠ 0).keys.toFinset := by
+    l.lookupFinsupp.support = (l.entries.filter fun x => Sigma.snd x ≠ 0).keys.toFinset := by
   dsimp only [lookupFinsupp]
   congr!
 
@@ -89,10 +95,7 @@ theorem lookupFinsupp_eq_zero_iff [DecidableEq α] {l : AList fun _x : α => M} 
   rcases lookup a l with - | m <;> simp
 
 @[simp]
-theorem empty_lookupFinsupp : lookupFinsupp (∅ : AList fun _x : α => M) = 0 := by
-  classical
-    ext
-    simp
+theorem empty_lookupFinsupp : lookupFinsupp (∅ : AList fun _x : α => M) = 0 := rfl
 
 @[simp]
 theorem insert_lookupFinsupp [DecidableEq α] (l : AList fun _x : α => M) (a : α) (m : M) :

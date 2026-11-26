@@ -3,15 +3,23 @@ Copyright (c) 2024 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
+module
+
+public import Mathlib.CategoryTheory.Limits.Filtered
+
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-import Mathlib.CategoryTheory.Limits.Filtered
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Functor categories have filtered colimits when the target category does
 
-These declarations cannot be in `Mathlib/CategoryTheory/Limits/FunctorCategory.lean` because
+These declarations cannot be in `Mathlib/CategoryTheory/Limits/FunctorCategory/Basic.lean` because
 that file shouldn't import `Mathlib/CategoryTheory/Limits/Filtered.lean`.
 -/
+
+public section
 
 universe w' w v₁ v₂ u₁ u₂
 

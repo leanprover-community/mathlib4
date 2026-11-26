@@ -3,16 +3,18 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Set.Notation
-import Mathlib.Order.SetNotation
-import Mathlib.Logic.Embedding.Basic
-import Mathlib.Logic.Pairwise
-import Mathlib.Data.Set.Image
+module
+
+public import Mathlib.Data.Set.Image
+public import Mathlib.Data.Set.Notation
+public import Mathlib.Logic.Embedding.Basic
+public import Mathlib.Order.SetNotation
 
 /-!
 # Interactions between embeddings and sets.
-
 -/
+
+@[expose] public section
 
 assert_not_exists WithTop
 
@@ -22,11 +24,11 @@ open Set Set.Notation
 
 section Equiv
 
-variable {α : Sort u} {β : Sort v} (f : α ≃ β)
+variable {α : Sort u} {β : Sort v}
 
 @[simp]
 theorem Equiv.asEmbedding_range {α β : Sort _} {p : β → Prop} (e : α ≃ Subtype p) :
-    Set.range e.asEmbedding = setOf p :=
+    Set.range e.asEmbedding = Set.ofPred p :=
   Set.ext fun x ↦ ⟨fun ⟨y, h⟩ ↦ h ▸ Subtype.coe_prop (e y), fun hs ↦ ⟨e.symm ⟨x, hs⟩, by simp⟩⟩
 
 end Equiv
@@ -39,13 +41,13 @@ namespace Embedding
 `Option α ↪ β`. -/
 @[simps]
 def optionElim {α β} (f : α ↪ β) (x : β) (h : x ∉ Set.range f) : Option α ↪ β :=
-  ⟨Option.elim' x f, Option.injective_iff.2 ⟨f.2, h⟩⟩
+  ⟨Option.elim' x f, Option.injective_iff.2 ⟨f.inj', h⟩⟩
 
 /-- Equivalence between embeddings of `Option α` and a sigma type over the embeddings of `α`. -/
 @[simps]
 def optionEmbeddingEquiv (α β) : (Option α ↪ β) ≃ Σ f : α ↪ β, ↥(Set.range f)ᶜ where
   toFun f := ⟨Embedding.some.trans f, f none, fun ⟨x, hx⟩ ↦ Option.some_ne_none x <| f.injective hx⟩
-  invFun f := f.1.optionElim f.2 f.2.2
+  invFun f := f.1.optionElim f.2 f.2.property
   left_inv f := ext <| by rintro (_ | _) <;> simp
   right_inv := fun ⟨f, y, hy⟩ ↦ by ext <;> simp
 
@@ -60,7 +62,7 @@ theorem codRestrict_apply {α β} (p) (f : α ↪ β) (H a) : codRestrict p f H 
 /-- `Set.image` as an embedding `Set α ↪ Set β`. -/
 @[simps apply]
 protected def image {α β} (f : α ↪ β) : Set α ↪ Set β :=
-  ⟨image f, f.2.image_injective⟩
+  ⟨image f, f.inj'.image_injective⟩
 
 end Embedding
 
@@ -71,7 +73,7 @@ namespace Set
 /-- The injection map is an embedding between subsets. -/
 @[simps apply_coe]
 def embeddingOfSubset {α} (s t : Set α) (h : s ⊆ t) : s ↪ t :=
-  ⟨fun x ↦ ⟨x.1, h x.2⟩, fun ⟨x, hx⟩ ⟨y, hy⟩ h ↦ by
+  ⟨fun x ↦ ⟨x.val, h x.property⟩, fun ⟨x, hx⟩ ⟨y, hy⟩ h ↦ by
     congr
     injection h⟩
 
@@ -86,7 +88,7 @@ subtypes `{x // p x} ⊕ {x // q x}` such that `¬ p x` is sent to the right, wh
 `Disjoint p q`.
 
 See also `Equiv.sumCompl`, for when `IsCompl p q`. -/
-@[simps apply]
+@[simps (attr := grind =) apply]
 def subtypeOrEquiv (p q : α → Prop) [DecidablePred p] (h : Disjoint p q) :
     { x // p x ∨ q x } ≃ { x // p x } ⊕ { x // q x } where
   toFun := subtypeOrLeftEmbedding p q
@@ -104,8 +106,6 @@ def subtypeOrEquiv (p q : α → Prop) [DecidablePred p] (h : Disjoint p q) :
       · suffices ¬p x by simpa
         intro hp
         simpa using h.le_bot x ⟨hp, x.prop⟩
-
-attribute [grind =] subtypeOrEquiv_apply
 
 @[simp, grind =]
 theorem subtypeOrEquiv_symm_inl (p q : α → Prop) [DecidablePred p] (h : Disjoint p q)
@@ -137,11 +137,11 @@ variable {α ι : Type*} {s t r : Set α}
     (Function.Embedding.sumSet h : s ⊕ t → α) = Sum.elim (↑) (↑) := rfl
 
 @[simp] theorem Function.Embedding.sumSet_preimage_inl (h : Disjoint s t) :
-    .inl ⁻¹' (Function.Embedding.sumSet h ⁻¹' r) = r ∩ s := by
+    .inl ⁻¹' Function.Embedding.sumSet h ⁻¹' r = r ∩ s := by
   simp [Set.ext_iff]
 
 @[simp] theorem Function.Embedding.sumSet_preimage_inr (h : Disjoint s t) :
-    .inr ⁻¹' (Function.Embedding.sumSet h ⁻¹' r) = r ∩ t := by
+    .inr ⁻¹' Function.Embedding.sumSet h ⁻¹' r = r ∩ t := by
   simp [Set.ext_iff]
 
 @[simp] theorem Function.Embedding.sumSet_range {s t : Set α} (h : Disjoint s t) :
@@ -154,18 +154,19 @@ open scoped Function -- required for scoped `on` notation
 the natural injection from the sigma-type `(i : ι) × ↑(s i)` to `α`. -/
 @[simps] def Function.Embedding.sigmaSet {s : ι → Set α} (h : Pairwise (Disjoint on s)) :
     (i : ι) × s i ↪ α where
-  toFun x := x.2.1
+  toFun x := x.2.val
   inj' := by
     rintro ⟨i, x, hx⟩ ⟨j, -, hx'⟩ rfl
     obtain rfl : i = j := h.eq (not_disjoint_iff.2 ⟨_, hx, hx'⟩)
     rfl
 
+set_option warning.simp.otherHead false in
 @[norm_cast] lemma Function.Embedding.coe_sigmaSet {s : ι → Set α} (h) :
-    (Function.Embedding.sigmaSet h : ((i : ι) × s i) → α) = fun x ↦ x.2.1 := rfl
+    (Function.Embedding.sigmaSet h : ((i : ι) × s i) → α) = fun x ↦ x.2.val := rfl
 
 @[simp] theorem Function.Embedding.sigmaSet_preimage {s : ι → Set α}
     (h : Pairwise (Disjoint on s)) (i : ι) (r : Set α) :
-    Sigma.mk i ⁻¹' (Function.Embedding.sigmaSet h ⁻¹' r) = r ∩ s i := by
+    Sigma.mk i ⁻¹' Function.Embedding.sigmaSet h ⁻¹' r = r ∩ s i := by
   simp [Set.ext_iff]
 
 @[simp] theorem Function.Embedding.sigmaSet_range {s : ι → Set α}

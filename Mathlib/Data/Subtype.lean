@@ -3,9 +3,15 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Logic.Function.Basic
+module
+
+public import Mathlib.Logic.Function.Basic
+public import Mathlib.Tactic.Simps
+
 import Mathlib.Tactic.AdaptationNote
-import Mathlib.Tactic.Simps.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Subtypes
@@ -22,6 +28,8 @@ such, subtypes can be thought of as bundled sets, the difference being that elem
 still of type `α` while elements of a subtype aren't.
 -/
 
+@[expose] public section
+
 
 open Function
 
@@ -31,23 +39,23 @@ variable {α β γ : Sort*} {p q : α → Prop}
 
 attribute [coe] Subtype.val
 
-initialize_simps_projections Subtype (val → coe)
-
 /-- A version of `x.property` or `x.2` where `p` is syntactically applied to the coercion of `x`
   instead of `x.1`. A similar result is `Subtype.mem` in `Mathlib/Data/Set/Basic.lean`. -/
 -- This is a leftover from Lean 3: it is identical to `Subtype.property`, and should be deprecated.
 theorem prop (x : Subtype p) : p x :=
-  x.2
+  x.property
 
 /-- An alternative version of `Subtype.forall`. This one is useful if Lean cannot figure out `q`
   when using `Subtype.forall` from right to left. -/
-protected theorem forall' {q : ∀ x, p x → Prop} : (∀ x h, q x h) ↔ ∀ x : { a // p a }, q x x.2 :=
-  (@Subtype.forall _ _ fun x ↦ q x.1 x.2).symm
+protected theorem forall' {q : ∀ x, p x → Prop} :
+    (∀ x h, q x h) ↔ ∀ x : { a // p a }, q x x.property :=
+  (@Subtype.forall _ _ fun x ↦ q x.val x.property).symm
 
 /-- An alternative version of `Subtype.exists`. This one is useful if Lean cannot figure out `q`
   when using `Subtype.exists` from right to left. -/
-protected theorem exists' {q : ∀ x, p x → Prop} : (∃ x h, q x h) ↔ ∃ x : { a // p a }, q x x.2 :=
-  (@Subtype.exists _ _ fun x ↦ q x.1 x.2).symm
+protected theorem exists' {q : ∀ x, p x → Prop} :
+    (∃ x h, q x h) ↔ ∃ x : { a // p a }, q x x.property :=
+  (@Subtype.exists _ _ fun x ↦ q x.val x.property).symm
 
 theorem heq_iff_coe_eq (h : ∀ x, p x ↔ q x) {a1 : { x // p x }} {a2 : { x // q x }} :
     a1 ≍ a2 ↔ (a1 : α) = (a2 : α) :=
@@ -56,18 +64,7 @@ theorem heq_iff_coe_eq (h : ∀ x, p x ↔ q x) {a1 : { x // p x }} {a2 : { x //
     (by grind) (funext <| fun x ↦ propext (h x)) a2
 
 lemma heq_iff_coe_heq {α β : Sort _} {p : α → Prop} {q : β → Prop} {a : {x // p x}}
-    {b : {y // q y}} (h : α = β) (h' : p ≍ q) : a ≍ b ↔ (a : α) ≍ (b : β) := by
-  subst h
-  subst h'
-  grind
-
-@[deprecated Subtype.ext (since := "2025-09-10")]
-theorem ext_val {a1 a2 : { x // p x }} : a1.1 = a2.1 → a1 = a2 :=
-  Subtype.ext
-
-@[deprecated Subtype.ext_iff (since := "2025-09-10")]
-theorem ext_iff_val {a1 a2 : { x // p x }} : a1 = a2 ↔ a1.1 = a2.1 :=
-  Subtype.ext_iff
+    {b : {y // q y}} (h : α = β) (h' : p ≍ q) : a ≍ b ↔ (a : α) ≍ (b : β) := by grind
 
 @[simp]
 theorem coe_eta (a : { a // p a }) (h : p a) : mk (↑a) h = a :=
@@ -79,7 +76,7 @@ theorem coe_mk (a h) : (@mk α p a h : α) = a :=
 /-- Restatement of `Subtype.mk.injEq` as an iff. -/
 theorem mk_eq_mk {a h a' h'} : @mk α p a h = @mk α p a' h' ↔ a = a' := by simp
 
-theorem coe_eq_of_eq_mk {a : { a // p a }} {b : α} (h : ↑a = b) : a = ⟨b, h ▸ a.2⟩ :=
+theorem coe_eq_of_eq_mk {a : { a // p a }} {b : α} (h : ↑a = b) : a = ⟨b, h ▸ a.property⟩ :=
   Subtype.ext h
 
 theorem coe_eq_iff {a : { a // p a }} {b : α} : ↑a = b ↔ ∃ h, a = ⟨b, h⟩ := by grind
@@ -115,12 +112,13 @@ theorem _root_.Function.extend_val_apply' {p : β → Prop} {g : {x // p x} → 
   grind [Function.extend]
 
 /-- Restrict a (dependent) function to a subtype -/
-def restrict {α} {β : α → Type*} (p : α → Prop) (f : ∀ x, β x) (x : Subtype p) : β x.1 :=
+@[implicit_reducible]
+def restrict {α} {β : α → Type*} (p : α → Prop) (f : ∀ x, β x) (x : Subtype p) : β x.val :=
   f x
 
 @[simp, grind =]
 theorem restrict_apply {α} {β : α → Type*} (f : ∀ x, β x) (p : α → Prop) (x : Subtype p) :
-    restrict p f x = f x.1 := by
+    restrict p f x = f x.val := by
   rfl
 
 theorem restrict_def {α β} (f : α → β) (p : α → Prop) :
@@ -142,14 +140,9 @@ def coind {α β} (f : α → β) {p : β → Prop} (h : ∀ a, p (f a)) : α �
 theorem coind_injective {α β} {f : α → β} {p : β → Prop} (h : ∀ a, p (f a)) (hf : Injective f) :
     Injective (coind f h) := fun x y hxy ↦ hf <| by apply congr_arg Subtype.val hxy
 
-theorem coind_surjective {α β} {f : α → β} {p : β → Prop} (h : ∀ a, p (f a)) (hf : Surjective f) :
-    Surjective (coind f h) := fun x ↦
-  let ⟨a, ha⟩ := hf x
-  ⟨a, coe_injective ha⟩
-
-theorem coind_bijective {α β} {f : α → β} {p : β → Prop} (h : ∀ a, p (f a)) (hf : Bijective f) :
-    Bijective (coind f h) :=
-  ⟨coind_injective h hf.1, coind_surjective h hf.2⟩
+@[simp] theorem coind_injective_iff {α β} {f : α → β} {p : β → Prop} (h : ∀ a, p (f a)) :
+    Injective (coind f h) ↔ Injective f :=
+  ⟨Subtype.coe_injective.comp, coind_injective h⟩
 
 /-- Restriction of a function to a function on subtypes. -/
 @[simps]
@@ -168,6 +161,11 @@ theorem map_comp {p : α → Prop} {q : β → Prop} {r : γ → Prop} {x : Subt
 
 theorem map_id {p : α → Prop} {h : ∀ a, p a → p (id a)} : map (@id α) h = id :=
   funext fun _ ↦ rfl
+
+@[simp]
+theorem val_comp_map {q : β → Prop} {f : α → β} (h : ∀ a, p a → q (f a)) :
+    val ∘ map f h = f ∘ val :=
+  rfl
 
 theorem map_injective {p : α → Prop} {q : β → Prop} {f : α → β} (h : ∀ a, p a → q (f a))
     (hf : Injective f) : Injective (map f h) :=

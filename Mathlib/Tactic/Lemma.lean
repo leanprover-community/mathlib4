@@ -3,12 +3,18 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kyle Miller
 -/
-import Mathlib.Init
-import Lean.Parser.Command
+module
+
+public import Mathlib.Tactic.Linter.Header  --shake: keep
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Support for `lemma` as a synonym for `theorem`.
 -/
+
+public meta section
 
 open Lean
 

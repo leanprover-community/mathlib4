@@ -3,9 +3,14 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Mario Carneiro
 -/
-import Mathlib.Init
-import Lean.Elab.Tactic.Basic
-import Lean.Meta.Tactic.Replace
+module
+
+public meta import Lean.Elab.Tactic.Basic
+public meta import Lean.Meta.Tactic.Replace
+public import Mathlib.Init
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Infer an optional parameter
@@ -13,6 +18,8 @@ import Lean.Meta.Tactic.Replace
 In this file we define a tactic `infer_param` that closes a goal with default value by using
 this default value.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic
 
