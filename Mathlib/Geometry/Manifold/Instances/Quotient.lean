@@ -36,26 +36,35 @@ open scoped ContDiff
 
 namespace MulAction
 
-variable {M : Type*} [TopologicalSpace M] {G : Type*} [Group G] [MulAction G M]
+variable {M : Type*} [TopologicalSpace M]
+  {G : Type*} [Group G] [MulAction G M]
   {H : Type*} [TopologicalSpace H] [ChartedSpace H M]
-  {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  {I : ModelWithCorners 𝕜 E H} {n : ℕ∞ω} [ContMDiffConstSMul I n G M]
+
+section ContMDiffConstSMul
 
 /-!
 ## `C^n` transitions of the quotient map
 -/
 
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {I : ModelWithCorners 𝕜 E H} {n : ℕ∞ω} [ContMDiffConstSMul I n G M]
+
 /-- For a group action such that the scalar multiplication `fun p : M ↦ g • p` is `C^n`, the
 quotient map `M → orbitRel.Quotient G M` satisfies `ContMDiffTransitions`. -/
 @[to_additive /-- For an additive group action such that the translation `fun p : M ↦ g +ᵥ p` is
 `C^n`, the quotient map `M → orbitRel.Quotient G M` satisfies `ContMDiffTransitions`. -/]
-lemma contMDiffTransitions_quotientMk_of_contMDiffConstSMul :
+lemma contMDiffTransitions_quotientMk :
     ContMDiffTransitions I n (Quotient.mk (orbitRel G M)) := by
   intro x y hxy
   obtain ⟨g, rfl⟩ := mem_orbit_iff.mp (Quotient.exact hxy.symm)
   refine ⟨(g • ·), rfl, (contMDiff_const_smul g).contMDiffAt, .of_eq ?_⟩
   ext z
-  exact Quotient.sound (mem_orbit z g)
+  simp
+
+end ContMDiffConstSMul
+
+section ProperlyDiscontinuousSMul
 
 /-!
 ## Charted space structure on quotient by a group
@@ -71,5 +80,7 @@ properly discontinuous additive group action. -/]
 instance instChartedSpaceQuotient : ChartedSpace H (orbitRel.Quotient G M) :=
   isQuotientCoveringMap_quotientMk_of_properlyDiscontinuousSMul.isCoveringMap
     |>.isLocalHomeomorph.chartedSpace Quotient.mk_surjective
+
+end ProperlyDiscontinuousSMul
 
 end MulAction

@@ -32,17 +32,16 @@ This file shows that, for this structure, if `f` satisfies a certain condition
 * `IsLocalHomeomorph.isManifold_of_rightInverse`: if `M` is a `C^n` manifold and
   `ContMDiffTransitions I n f` holds, then `M'` is a `C^n` manifold for the charted space
   structure `hf.chartedSpaceOfRightInverse hg`.
+* `IsLocalHomeomorph.isManifold`: the same for a surjective `f`, with the charted space
+  structure `hf.chartedSpace hf'`.
 
 ## TODO
 
-* Show that, under `ContMDiffTransitions I n f`, the map `f` and its local inverses are `C^n`,
-  and that a map `φ : M' → N` is `C^n` if and only if `φ ∘ f` is.
-* Show that `f` is then a local diffeomorphism.
-* Show the converse: if `f` is a `C^n` local diffeomorphism for this structure, then
-  `ContMDiffTransitions I n f` holds.
-* Use this to construct manifold structures on quotients `M ⧸ G` by suitable group actions.
-* Define `Filter.Germ.ContMDiffAt` and prove `contMDiffTransitions_iff_exists_germ`, showing that
-  it suffices to ask for `σ` as a germ at `x`.
+* Show that, under `ContMDiffTransitions I n f`, `f` is an `IsLocalDiffeomorph` for this
+  structure, and deduce that `φ : M' → N` is `C^n` if and only if `φ ∘ f` is.
+* Conversely, show that if `f` is a `C^n` local diffeomorphism for some `C^n` manifold structure
+  on `M'`, then `ContMDiffTransitions I n f` holds.
+* Show that the maximal atlas of `hf.chartedSpaceOfRightInverse hg` does not depend on `g`.
 
 ## Tags
 
@@ -78,14 +77,15 @@ namespace IsLocalHomeomorph
 
 /-- If `ContMDiffTransitions I n f` holds, the transition map between two local inverses of `f`
 is `C^n` on its source. -/
-lemma contMDiffOn_localInverseAt_symm_trans
-    (h : ContMDiffTransitions I n f) (x y : M) :
-    CMDiff[((hf.localInverseAt x).symm ≫ₕ hf.localInverseAt y).source] n
-      ((hf.localInverseAt x).symm ≫ₕ hf.localInverseAt y) := by
+lemma contMDiffOn_localInverseAt_symm_trans (h : ContMDiffTransitions I n f) (x y : M) :
+    letI s : Set M := (hf.localInverseAt x).target ∩ f ⁻¹' (hf.localInverseAt y).source
+    letI τ : OpenPartialHomeomorph M M := (hf.localInverseAt x).symm ≫ₕ hf.localInverseAt y
+    CMDiff[s] n τ := by
   set τ := (hf.localInverseAt x).symm ≫ₕ hf.localInverseAt y
   have hτ {z : M} (hz : z ∈ τ.source) : f (τ z) = f z := by
     simpa [τ] using hf.apply_localInverseAt_of_mem (by simpa using hz.2)
   intro z hz
+  replace hz : z ∈ τ.source := by simpa [τ]
   obtain ⟨σ, hσz, hσ, hfσ⟩ := h (hτ hz).symm
   refine (hσ.congr_of_eventuallyEq ?_).contMDiffWithinAt
   have ht : (hf.localInverseAt y).target ∈ 𝓝 (σ z) :=
@@ -109,8 +109,15 @@ theorem isManifold_of_rightInverse [IsManifold I n M]
     ← (hf.localInverseAt (g y)).symm.trans_assoc]
   exact symm_trans_trans_mem_contDiffGroupoid_of_contMDiffOn
     (IsManifold.chart_mem_maximalAtlas _) (IsManifold.chart_mem_maximalAtlas _)
-    (hf.contMDiffOn_localInverseAt_symm_trans h _ _)
-    (hf.contMDiffOn_localInverseAt_symm_trans h _ _)
+    ((hf.contMDiffOn_localInverseAt_symm_trans h _ _).mono (by simp))
+    ((hf.contMDiffOn_localInverseAt_symm_trans h _ _).mono (by simp))
+
+/-- If `M` is a `C^n` manifold, `f : M → M'` is surjective and `ContMDiffTransitions I n f` holds,
+then `M'` is a `C^n` manifold for the charts `hf.chartedSpace hf'` pushed forward from `M`. -/
+theorem isManifold [IsManifold I n M] (hf' : f.Surjective) (h : ContMDiffTransitions I n f) :
+    letI : ChartedSpace H M' := hf.chartedSpace hf'
+    IsManifold I n M' :=
+  hf.isManifold_of_rightInverse _ h
 
 end IsLocalHomeomorph
 
