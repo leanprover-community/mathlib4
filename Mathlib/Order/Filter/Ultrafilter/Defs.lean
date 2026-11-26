@@ -283,7 +283,7 @@ nonrec def curry (U : Ultrafilter α) (V : Ultrafilter β) : Ultrafilter (α × 
     Ultrafilter.eventually_not, not_not]
 
 @[simp]
-theorem coe_curry (U : Ultrafilter α) (V : Ultrafilter β) :
+theorem toFilter_curry (U : Ultrafilter α) (V : Ultrafilter β) :
     (U.curry V : Filter (α × β)) = (U : Filter α).curry V :=
   rfl
 
