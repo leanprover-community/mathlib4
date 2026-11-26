@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Convex.Between
 public import Mathlib.Analysis.Normed.Group.AddTorsor
 public import Mathlib.Analysis.Normed.Module.Convex
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sides of affine subspaces
 
@@ -24,7 +27,6 @@ This file defines notions of two points being on the same or opposite sides of a
   subspace `s`.
 * `s.SOppSide x y`: The points `x` and `y` are strictly on opposite sides of the affine
   subspace `s`.
-
 -/
 
 @[expose] public section
@@ -44,7 +46,7 @@ variable [AddCommGroup V'] [Module R V'] [AddTorsor V' P']
 
 /-- The points `x` and `y` are weakly on the same side of `s`. -/
 def WSameSide (s : AffineSubspace R P) (x y : P) : Prop :=
-  ∃ᵉ (p₁ ∈ s) (p₂ ∈ s), SameRay R (x -ᵥ p₁) (y -ᵥ p₂)
+  ∃ p₁ ∈ s, ∃ p₂ ∈ s, SameRay R (x -ᵥ p₁) (y -ᵥ p₂)
 
 /-- The points `x` and `y` are strictly on the same side of `s`. -/
 def SSameSide (s : AffineSubspace R P) (x y : P) : Prop :=
@@ -52,7 +54,7 @@ def SSameSide (s : AffineSubspace R P) (x y : P) : Prop :=
 
 /-- The points `x` and `y` are weakly on opposite sides of `s`. -/
 def WOppSide (s : AffineSubspace R P) (x y : P) : Prop :=
-  ∃ᵉ (p₁ ∈ s) (p₂ ∈ s), SameRay R (x -ᵥ p₁) (p₂ -ᵥ y)
+  ∃ p₁ ∈ s, ∃ p₂ ∈ s, SameRay R (x -ᵥ p₁) (p₂ -ᵥ y)
 
 /-- The points `x` and `y` are strictly on opposite sides of `s`. -/
 def SOppSide (s : AffineSubspace R P) (x y : P) : Prop :=

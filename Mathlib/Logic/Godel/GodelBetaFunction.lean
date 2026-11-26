@@ -8,11 +8,11 @@ module
 public import Mathlib.Data.Nat.ChineseRemainder
 public import Mathlib.Data.Nat.Pairing
 
-import Mathlib.Data.Nat.Prime.Defs
-import Mathlib.Order.Fin.Basic
 import Mathlib.Data.Finset.Lattice.Fold
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Nat.Factorial.Basic
+import Mathlib.Data.Nat.Prime.Defs
+import Mathlib.Order.Fin.Basic
 
 /-!
 # Gödel's Beta Function Lemma
@@ -30,7 +30,7 @@ definability is needed for the proof of the First Incompleteness Theorem.
 
 - `beta_unbeta_coe`: Gödel's Beta Function Lemma.
 
-## Implementation note
+## Implementation notes
 
 This code is a step towards eventually including a proof of Gödel's First Incompleteness Theorem
 and other key results from the repository https://github.com/iehality/lean4-logic.

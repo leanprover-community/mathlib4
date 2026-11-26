@@ -16,7 +16,6 @@ This file defines pullbacks of `C^n` vector bundles over a manifold.
 
 * `ContMDiffVectorBundle.pullback`: For a `C^n` vector bundle `E` over a manifold `B` and a `C^n`
   map `f : B' → B`, the pullback vector bundle `f *ᵖ E` is a `C^n` vector bundle.
-
 -/
 
 public section

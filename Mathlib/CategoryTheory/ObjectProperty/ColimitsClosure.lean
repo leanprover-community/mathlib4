@@ -5,8 +5,11 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.LimitsClosure
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
+public import Mathlib.CategoryTheory.ObjectProperty.LimitsClosure
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Closure of a property of objects under colimits of certain shapes
@@ -18,7 +21,6 @@ and under certain smallness assumptions, we show that it is essentially small.
 
 (We deduce these results about the closure under colimits by dualising the
 results in the file `Mathlib/CategoryTheory/ObjectProperty/LimitsClosure.lean`.)
-
 -/
 
 public section

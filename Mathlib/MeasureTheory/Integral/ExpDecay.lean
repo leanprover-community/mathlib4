@@ -9,6 +9,9 @@ public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 
 import Mathlib.MeasureTheory.Integral.Asymptotics
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integrals with exponential decay at ∞
 
@@ -23,9 +26,6 @@ for integrability:
 -/
 
 public section
-
-
-noncomputable section
 
 open Real intervalIntegral MeasureTheory Set Filter Asymptotics
 

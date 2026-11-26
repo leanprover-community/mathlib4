@@ -9,15 +9,30 @@ public import Mathlib.Algebra.Group.Equiv.TypeTags
 public import Mathlib.Algebra.Order.Hom.Monoid
 public import Mathlib.Algebra.Order.Monoid.Unbundled.TypeTags
 
+import Mathlib.Order.Hom.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-
 # Order Monoid Isomorphisms on `Additive` and `Multiplicative`.
-
 -/
 
 @[expose] public section
 
 section TypeTags
+
+/-- `Multiplicative.ofAdd` as an order isomorphism. -/
+@[simps! toEquiv apply symm_apply]
+def Multiplicative.ofAddOrderIso (M : Type*) [LE M] : M ≃o Multiplicative M where
+  toEquiv := ofAdd
+  map_rel_iff' := .rfl
+
+/-- `Additive.ofMul` as an order isomorphism. -/
+@[simps! toEquiv apply symm_apply]
+def Additive.ofMulOrderIso (M : Type*) [LE M] : M ≃o Additive M where
+  toEquiv := ofMul
+  map_rel_iff' := .rfl
 
 /-- Reinterpret `G ≃*o H` as `Additive G ≃+o Additive H`. -/
 def OrderMonoidIso.toAdditive {G H : Type*}

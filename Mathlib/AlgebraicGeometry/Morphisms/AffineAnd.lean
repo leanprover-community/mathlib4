@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicGeometry.Morphisms.Affine
 public import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Affine morphisms with additional ring hom property
 
@@ -21,7 +24,6 @@ at the (algebraic) source.
 
 Typical examples of this are affine morphisms (where `Q` is trivial), finite morphisms
 (where `Q` is module finite) or closed immersions (where `Q` is being surjective).
-
 -/
 
 @[expose] public section
@@ -96,7 +98,7 @@ lemma affineAnd_isLocal (hPi : RingHom.RespectsIso Q) (hQl : RingHom.Localizatio
     · obtain ⟨_, hf⟩ := hf a
       rw [morphismRestrict_appTop, CommRingCat.hom_comp, hPi.cancel_right_isIso] at hf
       -- Not sure why the `show` fixes the following `rw` complaining about "motive is incorrect"
-      have hf : Q (Scheme.Hom.app f ((Y.basicOpen a.1).ι ''ᵁ ⊤)).hom := hf
+      have hf : Q (Scheme.Hom.app f ((Y.basicOpen a.val).ι ''ᵁ ⊤)).hom := hf
       rw [Scheme.Opens.ι_image_top] at hf
       rw [(isAffineOpen_top Y).app_basicOpen_eq_away_map _ (isAffineOpen_top X)] at hf
       rwa [CommRingCat.hom_comp, hPi.cancel_right_isIso] at hf
@@ -126,10 +128,10 @@ lemma targetAffineLocally_affineAnd_iff (hQi : RingHom.RespectsIso Q)
     use hfU
     have hf : Q (Scheme.Hom.app f (((⟨U, hU⟩ : Y.affineOpens) : Y.Opens).ι ''ᵁ ⊤)).hom := hf
     rwa [Scheme.Opens.ι_image_top] at hf
-  · refine ⟨(h U U.2).1, ?_⟩
+  · refine ⟨(h U U.property).1, ?_⟩
     change Q (Scheme.Hom.app f ((U : Y.Opens).ι ''ᵁ ⊤)).hom
     rw [Scheme.Opens.ι_image_top]
-    exact (h U U.2).2
+    exact (h U U.property).2
 
 /-- Variant of `targetAffineLocally_affineAnd_iff` where `IsAffineHom` is bundled. -/
 lemma targetAffineLocally_affineAnd_iff' (hQi : RingHom.RespectsIso Q)
@@ -153,12 +155,12 @@ lemma targetAffineLocally_affineAnd_iff_affineLocally (hQ : RingHom.PropertyIsLo
       rw [IsZariskiLocalAtTarget.iff_of_iSup_eq_top (P := affineLocally Q)
         _ (iSup_affineOpens_eq_top _)]
       intro U
-      have : IsAffine (f ⁻¹ᵁ U) := hf.isAffine_preimage U U.2
+      have : IsAffine (f ⁻¹ᵁ U) := hf.isAffine_preimage U U.property
       rw [HasRingHomProperty.iff_of_isAffine (P := affineLocally Q),
         morphismRestrict_appTop, CommRingCat.hom_comp, hQ.respectsIso.cancel_right_isIso]
       apply h
       rw [Scheme.Opens.ι_image_top]
-      exact U.2
+      exact U.property
     intro h
     have : IsAffine X := isAffine_of_isAffineHom f
     rw [HasRingHomProperty.iff_of_isAffine (P := affineLocally Q)]
@@ -199,7 +201,7 @@ lemma HasAffineProperty.affineAnd_isStableUnderComposition {P : MorphismProperty
       intro U
       rw [morphismRestrict_comp]
       exact this hA hQ _ _ (IsZariskiLocalAtTarget.restrict hf _)
-        (IsZariskiLocalAtTarget.restrict hg _) U.2
+        (IsZariskiLocalAtTarget.restrict hg _) U.property
     rw [HasAffineProperty.iff_of_isAffine (P := P) (Q := (affineAnd Q))] at hg
     obtain ⟨hY, hg⟩ := hg
     rw [HasAffineProperty.iff_of_isAffine (P := P) (Q := (affineAnd Q))] at hf
@@ -250,7 +252,7 @@ lemma HasAffineProperty.affineAnd_le_isAffineHom (P : MorphismProperty Scheme.{u
   wlog hY : IsAffine Y
   · rw [IsZariskiLocalAtTarget.iff_of_iSup_eq_top (P := @IsAffineHom) _ (iSup_affineOpens_eq_top _)]
     intro U
-    exact this P hA _ (IsZariskiLocalAtTarget.restrict hf _) U.2
+    exact this P hA _ (IsZariskiLocalAtTarget.restrict hf _) U.property
   rw [HasAffineProperty.iff_of_isAffine (P := P) (Q := (affineAnd Q))] at hf
   rw [HasAffineProperty.iff_of_isAffine (P := @IsAffineHom)]
   exact hf.1
@@ -305,11 +307,11 @@ lemma HasAffineProperty.coprodDesc_affineAnd {P : MorphismProperty Scheme.{u}}
   · have : (Limits.coprod.desc f g).app W ≫ e.hom ≫ Limits.prod.fst = f.app W := by
       simp [e, Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_comp_appLE]
     convert (hf W hW).2
-    congrm ($this).1
+    congrm ($this).hom'
   · have : (Limits.coprod.desc f g).app W ≫ e.hom ≫ Limits.prod.snd = g.app W := by
       simp [e, Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_comp_appLE]
     convert (hg W hW).2
-    congrm ($this).1
+    congrm ($this).hom'
 
 end
 

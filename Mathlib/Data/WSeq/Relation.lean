@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.WSeq.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Relations between and equivalence of weak sequences
 
@@ -407,12 +410,12 @@ theorem liftRel_join.lem (R : α → β → Prop) {S T} {U : WSeq α → WSeq β
             apply Nat.lt_succ_of_le (Nat.le_add_right _ _)
           let ⟨ob, mb, rob⟩ := IH _ this ST' rs5'
           refine ⟨ob, ?_, rob⟩
-          · simp +unfoldPartialApp only [destruct_join, destruct_join.aux]
-            apply mem_bind mT
-            simp only [destruct_append]
-            apply think_mem
-            apply mem_bind mt
-            exact mb
+          simp +unfoldPartialApp only [destruct_join, destruct_join.aux]
+          apply mem_bind mT
+          simp only [destruct_append]
+          apply think_mem
+          apply mem_bind mt
+          exact mb
         | some (a, s'), some (b, t'), ⟨ab, st'⟩, _, rs5, mt => by
           simp only [destruct_append.aux] at rs5
           refine ⟨some (b, append t' (join T')), ?_, ?_⟩
@@ -571,7 +574,7 @@ theorem bind_assoc_comp (s : WSeq α) (f : α → WSeq β) (g : β → WSeq γ) 
 
 @[simp]
 theorem bind_assoc (s : WSeq α) (f : α → WSeq β) (g : β → WSeq γ) :
-    bind (bind s f) g ~ʷ bind s fun x : α => bind (f x) g := by
-  exact bind_assoc_comp s f g
+    bind (bind s f) g ~ʷ bind s fun x : α => bind (f x) g :=
+  bind_assoc_comp s f g
 
 end Stream'.WSeq

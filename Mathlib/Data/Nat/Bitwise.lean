@@ -9,10 +9,11 @@ public import Mathlib.Algebra.Ring.Parity
 public import Mathlib.Data.Bool.Basic
 public import Mathlib.Data.Nat.Bits
 
+import Batteries.Data.Nat.Bitwise
 import Mathlib.Data.List.GetD
 import Mathlib.Order.Basic
 import Mathlib.Tactic.AdaptationNote
-import Batteries.Data.Nat.Bitwise
+
 import all Init.Data.Nat.Bitwise.Basic  -- for unfolding `bitwise`
 
 /-!
@@ -23,6 +24,7 @@ bitwise properties. In the second half of this file, we show properties of the b
 `lor`, `land` and `xor`, which are defined in core.
 
 ## Main results
+
 * `eq_of_testBit_eq`: two natural numbers are equal if they have equal bits at every position.
 * `exists_most_significant_bit`: if `n ≠ 0`, then there is some position `i` that contains the most
   significant `1`-bit of `n`.
@@ -30,12 +32,12 @@ bitwise properties. In the second half of this file, we show properties of the b
   `n` is zero, the `i`-th bit of `m` is one, and all more significant bits are equal, then
   `n < m`.
 
-## Future work
+## TODO
 
 There is another way to express bitwise properties of natural number: `digits 2`. The two ways
 should be connected.
 
-## Keywords
+## Tags
 
 bitwise, and, or, xor
 -/

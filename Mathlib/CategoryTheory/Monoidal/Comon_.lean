@@ -5,8 +5,8 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Mon
 public import Mathlib.CategoryTheory.Monoidal.Braided.Opposite
+public import Mathlib.CategoryTheory.Monoidal.Mon
 public import Mathlib.CategoryTheory.Monoidal.Transport
 
 /-!
@@ -21,6 +21,7 @@ An oplax monoidal functor takes comonoid objects to comonoid objects.
 That is, an oplax monoidal functor `F : C ⥤ D` induces a functor `Comon C ⥤ Comon D`.
 
 ## TODO
+
 * Comonoid objects in `C` are "just"
   oplax monoidal functors from the trivial monoidal category to `C`.
 -/
@@ -307,7 +308,6 @@ def MonOpOpToComon : (Mon Cᵒᵖ)ᵒᵖ ⥤ Comon C where
       isComonHom_hom.hom_counit := by apply Quiver.Hom.op_inj; simp
       isComonHom_hom.hom_comul := by apply Quiver.Hom.op_inj; simp [op_tensorHom] }
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /--
 Comonoid objects are contravariantly equivalent to monoid objects in the opposite category.

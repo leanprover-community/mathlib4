@@ -5,12 +5,14 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Topology.LocallyConstant.Algebra
 public import Mathlib.Topology.ContinuousMap.Algebra
+public import Mathlib.Topology.LocallyConstant.Algebra
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The algebra morphism from locally constant functions to continuous functions.
-
 -/
 
 @[expose] public section

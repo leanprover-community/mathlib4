@@ -8,7 +8,11 @@ module
 public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.LinearAlgebra.Charpoly.ToMatrix
 public import Mathlib.LinearAlgebra.Eigenspace.Minpoly
-public import Mathlib.RingTheory.Artinian.Module
+
+import Mathlib.RingTheory.Artinian.Module
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Results on the eigenvalue 0
@@ -27,7 +31,6 @@ such as being nilpotent, having determinant equal to 0, having a non-trivial ker
 * `LinearMap.finrank_maxGenEigenspace`:
   the dimension of the maximal generalized eigenspace of an endomorphism
   is the trailing degree of its characteristic polynomial
-
 -/
 
 public section
@@ -71,7 +74,7 @@ lemma charpoly_nilpotent_tfae [IsNoetherian R M] (φ : Module.End R M) :
     obtain ⟨n, hn⟩ := Filter.eventually_atTop.mp φ.eventually_iSup_ker_pow_eq
     use n
     ext x
-    rw [zero_apply, ← mem_ker, ← hn n le_rfl]
+    rw [LinearMap.zero_apply, ← mem_ker, ← hn n le_rfl]
     obtain ⟨k, hk⟩ := h x
     rw [← mem_ker] at hk
     exact Submodule.mem_iSup_of_mem _ hk
@@ -150,13 +153,13 @@ lemma finrank_maxGenEigenspace_zero_eq (φ : Module.End K M) :
       forall_exists_index]
     intro x n hx
     use n
-    rw [← Module.End.mul_apply, ← pow_succ, pow_succ', Module.End.mul_apply, hx, map_zero]
+    rw [← mul_apply_eq_comp, ← pow_succ, pow_succ', mul_apply_eq_comp, hx, map_zero]
   have hφW : ∀ x ∈ W, φ x ∈ W := by
     simp only [W, Submodule.mem_iInf, mem_range]
     intro x H n
     obtain ⟨y, rfl⟩ := H n
     use φ y
-    rw [← Module.End.mul_apply, ← pow_succ, pow_succ', Module.End.mul_apply]
+    rw [← mul_apply_eq_comp, ← pow_succ, pow_succ', mul_apply_eq_comp]
   let F := φ.restrict hφV
   let G := φ.restrict hφW
   let ψ := F.prodMap G
@@ -167,8 +170,9 @@ lemma finrank_maxGenEigenspace_zero_eq (φ : Module.End K M) :
   have hψ : ψ = e.symm.conj φ := by
     apply b.ext
     simp only [Basis.prod_apply, coe_inl, coe_inr, prodMap_apply, LinearEquiv.conj_apply,
-      LinearEquiv.symm_symm, Submodule.coe_prodEquivOfIsCompl, coe_comp, LinearEquiv.coe_coe,
-      Function.comp_apply, coprod_apply, Submodule.coe_subtype, map_add, Sum.forall, Sum.elim_inl,
+      LinearEquiv.symm_symm, Submodule.coe_prodEquivOfIsCompl, coe_comp,
+      LinearEquiv.coe_toLinearMap, Function.comp_apply, coprod_apply, Submodule.coe_subtype,
+      map_add, Sum.forall, Sum.elim_inl,
       map_zero, ZeroMemClass.coe_zero, add_zero, LinearEquiv.eq_symm_apply, and_self,
       Submodule.coe_prodEquivOfIsCompl', coe_restrict_apply, implies_true, Sum.elim_inr, zero_add,
       e, V, W, ψ, F, G, b]
@@ -179,8 +183,8 @@ lemma finrank_maxGenEigenspace_zero_eq (φ : Module.End K M) :
     apply ((not_hasEigenvalue_zero_tfae G).out 3 6).mpr
     intro x hx
     apply Subtype.ext
-    suffices x.1 ∈ V ⊓ W by rwa [hVW.inf_eq_bot, Submodule.mem_bot] at this
-    suffices x.1 ∈ V from ⟨this, x.2⟩
+    suffices x.val ∈ V ⊓ W by rwa [hVW.inf_eq_bot, Submodule.mem_bot] at this
+    suffices x.val ∈ V from ⟨this, x.property⟩
     simp only [Module.End.mem_maxGenEigenspace, zero_smul, sub_zero, V]
     use 1
     rw [pow_one]

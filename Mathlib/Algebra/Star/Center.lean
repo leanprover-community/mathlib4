@@ -5,12 +5,17 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Algebra.Star.Pointwise
 public import Mathlib.Algebra.Group.Center
+public import Mathlib.Algebra.Star.Pointwise
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-! # `Set.center`, `Set.centralizer` and the `star` operation -/
 
 public section
+
+open scoped Pointwise
 
 variable {R : Type*} [Mul R] [StarMul R] {a : R} {s : Set R}
 

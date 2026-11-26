@@ -80,8 +80,8 @@ theorem closure_mul_image_mul_eq_top
     exact subset_closure ⟨r * s, Set.mul_mem_mul hr hs, rfl⟩
   · rintro - - s hs ⟨u, hu, r, hr, rfl⟩
     rw [show u * r * s⁻¹ = u * (f (r * s⁻¹) * s * r⁻¹)⁻¹ * f (r * s⁻¹) by group]
-    refine Set.mul_mem_mul ((closure U).mul_mem hu ((closure U).inv_mem ?_)) (f (r * s⁻¹)).2
-    refine subset_closure ⟨f (r * s⁻¹) * s, Set.mul_mem_mul (f (r * s⁻¹)).2 hs, ?_⟩
+    refine Set.mul_mem_mul ((closure U).mul_mem hu ((closure U).inv_mem ?_)) (f (r * s⁻¹)).property
+    refine subset_closure ⟨f (r * s⁻¹) * s, Set.mul_mem_mul (f (r * s⁻¹)).property hs, ?_⟩
     rw [mul_right_inj, inv_inj, ← Subtype.coe_mk r hr, ← Subtype.ext_iff, Subtype.coe_mk]
     apply (isComplement_iff_existsUnique_mul_inv_mem.mp hR (f (r * s⁻¹) * s)).unique
       (hR.mul_inv_toRightFun_mem (f (r * s⁻¹) * s))
@@ -209,7 +209,7 @@ theorem card_commutator_dvd_index_center_pow [Finite (commutatorSet G)] :
   apply card_dvd_exponent_pow_rank'
   intro g
   -- `Z(G)` is abelian, so `g ∈ Z(G) ∩ G' ≤ G' ≤ ker (transfer : G → Z(G))`
-  have := Abelianization.commutator_subset_ker (MonoidHom.transferCenterPow G) g.1.2
+  have := Group.Abelianization.commutator_le_ker (MonoidHom.transferCenterPow G) g.val.property
   -- `transfer g` is defeq to `g ^ [G : Z(G)]`, so we are done
   simpa only [MonoidHom.mem_ker, Subtype.ext_iff] using! this
 
@@ -231,13 +231,13 @@ theorem card_commutator_le_of_finite_commutatorSet [Finite (commutatorSet G)] :
   replace h2 := h2.trans (pow_dvd_pow _ (add_le_add_left (mul_le_mul_left h1 _) 1))
   rw [← pow_succ] at h2
   refine (Nat.le_of_dvd ?_ h2).trans (Nat.pow_le_pow_left h1 _)
-  exact pow_pos (Nat.pos_of_ne_zero FiniteIndex.index_ne_zero) _
+  exact pow_pos (Nat.pos_of_ne_zero index_ne_zero) _
 
 /-- A theorem of Schur: A group with finitely many commutators has finite commutator subgroup. -/
 instance [Finite (commutatorSet G)] : Finite (_root_.commutator G) := by
   have h2 := card_commutator_dvd_index_center_pow (closureCommutatorRepresentatives G)
   refine Nat.finite_of_card_ne_zero fun h => ?_
   rw [card_commutator_closureCommutatorRepresentatives, h, zero_dvd_iff] at h2
-  exact FiniteIndex.index_ne_zero (eq_zero_of_pow_eq_zero h2)
+  exact index_ne_zero (eq_zero_of_pow_eq_zero h2)
 
 end Subgroup

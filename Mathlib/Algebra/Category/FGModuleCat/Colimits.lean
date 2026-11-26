@@ -7,17 +7,19 @@ module
 
 public import Mathlib.Algebra.Category.FGModuleCat.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Colimits
-public import Mathlib.LinearAlgebra.DirectSum.Finite
 
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.Algebra.Category.ModuleCat.Products
 import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
+import Mathlib.LinearAlgebra.DirectSum.Finite
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # `forget₂ (FGModuleCat K) (ModuleCat K)` creates all finite colimits.
 
 And hence `FGModuleCat K` has all finite colimits.
-
 -/
 
 @[expose] public section

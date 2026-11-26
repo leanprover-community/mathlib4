@@ -32,6 +32,7 @@ existence of a nice sequence of derivatives, expressed with a predicate
 We prove basic properties of these notions.
 
 ## Main definitions and results
+
 Let `f : E → F` be a map between normed vector spaces over a nontrivially normed field `𝕜`.
 
 * `ContDiff 𝕜 n f`: expresses that `f` is `C^n`, i.e., it admits a Taylor series up to
@@ -783,7 +784,7 @@ theorem ContDiffOn.differentiableOn_iteratedFDerivWithin {m : ℕ} (h : ContDiff
   intro x hx
   have : (m + 1 : ℕ) ≤ n := ENat.add_one_natCast_le_withTop_of_lt hmn
   apply (((h.of_le this).ftaylorSeriesWithin hs).fderivWithin m ?_ x hx).differentiableWithinAt
-  exact_mod_cast lt_add_one m
+  exact mod_cast lt_add_one m
 
 theorem ContDiffWithinAt.differentiableWithinAt_iteratedFDerivWithin {m : ℕ}
     (h : ContDiffWithinAt 𝕜 n f s x) (hmn : m < n) (hs : UniqueDiffOn 𝕜 (insert x s)) :

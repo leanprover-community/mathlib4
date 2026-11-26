@@ -5,21 +5,21 @@ Authors: Alvan Caleb Arulandu
 -/
 module
 
-public import Mathlib.Probability.CDF
 public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
+public import Mathlib.Probability.CDF
 
 /-! # Pareto distributions over ℝ
 
 Define the Pareto measure over the reals.
 
 ## Main definitions
+
 * `paretoPDFReal`: the function `t r x ↦ r * t ^ r * x ^ -(r + 1)`
   for `t ≤ x` or `0` else, which is the probability density function of a Pareto distribution with
   scale `t` and shape `r` (when `ht : 0 < t` and `hr : 0 < r`).
 * `paretoPDF`: `ℝ≥0∞`-valued pdf,
   `paretoPDF t r = ENNReal.ofReal (paretoPDFReal t r)`.
 * `paretoMeasure`: a Pareto measure on `ℝ`, parametrized by its scale `t` and shape `r`.
-
 -/
 
 @[expose] public section

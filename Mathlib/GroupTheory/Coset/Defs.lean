@@ -5,11 +5,11 @@ Authors: Mitchell Rowett, Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Quotient
 public import Mathlib.Algebra.Group.Action.Opposite
-public import Mathlib.Algebra.Group.Subgroup.MulOpposite
-public import Mathlib.GroupTheory.GroupAction.Defs
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+public import Mathlib.Algebra.Group.Subgroup.MulOpposite
+public import Mathlib.Algebra.Quotient
+public import Mathlib.GroupTheory.GroupAction.Defs
 
 /-!
 # Cosets
@@ -137,13 +137,13 @@ def quotientRightRelEquivQuotientLeftRel : Quotient (QuotientGroup.rightRel s) �
       rw [leftRel_apply, rightRel_apply]
       exact fun h => congr($(by simp) ∈ s).mp (s.inv_mem h)
   left_inv g :=
-    Quotient.inductionOn' g fun g =>
+    Quotient.inductionOn g fun g =>
       Quotient.sound'
         (by
           simp only [inv_inv]
           exact Quotient.exact' rfl)
   right_inv g :=
-    Quotient.inductionOn' g fun g =>
+    Quotient.inductionOn g fun g =>
       Quotient.sound'
         (by
           simp only [inv_inv]
@@ -170,7 +170,7 @@ lemma range_mk : range (QuotientGroup.mk (s := s)) = univ := range_eq_univ.mpr m
 
 @[to_additive (attr := elab_as_elim)]
 theorem induction_on {C : α ⧸ s → Prop} (x : α ⧸ s) (H : ∀ z, C (QuotientGroup.mk z)) : C x :=
-  Quotient.inductionOn' x H
+  Quotient.inductionOn x H
 
 @[to_additive]
 instance : Coe α (α ⧸ s) :=
@@ -257,6 +257,14 @@ theorem preimage_mk_one (N : Subgroup α) :
     mk ⁻¹' {(mk : α → α ⧸ N) 1} = N := by
   rw [← image_singleton, preimage_image_mk_eq_mul]
   simp
+
+@[to_additive (attr := simp)]
+theorem mk_eq_one_iff : (a : α ⧸ s) = (1 : α) ↔ a ∈ s := by
+  simpa using congr(a ∈ $(preimage_mk_one s))
+
+@[to_additive (attr := simp)]
+theorem out_mem_iff {a : α ⧸ s} : a.out ∈ s ↔ a = (1 : α) := by
+  rw [← mk_eq_one_iff, out_eq']
 
 end QuotientGroup
 

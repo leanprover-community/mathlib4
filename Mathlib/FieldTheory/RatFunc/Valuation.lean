@@ -20,11 +20,13 @@ This file defines the valuation at infinity on the field of rational functions `
   valuation at infinity.
 
 ## References
+
 * [D. Marcus, *Number Fields*][marcus1977number]
 * [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
 * [P. Samuel, *Algebraic Theory of Numbers*][samuel1967]
 
 ## Tags
+
 function field, ring of integers
 -/
 
@@ -73,9 +75,11 @@ theorem InftyValuation.map_add_le_max' (x y : RatFunc F) :
   aesop
 
 @[simp]
-theorem inftyValuation_of_nonzero {x : RatFunc F} (hx : x ≠ 0) :
+theorem inftyValuation_of_ne_zero {x : RatFunc F} (hx : x ≠ 0) :
     inftyValuationDef F x = exp x.intDegree := by
   rw [inftyValuationDef, ite_eq_right hx]
+
+@[deprecated (since := "2026-10-13")] alias inftyValuation_of_nonzero := inftyValuation_of_ne_zero
 
 /-- The valuation at infinity on `F(t)`. -/
 def inftyValuation : Valuation (RatFunc F) ℤᵐ⁰ where
@@ -130,7 +134,7 @@ with the uniform space structure coming from the valuation at infinity. -/
 attribute [-instance] RatFunc.valuedRatFunc
 
 /- Locally add the uniform space structure coming from the valuation at infinity. This instance
-is scoped in the `CompletionAtInfty` namescape in case it is needed in the future. -/
+is scoped in the `CompletionAtInfty` namespace in case it is needed in the future. -/
 /-- The uniform space structure on `RatFunc F` coming from the valuation at infinity. -/
 scoped instance : UniformSpace (RatFunc F) := (inftyValued F).toUniformSpace
 

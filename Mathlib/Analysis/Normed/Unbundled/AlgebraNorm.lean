@@ -5,8 +5,11 @@ Authors: María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
 public import Mathlib.Analysis.Normed.Module.Seminorm.Basic
+public import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Algebra norms
@@ -14,6 +17,7 @@ public import Mathlib.Analysis.Normed.Module.Seminorm.Basic
 We define algebra norms and multiplicative algebra norms.
 
 ## Main Definitions
+
 * `AlgebraNorm` : an algebra norm on an `R`-algebra `S` is a ring norm on `S` compatible with
   the action of `R`.
 * `MulAlgebraNorm` : a multiplicative algebra norm on an `R`-algebra `S` is a multiplicative

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Star.Module
 public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 public import Mathlib.Topology.Algebra.Star
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The star operation, bundled as a continuous star-linear equiv
 -/
@@ -97,7 +100,7 @@ theorem continuous_decomposeProdAdjoint [IsTopologicalAddGroup A] [ContinuousSta
 @[fun_prop]
 theorem continuous_decomposeProdAdjoint_symm [ContinuousAdd A] :
     Continuous (StarModule.decomposeProdAdjoint R A).symm :=
-  (continuous_subtype_val.comp continuous_fst).add (continuous_subtype_val.comp continuous_snd)
+  (continuous_subtypeVal.comp continuous_fst).add (continuous_subtypeVal.comp continuous_snd)
 
 /-- The self-adjoint part of an element of a star module, as a continuous linear map. -/
 @[simps! -isSimp]

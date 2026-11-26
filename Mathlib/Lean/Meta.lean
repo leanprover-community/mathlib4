@@ -7,10 +7,13 @@ module
 
 public import Mathlib.Init
 
-import Lean.Elab.Term
 import Lean.Elab.Tactic.Basic
+import Lean.Elab.Term
 import Lean.Meta.Tactic.Assert
 import Lean.Meta.Tactic.Clear
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-! # Additional utilities in `Lean.MVarId` -/
 

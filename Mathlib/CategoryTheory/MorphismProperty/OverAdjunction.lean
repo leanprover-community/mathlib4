@@ -125,7 +125,7 @@ noncomputable def Over.pullbackComp (f : X ⟶ Y) (g : Y ⟶ Z)
 set_option backward.defeqAttrib.useBackward true in
 lemma Over.pullbackComp_left_fst_fst (f : X ⟶ Y) (g : Y ⟶ Z) [P.IsStableUnderBaseChangeAlong f]
     [P.IsStableUnderBaseChangeAlong g] [P.HasPullbacksAlong f] [P.HasPullbacksAlong g]
-    [Q.RespectsIso] [Q.IsStableUnderBaseChange] (A : P.Over Q Z) :
+    [Q.IsStableUnderBaseChange] (A : P.Over Q Z) :
     ((Over.pullbackComp f g).hom.app A).left ≫ pullback.fst (pullback.snd A.hom g) f ≫
     pullback.fst A.hom g = pullback.fst A.hom (f ≫ g) := by
   simp
@@ -346,7 +346,7 @@ variable [P.IsStableUnderComposition] [Q.IsStableUnderCobaseChange]
 
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
-attribute [local instance] hasPushouts_symmetry_of_hasPushoutsAlong in
+attribute [local instance] hasPushout_symmetry in
 /-- `P.Under.pushout` is left adjoint to `P.Under.map` if pushouts of morphisms satisfying `P`
 exist along `f` and are also in `P`, and `f` is in both `P` and `Q`. -/
 @[simps! unit_app counit_app]

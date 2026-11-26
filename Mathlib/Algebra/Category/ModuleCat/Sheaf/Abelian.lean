@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Sheafification
 public import Mathlib.CategoryTheory.Abelian.Transfer
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of sheaves of modules is abelian
 
@@ -21,7 +24,6 @@ In particular, if `u = v` and `C : Type u` is a small category,
 then `SheafOfModules.{u} R` is abelian: this instance shall be
 found automatically if this file and `Algebra.Category.Grp.FilteredColimits`
 are imported.
-
 -/
 
 public section

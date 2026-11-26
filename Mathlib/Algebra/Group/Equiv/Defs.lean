@@ -15,6 +15,7 @@ In this file we define two extensions of `Equiv` called `AddEquiv` and `MulEquiv
 datatypes representing isomorphisms of `AddMonoid`s/`AddGroup`s and `Monoid`s/`Group`s.
 
 ## Main definitions
+
 * `≃*` (`MulEquiv`), `≃+` (`AddEquiv`): bundled equivalences that preserve multiplication/addition
   (and are therefore monoid and group isomorphisms).
 * `MulEquivClass`, `AddEquivClass`: classes for types containing bundled equivalences that
@@ -60,9 +61,7 @@ structure AddEquiv (A B : Type*) [Add A] [Add B] extends A ≃ B, AddHom A B
 /-- `AddEquivClass F A B` states that `F` is a type of addition-preserving morphisms.
 You should extend this class when you extend `AddEquiv`. -/
 class AddEquivClass (F : Type*) (A B : outParam Type*) [Add A] [Add B] [EquivLike F A B] :
-    Prop where
-  /-- Preserves addition. -/
-  map_add : ∀ (f : F) (a b), f (a + b) = f a + f b
+    Prop extends AddHomClass F A B
 
 /-- The `Equiv` underlying an `AddEquiv`. -/
 add_decl_doc AddEquiv.toEquiv
@@ -96,9 +95,7 @@ You should extend this class when you extend `MulEquiv`. -/
 -- TODO: make this a synonym for MulHomClass?
 @[to_additive]
 class MulEquivClass (F : Type*) (A B : outParam Type*) [Mul A] [Mul B] [EquivLike F A B] :
-    Prop where
-  /-- Preserves multiplication. -/
-  map_mul : ∀ (f : F) (a b), f (a * b) = f a * f b
+    Prop extends MulHomClass F A B
 
 @[to_additive]
 alias MulEquivClass.map_eq_one_iff := EmbeddingLike.map_eq_one_iff
@@ -112,17 +109,14 @@ variable (F)
 variable [EquivLike F M N]
 
 -- See note [lower instance priority]
-@[to_additive]
-instance (priority := 100) instMulHomClass (F : Type*)
-    [Mul M] [Mul N] [EquivLike F M N] [h : MulEquivClass F M N] : MulHomClass F M N :=
-  { h with }
+attribute [instance 100] toMulHomClass
 
 -- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) instMonoidHomClass
     [MulOneClass M] [MulOneClass N] [MulEquivClass F M N] :
     MonoidHomClass F M N :=
-  { MulEquivClass.instMulHomClass F with
+  { MulEquivClass.toMulHomClass with
     map_one := fun e =>
       calc
         e 1 = e 1 * 1 := (mul_one _).symm
@@ -175,6 +169,10 @@ instance : CoeFun (M ≃* N) fun _ ↦ M → N where
 @[to_additive]
 instance : MulEquivClass (M ≃* N) M N where
   map_mul f := f.map_mul'
+
+@[to_additive (attr := simp)]
+theorem coe_toMulEquiv [EquivLike F M N] [MulEquivClass F M N] (f : F) :
+    ⇑(f : M ≃* N) = f := rfl
 
 /-- Two multiplicative isomorphisms agree if they are defined by the
 same underlying function. -/
@@ -425,6 +423,10 @@ theorem symm_trans_self (e : M ≃* N) : e.symm.trans e = refl N :=
 theorem self_trans_symm (e : M ≃* N) : e.trans e.symm = refl M :=
   DFunLike.ext _ _ e.symm_apply_apply
 
+@[to_additive]
+theorem isMulCommutative (e : M ≃* N) : IsMulCommutative M ↔ IsMulCommutative N :=
+  ⟨fun _ ↦ e.surjective.isMulCommutative, fun _ ↦ e.symm.surjective.isMulCommutative⟩
+
 end trans
 
 /-- `MulEquiv.symm` defines an equivalence between `α ≃* β` and `β ≃* α`. -/
@@ -505,8 +507,9 @@ protected theorem map_eq_one_iff (h : M ≃* N) {x : M} : h x = 1 ↔ x = 1 :=
 theorem map_ne_one_iff (h : M ≃* N) {x : M} : h x ≠ 1 ↔ x ≠ 1 :=
   EmbeddingLike.map_ne_one_iff
 
+-- TODO: Make simp once `toEquiv` is simp nf
 /-- A bijective `Semigroup` homomorphism is an isomorphism -/
-@[to_additive (attr := simps! apply)
+@[to_additive (attr := simps! apply, simps -isSimp toEquiv)
 /-- A bijective `AddSemigroup` homomorphism is an isomorphism -/]
 noncomputable def ofBijective {M N F} [Mul M] [Mul N] [FunLike F M N] [MulHomClass F M N]
     (f : F) (hf : Bijective f) : M ≃* N :=

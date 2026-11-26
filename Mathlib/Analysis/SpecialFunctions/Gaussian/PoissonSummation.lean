@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Fourier.PoissonSummation
 
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Poisson summation applied to the Gaussian
 
@@ -27,8 +30,6 @@ open Real Set MeasureTheory Filter Asymptotics intervalIntegral
 open scoped Real Topology FourierTransform RealInnerProductSpace
 
 open Complex hiding exp continuous_exp
-
-noncomputable section
 
 section GaussianPoisson
 

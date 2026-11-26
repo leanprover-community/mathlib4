@@ -9,13 +9,15 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.PiZero
 public import Mathlib.AlgebraicTopology.SimplicialSet.TopAdj
 public import Mathlib.Topology.Homotopy.TopCat.Path
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `ZerothHomotopy` and connected components of `TopCat.toSSet.obj X`
 
 In this file, given `X : TopCat`, we define a bijection
 `TopCat.zerothHomotopyEquiv` between `ZerothHomotopy X` and
 `(TopCat.toSSet.obj X).π₀`.
-
 -/
 
 @[expose] public section
@@ -34,7 +36,7 @@ singular simplicial set of `X` and the type of morphisms `I ⟶ X`. -/
 noncomputable def toSSetObj₁Equiv :
     toSSet.obj X _⦋1⦌ ≃ (I ⟶ X) :=
   (toSSetObjEquiv _ _).trans
-    { toFun f := ofHom (f.comp (toContinuousMap TopCat.stdSimplexHomeomorphI.symm))
+    { toFun f := ofHom (f.comp (ContinuousMap.ofClass TopCat.stdSimplexHomeomorphI.symm))
       invFun f := f.hom.comp TopCat.stdSimplexHomeomorphI
       left_inv _ := by simp
       right_inv _ := by simp }

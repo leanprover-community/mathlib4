@@ -7,14 +7,17 @@ module
 
 public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Algebra.Group.Fin.Basic
-public import Mathlib.Algebra.Ring.ULift
+public import Mathlib.Algebra.Ring.GrindInstances
 public import Mathlib.Algebra.Ring.Opposite
+public import Mathlib.Algebra.Ring.ULift
 public import Mathlib.Data.Int.ModEq
 public import Mathlib.Data.Nat.Cast.Prod
 public import Mathlib.Order.Interval.Set.Defs
-public import Mathlib.Algebra.Ring.GrindInstances
 
 import Mathlib.Data.ULift
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Characteristic of semirings
@@ -71,7 +74,7 @@ lemma intCast_eq_intCast : (a : R) = b ↔ a ≡ b [ZMOD p] := by
 lemma intCast_eq_intCast_mod : (a : R) = a % (p : ℤ) :=
   (CharP.intCast_eq_intCast R p).mpr (Int.mod_modEq a p).symm
 
-lemma intCast_injOn_Ico [IsRightCancelAdd R] : InjOn (Int.cast : ℤ → R) (Ico 0 p) := by
+lemma intCast_injOn_Ico : InjOn (Int.cast : ℤ → R) (Ico 0 p) := by
   rintro a ⟨ha₀, ha⟩ b ⟨hb₀, hb⟩ hab
   lift a to ℕ using ha₀
   lift b to ℕ using hb₀

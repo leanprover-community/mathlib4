@@ -5,12 +5,15 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Tactic.ApplyFun
-public import Mathlib.Data.List.GetD
 public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Data.List.Basic
+public import Mathlib.Data.List.GetD
+public import Mathlib.Tactic.ApplyFun
 
 import Mathlib.Algebra.Group.Int.Defs
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Turing machine tapes
@@ -25,7 +28,6 @@ All but finitely many of the cells are required to hold the blank symbol `defaul
   of `List Γ` by extension by blanks at the end.
 * `Tape Γ` is the type of Turing machine tapes with alphabet `Γ`. Implemented as two
   `ListBlank Γ` instances, one for each direction, as well as a head symbol.
-
 -/
 
 @[expose] public section
@@ -144,7 +146,7 @@ def ListBlank.mk {Γ} [Inhabited Γ] : List Γ → ListBlank Γ :=
 @[elab_as_elim]
 protected theorem ListBlank.induction_on {Γ} [Inhabited Γ] {p : ListBlank Γ → Prop}
     (q : ListBlank Γ) (h : ∀ a, p (ListBlank.mk a)) : p q :=
-  Quotient.inductionOn' q h
+  Quotient.inductionOn q h
 
 /-- The head of a `ListBlank` is well defined. -/
 def ListBlank.head {Γ} [Inhabited Γ] (l : ListBlank Γ) : Γ := by
@@ -186,17 +188,17 @@ theorem ListBlank.cons_mk {Γ} [Inhabited Γ] (a : Γ) (l : List Γ) :
 
 @[simp]
 theorem ListBlank.head_cons {Γ} [Inhabited Γ] (a : Γ) : ∀ l : ListBlank Γ, (l.cons a).head = a :=
-  Quotient.ind' fun _ ↦ rfl
+  Quotient.ind fun _ ↦ rfl
 
 @[simp]
 theorem ListBlank.tail_cons {Γ} [Inhabited Γ] (a : Γ) : ∀ l : ListBlank Γ, (l.cons a).tail = l :=
-  Quotient.ind' fun _ ↦ rfl
+  Quotient.ind fun _ ↦ rfl
 
 /-- The `cons` and `head`/`tail` functions are mutually inverse, unlike in the case of `List` where
 this only holds for nonempty lists. -/
 @[simp]
 theorem ListBlank.cons_head_tail {Γ} [Inhabited Γ] : ∀ l : ListBlank Γ, l.tail.cons l.head = l := by
-  apply Quotient.ind'
+  apply Quotient.ind
   refine fun l ↦ Quotient.sound' (Or.inr ?_)
   cases l
   · exact ⟨1, rfl⟩
@@ -227,14 +229,14 @@ theorem ListBlank.nth_mk {Γ} [Inhabited Γ] (l : List Γ) (n : ℕ) :
 @[simp]
 theorem ListBlank.nth_zero {Γ} [Inhabited Γ] (l : ListBlank Γ) : l.nth 0 = l.head := by
   rw [← ListBlank.cons_head_tail l]
-  induction l.tail using Quotient.inductionOn'
+  induction l.tail using Quotient.inductionOn
   rfl
 
 @[simp]
 theorem ListBlank.nth_succ {Γ} [Inhabited Γ] (l : ListBlank Γ) (n : ℕ) :
     l.nth (n + 1) = l.tail.nth n := by
   rw [← ListBlank.cons_head_tail l]
-  induction l.tail using Quotient.inductionOn'
+  induction l.tail using Quotient.inductionOn
   rfl
 
 @[ext]
@@ -316,14 +318,14 @@ theorem ListBlank.map_mk {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap
 theorem ListBlank.head_map {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap Γ Γ')
     (l : ListBlank Γ) : (l.map f).head = f l.head := by
   rw [← ListBlank.cons_head_tail l]
-  induction l using Quotient.inductionOn'
+  induction l using Quotient.inductionOn
   rfl
 
 @[simp]
 theorem ListBlank.tail_map {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap Γ Γ')
     (l : ListBlank Γ) : (l.map f).tail = l.tail.map f := by
   rw [← ListBlank.cons_head_tail l]
-  induction l using Quotient.inductionOn'
+  induction l using Quotient.inductionOn
   rfl
 
 @[simp]
@@ -502,7 +504,7 @@ def Tape.nth {Γ} [Inhabited Γ] (T : Tape Γ) : ℤ → Γ
   | -(n + 1 : ℕ) => T.left.nth n
 
 @[simp]
-theorem Tape.nth_zero {Γ} [Inhabited Γ] (T : Tape Γ) : T.nth 0 = T.1 :=
+theorem Tape.nth_zero {Γ} [Inhabited Γ] (T : Tape Γ) : T.nth 0 = T.head :=
   rfl
 
 theorem Tape.right₀_nth {Γ} [Inhabited Γ] (T : Tape Γ) (n : ℕ) : T.right₀.nth n = T.nth n := by
@@ -543,7 +545,7 @@ def Tape.write {Γ} [Inhabited Γ] (b : Γ) (T : Tape Γ) : Tape Γ :=
   { T with head := b }
 
 @[simp]
-theorem Tape.write_self {Γ} [Inhabited Γ] : ∀ T : Tape Γ, T.write T.1 = T := by
+theorem Tape.write_self {Γ} [Inhabited Γ] : ∀ T : Tape Γ, T.write T.head = T := by
   rintro ⟨⟩; rfl
 
 @[simp]
@@ -563,11 +565,11 @@ theorem Tape.write_mk' {Γ} [Inhabited Γ] (b : Γ) (L R : ListBlank Γ) :
 
 /-- Apply a pointed map to a tape to change the alphabet. -/
 def Tape.map {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap Γ Γ') (T : Tape Γ) : Tape Γ' :=
-  ⟨f T.1, T.2.map f, T.3.map f⟩
+  ⟨f T.head, T.left.map f, T.right.map f⟩
 
 @[simp]
 theorem Tape.map_fst {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap Γ Γ') :
-    ∀ T : Tape Γ, (T.map f).1 = f T.1 := by
+    ∀ T : Tape Γ, (T.map f).head = f T.head := by
   rintro ⟨⟩; rfl
 
 @[simp]

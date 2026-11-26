@@ -9,12 +9,14 @@ public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
 public import Mathlib.Topology.Order.Basic
 public import Mathlib.Topology.UniformSpace.UniformConvergence
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # TendstoUniformlyOn on ordered spaces
 
 We gather some results about `TendstoUniformlyOn f g K` on ordered spaces,
 in particular bounding the values of `f` in terms of bounds on the limit `g`.
-
 -/
 
 public section

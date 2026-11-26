@@ -9,12 +9,15 @@ public import Mathlib.RingTheory.LocalProperties.Basic
 
 import Mathlib.RingTheory.LocalProperties.Exactness
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Meta properties of bijective ring homomorphisms
 
 We show some meta properties of bijective ring homomorphisms.
 
-## Implementation details
+## Implementation notes
 
 We don't define a `RingHom.Bijective` predicate, but use `fun f ↦ Function.Bijective f` as
 the ring hom property.

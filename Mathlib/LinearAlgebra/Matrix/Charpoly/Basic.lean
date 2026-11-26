@@ -22,7 +22,7 @@ See the file `Mathlib/LinearAlgebra/Matrix/Charpoly/Coeff.lean` for corollaries 
 
 * `Matrix.charpoly` is the characteristic polynomial of a matrix.
 
-## Implementation details
+## Implementation notes
 
 We follow a nice proof from http://drorbn.net/AcademicPensieve/2015-12/CayleyHamilton.pdf
 -/
@@ -55,13 +55,13 @@ theorem charmatrix_apply :
 
 @[simp]
 theorem charmatrix_apply_eq : charmatrix M i i = (X : R[X]) - C (M i i) := by
-  simp only [charmatrix, RingHom.mapMatrix_apply, sub_apply, scalar_apply, map_apply,
+  simp only [charmatrix, RingHom.mapMatrix_apply, Matrix.sub_apply, scalar_apply, map_apply,
     diagonal_apply_eq]
 
 @[simp]
 theorem charmatrix_apply_ne (h : i ≠ j) : charmatrix M i j = -C (M i j) := by
-  simp only [charmatrix, RingHom.mapMatrix_apply, sub_apply, scalar_apply, diagonal_apply_ne _ h,
-    map_apply, sub_eq_neg_self]
+  simp only [charmatrix, RingHom.mapMatrix_apply, Matrix.sub_apply, scalar_apply,
+    diagonal_apply_ne _ h, map_apply, sub_eq_neg_self]
 
 @[simp]
 theorem charmatrix_zero : charmatrix (0 : Matrix n n R) = Matrix.scalar n (X : R[X]) := by
@@ -101,16 +101,29 @@ theorem matPolyEquiv_charmatrix : matPolyEquiv (charmatrix M) = X - C M := by
   · rw [charmatrix_apply_ne _ _ _ h, coeff_X, coeff_neg, coeff_C, coeff_C]
     split_ifs <;> simp [h]
 
-theorem charmatrix_reindex (e : n ≃ m) :
-    charmatrix (reindex e e M) = reindex e e (charmatrix M) := by
-  ext i j x
-  by_cases h : i = j
-  all_goals simp [h]
+lemma charmatrix_submatrix {b : m → n} (hf : b.Injective) :
+    (M.submatrix b b).charmatrix = M.charmatrix.submatrix b b := by
+  ext i j : 1
+  simp [charmatrix_apply, diagonal_apply, hf.eq_iff]
+
+lemma charmatrix_toSquareBlock {α : Type*} [DecidableEq α] {b : n → α} {a : α} :
+    (M.toSquareBlock b a).charmatrix = M.charmatrix.toSquareBlock b a :=
+  charmatrix_submatrix _ Subtype.val_injective
+
+theorem charmatrix_reindex (e : n ≃ m) : charmatrix (reindex e e M) = reindex e e (charmatrix M) :=
+  charmatrix_submatrix _ e.symm.injective
 
 lemma charmatrix_map (M : Matrix n n R) (f : R →+* S) :
     charmatrix (M.map f) = (charmatrix M).map (Polynomial.map f) := by
   ext i j
   by_cases h : i = j <;> simp [h, charmatrix, diagonal]
+
+lemma charmatrix_mul_map_C_of_mul_eq_mul {A : Matrix n n R} {B : Matrix m m R} {P : Matrix n m R}
+    (h : A * P = P * B) : charmatrix A * P.map C = P.map C * charmatrix B := by
+  simp only [charmatrix, RingHom.mapMatrix_apply, Matrix.sub_mul, Matrix.mul_sub, ← Matrix.map_mul,
+    h]
+  congrm ?_ - _
+  exact Matrix.scalar_comm X commute_X _
 
 lemma charmatrix_fromBlocks :
     charmatrix (fromBlocks M₁₁ M₁₂ M₂₁ M₂₂) =
@@ -188,14 +201,19 @@ lemma charpoly_fromBlocks_zero₂₁ :
   simp only [charpoly, charmatrix_fromBlocks, Matrix.map_zero _ (Polynomial.C_0), neg_zero,
     det_fromBlocks_zero₂₁]
 
-lemma charmatrix_toSquareBlock {α : Type*} [DecidableEq α] {b : n → α} {a : α} :
-    (M.toSquareBlock b a).charmatrix = M.charmatrix.toSquareBlock b a := by
-  ext i j : 1
-  simp [charmatrix_apply, toSquareBlock_def, diagonal_apply, Subtype.ext_iff]
-
-lemma BlockTriangular.charpoly {α : Type*} {b : n → α} [LinearOrder α] (h : M.BlockTriangular b) :
+lemma BlockTriangular.charpoly_eq {α : Type*} {b : n → α} [LinearOrder α]
+    (h : M.BlockTriangular b) :
     M.charpoly = ∏ a ∈ image b univ, (M.toSquareBlock b a).charpoly := by
   simp only [Matrix.charpoly, h.charmatrix.det, charmatrix_toSquareBlock]
+
+@[deprecated (since := "2026-11-03")]
+protected alias BlockTriangular.charpoly := BlockTriangular.charpoly_eq
+
+lemma StrictBlockTriangular.charpoly_eq {α : Type*} {b : n → α} [LinearOrder α]
+    (hM : M.StrictBlockTriangular b) : M.charpoly = X ^ Fintype.card n := by
+  rw [← charpoly_zero, hM.blockTriangular.charpoly_eq, (BlockTriangular.zero (b := b)).charpoly_eq]
+  simp only [hM.toSquareBlock_eq_zero]
+  rfl
 
 lemma charpoly_of_isUpperTriangular [LinearOrder n] (M : Matrix n n R) (h : M.IsUpperTriangular) :
     M.charpoly = ∏ i : n, (X - C (M i i)) := by
@@ -290,6 +308,15 @@ theorem charpoly_units_conj (M : (Matrix n n R)ˣ) (N : Matrix n n R) :
 theorem charpoly_units_conj' (M : (Matrix n n R)ˣ) (N : Matrix n n R) :
     (M.val⁻¹ * N * M.val).charpoly = N.charpoly := by
   simpa using charpoly_units_conj M⁻¹ N
+
+theorem C_det_mul_charpoly_of_mul_eq_mul {A B P : Matrix n n R} (h : A * P = P * B) :
+    C P.det * A.charpoly = C P.det * B.charpoly := by
+  rw [RingHom.map_det, RingHom.mapMatrix_apply, charpoly, charpoly, mul_comm, ← det_mul,
+    charmatrix_mul_map_C_of_mul_eq_mul h, det_mul]
+
+theorem charpoly_eq_of_mul_eq_mul [IsDomain R] {A B P : Matrix n n R}
+    (hP : P.det ≠ 0) (h : A * P = P * B) : A.charpoly = B.charpoly :=
+  mul_left_cancel₀ (C_ne_zero.mpr hP) (C_det_mul_charpoly_of_mul_eq_mul h)
 
 theorem charpoly_sub_scalar (M : Matrix n n R) (μ : R) :
     (M - scalar n μ).charpoly = M.charpoly.comp (X + C μ) := by

@@ -60,8 +60,8 @@ theorem trans [Flat R S] [Flat S M] : Flat R M := by
   rw [Flat.iff_lTensor_injectiveₛ]
   introv
   rw [← coe_lTensor (A := S), ← EquivLike.injective_comp (cancelBaseChange R S S _ _),
-    ← LinearEquiv.coe_coe, ← LinearMap.coe_comp, lTensor_comp_cancelBaseChange,
-    LinearMap.coe_comp, LinearEquiv.coe_coe, EquivLike.comp_injective]
+    ← LinearEquiv.coe_toLinearMap, ← LinearMap.coe_comp, lTensor_comp_cancelBaseChange,
+    LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, EquivLike.comp_injective]
   iterate 2 apply Flat.lTensor_preserves_injective_linearMap
   exact Subtype.val_injective
 
@@ -86,7 +86,6 @@ section BaseChange
 
 Let `R` be a ring, `M` a flat `R`-module and `S` an `R`-algebra, then
 `S ⊗[R] M` is a flat `S`-module. This is a special case of `Module.Flat.instTensorProduct`.
-
 -/
 
 variable (R : Type u) (S : Type v) (M : Type w)

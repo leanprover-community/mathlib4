@@ -5,9 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.Order.ExtendFrom
 public import Mathlib.Topology.Order.Compact
 
+import Mathlib.Topology.Order.ExtendFrom
 import Mathlib.Topology.Order.T5
 
 /-!
@@ -21,7 +21,8 @@ We also prove several variations of this statement.
 In `Mathlib/Analysis/Calculus/LocalExtr/Rolle` we use these lemmas
 to prove several versions of Rolle's Theorem from calculus.
 
-## Keywords
+## Tags
+
 local minimum, local maximum, extremum, Rolle's Theorem
 -/
 

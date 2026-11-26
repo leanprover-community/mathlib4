@@ -241,6 +241,17 @@ protected theorem continuous (f : NormedAddGroupHom V₁ V₂) : Continuous f :=
 instance : ContinuousMapClass (NormedAddGroupHom V₁ V₂) V₁ V₂ where
   map_continuous := fun f => f.continuous
 
+section toContinuousAddMonoidHom
+
+/-- Reinterpret a `NormedAddGroupHom V₁ V₂` as
+a continuous morphism of additive monoids `V₁ →ₜ+ V₂`. -/
+def toContinuousAddMonoidHom : V₁ →ₜ+ V₂ := .ofClass f
+
+@[simp]
+lemma coe_toContinuousAddMonoidHom : ⇑f.toContinuousAddMonoidHom = f := rfl
+
+end toContinuousAddMonoidHom
+
 theorem ratio_le_opNorm (x : V₁) : ‖f x‖ / ‖x‖ ≤ ‖f‖ :=
   div_le_of_le_mul₀ (norm_nonneg _) f.opNorm_nonneg (le_opNorm _ _)
 
@@ -256,7 +267,8 @@ theorem opNorm_eq_of_bounds {M : ℝ} (M_nonneg : 0 ≤ M) (h_above : ∀ x, ‖
 
 theorem opNorm_le_of_lipschitz {f : NormedAddGroupHom V₁ V₂} {K : ℝ≥0} (hf : LipschitzWith K f) :
     ‖f‖ ≤ K :=
-  f.opNorm_le_bound K.2 fun x => by simpa only [dist_zero_right, map_zero] using hf.dist_le_mul x 0
+  f.opNorm_le_bound K.property fun x => by
+    simpa only [dist_zero_right, map_zero] using hf.dist_le_mul x 0
 
 /-- If a bounded group homomorphism map is constructed from a group homomorphism via the constructor
 `AddMonoidHom.mkNormedAddGroupHom`, then its norm is bounded by the bound given to the constructor
@@ -770,7 +782,7 @@ def ι : NormedAddGroupHom (f.equalizer g) V :=
 theorem comp_ι_eq : f.comp (ι f g) = g.comp (ι f g) := by
   ext x
   rw [comp_apply, comp_apply, ← sub_eq_zero, ← NormedAddGroupHom.sub_apply]
-  exact x.2
+  exact x.property
 
 variable {f g}
 

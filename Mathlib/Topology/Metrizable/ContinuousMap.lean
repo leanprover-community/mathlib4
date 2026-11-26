@@ -5,11 +5,14 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.UniformSpace.CompactConvergence
 public import Mathlib.Topology.Metrizable.Basic
+public import Mathlib.Topology.UniformSpace.CompactConvergence
 
 import Mathlib.Algebra.Order.Module.Field
 import Mathlib.Topology.MetricSpace.Pseudo.Defs
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Metrizability of `C(X, Y)`

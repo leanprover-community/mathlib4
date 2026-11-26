@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Traversing walks
 
@@ -23,6 +26,7 @@ Functions that help access different parts of a walk.
 * `SimpleGraph.Walk.lastDart`: The last dart of a non-empty walk
 
 ## Tags
+
 walks
 -/
 

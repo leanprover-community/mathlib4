@@ -5,8 +5,11 @@ Authors: Arnoud van der Leer
 -/
 module
 
-public import Mathlib.CategoryTheory.CodiscreteCategory
 public import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
+public import Mathlib.CategoryTheory.CodiscreteCategory
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The Nerve of a Codiscrete Category

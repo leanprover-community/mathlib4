@@ -5,8 +5,8 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.Algebra.Order.Sub.Defs
 public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
+public import Mathlib.Algebra.Order.Sub.Defs
 
 /-!
 # Lemmas about subtraction in an unbundled canonically ordered monoids

@@ -5,17 +5,18 @@ Authors: Joël Riou
 -/
 module
 
-public import Aesop
 public import Mathlib.Data.Subtype
 
 import Mathlib.Util.CompileInductive
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Extending a function from the complement of a singleton
 
 In this file, we define `Function.subtypeNeLift` which allows to
 extend a (dependent) function defined on the complement of a singleton.
-
 -/
 
 @[expose] public section

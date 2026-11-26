@@ -7,8 +7,10 @@ module
 
 public import Mathlib.Algebra.Group.Submonoid.Defs
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # (Left) Ore sets
 
 This defines left Ore sets on arbitrary monoids.
@@ -16,7 +18,6 @@ This defines left Ore sets on arbitrary monoids.
 ## References
 
 * https://ncatlab.org/nlab/show/Ore+set
-
 -/
 
 @[expose] public section
