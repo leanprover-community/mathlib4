@@ -267,6 +267,16 @@ def getNames (mctx : MetavarContext) : List Name :=
   let locDecls := (lcts.map (PersistentArray.toList ∘ LocalContext.decls)).flatten.reduceOption
   locDecls.map LocalDecl.userName
 
+/-- Removes from `ranges` all the `skip` tactics occurring in `stx`-/
+partial def eraseSkips (stx : Syntax)
+    (ranges : Std.HashMap Syntax.Range (Syntax × Option MessageData)) :
+    Std.HashMap Syntax.Range (Syntax × Option MessageData) :=
+  if stx.getKind == ``Lean.Parser.Tactic.skip then
+    if let some r := stx.getRange? true then ranges.erase r else ranges
+  else match stx with
+    | .node _ _ args => args.foldl (fun ranges arg => eraseSkips arg ranges) ranges
+    | _ => ranges
+
 /--
 For each `TacticInfo` in the info tree that corresponds to a tactic syntax:
 - If the tactic is used, erase it from the set of tactics.
@@ -324,10 +334,9 @@ def eraseUsedTactics (exceptions : Std.HashSet SyntaxNodeKind)
         if getNames i.mctxBefore == getNames i.mctxAfter then
           return withMsg m!"`swap_var` does not change the variable names in the goal"
       | `Batteries.Tactic.seq_focus =>
-        -- In `t <;> [t1; t2; ...]`, lint subtactics, but ignore padding `skip`s
-        let inBrackets (r': Syntax.Range) : Bool := r.start <= r'.start && r'.stop <= r.stop
-        return (ranges.erase r).filter fun r' ⟨stx', _⟩ =>
-          !(inBrackets r' && stx'.getKind == ``Lean.Parser.Tactic.skip)
+        -- In `t <;> [t1; t2; ...]`, lint each subtactic individually,
+        -- but never report the padding `skip`s.
+        return eraseSkips stx (ranges.erase r)
       | _ =>
         -- The tactic is unused if the goals stay the same.
         if i.goalsAfter == i.goalsBefore then
@@ -348,9 +357,11 @@ def unusedTacticLinter : Linter where run := withSetOptionIn fun stx => do
     | return
   let some convs := Parser.ParserCategory.kinds <$> cats.find? `conv
     | return
+  let (_, map) ← (getTactics (ignoredTacticKindsExt.getState env) tactics convs stx).run {}
+  -- If the command contains no tactic, there is nothing to lint.
+  if map.isEmpty then return
   let trees ← getInfoTrees
   let exceptions := allowedUnusedTacticExt.getState env
-  let (_, map) ← (getTactics (ignoredTacticKindsExt.getState env) tactics convs stx).run {}
   let map := eraseUsedTactics exceptions trees tactics convs map
   let unused := map.toArray
   let key (r : Lean.Syntax.Range) := (r.start.byteIdx, (-r.stop.byteIdx : Int))
