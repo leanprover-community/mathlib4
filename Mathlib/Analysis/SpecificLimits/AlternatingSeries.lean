@@ -5,9 +5,9 @@ Authors: David Fox
 -/
 module
 
-public import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.Topology.Algebra.InfiniteSum.Order
 
 /-!
@@ -63,12 +63,12 @@ namespace SiegelElementary
 open Real
 
 /-- The eta term `(n + 1) ^ (-σ)`. -/
-noncomputable def eta_term (σ : ℝ) (n : ℕ) : ℝ := (n + 1 : ℝ) ^ (-σ)
+noncomputable def etaTerm (σ : ℝ) (n : ℕ) : ℝ := (n + 1 : ℝ) ^ (-σ)
 
 /-- `(n+1)^(-σ)` is antitone in `n` for `σ > 0`. -/
-lemma eta_antitone (σ : ℝ) (hσ : 0 < σ) : Antitone (eta_term σ) := by
+lemma eta_antitone (σ : ℝ) (hσ : 0 < σ) : Antitone (etaTerm σ) := by
   intro m n hmn
-  simp only [eta_term]
+  simp only [etaTerm]
   have hm : (0 : ℝ) < (m : ℝ) + 1 := by positivity
   have hn : (0 : ℝ) < (n : ℝ) + 1 := by positivity
   have hmn' : (m : ℝ) + 1 ≤ (n : ℝ) + 1 := by exact_mod_cast Nat.add_le_add_right hmn 1
@@ -77,34 +77,34 @@ lemma eta_antitone (σ : ℝ) (hσ : 0 < σ) : Antitone (eta_term σ) := by
     (Real.rpow_le_rpow (le_of_lt hm) hmn' (le_of_lt hσ))
 
 /-- `(n+1)^(-σ) → 0` for `σ > 0`. -/
-lemma eta_tends_zero (σ : ℝ) (hσ : 0 < σ) : Tendsto (eta_term σ) atTop (nhds 0) := by
+lemma eta_tends_zero (σ : ℝ) (hσ : 0 < σ) : Tendsto (etaTerm σ) atTop (nhds 0) := by
   change Tendsto (fun n : ℕ => ((n : ℝ) + 1) ^ (-σ)) atTop (nhds 0)
   exact (tendsto_rpow_neg_atTop hσ).comp
     (tendsto_atTop_add_const_right _ 1 tendsto_natCast_atTop_atTop)
 
 /-- Consecutive pair difference of eta terms:
 `η₂ₖ − η₂ₖ₊₁ = (2k+1)^{−σ} − (2k+2)^{−σ}`. -/
-noncomputable def eta_pair (σ : ℝ) (k : ℕ) : ℝ :=
-  eta_term σ (2 * k) - eta_term σ (2 * k + 1)
+noncomputable def etaPair (σ : ℝ) (k : ℕ) : ℝ :=
+  etaTerm σ (2 * k) - etaTerm σ (2 * k + 1)
 
 private lemma one_sub_half_pow_pos (σ : ℝ) (hσ : 0 < σ) : (0 : ℝ) < 1 - (2 : ℝ) ^ (-σ) := by
   have h : (2 : ℝ) ^ (-σ) < 1 :=
     Real.rpow_lt_one_of_one_lt_of_neg (by norm_num) (by linarith)
   linarith
 
-private lemma eta_pair_zero_pos (σ : ℝ) (hσ : 0 < σ) : 0 < eta_pair σ 0 := by
-  have h1 : eta_term σ 0 = 1 := by simp [eta_term, Real.one_rpow]
-  have h2 : eta_term σ 1 = (2 : ℝ) ^ (-σ) := by
-    simp only [eta_term, Nat.cast_one]; norm_num
-  simp only [eta_pair, mul_zero, zero_add, h1, h2]
+private lemma etaPair_zero_pos (σ : ℝ) (hσ : 0 < σ) : 0 < etaPair σ 0 := by
+  have h1 : etaTerm σ 0 = 1 := by simp [etaTerm, Real.one_rpow]
+  have h2 : etaTerm σ 1 = (2 : ℝ) ^ (-σ) := by
+    simp only [etaTerm, Nat.cast_one]; norm_num
+  simp only [etaPair, mul_zero, zero_add, h1, h2]
   exact one_sub_half_pow_pos σ hσ
 
 /-- The tsum of consecutive pair differences of the eta series is positive
 for all `σ > 0`: the verified combinatorial core of the Siegel
-zero-repulsion argument, as the `eta_term` instance of
+zero-repulsion argument, as the `etaTerm` instance of
 `Antitone.tsum_pair_sub_pos`. -/
-theorem eta_pos (σ : ℝ) (hσ : 0 < σ) : 0 < ∑' k : ℕ, eta_pair σ k := by
+theorem eta_pos (σ : ℝ) (hσ : 0 < σ) : 0 < ∑' k : ℕ, etaPair σ k := by
   apply Antitone.tsum_pair_sub_pos (eta_antitone σ hσ) (eta_tends_zero σ hσ)
-  exact sub_pos.mp (by simpa only [eta_pair, mul_zero, zero_add] using eta_pair_zero_pos σ hσ)
+  exact sub_pos.mp (by simpa only [etaPair, mul_zero, zero_add] using etaPair_zero_pos σ hσ)
 
 end SiegelElementary
