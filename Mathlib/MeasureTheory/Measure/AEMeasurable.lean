@@ -454,15 +454,6 @@ variable {p q : α → Prop} {s : Set α}
 @[simp] theorem aemeasurable_mem : AEMeasurable (· ∈ s) μ ↔ NullMeasurableSet s μ :=
   nullMeasurableSet_setOfPred.symm
 
-lemma MeasureTheory.NullMeasurableSet.of_sum_measure {μ : ι → Measure α}
-    (hs : NullMeasurableSet s (sum μ)) (i : ι) : NullMeasurableSet s (μ i) :=
-  hs.mono (le_sum μ i)
-
-@[simp]
-lemma MeasureTheory.nullMeasurableSet_sum_measure_iff [Countable ι] {μ : ι → Measure α} :
-    NullMeasurableSet s (sum μ) ↔ ∀ i, NullMeasurableSet s (μ i) := by
-  simp_rw [← aemeasurable_mem, aemeasurable_sum_measure_iff]
-
 alias ⟨_, AEMeasurable.setOf⟩ := nullMeasurableSet_setOfPred
 
 @[fun_prop]
