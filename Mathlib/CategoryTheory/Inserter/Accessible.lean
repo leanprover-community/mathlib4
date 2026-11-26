@@ -111,7 +111,7 @@ Once the chain becomes long enough, one can take its colimit to stabilize those 
 the ordinal Λ that appears in the hypothesis of the main theorem quantifies this "long enough".
 
 Setting up and carrying out this transfinite induction occupies most of the material below,
-the strategy is to encode the partial stages of the induction as a presheaf of type
+the strategy is to encode the partial stages of the induction as a presheaf of types
 (`PartialChainUpTo.functor` below) and to record the induction
 steps as a `Functor.WellOrderInductionData`, which will let us extract a section
 of the presheaf from which we can extract the desired chain. -/
