@@ -365,7 +365,7 @@ lemma exists_tendstoUniformlyOn_subseq_tonelliApproximation
         TendstoUniformlyOn (tonelliApproximation f t₀ tmax x₀ ∘ φ) α atTop (Icc t₀ tmax) := by
   obtain ⟨β, φ, hφ_mono, hβ_tendsto⟩ := exists_tendsto_subseq_boundedTonelliApproximation hf
   let α : ℝ → E := fun t ↦ if h : t ∈ Icc t₀ tmax then β ⟨t, h⟩ else 0
-  have hα : ∀ t : Icc t₀ tmax, α t = β t := fun t ↦ dite_eq_left t.2
+  have hα : ∀ t : Icc t₀ tmax, α t = β t := fun t ↦ dite_eq_left t.property
   have h_uniform : TendstoUniformly (fun n ↦ boundedTonelliApproximation hf (φ n)) β atTop :=
     BoundedContinuousFunction.tendsto_iff_tendstoUniformly.mp hβ_tendsto
   refine ⟨α, φ, hφ_mono, ?_, ?_, ?_⟩
