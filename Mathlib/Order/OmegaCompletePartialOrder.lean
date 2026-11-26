@@ -257,16 +257,16 @@ variable {f : α → β} {g : β → γ}
 Scott continuous over chains. -/
 @[fun_prop]
 def ωScottContinuous (f : α → β) : Prop :=
-    SupScottContinuousOn (Set.range fun c : Chain α => Set.range c) f
+    UpperScottContinuousOn (Set.range fun c : Chain α => Set.range c) f
 
-lemma _root_.SupScottContinuous.ωScottContinuous (hf : SupScottContinuous f) : ωScottContinuous f :=
+lemma _root_.UpperScottContinuous.ωScottContinuous (hf : UpperScottContinuous f) : ωScottContinuous f :=
   hf.supScottContinuousOn
 
 @[deprecated (since := "2026-11-08")]
-alias _root_.ScottContinuous.ωScottContinuous := SupScottContinuous.ωScottContinuous
+alias _root_.ScottContinuous.ωScottContinuous := UpperScottContinuous.ωScottContinuous
 
 lemma ωScottContinuous.monotone (h : ωScottContinuous f) : Monotone f :=
-  SupScottContinuousOn.monotone _ (fun a b hab => by
+  UpperScottContinuousOn.monotone _ (fun a b hab => by
     use pair a b hab; exact range_pair a b hab) h
 
 lemma ωScottContinuous.isLUB {c : Chain α} (hf : ωScottContinuous f) :
@@ -275,7 +275,7 @@ lemma ωScottContinuous.isLUB {c : Chain α} (hf : ωScottContinuous f) :
     using hf (by simp) (Set.range_nonempty _) (isChain_range c).directedOn (isLUB_range_ωSup c)
 
 @[fun_prop, to_fun (attr := simp)]
-lemma ωScottContinuous.id : ωScottContinuous (id : α → α) := SupScottContinuousOn.id
+lemma ωScottContinuous.id : ωScottContinuous (id : α → α) := UpperScottContinuousOn.id
 
 lemma ωScottContinuous.map_ωSup (hf : ωScottContinuous f) (c : Chain α) :
     f (ωSup c) = ωSup (c.map ⟨f, hf.monotone⟩) := ωSup_eq_of_isLUB hf.isLUB
@@ -316,7 +316,7 @@ lemma ωScottContinuous.comp (hg : ωScottContinuous g) (hf : ωScottContinuous 
 
 @[fun_prop, to_fun (attr := simp)]
 lemma ωScottContinuous.const {x : β} : ωScottContinuous (Function.const α x) :=
-  SupScottContinuousOn.const x
+  UpperScottContinuousOn.const x
 
 end Continuity
 
@@ -455,15 +455,15 @@ theorem ωSup_zip (c₀ : Chain α) (c₁ : Chain β) : ωSup (c₀.zip c₁) = 
 lemma ωScottContinuous.prodMk
     {f : α → β} (hf : ωScottContinuous f) {g : α → γ} (hg : ωScottContinuous g) :
     ωScottContinuous fun x ↦ (f x, g x) :=
-  SupScottContinuousOn.prodMk (fun a b hab ↦ ⟨pair a b hab, range_pair a b hab⟩) hf hg
+  UpperScottContinuousOn.prodMk (fun a b hab ↦ ⟨pair a b hab, range_pair a b hab⟩) hf hg
 
 @[fun_prop]
 lemma ωScottContinuous_fst : ωScottContinuous (Prod.fst : α × β → α) :=
-  SupScottContinuousOn.fst
+  UpperScottContinuousOn.fst
 
 @[fun_prop]
 lemma ωScottContinuous_snd : ωScottContinuous (Prod.snd : α × β → β) :=
-  SupScottContinuousOn.snd
+  UpperScottContinuousOn.snd
 
 end Prod
 
