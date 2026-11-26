@@ -8,6 +8,9 @@ module
 public import Mathlib.FieldTheory.PrimitiveElement
 public import Mathlib.RingTheory.Derivation.MapCoeffs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Differential Fields
 
@@ -165,7 +168,7 @@ noncomputable def uniqueDifferentialAlgebraFiniteDimensional [FiniteDimensional 
   ext x
   apply_fun (aeval x (mapCoeffs (minpoly F x)) + aeval x (derivative (minpoly F x)) * ·)
   · conv_lhs => apply (deriv_aeval_eq ..).symm
-    conv_rhs => apply (@deriv_aeval_eq _ _ _ _ _ default.1 _ default.2 _ _).symm
+    conv_rhs => apply (@deriv_aeval_eq _ _ _ _ _ default.val _ default.property _ _).symm
     simp
   · apply (add_right_injective _).comp
     apply mul_right_injective₀

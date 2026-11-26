@@ -16,6 +16,7 @@ We provide various results concerning the minimal primes above an ideal that req
 of localizations.
 
 ## Main results
+
 - `Ideal.exists_minimalPrimes_comap_eq` If `p` is a minimal prime over `f ⁻¹ I`, then it is the
   preimage of some minimal prime over `I`.
 - `Ideal.minimalPrimes_eq_comap`: The minimal primes over `I` are precisely the preimages of
@@ -47,7 +48,7 @@ theorem Ideal.iUnion_minimalPrimes :
     have : p.map (algebraMap R (Localization.AtPrime p)) ≤ (I.map (algebraMap _ _)).radical := by
       rw [Ideal.radical_eq_sInf, le_sInf_iff]
       rintro q ⟨hq', hq⟩
-      obtain ⟨h₁, h₂⟩ := ((IsLocalization.AtPrime.orderIsoOfPrime _ p) ⟨q, hq⟩).2
+      obtain ⟨h₁, h₂⟩ := ((IsLocalization.AtPrime.orderIsoOfPrime _ p) ⟨q, hq⟩).property
       rw [Ideal.map_le_iff_le_comap] at hq' ⊢
       exact hp₃ ⟨h₁, hq'⟩ h₂
     obtain ⟨n, hn⟩ := this (Ideal.mem_map_of_mem _ hxp)
@@ -55,12 +56,12 @@ theorem Ideal.iUnion_minimalPrimes :
     obtain ⟨⟨a, b⟩, hn⟩ := hn
     rw [← map_pow, ← map_mul, IsLocalization.eq_iff_exists p.primeCompl] at hn
     obtain ⟨t, ht⟩ := hn
-    refine ⟨t * b, fun h ↦ (t * b).2 (hp₁.radical_le_iff.mpr hp₂ h), n + 1, ?_⟩
+    refine ⟨t * b, fun h ↦ (t * b).property (hp₁.radical_le_iff.mpr hp₂ h), n + 1, ?_⟩
     simp only at ht
-    have : (x * (t.1 * b.1)) ^ (n + 1) = (t.1 ^ n * b.1 ^ n * x * t.1) * a := by
+    have : (x * (t.val * b.val)) ^ (n + 1) = (t.val ^ n * b.val ^ n * x * t.val) * a := by
       rw [mul_assoc, ← ht]; ring
     rw [this]
-    exact I.mul_mem_left _ a.2
+    exact I.mul_mem_left _ a.property
   · rintro ⟨y, hy, hx⟩
     obtain ⟨p, hp, hyp⟩ : ∃ p ∈ I.minimalPrimes, y ∉ p := by
       simpa [← Ideal.sInf_minimalPrimes] using hy

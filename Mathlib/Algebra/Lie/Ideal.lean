@@ -43,9 +43,11 @@ variable [LieAlgebra R L] [LieModule R L M]
 abbrev LieIdeal :=
   LieSubmodule R L L
 
+@[membership .]
 theorem lie_mem_right (I : LieIdeal R L) (x y : L) (h : y ∈ I) : ⁅x, y⁆ ∈ I :=
   I.lie_mem h
 
+@[membership .]
 theorem lie_mem_left (I : LieIdeal R L) (x y : L) (h : x ∈ I) : ⁅x, y⁆ ∈ I := by
   rw [← lie_skew, ← neg_lie]; apply lie_mem_right; assumption
 
@@ -216,7 +218,7 @@ lemma map_id : map LieHom.id I = I := by
 lemma map_equiv_eq_comap_symm : map e.toLieHom I = comap e.symm.toLieHom I := by
   apply le_antisymm
   · simp [map_le, Set.subset_def]
-  simp_rw [IsConcreteLE.le_iff, mem_comap, LieEquiv.coe_coe]
+  simp_rw [le_iff_mem_imp_mem, mem_comap, LieEquiv.coe_coe]
   intro x hx
   simpa using mem_map (f := e.toLieHom) hx
 
@@ -464,7 +466,7 @@ theorem coe_inclusion {I₁ I₂ : LieIdeal R L} (h : I₁ ≤ I₂) (x : I₁) 
   rfl
 
 theorem inclusion_apply {I₁ I₂ : LieIdeal R L} (h : I₁ ≤ I₂) (x : I₁) :
-    inclusion h x = ⟨x.1, h x.2⟩ :=
+    inclusion h x = ⟨x.val, h x.property⟩ :=
   rfl
 
 theorem inclusion_injective {I₁ I₂ : LieIdeal R L} (h : I₁ ≤ I₂) :

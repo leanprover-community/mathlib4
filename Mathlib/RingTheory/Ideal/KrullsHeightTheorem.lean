@@ -54,7 +54,8 @@ lemma IsLocalRing.quotient_artinian_of_mem_minimalPrimes_of_isLocalRing
       convert IsLocalRing.maximalIdeal.isMaximal R
       rw [Ideal.minimalPrimes, Set.mem_ofPred] at hp
       have := prime.comap (Ideal.Quotient.mk I)
-      exact hp.eq_of_le ⟨this, .trans (by simp) (Ideal.ker_le_comap _)⟩ (le_maximalIdeal this.1)
+      exact hp.eq_of_le ⟨this, .trans (by simp) (Ideal.ker_le_comap _)⟩
+        (le_maximalIdeal this.ne_top')
   IsNoetherianRing.isArtinianRing_of_krullDimLE_zero
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -214,7 +215,7 @@ nonrec lemma Ideal.height_le_spanRank_toENat_of_mem_minimalPrimes
         exact ⟨x, _, fun e ↦ (Finset.mem_erase.mp e).1 rfl, (Finset.insert_erase hxt).symm, hxq⟩
       have : maximalIdeal R ≤ (q ⊔ span {x}).radical := by
         rw [radical_eq_sInf, le_sInf_iff]
-        exact fun J ⟨hJ, hJ'⟩ ↦ by_contra fun h ↦ hq' J hJ' ((IsConcreteLE.lt_iff_le_and_exists.mpr
+        exact fun J ⟨hJ, hJ'⟩ ↦ by_contra fun h ↦ hq' J hJ' ((lt_iff_le_and_exists_mem_notMem.mpr
           ⟨le_sup_left, x, mem_sup_right (mem_span_singleton_self _), hxq⟩).trans_le hJ)
           ((le_maximalIdeal hJ'.ne_top).lt_of_not_ge h)
       have h : (s' : Set R) ⊆ (q ⊔ span {x}).radical := by

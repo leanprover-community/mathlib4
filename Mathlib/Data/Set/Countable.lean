@@ -18,7 +18,7 @@ and prove basic properties of this definition.
 Note that this definition does not provide a computable encoding.
 For a noncomputable conversion to `Encodable s`, use `Set.Countable.nonempty_encodable`.
 
-## Keywords
+## Tags
 
 sets, countable set
 -/
@@ -316,7 +316,7 @@ theorem countable_ofPred_nonempty_of_disjoint {f : β → Set α}
     (hf : Pairwise (Disjoint on f)) {s : Set α} (h'f : ∀ t, f t ⊆ s) (hs : s.Countable) :
     Set.Countable {t | (f t).Nonempty} := by
   rw [← Set.countable_coe_iff] at hs ⊢
-  have : ∀ t : {t // (f t).Nonempty}, ∃ x : s, x.1 ∈ f t := by
+  have : ∀ t : {t // (f t).Nonempty}, ∃ x : s, x.val ∈ f t := by
     rintro ⟨t, ⟨x, hx⟩⟩
     exact ⟨⟨x, (h'f t hx)⟩, hx⟩
   choose F hF using this

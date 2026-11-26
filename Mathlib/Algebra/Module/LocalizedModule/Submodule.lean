@@ -15,6 +15,7 @@ public import Mathlib.RingTheory.Localization.Module
 Results about localizations of submodules and quotient modules are provided in this file.
 
 ## Main results
+
 - `Submodule.localized`:
   The localization of an `R`-submodule of `M` at `p` viewed as an `Rₚ`-submodule of `Mₚ`.
   A direct consequence of this is that `Rₚ` is flat over `R`; see `IsLocalization.flat`.
@@ -24,6 +25,7 @@ Results about localizations of submodules and quotient modules are provided in t
   The localization map of a quotient module `M ⧸ M' →ₗ[R] LocalizedModule p M ⧸ M'.localized p`.
 
 ## TODO
+
 - Statements regarding the exactness of localization.
 -/
 
@@ -137,8 +139,8 @@ theorem localized'_inf :
   SetLike.ext' (by apply SetLike.ext'_iff.mp <| Submodule.localized₀_inf p f M' M'')
 
 theorem localized'_iSup {ι : Type*} (g : ι → Submodule R M) :
-    (⨆ i, g i).localized' S p f = ⨆ i, (g i).localized' S p f := by
-  exact GaloisConnection.l_iSup (localized'gi S p f).gc
+    (⨆ i, g i).localized' S p f = ⨆ i, (g i).localized' S p f :=
+  GaloisConnection.l_iSup (localized'gi S p f).gc
 
 theorem localized₀_iSup {ι : Type*} (g : ι → Submodule R M) :
     (⨆ i, g i).localized₀ p f = ⨆ i, (g i).localized₀ p f := by

@@ -9,6 +9,9 @@ public import Mathlib.MeasureTheory.Function.ConvergenceInDistribution
 
 import Mathlib.MeasureTheory.Measure.LevyConvergence
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cramér-Wold Theorem
 

@@ -296,7 +296,7 @@ theorem expMap_symm_apply (x : realSpace K) (w : InfinitePlace K) :
 
 theorem logMap_expMap {x : realSpace K}
     (hx : mixedEmbedding.norm (mixedSpaceOfRealSpace (expMap x)) = 1) :
-    logMap (mixedSpaceOfRealSpace (expMap x)) = fun w ↦ x w.1 := by
+    logMap (mixedSpaceOfRealSpace (expMap x)) = fun w ↦ x w.val := by
   ext
   rw [logMap, normAtPlace_mixedSpaceOfRealSpace (Real.exp_nonneg _), expMap_apply, Real.log_exp,
     mul_sub, mul_inv_cancel_left₀ mult_coe_ne_zero, hx, Real.log_one, zero_mul, mul_zero, sub_zero]
@@ -349,12 +349,12 @@ An auxiliary map from `realSpace K` to `logSpace K` used to prove that `complete
 linearly independent, see `linearIndependent_completeFamily`.
 -/
 def realSpaceToLogSpace : realSpace K →ₗ[ℝ] {w : InfinitePlace K // w ≠ w₀} → ℝ where
-  toFun := fun x w ↦ x w.1 - w.1.mult * (∑ w', x w') * (Module.finrank ℚ K : ℝ)⁻¹
+  toFun := fun x w ↦ x w.val - w.val.mult * (∑ w', x w') * (Module.finrank ℚ K : ℝ)⁻¹
   map_add' := fun _ _ ↦ funext fun _ ↦ by simp [sum_add_distrib]; ring
   map_smul' := fun _ _ ↦ funext fun _ ↦ by simp [← mul_sum]; ring
 
 theorem realSpaceToLogSpace_apply (x : realSpace K) (w : {w : InfinitePlace K // w ≠ w₀}) :
-    realSpaceToLogSpace x w = x w - w.1.mult * (∑ w', x w') * (Module.finrank ℚ K : ℝ)⁻¹ := rfl
+    realSpaceToLogSpace x w = x w - w.val.mult * (∑ w', x w') * (Module.finrank ℚ K : ℝ)⁻¹ := rfl
 
 theorem realSpaceToLogSpace_expMap_symm {x : K} (hx : x ≠ 0) :
     realSpaceToLogSpace (expMap.symm (normAtAllPlaces (mixedEmbedding K x))) =
@@ -378,7 +378,7 @@ theorem realSpaceToLogSpace_completeFamily_of_ne (i : {w : InfinitePlace K // w 
   exact coe_ne_zero _
 
 theorem sum_eq_zero_of_mem_span_completeFamily {x : realSpace K}
-    (hx : x ∈ Submodule.span ℝ (Set.range fun w : {w // w ≠ w₀} ↦ completeFamily K w.1)) :
+    (hx : x ∈ Submodule.span ℝ (Set.range fun w : {w // w ≠ w₀} ↦ completeFamily K w.val)) :
     ∑ w, x w = 0 := by
   induction hx using Submodule.span_induction with
   | mem _ h =>
@@ -394,14 +394,14 @@ variable (K)
 theorem linearIndependent_completeFamily :
     LinearIndependent ℝ (completeFamily K) := by
   classical
-  have h₁ : LinearIndependent ℝ (fun w : {w // w ≠ w₀} ↦ completeFamily K w.1) := by
+  have h₁ : LinearIndependent ℝ (fun w : {w // w ≠ w₀} ↦ completeFamily K w.val) := by
     refine LinearIndependent.of_comp realSpaceToLogSpace ?_
     simp_rw [Function.comp_def, realSpaceToLogSpace_completeFamily_of_ne]
     convert! (((basisUnitLattice K).ofZLatticeBasis ℝ _).reindex
       (Units.equivFinRank K)).linearIndependent
     simp
   have h₂ : completeFamily K w₀ ∉ Submodule.span ℝ
-      (Set.range (fun w : {w // w ≠ w₀} ↦ completeFamily K w.1)) := by
+      (Set.range (fun w : {w // w ≠ w₀} ↦ completeFamily K w.val)) := by
     intro h
     have := sum_eq_zero_of_mem_span_completeFamily h
     rw [completeFamily, dite_eq_left rfl, ← Nat.cast_sum, sum_mult_eq, Nat.cast_eq_zero] at this
@@ -561,7 +561,7 @@ theorem normAtAllPlaces_image_preimage_expMapBasis (s : Set (realSpace K)) :
 open scoped Classical in
 theorem prod_deriv_expMap_single (x : realSpace K) :
     ∏ w, deriv_expMap_single w ((completeBasis K).equivFun.symm x w) =
-      Real.exp (x w₀) ^ Module.finrank ℚ K * (∏ w : {w // IsComplex w}, expMapBasis x w.1)⁻¹ *
+      Real.exp (x w₀) ^ Module.finrank ℚ K * (∏ w : {w // IsComplex w}, expMapBasis x w.val)⁻¹ *
         (2⁻¹) ^ nrComplexPlaces K := by
   simp only [deriv_expMap_single, expMap_single_apply]
   rw [Finset.prod_mul_distrib]
@@ -589,7 +589,7 @@ open Classical ContinuousLinearMap in
 theorem abs_det_fderiv_expMapBasis (x : realSpace K) :
     |(fderiv_expMapBasis K x).det| =
       Real.exp (x w₀ * Module.finrank ℚ K) *
-      (∏ w : {w // IsComplex w}, expMapBasis x w.1)⁻¹ * 2⁻¹ ^ nrComplexPlaces K *
+      (∏ w : {w // IsComplex w}, expMapBasis x w.val)⁻¹ * 2⁻¹ ^ nrComplexPlaces K *
         (Module.finrank ℚ K) * regulator K := by
   simp_rw [fderiv_expMapBasis, det, toLinearMap_comp, LinearMap.det_comp, fderiv_expMap, coe_pi,
     toLinearMap_comp, coe_proj, LinearMap.det_pi, LinearMap.det_ring, ContinuousLinearMap.coe_coe,
@@ -617,7 +617,7 @@ theorem setLIntegral_expMapBasis_image {s : Set (realSpace K)} (hs : MeasurableS
   have : Measurable expMapBasis := (continuous_expMapBasis K).measurable
   rw [← lintegral_const_mul _ (by fun_prop)]
   congr with x
-  have : 0 ≤ (∏ w : {w // IsComplex w}, expMapBasis x w.1)⁻¹ :=
+  have : 0 ≤ (∏ w : {w // IsComplex w}, expMapBasis x w.val)⁻¹ :=
     inv_nonneg.mpr <| Finset.prod_nonneg fun _ _ ↦ (expMapBasis_pos _ _).le
   rw [ofReal_mul (by positivity), ofReal_mul (by positivity), ofReal_mul (by positivity),
     ofReal_mul (by positivity), ofReal_pow (by positivity), ofReal_inv_of_pos (Finset.prod_pos

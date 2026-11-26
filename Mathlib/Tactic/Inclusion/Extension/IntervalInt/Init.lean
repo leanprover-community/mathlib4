@@ -9,6 +9,9 @@ public meta import Mathlib.Tactic.Inclusion.Core.Extensions
 public import Mathlib.Algebra.Order.Ring.Int
 public import Mathlib.Tactic.Inclusion.Extension.Interval.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Initialization for the integer interval extension family
 

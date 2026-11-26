@@ -7,7 +7,8 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 public import Mathlib.LinearAlgebra.Matrix.Nondegenerate
-public import Mathlib.RingTheory.Localization.Integer
+
+import Mathlib.RingTheory.Localization.Integer
 
 /-!
 # Matrices and linear equivalences
@@ -166,6 +167,8 @@ theorem nondegenerate_iff_det_ne_zero [DecidableEq n] : Nondegenerate M ↔ M.de
   grind [nondegenerate_iff_forall_vecMul_and_mulVec_eq_zero, exists_mulVec_eq_zero_iff,
     exists_vecMul_eq_zero_iff]
 
+alias ⟨Nondegenerate.det_ne_zero, _⟩ := nondegenerate_iff_det_ne_zero
+
 lemma separatingLeft_iff_det_ne_zero [DecidableEq n] : SeparatingLeft M ↔ M.det ≠ 0 := by
   grind [separatingLeft_iff_forall_vecMul_eq_zero, exists_vecMul_eq_zero_iff]
 
@@ -213,8 +216,6 @@ theorem Nondegenerate.smul_iff [Finite n] {t : A} (h : t ≠ 0) :
   have := Fintype.ofFinite
   rw [nondegenerate_def, nondegenerate_def]
   simp [smul_mulVec, mul_eq_zero_iff_left h]
-
-alias ⟨Nondegenerate.det_ne_zero, Nondegenerate.of_det_ne_zero⟩ := nondegenerate_iff_det_ne_zero
 
 end Nondegenerate
 

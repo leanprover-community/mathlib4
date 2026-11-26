@@ -36,7 +36,7 @@ and show its relation with substitution (under `CommRing R`).
 To stay in line with `PowerSeries.rescale`, this is defined by hand
 for commutative *semirings*.
 
-## Implementation note
+## Implementation notes
 
 Evaluation of a power series at adequate elements has been defined
 in `Mathlib/RingTheory/MvPowerSeries/Evaluation.lean`.

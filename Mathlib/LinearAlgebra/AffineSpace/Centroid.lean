@@ -95,13 +95,13 @@ theorem centroid_singleton (p : ι → P) (i : ι) : ({i} : Finset ι).centroid 
 
 /-- The centroid of two points, expressed directly as adding a vector
 to a point. -/
-theorem centroid_pair [DecidableEq ι] [Invertible (2 : k)] (p : ι → P) (i₁ i₂ : ι) :
+theorem centroid_pair [DecidableEq ι] [NeZero (2 : k)] (p : ι → P) (i₁ i₂ : ι) :
     ({i₁, i₂} : Finset ι).centroid k p = (2⁻¹ : k) • (p i₂ -ᵥ p i₁) +ᵥ p i₁ := by
   by_cases h : i₁ = i₂
   · simp [h]
   · have hc : (#{i₁, i₂} : k) ≠ 0 := by
       rw [card_insert_of_notMem (notMem_singleton.2 h), card_singleton]
-      simpa using Invertible.ne_zero _
+      simpa using NeZero.ne _
     rw [centroid_def,
       affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one _ _ _
         (sum_centroidWeights_eq_one_of_cast_card_ne_zero _ hc) (p i₁)]
@@ -109,7 +109,7 @@ theorem centroid_pair [DecidableEq ι] [Invertible (2 : k)] (p : ι → P) (i₁
 
 /-- The centroid of two points indexed by `Fin 2`, expressed directly
 as adding a vector to the first point. -/
-theorem centroid_pair_fin [Invertible (2 : k)] (p : Fin 2 → P) :
+theorem centroid_pair_fin [NeZero (2 : k)] (p : Fin 2 → P) :
     univ.centroid k p = (2⁻¹ : k) • (p 1 -ᵥ p 0) +ᵥ p 0 := by
   rw [univ_fin2]
   convert centroid_pair k p 0 1

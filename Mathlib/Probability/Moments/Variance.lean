@@ -430,7 +430,7 @@ nonrec theorem IndepFun.variance_sum {ι : Type*} {X : ι → Ω → ℝ} {s : F
     · symm
       refine Finset.sum_eq_zero fun i hi ↦ ?_
       simp [variance_congr (h'' i hi)]
-    · have := fun (i : s) ↦ h'' i.1 i.2
+    · have := fun (i : s) ↦ h'' i.val i.property
       filter_upwards [ae_all_iff.2 this] with ω hω
       simp only [Finset.sum_apply, Pi.zero_apply]
       exact Finset.sum_eq_zero fun i hi ↦ hω ⟨i, hi⟩

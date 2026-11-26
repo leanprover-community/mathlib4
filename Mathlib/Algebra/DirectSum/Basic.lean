@@ -120,7 +120,7 @@ variable (β)
 
 /-- `mk β s x` is the element of `⨁ i, β i` that is zero outside `s`
 and has coefficient `x i` for `i` in `s`. -/
-def mk (s : Finset ι) : (∀ i : (↑s : Set ι), β i.1) →+ ⨁ i, β i where
+def mk (s : Finset ι) : (∀ i : (↑s : Set ι), β i.val) →+ ⨁ i, β i where
   toFun := DFinsupp.mk s
   map_add' _ _ := DFinsupp.mk_add
   map_zero' := DFinsupp.mk_zero
@@ -149,9 +149,8 @@ theorem mk_apply_of_notMem {s : Finset ι} {f : ∀ i : (↑s : Set ι), β i.va
     mk β s f n = 0 :=
   DFinsupp.mk_of_notMem hn
 
-@[simp]
-theorem support_zero [∀ (i : ι) (x : β i), Decidable (x ≠ 0)] : (0 : ⨁ i, β i).support = ∅ :=
-  DFinsupp.support_zero
+theorem support_zero [∀ (i : ι) (x : β i), Decidable (x ≠ 0)] : (0 : ⨁ i, β i).support = ∅ := by
+  simp
 
 @[simp]
 theorem support_of [∀ (i : ι) (x : β i), Decidable (x ≠ 0)] (i : ι) (x : β i) (h : x ≠ 0) :
@@ -267,7 +266,7 @@ variable (β)
 /-- `setToSet β S T h` is the natural homomorphism `⨁ (i : S), β i → ⨁ (i : T), β i`,
 where `h : S ⊆ T`. -/
 def setToSet (S T : Set ι) (H : S ⊆ T) : (⨁ i : S, β i) →+ ⨁ i : T, β i :=
-  toAddMonoid fun i => of (fun i : T => β i) ⟨↑i, H i.2⟩
+  toAddMonoid fun i => of (fun i : T => β i) ⟨↑i, H i.property⟩
 
 end DecidableEq
 
@@ -482,11 +481,11 @@ def map : (⨁ i, α i) →+ ⨁ i, β i := DFinsupp.mapRange.addMonoidHom f
     (map (fun i ↦ (g i).comp (f i))) = (map g).comp (map f) :=
   DFinsupp.mapRange.addMonoidHom_comp _ _
 
-lemma map_injective : Function.Injective (map f) ↔ ∀ i, Function.Injective (f i) := by
-  exact DFinsupp.mapRange_injective (hf := fun _ ↦ map_zero _)
+lemma map_injective : Function.Injective (map f) ↔ ∀ i, Function.Injective (f i) :=
+  DFinsupp.mapRange_injective (hf := fun _ ↦ map_zero _)
 
-lemma map_surjective : Function.Surjective (map f) ↔ (∀ i, Function.Surjective (f i)) := by
-  exact DFinsupp.mapRange_surjective (hf := fun _ ↦ map_zero _)
+lemma map_surjective : Function.Surjective (map f) ↔ (∀ i, Function.Surjective (f i)) :=
+  DFinsupp.mapRange_surjective (hf := fun _ ↦ map_zero _)
 
 lemma map_eq_iff (x y : ⨁ i, α i) :
     map f x = map f y ↔ ∀ i, f i (x i) = f i (y i) := by

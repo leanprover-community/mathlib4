@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.Additive
 public import Mathlib.Algebra.Homology.Embedding.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The restriction functor of an embedding of complex shapes
 
@@ -51,7 +54,7 @@ lemma restriction_d_eq {i j : ι} {i' j' : ι'} (hi : e.f i = i') (hj : e.f j = 
 variable {K L}
 
 /-- The morphism `K.restriction e ⟶ L.restriction e` induced by a morphism `φ : K ⟶ L`. -/
-@[simps]
+@[simps, implicit_reducible]
 def restrictionMap : K.restriction e ⟶ L.restriction e where
   f i := φ.f (e.f i)
 
@@ -79,7 +82,7 @@ variable (e : Embedding c c') (C : Type*) [Category* C] [HasZeroObject C] [e.IsR
 
 /-- Given `e : ComplexShape.Embedding c c'`, this is the restriction
 functor `HomologicalComplex C c' ⥤ HomologicalComplex C c`. -/
-@[simps]
+@[simps, implicit_reducible]
 def restrictionFunctor [HasZeroMorphisms C] :
     HomologicalComplex C c' ⥤ HomologicalComplex C c where
   obj K := K.restriction e

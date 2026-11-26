@@ -35,7 +35,7 @@ local notation a " * " b => op a b
 /-- `fold op b f s` folds the commutative associative operation `op` over the
   `f`-image of `s`, i.e. `fold (+) b f {1,2,3} = f 1 + f 2 + f 3 + b`. -/
 def fold (b : β) (f : α → β) (s : Finset α) : β :=
-  (s.1.map f).fold op b
+  (s.val.map f).fold op b
 
 variable {op} {f : α → β} {b : β} {s : Finset α} {a : α}
 
@@ -67,9 +67,14 @@ theorem fold_image [DecidableEq α] {g : γ → α} {s : Finset γ}
     (H : Set.InjOn g s) : (s.image g).fold op b f = s.fold op b (f ∘ g) := by
   simp only [fold, image_val_of_injOn H, Multiset.map_map]
 
-@[congr]
 theorem fold_congr {g : α → β} (H : ∀ x ∈ s, f x = g x) : s.fold op b f = s.fold op b g := by
   rw [fold, fold, map_congr rfl H]
+
+@[congr]
+theorem fold_congr' {op' : β → β → β} [Std.Commutative op'] [Std.Associative op'] {g : α → β}
+    {b' : β} {t : Finset α} (hop : op = op') (hb : b = b') (h : s = t) (H : ∀ x ∈ s, f x = g x) :
+    s.fold op b f = t.fold op' b' g := by
+  subst hop h hb; rw [fold_congr H]
 
 theorem fold_op_distrib {f g : α → β} {b₁ b₂ : β} :
     (s.fold op (b₁ * b₂) fun x => f x * g x) = s.fold op b₁ f * s.fold op b₂ g := by
@@ -81,7 +86,8 @@ theorem fold_const [hd : Decidable (s = ∅)] (c : β) (h : op c (op b c) = op b
     induction s using Finset.induction_on generalizing hd with
     | empty => simp
     | insert x s hx IH =>
-      simp only [Finset.fold_insert hx, IH, ite_false, Finset.insert_ne_empty]
+      simp only [Finset.fold_insert hx, IH, ite_false, Finset.insert_nonempty,
+        Finset.Nonempty.ne_empty]
       split_ifs
       · rw [hc.comm]
       · exact h

@@ -13,6 +13,7 @@ public import Mathlib.Topology.Compactness.LocallyFinite
 # Sigma-compactness in topological spaces
 
 ## Main definitions
+
 * `IsSigmaCompact`: a set that is the union of countably many compact sets.
 * `SigmaCompactSpace X`: `X` is a σ-compact topological space; i.e., is the union
   of a countable collection of compact subspaces.
@@ -144,7 +145,7 @@ class SigmaCompactSpace (X : Type*) [TopologicalSpace X] : Prop where
 
 /-- A topological space is σ-compact iff `univ` is σ-compact. -/
 lemma isSigmaCompact_univ_iff : IsSigmaCompact (univ : Set X) ↔ SigmaCompactSpace X :=
-  ⟨fun h => ⟨h⟩, fun h => h.1⟩
+  ⟨fun h => ⟨h⟩, fun h => h.isSigmaCompact_univ⟩
 
 /-- In a σ-compact space, `univ` is σ-compact. -/
 lemma isSigmaCompact_univ [h : SigmaCompactSpace X] : IsSigmaCompact (univ : Set X) :=
@@ -419,10 +420,10 @@ noncomputable def choice (X : Type*) [TopologicalSpace X] [WeaklyLocallyCompactS
   apply Classical.choice
   let K : ℕ → { s : Set X // IsCompact s } := fun n =>
     Nat.recOn n ⟨∅, isCompact_empty⟩ fun n s =>
-      ⟨(exists_compact_superset s.2).choose ∪ compactCovering X n,
-        (exists_compact_superset s.2).choose_spec.1.union (isCompact_compactCovering _ _)⟩
-  refine ⟨⟨fun n ↦ (K n).1, fun n => (K n).2, fun n ↦ ?_, ?_⟩⟩
-  · exact Subset.trans (exists_compact_superset (K n).2).choose_spec.2
+      ⟨(exists_compact_superset s.property).choose ∪ compactCovering X n,
+        (exists_compact_superset s.property).choose_spec.1.union (isCompact_compactCovering _ _)⟩
+  refine ⟨⟨fun n ↦ (K n).val, fun n => (K n).property, fun n ↦ ?_, ?_⟩⟩
+  · exact Subset.trans (exists_compact_superset (K n).property).choose_spec.2
       (interior_mono subset_union_left)
   · refine univ_subset_iff.1 (iUnion_compactCovering X ▸ ?_)
     exact iUnion_mono' fun n => ⟨n + 1, subset_union_right⟩

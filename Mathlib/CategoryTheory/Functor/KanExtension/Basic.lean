@@ -28,6 +28,7 @@ which assert the existence of a right or left Kan extension, and chosen Kan exte
 are obtained as `leftKanExtension L F` and `rightKanExtension L F`.
 
 ## References
+
 * https://ncatlab.org/nlab/show/Kan+extension
 -/
 
@@ -614,8 +615,8 @@ lemma isLeftKanExtension_iff_of_iso₂ {F₁' F₂' : D ⥤ H} (α₁ : F₁ ⟶
   let eq := LeftExtension.isUniversalEquivOfIso₂ (LeftExtension.mk _ α₁)
     (LeftExtension.mk _ α₂) e e' h
   constructor
-  · exact fun _ => ⟨⟨eq.1 (isUniversalOfIsLeftKanExtension F₁' α₁)⟩⟩
-  · exact fun _ => ⟨⟨eq.2 (isUniversalOfIsLeftKanExtension F₂' α₂)⟩⟩
+  · exact fun _ => ⟨⟨eq.toFun (isUniversalOfIsLeftKanExtension F₁' α₁)⟩⟩
+  · exact fun _ => ⟨⟨eq.invFun (isUniversalOfIsLeftKanExtension F₂' α₂)⟩⟩
 
 instance {F' : D ⥤ H} (α : F₁ ⟶ L ⋙ F') [F'.IsLeftKanExtension α]
     (f : F₂ ⟶ F₁) [IsIso f] :
@@ -640,8 +641,8 @@ lemma isRightKanExtension_iff_of_iso₂ {F₁' F₂' : D ⥤ H} (α₁ : L ⋙ F
   let eq := RightExtension.isUniversalEquivOfIso₂ (RightExtension.mk _ α₁)
     (RightExtension.mk _ α₂) e e' h
   constructor
-  · exact fun _ => ⟨⟨eq.1 (isUniversalOfIsRightKanExtension F₁' α₁)⟩⟩
-  · exact fun _ => ⟨⟨eq.2 (isUniversalOfIsRightKanExtension F₂' α₂)⟩⟩
+  · exact fun _ => ⟨⟨eq.toFun (isUniversalOfIsRightKanExtension F₁' α₁)⟩⟩
+  · exact fun _ => ⟨⟨eq.invFun (isUniversalOfIsRightKanExtension F₂' α₂)⟩⟩
 
 instance {F' : D ⥤ H} (α : L ⋙ F' ⟶ F₁) [F'.IsRightKanExtension α]
     (f : F₁ ⟶ F₂) [IsIso f] :
@@ -669,7 +670,6 @@ variable
     {F₀ : C ⥤ H} {F₁ : D ⥤ H} {F₂ : D' ⥤ H}
     (α : F₀ ⟶ L ⋙ F₁)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If the right extension defined by `α : F₀ ⟶ L ⋙ F₁` is universal,
 then for every `L' : D ⥤ D'`, `F₁ : D ⥤ H`, if an extension
@@ -707,9 +707,6 @@ def LeftExtension.isUniversalPrecomp₂
         (hα.fac <| LeftExtension.mk _ <|
           y.hom ≫ (L.associator L' y.right).hom) t
     dsimp at hb_fac_app hα_fac_app
-    simp only [whiskeringLeft_obj_obj, comp_obj,
-      precomp₂_obj_right, whiskeringLeft_obj_map, NatTrans.comp_app,
-      precomp₂_obj_hom_app, whiskerLeft_app, assoc] at a_w_t
     simp [← a_w_t, hb_fac_app, u, hα_fac_app]
   apply IsInitial.ofUnique
 

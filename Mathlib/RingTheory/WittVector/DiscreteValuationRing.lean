@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.DiscreteValuationRing.Basic
 public import Mathlib.RingTheory.WittVector.Domain
 public import Mathlib.RingTheory.WittVector.MulCoeff
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Witt vectors over a perfect ring
 

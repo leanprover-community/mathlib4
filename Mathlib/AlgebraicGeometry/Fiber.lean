@@ -13,7 +13,8 @@ public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
 /-!
 # Scheme-theoretic fiber
 
-## Main result
+## Main results
+
 - `AlgebraicGeometry.Scheme.Hom.fiber`: `f.fiber y` is the scheme-theoretic fiber of `f` at `y`.
 - `AlgebraicGeometry.Scheme.Hom.fiberHomeo`: `f.fiber y` is homeomorphic to `f ⁻¹' {y}`.
 - `AlgebraicGeometry.Scheme.Hom.finite_preimage`: Finite morphisms have finite fibers.
@@ -102,12 +103,12 @@ def Scheme.Hom.fiberHomeo (f : X ⟶ Y) (y : Y) : f.fiber y ≃ₜ f ⁻¹' {y} 
 
 @[simp]
 lemma Scheme.Hom.fiberHomeo_apply (f : X ⟶ Y) (y : Y) (x : f.fiber y) :
-    (f.fiberHomeo y x).1 = f.fiberι y x := rfl
+    (f.fiberHomeo y x).val = f.fiberι y x := rfl
 
 @[simp]
 lemma Scheme.Hom.fiberι_fiberHomeo_symm (f : X ⟶ Y) (y : Y) (x : f ⁻¹' {y}) :
     f.fiberι y ((f.fiberHomeo y).symm x) = x :=
-  congr($((f.fiberHomeo y).apply_symm_apply x).1)
+  congr($((f.fiberHomeo y).apply_symm_apply x).val)
 
 /-- A point `x` as a point in the fiber of `f` at `f x`. -/
 def Scheme.Hom.asFiber (f : X ⟶ Y) (x : X) : f.fiber (f x) :=

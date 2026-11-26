@@ -182,7 +182,7 @@ variable (p) in
 lemma ramificationIdx'_map_eq {E : Type*} [EquivLike E S S₁] [AlgEquivClass E R S S₁]
     (P : Ideal S) (e : E) :
     ramificationIdx' p (P.map e) = ramificationIdx' p P := by
-  rw [show P.map e = _ from P.map_comap_of_equiv (RingEquivClass.toRingEquiv e : S ≃+* S₁)]
+  rw [show P.map e = _ from P.map_comap_of_equiv (.ofClass e)]
   exact p.ramificationIdx'_comap_eq (AlgEquiv.ofClass e).symm P
 
 @[deprecated (since := "2026-07-01")] alias ramificationIdx_map_eq := ramificationIdx'_map_eq

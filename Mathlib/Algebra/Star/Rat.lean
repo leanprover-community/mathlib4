@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Field.Opposite
 public import Mathlib.Algebra.Star.Basic
 public import Mathlib.Data.Rat.Cast.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # \*-ring structure on `ℚ` and `ℚ≥0`.
 -/

@@ -18,6 +18,7 @@ This file contains additional results about `Valuation.IsTrivialOn` which is def
 In what follows, we consider a `A`-algebra `B` and a valuation `v` over `B` which is trivial on `A`.
 
 ## Main results
+
 * `valuation_aeval_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X`: Let `p` be a polynomial
   over `A` evaluated at an element `w` of `B` for which `1 < v w`.
   We have the equality `v (p.aeval w) = v w ^ p.natDegree`.
