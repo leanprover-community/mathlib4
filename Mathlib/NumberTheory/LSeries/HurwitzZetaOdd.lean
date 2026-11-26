@@ -39,7 +39,7 @@ various versions of the Jacobi theta function.
 * `completedHurwitzZetaOdd_one_sub`: the functional equation
   `completedHurwitzZetaOdd a (1 - s) = completedSinZeta a s`
 * `hasSum_int_hurwitzZetaOdd` and `hasSum_nat_sinZeta`: relation between
-  the zeta functions and corresponding Dirichlet series for `1 < re s`
+  the zeta functions and the corresponding Dirichlet series for `1 < re s`
 -/
 
 @[expose] public section

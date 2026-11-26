@@ -32,7 +32,7 @@ meromorphic continuation is not at all obvious); we in fact construct them as Me
 various versions of the Jacobi theta function.
 
 We also define completed versions of these functions with nicer functional equations (satisfying
-`completedHurwitzZetaEven a s = Gammaℝ s * hurwitzZetaEven a s`, and similarly for `cosZeta`); and
+`completedHurwitzZetaEven a s = Gammaℝ s * hurwitzZetaEven a s`, and similarly for `completedCosZeta`); and
 modified versions with a subscript `0`, which are entire functions differing from the above by
 multiples of `1 / s` and `1 / (1 - s)`.
 
