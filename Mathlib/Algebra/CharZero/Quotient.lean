@@ -12,6 +12,9 @@ public import Mathlib.GroupTheory.QuotientGroup.Defs
 
 import Mathlib.Algebra.Order.Group.Unbundled.Int
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about quotients in characteristic zero
 -/

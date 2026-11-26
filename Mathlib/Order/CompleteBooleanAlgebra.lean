@@ -228,13 +228,13 @@ private lemma iInf_iSup_eq' [CompleteLattice α] (minAx : MinimalAxioms α) (f :
     ⨅ i, ⨆ j, f i j = ⨆ g : ∀ i, κ i, ⨅ i, f i (g i) := by
   refine le_antisymm ?_ le_iInf_iSup
   calc
-    _ = ⨅ a : range (range <| f ·), ⨆ b : a.1, b.1 := by
+    _ = ⨅ a : range (range <| f ·), ⨆ b : a.val, b.val := by
       simp_rw [iInf_subtype, iInf_range, iSup_subtype, iSup_range]
     _ = _ := minAx.iInf_iSup_eq _
     _ ≤ _ := iSup_le fun g => by
-      refine le_trans ?_ <| le_iSup _ fun a => Classical.choose (g ⟨_, a, rfl⟩).2
+      refine le_trans ?_ <| le_iSup _ fun a => Classical.choose (g ⟨_, a, rfl⟩).property
       refine le_iInf fun a => le_trans (iInf_le _ ⟨range (f a), a, rfl⟩) ?_
-      rw [← Classical.choose_spec (g ⟨_, a, rfl⟩).2]
+      rw [← Classical.choose_spec (g ⟨_, a, rfl⟩).property]
 
 @[to_dual existing iInf_iSup_eq']
 private lemma iSup_iInf_eq [CompleteLattice α] (minAx : MinimalAxioms α) (f : ∀ i, κ i → α) :
@@ -264,7 +264,7 @@ theorem toCompleteDistribLattice [CompleteLattice α] (minAx : MinimalAxioms α)
           | .up false => j := by simp [sSup_eq_iSup', iSup_unique, iInf_bool_eq]
       _ ≤ _ := by
         simp only [minAx.iInf_iSup_eq, iInf_ulift, iInf_bool_eq, iSup_le_iff]
-        exact fun x ↦ le_biSup _ (x (.up false)).2
+        exact fun x ↦ le_biSup _ (x (.up false)).property
   iInf_sup_le_sup_sInf a s := by
     calc
       _ ≤ ⨆ i : ULift.{u} Bool, ⨅ j : match i with | .up true => PUnit.{u + 1} | .up false => s,
@@ -272,7 +272,7 @@ theorem toCompleteDistribLattice [CompleteLattice α] (minAx : MinimalAxioms α)
           | .up true => a
           | .up false => j := by
         simp only [minAx.iSup_iInf_eq, iSup_ulift, iSup_bool_eq, le_iInf_iff]
-        exact fun x ↦ biInf_le _ (x (.up false)).2
+        exact fun x ↦ biInf_le _ (x (.up false)).property
       _ = _ := by simp [sInf_eq_iInf', iInf_unique, iSup_bool_eq]
 
 /-- The `CompletelyDistribLattice.MinimalAxioms` element corresponding to a frame. -/

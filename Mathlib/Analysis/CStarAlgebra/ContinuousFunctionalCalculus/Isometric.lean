@@ -138,14 +138,14 @@ open NNReal
 
 lemma nnNorm_cfc_le {f : 𝕜 → 𝕜} {a : A} (c : ℝ≥0) (h : ∀ x ∈ σ 𝕜 a, ‖f x‖₊ ≤ c) :
     ‖cfc f a‖₊ ≤ c :=
-  norm_cfc_le c.2 h
+  norm_cfc_le c.property h
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_cfc_le := nnNorm_cfc_le
 
 lemma nnNorm_cfc_le_iff (f : 𝕜 → 𝕜) (a : A) (c : ℝ≥0)
     (hf : ContinuousOn f (σ 𝕜 a) := by cfc_cont_tac)
     (ha : p a := by cfc_tac) : ‖cfc f a‖₊ ≤ c ↔ ∀ x ∈ σ 𝕜 a, ‖f x‖₊ ≤ c :=
-  norm_cfc_le_iff f a c.2
+  norm_cfc_le_iff f a c.property
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_cfc_le_iff := nnNorm_cfc_le_iff
 
@@ -364,7 +364,7 @@ lemma nnNorm_cfcₙ_le {f : 𝕜 → 𝕜} {a : A} {c : ℝ≥0} (h : ∀ x ∈ 
 lemma nnNorm_cfcₙ_le_iff (f : 𝕜 → 𝕜) (a : A) (c : ℝ≥0)
     (hf : ContinuousOn f (σₙ 𝕜 a) := by cfc_cont_tac) (hf₀ : f 0 = 0 := by cfc_zero_tac)
     (ha : p a := by cfc_tac) : ‖cfcₙ f a‖₊ ≤ c ↔ ∀ x ∈ σₙ 𝕜 a, ‖f x‖₊ ≤ c :=
-  norm_cfcₙ_le_iff f a c.1 hf hf₀ ha
+  norm_cfcₙ_le_iff f a c.val hf hf₀ ha
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_cfcₙ_le_iff := nnNorm_cfcₙ_le_iff
 
@@ -377,7 +377,7 @@ lemma nnNorm_cfcₙ_lt {f : 𝕜 → 𝕜} {a : A} {c : ℝ≥0} (h : ∀ x ∈ 
 lemma nnNorm_cfcₙ_lt_iff (f : 𝕜 → 𝕜) (a : A) (c : ℝ≥0)
     (hf : ContinuousOn f (σₙ 𝕜 a) := by cfc_cont_tac) (hf₀ : f 0 = 0 := by cfc_zero_tac)
     (ha : p a := by cfc_tac) : ‖cfcₙ f a‖₊ < c ↔ ∀ x ∈ σₙ 𝕜 a, ‖f x‖₊ < c :=
-  norm_cfcₙ_lt_iff f a c.1 hf hf₀ ha
+  norm_cfcₙ_lt_iff f a c.val hf hf₀ ha
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_cfcₙ_lt_iff := nnNorm_cfcₙ_lt_iff
 
@@ -528,7 +528,7 @@ lemma IsGreatest.nnNorm_cfc_nnreal [Nontrivial A] (f : ℝ≥0 → ℝ≥0) (a :
   obtain ⟨-, ha'⟩ := nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts.mp ha
   rw [← SpectrumRestricts] at ha'
   convert IsGreatest.nnNorm_cfc (fun x : ℝ ↦ (f x.toNNReal : ℝ)) a ?hf_cont
-  case hf_cont => exact continuous_subtype_val.comp_continuousOn <|
+  case hf_cont => exact continuous_subtypeVal.comp_continuousOn <|
     ContinuousOn.comp ‹_› continuous_real_toNNReal.continuousOn <| ha'.image ▸ Set.mapsTo_image ..
   simp [Set.image_image, ← ha'.image]
 
@@ -617,7 +617,7 @@ lemma IsGreatest.nnNorm_cfcₙ_nnreal (f : ℝ≥0 → ℝ≥0) (a : A)
   rw [cfcₙ_nnreal_eq_real ..]
   obtain ⟨-, ha'⟩ := nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts.mp ha
   convert IsGreatest.nnNorm_cfcₙ (fun x : ℝ ↦ (f x.toNNReal : ℝ)) a ?hf_cont (by simpa)
-  case hf_cont => exact continuous_subtype_val.comp_continuousOn <|
+  case hf_cont => exact continuous_subtypeVal.comp_continuousOn <|
     ContinuousOn.comp ‹_› continuous_real_toNNReal.continuousOn <| ha'.image ▸ Set.mapsTo_image ..
   simp [Set.image_image, ← ha'.image]
 

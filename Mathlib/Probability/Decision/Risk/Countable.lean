@@ -8,6 +8,9 @@ module
 public import Mathlib.Probability.Decision.Risk.Defs
 public import Mathlib.Probability.Kernel.Composition.CompNotation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Risk in countable spaces
 

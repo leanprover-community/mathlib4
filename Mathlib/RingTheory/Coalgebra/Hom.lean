@@ -317,9 +317,7 @@ variable {A B}
 If `φ : A → B` is a coalgebra map and `a = ∑ xᵢ ⊗ yᵢ`, then `φ a = ∑ φ xᵢ ⊗ φ yᵢ`
 -/
 @[simps]
-def Repr.induced {a : A} (repr : Repr R a ι)
-    {F : Type*} [FunLike F A B] [CoalgHomClass F R A B]
-    (φ : F) : Repr R (φ a) ι where
+def Repr.induced {a : A} (repr : Repr R a ι) (φ : A →ₗc[R] B) : Repr R (φ a) ι where
   index := repr.index
   left := φ ∘ repr.left
   right := φ ∘ repr.right

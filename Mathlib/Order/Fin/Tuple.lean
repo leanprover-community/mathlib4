@@ -216,7 +216,7 @@ lemma finSuccAboveOrderIso_apply (p : Fin (n + 1)) (i : Fin n) :
     finSuccAboveOrderIso p i = ⟨p.succAbove i, p.succAbove_ne i⟩ := rfl
 
 lemma finSuccAboveOrderIso_symm_apply_last (x : { x : Fin (n + 1) // x ≠ Fin.last n }) :
-    (finSuccAboveOrderIso (Fin.last n)).symm x = Fin.castLT x.1 (Fin.val_lt_last x.2) := by
+    (finSuccAboveOrderIso (Fin.last n)).symm x = Fin.castLT x.val (Fin.val_lt_last x.property) := by
   rw [← Option.some_inj]
   simp [finSuccAboveOrderIso, finSuccAboveEquiv, OrderIso.symm]
 

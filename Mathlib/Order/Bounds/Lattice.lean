@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Set.Lattice.Image
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Unions and intersections of bounds
 

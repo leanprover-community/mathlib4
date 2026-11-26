@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Algebra.Order.Hom.Monoid
 public import Mathlib.Order.Prod.Lex.Hom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Order homomorphisms for products of ordered monoids
 

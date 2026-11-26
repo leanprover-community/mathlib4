@@ -5,11 +5,12 @@ Authors: Heather Macbeth
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Dual
 public import Mathlib.Analysis.InnerProductSpace.Orientation
-public import Mathlib.LinearAlgebra.Alternating.Curry
 public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 public import Mathlib.LinearAlgebra.Complex.Orientation
+
+import Mathlib.Analysis.InnerProductSpace.Dual
+import Mathlib.LinearAlgebra.Alternating.Curry
 
 /-!
 # Oriented two-dimensional real inner product spaces
@@ -172,7 +173,7 @@ oriented real inner product space of dimension 2. -/
 @[simp]
 theorem inner_rightAngleRotationAux₁_left (x y : E) : ⟪o.rightAngleRotationAux₁ x, y⟫ = ω x y := by
   simp only [rightAngleRotationAux₁, LinearEquiv.trans_symm, LinearEquiv.symm_symm,
-    LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, LinearEquiv.trans_apply,
+    LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply, LinearEquiv.trans_apply,
     LinearIsometryEquiv.coe_symm_toLinearEquiv]
   rw [InnerProductSpace.toDual_symm_apply]
   norm_cast
@@ -206,7 +207,8 @@ def rightAngleRotationAux₂ : E →ₗᵢ[ℝ] E :=
           have : finrank ℝ E = 2 := Fact.out
           lia
         obtain ⟨w, hw₀⟩ : ∃ w : Kᗮ, w ≠ 0 := exists_ne 0
-        have hw' : ⟪x, (w : E)⟫ = 0 := Submodule.mem_orthogonal_singleton_iff_inner_right.mp w.2
+        have hw' : ⟪x, (w : E)⟫ = 0 :=
+          Submodule.mem_orthogonal_singleton_iff_inner_right.mp w.property
         have hw : (w : E) ≠ 0 := fun h => hw₀ (Submodule.coe_eq_zero.mp h)
         refine le_of_mul_le_mul_right ?_ (by rwa [norm_pos_iff] : 0 < ‖(w : E)‖)
         rw [← o.abs_areaForm_of_orthogonal hw']

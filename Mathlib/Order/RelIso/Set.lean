@@ -68,7 +68,7 @@ def Subrel (r : α → α → Prop) (p : α → Prop) : Subtype p → Subtype p 
   Subtype.val ⁻¹'o r
 
 @[simp]
-theorem subrel_val (r : α → α → Prop) (p : α → Prop) {a b} : Subrel r p a b ↔ r a.1 b.1 :=
+theorem subrel_val (r : α → α → Prop) (p : α → Prop) {a b} : Subrel r p a b ↔ r a.val b.val :=
   Iff.rfl
 
 namespace Subrel
@@ -78,7 +78,7 @@ protected def relEmbedding (r : α → α → Prop) (p : α → Prop) : Subrel r
   ⟨Embedding.subtype _, Iff.rfl⟩
 
 @[simp]
-theorem relEmbedding_apply (r : α → α → Prop) (p a) : Subrel.relEmbedding r p a = a.1 :=
+theorem relEmbedding_apply (r : α → α → Prop) (p a) : Subrel.relEmbedding r p a = a.val :=
   rfl
 
 /-- `Set.inclusion` as a relation embedding. -/
@@ -147,8 +147,8 @@ theorem RelIso.preimage_eq_image_symm (e : r ≃r s) (t : Set β) : e ⁻¹' t =
 end image
 
 theorem Acc.of_subrel {r : α → α → Prop} [IsTrans α r] {b : α} (a : { a // r a b })
-    (h : Acc (Subrel r (r · b)) a) : Acc r a.1 :=
-  h.recOn fun a _ IH ↦ ⟨_, fun _ hb ↦ IH ⟨_, _root_.trans hb a.2⟩ hb⟩
+    (h : Acc (Subrel r (r · b)) a) : Acc r a.val :=
+  h.recOn fun a _ IH ↦ ⟨_, fun _ hb ↦ IH ⟨_, _root_.trans hb a.property⟩ hb⟩
 
 /-- A relation `r` is well-founded iff every downward-interval `{ a | r a b }` of it is
 well-founded. -/

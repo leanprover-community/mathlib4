@@ -26,7 +26,7 @@ This transports the operator norm on `EuclideanSpace 𝕜 n →L[𝕜] Euclidean
 
 * `entry_norm_bound_of_unitary`: the entries of a unitary matrix are uniformly bound by `1`.
 
-## Implementation details
+## Implementation notes
 
 We take care to ensure the topology and uniformity induced by `Matrix.instMetricSpaceL2Op`
 coincide with the existing topology and uniformity on matrices.
@@ -110,7 +110,7 @@ lemma continuous_uncurry_toEuclideanCLM :
   refine Continuous.comp (by fun_prop) <| continuous_pi fun i ↦ ?_
   simp only [LinearEquiv.toEquiv_symm, Equiv.symm_symm, Equiv.invFun_as_coe,
     LinearEquiv.coe_symm_toEquiv, toMatrix'_symm, OrthonormalBasis.coe_toBasis_repr,
-    LinearEquiv.coe_coe, LinearEquiv.trans_apply, LinearIsometryEquiv.coe_toLinearEquiv,
+    LinearEquiv.coe_toLinearMap, LinearEquiv.trans_apply, LinearIsometryEquiv.coe_toLinearEquiv,
     linearEquiv_apply, AddEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe,
     addEquiv_apply, toLin'_apply, LinearEquiv.symm_mk, coe_mk, AddHom.coe_mk, LinearEquiv.coe_mk,
     LinearEquiv.coe_toEquiv, Finsupp.linearEquivFunOnFinite_apply,
@@ -132,7 +132,8 @@ lemma ofLp_toEuclideanCLM (A : Matrix n n 𝕜) (x : EuclideanSpace 𝕜 n) :
 open scoped RealInnerProductSpace in
 lemma inner_toEuclideanCLM (A : Matrix n n ℝ) (x y : EuclideanSpace ℝ n) :
     ⟪x, toEuclideanCLM (𝕜 := ℝ) A y⟫ = x ⬝ᵥ A *ᵥ y := by
-  simp only [toEuclideanCLM, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearEquiv.coe_coe,
+  simp only [toEuclideanCLM, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom,
+    LinearEquiv.coe_toLinearMap,
     LinearEquiv.invFun_eq_symm, LinearMap.coe_toContinuousLinearMap_symm, StarAlgEquiv.trans_apply,
     LinearMap.toMatrixOrthonormal_symm_apply, LinearMap.toMatrix_symm, StarAlgEquiv.coe_mk,
     StarRingEquiv.coe_mk, RingEquiv.coe_mk, Equiv.coe_fn_mk, LinearMap.coe_toContinuousLinearMap',

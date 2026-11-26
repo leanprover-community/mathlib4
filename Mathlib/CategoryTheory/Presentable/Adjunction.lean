@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 
 import Mathlib.CategoryTheory.Monad.Limits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Presentable objects and adjunctions
 

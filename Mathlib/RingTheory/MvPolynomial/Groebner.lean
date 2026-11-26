@@ -6,7 +6,8 @@ Authors: Antoine Chambert-Loir
 module
 
 public import Mathlib.RingTheory.MvPolynomial.MonomialOrder
-public import Mathlib.RingTheory.MvPolynomial.WeightedHomogeneous
+
+import Mathlib.RingTheory.MvPolynomial.WeightedHomogeneous
 
 /-! # Division algorithm with respect to monomial orders
 
@@ -38,7 +39,9 @@ The proof is done by induction, using two standard constructions
 * `MonomialOrder.div_single` is the variant of `MonomialOrder.div` for a single polynomial.
 
 
-## Reference : [Becker-Weispfenning1993]
+## References
+
+[Becker-Weispfenning1993]
 -/
 
 @[expose] public section
@@ -99,7 +102,7 @@ theorem degree_reduce_lt {f b : MvPolynomial σ R} (hb : IsUnit (m.leadingCoeff 
       apply hf
       simp [hf0]
   have H' : (m.reduce hb f).coeff (m.degree f) = 0 := by
-    simp only [reduce, coeff_sub, sub_eq_zero]
+    simp only [reduce, AddMonoidAlgebra.coeff_sub, Finsupp.sub_apply, sub_eq_zero]
     nth_rewrite 3 [H]
     rw [coeff_mul_of_degree_add (m := m), leadingCoeff_monomial, mul_comm, ← mul_assoc,
       IsUnit.mul_val_inv, one_mul, ← leadingCoeff]

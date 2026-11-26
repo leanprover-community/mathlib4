@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.Additive
 public import Mathlib.CategoryTheory.Idempotents.Karoubi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Idempotent completeness and homological complexes
 

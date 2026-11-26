@@ -8,6 +8,9 @@ module
 public import Mathlib.Probability.Kernel.Composition.MeasureCompProd
 public import Mathlib.Probability.Kernel.RadonNikodym
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Absolute continuity of the composition of measures and kernels
 

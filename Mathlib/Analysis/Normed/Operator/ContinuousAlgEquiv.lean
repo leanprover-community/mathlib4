@@ -16,7 +16,8 @@ This file shows that continuous (star-)algebra equivalences between continuous e
 See `Mathlib/LinearAlgebra/GeneralLinearGroup/AlgEquiv.lean` for the non-continuous version.
 The proof follows the same idea as the non-continuous version.
 
-### TODO:
+### TODO
+
 - when `V = W`, we can state that the group homomorphism
   `(V →L[𝕜] V)ˣ →* ((V →L[𝕜] V) ≃A[𝕜] (V →L[𝕜] V))` is surjective,
   see `Module.End.mulSemiringActionToAlgEquiv_conjAct_surjective` for the non-continuous
@@ -228,7 +229,7 @@ public theorem StarAlgEquiv.eq_linearIsometryEquivConjStarAlgEquiv
 /- TODO: Remove instance when we have `StarOrderedRing (V →L[𝕜] V)` since
 this then becomes an instance from `StarRingEquivClass.instOrderIsoClass`. -/
 public instance (priority := 100) {F : Type*} [EquivLike F (V →L[𝕜] V) (W →L[𝕜] W)]
-    [NonUnitalAlgEquivClass F 𝕜 _ _] [StarHomClass F _ _] [ContinuousMapClass F _ _] :
+    [AlgEquivClass F 𝕜 _ _] [StarHomClass F _ _] [ContinuousMapClass F _ _] :
     OrderIsoClass F _ _ where
   map_le_map_iff f x y := by
     obtain ⟨U, hU⟩ := StarAlgEquiv.eq_linearIsometryEquivConjStarAlgEquiv

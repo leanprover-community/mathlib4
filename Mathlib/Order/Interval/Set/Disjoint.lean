@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Set.Lattice.Image
 public import Mathlib.Order.Interval.Set.LinearOrder
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extra lemmas about intervals
 
@@ -239,6 +242,7 @@ theorem IsGLB.biUnion_Ici_eq_Ioi (a_glb : IsGLB s a) (a_notMem : a ∉ s) :
     rw [mem_iUnion₂]
     exact ⟨y, hys, hyx.le⟩
 
+@[to_dual existing]
 theorem IsLUB.biUnion_Iic_eq_Iio (a_lub : IsLUB s a) (a_notMem : a ∉ s) :
     ⋃ x ∈ s, Iic x = Iio a := by
   refine (iUnion₂_subset fun x hx => ?_).antisymm fun x hx => ?_

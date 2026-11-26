@@ -10,6 +10,9 @@ public import Mathlib.Topology.MetricSpace.Similarity
 
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.RightAngle
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Triangle Similarity
 

@@ -244,7 +244,7 @@ instance RayVector.Setoid : Setoid (RayVector R M) where
   iseqv :=
     ⟨fun _ => SameRay.refl _, fun h => h.symm, by
       intro x y z hxy hyz
-      exact hxy.trans hyz fun hy => (y.2 hy).elim⟩
+      exact hxy.trans hyz fun hy => (y.property hy).elim⟩
 
 /-- A ray (equivalence class of nonzero vectors with common positive multiples) in a module. -/
 def Module.Ray :=
