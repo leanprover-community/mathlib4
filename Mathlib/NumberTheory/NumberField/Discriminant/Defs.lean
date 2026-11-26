@@ -8,6 +8,9 @@ module
 public import Mathlib.NumberTheory.NumberField.Basic
 public import Mathlib.RingTheory.Localization.NormTrace
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Number field discriminant
 

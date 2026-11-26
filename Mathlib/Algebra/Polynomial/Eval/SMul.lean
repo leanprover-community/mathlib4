@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Polynomial.Eval.Defs
 
 import Mathlib.Algebra.Polynomial.Degree.Support
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Evaluating polynomials and scalar multiplication
 

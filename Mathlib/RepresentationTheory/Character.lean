@@ -11,6 +11,9 @@ public import Mathlib.RepresentationTheory.Irreducible
 
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Characters of representations
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.Combinatorics.Graph.Basic
 public import Mathlib.Topology.CWComplex.Classical.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # 1-skeletons of CW complexes as graphs
 

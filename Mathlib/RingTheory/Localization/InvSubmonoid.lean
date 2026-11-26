@@ -9,6 +9,9 @@ public import Mathlib.GroupTheory.Submonoid.Inverses
 public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.Localization.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Submonoid of inverses
 

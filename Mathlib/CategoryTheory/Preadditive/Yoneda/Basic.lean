@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Category.ModuleCat.Basic
 
 import Mathlib.CategoryTheory.Preadditive.Opposite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Yoneda embedding for preadditive categories
 

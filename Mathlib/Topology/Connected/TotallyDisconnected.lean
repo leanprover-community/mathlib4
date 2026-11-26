@@ -10,6 +10,9 @@ public import Mathlib.Topology.InductiveDimension.Classes
 
 import Mathlib.Logic.Function.Const
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Totally disconnected and totally separated topological spaces
 

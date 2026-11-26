@@ -135,8 +135,8 @@ set_option backward.defeqAttrib.useBackward true in
 categories. -/
 @[simps! functor inverse]
 def resEquiv (f : G ≃ₜ* H) : ContAction V H ≌ ContAction V G where
-  functor := res _ f
-  inverse := res _ f.symm
+  functor := res _ f.toContinuousMonoidHom
+  inverse := res _ f.symm.toContinuousMonoidHom
   unitIso := resCongr V (ContinuousMonoidHom.id H) _ (by ext; simp) ≪≫
     ContAction.resComp _ _ _
   counitIso := (ContAction.resComp _ _ _).symm ≪≫

@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Finset.Powerset
 public import Mathlib.Data.List.Permutation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fintype instance for nodup lists
 

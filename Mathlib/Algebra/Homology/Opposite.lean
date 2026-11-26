@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.ImageToKernel
 public import Mathlib.Algebra.Homology.QuasiIso
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Opposite categories of complexes
 

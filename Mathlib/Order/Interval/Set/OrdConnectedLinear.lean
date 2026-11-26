@@ -11,6 +11,9 @@ public import Mathlib.Order.Lattice.Nat
 import Mathlib.Data.Int.Interval
 import Mathlib.Order.SuccPred.Int
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Order-connected subsets of linear orders
 

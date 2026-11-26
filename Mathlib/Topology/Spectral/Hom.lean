@@ -87,14 +87,16 @@ export SpectralMapClass (map_spectral)
 
 attribute [simp] map_spectral
 
+/-- Turn a bundled morphism with a `SpectralMapClass` instance into a `SpectralMap`. -/
+def SpectralMap.ofClass [TopologicalSpace α] [TopologicalSpace β] [FunLike F α β]
+    [SpectralMapClass F α β] (f : F) : SpectralMap α β where
+  toFun := f
+  spectral' := map_spectral f
+
 -- See note [lower instance priority]
 instance (priority := 100) SpectralMapClass.toContinuousMapClass [TopologicalSpace α]
     [TopologicalSpace β] [FunLike F α β] [SpectralMapClass F α β] : ContinuousMapClass F α β :=
   { ‹SpectralMapClass F α β› with map_continuous := fun f => (map_spectral f).continuous }
-
-instance [TopologicalSpace α] [TopologicalSpace β] [FunLike F α β] [SpectralMapClass F α β] :
-    CoeTC F (SpectralMap α β) :=
-  ⟨fun f => ⟨_, map_spectral f⟩⟩
 
 /-! ### Spectral maps -/
 
@@ -113,6 +115,10 @@ instance instFunLike : FunLike (SpectralMap α β) α β where
 
 instance : SpectralMapClass (SpectralMap α β) α β where
   map_spectral f := f.spectral'
+
+@[simp]
+protected theorem coe_ofClass [FunLike F α β] [SpectralMapClass F α β] (f : F) :
+    ⇑(ofClass f) = f := rfl
 
 @[simp]
 theorem toFun_eq_coe {f : SpectralMap α β} : f.toFun = (f : α → β) :=

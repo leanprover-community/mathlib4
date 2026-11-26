@@ -8,6 +8,10 @@ module
 public import Mathlib.LinearAlgebra.Charpoly.ToMatrix
 public import Mathlib.RingTheory.TensorProduct.Finite
 
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-! # The characteristic polynomial of base change -/
 
 public section

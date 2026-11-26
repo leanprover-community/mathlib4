@@ -9,6 +9,9 @@ public meta import Mathlib.Data.Nat.Prime.Defs
 public import Mathlib.Data.Nat.Prime.Basic
 public import Mathlib.Tactic.NormNum.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `norm_num` extensions on natural numbers
 
