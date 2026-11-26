@@ -16,7 +16,11 @@ set_option doc.verso.suggestions false
 # Lemmas of Gauss and Eisenstein
 
 This file contains the Lemmas of Gauss and Eisenstein on the Legendre symbol.
-The main results are `ZMod.gauss_lemma` and `ZMod.eisenstein_lemma`.
+
+## Main results
+
+* `ZMod.gauss_lemma`: Gauss's Lemma on the Legendre symbol.
+* `ZMod.eisenstein_lemma`: Eisenstein's Lemma on the Legendre symbol.
 -/
 
 public section
