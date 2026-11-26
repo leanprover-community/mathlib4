@@ -595,9 +595,15 @@ section SeminormedAddCommGroup
 
 variable [SeminormedAddCommGroup α] [SeminormedAddCommGroup β]
 
+lemma frobenius_nnNorm_eq_nnNorm_toLp (A : Matrix m n α) :
+    ‖A‖₊ = ‖toLp 2 fun i ↦ toLp 2 (A i)‖₊ := rfl
+
+lemma frobenius_norm_eq_norm_toLp (A : Matrix m n α) :
+    ‖A‖ = ‖toLp 2 fun i ↦ toLp 2 (A i)‖ := rfl
+
 theorem frobenius_nnNorm_def (A : Matrix m n α) :
     ‖A‖₊ = (∑ i, ∑ j, ‖A i j‖₊ ^ (2 : ℝ)) ^ (1 / 2 : ℝ) := by
-  change ‖toLp 2 fun i => toLp 2 fun j => A i j‖₊ = _
+  rw [frobenius_nnNorm_eq_nnNorm_toLp]
   simp_rw [PiLp.nnNorm_eq_of_L2, NNReal.sq_sqrt, NNReal.sqrt_eq_rpow, NNReal.rpow_two]
 
 @[deprecated (since := "2026-10-31")] alias frobenius_nnnorm_def := frobenius_nnNorm_def
@@ -730,19 +736,19 @@ theorem frobenius_nnNorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B�
 theorem frobenius_norm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B‖ ≤ ‖A‖ * ‖B‖ :=
   frobenius_nnNorm_mul A B
 
+lemma frobenius_norm_sq_eq_trace (A : Matrix m n α) : (‖A‖ ^ 2 : α) = (A * Aᴴ).trace := by
+  rw [← RCLike.ofReal_pow, frobenius_norm_def, ← Real.sqrt_eq_rpow, Real.sq_sqrt
+    (Finset.sum_nonneg fun _ _ ↦ Finset.sum_nonneg fun _ _ ↦ by positivity)]
+  simp [trace, Matrix.mul_apply, ← RCLike.mul_conj]
+
 /-- The norm of the trace pairing of two compatible matrices is at most the product of their
 Frobenius norms. -/
 theorem norm_trace_mul_le_frobenius_norm (A : Matrix m n α) (B : Matrix n m α) :
     ‖(A * B).trace‖ ≤ ‖A‖ * ‖B‖ := by
-  let vec (M : Matrix n m α) : PiLp 2 fun _ : n ↦ EuclideanSpace α m :=
-    WithLp.toLp 2 fun i ↦ WithLp.toLp 2 (M i)
-  have h_vec (M : Matrix n m α) : ‖vec M‖ = ‖M‖ := rfl
-  calc
-    ‖(A * B).trace‖ = ‖inner α (vec Aᴴ) (vec B)‖ := by
-      rw [trace_mul_comm]
-      simp [vec, inner, trace, Matrix.mul_apply]
-    _ ≤ ‖A‖ * ‖B‖ := by
-      grw [norm_inner_le_norm, h_vec, h_vec, frobenius_norm_conjTranspose]
+  rw [trace_mul_comm, ← frobenius_norm_conjTranspose A]
+  simp_rw [frobenius_norm_eq_norm_toLp]
+  grw [← norm_inner_le_norm (𝕜 := α)]
+  simp [trace, Matrix.mul_apply, PiLp.inner_apply, mul_comm]
 
 /-- The `NNReal`-valued version of `norm_trace_mul_le_frobenius_norm`. -/
 theorem nnNorm_trace_mul_le_frobenius_nnNorm (A : Matrix m n α) (B : Matrix n m α) :
