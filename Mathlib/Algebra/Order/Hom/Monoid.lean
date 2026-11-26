@@ -124,21 +124,17 @@ infixr:25 " →*o " => OrderMonoidHom
 variable [Preorder α] [Preorder β] [MulOneClass α] [MulOneClass β] [FunLike F α β]
 
 /-- Turn an element of a type `F` satisfying `OrderHomClass F α β` and `MonoidHomClass F α β`
-into an actual `OrderMonoidHom`. This is declared as the default coercion from `F` to `α →*o β`. -/
-@[to_additive (attr := coe)
+into an actual `OrderMonoidHom`. -/
+@[to_additive
   /-- Turn an element of a type `F` satisfying `OrderHomClass F α β` and `AddMonoidHomClass F α β`
-  into an actual `OrderAddMonoidHom`.
-  This is declared as the default coercion from `F` to `α →+o β`. -/]
-def OrderMonoidHomClass.toOrderMonoidHom [OrderHomClass F α β] [MonoidHomClass F α β] (f : F) :
+  into an actual `OrderAddMonoidHom`. -/]
+def OrderMonoidHom.ofClass [OrderHomClass F α β] [MonoidHomClass F α β] (f : F) :
     α →*o β :=
   { (f : α →* β) with monotone' := OrderHomClass.monotone f }
 
-/-- Any type satisfying `OrderMonoidHomClass` can be cast into `OrderMonoidHom` via
-  `OrderMonoidHomClass.toOrderMonoidHom`. -/
-@[to_additive /-- Any type satisfying `OrderAddMonoidHomClass` can be cast into `OrderAddMonoidHom`
-  via `OrderAddMonoidHomClass.toOrderAddMonoidHom`. -/]
-instance [OrderHomClass F α β] [MonoidHomClass F α β] : CoeTC F (α →*o β) :=
-  ⟨OrderMonoidHomClass.toOrderMonoidHom⟩
+@[to_additive (attr := deprecated (since := "2026-11-26"))] alias
+    OrderMonoidHomClass.toOrderMonoidHom :=
+  OrderMonoidHom.ofClass
 
 /-- `α ≃*o β` is the type of isomorphisms `α ≃ β` that preserve the ordered monoid structure.
 
@@ -282,6 +278,10 @@ instance : OrderHomClass (α →*o β) α β where
 instance : MonoidHomClass (α →*o β) α β where
   map_mul f := f.map_mul'
   map_one f := f.map_one'
+
+@[to_additive (attr := simp)]
+protected theorem coe_ofClass [FunLike F α β] [OrderHomClass F α β] [MonoidHomClass F α β]
+    (f : F) : ⇑(ofClass f) = f := rfl
 
 -- Other lemmas should be accessed through the `FunLike` API
 @[to_additive (attr := ext)]
