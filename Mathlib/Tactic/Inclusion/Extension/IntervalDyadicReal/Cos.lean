@@ -18,6 +18,26 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Series
 
 This file defines an inclusion operation for the `interval_dyadic_real` inclusion family that
 encloses `Real.cos` of an interval.
+
+## Implementation notes
+
+The argument is reduced by repeated halving, which the double-angle formula for `cos` then undoes
+(rounding outward at each step so that the bits do not accumulate). The formula is applied to the
+whole interval instead of the endpoints, so that the extrema of `cos` inside the interval do not
+need case analysis. Monotonicity is used only on the halved interval, where `cos` is antitone and
+the Taylor series is evaluated at the two endpoints.
+
+We do not use reduction modulo `π` since that requires high precision of `π` itself, while halving
+is exact on dyadic numbers.
+
+This file is opt-in so that `dyadic_interval` doesn't import unnecessary theories.
+
+## TODO
+
+The number of halvings beyond the size of the argument is `⌊√prec⌋`, which is not tuned. A smaller
+number is faster for an argument with few bits.
+
+The series is summed exactly, so an argument with many bits is slow at high precision.
 -/
 
 public section
@@ -68,8 +88,7 @@ theorem cosShiftRightTaylor_mem {x : Dyadic} {k : ℕ} (h0 : 0 ≤ x.toReal) (hx
   convert h using 1 <;> simp [hterm, hden, div_pow, pow_mul, div_div]
 
 /-- Apply the double-angle formula `cos (2 * x) = 2 * cos x ^ 2 - 1` `k` times to an enclosure `I`
-of `cos x`, rounding outward after each step. The formula uses `cos x` once, so each step encloses
-the exact image of `I`, which is at most `4` times as wide when `I ⊆ [-1, 1]`. -/
+of `cos x`, rounding outward after each step. -/
 @[expose]
 def cosDoubling (k : ℕ) (I : Interval Dyadic) (prec : ℕ) : Interval Dyadic :=
   match k with
@@ -88,18 +107,16 @@ theorem cosDoubling_mem {x : ℝ} {I : Interval Dyadic} (hx : Real.cos x ∈ I) 
     rw [Real.cos_two_mul]
     exact roundOut_mem (sub_mem (mul_mem (ofNat_mem 2) (pow_mem 2 hx)) (ofNat_mem 1)) prec
 
-/-- The cosine of an interval `I`, which is `[-1, 1]` when `I` is wider than `2π` (using `7` as a
-proxy for efficiency). Otherwise, `cos [a, b]` is computed by halving the interval `k` times to
-a small enough `[a / 2 ^ k, b / 2 ^ k]` so that `cos` is antitone on it. The constants are chosen
-as follows:
-- `k` is chosen so that `b / 2 ^ k ≤ 2 ^ (-⌊√prec⌋)`. This provides `√prec`
-bits of precision per term in the series.
-- `p` adds to `prec` `2` bits for each doubling, which widens an interval by a factor of at most
-  `4`, and `8` more bits so that the result exceeds the range of `cos` on `I` by little more than
-  `2 ^ (-prec - 1)` on each side, and has width at most `2 ^ (-prec)` when `I` is a point.
-- The number of terms brings the remainder below `2 ^ (-p)`, since each term shrinks it by at
-  least `2 * ⌊√prec⌋ + 1` bits (`2 * ⌊√prec⌋` from the bound on `b / 2 ^ k` and `1` from the
-  factorial).
+/-- The cosine of an interval `I`, which is `[-1, 1]` when `I` is wider than `2π` (tested as wider
+than `7`, so that no enclosure of `π` is needed). Otherwise, with `[a, b] = I.abs`, `cos [a, b]` is
+computed by halving the interval `k` times to a small enough `[a / 2 ^ k, b / 2 ^ k]` so that `cos`
+is antitone on it. The constants are chosen as follows:
+- `k` is chosen so that `b / 2 ^ k ≤ 2 ^ (-⌊√prec⌋)`. Each term of the series is then smaller than
+  the previous one by at least `2 * ⌊√prec⌋ + 1` bits (`2 * ⌊√prec⌋` from the square of the
+  argument and `1` from the factorial), so `p / (2 * ⌊√prec⌋ + 1) + 1` terms bring the remainder
+  below `2 ^ (-p)`.
+- `p` adds to `prec` two bits for each doubling, which multiplies an error by at most `4`, and `8`
+  guard bits, so that the result has width at most `2 ^ (-prec)` when `I` is a point.
 -/
 @[expose]
 def cos (I : Interval Dyadic) (prec : ℕ) : Interval Dyadic :=
