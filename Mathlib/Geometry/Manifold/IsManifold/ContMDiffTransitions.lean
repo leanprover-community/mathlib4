@@ -63,8 +63,11 @@ variable {M : Type*} [TopologicalSpace M]
 /-! ### The ContMDiffTransitions condition -/
 
 variable (I n f) in
-/-- Any two points `x`, `y` with `f x = f y` are related by a map `σ : M → M` with `σ x = y`
-which preserves `f` near `x` and is `C^n` at `x`. -/
+/-- If `x` and `y` belong to the same fiber of `f`, then there is a map `σ` sending `x` to `y`,
+`C^n` at `x`, and such that `f ∘ σ = f` near `x`.
+
+For convenience `σ` is a globally defined map of type `σ : M → M`. Only its germ at `x` matters,
+so one could equivalently ask for `σ : Filter.Germ (𝓝 x) M`. -/
 def ContMDiffTransitions : Prop :=
   ∀ {x y : M}, f x = f y → ∃ σ : M → M, σ x = y ∧ CMDiffAt n σ x ∧ f ∘ σ =ᶠ[𝓝 x] f
 
