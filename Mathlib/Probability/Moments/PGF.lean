@@ -5,9 +5,10 @@ Authors: Moe Tabei
 -/
 module
 
-public import Mathlib.Probability.Moments.Basic
 public import Mathlib.Analysis.Analytic.Basic
 public import Mathlib.Analysis.Analytic.OfScalars
+public import Mathlib.Probability.Moments.Basic
+
 import Mathlib.Analysis.Analytic.IsolatedZeros
 import Mathlib.MeasureTheory.Integral.Bochner.SumMeasure
 import Mathlib.Probability.Independence.Integration
@@ -107,7 +108,7 @@ lemma pgf_zero (hX : AEMeasurable X μ) : pgf X μ 0 = μ.real (X ⁻¹' {0}) :=
 /-- The generating function evaluated at `exp s` is the moment-generating function of `X`
 viewed as a real random variable. -/
 lemma pgf_exp_eq_mgf (s : ℝ) : pgf X μ (exp s) = mgf (fun ω ↦ (X ω : ℝ)) μ s := by
-  simp only [pgf, mgf, ← Real.exp_nat_mul, mul_comm s]
+  simp only [pgf, mgf, ← Real.exp_natCast_mul, mul_comm s]
 
 /-- For `|t| ≤ 1` the integrand defining `pgf` is integrable with respect to any finite
 measure: the generating function of an `ℕ`-valued variable is always defined on `[-1, 1]`. -/
@@ -188,7 +189,7 @@ lemma hasFPowerSeriesOnBall_pgf [IsFiniteMeasure μ] (hX : AEMeasurable X μ) :
   r_pos := zero_lt_one
   hasSum {y} hy := by
     have hy : |y| < 1 := by
-      rwa [Metric.mem_eball, edist_zero_right, Real.enorm_eq_ofReal_abs,
+      rwa [Metric.mem_eball, edist_zero_right, Real.eNorm_eq_ofReal_abs,
         ENNReal.ofReal_lt_one] at hy
     simp only [ofScalars_apply_eq, smul_eq_mul, zero_add]
     exact hasSum_pgf hX hy.le
