@@ -140,67 +140,59 @@ theorem polar_eq_zero_iff_abs_eq_zero (T : E →L[ℂ] F) (x : E) :
     T.polar x = 0 ↔ T.abs x = 0 :=
   (T.apply_eq_zero_tfae x).out 2 3
 
-theorem ker_polar_eq (T : E →L[ℂ] F) : T.polar.ker = T.ker := by
+theorem ker_polar (T : E →L[ℂ] F) : T.polar.ker = T.ker := by
   ext x
   simp [LinearMap.mem_ker, T.polar_eq_zero_iff]
 
+theorem orthogonal_ker_eq_topologicalClosure_range_abs (T : E →L[ℂ] F) :
+    T.kerᗮ = T.abs.range.topologicalClosure := by
+  rw [← T.ker_abs, orthogonal_ker, T.isSelfAdjoint_abs.adjoint_eq]
+
+theorem range_polar (T : E →L[ℂ] F) : T.polar.range = T.range.topologicalClosure := by
+  rw [← range_polarₗᵢ, polar_def, toLinearMap_comp]
+  refine LinearMap.range_comp_of_range_eq_top _ ?_
+  exact LinearMap.range_eq_top.mpr fun v ↦
+    ⟨v, Submodule.orthogonalProjectionOnto_mem_subspace_eq_self v⟩
+
 theorem polar_comp_polar_adjoint_eq_starProjection (T : E →L[ℂ] F) :
     T.polar ∘L T.polar.adjoint = T.range.topologicalClosure.starProjection := by
-  have h : T.abs.range.topologicalClosure.orthogonalProjectionOnto
-      ∘L T.abs.range.topologicalClosure.subtypeL = ContinuousLinearMap.id ℂ _ := by
-    ext x; simp
-  simp_rw +singlePass [polar_def, adjoint_comp, comp_assoc,
-    Submodule.adjoint_orthogonalProjectionOnto]
-  simp [← comp_assoc T.abs.range.topologicalClosure.orthogonalProjectionOnto, h,
-    polarₗᵢ_comp_adjoint]
+  rw [← polarₗᵢ_comp_adjoint]
+  ext x
+  simp [polar_def, adjoint_comp, Submodule.adjoint_orthogonalProjectionOnto]
 
 theorem polar_adjoint_comp_polar_eq_starProjection (T : E →L[ℂ] F) :
     T.polar.adjoint ∘L T.polar = T.abs.range.topologicalClosure.starProjection := by
   simp_rw +singlePass [polar_def, adjoint_comp, comp_assoc,
     ← comp_assoc T.polarₗᵢ.toContinuousLinearMap.adjoint]
-  simp [Submodule.adjoint_orthogonalProjectionOnto, one_def, id_comp]
-  rfl
+  simp [Submodule.adjoint_orthogonalProjectionOnto, one_def, id_comp,
+    Submodule.starProjection_def]
 
 theorem polar_comp_abs (T : E →L[ℂ] F) : T.polar ∘L T.abs = T := by
   ext x
-  simp only [polar_def, ContinuousLinearMap.comp_apply]
-  nth_rw 4 [← polarₗᵢ_apply]
-  simp only [LinearIsometry.coe_toContinuousLinearMap, LinearIsometry.map_eq_iff]
-  exact Submodule.orthogonalProjectionOnto_mem_subspace_eq_self
-    ⟨T.abs x, T.abs.range.le_topologicalClosure (by simp)⟩
+  simp [polar_def, ← polarₗᵢ_apply T x, Subtype.ext_iff, Submodule.starProjection_eq_self_iff,
+    T.abs.range.le_topologicalClosure _]
 
 theorem polar_adjoint_comp_self_eq_abs (T : E →L[ℂ] F) : T.polar.adjoint ∘L T = T.abs := by
   nth_rw 2 [← T.polar_comp_abs]
-  erw [← comp_assoc, T.polar_adjoint_comp_polar_eq_starProjection]
   ext x
-  simp only [ContinuousLinearMap.comp_apply]
-  exact Submodule.starProjection_eq_self_iff.mpr (T.abs.range.le_topologicalClosure ⟨x, rfl⟩)
+  simp [← comp_apply T.polar.adjoint T.polar, polar_adjoint_comp_polar_eq_starProjection,
+    Submodule.starProjection_eq_self_iff, T.abs.range.le_topologicalClosure _]
 
 theorem polar_unique {T : E →L[ℂ] F} {W : E →L[ℂ] F} (h : W ∘L T.abs = T)
     (hker : W.ker = T.ker) : W = T.polar := by
-  ext x
-  erw [← Submodule.starProjection_add_starProjection_orthogonal (K := T.ker) x, map_add, map_add]
-  refine congr_arg₂ _ ?_ ?_
-  · refine (fun z hz => ?_ : ∀ z ∈ T.ker, W z = T.polar z) _
-      (Submodule.starProjection_apply_mem T.ker x)
+  have h_ker : Set.EqOn W T.polar T.ker := by
+    intro z hz
     have hWz : z ∈ W.ker := hker ▸ hz
-    have hTz : z ∈ T.polar.ker := T.ker_polar_eq ▸ hz
+    have hTz : z ∈ T.polar.ker := T.ker_polar ▸ hz
     erw [LinearMap.mem_ker.mp hTz, LinearMap.mem_ker.mp hWz]
-  · refine (fun z hz => ?_ : ∀ z ∈ T.kerᗮ, W z = T.polar z) _ (T.kerᗮ.starProjection_apply_mem x)
-    refine Set.EqOn.closure (s := (T.abs.range : Set E))
-      (by
-        rintro _ ⟨y, rfl⟩
-        exact (DFunLike.congr_fun h y).trans (DFunLike.congr_fun T.polar_comp_abs y).symm
-      )
-      W.continuous
-      T.polar.continuous
-      ?_
-    rw [← Submodule.topologicalClosure_coe, ← Submodule.orthogonal_orthogonal_eq_closure]
-    refine Submodule.orthogonal_le (fun w hw => ?_) hz
-    erw [LinearMap.mem_ker, ← norm_eq_zero, ← norm_abs_apply]
-    refine norm_eq_zero.mpr ((inner_self_eq_zero (𝕜 := ℂ) (x := T.abs w)).mp ?_)
-    rw [← ContinuousLinearMap.adjoint_inner_left, T.isSelfAdjoint_abs.adjoint_eq]
-    exact (Submodule.mem_orthogonal _ _).mp hw _ ⟨T.abs w, rfl⟩
+  have h_orth : Set.EqOn W T.polar T.kerᗮ := by
+    rw [orthogonal_ker_eq_topologicalClosure_range_abs, Submodule.topologicalClosure_coe]
+    refine Set.EqOn.closure ?_ W.continuous T.polar.continuous
+    rintro _ ⟨y, rfl⟩
+    simp [← comp_apply, h, polar_comp_abs]
+  ext x
+  rw [← T.ker.starProjection_add_starProjection_orthogonal x, map_add, map_add,
+    h_ker (T.ker.starProjection_apply_mem x), h_orth (T.kerᗮ.starProjection_apply_mem x)]
 
 theorem abs_adjoint (T : E →L[ℂ] F) :
     T.adjoint.abs = T.polar ∘L T.abs ∘L T.polar.adjoint := by
@@ -218,44 +210,19 @@ theorem abs_adjoint (T : E →L[ℂ] F) :
             ContinuousLinearMap.comp_assoc]
       _ = T ∘L T.adjoint := by rw [T.polar_comp_abs]
   rw [T.adjoint.abs_def, ContinuousLinearMap.adjoint_adjoint, ← h]
-  exact CFC.sqrt_mul_self _
-    (nonneg_iff_isPositive.mpr (T.isPositive_abs.conj_adjoint T.polar))
+  exact CFC.sqrt_mul_self _ (T.isPositive_abs.conj_adjoint T.polar).nonneg
 
-theorem adjoint_polar (T : E →L[ℂ] F) : T.adjoint.polar = T.polar.adjoint := by
-  apply Eq.symm
-  apply polar_unique (T := T.adjoint)
-  · erw [T.abs_adjoint]
-    calc
-      T.polar.adjoint ∘L T.polar ∘L T.abs ∘L T.polar.adjoint =
-          (T.polar.adjoint ∘L (T.polar ∘L T.abs)) ∘L T.polar.adjoint := by
-        simp only [comp_assoc]
-      _ = T.abs ∘L T.polar.adjoint := by
-        rw [T.polar_comp_abs, T.polar_adjoint_comp_self_eq_abs]
-      _ = T.adjoint := by
-        nth_rw 3 [← T.polar_comp_abs]
-        simp [adjoint_comp, T.isSelfAdjoint_abs.adjoint_eq]
-  · ext x
-    simp_rw [LinearMap.mem_ker]
-    constructor
-    · rintro hx
-      refine ext_inner_right ℂ (fun y => ?_)
-      rw [← T.polar_comp_abs]
-      simp only [adjoint_comp, toLinearMap_comp, LinearMap.coe_comp, coe_coe, Function.comp_apply,
-        inner_zero_left, ContinuousLinearMap.adjoint_inner_left]
-      erw [← ContinuousLinearMap.adjoint_inner_left, hx, inner_zero_left]
-    · rintro hx
-      have h := congrArg (fun A => A x) T.polar_comp_polar_adjoint_eq_starProjection
-      simp only [ContinuousLinearMap.comp_apply] at h
-      apply (inner_self_eq_zero (𝕜 := ℂ)).mp
-      erw [ContinuousLinearMap.adjoint_inner_left, h, inner_eq_zero_symm]
-      refine Submodule.inner_right_of_mem_orthogonal
-        (Submodule.starProjection_apply_mem _ x) ?_
-      rw [Submodule.orthogonal_closure, Submodule.mem_orthogonal]
-      rintro _ ⟨y, rfl⟩
-      erw [← ContinuousLinearMap.adjoint_inner_right, hx, inner_zero_right]
+theorem abs_comp_polar_adjoint (T : E →L[ℂ] F) : T.abs ∘L T.polar.adjoint = T.adjoint := by
+  rw [← T.isSelfAdjoint_abs.adjoint_eq, ← adjoint_comp, polar_comp_abs]
+
+theorem adjoint_polar (T : E →L[ℂ] F) : T.polar.adjoint = T.adjoint.polar := by
+  refine polar_unique ?_ ?_
+  · rw [abs_adjoint, ← comp_assoc T.polar, polar_comp_abs, ← comp_assoc,
+      polar_adjoint_comp_self_eq_abs, abs_comp_polar_adjoint]
+  · rw [← orthogonal_range, ← orthogonal_range, range_polar, Submodule.orthogonal_closure]
 
 theorem norm_polar_le_one (T : E →L[ℂ] F) : ‖T.polar‖ ≤ 1 := by
-  refine ContinuousLinearMap.opNorm_le_bound _ zero_le_one fun x => ?_
+  refine ContinuousLinearMap.opNorm_le_bound _ zero_le_one fun x ↦ ?_
   rw [one_mul, polar_def, ContinuousLinearMap.comp_apply,
     LinearIsometry.coe_toContinuousLinearMap, LinearIsometry.norm_map]
   exact Submodule.norm_orthogonalProjectionOnto_apply_le _ x
