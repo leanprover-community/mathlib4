@@ -8,12 +8,14 @@ module
 public import Mathlib.CategoryTheory.ObjectProperty.Basic
 public import Mathlib.SetTheory.Cardinal.HasCardinalLT
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of objects that are bounded by a cardinal
 
 Given `P : ObjectProperty C` and `κ : Cardinal`, we introduce a predicate
 `P.HasCardinalLT κ` saying that the cardinality of `Subtype P` is `< κ`.
-
 -/
 
 public section

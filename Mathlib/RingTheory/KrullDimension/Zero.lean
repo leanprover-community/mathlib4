@@ -8,13 +8,14 @@ module
 public import Mathlib.RingTheory.Jacobson.Ring
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Zero-dimensional rings
 
 We provide further API for zero-dimensional rings.
 Basic definitions and lemmas are provided in `Mathlib/RingTheory/KrullDimension/Basic.lean`.
-
 -/
 
 public section
@@ -97,7 +98,7 @@ lemma Ring.krullDimLE_zero_and_isLocalRing_tfae :
     refine fun H ↦ ⟨fun e ↦ ?_, fun I hI ↦ ?_⟩
     · obtain ⟨n, hn⟩ := (Ideal.eq_top_iff_one _).mp e
       exact (H 0).mp .zero ((show (1 : R) = 0 by simpa using hn) ▸ isUnit_one)
-    · obtain ⟨x, hx, hx'⟩ := (IsConcreteLE.lt_iff_le_and_exists.mp hI).2
+    · obtain ⟨x, hx, hx'⟩ := (lt_iff_le_and_exists_mem_notMem.mp hI).2
       exact Ideal.eq_top_of_isUnit_mem _ hx (not_not.mp ((H x).not.mp hx'))
   tfae_have 4 → 2 := fun H ↦ ⟨_, H.isPrime, fun p (hp : p.IsPrime) ↦
       (H.eq_of_le hp.ne_top (nilradical_le_prime p)).symm⟩
@@ -137,7 +138,7 @@ variable (R) in
 theorem Ring.KrullDimLE.subsingleton_primeSpectrum [IsLocalRing R] :
     Subsingleton (PrimeSpectrum R) :=
   ⟨fun x y ↦ PrimeSpectrum.ext <|
-    (eq_maximalIdeal_of_isPrime x.1).trans (eq_maximalIdeal_of_isPrime y.1).symm⟩
+    (eq_maximalIdeal_of_isPrime x.asIdeal).trans (eq_maximalIdeal_of_isPrime y.asIdeal).symm⟩
 
 theorem Ring.KrullDimLE.isNilpotent_iff_mem_maximalIdeal [IsLocalRing R] {x} :
     IsNilpotent x ↔ x ∈ IsLocalRing.maximalIdeal R :=

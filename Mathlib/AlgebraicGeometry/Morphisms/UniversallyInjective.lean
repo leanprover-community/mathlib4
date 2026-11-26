@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicGeometry.PullbackCarrier
 public import Mathlib.RingTheory.RingHom.PurelyInseparable
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Universally injective morphism
 
@@ -21,7 +24,6 @@ compositions and base changes.
 We also prove that universally injective is equivalent to being injective with
 purely inseparable residue field extensions (also known as a radical morphism), see
 `AlgebraicGeometry.tfae_universallyInjective` and Stacks tag 01S4.
-
 -/
 
 public section
@@ -59,7 +61,8 @@ theorem universallyInjective_eq_diagonal :
     @UniversallyInjective = diagonal @Surjective := by
   apply le_antisymm
   · intro X Y f hf
-    refine ⟨fun x ↦ ⟨pullback.fst f f x, hf.1 _ _ _ (IsPullback.of_hasPullback f f) ?_⟩⟩
+    refine ⟨fun x ↦ ⟨pullback.fst f f x,
+      hf.universally_injective _ _ _ (IsPullback.of_hasPullback f f) ?_⟩⟩
     rw [← Scheme.Hom.comp_apply, pullback.diagonal_fst]
     rfl
   · rw [← universally_eq_iff.mpr (inferInstance : IsStableUnderBaseChange (diagonal @Surjective)),
@@ -67,7 +70,7 @@ theorem universallyInjective_eq_diagonal :
     apply universally_mono
     intro X Y f hf x₁ x₂ e
     obtain ⟨t, ht₁, ht₂⟩ := Scheme.Pullback.exists_preimage_pullback _ _ e
-    obtain ⟨t, rfl⟩ := hf.1 t
+    obtain ⟨t, rfl⟩ := hf.surj t
     rw [← ht₁, ← ht₂, ← Scheme.Hom.comp_apply, ← Scheme.Hom.comp_apply, pullback.diagonal_fst,
       pullback.diagonal_snd]
 

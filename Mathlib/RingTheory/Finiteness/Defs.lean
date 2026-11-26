@@ -5,10 +5,11 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Data.Set.Finite.Lemmas
 public import Mathlib.GroupTheory.Finiteness
 public import Mathlib.RingTheory.Ideal.Span
 public import Mathlib.Tactic.Algebraize
+
+import Mathlib.Data.Set.Finite.Lemmas
 
 /-!
 # Finiteness conditions in commutative algebra
@@ -27,7 +28,6 @@ In this file we define a notion of finiteness that is common in commutative alge
 
 Redefine `Submodule.FG` to be in terms of `Module.FG` (rather than the other way around) to match
 finite generation in the group theory folder.
-
 -/
 
 @[expose] public section

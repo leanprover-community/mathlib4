@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.Degenerate
 public import Mathlib.AlgebraicTopology.SimplicialSet.Simplices
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The partially ordered type of non degenerate simplices of a simplicial set
 
@@ -18,7 +21,6 @@ a non degenerate simplex to the subcomplex of `X` it generates.
 
 Given an arbitrary simplex `x : X.S`, we show that there is a unique
 non degenerate `x.toN : X.N` such that `x.toN.subcomplex = x.subcomplex`.
-
 -/
 
 @[expose] public section
@@ -65,7 +67,8 @@ def induction {motive : X.N → Sort*}
 
 @[simp]
 lemma induction_mk {motive : X.N → Sort*}
-    (mk : ∀ (n : ℕ) (x : X.nonDegenerate n), motive (mk x.1 x.2)) {n : ℕ} (s : X.nonDegenerate n) :
+    (mk : ∀ (n : ℕ) (x : X.nonDegenerate n), motive (mk x.val x.property)) {n : ℕ}
+    (s : X.nonDegenerate n) :
   induction (motive := motive) mk (N.mk s.val s.property) = mk n s := rfl
 
 lemma ext_iff (x y : X.N) :
@@ -279,7 +282,7 @@ lemma existsUnique_toNπ {x : X.S} {y : X.N} (hy : x.toN = y) :
     ∃! (f : ⦋x.dim⦌ ⟶ ⦋y.dim⦌), Epi f ∧ X.map f.op y.simplex = x.simplex := by
   obtain ⟨n, x, hx, rfl⟩ := x.mk_surjective
   obtain ⟨m, f, _, z, rfl⟩ := X.exists_nonDegenerate x
-  obtain rfl : y = N.mk _ z.2 := by
+  obtain rfl : y = N.mk _ z.property := by
     rw [toN_eq_iff] at hy
     rw [← N.subcomplex_injective_iff, hy]
     exact subcomplex_eq_of_epi _ _ f rfl

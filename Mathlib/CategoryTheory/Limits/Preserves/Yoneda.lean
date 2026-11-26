@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Yoneda preserves certain colimits
 
@@ -26,7 +29,6 @@ pointwise.
 
 There is also a relative version of this statement where `F : J ⥤ Over A` for some presheaf
 `A`, see `Mathlib/CategoryTheory/Comma/Presheaf/Colimit.lean`.
-
 -/
 
 @[expose] public section

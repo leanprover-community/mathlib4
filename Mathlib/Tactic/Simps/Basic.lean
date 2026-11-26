@@ -20,7 +20,7 @@ public import Mathlib.Util.AddRelatedDecl
 This file defines the `@[simps]` attribute, to automatically generate `simp` lemmas
 reducing a definition when projections are applied to it.
 
-## Implementation Notes
+## Implementation notes
 
 There are three attributes being defined here
 * `@[simps]` is the attribute for objects of a structure or instances of a class. It will
@@ -478,7 +478,7 @@ def projectionsInfo (l : List ProjectionData) (pref : String) (str : Name) : Mes
       let prefixStr := if s.isPrefix then "(prefix) " else ""
       m!"Projection {prefixStr}{s.name}: {s.expr}"
   let print2 : MessageData :=
-    String.join <| (nondefaults.map fun nm : ProjectionData ↦ toString nm.1).intersperse ", "
+    String.join <| (nondefaults.map fun nm : ProjectionData ↦ toString nm.name).intersperse ", "
   let toPrint :=
     toPrint ++
       if nondefaults.isEmpty then [] else

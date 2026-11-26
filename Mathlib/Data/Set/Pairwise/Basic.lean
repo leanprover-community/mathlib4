@@ -165,9 +165,10 @@ protected theorem Pairwise.insert (hs : s.Pairwise r) (h : ∀ b ∈ s, a ≠ b 
     (insert a s).Pairwise r :=
   pairwise_insert.2 ⟨hs, h⟩
 
-theorem Pairwise.insert_of_notMem (ha : a ∉ s) (hs : s.Pairwise r) (h : ∀ b ∈ s, r a b ∧ r b a) :
+@[deprecated Pairwise.insert +typeChanged (since := "2026-11-04")]
+theorem Pairwise.insert_of_notMem (hs : s.Pairwise r) (h : ∀ b ∈ s, r a b ∧ r b a) :
     (insert a s).Pairwise r :=
-  (pairwise_insert_of_notMem ha).2 ⟨hs, h⟩
+  hs.insert fun b hb _ => h b hb
 
 theorem pairwise_insert_of_symm [Std.Symm r] :
     (insert a s).Pairwise r ↔ s.Pairwise r ∧ ∀ b ∈ s, a ≠ b → r a b := by
@@ -298,9 +299,10 @@ protected theorem PairwiseDisjoint.insert (hs : s.PairwiseDisjoint f) {i : ι}
     (h : ∀ j ∈ s, i ≠ j → Disjoint (f i) (f j)) : (insert i s).PairwiseDisjoint f :=
   pairwiseDisjoint_insert.2 ⟨hs, h⟩
 
-theorem PairwiseDisjoint.insert_of_notMem (hs : s.PairwiseDisjoint f) {i : ι} (hi : i ∉ s)
+@[deprecated PairwiseDisjoint.insert +typeChanged (since := "2026-11-04")]
+theorem PairwiseDisjoint.insert_of_notMem (hs : s.PairwiseDisjoint f) {i : ι}
     (h : ∀ j ∈ s, Disjoint (f i) (f j)) : (insert i s).PairwiseDisjoint f :=
-  (pairwiseDisjoint_insert_of_notMem hi).2 ⟨hs, h⟩
+  hs.insert fun j hj _ => h j hj
 
 theorem PairwiseDisjoint.image_of_le (hs : s.PairwiseDisjoint f) {g : ι → ι} (hg : f ∘ g ≤ f) :
     (g '' s).PairwiseDisjoint f := by
@@ -314,7 +316,7 @@ theorem InjOn.pairwiseDisjoint_image {g : ι' → ι} {s : Set ι'} (h : s.InjOn
 theorem PairwiseDisjoint.range (g : s → ι) (hg : ∀ i : s, f (g i) ≤ f i)
     (ht : s.PairwiseDisjoint f) : (range g).PairwiseDisjoint f := by
   rintro _ ⟨x, rfl⟩ _ ⟨y, rfl⟩ hxy
-  exact ((ht x.2 y.2) fun h => hxy <| congr_arg g <| Subtype.ext h).mono (hg x) (hg y)
+  exact ((ht x.property y.property) fun h => hxy <| congr_arg g <| Subtype.ext h).mono (hg x) (hg y)
 
 theorem pairwiseDisjoint_union :
     (s ∪ t).PairwiseDisjoint f ↔
@@ -429,7 +431,7 @@ lemma exists_ne_mem_inter_of_not_pairwiseDisjoint
   simp only [not_forall] at h
   obtain ⟨i, hi, j, hj, h_ne, t, hfi, hfj, ht⟩ := h
   replace ht : t.Nonempty := by
-    rwa [le_bot_iff, bot_eq_empty, ← Ne, ← nonempty_iff_ne_empty] at ht
+    rwa [le_bot_iff, bot_eq_empty, ← Ne, ne_empty_iff_nonempty] at ht
   obtain ⟨x, hx⟩ := ht
   exact ⟨i, hi, j, hj, h_ne, x, hfi hx, hfj hx⟩
 

@@ -35,7 +35,6 @@ Of course, although we can inductively generate solutions (cf `mkSol`), the
 interesting part would be to determine closed-forms for the solutions.
 This is currently *not implemented*, as we are waiting for definition and
 properties of eigenvalues and eigenvectors.
-
 -/
 
 @[expose] public section
@@ -97,10 +96,10 @@ theorem eq_mk_of_is_sol_of_eq_init {u : ℕ → R} {init : Fin E.order → R} (h
     (heq : ∀ n : Fin E.order, u n = init n) : ∀ n, u n = E.mkSol init n := by
   intro n
   rw [mkSol]
+  dsimp only
   split_ifs with h'
   · exact mod_cast heq ⟨n, h'⟩
-  · dsimp only
-    rw [← tsub_add_cancel_of_le (le_of_not_gt h'), h (n - E.order)]
+  · rw [← tsub_add_cancel_of_le (le_of_not_gt h'), h (n - E.order)]
     congr with k
     rw [eq_mk_of_is_sol_of_eq_init h heq (n - E.order + k)]
     simp
@@ -135,7 +134,7 @@ def toInit : E.solSpace ≃ₗ[R] Fin E.order → R where
     ext
     simp
   invFun u := ⟨E.mkSol u, E.is_sol_mkSol u⟩
-  left_inv u := by ext n; symm; apply E.eq_mk_of_is_sol_of_eq_init u.2; intro k; rfl
+  left_inv u := by ext n; symm; apply E.eq_mk_of_is_sol_of_eq_init u.property; intro k; rfl
   right_inv u := funext_iff.mpr fun n ↦ E.mkSol_eq_init u n
 
 theorem mkSol_injective : E.mkSol.Injective :=
@@ -165,8 +164,6 @@ theorem eq_iff_eqOn_range_order (u v : ℕ → R) (hu : E.IsSolution u) (hv : E.
   constructor
   · exact fun h n hn ↦ congr($h ⟨n, Finset.mem_range.mp hn⟩)
   · exact fun h ↦ Finsupp.ext fun n ↦ h <| Finset.mem_range.mpr n.prop
-
-@[deprecated (since := "2026-04-16")] alias sol_eq_of_eq_init := eq_iff_eqOn_range_order
 
 /-! `E.tupleSucc` maps `![s₀, s₁, ..., sₙ]` to `![s₁, ..., sₙ, ∑ (E.coeffs i) * sᵢ]`,
 where `n := E.order`. This operation is quite useful for determining closed-form

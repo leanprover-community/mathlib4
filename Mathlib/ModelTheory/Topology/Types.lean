@@ -11,6 +11,9 @@ public import Mathlib.Topology.Baire.LocallyCompactRegular
 
 import Mathlib.Topology.Connected.Separation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topology on the space of complete types
 

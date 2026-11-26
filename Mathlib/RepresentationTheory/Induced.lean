@@ -38,7 +38,6 @@ is used to prove Shapiro's lemma in
   `A : Rep k G`, this is a natural isomorphism between the functor sending `B : Rep k H` to
   `(Ind(φ)(A) ⊗ B)_H` and the one sending `B` to `(A ⊗ Res(φ)(B))_G`. Used to prove Shapiro's
   lemma.
-
 -/
 
 @[expose] public section
@@ -105,7 +104,7 @@ noncomputable abbrev ind : Rep k H := Rep.of (A.ρ.ind φ)
 a morphism of `H`-representations `(k[H] ⊗[k] A)_G ⟶ (k[H] ⊗[k] B)_G`. -/
 noncomputable def indMap {A B : Rep k G} (f : A ⟶ B) : ind φ A ⟶ ind φ B := Rep.ofHom
   ⟨Representation.Coinvariants.map _ _ ⟨f.hom.toLinearMap.lTensor _, by
-    simp [LinearMap.lTensor_comp_map, f.hom.2, LinearMap.map_comp_lTensor]⟩,
+    simp [LinearMap.lTensor_comp_map, f.hom.isIntertwining', LinearMap.map_comp_lTensor]⟩,
     fun g ↦ by ext; simp⟩
 
 variable (k) in
@@ -127,7 +126,7 @@ variable (B : Rep k H)
 
 /-- Given a group homomorphism `φ : G →* H`, an `H`-representation `B`, and a `G`-representation
 `A`, there is a `k`-linear equivalence between the `H`-representation morphisms `ind φ A ⟶ B` and
-the `G`-representation morphisms `A ⟶ B`. -/
+the `G`-representation morphisms `A ⟶ res φ B`. -/
 @[simps]
 noncomputable def indResHomEquiv (A : Rep.{max w v' u} k G) (B : Rep.{max w v' u} k H) :
     (ind φ A ⟶ B) ≃ₗ[k] (A ⟶ res φ B) where

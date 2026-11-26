@@ -7,13 +7,15 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Change of presheaf of rings
 
 In this file, we define the restriction of scalars functor
 `restrictScalars α : PresheafOfModules.{v} R' ⥤ PresheafOfModules.{v} R`
 attached to a morphism of presheaves of rings `α : R ⟶ R'`.
-
 -/
 
 @[expose] public section

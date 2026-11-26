@@ -15,7 +15,6 @@ where there is an isomorphism of presheaves between the restriction to that open
 and the structure sheaf of `Spec R`, for some commutative ring `R`.
 
 A morphism of schemes is just a morphism of the underlying locally ringed spaces.
-
 -/
 
 @[expose] public section
@@ -144,7 +143,7 @@ instance {X : Scheme.{u}} : Subsingleton Γ(X, ⊥) :=
   CommRingCat.subsingleton_of_isTerminal X.sheaf.isTerminalOfEmpty
 
 @[continuity, fun_prop]
-lemma Hom.continuous {X Y : Scheme} (f : X ⟶ Y) : Continuous f := f.base.hom.2
+lemma Hom.continuous {X Y : Scheme} (f : X ⟶ Y) : Continuous f := by fun_prop
 
 /-- The structure sheaf of a scheme. -/
 protected abbrev sheaf (X : Scheme) :=
@@ -443,7 +442,7 @@ theorem inv_appTop {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
 
 /-- Copies a morphism with a different underlying map -/
 def copyBase {X Y : Scheme} (f : X.Hom Y) (g : X → Y) (h : f.base = g) : X ⟶ Y where
-  base := TopCat.ofHom ⟨g, h ▸ f.base.1.2⟩
+  base := TopCat.ofHom ⟨g, by rw [← h]; fun_prop⟩
   c := f.c ≫ (TopCat.Presheaf.pushforwardEq (by subst h; rfl) _).hom
   prop x := by
     subst h
@@ -532,7 +531,7 @@ variable {R S : CommRingCat.{u}} (f : R ⟶ S)
 -- The lemmas below are not tagged simp to respect the abstraction.
 lemma Spec_carrier (R : CommRingCat.{u}) : (Spec R).carrier = PrimeSpectrum R := rfl
 lemma Spec_sheaf (R : CommRingCat.{u}) : (Spec R).sheaf = Spec.structureSheaf R := rfl
-lemma Spec_presheaf (R : CommRingCat.{u}) : (Spec R).presheaf = (Spec.structureSheaf R).1 := rfl
+lemma Spec_presheaf (R : CommRingCat.{u}) : (Spec R).presheaf = (Spec.structureSheaf R).obj := rfl
 lemma Spec.map_base : (Spec.map f).base = ofHom ⟨_, PrimeSpectrum.continuous_comap f.hom⟩ := rfl
 lemma Spec.map_apply (x : Spec S) : Spec.map f x = PrimeSpectrum.comap f.hom x := rfl
 
@@ -643,7 +642,7 @@ theorem mem_basicOpen (x : X) (hx : x ∈ U) :
 
 /-- A variant of `mem_basicOpen` for bundled `x : U`. -/
 @[simp]
-theorem mem_basicOpen' (x : U) : ↑x ∈ X.basicOpen f ↔ IsUnit (X.presheaf.germ U x x.2 f) :=
+theorem mem_basicOpen' (x : U) : ↑x ∈ X.basicOpen f ↔ IsUnit (X.presheaf.germ U x x.property f) :=
   RingedSpace.mem_basicOpen _ _ _ _
 
 /-- A variant of `mem_basicOpen` without the `x ∈ U` assumption. -/
@@ -859,9 +858,10 @@ theorem Scheme.SpecMap_presheaf_map_eqToHom {X : Scheme} {U V : X.Opens} (h : U 
   simp [eqToHom_map]
 
 lemma germ_eq_zero_of_pow_mul_eq_zero {X : Scheme.{u}} {U : Opens X} (x : U) {f s : Γ(X, U)}
-    (hx : x.val ∈ X.basicOpen s) {n : ℕ} (hf : s ^ n * f = 0) : X.presheaf.germ U x x.2 f = 0 := by
-  rw [Scheme.mem_basicOpen X s x x.2] at hx
-  have hu : IsUnit (X.presheaf.germ _ x x.2 (s ^ n)) := by
+    (hx : x.val ∈ X.basicOpen s) {n : ℕ} (hf : s ^ n * f = 0) :
+    X.presheaf.germ U x x.property f = 0 := by
+  rw [Scheme.mem_basicOpen X s x x.property] at hx
+  have hu : IsUnit (X.presheaf.germ _ x x.property (s ^ n)) := by
     rw [map_pow]
     exact IsUnit.pow n hx
   rw [← hu.mul_right_eq_zero, ← map_mul, hf, map_zero]

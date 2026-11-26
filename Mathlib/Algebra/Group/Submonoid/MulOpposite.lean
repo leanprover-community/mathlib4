@@ -6,15 +6,15 @@ Authors: Eric Wieser, Jujian Zhang
 module
 
 public import Mathlib.Algebra.Group.Equiv.Opposite
-public import Mathlib.Algebra.Group.Opposite
 public import Mathlib.Algebra.Group.Submonoid.Basic
 public import Mathlib.Algebra.Group.Subsemigroup.MulOpposite
+
+import Mathlib.Algebra.Group.Opposite
 
 /-!
 # Submonoid of opposite monoids
 
 For every monoid `M`, we construct an equivalence between submonoids of `M` and that of `Mᵐᵒᵖ`.
-
 -/
 
 @[expose] public section

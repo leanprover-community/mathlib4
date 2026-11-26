@@ -11,6 +11,9 @@ public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 import Mathlib.CategoryTheory.Limits.Types.Filtered
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Stability properties of monomorphisms in `Type`
 
@@ -22,7 +25,6 @@ will also be inferred automatically.
 
 (The stability by retracts holds in any category: it is shown
 in the file `Mathlib/CategoryTheory/MorphismProperty/Retract.lean`.)
-
 -/
 
 public section

@@ -11,8 +11,10 @@ public import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPrecoherent
 public import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPreregular
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.InducedTopology
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Categories of coherent sheaves
 
 Given a fully faithful functor `F : C ⥤ D` into a precoherent category, which preserves and reflects

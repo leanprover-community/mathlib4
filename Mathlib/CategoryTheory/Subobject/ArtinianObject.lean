@@ -11,6 +11,9 @@ public import Mathlib.CategoryTheory.Simple
 
 import Mathlib.Order.OrderIsoNat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Artinian objects
 
@@ -20,11 +23,10 @@ satisfies the descending chain condition. The corresponding property of
 objects `isArtinianObject : ObjectProperty C` is always
 closed under subobjects.
 
-## Future work
+## TODO
 
 * when `C` is an abelian category, relate `IsArtinianObject` in `C`
   with `IsNoetherianObject` in `Cᵒᵖ`.
-
 -/
 
 @[expose] public section
@@ -125,7 +127,7 @@ lemma isArtinianObject_of_mono (i : X ⟶ Y) [Mono i] [IsArtinianObject Y] :
   intro f
   obtain ⟨n, hn⟩ := antitone_chain_condition_of_isArtinianObject
     ⟨fun n ↦ (Subobject.map i).obj (f n),
-      fun _ _ h ↦ (Subobject.map i).monotone (f.2 h)⟩
+      fun _ _ h ↦ (Subobject.map i).monotone (f.monotone' h)⟩
   exact ⟨n, fun m hm ↦ Subobject.map_obj_injective i (hn m hm)⟩
 
 instance : (isArtinianObject (C := C)).IsClosedUnderSubobjects where

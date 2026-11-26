@@ -13,6 +13,9 @@ import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Tactic.NormNum.Ineq
 import Mathlib.Tactic.NormNum.Pow
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Abstract Simplicial complexes
 
@@ -35,7 +38,6 @@ name `Geometry.SimplicialComplex` using affine combinations in another file.
 
 * `s ∈ K` means that `s` is a face of `K`. This notation arises from a `SetLike` instance.
 * `K ≤ L` means that the faces of `K` are faces of `L`.
-
 -/
 
 @[expose] public section
@@ -82,8 +84,8 @@ instance : LE (PreAbstractSimplicialComplex ι) where
 instance : LT (PreAbstractSimplicialComplex ι) where
   lt K L := K.faces ⊂ L.faces
 
-instance : IsConcreteLE (PreAbstractSimplicialComplex ι) (Finset ι) where
-  le_iff := .rfl
+instance : IsMemLE (PreAbstractSimplicialComplex ι) (Finset ι) where
+  le_iff_mem_imp_mem := .rfl
 
 instance : PartialOrder (PreAbstractSimplicialComplex ι) :=
   PartialOrder.lift (fun K => K.faces) (fun _ _ => PreAbstractSimplicialComplex.ext)
@@ -206,8 +208,8 @@ instance : LE (AbstractSimplicialComplex ι) where
 instance : LT (AbstractSimplicialComplex ι) where
   lt K L := K.faces ⊂ L.faces
 
-instance : IsConcreteLE (AbstractSimplicialComplex ι) (Finset ι) where
-  le_iff := .rfl
+instance : IsMemLE (AbstractSimplicialComplex ι) (Finset ι) where
+  le_iff_mem_imp_mem := .rfl
 
 instance : PartialOrder (AbstractSimplicialComplex ι) :=
   PartialOrder.lift (fun K => K.faces) (fun _ _ => AbstractSimplicialComplex.ext)

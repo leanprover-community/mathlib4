@@ -49,7 +49,6 @@ in a sufficiently large universe. Rather than use `UnivLE` we prove some results
 a category `A'` instead, whose morphism universe of `A'` is defined to be `max u₁ v₁`, where
 `u₁, v₁` are the universes for `C`. Perhaps after we get better at handling universe
 inequalities this can be changed.
-
 -/
 
 @[expose] public section
@@ -102,9 +101,9 @@ def conesEquivSieveCompatibleFamily :
         S.arrows.categoryMk f hf := ObjectProperty.homMk (Over.homMk _ rfl)
       simpa using! π.naturality φ.op⟩
   invFun x :=
-    { app := fun f => x.1 f.unop.1.hom f.unop.2
+    { app := fun f => x.val f.unop.obj.hom f.unop.property
       naturality := fun f f' g => by
-        have := x.2 f.unop.1.hom g.unop.hom.left f.unop.2
+        have := x.property f.unop.obj.hom g.unop.hom.left f.unop.property
         dsimp at this ⊢
         rw [id_comp, ← this]
         convert rfl
@@ -126,7 +125,7 @@ def _root_.CategoryTheory.Presieve.FamilyOfElements.SieveCompatible.cone :
 def homEquivAmalgamation :
     (hx.cone ⟶ P.mapCone S.arrows.cocone.op) ≃ { t // x.IsAmalgamation t } where
   toFun l := ⟨l.hom, fun _ f hf => l.w (op ⟨Over.mk f, hf⟩)⟩
-  invFun t := ⟨t.1, fun f => t.2 f.unop.1.hom f.unop.2⟩
+  invFun t := ⟨t.val, fun f => t.property f.unop.obj.hom f.unop.property⟩
 
 variable (P S)
 
@@ -145,9 +144,9 @@ theorem isLimit_iff_isSheafFor :
   · rintro h ⟨E, π⟩
     let eqv := conesEquivSieveCompatibleFamily P S (op E)
     rw [← eqv.left_inv π]
-    erw [(homEquivAmalgamation (eqv π).2).uniqueCongr.nonempty_congr]
+    erw [(homEquivAmalgamation (eqv π).property).uniqueCongr.nonempty_congr]
     rw [unique_subtype_iff_existsUnique]
-    exact h _ _ (eqv π).2
+    exact h _ _ (eqv π).property
 
 /-- Given sieve `S` and presheaf `P : Cᵒᵖ ⥤ A`, their natural associated cone admits at most one
     morphism from every cone in the same category (i.e. over the same diagram),
@@ -168,10 +167,10 @@ theorem subsingleton_iff_isSeparatedFor :
     constructor
     rw [← eqv.left_inv π]
     intro f₁ f₂
-    let eqv' := homEquivAmalgamation (eqv π).2
+    let eqv' := homEquivAmalgamation (eqv π).property
     apply eqv'.injective
     ext
-    apply h _ (eqv π).1 <;> exact (eqv' _).2
+    apply h _ (eqv π).val <;> exact (eqv' _).property
 
 /-- A presheaf `P` is a sheaf for the Grothendieck topology `J` iff for every covering sieve
     `S` of `J`, the natural cone associated to `P` and `S` is a limit cone. -/
@@ -374,10 +373,10 @@ end
 
 /-- This is stated as a lemma to prevent class search from forming a loop since a sheaf morphism is
 monic if and only if it is monic as a presheaf morphism (under suitable assumption). -/
-theorem Sheaf.Hom.mono_of_presheaf_mono {F G : Sheaf J A} (f : F ⟶ G) [h : Mono f.1] : Mono f :=
+theorem Sheaf.Hom.mono_of_presheaf_mono {F G : Sheaf J A} (f : F ⟶ G) [h : Mono f.hom] : Mono f :=
   (sheafToPresheaf J A).mono_of_mono_map h
 
-instance Sheaf.Hom.epi_of_presheaf_epi {F G : Sheaf J A} (f : F ⟶ G) [h : Epi f.1] : Epi f :=
+instance Sheaf.Hom.epi_of_presheaf_epi {F G : Sheaf J A} (f : F ⟶ G) [h : Epi f.hom] : Epi f :=
   (sheafToPresheaf J A).epi_of_epi_map h
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -450,10 +449,10 @@ variable {J} {A}
 
 /-- If the empty sieve is a cover of `X`, then `F(X)` is terminal. -/
 def Sheaf.isTerminalOfBotCover (F : Sheaf J A) (X : C) (H : ⊥ ∈ J X) :
-    IsTerminal (F.1.obj (op X)) := by
+    IsTerminal (F.obj.obj (op X)) := by
   refine @IsTerminal.ofUnique _ _ _ ?_
   intro Y
-  choose t h using F.2 Y _ H (by tauto) (by tauto)
+  choose t h using F.property Y _ H (by tauto) (by tauto)
   exact ⟨⟨t⟩, fun a => h.2 a (by tauto)⟩
 
 variable (J) in
@@ -482,7 +481,7 @@ noncomputable def Sheaf.isTerminalOfEqTop (H : J = ⊤) (F : Sheaf J A) :
 
 @[simp]
 theorem Sheaf.Hom.add_app [Preadditive A] {P Q : Sheaf J A} (f g : P ⟶ Q) (U : Cᵒᵖ) :
-    (f + g).1.app U = f.1.app U + g.1.app U :=
+    (f + g).hom.app U = f.hom.app U + g.hom.app U :=
   rfl
 
 end CategoryTheory
@@ -596,7 +595,7 @@ def firstObj : A :=
 diagram of the Stacks entry. -/
 @[stacks 00VM "The left morphism the fork diagram there."]
 def forkMap : P.obj (op U) ⟶ firstObj R P :=
-  Pi.lift fun f => P.map f.2.1.op
+  Pi.lift fun f => P.map f.2.val.op
 
 variable [HasPullbacks C]
 
@@ -606,7 +605,7 @@ contains the data used to check a family of elements for a presieve is compatibl
 @[stacks 00VM "The rightmost object of the fork diagram there."]
 def secondObj : A :=
   ∏ᶜ fun fg : (Σ V, { f : V ⟶ U // R f }) × Σ W, { g : W ⟶ U // R g } =>
-    P.obj (op (pullback fg.1.2.1 fg.2.2.1))
+    P.obj (op (pullback fg.1.2.val fg.2.2.val))
 
 /-- The map `pr₀*` of the Stacks entry. -/
 @[stacks 00VM "The map `pr₀*` there."]

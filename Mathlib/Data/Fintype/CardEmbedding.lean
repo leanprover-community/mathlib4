@@ -6,9 +6,12 @@ Authors: Eric Rodriguez
 module
 
 public import Mathlib.Data.Fintype.BigOperators
-public import Mathlib.Logic.Equiv.Embedding
 
 import Mathlib.Data.Set.Finite.Range
+import Mathlib.Logic.Equiv.Embedding
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Number of embeddings
@@ -30,8 +33,7 @@ open Nat
 namespace Fintype
 
 theorem card_embedding_eq_of_unique {α β : Type*} [Unique α] [Fintype β] [Fintype (α ↪ β)] :
-    ‖α ↪ β‖ = ‖β‖ :=
-  card_congr Equiv.uniqueEmbeddingEquivResult
+    ‖α ↪ β‖ = ‖β‖ := card_congr Equiv.embeddingUnique
 
 -- Establishes the cardinality of the type of all injections between two finite types.
 -- Porting note: `induction α using Fintype.induction_empty_option` can't work with the `Fintype α`

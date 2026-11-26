@@ -23,7 +23,7 @@ of `Set.Iic n` such that each `k ∈ Set.Iic n` belongs to `U` independently wit
 * `ProbabilityTheory.binomial`:
   Binomial distribution on an arbitrary semiring with parameters `n` and `p`.
 
-## Implementation details
+## Implementation notes
 
 We provide the definition `binomial` with notation `Bin(n, P)` as the corresponding measure
 over `ℕ`. We also introduce a notation `Bin(R, n p)` for the same measure but over a general

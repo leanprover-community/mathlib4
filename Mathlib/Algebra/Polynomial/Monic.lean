@@ -243,22 +243,24 @@ abbrev MonicDegreeEq : Type _ := { p : R[X] // p.coeff n = 1 ∧ ∀ i > n, p.co
 
 @[simp]
 lemma MonicDegreeEq.natDegree [Nontrivial R] (p : MonicDegreeEq R n) :
-    p.1.natDegree = n :=
-  natDegree_eq_of_le_of_coeff_ne_zero (natDegree_le_iff_coeff_eq_zero.mpr p.2.2) (by simp [p.2.1])
+    p.val.natDegree = n :=
+  natDegree_eq_of_le_of_coeff_ne_zero (natDegree_le_iff_coeff_eq_zero.mpr p.property.2)
+    (by simp [p.property.1])
 
 @[simp]
 lemma MonicDegreeEq.degree [Nontrivial R] (p : MonicDegreeEq R n) :
-    p.1.degree = n :=
-  degree_eq_of_le_of_coeff_ne_zero (degree_le_of_natDegree_le p.natDegree.le) (by simp [p.2.1])
+    p.val.degree = n :=
+  degree_eq_of_le_of_coeff_ne_zero (degree_le_of_natDegree_le p.natDegree.le)
+    (by simp [p.property.1])
 
 lemma MonicDegreeEq.monic (p : MonicDegreeEq R n) :
-    p.1.Monic := by
+    p.val.Monic := by
   nontriviality R
-  rw [Monic, leadingCoeff, p.natDegree, p.2.1]
+  rw [Monic, leadingCoeff, p.natDegree, p.property.1]
 
 lemma MonicDegreeEq.coeff_of_ge (p : MonicDegreeEq R n) (i : ℕ) (hi : n ≤ i) :
-    p.1.coeff i = if i = n then 1 else 0 := by
-  split_ifs <;> simp_all [p.2.1, p.2.2 _ (hi.lt_of_ne (.symm _))]
+    p.val.coeff i = if i = n then 1 else 0 := by
+  split_ifs <;> simp_all [p.property.1, p.property.2 _ (hi.lt_of_ne (.symm _))]
 
 /-- The constructor for `MonicDegreeEq` given a monic polynomial of degree `n`. -/
 @[simps]
@@ -270,7 +272,7 @@ def MonicDegreeEq.mk (p : R[X]) (hp : p.Monic) (hp' : p.natDegree = n) :
 @[simps] noncomputable
 def MonicDegreeEq.map (p : MonicDegreeEq R n) (f : R →+* S) :
     MonicDegreeEq S n :=
-  ⟨p.1.map f, by simp +contextual [coeff_map, p.2]⟩
+  ⟨p.val.map f, by simp +contextual [coeff_map, p.property]⟩
 
 end MonicDegreeEq
 
@@ -290,7 +292,7 @@ theorem monic_multiset_prod_of_monic (t : Multiset ι) (f : ι → R[X]) (ht : �
 
 theorem monic_prod_of_monic (s : Finset ι) (f : ι → R[X]) (hs : ∀ i ∈ s, Monic (f i)) :
     Monic (∏ i ∈ s, f i) :=
-  monic_multiset_prod_of_monic s.1 f hs
+  monic_multiset_prod_of_monic s.val f hs
 
 theorem monic_finprod_of_monic (α : Type*) (f : α → R[X])
     (hf : ∀ i ∈ Function.mulSupport f, Monic (f i)) :
@@ -316,14 +318,15 @@ theorem Monic.nextCoeff_multiset_prod (t : Multiset ι) (f : ι → R[X]) (h : �
 
 theorem Monic.nextCoeff_prod (s : Finset ι) (f : ι → R[X]) (h : ∀ i ∈ s, Monic (f i)) :
     nextCoeff (∏ i ∈ s, f i) = ∑ i ∈ s, nextCoeff (f i) :=
-  Monic.nextCoeff_multiset_prod s.1 f h
+  Monic.nextCoeff_multiset_prod s.val f h
 
 variable [NoZeroDivisors R] {p q : R[X]}
 
 lemma irreducible_of_monic (hp : p.Monic) (hp1 : p ≠ 1) :
     Irreducible p ↔ ∀ f g : R[X], f.Monic → g.Monic → f * g = p → f = 1 ∨ g = 1 := by
   refine
-    ⟨fun h f g hf hg hp => (h.2 hp.symm).imp hf.eq_one_of_isUnit hg.eq_one_of_isUnit, fun h =>
+    ⟨fun h f g hf hg hp =>
+      (h.isUnit_or_isUnit hp.symm).imp hf.eq_one_of_isUnit hg.eq_one_of_isUnit, fun h =>
       ⟨hp1 ∘ hp.eq_one_of_isUnit, fun f g hfg =>
         (h (g * C f.leadingCoeff) (f * C g.leadingCoeff) ?_ ?_ ?_).symm.imp
           (.of_mul_eq_one _)

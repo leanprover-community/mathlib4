@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 public import Mathlib.CategoryTheory.Preadditive.Injective.LiftingProperties
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Epimorphisms with an injective kernel
 
@@ -17,7 +20,6 @@ abelian category. We show that this property of morphisms is multiplicative.
 This shall be used in the file `Mathlib/Algebra/Homology/Factorizations/Basic.lean` in
 order to define morphisms of cochain complexes which satisfy this property
 degreewise.
-
 -/
 
 @[expose] public section

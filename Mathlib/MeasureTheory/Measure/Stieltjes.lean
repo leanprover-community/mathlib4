@@ -7,7 +7,8 @@ module
 
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 public import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
-public import Mathlib.Topology.Order.LeftRightLim
+
+import Mathlib.Topology.Order.LeftRightLim
 
 /-!
 # Stieltjes measures on the real line
@@ -128,8 +129,8 @@ instance instCoeFun : CoeFun (StieltjesFunction R) fun _ => R → ℝ :=
 
 initialize_simps_projections StieltjesFunction (toFun → apply)
 
-@[ext] lemma ext {f g : StieltjesFunction R} (h : ∀ x, f x = g x) : f = g := by
-  exact (StieltjesFunction.mk.injEq ..).mpr (funext h)
+@[ext] lemma ext {f g : StieltjesFunction R} (h : ∀ x, f x = g x) : f = g :=
+  (StieltjesFunction.mk.injEq ..).mpr (funext h)
 
 variable (f : StieltjesFunction R)
 
@@ -202,8 +203,8 @@ instance : AddCommMonoid (StieltjesFunction R) where
 instance : Module ℝ≥0 (StieltjesFunction R) where
   smul c f := {
     toFun := fun x ↦ c * f x
-    mono' := f.mono.const_mul c.2
-    right_continuous' := fun x ↦ (f.right_continuous x).const_smul c.1 }
+    mono' := f.mono.const_mul c.property
+    right_continuous' := fun x ↦ (f.right_continuous x).const_smul c.val }
   one_smul _ := ext fun _ ↦ one_mul _
   mul_smul _ _ _ := ext fun _ ↦ mul_assoc _ _ _
   smul_zero _ := ext fun _ ↦ mul_zero _
@@ -680,8 +681,8 @@ lemma measure_Iio_of_tendsto_atBot_atBot (hf : Tendsto f atBot atBot) (x : R) :
 
 theorem measure_univ [Nonempty R]
     {l u : ℝ} (hfl : Tendsto f atBot (𝓝 l)) (hfu : Tendsto f atTop (𝓝 u)) :
-    f.measure univ = ofReal (u - l) := by
-  exact tendsto_nhds_unique_of_forall (tendsto_measure_Iic_atTop _)
+    f.measure univ = ofReal (u - l) :=
+  tendsto_nhds_unique_of_forall (tendsto_measure_Iic_atTop _)
     (ENNReal.tendsto_ofReal (Tendsto.sub_const hfu _)) (by simp [measure_Iic f hfl])
 
 lemma measure_univ_of_tendsto_atTop_atTop [Nonempty R] (hf : Tendsto f atTop atTop) :

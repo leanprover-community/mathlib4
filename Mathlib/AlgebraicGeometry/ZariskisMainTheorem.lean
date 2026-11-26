@@ -13,7 +13,6 @@ public import Mathlib.AlgebraicGeometry.Normalization
 import Mathlib.RingTheory.Etale.QuasiFinite
 
 /-!
-
 # Zariski's Main Theorem
 
 In this file we prove Grothendieck's reformulation of Zariski's main theorem, namely if
@@ -28,7 +27,6 @@ We then have the following corollaries
 - `IsFinite.of_isProper_of_locallyQuasiFinite`:
   If `f` is proper and quasi-finite, then the map `f.toNormalization : X ⟶ X'` is an isomorphism,
   which implies that `f` itself is finite.
-
 -/
 
 open CategoryTheory Limits
@@ -49,16 +47,16 @@ theorem exists_etale_isCompl_of_quasiFiniteAt [IsSeparated f]
     {x : X} {s : S} (h : f x = s) (hx : f.QuasiFiniteAt x) :
     ∃ (U : Scheme) (g : U ⟶ S), Etale g ∧ s ∈ Set.range g ∧
     ∃ (V W : (pullback f g).Opens) (v : V), IsCompl V W ∧ IsFinite (V.ι ≫ pullback.snd f g) ∧
-      pullback.fst f g v.1 = x := by
+      pullback.fst f g v.val = x := by
   obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ := S.isBasis_affineOpens.exists_subset_of_mem_open
     (Set.mem_univ (f x)) isOpen_univ
   obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hUV : V ≤ f ⁻¹ᵁ U⟩ :=
-    X.isBasis_affineOpens.exists_subset_of_mem_open hxU (f ⁻¹ᵁ U).2
+    X.isBasis_affineOpens.exists_subset_of_mem_open hxU (f ⁻¹ᵁ U).is_open'
   have : (f.appLE U V hUV).hom.FiniteType := f.finiteType_appLE hU hV hUV
   algebraize [(f.appLE U V hUV).hom]
   have : (hV.primeIdealOf ⟨x, hxV⟩).asIdeal.LiesOver (hU.primeIdealOf ⟨f x, hxU⟩).asIdeal := by
     suffices hU.primeIdealOf ⟨f x, hxU⟩ = Spec.map (f.appLE U V hUV) (hV.primeIdealOf ⟨x, hxV⟩) from
-      ⟨congr(($this).1)⟩
+      ⟨congr(($this).asIdeal)⟩
     apply hU.isoSpec.inv.homeomorph.injective
     apply Subtype.ext
     simp only [IsAffineOpen.primeIdealOf, Scheme.Hom.homeomorph_apply,
@@ -121,12 +119,12 @@ lemma Scheme.Hom.exists_mem_and_isIso_morphismRestrict_toNormalization
     (x : X) (hx : f.QuasiFiniteAt x) :
     ∃ V, f.toNormalization x ∈ V ∧ IsIso (f.toNormalization ∣_ V) := by
   obtain ⟨T, fT, _, ⟨u, hu⟩, V, W, v, hVW, _, hv₂⟩ := exists_etale_isCompl_of_quasiFiniteAt _ rfl hx
-  obtain ⟨U, hU, _⟩ : ∃ U, (pullback.snd f fT).toNormalization v.1 ∈ U ∧
+  obtain ⟨U, hU, _⟩ : ∃ U, (pullback.snd f fT).toNormalization v.val ∈ U ∧
       IsIso ((pullback.snd f fT).toNormalization ∣_ U) := by
     have hVW' : (W : Set ↑(pullback f fT)) = (↑V)ᶜ :=
       eq_compl_iff_isCompl.mpr (hVW.map TopologicalSpace.Opens.frameHom).symm
     have : IsClosedImmersion V.ι := .of_isPreimmersion _ (by simp [eq_compl_comm.mp hVW', W.isOpen])
-    have : IsClosedImmersion W.ι := .of_isPreimmersion _ (by simpa [hVW'] using V.2)
+    have : IsClosedImmersion W.ι := .of_isPreimmersion _ (by simpa [hVW'] using V.is_open')
     obtain ⟨H⟩ := nonempty_isColimit_binaryCofanMk_of_isCompl V.ι W.ι (by simpa)
     let e : (pullback.snd f fT).normalization ≅ V ⨿ (W.ι ≫ pullback.snd f fT).normalization :=
       (Scheme.Hom.normalizationCoprodIso (pullback.snd f fT) H).symm ≪≫
@@ -151,7 +149,8 @@ lemma Scheme.Hom.exists_mem_and_isIso_morphismRestrict_toNormalization
           simpa [-Scheme.Hom.comp_base, Scheme.Hom.normalizationCoprodIso,
             reassoc_of% this] using hab
         exact Set.disjoint_iff_forall_ne.mp
-          (isCompl_range_inl_inr V (W.ι ≫ pullback.snd f fT).normalization).1 ⟨_, rfl⟩ ⟨_, rfl⟩ hab
+          (isCompl_range_inl_inr V (W.ι ≫ pullback.snd f fT).normalization).disjoint
+            ⟨_, rfl⟩ ⟨_, rfl⟩ hab
       · rw [← Scheme.Hom.inv_image, ← SetLike.coe_subset_coe]
         simpa [← Scheme.Hom.opensRange_comp, ι, e, Scheme.Hom.normalizationCoprodIso,
           Set.range_comp] using Set.subset_preimage_image _ _
@@ -162,7 +161,7 @@ lemma Scheme.Hom.exists_mem_and_isIso_morphismRestrict_toNormalization
     simp [e, Scheme.Hom.isoOpensRange, Scheme.Hom.normalizationCoprodIso, reassoc_of% this, ι]
   let fTn : (pullback.snd f fT).normalization ⟶ f.normalization :=
     f.normalizationPullback fT ≫ pullback.fst _ _
-  let U' : f.normalization.Opens := ⟨_, fTn.isOpenMap _ U.2⟩
+  let U' : f.normalization.Opens := ⟨_, fTn.isOpenMap _ U.is_open'⟩
   refine ⟨U', ⟨_, hU, by simp only [← hv₂, ← Scheme.Hom.comp_apply]; simp [fTn]⟩, ?_⟩
   let fTnU : U.toScheme ⟶ U' := fTn.resLE _ _ (Set.subset_preimage_image _ _)
   have : Surjective fTnU := ⟨fun ⟨x, a, ha, e⟩ ↦ ⟨⟨a, ha⟩, Subtype.ext <| by simpa [fTnU] using e⟩⟩
@@ -206,9 +205,9 @@ then there exists `U : f.normalization.Opens`, such that
 lemma Scheme.Hom.exists_isIso_morphismRestrict_toNormalization
     [LocallyOfFiniteType f] [IsSeparated f] [QuasiCompact f] :
     ∃ U : f.normalization.Opens, IsIso (f.toNormalization ∣_ U) ∧
-      (f.toNormalization ⁻¹ᵁ U).1 = { x | f.QuasiFiniteAt x } := by
+      (f.toNormalization ⁻¹ᵁ U).carrier = { x | f.QuasiFiniteAt x } := by
   choose V hxV hV using fun x : { x // f.QuasiFiniteAt x } ↦
-    f.exists_mem_and_isIso_morphismRestrict_toNormalization x x.2
+    f.exists_mem_and_isIso_morphismRestrict_toNormalization x x.property
   let 𝒰 := Opens.iSupOpenCover V
   have : IsIso (f.toNormalization ∣_ ⨆ x, V x) := by
     refine (IsZariskiLocalAtTarget.iff_of_openCover (P := .isomorphisms _) 𝒰).mpr fun x ↦ ?_
@@ -297,12 +296,13 @@ lemma Scheme.Hom.isOpen_quasiFiniteAt [LocallyOfFiniteType f] :
     obtain ⟨_, ⟨U : Y.Opens, hU, rfl⟩, hxU, -⟩ := Y.isBasis_affineOpens.exists_subset_of_mem_open
       (Set.mem_univ (f x)) isOpen_univ
     obtain ⟨_, ⟨V : X.Opens, hV, rfl⟩, hxV, hVU⟩ := X.isBasis_affineOpens.exists_subset_of_mem_open
-      hxU (f ⁻¹ᵁ U).2
+      hxU (f ⁻¹ᵁ U).is_open'
     have inst : IsAffineHom (f.resLE U V hVU) :=
       have : IsAffine _ := hU
       have : IsAffine _ := hV
       isAffineHom_of_isAffine _
-    refine ⟨_, ?_, V.2.isOpenEmbedding_subtypeVal.isOpenMap _ (this (f.resLE U V hVU) inst), ?_⟩
+    refine ⟨_, ?_,
+      V.is_open'.isOpenEmbedding_subtypeVal.isOpenMap _ (this (f.resLE U V hVU) inst), ?_⟩
     · rintro _ ⟨x : V, hx : (f.resLE U V hVU).QuasiFiniteAt _, rfl⟩
       rwa [← quasiFiniteAt_comp_iff (g := U.ι), resLE_comp_ι,
         quasiFiniteAt_comp_iff_of_isOpenImmersion] at hx
@@ -310,7 +310,7 @@ lemma Scheme.Hom.isOpen_quasiFiniteAt [LocallyOfFiniteType f] :
       rwa [← quasiFiniteAt_comp_iff (g := U.ι), resLE_comp_ι,
         quasiFiniteAt_comp_iff_of_isOpenImmersion]
   obtain ⟨U, hU, e⟩ := Scheme.Hom.exists_isIso_morphismRestrict_toNormalization f
-  exact e ▸ (f.toNormalization ⁻¹ᵁ U).2
+  exact e ▸ (f.toNormalization ⁻¹ᵁ U).is_open'
 
 /-- The set of quasi-finite points of a morphism `f : X ⟶ Y` as an `X.Opens`. -/
 def Scheme.Hom.quasiFiniteLocus [LocallyOfFiniteType f] : X.Opens :=
@@ -415,7 +415,7 @@ lemma exists_isFinite_morphismRestrict_of_finite_preimage_singleton
   · suffices LocallyQuasiFinite (f ∣_ V) from .of_isProper_of_locallyQuasiFinite _
     rw [← Scheme.Hom.quasiFiniteLocus_eq_top_iff]
     ext x
-    have : f.QuasiFiniteAt ((f ⁻¹ᵁ V).ι x) := by by_contra H; exact x.2 ⟨_, H, by simp⟩
+    have : f.QuasiFiniteAt ((f ⁻¹ᵁ V).ι x) := by by_contra H; exact x.property ⟨_, H, by simp⟩
     rw [← Scheme.Hom.quasiFiniteAt_comp_iff_of_isOpenImmersion, ← morphismRestrict_ι,
       Scheme.Hom.quasiFiniteAt_comp_iff] at this
     simpa

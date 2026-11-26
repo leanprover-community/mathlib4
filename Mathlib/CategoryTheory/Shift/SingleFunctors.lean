@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Shift.CommShift
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functors from a category to a category with a shift
 
@@ -24,7 +27,6 @@ triangulated category and `C` an abelian category. However, the definition
 ease the formalization of the compatibilities with shifts of the
 functors `C ⥤ CochainComplex C ℤ` (or `C ⥤ DerivedCategory C` (TODO))
 which sends an object `X : C` to a complex where `X` sits in a single degree.
-
 -/
 
 @[expose] public section

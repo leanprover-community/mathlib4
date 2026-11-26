@@ -36,7 +36,7 @@ with integral coefficients.
   composition of the `m`-th and `n`-th Chebyshev polynomials of the first kind. There is a similar
   statement `Polynomial.Chebyshev.C_mul` for the `C` polynomials.
 
-## Implementation details
+## Implementation notes
 
 Since Chebyshev polynomials have interesting behaviour over the complex numbers and modulo `p`,
 we define them to have coefficients in an arbitrary commutative ring, even though
@@ -46,8 +46,8 @@ and do not have `map (Int.castRingHom R)` interfering all the time.
 
 ## References
 
-[Lionel Ponton, _Roots of the Chebyshev polynomials: A purely algebraic approach_]
-[ponton2020chebyshev]
+[Lionel Ponton, *Roots of the Chebyshev polynomials: A purely algebraic
+approach*][ponton2020chebyshev]
 
 ## TODO
 

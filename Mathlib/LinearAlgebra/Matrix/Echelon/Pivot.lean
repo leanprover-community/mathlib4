@@ -136,7 +136,7 @@ end Zero
 
 section Rank
 
-variable [Fintype m] [Fintype n] [LinearOrder m] [LinearOrder n] [CommRing R] [IsDomain R]
+variable [Fintype m] [Finite n] [LinearOrder m] [LinearOrder n] [CommRing R] [IsDomain R]
   {A : Matrix m n R} {l : m → WithTop n}
 
 namespace IsPivotedBy
@@ -144,12 +144,13 @@ namespace IsPivotedBy
 theorem rank_eq (hA : A.IsPivotedBy l) : A.rank = #{i | l i ≠ ⊤} := by
   refine le_antisymm (A.rank_le_card_of_support_subset _
     (Function.support_subset_iff'.mpr fun i hi => hA.eq_top_iff.mp (by aesop))) ?_
-  let g : {i // l i ≠ ⊤} → n := fun i => (l i.1).untop i.2
-  have hlead : ∀ i : {i // l i ≠ ⊤}, A.IsLeadingEntry i.1 (g i) := fun i =>
-    hA.isLeadingEntry (WithTop.coe_untop (l i.1) i.2).symm
+  let g : {i // l i ≠ ⊤} → n := fun i => (l i.val).untop i.property
+  have hlead : ∀ i : {i // l i ≠ ⊤}, A.IsLeadingEntry i.val (g i) := fun i =>
+    hA.isLeadingEntry (WithTop.coe_untop (l i.val) i.property).symm
   have htri : (A.submatrix Subtype.val g).IsUpperTriangular := by
     intro i j hij
-    exact (hlead i).1 _ ((WithTop.untop_lt_untop_iff _ _).mpr (hA.strictMonoOn j.2 i.2 hij))
+    exact (hlead i).1 _
+      ((WithTop.untop_lt_untop_iff _ _).mpr (hA.strictMonoOn j.property i.property hij))
   have hdet : (A.submatrix Subtype.val g).det ≠ 0 := by
     rw [det_of_isUpperTriangular htri]
     exact prod_ne_zero_iff.mpr fun i _ => (hlead i).2
