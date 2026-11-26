@@ -5,12 +5,13 @@ Authors: Wrenna Robson
 -/
 module
 
-public import Mathlib.Algebra.Group.Submonoid.Operations
-public import Mathlib.Algebra.Group.Submonoid.Pointwise
 public import Mathlib.Algebra.Group.Subgroup.Lattice
+public import Mathlib.Algebra.Group.Submonoid.Pointwise
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
-
 # Submonoid of units
 
 Given a submonoid `S` of a monoid `M`, we define the subgroup `S.units` as the units of `S` as a
@@ -22,7 +23,8 @@ of `M`. `Submonoid.units` and `Subgroup.ofUnits` form a Galois coinsertion.
 
 We also make the equivalent additive definitions.
 
-## Implementation details
+## Implementation notes
+
 There are a number of other constructions which are multiplicatively equivalent to `S.units` but
 which have a different type.
 
@@ -114,11 +116,11 @@ lemma inv_val_mem_of_mem_units (S : Submonoid M) {x : Mˣ} (h : x ∈ S.units) :
 
 @[to_additive]
 lemma coe_inv_val_mul_coe_val (S : Submonoid M) {x : Sˣ} :
-    ((x⁻¹ : Sˣ) : M) * ((x : Sˣ) : M) = 1 := DFunLike.congr_arg S.subtype x.inv_mul
+    ((x⁻¹ : Sˣ) : M) * ((x : Sˣ) : M) = 1 := congr(S.subtype $x.inv_mul)
 
 @[to_additive]
 lemma coe_val_mul_coe_inv_val (S : Submonoid M) {x : Sˣ} :
-    ((x : Sˣ) : M) * ((x⁻¹ : Sˣ) : M) = 1 := DFunLike.congr_arg S.subtype x.mul_inv
+    ((x : Sˣ) : M) * ((x⁻¹ : Sˣ) : M) = 1 := congr(S.subtype $x.mul_inv)
 
 @[to_additive]
 lemma mk_inv_mul_mk_eq_one (S : Submonoid M) {x : Mˣ} (h : x ∈ S.units) :
@@ -144,7 +146,8 @@ lemma inv_mem_units_iff (S : Submonoid M) {x : Mˣ} : x⁻¹ ∈ S.units ↔ x �
 `S` and the type of additive units of `S`. -/]
 def unitsEquivUnitsType (S : Submonoid M) : S.units ≃* Sˣ where
   toFun := fun ⟨_, h⟩ => ⟨⟨_, h.1⟩, ⟨_, h.2⟩, S.mk_mul_mk_inv_eq_one h, S.mk_inv_mul_mk_eq_one h⟩
-  invFun := fun x => ⟨⟨_, _, S.coe_val_mul_coe_inv_val, S.coe_inv_val_mul_coe_val⟩, ⟨x.1.2, x.2.2⟩⟩
+  invFun := fun x =>
+    ⟨⟨_, _, S.coe_val_mul_coe_inv_val, S.coe_inv_val_mul_coe_val⟩, ⟨x.val.property, x.inv.property⟩⟩
   map_mul' := fun _ _ => rfl
 
 @[to_additive (attr := simp)]
@@ -260,8 +263,8 @@ the subgroup itself as a type. -/
 @[to_additive /-- The equivalence between the coercion of an additive subgroup `S` of
 `Mˣ` to an additive submonoid of `M` and the additive subgroup itself as a type. -/]
 noncomputable def ofUnitsEquivType (S : Subgroup Mˣ) : S.ofUnits ≃* S where
-  toFun := fun x => ⟨S.unit_of_mem_ofUnits x.2, S.unit_of_mem_ofUnits_spec_mem⟩
-  invFun := fun x => ⟨x.1, ⟨x.1, x.2, rfl⟩⟩
+  toFun := fun x => ⟨S.unit_of_mem_ofUnits x.property, S.unit_of_mem_ofUnits_spec_mem⟩
+  invFun := fun x => ⟨x.val, ⟨x.val, x.property, rfl⟩⟩
   map_mul' := fun _ _ => Subtype.ext (Units.ext rfl)
 
 @[to_additive (attr := simp)]

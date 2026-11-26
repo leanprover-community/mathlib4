@@ -59,7 +59,7 @@ In the `Distributions` scope, we introduce the following notations:
 - `N[𝕜; F]_{K, i}` (or simply `N[𝕜]_{K, i}`): the `𝕜`-seminorm on `𝓓_{K}(E, F)`
   given by the sup-norm of the `i`-th derivative.
 
-## Implementation details
+## Implementation notes
 
 * The technical choice of spelling `EqOn f 0 Kᶜ` in the definition, as opposed to `tsupport f ⊆ K`
   is to make rewriting `f x` to `0` easier when `x ∉ K`.
@@ -114,10 +114,9 @@ open scoped Distributions
 
 /-- `ContDiffMapSupportedInClass B E F n K` states that `B` is a type of bundled `n`-times
 continuously differentiable functions with support in the compact set `K`. -/
-class ContDiffMapSupportedInClass (B : Type*) (E F : outParam <| Type*)
+class ContDiffMapSupportedInClass (B : Type*) (E F : outParam Type*)
     [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F]
-    (n : outParam ℕ∞) (K : outParam <| Compacts E)
-    extends FunLike B E F where
+    (n : outParam ℕ∞) (K : outParam <| Compacts E) [FunLike B E F] where
   map_contDiff (f : B) : ContDiff ℝ n f
   map_zero_on_compl (f : B) : EqOn f 0 Kᶜ
 
@@ -125,16 +124,16 @@ open ContDiffMapSupportedInClass
 
 namespace ContDiffMapSupportedInClass
 
-instance (B : Type*) (E F : outParam <| Type*)
+instance (B : Type*) (E F : outParam Type*)
     [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F]
-    (n : outParam ℕ∞) (K : outParam <| Compacts E)
+    (n : outParam ℕ∞) (K : outParam <| Compacts E) [FunLike B E F]
     [ContDiffMapSupportedInClass B E F n K] :
     ContinuousMapClass B E F where
   map_continuous f := (map_contDiff f).continuous
 
-instance (B : Type*) (E F : outParam <| Type*)
+instance (B : Type*) (E F : outParam Type*)
     [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F]
-    (n : outParam ℕ∞) (K : outParam <| Compacts E)
+    (n : outParam ℕ∞) (K : outParam <| Compacts E) [FunLike B E F]
     [ContDiffMapSupportedInClass B E F n K] :
     BoundedContinuousMapClass B E F where
   map_bounded f := by
@@ -146,14 +145,20 @@ end ContDiffMapSupportedInClass
 
 namespace ContDiffMapSupportedIn
 
-instance toContDiffMapSupportedInClass :
-    ContDiffMapSupportedInClass 𝓓^{n}_{K}(E, F) E F n K where
+instance : FunLike 𝓓^{n}_{K}(E, F) E F where
   coe f := f.toFun
   coe_injective f g h := by cases f; cases g; congr
+
+instance toContDiffMapSupportedInClass :
+    ContDiffMapSupportedInClass 𝓓^{n}_{K}(E, F) E F n K where
   map_contDiff f := f.contDiff'
   map_zero_on_compl f := f.zero_on_compl'
 
 variable {E F F'}
+
+/-- Reinterpret a continuously differentiable map supported in a compact  `f : 𝓓^{n}_{K}(E, F)`
+as a continuous bounded map `E →ᵇ F`. -/
+def toBoundedContinuousFunction (f : 𝓓^{n}_{K}(E, F)) : E →ᵇ F := .ofClass f
 
 protected theorem contDiff (f : 𝓓^{n}_{K}(E, F)) : ContDiff ℝ n f := map_contDiff f
 protected theorem zero_on_compl (f : 𝓓^{n}_{K}(E, F)) : EqOn f 0 Kᶜ := map_zero_on_compl f
@@ -189,15 +194,19 @@ theorem copy_eq (f : 𝓓^{n}_{K}(E, F)) (f' : E → F) (h : f' = f) : f.copy f'
 
 @[simp]
 theorem coe_toBoundedContinuousFunction (f : 𝓓^{n}_{K}(E, F)) :
-    (f : BoundedContinuousFunction E F) = (f : E → F) := rfl
+    ⇑f.toBoundedContinuousFunction = (f : E → F) := rfl
+
+@[simp]
+theorem toBoundedContinuousFunction_injective :
+    Function.Injective (toBoundedContinuousFunction : 𝓓^{n}_{K}(E, F) → E →ᵇ F) :=
+  fun f g h ↦ by ext; simp [← coe_toBoundedContinuousFunction, h]
 
 section AddCommGroup
 
 instance : Zero 𝓓^{n}_{K}(E, F) where
   zero := .mk 0 contDiff_zero_fun fun _ _ ↦ rfl
 
-instance : IsZeroApply 𝓓^{n}_{K}(E, F) E F where
-  zero_apply _ := rfl
+instance : IsZeroApply 𝓓^{n}_{K}(E, F) where
 
 @[deprecated (since := "2026-06-15")] alias coe_zero := FunLike.coe_zero
 
@@ -206,8 +215,7 @@ instance : Add 𝓓^{n}_{K}(E, F) where
     rw [← add_zero 0]
     exact f.zero_on_compl.comp_left₂ g.zero_on_compl
 
-instance : IsAddApply 𝓓^{n}_{K}(E, F) E F where
-  add_apply _ _ _ := rfl
+instance : IsAddApply 𝓓^{n}_{K}(E, F) where
 
 @[deprecated (since := "2026-06-15")] alias coe_add := FunLike.coe_add
 
@@ -216,8 +224,7 @@ instance : Neg 𝓓^{n}_{K}(E, F) where
     rw [← neg_zero]
     exact f.zero_on_compl.comp_left
 
-instance : IsNegApply 𝓓^{n}_{K}(E, F) E F where
-  neg_apply _ _ := rfl
+instance : IsNegApply 𝓓^{n}_{K}(E, F) where
 
 @[deprecated (since := "2026-06-15")] alias coe_neg := FunLike.coe_neg
 
@@ -226,20 +233,18 @@ instance instSub : Sub 𝓓^{n}_{K}(E, F) where
     rw [← sub_zero 0]
     exact f.zero_on_compl.comp_left₂ g.zero_on_compl
 
-instance : IsSubApply 𝓓^{n}_{K}(E, F) E F where
-  sub_apply _ _ _ := rfl
+instance : IsSubApply 𝓓^{n}_{K}(E, F) where
 
 @[deprecated (since := "2026-06-15")] alias coe_sub := FunLike.coe_sub
 
-instance instSMul {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
+instance instSMul {R} [DistribSMul R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
     SMul R 𝓓^{n}_{K}(E, F) where
   smul c f := .mk (c • (f : E → F)) (f.contDiff.const_smul c) <| by
     rw [← smul_zero c]
     exact f.zero_on_compl.comp_left
 
-instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
-    IsSMulApply R 𝓓^{n}_{K}(E, F) E F where
-  smul_apply _ _ _ := rfl
+instance {R} [DistribSMul R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
+    IsSMulApply R 𝓓^{n}_{K}(E, F) where
 
 @[deprecated (since := "2026-06-15")] alias coe_smul := FunLike.coe_smul
 
@@ -299,13 +304,13 @@ as a `𝕜`-linear map.
 
 This is subsumed by `toBoundedContinuousFunctionCLM`, which also bundles the continuity. -/
 noncomputable def toBoundedContinuousFunctionLM : 𝓓^{n}_{K}(E, F) →ₗ[𝕜] E →ᵇ F where
-  toFun f := f
+  toFun := toBoundedContinuousFunction
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
 @[simp]
 lemma toBoundedContinuousFunctionLM_apply (f : 𝓓^{n}_{K}(E, F)) :
-    toBoundedContinuousFunctionLM 𝕜 f = f :=
+    toBoundedContinuousFunctionLM 𝕜 f = f.toBoundedContinuousFunction :=
   rfl
 
 lemma toBoundedContinuousFunctionLM_eq_of_scalars (𝕜' : Type*) [NontriviallyNormedField 𝕜']
@@ -709,7 +714,7 @@ theorem norm_apply_le_seminorm {f : 𝓓^{n}_{K}(E, F)} {x : E} :
   exact norm_iteratedFDeriv_apply_le_seminorm 𝕜 zero_le
 
 theorem norm_toBoundedContinuousFunction (f : 𝓓^{n}_{K}(E, F)) :
-    ‖(f : E →ᵇ F)‖ = N[𝕜]_{K, n, 0} f := by
+    ‖f.toBoundedContinuousFunction‖ = N[𝕜]_{K, n, 0} f := by
   simp [BoundedContinuousFunction.norm_eq_iSup_norm,
     ContDiffMapSupportedIn.seminorm_apply, structureMapCLM_apply]
 
@@ -763,7 +768,7 @@ noncomputable def toBoundedContinuousFunctionCLM : 𝓓^{n}_{K}(E, F) →L[𝕜]
 
 @[simp]
 lemma toBoundedContinuousFunctionCLM_apply (f : 𝓓^{n}_{K}(E, F)) :
-    toBoundedContinuousFunctionCLM 𝕜 f = f :=
+    toBoundedContinuousFunctionCLM 𝕜 f = f.toBoundedContinuousFunction :=
   rfl
 
 lemma toBoundedContinuousFunctionCLM_eq_of_scalars (𝕜' : Type*) [NontriviallyNormedField 𝕜']
@@ -922,8 +927,8 @@ variable {𝕜} {m : MeasurableSpace E} [OpensMeasurableSpace E] {F₁ F₂ F₃
 
 @[fun_prop]
 protected theorem stronglyMeasurable (f : 𝓓^{n}_{K}(E, F)) :
-    StronglyMeasurable f := by
-  exact f.continuous.stronglyMeasurable_of_hasCompactSupport f.hasCompactSupport
+    StronglyMeasurable f :=
+  f.continuous.stronglyMeasurable_of_hasCompactSupport f.hasCompactSupport
 
 @[fun_prop]
 protected theorem aestronglyMeasurable {μ : Measure E} (f : 𝓓^{n}_{K}(E, F)) :

@@ -5,8 +5,11 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Action.Defs
 public import Mathlib.Algebra.Group.Hom.Instances
+public import Mathlib.Algebra.GroupWithZero.Action.Defs
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-! # Zero-related `•` instances on group-like morphisms -/
 

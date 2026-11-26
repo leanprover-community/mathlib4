@@ -5,8 +5,9 @@ Authors: Mario Carneiro, Michail Karatarakis, Kyle Miller
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.Elab.SyntheticMVars
+
+import Mathlib.Init
 
 /-!
 # `clean%` term elaborator
@@ -60,7 +61,8 @@ def x' : Id Nat := clean% by dsimp [Id]; exact 1
 @[deprecated "`clean%` is not used/needed anymore" (since := "2026-09-03")]
 syntax (name := cleanStx) "clean% " term : term
 
-@[term_elab cleanStx, inherit_doc cleanStx]
+@[term_elab cleanStx, inherit_doc cleanStx,
+  deprecated "`clean%` is not used/needed anymore" (since := "2026-09-03")]
 def elabClean : Term.TermElab := fun stx expectedType? =>
   match stx with
   | `(clean% $t) => do

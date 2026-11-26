@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.Artinian.Module
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Modules of finite length
 
@@ -50,7 +53,7 @@ variable (R M) in
 theorem exists_compositionSeries_of_isNoetherian_isArtinian [IsNoetherian R M] [IsArtinian R M] :
     ∃ s : CompositionSeries (Submodule R M), s.head = ⊥ ∧ s.last = ⊤ := by
   obtain ⟨f, f0, n, hn⟩ := exists_covBy_seq_of_wellFoundedLT_wellFoundedGT (Submodule R M)
-  exact ⟨⟨n, fun i ↦ f i, fun i ↦ hn.2 i i.2⟩, f0.eq_bot, hn.1.eq_top⟩
+  exact ⟨⟨n, fun i ↦ f i, fun i ↦ hn.2 i i.isLt⟩, f0.eq_bot, hn.1.eq_top⟩
 
 theorem isFiniteLength_of_exists_compositionSeries
     (h : ∃ s : CompositionSeries (Submodule R M), s.head = ⊥ ∧ s.last = ⊤) :

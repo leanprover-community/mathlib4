@@ -7,14 +7,13 @@ module
 
 public import Mathlib.Algebra.Order.Group.Unbundled.Basic
 public import Mathlib.Algebra.Order.Monoid.Defs
-public import Mathlib.Algebra.Order.Sub.Defs
 
 /-!
 # Ordered groups
 
 This file defines bundled ordered groups and develops a few basic results.
 
-## Implementation details
+## Implementation notes
 
 Unfortunately, the number of `'` appended to lemmas in this file
 may differ between the multiplicative and the additive version of a lemma.

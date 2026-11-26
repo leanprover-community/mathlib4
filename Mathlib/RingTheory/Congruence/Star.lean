@@ -6,8 +6,12 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Algebra.Star.Basic
-public import Mathlib.Data.Finset.Attr
 public import Mathlib.RingTheory.Congruence.Defs
+
+import Mathlib.Data.Finset.Attr
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Helpers for working with star operators on quotients.

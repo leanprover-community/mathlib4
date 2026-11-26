@@ -5,11 +5,9 @@ Authors: Stefan Kebekus
 -/
 module
 
-public import Mathlib.Analysis.Calculus.ContDiff.Basic
 public import Mathlib.Analysis.Calculus.ContDiff.Operations
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 public import Mathlib.Analysis.Distribution.DerivNotation
-public import Mathlib.Analysis.InnerProductSpace.CanonicalTensor
 
 /-!
 # The Laplacian
@@ -118,7 +116,7 @@ end secondDerivativeAPI
 variable
   {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedAlgebra ℝ 𝕜]
   {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [IsScalarTower ℝ 𝕜 F]
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F]
   {G : Type*} [NormedAddCommGroup G] [NormedSpace ℝ G]
   {f f₁ f₂ : E → F} {x : E} {s : Set E}
 

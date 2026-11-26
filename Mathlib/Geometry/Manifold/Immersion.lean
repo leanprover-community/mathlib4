@@ -5,16 +5,12 @@ Authors: Michael Rothgang
 -/
 module
 
-public import Mathlib.Geometry.Manifold.ContMDiff.Atlas
-public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
-public import Mathlib.Geometry.Manifold.ImmersionDiff
-public import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
-public import Mathlib.Geometry.Manifold.LocalSourceTargetProperty
-public import Mathlib.Geometry.Manifold.Diffeomorph
-public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
-public import Mathlib.Geometry.Manifold.Notation
 public import Mathlib.Analysis.Normed.Module.Shrink  -- shake: keep (NormedAddCommGroup (Shrink ...)), cf. lean#13417
-public import Mathlib.Topology.Algebra.Module.TransferInstance
+public import Mathlib.Geometry.Manifold.ImmersionDiff
+public import Mathlib.Geometry.Manifold.LocalSourceTargetProperty
+
+import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
+import Mathlib.Topology.Algebra.Module.TransferInstance
 
 /-! # Smooth immersions
 
@@ -90,6 +86,7 @@ This shortens the overall argument, as the definition of submersions has the sam
   `IsImmersion(At)OfComplement.small` and `IsImmersion(At)OfComplement.smallEquiv`.
 
 ## TODO
+
 * The converse to `IsImmersionAtOfComplement.congr_F` also holds: any two complements are
   isomorphic, as they are isomorphic to the cokernel of the differential `mfderiv I J f x`.
 * If `f` is an immersion at `x`, its differential splits, hence is injective.
@@ -108,7 +105,6 @@ This shortens the overall argument, as the definition of submersions has the sam
 ## References
 
 * [Juan Margalef-Roig and Enrique Outerelo Dominguez, *Differential topology*][roigdomingues1992]
-
 -/
 
 open scoped Topology ContDiff

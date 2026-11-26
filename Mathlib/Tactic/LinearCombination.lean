@@ -21,7 +21,7 @@ normalization tactic.
 Over ordered algebraic objects (such as `LinearOrderedCommRing`), taking linear combinations of
 inequalities is also supported.
 
-## Implementation Notes
+## Implementation notes
 
 This tactic works by creating a weighted sum of the given equations with the
 given coefficients.  Then, it subtracts the right side of the weighted sum
@@ -33,7 +33,6 @@ Lastly, calls a normalization tactic on this target.
 ## References
 
 * <https://leanprover.zulipchat.com/#narrow/stream/239415-metaprogramming-.2F.20tactics/topic/Linear.20algebra.20tactic/near/213928196>
-
 -/
 
 public meta section
@@ -158,7 +157,7 @@ partial def expandLinearCombo (ty : Option Expr) (stx : Syntax.Term) :
 def elabLinearCombination (tk : Syntax)
     (norm? : Option Syntax.Tactic) (exp? : Option Syntax.NumLit) (input : Option Syntax.Term) :
     Tactic.TacticM Unit := Tactic.withMainContext <| Tactic.focus do
-  let eType ← withReducible <| (← Tactic.getMainGoal).getType'
+  let eType ← withReducible (← Tactic.getMainGoal).getType'
   let (goalRel, ty, _) ← eType.ineq?
   -- build the specified linear combination of the hypotheses
   let (hypRel, p) ← match input with

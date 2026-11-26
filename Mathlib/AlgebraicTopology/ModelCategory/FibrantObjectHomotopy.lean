@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.AlgebraicTopology.ModelCategory.Homotopy
 public import Mathlib.AlgebraicTopology.ModelCategory.Bifibrant
+public import Mathlib.AlgebraicTopology.ModelCategory.Homotopy
 public import Mathlib.CategoryTheory.MorphismProperty.Quotient
 
 /-!
@@ -21,8 +21,8 @@ This file was obtained by dualizing the definitions in
 `Mathlib/AlgebraicTopology/ModelCategory/CofibrantObjectHomotopy.lean`.
 
 ## References
-* [Daniel G. Quillen, Homotopical algebra][Quillen1967]
 
+* [Daniel G. Quillen, Homotopical algebra][Quillen1967]
 -/
 
 @[expose] public section

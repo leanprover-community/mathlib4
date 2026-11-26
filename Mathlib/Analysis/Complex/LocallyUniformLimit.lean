@@ -6,8 +6,11 @@ Authors: Vincent Beffara
 module
 
 public import Mathlib.Analysis.Complex.RemovableSingularity
-public import Mathlib.Analysis.Calculus.UniformLimitsDeriv
-public import Mathlib.Analysis.Normed.Group.FunctionSeries
+
+import Mathlib.Analysis.Calculus.UniformLimitsDeriv
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Locally uniform limits of holomorphic functions

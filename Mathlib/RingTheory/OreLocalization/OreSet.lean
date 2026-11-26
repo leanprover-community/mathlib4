@@ -5,12 +5,13 @@ Authors: Jakob von Raumer, Kevin Klinge
 -/
 module
 
-public import Mathlib.Algebra.Group.Submonoid.Defs
 public import Mathlib.Algebra.Ring.Regular
 public import Mathlib.GroupTheory.OreLocalization.OreSet
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # (Left) Ore sets and rings
 
 This file contains results on left Ore sets for rings and monoids with zero.
@@ -18,7 +19,6 @@ This file contains results on left Ore sets for rings and monoids with zero.
 ## References
 
 * https://ncatlab.org/nlab/show/Ore+set
-
 -/
 
 @[expose] public section

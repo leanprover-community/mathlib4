@@ -5,8 +5,10 @@ Authors: Jeremy Avigad
 -/
 module
 
-public import Mathlib.Data.Finset.Lattice.Fold
 public import Mathlib.Logic.Encodable.Pi
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # W types
@@ -22,7 +24,7 @@ are commonly used to formalize syntax, e.g. terms and expressions in a given lan
 is illustrated in the example found in the file `prop_encodable` in the `archive/examples` folder of
 mathlib.
 
-## Implementation details
+## Implementation notes
 
 While the name `WType` is somewhat verbose, it is preferable to putting a single character
 identifier `W` in the root namespace.
@@ -83,7 +85,7 @@ theorem elim_injective (γ : Type*) (fγ : (Σ a : α, β a → γ) → γ)
   | ⟨a₁, f₁⟩, ⟨a₂, f₂⟩, h => by
     obtain ⟨rfl, h⟩ := Sigma.mk.inj_iff.mp (fγ_injective h)
     congr with x
-    exact elim_injective γ fγ fγ_injective (congr_fun (eq_of_heq h) x :)
+    exact elim_injective γ fγ fγ_injective congr($(eq_of_heq h) x)
 
 instance [hα : IsEmpty α] : IsEmpty (WType β) :=
   ⟨fun w => WType.recOn w (IsEmpty.elim hα)⟩
@@ -104,7 +106,7 @@ theorem infinite_of_nonempty_of_isEmpty (a b : α) [ha : Nonempty (β a)] [he : 
     | succ n ih =>
       rcases m with - | m
       · simp_all
-      · refine congr_arg Nat.succ (ih ?_)
+      · congrm $(ih ?_).succ
         simp_all [funext_iff]⟩
 
 variable [∀ a : α, Fintype (β a)]
@@ -154,7 +156,8 @@ private def f (n : ℕ) : WType' β (n + 1) → Σ a : α, β a → WType' β n
 private def finv (n : ℕ) : (Σ a : α, β a → WType' β n) → WType' β (n + 1)
   | ⟨a, f⟩ =>
     let f' := fun i : β a => (f i).val
-    have : WType.depth ⟨a, f'⟩ ≤ n + 1 := Nat.add_le_add_right (Finset.sup_le fun b _ => (f b).2) 1
+    have : WType.depth ⟨a, f'⟩ ≤ n + 1 :=
+      Nat.add_le_add_right (Finset.sup_le fun b _ => (f b).property) 1
     ⟨⟨a, f'⟩, this⟩
 
 variable [Encodable α]
@@ -174,7 +177,7 @@ encodable. -/
 instance : Encodable (WType β) := by
   haveI h' : ∀ n, Encodable (WType' β n) := fun n => Nat.rec encodable_zero encodable_succ n
   let f : WType β → Σ n, WType' β n := fun t => ⟨t.depth, ⟨t, le_rfl⟩⟩
-  let finv : (Σ n, WType' β n) → WType β := fun p => p.2.1
+  let finv : (Σ n, WType' β n) → WType β := fun p => p.2.val
   have : ∀ t, finv (f t) = t := fun t => rfl
   exact Encodable.ofLeftInverse f finv this
 

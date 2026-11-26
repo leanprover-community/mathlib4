@@ -10,6 +10,9 @@ public import Mathlib.MeasureTheory.Measure.Regular
 
 import Mathlib.MeasureTheory.Measure.RegularityCompacts
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tight sets of measures
 
@@ -29,8 +32,6 @@ measures in the set, the complement of `K` has measure at most `ε`.
 
 * `isTightMeasureSet_singleton_of_innerRegularWRT`: every finite, inner-regular measure is tight.
 * `isTightMeasureSet_of_isCompact_closure`: every relatively compact set of measures is tight.
-
-
 -/
 
 @[expose] public section
@@ -119,7 +120,7 @@ protected lemma subset (hT : IsTightMeasureSet T) (hST : S ⊆ T) :
 protected lemma union (hS : IsTightMeasureSet S) (hT : IsTightMeasureSet T) :
     IsTightMeasureSet (S ∪ T) := by
   rw [IsTightMeasureSet, iSup_union]
-  convert! Tendsto.sup_nhds hS hT
+  convert Tendsto.sup_nhds hS hT
   simp
 
 protected lemma inter (hS : IsTightMeasureSet S) (T : Set (Measure 𝓧)) :

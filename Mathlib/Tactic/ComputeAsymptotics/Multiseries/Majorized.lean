@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Majorized` predicate
 
@@ -121,7 +124,7 @@ theorem mul_bounded {f g basis_hd : ℝ → ℝ} {exp : ℝ} (hf : Majorized f b
     (hg : g =O[atTop] (fun _ ↦ (1 : ℝ))) :
     Majorized (f * g) basis_hd exp := by
   intro exp h_exp
-  convert! IsLittleO.mul_isBigO (hf _ h_exp) hg using 1
+  convert IsLittleO.mul_isBigO (hf _ h_exp) hg using 1
   simp
   rfl
 

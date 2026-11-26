@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Real.Cardinality
 public import Mathlib.Basic.Complex.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The cardinality of the complex numbers
 

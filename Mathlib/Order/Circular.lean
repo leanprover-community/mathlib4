@@ -5,8 +5,9 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Order.Lattice
 public import Mathlib.Tactic.Order
+
+import Mathlib.Order.Lattice
 
 /-!
 # Circular order hierarchy
@@ -52,7 +53,7 @@ Some concrete circular orders one encounters in the wild are `ZMod n` for `0 < n
 * `Set.cIcc`: Closed-closed circular interval.
 * `Set.cIoo`: Open-open circular interval.
 
-## Notes
+## Implementation notes
 
 There's an unsolved diamond on `OrderDual α` here. The instances `LE α → Btw αᵒᵈ` and
 `LT α → SBtw αᵒᵈ` can each be inferred in two ways:

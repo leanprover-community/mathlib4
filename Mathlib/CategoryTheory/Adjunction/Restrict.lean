@@ -7,8 +7,11 @@ module
 
 public import Mathlib.CategoryTheory.Adjunction.Basic
 public import Mathlib.CategoryTheory.HomCongr
-/-!
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
 # Restricting adjunctions
 
 `Adjunction.restrictFullyFaithful` shows that an adjunction can be restricted along fully faithful
@@ -58,14 +61,12 @@ noncomputable def restrictFullyFaithful : L ⊣ R :=
           simp [Trans.trans, this]
         apply comm2.hom.naturality g }
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp, reassoc]
 lemma map_restrictFullyFaithful_unit_app (X : C) :
     iC.map ((adj.restrictFullyFaithful hiC hiD comm1 comm2).unit.app X) =
     adj.unit.app (iC.obj X) ≫ R'.map (comm1.hom.app X) ≫ comm2.hom.app (L.obj X) := by
   simp [restrictFullyFaithful]
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp, reassoc]
 lemma map_restrictFullyFaithful_counit_app (X : D) :
     iD.map ((adj.restrictFullyFaithful hiC hiD comm1 comm2).counit.app X) =
