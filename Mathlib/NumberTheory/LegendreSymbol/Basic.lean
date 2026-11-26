@@ -58,7 +58,7 @@ theorem euler_criterion_units (x : (ZMod p)ˣ) : (∃ y : (ZMod p)ˣ, y ^ 2 = x)
     rw [hs]
     rwa [card p] at h₀
 
-/-- Euler's Criterion: a nonzero `a : ZMod p` is a square if and only if `x ^ (p / 2) = 1`. -/
+/-- Euler's Criterion: a nonzero `a : ZMod p` is a square if and only if `a ^ (p / 2) = 1`. -/
 theorem euler_criterion {a : ZMod p} (ha : a ≠ 0) : IsSquare (a : ZMod p) ↔ a ^ (p / 2) = 1 := by
   apply (iff_congr _ (by simp [Units.ext_iff])).mp (euler_criterion_units p (Units.mk0 a ha))
   simp only [Units.ext_iff, sq, Units.val_mk0, Units.val_mul]
