@@ -36,6 +36,9 @@ nondegenerate-diagonal symmetric bilinear forms, including mixed-sign Coxeter sy
 * `ReflectionSystem.reflectionMatrix_neg`: `reflectionMatrix (-B) i = reflectionMatrix B i`.
 * `ReflectionSystem.group_preserves_form`: Every `w ∈ S.group` satisfies `wᵀ * B * w = B`.
 * `ReflectionSystem.toGL_injective`: The natural map `S.group →* GL ι K` is injective.
+* `ReflectionSystem.prod_map_reflectionMatrix_split`: Words factor across orthogonal components.
+* `ReflectionSystem.prod_map_reflectionMatrix_apply_of_orthogonal`: Reflections orthogonal to `e_j`
+  fix `e_j`.
 -/
 
 open Matrix
@@ -228,5 +231,62 @@ theorem toGL_injective (S : ReflectionSystem ι K) :
   intro w₁ w₂ h
   ext1
   exact congrArg Units.val h
+
+private lemma reflectionMatrix_comm_prod_of_orthogonal (S : ReflectionSystem ι K)
+    {a : ι} {w : List ι} (h : ∀ b ∈ w, S.B a b = 0) :
+    reflectionMatrix S.B a * (w.map (reflectionMatrix S.B)).prod =
+      (w.map (reflectionMatrix S.B)).prod * reflectionMatrix S.B a := by
+  induction w with
+  | nil => simp
+  | cons b t ih =>
+    simp only [List.map_cons, List.prod_cons]
+    have hab := S.reflectionMatrix_comm_of_orthogonal (h b List.mem_cons_self)
+    have iht := ih fun x hx ↦ h x (List.mem_cons_of_mem b hx)
+    rw [← Matrix.mul_assoc, hab, Matrix.mul_assoc, iht, ← Matrix.mul_assoc]
+
+/-- If `p : ι → Bool` splits the index set into two orthogonal components
+(`p i ≠ p j → S.B i j = 0`), then every word product factors as the product of its letters in
+each component. -/
+theorem prod_map_reflectionMatrix_split (S : ReflectionSystem ι K) (p : ι → Bool)
+    (hsep : ∀ i j : ι, p i ≠ p j → S.B i j = 0) (w : List ι) :
+    (w.map (reflectionMatrix S.B)).prod =
+      ((w.filter p).map (reflectionMatrix S.B)).prod *
+        ((w.filter fun i ↦ !p i).map (reflectionMatrix S.B)).prod := by
+  induction w with
+  | nil => simp
+  | cons a t ih =>
+    cases ha : p a
+    · simp only [List.map_cons, List.prod_cons, List.filter_cons, ha, Bool.false_eq_true,
+        ite_false, Bool.not_false, ite_true]
+      rw [ih]
+      have hcomm := S.reflectionMatrix_comm_prod_of_orthogonal (a := a) (w := t.filter p)
+        fun b hb ↦ hsep a b (by rw [ha, (List.mem_filter.mp hb).2]; decide)
+      rw [← Matrix.mul_assoc, hcomm, Matrix.mul_assoc]
+    · simp only [List.map_cons, List.prod_cons, List.filter_cons, ha, ite_true, Bool.not_true,
+        Bool.false_eq_true, ite_false]
+      rw [ih, ← Matrix.mul_assoc]
+
+/-- Any word of reflections whose generators are all distinct from `j` and orthogonal to `j`
+acts as the identity on the basis vector `e_j`. -/
+theorem prod_map_reflectionMatrix_apply_of_orthogonal (S : ReflectionSystem ι K)
+    {w : List ι} {j : ι} (hw : ∀ a ∈ w, a ≠ j ∧ S.B a j = 0) (r : ι) :
+    (w.map (reflectionMatrix S.B)).prod r j = if r = j then 1 else 0 := by
+  induction w generalizing r with
+  | nil => simp [Matrix.one_apply]
+  | cons a t ih =>
+    obtain ⟨hne, h0⟩ := hw a List.mem_cons_self
+    have ht : ∀ x ∈ t, x ≠ j ∧ S.B x j = 0 := fun x hx ↦ hw x (List.mem_cons_of_mem a hx)
+    simp only [List.map_cons, List.prod_cons, Matrix.mul_apply]
+    simp_rw [ih ht]
+    have hterm : ∀ k : ι,
+        reflectionMatrix S.B a r k * (if k = j then (1 : K) else 0) =
+          if k = j then reflectionMatrix S.B a r k else 0 := by
+      intro k; split_ifs <;> ring
+    rw [Finset.sum_congr rfl fun k _ ↦ hterm k]
+    simp only [Finset.sum_ite_eq', Finset.mem_univ, ite_true, reflectionMatrix_apply]
+    by_cases hra : r = a
+    · subst hra
+      simp [hne, h0]
+    · simp [hra]
 
 end ReflectionSystem
