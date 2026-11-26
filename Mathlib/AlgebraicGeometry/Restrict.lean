@@ -326,8 +326,8 @@ lemma Scheme.Hom.appIso_homOfLE_inv {X : Scheme.{u}} {U V : X.Opens} (h : U ≤ 
         simp [← Scheme.Hom.comp_image]) := by
   rw [eq_comm, ← Iso.hom_comp_eq_id]
   dsimp
-  simp only [appIso_hom, homOfLE_app, eqToHom_op, Opens.toScheme_presheaf_map,
-    eqToHom_unop, ← X.presheaf.map_comp, Category.assoc, ← X.presheaf.map_id]
+  simp only [appIso_hom, homOfLE_app, eqToHom_op, Opens.toScheme_presheaf_map, eqToHom_unop,
+    ← X.presheaf.map_comp, Category.assoc, ← X.presheaf.map_id]
   rfl
 
 @[simp]

@@ -753,8 +753,8 @@ lemma ker_of_isAffine {X Y : Scheme} (f : X ⟶ Y) [IsAffine Y] :
     f.ker = ofIdealTop (RingHom.ker f.appTop.hom) := by
   refine (le_of_isAffine ((f.ideal_ker_le _).trans (by simp))).antisymm
     (le_ofIdeals_iff.mpr fun U ↦ ?_)
-  simp only [ofIdealTop_ideal, Ideal.map_le_iff_le_comap, RingHom.comap_ker,
-    ← CommRingCat.hom_comp, f.naturality]
+  simp only [ofIdealTop_ideal, Ideal.map_le_iff_le_comap, RingHom.comap_ker, ← CommRingCat.hom_comp,
+    f.naturality]
   intro x
   simp +contextual
 
@@ -789,8 +789,8 @@ lemma Hom.iInf_ker_openCover_map_comp_apply
   apply ((𝒰.f i).appIso _).commRingCatIsoToRingEquiv.injective
   rw [map_zero, ← RingEquiv.coe_toRingHom, Iso.commRingCatIsoToRingEquiv_toRingHom,
     Scheme.Hom.appIso_hom']
-  simp only [Scheme.Hom.app_eq_appLE, ← RingHom.comp_apply,
-    ← CommRingCat.hom_comp, Scheme.Hom.appLE_map, Scheme.Hom.appLE_comp_appLE]
+  simp only [Scheme.Hom.app_eq_appLE, ← RingHom.comp_apply, ← CommRingCat.hom_comp,
+    Scheme.Hom.appLE_map, Scheme.Hom.appLE_comp_appLE]
   simpa [Scheme.Hom.appLE] using! ideal_ker_le _ _ (Ideal.mem_iInf.mp hs i)
 
 lemma Hom.iInf_ker_openCover_map_comp (f : X ⟶ Y) [QuasiCompact f] (𝒰 : X.OpenCover) :

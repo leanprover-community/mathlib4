@@ -172,8 +172,8 @@ lemma ideal_le_ker_glueDataObjι (U V : X.affineOpens) :
   apply ((ConcreteCategory.isIso_iff_bijective _).mp this).1
   simp only [map_zero, ← RingHom.comp_apply,
     ← CommRingCat.hom_comp, Category.assoc]
-  simp only [Scheme.Hom.app_eq_appLE, Scheme.Hom.map_appLE,
-    Scheme.Hom.appLE_comp_appLE, Category.assoc, glueDataObjMap_glueDataObjι_assoc]
+  simp only [Scheme.Hom.app_eq_appLE, Scheme.Hom.map_appLE, Scheme.Hom.appLE_comp_appLE,
+    Category.assoc, glueDataObjMap_glueDataObjι_assoc]
   rw [Scheme.Hom.appLE]
   have H : (X.homOfLE (X.basicOpen_le f) ≫ U.val.ι) ⁻¹ᵁ V.val = ⊤ := by
     simp only [Scheme.homOfLE_ι, ← top_le_iff]
@@ -212,11 +212,10 @@ noncomputable def glueDataT (U V : X.affineOpens) :
       have H : ⊤ ≤ X.homOfLE (inf_le_left (b := V.val)) ⁻¹ᵁ U.val.ι ⁻¹ᵁ V.val := by
         rw [← Scheme.Hom.comp_preimage, X.homOfLE_ι]; exact fun x _ ↦ by simpa using x.property.2
       rw [← F.map_appLE (show ⊤ ≤ F ⁻¹ᵁ ⊤ from le_rfl) (homOfLE H).op]
-      simp only [Opens.toScheme_presheaf_map, Quiver.Hom.unop_op,
-        Hom.opensFunctor_map_homOfLE, ← Functor.map_comp_assoc, IsAffineOpen.isoSpec_hom_appTop,
-        Opens.topIso_inv, eqToHom_op, Category.assoc,
-        Iso.inv_hom_id_assoc, F.app_eq_appLE]
-      rfl
+      simp only [Opens.toScheme_presheaf_map, Quiver.Hom.unop_op, Hom.opensFunctor_map_homOfLE,
+        ← Functor.map_comp_assoc, IsAffineOpen.isoSpec_hom_appTop, Opens.topIso_inv,
+        Category.assoc, Iso.inv_hom_id_assoc, F.app_eq_appLE, ← op_comp, homOfLE_comp_eqToHom,
+        homOfLE_comp, Scheme.Hom.preimage_top]
     · have : (U.val.ι.app V.val ≫ (I.glueDataObjι U).app (U.val.ι ⁻¹ᵁ V.val)).hom x = 0 :=
         I.ideal_le_ker_glueDataObjι U V hx
       simp_rw [F, ← pullback.condition]
@@ -550,8 +549,8 @@ lemma subschemeι_app (U : X.affineOpens) : I.subschemeι.app U =
   simp only [← this, ← Functor.map_inv, inv_eqToHom, Category.assoc, eqToHom_unop,
     ← Functor.map_comp, IsIso.Iso.inv_inv, subschemeObjIso, Iso.trans_inv, Functor.mapIso_inv,
     Iso.op_inv, eqToIso.inv, eqToHom_op, Iso.hom_inv_id_assoc, Hom.appIso_inv_naturality_assoc,
-      Functor.op_map, unop_comp, unop_inv, Quiver.Hom.unop_op,
-    Hom.app_appIso_inv_assoc, TopologicalSpace.Opens.carrier_eq_coe, TopologicalSpace.Opens.map_coe]
+    Functor.op_map, unop_comp, unop_inv, Quiver.Hom.unop_op, Hom.app_appIso_inv_assoc,
+    TopologicalSpace.Opens.carrier_eq_coe, TopologicalSpace.Opens.map_coe]
   convert (Category.comp_id _).symm
   exact CategoryTheory.Functor.map_id _ _
 

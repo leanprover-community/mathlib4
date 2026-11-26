@@ -745,8 +745,8 @@ lemma exists_appTop_map_eq_zero_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom
       (D.obj _).presheaf.map (eqToHom ((D.map j.hom ⁻¹ᵁ U).ι_image_top.symm)).op
     convert congr(t' $hj)
     · dsimp [TopCat.Presheaf.restrictOpen, TopCat.Presheaf.restrict]
-      simp only [Scheme.Hom.app_eq_appLE, ← ConcreteCategory.comp_apply, hf,
-        Scheme.Hom.map_appLE, TopologicalSpace.Opens.map_top, Scheme.Hom.resLE_appLE]
+      simp only [Scheme.Hom.app_eq_appLE, ← ConcreteCategory.comp_apply, hf, Scheme.Hom.map_appLE,
+        TopologicalSpace.Opens.map_top, Scheme.Hom.resLE_appLE]
       simp [t']
     · simp
   choose U hU hxU j f H using this
