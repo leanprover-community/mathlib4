@@ -13,7 +13,6 @@ public import Mathlib.GroupTheory.Coset.Basic
 public import Mathlib.GroupTheory.GroupAction.Basic
 public import Mathlib.GroupTheory.GroupAction.ConjAct
 public import Mathlib.GroupTheory.GroupAction.Hom
-public import Mathlib.GroupTheory.Subgroup.Centralizer
 
 /-!
 # Properties of group actions involving quotient groups
@@ -84,8 +83,8 @@ instance quotient [QuotientAction X H] : MulAction X (G ⧸ H) where
   smul b :=
     Quotient.map' (b • ·) fun _ _ h =>
       leftRel_apply.mpr <| QuotientAction.inv_mul_mem b <| leftRel_apply.mp h
-  one_smul q := Quotient.inductionOn' q fun a => congr_arg Quotient.mk'' (one_smul X a)
-  mul_smul b b' q := Quotient.inductionOn' q fun a => congr_arg Quotient.mk'' (mul_smul b b' a)
+  one_smul q := Quotient.inductionOn q fun a => congr(Quotient.mk'' $(one_smul X a))
+  mul_smul b b' q := Quotient.inductionOn q fun a => congr(Quotient.mk'' $(mul_smul b b' a))
 
 variable {X}
 
@@ -149,17 +148,17 @@ theorem ofQuotientStabilizer_mk (g : G) : ofQuotientStabilizer G x (QuotientGrou
 
 @[to_additive]
 theorem ofQuotientStabilizer_mem_orbit (g) : ofQuotientStabilizer G x g ∈ orbit G x :=
-  Quotient.inductionOn' g fun g => ⟨g, rfl⟩
+  Quotient.inductionOn g fun g => ⟨g, rfl⟩
 
 @[to_additive]
 theorem ofQuotientStabilizer_smul (g : G) (g' : G ⧸ MulAction.stabilizer G x) :
     ofQuotientStabilizer G x (g • g') = g • ofQuotientStabilizer G x g' :=
-  Quotient.inductionOn' g' fun _ => mul_smul _ _ _
+  Quotient.inductionOn g' fun _ => mul_smul _ _ _
 
 @[to_additive]
 theorem injective_ofQuotientStabilizer : Function.Injective (ofQuotientStabilizer G x) :=
   fun y₁ y₂ =>
-  Quotient.inductionOn₂' y₁ y₂ fun g₁ g₂ (H : g₁ • x = g₂ • x) =>
+  Quotient.inductionOn₂ y₁ y₂ fun g₁ g₂ (H : g₁ • x = g₂ • x) =>
     Quotient.sound' <| by
       rw [leftRel_apply]
       change (g₁⁻¹ * g₂) • x = x
@@ -170,7 +169,7 @@ theorem injective_ofQuotientStabilizer : Function.Injective (ofQuotientStabilize
 noncomputable def orbitEquivQuotientStabilizer (b : X) : orbit G b ≃ G ⧸ stabilizer G b :=
   Equiv.symm <|
     Equiv.ofBijective (fun g => ⟨ofQuotientStabilizer G b g, ofQuotientStabilizer_mem_orbit G b g⟩)
-      ⟨fun x y hxy => injective_ofQuotientStabilizer G b (by convert! congr_arg Subtype.val hxy),
+      ⟨fun x y hxy => injective_ofQuotientStabilizer G b (by convert! congr($(hxy).val)),
         fun ⟨_, ⟨g, hgb⟩⟩ => ⟨g, Subtype.ext hgb⟩⟩
 
 /-- Orbit-stabilizer theorem. -/
@@ -320,12 +319,12 @@ noncomputable def equivSubgroupOrbitsSetoidComap (H : Subgroup G) (ω : Ω) :
   left_inv := by
     simp only [LeftInverse]
     intro q
-    induction q using Quotient.inductionOn'
+    induction q using Quotient.inductionOn
     rfl
   right_inv := by
     simp only [Function.RightInverse, LeftInverse]
     intro q
-    induction q using Quotient.inductionOn'
+    induction q using Quotient.inductionOn
     rfl
 
 /-- A bijection between the orbits under the action of a subgroup `H` on `X`, and the orbits
@@ -371,17 +370,17 @@ noncomputable def equivSubgroupOrbitsQuotientGroup [IsPretransitive G X]
     rw [← @Quotient.mk''_eq_mk, Quotient.eq'', orbitRel_apply]
     exact ⟨⟨_, h⟩, by simp [mul_smul]⟩)
   left_inv := fun y ↦ by
-    cases y using Quotient.inductionOn'
+    cases y using Quotient.inductionOn
     simp only [Quotient.liftOn'_mk'']
     rw [← @Quotient.mk''_eq_mk, Quotient.eq'', orbitRel_apply]
-    convert! mem_orbit_self _
+    convert mem_orbit_self _
     rw [inv_smul_eq_iff, (exists_smul_eq G _ x).choose_spec]
   right_inv := fun g ↦ by
-    cases g using Quotient.inductionOn' with | _ g
+    cases g using Quotient.inductionOn with | _ g
     simp only [Quotient.liftOn'_mk'', QuotientGroup.mk]
     rw [Quotient.eq'', leftRel_eq]
     simp only
-    convert! one_mem H
+    convert one_mem H
     rw [inv_mul_eq_one, eq_comm, ← inv_mul_eq_one, ← Subgroup.mem_bot,
         ← IsCancelSMul.stabilizer_eq_bot (g⁻¹ • x), mem_stabilizer_iff, mul_smul,
         (exists_smul_eq G (g⁻¹ • x) x).choose_spec]
@@ -427,16 +426,18 @@ namespace Subgroup
 variable {G : Type*} [Group G] (H : Subgroup G)
 
 theorem normalCore_eq_ker : H.normalCore = (MulAction.toPermHom G (G ⧸ H)).ker := by
-  apply le_antisymm
-  · intro g hg
-    apply Equiv.Perm.ext
-    refine fun q ↦ QuotientGroup.induction_on q ?_
-    refine fun g' => (MulAction.Quotient.smul_mk H g g').trans (QuotientGroup.eq.mpr ?_)
-    rw [smul_eq_mul, mul_inv_rev, ← inv_inv g', inv_inv]
-    exact H.normalCore.inv_mem hg g'⁻¹
-  · refine (Subgroup.normal_le_normalCore.mpr fun g hg => ?_)
-    rw [← H.inv_mem_iff, ← mul_one g⁻¹, ← QuotientGroup.eq, ← mul_one g]
-    exact (MulAction.Quotient.smul_mk H g 1).symm.trans (Equiv.Perm.ext_iff.mp hg (1 : G))
+  ext g
+  rw [MonoidHom.mem_ker, MulAction.toPermHom_apply, Equiv.Perm.ext_iff, QuotientGroup.forall_mk]
+  apply Equiv.inv G |>.forall_congr
+  simp [QuotientGroup.eq, eq_comm, mul_assoc]
+
+theorem _root_.AddSubgroup.normalCore_eq_ker {G : Type*} [AddGroup G] (H : AddSubgroup G) :
+    H.normalCore = (AddAction.toPermHom G (G ⧸ H)).ker := by
+  ext g
+  rw [AddMonoidHom.mem_ker, AddAction.toPermHom_apply, ofMul_eq_zero, Equiv.Perm.ext_iff,
+    QuotientAddGroup.forall_mk]
+  apply Equiv.neg G |>.forall_congr
+  simp [QuotientAddGroup.eq, eq_comm, add_assoc]
 
 open QuotientGroup
 

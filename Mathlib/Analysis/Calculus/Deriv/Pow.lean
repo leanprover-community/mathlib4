@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Calculus.FDeriv.Pow
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Derivative of `(f x) ^ n`, `n : ℕ`
 
@@ -18,7 +21,7 @@ where the result is instead `∑ i ∈ Finset.range n, f x ^ (n.pred - i) * f' *
 For a more detailed overview of one-dimensional derivatives in mathlib, see the module docstring of
 `Mathlib/Analysis/Calculus/Deriv/Basic.lean`.
 
-## Keywords
+## Tags
 
 derivative, power
 -/

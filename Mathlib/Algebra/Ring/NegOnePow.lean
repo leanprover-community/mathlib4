@@ -5,9 +5,10 @@ Authors: Joël Riou, Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.Ring.Int.Parity
-public import Mathlib.Algebra.Ring.Int.Units
 public import Mathlib.Data.ZMod.IntUnitsPower
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Integer powers of (-1)
@@ -16,7 +17,6 @@ This file defines the map `negOnePow : ℤ → ℤˣ` which sends `n` to `(-1 : 
 
 The definition of `negOnePow` and some lemmas first appeared in contributions by
 Johan Commelin to the Liquid Tensor Experiment.
-
 -/
 
 @[expose] public section
@@ -27,6 +27,7 @@ assert_not_exists TwoSidedIdeal
 namespace Int
 
 /-- The map `ℤ → ℤˣ` which sends `n` to `(-1 : ℤˣ) ^ n`. -/
+@[implicit_reducible]
 def negOnePow (n : ℤ) : ℤˣ := (-1 : ℤˣ) ^ n
 
 lemma negOnePow_def (n : ℤ) : n.negOnePow = (-1 : ℤˣ) ^ n := rfl

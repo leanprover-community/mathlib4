@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.Group.InjSurj
 public import Mathlib.Algebra.Group.Units.Defs
-public import Mathlib.Data.Setoid.Basic
-public import Mathlib.Tactic.FastInstance
+public import Mathlib.Order.Setoid.Basic
+
 import Mathlib.Order.GaloisConnection.Basic
 
 /-!
@@ -260,14 +260,14 @@ congruence relation. -/
 @[to_additive (attr := elab_as_elim) /-- The inductive principle used to prove propositions about
 the elements of a quotient by an additive congruence relation. -/]
 protected theorem induction_on {C : c.Quotient → Prop} (q : c.Quotient) (H : ∀ x : M, C x) : C q :=
-  Quotient.inductionOn' q H
+  Quotient.inductionOn q H
 
 /-- A version of `Con.induction_on` for predicates which takes two arguments. -/
 @[to_additive (attr := elab_as_elim)
 /-- A version of `AddCon.induction_on` for predicates which takes two arguments. -/]
 protected theorem induction_on₂ {d : Con N} {C : c.Quotient → d.Quotient → Prop} (p : c.Quotient)
     (q : d.Quotient) (H : ∀ (x : M) (y : N), C x y) : C p q :=
-  Quotient.inductionOn₂' p q H
+  Quotient.inductionOn₂ p q H
 
 variable (c)
 
@@ -574,8 +574,8 @@ variable [MulOneClass M] (c : Con M)
 @[to_additive /-- The quotient of an `AddMonoid` by an additive congruence relation is
 an `AddMonoid`. -/]
 instance mulOneClass : MulOneClass c.Quotient where
-  mul_one x := Quotient.inductionOn' x fun _ => congr_arg ((↑) : M → c.Quotient) <| mul_one _
-  one_mul x := Quotient.inductionOn' x fun _ => congr_arg ((↑) : M → c.Quotient) <| one_mul _
+  mul_one x := Quotient.inductionOn x fun _ => congr_arg ((↑) : M → c.Quotient) <| mul_one _
+  one_mul x := Quotient.inductionOn x fun _ => congr_arg ((↑) : M → c.Quotient) <| one_mul _
 
 end MulOneClass
 
@@ -721,7 +721,7 @@ def liftOnUnits (u : Units c.Quotient) (f : ∀ x y : M, c (x * y) 1 → c (y * 
       (↑u⁻¹ : c.Quotient)
       (fun (x y : M) (hxy : (x * y : c.Quotient) = 1) (hyx : (y * x : c.Quotient) = 1) =>
         f x y (c.eq.1 hxy) (c.eq.1 hyx))
-      (fun x y x' y' hx hy => ?_) u.3 u.4
+      (fun x y x' y' hx hy => ?_) u.val_inv u.inv_val
   refine Function.hfunext ?_ ?_
   · rw [c.eq.2 hx, c.eq.2 hy]
   · rintro Hxy Hxy' -

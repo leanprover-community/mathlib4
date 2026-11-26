@@ -23,7 +23,7 @@ In this file we define associative unital `Algebra`s over commutative (semi)ring
 
 See the implementation notes for remarks about non-associative and non-unital algebras.
 
-## Main definitions:
+## Main definitions
 
 * `Algebra R A`: the algebra typeclass.
 * `algebraMap R A : R →+* A`: the canonical map from `R` to `A`, as a `RingHom`. This is the
@@ -79,7 +79,6 @@ While `AlgHom R A B` cannot be used in the second approach, `NonUnitalAlgHom R A
 
 You should always use the first approach when working with associative unital algebras, and mimic
 the second approach only when you need to weaken a condition on either `R` or `A`.
-
 -/
 
 @[expose] public section

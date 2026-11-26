@@ -6,10 +6,12 @@ Authors: Chris Hughes, Yury Kudryashov, Yaël Dillies
 module
 
 public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-public import Mathlib.Algebra.Module.Defs
 public import Mathlib.Data.Fintype.BigOperators
 
 import Mathlib.Algebra.Module.End
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Finite sums over modules over a ring

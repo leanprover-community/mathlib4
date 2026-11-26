@@ -5,11 +5,12 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
 module
 
-public import Mathlib.Basic.IsEmpty.Basic
 public import Mathlib.Data.ULift
 public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.PPWithUniv
 public import Mathlib.Util.Delaborators
+
+import Mathlib.Basic.IsEmpty.Basic
 
 /-!
 # Cardinal Numbers
@@ -489,6 +490,7 @@ recommended_spelling "aleph0" for "ℵ₀" in [aleph0, «termℵ₀»]
 theorem mk_nat : #ℕ = ℵ₀ :=
   (lift_id _).symm
 
+@[simp]
 theorem aleph0_ne_zero : ℵ₀ ≠ 0 :=
   mk_ne_zero _
 

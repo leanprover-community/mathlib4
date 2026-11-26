@@ -194,7 +194,7 @@ private lemma tonelliIterate_bounds (hf : IsPeanoODE f tmin tmax t₀ x₀ r L) 
   | zero =>
     exact
       ⟨fun _ _ ↦ by simp [mem_closedBall],
-        (LipschitzWith.const x₀).weaken L.2 |>.lipschitzOnWith⟩
+        (LipschitzWith.const x₀).weaken L.property |>.lipschitzOnWith⟩
   | succ k hk =>
     have h_delayed : MapsTo (delayedInput t₀ tmax n) (Icc t₀ tmax) (Icc t₀ tmax) :=
       mapsTo_delayedInput n hf.t₀_mem.2
@@ -319,7 +319,7 @@ private lemma lipschitzWith_boundedTonelliApproximation
     (hf : IsPeanoODE f tmin tmax t₀ x₀ r L) (n : ℕ) :
     LipschitzWith L (boundedTonelliApproximation hf n) :=
   lipschitzWith_iff_dist_le_mul.mpr fun t s ↦
-    (lipschitzOnWith_tonelliApproximation hf n).dist_le_mul t.val t.2 s.val s.2
+    (lipschitzOnWith_tonelliApproximation hf n).dist_le_mul t.val t.property s.val s.property
 
 /-- The family of bounded continuous Tonelli approximations is equicontinuous. -/
 private lemma equicontinuous_boundedTonelliApproximation
@@ -336,7 +336,7 @@ private lemma isCompact_closure_range_boundedTonelliApproximation
     IsCompact (closure (range (boundedTonelliApproximation hf))) := by
   apply BoundedContinuousFunction.arzela_ascoli (closedBall x₀ r) (isCompact_closedBall _ _)
   · rintro g x ⟨n, rfl⟩
-    exact mapsTo_tonelliApproximation_closedBall hf n x.2
+    exact mapsTo_tonelliApproximation_closedBall hf n x.property
   · exact fun x U hU ↦ (equicontinuous_boundedTonelliApproximation hf x U hU).mono (by simp)
 
 /-- The Tonelli approximations admit a convergent subsequence of bounded continuous functions. -/

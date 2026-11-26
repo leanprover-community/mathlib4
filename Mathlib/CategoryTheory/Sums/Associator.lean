@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Sums.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Associator for binary disjoint union of categories.
 

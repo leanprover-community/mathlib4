@@ -70,7 +70,7 @@ def StructureGroupoid.LocalInvariantProp.localPredicate (hG : LocalInvariantProp
     have : ChartedSpace.LiftPropAt P f (Opens.inclusion hUV x') := by
       rw [hG.liftPropAt_iff_comp_inclusion hUV]
       exact hU x'
-    convert! this
+    convert this
 
 /-- Let `P` be a `LocalInvariantProp` for functions between spaces with the groupoids `G`, `G'`
 and let `M`, `M'` be charted spaces modelled on the model spaces of those groupoids.  Then there is
@@ -82,8 +82,8 @@ def StructureGroupoid.LocalInvariantProp.sheaf (hG : LocalInvariantProp G G' P) 
 
 instance StructureGroupoid.LocalInvariantProp.sheafHasCoeToFun (hG : LocalInvariantProp G G' P)
     (U : (Opens (TopCat.of M))ᵒᵖ) : CoeFun ((hG.sheaf M M').obj.obj U) fun _ => ↑(unop U) → M' where
-  coe a := a.1
+  coe a := a.val
 
 theorem StructureGroupoid.LocalInvariantProp.section_spec (hG : LocalInvariantProp G G' P)
     (U : (Opens (TopCat.of M))ᵒᵖ) (f : (hG.sheaf M M').obj.obj U) : ChartedSpace.LiftProp P f :=
-  f.2
+  f.property

@@ -7,12 +7,14 @@ module
 
 public import Mathlib.Topology.Algebra.InfiniteSum.Defs
 public import Mathlib.Topology.Algebra.UniformConvergence
-public import Mathlib.Order.Filter.AtTopBot.Finset
+
+import Mathlib.Order.Filter.AtTopBot.Finset
 
 /-!
 # Infinite sum and products that converge uniformly
 
 ## Main definitions
+
 - `HasProdUniformlyOn f g s` : `∏ i, f i b` converges uniformly on `s` to `g`.
 - `HasProdLocallyUniformlyOn f g s` : `∏ i, f i b` converges locally uniformly on `s` to `g`.
 - `HasProdUniformly f g` : `∏ i, f i b` converges uniformly to `g`.
@@ -47,7 +49,7 @@ variable (f g s) in
 /-- `MultipliableUniformlyOn f s` means that there is some infinite product to which
 `f` converges uniformly on `s`. Use `fun x ↦ ∏' i, f i x` to get the product function. -/
 @[to_additive /-- `SummableUniformlyOn f s` means that there is some infinite sum to
-which `f` converges uniformly on `s`. Use fun x ↦ ∑' i, f i x to get the sum function. -/]
+which `f` converges uniformly on `s`. Use `fun x ↦ ∑' i, f i x` to get the sum function. -/]
 def MultipliableUniformlyOn : Prop := Multipliable (UniformOnFun.ofFun {s} ∘ f)
 
 @[to_additive]
@@ -301,7 +303,7 @@ variable (f g) in
 /-- `MultipliableUniformly f` means that there is some infinite product to which
 `f` converges uniformly. Use `fun x ↦ ∏' i, f i x` to get the product function. -/
 @[to_additive /-- `SummableUniformly f` means that there is some infinite sum to which
-`f` converges uniformly. Use `fun x ↦ ∑' i, f i x` to get the product function. -/]
+`f` converges uniformly. Use `fun x ↦ ∑' i, f i x` to get the sum function. -/]
 def MultipliableUniformly : Prop := Multipliable (UniformFun.ofFun ∘ f)
 
 @[to_additive]

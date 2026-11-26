@@ -6,9 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Order.Monovary
-public import Mathlib.Algebra.Order.Ring.Basic
 public import Mathlib.Analysis.Convex.Function
-public import Mathlib.Tactic.FieldSimp
 
 /-!
 # Product of convex functions
@@ -111,7 +109,7 @@ lemma ConcaveOn.smul_convexOn' (hf : ConcaveOn 𝕜 s f) (hg : ConvexOn 𝕜 s g
   rw [← neg_convexOn_iff, ← smul_neg]
   exact hf.smul'' hg.neg hf₀ (fun x hx ↦ neg_nonpos.2 <| hg₀ hx) hfg.neg_right
 
-variable [IsOrderedModule 𝕜 E] [IsScalarTower 𝕜 E E] [SMulCommClass 𝕜 E E] {f g : G → E}
+variable [IsOrderedModule 𝕜 E] [IsScalarTower 𝕜 E E] {f g : G → E}
 
 lemma ConvexOn.mul (hf : ConvexOn 𝕜 s f) (hg : ConvexOn 𝕜 s g) (hf₀ : ∀ ⦃x⦄, x ∈ s → 0 ≤ f x)
     (hg₀ : ∀ ⦃x⦄, x ∈ s → 0 ≤ g x) (hfg : MonovaryOn f g s) :

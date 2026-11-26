@@ -5,9 +5,9 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.LinearAlgebra.Finsupp.LSum
 public import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
-public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
+
+import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 
 /-!
 # Unimodular elements and completion to a basis

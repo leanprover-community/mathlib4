@@ -5,10 +5,12 @@ Authors: Yury Kudryashov, Joseph Myers
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Orthogonal
-public import Mathlib.Analysis.Normed.Group.AddTorsor
 public import Mathlib.Analysis.Convex.Between
 public import Mathlib.Analysis.InnerProductSpace.Affine
+public import Mathlib.Analysis.InnerProductSpace.Orthogonal
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Perpendicular bisector of a segment
@@ -18,7 +20,7 @@ We define `AffineSubspace.perpBisector p₁ p₂` to be the perpendicular bisect
 bisector if and only if it is equidistant from `p₁` and `p₂`, as well as a few linear equations that
 define this subspace.
 
-## Keywords
+## Tags
 
 euclidean geometry, perpendicular, perpendicular bisector, line segment bisector, equidistant
 -/
@@ -71,6 +73,8 @@ theorem midpoint_mem_perpBisector (p₁ p₂ : P) :
 
 theorem perpBisector_nonempty : (perpBisector p₁ p₂ : Set P).Nonempty :=
   ⟨_, midpoint_mem_perpBisector _ _⟩
+
+instance : Nonempty (perpBisector p₁ p₂) := perpBisector_nonempty.to_subtype
 
 @[simp]
 theorem direction_perpBisector (p₁ p₂ : P) :

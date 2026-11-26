@@ -6,8 +6,12 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-public import Mathlib.RingTheory.Finiteness.Basic
 public import Mathlib.RingTheory.Finiteness.Bilinear
+
+import Mathlib.RingTheory.Finiteness.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Subalgebras that are finitely generated as submodules

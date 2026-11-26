@@ -43,8 +43,6 @@ so we could deduce the facts here from an equivalence `HopfAlgCat R ≌ Hopf (Mo
 * <https://en.wikipedia.org/wiki/Hopf_algebra>
 
 * [C. Kassel, *Quantum Groups* (§III.3)][Kassel1995]
-
-
 -/
 
 public section
@@ -82,13 +80,13 @@ variable {R : Type u} {A : Type v} {ι : Type*} [CommSemiring R] [Semiring A] [H
 theorem mul_antipode_rTensor_comul_apply (a : A) :
     LinearMap.mul' R A ((antipode R).rTensor A (Coalgebra.comul a)) =
     algebraMap R A (Coalgebra.counit a) :=
-  LinearMap.congr_fun mul_antipode_rTensor_comul a
+  congr($mul_antipode_rTensor_comul a)
 
 @[simp]
 theorem mul_antipode_lTensor_comul_apply (a : A) :
     LinearMap.mul' R A ((antipode R).lTensor A (Coalgebra.comul a)) =
     algebraMap R A (Coalgebra.counit a) :=
-  LinearMap.congr_fun mul_antipode_lTensor_comul a
+  congr($mul_antipode_lTensor_comul a)
 
 @[simp]
 theorem antipode_one :

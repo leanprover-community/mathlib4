@@ -8,11 +8,14 @@ module
 public import Mathlib.Algebra.Category.FGModuleCat.Colimits
 public import Mathlib.Algebra.Category.FGModuleCat.Limits
 public import Mathlib.Algebra.Category.ModuleCat.Abelian
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.AbelianImages
+
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.AbelianImages
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # `FGModuleCat K` is an abelian category.
-
 -/
 
 public section

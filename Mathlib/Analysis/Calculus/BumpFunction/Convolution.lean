@@ -5,13 +5,9 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.Analysis.Convolution
 public import Mathlib.Analysis.Calculus.BumpFunction.FiniteDimension
 public import Mathlib.Analysis.Calculus.BumpFunction.Normed
-public import Mathlib.MeasureTheory.Integral.Average
-public import Mathlib.MeasureTheory.Covering.Differentiation
 public import Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace
-public import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 /-!
 # Convolution with a bump function
@@ -34,7 +30,7 @@ We also provide estimates in the case if `g x` is close to `g x₀` on this ball
   integrable function. Then the convolution of `g` with a family of bump functions with
   support tending to `0` converges almost everywhere to `g`.
 
-## Keywords
+## Tags
 
 convolution, smooth function, bump function
 -/

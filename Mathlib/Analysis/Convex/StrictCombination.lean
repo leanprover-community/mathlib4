@@ -7,14 +7,15 @@ module
 
 public import Mathlib.Analysis.Convex.StrictConvexSpace
 public import Mathlib.Analysis.Normed.Group.AddTorsor
-public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Convex combinations in strictly convex sets and spaces.
 
 This file proves lemmas about convex combinations of points in strictly convex sets and strictly
 convex spaces.
-
 -/
 
 public section

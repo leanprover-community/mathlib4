@@ -8,6 +8,9 @@ module
 public import Mathlib.Combinatorics.SimpleGraph.Basic
 public import Mathlib.MeasureTheory.MeasurableSpace.Embedding
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sigma-algebra on simple graphs
 

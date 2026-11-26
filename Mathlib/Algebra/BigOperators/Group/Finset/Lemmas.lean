@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Group.Even
 public import Mathlib.Algebra.Group.Pi.Lemmas
 public import Mathlib.Algebra.Notation.Support
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Miscellaneous lemmas on big operators
 
@@ -26,12 +29,6 @@ theorem MonoidHom.coe_finsetProd [MulOneClass M] [CommMonoid N] (f : ι → M �
     ⇑(∏ x ∈ s, f x) = ∏ x ∈ s, ⇑(f x) :=
   map_prod (MonoidHom.coeFn M N) _ _
 
-@[deprecated (since := "2026-04-08")]
-alias AddMonoidHom.coe_finset_sum := AddMonoidHom.coe_finsetSum
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-alias MonoidHom.coe_finset_prod := MonoidHom.coe_finsetProd
-
 /-- See also `Finset.prod_apply`, with the same conclusion but with the weaker hypothesis
 `f : α → M → N` -/
 @[to_additive (attr := simp)
@@ -40,12 +37,6 @@ alias MonoidHom.coe_finset_prod := MonoidHom.coe_finsetProd
 theorem MonoidHom.finsetProd_apply [MulOneClass M] [CommMonoid N] (f : ι → M →* N) (s : Finset ι)
     (b : M) : (∏ x ∈ s, f x) b = ∏ x ∈ s, f x b :=
   map_prod (MonoidHom.eval b) _ _
-
-@[deprecated (since := "2026-04-08")]
-alias AddMonoidHom.finset_sum_apply := AddMonoidHom.finsetSum_apply
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-alias MonoidHom.finset_prod_apply := MonoidHom.finsetProd_apply
 
 namespace Finset
 
@@ -58,15 +49,16 @@ lemma mulSupport_prod (s : Finset ι) (f : ι → κ → M) :
   simp only [mulSupport_subset_iff', Set.mem_iUnion, not_exists, notMem_mulSupport]
   exact fun x ↦ prod_eq_one
 
+-- TODO : add multiset sum version
 @[to_additive]
 lemma isSquare_prod {s : Finset ι} (f : ι → M) (h : ∀ c ∈ s, IsSquare (f c)) :
     IsSquare (∏ i ∈ s, f i) := by
   rw [isSquare_iff_exists_sq]
-  use (∏ (x : s), ((isSquare_iff_exists_sq _).mp (h _ x.2)).choose)
+  use (∏ (x : s), ((isSquare_iff_exists_sq _).mp (h _ x.property)).choose)
   rw [@sq, ← Finset.prod_mul_distrib, ← Finset.prod_coe_sort]
   congr
   ext i
   rw [← @sq]
-  exact ((isSquare_iff_exists_sq _).mp (h _ i.2)).choose_spec
+  exact ((isSquare_iff_exists_sq _).mp (h _ i.property)).choose_spec
 
 end Finset

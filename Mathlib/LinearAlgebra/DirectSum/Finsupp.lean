@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.DirectSum.Finsupp
 public import Mathlib.LinearAlgebra.DirectSum.TensorProduct
-public import Mathlib.LinearAlgebra.Finsupp.SumProd
 
 /-!
 # Results on finitely supported functions.
@@ -30,7 +29,6 @@ public import Mathlib.LinearAlgebra.Finsupp.SumProd
 
 * `finsuppTensorFinsupp`, the tensor product of `ι →₀ M` and `κ →₀ N`
   is linearly equivalent to `(ι × κ) →₀ (M ⊗ N)`.
-
 -/
 
 @[expose] public section

@@ -6,7 +6,6 @@ Authors: María Inés de Frutos-Fernández, Yaël Dillies
 module
 
 public import Mathlib.Algebra.Order.Ring.IsNonarchimedean
-public import Mathlib.Analysis.Normed.Field.Lemmas
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
@@ -28,7 +27,7 @@ For a ring `R`:
   `MulRingNorm R` is essentially the same as `AbsoluteValue R ℝ`, and it is recommended to
   use the latter instead to avoid duplicating results.
 
-## Notes
+## Implementation notes
 
 The corresponding hom classes are defined in `Mathlib/Algebra/Order/Hom/Basic.lean` to be used by
 absolute values; see `Mathlib/Algebra/Order/AbsoluteValue/Basic.lean` for the bundled version.
@@ -38,6 +37,7 @@ absolute values; see `Mathlib/Algebra/Order/AbsoluteValue/Basic.lean` for the bu
 * [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*][bosch-guntzer-remmert]
 
 ## Tags
+
 ring_seminorm, ring_norm
 -/
 
@@ -88,7 +88,7 @@ instance funLike : FunLike (RingSeminorm R) R ℝ where
     cases g
     congr
     ext x
-    exact congr_fun h x
+    congrm $h x
 
 instance ringSeminormClass : RingSeminormClass (RingSeminorm R) R ℝ where
   map_zero f := f.map_zero'
@@ -233,7 +233,7 @@ instance funLike : FunLike (RingNorm R) R ℝ where
     cases g
     congr
     ext x
-    exact congr_fun h x
+    congrm $h x
 
 instance ringNormClass : RingNormClass (RingNorm R) R ℝ where
   map_zero f := f.map_zero'
@@ -289,7 +289,7 @@ instance funLike : FunLike (MulRingSeminorm R) R ℝ where
     cases g
     congr
     ext x
-    exact congr_fun h x
+    congrm $h x
 
 instance mulRingSeminormClass : MulRingSeminormClass (MulRingSeminorm R) R ℝ where
   map_zero f := f.map_zero'
@@ -341,7 +341,7 @@ instance funLike : FunLike (MulRingNorm R) R ℝ where
     cases g
     congr
     ext x
-    exact congr_fun h x
+    congrm $h x
 
 instance mulRingNormClass : MulRingNormClass (MulRingNorm R) R ℝ where
   map_zero f := f.map_zero'

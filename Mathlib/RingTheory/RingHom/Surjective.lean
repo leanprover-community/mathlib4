@@ -7,8 +7,10 @@ module
 
 public import Mathlib.RingTheory.LocalProperties.Basic
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # The meta properties of surjective ring homomorphisms.
 
 ## Main results
@@ -20,7 +22,6 @@ Let `R` be a commutative ring, `M` be a submonoid of `R`.
   spans `R` such that `Rᵣ →+* Sᵣ` is surjective.
 * `surjective_localRingHom_of_surjective` : A surjective ring homomorphism `R →+* S` induces a
   surjective homomorphism `R_{f⁻¹(P)} →+* S_P` for every prime ideal `P` of `S`.
-
 -/
 
 public section

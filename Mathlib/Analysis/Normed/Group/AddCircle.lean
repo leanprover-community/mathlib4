@@ -9,20 +9,22 @@ public import Mathlib.Analysis.Normed.Group.Quotient
 public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
 public import Mathlib.Topology.Instances.AddCircle.Real  -- shake: keep (used in type annotation)
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The additive circle as a normed group
 
 We define the normed group structure on `AddCircle p`, for `p : ℝ`. For example if `p = 1` then:
 `‖(x : AddCircle 1)‖ = |x - round x|` for any `x : ℝ` (see `UnitAddCircle.norm_eq`).
 
-## Main definitions:
+## Main definitions
 
 * `AddCircle.norm_eq`: a characterisation of the norm on `AddCircle p`
 
 ## TODO
 
 * The fact `InnerProductGeometry.angle (Real.cos θ) (Real.sin θ) = ‖(θ : Real.Angle)‖`
-
 -/
 
 public section
@@ -47,7 +49,7 @@ theorem norm_coe_mul (x : ℝ) (t : ℝ) :
     ‖(↑(t * x) : AddCircle (t * p))‖ = |t| * ‖(x : AddCircle p)‖ := by
   obtain rfl | ht := eq_or_ne t 0
   · simp
-  simp only [norm_eq_infDist, ← Real.norm_eq_abs, ← infDist_smul₀ ht, smul_zero]
+  simp only [norm_eq_infDist, ← Real.norm_eq_abs, ← infDist_smul₀, smul_zero]
   congr 1 with m
   simp_rw [zmultiples, eq_iff_sub_mem, zsmul_eq_mul, mul_left_comm, ← smul_eq_mul, Set.range_smul]
   simp [mem_smul_set_iff_inv_smul_mem₀ ht, mul_sub, ht]
@@ -87,7 +89,7 @@ theorem norm_eq {x : ℝ} : ‖(x : AddCircle p)‖ = |x - round (p⁻¹ * x) * 
 
 theorem norm_eq' (hp : 0 < p) {x : ℝ} : ‖(x : AddCircle p)‖ = p * |p⁻¹ * x - round (p⁻¹ * x)| := by
   conv_rhs =>
-    congr
+    enter [1]
     rw [← abs_eq_self.mpr hp.le]
   rw [← abs_mul, mul_sub, mul_inv_cancel_left₀ hp.ne.symm, norm_eq, mul_comm p]
 

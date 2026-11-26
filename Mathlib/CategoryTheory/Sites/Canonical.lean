@@ -5,7 +5,6 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Sheaf
 public import Mathlib.CategoryTheory.Sites.Whiskering
 
 /-!
@@ -28,6 +27,7 @@ A Grothendieck topology is called `Subcanonical` if it is smaller than the canon
 equivalently it is subcanonical iff every representable presheaf is a sheaf.
 
 ## References
+
 * https://ncatlab.org/nlab/show/canonical+topology
 * https://ncatlab.org/nlab/show/subcanonical+coverage
 * https://stacks.math.columbia.edu/tag/00Z9

@@ -23,8 +23,6 @@ We then upgrade the original functor and its inverse to monoidal functors
 with respect to the new monoidal structure on `D`.
 -/
 
-set_option backward.defeqAttrib.useBackward true
-
 @[expose] public section
 
 
@@ -208,7 +206,6 @@ noncomputable instance : (equivalenceTransported e).functor.Monoidal :=
 noncomputable instance : (equivalenceTransported e).symm.inverse.Monoidal :=
   inferInstanceAs (equivalenceTransported e).functor.Monoidal
 
-set_option backward.isDefEq.respectTransparency false in
 instance : (equivalenceTransported e).symm.IsMonoidal := by
   infer_instance
 
