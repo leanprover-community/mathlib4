@@ -502,9 +502,10 @@ theorem eRank_diagonal [DecidableEq m] (w : m → R) :
 /-- **Frobenius rank inequality**: `rank (A * B) + rank (B * C) ≤ rank B + rank (A * B * C)`.
 
 Taking `B = 1` recovers Sylvester's rank inequality `Matrix.rank_mul_ge`. -/
-theorem rank_mul_add_rank_mul_le [Fintype m] [Fintype n] [Fintype o]
+theorem rank_mul_add_rank_mul_le [Fintype m] [Fintype n] [Finite o]
     (A : Matrix l m R) (B : Matrix m n R) (C : Matrix n o R) :
     (A * B).rank + (B * C).rank ≤ B.rank + (A * B * C).rank := by
+  have := Fintype.ofFinite o
   have hAB : (A * B).mulVecLin = A.mulVecLin ∘ₗ B.mulVecLin :=
     LinearMap.ext fun v => by simp [Matrix.mulVec_mulVec]
   have hBC : (B * C).mulVecLin = B.mulVecLin ∘ₗ C.mulVecLin :=
