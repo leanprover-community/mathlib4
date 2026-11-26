@@ -104,33 +104,35 @@ section
 variable {F : Type*} [FunLike F A B]
 
 /-- Turn an element of a type `F` satisfying `MonoidHomClass F A B` and `ContinuousMapClass F A B`
-into a `ContinuousMonoidHom`. This is declared as the default coercion from `F` to
-`(A →ₜ* B)`. -/
-@[to_additive (attr := coe) /-- Turn an element of a type `F` satisfying
-`AddMonoidHomClass F A B` and `ContinuousMapClass F A B` into a `ContinuousAddMonoidHom`.
-This is declared as the default coercion from `F` to `ContinuousAddMonoidHom A B`. -/]
-def toContinuousMonoidHom [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) : A →ₜ* B :=
+into a `ContinuousMonoidHom`. -/
+@[to_additive /-- Turn an element of a type `F` satisfying
+`AddMonoidHomClass F A B` and `ContinuousMapClass F A B` into a `ContinuousAddMonoidHom`. -/]
+def ofClass [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) : A →ₜ* B :=
   { MonoidHom.ofClass f with
     continuous_toFun := by dsimp; fun_prop }
 
-/-- Any type satisfying `MonoidHomClass` and `ContinuousMapClass` can be cast into
-`ContinuousMonoidHom` via `ContinuousMonoidHom.toContinuousMonoidHom`. -/
-@[to_additive /-- Any type satisfying `AddMonoidHomClass` and `ContinuousMapClass` can be cast into
-`ContinuousAddMonoidHom` via `ContinuousAddMonoidHom.toContinuousAddMonoidHom`. -/]
-instance [MonoidHomClass F A B] [ContinuousMapClass F A B] : CoeOut F (A →ₜ* B) :=
-  ⟨ContinuousMonoidHom.toContinuousMonoidHom⟩
+@[to_additive (attr := deprecated (since := "2026-11-24"))] alias toContinuousMonoidHom := ofClass
 
 @[to_additive (attr := simp)]
-lemma coe_coe [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) :
-    ⇑(f : A →ₜ* B) = f := rfl
+protected lemma coe_ofClass [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) :
+    ⇑(ofClass f) = f := rfl
 
-@[to_additive (attr := simp, norm_cast)]
-lemma toMonoidHom_toContinuousMonoidHom [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) :
-    ((f : A →ₜ* B) : A →* B) = f := rfl
+@[to_additive (attr := deprecated (since := "2026-11-24"))] protected alias coe_coe :=
+  ContinuousMonoidHom.coe_ofClass
 
-@[to_additive (attr := simp, norm_cast)]
-lemma toContinuousMap_toContinuousMonoidHom [MonoidHomClass F A B] [ContinuousMapClass F A B]
-    (f : F) : ((f : A →ₜ* B) : C(A, B)) = f := rfl
+@[to_additive (attr := simp)]
+lemma toMonoidHom_ofClass [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) :
+    (ofClass f : A →* B) = f := rfl
+
+@[to_additive (attr := deprecated (since := "2026-11-24"))] alias
+    toMonoidHom_toContinuousMonoidHom := toMonoidHom_ofClass
+
+@[to_additive (attr := simp)]
+lemma toContinuousMap_ofClass [MonoidHomClass F A B] [ContinuousMapClass F A B]
+    (f : F) : (ofClass f : C(A, B)) = f := rfl
+
+@[to_additive (attr := deprecated (since := "2026-11-24"))] alias
+    toContinuousMap_toContinuousMonoidHom := toContinuousMap_ofClass
 
 end
 
@@ -275,13 +277,6 @@ instance : CommGroup (ContinuousMonoidHom A E) where
 
 end CommGroup
 
-/-- For `f : F` where `F` is a class of continuous monoid hom, this yields an element
-`ContinuousMonoidHom A B`. -/
-@[to_additive /-- For `f : F` where `F` is a class of continuous additive monoid hom, this yields
-an element `ContinuousAddMonoidHom A B`. -/]
-def ofClass (F : Type*) [FunLike F A B] [ContinuousMapClass F A B]
-    [MonoidHomClass F A B] (f : F) : (ContinuousMonoidHom A B) := toContinuousMonoidHom f
-
 end ContinuousMonoidHom
 
 end
@@ -380,6 +375,30 @@ def mk' (f : M ≃ₜ N) (h : ∀ x y, f (x * y) = f x * f y) : M ≃ₜ* N :=
 set_option linter.docPrime false in -- This is about `ContinuousMulEquiv.mk'`
 @[simp]
 lemma coe_mk' (f : M ≃ₜ N) (h : ∀ x y, f (x * y) = f x * f y) : ⇑(mk' f h) = f := rfl
+
+section toContinuousMonoidHom
+
+variable {M N : Type*} [Monoid M] [Monoid N] [TopologicalSpace M] [TopologicalSpace N]
+
+/-- Reinterpret a `ContinuousMulEquiv` as a `ContinuousMonoidHom`. -/
+@[to_additive /-- Reinterpret a `ContinuousAddEquiv` as a `ContinuousAddMonoidHom`. -/]
+def toContinuousMonoidHom (e : M ≃ₜ* N) : M →ₜ* N :=
+  { ContinuousMap.ofClass e, MonoidHom.ofClass e with }
+
+@[to_additive (attr := simp)]
+lemma coe_toContinuousMonoidHom (e : M ≃ₜ* N) : ⇑e.toContinuousMonoidHom = e := rfl
+
+@[to_additive]
+lemma toContinuousMonoidHom_injective :
+    Function.Injective (toContinuousMonoidHom : (M ≃ₜ* N) → M →ₜ* N) :=
+  fun _ _ h ↦ by ext; simp [h, ← coe_toContinuousMonoidHom]
+
+@[to_additive (attr := simp)]
+lemma toContinuousMonoidHom_inj {e f : M ≃ₜ* N} :
+    e.toContinuousMonoidHom = f.toContinuousMonoidHom ↔ e = f :=
+  toContinuousMonoidHom_injective.eq_iff
+
+end toContinuousMonoidHom
 
 end coe
 
