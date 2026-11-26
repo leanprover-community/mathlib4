@@ -237,3 +237,6 @@
     build: make.yml
     release-tag: create-release.yml
     update: upgrade.yml
+- github: https://github.com/matheconlib/matheconlib
+  default_branch: main
+  name: MathEconLib
