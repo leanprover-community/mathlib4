@@ -162,7 +162,7 @@ elab_rules : term <= expectedType | `(assertInstancesCommuteLiftImpl $cont) => d
 `do` block in `PositivityM`. While `Mathlib.Meta.Positivity` is open, we expand it to the lifted
 variant above instead, so that `positivity` extensions can keep using it.
 
-TODO: make this change in `Qq` (it is one `monadLift`) and remove this override. -/
+TODO: remove this override once leanprover-community/quote4#181 is available in Mathlib. -/
 scoped macro_rules
   | `(assert! assertInstancesCommuteDummy; $cont) => `(assertInstancesCommuteLiftImpl $cont)
 
