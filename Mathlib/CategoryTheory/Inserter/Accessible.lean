@@ -264,14 +264,14 @@ abbrev functor (E : Inserter F G) : Λᵒᵖ ⥤ Type _ where
 
 section succ
 
-/- This section setups the "successor case" of the transfinite induction extending a partial
+/- This section sets up the successor case of the induction extending a partial
 chain to a section of `PartialChainUpTo`. -/
 
 open SmallObject.SuccStruct
 
 variable {κ} {Λ} in
 /-- The main technical induction step, where we pick an index large enough
-to ensure a set of properties. This crucially uses that Λ is small enough. -/
+to ensure a set of properties. This crucially uses that `Λ` is small enough. -/
 lemma exists_succ_of_hasCardinalLT [IsCardinalAccessibleCategory K κ]
     [F.IsCardinalAccessible κ] [G.IsCardinalAccessible κ]
     [F.PreservesCardinalPresentable κ]
@@ -286,7 +286,7 @@ lemma exists_succ_of_hasCardinalLT [IsCardinalAccessibleCategory K κ]
         F.map (b.ξ.map <| homOfLE <| hj.le).left.hom ≫ ψ := by
   let ξ₁ := b.ξ.obj (iic% i i)
   -- First, we summon a diagram to write E.obj as a κ-filtered colimits of κ-presentable objects.
-  let O₀ := isCardinalPresentable K κ
+  let O₀ := isCardinalPresentable K κ -- shorthand for shorter notations
   have : IsFiltered (CostructuredArrow O₀.ι E.obj) := isFiltered_of_isCardinalFiltered _ κ
   let hcolimT := O₀.ι.denseAt E.obj -- E.obj ≅ colim_ξ T_ξ
   have (X : K) : Limits.PreservesColimitsOfShape (CostructuredArrow O₀.ι X) G :=
@@ -300,11 +300,11 @@ lemma exists_succ_of_hasCardinalLT [IsCardinalAccessibleCategory K κ]
   necessarily commutative, so we must pick a new index large enough to coequalize everything. -/
   have Uspec (j : Set.Iio i) :
     ∃ (uji : CostructuredArrow O₀.ι E.obj) (vji : ξ₂₁ ⟶ uji),
-      b.ψ j.1 i j.property le_rfl ≫ G.map v₀.left.hom ≫ G.map vji.left.hom =
+      b.ψ j.val i j.property le_rfl ≫ G.map v₀.left.hom ≫ G.map vji.left.hom =
       F.map (b.ξ.map <| homOfLE <| j.property.le).left.hom ≫ v₁ ≫
         G.map vji.left.hom := by
     obtain ⟨uij, vij, h⟩ := IsCardinalPresentable.exists_eq_of_isColimit' κ hcolimGT
-      (b.ψ j.1 i j.property le_rfl ≫ G.map v₀.left.hom)
+      (b.ψ j.val i j.property le_rfl ≫ G.map v₀.left.hom)
       (F.map (b.ξ.map <| homOfLE <| j.property.le).left.hom ≫ v₁)
       (by
         dsimp at hv₀
@@ -333,7 +333,7 @@ variable [NoMaxOrder Λ] {κ} {Λ} {E : Inserter F G} {i : Λ} (b : PartialChain
     (h₂ : ∀ (j : Λ) (hj : j < i), F.map (b.ξ.map <| homOfLE hj.le).left.hom ≫ ψ₀ =
       b.ψ j i hj le_rfl ≫ G.map ν.left.hom)
 
-/-- The to-be ξ field of the extension -/
+/-- The to-be `ξ` field of the extension. -/
 abbrev ξ := extendToSucc (not_isMax _) b.ξ ν
 
 lemma ξ_map_le (j k : Λ) (hjk : j ≤ k := by valid) (hk : k ≤ i := by valid) :
@@ -353,7 +353,7 @@ lemma ξ_map_le_succ (j : Λ) (hj : j ≤ i := by valid) :
   simp [this, extendToSucc_map_le_succ (not_isMax _) b.ξ ν,
     extendToSuccObjIso_hom_naturality_assoc]
 
-/-- The to-be ψ field of the extension -/
+/-- The to-be `ψ` field of the extension. -/
 abbrev ψ (j k : Λ) (hjk : j < k := by valid) (hk : k ≤ succ i := by valid) :
     F.obj ((extend.ξ b ξₙ ν).obj (iic% j (succ i))).left.obj ⟶
       G.obj ((extend.ξ b ξₙ ν).obj (iic% k (succ i))).left.obj :=
@@ -370,7 +370,7 @@ abbrev ψ (j k : Λ) (hjk : j < k := by valid) (hk : k ≤ succ i := by valid) :
 lemma ψ_of_le (j k : Λ) (hjk : j < k := by valid) (hk : k ≤ i := by valid) :
     ψ b ξₙ ν ψ₀ j k =
     F.map (extendToSuccObjIso (not_isMax _) b.ξ ν j (by valid)).hom.left.hom ≫
-      b.ψ j k (by valid) hk ≫
+      b.ψ j k ≫
       G.map (extendToSuccObjIso (not_isMax _) b.ξ ν k hk).inv.left.hom := by
   simp [ψ, hk]
 
@@ -388,7 +388,8 @@ lemma sq₁ (j : Λ) (hj : j < succ i := by valid) :
       G.map ((extend.ξ b ξₙ ν).obj (iic% (succ i) (succ i))).hom =
     F.map ((extend.ξ b ξₙ ν).obj (iic% j (succ i))).hom ≫ E.hom := by
   simp (discharger := valid) only [ψ_succ, homOfLE_leOfHom, Category.assoc,
-    ← G.map_comp, helper, ← h₁, ← F.map_comp_assoc]
+    ← G.map_comp, ObjectProperty.CostructuredArrow.left_hom_comp_hom,
+    ← h₁, ← F.map_comp_assoc]
 
 lemma t₁ (j k l : Λ)
     (hjk : j ≤ k := by valid) (hkl : k < l := by valid) (hl : l ≤ succ i := by valid) :
@@ -456,14 +457,11 @@ lemma trunc_extend [NoMaxOrder Λ]
     (h₂ : ∀ (j : Λ) (hj : j < i), F.map (b.ξ.map <| homOfLE hj.le).left.hom ≫ ψ =
       b.ψ j i hj le_rfl ≫ G.map ν.left.hom) :
     (b.extend κ Λ ξₙ ν ψ h₁ h₂).trunc κ Λ E (Order.le_succ i) = b := by
-  fapply eqToHom_ext
-  · intro j
-    simpa [trunc, extend, SmallObject.restrictionLE] using! extendToSucc_obj_eq ..
-  · intro j k hjk hki
-    simp (discharger := valid) [trunc, extend, extend.ξ_map_le b ξₙ _ j k,
+  refine eqToHom_ext _ _ (fun j ↦ ?_) (fun j k hjk hki ↦ ?_) (fun j k hjk hki ↦ ?_)
+  · simpa [trunc, extend, SmallObject.restrictionLE] using! extendToSucc_obj_eq ..
+  · simp (discharger := valid) [trunc, extend, extend.ξ_map_le b ξₙ _ j k,
       SmallObject.SuccStruct.extendToSuccObjIso]
-  · intro j k hjk hki
-    simp [trunc, extend, extend.ψ, hki, SmallObject.SuccStruct.extendToSuccObjIso]
+  · simp [trunc, extend, extend.ψ, hki, SmallObject.SuccStruct.extendToSuccObjIso]
 
 theorem surjective_trunc [NoMaxOrder Λ] [IsCardinalAccessibleCategory K κ]
     [F.IsCardinalAccessible κ] [G.IsCardinalAccessible κ]
