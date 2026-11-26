@@ -396,8 +396,7 @@ theorem two_mul_cauchyIndex_inv_algebraMap {p : ℝ[X]} {a b : ℝ} (hab : a ≤
   by_cases hroot : ∀ x ∈ Ioo a b, p.eval x ≠ 0
   · -- no root in `(a, b)`: no jump, and `p` keeps its sign
     have hIcc : ∀ x ∈ uIcc a b, ¬p.IsRoot x := by
-      rw [uIcc_of_le hab.le, ← insert_left_Ioc hab.le, ← insert_right_Ioo hab]
-      exact forall_mem_insert.mpr ⟨ha, forall_mem_insert.mpr ⟨hb, hroot⟩⟩
+      grind [mem_uIcc, IsRoot.def]
     rw [sign_eval_eq_of_forall_ne_zero hIcc, sub_self,
       cauchyIndex_eq_zero_of_forall_eval_denom_ne_zero fun x hx h0 =>
         hroot x hx (eval_eq_zero_of_dvd_of_eval_eq_zero (denom_inv_algebraMap_dvd p) h0),
