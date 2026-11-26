@@ -63,12 +63,9 @@ theorem compMeasurePreserving_continuous (hp : p ≠ ∞) :
   induction f using Lp.simpleFunc.induction hp₀ hp with
   | add hfp hgp _ ihf ihg => exact ihf.add ihg
   | @indicatorConst c s hs hνs =>
-    have key : (fun f : {f : C(X, Y) // MeasurePreserving f μ ν} ↦
-          compMeasurePreserving f.1 f.2 (Lp.simpleFunc.indicatorConst p hs hνs.ne c : Lp E p ν)) =
-        fun f ↦ indicatorConstLp p (hs.preimage (map_continuous f.1).measurable)
-          (by rw [f.2.measure_preimage hs.nullMeasurableSet]; exact hνs.ne) c := rfl
-    rw [key]
-    refine continuous_indicatorConstLp_set hp fun f ↦ ?_
+    refine continuous_indicatorConstLp_set (hs := fun f ↦ hs.preimage f.val.continuous.measurable)
+      (hμs := fun f ↦ (f.property.measure_preimage hs.nullMeasurableSet).trans_ne hνs.ne) hp
+      fun f ↦ ?_
     apply tendsto_measure_symmDiff_preimage_nhds_zero continuousAt_subtypeVal _ f.property
       hs.nullMeasurableSet hνs.ne
     exact .of_forall Subtype.property
