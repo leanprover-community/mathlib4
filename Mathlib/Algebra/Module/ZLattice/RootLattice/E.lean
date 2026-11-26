@@ -19,7 +19,7 @@ or all half-integers, and whose coordinates sum to an even integer (`Submodule.E
 is the `ℤ`-span of the rows of an explicit matrix (`E8Matrix`), and prove various properties of the
 E₈ lattice.
 
-See also earlier work which inspired this one, by Gareth Ma: https://github.com/thefundamentaltheor3m/Sphere-Packing-Lean/blob/42c839d1002f5bcc1f8d2eb73190d97cd9c52852/SpherePacking/Basic/E8.lean
+This code is based on results from the Sphere Packing project, see https://github.com/thefundamentaltheor3m/Sphere-Packing-Lean/blob/03cb63c9bf51a7c879f5ace0d88fc784c6e84121/SpherePacking/Basic/E8.lean, which was itself inspired by prioir work by Gareth Ma, see https://github.com/thefundamentaltheor3m/Sphere-Packing-Lean/blob/42c839d1002f5bcc1f8d2eb73190d97cd9c52852/SpherePacking/Basic/E8.lean
 
 ## Main declarations
 
