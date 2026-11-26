@@ -19,6 +19,8 @@ line `Re s = 1`. The proof is the identity
 `3 + 4 * cos θ + cos (2 * θ) = 2 * (cos θ + 1) ^ 2`.
 -/
 
+public section
+
 namespace Real
 
 /-- The de la Vallée Poussin inequality: for every real `θ`,
