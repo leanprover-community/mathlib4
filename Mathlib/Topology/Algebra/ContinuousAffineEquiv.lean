@@ -95,6 +95,7 @@ instance instFunLike : FunLike (P₁ ≃ᴬ[k] P₂) P₁ P₂ where
 theorem coe_coe (e : P₁ ≃ᴬ[k] P₂) : ⇑(e : P₁ ≃ᵃ[k] P₂) = e :=
   rfl
 
+@[deprecated "AffineEquiv.coe_toEquiv and ContinuousAffineEquiv.coe_coe" (since := "2026-11-26")]
 theorem coe_toEquiv (e : P₁ ≃ᴬ[k] P₂) : ⇑e.toEquiv = e :=
   rfl
 
