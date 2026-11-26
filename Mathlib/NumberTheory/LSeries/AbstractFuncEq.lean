@@ -42,7 +42,7 @@ See the sections *Main theorems on weak FE-pairs* and
 *Main theorems on strong FE-pairs* below.
 
 * Weak FE pairs:
-  - `WeakFEPair.Λ₀`: and `WeakFEPair.Λ`: functions of `s : ℂ`
+  - `WeakFEPair.Λ₀` and `WeakFEPair.Λ`: functions of `s : ℂ`
   - `WeakFEPair.differentiable_Λ₀`: `Λ₀` is entire
   - `WeakFEPair.differentiableAt_Λ`: `Λ` is differentiable away from `s = 0` and `s = k`
   - `WeakFEPair.hasMellin`: for `k < re s`, `Λ s` equals the Mellin transform of `f - f₀`
