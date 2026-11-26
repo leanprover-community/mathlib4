@@ -117,6 +117,14 @@ theorem posLog_eq_log_max_one (hx : 0 ≤ x) : log⁺ x = log (max 1 x) := by
 lemma posLog_le_posLog (hx : -1 ≤ x) (hxy : x ≤ y) : log⁺ x ≤ log⁺ y :=
   monotoneOn_posLog (by grind) (by grind) hxy
 
+/--
+Monotonicity of `log⁺`, ignoring values below one: if `0 ≤ x` and `x ≤ max 1 y`, then
+`log⁺ x ≤ log⁺ y`. See `posLog_le_posLog` for the plain monotonicity statement.
+-/
+lemma posLog_le_posLog_of_le_max_one {x y : ℝ} (hx : 0 ≤ x) (h : x ≤ max 1 y) :
+    log⁺ x ≤ log⁺ y := by
+  grind [posLog_eq_zero_iff, posLog_nonneg, posLog_le_posLog]
+
 /-- The function `log⁺` commutes with taking powers. -/
 @[simp] lemma posLog_pow (n : ℕ) (x : ℝ) : log⁺ (x ^ n) = n * log⁺ x := by
   by_cases hn : n = 0
