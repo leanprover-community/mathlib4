@@ -286,7 +286,7 @@ theorem toFilter_curry (U : Ultrafilter α) (V : Ultrafilter β) :
 
 theorem mem_curry {U : Ultrafilter α} {V : Ultrafilter β} {s : Set (α × β)} :
     s ∈ U.curry V ↔ ∀ᶠ a in (U : Filter α), ∀ᶠ b in (V : Filter β), (a, b) ∈ s :=
-  Iff.rfl
+  .rfl
 
 section
 
