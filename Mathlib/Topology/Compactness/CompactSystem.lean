@@ -9,6 +9,9 @@ public import Mathlib.MeasureTheory.Constructions.Cylinders
 public import Mathlib.Order.CountableSupClosed
 public import Mathlib.Topology.Separation.Hausdorff
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Compact systems
 

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Homology.HomologySequence
 public import Mathlib.Algebra.Homology.QuasiIso
 public import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Consequences of the homology sequence
 

@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Left exactness of functors between preadditive categories
 

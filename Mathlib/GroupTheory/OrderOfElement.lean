@@ -6,17 +6,21 @@ Authors: Johannes Hölzl, Julian Kuelshammer
 module
 
 public import Mathlib.Algebra.CharP.Two
-public import Mathlib.Algebra.Group.Commute.Basic
 public import Mathlib.Algebra.Group.Pointwise.Set.Finite
-public import Mathlib.Algebra.Group.Subgroup.Finite
 public import Mathlib.Algebra.Group.TransferInstance
-public import Mathlib.Algebra.Order.Group.Action
 public import Mathlib.Algebra.Order.Ring.Abs
 public import Mathlib.Data.Int.ModEq
 public import Mathlib.Dynamics.PeriodicPts.Lemmas
 public import Mathlib.GroupTheory.Index
 public import Mathlib.NumberTheory.Divisors
 public import Mathlib.Order.Interval.Set.Infinite
+
+import Mathlib.Algebra.Group.Commute.Basic
+import Mathlib.Algebra.Group.Subgroup.Finite
+import Mathlib.Algebra.Order.Group.Action
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Order of an element
@@ -34,6 +38,7 @@ This file defines the order of an element of a finite group. For a finite group 
 * `addOrderOf` is the additive analogue of `orderOf`.
 
 ## Tags
+
 order of an element
 -/
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Sites.Equivalence
 public import Mathlib.CategoryTheory.Subobject.Classifier.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # (Elementary) Sheaf Topos
 

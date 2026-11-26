@@ -5,11 +5,12 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.Monad
 public import Mathlib.LinearAlgebra.Charpoly.ToMatrix
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Univ
 public import Mathlib.RingTheory.TensorProduct.Finite
 public import Mathlib.RingTheory.TensorProduct.Free
+
+import Mathlib.Algebra.MvPolynomial.Monad
 
 /-!
 # Characteristic polynomials of linear families of endomorphisms
@@ -46,7 +47,7 @@ that evaluates on elements `x` of `L` to the characteristic polynomial of `φ x`
   if the `n`-th coefficient of the characteristic polynomial of `φ x` is non-zero,
   where `n` denotes the nil-rank of `φ`.
 
-## Implementation details
+## Implementation notes
 
 We show that `LinearMap.polyCharpoly` does not depend on the choice of basis of the target module.
 This is done via `LinearMap.polyCharpoly_eq_polyCharpolyAux`

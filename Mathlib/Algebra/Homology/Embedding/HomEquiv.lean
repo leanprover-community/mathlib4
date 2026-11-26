@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Homology.Embedding.Boundary
 public import Mathlib.Algebra.Homology.Embedding.Extend
 public import Mathlib.Algebra.Homology.Embedding.Restriction
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Relations between `extend` and `restriction`
 
@@ -19,6 +22,7 @@ and the subtype of morphisms `φ : K.restriction e ⟶ L` which satisfy a certai
 condition `e.HasLift φ`.
 
 ## TODO
+
 * obtain dual results for morphisms `L.extend e ⟶ K`.
 -/
 

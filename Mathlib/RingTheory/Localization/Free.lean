@@ -64,7 +64,7 @@ lemma Module.FinitePresentation.exists_basis_localizedModule_powers
       map_one, LocalizedModule.mkLinearMap_apply] at this
     change LocalizedModule.lift _ _ _ (e.symm (e'.symm _)) = _
     replace he := congr($he (e.symm (e'.symm (.single i 1))))
-    simp only [LinearMap.coe_comp, LinearMap.coe_restrictScalars, LinearEquiv.coe_coe,
+    simp only [LinearMap.coe_comp, LinearMap.coe_restrictScalars, LinearEquiv.coe_toLinearMap,
       Function.comp_apply, LinearEquiv.apply_symm_apply, LinearEquiv.restrictScalars_apply] at he
     apply b.repr.injective
     rw [← he, Basis.repr_self, this, LocalizedModule.lift_mk]

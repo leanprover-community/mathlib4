@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Fintype.Defs
 public import Mathlib.Data.List.Pi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Quotients of families indexed by a finite type
 

@@ -9,8 +9,9 @@ module
 public import Mathlib.Basic.SProd
 public import Mathlib.Data.Set.CoeSort
 public import Mathlib.Data.Subtype
-public import Mathlib.Order.Notation
 public import Mathlib.Tactic.CrossRefAttribute
+
+import Mathlib.Order.Notation
 
 /-!
 # Basic definitions about sets
@@ -55,7 +56,7 @@ More advanced theorems about these definitions are located in other files in `Ma
 - `sᶜ`: the complement of a set;
 - `s \ t`: the difference of two sets.
 
-## Keywords
+## Tags
 
 set, image, preimage
 -/

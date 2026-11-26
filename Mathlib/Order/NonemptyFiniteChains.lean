@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Finset.Image
 public import Mathlib.Order.Category.PartOrd
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Nonempty finite chains in a partially ordered type
 

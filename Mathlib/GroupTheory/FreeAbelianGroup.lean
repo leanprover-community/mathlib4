@@ -43,7 +43,7 @@ Here we use the following variables: `(α β : Type*) (A : Type*) [CommGroup A]`
 
 * `instance [CommMonoid α] : CommRing (FreeCommGroup α)`
 
-## Implementation details
+## Implementation notes
 
 The definitions are
 `def FreeCommGroup : Type u := Group.Abelianization (FreeGroup α)` and
@@ -246,7 +246,7 @@ protected theorem induction_on
     {motive : FreeCommGroup α → Prop} (z : FreeCommGroup α) (one : motive 1)
     (of : ∀ x, motive (of x)) (inv : ∀ x, motive (.of x) → motive (.of x)⁻¹)
     (mul : ∀ x y, motive x → motive y → motive (x * y)) : motive z :=
-  Quotient.inductionOn' z fun x ↦ Quot.inductionOn x fun L ↦
+  Quotient.inductionOn z fun x ↦ Quot.inductionOn x fun L ↦
     List.recOn L one fun ⟨x, b⟩ _ ih ↦ Bool.recOn b (mul _ _ (inv _ (of x)) ih) (mul _ _ (of x) ih)
 
 @[to_additive]

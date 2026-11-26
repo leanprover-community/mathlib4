@@ -15,6 +15,9 @@ public import Mathlib.Order.SuccPred.Nat
 import Mathlib.Order.SuccPred.Fin
 import Mathlib.Order.SuccPred.InitialSeg
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuity of functors from well-ordered types
 

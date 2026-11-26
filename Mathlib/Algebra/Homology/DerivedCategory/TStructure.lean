@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Homology.DerivedCategory.Fractions
 public import Mathlib.Algebra.Homology.DerivedCategory.ShortExact
 public import Mathlib.CategoryTheory.Triangulated.TStructure.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The canonical t-structure on the derived category
 

@@ -12,6 +12,9 @@ public import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.Algebra.Notation.Indicator
 public import Mathlib.Algebra.Ring.Invertible
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Further basic results about modules.
 -/

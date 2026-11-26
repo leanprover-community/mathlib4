@@ -34,7 +34,7 @@ Let `s` be a `Finset ι`, and `f : ι → β` a function.
 * `∑ (x ∈ s) (y ∈ t), f x y` is notation for `Finset.sum (s ×ˢ t) (fun ⟨x, y⟩ ↦ f x y)`.
 * Other supported binders: `x < n`, `x > n`, `x ≤ n`, `x ≥ n`, `x ≠ n`, `x ∉ s`, `x + y = n`
 
-## Implementation Notes
+## Implementation notes
 
 The first arguments in all definitions and lemmas is the codomain of the function of the big
 operator. This is necessary for the heuristic in `@[to_additive]`.

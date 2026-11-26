@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.Types.Colimits
 public import Mathlib.Logic.Function.Coequalizer
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Coequalizers in Type
 

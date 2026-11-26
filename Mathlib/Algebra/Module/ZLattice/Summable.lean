@@ -17,6 +17,7 @@ Let `E` be a finite dimensional normed `ℝ`-space, and `L` a discrete subgroup 
 We show that `∑ z ∈ L, ‖z - x‖ʳ` is convergent for `r < -d`.
 
 ## Main results
+
 - `ZLattice.summable_norm_rpow`: `∑ z ∈ L, ‖z‖ʳ` converges when `r < -d`.
 - `ZLattice.summable_norm_sub_rpow`: `∑ z ∈ L, ‖z - x‖ʳ` converges when `r < -d`.
 - `ZLattice.tsum_norm_rpow_le`:

@@ -11,6 +11,9 @@ import Mathlib.Algebra.CharP.CharAndCard
 import Mathlib.Data.ZMod.Units
 import Mathlib.FieldTheory.Finite.GaloisField
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Factorization of cyclotomic polynomials over finite fields
 

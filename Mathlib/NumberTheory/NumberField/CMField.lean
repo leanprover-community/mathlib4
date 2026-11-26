@@ -42,7 +42,7 @@ subfield `F` is (isomorphic to) the maximal real subfield `K⁺` of `K`.
 
 * `IsCyclotomicExtension.Rat.isCMField`: A nontrivial cyclotomic extension of `ℚ` is CM.
 
-## Implementation note
+## Implementation notes
 
 Most results are proved for the case of a CM field, that is `K` is totally complex quadratic
 extension of its totally real. These results live in the `NumberField.IsCMField` namespace. Some
