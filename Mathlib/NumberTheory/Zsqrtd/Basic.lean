@@ -490,6 +490,35 @@ theorem isUnit_iff_norm_isUnit {d : ℤ} (z : ℤ√d) : IsUnit z ↔ IsUnit z.n
 theorem norm_eq_one_iff' {d : ℤ} (hd : d ≤ 0) (z : ℤ√d) : z.norm = 1 ↔ IsUnit z := by
   rw [← norm_eq_one_iff, ← Int.natCast_inj, Int.natAbs_of_nonneg (norm_nonneg hd z), Int.ofNat_one]
 
+/-- For `d < -1`, the only units of `ℤ√d` are `1` and `-1`: a unit has
+norm `1`, i.e. `z.re² - d·z.im² = 1`, and `-d ≥ 2` forces `z.im = 0`. -/
+theorem isUnit_iff_eq_one_or_neg_one {d : ℤ} (hd : d < -1) {z : ℤ√d} :
+    IsUnit z ↔ z = 1 ∨ z = -1 := by
+  constructor
+  · intro hz
+    have hnorm : z.norm = 1 := (norm_eq_one_iff' (by omega) z).mpr hz
+    rw [norm_def] at hnorm
+    have him : z.im = 0 := by
+      by_contra hne
+      have hpos : 0 < z.im ^ 2 := sq_pos_of_ne_zero hne
+      have him2 : 1 ≤ z.im * z.im := by
+        rw [← pow_two]
+        exact Int.add_one_le_of_lt hpos
+      have h2 : (2 : ℤ) * 1 ≤ -d * (z.im * z.im) :=
+        mul_le_mul (by omega) him2 (by norm_num) (by omega)
+      nlinarith [hnorm, h2, mul_self_nonneg z.re]
+    have hre : z.re = 1 ∨ z.re = -1 := by
+      have hsq : z.re ^ 2 = 1 := by
+        have h1 : z.re * z.re = 1 := by simpa [him] using hnorm
+        rwa [pow_two]
+      exact sq_eq_one_iff.mp hsq
+    rcases hre with h | h
+    · left; ext <;> simp [h, him]
+    · right; ext <;> simp [h, him]
+  · rintro (rfl | rfl)
+    · exact isUnit_one
+    · exact isUnit_one.neg
+
 theorem norm_eq_zero_iff {d : ℤ} (hd : d < 0) (z : ℤ√d) : z.norm = 0 ↔ z = 0 := by
   constructor
   · intro h
