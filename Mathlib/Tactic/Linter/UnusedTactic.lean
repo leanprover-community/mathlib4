@@ -151,7 +151,7 @@ This change is global and persistent across imports. For a file-local or scoped 
 The command `#show_kind tac` may help to find the `SyntaxNodeKind`.
 -/
 elab (name := allowUnusedTactic) attrKind:attrKind "allow_unused_tactic"
-    ppSpace colGt ids:ident* : command => 
+    ppSpace colGt ids:ident* : command =>
   addSyntaxNodeKinds allowedUnusedTacticExt "allow_unused_tactic" attrKind ids
 
 /-- `#allow_unused_tactic` is deprecated in favour of `allow_unused_tactic` -/
