@@ -17,7 +17,7 @@ so that in particular any compact subset of `ℂ` contains only finitely many ze
 
 ## Main declarations
 
-* `riemannZetaZeros`: The zeros of Riemann zeta function.
+* `riemannZetaZeros`: The zeros of the Riemann zeta function.
 
 ## Main results
 

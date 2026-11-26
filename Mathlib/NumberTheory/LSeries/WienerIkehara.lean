@@ -30,8 +30,8 @@ for `Re s > 1` (which the bound implies); it is assumed here because it simplifi
 
 ## Main results
 
-* `WienerIkehara.tendsto_sum_div`, `WienerIkehara.tendsto_sum_range_div`: the Wiener-Ikehara
-Tauberian theorem, summing over reals `n ≤ x` and over naturals `n < N` respectively.
+* `WienerIkehara.tendsto_sum_div`, `WienerIkehara.tendsto_sum_range_div`: the Wiener–Ikehara
+  Tauberian theorem, summing over reals `n ≤ x` and over naturals `n < N` respectively.
 * `WienerIkehara.tendsto_sum_div_smooth`, `WienerIkehara.tendsto_sum_div_smooth_real`: versions
 for smooth cutoffs.
 
