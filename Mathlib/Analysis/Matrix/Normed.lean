@@ -730,18 +730,24 @@ theorem frobenius_nnNorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B�
 theorem frobenius_norm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B‖ ≤ ‖A‖ * ‖B‖ :=
   frobenius_nnNorm_mul A B
 
-/-- The norm of the trace pairing of two square matrices is at most the product of their
+/-- The norm of the trace pairing of two compatible matrices is at most the product of their
 Frobenius norms. -/
-theorem norm_trace_mul_le_frobenius_norm (A B : Matrix m m α) :
+theorem norm_trace_mul_le_frobenius_norm (A : Matrix m n α) (B : Matrix n m α) :
     ‖(A * B).trace‖ ≤ ‖A‖ * ‖B‖ := by
-  let vec (M : Matrix m m α) : PiLp 2 fun _ : m ↦ EuclideanSpace α m :=
+  let vec (M : Matrix n m α) : PiLp 2 fun _ : n ↦ EuclideanSpace α m :=
     WithLp.toLp 2 fun i ↦ WithLp.toLp 2 (M i)
-  have h_vec (M : Matrix m m α) : ‖vec M‖ = ‖M‖ := rfl
+  have h_vec (M : Matrix n m α) : ‖vec M‖ = ‖M‖ := rfl
   calc
-    ‖(A * B).trace‖ = ‖inner α (vec (star A)) (vec B)‖ := by
+    ‖(A * B).trace‖ = ‖inner α (vec Aᴴ) (vec B)‖ := by
       rw [trace_mul_comm]
       simp [vec, inner, trace, Matrix.mul_apply]
-    _ ≤ ‖A‖ * ‖B‖ := by grw [norm_inner_le_norm, h_vec, h_vec, norm_star]
+    _ ≤ ‖A‖ * ‖B‖ := by
+      grw [norm_inner_le_norm, h_vec, h_vec, frobenius_norm_conjTranspose]
+
+/-- The `NNReal`-valued version of `norm_trace_mul_le_frobenius_norm`. -/
+theorem nnNorm_trace_mul_le_frobenius_nnNorm (A : Matrix m n α) (B : Matrix n m α) :
+    ‖(A * B).trace‖₊ ≤ ‖A‖₊ * ‖B‖₊ := by
+  exact_mod_cast norm_trace_mul_le_frobenius_norm A B
 
 /-- Normed ring instance (using the Frobenius norm) for matrices over `ℝ` or `ℂ`.  Not
 declared as an instance because there are several natural choices for defining the norm of a
