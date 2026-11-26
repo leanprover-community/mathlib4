@@ -18,6 +18,16 @@ set_option doc.verso.suggestions false
 We construct a primitive additive character on a finite field `F` with values in `ℂ`.
 This file is kept separate from `Mathlib.NumberTheory.LegendreSymbol.AddCharacter` to avoid
 importing the fundamental theorem of algebra and Bochner integral into that file.
+
+## Main definitions
+
+* `AddChar.FiniteField.primitiveChar_to_Complex`: a primitive additive character on
+  the finite field `F` with values in `ℂ`.
+
+## Main results
+
+* `AddChar.FiniteField.primitiveChar_to_Complex_isPrimitive`: proof that
+  `primitiveChar_to_Complex F` is primitive.
 -/
 
 namespace AddChar
