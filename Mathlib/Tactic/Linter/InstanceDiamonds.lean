@@ -14,9 +14,14 @@ public import Mathlib.Tactic.Linter.Header  -- shake: keep
 # Linter for instance diamonds
 
 This environment linter checks each global data-carrying instance,
-and tries to synthesize another instance that provides the same data.
+and tries to synthesize another instance for each of its data projections.
 If these instances are not definitionally equal at `implicit` transparency,
 then it gives a warning.
+
+The linter only does this for the full projections and not for partial projections
+(so this includes `Mul α` but excludes `Semigroup α` for a `Ring α` instance).
+This makes the linter significantly faster,
+but in some edge cases this can cause it to miss a diamond.
 -/
 
 meta section
