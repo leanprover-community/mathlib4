@@ -32,6 +32,7 @@ vectors whose coordinates have even sum. For `n ≥ 3` this is the root lattice 
   `Fin n → ℝ` over `ℝ`. Hence so is `EuclideanSpace.checkerboardLattice n` in
   `EuclideanSpace ℝ (Fin n)`.
 * `EuclideanSpace.isEven_checkerboardLattice`: the checkerboard lattice is even.
+* `EuclideanSpace.isIntegral_checkerboardLattice`: the checkerboard lattice is integral.
 -/
 
 @[expose] public section
@@ -117,5 +118,9 @@ theorem isEven_checkerboardLattice (n : ℕ) : ZLattice.IsEven (checkerboardLatt
   simp only [PiLp.inner_apply, RCLike.inner_apply, conj_trivial, hxi]
   simp only [mul_sub, mul_one, Finset.sum_sub_distrib, smul_eq_mul] at hm hz
   exact_mod_cast (by linarith : ∑ i, w i * w i = 2 * (z + m))
+
+/-- The checkerboard lattice is integral: `⟪v, w⟫` is an integer for all `v, w ∈ Dₙ`. -/
+theorem isIntegral_checkerboardLattice (n : ℕ) : ZLattice.IsIntegral (checkerboardLattice n) :=
+  (isEven_checkerboardLattice n).isIntegral
 
 end EuclideanSpace

@@ -33,13 +33,13 @@ See also earlier work which inspired this one, by Gareth Ma: https://github.com/
 * `span_E8Matrix_eq_top`: The `ℝ`-span of `E8Matrix` is the whole of `ℝ⁸`.
 * `span_E8Matrix`: The `ℤ`-span of `E8Matrix` is the E₈ lattice. This is the third characterisation
   of the E₈ lattice given in this file.
-* `E8_integral`: The E₈ lattice is integral, i.e., the dot product of any two vectors in E₈ is an
-  integer.
 * `covolume_E8`: The E₈ lattice in `Fin 8 → ℝ` has covolume `1`.
 * `E8Lattice`: The E₈ lattice as a submodule of eight-dimensional Euclidean space. This additional
   definition is valuable, since it now puts the correct metric space structure on the lattice.
 * `isEven_E8Lattice`: The E₈ lattice is even, i.e., the norm-squared of any vector in E₈ is an even
   integer.
+* `isIntegral_E8Lattice`: The E₈ lattice is integral, i.e., the inner product of any two vectors in
+  E₈ is an integer.
 * `covolume_E8Lattice`: `E8Lattice` has covolume `1`.
 
 ## TODO
@@ -326,17 +326,6 @@ lemma dotProduct_is_integer {R : Type*} [Field R] [CharZero R] (i j : Fin 8) :
     ∃ z : ℤ, z = (E8Matrix R).row i ⬝ᵥ (E8Matrix R).row j :=
   ⟨_, (dotProduct_eq_inn _ _).symm⟩
 
-theorem E8_integral {R : Type*} [Field R] [CharZero R] (v w : Fin 8 → R)
-    (hv : v ∈ Submodule.E8 R) (hw : w ∈ Submodule.E8 R) :
-    ∃ z : ℤ, z = v ⬝ᵥ w := by
-  rw [← span_E8Matrix, Submodule.mem_span_range_iff_exists_fun] at hv hw
-  obtain ⟨c, rfl⟩ := hv
-  obtain ⟨d, rfl⟩ := hw
-  simp_rw [sum_dotProduct, dotProduct_sum, dotProduct_smul, smul_dotProduct, dotProduct_eq_inn,
-    zsmul_eq_mul]
-  norm_cast
-  simp
-
 end E8_basis
 
 /-- The `E₈` lattice as a submodule of eight-dimensional Euclidean space. This additional
@@ -365,6 +354,10 @@ theorem isEven_E8Lattice : ZLattice.IsEven E8Lattice := by
   ring_nf
   have h4 : Even (4 : ℤ) := ⟨2, rfl⟩
   simp [h4, parity_simps]
+
+/-- The `E₈` lattice is integral: `⟪v, w⟫` is an integer for all `v, w ∈ E₈`. -/
+theorem isIntegral_E8Lattice : ZLattice.IsIntegral E8Lattice :=
+  isEven_E8Lattice.isIntegral
 
 lemma E8_norm_lower_bound (v : Fin 8 → ℝ) (hv : v ∈ Submodule.E8 ℝ) :
     v = 0 ∨ √2 ≤ ‖WithLp.toLp 2 v‖ :=
