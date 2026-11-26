@@ -17,6 +17,12 @@ This file defines some quadratic characters on the rings ℤ/4ℤ and ℤ/8ℤ.
 
 We set them up to be of type `MulChar (ZMod n) ℤ`, where `n` is `4` or `8`.
 
+## Main definitions
+
+* `ZMod.χ₄`: the nontrivial quadratic character on `ZMod 4`, corresponding to `ℚ(√-1)/ℚ`.
+* `ZMod.χ₈`: the first primitive quadratic character on `ZMod 8`, corresponding to `ℚ(√2)/ℚ`.
+* `ZMod.χ₈'`: the second primitive quadratic character on `ZMod 8`, corresponding to `ℚ(√-2)/ℚ`.
+
 ## Tags
 
 quadratic character, zmod
