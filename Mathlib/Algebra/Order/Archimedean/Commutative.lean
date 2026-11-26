@@ -17,10 +17,10 @@ set_option doc.verso.suggestions false
 /-!
 # Archimedean ordered rings are commutative
 
-This file proves that multiplication in an Archimedean linearly ordered ring is commutative.
-Neither a unit nor associativity of multiplication is needed. For division rings this is a theorem
-of Hilbert: an Archimedean ordered division ring is a field. The proof given here is a short
-division-free argument, not Hilbert's.
+This file proves that multiplication in an Archimedean linearly ordered (non-unital,
+non-associative) ring is commutative. For division rings this is a theorem of Hilbert: an
+Archimedean ordered division ring is a field. The proof given here is a short division-free
+argument, not Hilbert's.
 
 The statement fails for semirings: in a non-commutative linearly ordered division ring, the
 elements `a` with `1 ≤ a ≤ n` for some natural number `n`, together with `0`, form a
