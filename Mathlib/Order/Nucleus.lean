@@ -256,7 +256,7 @@ instance : CompleteLattice (range n) := n.giAux.liftCompleteLattice
 instance : Frame (range n) := .ofMinimalAxioms {
   inf_sSup_le_iSup_inf a s := by
     simp_rw [← Subtype.coe_le_coe, iSup_subtype', iSup, sSup, n.giAux.gc.u_inf]
-    rw [rangeFactorization_coe, ← mem_range.1 a.prop, ← map_inf]
+    rw [subtyleVal_rangeFactorization, ← mem_range.1 a.prop, ← map_inf]
     apply n.monotone
     simp_rw [inf_sSup_eq, sSup_image, iSup_range, iSup_image, iSup_subtype', n.giAux.gc.u_inf,
       le_rfl] }
