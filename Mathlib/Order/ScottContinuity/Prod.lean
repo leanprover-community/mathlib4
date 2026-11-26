@@ -24,11 +24,11 @@ open Set
 
 variable {α β γ : Type*}
 
-/-- A function is Scott continuous on a product space if it is Scott continuous and monotone in each
-variable. -/
+/-- A function is upper Scott continuous on a product space if it is upper Scott continuous and
+monotone in each variable. -/
 @[to_dual
-/-- A function is Scott continuous on a product space if it is Scott continuous and monotone in each
-variable. -/]
+/-- A function is lower Scott continuous on a product space if it is lower Scott continuous and
+monotone in each variable. -/]
 lemma UpperScottContinuousOn.fromProd [Preorder α] [Preorder β] [Preorder γ]
     {f : α × β → γ} {D : Set (Set (α × β))}
     (h₁ : ∀ a, UpperScottContinuousOn ((fun d => Prod.snd '' d) '' D) (fun b => f (a, b)))
