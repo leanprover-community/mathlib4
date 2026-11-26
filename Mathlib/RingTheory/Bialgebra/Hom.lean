@@ -227,10 +227,11 @@ protected def copy (f : A →ₐc[R] B) (f' : A → B) (h : f' = ⇑f) : A →�
     map_one' := by simp_all
     map_mul' := by intros; simp_all }
 
-theorem coe_copy (f : A →ₗc[R] B) (f' : A → B) (h : f' = ⇑f) : ⇑(f.copy f' h) = f' :=
+@[simp]
+theorem coe_copy (f : A →ₐc[R] B) (f' : A → B) (h : f' = ⇑f) : ⇑(f.copy f' h) = f' :=
   rfl
 
-theorem copy_eq (f : A →ₗc[R] B) (f' : A → B) (h : f' = ⇑f) : f.copy f' h = f :=
+theorem copy_eq (f : A →ₐc[R] B) (f' : A → B) (h : f' = ⇑f) : f.copy f' h = f :=
   DFunLike.ext' h
 
 section
