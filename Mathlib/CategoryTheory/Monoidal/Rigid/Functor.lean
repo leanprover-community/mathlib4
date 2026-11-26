@@ -24,7 +24,7 @@ to `(Cᵒᵖ)ᴹᵒᵖ` (the monoidal opposite of the opposite category).
 * `rightDualFunctor C`: For a right rigid category, the functor `C ⥤ (Cᵒᵖ)ᴹᵒᵖ` sending
   `X` to `Xᘁ` and `f` to `fᘁ`.
 
-## Future work
+## TODO
 
 * Show that in a `RigidCategory`, these functors are monoidal equivalences.
 -/

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Module.Torsion.Basic
 public import Mathlib.Algebra.Polynomial.Module.AEval
 public import Mathlib.FieldTheory.Minpoly.Field
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Polynomial modules in finite dimensions
 

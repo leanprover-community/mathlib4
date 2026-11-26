@@ -11,6 +11,9 @@ public import Mathlib.CategoryTheory.Shift.Twist
 
 import Mathlib.CategoryTheory.Linear.LinearFunctor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Commutation with shifts of functors in two variables
 

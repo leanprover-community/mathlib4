@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Eigenvalues, Eigenvectors and Spectrum for Matrices
 

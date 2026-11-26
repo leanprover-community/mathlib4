@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.QuasiFinite.Basic
 public import Mathlib.RingTheory.RingHom.OpenImmersion
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-! # The meta properties of quasi-finite ring homomorphisms. -/
 
 @[expose] public section
