@@ -19,7 +19,7 @@ and inherit the category structure with natural transformations as morphisms.
 
 We define construction that will allow to state the condition of being a K-sheaf.
 
-We also define the pushforward of a presheaf by a proper map
+We also define the pushforward of a presheaf by a proper map.
 
 -/
 @[expose] public section
