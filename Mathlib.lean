@@ -828,6 +828,7 @@ public import Mathlib.Algebra.Module.Injective
 public import Mathlib.Algebra.Module.Lattice
 public import Mathlib.Algebra.Module.Lattice.Basic
 public import Mathlib.Algebra.Module.Lattice.Full
+public import Mathlib.Algebra.Module.Lattice.Integral
 public import Mathlib.Algebra.Module.LinearMap.Basic
 public import Mathlib.Algebra.Module.LinearMap.Defs
 public import Mathlib.Algebra.Module.LinearMap.DivisionRing
@@ -899,7 +900,6 @@ public import Mathlib.Algebra.Module.TransferInstance
 public import Mathlib.Algebra.Module.ULift
 public import Mathlib.Algebra.Module.ZLattice.Basic
 public import Mathlib.Algebra.Module.ZLattice.Covolume
-public import Mathlib.Algebra.Module.ZLattice.Integral
 public import Mathlib.Algebra.Module.ZLattice.Summable
 public import Mathlib.Algebra.Module.ZMod
 public import Mathlib.Algebra.MonoidAlgebra.Basic
