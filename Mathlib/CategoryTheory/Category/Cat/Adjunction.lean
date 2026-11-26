@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Adjunction.Basic
 public import Mathlib.CategoryTheory.Category.Cat
 public import Mathlib.CategoryTheory.ConnectedComponents
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Adjunctions related to Cat, the category of categories
 

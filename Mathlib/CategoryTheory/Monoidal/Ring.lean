@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ring objects in cartesian monoidal categories
 

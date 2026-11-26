@@ -17,7 +17,7 @@ set_option doc.verso.suggestions false
 A type of topological spaces whose notion
 of continuity is equivalent to continuity in ωCPOs.
 
-## Reference
+## References
 
 * https://ncatlab.org/nlab/show/Scott+topology
 -/

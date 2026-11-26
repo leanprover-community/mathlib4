@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.Polynomial.Content
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Finite
 public import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Unique factorization for univariate and multivariate polynomials
 
