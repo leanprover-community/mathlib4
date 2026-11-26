@@ -8,12 +8,15 @@ module
 public import Mathlib.LinearAlgebra.AffineSpace.Basis
 public import Mathlib.LinearAlgebra.AffineSpace.Dimension
 public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Centroid
-public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 
 import Mathlib.FieldTheory.Finiteness
 import Mathlib.LinearAlgebra.Dimension.OrzechProperty
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 import Mathlib.RingTheory.Finiteness.Prod
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Finite-dimensional subspaces of affine spaces.
@@ -212,7 +215,7 @@ theorem AffineIndepOn.ncard_eq_succ_finDim_affineSpan {s : Set P} (hai : AffineI
   rw [← Subtype.range_coe (s := s)] at hf
   have := finiteDimensional_iff_setFinite k hai |>.mp hf
   have := hai.finrank_vectorSpan this hs
-  rw [finDim_eq_finrank (by simp [Set.nonempty_iff_ne_empty.mp hs]), direction_affineSpan,
+  rw [finDim_eq_finrank (by simp [hs]), direction_affineSpan,
     WithBot.succ_natCast, this]
   grind only [Set.ncard_eq_zero, Set.not_nonempty_empty]
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Ring.Equiv
 public import Mathlib.Data.Fin.Tuple.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Rings and `Fin`
 

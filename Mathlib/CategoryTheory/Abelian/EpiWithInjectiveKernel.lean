@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 public import Mathlib.CategoryTheory.Preadditive.Injective.LiftingProperties
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Epimorphisms with an injective kernel
 

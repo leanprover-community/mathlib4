@@ -135,7 +135,7 @@ set `u ∩ s`. -/
 theorem LocallyIntegrableOn.exists_countable_integrableOn [SecondCountableTopology X]
     (hf : LocallyIntegrableOn f s μ) : ∃ T : Set (Set X), T.Countable ∧
     (∀ u ∈ T, IsOpen u) ∧ (s ⊆ ⋃ u ∈ T, u) ∧ (∀ u ∈ T, IntegrableOn f (u ∩ s) μ) := by
-  have : ∀ x : s, ∃ u, IsOpen u ∧ x.1 ∈ u ∧ IntegrableOn f (u ∩ s) μ := by
+  have : ∀ x : s, ∃ u, IsOpen u ∧ x.val ∈ u ∧ IntegrableOn f (u ∩ s) μ := by
     rintro ⟨x, hx⟩
     rcases hf x hx with ⟨t, ht, h't⟩
     rcases mem_nhdsWithin.1 ht with ⟨u, u_open, x_mem, u_sub⟩
@@ -246,8 +246,8 @@ def LocallyIntegrable (f : X → ε) (μ : Measure X := by volume_tac) : Prop :=
 
 theorem locallyIntegrable_comap (hs : MeasurableSet s) :
     LocallyIntegrable (fun x : s ↦ f x) (μ.comap Subtype.val) ↔ LocallyIntegrableOn f s μ := by
-  simp_rw [LocallyIntegrableOn, Subtype.forall', ← map_nhds_subtype_val]
-  exact forall_congr' fun _ ↦ (MeasurableEmbedding.subtype_coe hs).integrableAtFilter_iff_comap.symm
+  simp_rw [LocallyIntegrableOn, Subtype.forall', ← map_nhds_subtypeVal]
+  exact forall_congr' fun _ ↦ (MeasurableEmbedding.subtypeVal hs).integrableAtFilter_iff_comap.symm
 
 theorem locallyIntegrableOn_univ : LocallyIntegrableOn f univ μ ↔ LocallyIntegrable f μ := by
   simp only [LocallyIntegrableOn, nhdsWithin_univ, mem_univ, true_imp_iff]; rfl

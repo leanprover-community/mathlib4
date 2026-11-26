@@ -24,7 +24,7 @@ In this file we define typeclasses for measures invariant under (scalar) multipl
 For basic facts about the first two typeclasses, see `Mathlib/MeasureTheory/Group/Action`.
 For facts about left/right-invariant measures, see `Mathlib/MeasureTheory/Group/Measure`.
 
-## Implementation Notes
+## Implementation notes
 
 The `smul`/`vadd` typeclasses and the left/right multiplication typeclasses
 were defined by different people with different tastes,
@@ -100,7 +100,7 @@ instance IsMulLeftInvariant.smulInvariantMeasure [Mul G] [IsMulLeftInvariant μ]
 @[to_additive]
 instance [Monoid G] [MeasurableConstSMul G G] (s : Submonoid G) [IsMulLeftInvariant μ] :
     SMulInvariantMeasure {x // x ∈ s} G μ :=
-  ⟨fun ⟨x, _⟩ _ h ↦ IsMulLeftInvariant.smulInvariantMeasure.1 x h⟩
+  ⟨fun ⟨x, _⟩ _ h ↦ IsMulLeftInvariant.smulInvariantMeasure.measure_preimage_smul x h⟩
 
 @[to_additive]
 instance IsMulRightInvariant.toSMulInvariantMeasure_op [Mul G] [MeasurableConstSMul Gᵐᵒᵖ G]

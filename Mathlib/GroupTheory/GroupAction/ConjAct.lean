@@ -24,7 +24,7 @@ As a generalization, this also allows:
 * `ConjAct Mˣ` to act on `M`, when `M` is a `Monoid`
 * `ConjAct G₀` to act on `G₀`, when `G₀` is a `GroupWithZero`
 
-## Implementation Notes
+## Implementation notes
 
 The scalar action in defined in this file can also be written using `MulAut.conj g • h`. This
 has the advantage of not using the type alias `ConjAct`, but the downside of this approach
@@ -168,7 +168,7 @@ end Units
 variable [Group G]
 
 theorem coe_smul {G : Type*} [Group G] {H : Subgroup G} (g h : H) :
-    (ConjAct.toConjAct g • h).1 = ConjAct.toConjAct g.1 • h.1 := by
+    (ConjAct.toConjAct g • h).val = ConjAct.toConjAct g.val • h.val := by
   rfl
 
 theorem toConjAct_inv_smul (g h : G) : toConjAct g⁻¹ • h = g⁻¹ * h * g := by
@@ -232,7 +232,7 @@ theorem _root_.Subgroup.centralizer_eq_comap_stabilizer (g : G) :
 /-- As normal subgroups are closed under conjugation, they inherit the conjugation action
   of the underlying group. -/
 instance Subgroup.conjAction {H : Subgroup G} [hH : H.Normal] : SMul (ConjAct G) H :=
-  ⟨fun g h => ⟨g • (h : G), hH.conj_mem h.1 h.2 (ofConjAct g)⟩⟩
+  ⟨fun g h => ⟨g • (h : G), hH.conj_mem h.val h.property (ofConjAct g)⟩⟩
 
 theorem Subgroup.val_conj_smul {H : Subgroup G} [H.Normal] (g : ConjAct G) (h : H) :
     ↑(g • h) = g • (h : G) :=
@@ -286,9 +286,9 @@ def unitsCentralizerEquiv (x : Mˣ) :
     (Submonoid.centralizer ({↑x} : Set M))ˣ ≃* MulAction.stabilizer (ConjAct Mˣ) x :=
   MulEquiv.symm
   { toFun := MonoidHom.toHomUnits
-      { toFun := fun u ↦ ⟨↑(ConjAct.ofConjAct u.1 : Mˣ), by
+      { toFun := fun u ↦ ⟨↑(ConjAct.ofConjAct u.val : Mˣ), by
           rintro x ⟨rfl⟩
-          have : (u : ConjAct Mˣ) • x = x := u.2
+          have : (u : ConjAct Mˣ) • x = x := u.property
           rwa [ConjAct.smul_def, mul_inv_eq_iff_eq_mul, Units.ext_iff, eq_comm] at this⟩,
         map_one' := rfl,
         map_mul' := fun _ _ ↦ rfl }
@@ -296,7 +296,7 @@ def unitsCentralizerEquiv (x : Mˣ) :
       ⟨ConjAct.toConjAct (Units.map (Submonoid.centralizer ({↑x} : Set M)).subtype u), by
       change _ • _ = _
       simp only [ConjAct.smul_def, ConjAct.ofConjAct_toConjAct, mul_inv_eq_iff_eq_mul]
-      exact Units.ext (u.1.2 x <| Set.mem_singleton _).symm⟩
+      exact Units.ext (u.val.property x <| Set.mem_singleton _).symm⟩
     map_mul' := map_mul _ }
 
 end Units

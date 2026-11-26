@@ -19,6 +19,7 @@ import Mathlib.Tactic.Abel
 # Locally Finite Linearly Ordered Abelian Groups
 
 ## Main results
+
 - `LocallyFiniteOrder.orderAddMonoidEquiv`:
   Any nontrivial linearly ordered additive abelian group that is locally finite is
   isomorphic to `ℤ`.
@@ -130,15 +131,15 @@ lemma LocallyFiniteOrder.orderAddMonoidHom_bijective [Nontrivial G] :
   have ⟨a, ha⟩ := exists_zero_lt (α := G)
   obtain ⟨b, hb⟩ := exists_covBy_of_wellFoundedLT (α := Icc 0 a) (a := ⟨0, by simpa using! ha.le⟩)
     (fun H ↦ ha.not_ge (@H ⟨a, by simpa using! ha.le⟩ ha.le))
-  use b.1
-  have : 0 ≤ b.1 := hb.1.le
-  suffices Ico 0 b.1 = {0} by simpa [orderAddMonoidHom, addMonoidHom, this]
+  use b.val
+  have : 0 ≤ b.val := hb.1.le
+  suffices Ico 0 b.val = {0} by simpa [orderAddMonoidHom, addMonoidHom, this]
   ext x
   simp only [mem_Ico, mem_singleton]
   constructor
   · rintro ⟨h₁, h₂⟩
     by_contra hx'
-    have := b.2
+    have := b.property
     simp only [Finset.mem_Icc] at this
     exact hb.2 (c := ⟨x, by simpa [h₁] using! h₂.le.trans this.2⟩)
       (lt_of_le_of_ne h₁ (by simpa using! Ne.symm hx')) h₂

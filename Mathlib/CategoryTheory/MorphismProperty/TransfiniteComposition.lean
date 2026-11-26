@@ -11,6 +11,9 @@ public import Mathlib.Order.Interval.Set.SuccOrder
 
 import Mathlib.Order.Shrink
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Classes of morphisms that are stable under transfinite composition
 
@@ -110,13 +113,13 @@ noncomputable def iic (j : J) :
     W.TransfiniteCompositionOfShape (Set.Iic j) (h.F.map (homOfLE bot_le : ⊥ ⟶ j)) where
   __ := h.toTransfiniteCompositionOfShape.iic j
   map_mem i hi := by
-    have := h.map_mem i.1 (by
+    have := h.map_mem i.val (by
       rw [not_isMax_iff] at hi ⊢
       obtain ⟨i', hi'⟩ := hi
-      exact ⟨j, lt_of_lt_of_le hi' i'.2⟩)
+      exact ⟨j, lt_of_lt_of_le hi' i'.property⟩)
     rw [← W.arrow_mk_mem_toSet_iff] at this ⊢
     have eq : Arrow.mk ((Subtype.mono_coe _).functor.map (homOfLE (Order.le_succ i))) =
-      Arrow.mk (homOfLE (Order.le_succ i.1)) :=
+      Arrow.mk (homOfLE (Order.le_succ i.val)) :=
         Arrow.ext rfl (Set.Iic.coe_succ_of_not_isMax hi) rfl
     replace eq := congr(h.F.mapArrow.obj $eq)
     convert! this using 1
@@ -127,11 +130,11 @@ noncomputable def ici (j : J) :
     W.TransfiniteCompositionOfShape (Set.Ici j) (h.incl.app j) where
   __ := h.toTransfiniteCompositionOfShape.ici j
   map_mem i hi := by
-    have := h.map_mem i.1 (Set.not_isMax_coe _ hi)
+    have := h.map_mem i.val (Set.not_isMax_coe _ hi)
     rw [← W.arrow_mk_mem_toSet_iff] at this ⊢
     have eq : Arrow.mk ((Subtype.mono_coe _).functor.map (homOfLE (Order.le_succ i))) =
-      Arrow.mk (homOfLE (Order.le_succ i.1)) :=
-        Arrow.ext rfl (coe_succ_of_mem (i.2.trans (Order.le_succ _))) rfl
+      Arrow.mk (homOfLE (Order.le_succ i.val)) :=
+        Arrow.ext rfl (coe_succ_of_mem (i.property.trans (Order.le_succ _))) rfl
     replace eq := congr(h.F.mapArrow.obj $eq)
     convert! this using 1
 
@@ -261,7 +264,7 @@ lemma mem_map_bot_le {j : J} (g : ⊥ ⟶ j) : W (hf.F.map g) := by
       { bot := ⟨⊥, Order.IsSuccLimit.bot_lt hj⟩
         bot_le j := bot_le }
     exact MorphismProperty.colimitsOfShape_le _
-      (.of_isColimit (hf.F.isColimitOfIsWellOrderContinuous j hj) (fun k ↦ hj' _ k.2))
+      (.of_isColimit (hf.F.isColimitOfIsWellOrderContinuous j hj) (fun k ↦ hj' _ k.property))
 
 include hf hJ in
 lemma mem [W.RespectsIso] : W f :=

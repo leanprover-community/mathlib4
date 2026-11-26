@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.Nilpotent.Lemmas
 
 import Mathlib.Data.Fintype.Order
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Nilpotent maps on finite modules
 -/

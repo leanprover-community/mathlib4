@@ -34,7 +34,7 @@ groups of all Galois objects.
 - `FiberFunctor.isPretransitive_of_isConnected`: The `Aut F` action on the fiber of a connected
   object is transitive.
 
-## Implementation details
+## Implementation notes
 
 The pro-representability statement and the isomorphism of `Aut F` with the limit over the
 automorphism groups of all Galois objects naturally forces `F` to take values in `FintypeCat.{u₂}`
@@ -367,7 +367,7 @@ noncomputable def endMulEquivAutGalois : End F ≃* (AutGalois F)ᵐᵒᵖ :=
   MulEquiv.mk (Equiv.trans (endEquivAutGalois F) MulOpposite.opEquiv) (by simp)
 
 lemma endMulEquivAutGalois_pi (f : End F) (A : PointedGaloisObject F) :
-    F.map (AutGalois.π F A (endMulEquivAutGalois F f).unop).asIso.hom A.2 = f.asHom.app A A.pt :=
+    F.map (AutGalois.π F A (endMulEquivAutGalois F f).unop).asIso.hom A.pt = f.asHom.app A A.pt :=
   endEquivAutGalois_π F f A
 
 /-- Any endomorphism of a fiber functor is a unit. -/

@@ -8,10 +8,10 @@ module
 public import Mathlib.Algebra.Group.Finsupp
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 public import Mathlib.Algebra.Group.TypeTags.Basic
-public import Mathlib.Algebra.Group.ULift
 public import Mathlib.Data.DFinsupp.Defs
 
 import Mathlib.Algebra.Group.Equiv.Opposite
+import Mathlib.Algebra.Group.ULift
 
 /-!
 # Unique products and related notions

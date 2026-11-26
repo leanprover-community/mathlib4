@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
 public import Mathlib.CategoryTheory.Monoidal.PushoutProduct
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pushout-products of simplicial sets
 

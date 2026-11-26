@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.BooleanAlgebra.Set
 public import Mathlib.Order.SymmDiff
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-! # Symmetric differences of sets -/
 
 public section
@@ -37,8 +40,8 @@ theorem symmDiff_eq_empty : s ∆ t = ∅ ↔ s = t :=
   symmDiff_eq_bot
 
 @[simp]
-theorem symmDiff_nonempty : (s ∆ t).Nonempty ↔ s ≠ t :=
-  nonempty_iff_ne_empty.trans symmDiff_eq_empty.not
+theorem symmDiff_nonempty : (s ∆ t).Nonempty ↔ s ≠ t := by
+  simp [← ne_empty_iff_nonempty]
 
 theorem inter_symmDiff_distrib_left (s t u : Set α) : s ∩ t ∆ u = (s ∩ t) ∆ (s ∩ u) :=
   inf_symmDiff_distrib_left _ _ _

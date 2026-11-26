@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.Path
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Strict Segal simplicial sets
 

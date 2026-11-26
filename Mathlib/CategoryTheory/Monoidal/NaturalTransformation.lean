@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Monoidal.Functor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Monoidal natural transformations
 
@@ -176,7 +179,7 @@ attribute [instance] Hom.isMonoidal
 
 instance : Category (LaxMonoidalFunctor C D) where
   Hom := Hom
-  comp α β := ⟨α.1 ≫ β.1, by have := α.2; have := β.2; infer_instance⟩
+  comp α β := ⟨α.hom ≫ β.hom, by have := α.isMonoidal; have := β.isMonoidal; infer_instance⟩
   id _ := ⟨𝟙 _, inferInstance⟩
 
 @[simp]

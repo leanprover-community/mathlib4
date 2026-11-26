@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.GradedAlgebra.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Graded rings of finite type
 
@@ -30,9 +33,10 @@ theorem exists_finset_adjoin_eq_top_and_homogeneous :
       ∀ i ∈ s, SetLike.IsHomogeneousElem 𝒜 i := by
   classical
   obtain ⟨F, hF⟩ := Algebra.FiniteType.out (R := 𝒜 0) (A := S)
-  let ι₀ := Σ (x : F), (DirectSum.decompose 𝒜 x.1).support
-  let x (i : ι₀) : S := ((DirectSum.decompose 𝒜) i.1 i.2).1
-  refine ⟨Finset.univ.image x, ?_, by simpa using fun f ↦ ⟨_, (DirectSum.decompose 𝒜 f.1 f.2).2⟩⟩
+  let ι₀ := Σ (x : F), (DirectSum.decompose 𝒜 x.val).support
+  let x (i : ι₀) : S := ((DirectSum.decompose 𝒜) i.1 i.2).val
+  refine ⟨Finset.univ.image x, ?_,
+    by simpa using fun f ↦ ⟨_, (DirectSum.decompose 𝒜 f.1 f.2).property⟩⟩
   rw [← top_le_iff, ← hF, Algebra.adjoin_le_iff]
   intro s hs
   rw [← DirectSum.sum_support_decompose 𝒜 s]

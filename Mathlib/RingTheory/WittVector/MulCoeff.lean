@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.WittVector.Truncated
 
 import Mathlib.Algebra.MvPolynomial.Supported
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Leading terms of Witt vector multiplication
 
@@ -122,9 +125,8 @@ theorem mul_polyOfInterest_aux1 (n : ℕ) :
       rw [Finsupp.support_eq_singleton]
       simp only [and_true, Finsupp.single_eq_same, Ne]
       exact pow_ne_zero _ hp.out.ne_zero
-    simp only [bind₁_monomial, hsupp, Int.cast_natCast, prod_singleton, eq_intCast,
-      Finsupp.single_eq_same, Int.cast_pow]
-  · simp only [map_mul, bind₁_X_right]
+    rw [aeval_monomial, Finsupp.prod_single_index (by simp), map_pow, map_natCast]
+  · simp only [map_mul, aeval_X]
 
 theorem mul_polyOfInterest_aux2 (n : ℕ) :
     (p : 𝕄) ^ n * wittMul p n + wittPolyProdRemainder p n = wittPolyProd p n := by
