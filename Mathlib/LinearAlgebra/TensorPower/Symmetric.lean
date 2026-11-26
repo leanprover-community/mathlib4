@@ -9,6 +9,9 @@ public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
 
 import Mathlib.Tactic.SuppressCompilation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Symmetric tensor power of a semimodule over a commutative semiring
 
@@ -18,7 +21,7 @@ by a permutation of `ι`. We denote this space by `Sym[R] ι M`, and the canonic
 from `ι → M` to `Sym[R] ι M` by `⨂ₛ[R] i, f i`. We also reserve the notation `Sym[R]^n M` for the
 `n`th symmetric tensor power of `M`, which is the symmetric tensor power indexed by `Fin n`.
 
-## Main definitions:
+## Main definitions
 
 * `SymmetricPower.module`: the symmetric tensor power is a module over `R`.
 
@@ -35,11 +38,12 @@ from `ι → M` to `Sym[R] ι M` by `⨂ₛ[R] i, f i`. We also reserve the nota
 
 suppress_compilation
 
-universe u v
+universe u v w
 
 open TensorProduct Equiv
 
-variable (R ι : Type u) [CommSemiring R] (M : Type v) [AddCommMonoid M] [Module R M] (s : ι → M)
+variable (R : Type u) (ι : Type w) [CommSemiring R] (M : Type v)
+  [AddCommMonoid M] [Module R M] (s : ι → M)
 
 /-- The relation on the `ι`-indexed tensor power of `M` where two tensors are equal
 if they are related by a permutation of `ι`. -/
@@ -49,7 +53,7 @@ inductive SymmetricPower.Rel : (⨂[R] _, M) → (⨂[R] _, M) → Prop
 /-- The `ι`-indexed symmetric tensor power of a semimodule `M` over a commutative semiring `R`
 is the quotient of the `ι`-indexed tensor power of `M` by the relation that two tensors are equal
 if they are related by a permutation of `ι`. -/
-def SymmetricPower : Type max u v :=
+def SymmetricPower : Type max u v w :=
   (addConGen (SymmetricPower.Rel R ι M)).Quotient
 deriving AddCommMonoid
 

@@ -44,8 +44,7 @@ noncomputable def subsetSupSet [Inhabited s] : SupSet s where
     then ⟨sSup ((↑) '' t : Set α), ht.2.2⟩
     else default
 
-attribute [local instance] subsetSupSet
-
+attribute [local instance] subsetSupSet in
 open scoped Classical in
 @[simp, deprecated "deprecated without replacement" (since := "2026-10-26")]
 theorem subset_sSup_def [Inhabited s] :
@@ -55,14 +54,20 @@ theorem subset_sSup_def [Inhabited s] :
       else default :=
   rfl
 
+set_option linter.deprecated false in -- will be deprecated later
+attribute [local instance] subsetSupSet in
 theorem subset_sSup_of_within [Inhabited s] {t : Set s}
     (h' : t.Nonempty) (h'' : BddAbove t) (h : sSup ((↑) '' t : Set α) ∈ s) :
     sSup ((↑) '' t : Set α) = (@sSup s _ t : α) := by simp [h, h', h'']
 
+set_option linter.deprecated false in -- will be deprecated later
+attribute [local instance] subsetSupSet in
 theorem subset_sSup_emptyset [Inhabited s] :
     sSup (∅ : Set s) = default := by
   simp [sSup]
 
+set_option linter.deprecated false in -- will be deprecated later
+attribute [local instance] subsetSupSet in
 theorem subset_sSup_of_not_bddAbove [Inhabited s] {t : Set s} (ht : ¬BddAbove t) :
     sSup t = default := by
   simp [sSup, ht]
@@ -84,8 +89,7 @@ noncomputable def subsetInfSet [Inhabited s] : InfSet s where
     then ⟨sInf ((↑) '' t : Set α), ht.2.2⟩
     else default
 
-attribute [local instance] subsetInfSet
-
+attribute [local instance] subsetInfSet in
 open scoped Classical in
 @[simp, deprecated "deprecated without replacement" (since := "2026-10-26")]
 theorem subset_sInf_def [Inhabited s] :
@@ -95,14 +99,20 @@ theorem subset_sInf_def [Inhabited s] :
       default :=
   rfl
 
+set_option linter.deprecated false in -- will be deprecated later
+attribute [local instance] subsetInfSet in
 theorem subset_sInf_of_within [Inhabited s] {t : Set s}
     (h' : t.Nonempty) (h'' : BddBelow t) (h : sInf ((↑) '' t : Set α) ∈ s) :
     sInf ((↑) '' t : Set α) = (@sInf s _ t : α) := by simp [h, h', h'']
 
+set_option linter.deprecated false in -- will be deprecated later
+attribute [local instance] subsetInfSet in
 theorem subset_sInf_emptyset [Inhabited s] :
     sInf (∅ : Set s) = default := by
   simp [sInf]
 
+set_option linter.deprecated false in -- will be deprecated later
+attribute [local instance] subsetInfSet in
 theorem subset_sInf_of_not_bddBelow [Inhabited s] {t : Set s} (ht : ¬BddBelow t) :
     sInf t = default := by
   simp [sInf, ht]
@@ -145,7 +155,7 @@ theorem Set.OrdConnected.csSup_image_mem {s : Set α} [hs : OrdConnected s] ⦃t
     (ht : t.Nonempty) (h_bdd : BddAbove t) : sSup ((↑) '' t : Set α) ∈ s := by
   obtain ⟨c, hct⟩ : ∃ c, c ∈ t := ht
   obtain ⟨B, hB⟩ : ∃ B, B ∈ upperBounds t := h_bdd
-  refine hs.out c.2 B.2 ⟨?_, ?_⟩
+  refine hs.out c.property B.property ⟨?_, ?_⟩
   · exact (Subtype.mono_coe (· ∈ s)).le_csSup_image hct ⟨B, hB⟩
   · exact (Subtype.mono_coe (· ∈ s)).csSup_image_le ⟨c, hct⟩ hB
 
@@ -155,7 +165,7 @@ theorem Set.OrdConnected.csInf_image_mem {s : Set α} [hs : OrdConnected s] ⦃t
     (ht : t.Nonempty) (h_bdd : BddBelow t) : sInf ((↑) '' t : Set α) ∈ s := by
   obtain ⟨c, hct⟩ : ∃ c, c ∈ t := ht
   obtain ⟨B, hB⟩ : ∃ B, B ∈ lowerBounds t := h_bdd
-  refine hs.out B.2 c.2 ⟨?_, ?_⟩
+  refine hs.out B.property c.property ⟨?_, ?_⟩
   · exact (Subtype.mono_coe (· ∈ s)).le_csInf_image ⟨c, hct⟩ hB
   · exact (Subtype.mono_coe (· ∈ s)).csInf_image_le hct ⟨B, hB⟩
 
@@ -195,23 +205,23 @@ noncomputable instance Set.Icc.completeLattice [ConditionallyCompleteLattice α]
   __ := (inferInstance : BoundedOrder ↑(Icc a b))
   sSup S := if hS : S = ∅ then ⟨a, le_rfl, Fact.out⟩ else ⟨sSup ((↑) '' S), by
     rw [← Set.not_nonempty_iff_eq_empty, not_not] at hS
-    refine ⟨?_, csSup_le (hS.image Subtype.val) (fun _ ⟨c, _, hc⟩ ↦ hc ▸ c.2.2)⟩
+    refine ⟨?_, csSup_le (hS.image Subtype.val) (fun _ ⟨c, _, hc⟩ ↦ hc ▸ c.property.2)⟩
     obtain ⟨c, hc⟩ := hS
-    exact c.2.1.trans (le_csSup ⟨b, fun _ ⟨d, _, hd⟩ ↦ hd ▸ d.2.2⟩ ⟨c, hc, rfl⟩)⟩
+    exact c.property.1.trans (le_csSup ⟨b, fun _ ⟨d, _, hd⟩ ↦ hd ▸ d.property.2⟩ ⟨c, hc, rfl⟩)⟩
   isLUB_sSup S := by
     split_ifs with hS
     · subst hS; simp only [isLUB_empty_iff, isBot_iff_eq_bot]; rfl
-    · exact .of_image Subtype.coe_le_coe <| isLUB_csSup ((Set.nonempty_iff_ne_empty.mpr hS).image _)
+    · exact .of_image Subtype.coe_le_coe <| isLUB_csSup ((Set.ne_empty_iff_nonempty.mp hS).image _)
         ((Subtype.mono_coe _).map_bddAbove (OrderTop.bddAbove S))
   sInf S := if hS : S = ∅ then ⟨b, Fact.out, le_rfl⟩ else ⟨sInf ((↑) '' S), by
     rw [← Set.not_nonempty_iff_eq_empty, not_not] at hS
-    refine ⟨le_csInf (hS.image Subtype.val) (fun _ ⟨c, _, hc⟩ ↦ hc ▸ c.2.1), ?_⟩
+    refine ⟨le_csInf (hS.image Subtype.val) (fun _ ⟨c, _, hc⟩ ↦ hc ▸ c.property.1), ?_⟩
     obtain ⟨c, hc⟩ := hS
-    exact le_trans (csInf_le ⟨a, fun _ ⟨d, _, hd⟩ ↦ hd ▸ d.2.1⟩ ⟨c, hc, rfl⟩) c.2.2⟩
+    exact le_trans (csInf_le ⟨a, fun _ ⟨d, _, hd⟩ ↦ hd ▸ d.property.1⟩ ⟨c, hc, rfl⟩) c.property.2⟩
   isGLB_sInf S := by
     split_ifs with hS
     · subst hS; simp only [isGLB_empty_iff, isTop_iff_eq_top]; rfl
-    · exact .of_image Subtype.coe_le_coe <| isGLB_csInf ((Set.nonempty_iff_ne_empty.mpr hS).image _)
+    · exact .of_image Subtype.coe_le_coe <| isGLB_csInf ((Set.ne_empty_iff_nonempty.mp hS).image _)
         ((Subtype.mono_coe _).map_bddBelow (OrderBot.bddBelow S))
 
 /-- Complete linear order structure on `Set.Icc` -/

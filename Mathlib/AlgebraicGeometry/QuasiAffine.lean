@@ -11,6 +11,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Immersion
 # Quasi-affine schemes
 
 ## Main results
+
 - `IsQuasiAffine`:
   A scheme `X` is quasi-affine if it is quasi-compact and `X ⟶ Spec Γ(X, ⊤)` is an immersion.
   This actually implies that `X ⟶ Spec Γ(X, ⊤)` is an open immersion.
@@ -59,7 +60,8 @@ lemma IsQuasiAffine.isBasis_basicOpen (X : Scheme.{u}) [IsQuasiAffine X] :
     Opens.IsBasis { X.basicOpen r | (r : Γ(X, ⊤)) (_ : IsAffineOpen (X.basicOpen r)) } := by
   refine Opens.isBasis_iff_nbhd.mpr fun {U x} hxU ↦ ?_
   obtain ⟨_, ⟨_, ⟨r, rfl⟩, rfl⟩, hxr, hrU⟩ := (PrimeSpectrum.isBasis_basic_opens
-    (R := Γ(X, ⊤))).exists_subset_of_mem_open (Set.mem_image_of_mem _ hxU) (X.toSpecΓ ''ᵁ U).2
+    (R := Γ(X, ⊤))).exists_subset_of_mem_open (Set.mem_image_of_mem _ hxU)
+    (X.toSpecΓ ''ᵁ U).is_open'
   simp_rw [← toSpecΓ_preimage_basicOpen]
   refine ⟨_, ⟨r, ?_, rfl⟩, hxr, (Set.preimage_mono hrU).trans_eq
     (Set.preimage_image_eq _ X.toSpecΓ.isEmbedding.injective)⟩
@@ -101,7 +103,7 @@ lemma IsQuasiAffine.of_isAffineHom [IsAffineHom f] [Y.IsQuasiAffine] : X.IsQuasi
 @[simps! f] def openCoverBasicOpenTop (X : Scheme.{u}) [X.IsQuasiAffine] :
     X.OpenCover :=
   X.openCoverOfIsOpenCover (fun i : { r // IsAffineOpen (X.basicOpen (U := ⊤) r) } ↦
-    X.basicOpen i.1) <| top_le_iff.mp fun x _ ↦ by
+    X.basicOpen i.val) <| top_le_iff.mp fun x _ ↦ by
   obtain ⟨_, ⟨_, ⟨r, hr, rfl⟩, rfl⟩, hxr, -⟩ :=
     (IsQuasiAffine.isBasis_basicOpen X).exists_subset_of_mem_open (Set.mem_univ x) isOpen_univ
   exact Opens.mem_iSup.mpr ⟨⟨r, hr⟩, hxr⟩
@@ -126,11 +128,11 @@ lemma isPullback_toSpecΓ_toSpecΓ (f : X ⟶ Y) [IsAffineHom f] [Y.IsQuasiAffin
       CommRingCat.Hom.hom (f.appTop ≫ X.presheaf.map _)
     rw [f.map_appLE, Scheme.Hom.appLE]
   refine isPullback_of_openCover _ _ _ _ Y.openCoverBasicOpenTop fun r ↦ ?_
-  let e : pullback f (Y.basicOpen r.1).ι ≅ Spec Γ(X, X.basicOpen (f.appTop r.1)) :=
-    pullbackRestrictIsoRestrict _ _ ≪≫ X.isoOfEq (Scheme.preimage_basicOpen_top f r.1) ≪≫
-    IsAffineOpen.isoSpec (by rw [← Scheme.preimage_basicOpen_top]; exact r.2.preimage f)
-  refine .of_iso ((this r.1).op.map Scheme.Spec) e.symm r.2.isoSpec.symm (.refl _) (.refl _)
-    ?_ ?_ (by simp) (by simp)
+  let e : pullback f (Y.basicOpen r.val).ι ≅ Spec Γ(X, X.basicOpen (f.appTop r.val)) :=
+    pullbackRestrictIsoRestrict _ _ ≪≫ X.isoOfEq (Scheme.preimage_basicOpen_top f r.val) ≪≫
+    IsAffineOpen.isoSpec (by rw [← Scheme.preimage_basicOpen_top]; exact r.property.preimage f)
+  refine .of_iso ((this r.val).op.map Scheme.Spec) e.symm r.property.isoSpec.symm (.refl _)
+    (.refl _) ?_ ?_ (by simp) (by simp)
   · simp only [Iso.symm_hom, Iso.eq_inv_comp, ← Category.assoc, Iso.comp_inv_eq]
     dsimp [e, Scheme.Cover.pullbackHom, IsAffineOpen.isoSpec_hom, Scheme.Hom.appLE]
     simp only [homOfLE_leOfHom, Spec.map_comp, Category.assoc,

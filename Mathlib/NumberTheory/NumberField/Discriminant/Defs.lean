@@ -8,6 +8,9 @@ module
 public import Mathlib.NumberTheory.NumberField.Basic
 public import Mathlib.RingTheory.Localization.NormTrace
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Number field discriminant
 
@@ -18,6 +21,7 @@ This file defines the discriminant of a number field.
 * `NumberField.discr`: the absolute discriminant of a number field.
 
 ## Tags
+
 number field, discriminant
 -/
 
@@ -62,7 +66,7 @@ theorem discr_eq_discr_of_algEquiv {L : Type*} [Field L] [NumberField L] (f : K 
 
 theorem discr_eq_discr_of_ringEquiv {L : Type*} [Field L] [NumberField L] (f : K ≃+* L) :
     discr K = discr L :=
-  discr_eq_discr_of_algEquiv _ <| AlgEquiv.ofRingEquiv (f := f) fun _ ↦ by simp
+  discr_eq_discr_of_algEquiv _ <| AlgEquiv.ofCommutes (e := f) fun _ ↦ by simp
 
 end NumberField
 

@@ -14,6 +14,9 @@ public import Mathlib.Tactic.ArithMult
 
 import Mathlib.Algebra.Module.BigOperators
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Arithmetic Functions and Dirichlet Convolution
 
@@ -371,7 +374,7 @@ def dirichletInverseFun (n : ℕ) : R :=
   if n = 0 then 0
   else if n = 1 then ⅟(f 1)
   else - ⅟(f 1) * ∑ d : n.properDivisors,
-    have : d < n := (Nat.mem_properDivisors.mp d.2).2
+    have : d < n := (Nat.mem_properDivisors.mp d.property).2
     f (n / d) * dirichletInverseFun d
 
 @[simp]

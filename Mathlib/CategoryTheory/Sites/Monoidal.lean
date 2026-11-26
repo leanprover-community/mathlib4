@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Localization.Monoidal.Braided
 public import Mathlib.CategoryTheory.Monoidal.Closed.FunctorCategory.Basic
 public import Mathlib.CategoryTheory.Sites.SheafHom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Monoidal category structure on categories of sheaves
 

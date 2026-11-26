@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.OuterMeasure.Induced
 public import Mathlib.MeasureTheory.SetSemiring
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Additive Contents
 
@@ -300,10 +303,10 @@ lemma addContent_le_sum_of_subset_sUnion {m : AddContent G C} (hC : IsSetSemirin
     m t ≤ ∑ u ∈ J, m u := by
   simp_rw +singlePass [← sSup_eq_sUnion, sSup_eq_iSup', SetLike.coe_sort_coe,
     ← J.equivFin.symm.iSup_comp, iSup_eq_iUnion, ← iUnion_disjointed] at htJ
-  set f := disjointed fun j => (J.equivFin.symm j).1
+  set f := disjointed fun j => (J.equivFin.symm j).val
   have h1 : ∀ j, f j ∈ supClosure C :=
     hC.isSetRing_supClosure.disjointed_mem fun j =>
-      subset_supClosure <| h_ss (J.equivFin.symm j).2
+      subset_supClosure <| h_ss (J.equivFin.symm j).property
   have h2 : Pairwise (Disjoint on f) := disjoint_disjointed _
   have h3 : ⋃ i, f i ∈ supClosure C :=
     supClosed_supClosure.iSup_mem (subset_supClosure hC.empty_mem) h1
@@ -311,9 +314,9 @@ lemma addContent_le_sum_of_subset_sUnion {m : AddContent G C} (hC : IsSetSemirin
     addContent_mono hC.isSetRing_supClosure.isSetSemiring (subset_supClosure ht) h3 htJ,
     addContent_iUnion h1 h2 h3, ← J.sum_attach, Finset.attach_eq_univ, ← J.equivFin.symm.sum_comp]
   gcongr with j -
-  rw [← m.supClosure_apply_of_mem hC (h_ss (J.equivFin.symm _).2)]
+  rw [← m.supClosure_apply_of_mem hC (h_ss (J.equivFin.symm _).property)]
   exact addContent_mono hC.isSetRing_supClosure.isSetSemiring (h1 j)
-    (subset_supClosure (h_ss (J.equivFin.symm j).2)) (disjointed_subset _ j)
+    (subset_supClosure (h_ss (J.equivFin.symm j).property)) (disjointed_subset _ j)
 
 /-- An `addContent C` on a `SetSemiring C` is sub-additive. -/
 lemma addContent_sUnion_le_sum {m : AddContent G C} (hC : IsSetSemiring C)

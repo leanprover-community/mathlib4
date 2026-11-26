@@ -11,6 +11,9 @@ public import Mathlib.Data.Nat.Count
 public import Mathlib.Data.Rat.Floor
 public import Mathlib.Order.Interval.Finset.Nat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Counting elements in an interval with given residue
 

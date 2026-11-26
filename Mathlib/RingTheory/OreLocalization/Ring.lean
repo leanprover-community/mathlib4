@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Field.Defs
 public import Mathlib.RingTheory.OreLocalization.NonZeroDivisors
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Module and Ring instances of Ore Localizations
 
@@ -98,7 +101,7 @@ lemma nsmul_eq_nsmul (n : ℕ) (x : X[S⁻¹]) :
     letI inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℕ) (R := R) (X := X) (S := S)
     HSMul.hSMul (self := @instHSMul _ _ inst.toSMul) n x = n • x := by
   let inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℕ) (R := R) (X := X) (S := S)
-  congrm $(AddCommMonoid.uniqueNatModule.2 inst).smul n x
+  congrm $(AddCommMonoid.uniqueNatModule.uniq inst).smul n x
 
 /-- The ring homomorphism from `R` to `R[S⁻¹]`, mapping `r : R` to the fraction `r /ₒ 1`. -/
 @[simps!]
@@ -185,7 +188,7 @@ lemma zsmul_eq_zsmul (n : ℤ) (x : X[S⁻¹]) :
     letI inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℤ) (R := R) (X := X) (S := S)
     HSMul.hSMul (self := @instHSMul _ _ inst.toSMul) n x = n • x := by
   let inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℤ) (R := R) (X := X) (S := S)
-  congrm $(AddCommGroup.uniqueIntModule.2 inst).smul n x
+  congrm $(AddCommGroup.uniqueIntModule.uniq inst).smul n x
 
 open nonZeroDivisors
 
@@ -196,7 +199,7 @@ theorem numeratorHom_inj (hS : S ≤ nonZeroDivisorsLeft R) :
   rcases h with ⟨u, v, h₁, h₂⟩
   simp only [S.coe_one, mul_one, Submonoid.smul_def, smul_eq_mul] at h₁ h₂
   rw [← h₂, ← sub_eq_zero, ← mul_sub] at h₁
-  exact (sub_eq_zero.mp (hS u.2 _ h₁)).symm
+  exact (sub_eq_zero.mp (hS u.property _ h₁)).symm
 
 end Ring
 

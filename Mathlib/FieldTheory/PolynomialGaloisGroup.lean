@@ -20,7 +20,7 @@ some results about some extension `E` above `p.SplittingField`.
 - `Polynomial.Gal.restrict p E`: the restriction homomorphism `Gal(E/F) → gal p`.
 - `Polynomial.Gal.galAction p E`: the action of `gal p` on the roots of `p` in `E`.
 
-## Main results
+## Main statements
 
 - `Polynomial.Gal.restrict_smul`: `restrict p E` is compatible with `gal_action p E`.
 - `Polynomial.Gal.galActionHom_injective`: `gal p` acting on the roots of `p` in `E` is faithful.
@@ -30,7 +30,6 @@ some results about some extension `E` above `p.SplittingField`.
 - `Polynomial.Gal.galActionHom_bijective_of_prime_degree`:
   An irreducible polynomial of prime degree with two non-real roots has full Galois group.
 
-## Other results
 - `Polynomial.Gal.card_complex_roots_eq_card_real_add_card_not_gal_inv`: The number of complex roots
   equals the number of real roots plus the number of roots not fixed by complex conjugation
   (i.e. with some imaginary component).
@@ -79,7 +78,7 @@ def uniqueGalOfSplits (h : p.Splits) : Unique p.Gal where
       rw [AlgEquiv.commutes, AlgEquiv.commutes]
 
 instance [h : Fact p.Splits] : Unique p.Gal :=
-  uniqueGalOfSplits _ h.1
+  uniqueGalOfSplits _ h.out
 
 instance uniqueGalZero : Unique (0 : F[X]).Gal :=
   uniqueGalOfSplits _ (by simp)
@@ -100,11 +99,11 @@ instance uniqueGalXPow (n : ℕ) : Unique (X ^ n : F[X]).Gal :=
   uniqueGalOfSplits _ (Splits.X_pow _)
 
 instance [h : Fact ((p.map (algebraMap F E)).Splits)] : Algebra p.SplittingField E :=
-  (IsSplittingField.lift p.SplittingField p h.1).toRingHom.toAlgebra
+  (IsSplittingField.lift p.SplittingField p h.out).toRingHom.toAlgebra
 
 instance [h : Fact ((p.map (algebraMap F E)).Splits)] : IsScalarTower F p.SplittingField E :=
   IsScalarTower.of_algebraMap_eq fun x =>
-    ((IsSplittingField.lift p.SplittingField p h.1).commutes x).symm
+    ((IsSplittingField.lift p.SplittingField p h.out).commutes x).symm
 
 -- The `Algebra p.SplittingField E` instance above behaves badly when
 -- `E := p.SplittingField`, since it may result in a unification problem
@@ -180,8 +179,10 @@ instance galAction [Fact ((p.map (algebraMap F E)).Splits)] : MulAction p.Gal (r
 lemma galAction_isPretransitive [Fact ((p.map (algebraMap F E)).Splits)] (hp : Irreducible p) :
     MulAction.IsPretransitive p.Gal (p.rootSet E) := by
   refine ⟨fun x y ↦ ?_⟩
-  have hx := minpoly.eq_of_irreducible hp (mem_rootSet.mp ((rootsEquivRootsAux p E).symm x).2).2
-  have hy := minpoly.eq_of_irreducible hp (mem_rootSet.mp ((rootsEquivRootsAux p E).symm y).2).2
+  have hx :=
+    minpoly.eq_of_irreducible hp (mem_rootSet.mp ((rootsEquivRootsAux p E).symm x).property).2
+  have hy :=
+    minpoly.eq_of_irreducible hp (mem_rootSet.mp ((rootsEquivRootsAux p E).symm y).property).2
   obtain ⟨g, hg⟩ := (Normal.minpoly_eq_iff_mem_orbit p.SplittingField).mp (hy.symm.trans hx)
   exact ⟨g, (rootsEquivRootsAux p E).eq_symm_apply.mp (Subtype.ext hg)⟩
 
