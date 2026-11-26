@@ -5,9 +5,9 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
+public import Mathlib.Order.Prod.Lex.Basic
 public import Mathlib.Order.SuccPred.Basic
 public import Mathlib.Order.Sum.Order
-public import Mathlib.Order.Prod.Lex.Basic
 
 /-!
 # Instances for lexicographic sums and products
@@ -119,8 +119,61 @@ theorem pred_inr_bot : pred (toLex (inr ⊥ : α ⊕ β)) = toLex (inl ⊤) :=
 end OrderBot
 end Sum.Lex
 
+/-! ### Lexicographic product -/
+
 namespace Prod.Lex
 
+attribute [local simp] Prod.Lex.le_iff Prod.Lex.lt_iff
 
+section NoMaxOrder
+variable [Preorder α]
+  [Preorder β] [SuccOrder β] [NoMaxOrder β]
 
+@[to_dual]
+instance : SuccOrder (α ×ₗ β) where
+  succ x := toLex ((ofLex x).1, succ (ofLex x).2)
+  le_succ := by simp
+  max_of_succ_le := by simp
+  succ_le_of_lt := by simp
+
+@[to_dual]
+theorem succ_def {x : α ×ₗ β} : succ x = toLex ((ofLex x).1, succ (ofLex x).2) :=
+  rfl
+
+end NoMaxOrder
+
+section BoundedOrder
+variable [PartialOrder α] [SuccOrder α] [DecidablePred (IsMax (α := α))]
+  [PartialOrder β] [SuccOrder β] [BoundedOrder β] [DecidableEq β]
+
+set_option backward.isDefEq.respectTransparency false in
+@[to_dual]
+instance : SuccOrder (α ×ₗ β) where
+  succ x :=
+    if (ofLex x).2 = ⊤ then
+      if IsMax (ofLex x).1 then x else toLex (succ (ofLex x).1, ⊥)
+      else toLex ((ofLex x).1, succ (ofLex x).2)
+  le_succ := by rw [Lex.forall]; aesop
+  max_of_succ_le := by
+    rw [Lex.forall]
+    have (x : α) := (le_succ x).not_gt
+    aesop
+  succ_le_of_lt := by
+    simp_rw [Lex.forall]
+    aesop (add apply safe [succ_le_of_lt, lt_or_eq_of_le])
+
+@[to_dual]
+theorem succ_mk_top_right {x : α} (hx : ∃ y, x < y) :
+    succ (toLex (x, (⊤ : β))) = toLex (succ x, ⊥) := by
+  apply (ite_eq_left rfl).trans
+  rw [ite_eq_right]
+  · simp
+  · simpa
+
+@[to_dual]
+theorem succ_of_ne_top (x : α) {y : β} (hy : y ≠ ⊤) :
+    succ (toLex (x, y)) = toLex (x, succ y) :=
+  ite_eq_right hy
+
+end BoundedOrder
 end Prod.Lex
