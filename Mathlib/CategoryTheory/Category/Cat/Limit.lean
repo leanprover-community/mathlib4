@@ -5,9 +5,8 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Category.Cat
+public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 public import Mathlib.CategoryTheory.Limits.Types.Limits
-public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
 # The category of small categories has all small limits.
@@ -17,7 +16,8 @@ which are carried to one another by the functors in the diagram.
 A morphism between two such objects is a family of morphisms between the corresponding objects,
 which are carried to one another by the action on morphisms of the functors in the diagram.
 
-## Future work
+## TODO
+
 Can the indexing category live in a lower universe?
 -/
 
@@ -105,7 +105,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition: the universal morphism to the proposed limit cone. -/
 @[simps! toFunctor]
 def limitConeLift (F : J ⥤ Cat.{v, v}) (s : Cone F) : s.pt ⟶ limitConeX F :=
-  Functor.toCatHom <| {
+  Functor.toCatHom {
     obj :=
       limit.lift (F ⋙ Cat.objects)
         { pt := s.pt
@@ -130,7 +130,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 theorem limit_π_homDiagram_eqToHom {F : J ⥤ Cat.{v, v}} (X Y : limit (F ⋙ Cat.objects.{v, v}))
     (j : J) (h : X = Y) :
     limit.π (homDiagram X Y) j (eqToHom h) =
-      eqToHom (ConcreteCategory.congr_arg (limit.π (F ⋙ Cat.objects.{v, v}) j) h) := by
+      eqToHom congr(limit.π (F ⋙ Cat.objects.{v, v}) j $h) := by
   subst h
   simp [-homDiagram_obj]
 

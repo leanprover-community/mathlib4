@@ -5,13 +5,11 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.Lattice
-public import Mathlib.Algebra.Group.Submonoid.Membership
 public import Mathlib.Algebra.Group.Submonoid.BigOperators
-public import Mathlib.Algebra.Module.Submodule.Defs
+public import Mathlib.Algebra.Group.Submonoid.Membership
 public import Mathlib.Algebra.Module.Equiv.Defs
 public import Mathlib.Algebra.Module.PUnit
-public import Mathlib.Data.Set.Subsingleton
+public import Mathlib.Algebra.Module.Submodule.Defs
 public import Mathlib.Data.Finset.Lattice.Fold
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
@@ -27,7 +25,6 @@ If `p` and `q` are submodules of a module, `p ≤ q` means that `p ⊆ q`.
 
 This structure should match the `AddSubmonoid.CompleteLattice` structure, and we should try
 to unify the APIs where possible.
-
 -/
 
 @[expose] public section
@@ -352,11 +349,11 @@ theorem eq_zero_of_coe_mem_of_disjoint (hpq : Disjoint p q) {a : p} (ha : (a : M
 
 theorem mem_right_iff_eq_zero_of_disjoint {p p' : Submodule R M} (h : Disjoint p p') {x : p} :
     (x : M) ∈ p' ↔ x = 0 :=
-  ⟨fun hx => coe_eq_zero.1 <| disjoint_def.1 h x x.2 hx, fun h => h.symm ▸ p'.zero_mem⟩
+  ⟨fun hx => coe_eq_zero.1 <| disjoint_def.1 h x x.property hx, fun h => h.symm ▸ p'.zero_mem⟩
 
 theorem mem_left_iff_eq_zero_of_disjoint {p p' : Submodule R M} (h : Disjoint p p') {x : p'} :
     (x : M) ∈ p ↔ x = 0 :=
-  ⟨fun hx => coe_eq_zero.1 <| disjoint_def.1 h x hx x.2, fun h => h.symm ▸ p.zero_mem⟩
+  ⟨fun hx => coe_eq_zero.1 <| disjoint_def.1 h x hx x.property, fun h => h.symm ▸ p.zero_mem⟩
 
 /-- Version of `AddSubgroup.disjoint_iff_add_eq_zero` for submodules. -/
 theorem disjoint_iff_add_eq_zero {M R : Type*} [Ring R] [AddCommGroup M] [Module R M]

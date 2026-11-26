@@ -5,11 +5,8 @@ Authors: Eric Wieser, Utensil Song
 -/
 module
 
-public import Mathlib.RingTheory.Congruence.Hom
-public import Mathlib.LinearAlgebra.TensorAlgebra.Basic
-public import Mathlib.LinearAlgebra.QuadraticForm.Isometry
 public import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
-public import Mathlib.Tactic.CrossRefAttribute
+public import Mathlib.LinearAlgebra.TensorAlgebra.Basic
 
 /-!
 # Clifford Algebras
@@ -35,7 +32,7 @@ of the Clifford algebra.
 1. `ι_comp_lift` is the fact that the composition of `ι Q` with `lift Q f cond` agrees with `f`.
 2. `lift_unique` ensures the uniqueness of `lift Q f cond` with respect to 1.
 
-## Implementation details
+## Implementation notes
 
 The Clifford algebra of `M` is constructed as a quotient of the tensor algebra, as follows.
 1. We define a relation `CliffordAlgebra.Rel Q` on `TensorAlgebra R M`.
@@ -172,13 +169,13 @@ theorem lift_ι_apply (f : M →ₗ[R] A) (cond : ∀ m, f m * f m = algebraMap 
 @[simp]
 theorem lift_unique (f : M →ₗ[R] A) (cond : ∀ m : M, f m * f m = algebraMap _ _ (Q m))
     (g : CliffordAlgebra Q →ₐ[R] A) : g.toLinearMap.comp (ι Q) = f ↔ g = lift Q ⟨f, cond⟩ := by
-  convert! (lift Q : _ ≃ (CliffordAlgebra Q →ₐ[R] A)).symm_apply_eq
+  convert (lift Q : _ ≃ (CliffordAlgebra Q →ₐ[R] A)).symm_apply_eq
   rw [lift_symm_apply, Subtype.mk_eq_mk]
 
 @[simp]
 theorem lift_comp_ι (g : CliffordAlgebra Q →ₐ[R] A) :
-    lift Q ⟨g.toLinearMap.comp (ι Q), comp_ι_sq_scalar _⟩ = g := by
-  exact (lift Q : _ ≃ (CliffordAlgebra Q →ₐ[R] A)).apply_symm_apply g
+    lift Q ⟨g.toLinearMap.comp (ι Q), comp_ι_sq_scalar _⟩ = g :=
+  (lift Q : _ ≃ (CliffordAlgebra Q →ₐ[R] A)).apply_symm_apply g
 
 /-- See note [partially-applied ext lemmas]. -/
 @[ext high]
@@ -382,11 +379,11 @@ equivalent. -/
 def equivOfIsometry (e : Q₁.IsometryEquiv Q₂) : CliffordAlgebra Q₁ ≃ₐ[R] CliffordAlgebra Q₂ :=
   AlgEquiv.ofAlgHom (map e.toIsometry) (map e.symm.toIsometry)
     ((map_comp_map _ _).trans <| by
-      convert! map_id Q₂ using 2
+      convert map_id Q₂ using 2
       ext m
       exact e.toLinearEquiv.apply_symm_apply m)
     ((map_comp_map _ _).trans <| by
-      convert! map_id Q₁ using 2
+      convert map_id Q₁ using 2
       ext m
       exact e.toLinearEquiv.symm_apply_apply m)
 

@@ -52,7 +52,6 @@ When `M = N` and `φ = MonoidHom.id M`, we provide the backward compatible notat
 The notation for `MulActionHom` and `AddActionHom` is the same, because it is unlikely
 that it could lead to confusion — unless one needs types `M` and `X` with simultaneous
 instances of `Mul M`, `Add M`, `SMul M X` and `VAdd M X`…
-
 -/
 
 @[expose] public section
@@ -141,7 +140,7 @@ abbrev MulActionHomClass (F : Type*) (M : outParam Type*)
     (X Y : outParam Type*) [SMul M X] [SMul M Y] [FunLike F X Y] :=
   MulActionSemiHomClass F (@id M) X Y
 
-@[to_additive] instance : FunLike (MulActionHom φ X Y) X Y where
+@[to_additive (attr := macro_inline)] instance : FunLike (MulActionHom φ X Y) X Y where
   coe := MulActionHom.toFun
   coe_injective f g h := by cases f; cases g; congr
 
@@ -591,7 +590,7 @@ variable (C : Type*) [Monoid C] [MulDistribMulAction P C]
 variable (A' : Type*) [Group A'] [MulDistribMulAction M A']
 variable (B' : Type*) [Group B'] [MulDistribMulAction N B']
 
-set_option linter.translateOverwrite false in
+set_option linter.translate.overwrite false in
 attribute [to_additive existing (dont_translate := M) DistribMulAction]
   MulDistribMulAction
 
@@ -600,7 +599,7 @@ structure DistribMulActionHom (A : Type*) [AddMonoid A] [DistribMulAction M A] (
     [AddMonoid B] [DistribMulAction N B] extends A →ₑ[φ] B, A →+ B
 
 /-- Equivariant monoid homomorphisms. -/
-@[to_additive (dont_translate := M N) DistribMulActionHom]
+@[to_additive (dont_translate := M N) DistribMulActionHom, to_additive_dont_translate]
 structure MulDistribMulActionHom extends A →ₑ[φ] B, A →* B
 
 /-- Reinterpret an equivariant additive monoid homomorphism as an additive monoid homomorphism. -/
@@ -672,7 +671,7 @@ abbrev MulDistribMulActionHomClass (F : Type*) (M : outParam Type*)
 
 namespace MulDistribMulActionHom
 
-@[to_additive (dont_translate := M N)]
+@[to_additive (attr := macro_inline) (dont_translate := M N)]
 instance : FunLike (A →ₑ*[φ] B) A B where
   coe m := m.toFun
   coe_injective f g h := by
@@ -781,30 +780,35 @@ theorem id_apply (x : A) : MulDistribMulActionHom.id M x = x := by
 
 variable {M C ψ χ}
 
-instance _root_.DistriMulActionHom.instZero {A : Type*} [AddMonoid A] [DistribMulAction M A]
+instance _root_.DistribMulActionHom.instZero {A : Type*} [AddMonoid A] [DistribMulAction M A]
     {B : Type*} [AddMonoid B] [DistribMulAction N B] : Zero (A →ₑ+[φ] B) :=
   ⟨{ (0 : A →+ B) with map_smul' := fun m _ => by simp }⟩
 
-@[to_additive (dont_translate := M)]
+@[to_additive (dont_translate := M) instOneId]
 instance : One (A →*[M] A) :=
   ⟨MulDistribMulActionHom.id M⟩
 
 @[simp]
-theorem _root_.DistriMulActionHom.coe_zero {A : Type*} [AddMonoid A] [DistribMulAction M A]
+theorem _root_.DistribMulActionHom.coe_zero {A : Type*} [AddMonoid A] [DistribMulAction M A]
     {B : Type*} [AddMonoid B] [DistribMulAction N B] : ⇑(0 : A →ₑ+[φ] B) = 0 :=
   rfl
 
-@[to_additive (attr := simp) (dont_translate := M)]
+@[to_additive (attr := simp) (dont_translate := M) coe_one]
 theorem coe_one : ⇑(1 : A →*[M] A) = id :=
   rfl
 
-theorem _root_.DistriMulActionHom.zero_apply {A : Type*} [AddMonoid A] [DistribMulAction M A]
+theorem _root_.DistribMulActionHom.zero_apply {A : Type*} [AddMonoid A] [DistribMulAction M A]
     {B : Type*} [AddMonoid B] [DistribMulAction N B] (a : A) : (0 : A →ₑ+[φ] B) a = 0 :=
   rfl
 
-@[to_additive (dont_translate := M)]
+@[to_additive (dont_translate := M) one_apply]
 theorem one_apply (a : A) : (1 : A →*[M] A) a = a :=
   rfl
+
+@[deprecated (since := "2026-11-21")]
+protected alias _root_.DistriMulActionHom.coe_zero := DistribMulActionHom.coe_zero
+@[deprecated (since := "2026-11-21")]
+protected alias _root_.DistriMulActionHom.zero_apply := DistribMulActionHom.zero_apply
 
 instance {A : Type*} [AddMonoid A] [DistribMulAction M A]
     {B : Type*} [AddMonoid B] [DistribMulAction N B] :
@@ -912,6 +916,7 @@ abbrev MulSemiringActionHomClass
 
 namespace MulSemiringActionHom
 
+@[macro_inline]
 instance : FunLike (R →ₑ+*[φ] S) R S where
   coe m := m.toFun
   coe_injective f g h := by

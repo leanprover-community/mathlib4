@@ -6,7 +6,6 @@ Authors: Aaron Anderson, Scott Carnahan
 module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-public import Mathlib.Algebra.GroupWithZero.Regular
 public import Mathlib.Algebra.Module.BigOperators
 public import Mathlib.Data.Finset.MulAntidiagonal
 public import Mathlib.Data.Finset.SMulAntidiagonal
@@ -26,6 +25,7 @@ multiplication from `R⟦Γ⟧`. The scalar action of `R` on `R⟦Γ⟧` is comp
 with the action of `R⟦Γ⟧` on `HahnModule Γ' R V`.
 
 ## Main Definitions
+
 * `HahnModule` is a type alias for `HahnSeries`, which we use for defining scalar multiplication
   of `R⟦Γ⟧` on `HahnModule Γ' R V` for an `R`-module `V`, where `Γ'` admits an ordered
   cancellative vector addition operation from `Γ`. The type alias allows us to avoid a potential
@@ -38,15 +38,18 @@ with the action of `R⟦Γ⟧` on `HahnModule Γ' R V`.
   series such that subtracting one yields a series with strictly positive `orderTop`.
 
 ## Main results
+
 * If `R` is a (commutative) (semi-)ring, then so is `R⟦Γ⟧`.
 * If `V` is an `R`-module, then `HahnModule Γ' R V` is a `R⟦Γ⟧`-module.
 
 ## TODO
+
 The following may be useful for composing vertex operators, but they seem to take time.
 * rightTensorMap: `HahnModule Γ' R U ⊗[R] V →ₗ[R] HahnModule Γ' R (U ⊗[R] V)`
 * leftTensorMap: `U ⊗[R] HahnModule Γ' R V →ₗ[R] HahnModule Γ' R (U ⊗[R] V)`
 
 ## References
+
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
 -/
 
@@ -103,7 +106,7 @@ theorem leadingCoeff_one [MulZeroOneClass R] : (1 : R⟦Γ⟧).leadingCoeff = 1 
 @[simp]
 protected lemma map_one [MonoidWithZero R] [MonoidWithZero S] (f : R →*₀ S) :
     (1 : R⟦Γ⟧).map f = (1 : S⟦Γ⟧) :=
-  HahnSeries.map_single (a := (0 : Γ)) f.toZeroHom |>.trans <| congrArg _ <| f.map_one
+  HahnSeries.map_single (a := (0 : Γ)) f.toZeroHom |>.trans <| congrArg _ f.map_one
 
 instance [AddCommMonoidWithOne R] : AddCommMonoidWithOne R⟦Γ⟧ where
   natCast_zero := by simp [← single_zero_natCast]
@@ -352,8 +355,8 @@ theorem support_smul_subset_vadd_support' [MulZeroClass R] [SMulWithZero R V] {x
 
 theorem support_smul_subset_vadd_support [MulZeroClass R] [SMulWithZero R V] {x : R⟦Γ⟧}
     {y : HahnModule Γ' R V} :
-    ((of R).symm (x • y)).support ⊆ x.support +ᵥ ((of R).symm y).support := by
-  exact support_smul_subset_vadd_support'
+    ((of R).symm (x • y)).support ⊆ x.support +ᵥ ((of R).symm y).support :=
+  support_smul_subset_vadd_support'
 
 theorem orderTop_vAdd_le_orderTop_smul {Γ Γ'} [LinearOrder Γ] [LinearOrder Γ'] [VAdd Γ Γ']
     [IsOrderedCancelVAdd Γ Γ'] [MulZeroClass R] [SMulWithZero R V] {x : R⟦Γ⟧}
@@ -540,7 +543,7 @@ theorem orderTop_mul (x y : R⟦Γ⟧) [NoZeroDivisors R] :
 
 theorem orderTop_add_le_mul {x y : R⟦Γ⟧} : x.orderTop + y.orderTop ≤ (x * y).orderTop := by
   rw [← smul_eq_mul]
-  exact HahnModule.orderTop_vAdd_le_orderTop_smul fun i j ↦ rfl
+  exact HahnModule.orderTop_vAdd_le_orderTop_smul fun i j : Γ ↦ rfl
 
 theorem order_mul_of_ne_zero {x y : R⟦Γ⟧}
     (h : x.leadingCoeff * y.leadingCoeff ≠ 0) : (x * y).order = x.order + y.order := by
@@ -580,7 +583,6 @@ section Ring
 
 variable [AddCommMonoid Γ] [PartialOrder Γ] [IsOrderedCancelAddMonoid Γ]
 
-set_option backward.privateInPublic true in
 private theorem mul_assoc' [NonUnitalSemiring R] (x y z : R⟦Γ⟧) : x * y * z = x * (y * z) := by
   ext b
   rw [coeff_mul_left' (x.isPWO_support.add y.isPWO_support) support_mul_subset,
@@ -590,10 +592,8 @@ private theorem mul_assoc' [NonUnitalSemiring R] (x y z : R⟦Γ⟧) : x * y * z
     (fun ⟨⟨i, _j⟩, ⟨k, l⟩⟩ ↦ ⟨(i + k, l), (i, k)⟩) <;>
     aesop (add safe Set.add_mem_add) (add simp [add_assoc, mul_assoc])
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance [NonUnitalSemiring R] : NonUnitalSemiring R⟦Γ⟧ where
-  mul_assoc := mul_assoc'
+  mul_assoc := private mul_assoc'
 
 instance [NonAssocSemiring R] : NonAssocSemiring R⟦Γ⟧ where
   one_mul x := by
@@ -700,7 +700,6 @@ namespace HahnModule
 variable [AddCommMonoid Γ] [PartialOrder Γ] [IsOrderedCancelAddMonoid Γ]
 variable [PartialOrder Γ'] [AddAction Γ Γ'] [IsOrderedCancelVAdd Γ Γ'] [AddCommMonoid V]
 
-set_option backward.privateInPublic true in
 private theorem mul_smul' [Semiring R] [Module R V] (x y : R⟦Γ⟧)
     (z : HahnModule Γ' R V) : (x * y) • z = x • (y • z) := by
   ext b
@@ -715,12 +714,10 @@ private theorem mul_smul' [Semiring R] [Module R V] (x y : R⟦Γ⟧)
 instance instBaseModule [Semiring R] [Module R V] : Module R (HahnModule Γ' R V) :=
   inferInstanceAs <| Module R V⟦Γ'⟧
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance instModule [Semiring R] [Module R V] : Module R⟦Γ⟧
     (HahnModule Γ' R V) := {
   (inferInstance : DistribSMul R⟦Γ⟧ (HahnModule Γ' R V)) with
-  mul_smul := mul_smul'
+  mul_smul := private mul_smul'
   one_smul := fun _ => one_smul'
   add_smul := fun _ _ _ => add_smul Module.add_smul
   zero_smul := fun _ => zero_smul' }

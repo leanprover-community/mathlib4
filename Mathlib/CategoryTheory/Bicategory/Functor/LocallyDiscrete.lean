@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 public import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pseudofunctors from locally discrete bicategories
 
@@ -25,7 +28,6 @@ the source bicategory is of the form `B := LocallyDiscrete B₀` for a category 
 We also prove that a functor `F : I ⥤ B` with `B` a strict bicategory can be promoted
 to a pseudofunctor (or oplax functor) (`Functor.toPseudofunctor`) with domain
 `LocallyDiscrete I`.
-
 -/
 
 @[expose] public section
@@ -117,8 +119,6 @@ def Functor.toPseudofunctor : LocallyDiscrete C ⥤ᵖ (LocallyDiscrete D) :=
     (fun ⟨X⟩ ↦ eqToIso (by simp [CategoryStruct.id]))
     (fun ⟨f⟩ ⟨g⟩ ↦ eqToIso (by simp [CategoryStruct.comp]))
 
-@[deprecated (since := "2026-02-08")] alias Functor.toPseudoFunctor := Functor.toPseudofunctor
-
 /--
 A functor between two categories `C` and `D` can be lifted to an oplax functor between the
 corresponding locally discrete bicategories.
@@ -148,8 +148,6 @@ def Functor.toPseudofunctor' : LocallyDiscrete I ⥤ᵖ B :=
     (fun ⟨X⟩ ↦ F.obj X) (fun ⟨f⟩ ↦ F.map f)
     (fun ⟨X⟩ ↦ eqToIso (by simp [CategoryStruct.id]))
     (fun f g ↦ eqToIso (by obtain ⟨f⟩ := f; obtain ⟨g⟩ := g; simp [CategoryStruct.comp]))
-
-@[deprecated (since := "2026-02-08")] alias Functor.toPseudoFunctor' := Functor.toPseudofunctor'
 
 /--
 If `B` is a strict bicategory and `I` is a (1-)category, any functor (of 1-categories) `I ⥤ B` can

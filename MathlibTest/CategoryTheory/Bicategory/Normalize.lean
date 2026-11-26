@@ -1,4 +1,6 @@
-import Mathlib.Tactic.CategoryTheory.Bicategory.Normalize
+module
+
+public import Mathlib.Tactic.CategoryTheory.Bicategory.Normalize
 
 open CategoryTheory Mathlib.Tactic BicategoryLike
 open Bicategory

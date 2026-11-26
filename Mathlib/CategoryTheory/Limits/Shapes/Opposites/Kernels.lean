@@ -7,11 +7,13 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Kernels and cokernels in `C` and `Cᵒᵖ`
 
 We construct kernels and cokernels in the opposite categories.
-
 -/
 
 @[expose] public section

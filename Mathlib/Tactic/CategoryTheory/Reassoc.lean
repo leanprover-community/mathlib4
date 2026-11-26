@@ -6,7 +6,9 @@ Authors: Kim Morrison, Robin Carlier
 module
 
 public import Mathlib.CategoryTheory.Functor.Basic
-public import Mathlib.Util.AddRelatedDecl
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The `reassoc` attribute
@@ -110,7 +112,7 @@ and returns a proof of the reassociation lemma.
 Handlers are considered in order of registration.
 They are applied directly to the equation in the body of the forall.
 -/
-def registerReassocExpr (f : Expr → MetaM (Expr × Array MVarId)) : IO Unit := do
+def registerReassocExpr (f : Expr → MetaM (Expr × Array MVarId)) : BaseIO Unit := do
   reassocImplRef.modify (·.push f)
 
 /--

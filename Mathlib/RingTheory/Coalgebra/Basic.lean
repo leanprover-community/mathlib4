@@ -6,8 +6,8 @@ Authors: Ali Ramsey, Eric Wieser
 module
 
 public import Mathlib.LinearAlgebra.Finsupp.Pi
-public import Mathlib.LinearAlgebra.TensorProduct.Finiteness
 public import Mathlib.LinearAlgebra.TensorProduct.Associator
+public import Mathlib.LinearAlgebra.TensorProduct.Finiteness
 
 /-!
 # Coalgebras
@@ -96,7 +96,7 @@ protected abbrev Repr.ι (_repr : Repr R a ι) : Type _ := ι
 @[simp]
 theorem coassoc_apply (a : A) :
     TensorProduct.assoc R A A A (comul.rTensor A (comul a)) = comul.lTensor A (comul a) :=
-  LinearMap.congr_fun coassoc a
+  congr($coassoc a)
 
 @[simp]
 theorem coassoc_symm_apply (a : A) :
@@ -111,11 +111,11 @@ theorem coassoc_symm :
 
 @[simp]
 theorem rTensor_counit_comul (a : A) : counit.rTensor A (comul a) = 1 ⊗ₜ[R] a :=
-  LinearMap.congr_fun rTensor_counit_comp_comul a
+  congr($rTensor_counit_comp_comul a)
 
 @[simp]
 theorem lTensor_counit_comul (a : A) : counit.lTensor A (comul a) = a ⊗ₜ[R] 1 :=
-  LinearMap.congr_fun lTensor_counit_comp_comul a
+  congr($lTensor_counit_comp_comul a)
 
 @[simp]
 lemma sum_counit_tmul_eq (repr : Repr R a ι) :
@@ -143,7 +143,7 @@ theorem sum_counit_tmul_map_eq {B : Type*} [AddCommMonoid B] [Module R B]
     ∑ i ∈ repr.index, counit (R := R) (repr.left i) ⊗ₜ f (repr.right i) = 1 ⊗ₜ[R] f a := by
   have := sum_counit_tmul_eq repr
   apply_fun LinearMap.lTensor R (f : A →ₗ[R] B) at this
-  simp_all only [map_sum, LinearMap.lTensor_tmul, LinearMap.coe_coe]
+  simp_all only [map_sum, LinearMap.lTensor_tmul, LinearMap.coe_ofClass]
 
 @[simp]
 theorem sum_map_tmul_counit_eq {B : Type*} [AddCommMonoid B] [Module R B]
@@ -151,7 +151,7 @@ theorem sum_map_tmul_counit_eq {B : Type*} [AddCommMonoid B] [Module R B]
     ∑ i ∈ repr.index, f (repr.left i) ⊗ₜ counit (R := R) (repr.right i) = f a ⊗ₜ[R] 1 := by
   have := sum_tmul_counit_eq repr
   apply_fun LinearMap.rTensor R (f : A →ₗ[R] B) at this
-  simp_all only [map_sum, LinearMap.rTensor_tmul, LinearMap.coe_coe]
+  simp_all only [map_sum, LinearMap.rTensor_tmul, LinearMap.coe_ofClass]
 
 -- Cannot be @[simp] because `a₁` cannot be inferred by `simp`.
 theorem sum_map_tmul_tmul_eq {B : Type*} [AddCommMonoid B] [Module R B]
@@ -164,7 +164,7 @@ theorem sum_map_tmul_tmul_eq {B : Type*} [AddCommMonoid B] [Module R B]
   have := sum_tmul_tmul_eq repr a₁ a₂
   apply_fun TensorProduct.map (f : A →ₗ[R] B)
     (TensorProduct.map (g : A →ₗ[R] B) (h : A →ₗ[R] B)) at this
-  simp_all only [map_sum, TensorProduct.map_tmul, LinearMap.coe_coe]
+  simp_all only [map_sum, TensorProduct.map_tmul, LinearMap.coe_ofClass]
 
 lemma sum_counit_smul (𝓡 : Repr R a ι) :
     ∑ x ∈ 𝓡.index, counit (R := R) (𝓡.left x) • 𝓡.right x = a := by
@@ -286,15 +286,16 @@ instance instCoalgebra : Coalgebra R (A × B) where
         ← rTensor_comp_lTensor, comp_assoc, lTensor_counit_comp_comul, rTensor_comp_flip_mk]
   coassoc := by
     dsimp +instances only [instCoalgebraStruct]
-    ext x : 2 <;> dsimp only [comp_apply, LinearEquiv.coe_coe, coe_inl, coe_inr, coprod_apply]
+    ext x : 2 <;> dsimp only [comp_apply, LinearEquiv.coe_toLinearMap, coe_inl, coe_inr,
+      coprod_apply]
     · simp only [map_zero, add_zero]
       simp_rw [← comp_apply, ← comp_assoc, rTensor_comp_map, lTensor_comp_map, coprod_inl,
         ← map_comp_rTensor, ← map_comp_lTensor, comp_assoc, ← coassoc, ← comp_assoc,
-        TensorProduct.map_map_comp_assoc_eq, comp_apply, LinearEquiv.coe_coe]
+        TensorProduct.map_map_comp_assoc_eq, comp_apply, LinearEquiv.coe_toLinearMap]
     · simp only [map_zero, zero_add]
       simp_rw [← comp_apply, ← comp_assoc, rTensor_comp_map, lTensor_comp_map, coprod_inr,
         ← map_comp_rTensor, ← map_comp_lTensor, comp_assoc, ← coassoc, ← comp_assoc,
-        TensorProduct.map_map_comp_assoc_eq, comp_apply, LinearEquiv.coe_coe]
+        TensorProduct.map_map_comp_assoc_eq, comp_apply, LinearEquiv.coe_toLinearMap]
 
 instance [IsCocomm R A] [IsCocomm R B] : IsCocomm R (A × B) where
   comm_comp_comul := by ext <;> simp [← TensorProduct.map_comm]

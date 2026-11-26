@@ -5,9 +5,7 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Data.Countable.Basic
-public import Mathlib.Data.Set.Finite.Basic
-public import Mathlib.Data.Set.Subsingleton
+public import Mathlib.Basic.Countable.Basic
 public import Mathlib.Logic.Equiv.List
 public import Mathlib.Order.Preorder.Finite
 
@@ -20,7 +18,7 @@ and prove basic properties of this definition.
 Note that this definition does not provide a computable encoding.
 For a noncomputable conversion to `Encodable s`, use `Set.Countable.nonempty_encodable`.
 
-## Keywords
+## Tags
 
 sets, countable set
 -/
@@ -107,7 +105,7 @@ lemma range_enumerateCountable_of_mem {s : Set α} (h : s.Countable) {default : 
 lemma enumerateCountable_mem {s : Set α} (h : s.Countable) {default : α} (h_mem : default ∈ s)
     (n : ℕ) :
     enumerateCountable h default n ∈ s := by
-  convert! mem_range_self n
+  convert mem_range_self n
   exact (range_enumerateCountable_of_mem h h_mem).symm
 
 end Enumerate
@@ -305,7 +303,7 @@ theorem countable_pi {π : α → Type*} [Finite α] {s : ∀ a, Set (π a)} (hs
 
 protected theorem Countable.prod {s : Set α} {t : Set β} (hs : s.Countable) (ht : t.Countable) :
     Set.Countable (s ×ˢ t) :=
-  have := hs.to_subtype; have := ht.to_subtype; .of_equiv _ <| (Equiv.Set.prod _ _).symm
+  have := hs.to_subtype; have := ht.to_subtype; .of_equiv _ (Equiv.Set.prod _ _).symm
 
 theorem Countable.image2 {s : Set α} {t : Set β} (hs : s.Countable) (ht : t.Countable)
     (f : α → β → γ) : (image2 f s t).Countable := by
@@ -318,7 +316,7 @@ theorem countable_ofPred_nonempty_of_disjoint {f : β → Set α}
     (hf : Pairwise (Disjoint on f)) {s : Set α} (h'f : ∀ t, f t ⊆ s) (hs : s.Countable) :
     Set.Countable {t | (f t).Nonempty} := by
   rw [← Set.countable_coe_iff] at hs ⊢
-  have : ∀ t : {t // (f t).Nonempty}, ∃ x : s, x.1 ∈ f t := by
+  have : ∀ t : {t // (f t).Nonempty}, ∃ x : s, x.val ∈ f t := by
     rintro ⟨t, ⟨x, hx⟩⟩
     exact ⟨⟨x, (h'f t hx)⟩, hx⟩
   choose F hF using this

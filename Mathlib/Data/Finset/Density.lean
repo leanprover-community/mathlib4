@@ -6,10 +6,11 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Order.Field.Rat
-public import Mathlib.Algebra.Order.Ring.NNRat
 public import Mathlib.Data.Fintype.Card
-public import Mathlib.Data.Rat.Cast.CharZero
 public import Mathlib.Tactic.Positivity.Basic
+
+import Mathlib.Algebra.Order.Ring.NNRat
+import Mathlib.Data.Rat.Cast.CharZero
 
 /-!
 # Density of a finite set
@@ -80,7 +81,7 @@ lemma dens_eq_card_div_card (s : Finset α) : dens s = s.card / Fintype.card α 
 @[simp] lemma dens_eq_zero : dens s = 0 ↔ s = ∅ := by
   simp +contextual [dens, Fintype.card_eq_zero_iff, eq_empty_of_isEmpty]
 
-lemma dens_ne_zero : dens s ≠ 0 ↔ s.Nonempty := dens_eq_zero.not.trans nonempty_iff_ne_empty.symm
+lemma dens_ne_zero : dens s ≠ 0 ↔ s.Nonempty := by simp
 
 @[simp] lemma dens_pos : 0 < dens s ↔ s.Nonempty := pos_iff_ne_zero.trans dens_ne_zero
 
@@ -107,7 +108,7 @@ lemma dens_map_le [Fintype β] (f : α ↪ β) : dens (s.map f) ≤ dens s := by
   simp_rw [dens, card_map]
   gcongr
   · exact mod_cast Fintype.card_pos
-  · exact Fintype.card_le_of_injective _ f.2
+  · exact Fintype.card_le_of_injective _ f.inj'
 
 @[simp] lemma dens_map_equiv [Fintype β] (e : α ≃ β) : (s.map e.toEmbedding).dens = s.dens := by
   simp [dens, Fintype.card_congr e]

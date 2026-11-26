@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Polynomial.Div
 public import Mathlib.RingTheory.Coprime.Lemmas
 
 /-!
-
 # Partial fractions
 
 For `f, g : R[X]`, if `g` is expressed as a product `g₁ ^ n₁ * g₂ ^ n₂ * ... * gₙ ^ nₙ`,
@@ -75,13 +74,12 @@ and referred to as `quo` in the name of the lemma and the variables `rᵢ` are c
 and referred to as `rem` in the name of the lemma.
 For example, `quo_add_sum_rem_div_unique` has the conclusion
 ```
-↑q₁ + ∑ i ∈ s, ↑(r₁ i) / ↑(g i) = ↑q₂ + ∑ i ∈ s, ↑(r₂ i) / ↑(g i)) →
+↑q₁ + ∑ i ∈ s, ↑(r₁ i) / ↑(g i) = ↑q₂ + ∑ i ∈ s, ↑(r₂ i) / ↑(g i) →
   q₁ = q₂ ∧ ∀ i ∈ s, r₁ i = r₂ i
 ```
 The name of the lemmas shows one side of the equality hypothesis (the other is the same),
 and in order we have
 `q` (`quo`), `+` (`add`), `∑` (`sum`), `r i` (`rem`), `/` (`div`).
-
 -/
 
 public section
@@ -101,7 +99,7 @@ Then `f` can be written in the form `g ^ n * (q + ∑ i : Fin n, r i / g ^ (i + 
 See `quo_mul_pow_add_sum_rem_mul_pow_unique` for the uniqueness of this representation. -/
 theorem eq_quo_mul_pow_add_sum_rem_mul_pow [Nontrivial R] (f : R[X]) {g : R[X]} (hg : g.Monic)
     (n : ℕ) : ∃ (q : R[X]) (r : Fin n → R[X]), (∀ i, (r i).degree < g.degree) ∧
-      f = q * g ^ n + ∑ i, r i * g ^ i.1 := by
+      f = q * g ^ n + ∑ i, r i * g ^ i.val := by
   induction n with
   | zero => simp
   | succ n ih =>
@@ -122,7 +120,7 @@ See `eq_quo_mul_pow_add_sum_rem_mul_pow` for the existence of such a representat
 theorem quo_mul_pow_add_sum_rem_mul_pow_unique {g : R[X]} (hg : g.Monic) {n : ℕ}
     {q₁ q₂ : R[X]} {r₁ r₂ : Fin n → R[X]}
     (hr₁ : ∀ i, (r₁ i).degree < g.degree) (hr₂ : ∀ i, (r₂ i).degree < g.degree)
-    (hf : q₁ * g ^ n + ∑ i, r₁ i * g ^ i.1 = q₂ * g ^ n + ∑ i, r₂ i * g ^ i.1) :
+    (hf : q₁ * g ^ n + ∑ i, r₁ i * g ^ i.val = q₂ * g ^ n + ∑ i, r₂ i * g ^ i.val) :
     q₁ = q₂ ∧ r₁ = r₂ := by
   induction n generalizing q₁ q₂ with
   | zero => exact ⟨by simpa using hf, funext Fin.rec0⟩
@@ -268,13 +266,13 @@ theorem eq_quo_mul_prod_pow_add_sum_rem_mul_prod_pow [Nontrivial R] {ι : Type*}
     ∃ (q : R[X]) (r : (i : ι) → Fin (n i) → R[X]),
       (∀ i ∈ s, ∀ j, (r i j).degree < (g i).degree) ∧
       f = q * (∏ i ∈ s, g i ^ n i) +
-        ∑ i ∈ s, ∑ j, r i j * g i ^ j.1 * ∏ k ∈ s.erase i, g k ^ n k := by
+        ∑ i ∈ s, ∑ j, r i j * g i ^ j.val * ∏ k ∈ s.erase i, g k ^ n k := by
   obtain ⟨q, r, -, hf⟩ := eq_quo_mul_prod_add_sum_rem_mul_prod f
     (fun i hi => (hg i hi).pow (n i))
     (hgg.mono' fun i j hij => hij.pow)
   have hc (i : ι) : ∃ (q' : R[X]) (r' : Fin (n i) → R[X]), i ∈ s →
       (∀ j, (r' j).degree < (g i).degree) ∧
-      r i = q' * g i ^ (n i) + ∑ j, r' j * g i ^ j.1 :=
+      r i = q' * g i ^ (n i) + ∑ j, r' j * g i ^ j.val :=
     if hi : i ∈ s then
       (eq_quo_mul_pow_add_sum_rem_mul_pow (r i) (hg i hi) (n i)).elim
         fun q' h => h.elim fun r' h => ⟨q', r', fun _ => h⟩
@@ -299,19 +297,19 @@ theorem quo_mul_prod_pow_add_sum_rem_mul_prod_pow_unique {ι : Type*} [Decidable
     (hr₁ : ∀ i ∈ s, ∀ j, (r₁ i j).degree < (g i).degree)
     (hr₂ : ∀ i ∈ s, ∀ j, (r₂ i j).degree < (g i).degree)
     (hf : q₁ * (∏ i ∈ s, g i ^ n i) +
-        ∑ i ∈ s, ∑ j, r₁ i j * g i ^ j.1 * ∏ k ∈ s.erase i, g k ^ n k =
+        ∑ i ∈ s, ∑ j, r₁ i j * g i ^ j.val * ∏ k ∈ s.erase i, g k ^ n k =
       q₂ * (∏ i ∈ s, g i ^ n i) +
-        ∑ i ∈ s, ∑ j, r₂ i j * g i ^ j.1 * ∏ k ∈ s.erase i, g k ^ n k) :
+        ∑ i ∈ s, ∑ j, r₂ i j * g i ^ j.val * ∏ k ∈ s.erase i, g k ^ n k) :
     q₁ = q₂ ∧ ∀ i ∈ s, r₁ i = r₂ i := by
   nontriviality R
   simp only [← Finset.sum_mul] at hf
   have hrd {r : (i : ι) → Fin (n i) → R[X]} (hr : ∀ i ∈ s, ∀ j, (r i j).degree < (g i).degree)
-      (i : ι) (hi : i ∈ s) : (∑ j, r i j * g i ^ j.1).degree < (g i ^ n i).degree := by
+      (i : ι) (hi : i ∈ s) : (∑ j, r i j * g i ^ j.val).degree < (g i ^ n i).degree := by
     refine (degree_sum_le _ _).trans_lt ((Finset.sup_lt_iff ?_).2 fun j _ => ?_)
     · rw [bot_lt_iff_ne_bot, degree_ne_bot]
       exact ((hg i hi).pow (n i)).ne_zero
     · refine (degree_mul_le _ _).trans_lt ?_
-      rw [degree_eq_natDegree ((hg i hi).pow j.1).ne_zero, (hg i hi).natDegree_pow,
+      rw [degree_eq_natDegree ((hg i hi).pow j.val).ne_zero, (hg i hi).natDegree_pow,
         degree_eq_natDegree ((hg i hi).pow (n i)).ne_zero, (hg i hi).natDegree_pow]
       conv_rhs => rw [← Nat.sub_add_cancel (Nat.one_le_iff_ne_zero.2 j.neZero.ne)]
       rw [Nat.add_one_mul, Nat.add_comm, Nat.cast_add, ← degree_eq_natDegree (hg i hi).ne_zero]
@@ -346,7 +344,7 @@ theorem mul_prod_pow_inverse_eq_quo_add_sum_rem_mul_pow_inverse [Nontrivial R] {
       (∀ i ∈ s, ∀ j, (r i j).degree < (g i).degree) ∧
       algebraMap R[X] K f * ∏ i ∈ s, gi i ^ n i =
         algebraMap R[X] K q + ∑ i ∈ s, ∑ j,
-          algebraMap R[X] K (r i j) * gi i ^ (j.1 + 1) := by
+          algebraMap R[X] K (r i j) * gi i ^ (j.val + 1) := by
   classical
   obtain ⟨q, r, hr, hf⟩ := eq_quo_mul_prod_pow_add_sum_rem_mul_prod_pow f hg hgg n
   refine ⟨q, fun i j => r i j.rev, fun i hi j => hr i hi j.rev, ?_⟩
@@ -363,7 +361,7 @@ theorem mul_prod_pow_inverse_eq_quo_add_sum_rem_mul_pow_inverse [Nontrivial R] {
     Finset.prod_congr rfl fun x hx => hc x (Finset.mem_of_mem_erase hx),
     Finset.prod_const_one, mul_one, map_mul, map_pow, mul_left_comm]
   refine congrArg (_ * ·) ?_
-  rw [← mul_one (gi i ^ (j.1 + 1)), ← @one_pow K _ j.rev, ← hgi i hi,
+  rw [← mul_one (gi i ^ (j.val + 1)), ← @one_pow K _ j.rev, ← hgi i hi,
     mul_pow, ← mul_assoc, ← pow_add, Fin.val_rev, Nat.add_sub_cancel' (by lia)]
 
 /-- Let `R` be a commutative ring and `f : R[X]`. Let `s` be a finite index set.
@@ -382,20 +380,20 @@ theorem quo_add_sum_rem_mul_pow_inverse_unique [FaithfulSMul R[X] K] {ι : Type*
     {q₁ q₂ : R[X]} {r₁ r₂ : (i : ι) → Fin (n i) → R[X]}
     (hr₁ : ∀ i ∈ s, ∀ j, (r₁ i j).degree < (g i).degree)
     (hr₂ : ∀ i ∈ s, ∀ j, (r₂ i j).degree < (g i).degree)
-    (hf : algebraMap R[X] K q₁ + ∑ i ∈ s, ∑ j, algebraMap R[X] K (r₁ i j) * gi i ^ (j.1 + 1) =
-      algebraMap R[X] K q₂ + ∑ i ∈ s, ∑ j, algebraMap R[X] K (r₂ i j) * gi i ^ (j.1 + 1)) :
+    (hf : algebraMap R[X] K q₁ + ∑ i ∈ s, ∑ j, algebraMap R[X] K (r₁ i j) * gi i ^ (j.val + 1) =
+      algebraMap R[X] K q₂ + ∑ i ∈ s, ∑ j, algebraMap R[X] K (r₂ i j) * gi i ^ (j.val + 1)) :
     q₁ = q₂ ∧ ∀ i ∈ s, r₁ i = r₂ i := by
   classical
   suffices hff : ∀ {q : R[X]} {r : (i : ι) → Fin (n i) → R[X]},
       (algebraMap R[X] K q + ∑ i ∈ s, ∑ j,
-        algebraMap R[X] K (r i j) * gi i ^ (j.1 + 1)) * ∏ i ∈ s, algebraMap R[X] K (g i) ^ n i =
+        algebraMap R[X] K (r i j) * gi i ^ (j.val + 1)) * ∏ i ∈ s, algebraMap R[X] K (g i) ^ n i =
       algebraMap R[X] K (q * ∏ i ∈ s, g i ^ n i + ∑ i ∈ s,
-        ∑ j : Fin (n i), r i j.rev * g i ^ j.1 * ∏ k ∈ s.erase i, g k ^ n k) by
+        ∑ j : Fin (n i), r i j.rev * g i ^ j.val * ∏ k ∈ s.erase i, g k ^ n k) by
     apply_fun (· * ∏ i ∈ s, algebraMap R[X] K (g i) ^ n i) at hf
     rw [hff, hff, (FaithfulSMul.algebraMap_injective R[X] K).eq_iff] at hf
     obtain ⟨hq, hr⟩ := quo_mul_prod_pow_add_sum_rem_mul_prod_pow_unique hg hgg
       (fun i hi j => hr₁ i hi j.rev) (fun i hi j => hr₂ i hi j.rev) hf
-    exact ⟨hq, fun i hi => funext fun j => j.rev_rev ▸ congrFun (hr i hi) j.rev⟩
+    exact ⟨hq, fun i hi => funext fun j => j.rev_rev ▸ congr($(hr i hi) j.rev)⟩
   intro q r
   simp_rw [add_mul, Finset.sum_mul, map_add, map_sum, map_mul, map_prod, map_pow]
   refine congrArg (_ + ·) (Finset.sum_congr rfl fun i hi => ?_)
@@ -403,7 +401,7 @@ theorem quo_add_sum_rem_mul_pow_inverse_unique [FaithfulSMul R[X] K] {ι : Type*
   rw [Fin.revPerm_apply, ← Finset.mul_prod_erase s _ hi, ← mul_assoc,
     mul_assoc (algebraMap R[X] K (r i j.rev))]
   refine congrArg (algebraMap R[X] K (r i j.rev) * · * _) ?_
-  rw [← mul_one (gi i ^ (j.rev.1 + 1)), ← @one_pow K _ j, ← hgi i hi,
+  rw [← mul_one (gi i ^ (j.rev.val + 1)), ← @one_pow K _ j, ← hgi i hi,
     mul_pow, ← mul_assoc, ← pow_add, Fin.val_rev, Nat.add_right_comm, Nat.add_assoc,
     Nat.sub_add_cancel (by lia), mul_right_comm, ← mul_pow, hgi i hi, one_pow, one_mul]
 
@@ -438,9 +436,6 @@ theorem div_prod_eq_quo_add_sum_rem_div (f : R[X]) {ι : Type*} {g : ι → R[X]
   simp_rw [Fin.sum_univ_one, Fin.val_zero, zero_add, pow_one, Finset.prod_inv_distrib] at hf
   simp_rw [Algebra.cast, div_eq_mul_inv]
   exact hf
-
-@[deprecated (since := "2026-02-08")]
-alias _root_.div_eq_quo_add_sum_rem_div := div_prod_eq_quo_add_sum_rem_div
 
 /-- Let `R` be an integral domain and `f : R[X]`. Let `s` be a finite index set.
 Then a fraction of the form `f / ∏ i ∈ s, g i` evaluated in a field `K` containing `R[X]`
@@ -487,9 +482,6 @@ theorem div_eq_quo_add_rem_div_add_rem_div (f : R[X]) {g₁ g₂ : R[X]} (hg₁ 
   obtain ⟨q, r, hr, hf⟩ := div_prod_eq_quo_add_sum_rem_div K f hg hcoprime
   refine ⟨q, r true, r false, hr true (Finset.mem_univ true), hr false (Finset.mem_univ false), ?_⟩
   simpa [g, add_assoc] using hf
-
-@[deprecated (since := "2026-02-08")]
-alias _root_.div_eq_quo_add_rem_div_add_rem_div := div_eq_quo_add_rem_div_add_rem_div
 
 /-- Let `R` be an integral domain and `f, g₁, g₂ : R[X]`. Let `g₁` and `g₂` be monic and coprime.
 Then the representation of `f / (g₁ * g₂)` as `q + r₁ / g₁ + r₂ / g₂` for `q r₁ r₂ : R[X]` and

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Multiset.UnionInter
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-! # `Multiset.range n` gives `{0, 1, ..., n-1}` as a multiset. -/
 
 @[expose] public section
@@ -52,7 +55,7 @@ theorem self_mem_range_succ (n : ℕ) : n ∈ range (n + 1) :=
   List.self_mem_range_succ
 
 theorem range_add (a b : ℕ) : range (a + b) = range a + (range b).map (a + ·) :=
-  congr_arg ((↑) : List ℕ → Multiset ℕ) List.range_add
+  congr($List.range_add)
 
 theorem range_disjoint_map_add (a : ℕ) (m : Multiset ℕ) :
     Disjoint (range a) (m.map (a + ·)) := by

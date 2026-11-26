@@ -7,6 +7,9 @@ module
 
 public import Mathlib.SetTheory.Cardinal.ENat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Projection from cardinal numbers to natural numbers
 
@@ -29,13 +32,13 @@ variable {α : Type u} {c d : Cardinal.{u}}
 /-- This function sends finite cardinals to the corresponding natural, and infinite cardinals
   to 0. -/
 noncomputable def toNat : Cardinal →*₀ ℕ :=
-  ENat.toNatHom.comp (.ofClass toENat)
+  ENat.toNatHom.comp toENat
 
 @[simp] lemma toNat_toENat (a : Cardinal) : ENat.toNat (toENat a) = toNat a := rfl
 
 @[simp]
 theorem toNat_ofENat (n : ℕ∞) : toNat n = ENat.toNat n :=
-  congr_arg ENat.toNat <| toENat_ofENat n
+  congr($(toENat_ofENat n).toNat)
 
 @[simp, norm_cast] theorem toNat_natCast (n : ℕ) : toNat n = n := toNat_ofENat n
 

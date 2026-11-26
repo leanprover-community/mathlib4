@@ -5,10 +5,12 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.Embedding.Restriction
-public import Mathlib.Algebra.Homology.Embedding.Extend
 public import Mathlib.Algebra.Homology.Embedding.Boundary
-public import Mathlib.CategoryTheory.MorphismProperty.Basic
+public import Mathlib.Algebra.Homology.Embedding.Extend
+public import Mathlib.Algebra.Homology.Embedding.Restriction
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Relations between `extend` and `restriction`
@@ -20,8 +22,8 @@ and the subtype of morphisms `φ : K.restriction e ⟶ L` which satisfy a certai
 condition `e.HasLift φ`.
 
 ## TODO
-* obtain dual results for morphisms `L.extend e ⟶ K`.
 
+* obtain dual results for morphisms `L.extend e ⟶ K`.
 -/
 
 @[expose] public section
@@ -68,8 +70,6 @@ lemma f_eq {i' : ι'} {i : ι} (hi : e.f i = i') :
   have : hi'.choose = i := e.injective_f (by rw [hi'.choose_spec, hi])
   grind [f]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma comm (hφ : e.HasLift φ) (i' j' : ι') :
     f φ i' ≫ (L.extend e).d i' j' = K.d i' j' ≫ f φ j' := by
@@ -115,8 +115,6 @@ lemma liftExtend_f :
       (L.extendXIso e hi).inv := by
   apply liftExtend.f_eq
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- Given `φ : K.restriction e ⟶ L` such that `hφ : e.HasLift φ`, this is
 the isomorphisms in the category of arrows between the maps
 `(e.liftExtend φ hφ).f i'` and `φ.f i` when `e.f i = i'`. -/
@@ -148,14 +146,11 @@ variable (ψ : K ⟶ L.extend e)
 noncomputable def f (i : ι) : (K.restriction e).X i ⟶ L.X i :=
   ψ.f (e.f i) ≫ (L.extendXIso e rfl).hom
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 lemma f_eq {i : ι} {i' : ι'} (h : e.f i = i') :
     f ψ i = (K.restrictionXIso e h).hom ≫ ψ.f i' ≫ (L.extendXIso e h).hom := by
   subst h
   simp [f, restrictionXIso]
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma comm (i j : ι) :
     f ψ i ≫ L.d i j = K.d (e.f i) (e.f j) ≫ f ψ j := by
@@ -172,7 +167,6 @@ lemma homRestrict_f (ψ : K ⟶ L.extend e) {i : ι} {i' : ι'} (h : e.f i = i')
     (e.homRestrict ψ).f i = (K.restrictionXIso e h).hom ≫ ψ.f i' ≫ (L.extendXIso e h).hom :=
   homRestrict.f_eq ψ h
 
-set_option backward.isDefEq.respectTransparency false in
 lemma homRestrict_hasLift (ψ : K ⟶ L.extend e) :
     e.HasLift (e.homRestrict ψ) := by
   intro j hj i' hij'
@@ -197,8 +191,6 @@ lemma homRestrict_liftExtend (φ : K.restriction e ⟶ L) (hφ : e.HasLift φ) :
   ext i
   simp [e.homRestrict_f _ rfl, e.liftExtend_f _ _ rfl]
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma homRestrict_precomp (α : K' ⟶ K) (ψ : K ⟶ L.extend e) :
     e.homRestrict (α ≫ ψ) = restrictionMap α e ≫ e.homRestrict ψ := by
@@ -220,7 +212,7 @@ consisting of morphisms `φ` such that `e.HasLift φ`. -/
 noncomputable def homEquiv :
     (K ⟶ L.extend e) ≃ { φ : K.restriction e ⟶ L // e.HasLift φ } where
   toFun ψ := ⟨e.homRestrict ψ, e.homRestrict_hasLift ψ⟩
-  invFun φ := e.liftExtend φ.1 φ.2
+  invFun φ := e.liftExtend φ.val φ.property
   left_inv ψ := by simp
   right_inv φ := by simp
 

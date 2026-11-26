@@ -6,9 +6,11 @@ Authors: Anne Baanen
 module
 
 public import Mathlib.Algebra.Algebra.Bilinear
-public import Mathlib.LinearAlgebra.Basis.Defs
 public import Mathlib.LinearAlgebra.Basis.Submodule
 public import Mathlib.RingTheory.Ideal.Span
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The basis of ideals

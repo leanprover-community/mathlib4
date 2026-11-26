@@ -6,9 +6,9 @@ Authors: Eric Wieser, Jujian Zhang
 module
 
 public import Mathlib.Algebra.GroupWithZero.Subgroup
-public import Mathlib.Algebra.Order.Group.Action
 public import Mathlib.Algebra.Module.Submodule.Map
 public import Mathlib.Algebra.Module.Submodule.RestrictScalars
+public import Mathlib.Algebra.Order.Group.Action
 
 /-! # Pointwise instances on `Submodule`s
 
@@ -121,7 +121,7 @@ theorem neg_bot : -(⊥ : Submodule R M) = ⊥ :=
 
 @[simp]
 theorem neg_top : -(⊤ : Submodule R M) = ⊤ :=
-  SetLike.coe_injective <| Set.neg_univ
+  SetLike.coe_injective Set.neg_univ
 
 @[simp]
 theorem neg_iInf {ι : Sort*} (S : ι → Submodule R M) : (-⨅ i, S i) = ⨅ i, -S i :=
@@ -186,9 +186,9 @@ This is available as an instance in the `Pointwise` locale. -/
 protected def pointwiseDistribMulAction : DistribMulAction α (Submodule R M) where
   smul a S := S.map (DistribSMul.toLinearMap R M a : M →ₗ[R] M)
   one_smul S :=
-    (congr_arg (fun f : Module.End R M => S.map f) (LinearMap.ext <| one_smul α)).trans S.map_id
+    congr(S.map $(LinearMap.ext <| one_smul α)).trans S.map_id
   mul_smul _a₁ _a₂ S :=
-    (congr_arg (fun f : Module.End R M => S.map f) (LinearMap.ext <| mul_smul _ _)).trans
+    congr(S.map $(LinearMap.ext <| mul_smul _ _)).trans
       (S.map_comp _ _)
   smul_zero _a := map_bot _
   smul_add _a _S₁ _S₂ := map_sup _ _ _
@@ -272,7 +272,7 @@ not hold so this cannot be stated as a `Module`. -/
 protected def pointwiseMulActionWithZero : MulActionWithZero α (Submodule R M) :=
   { Submodule.pointwiseDistribMulAction with
     zero_smul := fun S =>
-      (congr_arg (fun f : M →ₗ[R] M => S.map f) (LinearMap.ext <| zero_smul α)).trans S.map_zero }
+      congr(S.map $(LinearMap.ext <| zero_smul α)).trans S.map_zero }
 
 scoped[Pointwise] attribute [instance] Submodule.pointwiseMulActionWithZero
 
@@ -287,6 +287,7 @@ For subset `s ⊆ S` and submodule `N ≤ M`, we define `s • N` to be the smal
 all `r • n` where `r ∈ s` and `n ∈ N`.
 
 #### Results
+
 For arbitrary monoids `S` acting distributively on `M`, there is an induction principle for `s • N`:
 To prove `P` holds for all `s • N`, it is enough
 to prove:
@@ -299,6 +300,7 @@ To invoke this induction principle, use `induction x, hx using Submodule.set_smu
 `x : M` and `hx : x ∈ s • N`
 
 #### Notes
+
 - If we assume the addition on subsets of `R` is the `⊔` and subtraction `⊓` i.e. use `SetSemiring`,
   then this action actually gives a module structure on submodules of `M` over subsets of `R`.
 - If we generalize so that `r • N` makes sense for all `r : S`, then `Submodule.singleton_set_smul`
@@ -449,9 +451,9 @@ lemma smul_inductionOn_pointwise [SMulCommClass S R M] {a : S} {p : (x : M) → 
     p x (by rwa [← Submodule.singleton_set_smul])
   refine Submodule.set_smul_inductionOn (motive := p') _ (N.singleton_set_smul a ▸ hx)
       (fun r n hr hn ↦ ?_) smul₁ add zero
-  · push _ ∈ _ at hr
-    subst hr
-    exact smul₀ n hn
+  push _ ∈ _ at hr
+  subst hr
+  exact smul₀ n hn
 
 lemma sup_set_smul (s t : Set S) :
     (s ⊔ t) • N = s • N ⊔ t • N :=

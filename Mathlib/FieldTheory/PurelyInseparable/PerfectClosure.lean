@@ -6,10 +6,10 @@ Authors: Jz Pan
 module
 
 public import Mathlib.FieldTheory.PurelyInseparable.Basic
-public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
+
+import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 
 /-!
-
 # Basic results about relative perfect closure
 
 This file contains basic results about relative perfect closures.
@@ -36,7 +36,6 @@ This file contains basic results about relative perfect closures.
 ## Tags
 
 separable degree, degree, separable closure, purely inseparable
-
 -/
 
 @[expose] public section
@@ -112,7 +111,7 @@ theorem le_perfectClosure (L : IntermediateField F E) [h : IsPurelyInseparable F
   rw [isPurelyInseparable_iff_pow_mem F (ringExpChar F)] at h
   intro x hx
   obtain ⟨n, y, hy⟩ := h ⟨x, hx⟩
-  exact ⟨n, y, congr_arg (algebraMap L E) hy⟩
+  exact ⟨n, y, congr(algebraMap L E $hy)⟩
 
 /-- An intermediate field of `E / F` is contained in the relative perfect closure of `F` in `E`
 if and only if it is purely inseparable over `F`. -/
@@ -120,7 +119,7 @@ theorem le_perfectClosure_iff (L : IntermediateField F E) :
     L ≤ perfectClosure F E ↔ IsPurelyInseparable F L := by
   refine ⟨fun h ↦ (isPurelyInseparable_iff_pow_mem F (ringExpChar F)).2 fun x ↦ ?_,
     fun _ ↦ le_perfectClosure F E L⟩
-  obtain ⟨n, y, hy⟩ := h x.2
+  obtain ⟨n, y, hy⟩ := h x.property
   exact ⟨n, y, (algebraMap L E).injective hy⟩
 
 theorem separableClosure_inf_perfectClosure : separableClosure F E ⊓ perfectClosure F E = ⊥ :=
@@ -140,7 +139,7 @@ theorem map_mem_perfectClosure_iff (i : E →ₐ[F] K) {x : E} :
   refine ⟨fun ⟨n, y, h⟩ ↦ ⟨n, y, ?_⟩, fun ⟨n, y, h⟩ ↦ ⟨n, y, ?_⟩⟩
   · apply_fun i using i.injective
     rwa [AlgHom.commutes, map_pow]
-  simpa only [AlgHom.commutes, map_pow] using congr_arg i h
+  simpa only [AlgHom.commutes, map_pow] using congr(i $h)
 
 /-- If `i` is an `F`-algebra homomorphism from `E` to `K`, then the preimage of `perfectClosure F K`
 under the map `i` is equal to `perfectClosure F E`. -/
@@ -178,8 +177,8 @@ end map
 instance perfectClosure.perfectRing (p : ℕ) [ExpChar E p]
     [PerfectRing E p] : PerfectRing (perfectClosure F E) p := .ofSurjective _ p fun x ↦ by
   have := RingHom.expChar _ (algebraMap F E).injective p
-  obtain ⟨x', hx⟩ := surjective_frobenius E p x.1
-  obtain ⟨n, y, hy⟩ := (mem_perfectClosure_iff_pow_mem p).1 x.2
+  obtain ⟨x', hx⟩ := surjective_frobenius E p x.val
+  obtain ⟨n, y, hy⟩ := (mem_perfectClosure_iff_pow_mem p).1 x.property
   rw [frobenius_def] at hx
   rw [← hx, ← pow_mul, ← pow_succ'] at hy
   exact ⟨⟨x', (mem_perfectClosure_iff_pow_mem p).2 ⟨n + 1, y, hy⟩⟩, by
@@ -244,7 +243,7 @@ theorem adjoin_eq_adjoin_pow_expChar_pow_of_isSeparable (S : Set E)
     have hx' := mem_adjoin_simple_self M x
     rw [M⟮x⟯.eq_bot_of_isPurelyInseparable_of_isSeparable, mem_bot] at hx'
     obtain ⟨y, rfl⟩ := hx'
-    exact y.2
+    exact y.property
   · rintro _ ⟨y, hy, rfl⟩
     exact pow_mem (subset_adjoin F S hy) _
 
@@ -346,13 +345,13 @@ family of elements of `E` which is `F`-linearly independent, then `{ u_i ^ (q ^ 
 theorem LinearIndependent.map_pow_expChar_pow_of_isSeparable [Algebra.IsSeparable F E]
     (h : LinearIndependent F v) : LinearIndependent F (v · ^ q ^ n) := by
   classical
-  rw [linearIndependent_iff_finset_linearIndependent] at h ⊢
+  rw [linearIndependent_iff_linearIndepOn_finset] at h ⊢
   intro s
   let E' := adjoin F (s.image v : Set E)
   have : FiniteDimensional F E' := finiteDimensional_adjoin
     fun x _ ↦ Algebra.IsIntegral.isIntegral x
-  let v' (i : s) : E' := ⟨v i.1, subset_adjoin F _ (Finset.mem_image.2 ⟨i.1, i.2, rfl⟩)⟩
-  have h' : LinearIndependent F v' := (h s).of_comp E'.val.toLinearMap
+  let v' (i : s) : E' := ⟨v i.val, subset_adjoin F _ (Finset.mem_image.2 ⟨i.val, i.property, rfl⟩)⟩
+  have h' : LinearIndependent F v' := .of_comp E'.val.toLinearMap (h s)
   exact (h'.map_pow_expChar_pow_of_fd_isSeparable q n).map'
     E'.val.toLinearMap (LinearMap.ker_eq_bot_of_injective E'.val.injective)
 

@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Convex.Basic
 public import Mathlib.Order.Filter.Extr
 public import Mathlib.Tactic.NormNum
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Convex and concave functions
 
@@ -1124,12 +1127,12 @@ variable [AddCommMonoid β] [LinearOrder β] [IsOrderedCancelAddMonoid β]
 
 theorem ConvexOn.le_right_of_left_le'' (hf : ConvexOn 𝕜 s f) (hx : x ∈ s) (hz : z ∈ s) (hxy : x < y)
     (hyz : y ≤ z) (h : f x ≤ f y) : f y ≤ f z :=
-  hyz.eq_or_lt.elim (fun hyz => (congr_arg f hyz).le) fun hyz =>
+  hyz.eq_or_lt.elim (fun hyz => congr(f $hyz).le) fun hyz =>
     hf.le_right_of_left_le hx hz (Ioo_subset_openSegment ⟨hxy, hyz⟩) h
 
 theorem ConvexOn.le_left_of_right_le'' (hf : ConvexOn 𝕜 s f) (hx : x ∈ s) (hz : z ∈ s) (hxy : x ≤ y)
     (hyz : y < z) (h : f z ≤ f y) : f y ≤ f x :=
-  hxy.eq_or_lt.elim (fun hxy => (congr_arg f hxy).ge) fun hxy =>
+  hxy.eq_or_lt.elim (fun hxy => congr(f $hxy).ge) fun hxy =>
     hf.le_left_of_right_le hx hz (Ioo_subset_openSegment ⟨hxy, hyz⟩) h
 
 theorem ConcaveOn.right_le_of_le_left'' (hf : ConcaveOn 𝕜 s f) (hx : x ∈ s) (hz : z ∈ s)

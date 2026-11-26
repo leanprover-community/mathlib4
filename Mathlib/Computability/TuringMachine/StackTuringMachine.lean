@@ -5,12 +5,10 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Computability.TuringMachine.Tape
-public import Mathlib.Data.Fintype.Option
-public import Mathlib.Data.Fintype.Prod
-public import Mathlib.Data.Fintype.Pi
-public import Mathlib.Data.PFun
 public import Mathlib.Computability.TuringMachine.PostTuringMachine
+public import Mathlib.Data.Fintype.Option
+public import Mathlib.Data.Fintype.Pi
+public import Mathlib.Data.Fintype.Prod
 
 /-!
 # Turing machines
@@ -366,7 +364,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem addBottom_map (L : ListBlank (∀ k, Option (Γ k))) :
     (addBottom L).map ⟨Prod.snd, by rfl⟩ = L := by
   simp only [addBottom, ListBlank.map_cons]
-  convert! ListBlank.cons_head_tail L
+  convert ListBlank.cons_head_tail L
   generalize ListBlank.tail L = L'
   refine L'.induction_on fun l ↦ ?_; simp
 
@@ -725,6 +723,7 @@ theorem trCfg_init (k) (L : List (Γ k)) : TrCfg (TM2.init k L)
       rw [ListBlank.nth_mk, List.getI_eq_getElem?_getD, List.map, List.reverse_nil]
       cases L.reverse[i]? <;> rfl
   · rw [trInit, TM1.init]
+    dsimp only
     congr <;> cases L.reverse <;> try rfl
     simp only [List.map_map, List.tail_cons, List.map]
     rfl

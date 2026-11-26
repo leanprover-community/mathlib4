@@ -5,8 +5,6 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Data.Matrix.Basis
-public import Mathlib.Data.Matrix.Composition
 public import Mathlib.RingTheory.MatrixAlgebra
 public import Mathlib.RingTheory.PolynomialAlgebra
 
@@ -19,7 +17,7 @@ def matPolyEquiv : Matrix n n R[X] ≃ₐ[R] (Matrix n n R)[X]
 ```
 which is characterized by
 ```
-coeff (matPolyEquiv m) k i j = coeff (m i j) k
+(matPolyEquiv m).coeff k i j = (m i j).coeff k
 ```
 
 We will use this algebra isomorphism to prove the Cayley-Hamilton theorem.
@@ -83,20 +81,20 @@ theorem matPolyEquiv_coeff_apply_aux_1 (i j : n) (k : ℕ) (x : R) :
   congr with i' <;> simp [single]
 
 theorem matPolyEquiv_coeff_apply_aux_2 (i j : n) (p : R[X]) (k : ℕ) :
-    coeff (matPolyEquiv (single i j p)) k = single i j (coeff p k) := by
+    (matPolyEquiv (single i j p)).coeff k = single i j (p.coeff k) := by
   refine Polynomial.induction_on' p ?_ ?_
   · intro p q hp hq
     ext
-    simp [hp, hq, coeff_add, Matrix.add_apply, single_add]
+    simp [hp, hq, Matrix.add_apply, single_add]
   · intro k x
-    simp only [matPolyEquiv_coeff_apply_aux_1, coeff_monomial]
+    simp only [matPolyEquiv_coeff_apply_aux_1, coeff_monomial, Finsupp.single_apply]
     split_ifs <;>
       · funext
         simp
 
 @[simp]
 theorem matPolyEquiv_coeff_apply (m : Matrix n n R[X]) (k : ℕ) (i j : n) :
-    coeff (matPolyEquiv m) k i j = coeff (m i j) k := by
+    (matPolyEquiv m).coeff k i j = (m i j).coeff k := by
   refine Matrix.induction_on' m ?_ ?_ ?_
   · simp
   · intro p q hp hq
@@ -110,7 +108,7 @@ theorem matPolyEquiv_coeff_apply (m : Matrix n n R[X]) (k : ℕ) (i j : n) :
 
 @[simp]
 theorem matPolyEquiv_symm_apply_coeff (p : (Matrix n n R)[X]) (i j : n) (k : ℕ) :
-    coeff (matPolyEquiv.symm p i j) k = coeff p k i j := by
+    (matPolyEquiv.symm p i j).coeff k = p.coeff k i j := by
   have t : p = matPolyEquiv (matPolyEquiv.symm p) := by simp
   conv_rhs => rw [t]
   simp only [matPolyEquiv_coeff_apply]
@@ -133,7 +131,7 @@ theorem matPolyEquiv_symm_map_eval (M : (Matrix n n R)[X]) (r : R) :
   suffices ((aeval r).mapMatrix.comp matPolyEquiv.symm.toAlgHom : (Matrix n n R)[X] →ₐ[R] _) =
       (eval₂AlgHom (AlgHom.id R _) (scalar n r)
         fun x => (scalar_commute _ (Commute.all _) _).symm) from
-    DFunLike.congr_fun this M
+    congr($this M)
   ext : 1
   · ext M : 1
     simp [Function.comp_def]
@@ -159,7 +157,7 @@ theorem support_subset_support_matPolyEquiv (m : Matrix n n R[X]) (i j : n) :
 theorem eval_det {R : Type*} [CommRing R] (M : Matrix n n R[X]) (r : R) :
     Polynomial.eval r M.det = (Polynomial.eval (scalar n r) (matPolyEquiv M)).det := by
   rw [Polynomial.eval, ← coe_eval₂RingHom, RingHom.map_det]
-  exact congr_arg det <| ext fun _ _ ↦ matPolyEquiv_eval _ _ _ _ |>.symm
+  congrm det $(ext fun _ _ ↦ matPolyEquiv_eval _ _ _ _ |>.symm)
 
 lemma eval_det_add_X_smul {R : Type*} [CommRing R] (A : Matrix n n R[X]) (M : Matrix n n R) :
     (det (A + (X : R[X]) • M.map C)).eval 0 = (det A).eval 0 := by

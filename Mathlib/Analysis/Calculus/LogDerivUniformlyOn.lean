@@ -8,13 +8,15 @@ module
 public import Mathlib.Analysis.Complex.LocallyUniformLimit
 public import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Logarithmic derivative of an infinite product
 
 We show that if we have an infinite product of functions `f` that is locally uniformly convergent,
 then the logarithmic derivative of the product is the sum of the logarithmic derivatives of the
 individual functions.
-
 -/
 
 public section

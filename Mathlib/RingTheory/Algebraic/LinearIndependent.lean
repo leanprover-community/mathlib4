@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.LinearIndependent.Defs
 public import Mathlib.RingTheory.Algebraic.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Linear independence of transcendental elements
 
@@ -37,7 +40,7 @@ theorem Transcendental.linearIndependent_sub_inv
   have h1 : ∀ i ∈ s, m i • (b * (x - algebraMap F E i)⁻¹) =
       m i • (s.erase i).prod fun j ↦ x - algebraMap F E j := fun i hi ↦ by
     simp_rw [b, ← s.prod_erase_mul _ hi, mul_inv_cancel_right₀ (hnz i)]
-  replace hm := congr(b * $(hm))
+  replace hm := congr(b * $hm)
   simp_rw [mul_zero, Finset.mul_sum, mul_smul_comm, Finset.sum_congr rfl h1] at hm
   let p : Polynomial F := s.sum fun i ↦ .C (m i) * (s.erase i).prod fun j ↦ .X - .C j
   replace hm := congr(Polynomial.aeval i $(H p (by simp_rw [← hm, p, map_sum, map_mul, map_prod,

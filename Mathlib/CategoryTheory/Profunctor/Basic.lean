@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Yoneda
 
 /-!
-
 # Profunctors
 
 A profunctor from a category `C` to a category `D` is a functor from `C` to a category of
@@ -20,10 +19,9 @@ as the Yoneda bifunctor, the opposite of a profunctor, the `ulift` of a profunct
 of a profunctor with functors, and the profunctors in both directions corresponding to a functor
 `C ⥤ D` (see `Functor.toProfunctor` and `Functor.toProfunctorFlip`).
 
-## Future work
+## TODO
 
-- Define composition of profunctors.
-- Define the bicategory of categories where the 1-morphisms are profunctors.
+- Use profunctor composition to define the bicategory of categories and profunctors.
 -/
 
 @[expose] public section

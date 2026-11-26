@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.Jacobson.Radical
 public import Mathlib.RingTheory.SimpleModule.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Semiprimary rings
 
@@ -29,7 +32,7 @@ theorem IsSimpleModule.jacobson_eq_bot [IsSimpleModule R M] : Module.jacobson R 
 theorem IsSemisimpleModule.jacobson_eq_bot [IsSemisimpleModule R M] :
     Module.jacobson R M = ⊥ :=
   have ⟨s, e, simple⟩ := isSemisimpleModule_iff_exists_linearEquiv_dfinsupp.mp ‹_›
-  let f : M →ₗ[R] ∀ m : s, m.1 := (LinearMap.pi DFinsupp.lapply).comp e.toLinearMap
+  let f : M →ₗ[R] ∀ m : s, m.val := (LinearMap.pi DFinsupp.lapply).comp e.toLinearMap
   Module.jacobson_eq_bot_of_injective f (DFinsupp.injective_pi_lapply (R := R).comp e.injective)
     (Module.jacobson_pi_eq_bot _ _ fun i ↦ IsSimpleModule.jacobson_eq_bot R _)
 
