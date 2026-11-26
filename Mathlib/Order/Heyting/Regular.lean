@@ -189,8 +189,9 @@ def gi : GaloisInsertion toRegular ((↑) : Regular α → α) where
   le_l_u _ := le_compl_compl
   choice_eq _ ha := coe_injective <| le_compl_compl.antisymm ha
 
-instance lattice : Lattice (Regular α) :=
-  { gi.liftLattice with min := (· ⊓ ·) }
+instance lattice : Lattice (Regular α) where
+  __ := gi.liftLattice
+  min := (· ⊓ ·) -- Use the existing `min` instead of the one from `gi.liftLattice`
 
 @[simp, norm_cast]
 theorem coe_sup (a b : Regular α) : (↑(a ⊔ b) : α) = ((a : α) ⊔ b)ᶜᶜ :=
