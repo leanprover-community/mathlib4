@@ -276,11 +276,8 @@ instance functor : Functor Ultrafilter where map := @Ultrafilter.map
 
 instance monad : Monad Ultrafilter where map := @Ultrafilter.map
 
-nonrec def curry (U : Ultrafilter α) (V : Ultrafilter β) : Ultrafilter (α × β) :=
-  ofComplNotMemIff (Filter.curry (U : Filter α) (V : Filter β))
-  fun s => by
-    simp only [Filter.mem_curry_iff, Set.mem_compl_iff,
-    Ultrafilter.eventually_not, not_not]
+def curry (U : Ultrafilter α) (V : Ultrafilter β) : Ultrafilter (α × β) :=
+  ofComplNotMemIff (Filter.curry U V) <| by simp [mem_curry_iff]
 
 @[simp]
 theorem toFilter_curry (U : Ultrafilter α) (V : Ultrafilter β) :
