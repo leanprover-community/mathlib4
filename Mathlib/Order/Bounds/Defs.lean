@@ -37,8 +37,14 @@ variable {α : Type*} [LE α]
 def upperBounds (s : Set α) : Set α :=
   { x | ∀ ⦃a⦄, a ∈ s → a ≤ x }
 
-/-- A set is bounded above if there exists an upper bound. -/
-@[to_dual /-- A set is bounded below if there exists a lower bound. -/]
+/-- A set is bounded above if there exists an upper bound.
+
+For the property of being unbounded, see also `IsCofinal`, which implies `¬BddAbove` on a linear
+order and is equivalent to it for a linear order with no maximum. -/
+@[to_dual /-- A set is bounded below if there exists a lower bound.
+
+For the property of being unbounded, see also `IsInitial`, which implies `BddBelow` on a linear
+order and is equivalent to it for a linear order with no minimum. -/]
 def BddAbove (s : Set α) :=
   (upperBounds s).Nonempty
 
