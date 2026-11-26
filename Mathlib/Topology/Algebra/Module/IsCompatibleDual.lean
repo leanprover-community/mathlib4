@@ -8,7 +8,25 @@ module
 public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 
-/-! # Compatible duals -/
+/-! # Compatible duals
+
+Given a bilinear form `B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜`, we say that these form a *compatible dual system*
+(`LinearMap.IsCompatibleDual`) if `B.flip` is a linear equivalence between `F` and the strong dual
+of `E` (`StrongDual 𝕜 E`). In other words, `B.flip` is injective, for every `y : F`,
+`B.flip y : E →ₗ[𝕜] 𝕜` is continuous, moreover every `φ : StrongDual 𝕜 E` can be realized as
+`B.flip y` for some choice of `y`.
+
+Compatible dual systems are prevalent throughout functional analysis, and are the primary subject of
+the Mackey–Arens theorem: given a dual system `B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜`, a locally convex topology
+on `E` makes this a compatible dual system if and only if that topology lies between the weak
+topology on `E` induced by `B` and the Mackey topology on `E` relative to `B`.
+
+## Implementation notes
+
+We choose to implement `IsCompatibleDual` as a `Prop`-valued class instead of carrying the data of
+the inverse (i.e., the map `StrongDual 𝕜 E →ₗ[𝕜] F`). This avoids entirely any potential instance
+diamonds (e.g., `B.IsCompatibleDual` and `B.flip.flip.IsCompatibleDual`).
+-/
 
 @[expose] public section
 
@@ -26,6 +44,9 @@ class IsCompatibleDual (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) : Prop where
 
 namespace IsCompatibleDual
 
+/-- A linear equivalence between `F` and the strong dual of `E` which is implemented by `B`
+constitutes a compatible dual system. The converse also holds, see
+`LinearMap.IsCompatibleDual.equiv`. -/
 lemma of_linearEquiv (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) (e : F ≃ₗ[𝕜] StrongDual 𝕜 E)
     (he : ∀ x y, e y x = B x y) : B.IsCompatibleDual where
   range_flip := by
@@ -47,7 +68,9 @@ lemma continuous_eval (y : F) : Continuous (B · y) := by
   ext x
   simpa using congr($hf.symm x)
 
-/-- Linear equivalence of `F` with `StrongDual 𝕜 E` obtained from `B.IsCompatibleDual`. -/
+/-- Linear equivalence of `F` with `StrongDual 𝕜 E` obtained from `B.IsCompatibleDual`
+This has a non-computable inverse via `LinearEquiv.ofBijective`. In type-specific cases, it
+is preferred to use an existing equivalence. -/
 noncomputable def equiv : F ≃ₗ[𝕜] StrongDual 𝕜 E :=
   .ofBijective
     { toFun y := ⟨B.flip y, continuous_eval B y⟩
