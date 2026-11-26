@@ -137,8 +137,8 @@ variable [Coalgebra R X] [Coalgebra R Y] [Coalgebra R Z]
 `CoalgEquiv`. -/
 @[simps]
 def toCoalgIso (e : X ≃ₗc[R] Y) : CoalgCat.of R X ≅ CoalgCat.of R Y where
-  hom := CoalgCat.ofHom e
-  inv := CoalgCat.ofHom e.symm
+  hom := CoalgCat.ofHom e.toCoalgHom
+  inv := CoalgCat.ofHom e.symm.toCoalgHom
   hom_inv_id := Hom.ext <| DFunLike.ext _ _ e.left_inv
   inv_hom_id := Hom.ext <| DFunLike.ext _ _ e.right_inv
 
@@ -171,7 +171,7 @@ def toCoalgEquiv (i : X ≅ Y) : X ≃ₗc[R] Y :=
     right_inv := fun x => congr($(i.inv_hom_id).toCoalgHom x) }
 
 @[simp] theorem toCoalgEquiv_toCoalgHom (i : X ≅ Y) :
-    i.toCoalgEquiv = i.hom.toCoalgHom := rfl
+    i.toCoalgEquiv.toCoalgHom = i.hom.toCoalgHom := rfl
 
 @[simp] theorem toCoalgEquiv_refl : toCoalgEquiv (.refl X) = .refl _ _ :=
   rfl
