@@ -38,66 +38,53 @@ gives an equivalence with $\operatorname{SL}_2(R)$, whose matrices are indexed b
 
 namespace SymplecticGroup
 
+open Matrix
+
 /-- A matrix indexed by `ι ⊕ ι`, where `ι` is a subsingleton type, is symplectic
 if and only if its determinant is one. -/
 theorem mem_subsingleton_iff_det_eq_one
     (ι R : Type*) [Subsingleton ι] [Fintype ι] [DecidableEq ι] [CommRing R]
     (M : Matrix (ι ⊕ ι) (ι ⊕ ι) R) :
-    M ∈ Matrix.symplecticGroup ι R ↔ M.det = 1 := by
-  refine ⟨SymplecticGroup.det_eq_one, ?_⟩
-  intro hdet
-  rw [← Matrix.fromBlocks_toBlocks M, SymplecticGroup.fromBlocks_mem_iff]
-  refine ⟨?_, ?_, ?_⟩ <;> ext i j
-  all_goals
-    have hji : j = i := Subsingleton.elim _ _
-    subst j
-  · simp [Matrix.mul_apply, Matrix.transpose_apply, mul_comm]
-  · simp [Matrix.mul_apply, Matrix.transpose_apply, mul_comm]
-  · rw [Matrix.det_subsingleton_sum_subsingleton M i i] at hdet
-    have hsum (f : ι → R) : Finset.univ.sum f = f i :=
-      Fintype.sum_subsingleton f i
-    simpa [Matrix.mul_apply, Matrix.transpose_apply, hsum,
-      Matrix.toBlocks₁₁, Matrix.toBlocks₁₂, Matrix.toBlocks₂₁, Matrix.toBlocks₂₂,
-      Matrix.sub_apply, Matrix.one_apply, mul_comm] using hdet
+    M ∈ symplecticGroup ι R ↔ M.det = 1 := by
+  refine ⟨det_eq_one, fun hdet ↦ ?_⟩
+  rw [← fromBlocks_toBlocks M, fromBlocks_mem_iff]
+  simp_rw [← Matrix.ext_iff, ← forall_and, Subsingleton.forall₂_iff]
+  intro i
+  simpa [Matrix.mul_apply, toBlocks₁₁, toBlocks₁₂, toBlocks₂₁, toBlocks₂₂,
+    Fintype.sum_subsingleton _ i, det_subsingleton_sum_subsingleton M i i, mul_comm] using hdet
 
 /-- If `m` is a subsingleton, the symplectic group is equivalent to the special linear group
 on `m ⊕ m`. The underlying matrix is unchanged. -/
 def subsingletonEquivSpecialLinear (R m : Type*) [Fintype m] [Subsingleton m]
     [DecidableEq m] [CommRing R] :
-    ↥(Matrix.symplecticGroup m R) ≃*
-      Matrix.SpecialLinearGroup (m ⊕ m) R where
-  __ := Equiv.subtypeEquivRight fun A =>
-    SymplecticGroup.mem_subsingleton_iff_det_eq_one m R A
-  map_mul' _ _ := Subtype.ext rfl
+    ↥(symplecticGroup m R) ≃*
+      SpecialLinearGroup (m ⊕ m) R where
+  __ := Equiv.subtypeEquivRight fun A ↦ mem_subsingleton_iff_det_eq_one m R A
+  map_mul' _ _ := rfl
 
 /-- The symplectic group on 2 × 2 matrices is equivalent to $\operatorname{SL}_2(R)$.
 The source matrices are indexed by `Fin 1 ⊕ Fin 1`, and the target matrices by `Fin 2`. -/
 def finOneEquivSL2 (R : Type*) [CommRing R] :
-    ↥(Matrix.symplecticGroup (Fin 1) R) ≃*
-      Matrix.SpecialLinearGroup (Fin 2) R :=
+    ↥(symplecticGroup (Fin 1) R) ≃*
+      SpecialLinearGroup (Fin 2) R :=
   (subsingletonEquivSpecialLinear R (Fin 1)).trans
-    (Matrix.SpecialLinearGroup.reindex R
-      (finSumFinEquiv : (Fin 1 ⊕ Fin 1) ≃ Fin 2))
+    (SpecialLinearGroup.reindex R finSumFinEquiv)
 
 @[simp]
 theorem finOneEquivSL2_apply_coe
     (R : Type*) [CommRing R]
-    (A : ↥(Matrix.symplecticGroup (Fin 1) R)) :
+    (A : ↥(symplecticGroup (Fin 1) R)) :
     ((finOneEquivSL2 R) A : Matrix (Fin 2) (Fin 2) R) =
-      Matrix.reindex
-        (finSumFinEquiv : (Fin 1 ⊕ Fin 1) ≃ Fin 2)
-        (finSumFinEquiv : (Fin 1 ⊕ Fin 1) ≃ Fin 2)
+      Matrix.reindex finSumFinEquiv finSumFinEquiv
         (A : Matrix (Fin 1 ⊕ Fin 1) (Fin 1 ⊕ Fin 1) R) := rfl
 
 @[simp]
 theorem finOneEquivSL2_symm_apply_coe
     (R : Type*) [CommRing R]
-    (A : Matrix.SpecialLinearGroup (Fin 2) R) :
+    (A : SpecialLinearGroup (Fin 2) R) :
     ((finOneEquivSL2 R).symm A :
         Matrix (Fin 1 ⊕ Fin 1) (Fin 1 ⊕ Fin 1) R) =
-      Matrix.reindex
-        (finSumFinEquiv : (Fin 1 ⊕ Fin 1) ≃ Fin 2).symm
-        (finSumFinEquiv : (Fin 1 ⊕ Fin 1) ≃ Fin 2).symm
+      Matrix.reindex finSumFinEquiv.symm finSumFinEquiv.symm
         (A : Matrix (Fin 2) (Fin 2) R) := rfl
 
 end SymplecticGroup
