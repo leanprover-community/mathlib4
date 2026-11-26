@@ -223,17 +223,19 @@ theorem exists_pow_of_dvd_padicValNat {n k : ℕ} (hn : n ≠ 0)
     _ = n := by
           simpa [Finsupp.prod] using hself
 
-/-- A natural number is a perfect `k`-th power if and only if its `p`-adic
-valuation is divisible by `k` at every prime `p`. -/
-theorem exists_pow_iff_forall_prime_dvd_padicValNat {n k : ℕ} (hn : n ≠ 0) :
-    (∃ m, n = m ^ k) ↔ ∀ p, Nat.Prime p → k ∣ padicValNat p n := by
+/-- A natural number is a perfect `k`-th power if and only if the power of
+every prime `p` in its factorization is divisible by `k`. -/
+theorem exists_eq_pow_iff_dvd_factorization {n k : ℕ} (hn : n ≠ 0) :
+    (∃ m, n = m ^ k) ↔ ∀ p, p.Prime → k ∣ n.factorization p := by
   constructor
   · rintro ⟨m, rfl⟩ p hp
-    have hfac : padicValNat p (m ^ k) = (m ^ k).factorization p := by
-      rw [padicValNat_def, ← factorization_def _ hp]
-    rw [hfac, factorization_pow, Finsupp.smul_apply, smul_eq_mul]
+    rw [factorization_pow, Finsupp.smul_apply, smul_eq_mul]
     exact dvd_mul_right k _
-  · exact exists_pow_of_dvd_padicValNat hn
+  · intro h
+    refine exists_pow_of_dvd_padicValNat hn (fun p hp => ?_)
+    have hdvd := h p hp
+    rw [factorization_def n hp] at hdvd
+    rwa [padicValNat_def]
 
 /-! ## Criterion for a natural number or integer being a square through even factorization -/
 
@@ -242,21 +244,8 @@ theorem isSquare_iff_even_factorization {n : ℕ} :
     IsSquare n ↔ ∀ (p : ℕ), p.Prime → Even (n.factorization p) := by
   by_cases h0 : n = 0
   · simp [h0]
-  constructor
-  · rintro ⟨m, hm⟩ p hp
-    have h2 : 2 ∣ padicValNat p n :=
-      (exists_pow_iff_forall_prime_dvd_padicValNat h0).mp
-        ⟨m, by rw [pow_two]; exact hm⟩ p hp
-    rw [padicValNat_def, ← factorization_def n hp] at h2
-    obtain ⟨c, hc⟩ := h2
-    exact ⟨c, hc.trans (two_mul c)⟩
-  · intro h
-    have h2 : ∀ p, p.Prime → 2 ∣ padicValNat p n := by
-      intro p hp
-      have hdvd : 2 ∣ n.factorization p := (h p hp).two_dvd
-      rwa [factorization_def n hp, ← padicValNat_def] at hdvd
-    obtain ⟨m, hm⟩ := (exists_pow_iff_forall_prime_dvd_padicValNat h0).mpr h2
-    exact ⟨m, hm.trans (pow_two m)⟩
+  · simp_rw [isSquare_iff_exists_sq, exists_eq_pow_iff_dvd_factorization h0,
+      even_iff_two_dvd]
 
 end Nat
 
