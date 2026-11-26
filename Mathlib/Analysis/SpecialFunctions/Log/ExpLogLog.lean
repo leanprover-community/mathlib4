@@ -5,8 +5,8 @@ Authors: David Fox
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 public import Mathlib.Analysis.SpecialFunctions.Exp
+public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 /-!
 # The exponential of `log t / log (log t)` dominates powers of `log t`
@@ -18,6 +18,8 @@ Riemann Hypothesis formalization work (Route C), where the upper bound
 `C * (log t) ^ 2` on the critical line is contradicted by a lower bound
 of exactly this exponential shape.
 -/
+
+public section
 
 open Filter
 
