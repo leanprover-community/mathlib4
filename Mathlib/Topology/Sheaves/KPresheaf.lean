@@ -17,7 +17,7 @@ public import Mathlib.Topology.Sets.BaseChangeNhds
 We define `TopCat.KPresheaf A X` simply as `(Compacts X)ᵒᵖ ⥤ A`,
 and inherit the category structure with natural transformations as morphisms.
 
-We define construction that will allow to state the condition of being a K-sheaf.
+We define constructions that will allow to state the condition of being a K-sheaf.
 
 We also define the pushforward of a presheaf by a proper map.
 
