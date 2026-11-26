@@ -23,6 +23,11 @@ set_option doc.verso.suggestions false
 We consider Dirichlet characters `χ` with values in a normed field `F`.
 
 We show that `‖χ a‖ = 1` if `a` is a unit and `‖χ a‖ ≤ 1` in general.
+
+## Main results
+
+* `DirichletCharacter.unit_norm_eq_one`: the value at a unit of a Dirichlet character has norm `1`.
+* `DirichletCharacter.norm_le_one`: the values of a Dirichlet character have norm bounded by `1`.
 -/
 
 public section
