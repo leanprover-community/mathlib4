@@ -123,8 +123,7 @@ lemma edgeMonoStep_comp_edgeMonoSteps
   simp
 
 lemma edgeMonoSteps_eq_edgeMonoStep (r' : ℤ) (h : r + 1 = r' := by lia) :
-    E.edgeMonoSteps pq r r' (by lia) =
-    E.edgeMonoStep pq r r' h := by
+    E.edgeMonoSteps pq r r' (by lia) = E.edgeMonoStep pq r r' h := by
   simp [← E.edgeMonoStep_comp_edgeMonoSteps pq r r r']
 
 @[reassoc (attr := simp)]
@@ -271,8 +270,7 @@ lemma edgeEpiSteps_comp_edgeEpiStep
   simp
 
 lemma edgeEpiSteps_eq_edgeEpiStep (r' : ℤ) (h : r + 1 = r' := by lia) :
-    E.edgeEpiSteps pq r r' (by lia) =
-    E.edgeEpiStep pq r r' h := by
+    E.edgeEpiSteps pq r r' (by lia) = E.edgeEpiStep pq r r' h := by
   simp [← E.edgeEpiSteps_comp_edgeEpiStep pq r r r']
 
 @[reassoc (attr := simp)]
@@ -372,6 +370,8 @@ lemma edgeMonoSteps_edgeEpiSteps (r' : ℤ) (hr' : r ≤ r' := by lia) :
       E.edgeMonoStep_edgeEpiStep_assoc ..,
       hk' (r + 1) r' (by lia) (by lia)]
 
+/-- The isomorphism `E_r^pq ≅ E_{r'}^pq` when `r ≤ r'` when
+differentials to and from `E_{r''}^pq` are all zero when `r ≤ r''`. -/
 @[expose, simps]
 noncomputable def edgeIsoSteps (r' : ℤ) (hr' : r ≤ r' := by lia) :
     haveI := E.le₀_of_hasEdgeEpiAt pq r

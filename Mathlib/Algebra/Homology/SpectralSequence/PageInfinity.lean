@@ -9,7 +9,24 @@ public import Mathlib.Algebra.Homology.SpectralSequence.EdgeSteps
 public import Mathlib.Order.Int.LeastGreatest
 
 /-!
-# ...
+# "Stabilization" of the objects in a spectral sequence
+
+Let `E` be a spectral sequence. In this file, we introduce a
+typeclass `E.HasPageInfinityAt pq` which says that for all big
+enough page numbers `r`, the differentials to and from `E_r^pq`
+are zero, which imply that be have isomorphisms `E_r^pq ≅ E_{r+1}^pq`.
+When this condition holds, we define `E.pageInfinity pq` as an
+object that is isomorphic to `E_r^pq` for a big enough `r`.
+(For convenience, `E.pageInfinity pq` is set to be zero when
+`E.HasPageInfinityAt pq` does not hold.)
+
+If `E.HasEdgeMonoAtFrom pq r` holds, we define a monomorphism
+`E.pageInfinity pq ⟶ (E.page r).X pq`, and
+if `E.HasEdgeMonoAtEpi pq r` holds, we define a epimorphism
+`(E.page r).X pq ⟶ E.pageInfinity pq`.
+When both `E.HasEdgeMonoAtFrom pq r` and `E.HasEdgeMonoAtEpi pq r` hold,
+these two morphisms define an isomorphism
+`E.pageInfinityIso pq : (E.page r).X pq ≅ E.pageInfinity pq`.
 
 -/
 
@@ -158,7 +175,8 @@ lemma edgeMono_edgeEpi :
 `HasEdgeEpiAtFrom pq r` hold. -/
 @[expose, simps]
 noncomputable def pageInfinityIso :
-    (E.page r (E.le₀_of_hasEdgeMonoAt pq r)).X pq ≅ E.pageInfinity pq where
+    haveI := E.le₀_of_hasEdgeMonoAt pq r
+    (E.page r).X pq ≅ E.pageInfinity pq where
   hom := haveI := HasPageInfinityAt.mk' E pq r; E.edgeEpi pq r
   inv := haveI := HasPageInfinityAt.mk' E pq r; E.edgeMono pq r
 
