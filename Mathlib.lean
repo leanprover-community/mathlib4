@@ -6220,6 +6220,7 @@ public import Mathlib.NumberTheory.Padics.ValuativeRel
 public import Mathlib.NumberTheory.Padics.WithVal
 public import Mathlib.NumberTheory.Pell
 public import Mathlib.NumberTheory.PellMatiyasevic
+public import Mathlib.NumberTheory.PerfectPowers
 public import Mathlib.NumberTheory.PowModTotient
 public import Mathlib.NumberTheory.PrimeCounting
 public import Mathlib.NumberTheory.PrimesCongruentOne
