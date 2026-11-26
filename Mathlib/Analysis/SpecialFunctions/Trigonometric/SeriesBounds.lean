@@ -25,9 +25,9 @@ import Mathlib.Analysis.Calculus.Deriv.Pow
   of their Taylor series, at every order and for every `x > 0`, with no bound on `x`. The range is
   indexed by `Even n` or `Odd n`, whichever gives the bound. `Real.cos_le_sum_of_pos` is the
   non-strict form of the last, which needs no lower bound on `n`.
-* `Real.cos_lt_one_sub_sq_div_two_add_pow_four`, `Real.sin_lt_sub_cube_add_pow_five` and
-  `Real.sub_cube_add_pow_five_lt_sin` are the low-order corollaries, with their non-strict forms.
-  They complete the brackets whose lower halves are in
+* `Real.cos_lt_one_sub_sq_div_two_add_pow_four` and `Real.sin_lt_sub_cube_add_pow_five` are the
+  low-order corollaries, with their non-strict forms. They complete the brackets whose lower
+  halves, `Real.one_sub_sq_div_two_lt_cos` and `Real.sin_gt_sub_cube`, are in
   `Mathlib/Analysis/SpecialFunctions/Trigonometric/Bounds.lean`.
 
 See `Mathlib/Analysis/SpecialFunctions/Trigonometric/Bounds.lean` for simpler inequalities and
@@ -64,14 +64,14 @@ lemma Complex.sin_series_bound {z : ℂ} (z1 : ‖z‖ ≤ 1) (n : ℕ) :
       zero_div, zero_mul, zero_div, add_zero]
     refine Finset.sum_congr rfl fun k _ ↦ ?_
     rcases k.even_or_odd' with ⟨a, rfl | rfl⟩ <;> grind [pow_mul, mul_pow, I_sq]
-  rw [sin, e, ← sub_div, ← sub_mul, sub_sub_sub_comm, norm_div, Complex.norm_two,
-    div_le_iff₀ (by norm_num), norm_mul, Complex.norm_I, mul_one]
-  grw [norm_sub_le, add_le_add ((-z * I).exp_bound (by simpa) (by simp))
-    ((z * I).exp_bound (by simpa) (by simp))]
-  apply le_of_eq
-  simp only [norm_mul, Complex.norm_I, norm_neg, Nat.succ_eq_add_one,
-    Nat.cast_add, Nat.cast_mul]
-  ring_nf
+  calc
+    _ = ‖(exp (-z * I) - ∑ k ∈ Finset.range (2 * n + 1), (-z * I) ^ k / k.factorial) -
+          (exp (z * I) - ∑ k ∈ Finset.range (2 * n + 1), (z * I) ^ k / k.factorial)‖ / 2 := by
+      simp [sin, e, ← sub_div, ← sub_mul, sub_sub_sub_comm]
+    _ ≤ _ := by
+      grw [norm_sub_le, exp_bound (by simpa) (by simp), exp_bound (by simpa) (by simp)]
+      norm_num
+      grind [le_of_eq]
 
 /-- Bounds the Taylor remainder of `Complex.cos` at order `n`, for `‖z‖ ≤ 1`. -/
 lemma Complex.cos_series_bound {z : ℂ} (z1 : ‖z‖ ≤ 1) {n : ℕ} (n0 : 0 < n) :
@@ -83,13 +83,14 @@ lemma Complex.cos_series_bound {z : ℂ} (z1 : ‖z‖ ≤ 1) {n : ℕ} (n0 : 0 
     simp only [← Finset.sum_add_distrib, ← Finset.sum_range_two_mul_ite_even n, Finset.sum_div]
     refine Finset.sum_congr rfl fun k _ ↦ ?_
     rcases k.even_or_odd' with ⟨a, rfl | rfl⟩ <;> grind [pow_mul, mul_pow, I_sq]
-  rw [cos, e, ← sub_div, add_sub_add_comm, norm_div, Complex.norm_two, div_le_iff₀ (by norm_num)]
-  grw [norm_add_le, add_le_add ((z * I).exp_bound (by simpa) (by lia))
-    ((-z * I).exp_bound (by simpa) (by lia))]
-  apply le_of_eq
-  simp only [norm_mul, Complex.norm_I, norm_neg, Nat.succ_eq_add_one,
-    Nat.cast_add, Nat.cast_mul]
-  ring_nf
+  calc
+    _ = ‖(exp (z * I) - ∑ k ∈ Finset.range (2 * n), (z * I) ^ k / k.factorial) +
+          (exp (-z * I) - ∑ k ∈ Finset.range (2 * n), (-z * I) ^ k / k.factorial)‖ / 2 := by
+      simp [cos, e, ← sub_div, add_sub_add_comm]
+    _ ≤ _ := by
+      grw [norm_add_le, exp_bound (by simpa) (by lia), exp_bound (by simpa) (by lia)]
+      norm_num
+      grind [le_of_eq]
 
 /-- Bounds the Taylor remainder of `Real.sin` at order `n`, for `|x| ≤ 1`. -/
 lemma Real.sin_series_bound {x : ℝ} (x1 : |x| ≤ 1) (n : ℕ) :
@@ -247,8 +248,7 @@ theorem cos_le_one_sub_sq_div_two_add_pow_four (x : ℝ) : cos x ≤ 1 - x ^ 2 /
 /-- The quintic Taylor polynomial strictly dominates `sin` on `(0, ∞)`.
 
 The upper half of the bracket whose lower half is `sin_gt_sub_cube`. Unlike the `cos` bound this
-is one-sided: both sides are odd, so the inequality reverses for `x < 0` — see
-`sub_cube_add_pow_five_lt_sin`. -/
+is one-sided: both sides are odd, so the inequality reverses for `x < 0`. -/
 theorem sin_lt_sub_cube_add_pow_five {x : ℝ} (hx : 0 < x) :
     sin x < x - x ^ 3 / 6 + x ^ 5 / 120 := by
   have h := sin_lt_sum_of_pos (n := 3) hx (by decide)
@@ -260,20 +260,6 @@ theorem sin_le_sub_cube_add_pow_five {x : ℝ} (hx : 0 ≤ x) :
     sin x ≤ x - x ^ 3 / 6 + x ^ 5 / 120 := by
   rcases hx.lt_or_eq with h | rfl
   · exact (sin_lt_sub_cube_add_pow_five h).le
-  · simp
-
-/-- `sin_lt_sub_cube_add_pow_five` reversed, for negative arguments. Compare `lt_sin`. -/
-theorem sub_cube_add_pow_five_lt_sin {x : ℝ} (hx : x < 0) :
-    x - x ^ 3 / 6 + x ^ 5 / 120 < sin x := by
-  have h := sin_lt_sub_cube_add_pow_five (x := -x) (by linarith)
-  rw [sin_neg] at h
-  linarith
-
-/-- The non-strict form of `sub_cube_add_pow_five_lt_sin`. Compare `le_sin`. -/
-theorem sub_cube_add_pow_five_le_sin {x : ℝ} (hx : x ≤ 0) :
-    x - x ^ 3 / 6 + x ^ 5 / 120 ≤ sin x := by
-  rcases hx.lt_or_eq with h | rfl
-  · exact (sub_cube_add_pow_five_lt_sin h).le
   · simp
 
 end Real
