@@ -5,8 +5,8 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.RingTheory.Trace.Basic
 public import Mathlib.FieldTheory.Finite.GaloisField
+public import Mathlib.RingTheory.Trace.Basic
 
 /-!
 # The trace and norm maps for finite fields
@@ -23,6 +23,7 @@ We state several lemmas about the trace and norm maps for finite fields.
   `norm[L/K](x) = ∏ i < [L:K], x ^ ((#K) ^ i)`.
 
 ## Tags
+
 finite field, trace, norm
 -/
 

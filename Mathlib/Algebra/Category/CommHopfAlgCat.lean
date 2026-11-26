@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Category.CommBialgCat
 public import Mathlib.CategoryTheory.Monoidal.Grp
 public import Mathlib.RingTheory.HopfAlgebra.Convolution
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of commutative Hopf algebras over a commutative ring
 
@@ -135,8 +138,8 @@ def ofIsoSelf (A : CommHopfAlgCat.{v} R) : of R A ≅ A where
 @[expose, simps]
 def isoMk {X Y : Type v} {_ : CommRing X} {_ : CommRing Y} {_ : HopfAlgebra R X}
     {_ : HopfAlgebra R Y} (e : X ≃ₐc[R] Y) : of R X ≅ of R Y where
-  hom := ofHom (e : X →ₐc[R] Y)
-  inv := ofHom (e.symm : Y →ₐc[R] X)
+  hom := ofHom e.toBialgHom
+  inv := ofHom e.symm.toBialgHom
 
 /-- Build a `BialgEquiv` from an isomorphism in the category `CommHopfAlgCat R`. -/
 -- TODO: Make `BialgEquiv.toCoalgEquiv` the simp normal form so that this can be simp
@@ -220,3 +223,13 @@ def commHopfAlgCatEquivCogrpCommAlgCat : CommHopfAlgCat R ≌ (Grp (CommAlgCat R
 instance {A : CommHopfAlgCat.{u} R} [IsCocomm R A] :
     IsCommMonObj ((commHopfAlgCatEquivCogrpCommAlgCat R).functor.obj A).unop.X :=
   inferInstanceAs <| IsCommMonObj <| op <| CommAlgCat.of R A
+
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prints `CommHopfAlgCat.of R X` as `↧X`. -/
+@[app_delab CommHopfAlgCat.of]
+meta def CommHopfAlgCat.delabOf : Delab := CategoryTheory.delabOf
+
+end Notation

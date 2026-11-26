@@ -5,9 +5,11 @@ Authors: Patrick Massot
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Basic
 public import Mathlib.Topology.Algebra.FilterBasis
 public import Mathlib.Topology.Algebra.Nonarchimedean.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Neighborhood bases for non-archimedean rings and modules
@@ -158,9 +160,7 @@ theorem hasBasis_nhds (a : A) :
     constructor
     · rintro ⟨-, ⟨i, rfl⟩, hi⟩
       use i
-      suffices h : { b : A | b - a ∈ B i } = (fun y => a + y) '' ↑(B i) by
-        rw [h]
-        assumption
+      suffices h : { b : A | b - a ∈ B i } = (fun y => a + y) '' ↑(B i) by rwa [h]
       simp only [image_add_left, neg_add_eq_sub]
       ext b
       simp
@@ -349,7 +349,7 @@ section
 In this section, we check that in an `R`-algebra `A` over a ring equipped with a topology,
 a basis of `R`-submodules which is compatible with the topology on `R` is also a submodule basis
 in the sense of `R`-modules (forgetting about the ring structure on `A`) and those two points of
-view definitionaly gives the same topology on `A`.
+view definitionally gives the same topology on `A`.
 -/
 variable [TopologicalSpace R] {B : ι → Submodule R A} (hB : SubmodulesRingBasis B)
   (hsmul : ∀ (m : A) (i : ι), ∀ᶠ a : R in 𝓝 0, a • m ∈ B i)

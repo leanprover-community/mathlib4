@@ -5,12 +5,12 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Images
 public import Mathlib.CategoryTheory.Subfunctor.Image
-public import Mathlib.Tactic.CategoryTheory.CategoryStar
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
-
 # The category of type-valued functors has images
 -/
 
@@ -24,7 +24,6 @@ open Limits
 
 variable {C : Type*} [Category* C]
 
-attribute [local simp] FunctorToTypes.naturality in
 /-- The image of a natural transformation between type-valued functors is a `MonoFactorisation` -/
 @[simps]
 def monoFactorisation {F G : C ⥤ Type u} (f : F ⟶ G) : MonoFactorisation f where

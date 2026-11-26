@@ -5,8 +5,12 @@ Authors: Yael Dillies
 -/
 module
 
-public import Batteries.Tactic.Init
 public import Mathlib.Tactic.ToAdditive
+
+import Batteries.Tactic.Init
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-! # Lemmas about inequalities with `1`. -/
 

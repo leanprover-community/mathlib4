@@ -5,10 +5,11 @@ Authors: Aaron Anderson
 -/
 module
 
+public import Mathlib.Data.Finsupp.PWO
 public import Mathlib.RingTheory.HahnSeries.Multiplication
 public import Mathlib.RingTheory.PowerSeries.Basic
-public import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
-public import Mathlib.Data.Finsupp.PWO
+
+import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 
 /-!
 # Comparison between Hahn series and power series
@@ -19,19 +20,23 @@ coefficients in `R`, whose supports are partially well-ordered. With further str
 we get the more familiar semiring of formal power series with coefficients in `R`.
 
 ## Main Definitions
+
 * `toPowerSeries` the isomorphism from `R⟦ℕ⟧` to `PowerSeries R`.
 * `ofPowerSeries` the inverse, casting a `PowerSeries R` to a `R⟦ℕ⟧`.
 
-## Instances
+## Main statements
+
 * For `Finite σ`, the instance `NoZeroDivisors R⟦σ →₀ ℕ⟧`,
   deduced from the case of `MvPowerSeries`
   The case of `R⟦ℕ⟧` is taken care of by `instNoZeroDivisors`.
 
 ## TODO
+
 * Build an API for the variable `X` (defined to be `single 1 1 : R⟦Γ⟧`) in analogy to
   `X : R[X]` and `X : PowerSeries R`
 
 ## References
+
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
 -/
 
@@ -117,7 +122,7 @@ theorem ofPowerSeries_C (r : R) : ofPowerSeries Γ R (PowerSeries.C r) = HahnSer
     coeff_single]
   split_ifs with hn
   · subst hn
-    convert! embDomain_coeff (a := 0) <;> simp
+    convert embDomain_coeff (a := 0) <;> simp
   · rw [embDomain_notin_image_support]
     simp only [not_exists, Set.mem_image, toPowerSeries_symm_apply_coeff, mem_support,
       PowerSeries.coeff_C]
@@ -130,7 +135,7 @@ theorem ofPowerSeries_X : ofPowerSeries Γ R PowerSeries.X = single 1 1 := by
   simp only [coeff_single, ofPowerSeries_apply]
   split_ifs with hn
   · rw [hn]
-    convert! embDomain_coeff (a := 1) <;> simp
+    convert embDomain_coeff (a := 1) <;> simp
   · rw [embDomain_notin_image_support]
     simp only [not_exists, Set.mem_image, toPowerSeries_symm_apply_coeff, mem_support,
       PowerSeries.coeff_X]
@@ -201,9 +206,7 @@ variable (R) [CommSemiring R] {A : Type*} [Semiring A] [Algebra R A]
 @[simps!]
 def toPowerSeriesAlg : A⟦ℕ⟧ ≃ₐ[R] PowerSeries A :=
   { toPowerSeries with
-    commutes' := fun r => by
-      ext n
-      cases n <;> simp [algebraMap_apply, PowerSeries.algebraMap_apply] }
+    map_smul' _ _ := by ext; simp }
 
 variable (Γ) [Semiring Γ] [PartialOrder Γ] [IsStrictOrderedRing Γ]
 

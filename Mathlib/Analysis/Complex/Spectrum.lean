@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
 public import Mathlib.Analysis.Complex.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Some lemmas on the spectrum and quasispectrum of elements and positivity on `ℂ`
 -/

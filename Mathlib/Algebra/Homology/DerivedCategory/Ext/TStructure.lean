@@ -6,7 +6,11 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
-public import Mathlib.Algebra.Homology.DerivedCategory.TStructure
+
+import Mathlib.Algebra.Homology.DerivedCategory.TStructure
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Morphisms between bounded complexes are small
@@ -18,9 +22,9 @@ for any `n : ℤ`, which we phrase here by saying that
 `HasSmallLocalizedShiftedHom.{w} (HomologicalComplex.quasiIso _ _) ℤ K L` hold.
 
 ## TODO
+
 * When more definitions are introduced for t-structures (e.g. the heart),
   show that the conclusion holds when `K` and `L` are cohomologically bounded.
-
 -/
 
 public section

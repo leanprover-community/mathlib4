@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Category.Grp.Zero
 public import Mathlib.Algebra.Ring.PUnit
 public import Mathlib.CategoryTheory.Monoidal.Types.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Chosen finite products in `GrpCat` and friends
 -/
@@ -32,7 +35,7 @@ def binaryProductLimitCone (G H : GrpCat.{u}) : LimitCone (pair G H) where
 /-- We choose `GrpCat.of (G × H)` as the product of `G` and `H` and `GrpCat.of PUnit` as
 the terminal object. -/
 noncomputable instance cartesianMonoidalCategoryGrp : CartesianMonoidalCategory GrpCat.{u} :=
-  .ofChosenFiniteProducts ⟨_, (isZero_of_subsingleton (GrpCat.of PUnit.{u + 1})).isTerminal⟩
+  .ofChosenFiniteProducts ⟨_, (isZero_of_subsingleton ↧PUnit.{u + 1}).isTerminal⟩
     fun G H ↦ binaryProductLimitCone G H
 
 noncomputable instance : BraidedCategory GrpCat.{u} := .ofCartesianMonoidalCategory
@@ -62,7 +65,7 @@ def binaryProductLimitCone (G H : AddGrpCat.{u}) : LimitCone (pair G H) where
 /-- We choose `AddGrpCat.of (G × H)` as the product of `G` and `H` and `AddGrpCat.of PUnit` as
 the terminal object. -/
 noncomputable instance cartesianMonoidalCategoryAddGrp : CartesianMonoidalCategory AddGrpCat.{u} :=
-  .ofChosenFiniteProducts ⟨_, (isZero_of_subsingleton (AddGrpCat.of PUnit.{u + 1})).isTerminal⟩
+  .ofChosenFiniteProducts ⟨_, (isZero_of_subsingleton ↧PUnit.{u + 1}).isTerminal⟩
     fun G H ↦ binaryProductLimitCone G H
 
 noncomputable instance : BraidedCategory AddGrpCat.{u} := .ofCartesianMonoidalCategory
@@ -92,7 +95,7 @@ def binaryProductLimitCone (G H : CommGrpCat.{u}) : LimitCone (pair G H) where
 /-- We choose `CommGrpCat.of (G × H)` as the product of `G` and `H` and `CommGrpCat.of PUnit` as
 the terminal object. -/
 noncomputable instance cartesianMonoidalCategory : CartesianMonoidalCategory CommGrpCat.{u} :=
-  .ofChosenFiniteProducts ⟨_, (isZero_of_subsingleton (CommGrpCat.of PUnit.{u + 1})).isTerminal⟩
+  .ofChosenFiniteProducts ⟨_, (isZero_of_subsingleton ↧PUnit.{u + 1}).isTerminal⟩
     fun G H ↦ binaryProductLimitCone G H
 
 noncomputable instance : BraidedCategory CommGrpCat.{u} := .ofCartesianMonoidalCategory
@@ -116,7 +119,7 @@ namespace AddCommGrpCat
 `AddCommGrpCat.of PUnit` as the terminal object. -/
 @[instance_reducible]
 noncomputable def cartesianMonoidalCategory : CartesianMonoidalCategory AddCommGrpCat.{u} :=
-  .ofChosenFiniteProducts ⟨_, (isZero_of_subsingleton (AddCommGrpCat.of PUnit.{u + 1})).isTerminal⟩
+  .ofChosenFiniteProducts ⟨_, (isZero_of_subsingleton ↧PUnit.{u + 1}).isTerminal⟩
     fun G H ↦ binaryProductLimitCone G H
 
 attribute [local instance] cartesianMonoidalCategory

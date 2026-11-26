@@ -23,7 +23,7 @@ This file develops the basic, abstract theory of these schemes and the functions
   implemented here as an object of type `Σ s : Set (ℕ → β), s → α`.
   That is, `(inducedMap A).1` is the domain and `(inducedMap A).2` is the function.
 
-## Implementation Notes
+## Implementation notes
 
 We consider end-appending to be the fundamental way to build lists (say on `β`) inductively,
 as this interacts better with the topology on `ℕ → β`.
@@ -37,7 +37,6 @@ in this file. See instead `PiNat.res`.
 ## Tags
 
 scheme, cantor scheme, lusin scheme, approximation.
-
 -/
 
 @[expose] public section
@@ -142,14 +141,14 @@ theorem VanishingDiam.map_continuous [TopologicalSpace β] [DiscreteTopology β]
   rintro x ε ε_pos
   obtain ⟨n, hn⟩ := hA.dist_lt _ ε_pos x
   rw [_root_.eventually_nhds_iff]
-  refine ⟨(↑)⁻¹' cylinder x.1 n, ?_, ?_, by simp⟩
+  refine ⟨(↑)⁻¹' cylinder x.val n, ?_, ?_, by simp⟩
   · rintro y hyx
     rw [mem_preimage, Subtype.coe_mk, cylinder_eq_res, mem_ofPred] at hyx
     apply hn
     · rw [← hyx]
       apply map_mem
     apply map_mem
-  apply continuous_subtype_val.isOpen_preimage
+  apply continuous_subtypeVal.isOpen_preimage
   apply isOpen_cylinder
 
 /-- A scheme on a complete space with vanishing diameter

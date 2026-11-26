@@ -5,8 +5,11 @@ Authors: Kexing Ying
 -/
 module
 
-public import Mathlib.MeasureTheory.VectorMeasure.Basic
 public import Mathlib.Analysis.Complex.Basic
+public import Mathlib.MeasureTheory.VectorMeasure.Relations
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Complex measure

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Logic.Small.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # UnivLE
 
@@ -36,7 +39,7 @@ its simplicity and transitivity.
 
 The strong definition easily implies the weaker definition (see below),
 but we cannot prove the reverse implication.
-This is because in Lean's type theory, while `max u v` is at least at big as `u` and `v`,
+This is because in Lean's type theory, while `max u v` is at least as big as `u` and `v`,
 it could be bigger than both!
 See also `Mathlib/CategoryTheory/UnivLE.lean` for the statement that the stronger definition is
 equivalent to `EssSurj (uliftFunctor : Type v ⥤ Type max u v)`.
@@ -82,7 +85,7 @@ example : UnivLE.{u, max u v} := inferInstance
 example : UnivLE.{u, u + 1} := inferInstance
 example : UnivLE.{2, 5} := inferInstance
 
-/- When `small_Pi` from `Mathlib/Logic/Small/Basic.lean` is imported, we have : -/
+/- When `small_Pi` from `Mathlib/Logic/Small/Basic.lean` is imported, we have: -/
 -- example (α : Type u) (β : Type v) [UnivLE.{u, v}] : Small.{v} (α → β) := inferInstance
 
 example : ¬UnivLE.{u + 1, u} := by

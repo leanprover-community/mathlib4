@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 public import Mathlib.CategoryTheory.Limits.FormalCoproducts.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Cech object for formal coproducts
 
@@ -16,7 +19,6 @@ functor `cechFunctor : FormalCoproduct C ⥤ SimplicialObject (FormalCoproduct C
 which sends a formal coproduct of objects `U j` (for `j : ι`) to the simplicial object
 which sends `⦋n⦌` to the formal coproduct, indexed by `i : Fin (n + 1) → ι`,
 of the products of the objects `U (i a)` for all `a : Fin (n + 1)`.
-
 -/
 
 @[expose] public section
@@ -68,7 +70,7 @@ noncomputable def isLimitPowerFan : IsLimit (U.powerFan α) :=
         ext i
         dsimp
         ext a
-        exact congr_fun (congr_arg FormalCoproduct.Hom.f (hm a)) i
+        congrm $(hm a).f i
       ext i
       · rfl
       · dsimp
@@ -134,7 +136,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma mapPower_id (U : FormalCoproduct.{w} C) (α : Type t)
     [HasProductsOfShape α C] :
     U.mapPower (id : α → α) = 𝟙 _ := by
-  cat_disch
+  ext <;> simp
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -192,7 +194,6 @@ noncomputable def cech (U : FormalCoproduct.{w} C) :
   obj n := U.power (ToType n.unop)
   map f := U.mapPower f.unop.toOrderHom.toFun
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The functor `FormalCoproduct C ⥤ SimplicialObject (FormalCoproduct C)`
 which sends a formal coproduct to its Cech object. -/
 @[simps]

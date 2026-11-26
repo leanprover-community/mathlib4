@@ -6,9 +6,11 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.Topology.Compactness.CompactlyGeneratedSpace
-public import Mathlib.CategoryTheory.Elementwise
-/-!
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
 # Compactly generated topological spaces
 
 This file defines the category of compactly generated topological spaces. These are spaces `X` such
@@ -39,7 +41,7 @@ structure CompactlyGenerated where
 namespace CompactlyGenerated
 
 instance : Inhabited CompactlyGenerated.{u, w} :=
-  ⟨{ toTop := TopCat.of (ULift (Fin 37)) }⟩
+  ⟨{ toTop := ↧(ULift (Fin 37)) }⟩
 
 instance : CoeSort CompactlyGenerated Type* :=
   ⟨fun X => X.toTop⟩
@@ -56,8 +58,13 @@ variable (X : Type w) [TopologicalSpace X] [UCompactlyGeneratedSpace.{u} X]
 
 /-- Constructor for objects of the category `CompactlyGenerated`. -/
 abbrev of : CompactlyGenerated.{u, w} where
-  toTop := TopCat.of X
+  toTop := ↧X
   is_compactly_generated := ‹_›
+
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `CompactlyGenerated.of X` as `↧X`. -/
+@[app_delab CompactlyGenerated.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
 
 section
 

@@ -38,7 +38,6 @@ called “dilations” (especially if `f v ≠ -1`).
 
 The definition is almost the same as that of `Module.preReflection f v`,
 up to a sign change, which are interesting when `f v = 2`, because they give “reflections”.
-
 -/
 
 @[expose] public section
@@ -301,7 +300,7 @@ theorem symm_mem_dilatransvections_iff {e : V ≃ₗ[R] V} :
   ext x
   suffices x = e x - f x • v by
     simpa [LinearMap.transvection.apply, ← sub_eq_add_neg, symm_apply_eq]
-  rw [eq_comm, sub_eq_iff_eq_add, ← coe_coe, he, LinearMap.transvection.apply]
+  rw [eq_comm, sub_eq_iff_eq_add, ← coe_toLinearMap, he, LinearMap.transvection.apply]
 
 @[simp]
 theorem inv_mem_dilatransvections_iff {e : V ≃ₗ[R] V} :
@@ -440,7 +439,7 @@ theorem mem_transvections_iff_mem_dilatransvections_and_fixedReduce_eq_one
     have hefixed_ne_top : e.fixedSubmodule ≠ ⊤ := by
       rwa [ne_eq, LinearEquiv.fixedSubmodule_eq_top_iff]
     obtain ⟨w : V, hw : w ∉ e.fixedSubmodule⟩ :=
-      SetLike.exists_not_mem_of_ne_top e.fixedSubmodule hefixed_ne_top rfl
+      SetLike.exists_notMem_of_ne_top e.fixedSubmodule hefixed_ne_top rfl
     obtain ⟨f, hfw, hf⟩ := Submodule.exists_dual_map_eq_bot_of_notMem hw inferInstance
     rw [mem_dilatransvections_iff_finrank_quotient] at he
     have hf' : e.fixedSubmodule = LinearMap.ker f := by
@@ -470,7 +469,7 @@ theorem mem_transvections_iff_mem_dilatransvections_and_fixedReduce_eq_one
         ← sub_eq_zero, ← LinearMap.ker_eq_top, eq_top_iff, ← eq_top]
       simp only [LinearEquiv.transvection.coe_toLinearMap,
         sup_le_iff, Submodule.span_singleton_le_iff_mem, LinearMap.mem_ker, LinearMap.sub_apply,
-        LinearEquiv.coe_coe]
+        coe_toLinearMap]
       constructor
       · intro x hx
         suffices f x = 0 by
@@ -510,7 +509,6 @@ theorem IsBaseChange.transvection (f : Dual R V) (v : V) :
     ibc.endHom (transvection f v) = transvection (ibc.toDual f) (ε v) := by
   ext w
   induction w using ibc.inductionOn with
-  | zero => simp
   | add x y hx hy => simp [hx, hy]
   | smul a w hw => simp [hw]
   | tmul x => simp [LinearMap.transvection.apply, endHom_comp_apply, toDual_comp_apply]
@@ -601,13 +599,13 @@ private theorem det_ofField [FiniteDimensional K V] (f : Dual K V) (v : V) :
     simp only [map_add, Basis.repr_self, map_smul, Finsupp.coe_add, Finsupp.coe_smul,
       Pi.add_apply, Pi.smul_apply, smul_eq_mul, Matrix.of_apply]
     rw [hv, Function.update_apply, Basis.repr_self, Pi.one_apply, hf]
-    simp only [smul_apply, Basis.coord_apply, Basis.repr_self, smul_eq_mul,
+    simp only [LinearMap.smul_apply, Basis.coord_apply, Basis.repr_self, smul_eq_mul,
       Finsupp.single_eq_same, mul_one]
     split_ifs with hxy hxi
     · simp [← hxy, hxi]
     · rw [Finsupp.single_eq_of_ne hxi]; simp [hxy]
     · rw [Finsupp.single_eq_of_ne hxy, zero_add, mul_assoc]
-      convert! mul_zero _
+      convert mul_zero _
       by_cases hxi : x = i
       · simp [← hxi, Finsupp.single_eq_of_ne hxy]
       · simp [Finsupp.single_eq_of_ne hxi]

@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.Localization.AtPrime.Basic
 public import Mathlib.RingTheory.TensorProduct.Maps
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ring Homomorphisms surjective on stalks
 
@@ -17,7 +20,6 @@ the development of immersions in algebraic geometry.
 A ring homomorphism `R →+* S` is surjective on stalks if `R_p →+* S_q` is surjective for all pairs
 of primes `p = f⁻¹(q)`. We show that this property is stable under composition and base change, and
 that surjections and localizations satisfy this.
-
 -/
 
 @[expose] public section
@@ -51,7 +53,7 @@ lemma surjective_localRingHom_iff (P : Ideal S) [P.IsPrime] :
       Submonoid.coe_one, one_mul, IsLocalization.eq_iff_exists P.primeCompl] at ha
     obtain ⟨c, hc⟩ := ha
     simp only [← mul_assoc] at hc
-    exact ⟨_, _, _, c.2, t.2, hc.symm⟩
+    exact ⟨_, _, _, c.property, t.property, hc.symm⟩
   · refine fun H y ↦ Localization.ind (fun ⟨y, t, h⟩ ↦ ?_) y
     simp only
     obtain ⟨yx, ys, yc, hyc, hy, ey⟩ := H y
@@ -62,7 +64,7 @@ lemma surjective_localRingHom_iff (P : Ideal S) [P.IsPrime] :
         IsLocalization.mk'_eq_iff_eq, IsLocalization.eq_iff_exists P.primeCompl]
       refine ⟨⟨yc, hyc⟩ * ⟨yt, hyt⟩, ?_⟩
       simp only [Submonoid.coe_mul]
-      convert! congr($(ey.symm) * $(et)) using 1 <;> ring
+      convert! congr($ey.symm * $et) using 1 <;> ring
 
 lemma surjectiveOnStalks_iff_forall_ideal :
     f.SurjectiveOnStalks ↔
@@ -137,9 +139,6 @@ lemma SurjectiveOnStalks.exists_mul_eq_tmul
     ∃ (t : T) (r : R) (a : S), (r • t ∉ J) ∧
       (1 : S) ⊗ₜ[R] (r • t) * x = a ⊗ₜ[R] t := by
   induction x with
-  | zero =>
-    exact ⟨1, 1, 0, by rw [one_smul]; exact J.primeCompl.one_mem,
-      by rw [mul_zero, TensorProduct.zero_tmul]⟩
   | tmul x₁ x₂ =>
     obtain ⟨y, s, c, hs, hc, e⟩ := (surjective_localRingHom_iff _).mp (hf₂ J hJ) x₂
     simp_rw [Algebra.smul_def]
@@ -214,7 +213,7 @@ lemma SurjectiveOnStalks.tensorProductMap
     [Algebra R S] [Algebra R T] [Algebra R S'] [Algebra R T']
     {f : S →ₐ[R] S'} (Hf : f.SurjectiveOnStalks) {g : T →ₐ[R] T'} (Hg : g.SurjectiveOnStalks) :
     (Algebra.TensorProduct.map f g).SurjectiveOnStalks := by
-  convert!
+  convert
     RingHom.SurjectiveOnStalks.tensorProductMap_id (T := T') Hf |>.comp <|
       (Algebra.TensorProduct.comm _ _ _).toRingEquiv.surjectiveOnStalks |>.comp <|
         RingHom.SurjectiveOnStalks.tensorProductMap_id (T := S) Hg |>.comp <|

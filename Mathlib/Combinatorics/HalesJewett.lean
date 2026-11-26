@@ -5,11 +5,12 @@ Authors: David Wärn
 -/
 module
 
-public import Mathlib.Data.Fintype.Option
-public import Mathlib.Data.Fintype.Shrink
 public import Mathlib.Data.Fintype.Sum
-public import Mathlib.Data.Finite.Prod
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Basic.Finite.Prod
+import Mathlib.Data.Fintype.Option
+import Mathlib.Data.Fintype.Shrink
 
 /-!
 # The Hales-Jewett theorem
@@ -41,7 +42,7 @@ to `∑ i : ι, v i`, which sends a combinatorial line to a homothetic copy of `
 - `Combinatorics.Subspace.exists_mono_in_high_dimension`: The multidimensional Hales-Jewett theorem.
 - `Combinatorics.exists_mono_homothetic_copy`: A generalization of Van der Waerden's theorem.
 
-## Implementation details
+## Implementation notes
 
 For convenience, we work directly with finite types instead of natural numbers. That is, we write
 `α, ι, κ` for (finite) types where one might traditionally use natural numbers `n, H, c`. This
@@ -63,7 +64,6 @@ combinatorial line, Ramsey theory, arithmetic progression
 ### References
 
 * https://en.wikipedia.org/wiki/Hales%E2%80%93Jewett_theorem
-
 -/
 
 @[expose] public section

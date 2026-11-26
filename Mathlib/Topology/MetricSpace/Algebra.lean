@@ -5,10 +5,10 @@ Authors: Heather Macbeth
 -/
 module
 
-public import Mathlib.Topology.Algebra.MulAction
 public import Mathlib.Topology.Algebra.SeparationQuotient.Basic
 public import Mathlib.Topology.Algebra.UniformMulAction
 public import Mathlib.Topology.MetricSpace.Lipschitz
+
 import Mathlib.Topology.Order.LiminfLimsup
 
 /-!
@@ -24,7 +24,6 @@ properties shared by normed groups and by `R≥0`.
 We deduce a `ContinuousMul` instance from `LipschitzMul`, etc.  In principle there should
 be an intermediate typeclass for uniform spaces, but the algebraic hierarchy there (see
 `IsUniformGroup`) is structured differently.
-
 -/
 
 @[expose] public section
@@ -79,7 +78,7 @@ instance (priority := 100) LipschitzMul.continuousMul : ContinuousMul β :=
 instance Submonoid.lipschitzMul (s : Submonoid β) : LipschitzMul s where
   lipschitz_mul := ⟨LipschitzMul.C β, by
     rintro ⟨x₁, x₂⟩ ⟨y₁, y₂⟩
-    convert! lipschitzWith_lipschitz_const_mul_edist ⟨(x₁ : β), x₂⟩ ⟨y₁, y₂⟩ using 1⟩
+    convert lipschitzWith_lipschitz_const_mul_edist ⟨(x₁ : β), x₂⟩ ⟨y₁, y₂⟩ using 1⟩
 
 @[to_additive]
 instance MulOpposite.lipschitzMul : LipschitzMul βᵐᵒᵖ where
@@ -156,7 +155,7 @@ instance (priority := 100) IsBoundedSMul.continuousSMul : ContinuousSMul α β w
 
 instance (priority := 100) IsBoundedSMul.toUniformContinuousConstSMul :
     UniformContinuousConstSMul α β :=
-  ⟨fun c => ((lipschitzWith_iff_dist_le_mul (K := nndist c 0)).2 fun _ _ =>
+  ⟨fun c => ((lipschitzWith_iff_dist_le_mul (K := nnDist c 0)).2 fun _ _ =>
     dist_smul_pair c _ _).uniformContinuous⟩
 
 @[to_fun]

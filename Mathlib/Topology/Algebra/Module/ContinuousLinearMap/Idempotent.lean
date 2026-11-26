@@ -5,8 +5,11 @@ Authors: Monica Omar
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 public import Mathlib.LinearAlgebra.Projection
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Idempotent continuous linear maps

@@ -8,8 +8,8 @@ module
 public import Mathlib.Algebra.EuclideanDomain.Basic
 public import Mathlib.Algebra.EuclideanDomain.Field
 public import Mathlib.Algebra.GCDMonoid.Finset
-public import Mathlib.RingTheory.Ideal.Prod
 public import Mathlib.RingTheory.Ideal.Nonunits
+public import Mathlib.RingTheory.Ideal.Prod
 public import Mathlib.RingTheory.Noetherian.UniqueFactorizationDomain
 
 /-!
@@ -35,7 +35,6 @@ Theorems about PID's are in the `PrincipalIdealRing` namespace.
 - `Ideal.IsPrime.to_maximal_ideal`: a non-zero prime ideal in a PID is maximal.
 - `EuclideanDomain.instIsPrincipalIdealRing`: a Euclidean domain is a PID.
 - `IsBezout.nonemptyGCDMonoid`: Every Bézout domain is a GCD domain.
-
 -/
 
 @[expose] public section
@@ -94,7 +93,7 @@ theorem _root_.Ideal.span_singleton_generator (I : Ideal R) [I.IsPrincipal] :
 @[simp]
 theorem generator_mem (S : Submodule R M) [S.IsPrincipal] : generator S ∈ S := by
   have : generator S ∈ span R {generator S} := subset_span (mem_singleton _)
-  convert! this
+  convert this
   exact span_singleton_generator S |>.symm
 
 theorem mem_iff_eq_smul_generator (S : Submodule R M) [S.IsPrincipal] {x : M} :
@@ -139,7 +138,7 @@ theorem prime_generator_of_isPrime (S : Ideal R) [S.IsPrincipal] [is_prime : S.I
     (ne_bot : S ≠ ⊥) : Prime (generator S) :=
   ⟨fun h => ne_bot ((eq_bot_iff_generator_eq_zero S).2 h), fun h =>
     is_prime.ne_top (S.eq_top_of_isUnit_mem (generator_mem S) h), fun _ _ => by
-    simpa only [← mem_iff_generator_dvd S] using is_prime.2⟩
+    simpa only [← mem_iff_generator_dvd S] using is_prime.mem_or_mem'⟩
 
 -- Note that the converse may not hold if `ϕ` is not injective.
 theorem generator_map_dvd_of_mem {N : Submodule R M} (ϕ : M →ₗ[R] R) [(N.map ϕ).IsPrincipal] {x : M}
@@ -243,7 +242,7 @@ lemma Finset.gcd_eq_sum_mul {α : Type*} [CommRing R] [IsBezout R] [NormalizedGC
     refine ⟨Function.update (g · * (y * u)) a (x * u), ?_⟩
     rw [gcd_insert, sum_insert ha, ← hu, hg]
     simp only [Function.update_self, add_right_inj, sum_mul, mul_assoc]
-    exact sum_congr rfl fun b hb ↦ congrArg (f b * ·) <|
+    exact sum_congr rfl fun b hb ↦ congrArg (f b * ·)
       (Function.update_of_ne (show b ≠ a by grind) (x * u) (g · * (y * u))).symm
 
 namespace IsPrime
@@ -257,7 +256,7 @@ open Submodule.IsPrincipal Ideal
 theorem to_maximal_ideal [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] {S : Ideal R}
     [hpi : IsPrime S] (hS : S ≠ ⊥) : IsMaximal S :=
   isMaximal_iff.2
-    ⟨(ne_top_iff_one S).1 hpi.1, by
+    ⟨(ne_top_iff_one S).1 hpi.ne_top', by
       intro T x hST hxS hxT
       obtain ⟨z, hz⟩ := (mem_iff_generator_dvd _).1 (hST <| generator_mem S)
       cases hpi.mem_or_mem (show generator T * z ∈ S from hz ▸ generator_mem S) with
@@ -314,7 +313,7 @@ open IsPrincipalIdealRing
 
 theorem isMaximal_of_irreducible [CommSemiring R] [IsPrincipalIdealRing R] {p : R}
     (hp : Irreducible p) : Ideal.IsMaximal (span R ({p} : Set R)) :=
-  ⟨⟨mt Ideal.span_singleton_eq_top.1 hp.1, fun I hI => by
+  ⟨⟨mt Ideal.span_singleton_eq_top.1 hp.not_isUnit, fun I hI => by
       rcases principal I with ⟨a, rfl⟩
       rw [Ideal.submodule_span_eq, Ideal.span_singleton_eq_top]
       rcases Ideal.span_singleton_le_span_singleton.1 (le_of_lt hI) with ⟨b, rfl⟩
@@ -367,9 +366,8 @@ theorem ringHom_mem_submonoid_of_factors_subset_of_units_subset {R S : Type*} [C
 
 -- see Note [lower instance priority]
 /-- A principal ideal domain has unique factorization -/
-instance (priority := 100) to_uniqueFactorizationMonoid : UniqueFactorizationMonoid R :=
-  { (IsNoetherianRing.wfDvdMonoid : WfDvdMonoid R) with
-    irreducible_iff_prime := irreducible_iff_prime }
+instance (priority := 100) to_uniqueFactorizationMonoid : UniqueFactorizationMonoid R where
+  irreducible_iff_prime := irreducible_iff_prime
 
 end
 

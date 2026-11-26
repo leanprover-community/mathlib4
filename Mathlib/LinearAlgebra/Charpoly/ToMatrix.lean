@@ -6,23 +6,21 @@ Authors: Riccardo Brasca
 module
 
 public import Mathlib.LinearAlgebra.Charpoly.Basic
-public import Mathlib.LinearAlgebra.Matrix.Basis
 public import Mathlib.RingTheory.Finiteness.Prod
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Characteristic polynomial
 
 ## Main result
 
 * `LinearMap.charpoly_toMatrix f` : `charpoly f` is the characteristic polynomial of the matrix
   of `f` in any basis.
-
 -/
 
 public section
-
-noncomputable section
 
 open Module Free Polynomial Matrix
 
@@ -66,7 +64,7 @@ lemma charpoly_prodMap (f₁ : M₁ →ₗ[R] M₁) (f₂ : M₂ →ₗ[R] M₂)
   let b₂ := chooseBasis R M₂
   let b := b₁.prod b₂
   rw [← charpoly_toMatrix f₁ b₁, ← charpoly_toMatrix f₂ b₂, ← charpoly_toMatrix (f₁.prodMap f₂) b,
-    toMatrix_prodMap b₁ b₂ f₁ f₂, Matrix.charpoly_fromBlocks_zero₁₂]
+    toMatrix_prodMap b₁ b₂ b₁ b₂ f₁ f₂, Matrix.charpoly_fromBlocks_zero₁₂]
 
 end Basic
 

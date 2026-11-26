@@ -5,12 +5,13 @@ Authors: Andrew Yang, Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Elementwise
 public import Mathlib.CategoryTheory.Types.Basic
 public import Mathlib.Data.Set.Lattice.Image
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Subfunctor of types
 
 We define subfunctors of a type-valued functors.
@@ -18,7 +19,6 @@ We define subfunctors of a type-valued functors.
 ## Main definition
 
 `CategoryTheory.Subfunctor` : A subfunctor of a type-valued functor.
-
 -/
 
 @[expose] public section
@@ -96,8 +96,8 @@ lemma le_def (S T : Subfunctor F) : S ≤ T ↔ ∀ U, S.obj U ≤ T.obj U := If
 
 variable (F)
 
-@[simp] lemma top_obj (i : C) : (⊤ : Subfunctor F).obj i = ⊤ := rfl
-@[simp] lemma bot_obj (i : C) : (⊥ : Subfunctor F).obj i = ⊥ := rfl
+@[simp] lemma top_obj (i : C) : (⊤ : Subfunctor F).obj i = .univ := rfl
+@[simp] lemma bot_obj (i : C) : (⊥ : Subfunctor F).obj i = ∅ := rfl
 
 variable {F}
 
@@ -137,7 +137,7 @@ instance : Nonempty (Subfunctor F) :=
   inferInstance
 
 /-- The subfunctor as a functor. -/
-@[simps obj map]
+@[implicit_reducible, simps obj map]
 def toFunctor : C ⥤ Type w where
   obj U := G.obj U
   map i := ↾fun x => ⟨F.map i x, G.map i x.prop⟩
@@ -160,7 +160,7 @@ def homOfLe {G G' : Subfunctor F} (h : G ≤ G') : G.toFunctor ⟶ G'.toFunctor 
 
 instance {G G' : Subfunctor F} (h : G ≤ G') : Mono (Subfunctor.homOfLe h) :=
   ⟨fun _ _ e => NatTrans.ext <| funext fun U => hom_ext _ _ fun x => by
-    exact Subtype.ext (congr_arg Subtype.val <| (congr_hom (congr_app e U) x) :)⟩
+    exact Subtype.ext (congr_arg Subtype.val (congr_hom (congr_app e U) x) :)⟩
 
 @[reassoc (attr := simp)]
 theorem homOfLe_ι {G G' : Subfunctor F} (h : G ≤ G') :
@@ -182,13 +182,11 @@ theorem eq_top_iff_isIso : G = ⊤ ↔ IsIso G.ι := by
     ext U x
     apply (iff_of_eq (iff_true _)).mpr
     rw [← IsIso.inv_hom_id_apply (G.ι.app U) x]
-    exact ((inv (G.ι.app U)) x).2
+    exact ((inv (G.ι.app U)) x).property
 
 theorem nat_trans_naturality (f : F' ⟶ G.toFunctor) {U V : C} (i : U ⟶ V)
-    (x : F'.obj U) : (f.app V (F'.map i x)).1 = F.map i (f.app U x).1 :=
+    (x : F'.obj U) : (f.app V (F'.map i x)).val = F.map i (f.app U x).val :=
   congrArg Subtype.val (NatTrans.naturality_apply f i x)
-
-@[deprecated (since := "2026-02-10")] alias toFunctor_map_coe := toFunctor_map
 
 end Subfunctor
 

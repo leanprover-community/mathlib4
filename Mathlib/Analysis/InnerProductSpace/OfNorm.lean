@@ -5,10 +5,9 @@ Authors: Heather Macbeth
 -/
 module
 
-public import Mathlib.Topology.Algebra.Algebra
 public import Mathlib.Analysis.InnerProductSpace.Convex
-public import Mathlib.Algebra.Module.LinearMap.Rat
-public import Mathlib.Tactic.Module
+
+import Mathlib.Algebra.Module.LinearMap.Rat
 
 /-!
 # Inner product space derived from a norm
@@ -129,7 +128,7 @@ theorem inner_.conj_symm (x y : E) : conj (inner_ 𝕜 y x) = inner_ 𝕜 x y :=
   rw [add_comm y x, norm_sub_rev]
   by_cases hI : (I : 𝕜) = 0
   · simp only [hI, neg_zero, zero_mul]
-  have hI' := I_mul_I_of_nonzero hI
+  have hI' := I_mul_I_of_ne_zero hI
   have I_smul (v : E) : ‖(I : 𝕜) • v‖ = ‖v‖ := by rw [norm_smul, norm_I_of_ne_zero hI, one_mul]
   have h₁ : ‖(I : 𝕜) • y - x‖ = ‖(I : 𝕜) • x + y‖ := by
     convert I_smul ((I : 𝕜) • x + y)
@@ -155,8 +154,8 @@ theorem add_left (x y z : E) : inner_ 𝕜 (x + y) z = inner_ 𝕜 x z + inner_ 
   have h7 := parallelogram_identity ((I : 𝕜) • y + z) z
   have h8 := parallelogram_identity ((I : 𝕜) • y - z) z
   apply_fun 𝓚 at h1 h2 h3 h4 h5 h6 h7 h8
-  simp only [map_add, map_mul, map_ofNat, smul_add] at *
-  abel_nf at * -- TODO this should be `module_nf` (then the `smul_add` above can go)
+  simp only [map_add, map_mul, map_ofNat] at *
+  module_nf with 𝕜 at *
   linear_combination (- h1 + h2 + h3 - h4 + I * (- h5 + h6 + h7 - h8)) / 8
 
 private theorem rat_prop (r : ℚ) : innerProp' E (r : 𝕜) := by
@@ -180,7 +179,7 @@ private theorem I_prop : innerProp' E (I : 𝕜) := by
   · rw [hI]
     simpa using real_prop (𝕜 := 𝕜) 0
   intro x y
-  have hI' := I_mul_I_of_nonzero hI
+  have hI' := I_mul_I_of_ne_zero hI
   rw [conj_I, inner_, inner_, mul_left_comm, smul_smul, hI', neg_one_smul]
   have h₁ : ‖-x - y‖ = ‖x + y‖ := by rw [← neg_add', norm_neg]
   have h₂ : ‖-x + y‖ = ‖x - y‖ := by rw [← neg_sub, norm_neg, sub_eq_neg_add]

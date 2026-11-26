@@ -42,7 +42,7 @@ example (X : Type) [TopologicalSpace X] [CompactSpace X] [T2Space X] [Extremally
 section
 variable (X : Type) [TopologicalSpace X] [CompactSpace X] [T2Space X] [TotallyDisconnectedSpace X]
 
-#guard_expr (↧X : Profinite) =ₛ Profinite.of X
+#guard_expr (↧X : Profinite) =ₛ ↧X
 
 end
 
@@ -71,8 +71,8 @@ example (R : Type) [Ring R] (M : Type 5) [AddCommGroup M] [Module R M] : ModuleC
 definitional equality.
 -/
 
-#guard_expr (↧ℤ : CommRingCat) =ₛ CommRingCat.of ℤ
-#guard_expr (↧ℤ : ModuleCat ℤ) =ₛ ModuleCat.of ℤ ℤ
+#guard_expr (↧ℤ : CommRingCat) =ₛ ↧ℤ
+#guard_expr (↧ℤ : ModuleCat ℤ) =ₛ ↧ℤ
 
 -- `rw` needs the term to match `FooCat.of` syntactically.
 example : ((↧ℤ : CommRingCat) : Type) = ℤ := by rw [CommRingCat.coe_of]
@@ -112,14 +112,28 @@ section Delab
 #guard_msgs in
 #check (↧ℤ : CommRingCat)
 
--- `ModuleCat` does not opt in, so it still prints using `.of`.
-/-- info: ModuleCat.of ℤ ℤ : ModuleCat ℤ -/
+-- A category that has not opted in still prints using `.of`. We use a category local to this file,
+-- since every concrete category in Mathlib opts in.
+/-- A concrete category that does not opt into the `↧` delaborator. -/
+public structure OptOutCat where
+  /-- The underlying type. -/
+  carrier : Type
+
+/-- Bundle a type as an `OptOutCat`. -/
+public def OptOutCat.of (X : Type) : OptOutCat := ⟨X⟩
+
+/-- info: OptOutCat.of ℤ : OptOutCat -/
 #guard_msgs in
-#check (↧ℤ : ModuleCat ℤ)
+#check (↧ℤ : OptOutCat)
 
--- ... unless it is opted in, which also covers the parameterised case.
-@[app_delab ModuleCat.of] public meta def ModuleCat.delabOf := CategoryTheory.delabOf
+-- ... unless it is opted in.
+@[app_delab OptOutCat.of] public meta def OptOutCat.delabOf := CategoryTheory.delabOf
 
+/-- info: ↧ℤ : OptOutCat -/
+#guard_msgs in
+#check (↧ℤ : OptOutCat)
+
+-- Opting in also covers the parameterised case.
 /-- info: ↧ℤ : ModuleCat ℤ -/
 #guard_msgs in
 #check (↧ℤ : ModuleCat ℤ)

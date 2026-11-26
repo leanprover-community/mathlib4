@@ -6,7 +6,9 @@ Authors: Adam Topaz, Nikolas Kuhn
 module
 
 public import Mathlib.CategoryTheory.Sites.Coherent.CoherentSheaves
-public import Mathlib.Data.Finite.Sigma
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Description of the covering sieves of the coherent topology
@@ -17,7 +19,6 @@ This file characterises the covering sieves of the coherent topology.
 
 * `coherentTopology.mem_sieves_iff_hasEffectiveEpiFamily`: a sieve is a covering sieve for the
   coherent topology if and only if it contains a finite effective epimorphic family.
-
 -/
 
 public section

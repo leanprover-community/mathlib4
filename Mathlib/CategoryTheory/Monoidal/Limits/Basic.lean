@@ -5,8 +5,8 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 public import Mathlib.CategoryTheory.Limits.HasLimits
+public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 
 /-!
 # `lim : (J ⥤ C) ⥤ C` is lax monoidal when `C` is a monoidal category.
@@ -19,6 +19,7 @@ i.e. there are morphisms
 satisfying the laws of a lax monoidal functor.
 
 ## TODO
+
 Now that we have oplax monoidal functors, assemble `Limits.colim` into an oplax monoidal functor.
 -/
 
@@ -37,7 +38,6 @@ variable {J : Type w} [SmallCategory J] {C : Type u} [Category.{v} C] [HasLimits
 
 open Functor.LaxMonoidal
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance : (lim (J := J) (C := C)).LaxMonoidal :=
   Functor.LaxMonoidal.ofTensorHom

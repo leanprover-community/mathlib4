@@ -9,13 +9,15 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.HomologyZero
 public import Mathlib.AlgebraicTopology.SingularHomology.Basic
 public import Mathlib.Topology.Homotopy.TopCat.ZerothHomotopy
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Singular homology in degree 0
 
 The main definition in this file is `TopCat.singularHomology₀Iso` which is an
 isomorphism `((singularHomologyFunctor C 0).obj R).obj X ≅ ∐ (fun (_ : ZerothHomotopy X) ↦ R)`
 for any `X : TopCat`.
-
 -/
 
 @[expose] public section

@@ -9,6 +9,9 @@ public meta import Mathlib.Tactic.Linarith.Datatypes
 public import Mathlib.Tactic.Linarith.Datatypes
 public import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.PositiveVector
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The oracle based on Simplex Algorithm
 
