@@ -58,32 +58,19 @@ theorem finite_vectorSpan_of_finite {s : Set P} (h : Set.Finite s) :
 alias finiteDimensional_vectorSpan_of_finite := finite_vectorSpan_of_finite
 
 /-- The vector span of a singleton is finite-dimensional. -/
-instance finite_vectorSpan_singleton (p : P) : Module.Finite k (vectorSpan k {p}) :=
+instance (p : P) : Module.Finite k (vectorSpan k {p}) :=
   finite_vectorSpan_of_finite _ (Set.finite_singleton p)
 
-@[deprecated (since := "2026-11-26")]
-alias finiteDimensional_vectorSpan_singleton := finite_vectorSpan_singleton
-
-/-- The `vectorSpan` of a family indexed by a `Fintype` is
-finite-dimensional. -/
-instance finite_vectorSpan_range [Finite ι] (p : ι → P) :
-    Module.Finite k (vectorSpan k (Set.range p)) :=
+/-- The `vectorSpan` of a family indexed by a `Fintype` is finite-dimensional. -/
+instance [Finite ι] (p : ι → P) : Module.Finite k (vectorSpan k (Set.range p)) :=
   finite_vectorSpan_of_finite k (Set.finite_range _)
-
-@[deprecated (since := "2026-11-26")]
-alias finiteDimensional_vectorSpan_range := finite_vectorSpan_range
 
 /-- The `vectorSpan` of a subset of a family indexed by a `Fintype`
 is finite-dimensional. -/
-instance finite_vectorSpan_image_of_finite [Finite ι] (p : ι → P) (s : Set ι) :
-    Module.Finite k (vectorSpan k (p '' s)) :=
+instance [Finite ι] (p : ι → P) (s : Set ι) : Module.Finite k (vectorSpan k (p '' s)) :=
   finite_vectorSpan_of_finite k (Set.toFinite _)
 
-@[deprecated (since := "2026-11-26")]
-alias finiteDimensional_vectorSpan_image_of_finite := finite_vectorSpan_image_of_finite
-
-/-- The direction of the affine span of a finite set is
-finite-dimensional. -/
+/-- The direction of the affine span of a finite set is finite-dimensional. -/
 theorem finite_direction_affineSpan_of_finite {s : Set P} (h : Set.Finite s) :
     Module.Finite k (affineSpan k s).direction :=
   (direction_affineSpan k s).symm ▸ finite_vectorSpan_of_finite k h
@@ -92,41 +79,23 @@ theorem finite_direction_affineSpan_of_finite {s : Set P} (h : Set.Finite s) :
 alias finiteDimensional_direction_affineSpan_of_finite := finite_direction_affineSpan_of_finite
 
 /-- The direction of the affine span of a singleton is finite-dimensional. -/
-instance finite_direction_affineSpan_singleton (p : P) :
-    Module.Finite k (affineSpan k {p}).direction := by
+instance (p : P) : Module.Finite k (affineSpan k {p}).direction := by
   rw [direction_affineSpan]
   infer_instance
 
-@[deprecated (since := "2026-11-26")]
-alias finiteDimensional_direction_affineSpan_singleton := finite_direction_affineSpan_singleton
-
 /-- The direction of a singleton is finite-dimensional. -/
-instance finite_direction_singleton (p : P) :
-    Module.Finite k ({p} : AffineSubspace k P).direction := by
+instance (p : P) : Module.Finite k ({p} : AffineSubspace k P).direction := by
   rw [← affineSpan_singleton]
   infer_instance
 
-@[deprecated (since := "2026-11-26")]
-alias finiteDimensional_direction_singleton := finite_direction_singleton
-
-/-- The direction of the affine span of a family indexed by a
-`Fintype` is finite-dimensional. -/
-instance finite_direction_affineSpan_range [Finite ι] (p : ι → P) :
-    Module.Finite k (affineSpan k (Set.range p)).direction :=
+/-- The direction of the affine span of a family indexed by a `Fintype` is finite-dimensional. -/
+instance [Finite ι] (p : ι → P) : Module.Finite k (affineSpan k (Set.range p)).direction :=
   finite_direction_affineSpan_of_finite k (Set.finite_range _)
-
-@[deprecated (since := "2026-11-26")]
-alias finiteDimensional_direction_affineSpan_range := finite_direction_affineSpan_range
 
 /-- The direction of the affine span of a subset of a family indexed
 by a `Fintype` is finite-dimensional. -/
-instance finite_direction_affineSpan_image_of_finite [Finite ι] (p : ι → P) (s : Set ι) :
-    Module.Finite k (affineSpan k (p '' s)).direction :=
+instance [Finite ι] (p : ι → P) (s : Set ι) : Module.Finite k (affineSpan k (p '' s)).direction :=
   finite_direction_affineSpan_of_finite k (Set.toFinite _)
-
-@[deprecated (since := "2026-11-26")]
-alias finiteDimensional_direction_affineSpan_image_of_finite :=
-  finite_direction_affineSpan_image_of_finite
 
 section StrongRankCondition
 
@@ -222,7 +191,7 @@ lemma affineSpan_range_ne_top_of_card_le_finrank (hι : ENat.card ι ≤ finrank
 variable {k}
 
 /-- The supremum of two finite-dimensional affine subspaces is finite-dimensional. -/
-instance AffineSubspace.finite_sup (s₁ s₂ : AffineSubspace k P)
+instance (s₁ s₂ : AffineSubspace k P)
     [Module.Finite k s₁.direction] [Module.Finite k s₂.direction] :
     Module.Finite k (s₁ ⊔ s₂).direction := by
   rcases eq_bot_or_nonempty s₁ with rfl | ⟨p₁, hp₁⟩
@@ -232,18 +201,12 @@ instance AffineSubspace.finite_sup (s₁ s₂ : AffineSubspace k P)
   rw [AffineSubspace.direction_sup hp₁ hp₂]
   infer_instance
 
-@[deprecated (since := "2026-11-26")]
-alias AffineSubspace.finiteDimensional_sup := AffineSubspace.finite_sup
-
 /-- The image of a finite-dimensional affine subspace under an affine map is finite-dimensional. -/
 instance finite_direction_map {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂]
     [AffineSpace V₂ P₂] (s : AffineSubspace k P) [Module.Finite k s.direction] (f : P →ᵃ[k] P₂) :
     Module.Finite k (s.map f).direction := by
   rw [map_direction]
   infer_instance
-
-@[deprecated (since := "2026-11-26")]
-alias finiteDimensional_direction_map := finite_direction_map
 
 /-- The `vectorSpan` of a finite subset of an affinely independent
 family has dimension one less than its cardinality. -/
