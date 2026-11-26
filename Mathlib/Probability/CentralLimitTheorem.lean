@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Thomas Zhu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Thomas Zhu, Etienne Marion
+Authors: Thomas Zhu, Etienne Marion, Ivo Malinowski
 -/
 module
 
