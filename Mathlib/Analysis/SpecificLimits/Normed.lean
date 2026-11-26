@@ -9,16 +9,14 @@ public import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
 public import Mathlib.Algebra.BigOperators.Module
 public import Mathlib.Algebra.Order.Field.Power
 public import Mathlib.Analysis.Asymptotics.Lemmas
-public import Mathlib.Analysis.Normed.Ring.InfiniteSum
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Analysis.Normed.Order.Lattice
+public import Mathlib.Analysis.Normed.Ring.InfiniteSum
 public import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.Combinatorics.Enumerative.Stirling
-public import Mathlib.Data.List.TFAE
-public import Mathlib.Data.Nat.Choose.Bounds
-public import Mathlib.Data.Nat.Choose.Sum
-public import Mathlib.Order.Filter.AtTopBot.ModEq
-public import Mathlib.Tactic.NoncommRing
+
+import Mathlib.Data.Nat.Choose.Bounds
+import Mathlib.Order.Filter.AtTopBot.ModEq
 
 /-!
 # A collection of specific limit computations
@@ -95,7 +93,7 @@ open List in
 
 NB: For backwards compatibility, if you add more items to the list, please append them at the end of
 the list. -/
-theorem TFAE_exists_lt_isLittleO_pow (f : ℕ → ℝ) (R : ℝ) :
+theorem tfae_exists_lt_isLittleO_pow (f : ℕ → ℝ) (R : ℝ) :
     TFAE
       [∃ a ∈ Ioo (-R) R, f =o[atTop] (a ^ ·), ∃ a ∈ Ioo 0 R, f =o[atTop] (a ^ ·),
         ∃ a ∈ Ioo (-R) R, f =O[atTop] (a ^ ·), ∃ a ∈ Ioo 0 R, f =O[atTop] (a ^ ·),
@@ -144,6 +142,9 @@ theorem TFAE_exists_lt_isLittleO_pow (f : ℕ → ℝ) (R : ℝ) :
     exact nonneg_of_eventually_pow_nonneg (H.mono fun n ↦ (abs_nonneg _).trans)
   tfae_finish
 
+@[deprecated (since := "2026-10-27")]
+alias TFAE_exists_lt_isLittleO_pow := tfae_exists_lt_isLittleO_pow
+
 /-- For any natural `k` and a real `r > 1` we have `n ^ k = o(r ^ n)` as `n → ∞`. -/
 theorem isLittleO_pow_const_const_pow_of_one_lt {R : Type*} [NormedRing R] (k : ℕ) {r : ℝ}
     (hr : 1 < r) : (fun n ↦ n ^ k : ℕ → R) =o[atTop] fun n ↦ r ^ n := by
@@ -172,7 +173,7 @@ theorem isLittleO_pow_const_mul_const_pow_const_pow_of_norm_lt {R : Type*} [Norm
     {r₁ : R} {r₂ : ℝ} (h : ‖r₁‖ < r₂) :
     (fun n ↦ n ^ k * r₁ ^ n : ℕ → R) =o[atTop] fun n ↦ r₂ ^ n := by
   by_cases h0 : r₁ = 0
-  · refine (isLittleO_zero _ _).congr' (mem_atTop_sets.2 <| ⟨1, fun n hn ↦ ?_⟩) EventuallyEq.rfl
+  · refine (isLittleO_zero _ _).congr' (mem_atTop_sets.2 ⟨1, fun n hn ↦ ?_⟩) EventuallyEq.rfl
     simp [zero_pow (one_le_iff_ne_zero.1 hn), h0]
   rw [← Ne, ← norm_pos_iff] at h0
   have A : (fun n ↦ n ^ k : ℕ → R) =o[atTop] fun n ↦ (r₂ / ‖r₁‖) ^ n :=
@@ -302,6 +303,23 @@ lemma summable_iterate_mul_of_norm_lt_one [HasSummableGeomSeries R] {x : R} (h :
     Summable ((· * x)^[·] x) :=
   HasSummableGeomSeries.summable_geometric_of_norm_lt_one x h
 
+/-- A closed subring has summable geometric series when the ambient ring does. -/
+instance {S : Type*} [SetLike S R] [NonUnitalSubringClass S R] [HasSummableGeomSeries R]
+    (s : S) [hs : IsClosed (s : Set R)] : HasSummableGeomSeries s where
+  summable_geometric_of_norm_lt_one x hx := by
+    obtain ⟨L, hL⟩ := summable_iterate_mul_of_norm_lt_one (x := (x : R)) hx
+    replace hL : HasSum (fun x_1 ↦ (↑((fun x_2 ↦ x_2 * x)^[x_1] x) : R)) L := by
+      convert hL with n
+      induction n with
+      | zero => simp
+      | succ n ih => simp [ih, iterate_succ_apply']
+    lift L to s using hs.mem_of_tendsto hL.tendsto_sum_nat <| .of_forall fun _ ↦ by
+      simp only [← AddSubmonoidClass.coe_finsetSum, Subtype.coe_prop]
+    apply HasSum.summable (a := L)
+    rw [← Topology.IsEmbedding.subtypeVal.isInducing.hasSum_iff (g := AddSubmonoidClass.subtype s)]
+    simpa [Function.comp_def] using hL
+
+/-- A complete normed ring has summable geometric series. -/
 instance [CompleteSpace R] : HasSummableGeomSeries R where
   summable_geometric_of_norm_lt_one x hx := by
     have h1 : Summable fun n : ℕ ↦ ‖x‖ ^ (n + 1) :=
@@ -461,7 +479,7 @@ theorem geom_series_eq_inverse (x : R) (h : ‖x‖ < 1) :
 
 theorem hasSum_geom_series_inverse (x : R) (h : ‖x‖ < 1) :
     HasSum (fun i ↦ x ^ i) (1 - x)⁻¹ʳ := by
-  convert! (summable_geometric_of_norm_lt_one h).hasSum
+  convert (summable_geometric_of_norm_lt_one h).hasSum
   exact (geom_series_eq_inverse x h).symm
 
 lemma isUnit_one_sub_of_norm_lt_one {x : R} (h : ‖x‖ < 1) : IsUnit (1 - x) :=
@@ -600,7 +618,7 @@ theorem hasSum_descFactorial_mul_geometric_of_norm_lt_one' (j : ℕ) {r : R} (h 
     HasSum (fun n : ℕ ↦ n.descFactorial j * r ^ n)
       (j.factorial * r ^ j * (1 - r)⁻¹ʳ ^ (j + 1)) := by
   rw [← hasSum_nat_add_iff' j]
-  convert! (hasSum_choose_mul_geometric_of_norm_lt_one' j h).mul_left (j.factorial * r ^ j) using 1
+  convert (hasSum_choose_mul_geometric_of_norm_lt_one' j h).mul_left (j.factorial * r ^ j) using 1
   · funext n
     symm
     push_cast [Nat.descFactorial_eq_factorial_mul_choose]
@@ -828,7 +846,7 @@ theorem summable_of_ratio_norm_eventually_le {α : Type*} [SeminormedAddCommGrou
       (Summable.mul_left _ <| summable_geometric_of_lt_one hr₀ hr₁) fun n ↦ ?_
     conv_rhs => rw [mul_comm, ← zero_add N]
     refine le_geom (u := fun n ↦ ‖f (n + N)‖) hr₀ n fun i _ ↦ ?_
-    convert! hN (i + N) (N.le_add_left i) using 3
+    convert hN (i + N) (N.le_add_left i) using 3
     ac_rfl
   · refine .of_norm_bounded_eventually_nat summable_zero ?_
     filter_upwards [h] with _ hn
@@ -853,7 +871,7 @@ theorem not_summable_of_ratio_norm_eventually_ge {α : Type*} [SeminormedAddComm
   rw [← @summable_nat_add_iff α _ _ _ _ N]
   refine mt Summable.tendsto_atTop_zero
     fun h' ↦ not_tendsto_atTop_of_tendsto_nhds (tendsto_norm_zero.comp h') ?_
-  convert! tendsto_atTop_of_geom_le _ hr _
+  convert tendsto_atTop_of_geom_le _ hr _
   · refine lt_of_le_of_ne (norm_nonneg _) ?_
     intro h''
     specialize hN₀ N hNN₀
@@ -938,7 +956,7 @@ theorem Antitone.cauchySeq_series_mul_of_tendsto_zero_of_bounded (hfa : Antitone
 
 theorem norm_sum_neg_one_pow_le (n : ℕ) : ‖∑ i ∈ range n, (-1 : ℝ) ^ i‖ ≤ 1 := by
   rw [neg_one_geom_sum]
-  split_ifs <;> norm_num
+  split_ifs <;> simp
 
 /-- The **alternating series test** for monotone sequences.
 See also `Monotone.tendsto_alternating_series_of_tendsto_zero`. -/

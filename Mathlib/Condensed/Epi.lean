@@ -5,12 +5,16 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Coherent.LocallySurjective
 public import Mathlib.CategoryTheory.Sites.EpiMono
 public import Mathlib.Condensed.Equivalence
 public import Mathlib.Condensed.Module
-/-!
 
+import Mathlib.CategoryTheory.Sites.Coherent.LocallySurjective
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
 # Epimorphisms of condensed objects
 
 This file characterises epimorphisms of condensed sets and condensed `R`-modules for any ring `R`,

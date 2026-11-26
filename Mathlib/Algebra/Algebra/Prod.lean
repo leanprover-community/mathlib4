@@ -6,8 +6,9 @@ Authors: Kenny Lau, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Algebra.Equiv
-public import Mathlib.Algebra.Algebra.Hom
-public import Mathlib.Algebra.Module.Prod
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The R-algebra structure on products of R-algebras
@@ -124,8 +125,9 @@ variable {S T A B : Type*} [Semiring A] [Semiring B]
   [Semiring S] [Semiring T] [Algebra R S] [Algebra R T] [Algebra R A] [Algebra R B]
 
 /-- Product of algebra isomorphisms. -/
-def prodCongr (l : S ≃ₐ[R] A) (r : T ≃ₐ[R] B) : (S × T) ≃ₐ[R] A × B :=
-  .ofRingEquiv (f := RingEquiv.prodCongr l r) <| by simp
+def prodCongr (l : S ≃ₐ[R] A) (r : T ≃ₐ[R] B) : (S × T) ≃ₐ[R] A × B where
+  __ := RingEquiv.prodCongr l r
+  map_smul' := by simp
 
 variable (l : S ≃ₐ[R] A) (r : T ≃ₐ[R] B)
 
@@ -147,7 +149,7 @@ def prodUnique [Unique B] : (A × B) ≃ₐ[R] A where
   toFun := Prod.fst
   invFun x := (x, 0)
   __ := (RingEquiv.prodZeroRing A B).symm
-  commutes' _ := rfl
+  map_smul' _ _ := rfl
 
 /-- Multiplying by the trivial algebra from the left does not change the structure.
 This is the `AlgEquiv` version of `LinearEquiv.uniqueProd` and `RingEquiv.zeroRingProd.symm`.
@@ -157,6 +159,6 @@ def uniqueProd [Unique B] : (B × A) ≃ₐ[R] A where
   toFun := Prod.snd
   invFun x := (0, x)
   __ := (RingEquiv.zeroRingProd A B).symm
-  commutes' _ := rfl
+  map_smul' _ _ := rfl
 
 end AlgEquiv

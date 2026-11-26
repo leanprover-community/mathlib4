@@ -6,7 +6,6 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Algebra.Category.Grp.ForgetCorepresentable
-public import Mathlib.Algebra.Category.Grp.Preadditive
 public import Mathlib.Algebra.Category.MonCat.ForgetCorepresentable
 public import Mathlib.Algebra.Category.MonCat.Limits
 public import Mathlib.Algebra.Group.Subgroup.Ker
@@ -18,7 +17,6 @@ public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 
 Further, these limits are preserved by the forgetful functor --- that is,
 the underlying types are just the limits in the category of types.
-
 -/
 
 @[expose] public section
@@ -98,9 +96,8 @@ noncomputable instance Forget₂.createsLimit :
           { pt := ↧(Types.Small.limitCone (F ⋙ forget GrpCat)).pt
             π :=
               { app j := ofHom <| MonCat.limitπMonoidHom (F ⋙ forget₂ GrpCat MonCat) j
-                naturality i j h := hom_ext <| congr_arg MonCat.Hom.hom <|
-                  (MonCat.HasLimits.limitCone
-                        (F ⋙ forget₂ GrpCat MonCat.{u})).π.naturality h } }
+                naturality i j h := hom_ext congr($((MonCat.HasLimits.limitCone
+                        (F ⋙ forget₂ GrpCat MonCat.{u})).π.naturality h).hom) } }
         validLift := by apply IsLimit.uniqueUpToIso (MonCat.HasLimits.limitConeIsLimit.{v, u} _) t
         makesLimit :=
          IsLimit.ofFaithful (forget₂ GrpCat MonCat.{u}) (MonCat.HasLimits.limitConeIsLimit _)
@@ -442,14 +439,14 @@ agrees with the usual group-theoretical kernel.
 def kernelIsoKer {G H : AddCommGrpCat.{u}} (f : G ⟶ H) :
     kernel f ≅ ↧f.hom.ker where
   hom := ofHom
-    { toFun := fun g => ⟨kernel.ι f g, ConcreteCategory.congr_hom (kernel.condition f) g⟩
+    { toFun := fun g => ⟨kernel.ι f g, congr($(kernel.condition f) g)⟩
       map_zero' := by
         refine Subtype.ext ?_
         simp only [map_zero, ZeroMemClass.coe_zero]
       map_add' := fun g g' => by
         refine Subtype.ext ?_
         simp }
-  inv := kernel.lift f (ofHom (AddSubgroup.subtype f.hom.ker)) <| by ext x; exact x.2
+  inv := kernel.lift f (ofHom (AddSubgroup.subtype f.hom.ker)) <| by ext x; exact x.property
   hom_inv_id := by
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): it would be nice to do the next two steps by a single `ext`,
     -- but this will require thinking carefully about the relative priorities of `@[ext]` lemmas.

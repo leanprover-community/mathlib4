@@ -5,15 +5,17 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Units
-public import Mathlib.Algebra.Order.GroupWithZero.WithZero
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
-public import Mathlib.Basic.Real.Embedding
 public import Mathlib.Combinatorics.Matroid.Init
 public import Mathlib.Data.Sym.Sym2
 public import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
 public import Mathlib.Tactic.NormNum.GCD
 public import Mathlib.Tactic.Positivity
+
+import Mathlib.Basic.Real.Embedding
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Rank one valuations
@@ -21,6 +23,7 @@ public import Mathlib.Tactic.Positivity
 We define rank one valuations.
 
 ## Main Definitions
+
 * `RankOne` : A valuation has rank one if it is nontrivial and its image (defined as
   `MonoidWithZeroHom.valueGroup₀ v`) is contained in `ℝ≥0`. Note that this class includes the data
   of an inclusion morphism `MonoidWithZeroHom.valueGroup₀ v → ℝ≥0`.
@@ -153,7 +156,7 @@ theorem exists_val_lt {γ : ℝ≥0} (hγ : γ ≠ 0) : ∃ x ≠ 0, RankOne.hom
     by_contra h0
     rw [dite_eq_left (by simp [h0]), eq_comm] at hk
     simp at hk
-  · convert! h
+  · convert h
     simp only [restrict_RankOne_hom_eq, coe_comp, Function.comp_apply, ← hk]
     congr 1
     exact (embedding_restrict₀ k).symm

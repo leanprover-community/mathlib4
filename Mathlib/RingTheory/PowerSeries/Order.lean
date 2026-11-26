@@ -5,10 +5,9 @@ Authors: Johan Commelin, Kenny Lau
 -/
 module
 
-public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.RingTheory.Multiplicity
-public import Mathlib.RingTheory.PowerSeries.Basic
 public import Mathlib.RingTheory.MvPowerSeries.Order
+public import Mathlib.RingTheory.PowerSeries.Basic
 
 /-! # Formal power series (in one variable) - Order
 
@@ -24,7 +23,6 @@ is an integral domain.
 Given a non-zero power series `f`, `divided_by_X_pow_order f` is the power series obtained by
 dividing out the largest power of X that divides `f`, that is its order. This is useful when
 proving that `R⟦X⟧` is a normalization monoid, which is done in `PowerSeries.Inverse`.
-
 -/
 
 @[expose] public section
@@ -118,7 +116,7 @@ theorem le_order (φ : R⟦X⟧) (n : ℕ∞) (h : ∀ i : ℕ, ↑i < n → coe
   cases n with
   | top => simpa using ext (by simpa using h)
   | coe n =>
-    convert! nat_le_order φ n _
+    convert nat_le_order φ n _
     simpa using h
 
 /-- The order of a formal power series is at least `n` if and only if its coefficients below `n`
@@ -327,7 +325,7 @@ theorem order_eq_emultiplicity_X {R : Type*} [Semiring R] (φ : R⟦X⟧) :
     · apply Order.le_of_lt_add_one
       rw [← not_le, ← Nat.cast_one, ← Nat.cast_add, ← pow_dvd_iff_le_emultiplicity]
       rintro ⟨ψ, H⟩
-      have := congr_arg (coeff n) H
+      have := congr(coeff n $H)
       rw [X_pow_mul, coeff_mul_of_lt_order, ← hn] at this
       · exact coeff_order hφ this
       · rw [X_pow_eq, order_monomial]

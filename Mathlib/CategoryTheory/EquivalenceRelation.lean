@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Limits.Types.Pullbacks
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
-
 # Equivalence relations
 
 We define internal equivalence relations (sometimes called congruences) in any category `C`, as a
@@ -23,7 +22,6 @@ In general, kernel pairs in any category are internal equivalence relations.
 ## References
 
 * <https://ncatlab.org/nlab/show/congruence>
-
 -/
 
 @[expose] public section
@@ -165,8 +163,8 @@ lemma jointlyMono₂ :
     JointlyMono₂ (p₁OfRel φ) (p₂OfRel φ) where
   right_cancellation Y f g h₁ h₂ := by
     ext y
-    · exact congr($h₁ y)
-    · exact congr($h₂ y)
+    · congrm $h₁ y
+    · congrm $h₂ y
 
 /-- Standard reflexive relations on types are internal reflexive relations in the category of
 types. -/
@@ -293,11 +291,12 @@ class IsUniversallyEffectiveEquivalenceRelation {R A : C} (p₁ p₂ : R ⟶ A) 
     Nonempty (UniversallyEffectiveEquivalenceRelation p₁ p₂)
 
 variable (C) in
-/-- A category `C` is a universally exact category if all equivalence relations in `C` are
-universally effective equivalence relations. -/
-class IsUniversallyEffectiveEquivalenceRelationCategory where
-  isUniversallyEffectiveEquivalenceRelation (p₁ p₂ : R ⟶ A) [IsEquivalenceRelation p₁ p₂] :
-    IsUniversallyEffectiveEquivalenceRelation p₁ p₂
+/-- A category in which every equivalence relation is universally effective. This is condition (c)
+in Giraud's characterisation of Grothendieck toposes, [SGA4, IV, 1.1.2][sga-4-tome-1]. -/
+class IsUniversallyEffectiveEquivalenceRelationCategory : Prop where
+  /-- Every equivalence relation `p₁, p₂ : R ⟶ A` is universally effective. -/
+  isUniversallyEffectiveEquivalenceRelation {R A : C} (p₁ p₂ : R ⟶ A)
+    [IsEquivalenceRelation p₁ p₂] : IsUniversallyEffectiveEquivalenceRelation p₁ p₂
 
 end Effective
 

@@ -5,8 +5,11 @@ Authors: Jannis Limperg
 -/
 module
 
+public meta import Aesop
 public import Mathlib.Init
-public import Aesop
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Continuity Rule Set

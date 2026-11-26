@@ -6,10 +6,10 @@ Authors: María Inés de Frutos-Fernández
 module
 
 public import Mathlib.Analysis.Normed.Unbundled.AlgebraNorm
-public import Mathlib.Analysis.Normed.Unbundled.SeminormFromBounded
 public import Mathlib.Analysis.Normed.Unbundled.SmoothingSeminorm
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
+
+import Mathlib.Analysis.Normed.Unbundled.SeminormFromBounded
 
 
 /-!
@@ -20,10 +20,12 @@ with a nonarchimedean power-multiplicative norm and `L/K` is a finite extension,
 at least one power-multiplicative `K`-algebra norm on `L` extending the norm on `K`.
 
 ## Main Definitions
+
 * `Basis.norm` : the function sending an element `x : L` to the maximum of the norms of its
   coefficients with respect to the `K`-basis `B` of `L`.
 
 ## Main Results
+
 * `norm_mul_le_const_mul_norm` : For any `K`-basis of `L`, `B.norm` is bounded with respect to
   multiplication. That is, `∃ (c : ℝ), c > 0` such that
   ` ∀ (x y : L), B.norm (x * y) ≤ c * B.norm x * B.norm y`.
@@ -33,6 +35,7 @@ at least one power-multiplicative `K`-algebra norm on `L` extending the norm on 
   [BGR, Lemma 3.2.1./3].
 
 ## References
+
 * [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*][bosch-guntzer-remmert]
 
 ## Tags

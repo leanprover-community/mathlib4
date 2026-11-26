@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Sites.CoverPreserving
 public import Mathlib.CategoryTheory.Sites.Point.Skyscraper
 public import Mathlib.CategoryTheory.Sites.Pullback
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Inverse image of a point by a continuous functor
 
@@ -17,7 +20,6 @@ and `(D, K)`. Let `Φ` be a point of `(D, K)`. Assume `hF : CoverPreserving J K 
 In this file, we define a point `Φ.comap F hF` of the site `(C, J)` and
 construct an isomorphism
 `(Φ.comap F hF).sheafFiber ≅ F.sheafPullback A J K ⋙ Φ.sheafFiber`.
-
 -/
 
 @[expose] public section
@@ -34,7 +36,6 @@ variable {C D : Type*} [Category* C] [Category* D]
   (hF : CoverPreserving J K F)
   [InitiallySmall (F ⋙ Φ.fiber).Elements]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `F : C ⥤ D` is a representably flat and cover preserving functor between sites, then
 any point on `D` induces a point on `C` by precomposing the fiber functor with `F`. -/
 @[simps]

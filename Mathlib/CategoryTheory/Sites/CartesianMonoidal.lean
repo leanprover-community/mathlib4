@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Monoidal.Cartesian.FunctorCategory
 public import Mathlib.CategoryTheory.Monoidal.Subcategory
 public import Mathlib.CategoryTheory.Sites.Limits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Chosen finite products on sheaves
 
@@ -55,24 +58,12 @@ example : CartesianMonoidalCategory (Sheaf J A) :=
 @[simp] lemma cartesianMonoidalCategoryFst_hom : (fst X Y).hom = fst X.obj Y.obj := rfl
 @[simp] lemma cartesianMonoidalCategorySnd_hom : (snd X Y).hom = snd X.obj Y.obj := rfl
 
-@[deprecated (since := "2026-03-05")]
-alias cartesianMonoidalCategoryFst_val := cartesianMonoidalCategoryFst_hom
-@[deprecated (since := "2026-03-05")]
-alias cartesianMonoidalCategorySnd_val := cartesianMonoidalCategorySnd_hom
-
 variable {X Y}
 variable {W : Sheaf J A} (f : W ⟶ X) (g : W ⟶ Y)
 
 @[simp] lemma cartesianMonoidalCategoryLift_hom : (lift f g).hom = lift f.hom g.hom := rfl
 lemma cartesianMonoidalCategoryWhiskerLeft_hom : (X ◁ f).hom = X.obj ◁ f.hom := rfl
 lemma cartesianMonoidalCategoryWhiskerRight_hom : (f ▷ X).hom = f.hom ▷ X.obj := rfl
-
-@[deprecated (since := "2026-03-05")]
-alias cartesianMonoidalCategoryLift_val := cartesianMonoidalCategoryLift_hom
-@[deprecated (since := "2026-03-05")]
-alias cartesianMonoidalCategoryWhiskerLeft_val := cartesianMonoidalCategoryWhiskerLeft_hom
-@[deprecated (since := "2026-03-05")]
-alias cartesianMonoidalCategoryWhiskerRight_val := cartesianMonoidalCategoryWhiskerRight_hom
 
 end Sheaf
 

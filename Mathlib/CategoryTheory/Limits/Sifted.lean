@@ -5,14 +5,15 @@ Authors: Robin Carlier
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
-public import Mathlib.CategoryTheory.Monoidal.ExternalProduct.Basic
-public import Mathlib.CategoryTheory.Monoidal.Closed.Types
-public import Mathlib.CategoryTheory.Monoidal.Limits.Preserves
-public import Mathlib.CategoryTheory.Limits.Preserves.Bifunctor
-public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 public import Mathlib.CategoryTheory.Limits.IsConnected
-public import Mathlib.CategoryTheory.Products.Associator
+public import Mathlib.CategoryTheory.Limits.Preserves.Bifunctor
+public import Mathlib.CategoryTheory.Monoidal.Closed.Types
+public import Mathlib.CategoryTheory.Monoidal.ExternalProduct.Basic
+public import Mathlib.CategoryTheory.Monoidal.Limits.Preserves
+
+import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
+import Mathlib.CategoryTheory.Products.Associator
+
 /-!
 # Sifted categories
 
@@ -21,6 +22,7 @@ Sifted categories can be characterized as those such that the colimit functor `(
 preserves finite products. We achieve this characterization in this file.
 
 ## Main results
+
 - `isSifted_of_hasBinaryCoproducts_and_nonempty`: A nonempty category with binary coproducts is
   sifted.
 - `IsSifted.colimPreservesFiniteProductsOfIsSifted`: The `Type`-valued colimit functor for sifted
@@ -31,6 +33,7 @@ preserves finite products. We achieve this characterization in this file.
   category is itself sifted.
 
 ## References
+
 - [nLab, *Sifted category*](https://ncatlab.org/nlab/show/sifted+category)
 - [*Algebraic Theories*, Chapter 2.][Adamek_Rosicky_Vitale_2010]
 -/
@@ -66,7 +69,6 @@ namespace IsSifted
 
 variable {C}
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Being sifted is preserved by equivalences of categories -/
 lemma isSifted_of_equiv [IsSifted C] {D : Type u₁} [Category.{v₁} D] (e : D ≌ C) : IsSifted D :=
   letI : Final (diag D) := by
@@ -98,7 +100,6 @@ instance [IsSifted C] : IsConnected C :=
           · simpa using Zag.of_inv X.hom.snd
         · rfl)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- A category with binary coproducts is sifted or empty. -/
 instance [HasBinaryCoproducts C] : IsSiftedOrEmpty C := by
     constructor
@@ -162,7 +163,6 @@ open scoped MonoidalCategory.ExternalProduct
 variable (X Y : C ⥤ Type u)
 
 set_option backward.isDefEq.respectTransparency false in
-set_option backward.defeqAttrib.useBackward true in
 /-- Through the isomorphisms `PreservesColimit₂.isoColimitUncurryWhiskeringLeft₂` and
 `externalProductCompDiagIso`, the comparison map `colimit.pre (X ⊠ Y) (diag C)` identifies with the
 product comparison map for the colimit functor. -/

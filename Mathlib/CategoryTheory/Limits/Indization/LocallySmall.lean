@@ -5,9 +5,11 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 public import Mathlib.CategoryTheory.Limits.IndYoneda
 public import Mathlib.CategoryTheory.Limits.Indization.IndObject
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # There are only `v`-many natural transformations between Ind-objects
@@ -15,7 +17,7 @@ public import Mathlib.CategoryTheory.Limits.Indization.IndObject
 We provide the instance `LocallySmall.{v} (FullSubcategory (IsIndObject (C := C)))`, which will
 serve as the basis for our definition of the category of Ind-objects.
 
-## Future work
+## TODO
 
 The equivalence established here serves as the basis for a well-known calculation of hom-sets of
 ind-objects as a limit of a colimit.
@@ -53,7 +55,6 @@ noncomputable def colimitYonedaHomEquiv :
 
 attribute [elementwise] HasLimit.isoOfNatIso_hom_π
 
-set_option backward.defeqAttrib.useBackward true in
 unif_hint {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D) (G : D ⥤ Type*) (X X' : C)
   where X ≟ X'⊢ (F ⋙ G).obj X ≟ (G.obj (F.obj X)) in
 @[simp]
@@ -65,7 +66,7 @@ theorem colimitYonedaHomEquiv_π_apply (η : colimit (F ⋙ yoneda) ⟶ G) (i : 
     Category.assoc, Equiv.symm_trans_apply, Equiv.symm_symm, Equiv.coe_fn_mk, comp_apply,
     Equiv.ulift_apply]
   have (a : limit ((F.op ⋙ G) ⋙ uliftFunctor.{u, v})) := congrArg ULift.down
-    (ConcreteCategory.congr_hom (preservesLimitIso_inv_π uliftFunctor.{u, v} (F.op ⋙ G) i) a)
+    congr($(preservesLimitIso_inv_π uliftFunctor.{u, v} (F.op ⋙ G) i) a)
   refine Eq.trans (dsimp% this _) ?_
   rw [HasLimit.isoOfNatIso_hom_π_apply]
   dsimp
@@ -78,8 +79,8 @@ end
 
 instance : LocallySmall.{v} (ObjectProperty.FullSubcategory (IsIndObject (C := C))) where
   hom_small X Y := by
-    obtain ⟨⟨P⟩⟩ := X.2
-    obtain ⟨⟨Q⟩⟩ := Y.2
+    obtain ⟨⟨P⟩⟩ := X.property
+    obtain ⟨⟨Q⟩⟩ := Y.property
     let e₁ := IsColimit.coconePointUniqueUpToIso (P.isColimit) (colimit.isColimit _)
     let e₂ := IsColimit.coconePointUniqueUpToIso (Q.isColimit) (colimit.isColimit _)
     let e₃ := Iso.homCongr e₁ e₂

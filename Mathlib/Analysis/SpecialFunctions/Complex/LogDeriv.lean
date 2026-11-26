@@ -11,9 +11,11 @@ public import Mathlib.Analysis.SpecialFunctions.Complex.Log
 public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 public import Mathlib.Tactic.Measurability
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Differentiability of the complex `log` function
-
 -/
 
 public section

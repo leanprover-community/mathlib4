@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Algebra.FilterBasis
 public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Uniform properties of neighborhood bases in topological algebra
 
@@ -15,7 +18,6 @@ This file contains properties of filter bases on algebraic structures that also 
 of uniform spaces.
 
 The only result so far is a characterization of Cauchy filters in topological groups.
-
 -/
 
 @[expose] public section
@@ -42,10 +44,10 @@ protected theorem isUniformAddGroup : @IsUniformAddGroup G B.uniformSpace _ :=
 
 theorem cauchy_iff {F : Filter G} :
     @Cauchy G B.uniformSpace F ↔
-      F.NeBot ∧ ∀ U ∈ B, ∃ M ∈ F, ∀ᵉ (x ∈ M) (y ∈ M), y - x ∈ U := by
+      F.NeBot ∧ ∀ U ∈ B, ∃ M ∈ F, ∀ x ∈ M, ∀ y ∈ M, y - x ∈ U := by
   let := B.uniformSpace
   have := B.isUniformAddGroup
-  suffices F ×ˢ F ≤ uniformity G ↔ ∀ U ∈ B, ∃ M ∈ F, ∀ᵉ (x ∈ M) (y ∈ M), y - x ∈ U by
+  suffices F ×ˢ F ≤ uniformity G ↔ ∀ U ∈ B, ∃ M ∈ F, ∀ x ∈ M, ∀ y ∈ M, y - x ∈ U by
     constructor <;> rintro ⟨h', h⟩ <;> refine ⟨h', ?_⟩ <;> [rwa [← this]; rwa [this]]
   rw [uniformity_eq_comap_nhds_zero G, ← map_le_iff_le_comap]
   change Tendsto _ _ _ ↔ _

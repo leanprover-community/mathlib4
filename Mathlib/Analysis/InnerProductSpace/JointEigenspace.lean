@@ -5,10 +5,11 @@ Authors: Jon Bannon, Jack Cheverton, Samyak Dhar Tuladhar
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Spectrum
-public import Mathlib.LinearAlgebra.Eigenspace.Pi
-public import Mathlib.LinearAlgebra.Eigenspace.Semisimple
 public import Mathlib.Analysis.InnerProductSpace.Semisimple
+public import Mathlib.LinearAlgebra.Eigenspace.Semisimple
+
+import Mathlib.Analysis.InnerProductSpace.Spectrum
+import Mathlib.LinearAlgebra.Eigenspace.Pi
 
 /-! # Joint eigenspaces of commuting symmetric operators
 
@@ -36,7 +37,6 @@ and a proof obligation that the basis vectors are eigenvectors.
 ## Tags
 
 symmetric operator, simultaneous eigenspaces, joint eigenspaces
-
 -/
 
 public section
@@ -77,8 +77,8 @@ theorem orthogonalFamily_iInf_eigenspaces (hT : ∀ i, (T i).IsSymmetric) :
   have H := orthogonalFamily_eigenspaces (hT a) ha
   simp only [Submodule.coe_subtypeₗᵢ, Submodule.coe_subtype, Subtype.forall] at H
   apply H
-  · exact (Submodule.mem_iInf <| fun _ ↦ eigenspace (T _) (f _)).mp Ef.2 _
-  · exact (Submodule.mem_iInf <| fun _ ↦ eigenspace (T _) (g _)).mp Eg.2 _
+  · exact (Submodule.mem_iInf <| fun _ ↦ eigenspace (T _) (f _)).mp Ef.property _
+  · exact (Submodule.mem_iInf <| fun _ ↦ eigenspace (T _) (g _)).mp Eg.property _
 
 variable [FiniteDimensional 𝕜 E]
 
@@ -102,7 +102,7 @@ theorem iSup_iSup_eigenspace_inf_eigenspace_eq_top_of_commute (hA : A.IsSymmetri
     (hB : B.IsSymmetric) (hAB : Commute A B) :
     (⨆ α, ⨆ γ, eigenspace A α ⊓ eigenspace B γ) = ⊤ := by
   simpa [iSup_eigenspace_inf_eigenspace_of_commute hB hAB] using
-    Submodule.orthogonal_eq_bot_iff.mp <| hA.orthogonalComplement_iSup_eigenspaces_eq_bot
+    Submodule.orthogonal_eq_bot_iff.mp hA.orthogonalComplement_iSup_eigenspaces_eq_bot
 
 /-- Given a commuting pair of symmetric linear operators on a finite-dimensional inner product
 space, the space decomposes as an internal direct sum of simultaneous eigenspaces of these

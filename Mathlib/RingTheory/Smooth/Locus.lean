@@ -7,7 +7,6 @@ module
 
 public import Mathlib.RingTheory.Etale.Kaehler
 public import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
-public import Mathlib.RingTheory.Support
 
 /-!
 # Smooth locus of an algebra
@@ -16,6 +15,7 @@ Most results in this file are proved for algebras of finite presentations.
 Some of them are true for arbitrary algebras but the proof is substantially harder.
 
 ## Main results
+
 - `Algebra.smoothLocus` : The set of primes that are smooth over the base.
 - `Algebra.basicOpen_subset_smoothLocus_iff` :
   `D(f)` is contained in the smooth locus if and only if `A_f` is smooth over `R`.
@@ -95,7 +95,7 @@ lemma basicOpen_subset_smoothLocus_iff_smooth [FinitePresentation R A] {f : A} :
       Algebra.Smooth R (Localization.Away f) := by
   have : FinitePresentation A (Localization.Away f) := IsLocalization.Away.finitePresentation f
   rw [basicOpen_subset_smoothLocus_iff]
-  exact ⟨fun H ↦ ⟨H, .trans _ A _⟩, fun H ↦ H.1⟩
+  exact ⟨fun H ↦ ⟨H, .trans _ A _⟩, fun H ↦ H.formallySmooth⟩
 
 lemma smoothLocus_eq_univ_iff [FinitePresentation R A] :
     smoothLocus R A = Set.univ ↔ Algebra.FormallySmooth R A := by

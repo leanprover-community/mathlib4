@@ -7,11 +7,12 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Abelian
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Sheafify
-public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Limits
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Limits
-public import Mathlib.CategoryTheory.Sites.LocallyBijective
-public import Mathlib.CategoryTheory.Sites.Sheafification
-public import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
+
+import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The sheafification functor for presheaves of modules
@@ -22,7 +23,6 @@ for a locally bijective morphism `α : R₀ ⟶ R.val` where `R₀` is a preshea
 and `R` a sheaf of rings.
 In particular, if `α` is the identity of `R.val`, we obtain the
 sheafification functor `PresheafOfModules R.val ⥤ SheafOfModules R`.
-
 -/
 
 @[expose] public section
@@ -118,7 +118,6 @@ lemma toSheaf_map_sheafificationHomEquiv_symm
   rw [Equiv.apply_symm_apply, Adjunction.homEquiv_unit, Equiv.symm_apply_apply]
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a locally bijective morphism `α : R₀ ⟶ R.val` where `R₀` is a presheaf of rings
 and `R` a sheaf of rings, this is the adjunction
 `sheafification.{v} α ⊣ SheafOfModules.forget R ⋙ restrictScalars α`. -/
@@ -180,9 +179,6 @@ variable [HasSheafify J AddCommGrpCat.{v}]
 noncomputable instance :
     PreservesFiniteLimits (sheafification.{v} α ⋙ SheafOfModules.toSheaf.{v} R) :=
   comp_preservesFiniteLimits (toPresheaf.{v} R₀) (presheafToSheaf J AddCommGrpCat)
-
-instance : (SheafOfModules.toSheaf.{v} R).ReflectsIsomorphisms :=
-  reflectsIsomorphisms_of_comp (SheafOfModules.toSheaf.{v} R) (sheafToPresheaf J _)
 
 noncomputable instance : ReflectsFiniteLimits (SheafOfModules.toSheaf.{v} R) where
   reflects _ _ _ := inferInstance

@@ -6,17 +6,19 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Algebra.Category.FGModuleCat.Basic
-public import Mathlib.Algebra.Category.ModuleCat.EpiMono
 public import Mathlib.Algebra.Category.ModuleCat.Limits
-public import Mathlib.Algebra.Category.ModuleCat.Products
-public import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
+
+import Mathlib.Algebra.Category.ModuleCat.EpiMono
+import Mathlib.Algebra.Category.ModuleCat.Products
+import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 
 /-!
 # `forget₂ (FGModuleCat K) (ModuleCat K)` creates all finite limits.
 
 And hence `FGModuleCat K` has all finite limits.
 
-## Future work
+## TODO
+
 After generalising `FGModuleCat` to allow the ring and the module to live in different universes,
 generalize this construction so we can take limits over smaller diagrams,
 as is done for the other algebraic categories.

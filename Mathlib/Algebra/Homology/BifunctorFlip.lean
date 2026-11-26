@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.Bifunctor
 public import Mathlib.Algebra.Homology.TotalComplexSymmetry
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Action of the flip of a bifunctor on homological complexes
 
@@ -16,7 +19,6 @@ a bifunctor `F : C₁ ⥤ C₂ ⥤ D`, and a complex shape `c` with
 `[TotalComplexShape c₁ c₂ c]` and `[TotalComplexShape c₂ c₁ c]`, we define
 an isomorphism `mapBifunctor K₂ K₁ F.flip c ≅ mapBifunctor K₁ K₂ F c`
 under the additional assumption `[TotalComplexShapeSymmetry c₁ c₂ c]`.
-
 -/
 
 @[expose] public section
