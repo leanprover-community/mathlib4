@@ -11,6 +11,9 @@ import Mathlib.Analysis.Calculus.BumpFunction.FiniteDimension
 import Mathlib.Analysis.Calculus.ContDiff.Bounds
 import Mathlib.Analysis.Calculus.ContDiff.Operations
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Compactly supported functions are dense in Schwartz space
 

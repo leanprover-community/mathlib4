@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.CompactlyGenerated.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Results about compactness properties for intervals in complete lattices
 -/

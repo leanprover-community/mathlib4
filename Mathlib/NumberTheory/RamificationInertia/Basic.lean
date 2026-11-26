@@ -350,11 +350,11 @@ noncomputable def quotientToQuotientRangePowQuotSucc
       (P ^ i).map (Ideal.Quotient.mk (P ^ e)) ⧸ LinearMap.range (powQuotSuccInclusion p P i) where
   toFun := quotientToQuotientRangePowQuotSuccAux p P a_mem
   map_add' x y := by
-    induction x, y using Quotient.inductionOn₂' with | _ x y
+    induction x, y using Quotient.inductionOn₂ with | _ x y
     simp only [Submodule.Quotient.mk''_eq_mk, ← Submodule.Quotient.mk_add,
       quotientToQuotientRangePowQuotSuccAux_mk, mul_add, map_add, map_mul, AddMemClass.mk_add_mk]
   map_smul' x y := by
-    induction x, y using Quotient.inductionOn₂' with | _ x y
+    induction x, y using Quotient.inductionOn₂ with | _ x y
     simp only [Submodule.Quotient.mk''_eq_mk, RingHom.id_apply,
       quotientToQuotientRangePowQuotSuccAux_mk]
     congrm Submodule.Quotient.mk ?_
@@ -374,8 +374,8 @@ set_option backward.isDefEq.respectTransparency.types false in
 theorem quotientToQuotientRangePowQuotSucc_injective [IsDedekindDomain S] [P.IsPrime]
     {i : ℕ} (hi : i < e) {a : S} (a_mem : a ∈ P ^ i) (a_notMem : a ∉ P ^ (i + 1)) :
     Function.Injective (quotientToQuotientRangePowQuotSucc p P a_mem) := fun x =>
-  Quotient.inductionOn' x fun x y =>
-    Quotient.inductionOn' y fun y h => by
+  Quotient.inductionOn x fun x y =>
+    Quotient.inductionOn y fun y h => by
       have Pe_le_Pi1 : P ^ e ≤ P ^ (i + 1) := Ideal.pow_le_pow_right hi
       simp only [Submodule.Quotient.mk''_eq_mk, quotientToQuotientRangePowQuotSucc_mk,
         Submodule.Quotient.eq, LinearMap.mem_range, Subtype.ext_iff,
@@ -423,7 +423,7 @@ noncomputable def quotientRangePowQuotSuccInclusionEquiv [IsDedekindDomain S]
     ((P ^ i).map (Ideal.Quotient.mk (P ^ e)) ⧸ LinearMap.range (powQuotSuccInclusion p P i))
       ≃ₗ[R ⧸ p] S ⧸ P := by
   choose a a_mem a_notMem using
-    IsConcreteLE.exists_of_lt
+    exists_mem_notMem_of_lt
       (Ideal.pow_right_strictAnti P hP (Ideal.IsPrime.ne_top inferInstance) (le_refl i.succ))
   refine (LinearEquiv.ofBijective ?_ ⟨?_, ?_⟩).symm
   · exact quotientToQuotientRangePowQuotSucc p P a_mem

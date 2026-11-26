@@ -36,7 +36,7 @@ the noncommutative division algebra `D` with center `k`.
 - `D` is a noncommutative division algebra
 - `k` is the center of `D`
 
-## Implementation Notes
+## Implementation notes
 
 Mathematically, `exists_separable_and_not_isCentral` and `exists_separable_and_not_isCentral'`
 are equivalent.

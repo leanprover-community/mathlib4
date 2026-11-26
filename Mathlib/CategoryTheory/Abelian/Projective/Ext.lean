@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Homology.DerivedCategory.KProjective
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexSingle
 public import Mathlib.CategoryTheory.Abelian.Projective.Extend
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Computing `Ext` using a projective resolution
 

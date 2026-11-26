@@ -24,7 +24,7 @@ if it is a sheaf for every covering in `K`.
 If `K` generates `J`, then `J` is the smallest Grothendieck topology containing `K`. The converse
 only holds if `K` is a coverage or a pretopology.
 
-## Implementation details
+## Implementation notes
 
 For `C : Type u` and `Category.{v} C`, the definition of `Precoverage.Generates` quantifies over
 presheafs `Cᵒᵖ ⥤ Type max u v`. We then show that this implies that the condition holds

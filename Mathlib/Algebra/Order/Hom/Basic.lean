@@ -5,9 +5,10 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Order.Lattice
+
+import Mathlib.Algebra.Group.Basic
 
 /-!
 # Algebraic order homomorphism classes
@@ -23,7 +24,7 @@ Basic typeclasses
 * `MulLEAddHomClass`: `∀ f a b, f (a * b) ≤ f a + f b`
 * `NonarchimedeanHomClass`: `∀ a b, f (a + b) ≤ max (f a) (f b)`
 
-## Notes
+## Implementation notes
 
 Typeclasses for seminorms are defined here while types of seminorms are defined in
 `Analysis.Normed.Group.Seminorm` and `Analysis.Normed.Ring.Seminorm` because absolute values are

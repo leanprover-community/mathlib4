@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Normed.Group.AddTorsor
 public import Mathlib.Analysis.Normed.Operator.NormedSpace
 public import Mathlib.Topology.Algebra.ContinuousAffineMap.Topology
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Norm on the continuous affine maps between normed vector spaces.
 
@@ -27,7 +30,7 @@ isometric decomposition.
 On the other hand, choosing a base point breaks the affine invariance so the norm fails to be
 submultiplicative: for a composition of maps, we have only `‖f.comp g‖ ≤ ‖f‖ * ‖g‖ + ‖f 0‖`.
 
-## Main definitions:
+## Main definitions
 
 * `ContinuousAffineMap.hasNorm`
 * `ContinuousAffineMap.norm_comp_le`

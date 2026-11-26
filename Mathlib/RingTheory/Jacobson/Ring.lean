@@ -5,9 +5,10 @@ Authors: Devon Tuma
 -/
 module
 
-public import Mathlib.RingTheory.Artinian.Module
 public import Mathlib.RingTheory.Ideal.GoingUp
 public import Mathlib.RingTheory.Jacobson.Polynomial
+
+import Mathlib.RingTheory.Artinian.Module
 
 /-!
 # Jacobson Rings
@@ -26,11 +27,13 @@ Some particular examples of Jacobson rings are also proven.
   form a Jacobson ring.
 
 ## Main definitions
+
 Let `R` be a commutative ring. Jacobson rings are defined using the first of the above conditions
 * `IsJacobsonRing R` is the proposition that `R` is a Jacobson ring. It is a class,
   implemented as the predicate that for any ideal, `I.isRadical` implies `I.jacobson = I`.
 
 ## Main statements
+
 * `isJacobsonRing_iff_prime_eq` is the equivalence between conditions 1 and 3 above.
 * `isJacobsonRing_iff_sInf_maximal` is the equivalence between conditions 1 and 2 above.
 * `isJacobsonRing_of_surjective` says that if `R` is a Jacobson ring and
@@ -39,6 +42,7 @@ Let `R` be a commutative ring. Jacobson rings are defined using the first of the
   over a Jacobson ring are Jacobson.
 
 ## Tags
+
 Jacobson, Jacobson Ring
 -/
 
@@ -675,7 +679,7 @@ theorem comp_C_integral_of_surjective_of_isJacobsonRing {R : Type*} [CommRing R]
   rw [RingHom.comp_assoc] at this
   convert this
   refine RingHom.ext fun x => ?_
-  exact ((renameEquiv R e).commutes' x).symm
+  exact ((renameEquiv R e).commutes x).symm
 
 end MvPolynomial
 

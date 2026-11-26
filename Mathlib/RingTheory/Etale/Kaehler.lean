@@ -13,6 +13,7 @@ public import Mathlib.RingTheory.Kaehler.JacobiZariski
 # The differential module and étale algebras
 
 ## Main results
+
 - `KaehlerDifferential.tensorKaehlerEquivOfFormallyEtale`:
   The canonical isomorphism `T ⊗[S] Ω[S⁄R] ≃ₗ[T] Ω[T⁄R]` for `T` a formally étale `S`-algebra.
 - `Algebra.tensorH1CotangentOfIsLocalization`:
@@ -161,7 +162,7 @@ def tensorCotangentInvFun
     obtain rfl : (e x).val = a := congr($(hx).val)
     obtain ⟨y, rfl⟩ := e.surjective b
     simp only [AddMonoidHom.mem_ker, AddMonoidHom.coe_ofClass, map_smul,
-      LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+      LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply,
       LinearEquiv.symm_apply_apply, f']
     clear hx ha
     induction x with
@@ -343,7 +344,7 @@ lemma tensorH1CotangentOfIsLocalization_toLinearMap
       (Algebra.H1Cotangent.map R R S T).liftBaseChange T := by
   ext x : 3
   simp only [AlgebraTensorModule.curry_apply, curry_apply, LinearMap.coe_restrictScalars,
-    LinearEquiv.coe_coe, LinearMap.liftBaseChange_tmul, one_smul]
+    LinearEquiv.coe_toLinearMap, LinearMap.liftBaseChange_tmul, one_smul]
   simp only [tensorH1CotangentOfIsLocalization,
     Extension.tensorH1CotangentOfFormallyEtale,
     LinearEquiv.ofBijective_apply, LinearMap.liftBaseChange_tmul, one_smul,
