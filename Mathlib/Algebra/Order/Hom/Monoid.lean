@@ -158,7 +158,7 @@ infixr:25 " ≃*o " => OrderMonoidIso
 
 /-- Turn an element of a type `F` satisfying `OrderIsoClass F α β` and `MulEquivClass F α β`
 into an actual `OrderMonoidIso` -/
-@[to_additive (attr := coe)
+@[to_additive
   /-- Turn an element of a type `F` satisfying `OrderIsoClass F α β` and `AddEquivClass F α β`
   into an actual `OrderAddMonoidIso`. -/]
 def OrderMonoidIso.ofClass {α β : Type*} [Preorder α] [Preorder β] [Mul α] [Mul β] [EquivLike F α β]
