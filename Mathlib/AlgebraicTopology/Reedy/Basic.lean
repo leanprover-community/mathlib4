@@ -19,6 +19,7 @@ on a category `C` equipped with two classes of morphisms
 the literature).
 
 ## TODO
+
 * Construct the Reedy model category structure on the category of
 functors `C ⥤ D` when `C` is a Reedy category and `D` a model category
 https://github.com/leanprover-community/project-intentions/issues/5

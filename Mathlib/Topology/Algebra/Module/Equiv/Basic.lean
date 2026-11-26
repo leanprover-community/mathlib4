@@ -13,10 +13,12 @@ public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Restrict
 # Continuous linear equivalences
 
 ## Notation
+
 Continuous semilinear / linear / star-linear equivalences between topological modules are denoted
 by `M ≃SL[σ] M₂`, `M ≃L[R] M₂` and `M ≃L⋆[R] M₂`.
 
 ## Main Definitions
+
 * `toHomeomorph` is the homeomorphism induced by a continuous (semi)linear equivalence.
 * `symm` is the inverse of a continuous linear equivalence as a continuous linear equivalence.
 * `equivOfInverse` creates a `ContinuousLinearEquiv` from two `ContinuousLinearMap`s that are
@@ -27,6 +29,7 @@ by `M ≃SL[σ] M₂`, `M ≃L[R] M₂` and `M ≃L⋆[R] M₂`.
 * `ofIsHomeomorph`: a linear equivalence that is a homeomorphism is a continuous linear equivalence.
 
 ## Main Results
+
 * `LinearEquiv.isHomeomorph_iff`: A linear equivalence between topological modules is a
   homeomorphism if and only if it is continuous in both directions.
 -/

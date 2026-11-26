@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Multiset.UnionInter
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-! # `Multiset.range n` gives `{0, 1, ..., n-1}` as a multiset. -/
 
 @[expose] public section

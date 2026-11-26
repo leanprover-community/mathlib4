@@ -15,6 +15,7 @@ In this file, we introduce the category `SpectralObject C ι` of spectral
 objects in a pretriangulated category `C` indexed by the category `ι`.
 
 ## TODO (@joelriou)
+
 * construct the spectral sequence attached to a spectral object in an abelian category
  (the spectral sequence is already constructed: it remains to study convergence)
 

@@ -21,6 +21,7 @@ Almost everywhere strongly measurable functions form the largest class of functi
 integrated using the Bochner integral.
 
 ## Main definitions
+
 * `AEStronglyMeasurable f μ`: `f` is almost everywhere equal to a `StronglyMeasurable` function.
 * `AEFinStronglyMeasurable f μ`: `f` is almost everywhere equal to a `FinStronglyMeasurable`
   function.
