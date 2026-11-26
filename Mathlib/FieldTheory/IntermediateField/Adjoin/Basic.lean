@@ -571,19 +571,45 @@ theorem _root_.minpoly.degree_dvd {x : L} (hx : IsIntegral K x) :
   use finrank K⟮x⟯ L
   rw [mul_comm, finrank_mul_finrank]
 
+/-- If an irreducible polynomial `f` over `K` has a root in a field extension `L` of `K`, then
+the degree of `f` divides `[L : K]`. -/
+theorem _root_.Irreducible.natDegree_dvd_finrank_of_aeval_eq_zero {f : K[X]} (hi : Irreducible f)
+    {x : L} (hx : aeval x f = 0) : f.natDegree ∣ finrank K L := by
+  rw [← natDegree_mul_C (inv_ne_zero (leadingCoeff_ne_zero.2 hi.ne_zero)),
+    minpoly.eq_of_irreducible hi hx]
+  exact minpoly.degree_dvd (IsAlgebraic.isIntegral ⟨f, hi.ne_zero, hx⟩)
+
 theorem _root_.Polynomial.Irreducible.natDegree_dvd_finrank {f : K[X]} (hi : Irreducible f)
     (hs : (f.map (algebraMap K L)).Splits) : f.natDegree ∣ finrank K L := by
-  have := hi.degree_pos.ne'
-  rw [← f.degree_map (algebraMap K L)] at this
-  obtain ⟨x, hx⟩ := hs.exists_eval_eq_zero this
-  rw [eval_map_algebraMap] at hx
-  have key := minpoly.Irreducible.eq_minpoly hi hx
-  replace hi := hi.ne_zero
-  rw [key, natDegree_C_mul (leadingCoeff_ne_zero.mpr hi)]
-  apply minpoly.degree_dvd
-  rw [← minpoly.ne_zero_iff]
-  contrapose hi
-  rwa [hi, mul_zero] at key
+  obtain ⟨x, hx⟩ := hs.exists_eval_eq_zero <|
+    (f.degree_map (algebraMap K L)).trans_ne hi.degree_pos.ne'
+  exact hi.natDegree_dvd_finrank_of_aeval_eq_zero ((eval_map_algebraMap f x).symm.trans hx)
+
+/-- If `p` is an irreducible polynomial over `K` and `q` is an irreducible factor of `p` over a
+field extension `L` of `K`, then the degree of `p` divides `[L : K] * deg q`. -/
+theorem _root_.Irreducible.natDegree_dvd_finrank_mul_natDegree {p : K[X]} (hp : Irreducible p)
+    {q : L[X]} (hq : Irreducible q) (hqp : q ∣ p.map (algebraMap K L)) :
+    p.natDegree ∣ finrank K L * q.natDegree := by
+  have : Fact (Irreducible q) := ⟨hq⟩
+  -- `p` has a root in the field `L[X] ⧸ (q)`, whose degree over `K` is `[L : K] * deg q`.
+  rw [← AdjoinRoot.powerBasis_dim hq.ne_zero, ← PowerBasis.finrank, finrank_mul_finrank]
+  refine hp.natDegree_dvd_finrank_of_aeval_eq_zero (x := AdjoinRoot.root q) ?_
+  rwa [← aeval_map_algebraMap L, AdjoinRoot.aeval_eq, AdjoinRoot.mk_eq_zero]
+
+/-- An irreducible polynomial over a field `K` remains irreducible over any field extension `L`
+of `K` whose degree is coprime to the degree of the polynomial.
+
+If `L` is infinite-dimensional over `K` then `Module.finrank K L = 0`, so the hypothesis only
+holds for `p` of degree one. -/
+theorem _root_.Irreducible.map_of_coprime_natDegree_finrank {p : K[X]} (hp : Irreducible p)
+    (h : p.natDegree.Coprime (finrank K L)) : Irreducible (p.map (algebraMap K L)) := by
+  obtain ⟨q, hq, hqp⟩ := exists_irreducible_of_natDegree_pos
+    (hp.natDegree_pos.trans_eq (natDegree_map (algebraMap K L)).symm)
+  refine (associated_of_dvd_of_natDegree_le hqp (Polynomial.map_ne_zero hp.ne_zero) ?_).irreducible
+    hq
+  rw [natDegree_map]
+  exact Nat.le_of_dvd hq.natDegree_pos
+    (h.dvd_of_dvd_mul_left (hp.natDegree_dvd_finrank_mul_natDegree hq hqp))
 
 instance : Algebra.IsAlgebraic K (⊥ : IntermediateField K L) where
   isAlgebraic := by
@@ -744,6 +770,22 @@ theorem algEquiv_apply {x y : L} (hx : IsAlgebraic K x) (h_mp : minpoly K x = mi
   rw [algEquiv, trans_apply, ← adjoinRootEquivAdjoin_apply_root K hx.isIntegral,
     symm_apply_apply, trans_apply, AdjoinRoot.algEquivOfEq_root,
     adjoinRootEquivAdjoin_apply_root K hy.isIntegral]
+
+/-- If the degree of the minimal polynomial of `x` over `K` is coprime to the degree of a field
+extension `L` of `K`, then it is also the minimal polynomial of `x` over `L`.
+
+No integrality assumption is needed: if `x` is not integral over `K`, then both sides are zero. -/
+theorem map_eq_of_coprime_natDegree_finrank {E : Type*} [Ring E] [IsDomain E] [Algebra K E]
+    [Algebra L E] [IsScalarTower K L E] {x : E}
+    (h : (minpoly K x).natDegree.Coprime (finrank K L)) :
+    (minpoly K x).map (algebraMap K L) = minpoly L x := by
+  by_cases hx : IsIntegral K x
+  · exact eq_of_irreducible_of_monic ((irreducible hx).map_of_coprime_natDegree_finrank h)
+      (by rw [aeval_map_algebraMap, minpoly.aeval]) ((monic hx).map _)
+  · -- Here `[L : K] = 1`, so `x` is not integral over `L` either.
+    rw [eq_zero hx, natDegree_zero, Nat.coprime_zero_left] at h
+    have : Module.Finite K L := Module.finite_of_finrank_eq_succ h
+    rw [eq_zero hx, eq_zero fun hL ↦ hx (isIntegral_trans x hL), Polynomial.map_zero]
 
 end minpoly
 
