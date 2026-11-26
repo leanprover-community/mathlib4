@@ -227,7 +227,8 @@ protected def hrecOn₂ (qa : Quotient sa) (qb : Quotient sb) (f : ∀ a b, φ �
 
 /-- Map a function `f : α → β` that sends equivalent elements to equivalent elements
 to a function `Quotient sa → Quotient sb`. Useful to define unary operations on quotients. -/
-protected def map (f : α → β) (h : ∀ ⦃a b : α⦄, a ≈ b → f a ≈ f b) : Quotient sa → Quotient sb :=
+protected def map (f : α → β) (h : ∀ ⦃a b : α⦄, sa a b → sb (f a) (f b)) :
+    Quotient sa → Quotient sb :=
   Quot.map f h
 
 @[simp]
@@ -241,7 +242,7 @@ variable {γ : Sort*} {sc : Setoid γ}
 to a function `f : Quotient sa → Quotient sb → Quotient sc`.
 Useful to define binary operations on quotients. -/
 protected def map₂ (f : α → β → γ)
-    (h : ∀ ⦃a₁ a₂⦄, a₁ ≈ a₂ → ∀ ⦃b₁ b₂⦄, b₁ ≈ b₂ → f a₁ b₁ ≈ f a₂ b₂) :
+    (h : ∀ ⦃a₁ a₂⦄, sa a₁ a₂ → ∀ ⦃b₁ b₂⦄, sb b₁ b₂ → sc (f a₁ b₁) (f a₂ b₂)) :
     Quotient sa → Quotient sb → Quotient sc :=
   Quotient.lift₂ (fun x y ↦ ⟦f x y⟧) fun _ _ _ _ h₁ h₂ ↦ Quot.sound <| h h₁ h₂
 
@@ -353,7 +354,8 @@ theorem Quot.map_surjective {ra : α → α → Prop} {rb : β → β → Prop} 
   surjective_lift _ |>.mpr <| .comp Quot.mk_surjective hf
 
 theorem Quotient.map_surjective {sa : Setoid α} {sb : Setoid β} {f : α → β}
-    (h : ∀ ⦃a b : α⦄, a ≈ b → f a ≈ f b) (hf : f.Surjective) : Quotient.map f h |>.Surjective :=
+    (h : ∀ ⦃a b : α⦄, sa a b → sb (f a) (f b)) (hf : f.Surjective) :
+    Quotient.map f h |>.Surjective :=
   lift_surjective _ _ <| .comp Quot.mk_surjective hf
 
 /-- Choose an element of the equivalence class using the axiom of choice.
@@ -697,11 +699,12 @@ theorem hrecOn₂'_mk'' {φ : Quotient s₁ → Quotient s₂ → Sort*}
 /-- Map a function `f : α → β` that sends equivalent elements to equivalent elements
 to a function `Quotient sa → Quotient sb`. Useful to define unary operations on quotients.
 This is a version of `Quotient.map` using `Setoid.r` instead of `≈`. -/
+@[deprecated Quotient.map (since := "2026-11-26")]
 protected def map' (f : α → β) (h : ∀ a b, s₁.r a b → s₂.r (f a) (f b)) :
     Quotient s₁ → Quotient s₂ :=
   Quot.map f h
 
-@[simp]
+@[simp, deprecated Quotient.map_mk +typeChanged (since := "2026-11-26")]
 theorem map'_mk'' (f : α → β) (h) (x : α) :
     (Quotient.mk'' x : Quotient s₁).map' f h = (Quotient.mk'' (f x) : Quotient s₂) :=
   rfl
@@ -709,12 +712,13 @@ theorem map'_mk'' (f : α → β) (h) (x : α) :
 /-- Map a function `f : α → β → γ` that sends equivalent elements to equivalent elements
 to a function `f : Quotient sa → Quotient sb → Quotient sc`. Useful to define binary operations
 on quotients. This is a version of `Quotient.map₂` using `Setoid.r` instead of `≈`. -/
+@[deprecated Quotient.map₂ +typeChanged (since := "2026-11-26")]
 protected def map₂' (f : α → β → γ)
     (h : ∀ ⦃a₁ a₂ : α⦄, s₁.r a₁ a₂ → ∀ ⦃b₁ b₂ : β⦄, s₂.r b₁ b₂ → s₃.r (f a₁ b₁) (f a₂ b₂)) :
     Quotient s₁ → Quotient s₂ → Quotient s₃ :=
   Quotient.map₂ f h
 
-@[simp]
+@[simp, deprecated Quotient.map₂_mk +typeChanged (since := "2026-11-26")]
 theorem map₂'_mk'' (f : α → β → γ) (h) (x : α) :
     (Quotient.mk'' x : Quotient s₁).map₂' f h =
       (Quotient.map' (f x) (h (Setoid.refl x)) : Quotient s₂ → Quotient s₃) :=
@@ -757,6 +761,7 @@ protected theorem liftOn₂'_mk {t : Setoid β} (f : α → β → γ) (h) (a : 
     Quotient.liftOn₂' (Quotient.mk s a) (Quotient.mk t b) f h = f a b :=
   rfl
 
+@[deprecated Quotient.map_mk +typeChanged (since := "2026-11-26")]
 theorem map'_mk {t : Setoid β} (f : α → β) (h) (x : α) :
     (Quotient.mk s x).map' f h = (Quotient.mk t (f x)) :=
   rfl

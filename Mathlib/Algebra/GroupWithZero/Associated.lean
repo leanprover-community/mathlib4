@@ -508,7 +508,7 @@ theorem mkMonoidHom_apply (a : M) : Associates.mkMonoidHom a = Associates.mk a :
 
 /-- The monoid homomorphism on associates induced by a monoid homomorphism. -/
 def map (f : M →* N) : Associates M →* Associates N where
-  toFun := Quotient.map' f fun _ _ ↦ .map f
+  toFun := Quotient.map f fun _ _ ↦ .map f
   map_one' := show Associates.mk (f 1) = 1 by simp
   map_mul' := by
     rintro ⟨a⟩ ⟨b⟩

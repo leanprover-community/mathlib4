@@ -197,7 +197,7 @@ variable {A B C : DiscreteQuotient X}
 
 /-- The map induced by a refinement of a discrete quotient. -/
 def ofLE (h : A ≤ B) : A → B :=
-  Quotient.map' id h
+  Quotient.map id h
 
 @[simp]
 theorem ofLE_refl : ofLE (le_refl A) = id := by
@@ -280,7 +280,7 @@ theorem LEComap.mono (h : LEComap f A B) (hA : A' ≤ A) (hB : B ≤ B') : LECom
   hA.trans <| h.trans <| comap_mono _ hB
 
 /-- Map a discrete quotient along a continuous map. -/
-def map (f : C(X, Y)) (cond : LEComap f A B) : A → B := Quotient.map' f cond
+def map (f : C(X, Y)) (cond : LEComap f A B) : A → B := Quotient.map f cond
 
 theorem map_continuous (cond : LEComap f A B) : Continuous (map f cond) :=
   continuous_of_discreteTopology

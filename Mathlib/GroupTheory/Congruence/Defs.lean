@@ -590,7 +590,7 @@ protected theorem pow {M : Type*} [Monoid M] (c : Con M) :
 
 @[to_additive]
 instance {M : Type*} [Monoid M] (c : Con M) : Pow c.Quotient ℕ where
-  pow x n := Quotient.map' (fun x => x ^ n) (fun _ _ => c.pow n) x
+  pow x n := Quotient.map (fun x => x ^ n) (fun _ _ => c.pow n) x
 
 /-- The quotient of a semigroup by a congruence relation is a semigroup. -/
 @[to_additive /-- The quotient of an `AddSemigroup` by an additive congruence relation is
@@ -672,7 +672,7 @@ inversion. -/
 @[to_additive /-- The negation induced on the quotient by an additive congruence relation on a type
 with a negation. -/]
 instance hasInv : Inv c.Quotient :=
-  ⟨(Quotient.map' Inv.inv) fun _ _ => c.inv⟩
+  ⟨(Quotient.map Inv.inv) fun _ _ => c.inv⟩
 
 /-- The division induced on the quotient by a congruence relation on a type with a
 division. -/
@@ -686,7 +686,7 @@ division. -/
 @[to_additive /-- The integer scaling induced on the quotient by a congruence relation on a type
 with a subtraction. -/]
 instance instZPow : Pow c.Quotient ℤ :=
-  ⟨fun x z => Quotient.map' (fun x => x ^ z) (fun _ _ h => c.zpow z h) x⟩
+  ⟨fun x z => Quotient.map (fun x => x ^ z) (fun _ _ h => c.zpow z h) x⟩
 
 /-- The quotient of a group by a congruence relation is a group. -/
 @[to_additive /-- The quotient of an `AddGroup` by an additive congruence relation is

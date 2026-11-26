@@ -276,7 +276,7 @@ from different sources are reducibly defeq, they should all go through this func
 def smulAux [Add R] [Mul R] {α : Type*} [SMul α R]
     (c : RingCon R) (h : ∀ (a : α) (x y : R), c x y → c (a • x) (a • y))
     (a : α) (x : c.Quotient) : c.Quotient :=
-  Quotient.map' (a • ·) (h a) x
+  Quotient.map (a • ·) (h a) x
 
 section NegSubZSMul
 

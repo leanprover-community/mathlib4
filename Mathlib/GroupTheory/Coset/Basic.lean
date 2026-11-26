@@ -357,8 +357,8 @@ of the quotient map `G → G/K`. The classical version is `Subgroup.quotientEqui
 def quotientEquivProdOfLE' (h_le : s ≤ t) (f : α ⧸ t → α)
     (hf : Function.RightInverse f QuotientGroup.mk) : α ⧸ s ≃ (α ⧸ t) × t ⧸ s.subgroupOf t where
   toFun a :=
-    ⟨a.map' id fun _ _ h => leftRel_apply.mpr (h_le (leftRel_apply.mp h)),
-      a.map' (fun g : α => ⟨(f (Quotient.mk'' g))⁻¹ * g, leftRel_apply.mp (Quotient.exact' (hf g))⟩)
+    ⟨a.map id fun _ _ h => leftRel_apply.mpr (h_le (leftRel_apply.mp h)),
+      a.map (fun g : α => ⟨(f (Quotient.mk'' g))⁻¹ * g, leftRel_apply.mp (Quotient.exact' (hf g))⟩)
         fun b c h => by
         rw [leftRel_apply]
         change ((f b)⁻¹ * b)⁻¹ * ((f c)⁻¹ * c) ∈ s
@@ -366,19 +366,19 @@ def quotientEquivProdOfLE' (h_le : s ≤ t) (f : α ⧸ t → α)
           congr(f $(Quotient.sound' (leftRel_apply.mpr (h_le (leftRel_apply.mp h)))))
         rwa [key, mul_inv_rev, inv_inv, mul_assoc, mul_inv_cancel_left, ← leftRel_apply]⟩
   invFun a := by
-    refine a.2.map' (fun (b : { x // x ∈ t}) => f a.1 * b) fun b c h => by
+    refine a.2.map (fun (b : { x // x ∈ t}) => f a.1 * b) fun b c h => by
       rw [leftRel_apply] at h ⊢
       rwa [mul_inv_rev, mul_assoc, inv_mul_cancel_left]
   left_inv := by
     refine Quotient.ind fun a => ?_
-    simp_rw [Quotient.map'_mk'', id, mul_inv_cancel_left]
+    simp_rw [Quotient.map_mk, id, mul_inv_cancel_left]
   right_inv := by
     refine Prod.rec ?_
     refine Quotient.ind fun a => ?_
     refine Quotient.ind fun b => ?_
     have key : Quotient.mk'' (f (Quotient.mk'' a) * b) = Quotient.mk'' a :=
       (QuotientGroup.mk_mul_of_mem (f a) b.property).trans (hf a)
-    simp_rw [Quotient.map'_mk'', id, key, inv_mul_cancel_left]
+    simp_rw [Quotient.map_mk, id, key, inv_mul_cancel_left]
 
 /-- If `H ≤ K`, then `G/H ≃ G/K × K/H` nonconstructively.
 The constructive version is `quotientEquivProdOfLE'`. -/
@@ -394,13 +394,13 @@ noncomputable def quotientEquivProdOfLE (h_le : s ≤ t) : α ⧸ s ≃ (α ⧸ 
 def quotientSubgroupOfEmbeddingOfLE (H : Subgroup α) (h : s ≤ t) :
     s ⧸ H.subgroupOf s ↪ t ⧸ H.subgroupOf t where
   toFun :=
-    Quotient.map' (inclusion h) fun a b => by
+    Quotient.map (inclusion h) fun a b => by
       simp_rw [leftRel_eq]
       exact id
   inj' :=
     Quotient.ind₂ <| by
       intro a b h
-      simpa only [Quotient.map'_mk'', QuotientGroup.eq] using! h
+      simpa only [Quotient.map_mk, QuotientGroup.eq] using! h
 
 @[to_additive (attr := simp)]
 theorem quotientSubgroupOfEmbeddingOfLE_apply_mk (H : Subgroup α) (h : s ≤ t) (g : s) :
@@ -412,7 +412,7 @@ theorem quotientSubgroupOfEmbeddingOfLE_apply_mk (H : Subgroup α) (h : s ≤ t)
 /-- If `s ≤ t`, then there is a map `H ⧸ s.addSubgroupOf H → H ⧸ t.addSubgroupOf H`. -/]
 def quotientSubgroupOfMapOfLE (H : Subgroup α) (h : s ≤ t) :
     H ⧸ s.subgroupOf H → H ⧸ t.subgroupOf H :=
-  Quotient.map' id fun a b => by
+  Quotient.map id fun a b => by
     simp_rw [leftRel_eq]
     apply h
 
@@ -424,7 +424,7 @@ theorem quotientSubgroupOfMapOfLE_apply_mk (H : Subgroup α) (h : s ≤ t) (g : 
 /-- If `s ≤ t`, then there is a map `α ⧸ s → α ⧸ t`. -/
 @[to_additive /-- If `s ≤ t`, then there is a map `α ⧸ s → α ⧸ t`. -/]
 def quotientMapOfLE (h : s ≤ t) : α ⧸ s → α ⧸ t :=
-  Quotient.map' id fun a b => by
+  Quotient.map id fun a b => by
     simp_rw [leftRel_eq]
     apply h
 

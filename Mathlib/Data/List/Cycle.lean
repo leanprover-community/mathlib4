@@ -623,7 +623,7 @@ theorem toMultiset_eq_nil {s : Cycle α} : s.toMultiset = 0 ↔ s = Cycle.nil :=
 
 /-- The lift of `list.map`. -/
 def map {β : Type*} (f : α → β) : Cycle α → Cycle β :=
-  Quotient.map' (List.map f) fun _ _ h => h.map _
+  Quotient.map (List.map f) fun _ _ h => h.map _
 
 @[simp]
 theorem map_nil {β : Type*} (f : α → β) : map f nil = nil :=

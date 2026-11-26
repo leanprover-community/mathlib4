@@ -183,7 +183,7 @@ def preordToPartOrd : Preord.{u} ⥤ PartOrd where
   map_id X := by
     ext x
     induction x using Quotient.inductionOn
-    exact Quotient.map'_mk'' _ (fun a b ↦ id) _
+    exact Quotient.map_mk _ (fun a b ↦ id) _
   map_comp f g := by
     ext x
     induction x using Quotient.inductionOn

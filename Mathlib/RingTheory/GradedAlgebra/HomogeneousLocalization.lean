@@ -322,7 +322,7 @@ variable {𝒜 : ι → σ} (x : Submonoid A)
 variable {α : Type*} [SMul α A] [IsScalarTower α A A] [SMulMemClass σ α A]
 
 instance : SMul α (HomogeneousLocalization 𝒜 x) where
-  smul m := Quotient.map' (m • ·) fun c1 c2 (h : Localization.mk _ _ = Localization.mk _ _) => by
+  smul m := Quotient.map (m • ·) fun c1 c2 (h : Localization.mk _ _ = Localization.mk _ _) => by
     change Localization.mk _ _ = Localization.mk _ _
     simp only [num_smul, den_smul]
     convert congr_arg (fun z : at x => m • z) h <;> rw [Localization.smul_mk]
@@ -363,7 +363,7 @@ section Neg
 variable [NegMemClass σ A] {𝒜 : ι → σ} (x : Submonoid A)
 
 instance : Neg (HomogeneousLocalization 𝒜 x) where
-  neg := Quotient.map' Neg.neg fun c1 c2 (h : Localization.mk _ _ = Localization.mk _ _) => by
+  neg := Quotient.map Neg.neg fun c1 c2 (h : Localization.mk _ _ = Localization.mk _ _) => by
     change Localization.mk _ _ = Localization.mk _ _
     simp only [num_neg, den_neg, ← Localization.neg_mk]
     congrm -$h
@@ -381,7 +381,7 @@ variable {𝒜 : ι → σ} [GradedRing 𝒜] (x : Submonoid A)
 
 instance hasPow : Pow (HomogeneousLocalization 𝒜 x) ℕ where
   pow z n :=
-    (Quotient.map' (· ^ n) fun c1 c2 (h : Localization.mk _ _ = Localization.mk _ _) => by
+    (Quotient.map (· ^ n) fun c1 c2 (h : Localization.mk _ _ = Localization.mk _ _) => by
           change Localization.mk _ _ = Localization.mk _ _
           simp only [num_pow, den_pow]
           convert congr_arg (fun z : at x => z ^ n) h <;> rw [Localization.mk_pow] <;> rfl :
@@ -669,7 +669,7 @@ induces a map from the homogeneous localization `A⁰_P` to the homogeneous loca
 -/
 def map (g : 𝒜 →+*ᵍ ℬ) (comap_le : P ≤ Q.comap g) :
     HomogeneousLocalization 𝒜 P →+* HomogeneousLocalization ℬ Q where
-  toFun := Quotient.map'
+  toFun := Quotient.map
     (fun x ↦ ⟨x.deg, ⟨_, map_mem g x.num.property⟩, ⟨_, map_mem g x.den.property⟩,
       comap_le x.den_mem⟩)
     fun x y (e : x.embedding = y.embedding) ↦ by
@@ -678,12 +678,12 @@ def map (g : 𝒜 →+*ᵍ ℬ) (comap_le : P ≤ Q.comap g) :
         IsLocalization.map_mk', ← Localization.mk_eq_mk'] at e
       exact e
   map_add' := Quotient.ind₂ fun x y ↦ by
-    simp only [← mk_add, Quotient.map'_mk'', num_add, map_add, map_mul, den_add]; rfl
+    simp only [← mk_add, Quotient.map_mk, num_add, map_add, map_mul, den_add]; rfl
   map_mul' := Quotient.ind₂ fun x y ↦ by
-    simp only [← mk_mul, Quotient.map'_mk'', num_mul, map_mul, den_mul]; rfl
-  map_zero' := by simp only [← mk_zero (𝒜 := 𝒜), Quotient.map'_mk'', deg_zero,
+    simp only [← mk_mul, Quotient.map_mk, num_mul, map_mul, den_mul]; rfl
+  map_zero' := by simp only [← mk_zero (𝒜 := 𝒜), Quotient.map_mk, deg_zero,
     num_zero, ZeroMemClass.coe_zero, map_zero, den_zero, map_one]; rfl
-  map_one' := by simp only [← mk_one (𝒜 := 𝒜), Quotient.map'_mk'',
+  map_one' := by simp only [← mk_one (𝒜 := 𝒜), Quotient.map_mk,
     num_one, den_one, map_one]; rfl
 
 variable (𝒜) in
