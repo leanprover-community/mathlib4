@@ -210,9 +210,9 @@ theorem toFinset_def (s : RelSeries r) [DecidableEq α] : s.toFinset = Finset.un
 
 @[simp] theorem mem_toFinset_iff_mem : x ∈ s.toFinset ↔ x ∈ s := by classical simp [toFinset_def]
 
-@[simp] theorem ofPred_mem_eq_range : {l | l ∈ s} = Set.range s := by ext; simp
+@[simp] theorem ofPred_mem_eq_setRange : {l | l ∈ s} = Set.range s := by ext; simp
 
-@[simp] theorem coe_toFinset_eq_range : (s.toFinset : Set α) = Set.range s := by ext; simp
+@[simp] theorem coe_toFinset_eq_setRange : (s.toFinset : Set α) = Set.range s := by ext; simp
 
 @[simp] theorem apply_mem {i} : s i ∈ s := Set.mem_range_self _
 
@@ -227,13 +227,13 @@ theorem length_ne_zero_of_nontrivial (h : (Set.range s).Nontrivial) : s.length �
   fun hs ↦ h.not_subsingleton <| subsingleton_of_length_eq_zero hs
 
 theorem length_ne_zero_of_nontrivial_toFinset (h : s.toFinset.Nontrivial) : s.length ≠ 0 :=
-  length_ne_zero_of_nontrivial <| by simpa [← coe_toFinset_eq_range] using h
+  length_ne_zero_of_nontrivial <| by simpa [← coe_toFinset_eq_setRange] using h
 
 theorem length_pos_of_nontrivial (h : (Set.range s).Nontrivial) : 0 < s.length :=
   Nat.pos_iff_ne_zero.mpr <| length_ne_zero_of_nontrivial h
 
 theorem length_pos_of_nontrivial_toFinset (h : s.toFinset.Nontrivial) : 0 < s.length :=
-  length_pos_of_nontrivial <| by simpa [← coe_toFinset_eq_range] using h
+  length_pos_of_nontrivial <| by simpa [← coe_toFinset_eq_setRange] using h
 
 theorem length_ne_zero [r.IsIrrefl] : s.length ≠ 0 ↔ (Set.range s).Nontrivial := by
   refine ⟨fun h ↦ ⟨s 0, by simp, s 1, by simp,
@@ -244,13 +244,13 @@ theorem length_ne_zero [r.IsIrrefl] : s.length ≠ 0 ↔ (Set.range s).Nontrivia
   simpa [Nat.pos_iff_ne_zero]
 
 theorem length_ne_zero' [r.IsIrrefl] : s.length ≠ 0 ↔ s.toFinset.Nontrivial := by
-  simp [length_ne_zero, ← coe_toFinset_eq_range]
+  simp [length_ne_zero, ← coe_toFinset_eq_setRange]
 
 theorem length_pos [r.IsIrrefl] : 0 < s.length ↔ (Set.range s).Nontrivial :=
   Nat.pos_iff_ne_zero.trans length_ne_zero
 
 theorem length_pos' [r.IsIrrefl] : 0 < s.length ↔ s.toFinset.Nontrivial := by
-  simp [length_pos, ← coe_toFinset_eq_range]
+  simp [length_pos, ← coe_toFinset_eq_setRange]
 
 lemma length_eq_zero [r.IsIrrefl] : s.length = 0 ↔ (Set.range s).Subsingleton := by
   rw [← not_ne_iff, length_ne_zero, Set.not_nontrivial_iff]
