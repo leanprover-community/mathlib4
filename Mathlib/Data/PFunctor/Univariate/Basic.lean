@@ -119,6 +119,27 @@ theorem map_id : P.map (@id α) = id := rfl
 
 theorem map_comp_map (f : α → β) (g : β → γ) : P.map g ∘ P.map f = P.map (g ∘ f) := rfl
 
+/-- A version of `Functor.mapEquiv` for `PFunctor`, which is more universe-polymorphic. -/
+@[simps apply]
+def mapEquiv (f : α ≃ β) : P α ≃ P β where
+  toFun := P.map f
+  invFun := P.map f.symm
+  left_inv x := by rw [P.map_map, Equiv.symm_comp_self, P.id_map]
+  right_inv x := by rw [P.map_map, Equiv.self_comp_symm, P.id_map]
+
+@[simp]
+theorem coe_mapEquiv (f : α ≃ β) : P.mapEquiv f = P.map f := rfl
+
+@[simp]
+theorem mapEquiv_refl : P.mapEquiv (Equiv.refl α) = Equiv.refl (P α) := rfl
+
+@[simp]
+theorem symm_mapEquiv (f : α ≃ β) : (P.mapEquiv f).symm = P.mapEquiv f.symm := rfl
+
+@[simp]
+theorem trans_mapEquiv (f : α ≃ β) (g : β ≃ γ) :
+    (P.mapEquiv f).trans (P.mapEquiv g) = P.mapEquiv (f.trans g) := rfl
+
 instance : LawfulFunctor (Obj.{v} P) where
   map_const := rfl
   id_map x := P.id_map x
