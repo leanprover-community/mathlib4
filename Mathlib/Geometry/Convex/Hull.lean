@@ -8,6 +8,9 @@ module
 public import Mathlib.Geometry.Convex.Set
 public import Mathlib.Order.Closure
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Convex hull
 
@@ -71,7 +74,7 @@ variable (R) in
   simp [← subset_empty_iff, IsConvexSet.empty.convexHull_subset_iff]
 
 @[simp] lemma convexHull_nonempty : (convexHull R s).Nonempty ↔ s.Nonempty := by
-  simp [nonempty_iff_ne_empty]
+  simp [← ne_empty_iff_nonempty]
 
 protected alias ⟨_, Set.Nonempty.convexHull'⟩ := convexHull_nonempty
 

@@ -10,6 +10,9 @@ public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 import Mathlib.SetTheory.Cardinal.Free
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Linear algebra properties of `FreeAlgebra R X`
 

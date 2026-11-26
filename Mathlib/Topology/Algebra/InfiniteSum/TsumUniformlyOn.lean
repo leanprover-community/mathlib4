@@ -11,6 +11,9 @@ public import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
 
 import Mathlib.Analysis.Normed.Group.FunctionSeries
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Differentiability of sum of functions
 

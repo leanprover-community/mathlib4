@@ -62,10 +62,10 @@ lemma univ_eq_Icc : (univ : Set I) = Icc (0 : I) (1 : I) := Icc_bot_top.symm
 @[simp, norm_cast] theorem coe_lt_one {x : I} : (x : ℝ) < 1 ↔ x < 1 := Iff.rfl
 
 theorem mul_le_left {x y : I} : x * y ≤ x :=
-  Subtype.coe_le_coe.mp <| mul_le_of_le_one_right x.2.1 y.2.2
+  Subtype.coe_le_coe.mp <| mul_le_of_le_one_right x.property.1 y.property.2
 
 theorem mul_le_right {x y : I} : x * y ≤ y :=
-  Subtype.coe_le_coe.mp <| mul_le_of_le_one_left y.2.1 x.2.2
+  Subtype.coe_le_coe.mp <| mul_le_of_le_one_left y.property.1 x.property.2
 
 theorem eq_closedBall : I = Metric.closedBall 2⁻¹ 2⁻¹ := by
   simp [unitInterval, Real.Icc_eq_closedBall]
@@ -167,16 +167,16 @@ instance : ConnectedSpace I :=
 example : CompactSpace I := by infer_instance
 
 theorem nonneg (x : I) : 0 ≤ (x : ℝ) :=
-  x.2.1
+  x.property.1
 
-theorem one_sub_nonneg (x : I) : 0 ≤ 1 - (x : ℝ) := by simpa using x.2.2
+theorem one_sub_nonneg (x : I) : 0 ≤ 1 - (x : ℝ) := by simpa using x.property.2
 
 @[deprecated (since := "2026-10-06")] alias one_minus_nonneg := one_sub_nonneg
 
 theorem le_one (x : I) : (x : ℝ) ≤ 1 :=
-  x.2.2
+  x.property.2
 
-theorem one_sub_le_one (x : I) : 1 - (x : ℝ) ≤ 1 := by simpa using x.2.1
+theorem one_sub_le_one (x : I) : 1 - (x : ℝ) ≤ 1 := by simpa using x.property.1
 
 @[deprecated (since := "2026-10-06")] alias one_minus_le_one := one_sub_nonneg
 
@@ -185,11 +185,11 @@ theorem add_pos {t : I} {x : ℝ} (hx : 0 < x) : 0 < (x + t : ℝ) :=
 
 /-- like `unitInterval.nonneg`, but with the inequality in `I`. -/
 theorem nonneg' {t : I} : 0 ≤ t :=
-  t.2.1
+  t.property.1
 
 /-- like `unitInterval.le_one`, but with the inequality in `I`. -/
 theorem le_one' {t : I} : t ≤ 1 :=
-  t.2.2
+  t.property.2
 
 protected lemma pos_iff_ne_zero {x : I} : 0 < x ↔ x ≠ 0 := bot_lt_iff_ne_bot
 
@@ -229,24 +229,24 @@ protected theorem prod_mem {ι : Type*} {t : Finset ι} {f : ι → ℝ}
     ∏ c ∈ t, f c ∈ unitInterval := _root_.prod_mem (S := unitInterval.submonoid) h
 
 instance : LinearOrderedCommMonoidWithZero I where
-  isBot_zero x := x.2.1
+  isBot_zero x := x.property.1
   mul_lt_mul_of_pos_left i hi j k hjk := by
     simp only [← Subtype.coe_lt_coe, coe_mul]; gcongr
 
 lemma subtype_Iic_eq_Icc (x : I) : Subtype.val ⁻¹' (Iic ↑x) = Icc 0 x := by
-  rw [preimage_subtype_val_Iic]
+  rw [preimage_subtypeVal_Iic]
   exact Icc_bot.symm
 
 lemma subtype_Iio_eq_Ico (x : I) : Subtype.val ⁻¹' (Iio ↑x) = Ico 0 x := by
-  rw [preimage_subtype_val_Iio]
+  rw [preimage_subtypeVal_Iio]
   exact Ico_bot.symm
 
 lemma subtype_Ici_eq_Icc (x : I) : Subtype.val ⁻¹' (Ici ↑x) = Icc x 1 := by
-  rw [preimage_subtype_val_Ici]
+  rw [preimage_subtypeVal_Ici]
   exact Icc_top.symm
 
 lemma subtype_Ioi_eq_Ioc (x : I) : Subtype.val ⁻¹' (Ioi ↑x) = Ioc x 1 := by
-  rw [preimage_subtype_val_Ioi]
+  rw [preimage_subtypeVal_Ioi]
   exact Ioc_top.symm
 
 end unitInterval
@@ -309,8 +309,8 @@ This should be removed once a general theory of convex spaces is available in Ma
 def convexComb {a b : ℝ} (x y : Icc a b) (t : unitInterval) : Icc a b :=
   ⟨(1 - t) * x + t * y, by
     constructor
-    · nlinarith [x.2.1, y.2.1, t.2.1, t.2.2]
-    · nlinarith [x.2.2, y.2.2, t.2.1, t.2.2]⟩
+    · nlinarith [x.property.1, y.property.1, t.property.1, t.property.2]
+    · nlinarith [x.property.2, y.property.2, t.property.1, t.property.2]⟩
 
 @[simp, grind =]
 theorem coe_convexComb {a b : ℝ} (x y : Icc a b) (t : unitInterval) :
@@ -343,14 +343,14 @@ theorem le_convexComb {a b : ℝ} {x y : Icc a b} (h : x ≤ y) (t : unitInterva
     x ≤ convexComb x y t := by
   rw [← Subtype.coe_le_coe] at h ⊢
   simp
-  nlinarith [t.2.1, t.2.2]
+  nlinarith [t.property.1, t.property.2]
 
 @[grind .]
 theorem convexComb_le {a b : ℝ} {x y : Icc a b} (h : x ≤ y) (t : unitInterval) :
     convexComb x y t ≤ y := by
   rw [← Subtype.coe_le_coe] at h ⊢
   simp
-  nlinarith [t.2.1, t.2.2]
+  nlinarith [t.property.1, t.property.2]
 
 @[continuity, fun_prop]
 theorem continuous_convexComb {a b : ℝ} (x y : Icc a b) : Continuous (convexComb x y) := by
@@ -371,12 +371,12 @@ abbrev convexComb_assoc_coeff₁ (s t : unitInterval) : unitInterval :=
   ⟨s * (1 - t) / (1 - s * t),
     by
       apply div_nonneg
-      · nlinarith [s.2.1, t.2.2]
-      · nlinarith [s.2.2, t.2.2, t.2.1],
+      · nlinarith [s.property.1, t.property.2]
+      · nlinarith [s.property.2, t.property.2, t.property.1],
     by
       apply div_le_one_of_le₀
-      · nlinarith [s.2.2]
-      · nlinarith [s.2.2, t.2.2, t.2.1]⟩
+      · nlinarith [s.property.2]
+      · nlinarith [s.property.2, t.property.2, t.property.1]⟩
 
 /--
 Helper definition for `convexComb_assoc`, giving one of the coefficients appearing
@@ -400,7 +400,7 @@ theorem convexComb_assoc {a b : ℝ} (x y z : Icc a b) (s t : unitInterval) :
     · simp [ht]
     · have : (1 - s * t : ℝ) ≠ 0 := by
         intro h
-        have : 1 ≤ (t : ℝ) := by nlinarith [s.2.2, t.2.1]
+        have : 1 ≤ (t : ℝ) := by nlinarith [s.property.2, t.property.1]
         grind
       field_simp
       ring_nf
@@ -566,7 +566,10 @@ namespace unitInterval
 open NNReal
 
 /-- The coercion from `I` to `ℝ≥0`. -/
-def toNNReal : I → ℝ≥0 := fun i ↦ ⟨i.1, i.2.1⟩
+def toNNReal : I → ℝ≥0 := fun i ↦ ⟨i.val, i.property.1⟩
+
+@[simp]
+theorem toNNReal_mk (x : ℝ) (hx : x ∈ Set.Icc _ _) : toNNReal ⟨x, hx⟩ = NNReal.mk x hx.1 := rfl
 
 @[simp] lemma toNNReal_zero : toNNReal 0 = 0 := rfl
 

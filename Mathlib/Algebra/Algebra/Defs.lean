@@ -23,7 +23,7 @@ In this file we define associative unital `Algebra`s over commutative (semi)ring
 
 See the implementation notes for remarks about non-associative and non-unital algebras.
 
-## Main definitions:
+## Main definitions
 
 * `Algebra R A`: the algebra typeclass.
 * `algebraMap R A : R →+* A`: the canonical map from `R` to `A`, as a `RingHom`. This is the

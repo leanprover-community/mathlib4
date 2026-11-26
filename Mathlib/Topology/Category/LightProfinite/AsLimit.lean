@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Category.LightProfinite.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Light profinite sets as limits of finite sets.
 

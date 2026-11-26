@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Measure.CompleteLattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sums of measures
 

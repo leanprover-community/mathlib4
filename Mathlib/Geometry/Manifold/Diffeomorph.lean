@@ -50,7 +50,7 @@ because structomorphisms do not allow the model spaces `H` and `H'` of the two m
 different, i.e. for a structomorphism one has to impose `H = H'` which is often not the case in
 practice.
 
-## Keywords
+## Tags
 
 diffeomorphism, manifold
 -/

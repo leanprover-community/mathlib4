@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Limits
 
 import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The sheafification functor for presheaves of modules
 
@@ -176,9 +179,6 @@ variable [HasSheafify J AddCommGrpCat.{v}]
 noncomputable instance :
     PreservesFiniteLimits (sheafification.{v} α ⋙ SheafOfModules.toSheaf.{v} R) :=
   comp_preservesFiniteLimits (toPresheaf.{v} R₀) (presheafToSheaf J AddCommGrpCat)
-
-instance : (SheafOfModules.toSheaf.{v} R).ReflectsIsomorphisms :=
-  reflectsIsomorphisms_of_comp (SheafOfModules.toSheaf.{v} R) (sheafToPresheaf J _)
 
 noncomputable instance : ReflectsFiniteLimits (SheafOfModules.toSheaf.{v} R) where
   reflects _ _ _ := inferInstance

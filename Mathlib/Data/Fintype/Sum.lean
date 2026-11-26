@@ -7,7 +7,11 @@ module
 
 public import Mathlib.Data.Finset.Sum
 public import Mathlib.Data.Fintype.EquivFin
-public import Mathlib.Logic.Embedding.Set
+
+import Mathlib.Logic.Embedding.Set
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Fintypes and sum types
@@ -75,7 +79,7 @@ theorem image_subtype_ne_univ_eq_image_erase [Fintype α] [DecidableEq β] (k : 
   apply subset_antisymm
   · rw [image_subset_iff]
     intro i _
-    apply mem_erase_of_ne_of_mem i.2 (mem_image_of_mem _ (mem_univ _))
+    apply mem_erase_of_ne_of_mem i.property (mem_image_of_mem _ (mem_univ _))
   · intro i hi
     rw [mem_image]
     rcases mem_image.1 (erase_subset _ _ hi) with ⟨a, _, ha⟩

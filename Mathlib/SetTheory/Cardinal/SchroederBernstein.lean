@@ -5,9 +5,10 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Set.Piecewise
 public import Mathlib.Order.FixedPoints
 public import Mathlib.Order.Zorn
+
+import Mathlib.Data.Set.Piecewise
 
 /-!
 # Schröder-Bernstein theorem, well-ordering of cardinals

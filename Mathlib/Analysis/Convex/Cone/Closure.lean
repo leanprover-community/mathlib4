@@ -9,6 +9,9 @@ public import Mathlib.Geometry.Convex.Cone.Pointed
 public import Mathlib.Topology.Algebra.ConstMulAction
 public import Mathlib.Topology.Algebra.Monoid.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Closure of cones
 
@@ -62,7 +65,8 @@ construction is mainly used for defining maps between proper cones. -/
 protected def closure (K : PointedCone 𝕜 E) : PointedCone 𝕜 E where
   carrier := closure ↑K
   zero_mem' := subset_closure (zero_mem K)
-  smul_mem' c _ h₁ := map_mem_closure (continuous_const_smul c.1) h₁ fun _ h₂ ↦ K.smul_mem c.2 h₂
+  smul_mem' c _ h₁ :=
+    map_mem_closure (continuous_const_smul c.val) h₁ fun _ h₂ ↦ K.smul_mem c.property h₂
   add_mem' h₁ h₂ := map_mem_closure₂ continuous_add h₁ h₂ (fun _ ha _ hb ↦ K.add_mem ha hb)
 
 @[simp, norm_cast]

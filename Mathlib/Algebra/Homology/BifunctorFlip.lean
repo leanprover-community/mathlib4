@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.Bifunctor
 public import Mathlib.Algebra.Homology.TotalComplexSymmetry
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Action of the flip of a bifunctor on homological complexes
 

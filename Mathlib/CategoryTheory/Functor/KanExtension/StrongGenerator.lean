@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Functor.KanExtension.Dense
 public import Mathlib.CategoryTheory.Generator.StrongGenerator
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The range of a dense functor is a strong generator
 

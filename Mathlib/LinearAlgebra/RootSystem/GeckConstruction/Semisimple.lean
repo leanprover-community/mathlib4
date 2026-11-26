@@ -17,7 +17,7 @@ import Mathlib.RingTheory.Finiteness.Nilpotent
 This file contains a proof that `RootPairing.GeckConstruction.lieAlgebra` yields semisimple Lie
 algebras.
 
-## Main definitions:
+## Main definitions
 
 * `RootPairing.GeckConstruction.trace_toEnd_eq_zero`: the Geck construction yields trace-free
   matrices.

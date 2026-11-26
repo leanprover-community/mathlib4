@@ -41,6 +41,7 @@ a coloop is an element of `M.E` if any of the following equivalent conditions ho
 * `M.E \ {e}` is nonspanning.
 
 ## Main Declarations
+
 For `M` : Matroid `α`:
 * `M.loops` is the set `M.closure ∅`.
 * `M.IsLoop e` means that `e : α` is a loop of `M`, defined as the statement `e ∈ M.loops`.
