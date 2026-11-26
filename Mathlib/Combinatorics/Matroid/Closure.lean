@@ -36,7 +36,7 @@ We also define a predicate `Spanning`, to describe a set whose closure is the en
 * For `M : Matroid α` and `S ⊆ M.E`, `M.Spanning S` means that `S` has closure equal to `M.E`,
   or equivalently that `S` contains an isBase of `M`.
 
-## Implementation details
+## Implementation notes
 
 If `X : Set α` satisfies `X ⊆ M.E`, then it is clear how `M.closure X` should be defined.
 But `M.closure X` also needs to be defined for all `X : Set α`,
@@ -105,8 +105,8 @@ lemma IsFlat.iInter {ι : Type*} [Nonempty ι] {Fs : ι → Set α}
   refine ⟨fun I X hI hIX ↦ subset_iInter fun i ↦ ?_,
     (iInter_subset _ (Classical.arbitrary _)).trans (hFs _).subset_ground⟩
   obtain ⟨J, hIJ, hJ⟩ := hI.indep.subset_isBasis_of_subset (hI.subset.trans (iInter_subset _ i))
-  refine subset_union_right.trans ((hFs i).1 (X := Fs i ∪ X) hIJ ?_)
-  convert! hIJ.isBasis_union (hIX.isBasis_union_of_subset hIJ.indep hJ) using 1
+  refine subset_union_right.trans ((hFs i).subset_of_isBasis_of_isBasis (X := Fs i ∪ X) hIJ ?_)
+  convert hIJ.isBasis_union (hIX.isBasis_union_of_subset hIJ.indep hJ) using 1
   rw [← union_assoc, union_eq_self_of_subset_right hIJ.subset]
 
 /-- The property of being a flat gives rise to a `ClosureOperator` on the subsets of `M.E`,
@@ -114,11 +114,11 @@ in which the `IsClosed` sets correspond to flats.
 (We can't define such an operator on all of `Set α`,
 since this would incorrectly force `univ` to always be a flat.) -/
 def subtypeClosure (M : Matroid α) : ClosureOperator (Iic M.E) :=
-  ClosureOperator.ofCompletePred (fun F ↦ M.IsFlat F.1) fun s hs ↦ by
+  ClosureOperator.ofCompletePred (fun F ↦ M.IsFlat F.val) fun s hs ↦ by
     obtain (rfl | hne) := s.eq_empty_or_nonempty
     · simp
     have _ := hne.coe_sort
-    convert! IsFlat.iInter (M := M) (Fs := fun (F : s) ↦ F.1.1) (fun F ↦ hs F.1 F.2)
+    convert IsFlat.iInter (M := M) (Fs := fun (F : s) ↦ F.val.val) (fun F ↦ hs F.val F.property)
     ext
     aesop
 
@@ -182,7 +182,7 @@ lemma IsFlat.closure (hF : M.IsFlat F) : M.closure F = F :=
 
 variable (X) in
 @[simp] lemma isFlat_closure : M.IsFlat (M.closure X) := by
-  rw [closure, sInter_eq_iInter]; exact .iInter (·.2.1)
+  rw [closure, sInter_eq_iInter]; exact .iInter (·.property.1)
 
 lemma isFlat_iff_closure_eq : M.IsFlat F ↔ M.closure F = F := ⟨(·.closure), (· ▸ isFlat_closure F)⟩
 
@@ -246,7 +246,7 @@ lemma mem_ground_of_mem_closure (he : e ∈ M.closure X) : e ∈ M.E :=
 lemma closure_iUnion_closure_eq_closure_iUnion (M : Matroid α) (Xs : ι → Set α) :
     M.closure (⋃ i, M.closure (Xs i)) = M.closure (⋃ i, Xs i) := by
   simp_rw [closure_eq_subtypeClosure, iUnion_inter, Subtype.coe_inj]
-  convert! M.subtypeClosure.closure_iSup_closure (fun i ↦ ⟨Xs i ∩ M.E, inter_subset_right⟩) <;>
+  convert M.subtypeClosure.closure_iSup_closure (fun i ↦ ⟨Xs i ∩ M.E, inter_subset_right⟩) <;>
   simp [← iUnion_inter, subtypeClosure]
 
 lemma closure_iUnion_congr (Xs Ys : ι → Set α) (h : ∀ i, M.closure (Xs i) = M.closure (Ys i)) :
@@ -329,8 +329,9 @@ lemma Indep.closure_eq_setOfPred_isBasis_insert (hI : M.Indep I) :
   rw [subset_antisymm_iff, closure_def, subset_sInter_iff, and_iff_right (sInter_subset_of_mem _)]
   · rintro F' ⟨hF', hIF'⟩ e (he : M.IsBasis I (insert e I))
     rw [inter_eq_left.mpr (hIF.subset.trans hIF.subset_ground)] at hIF'
-    obtain ⟨J, hJ, hIJ⟩ := hI.subset_isBasis_of_subset hIF' hF'.2
-    exact (hF'.1 hJ (he.isBasis_union_of_subset hJ.indep hIJ)) (Or.inr (mem_insert _ _))
+    obtain ⟨J, hJ, hIJ⟩ := hI.subset_isBasis_of_subset hIF' hF'.subset_ground
+    exact (hF'.subset_of_isBasis_of_isBasis hJ (he.isBasis_union_of_subset hJ.indep hIJ))
+      (Or.inr (mem_insert _ _))
   exact ⟨hF, inter_subset_left.trans hIF.subset⟩
 
 @[deprecated (since := "2026-07-09")]
@@ -511,7 +512,7 @@ lemma closure_biInter_eq_biInter_closure_of_biUnion_indep {ι : Type*} {A : Set 
     {I : ι → Set α} (h : M.Indep (⋃ i ∈ A, I i)) :
     M.closure (⋂ i ∈ A, I i) = ⋂ i ∈ A, M.closure (I i) := by
   have := hA.coe_sort
-  convert! closure_iInter_eq_iInter_closure_of_iUnion_indep (Is := fun i : A ↦ I i) (by simpa) <;>
+  convert closure_iInter_eq_iInter_closure_of_iUnion_indep (Is := fun i : A ↦ I i) (by simpa) <;>
   simp
 
 lemma Indep.closure_iInter_eq_biInter_closure_of_forall_subset [Nonempty ι] {Js : ι → Set α}
@@ -535,7 +536,7 @@ lemma Indep.inter_isBasis_biInter {ι : Type*} (hI : M.Indep I) {X : ι → Set 
 
 lemma Indep.inter_isBasis_iInter [Nonempty ι] {X : ι → Set α} (hI : M.Indep I)
     (h : ∀ i, M.IsBasis ((X i) ∩ I) (X i)) : M.IsBasis ((⋂ i, X i) ∩ I) (⋂ i, X i) := by
-  convert!
+  convert
     hI.inter_isBasis_biInter (ι := PLift ι) univ_nonempty (X := fun i ↦ X i.down)
       (by simpa using fun (i : PLift ι) ↦ h i.down) <;>
   · simp only [mem_univ, iInter_true]
@@ -607,7 +608,7 @@ lemma indep_iff_forall_notMem_closure_sdiff (hI : I ⊆ M.E := by aesop_mat) :
   use fun h e heI he ↦ ((h.closure_inter_eq_self_of_subset sdiff_subset).subset ⟨he, heI⟩).2 rfl
   intro h
   obtain ⟨J, hJ⟩ := M.exists_isBasis I
-  convert! hJ.indep
+  convert hJ.indep
   refine hJ.subset.antisymm' (fun e he ↦ by_contra fun heJ ↦ h he ?_)
   exact mem_of_mem_of_subset
     (hJ.subset_closure he) (M.closure_subset_closure (subset_sdiff_singleton hJ.subset heJ))
@@ -753,7 +754,7 @@ lemma mem_closure_insert (he : e ∉ M.closure X) (hef : e ∈ M.closure (insert
     f ∈ M.closure (insert e X) := by
   rw [← closure_inter_ground] at *
   have hfE : f ∈ M.E := by
-    by_contra! hfE; rw [insert_inter_of_notMem hfE] at hef; exact he hef
+    by_contra hfE; rw [insert_inter_of_notMem hfE] at hef; exact he hef
   have heE : e ∈ M.E := (M.closure_subset_ground _) hef
   rw [insert_inter_of_mem hfE] at hef; rw [insert_inter_of_mem heE]
   obtain ⟨I, hI⟩ := M.exists_isBasis (X ∩ M.E)

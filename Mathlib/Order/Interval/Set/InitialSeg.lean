@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.InitialSeg
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Intervals as initial segments
 
@@ -27,7 +30,7 @@ def initialSegIic (j : α) : Iic j ≤i α where
   toFun j := j
   inj' _ _ _ := by aesop
   map_rel_iff' := by aesop
-  mem_range_of_rel' x k h := by simpa using h.le.trans x.2
+  mem_range_of_rel' x k h := by simpa using h.le.trans x.property
 
 /-- `Iio j` is a principal segment. -/
 @[implicit_reducible, simps]
@@ -39,37 +42,30 @@ def principalSegIio (j : α) : Iio j <i α where
   mem_range_iff_rel' := by aesop
 
 @[simp]
-lemma principalSegIio_apply (k : Iio j) : principalSegIio j k = k.1 :=
+lemma principalSegIio_apply (k : Iio j) : principalSegIio j k = k.val :=
   rfl
 
-@[deprecated (since := "2026-04-12")]
-alias principalSegIio_toRelEmbedding := principalSegIio_apply
-
-set_option backward.isDefEq.respectTransparency false in
 /-- If `i ≤ j`, then `Iic i` is an initial segment of `Iic j`. -/
 @[simps]
 def initialSegIicIicOfLE (h : i ≤ j) : Iic i ≤i Iic j where
-  toFun k := ⟨k, k.2.trans h⟩
+  toFun k := ⟨k, k.property.trans h⟩
   inj' _ _ _ := by aesop
   map_rel_iff' := by aesop
-  mem_range_of_rel' x k h := ⟨⟨k.1, (Subtype.coe_le_coe.2 h.le).trans x.2⟩, rfl⟩
+  mem_range_of_rel' x k h := ⟨⟨k.val, (Subtype.coe_le_coe.2 h.le).trans x.property⟩, rfl⟩
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `i ≤ j`, then `Iio i` is a principal segment of `Iic j`. -/
 @[simps top]
 def principalSegIioIicOfLE (h : i ≤ j) : Iio i <i Iic j where
   top := ⟨i, h⟩
-  toFun k := ⟨k, k.2.le.trans h⟩
+  toFun k := ⟨k, k.property.le.trans h⟩
   inj' _ _ _ := by aesop
   map_rel_iff' := by aesop
   mem_range_iff_rel' := by aesop
 
 @[simp]
 lemma principalSegIioIicOfLE_apply (h : i ≤ j) (k : Iio i) :
-    principalSegIioIicOfLE h k = ⟨k, k.2.le.trans h⟩ := rfl
-
-@[deprecated (since := "2026-04-12")]
-alias principalSegIioIicOfLE_toRelEmbedding := principalSegIioIicOfLE_apply
+    principalSegIioIicOfLE h k = ⟨k, k.property.le.trans h⟩ := rfl
 
 end Set
 

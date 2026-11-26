@@ -7,7 +7,11 @@ module
 
 public import Mathlib.Data.Finset.Sum
 public import Mathlib.Data.Fintype.EquivFin
-public import Mathlib.Logic.Embedding.Set
+
+import Mathlib.Logic.Embedding.Set
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Fintypes and sum types
@@ -75,7 +79,7 @@ theorem image_subtype_ne_univ_eq_image_erase [Fintype α] [DecidableEq β] (k : 
   apply subset_antisymm
   · rw [image_subset_iff]
     intro i _
-    apply mem_erase_of_ne_of_mem i.2 (mem_image_of_mem _ (mem_univ _))
+    apply mem_erase_of_ne_of_mem i.property (mem_image_of_mem _ (mem_univ _))
   · intro i hi
     rw [mem_image]
     rcases mem_image.1 (erase_subset _ _ hi) with ⟨a, _, ha⟩
@@ -132,14 +136,14 @@ theorem Fintype.card_subtype_or (p q : α → Prop) [Fintype { x // p x }] [Fint
     [Fintype { x // p x ∨ q x }] :
     Fintype.card { x // p x ∨ q x } ≤ Fintype.card { x // p x } + Fintype.card { x // q x } := by
   classical
-    convert! Fintype.card_le_of_embedding (subtypeOrLeftEmbedding p q)
+    convert Fintype.card_le_of_embedding (subtypeOrLeftEmbedding p q)
     rw [Fintype.card_sum]
 
 theorem Fintype.card_subtype_or_disjoint (p q : α → Prop) (h : Disjoint p q) [Fintype { x // p x }]
     [Fintype { x // q x }] [Fintype { x // p x ∨ q x }] :
     Fintype.card { x // p x ∨ q x } = Fintype.card { x // p x } + Fintype.card { x // q x } := by
   classical
-    convert! Fintype.card_congr (subtypeOrEquiv p q h)
+    convert Fintype.card_congr (subtypeOrEquiv p q h)
     simp
 
 theorem Fintype.card_subtype_eq_or_eq_of_ne {α : Type*} [Fintype α] [DecidableEq α] {a b : α}

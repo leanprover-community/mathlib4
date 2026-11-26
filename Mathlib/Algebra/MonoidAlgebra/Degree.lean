@@ -5,14 +5,16 @@ Authors: Damiano Testa
 -/
 module
 
-public import Mathlib.Algebra.Group.Subsemigroup.Operations
 public import Mathlib.Algebra.MonoidAlgebra.Support
 public import Mathlib.Order.Filter.Extr
+
+import Mathlib.Algebra.Group.Subsemigroup.Operations
 
 /-!
 # Lemmas about the `sup` and `inf` of the support of `AddMonoidAlgebra`
 
 ## TODO
+
 The current plan is to state and prove lemmas about `Finset.sup (Finsupp.support f) D` with a
 "generic" degree/weight function `D` from the grading Type `A` to a somewhat ordered Type `B`.
 
@@ -27,7 +29,6 @@ variable {R R' A T B ι : Type*}
 namespace AddMonoidAlgebra
 
 /-!
-
 ## sup-degree and inf-degree of an `AddMonoidAlgebra`
 
 Let `R` be a semiring and let `A` be a `SemilatticeSup`.
@@ -78,7 +79,6 @@ variable [Semiring R]
 section ExplicitDegrees
 
 /-!
-
 In this section, we use `degb` and `degt` to denote "degree functions" on `A` with values in
 a type with *b*ot or *t*op respectively.
 -/
@@ -205,9 +205,6 @@ theorem sup_support_coeff_finsetProd_le (degb0 : degb 0 ≤ 0)
 @[deprecated (since := "2026-06-18")]
 alias sup_support_finsetProd_le := sup_support_coeff_finsetProd_le
 
-@[deprecated (since := "2026-04-08")]
-alias sup_support_finset_prod_le := sup_support_coeff_finsetProd_le
-
 theorem le_inf_support_coeff_finsetProd (degt0 : 0 ≤ degt 0)
     (degtm : ∀ a b, degt a + degt b ≤ degt (a + b)) (s : Finset ι) (f : ι → R[A]) :
     (∑ i ∈ s, (f i).coeff.support.inf degt) ≤ (∏ i ∈ s, f i).coeff.support.inf degt :=
@@ -215,9 +212,6 @@ theorem le_inf_support_coeff_finsetProd (degt0 : 0 ≤ degt 0)
 
 @[deprecated (since := "2026-06-18")]
 alias le_inf_support_finsetProd := le_inf_support_coeff_finsetProd
-
-@[deprecated (since := "2026-04-08")]
-alias le_inf_support_finset_prod := le_inf_support_coeff_finsetProd
 
 end CommutativeLemmas
 
@@ -324,7 +318,7 @@ theorem supDegree_mul_le (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
 
 theorem supDegree_prod_le {R A B : Type*} [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B]
     [SemilatticeSup B] [OrderBot B]
-    [AddLeftMono B] [AddRightMono B]
+    [AddLeftMono B]
     {D : A → B} (hzero : D 0 = 0) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
     {ι} {s : Finset ι} {f : ι → R[A]} :
     (∏ i ∈ s, f i).supDegree D ≤ ∑ i ∈ s, (f i).supDegree D := by

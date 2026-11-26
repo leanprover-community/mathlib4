@@ -6,11 +6,12 @@ Authors: Antoine Labelle
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 public import Mathlib.CategoryTheory.Monoidal.Linear
 public import Mathlib.CategoryTheory.Monoidal.Transport
-public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-public import Mathlib.CategoryTheory.Linear.LinearFunctor
-public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Full monoidal subcategories
@@ -24,6 +25,7 @@ When `C` is also braided/symmetric, the full monoidal subcategory also inherits 
 braided/symmetric structure.
 
 ## TODO
+
 * Add monoidal/braided versions of `ObjectProperty.Lift`
 -/
 
@@ -77,14 +79,14 @@ variable (P : ObjectProperty C) [P.IsMonoidal]
 
 @[simps]
 instance : MonoidalCategoryStruct P.FullSubcategory where
-  tensorObj X Y := ⟨X.1 ⊗ Y.1, prop_tensor X.2 Y.2⟩
-  whiskerLeft X _ _ f := ObjectProperty.homMk (X.1 ◁ f.hom)
-  whiskerRight f Y := ObjectProperty.homMk (f.hom ▷ Y.1)
+  tensorObj X Y := ⟨X.obj ⊗ Y.obj, prop_tensor X.property Y.property⟩
+  whiskerLeft X _ _ f := ObjectProperty.homMk (X.obj ◁ f.hom)
+  whiskerRight f Y := ObjectProperty.homMk (f.hom ▷ Y.obj)
   tensorHom f g := ObjectProperty.homMk (f.hom ⊗ₘ g.hom)
   tensorUnit := ⟨𝟙_ C, P.prop_unit⟩
-  associator X Y Z := P.isoMk (α_ X.1 Y.1 Z.1)
-  leftUnitor X := P.isoMk (λ_ X.1)
-  rightUnitor X := P.isoMk (ρ_ X.1)
+  associator X Y Z := P.isoMk (α_ X.obj Y.obj Z.obj)
+  leftUnitor X := P.isoMk (λ_ X.obj)
+  rightUnitor X := P.isoMk (ρ_ X.obj)
 
 /--
 When `P : ObjectProperty C` is monoidal, the full subcategory for `P` inherits the
@@ -128,7 +130,6 @@ section
 
 variable {P} {P' : ObjectProperty C} [P'.IsMonoidal] (h : P ≤ P')
 
-set_option backward.defeqAttrib.useBackward true in
 /-- An inequality `P ≤ P'` between monoidal properties of objects induces
 a monoidal functor between full monoidal subcategories. -/
 instance : (ιOfLE h).Monoidal :=
@@ -150,7 +151,7 @@ variable [BraidedCategory C]
 /-- The braided structure on a full subcategory inherited by the braided structure on `C`.
 -/
 instance fullBraidedSubcategory : BraidedCategory (FullSubcategory P) :=
-  .ofFaithful P.ι fun X Y ↦ P.isoMk (β_ X.1 Y.1)
+  .ofFaithful P.ι fun X Y ↦ P.isoMk (β_ X.obj Y.obj)
 
 /-- The forgetful braided functor from a full braided subcategory into the original category
 ("forgetting" the condition).
@@ -159,7 +160,6 @@ instance : P.ι.Braided where
 
 variable {P}
 
-set_option backward.defeqAttrib.useBackward true in
 /-- An inequality `P ≤ P'` between monoidal properties of objects induces
 a braided functor between full braided subcategories. -/
 instance {P' : ObjectProperty C} [P'.IsMonoidal] (h : P ≤ P') :
@@ -180,13 +180,12 @@ section Closed
 
 variable [MonoidalClosed C] [P.IsMonoidalClosed]
 
-set_option backward.defeqAttrib.useBackward true in
 instance fullMonoidalClosedSubcategory : MonoidalClosed (FullSubcategory P) where
   closed X :=
-    { rightAdj := P.lift (P.ι ⋙ ihom X.1) (fun Y => P.prop_ihom X.2 Y.2)
+    { rightAdj := P.lift (P.ι ⋙ ihom X.obj) (fun Y => P.prop_ihom X.property Y.property)
       adj :=
-        { unit := { app Y := ObjectProperty.homMk ((ihom.coev X.1).app Y.1) }
-          counit := { app Y := ObjectProperty.homMk ((ihom.ev X.1).app Y.1) } } }
+        { unit := { app Y := ObjectProperty.homMk ((ihom.coev X.obj).app Y.obj) }
+          counit := { app Y := ObjectProperty.homMk ((ihom.ev X.obj).app Y.obj) } } }
 
 @[simp]
 theorem ihom_obj (X Y : P.FullSubcategory) :

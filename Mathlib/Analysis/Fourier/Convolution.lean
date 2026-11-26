@@ -13,10 +13,12 @@ public import Mathlib.Analysis.Distribution.SchwartzSpace.Fourier
 In this file we calculate the Fourier transform of a convolution.
 
 ## Main definitions
+
 * `SchwartzMap.convolution`: The convolution on Schwartz functions is defined via the Fourier
   transform.
 
 ## Main statements
+
 * `Real.fourier_bilin_convolution_eq`: The Fourier transform of a convolution is the bilinear map
   applied to the Fourier transform of the functions.
 * `Real.fourier_smul_convolution_eq`: Variant for scalar multiplication.
@@ -25,7 +27,6 @@ In this file we calculate the Fourier transform of a convolution.
   the pairing of the Fourier transformed Schwartz functions.
 * `SchwartzMap.convolution_apply`: The Schwartz function convolution coincides with the convolution
   for functions.
-
 -/
 
 @[expose] public section

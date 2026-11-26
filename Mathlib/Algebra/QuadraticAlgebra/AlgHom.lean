@@ -6,8 +6,12 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.Algebra.QuadraticAlgebra.Basic
-public import Mathlib.LinearAlgebra.Matrix.Nonsingular
 public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+
+import Mathlib.LinearAlgebra.Matrix.Nonsingular
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Algebra homomorphisms between quadratic algebras
@@ -90,7 +94,7 @@ theorem isUnit_im_omega_of_algEquiv (e : QuadraticAlgebra R a b ≃ₐ[R] Quadra
 theorem trace_algHom_omega (hf : Function.Injective f) :
     trace (f ω) = b := by
   have h := (isRegular_im_omega_iff_injective f).mpr hf
-  simpa [h.right.mul_right_eq_zero_iff, sub_eq_zero] using congr_arg im (smul_omega_sub_eq f)
+  simpa [h.right.mul_right_eq_zero_iff, sub_eq_zero] using congr(im $(smul_omega_sub_eq f))
 
 /-- An injective algebra homomorphism sends `ω` to an element of norm `-a`. -/
 theorem norm_algHom_omega (hf : Function.Injective f) :

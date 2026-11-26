@@ -5,9 +5,12 @@ Authors: Moritz Doll
 -/
 module
 
+public import Mathlib.Analysis.Convex.Gauge
 public import Mathlib.Analysis.LocallyConvex.AbsConvex
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
-public import Mathlib.Analysis.Convex.Gauge
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Absolutely convex open sets
@@ -28,7 +31,6 @@ convex open neighborhoods of zero.
 * `with_gaugeSeminormFamily`: the topology of a locally convex space is induced by the family
   `gaugeSeminormFamily`.
 * `LocallyConvexSpace.toPolynormableSpace`: a locally convex space is polynormable
-
 -/
 
 @[expose] public section
@@ -57,19 +59,19 @@ namespace AbsConvexOpenSets
 variable {𝕜 E}
 
 theorem coe_zero_mem (s : AbsConvexOpenSets 𝕜 E) : (0 : E) ∈ (s : Set E) :=
-  s.2.1
+  s.property.1
 
 theorem coe_isOpen (s : AbsConvexOpenSets 𝕜 E) : IsOpen (s : Set E) :=
-  s.2.2.1
+  s.property.2.1
 
 theorem coe_nhds (s : AbsConvexOpenSets 𝕜 E) : (s : Set E) ∈ 𝓝 (0 : E) :=
   s.coe_isOpen.mem_nhds s.coe_zero_mem
 
 theorem coe_balanced (s : AbsConvexOpenSets 𝕜 E) : Balanced 𝕜 (s : Set E) :=
-  s.2.2.2.1
+  s.property.2.2.1
 
 theorem coe_convex (s : AbsConvexOpenSets 𝕜 E) : Convex 𝕜 (s : Set E) :=
-  s.2.2.2.2
+  s.property.2.2.2
 
 end AbsConvexOpenSets
 
@@ -111,7 +113,7 @@ theorem with_gaugeSeminormFamily : WithSeminorms (gaugeSeminormFamily 𝕜 E) :=
   refine SeminormFamily.withSeminorms_of_hasBasis _ ?_
   refine (nhds_hasBasis_absConvex_open 𝕜 E).to_hasBasis (fun s hs => ?_) fun s hs => ?_
   · refine ⟨s, ⟨?_, rfl.subset⟩⟩
-    convert! (gaugeSeminormFamily _ _).basisSets_singleton_mem ⟨s, hs⟩ one_pos
+    convert (gaugeSeminormFamily _ _).basisSets_singleton_mem ⟨s, hs⟩ one_pos
     rw [gaugeSeminormFamily_ball, Subtype.coe_mk]
   refine ⟨s, ⟨?_, rfl.subset⟩⟩
   rw [SeminormFamily.basisSets_iff] at hs

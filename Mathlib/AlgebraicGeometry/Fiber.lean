@@ -5,21 +5,20 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.PullbackCarrier
-public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
-public import Mathlib.RingTheory.Spectrum.Prime.Jacobson
 public import Mathlib.AlgebraicGeometry.Morphisms.Affine
 public import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
+public import Mathlib.AlgebraicGeometry.PullbackCarrier
+public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
 
 /-!
 # Scheme-theoretic fiber
 
-## Main result
+## Main results
+
 - `AlgebraicGeometry.Scheme.Hom.fiber`: `f.fiber y` is the scheme-theoretic fiber of `f` at `y`.
 - `AlgebraicGeometry.Scheme.Hom.fiberHomeo`: `f.fiber y` is homeomorphic to `f ⁻¹' {y}`.
 - `AlgebraicGeometry.Scheme.Hom.finite_preimage`: Finite morphisms have finite fibers.
 - `AlgebraicGeometry.Scheme.Hom.discrete_fiber`: Finite morphisms have discrete fibers.
-
 -/
 
 @[expose] public section
@@ -61,7 +60,6 @@ lemma Scheme.Hom.fiberToSpecResidueField_apply (f : X ⟶ Y) (y : Y) (x : f.fibe
     f.fiberToSpecResidueField y x = IsLocalRing.closedPoint (Y.residueField y) :=
   Subsingleton.elim (α := PrimeSpectrum _) _ _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isPullback_fiberToSpecResidueField_of_isPullback {P X Y Z : Scheme.{u}} {fst : P ⟶ X}
     {snd : P ⟶ Y} {f : X ⟶ Z} {g : Y ⟶ Z} (h : IsPullback fst snd f g) (y : Y) :
     IsPullback (pullback.map _ _ _ _ fst (Spec.map (g.residueFieldMap y)) g h.w.symm (by simp))
@@ -85,7 +83,7 @@ noncomputable def Spec.fiberToSpecResidueFieldIso (R S : Type u) [CommRing R] [C
     (pullbackSymmetry _ _ ≪≫ ?_ ≪≫ pullbackSpecIso R p.asIdeal.ResidueField S) ?_ ?_
   · refine pullback.congrHom
       (Scheme.Spec.map_residueFieldIso_inv_eq_fromSpecResidueField (.of R) p).symm rfl ≪≫ ?_
-    refine asIso <| pullback.map _ _ _ _ (Spec.map <| (Scheme.Spec.residueFieldIso (.of R) _).inv)
+    refine asIso <| pullback.map _ _ _ _ (Spec.map (Scheme.Spec.residueFieldIso (.of R) _).inv)
       (𝟙 _) (𝟙 _) (by simp) (by simp)
   · exact Scheme.Spec.mapIso (Scheme.Spec.residueFieldIso (.of R) _).symm.op
   · cat_disch
@@ -105,12 +103,12 @@ def Scheme.Hom.fiberHomeo (f : X ⟶ Y) (y : Y) : f.fiber y ≃ₜ f ⁻¹' {y} 
 
 @[simp]
 lemma Scheme.Hom.fiberHomeo_apply (f : X ⟶ Y) (y : Y) (x : f.fiber y) :
-    (f.fiberHomeo y x).1 = f.fiberι y x := rfl
+    (f.fiberHomeo y x).val = f.fiberι y x := rfl
 
 @[simp]
 lemma Scheme.Hom.fiberι_fiberHomeo_symm (f : X ⟶ Y) (y : Y) (x : f ⁻¹' {y}) :
     f.fiberι y ((f.fiberHomeo y).symm x) = x :=
-  congr($((f.fiberHomeo y).apply_symm_apply x).1)
+  congr($((f.fiberHomeo y).apply_symm_apply x).val)
 
 /-- A point `x` as a point in the fiber of `f` at `f x`. -/
 def Scheme.Hom.asFiber (f : X ⟶ Y) (x : X) : f.fiber (f x) :=

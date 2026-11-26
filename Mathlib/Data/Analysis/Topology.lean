@@ -9,6 +9,9 @@ public import Mathlib.Data.Analysis.Filter
 public import Mathlib.Topology.Bases
 public import Mathlib.Topology.LocallyFinite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Computational realization of topological spaces (experimental)
 
@@ -94,7 +97,7 @@ theorem toTopsp_isTopologicalBasis (F : Ctop α σ) :
 theorem mem_nhds_toTopsp (F : Ctop α σ) {s : Set α} {a : α} :
     s ∈ @nhds _ F.toTopsp a ↔ ∃ b, a ∈ F b ∧ F b ⊆ s :=
   (@TopologicalSpace.IsTopologicalBasis.mem_nhds_iff _ F.toTopsp _ _ _
-        F.toTopsp_isTopologicalBasis).trans <|
+        F.toTopsp_isTopologicalBasis).trans
     ⟨fun ⟨_, ⟨x, rfl⟩, h⟩ ↦ ⟨x, h⟩, fun ⟨x, h⟩ ↦ ⟨_, ⟨x, rfl⟩, h⟩⟩
 
 end Ctop
@@ -174,7 +177,7 @@ protected def id : Realizer α :=
 def ofEquiv (F : Realizer α) (E : F.σ ≃ τ) : Realizer α :=
   ⟨τ, F.F.ofEquiv E,
     ext' fun a s ↦
-      F.mem_nhds.trans <|
+      F.mem_nhds.trans
         ⟨fun ⟨s, h⟩ ↦ ⟨E s, by simpa using h⟩, fun ⟨t, h⟩ ↦ ⟨E.symm t, by simpa using h⟩⟩⟩
 
 @[simp]
@@ -187,7 +190,7 @@ theorem ofEquiv_F (F : Realizer α) (E : F.σ ≃ τ) (s : τ) : (F.ofEquiv E).F
 /-- A realizer of the neighborhood of a point. -/
 protected def nhds (F : Realizer α) (a : α) : (𝓝 a).Realizer :=
   ⟨{ s : F.σ // a ∈ F.F s },
-    { f := fun s ↦ F.F s.1
+    { f := fun s ↦ F.F s.val
       pt := ⟨_, F.F.top_mem a⟩
       inf := fun ⟨x, h₁⟩ ⟨y, h₂⟩ ↦ ⟨_, F.F.inter_mem x y a ⟨h₁, h₂⟩⟩
       inf_le_left := fun ⟨x, h₁⟩ ⟨y, h₂⟩ _z h ↦ (F.F.inter_sub x y a ⟨h₁, h₂⟩ h).1
@@ -202,7 +205,7 @@ protected def nhds (F : Realizer α) (a : α) : (𝓝 a).Realizer :=
 theorem nhds_σ (F : Realizer α) (a : α) : (F.nhds a).σ = { s : F.σ // a ∈ F.F s } := rfl
 
 @[simp]
-theorem nhds_F (F : Realizer α) (a : α) (s) : (F.nhds a).F s = F.F s.1 := rfl
+theorem nhds_F (F : Realizer α) (a : α) (s) : (F.nhds a).F s = F.F s.val := rfl
 
 theorem tendsto_nhds_iff {m : β → α} {f : Filter β} (F : f.Realizer) (R : Realizer α) {a : α} :
     Tendsto m f (𝓝 a) ↔ ∀ t, a ∈ R.F t → ∃ s, ∀ x ∈ F.F s, m x ∈ R.F t :=
@@ -219,7 +222,8 @@ structure LocallyFinite.Realizer [TopologicalSpace α] (F : Ctop.Realizer α) (f
 
 theorem LocallyFinite.Realizer.to_locallyFinite [TopologicalSpace α] {F : Ctop.Realizer α}
     {f : β → Set α} (R : LocallyFinite.Realizer F f) : LocallyFinite f := fun a ↦
-  ⟨_, F.mem_nhds.2 ⟨(R.bas a).1, (R.bas a).2, Subset.rfl⟩, have := R.sets a; Set.toFinite _⟩
+  ⟨_, F.mem_nhds.2 ⟨(R.bas a).val, (R.bas a).property, Subset.rfl⟩,
+    have := R.sets a; Set.toFinite _⟩
 
 theorem locallyFinite_iff_exists_realizer [TopologicalSpace α] (F : Ctop.Realizer α)
     {f : β → Set α} : LocallyFinite f ↔ Nonempty (LocallyFinite.Realizer F f) :=
@@ -231,9 +235,7 @@ theorem locallyFinite_iff_exists_realizer [TopologicalSpace α] (F : Ctop.Realiz
           let ⟨h, _h'⟩ := h₁ x
           F.mem_nhds.1 h
     ⟨⟨fun x ↦ ⟨g₂ x, (h₂ x).1⟩, fun x ↦
-        Finite.fintype <|
-          let ⟨_h, h'⟩ := h₁ x
-          h'.subset fun _i hi ↦ hi.mono (inter_subset_inter_right _ (h₂ x).2)⟩⟩,
+        Finite.fintype <| by grw [(h₂ x).2]; exact (h₁ x).2⟩⟩,
     fun ⟨R⟩ ↦ R.to_locallyFinite⟩
 
 instance [TopologicalSpace α] [Finite β] (F : Ctop.Realizer α) (f : β → Set α) :

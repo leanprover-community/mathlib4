@@ -6,7 +6,6 @@ Authors: Peter Nelson
 module
 
 public import Mathlib.Combinatorics.Matroid.Circuit
-public import Mathlib.Tactic.TFAE
 
 /-!
 # Matroid loops and coloops
@@ -42,6 +41,7 @@ a coloop is an element of `M.E` if any of the following equivalent conditions ho
 * `M.E \ {e}` is nonspanning.
 
 ## Main Declarations
+
 For `M` : Matroid `α`:
 * `M.loops` is the set `M.closure ∅`.
 * `M.IsLoop e` means that `e : α` is a loop of `M`, defined as the statement `e ∈ M.loops`.
@@ -370,7 +370,7 @@ lemma IsNonloop.isNonloop_of_mem_closure (he : M.IsNonloop e) (hef : e ∈ M.clo
     M.IsNonloop f := by
   rw [isNonloop_iff, and_comm]
   by_contra! h; apply he.not_isLoop
-  rw [isLoop_iff] at *; convert! hef using 1
+  rw [isLoop_iff] at *; convert hef using 1
   obtain (hf | hf) := em (f ∈ M.E)
   · rw [← closure_loops, ← insert_eq_of_mem (h hf), closure_insert_congr_right M.closure_loops,
       insert_empty_eq]

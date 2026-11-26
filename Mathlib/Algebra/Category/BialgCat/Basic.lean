@@ -5,9 +5,12 @@ Authors: Amelia Livingston
 -/
 module
 
-public import Mathlib.Algebra.Category.CoalgCat.Basic
 public import Mathlib.Algebra.Category.AlgCat.Basic
+public import Mathlib.Algebra.Category.CoalgCat.Basic
 public import Mathlib.RingTheory.Bialgebra.Equiv
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The category of bialgebras over a commutative ring
@@ -16,7 +19,6 @@ We introduce the bundled category `BialgCat` of bialgebras over a fixed commutat
 along with the forgetful functors to `CoalgCat` and `AlgCat`.
 
 This file mimics `Mathlib/LinearAlgebra/QuadraticForm/QuadraticModuleCat.lean`.
-
 -/
 
 @[expose] public section
@@ -156,8 +158,8 @@ variable [Bialgebra R X] [Bialgebra R Y] [Bialgebra R Z]
 `BialgEquiv`. -/
 @[simps]
 def toBialgIso (e : X ≃ₐc[R] Y) : BialgCat.of R X ≅ BialgCat.of R Y where
-  hom := BialgCat.ofHom e
-  inv := BialgCat.ofHom e.symm
+  hom := BialgCat.ofHom e.toBialgHom
+  inv := BialgCat.ofHom e.symm.toBialgHom
   hom_inv_id := Hom.ext <| DFunLike.ext _ _ e.left_inv
   inv_hom_id := Hom.ext <| DFunLike.ext _ _ e.right_inv
 
@@ -185,11 +187,11 @@ variable {X Y Z : BialgCat.{v} R}
 def toBialgEquiv (i : X ≅ Y) : X ≃ₐc[R] Y :=
   { i.hom.toBialgHom with
     invFun := i.inv.toBialgHom
-    left_inv := fun x => BialgHom.congr_fun (congr_arg BialgCat.Hom.toBialgHom i.3) x
-    right_inv := fun x => BialgHom.congr_fun (congr_arg BialgCat.Hom.toBialgHom i.4) x }
+    left_inv := fun x => congr($(i.hom_inv_id).toBialgHom x)
+    right_inv := fun x => congr($(i.inv_hom_id).toBialgHom x) }
 
 @[simp] theorem toBialgEquiv_toBialgHom (i : X ≅ Y) :
-    (i.toBialgEquiv : X →ₐc[R] Y) = i.hom.1 := rfl
+    i.toBialgEquiv.toBialgHom = i.hom.toBialgHom' := rfl
 
 @[simp] theorem toBialgEquiv_refl : toBialgEquiv (.refl X) = .refl _ _ :=
   rfl
@@ -209,4 +211,4 @@ instance BialgCat.forget_reflects_isos :
   reflects {X Y} f _ := by
     let i := asIso ((forget (BialgCat.{v} R)).map f)
     let e : X ≃ₐc[R] Y := { f.toBialgHom, i.toEquiv with }
-    exact ⟨e.toBialgIso.isIso_hom.1⟩
+    exact ⟨e.toBialgIso.isIso_hom.out⟩

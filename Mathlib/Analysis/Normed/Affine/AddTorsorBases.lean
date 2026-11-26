@@ -6,14 +6,15 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Analysis.Normed.Module.FiniteDimension
-public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
+
+import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 
 /-!
 # Bases in normed affine spaces.
 
 This file contains results about bases in normed affine spaces.
 
-## Main definitions:
+## Main definitions
 
 * `continuous_barycentric_coord`
 * `isOpenMap_barycentric_coord`

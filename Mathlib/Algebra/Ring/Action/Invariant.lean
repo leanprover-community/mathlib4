@@ -5,15 +5,14 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.GroupTheory.GroupAction.Hom
 public import Mathlib.Algebra.Ring.Subring.Defs
+public import Mathlib.GroupTheory.GroupAction.Hom
 
 /-! # Subrings invariant under an action
 
 If a monoid acts on a ring via a `MulSemiringAction`, then `IsInvariantSubring` is
 a predicate on subrings asserting that the subring is fixed elementwise by the
 action.
-
 -/
 
 @[expose] public section
@@ -35,7 +34,7 @@ class IsInvariantSubring : Prop where
 
 instance IsInvariantSubring.toMulSemiringAction [IsInvariantSubring M S] :
     MulSemiringAction M S where
-  smul m x := ⟨m • ↑x, IsInvariantSubring.smul_mem m x.2⟩
+  smul m x := ⟨m • ↑x, IsInvariantSubring.smul_mem m x.property⟩
   one_smul s := Subtype.ext <| one_smul M (s : R)
   mul_smul m₁ m₂ s := Subtype.ext <| mul_smul m₁ m₂ (s : R)
   smul_add m s₁ s₂ := Subtype.ext <| smul_add m (s₁ : R) (s₂ : R)

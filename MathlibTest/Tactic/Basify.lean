@@ -90,7 +90,7 @@ example (a b : E) : ‖a‖₊ ≤ ‖a - b‖₊ + ‖b‖₊ := by
   basify
   exact norm_le_norm_sub_add a b
 
-example (a b c : E) : nndist a c ≤ nndist a b + nndist b c := by
+example (a b c : E) : nnDist a c ≤ nnDist a b + nnDist b c := by
   basify
   exact dist_triangle a b c
 
@@ -171,7 +171,7 @@ example (a b c : ℝ≥0∞) (hc : c ≠ ⊤) (h : a + c = b + c) : ∀ _ : ℕ,
 
 /-- An atom under a `let` -/
 example (a b : ℝ≥0∞) (h : (let c : ℝ≥0∞ := a + b; c) = 0) : a = 0 := by
-  basify <;> linarith
+  basify; linarith
 
 /-- A subterm with bvar is not an atom -/
 example (f : ℕ → ℝ≥0∞) (h : ∀ i, f i ≤ 1) : f 0 ≤ 1 := by

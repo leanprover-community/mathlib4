@@ -7,7 +7,11 @@ module
 
 public import Mathlib.Analysis.Calculus.Deriv.Comp
 public import Mathlib.Analysis.Calculus.FDeriv.Equiv
+
 import Mathlib.Analysis.Calculus.FDeriv.OfCompLeft
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Inverse function theorem - the easy half
@@ -19,7 +23,7 @@ easy half of the inverse function theorem: the harder half states that `g` exist
 For a more detailed overview of one-dimensional derivatives in mathlib, see the module docstring of
 `Analysis/Calculus/Deriv/Basic`.
 
-## Keywords
+## Tags
 
 derivative, inverse function
 -/
@@ -73,7 +77,7 @@ theorem OpenPartialHomeomorph.hasStrictDerivAt_symm (f : OpenPartialHomeomorph �
 theorem HasDerivAt.of_comp_left {f g h : 𝕜 → 𝕜} {f' h' a : 𝕜} (hst : ContinuousAt g a)
     (hf : HasDerivAt f f' (g a)) (hh : HasDerivAt h h' a) (hf' : f' ≠ 0)
     (hcomp : f ∘ g =ᶠ[𝓝 a] h) : HasDerivAt g (h' / f') a := by
-  convert! hf.hasFDerivAt.of_comp_of_leftInverse hst hh hcomp (f'symm := .toSpanSingleton 𝕜 f'⁻¹)
+  convert hf.hasFDerivAt.of_comp_of_leftInverse hst hh hcomp (f'symm := .toSpanSingleton 𝕜 f'⁻¹)
     (fun _ ↦ by simp [hf']) |>.hasDerivAt using 1
   simp [div_eq_mul_inv]
 

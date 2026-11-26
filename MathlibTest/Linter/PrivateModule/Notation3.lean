@@ -20,7 +20,6 @@ run_cmd do
   logInfo m!"{(← getEnv).constants.map₂.toArray.map (·.1)}"
 
 -- The linter should fire since the `notation3` is local
--- Run the linter on artificial `eoi` syntax so that we can actually guard the message
 set_option linter.mathlibStandardSet true in
 open Mathlib.Linter Parser in
 /--
@@ -31,6 +30,4 @@ Consider adding `public section` at the beginning of the module, or selectively 
 Note: This linter can be disabled with `set_option linter.privateModule false`
 -/
 #guard_msgs in
-run_cmd do
-  let eoi := mkNode ``Command.eoi #[mkAtom .none ""]
-  privateModule.run eoi
+run_cmd privateModule.run #[]

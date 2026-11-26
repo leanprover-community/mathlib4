@@ -5,9 +5,6 @@ Authors: Kim Morrison, Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.Star.StarAlgHom
-public import Mathlib.Data.Matrix.Basis
-public import Mathlib.Data.Matrix.Composition
 public import Mathlib.LinearAlgebra.Matrix.Kronecker
 public import Mathlib.RingTheory.TensorProduct.Maps
 
@@ -237,7 +234,6 @@ variable [Fintype m] [DecidableEq m]
 def kroneckerTMulAlgEquiv :
     Matrix m m A ⊗[R] Matrix n n B ≃ₐ[S] Matrix (m × n) (m × n) (A ⊗[R] B) :=
   .ofLinearEquiv (kroneckerTMulLinearEquiv m m n n R S A B)
-    (kroneckerTMulLinearEquiv_one _ _ _ _ _)
     (kroneckerTMulLinearEquiv_mul _ _ _ _ _)
 
 variable {m n A B}

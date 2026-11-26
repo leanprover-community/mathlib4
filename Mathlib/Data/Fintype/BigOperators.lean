@@ -9,10 +9,12 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
 public import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
 public import Mathlib.Algebra.BigOperators.Option
 public import Mathlib.Data.Fintype.Option
-public import Mathlib.Data.Fintype.Prod
 public import Mathlib.Data.Fintype.Sigma
 public import Mathlib.Data.Fintype.Sum
 public import Mathlib.Data.Fintype.Vector
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Big operators over a fintype
@@ -105,7 +107,7 @@ theorem Fintype.prod_option (f : Option α → M) : ∏ i, f i = f none * ∏ i,
 
 @[to_additive]
 theorem Fintype.prod_eq_mul_prod_subtype_ne [DecidableEq α] (f : α → M) (a : α) :
-    ∏ i, f i = f a * ∏ i : {i // i ≠ a}, f i.1 := by
+    ∏ i, f i = f a * ∏ i : {i // i ≠ a}, f i.val := by
   simp_rw [← (Equiv.optionSubtypeNe a).prod_comp, prod_option, Equiv.optionSubtypeNe_none,
     Equiv.optionSubtypeNe_some]
 
@@ -247,11 +249,11 @@ theorem Finset.prod_toFinset_eq_subtype {M : Type*} [CommMonoid M] [Fintype α] 
 nonrec theorem Fintype.prod_dite [Fintype α] {p : α → Prop} [DecidablePred p] [CommMonoid β]
     (f : ∀ a, p a → β) (g : ∀ a, ¬p a → β) :
     (∏ a, dite (p a) (f a) (g a)) =
-    (∏ a : { a // p a }, f a a.2) * ∏ a : { a // ¬p a }, g a a.2 := by
+    (∏ a : { a // p a }, f a a.property) * ∏ a : { a // ¬p a }, g a a.property := by
   simp only [prod_dite]
   congr 1
-  · exact (Equiv.subtypeEquivRight <| by simp).prod_comp fun x : { x // p x } => f x x.2
-  · exact (Equiv.subtypeEquivRight <| by simp).prod_comp fun x : { x // ¬p x } => g x x.2
+  · exact (Equiv.subtypeEquivRight <| by simp).prod_comp fun x : { x // p x } => f x x.property
+  · exact (Equiv.subtypeEquivRight <| by simp).prod_comp fun x : { x // ¬p x } => g x x.property
 
 section
 

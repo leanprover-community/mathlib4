@@ -9,6 +9,9 @@ public import Mathlib.LinearAlgebra.Complex.Module
 public import Mathlib.RingTheory.Norm.Defs
 public import Mathlib.RingTheory.Trace.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-! # Lemmas about `Algebra.trace` and `Algebra.norm` on `ℂ` -/
 
 public section

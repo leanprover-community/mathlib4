@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.PointwiseLeftDerived
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.PointwiseRightDerived
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Deriving functors using a derivability structure
 
@@ -25,7 +28,6 @@ Under this assumption, if `L₂ : C₂ ⥤ D₂` is a localization functor
 for `W₂`, then a functor `RF : D₂ ⥤ H` equipped with a natural
 transformation `α : F ⟶ L₂ ⋙ RF` is the right derived functor of `F` iff
 for any `X₁ : C₁`, the map `α.app (Φ.functor.obj X₁)` is an isomorphism.
-
 -/
 
 public section
@@ -77,7 +79,6 @@ lemma isIso_of_isRightDerivedFunctor (X₁ : C₁) [RF.IsRightDerivedFunctor α 
 
 @[deprecated (since := "2026-06-22")] alias isIso := isIso_of_isRightDerivedFunctor
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isRightDerivedFunctor_of_isIso (hα : ∀ (X₁ : C₁), IsIso (α.app (Φ.functor.obj X₁))) :
     RF.IsRightDerivedFunctor α W₂ := by
   have := h.hasPointwiseRightDerivedFunctor

@@ -31,7 +31,7 @@ satisfy the axioms of a commutative ring.
 
 We use notation `𝕎 R`, entered `\bbW`, for the Witt vectors over `R`.
 
-## Implementation details
+## Implementation notes
 
 As we prove that the ghost components respect the ring operations, we face a number of repetitive
 proofs. To avoid duplicating code we factor these proofs into a custom tactic, only slightly more
@@ -43,7 +43,6 @@ in this file.
 * [Hazewinkel, *Witt Vectors*][Haze09]
 
 * [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
-
 -/
 
 @[expose] public section
@@ -71,14 +70,14 @@ def mapFun (f : α → β) : 𝕎 α → 𝕎 β := fun x => mk _ (f ∘ x.coeff
 namespace mapFun
 
 theorem injective (f : α → β) (hf : Injective f) : Injective (mapFun f : 𝕎 α → 𝕎 β) :=
-  fun _ _ h => ext fun n => hf (congr_arg (fun x => coeff x n) h :)
+  fun _ _ h => ext fun n => hf congr(coeff $h n)
 
 theorem surjective (f : α → β) (hf : Surjective f) : Surjective (mapFun f : 𝕎 α → 𝕎 β) := fun x =>
   ⟨mk _ fun n => Classical.choose <| hf <| x.coeff n,
     by ext n; simp only [mapFun, coeff_mk, comp_apply, Classical.choose_spec (hf (x.coeff n))]⟩
 
 /-- Auxiliary tactic for showing that `mapFun` respects the ring operations. -/
-macro "map_fun_tac" : tactic => `(tactic| (
+local macro "map_fun_tac" : tactic => `(tactic| (
   -- TODO: the Lean 3 version of this tactic was more functional
   ext n
   simp only [mapFun, mk, comp_apply, zero_coeff, map_zero,
@@ -147,7 +146,7 @@ elab "ghost_fun_tac " φ:term ", " fn:term : tactic => do
   simp only [wittZero, OfNat.ofNat, Zero.zero, wittOne, One.one,
     HAdd.hAdd, Add.add, HSub.hSub, Sub.sub, Neg.neg, HMul.hMul, Mul.mul, HPow.hPow, Pow.pow,
     wittNSMul, wittZSMul, HSMul.hSMul, SMul.smul]
-  simpa +unfoldPartialApp [WittVector.ghostFun, aeval_rename, aeval_bind₁,
+  simpa +unfoldPartialApp [WittVector.ghostFun, aeval_rename, comp_aeval_apply _ (aeval _),
     comp, uncurry, peval, eval] using! this
   )))
 
@@ -216,16 +215,15 @@ private def ghostEquiv' [Invertible (p : R)] : 𝕎 R ≃ (ℕ → R) where
   left_inv := by
     intro x
     ext n
-    have := bind₁_wittPolynomial_xInTermsOfW p R n
+    have := aeval_wittPolynomial_xInTermsOfW p R n
     apply_fun aeval x.coeff at this
-    simpa +unfoldPartialApp only [aeval_bind₁, aeval_X, ghostFun,
+    simpa +unfoldPartialApp only [comp_aeval_apply, aeval_X, ghostFun,
       aeval_wittPolynomial]
   right_inv := by
     intro x
     ext n
-    have := bind₁_xInTermsOfW_wittPolynomial p R n
-    apply_fun aeval x at this
-    simpa only [aeval_bind₁, aeval_X, ghostFun, aeval_wittPolynomial]
+    simpa [ghostFun, aeval_wittPolynomial] using
+      congrArg (aeval x) (aeval_xInTermsOfW_wittPolynomial p R n)
 
 variable [Fact p.Prime]
 

@@ -9,6 +9,9 @@ public import Mathlib.LinearAlgebra.Basis.Defs
 public import Mathlib.LinearAlgebra.LinearIndependent.Basic
 public import Mathlib.LinearAlgebra.Span.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic results on bases
 
@@ -279,7 +282,7 @@ protected def empty [Subsingleton M] [IsEmpty ι] : Basis ι R M :=
 
 instance emptyUnique [Subsingleton M] [IsEmpty ι] : Unique (Basis ι R M) where
   default := Basis.empty M
-  uniq := fun _ => congr_arg ofRepr <| Subsingleton.elim _ _
+  uniq := fun _ => congr(ofRepr $(Subsingleton.elim ..))
 
 end Empty
 

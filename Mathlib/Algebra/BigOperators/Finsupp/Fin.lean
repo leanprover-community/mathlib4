@@ -9,6 +9,9 @@ public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Algebra.BigOperators.Finsupp.Basic
 public import Mathlib.Data.Finsupp.Fin
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Finsupp.sum` and `Finsupp.prod` over `Fin`
 
@@ -53,5 +56,10 @@ theorem finTwoArrowEquiv'_sum_eq {d : M × M} [AddCommMonoid M] :
     (((finTwoArrowEquiv' M).symm d).sum fun _ n ↦ n) = d.1 + d.2 := by
   apply (Finsupp.equivFunOnFinite_symm_sum _).trans
   simp
+
+lemma forall_congr_curry₀ {α : Type*} [Zero α] {p : (Fin 2 →₀ α) → Prop} {q : α → α → Prop}
+    (hpq : ∀ e : Fin 2 →₀ α, p e ↔ q (e 0) (e 1)) :
+    (∀ e, p e) ↔ ∀ u v, q u v := by
+  simp [Equiv.forall_congr_left (Finsupp.equivFunOnFinite.trans (finTwoArrowEquiv α)), hpq]
 
 end Fin2

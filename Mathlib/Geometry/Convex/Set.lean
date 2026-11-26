@@ -7,8 +7,11 @@ module
 
 public import Mathlib.Geometry.Convex.ConvexSpace.Prod
 
-public import Mathlib.Data.Set.Finite.Lattice
+import Mathlib.Data.Set.Finite.Lattice
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Convex sets
@@ -127,7 +130,7 @@ protected lemma IsConvexSet.image (hf : IsAffineMap R f) (hs : IsConvexSet R s) 
     obtain ⟨x, hx, rfl⟩ := hy
     convert mapDomain_apply' _ _ support_onFinset_subset hfu hx
     exact (ite_eq_left hx).symm
-  · rw [mapDomain_of_not_mem_image_support (by simp [← huw] at ⊢ hy; tauto)]
+  · rw [mapDomain_of_notMem_image_support (by simp [← huw] at ⊢ hy; tauto)]
     simp_all
 
 /-- A convex subset of a convex space is a convex space. -/
@@ -178,12 +181,13 @@ protected lemma IsConvexSet.pi {X : ι → Type*} [∀ i, ConvexSpace R (X i)] {
 
 end Semiring
 
-section Field
-variable [Field K] [LinearOrder K] [IsStrictOrderedRing K] [ConvexSpace K X] {w : StdSimplex K X}
-  {s t : Set X} {x y : X}
+section DivisionSemiring
+variable [DivisionSemiring K] [LinearOrder K] [IsStrictOrderedRing K] [ConvexSpace K X]
+  {w : StdSimplex K X} {s t : Set X} {x y : X}
 
 set_option backward.isDefEq.respectTransparency.types false in
-/-- Convexity of a set can be checked via binary combinations if the scalars form a field. -/
+/-- Convexity of a set can be checked via binary combinations if the scalars form a division
+semiring. -/
 lemma IsConvexSet.of_convexCombPair_mem
     (hs : ∀ a b : K, ∀ ha hb hab, ∀ x ∈ s, ∀ y ∈ s, convexCombPair a b ha hb hab x y ∈ s) :
     IsConvexSet K s := by
@@ -205,5 +209,5 @@ lemma IsConvexSet.of_convexCombPair_mem
   exact hs _ _ _ _ _ _ (hw <| by simp) _ <| ih (by grw [← hw, ← Finset.subset_cons])
     (by simp [← hsw]; grind)
 
-end Field
+end DivisionSemiring
 end Convexity

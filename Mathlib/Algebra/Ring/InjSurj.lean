@@ -5,15 +5,15 @@ Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Ne
 -/
 module
 
-public import Mathlib.Algebra.Ring.Defs
-public import Mathlib.Algebra.Opposites
 public import Mathlib.Algebra.GroupWithZero.InjSurj
+public import Mathlib.Algebra.Opposites
+public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Data.Int.Cast.Basic
 
 /-!
 # Pulling back rings along injective maps, and pushing them forward along surjective maps
 
-## Implementation note
+## Implementation notes
 
 The `nsmul` and `zsmul` assumptions on any transfer definition for an algebraic structure involving
 both addition and multiplication (e.g. `AddMonoidWithOne`) is `∀ n x, f (n • x) = n • f x`, which is

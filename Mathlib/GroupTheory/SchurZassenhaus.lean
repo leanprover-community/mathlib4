@@ -50,12 +50,12 @@ noncomputable instance : Inhabited H.QuotientDiff :=
 theorem smul_diff_smul' [hH : Normal H] (g : Gᵐᵒᵖ) :
     diff (MonoidHom.id H) (g • α) (g • β) =
       ⟨g.unop⁻¹ * (diff (MonoidHom.id H) α β : H) * g.unop,
-        hH.mem_comm ((congr_arg (· ∈ H) (mul_inv_cancel_left _ _)).mpr (SetLike.coe_mem _))⟩ := by
+        hH.mem_comm (congr($(mul_inv_cancel_left ..) ∈ H).mpr (SetLike.coe_mem _))⟩ := by
   let := H.fintypeQuotientOfFiniteIndex
   let ϕ : H →* H :=
     { toFun := fun h =>
         ⟨g.unop⁻¹ * h * g.unop,
-          hH.mem_comm ((congr_arg (· ∈ H) (mul_inv_cancel_left _ _)).mpr (SetLike.coe_mem _))⟩
+          hH.mem_comm (congr($(mul_inv_cancel_left ..) ∈ H).mpr (SetLike.coe_mem _))⟩
       map_one' := by rw [Subtype.ext_iff, coe_mk, coe_one, mul_one, inv_mul_cancel]
       map_mul' := fun h₁ h₂ => by
         simp only [Subtype.ext_iff, coe_mul, mul_assoc, mul_inv_cancel_left] }
@@ -74,11 +74,11 @@ noncomputable instance : MulAction G H.QuotientDiff where
           rwa [smul_diff_smul', coe_mk, coe_one, mul_eq_one_iff_eq_inv, mul_eq_left, ←
             coe_one, ← Subtype.ext_iff])
   mul_smul g₁ g₂ q :=
-    Quotient.inductionOn' q fun T =>
-      congr_arg Quotient.mk'' (by rw [mul_inv_rev]; exact mul_smul (op g₁⁻¹) (op g₂⁻¹) T)
+    Quotient.inductionOn q fun T =>
+      congr(Quotient.mk'' $(by rw [mul_inv_rev]; exact mul_smul (op g₁⁻¹) (op g₂⁻¹) T))
   one_smul q :=
-    Quotient.inductionOn' q fun T =>
-      congr_arg Quotient.mk'' (by rw [inv_one]; apply one_smul Gᵐᵒᵖ T)
+    Quotient.inductionOn q fun T =>
+      congr(Quotient.mk'' $(by rw [inv_one]; apply one_smul Gᵐᵒᵖ T))
 
 theorem smul_diff' (h : H) :
     diff (MonoidHom.id H) α (op (h : G) • β) = diff (MonoidHom.id H) α β * h ^ H.index := by
@@ -89,11 +89,11 @@ theorem smul_diff' (h : H) :
   simp_rw [Subtype.ext_iff, MonoidHom.id_apply, coe_mul, mul_assoc, mul_right_inj]
   rw [smul_apply_eq_smul_apply_inv_smul, smul_eq_mul_unop, MulOpposite.unop_op, mul_left_inj,
     ← Subtype.ext_iff, Equiv.apply_eq_iff_eq, inv_smul_eq_iff]
-  exact left_eq_mul.mpr ((QuotientGroup.eq_one_iff _).mpr h.2)
+  exact left_eq_mul.mpr ((QuotientGroup.eq_one_iff _).mpr h.property)
 
 theorem eq_one_of_smul_eq_one (hH : Nat.Coprime (Nat.card H) H.index) (α : H.QuotientDiff)
     (h : H) : h • α = α → h = 1 :=
-  Quotient.inductionOn' α fun α hα =>
+  Quotient.inductionOn α fun α hα =>
     (powCoprime hH).injective <|
       calc
         h ^ H.index = diff (MonoidHom.id H) (op ((h⁻¹ : H) : G) • α) α := by
@@ -102,8 +102,8 @@ theorem eq_one_of_smul_eq_one (hH : Nat.Coprime (Nat.card H) H.index) (α : H.Qu
 
 theorem exists_smul_eq (hH : Nat.Coprime (Nat.card H) H.index) (α β : H.QuotientDiff) :
     ∃ h : H, h • α = β :=
-  Quotient.inductionOn' α
-    (Quotient.inductionOn' β fun β α =>
+  Quotient.inductionOn α
+    (Quotient.inductionOn β fun β α =>
       Exists.imp (fun _ => Quotient.sound')
         ⟨(powCoprime hH).symm (diff (MonoidHom.id H) β α),
           (diff_inv _ _ _).symm.trans
@@ -232,7 +232,7 @@ private theorem step4 : (Nat.card N).minFac.Prime :=
   Nat.minFac_prime (N.one_lt_card_iff_ne_bot.mpr (step0 h1 h3)).ne'
 
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
-private theorem step5 {P : Sylow (Nat.card N).minFac N} : P.1 ≠ ⊥ := by
+private theorem step5 {P : Sylow (Nat.card N).minFac N} : P.toSubgroup ≠ ⊥ := by
   have : Fact (Nat.card N).minFac.Prime := ⟨step4 h1 h3⟩
   apply P.ne_bot_of_dvd_card
   exact (Nat.card N).minFac_dvd
@@ -241,11 +241,11 @@ include h2 in
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
 private theorem step6 : IsPGroup (Nat.card N).minFac N := by
   have : Fact (Nat.card N).minFac.Prime := ⟨step4 h1 h3⟩
-  refine Sylow.nonempty.elim fun P => P.2.of_surjective P.1.subtype ?_
+  refine Sylow.nonempty.elim fun P => P.isPGroup.of_surjective P.toSubgroup.subtype ?_
   rw [← MonoidHom.range_eq_top, range_subtype]
-  have : (P.1.map N.subtype).Normal :=
+  have : (P.toSubgroup.map N.subtype).Normal :=
     normalizer_eq_top_iff.mp (step1 h1 h2 h3 _ P.normalizer_sup_eq_top)
-  exact (step3 h1 h2 h3 P.1).resolve_left (step5 h1 h3)
+  exact (step3 h1 h2 h3 P.toSubgroup).resolve_left (step5 h1 h3)
 
 include h2 in
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
