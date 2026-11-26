@@ -683,7 +683,7 @@ theorem SigmaFinite.of_map (μ : Measure α) {f : α → β} (hf : AEMeasurable 
           measure_spanningSets_lt_top],
         by rw [← preimage_iUnion, iUnion_spanningSets, preimage_univ]⟩⟩⟩
 
-/-- The pullback of a σ-finite measure along a measurable function is a σ-finite measure.
+/-- The pullback of a σ-finite measure along a null measurable function is a σ-finite measure.
 
 This theorem is not true without the measurability assumption.
 For example, let `β` be `ℕ` with σ-algebra `⊥`, i.e., only `∅` and `Set.univ` are measurable.
@@ -692,12 +692,12 @@ Then `μ.comap f = ⊤` since the only nonempty measurable set has measure infin
 and this is not a σ-finite measure.
 -/
 protected theorem SigmaFinite.comap (μ : Measure α) [SigmaFinite μ] {f : β → α}
-    (hf : Measurable f) : SigmaFinite (μ.comap f) :=
+    (hf : NullMeasurable f (μ.comap f)) : SigmaFinite (μ.comap f) :=
   ⟨⟨μ.toFiniteSpanningSetsIn.comap (mapsTo_univ _ _) fun n ↦
-    (hf <| μ.toFiniteSpanningSetsIn.set_mem n).nullMeasurableSet⟩⟩
+    hf <| μ.toFiniteSpanningSetsIn.set_mem n⟩⟩
 
 instance {p : α → Prop} [SigmaFinite μ] : SigmaFinite (μ.comap ((↑) : Subtype p → α)) :=
-  .comap μ measurable_subtypeVal
+  .comap μ measurable_subtypeVal.nullMeasurable
 
 lemma _root_.MeasurableEmbedding.sigmaFinite_map {f : α → β} (hf : MeasurableEmbedding f)
     [SigmaFinite μ] :
