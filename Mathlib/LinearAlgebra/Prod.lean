@@ -232,6 +232,10 @@ theorem fst_eq_coprod : fst R M M₂ = coprod LinearMap.id 0 := by ext; simp
 
 theorem snd_eq_coprod : snd R M M₂ = coprod 0 LinearMap.id := by ext; simp
 
+theorem coprod_prod (f : M →ₗ[R] M₃) (f' : M →ₗ[R] M₄) (g : M₂ →ₗ[R] M₃) (g' : M₂ →ₗ[R] M₄) :
+    coprod (prod f f') (prod g g') = prod (coprod f g) (coprod f' g') := by
+  ext <;> simp
+
 @[simp]
 theorem coprod_comp_prod (f : M₂ →ₗ[R] M₄) (g : M₃ →ₗ[R] M₄) (f' : M →ₗ[R] M₂) (g' : M →ₗ[R] M₃) :
     (f.coprod g).comp (f'.prod g') = f.comp f' + g.comp g' :=
