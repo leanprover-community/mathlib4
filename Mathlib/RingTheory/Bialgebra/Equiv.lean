@@ -181,8 +181,7 @@ theorem coe_toBialgHom : ⇑e.toBialgHom = e :=
 theorem coe_toAlgEquiv : ⇑(e : A ≃ₐ[R] B) = e :=
   rfl
 
-theorem toCoalgEquiv_toCoalgHom :
-    (e.toCoalgEquiv : A →ₗc[R] B) = e.toBialgHom := rfl
+theorem toCoalgEquiv_toCoalgHom : e.toCoalgEquiv.toCoalgHom = e.toBialgHom.toCoalgHom := rfl
 
 section
 

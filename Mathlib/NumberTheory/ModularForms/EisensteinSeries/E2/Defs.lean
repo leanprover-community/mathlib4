@@ -23,10 +23,8 @@ We define the Eisenstein series `E2` of weight `2` and level `1` as a limit of p
 over non-symmetric intervals.
 -/
 
-open UpperHalfPlane hiding I
-
-open ModularForm EisensteinSeries Matrix.SpecialLinearGroup Filter Complex MatrixGroups
-  SummationFilter Real
+open UpperHalfPlane ModularForm EisensteinSeries Matrix.SpecialLinearGroup Filter Complex
+  MatrixGroups SummationFilter Real
 
 @[expose] public noncomputable section
 
