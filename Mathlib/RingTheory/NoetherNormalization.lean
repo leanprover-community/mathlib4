@@ -22,6 +22,7 @@ Then there exists a natural number `s` and an injective homomorphism
 from `k[X_0, X_1, ..., X_(s-1)]` to `A` such that `A` is integral over `k[X_0, X_1, ..., X_(s-1)]`.
 
 ## Strategy of the proof
+
 Suppose `f` is a nonzero polynomial in `n+1` variables.
 First, we construct an algebra equivalence `T` from `k[X_0,...,X_n]` to itself such that
 `f` is mapped to a polynomial in `X_0` with invertible leading coefficient.

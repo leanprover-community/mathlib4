@@ -10,6 +10,9 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Preimmersion
 
 import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subscheme associated to an ideal sheaf
 

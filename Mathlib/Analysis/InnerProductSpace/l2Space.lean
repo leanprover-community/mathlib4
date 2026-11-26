@@ -82,7 +82,7 @@ We also define a *predicate* `IsHilbertSum 𝕜 G V`, where `V : Π i, G i →�
 
 * `exists_hilbertBasis`: A Hilbert space admits a Hilbert basis.
 
-## Keywords
+## Tags
 
 Hilbert space, Hilbert sum, l2, Hilbert basis, unitary equivalence, isometric isomorphism
 -/

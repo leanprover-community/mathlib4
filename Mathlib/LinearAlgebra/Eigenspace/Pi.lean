@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Simultaneous eigenvectors and eigenvalues for families of endomorphisms
 

@@ -207,6 +207,9 @@ def sumSq : Subsemiring T where
 theorem mem_sumSq {s : T} : s ∈ sumSq T ↔ IsSumSq s := by
   simp [← Subsemiring.mem_toNonUnitalSubsemiring]
 
+@[simp] theorem sumSq_toAddSubmonoid :
+    (Subsemiring.sumSq T).toAddSubmonoid = .sumSq T := by ext; simp
+
 @[simp, norm_cast] theorem coe_sumSq : sumSq T = {s : T | IsSumSq s} := by ext; simp
 
 @[simp] theorem closure_isSquare : closure {x : T | IsSquare x} = sumSq T := by

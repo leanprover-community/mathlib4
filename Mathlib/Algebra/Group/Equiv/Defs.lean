@@ -170,6 +170,10 @@ instance : CoeFun (M ≃* N) fun _ ↦ M → N where
 instance : MulEquivClass (M ≃* N) M N where
   map_mul f := f.map_mul'
 
+@[to_additive (attr := simp)]
+theorem coe_toMulEquiv [EquivLike F M N] [MulEquivClass F M N] (f : F) :
+    ⇑(f : M ≃* N) = f := rfl
+
 /-- Two multiplicative isomorphisms agree if they are defined by the
 same underlying function. -/
 @[to_additive (attr := ext)

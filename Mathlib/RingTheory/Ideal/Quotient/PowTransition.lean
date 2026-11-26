@@ -25,9 +25,6 @@ ideals here.
   the natural inclusion `I ^ n • ⊤ → I ^ m • ⊤`.
 - `Ideal.Quotient.factorPow`: the ring homomorphism from `R ⧸ I ^ m`
   to `R ⧸ I ^ n` induced by the natural inclusion `I ^ n → I ^ m`.
-
-## Main results
-
 -/
 
 @[expose] public section
