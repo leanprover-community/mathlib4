@@ -39,9 +39,14 @@ lemma hasEigenvector_toLin_diagonal (d : n → R) (i : n) (b : Basis n R M) :
   ⟨mem_eigenspace_iff.mpr <| by simp [diagonal], Basis.ne_zero b i⟩
 
 /-- Standard basis vectors are eigenvectors of any associated diagonal linear operator. -/
+lemma hasEigenvector_mulVecLin_diagonal (d : n → R) (i : n) :
+    HasEigenvector (diagonal d).mulVecLin (d i) (Pi.basisFun R n i) :=
+  hasEigenvector_toLin_diagonal _ _ (Pi.basisFun R n)
+
+@[deprecated hasEigenvector_mulVecLin_diagonal +typeChanged (since := "2026-11-25")]
 lemma hasEigenvector_toLin'_diagonal (d : n → R) (i : n) :
     HasEigenvector (toLin' (diagonal d)) (d i) (Pi.basisFun R n i) :=
-  hasEigenvector_toLin_diagonal _ _ (Pi.basisFun R n)
+  hasEigenvector_mulVecLin_diagonal d i
 
 set_option linter.overlappingInstances false
 
@@ -70,9 +75,14 @@ lemma hasEigenvalue_toLin_diagonal_iff (d : n → R) {μ : R} [IsDomain R] [IsTo
 
 /-- Eigenvalues of a diagonal linear operator with respect to standard basis
 are the diagonal entries. -/
+lemma hasEigenvalue_mulVecLin_diagonal_iff [IsDomain R] (d : n → R) {μ : R} :
+    HasEigenvalue (diagonal d).mulVecLin μ ↔ (∃ i, d i = μ) :=
+  hasEigenvalue_toLin_diagonal_iff _ <| Pi.basisFun R n
+
+@[deprecated hasEigenvalue_mulVecLin_diagonal_iff +typeChanged (since := "2026-11-25")]
 lemma hasEigenvalue_toLin'_diagonal_iff [IsDomain R] (d : n → R) {μ : R} :
     HasEigenvalue (toLin' (diagonal d)) μ ↔ (∃ i, d i = μ) :=
-  hasEigenvalue_toLin_diagonal_iff _ <| Pi.basisFun R n
+  hasEigenvalue_mulVecLin_diagonal_iff d
 
 end NontrivialCommRing
 
@@ -80,8 +90,9 @@ namespace Matrix
 
 variable [CommRing R] [AddCommGroup M] [Module R M] (d : n → R) {μ : R} (b : Basis n R M)
 
+omit [DecidableEq n] in
 lemma _root_.Module.End.HasEigenvalue.nonempty
-    {A : Matrix n n R} {μ : R} (hμ : HasEigenvalue A.toLin' μ) :
+    {A : Matrix n n R} {μ : R} (hμ : HasEigenvalue A.mulVecLin μ) :
     Nonempty n := by
   rw [hasEigenvalue_iff] at hμ
   contrapose! hμ
@@ -94,9 +105,14 @@ lemma iSup_eigenspace_toLin_diagonal_eq_top :
   exact Submodule.mem_iSup_of_mem (d j) <| by simp [diagonal_apply]
 
 @[simp]
+lemma iSup_eigenspace_mulVecLin_diagonal_eq_top :
+    ⨆ μ, eigenspace (diagonal d).mulVecLin μ = ⊤ :=
+  iSup_eigenspace_toLin_diagonal_eq_top d <| Pi.basisFun R n
+
+@[deprecated iSup_eigenspace_mulVecLin_diagonal_eq_top +typeChanged (since := "2026-11-25")]
 lemma iSup_eigenspace_toLin'_diagonal_eq_top :
     ⨆ μ, eigenspace (diagonal d).toLin' μ = ⊤ :=
-  iSup_eigenspace_toLin_diagonal_eq_top d <| Pi.basisFun R n
+  iSup_eigenspace_mulVecLin_diagonal_eq_top d
 
 @[simp]
 lemma maxGenEigenspace_toLin_diagonal_eq_eigenspace [IsDomain R] :
@@ -115,9 +131,15 @@ lemma maxGenEigenspace_toLin_diagonal_eq_eigenspace [IsDomain R] :
   simp [toLin_apply, mulVec_eq_sum, diagonal_apply, aux, ← Finset.smul_sum]
 
 @[simp]
+lemma maxGenEigenspace_mulVecLin_diagonal_eq_eigenspace [IsDomain R] :
+    maxGenEigenspace (diagonal d).mulVecLin μ = eigenspace (diagonal d).mulVecLin μ :=
+  maxGenEigenspace_toLin_diagonal_eq_eigenspace d <| Pi.basisFun R n
+
+@[deprecated maxGenEigenspace_mulVecLin_diagonal_eq_eigenspace +typeChanged
+  (since := "2026-11-25")]
 lemma maxGenEigenspace_toLin'_diagonal_eq_eigenspace [IsDomain R] :
     maxGenEigenspace (diagonal d).toLin' μ = eigenspace (diagonal d).toLin' μ :=
-  maxGenEigenspace_toLin_diagonal_eq_eigenspace d <| Pi.basisFun R n
+  maxGenEigenspace_mulVecLin_diagonal_eq_eigenspace d
 
 @[simp]
 theorem _root_.LinearMap.spectrum_toMatrix (f : M →ₗ[R] M) (b : Basis n R M) :
@@ -135,8 +157,12 @@ theorem spectrum_toLin (A : Matrix n n R) (b : Basis n R M) :
   AlgEquiv.spectrum_eq (Matrix.toLinAlgEquiv b) A
 
 @[simp]
-theorem spectrum_toLin' (A : Matrix n n R) : spectrum R A.toLin' = spectrum R A :=
+theorem spectrum_mulVecLin (A : Matrix n n R) : spectrum R A.mulVecLin = spectrum R A :=
   AlgEquiv.spectrum_eq Matrix.toLinAlgEquiv' A
+
+@[deprecated spectrum_mulVecLin +typeChanged (since := "2026-11-25")]
+theorem spectrum_toLin' (A : Matrix n n R) : spectrum R A.toLin' = spectrum R A :=
+  spectrum_mulVecLin A
 
 end Matrix
 
@@ -145,6 +171,6 @@ end Matrix
     spectrum R (diagonal d) = Set.range d := by
   ext μ
   rw [← AlgEquiv.spectrum_eq (toLinAlgEquiv <| Pi.basisFun R n), ← hasEigenvalue_iff_mem_spectrum]
-  exact hasEigenvalue_toLin'_diagonal_iff d
+  exact hasEigenvalue_mulVecLin_diagonal_iff d
 
 end SpectrumDiagonal

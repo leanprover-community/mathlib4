@@ -49,7 +49,7 @@ theorem mulVecLin_diagonal (w : n → R) :
     (diagonal w).mulVecLin = LinearMap.pi fun i => w i • LinearMap.proj i :=
   LinearMap.ext fun _ => funext fun _ => mulVec_diagonal _ _ _
 
-@[deprecated mulVecLin_diagonal (since := "2025-05-09")]
+@[deprecated mulVecLin_diagonal +typeChanged (since := "2026-11-25")]
 theorem diagonal_toLin' (w : n → R) :
     toLin' (diagonal w) = LinearMap.pi fun i => w i • LinearMap.proj i :=
   mulVecLin_diagonal w
@@ -67,7 +67,7 @@ theorem ker_mulVecLin_diagonal [DecidableEq m] (w : m → K) :
   simpa [← ker_comp, proj_diagonal, ker_smul', ← iInf_ker_proj] using
     (iSup_range_single_eq_iInf_ker_proj K _ isCompl_compl {i | w i = 0}.toFinite).symm
 
-@[deprecated ker_mulVecLin_diagonal (since := "2025-05-09")]
+@[deprecated ker_mulVecLin_diagonal +typeChanged (since := "2026-11-25")]
 theorem ker_diagonal_toLin' [DecidableEq m] (w : m → K) :
     ker (toLin' (diagonal w)) =
       ⨆ i ∈ { i | w i = 0 }, LinearMap.range (LinearMap.single K (fun _ => K) i) :=

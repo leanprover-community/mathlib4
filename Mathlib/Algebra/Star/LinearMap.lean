@@ -236,15 +236,28 @@ end LinearMap
 
 namespace Matrix
 
-theorem intrinsicStar_toLin' (A : Matrix n m R) :
-    star (toConv A.toLin') = toConv (A.map star).toLin' := by
+omit [DecidableEq m] in
+theorem intrinsicStar_mulVecLin (A : Matrix n m R) :
+    star (toConv A.mulVecLin) = toConv (A.map star).mulVecLin := by
+  classical
   simp [← LinearMap.toMatrix'.injective.eq_iff, LinearMap.toMatrix'_intrinsicStar, WithConv.ext_iff]
 
-/-- Given a matrix `A`, `A.toLin'` is self-adjoint (with respect to the intrinsic star)
+@[deprecated intrinsicStar_mulVecLin +typeChanged (since := "2026-11-25")]
+theorem intrinsicStar_toLin' (A : Matrix n m R) :
+    star (toConv A.toLin') = toConv (A.map star).toLin' :=
+  intrinsicStar_mulVecLin A
+
+omit [DecidableEq m] in
+/-- Given a matrix `A`, `A.mulVecLin` is self-adjoint (with respect to the intrinsic star)
 iff all its elements are self-adjoint. -/
+theorem IntrinsicStar.isSelfAdjoint_mulVecLin_iff (A : Matrix n m R) :
+    IsSelfAdjoint (toConv A.mulVecLin) ↔ ∀ i j, IsSelfAdjoint (A i j) := by
+  simp [IsSelfAdjoint, intrinsicStar_mulVecLin, ← ext_iff]
+
+@[deprecated IntrinsicStar.isSelfAdjoint_mulVecLin_iff +typeChanged (since := "2026-11-25")]
 theorem IntrinsicStar.isSelfAdjoint_toLin'_iff (A : Matrix n m R) :
-    IsSelfAdjoint (toConv A.toLin') ↔ ∀ i j, IsSelfAdjoint (A i j) := by
-  simp [IsSelfAdjoint, intrinsicStar_toLin', ← ext_iff]
+    IsSelfAdjoint (toConv A.toLin') ↔ ∀ i j, IsSelfAdjoint (A i j) :=
+  IntrinsicStar.isSelfAdjoint_mulVecLin_iff A
 
 end Matrix
 end matrix

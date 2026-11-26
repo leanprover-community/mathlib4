@@ -58,7 +58,7 @@ theorem isHermitian_adjMatrix [NonAssocSemiring R] [StarRing R] : (G.adjMatrix R
 
 theorem IsRegularOfDegree.mem_spectrum_adjMatrix [DecidableEq V] [Nonempty V] [Nontrivial R]
     [CommRing R] {d : ℕ} (hd : G.IsRegularOfDegree d) : (d : R) ∈ spectrum R (G.adjMatrix R) := by
-  rw [← Matrix.spectrum_toLin']
+  rw [← Matrix.spectrum_mulVecLin]
   apply End.HasEigenvalue.mem_spectrum
   refine End.hasEigenvalue_of_hasEigenvector (x := 1) ⟨End.mem_genEigenspace_one.mpr ?_, by simp⟩
   ext v
@@ -231,7 +231,7 @@ lemma mem_ker_mulVecLin_lapMatrix_of_connectedComponent {G : SimpleGraph V} [Dec
   rw [LinearMap.mem_ker, mulVecLin_apply, lapMatrix_mulVec_eq_zero_iff_forall_reachable]
   grind [ConnectedComponent.eq]
 
-@[deprecated mem_ker_mulVecLin_lapMatrix_of_connectedComponent (since := "2025-05-18")]
+@[deprecated mem_ker_mulVecLin_lapMatrix_of_connectedComponent +typeChanged (since := "2026-11-25")]
 lemma mem_ker_toLin'_lapMatrix_of_connectedComponent {G : SimpleGraph V} [DecidableRel G.Adj]
     [DecidableEq G.ConnectedComponent] (c : G.ConnectedComponent) :
     (fun i ↦ if connectedComponentMk G i = c then 1 else 0) ∈
@@ -291,7 +291,8 @@ theorem card_connectedComponent_eq_finrank_ker_mulVecLin_lapMatrix :
   classical
   rw [Module.finrank_eq_card_basis G.lapMatrix_ker_basis]
 
-@[deprecated card_connectedComponent_eq_finrank_ker_mulVecLin_lapMatrix (since := "2025-05-18")]
+@[deprecated card_connectedComponent_eq_finrank_ker_mulVecLin_lapMatrix +typeChanged
+  (since := "2026-11-25")]
 theorem card_connectedComponent_eq_finrank_ker_toLin'_lapMatrix :
     Fintype.card G.ConnectedComponent = Module.finrank ℝ (G.lapMatrix ℝ).toLin'.ker :=
   card_connectedComponent_eq_finrank_ker_mulVecLin_lapMatrix G
