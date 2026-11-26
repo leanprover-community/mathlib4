@@ -51,15 +51,16 @@ alias ScottContinuousOn.fromProd := UpperScottContinuousOn.fromProd
 lemma UpperScottContinuous.fromProd {γ : Type*} [Preorder α] [Preorder β] [Preorder γ]
     {f : α × β → γ} (h₁ : ∀ a, UpperScottContinuous (fun b => f (a, b)))
     (h₂ : ∀ b, UpperScottContinuous (fun a => f (a, b))) : UpperScottContinuous f := by
-  simp_rw [← supScottContinuousOn_univ] at ⊢
-  exact .fromProd (fun a ↦ (h₁ a).supScottContinuousOn) (fun b ↦ (h₂ b).supScottContinuousOn)
+  simp_rw [← upperScottContinuousOn_univ] at ⊢
+  exact .fromProd (fun a ↦ (h₁ a).upperScottContinuousOn) (fun b ↦ (h₂ b).upperScottContinuousOn)
     (fun a ↦ (h₁ a).monotone) (fun b ↦ (h₂ b).monotone)
 
 @[deprecated (since := "2026-11-08")]
 alias ScottContinuous.fromProd := UpperScottContinuous.fromProd
 
 @[to_dual]
-lemma UpperScottContinuous.prod {α' β' : Type*} [Preorder α] [Preorder β] [Preorder α'] [Preorder β']
+lemma UpperScottContinuous.prod {α' β' : Type*}
+    [Preorder α] [Preorder β] [Preorder α'] [Preorder β']
     {f : α → α'} {g : β → β'} (hf : UpperScottContinuous f) (hg : UpperScottContinuous g) :
     UpperScottContinuous (Prod.map f g) := by
   refine .fromProd (fun a d hd₁ hd₂ c hdc ↦ ?_) (fun b d hd₁ hd₂ c hdc ↦ ?_)

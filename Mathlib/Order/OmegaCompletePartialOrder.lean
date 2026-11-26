@@ -259,8 +259,9 @@ Scott continuous over chains. -/
 def ωScottContinuous (f : α → β) : Prop :=
     UpperScottContinuousOn (Set.range fun c : Chain α => Set.range c) f
 
-lemma _root_.UpperScottContinuous.ωScottContinuous (hf : UpperScottContinuous f) : ωScottContinuous f :=
-  hf.supScottContinuousOn
+lemma _root_.UpperScottContinuous.ωScottContinuous (hf : UpperScottContinuous f) :
+    ωScottContinuous f :=
+  hf.UpperScottContinuous.upperScottContinuousOn
 
 @[deprecated (since := "2026-11-08")]
 alias _root_.ScottContinuous.ωScottContinuous := UpperScottContinuous.ωScottContinuous

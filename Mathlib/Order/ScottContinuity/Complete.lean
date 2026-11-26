@@ -27,18 +27,18 @@ variable [CompleteLattice α] [CompleteLattice β]
 /-- A restatement of the definition of `UpperScottContinuous` using `sSup`. -/
 @[to_dual
 /-- A restatement of the definition of `LowerScottContinuous` using `sInf`. -/]
-lemma supScottContinuous_iff_map_sSup {f : α → β} :
+lemma upperScottContinuous_iff_map_sSup {f : α → β} :
     UpperScottContinuous f ↔
       ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → f (sSup d) = sSup (f '' d) where
   mp h _ d₁ d₂ := by rw [IsLUB.sSup_eq (h d₁ d₂ (isLUB_iff_sSup_eq.mpr rfl))]
   mpr h _ d₁ d₂ _ hda := by rw [isLUB_iff_sSup_eq, ← (h d₁ d₂), IsLUB.sSup_eq hda]
 
 @[deprecated (since := "2026-11-08")]
-alias scottContinuous_iff_map_sSup := supScottContinuous_iff_map_sSup
+alias scottContinuous_iff_map_sSup := upperScottContinuous_iff_map_sSup
 
 @[to_dual]
 alias ⟨UpperScottContinuous.map_sSup, UpperScottContinuous.of_map_sSup⟩ :=
-  supScottContinuous_iff_map_sSup
+  upperScottContinuous_iff_map_sSup
 
 @[deprecated (since := "2026-11-08")]
 alias ScottContinuous.map_sSup := UpperScottContinuous.map_sSup
@@ -57,24 +57,24 @@ section CompleteLinearOrder
 variable [CompleteLinearOrder β]
 
 @[to_dual]
-lemma supScottContinuous_inf_right (a : β) : UpperScottContinuous fun b ↦ a ⊓ b :=
+lemma upperScottContinuous_inf_right (a : β) : UpperScottContinuous fun b ↦ a ⊓ b :=
   .of_map_sSup (fun d _ _ ↦ by rw [inf_sSup_eq, sSup_image])
 
 @[deprecated (since := "2026-11-08")]
-alias scottContinuous_inf_right := supScottContinuous_inf_right
+alias scottContinuous_inf_right := upperScottContinuous_inf_right
 
 @[to_dual]
-lemma supScottContinuous_inf_left (b : β) : UpperScottContinuous fun a ↦ a ⊓ b :=
+lemma upperScottContinuous_inf_left (b : β) : UpperScottContinuous fun a ↦ a ⊓ b :=
   .of_map_sSup (fun d _ _ ↦ by rw [sSup_inf_eq, sSup_image])
 
 @[deprecated (since := "2026-11-08")]
-alias scottContinuous_inf_left := supScottContinuous_inf_left
+alias scottContinuous_inf_left := upperScottContinuous_inf_left
 
 /- The meet operation is Scott continuous for suprema. -/
 @[to_dual
 /- The join operation is Scott continuous for infima. -/]
 protected lemma UpperScottContinuous.inf : UpperScottContinuous fun b : β × β => b.1 ⊓ b.2 :=
-  .fromProd supScottContinuous_inf_right supScottContinuous_inf_left
+  .fromProd upperScottContinuous_inf_right upperScottContinuous_inf_left
 
 @[deprecated (since := "2026-11-08")]
 alias ScottContinuous.inf₂ := UpperScottContinuous.inf

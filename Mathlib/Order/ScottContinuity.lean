@@ -182,21 +182,21 @@ def UpperScottContinuous (f : α → β) : Prop :=
 @[deprecated (since := "2026-11-08")] alias ScottContinuous := UpperScottContinuous
 
 @[to_dual (attr := simp)]
-lemma supScottContinuousOn_univ : UpperScottContinuousOn univ f ↔ UpperScottContinuous f := by
+lemma upperScottContinuousOn_univ : UpperScottContinuousOn univ f ↔ UpperScottContinuous f := by
   simp [UpperScottContinuousOn, UpperScottContinuous]
 
-@[deprecated (since := "2026-11-08")] alias scottContinuousOn_univ := supScottContinuousOn_univ
+@[deprecated (since := "2026-11-08")] alias scottContinuousOn_univ := upperScottContinuousOn_univ
 
 @[to_dual]
-lemma UpperScottContinuous.supScottContinuousOn {D : Set (Set α)} :
+lemma UpperScottContinuous.upperScottContinuousOn {D : Set (Set α)} :
     UpperScottContinuous f → UpperScottContinuousOn D f := fun h _ _ d₂ d₃ _ hda => h d₂ d₃ hda
 
 @[deprecated (since := "2026-11-08")] alias ScottContinuous.scottContinuousOn :=
-  UpperScottContinuous.supScottContinuousOn
+  UpperScottContinuous.upperScottContinuousOn
 
 @[to_dual]
 protected theorem UpperScottContinuous.monotone (h : UpperScottContinuous f) : Monotone f :=
-  h.supScottContinuousOn.monotone univ (fun _ _ _ ↦ mem_univ _)
+  h.upperScottContinuousOn.monotone univ (fun _ _ _ ↦ mem_univ _)
 
 @[deprecated (since := "2026-11-08")] alias ScottContinuous.monotone :=
   UpperScottContinuous.monotone
@@ -209,14 +209,14 @@ lemma UpperScottContinuous.id : UpperScottContinuous (id : α → α) := by simp
 
 @[to_dual (attr := fun_prop, to_fun (attr := simp))]
 lemma UpperScottContinuous.const (x : β) : UpperScottContinuous (Function.const α x) := by
-  simp_rw [← supScottContinuousOn_univ, UpperScottContinuousOn.const]
+  simp_rw [← upperScottContinuousOn_univ, UpperScottContinuousOn.const]
 
 @[deprecated (since := "2026-11-08")] alias ScottContinuous.const := UpperScottContinuous.const
 
 @[to_dual (attr := fun_prop, to_fun)]
 lemma UpperScottContinuous.comp {g : β → γ}
     (hf : UpperScottContinuous f) (hg : UpperScottContinuous g) : UpperScottContinuous (g ∘ f) := by
-  rw [← supScottContinuousOn_univ] at ⊢ hf hg
+  rw [← upperScottContinuousOn_univ] at ⊢ hf hg
   exact UpperScottContinuousOn.comp (by simp) (by simp [MapsTo]) hg hf
 
 @[deprecated (since := "2026-11-08")] alias ScottContinuous.comp := UpperScottContinuous.comp
@@ -225,20 +225,20 @@ lemma UpperScottContinuous.comp {g : β → γ}
 lemma UpperScottContinuous.prodMk {g : α → γ}
     (hf : UpperScottContinuous f) (hg : UpperScottContinuous g) :
     UpperScottContinuous fun x => (f x, g x) := by
-  rw [← supScottContinuousOn_univ] at ⊢ hf hg
+  rw [← upperScottContinuousOn_univ] at ⊢ hf hg
   exact UpperScottContinuousOn.prodMk (by grind) hf hg
 
 @[deprecated (since := "2026-11-08")] alias ScottContinuous.prodMk := UpperScottContinuous.prodMk
 
 @[to_dual (attr := simp, fun_prop)]
 lemma UpperScottContinuous.fst : UpperScottContinuous (Prod.fst : α × β → α) := by
-  simp_rw [← supScottContinuousOn_univ, UpperScottContinuousOn.fst]
+  simp_rw [← upperScottContinuousOn_univ, UpperScottContinuousOn.fst]
 
 @[deprecated (since := "2026-11-08")] alias ScottContinuous.fst := UpperScottContinuous.fst
 
 @[to_dual (attr := simp, fun_prop)]
 lemma UpperScottContinuous.snd : UpperScottContinuous (Prod.snd : α × β → β) := by
-  simp_rw [← supScottContinuousOn_univ, UpperScottContinuousOn.snd]
+  simp_rw [← upperScottContinuousOn_univ, UpperScottContinuousOn.snd]
 
 @[deprecated (since := "2026-11-08")] alias ScottContinuous.snd := UpperScottContinuous.snd
 
@@ -268,7 +268,7 @@ protected lemma UpperScottContinuous.sup :
 @[fun_prop]
 lemma UpperScottContinuousOn.sup {D : Set (Set (β × β))} :
     UpperScottContinuousOn D fun (a, b) => (a ⊔ b : β) :=
-  UpperScottContinuous.sup.supScottContinuousOn
+  UpperScottContinuous.sup.upperScottContinuousOn
 
 @[deprecated (since := "2026-11-08")] alias ScottContinuousOn.sup₂ := UpperScottContinuousOn.sup
 

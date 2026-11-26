@@ -81,7 +81,7 @@ hf.directedOn_range.sSup_le <| Set.forall_mem_range.2 ha
 --TODO: We could mimic more `sSup`/`iSup` lemmas
 
 /-- Scott-continuity takes on a simpler form in complete partial orders. -/
-lemma CompletePartialOrder.supScottContinuous {f : α → β} :
+lemma CompletePartialOrder.upperScottContinuous_iff {f : α → β} :
     UpperScottContinuous f ↔
     ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → IsLUB (f '' d) (f (sSup d)) := by
   refine ⟨fun h d hd₁ hd₂ ↦ h hd₁ hd₂ hd₂.isLUB_sSup, fun h d hne hd a hda ↦ ?_⟩
@@ -89,7 +89,7 @@ lemma CompletePartialOrder.supScottContinuous {f : α → β} :
   exact h hne hd
 
 @[deprecated (since := "2026-11-08")]
-alias CompletePartialOrder.scottContinuous := CompletePartialOrder.supScottContinuous
+alias CompletePartialOrder.scottContinuous := CompletePartialOrder.upperScottContinuous_iff
 
 open OmegaCompletePartialOrder
 
