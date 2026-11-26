@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
 
 import Mathlib.CategoryTheory.SmallObject.WellOrderInductionData
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # ObjectProperty.isLocal is stable under transfinite compositions
 

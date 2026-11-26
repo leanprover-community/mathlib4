@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Category.Grp.Colimits
 
 import Mathlib.Algebra.Module.CharacterModule
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Existence of "big" colimits in the category of additive commutative groups
 

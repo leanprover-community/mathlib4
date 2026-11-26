@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Star structure on `CliffordAlgebra`
 

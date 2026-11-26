@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.SimplexCategory.DeltaZeroIter
 public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Iterations of `δ 0` and `σ 0`
 

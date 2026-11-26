@@ -37,7 +37,7 @@ A graph is complete multipartite iff non-adjacency is transitive.
   `r` subsets of vertices each of size `t` such that the vertices in distinct subsets are
   adjacent.
 
-## Implementation Notes
+## Implementation notes
 
 The definition of `completeEquipartiteGraph` is similar to `completeMultipartiteGraph`
 except that `Sigma.fst` is replaced by `Prod.fst` in the definition. The difference is that the

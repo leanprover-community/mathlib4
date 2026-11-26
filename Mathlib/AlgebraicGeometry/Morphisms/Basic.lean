@@ -88,7 +88,7 @@ For `HasAffineProperty P Q` and `f : X ⟶ Y`, we provide these API lemmas:
 - `AlgebraicGeometry.HasAffineProperty.isStableUnderBaseChange`:
     If `Q` is stable under affine base change, then `P` is stable under arbitrary base change.
 
-## Implementation details
+## Implementation notes
 
 The properties `IsZariskiLocalAtTarget` and `IsZariskiLocalAtSource` are defined as abbreviations
 for the respective local property of morphism properties defined generally for categories equipped

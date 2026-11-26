@@ -11,6 +11,9 @@ public import Mathlib.Data.ENat.Lattice
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
 import Mathlib.CategoryTheory.Abelian.Exact
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Injective dimension
 

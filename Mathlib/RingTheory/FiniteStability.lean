@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.TensorProduct.MvPolynomial
 
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Stability of finiteness conditions in commutative algebra
 

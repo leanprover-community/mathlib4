@@ -10,6 +10,9 @@ public import Mathlib.MeasureTheory.Measure.Regular
 
 import Mathlib.MeasureTheory.Measure.RegularityCompacts
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tight sets of measures
 

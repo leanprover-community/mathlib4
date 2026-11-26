@@ -137,13 +137,13 @@ def quotientRightRelEquivQuotientLeftRel : Quotient (QuotientGroup.rightRel s) �
       rw [leftRel_apply, rightRel_apply]
       exact fun h => congr($(by simp) ∈ s).mp (s.inv_mem h)
   left_inv g :=
-    Quotient.inductionOn' g fun g =>
+    Quotient.inductionOn g fun g =>
       Quotient.sound'
         (by
           simp only [inv_inv]
           exact Quotient.exact' rfl)
   right_inv g :=
-    Quotient.inductionOn' g fun g =>
+    Quotient.inductionOn g fun g =>
       Quotient.sound'
         (by
           simp only [inv_inv]
@@ -170,7 +170,7 @@ lemma range_mk : range (QuotientGroup.mk (s := s)) = univ := range_eq_univ.mpr m
 
 @[to_additive (attr := elab_as_elim)]
 theorem induction_on {C : α ⧸ s → Prop} (x : α ⧸ s) (H : ∀ z, C (QuotientGroup.mk z)) : C x :=
-  Quotient.inductionOn' x H
+  Quotient.inductionOn x H
 
 @[to_additive]
 instance : Coe α (α ⧸ s) :=

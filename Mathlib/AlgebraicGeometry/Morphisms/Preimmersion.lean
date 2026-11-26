@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicGeometry.Morphisms.SurjectiveOnStalks
 public import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Preimmersions of schemes
 

@@ -9,6 +9,9 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Rank
 
 import Mathlib.Basic.Finite.Sigma
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Existence of a rank function to natural numbers
 
