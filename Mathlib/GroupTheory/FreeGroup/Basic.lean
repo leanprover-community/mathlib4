@@ -195,12 +195,12 @@ respectively. This is also known as Newman's diamond lemma. -/
   /-- **Church-Rosser theorem** for word reduction: If `w1 w2 w3` are words such that `w1` reduces
   to `w2` and `w3` respectively, then there is a word `w4` such that `w2` and `w3` reduce to `w4`
   respectively. This is also known as Newman's diamond lemma. -/]
-theorem church_rosser : Red L₁ L₂ → Red L₁ L₃ → Join Red L₂ L₃ := by
-  suffices IsConfluent (@Red.Step α) from (this.join_of_rel_of_rel · ·)
-  refine Relation.IsConfluent.of_reflGen_reflTransGen fun _ b c hab hac ↦ ?_
-  rcases Red.Step.diamond hab hac rfl with rfl | ⟨d, hbd, hcd⟩
-  · exact ⟨b, .refl, .refl⟩
-  · exact ⟨d, .single hbd, hcd.to_red⟩
+theorem church_rosser : Red L₁ L₂ → Red L₁ L₃ → Join Red L₂ L₃ :=
+  have : IsStronglyConfluent (@Step α) := ⟨fun _ b _ hab hac ↦
+    match Step.diamond hab hac rfl with
+    | .inl rfl => ⟨b, .refl, .refl⟩
+    | .inr ⟨d, hbd, hcd⟩ => ⟨d, .single hbd, hcd.to_red⟩⟩
+  (IsConfluent.of_reflGen_reflTransGen.join_of_rel_of_rel · ·)
 
 @[to_additive]
 theorem cons_cons {p} : Red L₁ L₂ → Red (p :: L₁) (p :: L₂) :=
