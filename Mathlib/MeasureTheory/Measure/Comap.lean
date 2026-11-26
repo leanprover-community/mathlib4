@@ -167,13 +167,19 @@ lemma comap_comap (hf' : ∀ s, MeasurableSet s → MeasurableSet (f '' s)) (hg 
       comap_apply _ (hg.comp hf) (fun t ht ↦ image_comp g f _ ▸ hg' _ <| hf' _ ht) _ hs, image_comp]
   · rw [comap, dite_eq_right <| mt And.left hf, comap, dite_eq_right fun h ↦ hf h.1.of_comp]
 
-theorem comap_sum {ι : Type*} [Countable ι] {μ : ι → Measure β}
-    (hf : ∀ i s, MeasurableSet s → NullMeasurableSet (f '' s) (μ i)) :
+theorem comap_sum' {ι : Type*} {μ : ι → Measure β}
+    (hf : ∀ s, MeasurableSet s → NullMeasurableSet (f '' s) (sum μ)) :
     comap f (sum μ) = sum fun i ↦ comap f (μ i) := by
+  have hμ i s hs := (hf s hs).mono (le_sum μ i)
   by_cases hfi : Injective f
   · ext1 s hs
-    simp +contextual [sum_apply_of_countable, comap_apply₀, hs.nullMeasurableSet, hfi, hf]
+    simp +contextual [sum_apply₀, comap_apply₀, hs, hfi, hf, hμ]
   · simp [comap_undef, hfi]
+
+theorem comap_sum {ι : Type*} [Countable ι] {μ : ι → Measure β}
+    (hf : ∀ i s, MeasurableSet s → NullMeasurableSet (f '' s) (μ i)) :
+    comap f (sum μ) = sum fun i ↦ comap f (μ i) :=
+  comap_sum' fun s hs ↦ nullMeasurableSet_sum.mpr fun i ↦ hf i s hs
 
 lemma comap_smul {μ : Measure β} (c : ℝ≥0∞) : comap f (c • μ) = c • comap f μ := by
   obtain rfl | hc := eq_or_ne c 0

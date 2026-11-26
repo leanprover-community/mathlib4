@@ -543,11 +543,11 @@ protected theorem sigmaFinite (h : μ.FiniteSpanningSetsIn C) : SigmaFinite μ :
 /-- If `μ` has finite spanning sets in `C`, the preimages of these sets under `f` are measurable,
 and `(f ⁻¹' ·)` maps `C` to `S`, then `μ.comap f` has finite spanning sets in `S`. -/
 protected def comap (h : μ.FiniteSpanningSetsIn C) {S : Set (Set β)} {f : β → α}
-    (hf : MapsTo (f ⁻¹' ·) C S) (hmeas : ∀ n, MeasurableSet (f ⁻¹' h.set n)) :
+    (hf : MapsTo (f ⁻¹' ·) C S) (hmeas : ∀ n, NullMeasurableSet (f ⁻¹' h.set n) (μ.comap f)) :
     (μ.comap f).FiniteSpanningSetsIn S where
   set n := f ⁻¹' h.set n
   set_mem n := hf <| h.set_mem n
-  finite n := (comap_apply_le _ _ (hmeas n).nullMeasurableSet).trans_lt <|
+  finite n := (comap_apply_le _ _ (hmeas n)).trans_lt <|
     (measure_mono (image_preimage_subset _ _)).trans_lt <| h.finite n
   spanning := by simp [← preimage_iUnion, h.spanning]
 
