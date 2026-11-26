@@ -592,11 +592,9 @@ theorem exists_injective_not_surjective (α : Type*) [Infinite α] :
 theorem exists_injective_not_surjective_iff (α : Type*) :
     Infinite α ↔ ∃ f : α → α, Injective f ∧ ¬ Surjective f := by
   refine ⟨fun h ↦ ?_, fun ⟨f, hf, hf'⟩ ↦ ?_⟩
-  · have := h
-    exact exists_injective_not_surjective α
+  · exact exists_injective_not_surjective α
   · rw [← not_finite_iff_infinite]
     intro h
-    have := h
     exact hf' (Finite.injective_iff_surjective.mp hf)
 
 /-- An infinite type admits a surjective self-map that is not injective.
@@ -613,11 +611,9 @@ theorem exists_surjective_not_injective (α : Type*) [Infinite α] :
 theorem exists_surjective_not_injective_iff (α : Type*) :
     Infinite α ↔ ∃ f : α → α, Surjective f ∧ ¬ Injective f := by
   refine ⟨fun h ↦ ?_, fun ⟨f, hf, hf'⟩ ↦ ?_⟩
-  · have := h
-    exact exists_surjective_not_injective α
+  · exact exists_surjective_not_injective α
   · rw [← not_finite_iff_infinite]
     intro h
-    have := h
     exact hf' (Finite.injective_iff_surjective.mpr hf)
 
 /-- An infinite type is equivalent to a proper subset of itself.
