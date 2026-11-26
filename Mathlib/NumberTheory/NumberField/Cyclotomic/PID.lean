@@ -12,6 +12,9 @@ meta import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Sqrt
 import Mathlib.NumberTheory.NumberField.Cyclotomic.Ideal
 import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Tactic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cyclotomic fields whose ring of integers is a PID.
 

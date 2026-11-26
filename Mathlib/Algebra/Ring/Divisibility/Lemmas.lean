@@ -9,6 +9,9 @@ public import Mathlib.Algebra.GCDMonoid.Basic
 public import Mathlib.Data.Nat.Choose.Sum
 public import Mathlib.GroupTheory.GroupAction.Ring
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about divisibility in rings
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Set.Countable
 public import Mathlib.Order.Filter.Curry
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Filters with countable intersection property
 
