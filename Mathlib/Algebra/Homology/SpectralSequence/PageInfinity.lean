@@ -34,7 +34,7 @@ public section
 
 namespace CategoryTheory
 
-open Category ZeroObject
+open Category ZeroObject Limits
 
 variable {C : Type*} [Category C] [Abelian C]
   {ι : Type*} {c : ℤ → ComplexShape ι} {r₀ : ℤ}
@@ -47,7 +47,7 @@ class HasPageInfinityAt (E : SpectralSequence C c r₀) (pq : ι) : Prop where
   exists_hasEdgeMonoAtFrom (E pq) : ∃ (r : ℤ), E.HasEdgeMonoAtFrom pq r
   exists_hasEdgeEpiAtFrom (E pq) : ∃ (r : ℤ), E.HasEdgeEpiAtFrom pq r
 
-variable (E E' : SpectralSequence C c r₀) (f : E ⟶ E') (pq : ι)
+variable (E E' E'' : SpectralSequence C c r₀) (f : E ⟶ E') (g : E' ⟶ E'') (pq : ι)
 
 lemma HasPageInfinityAt.mk' (r : ℤ)
     (_ : E.HasEdgeMonoAtFrom pq r := by infer_instance)
@@ -97,14 +97,24 @@ lemma rMin_le_iff (r : ℤ) :
 lemma le₀_rMin : r₀ ≤ E.rMin pq :=
   E.le₀_of_hasEdgeMonoAt pq _
 
+end
+
 open Classical in
 /-- If `E` is a spectral sequence and `pq` is such that
 `E.HasPageInfinityAt pq` holds, this object identifies to
 `E_r^{pq}` for any big enough `r` (precisely when `E.rMin pq ≤ r`).
 Otherwise, we set it to be the zero object. -/
-noncomputable def pageInfinity (pq : ι) : C :=
+noncomputable def pageInfinity : C :=
   if _ : E.HasPageInfinityAt pq then
     (E.page (E.rMin pq) (E.le₀_rMin pq)).X pq else 0
+
+lemma isZero_pageInfinity (hpq : ¬ E.HasPageInfinityAt pq) :
+    IsZero (E.pageInfinity pq) := by
+  simpa [pageInfinity, dite_eq_right hpq] using isZero_zero C
+
+section
+
+variable [E.HasPageInfinityAt pq]
 
 /-- Auxiliary definition for `edgeMono` and `edgeEpi`. -/
 private noncomputable def pageInfinityIso' :
@@ -192,17 +202,22 @@ instance :
 
 end
 
-variable {E E'} in
+section
+
+variable {E E' E''}
+
+open Classical in
 /-- The morphism `E.pageInfinity pq ⟶ E'.pageInfinity pq` that is induced by
 a morphism `E ⟶ E'` of spectral sequences. -/
-noncomputable def Hom.mapPageInfinity
-    [E.HasPageInfinityAt pq] [E'.HasPageInfinityAt pq] :
+noncomputable def Hom.mapPageInfinity :
     E.pageInfinity pq ⟶ E'.pageInfinity pq :=
-  haveI := E.le₀_rMin pq
-  (E.pageInfinityIso pq (max (E.rMin pq) (E'.rMin pq))).inv ≫ (f.hom _).f pq ≫
-    (E'.pageInfinityIso pq (max (E.rMin pq) (E'.rMin pq))).hom
+  if _ : E.HasPageInfinityAt pq then
+    if _ : E'.HasPageInfinityAt pq then
+      haveI := E.le₀_rMin pq
+      (E.pageInfinityIso pq (max (E.rMin pq) (E'.rMin pq))).inv ≫ (f.hom _).f pq ≫
+        (E'.pageInfinityIso pq (max (E.rMin pq) (E'.rMin pq))).hom
+    else 0 else 0
 
-variable {E E'} in
 @[reassoc (attr := simp)]
 lemma Hom.edgeMono_naturality (r : ℤ)
     [E.HasPageInfinityAt pq] [E.HasEdgeMonoAtFrom pq r]
@@ -213,13 +228,12 @@ lemma Hom.edgeMono_naturality (r : ℤ)
   have := E.le₀_rMin pq
   let r' := max (E.rMin pq) (E'.rMin pq)
   have : f.mapPageInfinity pq ≫ E'.edgeMono pq r' = E.edgeMono pq r' ≫ (f.hom r').f pq := by
-    simp [Hom.mapPageInfinity, r']
+    simp [Hom.mapPageInfinity, r', dite_eq_left]
   by_cases r ≤ r'
   · simp only [← edgeMono_edgeMonoSteps _ pq r r', reassoc_of% this, Category.assoc,
       edgeMonoSteps_naturality f pq r r']
   · simp [← cancel_mono (E'.edgeMonoSteps pq r' r), this, edgeMonoSteps_naturality]
 
-variable {E E'} in
 @[reassoc (attr := simp)]
 lemma Hom.edgeEpi_naturality (r : ℤ)
     [E.HasPageInfinityAt pq] [E.HasEdgeEpiAtFrom pq r]
@@ -230,13 +244,12 @@ lemma Hom.edgeEpi_naturality (r : ℤ)
   have := E.le₀_rMin pq
   let r' := max (E.rMin pq) (E'.rMin pq)
   have : E.edgeEpi pq r' ≫ f.mapPageInfinity pq = (f.hom r').f pq ≫ E'.edgeEpi pq r' := by
-    simp [Hom.mapPageInfinity, r']
+    simp [Hom.mapPageInfinity, r', dite_eq_left]
   by_cases r ≤ r'
   · simp only [← edgeEpiSteps_edgeEpi _ pq r r', Category.assoc,
       edgeEpiSteps_naturality_assoc, this]
   · simp [← cancel_epi (E.edgeEpiSteps pq r' r), this, ← edgeEpiSteps_naturality_assoc f pq r' r]
 
-variable {E E'} in
 lemma Hom.edgeMono_hom_f_edgeEpi (r : ℤ)
     [E.HasPageInfinityAt pq] [E.HasEdgeMonoAtFrom pq r]
     [E'.HasPageInfinityAt pq] [E'.HasEdgeEpiAtFrom pq r] :
@@ -248,14 +261,32 @@ lemma Hom.edgeMono_hom_f_edgeEpi (r : ℤ)
     ← E'.edgeEpiSteps_edgeEpi_assoc pq r r']
   simp
 
-variable {E E'} in
-lemma Hom.isIso_mapPageInfinity_of_isIso_hom (r : ℤ) (pq : ι) {hr : r₀ ≤ r}
+lemma Hom.isIso_mapPageInfinity_of_isIso_hom (r : ℤ) {hr : r₀ ≤ r}
     (hf : IsIso (f.hom r hr)) [E.HasPageInfinityAt pq] [E'.HasPageInfinityAt pq] :
     IsIso (mapPageInfinity f pq) := by
   let r' := max r (max (E.rMin pq) (E'.rMin pq))
   have := f.isIso_hom_of_ge r r'
   rw [← f.edgeMono_hom_f_edgeEpi pq r']
   infer_instance
+
+variable (E) in
+@[simp]
+lemma Hom.mapPageInfinity_id :
+    Hom.mapPageInfinity (𝟙 E) pq = 𝟙 _ := by
+  by_cases h : E.HasPageInfinityAt pq
+  · simp [← Hom.edgeMono_hom_f_edgeEpi (𝟙 E) pq (E.rMin pq)]
+  · exact (E.isZero_pageInfinity pq h).eq_of_src ..
+
+@[reassoc (attr := simp)]
+lemma Hom.mapPageInfinity_comp [E'.HasPageInfinityAt pq] :
+    (f ≫ g).mapPageInfinity pq = f.mapPageInfinity pq ≫ g.mapPageInfinity pq := by
+  by_cases hE : E.HasPageInfinityAt pq
+  · by_cases hE'' : E''.HasPageInfinityAt pq
+    · simp [← Hom.edgeMono_hom_f_edgeEpi _ pq (max (E.rMin pq) (max (E'.rMin pq) (E''.rMin pq)))]
+    · exact (E''.isZero_pageInfinity pq hE'').eq_of_tgt ..
+  · exact (E.isZero_pageInfinity pq hE).eq_of_src ..
+
+end
 
 end SpectralSequence
 
