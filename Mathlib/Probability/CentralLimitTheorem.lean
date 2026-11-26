@@ -220,10 +220,10 @@ theorem tendstoInDistribution_inv_sqrt_smul_sum_sub
     simp [variance_eq_sub (hX.const_inner t), hY2, hYmean]
   simpa [hYmean, real_inner_comm, real_inner_smul_right, inner_sum, inner_sub_left, inner_sub_right]
     using
-    (tendstoInDistribution_inv_sqrt_mul_sum_sub (X := fun i ω ↦ ⟪t, X i ω⟫) (Y := fun ω ↦ ⟪t, Y ω⟫)
-      (by simpa [hYVar] using (hY.inner_multivariateGaussian hS t)) (hX.const_inner t)
+    tendstoInDistribution_inv_sqrt_mul_sum_sub (X := fun i ω ↦ ⟪t, X i ω⟫) (Y := fun ω ↦ ⟪t, Y ω⟫)
+      (by simpa [hYVar] using hY.inner_multivariateGaussian hS t) (hX.const_inner t)
       (hindep.comp (fun _ x ↦ ⟪t, x⟫) (by fun_prop))
-      (fun i ↦ (hident i).comp (u := fun x ↦ ⟪t, x⟫) (by fun_prop)))
+      (fun i ↦ (hident i).comp (by fun_prop))
 
 /-- **Multivariate Central Limit Theorem:** Given a sequence of random variables
 `X : ℕ → Ω → EuclideanSpace ℝ ι` that are independent, identically distributed, centered,
