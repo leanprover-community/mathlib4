@@ -1,20 +1,23 @@
 /-
-Staged for Mathlib — provenance:
-  Source: DavidFox998/riemann-hypothesis-four-routes,
-  upstream/RouteC/lean/growthbound.lean, `RHRouteC.exp_loglog_dominates_sq`
-  (read at unified tree 5bf712bd, 2026-11-25).
-  Statement and proof are David's, unchanged in substance. Changes are
-  presentational only: namespace/name in Mathlib style, docstring,
-  imports trimmed to what the lemma uses (the source file also carries
-  the Route C zeta definitions, which are not part of this piece), and
-  one API rename for current Mathlib master (`atTop_mul_atTop` →
-  `atTop_mul_atTop₀`, the ring variant, Order/Filter/AtTopBot/Ring).
-  Proposed generalization (any fixed power of log in place of 2) is NOT
-  applied here — it changes the statement and waits for David's sign-off.
+Copyright (c) 2026 David Fox. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: David Fox
 -/
+module
 
-import Mathlib.Analysis.SpecialFunctions.Log.Basic
-import Mathlib.Analysis.SpecialFunctions.Exp
+public import Mathlib.Analysis.SpecialFunctions.Log.Basic
+public import Mathlib.Analysis.SpecialFunctions.Exp
+
+/-!
+# The exponential of `log t / log (log t)` dominates powers of `log t`
+
+For positive constants `C` and `c₁`, `exp (c₁ * log t / log (log t))`
+eventually dominates `C * (log t) ^ 2`. This growth comparison is the
+analytic engine of a growth-bound/repulsion argument in the author's
+Riemann Hypothesis formalization work (Route C), where the upper bound
+`C * (log t) ^ 2` on the critical line is contradicted by a lower bound
+of exactly this exponential shape.
+-/
 
 open Filter
 
