@@ -12,7 +12,6 @@ public import Mathlib.Tactic.Push
 import all Lean.MetavarContext -- for `mkAuxMVarType`
 
 /-!
-
 # Without loss of generality tactic
 
 The tactic `wlog h : P` will add an assumption `h : P` to the main goal,
@@ -21,7 +20,6 @@ where `P` holds (typically by symmetry). `wlog! h : P` is a variant that will al
 at `h : ¬ P`.
 
 The new goal will be placed at the top of the goal stack.
-
 -/
 
 public meta section

@@ -23,7 +23,6 @@ is an integral domain.
 Given a non-zero power series `f`, `divided_by_X_pow_order f` is the power series obtained by
 dividing out the largest power of X that divides `f`, that is its order. This is useful when
 proving that `R⟦X⟧` is a normalization monoid, which is done in `PowerSeries.Inverse`.
-
 -/
 
 @[expose] public section

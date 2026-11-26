@@ -25,7 +25,6 @@ It contains theorems relating these to each other, as well as to `LinearMap.ker`
   - `LinearMap.single`
 - pi types in the domain:
   - `LinearMap.diag`
-
 -/
 
 @[expose] public section
@@ -66,7 +65,7 @@ theorem proj_comp_funLeft (f : ι' → ι) (i : ι') :
 theorem iInf_ker_proj : (⨅ i, ker (proj i : ((i : ι) → φ i) →ₗ[R] φ i) :
     Submodule R ((i : ι) → φ i)) = ⊥ :=
   bot_unique <|
-    IsConcreteLE.le_iff.2 fun a h => by
+    le_iff_mem_imp_mem.2 fun a h => by
       simp only [mem_iInf, mem_ker, proj_apply] at h
       exact (mem_bot _).2 (funext fun i => h i)
 
@@ -135,9 +134,9 @@ theorem proj_comp_single_ne (i j : ι) (h : i ≠ j) : (proj i).comp (single R �
 theorem iSup_range_single_le_iInf_ker_proj (I J : Set ι) (h : Disjoint I J) :
     ⨆ i ∈ I, range (single R φ i) ≤ ⨅ i ∈ J, ker (proj i : (∀ i, φ i) →ₗ[R] φ i) := by
   refine iSup_le fun i => iSup_le fun hi => range_le_iff_comap.2 ?_
-  simp only [← ker_comp, eq_top_iff, IsConcreteLE.le_iff, mem_ker, comap_iInf, mem_iInf]
+  simp only [← ker_comp, eq_top_iff, le_iff_mem_imp_mem, mem_ker, comap_iInf, mem_iInf]
   rintro b - j hj
-  rw [proj_comp_single_ne R φ j i, zero_apply]
+  rw [proj_comp_single_ne R φ j i, LinearMap.zero_apply]
   rintro rfl
   exact h.le_bot ⟨hi, hj⟩
 
@@ -169,7 +168,7 @@ theorem disjoint_single_single (I J : Set ι) (h : Disjoint I J) :
   refine
     Disjoint.mono (iSup_range_single_le_iInf_ker_proj _ _ _ _ disjoint_compl_right)
       (iSup_range_single_le_iInf_ker_proj _ _ _ _ disjoint_compl_right) ?_
-  simp only [disjoint_iff_inf_le, IsConcreteLE.le_iff, mem_iInf, mem_inf, mem_ker, mem_bot,
+  simp only [disjoint_iff_inf_le, le_iff_mem_imp_mem, mem_iInf, mem_inf, mem_ker, mem_bot,
     proj_apply, funext_iff]
   rintro b ⟨hI, hJ⟩ i
   classical
@@ -204,7 +203,8 @@ theorem lsum_apply (S) [AddCommMonoid M] [Module R M] [Fintype ι] [Semiring S]
 theorem lsum_piSingle (S) [AddCommMonoid M] [Module R M] [Fintype ι] [Semiring S]
     [Module S M] [SMulCommClass R S M] (f : (i : ι) → φ i →ₗ[R] M) (i : ι) (x : φ i) :
     lsum R φ S f (Pi.single i x) = f i x := by
-  simp_rw [lsum_apply, sum_apply, comp_apply, proj_apply, apply_single, Fintype.sum_pi_single']
+  simp_rw [lsum_apply, LinearMap.sum_apply, comp_apply, proj_apply, apply_single,
+    Fintype.sum_pi_single']
 
 @[simp high]
 theorem lsum_single (S) [Fintype ι] [Semiring S]
@@ -250,7 +250,7 @@ def iInfKerProjEquiv {I J : Set ι} [DecidablePred fun i => i ∈ I] (hd : Disjo
     simp only [mem_iInf, mem_ker, proj_apply, pi_apply]
     intro j hjJ
     have : j ∉ I := fun hjI => hd.le_bot ⟨hjI, hjJ⟩
-    rw [dite_eq_right this, zero_apply]
+    rw [dite_eq_right this, LinearMap.zero_apply]
   · simp only [pi_comp, comp_assoc, subtype_comp_codRestrict, proj_pi, Subtype.coe_prop]
     ext b ⟨j, hj⟩
     simp only [dite_eq_left,
@@ -619,7 +619,6 @@ definitionally equal to the result using `LinearMap.vecCons`, as `Fin.cases` and
 application do not commute definitionally.
 
 Versions for when `f₁ f₂ f₃` are bilinear maps are also provided.
-
 -/
 
 

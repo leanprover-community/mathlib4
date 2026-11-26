@@ -28,6 +28,7 @@ This file defines the discriminant of a number field.
   finitely many number fields (in some fixed extension of `ℚ`) of discriminant bounded by `N`.
 
 ## Tags
+
 number field, discriminant
 -/
 
@@ -38,7 +39,8 @@ public section
 
 namespace NumberField
 
-open Module NumberField NumberField.InfinitePlace Matrix
+open Module NumberField NumberField.InfinitePlace
+open Matrix hiding zpow_neg_one zpow_mul
 
 open scoped Real nonZeroDivisors
 
@@ -104,16 +106,16 @@ theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis 
           ((latticeBasis K).reindex e.symm), volume_fundamentalDomain_stdBasis, mul_one]
         rfl
       _ = ‖(matrixToStdBasis K).det * N.det‖₊ := by
-        rw [← nnnorm_real, ← ofRealHom_eq_coe, RingHom.map_det, RingHom.mapMatrix_apply, this,
+        rw [← nnNorm_real, ← ofRealHom_eq_coe, RingHom.map_det, RingHom.mapMatrix_apply, this,
           det_mul, det_transpose, det_reindex_self]
       _ = (2 : ℝ≥0∞)⁻¹ ^ Fintype.card {w : InfinitePlace K // IsComplex w} * sqrt ‖N.det ^ 2‖₊ := by
         have : ‖Complex.I‖₊ = 1 := by rw [← norm_toNNReal, norm_I, Real.toNNReal_one]
-        rw [det_matrixToStdBasis, nnnorm_mul, nnnorm_pow, nnnorm_mul, this, mul_one, nnnorm_inv,
+        rw [det_matrixToStdBasis, nnNorm_mul, nnNorm_pow, nnNorm_mul, this, mul_one, nnNorm_inv,
           coe_mul, ENNReal.coe_pow, ← norm_toNNReal, RCLike.norm_two, Real.toNNReal_ofNat,
-          coe_inv two_ne_zero, coe_ofNat, nnnorm_pow, NNReal.sqrt_sq]
+          coe_inv two_ne_zero, coe_ofNat, nnNorm_pow, NNReal.sqrt_sq]
       _ = (2 : ℝ≥0∞)⁻¹ ^ Fintype.card { w // IsComplex w } * NNReal.sqrt ‖discr K‖₊ := by
         rw [← Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two, Algebra.discr_reindex,
-          ← coe_discr, map_intCast, ← Complex.nnnorm_intCast]
+          ← coe_discr, map_intCast, ← Complex.nnNorm_intCast]
   ext : 2
   dsimp only [M]
   rw [Matrix.map_apply, Basis.toMatrix_apply, Basis.coe_reindex, Function.comp_apply,
@@ -128,7 +130,7 @@ theorem _root_.NumberField.mixedEmbedding.covolume_integerLattice :
   rw [ZLattice.covolume_eq_measure_fundamentalDomain _ _ (fundamentalDomain_integerLattice K),
     measureReal_def,
     volume_fundamentalDomain_latticeBasis, ENNReal.toReal_mul, ENNReal.toReal_pow,
-    ENNReal.toReal_inv, toReal_ofNat, ENNReal.coe_toReal, Real.coe_sqrt, coe_nnnorm,
+    ENNReal.toReal_inv, toReal_ofNat, ENNReal.coe_toReal, Real.coe_sqrt, coe_nnNorm,
     Int.norm_eq_abs]
 
 open scoped Classical in
@@ -140,12 +142,12 @@ theorem _root_.NumberField.mixedEmbedding.covolume_idealLattice (I : (Fractional
     measureReal_def,
     volume_fundamentalDomain_fractionalIdealLatticeBasis, volume_fundamentalDomain_latticeBasis,
     ENNReal.toReal_mul, ENNReal.toReal_mul, ENNReal.toReal_pow, ENNReal.toReal_inv, toReal_ofNat,
-    ENNReal.coe_toReal, Real.coe_sqrt, coe_nnnorm, Int.norm_eq_abs,
+    ENNReal.coe_toReal, Real.coe_sqrt, coe_nnNorm, Int.norm_eq_abs,
     ENNReal.toReal_ofReal (Rat.cast_nonneg.mpr (FractionalIdeal.absNorm_nonneg I.val)), mul_assoc]
 
 theorem exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
     ∃ a ∈ (I : FractionalIdeal (𝓞 K)⁰ K), a ≠ 0 ∧
-      |Algebra.norm ℚ (a : K)| ≤ FractionalIdeal.absNorm I.1 * (4 / π) ^ nrComplexPlaces K *
+      |Algebra.norm ℚ (a : K)| ≤ FractionalIdeal.absNorm I.val * (4 / π) ^ nrComplexPlaces K *
         (finrank ℚ K).factorial / (finrank ℚ K) ^ (finrank ℚ K) * Real.sqrt |discr K| := by
   classical
   -- The smallest possible value for `exists_ne_zero_mem_ideal_of_norm_le`
@@ -164,29 +166,29 @@ theorem exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (FractionalIdeal
   congr 1
   rw [eq_comm]
   calc
-    _ = FractionalIdeal.absNorm I.1 * (2 : ℝ)⁻¹ ^ nrComplexPlaces K * sqrt ‖discr K‖₊ *
+    _ = FractionalIdeal.absNorm I.val * (2 : ℝ)⁻¹ ^ nrComplexPlaces K * sqrt ‖discr K‖₊ *
           (2 : ℝ) ^ finrank ℚ K * ((2 : ℝ) ^ nrRealPlaces K * (π / 2) ^ nrComplexPlaces K /
             (Nat.factorial (finrank ℚ K)))⁻¹ := by
       simp_rw [minkowskiBound, convexBodySumFactor,
         volume_fundamentalDomain_fractionalIdealLatticeBasis,
         volume_fundamentalDomain_latticeBasis, toReal_mul, toReal_pow, toReal_inv, coe_toReal,
         toReal_ofNat, mixedEmbedding.finrank, mul_assoc]
-      rw [ENNReal.toReal_ofReal (Rat.cast_nonneg.mpr (FractionalIdeal.absNorm_nonneg I.1))]
+      rw [ENNReal.toReal_ofReal (Rat.cast_nonneg.mpr (FractionalIdeal.absNorm_nonneg I.val))]
       simp_rw [NNReal.coe_inv, NNReal.coe_div, NNReal.coe_mul, NNReal.coe_pow, NNReal.coe_div,
         coe_real_pi, NNReal.coe_ofNat, NNReal.coe_natCast]
-    _ = FractionalIdeal.absNorm I.1 * (2 : ℝ) ^ (finrank ℚ K - nrComplexPlaces K - nrRealPlaces K +
-          nrComplexPlaces K : ℤ) * Real.sqrt ‖discr K‖ * Nat.factorial (finrank ℚ K) *
-            π⁻¹ ^ (nrComplexPlaces K) := by
+    _ = FractionalIdeal.absNorm I.val * (2 : ℝ) ^ (finrank ℚ K - nrComplexPlaces K -
+          nrRealPlaces K + nrComplexPlaces K : ℤ) * Real.sqrt ‖discr K‖ *
+            Nat.factorial (finrank ℚ K) * π⁻¹ ^ (nrComplexPlaces K) := by
       simp_rw [inv_div, div_eq_mul_inv, mul_inv, ← zpow_neg_one, ← zpow_natCast, mul_zpow,
-        ← zpow_mul, neg_one_mul, mul_neg_one, neg_neg, Real.coe_sqrt, coe_nnnorm, sub_eq_add_neg,
+        ← zpow_mul, neg_one_mul, mul_neg_one, neg_neg, Real.coe_sqrt, coe_nnNorm, sub_eq_add_neg,
         zpow_add₀ (two_ne_zero : (2 : ℝ) ≠ 0)]
       ring
-    _ = FractionalIdeal.absNorm I.1 * (2 : ℝ) ^ (2 * nrComplexPlaces K : ℤ) * Real.sqrt ‖discr K‖ *
-          Nat.factorial (finrank ℚ K) * π⁻¹ ^ (nrComplexPlaces K) := by
+    _ = FractionalIdeal.absNorm I.val * (2 : ℝ) ^ (2 * nrComplexPlaces K : ℤ) *
+          Real.sqrt ‖discr K‖ * Nat.factorial (finrank ℚ K) * π⁻¹ ^ (nrComplexPlaces K) := by
       congr
       rw [← card_add_two_mul_card_eq_rank, Nat.cast_add, Nat.cast_mul, Nat.cast_ofNat]
       ring
-    _ = FractionalIdeal.absNorm I.1 * (4 / π) ^ nrComplexPlaces K * (finrank ℚ K).factorial *
+    _ = FractionalIdeal.absNorm I.val * (4 / π) ^ nrComplexPlaces K * (finrank ℚ K).factorial *
           Real.sqrt |discr K| := by
       rw [Int.norm_eq_abs, zpow_mul, show (2 : ℝ) ^ (2 : ℤ) = 4 by norm_cast, div_pow,
         inv_eq_one_div, div_pow, one_pow, zpow_natCast]
@@ -378,7 +380,7 @@ theorem minkowskiBound_lt_boundOfDiscBdd : minkowskiBound K ↑1 < boundOfDiscBd
     coe_mul, ENNReal.coe_pow, coe_ofNat, show sqrt N = (1 : ℝ≥0∞) * sqrt N by rw [one_mul]]
   gcongr
   · exact pow_le_one₀ (by positivity) (by simp)
-  · rwa [← NNReal.coe_le_coe, coe_nnnorm, Int.norm_eq_abs, ← Int.cast_abs,
+  · rwa [← NNReal.coe_le_coe, coe_nnNorm, Int.norm_eq_abs, ← Int.cast_abs,
       NNReal.coe_natCast, ← Int.cast_natCast, Int.cast_le]
   · exact one_le_two
   · exact rank_le_rankOfDiscrBdd hK

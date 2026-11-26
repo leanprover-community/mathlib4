@@ -9,9 +9,9 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Lemmas
 public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
 public import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 public import Mathlib.Algebra.Group.Action.Pi
-public import Mathlib.Algebra.Group.IsApply
 public import Mathlib.Algebra.Ring.Pi
 
+import Mathlib.Algebra.Group.IsApply
 import Mathlib.Data.Fintype.Basic
 
 /-!
@@ -192,8 +192,7 @@ def Pi.monoidHomMulEquiv {ι : Type*} [Fintype ι] [DecidableEq ι] (M : ι → 
     exact Fintype.prod_pi_mulSingle' ..
   map_mul' φ ψ := by
     ext
-    simp only [MonoidHom.coe_comp, Function.comp_apply, MonoidHom.mulSingle_apply,
-      MonoidHom.mul_apply, mul_apply]
+    simp
 
 end MulEquiv
 
@@ -225,7 +224,7 @@ end EqOn
 
 section FunLike
 
-variable {F α β ι : Type*} [FunLike F α β] [CommMonoid β] [CommMonoid F]
+variable {F α ι : Type*} {β : α → Type*} [DFunLike F α β] [∀ a, CommMonoid (β a)] [CommMonoid F]
   [IsOneApply F] [IsMulApply F]
 
 @[to_additive (attr := simp, grind =)]
@@ -236,7 +235,7 @@ theorem prod_apply (s : Finset ι) (f : ι → F) (x : α) : (∏ i ∈ s, f i) 
   | insert i s his h => simp [his, h]
 
 @[to_additive (attr := norm_cast)]
-theorem FunLike.coe_prod (s : Finset ι) (f : ι → F) : ↑(∏ i ∈ s, f i) = ∏ i ∈ s, (f i : α → β) := by
+theorem FunLike.coe_prod (s : Finset ι) (f : ι → F) : ⇑(∏ i ∈ s, f i) = ∏ i ∈ s, ⇑(f i) := by
   ext; simp
 
 end FunLike

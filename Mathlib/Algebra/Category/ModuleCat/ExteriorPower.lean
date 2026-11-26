@@ -8,12 +8,14 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.LinearAlgebra.ExteriorPower.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The exterior powers as functors on the category of modules
 
 In this file, given `M : ModuleCat R` and `n : ℕ`, we define `M.exteriorPower n : ModuleCat R`,
 and this extends to a functor `ModuleCat.exteriorPower.functor : ModuleCat R ⥤ ModuleCat R`.
-
 -/
 
 @[expose] public section

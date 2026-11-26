@@ -416,7 +416,7 @@ theorem contMDiff_finprod_cond (hc : ∀ i, p i → CMDiff n (f i))
     (hf : LocallyFinite fun i ↦ mulSupport (f i)) :
     CMDiff n fun x ↦ ∏ᶠ (i) (_ : p i), f i x := by
   simp only [← finprod_subtype_eq_finprod_cond]
-  exact contMDiff_finprod (fun i ↦ hc i i.2) (hf.comp_injective Subtype.coe_injective)
+  exact contMDiff_finprod (fun i ↦ hc i i.property) (hf.comp_injective Subtype.coe_injective)
 
 variable {g : M → G}
 

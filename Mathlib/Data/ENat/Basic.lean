@@ -12,13 +12,16 @@ public import Mathlib.Order.Nat
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Tactic.Basify.Attr
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Definition and basic properties of extended natural numbers
 
 In this file we define `ENat` (notation: `ℕ∞`) to be `WithTop ℕ` and prove some basic lemmas
 about this type.
 
-## Implementation details
+## Implementation notes
 
 There are two natural coercions from `ℕ` to `WithTop ℕ = ENat`: `WithTop.some` and `Nat.cast`. In
 Lean 3, this difference was hidden in typeclass instances. Since these instances were definitionally

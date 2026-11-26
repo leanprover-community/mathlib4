@@ -10,6 +10,9 @@ public import Mathlib.NumberTheory.ModularForms.Discriminant
 
 import Mathlib.Algebra.Order.Floor.Semifield
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Dimension formula and Sturm bound for level 1 modular forms
 
@@ -175,7 +178,7 @@ lemma CuspForm.rank_eq_one_of_weight_eq_twelve : Module.rank ℂ (CuspForm 𝒮�
 /-- Every weight 12 cusp form for `𝒮ℒ` is a scalar multiple of the discriminant. -/
 lemma CuspForm.exists_smul_discriminant_of_weight_eq_twelve (f : CuspForm 𝒮ℒ 12) :
     ∃ c : ℂ, c • CuspForm.discriminant = f :=
-  (finrank_eq_one_iff_of_ne_zero' _ (DFunLike.ne_iff.mpr ⟨I, discriminant_ne_zero _⟩)).mp
+  (finrank_eq_one_iff_of_ne_zero' _ (DFunLike.ne_iff.mpr ⟨.I, discriminant_ne_zero _⟩)).mp
     (Module.rank_eq_one_iff_finrank_eq_one.mp CuspForm.rank_eq_one_of_weight_eq_twelve) f
 
 /-- For even `k ≥ 3`, the rank of `𝒮ℒ` modular forms is one more than the rank of
@@ -291,7 +294,7 @@ instance (k : ℤ) : FiniteDimensional ℂ (ModularForm 𝒮ℒ k) := by
   rcases Int.even_or_odd k with hk_even | hk_odd
   · lift k to ℕ using hk_nonneg
     rw [dimension_level_one k (mod_cast hk_even)]
-    split_ifs <;> exact_mod_cast Cardinal.natCast_lt_aleph0
+    split_ifs <;> exact mod_cast Cardinal.natCast_lt_aleph0
   · rw [levelOne_odd_weight_rank_zero hk_odd]
     exact Cardinal.aleph0_pos
 

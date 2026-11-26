@@ -5,11 +5,11 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.RingTheory.Finiteness.FiniteTypeLocal
 public import Mathlib.RingTheory.Localization.Away.AdjoinRoot
 
-/-!
+import Mathlib.RingTheory.Finiteness.FiniteTypeLocal
 
+/-!
 # `Algebra.FinitePresentation` is local
 
 In this file we show that being a finitely presented algebra is local.
@@ -18,7 +18,6 @@ In this file we show that being a finitely presented algebra is local.
 
 - `Algebra.FinitePresentation.of_span_eq_top_target`: finite presentation is local on the
   (algebraic) target
-
 -/
 
 public section

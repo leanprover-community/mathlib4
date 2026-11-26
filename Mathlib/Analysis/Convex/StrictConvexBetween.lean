@@ -10,12 +10,14 @@ public import Mathlib.Analysis.Convex.StrictConvexSpace
 public import Mathlib.Analysis.Normed.Affine.AddTorsor
 public import Mathlib.Analysis.Normed.Affine.Isometry
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Betweenness in affine spaces for strictly convex spaces
 
 This file proves results about betweenness for points in an affine space for a strictly convex
 space.
-
 -/
 
 @[expose] public section

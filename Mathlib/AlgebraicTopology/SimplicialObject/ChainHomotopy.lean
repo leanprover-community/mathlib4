@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Homology.Homotopy
 public import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
 public import Mathlib.AlgebraicTopology.SimplicialObject.Homotopy
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Simplicial homotopies induce chain homotopies
 

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.MonoidAlgebra.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Free rings
 
@@ -18,14 +21,13 @@ The theory of the free ring over a type.
 * `lift (f : α → R)` : the ring hom `FreeRing α →+* R` induced by `f`.
 * `map (f : α → β)` : the ring hom `FreeRing α →+* FreeRing β` induced by `f`.
 
-## Implementation details
+## Implementation notes
 
 `FreeRing α` is implemented as the `ℤ` monoid algebra over the free monoid on `α`.
 
 ## Tags
 
 free ring
-
 -/
 
 @[expose] public noncomputable section

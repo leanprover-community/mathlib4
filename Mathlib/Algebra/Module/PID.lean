@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Category.ModuleCat.Biproducts
 public import Mathlib.Algebra.Module.DedekindDomain
 public import Mathlib.LinearAlgebra.FreeModule.PID
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Structure of finitely generated modules over a PID
 
@@ -26,7 +29,7 @@ public import Mathlib.LinearAlgebra.FreeModule.PID
   torsion hypotheses in the intermediate lemmas.
 * `p` is an irreducible element of `R` or a tuple of these.
 
-## Implementation details
+## Implementation notes
 
 We first prove (`Submodule.isInternal_prime_power_torsion_of_pid`) that a finitely generated
 torsion module is the internal direct sum of its `p i ^ e i`-torsion submodules for some
@@ -234,8 +237,8 @@ theorem equiv_directSum_of_isTorsion [h' : Module.Finite R M] (hM : Module.IsTor
   have :
     ∀ i,
       ∃ (d : ℕ) (k : Fin d → ℕ),
-        Nonempty <| torsionBy R M (p i ^ e i) ≃ₗ[R] ⨁ j, R ⧸ R ∙ p i ^ k j := by
-    exact fun i =>
+        Nonempty <| torsionBy R M (p i ^ e i) ≃ₗ[R] ⨁ j, R ⧸ R ∙ p i ^ k j :=
+    fun i =>
       torsion_by_prime_power_decomposition.{u, v} (hp i)
         ((isTorsion'_powers_iff <| p i).mpr fun x => ⟨e i, smul_torsionBy _ _⟩)
   refine

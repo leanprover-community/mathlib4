@@ -43,7 +43,7 @@ We will also need the fact that if the restriction `V → F` is a *closed* embed
 `f : E → F` is a *closed* embedding. This will follow from the fact that a subgroup which is
 locally closed at `0` is in fact closed, which we don't have yet
 
-## Implementation details
+## Implementation notes
 
 The content of this file is essentially (variations of)
 [N. Bourbaki, *Théories Spectrales*, Chapitre III, § 5, n° 1, lemme 1][bourbaki2023], except
@@ -59,7 +59,6 @@ proof for more details.
 ## References
 
 * [N. Bourbaki, *Théories Spectrales*, Chapitre III, § 5, n° 1, lemme 1][bourbaki2023]
-
 -/
 
 public section

@@ -303,7 +303,7 @@ lemma densityProcess_mono_set (hκν : fst κ ≤ ν) (n : ℕ) (a : α) (x : γ
   obtain h₀ | h₀ := eq_or_ne (ν a (countablePartitionSet n x)) 0
   · simp [h₀]
   · gcongr
-    simp only [ne_eq, ENNReal.div_eq_top, h₀, and_false, false_or, not_and, not_not]
+    simp only [ne_eq, ENNReal.div_eq_top_iff, h₀, and_false, false_or, not_and, not_not]
     exact eq_top_mono (meas_countablePartitionSet_le_of_fst_le hκν n a x s')
 
 lemma densityProcess_mono_kernel_left {κ' : Kernel α (γ × β)} (hκκ' : κ ≤ κ')
@@ -316,7 +316,7 @@ lemma densityProcess_mono_kernel_left {κ' : Kernel α (γ × β)} (hκκ' : κ 
   have h_le : κ' a (countablePartitionSet n x ×ˢ s) ≤ ν a (countablePartitionSet n x) :=
     meas_countablePartitionSet_le_of_fst_le hκ'ν n a x s
   gcongr
-  · simp only [ne_eq, div_eq_top, h0, and_false, false_or, not_and, not_not]
+  · simp only [ne_eq, div_eq_top_iff, h0, and_false, false_or, not_and, not_not]
     exact fun h_top ↦ eq_top_mono h_le h_top
   · apply hκκ'
 
@@ -329,7 +329,7 @@ lemma densityProcess_antitone_kernel_right {ν' : Kernel α γ}
   by_cases h0 : ν a (countablePartitionSet n x) = 0
   · simp [nonpos_iff_eq_zero.1 (h_le.trans h0.le), h0]
   gcongr
-  · simp only [ne_eq, div_eq_top, h0, and_false, false_or, not_and, not_not]
+  · simp only [ne_eq, div_eq_top_iff, h0, and_false, false_or, not_and, not_not]
     exact fun h_top ↦ eq_top_mono h_le h_top
   · apply hνν'
 
@@ -349,7 +349,7 @@ lemma tendsto_densityProcess_atTop_empty_of_antitone (κ : Kernel α (γ × β))
   · simp_rw [h0, toReal_div]
     simp
   refine (tendsto_toReal ?_).comp ?_
-  · rw [ne_eq, div_eq_top]
+  · rw [ne_eq, div_eq_top_iff]
     simp
   refine ENNReal.Tendsto.div_const ?_ (.inr h0)
   have : Tendsto (fun m ↦ κ a (countablePartitionSet n x ×ˢ seq m)) atTop
@@ -373,21 +373,17 @@ lemma tendsto_densityProcess_limitProcess (hκν : fst κ ≤ ν)
     ∀ᵐ x ∂(ν a), Tendsto (fun n ↦ densityProcess κ ν n a x s) atTop
       (𝓝 ((countableFiltration γ).limitProcess
       (fun n x ↦ densityProcess κ ν n a x s) (ν a) x)) := by
-  refine Submartingale.ae_tendsto_limitProcess (martingale_densityProcess hκν a hs).submartingale
-    (R := (ν a univ).toNNReal) (fun n ↦ ?_)
-  refine (eLpNorm_densityProcess_le hκν n a hs).trans_eq ?_
-  rw [ENNReal.coe_toNNReal]
-  exact measure_ne_top _ _
+  apply Submartingale.ae_tendsto_limitProcess (martingale_densityProcess hκν a hs).submartingale
+  apply (measure_ne_top (ν a) univ).lt_top.trans_le'
+  exact iSup_le_iff.2 fun n ↦ eLpNorm_densityProcess_le hκν n a hs
 
 lemma memL1_limitProcess_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     (a : α) {s : Set β} (hs : MeasurableSet s) :
     MemLp ((countableFiltration γ).limitProcess
       (fun n x ↦ densityProcess κ ν n a x s) (ν a)) 1 (ν a) := by
-  refine Submartingale.memLp_limitProcess (martingale_densityProcess hκν a hs).submartingale
-    (R := (ν a univ).toNNReal) (fun n ↦ ?_)
-  refine (eLpNorm_densityProcess_le hκν n a hs).trans_eq ?_
-  rw [ENNReal.coe_toNNReal]
-  exact measure_ne_top _ _
+  apply Submartingale.memLp_limitProcess (martingale_densityProcess hκν a hs).submartingale
+  apply (measure_ne_top (ν a) univ).lt_top.trans_le'
+  exact iSup_le_iff.2 fun n ↦ eLpNorm_densityProcess_le hκν n a hs
 
 lemma tendsto_eLpNorm_one_densityProcess_limitProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     (a : α) {s : Set β} (hs : MeasurableSet s) :
@@ -403,7 +399,7 @@ lemma tendsto_eLpNorm_one_densityProcess_limitProcess (hκν : fst κ ≤ ν) [I
       ext x
       simp only [mem_ofPred_eq, mem_empty_iff_false, iff_false, not_le]
       refine (?_ : _ ≤ (1 : ℝ≥0)).trans_lt one_lt_two
-      rw [Real.nnnorm_of_nonneg (densityProcess_nonneg ..)]
+      rw [Real.nnNorm_of_nonneg (densityProcess_nonneg ..)]
       exact mod_cast (densityProcess_le_one hκν ..)
 
 lemma tendsto_eLpNorm_one_restrict_densityProcess_limitProcess [IsFiniteKernel ν]
@@ -685,7 +681,7 @@ lemma tendsto_densityProcess_fst_atTop_univ_of_monotone (κ : Kernel α (γ × �
       (𝓝 (densityProcess κ (fst κ) n a x univ)) := by
   simp_rw [densityProcess]
   refine (tendsto_toReal ?_).comp ?_
-  · rw [ne_eq, div_eq_top]
+  · rw [ne_eq, div_eq_top_iff]
     push Not
     simp_rw [fst_apply' _ _ (measurableSet_countablePartitionSet _ _)]
     constructor

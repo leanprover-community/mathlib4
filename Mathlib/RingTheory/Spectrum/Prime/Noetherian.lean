@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.Artinian.Ring
 public import Mathlib.RingTheory.Ideal.MinimalPrime.Noetherian
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Prime spectra of Noetherian and Artinian rings
 
@@ -69,7 +72,7 @@ lemma exists_notMem_forall_mem_of_ne (p : Ideal R) [p.IsPrime] :
   · apply PrimeSpectrum.toPiLocalization_bijective.injective
     simp [map_mul, hr, ← Pi.single_mul]
   · intro q hq e
-    have : PrimeSpectrum.mk q inferInstance ≠ ⟨p, inferInstance⟩ := ne_of_apply_ne (·.1) e
+    have : PrimeSpectrum.mk q inferInstance ≠ ⟨p, inferInstance⟩ := ne_of_apply_ne (·.asIdeal) e
     have : (algebraMap R (Localization.AtPrime q)) r = 0 := by
       simpa [PrimeSpectrum.toPiLocalization, this,
         -FaithfulSMul.algebraMap_eq_zero_iff] using funext_iff.mp hr ⟨q, inferInstance⟩

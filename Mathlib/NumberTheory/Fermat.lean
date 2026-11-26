@@ -159,7 +159,7 @@ lemma pow_pow_add_primeFactors_one_lt {a n p : ℕ} (hp : p.Prime) (hp2 : p ≠ 
   have : Fact p.Prime := Fact.mk hp
   have ha1 : (a : ZMod p) ^ (2 ^ n) = -1 := by
     rw [eq_neg_iff_add_eq_zero]
-    exact_mod_cast (natCast_eq_zero_iff (a ^ (2 ^ n) + 1) p).mpr hpdvd
+    exact mod_cast (natCast_eq_zero_iff (a ^ (2 ^ n) + 1) p).mpr hpdvd
   have ha0 : (a : ZMod p) ≠ 0 := by
     intro h
     rw [h, zero_pow (pow_ne_zero n two_ne_zero), zero_eq_neg] at ha1
@@ -176,8 +176,8 @@ lemma fermat_primeFactors_one_lt (n p : ℕ) (hn : 1 < n) (hp : p.Prime)
     (hpdvd : p ∣ fermatNumber n) :
     ∃ k, p = k * 2 ^ (n + 2) + 1 := by
   have : Fact p.Prime := Fact.mk hp
-  have hp2 : p ≠ 2 := by
-    exact (even_two.pow_of_ne_zero <| pow_ne_zero n two_ne_zero).add_one.ne_two_of_dvd_nat hpdvd
+  have hp2 : p ≠ 2 :=
+    (even_two.pow_of_ne_zero <| pow_ne_zero n two_ne_zero).add_one.ne_two_of_dvd_nat hpdvd
   have hp8 : p % 8 = 1 := by
     obtain ⟨k, rfl⟩ := pow_pow_add_primeFactors_one_lt hp hp2 hpdvd
     obtain ⟨n, rfl⟩ := Nat.exists_eq_add_of_le' hn

@@ -34,7 +34,6 @@ In this file, we define:
   so opening this scope allows this relation to be denoted by `≈`.
 * `LinearMap.IsQuasiInverse`: two linear maps `u` and `v` are **quasi-inverses** if we have
   `u ∘ₗ v ≈ id` and `v ∘ₗ u ≈ id` modulo linear maps with noetherian ranges.
-
 -/
 
 @[expose] public section

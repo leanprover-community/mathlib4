@@ -8,8 +8,10 @@ module
 public import Mathlib.Algebra.Module.Submodule.Basic
 public import Mathlib.RingTheory.Ideal.Defs
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Big operators for ideals
 
 This contains some results on the big operators `∑` and `∏` interacting with the `Ideal` type.

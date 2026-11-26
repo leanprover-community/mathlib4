@@ -15,7 +15,6 @@ public import Mathlib.RingTheory.Derivation.Basic
 ## Main statements
 
 - `Derivation.instLieAlgebra`: The `R`-derivations from `A` to `A` form a Lie algebra over `R`.
-
 -/
 
 @[expose] public section
@@ -36,7 +35,7 @@ section LieStructures
 instance : Bracket (Derivation R A A) (Derivation R A A) :=
   ⟨fun D1 D2 =>
     mk' ⁅(D1 : Module.End R A), (D2 : Module.End R A)⁆ fun a b => by
-      simp only [Ring.lie_def, map_add, smul_eq_mul, Module.End.mul_apply, leibniz,
+      simp only [Ring.lie_def, map_add, smul_eq_mul, mul_apply_eq_comp, leibniz,
         coeFn_coe, LinearMap.sub_apply]
       ring⟩
 
@@ -104,14 +103,14 @@ def mk (x : Derivation R A' A') (y : Derivation R A A)
 ⟨(x, y), (Compatible.mem _).mpr h⟩
 
 lemma mk_left (x : Derivation R A' A') (y : Derivation R A A)
-    (h : x ∘ (Algebra.ofId A A') = (Algebra.ofId A A') ∘ y) : (mk x y h).1.1 = x := rfl
+    (h : x ∘ (Algebra.ofId A A') = (Algebra.ofId A A') ∘ y) : (mk x y h).val.1 = x := rfl
 
 lemma mk_right (x : Derivation R A' A') (y : Derivation R A A)
-    (h : x ∘ (Algebra.ofId A A') = (Algebra.ofId A A') ∘ y) : (mk x y h).1.2 = y := rfl
+    (h : x ∘ (Algebra.ofId A A') = (Algebra.ofId A A') ∘ y) : (mk x y h).val.2 = y := rfl
 
 lemma apply (x : couple R A A') (a : A) :
-    x.1.1 (Algebra.ofId A A' a) = (Algebra.ofId A A') (x.1.2 a) := by
-  exact congrArg (· a) x.2
+    x.val.1 (Algebra.ofId A A' a) = (Algebra.ofId A A') (x.val.2 a) :=
+  congrArg (· a) x.property
 
 end Compatible
 

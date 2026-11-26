@@ -11,6 +11,9 @@ public import Mathlib.RepresentationTheory.Irreducible
 
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Characters of representations
 
@@ -27,6 +30,7 @@ Irreducible representations are implemented categorically, using the `CategoryTh
 defined in `Mathlib/CategoryTheory/Simple.lean`
 
 ## TODO
+
 * Once we have the monoidal closed structure on `FDRep k G` and a better API for the rigid
   structure, `char_dual` and `char_linHom` should probably be stated
   in terms of `Vᘁ` and `ihom V W`.
@@ -226,7 +230,7 @@ equivariant maps from `V` to `W`.
 theorem scalar_product_char_eq_finrank_equivariant (V W : FDRep k G) :
     (Nat.card G : k)⁻¹ * ∑ g : G, W.character g * V.character g⁻¹ =
     Module.finrank k (V ⟶ W) := by
-  conv_lhs => congr; rfl; congr; rfl; intro _; rw [mul_comm, ← FDRep.char_linHom]
+  conv_lhs => enter [2, 2, _]; rw [mul_comm, ← FDRep.char_linHom]
   -- The scalar product is the character of `Hom(V, W).`
   rw [FDRep.average_char_eq_finrank_invariants, ← LinearEquiv.finrank_eq
     (Representation.linHom.invariantsEquivFDRepHom V W), of_ρ']

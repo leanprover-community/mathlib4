@@ -7,8 +7,10 @@ module
 
 public import Mathlib.Algebra.Group.Submonoid.Pointwise
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Submonoid of inverses
 
 Given a submonoid `N` of a monoid `M`, we define the submonoid `N.leftInv` as the submonoid of
@@ -146,7 +148,7 @@ set_option backward.isDefEq.respectTransparency false in
 is `AddEquiv` to `S`. -/]
 noncomputable def leftInvEquiv : S.leftInv ≃* S :=
   { S.fromCommLeftInv with
-    invFun := fun x ↦ ⟨↑(hS x.2).unit⁻¹, x, by simp⟩
+    invFun := fun x ↦ ⟨↑(hS x.property).unit⁻¹, x, by simp⟩
     left_inv := by
       intro x
       ext

@@ -11,6 +11,9 @@ public import Mathlib.Geometry.Euclidean.Inversion.Basic
 import Mathlib.Analysis.Calculus.Deriv.Inv
 import Mathlib.Tactic.AdaptationNote
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Derivative of the inversion
 
@@ -21,7 +24,7 @@ In this file we prove a formula for the derivative of `EuclideanGeometry.inversi
 Since `fderiv` and related definitions do not work for affine spaces, we deal with an inner product
 space in this file.
 
-## Keywords
+## Tags
 
 inversion, derivative
 -/

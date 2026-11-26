@@ -12,14 +12,14 @@ public import Mathlib.Topology.LocallyConstant.Basic
 import Mathlib.Topology.Separation.Regular
 
 /-!
-
 # Discrete quotients of a topological space.
 
 This file defines the type of discrete quotients of a topological space,
 denoted `DiscreteQuotient X`. To avoid quantifying over types, we model such
 quotients as setoids whose equivalence classes are clopen.
 
-## Definitions
+## Main definitions
+
 1. `DiscreteQuotient X` is the type of discrete quotients of `X`.
   It is endowed with a coercion to `Type`, which is defined as the
   quotient associated to the setoid in question, and each such quotient
@@ -47,7 +47,7 @@ Given `f : C(X, Y)`, we define a predicate `DiscreteQuotient.LEComap f A B` for
 `cond : DiscreteQuotient.LEComap h A B`, the function `A → B` is obtained by
 `DiscreteQuotient.map f cond`.
 
-## Theorems
+## Main theorems
 
 The two main results proved in this file are:
 
@@ -60,6 +60,7 @@ The two main results proved in this file are:
   respect to `DiscreteQuotient.ofLE`, must arise from some element of `X`.
 
 ## Remarks
+
 The constructions in this file will be used to show that any profinite space is a limit
 of finite discrete spaces.
 -/
@@ -147,7 +148,8 @@ theorem isClopen_setOfPred_rel (x : X) : IsClopen (Set.ofPred (S.toSetoid x)) :=
 alias isClopen_setOf_rel := isClopen_setOfPred_rel
 
 instance : Min (DiscreteQuotient X) :=
-  ⟨fun S₁ S₂ => ⟨S₁.1 ⊓ S₂.1, fun x => (S₁.2 x).inter (S₂.2 x)⟩⟩
+  ⟨fun S₁ S₂ => ⟨S₁.toSetoid ⊓ S₂.toSetoid,
+    fun x => (S₁.isOpen_setOfPred_rel x).inter (S₂.isOpen_setOfPred_rel x)⟩⟩
 
 instance : PartialOrder (DiscreteQuotient X) :=
   PartialOrder.lift _ toSetoid_injective
@@ -174,8 +176,8 @@ variable (g : C(Y, Z)) (f : C(X, Y))
 
 /-- Comap a discrete quotient along a continuous map. -/
 def comap (S : DiscreteQuotient Y) : DiscreteQuotient X where
-  toSetoid := Setoid.comap f S.1
-  isOpen_setOfPred_rel _ := (S.2 _).preimage f.continuous
+  toSetoid := Setoid.comap f S.toSetoid
+  isOpen_setOfPred_rel _ := (S.isOpen_setOfPred_rel _).preimage f.continuous
 
 @[simp]
 theorem comap_id : S.comap (ContinuousMap.id X) = S := rfl

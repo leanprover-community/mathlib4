@@ -10,6 +10,9 @@ public import Mathlib.Data.Finset.Lattice.Fold
 public import Mathlib.Data.Fintype.Vector
 public import Mathlib.Data.Multiset.Sym
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Symmetric powers of a finset
 
@@ -38,7 +41,7 @@ variable {α β : Type*}
 /-- `s.sym2` is the finset of all unordered pairs of elements from `s`.
 It is the image of `s ×ˢ s` under the quotient `α × α → Sym2 α`. -/
 @[simps]
-protected def sym2 (s : Finset α) : Finset (Sym2 α) := ⟨s.1.sym2, s.2.sym2⟩
+protected def sym2 (s : Finset α) : Finset (Sym2 α) := ⟨s.val.sym2, s.nodup.sym2⟩
 
 section
 variable {s t : Finset α} {a b : α}
@@ -233,7 +236,7 @@ theorem eq_empty_of_sym_eq_empty (h : s.sym n = ∅) : s = ∅ := by
 @[simp]
 theorem sym_eq_empty : s.sym n = ∅ ↔ n ≠ 0 ∧ s = ∅ := by
   cases n
-  · exact iff_of_false (singleton_ne_empty _) fun h ↦ (h.1 rfl).elim
+  · simp
   · refine ⟨fun h ↦ ⟨Nat.succ_ne_zero _, eq_empty_of_sym_eq_empty h⟩, ?_⟩
     rintro ⟨_, rfl⟩
     exact sym_empty _
@@ -274,9 +277,10 @@ theorem sym_filterNe_mem {m : Sym α n} (a : α) (h : m ∈ s.sym n) :
   for `0 ≤ i ≤ n`. -/
 @[simps]
 def symInsertEquiv (h : a ∉ s) : (insert a s).sym n ≃ Σ i : Fin (n + 1), s.sym (n - i) where
-  toFun m := ⟨_, (m.1.filterNe a).2, by convert sym_filterNe_mem a m.2; rw [erase_insert h]⟩
-  invFun m := ⟨m.2.1.fill a m.1, sym_fill_mem a m.2.2⟩
-  left_inv m := Subtype.ext <| m.1.fill_filterNe a
+  toFun m := ⟨_, (m.val.filterNe a).2, by
+    convert sym_filterNe_mem a m.property; rw [erase_insert h]⟩
+  invFun m := ⟨m.2.val.fill a m.1, sym_fill_mem a m.2.property⟩
+  left_inv m := Subtype.ext <| m.val.fill_filterNe a
   right_inv := fun ⟨i, m, hm⟩ ↦ by
     refine Function.Injective.sigma_map (β₂ := ?_) (f₂ := ?_)
         (Function.injective_id) (fun i ↦ ?_) ?_

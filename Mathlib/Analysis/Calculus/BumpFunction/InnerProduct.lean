@@ -9,13 +9,16 @@ public import Mathlib.Analysis.Calculus.BumpFunction.Basic
 public import Mathlib.Analysis.InnerProductSpace.Calculus
 public import Mathlib.Analysis.SpecialFunctions.SmoothTransition
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Smooth bump functions in inner product spaces
 
 In this file we prove that a real inner product space has smooth bump functions,
 see `hasContDiffBump_of_innerProductSpace`.
 
-## Keywords
+## Tags
 
 smooth function, bump function, inner product space
 -/

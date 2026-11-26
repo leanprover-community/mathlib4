@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Order.Nonneg.Basic
 public import Mathlib.Algebra.Order.Nonneg.Lattice
 public import Mathlib.Algebra.Order.Ring.InjSurj
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bundled ordered algebra instance on the type of nonnegative elements
 
@@ -20,7 +23,7 @@ Currently we only state instances and states some `simp`/`norm_cast` lemmas.
 
 When `α` is `ℝ`, this will give us some properties about `ℝ≥0`.
 
-## Implementation Notes
+## Implementation notes
 
 Instead of `{x : α // 0 ≤ x}` we could also use `Set.Ici (0 : α)`, which is definitionally equal.
 However, using the explicit subtype has a big advantage: when writing an element explicitly
@@ -77,12 +80,12 @@ instance [Nontrivial α] [AddGroup α] [LinearOrder α] [AddLeftMono α] :
 
 instance linearOrderedCommMonoidWithZero [CommSemiring α] [LinearOrder α] [IsStrictOrderedRing α] :
     LinearOrderedCommMonoidWithZero (Nonneg α) where
-  isBot_zero a := a.2
+  isBot_zero a := a.property
 
 instance canonicallyOrderedAdd [Ring α] [PartialOrder α] [IsOrderedRing α] :
     CanonicallyOrderedAdd (Nonneg α) where
-  le_add_self _ b := le_add_of_nonneg_left b.2
-  le_self_add _ b := le_add_of_nonneg_right b.2
+  le_add_self _ b := le_add_of_nonneg_left b.property
+  le_self_add _ b := le_add_of_nonneg_right b.property
   exists_add_of_le := fun {a b} h =>
     ⟨⟨b - a, sub_nonneg_of_le h⟩, Subtype.ext (add_sub_cancel _ _).symm⟩
 
