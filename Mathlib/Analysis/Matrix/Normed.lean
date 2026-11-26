@@ -741,8 +741,6 @@ lemma frobenius_norm_sq_eq_trace (A : Matrix m n α) : (‖A‖ ^ 2 : α) = (A *
     (Finset.sum_nonneg fun _ _ ↦ Finset.sum_nonneg fun _ _ ↦ by positivity)]
   simp [trace, Matrix.mul_apply, ← RCLike.mul_conj]
 
-/-- The norm of the trace pairing of two compatible matrices is at most the product of their
-Frobenius norms. -/
 theorem norm_trace_mul_le_frobenius_norm (A : Matrix m n α) (B : Matrix n m α) :
     ‖(A * B).trace‖ ≤ ‖A‖ * ‖B‖ := by
   rw [trace_mul_comm, ← frobenius_norm_conjTranspose A]
@@ -750,10 +748,9 @@ theorem norm_trace_mul_le_frobenius_norm (A : Matrix m n α) (B : Matrix n m α)
   grw [← norm_inner_le_norm (𝕜 := α)]
   simp [trace, Matrix.mul_apply, PiLp.inner_apply, mul_comm]
 
-/-- The `NNReal`-valued version of `norm_trace_mul_le_frobenius_norm`. -/
 theorem nnNorm_trace_mul_le_frobenius_nnNorm (A : Matrix m n α) (B : Matrix n m α) :
-    ‖(A * B).trace‖₊ ≤ ‖A‖₊ * ‖B‖₊ := by
-  exact_mod_cast norm_trace_mul_le_frobenius_norm A B
+    ‖(A * B).trace‖₊ ≤ ‖A‖₊ * ‖B‖₊ :=
+  norm_trace_mul_le_frobenius_norm A B
 
 /-- Normed ring instance (using the Frobenius norm) for matrices over `ℝ` or `ℂ`.  Not
 declared as an instance because there are several natural choices for defining the norm of a
