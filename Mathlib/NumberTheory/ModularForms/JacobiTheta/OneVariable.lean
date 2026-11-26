@@ -20,7 +20,8 @@ show that `θ` is differentiable on `ℍ`, and `θ(τ) - 1` has exponential deca
 
 We also define the Jacobi theta functions `θ₂ = jacobiTheta₁₀` and `θ₄ = jacobiTheta₀₁` (with
 `θ₃ = jacobiTheta`), and prove the transformation laws of `θ₂`, `θ₃` and `θ₄` under `τ ↦ 1 + τ`
-and `τ ↦ -1 / τ`.
+and `τ ↦ -1 / τ`. Finally, we show that `θ₂` and `θ₄` are differentiable on `ℍ`, and that
+`θ₂(τ)` and `θ₄(τ) - 1` have exponential decay as `im τ → ∞`.
 
 ## Notation
 
@@ -138,7 +139,16 @@ theorem jacobiTheta₁₀_S_smul (τ : ℍ) :
       mul_one_div_cancel h]
   ring_nf
 
-theorem norm_exp_mul_sq_le {τ : ℂ} (hτ : 0 < τ.im) (n : ℤ) :
+/-!
+## Bounds and differentiability on the upper half-plane
+-/
+
+section
+
+variable {τ : ℂ} (hτ : 0 < τ.im)
+include hτ
+
+theorem norm_exp_mul_sq_le (n : ℤ) :
     ‖cexp (π * I * (n : ℂ) ^ 2 * τ)‖ ≤ rexp (-π * τ.im) ^ n.natAbs := by
   let y := rexp (-π * τ.im)
   have h : y < 1 := exp_lt_one_iff.mpr (mul_neg_of_neg_of_pos (neg_lt_zero.mpr pi_pos) hτ)
@@ -154,7 +164,7 @@ theorem norm_exp_mul_sq_le {τ : ℂ} (hτ : 0 < τ.im) (n : ℤ) :
     rw [this, zpow_natCast]
     exact pow_le_pow_of_le_one (exp_pos _).le h.le ((sq n.natAbs).symm ▸ n.natAbs.le_mul_self)
 
-theorem hasSum_nat_jacobiTheta {τ : ℂ} (hτ : 0 < im τ) :
+theorem hasSum_nat_jacobiTheta :
     HasSum (fun n : ℕ => cexp (π * I * ((n : ℂ) + 1) ^ 2 * τ)) ((jacobiTheta τ - 1) / 2) := by
   have := hasSum_jacobiTheta₂_term 0 hτ
   simp_rw [jacobiTheta₂_term, mul_zero, zero_add, ← jacobiTheta_eq_jacobiTheta₂] at this
@@ -167,13 +177,13 @@ theorem hasSum_nat_jacobiTheta {τ : ℂ} (hτ : 0 < im τ) :
   convert this.div_const 2 using 1
   simp_rw [mul_div_cancel_right₀ _ (two_ne_zero' ℂ)]
 
-theorem jacobiTheta_eq_tsum_nat {τ : ℂ} (hτ : 0 < im τ) :
+theorem jacobiTheta_eq_tsum_nat :
     jacobiTheta τ = ↑1 + ↑2 * ∑' n : ℕ, cexp (π * I * ((n : ℂ) + 1) ^ 2 * τ) := by
   rw [(hasSum_nat_jacobiTheta hτ).tsum_eq, mul_div_cancel₀ _ (two_ne_zero' ℂ), ← add_sub_assoc,
     add_sub_cancel_left]
 
 /-- An explicit upper bound for `‖jacobiTheta τ - 1‖`. -/
-theorem norm_jacobiTheta_sub_one_le {τ : ℂ} (hτ : 0 < im τ) :
+theorem norm_jacobiTheta_sub_one_le :
     ‖jacobiTheta τ - 1‖ ≤ 2 / (1 - rexp (-π * τ.im)) * rexp (-π * τ.im) := by
   suffices ‖∑' n : ℕ, cexp (π * I * ((n : ℂ) + 1) ^ 2 * τ)‖ ≤
       rexp (-π * τ.im) / (1 - rexp (-π * τ.im)) by
@@ -194,6 +204,35 @@ theorem norm_jacobiTheta_sub_one_le {τ : ℂ} (hτ : 0 < im τ) :
     .of_nonneg_of_le (fun n => norm_nonneg _) this s.summable
   exact (norm_tsum_le_tsum_norm aux).trans ((aux.tsum_mono s.summable this).trans_eq s.tsum_eq)
 
+theorem differentiableAt_jacobiTheta :
+    DifferentiableAt ℂ jacobiTheta τ := by
+  simp_rw [funext jacobiTheta_eq_jacobiTheta₂]
+  exact differentiableAt_jacobiTheta₂_snd 0 hτ
+
+theorem continuousAt_jacobiTheta : ContinuousAt jacobiTheta τ :=
+  (differentiableAt_jacobiTheta hτ).continuousAt
+
+theorem differentiableAt_jacobiTheta₀₁ : DifferentiableAt ℂ jacobiTheta₀₁ τ := by
+  rw [funext jacobiTheta₀₁_eq_jacobiTheta₂]
+  exact differentiableAt_jacobiTheta₂_snd _ hτ
+
+theorem continuousAt_jacobiTheta₀₁ : ContinuousAt jacobiTheta₀₁ τ :=
+  (differentiableAt_jacobiTheta₀₁ hτ).continuousAt
+
+theorem differentiableAt_jacobiTheta₁₀ :
+    DifferentiableAt ℂ jacobiTheta₁₀ τ := by
+  rw [funext jacobiTheta₁₀_eq_jacobiTheta₂]
+  fun_prop
+
+theorem continuousAt_jacobiTheta₁₀ : ContinuousAt jacobiTheta₁₀ τ :=
+  (differentiableAt_jacobiTheta₁₀ hτ).continuousAt
+
+end
+
+/-!
+## Asymptotics as `im τ → ∞`
+-/
+
 /-- The norm of `jacobiTheta τ - 1` decays exponentially as `im τ → ∞`. -/
 theorem isBigO_at_im_infty_jacobiTheta_sub_one :
     (fun τ => jacobiTheta τ - 1) =O[comap im atTop] fun τ => rexp (-π * τ.im) := by
@@ -204,10 +243,46 @@ theorem isBigO_at_im_infty_jacobiTheta_sub_one :
   gcongr
   simp [pi_pos]
 
-theorem differentiableAt_jacobiTheta {τ : ℂ} (hτ : 0 < im τ) :
-    DifferentiableAt ℂ jacobiTheta τ := by
-  simp_rw [funext jacobiTheta_eq_jacobiTheta₂]
-  exact differentiableAt_jacobiTheta₂_snd 0 hτ
+private lemma tendsto_rexp_neg_mul_im {c : ℝ} (hc : 0 < c) :
+    Tendsto (fun τ : ℂ ↦ rexp (-c * τ.im)) (comap im atTop) (𝓝 0) :=
+  tendsto_exp_atBot.comp (tendsto_comap.const_mul_atTop_of_neg (neg_lt_zero.mpr hc))
 
-theorem continuousAt_jacobiTheta {τ : ℂ} (hτ : 0 < im τ) : ContinuousAt jacobiTheta τ :=
-  (differentiableAt_jacobiTheta hτ).continuousAt
+/-- `jacobiTheta τ` tends to `1` as `im τ → ∞`. -/
+theorem tendsto_jacobiTheta_at_im_infty : Tendsto jacobiTheta (comap im atTop) (𝓝 1) :=
+  tendsto_sub_nhds_zero_iff.mp <|
+    isBigO_at_im_infty_jacobiTheta_sub_one.trans_tendsto (tendsto_rexp_neg_mul_im pi_pos)
+
+/-- The norm of `θ₄ τ - 1` decays exponentially as `im τ → ∞`. -/
+theorem isBigO_at_im_infty_jacobiTheta₀₁_sub_one :
+    (θ₄ · - 1) =O[comap im atTop] fun τ ↦ rexp (-π * τ.im) := by
+  have h : Tendsto (1 + ·) (comap im atTop) (comap im atTop) :=
+    tendsto_comap_iff.mpr <| by simp [Function.comp_def, tendsto_comap]
+  simpa [Function.comp_def, jacobiTheta_one_add] using
+    isBigO_at_im_infty_jacobiTheta_sub_one.comp_tendsto h
+
+/-- `θ₄ τ` tends to `1` as `im τ → ∞`. -/
+theorem tendsto_jacobiTheta₀₁_at_im_infty : Tendsto jacobiTheta₀₁ (comap im atTop) (𝓝 1) :=
+  tendsto_sub_nhds_zero_iff.mp <|
+    isBigO_at_im_infty_jacobiTheta₀₁_sub_one.trans_tendsto (tendsto_rexp_neg_mul_im pi_pos)
+
+/-- The norm of `θ₂ τ` decays exponentially as `im τ → ∞`. -/
+theorem isBigO_at_im_infty_jacobiTheta₁₀ :
+    θ₂ =O[comap im atTop] fun τ ↦ rexp (-π * τ.im / 4) := by
+  have hs : Summable fun n : ℤ ↦ ‖jacobiTheta₂_term n (I / 2) I‖ :=
+    summable_norm_iff.mpr <| (summable_jacobiTheta₂_term_iff _ _).mpr (by simp)
+  simp_rw [isBigO_iff, Filter.eventually_comap, Filter.eventually_atTop]
+  refine ⟨∑' n : ℤ, ‖jacobiTheta₂_term n (I / 2) I‖, 1, fun y hy τ hτ ↦ ?_⟩
+  -- `jacobiTheta₂ (τ / 2) τ` is bounded for `1 ≤ im τ`
+  have h₁ : ‖jacobiTheta₂ (τ / 2) τ‖ ≤ ∑' n : ℤ, ‖jacobiTheta₂_term n (I / 2) I‖ := by
+    refine tsum_of_norm_bounded hs.hasSum fun n ↦ ?_
+    rw [norm_jacobiTheta₂_term, norm_jacobiTheta₂_term, Real.exp_le_exp, div_ofNat_im,
+      div_ofNat_im, I_im]
+    have hn : (0 : ℝ) ≤ n ^ 2 + n := by norm_cast; nlinarith
+    nlinarith [mul_nonneg (mul_nonneg pi_pos.le hn) (sub_nonneg.mpr (hτ ▸ hy))]
+  grw [jacobiTheta₁₀_eq_jacobiTheta₂, norm_mul, mul_comm, h₁]
+  simp [Complex.norm_exp, Real.norm_eq_abs, Real.abs_exp]
+
+/-- `θ₂ τ` tends to `0` as `im τ → ∞`. -/
+theorem tendsto_jacobiTheta₁₀_at_im_infty : Tendsto jacobiTheta₁₀ (comap im atTop) (𝓝 0) :=
+  isBigO_at_im_infty_jacobiTheta₁₀.trans_tendsto <|
+    (tendsto_rexp_neg_mul_im (c := π / 4) (by positivity)).congr fun τ ↦ by ring_nf

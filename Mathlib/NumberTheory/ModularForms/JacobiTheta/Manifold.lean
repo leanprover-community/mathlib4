@@ -14,10 +14,10 @@ set_option doc.verso true
 set_option doc.verso.suggestions false
 
 /-!
-# Manifold differentiability of the Jacobi theta function
+# Manifold differentiability of the Jacobi theta functions
 
-In this file we reformulate differentiability of the Jacobi theta function in terms of manifold
-differentiability.
+In this file we reformulate differentiability of the Jacobi theta functions `jacobiTheta`,
+`jacobiTheta₀₁` and `jacobiTheta₁₀` in terms of manifold differentiability.
 
 ## TODO
 
@@ -31,4 +31,12 @@ open scoped UpperHalfPlane Manifold
 
 theorem mdifferentiable_jacobiTheta : MDiff (jacobiTheta ∘ (↑) : ℍ → ℂ) :=
   fun τ => (differentiableAt_jacobiTheta τ.coe_im_pos).mdifferentiableAt.comp τ
+    τ.mdifferentiable_coe
+
+theorem mdifferentiable_jacobiTheta₀₁ : MDiff (jacobiTheta₀₁ ∘ (↑) : ℍ → ℂ) :=
+  fun τ => (differentiableAt_jacobiTheta₀₁ τ.coe_im_pos).mdifferentiableAt.comp τ
+    τ.mdifferentiable_coe
+
+theorem mdifferentiable_jacobiTheta₁₀ : MDiff (jacobiTheta₁₀ ∘ (↑) : ℍ → ℂ) :=
+  fun τ => (differentiableAt_jacobiTheta₁₀ τ.coe_im_pos).mdifferentiableAt.comp τ
     τ.mdifferentiable_coe

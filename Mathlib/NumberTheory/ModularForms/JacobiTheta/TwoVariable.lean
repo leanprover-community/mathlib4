@@ -290,6 +290,7 @@ lemma jacobiTheta₂'_undef (z : ℂ) {τ : ℂ} (hτ : im τ ≤ 0) : jacobiThe
 ## Derivatives and continuity
 -/
 
+@[fun_prop]
 lemma hasFDerivAt_jacobiTheta₂ (z : ℂ) {τ : ℂ} (hτ : 0 < im τ) :
     HasFDerivAt (fun p : ℂ × ℂ ↦ jacobiTheta₂ p.1 p.2) (jacobiTheta₂_fderiv z τ) (z, τ) := by
   obtain ⟨T, hT, hτ'⟩ := exists_between hτ
