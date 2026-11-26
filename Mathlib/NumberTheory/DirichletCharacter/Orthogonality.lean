@@ -19,6 +19,12 @@ Let `n` be a positive natural number. The main result of this file is
 and `b : ZMod n`, then the sum `∑ χ : DirichletCharacter R n, χ a⁻¹ * χ b` vanishes
 when `a ≠ b` and has the value `n.totient` otherwise. This requires `R` to have
 enough roots of unity (e.g., `R` could be an algebraically closed field of characteristic zero).
+
+## Main results
+
+* `DirichletCharacter.sum_char_inv_mul_char_eq`: the orthogonality relation `∑ χ, χ a⁻¹ * χ b` equals `n.totient` if `a = b` (for `a` a unit) and `0` otherwise.
+* `DirichletCharacter.sum_characters_eq`: the sum `∑ χ : DirichletCharacter R n, χ a` equals `n.totient` if `a = 1` and `0` otherwise.
+* `DirichletCharacter.card_eq_totient_of_hasEnoughRootsOfUnity`: the number of Dirichlet characters modulo `n` equals `n.totient`.
 -/
 
 public section
