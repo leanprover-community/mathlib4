@@ -47,6 +47,22 @@ variable {s : Finset ℕ} {m n p : ℕ}
 theorem squarefree_iff_prime_squarefree {n : ℕ} : Squarefree n ↔ ∀ x, Prime x → ¬x * x ∣ n :=
   squarefree_iff_irreducible_sq_not_dvd_of_exists_irreducible ⟨_, prime_two⟩
 
+/-- To prove a predicate for all positive natural numbers, it suffices to prove it for squarefree
+numbers and to show that multiplying a positive number by the square of a prime preserves it. -/
+@[elab_as_elim] theorem squarefree_induction_on {P : ℕ → Prop} (n : ℕ) (hn : 0 < n)
+    (squarefree : ∀ m, Squarefree m → P m)
+    (prime_sq_mul : ∀ p m, p.Prime → 0 < m → P m → P (p ^ 2 * m)) : P n := by
+  induction n using Nat.strong_induction_on with
+  | _ n ih =>
+    by_cases h : Squarefree n
+    · exact squarefree n h
+    · rw [squarefree_iff_prime_squarefree] at h
+      push Not at h
+      obtain ⟨p, hp, m, rfl⟩ := h
+      have hm := Nat.pos_of_mul_pos_left hn
+      have hlt : m < (p * p) * m := lt_mul_of_one_lt_left hm (one_lt_mul hp.one_lt.le hp.one_lt)
+      simpa only [pow_two] using prime_sq_mul p m hp hm (ih m hlt hm)
+
 theorem _root_.Squarefree.natFactorization_le_one {n : ℕ} (p : ℕ) (hn : Squarefree n) :
     n.factorization p ≤ 1 := by
   rcases eq_or_ne n 0 with (rfl | hn')
