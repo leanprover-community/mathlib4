@@ -86,7 +86,7 @@ public section
 
 open TopologicalSpace Metric Set Filter Function AffineMap Bornology
 
-open scoped Topology Filter NNReal Real
+open scoped Topology Filter NNReal Real ComplexConjugate
 
 universe u v w
 
@@ -370,26 +370,36 @@ theorem eventually_eq_or_eq_zero_of_isLocalMin_norm {f : E → ℂ} {c : E}
   filter_upwards [eventually_eq_of_isLocalMax_norm h4 h3] with z using inv_inj.mp
 
 /--
-If two functions are holomorphic near `x` and have the same norm there, then their logarithmic
-derivatives at `x` agree.
+If two functions are complex differentiable at `x` and have the same norm near `x`, then their
+logarithmic derivatives at `x` agree.
 -/
-theorem _root_.AnalyticAt.logDeriv_eq_of_eventually_norm_eq {f g : ℂ → ℂ} {x : ℂ}
+theorem _root_.DifferentiableAt.logDeriv_eq_of_eventually_norm_eq {f g : ℂ → ℂ} {x : ℂ}
     (hf : DifferentiableAt ℂ f x) (hg : DifferentiableAt ℂ g x) (h : ∀ᶠ z in 𝓝 x, ‖f z‖ = ‖g z‖) :
     logDeriv f x = logDeriv g x := by
   have hx : ‖f x‖ = ‖g x‖ := h.self_of_nhds
   obtain hgx | hgx := eq_or_ne (g x) 0
   · simp_all [logDeriv_apply]
   have hfx : f x ≠ 0 := by rwa [← norm_ne_zero_iff, hx, norm_ne_zero_iff]
-  -- The quotient `f / g` is holomorphic near `x` and has constant norm, so it is locally constant.
-  have h₁ : (fun _ ↦ 1) =ᶠ[𝓝 x] norm ∘ (f / g) := by
-    filter_upwards [h, hg.continuousAt.eventually_ne hgx] with z h₁z h₂z
-    simp [h₁z, h₂z]
-  have h₂ := Complex.eventually_eq_of_isLocalMax_norm
-    ((hf.div hg hgx).eventually_analyticAt.mono fun _ h ↦ h.differentiableAt)
-    (isLocalMax_const.congr h₁)
-  rw [← sub_eq_zero, ← logDeriv_div x hfx hgx hf.differentiableAt hg.differentiableAt,
-    (logDeriv_congr_nhds h₂).self_of_nhds]
-  simp
+  -- The real derivative of `f * conj f - g * conj g` vanishes at `x`, as the function is locally
+  -- zero. Evaluating it at `1` and at `I` shows `conj (f x) * f' x = conj (g x) * g' x`.
+  have hsq {f : ℂ → ℂ} (hf : DifferentiableAt ℂ f x) :=
+    (hf.hasDerivAt.hasFDerivAt.restrictScalars ℝ).mul
+      (conjCLE.hasFDerivAt.comp x (hf.hasDerivAt.hasFDerivAt.restrictScalars ℝ))
+  have key := ((hsq hf).sub (hsq hg)).unique
+    ((hasFDerivAt_const (0 : ℂ) x).congr_of_eventuallyEq
+      (by filter_upwards [h] with z hz; simp [mul_conj', hz]))
+  have h₁ := congr($key 1)
+  have h₂ := congr($key I)
+  simp only [ContinuousAlgEquiv.coe_coeCLE, Function.comp_apply, conjCAE_apply, sub_apply,
+    add_apply, smul_apply, ContinuousLinearMap.comp_apply,
+    ContinuousLinearMap.coe_restrictScalars', ContinuousLinearMap.toSpanSingleton_apply,
+    smul_eq_mul, one_mul, ContinuousLinearEquiv.coe_coe, ContinuousAlgEquiv.coeCLE_apply,
+    zero_apply, map_mul, conj_I, neg_mul, mul_neg] at h₁ h₂
+  have : conj (f x) * deriv f x = conj (g x) * deriv g x := by
+    linear_combination (h₁ - I * h₂) / 2 - (f x * conj (deriv f x) - conj (f x) * deriv f x
+      - g x * conj (deriv g x) + conj (g x) * deriv g x) / 2 * I_sq
+  rw [logDeriv_apply, logDeriv_apply, ← mul_div_mul_left _ _ ((map_ne_zero conj).2 hfx), this,
+    conj_mul', hx, ← conj_mul', mul_div_mul_left _ _ ((map_ne_zero conj).2 hgx)]
 
 end StrictConvex
 

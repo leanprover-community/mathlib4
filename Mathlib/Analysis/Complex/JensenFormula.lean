@@ -486,8 +486,9 @@ private lemma MeromorphicOn.logDeriv_eq_circleAverage₀
       h₁f.circleAverage_poissonKernel_smul_log_norm_of_ne_zero h₂f h₃f hz,
       Real.exp_log (norm_pos_iff.2 (h₃f z hz))]
   -- Hence, `f` and `exp ∘ F` have the same logarithmic derivative, namely the derivative of `F`.
-  rw [(h₂f w hw).logDeriv_eq_of_eventually_norm_eq
-      (analyticOnNhd_circleAverage_herglotzRieszKernel_smul hlog.ofReal w (hball hw)).cexp' hF,
+  rw [(h₂f w hw).differentiableAt.logDeriv_eq_of_eventually_norm_eq
+      ((analyticOnNhd_circleAverage_herglotzRieszKernel_smul hlog.ofReal w (hball hw)).cexp'
+        |>.differentiableAt) hF,
     logDeriv_apply,
     (hasDerivAt_circleAverage_herglotzRieszKernel_smul hlog.ofReal (hball hw)).cexp.deriv,
     mul_div_cancel_left₀ _ (Complex.exp_ne_zero _)]
