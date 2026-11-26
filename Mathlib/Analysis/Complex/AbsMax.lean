@@ -374,7 +374,7 @@ If two functions are holomorphic near `x` and have the same norm there, then the
 derivatives at `x` agree.
 -/
 theorem _root_.AnalyticAt.logDeriv_eq_of_eventually_norm_eq {f g : ℂ → ℂ} {x : ℂ}
-    (hf : AnalyticAt ℂ f x) (hg : AnalyticAt ℂ g x) (h : ∀ᶠ z in 𝓝 x, ‖f z‖ = ‖g z‖) :
+    (hf : DifferentiableAt ℂ f x) (hg : DifferentiableAt ℂ g x) (h : ∀ᶠ z in 𝓝 x, ‖f z‖ = ‖g z‖) :
     logDeriv f x = logDeriv g x := by
   have hx : ‖f x‖ = ‖g x‖ := h.self_of_nhds
   obtain hgx | hgx := eq_or_ne (g x) 0
