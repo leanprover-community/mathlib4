@@ -427,28 +427,19 @@ theorem aeval_gen_minpoly (α : E) : aeval (AdjoinSimple.gen F α) (minpoly F α
 noncomputable def adjoinRootEquivAdjoin (h : IsIntegral F α) :
     AdjoinRoot (minpoly F α) ≃ₐ[F] F⟮α⟯ :=
   AlgEquiv.ofBijective
-    (AdjoinRoot.liftAlgHom (minpoly F α) _ (AdjoinSimple.gen F α) (aeval_gen_minpoly F α))
+    (AdjoinRoot.liftAlgHom (minpoly F α) (Algebra.ofId F F⟮α⟯) (AdjoinSimple.gen F α)
+      (by rw [Algebra.toRingHom_ofId, ← aeval_def]; exact aeval_gen_minpoly F α))
     (by
-      set f := AdjoinRoot.lift _ _ (aeval_gen_minpoly F α :)
       have := Fact.mk (minpoly.irreducible h)
       constructor
-      · exact RingHom.injective f
-      · suffices F⟮α⟯.toSubfield ≤ RingHom.fieldRange (F⟮α⟯.toSubfield.subtype.comp f) by
-          intro x
-          obtain ⟨y, hy⟩ := this (Subtype.mem x)
-          exact ⟨y, Subtype.ext hy⟩
-        refine Subfield.closure_le.mpr (Set.union_subset (fun x hx => ?_) ?_)
-        · obtain ⟨y, hy⟩ := hx
-          refine ⟨y, ?_⟩
-          rw [RingHom.comp_apply]
-          dsimp only [coe_type_toSubfield]
-          rw [AdjoinRoot.lift_of (aeval_gen_minpoly F α)]
-          exact hy
-        · refine Set.singleton_subset_iff.mpr ⟨AdjoinRoot.root (minpoly F α), ?_⟩
-          rw [RingHom.comp_apply]
-          dsimp only [coe_type_toSubfield]
-          rw [AdjoinRoot.lift_root (aeval_gen_minpoly F α)]
-          rfl)
+      · exact RingHom.injective _
+      rw [← Set.range_eq_univ, ← Set.univ_subset_iff, ← AlgHom.coe_fieldRange,
+        ← @IntermediateField.coe_top F, SetLike.coe_subset_coe,
+        ← IntermediateField.map_le_map_iff F⟮α⟯.val, IntermediateField.map_top,
+        IntermediateField.fieldRange_val, AlgHom.map_fieldRange,
+        IntermediateField.adjoin_le_iff, Set.singleton_subset_iff, SetLike.mem_coe,
+        AlgHom.mem_fieldRange]
+      exact ⟨.root _, by simp⟩)
 
 theorem adjoinRootEquivAdjoin_apply_root (h : IsIntegral F α) :
     adjoinRootEquivAdjoin F h (AdjoinRoot.root (minpoly F α)) = AdjoinSimple.gen F α :=
