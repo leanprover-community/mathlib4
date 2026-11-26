@@ -561,7 +561,9 @@ instance instRKHSSubmodule : RKHS 𝕜 H₀ X V where
 
 omit [CompleteSpace H] [CompleteSpace V] [CompleteSpace H₀] in
 @[simp]
-lemma coe_coe (f : H₀) : ⇑(f : H) = f := rfl
+lemma coe_subtypeVal (f : H₀) : ⇑(f : H) = f := rfl
+
+@[deprecated (since := "2026-11-26")] alias coe_coe := coe_subtypeVal
 
 lemma kerFun_submodule (x : X) :
     kerFun H₀ x = H₀.orthogonalProjectionOnto.comp (kerFun H x) := by
