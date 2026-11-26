@@ -899,6 +899,9 @@ public import Mathlib.Algebra.Module.TransferInstance
 public import Mathlib.Algebra.Module.ULift
 public import Mathlib.Algebra.Module.ZLattice.Basic
 public import Mathlib.Algebra.Module.ZLattice.Covolume
+public import Mathlib.Algebra.Module.ZLattice.Even
+public import Mathlib.Algebra.Module.ZLattice.RootLattice.D
+public import Mathlib.Algebra.Module.ZLattice.RootLattice.E
 public import Mathlib.Algebra.Module.ZLattice.Summable
 public import Mathlib.Algebra.Module.ZMod
 public import Mathlib.Algebra.MonoidAlgebra.Basic
