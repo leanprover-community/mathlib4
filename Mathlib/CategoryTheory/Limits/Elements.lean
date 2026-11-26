@@ -5,12 +5,11 @@ Authors: Markus Himmel, Emily Riehl
 -/
 module
 
+public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 public import Mathlib.CategoryTheory.Elements
-public import Mathlib.CategoryTheory.Limits.Types.Limits
 public import Mathlib.CategoryTheory.Limits.Creates
 public import Mathlib.CategoryTheory.Limits.Preserves.Limits
-public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
-public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
+public import Mathlib.CategoryTheory.Limits.Types.Limits
 
 /-!
 # Limits in the category of elements
@@ -22,7 +21,6 @@ the category of elements of `A` has limits of shape `I` and the forgetful functo
 ## Further results
 
 - If `A` is (co)representable, then `A.Elements` has an initial object.
-
 -/
 
 @[expose] public section
@@ -47,11 +45,11 @@ variable (F : I ⥤ A.Elements)
 
 /-- (implementation) A system `(Fi, fi)_i` of elements induces an element in `lim_i A(Fi)`. -/
 noncomputable def liftedConeElement' : limit ((F ⋙ π A) ⋙ A) :=
-  Types.Limit.mk _ (fun i => (F.obj i).2) (by simp)
+  Types.Limit.mk _ (fun i => (F.obj i).val) (by simp)
 
 @[simp]
 lemma π_liftedConeElement' (i : I) :
-    dsimp% limit.π ((F ⋙ π A) ⋙ A) i (liftedConeElement' F) = (F.obj i).2 :=
+    dsimp% limit.π ((F ⋙ π A) ⋙ A) i (liftedConeElement' F) = (F.obj i).val :=
   Types.Limit.π_mk _ _ _ _
 
 variable [HasLimitsOfShape I C] [PreservesLimitsOfShape I A]
@@ -121,7 +119,6 @@ instance {F : C ⥤ Type*} [F.IsCorepresentable] : HasInitial F.Elements :=
 end Initial
 
 end
-
 
 /-- An initial object in the category `F.Elements` of a covariant functor defines a
 corepresentation for that functor. -/

@@ -15,7 +15,7 @@ public import Mathlib.Data.Fintype.Basic
 In this file we prove lemmas of the following form: if `β` has a group structure and `α ≃ β`
 then `α` has a group structure, and similarly for monoids, semigroups and so on.
 
-### Implementation details
+## Implementation notes
 
 When adding new definitions that transfer type-classes across an equivalence, please use
 `abbrev`. See note [reducible non-instances].
@@ -205,6 +205,6 @@ lemma exists_type_univ_nonempty_mulEquiv.{u, v} (G : Type u) [Group G] [Finite G
   let f : Fin n ≃ ULift (Fin n) := Equiv.ulift.symm
   let e : G ≃ ULift (Fin n) := e.trans f
   let groupH : Group (ULift (Fin n)) := e.symm.group
-  exact ⟨ULift (Fin n), groupH, inferInstance, ⟨MulEquiv.symm <| e.symm.mulEquiv⟩⟩
+  exact ⟨ULift (Fin n), groupH, inferInstance, ⟨MulEquiv.symm e.symm.mulEquiv⟩⟩
 
 end Finite

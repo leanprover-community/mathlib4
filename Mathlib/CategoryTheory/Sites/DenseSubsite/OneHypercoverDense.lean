@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equivalence of categories of sheaves with a dense subsite that is 1-hypercover dense
 
@@ -23,7 +26,6 @@ to transport `HasWeakSheafify` and `HasSheafify` assumptions for the site `(C₀
 to the site `(C, J)`, see `Functor.IsDenseSubsite.hasWeakSheafify_of_isEquivalence`
 and `Functor.IsDenseSubsite.hasSheafify_of_isEquivalence` in the file
 `Mathlib/CategoryTheory/Sites/DenseSubsite/Basic.lean`.
-
 -/
 
 @[expose] public section
@@ -328,7 +330,7 @@ variable {S} (s : Multifork (S.index G))
 
 /-- Auxiliary definition for `lift`. -/
 private noncomputable def liftAux (i : (data X).I₀) : s.pt ⟶ G.obj (op (F.obj ((data X).X i))) :=
-  hG₀.amalgamate ⟨_, cover_lift F J₀ _ (J.pullback_stable ((data X).f i) S.2)⟩
+  hG₀.amalgamate ⟨_, cover_lift F J₀ _ (J.pullback_stable ((data X).f i) S.property)⟩
     (fun ⟨W₀, a, ha⟩ ↦ s.ι ⟨_, F.map a ≫ (data X).f i, ha⟩) (by
       rintro ⟨W₀, a, ha⟩ ⟨Z₀, b, hb⟩ ⟨U₀, p₁, p₂, fac⟩
       exact s.condition
@@ -351,7 +353,7 @@ private noncomputable def lift : s.pt ⟶ G.obj (op X) :=
     dsimp at i₁ i₂ j ⊢
     refine Presheaf.IsSheaf.hom_ext
       hG₀ ⟨_, cover_lift F J₀ _
-        (J.pullback_stable (F.map ((data X).p₁ j) ≫ (data X).f i₁) S.2)⟩ _ _ ?_
+        (J.pullback_stable (F.map ((data X).p₁ j) ≫ (data X).f i₁) S.property)⟩ _ _ ?_
     rintro ⟨W₀, a, ha⟩
     dsimp
     simp only [assoc, ← Functor.map_comp, ← op_comp]
@@ -384,7 +386,7 @@ private lemma fac (a : S.Arrow) :
         dsimp at i j c fac₁ ⊢
         have he : S (F.map e ≫ (data X).f j) := by
           rw [fac₂, assoc, fac₁]
-          simpa only [assoc] using S.1.downward_closed a.hf (F.map d ≫ F.map b ≫ (data a.Y).f i)
+          simpa only [assoc] using S.val.downward_closed a.hf (F.map d ≫ F.map b ≫ (data a.Y).f i)
         simp only [assoc, ← Functor.map_comp, ← op_comp, ← fac₁]
         conv_lhs => simp only [op_comp, Functor.map_comp, assoc, lift_map_assoc]
         rw [← Functor.map_comp, ← op_comp, ← fac₂, liftAux_fac _ _ _ he]
@@ -401,7 +403,7 @@ private lemma hom_ext {f₁ f₂ : s.pt ⟶ G.obj (op X)}
     (h : ∀ (a : S.Arrow), f₁ ≫ G.map a.f.op = f₂ ≫ G.map a.f.op) : f₁ = f₂ :=
   Multifork.IsLimit.hom_ext (hG X) (fun i ↦ by
     refine Presheaf.IsSheaf.hom_ext hG₀
-      ⟨_, cover_lift F J₀ _ (J.pullback_stable ((data X).f i) S.2)⟩ _ _ ?_
+      ⟨_, cover_lift F J₀ _ (J.pullback_stable ((data X).f i) S.property)⟩ _ _ ?_
     rintro ⟨X₀, a, ha⟩
     dsimp
     simp only [assoc, ← Functor.map_comp]
@@ -537,7 +539,7 @@ see `OneHypercoverDenseData.essSurj.presheaf` and
 `OneHypercoverDenseData.essSurj.isSheaf`). -/
 noncomputable def restriction {X : C} {X₀ : C₀} (f : F.obj X₀ ⟶ X) :
     presheafObj data G₀ X ⟶ G₀.obj.obj (op X₀) :=
-  G₀.2.amalgamate ⟨_, (data X).sieve_mem f⟩
+  G₀.property.amalgamate ⟨_, (data X).sieve_mem f⟩
     (fun ⟨Y₀, g, hg⟩ ↦ restriction.res data G₀ hg.some) (by
       rintro ⟨Z₁, g₁, ⟨h₁⟩⟩ ⟨Z₂, g₂, ⟨h₂⟩⟩ ⟨T₀, p₁, p₂, w⟩
       dsimp at g₁ g₂ p₁ p₂ w ⊢
@@ -564,7 +566,7 @@ lemma restriction_map {X : C} {X₀ : C₀} (f : F.obj X₀ ⟶ X) {Y₀ : C₀}
       presheafObjπ data G₀ X i ≫ IsDenseSubsite.mapPreimage J F G₀ p := by
   have hg : (data X).sieve f g := ⟨i, p, fac⟩
   dsimp only [restriction]
-  rw [G₀.2.amalgamate_map _ _ _ ⟨_, g, hg⟩]
+  rw [G₀.property.amalgamate_map _ _ _ ⟨_, g, hg⟩]
   apply presheafObj_mapPreimage_condition
   rw [hg.some.fac, fac]
 
@@ -666,7 +668,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `OneHypercoverDenseData.essSurj.presheafObjObjIso`. -/
 noncomputable def hom : (presheaf data G₀).obj (op (F.obj X₀)) ⟶ G₀.obj.obj (op X₀) :=
-  G₀.2.amalgamate ⟨_, cover_lift F J₀ _ (data (F.obj X₀)).mem₀⟩ (fun ⟨W₀, a, ha⟩ ↦
+  G₀.property.amalgamate ⟨_, cover_lift F J₀ _ (data (F.obj X₀)).mem₀⟩ (fun ⟨W₀, a, ha⟩ ↦
     presheafObjπ data G₀ _ (Sieve.ofArrows.i ha) ≫
       IsDenseSubsite.mapPreimage J F G₀ (Sieve.ofArrows.h ha)) (by
         rintro ⟨W₀, a, ha⟩ ⟨T₀, b, hb⟩ ⟨U₀, p₁, p₂, fac⟩
@@ -693,11 +695,10 @@ lemma hom_map {W₀ : C₀} (a : W₀ ⟶ X₀) {i : (data (F.obj X₀)).I₀}
       presheafObjπ data G₀ _ i ≫ IsDenseSubsite.mapPreimage J F G₀ p := by
   have ha : Sieve.functorPullback F (data (F.obj X₀)).toPreOneHypercover.sieve₀ a :=
     ⟨_, p, _, ⟨i⟩, fac⟩
-  exact (G₀.2.amalgamate_map _ _ _ ⟨W₀, a, ha⟩).trans
+  exact (G₀.property.amalgamate_map _ _ _ ⟨W₀, a, ha⟩).trans
     (presheafObj_mapPreimage_condition _ _ _ _ _ _ _
       ((Sieve.ofArrows.fac ha).trans fac.symm))
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma hom_mapPreimage {W₀ : C₀} (a : F.obj W₀ ⟶ F.obj X₀) {i : (data (F.obj X₀)).I₀}
     (p : F.obj W₀ ⟶ F.obj ((data (F.obj X₀)).X i))
@@ -806,7 +807,7 @@ lemma isSheaf : Presheaf.IsSheaf J (presheaf data G₀) := by
       (WalkingMulticospan.functorExt
           (fun _ ↦ presheafObjObjIso _ _ _) (fun _ ↦ presheafObjObjIso _ _ _)
           (fun _ ↦ (compPresheafIso _ _).hom.naturality _)
-          (fun _ ↦ (compPresheafIso _ _).hom.naturality _)) _).1
+          (fun _ ↦ (compPresheafIso _ _).hom.naturality _)) _).toFun
       (IsLimit.ofIsoLimit (presheafObjIsLimit data G₀ X)
         (Multifork.ext (Iso.refl _) (fun i ↦ ?_)))⟩
     simp [Multifork.ι, PreOneHypercover.multifork, MulticospanIndex.multicospan]

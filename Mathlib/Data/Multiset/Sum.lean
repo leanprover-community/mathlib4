@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Order.Group.Multiset
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Disjoint sum of multisets
 

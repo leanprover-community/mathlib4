@@ -6,15 +6,15 @@ Authors: Keeley Hoek, Patrick Massot, Kim Morrison
 module
 
 public meta import Mathlib.Lean.Expr.Basic
-public import Mathlib.Order.Hom.Basic
 public meta import Mathlib.Tactic.ToDual
+public import Mathlib.Order.Hom.Basic
 
 /-!
 # The `apply_fun` tactic.
 
 Apply a function to an equality or inequality in either a local hypothesis or the goal.
 
-## Future work
+## TODO
 
 Using the `mono` tactic, we can attempt to automatically discharge `Monotone f` goals.
 -/

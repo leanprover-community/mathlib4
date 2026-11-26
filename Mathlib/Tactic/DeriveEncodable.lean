@@ -5,11 +5,12 @@ Authors: Kyle Miller
 -/
 module
 
-public meta import Lean.Meta.Transform
 public meta import Lean.Elab.Deriving.Util  -- shake: keep (???)
-import Mathlib.Logic.Encodable.Basic
+public meta import Lean.Meta.Transform
+
+meta import Aesop.BuiltinRules
 import Mathlib.Data.Nat.Pairing
-import Aesop.BuiltinRules
+import Mathlib.Logic.Encodable.Basic
 
 /-!
 # `Encodable` deriving handler

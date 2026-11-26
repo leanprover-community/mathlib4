@@ -19,7 +19,7 @@ This file defines the indicator function of a set. More lemmas can be found in
 - `Set.indicator (s : Set α) (f : α → β) (a : α)` is `f a` if `a ∈ s` and is `0` otherwise.
 - `Set.mulIndicator (s : Set α) (f : α → β) (a : α)` is `f a` if `a ∈ s` and is `1` otherwise.
 
-## Implementation note
+## Implementation notes
 
 In mathematics, an indicator function or a characteristic function is a function
 used to indicate membership of an element in a set `s`,
@@ -111,8 +111,8 @@ lemma mulIndicator_apply_ne_one {a : α} : s.mulIndicator f a ≠ 1 ↔ a ∈ s 
 
 @[to_additive (attr := simp)]
 lemma mulSupport_mulIndicator :
-    Function.mulSupport (s.mulIndicator f) = s ∩ Function.mulSupport f :=
-  ext fun x => by simp [Function.mem_mulSupport, mulIndicator_apply_eq_one]
+    Function.mulSupport (s.mulIndicator f) = s ∩ Function.mulSupport f := by
+  grind [mulIndicator_apply_eq_one]
 
 /-- If a multiplicative indicator function is not equal to `1` at a point, then that point is in the
 set. -/

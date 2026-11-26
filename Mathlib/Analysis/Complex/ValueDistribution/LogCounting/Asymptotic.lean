@@ -18,7 +18,7 @@ discussion.
 Analogously, characterize meromorphic functions with finite set of poles, as functions whose
 logarithmic counting function is big-O of `log`.
 
-## Implementation Notes
+## Implementation notes
 
 We establish the result first for the logarithmic counting function for functions with locally
 finite support on `𝕜` and then specialize to the setting where the function with locally finite
@@ -184,8 +184,8 @@ function for its pole divisor is asymptotically bounded.
 -/
 theorem logCounting_isBigO_one_iff_analyticOnNhd {f : 𝕜 → E} (h : Meromorphic f) :
     logCounting f ⊤ =O[atTop] (1 : ℝ → ℝ) ↔ AnalyticOnNhd 𝕜 (toMeromorphicNFOn f univ) univ := by
-  simp only [logCounting, reduceDIte]
-  rw [← locallyFinsuppWithin.zero_iff_logCounting_bounded (negPart_nonneg _), negPart_eq_zero,
+  rw [logCounting_top,
+    ← locallyFinsuppWithin.zero_iff_logCounting_bounded (negPart_nonneg _), negPart_eq_zero,
     ← h.meromorphicOn.divisor_of_toMeromorphicNFOn,
     (meromorphicNFOn_toMeromorphicNFOn _ _).divisor_nonneg_iff_analyticOnNhd]
 

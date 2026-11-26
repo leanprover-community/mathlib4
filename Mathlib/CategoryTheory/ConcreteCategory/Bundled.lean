@@ -5,8 +5,11 @@ Authors: Kim Morrison, Johannes Hölzl, Reid Barton, Sean Leather
 -/
 module
 
-public import Mathlib.Init
-public import Batteries.Tactic.Lint.Misc
+import Batteries.Tactic.Lint.Misc
+import Mathlib.Init
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Bundled types

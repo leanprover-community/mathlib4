@@ -6,7 +6,8 @@ Authors: Gabriel Ebner, Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Calculus.Deriv.Basic
-public import Mathlib.Analysis.Calculus.FDeriv.Linear
+
+import Mathlib.Analysis.Calculus.FDeriv.Linear
 
 /-!
 # Derivatives of continuous linear maps from the base field
@@ -16,7 +17,7 @@ In this file we prove that `f : 𝕜 →L[𝕜] E` (or `f : 𝕜 →ₗ[𝕜] E`
 For a more detailed overview of one-dimensional derivatives in mathlib, see the module docstring of
 `Analysis/Calculus/Deriv/Basic`.
 
-## Keywords
+## Tags
 
 derivative, linear map
 -/

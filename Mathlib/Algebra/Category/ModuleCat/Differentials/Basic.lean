@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
 public import Mathlib.Algebra.Category.Ring.Basic
 public import Mathlib.RingTheory.Kaehler.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The differentials of a morphism in the category of commutative rings
 
@@ -17,7 +20,6 @@ and `M : ModuleCat B`, we define the type `M.Derivation f` of
 derivations with values in `M` relative to `f`.
 We also construct the module of differentials
 `CommRingCat.KaehlerDifferential f : ModuleCat B` and the corresponding derivation.
-
 -/
 
 @[expose] public section
@@ -164,7 +166,6 @@ namespace ModuleCat.Derivation
 variable {A B : CommRingCat.{u}} {f : A ⟶ B}
   {M : ModuleCat.{u} B} (D : M.Derivation f)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given `f : A ⟶ B` a morphism in the category `CommRingCat`, `M : ModuleCat B`,
 and `D : M.Derivation f`, this is the induced
 morphism `CommRingCat.KaehlerDifferential f ⟶ M`. -/
@@ -173,7 +174,6 @@ noncomputable def desc : CommRingCat.KaehlerDifferential f ⟶ M :=
   letI := Module.compHom M f.hom
   ofHom D.liftKaehlerDifferential
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma desc_d (b : B) : D.desc (CommRingCat.KaehlerDifferential.d b) = D.d b := by
   let := f.hom.toAlgebra

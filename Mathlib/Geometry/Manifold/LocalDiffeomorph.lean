@@ -6,7 +6,6 @@ Authors: Michael Rothgang
 module
 
 public import Mathlib.Geometry.Manifold.Diffeomorph
-public import Mathlib.Topology.IsLocalHomeomorph
 
 /-!
 # Local diffeomorphisms between manifolds
@@ -20,11 +19,13 @@ diffeomorphism at every `x ∈ s`, and a **local diffeomorphism** iff it is a lo
 `univ`.
 
 ## Main definitions
+
 * `IsLocalDiffeomorphAt I J n f x`: `f` is a `C^n` local diffeomorphism at `x`
 * `IsLocalDiffeomorphOn I J n f s`: `f` is a `C^n` local diffeomorphism on `s`
 * `IsLocalDiffeomorph I J n f`: `f` is a `C^n` local diffeomorphism
 
 ## Main results
+
 * Each of `Diffeomorph`, `IsLocalDiffeomorph`, `IsLocalDiffeomorphOn` and `IsLocalDiffeomorphAt`
   implies the next condition.
 * `IsLocalDiffeomorph.isLocalHomeomorph`: a local diffeomorphism is a local homeomorphism,
@@ -41,6 +42,7 @@ diffeomorphism at every `x ∈ s`, and a **local diffeomorphism** iff it is a lo
   each differential `mfderiv I J n f x` is a continuous linear equivalence.
 
 ## TODO
+
 * an injective local diffeomorphism is a diffeomorphism to its image
 * if `f` is `C^n` at `x` and `mfderiv I J n f x` is a linear isomorphism,
   `f` is a local diffeomorphism at `x` (using the inverse function theorem).
@@ -53,8 +55,8 @@ different, i.e. for a structomorphism one has to impose `H = H'` which is often 
 practice.
 
 ## Tags
-local diffeomorphism, manifold
 
+local diffeomorphism, manifold
 -/
 
 public noncomputable section
@@ -114,6 +116,9 @@ def toOpenPartialHomeomorph : OpenPartialHomeomorph M N where
   open_target := Φ.open_target
   continuousOn_toFun := Φ.contMDiffOn_toFun.continuousOn
   continuousOn_invFun := Φ.contMDiffOn_invFun.continuousOn
+
+@[simp, mfld_simps] theorem toFun'_toOpenPartialHomeomorph : ⇑Φ.toOpenPartialHomeomorph = Φ :=
+  rfl
 
 /-- The inverse of a local diffeomorphism. -/
 @[expose, simps toPartialEquiv]
@@ -185,13 +190,19 @@ lemma localInverse_mem_target (hf : IsLocalDiffeomorphAt I J n f x) :
     x ∈ hf.localInverse.target :=
   hf.choose_spec.1
 
-lemma contmdiffOn_localInverse (hf : IsLocalDiffeomorphAt I J n f x) :
+lemma contMDiffOn_localInverse (hf : IsLocalDiffeomorphAt I J n f x) :
     CMDiff[hf.localInverse.source] n hf.localInverse :=
   hf.localInverse.contMDiffOn_toFun
 
+@[deprecated (since := "2026-09-17")]
+alias contmdiffOn_localInverse := contMDiffOn_localInverse
+
+@[deprecated (since := "2026-09-17")]
+alias localInverse_contMDiffOn := contMDiffOn_localInverse
+
 lemma continuousAt_localInverse (hf : IsLocalDiffeomorphAt I J n f x) :
     ContinuousAt hf.localInverse (f x) :=
-  hf.contmdiffOn_localInverse.continuousOn.continuousAt <|
+  hf.contMDiffOn_localInverse.continuousOn.continuousAt <|
     hf.localInverse_open_source.mem_nhds hf.localInverse_mem_source
 
 lemma localInverse_right_inv (hf : IsLocalDiffeomorphAt I J n f x) {y : N}
@@ -230,18 +241,20 @@ lemma localInverse_isLocalDiffeomorphAt (hf : IsLocalDiffeomorphAt I J n f x) :
     IsLocalDiffeomorphAt J I n (hf.localInverse) (f x) :=
   hf.localInverse.isLocalDiffeomorphAt _ _ _ hf.localInverse_mem_source
 
-lemma localInverse_contMDiffOn (hf : IsLocalDiffeomorphAt I J n f x) :
-    CMDiff[hf.localInverse.source] n hf.localInverse :=
-  hf.localInverse.contMDiffOn_toFun
-
-lemma localInverse_contMDiffAt (hf : IsLocalDiffeomorphAt I J n f x) :
+lemma contMDiffAt_localInverse (hf : IsLocalDiffeomorphAt I J n f x) :
     CMDiffAt n hf.localInverse (f x) :=
-  hf.localInverse_contMDiffOn.contMDiffAt
+  hf.contMDiffOn_localInverse.contMDiffAt
     (hf.localInverse.open_source.mem_nhds hf.localInverse_mem_source)
 
-lemma localInverse_mdifferentiableAt (hf : IsLocalDiffeomorphAt I J n f x) (hn : n ≠ 0) :
+@[deprecated (since := "2026-09-17")]
+alias localInverse_contMDiffAt := contMDiffAt_localInverse
+
+lemma mdifferentiableAt_localInverse (hf : IsLocalDiffeomorphAt I J n f x) (hn : n ≠ 0) :
     MDiffAt hf.localInverse (f x) :=
-  hf.localInverse_contMDiffAt.mdifferentiableAt hn
+  hf.contMDiffAt_localInverse.mdifferentiableAt hn
+
+@[deprecated (since := "2026-09-17")]
+alias localInverse_mdifferentiableAt := mdifferentiableAt_localInverse
 
 lemma comp (hf : IsLocalDiffeomorphAt I J n f x) {g : N → P}
     (hg : IsLocalDiffeomorphAt J K n g (f x)) :
@@ -352,7 +365,7 @@ lemma IsLocalDiffeomorph.isOpen_range (hf : IsLocalDiffeomorph I J n f) : IsOpen
 @[expose] def IsLocalDiffeomorph.image (hf : IsLocalDiffeomorph I J n f) : Opens N :=
   ⟨range f, hf.isOpen_range⟩
 
-lemma IsLocalDiffeomorph.image_coe (hf : IsLocalDiffeomorph I J n f) : hf.image.1 = range f :=
+lemma IsLocalDiffeomorph.image_coe (hf : IsLocalDiffeomorph I J n f) : hf.image.carrier = range f :=
   rfl
 
 -- TODO: this result holds more generally for (local) structomorphisms
@@ -406,7 +419,7 @@ is a linear equivalence. -/
   left_inv := by
     apply ContinuousLinearMap.leftInverse_of_comp
     rw [← mfderiv_id, hf.localInverse_eventuallyEq_left.symm.mfderiv_eq]
-    exact (mfderiv_comp _ (hf.localInverse_mdifferentiableAt hn) (hf.mdifferentiableAt hn)).symm
+    exact (mfderiv_comp _ (hf.mdifferentiableAt_localInverse hn) (hf.mdifferentiableAt hn)).symm
   right_inv := by
     apply ContinuousLinearMap.rightInverse_of_comp
     rw [← mfderiv_id, hf.localInverse_eventuallyEq_right.symm.mfderiv_eq]
@@ -415,7 +428,7 @@ is a linear equivalence. -/
     have hf' : MDifferentiableAt I J f (hf.localInverse (f x)) := by
       rw [hf.localInverse_left_inv hf.localInverse_mem_target]
       exact hf.mdifferentiableAt hn
-    rw [mfderiv_comp _ hf' (hf.localInverse_mdifferentiableAt hn),
+    rw [mfderiv_comp _ hf' (hf.mdifferentiableAt_localInverse hn),
       hf.localInverse_left_inv hf.localInverse_mem_target]
     rfl
   continuous_toFun := (mfderiv% f x).cont

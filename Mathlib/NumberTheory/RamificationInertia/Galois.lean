@@ -40,7 +40,6 @@ Assume `B / A` is a finite extension of Dedekind domains, `K` is the fraction ri
 ## References
 
 * [J Neukirch, *Algebraic Number Theory*][Neukirch1992]
-
 -/
 
 @[expose] public section
@@ -75,17 +74,17 @@ variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B] {p : Ideal A}
   {G : Type*} [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
 
 instance : MulAction G (primesOver p B) where
-  smul σ Q := primesOver.mk p (σ • Q.1)
-  one_smul Q := Subtype.ext (one_smul G Q.1)
-  mul_smul σ τ Q := Subtype.ext (mul_smul σ τ Q.1)
+  smul σ Q := primesOver.mk p (σ • Q.val)
+  one_smul Q := Subtype.ext (one_smul G Q.val)
+  mul_smul σ τ Q := Subtype.ext (mul_smul σ τ Q.val)
 
 @[simp]
-theorem coe_smul_primesOver (σ : G) (P : primesOver p B) : (σ • P).1 = σ • P.1 :=
+theorem coe_smul_primesOver (σ : G) (P : primesOver p B) : (σ • P).val = σ • P.val :=
   rfl
 
 @[simp]
 theorem coe_smul_primesOver_mk (σ : G) (P : Ideal B) [P.IsPrime] [P.LiesOver p] :
-    (σ • primesOver.mk p P).1 = σ • P :=
+    (σ • primesOver.mk p P).val = σ • P :=
   rfl
 
 variable (K L : Type*) [Field K] [Field L] [Algebra A K] [IsFractionRing A K] [Algebra B L]
@@ -93,23 +92,24 @@ variable (K L : Type*) [Field K] [Field L] [Algebra A K] [IsFractionRing A K] [A
   [IsIntegralClosure B A L] [FiniteDimensional K L]
 
 noncomputable instance : MulAction Gal(L/K) (primesOver p B) where
-  smul σ Q := primesOver.mk p (map (galRestrict A K L B σ) Q.1)
+  smul σ Q := primesOver.mk p (map (galRestrict A K L B σ) Q.val)
   one_smul Q := by
     apply Subtype.val_inj.mp
-    change map _ Q.1 = Q.1
-    simpa only [map_one] using! map_id Q.1
+    change map _ Q.val = Q.val
+    simpa only [map_one] using! map_id Q.val
   mul_smul σ τ Q := by
     apply Subtype.val_inj.mp
-    change map _ Q.1 = map _ (map _ Q.1)
+    change map _ Q.val = map _ (map _ Q.val)
     rw [map_mul]
-    exact (Q.1.map_map ((galRestrict A K L B) τ).toRingHom ((galRestrict A K L B) σ).toRingHom).symm
+    exact (Q.val.map_map ((galRestrict A K L B) τ).toRingHom
+      ((galRestrict A K L B) σ).toRingHom).symm
 
 theorem coe_smul_primesOver_eq_map_galRestrict (σ : Gal(L/K)) (P : primesOver p B) :
-    (σ • P).1 = map (galRestrict A K L B σ) P :=
+    (σ • P).val = map (galRestrict A K L B σ) P :=
   rfl
 
 theorem coe_smul_primesOver_mk_eq_map_galRestrict (σ : Gal(L/K)) (P : Ideal B) [P.IsPrime]
-    [P.LiesOver p] : (σ • primesOver.mk p P).1 = map (galRestrict A K L B σ) P :=
+    [P.LiesOver p] : (σ • primesOver.mk p P).val = map (galRestrict A K L B σ) P :=
   rfl
 
 end MulAction
@@ -163,7 +163,7 @@ theorem ramificationIdxIn_ne_zero [Module.Finite A B] [FaithfulSMul A B] {p : Id
     p.ramificationIdxIn B ≠ 0 := by
   obtain ⟨P⟩ := (inferInstance : Nonempty (primesOver p B))
   rw [ramificationIdxIn_eq_ramificationIdx p P G]
-  exact (P.1.ramificationIdx_pos A).ne'
+  exact (P.val.ramificationIdx_pos A).ne'
 
 include G in
 /-- The `inertiaDegIn` is equal to any ramification index over the same ideal. -/
@@ -179,7 +179,7 @@ theorem inertiaDegIn_ne_zero [Module.Finite A B] [FaithfulSMul A B] {p : Ideal A
     inertiaDegIn p B ≠ 0 := by
   obtain ⟨P⟩ := (inferInstance : Nonempty (primesOver p B))
   rw [inertiaDegIn_eq_inertiaDeg p P G]
-  exact (P.1.inertiaDeg_pos A).ne'
+  exact (P.val.inertiaDeg_pos A).ne'
 
 section tower
 
@@ -248,7 +248,7 @@ theorem ncard_primesOver_mul_ncard_primesOver :
   let f := restrictHom GAC G A B C
   let H := (stabilizer G P).comap f
   have key (Q Q' : Ideal C) [Q.LiesOver P] [Q'.LiesOver P] g (hg : g • Q = Q') : g ∈ H := by
-    simpa [← restrictHom_smul_under GAC G A, ← over_def _ P, H] using congr_arg (under B) hg
+    simpa [← restrictHom_smul_under GAC G A, ← over_def _ P, H] using congr(under B $hg)
   obtain ⟨Q, _, _⟩ := (inferInstance : Nonempty (P.primesOver C))
   have : Q.LiesOver p := .trans Q P p
   have orbit_eq : orbit H Q = P.primesOver C := by
@@ -257,16 +257,14 @@ theorem ncard_primesOver_mul_ncard_primesOver :
     · rintro ⟨g, rfl : g • Q = Q'⟩
       refine ⟨inferInstance, ?_⟩
       rw [liesOver_iff, H.smul_def, ← restrictHom_smul_under GAC G A B C, ← Q.over_def P]
-      exact g.2.symm
+      exact g.property.symm
     · rintro ⟨_, _⟩
       have : Q'.LiesOver p := .trans Q' P p
       obtain ⟨g, hg⟩ :=
         IsInvariant.exists_smul_of_under_eq A C GAC Q Q' ((Q.over_def p).symm.trans (Q'.over_def p))
       exact ⟨⟨g, key Q Q' g hg.symm⟩, by simpa [Subgroup.smul_def] using hg.symm⟩
-  have stabilizer_eq : stabilizer H Q = (stabilizer GAC Q).subgroupOf H := by
-    simp [Subgroup.ext_iff, Subgroup.mem_subgroupOf]
   rw [← IsInvariant.orbit_eq_primesOver A B G p P, ← index_stabilizer,
-    ← orbit_eq, ← index_stabilizer, stabilizer_eq, ← Subgroup.relIndex,
+    ← orbit_eq, ← index_stabilizer, ← stabilizer_subgroupOf, ← Subgroup.relIndex,
     ← IsInvariant.orbit_eq_primesOver A C GAC p Q, ← index_stabilizer,
     ← (stabilizer G P).index_comap_of_surjective (restrictHom_surjective GAC G A B C),
     mul_comm, Subgroup.relIndex_mul_index]

@@ -6,7 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Enriched.Basic
-public import Mathlib.CategoryTheory.Monoidal.Types.Coyoneda
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Enriched ordinary categories
@@ -23,7 +25,6 @@ the "underlying" category `ForgetEnrichment V C` is equipped with a
 
 Simplicial categories are implemented in `AlgebraicTopology.SimplicialCategory.Basic`
 using an abbreviation for `EnrichedOrdinaryCategory SSet C`.
-
 -/
 
 @[expose] public section

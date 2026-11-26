@@ -7,12 +7,14 @@ module
 
 public import Mathlib.Topology.Homeomorph.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Transfer topological structure across `Equiv`s
 
 We show how to transport a topological space structure across an `Equiv` and prove that this
 make the equivalence a homeomorphism between the original space and the transported topology.
-
 -/
 
 @[expose] public section
@@ -37,7 +39,7 @@ def homeomorph [TopologicalSpace β] (e : α ≃ β) :
     continuous_toFun := continuous_induced_dom
     continuous_invFun := by
       simp only [Equiv.invFun_as_coe]
-      convert! continuous_coinduced_rng
+      convert continuous_coinduced_rng
       rw [e.coinduced_symm]
       rfl }
 

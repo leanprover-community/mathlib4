@@ -5,14 +5,15 @@ Authors: Moritz Doll, Zhouhang Zhou
 -/
 module
 
-public import Mathlib.Analysis.Normed.Operator.Basic
 public import Mathlib.Analysis.Normed.Group.Completion
+public import Mathlib.Analysis.Normed.Operator.Basic
 public import Mathlib.LinearAlgebra.Isomorphisms
-public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Extend
 public import Mathlib.Topology.Algebra.LinearMapCompletion
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Extension of continuous linear maps on Banach spaces
 
 In this file we provide several different ways to extend a continuous linear map defined on a dense
@@ -139,7 +140,7 @@ variable {f e}
 theorem extendOfNorm_eq (h_dense : DenseRange e) (h_norm : ∃ C, ∀ x, ‖f x‖ ≤ C * ‖e x‖)
     (x : E) : f.extendOfNorm e (e x) = f x := by
   have := (f.compLeftInverse e).extend_eq (e := (LinearMap.range e).subtypeL)
-    (by simpa using! h_dense) isUniformEmbedding_subtype_val.isUniformInducing
+    (by simpa using! h_dense) isUniformEmbedding_subtypeVal.isUniformInducing
   convert! this ⟨e x, LinearMap.mem_range_self e x⟩
   exact (compLeftInverse_apply_of_bdd _ _ h_norm _ _ rfl).symm
 
@@ -155,7 +156,7 @@ theorem extendOfNorm_unique (h_dense : DenseRange e) (C : ℝ) (h_norm : ∀ (x 
     (g : Eₗ →SL[σ₁₂] F) (H : g.toLinearMap.comp e = f) : extendOfNorm f e = g := by
   apply ContinuousLinearMap.extend_unique
   · simpa using! h_dense
-  · exact isUniformEmbedding_subtype_val.isUniformInducing
+  · exact isUniformEmbedding_subtypeVal.isUniformInducing
   ext ⟨y, x, hxy⟩
   rw [compLeftInverse_apply_of_bdd _ _ ⟨C, h_norm⟩ x y hxy]
   simp [← hxy, ← H]
@@ -313,7 +314,7 @@ def extendOfIsometry (h_dense₁ : DenseRange e₁) (h_dense₂ : DenseRange e�
       refine h_dense₁.induction ?_ (isClosed_eq (by
         simp only [ContinuousLinearEquiv.coe_toLinearEquiv]; fun_prop) continuous_norm)
       rintro x ⟨y, rfl⟩
-      convert! h_norm y
+      convert h_norm y
       apply LinearMap.extendOfNorm_eq h_dense₁ (by use 1; simp [h_norm]) }
 
 theorem extendOfIsometry_apply (h_dense₁ : DenseRange e₁) (h_dense₂ : DenseRange e₂)
@@ -349,7 +350,7 @@ namespace LinearIsometry
 open UniformSpace
 
 variable {R R₂ : Type*} [Semiring R] [Semiring R₂] [SeminormedAddCommGroup E] [Module R E]
-  [IsUniformAddGroup E] [UniformContinuousConstSMul R E] [NormedAddCommGroup F] [Module R₂ F]
+  [UniformContinuousConstSMul R E] [NormedAddCommGroup F] [Module R₂ F]
   {σ₁₂ : R →+* R₂} (f : E →ₛₗᵢ[σ₁₂] F)
 
 section fromCompletion

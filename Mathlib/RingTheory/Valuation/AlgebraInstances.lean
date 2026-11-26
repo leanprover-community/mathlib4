@@ -5,8 +5,10 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 module
 
-public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 public import Mathlib.RingTheory.Valuation.ValuationSubring
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Algebra instances
@@ -15,6 +17,7 @@ This file contains several `Algebra` and `IsScalarTower` instances related to ex
 of a field with a valuation, as well as their unit balls.
 
 ## Main definitions
+
 * `ValuationSubring.algebra` : Given an algebra between two field extensions `L` and `E` of a
   field `K` with a valuation, create an algebra between their two rings of integers.
 
@@ -58,7 +61,7 @@ instance : IsScalarTower v.valuationSubring L E := inferInstance
 instance algebra :
     Algebra (integralClosure v.valuationSubring L) (integralClosure v.valuationSubring E) :=
   RingHom.toAlgebra
-    { toFun := fun k => ⟨algebraMap L E k, IsIntegral.algebraMap k.2⟩
+    { toFun := fun k => ⟨algebraMap L E k, IsIntegral.algebraMap k.property⟩
       map_zero' :=
         Subtype.ext <| by simp only [Subalgebra.coe_zero, map_zero]
       map_one' := Subtype.ext <| by simp only [Subalgebra.coe_one, map_one]

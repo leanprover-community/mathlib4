@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Products.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The associator equivalence for products of categories
 
@@ -87,6 +90,6 @@ def prodμ : (A × C) × (D × E) ≌ (A × D) × (C × E) :=
   (associativity ..).trans <|
     (Equivalence.refl.prod (associativity ..).symm).trans <|
       (Equivalence.refl.prod <| (Prod.braiding C D).prod (Equivalence.refl)).trans <|
-        (Equivalence.refl.prod (associativity ..)).trans <| (associativity ..).symm
+        (Equivalence.refl.prod (associativity ..)).trans (associativity ..).symm
 
 end CategoryTheory.prod

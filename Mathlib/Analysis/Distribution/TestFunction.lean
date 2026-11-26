@@ -84,9 +84,9 @@ open scoped Distributions
 /-- `TestFunctionClass B Ω F n` states that `B` is a type of `n`-times continuously
 differentiable functions `E → F` with compact support contained in `Ω : Opens E`. -/
 class TestFunctionClass (B : Type*)
-    {E : outParam <| Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (Ω : outParam <| Opens E)
-    (F : outParam <| Type*) [NormedAddCommGroup F] [NormedSpace ℝ F]
-    (n : outParam ℕ∞) extends FunLike B E F where
+    {E : outParam Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (Ω : outParam <| Opens E)
+    (F : outParam Type*) [NormedAddCommGroup F] [NormedSpace ℝ F]
+    (n : outParam ℕ∞) [FunLike B E F] where
   map_contDiff (f : B) : ContDiff ℝ n f
   map_hasCompactSupport (f : B) : HasCompactSupport f
   tsupport_map_subset (f : B) : tsupport f ⊆ Ω
@@ -96,16 +96,16 @@ open TestFunctionClass
 namespace TestFunctionClass
 
 instance (B : Type*)
-    {E : outParam <| Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (Ω : outParam <| Opens E)
-    (F : outParam <| Type*) [NormedAddCommGroup F] [NormedSpace ℝ F]
-    (n : outParam ℕ∞) [TestFunctionClass B Ω F n] :
+    {E : outParam Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (Ω : outParam <| Opens E)
+    (F : outParam Type*) [NormedAddCommGroup F] [NormedSpace ℝ F]
+    (n : outParam ℕ∞) [FunLike B E F] [TestFunctionClass B Ω F n] :
     ContinuousMapClass B E F where
   map_continuous f := (map_contDiff f).continuous
 
 instance (B : Type*)
-    {E : outParam <| Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (Ω : outParam <| Opens E)
-    (F : outParam <| Type*) [NormedAddCommGroup F] [NormedSpace ℝ F]
-    (n : outParam ℕ∞) [TestFunctionClass B Ω F n] :
+    {E : outParam Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (Ω : outParam <| Opens E)
+    (F : outParam Type*) [NormedAddCommGroup F] [NormedSpace ℝ F]
+    (n : outParam ℕ∞) [FunLike B E F] [TestFunctionClass B Ω F n] :
     BoundedContinuousMapClass B E F where
   map_bounded f := by
     obtain ⟨C, hC⟩ := (map_continuous f).bounded_above_of_compact_support (map_hasCompactSupport f)
@@ -115,12 +115,17 @@ end TestFunctionClass
 
 namespace TestFunction
 
-instance toTestFunctionClass : TestFunctionClass 𝓓^{n}(Ω, F) Ω F n where
+instance : FunLike 𝓓^{n}(Ω, F) E F where
   coe f := f.toFun
   coe_injective f g h := by cases f; cases g; congr
+
+instance : TestFunctionClass 𝓓^{n}(Ω, F) Ω F n where
   map_contDiff f := f.contDiff'
   map_hasCompactSupport f := f.hasCompactSupport'
   tsupport_map_subset f := f.tsupport_subset'
+
+/-- Reinterpret a test function `f : 𝓓^{n}(Ω, F)` as a continuous bounded map `E →ᵇ F`. -/
+def toBoundedContinuousFunction (f : 𝓓^{n}(Ω, F)) : E →ᵇ F := .ofClass f
 
 protected theorem contDiff (f : 𝓓^{n}(Ω, F)) : ContDiff ℝ n f := map_contDiff f
 protected theorem hasCompactSupport (f : 𝓓^{n}(Ω, F)) : HasCompactSupport f :=
@@ -163,7 +168,12 @@ theorem copy_eq (f : 𝓓^{n}(Ω, F)) (f' : E → F) (h : f' = f) : f.copy f' h 
 
 @[simp]
 theorem coe_toBoundedContinuousFunction (f : 𝓓^{n}(Ω, F)) :
-    (f : BoundedContinuousFunction E F) = (f : E → F) := rfl
+    ⇑f.toBoundedContinuousFunction = f := rfl
+
+@[simp]
+theorem toBoundedContinuousFunction_injective :
+    Function.Injective (toBoundedContinuousFunction : 𝓓^{n}(Ω, F) → E →ᵇ F) :=
+  fun f g h ↦ by ext; simp [← coe_toBoundedContinuousFunction, h]
 
 @[simp]
 theorem coe_mk {f : E → F} {contDiff : ContDiff ℝ n f} {hasCompactSupport : HasCompactSupport f}
@@ -176,8 +186,7 @@ section AddCommGroup
 instance : Zero 𝓓^{n}(Ω, F) where
   zero := ⟨0, contDiff_zero_fun, .zero, by simp only [tsupport_zero, empty_subset]⟩
 
-instance : IsZeroApply 𝓓^{n}(Ω, F) E F where
-  zero_apply _ := rfl
+instance : IsZeroApply 𝓓^{n}(Ω, F) where
 
 @[deprecated (since := "2026-06-15")] alias coe_zero := FunLike.coe_zero
 
@@ -185,16 +194,14 @@ instance : Add 𝓓^{n}(Ω, F) where
   add f g := ⟨f + g, f.contDiff.add g.contDiff, f.hasCompactSupport.add g.hasCompactSupport,
     tsupport_add f g |>.trans <| union_subset f.tsupport_subset g.tsupport_subset⟩
 
-instance : IsAddApply 𝓓^{n}(Ω, F) E F where
-  add_apply _ _ _ := rfl
+instance : IsAddApply 𝓓^{n}(Ω, F) where
 
 @[deprecated (since := "2026-06-15")] alias coe_add := FunLike.coe_add
 
 instance : Neg 𝓓^{n}(Ω, F) where
   neg f := ⟨-f, f.contDiff.neg, f.hasCompactSupport.neg, tsupport_neg f ▸ f.tsupport_subset⟩
 
-instance : IsNegApply 𝓓^{n}(Ω, F) E F where
-  neg_apply _ _ := rfl
+instance : IsNegApply 𝓓^{n}(Ω, F) where
 
 @[deprecated (since := "2026-06-15")] alias coe_neg := FunLike.coe_neg
 
@@ -202,8 +209,7 @@ instance : Sub 𝓓^{n}(Ω, F) where
   sub f g := ⟨f - g, f.contDiff.sub g.contDiff, f.hasCompactSupport.sub g.hasCompactSupport,
     tsupport_sub f g |>.trans <| union_subset f.tsupport_subset g.tsupport_subset⟩
 
-instance : IsSubApply 𝓓^{n}(Ω, F) E F where
-  sub_apply _ _ _ := rfl
+instance : IsSubApply 𝓓^{n}(Ω, F) where
 
 @[deprecated (since := "2026-06-15")] alias coe_sub := FunLike.coe_sub
 
@@ -213,7 +219,7 @@ instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstS
     tsupport_smul_subset_right _ _ |>.trans f.tsupport_subset⟩
 
 instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
-    IsSMulApply R 𝓓^{n}(Ω, F) E F where
+    IsSMulApply R 𝓓^{n}(Ω, F) where
   smul_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-06-15")] alias coe_smul := FunLike.coe_smul
@@ -404,7 +410,7 @@ functions as a continuous `𝕜`-linear map. -/
 @[simps! apply]
 noncomputable def toBoundedContinuousFunctionCLM [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F] :
     𝓓^{n}(Ω, F) →L[𝕜] E →ᵇ F :=
-  TestFunction.mkCLM 𝕜 (↑) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+  TestFunction.mkCLM 𝕜 toBoundedContinuousFunction (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
     (fun _ _ ↦ (ContDiffMapSupportedIn.toBoundedContinuousFunctionCLM 𝕜).continuous)
 
 lemma toBoundedContinuousFunctionCLM_eq_of_scalars [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F] (𝕜' : Type*)
@@ -412,11 +418,13 @@ lemma toBoundedContinuousFunctionCLM_eq_of_scalars [Algebra ℝ 𝕜] [IsScalarT
     (toBoundedContinuousFunctionCLM 𝕜 : 𝓓^{n}(Ω, F) → _) = toBoundedContinuousFunctionCLM 𝕜' :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 variable (𝕜) in
-theorem injective_toBoundedContinuousFunctionCLM [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F] :
+theorem toBoundedContinuousFunctionCLM_injective [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F] :
     Function.Injective (toBoundedContinuousFunctionCLM 𝕜 : 𝓓^{n}(Ω, F) →L[𝕜] E →ᵇ F) :=
-  fun f g ↦ by simp [toBoundedContinuousFunctionCLM]
+  toBoundedContinuousFunction_injective
+
+@[deprecated (since := "2026-11-24")] alias injective_toBoundedContinuousFunctionCLM :=
+  toBoundedContinuousFunctionCLM_injective
 
 instance : ContinuousEval 𝓓^{n}(Ω, F) E F :=
   ContinuousEval.of_continuous_forget
@@ -424,7 +432,7 @@ instance : ContinuousEval 𝓓^{n}(Ω, F) E F :=
 
 instance : T3Space 𝓓^{n}(Ω, F) :=
   suffices T2Space 𝓓^{n}(Ω, F) from inferInstance
-  .of_injective_continuous (injective_toBoundedContinuousFunctionCLM ℝ)
+  .of_injective_continuous (toBoundedContinuousFunctionCLM_injective ℝ)
     (ContinuousLinearMap.continuous _)
 
 end ToBoundedContinuousFunctionCLM
@@ -653,8 +661,8 @@ variable {m : MeasurableSpace E} [OpensMeasurableSpace E] {F₁ F₂ F₃ : Type
 
 @[fun_prop]
 protected theorem stronglyMeasurable (f : 𝓓^{n}(Ω, F)) :
-    StronglyMeasurable f := by
-  exact f.continuous.stronglyMeasurable_of_hasCompactSupport f.hasCompactSupport
+    StronglyMeasurable f :=
+  f.continuous.stronglyMeasurable_of_hasCompactSupport f.hasCompactSupport
 
 @[fun_prop]
 protected theorem aestronglyMeasurable {μ : Measure E} (f : 𝓓^{n}(Ω, F)) :
@@ -716,7 +724,7 @@ noncomputable def integralAgainstBilinCLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F
       else 0)
     (fun K K_sub_Ω f ↦ by
       split_ifs with h
-      · simp [h.integrableOn_compact_subset K_sub_Ω K.2]
+      · simp [h.integrableOn_compact_subset K_sub_Ω K.isCompact']
       · simp)
 
 open scoped Classical in

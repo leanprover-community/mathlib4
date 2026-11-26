@@ -26,6 +26,7 @@ and morphisms `π j : X ⟶ F j` and `ι j : F j ⟶ X` for each `j`,
 such that `ι j ≫ π j'` is the identity when `j = j'` and zero otherwise.
 
 ## Notation
+
 As `⊕` is already taken for the sum of types, we introduce the notation `X ⊞ Y` for
 a binary biproduct. We introduce `⨁ f` for the indexed biproduct.
 
@@ -67,6 +68,7 @@ structure Bicone (F : J → C) where
   ι_π : ∀ j j', ι j ≫ π j' =
     if h : j = j' then eqToHom (congrArg F h) else 0 := by aesop
 
+attribute [reassoc] Bicone.ι_π
 attribute [inherit_doc Bicone] Bicone.pt Bicone.π Bicone.ι Bicone.ι_π
 
 @[reassoc (attr := simp)]
@@ -152,7 +154,7 @@ instance functoriality_full [G.PreservesZeroMorphisms] [G.Full] [G.Faithful] :
 instance functoriality_faithful [G.PreservesZeroMorphisms] [G.Faithful] :
     (functoriality F G).Faithful where
   map_injective {_X} {_Y} f g h :=
-    BiconeMorphism.ext f g <| G.map_injective <| congr_arg BiconeMorphism.hom h
+    BiconeMorphism.ext f g <| G.map_injective congr(BiconeMorphism.hom $h)
 
 end Bicones
 
@@ -211,7 +213,7 @@ instance (B : Bicone F) (j : J) : IsSplitEpi (B.π j) := (B.retract j).instIsSpl
 
 open scoped Classical in
 /-- We can turn any limit cone over a discrete collection of objects into a bicone. -/
-@[simps]
+@[implicit_reducible, simps]
 def ofLimitCone {f : J → C} {t : Cone (Discrete.functor f)} (ht : IsLimit t) : Bicone f where
   pt := t.pt
   π j := t.π.app ⟨j⟩
@@ -227,7 +229,7 @@ theorem ι_of_isLimit {f : J → C} {t : Bicone f} (ht : IsLimit t.toCone) (j : 
 
 open scoped Classical in
 /-- We can turn any colimit cocone over a discrete collection of objects into a bicone. -/
-@[simps]
+@[implicit_reducible, simps]
 def ofColimitCocone {f : J → C} {t : Cocone (Discrete.functor f)} (ht : IsColimit t) :
     Bicone f where
   pt := t.pt
@@ -380,7 +382,7 @@ theorem hasBiproductsOfShape_of_equiv {K : Type w'} [HasBiproductsOfShape K C] (
     let ⟨c, hc⟩ := h
     HasBiproduct.mk <| by
       simpa only [Function.comp_def, e.symm_apply_apply] using
-        LimitBicone.mk (c.whisker e) ((c.whiskerIsBilimitIff _).2 hc)⟩
+        LimitBicone.mk (c.whisker e) ((c.whiskerIsBilimitIff _).invFun hc)⟩
 
 instance (priority := 100) hasBiproductsOfShape_finite [HasFiniteBiproducts C] [Finite J] :
     HasBiproductsOfShape J C := by
@@ -445,7 +447,7 @@ This means you may not be able to `simp` using this lemma unless you `open scope
 @[reassoc]
 theorem biproduct.ι_π [DecidableEq J] (f : J → C) [HasBiproduct f] (j j' : J) :
     biproduct.ι f j ≫ biproduct.π f j' = if h : j = j' then eqToHom (congr_arg f h) else 0 := by
-  convert! (biproduct.bicone f).ι_π j j'
+  convert (biproduct.bicone f).ι_π j j'
 
 @[reassoc] -- Not `simp` because `simp` can prove this
 theorem biproduct.ι_π_self (f : J → C) [HasBiproduct f] (j : J) :
@@ -733,8 +735,9 @@ theorem biproduct.fromSubtype_π [DecidablePred p] (j : J) :
   by_cases h : p j
   · rw [dite_eq_left h, biproduct.ι_π]
     split_ifs with h₁ h₂ h₂
-    exacts [rfl, False.elim (h₂ (Subtype.ext h₁)), False.elim (h₁ (congr_arg Subtype.val h₂)), rfl]
-  · rw [dite_eq_right h, dite_eq_right (show (i : J) ≠ j from fun h₂ => h (h₂ ▸ i.2)), comp_zero]
+    exacts [rfl, False.elim (h₂ (Subtype.ext h₁)), False.elim (h₁ congr($(h₂).val)), rfl]
+  · rw [dite_eq_right h, dite_eq_right (show (i : J) ≠ j from fun h₂ => h (h₂ ▸ i.property)),
+      comp_zero]
 
 theorem biproduct.fromSubtype_eq_lift [DecidablePred p] :
     biproduct.fromSubtype f p =
@@ -748,7 +751,7 @@ theorem biproduct.fromSubtype_π_subtype (j : Subtype p) :
   ext
   rw [biproduct.fromSubtype, biproduct.ι_desc_assoc, biproduct.ι_π, biproduct.ι_π]
   split_ifs with h₁ h₂ h₂
-  exacts [rfl, False.elim (h₂ (Subtype.ext h₁)), False.elim (h₁ (congr_arg Subtype.val h₂)), rfl]
+  exacts [rfl, False.elim (h₂ (Subtype.ext h₁)), False.elim (h₁ congr($(h₂).val)), rfl]
 
 @[reassoc (attr := simp)]
 theorem biproduct.toSubtype_π (j : Subtype p) :
@@ -765,8 +768,9 @@ theorem biproduct.ι_toSubtype [DecidablePred p] (j : J) :
   by_cases h : p j
   · rw [dite_eq_left h, biproduct.ι_π]
     split_ifs with h₁ h₂ h₂
-    exacts [rfl, False.elim (h₂ (Subtype.ext h₁)), False.elim (h₁ (congr_arg Subtype.val h₂)), rfl]
-  · rw [dite_eq_right h, dite_eq_right (show j ≠ i from fun h₂ => h (h₂.symm ▸ i.2)), zero_comp]
+    exacts [rfl, False.elim (h₂ (Subtype.ext h₁)), False.elim (h₁ congr($(h₂).val)), rfl]
+  · rw [dite_eq_right h, dite_eq_right (show j ≠ i from fun h₂ => h (h₂.symm ▸ i.property)),
+      zero_comp]
 
 theorem biproduct.toSubtype_eq_desc [DecidablePred p] :
     biproduct.toSubtype f p =
@@ -780,7 +784,7 @@ theorem biproduct.ι_toSubtype_subtype (j : Subtype p) :
   ext
   rw [biproduct.toSubtype, Category.assoc, biproduct.lift_π, biproduct.ι_π, biproduct.ι_π]
   split_ifs with h₁ h₂ h₂
-  exacts [rfl, False.elim (h₂ (Subtype.ext h₁)), False.elim (h₁ (congr_arg Subtype.val h₂)), rfl]
+  exacts [rfl, False.elim (h₂ (Subtype.ext h₁)), False.elim (h₁ congr($(h₂).val)), rfl]
 
 @[reassoc (attr := simp)]
 theorem biproduct.ι_fromSubtype (j : Subtype p) :
@@ -878,7 +882,7 @@ def kernelForkBiproductToSubtype (p : K → Prop) :
         ext j k
         simp only [Category.assoc, biproduct.ι_fromSubtype_assoc, biproduct.ι_toSubtype_assoc,
           comp_zero, zero_comp]
-        rw [dite_eq_right k.2]
+        rw [dite_eq_right k.property]
         simp only [zero_comp])
   isLimit :=
     KernelFork.IsLimit.ofι _ _ (fun {_} g _ => g ≫ biproduct.toSubtype f pᶜ)
@@ -917,7 +921,7 @@ def cokernelCoforkBiproductFromSubtype (p : K → Prop) :
           biproduct.ι_toSubtype_assoc, comp_zero, zero_comp]
         rw [dite_eq_right]
         · simp only [zero_comp]
-        · exact not_not.mpr k.2)
+        · exact not_not.mpr k.property)
   isColimit :=
     CokernelCofork.IsColimit.ofπ _ _ (fun {_} g _ => biproduct.fromSubtype f pᶜ ≫ g)
       (by
@@ -946,7 +950,7 @@ end πKernel
 
 section FiniteBiproducts
 
-variable {J : Type} [Finite J] {K : Type} [Finite K] {C : Type u} [Category.{v} C]
+variable {J : Type*} [Finite J] {K : Type} [Finite K] {C : Type u} [Category.{v} C]
   [HasZeroMorphisms C] [HasFiniteBiproducts C] {f : J → C} {g : K → C}
 
 /-- Convert a (dependently typed) matrix to a morphism of biproducts. -/

@@ -5,8 +5,11 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Preadditive.Projective.Basic
 public import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
+public import Mathlib.CategoryTheory.Preadditive.Projective.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Characterization of projective objects in terms of lifting properties
@@ -14,7 +17,6 @@ public import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
 An object `P` is projective iff the morphism `0 ⟶ P` has the
 left lifting property with respect to epimorphisms,
 `projective_iff_llp_epimorphisms_zero`.
-
 -/
 
 public section

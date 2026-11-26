@@ -8,6 +8,9 @@ module
 public import Mathlib.GroupTheory.OreLocalization.Cardinality
 public import Mathlib.RingTheory.OreLocalization.Ring
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cardinality of Ore localizations of rings
 
