@@ -55,6 +55,23 @@ lemma ker_constantCoeff : RingHom.ker constantCoeff = .span {(X : R[X])} := by
 
 end Polynomial
 
+namespace Ideal
+
+open Polynomial
+
+/-- If `n` divides `g(a)`, then `g(θ)` belongs to the ideal spanned by `n` and `θ - a`. -/
+theorem mem_span_pair_sub_of_dvd_eval {R : Type*} [CommRing R] {θ α : R} (n a : ℤ) (g : ℤ[X])
+    (hα : aeval θ g = α) (hg : n ∣ g.eval a) : α ∈ span {(n : R), θ - a} := by
+  obtain ⟨q, hq⟩ := X_sub_C_dvd_sub_C_eval (p := g) (a := a)
+  obtain ⟨k, hk⟩ := hg
+  rw [mem_span_pair]
+  refine ⟨k, aeval θ q, ?_⟩
+  have := congr_arg (aeval θ) hq
+  simp [hk, hα] at this
+  grind
+
+end Ideal
+
 namespace Algebra
 
 variable {R S : Type*}
