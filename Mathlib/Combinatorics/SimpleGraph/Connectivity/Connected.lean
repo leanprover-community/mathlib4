@@ -792,6 +792,14 @@ def edgeSetEquivSigmaConnectedComponent :
   .sigmaQuotFromRel G.symm <| .ofLE fun _ _ ↦ Adj.reachable
 
 variable (G) in
+/-- Joining distinct reachable vertices gives the union of the complete graphs on the
+connected components of `G`. -/
+theorem fromRel_reachable_eq_iSup_completeGraph :
+    fromRel G.Reachable = ⨆ c : G.ConnectedComponent, (completeGraph c.supp).spanningCoe := by
+  ext x y
+  simp [iSup_adj, spanningCoe, map_adj', Subtype.exists, ← ConnectedComponent.eq, eq_comm]
+
+variable (G) in
 theorem sum_connectedComponent_ncard_supp [Finite V] [Fintype G.ConnectedComponent] :
     ∑ c : G.ConnectedComponent, c.supp.ncard = Nat.card V := by
   simp [Nat.card_congr G.verticesEquivSigmaConnectedComponent, Nat.card_sigma]
