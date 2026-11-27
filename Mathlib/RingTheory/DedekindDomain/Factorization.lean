@@ -11,6 +11,7 @@ public import Mathlib.RingTheory.RamificationInertia.Ramification
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Finsupp
 
 import Mathlib.Algebra.FiniteSupport.Basic
+import Mathlib.Algebra.GroupWithZero.Torsion
 
 /-!
 # Factorization of ideals and fractional ideals of Dedekind domains
@@ -135,15 +136,10 @@ theorem maxPowDividing_eq_pow_multiset_count (I : Ideal R) :
     maxPowDividing v I = v.asIdeal ^ Multiset.count v.asIdeal (normalizedFactors I) := by
   rw [maxPowDividing, Ideal.count_normalizedFactors_eq_multiplicity]
 
-theorem maxPowDividing_ne_one_iff (I : Ideal R) :
+theorem maxPowDividing_ne_one_iff {I : Ideal R} :
     v.maxPowDividing I ≠ 1 ↔ v.asIdeal ∈ normalizedFactors I := by
-  rw [maxPowDividing_eq_pow_multiplicity]
-  obtain rfl | hI := eq_or_ne I 0
-  · simp [-Submodule.zero_eq_bot, -Ideal.zero_eq_bot]
-  rw [ne_eq, Ideal.one_eq_top, Ideal.pow_eq_top_iff, not_or, Ideal.mem_normalizedFactors_iff hI,
-    and_iff_right v.isPrime.ne_top, and_iff_right v.isPrime, ← ne_eq, multiplicity_ne_zero,
-    Ideal.dvd_iff_le]
-  exact Ideal.finiteMultiplicity v.isPrime.ne_top hI
+  rw [maxPowDividing_eq_pow_multiset_count, ne_eq, pow_eq_one_iff, Multiset.count_eq_zero,
+    not_or, not_not, and_iff_right_of_imp fun h ↦ (irreducible_of_normalized_factor _ h).ne_one]
 
 end IsDedekindDomain.HeightOneSpectrum
 
@@ -186,8 +182,7 @@ namespace Ideal
 @[fun_prop]
 theorem hasFiniteMulSupport (I : Ideal R) :
     HasFiniteMulSupport fun v : HeightOneSpectrum R ↦ v.maxPowDividing I :=
-  (hasFiniteSupport_multiplicity I).subset fun v hv h ↦ by
-    simp_all [mem_mulSupport, IsDedekindDomain.HeightOneSpectrum.maxPowDividing]
+  (hasFiniteSupport_multiplicity I).hasFiniteMulSupport_fun_pow asIdeal
 
 /-- For every ideal `I` of `R`, there are finitely many maximal ideals `v` such that
 `v ^ multiplicity v I`, regarded as a fractional ideal, is not `(1)`. -/
@@ -195,9 +190,8 @@ theorem hasFiniteMulSupport (I : Ideal R) :
 theorem hasFiniteMulSupport_zpow_multiplicity (I : Ideal R) :
     HasFiniteMulSupport fun v : HeightOneSpectrum R ↦ (v.asIdeal : FractionalIdeal R⁰ K) ^
       (multiplicity v.asIdeal I : ℤ) := by
-  rw [HasFiniteMulSupport, mulSupport]
-  simp_rw [Ne, zpow_natCast, ← FractionalIdeal.coeIdeal_pow, FractionalIdeal.coeIdeal_eq_one]
-  exact hasFiniteMulSupport I
+  simp_rw [zpow_natCast, ← FractionalIdeal.coeIdeal_pow]
+  exact (hasFiniteMulSupport I).comp (FractionalIdeal.coeIdeal_one _)
 
 /-- For every ideal `I` of `R`, there are finitely many maximal ideals `v` such that
 `v ^ (-multiplicity v I)` is not the unit ideal. -/
@@ -338,13 +332,14 @@ theorem finprod_heightOneSpectrum_zpow_multiplicity {I : Ideal R} (hI : I ≠ 0)
 
 /-- The ideal `I` equals the finprod `∏_v v^(val_v(I))`, when both sides are regarded as fractional
 ideals of `R`. -/
+@[deprecated finprod_heightOneSpectrum_zpow_multiplicity +typeChanged (since := "2026-11-12")]
 theorem finprod_heightOneSpectrum_factorization_coeIdeal {I : Ideal R} (hI : I ≠ 0) :
     (∏ᶠ v : HeightOneSpectrum R, (v.asIdeal : FractionalIdeal R⁰ K) ^
       ((Associates.mk v.asIdeal).count (Associates.mk I).factors : ℤ)) = I := by
   simp_rw [count_associates_factors_eq_multiplicity]
   exact finprod_heightOneSpectrum_zpow_multiplicity K hI
 
-@[deprecated (since := "2026-11-10")]
+@[deprecated finprod_heightOneSpectrum_zpow_multiplicity +typeChanged (since := "2026-11-10")]
 alias finprod_heightOneSpectrum_factorization_coe :=
   finprod_heightOneSpectrum_factorization_coeIdeal
 
@@ -364,10 +359,11 @@ theorem finprod_heightOneSpectrum_factorization {I : FractionalIdeal R⁰ K} (hI
     ∏ᶠ v : HeightOneSpectrum R, (v.asIdeal : FractionalIdeal R⁰ K) ^
       ((Associates.mk v.asIdeal).count (Associates.mk J).factors -
         (Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {a})).factors : ℤ) = I := by
+  simp_rw [count_associates_factors_eq_multiplicity]
   have hJ_ne_zero : J ≠ 0 := ideal_factor_ne_zero hI haJ
-  have hJ := finprod_heightOneSpectrum_factorization_coeIdeal K hJ_ne_zero
+  have hJ := finprod_heightOneSpectrum_zpow_multiplicity K hJ_ne_zero
   have ha_ne_zero : Ideal.span {a} ≠ 0 := constant_factor_ne_zero hI haJ
-  have ha := finprod_heightOneSpectrum_factorization_coeIdeal K ha_ne_zero
+  have ha := finprod_heightOneSpectrum_zpow_multiplicity K ha_ne_zero
   rw [haJ, ← div_spanSingleton, div_eq_mul_inv, ← coeIdeal_span_singleton, ← hJ, ← ha,
     ← finprod_inv_distrib]
   simp_rw [← zpow_neg]
