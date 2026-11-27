@@ -25,7 +25,6 @@ open Algebra TensorProduct
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime]
 
-set_option backward.isDefEq.respectTransparency false in
 open IsLocalRing in
 instance [IsLocalRing R] [IsLocalRing S] [IsLocalHom (algebraMap R S)] :
     IsLocalRing (ResidueField R ⊗[R] S) :=
@@ -80,12 +79,12 @@ noncomputable def Fiber.algEquivQuotient :
     letI pSp := pRp.map (algebraMap Rp Sp)
     p.Fiber S ≃ₐ[S] Sp ⧸ pSp :=
   (commRight R S p.ResidueField).symm.trans <| (tensorQuotientEquiv S _ S _).trans
-    { __ := Ideal.quotientEquiv _ _ (Localization.tensorLeftAlgEquiv p.primeCompl S) (by
+    (.ofCommutes (Ideal.quotientEquiv _ _ (Localization.tensorLeftAlgEquiv p.primeCompl S) (by
         rw [← Ideal.map_coe includeRight, Ideal.map_map]
         congr
         ext
-        simp [Localization.tensorLeftAlgEquiv_apply_one_tmul p.primeCompl])
-      commutes' := by simp }
+        simp [Localization.tensorLeftAlgEquiv_apply_one_tmul p.primeCompl]))
+      (by simp))
 
 /-- `p.Fiber S` is isomorphic to the quotient `Sₚ ⧸ pSₚ`. -/
 noncomputable def Fiber.algEquivAux₁ :

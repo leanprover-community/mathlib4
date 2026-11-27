@@ -23,6 +23,7 @@ consisting of the even permutations.
 * `alternatingGroup α` is the alternating group on `α`, defined as a `Subgroup (Perm α)`.
 
 ## Main results
+
 * `alternatingGroup.index_eq_two` shows that the index of the alternating group is two.
 
 * `two_mul_card_alternatingGroup` shows that the alternating group is half as large as
@@ -49,10 +50,12 @@ consisting of the even permutations.
 * The alternating group is a characteristic subgroup of the permutation group.
 
 ## Tags
+
 alternating group permutation simple characteristic index
 
 
 ## TODO
+
 * Show that `alternatingGroup α` is simple if and only if `Fintype.card α ≠ 4`.
 -/
 
@@ -250,8 +253,9 @@ theorem closure_cycleType_eq_two_two_eq_alternatingGroup (h5 : 5 ≤ Nat.card α
     have H : g = (swap a (g a) * (swap b c)) * (swap b c * (swap (g a) (g (g a)))) := by
       simp [mul_assoc, ← hg3.eq_swap_mul_swap_iff_mem_support.mpr ha]
     rw [H]
-    apply mul_mem <;>
-    · apply Subgroup.subset_closure
+    apply mul_mem
+    all_goals
+      apply Subgroup.subset_closure
       exact cycleType_swap_mul_swap_of_nodup (by grind [Finset.mem_compl])
 
 theorem cycleType_eq_two_two_subset_alternatingGroup :

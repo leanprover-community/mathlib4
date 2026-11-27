@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Colimit.Module
 public import Mathlib.LinearAlgebra.TensorProduct.Map
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tensor product and direct limits commute with each other.
 
@@ -15,7 +18,7 @@ Given a family of `R`-modules `Gᵢ` with a family of compatible `R`-linear maps
 every `i ≤ j` and another `R`-module `M`, we have `(limᵢ Gᵢ) ⊗ M` and `lim (Gᵢ ⊗ M)` are isomorphic
 as `R`-modules.
 
-## Main definitions:
+## Main definitions
 
 * `TensorProduct.directLimitLeft : DirectLimit G f ⊗[R] M ≃ₗ[R] DirectLimit (G · ⊗[R] M) (f ▷ M)`
 * `TensorProduct.directLimitRight : M ⊗[R] DirectLimit G f ≃ₗ[R] DirectLimit (M ⊗[R] G ·) (M ◁ f)`

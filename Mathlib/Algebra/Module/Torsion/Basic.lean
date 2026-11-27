@@ -13,6 +13,9 @@ public import Mathlib.RingTheory.Coprime.Ideal
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
 public import Mathlib.RingTheory.SimpleModule.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Torsion submodules
 
@@ -564,7 +567,6 @@ theorem IsTorsionBySet.mk_smul [I.IsTwoSided] (hM : IsTorsionBySet R M I) (b : R
     Ideal.Quotient.mk I b • x = b • x :=
   rfl
 
-@[simp]
 theorem IsTorsionBy.mk_smul [(Ideal.span {r}).IsTwoSided] (hM : IsTorsionBy R M r) (b : R) (x : M) :
     haveI := hM.hasSMul
     Ideal.Quotient.mk (Ideal.span {r}) b • x = b • x :=
@@ -580,7 +582,7 @@ instance IsTorsionBySet.isScalarTower (hM : IsTorsionBySet R M I)
     @IsScalarTower S (R ⧸ I) M _ hM.hasSMul _ :=
   -- Porting note: still needed to be fed the Module R / I M instance
   @IsScalarTower.mk S (R ⧸ I) M _ hM.hasSMul _
-    (fun b d x => Quotient.inductionOn' d fun c => (smul_assoc b c x :))
+    (fun b d x => Quotient.inductionOn d fun c => (smul_assoc b c x :))
 
 /-- If an `R`-module `M` is annihilated by a two-sided ideal `I`, then the identity is a semilinear
 map from the `R`-module `M` to the `R ⧸ I`-module `M`. -/
@@ -681,7 +683,6 @@ instance (I : Ideal R) : Module (R ⧸ I) (torsionBySet R M I) :=
   -- Porting note: times out without the (R := R)
   Module.IsTorsionBySet.module <| torsionBySet_isTorsionBySet (R := R) I
 
-@[simp]
 theorem torsionBySet.mk_smul (I : Ideal R) (b : R) (x : torsionBySet R M I) :
     Ideal.Quotient.mk I b • x = b • x :=
   rfl
@@ -698,7 +699,6 @@ instance instModuleQuotientTorsionBy (a : R) : Module (R ⧸ R ∙ a) (torsionBy
 instance (a : R) : Module (R ⧸ Ideal.span {a}) (torsionBy R M a) :=
   inferInstanceAs <| Module (R ⧸ R ∙ a) (torsionBy R M a)
 
-@[simp]
 theorem torsionBy.mk_ideal_smul (a b : R) (x : torsionBy R M a) :
     (Ideal.Quotient.mk (Ideal.span {a})) b • x = b • x :=
   rfl
@@ -848,9 +848,9 @@ variable [CommRing R] [AddCommGroup M] [Module R M]
 @[simp]
 theorem torsion_eq_bot : torsion R (M ⧸ torsion R M) = ⊥ :=
   eq_bot_iff.mpr fun z =>
-    Quotient.inductionOn' z fun x ⟨a, hax⟩ => by
-      rw [Quotient.mk''_eq_mk, ← Quotient.mk_smul, Quotient.mk_eq_zero] at hax
-      rw [mem_bot, Quotient.mk''_eq_mk, Quotient.mk_eq_zero]
+    Quotient.induction_on _ z fun x ⟨a, hax⟩ => by
+      rw [← Quotient.mk_smul, Quotient.mk_eq_zero] at hax
+      rw [mem_bot, Quotient.mk_eq_zero]
       obtain ⟨b, h⟩ := hax
       exact ⟨b * a, (mul_smul _ _ _).trans h⟩
 

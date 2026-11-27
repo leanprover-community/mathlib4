@@ -46,6 +46,7 @@ At this point, however, this is far from uniformly achieved in mathlib ---
 often statements are only written in terms of `HasLimit`.
 
 ## References
+
 * [Stacks: Limits and colimits](https://stacks.math.columbia.edu/tag/002D)
 -/
 

@@ -21,6 +21,7 @@ Almost everywhere strongly measurable functions form the largest class of functi
 integrated using the Bochner integral.
 
 ## Main definitions
+
 * `AEStronglyMeasurable f μ`: `f` is almost everywhere equal to a `StronglyMeasurable` function.
 * `AEFinStronglyMeasurable f μ`: `f` is almost everywhere equal to a `FinStronglyMeasurable`
   function.
@@ -241,6 +242,11 @@ theorem _root_.Continuous.aestronglyMeasurable [TopologicalSpace α] [OpensMeasu
     [PseudoMetrizableSpace β] [SecondCountableTopologyEither α β] (hf : Continuous f) :
     AEStronglyMeasurable f μ :=
   hf.stronglyMeasurable.aestronglyMeasurable
+
+protected theorem eval {δ : Type*} {π : δ → Type*} [∀ i, TopologicalSpace (π i)]
+    {i : δ} {f : α → ∀ i, π i} (hf : AEStronglyMeasurable[m] f μ) :
+    AEStronglyMeasurable[m] (fun x ↦ f x i) μ :=
+  (continuous_apply i).comp_aestronglyMeasurable hf
 
 @[fun_prop]
 protected theorem fst {f : α → β × γ} (hf : AEStronglyMeasurable[m] f μ) :

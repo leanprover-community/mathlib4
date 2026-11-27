@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Analysis.BoundedVariation
 public import Mathlib.Analysis.Calculus.ContDiff.RCLike
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 import Mathlib.Order.SuccPred.IntervalSucc
 
 /-!
@@ -53,6 +53,7 @@ We conclude that
   `IntervalIntegrable.absolutelyContinuousOnInterval_intervalIntegral`.
 
 ## Tags
+
 absolutely continuous
 -/
 

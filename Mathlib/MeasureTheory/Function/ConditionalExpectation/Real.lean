@@ -12,6 +12,9 @@ public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.RadonNikodym
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondJensen
 import Mathlib.MeasureTheory.Function.LpSeminorm.LpNorm
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Conditional expectation of real-valued functions
 

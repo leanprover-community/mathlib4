@@ -33,6 +33,7 @@ Lattice inclusion (e.g. `≤` and `⊓`) is used rather than set notation (`⊆`
 `∈` is defined as membership of a non-unital subring's underlying set.
 
 ## Tags
+
 non-unital subring
 -/
 
@@ -304,7 +305,6 @@ protected theorem zsmul_mem {x : R} (hx : x ∈ s) (n : ℤ) : n • x ∈ s :=
 theorem val_add (x y : s) : (↑(x + y) : R) = ↑x + ↑y :=
   rfl
 
-@[simp, norm_cast]
 theorem val_neg (x : s) : (↑(-x) : R) = -↑x :=
   rfl
 
@@ -312,7 +312,6 @@ theorem val_neg (x : s) : (↑(-x) : R) = -↑x :=
 theorem val_mul (x y : s) : (↑(x * y) : R) = ↑x * ↑y :=
   rfl
 
-@[simp, norm_cast]
 theorem val_zero : ((0 : s) : R) = 0 :=
   rfl
 
@@ -330,14 +329,12 @@ instance toNonUnitalCommRing {R} [NonUnitalCommRing R] (s : NonUnitalSubring R) 
 theorem mem_toSubsemigroup {s : NonUnitalSubring R} {x : R} : x ∈ s.toSubsemigroup ↔ x ∈ s :=
   Iff.rfl
 
-@[simp]
 theorem coe_toSubsemigroup (s : NonUnitalSubring R) : (s.toSubsemigroup : Set R) = s :=
   rfl
 
 theorem mem_toAddSubgroup {s : NonUnitalSubring R} {x : R} : x ∈ s.toAddSubgroup ↔ x ∈ s :=
   Iff.rfl
 
-@[simp]
 theorem coe_toAddSubgroup (s : NonUnitalSubring R) : (s.toAddSubgroup : Set R) = s :=
   rfl
 

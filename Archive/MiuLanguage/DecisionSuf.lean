@@ -147,7 +147,7 @@ private theorem le_pow2_and_pow2_eq_mod3' (c : ℕ) (x : ℕ) (h : c = 1 ∨ c =
   induction x with
   | zero =>
     use c + 1
-    rcases h with hc | hc <;> · rw [hc]; norm_num
+    rcases h with rfl | rfl <;> norm_num
   | succ k hk =>
     rcases hk with ⟨g, hkg, hgmod⟩
     by_cases hp : c + 3 * (k + 1) ≤ 2 ^ g

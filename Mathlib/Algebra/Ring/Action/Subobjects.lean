@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Subgroup.Defs
 public import Mathlib.Algebra.Group.Submonoid.DistribMulAction
 public import Mathlib.Algebra.Ring.Action.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Instances of `MulSemiringAction` for subobjects
 

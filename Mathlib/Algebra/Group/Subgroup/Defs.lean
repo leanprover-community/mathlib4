@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.Submonoid.Defs
-public import Mathlib.Data.Set.Inclusion
 public import Mathlib.Tactic.Attr.Core
 public import Mathlib.Tactic.Common
+
+import Mathlib.Data.Set.Inclusion
 
 /-!
 # Subgroups
@@ -49,6 +50,7 @@ Subgroup inclusion is denoted `≤` rather than `⊆`, although `∈` is defined
 membership of a subgroup's underlying set.
 
 ## Tags
+
 subgroup, subgroups
 -/
 
@@ -145,9 +147,10 @@ variable [SetLike S G] [SubgroupClass S G]
 @[to_additive]
 theorem exists_inv_mem_iff_exists_mem {P : G → Prop} :
     (∃ x : G, x ∈ H ∧ P x⁻¹) ↔ ∃ x ∈ H, P x := by
-  constructor <;>
-    · rintro ⟨x, x_in, hx⟩
-      exact ⟨x⁻¹, inv_mem x_in, by simp [hx]⟩
+  constructor
+  all_goals
+    rintro ⟨x, x_in, hx⟩
+    exact ⟨x⁻¹, inv_mem x_in, by simp [hx]⟩
 
 @[to_additive]
 theorem mul_mem_cancel_right {x y : G} (h : x ∈ H) : y * x ∈ H ↔ y ∈ H :=
@@ -177,11 +180,11 @@ namespace SubgroupClass
 -- Counterexample where K and L are submonoids: H = ℤ, K = ℕ, L = -ℕ
 -- Counterexample where H and K are submonoids: H = {n | n = 0 ∨ 3 ≤ n}, K = 3ℕ + 4ℕ, L = 5ℤ
 @[to_additive]
-theorem subset_union [LE S] [IsConcreteLE S G] {H K L : S} :
+theorem subset_union [LE S] [IsMemLE S G] {H K L : S} :
     (H : Set G) ⊆ K ∪ L ↔ H ≤ K ∨ H ≤ L := by
   refine ⟨fun h ↦ ?_, fun h x xH ↦ h.imp
     (SetLike.coe_subset_coe.2 · xH) (SetLike.coe_subset_coe.2 · xH)⟩
-  rw [or_iff_not_imp_left, IsConcreteLE.not_le_iff_exists, ← SetLike.coe_subset_coe]
+  rw [or_iff_not_imp_left, not_le_iff_exists_mem_notMem, ← SetLike.coe_subset_coe]
   exact fun ⟨x, xH, xK⟩ y yH ↦ (h <| mul_mem xH yH).elim
     ((h yH).resolve_left fun yK ↦ xK <| (mul_mem_cancel_right yK).mp ·)
     (mul_mem_cancel_left <| (h xH).resolve_left xK).mp
@@ -239,7 +242,7 @@ theorem coe_subtype : (SubgroupClass.subtype H : H → G) = ((↑) : H → G) :=
 
 variable {H}
 
-@[to_additive (attr := simp, norm_cast)]
+@[to_additive]
 theorem coe_pow (x : H) (n : ℕ) : ((x ^ n : H) : G) = (x : G) ^ n :=
   rfl
 
@@ -250,39 +253,39 @@ theorem coe_zpow (x : H) (n : ℤ) : ((x ^ n : H) : G) = (x : G) ^ n :=
 /-- The inclusion homomorphism from a subgroup `H` contained in `K` to `K`. -/
 @[to_additive
 /-- The inclusion homomorphism from an additive subgroup `H` contained in `K` to `K`. -/]
-def inclusion [LE S] [IsConcreteLE S G] {H K : S} (h : H ≤ K) : H →* K :=
+def inclusion [LE S] [IsMemLE S G] {H K : S} (h : H ≤ K) : H →* K :=
   MonoidHom.mk' (fun x => ⟨x, mem_of_le_of_mem h x.prop⟩) fun _ _ => rfl
 
 @[to_additive (attr := simp)]
-theorem inclusion_self [Preorder S] [IsConcreteLE S G] (x : H) : inclusion le_rfl x = x := by
+theorem inclusion_self [Preorder S] [IsMemLE S G] (x : H) : inclusion le_rfl x = x := by
   cases x
   rfl
 
 @[to_additive (attr := simp)]
-theorem inclusion_mk [LE S] [IsConcreteLE S G] {h : H ≤ K} (x : G) (hx : x ∈ H) :
+theorem inclusion_mk [LE S] [IsMemLE S G] {h : H ≤ K} (x : G) (hx : x ∈ H) :
     inclusion h ⟨x, hx⟩ = ⟨x, mem_of_le_of_mem h hx⟩ :=
   rfl
 
 @[to_additive]
-theorem inclusion_right [LE S] [IsConcreteLE S G] (h : H ≤ K) (x : K) (hx : (x : G) ∈ H) :
+theorem inclusion_right [LE S] [IsMemLE S G] (h : H ≤ K) (x : K) (hx : (x : G) ∈ H) :
     inclusion h ⟨x, hx⟩ = x := by
   cases x
   rfl
 
 @[simp]
-theorem inclusion_inclusion [Preorder S] [IsConcreteLE S G]
+theorem inclusion_inclusion [Preorder S] [IsMemLE S G]
     {L : S} (hHK : H ≤ K) (hKL : K ≤ L) (x : H) :
     inclusion hKL (inclusion hHK x) = inclusion (hHK.trans hKL) x := by
   cases x
   rfl
 
 @[to_additive (attr := simp)]
-theorem coe_inclusion [LE S] [IsConcreteLE S G]
+theorem coe_inclusion [LE S] [IsMemLE S G]
     {H K : S} (h : H ≤ K) (a : H) : (inclusion h a : G) = a :=
   Set.coe_inclusion (SetLike.coe_subset_coe.mpr h) a
 
 @[to_additive (attr := simp)]
-theorem subtype_comp_inclusion [LE S] [IsConcreteLE S G]
+theorem subtype_comp_inclusion [LE S] [IsMemLE S G]
     {H K : S} (h : H ≤ K) :
     (SubgroupClass.subtype K).comp (inclusion h) = SubgroupClass.subtype H :=
   rfl
@@ -518,15 +521,15 @@ instance zpow : Pow H ℤ :=
 theorem coe_mul (x y : H) : (↑(x * y) : G) = ↑x * ↑y :=
   rfl
 
-@[to_additive (attr := simp, norm_cast)]
+@[to_additive]
 theorem coe_one : ((1 : H) : G) = 1 :=
   rfl
 
-@[to_additive (attr := simp, norm_cast)]
+@[to_additive]
 theorem coe_inv (x : H) : ↑(x⁻¹ : H) = (x⁻¹ : G) :=
   rfl
 
-@[to_additive (attr := simp, norm_cast)]
+@[to_additive]
 theorem coe_div (x y : H) : (↑(x / y) : G) = ↑x / ↑y :=
   rfl
 
@@ -534,7 +537,7 @@ theorem coe_div (x y : H) : (↑(x / y) : G) = ↑x / ↑y :=
 theorem coe_mk (x : G) (hx : x ∈ H) : ((⟨x, hx⟩ : H) : G) = x :=
   rfl
 
-@[to_additive (attr := simp, norm_cast)]
+@[to_additive]
 theorem coe_pow (x : H) (n : ℕ) : ((x ^ n : H) : G) = (x : G) ^ n :=
   rfl
 

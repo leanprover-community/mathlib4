@@ -9,6 +9,9 @@ public import Mathlib.MeasureTheory.Measure.Decomposition.Hahn
 public import Mathlib.MeasureTheory.Measure.Sub
 public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Jordan
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Jordan decomposition from signed measure subtraction
 

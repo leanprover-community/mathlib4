@@ -5,10 +5,8 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Algebra.Group.Action.End
 public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 public import Mathlib.Algebra.Group.Action.Prod
-public import Mathlib.Algebra.Group.Subgroup.Map
 public import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.Algebra.Order.Group.Action
 public import Mathlib.Basic.Finite.Sigma
@@ -16,6 +14,9 @@ public import Mathlib.Data.Set.Finite.Range
 public import Mathlib.GroupTheory.GroupAction.Defs
 public import Mathlib.GroupTheory.Subgroup.Centralizer
 public import Mathlib.Order.Setoid.Basic
+
+import Mathlib.Algebra.Group.Action.End
+import Mathlib.Algebra.Group.Subgroup.Map
 
 /-!
 # Basic properties of group actions
@@ -199,7 +200,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 instance (x : orbitRel.Quotient G α) : IsPretransitive G x.orbit where
   exists_smul_eq := by
-    induction x using Quotient.inductionOn'
+    induction x using Quotient.inductionOn
     rintro ⟨y, yh⟩ ⟨z, zh⟩
     rw [orbitRel.Quotient.mem_orbit, Quotient.eq''] at yh zh
     rcases yh with ⟨g, rfl⟩
@@ -217,7 +218,7 @@ lemma _root_.Finite.of_finite_mulAction_orbitRel_quotient [Finite G] [Finite Ω]
   rw [(selfEquivSigmaOrbits' G _).finite_iff]
   have : ∀ g : Ω, Finite g.orbit := by
     intro g
-    induction g using Quotient.inductionOn'
+    induction g using Quotient.inductionOn
     simpa [Set.finite_coe_iff] using Finite.finite_mulAction_orbit _
   exact Finite.instSigma
 

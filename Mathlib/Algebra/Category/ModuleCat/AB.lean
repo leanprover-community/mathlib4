@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Category.ModuleCat.Colimits
 
 import Mathlib.Algebra.Module.Shrink
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # AB axioms in module categories
 

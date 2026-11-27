@@ -9,6 +9,9 @@ public import Mathlib.MeasureTheory.Function.LpSeminorm.Indicator
 public import Mathlib.MeasureTheory.Function.LpSeminorm.SMul
 public import Mathlib.MeasureTheory.Integral.MeanInequalities
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Compare Lp seminorms for different values of `p`
 

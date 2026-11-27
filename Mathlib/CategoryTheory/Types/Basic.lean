@@ -159,10 +159,8 @@ lemma ofHom_eq {X Y : Type u} (f : X ⟶ Y) : ofHom f = f :=
 @[simp high]
 lemma hom_ofHom {X Y : Type u} (f : X → Y) : Hom.hom (ofHom f) = Fun.mk f := rfl
 
-@[simp]
 lemma ofHom_hom {X Y : Type u} (f : X ⟶ Y) : ofHom (Hom.hom f) = f := rfl
 
-@[simp]
 lemma ofHom_apply {X Y : Type u} (f : X → Y) (x : X) :
     (↾f) x = f x :=
   rfl
@@ -251,8 +249,11 @@ attribute [elementwise (attr := simp)] eqToHom_map_comp
 
 variable {D : Type u'} [𝒟 : Category.{u'} D] (I J : D ⥤ C) (ρ : I ⟶ J) {W : D}
 
-attribute [elementwise nosimp] Functor.map_hom_inv Functor.map_inv_hom
+attribute [elementwise nosimp] IsIso.hom_inv_id_map IsIso.inv_hom_id_map
   Functor.map_hom_inv' Functor.map_inv_hom'
+
+set_option linter.deprecated false in
+attribute [elementwise nosimp] Functor.map_hom_inv Functor.map_inv_hom
 
 attribute [elementwise (attr := simp)] Iso.hom_inv_id_app Iso.inv_hom_id_app
 

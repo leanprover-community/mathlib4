@@ -134,7 +134,7 @@ lemma coe_sUnion (x : ZFSet.{u}) : ↑(⋃₀ x : ZFSet) = ⋃₀ (x : ZFClass.{
   simp [sUnion, ZFClass.CMem, classToCong]; grind
 
 lemma mem_sInter : y ∈ ⋂₀ A ↔ ∀ z ∈ A, y ∈ z := by
-  simp +contextual [sInter, ZFClass.CMem, classToCong, eq_comm]; grind
+  simp [sInter, ZFClass.CMem, classToCong]
 
 open scoped ZFSet in
 lemma coe_sInter (h : x.Nonempty) : ↑(⋂₀ x : ZFSet) = ⋂₀ (x : ZFClass.{u}) := by
@@ -241,6 +241,7 @@ def univ : Class :=
 @[deprecated inferInstance +typeChanged (since := "2026-09-25")]
 instance : Top Class := ⟨univ⟩
 
+set_option linter.deprecated false in
 deriving instance CompleteLattice for Class
 
 /-- Assert that `A` is a ZFC set satisfying `B` -/
@@ -343,6 +344,7 @@ scoped under the `Class` namespace. -/
 def sUnion (x : Class) : Class :=
   sSup (classToCong x)
 
+set_option linter.deprecated false in
 @[inherit_doc]
 scoped prefix:110 "⋃₀ " => Class.sUnion
 
@@ -352,6 +354,7 @@ Uses `⋂₀` notation, scoped under the `Class` namespace. -/
 def sInter (x : Class) : Class :=
   sInf (classToCong x)
 
+set_option linter.deprecated false in
 @[inherit_doc]
 scoped prefix:110 "⋂₀ " => Class.sInter
 

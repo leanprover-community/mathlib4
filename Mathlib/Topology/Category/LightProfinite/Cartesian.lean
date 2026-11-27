@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Category.CompHausLike.Cartesian
 public import Mathlib.Topology.Category.LightProfinite.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cartesian monoidal structure on `LightProfinite`
 

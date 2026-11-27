@@ -184,7 +184,7 @@ theorem mem_Lp_iff_eLpNorm_lt_top_of_pos {f : α →ₘ[μ] E} (hp : 0 < p) :
 protected theorem antitone [IsFiniteMeasure μ] {p q : ℝ≥0∞} (hpq : p ≤ q) : Lp E q μ ≤ Lp E p μ :=
   fun _f hf => MemLp.mono_exponent hf hpq
 
-@[simp]
+@[deprecated "holds by reducible rfl" (since := "2026-11-26")]
 theorem coeFn_mk {f : α →ₘ[μ] E} (hf : inhmgELpNorm f p μ < ∞) :
     ((⟨f, hf⟩ : Lp E p μ) : α → E) = f :=
   rfl

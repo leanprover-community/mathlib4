@@ -351,7 +351,7 @@ def retractionKerCotangentToTensorEquivSection :
   · ext x
     rw [H]
     apply e₁.injective
-    simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, LinearMap.coe_restrictScalars,
+    simp only [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, LinearMap.coe_restrictScalars,
       Function.comp_apply, LinearEquiv.symm_apply_apply, LinearMap.id_coe, id_eq,
       LinearEquiv.apply_symm_apply]
     congrm $hl (e₁ x)
@@ -359,13 +359,13 @@ def retractionKerCotangentToTensorEquivSection :
     ext x
     simp only [AlgebraTensorModule.curry_apply, Derivation.coe_comp, LinearMap.coe_comp,
       LinearMap.coe_restrictScalars, Derivation.coeFn_coe, Function.comp_apply, curry_apply,
-      LinearEquiv.coe_coe, LinearMap.coe_mk, AddHom.coe_coe,
+      LinearEquiv.coe_toLinearMap, LinearMap.coe_mk, AddHom.coe_coe,
       LinearEquiv.apply_symm_apply, LinearEquiv.symm_apply_apply]
   · intro f
     ext x
     simp only [AlgebraTensorModule.curry_apply, Derivation.coe_comp, LinearMap.coe_comp,
       LinearMap.coe_restrictScalars, Derivation.coeFn_coe, Function.comp_apply, curry_apply,
-      LinearMap.coe_mk, AddHom.coe_coe, LinearEquiv.coe_coe,
+      LinearMap.coe_mk, AddHom.coe_coe, LinearEquiv.coe_toLinearMap,
       LinearEquiv.symm_apply_apply, LinearEquiv.apply_symm_apply]
 
 namespace Algebra.Extension

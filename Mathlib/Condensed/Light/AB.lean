@@ -10,6 +10,9 @@ public import Mathlib.Condensed.Light.Epi
 
 import Mathlib.Algebra.Category.ModuleCat.AB
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Grothendieck's AB axioms for light condensed modules
 

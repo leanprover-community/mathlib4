@@ -5,14 +5,16 @@ Authors: Damiano Testa
 -/
 module
 
-public import Mathlib.Algebra.Group.Subsemigroup.Operations
 public import Mathlib.Algebra.MonoidAlgebra.Support
 public import Mathlib.Order.Filter.Extr
+
+import Mathlib.Algebra.Group.Subsemigroup.Operations
 
 /-!
 # Lemmas about the `sup` and `inf` of the support of `AddMonoidAlgebra`
 
 ## TODO
+
 The current plan is to state and prove lemmas about `Finset.sup (Finsupp.support f) D` with a
 "generic" degree/weight function `D` from the grading Type `A` to a somewhat ordered Type `B`.
 
@@ -177,7 +179,7 @@ theorem sup_support_coeff_multisetProd_le (degb0 : degb 0 ≤ 0)
     (degbm : ∀ a b, degb (a + b) ≤ degb a + degb b) (m : Multiset R[A]) :
     m.prod.coeff.support.sup degb ≤ (m.map fun f : R[A] => f.coeff.support.sup degb).sum := by
   induction m using Quot.inductionOn
-  rw [Multiset.quot_mk_to_coe'', Multiset.map_coe, Multiset.sum_coe, Multiset.prod_coe]
+  rw [Multiset.quot_mk_to_coe', Multiset.map_coe, Multiset.sum_coe, Multiset.prod_coe]
   exact sup_support_list_prod_le degb0 degbm _
 
 @[deprecated (since := "2026-06-18")]

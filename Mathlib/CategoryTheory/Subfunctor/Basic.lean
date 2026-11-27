@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Types.Basic
 public import Mathlib.Data.Set.Lattice.Image
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subfunctor of types
 

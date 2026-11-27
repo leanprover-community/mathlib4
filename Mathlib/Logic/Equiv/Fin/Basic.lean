@@ -375,7 +375,7 @@ def Int.divModEquiv (n : ℕ) [NeZero n] : ℤ ≃ ℤ × Fin n where
   toFun a := (a / n, Fin.ofNat n (a.natMod n))
   invFun p := p.1 * n + ↑p.2
   left_inv a := by
-    simp_rw [Fin.val_ofNat, natCast_mod, natMod,
+    simp_rw [Fin.val_ofNat, natCast_emod, natMod,
       toNat_of_nonneg (emod_nonneg _ <| natCast_eq_zero.not.2 (NeZero.ne n)), emod_emod,
       ediv_mul_add_emod]
   right_inv := fun ⟨q, r, hrn⟩ => by

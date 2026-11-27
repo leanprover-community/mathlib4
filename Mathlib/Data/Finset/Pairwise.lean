@@ -6,7 +6,8 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Data.Finset.Lattice.Fold
-public import Mathlib.Data.Set.Pairwise.List
+
+import Mathlib.Data.Set.Pairwise.List
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
