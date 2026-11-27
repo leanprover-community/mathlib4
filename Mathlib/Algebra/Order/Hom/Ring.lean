@@ -202,7 +202,6 @@ theorem orderMonoidWithZeroHomOfClass_apply (f : α →+*o β) (a : α) :
 @[deprecated (since := "2026-11-26")] alias coe_orderMonoidWithZeroHom_apply :=
   orderMonoidWithZeroHomOfClass_apply
 
-
 /-- Copy of an `OrderRingHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
 protected def copy (f : α →+*o β) (f' : α → β) (h : f' = f) : α →+*o β :=
