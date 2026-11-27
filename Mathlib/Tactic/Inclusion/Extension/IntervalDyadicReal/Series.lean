@@ -28,8 +28,11 @@ In a normal evaluator, this divide-and-conquer based approach is faster than lin
 since it reduces the number of computations on larger numerals. However, the performance gain
 is limited for kernel checks, since GMP arithmetic is still not the bottleneck even at ~10k bits,
 while the binary splitting approach takes more kernel steps than a simple linear recursion.
+
 An optimisation is implemented where blocks of up to 32 terms are evaluated linearly to reduce the
-number of kernel steps.
+number of kernel steps. The block size is empirical: a smaller block does less arithmetic on
+large numbers and takes more kernel steps, so and therefore would be better for higher precision or
+faster kernel. A larger block size is faster on the other case (lower precision, slower kernel).
 
 The benefit of this approach is therefore mainly in reducing the recursion depth (`O(log n)`,
 compared to `O(n)` for linear computation) rather than performance.
