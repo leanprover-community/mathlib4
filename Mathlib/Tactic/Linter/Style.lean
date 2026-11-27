@@ -446,7 +446,7 @@ these are coercion lemmas violating mathlib's naming convention. -/
         -- name? But beware this may be wrong.
         m!"Probably, the linter should reference `{usedCoercions[0]!}` instead of saying `coe`"
       else ""
-      return m!"The lemma `{.ofConstName declName true}` contains 'coe' in its name, \
+      return m!"The lemma `{.ofConstName declName true}` contains `coe` in its name, \
         but does not involve any constant named `coe`: \
         This declaration statement references the coercions(s) {usedCoercions}.\n\
         Most likely, this lemma is a misnamed coercion lemma: \
