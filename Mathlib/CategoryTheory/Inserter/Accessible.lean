@@ -305,8 +305,7 @@ lemma exists_succ_of_hasCardinalLT [IsCardinalAccessibleCategory K κ]
         G.map vji.left.hom := by
     obtain ⟨uij, vij, h⟩ := IsCardinalPresentable.exists_eq_of_isColimit' κ hcolimGT
       (b.ψ j.val i j.property le_rfl ≫ G.map v₀.left.hom)
-      (F.map (b.ξ.map <| homOfLE <| j.property.le).left.hom ≫ v₁)
-      (by
+      (F.map (b.ξ.map <| homOfLE <| j.property.le).left.hom ≫ v₁) (by
         dsimp at hv₀
         simp only [Category.id_comp] at hv₀
         simp [hv₀, ← Functor.map_comp, ξ₁, b.sq₁ j j.prop, ← Functor.map_comp_assoc])
@@ -314,7 +313,6 @@ lemma exists_succ_of_hasCardinalLT [IsCardinalAccessibleCategory K κ]
   choose u ν huν using Uspec
   have h' : HasCardinalLT (Set.Iio i) κ := hΛ.of_injective _ Subtype.val_injective
   obtain ⟨ξ₂, ν₂, μ₀, h₂⟩ := IsCardinalFiltered.wideSpan ν h'
-  let ξ₂₀ := IsCardinalFiltered.max (κ := κ) u h'
   -- Now, we check that we have obtained all the conditions we want:
   refine ⟨ξ₂, v₀ ≫ μ₀, v₁ ≫ G.map μ₀.left.hom, ?_, fun j hj ↦ ?_⟩
   · dsimp [ψ, ξ₁] at *
@@ -463,7 +461,7 @@ lemma trunc_extend [NoMaxOrder Λ]
       SmallObject.SuccStruct.extendToSuccObjIso]
   · simp [trunc, extend, extend.ψ, hki, SmallObject.SuccStruct.extendToSuccObjIso]
 
-theorem surjective_trunc [NoMaxOrder Λ] [IsCardinalAccessibleCategory K κ]
+theorem surjective_trunc_le_succ [NoMaxOrder Λ] [IsCardinalAccessibleCategory K κ]
     [F.IsCardinalAccessible κ] [G.IsCardinalAccessible κ]
     [F.PreservesCardinalPresentable κ]
     (hΛ : HasCardinalLT Λ κ) (E : Inserter F G) (i : Λ) :
