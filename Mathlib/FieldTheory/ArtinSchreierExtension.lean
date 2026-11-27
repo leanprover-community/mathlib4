@@ -27,11 +27,6 @@ theory).
 
 public section
 
-theorem ExpChar.nontrivial (R : Type*) [Semiring R] (p : ℕ) [ExpChar R p] : Nontrivial R := by
-  rcases ‹ExpChar R p› with _ | h
-  · infer_instance
-  · exact CharP.nontrivial_of_char_ne_one h.ne_one
-
 section CommRing
 
 variable {F : Type*} [CommRing F]

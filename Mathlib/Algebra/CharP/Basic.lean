@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Ring.GrindInstances
 public import Mathlib.Algebra.Ring.Opposite
 public import Mathlib.Algebra.Ring.ULift
 public import Mathlib.Data.Int.ModEq
+public import Mathlib.Data.Nat.Cast.Order.Basic
 public import Mathlib.Data.Nat.Cast.Prod
 public import Mathlib.Order.Interval.Set.Defs
 
@@ -208,6 +209,16 @@ instance (S : Type*) [Semiring S] (p) [ExpChar R p] [ExpChar S p] : ExpChar (R �
   · have := Prod.charP R S p; exact .prime hp
 
 end AddMonoidWithOne
+
+section Semiring
+
+/-- Any semiring with an exponential characteristic is nontrivial. -/
+theorem ExpChar.nontrivial (R : Type*) [Semiring R] (p : ℕ) [ExpChar R p] : Nontrivial R := by
+  rcases ‹ExpChar R p› with _ | h
+  · infer_instance
+  · exact CharP.nontrivial_of_char_ne_one h.ne_one
+
+end Semiring
 
 section CommRing
 
