@@ -25,7 +25,8 @@ Many of the results in this file are expressed in the generality of: `R` is a De
 with field of fractions `K` such that `Ring.HasFiniteQuotients R`, as holds for `𝓞 K` when `K` is
 a number field. This is so that `ℤ` and `𝓞 ℚ` can be used interchangeably.
 
-## Main Definitions and Results
+## Main definitions and statements
+
 * `NumberField.adicAbv`: a `v`-adic absolute value on `K`.
 * `NumberField.FinitePlace`: the type of finite places of a number field `K`.
 * `NumberField.FinitePlace.embedding`: the canonical embedding of a number field `K` to the
@@ -40,6 +41,7 @@ a number field. This is so that `ℤ` and `𝓞 ℚ` can be used interchangeably
    discrete valuation rings.
 
 ## Tags
+
 number field, places, finite places
 -/
 
@@ -275,16 +277,16 @@ variable [NumberField K] [NumberField L]
 
 @[macro_inline]
 instance : FunLike (FinitePlace K) K ℝ where
-  coe w x := w.1 x
+  coe w x := w.val x
   coe_injective _ _ h := Subtype.ext (AbsoluteValue.ext <| congr_fun h)
 
 instance : MonoidWithZeroHomClass (FinitePlace K) K ℝ where
-  map_mul w := w.1.map_mul
-  map_one w := w.1.map_one
-  map_zero w := w.1.map_zero
+  map_mul w := w.val.map_mul
+  map_one w := w.val.map_one
+  map_zero w := w.val.map_zero
 
 instance : NonnegHomClass (FinitePlace K) K ℝ where
-  apply_nonneg w := w.1.nonneg
+  apply_nonneg w := w.val.nonneg
 
 @[simp]
 theorem mk_apply (v : HeightOneSpectrum (𝓞 K)) (x : K) : mk v x = ‖embedding v x‖ := rfl
@@ -297,17 +299,18 @@ instance : MulRingNormClass (FinitePlace K) K ℝ where
   eq_zero_of_map_eq_zero v := by simp
 
 /-- For a finite place `w`, return a maximal ideal `v` such that `w = finite_place v` . -/
-noncomputable def maximalIdeal (w : FinitePlace K) : HeightOneSpectrum (𝓞 K) := w.2.choose
+noncomputable def maximalIdeal (w : FinitePlace K) : HeightOneSpectrum (𝓞 K) := w.property.choose
 
 @[simp]
-theorem mk_maximalIdeal (w : FinitePlace K) : mk (maximalIdeal w) = w := Subtype.ext w.2.choose_spec
+theorem mk_maximalIdeal (w : FinitePlace K) : mk (maximalIdeal w) = w :=
+  Subtype.ext w.property.choose_spec
 
 @[simp]
 theorem norm_embedding_eq (w : FinitePlace K) (x : K) :
     ‖embedding (maximalIdeal w) x‖ = w x := by
   conv_rhs => rw [← mk_maximalIdeal w, mk_apply]
 
-theorem pos_iff {w : FinitePlace K} {x : K} : 0 < w x ↔ x ≠ 0 := w.1.pos_iff
+theorem pos_iff {w : FinitePlace K} {x : K} : 0 < w x ↔ x ≠ 0 := w.val.pos_iff
 
 @[simp]
 theorem mk_eq_iff {v₁ v₂ : HeightOneSpectrum (𝓞 K)} : mk v₁ = mk v₂ ↔ v₁ = v₂ := by
@@ -392,10 +395,11 @@ lemma equivHeightOneSpectrum_symm_apply (v : HeightOneSpectrum (𝓞 K)) (x : K)
 -- domains `𝓞 K` and `𝓞 L` once we have a ramification theory for finite places set up.
 -- Note that this will mean `FinitePlace.equivHeightOneSpectrum` no longer appears in the statement.
 lemma equivHeightOneSpectrum_symm_apply_algebraMap
-    (v : HeightOneSpectrum (𝓞 K)) (w : HeightOneSpectrum (𝓞 L)) [w.1.LiesOver v.1] (x : K) :
+    (v : HeightOneSpectrum (𝓞 K)) (w : HeightOneSpectrum (𝓞 L)) [w.asIdeal.LiesOver v.asIdeal]
+    (x : K) :
     FinitePlace.equivHeightOneSpectrum.symm w (algebraMap K L x) =
       FinitePlace.equivHeightOneSpectrum.symm v x ^
-        (w.1.ramificationIdx (𝓞 K) * w.1.inertiaDeg (𝓞 K)) := by
+        (w.asIdeal.ramificationIdx (𝓞 K) * w.asIdeal.inertiaDeg (𝓞 K)) := by
   by_cases hx : x = 0
   · rw [hx, map_zero, map_zero, map_zero, zero_pow]
     exact (mul_pos (w.asIdeal.ramificationIdx_pos (𝓞 K)) (w.asIdeal.inertiaDeg_pos (𝓞 K))).ne'
@@ -403,7 +407,7 @@ lemma equivHeightOneSpectrum_symm_apply_algebraMap
     FinitePlace.norm_embedding, HeightOneSpectrum.adicAbv_def]
   rw [← IsDedekindDomain.HeightOneSpectrum.valuation_liesOver L v, map_pow,
     WithZeroMulInt.toNNReal_neg_apply _ (by simpa), WithZeroMulInt.toNNReal_neg_apply _ (by simpa),
-    ← Ideal.absNorm_pow_inertiaDeg v.1 w.1]
+    ← Ideal.absNorm_pow_inertiaDeg v.asIdeal w.asIdeal]
   simp only [Nat.cast_pow, NNReal.coe_zpow, ← zpow_natCast, ← zpow_mul]
   grind
 

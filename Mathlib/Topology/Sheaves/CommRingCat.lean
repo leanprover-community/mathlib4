@@ -25,6 +25,7 @@ sub, quotient, and localization operations on sheaves of rings with
 As more results accumulate, please consider splitting this file.
 
 ## References
+
 * https://stacks.math.columbia.edu/tag/0073
 -/
 
@@ -116,14 +117,14 @@ sections whose restriction onto each stalk falls in the given submonoid. -/
 @[simps]
 noncomputable def submonoidPresheafOfStalk (S : ∀ x : X, Submonoid (F.stalk x)) :
     F.SubmonoidPresheaf where
-  obj U := ⨅ x : U.unop, Submonoid.comap (F.germ U.unop x.1 x.2).hom (S x)
+  obj U := ⨅ x : U.unop, Submonoid.comap (F.germ U.unop x.val x.property).hom (S x)
   map {U V} i := by
     intro s hs
     simp only [Submonoid.mem_comap, Submonoid.mem_iInf] at hs ⊢
     intro x
-    change (F.map i.unop.op ≫ F.germ V.unop x.1 x.2) s ∈ _
+    change (F.map i.unop.op ≫ F.germ V.unop x.val x.property) s ∈ _
     rw [F.germ_res]
-    exact hs ⟨_, i.unop.le x.2⟩
+    exact hs ⟨_, i.unop.le x.property⟩
 
 noncomputable instance : Inhabited F.SubmonoidPresheaf :=
   ⟨F.submonoidPresheafOfStalk fun _ => ⊥⟩
@@ -224,10 +225,10 @@ this is a ring homomorphism (with respect to the pointwise ring operations on fu
 def map (X : TopCat.{u}ᵒᵖ) {R S : TopCommRingCat.{u}} (φ : R ⟶ S) :
     continuousFunctions X R ⟶ continuousFunctions X S := CommRingCat.ofHom
   { toFun g := g ≫ (forget₂ TopCommRingCat TopCat).map φ
-    map_one' := by ext; exact φ.1.map_one
-    map_zero' := by ext; exact φ.1.map_zero
-    map_add' _ _ := by ext; exact φ.1.map_add _ _
-    map_mul' _ _ := by ext; exact φ.1.map_mul _ _ }
+    map_one' := by ext; exact φ.val.map_one
+    map_zero' := by ext; exact φ.val.map_zero
+    map_add' _ _ := by ext; exact φ.val.map_add _ _
+    map_mul' _ _ := by ext; exact φ.val.map_mul _ _ }
 
 end continuousFunctions
 
@@ -274,11 +275,11 @@ variable {X : TopCat.{v}}
 
 instance algebra_section_stalk (F : X.Presheaf CommRingCat) {U : Opens X} (x : U) :
     Algebra (F.obj <| op U) (F.stalk x) :=
-  (F.germ U x.1 x.2).hom.toAlgebra
+  (F.germ U x.val x.property).hom.toAlgebra
 
 @[simp]
 theorem stalk_open_algebraMap {X : TopCat.{v}} (F : X.Presheaf CommRingCat) {U : Opens X} (x : U) :
-    algebraMap (F.obj <| op U) (F.stalk x) = (F.germ U x.1 x.2).hom :=
+    algebraMap (F.obj <| op U) (F.stalk x) = (F.germ U x.val x.property).hom :=
   rfl
 
 end TopCat.Presheaf
@@ -299,7 +300,7 @@ open CategoryTheory.Limits
 
 /-- `F(U ⊔ V)` is isomorphic to the `eq_locus` of the two maps `F(U) × F(V) ⟶ F(U ⊓ V)`. -/
 def objSupIsoProdEqLocus {X : TopCat.{w}} (F : X.Sheaf CommRingCat) (U V : Opens X) :
-    F.1.obj (op <| U ⊔ V) ≅ CommRingCat.of <|
+    F.obj.obj (op <| U ⊔ V) ≅ CommRingCat.of <|
     -- Porting note: Lean 3 is able to figure out the ring homomorphism automatically
     RingHom.eqLocus
       (RingHom.comp (F.obj.map (homOfLE inf_le_left : U ⊓ V ⟶ U).op).hom
@@ -310,36 +311,36 @@ def objSupIsoProdEqLocus {X : TopCat.{w}} (F : X.Sheaf CommRingCat) (U V : Opens
 
 theorem objSupIsoProdEqLocus_hom_fst {X : TopCat.{w}} (F : X.Sheaf CommRingCat) (U V : Opens X)
     (x) :
-    ((F.objSupIsoProdEqLocus U V).hom x).1.fst = F.1.map (homOfLE le_sup_left).op x :=
+    ((F.objSupIsoProdEqLocus U V).hom x).val.fst = F.obj.map (homOfLE le_sup_left).op x :=
   congr($((F.isLimitPullbackCone U V).conePointUniqueUpToIso_hom_comp
       (CommRingCat.pullbackConeIsLimit _ _) WalkingCospan.left) x)
 
 theorem objSupIsoProdEqLocus_hom_snd {X : TopCat.{w}} (F : X.Sheaf CommRingCat) (U V : Opens X)
     (x) :
-    ((F.objSupIsoProdEqLocus U V).hom x).1.snd = F.1.map (homOfLE le_sup_right).op x :=
+    ((F.objSupIsoProdEqLocus U V).hom x).val.snd = F.obj.map (homOfLE le_sup_right).op x :=
   congr($((F.isLimitPullbackCone U V).conePointUniqueUpToIso_hom_comp
       (CommRingCat.pullbackConeIsLimit _ _) WalkingCospan.right) x)
 
 theorem objSupIsoProdEqLocus_inv_fst {X : TopCat.{w}} (F : X.Sheaf CommRingCat) (U V : Opens X)
     (x) :
-    F.1.map (homOfLE le_sup_left).op ((F.objSupIsoProdEqLocus U V).inv x) = x.1.1 :=
+    F.obj.map (homOfLE le_sup_left).op ((F.objSupIsoProdEqLocus U V).inv x) = x.val.1 :=
   congr($((F.isLimitPullbackCone U V).conePointUniqueUpToIso_inv_comp
       (CommRingCat.pullbackConeIsLimit _ _) WalkingCospan.left) x)
 
 theorem objSupIsoProdEqLocus_inv_snd {X : TopCat.{w}} (F : X.Sheaf CommRingCat) (U V : Opens X)
     (x) :
-    F.1.map (homOfLE le_sup_right).op ((F.objSupIsoProdEqLocus U V).inv x) = x.1.2 :=
+    F.obj.map (homOfLE le_sup_right).op ((F.objSupIsoProdEqLocus U V).inv x) = x.val.2 :=
   congr($((F.isLimitPullbackCone U V).conePointUniqueUpToIso_inv_comp
       (CommRingCat.pullbackConeIsLimit _ _) WalkingCospan.right) x)
 
 theorem objSupIsoProdEqLocus_inv_eq_iff {X : TopCat.{u}} (F : X.Sheaf CommRingCat.{u})
-    {U V W UW VW : Opens X} (e : W ≤ U ⊔ V) (x) (y : F.1.obj (op W))
+    {U V W UW VW : Opens X} (e : W ≤ U ⊔ V) (x) (y : F.obj.obj (op W))
     (h₁ : UW = U ⊓ W) (h₂ : VW = V ⊓ W) :
-    F.1.map (homOfLE e).op ((F.objSupIsoProdEqLocus U V).inv x) = y ↔
-    F.1.map (homOfLE (h₁ ▸ inf_le_left : UW ≤ U)).op x.1.1 =
-      F.1.map (homOfLE <| h₁ ▸ inf_le_right).op y ∧
-    F.1.map (homOfLE (h₂ ▸ inf_le_left : VW ≤ V)).op x.1.2 =
-      F.1.map (homOfLE <| h₂ ▸ inf_le_right).op y := by
+    F.obj.map (homOfLE e).op ((F.objSupIsoProdEqLocus U V).inv x) = y ↔
+    F.obj.map (homOfLE (h₁ ▸ inf_le_left : UW ≤ U)).op x.val.1 =
+      F.obj.map (homOfLE <| h₁ ▸ inf_le_right).op y ∧
+    F.obj.map (homOfLE (h₂ ▸ inf_le_left : VW ≤ V)).op x.val.2 =
+      F.obj.map (homOfLE <| h₂ ▸ inf_le_right).op y := by
   subst h₁ h₂
   constructor
   · rintro rfl

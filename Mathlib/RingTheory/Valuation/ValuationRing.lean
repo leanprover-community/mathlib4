@@ -36,7 +36,7 @@ We also provide the equivalence of the following notions for a domain `R` in `Va
 We also show that, given a valuation `v` on a field `K`, the ring of valuation integers is a
 valuation ring and `K` is the fraction field of this ring.
 
-## Implementation details
+## Implementation notes
 
 The Mathlib definition of a valuation ring requires `IsDomain A` even though the condition
 does not mention zero divisors. Thus, there is a technical `PreValuationRing A` that

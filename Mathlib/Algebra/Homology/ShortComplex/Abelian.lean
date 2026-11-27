@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Homology.ShortComplex.Limits
 public import Mathlib.Algebra.Homology.ShortComplex.Preadditive
 public import Mathlib.CategoryTheory.Abelian.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Abelian categories have homology
 
@@ -331,7 +334,7 @@ end ofEpiMonoFactorisation
 limit kernel fork of `S.g` and `cc` a limit cokernel cofork of `S.f`.
 Let `kf.pt ⟶ H ⟶ cc.pt` be an epi-mono factorization of `kf.ι ≫ cc.π : kf.pt ⟶ cc.pt`.
 This is the homology data expressing `H` as the homology of `S`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def ofEpiMonoFactorisation {kf : KernelFork S.g} {cc : CokernelCofork S.f}
     (hkf : IsLimit kf) (hcc : IsColimit cc) {H : C} {π : kf.pt ⟶ H} {ι : H ⟶ cc.pt}
     (fac : kf.ι ≫ cc.π = π ≫ ι) [Epi π] [Mono ι] :

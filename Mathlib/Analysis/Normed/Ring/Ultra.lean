@@ -22,7 +22,7 @@ The norm must send one to one.
 * `norm_intCast_le_one`:
   the norm of the image of an integer in the ring is always less than or equal to one
 
-## Implementation details
+## Implementation notes
 
 A `[NormedRing R]` only assumes a submultiplicative norm and does not have `[NormOneClass R]`.
 The weakest ring-like structure that has a bundled norm such that `‖1‖ = 1` is

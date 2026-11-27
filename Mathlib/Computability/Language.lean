@@ -10,6 +10,9 @@ public import Mathlib.Data.Fintype.Sum
 public import Mathlib.Data.Set.Lattice.Image
 public import Mathlib.Tactic.DeriveFintype
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Languages
 
@@ -407,14 +410,3 @@ lemma compl_compl (l : Language α) : lᶜᶜ = l :=
   _root_.compl_compl l
 
 end Language
-
-/-- Symbols for use by all kinds of grammars. -/
-inductive Symbol (T N : Type*)
-  /-- Terminal symbols (of the same type as the language) -/
-  | terminal (t : T) : Symbol T N
-  /-- Nonterminal symbols (must not be present when the word being generated is finalized) -/
-  | nonterminal (n : N) : Symbol T N
-deriving
-  DecidableEq, Repr, Fintype
-
-attribute [nolint docBlame] Symbol.proxyType Symbol.proxyTypeEquiv

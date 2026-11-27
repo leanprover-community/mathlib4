@@ -18,6 +18,7 @@ any small family of regular cardinals, there exists a regular cardinal
 that is sharply greater than all the cardinals in the family.
 
 ## References
+
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 -/
 

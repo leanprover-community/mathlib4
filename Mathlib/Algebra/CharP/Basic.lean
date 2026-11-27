@@ -16,6 +16,9 @@ public import Mathlib.Order.Interval.Set.Defs
 
 import Mathlib.Data.ULift
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Characteristic of semirings
 

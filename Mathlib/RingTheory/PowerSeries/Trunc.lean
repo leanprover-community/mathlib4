@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.PowerSeries.Basic
 
 import Mathlib.Algebra.Polynomial.Degree.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Formal power series in one variable - Truncation
 

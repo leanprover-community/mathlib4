@@ -23,7 +23,7 @@ coefficients in `R` together with its universal property.
   * `FreeLieAlgebra.of`
   * `FreeLieAlgebra.universalEnvelopingEquivFreeAlgebra`
 
-## Implementation details
+## Implementation notes
 
 ### Quotient of free non-unital, non-associative algebra
 

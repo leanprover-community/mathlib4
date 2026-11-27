@@ -11,6 +11,9 @@ public import Mathlib.AlgebraicTopology.ModelCategory.FibrantObjectHomotopy
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions.OfAdjunction
 import Mathlib.CategoryTheory.Quotient.LocallySmall
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The homotopy category of bifibrant objects
 
@@ -270,7 +273,7 @@ instance (X : CofibrantObject C) :
   infer_instance
 
 instance (X : BifibrantObject C) :
-    IsFibrant (ι.obj (BifibrantObject.ιCofibrantObject.obj X)) := X.2.2
+    IsFibrant (ι.obj (BifibrantObject.ιCofibrantObject.obj X)) := X.property.2
 
 set_option backward.isDefEq.respectTransparency false in
 lemma exists_bifibrant_map {X₁ X₂ : CofibrantObject C} (f : X₁ ⟶ X₂) :

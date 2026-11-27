@@ -10,6 +10,9 @@ public import Mathlib.NumberTheory.Harmonic.EulerMascheroni
 
 import Mathlib.Analysis.Convex.Deriv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Derivative of Γ at positive integers
 

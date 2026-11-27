@@ -10,6 +10,9 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.HornColimits
 public import Mathlib.AlgebraicTopology.SimplicialSet.Skeleton
 public import Mathlib.CategoryTheory.SmallObject.TransfiniteCompositionLifting
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cofibrations and fibrations in the category of simplicial sets
 

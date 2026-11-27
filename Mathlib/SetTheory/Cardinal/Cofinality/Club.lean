@@ -141,7 +141,7 @@ protected theorem sInter {s : Set (Set α)} (hα : cof α ≠ ℵ₀) (hsα : #s
   obtain hα | hα := hα.lt_or_gt
   · exact .sInter_of_cof_le_one (cof_lt_aleph0_iff.1 hα) hs
   refine ⟨.sInter fun x hx ↦ (hs x hx).dirSupClosed, fun a ↦ ?_⟩
-  choose f hf using fun x : s ↦ (hs _ x.2).isCofinal
+  choose f hf using fun x : s ↦ (hs _ x.property).isCofinal
   let g : ℕ → α := Nat.rec a fun _ IH ↦ sSup (.range (f · IH))
   have hg : BddAbove (.range g) := by
     refine .of_not_isCofinal fun hg ↦ (cof_le hg).not_gt (hα.trans_le' ?_)
@@ -335,7 +335,7 @@ theorem isStationary_sUnion_iff_of_cof_le_one {s : Set (Set α)} (hα : cof α �
     contrapose! h
     simp_rw [not_isStationary_iff] at h ⊢
     choose f hf hxf using h
-    refine ⟨⋂ x : s, f _ x.2, ?_, ?_⟩
+    refine ⟨⋂ x : s, f _ x.property, ?_, ?_⟩
     · apply IsClub.iInter_of_cof_le_one hα
       simpa
     · rw [disjoint_sUnion_left]
@@ -382,7 +382,7 @@ theorem isStationary_sUnion_iff {s : Set (Set α)} (hα : cof α ≠ ℵ₀) (hs
     contrapose! h
     simp_rw [not_isStationary_iff] at h ⊢
     choose f hf hxf using h
-    refine ⟨⋂ x : s, f _ x.2, ?_, ?_⟩
+    refine ⟨⋂ x : s, f _ x.property, ?_, ?_⟩
     · apply IsClub.iInter hα <;> simpa
     · rw [disjoint_sUnion_left]
       exact fun x hx ↦ (hxf _ hx).mono_right (iInter_subset _ ⟨x, hx⟩)

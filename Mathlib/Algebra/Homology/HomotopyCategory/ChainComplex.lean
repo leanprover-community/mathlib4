@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Homology.Embedding.Splitting
 import Mathlib.Algebra.Homology.Embedding.ExtendHomotopy
 import Mathlib.Algebra.Homology.HomotopyCategory.DegreewiseSplit
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Homotopy equivalences between chain complexes
 
@@ -28,7 +31,6 @@ namespace ChainComplex
 variable {C : Type*} [Category* C] [Preadditive C] [HasZeroObject C] [HasBinaryBiproducts C]
   (S : ShortComplex (ChainComplex C ℕ))
 
-set_option backward.isDefEq.respectTransparency false in
 lemma homotopyEquivalences_shortComplexF_iff_of_degreewiseSplit
     (σ : ∀ n, (S.map (eval _ _ n)).Splitting) :
     homotopyEquivalences _ _ S.f ↔ Nonempty (Homotopy (𝟙 S.X₃) 0) := by
@@ -42,7 +44,6 @@ lemma homotopyEquivalences_shortComplexF_iff_of_degreewiseSplit
   simp
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma homotopyEquivalences_shortComplexG_iff_of_degreewiseSplit
     (σ : ∀ n, (S.map (eval _ _ n)).Splitting) :
     homotopyEquivalences _ _ S.g ↔ Nonempty (Homotopy (𝟙 S.X₁) 0) := by

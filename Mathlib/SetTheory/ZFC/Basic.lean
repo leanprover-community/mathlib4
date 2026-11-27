@@ -10,6 +10,9 @@ public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Logic.Small.Basic
 public import Mathlib.SetTheory.ZFC.PSet
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # A model of ZFC
 
@@ -539,8 +542,8 @@ lemma coe_sdiff (x y : ZFSet.{u}) : ↑(x \ y) = (↑x \ ↑y : Set ZFSet) := by
 
 /-- `ZFSet.powerset` is equivalent to `Set.powerset`. -/
 def powersetEquiv (x : ZFSet.{u}) : x.powerset ≃ 𝒫 (x : Set ZFSet) where
-  toFun y := ⟨y.1, Set.mem_powerset (mem_powerset.1 y.2)⟩
-  invFun s := ⟨x.sep (· ∈ s.1), mem_powerset.2 sep_subset⟩
+  toFun y := ⟨y.val, Set.mem_powerset (mem_powerset.1 y.property)⟩
+  invFun s := ⟨x.sep (· ∈ s.val), mem_powerset.2 sep_subset⟩
   left_inv := by simp +contextual [Function.LeftInverse]
   right_inv := by simp +contextual [Function.LeftInverse, Function.RightInverse, Set.ofPred_and]
 

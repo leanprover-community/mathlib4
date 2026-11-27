@@ -268,7 +268,7 @@ instance (priority := 50) {F A B : Type*} [Add A] [Mul A] [Star A] [Add B] [Mul 
 `StarRingEquiv`. -/
 def _root_.StarRingEquiv.ofClass {F A B : Type*} [Add A] [Mul A] [Star A] [Add B] [Mul B] [Star B]
     [EquivLike F A B] [StarRingEquivClass F A B] (f : F) : A ≃⋆+* B :=
-  { (RingEquivClass.toRingEquiv f : A ≃+* B) with
+  { RingEquiv.ofClass f with
     map_star' := map_star f }
 
 @[deprecated (since := "2026-09-03")] alias toStarRingEquiv := StarRingEquiv.ofClass
@@ -304,6 +304,8 @@ instance : StarRingEquivClass (A ≃⋆+* B) A B where
 instance : FunLike (A ≃⋆+* B) A B where
   coe f := f.toFun
   coe_injective := DFunLike.coe_injective
+
+@[simp] lemma coe_toRingEquiv (f : A ≃⋆+* B) : ⇑f.toRingEquiv = f := rfl
 
 section
 
@@ -461,6 +463,12 @@ theorem coe_ofBijective {f : F} (hf : Function.Bijective f) :
 
 theorem ofBijective_apply {f : F} (hf : Function.Bijective f) (a : A) :
     (StarRingEquiv.ofBijective f hf) a = f a :=
+  rfl
+
+lemma ofBijective_coe (e : A ≃⋆+* B) : StarRingEquiv.ofBijective e e.bijective = e := by ext; rfl
+
+@[simp]
+lemma toRingEquiv_ofBijective (f : F) (hf) : (ofBijective f hf).toRingEquiv = .ofBijective f hf :=
   rfl
 
 end Bijective

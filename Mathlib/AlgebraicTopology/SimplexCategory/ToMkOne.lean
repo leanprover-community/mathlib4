@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplexCategory.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Morphisms to `⦋1⦌`
 
@@ -109,7 +112,7 @@ lemma toMk₁_injective {n : ℕ} : Function.Injective (toMk₁ (n := n)) := by
   intro i j h
   wlog hij : i < j generalizing i j
   · grind
-  have := congr($h ⟨i.1, lt_of_lt_of_le hij (by dsimp; lia)⟩)
+  have := congr($h ⟨i.val, lt_of_lt_of_le hij (by dsimp; lia)⟩)
   simp [toMk₁_apply, ite_eq_left hij] at this
 
 lemma toMk₁_surjective {n : ℕ} : Function.Surjective (toMk₁ (n := n)) := by

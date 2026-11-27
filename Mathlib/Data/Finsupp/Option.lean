@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Module.Defs
 public import Mathlib.Data.Finsupp.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Operations on `Finsupp`s with an `Option` domain
 

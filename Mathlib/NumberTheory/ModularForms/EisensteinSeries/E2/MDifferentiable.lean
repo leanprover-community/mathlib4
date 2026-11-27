@@ -8,6 +8,9 @@ module
 
 public import Mathlib.NumberTheory.ModularForms.DedekindEta
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # MDifferentiability of the weight 2 Eisenstein series
 
@@ -18,8 +21,7 @@ the Dedekind eta function.
 
 public section
 
-open UpperHalfPlane hiding I
-open Real Complex EisensteinSeries ModularForm
+open UpperHalfPlane Real Complex EisensteinSeries ModularForm
 
 open scoped Manifold
 

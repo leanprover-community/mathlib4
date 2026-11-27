@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Filtered.Final
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Final functors between intervals
 -/
