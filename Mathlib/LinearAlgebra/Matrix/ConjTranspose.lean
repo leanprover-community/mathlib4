@@ -359,7 +359,6 @@ theorem conjTranspose_map [Star α] [Star β] {A : Matrix m n α} (f : α → β
 
 /-- When `star x = x` on the coefficients (such as the real numbers) `conjTranspose` and `transpose`
 are the same operation. -/
-@[simp]
 theorem conjTranspose_eq_transpose_of_trivial [Star α] [TrivialStar α] (A : Matrix m n α) :
     Aᴴ = Aᵀ := Matrix.ext fun _ _ => star_trivial _
 
