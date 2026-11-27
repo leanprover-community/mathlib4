@@ -27,9 +27,9 @@ structure, although the topological, uniform and bornological structures coincid
 These structures are only defined on `PiLp` for `Fintype α`, so there are no issues of convergence
 to consider.
 
-While `PreLp` is also a type synonym for `Π i, E i`, it allows for infinite index types. On this
-type there is a predicate `Memℓp` which says that the relevant `p`-norm is finite and `lp E p` is
-the subtype of `PreLp` satisfying `Memℓp`.
+While `PreLp` is also a copy of `Π i, E i` (as a one-field structure), it allows for infinite index
+types. On `Π i, E i` there is a predicate `Memℓp` which says that the relevant `p`-norm is finite,
+and `lp E p` is the subtype of `PreLp` satisfying `Memℓp`.
 
 ## TODO
 
@@ -55,7 +55,7 @@ variable [Finite α]
 /-- The canonical `Equiv` between `lp E p ≃ PiLp p E` when `E : α → Type u` with `[Finite α]`. -/
 def Equiv.lpPiLp : lp E p ≃ PiLp p E where
   toFun f := toLp p ⇑f
-  invFun f := ⟨ofLp f, Memℓp.all f⟩
+  invFun f := lp.mk (ofLp f) (Memℓp.all f)
 
 theorem coe_equiv_lpPiLp (f : lp E p) : Equiv.lpPiLp f = ⇑f :=
   rfl
@@ -128,7 +128,7 @@ section NormedAddCommGroup
 /-- The canonical map between `lp (fun _ : α ↦ E) ∞` and `α →ᵇ E` as an `AddEquiv`. -/
 noncomputable def AddEquiv.lpBCF : lp (fun _ : α ↦ E) ∞ ≃+ (α →ᵇ E) where
   toFun f := ofNormedAddCommGroupDiscrete f ‖f‖ <| le_ciSup (memℓp_infty_iff.mp f.prop)
-  invFun f := ⟨⇑f, f.bddAbove_range_norm_comp⟩
+  invFun f := lp.mk ⇑f f.bddAbove_range_norm_comp
   map_add' _f _g := rfl
 
 
