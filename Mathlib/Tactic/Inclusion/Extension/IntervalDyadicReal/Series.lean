@@ -66,6 +66,13 @@ structure HypergeomSum (R : Type*) where
 
 /-- The sum of the first `k` terms of the series starting with `1` where each later term is
 the previous one multiplied by `p j / q j` for `j ∈ [a, a + k - 1)`, computed by binary splitting.
+
+When `p` and `q` are polynomials in `j`, this is a hypergeometric series in the sense of Graham,
+Knuth and Patashnik: factoring `p` and `q` into linear factors `j + c`, the products of the `p j`
+and of the `q j` become, up to constant factors, products of Pochhammer symbols, as in the usual
+`ₚF_q` form. Nothing here requires `p` and `q` to be polynomials, but binary splitting is only
+efficient when the factors `p j` and `q j` stay small, as they do for polynomials.
+
 If no `q j` is zero, `sumNum / den` is the sum (`hypergeomPartialSum_spec` states this precisely).
 The recursion needs `termNum` to append a term or to join two blocks of terms, since every term
 of the later block is scaled by `termNum / den`. -/
