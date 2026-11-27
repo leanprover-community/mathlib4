@@ -197,10 +197,7 @@ theorem finrank_map_add_finrank_inf_ker [FiniteDimensional K V] (f : V →ₗ[K]
     (p : Submodule K V) :
     finrank K (p.map f) + finrank K ↥(p ⊓ ker f) = finrank K p := by
   have h := (f.domRestrict p).finrank_range_add_finrank_ker
-  rw [range_domRestrict, ker_domRestrict,
-    ← Submodule.finrank_map_subtype_eq p ((ker f).comap p.subtype),
-    Submodule.map_comap_subtype] at h
-  exact h
+  rwa [range_domRestrict, ker_domRestrict, ← finrank_map_subtype_eq p, map_comap_subtype] at h
 
 /-- **Frobenius rank inequality** for linear maps:
 `rank (f g) + rank (g h) ≤ rank g + rank (f g h)`. -/
