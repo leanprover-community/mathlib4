@@ -172,15 +172,18 @@ lemma nonneg_of_isNat' {n : ℕ}
   rw [NormNum.IsNat.to_eq h rfl]
   exact Nat.cast_nonneg' n
 
+lemma nz_of_isNegNat {n : ℕ} [Ring A] [CharZero A]
+    (h : NormNum.IsInt e (.negOfNat n)) (w : Nat.ble 1 n = true) : (e : A) ≠ 0 := by
+  rw [NormNum.IsInt.neg_to_eq h rfl]
+  simp only [ne_eq, neg_eq_zero]
+  apply Nat.cast_ne_zero.2
+  simpa [Nat.one_le_iff_ne_zero] using! w
+
 lemma nz_of_isNat {n : ℕ} [AddMonoidWithOne A] [CharZero A]
     (h : NormNum.IsNat e n) (w : Nat.ble 1 n = true) : (e : A) ≠ 0 := by
   rw [NormNum.IsNat.to_eq h rfl]
-  exact Nat.cast_ne_zero.2 (by simpa using! w : 0 < n).ne'
-
-lemma nz_of_isNegNat {n : ℕ} [Ring A] [CharZero A]
-    (h : NormNum.IsInt e (.negOfNat n)) (w : Nat.ble 1 n = true) : (e : A) ≠ 0 := by
-  rw [NormNum.IsInt.neg_to_eq h rfl, neg_ne_zero]
-  exact Nat.cast_ne_zero.2 (by simpa using! w : 0 < n).ne'
+  apply Nat.cast_ne_zero.2
+  simpa [Nat.one_le_iff_ne_zero] using! w
 
 lemma pos_of_isNNRat {n d : ℕ} [Semiring A] [LinearOrder A] [IsStrictOrderedRing A] :
     (NormNum.IsNNRat e n d) → (decide (0 < n)) → ((0 : A) < (e : A))
@@ -206,20 +209,20 @@ lemma nonneg_of_isRat {n : ℤ} {d : ℕ} [Ring A] [LinearOrder A] :
     (NormNum.IsRat e n d) → (decide (n = 0)) → (0 ≤ (e : A))
   | ⟨inv, eq⟩, h => by rw [eq, of_decide_eq_true h]; simp
 
-lemma nz_of_isNNRat {n d : ℕ} [Semiring A] [CharZero A] :
-    (NormNum.IsNNRat e n d) → (decide (0 < n)) → ((e : A) ≠ 0)
-  | ⟨_, eq⟩, h => by
-    rw [eq, Ne, mul_invOf_eq_iff_eq_mul_right, zero_mul, Nat.cast_eq_zero]
-    exact (of_decide_eq_true h).ne'
-
 lemma nz_of_isRat {n : ℤ} {d : ℕ} [Ring A] [CharZero A] :
     (NormNum.IsRat e n d) → (decide (n < 0)) → ((e : A) ≠ 0)
-  | ⟨_, eq⟩, h => by
+  | ⟨inv, eq⟩, h => by
     have h := of_decide_eq_true h
     obtain ⟨m, rfl⟩ := Int.exists_eq_neg_ofNat h.le
     rw [eq, Ne, mul_invOf_eq_iff_eq_mul_right, zero_mul, Int.cast_neg, Int.cast_natCast,
       neg_eq_zero, Nat.cast_eq_zero]
     omega
+
+lemma nz_of_isNNRat {n d : ℕ} [Semiring A] [CharZero A] :
+    (NormNum.IsNNRat e n d) → (decide (0 < n)) → ((e : A) ≠ 0)
+  | ⟨inv, eq⟩, h => by
+    rw [eq, Ne, mul_invOf_eq_iff_eq_mul_right, zero_mul, Nat.cast_eq_zero]
+    exact (of_decide_eq_true h).ne'
 
 variable {zα} in
 /-- Converts a `MetaM Strictness` which can fail
