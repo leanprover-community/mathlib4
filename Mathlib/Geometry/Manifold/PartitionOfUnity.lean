@@ -167,6 +167,9 @@ theorem sum_le_one (x : M) : ∑ᶠ i, f i x ≤ 1 :=
 def toPartitionOfUnity : PartitionOfUnity ι M s :=
   { f with toFun := fun i => (f i).toContinuousMap }
 
+lemma toPartitionOfUnity_toFun_apply (i : ι) (a : M) :
+    f.toPartitionOfUnity i a = f i a := rfl
+
 theorem contMDiff_sum : CMDiff ∞ fun x => ∑ᶠ i, f i x :=
   contMDiff_finsum (fun i => (f i).contMDiff) f.locallyFinite
 

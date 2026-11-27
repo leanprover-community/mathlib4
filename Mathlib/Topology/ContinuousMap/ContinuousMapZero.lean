@@ -368,6 +368,9 @@ def toContinuousMapCLM (M : Type*) [Semiring M] [Module M R] [ContinuousConstSMu
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
+lemma toContinuousMapCLM_apply_apply (M : Type*) [Semiring M] [Module M R] [ContinuousConstSMul M R]
+    (f : C(X, R)₀) (x : X) : f.toContinuousMapCLM M x = f x := rfl
+
 /-- The evaluation at a point, as a continuous linear map from `C(X, R)₀` to `R`. -/
 def evalCLM (𝕜 : Type*) [Semiring 𝕜] [Module 𝕜 R] [ContinuousConstSMul 𝕜 R] (x : X) :
     C(X, R)₀ →L[𝕜] R :=

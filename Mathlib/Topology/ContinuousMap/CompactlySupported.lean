@@ -141,6 +141,9 @@ def continuousMapEquiv [CompactSpace α] : C(α, β) ≃ C_c(α, β) where
       hasCompactSupport' := HasCompactSupport.of_compactSpace f }
   invFun f := f.toContinuousMap
 
+lemma continuousMapEquiv_symm_apply_apply [CompactSpace α] (f : C_c(α, β)) (a : α) :
+    continuousMapEquiv.symm f a = f a := rfl
+
 variable {γ : Type*} [TopologicalSpace γ] [Zero γ]
 
 /-- Composition of a continuous function `f` with compact support with another continuous function

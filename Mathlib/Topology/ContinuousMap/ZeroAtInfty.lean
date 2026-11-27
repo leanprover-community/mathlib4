@@ -143,6 +143,9 @@ def ContinuousMap.liftZeroAtInfty [CompactSpace α] : C(α, β) ≃ C₀(α, β)
       zero_at_infty' := by simp }
   invFun f := f.toContinuousMap
 
+lemma ContinuousMap.liftZeroAtInfty_symm_apply_apply [CompactSpace α] (f : C₀(α, β)) (a : α) :
+    liftZeroAtInfty.symm f a = f a := rfl
+
 /-- A continuous function on a compact space is automatically a continuous function vanishing at
 infinity. This is not an instance to avoid type class loops. -/
 lemma zeroAtInftyContinuousMapClass.ofCompact {G : Type*} [FunLike G α β]

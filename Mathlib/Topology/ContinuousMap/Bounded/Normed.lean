@@ -557,6 +557,8 @@ def toContinuousMapₐ : (α →ᵇ γ) →ₐ[𝕜] C(α, γ) where
   map_add' _ _ := rfl
   commutes' _ := rfl
 
+lemma toContinuousMapₐ_apply_apply (f : α →ᵇ γ) (a : α) : f.toContinuousMapₐ 𝕜 a = f a := rfl
+
 @[simp]
 theorem coe_toContinuousMapₐ (f : α →ᵇ γ) : (f.toContinuousMapₐ 𝕜 : α → γ) = f := rfl
 
