@@ -249,41 +249,35 @@ calc
 Concretely, it sends `f` to `algebraMap 𝕜 _ (f x.fst) + ↑(cfcₙHom hx g)`, where
 `g : C(σₙ 𝕜 x.snd, 𝕜)₀` is the function `y ↦ f (y + x.fst) - f x.fst`.
 -/
-noncomputable def cfcAux : C(σ 𝕜 x, 𝕜) →⋆ₐ[𝕜] Unitization 𝕜 A :=
+private noncomputable def cfcAux : C(σ 𝕜 x, 𝕜) →⋆ₐ[𝕜] Unitization 𝕜 A :=
   (starMap (cfcₙHom hx)).comp <|
     (unitizationStarAlgEquiv (σₙ 𝕜 x.snd) 𝕜).symm.toStarAlgHom.comp
       (Homeomorph.compStarAlgEquiv' 𝕜 𝕜 (quasispectrumHomeomorphSpectrum x)).toStarAlgHom
 
-@[simp]
-lemma fst_cfcAux (f : C(σ 𝕜 x, 𝕜)) :
-    (cfcAux x hx f).fst = f ⟨x.fst, fst_mem_spectrum x⟩ := by
-  simp [cfcAux]
+private lemma toProd_cfcAux (f : C(σ 𝕜 x, 𝕜)) :
+    (cfcAux x hx f).toProd =
+      (f ⟨x.fst, fst_mem_spectrum x⟩,
+        cfcₙHom hx (f.comp (quasispectrumHomeomorphSpectrum x)).toContinuousMapZero) :=
+  Prod.ext (by simp [cfcAux]) (by simp [cfcAux])
 
-@[simp]
-lemma snd_cfcAux (f : C(σ 𝕜 x, 𝕜)) :
-    (cfcAux x hx f).snd =
-      cfcₙHom hx (f.comp (quasispectrumHomeomorphSpectrum x)).toContinuousMapZero := by
-  simp [cfcAux]
-
-lemma continuous_cfcAux : Continuous (cfcAux x hx) := by
-  simp only [Unitization.continuous_iff, fst_cfcAux, snd_cfcAux]
+private lemma continuous_cfcAux : Continuous (cfcAux x hx) := by
+  simp only [Unitization.continuous_iff, toProd_cfcAux]
   exact ⟨by fun_prop, (cfcₙHom_continuous hx).comp (by fun_prop)⟩
 
-lemma cfcAux_injective : Function.Injective (cfcAux x hx) :=
+private lemma cfcAux_injective : Function.Injective (cfcAux x hx) :=
   starMap_injective (cfcₙHom_injective hx) |>.comp <|
     (unitizationStarAlgEquiv _ 𝕜).symm.injective.comp (Homeomorph.compStarAlgEquiv' 𝕜 𝕜 _).injective
 
-@[simp]
-lemma cfcAux_id : cfcAux x hx ((ContinuousMap.id 𝕜).restrict (σ 𝕜 x)) = x := by
-  refine Unitization.ext (by simp) ?_
-  rw [snd_cfcAux]
+private lemma cfcAux_id : cfcAux x hx ((ContinuousMap.id 𝕜).restrict (σ 𝕜 x)) = x := by
+  refine Unitization.ext (by simp [toProd_cfcAux]) ?_
+  rw [toProd_cfcAux]
   convert cfcₙHom_id hx using 2
   ext
   simp
 
-lemma spectrum_cfcAux (f : C(σ 𝕜 x, 𝕜)) : σ 𝕜 (cfcAux x hx f) = Set.range f := by
-  rw [Unitization.spectrum_eq_vadd_quasispectrum, snd_cfcAux, fst_cfcAux,
-    cfcₙHom_map_quasispectrum, Set.vadd_set_range]
+private lemma spectrum_cfcAux (f : C(σ 𝕜 x, 𝕜)) : σ 𝕜 (cfcAux x hx f) = Set.range f := by
+  rw [Unitization.spectrum_eq_vadd_quasispectrum, toProd_cfcAux, cfcₙHom_map_quasispectrum,
+    Set.vadd_set_range]
   convert (quasispectrumHomeomorphSpectrum x).surjective.range_comp f using 3
   simp
 
@@ -296,13 +290,16 @@ theorem continuousFunctionalCalculus (hp₁ : ∀ y : Unitization 𝕜 A, p₁ y
   exists_cfc_of_predicate y hy := by
     refine ⟨cfcAux y ((hp₁ y).mp hy), continuous_cfcAux .., cfcAux_injective .., cfcAux_id ..,
       fun f ↦ spectrum_cfcAux .., fun f ↦ (hp₁ _).mpr ?_⟩
-    rw [snd_cfcAux]
+    rw [toProd_cfcAux]
     exact cfcₙHom_predicate _ _
 
-lemma cfcHom_eq_cfcAux [ContinuousFunctionalCalculus 𝕜 (Unitization 𝕜 A) p₁]
-    (hp₁ : ∀ y : Unitization 𝕜 A, p₁ y ↔ p y.snd) :
-    cfcHom ((hp₁ x).mpr hx) = cfcAux x hx :=
-  cfcHom_eq_of_continuous_of_map_id _ _ (continuous_cfcAux x hx) (cfcAux_id x hx)
+lemma toProd_cfcHom [ContinuousFunctionalCalculus 𝕜 (Unitization 𝕜 A) p₁]
+    (hp₁ : ∀ y : Unitization 𝕜 A, p₁ y ↔ p y.snd) (f : C(σ 𝕜 x, 𝕜)) :
+    (cfcHom ((hp₁ x).mpr hx) f).toProd =
+      (f ⟨x.fst, fst_mem_spectrum x⟩,
+        cfcₙHom hx (f.comp (quasispectrumHomeomorphSpectrum x)).toContinuousMapZero) := by
+  rw [cfcHom_eq_of_continuous_of_map_id _ _ (continuous_cfcAux x hx) (cfcAux_id x hx),
+    toProd_cfcAux]
 
 end Unitization
 
