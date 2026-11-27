@@ -283,6 +283,17 @@ example : True ∧ True := by
     any_goals rfl
   all_goals trivial
 
+-- Lint subtactics in `t <;> [t1, ...]`, ignore padding `skip`s
+/--
+warning: Unused tactic linter: `all_goals` can be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+-/
+#guard_msgs in
+example : True ∧ True := by
+  constructor <;> [skip; all_goals trivial]
+  trivial
+
 section allowing_more_unused_tactics
 
 /-- info: The `Lean.SyntaxNodeKind` is `Lean.Parser.Tactic.refine`. -/
@@ -311,16 +322,6 @@ example : True := by
 
 end allowing_more_unused_tactics
 
--- Lint subtactics in `t <;> [t1, ...]`, ignore padding `skip`s
-/--
-warning: Unused tactic linter: `all_goals` can be removed.
-
-Note: This linter can be disabled with `set_option linter.unusedTactic false`
--/
-#guard_msgs in
-example : True ∧ True := by
-  constructor <;> [skip; all_goals trivial]
-  trivial
 
 -- Allowing subtactics has the desired effect of silencing the linter
 namespace TestIgnoredKinds
@@ -329,8 +330,7 @@ scoped allow_unused_subtactics_inside Batteries.Tactic.seq_focus
 
 #guard_msgs in
 example : True ∧ True := by
-  constructor <;> [skip; all_goals trivial]
-  trivial
+  constructor <;> [trivial; all_goals trivial]
 
 end TestIgnoredKinds
 
