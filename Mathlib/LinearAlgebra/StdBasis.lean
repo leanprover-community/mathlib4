@@ -131,6 +131,13 @@ theorem basisFun_repr (x : η → R) (i : η) : (Pi.basisFun R η).repr x i = x 
 theorem basisFun_equivFun : (Pi.basisFun R η).equivFun = LinearEquiv.refl _ _ :=
   Basis.equivFun_ofEquivFun _
 
+variable {R η} in
+@[simp]
+theorem _root_.Module.Basis.equiv_basisFun [AddCommMonoid M] [Module R M] (b : Basis η R M) :
+    b.equiv (Pi.basisFun R η) (Equiv.refl η) = b.equivFun := by
+  classical
+  exact b.ext' fun i ↦ by simp [Finsupp.single_eq_pi_single]
+
 variable {η}
 
 /-- The `R`-submodule of `η → R` consisting of functions supported in the subset `s`. -/
