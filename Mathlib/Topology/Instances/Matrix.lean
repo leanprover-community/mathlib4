@@ -337,8 +337,8 @@ theorem Matrix.summable_iff {f : X → Matrix m n R} :
     Summable f L ↔ ∀ i j, Summable (fun x => f x i j) L :=
   Pi.summable.trans <| forall_congr' fun _ => Pi.summable
 
-theorem Matrix.tsum_apply [T2Space R] [L.NeBot] {f : X → Matrix m n R} (hf : Summable f L)
-    (i : m) (j : n) : (∑'[L] x, f x) i j = ∑'[L] x, f x i j :=
+theorem Matrix.tsum_apply [T2Space R] [L.NeBot] {f : X → Matrix m n R} {i : m} {j : n}
+    (hf : Summable f L) : (∑'[L] x, f x) i j = ∑'[L] x, f x i j :=
   (Matrix.hasSum_iff.mp hf.hasSum i j).tsum_eq.symm
 
 theorem HasSum.matrix_transpose {f : X → Matrix m n R} {a : Matrix m n R} (hf : HasSum f a L) :
