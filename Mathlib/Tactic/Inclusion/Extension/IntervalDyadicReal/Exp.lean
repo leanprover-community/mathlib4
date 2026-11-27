@@ -9,8 +9,6 @@ public import Mathlib.Analysis.Complex.Exponential
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Rational
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Series
 
-import Mathlib.Data.Nat.Factorial.BigOperators
-
 /-!
 # Exponential enclosures for interval_dyadic_real
 
@@ -60,19 +58,19 @@ theorem expRatTaylor_mem (a : ℤ) {b : ℕ} (hb : b ≠ 0) (hab : a.natAbs ≤ 
     rw [abs_div, Nat.abs_cast, div_le_one (by positivity), ← Int.cast_abs, ← Int.natCast_natAbs]
     norm_cast
   have h := Real.exp_bound hy hn
-  rw [← hypergeomPartialSum_div (Int.castRingHom ℝ) (fun _ ↦ a) (fun j ↦ b * (j + 1))
-    (fun j ↦ by positivity) (fun m ↦ ((a : ℝ) / b) ^ m / m !)
-    (fun j ↦ by push_cast [eq_intCast, pow_succ, Nat.factorial_succ]; field)] at h
-  obtain ⟨hterm, hden, -⟩ := hypergeomPartialSum_spec (fun _ ↦ a) (fun j ↦ b * (j + 1)) 0 n
+  obtain ⟨hterm, hsum⟩ := hypergeomPartialSum_div (Int.castRingHom ℝ) (fun _ ↦ a)
+    (fun j ↦ b * (j + 1)) (fun j ↦ by positivity) (fun m ↦ ((a : ℝ) / b) ^ m / m !)
+    (fun j ↦ by push_cast [eq_intCast, pow_succ, Nat.factorial_succ]; field) n
   rw [expRatTaylor]
-  generalize hypergeomPartialSum (R := ℤ) _ _ 0 n = X at h hterm hden ⊢
-  simp only [zero_add, Nat.Ico_zero_eq_range, prod_const, card_range, prod_mul_distrib,
-    prod_range_add_one_eq_factorial] at hterm hden
+  generalize hypergeomPartialSum (R := ℤ) _ _ 0 n = X at hterm hsum ⊢
+  have hterm' : |(X.termNum : ℝ)| / X.den = |(a : ℝ) / b| ^ n / n ! := by
+    simpa [abs_div, abs_pow] using congrArg abs hterm
   refine ratBall_mem ?_ prec
-  convert h using 1 <;> push_cast [hterm, hden, eq_intCast, Nat.factorial_zero]
-  · field_simp
-  · rw [abs_div, Nat.abs_cast, abs_pow, div_pow]
-    field
+  convert h using 1
+  · simp [← hsum, mul_div_mul_left, hn.ne']
+  · push_cast
+    rw [mul_div_mul_comm, hterm']
+    ring
 
 /-- Square `I` `k` times, rounding outward to the `2 ^ (-prec)` grid after each squaring.
 Compared with the exact `I.pow (2 ^ k)`, the roundings add an error of less than about
