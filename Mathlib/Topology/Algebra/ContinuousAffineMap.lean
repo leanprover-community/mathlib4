@@ -84,7 +84,7 @@ def toContinuousMap (f : P →ᴬ[R] Q) : C(P, Q) :=
 instance : CoeHead (P →ᴬ[R] Q) C(P, Q) :=
   ⟨toContinuousMap⟩
 
-@[deprecated "Syntactic equality" (since := "2026-11-25"), nolint synTaut]
+@[deprecated "Syntactic tautology" (since := "2026-11-25"), nolint synTaut]
 theorem toContinuousMap_coe (f : P →ᴬ[R] Q) : f.toContinuousMap = ↑f := rfl
 
 @[simp, norm_cast]
