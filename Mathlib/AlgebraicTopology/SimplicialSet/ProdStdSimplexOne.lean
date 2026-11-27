@@ -332,10 +332,8 @@ lemma filtration.exists_desc
       stdSimplex.δ i.succ.castSucc ≫ α i.succ hi) :
     ∃ (φ : (filtration j : SSet.{u}) ⟶ X),
       ∀ (i : Fin (p + 1)) (hi : i ≤ j), ι hi ≫ φ = α i hi := by
-  revert α hα
   induction j using Fin.induction with
   | zero =>
-    intro α hα
     refine ⟨(Subcomplex.eqToIso (filtration_zero p)).hom ≫
       (stdSimplex.isoOfRepresentableBy
         (Subcomplex.ofSimplexRepresentableBy _)).inv ≫ α 0 (by rfl), fun i hi ↦ ?_⟩
@@ -346,7 +344,6 @@ lemma filtration.exists_desc
       (Subcomplex.ofSimplexRepresentableBy (nonDegenerateEquiv 0).val)).hom]
     rfl
   | succ j hj  =>
-    intro α hα
     obtain ⟨β, hβ⟩ := hj (fun i hi ↦ α i (hi.trans j.castSucc_le_succ)) (fun _ _ ↦ hα _ _)
     obtain ⟨φ, hφ₁, hφ₂⟩ := (isPushout j).exists_desc β (α j.succ (by rfl))
       (by rw [Category.assoc, hβ, hα])
