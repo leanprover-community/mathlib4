@@ -108,6 +108,8 @@ instance (priority := 100) instIsTorsionFree : IsTorsionFree R M :=
 instance [Nontrivial M] : Nonempty (Module.Free.ChooseBasisIndex R M) :=
   (Module.Free.chooseBasis R M).index_nonempty
 
+/-- A nontrivial free module over an infinite ring is infinite. See
+`Module.infinite_of_rank_pos` for a version that does not assume the module to be free. -/
 theorem infinite [Infinite R] [Nontrivial M] : Infinite M :=
   (Equiv.infinite_iff (chooseBasis R M).repr.toEquiv).mpr Finsupp.infinite_of_right
 

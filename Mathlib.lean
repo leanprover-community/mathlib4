@@ -4735,6 +4735,7 @@ public import Mathlib.FieldTheory.Galois.IsGaloisGroup
 public import Mathlib.FieldTheory.Galois.NormalBasis
 public import Mathlib.FieldTheory.Galois.Notation
 public import Mathlib.FieldTheory.Galois.Profinite
+public import Mathlib.FieldTheory.Galois.Quadratic
 public import Mathlib.FieldTheory.Galois.Sylow
 public import Mathlib.FieldTheory.IntermediateField.Adjoin.Algebra
 public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
@@ -6195,6 +6196,7 @@ public import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex
 public import Mathlib.NumberTheory.NumberField.Norm
 public import Mathlib.NumberTheory.NumberField.ProductFormula
 public import Mathlib.NumberTheory.NumberField.QuadraticField.Basic
+public import Mathlib.NumberTheory.NumberField.QuadraticField.Units
 public import Mathlib.NumberTheory.NumberField.Units.Basic
 public import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
 public import Mathlib.NumberTheory.NumberField.Units.Regulator

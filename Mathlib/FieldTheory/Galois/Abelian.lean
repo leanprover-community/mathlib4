@@ -69,6 +69,11 @@ instance : IsAbelianGalois K (⊥ : IntermediateField K L) :=
 
 lemma IsAbelianGalois.of_isCyclic [IsGalois K L] [IsCyclic Gal(L/K)] : IsAbelianGalois K L where
 
+/-- A separable quadratic extension is abelian. -/
+instance Algebra.IsQuadraticExtension.isAbelianGalois [Algebra.IsQuadraticExtension K L]
+    [Algebra.IsSeparable K L] : IsAbelianGalois K L :=
+  .of_isCyclic K L
+
 /-- The compositum of two abelian extensions is abelian: its Galois group embeds into the product
 of the (commutative) factor Galois groups. -/
 instance IsAbelianGalois.sup {F E : Type*} [Field F] [Field E] [Algebra F E]

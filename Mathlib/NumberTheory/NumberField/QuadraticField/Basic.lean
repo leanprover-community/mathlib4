@@ -7,7 +7,10 @@ module
 
 public import Mathlib.Algebra.QuadraticAlgebra.Int
 public import Mathlib.Algebra.QuadraticAlgebra.IsQuadraticExtension
+public import Mathlib.FieldTheory.Galois.Quadratic
+public import Mathlib.NumberTheory.Cyclotomic.Basic
 public import Mathlib.NumberTheory.NumberField.Discriminant.Defs
+public import Mathlib.NumberTheory.NumberField.InfinitePlace.Ramification
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex
 
 import Mathlib.Algebra.Algebra.Hom.Rat
@@ -34,7 +37,10 @@ zero which is a quadratic extension of `ℚ` in the sense of `Algebra.IsQuadrati
   than `1` is the discriminant of a quadratic field;
 * `NumberField.QuadraticField.isTotallyReal_iff_discr_pos` and
   `NumberField.QuadraticField.isTotallyComplex_iff_discr_neg`: a quadratic field is totally real,
-  resp. totally complex, iff its discriminant is positive, resp. negative.
+  resp. totally complex, iff its discriminant is positive, resp. negative;
+* `NumberField.QuadraticField.isCyclotomicExtension_four_of_discr` and
+  `NumberField.QuadraticField.isCyclotomicExtension_six_of_discr`: the quadratic fields of
+  discriminant `-4` and `-3` are the `4`-th and `6`-th cyclotomic fields.
 
 ## Implementation notes
 
@@ -178,6 +184,55 @@ theorem discr_half {d : ℤ} [Fact (¬ IsSquare (d : ℚ))]
     discr (QuadraticAlgebra ℚ (d : ℚ) 0) = d :=
   discr_quadraticAlgebra (Int.isFundamentalDiscr_iff_squarefree.mpr (Or.inl ⟨h, hd⟩)) hd1
 
+section cyclotomic
+
+open Algebra QuadraticAlgebra
+
+/-- In `ℚ(√-4)`, the element `√-4 / 2` is a primitive `4`-th root of unity. -/
+theorem isPrimitiveRoot_four_quadraticAlgebra :
+    IsPrimitiveRoot ((2⁻¹ : ℚ) • ω : QuadraticAlgebra ℚ (-4) 0) 4 := by
+  refine IsPrimitiveRoot.iff_orderOf.mpr ?_
+  refine (orderOf_eq_iff (by lia)).mpr ⟨by decide +kernel, fun m _ _ ↦ ?_⟩
+  interval_cases m <;> decide +kernel
+
+/-- In `ℚ(√-3)`, the element `(1 + √-3) / 2` is a primitive `6`-th root of unity. -/
+theorem isPrimitiveRoot_six_quadraticAlgebra :
+    IsPrimitiveRoot ((2⁻¹ : ℚ) • 1 + (2⁻¹ : ℚ) • ω : QuadraticAlgebra ℚ (-3) 0) 6 := by
+  refine IsPrimitiveRoot.iff_orderOf.mpr ?_
+  refine (orderOf_eq_iff (by lia)).mpr ⟨by decide +kernel, fun m _ _ ↦ ?_⟩
+  interval_cases m <;> decide +kernel
+
+instance : IsCyclotomicExtension {4} ℚ (QuadraticAlgebra ℚ (-4) 0) := by
+  let ζ := ((2⁻¹ : ℚ) • ω : QuadraticAlgebra ℚ (-4) 0)
+  have := IsPrimitiveRoot.adjoin_isCyclotomicExtension ℚ isPrimitiveRoot_four_quadraticAlgebra
+  have : ℚ[ζ] = ⊤ := by
+    rw [_root_.eq_top_iff, ← adjoin_omega_eq_top, show ω = 2 • ζ by decide +kernel]
+    exact adjoin_singleton_le <| Subalgebra.smul_mem _ (self_mem_adjoin_singleton ℚ ζ) _
+  exact .equiv _ _ _ ((Subalgebra.equivOfEq _ _ this).trans Subalgebra.topEquiv)
+
+instance : IsCyclotomicExtension {6} ℚ (QuadraticAlgebra ℚ (-3) 0) := by
+  let ζ := ((2⁻¹ : ℚ) • 1 + (2⁻¹ : ℚ) • ω : QuadraticAlgebra ℚ (-3) 0)
+  have := IsPrimitiveRoot.adjoin_isCyclotomicExtension ℚ isPrimitiveRoot_six_quadraticAlgebra
+  have : ℚ[ζ] = ⊤ := by
+    rw [_root_.eq_top_iff, ← adjoin_omega_eq_top, show ω = 2 • ζ - 1 by decide +kernel]
+    refine adjoin_singleton_le <| Subalgebra.sub_mem ℚ[ζ] ?_ (one_mem _)
+    exact Subalgebra.smul_mem _ (self_mem_adjoin_singleton ℚ ζ) _
+  exact .equiv _ _ _ ((Subalgebra.equivOfEq _ _ this).trans Subalgebra.topEquiv)
+
+theorem isCyclotomicExtension_four_of_discr (h : discr K = -4) :
+    IsCyclotomicExtension {4} ℚ K := by
+  have h_equiv := nonempty_algEquiv_quadraticAlgebra_discr K
+  rw [h, Int.cast_neg, Int.cast_ofNat] at h_equiv
+  exact IsCyclotomicExtension.equiv {4} ℚ _ h_equiv.some.symm
+
+theorem isCyclotomicExtension_six_of_discr (h : discr K = -3) :
+    IsCyclotomicExtension {6} ℚ K := by
+  have h_equiv := nonempty_algEquiv_quadraticAlgebra_discr K
+  rw [h, Int.cast_neg, Int.cast_ofNat] at h_equiv
+  exact IsCyclotomicExtension.equiv {6} ℚ _ h_equiv.some.symm
+
+end cyclotomic
+
 section embeddings
 
 /-- The complex embeddings of `ℚ(√d)` correspond to the two square roots of `d` in `ℂ`. -/
@@ -231,6 +286,35 @@ theorem discr_pos [IsTotallyReal K] : 0 < discr K :=
 /-- The discriminant of a totally complex quadratic field is negative. -/
 theorem discr_neg [IsTotallyComplex K] : discr K < 0 :=
   (isTotallyComplex_iff_discr_neg K).mp ‹_›
+
+/-- A real quadratic field has two real places. -/
+theorem nrRealPlaces_eq_two [IsTotallyReal K] : InfinitePlace.nrRealPlaces K = 2 := by
+  rw [← IsTotallyReal.finrank, Algebra.IsQuadraticExtension.finrank_eq_two]
+
+/-- A real quadratic field has two infinite places. -/
+theorem card_infinitePlace_eq_two [IsTotallyReal K] : Fintype.card (InfinitePlace K) = 2 := by
+  rw [InfinitePlace.card_eq_nrRealPlaces_add_nrComplexPlaces, IsTotallyReal.nrComplexPlaces_eq_zero,
+    nrRealPlaces_eq_two]
+
+/-- A complex quadratic field has one complex place. -/
+theorem nrComplexPlaces_eq_one [IsTotallyComplex K] : InfinitePlace.nrComplexPlaces K = 1 := by
+  rw [← mul_right_inj' two_ne_zero, ← IsTotallyComplex.finrank,
+    Algebra.IsQuadraticExtension.finrank_eq_two]
+
+/-- A complex quadratic field has one infinite place. -/
+theorem card_infinitePlace_eq_one [IsTotallyComplex K] : Fintype.card (InfinitePlace K) = 1 := by
+  rw [InfinitePlace.card_eq_nrRealPlaces_add_nrComplexPlaces, IsTotallyComplex.nrRealPlaces_eq_zero,
+    zero_add, nrComplexPlaces_eq_one]
+
+open Algebra.IsQuadraticExtension InfinitePlace in
+variable {K} in
+/-- In a real quadratic field, the conjugation exchanges the two infinite places. -/
+theorem conj_smul_infinitePlace_ne_self [IsTotallyReal K] (w : InfinitePlace K) :
+    conj ℚ K • w ≠ w := by
+  rw [ne_eq, ← mk_embedding w, InfinitePlace.smul_mk, mk_eq_iff, ComplexEmbedding.isReal_iff.mp
+    (IsTotallyReal.complexEmbedding_isReal _), or_self, conj_symm,
+    ← (RingHom.equivRatAlgHom K ℂ).injective.eq_iff]
+  exact comp_conj_ne w.embedding.toRatAlgHom
 
 end embeddings
 

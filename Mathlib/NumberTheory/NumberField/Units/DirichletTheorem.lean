@@ -462,6 +462,10 @@ theorem finrank_modTorsion : finrank ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K)))
 theorem finrank_eq : finrank ℤ (Additive (𝓞 K)ˣ) = rank K := by
   simpa [← finrank_modTorsion] using! finrank_quotient_torsion_eq.symm
 
+/-- If the unit rank of `K` is positive, the group of units of `𝓞 K` is infinite. -/
+theorem infinite_of_rank_pos (h : 0 < rank K) : Infinite (𝓞 K)ˣ :=
+  Additive.ofMul.infinite_iff.mpr <| Module.infinite_of_finrank_pos <| by rwa [finrank_eq]
+
 /-- A basis of the quotient `(𝓞 K)ˣ ⧸ (torsion K)` seen as an additive ℤ-module. -/
 def basisModTorsion : Basis (Fin (rank K)) ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) :=
   Basis.reindex (Module.Free.chooseBasis ℤ _) (Fintype.equivOfCardEq <| by

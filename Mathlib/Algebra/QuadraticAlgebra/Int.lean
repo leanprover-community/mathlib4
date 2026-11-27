@@ -304,6 +304,33 @@ theorem algebraMap_algEquivIntegralClosure_symm_apply (h : Int.IsFundamentalDisc
       ((algEquivIntegralClosure h).symm y) = y := by
   rw [← coe_algEquivIntegralClosure_apply h, AlgEquiv.apply_symm_apply]
 
+
+private theorem isUnit_iff_eq_one_or_neg_one_aux {d r s : ℤ} (h₀ : d < 0)
+    (h₃ : d ≠ -3) (h₄ : d ≠ -4) (h₁ : d % 4 = 0 ∨ d % 4 = 1)
+    (h : |r * r + d % 4 * r * s - d / 4 * s * s| = 1) :
+    s = 0 ∧ (r = 1 ∨ r = -1) := by
+  suffices |r * r + d % 4 * r * s - d / 4 * s * s| = 1 → s = 0 from
+    ⟨this h, by simpa [this h, mul_self_eq_one_iff] using h⟩
+  intro _
+  by_contra hs
+  replace hs : 1 ≤ s * s := by nlinarith [mul_self_pos.mpr hs]
+  have : d / 4 ≤ -2 := by lia
+  obtain _ | _ := (abs_eq zero_le_one).mp h <;>
+  obtain _ | _ := h₁ <;>
+  nlinarith [sq_nonneg (2 * r + s)]
+
+theorem isUnit_iff_eq_one_or_neg_one {d : ℤ} (h₁ : d.IsFundamentalDiscr)
+    (h₂ : d < 0) (h₃ : d ≠ -3) (h₄ : d ≠ -4) {x : QuadraticAlgebra ℤ (d / 4) (d % 4)} :
+    IsUnit x ↔ x = 1 ∨ x = -1 := by
+  rw [isUnit_iff_norm_isUnit, Int.isUnit_iff_abs_eq]
+  refine ⟨fun h ↦ ?_, ?_⟩
+  · rw [← re_smul_add_im_smul x] at h ⊢
+    simp only [zsmul_eq_mul, mul_one, norm_def, re_add, re_intCast, Int.cast_eq, re_mul, re_omega,
+      mul_zero, im_intCast, im_omega, add_zero, im_add, im_mul, zero_add] at h
+    obtain ⟨him, (hre | hre)⟩ := isUnit_iff_eq_one_or_neg_one_aux h₂ h₃ h₄
+      h₁.emod_four_eq_zero_or_one h <;> simp [him, hre]
+  · rintro (rfl | rfl) <;> simp
+
 end Int
 
 end QuadraticAlgebra

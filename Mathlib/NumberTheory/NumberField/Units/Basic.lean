@@ -237,21 +237,20 @@ section odd
 
 variable {K}
 
-set_option backward.isDefEq.respectTransparency false in
-theorem torsion_eq_one_or_neg_one_of_odd_finrank
-    (h : Odd (Module.finrank ℚ K)) (x : torsion K) : (x : (𝓞 K)ˣ) = 1 ∨ (x : (𝓞 K)ˣ) = -1 := by
+/-- If `K` has a real place, its only roots of unity are `1` and `-1`. -/
+theorem torsion_eq_one_or_neg_one_of_nrRealPlaces_pos (h : 0 < nrRealPlaces K) (x : torsion K) :
+    (x : (𝓞 K)ˣ) = 1 ∨ (x : (𝓞 K)ˣ) = -1 := by
   by_cases! hc : 2 < orderOf (x : (𝓞 K)ˣ)
-  · rw [← orderOf_units, ← orderOf_submonoid] at hc
-    linarith [IsPrimitiveRoot.nrRealPlaces_eq_zero_of_two_lt hc
-          (IsPrimitiveRoot.orderOf (x.val : K)),
-        NumberField.InfinitePlace.nrRealPlaces_pos_of_odd_finrank h]
+  · rw [← orderOf_units, ← orderOf_injective _ RingOfIntegers.coe_injective] at hc
+    linarith [(IsPrimitiveRoot.orderOf (x.val : K)).nrRealPlaces_eq_zero_of_two_lt hc]
   · interval_cases hi : orderOf (x : (𝓞 K)ˣ)
     · linarith [orderOf_pos_iff.2 ((CommGroup.mem_torsion x.val).1 x.property)]
     · exact Or.intro_left _ (orderOf_eq_one_iff.1 hi)
     · rw [← orderOf_units, CharP.orderOf_eq_two_iff 0 (by decide)] at hi
       simp [← Units.val_inj, ← Units.val_inj, Units.val_neg, Units.val_one, hi]
 
-theorem torsionOrder_eq_two_of_odd_finrank (h : Odd (Module.finrank ℚ K)) :
+/-- If `K` has a real place, it has `2` roots of unity. -/
+theorem torsionOrder_eq_two_of_nrRealPlaces_pos (h : 0 < nrRealPlaces K) :
     torsionOrder K = 2 := by
   classical
   let := Fintype.ofFinite (torsion K)
@@ -259,7 +258,24 @@ theorem torsionOrder_eq_two_of_odd_finrank (h : Odd (Module.finrank ℚ K)) :
   refine (Finset.card_eq_two.2 ⟨1, ⟨-1, neg_one_mem_torsion⟩,
     by simp [← Subtype.coe_ne_coe], Finset.ext fun x ↦ ⟨fun _ ↦ ?_, fun _ ↦ Finset.mem_univ _⟩⟩)
   rw [Finset.mem_insert, Finset.mem_singleton, ← Subtype.val_inj, ← Subtype.val_inj]
-  exact torsion_eq_one_or_neg_one_of_odd_finrank h x
+  exact torsion_eq_one_or_neg_one_of_nrRealPlaces_pos h x
+
+/-- If `K` has a real place, its roots of unity are the powers of `-1`. -/
+theorem torsion_eq_zpowers_neg_one_of_nrRealPlaces_pos (h : 0 < nrRealPlaces K) :
+    torsion K = Subgroup.zpowers (-1) := by
+  refine le_antisymm ?_ <| Subgroup.zpowers_le.mpr neg_one_mem_torsion
+  intro x hx
+  obtain rfl | rfl := torsion_eq_one_or_neg_one_of_nrRealPlaces_pos h ⟨x, hx⟩
+  · exact Subgroup.one_mem (Subgroup.zpowers (-1))
+  · exact Subgroup.mem_zpowers (-1)
+
+theorem torsion_eq_one_or_neg_one_of_odd_finrank
+    (h : Odd (Module.finrank ℚ K)) (x : torsion K) : (x : (𝓞 K)ˣ) = 1 ∨ (x : (𝓞 K)ˣ) = -1 :=
+  torsion_eq_one_or_neg_one_of_nrRealPlaces_pos (nrRealPlaces_pos_of_odd_finrank h) x
+
+theorem torsionOrder_eq_two_of_odd_finrank (h : Odd (Module.finrank ℚ K)) :
+    torsionOrder K = 2 :=
+  torsionOrder_eq_two_of_nrRealPlaces_pos (nrRealPlaces_pos_of_odd_finrank h)
 
 end odd
 
