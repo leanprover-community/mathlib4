@@ -37,11 +37,11 @@ variable {n : ℕ} [MetricSpace α] (x : ℕ → α) (a : α)
 a fixed countable set, if this set is dense. This map is given in `kuratowskiEmbedding`,
 without density assumptions. -/
 def embeddingOfSubset : ℓ^∞(ℕ, ℝ) :=
-  ⟨fun n => dist a (x n) - dist (x 0) (x n), by
+  lp.mk (fun n => dist a (x n) - dist (x 0) (x n)) <| by
     apply memℓp_infty
     use dist a (x 0)
     rintro - ⟨n, rfl⟩
-    exact abs_dist_sub_le _ _ _⟩
+    exact abs_dist_sub_le _ _ _
 
 theorem embeddingOfSubset_coe : embeddingOfSubset x a n = dist a (x n) - dist (x 0) (x n) :=
   rfl
@@ -51,7 +51,7 @@ theorem embeddingOfSubset_dist_le (a b : α) :
     dist (embeddingOfSubset x a) (embeddingOfSubset x b) ≤ dist a b := by
   rw [dist_eq_norm]
   refine lp.norm_le_of_forall_le dist_nonneg fun n => ?_
-  simp only [lp.coeFn_sub, Pi.sub_apply, embeddingOfSubset_coe]
+  simp only [FunLike.coe_sub, Pi.sub_apply, embeddingOfSubset_coe]
   convert! abs_dist_sub_le a b (x n) using 2
   ring
 
@@ -144,7 +144,7 @@ theorem LipschitzOnWith.extend_lp_infty [PseudoMetricSpace α] {s : Set α} {ι 
       simp_rw [← hgeq i ha₀_in_s]
       exact lp.norm_apply_le_norm top_ne_zero (f a₀) i
     -- Construct witness by bundling the function with its certificate of membership in ℓ^∞
-    let f_ext' : α → ℓ^∞(ι, ℝ) := fun i ↦ ⟨swap g i, hf_extb i⟩
+    let f_ext' : α → ℓ^∞(ι, ℝ) := fun i ↦ lp.mk (swap g i) (hf_extb i)
     refine ⟨f_ext', ?_, ?_⟩
     · rw [LipschitzWith.coordinate]
       exact hgl
