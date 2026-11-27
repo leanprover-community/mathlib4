@@ -280,13 +280,13 @@ lemma exists_succ_of_hasCardinalLT [IsCardinalAccessibleCategory K κ]
     ∃ (ξ₂ : CostructuredArrow (isCardinalPresentable K κ).ι E.obj)
       (ν : b.ξ.obj (iic% i i) ⟶ ξ₂)
       (ψ : F.obj (b.ξ.obj (iic% i i)).left.obj ⟶ G.obj ξ₂.left.obj),
-      (F.map (b.ξ.obj (iic% i i)).hom ≫ E.hom = ψ ≫ G.map ξ₂.hom) ∧
+      F.map (b.ξ.obj (iic% i i)).hom ≫ E.hom = ψ ≫ G.map ξ₂.hom ∧
       ∀ (j : Λ) (hj : j < i),
         b.ψ j i hj le_rfl ≫ G.map ν.left.hom =
         F.map (b.ξ.map <| homOfLE <| hj.le).left.hom ≫ ψ := by
   let ξ₁ := b.ξ.obj (iic% i i)
   -- First, we summon a diagram to write E.obj as a κ-filtered colimits of κ-presentable objects.
-  let O₀ := isCardinalPresentable K κ -- shorthand for shorter notations
+  let O₀ := isCardinalPresentable K κ -- for shorter notations
   have : IsFiltered (CostructuredArrow O₀.ι E.obj) := isFiltered_of_isCardinalFiltered _ κ
   let hcolimT := O₀.ι.denseAt E.obj -- E.obj ≅ colim_ξ T_ξ
   have (X : K) : Limits.PreservesColimitsOfShape (CostructuredArrow O₀.ι X) G :=
@@ -318,8 +318,7 @@ lemma exists_succ_of_hasCardinalLT [IsCardinalAccessibleCategory K κ]
   · dsimp [ψ, ξ₁] at *
     simp only [Category.id_comp] at hv₀
     simp [← Functor.map_comp, hv₀]
-  · have S1 := huν (iio% j i)
-    simp [homOfLE_leOfHom, ← h₂ ⟨j, hj⟩, reassoc_of% S1]
+  · simp [homOfLE_leOfHom, ← h₂ ⟨j, hj⟩, reassoc_of% huν (iio% j i)]
 
 namespace extend
 
@@ -347,8 +346,7 @@ lemma ξ_map_le_succ (j : Λ) (hj : j ≤ i := by valid) :
   have := (extendToSucc (not_isMax _) b.ξ ν).map_comp
     (X := iic% j (succ i)) (Y := iic% i (succ i)) (Z := iic% (succ i) (succ i))
     (homOfLE <| by valid) (homOfLE <| by valid)
-  dsimp at this
-  simp [this, extendToSucc_map_le_succ (not_isMax _) b.ξ ν,
+  simp [dsimp% this, extendToSucc_map_le_succ (not_isMax _) b.ξ ν,
     extendToSuccObjIso_hom_naturality_assoc]
 
 /-- The to-be `ψ` field of the extension. -/
@@ -357,7 +355,7 @@ abbrev ψ (j k : Λ) (hjk : j < k := by valid) (hk : k ≤ succ i := by valid) :
       G.obj ((extend.ξ b ξₙ ν).obj (iic% k (succ i))).left.obj :=
   if hk' : k ≤ i then
     F.map (extendToSuccObjIso (not_isMax _) b.ξ ν j (by valid)).hom.left.hom ≫
-      b.ψ j k (by valid) hk' ≫
+      b.ψ j k ≫
       G.map (extendToSuccObjIso (not_isMax _) b.ξ ν k hk').inv.left.hom
   else
     F.map ((extend.ξ b ξₙ ν).map <| homOfLE (by valid)).left.hom ≫
@@ -393,8 +391,7 @@ lemma t₁ (j k l : Λ)
     (hjk : j ≤ k := by valid) (hkl : k < l := by valid) (hl : l ≤ succ i := by valid) :
     extend.ψ b ξₙ ν ψ₀ j l =
     F.map ((extend.ξ b ξₙ ν).map (homOfLE hjk)).left.hom ≫ extend.ψ b ξₙ ν ψ₀ k l := by
-  have : l ≤ i ∨ (k ≤ i ∧ l = succ i) := by valid
-  obtain hl' | ⟨hki, rfl⟩ := this
+  obtain hl' | ⟨hki, rfl⟩ : l ≤ i ∨ (k ≤ i ∧ l = succ i) := by valid
   · have := congr(F.map
       $(extendToSuccObjIso_hom_naturality (not_isMax _) b.ξ ν j k (by valid) (by valid)).left.hom)
     simp only [homOfLE_leOfHom, CostructuredArrow.comp_left,
@@ -408,15 +405,15 @@ lemma t₂ (j k l : Λ)
     (hjk : j < k := by valid) (hkl : k ≤ l := by valid) (hl : l ≤ succ i := by valid) :
     extend.ψ b ξₙ ν ψ₀ j l =
     extend.ψ b ξₙ ν ψ₀ j k ≫ G.map ((extend.ξ b ξₙ ν).map (homOfLE hkl)).left.hom := by
-  obtain hl' | ⟨rfl, rfl⟩ | ⟨hk', rfl⟩ :=
-    show l ≤ i ∨ (k = succ i ∧ l = succ i) ∨ (k ≤ i ∧ l = succ i) by valid
+  obtain hl' | ⟨rfl, rfl⟩ | ⟨hk', rfl⟩ :
+      l ≤ i ∨ (k = succ i ∧ l = succ i) ∨ (k ≤ i ∧ l = succ i) := by valid
   · obtain rfl | hkl := hkl.eq_or_lt
     · simp
-    have := congr(G.map
-      $(extendToSuccObjIso_inv_naturality (not_isMax _) b.ξ ν k l (by valid) (by valid)).left.hom)
-    simp only [homOfLE_leOfHom, CostructuredArrow.comp_left,
-      ObjectProperty.FullSubcategory.comp_hom, Functor.map_comp] at this
-    simp (discharger := valid) [ψ_of_le, b.t₂ j k l, this]
+    · have := congr(G.map
+        $(extendToSuccObjIso_inv_naturality (not_isMax _) b.ξ ν k l (by valid) (by valid)).left.hom)
+      simp only [homOfLE_leOfHom, CostructuredArrow.comp_left,
+        ObjectProperty.FullSubcategory.comp_hom, Functor.map_comp] at this
+      simp (discharger := valid) [ψ_of_le, b.t₂ j k l, this]
   · simp
   · simp (discharger := valid) only [homOfLE_leOfHom, homOfLE_refl,
       Functor.map_id, CostructuredArrow.id_left, ψ_succ, ψ_of_le,
