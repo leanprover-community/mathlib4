@@ -66,9 +66,8 @@ variable [IsScalarTower R S M] [IsScalarTower R S M']
 `x, y ∈ s`. -/
 lemma isIntegral_span_iff {s : Set M} :
     B.IsIntegral (span R s) ↔ ∀ x ∈ s, ∀ y ∈ s, B x y ∈ (1 : Submodule R S) := by
-  have := map₂_le (f := B.restrictScalars₁₂ R R) (p := span R s) (q := span R s) (r := 1)
-  rw [map₂_span_span, span_le, Set.image2_subset_iff] at this
-  exact this.symm
+  have := (map₂_le (f := B.restrictScalars₁₂ R R) (p := span R s) (q := span R s) (r := 1)).symm
+  rwa [map₂_span_span, span_le, Set.image2_subset_iff] at this
 
 lemma isIntegral_span_range_iff {ι : Type*} {v : ι → M} :
     B.IsIntegral (span R (Set.range v)) ↔ ∀ i j, B (v i) (v j) ∈ (1 : Submodule R S) := by
