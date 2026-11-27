@@ -13,6 +13,9 @@ import Mathlib.Algebra.Homology.SingleHomology
 import Mathlib.CategoryTheory.Category.Factorisation
 import Mathlib.CategoryTheory.Functor.OfSequence
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Factorization lemma
 

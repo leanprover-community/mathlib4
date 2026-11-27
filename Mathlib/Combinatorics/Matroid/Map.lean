@@ -61,7 +61,7 @@ In the definitions below, `M` and `N` are matroids on `α` and `β` respectively
 * For `X : Set α`, `Matroid.restrictSubtype M X` is the `Matroid ↥X` with ground set
   `univ : Set ↥X`. This matroid is isomorphic to `M ↾ X`.
 
-## Implementation details
+## Implementation notes
 
 The definition of `comap` is the only place where we need to actually define a matroid from scratch.
 After `comap` is defined, we can define `map` and its variants indirectly in terms of `comap`.

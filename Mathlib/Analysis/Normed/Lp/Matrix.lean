@@ -9,6 +9,9 @@ module
 public import Mathlib.Analysis.Normed.Lp.PiLp
 public import Mathlib.LinearAlgebra.Determinant
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Matrices are isomorphic with linear maps between Lp spaces
 
@@ -34,11 +37,11 @@ def toLpLin : Matrix m n R ≃ₗ[R] WithLp p (n → R) →ₗ[R] WithLp q (m �
 
 @[simp]
 lemma toLpLin_toLp (A : Matrix m n R) (x : n → R) :
-    toLpLin p q A (toLp _ x) = toLp _ (Matrix.toLin' A x) := rfl
+    toLpLin p q A (toLp _ x) = toLp _ (A *ᵥ x) := rfl
 
 @[simp]
 theorem ofLp_toLpLin (A : Matrix m n R) (x : WithLp p (n → R)) :
-    ofLp (toLpLin p q A x) = Matrix.toLin' A (ofLp x) :=
+    ofLp (toLpLin p q A x) = A *ᵥ ofLp x :=
   rfl
 
 theorem toLpLin_apply (M : Matrix m n R) (v : WithLp p (n → R)) :

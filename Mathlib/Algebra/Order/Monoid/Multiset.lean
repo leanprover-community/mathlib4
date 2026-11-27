@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.Group.Multiset
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Multisets as ordered monoids
 

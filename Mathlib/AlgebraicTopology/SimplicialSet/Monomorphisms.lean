@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Types.Monomorphisms
 
 import Mathlib.CategoryTheory.MorphismProperty.FunctorCategory
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Monomorphisms of simplicial sets
 

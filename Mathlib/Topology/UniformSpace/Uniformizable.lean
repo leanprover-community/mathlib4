@@ -24,7 +24,7 @@ generates the same topology) iff it is completely regular.
 * `completelyRegularSpace_iff_exists_uniformSpace`: A space is completely regular
   iff it is uniformizable
 
-## Implementation Details
+## Implementation notes
 
 Urysohn's lemma is reused in the proof of `UniformSpace.completelyRegularSpace`.
 

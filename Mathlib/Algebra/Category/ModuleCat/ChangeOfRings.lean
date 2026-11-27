@@ -40,6 +40,7 @@ public import Mathlib.LinearAlgebra.TensorProduct.Tower
   `f : R ⟶ S` then `coextendScalars f` is the right adjoint of `restrictScalars f`.
 
 ## Notation
+
 Let `R, S` be rings and `f : R →+* S`
 * if `M` is an `R`-module, `s : S` and `m : M`, then `s ⊗ₜ[R, f] m` is the pure tensor
   `s ⊗ m : S ⊗[R, f] M`.

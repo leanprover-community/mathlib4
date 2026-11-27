@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.Smooth.Locus
 
 import Mathlib.RingTheory.RingHom.FinitePresentation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Smooth ring homomorphisms
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Calculus.Deriv.ZPow
 public import Mathlib.Analysis.Calculus.MeanValue
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Logarithmic Derivatives
 

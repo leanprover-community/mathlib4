@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Homology.HomotopyCategory.HomologicalFunctor
 public import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
 public import Mathlib.Algebra.Homology.Refinements
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The mapping cone of a monomorphism, up to a quasi-isomorphism
 

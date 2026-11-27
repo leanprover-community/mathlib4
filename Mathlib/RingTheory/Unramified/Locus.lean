@@ -15,6 +15,7 @@ import Mathlib.RingTheory.Localization.InvSubmonoid
 # Unramified locus of an algebra
 
 ## Main results
+
 - `Algebra.unramifiedLocus` : The set of primes that is unramified over the base.
 - `Algebra.basicOpen_subset_unramifiedLocus_iff` :
   `D(f)` is contained in the unramified locus if and only if `A_f` is unramified over `R`.

@@ -7,13 +7,16 @@ module
 
 public import Mathlib.CategoryTheory.Enriched.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The bicategory of `V`-enriched categories
 
 We define the bicategory `EnrichedCat V` of (bundled) `V`-enriched categories for a fixed monoidal
 category `V`.
 
-## Future work
+## TODO
 
 * Define change of base and `ForgetEnrichment` as 2-functors.
 * Define the bicategory of enriched ordinary categories.

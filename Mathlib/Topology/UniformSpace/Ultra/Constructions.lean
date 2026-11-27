@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.UniformSpace.Pi
 public import Mathlib.Topology.UniformSpace.Ultra.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Products of ultrametric (nonarchimedean) uniform spaces
 
@@ -18,7 +21,7 @@ public import Mathlib.Topology.UniformSpace.Ultra.Basic
 * `IsUltraUniformity.pi`: an indexed product of uniform spaces with nonarchimedean uniformities
   has a nonarchimedean uniformity.
 
-## Implementation details
+## Implementation notes
 
 This file can be split to separate imports to have the `Prod` and `Pi` instances separately,
 but would be somewhat unnatural since they are closely related.

@@ -40,7 +40,7 @@ This file defines first-order terms, formulas, sentences, and theories in a styl
   `FirstOrder.Language.BoundedFormula.constantsVarsEquiv` switch terms and formulas between having
   constants in the language and having extra free variables indexed by the same type.
 
-## Implementation Notes
+## Implementation notes
 
 - `BoundedFormula` uses a locally nameless representation with bound variables as well-scoped de
   Bruijn levels (the variable bounded by the outermost quantifier is indexed by `0`). Specifically,

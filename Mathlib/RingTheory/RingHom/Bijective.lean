@@ -17,7 +17,7 @@ set_option doc.verso.suggestions false
 
 We show some meta properties of bijective ring homomorphisms.
 
-## Implementation details
+## Implementation notes
 
 We don't define a `RingHom.Bijective` predicate, but use `fun f ↦ Function.Bijective f` as
 the ring hom property.

@@ -12,6 +12,9 @@ public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 import Mathlib.Algebra.Order.Interval.Set.Group
 import Mathlib.Tactic.Bound
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Betweenness in affine spaces
 

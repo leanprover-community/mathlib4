@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Squarefree.Basic
 public import Mathlib.Data.Nat.Prime.Int
 public import Mathlib.RingTheory.PrincipalIdealDomain
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Divisibility over ℤ
 

@@ -8,13 +8,16 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexOp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The boundary of the standard simplex
 
 We introduce the boundary `∂Δ[n]` of the standard simplex `Δ[n]`.
 (These notations become available by doing `open Simplicial`.)
 
-## Future work
+## TODO
 
 There isn't yet a complete API for simplices, boundaries, and horns.
 As an example, we should have a function that constructs

@@ -49,7 +49,7 @@ abstract two related kinds of ideas:
 * `f ≤ᶠ[l] g` : `∀ᶠ x in l, f x ≤ g x`;
 * `𝓟 s` : `Filter.Principal s`, localized in `Filter`.
 
-## Implementation Notes
+## Implementation notes
 
 Important note: Bourbaki requires that a filter on `X` cannot contain all sets of `X`,
 which we do *not* require.
@@ -247,7 +247,7 @@ whose union with any set in `g` lies in `f`. -/
 instance instSDiff : SDiff (Filter α) where
   sdiff f g := {
     sets := {s | ∀ ⦃t⦄, t ∈ g → s ⊆ t → t ∈ f}
-    univ_sets := by simp +contextual
+    univ_sets := by simp
     sets_of_superset hx hxy t ht hyt := hx ht (hxy.trans hyt)
     inter_sets hx hy t htg ht := by
       rw [← union_eq_right.2 ht, inter_union_distrib_right]

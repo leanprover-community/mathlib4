@@ -287,6 +287,7 @@ Note: This linter can be disabled with `set_option linter.style.dollarSyntax fal
 @[reducible]
 def test (f g : Nat → Nat) : Inhabited Nat where
   default := by
+    have := 0
     have : Nat := f $ g $ 0
     exact 0
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.Degenerate
 public import Mathlib.AlgebraicTopology.SimplicialSet.Simplices
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The partially ordered type of non degenerate simplices of a simplicial set
 

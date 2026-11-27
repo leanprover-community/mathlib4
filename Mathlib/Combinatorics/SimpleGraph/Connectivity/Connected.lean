@@ -29,6 +29,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Paths
   contained in any cycle.
 
 ## Tags
+
 trails, paths, cycles, bridge edges
 -/
 

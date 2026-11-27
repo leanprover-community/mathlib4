@@ -41,7 +41,7 @@ form by operations on its rows and columns, a variant of Gauss' pivot algorithm.
   transvections, and invariant under product, is true for all matrices.
 * `diagonal_transvection_induction_of_det_ne_zero` is the same statement over invertible matrices.
 
-## Implementation details
+## Implementation notes
 
 The proof of the reduction results is done inductively on the size of the matrices, reducing an
 `(r + 1) × (r + 1)` matrix to a matrix whose last row and column are zeroes, except possibly for

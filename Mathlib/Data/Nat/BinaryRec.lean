@@ -7,12 +7,16 @@ module
 
 import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Binary recursion on `Nat`
 
 This file defines binary recursion on `Nat`.
 
 ## Main results
+
 * `Nat.binaryRec`: A recursion principle for `bit` representations of natural numbers.
 * `Nat.binaryRec'`: The same as `binaryRec`, but the induction step can assume that if `n=0`,
   the bit being appended is `true`.

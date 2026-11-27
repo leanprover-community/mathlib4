@@ -9,12 +9,16 @@ public import Mathlib.Algebra.Module.FinitePresentation
 
 import Mathlib.RingTheory.Localization.Finiteness
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Module.FinitePresentation` is a local property
 
 In this file, we prove that `Module.FinitePresentation` is a local property.
 
 ## Main results
+
 * `Module.FinitePresentation.of_localizationSpan` : If there exists a set `{ r }` of `R` that
   generates the unit ideal and such that `Mᵣ` is a finitely presented `Rᵣ`-module for each `r`,
   then `M` is a finitely presented `R`-module.
