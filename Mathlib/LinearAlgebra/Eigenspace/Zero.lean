@@ -148,18 +148,14 @@ lemma finrank_maxGenEigenspace_zero_eq (φ : Module.End K M) :
   have hVW : IsCompl V W := by
     rw [hV]
     exact LinearMap.isCompl_iSup_ker_pow_iInf_range_pow φ
-  have hφV : ∀ x ∈ V, φ x ∈ V := by
-    simp only [V, Module.End.mem_maxGenEigenspace, zero_smul, sub_zero,
-      forall_exists_index]
-    intro x n hx
-    use n
-    rw [← mul_apply_eq_comp, ← pow_succ, pow_succ', mul_apply_eq_comp, hx, map_zero]
-  have hφW : ∀ x ∈ W, φ x ∈ W := by
-    simp only [W, Submodule.mem_iInf, mem_range]
-    intro x H n
-    obtain ⟨y, rfl⟩ := H n
-    use φ y
-    rw [← mul_apply_eq_comp, ← pow_succ, pow_succ', mul_apply_eq_comp]
+  have hφV : Set.MapsTo φ V V := End.mapsTo_maxGenEigenspace_of_comm rfl 0
+  have hφW : Set.MapsTo φ W W  := by
+    refine Set.mapsTo_iff_image_subset.mpr fun x hx ↦ ?_
+    simp only [Submodule.coe_iInf, Set.mem_image, Set.mem_iInter, W] at ⊢ hx
+    intro n
+    obtain ⟨y, ⟨hy, rfl⟩⟩ := hx
+    obtain ⟨y', rfl⟩ := hy n
+    exact ⟨φ y', by rw [← mul_apply_eq_comp, ← pow_succ, pow_succ', mul_apply_eq_comp]⟩
   let F := φ.restrict hφV
   let G := φ.restrict hφW
   rw [φ.charpoly_eq_charpoly_restrict_mul_of_isCompl hVW hφV hφW,
