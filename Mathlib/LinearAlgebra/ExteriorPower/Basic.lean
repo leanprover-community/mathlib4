@@ -13,7 +13,7 @@ public import Mathlib.LinearAlgebra.ExteriorAlgebra.OfAlternating
 
 We study the exterior powers of a module `M` over a commutative ring `R`.
 
-## Definitions
+## Main definitions
 
 * `exteriorPower.ιMulti` is the canonical alternating map on `M` with values in `⋀[R]^n M`.
 
@@ -24,7 +24,8 @@ We study the exterior powers of a module `M` over a commutative ring `R`.
   `Mathlib/Algebra/Category/ModuleCat/ExteriorPower.lean` for the corresponding functor
   `ModuleCat R ⥤ ModuleCat R`.)
 
-## Theorems
+## Main statements
+
 * `exteriorPower.ιMulti_span`: The image of `exteriorPower.ιMulti` spans `⋀[R]^n M`.
 
 * We construct `exteriorPower.alternatingMapLinearEquiv` which
@@ -419,8 +420,7 @@ lemma subsingleton_of_span_eq_top_of_card_lt {ι : Type*} [Finite ι] (g : ι �
     Subsingleton (⋀[R]^i M) := by
   obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin ι
   let : LinearOrder ι := LinearOrder.lift' e e.injective
-  replace hi : range (ιMulti_family R i g) = ∅ := by
-    rw [range_eq_empty_iff, powersetCard.eq_empty_iff.mpr hi, isEmpty_coe_sort]
+  replace hi : range (ιMulti_family R i g) = ∅ := by simp [ENat.card_eq_coe_natCard, hi]
   suffices (⊥ : Submodule R (⋀[R]^i M)) = ⊤ by
     rwa [subsingleton_iff_bot_eq_top, Submodule.subsingleton_iff] at this
   rw [← ιMulti_family_span_of_span R hg, hi, Submodule.span_empty]

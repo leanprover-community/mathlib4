@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Vector.Basic
 public import Mathlib.Logic.Equiv.Finset
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Encodability of Pi types
 

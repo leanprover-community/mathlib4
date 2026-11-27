@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Group.Hom.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extensionality lemmas for monoid and group structures
 
@@ -14,7 +17,7 @@ In this file we prove extensionality lemmas for `Monoid` and higher algebraic st
 binary operation. Extensionality lemmas for structures that are lower in the hierarchy can be found
 in `Algebra.Group.Defs`.
 
-## Implementation details
+## Implementation notes
 
 To get equality of `npow` etc, we define a monoid homomorphism between two monoid structures on the
 same type, then apply lemmas like `MonoidHom.map_div`, `MonoidHom.map_pow` etc.
@@ -24,6 +27,7 @@ To refer to the `*` operator of a particular instance `i`, we use
 former uses `HMul.hMul` which is the canonical spelling.
 
 ## Tags
+
 monoid, group, extensionality
 -/
 

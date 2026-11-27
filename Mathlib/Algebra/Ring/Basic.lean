@@ -5,13 +5,13 @@ Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Ne
 -/
 module
 
-public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Algebra.Group.Hom.Instances
-public import Mathlib.Algebra.Group.SelfInv
 public import Mathlib.Algebra.Opposites
 public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Tactic.TFAE
 
+import Mathlib.Algebra.Group.Commute.Defs
+import Mathlib.Algebra.Group.SelfInv
 import Mathlib.Algebra.GroupWithZero.NeZero
 
 set_option doc.verso true

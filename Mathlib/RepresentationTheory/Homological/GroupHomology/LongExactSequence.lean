@@ -9,6 +9,9 @@ public import Mathlib.RepresentationTheory.Homological.GroupHomology.Functoriali
 
 import Mathlib.Algebra.Homology.HomologicalComplexAbelian
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Long exact sequence in group homology
 

@@ -6,9 +6,13 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.Algebra.QuadraticAlgebra.Discriminant
-public import Mathlib.Algebra.QuadraticAlgebra.NormDeterminant
 public import Mathlib.RingTheory.Discriminant
 public import Mathlib.RingTheory.Polynomial.Resultant.Basic
+
+import Mathlib.Algebra.QuadraticAlgebra.NormDeterminant
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Ring-theoretic properties of quadratic algebras

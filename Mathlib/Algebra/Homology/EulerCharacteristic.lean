@@ -12,6 +12,9 @@ public import Mathlib.LinearAlgebra.Dimension.Finrank
 
 import Mathlib.Algebra.GroupWithZero.Indicator
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Euler characteristic of homological complexes
 

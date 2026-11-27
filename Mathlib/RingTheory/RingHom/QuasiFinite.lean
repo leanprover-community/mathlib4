@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.QuasiFinite.Basic
 public import Mathlib.RingTheory.RingHom.OpenImmersion
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-! # The meta properties of quasi-finite ring homomorphisms. -/
 
 @[expose] public section
@@ -92,12 +95,14 @@ lemma QuasiFinite.ofLocalizationSpanTarget : OfLocalizationSpanTarget QuasiFinit
     Ideal.IsPrime.ne_top' (top_le_iff.mp (hs.symm.trans_le (Ideal.span_le.mpr h)))
   obtain ⟨r, hrs, hrI⟩ := Set.not_subset.mp this
   let ψ : P.Fiber (Localization.Away r) →ₐ[P.ResidueField] Localization.AtPrime J :=
-    Algebra.TensorProduct.lift (Algebra.ofId _ _) ⟨IsLocalization.map (M := .powers r)
-      (T := J.primeCompl) _ Algebra.TensorProduct.includeRight.toRingHom (by
-      simpa [Submonoid.powers_le] using! hrI), by
-      simp [IsScalarTower.algebraMap_apply R S (Localization.Away r),
-        -Algebra.TensorProduct.algebraMap_apply,
-        ← IsScalarTower.algebraMap_apply R _ (Localization.AtPrime J)]⟩ (fun _ _ ↦ .all _ _)
+    Algebra.TensorProduct.lift (Algebra.ofId _ _)
+      { toRingHom := IsLocalization.map (M := .powers r) (T := J.primeCompl) _
+          Algebra.TensorProduct.includeRight.toRingHom (by simpa [Submonoid.powers_le] using! hrI),
+        commutes' := by
+          simp [IsScalarTower.algebraMap_apply R S (Localization.Away r),
+            -Algebra.TensorProduct.algebraMap_apply,
+            ← IsScalarTower.algebraMap_apply R _ (Localization.AtPrime J)] }
+      (fun _ _ ↦ .all _ _)
   have hψ : ψ.comp (φ ⟨r, hrs⟩) = IsScalarTower.toAlgHom _ _ _ := by ext; simp [φ, ψ]
   refine congr($hψ a).symm.trans
     (show ψ (f a ⟨r, hrs⟩) = 0 by simp only [ha, Pi.zero_apply, map_zero])

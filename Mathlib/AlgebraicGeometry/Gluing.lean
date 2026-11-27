@@ -45,7 +45,7 @@ which is a special case where the conditions are easier to check.
 * `AlgebraicGeometry.Scheme.GlueData.isOpen_iff` : A subset of the glued scheme is open iff
   all its preimages in `U i` are open.
 
-## Implementation details
+## Implementation notes
 
 All the hard work is done in `Mathlib/Geometry/RingedSpace/PresheafedSpace/Gluing.lean` where we
 glue presheafed spaces, sheafed spaces, and locally ringed spaces.

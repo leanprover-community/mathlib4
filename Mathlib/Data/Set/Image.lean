@@ -221,7 +221,8 @@ theorem image_congr {f g : α → β} {s : Set α} (h : ∀ a ∈ s, f a = g a) 
   aesop
 
 /-- A common special case of `image_congr` -/
-theorem image_congr' {f g : α → β} {s : Set α} (h : ∀ x : α, f x = g x) : f '' s = g '' s := by
+theorem image_congr' {f g : α → β} {s t : Set α} (hs : s = t) (h : ∀ x : α, f x = g x) :
+    f '' s = g '' t := by
   grind
 
 @[gcongr]
@@ -906,11 +907,16 @@ theorem rangeFactorization_eq {f : ι → β} : Subtype.val ∘ rangeFactorizati
   funext fun _ => rfl
 
 @[simp]
-theorem rangeFactorization_coe (f : ι → β) (a : ι) : (rangeFactorization f a : β) = f a :=
+theorem subtypeVal_rangeFactorization (f : ι → β) (a : ι) : (rangeFactorization f a : β) = f a :=
   rfl
 
+@[deprecated (since := "2026-11-26")] alias rangeFactorization_coe := subtypeVal_rangeFactorization
+
 @[simp]
-theorem coe_comp_rangeFactorization (f : ι → β) : (↑) ∘ rangeFactorization f = f := rfl
+theorem subtypeVal_comp_rangeFactorization (f : ι → β) : (↑) ∘ rangeFactorization f = f := rfl
+
+@[deprecated (since := "2026-11-26")]
+alias coe_comp_rangeFactorization := subtypeVal_comp_rangeFactorization
 
 theorem image_eq_range (f : α → β) (s : Set α) : f '' s = range fun x : s => f x := by
   ext
@@ -967,7 +973,7 @@ theorem range_inclusion (h : s ⊆ t) : range (inclusion h) = { x : t | (x : α)
 theorem leftInverse_rangeSplitting (f : α → β) :
     LeftInverse (rangeFactorization f) (rangeSplitting f) := fun x => by
   ext
-  simp only [rangeFactorization_coe]
+  simp only [subtypeVal_rangeFactorization]
   apply apply_rangeSplitting
 
 theorem rangeSplitting_injective (f : α → β) : Injective (rangeSplitting f) :=

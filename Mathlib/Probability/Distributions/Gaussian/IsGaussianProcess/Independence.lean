@@ -29,7 +29,7 @@ then they are independent if their marginals are uncorrelated.
   that are jointly Gaussian are independent if for all $s \in S$ and $t \in T$,
   $\mathrm{Cov}(X_s, Y_t) = 0$.
 
-## Implementation note
+## Implementation notes
 
 To talk about the joint process of two processes `X : S → Ω → E` and `Y : T → Ω → E`,
 we consider the process `Sum.elim X Y : S ⊕ T → Ω → E`, where `S ⊕ T` is

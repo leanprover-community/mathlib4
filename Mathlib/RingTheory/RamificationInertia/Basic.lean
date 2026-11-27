@@ -12,6 +12,9 @@ public import Mathlib.RingTheory.RamificationInertia.Ramification
 
 import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ramification index and inertia degree
 

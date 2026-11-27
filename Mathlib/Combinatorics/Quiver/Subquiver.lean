@@ -6,7 +6,8 @@ Authors: David Wärn
 module
 
 public import Mathlib.Combinatorics.Quiver.Basic
-public import Mathlib.Order.Notation
+
+import Mathlib.Order.Notation
 
 /-!
 ## Wide subquivers

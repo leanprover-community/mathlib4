@@ -63,6 +63,7 @@ namespace ComplexShape
 /-- An embedding of a complex shape `c : ComplexShape ι` into a complex shape
 `c' : ComplexShape ι'` consists of an injective map `f : ι → ι'` which satisfies
 a compatibility with respect to the relations `c.Rel` and `c'.Rel`. -/
+@[ext]
 structure Embedding where
   /-- the map between the underlying types of indices -/
   f : ι → ι'
@@ -249,6 +250,12 @@ instance : (embeddingUpIntLE p).IsRelIff := .mk' ..
 
 instance : (embeddingUpIntLE p).IsTruncLE where
   mem_prev {_ k} h := ⟨k + 1, by dsimp at h ⊢; lia⟩
+
+lemma embeddingUpIntGE_zero : embeddingUpIntGE 0 = embeddingUpNat := by
+  aesop
+
+lemma embeddingUpIntLE_zero : embeddingUpIntLE 0 = embeddingDownNat := by
+  aesop
 
 lemma notMem_range_embeddingUpIntLE_iff (n : ℤ) :
     (∀ (i : ℕ), (embeddingUpIntLE p).f i ≠ n) ↔ p < n := by

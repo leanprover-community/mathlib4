@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Types.Set
 
 import Mathlib.CategoryTheory.Generator.Type
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Presentable objects in Type
 

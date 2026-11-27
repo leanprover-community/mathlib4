@@ -6,10 +6,11 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
-public import Mathlib.Analysis.Normed.Unbundled.IsPowMulFaithful
 public import Mathlib.Analysis.Normed.Unbundled.SeminormFromConst
 public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
-public import Mathlib.Topology.Algebra.Module.FiniteDimension
+
+import Mathlib.Analysis.Normed.Unbundled.IsPowMulFaithful
+import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
@@ -73,7 +74,7 @@ public theorem MulAlgebraNorm.unique [CompleteSpace K] (f g : MulAlgebraNorm K L
 public def AlgebraNorm.toMulAlgebraNorm [CompleteSpace K] (f : AlgebraNorm K L) (hf : IsPowMul f) :
     MulAlgebraNorm K L where
   __ := f
-  map_one' := by simpa [map_ne_zero_iff_ne_zero, sq] using hf 1 one_le_two
+  map_one' := hf.map_one
   map_mul' x y := by
     by_cases hx : f x = 0
     · simp [eq_zero_of_map_eq_zero f hx]

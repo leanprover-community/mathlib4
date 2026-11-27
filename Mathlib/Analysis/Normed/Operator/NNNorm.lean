@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Normed.Operator.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Operator norm as an `NNNorm`
 
@@ -45,6 +48,10 @@ theorem nnNorm_def (f : E →SL[σ₁₂] F) : ‖f‖₊ = sInf { c | ∀ x, �
 @[simp, nontriviality]
 theorem opNNNorm_subsingleton [Subsingleton E] (f : E →SL[σ₁₂] F) : ‖f‖₊ = 0 :=
   NNReal.eq f.opNorm_subsingleton
+
+@[simp, nontriviality]
+theorem opENorm_subsingleton [Subsingleton E] (f : E →SL[σ₁₂] F) : ‖f‖ₑ = 0 := by
+  simpa only [eNorm_eq_nnNorm, ENNReal.coe_zero] using congr(($(f.opNNNorm_subsingleton) : ℝ≥0∞))
 
 /-- If one controls the norm of every `A x`, then one controls the norm of `A`. -/
 theorem opNNNorm_le_bound (f : E →SL[σ₁₂] F) (M : ℝ≥0) (hM : ∀ x, ‖f x‖₊ ≤ M * ‖x‖₊) : ‖f‖₊ ≤ M :=
@@ -120,8 +127,10 @@ theorem opENorm_le_iff {f : E →SL[σ₁₂] F} {M : ℝ≥0∞} :
     ‖f‖ₑ ≤ M ↔ ∀ x, ‖f x‖ₑ ≤ M * ‖x‖ₑ :=
   ⟨f.le_of_opENorm_le, opENorm_le_bound f⟩
 
-theorem nndist_le_opNNNorm (f : E →SL[σ₁₂] F) (x y : E) : nndist (f x) (f y) ≤ ‖f‖₊ * nndist x y :=
+theorem nnDist_le_opNNNorm (f : E →SL[σ₁₂] F) (x y : E) : nnDist (f x) (f y) ≤ ‖f‖₊ * nnDist x y :=
   dist_le_opNorm f x y
+
+@[deprecated (since := "2026-11-07")] alias nndist_le_opNNNorm := nnDist_le_opNNNorm
 
 /-- continuous linear maps are Lipschitz continuous. -/
 theorem lipschitzWith (f : E →SL[σ₁₂] F) : LipschitzWith ‖f‖₊ f :=
