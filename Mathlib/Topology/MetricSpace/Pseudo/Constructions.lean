@@ -97,9 +97,8 @@ variable {M : Type*} [Zero M] [LE M] [PseudoMetricSpace M]
 instance instPseudoMetricSpace : PseudoMetricSpace (Nonneg M) :=
   isInducing_val.comapPseudoMetricSpace
 
-lemma dist_eq (x y : Nonneg M) : dist x y = dist (x : M) y := rfl
-
-lemma nndist_eq (x y : Nonneg M) : nndist x y = nndist (x : M) y := rfl
+lemma dist_def (x y : Nonneg M) : dist x y = dist (x : M) y := rfl
+lemma nnDist_def (x y : Nonneg M) : nnDist x y = nnDist (x : M) y := rfl
 
 lemma isUniformInducing_val : IsUniformInducing (val : Nonneg M → M) := ⟨rfl⟩
 
