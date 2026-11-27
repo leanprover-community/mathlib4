@@ -23,7 +23,7 @@ that it is preadditive and show that being an isomorphism, monomorphism and epim
 equivalent to being a linear equivalence, an injective linear map and a surjective linear map,
 respectively.
 
-## Implementation details
+## Implementation notes
 
 To construct an object in the category of `R`-modules from a type `M` with an instance of the
 `Module` typeclass, write `of R M`. There is a coercion in the other direction.

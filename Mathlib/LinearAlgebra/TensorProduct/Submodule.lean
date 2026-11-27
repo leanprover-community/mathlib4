@@ -91,7 +91,7 @@ theorem mulMap_op :
 theorem mulMap_comm_of_commute (hc : ∀ (m : M) (n : N), Commute m.val n.val) :
     mulMap N M = mulMap M N ∘ₗ TensorProduct.comm R N M := by
   refine TensorProduct.ext' fun n m ↦ ?_
-  simp_rw [LinearMap.comp_apply, LinearEquiv.coe_coe, TensorProduct.comm_tmul, mulMap_tmul]
+  simp_rw [LinearMap.comp_apply, LinearEquiv.coe_toLinearMap, TensorProduct.comm_tmul, mulMap_tmul]
   exact (hc m n).symm
 
 variable {M} in
@@ -130,7 +130,7 @@ variable {M N} in
 theorem val_mulMap'_tmul (m : M) (n : N) : (mulMap' M N (m ⊗ₜ[R] n) : S) = m.val * n.val := rfl
 
 theorem mulMap'_surjective : Function.Surjective (mulMap' M N) := by
-  simp_rw [mulMap', LinearMap.coe_comp, LinearEquiv.coe_coe, EquivLike.comp_surjective,
+  simp_rw [mulMap', LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, EquivLike.comp_surjective,
     LinearMap.surjective_rangeRestrict]
 
 /-- If `N` is a submodule in an algebra `S` over `R`, there is the natural `R`-linear map
@@ -145,7 +145,7 @@ variable {N} in
 @[simp]
 theorem lTensorOne'_tmul (y : R) (n : N) :
     N.lTensorOne' (algebraMap R _ y ⊗ₜ[R] n) = y • n := Subtype.val_injective <| by
-  simp_rw [lTensorOne', LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+  simp_rw [lTensorOne', LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply,
     LinearEquiv.coe_ofEq_apply, LinearMap.codRestrict_apply, SetLike.val_smul, Algebra.smul_def]
   exact mulMap_tmul _ N _ _
 
@@ -196,7 +196,7 @@ variable {M} in
 @[simp]
 theorem rTensorOne'_tmul (y : R) (m : M) :
     M.rTensorOne' (m ⊗ₜ[R] algebraMap R _ y) = y • m := Subtype.val_injective <| by
-  simp_rw [rTensorOne', LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+  simp_rw [rTensorOne', LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply,
     LinearEquiv.coe_ofEq_apply, LinearMap.codRestrict_apply, SetLike.val_smul]
   rw [Algebra.smul_def, Algebra.commutes]
   exact mulMap_tmul M _ _ _

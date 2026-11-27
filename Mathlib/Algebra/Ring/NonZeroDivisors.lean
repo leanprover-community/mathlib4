@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Ring.Basic
 
 import Mathlib.Algebra.Regular.Opposite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Non-zero divisors in a ring
 -/

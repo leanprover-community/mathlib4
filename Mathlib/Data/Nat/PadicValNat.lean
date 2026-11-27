@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Nat.MaxPowDiv
 public import Mathlib.RingTheory.Multiplicity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The p-adic valuation on natural numbers
 -/

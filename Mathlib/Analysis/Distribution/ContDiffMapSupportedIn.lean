@@ -59,7 +59,7 @@ In the `Distributions` scope, we introduce the following notations:
 - `N[𝕜; F]_{K, i}` (or simply `N[𝕜]_{K, i}`): the `𝕜`-seminorm on `𝓓_{K}(E, F)`
   given by the sup-norm of the `i`-th derivative.
 
-## Implementation details
+## Implementation notes
 
 * The technical choice of spelling `EqOn f 0 Kᶜ` in the definition, as opposed to `tsupport f ⊆ K`
   is to make rewriting `f x` to `0` easier when `x ∉ K`.
@@ -156,6 +156,10 @@ instance toContDiffMapSupportedInClass :
 
 variable {E F F'}
 
+/-- Reinterpret a continuously differentiable map supported in a compact  `f : 𝓓^{n}_{K}(E, F)`
+as a continuous bounded map `E →ᵇ F`. -/
+def toBoundedContinuousFunction (f : 𝓓^{n}_{K}(E, F)) : E →ᵇ F := .ofClass f
+
 protected theorem contDiff (f : 𝓓^{n}_{K}(E, F)) : ContDiff ℝ n f := map_contDiff f
 protected theorem zero_on_compl (f : 𝓓^{n}_{K}(E, F)) : EqOn f 0 Kᶜ := map_zero_on_compl f
 protected theorem compact_supp (f : 𝓓^{n}_{K}(E, F)) : HasCompactSupport f :=
@@ -190,7 +194,12 @@ theorem copy_eq (f : 𝓓^{n}_{K}(E, F)) (f' : E → F) (h : f' = f) : f.copy f'
 
 @[simp]
 theorem coe_toBoundedContinuousFunction (f : 𝓓^{n}_{K}(E, F)) :
-    (f : BoundedContinuousFunction E F) = (f : E → F) := rfl
+    ⇑f.toBoundedContinuousFunction = (f : E → F) := rfl
+
+@[simp]
+theorem toBoundedContinuousFunction_injective :
+    Function.Injective (toBoundedContinuousFunction : 𝓓^{n}_{K}(E, F) → E →ᵇ F) :=
+  fun f g h ↦ by ext; simp [← coe_toBoundedContinuousFunction, h]
 
 section AddCommGroup
 
@@ -295,13 +304,13 @@ as a `𝕜`-linear map.
 
 This is subsumed by `toBoundedContinuousFunctionCLM`, which also bundles the continuity. -/
 noncomputable def toBoundedContinuousFunctionLM : 𝓓^{n}_{K}(E, F) →ₗ[𝕜] E →ᵇ F where
-  toFun f := f
+  toFun := toBoundedContinuousFunction
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
 @[simp]
 lemma toBoundedContinuousFunctionLM_apply (f : 𝓓^{n}_{K}(E, F)) :
-    toBoundedContinuousFunctionLM 𝕜 f = f :=
+    toBoundedContinuousFunctionLM 𝕜 f = f.toBoundedContinuousFunction :=
   rfl
 
 lemma toBoundedContinuousFunctionLM_eq_of_scalars (𝕜' : Type*) [NontriviallyNormedField 𝕜']
@@ -705,7 +714,7 @@ theorem norm_apply_le_seminorm {f : 𝓓^{n}_{K}(E, F)} {x : E} :
   exact norm_iteratedFDeriv_apply_le_seminorm 𝕜 zero_le
 
 theorem norm_toBoundedContinuousFunction (f : 𝓓^{n}_{K}(E, F)) :
-    ‖(f : E →ᵇ F)‖ = N[𝕜]_{K, n, 0} f := by
+    ‖f.toBoundedContinuousFunction‖ = N[𝕜]_{K, n, 0} f := by
   simp [BoundedContinuousFunction.norm_eq_iSup_norm,
     ContDiffMapSupportedIn.seminorm_apply, structureMapCLM_apply]
 
@@ -759,7 +768,7 @@ noncomputable def toBoundedContinuousFunctionCLM : 𝓓^{n}_{K}(E, F) →L[𝕜]
 
 @[simp]
 lemma toBoundedContinuousFunctionCLM_apply (f : 𝓓^{n}_{K}(E, F)) :
-    toBoundedContinuousFunctionCLM 𝕜 f = f :=
+    toBoundedContinuousFunctionCLM 𝕜 f = f.toBoundedContinuousFunction :=
   rfl
 
 lemma toBoundedContinuousFunctionCLM_eq_of_scalars (𝕜' : Type*) [NontriviallyNormedField 𝕜']

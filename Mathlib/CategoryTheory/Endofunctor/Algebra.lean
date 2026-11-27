@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
 
 import Mathlib.CategoryTheory.Functor.EpiMono
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Algebras of endofunctors
 

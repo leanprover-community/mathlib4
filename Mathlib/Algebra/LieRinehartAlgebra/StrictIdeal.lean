@@ -131,7 +131,10 @@ instance lieRing {s : StrictLieRinehartIdeal A L} : LieRing s where
   leibniz_lie _ _ _ := by simp
 
 @[simp]
-lemma coe_bracket {s : StrictLieRinehartIdeal A L} (x y : s) : ⁅x, y⁆ = ⁅(x : L), (y : L)⁆ := rfl
+lemma subtypeVal_bracket {s : StrictLieRinehartIdeal A L} (x y : s) : ⁅x, y⁆ = ⁅(x : L), (y : L)⁆ :=
+  rfl
+
+@[deprecated (since := "2026-11-24")] alias coe_bracket := subtypeVal_bracket
 
 section LieModule
 
@@ -141,8 +144,10 @@ instance : Bracket s M where
   bracket x m := ⁅(x : L), m⁆
 
 @[simp]
-theorem bracket_coe (x : s) (m : M) : ⁅x, m⁆ = ⁅(x : L), m⁆ :=
+theorem bracket_subtypeVal (x : s) (m : M) : ⁅x, m⁆ = ⁅(x : L), m⁆ :=
   rfl
+
+@[deprecated (since := "2026-11-24")] alias bracket_coe := bracket_subtypeVal
 
 instance : IsLieTower s L M where
   leibniz_lie x y m := leibniz_lie x.val y m
@@ -198,9 +203,8 @@ variable {M : Type*} [AddCommGroup M] [LieRingModule L M] [Module R M] [LieModul
 /-- Given a Lie-Rinehart algebra `L` containing a strict Lie-Rinehart ideal `s ⊆ L`, together with a
 Lie module `M` over `L`, we may regard `M` as a Lie module over `s` by restriction. -/
 instance lieModule {s : StrictLieRinehartIdeal A L} : LieModule R s M where
-  smul_lie t x m := by
-    rw [bracket_coe, Submodule.coe_smul_of_tower, smul_lie, bracket_coe]
-  lie_smul t x m := by simp only [bracket_coe, lie_smul]
+  smul_lie t x m := by simp
+  lie_smul t x m := by simp
 
 end LieModule
 

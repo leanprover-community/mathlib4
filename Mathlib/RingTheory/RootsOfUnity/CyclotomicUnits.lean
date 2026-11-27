@@ -24,7 +24,7 @@ We gather miscellaneous results about units given by sums of powers of roots of 
   where `2 ≤ n`, we have that `ζ - 1` and `ζ ^ (i + j) - ζ ^ i` are associated for all and `j`
   coprime with `n` and all `i`.
 
-## Implementation details
+## Implementation notes
 
 We sometimes state series of results of the form `a = u * b`, `IsUnit u` and `Associated a b`.
 Often, `Associated a b` is everything one needs, and it is more convenient to use, we include the

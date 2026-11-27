@@ -13,6 +13,9 @@ import Mathlib.Algebra.Category.Grp.Zero
 import Mathlib.RingTheory.LocalRing.Module
 import Mathlib.RingTheory.Regular.Category
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # ProjectiveDimension of quotient by regular element
 

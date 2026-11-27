@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
 public import Mathlib.Order.Fin.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Limits and colimits indexed by `Fin`
 

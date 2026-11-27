@@ -9,6 +9,9 @@ public import Mathlib.Data.Finset.Card
 public import Mathlib.Data.Finset.Fold
 public import Mathlib.Data.Multiset.Sum
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Disjoint sum of finsets
 

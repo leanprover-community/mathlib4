@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Homology.ExactSequence
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Exact sequences with four terms
 
