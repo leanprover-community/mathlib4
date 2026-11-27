@@ -110,6 +110,16 @@ theorem truncatedLogCounting_nonneg {r : ℝ} (hr : 1 ≤ r) :
   cases a <;>
   simpa using logCounting_truncate_nonneg (by positivity) hr
 
+/--
+The truncated logarithmic counting function is big-O of the ordinary logarithmic counting function.
+-/
+theorem isBigO_truncatedLogCounting_logCounting :
+    truncatedLogCounting f a =O[atTop] logCounting f a := by
+  refine .of_norm_eventuallyLE ?_
+  filter_upwards [eventually_ge_atTop 1] with r hr
+  rw [norm_of_nonneg (truncatedLogCounting_nonneg hr)]
+  exact truncatedLogCounting_le hr
+
 /-- The truncated logarithmic counting function is monotonous. -/
 theorem truncatedLogCounting_monotoneOn :
     MonotoneOn (truncatedLogCounting f a) (Set.Ioi 0) := by

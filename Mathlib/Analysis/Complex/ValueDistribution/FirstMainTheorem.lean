@@ -165,6 +165,83 @@ theorem isBigO_characteristic_sub_characteristic_shift (h : Meromorphic f) :
 
 end SecondPart
 
+/-!
+## Combined Form of the First Main Theorem
+
+The two parts of the First Main Theorem combine to the statement that the characteristic functions
+of `f` for the value `⊤` and for any other value agree up to a bounded function. If the
+characteristic function tends to infinity, the bounded error is negligible.
+-/
+
+section CombinedForm
+
+variable {f : ℂ → ℂ} {a₀ : ℂ} {a : WithTop ℂ}
+
+/--
+First Main Theorem of Value Distribution Theory, combined form, quantitative version: If `f` is
+meromorphic on the complex plane, then the characteristic functions of `f` for the value `⊤` and for
+a finite value `a₀` differ at most by an explicit constant. The constant is the sum of the constants
+of the two parts of the First Main Theorem: the second part compares `f` with the shifted function
+`f - a₀`, and the first part compares `f - a₀` with its inverse.
+-/
+theorem abs_characteristic_top_sub_characteristic_coe_le {r : ℝ} (hf : Meromorphic f) :
+    |characteristic f ⊤ r - characteristic f a₀ r|
+      ≤ log⁺ ‖a₀‖ + log 2
+        + max |log ‖f 0 - a₀‖| |log ‖meromorphicTrailingCoeffAt (f · - a₀) 0‖| := by
+  rw [characteristic_coe_eq_characteristic_sub_const_zero, ← characteristic_inv]
+  exact (abs_sub_le _ (characteristic (f · - a₀) ⊤ r) _).trans <|
+    add_le_add (abs_characteristic_sub_characteristic_shift_le hf)
+      (characteristic_sub_characteristic_inv_le (by fun_prop))
+
+/--
+First Main Theorem of Value Distribution Theory, combined form, qualitative version: If `f` is
+meromorphic on the complex plane, then for every value `a`, the characteristic functions of `f` for
+the values `⊤` and `a` agree asymptotically up to a bounded function. See
+`ValueDistribution.abs_characteristic_top_sub_characteristic_coe_le` for an explicit bound.
+-/
+theorem isBigO_characteristic_top_sub_characteristic (hf : Meromorphic f) :
+    (characteristic f ⊤ - characteristic f a) =O[atTop] (1 : ℝ → ℝ) := by
+  cases a with
+  | top => exact isBigO_of_le' (c := 0) _ fun r ↦ by simp
+  | coe a₀ =>
+    exact isBigO_of_le' _ fun r ↦ by
+      simpa using abs_characteristic_top_sub_characteristic_coe_le hf
+
+/--
+First Main Theorem of Value Distribution Theory, asymptotic version: If `f` is meromorphic on the
+complex plane and its characteristic function tends to infinity, then for every value `a`, the
+characteristic function `characteristic f a` is asymptotically equivalent to `characteristic f ⊤`.
+See `ValueDistribution.isBigO_characteristic_top_sub_characteristic` for the underlying statement,
+which holds without the assumption on the characteristic function.
+-/
+theorem isEquivalent_characteristic_characteristic_top (hf : Meromorphic f)
+    (hT : Tendsto (characteristic f ⊤) atTop atTop) :
+    characteristic f a ~[atTop] characteristic f ⊤ :=
+  ((isBigO_characteristic_top_sub_characteristic hf).trans_isLittleO <|
+    (isLittleO_one_left_iff ℝ).2 <| tendsto_norm_atTop_atTop.comp hT).symm
+
+/--
+If `f` is meromorphic on the complex plane and its characteristic function tends to infinity, then
+the proximity function `proximity f a` is big-O of `characteristic f ⊤`.
+-/
+theorem isBigO_proximity_characteristic_top (hf : Meromorphic f)
+    (hT : Tendsto (characteristic f ⊤) atTop atTop) :
+    proximity f a =O[atTop] characteristic f ⊤ :=
+  isBigO_proximity_characteristic.trans
+    (isEquivalent_characteristic_characteristic_top hf hT).isBigO
+
+/--
+If `f` is meromorphic on the complex plane and its characteristic function tends to infinity, then
+the logarithmic counting function `logCounting f a` is big-O of `characteristic f ⊤`.
+-/
+theorem isBigO_logCounting_characteristic_top (hf : Meromorphic f)
+    (hT : Tendsto (characteristic f ⊤) atTop atTop) :
+    logCounting f a =O[atTop] characteristic f ⊤ :=
+  isBigO_logCounting_characteristic.trans
+    (isEquivalent_characteristic_characteristic_top hf hT).isBigO
+
+end CombinedForm
+
 section moebius
 
 /-!
