@@ -62,10 +62,10 @@ theorem spec (num den n : ℕ) :
     (X.1 : ℝ) / X.2 = ∑ k ∈ range n, (num / den : ℝ) ^ (2 * k + 1) / (2 * k + 1) := by
   rcases eq_or_ne den 0 with rfl | hden
   · simp [smallArtanh]
-  rw [← hypergeomPartialSum_div (Nat.castRingHom ℝ) (fun j ↦ (2 * j + 1) * num ^ 2)
+  rw [← (hypergeomPartialSum_div (Nat.castRingHom ℝ) (fun j ↦ (2 * j + 1) * num ^ 2)
     (fun j ↦ (2 * j + 3) * den ^ 2) (fun j ↦ by positivity)
     (fun k ↦ (num / den : ℝ) ^ (2 * k + 1) / (2 * k + 1))
-    (fun j ↦ by push_cast [div_pow]; field)]
+    (fun j ↦ by push_cast [div_pow]; field) n).2]
   push_cast [smallArtanh]
   field
 

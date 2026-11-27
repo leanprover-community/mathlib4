@@ -115,18 +115,19 @@ theorem hypergeomPartialSum_spec {R : Type*} [CommSemiring R] (p : ℕ → R) (q
 theorem hypergeomPartialSum_div {R K : Type*} [CommSemiring R] [Semifield K] [CharZero K]
     (f : R →+* K) (p : ℕ → R) (q : ℕ → ℕ) (hq : ∀ j, q j ≠ 0) (t : ℕ → K)
     (ht : ∀ j, t (j + 1) = t j * (f (p j) / q j)) (n : ℕ) :
-    t 0 * f (hypergeomPartialSum p q 0 n).sumNum / (hypergeomPartialSum p q 0 n).den =
-      ∑ m ∈ range n, t m := by
+    letI X := hypergeomPartialSum p q 0 n
+    t 0 * f X.termNum / X.den = t n ∧ t 0 * f X.sumNum / X.den = ∑ m ∈ range n, t m := by
   have key (m : ℕ) : t 0 * ∏ j ∈ range m, f (p j) / q j = t m := by
     induction m with
     | zero => simp
     | succ m ih => rw [prod_range_succ, ← mul_assoc, ih, ht]
-  obtain ⟨-, hden, hsum⟩ := hypergeomPartialSum_spec p q 0 n
-  simp only [hden, hsum, map_sum, map_mul, map_prod, map_natCast, Nat.cast_prod, mul_sum, sum_div,
-    zero_add, Nat.Ico_zero_eq_range]
-  refine sum_congr rfl fun i hi ↦ ?_
-  rw [mul_div_assoc, ← prod_range_mul_prod_Ico (fun j ↦ (q j : K)) (mem_range.mp hi).le,
-    mul_div_mul_right _ _ (prod_ne_zero_iff.mpr fun j _ ↦ Nat.cast_ne_zero.mpr (hq j)),
-    ← prod_div_distrib, key]
+  obtain ⟨hterm, hden, hsum⟩ := hypergeomPartialSum_spec p q 0 n
+  simp only [hterm, hden, hsum, map_sum, map_mul, map_prod, map_natCast, Nat.cast_prod, mul_sum,
+    sum_div, zero_add, Nat.Ico_zero_eq_range]
+  refine ⟨?_, sum_congr rfl fun i hi ↦ ?_⟩
+  · rw [mul_div_assoc, ← prod_div_distrib, key]
+  · rw [mul_div_assoc, ← prod_range_mul_prod_Ico (fun j ↦ (q j : K)) (mem_range.mp hi).le,
+      mul_div_mul_right _ _ (prod_ne_zero_iff.mpr fun j _ ↦ Nat.cast_ne_zero.mpr (hq j)),
+      ← prod_div_distrib, key]
 
 end Inclusion.IntervalDyadicReal
