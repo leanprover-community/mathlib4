@@ -186,8 +186,8 @@ lemma not_connected_sum [Nonempty V] [Nonempty W] : ¬(G ⊕g H).Connected := by
 
 lemma Reachable.sum_sup_edge (hv : G.Reachable v v') (hw : H.Reachable w w') :
     (G.sum H ⊔ edge (.inl v) (.inr w)).Reachable (.inl v') (.inr w') :=
-  ((hv.symm.map Embedding.sumInl.toHom).mono le_sup_left).trans <| .trans
-    (Adj.reachable <| by simp [edge]) <| (hw.map Embedding.sumInr.toHom).mono le_sup_left
+  (reachable_sup_edge_iff _).2 <| Or.inr <| Or.inl
+    ⟨hv.symm.map Embedding.sumInl.toHom, hw.map Embedding.sumInr.toHom⟩
 
 lemma Preconnected.sum_sup_edge (hG : G.Preconnected) (hH : H.Preconnected) :
     (G.sum H ⊔ edge (.inl v) (.inr w)).Preconnected := by
