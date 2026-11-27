@@ -58,9 +58,7 @@ theorem coe_min (a b : Fin n) : ↑(min a b) = (min a b : ℕ) := rfl
 
 theorem compare_eq_compare_val (a b : Fin n) : compare a b = compare a.val b.val := rfl
 
-instance instLinearOrder : LinearOrder (Fin n) :=
-  Fin.val_injective.linearOrder _
-    Fin.le_iff_val_le_val Fin.lt_def val_min val_max compare_eq_compare_val
+instance instLinearOrder : LinearOrder (Fin n) := fast_instance% .ofStd (Fin n)
 
 instance instBoundedOrder [NeZero n] : BoundedOrder (Fin n) where
   top := rev 0

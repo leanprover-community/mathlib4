@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Data.Int.Notation
 public import Mathlib.Data.Nat.Notation
-public import Mathlib.Order.Defs.LinearOrder
+public import Mathlib.Order.Std
 
 import Mathlib.Basic.Logic.Basic
+import Mathlib.Tactic.FastInstance
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
@@ -36,15 +37,7 @@ theorem lt.elim (h : a < b) {P : Prop} (h' : ∀ n : ℕ, a + ↑(Nat.succ n) = 
 
 alias ⟨lt_of_ofNat_lt_ofNat, ofNat_lt_ofNat_of_lt⟩ := ofNat_lt
 
-instance instLinearOrder : LinearOrder ℤ where
-  le_refl := Int.le_refl
-  le_trans := @Int.le_trans
-  le_antisymm := @Int.le_antisymm
-  lt_iff_le_not_ge := @Int.lt_iff_le_and_not_ge
-  le_total := Int.le_total
-  toDecidableEq := instDecidableEq
-  toDecidableLE := decLe
-  toDecidableLT := decLt
+instance instLinearOrder : LinearOrder ℤ := fast_instance% .ofStd ℤ
 
 -- Shortcut instances
 instance : Preorder ℤ := inferInstance

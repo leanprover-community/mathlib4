@@ -139,6 +139,8 @@ theorem xor_iff_ne : ∀ {x y : Bool}, xor x y = true ↔ x ≠ y := by decide
 
 /-! ### De Morgan's laws for Booleans -/
 
+-- TODO: use `LinearOrder.ofStd` once `Bool` has the necessary instances
+-- See https://github.com/leanprover/lean4/issues/16450
 instance linearOrder : LinearOrder Bool where
   le_refl := by decide
   le_trans := by decide
