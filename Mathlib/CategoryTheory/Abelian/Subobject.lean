@@ -188,6 +188,7 @@ end
 
 /-- For an epimorphism `f : X ⟶ Y`, there is an order-isomorphism between subobjects of `Y`
 and subobjects of `X` containing `kernelSubobject f`. -/
+@[simps!]
 def epiOrderIso {X Y : C} (f : X ⟶ Y) [Epi f] :
     Subobject Y ≃o Set.Ici (kernelSubobject f) where
   toFun p := ⟨(Subobject.pullback f).obj p, by
