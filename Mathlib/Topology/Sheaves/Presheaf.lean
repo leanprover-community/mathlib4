@@ -59,10 +59,6 @@ lemma ext {X : TopCat.{w}} {P Q : Presheaf C X} {f g : P ⟶ Q}
     (w : ∀ U : Opens X, f.app (op U) = g.app (op U)) :
     f = g := by
   aesop
-  /-apply NatTrans.ext
-  ext U
-  induction U with | _ U => ?_
-  apply w-/
 
 /-- attribute `sheaf_restrict` to mark lemmas related to restricting sheaves -/
 macro "sheaf_restrict" : attr =>
