@@ -36,6 +36,8 @@ This file defines the following linters:
   by containing a double underscore. The `defsWithUnderscore` environment linter checks for
   definitions whose name contains an underscore: that is also very likely to be a violation of
   mathlib's naming convention.
+- the `nameComponents` linter flags linters with misleading name components: for instance,
+  containing a component `nsmul` but not mentioning `Nat` at all
 
 All of these linters are enabled in mathlib by default, but disabled globally
 since they enforce conventions which are inherently subjective.
@@ -405,6 +407,55 @@ such names violate the naming convention. -/
     else return none
 
 end Style.nameCheck
+
+namespace Style.misnamedCoercions
+
+inductive NameComponentCheck
+| NSMul
+| ZSMul
+
+/-- Checks if a lemma `name` has mismatching name components:
+- if it contains the component `nsmul`, it must involve the type `Nat`,
+- if it contains the component `zsmul`, it must involve the type `Int`.
+-/
+def hasMisleadingComponents (name : Name) : MetaM <| Option NameComponentCheck := do
+  -- Does the final name component contain a part `nsmul`?
+  let .str _ s := name | return none
+  let parts := s.split "_" |>.toList
+  if parts.contains "nsmul" then
+    -- Does the declaration reference `Nat`? If so, we are fine.
+    let usedConstants := ((← getEnv).find? name).get!.type.getUsedConstants
+    if !usedConstants.contains ``Nat then
+      return some NameComponentCheck.NSMul
+  else if parts.contains "zsmul" then
+    -- Does the declaration reference `Int`? If so, we are fine.
+    let usedConstants := ((← getEnv).find? name).get!.type.getUsedConstants
+    if !usedConstants.contains ``Int then
+      return some NameComponentCheck.ZSMul
+  return none
+
+/-- Linter that checks for lemmas whose name contains a name component evoking a specific meaning,
+but does not involve the corresponding types: for instance, a component `nsmul` should only occur
+when natural numbers are involved. -/
+@[env_linter] public def nameComponents : Batteries.Linter where
+  noErrorsFound := "no lemmas with misleading name components found."
+  errorsFound := "FOUND lemmas with misleading name components."
+  test declName := do
+    let env ← getEnv
+    unless wasOriginallyTheorem env declName do return none
+    if env.isPrivateOrAutoDecl declName || declName.isInternalDetail ||
+        isDeprecated env declName then
+      return none
+    match ← hasMisleadingComponents declName with
+    | some NameComponentCheck.NSMul =>
+      return m!"The lemma `{.ofConstName declName true}` contains `nsmul` in its name, \
+        but does not involve the type `Nat`"
+    | some NameComponentCheck.ZSMul =>
+      return m!"The lemma `{.ofConstName declName true}` contains `zsmul` in its name, \
+        but does not involve the type `Int`"
+    | none => return none
+
+end Style.misnamedCoercions
 
 /-! ### The "openClassical" linter -/
 

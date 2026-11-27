@@ -473,6 +473,30 @@ open Mathlib.Linter.Style.nameCheck
 
 end
 
+/-! Tests for the `nameComponents` linter -/
+section nameComponents
+
+public lemma foo_nsmul : 1 + 2 = 3 := rfl
+
+public lemma bar_nsmul : True = (True = True) := by simp
+
+public lemma bar_zsmul : True := trivial
+
+public lemma baz_zsmul : (2 : ℤ) + 2 = 4 := rfl
+
+/--
+error: -- Found 2 errors in 12 declarations (plus 0 automatically generated ones) in the current file with 15 linters
+
+/- The `nameComponents` linter reports:
+FOUND lemmas with misleading name components.
+This linter can be disabled with `@[nolint nameComponents]`. -/
+#check bar_nsmul /- The lemma `bar_nsmul` contains `nsmul` in its name, but does not involve the type `Nat` -/
+#check bar_zsmul /- The lemma `bar_zsmul` contains `zsmul` in its name, but does not involve the type `Int` -/
+-/
+#guard_msgs in
+#lint
+end nameComponents
+
 /- Tests for the `openClassical` linter -/
 section openClassical
 
