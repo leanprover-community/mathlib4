@@ -248,6 +248,24 @@ theorem eq_fundamentalUnit_iff (u : (𝓞 K)ˣ) :
       (injective_zpow_iff_not_isOfFinOrder.mpr (not_isOfFinOrder_fundamentalUnit φ)).eq_iff] at hu'
     exact Int.eq_one_or_neg_one_of_mul_eq_one hu'
 
+/-- The fundamental unit is the smallest unit greater than `1` under `φ`. -/
+theorem fundamentalUnit_le_of_one_lt {u : (𝓞 K)ˣ} (hu : 1 < φ u) :
+    φ (fundamentalUnit φ) ≤ φ u := by
+  obtain ⟨n, rfl⟩ := exists_eq_zpow_of_nonneg φ (zero_lt_one.trans hu).le
+  rw [coe_zpow, map_zpow₀, one_lt_zpow_iff_right₀ (one_lt_fundamentalUnit φ)] at hu
+  simpa [coe_zpow] using zpow_right_mono₀ (one_lt_fundamentalUnit φ).le hu
+
+/-- The fundamental unit is the only unit that is greater than `1` under `φ` and smallest
+with this property. -/
+theorem eq_fundamentalUnit_iff_forall_le (u : (𝓞 K)ˣ) :
+    u = fundamentalUnit φ ↔ 1 < φ u ∧ ∀ v : (𝓞 K)ˣ, 1 < φ v → φ u ≤ φ v := by
+  refine ⟨fun h ↦ ?_, fun ⟨h₁, h₂⟩ ↦ ?_⟩
+  · exact h ▸ ⟨one_lt_fundamentalUnit φ, fun v hv ↦ fundamentalUnit_le_of_one_lt φ hv⟩
+  · rw [Units.ext_iff, RingOfIntegers.ext_iff, ← (RingHom.injective φ).eq_iff]
+    apply le_antisymm
+    · exact h₂ (fundamentalUnit φ) (one_lt_fundamentalUnit φ)
+    · exact fundamentalUnit_le_of_one_lt φ h₁
+
 open IsQuadraticExtension in
 attribute [local instance] Units.mulDistribMulActionRight in
 /-- The conjugate of the fundamental unit with respect to `φ` is the fundamental unit with respect
