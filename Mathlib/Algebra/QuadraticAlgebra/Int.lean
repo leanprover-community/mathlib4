@@ -42,6 +42,9 @@ For `a b : ℤ`, this file proves that `QuadraticAlgebra ℚ a b` is the fractio
   of `ℤ` in `QuadraticAlgebra ℚ a b` iff `discr a b` is a fundamental discriminant.
 * `QuadraticAlgebra.Int.isIntegrallyClosed_iff`: `QuadraticAlgebra ℤ a b` is integrally closed iff
   `discr a b` is a fundamental discriminant.
+* `QuadraticAlgebra.Int.isUnit_iff_eq_one_or_neg_one`: if `d < 0` is a fundamental discriminant
+  different from `-3` and `-4`, the only units of `QuadraticAlgebra ℤ (d / 4) (d % 4)` are `1`
+  and `-1`.
 
 ## Tags
 
@@ -304,9 +307,8 @@ theorem algebraMap_algEquivIntegralClosure_symm_apply (h : Int.IsFundamentalDisc
       ((algEquivIntegralClosure h).symm y) = y := by
   rw [← coe_algEquivIntegralClosure_apply h, AlgEquiv.apply_symm_apply]
 
-
-private theorem isUnit_iff_eq_one_or_neg_one_aux {d r s : ℤ} (h₀ : d < 0)
-    (h₃ : d ≠ -3) (h₄ : d ≠ -4) (h₁ : d % 4 = 0 ∨ d % 4 = 1)
+private theorem isUnit_iff_eq_one_or_neg_one_aux {d r s : ℤ}
+    (h₁ : d % 4 = 0 ∨ d % 4 = 1) (h₂ : d < 0) (h₃ : d ≠ -3) (h₄ : d ≠ -4)
     (h : |r * r + d % 4 * r * s - d / 4 * s * s| = 1) :
     s = 0 ∧ (r = 1 ∨ r = -1) := by
   suffices |r * r + d % 4 * r * s - d / 4 * s * s| = 1 → s = 0 from
@@ -319,6 +321,8 @@ private theorem isUnit_iff_eq_one_or_neg_one_aux {d r s : ℤ} (h₀ : d < 0)
   obtain _ | _ := h₁ <;>
   nlinarith [sq_nonneg (2 * r + s)]
 
+/-- If `d < 0` is a fundamental discriminant different from `-3` and `-4`, the only units of
+`QuadraticAlgebra ℤ (d / 4) (d % 4)` are `1` and `-1`. -/
 theorem isUnit_iff_eq_one_or_neg_one {d : ℤ} (h₁ : d.IsFundamentalDiscr)
     (h₂ : d < 0) (h₃ : d ≠ -3) (h₄ : d ≠ -4) {x : QuadraticAlgebra ℤ (d / 4) (d % 4)} :
     IsUnit x ↔ x = 1 ∨ x = -1 := by
@@ -327,8 +331,8 @@ theorem isUnit_iff_eq_one_or_neg_one {d : ℤ} (h₁ : d.IsFundamentalDiscr)
   · rw [← re_smul_add_im_smul x] at h ⊢
     simp only [zsmul_eq_mul, mul_one, norm_def, re_add, re_intCast, Int.cast_eq, re_mul, re_omega,
       mul_zero, im_intCast, im_omega, add_zero, im_add, im_mul, zero_add] at h
-    obtain ⟨him, (hre | hre)⟩ := isUnit_iff_eq_one_or_neg_one_aux h₂ h₃ h₄
-      h₁.emod_four_eq_zero_or_one h <;> simp [him, hre]
+    obtain ⟨him, (hre | hre)⟩ := isUnit_iff_eq_one_or_neg_one_aux
+      h₁.emod_four_eq_zero_or_one h₂ h₃ h₄ h <;> simp [him, hre]
   · rintro (rfl | rfl) <;> simp
 
 end Int
