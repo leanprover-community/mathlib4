@@ -174,8 +174,8 @@ def dual : BddOrd ⥤ BddOrd where
 /-- Constructs an equivalence between bounded orders from an order isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : BddOrd.{u}} (e : α ≃o β) : α ≅ β where
-  hom := ofHom e
-  inv := ofHom e.symm
+  hom := ofHom e.toBoundedOrderHom
+  inv := ofHom e.symm.toBoundedOrderHom
   hom_inv_id := by ext; exact e.symm_apply_apply _
   inv_hom_id := by ext; exact e.apply_symm_apply _
 
