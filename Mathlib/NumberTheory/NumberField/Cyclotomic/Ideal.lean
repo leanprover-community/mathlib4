@@ -290,17 +290,7 @@ end Prime
 
 section toInteger
 
-open Polynomial
-
-variable {m K} [NeZero m]
-
-/-- The minimal polynomial over `ℤ` of a primitive `m`-th root of unity seen in `𝓞 K` is the
-`m`-th cyclotomic polynomial. -/
-theorem _root_.IsPrimitiveRoot.minpoly_toInteger {ζ : K} (hζ : IsPrimitiveRoot ζ m) :
-    minpoly ℤ hζ.toInteger = cyclotomic m ℤ := by
-  rw [← RingOfIntegers.minpoly_coe, hζ.coe_toInteger, cyclotomic_eq_minpoly hζ (NeZero.pos m)]
-
-variable [IsCyclotomicExtension {m} ℚ K]
+variable {m K} [NeZero m] [IsCyclotomicExtension {m} ℚ K]
 
 /-- If `ζ` is a primitive `m`-th root of unity, then the exponent of `ζ` in `𝓞 K` is `1`. -/
 theorem _root_.IsPrimitiveRoot.exponent_toInteger {ζ : K} (hζ : IsPrimitiveRoot ζ m) :

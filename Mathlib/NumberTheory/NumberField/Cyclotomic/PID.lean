@@ -153,7 +153,9 @@ private lemma exists_primesOver_isPrincipal_twentythree :
     · exact mem_span_singleton.mpr ⟨-(3 + 2 * θ ^ 2 + 2 * θ ^ 3 + 3 * θ ^ 4 + θ ^ 5 + θ ^ 7 +
         4 * θ ^ 8 + 4 * θ ^ 9), by grind⟩
     -- Conversely, `1 + X ^ 2 + X ^ 3` takes the value `253 = 11 * 23` at `6`.
-    · exact_mod_cast mem_span_pair_sub_of_dvd_eval 23 6 (1 + X ^ 2 + X ^ 3) (by simp) (by norm_num)
+    · have h := mem_span_pair_sub_of_dvd_eval θ (n := (23 : ℤ)) (a := 6)
+        (g := 1 + X ^ 2 + X ^ 3) (by norm_num)
+      simpa using h
   -- `6` is a primitive `11`-th root of unity mod `23`, hence a root of `Φ₁₁` mod `23`.
   have h6 : ((minpoly ℤ θ).map (Int.castRingHom (ZMod 23))).IsRoot (6 : ℤ) := by
     rw [(zeta_spec 11 ℚ K).minpoly_toInteger, map_cyclotomic_int]
