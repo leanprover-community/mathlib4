@@ -580,7 +580,7 @@ but this is unlikely to happen so we keep the "bad" definition for now. -/
 noncomputable instance instConditionallyCompleteLattice :
     ConditionallyCompleteLattice (Seminorm 𝕜 E) :=
   conditionallyCompleteLatticeOfLatticeOfsSup (Seminorm 𝕜 E) Seminorm.isLUB_sSup fun _ ↦
-    Seminorm.sSup_empty ▸ isBot_bot
+    Seminorm.sSup_empty (𝕜 := 𝕜) (E := E) ▸ isBot_bot
 
 end Classical
 
