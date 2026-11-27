@@ -74,7 +74,7 @@ lemma lie_mem_of_left {s : StrictLieRinehartIdeal A L} {l : L} (h : l ∈ s) (l'
 
 instance : PartialOrder (StrictLieRinehartIdeal A L) := .ofSetLike (StrictLieRinehartIdeal A L)
 
-instance : AddSubgroupClass (StrictLieRinehartIdeal A L) L where
+instance : AddSubgroupClass (StrictLieRinehartIdeal A L) where
   add_mem {s} := s.add_mem
   zero_mem {s} := s.zero_mem
   neg_mem {s} := s.neg_mem

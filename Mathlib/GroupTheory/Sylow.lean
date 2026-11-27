@@ -72,7 +72,7 @@ instance : SetLike (Sylow p G) G where
 
 instance : PartialOrder (Sylow p G) := .ofSetLike (Sylow p G)
 
-instance : SubgroupClass (Sylow p G) G where
+instance : SubgroupClass (Sylow p G) where
   mul_mem := Subgroup.mul_mem _
   one_mem _ := Subgroup.one_mem _
   inv_mem := Subgroup.inv_mem _

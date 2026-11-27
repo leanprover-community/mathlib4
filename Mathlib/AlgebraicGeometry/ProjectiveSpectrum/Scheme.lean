@@ -107,7 +107,7 @@ open DirectSum SetLike.GradedMonoid Localization
 open Finset hiding mk_zero
 
 variable {A σ : Type*}
-variable [CommRing A] [SetLike σ A] [AddSubgroupClass σ A]
+variable [CommRing A] [SetLike σ A] [AddSubgroupClass σ]
 variable (𝒜 : ℕ → σ)
 variable [GradedRing 𝒜]
 

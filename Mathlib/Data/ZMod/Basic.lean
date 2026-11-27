@@ -1200,7 +1200,7 @@ future.
 -/
 
 section Module
-variable {n : ℕ} {S G : Type*} [AddCommGroup G] [SetLike S G] [AddSubgroupClass S G] {K : S} {x : G}
+variable {n : ℕ} {S G : Type*} [AddCommGroup G] [SetLike S G] [AddSubgroupClass S] {K : S} {x : G}
 
 section general
 variable [Module (ZMod n) G] {x : G}

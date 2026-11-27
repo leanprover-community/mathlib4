@@ -113,7 +113,7 @@ theorem ext {𝒜 : ι → σ} (x : Submonoid A)
   congr
 
 section Neg
-variable [NegMemClass σ A] {𝒜 : ι → σ} (x : Submonoid A)
+variable [NegMemClass σ] {𝒜 : ι → σ} (x : Submonoid A)
 
 instance : Neg (NumDenSameDeg 𝒜 x) where
   neg c := ⟨c.deg, ⟨-c.num, neg_mem c.num.property⟩, c.den, c.den_mem⟩
@@ -348,7 +348,7 @@ theorem val_nsmul (n : ℕ) (y : HomogeneousLocalization 𝒜 x) : (n • y).val
 end nsmul
 
 section zsmul
-variable [AddSubgroupClass σ A] {𝒜 : ι → σ} (x : Submonoid A)
+variable [AddSubgroupClass σ] {𝒜 : ι → σ} (x : Submonoid A)
 
 instance : SMul ℤ (HomogeneousLocalization 𝒜 x) :=
   haveI := AddSubgroupClass.zsmulMemClass (S := σ) (M := A)
@@ -360,7 +360,7 @@ theorem val_zsmul (n : ℤ) (y : HomogeneousLocalization 𝒜 x) : (n • y).val
 end zsmul
 
 section Neg
-variable [NegMemClass σ A] {𝒜 : ι → σ} (x : Submonoid A)
+variable [NegMemClass σ] {𝒜 : ι → σ} (x : Submonoid A)
 
 instance : Neg (HomogeneousLocalization 𝒜 x) where
   neg := Quotient.map' Neg.neg fun c1 c2 (h : Localization.mk _ _ = Localization.mk _ _) => by
@@ -376,7 +376,7 @@ theorem val_neg {x} : ∀ y : HomogeneousLocalization 𝒜 x, (-y).val = -y.val 
 
 end Neg
 
-variable [AddSubgroupClass σ A] [AddCommMonoid ι] [DecidableEq ι]
+variable [AddSubgroupClass σ] [AddCommMonoid ι] [DecidableEq ι]
 variable {𝒜 : ι → σ} [GradedRing 𝒜] (x : Submonoid A)
 
 instance hasPow : Pow (HomogeneousLocalization 𝒜 x) ℕ where
@@ -559,7 +559,7 @@ end
 
 section
 
-variable [AddSubgroupClass σ A] {𝒜 : ι → σ} {x : Submonoid A}
+variable [AddSubgroupClass σ] {𝒜 : ι → σ} {x : Submonoid A}
 variable [AddCommMonoid ι] [DecidableEq ι] [GradedRing 𝒜]
 variable (𝒜) (𝔭 : Ideal A) [Ideal.IsPrime 𝔭]
 
@@ -599,7 +599,7 @@ section
 abbrev Away (𝒜 : ι → σ) (f : A) :=
   HomogeneousLocalization 𝒜 (Submonoid.powers f)
 
-variable [AddSubgroupClass σ A] [AddCommMonoid ι] [DecidableEq ι]
+variable [AddSubgroupClass σ] [AddCommMonoid ι] [DecidableEq ι]
 variable (𝒜 : ι → σ) [GradedRing 𝒜] {f : A}
 
 /-- This is a convenient constructor for `Away 𝒜 f` when `f` is homogeneous.
@@ -643,11 +643,11 @@ end
 
 section
 
-variable [AddSubgroupClass σ A] [AddCommMonoid ι] [DecidableEq ι]
+variable [AddSubgroupClass σ] [AddCommMonoid ι] [DecidableEq ι]
 variable {𝒜 : ι → σ} [GradedRing 𝒜]
-variable {B τ : Type*} [CommRing B] [SetLike τ B] [AddSubgroupClass τ B]
+variable {B τ : Type*} [CommRing B] [SetLike τ B] [AddSubgroupClass τ]
 variable {ℬ : ι → τ} [GradedRing ℬ]
-variable {C ψ : Type*} [CommRing C] [SetLike ψ C] [AddSubgroupClass ψ C]
+variable {C ψ : Type*} [CommRing C] [SetLike ψ C] [AddSubgroupClass ψ]
 variable {𝒞 : ι → ψ} [GradedRing 𝒞]
 variable {P : Submonoid A} {Q : Submonoid B}
 
@@ -776,7 +776,7 @@ end
 
 section mapAway
 
-variable [AddSubgroupClass σ A] [AddCommMonoid ι] [DecidableEq ι]
+variable [AddSubgroupClass σ] [AddCommMonoid ι] [DecidableEq ι]
 variable (𝒜 : ι → σ) [GradedRing 𝒜]
 variable {e : ι} {f : A} {g : A} (hg : g ∈ 𝒜 e) {x : A} (hx : x = f * g)
 
@@ -874,7 +874,7 @@ end mapAway
 
 section isLocalization
 
-variable [AddSubgroupClass σ A] {𝒜 : ℕ → σ} [GradedRing 𝒜]
+variable [AddSubgroupClass σ] {𝒜 : ℕ → σ} [GradedRing 𝒜]
 variable {e d : ℕ} {f : A} (hf : f ∈ 𝒜 d) {g : A} (hg : g ∈ 𝒜 e)
 
 /-- The element `t := g ^ d / f ^ e` such that `A_{(fg)} = A_{(f)}[1/t]`. -/
@@ -939,7 +939,7 @@ end isLocalization
 section span
 
 set_option backward.isDefEq.respectTransparency.types false in
-variable [AddSubgroupClass σ A] [AddCommMonoid ι] [DecidableEq ι] {𝒜 : ι → σ} [GradedRing 𝒜] in
+variable [AddSubgroupClass σ] [AddCommMonoid ι] [DecidableEq ι] {𝒜 : ι → σ} [GradedRing 𝒜] in
 /--
 Let `𝒜` be a graded ring, finitely generated (as an algebra) over `𝒜₀` by `{ vᵢ }`,
 where `vᵢ` has degree `dvᵢ`.
@@ -997,7 +997,7 @@ theorem Away.span_mk_prod_pow_eq_top {f : A} {d : ι} (hf : f ∈ 𝒜 d)
     simp [Algebra.smul_def, algebraMap_eq, fromZeroRingHom, Localization.mk_mul,
       -decompose_mul, coe_decompose_mul_of_left_mem_zero 𝒜 r.property]
 
-variable [AddSubgroupClass σ A] {𝒜 : ℕ → σ} [GradedRing 𝒜] in
+variable [AddSubgroupClass σ] {𝒜 : ℕ → σ} [GradedRing 𝒜] in
 /-- This is strictly weaker than `Away.adjoin_mk_prod_pow_eq_top`. -/
 private
 theorem Away.adjoin_mk_prod_pow_eq_top_of_pos {f : A} {d : ℕ} (hf : f ∈ 𝒜 d)
@@ -1060,7 +1060,7 @@ theorem Away.adjoin_mk_prod_pow_eq_top_of_pos {f : A} {d : ℕ} (hf : f ∈ 𝒜
   ext
   simp [Pi.single_apply]
 
-variable [AddSubgroupClass σ A] {𝒜 : ℕ → σ} [GradedRing 𝒜] in
+variable [AddSubgroupClass σ] {𝒜 : ℕ → σ} [GradedRing 𝒜] in
 /--
 Let `𝒜` be a graded ring, finitely generated (as an algebra) over `𝒜₀` by `{ vᵢ }`,
 where `vᵢ` has degree `dvᵢ`.
@@ -1093,7 +1093,7 @@ theorem Away.adjoin_mk_prod_pow_eq_top {f : A} {d : ℕ} (hf : f ∈ 𝒜 d)
     change _ = ∏ x ∈ s.attach, _
     simp [Finset.prod_attach_eq_prod_dite]
 
-variable [AddSubgroupClass σ A] {𝒜 : ℕ → σ} [GradedRing 𝒜] [Algebra.FiniteType (𝒜 0) A] in
+variable [AddSubgroupClass σ] {𝒜 : ℕ → σ} [GradedRing 𝒜] [Algebra.FiniteType (𝒜 0) A] in
 lemma Away.finiteType (f : A) (d : ℕ) (hf : f ∈ 𝒜 d) :
     Algebra.FiniteType (𝒜 0) (Away 𝒜 f) := by
   constructor

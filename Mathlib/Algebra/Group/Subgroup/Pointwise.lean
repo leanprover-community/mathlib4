@@ -40,16 +40,16 @@ open scoped Pointwise
 variable {α G A S : Type*}
 
 @[to_additive (attr := simp, norm_cast)]
-theorem inv_coe_set [InvolutiveInv G] [SetLike S G] [InvMemClass S G] {H : S} : (H : Set G)⁻¹ = H :=
+theorem inv_coe_set [InvolutiveInv G] [SetLike S G] [InvMemClass S] {H : S} : (H : Set G)⁻¹ = H :=
   Set.ext fun _ => inv_mem_iff
 
 @[to_additive (attr := simp)]
-theorem IsSelfInv.of_invMemClass [InvolutiveInv G] [SetLike S G] [InvMemClass S G] (H : S) :
+theorem IsSelfInv.of_invMemClass [InvolutiveInv G] [SetLike S G] [InvMemClass S] (H : S) :
     IsSelfInv (H : Set G) :=
   inv_coe_set
 
 @[to_additive (attr := simp)]
-lemma smul_coe_set [Group G] [SetLike S G] [SubgroupClass S G] {s : S} {a : G} (ha : a ∈ s) :
+lemma smul_coe_set [Group G] [SetLike S G] [SubgroupClass S] {s : S} {a : G} (ha : a ∈ s) :
     a • (s : Set G) = s := by
   ext; simp [Set.mem_smul_set_iff_inv_smul_mem, mul_mem_cancel_left, ha]
 
@@ -58,12 +58,12 @@ lemma coe_set_eq_one [Group G] {s : Subgroup G} : (s : Set G) = 1 ↔ s = ⊥ :=
   (SetLike.ext'_iff.trans (by rfl)).symm
 
 @[to_additive (attr := simp)]
-lemma op_smul_coe_set [Group G] [SetLike S G] [SubgroupClass S G] {s : S} {a : G} (ha : a ∈ s) :
+lemma op_smul_coe_set [Group G] [SetLike S G] [SubgroupClass S] {s : S} {a : G} (ha : a ∈ s) :
     MulOpposite.op a • (s : Set G) = s := by
   ext; simp [Set.mem_smul_set_iff_inv_smul_mem, mul_mem_cancel_right, ha]
 
 @[to_additive (attr := simp, norm_cast)]
-lemma coe_div_coe [SetLike S G] [DivisionMonoid G] [SubgroupClass S G] (H : S) :
+lemma coe_div_coe [SetLike S G] [DivisionMonoid G] [SubgroupClass S] (H : S) :
     H / H = (H : Set G) := by simp [div_eq_mul_inv]
 
 variable [Group G] [AddGroup A] {s : Set G}

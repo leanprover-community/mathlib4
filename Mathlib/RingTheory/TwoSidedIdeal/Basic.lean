@@ -128,7 +128,7 @@ lemma add_mem {x y} (hx : x ∈ I) (hy : y ∈ I) : x + y ∈ I := by simpa usin
 
 lemma neg_mem {x} (hx : x ∈ I) : -x ∈ I := by simpa using! I.ringCon.neg hx
 
-instance : AddSubgroupClass (TwoSidedIdeal R) R where
+instance : AddSubgroupClass (TwoSidedIdeal R) where
   zero_mem := zero_mem
   add_mem := @add_mem _ _
   neg_mem := @neg_mem _ _

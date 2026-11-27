@@ -525,7 +525,7 @@ variable [Π i, TopologicalSpace (R i)]
 section general
 
 @[to_additive]
-instance [Π i, Inv (R i)] [∀ i, InvMemClass (S i) (R i)] [∀ i, ContinuousInv (R i)] :
+instance [Π i, Inv (R i)] [∀ i, InvMemClass (S i)] [∀ i, ContinuousInv (R i)] :
     ContinuousInv (Πʳ i, [R i, B i]_[𝓕]) where
   continuous_inv := by
     rw [continuous_dom]
@@ -564,7 +564,7 @@ instance {G : Type*} [TopologicalSpace G] [Π i, SMul G (R i)] [∀ i, SMulMemCl
   isEmbedding_coe_of_principal.continuousSMul continuous_id rfl
 
 @[to_additive]
-instance [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)] [∀ i, IsTopologicalGroup (R i)] :
+instance [Π i, Group (R i)] [∀ i, SubgroupClass (S i)] [∀ i, IsTopologicalGroup (R i)] :
     IsTopologicalGroup (Πʳ i, [R i, B i]_[𝓟 T]) where
 
 instance [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)] [∀ i, IsTopologicalRing (R i)] :
@@ -604,7 +604,7 @@ instance continuousSMul {G : Type*} [TopologicalSpace G] [Π i, SMul G (R i)]
     exact fun S hS ↦ (continuous_inclusion hS).comp continuous_smul
 
 @[to_additive]
-instance isTopologicalGroup [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)]
+instance isTopologicalGroup [Π i, Group (R i)] [∀ i, SubgroupClass (S i)]
     [∀ i, IsTopologicalGroup (R i)] :
     IsTopologicalGroup (Πʳ i, [R i, B i]) where
 
@@ -619,7 +619,7 @@ Then the restricted product `Πʳ i, [R i, A i]` is a locally compact group. -/
 /-- Assume that each `R i` is a locally compact additive group with `A i` an open subgroup.
 Assume also that all but finitely many `A i`s are compact.
 Then the restricted product `Πʳ i, [R i, A i]` is a locally compact additive group. -/]
-theorem locallyCompactSpace_of_group [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)]
+theorem locallyCompactSpace_of_group [Π i, Group (R i)] [∀ i, SubgroupClass (S i)]
     [∀ i, IsTopologicalGroup (R i)] [∀ i, LocallyCompactSpace (R i)]
     (hBcompact : ∀ᶠ i in cofinite, IsCompact (B i : Set (R i))) :
     LocallyCompactSpace (Πʳ i, [R i, B i]) :=
@@ -629,7 +629,7 @@ theorem locallyCompactSpace_of_group [Π i, Group (R i)] [∀ i, SubgroupClass (
 
 open scoped Pointwise in
 @[to_additive]
-instance [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)] [∀ i, IsTopologicalGroup (R i)]
+instance [Π i, Group (R i)] [∀ i, SubgroupClass (S i)] [∀ i, IsTopologicalGroup (R i)]
     [hAcompact : ∀ i, CompactSpace (B i)] : LocallyCompactSpace (Πʳ i, [R i, B i]) :=
   -- TODO: extract as a lemma
   haveI : ∀ i, WeaklyLocallyCompactSpace (R i) := fun i ↦ .mk fun x ↦

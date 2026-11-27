@@ -312,7 +312,7 @@ variable {module_M : Module R M}
 variable (p p' : Submodule R M)
 variable {x y : M}
 
-instance addSubgroupClass [Module R M] : AddSubgroupClass (Submodule R M) M :=
+instance addSubgroupClass [Module R M] : AddSubgroupClass (Submodule R M) :=
   { Submodule.addSubmonoidClass with neg_mem := fun p {_} => p.toSubMulAction.neg_mem }
 
 protected theorem neg_mem (hx : x ∈ p) : -x ∈ p :=

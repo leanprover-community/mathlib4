@@ -59,7 +59,7 @@ open scoped DirectSum Pointwise
 open DirectSum SetLike Localization TopCat TopologicalSpace CategoryTheory Opposite
 
 variable {A σ : Type*}
-variable [CommRing A] [SetLike σ A] [AddSubgroupClass σ A]
+variable [CommRing A] [SetLike σ A] [AddSubgroupClass σ]
 variable (𝒜 : ℕ → σ) [GradedRing 𝒜]
 
 local notation3 "at " x =>

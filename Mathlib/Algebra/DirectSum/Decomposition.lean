@@ -217,7 +217,7 @@ end AddCommMonoid
 section AddCommGroup
 
 variable [DecidableEq ι] [AddCommGroup M]
-variable [SetLike σ M] [AddSubgroupClass σ M] (ℳ : ι → σ)
+variable [SetLike σ M] [AddSubgroupClass σ] (ℳ : ι → σ)
 variable [Decomposition ℳ]
 
 @[simp]

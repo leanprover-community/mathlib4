@@ -73,7 +73,7 @@ lemma AddSubmonoidClass.nsmulMemClass {S M : Type*} [AddMonoid M] [SetLike S M]
 
 /-- Not registered as an instance because `R` is an `outParam` in `SMulMemClass S R M`. -/
 lemma AddSubgroupClass.zsmulMemClass {S M : Type*} [SubNegMonoid M] [SetLike S M]
-    [AddSubgroupClass S M] : SMulMemClass S ℤ M where
+    [AddSubgroupClass S] : SMulMemClass S ℤ M where
   smul_mem n _x hx := zsmul_mem hx n
 
 namespace SetLike

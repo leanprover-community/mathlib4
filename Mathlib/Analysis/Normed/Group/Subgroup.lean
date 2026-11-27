@@ -78,7 +78,7 @@ namespace SubgroupClass
 
 section SeminormedGroup
 
-variable [SeminormedGroup E] {S : Type*} [SetLike S E] [SubgroupClass S E] (s : S)
+variable [SeminormedGroup E] {S : Type*} [SetLike S E] [SubgroupClass S] (s : S)
 
 /-- A subgroup of a seminormed group is also a seminormed group,
 with the restriction of the norm. -/
@@ -98,17 +98,17 @@ end SeminormedGroup
 
 @[to_additive]
 instance (priority := 75) seminormedCommGroup [SeminormedCommGroup E] {S : Type*} [SetLike S E]
-    [SubgroupClass S E] (s : S) : SeminormedCommGroup s :=
+    [SubgroupClass S] (s : S) : SeminormedCommGroup s :=
   fast_instance% SeminormedCommGroup.induced _ _ (SubgroupClass.subtype s)
 
 @[to_additive]
-instance (priority := 75) normedGroup [NormedGroup E] {S : Type*} [SetLike S E] [SubgroupClass S E]
+instance (priority := 75) normedGroup [NormedGroup E] {S : Type*} [SetLike S E] [SubgroupClass S]
     (s : S) : NormedGroup s :=
   fast_instance% NormedGroup.induced _ _ (SubgroupClass.subtype s) Subtype.coe_injective
 
 @[to_additive]
 instance (priority := 75) normedCommGroup [NormedCommGroup E] {S : Type*} [SetLike S E]
-    [SubgroupClass S E] (s : S) : NormedCommGroup s :=
+    [SubgroupClass S] (s : S) : NormedCommGroup s :=
   fast_instance% NormedCommGroup.induced _ _ (SubgroupClass.subtype s) Subtype.coe_injective
 
 end SubgroupClass

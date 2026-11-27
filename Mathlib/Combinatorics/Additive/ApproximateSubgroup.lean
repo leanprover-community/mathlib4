@@ -117,7 +117,7 @@ lemma image {F H : Type*} [Group H] [FunLike F G H] [MonoidHomClass F G H] (f : 
       gcongr
 
 @[to_additive]
-lemma subgroup {S : Type*} [SetLike S G] [SubgroupClass S G] {H : S} :
+lemma subgroup {S : Type*} [SetLike S G] [SubgroupClass S] {H : S} :
     IsApproximateSubgroup 1 (H : Set G) where
   one_mem := OneMemClass.one_mem H
   inv_eq_self := inv_coe_set

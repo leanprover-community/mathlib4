@@ -56,7 +56,7 @@ instance : SetLike (LieSubmodule R L M) M where
 
 instance : PartialOrder (LieSubmodule R L M) := .ofSetLike (LieSubmodule R L M)
 
-instance : AddSubgroupClass (LieSubmodule R L M) M where
+instance : AddSubgroupClass (LieSubmodule R L M) where
   add_mem {N} _ _ := N.add_mem'
   zero_mem N := N.zero_mem'
   neg_mem {N} x hx := show -x ∈ N.toSubmodule from neg_mem hx

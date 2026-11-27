@@ -65,15 +65,15 @@ variable {G : Type*} [Group G] {A : Type*} [AddGroup A]
 
 section SubgroupClass
 
-/-- `InvMemClass S G` states `S` is a type of subsets `s ⊆ G` closed under inverses. -/
-class InvMemClass (S : Type*) (G : outParam Type*) [Inv G] [SetLike S G] : Prop where
+/-- `InvMemClass S` states `S` is a type of subsets `s ⊆ G` closed under inverses. -/
+class InvMemClass (S : Type*) {G : outParam Type*} [Inv G] [SetLike S G] : Prop where
   /-- `s` is closed under inverses -/
   inv_mem : ∀ {s : S} {x}, x ∈ s → x⁻¹ ∈ s
 
 export InvMemClass (inv_mem)
 
-/-- `NegMemClass S G` states `S` is a type of subsets `s ⊆ G` closed under negation. -/
-class NegMemClass (S : Type*) (G : outParam Type*) [Neg G] [SetLike S G] : Prop where
+/-- `NegMemClass S` states `S` is a type of subsets `s ⊆ G` closed under negation. -/
+class NegMemClass (S : Type*) {G : outParam Type*} [Neg G] [SetLike S G] : Prop where
   /-- `s` is closed under negation -/
   neg_mem : ∀ {s : S} {x}, x ∈ s → -x ∈ s
 
@@ -107,25 +107,25 @@ theorem mem_of_inv_notMem (x : G) (h : x⁻¹ ∉ s) : x ∈ s := by
 
 end HasMemOrInvMem
 
-/-- `SubgroupClass S G` states `S` is a type of subsets `s ⊆ G` that are subgroups of `G`. -/
-class SubgroupClass (S : Type*) (G : outParam Type*) [DivInvMonoid G] [SetLike S G] : Prop
-    extends SubmonoidClass S G, InvMemClass S G
+/-- `SubgroupClass S` states `S` is a type of subsets `s ⊆ G` that are subgroups of `G`. -/
+class SubgroupClass (S : Type*) {G : outParam Type*} [DivInvMonoid G] [SetLike S G] : Prop
+    extends SubmonoidClass S G, InvMemClass S
 
-/-- `AddSubgroupClass S G` states `S` is a type of subsets `s ⊆ G` that are
+/-- `AddSubgroupClass S` states `S` is a type of subsets `s ⊆ G` that are
 additive subgroups of `G`. -/
-class AddSubgroupClass (S : Type*) (G : outParam Type*) [SubNegMonoid G] [SetLike S G] : Prop
-    extends AddSubmonoidClass S G, NegMemClass S G
+class AddSubgroupClass (S : Type*) {G : outParam Type*} [SubNegMonoid G] [SetLike S G] : Prop
+    extends AddSubmonoidClass S G, NegMemClass S
 
 attribute [to_additive] InvMemClass SubgroupClass
 
 attribute [aesop 90% (rule_sets := [SetLike]), membership .] inv_mem neg_mem
 
 @[to_additive (attr := simp)]
-theorem inv_mem_iff {S G} [InvolutiveInv G] {_ : SetLike S G} [InvMemClass S G] {H : S}
+theorem inv_mem_iff {S G} [InvolutiveInv G] {_ : SetLike S G} [InvMemClass S] {H : S}
     {x : G} : x⁻¹ ∈ H ↔ x ∈ H :=
   ⟨fun h => inv_inv x ▸ inv_mem h, inv_mem⟩
 
-variable {M S : Type*} [DivInvMonoid M] [SetLike S M] [hSM : SubgroupClass S M] {H K : S}
+variable {M S : Type*} [DivInvMonoid M] [SetLike S M] [hSM : SubgroupClass S] {H K : S}
 
 /-- A subgroup is closed under division. -/
 @[to_additive (attr := aesop 90% (rule_sets := [SetLike]), membership .)
@@ -142,7 +142,7 @@ theorem zpow_mem {x : M} (hx : x ∈ K) : ∀ n : ℤ, x ^ n ∈ K
     rw [zpow_negSucc]
     exact inv_mem (pow_mem hx n.succ)
 
-variable [SetLike S G] [SubgroupClass S G]
+variable [SetLike S G] [SubgroupClass S]
 
 @[to_additive]
 theorem exists_inv_mem_iff_exists_mem {P : G → Prop} :
@@ -163,7 +163,7 @@ namespace InvMemClass
 
 /-- A subgroup of a group inherits an inverse. -/
 @[to_additive /-- An additive subgroup of an `AddGroup` inherits an inverse. -/]
-instance inv {G S : Type*} [Inv G] [SetLike S G] [InvMemClass S G] {H : S} : Inv H :=
+instance inv {G S : Type*} [Inv G] [SetLike S G] [InvMemClass S] {H : S} : Inv H :=
   ⟨fun a => ⟨a⁻¹, inv_mem a.property⟩⟩
 
 @[to_additive (attr := simp, norm_cast)]
@@ -190,12 +190,12 @@ theorem subset_union [LE S] [IsMemLE S G] {H K L : S} :
 
 /-- A subgroup of a group inherits a division -/
 @[to_additive /-- An additive subgroup of an `AddGroup` inherits a subtraction. -/]
-instance div {G S : Type*} [DivInvMonoid G] [SetLike S G] [SubgroupClass S G] {H : S} : Div H :=
+instance div {G S : Type*} [DivInvMonoid G] [SetLike S G] [SubgroupClass S] {H : S} : Div H :=
   ⟨fun a b => ⟨a / b, div_mem a.property b.property⟩⟩
 
 /-- A subgroup of a group inherits an integer power. -/
 @[to_additive /-- An additive subgroup of an `AddGroup` inherits an integer scaling. -/]
-instance instZPow {M S} [DivInvMonoid M] [SetLike S M] [SubgroupClass S M] {H : S} : Pow H ℤ :=
+instance instZPow {M S} [DivInvMonoid M] [SetLike S M] [SubgroupClass S] {H : S} : Pow H ℤ :=
   ⟨fun a n => ⟨a.val ^ n, zpow_mem a.property n⟩⟩
 
 @[to_additive (attr := simp, norm_cast)]
@@ -214,7 +214,7 @@ instance (priority := 75) toGroup : Group H := fast_instance%
 -- Prefer subclasses of `CommGroup` over subclasses of `SubgroupClass`.
 /-- A subgroup of a `CommGroup` is a `CommGroup`. -/
 @[to_additive /-- An additive subgroup of an `AddCommGroup` is an `AddCommGroup`. -/]
-instance (priority := 75) toCommGroup {G : Type*} [CommGroup G] [SetLike S G] [SubgroupClass S G] :
+instance (priority := 75) toCommGroup {G : Type*} [CommGroup G] [SetLike S G] [SubgroupClass S] :
     CommGroup H := fast_instance%
   Subtype.coe_injective.commGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
@@ -331,7 +331,7 @@ initialize_simps_projections AddSubgroup (carrier → coe, as_prefix coe)
 /-- The actual `Subgroup` obtained from an element of a `SubgroupClass` -/
 @[to_additive (attr := simps) /-- The actual `AddSubgroup` obtained from an element of a
 `AddSubgroupClass` -/]
-def ofClass {S G : Type*} [Group G] [SetLike S G] [SubgroupClass S G]
+def ofClass {S G : Type*} [Group G] [SetLike S G] [SubgroupClass S]
     (s : S) : Subgroup G :=
   ⟨⟨⟨s, MulMemClass.mul_mem⟩, OneMemClass.one_mem s⟩, InvMemClass.inv_mem⟩
 
@@ -342,7 +342,7 @@ instance (priority := 100) : CanLift (Set G) (Subgroup G) (↑)
 
 -- TODO: Below can probably be written more uniformly
 @[to_additive]
-instance : SubgroupClass (Subgroup G) G where
+instance : SubgroupClass (Subgroup G) where
   inv_mem := Subgroup.inv_mem' _
   one_mem _ := (Subgroup.toSubmonoid _).one_mem'
   mul_mem := (Subgroup.toSubmonoid _).mul_mem'
@@ -706,7 +706,7 @@ end Subgroup
 @[to_additive]
 theorem Set.injOn_iff_map_eq_one {F G H S : Type*} [Group G] [Group H]
     [FunLike F G H] [MonoidHomClass F G H] (f : F)
-    [SetLike S G] [OneMemClass S G] [MulMemClass S G] [InvMemClass S G] (s : S) :
+    [SetLike S G] [OneMemClass S G] [MulMemClass S G] [InvMemClass S] (s : S) :
     Set.InjOn f s ↔ ∀ a ∈ s, f a = 1 → a = 1 where
   mp h a ha ha' := by
     refine h ha (one_mem s) ?_

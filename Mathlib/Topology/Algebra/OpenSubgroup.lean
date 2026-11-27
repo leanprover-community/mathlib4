@@ -79,7 +79,7 @@ instance : SetLike (OpenSubgroup G) G where
 @[to_additive] instance : PartialOrder (OpenSubgroup G) := .ofSetLike (OpenSubgroup G)
 
 @[to_additive]
-instance : SubgroupClass (OpenSubgroup G) G where
+instance : SubgroupClass (OpenSubgroup G) where
   mul_mem := Subsemigroup.mul_mem' _
   one_mem U := U.one_mem'
   inv_mem := Subgroup.inv_mem' _
@@ -504,7 +504,7 @@ instance : SetLike (OpenNormalSubgroup G) G where
 @[to_additive] instance : PartialOrder (OpenNormalSubgroup G) := .ofSetLike (OpenNormalSubgroup G)
 
 @[to_additive]
-instance : SubgroupClass (OpenNormalSubgroup G) G where
+instance : SubgroupClass (OpenNormalSubgroup G) where
   mul_mem := Subsemigroup.mul_mem' _
   one_mem U := U.one_mem'
   inv_mem := Subgroup.inv_mem' _
