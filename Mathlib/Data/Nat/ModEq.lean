@@ -109,7 +109,7 @@ theorem _root_.Dvd.dvd.zero_modEq_nat (h : n ∣ a) : 0 ≡ a [MOD n] :=
   h.modEq_zero_nat.symm
 
 theorem modEq_iff_dvd : a ≡ b [MOD n] ↔ (n : ℤ) ∣ b - a := by
-  rw [ModEq, eq_comm, ← Int.natCast_inj, Int.natCast_mod, Int.natCast_mod,
+  rw [ModEq, eq_comm, ← Int.natCast_inj, Int.natCast_emod, Int.natCast_emod,
     Int.emod_eq_emod_iff_emod_sub_eq_zero, Int.dvd_iff_emod_eq_zero]
 
 alias ⟨ModEq.dvd, modEq_of_dvd⟩ := modEq_iff_dvd
@@ -493,14 +493,14 @@ theorem chineseRemainder_modEq_unique (co : n.Coprime m) {a b z}
     mod_lcm (hzan.trans ((chineseRemainder co a b).prop.1).symm)
       (hzbm.trans ((chineseRemainder co a b).prop.2).symm)
 
+theorem modEq_and_modEq_iff_modEq_lcm {a b m n : ℕ} :
+    a ≡ b [MOD m] ∧ a ≡ b [MOD n] ↔ a ≡ b [MOD lcm m n] :=
+  ⟨fun ⟨hm, hn⟩ ↦ mod_lcm hm hn,
+    fun h ↦ ⟨h.of_dvd (dvd_lcm_left m n), h.of_dvd (dvd_lcm_right m n)⟩⟩
+
 theorem modEq_and_modEq_iff_modEq_mul {a b m n : ℕ} (hmn : m.Coprime n) :
-    a ≡ b [MOD m] ∧ a ≡ b [MOD n] ↔ a ≡ b [MOD m * n] :=
-  ⟨fun h => by
-    rw [Nat.modEq_iff_dvd, Nat.modEq_iff_dvd, ← Int.dvd_natAbs, Int.natCast_dvd_natCast,
-      ← Int.dvd_natAbs, Int.natCast_dvd_natCast] at h
-    rw [Nat.modEq_iff_dvd, ← Int.dvd_natAbs, Int.natCast_dvd_natCast]
-    exact hmn.mul_dvd_of_dvd_of_dvd h.1 h.2,
-   fun h => ⟨h.of_mul_right _, h.of_mul_left _⟩⟩
+    a ≡ b [MOD m] ∧ a ≡ b [MOD n] ↔ a ≡ b [MOD m * n] := by
+  rw [modEq_and_modEq_iff_modEq_lcm, hmn.lcm_eq_mul]
 
 theorem coprime_of_mul_modEq_one (b : ℕ) {a n : ℕ} (h : a * b ≡ 1 [MOD n]) : a.Coprime n := by
   obtain ⟨g, hh⟩ := Nat.gcd_dvd_right a n

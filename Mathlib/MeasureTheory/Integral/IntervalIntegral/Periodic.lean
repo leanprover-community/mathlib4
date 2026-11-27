@@ -7,7 +7,8 @@ module
 
 public import Mathlib.MeasureTheory.Measure.Haar.Quotient
 public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
-public import Mathlib.Topology.Algebra.Order.Floor
+
+import Mathlib.Topology.Algebra.Order.Floor
 
 /-!
 # Integrals of periodic functions
@@ -133,7 +134,7 @@ noncomputable def measurableEquivIoc (a : ℝ) : AddCircle T ≃ᵐ Ioc a (a + T
   measurable_toFun := measurable_of_measurable_on_compl_singleton _
     (continuousOn_iff_continuous_domRestrict.mp <| continuousOn_of_forall_continuousAt fun _x hx =>
       continuousAt_equivIoc T a hx).measurable
-  measurable_invFun := AddCircle.measurable_mk'.comp measurable_subtype_coe
+  measurable_invFun := AddCircle.measurable_mk'.comp measurable_subtypeVal
 
 /-- The isomorphism `AddCircle T ≃ Ico a (a + T)` whose inverse is the natural quotient map,
   as an equivalence of measurable spaces. -/
@@ -142,7 +143,7 @@ noncomputable def measurableEquivIco (a : ℝ) : AddCircle T ≃ᵐ Ico a (a + T
   measurable_toFun := measurable_of_measurable_on_compl_singleton _
     (continuousOn_iff_continuous_domRestrict.mp <| continuousOn_of_forall_continuousAt fun _x hx =>
       continuousAt_equivIco T a hx).measurable
-  measurable_invFun := AddCircle.measurable_mk'.comp measurable_subtype_coe
+  measurable_invFun := AddCircle.measurable_mk'.comp measurable_subtypeVal
 
 /-- The equivalence `equivIoc` is measure preserving with respect to the natural volume measures. -/
 lemma measurePreserving_equivIoc {a : ℝ} :
@@ -171,13 +172,13 @@ protected theorem lintegral_preimage (t : ℝ) (f : AddCircle T → ℝ≥0∞) 
     MeasurableEquiv.coe_mk, Equiv.coe_fn_symm_mk] at this
   rw [← (AddCircle.measurePreserving_mk T t).map_eq]
   convert this.symm using 1
-  · rw [← map_comap_subtype_coe m _]
-    exact MeasurableEmbedding.lintegral_map (MeasurableEmbedding.subtype_coe m) _
+  · rw [← map_comap_subtypeVal m _]
+    exact MeasurableEmbedding.lintegral_map (MeasurableEmbedding.subtypeVal m) _
   · congr 1
     have : ((↑) : Ioc t (t + T) → AddCircle T) = ((↑) : ℝ → AddCircle T) ∘ ((↑) : _ → ℝ) := by
       ext1 x; rfl
     simp_rw [this]
-    rw [← map_map AddCircle.measurable_mk' measurable_subtype_coe, ← map_comap_subtype_coe m]
+    rw [← map_map AddCircle.measurable_mk' measurable_subtypeVal, ← map_comap_subtypeVal m]
     rfl
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -195,7 +196,7 @@ protected theorem integral_preimage (t : ℝ) (f : AddCircle T → E) :
   have : ((↑) : Ioc t (t + T) → AddCircle T) = ((↑) : ℝ → AddCircle T) ∘ ((↑) : _ → ℝ) := by
     ext1 x; rfl
   simp_rw [this]
-  rw [← map_map AddCircle.measurable_mk' measurable_subtype_coe, ← map_comap_subtype_coe m]
+  rw [← map_map AddCircle.measurable_mk' measurable_subtypeVal, ← map_comap_subtypeVal m]
   rfl
 
 /-- The integral of an almost-everywhere strongly measurable function over `AddCircle T` is equal
@@ -224,7 +225,7 @@ lemma MeasureTheory.MemLp.memLp_liftIoc {T : ℝ} [hT : Fact (0 < T)] {t : ℝ} 
       MemLp (AddCircle.liftIoc T t f) p := by
   simp only [AddCircle.liftIoc, Set.domRestrict_def, Function.comp_def]
   apply hLp.comp_measurePreserving
-  refine .comp (measurePreserving_subtype_coe measurableSet_Ioc) ?_
+  refine .comp (measurePreserving_subtypeVal measurableSet_Ioc) ?_
   exact AddCircle.measurePreserving_equivIoc T
 
 namespace UnitAddCircle
@@ -305,7 +306,7 @@ theorem intervalIntegrable {t : ℝ} (h₁f : Function.Periodic f T)
   apply IntervalIntegrable.trans_iterate
   -- Show integrability over a shifted period
   intro k hk
-  convert (IntervalIntegrable.comp_sub_right h₂f ((k - n₁) * T) enorm_ne_top) using 1
+  convert (IntervalIntegrable.comp_sub_right h₂f ((k - n₁) * T) eNorm_ne_top) using 1
   · funext x
     simpa using (h₁f.sub_int_mul_eq (k - n₁)).symm
   · simp [a, Nat.cast_add]
@@ -459,8 +460,8 @@ theorem tendsto_atTop_intervalIntegral_of_pos'
 tends to `-∞` as `t` tends to `-∞`. -/
 theorem tendsto_atBot_intervalIntegral_of_pos'
     (h_int : IntervalIntegrable g MeasureSpace.volume 0 T) (h₀ : ∀ x, 0 < g x) (hT : 0 < T) :
-    Tendsto (fun t => ∫ x in 0..t, g x) atBot atBot := by
-  exact hg.tendsto_atBot_intervalIntegral_of_pos (intervalIntegral_pos_of_pos h_int h₀ hT) hT
+    Tendsto (fun t => ∫ x in 0..t, g x) atBot atBot :=
+  hg.tendsto_atBot_intervalIntegral_of_pos (intervalIntegral_pos_of_pos h_int h₀ hT) hT
 
 end RealValued
 

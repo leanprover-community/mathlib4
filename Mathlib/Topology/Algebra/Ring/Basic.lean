@@ -15,7 +15,6 @@ public import Mathlib.Topology.Algebra.Group.Subgroup
 import Mathlib.Topology.Algebra.Group.Neighborhood
 
 /-!
-
 # Topological (semi)rings
 
 A topological (semi)ring is a (semi)ring equipped with a topology such that all operations are
@@ -89,9 +88,6 @@ well since it is just multiplication with `-1`. -/
 theorem IsSemitopologicalSemiring.continuousNeg_of_mul [TopologicalSpace R] [NonAssocRing R]
     [SeparatelyContinuousMul R] : ContinuousNeg R where
   continuous_neg := by simpa using continuous_id.const_mul (-1 : R)
-
-@[deprecated (since := "2026-03-13")] alias IsTopologicalSemiring.continuousNeg_of_mul :=
-  IsSemitopologicalSemiring.continuousNeg_of_mul
 
 /-- If `R` is a ring which is a semitopological semiring, then it is automatically a
 semitopological ring. This exists so that one can place a topological ring structure on `R` without
@@ -576,11 +572,11 @@ set_option backward.privateInPublic true in
 private def def_sInf (S : Set (RingTopology R)) : RingTopology R :=
   let _ := sInf (toTopologicalSpace '' S)
   { toContinuousAdd := continuousAdd_sInf <| forall_mem_image.2 fun t _ =>
-      let _ := t.1; t.toContinuousAdd
+      let _ := t.toTopologicalSpace; t.toContinuousAdd
     toContinuousMul := continuousMul_sInf <| forall_mem_image.2 fun t _ =>
-      let _ := t.1; t.toContinuousMul
+      let _ := t.toTopologicalSpace; t.toContinuousMul
     toContinuousNeg := continuousNeg_sInf <| forall_mem_image.2 fun t _ =>
-      let _ := t.1; t.toContinuousNeg }
+      let _ := t.toTopologicalSpace; t.toContinuousNeg }
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
@@ -627,7 +623,7 @@ and an injective ring homomorphism `f : T →+* R` -/
 @[simps!]
 def AbsoluteValue.comp {R S T : Type*} [Semiring T] [Semiring R] [Semiring S] [PartialOrder S]
     (v : AbsoluteValue R S) {f : T →+* R} (hf : Function.Injective f) : AbsoluteValue T S where
-  toMulHom := v.1.comp f
+  toMulHom := v.toMulHom.comp f
   nonneg' _ := v.nonneg _
   eq_zero' _ := v.eq_zero.trans (map_eq_zero_iff f hf)
   add_le' _ _ := congr(v $(map_add f ..)).trans_le (v.add_le _ _)

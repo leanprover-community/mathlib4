@@ -39,7 +39,6 @@ The main definitions are in the `AdjoinRoot` namespace.
 
 * `equiv : (AdjoinRoot f →ₐ[F] E) ≃ {x // x ∈ f.aroots E}` a
   bijection between algebra homomorphisms from `AdjoinRoot` and roots of `f` in `S`
-
 -/
 
 @[expose] public section
@@ -96,7 +95,7 @@ def mk : R[X] →+* AdjoinRoot f :=
 @[elab_as_elim]
 theorem induction_on {C : AdjoinRoot f → Prop} (x : AdjoinRoot f) (ih : ∀ p : R[X], C (mk f p)) :
     C x :=
-  Quotient.inductionOn' x ih
+  Quotient.inductionOn x ih
 
 /-- Embedding of the original ring `R` into `AdjoinRoot f`. -/
 def of : R →+* AdjoinRoot f :=
@@ -702,7 +701,8 @@ def powerBasisAux' (hg : g.Monic) : Basis (Fin g.natDegree) R (AdjoinRoot g) :=
         funext fun i => by simp only [(modByMonicHom hg).map_add, coeff_add, Pi.add_apply]
       map_smul' := fun f₁ f₂ =>
         funext fun i => by
-          simp only [(modByMonicHom hg).map_smul, coeff_smul, Pi.smul_apply, RingHom.id_apply]
+          simp only [(modByMonicHom hg).map_smul, AddMonoidAlgebra.coeff_smul_apply,
+            Pi.smul_apply, RingHom.id_apply]
       left_inv f := AdjoinRoot.induction_on _ f fun f => Eq.symm <| mk_eq_mk.mpr <| by
         simp only [modByMonicHom_mk, sum_modByMonic_coeff hg degree_le_natDegree]
         rw [modByMonic_eq_sub_mul_div, sub_sub_cancel]
@@ -712,7 +712,7 @@ def powerBasisAux' (hg : g.Monic) : Basis (Fin g.natDegree) R (AdjoinRoot g) :=
           nontriviality R
           simp only [modByMonicHom_mk]
           rw [(modByMonic_eq_self_iff hg).mpr, finsetSum_coeff]
-          · simp_rw [coeff_monomial, Fin.val_eq_val, Finset.sum_ite_eq',
+          · simp_rw [coeff_monomial, Finsupp.single_apply, Fin.val_eq_val, Finset.sum_ite_eq',
               ite_eq_left (Finset.mem_univ _)]
           · simp_rw [← C_mul_X_pow_eq_monomial]
             exact (degree_eq_natDegree hg.ne_zero).symm ▸ degree_sum_fin_lt _ }
@@ -795,7 +795,7 @@ def powerBasisAux (hf : f ≠ 0) : Basis (Fin f.natDegree) K (AdjoinRoot f) := b
   let f' := f * C f.leadingCoeff⁻¹
   have deg_f' : f'.natDegree = f.natDegree := by
     rw [natDegree_mul hf, natDegree_C, add_zero]
-    · rwa [Ne, C_eq_zero, inv_eq_zero, leadingCoeff_eq_zero]
+    rwa [Ne, C_eq_zero, inv_eq_zero, leadingCoeff_eq_zero]
   have minpoly_eq : minpoly K (root f) = f' := minpoly_root hf
   apply Basis.mk (v := fun i : Fin f.natDegree ↦ root f ^ i.val)
   · rw [← deg_f', ← minpoly_eq]
@@ -950,16 +950,10 @@ def quotMapOfEquivQuotMapCMapMk :
       AdjoinRoot f ⧸ (I.map (C : R →+* R[X])).map (AdjoinRoot.mk f) :=
   Ideal.quotEquivOfEq (by rw [of, AdjoinRoot.mk, Ideal.map_map])
 
-@[deprecated (since := "2026-03-02")]
-alias quotMapOfEquivQuotMapCMapSpanMk := quotMapOfEquivQuotMapCMapMk
-
 @[simp]
 theorem quotMapOfEquivQuotMapCMapMk_mk (x : AdjoinRoot f) :
     quotMapOfEquivQuotMapCMapMk I f (Ideal.Quotient.mk (I.map (of f)) x) =
       Ideal.Quotient.mk (Ideal.map (Ideal.Quotient.mk (span {f})) (I.map (C : R →+* R[X]))) x := rfl
-
-@[deprecated (since := "2026-03-02")]
-alias quotMapOfEquivQuotMapCMapSpanMk_mk := quotMapOfEquivQuotMapCMapMk_mk
 
 --this lemma should have the simp tag but this causes a lint issue
 set_option backward.isDefEq.respectTransparency.types false in
@@ -970,9 +964,6 @@ theorem quotMapOfEquivQuotMapCMapMk_symm_mk (x : AdjoinRoot f) :
   rw [quotMapOfEquivQuotMapCMapMk, Ideal.quotEquivOfEq_symm]
   exact Ideal.quotEquivOfEq_mk _ _
 
-@[deprecated (since := "2026-03-02")]
-alias quotMapOfEquivQuotMapCMapSpanMk_symm_mk := quotMapOfEquivQuotMapCMapMk_symm_mk
-
 /-- The natural isomorphism `R[α]/((I[x] ⊔ (f)) / (f)) ≅ (R[x]/I[x])/((f) ⊔ I[x] / I[x])`
   for `α` a root of `f : R[X]` and `I : Ideal R` -/
 def quotMapCMapSpanMkEquivQuotMapCQuotMapMk :
@@ -981,17 +972,11 @@ def quotMapCMapSpanMkEquivQuotMapCQuotMapMk :
         (span ({f} : Set R[X])).map (Ideal.Quotient.mk (I.map (C : R →+* R[X]))) :=
   quotQuotEquivComm (Ideal.span ({f} : Set R[X])) (I.map (C : R →+* R[X]))
 
-@[deprecated (since := "2026-03-02")]
-alias quotMapCMapSpanMkEquivQuotMapCQuotMapSpanMk := quotMapCMapSpanMkEquivQuotMapCQuotMapMk
-
 -- This lemma should have the simp tag but this causes a lint issue.
 theorem quotMapCMapSpanMkEquivQuotMapCQuotMapMk_mk (p : R[X]) :
     quotMapCMapSpanMkEquivQuotMapCQuotMapMk I f (Ideal.Quotient.mk _ (mk f p)) =
       quotQuotMk (I.map C) (span {f}) p :=
   rfl
-
-@[deprecated (since := "2026-03-02")]
-alias quotMapCMapSpanMkEquivQuotMapCQuotMapSpanMk_mk := quotMapCMapSpanMkEquivQuotMapCQuotMapMk_mk
 
 @[simp]
 theorem quotMapCMapSpanMkEquivQuotMapCQuotMapMk_symm_quotQuotMk (p : R[X]) :
@@ -999,10 +984,6 @@ theorem quotMapCMapSpanMkEquivQuotMapCQuotMapMk_symm_quotQuotMk (p : R[X]) :
       Ideal.Quotient.mk (Ideal.map (Ideal.Quotient.mk (span {f})) (I.map (C : R →+* R[X])))
         (mk f p) :=
   rfl
-
-@[deprecated (since := "2026-03-02")]
-alias quotMapCMapSpanMkEquivQuotMapCQuotMapSpanMk_symm_quotQuotMk :=
-  quotMapCMapSpanMkEquivQuotMapCQuotMapMk_symm_quotQuotMk
 
 /-- The natural isomorphism `(R/I)[x]/(f mod I) ≅ (R[x]/I*R[x])/(f mod I[x])` where
   `f : R[X]` and `I : Ideal R` -/
@@ -1065,28 +1046,25 @@ theorem quotAdjoinRootEquivQuotPolynomialQuot_symm_mk_mk (p : R[X]) :
 noncomputable def quotEquivQuotMap (f : R[X]) (I : Ideal R) :
     (AdjoinRoot f ⧸ Ideal.map (of f) I) ≃ₐ[R]
       (R ⧸ I)[X] ⧸ Ideal.span ({Polynomial.map (Ideal.Quotient.mk I) f} : Set (R ⧸ I)[X]) :=
-  AlgEquiv.ofRingEquiv
-    (show ∀ x, (quotAdjoinRootEquivQuotPolynomialQuot I f) (algebraMap R _ x) = algebraMap R _ x
-      from fun x => by
+  .ofCommutes (e := quotAdjoinRootEquivQuotPolynomialQuot I f)
+    fun x => by
       have :
         algebraMap R (AdjoinRoot f ⧸ Ideal.map (of f) I) x =
           Ideal.Quotient.mk (Ideal.map (AdjoinRoot.of f) I) ((mk f) (C x)) :=
         rfl
       rw [this, quotAdjoinRootEquivQuotPolynomialQuot_mk_of, map_C, Quotient.alg_map_eq]
-      simp only [RingHom.comp_apply, Quotient.algebraMap_eq, Polynomial.algebraMap_apply])
+      simp only [RingHom.comp_apply, Quotient.algebraMap_eq, Polynomial.algebraMap_apply]
 
 theorem quotEquivQuotMap_apply_mk (f g : R[X]) (I : Ideal R) :
     AdjoinRoot.quotEquivQuotMap f I (Ideal.Quotient.mk (Ideal.map (of f) I) (AdjoinRoot.mk f g)) =
       Ideal.Quotient.mk (Ideal.span ({Polynomial.map (Ideal.Quotient.mk I) f} : Set (R ⧸ I)[X]))
-      (g.map (Ideal.Quotient.mk I)) := by
-  rw [AdjoinRoot.quotEquivQuotMap_apply, AdjoinRoot.quotAdjoinRootEquivQuotPolynomialQuot_mk_of]
+      (g.map (Ideal.Quotient.mk I)) := rfl
 
 theorem quotEquivQuotMap_symm_apply_mk (f g : R[X]) (I : Ideal R) :
     (AdjoinRoot.quotEquivQuotMap f I).symm (Ideal.Quotient.mk _
       (Polynomial.map (Ideal.Quotient.mk I) g)) =
         Ideal.Quotient.mk (Ideal.map (of f) I) (AdjoinRoot.mk f g) := by
-  rw [AdjoinRoot.quotEquivQuotMap_symm_apply,
-    AdjoinRoot.quotAdjoinRootEquivQuotPolynomialQuot_symm_mk_mk]
+  simp; rfl
 
 end
 
@@ -1141,7 +1119,7 @@ noncomputable def quotientEquivQuotientMinpolyMap (pb : PowerBasis R S) (I : Ide
     (S ⧸ I.map (algebraMap R S)) ≃ₐ[R]
       Polynomial (R ⧸ I) ⧸
         Ideal.span ({(minpoly R pb.gen).map (Ideal.Quotient.mk I)} : Set (Polynomial (R ⧸ I))) :=
-  (ofRingEquiv
+  (ofCommutes _
         (show ∀ x,
             (Ideal.quotientEquiv _ (Ideal.map (AdjoinRoot.of (minpoly R pb.gen)) I)
                   (AdjoinRoot.equiv' (minpoly R pb.gen) pb
@@ -1162,7 +1140,7 @@ theorem quotientEquivQuotientMinpolyMap_apply_mk (pb : PowerBasis R S) (I : Idea
       (aeval pb.gen g)) = Ideal.Quotient.mk
         (Ideal.span ({(minpoly R pb.gen).map (Ideal.Quotient.mk I)} : Set (Polynomial (R ⧸ I))))
           (g.map (Ideal.Quotient.mk I)) := by
-  rw [PowerBasis.quotientEquivQuotientMinpolyMap, AlgEquiv.trans_apply, AlgEquiv.ofRingEquiv_apply,
+  rw [PowerBasis.quotientEquivQuotientMinpolyMap, AlgEquiv.trans_apply, AlgEquiv.ofCommutes_apply,
     quotientEquiv_mk, AlgEquiv.coe_toRingEquiv, AdjoinRoot.equiv'_symm_apply, PowerBasis.lift_aeval,
     AdjoinRoot.aeval_eq, AdjoinRoot.quotEquivQuotMap_apply_mk]
 
@@ -1174,7 +1152,7 @@ theorem quotientEquivQuotientMinpolyMap_symm_apply_mk (pb : PowerBasis R S) (I :
       ({(minpoly R pb.gen).map (Ideal.Quotient.mk I)} : Set (Polynomial (R ⧸ I))))
         (g.map (Ideal.Quotient.mk I))) = Ideal.Quotient.mk (I.map (algebraMap R S))
           (aeval pb.gen g) := by
-  simp [quotientEquivQuotientMinpolyMap, aeval_def]
+  simp; rfl
 
 end PowerBasis
 
@@ -1194,7 +1172,7 @@ lemma Polynomial.Monic.exists_splits_map.{u}
     {R : Type u} [CommRing R] [Nontrivial R] {p : R[X]} (hp : p.Monic) :
     ∃ (S : Type u) (_ : CommRing S) (_ : Algebra R S) (_ : Module.Finite R S) (_ : Module.Free R S)
       (_ : Nontrivial S), (p.map (algebraMap R S)).Splits := by
-  induction hn : p.natDegree using Nat.strong_induction_on generalizing R with | h n IH =>
+  induction hn : p.natDegree using Nat.strong_induction_on generalizing R with | ind n IH
   by_cases hpu : IsUnit p
   · obtain rfl := hp.eq_one_of_isUnit hpu
     exact ⟨R, inferInstance, inferInstance, inferInstance, inferInstance, inferInstance, by simp⟩

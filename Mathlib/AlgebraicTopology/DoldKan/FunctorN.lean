@@ -7,8 +7,10 @@ module
 
 public import Mathlib.AlgebraicTopology.DoldKan.PInfty
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Construction of functors N for the Dold-Kan correspondence
 
 In this file, we construct functors `N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ)`
@@ -29,7 +31,6 @@ When the category `C` is abelian, a relation between `N₁` and the
 normalized Moore complex functor shall be obtained in `Normalized.lean`.
 
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
-
 -/
 
 @[expose] public section

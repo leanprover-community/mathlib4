@@ -12,6 +12,9 @@ public import Mathlib.Algebra.Star.Prod
 public import Mathlib.Algebra.Star.StarProjection
 public import Mathlib.Tactic.ContinuousFunctionalCalculus
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Unitary elements of a star monoid
 
@@ -357,7 +360,6 @@ def map (f : R →⋆* S) : unitary R →⋆* unitary S where
 @[simp]
 lemma coe_map (f : R →⋆* S) (x : unitary R) : map f x = f x := rfl
 
-@[simp]
 lemma coe_map_star (f : R →⋆* S) (x : unitary R) : map f (star x) = f (star x) := rfl
 
 @[simp]

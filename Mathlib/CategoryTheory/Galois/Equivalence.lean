@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Action.Continuous
 public import Mathlib.CategoryTheory.Galois.EssSurj
 public import Mathlib.Topology.Category.FinTopCat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fiber functors induce an equivalence of categories
 
@@ -50,7 +53,7 @@ instance : (functorToContAction F).Full :=
 
 instance {F : C ⥤ FintypeCat.{u₁}} [FiberFunctor F] : (functorToContAction F).EssSurj where
   mem_essImage X := by
-    have : ContinuousSMul (Aut F) X.obj.V := X.2
+    have : ContinuousSMul (Aut F) X.obj.V := X.property
     obtain ⟨A, ⟨i⟩⟩ := exists_lift_of_continuous (F := F) X
     exact ⟨A, ⟨ObjectProperty.isoMk _ i⟩⟩
 
@@ -67,13 +70,15 @@ instance : (functorToContAction F).EssSurj := by
           change Continuous ((fun p ↦ (FintypeCat.uSwitchEquiv X.obj.V).symm p) ∘
               (fun p : Aut F' × _ ↦ (X.obj.ρ p.1).asHom.hom p.2) ∘
               (fun p : Aut F' × _ ↦ (p.1, FintypeCat.uSwitchEquiv _ p.2)))
-          exact Continuous.comp (by fun_prop) (Continuous.comp X.2.1 (by fun_prop)))
+          exact Continuous.comp (by fun_prop)
+            (Continuous.comp X.property.continuous_smul (by fun_prop)))
        (fun X ↦ by
           rw [Action.isContinuous_def]
           change Continuous ((fun p ↦ (FintypeCat.uSwitchEquiv X.obj.V).symm p) ∘
               (fun p : Aut F' × _ ↦ (X.obj.ρ p.1).asHom.hom p.2) ∘
               (fun p : Aut F' × _ ↦ (p.1, FintypeCat.uSwitchEquiv _ p.2)))
-          exact Continuous.comp (by fun_prop) (Continuous.comp X.2.1 (by fun_prop)))).trans <|
+          exact Continuous.comp (by fun_prop)
+            (Continuous.comp X.property.continuous_smul (by fun_prop)))).trans <|
       ContAction.resEquiv _ f
   have : functorToContAction F ≅ functorToContAction F' ⋙ equiv.functor :=
     NatIso.ofComponents

@@ -17,7 +17,7 @@ import Mathlib.RingTheory.Finiteness.Nilpotent
 This file contains a proof that `RootPairing.GeckConstruction.lieAlgebra` yields semisimple Lie
 algebras.
 
-## Main definitions:
+## Main definitions
 
 * `RootPairing.GeckConstruction.trace_toEnd_eq_zero`: the Geck construction yields trace-free
   matrices.
@@ -25,7 +25,6 @@ algebras.
   construction is irreducible.
 * `RootPairing.GeckConstruction.instHasTrivialRadical`: the Geck construction yields semisimple
   Lie algebras.
-
 -/
 
 public section
@@ -168,7 +167,7 @@ open LinearMap LieModule in
 lemma trace_toEnd_eq_zero (x : lieAlgebra b) :
     trace R _ (toEnd R _ (b.support ⊕ ι → R) x) = 0 := by
   obtain ⟨x, hx⟩ := x
-  suffices trace R _ x.toLin' = 0 by simpa
+  suffices trace R _ x.mulVecLin = 0 by simpa
   refine LieAlgebra.trace_toEnd_eq_zero ?_ hx
   rintro - ((⟨i, rfl⟩ | ⟨i, rfl⟩) | ⟨i, rfl⟩)
   · simp
@@ -210,10 +209,10 @@ private lemma instIsIrreducible_aux₀ {U : LieSubmodule K H (b.support ⊕ ι �
     obtain ⟨⟨x, hx⟩, hx'⟩ := x
     replace hdx : x = diagonal d := by simpa using! hdx
     have this (d : b.support ⊕ ι → K) (μ : K) :
-        (diagonal d).toLin' - μ • 1 = (diagonal (d - μ • 1)).toLin' := by
+        (diagonal d).mulVecLin - μ • 1 = (diagonal (d - μ • 1)).mulVecLin := by
       ext i j
       simp [Pi.single_apply, ite_sub_ite]
-    simp [mem_genWeightSpaceOf, hdx, this, ← toLin'_pow, diagonal_pow]
+    simp [mem_genWeightSpaceOf, hdx, this, ← mulVecLin_pow, diagonal_pow]
   obtain ⟨i, hi⟩ : ∃ i, w (Sum.inr i) ≠ 0 := by
     obtain ⟨l, hl⟩ : ∃ l, χ (h' l) ≠ 0 := by
       replace hw₀ : genWeightSpace (b.support ⊕ ι → K) χ ≠ ⊥ := by
@@ -264,7 +263,8 @@ private lemma instIsIrreducible_aux₁ (U : LieSubmodule K H (b.support ⊕ ι �
   contrapose! hU
   refine le_trans ?_ (map_genWeightSpace_le (f := U.incl))
   suffices genWeightSpace U (0 : H → K) = ⊤ by simp [this]
-  have : ⨆ (χ : H → K), ⨆ (_ : χ ≠ 0), (⊥ : LieSubmodule K H U) = ⊥ := biSup_const ⟨1, one_ne_zero⟩
+  have : ⨆ (χ : H → K), ⨆ (_ : χ ≠ 0), (⊥ : LieSubmodule K H U) = ⊥ :=
+    biSup_const (s := {χ : H → K | χ ≠ 0}) ⟨1, one_ne_zero⟩
   rw [← iSup_genWeightSpace_eq_top K H U, iSup_split_single _ 0, biSup_congr hU, this, sup_bot_eq]
 
 omit [P.IsRootSystem] in
@@ -273,7 +273,7 @@ private lemma instIsIrreducible_aux₂ [P.IsReduced] [P.IsIrreducible]
     U = ⊤ := by
   let _i := P.indexNeg
   have hωu (i : b.support) : ω b *ᵥ (u i) = u i := by
-    ext (j | j) <;> simp [ω, u, Pi.single_apply, one_apply]
+    ext (j | j) <;> simp [ω, u, Pi.single_apply, Matrix.one_apply]
   have hωv (i : ι) : ω b *ᵥ (v b i) = v b (-i) := by ext (j | j) <;> simp [ω, v, Pi.single_apply]
   obtain ⟨j, hj⟩ : ∃ j : b.support, u j ∈ U := by
     revert U
@@ -339,13 +339,13 @@ lemma coe_genWeightSpace_zero_eq_span_range_u :
     genWeightSpace (b.support ⊕ ι → K) (0 : H → K) = span K (range <| u (b := b)) := by
   refine le_antisymm (fun w hw ↦ Pi.mem_span_range_single_inl_iff.mpr fun i ↦ ?_) ?_
   · replace hw : ∀ (x) (hx : x ∈ lieAlgebra b), ⟨x, hx⟩ ∈ H →
-        ∃ k, (x.toLin' ^ k) w = 0 := by simpa [mem_genWeightSpace] using hw
+        ∃ k, (x.mulVecLin ^ k) w = 0 := by simpa [mem_genWeightSpace] using hw
     obtain ⟨j, hj⟩ : ∃ j : b.support, P.pairingIn ℤ i j ≠ 0 := by
       obtain ⟨j, hj, hj₀⟩ := b.exists_mem_support_pos_pairingIn_ne_zero i
       rw [ne_eq, P.pairingIn_eq_zero_iff] at hj₀
       exact ⟨⟨j, hj⟩, hj₀⟩
     obtain ⟨k, hk⟩ := hw (h j) (h_mem_lieAlgebra j) (h_mem_cartanSubalgebra' j _)
-    simpa [h_eq_diagonal, ← toLin'_pow, fromBlocks_diagonal_pow, diagonal_pow,
+    simpa [h_eq_diagonal, ← mulVecLin_pow, fromBlocks_diagonal_pow, diagonal_pow,
       mulVec_eq_sum, diagonal_apply, hj] using congr($hk (Sum.inr i))
   · rw [span_le]
     rintro - ⟨i, rfl⟩

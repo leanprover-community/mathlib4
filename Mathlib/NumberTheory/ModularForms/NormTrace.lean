@@ -7,6 +7,9 @@ module
 
 public import Mathlib.NumberTheory.ModularForms.LevelOne.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Restriction, translation, norm and trace
 
@@ -122,7 +125,7 @@ section restrictₗ -- do we want this for CuspForm etc? probably not so useful?
 
 variable (k) (R : Type*) [Semiring R] [SMul R ℂ]
   [Module R (ModularForm 𝒢 k)] [Module R (ModularForm ℋ k)]
-  [IsSMulApply R (ModularForm 𝒢 k) ℍ ℂ] [IsSMulApply R (ModularForm ℋ k) ℍ ℂ]
+  [IsSMulApply R (ModularForm 𝒢 k)] [IsSMulApply R (ModularForm ℋ k)]
 
 /-- Restriction bundled as a linear map. The typeclass assumptions will be satisfied for `R = ℝ`
 and any levels, or `R = ℂ` if `HasDetOne` is available. -/
@@ -285,7 +288,7 @@ omit [Subgroup.IsFiniteRelIndex 𝒢 ℋ] in
 lemma quotientFunc_restrict (hGH : 𝒢 ≤ ℋ) (q : ℋ ⧸ 𝒢.subgroupOf ℋ) :
     quotientFunc (f.restrict hGH) q = f := by
   induction q using QuotientGroup.induction_on' with
-  | H g => simp [slash_action_eqn _ _ (inv_mem g.2)]
+  | H g => simp [slash_action_eqn _ _ (inv_mem g.property)]
 
 /-- Composite of trace and restriction maps. -/
 lemma trace_restrict (hGH : 𝒢 ≤ ℋ) :
@@ -322,14 +325,14 @@ private lemma ModularForm.eq_const_of_weight_zero₀ [𝒢.IsArithmetic] [𝒢.H
   let : ModularFormClass (ModularForm 𝒮ℒ (0 * Nat.card (𝒮ℒ ⧸ 𝒢.subgroupOf 𝒮ℒ))) 𝒮ℒ 0 := by
     rw [zero_mul]; infer_instance
   obtain ⟨c, hc⟩ := ModularFormClass.levelOne_weight_zero_const
-    (ModularForm.norm 𝒮ℒ (f - .const (f I)))
+    (ModularForm.norm 𝒮ℒ (f - .const (f .I)))
   -- But the constant must be 0, since `f - f I` vanishes at `I`.
-  have : ModularForm.norm 𝒮ℒ (f - .const (f I)) I = 0 := by
+  have : ModularForm.norm 𝒮ℒ (f - .const (f .I)) .I = 0 := by
     simpa [Finset.prod_eq_zero_iff, QuotientGroup.exists_mk] using ⟨1, by simp⟩
   obtain rfl : c = 0 := by simpa [hc]
   -- So `f - f I` has zero norm, hence it's the zero form.
   simp only [Function.const_zero, FunLike.coe_zero_iff, norm_eq_zero_iff, sub_eq_zero] at hc
-  exact ⟨f I, by rw [hc, ModularForm.coe_const, Function.const_apply]⟩
+  exact ⟨f .I, by rw [hc, ModularForm.coe_const, Function.const_apply]⟩
 
 lemma ModularForm.eq_const_of_weight_zero [𝒢.IsArithmetic] (f : ModularForm 𝒢 0) :
     ∃ c, (f : ℍ → ℂ) = Function.const ℍ c :=

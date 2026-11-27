@@ -9,6 +9,9 @@ module
 public import Mathlib.Algebra.BigOperators.Finsupp.Basic
 public import Mathlib.Algebra.Order.Antidiag.Pi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Antidiagonal of finitely supported functions as finsets
 
@@ -25,7 +28,6 @@ We define it using `Finset.piAntidiag s n`, the corresponding antidiagonal in `�
 
 * `Finset.finsuppAntidiag s n`: Finset of all finitely supported functions `f : ι →₀ μ` with support
   contained in `s` and such that the sum of its values equals `n : μ`.
-
 -/
 
 @[expose] public section
@@ -43,8 +45,8 @@ variable [DecidableEq ι] [AddCommMonoid μ] [HasAntidiagonal μ] [DecidableEq �
 
 /-- The finset of functions `ι →₀ μ` with support contained in `s` and sum equal to `n`. -/
 def finsuppAntidiag (s : Finset ι) (n : μ) : Finset (ι →₀ μ) :=
-  (piAntidiag s n).attach.map ⟨fun f ↦ ⟨s.filter (f.1 · ≠ 0), f.1, by
-    simpa using (mem_piAntidiag.1 f.2).2⟩, fun _ _ hfg ↦ Subtype.ext (congr_arg (⇑) hfg)⟩
+  (piAntidiag s n).attach.map ⟨fun f ↦ ⟨s.filter (f.val · ≠ 0), f.val, by
+    simpa using (mem_piAntidiag.1 f.property).2⟩, fun _ _ hfg ↦ Subtype.ext (congr_arg (⇑) hfg)⟩
 
 @[simp] lemma mem_finsuppAntidiag : f ∈ finsuppAntidiag s n ↔ s.sum f = n ∧ f.support ⊆ s := by
   simp [finsuppAntidiag, ← DFunLike.coe_fn_eq, subset_iff]

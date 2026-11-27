@@ -5,11 +5,11 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.BoxIntegral.DivergenceTheorem
 public import Mathlib.Analysis.BoxIntegral.Integrability
 public import Mathlib.Analysis.Calculus.Deriv.Basic
 public import Mathlib.MeasureTheory.Integral.Prod
 
+import Mathlib.Analysis.BoxIntegral.DivergenceTheorem
 import Mathlib.Analysis.Calculus.FDeriv.Equiv
 
 /-!
@@ -117,7 +117,7 @@ private theorem integral_divergence_of_hasFDerivWithinAt_off_countable_aux₁ (I
         ((∫ x in Box.Icc (I.face i), f (i.insertNth (I.upper i) x) i) -
           ∫ x in Box.Icc (I.face i), f (i.insertNth (I.lower i) x) i) := by
   wlog hE : CompleteSpace E generalizing
-  · simp [integral, hE]
+  · simp [integral_of_not_completeSpace hE]
   simp only [← setIntegral_congr_set (Box.coe_ae_eq_Icc _)]
   have A := (Hi.mono_set Box.coe_subset_Icc).hasBoxIntegral ⊥ rfl
   have B :=

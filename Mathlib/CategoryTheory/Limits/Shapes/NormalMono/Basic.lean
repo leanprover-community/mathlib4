@@ -21,7 +21,6 @@ normal monomorphism is normal (`CategoryTheory.normalOfIsPullbackSndOfNormal`).
 We also define classes `IsNormalMonoCategory` and `IsNormalEpiCategory` for categories in which
 every monomorphism or epimorphism is normal, and deduce that these categories are
 `RegularMonoCategory`s resp. `RegularEpiCategory`s.
-
 -/
 
 @[expose] public section
@@ -53,7 +52,6 @@ attribute [inherit_doc NormalMono] NormalMono.Z NormalMono.g NormalMono.w Normal
 
 section
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `F` is an equivalence and `F.map f` is a normal mono, then `f` is a normal mono. -/
 @[instance_reducible]
 def equivalenceReflectsNormalMono {D : Type u₂} [Category.{v₁} D] [HasZeroMorphisms D] (F : C ⥤ D)
@@ -118,7 +116,6 @@ def normalOfIsPullbackFstOfNormal {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h :
     NormalMono f :=
   normalOfIsPullbackSndOfNormal comm.symm (PullbackCone.flipIsLimit t)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Transport a `NormalMono` structure via an isomorphism of arrows. -/
 @[instance_reducible]
 def NormalMono.ofArrowIso {X Y : C} {f : X ⟶ Y}
@@ -131,7 +128,7 @@ def NormalMono.ofArrowIso {X Y : C} {f : X ⟶ Y}
     dsimp at this
     rw [← reassoc_of% this, hf.w, comp_zero]
   isLimit := by
-    refine (IsLimit.equivOfNatIsoOfIso ?_ _ _ ?_).1 hf.isLimit
+    refine (IsLimit.equivOfNatIsoOfIso ?_ _ _ ?_).toFun hf.isLimit
     · exact parallelPair.ext (Arrow.rightFunc.mapIso e) (Iso.refl _)
     · exact Fork.ext (Arrow.leftFunc.mapIso e)
 
@@ -176,7 +173,6 @@ attribute [inherit_doc NormalEpi] NormalEpi.W NormalEpi.g NormalEpi.w NormalEpi.
 
 section
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `F` is an equivalence and `F.map f` is a normal epi, then `f` is a normal epi. -/
 @[instance_reducible]
 def equivalenceReflectsNormalEpi {D : Type u₂} [Category.{v₁} D] [HasZeroMorphisms D] (F : C ⥤ D)
@@ -244,7 +240,6 @@ open Opposite
 
 variable [HasZeroMorphisms C]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Transport a `NormalEpi` structure via an isomorphism of arrows. -/
 @[instance_reducible]
 def NormalEpi.ofArrowIso {X Y : C} {f : X ⟶ Y}
@@ -257,12 +252,11 @@ def NormalEpi.ofArrowIso {X Y : C} {f : X ⟶ Y}
     dsimp at this
     rw [Category.assoc, this, reassoc_of% hf.w, zero_comp]
   isColimit := by
-    refine (IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_).1 hf.isColimit
+    refine (IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_).toFun hf.isColimit
     · exact parallelPair.ext (Iso.refl _) (Arrow.leftFunc.mapIso e)
     · exact Cofork.ext (Arrow.rightFunc.mapIso e) (by simp [Cofork.π])
 
 
-set_option backward.defeqAttrib.useBackward true in
 /-- A normal mono becomes a normal epi in the opposite category. -/
 @[instance_reducible]
 def normalEpiOfNormalMonoUnop {X Y : Cᵒᵖ} (f : X ⟶ Y) (m : NormalMono f.unop) : NormalEpi f where
@@ -272,17 +266,16 @@ def normalEpiOfNormalMonoUnop {X Y : Cᵒᵖ} (f : X ⟶ Y) (m : NormalMono f.un
   isColimit :=
     CokernelCofork.IsColimit.ofπ _ _
       (fun g' w' =>
-        (KernelFork.IsLimit.lift' m.isLimit g'.unop (congrArg Quiver.Hom.unop w')).1.op)
+        (KernelFork.IsLimit.lift' m.isLimit g'.unop (congrArg Quiver.Hom.unop w')).val.op)
       (fun g' w' =>
         congrArg Quiver.Hom.op
-          (KernelFork.IsLimit.lift' m.isLimit g'.unop (congrArg Quiver.Hom.unop w')).2)
+          (KernelFork.IsLimit.lift' m.isLimit g'.unop (congrArg Quiver.Hom.unop w')).property)
       (by
         rintro Z' g' w' m' rfl
         apply Quiver.Hom.unop_inj
         apply m.isLimit.uniq (KernelFork.ofι (m'.unop ≫ f.unop) _) m'.unop
         rintro (⟨⟩ | ⟨⟩) <;> simp)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- A normal epi becomes a normal mono in the opposite category. -/
 @[instance_reducible]
 def normalMonoOfNormalEpiUnop {X Y : Cᵒᵖ} (f : X ⟶ Y) (m : NormalEpi f.unop) : NormalMono f where
@@ -292,10 +285,11 @@ def normalMonoOfNormalEpiUnop {X Y : Cᵒᵖ} (f : X ⟶ Y) (m : NormalEpi f.uno
   isLimit :=
     KernelFork.IsLimit.ofι _ _
       (fun g' w' =>
-        (CokernelCofork.IsColimit.desc' m.isColimit g'.unop (congrArg Quiver.Hom.unop w')).1.op)
+        (CokernelCofork.IsColimit.desc' m.isColimit g'.unop (congrArg Quiver.Hom.unop w')).val.op)
       (fun g' w' =>
         congrArg Quiver.Hom.op
-          (CokernelCofork.IsColimit.desc' m.isColimit g'.unop (congrArg Quiver.Hom.unop w')).2)
+          (CokernelCofork.IsColimit.desc' m.isColimit g'.unop
+            (congrArg Quiver.Hom.unop w')).property)
       (by
         rintro Z' g' w' m' rfl
         apply Quiver.Hom.unop_inj

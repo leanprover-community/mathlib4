@@ -9,13 +9,13 @@ public import Mathlib.FieldTheory.KummerPolynomial
 public import Mathlib.FieldTheory.Separable
 
 /-!
-
 # Perfect fields and rings
 
 In this file we define perfect fields, together with a generalisation to (commutative) rings in
 prime characteristic.
 
-## Main definitions / statements:
+## Main definitions / results
+
 * `PerfectRing`: a ring of characteristic `p` (prime) is said to be perfect in the sense of Serre,
   if its absolute Frobenius map `x ↦ xᵖ` is bijective.
 * `PerfectField`: a field `K` is said to be perfect if every irreducible polynomial over `K` is
@@ -30,7 +30,6 @@ prime characteristic.
 * `Algebra.IsAlgebraic.isSeparable_of_perfectField`, `Algebra.IsAlgebraic.perfectField`:
   if `L / K` is an algebraic extension, `K` is a perfect field, then `L / K` is separable,
   and `L` is also a perfect field.
-
 -/
 
 @[expose] public section
@@ -248,11 +247,11 @@ theorem MonoidHom.map_iterate_frobeniusEquiv_symm (f : R →* S) (n : ℕ) (x : 
     f (((frobeniusEquiv R p).symm^[n]) x) = ((frobeniusEquiv S p).symm^[n]) (f x) := by
   apply_fun (frobeniusEquiv S p)^[n]
   · simp only [coe_frobeniusEquiv, ← map_iterate_frobenius]
-    · rw [← Function.comp_apply (f := (⇑(frobenius R p))^[n]),
-          ← Function.comp_apply (f := (⇑(frobenius S p))^[n]),
-          ← Function.Commute.comp_iterate, ← Function.Commute.comp_iterate]
-      · simp
-      all_goals rw [← coe_frobeniusEquiv]; simp [Function.Commute, Function.Semiconj]
+    rw [← Function.comp_apply (f := (⇑(frobenius R p))^[n]),
+        ← Function.comp_apply (f := (⇑(frobenius S p))^[n]),
+        ← Function.Commute.comp_iterate, ← Function.Commute.comp_iterate]
+    · simp
+    all_goals rw [← coe_frobeniusEquiv]; simp [Function.Commute, Function.Semiconj]
   apply Function.Injective.iterate
   simp
 
@@ -319,7 +318,7 @@ instance toPerfectRing (p : ℕ) [hp : ExpChar K p] : PerfectRing K p := by
   rcases hp with _ | hp
   · simp [frobenius]
   rw [← not_forall_not]
-  apply mt (X_pow_sub_C_irreducible_of_prime hp)
+  apply mt (irreducible_X_pow_sub_C_of_prime hp)
   apply mt separable_of_irreducible
   simp [separable_def, isCoprime_zero_right, isUnit_iff_degree_eq_zero,
     derivative_X_pow, degree_X_pow_sub_C hp.pos, hp.ne_zero]
@@ -330,7 +329,7 @@ theorem separable_iff_squarefree {g : K[X]} : g.Separable ↔ Squarefree g := by
   replace dvd : p ∣ q := by
     rw [derivative_mul, dvd_add_left (dvd_mul_right p _)] at dvd
     exact (separable_of_irreducible h).dvd_of_dvd_mul_left dvd
-  exact (h.1 : ¬ IsUnit p) (sqf _ <| mul_dvd_mul_left _ dvd)
+  exact (h.not_isUnit : ¬ IsUnit p) (sqf _ <| mul_dvd_mul_left _ dvd)
 
 end PerfectField
 
@@ -448,7 +447,7 @@ variable [DecidableEq R]
 a map from the set of roots of `Polynomial.expand R p f` to the set of roots of `f`.
 It's given by `x ↦ x ^ p`, see `rootsExpandToRoots_apply`. -/
 noncomputable def rootsExpandToRoots : (expand R p f).roots.toFinset ↪ f.roots.toFinset where
-  toFun x := ⟨x ^ p, roots_expand_image_frobenius_subset p f (Finset.mem_image_of_mem _ x.2)⟩
+  toFun x := ⟨x ^ p, roots_expand_image_frobenius_subset p f (Finset.mem_image_of_mem _ x.property)⟩
   inj' _ _ h := Subtype.ext (frobenius_inj R p <| Subtype.ext_iff.1 h)
 
 @[simp]
@@ -460,7 +459,7 @@ It's given by `x ↦ x ^ (p ^ n)`, see `rootsExpandPowToRoots_apply`. -/
 noncomputable def rootsExpandPowToRoots :
     (expand R (p ^ n) f).roots.toFinset ↪ f.roots.toFinset where
   toFun x := ⟨x ^ p ^ n,
-    roots_expand_pow_image_iterateFrobenius_subset p n f (Finset.mem_image_of_mem _ x.2)⟩
+    roots_expand_pow_image_iterateFrobenius_subset p n f (Finset.mem_image_of_mem _ x.property)⟩
   inj' _ _ h := Subtype.ext (iterateFrobenius_inj R p n <| Subtype.ext_iff.1 h)
 
 @[simp]

@@ -8,9 +8,11 @@ module
 public import Mathlib.Algebra.Homology.ShortComplex.QuasiIso
 public import Mathlib.CategoryTheory.MorphismProperty.Retract
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Quasi-isomorphisms of short complexes are stable under retracts
-
 -/
 
 public section
@@ -26,7 +28,6 @@ variable {C : Type*} [Category* C] [HasZeroMorphisms C]
   [S₁.HasHomology] [T₁.HasHomology] [S₂.HasHomology] [T₂.HasHomology]
   {f₁ : S₁ ⟶ T₁} {f₂ : S₂ ⟶ T₂}
 
-set_option backward.defeqAttrib.useBackward true in
 lemma quasiIso_of_retract (h : RetractArrow f₁ f₂) [hf₂ : QuasiIso f₂] :
     QuasiIso f₁ := by
   rw [quasiIso_iff] at hf₂ ⊢

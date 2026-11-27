@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.Submonoid.Defs
-public import Mathlib.Data.Set.Inclusion
 public import Mathlib.Tactic.Attr.Core
 public import Mathlib.Tactic.Common
+
+import Mathlib.Data.Set.Inclusion
 
 /-!
 # Subgroups
@@ -49,6 +50,7 @@ Subgroup inclusion is denoted `≤` rather than `⊆`, although `∈` is defined
 membership of a subgroup's underlying set.
 
 ## Tags
+
 subgroup, subgroups
 -/
 
@@ -116,7 +118,7 @@ class AddSubgroupClass (S : Type*) (G : outParam Type*) [SubNegMonoid G] [SetLik
 
 attribute [to_additive] InvMemClass SubgroupClass
 
-attribute [aesop 90% (rule_sets := [SetLike])] inv_mem neg_mem
+attribute [aesop 90% (rule_sets := [SetLike]), membership .] inv_mem neg_mem
 
 @[to_additive (attr := simp)]
 theorem inv_mem_iff {S G} [InvolutiveInv G] {_ : SetLike S G} [InvMemClass S G] {H : S}
@@ -126,12 +128,12 @@ theorem inv_mem_iff {S G} [InvolutiveInv G] {_ : SetLike S G} [InvMemClass S G] 
 variable {M S : Type*} [DivInvMonoid M] [SetLike S M] [hSM : SubgroupClass S M] {H K : S}
 
 /-- A subgroup is closed under division. -/
-@[to_additive (attr := aesop 90% (rule_sets := [SetLike]))
+@[to_additive (attr := aesop 90% (rule_sets := [SetLike]), membership .)
   /-- An additive subgroup is closed under subtraction. -/]
 theorem div_mem {x y : M} (hx : x ∈ H) (hy : y ∈ H) : x / y ∈ H := by
   rw [div_eq_mul_inv]; exact mul_mem hx (inv_mem hy)
 
-@[to_additive (attr := aesop 90% (rule_sets := [SetLike]))]
+@[to_additive (attr := aesop 90% (rule_sets := [SetLike]), membership .)]
 theorem zpow_mem {x : M} (hx : x ∈ K) : ∀ n : ℤ, x ^ n ∈ K
   | (n : ℕ) => by
     rw [zpow_natCast]
@@ -145,9 +147,10 @@ variable [SetLike S G] [SubgroupClass S G]
 @[to_additive]
 theorem exists_inv_mem_iff_exists_mem {P : G → Prop} :
     (∃ x : G, x ∈ H ∧ P x⁻¹) ↔ ∃ x ∈ H, P x := by
-  constructor <;>
-    · rintro ⟨x, x_in, hx⟩
-      exact ⟨x⁻¹, inv_mem x_in, by simp [hx]⟩
+  constructor
+  all_goals
+    rintro ⟨x, x_in, hx⟩
+    exact ⟨x⁻¹, inv_mem x_in, by simp [hx]⟩
 
 @[to_additive]
 theorem mul_mem_cancel_right {x y : G} (h : x ∈ H) : y * x ∈ H ↔ y ∈ H :=
@@ -162,10 +165,10 @@ namespace InvMemClass
 /-- A subgroup of a group inherits an inverse. -/
 @[to_additive /-- An additive subgroup of an `AddGroup` inherits an inverse. -/]
 instance inv {G S : Type*} [Inv G] [SetLike S G] [InvMemClass S G] {H : S} : Inv H :=
-  ⟨fun a => ⟨a⁻¹, inv_mem a.2⟩⟩
+  ⟨fun a => ⟨a⁻¹, inv_mem a.property⟩⟩
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_inv (x : H) : (x⁻¹).1 = x.1⁻¹ :=
+theorem coe_inv (x : H) : (x⁻¹).val = x.val⁻¹ :=
   rfl
 
 end InvMemClass
@@ -177,11 +180,11 @@ namespace SubgroupClass
 -- Counterexample where K and L are submonoids: H = ℤ, K = ℕ, L = -ℕ
 -- Counterexample where H and K are submonoids: H = {n | n = 0 ∨ 3 ≤ n}, K = 3ℕ + 4ℕ, L = 5ℤ
 @[to_additive]
-theorem subset_union [LE S] [IsConcreteLE S G] {H K L : S} :
+theorem subset_union [LE S] [IsMemLE S G] {H K L : S} :
     (H : Set G) ⊆ K ∪ L ↔ H ≤ K ∨ H ≤ L := by
   refine ⟨fun h ↦ ?_, fun h x xH ↦ h.imp
     (SetLike.coe_subset_coe.2 · xH) (SetLike.coe_subset_coe.2 · xH)⟩
-  rw [or_iff_not_imp_left, IsConcreteLE.not_le_iff_exists, ← SetLike.coe_subset_coe]
+  rw [or_iff_not_imp_left, not_le_iff_exists_mem_notMem, ← SetLike.coe_subset_coe]
   exact fun ⟨x, xH, xK⟩ y yH ↦ (h <| mul_mem xH yH).elim
     ((h yH).resolve_left fun yK ↦ xK <| (mul_mem_cancel_right yK).mp ·)
     (mul_mem_cancel_left <| (h xH).resolve_left xK).mp
@@ -189,15 +192,15 @@ theorem subset_union [LE S] [IsConcreteLE S G] {H K L : S} :
 /-- A subgroup of a group inherits a division -/
 @[to_additive /-- An additive subgroup of an `AddGroup` inherits a subtraction. -/]
 instance div {G S : Type*} [DivInvMonoid G] [SetLike S G] [SubgroupClass S G] {H : S} : Div H :=
-  ⟨fun a b => ⟨a / b, div_mem a.2 b.2⟩⟩
+  ⟨fun a b => ⟨a / b, div_mem a.property b.property⟩⟩
 
 /-- A subgroup of a group inherits an integer power. -/
 @[to_additive /-- An additive subgroup of an `AddGroup` inherits an integer scaling. -/]
 instance instZPow {M S} [DivInvMonoid M] [SetLike S M] [SubgroupClass S M] {H : S} : Pow H ℤ :=
-  ⟨fun a n => ⟨a.1 ^ n, zpow_mem a.2 n⟩⟩
+  ⟨fun a n => ⟨a.val ^ n, zpow_mem a.property n⟩⟩
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_div (x y : H) : (x / y).1 = x.1 / y.1 :=
+theorem coe_div (x y : H) : (x / y).val = x.val / y.val :=
   rfl
 
 variable (H)
@@ -239,7 +242,7 @@ theorem coe_subtype : (SubgroupClass.subtype H : H → G) = ((↑) : H → G) :=
 
 variable {H}
 
-@[to_additive (attr := simp, norm_cast)]
+@[to_additive]
 theorem coe_pow (x : H) (n : ℕ) : ((x ^ n : H) : G) = (x : G) ^ n :=
   rfl
 
@@ -250,39 +253,39 @@ theorem coe_zpow (x : H) (n : ℤ) : ((x ^ n : H) : G) = (x : G) ^ n :=
 /-- The inclusion homomorphism from a subgroup `H` contained in `K` to `K`. -/
 @[to_additive
 /-- The inclusion homomorphism from an additive subgroup `H` contained in `K` to `K`. -/]
-def inclusion [LE S] [IsConcreteLE S G] {H K : S} (h : H ≤ K) : H →* K :=
+def inclusion [LE S] [IsMemLE S G] {H K : S} (h : H ≤ K) : H →* K :=
   MonoidHom.mk' (fun x => ⟨x, mem_of_le_of_mem h x.prop⟩) fun _ _ => rfl
 
 @[to_additive (attr := simp)]
-theorem inclusion_self [Preorder S] [IsConcreteLE S G] (x : H) : inclusion le_rfl x = x := by
+theorem inclusion_self [Preorder S] [IsMemLE S G] (x : H) : inclusion le_rfl x = x := by
   cases x
   rfl
 
 @[to_additive (attr := simp)]
-theorem inclusion_mk [LE S] [IsConcreteLE S G] {h : H ≤ K} (x : G) (hx : x ∈ H) :
+theorem inclusion_mk [LE S] [IsMemLE S G] {h : H ≤ K} (x : G) (hx : x ∈ H) :
     inclusion h ⟨x, hx⟩ = ⟨x, mem_of_le_of_mem h hx⟩ :=
   rfl
 
 @[to_additive]
-theorem inclusion_right [LE S] [IsConcreteLE S G] (h : H ≤ K) (x : K) (hx : (x : G) ∈ H) :
+theorem inclusion_right [LE S] [IsMemLE S G] (h : H ≤ K) (x : K) (hx : (x : G) ∈ H) :
     inclusion h ⟨x, hx⟩ = x := by
   cases x
   rfl
 
 @[simp]
-theorem inclusion_inclusion [Preorder S] [IsConcreteLE S G]
+theorem inclusion_inclusion [Preorder S] [IsMemLE S G]
     {L : S} (hHK : H ≤ K) (hKL : K ≤ L) (x : H) :
     inclusion hKL (inclusion hHK x) = inclusion (hHK.trans hKL) x := by
   cases x
   rfl
 
 @[to_additive (attr := simp)]
-theorem coe_inclusion [LE S] [IsConcreteLE S G]
+theorem coe_inclusion [LE S] [IsMemLE S G]
     {H K : S} (h : H ≤ K) (a : H) : (inclusion h a : G) = a :=
   Set.coe_inclusion (SetLike.coe_subset_coe.mpr h) a
 
 @[to_additive (attr := simp)]
-theorem subtype_comp_inclusion [LE S] [IsConcreteLE S G]
+theorem subtype_comp_inclusion [LE S] [IsMemLE S G]
     {H K : S} (h : H ≤ K) :
     (SubgroupClass.subtype K).comp (inclusion h) = SubgroupClass.subtype H :=
   rfl
@@ -400,11 +403,6 @@ theorem toSubmonoid_le {p q : Subgroup G} : p.toSubmonoid ≤ q.toSubmonoid ↔ 
 @[to_additive]
 lemma coe_nonempty (s : Subgroup G) : (s : Set G).Nonempty := ⟨1, one_mem _⟩
 
-attribute [deprecated OneMemClass.coe_nonempty +typeChanged (since := "2026-04-20")]
-  Subgroup.coe_nonempty
-attribute [deprecated ZeroMemClass.coe_nonempty +typeChanged (since := "2026-04-20")]
-  AddSubgroup.coe_nonempty
-
 end Subgroup
 
 namespace Subgroup
@@ -478,7 +476,7 @@ protected theorem zpow_mem {x : G} (hx : x ∈ K) : ∀ n : ℤ, x ^ n ∈ K :=
 
 /-- Construct a subgroup from a nonempty set that is closed under division. -/
 @[to_additive /-- Construct a subgroup from a nonempty set that is closed under subtraction -/]
-def ofDiv (s : Set G) (hsn : s.Nonempty) (hs : ∀ᵉ (x ∈ s) (y ∈ s), x * y⁻¹ ∈ s) :
+def ofDiv (s : Set G) (hsn : s.Nonempty) (hs : ∀ x ∈ s, ∀ y ∈ s, x * y⁻¹ ∈ s) :
     Subgroup G :=
   have one_mem : (1 : G) ∈ s := by
     let ⟨x, hx⟩ := hsn
@@ -502,36 +500,36 @@ instance one : One H :=
 /-- A subgroup of a group inherits an inverse. -/
 @[to_additive /-- An `AddSubgroup` of an `AddGroup` inherits an inverse. -/]
 instance inv : Inv H :=
-  ⟨fun a => ⟨a⁻¹, H.inv_mem a.2⟩⟩
+  ⟨fun a => ⟨a⁻¹, H.inv_mem a.property⟩⟩
 
 /-- A subgroup of a group inherits a division -/
 @[to_additive /-- An `AddSubgroup` of an `AddGroup` inherits a subtraction. -/]
 instance div : Div H :=
-  ⟨fun a b => ⟨a / b, H.div_mem a.2 b.2⟩⟩
+  ⟨fun a b => ⟨a / b, H.div_mem a.property b.property⟩⟩
 
 /-- A subgroup of a group inherits a natural power -/
 @[to_additive /-- An `AddSubgroup` of an `AddGroup` inherits a natural scaling. -/]
 protected instance npow : Pow H ℕ :=
-  ⟨fun a n => ⟨a ^ n, H.pow_mem a.2 n⟩⟩
+  ⟨fun a n => ⟨a ^ n, H.pow_mem a.property n⟩⟩
 
 /-- A subgroup of a group inherits an integer power -/
 @[to_additive /-- An `AddSubgroup` of an `AddGroup` inherits an integer scaling. -/]
 instance zpow : Pow H ℤ :=
-  ⟨fun a n => ⟨a ^ n, H.zpow_mem a.2 n⟩⟩
+  ⟨fun a n => ⟨a ^ n, H.zpow_mem a.property n⟩⟩
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_mul (x y : H) : (↑(x * y) : G) = ↑x * ↑y :=
   rfl
 
-@[to_additive (attr := simp, norm_cast)]
+@[to_additive]
 theorem coe_one : ((1 : H) : G) = 1 :=
   rfl
 
-@[to_additive (attr := simp, norm_cast)]
+@[to_additive]
 theorem coe_inv (x : H) : ↑(x⁻¹ : H) = (x⁻¹ : G) :=
   rfl
 
-@[to_additive (attr := simp, norm_cast)]
+@[to_additive]
 theorem coe_div (x y : H) : (↑(x / y) : G) = ↑x / ↑y :=
   rfl
 
@@ -539,7 +537,7 @@ theorem coe_div (x y : H) : (↑(x / y) : G) = ↑x / ↑y :=
 theorem coe_mk (x : G) (hx : x ∈ H) : ((⟨x, hx⟩ : H) : G) = x :=
   rfl
 
-@[to_additive (attr := simp, norm_cast)]
+@[to_additive]
 theorem coe_pow (x : H) (n : ℕ) : ((x ^ n : H) : G) = (x : G) ^ n :=
   rfl
 
@@ -582,7 +580,7 @@ theorem coe_subtype : ⇑H.subtype = ((↑) : H → G) :=
 @[to_additive
 /-- The inclusion homomorphism from an additive subgroup `H` contained in `K` to `K`. -/]
 def inclusion {H K : Subgroup G} (h : H ≤ K) : H →* K :=
-  MonoidHom.mk' (fun x => ⟨x, h x.2⟩) fun _ _ => rfl
+  MonoidHom.mk' (fun x => ⟨x, h x.property⟩) fun _ _ => rfl
 
 @[to_additive (attr := simp)]
 theorem coe_inclusion {H K : Subgroup G} (h : H ≤ K) (a : H) : (inclusion h a : G) = a :=
@@ -603,24 +601,20 @@ theorem subtype_comp_inclusion {H K : Subgroup G} (hH : H ≤ K) :
   rfl
 
 /-- A subgroup `H` is normal if whenever `n ∈ H`, then `g * n * g⁻¹ ∈ H` for every `g : G` -/
-structure Normal : Prop where
+class Normal : Prop where
   /-- `H` is closed under conjugation -/
   conj_mem : ∀ n, n ∈ H → ∀ g : G, g * n * g⁻¹ ∈ H
-
-attribute [class] Normal
 
 end Subgroup
 
 namespace AddSubgroup
 
 /-- An AddSubgroup `H` is normal if whenever `n ∈ H`, then `g + n - g ∈ H` for every `g : A` -/
-structure Normal (H : AddSubgroup A) : Prop where
+class Normal (H : AddSubgroup A) : Prop where
   /-- `H` is closed under additive conjugation -/
   conj_mem : ∀ n, n ∈ H → ∀ g : A, g + n + -g ∈ H
 
 attribute [to_additive (attr := wikidata Q743179)] Subgroup.Normal
-
-attribute [class] Normal
 
 end AddSubgroup
 
@@ -631,8 +625,6 @@ variable {H : Subgroup G}
 @[to_additive]
 instance (priority := 100) normal_of_isMulCommutative [IsMulCommutative G] (H : Subgroup G) :
     H.Normal := ⟨by simp [mul_comm']⟩
-
-@[deprecated (since := "2026-04-10")] alias normal_of_comm := normal_of_isMulCommutative
 
 namespace Normal
 
@@ -676,11 +668,6 @@ def normalizer (S : Set G) : Subgroup G where
     rw [ha (a⁻¹ * n * a⁻¹⁻¹)]
     simp only [inv_inv, mul_assoc, mul_inv_cancel_left, mul_inv_cancel, mul_one]
 
-@[deprecated (since := "2026-03-19")]
-alias setNormalizer := normalizer
-@[deprecated (since := "2026-03-19")]
-alias _root_.AddSubgroup.setNormalizer := AddSubgroup.normalizer
-
 variable {H} {S : Set G} {g : G}
 
 @[to_additive]
@@ -714,15 +701,6 @@ theorem le_normalizer : H ≤ normalizer H := fun x xH n => by
     H.mul_mem_cancel_left xH]
 
 end Normalizer
-
-@[to_additive (attr := deprecated inferInstance +typeChanged (since := "2026-04-09"))]
-theorem commGroup_isMulCommutative {G : Type*} [CommGroup G] (H : Subgroup G) :
-    IsMulCommutative H := inferInstance
-
-@[to_additive (attr := deprecated setLike_mul_comm +typeChanged (since := "2026-03-09"))]
-lemma mul_comm_of_mem_isMulCommutative [IsMulCommutative H] {a b : G} (ha : a ∈ H) (hb : b ∈ H) :
-    a * b = b * a :=
-  setLike_mul_comm ha hb
 
 end Subgroup
 

@@ -63,23 +63,15 @@ variable [FunLike F α β]
 
 /-- Turn an element of a type `F`
 satisfying `OrderHomClass F α β` and `MonoidWithZeroHomClass F α β`
-into an actual `OrderMonoidWithZeroHom`.
-This is declared as the default coercion from `F` to `α →+*₀o β`.
-TODO: Following [#mathlib4 > Mathlib's morphism hierarchy]
-(https://leanprover.zulipchat.com/#narrow/channel/287929-
-mathlib4/topic/Mathlib.27s.20morphism.20hierarchy/with/554383157),
-rename this to `OrderMonoidWithZeroHom.ofClass` and remove `@[coe]` tag. -/
-@[coe]
-def OrderMonoidWithZeroHomClass.toOrderMonoidWithZeroHom [OrderHomClass F α β]
+into an actual `OrderMonoidWithZeroHom`. -/
+def OrderMonoidWithZeroHom.ofClass [OrderHomClass F α β]
     [MonoidWithZeroHomClass F α β] (f : F) : α →*₀o β :=
 { (.ofClass f : α →*₀ β) with monotone' := OrderHomClass.monotone f }
 
+@[deprecated (since := "2026-11-26")] alias OrderMonoidWithZeroHomClass.toOrderMonoidWithZeroHom :=
+  OrderMonoidWithZeroHom.ofClass
+
 end
-
-variable [FunLike F α β]
-
-instance [OrderHomClass F α β] [MonoidWithZeroHomClass F α β] : CoeTC F (α →*₀o β) :=
-  ⟨OrderMonoidWithZeroHomClass.toOrderMonoidWithZeroHom⟩
 
 end MonoidWithZero
 
@@ -101,8 +93,13 @@ instance : FunLike (α →*₀o β) α β where
 initialize_simps_projections OrderMonoidWithZeroHom (toFun → apply, -toMonoidWithZeroHom)
 
 @[simp]
+protected lemma coe_ofClass [FunLike F α β] [OrderHomClass F α β]
+    [MonoidWithZeroHomClass F α β] (f : F) : ⇑(ofClass f) = f := rfl
+
+@[deprecated OrderMonoidWithZeroHom.coe_ofClass +typeChanged (since := "2026-11-27")]
 lemma coe_toOrderMonoidWithZeroHom [FunLike F α β] [OrderHomClass F α β]
-    [MonoidWithZeroHomClass F α β] (f : F) : ⇑(f : α →*₀o β) = f := rfl
+    [MonoidWithZeroHomClass F α β] (f : F) :
+    ⇑(OrderMonoidWithZeroHomClass.toOrderMonoidWithZeroHom f) = f := rfl
 
 attribute [coe] toMonoidWithZeroHom
 
@@ -308,3 +305,15 @@ def OrderMonoidIso.withZeroUnits {α : Type*} [LinearOrderedCommGroupWithZero α
   map_le_map_iff' {a b} := by
     cases a <;> cases b <;>
     simp
+
+namespace OrderMonoidIso
+
+variable [Preorder α] [Preorder β] [MulZeroOneClass α] [MulZeroOneClass β]
+
+/-- Reinterpret an `OrderMonoidIso` as an `OrderMonoidWithZeroHom`. -/
+def toOrderMonoidWithZeroHom (f : α ≃*o β) : α →*₀o β := .ofClass f
+
+@[simp]
+lemma coe_toOrderMonoidWithZeroHom (f : α ≃*o β) : ⇑f.toOrderMonoidWithZeroHom = f := rfl
+
+end OrderMonoidIso

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.CompactOpen
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equivalence between `C(X, Σ i, Y i)` and `Σ i, C(X, Y i)`
 
@@ -29,7 +32,7 @@ because it is easier to use an equivalence in applications.
 Some results in this file can be generalized to the case when `X` is a preconnected space. However,
 if `X` is empty, then any index `i` will work, so there is no 1-to-1 correspondence.
 
-## Keywords
+## Tags
 
 continuous map, sigma type, disjoint union
 -/

@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 public import Mathlib.CategoryTheory.Sites.Sieves.Presieve
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sieves
 

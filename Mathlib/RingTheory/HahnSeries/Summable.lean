@@ -17,6 +17,7 @@ function. This theory is applied to characterize invertible Hahn series whose co
 commutative domain.
 
 ## Main Definitions
+
 * `HahnSeries.SummableFamily` is a family of Hahn series such that the union of the supports
   is partially well-ordered and only finitely many are nonzero at any given coefficient. Note that
   this is different from `Summable` in the valuation topology, because there are topologically
@@ -32,6 +33,7 @@ commutative domain.
   the summable family takes the junk value of zero.
 
 ## Main results
+
 * `HahnSeries.isUnit_iff`: If `R` is a commutative domain, and `Γ` is a linearly ordered additive
   commutative group, then a Hahn series is a unit if and only if its leading term is a unit in `R`.
 * `HahnSeries.SummableFamily.hsum_smul`:   `smul` is compatible with `hsum`.
@@ -39,9 +41,11 @@ commutative domain.
   sums is equal to the sum of pointwise products.
 
 ## TODO
+
 * Summable Pi families
 
 ## References
+
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
 -/
 
@@ -386,8 +390,6 @@ theorem hasFiniteSupport_smul (s : SummableFamily Γ R α)
     (fun (i : α × β) ↦ (s i.1).coeff gh.1 • (t i.2).coeff gh.2).HasFiniteSupport :=
   Set.Finite.subset (Set.toFinite ((s.finite_co_support' gh.1).prod
     (t.finite_co_support' gh.2)).toFinset) (smul_support_subset_prod s t gh)
-
-@[deprecated (since := "2026-03-03")] alias smul_support_finite := hasFiniteSupport_smul
 
 variable [VAdd Γ Γ'] [IsOrderedCancelVAdd Γ Γ']
 

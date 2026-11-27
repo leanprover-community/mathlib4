@@ -151,7 +151,6 @@ instance : LieRingModule L N where
   lie_add := by intro x m n; apply SetCoe.ext; apply lie_add
   leibniz_lie := by intro x y m; apply SetCoe.ext; apply leibniz_lie
 
-@[simp, norm_cast]
 theorem coe_zero : ((0 : N) : M) = (0 : M) :=
   rfl
 
@@ -159,15 +158,12 @@ theorem coe_zero : ((0 : N) : M) = (0 : M) :=
 theorem coe_add (m m' : N) : (↑(m + m') : M) = (m : M) + (m' : M) :=
   rfl
 
-@[simp, norm_cast]
 theorem coe_neg (m : N) : (↑(-m) : M) = -(m : M) :=
   rfl
 
-@[simp, norm_cast]
 theorem coe_sub (m m' : N) : (↑(m - m') : M) = (m : M) - (m' : M) :=
   rfl
 
-@[simp, norm_cast]
 theorem coe_smul (t : R) (m : N) : (↑(t • m) : M) = t • (m : M) :=
   rfl
 
@@ -582,7 +578,7 @@ def inclusion : N →ₗ⁅R,L⁆ N' where
 theorem coe_inclusion (m : N) : (inclusion h m : M) = m :=
   rfl
 
-theorem inclusion_apply (m : N) : inclusion h m = ⟨m.1, h m.2⟩ :=
+theorem inclusion_apply (m : N) : inclusion h m = ⟨m.val, h m.property⟩ :=
   rfl
 
 theorem inclusion_injective : Function.Injective (inclusion h) := fun x y ↦ by
@@ -649,7 +645,7 @@ theorem span_empty : lieSpan R L (∅ : Set M) = ⊥ :=
 
 @[simp]
 theorem span_univ : lieSpan R L (Set.univ : Set M) = ⊤ :=
-  eq_top_iff.2 <| IsConcreteLE.le_iff.2 subset_lieSpan
+  eq_top_iff.2 fun _ _ ↦ subset_lieSpan (Set.mem_univ _)
 
 theorem lieSpan_eq_bot_iff : lieSpan R L s = ⊥ ↔ ∀ m ∈ s, m = (0 : M) := by
   rw [_root_.eq_bot_iff, lieSpan_le, bot_coe, subset_singleton_iff]

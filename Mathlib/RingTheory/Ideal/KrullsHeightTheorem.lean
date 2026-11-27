@@ -54,7 +54,8 @@ lemma IsLocalRing.quotient_artinian_of_mem_minimalPrimes_of_isLocalRing
       convert IsLocalRing.maximalIdeal.isMaximal R
       rw [Ideal.minimalPrimes, Set.mem_ofPred] at hp
       have := prime.comap (Ideal.Quotient.mk I)
-      exact hp.eq_of_le ⟨this, .trans (by simp) (Ideal.ker_le_comap _)⟩ (le_maximalIdeal this.1)
+      exact hp.eq_of_le ⟨this, .trans (by simp) (Ideal.ker_le_comap _)⟩
+        (le_maximalIdeal this.ne_top')
   IsNoetherianRing.isArtinianRing_of_krullDimLE_zero
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -77,15 +78,14 @@ lemma Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes_of_isLocalRing
       monotone' i j e := Ideal.map_mono (Ideal.comap_mono (Ideal.pow_le_pow_right e)) }
   obtain ⟨n, hn⟩ := IsArtinian.monotone_stabilizes qs
   refine ⟨n, ?_⟩
-  apply Submodule.eq_bot_of_le_smul_of_le_jacobson_bot (q.map f) _ (IsNoetherian.noetherian _)
+  apply Submodule.eq_bot_of_le_smul_of_le_jacobson (q.map f) _ (IsNoetherian.noetherian _)
   rotate_left
-  · rw [IsLocalRing.jacobson_eq_maximalIdeal, Localization.AtPrime.map_eq_maximalIdeal]
-    exact bot_ne_top
+  · rw [IsLocalRing.ringJacobson_eq_maximalIdeal, Localization.AtPrime.map_eq_maximalIdeal]
   rw [smul_eq_mul, ← pow_succ',
     ← (IsLocalization.orderEmbedding q.primeCompl (Localization.AtPrime q)).map_rel_iff]
-  refine Submodule.le_of_le_smul_of_le_jacobson_bot (I := I) (IsNoetherian.noetherian _) ?_ ?_
-  · rw [IsLocalRing.jacobson_eq_maximalIdeal]
-    exacts [hp.le, bot_ne_top]
+  refine Submodule.le_of_le_smul_of_le_jacobson (I := I) (IsNoetherian.noetherian _) ?_ ?_
+  · rw [IsLocalRing.ringJacobson_eq_maximalIdeal]
+    exact hp.le
   · replace hn := congr(Ideal.comap (Ideal.Quotient.mk I) $(hn _ n.le_succ))
     simp only [qs, OrderHom.coe_mk, ← RingHom.ker_eq_comap_bot, Ideal.mk_ker,
       Ideal.comap_map_of_surjective _ Ideal.Quotient.mk_surjective] at hn
@@ -190,7 +190,7 @@ nonrec lemma Ideal.height_le_spanRank_toENat_of_mem_minimalPrimes
   rw [I.spanRank_toENat_eq_iInf_finset_card, le_iInf_iff]
   rintro ⟨s, (rfl : span s = I)⟩
   induction hn : s.card using Nat.strong_induction_on generalizing R with
-  | h n H =>
+  | ind n H =>
     replace hn : s.card ≤ n := hn.le
     have := hp.isPrime
     cases n with
@@ -215,7 +215,7 @@ nonrec lemma Ideal.height_le_spanRank_toENat_of_mem_minimalPrimes
         exact ⟨x, _, fun e ↦ (Finset.mem_erase.mp e).1 rfl, (Finset.insert_erase hxt).symm, hxq⟩
       have : maximalIdeal R ≤ (q ⊔ span {x}).radical := by
         rw [radical_eq_sInf, le_sInf_iff]
-        exact fun J ⟨hJ, hJ'⟩ ↦ by_contra fun h ↦ hq' J hJ' ((IsConcreteLE.lt_iff_le_and_exists.mpr
+        exact fun J ⟨hJ, hJ'⟩ ↦ by_contra fun h ↦ hq' J hJ' ((lt_iff_le_and_exists_mem_notMem.mpr
           ⟨le_sup_left, x, mem_sup_right (mem_span_singleton_self _), hxq⟩).trans_le hJ)
           ((le_maximalIdeal hJ'.ne_top).lt_of_not_ge h)
       have h : (s' : Set R) ⊆ (q ⊔ span {x}).radical := by
@@ -233,9 +233,6 @@ nonrec lemma Ideal.height_le_spanRank_toENat_of_mem_minimalPrimes
       · simp [t]
       refine hspan.trans <| radical_mono ?_
       rw [← Set.union_singleton, span_union]
-
-@[deprecated (since := "2026-04-01")] alias Ideal.height_le_spanRank_toENat_of_mem_minimal_primes :=
-    Ideal.height_le_spanRank_toENat_of_mem_minimalPrimes
 
 lemma Ideal.height_le_card_of_mem_minimalPrimes_span_finset {p : Ideal R} {s : Finset R}
     (hI : p ∈ (Ideal.span s).minimalPrimes) :
@@ -292,7 +289,7 @@ lemma Ideal.height_le_spanFinrank (I : Ideal R) (hI : I ≠ ⊤) :
 lemma Ideal.height_le_spanRank (I : Ideal R) (hI : I ≠ ⊤) :
     I.height ≤ I.spanRank := by
   trans ↑I.spanRank.toENat
-  · exact_mod_cast I.height_le_spanRank_toENat hI
+  · exact mod_cast I.height_le_spanRank_toENat hI
   · exact I.spanRank.ofENat_toENat_le
 
 instance Ideal.finiteHeight_of_isNoetherianRing (I : Ideal R) :

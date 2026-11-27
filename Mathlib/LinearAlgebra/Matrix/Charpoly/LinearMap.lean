@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Module.SpanRank
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
 
 /-!
-
 # Cayley-Hamilton theorem for f.g. modules.
 
 Given a fixed finite spanning set `b : ι → M` of an `R`-module `M`, we say that a matrix `M`
@@ -34,7 +33,8 @@ open Polynomial Matrix
 /-- The composition of a matrix (as an endomorphism of `ι → R`) with the projection
 `(ι → R) →ₗ[R] M`. -/
 def PiToModule.fromMatrix [DecidableEq ι] : Matrix ι ι R →ₗ[R] (ι → R) →ₗ[R] M :=
-  (LinearMap.llcomp R _ _ _ (Fintype.linearCombination R b)).comp algEquivMatrix'.symm.toLinearMap
+  (LinearMap.llcomp R _ _ _ (Fintype.linearCombination R b)).comp
+    (algEquivMatrix' (R := R) (n := ι)).symm.toLinearMap
 
 theorem PiToModule.fromMatrix_apply [DecidableEq ι] (A : Matrix ι ι R) (w : ι → R) :
     PiToModule.fromMatrix R b A w = Fintype.linearCombination R b (A *ᵥ w) :=
@@ -105,7 +105,7 @@ theorem Matrix.Represents.mul {A A' : Matrix ι ι R} {f f' : Module.End R M} (h
   rw [LinearMap.comp_apply, AlgEquiv.toLinearMap_apply, map_mul]
   ext
   dsimp [PiToModule.fromEnd]
-  rw [← h'.congr_fun, ← h.congr_fun]
+  rw [mul_apply_eq_comp, mul_apply_eq_comp, ← h'.congr_fun, ← h.congr_fun]
   rfl
 
 theorem Matrix.Represents.one : (1 : Matrix ι ι R).Represents b 1 := by
@@ -154,26 +154,28 @@ include hb
 /-- The map sending a matrix to the endomorphism it represents. This is an `R`-algebra morphism. -/
 noncomputable def Matrix.isRepresentation.toEnd :
     Matrix.isRepresentation R b →ₐ[R] Module.End R M where
-  toFun A := A.2.choose
-  map_one' := (1 : Matrix.isRepresentation R b).2.choose_spec.eq hb Matrix.Represents.one
-  map_mul' A₁ A₂ := (A₁ * A₂).2.choose_spec.eq hb (A₁.2.choose_spec.mul A₂.2.choose_spec)
-  map_zero' := (0 : Matrix.isRepresentation R b).2.choose_spec.eq hb Matrix.Represents.zero
-  map_add' A₁ A₂ := (A₁ + A₂).2.choose_spec.eq hb (A₁.2.choose_spec.add A₂.2.choose_spec)
+  toFun A := A.property.choose
+  map_one' := (1 : Matrix.isRepresentation R b).property.choose_spec.eq hb Matrix.Represents.one
+  map_mul' A₁ A₂ :=
+    (A₁ * A₂).property.choose_spec.eq hb (A₁.property.choose_spec.mul A₂.property.choose_spec)
+  map_zero' := (0 : Matrix.isRepresentation R b).property.choose_spec.eq hb Matrix.Represents.zero
+  map_add' A₁ A₂ :=
+    (A₁ + A₂).property.choose_spec.eq hb (A₁.property.choose_spec.add A₂.property.choose_spec)
   commutes' r :=
-    (algebraMap _ (Matrix.isRepresentation R b) r).2.choose_spec.eq hb (.algebraMap r)
+    (algebraMap _ (Matrix.isRepresentation R b) r).property.choose_spec.eq hb (.algebraMap r)
 
 theorem Matrix.isRepresentation.toEnd_represents (A : Matrix.isRepresentation R b) :
     (A : Matrix ι ι R).Represents b (Matrix.isRepresentation.toEnd R b hb A) :=
-  A.2.choose_spec
+  A.property.choose_spec
 
 theorem Matrix.isRepresentation.eq_toEnd_of_represents (A : Matrix.isRepresentation R b)
     {f : Module.End R M} (h : (A : Matrix ι ι R).Represents b f) :
     Matrix.isRepresentation.toEnd R b hb A = f :=
-  A.2.choose_spec.eq hb h
+  A.property.choose_spec.eq hb h
 
 theorem Matrix.isRepresentation.toEnd_exists_mem_ideal (f : Module.End R M) (I : Ideal R)
     (hI : LinearMap.range f ≤ I • ⊤) :
-    ∃ M, Matrix.isRepresentation.toEnd R b hb M = f ∧ ∀ i j, M.1 i j ∈ I := by
+    ∃ M, Matrix.isRepresentation.toEnd R b hb M = f ∧ ∀ i j, M.val i j ∈ I := by
   have : ∀ x, f x ∈ LinearMap.range (Ideal.finsuppTotal ι M I b) := by
     rw [Ideal.range_finsuppTotal, hb]
     exact fun x => hI (LinearMap.mem_range_self f x)
@@ -215,20 +217,13 @@ theorem LinearMap.exists_monic_and_natDegree_eq_and_coeff_mem_pow_and_aeval_eq_z
       Submodule.FG.exists_span_finset_card_eq_spanFinrank (R := R) (M := M) Module.Finite.fg_top
     have : Submodule.span R (Set.range ((↑) : s → M)) = ⊤ := by simp [hs_span]
     obtain ⟨A, rfl, h⟩ := Matrix.isRepresentation.toEnd_exists_mem_ideal R ((↑) : s → M) this f I hI
-    refine ⟨A.1.charpoly, A.1.charpoly_monic, by simp [hs_card],
+    refine ⟨A.val.charpoly, A.val.charpoly_monic, by simp [hs_card],
             by simpa using coeff_charpoly_mem_ideal_pow h, ?_⟩
     rw [Polynomial.aeval_algHom_apply,
       ← map_zero (Matrix.isRepresentation.toEnd R ((↑) : s → M) this)]
     congr 1
     ext1
     rw [Polynomial.aeval_subalgebra_coe, Matrix.aeval_self_charpoly, Subalgebra.coe_zero]
-
-@[deprecated
-"strengthened conclusion to
-`LinearMap.exists_monic_and_natDegree_eq_and_coeff_mem_pow_and_aeval_eq_zero`"
-(since := "2026-04-10")] alias
-LinearMap.exists_monic_and_coeff_mem_pow_and_aeval_eq_zero_of_range_le_smul :=
-  LinearMap.exists_monic_and_natDegree_eq_and_coeff_mem_pow_and_aeval_eq_zero
 
 theorem LinearMap.exists_monic_and_natDegree_eq_and_aeval_eq_zero
     [Module.Finite R M] (f : Module.End R M) :

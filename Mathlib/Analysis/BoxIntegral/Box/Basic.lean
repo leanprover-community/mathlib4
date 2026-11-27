@@ -12,6 +12,7 @@ import Mathlib.Order.Fin.Tuple
 import Mathlib.Order.Interval.Set.Monotone
 import Mathlib.Topology.MetricSpace.Pseudo.Real
 import Mathlib.Topology.Order.MonotoneConvergence
+
 /-!
 # Rectangular boxes in `ℝⁿ`
 
@@ -44,7 +45,7 @@ We define the following operations on boxes:
   map from `Box ι` to `Set (ι → ℝ)`;
 * `BoxIntegral.Box.face I i : Box (Fin n)`: a hyperface of `I : BoxIntegral.Box (Fin (n + 1))`;
 * `BoxIntegral.Box.distortion`: the maximal ratio of two lengths of edges of a box; defined as the
-  supremum of `nndist I.lower I.upper / nndist (I.lower i) (I.upper i)`.
+  supremum of `nnDist I.lower I.upper / nnDist (I.lower i) (I.upper i)`.
 
 We also provide a convenience constructor `BoxIntegral.Box.mk' (l u : ι → ℝ) : WithBot (Box ι)`
 that returns the box `⟨l, u, _⟩` if it is nonempty and `⊥` otherwise.
@@ -126,10 +127,10 @@ theorem upper_mem : I.upper ∈ I :=
 theorem exists_mem : ∃ x, x ∈ I :=
   ⟨_, I.upper_mem⟩
 
+@[simp]
 theorem nonempty_coe : Set.Nonempty (I : Set (ι → ℝ)) :=
   I.exists_mem
 
-@[simp]
 theorem coe_ne_empty : (I : Set (ι → ℝ)) ≠ ∅ :=
   I.nonempty_coe.ne_empty
 
@@ -142,7 +143,7 @@ instance : LE (Box ι) :=
 
 theorem le_def : I ≤ J ↔ ∀ x ∈ I, x ∈ J := Iff.rfl
 
-theorem le_TFAE : List.TFAE [I ≤ J, (I : Set (ι → ℝ)) ⊆ J,
+theorem le_tfae : List.TFAE [I ≤ J, (I : Set (ι → ℝ)) ⊆ J,
     Icc I.lower I.upper ⊆ Icc J.lower J.upper, J.lower ≤ I.lower ∧ I.upper ≤ J.upper] := by
   tfae_have 1 ↔ 2 := Iff.rfl
   tfae_have 2 → 3
@@ -152,13 +153,15 @@ theorem le_TFAE : List.TFAE [I ≤ J, (I : Set (ι → ℝ)) ⊆ J,
   | h, x, hx, i => Ioc_subset_Ioc (h.1 i) (h.2 i) (hx i)
   tfae_finish
 
+@[deprecated (since := "2026-10-27")] alias le_TFAE := le_tfae
+
 variable {I J}
 
 @[simp, norm_cast]
 theorem coe_subset_coe : (I : Set (ι → ℝ)) ⊆ J ↔ I ≤ J := Iff.rfl
 
 theorem le_iff_bounds : I ≤ J ↔ J.lower ≤ I.lower ∧ I.upper ≤ J.upper :=
-  (le_TFAE I J).out 1 4
+  (le_tfae I J).out 1 4
 
 theorem injective_coe : Injective ((↑) : Box ι → Set (ι → ℝ)) := by
   rintro ⟨l₁, u₁, h₁⟩ ⟨l₂, u₂, h₂⟩ h
@@ -182,7 +185,7 @@ instance : PartialOrder (Box ι) :=
 
 /-- Closed box corresponding to `I : BoxIntegral.Box ι`. -/
 protected def Icc : Box ι ↪o Set (ι → ℝ) :=
-  OrderEmbedding.ofMapLEIff (fun I : Box ι ↦ Icc I.lower I.upper) fun I J ↦ (le_TFAE I J).out 3 1
+  OrderEmbedding.ofMapLEIff (fun I : Box ι ↦ Icc I.lower I.upper) fun I J ↦ (le_tfae I J).out 3 1
 
 theorem Icc_def : Box.Icc I = Icc I.lower I.upper := rfl
 
@@ -201,7 +204,7 @@ theorem Icc_eq_pi : Box.Icc I = pi univ fun i ↦ Icc (I.lower i) (I.upper i) :=
   (pi_univ_Icc _ _).symm
 
 theorem le_iff_Icc : I ≤ J ↔ Box.Icc I ⊆ Box.Icc J :=
-  (le_TFAE I J).out 1 3
+  (le_tfae I J).out 1 3
 
 theorem antitone_lower : Antitone fun I : Box ι ↦ I.lower :=
   fun _ _ H ↦ (le_iff_bounds.1 H).1
@@ -260,7 +263,7 @@ theorem isSome_iff : ∀ {I : WithBot (Box ι)}, I.isSome ↔ (I : Set (ι → �
     simp
   | (I : Box ι) => by
     unfold Option.isSome
-    simp [I.nonempty_coe]
+    simp
 
 theorem biUnion_coe_eq_coe (I : WithBot (Box ι)) :
     ⋃ (J : Box ι) (_ : ↑J = I), (J : Set (ι → ℝ)) = I := by
@@ -439,14 +442,14 @@ variable [Fintype ι]
 
 /-- The distortion of a box `I` is the maximum of the ratios of the lengths of its edges.
 It is defined as the maximum of the ratios
-`nndist I.lower I.upper / nndist (I.lower i) (I.upper i)`. -/
+`nnDist I.lower I.upper / nnDist (I.lower i) (I.upper i)`. -/
 def distortion (I : Box ι) : ℝ≥0 :=
-  Finset.univ.sup fun i : ι ↦ nndist I.lower I.upper / nndist (I.lower i) (I.upper i)
+  Finset.univ.sup fun i : ι ↦ nnDist I.lower I.upper / nnDist (I.lower i) (I.upper i)
 
 theorem distortion_eq_of_sub_eq_div {I J : Box ι} {r : ℝ}
     (h : ∀ i, I.upper i - I.lower i = (J.upper i - J.lower i) / r) :
     distortion I = distortion J := by
-  simp only [distortion, nndist_pi_def, Real.nndist_eq', h, map_div₀]
+  simp only [distortion, nnDist_pi_def, Real.nnDist_eq', h, map_div₀]
   congr 1 with i
   have : 0 < r := by
     by_contra hr
@@ -456,20 +459,22 @@ theorem distortion_eq_of_sub_eq_div {I J : Box ι} {r : ℝ}
   have hn0 := (map_ne_zero Real.nnabs).2 this.ne'
   simp_rw [NNReal.finset_sup_div, div_div_div_cancel_right₀ hn0]
 
-theorem nndist_le_distortion_mul (I : Box ι) (i : ι) :
-    nndist I.lower I.upper ≤ I.distortion * nndist (I.lower i) (I.upper i) :=
+theorem nnDist_le_distortion_mul (I : Box ι) (i : ι) :
+    nnDist I.lower I.upper ≤ I.distortion * nnDist (I.lower i) (I.upper i) :=
   calc
-    nndist I.lower I.upper =
-        nndist I.lower I.upper / nndist (I.lower i) (I.upper i) * nndist (I.lower i) (I.upper i) :=
-      (div_mul_cancel₀ _ <| mt nndist_eq_zero.1 (I.lower_lt_upper i).ne).symm
-    _ ≤ I.distortion * nndist (I.lower i) (I.upper i) := by
+    nnDist I.lower I.upper =
+        nnDist I.lower I.upper / nnDist (I.lower i) (I.upper i) * nnDist (I.lower i) (I.upper i) :=
+      (div_mul_cancel₀ _ <| mt nnDist_eq_zero.1 (I.lower_lt_upper i).ne).symm
+    _ ≤ I.distortion * nnDist (I.lower i) (I.upper i) := by
       grw [distortion, ← Finset.le_sup (Finset.mem_univ i)]
+
+@[deprecated (since := "2026-11-07")] alias nndist_le_distortion_mul := nnDist_le_distortion_mul
 
 theorem dist_le_distortion_mul (I : Box ι) (i : ι) :
     dist I.lower I.upper ≤ I.distortion * (I.upper i - I.lower i) := by
   have A : I.lower i - I.upper i < 0 := sub_neg.2 (I.lower_lt_upper i)
-  simpa only [← NNReal.coe_le_coe, ← dist_nndist, NNReal.coe_mul, Real.dist_eq, abs_of_neg A,
-    neg_sub] using I.nndist_le_distortion_mul i
+  simpa only [← NNReal.coe_le_coe, ← dist_nnDist, NNReal.coe_mul, Real.dist_eq, abs_of_neg A,
+    neg_sub] using I.nnDist_le_distortion_mul i
 
 theorem diam_Icc_le_of_distortion_le (I : Box ι) (i : ι) {c : ℝ≥0} (h : I.distortion ≤ c) :
     diam (Box.Icc I) ≤ c * (I.upper i - I.lower i) :=

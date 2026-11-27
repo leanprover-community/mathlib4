@@ -9,8 +9,11 @@ public import Mathlib.Algebra.Category.Grp.AB
 public import Mathlib.Algebra.Category.ModuleCat.Colimits
 
 import Mathlib.Algebra.Module.Shrink
-/-!
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
 # AB axioms in module categories
 
 This file proves that the category of modules over a ring satisfies Grothendieck's axioms AB5, AB4,

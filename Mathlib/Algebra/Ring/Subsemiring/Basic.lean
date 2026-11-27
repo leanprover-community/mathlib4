@@ -251,6 +251,10 @@ instance : CompleteLattice (Subsemiring R) :=
 theorem eq_top_iff' (A : Subsemiring R) : A = ⊤ ↔ ∀ x : R, x ∈ A :=
   eq_top_iff.trans ⟨fun h m => h <| mem_top m, fun h m _ => h m⟩
 
+@[simp] theorem toSubmonoid_top : (⊤ : Subsemiring R).toSubmonoid = ⊤ := rfl
+
+@[simp] theorem toAddSubmonoid_top : (⊤ : Subsemiring R).toAddSubmonoid = ⊤ := rfl
+
 section NonAssocSemiring
 
 variable (R)
@@ -378,7 +382,7 @@ theorem mem_closure {x : R} {s : Set R} : x ∈ closure s ↔ ∀ S : Subsemirin
 @[simp, aesop safe 20 (rule_sets := [SetLike])]
 theorem subset_closure {s : Set R} : s ⊆ closure s := fun _ hx => mem_closure.2 fun _ hS => hS hx
 
-@[aesop 80% (rule_sets := [SetLike])]
+@[aesop 80% (rule_sets := [SetLike]), membership .]
 theorem mem_closure_of_mem {s : Set R} {x : R} (hx : x ∈ s) : x ∈ closure s := subset_closure hx
 
 theorem notMem_of_notMem_closure {s : Set R} {P : R} (hP : P ∉ closure s) : P ∉ s := fun h =>
@@ -755,7 +759,7 @@ theorem surjective_codRestrict {f : R →+* S} {s : σS} {h : ∀ x, f x ∈ s} 
 
 /-- The ring homomorphism from the preimage of `s` to `s`. -/
 def restrict (f : R →+* S) (s' : σR) (s : σS) (h : ∀ x ∈ s', f x ∈ s) : s' →+* s :=
-  (f.domRestrict s').codRestrict s fun x => h x x.2
+  (f.domRestrict s').codRestrict s fun x => h x x.property
 
 @[simp]
 theorem coe_restrict_apply (f : R →+* S) (s' : σR) (s : σS) (h : ∀ x ∈ s', f x ∈ s) (x : s') :
@@ -831,7 +835,7 @@ open RingHom
 
 /-- The ring homomorphism associated to an inclusion of subsemirings. -/
 def inclusion {S T : Subsemiring R} (h : S ≤ T) : S →+* T :=
-  S.subtype.codRestrict _ fun x => h x.2
+  S.subtype.codRestrict _ fun x => h x.property
 
 theorem inclusion_injective {S T : Subsemiring R} (h : S ≤ T) :
     Function.Injective (inclusion h) := Set.inclusion_injective h
@@ -1036,14 +1040,6 @@ theorem isMulCommutative_closure {s : Set R'} (hcomm : s.Pairwise Commute) :
   have := closure_le_centralizer_centralizer s
   .of_setLike_mul_comm fun _ h₁ _ h₂ ↦
     Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂)
-
-open scoped IsMulCommutative in
-/-- If all the elements of a set `s` commute, then `closure s` is a commutative semiring. -/
-@[deprecated isMulCommutative_closure +typeChanged (since := "2026-03-11")]
-abbrev closureCommSemiringOfComm {s : Set R'} (hcomm : s.Pairwise Commute) :
-    CommSemiring (closure s) :=
-  have := isMulCommutative_closure hcomm
-  inferInstance
 
 instance instIsMulCommutative_closure {S : Type*} [SetLike S R'] [MulMemClass S R'] (s : S)
     [IsMulCommutative s] : IsMulCommutative (closure (s : Set R')) :=

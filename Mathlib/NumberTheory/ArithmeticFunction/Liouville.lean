@@ -7,6 +7,9 @@ module
 
 public import Mathlib.NumberTheory.ArithmeticFunction.Misc
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Liouville Function
 
@@ -24,6 +27,7 @@ namespace ArithmeticFunction
 
 /-- The Liouville function `λ(n)` defined to be `1` if `n` has an even number of prime factors
 (counting multiplicity) and `-1` otherwise. -/
+@[oeis A008836 "the sequence skips `n = 0`"]
 def liouville : ArithmeticFunction ℤ where
   toFun n := if n = 0 then 0 else (-1) ^ cardFactors n
   map_zero' := by simp

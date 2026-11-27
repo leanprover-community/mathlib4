@@ -26,10 +26,20 @@ This file defines bundled homomorphisms of `R`-algebras.
 
 universe u v w u₁ v₁
 
+lemma map_smul_of_commutes {R : Type u} {A : Type v} {B : Type w}
+    [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+    (f : A → B) (map_mul : ∀ a b : A, f (a * b) = f a * f b)
+    (commutes : ∀ r : R, f (algebraMap R A r) = algebraMap R B r) :
+    ∀ r : R, ∀ a : A, f (r • a) = r • f a := by
+  intros
+  rw [Algebra.smul_def, Algebra.smul_def, map_mul, commutes]
+
 /-- Defining the homomorphism in the category R-Alg, denoted `A →ₐ[R] B`. -/
 structure AlgHom (R : Type u) (A : Type v) (B : Type w) [CommSemiring R] [Semiring A] [Semiring B]
-  [Algebra R A] [Algebra R B] extends RingHom A B where
+    [Algebra R A] [Algebra R B] extends RingHom A B where
   commutes' : ∀ r : R, toFun (algebraMap R A r) = algebraMap R B r
+  map_smul' : ∀ r : R, ∀ a : A, toFun (r • a) = r • toFun a :=
+    map_smul_of_commutes toFun map_mul' commutes'
 
 /-- Reinterpret an `AlgHom` as a `RingHom` -/
 add_decl_doc AlgHom.toRingHom
@@ -63,9 +73,7 @@ instance (priority := 100) linearMapClass [AlgHomClass F R A B] : LinearMapClass
     map_smulₛₗ := fun f r x => by
       simp only [Algebra.smul_def, map_mul, commutes, RingHom.id_apply] }
 
-/-- Turn an element of a type `F` satisfying `AlgHomClass F α β` into an actual
-`AlgHom`. This is declared as the default coercion from `F` to `α →+* β`. -/
-@[coe]
+/-- Turn an element of a type `F` satisfying `AlgHomClass F α β` into an actual `AlgHom`. -/
 def _root_.AlgHom.ofClass {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) :
     A →ₐ[R] B where
   __ := (f : A →+* B)
@@ -120,7 +128,6 @@ protected theorem coe_ofClass {F : Type*} [FunLike F A B] [AlgHomClass F R A B] 
 
 @[deprecated (since := "2026-09-08")] alias coe_coe := AlgHom.coe_ofClass
 
-@[simp]
 theorem toFun_eq_coe (f : A →ₐ[R] B) : f.toFun = f :=
   rfl
 
@@ -139,15 +146,18 @@ instance coeOutAddMonoidHom : CoeOut (A →ₐ[R] B) (A →+ B) :=
   ⟨AlgHom.toAddMonoidHom'⟩
 
 @[simp]
-theorem coe_mk {f : A →+* B} (h) : ((⟨f, h⟩ : A →ₐ[R] B) : A → B) = f :=
-  rfl
-
-@[norm_cast]
-theorem coe_mks {f : A → B} (h₁ h₂ h₃ h₄ h₅) : ⇑(⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅⟩ : A →ₐ[R] B) = f :=
+theorem coe_mk {f : A →+* B} (h₁ h₂) : ((⟨f, h₁, h₂⟩ : A →ₐ[R] B) : A → B) = f :=
   rfl
 
 @[simp, norm_cast]
-theorem toRingHom_mk {f : A →+* B} (h) : ((⟨f, h⟩ : A →ₐ[R] B) : A →+* B) = f :=
+theorem mk_coe {f : A → B} (h₁ h₂ h₃ h₄ h₅ h₆) :
+    ⇑(⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅, h₆⟩ : A →ₐ[R] B) = f :=
+  rfl
+
+@[deprecated (since := "2026-11-19")] alias coe_mks := mk_coe
+
+@[simp, norm_cast]
+theorem toRingHom_mk {f : A →+* B} (h₁ h₂) : ((⟨f, h₁, h₂⟩ : A →ₐ[R] B) : A →+* B) = f :=
   rfl
 
 @[deprecated (since := "2026-05-05")] alias coe_ringHom_mk := toRingHom_mk
@@ -157,15 +167,15 @@ theorem toRingHom_mk {f : A →+* B} (h) : ((⟨f, h⟩ : A →ₐ[R] B) : A →
 theorem toRingHom_eq_coe (f : A →ₐ[R] B) : f.toRingHom = f :=
   rfl
 
-@[simp, norm_cast]
+@[simp, norm_cast, nolint simpNF] -- `nolint` needed while this uses `RingHomClass.toRingHom`
 theorem coe_toRingHom (f : A →ₐ[R] B) : ⇑(f : A →+* B) = f :=
   rfl
 
-@[simp, norm_cast]
+@[simp, norm_cast, nolint simpNF] -- `nolint` needed while this uses `MonoidHom.ofClass`
 theorem coe_toMonoidHom (f : A →ₐ[R] B) : ⇑(f : A →* B) = f :=
   rfl
 
-@[simp, norm_cast]
+@[simp, norm_cast, nolint simpNF] -- `nolint` needed while this uses `AddMonoidHom.ofClass`
 theorem coe_toAddMonoidHom (f : A →ₐ[R] B) : ⇑(f : A →+ B) = f :=
   rfl
 
@@ -209,10 +219,6 @@ protected theorem congr_arg (φ : A →ₐ[R] B) {x y : A} (h : x = y) : φ x = 
 @[ext]
 theorem ext {φ₁ φ₂ : A →ₐ[R] B} (H : ∀ x, φ₁ x = φ₂ x) : φ₁ = φ₂ :=
   DFunLike.ext _ _ H
-
-@[simp]
-theorem mk_coe {f : A →ₐ[R] B} (h₁ h₂ h₃ h₄ h₅) : (⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅⟩ : A →ₐ[R] B) = f :=
-  rfl
 
 @[simp] lemma addHomMk_coe (f : A →ₐ[R] B) : AddHom.mk f (map_add f) = f := rfl
 
@@ -495,6 +501,8 @@ variable {R}
 theorem ofId_apply (r) : ofId R A r = algebraMap R A r :=
   rfl
 
+@[simp] lemma ofId_toLinearMap : (ofId R A).toLinearMap = Algebra.linearMap R A := rfl
+
 /-- This is a special case of a more general instance that we define in a later file. -/
 instance subsingleton_id : Subsingleton (R →ₐ[R] A) :=
   ⟨fun f g => AlgHom.ext fun _ => (f.commutes _).trans (g.commutes _).symm⟩
@@ -561,6 +569,10 @@ def toAlgHom (m : M) : A →ₐ[R] A :=
 theorem toAlgHom_injective [FaithfulSMul M A] :
     Function.Injective (MulSemiringAction.toAlgHom R A : M → A →ₐ[R] A) := fun _m₁ _m₂ h =>
   eq_of_smul_eq_smul fun r => AlgHom.ext_iff.1 h r
+
+variable (M) in
+@[simp]
+theorem toAlgHom_one : toAlgHom R A (1 : M) = AlgHom.id R A := by ext; simp
 
 end MulSemiringAction
 

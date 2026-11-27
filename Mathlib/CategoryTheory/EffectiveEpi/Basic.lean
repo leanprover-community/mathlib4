@@ -6,8 +6,8 @@ Authors: Adam Topaz
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Products
-/-!
 
+/-!
 # Effective epimorphisms
 
 We define the notion of effective epimorphism and effective epimorphic family of morphisms.
@@ -29,10 +29,10 @@ See [nlab: *Effective Epimorphism*](https://ncatlab.org/nlab/show/effective+epim
 our notion of `EffectiveEpi` is often called "strict epi" in the literature.
 
 ## References
+
 - [Elephant]: *Sketches of an Elephant*, P. T. Johnstone: C2.1, Example 2.1.12.
 - [nlab: *Effective Epimorphism*](https://ncatlab.org/nlab/show/effective+epimorphism) and
 - [Stacks 00WP](https://stacks.math.columbia.edu/tag/00WP) for the standard definitions.
-
 -/
 
 @[expose] public section

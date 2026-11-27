@@ -31,7 +31,6 @@ its quotients by open normal subgroups.
 
 * `OpenNormalSubgroupSubClopenNhdsOfOne` : For any open neighborhood of `1` there is an
   open normal subgroup contained in it.
-
 -/
 
 @[expose] public section
@@ -94,17 +93,18 @@ def toLimit (P : ProfiniteGrp.{u}) : P ⟶ limit (diagram P) :=
   ofHom { toLimitFun P with
   continuous_toFun := toLimitFun_continuous P }
 
-/-- An auxiliary result, superseded by `toLimit_surjective` -/
-theorem denseRange_toLimit (P : ProfiniteGrp.{u}) : DenseRange (toLimit P) := by
+-- An auxiliary result, superseded by `toLimit_surjective`
+@[to_additive]
+private theorem denseRange_toLimit (P : ProfiniteGrp.{u}) : DenseRange (toLimit P) := by
   apply dense_iff_inter_open.mpr
   rintro U ⟨s, hsO, hsv⟩ ⟨⟨spc, hspc⟩, uDefaultSpec⟩
   simp_rw [← hsv, Set.mem_preimage] at uDefaultSpec
   rcases (isOpen_pi_iff.mp hsO) _ uDefaultSpec with ⟨J, fJ, hJ1, hJ2⟩
-  let M := iInf (fun (j : J) => j.1.1.1)
-  have hM : M.Normal := Subgroup.normal_iInf_normal fun j => j.1.isNormal'
+  let M := iInf (fun (j : J) => j.val.toOpenSubgroup.toSubgroup)
+  have hM : M.Normal := Subgroup.normal_iInf_normal fun j => j.val.isNormal'
   have hMOpen : IsOpen (M : Set P) := by
     rw [Subgroup.coe_iInf]
-    exact isOpen_iInter_of_finite fun i => i.1.1.isOpen'
+    exact isOpen_iInter_of_finite fun i => i.val.toOpenSubgroup.isOpen'
   let m : OpenNormalSubgroup P := { M with isOpen' := hMOpen }
   rcases QuotientGroup.mk'_surjective M (spc m) with ⟨origin, horigin⟩
   use (toLimit P) origin
@@ -112,12 +112,13 @@ theorem denseRange_toLimit (P : ProfiniteGrp.{u}) : DenseRange (toLimit P) := by
   rw [← hsv]
   apply hJ2
   intro a a_in_J
-  let M_to_Na : m ⟶ a := (iInf_le (fun (j : J) => j.1.1.1) ⟨a, a_in_J⟩).hom
+  let M_to_Na : m ⟶ a := (iInf_le (fun (j : J) => j.val.toOpenSubgroup.toSubgroup) ⟨a, a_in_J⟩).hom
   rw [← (P.toLimit origin).property M_to_Na]
   change (P.toFiniteQuotientFunctor.map M_to_Na) (QuotientGroup.mk' M origin) ∈ _
   rw [horigin]
   exact Set.mem_of_eq_of_mem (hspc M_to_Na) (hJ1 a a_in_J).2
 
+@[to_additive]
 theorem toLimit_surjective (P : ProfiniteGrp.{u}) : Function.Surjective (toLimit P) := by
   have : IsClosed (Set.range P.toLimit) :=
     P.toLimit.hom.continuous_toFun.isClosedMap.isClosed_range
@@ -135,7 +136,10 @@ theorem toLimit_injective (P : ProfiniteGrp.{u}) : Function.Injective (toLimit P
   exact hH ((QuotientGroup.eq_one_iff x).mp congr($(Subtype.val_inj.mpr h) H)) rfl
 
 /-- The topological group isomorphism between a profinite group and the projective limit of
-its quotients by open normal subgroups -/
+its quotients by open normal subgroups. -/
+@[to_additive
+/-- The topological group isomorphism between an additive profinite group and the projective limit
+of its quotients by open normal subgroups. -/]
 noncomputable def continuousMulEquivLimittoFiniteQuotientFunctor (P : ProfiniteGrp.{u}) :
     P ≃ₜ* (limit <| diagram P) := {
   (Continuous.homeoOfEquivCompactToT2
@@ -143,12 +147,16 @@ noncomputable def continuousMulEquivLimittoFiniteQuotientFunctor (P : ProfiniteG
     P.toLimit.hom.continuous_toFun) with
   map_mul' := (toLimit P).hom.map_mul' }
 
+@[to_additive]
 instance isIso_toLimit (P : ProfiniteGrp.{u}) : IsIso (toLimit P) := by
   rw [CategoryTheory.ConcreteCategory.isIso_iff_bijective]
   exact ⟨toLimit_injective P, toLimit_surjective P⟩
 
-/-- The isomorphism in the category of profinite group between a profinite group and
-the projective limit of its quotients by open normal subgroups -/
+/-- The isomorphism in the category of profinite groups between a profinite group and
+the projective limit of its quotients by open normal subgroups. -/
+@[to_additive
+/-- The isomorphism in the category of additive profinite groups between an additive profinite group
+and the projective limit of its quotients by open normal subgroups. -/]
 noncomputable def isoLimittoFiniteQuotientFunctor (P : ProfiniteGrp.{u}) :
     P ≅ (limit <| diagram P) :=
   ContinuousMulEquiv.toProfiniteGrpIso (continuousMulEquivLimittoFiniteQuotientFunctor P)
@@ -172,6 +180,7 @@ def cone (P : ProfiniteGrp.{u}) : Limits.Cone (diagram P) where
   π := { app := proj }
 
 /-- The canonical cone over `diagram P` is a limit cone. -/
+@[to_additive /-- The canonical cone over `diagram P` is a limit cone. -/]
 noncomputable def isLimitCone (P : ProfiniteGrp.{u}) : Limits.IsLimit P.cone :=
   Limits.IsLimit.ofIsoLimit (limitConeIsLimit _) <| .symm <|
     Limits.Cone.ext (isoLimittoFiniteQuotientFunctor _) fun _ => rfl

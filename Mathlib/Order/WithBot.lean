@@ -6,12 +6,13 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Basic.Nontrivial.Basic
-public import Mathlib.Data.Option.Basic
 public import Mathlib.Data.Option.NAry
 public import Mathlib.Order.BoundedOrder.Basic
 public import Mathlib.Order.Lattice
 public import Mathlib.Order.TypeTags
 public import Mathlib.Tactic.Lift
+
+import Mathlib.Data.Option.Basic
 
 /-!
 # `WithBot`, `WithTop`
@@ -21,7 +22,6 @@ Adding a `bot` or a `top` to an order.
 ## Main declarations
 
 * `With<Top/Bot> α`: Equips `Option α` with the order on `α` plus `none` as the top/bottom element.
-
 -/
 
 @[expose] public section
@@ -395,13 +395,13 @@ variable {a b : α}
 
 section LE
 
-variable [LE α] {x y : WithBot α}
+variable [LE α] [LE β] {x y : WithBot α}
 
 @[to_dual]
 lemma le_iff_forall : x ≤ y ↔ ∀ a : α, x = ↑a → ∃ b : α, y = ↑b ∧ a ≤ b := by
   cases x <;> cases y <;> simp [le_def]
 
-@[to_dual (attr := simp, norm_cast)]
+@[to_dual (attr := simp, norm_cast, gcongr)]
 lemma coe_le_coe : (a : WithBot α) ≤ b ↔ a ≤ b := by simp [le_def]
 
 @[to_dual not_top_le_coe]
@@ -481,6 +481,10 @@ lemma unbotA_le_iff [Nonempty α] (hx : x ≠ ⊥) : x.unbotA ≤ a ↔ x ≤ a 
 @[to_dual]
 lemma unbotA_mono [Nonempty α] (hy : x ≠ ⊥) (h : x ≤ y) : x.unbotA ≤ y.unbotA := unbotD_mono hy h
 
+@[to_dual]
+lemma map_le_iff (f : α → β) (mono_iff : ∀ {a b}, f a ≤ f b ↔ a ≤ b) :
+    x.map f ≤ y.map f ↔ x ≤ y := by cases x <;> cases y <;> simp [mono_iff]
+
 end LE
 
 section LT
@@ -491,7 +495,7 @@ variable [LT α] {x y : WithBot α}
 lemma lt_iff_exists : x < y ↔ ∃ b : α, y = ↑b ∧ ∀ a : α, x = ↑a → a < b := by
   cases x <;> cases y <;> simp [lt_def]
 
-@[to_dual (attr := simp, norm_cast)]
+@[to_dual (attr := simp, norm_cast, gcongr)]
 lemma coe_lt_coe : (a : WithBot α) < b ↔ a < b := by simp [lt_def]
 @[to_dual (attr := simp) coe_lt_top]
 lemma bot_lt_coe (a : α) : ⊥ < (a : WithBot α) := by simp [lt_def]
@@ -585,10 +589,6 @@ theorem strictMono_map_iff {f : α → β} :
 @[to_dual]
 alias ⟨_, _root_.StrictMono.withBot_map⟩ := strictMono_map_iff
 
-@[to_dual]
-lemma map_le_iff (f : α → β) (mono_iff : ∀ {a b}, f a ≤ f b ↔ a ≤ b) :
-    x.map f ≤ y.map f ↔ x ≤ y := by cases x <;> cases y <;> simp [mono_iff]
-
 @[to_dual coe_untopD_le]
 theorem le_coe_unbotD (x : WithBot α) (b : α) : x ≤ x.unbotD b := by cases x <;> simp
 
@@ -677,6 +677,7 @@ lemma eq_of_forall_le_coe_iff (h : ∀ a : α, x ≤ a ↔ y ≤ a) : x = y :=
 
 end PartialOrder
 
+@[to_dual]
 instance semilatticeSup [SemilatticeSup α] : SemilatticeSup (WithBot α) where
   sup
     -- note this is `Option.merge`, but with the right defeq when unfolding
@@ -688,30 +689,12 @@ instance semilatticeSup [SemilatticeSup α] : SemilatticeSup (WithBot α) where
   le_sup_right x y := by cases x <;> cases y <;> simp
   sup_le x y z := by cases x <;> cases y <;> cases z <;> simp; simpa using sup_le
 
-@[to_dual existing]
-instance _root_.WithTop.semilatticeInf [SemilatticeInf α] : SemilatticeInf (WithTop α) where
-  inf
-    -- note this is `Option.merge`, but with the right defeq when unfolding
-    | ⊤, ⊤ => ⊤
-    | (a : α), ⊤ => a
-    | ⊤, (b : α) => b
-    | (a : α), (b : α) => ↑(a ⊓ b)
-  inf_le_left x y := by cases x <;> cases y <;> simp
-  inf_le_right x y := by cases x <;> cases y <;> simp
-  le_inf x y z := by cases x <;> cases y <;> cases z <;> simp; simpa using le_inf
-
+@[to_dual]
 instance semilatticeInf [SemilatticeInf α] : SemilatticeInf (WithBot α) where
   inf := .map₂ (· ⊓ ·)
   inf_le_left x y := by cases x <;> cases y <;> simp
   inf_le_right x y := by cases x <;> cases y <;> simp
   le_inf x y z := by cases x <;> cases y <;> cases z <;> simp; simpa using le_inf
-
-@[to_dual existing]
-instance _root_.WithTop.semilatticeSup [SemilatticeSup α] : SemilatticeSup (WithTop α) where
-  sup := .map₂ (· ⊔ ·)
-  le_sup_left x y := by cases x <;> cases y <;> simp
-  le_sup_right x y := by cases x <;> cases y <;> simp
-  sup_le x y z := by cases x <;> cases y <;> cases z <;> simp; simpa using sup_le
 
 @[to_dual (attr := simp, norm_cast)]
 theorem coe_sup [SemilatticeSup α] (a b : α) :
@@ -721,20 +704,13 @@ theorem coe_sup [SemilatticeSup α] (a b : α) :
 theorem coe_inf [SemilatticeInf α] (a b : α) :
     ((a ⊓ b : α) : WithBot α) = (a : WithBot α) ⊓ b := rfl
 
+@[to_dual]
 instance lattice [Lattice α] : Lattice (WithBot α) where
 
-@[to_dual existing]
-instance _root_.WithTop.lattice [Lattice α] : Lattice (WithTop α) where
-
+@[to_dual]
 instance distribLattice [DistribLattice α] : DistribLattice (WithBot α) where
   le_sup_inf x y z := by
     cases x <;> cases y <;> cases z <;> simp [← coe_inf, ← coe_sup]
-    simpa [← coe_inf, ← coe_sup] using le_sup_inf
-
-@[to_dual existing]
-instance _root_.WithTop.distribLattice [DistribLattice α] : DistribLattice (WithTop α) where
-  le_sup_inf x y z := by
-    cases x <;> cases y <;> cases z <;> simp [← WithTop.coe_inf, ← WithTop.coe_sup]
     simpa [← coe_inf, ← coe_sup] using le_sup_inf
 
 @[to_dual]
@@ -782,6 +758,7 @@ instance instWellFoundedGT [LT α] [WellFoundedGT α] : WellFoundedGT (WithBot �
     | (a : α) => acc_some a
     | ⊥ => ⟨_, by simpa [WithBot.forall]⟩
 
+@[to_dual]
 lemma denselyOrdered_iff [LT α] [NoMinOrder α] :
     DenselyOrdered (WithBot α) ↔ DenselyOrdered α := by
   constructor <;> intro h <;> constructor
@@ -791,17 +768,6 @@ lemma denselyOrdered_iff [LT α] [NoMinOrder α] :
     | bot => simp at hc
     | coe c => exact ⟨c, by simpa using hc⟩
   · simpa [WithBot.exists, WithBot.forall, exists_lt] using DenselyOrdered.dense
-
-@[to_dual existing]
-lemma _root_.WithTop.denselyOrdered_iff [LT α] [NoMaxOrder α] :
-    DenselyOrdered (WithTop α) ↔ DenselyOrdered α := by
-  constructor <;> intro h <;> constructor
-  · intro a b hab
-    obtain ⟨c, hc⟩ := exists_between (WithTop.coe_lt_coe.mpr hab)
-    induction c with
-    | top => simp at hc
-    | coe c => exact ⟨c, by simpa using hc⟩
-  · simpa [WithTop.exists, WithTop.forall, exists_gt] using DenselyOrdered.dense
 
 @[to_dual]
 instance denselyOrdered [LT α] [DenselyOrdered α] [NoMinOrder α] :

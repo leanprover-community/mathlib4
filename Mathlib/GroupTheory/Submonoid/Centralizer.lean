@@ -8,6 +8,9 @@ module
 public import Mathlib.GroupTheory.Submonoid.Center
 public import Mathlib.GroupTheory.Subsemigroup.Centralizer
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Centralizers of magmas and monoids
 
@@ -101,16 +104,6 @@ theorem isMulCommutative_closure {s : Set M} (hcomm : s.Pairwise Commute) :
   have := closure_le_centralizer_centralizer s
   .of_setLike_mul_comm fun _ h₁ _ h₂ ↦
     Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂)
-
-open scoped IsMulCommutative
-/-- If all the elements of a set `s` commute, then `closure s` is a commutative monoid. -/
-@[to_additive (attr := deprecated isMulCommutative_closure +typeChanged (since := "2026-03-09"))
-/-- If all the elements of a set `s` commute, then `closure s` forms an additive
-commutative monoid. -/]
-abbrev closureCommMonoidOfComm {s : Set M} (hcomm : s.Pairwise Commute) :
-    CommMonoid (closure s) :=
-  haveI := isMulCommutative_closure _ hcomm
-  inferInstance
 
 @[to_additive]
 instance instIsMulCommutative_closure {S : Type*} [SetLike S M] [MulMemClass S M] (s : S)

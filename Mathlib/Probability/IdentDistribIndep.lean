@@ -9,6 +9,9 @@ public import Mathlib.Probability.IdentDistrib
 
 import Mathlib.Probability.Independence.InfinitePi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Results about identically distributed random variables and independence
 
@@ -21,7 +24,6 @@ import Mathlib.Probability.Independence.InfinitePi
 * `IdentDistrib.pi`: if `(X i)` and `(Y i)` are families of independent random variables indexed by
   a countable type `ι`, such that for each `i`, `X i` and `Y i` are identically distributed, then
   the products `X` and `Y` are identically distributed.
-
 -/
 
 public section

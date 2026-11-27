@@ -104,15 +104,14 @@ theorem coe_toEquiv (e : P₁ ≃ᵃ[k] P₂) : ⇑e.toEquiv = e :=
 instance : Coe (P₁ ≃ᵃ[k] P₂) (P₁ →ᵃ[k] P₂) :=
   ⟨toAffineMap⟩
 
-@[simp]
+@[norm_cast, simp]
 theorem coe_toAffineMap (e : P₁ ≃ᵃ[k] P₂) : (e.toAffineMap : P₁ → P₂) = (e : P₁ → P₂) :=
   rfl
 
-@[norm_cast, simp]
+@[deprecated coe_toAffineMap (since := "2026-11-23")]
 theorem coe_coe (e : P₁ ≃ᵃ[k] P₂) : ((e : P₁ →ᵃ[k] P₂) : P₁ → P₂) = e :=
   rfl
 
-@[simp]
 theorem coe_linear (e : P₁ ≃ᵃ[k] P₂) : (e : P₁ →ᵃ[k] P₂).linear = e.linear :=
   rfl
 
@@ -210,6 +209,10 @@ noncomputable def ofBijective {φ : P₁ →ᵃ[k] P₂} (hφ : Function.Bijecti
 theorem ofBijective.symm_eq {φ : P₁ →ᵃ[k] P₂} (hφ : Function.Bijective φ) :
     (ofBijective hφ).symm.toEquiv = (Equiv.ofBijective _ hφ).symm :=
   rfl
+
+@[simp]
+lemma toEquiv_ofBijective (φ : P₁ →ᵃ[k] P₂) (hφ) :
+    (ofBijective (φ := φ) hφ).toEquiv = .ofBijective φ hφ := rfl
 
 theorem range_eq (e : P₁ ≃ᵃ[k] P₂) : range e = univ := by simp
 

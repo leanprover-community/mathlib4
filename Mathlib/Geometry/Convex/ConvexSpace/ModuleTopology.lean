@@ -8,9 +8,11 @@ module
 public import Mathlib.Geometry.Convex.ConvexSpace.Module
 public import Mathlib.Geometry.Convex.ConvexSpace.Topology
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuity of affine maps from the standard simplex to modules
-
 -/
 
 open Topology

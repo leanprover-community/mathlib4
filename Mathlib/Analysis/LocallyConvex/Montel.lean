@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Normed.Module.FiniteDimension
 public import Mathlib.Topology.Algebra.Module.Spaces.CompactConvergenceCLM
+
 /-!
 # Montel spaces
 
@@ -23,8 +24,8 @@ space would be `[MontelSpace 𝕜 E] [BarrelledSpace 𝕜 E]`.
   [F. Trèves][treves1967].
 
 ## References
-* [F. Trèves, *Topological vector spaces, distributions and kernels*][treves1967]
 
+* [F. Trèves, *Topological vector spaces, distributions and kernels*][treves1967]
 -/
 
 @[expose] public section
@@ -104,7 +105,8 @@ def _root_.ContinuousLinearEquiv.toCompactConvergenceCLM [T1Space E] [MontelSpac
     (E →SL[σ] F) ≃L[𝕜₂] E →SL_c[σ] F where
   __ := LinearEquiv.toCompactConvergenceCLM σ E F
   continuous_toFun := by
-    simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearEquiv.coe_coe, continuous_def]
+    simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearEquiv.coe_toLinearMap,
+      continuous_def]
     intro s hs
     apply hs.mono
     apply UniformConvergenceCLM.topologicalSpace_mono

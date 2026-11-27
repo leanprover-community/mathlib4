@@ -11,6 +11,9 @@ public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 import Mathlib.CategoryTheory.Limits.Types.Filtered
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Stability properties of monomorphisms in `Type`
 
@@ -22,7 +25,6 @@ will also be inferred automatically.
 
 (The stability by retracts holds in any category: it is shown
 in the file `Mathlib/CategoryTheory/MorphismProperty/Retract.lean`.)
-
 -/
 
 public section
@@ -38,7 +40,6 @@ instance : (monomorphisms (Type u)).IsStableUnderCobaseChange where
     simp only [monomorphisms.iff] at ht ⊢
     exact Limits.Types.pushoutCocone_inr_mono_of_isColimit sq.flip.isColimit
 
-set_option backward.defeqAttrib.useBackward true in
 instance : MorphismProperty.IsStableUnderFilteredColimits.{v', u'}
     (monomorphisms (Type u)) where
   isStableUnderColimitsOfShape J _ _ := ⟨fun F₁ F₂ c₁ c₂ hc₁ hc₂ f hf φ hφ ↦ by

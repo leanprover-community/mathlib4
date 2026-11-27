@@ -7,8 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Localization.Triangulated
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
-public import Mathlib.CategoryTheory.ObjectProperty.FiniteProducts
 public import Mathlib.CategoryTheory.ObjectProperty.ShiftAdditive
+
+import Mathlib.CategoryTheory.ObjectProperty.FiniteProducts
 
 /-! # Triangulated subcategories
 
@@ -33,8 +34,8 @@ for example, the subcategory of bounded below complexes in the homotopy category
 of an additive category is not closed under isomorphisms.
 
 ## References
-* [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
 
+* [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
 -/
 
 @[expose] public section
@@ -88,27 +89,24 @@ lemma ext_of_isTriangulatedClosed₃'
     (h₁ : P T.obj₁) (h₂ : P T.obj₂) : P.isoClosure T.obj₃ :=
   IsTriangulatedClosed₃.ext₃' T hT h₁ h₂
 
-set_option backward.defeqAttrib.useBackward true in
 protected lemma distinguished_cocone_triangle [P.IsTriangulatedClosed₃]
     {X Y : C} (a : X ⟶ Y) (hX : P X) (hY : P Y) :
-    ∃ (Z : C) (_ : P Z) (b : Y ⟶ Z) (c : Z ⟶ X⟦(1 : ℤ)⟧), Triangle.mk a b c ∈ distTriang _ := by
+    ∃ (Z : C) (_ : P Z) (b : Y ⟶ Z) (c : Z ⟶ X⟦1⟧), Triangle.mk a b c ∈ distTriang _ := by
   obtain ⟨Z, b, c, h⟩ := distinguished_cocone_triangle a
   obtain ⟨Z', hZ', ⟨e⟩⟩ := P.ext_of_isTriangulatedClosed₃' _ h hX hY
   exact ⟨Z', hZ', b ≫ e.hom, e.inv ≫ c, isomorphic_distinguished _ h _
     (Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) e.symm )⟩
 
-set_option backward.defeqAttrib.useBackward true in
 protected lemma distinguished_cocone_triangle₁ [P.IsTriangulatedClosed₁]
     {Y Z : C} (b : Y ⟶ Z) (hY : P Y) (hZ : P Z) :
-    ∃ (X : C) (_ : P X) (a : X ⟶ Y) (c : Z ⟶ X⟦(1 : ℤ)⟧), Triangle.mk a b c ∈ distTriang _ := by
+    ∃ (X : C) (_ : P X) (a : X ⟶ Y) (c : Z ⟶ X⟦1⟧), Triangle.mk a b c ∈ distTriang _ := by
   obtain ⟨X, a, c, h⟩ := distinguished_cocone_triangle₁ b
   obtain ⟨X', hX', ⟨e⟩⟩ := P.ext_of_isTriangulatedClosed₁' _ h hY hZ
   exact ⟨X', hX', e.inv ≫ a, c ≫ e.hom⟦1⟧', isomorphic_distinguished _ h _
     (Triangle.isoMk _ _ e.symm (Iso.refl _) (Iso.refl _))⟩
 
-set_option backward.defeqAttrib.useBackward true in
 protected lemma distinguished_cocone_triangle₂ [P.IsTriangulatedClosed₂]
-    {X Z : C} (c : Z ⟶ X⟦(1 : ℤ)⟧) (hX : P X) (hZ : P Z) :
+    {X Z : C} (c : Z ⟶ X⟦1⟧) (hX : P X) (hZ : P Z) :
     ∃ (Y : C) (_ : P Y) (a : X ⟶ Y) (b : Y ⟶ Z), Triangle.mk a b c ∈ distTriang _ := by
   obtain ⟨Y, a, b, h⟩ := distinguished_cocone_triangle₂ c
   obtain ⟨Y', hY', ⟨e⟩⟩ := P.ext_of_isTriangulatedClosed₂' _ h hX hZ
@@ -159,7 +157,6 @@ lemma IsTriangulatedClosed₂.of_isTriangulatedClosed₃
 
 variable (P)
 
-set_option backward.defeqAttrib.useBackward true in
 instance [P.IsTriangulatedClosed₂] : P.isoClosure.IsTriangulatedClosed₂ where
   ext₂' := by
     rintro T hT ⟨X₁, h₁, ⟨e₁⟩⟩ ⟨X₃, h₃, ⟨e₃⟩⟩
@@ -201,15 +198,15 @@ variable (Q R : ObjectProperty C)
 /-- An object `X` satisfies `extensionProduct P Q` if there exists a distinguished triangle
 `Y ⟶ X ⟶ Z ⟶ Y⟦1⟧` such that `Y` satisfies `P` and `Z` satisfies `Q`. -/
 def extensionProduct : ObjectProperty C :=
-  fun X => ∃ (Y Z : C) (f : Y ⟶ X) (g : X ⟶ Z) (h : Z ⟶ Y⟦(1 : ℤ)⟧),
+  fun X => ∃ (Y Z : C) (f : Y ⟶ X) (g : X ⟶ Z) (h : Z ⟶ Y⟦1⟧),
     Triangle.mk f g h ∈ distTriang C ∧ P Y ∧ Q Z
 
 lemma extensionProduct_iff (X : C) : extensionProduct P Q X ↔
-  ∃ (Y Z : C) (f : Y ⟶ X) (g : X ⟶ Z) (h : Z ⟶ Y⟦(1 : ℤ)⟧),
+  ∃ (Y Z : C) (f : Y ⟶ X) (g : X ⟶ Z) (h : Z ⟶ Y⟦1⟧),
     Triangle.mk f g h ∈ distTriang C ∧ P Y ∧ Q Z := Iff.rfl
 
 instance [P.Nonempty] [Q.Nonempty] : (extensionProduct P Q).Nonempty := by
-  obtain ⟨Y, f, g, hT⟩ := distinguished_cocone_triangle₂ (0 : Q.arbitrary ⟶ P.arbitrary⟦(1 : ℤ)⟧)
+  obtain ⟨Y, f, g, hT⟩ := distinguished_cocone_triangle₂ (0 : Q.arbitrary ⟶ P.arbitrary⟦1⟧)
   exact ⟨_, _, _, _, _, _, hT, P.prop_arbitrary, Q.prop_arbitrary⟩
 
 @[simp]
@@ -236,14 +233,12 @@ lemma monotone_extensionProduct_right {Q' : ObjectProperty C} (h : Q ≤ Q') :
   intro X ⟨Y, Z, f, g, k, hT, hP, hQ⟩
   exact ⟨Y, Z, f, g, k, hT, hP, h Z hQ⟩
 
-set_option backward.defeqAttrib.useBackward true in
 instance : (extensionProduct P Q).IsClosedUnderIsomorphisms where
   of_iso := by
     intro X X' i ⟨Y, Z, f, g, h, hT, hP, hQ⟩
     refine ⟨Y, Z, f ≫ i.hom, i.inv ≫ g, h, ?_, hP, hQ⟩
     exact isomorphic_distinguished _ hT _ <| Triangle.isoMk _ _ (Iso.refl _) i.symm (Iso.refl _)
 
-set_option backward.defeqAttrib.useBackward true in
 lemma extensionProduct_isoClosure_left :
     extensionProduct P.isoClosure Q = extensionProduct P Q := by
   refine le_antisymm ?_ (monotone_extensionProduct_left Q P.le_isoClosure)
@@ -251,7 +246,6 @@ lemma extensionProduct_isoClosure_left :
   refine ⟨Y', Z, i.inv ≫ f, g, h ≫ i.hom⟦1⟧', ?_, hP, hQ⟩
   exact isomorphic_distinguished _ hT _ <| Triangle.isoMk _ _ i.symm (Iso.refl _) (Iso.refl _)
 
-set_option backward.defeqAttrib.useBackward true in
 lemma extensionProduct_isoClosure_right :
     extensionProduct P Q.isoClosure = extensionProduct P Q := by
   refine le_antisymm ?_ (monotone_extensionProduct_right _ Q.le_isoClosure)
@@ -308,13 +302,12 @@ lemma extensionProduct_le_of_isTriangulatedClosed₂ {P₁ P₂ Q : ObjectProper
   intro _ ⟨_, _, _, _, _, hT, hY, hZ⟩
   exact ext_of_isTriangulatedClosed₂ Q _ hT (h₁ _ hY) (h₂ _ hZ)
 
-set_option backward.defeqAttrib.useBackward true in
 @[stacks 0FX2 "first part"]
 lemma extensionProduct_retractClosure_retractClosure_le :
     extensionProduct P.retractClosure Q.retractClosure ≤
       (extensionProduct P Q).retractClosure := by
   intro X ⟨A, B, f₁, f₂, f₃, hT, ⟨A', hP, ⟨a₁, b₁, h₁⟩⟩, ⟨B', hQ, ⟨a₃, b₃, h₃⟩⟩⟩
-  obtain ⟨X', g₁, g₂, hT'⟩ := distinguished_cocone_triangle₂ (b₃ ≫ f₃ ≫ a₁⟦(1 : ℤ)⟧')
+  obtain ⟨X', g₁, g₂, hT'⟩ := distinguished_cocone_triangle₂ (b₃ ≫ f₃ ≫ a₁⟦1⟧')
   obtain ⟨a₂ : X ⟶ X', ha₁₂, ha₂₃⟩ :=
     complete_distinguished_triangle_morphism₂ _ _ hT hT' a₁ a₃ (by dsimp; grind)
   obtain ⟨b₂ : X' ⟶ X, hb₁₂, hb₂₃⟩ :=
@@ -428,11 +421,6 @@ lemma extensionProductIter_le_of_isTriangulatedClosed₂ {Q : ObjectProperty C}
     P.extensionProductIter n ≤ Q :=
   Q.isoClosure_eq_self ▸ P.extensionProductIter_le_of_isTriangulatedClosed₂' h n
 
-instance [P.IsStableUnderShift ℤ] (n : ℕ) : (P.extensionProductIter n).IsStableUnderShift ℤ := by
-  induction n with
-  | zero => rwa [extensionProductIter_zero]
-  | succ n H => rw [extensionProductIter_succ]; infer_instance
-
 lemma extensionProductIter_retractClosure_le {n : ℕ} :
     (P.retractClosure.extensionProductIter n) ≤ (P.extensionProductIter n).retractClosure := by
   induction n with
@@ -456,15 +444,15 @@ of morphisms whose cone satisfies `P`. (The name `trW` contains the prefix `tr`
 for "triangulated", and `W` is a letter that is often used to refer to classes of
 morphisms with respect to which we may consider the localized category.) -/
 def trW : MorphismProperty C :=
-  fun X Y f => ∃ (Z : C) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧)
+  fun X Y f => ∃ (Z : C) (g : Y ⟶ Z) (h : Z ⟶ X⟦1⟧)
     (_ : Triangle.mk f g h ∈ distTriang C), P Z
 
 lemma trW_iff {X Y : C} (f : X ⟶ Y) :
-    P.trW f ↔ ∃ (Z : C) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧)
+    P.trW f ↔ ∃ (Z : C) (g : Y ⟶ Z) (h : Z ⟶ X⟦1⟧)
       (_ : Triangle.mk f g h ∈ distTriang C), P Z := by rfl
 
 lemma trW_iff' [P.IsStableUnderShift ℤ] {Y Z : C} (g : Y ⟶ Z) :
-    P.trW g ↔ ∃ (X : C) (f : X ⟶ Y) (h : Z ⟶ X⟦(1 : ℤ)⟧)
+    P.trW g ↔ ∃ (X : C) (f : X ⟶ Y) (h : Z ⟶ X⟦1⟧)
       (_ : Triangle.mk f g h ∈ distTriang C), P X := by
   rw [P.trW_iff]
   constructor
@@ -481,7 +469,6 @@ lemma trW.mk' [P.IsStableUnderShift ℤ] {T : Triangle C} (hT : T ∈ distTriang
   rw [trW_iff']
   exact ⟨_, _, _, hT, h⟩
 
-set_option backward.defeqAttrib.useBackward true in
 lemma trW_isoClosure : P.isoClosure.trW = P.trW := by
   ext X Y f
   constructor
@@ -498,11 +485,10 @@ lemma trW_monotone {Q : ObjectProperty C} (h : P ≤ Q) : P.trW ≤ Q.trW := by
   obtain ⟨Z, a, b, hT, hZ⟩ := hf
   exact ⟨Z, a, b, hT, h _ hZ⟩
 
-set_option backward.defeqAttrib.useBackward true in
 instance : P.trW.RespectsIso where
   precomp {X' X Y} e (he : IsIso e) := by
     rintro f ⟨Z, g, h, mem, mem'⟩
-    refine ⟨Z, g, h ≫ inv e⟦(1 : ℤ)⟧', isomorphic_distinguished _ mem _ ?_, mem'⟩
+    refine ⟨Z, g, h ≫ inv e⟦1⟧', isomorphic_distinguished _ mem _ ?_, mem'⟩
     refine Triangle.isoMk _ _ (asIso e) (Iso.refl _) (Iso.refl _) (by simp) (by simp) ?_
     dsimp
     simp only [Functor.map_inv, assoc, IsIso.inv_hom_id, comp_id, id_comp]
@@ -573,7 +559,6 @@ instance [P.IsTriangulated] : (P.inverseImage F).IsTriangulated where
   toIsTriangulatedClosed₂ := .mk' (fun T hT h₁ h₃ ↦
     P.ext_of_isTriangulatedClosed₂ _ (F.map_distinguished T hT) h₁ h₃)
 
-set_option backward.defeqAttrib.useBackward true in
 lemma inverseImage_trW_iff {X Y : D} (s : X ⟶ Y) :
     (P.inverseImage F).trW s ↔ P.trW (F.map s) := by
   obtain ⟨Z, g, h, hT⟩ := distinguished_cocone_triangle s
@@ -590,7 +575,6 @@ lemma inverseImage_trW_isInverted {E : Type*} [Category E]
 
 end
 
-set_option backward.defeqAttrib.useBackward true in
 instance [IsTriangulated C] [P.IsTriangulated] : P.trW.HasLeftCalculusOfFractions where
   exists_leftFraction X Y φ := by
     obtain ⟨Z, f, g, H, mem⟩ := φ.hs
@@ -609,7 +593,6 @@ instance [IsTriangulated C] [P.IsTriangulated] : P.trW.HasLeftCalculusOfFraction
       dsimp at eq
       rw [← sub_eq_zero, ← sub_comp, hq, assoc, eq, comp_zero]
 
-set_option backward.defeqAttrib.useBackward true in
 instance [IsTriangulated C] [P.IsTriangulated] : P.trW.HasRightCalculusOfFractions where
   exists_rightFraction X Y φ := by
     obtain ⟨Z, f, g, H, mem⟩ := φ.hs
@@ -629,7 +612,6 @@ instance [IsTriangulated C] [P.IsTriangulated] : P.trW.HasRightCalculusOfFractio
       dsimp at eq
       rw [← sub_eq_zero, ← comp_sub, hq, reassoc_of% eq, zero_comp]
 
-set_option backward.defeqAttrib.useBackward true in
 instance [IsTriangulated C] [P.IsTriangulated] : P.trW.IsCompatibleWithTriangulation := ⟨by
   rintro T₁ T₃ mem₁ mem₃ a b ⟨Z₅, g₅, h₅, mem₅, mem₅'⟩ ⟨Z₄, g₄, h₄, mem₄, mem₄'⟩ comm
   obtain ⟨Z₂, g₂, h₂, mem₂⟩ := distinguished_cocone_triangle (T₁.mor₁ ≫ b)
@@ -658,7 +640,7 @@ instance [P.IsTriangulated] [P.IsClosedUnderIsomorphisms] :
       (binaryProductTriangle_distinguished _ _)
       (p.prop_diag_obj (.mk .left)) (p.prop_diag_obj (.mk .right)))
     exact IsLimit.conePointUniqueUpToIso (prodIsProd _ _)
-      ((IsLimit.postcomposeHomEquiv (diagramIsoPair p.diag) _).2 p.isLimit)
+      ((IsLimit.postcomposeHomEquiv (diagramIsoPair p.diag) _).invFun p.isLimit)
 
 instance [P.IsTriangulated] [P.IsClosedUnderIsomorphisms] :
     P.IsClosedUnderFiniteProducts := .mk'
@@ -677,7 +659,6 @@ section
 
 variable [P.IsTriangulated]
 
-set_option backward.defeqAttrib.useBackward true in
 noncomputable instance : Pretriangulated P.FullSubcategory where
   distinguishedTriangles := P.ι.mapTriangle.obj ⁻¹' (distTriang C)
   isomorphic_distinguished T₁ hT₁ T₂ e :=
@@ -687,9 +668,9 @@ noncomputable instance : Pretriangulated P.FullSubcategory where
       (Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) P.ι.mapZeroObject)
   distinguished_cocone_triangle {X Y} f := by
     obtain ⟨Z', g', h', mem⟩ := distinguished_cocone_triangle (P.ι.map f)
-    obtain ⟨Z'', hZ'', ⟨e⟩⟩ := P.ext_of_isTriangulatedClosed₃' _ mem X.2 Y.2
+    obtain ⟨Z'', hZ'', ⟨e⟩⟩ := P.ext_of_isTriangulatedClosed₃' _ mem X.property Y.property
     exact ⟨⟨Z'', hZ''⟩, P.fullyFaithfulι.preimage (g' ≫ e.hom),
-      P.fullyFaithfulι.preimage (e.inv ≫ h' ≫ (P.ι.commShiftIso (1 : ℤ)).inv.app X),
+      P.fullyFaithfulι.preimage (e.inv ≫ h' ≫ (P.ι.commShiftIso 1).inv.app X),
       isomorphic_distinguished _ mem _ (Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) e.symm)⟩
   rotate_distinguished_triangle T :=
     (rotate_distinguished_triangle (P.ι.mapTriangle.obj T)).trans
@@ -700,8 +681,8 @@ noncomputable instance : Pretriangulated P.FullSubcategory where
       (by simpa using P.ι.congr_map comm)
     refine ⟨P.fullyFaithfulι.preimage c, ⟨by cat_disch, ?_⟩⟩
     ext
-    have := P.ι.commShiftIso_hom_naturality a (1 : ℤ)
-    rw [← cancel_mono ((Functor.commShiftIso P.ι (1 : ℤ)).hom.app T₂.obj₁)]
+    have := P.ι.commShiftIso_hom_naturality a 1
+    rw [← cancel_mono ((Functor.commShiftIso P.ι 1).hom.app T₂.obj₁)]
     cat_disch
 
 instance : P.ι.IsTriangulated where
@@ -710,7 +691,6 @@ instance : P.ι.IsTriangulated where
 instance [IsTriangulated C] : IsTriangulated P.FullSubcategory :=
   IsTriangulated.of_fully_faithful_triangulated_functor P.ι
 
-set_option backward.defeqAttrib.useBackward true in
 instance (F : C ⥤ D) [F.CommShift ℤ] [F.IsTriangulated] [F.Full] :
     F.essImage.IsTriangulated where
   isStableUnderShiftBy n :=
@@ -721,7 +701,7 @@ instance (F : C ⥤ D) [F.CommShift ℤ] [F.IsTriangulated] [F.Full] :
   toIsTriangulatedClosed₂ := .mk' (by
     rintro T hT ⟨X₁, ⟨e₁⟩⟩ ⟨X₃, ⟨e₃⟩⟩
     have ⟨h, hh⟩ := F.map_surjective (e₃.hom ≫ T.mor₃ ≫ e₁.inv⟦1⟧' ≫
-      (F.commShiftIso (1 : ℤ)).inv.app X₁)
+      (F.commShiftIso 1).inv.app X₁)
     obtain ⟨X₂, f, g, H⟩ := distinguished_cocone_triangle₂ h
     exact ⟨X₂, ⟨Triangle.π₂.mapIso
       (isoTriangleOfIso₁₃ _ _ (F.map_distinguished _ H) hT e₁ e₃
