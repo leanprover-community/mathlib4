@@ -19,6 +19,8 @@ file used by the library's own linters.
 
 ## Current scripts and their purpose
 
+The `tests` directory contains regression tests for these maintenance scripts.
+
 **Repository analysis and reporting**
 - `bench` is mathlib's benchmark suite. View its [README.md](bench/README.md) for more details.
 - `user_activity_report.py`
