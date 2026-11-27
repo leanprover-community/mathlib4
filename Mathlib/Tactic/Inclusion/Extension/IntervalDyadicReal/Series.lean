@@ -31,8 +31,8 @@ while the binary splitting approach takes more kernel steps than a simple linear
 
 An optimisation is implemented where blocks of up to 32 terms are evaluated linearly to reduce the
 number of kernel steps. The block size is empirical: a smaller block does less arithmetic on
-large numbers and takes more kernel steps, so and therefore would be better for higher precision or
-faster kernel. A larger block size is faster on the other case (lower precision, slower kernel).
+large numbers and takes more kernel steps, and therefore would be better for higher precision or
+faster kernel. A larger block size is faster for the other case (lower precision, slower kernel).
 
 The benefit of this approach is therefore mainly in reducing the recursion depth (`O(log n)`,
 compared to `O(n)` for linear computation) rather than performance.
