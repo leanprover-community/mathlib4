@@ -431,15 +431,10 @@ noncomputable def adjoinRootEquivAdjoin (h : IsIntegral F α) :
       (by rw [Algebra.toRingHom_ofId, ← aeval_def]; exact aeval_gen_minpoly F α))
     (by
       have := Fact.mk (minpoly.irreducible h)
-      constructor
-      · exact RingHom.injective _
-      rw [← Set.range_eq_univ, ← Set.univ_subset_iff, ← AlgHom.coe_fieldRange,
-        ← @IntermediateField.coe_top F, SetLike.coe_subset_coe,
-        ← IntermediateField.map_le_map_iff F⟮α⟯.val, IntermediateField.map_top,
-        IntermediateField.fieldRange_val, AlgHom.map_fieldRange,
-        IntermediateField.adjoin_le_iff, Set.singleton_subset_iff, SetLike.mem_coe,
-        AlgHom.mem_fieldRange]
-      exact ⟨.root _, by simp⟩)
+      refine ⟨RingHom.injective _, ?_⟩
+      rw [← AdjoinSimple.isIntegral_gen F α] at h
+      rw [← AlgHom.range_eq_top, ← Algebra.map_top, ← AdjoinRoot.adjoinRoot_eq_top]
+      simp [← adjoin_simple_eq_top_iff_of_isAlgebraic h.isAlgebraic, ← lift_inj])
 
 theorem adjoinRootEquivAdjoin_apply_root (h : IsIntegral F α) :
     adjoinRootEquivAdjoin F h (AdjoinRoot.root (minpoly F α)) = AdjoinSimple.gen F α :=
