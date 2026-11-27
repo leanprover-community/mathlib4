@@ -72,7 +72,7 @@ namespace Submonoid
 
 variable {C : Type*} [SetLike C α]
 
-theorem inv_mem_of_isUnit [DivisionMonoid α] [SubmonoidClass C α] {S : C} {a : S} (ha : IsUnit a) :
+theorem inv_mem_of_isUnit [DivisionMonoid α] [SubmonoidClass C] {S : C} {a : S} (ha : IsUnit a) :
     (a : α)⁻¹ ∈ S := by
   obtain ⟨u, rfl⟩ := ha
   convert u⁻¹.val.property
@@ -80,7 +80,7 @@ theorem inv_mem_of_isUnit [DivisionMonoid α] [SubmonoidClass C α] {S : C} {a :
 
 section Group
 
-variable [Group α] [SubmonoidClass C α] {S : C} {a : S}
+variable [Group α] [SubmonoidClass C] {S : C} {a : S}
 
 theorem isUnit_iff : IsUnit a ↔ (a : α)⁻¹ ∈ S where
   mp := inv_mem_of_isUnit
@@ -93,7 +93,7 @@ end Group
 
 section GroupWithZero
 
-variable [GroupWithZero α] [SubmonoidClass C α] {S : C} {a : S}
+variable [GroupWithZero α] [SubmonoidClass C] {S : C} {a : S}
 
 theorem isUnit_iff_and : IsUnit a ↔ (a : α) ≠ 0 ∧ (a : α)⁻¹ ∈ S where
   mp h := ⟨(h.map <| subtype <| ofClass S).ne_zero, inv_mem_of_isUnit h⟩

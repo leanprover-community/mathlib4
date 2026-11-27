@@ -550,7 +550,7 @@ end general
 section principal
 
 @[to_additive]
-instance [Π i, Mul (R i)] [∀ i, MulMemClass (S i) (R i)] [∀ i, ContinuousMul (R i)] :
+instance [Π i, Mul (R i)] [∀ i, MulMemClass (S i)] [∀ i, ContinuousMul (R i)] :
     ContinuousMul (Πʳ i, [R i, B i]_[𝓟 T]) :=
   let φ : Πʳ i, [R i, B i]_[𝓟 T] →ₙ* Π i, R i :=
   { toFun := (↑)
@@ -574,12 +574,12 @@ end principal
 
 section cofinite
 
-theorem nhds_zero_eq_map_ofPre [Π i, Zero (R i)] [∀ i, ZeroMemClass (S i) (R i)]
+theorem nhds_zero_eq_map_ofPre [Π i, Zero (R i)] [∀ i, ZeroMemClass (S i)]
     (hBopen : ∀ i, IsOpen (B i : Set (R i))) (hT : cofinite ≤ 𝓟 T) :
     (𝓝 (inclusion R (fun i ↦ B i) hT 0)) = .map (inclusion R (fun i ↦ B i) hT) (𝓝 0) :=
   nhds_eq_map_inclusion hBopen hT 0
 
-theorem nhds_zero_eq_map_structureMap [Π i, Zero (R i)] [∀ i, ZeroMemClass (S i) (R i)]
+theorem nhds_zero_eq_map_structureMap [Π i, Zero (R i)] [∀ i, ZeroMemClass (S i)]
     (hBopen : ∀ i, IsOpen (B i : Set (R i))) :
     (𝓝 (structureMap R (fun i ↦ B i) cofinite 0)) =
       .map (structureMap R (fun i ↦ B i) cofinite) (𝓝 0) :=
@@ -589,7 +589,7 @@ theorem nhds_zero_eq_map_structureMap [Π i, Zero (R i)] [∀ i, ZeroMemClass (S
 variable [hBopen : Fact (∀ i, IsOpen (B i : Set (R i)))]
 
 @[to_additive]
-instance [Π i, Mul (R i)] [∀ i, MulMemClass (S i) (R i)] [∀ i, ContinuousMul (R i)] :
+instance [Π i, Mul (R i)] [∀ i, MulMemClass (S i)] [∀ i, ContinuousMul (R i)] :
     ContinuousMul (Πʳ i, [R i, B i]) where
   continuous_mul := by
     rw [continuous_dom_prod hBopen.out hBopen.out]

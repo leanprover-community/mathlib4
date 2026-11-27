@@ -302,7 +302,7 @@ theorem isMulCommutative_closure {G : Type*} [Group G] {k : Set G}
 or even *instances* such as
 ```
 instance Subgroup.instIsMulCommutative_closure {S G : Type*} [Group G] [SetLike S G]
-    [MulMemClass S G] (s : S) [IsMulCommutative s] :
+    [MulMemClass S] (s : S) [IsMulCommutative s] :
     IsMulCommutative (closure (s : Set G))
 ```
 and

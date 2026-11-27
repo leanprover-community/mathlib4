@@ -161,7 +161,7 @@ theorem one_left_iff : IsPrimitiveRoot (1 : M) k ↔ k = 1 :=
   ⟨fun h ↦ Nat.dvd_one.mp (h.dvd_of_pow_eq_one 1 (one_pow _)), fun e ↦ e ▸ one⟩
 
 @[simp]
-theorem coe_submonoidClass_iff {M B : Type*} [CommMonoid M] [SetLike B M] [SubmonoidClass B M]
+theorem coe_submonoidClass_iff {M B : Type*} [CommMonoid M] [SetLike B M] [SubmonoidClass B]
     {N : B} {ζ : N} : IsPrimitiveRoot (ζ : M) k ↔ IsPrimitiveRoot ζ k := by
   simp_rw [iff_def]
   norm_cast

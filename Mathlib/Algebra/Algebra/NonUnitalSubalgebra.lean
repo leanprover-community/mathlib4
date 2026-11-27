@@ -1228,7 +1228,7 @@ instance isMulCommutative_adjoin_singleton (x : A) :
     IsMulCommutative (adjoin R ({x} : Set A)) :=
   isMulCommutative_adjoin R (by simp)
 
-instance instIsMulCommutative_adjoin {S : Type*} [SetLike S A] [MulMemClass S A] (s : S)
+instance instIsMulCommutative_adjoin {S : Type*} [SetLike S A] [MulMemClass S] (s : S)
     [IsMulCommutative s] : IsMulCommutative (adjoin R (s : Set A)) :=
   isMulCommutative_adjoin R fun _ h₁ _ h₂ _ => setLike_mul_comm h₁ h₂
 

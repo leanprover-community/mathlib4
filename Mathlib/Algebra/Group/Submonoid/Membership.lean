@@ -55,7 +55,7 @@ open Function Set
 
 namespace Submonoid
 
--- TODO: this section can be generalized to `[SubmonoidClass B M] [CompleteLattice B]`
+-- TODO: this section can be generalized to `[SubmonoidClass B] [CompleteLattice B]`
 -- such that `CompleteLattice.LE` coincides with `SetLike.LE`
 
 @[to_additive]

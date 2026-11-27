@@ -19,8 +19,8 @@ public section
 
 namespace MulZeroMemClass
 
-variable {M₀ : Type*} [Mul M₀] [Zero M₀] {S : Type*} [SetLike S M₀] [MulMemClass S M₀]
-  [ZeroMemClass S M₀] (s : S)
+variable {M₀ : Type*} [Mul M₀] [Zero M₀] {S : Type*} [SetLike S M₀] [MulMemClass S]
+  [ZeroMemClass S] (s : S)
 
 /-- A submagma with zero of a left cancellative magma with zero inherits left cancellation. -/
 instance isLeftCancelMulZero [IsLeftCancelMulZero M₀] : IsLeftCancelMulZero s :=

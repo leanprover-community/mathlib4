@@ -60,16 +60,16 @@ section NonAssoc
 
 variable [MulOneClass M] {s : Set M}
 
-/-- `OneMemClass S M` says `S` is a type of subsets `s ≤ M`, such that `1 ∈ s` for all `s`. -/
-class OneMemClass (S : Type*) (M : outParam Type*) [One M] [SetLike S M] : Prop where
-  /-- By definition, if we have `OneMemClass S M`, we have `1 ∈ s` for all `s : S`. -/
+/-- `OneMemClass S` says `S` is a type of subsets `s ≤ M`, such that `1 ∈ s` for all `s`. -/
+class OneMemClass (S : Type*) {M : outParam Type*} [One M] [SetLike S M] : Prop where
+  /-- By definition, if we have `OneMemClass S`, we have `1 ∈ s` for all `s : S`. -/
   one_mem : ∀ s : S, (1 : M) ∈ s
 
 export OneMemClass (one_mem)
 
-/-- `ZeroMemClass S M` says `S` is a type of subsets `s ≤ M`, such that `0 ∈ s` for all `s`. -/
-class ZeroMemClass (S : Type*) (M : outParam Type*) [Zero M] [SetLike S M] : Prop where
-  /-- By definition, if we have `ZeroMemClass S M`, we have `0 ∈ s` for all `s : S`. -/
+/-- `ZeroMemClass S` says `S` is a type of subsets `s ≤ M`, such that `0 ∈ s` for all `s`. -/
+class ZeroMemClass (S : Type*) {M : outParam Type*} [Zero M] [SetLike S M] : Prop where
+  /-- By definition, if we have `ZeroMemClass S`, we have `0 ∈ s` for all `s : S`. -/
   zero_mem : ∀ s : S, (0 : M) ∈ s
 
 export ZeroMemClass (zero_mem)
@@ -81,7 +81,7 @@ attribute [simp, aesop safe (rule_sets := [SetLike]), membership .] one_mem zero
 /-- The underlying set of a term of a `OneMemClass` is nonempty. -/
 @[to_additive (attr := simp)
 /-- The underlying set of a term of a `ZeroMemClass` is nonempty. -/]
-theorem OneMemClass.coe_nonempty {S M : Type*} [One M] [SetLike S M] [OneMemClass S M] (s : S) :
+theorem OneMemClass.coe_nonempty {S M : Type*} [One M] [SetLike S M] [OneMemClass S] (s : S) :
     (s : Set M).Nonempty :=
   ⟨1, one_mem s⟩
 
@@ -97,10 +97,10 @@ end
 /-- A submonoid of a monoid `M` can be considered as a subsemigroup of that monoid. -/
 add_decl_doc Submonoid.toSubsemigroup
 
-/-- `SubmonoidClass S M` says `S` is a type of subsets `s ≤ M` that contain `1`
+/-- `SubmonoidClass S` says `S` is a type of subsets `s ≤ M` that contain `1`
 and are closed under `(*)` -/
-class SubmonoidClass (S : Type*) (M : outParam Type*) [MulOneClass M] [SetLike S M] : Prop
-    extends MulMemClass S M, OneMemClass S M
+class SubmonoidClass (S : Type*) {M : outParam Type*} [MulOneClass M] [SetLike S M] : Prop
+    extends MulMemClass S, OneMemClass S
 
 section
 
@@ -116,15 +116,15 @@ end
 additive subsemigroup of that additive monoid. -/
 add_decl_doc AddSubmonoid.toAddSubsemigroup
 
-/-- `AddSubmonoidClass S M` says `S` is a type of subsets `s ≤ M` that contain `0`
+/-- `AddSubmonoidClass S` says `S` is a type of subsets `s ≤ M` that contain `0`
 and are closed under `(+)` -/
-class AddSubmonoidClass (S : Type*) (M : outParam Type*) [AddZeroClass M] [SetLike S M] : Prop
-  extends AddMemClass S M, ZeroMemClass S M
+class AddSubmonoidClass (S : Type*) {M : outParam Type*} [AddZeroClass M] [SetLike S M] : Prop
+  extends AddMemClass S, ZeroMemClass S
 
 attribute [to_additive] Submonoid SubmonoidClass
 
 @[to_additive (attr := aesop 90% (rule_sets := [SetLike]), membership .)]
-theorem pow_mem {M A} [Monoid M] [SetLike A M] [SubmonoidClass A M] {S : A} {x : M}
+theorem pow_mem {M A} [Monoid M] [SetLike A M] [SubmonoidClass A] {S : A} {x : M}
     (hx : x ∈ S) : ∀ n : ℕ, x ^ n ∈ S
   | 0 => by
     rw [pow_zero]
@@ -156,7 +156,7 @@ initialize_simps_projections AddSubmonoid (carrier → coe, as_prefix coe)
 /-- The actual `Submonoid` obtained from an element of a `SubmonoidClass` -/
 @[to_additive (attr := simps) /-- The actual `AddSubmonoid` obtained from an element of a
 `AddSubmonoidClass` -/]
-def ofClass {S M : Type*} [Monoid M] [SetLike S M] [SubmonoidClass S M] (s : S) : Submonoid M :=
+def ofClass {S M : Type*} [Monoid M] [SetLike S M] [SubmonoidClass S] (s : S) : Submonoid M :=
   ⟨⟨s, MulMemClass.mul_mem⟩, OneMemClass.one_mem s⟩
 
 @[to_additive]
@@ -165,7 +165,7 @@ instance (priority := 100) : CanLift (Set M) (Submonoid M) (↑)
   prf s h := ⟨{ carrier := s, one_mem' := h.1, mul_mem' := h.2 }, rfl⟩
 
 @[to_additive]
-instance : SubmonoidClass (Submonoid M) M where
+instance : SubmonoidClass (Submonoid M) where
   one_mem := Submonoid.one_mem'
   mul_mem {s} := s.mul_mem'
 
@@ -339,7 +339,7 @@ end NonAssoc
 
 namespace OneMemClass
 
-variable {A M₁ : Type*} [SetLike A M₁] [One M₁] [hA : OneMemClass A M₁] (S' : A)
+variable {A M₁ : Type*} [SetLike A M₁] [One M₁] [hA : OneMemClass A] (S' : A)
 
 /-- A submonoid of a monoid inherits a 1. -/
 @[to_additive /-- An `AddSubmonoid` of an `AddMonoid` inherits a zero. -/]
@@ -368,22 +368,22 @@ theorem one_def : (1 : S') = ⟨1, OneMemClass.one_mem S'⟩ :=
 
 end OneMemClass
 
-variable {A : Type*} [MulOneClass M] [SetLike A M] [hA : SubmonoidClass A M] (S' : A)
+variable {A : Type*} [MulOneClass M] [SetLike A M] [hA : SubmonoidClass A] (S' : A)
 
 namespace SubmonoidClass
 
 /-- A submonoid of a monoid inherits a power operator. -/
 @[to_additive /-- An `AddSubmonoid` of an `AddMonoid` inherits a scalar multiplication. -/]
-instance instPow {M} [Monoid M] {A : Type*} [SetLike A M] [SubmonoidClass A M] (S : A) : Pow S ℕ :=
+instance instPow {M} [Monoid M] {A : Type*} [SetLike A M] [SubmonoidClass A] (S : A) : Pow S ℕ :=
   ⟨fun a n => ⟨a.val ^ n, pow_mem a.property n⟩⟩
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_pow {M} [Monoid M] {A : Type*} [SetLike A M] [SubmonoidClass A M] {S : A} (x : S)
+theorem coe_pow {M} [Monoid M] {A : Type*} [SetLike A M] [SubmonoidClass A] {S : A} (x : S)
     (n : ℕ) : ↑(x ^ n) = (x : M) ^ n :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem mk_pow {M} [Monoid M] {A : Type*} [SetLike A M] [SubmonoidClass A M] {S : A} (x : M)
+theorem mk_pow {M} [Monoid M] {A : Type*} [SetLike A M] [SubmonoidClass A] {S : A} (x : M)
     (hx : x ∈ S) (n : ℕ) : (⟨x, hx⟩ : S) ^ n = ⟨x ^ n, pow_mem hx n⟩ :=
   rfl
 
@@ -392,7 +392,7 @@ theorem mk_pow {M} [Monoid M] {A : Type*} [SetLike A M] [SubmonoidClass A M] {S 
 @[to_additive
   /-- An `AddSubmonoid` of a unital additive magma inherits a unital additive magma structure. -/]
 instance toMulOneClass {M : Type*} [MulOneClass M] {A : Type*} [SetLike A M]
-    [SubmonoidClass A M] (S : A) : MulOneClass S := fast_instance%
+    [SubmonoidClass A] (S : A) : MulOneClass S := fast_instance%
   Subtype.coe_injective.mulOneClass Subtype.val rfl (fun _ _ => rfl)
 
 instance (S : A) [IsDedekindFiniteMonoid M] : IsDedekindFiniteMonoid S where
@@ -402,14 +402,14 @@ instance (S : A) [IsDedekindFiniteMonoid M] : IsDedekindFiniteMonoid S where
 /-- A submonoid of a monoid inherits a monoid structure. -/
 @[to_additive /-- An `AddSubmonoid` of an `AddMonoid` inherits an `AddMonoid` structure. -/]
 instance toMonoid {M : Type*} [Monoid M] {A : Type*} [SetLike A M]
-    [SubmonoidClass A M] (S : A) : Monoid S := fast_instance%
+    [SubmonoidClass A] (S : A) : Monoid S := fast_instance%
   Subtype.coe_injective.monoid Subtype.val rfl (fun _ _ => rfl) (fun _ _ => rfl)
 
 -- Prefer subclasses of `Monoid` over subclasses of `SubmonoidClass`.
 /-- A submonoid of a `CommMonoid` is a `CommMonoid`. -/
 @[to_additive /-- An `AddSubmonoid` of an `AddCommMonoid` is an `AddCommMonoid`. -/]
 instance toCommMonoid {M} [CommMonoid M] {A : Type*} [SetLike A M]
-    [SubmonoidClass A M] (S : A) : CommMonoid S := fast_instance%
+    [SubmonoidClass A] (S : A) : CommMonoid S := fast_instance%
   Subtype.coe_injective.commMonoid Subtype.val rfl (fun _ _ => rfl) fun _ _ => rfl
 
 /-- The natural monoid hom from a submonoid of monoid `M` to `M`. -/

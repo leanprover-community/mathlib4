@@ -49,7 +49,7 @@ variable {ι R A σ : Type*}
 section GradedRing
 
 variable [DecidableEq ι] [AddMonoid ι] [CommSemiring R] [Semiring A] [Algebra R A]
-variable [SetLike σ A] [AddSubmonoidClass σ A] (𝒜 : ι → σ)
+variable [SetLike σ A] [AddSubmonoidClass σ] (𝒜 : ι → σ)
 
 open DirectSum
 
@@ -119,7 +119,7 @@ section AddCancelMonoid
 
 open DirectSum
 
-variable [DecidableEq ι] [Semiring A] [SetLike σ A] [AddSubmonoidClass σ A] (𝒜 : ι → σ)
+variable [DecidableEq ι] [Semiring A] [SetLike σ A] [AddSubmonoidClass σ] (𝒜 : ι → σ)
 variable {i j : ι}
 
 namespace DirectSum
@@ -248,7 +248,7 @@ open SetLike.GradedMonoid DirectSum
 
 variable [Semiring A] [DecidableEq ι]
 variable [AddCommMonoid ι] [PartialOrder ι] [CanonicallyOrderedAdd ι]
-variable [SetLike σ A] [AddSubmonoidClass σ A] (𝒜 : ι → σ) [GradedRing 𝒜]
+variable [SetLike σ A] [AddSubmonoidClass σ] (𝒜 : ι → σ) [GradedRing 𝒜]
 
 /-- If `A` is graded by a canonically ordered additive monoid, then the projection map `x ↦ x₀`
 is a ring homomorphism.

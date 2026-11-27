@@ -35,7 +35,7 @@ assert_not_exists Finset
 @[to_additive]
 instance SubmonoidClass.instMulArchimedean {M S : Type*} [SetLike S M]
     [CommMonoid M] [PartialOrder M]
-    [SubmonoidClass S M] [MulArchimedean M] (H : S) : MulArchimedean H := by
+    [SubmonoidClass S] [MulArchimedean M] (H : S) : MulArchimedean H := by
   constructor
   rintro x _
   simp only [← Subtype.coe_lt_coe, OneMemClass.coe_one]

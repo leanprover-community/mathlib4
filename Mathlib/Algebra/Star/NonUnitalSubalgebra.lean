@@ -38,14 +38,14 @@ instance instInvolutiveStar {S R : Type*} [InvolutiveStar R] [SetLike S R] [Star
 operation), any star-closed subset which is also closed under multiplication is itself a star
 magma. -/
 instance instStarMul {S R : Type*} [Mul R] [StarMul R] [SetLike S R]
-    [MulMemClass S R] [StarMemClass S R] (s : S) : StarMul s where
+    [MulMemClass S] [StarMemClass S R] (s : S) : StarMul s where
   star_mul _ _ := Subtype.ext <| star_mul _ _
 
 /-- In a `StarAddMonoid` (i.e., an additive monoid with an additive involutive star operation), any
 star-closed subset which is also closed under addition and contains zero is itself a
 `StarAddMonoid`. -/
 instance instStarAddMonoid {S R : Type*} [AddMonoid R] [StarAddMonoid R] [SetLike S R]
-    [AddSubmonoidClass S R] [StarMemClass S R] (s : S) : StarAddMonoid s where
+    [AddSubmonoidClass S] [StarMemClass S R] (s : S) : StarAddMonoid s where
   star_add _ _ := Subtype.ext <| star_add _ _
 
 /-- In a star ring (i.e., a non-unital, non-associative, semiring with an additive,
@@ -1289,7 +1289,7 @@ instance isMulCommutative_adjoin_singleton (a : A) [IsStarNormal a] :
     IsMulCommutative (adjoin R ({a} : Set A)) :=
   isMulCommutative_adjoin R (by simpa) (by simp) (by simp)
 
-instance instIsMulCommutative_adjoin {S : Type*} [SetLike S A] [MulMemClass S A] [StarMemClass S A]
+instance instIsMulCommutative_adjoin {S : Type*} [SetLike S A] [MulMemClass S] [StarMemClass S A]
     (s : S) [IsMulCommutative s] : IsMulCommutative (adjoin R (s : Set A)) :=
   isMulCommutative_adjoin R
     (fun _ h ↦ ⟨setLike_mul_comm (star_mem h) h⟩)

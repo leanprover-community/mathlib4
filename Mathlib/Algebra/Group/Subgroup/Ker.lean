@@ -297,7 +297,7 @@ theorem ker_domRestrict (f : G →* M) : (f.domRestrict K).ker = f.ker.subgroupO
 alias _root_.AddMonoidHom.ker_restrict := _root_.AddMonoidHom.ker_domRestrict
 
 @[to_additive (attr := simp)]
-theorem ker_codRestrict {S} [SetLike S N] [SubmonoidClass S N] (f : G →* N) (s : S)
+theorem ker_codRestrict {S} [SetLike S N] [SubmonoidClass S] (f : G →* N) (s : S)
     (h : ∀ x, f x ∈ s) : (f.codRestrict s h).ker = f.ker :=
   SetLike.ext fun _x => Subtype.ext_iff
 

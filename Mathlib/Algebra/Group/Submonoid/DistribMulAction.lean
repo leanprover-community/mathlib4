@@ -23,7 +23,7 @@ namespace Submonoid
 
 variable {M α : Type*} [Monoid M]
 
-variable {S : Type*} [SetLike S M] (s : S) [SubmonoidClass S M]
+variable {S : Type*} [SetLike S M] (s : S) [SubmonoidClass S]
 
 instance (priority := low) [AddMonoid α] [DistribMulAction M α] : DistribMulAction s α where
   smul_zero r := smul_zero (r : M)

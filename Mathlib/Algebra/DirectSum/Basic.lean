@@ -406,24 +406,24 @@ indexed by `ι`.
 
 When `S = Submodule _ M`, this is available as a `LinearMap`, `DirectSum.coe_linearMap`. -/
 protected def coeAddMonoidHom {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S M]
-    [AddSubmonoidClass S M] (A : ι → S) : (⨁ i, A i) →+ M :=
+    [AddSubmonoidClass S] (A : ι → S) : (⨁ i, A i) →+ M :=
   toAddMonoid fun i => AddSubmonoidClass.subtype (A i)
 
 theorem coeAddMonoidHom_eq_dfinsuppSum [DecidableEq ι]
     {M S : Type*} [DecidableEq M] [AddCommMonoid M]
-    [SetLike S M] [AddSubmonoidClass S M] (A : ι → S) (x : DirectSum ι fun i => A i) :
+    [SetLike S M] [AddSubmonoidClass S] (A : ι → S) (x : DirectSum ι fun i => A i) :
     DirectSum.coeAddMonoidHom A x = DFinsupp.sum x fun i => (fun x : A i => ↑x) := by
   simp only [DirectSum.coeAddMonoidHom, toAddMonoid, DFinsupp.liftAddHom, AddEquiv.coe_mk]
   exact DFinsupp.sumAddHom_apply _ x
 
 @[simp]
 theorem coeAddMonoidHom_of {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S M]
-    [AddSubmonoidClass S M] (A : ι → S) (i : ι) (x : A i) :
+    [AddSubmonoidClass S] (A : ι → S) (i : ι) (x : A i) :
     DirectSum.coeAddMonoidHom A (of (fun i => A i) i x) = x :=
   toAddMonoid_of _ _ _
 
 theorem coe_of_apply {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S M]
-    [AddSubmonoidClass S M] {A : ι → S} (i j : ι) (x : A i) :
+    [AddSubmonoidClass S] {A : ι → S} (i j : ι) (x : A i) :
     (of (fun i ↦ {x // x ∈ A i}) i x j : M) = if i = j then x else 0 := by
   obtain rfl | h := Decidable.eq_or_ne j i
   · rw [DirectSum.of_eq_same, ite_eq_left rfl]
@@ -437,7 +437,7 @@ For the alternate statement in terms of independence and spanning, see
 `DirectSum.subgroup_isInternal_iff_iSupIndep_and_supr_eq_top` and
 `DirectSum.isInternal_submodule_iff_iSupIndep_and_iSup_eq_top`. -/
 def IsInternal {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S M]
-    [AddSubmonoidClass S M] (A : ι → S) : Prop :=
+    [AddSubmonoidClass S] (A : ι → S) : Prop :=
   Function.Bijective (DirectSum.coeAddMonoidHom A)
 
 theorem IsInternal.addSubmonoid_iSup_eq_top {M : Type*} [DecidableEq ι] [AddCommMonoid M]
@@ -445,7 +445,7 @@ theorem IsInternal.addSubmonoid_iSup_eq_top {M : Type*} [DecidableEq ι] [AddCom
   rw [AddSubmonoid.iSup_eq_mrange_dfinsuppSumAddHom, AddMonoidHom.mrange_eq_top]
   exact Function.Bijective.surjective h
 
-variable {M S : Type*} [AddCommMonoid M] [SetLike S M] [AddSubmonoidClass S M]
+variable {M S : Type*} [AddCommMonoid M] [SetLike S M] [AddSubmonoidClass S]
 
 theorem support_subset [DecidableEq ι] [DecidableEq M] (A : ι → S) (x : DirectSum ι fun i => A i) :
     (Function.support fun i => (x i : M)) ⊆ ↑(DFinsupp.support x) := by

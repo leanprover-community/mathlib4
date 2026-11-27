@@ -45,7 +45,7 @@ noncomputable section
 open DirectSum SetLike TopCat TopologicalSpace
 
 variable {A σ : Type*}
-variable [CommRing A] [SetLike σ A] [AddSubmonoidClass σ A]
+variable [CommRing A] [SetLike σ A] [AddSubmonoidClass σ]
 variable (𝒜 : ℕ → σ) [GradedRing 𝒜]
 
 /-- The projective spectrum of a graded commutative ring is the subtype of all homogeneous ideals

@@ -563,14 +563,14 @@ theorem tprod_comp_neg {β : Type*} [InvolutiveNeg β] (f : β → α) :
   (Equiv.neg β).tprod_eq f
 
 @[to_additive]
-theorem HasProd.mem {ι S : Type*} {s : S} [SetLike S α] [SubmonoidClass S α]
+theorem HasProd.mem {ι S : Type*} {s : S} [SetLike S α] [SubmonoidClass S]
     (h_closed : IsClosed (s : Set α)) {f : ι → α} {a : α} (h : ∀ i, f i ∈ s) {L : SummationFilter ι}
     (hf : HasProd f a L) [L.NeBot] :
     a ∈ s :=
   h_closed.mem_of_tendsto hf <| .of_forall fun _ => prod_mem fun i _ => h i
 
 @[to_additive]
-theorem tprod_mem {ι S : Type*} {s : S} [SetLike S α] [SubmonoidClass S α]
+theorem tprod_mem {ι S : Type*} {s : S} [SetLike S α] [SubmonoidClass S]
     (h_closed : IsClosed (s : Set α)) {f : ι → α} (h : ∀ i, f i ∈ s) (L := unconditional ι) :
     ∏'[L] i, f i ∈ s := by
   by_cases hL : L.NeBot

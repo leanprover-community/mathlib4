@@ -41,7 +41,7 @@ variable {R : Type u} {M : Type v} {ι : Type w}
 namespace SMulMemClass
 
 variable [Semiring R] [AddCommMonoid M] [Module R M] {A : Type*} [SetLike A M]
-  [AddSubmonoidClass A M] [SMulMemClass A R M] (S' : A)
+  [AddSubmonoidClass A] [SMulMemClass A R M] (S' : A)
 
 /-- The natural `R`-linear map from a submodule of an `R`-module `M` to `M`. -/
 protected def subtype : S' →ₗ[R] M where

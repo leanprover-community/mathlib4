@@ -62,7 +62,7 @@ priori, it only behaves well when `‖x‖ < p.radius`. -/
 protected def sum (p : FormalMultilinearSeries 𝕜 E F) (x : E) : F :=
   ∑' n : ℕ, p n fun _ => x
 
-theorem sum_mem {S : Type*} {s : S} [SetLike S F] [AddSubmonoidClass S F]
+theorem sum_mem {S : Type*} {s : S} [SetLike S F] [AddSubmonoidClass S]
     (h_closed : IsClosed (s : Set F)) (p : FormalMultilinearSeries 𝕜 E F) (x : E)
     (h : ∀ k, p k (fun _ : Fin k => x) ∈ s) :
     p.sum x ∈ s :=

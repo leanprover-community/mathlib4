@@ -34,7 +34,7 @@ variable {F R M N I : Type*} [Semiring R] [PartialOrder R] [IsStrictOrderedRing 
 
 section AddCommMonoid
 variable [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N] [SetLike F M]
-  [AddSubmonoidClass F M] [SMulMemClass F R M] {f g : M → N}
+  [AddSubmonoidClass F] [SMulMemClass F R M] {f g : M → N}
 
 /-- Any semimodule over an ordered semiring is a convex space.
 

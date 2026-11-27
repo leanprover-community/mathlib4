@@ -279,7 +279,7 @@ instance IsConvexDist.subtype (s : Set X) (hs : IsConvexSet ℝ s) :
 
 instance IsConvexDist.submodule {F M : Type*} [AddCommGroup M] [MetricSpace M]
     [Module ℝ M] [ConvexSpace ℝ M] [IsModuleConvexSpace ℝ M] [IsConvexDist M]
-    [SetLike F M] [AddSubmonoidClass F M] [SMulMemClass F ℝ M] {S : F} :
+    [SetLike F M] [AddSubmonoidClass F] [SMulMemClass F ℝ M] {S : F} :
     IsConvexDist S := .subtype _ _
 
 end Convexity
