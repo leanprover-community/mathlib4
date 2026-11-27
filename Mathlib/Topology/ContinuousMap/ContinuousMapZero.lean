@@ -584,12 +584,16 @@ lemma toContinuousMapZero_smul {M : Type*} [DistribSMul M R] [ContinuousConstSMu
   ext; simp [smul_sub]
 
 @[simp]
-lemma toContinuousMapZero_coe (f : C(X, R)₀) : f.toContinuousMap.toContinuousMapZero = f := by
+lemma toContinuousMapZero_toContinuousMap (f : C(X, R)₀) :
+    f.toContinuousMap.toContinuousMapZero = f := by
   ext; simp
+
+@[deprecated (since := "2026-11-27")] alias toContinuousMapZero_coe :=
+  toContinuousMapZero_toContinuousMap
 
 lemma toContinuousMapZero_surjective :
     Function.Surjective (toContinuousMapZero (X := X) (R := R)) :=
-  fun f ↦ ⟨f.toContinuousMap, toContinuousMapZero_coe f⟩
+  fun f ↦ ⟨f.toContinuousMap, toContinuousMapZero_toContinuousMap f⟩
 
 @[fun_prop]
 lemma continuous_toContinuousMapZero :
