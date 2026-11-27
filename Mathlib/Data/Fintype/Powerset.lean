@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Finset.Powerset
 public import Mathlib.Data.Fintype.EquivFin
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # fintype instance for `Set α`, when `α` is a fintype
 -/

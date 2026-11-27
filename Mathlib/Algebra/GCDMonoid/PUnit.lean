@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.GCDMonoid.Basic
 public import Mathlib.Algebra.Ring.PUnit
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `PUnit` is a GCD monoid
 
@@ -46,7 +49,7 @@ theorem gcd_eq {x y : PUnit} : gcd x y = unit :=
 theorem lcm_eq {x y : PUnit} : lcm x y = unit :=
   rfl
 
-@[simp]
+@[deprecated normUnit_eq_one +typeChanged (since := "2026-11-23")]
 theorem norm_unit_eq {x : PUnit} : normUnit x = 1 :=
   rfl
 

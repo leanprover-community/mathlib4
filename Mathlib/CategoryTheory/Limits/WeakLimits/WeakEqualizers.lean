@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 public import Mathlib.CategoryTheory.Limits.WeakLimits.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Weak equalizers
 
@@ -53,7 +56,6 @@ noncomputable abbrev weakEqualizer.fork : Fork f g :=
 theorem weakEqualizer.fork_ι : (weakEqualizer.fork f g).ι = weakEqualizer.ι f g :=
   rfl
 
-@[simp]
 theorem weakEqualizer.fork_π_app_zero :
     (weakEqualizer.fork f g).π.app WalkingParallelPair.zero = weakEqualizer.ι f g :=
   rfl

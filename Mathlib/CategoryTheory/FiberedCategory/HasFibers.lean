@@ -32,7 +32,8 @@ is an element of `F(S)`. The fiber category `Fiber p S` is then equivalent to th
 `Fib S` with objects `a` in `F(S)`. In this case, the `HasFibers` instance is given by the
 categories `F(S)` and the functor `ι` sends `a : F(S)` to `(S, a)` in the fibered category.
 
-## Main API
+## Main definitions and statements
+
 The following API is developed so that the fibers from a `HasFibers` instance can be used
 analogously to the standard fibers.
 

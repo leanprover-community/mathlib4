@@ -82,7 +82,6 @@ instance : MulAction G (primesOver p B) where
 theorem coe_smul_primesOver (σ : G) (P : primesOver p B) : (σ • P).val = σ • P.val :=
   rfl
 
-@[simp]
 theorem coe_smul_primesOver_mk (σ : G) (P : Ideal B) [P.IsPrime] [P.LiesOver p] :
     (σ • primesOver.mk p P).val = σ • P :=
   rfl

@@ -63,12 +63,11 @@ The proof of `G2_S_transform` is the heart of this file. The strategy is:
    any element using the cocycle property of `D₂`.
 
 ## References
+
 * P. Bruin and S. Dahmen, Modular Forms, https://www.few.vu.nl/~sdn249/modularforms16/notes.pdf
 -/
 
-open UpperHalfPlane hiding I
-
-open ModularForm ModularGroup Filter Complex Set SummationFilter
+open UpperHalfPlane ModularForm ModularGroup Filter Complex Set SummationFilter
 
 open scoped MatrixGroups
 

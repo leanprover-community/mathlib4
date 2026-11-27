@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Nonempty simplicial sets
 -/

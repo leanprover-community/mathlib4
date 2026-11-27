@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.HomologicalComplex
 public import Mathlib.CategoryTheory.DifferentialObject
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Homological complexes are differential graded objects.
 
@@ -41,7 +44,6 @@ abbrev objEqToHom {i j : β} (h : i = j) :
     X.obj i ⟶ X.obj j :=
   eqToHom congr(X.obj $h)
 
-@[simp]
 theorem objEqToHom_refl (i : β) : X.objEqToHom (refl i) = 𝟙 _ :=
   rfl
 

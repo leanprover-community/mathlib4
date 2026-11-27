@@ -13,7 +13,7 @@ public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Rational
 
 This file implements `Real.log` extension for the tactic `dyadic_interval`.
 
-## Implementation details
+## Implementation notes
 
 We first define `Inclusion.IntervalDyadicReal.smallArtanh`, which computes `artanh` of a small
 rational number `num / den` using the binary splitting method. Then we use the identity
@@ -95,7 +95,7 @@ theorem go_spec (num den a b : ℕ) :
 
 theorem den_ne_zero (num den n : ℕ) (hden : den ≠ 0) :
     (smallArtanh num den n).2 ≠ 0 := by
-  rw [smallArtanh, (go_spec num den 0 n).2.1]
+  simp only [smallArtanh, (go_spec num den 0 n).2.1]
   simpa [hden] using prod_ne_zero_iff.mpr fun j _ => by positivity
 
 theorem spec (num den n : ℕ) :
@@ -103,7 +103,7 @@ theorem spec (num den n : ℕ) :
     (X.1 : ℝ) / X.2 = ∑ k ∈ range n, (num / den : ℝ) ^ (2 * k + 1) / (2 * k + 1) := by
   rw [smallArtanh]
   rcases eq_or_ne den 0 with rfl | hden; · simp
-  rw [(go_spec num den 0 n).2.1, (go_spec num den 0 n).2.2]
+  simp only [(go_spec num den 0 n).2.1, (go_spec num den 0 n).2.2]
   push_cast
   rw [mul_div_mul_comm, div_eq_mul_inv (∑ _ ∈ _, _), sum_mul, mul_sum, Nat.Ico_zero_eq_range]
   refine sum_congr rfl fun i hi => ?_

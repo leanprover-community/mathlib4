@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.Polynomial.Basic
 
 import Mathlib.RingTheory.PrincipalIdealDomain
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Adjoining elements to form subalgebras
 

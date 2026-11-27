@@ -5,12 +5,12 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Logic.Equiv.Functor
 public import Mathlib.Order.ModularLattice
 public import Mathlib.Order.RelSeries
 
 import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.Logic.Equiv.Fin.Basic
+import Mathlib.Logic.Equiv.Functor
 
 /-!
 # Jordan-Hölder Theorem
@@ -21,6 +21,7 @@ this file. Examples of `JordanHolderLattice` include `Subgroup G` if `G` is a gr
 separately for both groups and modules, the proof in this file can be applied to both.
 
 ## Main definitions
+
 The main definitions in this file are `JordanHolderLattice` and `CompositionSeries`,
 and the relation `Equivalent` on `CompositionSeries`
 

@@ -13,6 +13,9 @@ public import Mathlib.RingTheory.QuotSMulTop
 import Mathlib.Algebra.GroupWithZero.Action.Regular
 import Mathlib.RingTheory.Ideal.Finsupp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Freeness of `QuotSMulTop` by a regular element
 

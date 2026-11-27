@@ -32,6 +32,7 @@ be phrased in terms of counting walks.
 - This gives a contradiction, as `A` has trace `0`, and thus `A ^ p` has trace `0`.
 
 ## References
+
 - [P. Erdős, A. Rényi, V. Sós, *On A Problem of Graph Theory*][erdosrenyisos]
 - [C. Huneke, *The Friendship Theorem*][huneke2002]
 -/

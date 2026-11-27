@@ -5,13 +5,13 @@ Authors: Kevin Buzzard, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Ring.Torsion
 public import Mathlib.Algebra.Star.Basic
 public import Mathlib.Basic.Real.Basic
 public import Mathlib.Order.Interval.Set.UnorderedInterval
 public import Mathlib.Tactic.Ring
 
 import Mathlib.Algebra.Ring.CharZero
+import Mathlib.Algebra.Ring.Torsion
 
 /-!
 # The complex numbers
@@ -31,7 +31,7 @@ open Set Function
 
 
 /-- Complex numbers consist of two `Real`s: a real part `re` and an imaginary part `im`. -/
-@[wikidata Q11567, allow_numeric_proj]
+@[wikidata Q11567]
 structure Complex : Type where
   /-- The real part of a complex number. -/
   re : ℝ

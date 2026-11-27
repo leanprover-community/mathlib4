@@ -21,6 +21,7 @@ This file proves that:
   at most `f (b + c) - f a`.
 
 ## Tags
+
 interval integrable, interval integral, monotone, slope
 -/
 

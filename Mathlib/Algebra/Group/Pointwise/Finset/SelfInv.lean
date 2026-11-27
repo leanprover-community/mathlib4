@@ -6,7 +6,11 @@ Authors: Justus Springer
 module
 
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
-public import Mathlib.Algebra.Group.Pointwise.Set.SelfInv
+
+import Mathlib.Algebra.Group.Pointwise.Set.SelfInv
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Self-inverse finsets

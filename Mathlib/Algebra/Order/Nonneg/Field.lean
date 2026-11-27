@@ -9,7 +9,8 @@ public import Mathlib.Algebra.Field.Basic
 public import Mathlib.Algebra.Order.Field.Canonical
 public import Mathlib.Algebra.Order.Nonneg.Ring
 public import Mathlib.Algebra.Order.Positive.Ring
-public import Mathlib.Data.Nat.Cast.Order.Ring
+
+import Mathlib.Data.Nat.Cast.Order.Ring
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

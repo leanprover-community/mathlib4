@@ -206,12 +206,12 @@ variable {I M}
 @[elab_as_elim]
 theorem induction_on {C : Hausdorffification I M → Prop} (x : Hausdorffification I M)
     (ih : ∀ x, C (of I M x)) : C x :=
-  Quotient.inductionOn' x ih
+  Quotient.inductionOn x ih
 
 variable (I M)
 
 instance : IsHausdorff I (Hausdorffification I M) :=
-  ⟨fun x => Quotient.inductionOn' x fun x hx =>
+  ⟨fun x => Quotient.inductionOn x fun x hx =>
     (Quotient.mk_eq_zero _).2 <| (mem_iInf _).2 fun n => by
       have := comap_map_mkQ (⨅ n : ℕ, I ^ n • ⊤ : Submodule R M) (I ^ n • ⊤)
       simp only [sup_of_le_right (iInf_le (fun n => (I ^ n • ⊤ : Submodule R M)) n)] at this
@@ -393,7 +393,7 @@ theorem eval_comp_of (n : ℕ) : (eval I M n).comp (of I M) = mkQ _ :=
   rfl
 
 theorem eval_surjective (n : ℕ) : Function.Surjective (eval I M n) := fun x ↦
-  Quotient.inductionOn' x fun x ↦ ⟨of I M x, rfl⟩
+  Quotient.inductionOn x fun x ↦ ⟨of I M x, rfl⟩
 
 @[simp]
 theorem range_eval (n : ℕ) : LinearMap.range (eval I M n) = ⊤ :=
@@ -407,7 +407,7 @@ instance : IsHausdorff I (AdicCompletion I M) where
   haus' x h := ext fun n ↦ by
     refine smul_induction_on (SModEq.zero.1 <| h n) (fun r hr x _ ↦ ?_) (fun x y hx hy ↦ ?_)
     · simp only [val_smul_apply, val_zero]
-      induction x.val n using Quotient.inductionOn' with | _ a
+      induction x.val n using Quotient.inductionOn with | _ a
       exact SModEq.zero.2 <| smul_mem_smul hr mem_top
     · simp only [val_add_apply, hx, val_zero_apply, hy, add_zero]
 
@@ -751,7 +751,7 @@ projection `N → N ⧸ (I ^ n • ⊤)` is `f n` .
 theorem mk_lift {f : (n : ℕ) → M →ₗ[R] N ⧸ (I ^ n • ⊤)}
     (h : ∀ {m n : ℕ} (hle : m ≤ n), factorPow I N hle ∘ₗ f n = f m) (n : ℕ) (x : M) :
     Submodule.Quotient.mk (lift I f h x) = f n x := by
-  simp only [lift, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply]
+  simp only [lift, LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply]
   rw [← mkQ_apply, ← eval_of]
   simp
 
@@ -851,8 +851,8 @@ theorem of_comp_lift :
 @[simp]
 theorem mk_lift {n : ℕ} (x : M) :
     (Submodule.Quotient.mk (lift I ha f hf x)) = f n x := by
-  simp only [lift, IsAdicComplete.lift, ofLinearEquiv, LinearMap.coe_comp, LinearEquiv.coe_coe,
-    Function.comp_apply]
+  simp only [lift, IsAdicComplete.lift, ofLinearEquiv, LinearMap.coe_comp,
+    LinearEquiv.coe_toLinearMap, Function.comp_apply]
   rw [← mkQ_apply, ← eval_of]
   simp [extend_eq ha f hf]
 

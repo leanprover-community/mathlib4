@@ -5,9 +5,10 @@ Authors: Kim Morrison, Justus Springer
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Filtered
 public import Mathlib.Topology.Category.TopCat.OpenNhds
 public import Mathlib.Topology.Sheaves.SheafCondition.UniqueGluing
+
+import Mathlib.CategoryTheory.Limits.ConcreteCategory.Filtered
 
 /-!
 # Stalks

@@ -111,8 +111,9 @@ lemma sq_ker_comp_le_ker_compLocalizationAwayAlgHom :
     · rw [Ideal.mul_le]
       intro x hx y hy
       simp [hsple hy]
-  · apply sup_le <;>
-    · rw [Ideal.mul_le]
+  · apply sup_le
+    all_goals
+      rw [Ideal.mul_le]
       intro x hx y hy
       simp [hsple hx]
 
@@ -149,7 +150,7 @@ lemma liftBaseChange_injective_of_isLocalizationAway :
     simpa using! hm
   rw [← compLocalizationAwayAlgHom_toAlgHom_toComp (T := T)]
   apply sq_ker_comp_le_ker_compLocalizationAwayAlgHom
-  simpa only [LinearEquiv.coe_coe, LinearMap.ringLmapEquivSelf_symm_apply,
+  simpa only [LinearEquiv.coe_toLinearMap, LinearMap.ringLmapEquivSelf_symm_apply,
     mk_apply, lift.tmul, LinearMap.coe_restrictScalars, LinearMap.coe_smulRight,
     one_apply_eq_self, LinearMap.smul_apply, one_smul, Algebra.Extension.Cotangent.map_mk,
     Extension.Cotangent.mk_eq_zero_iff] using! hx

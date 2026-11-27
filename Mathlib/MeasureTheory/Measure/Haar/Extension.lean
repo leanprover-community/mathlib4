@@ -10,6 +10,9 @@ public import Mathlib.Topology.Algebra.Group.Extension
 
 import Mathlib.MeasureTheory.Group.Integral
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Haar measures on group extensions
 

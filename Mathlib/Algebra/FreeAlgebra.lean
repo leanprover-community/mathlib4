@@ -34,7 +34,7 @@ Given a commutative semiring `R`, and a type `X`, we construct the free unital, 
 5. `equivMonoidAlgebraFreeMonoid : FreeAlgebra R X ≃ₐ[R] R[FreeMonoid X]`
 6. An inductive principle `induction`.
 
-## Implementation details
+## Implementation notes
 
 We construct the free algebra on `X` as a quotient of an inductive type `FreeAlgebra.Pre` by an
 inductively defined relation `FreeAlgebra.Rel`. Explicitly, the construction involves three steps:

@@ -83,6 +83,7 @@ def natDiv (m d prec : ℕ) : Interval Dyadic :=
 theorem natDiv_eq_rat (m : ℕ) {d : ℕ} (prec : ℕ) (hd : 0 < d) :
     natDiv m d prec = rat (mkRat m d) prec := by
   rw [natDiv, rat]
+  dsimp only
   congr 2 <;>
     simp [Rat.toDyadic_mkRat, Dyadic.toRat_ofIntWithPrec_eq_mkRat, Rat.mkRat_eq_iff,
       Int.shiftLeft_eq, Nat.shiftLeft_eq, hd.ne']

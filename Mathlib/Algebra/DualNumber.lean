@@ -71,7 +71,6 @@ theorem snd_eps [Zero R] [One R] : DualNumber.eps.snd = (1 : R) :=
   rfl
 
 /-- A version of `TrivSqZeroExt.snd_mul` with `*` instead of `•`. -/
-@[simp]
 theorem snd_mul [Semiring R] (x y : R[ε]) : (x * y).snd = x.fst * y.snd + x.snd * y.fst :=
   rfl
 

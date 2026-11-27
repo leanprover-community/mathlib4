@@ -5,9 +5,10 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.EuclideanDomain.Int
 public import Mathlib.Algebra.Star.Unitary
 public import Mathlib.RingTheory.PrincipalIdealDomain
+
+import Mathlib.Algebra.EuclideanDomain.Int
 
 /-! # ℤ[√d]
 
@@ -372,15 +373,16 @@ theorem sqLe_mul {d x y z w : ℕ} :
       (SqLe x 1 y d → SqLe w d z 1 → SqLe (x * z + d * y * w) 1 (x * w + y * z) d) ∧
         (SqLe y d x 1 → SqLe z 1 w d → SqLe (x * z + d * y * w) 1 (x * w + y * z) d) ∧
           (SqLe y d x 1 → SqLe w d z 1 → SqLe (x * w + y * z) d (x * z + d * y * w) 1) := by
-  refine ⟨?_, ?_, ?_, ?_⟩ <;>
-    · intro xy zw
-      have :=
-        Int.mul_nonneg (sub_nonneg_of_le (Int.ofNat_le_ofNat_of_le xy))
-          (sub_nonneg_of_le (Int.ofNat_le_ofNat_of_le zw))
-      refine Int.le_of_ofNat_le_ofNat (le_of_sub_nonneg ?_)
-      convert this using 1
-      simp only [one_mul, Int.natCast_add, Int.natCast_mul]
-      ring
+  refine ⟨?_, ?_, ?_, ?_⟩
+  all_goals
+    intro xy zw
+    have :=
+      Int.mul_nonneg (sub_nonneg_of_le (Int.ofNat_le_ofNat_of_le xy))
+        (sub_nonneg_of_le (Int.ofNat_le_ofNat_of_le zw))
+    refine Int.le_of_ofNat_le_ofNat (le_of_sub_nonneg ?_)
+    convert this using 1
+    simp only [one_mul, Int.natCast_add, Int.natCast_mul]
+    ring
 
 open Int in
 /-- "Generalized" `nonneg`. `nonnegg c d x y` means `a √c + b √d ≥ 0`;
@@ -571,15 +573,15 @@ theorem Nonneg.add {a b : ℤ√d} (ha : Nonneg a) (hb : Nonneg b) : Nonneg (a +
     rcases nonneg_cases hb with ⟨z, w, rfl | rfl | rfl⟩
   · trivial
   · refine nonnegg_cases_right fun i h => sqLe_of_le ?_ ?_ (nonnegg_pos_neg.1 hb)
-    · dsimp only at h
+    · dsimp only [add_def] at h
       exact Int.ofNat_le.1 (le_of_neg_le_neg (Int.le.intro y (by simp [add_comm, *])))
     · apply Nat.le_add_left
   · refine nonnegg_cases_left fun i h => sqLe_of_le ?_ ?_ (nonnegg_neg_pos.1 hb)
-    · dsimp only at h
+    · dsimp only [add_def] at h
       exact Int.ofNat_le.1 (le_of_neg_le_neg (Int.le.intro x (by simp [add_comm, *])))
     · apply Nat.le_add_left
   · refine nonnegg_cases_right fun i h => sqLe_of_le ?_ ?_ (nonnegg_pos_neg.1 ha)
-    · dsimp only at h
+    · dsimp only [add_def] at h
       exact Int.ofNat_le.1 (le_of_neg_le_neg (Int.le.intro w (by simp [*])))
     · apply Nat.le_add_right
   · have : Nonneg ⟨_, _⟩ :=
@@ -588,7 +590,7 @@ theorem Nonneg.add {a b : ℤ√d} (ha : Nonneg a) (hb : Nonneg b) : Nonneg (a +
     rwa [add_def]
   · exact nonneg_add_lem ha hb
   · refine nonnegg_cases_left fun i h => sqLe_of_le ?_ ?_ (nonnegg_neg_pos.1 ha)
-    · dsimp only at h
+    · dsimp only [add_def]  at h
       exact Int.ofNat_le.1 (le_of_neg_le_neg (Int.le.intro _ h))
     · apply Nat.le_add_right
   · dsimp

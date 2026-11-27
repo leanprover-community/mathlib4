@@ -8,12 +8,15 @@ module
 public import Mathlib.LinearAlgebra.AffineSpace.Basis
 public import Mathlib.LinearAlgebra.AffineSpace.Dimension
 public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Centroid
-public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 
 import Mathlib.FieldTheory.Finiteness
 import Mathlib.LinearAlgebra.Dimension.OrzechProperty
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 import Mathlib.RingTheory.Finiteness.Prod
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Finite-dimensional subspaces of affine spaces.

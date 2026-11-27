@@ -31,6 +31,7 @@ This file contains the dual results to those obtained in the file
 `Mathlib/CategoryTheory/Localization/DerivabilityStructure/PointwiseRightDerived.lean`.
 
 ## References
+
 * [Bruno Kahn and Georges Maltsiniotis, *Structures de dérivabilité*][KahnMaltsiniotis2008]
 -/
 

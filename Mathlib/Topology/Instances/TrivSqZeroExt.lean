@@ -12,6 +12,9 @@ public import Mathlib.Topology.UniformSpace.Equiv
 
 import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topology on `TrivSqZeroExt R M`
 
