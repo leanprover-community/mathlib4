@@ -255,7 +255,7 @@ variable [Fintype V]
 
 /-- Decides reachability of vertices `u` and `v` by performing a breadth-first search from `u`. -/
 instance decidableReachable : DecidableRel G.Reachable := fun _u _v ↦
-  (Fintype.truncList V).lift (fun l ↦ decidable_of_iff _ (mem_bfsList l.2.2))
+  (Fintype.truncList V).lift (fun l ↦ decidable_of_iff _ (mem_bfsList l.property.2))
     fun _ _ ↦ Subsingleton.elim ..
 
 /-- Decides preconnectedness of `G` by checking whether the vertex set is empty and, if not,
