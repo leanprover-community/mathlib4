@@ -505,6 +505,9 @@ Q495412:
 
 Q504843:
   title: Mycielski's theorem
+  authors: Rotem Ashkenazi
+  date: 2026
+  url: https://github.com/rotem4997/lean-classics/blob/2ed53092408d62d2223bf1531febf6bef0b09c57/LeanClassics/Mycielski.lean#L134
 
 Q505798:
   title: Lagrange's theorem (group theory)
@@ -1480,6 +1483,10 @@ Q1166774:
 
 Q1177508:
   title: Rédei's theorem
+  authors: Rotem Ashkenazi
+  date: 2026
+  url: https://github.com/rotem4997/lean-classics/blob/2ed53092408d62d2223bf1531febf6bef0b09c57/LeanClassics/Redei.lean#L53
+  comment: "Existence of a Hamiltonian path in every finite tournament; the parity statement is not formalised."
 
 Q1179446:
   title: De Rham's theorem
@@ -2391,6 +2398,9 @@ Q3424029:
 
 Q3443426:
   title: Bondy's theorem
+  authors: Rotem Ashkenazi
+  date: 2026
+  url: https://github.com/rotem4997/lean-classics/blob/2ed53092408d62d2223bf1531febf6bef0b09c57/LeanClassics/BondySets.lean#L117
 
 Q3458641:
   title: Szegő limit theorems
@@ -2628,6 +2638,9 @@ Q3757563:
 
 Q3771212:
   title: Proth's theorem
+  authors: Rotem Ashkenazi
+  date: 2026
+  url: https://github.com/rotem4997/lean-classics/blob/2ed53092408d62d2223bf1531febf6bef0b09c57/LeanClassics/Proth.lean#L19
 
 Q3889376:
   title: Carmichael's theorem
