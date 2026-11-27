@@ -664,10 +664,10 @@ instance monMonoidalStruct : MonoidalCategoryStruct (Mon C) where
 @[to_additive (attr := simp)]
 lemma tensorUnit_X : (𝟙_ (Mon C)).X = 𝟙_ C := rfl
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma tensorUnit_one : η[(𝟙_ (Mon C)).X] = 𝟙 (𝟙_ C) := rfl
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma tensorUnit_mul : μ[(𝟙_ (Mon C)).X] = (λ_ (𝟙_ C)).hom := rfl
 
 @[to_additive (attr := simp)]
@@ -701,10 +701,10 @@ lemma associator_hom_hom (X Y Z : Mon C) : (α_ X Y Z).hom.hom = (α_ X.X Y.X Z.
 @[to_additive (attr := simp)]
 lemma associator_inv_hom (X Y Z : Mon C) : (α_ X Y Z).inv.hom = (α_ X.X Y.X Z.X).inv := rfl
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma tensor_one (M N : Mon C) : η[(M ⊗ N).X] = (λ_ (𝟙_ C)).inv ≫ (η[M.X] ⊗ₘ η[N.X]) := rfl
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma tensor_mul (M N : Mon C) : μ[(M ⊗ N).X] = tensorμ M.X N.X M.X N.X ≫ (μ[M.X] ⊗ₘ μ[N.X]) := rfl
 
 @[to_additive]

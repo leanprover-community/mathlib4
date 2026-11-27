@@ -91,7 +91,6 @@ abbrev subtypePermOfFintype (f : Perm α) {p : α → Prop} [Finite { x // p x }
     (h : ∀ x, p x → p (f x)) : Perm { x // p x } :=
   f.subtypePerm fun x => ⟨fun h₂ => f.symm_apply_apply x ▸ perm_symm_on_of_perm_on_finite h h₂, h x⟩
 
-@[simp]
 theorem subtypePermOfFintype_apply (f : Perm α) {p : α → Prop} [Finite { x // p x }]
     (h : ∀ x, p x → p (f x)) (x : { x // p x }) :
     subtypePermOfFintype f h x = ⟨f x, h x x.property⟩ :=

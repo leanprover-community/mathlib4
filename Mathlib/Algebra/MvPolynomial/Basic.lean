@@ -548,8 +548,8 @@ protected lemma coeff_zero : (0 : MvPolynomial σ R).coeff = 0 := rfl
 theorem coeff_zero_X (i : σ) : (X i : MvPolynomial σ R).coeff 0 = 0 :=
   single_eq_of_ne' fun h => by cases Finsupp.single_eq_zero.1 h
 
--- TODO: Remove once its use in the Witt vector API has been removed.
-@[simp]
+@[deprecated "AddMonoidAlgebra.coeff_map and Finsupp.mapRange_apply" +typeChanged
+  (since := "2026-11-26")]
 lemma coeff_addMonoidAlgebraMap (g : S₁ →+ R) (φ : MvPolynomial σ S₁) (m) :
     (φ.map g).coeff m = g (φ.coeff m) := rfl
 
