@@ -84,16 +84,13 @@ section LocallyFinite
 
 variable [Preorder α] [LocallyFiniteOrder α]
 
+@[to_dual]
 instance : IsStronglyAtomic α where
   exists_covBy_le_of_lt a b hab := by
     obtain ⟨x, hx, hxmin⟩ := (LocallyFiniteOrder.finsetIoc a b).exists_minimal
       ⟨b, by simpa [LocallyFiniteOrder.finset_mem_Ioc]⟩
     simp only [LocallyFiniteOrder.finset_mem_Ioc] at hx hxmin
     exact ⟨x, ⟨hx.1, fun c hac hcx ↦ hcx.not_ge <| hxmin ⟨hac, hcx.le.trans hx.2⟩ hcx.le⟩, hx.2⟩
-
-@[to_dual existing]
-instance : IsStronglyCoatomic α := by
-  rw [← isStronglyAtomic_dual_iff_is_stronglyCoatomic]; infer_instance
 
 end LocallyFinite
 
