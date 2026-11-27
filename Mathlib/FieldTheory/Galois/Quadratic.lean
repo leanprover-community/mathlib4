@@ -14,7 +14,7 @@ public import Mathlib.RingTheory.Trace.Basic
 
 Let `K/F` be a separable quadratic extension, given by `Algebra.IsQuadraticExtension F K` and
 `Algebra.IsSeparable F K`. Then `K/F` is Galois with Galois group of order `2`, see
-`Algebra.IsQuadraticExtension.isGalois` and `Algebra.IsQuadraticExtension.isCyclic`.
+`Algebra.IsQuadraticExtension.isGalois` and `Algebra.IsQuadraticExtension.card_aut_eq_two`.
 
 ## Main definitions and results
 
@@ -86,7 +86,7 @@ theorem add_conj (x : K) : x + conj F K x = algebraMap F K (Algebra.trace F K x)
 variable {A : Type*} [Field A] [Algebra F A]
 
 /-- Composing an embedding with the conjugation gives a different embedding. -/
-theorem comp_conj_ne (φ : K →ₐ[F] A) : φ.comp (conj F K : K →ₐ[F] K) ≠ φ :=
+theorem comp_conj_ne_self (φ : K →ₐ[F] A) : φ.comp (conj F K : K →ₐ[F] K) ≠ φ :=
   fun h ↦ conj_ne_one F K <| AlgEquiv.ext fun x ↦ φ.toRingHom.injective.eq_iff.mp <|
     AlgHom.congr_fun h x
 
@@ -97,6 +97,6 @@ theorem card_algHom_eq_two (φ : K →ₐ[F] A) : Nat.card (K →ₐ[F] A) = 2 :
 /-- The embeddings of `K` into `A` are `φ` and `φ ∘ conj F K`. -/
 theorem eq_or_eq_comp_conj (φ ψ : K →ₐ[F] A) : ψ = φ ∨ ψ = φ.comp (conj F K : K →ₐ[F] K) :=
   or_iff_not_imp_left.mpr fun h ↦
-    (Nat.card_eq_two_iff' φ |>.mp (card_algHom_eq_two φ)).unique h (comp_conj_ne φ)
+    (Nat.card_eq_two_iff' φ |>.mp (card_algHom_eq_two φ)).unique h (comp_conj_ne_self φ)
 
 end Algebra.IsQuadraticExtension
