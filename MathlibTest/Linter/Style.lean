@@ -476,6 +476,7 @@ end
 /-! Tests for the `nameComponents` linter -/
 section nameComponents
 
+-- We do not check that e.g. nsmul corresponds to actual scalar multiplication at the moment.
 public lemma foo_nsmul : 1 + 2 = 3 := rfl
 
 public lemma bar_nsmul : True = (True = True) := by simp
@@ -484,14 +485,24 @@ public lemma bar_zsmul : True := trivial
 
 public lemma baz_zsmul : (2 : ℤ) + 2 = 4 := rfl
 
+public lemma foo_npow : True := trivial
+public lemma bar_npow : (1 : ℤ) + 2 = 3 := rfl
+
+public lemma foo_zpow : True := trivial
+public lemma bar_zpow : (2 : ℕ) + 1 = 3 := by simp
+
 /--
-error: -- Found 2 errors in 12 declarations (plus 0 automatically generated ones) in the current file with 15 linters
+error: -- Found 6 errors in 16 declarations (plus 0 automatically generated ones) in the current file with 15 linters
 
 /- The `nameComponents` linter reports:
 FOUND lemmas with misleading name components.
 This linter can be disabled with `@[nolint nameComponents]`. -/
 #check bar_nsmul /- The lemma `bar_nsmul` contains `nsmul` in its name, but does not involve the type `Nat` -/
 #check bar_zsmul /- The lemma `bar_zsmul` contains `zsmul` in its name, but does not involve the type `Int` -/
+#check foo_npow /- The lemma `foo_npow` contains `npow` in its name, but does not involve the type `Nat` -/
+#check bar_npow /- The lemma `bar_npow` contains `npow` in its name, but does not involve the type `Nat` -/
+#check foo_zpow /- The lemma `foo_zpow` contains `zpow` in its name, but does not involve the type `Int` -/
+#check bar_zpow /- The lemma `bar_zpow` contains `zpow` in its name, but does not involve the type `Int` -/
 -/
 #guard_msgs in
 #lint

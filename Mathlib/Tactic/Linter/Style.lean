@@ -412,11 +412,15 @@ namespace Style.misnamedCoercions
 
 inductive NameComponentCheck
 | NSMul
+| NPow
 | ZSMul
+| ZPow
 
 /-- Checks if a lemma `name` has mismatching name components:
 - if it contains the component `nsmul`, it must involve the type `Nat`,
-- if it contains the component `zsmul`, it must involve the type `Int`.
+- if it contains the component `zsmul`, it must involve the type `Int`,
+- if it contains the component `npow`, it must involve the type `Nat`,
+- if it contains the component `zpow`, it must involve the type `Int`.
 -/
 def hasMisleadingComponents (name : Name) : MetaM <| Option NameComponentCheck := do
   -- Does the final name component contain a part `nsmul`?
@@ -427,11 +431,21 @@ def hasMisleadingComponents (name : Name) : MetaM <| Option NameComponentCheck :
     let usedConstants := ((← getEnv).find? name).get!.type.getUsedConstants
     if !usedConstants.contains ``Nat then
       return some NameComponentCheck.NSMul
+  else if parts.contains "npow" then
+    -- Does the declaration reference `Nat`? If so, we are fine.
+    let usedConstants := ((← getEnv).find? name).get!.type.getUsedConstants
+    if !usedConstants.contains ``Nat then
+      return some NameComponentCheck.NPow
   else if parts.contains "zsmul" then
     -- Does the declaration reference `Int`? If so, we are fine.
     let usedConstants := ((← getEnv).find? name).get!.type.getUsedConstants
     if !usedConstants.contains ``Int then
       return some NameComponentCheck.ZSMul
+  else if parts.contains "zpow" then
+    -- Does the declaration reference `Int`? If so, we are fine.
+    let usedConstants := ((← getEnv).find? name).get!.type.getUsedConstants
+    if !usedConstants.contains ``Int then
+      return some NameComponentCheck.ZPow
   return none
 
 /-- Linter that checks for lemmas whose name contains a name component evoking a specific meaning,
@@ -452,6 +466,12 @@ when natural numbers are involved. -/
         but does not involve the type `Nat`"
     | some NameComponentCheck.ZSMul =>
       return m!"The lemma `{.ofConstName declName true}` contains `zsmul` in its name, \
+        but does not involve the type `Int`"
+    | some NameComponentCheck.NPow =>
+      return m!"The lemma `{.ofConstName declName true}` contains `npow` in its name, \
+        but does not involve the type `Nat`"
+    | some NameComponentCheck.ZPow =>
+      return m!"The lemma `{.ofConstName declName true}` contains `zpow` in its name, \
         but does not involve the type `Int`"
     | none => return none
 
