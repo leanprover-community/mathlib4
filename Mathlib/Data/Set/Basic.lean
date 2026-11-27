@@ -582,7 +582,7 @@ theorem ofPred_true : { _x : α | True } = univ :=
 
 @[deprecated (since := "2026-07-09")] alias setOf_true := ofPred_true
 
-@[simp] theorem ofPred_top : { _x : α | ⊤ } = univ := rfl
+theorem ofPred_top : { _x : α | ⊤ } = univ := rfl
 
 @[deprecated (since := "2026-07-09")]
 alias setOf_top := ofPred_top

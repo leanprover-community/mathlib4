@@ -833,7 +833,6 @@ protected theorem map_neg (f : M →SL[σ₁₂] M₂) (x : M) : f (-x) = -f x :
 protected theorem map_sub (f : M →SL[σ₁₂] M₂) (x y : M) : f (x - y) = f x - f y :=
   map_sub f x y
 
-@[simp]
 theorem sub_apply' (f g : M →SL[σ₁₂] M₂) (x : M) : ((f : M →ₛₗ[σ₁₂] M₂) - g) x = f x - g x :=
   rfl
 

@@ -89,11 +89,11 @@ theorem charpoly_toLin (A : Matrix n n R) (b : Basis n R M) :
   simp [← LinearMap.charpoly_toMatrix (A.toLin b b) b]
 
 @[simp]
-theorem charpoly_toLin' (A : Matrix n n R) : A.toLin'.charpoly = A.charpoly := by
-  rw [← Matrix.toLin_eq_toLin', charpoly_toLin]
-
-@[simp]
 theorem charpoly_mulVecLin (A : Matrix n n R) : A.mulVecLin.charpoly = A.charpoly :=
-  charpoly_toLin' A
+  charpoly_toLin A (Pi.basisFun R n)
+
+@[deprecated charpoly_mulVecLin +typeChanged (since := "2026-11-25")]
+theorem charpoly_toLin' (A : Matrix n n R) : A.toLin'.charpoly = A.charpoly :=
+  charpoly_mulVecLin A
 
 end Matrix

@@ -41,7 +41,6 @@ mapping this element to its additive inverse. -/
 protected theorem val_neg (u : αˣ) : (↑(-u) : α) = -u :=
   rfl
 
-@[simp, norm_cast]
 protected theorem coe_neg_one : ((-1 : αˣ) : α) = -1 :=
   rfl
 
