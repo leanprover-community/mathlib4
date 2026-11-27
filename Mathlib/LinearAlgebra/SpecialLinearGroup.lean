@@ -272,7 +272,6 @@ theorem congr_linearEquiv_coe_apply (e : V ≃ₗ[R] W) (f : SpecialLinearGroup 
     (congr_linearEquiv e f : W ≃ₗ[R] W) = e.symm ≪≫ₗ f ≪≫ₗ e :=
   rfl
 
-@[simp]
 theorem congr_linearEquiv_apply_apply (e : V ≃ₗ[R] W) (f : SpecialLinearGroup R V) (x : W) :
     congr_linearEquiv e f x = e (f (e.symm x)) :=
   rfl
@@ -541,8 +540,9 @@ theorem centerCongr_toLin_equiv_trans_centerEquivRootsOfUnity_eq (g) :
       Matrix.SpecialLinearGroup.center_equiv_rootsOfUnity g := by
   nontriviality R
   by_cases hV : Subsingleton V
-  · convert Eq.refl (1 : Rˣ) <;>
-    · apply rootsOfUnity.eq_one
+  · convert Eq.refl (1 : Rˣ)
+    all_goals
+      apply rootsOfUnity.eq_one
       rw [← Module.finrank_eq_zero_iff_of_free (R := R)] at hV
       simp only [hV, sup_eq_right, zero_le_one, ← Module.finrank_eq_card_basis b]
   · have hι : ¬ IsEmpty ι := fun hι ↦ hV (by

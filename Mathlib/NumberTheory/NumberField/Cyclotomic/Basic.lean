@@ -219,6 +219,13 @@ lemma toInteger_isPrimitiveRoot {k : ℕ} [NeZero k] (hζ : IsPrimitiveRoot ζ k
 
 variable [CharZero K]
 
+/-- The minimal polynomial over `ℤ` of a primitive `k`-th root of unity seen in `𝓞 K` is the
+`k`-th cyclotomic polynomial. -/
+@[simp]
+theorem minpoly_toInteger {k : ℕ} [NeZero k] (hζ : IsPrimitiveRoot ζ k) :
+    minpoly ℤ hζ.toInteger = cyclotomic k ℤ := by
+  rw [← RingOfIntegers.minpoly_coe, hζ.coe_toInteger, cyclotomic_eq_minpoly hζ (NeZero.pos k)]
+
 @[simp]
 theorem integralPowerBasisOfPrimePow_gen [hcycl : IsCyclotomicExtension {p ^ k} ℚ K]
     (hζ : IsPrimitiveRoot ζ (p ^ k)) :

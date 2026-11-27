@@ -75,8 +75,9 @@ theorem sumLift₂_eq_empty :
       (∀ a₁ b₁, a = inl a₁ → b = inl b₁ → f a₁ b₁ = ∅) ∧
         ∀ a₂ b₂, a = inr a₂ → b = inr b₂ → g a₂ b₂ = ∅ := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · constructor <;>
-    · rintro a b rfl rfl
+  · constructor
+    all_goals
+      rintro a b rfl rfl
       exact map_eq_empty.1 h
   cases a <;> cases b
   · exact map_eq_empty.2 (h.1 _ _ rfl rfl)
