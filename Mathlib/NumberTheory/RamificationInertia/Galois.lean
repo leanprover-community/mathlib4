@@ -187,10 +187,15 @@ variable (C : Type*) [CommRing C] [Algebra A C] [Algebra B C]
   (GAC : Type*) [Group GAC] [Finite GAC] [MulSemiringAction GAC C] [IsGaloisGroup GAC A C]
   (GBC : Type*) [Group GBC] [Finite GBC] [MulSemiringAction GBC C] [IsGaloisGroup GBC B C]
 
+-- Note that `hPp` is not needed in this section: indeed `Nonempty (P.primesOver C)` implies
+-- that `P` is prime (see `Ideal.isPrime_of_liesOver`).
+omit hPp
+
 include G GAC GBC in
 theorem inertiaDegIn_mul_inertiaDegIn :
     p.inertiaDegIn B * P.inertiaDegIn C = p.inertiaDegIn C := by
   obtain ⟨⟨Q, _, _⟩⟩ := (inferInstance : Nonempty (primesOver P C))
+  have := isPrime_of_liesOver Q P
   have : Q.LiesOver p := LiesOver.trans Q P p
   rw [inertiaDegIn_eq_inertiaDeg p P G, inertiaDegIn_eq_inertiaDeg p Q GAC,
     inertiaDegIn_eq_inertiaDeg P Q GBC, ← inertiaDeg_tower P Q]
@@ -200,12 +205,47 @@ include G GAC GBC in
 theorem ramificationIdxIn_mul_ramificationIdxIn [Flat B C] :
     p.ramificationIdxIn B * P.ramificationIdxIn C = p.ramificationIdxIn C := by
   obtain ⟨⟨Q, _, hQ⟩⟩ := (inferInstance : Nonempty (primesOver P C))
+  have := isPrime_of_liesOver Q P
   have : Q.LiesOver p := LiesOver.trans Q P p
   rw [ramificationIdxIn_eq_ramificationIdx p P G, ramificationIdxIn_eq_ramificationIdx p Q GAC,
     ramificationIdxIn_eq_ramificationIdx P Q GBC, ← ramificationIdx_tower P Q]
 
 @[deprecated (since := "2026-06-18")] alias ramificationIdxIn_mul_ramificationIdxIn' :=
   ramificationIdxIn_mul_ramificationIdxIn
+
+include GAC GBC in
+theorem ramificationIdxIn_above_le [Module.Finite A C] [Flat B C] :
+    P.ramificationIdxIn C ≤ p.ramificationIdxIn C := by
+  obtain ⟨⟨Q, _, _⟩⟩ := (inferInstance : Nonempty (primesOver P C))
+  have : Q.LiesOver p := LiesOver.trans Q P p
+  rw [ramificationIdxIn_eq_ramificationIdx p Q GAC, ramificationIdxIn_eq_ramificationIdx P Q GBC]
+  exact P.ramificationIdx_above_le Q
+
+include P G GAC in
+theorem ramificationIdxIn_below_le [Module.Finite A C] [Flat B C] :
+    p.ramificationIdxIn B ≤ p.ramificationIdxIn C := by
+  obtain ⟨⟨Q, _, _⟩⟩ := (inferInstance : Nonempty (primesOver P C))
+  have := isPrime_of_liesOver Q P
+  have : Q.LiesOver p := LiesOver.trans Q P p
+  rw [ramificationIdxIn_eq_ramificationIdx p P G, ramificationIdxIn_eq_ramificationIdx p Q GAC]
+  exact P.ramificationIdx_below_le Q
+
+include GAC GBC in
+theorem inertiaDegIn_above_le [Module.Finite A C] :
+    P.inertiaDegIn C ≤ p.inertiaDegIn C := by
+  obtain ⟨⟨Q, _, _⟩⟩ := (inferInstance : Nonempty (primesOver P C))
+  have : Q.LiesOver p := LiesOver.trans Q P p
+  rw [inertiaDegIn_eq_inertiaDeg p Q GAC, inertiaDegIn_eq_inertiaDeg P Q GBC]
+  exact P.inertiaDeg_above_le Q
+
+include P G GAC in
+theorem inertiaDegIn_below_le [Module.Finite A C] :
+    p.inertiaDegIn B ≤ p.inertiaDegIn C := by
+  obtain ⟨⟨Q, _, _⟩⟩ := (inferInstance : Nonempty (primesOver P C))
+  have := isPrime_of_liesOver Q P
+  have : Q.LiesOver p := LiesOver.trans Q P p
+  rw [inertiaDegIn_eq_inertiaDeg p P G, inertiaDegIn_eq_inertiaDeg p Q GAC]
+  exact P.inertiaDeg_below_le Q
 
 end tower
 
