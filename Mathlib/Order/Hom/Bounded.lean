@@ -150,7 +150,7 @@ def TopHom.ofClass [Top α] [Top β] [TopHomClass F α β] (f : F) : TopHom α �
 `BoundedOrderHom`. -/
 def BoundedOrderHom.ofClass [Preorder α] [Preorder β] [BoundedOrder α]
     [BoundedOrder β] [BoundedOrderHomClass F α β] (f : F) : BoundedOrderHom α β :=
-  { (f : α →o β) with toFun := f, map_top' := map_top f, map_bot' := map_bot f }
+  { OrderHom.ofClass f with toFun := f, map_top' := map_top f, map_bot' := map_bot f }
 
 @[deprecated (since := "2026-11-27")] alias BoundedOrderHomClass.toBoundedOrderHom :=
   BoundedOrderHom.ofClass
@@ -429,7 +429,7 @@ theorem comp_apply (f : BoundedOrderHom β γ) (g : BoundedOrderHom α β) (a : 
 
 @[simp]
 theorem coe_comp_orderHom (f : BoundedOrderHom β γ) (g : BoundedOrderHom α β) :
-    (f.comp g : OrderHom α γ) = (f : OrderHom β γ).comp g :=
+    (f.comp g).toOrderHom = f.toOrderHom.comp g.toOrderHom :=
   rfl
 
 @[to_dual (attr := simp)]

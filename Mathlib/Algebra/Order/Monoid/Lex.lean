@@ -95,7 +95,7 @@ lexicographic M ×ₗ N. -/
 @[to_additive (attr := simps!) /-- Given ordered additive monoids M, N, the natural inclusion
 ordered homomorphism from M to the lexicographic M ×ₗ N. -/]
 def inlₗ : α →*o α ×ₗ β where
-  __ := (Prod.Lex.toLexOrderHom).comp (inl α β)
+  __ := Prod.Lex.toLexOrderHom.comp (inl α β).toOrderHom
   map_one' := rfl
   map_mul' := by simp [← toLex_mul]
 
@@ -104,7 +104,7 @@ lexicographic M ×ₗ N. -/
 @[to_additive (attr := simps!) /-- Given ordered additive monoids M, N, the natural inclusion
 ordered homomorphism from N to the lexicographic M ×ₗ N. -/]
 def inrₗ : β →*o (α ×ₗ β) where
-  __ := Prod.Lex.toLexOrderHom.comp (inr α β)
+  __ := Prod.Lex.toLexOrderHom.comp (inr α β).toOrderHom
   map_one' := rfl
   map_mul' := by simp [← toLex_mul]
 
