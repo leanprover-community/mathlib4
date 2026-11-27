@@ -368,30 +368,6 @@ def skyscraperPresheafStalkAdjunction [HasColimits C] :
     (Presheaf.stalkFunctor C p₀ : Presheaf C X ⥤ C) ⊣ skyscraperPresheafFunctor p₀ where
   unit := StalkSkyscraperPresheafAdjunctionAuxs.unit _
   counit := StalkSkyscraperPresheafAdjunctionAuxs.counit _
-  left_triangle_components X := by
-    dsimp [Presheaf.stalkFunctor, toSkyscraperPresheaf]
-    ext
-    simp only [Functor.comp_obj, Functor.op_obj, ι_colimMap_assoc, skyscraperPresheaf_obj,
-      Functor.whiskerLeft_app, Category.comp_id]
-    split_ifs with h
-    · simp [skyscraperPresheafStalkOfSpecializes]
-      rfl
-    · simp only [skyscraperPresheafStalkOfSpecializes, colimit.isoColimitCocone_ι_hom,
-        skyscraperPresheafCoconeOfSpecializes_pt, skyscraperPresheafCoconeOfSpecializes_ι_app,
-        Functor.comp_obj, Functor.op_obj, skyscraperPresheaf_obj, Functor.const_obj_obj]
-      rw [comp_eqToHom_iff]
-      apply ((ite_eq_right h).symm.ndrec terminalIsTerminal).hom_ext
-  right_triangle_components Y := by
-    ext
-    simp only [skyscraperPresheafFunctor_obj, Functor.id_obj, skyscraperPresheaf_obj,
-      Presheaf.stalkFunctor_obj, unit_app, counit_app,
-      skyscraperPresheafStalkOfSpecializes, skyscraperPresheafFunctor_map, Presheaf.comp_app,
-      toSkyscraperPresheaf_app, Category.id_comp, SkyscraperPresheafFunctor.map'_app]
-    split_ifs with h
-    · simp [Presheaf.germ]
-      rfl
-    · simp
-      rfl
 
 instance [HasColimits C] : (skyscraperPresheafFunctor p₀ : C ⥤ Presheaf C X).IsRightAdjoint :=
   (skyscraperPresheafStalkAdjunction _).isRightAdjoint
