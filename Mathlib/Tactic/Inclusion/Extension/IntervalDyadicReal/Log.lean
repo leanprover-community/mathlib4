@@ -46,28 +46,26 @@ returned as `(P, Q)` with `P / Q` equal to this sum.
 Note that the series converges slowly when the input is close to `1`. -/
 @[expose]
 def smallArtanh (num den : ℕ) (n : ℕ) : ℕ × ℕ :=
-  let r := hypergeomPartialSum (fun j ↦ (2 * j + 1) * num ^ 2) (fun j ↦ (2 * j + 3) * den ^ 2)
-    0 n
+  let r := hypergeomPartialSum (fun j ↦ (2 * j + 1) * num ^ 2) (fun j ↦ (2 * j + 3) * den ^ 2) 0 n
   (num * r.sumNum, den * r.den)
 
 namespace smallArtanh
 
 theorem den_ne_zero (num den n : ℕ) (hden : den ≠ 0) :
-    (smallArtanh num den n).2 ≠ 0 := by
-  simp only [smallArtanh, (hypergeomPartialSum_spec _ _ 0 n).2.1]
-  positivity
+    (smallArtanh num den n).2 ≠ 0 :=
+  mul_ne_zero hden (hypergeomPartialSum_den_ne_zero _ (fun j ↦ by positivity) 0 n)
 
 theorem spec (num den n : ℕ) :
     letI X := smallArtanh num den n
     (X.1 : ℝ) / X.2 = ∑ k ∈ range n, (num / den : ℝ) ^ (2 * k + 1) / (2 * k + 1) := by
-  rcases eq_or_ne den 0 with rfl | hden
-  · simp [smallArtanh]
-  rw [← (hypergeomPartialSum_div (Nat.castRingHom ℝ) (fun j ↦ (2 * j + 1) * num ^ 2)
-    (fun j ↦ (2 * j + 3) * den ^ 2) (fun j ↦ by positivity)
+  rw [smallArtanh]
+  rcases eq_or_ne den 0 with rfl | hden; · simp
+  rw [← (hypergeomPartialSum_spec (Nat.castRingHom ℝ) (fun j ↦ (2 * j + 1) * num ^ 2)
+    (fun j ↦ (2 * j + 3) * den ^ 2) (fun j ↦ by positivity) 0
     (fun k ↦ (num / den : ℝ) ^ (2 * k + 1) / (2 * k + 1))
     (fun j ↦ by push_cast [div_pow]; field) n).2]
-  push_cast [smallArtanh]
-  field
+  push_cast
+  ring
 
 /-- The partial sums computed by `smallArtanh` are lower bounds for `artanh (num / den)`. -/
 theorem div_le_artanh {num den : ℕ} (h : num < den) (n : ℕ) :
