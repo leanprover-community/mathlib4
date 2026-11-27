@@ -395,8 +395,9 @@ def LinearMap.toMatrix' : ((n → R) →ₗ[R] m → R) ≃ₗ[R] Matrix m n R w
 
 /-- A `Matrix m n R` is linearly equivalent to a linear map `(n → R) →ₗ[R] (m → R)`.
 
-Note that the forward-direction does not require `DecidableEq` and is `Matrix.mulVecLin`.
-Lemmas are stated in terms of the simp-normal form `Matrix.mulVecLin` rather than `M.toLin'`. -/
+Note that the forward direction does not require `DecidableEq` and is `Matrix.mulVecLin`.
+Lemmas are stated in terms of the simp-normal form `Matrix.mulVecLin`
+(or `Matrix.mulVec`, when applied to a vector) rather than `M.toLin'`. -/
 def Matrix.toLin' : Matrix m n R ≃ₗ[R] (n → R) →ₗ[R] m → R :=
   LinearMap.toMatrix'.symm
 
