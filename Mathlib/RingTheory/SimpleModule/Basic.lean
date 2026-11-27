@@ -19,10 +19,14 @@ import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.Order.CompactlyGenerated.Intervals
 import Mathlib.SetTheory.Cardinal.NatCard
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Simple Modules
 
 ## Main Definitions
+
 * `IsSimpleModule` indicates that a module has no proper submodules
   (the only submodules are `⊥` and `⊤`).
 * `IsSemisimpleModule` indicates that every submodule has a complement, or equivalently,
@@ -30,6 +34,7 @@ import Mathlib.SetTheory.Cardinal.NatCard
 * A `DivisionRing` structure on the endomorphism ring of a simple module.
 
 ## Main Results
+
 * Schur's Lemma: `bijective_or_eq_zero` shows that a linear map between simple modules
   is either bijective or 0, leading to a `DivisionRing` structure on the endomorphism ring.
 * `isSimpleModule_iff_quot_maximal`:
@@ -47,6 +52,7 @@ import Mathlib.SetTheory.Cardinal.NatCard
 * `RingHom.isSemisimpleRing_of_surjective`: any quotient of a semisimple ring is semisimple.
 
 ## TODO
+
 * Artin-Wedderburn Theory (uniqueness)
 * Unify with the work on Schur's Lemma in a category theory context
 -/
@@ -264,7 +270,7 @@ theorem lifting_property {P} [AddCommGroup P] [Module R P] (f : M →ₗ[R] N)
   let e := (Submodule.quotientEquivOfIsCompl _ m compl).symm ≪≫ₗ f.quotKerEquivOfSurjective hf
   refine ⟨Submodule.subtype _ ∘ₗ e.symm.toLinearMap ∘ₗ g, LinearMap.ext fun x ↦ ?_⟩
   obtain ⟨z, eq⟩ := e.surjective (g x)
-  simp only [LinearMap.comp_apply, ← eq, LinearEquiv.coe_coe, e.symm_apply_apply]
+  simp only [LinearMap.comp_apply, ← eq, LinearEquiv.coe_toLinearMap, e.symm_apply_apply]
   simp [e]
 
 theorem sSup_simples_le (N : Submodule R M) :

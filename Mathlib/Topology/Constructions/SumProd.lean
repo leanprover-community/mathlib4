@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Homeomorph.Defs
 public import Mathlib.Topology.Separation.SeparatedNhds
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Disjoint unions and products of topological spaces
 
@@ -20,7 +23,7 @@ and other specific classes of maps.
 We also provide basic homeomorphisms, to show that sums and products are commutative, associative
 and distributive (up to homeomorphism).
 
-## Implementation note
+## Implementation notes
 
 The constructed topologies are defined using induced and coinduced topologies
 along with the complete lattice structure on topologies. Their universal properties

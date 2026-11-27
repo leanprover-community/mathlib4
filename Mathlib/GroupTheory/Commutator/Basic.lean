@@ -390,11 +390,12 @@ theorem commutator_prod_prod (K₁ K₂ : Subgroup G') :
     rintro ⟨p₁, p₂⟩ ⟨hp₁, hp₂⟩ ⟨q₁, q₂⟩ ⟨hq₁, hq₂⟩
     exact ⟨commutator_mem_commutator hp₁ hq₁, commutator_mem_commutator hp₂ hq₂⟩
   · rw [prod_le_iff]
-    constructor <;>
-      · rw [map_commutator]
-        apply commutator_mono <;>
-          simp [le_prod_iff, map_map, MonoidHom.fst_comp_inl, MonoidHom.snd_comp_inl,
-            MonoidHom.fst_comp_inr, MonoidHom.snd_comp_inr]
+    constructor
+    all_goals
+      rw [map_commutator]
+      apply commutator_mono <;>
+        simp [le_prod_iff, map_map, MonoidHom.fst_comp_inl, MonoidHom.snd_comp_inl,
+          MonoidHom.fst_comp_inr, MonoidHom.snd_comp_inr]
 
 /-- The commutator of direct product is contained in the direct product of the commutators.
 

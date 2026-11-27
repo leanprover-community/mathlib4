@@ -8,6 +8,9 @@ module
 public import Mathlib.GroupTheory.Submonoid.Center
 public import Mathlib.GroupTheory.Subsemigroup.Centralizer
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Centralizers of magmas and monoids
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Fintype.Perm
 public import Mathlib.LinearAlgebra.Matrix.RowCol
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Permanent of a matrix
 

@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Ring.Opposite
 
 import Mathlib.Data.Int.Cast.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Field structure on the multiplicative/additive opposite
 -/

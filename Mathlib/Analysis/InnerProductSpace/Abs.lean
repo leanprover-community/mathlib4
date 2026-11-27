@@ -17,7 +17,7 @@ import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Isome
 This file defines the absolute value `|T| = √(T†∘T)` for continuous linear maps `T : E →L[ℂ] F`
 between (potentially distinct) Hilbert spaces `E` and `F`.
 
-## Implementation details
+## Implementation notes
 
 The absolute value `ContinuousLinearMap.abs T` is similar to `CFC.abs T` for a continuous linear
 map `T : E →L[ℂ] E` acting on a Hilbert space `E`. They agree when `E = F`, see the theorem
@@ -28,8 +28,9 @@ The absolute value `ContinuousLinearMap.abs T` is also known in the literature u
 modulus. The name `ContinuousLinearMap.abs` has been chosen to be consistent with `CFC.abs` and
 `Complex.abs`.
 
-## TODO:
-   - generalize from `T : E →L[ℂ] F` to `T : E →L[𝕜] F` once CFC becomes available for the latter.
+## TODO
+
+- generalize from `T : E →L[ℂ] F` to `T : E →L[𝕜] F` once CFC becomes available for the latter.
 
 -/
 

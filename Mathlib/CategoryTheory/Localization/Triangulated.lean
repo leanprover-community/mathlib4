@@ -19,6 +19,7 @@ it is shown in this file that `D` can be equipped with a pretriangulated categor
 and that it is triangulated.
 
 ## References
+
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
 -/
 
@@ -64,7 +65,6 @@ lemma essImageDistTriang_mem_of_iso {T₁ T₂ : Triangle D} (e : T₂ ≅ T₁)
   obtain ⟨T', e', hT'⟩ := h
   exact ⟨T', e ≪≫ e', hT'⟩
 
-set_option backward.defeqAttrib.useBackward true in
 lemma contractible_mem_essImageDistTriang [EssSurj L] [HasZeroObject D]
     [HasZeroMorphisms D] [L.PreservesZeroMorphisms] (X : D) :
     contractibleTriangle X ∈ L.essImageDistTriang := by

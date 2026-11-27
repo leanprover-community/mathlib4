@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
 
 import Mathlib.Tactic.ComputeDegree
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integral elements of quadratic algebras
 

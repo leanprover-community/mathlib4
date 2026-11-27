@@ -12,6 +12,9 @@ public import Mathlib.RingTheory.Polynomial.UniqueFactorization
 
 import Mathlib.Algebra.Polynomial.Expand
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Algebraic elements and algebraic extensions
 

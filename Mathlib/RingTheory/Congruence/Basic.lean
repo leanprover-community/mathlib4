@@ -69,11 +69,11 @@ end SMul
 
 instance isScalarTower_right [Add R] [MulOneClass R] [SMul α R] [IsScalarTower α R R]
     (c : RingCon R) : IsScalarTower α c.Quotient c.Quotient where
-  smul_assoc _ := Quotient.ind₂' fun _ _ => congr(Quotient.mk'' $(smul_mul_assoc ..))
+  smul_assoc _ := Quotient.ind₂ fun _ _ => congr(Quotient.mk'' $(smul_mul_assoc ..))
 
 instance smulCommClass [Add R] [MulOneClass R] [SMul α R] [IsScalarTower α R R]
     [SMulCommClass α R R] (c : RingCon R) : SMulCommClass α c.Quotient c.Quotient where
-  smul_comm _ := Quotient.ind₂' fun _ _ => congr(Quotient.mk'' $((mul_smul_comm ..).symm))
+  smul_comm _ := Quotient.ind₂ fun _ _ => congr(Quotient.mk'' $((mul_smul_comm ..).symm))
 
 instance smulCommClass' [Add R] [MulOneClass R] [SMul α R] [IsScalarTower α R R]
     [SMulCommClass R α R] (c : RingCon R) : SMulCommClass c.Quotient α c.Quotient :=
@@ -87,12 +87,12 @@ instance [Monoid α] [NonAssocSemiring R] [MulAction α R] [IsScalarTower α R R
 instance [Monoid α] [NonAssocSemiring R] [DistribMulAction α R] [IsScalarTower α R R]
     (c : RingCon R) : DistribMulAction α c.Quotient where
   smul_zero := fun _ => congr(toQuotient $(smul_zero _))
-  smul_add := fun _ => Quotient.ind₂' fun _ _ => congr(toQuotient $(smul_add ..))
+  smul_add := fun _ => Quotient.ind₂ fun _ _ => congr(toQuotient $(smul_add ..))
 
 instance [Monoid α] [Semiring R] [MulSemiringAction α R] [IsScalarTower α R R] (c : RingCon R) :
     MulSemiringAction α c.Quotient where
   smul_one := fun _ => congr(toQuotient $(smul_one _))
-  smul_mul := fun _ => Quotient.ind₂' fun _ _ => congr_arg toQuotient <|
+  smul_mul := fun _ => Quotient.ind₂ fun _ _ => congr_arg toQuotient <|
     MulSemiringAction.smul_mul _ _ _
 
 section
@@ -100,8 +100,8 @@ variable [CommSemiring α] [Semiring R] [Algebra α R]
 
 instance (c : RingCon R) : Algebra α c.Quotient where
   algebraMap := c.mk'.comp (algebraMap α R)
-  commutes' _ := Quotient.ind' fun _ ↦ congr(Quotient.mk'' $(Algebra.commutes ..))
-  smul_def' _ := Quotient.ind' fun _ ↦ congr(Quotient.mk'' $(Algebra.smul_def ..))
+  commutes' _ := Quotient.ind fun _ ↦ congr(Quotient.mk'' $(Algebra.commutes ..))
+  smul_def' _ := Quotient.ind fun _ ↦ congr(Quotient.mk'' $(Algebra.smul_def ..))
 
 @[simp, norm_cast]
 theorem coe_algebraMap (c : RingCon R) (s : α) :
@@ -339,7 +339,7 @@ theorem comap_ringConGen_equiv
     {F} [EquivLike F R' R] [RingEquivClass F R' R]
     (r : R → R → Prop) (f : F) :
     (ringConGen r).comap f = ringConGen (r on f) := by
-  set f' := RingEquivClass.toRingEquiv f
+  set f' := RingEquiv.ofClass f
   suffices (ringConGen r).comap f' = ringConGen (r on f') from this
   refine le_antisymm (fun x y h ↦ ?_) (le_comap_ringConGen _ _)
   rw [← f'.symm_apply_apply x, ← f'.symm_apply_apply y]

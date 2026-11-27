@@ -9,6 +9,9 @@ public import Mathlib.Probability.IdentDistrib
 
 import Mathlib.Probability.Independence.InfinitePi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Results about identically distributed random variables and independence
 

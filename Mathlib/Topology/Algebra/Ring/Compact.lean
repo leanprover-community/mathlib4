@@ -19,6 +19,7 @@ import Mathlib.Topology.Algebra.Ring.Ideal
 # Compact Hausdorff Rings
 
 ## Main results
+
 - `IsArtinianRing.finite_of_compactSpace_of_t2Space`:
   Compact Hausdorff Artinian rings are finite (and thus discrete).
 - `Ideal.isOpen_of_isMaximal`:
@@ -28,7 +29,8 @@ import Mathlib.Topology.Algebra.Ring.Ideal
 - `IsDedekindDomain.isOpen_iff`:
   An ideal in a compact Hausdorff Dedekind domain (that is not a field) is open iff it is non-zero.
 
-## Future projects
+## TODO
+
 Show that compact Hausdorff rings are totally disconnected and linearly topologized.
 See https://ncatlab.org/nlab/show/compact+Hausdorff+rings+are+profinite
 -/

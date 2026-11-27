@@ -12,7 +12,7 @@ import Mathlib.Analysis.PSeriesComplex
 /-!
 # Definition of the Riemann zeta function
 
-## Main definitions:
+## Main definitions
 
 * `riemannZeta`: the Riemann zeta function `ζ : ℂ → ℂ`.
 * `completedRiemannZeta`: the completed zeta function `Λ : ℂ → ℂ`, which satisfies
@@ -24,7 +24,7 @@ Note that mathematically `ζ(s)` is undefined at `s = 1`, while `Λ(s)` is undef
 and `s = 1`. Our construction assigns some values at these points; exact formulae involving the
 Euler-Mascheroni constant will follow in a subsequent PR.
 
-## Main results:
+## Main results
 
 * `differentiable_completedZeta₀` : the function `Λ₀(s)` is entire.
 * `differentiableAt_completedZeta` : the function `Λ(s)` is differentiable away from `s = 0` and
@@ -179,8 +179,9 @@ theorem riemannZeta_one_sub {s : ℂ} (hs : ∀ n : ℕ, s ≠ -n) (hs' : s ≠ 
     riemannZeta (1 - s) = 2 * (2 * π) ^ (-s) * Gamma s * cos (π * s / 2) * riemannZeta s := by
   rw [riemannZeta, hurwitzZetaEven_one_sub 0 hs (Or.inr hs'), cosZeta_zero, hurwitzZetaEven_zero]
 
-/-- A formal statement of the **Riemann hypothesis** – constructing a term of this type is worth a
-million dollars. -/
+/-- A formal statement of the **Riemann hypothesis**. See
+[leanprover-community/riemann-hypothesis](https://github.com/leanprover-community/riemann-hypothesis)
+for a construction of a term of type `RiemannHypothesis`. -/
 @[wikidata Q205966]
 def RiemannHypothesis : Prop :=
   ∀ (s : ℂ) (_ : riemannZeta s = 0) (_ : ¬∃ n : ℕ, s = -2 * (n + 1)) (_ : s ≠ 1), s.re = 1 / 2
