@@ -162,7 +162,7 @@ theorem coeFn_injective : Injective ((↑) : (M ≃ₘ^n⟮I, I'⟯ M') → (M �
 theorem ext {h h' : M ≃ₘ^n⟮I, I'⟯ M'} (Heq : ∀ x, h x = h' x) : h = h' :=
   coeFn_injective <| funext Heq
 
-instance : ContinuousMapClass (M ≃ₘ⟮I, J⟯ N) M N where
+instance : ContinuousMapClass (M ≃ₘ⟮I, J⟯ N) where
   map_continuous f := f.continuous
 
 section

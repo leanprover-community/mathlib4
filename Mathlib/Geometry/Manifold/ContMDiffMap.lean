@@ -83,7 +83,7 @@ theorem coe_injective ⦃f g : C^n⟮I, M; I', M'⟯⦄ (h : (f : M → M') = g)
 @[ext]
 theorem ext (h : ∀ x, f x = g x) : f = g := DFunLike.ext _ _ h
 
-instance : ContinuousMapClass C^n⟮I, M; I', M'⟯ M M' where
+instance : ContinuousMapClass C^n⟮I, M; I', M'⟯ where
   map_continuous f := f.contMDiff.continuous
 
 /-- The identity as a `C^n` map. -/

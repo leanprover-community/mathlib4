@@ -48,7 +48,7 @@ theorem ContinuousEval.of_continuous_forget {F' : Type*} [FunLike F' X Y] [Topol
     ContinuousEval F' X Y where
   continuous_eval := by simpa only [← hf] using hc.fst'.eval continuous_snd
 
-instance (priority := 100) ContinuousEval.toContinuousMapClass : ContinuousMapClass F X Y where
+instance (priority := 100) ContinuousEval.toContinuousMapClass : ContinuousMapClass F where
   map_continuous _ := continuous_const.eval continuous_id
 
 instance (priority := 100) ContinuousEval.toContinuousEvalConst : ContinuousEvalConst F X Y where

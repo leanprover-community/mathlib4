@@ -70,7 +70,7 @@ instance Path.instFunLike : FunLike (Path x y) I X where
     simp only [DFunLike.coe_fn_eq] at h
     cases γ₁; cases γ₂; congr
 
-instance Path.continuousMapClass : ContinuousMapClass (Path x y) I X where
+instance Path.continuousMapClass : ContinuousMapClass (Path x y) where
   map_continuous γ := show Continuous γ.toContinuousMap by fun_prop
 
 @[ext, grind ext]

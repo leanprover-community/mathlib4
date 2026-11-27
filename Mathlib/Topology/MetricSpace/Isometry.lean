@@ -333,7 +333,7 @@ theorem ediam_image (s : Set α) : Metric.ediam (f '' s) = Metric.ediam s :=
 theorem ediam_range : Metric.ediam (range f) = Metric.ediam (univ : Set α) :=
   (IsometryClass.isometry f).ediam_range
 
-instance toContinuousMapClass : ContinuousMapClass F α β where
+instance toContinuousMapClass : ContinuousMapClass F where
   map_continuous := IsometryClass.continuous
 
 end

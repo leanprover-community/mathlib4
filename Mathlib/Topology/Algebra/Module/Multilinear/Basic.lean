@@ -82,7 +82,7 @@ instance funLike : FunLike (ContinuousMultilinearMap R M₁ M₂) (∀ i, M₁ i
   coe_injective _ _ h := toMultilinearMap_injective <| MultilinearMap.coe_injective h
 
 instance continuousMapClass :
-    ContinuousMapClass (ContinuousMultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
+    ContinuousMapClass (ContinuousMultilinearMap R M₁ M₂) where
   map_continuous := ContinuousMultilinearMap.cont
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,

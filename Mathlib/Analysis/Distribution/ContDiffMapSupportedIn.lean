@@ -128,7 +128,7 @@ instance (B : Type*) (E F : outParam Type*)
     [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F]
     (n : outParam ℕ∞) (K : outParam <| Compacts E) [FunLike B E F]
     [ContDiffMapSupportedInClass B E F n K] :
-    ContinuousMapClass B E F where
+    ContinuousMapClass B where
   map_continuous f := (map_contDiff f).continuous
 
 instance (B : Type*) (E F : outParam Type*)

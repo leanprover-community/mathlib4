@@ -53,7 +53,7 @@ instance instFunLike : FunLike C(X, R)₀ X R where
   coe f := f.toFun
   coe_injective _ _ h := congr(⟨⟨$h, _⟩, _⟩)
 
-instance instContinuousMapClass : ContinuousMapClass C(X, R)₀ X R where
+instance instContinuousMapClass : ContinuousMapClass C(X, R)₀ where
   map_continuous f := f.continuous
 
 instance instZeroHomClass : ZeroHomClass C(X, R)₀ X R where

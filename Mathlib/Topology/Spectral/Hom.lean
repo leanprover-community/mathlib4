@@ -96,7 +96,7 @@ def SpectralMap.ofClass [TopologicalSpace α] [TopologicalSpace β] [FunLike F �
 
 -- See note [lower instance priority]
 instance (priority := 100) SpectralMapClass.toContinuousMapClass [TopologicalSpace α]
-    [TopologicalSpace β] [FunLike F α β] [SpectralMapClass F α β] : ContinuousMapClass F α β :=
+    [TopologicalSpace β] [FunLike F α β] [SpectralMapClass F α β] : ContinuousMapClass F :=
   { ‹SpectralMapClass F α β› with map_continuous := fun f => (map_spectral f).continuous }
 
 /-! ### Spectral maps -/

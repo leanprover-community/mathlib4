@@ -87,7 +87,7 @@ section
 You should extend this class when you extend `ContinuousMap.Homotopy`. -/
 class HomotopyLike {X Y : outParam Type*} [TopologicalSpace X] [TopologicalSpace Y]
     (F : Type*) (f₀ f₁ : outParam <| C(X, Y)) [FunLike F (I × X) Y] : Prop
-    extends ContinuousMapClass F (I × X) Y where
+    extends ContinuousMapClass F where
   /-- value of the homotopy at 0 -/
   map_zero_left (f : F) : ∀ x, f (0, x) = f₀ x
   /-- value of the homotopy at 1 -/

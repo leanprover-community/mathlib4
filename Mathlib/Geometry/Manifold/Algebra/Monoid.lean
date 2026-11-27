@@ -303,7 +303,7 @@ instance : MonoidHomClass (ContMDiffMonoidMorphism I I' n G G') G G' where
   map_mul f := f.map_mul
 
 @[to_additive]
-instance : ContinuousMapClass (ContMDiffMonoidMorphism I I' n G G') G G' where
+instance : ContinuousMapClass (ContMDiffMonoidMorphism I I' n G G') where
   map_continuous f := f.contMDiff_toFun.continuous
 
 end Monoid

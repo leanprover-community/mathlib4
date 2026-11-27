@@ -25,7 +25,7 @@ open Function Topology
 section ContinuousMapClass
 
 variable {F α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [FunLike F α β]
-variable [ContinuousMapClass F α β]
+variable [ContinuousMapClass F]
 
 theorem map_continuousAt (f : F) (a : α) : ContinuousAt f a :=
   (map_continuous f).continuousAt
@@ -520,7 +520,7 @@ namespace Homeomorph
 variable {α β γ : Type*} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 variable (f : α ≃ₜ β) (g : β ≃ₜ γ)
 
-instance instContinuousMapClass : ContinuousMapClass (α ≃ₜ β) α β where
+instance instContinuousMapClass : ContinuousMapClass (α ≃ₜ β) where
   map_continuous f := f.continuous_toFun
 
 @[simp]

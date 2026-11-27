@@ -76,7 +76,7 @@ instance funLike : FunLike (M [⋀^ι]→L[R] N) (ι → M) N where
   coe f := f.toFun
   coe_injective _ _ h := toContinuousMultilinearMap_injective <| DFunLike.ext' h
 
-instance continuousMapClass : ContinuousMapClass (M [⋀^ι]→L[R] N) (ι → M) N where
+instance continuousMapClass : ContinuousMapClass (M [⋀^ι]→L[R] N) where
   map_continuous f := f.cont
 
 initialize_simps_projections ContinuousAlternatingMap (toFun → apply)
