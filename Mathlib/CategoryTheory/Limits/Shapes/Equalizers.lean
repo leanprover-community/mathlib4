@@ -704,7 +704,7 @@ noncomputable abbrev equalizer.fork : Fork f g :=
 theorem equalizer.fork_ι : (equalizer.fork f g).ι = equalizer.ι f g :=
   rfl
 
-@[to_dual (attr := simp)]
+@[to_dual]
 theorem equalizer.fork_π_app_zero : (equalizer.fork f g).π.app zero = equalizer.ι f g :=
   rfl
 

@@ -107,12 +107,10 @@ theorem infLELeft_apply (U V : Opens X) (x) :
     (infLELeft U V) x = ⟨x.val, (@inf_le_left _ _ U V : _ ≤ _) x.property⟩ :=
   rfl
 
-@[simp]
 theorem infLELeft_apply_mk (U V : Opens X) (x) (m) :
     (infLELeft U V) ⟨x, m⟩ = ⟨x, (@inf_le_left _ _ U V : _ ≤ _) m⟩ :=
   rfl
 
-@[simp]
 theorem leSupr_apply_mk {ι : Type*} (U : ι → Opens X) (i : ι) (x) (m) :
     (leSupr U i) ⟨x, m⟩ = ⟨x, (le_iSup U i :) m⟩ :=
   rfl
@@ -191,7 +189,6 @@ theorem map_id_obj (U : Opens X) : (map (𝟙 X)).obj U = U :=
   let ⟨_, _⟩ := U
   rfl
 
-@[simp]
 theorem map_id_obj' (U) (p) : (map (𝟙 X)).obj ⟨U, p⟩ = ⟨U, p⟩ :=
   rfl
 
@@ -213,7 +210,6 @@ theorem map_comp_obj (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
     (map (f ≫ g)).obj U = (map f).obj ((map g).obj U) :=
   rfl
 
-@[simp]
 theorem map_comp_obj' (f : X ⟶ Y) (g : Y ⟶ Z) (U) (p) :
     (map (f ≫ g)).obj ⟨U, p⟩ = (map f).obj ((map g).obj ⟨U, p⟩) :=
   rfl
@@ -223,12 +219,10 @@ theorem map_comp_map (f : X ⟶ Y) (g : Y ⟶ Z) {U V} (i : U ⟶ V) :
     (map (f ≫ g)).map i = (map f).map ((map g).map i) :=
   rfl
 
-@[simp]
 theorem map_comp_obj_unop (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
     (map (f ≫ g)).obj (unop U) = (map f).obj ((map g).obj (unop U)) :=
   rfl
 
-@[simp]
 theorem op_map_comp_obj (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
     (map (f ≫ g)).op.obj U = (map f).op.obj ((map g).op.obj U) :=
   rfl
@@ -519,7 +513,7 @@ instance {X Y : TopCat.{u}} (f : X ⟶ Y) (hf : Topology.IsOpenEmbedding f) {ι 
   intro g
   refine preservesLimit_of_preserves_limit_cone (Preorder.isLimitIInf g) ?_
   refine (Limits.Fan.isLimitMapConeEquiv _ _ _).symm (Preorder.isLimitOfIsGLB _ _ ?_)
-  simp only [Discrete.range_functor, homOfLE_leOfHom, Fan.mk_pt, hf.functor_obj_iInf]
+  simp only [Discrete.range_functor, Fan.mk_pt, hf.functor_obj_iInf]
   apply isGLB_iInf
 
 end TopologicalSpace.Opens

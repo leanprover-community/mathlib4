@@ -12,6 +12,9 @@ import Mathlib.GroupTheory.Abelianization.Finite
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Qify
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Commuting Probability
 

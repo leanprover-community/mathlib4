@@ -15,7 +15,7 @@ set_option doc.verso.suggestions false
 
 The range of an affine map `f : P₁ →ᵃ[R] P₂` is an affine subspace of `P₂`.
 
-# Implementation note
+# Implementation notes
 
 Follows `LinearMap.range`.
 -/

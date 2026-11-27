@@ -62,7 +62,7 @@ instance : FunLike (Nucleus X) X X where
 /-- See Note [custom simps projection] -/
 def Simps.apply (n : Nucleus X) : X → X := n
 
-@[simp] lemma toFun_eq_coe (n : Nucleus X) : n.toFun = n := rfl
+lemma toFun_eq_coe (n : Nucleus X) : n.toFun = n := rfl
 @[simp] lemma coe_toInfHom (n : Nucleus X) : ⇑n.toInfHom = n := rfl
 @[simp] lemma coe_mk (f : InfHom X X) (h1 h2) : ⇑(mk f h1 h2) = f := rfl
 
@@ -256,7 +256,7 @@ instance : CompleteLattice (range n) := n.giAux.liftCompleteLattice
 instance : Frame (range n) := .ofMinimalAxioms {
   inf_sSup_le_iSup_inf a s := by
     simp_rw [← Subtype.coe_le_coe, iSup_subtype', iSup, sSup, n.giAux.gc.u_inf]
-    rw [rangeFactorization_coe, ← mem_range.1 a.prop, ← map_inf]
+    rw [subtypeVal_rangeFactorization, ← mem_range.1 a.prop, ← map_inf]
     apply n.monotone
     simp_rw [inf_sSup_eq, sSup_image, iSup_range, iSup_image, iSup_subtype', n.giAux.gc.u_inf,
       le_rfl] }

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Submonoid.Membership
 public import Mathlib.GroupTheory.MonoidLocalization.Maps
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Localizing commutative monoids away from an element
 

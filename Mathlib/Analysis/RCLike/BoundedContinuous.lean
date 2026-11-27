@@ -11,6 +11,9 @@ public import Mathlib.Topology.ContinuousMap.Bounded.Star
 
 import Mathlib.Analysis.Normed.Operator.NNNorm
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-! # Results on bounded continuous functions with `RCLike` values -/
 
 public section
@@ -40,13 +43,14 @@ theorem restrict_toContinuousMap_eq_toContinuousMapStar_restrict
   · intro ⟨x, hxA, hxg⟩
     use (@ofRealAm 𝕜 _).compLeftContinuousBounded ℝ lipschitzWith_one_ofReal x, hxA
     ext a
-    simp only [toContinuousMapStarₐ_apply_apply, AlgHom.compLeftContinuousBounded_apply_apply,
-      ofRealAm_coe, AlgHom.compLeftContinuous_apply_apply, algebraMap.coe_inj]
+    simp only [toContinuousMapStarₐ_apply, coe_toContinuousMap,
+      AlgHom.compLeftContinuousBounded_apply_apply, ofRealAm_coe,
+      AlgHom.compLeftContinuous_apply_apply, algebraMap.coe_inj]
     congrm $hxg a
   · intro ⟨x, hxA, hxg⟩
     have hg_apply (a : E) := congr($hxg a)
-    simp only [toContinuousMapStarₐ_apply_apply, AlgHom.compLeftContinuous_apply_apply,
-      ofRealAm_coe] at hg_apply
+    simp only [toContinuousMapStarₐ_apply, coe_toContinuousMap,
+      AlgHom.compLeftContinuous_apply_apply, ofRealAm_coe] at hg_apply
     have h_comp_eq : (@ofRealAm 𝕜 _).compLeftContinuousBounded ℝ lipschitzWith_one_ofReal
         (x.comp reCLM (@reCLM 𝕜 _).lipschitzWith) = x := by
       ext a

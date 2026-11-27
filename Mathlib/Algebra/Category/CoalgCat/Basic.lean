@@ -43,7 +43,7 @@ open Coalgebra
 instance : CoeSort (CoalgCat.{v} R) (Type v) :=
   ⟨(·.carrier)⟩
 
-@[simp] theorem moduleCat_of_toModuleCat (X : CoalgCat.{v} R) :
+theorem moduleCat_of_toModuleCat (X : CoalgCat.{v} R) :
     ↧X.toModuleCat = X.toModuleCat :=
   rfl
 
@@ -59,11 +59,9 @@ open Lean.PrettyPrinter.Delaborator in
 @[app_delab CoalgCat.of]
 meta def delabOf : Delab := CategoryTheory.delabOf
 
-@[simp]
 lemma of_comul {X : Type v} [AddCommGroup X] [Module R X] [Coalgebra R X] :
     Coalgebra.comul (A := of R X) = Coalgebra.comul (R := R) (A := X) := rfl
 
-@[simp]
 lemma of_counit {X : Type v} [AddCommGroup X] [Module R X] [Coalgebra R X] :
     Coalgebra.counit (A := of R X) = Coalgebra.counit (R := R) (A := X) := rfl
 
@@ -139,8 +137,8 @@ variable [Coalgebra R X] [Coalgebra R Y] [Coalgebra R Z]
 `CoalgEquiv`. -/
 @[simps]
 def toCoalgIso (e : X ≃ₗc[R] Y) : CoalgCat.of R X ≅ CoalgCat.of R Y where
-  hom := CoalgCat.ofHom e
-  inv := CoalgCat.ofHom e.symm
+  hom := CoalgCat.ofHom e.toCoalgHom
+  inv := CoalgCat.ofHom e.symm.toCoalgHom
   hom_inv_id := Hom.ext <| DFunLike.ext _ _ e.left_inv
   inv_hom_id := Hom.ext <| DFunLike.ext _ _ e.right_inv
 
@@ -173,7 +171,7 @@ def toCoalgEquiv (i : X ≅ Y) : X ≃ₗc[R] Y :=
     right_inv := fun x => congr($(i.inv_hom_id).toCoalgHom x) }
 
 @[simp] theorem toCoalgEquiv_toCoalgHom (i : X ≅ Y) :
-    i.toCoalgEquiv = i.hom.toCoalgHom := rfl
+    i.toCoalgEquiv.toCoalgHom = i.hom.toCoalgHom := rfl
 
 @[simp] theorem toCoalgEquiv_refl : toCoalgEquiv (.refl X) = .refl _ _ :=
   rfl

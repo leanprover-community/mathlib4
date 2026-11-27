@@ -102,7 +102,7 @@ theorem measurable_rangeSplitting (hf : MeasurableEmbedding f) :
     Measurable (rangeSplitting f) := fun s hs => by
   rwa [preimage_rangeSplitting hf.injective,
     ← (subtypeVal hf.measurableSet_range).measurableSet_image, ← image_comp,
-    coe_comp_rangeFactorization, hf.measurableSet_image]
+    subtypeVal_comp_rangeFactorization, hf.measurableSet_image]
 
 theorem measurable_extend (hf : MeasurableEmbedding f) {g : α → γ} {g' : β → γ} (hg : Measurable g)
     (hg' : Measurable g') : Measurable (extend f g g') := by
