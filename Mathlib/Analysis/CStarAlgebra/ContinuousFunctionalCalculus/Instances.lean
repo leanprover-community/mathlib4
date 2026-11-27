@@ -77,7 +77,7 @@ This range of this map is contained in the range of `(↑) : A → A⁺¹` (see 
 and so we may restrict it to `A` to get the necessary homomorphism for the non-unital continuous
 functional calculus.
 -/
-noncomputable def cfcₙAux : C(σₙ 𝕜 a, 𝕜)₀ →⋆ₙₐ[𝕜] A⁺¹ :=
+def cfcₙAux : C(σₙ 𝕜 a, 𝕜)₀ →⋆ₙₐ[𝕜] A⁺¹ :=
   (cfcHom (R := 𝕜) (hp₁.mpr ha)).toNonUnitalStarAlgHom |>.comp
       (Homeomorph.compStarAlgEquiv' 𝕜 𝕜 <| .setCongr
         (quasispectrum_eq_spectrum_inr' 𝕜 𝕜 a).symm).toNonUnitalStarAlgHom
@@ -249,7 +249,7 @@ calc
 Concretely, it sends `f` to `algebraMap 𝕜 _ (f x.fst) + ↑(cfcₙHom hx g)`, where
 `g : C(σₙ 𝕜 x.snd, 𝕜)₀` is the function `y ↦ f (y + x.fst) - f x.fst`.
 -/
-private noncomputable def cfcAux : C(σ 𝕜 x, 𝕜) →⋆ₐ[𝕜] Unitization 𝕜 A :=
+private def cfcAux : C(σ 𝕜 x, 𝕜) →⋆ₐ[𝕜] Unitization 𝕜 A :=
   (starMap (cfcₙHom hx)).comp <|
     (unitizationStarAlgEquiv (σₙ 𝕜 x.snd) 𝕜).symm.toStarAlgHom.comp
       (Homeomorph.compStarAlgEquiv' 𝕜 𝕜 (quasispectrumHomeomorphSpectrum x)).toStarAlgHom
