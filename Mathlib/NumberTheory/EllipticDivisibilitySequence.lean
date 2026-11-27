@@ -616,8 +616,7 @@ lemma preComplEDS₂_four : preComplEDS₂ b c d 4 = c ^ 2 * preNormEDS (b ^ 4) 
 @[simp]
 lemma preComplEDS₂_neg (k : ℤ) : preComplEDS₂ b c d (-k) = -(preNormEDS (b ^ 4) c d (k + 1) ^ 2 *
     preNormEDS (b ^ 4) c d (k - 2) * if Even k then 1 else b) := by
-  simp_rw [preComplEDS₂, ← neg_add', ← sub_neg_eq_add, ← neg_sub', preNormEDS_neg, even_neg]
-  ring1
+  grind [preComplEDS₂, preNormEDS_neg (b ^ 4) c d <| k + 1, preNormEDS_neg (b ^ 4) c d <| k - 2]
 
 /-- The 2-complement sequence `Wᶜ₂ : ℤ → R` for a normalised EDS `W : ℤ → R` that witnesses
 `W(k) ∣ W(2 * k)`. In other words, `W(k) * Wᶜ₂(k) = W(2 * k)` for all `k ∈ ℤ`.
@@ -653,9 +652,7 @@ lemma complEDS₂_neg (k : ℤ) : complEDS₂ b c d (-k) = complEDS₂ b c d k :
 
 lemma preNormEDS_mul_complEDS₂ (k : ℤ) : preNormEDS (b ^ 4) c d k * complEDS₂ b c d k =
     preNormEDS (b ^ 4) c d (2 * k) * if Even k then 1 else b := by
-  simp_rw [complEDS₂, preComplEDS₂, ← neg_add', neg_add_eq_sub, ← neg_sub k, preNormEDS_neg,
-    even_neg, preNormEDS_even]
-  ring1
+  grind only [complEDS₂, preComplEDS₂, preComplEDS₂_neg, preNormEDS_even]
 
 end PreNormEDS
 
@@ -717,15 +714,12 @@ lemma complEDS₂_mul_b (k : ℤ) : complEDS₂ b c d k * b =
 lemma normEDS_even (m : ℤ) : normEDS b c d (2 * m) * b =
     normEDS b c d (m - 1) ^ 2 * normEDS b c d m * normEDS b c d (m + 2) -
       normEDS b c d (m - 2) * normEDS b c d m * normEDS b c d (m + 1) ^ 2 := by
-  rw [← normEDS_mul_complEDS₂, mul_assoc, complEDS₂_mul_b]
-  ring1
+  grind [normEDS, preNormEDS_even]
 
 lemma normEDS_odd (m : ℤ) : normEDS b c d (2 * m + 1) =
     normEDS b c d (m + 2) * normEDS b c d m ^ 3 -
       normEDS b c d (m - 1) * normEDS b c d (m + 1) ^ 3 := by
-  simp_rw [normEDS, preNormEDS_odd, ite_eq_right m.not_even_two_mul_add_one, Int.even_add,
-    Int.even_sub, even_two, iff_true, Int.not_even_one, iff_false]
-  split_ifs <;> ring1
+  grind [normEDS, preNormEDS_odd]
 
 lemma normEDS_atomRel_even (m : ℤ) :
     IsEllipticNet.atomRel (normEDS b c d) (2 * m + 2) (2 * m - 2) 2 0 = 0 := by
