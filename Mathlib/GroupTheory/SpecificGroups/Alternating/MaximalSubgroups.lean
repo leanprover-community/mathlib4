@@ -79,7 +79,7 @@ namespace alternatingGroup
 theorem stabilizer.surjective_toPerm {s : Set α} (hs : sᶜ.Nontrivial) :
     Function.Surjective (toPerm : stabilizer (alternatingGroup α) s → Perm s) := by
   classical
-  have : ∃ k : Perm α, IsSwap k ∧ _root_.Disjoint s k.support := by
+  have : ∃ k : Perm α, IsSwap k ∧ _root_.Disjoint s k.supportFinset := by
     obtain ⟨a, ha, b, hb, hab⟩ := hs
     use Equiv.swap a b
     rw [swap_isSwap_iff]; aesop
@@ -90,7 +90,7 @@ theorem stabilizer.surjective_toPerm {s : Set α} (hs : sᶜ.Nontrivial) :
     simp only [mem_smul_set]
     rintro ⟨x, hx, rfl⟩
     convert hx
-    rw [Perm.smul_def, ← Perm.notMem_support]
+    rw [Perm.smul_def, ← Perm.notMem_supportFinset]
     exact (Set.disjoint_left.mp hk_support) hx
   intro g
   rcases Int.units_eq_one_or (sign g) with hsg | hsg
@@ -105,7 +105,7 @@ theorem stabilizer.surjective_toPerm {s : Set α} (hs : sᶜ.Nontrivial) :
     · ext x
       suffices k x = x by simp [this]
       rw [Set.disjoint_left] at hk_support
-      rw [← notMem_support]
+      rw [← notMem_supportFinset]
       exact hk_support x.prop
 
 /-- In the alternating group, the stabilizer of a set acts

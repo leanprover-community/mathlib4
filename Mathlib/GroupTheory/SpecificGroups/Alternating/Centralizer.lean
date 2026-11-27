@@ -169,7 +169,7 @@ theorem count_le_one_of_centralizer_le_alternating
     rw [← hsign_k, h (toCentralizer a ⟨τ, hτ⟩).prop]
   /- to prove that `hsign_k : sign k = -1` below,
   we could prove that it is the product of the transpositions with disjoint supports
-  [(g ^ n) (a c), (g ^ n) (a d)], for 0 ≤ n < c.support.card,
+  [(g ^ n) (a c), (g ^ n) (a d)], for 0 ≤ n < c.supportFinset.card,
   which are in odd number by `odd_of_centralizer_le_alternatingGroup`,
   but it will be sufficient to observe that `k ^ 2 = 1`
   (which implies that `k.cycleType` is of the form (2,2,…))
@@ -185,14 +185,14 @@ theorem count_le_one_of_centralizer_le_alternating
     even_two, Even.mul_left, Even.neg_pow, one_pow, one_mul]
   apply Odd.neg_one_pow
   apply odd_of_centralizer_le_alternatingGroup h
-  have : (k : Perm α).cycleType.card * 2 = (k : Perm α).support.card := by
+  have : (k : Perm α).cycleType.card * 2 = (k : Perm α).supportFinset.card := by
     rw [← sum_cycleType, hk_cT]
     simp
-  have that : Multiset.card (k : Perm α).cycleType = (c : Perm α).support.card := by
+  have that : Multiset.card (k : Perm α).cycleType = (c : Perm α).supportFinset.card := by
     rw [← Nat.mul_left_inj (a := 2) (by simp), this]
-    simp only [hk, toCentralizer, MonoidHom.coe_mk, OneHom.coe_mk, card_ofPermHom_support]
+    simp only [hk, toCentralizer, MonoidHom.coe_mk, OneHom.coe_mk, card_ofPermHom_supportFinset]
     have H : (⟨c, hc⟩ : g.cycleFactorsFinset) ≠ ⟨d, hd⟩ := Subtype.coe_ne_coe.mp hm'
-    simp only [τ, support_swap H]
+    simp only [τ, supportFinset_swap H]
     rw [Finset.sum_insert (by simp only [mem_singleton, H, not_false_eq_true]),
       Finset.sum_singleton, hm, mul_two]
   rw [that]
@@ -242,7 +242,7 @@ theorem centralizer_le_alternating_iff :
         exact hc.left
     · suffices y = 1 by simp [this]
       have := card_fixedPoints g
-      exact card_support_le_one.mp <| le_trans (Finset.card_le_univ _) (by lia)
+      exact card_supportFinset_le_one.mp <| le_trans (Finset.card_le_univ _) (by lia)
 
 namespace IsThreeCycle
 

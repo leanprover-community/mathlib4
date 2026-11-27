@@ -119,6 +119,10 @@ theorem inv_def (f : Perm α) : f⁻¹ = f.symm :=
 
 @[simp] lemma coe_inv (f : Perm α) : ⇑f⁻¹ = ⇑f.symm := rfl
 
+@[simp] theorem inv_symm (f : Perm α) : f⁻¹.symm = f := rfl
+
+@[simp] theorem symm_inv (f : Perm α) : f.symm⁻¹ = f := rfl
+
 @[simp, norm_cast] lemma coe_one : ⇑(1 : Perm α) = id := rfl
 
 @[simp, norm_cast] lemma coe_mul (f g : Perm α) : ⇑(f * g) = f ∘ g := rfl
@@ -133,6 +137,13 @@ theorem eq_inv_iff_eq {f : Perm α} {x y : α} : x = f⁻¹ y ↔ f x = y :=
 
 theorem inv_eq_iff_eq {f : Perm α} {x y : α} : f⁻¹ x = y ↔ x = f y :=
   f.symm_apply_eq
+
+theorem _root_.Commute.apply_apply {f g : Perm α} (h : Commute f g) {x : α} : f (g x) = g (f x) :=
+  Equiv.congr_fun h x
+
+@[simp 1001]
+theorem _root_.Set.mem_image_perm {f : Perm α} {S : Set α} {x} :
+    x ∈ f '' S ↔ f⁻¹ x ∈ S := by simp [Set.mem_image, f.eq_inv_iff_eq.symm]
 
 section PowApply
 
@@ -629,6 +640,14 @@ variable [DecidableEq α]
 /-- `f.IsSwap` indicates that the permutation `f` is a transposition of two elements. -/
 def IsSwap (f : Perm α) : Prop :=
   ∃ x y, x ≠ y ∧ f = swap x y
+
+theorem isSwap_iff_exists_ne_eq_swap {f : Perm α} :
+  f.IsSwap ↔ ∃ x y, x ≠ y ∧ f = swap x y := Iff.rfl
+
+theorem isSwap_iff_exists_apply {f : Perm α} :
+    f.IsSwap ↔ ∃ x y, x ≠ y ∧ f x = y ∧ f y = x ∧ ∀ z, z ≠ x → z ≠ y → f z = z := by
+  rw [isSwap_iff_exists_ne_eq_swap]
+  exact exists_congr fun x => exists_congr fun y => by grind
 
 @[simp]
 theorem ofSubtype_swap_eq {p : α → Prop} [DecidablePred p] (x y : Subtype p) :
