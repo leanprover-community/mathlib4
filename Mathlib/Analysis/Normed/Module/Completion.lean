@@ -94,3 +94,38 @@ end Algebra
 end Completion
 
 end UniformSpace
+
+/-!
+# Real scalars on a complete normed `ℚ`-algebra
+
+A complete normed ring `𝔸` with a `NormedAlgebra ℚ 𝔸` structure carries a `NormedAlgebra ℝ 𝔸`
+structure, and that structure is unique.
+-/
+
+section Real
+
+variable (𝔸 : Type*) [NormedRing 𝔸] [NormedAlgebra ℚ 𝔸]
+
+/-- Extend normed algebras over `ℚ` to normed algebras over `ℝ` on Banach algebras. -/
+abbrev normedAlgebraReal [CompleteSpace 𝔸] : NormedAlgebra ℝ 𝔸 where
+  __ := (IsDenseInducing.extendRingHom (i := Rat.castHom ℝ)
+    Rat.isUniformEmbedding_coe_real.isUniformInducing Rat.denseRange_cast
+    (uniformContinuous_addMonoidHom_of_continuous (continuous_algebraMap ℚ 𝔸))).toAlgebra'
+    fun r x ↦ by
+      refine Rat.denseRange_cast.induction_on r (isClosed_eq (by fun_prop) (by fun_prop)) ?_
+      intro a
+      rw [← eq_ratCast (Rat.castHom ℝ), IsDenseInducing.extendRingHom_eq, Algebra.commutes]
+  norm_smul_le r x := by
+    refine Rat.denseRange_cast.induction_on r ?_ fun a ↦ ?_
+    · exact isClosed_le ((IsDenseInducing.continuous_extendRingHom ..).mul continuous_const).norm
+        (by fun_prop)
+    · change ‖IsDenseInducing.extendRingHom _ _ _ (a : ℝ) * x‖ ≤ _
+      rw [← eq_ratCast (Rat.castHom ℝ), IsDenseInducing.extendRingHom_eq, ← Algebra.smul_def]
+      exact norm_smul_le a x
+
+/-- A complete normed `ℚ`-algebra carries a unique `NormedAlgebra ℝ` structure. -/
+noncomputable instance [CompleteSpace 𝔸] : Unique (NormedAlgebra ℝ 𝔸) where
+  default := normedAlgebraReal 𝔸
+  uniq _ := Subsingleton.elim _ _
+
+end Real

@@ -19,8 +19,8 @@ cardinal `κ` is asserted in the typeclasses `IsLocallyPresentable` and
 accessible category, any object is presentable.
 
 ## References
-* [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 
+* [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 -/
 
 public section
@@ -58,7 +58,6 @@ example (κ : Cardinal.{w}) [Fact κ.IsRegular] [IsCardinalAccessibleCategory C 
 section Finite
 
 open Cardinal
-attribute [local instance] fact_isRegular_aleph0
 
 /-- A category is locally finitely presentable if it is locally `ℵ₀`-presentable. -/
 abbrev IsLocallyFinitelyPresentable :=
@@ -105,6 +104,13 @@ instance [IsAccessibleCategory.{w} C] (X : C) : IsPresentable.{w} X := by
   apply h.presentable
 
 example [IsLocallyPresentable.{w} C] (X : C) : IsPresentable.{w} X := inferInstance
+
+instance [IsLocallyPresentable.{w} C] : HasColimitsOfSize.{w, w} C := by
+  obtain ⟨κ, _, _⟩ := IsLocallyPresentable.exists_cardinal.{w} C
+  infer_instance
+
+instance [IsLocallyPresentable.{w} C] : HasFiniteColimits C :=
+  hasFiniteColimits_of_hasColimitsOfSize.{w, w} _
 
 end
 

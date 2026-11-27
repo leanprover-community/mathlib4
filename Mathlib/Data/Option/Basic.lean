@@ -12,7 +12,7 @@ public import Mathlib.Data.Option.Defs
 public import Mathlib.Logic.Function.Basic
 public import Mathlib.Logic.Relator
 
-import Batteries.Tactic.Lint.Simp
+import Batteries.Linter.Simp
 
 /-!
 # Option of a type
@@ -32,7 +32,6 @@ This is useful in multiple ways:
 
 `Part` is an alternative to `Option` that can be seen as the type of `True`/`False` values
 along with a term `a : α` if the value is `True`.
-
 -/
 
 @[expose] public section

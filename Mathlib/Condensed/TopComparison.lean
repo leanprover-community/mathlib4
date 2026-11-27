@@ -9,8 +9,10 @@ public import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
 public import Mathlib.Condensed.Basic
 public import Mathlib.Topology.Category.TopCat.Yoneda
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # The functor from topological spaces to condensed sets
 
 This file builds on the API from the file `TopCat.Yoneda`. If the forgetful functor to `TopCat` has
@@ -19,7 +21,6 @@ satisfies the sheaf condition for the regular and extensive topologies respectiv
 
 We apply this API to `CompHaus` and define the functor
 `topCatToCondensedSet : TopCat.{u + 1} ⥤ CondensedSet.{u}`.
-
 -/
 
 @[expose] public section

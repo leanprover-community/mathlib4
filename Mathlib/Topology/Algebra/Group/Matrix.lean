@@ -68,8 +68,9 @@ lemma continuous_upperRightHom {R : Type*} [Ring R] [TopologicalSpace R] [IsTopo
     Continuous (upperRightHom (R := R)) := by
   simp only [continuous_induced_rng, Function.comp_def, upperRightHom_apply,
     Units.embedProduct_apply, Units.inv_mk, continuous_prodMk, MulOpposite.unop_op]
-  constructor <;>
-  · refine continuous_matrix fun i j ↦ ?_
+  constructor
+  all_goals
+    refine continuous_matrix fun i j ↦ ?_
     fin_cases i <;> fin_cases j <;> simp [continuous_const, continuous_neg, continuous_id']
 
 end Matrix.GeneralLinearGroup
@@ -95,17 +96,17 @@ theorem continuous_apply {α : Type*} [TopologicalSpace α]
 lemma _root_.Continuous.specialLinearGroup_map (hf : Continuous f) :
     Continuous (map (n := n) f) := by
   refine (IsInducing.subtypeVal (t := {A : Matrix n n S | A.det = 1})).continuous_iff.mpr ?_
-  exact (continuous_id.matrix_map hf).comp continuous_subtype_val
+  exact (continuous_id.matrix_map hf).comp continuous_subtypeVal
 
 lemma _root_.Topology.IsInducing.specialLinearGroup_map (hf : IsInducing f) :
     IsInducing (map (n := n) f) :=
   (hf.matrix_map.comp (IsInducing.subtypeVal (t := {A : Matrix n n R | A.det = 1}))).of_comp
-    (by fun_prop) continuous_subtype_val
+    (by fun_prop) continuous_subtypeVal
 
 lemma _root_.Topology.IsEmbedding.specialLinearGroup_map (hf : IsEmbedding f) :
     IsEmbedding (map (n := n) f) :=
   (hf.matrix_map.comp (IsEmbedding.subtypeVal (p := fun A : Matrix n n R ↦ A.det = 1))).of_comp
-    (by fun_prop) continuous_subtype_val
+    (by fun_prop) continuous_subtypeVal
 
 variable [IsTopologicalRing R]
 

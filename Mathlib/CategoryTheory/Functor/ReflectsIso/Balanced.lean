@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Functor.EpiMono
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Balanced categories and functors reflecting isomorphisms
 
@@ -14,7 +17,6 @@ If a category is `C`, and a functor out of `C` reflects epimorphisms and monomor
 then the functor reflects isomorphisms.
 Furthermore, categories that admit a functor that `ReflectsIsomorphisms`, `PreservesEpimorphisms`
 and `PreservesMonomorphisms` are balanced.
-
 -/
 
 public section

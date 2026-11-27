@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Fourier.PoissonSummation
 
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Poisson summation applied to the Gaussian
 

@@ -136,8 +136,8 @@ theorem coe_eq_empty {s : Compacts α} : (s : Set α) = ∅ ↔ s = ⊥ :=
   SetLike.coe_injective.eq_iff' rfl
 
 @[simp]
-theorem coe_nonempty {s : Compacts α} : (s : Set α).Nonempty ↔ s ≠ ⊥ :=
-  nonempty_iff_ne_empty.trans coe_eq_empty.not
+theorem coe_nonempty {s : Compacts α} : (s : Set α).Nonempty ↔ s ≠ ⊥ := by
+  simp [← ne_empty_iff_nonempty]
 
 @[simp]
 theorem coe_finset_sup {ι : Type*} {s : Finset ι} {f : ι → Compacts α} :
@@ -181,7 +181,7 @@ theorem disjoint_coe_iff (K L : Compacts α) : Disjoint (K : Set α) L ↔ Disjo
 instance [Nonempty α] : Nontrivial (Compacts α) := by
   constructor
   obtain ⟨x⟩ := ‹Nonempty α›
-  exact ⟨⊥, {x}, ne_of_apply_ne SetLike.coe (Set.empty_ne_singleton x)⟩
+  exact ⟨⊥, {x}, ne_of_apply_ne SetLike.coe (by simp)⟩
 
 @[simp]
 theorem subsingleton_iff : Subsingleton (Compacts α) ↔ IsEmpty α := by
@@ -195,7 +195,7 @@ theorem nontrivial_iff : Nontrivial (Compacts α) ↔ Nonempty α := by
 
 /-- The image of a compact set under a continuous function. -/
 protected def map (f : α → β) (hf : Continuous f) (K : Compacts α) : Compacts β :=
-  ⟨f '' K.1, K.2.image hf⟩
+  ⟨f '' K.carrier, K.isCompact'.image hf⟩
 
 @[simp, norm_cast]
 theorem coe_map {f : α → β} (hf : Continuous f) (s : Compacts α) : (s.map f hf : Set β) = f '' s :=
@@ -266,7 +266,7 @@ theorem coe_equiv_apply_eq_preimage (f : α ≃ₜ β) (K : Compacts α) :
 /-- The product of two `TopologicalSpace.Compacts`, as a `TopologicalSpace.Compacts` in the product
 space. -/
 instance : SProd (Compacts α) (Compacts β) (Compacts (α × β)) where
-  sprod K L := { carrier := K ×ˢ L, isCompact' := IsCompact.prod K.2 L.2 }
+  sprod K L := { carrier := K ×ˢ L, isCompact' := IsCompact.prod K.isCompact' L.isCompact' }
 
 @[simp]
 theorem coe_prod (K : Compacts α) (L : Compacts β) :
@@ -297,7 +297,7 @@ lemma subset_of_mem_compactNhds {K K' : Compacts α} (h : K' ∈ K.compactNhds) 
 
 lemma exists_open_set_nhds_of_compactsNhds {K : Compacts α} (L : K.compactNhds) :
     ∃ U : Opens α, (K : Set α) ⊆ U ∧ (U : Set α) ⊆ L := by
-  obtain ⟨U, KsubU, openU, UsubL⟩ := exists_open_set_nhds (fun x hx ↦ L.2 ⟨x, hx⟩)
+  obtain ⟨U, KsubU, openU, UsubL⟩ := exists_open_set_nhds (fun x hx ↦ L.property ⟨x, hx⟩)
   exact ⟨⟨U, openU⟩, KsubU, UsubL⟩
 
 lemma exists_open_set_nhds_of_mem_compactsNhds {K K' : Compacts α} (h : K' ∈ K.compactNhds) :
@@ -311,7 +311,7 @@ def compactNhdsMkOfOpens {K : Compacts α} (L : Compacts α) (U : Opens α)
   ⟨L, fun _ ↦ Filter.mem_of_superset (IsOpen.mem_nhds U.is_open' (h1 (Subtype.coe_prop _))) h2⟩
 
 instance [T2Space α] (K : Compacts α) : SemilatticeInf (K.compactNhds) where
-  inf L M := ⟨L.1 ⊓ M.1, fun x ↦ Filter.inter_mem_iff.2 ⟨L.2 x, M.2 x⟩⟩
+  inf L M := ⟨L.val ⊓ M.val, fun x ↦ Filter.inter_mem_iff.2 ⟨L.property x, M.property x⟩⟩
   inf_le_right _ _ := Subtype.coe_le_coe.mp inf_le_right
   inf_le_left _ _:= Subtype.coe_le_coe.mp inf_le_left
   le_inf _ _ _ h k :=
@@ -844,7 +844,9 @@ variable [QuasiSeparatedSpace α]
 
 instance instInf : Min (CompactOpens α) where
   min U V :=
-    ⟨⟨U ∩ V, QuasiSeparatedSpace.inter_isCompact U.1.1 V.1.1 U.2 U.1.2 V.2 V.1.2⟩, U.2.inter V.2⟩
+    ⟨⟨U ∩ V, QuasiSeparatedSpace.inter_isCompact U.toCompacts.carrier V.toCompacts.carrier
+        U.isOpen' U.toCompacts.isCompact' V.isOpen' V.toCompacts.isCompact'⟩,
+      U.isOpen'.inter V.isOpen'⟩
 
 @[simp, norm_cast] lemma coe_inf (s t : CompactOpens α) : ↑(s ⊓ t) = (s ∩ t : Set α) := rfl
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Finset.Prod
 public import Mathlib.Data.Fintype.Pi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fin-indexed tuples of finsets
 -/

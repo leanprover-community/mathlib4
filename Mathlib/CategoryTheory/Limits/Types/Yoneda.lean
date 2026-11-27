@@ -8,13 +8,15 @@ module
 public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 public import Mathlib.CategoryTheory.Limits.Types.Limits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cones and limits
 
 In this file, we give the natural isomorphism between cones on `F` with cone point `X` and the type
 `lim Hom(X, F·)`, and similarly the natural isomorphism between cocones on `F` with cocone point `X`
 and the type `lim Hom(F·, X)`.
-
 -/
 
 @[expose] public section

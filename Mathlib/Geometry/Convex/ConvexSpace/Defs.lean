@@ -37,7 +37,6 @@ This file defines convex spaces as an algebraic structure supporting finite conv
 The design follows a monadic structure where `StdSimplex R` forms a monad and `convexCombination`
 is a monadic algebra. This eliminates the need for explicit extensionality axioms and resolves
 universe issues with indexed families.
-
 -/
 
 @[expose] public noncomputable section
@@ -327,8 +326,8 @@ private lemma map_join (f : StdSimplex R (StdSimplex R X)) (g : X → Y) :
 
 end Semiring
 
-section Semifield
-variable [Semifield K] [LinearOrder K] [IsStrictOrderedRing K]
+section DivisionSemiring
+variable [DivisionSemiring K] [LinearOrder K] [IsStrictOrderedRing K]
 
 private lemma restrict_nonneg_aux {w : StdSimplex K X} {p : X → Prop} [DecidablePred p] :
     0 ≤ (filter p w.weights).sum fun _x k ↦ k :=
@@ -373,7 +372,7 @@ lemma support_weights_restrict (w : StdSimplex K X) (s : Set X) (hs) [DecidableP
   rintro rfl
   simpa using hx
 
-end Semifield
+end DivisionSemiring
 end StdSimplex
 
 /--
@@ -452,8 +451,7 @@ lemma iConvexComb_single (x : StdSimplex R I) :
     x.iConvexComb single = x := by
   aesop
 
-variable [Semifield K] [LinearOrder K] [IsStrictOrderedRing K]
-
+variable [DivisionSemiring K] [LinearOrder K] [IsStrictOrderedRing K] in
 lemma convexCombPair_restrict_restrict_compl (w : StdSimplex K I) (s : Set I) (hs hs')
     [DecidablePred (· ∈ s)] :
     convexCombPair
@@ -534,15 +532,16 @@ lemma iConvexComb_id (w : StdSimplex R X) : w.iConvexComb id = w.sConvexComb := 
     (s.map f).iConvexComb g = s.iConvexComb (fun i ↦ g (f i)) := by
   simp only [iConvexComb, map_map]
 
-@[congr] lemma iConvexComb_congr {w : StdSimplex R I} {f g : I → X}
-    (hfg : ∀ i, w.weights i ≠ 0 → f i = g i) :
-    w.iConvexComb f = w.iConvexComb g := by
+@[congr] lemma iConvexComb_congr {w w' : StdSimplex R I} {f g : I → X}
+    (hw : w = w') (hfg : ∀ i, w.weights i ≠ 0 → f i = g i) :
+    w.iConvexComb f = w'.iConvexComb g := by
+  subst hw
   congrm sConvexComb ?_
   ext i
   simp only [weights_map]
   -- TODO: This should just be `congr! 2 with i hi`.
   congr 1
-  refine Finsupp.mapDomain_congr fun i hi ↦ ?_
+  refine Finsupp.mapDomain_congr rfl fun i hi ↦ ?_
   exact hfg i (by simpa using hi)
 
 lemma iConvexComb_reindex (s : StdSimplex R I) (f : I ≃ J) (g : I → X) :

@@ -531,7 +531,7 @@ instance (priority := low) {α β} [CSLift α β] (a : α) : CSLiftVal a (CSLift
 
 theorem of_lift {α β} [inst : CSLift α β] {a b : α} {a' b' : β}
     [h1 : CSLiftVal a a'] [h2 : CSLiftVal b b'] (h : a' = b') : a = b :=
-  inst.2 <| by rwa [← h1.1, ← h2.1]
+  inst.inj <| by rwa [← h1.eq, ← h2.eq]
 
 open Lean Parser.Tactic Elab Command Elab.Tactic
 

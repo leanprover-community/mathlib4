@@ -16,6 +16,7 @@ This file collects various results related to the Lebesgue dominated convergence
 for the Bochner integral.
 
 ## Main results
+
 - `MeasureTheory.tendsto_integral_of_dominated_convergence`:
   the Lebesgue dominated convergence theorem for the Bochner integral
 - `MeasureTheory.hasSum_integral_of_dominated_convergence`:
@@ -28,7 +29,6 @@ for the Bochner integral.
   w.r.t. a parameter
 - `intervalIntegral.continuous_primitive` and friends: primitives of interval integrable
   measurable functions are continuous
-
 -/
 
 public section
@@ -102,7 +102,7 @@ lemma hasSum_integral_of_summable_integral_norm {ι} [Countable ι] {F : ι → 
   rw [integral_tsum (fun i ↦ (hF_int i).1)]
   · exact (hF_sum.of_norm_bounded fun i ↦ norm_integral_le_integral_norm _).hasSum
   have (i : ι) : ∫⁻ a, ‖F i a‖ₑ ∂μ = ‖∫ a, ‖F i a‖ ∂μ‖ₑ := by
-    dsimp [enorm]
+    dsimp [eNorm]
     rw [lintegral_coe_eq_integral _ (hF_int i).norm, coe_nnreal_eq, coe_nnNorm,
       Real.norm_of_nonneg (integral_nonneg (fun a ↦ norm_nonneg (F i a)))]
     simp only [coe_nnNorm]

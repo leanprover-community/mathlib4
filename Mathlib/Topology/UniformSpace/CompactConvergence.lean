@@ -8,8 +8,9 @@ module
 public import Mathlib.Topology.CompactOpen
 public import Mathlib.Topology.Compactness.CompactlyCoherentSpace
 public import Mathlib.Topology.Maps.Proper.Basic
-public import Mathlib.Topology.UniformSpace.Compact
 public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
+
+import Mathlib.Topology.UniformSpace.Compact
 
 /-!
 # Compact convergence (uniform convergence on compact sets)
@@ -72,7 +73,7 @@ and also prove its basic properties.
   on a compact space, a sequence of functions `Fₙ` in `C(α, β)` converges to some `f`
   iff `Fₙ` converges to `f` uniformly.
 
-## Implementation details
+## Implementation notes
 
 For technical reasons (see Note [forgetful inheritance]),
 instead of defining a `UniformSpace C(α, β)` structure

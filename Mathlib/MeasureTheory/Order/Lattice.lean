@@ -26,7 +26,6 @@ For instances relating, e.g., `ContinuousSup` to `MeasurableSup` see file
 ## Tags
 
 measurable function, lattice operation
-
 -/
 
 public section

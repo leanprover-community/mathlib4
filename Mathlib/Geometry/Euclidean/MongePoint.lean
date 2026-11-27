@@ -42,7 +42,6 @@ generalization, the Monge point of a simplex.
 * Małgorzata Buba-Brzozowa, [The Monge Point and the 3(n+1) Point
   Sphere of an
   n-Simplex](https://pdfs.semanticscholar.org/6f8b/0f623459c76dac2e49255737f8f0f4725d16.pdf)
-
 -/
 
 @[expose] public section
@@ -241,7 +240,7 @@ theorem inner_mongePoint_vsub_face_centroid_vsub {n : ℕ} (s : Simplex ℝ P (n
   let fs : Finset (Fin (n + 3)) := {i₁, i₂}
   have hfs : ∀ i : Fin (n + 3), i ∉ fs → i ≠ i₁ ∧ i ≠ i₂ := by
     intro i hi
-    constructor <;> · intro hj; simp [fs, ← hj] at hi
+    constructor <;> intro hj <;> simp [fs, ← hj] at hi
   rw [← sum_subset fs.subset_univ _]
   · simp_rw [sum_pointsWithCircumcenter, pointsWithCircumcenter_eq_circumcenter,
       pointsWithCircumcenter_point, Pi.sub_apply, pointWeightsWithCircumcenter]

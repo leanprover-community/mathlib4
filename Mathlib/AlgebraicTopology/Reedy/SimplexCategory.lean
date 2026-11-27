@@ -17,8 +17,8 @@ of epimorphisms and monomorphisms, the length map `SimplexCategory → ℕ`
 is the degree map of a Reedy structure.
 
 ## References
-* [Emily Riehl and Dominic Verity, *Elements of ∞-Category Theory*, C.4][RiehlVerity2022]
 
+* [Emily Riehl and Dominic Verity, *Elements of ∞-Category Theory*, C.4][RiehlVerity2022]
 -/
 
 @[expose] public section

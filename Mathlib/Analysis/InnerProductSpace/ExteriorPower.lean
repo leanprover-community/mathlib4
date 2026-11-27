@@ -23,7 +23,7 @@ via the Gram determinant formula: on decomposable elements,
 - `OrthonormalBasis.exteriorPower`: An orthonormal basis of `E` induces an orthonormal basis
   of `⋀[ℝ]^n E`.
 
-## Future work
+## TODO
 
 - Generalize to `RCLike 𝕜`. To define `innerProductForm` in this case, we would probably
   want a semilinear generalization of `exteriorPower.map`, which in turn requires
@@ -33,7 +33,6 @@ via the Gram determinant formula: on decomposable elements,
   we need to choose an orthonormal basis of `E`. But we can reduce the general case to
   the finite-dimensional case by noticing that any `x : ⋀[𝕜]^n E` is contained in some
   `⋀[𝕜]^n F` for a finite-dimensional subspace `F ≤ E`.
-
 -/
 
 @[expose] public noncomputable section

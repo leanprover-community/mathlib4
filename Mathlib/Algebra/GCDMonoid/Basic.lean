@@ -28,7 +28,7 @@ This file defines extra structures on `CommMonoidWithZero`s.
 
 For the `NormalizedGCDMonoid` instances on `ℕ` and `ℤ`, see `Mathlib/Algebra/GCDMonoid/Nat.lean`.
 
-## Implementation Notes
+## Implementation notes
 
 * `NormalizationMonoid` is defined by assigning to each element a `normUnit` such that multiplying
   by that unit normalizes the monoid, and `normalize` is an idempotent function. This
@@ -130,7 +130,7 @@ section NormalizationMonoid
 
 variable [MonoidWithZero α] [NormalizationMonoid α]
 
-@[simp] theorem normUnit_coe_units (u : αˣ) : normUnit u.1 = u⁻¹ := by
+@[simp] theorem normUnit_coe_units (u : αˣ) : normUnit u.val = u⁻¹ := by
   nontriviality α; convert normUnit_mul_units u one_ne_zero using 1 <;> simp
 
 /-- Chooses an element of each associate class, by multiplying by `normUnit` -/

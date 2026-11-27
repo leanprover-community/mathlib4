@@ -30,7 +30,7 @@ These tactics can be useful for various purposes:
 * You can also use the grind sets directly: `grind only [compactness, closedness]`.
   This is especially useful if you want to combine multiple grind sets.
 
-## Implementation Notes
+## Implementation notes
 
 We define these grind sets so that we can aggressively tag lemmas in one particular topic as
 grind lemmas for a particular grind set. For the default grind set we should be a lot
@@ -57,7 +57,6 @@ that involve other properties, e.g. `IsCompact.inter_left`
 ## To do
 
 * Implement other grind sets, e.g. `boundedness`, `countability`, `connectedness`, ...
-
 -/
 
 open Lean Parser Tactic

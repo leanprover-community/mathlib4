@@ -17,18 +17,21 @@ import Mathlib.Analysis.Normed.Module.Ball.Pointwise
 import Mathlib.Topology.Algebra.InfiniteSum.Module
 
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite-dimensional normed spaces over complete fields
 
 Over a complete nontrivially normed field, in finite dimension, all norms are equivalent and all
 linear maps are continuous. Moreover, a finite-dimensional subspace is always complete and closed.
 
-## Main results:
+## Main results
 
 * `FiniteDimensional.complete` : a finite-dimensional space over a complete field is complete. This
   is not registered as an instance, as the field would be an unknown metavariable in typeclass
   resolution.
-* `Submodule.closed_of_finiteDimensional` : a finite-dimensional subspace over a complete field is
+* `Submodule.isClosed_of_finiteDimensional` : a finite-dimensional subspace over a complete field is
   closed
 * `FiniteDimensional.proper` : a finite-dimensional space over a proper field is proper. This
   is not registered as an instance, as the field would be an unknown metavariable in typeclass
@@ -408,10 +411,13 @@ instance [FiniteDimensional 𝕜 E] [SecondCountableTopology F] :
     (e₁.arrowCongr (1 : F ≃L[𝕜] F)).trans (ContinuousLinearEquiv.piRing (Fin d))
   exact e₂.toHomeomorph.secondCountableTopology
 
-theorem AffineSubspace.closed_of_finiteDimensional {P : Type*} [MetricSpace P]
+theorem AffineSubspace.isClosed_of_finiteDimensional {P : Type*} [MetricSpace P]
     [NormedAddTorsor E P] (s : AffineSubspace 𝕜 P) [FiniteDimensional 𝕜 s.direction] :
     IsClosed (s : Set P) :=
-  s.isClosed_direction_iff.mp s.direction.closed_of_finiteDimensional
+  s.isClosed_direction_iff.mp s.direction.isClosed_of_finiteDimensional
+
+@[deprecated (since := "2026-11-03")]
+alias AffineSubspace.closed_of_finiteDimensional := AffineSubspace.isClosed_of_finiteDimensional
 
 section Riesz
 
@@ -422,7 +428,7 @@ theorem exists_norm_le_le_norm_sub_of_finset {c : 𝕜} (hc : 1 < ‖c‖) {R : 
   let F := Submodule.span 𝕜 (s : Set E)
   have hF : F.FG := ⟨s, rfl⟩
   have : FiniteDimensional 𝕜 F := .of_fg hF
-  have Fclosed : IsClosed (F : Set E) := Submodule.closed_of_finiteDimensional _
+  have Fclosed : IsClosed (F : Set E) := Submodule.isClosed_of_finiteDimensional _
   have : ∃ x, x ∉ F := by
     contrapose! h
     have : (⊤ : Submodule 𝕜 E) = F := by
@@ -717,9 +723,8 @@ theorem continuous_coe_repr : Continuous (fun m : M => ⇑(B.repr m)) :=
 
 -- Note: this could be generalized if we had some typeclass to indicate "each of the projections
 -- into the basis is continuous".
-theorem continuous_toMatrix : Continuous fun (v : ι → M) => B.toMatrix v :=
-  let _ := Fintype.ofFinite ι
-  have := Finite.of_basis B
-  LinearMap.continuous_of_finiteDimensional B.toMatrixEquiv.toLinearMap
+theorem continuous_toMatrix {ι' : Type*} : Continuous fun (v : ι' → M) => B.toMatrix v :=
+  continuous_matrix fun i j =>
+    (continuous_apply i).comp (B.continuous_coe_repr.comp (continuous_apply j))
 
 end Module.Basis

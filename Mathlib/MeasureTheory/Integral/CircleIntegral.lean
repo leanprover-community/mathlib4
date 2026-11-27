@@ -100,6 +100,7 @@ theorem hasDerivAt_circleMap (c : ℂ) (R : ℝ) (θ : ℝ) :
   simpa only [mul_assoc, one_mul, ofRealCLM_apply, circleMap, ofReal_one, zero_add]
     using! (((ofRealCLM.hasDerivAt (x := θ)).mul_const I).cexp.const_mul (R : ℂ)).const_add c
 
+@[fun_prop]
 theorem differentiable_circleMap (c : ℂ) (R : ℝ) : Differentiable ℝ (circleMap c R) := fun θ =>
   (hasDerivAt_circleMap c R θ).differentiableAt
 
@@ -114,6 +115,7 @@ theorem analyticOnNhd_circleMap (c : ℂ) (R : ℝ) {u : Set ℝ} :
   apply analyticAt_cexp.restrictScalars.comp ((ofRealCLM.analyticAt z).mul (by fun_prop))
 
 /-- The circleMap is continuously differentiable. -/
+@[fun_prop]
 theorem contDiff_circleMap (c : ℂ) (R : ℝ) {n : WithTop ℕ∞} :
     ContDiff ℝ n (circleMap c R) :=
   (analyticOnNhd_circleMap c R).contDiff
@@ -324,8 +326,6 @@ theorem circleIntegrable_congr {c : ℂ} {R : ℝ} {f₁ f₂ : ℂ → E}
     (hf : Set.EqOn f₁ f₂ (sphere c |R|)) :
     CircleIntegrable f₁ c R ↔ CircleIntegrable f₂ c R :=
   intervalIntegrable_congr fun x _ ↦ hf (circleMap_mem_sphere' c R x)
-
-@[deprecated (since := "2026-04-26")] alias crcleIntegrable_congr := circleIntegrable_congr
 
 /--
 Circle integrability is invariant when taking negative radius.

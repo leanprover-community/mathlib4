@@ -137,9 +137,11 @@ theorem dist_eq_iSup : dist f g = ⨆ x, dist (f x) (g x) := by
   simp [← isometryEquivBoundedOfCompact α β |>.dist_eq f g,
     BoundedContinuousFunction.dist_eq_iSup]
 
-theorem nndist_eq_iSup : nndist f g = ⨆ x, nndist (f x) (g x) := by
-  simp [← isometryEquivBoundedOfCompact α β |>.nndist_eq f g,
-    BoundedContinuousFunction.nndist_eq_iSup]
+theorem nnDist_eq_iSup : nnDist f g = ⨆ x, nnDist (f x) (g x) := by
+  simp [← isometryEquivBoundedOfCompact α β |>.nnDist_eq f g,
+    BoundedContinuousFunction.nnDist_eq_iSup]
+
+@[deprecated (since := "2026-11-07")] alias nndist_eq_iSup := nnDist_eq_iSup
 
 theorem edist_eq_iSup : edist f g = ⨆ (x : α), edist (f x) (g x) := by
   simp [← isometryEquivBoundedOfCompact α β |>.edist_eq f g,
@@ -238,8 +240,10 @@ theorem nnNorm_eq_iSup_nnNorm : ‖f‖₊ = ⨆ x : α, ‖f x‖₊ :=
 theorem norm_eq_iSup_norm : ‖f‖ = ⨆ x : α, ‖f x‖ :=
   (mkOfCompact f).norm_eq_iSup_norm
 
-theorem enorm_eq_iSup_enorm : ‖f‖ₑ = ⨆ x, ‖f x‖ₑ :=
-  (mkOfCompact f).enorm_eq_iSup_enorm
+theorem eNorm_eq_iSup_eNorm : ‖f‖ₑ = ⨆ x, ‖f x‖ₑ :=
+  (mkOfCompact f).eNorm_eq_iSup_eNorm
+
+@[deprecated (since := "2026-11-06")] alias enorm_eq_iSup_enorm := eNorm_eq_iSup_eNorm
 
 -- A version with better keys
 instance {X : Type*} [TopologicalSpace X] (K : TopologicalSpace.Compacts X) :

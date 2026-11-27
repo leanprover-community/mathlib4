@@ -146,7 +146,7 @@ theorem isNormal_enumOrd (H : ∀ t ⊆ s, t.Nonempty → BddAbove t → sSup t 
       exact enumOrd_mem hs c
     · grw [lt_succ b]
       exact Ordinal.le_iSup _ (⟨_, ho.succ_lt hb⟩ : Iio o)
-  · exact Ordinal.iSup_le fun x ↦ ha _ x.2
+  · exact Ordinal.iSup_le fun x ↦ ha _ x.property
 
 @[simp]
 theorem enumOrd_univ : enumOrd Set.univ = id := by

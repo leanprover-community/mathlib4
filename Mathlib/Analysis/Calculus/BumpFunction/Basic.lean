@@ -44,7 +44,7 @@ such that
   Two instances of this typeclass (for inner product spaces and for finite-dimensional spaces)
   are provided elsewhere.
 
-## Keywords
+## Tags
 
 smooth function, smooth bump function
 -/
