@@ -165,8 +165,6 @@ lemma IsDynCoverOf.iterate_le_pow (F_inv : MapsTo T F F) [U.IsSymm] (n : ℕ) {s
     -- such that `y`, `T^[m] y`, `T^[m]^[2] y` ... is `(dynEntourage T U m)`-close to `t 0`, `t 1`,
     -- `t 2`... Then `dyncover t` is a point of `range dyncover` which satisfies the conclusion
     -- of the lemma.
-    rw [Finset.coe_nonempty] at s_nemp
-    have _ : Nonempty s := Finset.Nonempty.coe_sort s_nemp
     intro y y_F
     have key : ∀ k : Fin n,
         ∃ z : s, y ∈ T^[m * k] ⁻¹' (dynEntourage T U m).ball z := by
@@ -175,6 +173,7 @@ lemma IsDynCoverOf.iterate_le_pow (F_inv : MapsTo T F F) [U.IsSymm] (n : ℕ) {s
       simp only [Finset.mem_coe] at this
       obtain ⟨z, z_s, hz⟩ := this
       exact ⟨⟨z, z_s⟩, hz⟩
+    have : Nonempty s := s_nemp.coe_sort
     choose! t ht using key
     simp only [toFinset_range, Finset.coe_image, Finset.coe_univ, image_univ, mem_range,
       exists_exists_eq_and, sn]
