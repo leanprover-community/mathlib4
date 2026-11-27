@@ -119,6 +119,20 @@ instance (priority := 100) BoundedLatticeHomClass.toBoundedOrderHomClass [Lattic
     BoundedOrderHomClass F α β :=
 { show OrderHomClass F α β from inferInstance, ‹BoundedLatticeHomClass F α β› with }
 
+/-- Turn a bundled morphism with a `SupBotHomClass` instance into a `SupBotHom`. -/
+@[to_dual /-- Turn a bundled morphism with an `InfTopHomClass` instance into n `InfTopHom`. -/]
+def SupBotHom.ofClass [Max α] [Max β] [Bot α] [Bot β] [SupBotHomClass F α β] (f : F) :
+    SupBotHom α β := ⟨f, map_bot f⟩
+
+/-- Turn a bundled morphism with a `BoundedLatticeHomClass` instance into a `BoundedLatticeHom`. -/
+def BoundedLatticeHom.ofClass [Lattice α] [Lattice β] [BoundedOrder α] [BoundedOrder β]
+    [BoundedLatticeHomClass F α β] (f : F) :
+    BoundedLatticeHom α β :=
+  { (f : LatticeHom α β) with
+    toFun := f
+    map_top' := map_top f
+    map_bot' := map_bot f }
+
 end Hom
 
 section Equiv
@@ -176,18 +190,6 @@ end BooleanAlgebra
 
 variable [FunLike F α β]
 
-@[to_dual]
-instance [Max α] [Max β] [Bot α] [Bot β] [SupBotHomClass F α β] : CoeTC F (SupBotHom α β) :=
-  ⟨fun f => ⟨f, map_bot f⟩⟩
-
-instance [Lattice α] [Lattice β] [BoundedOrder α] [BoundedOrder β] [BoundedLatticeHomClass F α β] :
-    CoeTC F (BoundedLatticeHom α β) :=
-  ⟨fun f =>
-    { (f : LatticeHom α β) with
-      toFun := f
-      map_top' := map_top f
-      map_bot' := map_bot f }⟩
-
 /-! ### Finitary supremum homomorphisms -/
 
 namespace SupBotHom
@@ -210,6 +212,9 @@ instance : FunLike (SupBotHom α β) α β where
 instance : SupBotHomClass (SupBotHom α β) α β where
   map_sup f := f.map_sup'
   map_bot f := f.map_bot'
+
+@[to_dual (attr := simp)]
+protected lemma coe_ofClass [SupBotHomClass F α β] (f : F) : ⇑(ofClass f) = f := rfl
 
 @[to_dual]
 lemma toFun_eq_coe (f : SupBotHom α β) : f.toFun = f := rfl
@@ -372,6 +377,9 @@ instance instBoundedLatticeHomClass : BoundedLatticeHomClass (BoundedLatticeHom 
   map_inf f := f.map_inf'
   map_top f := f.map_top'
   map_bot f := f.map_bot'
+
+@[simp]
+protected lemma coe_ofClass [BoundedLatticeHomClass F α β] (f : F) : ⇑(ofClass f) = f := rfl
 
 lemma toFun_eq_coe (f : BoundedLatticeHom α β) : f.toFun = f := rfl
 
