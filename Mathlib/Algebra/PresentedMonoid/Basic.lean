@@ -9,6 +9,9 @@ public import Mathlib.Algebra.FreeMonoid.Basic
 public import Mathlib.Algebra.Group.Submonoid.Operations
 public import Mathlib.GroupTheory.Congruence.Hom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Defining a monoid given by generators and relations
 

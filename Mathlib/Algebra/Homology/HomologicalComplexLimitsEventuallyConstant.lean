@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
 
 import Mathlib.Algebra.Homology.HomologicalComplexLimits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Limits of degreewise eventually constant systems
 

@@ -22,7 +22,7 @@ but at present we are a long way off.
 
 * `chudnovskySum`: The infinite sum in Chudnovsky's formula
 
-## Future work
+## TODO
 
 * Use this formula to give approximations for `π`.
 * Prove the sum equals `π⁻¹`, as stated using `proof_wanted` in
@@ -33,6 +33,7 @@ but at present we are a long way off.
   Eisenstein series.
 
 ## References
+
 * [Milla, *A detailed proof of the Chudnovsky formula*][Milla_2018]
 * [Chen and Glebov, *On Chudnovsky--Ramanujan type formulae*][Chen_Glebov_2018]
 -/

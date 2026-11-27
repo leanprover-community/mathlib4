@@ -268,7 +268,7 @@ instance (priority := 50) {F A B : Type*} [Add A] [Mul A] [Star A] [Add B] [Mul 
 `StarRingEquiv`. -/
 def _root_.StarRingEquiv.ofClass {F A B : Type*} [Add A] [Mul A] [Star A] [Add B] [Mul B] [Star B]
     [EquivLike F A B] [StarRingEquivClass F A B] (f : F) : A ≃⋆+* B :=
-  { (RingEquivClass.toRingEquiv f : A ≃+* B) with
+  { RingEquiv.ofClass f with
     map_star' := map_star f }
 
 @[deprecated (since := "2026-09-03")] alias toStarRingEquiv := StarRingEquiv.ofClass

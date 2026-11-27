@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Normed.Group.Basic
 public import Mathlib.Topology.ContinuousMap.CocompactMap
 public import Mathlib.Topology.MetricSpace.Bounded
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cocompact maps in normed groups
 

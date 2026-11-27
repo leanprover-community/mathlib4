@@ -10,13 +10,16 @@ public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 
 import Mathlib.Analysis.Asymptotics.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Asymptotics for locally convex topological vector spaces
 
 We provide a characterization of `IsBigOTVS` and `IsLittleOTVS` in terms of continuous seminorms
 and families of seminorms.
 
-## Main results:
+## Main results
 
 * `PolynormableSpace.isBigOTVS_iff`
 * `PolynormableSpace.isLittleOTVS_iff`

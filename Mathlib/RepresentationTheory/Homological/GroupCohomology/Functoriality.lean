@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functoriality of group cohomology
 

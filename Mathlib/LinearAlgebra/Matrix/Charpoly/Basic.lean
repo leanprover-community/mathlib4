@@ -22,7 +22,7 @@ See the file `Mathlib/LinearAlgebra/Matrix/Charpoly/Coeff.lean` for corollaries 
 
 * `Matrix.charpoly` is the characteristic polynomial of a matrix.
 
-## Implementation details
+## Implementation notes
 
 We follow a nice proof from http://drorbn.net/AcademicPensieve/2015-12/CayleyHamilton.pdf
 -/
@@ -101,11 +101,17 @@ theorem matPolyEquiv_charmatrix : matPolyEquiv (charmatrix M) = X - C M := by
   · rw [charmatrix_apply_ne _ _ _ h, coeff_X, coeff_neg, coeff_C, coeff_C]
     split_ifs <;> simp [h]
 
-theorem charmatrix_reindex (e : n ≃ m) :
-    charmatrix (reindex e e M) = reindex e e (charmatrix M) := by
-  ext i j x
-  by_cases h : i = j
-  all_goals simp [h]
+lemma charmatrix_submatrix {b : m → n} (hf : b.Injective) :
+    (M.submatrix b b).charmatrix = M.charmatrix.submatrix b b := by
+  ext i j : 1
+  simp [charmatrix_apply, diagonal_apply, hf.eq_iff]
+
+lemma charmatrix_toSquareBlock {α : Type*} [DecidableEq α] {b : n → α} {a : α} :
+    (M.toSquareBlock b a).charmatrix = M.charmatrix.toSquareBlock b a :=
+  charmatrix_submatrix _ Subtype.val_injective
+
+theorem charmatrix_reindex (e : n ≃ m) : charmatrix (reindex e e M) = reindex e e (charmatrix M) :=
+  charmatrix_submatrix _ e.symm.injective
 
 lemma charmatrix_map (M : Matrix n n R) (f : R →+* S) :
     charmatrix (M.map f) = (charmatrix M).map (Polynomial.map f) := by
@@ -195,14 +201,19 @@ lemma charpoly_fromBlocks_zero₂₁ :
   simp only [charpoly, charmatrix_fromBlocks, Matrix.map_zero _ (Polynomial.C_0), neg_zero,
     det_fromBlocks_zero₂₁]
 
-lemma charmatrix_toSquareBlock {α : Type*} [DecidableEq α] {b : n → α} {a : α} :
-    (M.toSquareBlock b a).charmatrix = M.charmatrix.toSquareBlock b a := by
-  ext i j : 1
-  simp [charmatrix_apply, toSquareBlock_def, diagonal_apply, Subtype.ext_iff]
-
-lemma BlockTriangular.charpoly {α : Type*} {b : n → α} [LinearOrder α] (h : M.BlockTriangular b) :
+lemma BlockTriangular.charpoly_eq {α : Type*} {b : n → α} [LinearOrder α]
+    (h : M.BlockTriangular b) :
     M.charpoly = ∏ a ∈ image b univ, (M.toSquareBlock b a).charpoly := by
   simp only [Matrix.charpoly, h.charmatrix.det, charmatrix_toSquareBlock]
+
+@[deprecated (since := "2026-11-03")]
+protected alias BlockTriangular.charpoly := BlockTriangular.charpoly_eq
+
+lemma StrictBlockTriangular.charpoly_eq {α : Type*} {b : n → α} [LinearOrder α]
+    (hM : M.StrictBlockTriangular b) : M.charpoly = X ^ Fintype.card n := by
+  rw [← charpoly_zero, hM.blockTriangular.charpoly_eq, (BlockTriangular.zero (b := b)).charpoly_eq]
+  simp only [hM.toSquareBlock_eq_zero]
+  rfl
 
 lemma charpoly_of_isUpperTriangular [LinearOrder n] (M : Matrix n n R) (h : M.IsUpperTriangular) :
     M.charpoly = ∏ i : n, (X - C (M i i)) := by

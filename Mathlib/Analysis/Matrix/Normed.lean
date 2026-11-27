@@ -510,8 +510,7 @@ variable [DecidableEq n]
 
 @[simp] lemma linfty_opNNNorm_toMatrix (f : (n → α) →L[α] (m → α)) :
     ‖LinearMap.toMatrix' (↑f : (n → α) →ₗ[α] (m → α))‖₊ = ‖f‖₊ := by
-  rw [linfty_opNNNorm_eq_opNNNorm]
-  simp only [← toLin'_apply', toLin'_toMatrix']
+  simp [linfty_opNNNorm_eq_opNNNorm]
 
 @[simp] lemma linfty_opNorm_toMatrix (f : (n → α) →L[α] (m → α)) :
     ‖LinearMap.toMatrix' (↑f : (n → α) →ₗ[α] (m → α))‖ = ‖f‖ :=
@@ -595,9 +594,15 @@ section SeminormedAddCommGroup
 
 variable [SeminormedAddCommGroup α] [SeminormedAddCommGroup β]
 
+lemma frobenius_nnNorm_eq_nnNorm_toLp (A : Matrix m n α) :
+    ‖A‖₊ = ‖toLp 2 fun i ↦ toLp 2 (A i)‖₊ := rfl
+
+lemma frobenius_norm_eq_norm_toLp (A : Matrix m n α) :
+    ‖A‖ = ‖toLp 2 fun i ↦ toLp 2 (A i)‖ := rfl
+
 theorem frobenius_nnNorm_def (A : Matrix m n α) :
     ‖A‖₊ = (∑ i, ∑ j, ‖A i j‖₊ ^ (2 : ℝ)) ^ (1 / 2 : ℝ) := by
-  change ‖toLp 2 fun i => toLp 2 fun j => A i j‖₊ = _
+  rw [frobenius_nnNorm_eq_nnNorm_toLp]
   simp_rw [PiLp.nnNorm_eq_of_L2, NNReal.sq_sqrt, NNReal.sqrt_eq_rpow, NNReal.rpow_two]
 
 @[deprecated (since := "2026-10-31")] alias frobenius_nnnorm_def := frobenius_nnNorm_def
@@ -729,6 +734,11 @@ theorem frobenius_nnNorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B�
 
 theorem frobenius_norm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B‖ ≤ ‖A‖ * ‖B‖ :=
   frobenius_nnNorm_mul A B
+
+lemma frobenius_norm_sq_eq_trace (A : Matrix m n α) : (‖A‖ ^ 2 : α) = (A * Aᴴ).trace := by
+  rw [← RCLike.ofReal_pow, frobenius_norm_def, ← Real.sqrt_eq_rpow, Real.sq_sqrt
+    (Finset.sum_nonneg fun _ _ ↦ Finset.sum_nonneg fun _ _ ↦ by positivity)]
+  simp [trace, Matrix.mul_apply, ← RCLike.mul_conj]
 
 /-- Normed ring instance (using the Frobenius norm) for matrices over `ℝ` or `ℂ`.  Not
 declared as an instance because there are several natural choices for defining the norm of a

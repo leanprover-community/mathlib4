@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Polynomial.Eval.Subring
 
 import Mathlib.Algebra.Polynomial.Monic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Polynomials that lift
 
@@ -32,7 +35,7 @@ and that a monic polynomial that lifts can be lifted to a monic polynomial (of t
   `mapAlg`, where `mapAlg : R[X] →ₐ[R] S[X]` is the only `R`-algebra map
   that sends `X` to `X`.
 
-## Implementation details
+## Implementation notes
 
 In general `R` and `S` are semirings, so `lifts` is a semiring. In the case of rings, see
 `lifts_iff_liftsRing`.

@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Complex.Basic
 
 import Mathlib.Topology.Instances.EReal.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Half-planes in ℂ are open
 

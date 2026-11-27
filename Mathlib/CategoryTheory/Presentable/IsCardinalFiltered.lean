@@ -22,6 +22,7 @@ A preordered type `J` is a `κ`-filtered category (i.e. `κ`-directed set)
 if any subset of `J` of cardinality `< κ` has an upper bound.
 
 ## References
+
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 -/
 
@@ -164,8 +165,6 @@ lemma IsCardinalFiltered.nonempty (J : Type u) [Category.{v} J]
     (κ : Cardinal.{w}) [hκ : Fact κ.IsRegular] [IsCardinalFiltered J κ] : Nonempty J :=
   have := isFiltered_of_isCardinalFiltered J κ
   IsFiltered.nonempty
-
-attribute [local instance] Cardinal.fact_isRegular_aleph0
 
 lemma isCardinalFiltered_aleph0_iff (J : Type u) [Category.{v} J] :
     IsCardinalFiltered J Cardinal.aleph0.{w} ↔ IsFiltered J := by

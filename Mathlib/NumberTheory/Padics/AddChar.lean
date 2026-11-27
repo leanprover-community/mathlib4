@@ -10,6 +10,9 @@ public import Mathlib.NumberTheory.Padics.MahlerBasis
 
 import Mathlib.Topology.Algebra.Monoid.AddChar
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Additive characters of `ℤ_[p]`
 
@@ -33,7 +36,7 @@ equivalent if `NormMulClass R` holds.
   sub-multiplicative), then `addChar_of_value_at_one` is a bijection between continuous additive
   characters `ℤ_[p] → R` and elements of `R` with `‖r‖ < 1`.
 
-## TODO:
+## TODO
 
 * Show that the above equivalences are homeomorphisms, for appropriate choices of the topology.
 -/
