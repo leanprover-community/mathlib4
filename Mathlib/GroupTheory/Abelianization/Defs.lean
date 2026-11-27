@@ -254,13 +254,13 @@ theorem subsingleton_iff (hf : IsAbelianization f) : Subsingleton A ↔ commutat
   hf.mulEquiv.toEquiv.subsingleton_congr.symm.trans QuotientGroup.subsingleton_iff
 
 /-- If `B` is isomorphic to `A` and `A` is an abelianization of `G`, then `B` is an abelianization
-of `G` -/
+of `G`. -/
 @[to_additive
 /-- If `B` is isomorphic to `A` and `A` is an additive abelianization of `G`, then `B` is an
-additive abelianization of `G` -/]
+additive abelianization of `G`. -/]
 theorem mulEquiv_comp {B : Type*} [Group B] (hf : IsAbelianization f) (e : A ≃* B) :
     IsAbelianization ((e : A →* B).comp f) where
-  surjective := (e.surjective.comp hf.surjective :)
+  surjective := e.surjective.comp hf.surjective
   ker_eq := (f.ker_comp_of_injective _ e.injective).trans hf.ker_eq
 
 /-- If `H` is isomorphic to `G` and `A` is an abelianization of `G`, then `A` is an abelianization
@@ -292,17 +292,16 @@ protected theorem id [IsMulCommutative G] : IsAbelianization (MonoidHom.id G) wh
   ker_eq := by rw [MonoidHom.ker_id, commutator_eq_bot]
 
 /-- An abelianization of `G` induces an abelianization of `G ⧸ N`, given by the quotient of `A`
-by the image `M` of `N`. -/
+by the image of `N`. -/
 @[to_additive
 /-- An additive abelianization of `G` induces an additive abelianization of `G ⧸ N`, given by the
-quotient of `A` by the image `M` of `N`. -/]
+quotient of `A` by the image of `N`. -/]
 theorem quotient (hf : IsAbelianization f) {N : Subgroup G} [N.Normal]
-  {M : Subgroup A} [M.Normal] (h : N.map f = M) :
-    IsAbelianization (QuotientGroup.map N M f (Subgroup.map_le_iff_le_comap.mp h.le)) where
+    (h : (N.map f).Normal := Subgroup.Normal.map inferInstance f hf.surjective) :
+    IsAbelianization (QuotientGroup.map N (N.map f) f (Subgroup.le_comap_map f N)) where
   surjective := QuotientGroup.map_surjective_of_surjective _ _ _
     (QuotientGroup.mk_surjective.comp hf.surjective) _
   ker_eq := by
-    subst h
     rw [QuotientGroup.ker_map, Subgroup.comap_map_eq, hf.ker_eq, Subgroup.map_sup,
       QuotientGroup.map_mk'_self, map_commutator_of_surjective (QuotientGroup.mk'_surjective N),
       bot_sup_eq]
