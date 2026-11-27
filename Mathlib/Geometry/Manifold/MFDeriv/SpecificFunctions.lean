@@ -216,8 +216,8 @@ then `x ↦ (f x, g x)` has derivative `df.prod dg` within `s`. -/
 theorem HasMFDerivWithinAt.prodMk {f : M → M'} {g : M → M''}
     {df : TangentSpace% x →L[𝕜] TangentSpace% (f x)} (hf : HasMFDerivAt[s] f x df)
     {dg : TangentSpace% x →L[𝕜] TangentSpace% (g x)} (hg : HasMFDerivAt[s] g x dg) :
-    HasMFDerivAt[s] (fun y ↦ (f y, g y)) x (df.prod dg) := by
-  exact ⟨hf.1.prodMk hg.1, hf.2.prodMk hg.2⟩
+    HasMFDerivAt[s] (fun y ↦ (f y, g y)) x (df.prod dg) :=
+  ⟨hf.1.prodMk hg.1, hf.2.prodMk hg.2⟩
 
 lemma mfderivWithin_prodMk {f : M → M'} {g : M → M''} (hf : MDiffAt[s] f x) (hg : MDiffAt[s] g x)
     (hs : UniqueMDiffAt[s] x) :
