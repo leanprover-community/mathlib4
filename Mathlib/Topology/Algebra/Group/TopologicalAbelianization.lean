@@ -21,10 +21,12 @@ This file defines the topological abelianization of a topological group.
   of `G` by the topological closure of its commutator subgroup.
 
 ## Main results
+
 - `instNormalCommutatorClosure` : the topological closure of the commutator of a topological group
   `G` is a normal subgroup.
 
 ## Tags
+
 group, topological abelianization
 -/
 
@@ -47,7 +49,7 @@ namespace TopologicalAbelianization
 
 instance commGroup : CommGroup (G_ab G) where
   mul_comm := fun x y =>
-    Quotient.inductionOn₂' x y fun a b =>
+    Quotient.inductionOn₂ x y fun a b =>
       Quotient.sound' <|
         QuotientGroup.leftRel_apply.mpr <| by
           have h : (a * b)⁻¹ * (b * a) = ⁅b⁻¹, a⁻¹⁆ := by group

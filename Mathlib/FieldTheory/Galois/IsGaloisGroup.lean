@@ -396,7 +396,7 @@ theorem quotient [Finite G] (N : Subgroup G) [N.Normal] [MulSemiringAction G C]
     [SMulCommClass (G ⧸ N) A B] [SMulDistribClass G B C] [IsScalarTower G (G ⧸ N) B]
     [IsGaloisGroup N B C] :
     IsGaloisGroup (G ⧸ N) A B where
-  faithful.eq_of_smul_eq_smul := fun {g₁} {g₂} ↦ Quotient.inductionOn₂' g₁ g₂ fun g₁ g₂ h ↦ by
+  faithful.eq_of_smul_eq_smul := fun {g₁} {g₂} ↦ Quotient.inductionOn₂ g₁ g₂ fun g₁ g₂ h ↦ by
     have h' : ∀ g : G, (∀ x : B, g • x = x) → g ∈ N := by
       simp [← fixingSubgroup_range_algebraMap G A B C N, mem_fixingSubgroup_iff, ← algebraMap.smul',
         (FaithfulSMul.algebraMap_injective B C).eq_iff]
@@ -490,6 +490,53 @@ theorem restrictHom_smul_under [Finite G] [Finite G'] [MulSemiringAction G C]
     [IsGaloisGroup G A C] [MulSemiringAction G' B] [IsGaloisGroup G' A B] (g : G) (I : Ideal C) :
     restrictHom G G' A B C g • I.under B = (g • I).under B := by
   simp [Ideal.ext_iff, Ideal.mem_pointwise_smul_iff_inv_smul_mem, ← map_inv]
+
+/-- The homomorphism `restrictHom` is the unique homomorphism `G →* G'` for which
+`algebraMap B C` is compatible with the actions of `G'` on `B` and of `G` on `C`. -/
+theorem restrictHom_eq_of_algebraMap_smul [Finite G] [Finite G'] [MulSemiringAction G C]
+    [IsGaloisGroup G A C] [MulSemiringAction G' B] [IsGaloisGroup G' A B] (f : G →* G')
+    (hf : ∀ g x, algebraMap B C (f g • x) = g • algebraMap B C x) :
+    restrictHom G G' A B C = f := by
+  ext g
+  have : FaithfulSMul G' B := faithful A
+  exact eq_of_smul_eq_smul fun x ↦ FaithfulSMul.algebraMap_injective B C <| by
+    rw [algebraMap_restrictHom_smul, hf]
+
+/-- The homomorphism `restrictHom` does not depend on the tower `C/B/A` used to define it.
+
+More precisely, let `C'/B'/A'` be a second tower, with maps `B → B'` and `C → C'` such that
+`C → C'` is injective and the square formed with `B → C` and `B' → C'` commutes. (The square is
+expressed by `Algebra B C'` together with the two `IsScalarTower` instances.) If `G` is a Galois
+group of both `C/A` and `C'/A'`, `G'` is a Galois group of both `B/A` and `B'/A'`, and these
+actions are compatible with the maps `C → C'` and `B → B'`, then the two restriction homomorphisms
+agree. No relationship between `A` and `A'` is required. -/
+theorem restrictHom_eq_restrictHom
+    -- the second tower `C'/B'/A'`
+    (A' B' C' : Type*) [CommRing A'] [CommRing B'] [CommRing C'] [IsDomain C']
+    [Algebra A' B'] [Algebra A' C'] [Algebra B' C'] [FaithfulSMul B' C'] [IsScalarTower A' B' C']
+    -- a commutative square from `B → C` to `B' → C'`, with `C → C'` injective
+    [Algebra B B'] [Algebra C C'] [Algebra B C'] [IsScalarTower B B' C'] [IsScalarTower B C C']
+    [FaithfulSMul C C']
+    -- the Galois groups
+    [Finite G] [Finite G']
+    [MulSemiringAction G C] [IsGaloisGroup G A C] [MulSemiringAction G C'] [IsGaloisGroup G A' C']
+    [MulSemiringAction G' B] [IsGaloisGroup G' A B]
+    [MulSemiringAction G' B'] [IsGaloisGroup G' A' B']
+    -- compatibility of the actions with the maps `C → C'` and `B → B'`
+    [SMulDistribClass G C C'] [SMulDistribClass G' B B'] :
+    restrictHom G G' A B C = restrictHom G G' A' B' C' :=
+  restrictHom_eq_of_algebraMap_smul _ _ _ _ _ _ fun g x ↦
+    FaithfulSMul.algebraMap_injective C C' <| by
+      rw [← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply B B' C',
+        algebraMap.smul', algebraMap_restrictHom_smul, ← IsScalarTower.algebraMap_apply,
+        algebraMap.smul', ← IsScalarTower.algebraMap_apply]
+
+/-- For fields, the homomorphism `restrictHom` is `AlgEquiv.restrictNormalHom`. -/
+theorem restrictHom_eq_restrictNormalHom (E : Type*) [Field E] [Algebra K E] [Algebra E L]
+    [IsScalarTower K E L] [FiniteDimensional K L] [FiniteDimensional K E] [IsGalois K L]
+    [IsGalois K E] :
+    restrictHom Gal(L/K) Gal(E/K) K E L = AlgEquiv.restrictNormalHom E :=
+  restrictHom_eq_of_algebraMap_smul _ _ _ _ _ _ fun σ x ↦ σ.restrictNormal_commutes E x
 
 end Domain
 

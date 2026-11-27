@@ -9,6 +9,9 @@ public import Mathlib.MeasureTheory.VectorMeasure.Variation.Defs
 
 import Mathlib.MeasureTheory.VectorMeasure.Variation.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Total variation distance of vector measures
 

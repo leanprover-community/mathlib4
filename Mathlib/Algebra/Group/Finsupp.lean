@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.Group.Pi.Lemmas
-public import Mathlib.Algebra.Group.Pi.Torsion
 public import Mathlib.Data.Finset.Max
 public import Mathlib.Data.Finsupp.Single
+
+import Mathlib.Algebra.Group.Pi.Torsion
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
@@ -344,7 +345,7 @@ variable [AddMonoid M]
 unless `F i`'s addition is commutative. -/
 instance instNatSMul : SMul ℕ (ι →₀ M) where smul n v := v.mapRange (n • ·) (nsmul_zero _)
 
-@[simp, norm_cast] lemma coe_nsmul (n : ℕ) (f : ι →₀ M) : ⇑(n • f) = n • ⇑f := rfl
+lemma coe_nsmul (n : ℕ) (f : ι →₀ M) : ⇑(n • f) = n • ⇑f := rfl
 
 lemma nsmul_apply (n : ℕ) (f : ι →₀ M) (x : ι) : (n • f) x = n • f x := rfl
 

@@ -25,7 +25,7 @@ One should however think of this definition as an implementation detail: the onl
 introduce the predicates `UniqueDiffWithinAt` and `UniqueDiffOn` is to ensure the uniqueness
 of the derivative. This is why their names reflect their uses, and not how they are defined.
 
-## Implementation details
+## Implementation notes
 
 Note that this file is imported by `Mathlib/Analysis/Calculus/FDeriv/Basic.lean`. Hence, derivatives
 are not defined yet. The property of uniqueness of the derivative is therefore proved in
@@ -123,7 +123,7 @@ theorem exists_fun_of_mem_tangentConeAt (h : y ∈ tangentConeAt R s x) :
   · refine .filter_mono inf_le_right ?_
     rw [top_prod, eventually_comap]
     filter_upwards [eventually_mem_nhdsWithin]
-    simp +contextual
+    simp
   · exact tendsto_comap.mono_left inf_le_left
 
 end TangentConeAt

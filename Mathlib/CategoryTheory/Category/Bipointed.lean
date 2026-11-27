@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Category.Pointed
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of bipointed types
 

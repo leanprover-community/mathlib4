@@ -5,12 +5,13 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Category.Grp.Preadditive
-public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Limits
 public import Mathlib.Algebra.Homology.Homotopy
-public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Algebra.Ring.NegOnePow
+
+import Mathlib.Algebra.Category.Grp.Preadditive
+import Mathlib.Algebra.Category.ModuleCat.Basic
+import Mathlib.Algebra.Module.Pi
 
 /-! # The cochain complex of homomorphisms between cochain complexes
 
@@ -30,6 +31,7 @@ We follow the signs conventions appearing in the introduction of
 [Brian Conrad's book *Grothendieck duality and base change*][conrad2000].
 
 ## References
+
 * [Brian Conrad, Grothendieck duality and base change][conrad2000]
 -/
 
@@ -608,7 +610,6 @@ variable (F G n)
 instance : AddCommGroup (Cocycle F G n) :=
   inferInstanceAs <| AddCommGroup (cocycle F G n)
 
-@[simp]
 lemma coe_zero : (↑(0 : Cocycle F G n) : Cochain F G n) = 0 := by rfl
 
 variable {F G n}

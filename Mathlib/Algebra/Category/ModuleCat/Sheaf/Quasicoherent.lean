@@ -12,6 +12,9 @@ public import Mathlib.CategoryTheory.Sites.CoversTop.Over
 
 import Mathlib.CategoryTheory.Limits.Shapes.Connected
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Quasicoherent sheaves
 

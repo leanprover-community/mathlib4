@@ -26,11 +26,13 @@ semantics for regular logic.
   internal language, we have `∃ x, (P(x) ⊓ Q)` iff `(∃ x, P(x)) ⊓ Q`, for a proposition `Q` not
   depending on `x`.
 
-## Future work
+## TODO
+
 * Show that every topos is regular
 * Show that regular logic has an interpretation in regular categories
 
 ## References
+
 * [Marino Gran, An Introduction to Regular Categories][Gran2021]
 * <https://ncatlab.org/nlab/show/regular+category>
 -/

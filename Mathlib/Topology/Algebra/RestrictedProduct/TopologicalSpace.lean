@@ -80,7 +80,7 @@ and that the topology for a general `𝓕` is indeed the expected inductive limi
   group with `A i` an open subgroup. Assume also that all but finitely many `A i`s are compact.
   Then the restricted product `Πʳ i, [R i, A i]` is a locally compact group.
 
-## Implementation details
+## Implementation notes
 
 Outside of principal filters and the cofinite filter, the topology we define on the restricted
 product does not seem well-behaved. While declaring a single instance is practical, it may conflict

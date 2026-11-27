@@ -6,8 +6,9 @@ Authors: Mario Carneiro, Rudy Peterson
 module
 
 public import Mathlib.Data.Multiset.MapFold
-public import Mathlib.Data.Set.Function
 public import Mathlib.Order.Hom.Basic
+
+import Mathlib.Data.Set.Function
 
 /-!
 # Filtering multisets by a predicate
@@ -310,7 +311,7 @@ variable [DecidableEq α] {s : Multiset α}
 theorem count_filter_of_pos {p} [DecidablePred p] {a} {s : Multiset α} (h : p a) :
     count a (filter p s) = count a s :=
   Quot.inductionOn s fun _l => by
-    simp only [quot_mk_to_coe'', filter_coe, coe_count]
+    simp only [quot_mk_to_coe', filter_coe, coe_count]
     apply count_filter
     simpa using h
 

@@ -5,11 +5,11 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Module.FinitePresentation
-public import Mathlib.RingTheory.FiniteStability
 public import Mathlib.RingTheory.Jacobson.Artinian
 public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
 
+import Mathlib.Algebra.Module.FinitePresentation
+import Mathlib.RingTheory.FiniteStability
 import Mathlib.RingTheory.Finiteness.NilpotentKer
 import Mathlib.RingTheory.Localization.InvSubmonoid
 import Mathlib.RingTheory.Localization.Submodule
@@ -22,6 +22,7 @@ import Mathlib.RingTheory.TensorProduct.Pi
 In this file, we define the notion of quasi-finite algebras and prove basic properties about them
 
 ## Main definition and results
+
 - `Algebra.QuasiFinite`: The class of quasi-finite algebras.
   We say that an `R`-algebra `S` is quasi-finite
   if `κ(p) ⊗[R] S` is finite-dimensional over `κ(p)` for all primes `p` of `R`.
@@ -183,14 +184,14 @@ lemma trans [QuasiFinite R S] [QuasiFinite S T] : QuasiFinite R T := by
   have : Module.Finite P.ResidueField ((P.Fiber S) ⊗[S] T) :=
     .trans (P.Fiber S) _
   let e : P.Fiber S ≃ₐ[S] S ⊗[R] P.ResidueField :=
-    { __ := Algebra.TensorProduct.comm _ _ _, commutes' _ := rfl }
+    .ofCommutes (Algebra.TensorProduct.comm _ _ _).toRingEquiv fun _ ↦ rfl
   let e' : (P.Fiber S) ⊗[S] T ≃ₐ[R] P.Fiber T :=
     ((Algebra.TensorProduct.congr e .refl).restrictScalars R).trans <|
     ((Algebra.TensorProduct.comm _ _ _).restrictScalars R).trans <|
     ((Algebra.TensorProduct.cancelBaseChange _ _ T _ _).restrictScalars R).trans
     (Algebra.TensorProduct.comm _ _ _)
   let e'' : (P.Fiber S) ⊗[S] T ≃ₐ[P.ResidueField] P.Fiber T :=
-    { __ := e', commutes' _ := by simp [e', e] }
+    .ofCommutes e'.toRingEquiv fun _ ↦ by simp [e', e]
   exact .of_surjective e''.toLinearMap e''.surjective
 
 omit [Algebra S T] in

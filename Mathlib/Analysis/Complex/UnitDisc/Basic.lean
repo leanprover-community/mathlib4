@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Group.PNatPowAssoc
 public import Mathlib.Analysis.Complex.Circle
 public import Mathlib.Analysis.Normed.Module.Ball.Action
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Poincaré disc
 
@@ -260,14 +263,6 @@ namespace UnitClosedDisc
 /-- Coercion to `ℂ`. -/
 @[coe] protected def coe : 𝕔𝔻 → ℂ := Subtype.val
 
-instance : MonoidWithZero 𝕔𝔻 := inferInstanceAs <| MonoidWithZero (closedBall _ _)
-
-instance : IsCancelMulZero 𝕔𝔻 :=
-  inferInstanceAs <| IsCancelMulZero (closedBall _ _)
-
-instance : HasDistribNeg 𝕔𝔻 :=
-  inferInstanceAs <| HasDistribNeg (closedBall _ _)
-
 instance : Coe 𝕔𝔻 ℂ := ⟨UnitClosedDisc.coe⟩
 
 @[ext]
@@ -293,6 +288,17 @@ theorem sq_norm_lt_one (z : 𝕔𝔻) : ‖(z : ℂ)‖ ^ 2 ≤ 1 := by
 theorem normSq_lt_one (z : 𝕔𝔻) : normSq z ≤ 1 := by
   rw [← Complex.norm_mul_self_eq_normSq, ← sq]
   exact z.sq_norm_lt_one
+
+instance : Pow 𝕔𝔻 ℕ where
+  pow z n := ⟨z ^ n, by simp [pow_le_one₀ (norm_nonneg _) z.norm_le_one]⟩
+
+instance : MonoidWithZero 𝕔𝔻 := inferInstanceAs <| MonoidWithZero (closedBall _ _)
+
+instance : IsCancelMulZero 𝕔𝔻 :=
+  inferInstanceAs <| IsCancelMulZero (closedBall _ _)
+
+instance : HasDistribNeg 𝕔𝔻 :=
+  inferInstanceAs <| HasDistribNeg (closedBall _ _)
 
 @[simp, norm_cast]
 theorem coe_mul (z w : 𝕔𝔻) : ↑(z * w) = (z * w : ℂ) :=
@@ -414,9 +420,6 @@ theorem coe_closedBall_smul (z : 𝕔𝔻) (w : 𝔻) : ↑(z • w) = (z * w : 
 theorem coe_circle_smul (z : Circle) (w : 𝕔𝔻) : ↑(z • w) = (z * w : ℂ) :=
   rfl
 
-instance : Pow 𝕔𝔻 ℕ where
-  pow z n := ⟨z ^ n, by simp [pow_le_one₀ (norm_nonneg _) z.norm_le_one]⟩
-
 @[simp, norm_cast]
 theorem coe_pow (z : 𝕔𝔻) (n : ℕ) : ((z ^ n : 𝕔𝔻) : ℂ) = z ^ (n : ℕ) := rfl
 
@@ -424,11 +427,6 @@ theorem coe_pow (z : 𝕔𝔻) (n : ℕ) : ((z ^ n : 𝕔𝔻) : ℂ) = z ^ (n :
 theorem continuous_pow (n : ℕ) : Continuous (· ^ n : 𝕔𝔻 → 𝕔𝔻) := by
   simp only [isEmbedding_coe.continuous_iff, Function.comp_def, coe_pow]
   fun_prop
-
-instance : NatPowAssoc 𝕔𝔻 where
-  npow_add m n z := mod_cast pow_add (z : ℂ) m n
-  npow_one z := by simp [← coe_inj]
-  npow_zero z := by simp [← coe_inj]
 
 /-- Real part of a point of the unit disc. -/
 def re (z : 𝕔𝔻) : ℝ :=

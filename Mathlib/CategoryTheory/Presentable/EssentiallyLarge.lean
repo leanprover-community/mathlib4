@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Presentable.CardinalFilteredPresentation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Accessible categories are essentially large
 
