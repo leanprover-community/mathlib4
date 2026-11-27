@@ -788,7 +788,7 @@ variable (G) in
 @[simps!]
 def edgeSetEquivSigmaConnectedComponent :
     G.edgeSet ≃ Σ c : G.ConnectedComponent, c.toSimpleGraph.edgeSet :=
-  .sigmaQuotFromRel G.symm <| .ofLE fun _ _ ↦ Adj.reachable
+  .sigmaQuotFromRel G.symm_adj <| .ofLE fun _ _ ↦ Adj.reachable
 
 variable (G) in
 theorem sum_connectedComponent_ncard_supp [Finite V] [Fintype G.ConnectedComponent] :
