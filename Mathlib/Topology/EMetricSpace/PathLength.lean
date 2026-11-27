@@ -64,23 +64,21 @@ theorem segment_length {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E
       (mem_univ _) (mem_univ _), Icc.coe_one, Icc.coe_zero, sub_zero, ENNReal.ofReal_one]
   rw [length, arcLength]
   calc eVariationOn (lineMap a b ∘ ((↑) : I → ℝ)) (Icc 0 1)
-      ≤ nndist a b * eVariationOn ((↑) : I → ℝ) (Icc 0 1) :=
+      ≤ nnDist a b * eVariationOn ((↑) : I → ℝ) (Icc 0 1) :=
         (lipschitzWith_lineMap a b).lipschitzOnWith.comp_eVariationOn_le (mapsTo_univ _ _)
-    _ = edist a b := by rw [h, mul_one, edist_nndist]
+    _ = edist a b := by rw [h, mul_one, eDist_nnDist]
 
 /-- The constant path has zero length. -/
 @[simp]
 theorem length_refl (x : E) : (refl x).length = 0 :=
-  arcLength_eq_zero_of_constantOn (refl x) (by simp)
+  Set.Subsingleton.arcLength_eq_zero (by simp)
 
 /-- Reversing a path does not change its length. -/
 @[simp]
 theorem length_symm (γ : Path a b) : γ.symm.length = γ.length := by
   rw [length, length, symm_eq_comp γ, arcLength_comp_eq_of_antitoneOn _ _
-    (strictAnti_symm.antitone.antitoneOn (Icc 0 1)) (symm_image_Icc 0 1 nonneg'), symm_one,
+    (strictAnti_symm.antitone.antitoneOn (Icc 0 1)) (symm_image_Icc 0 1), symm_one,
     symm_zero]
-
-/-! ## Auxiliary lemmas for concatenation -/
 
 /-- The length of a path is the variation of its extension on `[0,1]`. -/
 lemma length_eq_eVariationOn_extend (γ : Path a b) :
@@ -88,37 +86,33 @@ lemma length_eq_eVariationOn_extend (γ : Path a b) :
   rw [length_eq_eVariationOn, ← extend_comp_subtype_val γ, eVariationOn.comp_eq_of_monotoneOn _ _
     ((Subtype.mono_coe _).monotoneOn univ), Subtype.coe_image_univ I]
 
-/-- Auxiliary lemma: the affine map `t ↦ 2t` sends the left half of the unit interval onto
-`[0,1]`. -/
+/-- The affine map `t ↦ 2t` sends the left half of the unit interval onto `[0,1]`. -/
 lemma image_double_Icc_half :
-    (fun t : I ↦ (2 : ℝ) * t) '' Icc 0 ⟨1 / 2, by norm_num⟩ = Icc 0 1 := by
+    (fun t : I ↦ (2 : ℝ) * t) '' Icc 0 half = Icc 0 1 := by
   simp [ContinuousOn.image_Icc_of_monotoneOn nonneg' (by fun_prop)
     (Subtype.mono_coe _ |>.const_mul zero_le_two |>.monotoneOn _)]
 
-/-- Auxiliary lemma: the arc length of the left half of `γ.symm` is the arc length of the right half
- of `γ`. -/
+/-- The arc length of the left half of `γ.symm` is the arc length of the right half of `γ`. -/
 lemma arcLength_symm_left_half (γ : Path a b) :
-    arcLength γ.symm 0 ⟨1 / 2, by norm_num⟩ = arcLength γ ⟨1 / 2, by norm_num⟩ 1 := by
+    arcLength γ.symm 0 half = arcLength γ half 1 := by
   rw [arcLength, symm_eq_comp γ,
     eVariationOn.comp_eq_of_antitoneOn γ σ fun _ _ _ _ hxy => symm_le_symm.mpr hxy,
-    symm_image_Icc 0 ⟨1 / 2, by norm_num⟩ nonneg', symm_half, symm_zero, arcLength]
+    symm_image_Icc 0 half, symm_half, symm_zero, arcLength]
 
 /-! ## Length of concatenations -/
 
-/-- Auxiliary lemma: the arc length of a concatenation on its left half is the length of the first
- path. -/
+/-- The arc length of a concatenation on its left half is the length of the first path. -/
 lemma arcLength_trans_left (γ : Path a b) (η : Path b c) :
-    arcLength (γ.trans η) 0 ⟨1 / 2, by norm_num⟩ = γ.length := by
+    arcLength (γ.trans η) 0 half = γ.length := by
   rw [arcLength, length_eq_eVariationOn_extend γ, ← image_double_Icc_half,
     ← eVariationOn.comp_eq_of_monotoneOn _ _
     ((Subtype.mono_coe _ |>.const_mul zero_le_two |>.monotoneOn _))]
   refine eVariationOn.congr fun t ht => ?_
   rw [Function.comp_apply, ← extend_apply, extend_trans_of_le_half γ η ht.2]
 
-/-- Auxiliary lemma: the arc length of a concatenation on its right half is the length of the second
- path. -/
+/-- The arc length of a concatenation on its right half is the length of the second path. -/
 lemma arcLength_trans_right (γ : Path a b) (η : Path b c) :
-    arcLength (γ.trans η) ⟨1 / 2, by norm_num⟩ 1 = η.length := by
+    arcLength (γ.trans η) half 1 = η.length := by
   rw [← arcLength_symm_left_half, trans_symm, ← length_symm]
   exact arcLength_trans_left η.symm γ.symm
 

@@ -37,10 +37,32 @@ noncomputable def arcLength (a b : α) : ℝ≥0∞ :=
 theorem arcLength_eq_zero_of_le (hba : b ≤ a) : arcLength f a b = 0 :=
   eVariationOn.subsingleton f <| by simp [hba]
 
+variable {f} in
 /-- The arc length on `[a, b]` vanishes if `f` is constant on this interval. -/
-theorem arcLength_eq_zero_of_constantOn (hf : (f '' Icc a b).Subsingleton) :
+theorem Set.Subsingleton.arcLength_eq_zero (hf : (f '' Icc a b).Subsingleton) :
     arcLength f a b = 0 :=
   eVariationOn.constant_on hf
+
+theorem Function.IsConst.arcLength {f : α → E} (hf : f.IsConst) (a b : α) :
+    arcLength f a b = 0 :=
+  Set.subsingleton_range_iff.mpr hf |>.anti (Set.image_subset_range _ _)
+    |>.arcLength_eq_zero
+
+@[simp]
+theorem arcLength_const (x : E) (a b : α) : arcLength (Function.const α x) a b = 0 :=
+  (Function.IsConst.const x).arcLength a b
+
+@[simp]
+theorem arcLength_fun_const (x : E) (a b : α) : arcLength (fun _ : α ↦ x) a b = 0 :=
+  arcLength_const x a b
+
+@[simp]
+theorem arcLength_one [One E] (a b : α) : arcLength (1 : α → E) a b = 0 :=
+  arcLength_const 1 a b
+
+@[simp]
+theorem arcLength_zero [Zero E] (a b : α) : arcLength (0 : α → E) a b = 0 :=
+  arcLength_const 0 a b
 
 /-- The arc length on the degenerate interval `[a, a]` is zero. -/
 theorem arcLength_self (a : α) : arcLength f a a = 0 := arcLength_eq_zero_of_le _ le_rfl
@@ -50,7 +72,7 @@ theorem edist_le_arcLength (hab : a ≤ b) : edist (f a) (f b) ≤ arcLength f a
   refine eVariationOn.edist_le f ?_ ?_ <;> simp [hab]
 
 /-- Arc length is additive on adjacent intervals. -/
-theorem arcLength_add (hab : a ≤ b) (hbc : b ≤ c) :
+theorem arcLength_add_arcLength (hab : a ≤ b) (hbc : b ≤ c) :
     arcLength f a b + arcLength f b c = arcLength f a c := by
   unfold arcLength
   convert eVariationOn.Icc_add_Icc f hab hbc (mem_univ _) <;> simp
@@ -58,11 +80,8 @@ theorem arcLength_add (hab : a ≤ b) (hbc : b ≤ c) :
 /-- The arc length along a monotone finite subdivision equals the arc length of the whole
 interval. -/
 theorem arcLength_sum {n : ℕ} {u : ℕ → α} (hu : Monotone u) :
-    ∑ i ∈ Finset.range n, arcLength f (u i) (u (i + 1)) = arcLength f (u 0) (u n) := by
-  induction n with
-  | zero => rw [arcLength_self, Finset.sum_range_zero]
-  | succ k ih =>
-      rw [Finset.sum_range_succ, ih, arcLength_add f (hu (Nat.zero_le k)) (hu (Nat.le_succ k))]
+    ∑ i ∈ Finset.range n, arcLength f (u i) (u (i + 1)) = arcLength f (u 0) (u n) :=
+  eVariationOn.sum' f hu
 
 /-- Arc length is preserved by a monotone reparametrization whose image is exactly the target
 interval. -/

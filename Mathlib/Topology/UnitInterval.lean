@@ -84,8 +84,14 @@ theorem symm_zero : σ 0 = 1 :=
 theorem symm_one : σ 1 = 0 :=
   Subtype.ext <| by simp [symm]
 
+/-- The midpoint `1 / 2` of the unit interval. -/
+abbrev half : I := (⟨(1 / 2 : ℝ), by norm_num⟩ : I)
+
+@[simp]
+lemma coe_half : (half : ℝ) = 1 / 2 := rfl
+
 @[grind =]
-theorem symm_half : σ ((⟨(1 / 2 : ℝ), by norm_num⟩ : I)) = ((⟨(1 / 2 : ℝ), by norm_num⟩ : I)) := by
+theorem symm_half : σ half = half := by
   norm_num [symm]
 
 @[simp, grind =]
@@ -127,11 +133,17 @@ def symmHomeomorph : I ≃ₜ I where
   left_inv := symm_symm
   right_inv := symm_symm
 
+theorem antitone_symm : Antitone σ := fun _ _ h ↦ sub_le_sub_left (α := ℝ) h _
+
 theorem strictAnti_symm : StrictAnti σ := fun _ _ h ↦ sub_lt_sub_left (α := ℝ) h _
 
-theorem symm_image_Icc (a b : I) (h : a ≤ b) : σ '' Icc a b = Icc (σ b) (σ a) :=
-  continuous_symm.continuousOn.image_Icc_of_antitoneOn h
-    (strictAnti_symm.antitone.antitoneOn (Icc a b))
+theorem symm_image_Icc (a b : I) : σ '' Icc a b = Icc (σ b) (σ a) := by
+  refine subset_antisymm (Antitone.image_Icc_subset strictAnti_symm.antitone) ?_
+  have h := Antitone.image_Icc_subset (f := σ) strictAnti_symm.antitone (a := σ b) (b := σ a)
+  rw [symm_symm, symm_symm] at h
+  rw [show Icc (σ b) (σ a) = σ '' (σ '' Icc (σ b) (σ a)) by
+    rw [image_image, show (fun x => σ (σ x)) = id from funext symm_symm, image_id]]
+  exact image_mono h
 
 @[simp]
 theorem symm_inj {i j : I} : σ i = σ j ↔ i = j := symm_bijective.injective.eq_iff
