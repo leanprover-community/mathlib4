@@ -828,6 +828,7 @@ public import Mathlib.Algebra.Module.Injective
 public import Mathlib.Algebra.Module.Lattice
 public import Mathlib.Algebra.Module.Lattice.Basic
 public import Mathlib.Algebra.Module.Lattice.Full
+public import Mathlib.Algebra.Module.Lattice.Integral
 public import Mathlib.Algebra.Module.LinearMap.Basic
 public import Mathlib.Algebra.Module.LinearMap.Defs
 public import Mathlib.Algebra.Module.LinearMap.DivisionRing
@@ -2139,6 +2140,7 @@ public import Mathlib.Analysis.InnerProductSpace.GramSchmidtOrtho
 public import Mathlib.Analysis.InnerProductSpace.Harmonic.Basic
 public import Mathlib.Analysis.InnerProductSpace.Harmonic.Constructions
 public import Mathlib.Analysis.InnerProductSpace.Harmonic.HarmonicContOnCl
+public import Mathlib.Analysis.InnerProductSpace.IntegralLattice
 public import Mathlib.Analysis.InnerProductSpace.JointEigenspace
 public import Mathlib.Analysis.InnerProductSpace.Laplacian
 public import Mathlib.Analysis.InnerProductSpace.LaxMilgram
