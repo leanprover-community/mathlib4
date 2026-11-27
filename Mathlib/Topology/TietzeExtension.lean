@@ -78,7 +78,7 @@ continuous function `g : C(X, Y)` such that `g ∘ e = f`. -/
 theorem ContinuousMap.exists_extension (he : IsClosedEmbedding e) (f : C(X₁, Y)) :
     ∃ (g : C(X, Y)), g.comp ⟨e, he.continuous⟩ = f := by
   let e' : X₁ ≃ₜ Set.range e := he.isEmbedding.toHomeomorph
-  obtain ⟨g, hg⟩ := (f.comp e'.symm).exists_restrict_eq he.isClosed_range
+  obtain ⟨g, hg⟩ := (f.comp e'.symm.toContinuousMap).exists_restrict_eq he.isClosed_range
   exact ⟨g, by ext x; simpa using! congr($hg ⟨e' x, x, rfl⟩)⟩
 
 /-- **Tietze extension theorem** for `TietzeExtension` spaces. Let `e` be a closed embedding of a
@@ -153,7 +153,7 @@ theorem TietzeExtension.of_retract {Y : Type v} {Z : Type w} [TopologicalSpace Y
 theorem TietzeExtension.of_homeo {Y : Type v} {Z : Type w} [TopologicalSpace Y]
     [TopologicalSpace Z] [TietzeExtension.{u, w} Z] (e : Y ≃ₜ Z) :
     TietzeExtension.{u, v} Y :=
-  .of_retract (e : C(Y, Z)) (e.symm : C(Z, Y)) <| by simp
+  .of_retract e.toContinuousMap e.symm.toContinuousMap <| by simp
 
 end TietzeExtensionClass
 
@@ -473,13 +473,13 @@ theorem exists_extension_forall_mem_of_isClosedEmbedding (f : C(X, ℝ)) {t : Se
     { toFun := (↑) ∘ h ∘ f
       continuous_toFun := by fun_prop
       map_bounded' := isBounded_range_iff.1
-        ((isBounded_Ioo (-1 : ℝ) 1).subset <| range_subset_iff.2 fun x => (h (f x)).2) }
+        ((isBounded_Ioo (-1 : ℝ) 1).subset <| range_subset_iff.2 fun x => (h (f x)).property) }
   let t' : Set ℝ := (↑) ∘ h '' t
-  have ht_sub : t' ⊆ Ioo (-1 : ℝ) 1 := image_subset_iff.2 fun x _ => (h x).2
+  have ht_sub : t' ⊆ Ioo (-1 : ℝ) 1 := image_subset_iff.2 fun x _ => (h x).property
   have : OrdConnected t' := by
     constructor
     rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩ z hz
-    lift z to Ioo (-1 : ℝ) 1 using Icc_subset_Ioo (h x).2.1 (h y).2.2 hz
+    lift z to Ioo (-1 : ℝ) 1 using Icc_subset_Ioo (h x).property.1 (h y).property.2 hz
     change z ∈ Icc (h x) (h y) at hz
     rw [← h.image_Icc] at hz
     rcases hz with ⟨z, hz, rfl⟩

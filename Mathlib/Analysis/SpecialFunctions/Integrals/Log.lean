@@ -9,6 +9,9 @@ public import Mathlib.Analysis.SpecialFunctions.Integrability.Log
 
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integrals of Functions Prominently Involving the Logarithm
 

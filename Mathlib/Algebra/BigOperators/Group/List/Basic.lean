@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.BigOperators.Group.List.Defs
 public import Mathlib.Algebra.Group.Basic
-public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Group.Int.Defs
 public import Mathlib.Algebra.Group.Nat.Defs
@@ -17,6 +16,10 @@ public import Mathlib.Data.List.TakeDrop
 public import Mathlib.Order.Basic
 
 import Mathlib.Algebra.Divisibility.Basic
+import Mathlib.Algebra.Group.Commute.Defs
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Sums and products from lists

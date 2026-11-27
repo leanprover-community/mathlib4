@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Combinatorics.Matroid.Closure
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite-rank sets
 
@@ -15,7 +18,7 @@ or equivalently that the restriction of `M` to `X` is `Matroid.RankFinite`.
 Sets in a matroid with `IsRkFinite` are the largest class of sets for which one can do nontrivial
 integer arithmetic involving the rank function.
 
-## Implementation Details
+## Implementation notes
 
 Unlike most set predicates on matroids, a set `X` with `M.IsRkFinite X` need not satisfy `X ⊆ M.E`,
 so may contain junk elements. This seems to be what makes the definition easiest to use.

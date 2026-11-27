@@ -61,9 +61,9 @@ def normalize (l : AList (fun _ : ℕ => Bool)) :
     match h : l.lookup v with
     | none => ⟨var v, ◾⟩
     | some b => ⟨lit b, ◾⟩
-  | .ite (lit true)   t e => have t' := normalize l t; ⟨t'.1, ◾⟩
-  | .ite (lit false)  t e => have e' := normalize l e; ⟨e'.1, ◾⟩
-  | .ite (.ite a b c) t e => have i' := normalize l (.ite a (.ite b t e) (.ite c t e)); ⟨i'.1, ◾⟩
+  | .ite (lit true)   t e => have t' := normalize l t; ⟨t'.val, ◾⟩
+  | .ite (lit false)  t e => have e' := normalize l e; ⟨e'.val, ◾⟩
+  | .ite (.ite a b c) t e => have i' := normalize l (.ite a (.ite b t e) (.ite c t e)); ⟨i'.val, ◾⟩
   | .ite (var v)      t e =>
     match h : l.lookup v with
     | none =>
@@ -91,7 +91,7 @@ def normalize (l : AList (fun _ : ℕ => Bool)) :
           have := he₃ w
           by_cases w = v <;> ◾⟩
     | some b =>
-      have i' := normalize l (.ite (lit b) t e); ⟨i'.1, ◾⟩
+      have i' := normalize l (.ite (lit b) t e); ⟨i'.val, ◾⟩
   termination_by e => e.normSize
 
 /-
@@ -104,6 +104,6 @@ recall IfNormalization :=
   { Z : IfExpr → IfExpr // ∀ e, (Z e).normalized ∧ (Z e).eval = e.eval }
 
 example : IfNormalization :=
-  ⟨_, fun e => ⟨(IfExpr.normalize ∅ e).2.2.1, by simp [(IfExpr.normalize ∅ e).2.1]⟩⟩
+  ⟨_, fun e => ⟨(IfExpr.normalize ∅ e).property.2.1, by simp [(IfExpr.normalize ∅ e).property.1]⟩⟩
 
 end IfExpr

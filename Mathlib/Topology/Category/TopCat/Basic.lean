@@ -104,20 +104,18 @@ The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep 
 @[simp]
 lemma hom_id {X : TopCat.{u}} : (𝟙 X : X ⟶ X).hom = ContinuousMap.id X := rfl
 
-@[simp]
 theorem id_app (X : TopCat.{u}) (x : ↑X) : (𝟙 X : X ⟶ X) x = x := rfl
 
-@[simp] theorem coe_id (X : TopCat.{u}) : (𝟙 X : X → X) = id := rfl
+theorem coe_id (X : TopCat.{u}) : (𝟙 X : X → X) = id := rfl
 
 @[simp]
 lemma hom_comp {X Y Z : TopCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).hom = g.hom.comp f.hom := rfl
 
-@[simp]
 theorem comp_app {X Y Z : TopCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
     (f ≫ g : X → Z) x = g (f x) := rfl
 
-@[simp] theorem coe_comp {X Y Z : TopCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
+theorem coe_comp {X Y Z : TopCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g : X → Z) = g ∘ f := rfl
 
 @[ext]
@@ -160,21 +158,6 @@ def Hom.equivContinuousMap (X Y : TopCat.{u}) : (X ⟶ Y) ≃ C(X, Y) where
   toFun f := f.hom
   invFun f := ofHom f
 
-/--
-Replace a function coercion for a morphism `TopCat.of X ⟶ TopCat.of Y` with the definitionally
-equal function coercion for a continuous map `C(X, Y)`.
--/
-@[deprecated "No replacement" (since := "2026-04-23")]
-theorem coe_of_of {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y]
-    {f : C(X, Y)} {x} :
-    @DFunLike.coe (TopCat.of X ⟶ TopCat.of Y) ((CategoryTheory.forget TopCat).obj (TopCat.of X))
-      (fun _ ↦ (CategoryTheory.forget TopCat).obj ↧Y) ConcreteCategory.instFunLike
-      (ofHom f) x =
-    @DFunLike.coe C(X, Y) X
-      (fun _ ↦ Y) _
-      f x :=
-  rfl
-
 instance inhabited : Inhabited TopCat :=
   ⟨↧Empty⟩
 
@@ -194,8 +177,8 @@ def trivial : Type u ⥤ TopCat.{u} where
 /-- Any homeomorphisms induces an isomorphism in `Top`. -/
 @[simps]
 def isoOfHomeo {X Y : TopCat.{u}} (f : X ≃ₜ Y) : X ≅ Y where
-  hom := ofHom f
-  inv := ofHom f.symm
+  hom := ofHom f.toContinuousMap
+  inv := ofHom f.symm.toContinuousMap
 
 /-- Any isomorphism in `Top` induces a homeomorphism. -/
 @[simps]

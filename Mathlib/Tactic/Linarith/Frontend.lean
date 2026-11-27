@@ -83,7 +83,7 @@ There are two oracles that can be used in `linarith` so far.
   The default version of the algorithm operates with sparse matrices as it is usually faster. You
   can invoke the dense version by `linarith (oracle := .simplexAlgorithmDense)`.
 
-## Implementation details
+## Implementation notes
 
 `linarith` homogenizes numerical constants: the expression `1` is treated as a variable `t₀`.
 
@@ -146,7 +146,6 @@ namespace Mathlib.Tactic.Linarith
 
 The config object is defined in the frontend, instead of in `Datatypes.lean`, since the oracles must
 be in context to choose a default.
-
 -/
 
 section

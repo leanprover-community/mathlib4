@@ -41,7 +41,7 @@ For `H : Hypergraph α`:
 * `H.EAdj e f` means that there exists some vertex that is incident to the edges `e` and
   `f : Set α`.
 
-## Implementation details
+## Implementation notes
 
 This implementation is heavily inspired by Peter Nelson and Jun Kwon's `Graph` implementation,
 which was in turn inspired by `Matroid`.
@@ -53,7 +53,6 @@ the vertex or edge set. This is an issue, but is likely amenable to automation."
 
 Because `edgeSet` is a `Set (Set α)`, rather than a multiset, here we are assuming that
 all hypergraphs are *without repeated edge*.
-
 -/
 
 public section
@@ -210,8 +209,8 @@ lemma IsNonempty.of_nonempty_edgeSet (hE : E(H).Nonempty) : H.IsNonempty :=
 
 @[simp]
 theorem ne_bot_iff : H ≠ ⊥ ↔ H.IsNonempty := by
-  simp [IsNonempty, Set.nonempty_iff_ne_empty, Hypergraph.ext_iff]
-  grind [bot_vertexSet, bot_edgeSet]
+  simp [IsNonempty, Hypergraph.ext_iff]
+  grind [bot_vertexSet, bot_edgeSet, Set.not_nonempty_iff_eq_empty]
 
 alias ⟨_, IsNonempty.ne_bot⟩ := ne_bot_iff
 
@@ -248,7 +247,7 @@ lemma IsTrivial.trivialOn (hf : Set.Nonempty f) :
   grind [trivialOn, IsTrivial]
 
 lemma IsTrivial.isNonempty (h : IsTrivial H) : IsNonempty H := by
-  grind [IsNonempty, IsTrivial, Set.nonempty_iff_ne_empty]
+  grind [IsNonempty, IsTrivial]
 
 lemma IsTrivial.notMem_edgeSet (h : H.IsTrivial) : e ∉ E(H) := by grind [IsTrivial]
 

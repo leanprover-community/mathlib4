@@ -8,9 +8,10 @@ module
 public import Mathlib.Algebra.Group.AddChar
 public import Mathlib.Algebra.MonoidAlgebra.Module
 public import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
-public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Algebra.Ring.Action.Rat
 public import Mathlib.Data.Finset.Sort
+
+import Mathlib.Algebra.Order.Group.Nat
 
 
 /-!
@@ -68,7 +69,27 @@ The embedding from `R` is called `C`. -/
 @[wikidata Q43260]
 abbrev Polynomial (R : Type*) [Semiring R] : Type _ := AddMonoidAlgebra R ℕ
 
-@[inherit_doc] scoped[Polynomial] notation:9000 R "[X]" => Polynomial R
+namespace Polynomial
+
+-- We parse `[`, `X`, `]` as separate tokens (`&"X"` matches the identifier `X` without making it a
+-- keyword) rather than introducing a `[X]` token, as the latter would make `simp [X]` lex as
+-- `simp` + `[X]`. The priority makes `R[X]` (where `R` is a variable) win over `GetElem` notation
+-- `xs[i]` (where `xs` and `i` are variables) and over the `AddMonoidAlgebra` notation `R[M]`
+-- (where `R` and `M` are variables) which has priority `high`.
+@[inherit_doc Polynomial]
+scoped syntax:9000 (priority := high + 1) term:max noWs "[" noWs &"X" noWs "]" : term
+
+scoped macro_rules
+  | `($R[X]) => `(Polynomial $R)
+
+open Lean PrettyPrinter in
+/-- Unexpander for `Polynomial`. -/
+@[scoped app_unexpander Polynomial]
+meta def unexpander : Unexpander
+  | `($_ $R) => `($R[X])
+  | _ => throw ()
+
+end Polynomial
 
 open AddMonoidAlgebra Finset Module
 open Finsupp hiding single
@@ -270,8 +291,8 @@ theorem support_eq_empty : p.support = ∅ ↔ p = 0 := by
   rcases p with ⟨⟩
   simp [support]
 
-@[simp] lemma support_nonempty : p.support.Nonempty ↔ p ≠ 0 :=
-  Finset.nonempty_iff_ne_empty.trans support_eq_empty.not
+@[simp] lemma support_nonempty : p.support.Nonempty ↔ p ≠ 0 := by
+  simp [← Finset.ne_empty_iff_nonempty]
 
 theorem card_support_eq_zero : #p.support = 0 ↔ p = 0 := by simp
 
@@ -486,7 +507,6 @@ theorem coeff_monomial_same (n : ℕ) (c : R) : (monomial n c).coeff n = c :=
 theorem coeff_monomial_of_ne {m n : ℕ} (c : R) (h : m ≠ n) : (monomial n c).coeff m = 0 :=
   Finsupp.single_eq_of_ne h
 
-@[simp]
 theorem coeff_zero (n : ℕ) : coeff (0 : R[X]) n = 0 :=
   rfl
 
@@ -497,13 +517,8 @@ theorem coeff_one {n : ℕ} : coeff (1 : R[X]) n = if n = 0 then 1 else 0 := by
 @[deprecated coeff_one_zero +typeChanged (since := "2026-10-25")]
 protected theorem coeff_one_zero : coeff (1 : R[X]) 0 = 1 := by simp
 
--- `simp [X]` parses as `simp` + `[X]` (where `[X]` is the token coming from `Polynomial` notation)
--- instead of the expected `simp` + `[` + `X` + `]` because the former is a longer match!
-@[simp]
-theorem coeff_X_one : coeff (X : R[X]) 1 = 1 := by simp [X,]
-
-@[simp]
-theorem coeff_X_zero : coeff (X : R[X]) 0 = 0 := by simp [X,]
+@[simp] lemma coeff_X_zero : coeff (X : R[X]) 0 = 0 := by simp [X]
+@[simp] lemma coeff_X_one : coeff (X : R[X]) 1 = 1 := by simp [X]
 
 theorem coeff_monomial_succ : coeff (monomial (n + 1) a) 0 = 0 := by simp
 
@@ -934,7 +949,7 @@ theorem coeffs_empty_iff {p : R[X]} : coeffs p = ∅ ↔ p = 0 := by
 
 @[simp]
 theorem coeffs_nonempty_iff {p : R[X]} : p.coeffs.Nonempty ↔ p ≠ 0 := by
-  simp [Finset.nonempty_iff_ne_empty]
+  simp [← Finset.ne_empty_iff_nonempty]
 
 theorem coeffs_monomial (n : ℕ) {c : R} (hc : c ≠ 0) : (monomial n c).coeffs = {c} := by
   rw [coeffs, support_monomial n hc]
@@ -962,10 +977,8 @@ theorem ofFinsupp_intCast (z : ℤ) : (ofFinsupp z : R[X]) = z := rfl
 @[deprecated "Now a tautology" (since := "2026-07-18")]
 theorem toFinsupp_intCast (z : ℤ) : (z : R[X]).toFinsupp = z := rfl
 
-@[simp]
 theorem coeff_neg (p : R[X]) (n : ℕ) : coeff (-p) n = -coeff p n := by simp
 
-@[simp]
 theorem coeff_sub (p q : R[X]) (n : ℕ) : coeff (p - q) n = coeff p n - coeff q n := by simp
 
 @[simp]

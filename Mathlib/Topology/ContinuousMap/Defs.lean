@@ -60,11 +60,9 @@ variable {F X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [FunLike F X 
 variable [ContinuousMapClass F X Y]
 
 /-- Coerce a bundled morphism with a `ContinuousMapClass` instance to a `ContinuousMap`. -/
-@[coe, reducible] def ContinuousMap.ofClass (f : F) : C(X, Y) := ⟨f, map_continuous f⟩
+def ContinuousMap.ofClass (f : F) : C(X, Y) := ⟨f, map_continuous f⟩
 
 @[deprecated (since := "2026-10-14")] alias toContinuousMap := ContinuousMap.ofClass
-
-instance : CoeTC F C(X, Y) := ⟨ContinuousMap.ofClass⟩
 
 end ContinuousMapClass
 
@@ -96,13 +94,14 @@ initialize_simps_projections ContinuousMap (toFun → apply)
 
 @[simp]
 protected theorem coe_ofClass {F : Type*} [FunLike F X Y] [ContinuousMapClass F X Y] (f : F) :
-    ⇑(f : C(X, Y)) = f :=
+    ⇑(ofClass f) = f :=
   rfl
 
 @[deprecated (since := "2026-10-15")] protected alias coe_coe := ContinuousMap.coe_ofClass
 
+@[deprecated ContinuousMap.coe_ofClass +typeChanged (since := "2026-11-24")]
 protected theorem coe_apply {F : Type*} [FunLike F X Y] [ContinuousMapClass F X Y] (f : F) (x : X) :
-    (f : C(X, Y)) x = f x :=
+    (ofClass f : C(X, Y)) x = f x :=
   rfl
 
 /-- Coercion to a `ContinuousMap` is injective.

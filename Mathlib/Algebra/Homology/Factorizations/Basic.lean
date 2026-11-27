@@ -31,7 +31,6 @@ ingredients in the proof that the bounded below derived category of an abelian
 category `C` with enough injectives identifies to the bounded below homotopy category
 of complexes of injective objects in `C`. This will be used in the construction
 of total derived functors (and a refactor of the sequence of derived functors).
-
 -/
 
 @[expose] public section

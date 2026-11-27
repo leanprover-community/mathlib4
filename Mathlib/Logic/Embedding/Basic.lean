@@ -72,7 +72,6 @@ example (s : Finset (Fin 3)) (f : Equiv.Perm (Fin 3)) : s.map f = s.map f.toEmbe
 protected def toEmbedding : α ↪ β :=
   ⟨f, f.injective⟩
 
-@[simp]
 theorem coe_toEmbedding : (f.toEmbedding : α → β) = f :=
   rfl
 
@@ -383,7 +382,7 @@ theorem trans_arrowCongrLeft {α₁ : Sort u} {α₂ : Sort v} {α₃ : Sort x} 
 protected def subtypeMap {α β} {p : α → Prop} {q : β → Prop} (f : α ↪ β)
     (h : ∀ ⦃x⦄, p x → q (f x)) :
     { x : α // p x } ↪ { y : β // q y } :=
-  ⟨Subtype.map f h, Subtype.map_injective h f.2⟩
+  ⟨Subtype.map f h, Subtype.map_injective h f.inj'⟩
 
 open Set
 

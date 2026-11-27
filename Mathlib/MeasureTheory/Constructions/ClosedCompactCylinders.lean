@@ -6,8 +6,9 @@ Authors: Rémy Degenne, Peter Pfaffelhuber
 module
 
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-public import Mathlib.MeasureTheory.Constructions.Cylinders
 public import Mathlib.Topology.Compactness.CompactSystem
+
+import Mathlib.MeasureTheory.Constructions.Cylinders
 
 /-! # Cylinders with closed compact bases
 
@@ -25,7 +26,6 @@ proof of Kolmogorov's extension theorem.
   cylinder.
 * `isCompactSystem_closedCompactCylinders`: cylinders with compact closed bases form a compact
   system.
-
 -/
 
 @[expose] public section

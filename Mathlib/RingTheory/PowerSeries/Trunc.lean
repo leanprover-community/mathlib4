@@ -9,14 +9,15 @@ public import Mathlib.RingTheory.PowerSeries.Basic
 
 import Mathlib.Algebra.Polynomial.Degree.Lemmas
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Formal power series in one variable - Truncation
 
 `PowerSeries.trunc n φ` truncates a (univariate) formal power series
 to the polynomial that has the same coefficients as `φ`, for all `m < n`,
 and `0` otherwise.
-
 -/
 
 @[expose] public section

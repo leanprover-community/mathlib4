@@ -8,8 +8,9 @@ module
 public import Mathlib.Basic.Real.ENatENNReal
 public import Mathlib.Data.Set.Card
 public import Mathlib.Tactic.Bound
-public import Mathlib.Topology.Algebra.InfiniteSum.Order
 public import Mathlib.Topology.Instances.ENNReal.Lemmas
+
+import Mathlib.Topology.Algebra.InfiniteSum.Order
 
 /-!
 # Infinite sums in extended nonnegative reals
@@ -326,7 +327,7 @@ theorem finite_const_le_of_tsum_ne_top {ι : Type*} {a : ι → ℝ≥0∞} (tsu
   refine tsum_ne_top (top_unique ?_)
   calc ∞ = ∑' _ : { i | ε ≤ a i }, ε := (tsum_const_eq_top_of_ne_zero ε_ne_zero).symm
   _ ≤ ∑' i, a i := CompleteLattice.summable.tsum_le_tsum_of_inj (↑)
-    Subtype.val_injective (fun _ _ => zero_le) (fun i => i.2) CompleteLattice.summable
+    Subtype.val_injective (fun _ _ => zero_le) (fun i => i.property) CompleteLattice.summable
 
 /-- Markov's inequality for `Finset.card` and `tsum` in `ℝ≥0∞`. -/
 theorem finset_card_const_le_le_of_tsum_le {ι : Type*} {a : ι → ℝ≥0∞} {c : ℝ≥0∞} (c_ne_top : c ≠ ∞)
@@ -613,7 +614,7 @@ theorem cauchySeq_of_edist_le_of_summable {f : ℕ → α} (d : ℕ → ℝ≥0)
   refine (Metric.cauchySeq_iff'.1 hd ε (NNReal.coe_pos.2 εpos)).imp fun N hN n hn ↦ ?_
   specialize hN n hn
   -- We simplify the known inequality.
-  rw [dist_nndist, NNReal.nndist_eq, ← Finset.sum_range_add_sum_Ico _ hn, add_tsub_cancel_left,
+  rw [dist_nnDist, NNReal.nnDist_eq, ← Finset.sum_range_add_sum_Ico _ hn, add_tsub_cancel_left,
     NNReal.coe_lt_coe, max_lt_iff] at hN
   rw [edist_comm]
   -- Then use `hf` to simplify the goal to the same form.

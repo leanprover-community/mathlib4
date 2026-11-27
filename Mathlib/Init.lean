@@ -9,7 +9,6 @@ public meta import Lean.Linter.Sets -- for the definition of linter sets
 public meta import Mathlib.Lean.Linter -- linter utilities; will be transitively imported in #31134
 public meta import Mathlib.Tactic.AdaptationNote -- make #adaptation_note available everywhere
 public meta import Mathlib.Tactic.Lemma
-public meta import Mathlib.Tactic.Linter.AuxLemma
 public meta import Mathlib.Tactic.Linter.DeclType
 public meta import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
 public meta import Mathlib.Tactic.Linter.DirectoryDependency
@@ -21,12 +20,14 @@ public meta import Mathlib.Tactic.Linter.HashCommandLinter
 public meta import Mathlib.Tactic.Linter.HaveILetI
 public meta import Mathlib.Tactic.Linter.Header
 public meta import Mathlib.Tactic.Linter.InternalConstructor
--- The following module imports `Batteries.Tactic.Lint`, where `#lint` is defined.
+-- The following module imports `Batteries.Linter`, where `#lint` is defined.
 public meta import Mathlib.Tactic.Linter.Lint
+public meta import Mathlib.Tactic.Linter.LongDeclaration
 public meta import Mathlib.Tactic.Linter.Multigoal
-public meta import Mathlib.Tactic.Linter.OldObtain
+public meta import Mathlib.Tactic.Linter.NumericProjection
 public meta import Mathlib.Tactic.Linter.PrivateModule
 public meta import Mathlib.Tactic.Linter.Style
+public meta import Mathlib.Tactic.Linter.SyntaxBased
 public meta import Mathlib.Tactic.Linter.TacticDocumentation
 public meta import Mathlib.Tactic.Linter.UnusedTactic
 public meta import Mathlib.Tactic.Linter.Whitespace
@@ -74,7 +75,6 @@ All linters imported here have no bulk imports;
 - the `minImports` linter, as that linter is disabled by default (and has an informational function;
   it is useful for debugging, but not as a permanently enabled lint)
 - the `upstreamableDecls` linter, as it is also mostly informational
-
 -/
 
 public section
@@ -90,6 +90,7 @@ register_linter_set linter.mathlibStandardSet :=
   linter.auxLemma
   linter.flexible
   linter.hashCommand
+  linter.longDeclaration
   linter.oldObtain
   linter.privateModule
   linter.style.cases
@@ -109,6 +110,7 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.openClassical
   linter.style.maxHeartbeats
   linter.style.missingEnd
+  linter.style.numericProjections
   linter.style.setOption
   linter.style.show
   linter.style.whitespace
@@ -133,7 +135,7 @@ register_linter_set linter.weeklyLintSet :=
   linter.tacticAnalysis.verifyGrindOnly
 
 -- Check that all linter options mentioned in the mathlib standard linter set exist.
-open Lean Elab.Command Linter Mathlib.Linter Style UnusedInstancesInType AuxLemma
+open Lean Elab.Command Linter Mathlib.Linter Style UnusedInstancesInType
 
 run_cmd liftTermElabM do
   let DefinedInScripts : Array Name :=

@@ -12,12 +12,14 @@ public import Mathlib.Data.Nat.Choose.Sum
 
 import Mathlib.Algebra.MonoidAlgebra.Support
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Theory of univariate polynomials
 
 The theorems include formulas for computing coefficients, such as
 `coeff_add`, `coeff_sum`, `coeff_mul`
-
 -/
 
 @[expose] public section
@@ -38,7 +40,6 @@ variable [Semiring R] {p q r : R[X]}
 
 section Coeff
 
-@[simp]
 theorem coeff_add (p q : R[X]) (n : ℕ) : coeff (p + q) n = coeff p n + coeff q n := rfl
 
 @[deprecated AddMonoidAlgebra.coeff_smul_apply +typeChanged (since := "2026-09-03")]
@@ -359,8 +360,8 @@ end cast
 
 instance charZero [CharZero R] : CharZero R[X] where cast_injective _x _y := natCast_inj.mp
 
-instance charP {p : ℕ} [CharP R p] : CharP R[X] p where
+instance {p : ℕ} [CharP R p] : CharP R[X] p where
   cast_eq_zero_iff n := by
-    rw [← CharP.cast_eq_zero_iff R, ← C_inj (R := R), map_natCast, C_0]
+    rw [← map_natCast C, ← C_0, C_inj, CharP.cast_eq_zero_iff R]
 
 end Polynomial

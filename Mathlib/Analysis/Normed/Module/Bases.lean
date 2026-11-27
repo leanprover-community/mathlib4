@@ -74,7 +74,6 @@ This file provides a unified structure `GeneralSchauderBasis` that captures both
 * [Albiac, Fernando. and Kalton, Nigel J., Topics in Banach Space Theory][Albiac_Kalton_2016].
 * [Singer, Ivan, Bases in Banach spaces][Singer_1970].
 * [Marti, Jürg T., Introduction to the theory of bases][MartiJurg1969].
-
 -/
 
 @[expose] public section
@@ -212,12 +211,15 @@ namespace UnconditionalSchauderBasis
 
 variable (b : UnconditionalSchauderBasis β 𝕜 X)
 
-/-- The basis constant for unconditional bases (supremum over all finite sets) as `enorm`. -/
+/-- The basis constant for unconditional bases (supremum over all finite sets) as `eNorm`. -/
 noncomputable def enormProjBound : ℝ≥0∞ := ⨆ A : Finset β, ‖b.proj A‖ₑ
 
-/-- The `enorm` of any projection is bounded by the basis constant. -/
-theorem enorm_proj_le_enormProjBound (A : Finset β) : ‖b.proj A‖ₑ ≤ b.enormProjBound :=
+/-- The `eNorm` of any projection is bounded by the basis constant. -/
+theorem eNorm_proj_le_enormProjBound (A : Finset β) : ‖b.proj A‖ₑ ≤ b.enormProjBound :=
   le_iSup (fun A ↦ ‖b.proj A‖ₑ) A
+
+@[deprecated (since := "2026-11-06")]
+alias enorm_proj_le_enormProjBound := eNorm_proj_le_enormProjBound
 
 /-- Projections are uniformly bounded for unconditional bases. -/
 theorem exists_norm_proj_le [CompleteSpace X] : ∃ C : ℝ, ∀ A : Finset β, ‖b.proj A‖ ≤ C := by
@@ -333,12 +335,15 @@ theorem exists_norm_proj_le [CompleteSpace X] : ∃ C : ℝ, ∀ n : ℕ, ‖b.p
     (Metric.isBounded_range_of_tendsto (fun n ↦ b.proj n x) (tendsto_proj b x))
   exact ⟨M, Set.forall_mem_range.mp hM⟩
 
-/-- The basis constant for Schauder bases (supremum over projections) as `enorm`. -/
+/-- The basis constant for Schauder bases (supremum over projections) as `eNorm`. -/
 noncomputable def enormProjBound : ℝ≥0∞ := ⨆ n, ‖b.proj n‖ₑ
 
-/-- The enorm of any projection is bounded by the basis constant. -/
-theorem enorm_proj_le_enormProjBound (n : ℕ) : ‖b.proj n‖ₑ ≤ b.enormProjBound :=
+/-- The eNorm of any projection is bounded by the basis constant. -/
+theorem eNorm_proj_le_enormProjBound (n : ℕ) : ‖b.proj n‖ₑ ≤ b.enormProjBound :=
   le_iSup (fun i ↦ ‖b.proj i‖ₑ) n
+
+@[deprecated (since := "2026-11-06")]
+alias enorm_proj_le_enormProjBound := eNorm_proj_le_enormProjBound
 
 /-- The basis constant for Schauder bases (supremum over projections) as `nnNorm`.
     Requires completeness to guarantee the supremum is finite,

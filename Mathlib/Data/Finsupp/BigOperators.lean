@@ -31,7 +31,6 @@ it is a member of the support of a member of the collection:
 * `List.mem_foldr_sup_support_iff`
 * `Multiset.mem_sup_map_support_iff`
 * `Finset.mem_sup_support_iff`
-
 -/
 
 public section
@@ -50,12 +49,12 @@ theorem List.support_sum_subset [AddZeroClass M] (l : List (ι →₀ M)) :
 theorem Multiset.support_sum_subset [AddCommMonoid M] (s : Multiset (ι →₀ M)) :
     s.sum.support ⊆ (s.map Finsupp.support).sup := by
   induction s using Quot.inductionOn
-  simpa only [Multiset.quot_mk_to_coe'', Multiset.sum_coe, Multiset.map_coe, Multiset.sup_coe,
+  simpa only [quot_mk_to_coe', Multiset.sum_coe, Multiset.map_coe, Multiset.sup_coe,
     List.foldr_map] using! List.support_sum_subset _
 
 theorem Finset.support_sum_subset [AddCommMonoid M] (s : Finset (ι →₀ M)) :
     (s.sum id).support ⊆ Finset.sup s Finsupp.support := by
-  convert! Multiset.support_sum_subset s.1; simp
+  convert! Multiset.support_sum_subset s.val; simp
 
 theorem List.mem_foldr_sup_support_iff [Zero M] {l : List (ι →₀ M)} {x : ι} :
     x ∈ l.foldr (Finsupp.support · ∪ ·) ∅ ↔ ∃ f ∈ l, x ∈ f.support := by
@@ -69,7 +68,7 @@ theorem List.mem_foldr_sup_support_iff [Zero M] {l : List (ι →₀ M)} {x : ι
 theorem Multiset.mem_sup_map_support_iff [Zero M] {s : Multiset (ι →₀ M)} {x : ι} :
     x ∈ (s.map Finsupp.support).sup ↔ ∃ f ∈ s, x ∈ f.support :=
   Quot.inductionOn s fun _ ↦ by
-    simpa only [Multiset.quot_mk_to_coe'', Multiset.map_coe, Multiset.sup_coe, List.foldr_map]
+    simpa only [quot_mk_to_coe', Multiset.map_coe, Multiset.sup_coe, List.foldr_map]
     using! List.mem_foldr_sup_support_iff
 
 theorem Finset.mem_sup_support_iff [Zero M] {s : Finset (ι →₀ M)} {x : ι} :
@@ -103,17 +102,17 @@ theorem Multiset.support_sum_eq [AddCommMonoid M] (s : Multiset (ι →₀ M))
   obtain ⟨l, hl, hd⟩ := hs
   suffices a.Pairwise (_root_.Disjoint on Finsupp.support) by
     convert! List.support_sum_eq a this
-    simp only [quot_mk_to_coe'', map_coe, sup_coe,
+    simp only [quot_mk_to_coe', map_coe, sup_coe,
       Finset.bot_eq_empty, List.foldr_map]
-  simp only [Multiset.quot_mk_to_coe'', Multiset.coe_eq_coe] at hl
+  simp only [quot_mk_to_coe', Multiset.coe_eq_coe] at hl
   exact hl.symm.pairwise hd fun h ↦ _root_.Disjoint.symm h
 
 theorem Finset.support_sum_eq [AddCommMonoid M] (s : Finset (ι →₀ M))
     (hs : (s : Set (ι →₀ M)).PairwiseDisjoint Finsupp.support) :
     (s.sum id).support = Finset.sup s Finsupp.support := by
   classical
-  suffices s.1.Pairwise (_root_.Disjoint on Finsupp.support) by
-    convert! Multiset.support_sum_eq s.1 this
+  suffices s.val.Pairwise (_root_.Disjoint on Finsupp.support) by
+    convert! Multiset.support_sum_eq s.val this
     exact (Finset.sum_val _).symm
   obtain ⟨l, hl, hn⟩ : ∃ l : List (ι →₀ M), l.toFinset = s ∧ l.Nodup := by
     refine ⟨s.toList, ?_, Finset.nodup_toList _⟩

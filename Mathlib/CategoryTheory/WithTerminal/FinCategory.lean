@@ -9,13 +9,14 @@ public import Mathlib.CategoryTheory.FinCategory.Basic
 public import Mathlib.CategoryTheory.WithTerminal.Basic
 public import Mathlib.Data.Fintype.Option
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # `WithTerminal C` and `WithInitial C` are finite whenever `C` is
 
 If `C` has finitely many objects, then so do `WithTerminal C` and `WithInitial C`,
 and likewise if `C` has finitely many morphisms as well.
-
 -/
 
 @[expose] public section

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Homology.Embedding.CochainComplex
 public import Mathlib.Algebra.Homology.Factorizations.Basic
 public import Mathlib.Algebra.Homology.HomotopyCategory.MappingCone
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Factorization lemma
 
@@ -18,7 +21,6 @@ can be factored as `i ≫ p` where `i : K ⟶ L'` is a monomorphism (with
 `L'` bounded below) and `p : L' ⟶ L` a quasi-isomorphism that is an epimorphism
 with a degreewise injective kernel. (This is part of the factorization axiom CM5
 for a model category structure on bounded below cochain complexes (TODO @joelriou).)
-
 -/
 
 @[expose] public section
@@ -36,12 +38,11 @@ variable (K L) in
 /-- Given a cochain complex `K`, this is a cochain complex `I K` with
 zero differentials which in degree `n` consists of the injective
 object `Injective.under (K.X n)`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def I : CochainComplex C ℤ where
   X n := Injective.under (K.X n)
   d _ _ := 0
 
-set_option backward.defeqAttrib.useBackward true in
 instance (n : ℤ) : Injective ((I K).X n) := by
   dsimp
   infer_instance
@@ -64,7 +65,6 @@ variable (K L) in
 /-- The second projection `mappingCone (𝟙 (I K)) ⊞ L ⟶ L`. -/
 noncomputable abbrev p : mappingCone (𝟙 (I K)) ⊞ L ⟶ L := biprod.snd
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A lift of a morphism `f : K ⟶ L` between bounded below cochain complexes
 as a monomorphism `K ⟶ mappingCone (𝟙 (I K)) ⊞ L`. -/
 noncomputable def i : K ⟶ mappingCone (𝟙 (I K)) ⊞ L :=
@@ -75,14 +75,12 @@ noncomputable def i : K ⟶ mappingCone (𝟙 (I K)) ⊞ L :=
         simp [HomComplex.δ_v 1 2 (by lia) _ p q hpq (p + 1) (p + 1) (by lia) rfl]))
     (HomComplex.Cochain.ofHoms (fun n => Injective.ι _)) (by cat_disch)) f
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma i_f_comp (n : ℤ) : (i f).f n ≫
     (biprod.fst : mappingCone (𝟙 (I K)) ⊞ L ⟶ _).f n ≫
       (mappingCone.snd (𝟙 (I K))).v n n (add_zero n) = Injective.ι (K.X n) := by
   simp [i]
 
-set_option backward.isDefEq.respectTransparency false in
 instance (n : ℤ) : Mono ((i f).f n) := mono_of_mono_fac (i_f_comp f n)
 
 instance : Mono (i f) := HomologicalComplex.mono_of_mono_f (i f) inferInstance

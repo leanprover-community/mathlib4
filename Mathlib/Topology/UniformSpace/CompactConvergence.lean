@@ -8,8 +8,9 @@ module
 public import Mathlib.Topology.CompactOpen
 public import Mathlib.Topology.Compactness.CompactlyCoherentSpace
 public import Mathlib.Topology.Maps.Proper.Basic
-public import Mathlib.Topology.UniformSpace.Compact
 public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
+
+import Mathlib.Topology.UniformSpace.Compact
 
 /-!
 # Compact convergence (uniform convergence on compact sets)
@@ -72,7 +73,7 @@ and also prove its basic properties.
   on a compact space, a sequence of functions `Fₙ` in `C(α, β)` converges to some `f`
   iff `Fₙ` converges to `f` uniformly.
 
-## Implementation details
+## Implementation notes
 
 For technical reasons (see Note [forgetful inheritance]),
 instead of defining a `UniformSpace C(α, β)` structure
@@ -293,8 +294,8 @@ theorem uniformContinuous_comp_left (g : C(α, γ)) :
 to an isomorphism `C(X, Y) ≃ᵤ C(Z, T)`. -/
 protected def _root_.UniformEquiv.arrowCongr (φ : α ≃ₜ γ) (ψ : β ≃ᵤ δ) :
     C(α, β) ≃ᵤ C(γ, δ) where
-  toFun f := .comp ψ.toHomeomorph <| f.comp φ.symm
-  invFun f := .comp ψ.symm.toHomeomorph <| f.comp φ
+  toFun f := .comp ψ.toHomeomorph.toContinuousMap <| f.comp φ.symm.toContinuousMap
+  invFun f := .comp ψ.symm.toHomeomorph.toContinuousMap <| f.comp φ.toContinuousMap
   left_inv f := ext fun _ ↦ ψ.left_inv (f _) |>.trans <| congrArg f <| φ.left_inv _
   right_inv f := ext fun _ ↦ ψ.right_inv (f _) |>.trans <| congrArg f <| φ.right_inv _
   uniformContinuous_toFun := uniformContinuous_comp _ ψ.uniformContinuous |>.comp <|

@@ -456,8 +456,9 @@ section MinMax
 theorem isCoboundedUnder_le_max [LinearOrder β] {f : Filter α} {u v : α → β}
     (h : f.IsCoboundedUnder (· ≤ ·) u ∨ f.IsCoboundedUnder (· ≤ ·) v) :
     f.IsCoboundedUnder (· ≤ ·) (fun a ↦ max (u a) (v a)) := by
-  rcases h with (h' | h') <;>
-  · rcases h' with ⟨b, hb⟩
+  rcases h with (h' | h')
+  all_goals
+    rcases h' with ⟨b, hb⟩
     use b
     intro c hc
     apply hb c

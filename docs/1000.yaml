@@ -415,6 +415,9 @@ Q384142:
 
 Q386292:
   title: Prime number theorem
+  decls:
+    - Nat.isEquivalent_primeCounting
+    - Chebyshev.isEquivalent_theta_id
   authors : Alex Kontorovich, Terry Tao, and the Prime Number Theorem + Project
   url: https://github.com/AlexKontorovich/PrimeNumberTheoremAnd
   date: 2025
@@ -1693,7 +1696,7 @@ Q1434805:
 
 Q1443036:
   title: Parseval's theorem
-  decl: tsum_sq_fourierCoeff
+  decl: AddCircle.tsum_sq_fourierCoeff
 
 Q1452678:
   title: Penrose–Hawking singularity theorems
@@ -1927,6 +1930,9 @@ Q1893717:
 
 Q1896455:
   title: Varignon's theorem
+  decl: midpoint_midpoint_midpoint_rotate
+  authors: Daniel Liao
+  date: 2026
 
 Q1899432:
   title: Grothendieck–Hirzebruch–Riemann–Roch theorem
@@ -4181,6 +4187,9 @@ Q18206266:
 
 Q18630480:
   title: Euler's quadrilateral theorem
+  decl: EuclideanGeometry.dist_sq_add_dist_sq_add_dist_sq_add_dist_sq_eq_dist_sq_add_dist_sq_add_four_mul_dist_sq
+  authors: Daniel Liao
+  date: 2026
 
 Q19323571:
   title: Chomsky–Schützenberger enumeration theorem

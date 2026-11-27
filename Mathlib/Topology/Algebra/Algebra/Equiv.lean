@@ -94,7 +94,7 @@ instance equivLike : EquivLike (A ≃A[R] B) A B where
 instance continuousAlgEquivClass : ContinuousAlgEquivClass (A ≃A[R] B) R A B where
   map_add f := f.map_add'
   map_mul f := f.map_mul'
-  commutes f := f.commutes'
+  map_smulₛₗ f := f.map_smul'
   map_continuous := continuous_toFun
   inv_continuous := continuous_invFun
 
@@ -135,7 +135,6 @@ instance : Coe (A ≃A[R] B) (A ≃L[R] B) := ⟨toContinuousLinearEquiv⟩
 
 @[simp] theorem coe_coeCLE (e : A ≃A[R] B) : ⇑(e : A ≃L[R] B) = e := rfl
 
-@[simp]
 theorem toContinuousLinearEquiv_apply (e : A ≃A[R] B) (a : A) :
     e.toContinuousLinearEquiv a = e a := rfl
 
@@ -211,7 +210,6 @@ theorem coeCLE_refl : (refl R A).toContinuousLinearEquiv = ContinuousLinearEquiv
 @[simp]
 theorem coe_refl' : ⇑(refl R A) = id := rfl
 
-@[simp]
 theorem refl_toContinuousLinearEquiv :
     (refl R A).toContinuousLinearEquiv = .refl R A := rfl
 
@@ -226,11 +224,11 @@ def symm (e : A ≃A[R] B) : B ≃A[R] A where
 
 @[simp]
 theorem apply_symm_apply (e : A ≃A[R] B) (b : B) : e (e.symm b) = b :=
-  e.1.right_inv b
+  e.toAlgEquiv.right_inv b
 
 @[simp]
 theorem symm_apply_apply (e : A ≃A[R] B) (a : A) : e.symm (e a) = a :=
-  e.1.left_inv a
+  e.toAlgEquiv.left_inv a
 
 @[simp]
 theorem symm_image_image (e : A ≃A[R] B) (S : Set A) : e.symm '' e '' S = S :=
@@ -295,8 +293,8 @@ theorem coe_symm_comp_coe (e : A ≃A[R] B) :
   ContinuousAlgHom.ext e.symm_apply_apply
 
 @[simp]
-theorem symm_comp_self (e : A ≃A[R] B) : (e.symm : B → A) ∘ e = id := by
-  exact funext e.symm_apply_apply
+theorem symm_comp_self (e : A ≃A[R] B) : (e.symm : B → A) ∘ e = id :=
+  funext e.symm_apply_apply
 
 @[simp]
 theorem self_comp_symm (e : A ≃A[R] B) : (e : A → B) ∘ e.symm = id :=

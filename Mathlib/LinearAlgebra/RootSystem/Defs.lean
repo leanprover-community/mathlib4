@@ -13,7 +13,7 @@ public import Mathlib.LinearAlgebra.Reflection
 
 This file contains basic definitions for root systems and root data.
 
-## Main definitions:
+## Main definitions
 
 * `RootPairing`: Given two perfectly-paired `R`-modules `M` and `N` (over some commutative ring
   `R`) a root pairing with indexing set `ι` is the data of an `ι`-indexed subset of `M`
@@ -25,7 +25,7 @@ This file contains basic definitions for root systems and root data.
   finitely-generated free Abelian groups.
 * `RootSystem`: A root system is a root pairing for which the roots span their ambient module.
 
-## Implementation details
+## Implementation notes
 
 A root datum is sometimes defined as two subsets: roots and coroots, together with a bijection
 between them, subject to hypotheses. However the hypotheses ensure that the bijection is unique and
@@ -56,7 +56,6 @@ and coroots. This is necessary when working with infinite root systems, where th
 uniquely determined by the roots, because without it, the reflection permutations on roots and
 coroots may not correspond. For this purpose, we define a map from `ι` to permutations on `ι`, and
 require that it is compatible with reflections and coreflections.
-
 -/
 
 @[expose] public section
@@ -200,11 +199,9 @@ def pairing : R := P.root' i (P.coroot j)
 lemma root_coroot_eq_pairing : P.toLinearMap (P.root i) (P.coroot j) = P.pairing i j :=
   rfl
 
-@[simp]
 lemma root'_coroot_eq_pairing : P.root' i (P.coroot j) = P.pairing i j :=
   rfl
 
-@[simp]
 lemma root_coroot'_eq_pairing : P.coroot' i (P.root j) = P.pairing j i :=
   rfl
 
