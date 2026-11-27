@@ -33,6 +33,14 @@ example {f : α → E} {g₁ g₂ : α → F} (h : g₁ =O[l] g₂) : f =O[l] g�
 example {f₁ f₂ : α → E} {g : α → F} (h : f₁ =O[l] f₂) : f₂ =O[l] g → f₁ =O[l] g := by
   gcongr
 
+example {f₁ f₂ : α → E} {g₁ g₂ : α → F} (hf : f₁ =O[l] f₂) (hg : g₁ =O[l] g₂) :
+    f₂ =O[l] g₁ → f₁ =O[l] g₂ := by
+  gcongr
+
+example {f₁ f₂ : α → E} {g₁ g₂ : α → F} (hf : f₁ =O[l] f₂) (hg : g₁ =O[l] g₂) :
+    f₂ =o[l] g₁ → f₁ =o[l] g₂ := by
+  gcongr
+
 /-! ### `=O` goals with `=o` rules, using the `gcongr_forward` extension -/
 
 example {f : α → E} {g k : α → F} (h₁ : f =O[l] g) (h₂ : g =o[l] k) : f =O[l] k := by

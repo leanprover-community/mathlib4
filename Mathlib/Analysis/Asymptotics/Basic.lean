@@ -361,39 +361,21 @@ instance transIsLittleOIsLittleO :
     @Trans (α → E) (α → F) (α → G) (· =o[l] ·) (· =o[l] ·) (· =o[l] ·) where
   trans := IsLittleO.trans
 
-/- The following lemmas allow `gcongr` and `grw` to rewrite with `=O` and `=o` hypotheses.
-The general transitivity lemmas above cannot be tagged with `@[gcongr]` directly, because `gcongr`
-needs the two functions being exchanged to have the same codomain. -/
+@[gcongr]
+theorem isBigO_imp_isBigO {f₁ f₂ : α → E'} {g₁ g₂ : α → F'} (hf : f₁ =O[l] f₂)
+    (hg : g₁ =O[l] g₂) : f₂ =O[l] g₁ → f₁ =O[l] g₂ :=
+  fun h ↦ hf.trans (h.trans hg)
 
 @[gcongr]
-theorem isBigO_imp_isBigO_left {f₁ f₂ : α → E'} {g : α → F} (hf : f₁ =O[l] f₂) :
-    f₂ =O[l] g → f₁ =O[l] g :=
-  hf.trans
+theorem isLittleO_imp_isLittleO {f₁ f₂ : α → E'} {g₁ g₂ : α → F'} (hf : f₁ =O[l] f₂)
+    (hg : g₁ =O[l] g₂) : f₂ =o[l] g₁ → f₁ =o[l] g₂ :=
+  fun h ↦ hf.trans_isLittleO (h.trans_isBigO hg)
 
-@[gcongr]
-theorem isBigO_imp_isBigO_right {f : α → E} {g₁ g₂ : α → F'} (hg : g₁ =O[l] g₂) :
-    f =O[l] g₁ → f =O[l] g₂ :=
-  (·.trans hg)
-
-@[gcongr]
-theorem isLittleO_imp_isLittleO_left {f₁ f₂ : α → E'} {g : α → F} (hf : f₁ =O[l] f₂) :
-    f₂ =o[l] g → f₁ =o[l] g :=
-  hf.trans_isLittleO
-
-@[gcongr]
-theorem isLittleO_imp_isLittleO_right {f : α → E} {g₁ g₂ : α → F'} (hg : g₁ =O[l] g₂) :
-    f =o[l] g₁ → f =o[l] g₂ :=
-  (·.trans_isBigO hg)
-
-/- With this lemma, `grw [hf]` for `hf : f₁ =o[l] f₂` turns the goal `f₁ =o[l] g`
-into `f₂ =O[l] g`, in the same way as `lt_of_lt_of_le` does for `<` and `≤`. -/
 @[gcongr strict]
 theorem isBigO_imp_isLittleO_left {f₁ f₂ : α → E} {g : α → F'} (hf : f₁ =o[l] f₂) :
     f₂ =O[l] g → f₁ =o[l] g :=
   hf.trans_isBigO
 
-/- With this lemma, `grw [← hg]` for `hg : g₁ =o[l] g₂` turns the goal `f =o[l] g₂`
-into `f =O[l] g₁`, in the same way as `lt_of_le_of_lt` does for `≤` and `<`. -/
 @[gcongr strict]
 theorem isBigO_imp_isLittleO_right {f : α → E} {g₁ g₂ : α → F'} (hg : g₁ =o[l] g₂) :
     f =O[l] g₁ → f =o[l] g₂ :=
