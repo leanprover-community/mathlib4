@@ -135,7 +135,7 @@ noncomputable def teichmuller₀ : Perfection (R ⧸ I) p →*₀ R where
 @[simp] lemma teichmuller_eq_teichmuller₀_toMonoidHom :
     teichmuller p I = (teichmuller₀ p I).toMonoidHom := rfl
 
-@[simp] lemma coe_teichmuller_eq_teichmuller₀ :
+lemma coe_teichmuller_eq_teichmuller₀ :
     ⇑(teichmuller p I) = teichmuller₀ p I := rfl
 
 @[simp] lemma teichmullerFun_eq_teichmuller₀ :

@@ -100,7 +100,7 @@ Note: This linter can be disabled with `set_option linter.style.admit false`
 #guard_msgs in
 example : True ∧ True := by
   have : True := by
-    · admit
+    admit
   let foo : Nat := by admit
   refine ⟨?_, ?_⟩
   · admit

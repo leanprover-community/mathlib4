@@ -21,7 +21,8 @@ We also prove several variations of this statement.
 In `Mathlib/Analysis/Calculus/LocalExtr/Rolle` we use these lemmas
 to prove several versions of Rolle's Theorem from calculus.
 
-## Keywords
+## Tags
+
 local minimum, local maximum, extremum, Rolle's Theorem
 -/
 

@@ -71,7 +71,7 @@ variable [Semiring C] [Semiring D] [Bialgebra S C]
 
 /-- The tensor product of two bialgebra morphisms as a bialgebra morphism. -/
 @[expose] def map (f : A →ₐc[S] C) (g : B →ₐc[R] D) : A ⊗[R] B →ₐc[S] C ⊗[R] D :=
-  { Coalgebra.TensorProduct.map (f : A →ₗc[S] C) (g : B →ₗc[R] D),
+  { Coalgebra.TensorProduct.map f.toCoalgHom g.toCoalgHom,
     Algebra.TensorProduct.map (f : A →ₐ[S] C) (g : B →ₐ[R] D) with }
 
 @[simp]
@@ -81,7 +81,7 @@ theorem map_tmul (f : A →ₐc[S] C) (g : B →ₐc[R] D) (x : A) (y : B) :
 
 @[simp]
 theorem map_toCoalgHom (f : A →ₐc[S] C) (g : B →ₐc[R] D) :
-    map f g = Coalgebra.TensorProduct.map (f : A →ₗc[S] C) (g : B →ₗc[R] D) := rfl
+    (map f g).toCoalgHom = Coalgebra.TensorProduct.map f.toCoalgHom g.toCoalgHom := rfl
 
 @[simp]
 theorem map_toAlgHom (f : A →ₐc[S] C) (g : B →ₐc[R] D) :
@@ -106,7 +106,7 @@ theorem assoc_symm_tmul (x : A) (y : C) (z : D) :
 
 @[simp]
 theorem assoc_toCoalgEquiv :
-    (Bialgebra.TensorProduct.assoc R S A C D : _ ≃ₗc[S] _) =
+    (Bialgebra.TensorProduct.assoc R S A C D).toCoalgEquiv =
     Coalgebra.TensorProduct.assoc R S A C D := rfl
 
 @[simp]
@@ -122,7 +122,7 @@ bialgebra equivalence. -/
 
 @[simp]
 theorem lid_toCoalgEquiv :
-    (Bialgebra.TensorProduct.lid R B : R ⊗[R] B ≃ₗc[R] B) = Coalgebra.TensorProduct.lid R B := rfl
+    (Bialgebra.TensorProduct.lid R B).toCoalgEquiv = Coalgebra.TensorProduct.lid R B := rfl
 
 @[simp]
 theorem lid_toAlgEquiv :
@@ -146,7 +146,7 @@ bialgebra equivalence. -/
 
 @[simp]
 theorem rid_toCoalgEquiv :
-    (TensorProduct.rid R S A : A ⊗[R] R ≃ₗc[S] A) = Coalgebra.TensorProduct.rid R S A := rfl
+    (TensorProduct.rid R S A).toCoalgEquiv = Coalgebra.TensorProduct.rid R S A := rfl
 
 @[simp]
 theorem rid_toAlgEquiv :
@@ -169,8 +169,9 @@ set_option backward.defeqAttrib.useBackward true in
 /-- The tensor product of `R`-bialgebras is commutative, up to bialgebra isomorphism. -/
 @[expose] def comm : A ⊗[R] B ≃ₐc[R] B ⊗[R] A :=
   .ofAlgEquiv (Algebra.TensorProduct.comm R A B) (by ext <;> simp) <| by
-    ext a <;>
-    · dsimp
+    ext a
+    all_goals
+      dsimp
       rw [← (ℛ R a).eq]
       simp [TensorProduct.tmul_sum, TensorProduct.sum_tmul, Algebra.TensorProduct.one_def]
 

@@ -186,11 +186,11 @@ lemma inv_hom_apply {A B : ProfiniteGrp.{u}} (e : A ≅ B) (x : A) : e.inv (e.ho
 lemma hom_inv_apply {A B : ProfiniteGrp.{u}} (e : A ≅ B) (x : B) : e.hom (e.inv x) = x := by
   simp
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem coe_id (X : ProfiniteGrp) : (𝟙 X : X → X) = id :=
   rfl
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem coe_comp {X Y Z : ProfiniteGrp} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g : X → Z) = g ∘ f :=
   rfl
@@ -258,8 +258,8 @@ a `ContinuousMulEquiv` between `ProfiniteGrp`s. -/
 @[to_additive /-- Build an isomorphism in the category `ProfiniteAddGrp` from
 a `ContinuousAddEquiv` between `ProfiniteAddGrp`s. -/]
 def ContinuousMulEquiv.toProfiniteGrpIso {X Y : ProfiniteGrp} (e : X ≃ₜ* Y) : X ≅ Y where
-  hom := ofHom e
-  inv := ofHom e.symm
+  hom := ofHom e.toContinuousMonoidHom
+  inv := ofHom e.symm.toContinuousMonoidHom
 
 /-- The functor mapping a profinite group to its underlying profinite space. -/
 @[to_additive /-- The functor mapping a profinite additive group to its underlying profinite
@@ -383,7 +383,7 @@ lemma limit_ext (x y : limit F) (hxy : ∀ j, x.val j = y.val j) : x = y :=
 lemma limit_one_val (j : J) : (1 : limit F).val j = 1 :=
   rfl
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma limit_mul_val (x y : limit F) (j : J) : (x * y).val j = x.val j * y.val j :=
   rfl
 

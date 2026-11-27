@@ -30,7 +30,7 @@ definability is needed for the proof of the First Incompleteness Theorem.
 
 - `beta_unbeta_coe`: Gödel's Beta Function Lemma.
 
-## Implementation note
+## Implementation notes
 
 This code is a step towards eventually including a proof of Gödel's First Incompleteness Theorem
 and other key results from the repository https://github.com/iehality/lean4-logic.

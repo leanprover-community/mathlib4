@@ -56,7 +56,7 @@ More advanced theorems about these definitions are located in other files in `Ma
 - `sᶜ`: the complement of a set;
 - `s \ t`: the difference of two sets.
 
-## Keywords
+## Tags
 
 set, image, preimage
 -/

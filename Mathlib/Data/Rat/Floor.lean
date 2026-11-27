@@ -46,7 +46,7 @@ This variant of `ceil_def` uses the `Int.ceil` (for any `FloorRing`) rather than
 -/
 protected theorem ceil_def' (q : ℚ) : ⌈q⌉ = -(-q.num / ↑q.den) := by
   change -⌊-q⌋ = _
-  rw [Rat.floor_def', num_neg_eq_neg_num, den_neg_eq_den]
+  rw [Rat.floor_def', neg_num, neg_den]
 
 
 @[norm_cast]

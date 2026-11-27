@@ -106,12 +106,11 @@ lemma instNonnegSpectrumClass : NonnegSpectrumClass ℝ (Matrix n n 𝕜) where
       hA.posSemidef.1.spectrum_real_eq_range_eigenvalues x |>.mp hx
     exact hA.posSemidef.eigenvalues_nonneg _
 
-scoped[MatrixOrder] attribute [instance] instNonnegSpectrumClass
-
 lemma instStarOrderedRing : StarOrderedRing (Matrix n n 𝕜) :=
   .of_nonneg_iff' add_le_add_right fun A ↦
     ⟨fun hA ↦ by
       classical
+      have := instNonnegSpectrumClass (n := n) (𝕜 := 𝕜)
       obtain ⟨X, hX, -, rfl⟩ :=
         sub_zero A ▸ CFC.exists_sqrt_of_isSelfAdjoint_of_quasispectrumRestricts hA.isHermitian
           (QuasispectrumRestricts.nnreal_of_nonneg hA.nonneg)

@@ -111,7 +111,7 @@ theorem toFun_eq_coe {f : CentroidHom α} : f.toFun = f := rfl
 theorem ext {f g : CentroidHom α} (h : ∀ a, f a = g a) : f = g :=
   DFunLike.ext f g h
 
-@[simp, norm_cast]
+@[simp, norm_cast, nolint simpNF] -- `nolint` needed while this uses `AddMonoidHom.ofClass`
 theorem coe_toAddMonoidHom (f : CentroidHom α) : ⇑(f : α →+ α) = f :=
   rfl
 

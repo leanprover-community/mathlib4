@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Abelian.Projective.Resolution
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Left-derived functors
 

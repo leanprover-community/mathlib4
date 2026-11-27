@@ -9,6 +9,9 @@ public import Mathlib.LinearAlgebra.RootSystem.WeylGroup
 
 import Mathlib.RepresentationTheory.Submodule
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Irreducible root pairings
 

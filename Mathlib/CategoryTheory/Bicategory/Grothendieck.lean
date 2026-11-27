@@ -46,7 +46,7 @@ The name `Grothendieck` is reserved for the construction on covariant pseudofunc
 This is consistent with the convention for the Grothendieck construction on 1-functors
 `CategoryTheory.Grothendieck`.
 
-## Future work / TODO
+## TODO
 
 1. Once the bicategory of pseudofunctors has been defined, show that this construction forms a
    pseudofunctor from `LocallyDiscrete 𝒮 ⥤ᵖ Catᵒᵖ` to `Cat`.

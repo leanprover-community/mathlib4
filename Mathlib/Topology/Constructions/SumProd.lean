@@ -23,7 +23,7 @@ and other specific classes of maps.
 We also provide basic homeomorphisms, to show that sums and products are commutative, associative
 and distributive (up to homeomorphism).
 
-## Implementation note
+## Implementation notes
 
 The constructed topologies are defined using induced and coinduced topologies
 along with the complete lattice structure on topologies. Their universal properties

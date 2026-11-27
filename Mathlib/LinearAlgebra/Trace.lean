@@ -95,10 +95,17 @@ variable {R} in
     LinearMap.trace R _ (Matrix.toLin b b A) = A.trace := by
   simp [trace_eq_matrix_trace R b]
 
+omit [DecidableEq ι] in
 variable {R} in
-@[simp] theorem _root_.Matrix.trace_toLin'_eq (A : Matrix ι ι R) :
+@[simp] theorem _root_.Matrix.trace_mulVecLin_eq (A : Matrix ι ι R) :
+    LinearMap.trace R _ A.mulVecLin = A.trace :=
+  by classical exact A.trace_toLin_eq (Pi.basisFun R ι)
+
+variable {R} in
+@[deprecated Matrix.trace_mulVecLin_eq +typeChanged (since := "2026-11-25")]
+theorem _root_.Matrix.trace_toLin'_eq (A : Matrix ι ι R) :
     LinearMap.trace R _ A.toLin' = A.trace :=
-  A.trace_toLin_eq (Pi.basisFun R ι)
+  A.trace_mulVecLin_eq
 
 theorem trace_mul_comm (f g : M →ₗ[R] M) : trace R M (f * g) = trace R M (g * f) := by
   classical

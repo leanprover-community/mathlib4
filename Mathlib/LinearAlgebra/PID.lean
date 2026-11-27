@@ -9,6 +9,9 @@ public import Mathlib.LinearAlgebra.Trace
 
 import Mathlib.LinearAlgebra.FreeModule.PID
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Linear maps of modules with coefficients in a principal ideal domain
 

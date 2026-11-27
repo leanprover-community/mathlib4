@@ -103,7 +103,7 @@ end RCLike
 open scoped NNReal
 variable {A : Type*} [Ring A] [StarRing A] [Algebra ℝ A] [TopologicalSpace A]
 variable [IsTopologicalRing A]
-variable [T2Space A] [PartialOrder A] [NonnegSpectrumClass ℝ A] [StarOrderedRing A]
+variable [T2Space A] [PartialOrder A] [StarOrderedRing A]
 
 lemma range_cfc_nnreal_eq_image_cfc_real [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
     (a : A) (ha : 0 ≤ a := by cfc_tac) :
@@ -219,7 +219,7 @@ end RCLike
 open scoped NNReal
 variable {A : Type*} [NonUnitalRing A] [StarRing A] [Module ℝ A] [IsScalarTower ℝ A A]
 variable [SMulCommClass ℝ A A] [TopologicalSpace A]
-variable [IsTopologicalRing A] [T2Space A] [PartialOrder A] [NonnegSpectrumClass ℝ A]
+variable [IsTopologicalRing A] [T2Space A] [PartialOrder A]
 variable [StarOrderedRing A]
 
 lemma range_cfcₙ_nnreal_eq_image_cfcₙ_real
@@ -276,7 +276,7 @@ section StarOrderedSubtype
 
 variable {𝕜 S A : Type*} [NonUnitalRing A] [StarRing A] [TopologicalSpace A]
     [ContinuousStar A] [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A]
-    [IsTopologicalRing A] [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A]
+    [IsTopologicalRing A] [PartialOrder A] [StarOrderedRing A]
     [RCLike 𝕜] [Module 𝕜 A] [IsScalarTower ℝ 𝕜 A] [ContinuousConstSMul ℝ A]
     [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint] [StarModule ℝ A]
     [SetLike S A] [NonUnitalSubringClass S A] [SMulMemClass S 𝕜 A] [StarMemClass S A]
