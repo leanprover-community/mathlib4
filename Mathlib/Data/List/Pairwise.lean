@@ -6,10 +6,11 @@ Authors: Mario Carneiro
 module
 
 public import Batteries.Data.List.Lemmas
-public import Batteries.Data.List.Pairwise
 public import Mathlib.Data.List.TFAE
 public import Mathlib.Logic.Pairwise
 public import Mathlib.Logic.Relation
+
+import Batteries.Data.List.Pairwise
 
 /-!
 # Pairwise relations on a list

@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.Basic
 public import Mathlib.CategoryTheory.Subfunctor.OfSection
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subcomplexes of a simplicial set
 
@@ -185,7 +188,7 @@ abbrev range : Y.Subcomplex := Subfunctor.range f
 /-- The morphism `X ⟶ Subcomplex.range f` induced by `f : X ⟶ Y`. -/
 abbrev toRange : X ⟶ Subcomplex.range f := Subfunctor.toRange f
 
-@[simp, reassoc]
+@[reassoc]
 lemma toRange_ι : toRange f ≫ (Subcomplex.range f).ι = f := rfl
 
 @[simp]

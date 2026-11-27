@@ -65,8 +65,6 @@ of this form. The other two can be emulated using `s = id` or `p = fun _ ↦ Tru
 With this approach sometimes one needs to `simp` the statement provided by the `Filter.HasBasis`
 machinery, e.g., `simp only [true_and_iff]` or `simp only [forall_const]` can help with the case
 `p = fun _ ↦ True`.
-
-## Main statements
 -/
 
 @[expose] public section

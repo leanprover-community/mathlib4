@@ -852,6 +852,17 @@ lemma nonempty_of_finiteDimensionalOrder [FiniteDimensionalOrder α] : Nonempty 
   obtain ⟨p, _⟩ := (SetRel.finiteDimensional_iff _).mp ‹_›
   exact ⟨p 0⟩
 
+/-- This is not an instance because it causes a significant slowdown in typeclass synthesis
+via `Submodule`s `IsArtinian → IsNoetherian → FiniteDimensionalOrder` instance. -/
+lemma _root_.FiniteDimensionalOrder.wellFoundedLT [FiniteDimensionalOrder α] : WellFoundedLT α :=
+  SetRel.IsWellFounded.of_finiteDimensional {(a, b) : α × α | a < b}
+
+/-- This is not an instance because it causes a significant slowdown in typeclass synthesis
+via `Submodule`s `IsArtinian → IsNoetherian → FiniteDimensionalOrder` instance. -/
+@[to_dual existing]
+lemma _root_.FiniteDimensionalOrder.wellFoundedGT [FiniteDimensionalOrder α] : WellFoundedGT α :=
+  SetRel.IsWellFounded.inv_of_finiteDimensional {(a, b) : α × α | a < b}
+
 variable {α}
 
 lemma longestOf_is_longest [FiniteDimensionalOrder α] (x : LTSeries α) :

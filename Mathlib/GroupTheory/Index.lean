@@ -5,13 +5,14 @@ Authors: Thomas Browning
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 public import Mathlib.Algebra.Group.Subgroup.Finite
 public import Mathlib.Algebra.GroupWithZero.Subgroup
 public import Mathlib.GroupTheory.Coset.Card
 public import Mathlib.GroupTheory.GroupAction.Quotient
 public import Mathlib.GroupTheory.QuotientGroup.Basic
-public import Mathlib.SetTheory.Cardinal.NatCard
+
+import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
+import Mathlib.SetTheory.Cardinal.NatCard
 
 /-!
 # Index of a Subgroup
@@ -71,10 +72,10 @@ theorem index_comap_of_surjective {f : G' →* G} (hf : Function.Surjective f) :
     exact fun x y => iff_of_eq congr($(by rw [f.map_mul, f.map_inv]) ∈ H)
   refine Nat.card_congr (Equiv.ofBijective (Quotient.map' f fun x y => (key x y).mp) ⟨?_, ?_⟩)
   · simp_rw [← Quotient.eq''] at key
-    refine Quotient.ind' fun x => ?_
-    refine Quotient.ind' fun y => ?_
+    refine Quotient.ind fun x => ?_
+    refine Quotient.ind fun y => ?_
     exact (key x y).mpr
-  · refine Quotient.ind' fun x => ?_
+  · refine Quotient.ind fun x => ?_
     obtain ⟨y, hy⟩ := hf x
     exact ⟨y, (Quotient.map'_mk'' f _ y).trans congr(Quotient.mk'' $hy)⟩
 

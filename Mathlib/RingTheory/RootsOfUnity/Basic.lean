@@ -28,7 +28,7 @@ as a subgroup of the group of units.
 
 * `rootsOfUnity.isCyclic`: the roots of unity in an integral domain form a cyclic group.
 
-## Implementation details
+## Implementation notes
 
 It is desirable that `rootsOfUnity` is a subgroup,
 and it will mainly be applied to rings (e.g. the ring of integers in a number field) and fields.

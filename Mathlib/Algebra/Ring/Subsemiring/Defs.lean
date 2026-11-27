@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.NonUnitalSubsemiring.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bundled subsemirings
 
@@ -287,11 +290,9 @@ protected theorem add_mem {x y : R} : x ∈ s → y ∈ s → x + y ∈ s :=
 instance toNonAssocSemiring : NonAssocSemiring s :=
   SubsemiringClass.toNonAssocSemiring _
 
-@[simp, norm_cast]
 theorem coe_one : ((1 : s) : R) = (1 : R) :=
   rfl
 
-@[simp, norm_cast]
 theorem coe_zero : ((0 : s) : R) = (0 : R) :=
   rfl
 
@@ -322,7 +323,6 @@ instance noZeroDivisors [NoZeroDivisors R] : NoZeroDivisors s where
 instance toSemiring {R} [Semiring R] (s : Subsemiring R) : Semiring s :=
   { s.toNonAssocSemiring, s.toSubmonoid.toMonoid with }
 
-@[simp, norm_cast]
 theorem coe_pow {R} [Semiring R] (s : Subsemiring R) (x : s) (n : ℕ) :
     ((x ^ n : s) : R) = (x : R) ^ n := rfl
 

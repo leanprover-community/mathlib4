@@ -21,13 +21,13 @@ import Mathlib.Analysis.Calculus.LogDerivUniformlyOn
   derivative and show that it is a multiple of the Eisenstein series `E2`.
 
 ## References
+
 * [F. Diamond and J. Shurman, *A First Course in Modular Forms*][diamondshurman2005], section 1.2
 -/
 
 @[expose] public section
 
-open Set Function Complex
-open UpperHalfPlane hiding I
+open Set Function Complex UpperHalfPlane
 open scoped Real
 
 local notation "𝕢" => Periodic.qParam

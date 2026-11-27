@@ -14,6 +14,9 @@ import Mathlib.Order.Interval.Set.Final
 import Mathlib.Order.Interval.Set.Limit
 import Mathlib.Order.LatticeIntervals
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Limits of inverse systems indexed by well-ordered types
 
@@ -144,7 +147,7 @@ instance [WellFoundedLT J] (j : J) : Subsingleton (d.Extension val₀ j) := by
     refine Subsingleton.intro (fun e₁ e₂ ↦ val_injective ?_)
     have h₁ := e₁.map_succ i (Order.lt_succ_of_not_isMax hi)
     have h₂ := e₂.map_succ i (Order.lt_succ_of_not_isMax hi)
-    simp only [homOfLE_refl, op_id, map_id, id_apply, homOfLE_leOfHom] at h₁ h₂
+    simp only [homOfLE_refl, op_id, map_id, id_apply] at h₁ h₂
     rw [h₁, h₂]
     congr 1
     exact congrArg val (Subsingleton.elim (e₁.ofLE (Order.le_succ i)) (e₂.ofLE (Order.le_succ i)))
@@ -152,7 +155,7 @@ instance [WellFoundedLT J] (j : J) : Subsingleton (d.Extension val₀ j) := by
     refine Subsingleton.intro (fun e₁ e₂ ↦ val_injective ?_)
     have h₁ := e₁.map_limit i hi (by rfl)
     have h₂ := e₂.map_limit i hi (by rfl)
-    simp only [homOfLE_refl, op_id, map_id, id_apply, homOfLE_leOfHom] at h₁ h₂
+    simp only [homOfLE_refl, op_id, map_id, id_apply] at h₁ h₂
     rw [h₁, h₂]
     congr
     ext ⟨⟨l, hl⟩⟩
@@ -192,7 +195,7 @@ def succ {j : J} (e : d.Extension val₀ j) (hj : ¬IsMax j) :
         map_comp, comp_apply, d.map_succ, ← e.map_succ i hij,
         ← homOfLE_comp (Order.succ_le_of_lt hij) (Order.le_succ j), op_comp,
         map_comp, comp_apply, d.map_succ]
-    · simp only [homOfLE_refl, op_id, map_id, id_apply, homOfLE_leOfHom, d.map_succ]
+    · simp only [homOfLE_refl, op_id, map_id, id_apply, d.map_succ]
   map_limit i hi hij := by
     obtain hij | rfl := hij.lt_or_eq
     · have hij' : i ≤ j := (Order.lt_succ_iff_of_not_isMax hj).mp hij

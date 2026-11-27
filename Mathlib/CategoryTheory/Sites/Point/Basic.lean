@@ -12,6 +12,9 @@ public import Mathlib.CategoryTheory.Sites.LocallyBijective
 
 import Mathlib.CategoryTheory.Limits.ConcreteCategory.Filtered
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Points of a site
 

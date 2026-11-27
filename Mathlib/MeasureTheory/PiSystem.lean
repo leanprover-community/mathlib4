@@ -51,7 +51,7 @@ import Mathlib.Logic.Encodable.Lattice
   set of indices `S : Set ι`. `piiUnionInter π S` is the set of sets that can be written
   as `⋂ x ∈ t, f x` for some finset `t ∈ S` and sets `f x ∈ π x`.
 
-## Implementation details
+## Implementation notes
 
 * `IsPiSystem` is a predicate, not a type. Thus, we don't explicitly define the Galois
   insertion, nor do we define a complete lattice. In theory, we could define a complete
@@ -348,14 +348,15 @@ theorem mem_generatePiSystem_iUnion_elim' {α β} {g : β → Set (Set α)} {s :
     ⟨T.image (fun x : s => (x : β)),
       Function.extend (fun x : s => (x : β)) f fun _ : β => (∅ : Set α), by simp, ?_, ?_⟩
   · ext a
-    constructor <;>
-      · simp -proj only
-          [Set.mem_iInter, Subtype.forall, Finset.set_biInter_finset_image]
-        intro h1 b h_b h_b_in_T
-        have h2 := h1 b h_b h_b_in_T
-        revert h2
-        rw [Subtype.val_injective.extend_apply]
-        apply id
+    constructor
+    all_goals
+      simp -proj only
+        [Set.mem_iInter, Subtype.forall, Finset.set_biInter_finset_image]
+      intro h1 b h_b h_b_in_T
+      have h2 := h1 b h_b h_b_in_T
+      revert h2
+      rw [Subtype.val_injective.extend_apply]
+      apply id
   · intro b h_b
     simp_rw [Finset.mem_image, Subtype.exists, exists_and_right, exists_eq_right]
       at h_b

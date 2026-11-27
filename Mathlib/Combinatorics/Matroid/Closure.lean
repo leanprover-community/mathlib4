@@ -36,7 +36,7 @@ We also define a predicate `Spanning`, to describe a set whose closure is the en
 * For `M : Matroid α` and `S ⊆ M.E`, `M.Spanning S` means that `S` has closure equal to `M.E`,
   or equivalently that `S` contains an isBase of `M`.
 
-## Implementation details
+## Implementation notes
 
 If `X : Set α` satisfies `X ⊆ M.E`, then it is clear how `M.closure X` should be defined.
 But `M.closure X` also needs to be defined for all `X : Set α`,
@@ -538,8 +538,9 @@ lemma Indep.inter_isBasis_iInter [Nonempty ι] {X : ι → Set α} (hI : M.Indep
     (h : ∀ i, M.IsBasis ((X i) ∩ I) (X i)) : M.IsBasis ((⋂ i, X i) ∩ I) (⋂ i, X i) := by
   convert
     hI.inter_isBasis_biInter (ι := PLift ι) univ_nonempty (X := fun i ↦ X i.down)
-      (by simpa using fun (i : PLift ι) ↦ h i.down) <;>
-  · simp only [mem_univ, iInter_true]
+      (by simpa using fun (i : PLift ι) ↦ h i.down)
+  all_goals
+    simp only [mem_univ, iInter_true]
     exact (iInter_plift_down X).symm
 
 lemma Indep.inter_isBasis_sInter {Xs : Set (Set α)} (hI : M.Indep I) (hXs : Xs.Nonempty)

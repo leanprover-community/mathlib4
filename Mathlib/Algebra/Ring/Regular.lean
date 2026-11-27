@@ -6,8 +6,9 @@ Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Ne
 module
 
 public import Mathlib.Algebra.Group.Basic
-public import Mathlib.Algebra.GroupWithZero.Regular
 public import Mathlib.Algebra.Ring.Defs
+
+import Mathlib.Algebra.GroupWithZero.Regular
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

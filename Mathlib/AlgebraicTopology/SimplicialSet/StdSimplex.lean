@@ -13,6 +13,9 @@ public import Mathlib.Order.Fin.Finset
 import Mathlib.Order.Fin.SuccAboveOrderIso
 import Mathlib.Order.Preorder.Finite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The standard simplex
 
@@ -124,7 +127,6 @@ abbrev objMk {n : SimplexCategory} {m : SimplexCategoryᵒᵖ}
     (stdSimplex.{u}.obj n).obj m :=
   objEquiv.symm (Hom.mk f)
 
-@[simp]
 lemma objMk_apply {n m : ℕ} (f : Fin (m + 1) →o Fin (n + 1)) (i : Fin (m + 1)) :
     objMk.{u} (n := ⦋n⦌) (m := op ⦋m⦌) f i = f i :=
   rfl

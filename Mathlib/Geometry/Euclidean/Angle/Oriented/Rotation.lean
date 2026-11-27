@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Complex.Circle
 public import Mathlib.Geometry.Euclidean.Angle.Oriented.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Rotations by oriented angles.
 
@@ -46,7 +49,7 @@ def rotationAux (θ : Real.Angle) : V →ₗᵢ[ℝ] V :=
     (by
       intro x y
       simp only [RCLike.conj_to_real, id, LinearMap.smul_apply, LinearMap.add_apply,
-        LinearMap.id_coe, LinearEquiv.coe_coe, LinearIsometryEquiv.coe_toLinearEquiv,
+        LinearMap.id_coe, LinearEquiv.coe_toLinearMap, LinearIsometryEquiv.coe_toLinearEquiv,
         Orientation.areaForm_rightAngleRotation_left, Orientation.inner_rightAngleRotation_left,
         Orientation.inner_rightAngleRotation_right, inner_add_left, inner_smul_left,
         inner_add_right, inner_smul_right]
@@ -66,7 +69,7 @@ def rotation (θ : Real.Angle) : V ≃ₗᵢ[ℝ] V :=
       ext x
       convert! congr($θ.cos_sq_add_sin_sq • x) using 1
       · simp only [o.rightAngleRotation_rightAngleRotation, o.rotationAux_apply,
-          Function.comp_apply, id, LinearEquiv.coe_coe, LinearIsometry.coe_toLinearMap,
+          Function.comp_apply, id, LinearEquiv.coe_toLinearMap, LinearIsometry.coe_toLinearMap,
           LinearIsometryEquiv.coe_toLinearEquiv, map_smul, map_sub, LinearMap.coe_comp,
           LinearMap.id_coe, LinearMap.smul_apply, LinearMap.sub_apply]
         module
@@ -75,7 +78,7 @@ def rotation (θ : Real.Angle) : V ≃ₗᵢ[ℝ] V :=
       ext x
       convert! congr($θ.cos_sq_add_sin_sq • x) using 1
       · simp only [o.rightAngleRotation_rightAngleRotation, o.rotationAux_apply,
-          Function.comp_apply, id, LinearEquiv.coe_coe, LinearIsometry.coe_toLinearMap,
+          Function.comp_apply, id, LinearEquiv.coe_toLinearMap, LinearIsometry.coe_toLinearMap,
           LinearIsometryEquiv.coe_toLinearEquiv, map_add, map_smul, LinearMap.coe_comp,
           LinearMap.id_coe, LinearMap.smul_apply, LinearMap.sub_apply]
         module

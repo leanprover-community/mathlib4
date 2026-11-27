@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basis
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic constructions for multiseries
 

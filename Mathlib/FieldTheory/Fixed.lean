@@ -388,7 +388,7 @@ theorem toAlgAut_surjective [Finite G] :
     rwa [QuotientGroup.eq, MonoidHom.mem_ker, map_mul, map_inv, inv_mul_eq_one, AlgEquiv.ext_iff]⟩
   intro f
   obtain ⟨q, hq⟩ := (toAlgAut_bijective Q F).surjective
-    (AlgEquiv.ofRingEquiv (f := f) (fun ⟨x, hx⟩ ↦ f.commutes' ⟨x, fun g ↦ hx g⟩))
+    (AlgEquiv.ofCommutes (e := f) (fun ⟨x, hx⟩ ↦ f.commutes ⟨x, fun g ↦ hx g⟩))
   revert hq
   refine QuotientGroup.induction_on q (fun g hg ↦ ⟨g, ?_⟩)
   rw [AlgEquiv.ext_iff] at hg ⊢
