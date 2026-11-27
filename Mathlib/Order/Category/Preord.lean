@@ -143,8 +143,8 @@ instance : Inhabited Preord :=
 /-- Constructs an equivalence between preorders from an order isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : Preord.{u}} (e : α ≃o β) : α ≅ β where
-  hom := ofHom e
-  inv := ofHom e.symm
+  hom := ofHom e.toOrderHom
+  inv := ofHom e.symm.toOrderHom
 
 /-- `OrderDual` as a functor. -/
 @[simps map]

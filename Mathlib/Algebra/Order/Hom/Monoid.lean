@@ -314,7 +314,10 @@ theorem coe_toMonoidHom (f : α →*o β) : ((f : α →* β) : α → β) = f :
 alias coe_monoidHom := coe_toMonoidHom
 
 @[to_additive (attr := simp)]
-theorem coe_orderHom (f : α →*o β) : ((f : α →o β) : α → β) = f :=
+theorem coe_toOrderHom (f : α →*o β) : ⇑f.toOrderHom = f := rfl
+
+@[to_additive (attr := deprecated OrderHom.coe_ofClass +typeChanged (since := "2026-11-27"))]
+theorem coe_orderHom (f : α →*o β) : ((.ofClass f : α →o β) : α → β) = f :=
   rfl
 
 @[to_additive]
@@ -360,7 +363,7 @@ variable {α}
 /-- Composition of `OrderMonoidHom`s as an `OrderMonoidHom`. -/
 @[to_additive /-- Composition of `OrderAddMonoidHom`s as an `OrderAddMonoidHom` -/]
 def comp (f : β →*o γ) (g : α →*o β) : α →*o γ :=
-  { f.toMonoidHom.comp (g : α →* β), f.toOrderHom.comp (g : α →o β) with }
+  { f.toMonoidHom.comp (g : α →* β), f.toOrderHom.comp g.toOrderHom with }
 
 @[to_additive (attr := simp)]
 theorem coe_comp (f : β →*o γ) (g : α →*o β) : (f.comp g : α → γ) = f ∘ g :=
@@ -380,7 +383,7 @@ alias coe_comp_monoidHom := toMonoidHom_comp
 
 @[to_additive]
 theorem coe_comp_orderHom (f : β →*o γ) (g : α →*o β) :
-    (f.comp g : α →o γ) = (f : β →o γ).comp g :=
+    (f.comp g).toOrderHom = f.toOrderHom.comp g.toOrderHom :=
   rfl
 
 @[to_additive (attr := simp)]
@@ -470,9 +473,12 @@ variable {_ : Preorder α} {_ : Preorder β} {_ : MulOneClass α} {_ : MulOneCla
 theorem toMonoidHom_eq_coe (f : α →*o β) : f.toMonoidHom = f :=
   rfl
 
-@[to_additive (attr := simp)]
-theorem toOrderHom_eq_coe (f : α →*o β) : f.toOrderHom = f :=
+@[to_additive]
+theorem toOrderHom_eq_ofClass (f : α →*o β) : f.toOrderHom = .ofClass f :=
   rfl
+
+@[to_additive (attr := deprecated (since := "2026-11-27"))] alias toOrderHom_eq_coe :=
+  toOrderHom_eq_ofClass
 
 end OrderedCommMonoid
 
@@ -548,8 +554,11 @@ def toOrderIso (f : α ≃*o β) : α ≃o β :=
 theorem coe_mulEquiv (f : α ≃*o β) : ((f : α ≃* β) : α → β) = f :=
   rfl
 
-@[to_additive (attr := simp)]
-theorem coe_orderIso (f : α ≃*o β) : ((f : α →o β) : α → β) = f :=
+@[simp]
+theorem coe_toOrderIso (f : α ≃*o β) : ⇑f.toOrderIso = f := rfl
+
+@[to_additive (attr := deprecated OrderIso.coe_ofClass +typeChanged (since := "2026-11-27"))]
+theorem coe_orderIso (f : α ≃*o β) : ((.ofClass f : α ≃o β) : α → β) = f :=
   rfl
 
 @[to_additive]

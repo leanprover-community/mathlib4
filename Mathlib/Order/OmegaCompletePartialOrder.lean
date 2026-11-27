@@ -512,7 +512,9 @@ protected lemma ωScottContinuous (f : α →𝒄 β) : ωScottContinuous f :=
   ωScottContinuous.of_map_ωSup_of_orderHom f.map_ωSup'
 
 -- Not a `simp` lemma because in many cases projection is simpler than a generic coercion
-theorem toOrderHom_eq_coe (f : α →𝒄 β) : f.toOrderHom = f := rfl
+theorem toOrderHom_eq_ofClass (f : α →𝒄 β) : f.toOrderHom = .ofClass f := rfl
+
+@[deprecated (since := "2026-11-27")] alias toOrderHom_eq_coe := toOrderHom_eq_ofClass
 
 @[simp] theorem coe_mk (f : α →o β) (hf) : ⇑(mk f hf) = f := rfl
 
@@ -546,7 +548,7 @@ protected theorem monotone (f : α →𝒄 β) : Monotone f :=
 
 @[gcongr, mono]
 theorem apply_mono {f g : α →𝒄 β} {x y : α} (h₁ : f ≤ g) (h₂ : x ≤ y) : f x ≤ g y :=
-  OrderHom.apply_mono (show (f : α →o β) ≤ g from h₁) h₂
+  OrderHom.apply_mono (show f.toOrderHom ≤ g.toOrderHom from h₁) h₂
 
 theorem ωSup_bind {β γ : Type v} (c : Chain α) (f : α →o Part β) (g : α →o β → Part γ) :
     ωSup (c.map (f.partBind g)) = ωSup (c.map f) >>= ωSup (c.map g) := by
@@ -589,7 +591,7 @@ lemma ωScottContinuous.seq {β γ} {f : α → Part (β → γ)} {g : α → Pa
   simp only [seq_eq_bind_map]
   exact ωScottContinuous.bind hf <| ωScottContinuous.of_apply₂ fun _ ↦ ωScottContinuous.map hg
 
-theorem continuous (F : α →𝒄 β) (C : Chain α) : F (ωSup C) = ωSup (C.map F) :=
+theorem continuous (F : α →𝒄 β) (C : Chain α) : F (ωSup C) = ωSup (C.map F.toOrderHom) :=
   F.ωScottContinuous.map_ωSup _
 
 /-- Construct a continuous function from a bare function, a continuous function, and a proof that
@@ -624,8 +626,8 @@ theorem id_comp (f : β →𝒄 γ) : id.comp f = f := rfl
 theorem comp_assoc (f : γ →𝒄 δ) (g : β →𝒄 γ) (h : α →𝒄 β) : f.comp (g.comp h) = (f.comp g).comp h :=
   rfl
 
-@[simp]
-theorem coe_apply (a : α) (f : α →𝒄 β) : (f : α →o β) a = f a :=
+@[deprecated OrderHom.coe_ofClass +typeChanged (since := "2026-11-27")]
+theorem coe_apply (a : α) (f : α →𝒄 β) : (.ofClass f : α →o β) a = f a :=
   rfl
 
 /-- `Function.const` is a continuous function. -/
@@ -638,7 +640,7 @@ instance [Inhabited β] : Inhabited (α →𝒄 β) :=
 /-- The map from continuous functions to monotone functions is itself a monotone function. -/
 @[simps]
 def toMono : (α →𝒄 β) →o α →o β where
-  toFun f := f
+  toFun f := f.toOrderHom
   monotone' _ _ h := h
 
 /-- When proving that a chain of applications is below a bound `z`, it suffices to consider the
@@ -689,7 +691,7 @@ lemma ωScottContinuous_apply
     · apply ωSup_le
       intro i
       simp only [coe_map, OrderHom.apply_coe, OrderHom.coe_mk, Function.comp_apply, toMono_coe,
-        OrderHomClass.coe_coe, (f (c i)).continuous]
+        ContinuousHom.coe_toOrderHom, (f (c i)).continuous]
       apply ωSup_le
       intro j
       apply le_ωSup_of_le (i ⊔ j)
@@ -722,8 +724,8 @@ def flip {α : Type*} (f : α → β →𝒄 γ) : β →𝒄 α → γ :=
 /-- `Part.bind` as a continuous function. -/
 @[simps! apply]
 noncomputable def bind {β γ : Type v} (f : α →𝒄 Part β) (g : α →𝒄 β → Part γ) : α →𝒄 Part γ :=
-  .mk (OrderHom.partBind f g.toOrderHom) fun c => by
-    rw [ωSup_bind, ← f.continuous, g.toOrderHom_eq_coe, ← g.continuous]
+  .mk (OrderHom.partBind f.toOrderHom g.toOrderHom) fun c => by
+    rw [ωSup_bind, ← f.continuous, ← g.continuous]
     rfl
 
 /-- `Part.map` as a continuous function. -/
@@ -731,8 +733,8 @@ noncomputable def bind {β γ : Type v} (f : α →𝒄 Part β) (g : α →𝒄
 noncomputable def map {β γ : Type v} (f : β → γ) (g : α →𝒄 Part β) : α →𝒄 Part γ :=
   .copy (fun x => f <$> g x) (bind g (const (pure ∘ f))) <| by
     ext1
-    simp only [map_eq_bind_pure_comp, bind, coe_mk, OrderHom.partBind_coe, coe_apply,
-      coe_toOrderHom, const_apply, Part.bind_eq_bind]
+    simp only [map_eq_bind_pure_comp, bind, coe_mk, OrderHom.partBind_coe, coe_toOrderHom,
+      const_apply, Part.bind_eq_bind]
 
 /-- `Part.seq` as a continuous function. -/
 @[simps! apply]
@@ -756,22 +758,25 @@ variable (f : α →𝒄 α) (x : α)
 
 /-- The supremum of iterating a function on x arbitrary often is a fixed point -/
 theorem ωSup_iterate_mem_fixedPoint (h : x ≤ f x) :
-    ωSup (iterateChain f x h) ∈ fixedPoints f := by
+    ωSup (iterateChain f.toOrderHom x h) ∈ fixedPoints f := by
   rw [mem_fixedPoints, IsFixedPt, f.continuous]
   apply le_antisymm
   · apply ωSup_le
     intro n
-    simp only [Chain.coe_map, OrderHomClass.coe_coe, comp_apply]
-    have : iterateChain f x h (n.succ) = f (iterateChain f x h n) :=
+    simp only [Chain.coe_map, comp_apply]
+    have : iterateChain f.toOrderHom x h (n.succ) =
+        f.toOrderHom (iterateChain f.toOrderHom x h n) :=
       Function.iterate_succ_apply' ..
     rw [← this]
     apply le_ωSup
   · apply ωSup_le
     rintro (_ | n)
     · apply le_trans h
-      change ((iterateChain f x h).map f) 0 ≤ ωSup ((iterateChain f x h).map (f : α →o α))
+      change ((iterateChain f.toOrderHom x h).map f.toOrderHom) 0 ≤
+        ωSup ((iterateChain f.toOrderHom x h).map f.toOrderHom)
       apply le_ωSup
-    · have : iterateChain f x h (n.succ) = (iterateChain f x h).map f n :=
+    · have : iterateChain f.toOrderHom x h (n.succ) =
+          (iterateChain f.toOrderHom x h).map f.toOrderHom n :=
         Function.iterate_succ_apply' ..
       rw [this]
       apply le_ωSup
@@ -781,13 +786,13 @@ theorem ωSup_iterate_mem_fixedPoint (h : x ≤ f x) :
 A prefixed point is a value `a` with `f a ≤ a`. -/
 theorem ωSup_iterate_le_prefixedPoint (h : x ≤ f x) {a : α}
     (h_a : f a ≤ a) (h_x_le_a : x ≤ a) :
-    ωSup (iterateChain f x h) ≤ a := by
+    ωSup (iterateChain f.toOrderHom x h) ≤ a := by
   apply ωSup_le
   intro n
   induction n with
   | zero => exact h_x_le_a
   | succ n h_ind =>
-    have : iterateChain f x h (n.succ) = f (iterateChain f x h n) :=
+    have : iterateChain f.toOrderHom x h (n.succ) = f (iterateChain f.toOrderHom x h n) :=
       Function.iterate_succ_apply' ..
     rw [this]
     exact le_trans (f.monotone h_ind) h_a
@@ -795,7 +800,7 @@ theorem ωSup_iterate_le_prefixedPoint (h : x ≤ f x) {a : α}
 /-- The supremum of iterating a function on x arbitrary often is smaller than any fixed point. -/
 theorem ωSup_iterate_le_fixedPoint (h : x ≤ f x) {a : α}
     (h_a : a ∈ fixedPoints f) (h_x_le_a : x ≤ a) :
-    ωSup (iterateChain f x h) ≤ a := by
+    ωSup (iterateChain f.toOrderHom x h) ≤ a := by
   rw [mem_fixedPoints] at h_a
   obtain h_a := Eq.le h_a
   exact ωSup_iterate_le_prefixedPoint f x h h_a h_x_le_a
