@@ -103,14 +103,17 @@ The constants are chosen as follows:
 -/
 @[expose]
 def cos (I : Interval Dyadic) (prec : ℕ) : Interval Dyadic :=
-  match I, I.abs with
-  | ⟨some l, some u⟩, ⟨some a, some b⟩ =>
+  match I with
+  | ⟨some l, some u⟩ =>
     if l + 7 < u then Interval.Icc (-1 : Dyadic) (1 : Dyadic) else
-      let k := Nat.clog 2 ⌈b.toRat⌉₊ + Nat.sqrt prec
-      let p := prec + 2 * k + 8
-      let taylor (x : Dyadic) := cosTaylor (x >>> k) (p / (2 * Nat.sqrt prec + 1) + 1) p
-      roundOut (cosDoubling k ⟨(taylor b).lb, (taylor a).ub⟩ p) (prec + 1)
-  | _, _ => Interval.Icc (-1 : Dyadic) (1 : Dyadic)
+      match I.abs with
+      | ⟨some a, some b⟩ =>
+        let k := Nat.clog 2 ⌈b.toRat⌉₊ + Nat.sqrt prec
+        let p := prec + 2 * k + 8
+        let taylor (x : Dyadic) := cosTaylor (x >>> k) (p / (2 * Nat.sqrt prec + 1) + 1) p
+        roundOut (cosDoubling k ⟨(taylor b).lb, (taylor a).ub⟩ p) (prec + 1)
+      | _ => Interval.Icc (-1 : Dyadic) (1 : Dyadic) -- impossible since `I` is bounded
+  | _ => Interval.Icc (-1 : Dyadic) (1 : Dyadic)
 
 @[inclusion_op interval_dyadic_real]
 theorem cos_mem {x : ℝ} {I : Interval Dyadic} (hx : x ∈ I) (prec : ℕ) :
@@ -120,11 +123,12 @@ theorem cos_mem {x : ℝ} {I : Interval Dyadic} (hx : x ∈ I) (prec : ℕ) :
   have habs := abs_mem hx
   have h0 := I.abs_lb_nonneg
   unfold cos
-  generalize I.abs = J at habs h0 ⊢
-  rcases I with ⟨_ | l, _ | u⟩ <;> rcases J with ⟨_ | a, _ | b⟩ <;> try exact h1
-  dsimp only
+  split <;> [skip; exact h1]
   split
   · exact h1
+  split <;> [skip; exact h1]
+  rename_i a b hJ
+  rw [hJ] at habs h0
   obtain ⟨hax, hxb⟩ := (mem_mk_coe |x| a b).mp habs
   have ha : 0 ≤ a.toReal := by simpa using Dyadic.toReal_le_toReal.mpr (WithBot.coe_le_coe.mp h0)
   generalize hk : Nat.clog 2 ⌈b.toRat⌉₊ + Nat.sqrt prec = k
@@ -135,11 +139,13 @@ theorem cos_mem {x : ℝ} {I : Interval Dyadic} (hx : x ∈ I) (prec : ℕ) :
     simp [Dyadic.toReal, Dyadic.toRat_shiftRight_nat]
   have hs1 {d : Dyadic} (hd0 : 0 ≤ d.toReal) (hd : d.toReal ≤ 2 ^ k) : |(d >>> k).toReal| ≤ 1 := by
     rwa [hs, abs_of_nonneg (by positivity), div_le_one (by positivity)]
+  have hab := hax.trans hxb
   rw [← Real.cos_abs]
-  refine roundOut_mem (cosDoubling_mem (Interval.mem_Icc_of_le
-    (cosTaylor_mem (hs1 (ha.trans (hax.trans hxb)) hb) _ _) ?_ ?_
-    (cosTaylor_mem (hs1 ha ((hax.trans hxb).trans hb)) _ _)) _) _ <;> rw [hs] <;>
-  exact Real.cos_le_cos_of_nonneg_of_le_pi (by positivity) (le_trans (by gcongr) hπ) (by gcongr)
+  refine roundOut_mem (cosDoubling_mem ?_ _) _
+  refine Interval.mem_Icc_of_le (cosTaylor_mem (hs1 (ha.trans hab) hb) _ _) ?_ ?_
+    (cosTaylor_mem (hs1 ha (hab.trans hb)) _ _) <;> rw [hs]
+  · exact Real.cos_le_cos_of_nonneg_of_le_pi (by positivity) hπ (by gcongr)
+  · exact Real.cos_le_cos_of_nonneg_of_le_pi (by positivity) (le_trans (by gcongr) hπ) (by gcongr)
 
 end IntervalDyadicReal
 
