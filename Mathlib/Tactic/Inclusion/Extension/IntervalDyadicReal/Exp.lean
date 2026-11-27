@@ -35,8 +35,6 @@ This requires a certified computation of `log 2` to arbitrary precision, which i
 
 public section
 
-open Finset
-
 open scoped Nat
 
 namespace Inclusion
@@ -57,19 +55,17 @@ theorem expRatTaylor_mem (a : ℤ) {b : ℕ} (hb : b ≠ 0) (hab : a.natAbs ≤ 
   have hy : |(a : ℝ) / b| ≤ 1 := by
     rw [abs_div, Nat.abs_cast, div_le_one (by positivity), ← Int.cast_abs, ← Int.natCast_natAbs]
     norm_cast
-  have h := Real.exp_bound hy hn
-  obtain ⟨hterm, hsum⟩ := hypergeomPartialSum_div (Int.castRingHom ℝ) (fun _ ↦ a)
-    (fun j ↦ b * (j + 1)) (fun j ↦ by positivity) (fun m ↦ ((a : ℝ) / b) ^ m / m !)
+  obtain ⟨hterm, hsum⟩ := hypergeomPartialSum_spec (Int.castRingHom ℝ) (fun _ ↦ a)
+    (fun j ↦ b * (j + 1)) (fun j ↦ by positivity) 0 (fun m ↦ ((a : ℝ) / b) ^ m / m !)
     (fun j ↦ by push_cast [eq_intCast, pow_succ, Nat.factorial_succ]; field) n
   rw [expRatTaylor]
   generalize hypergeomPartialSum (R := ℤ) _ _ 0 n = X at hterm hsum ⊢
   have hterm' : |(X.termNum : ℝ)| / X.den = |(a : ℝ) / b| ^ n / n ! := by
-    simpa [abs_div, abs_pow] using congrArg abs hterm
+    simpa [abs_div] using congrArg abs hterm
   refine ratBall_mem ?_ prec
-  convert h using 1
+  convert Real.exp_bound hy hn using 1
   · simp [← hsum, mul_div_mul_left, hn.ne']
-  · push_cast
-    rw [mul_div_mul_comm, hterm']
+  · push_cast [mul_div_mul_comm, hterm']
     ring
 
 /-- Square `I` `k` times, rounding outward to the `2 ^ (-prec)` grid after each squaring.
