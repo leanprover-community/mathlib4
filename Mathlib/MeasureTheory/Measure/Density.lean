@@ -42,6 +42,7 @@ namespace MeasureTheory
 
 variable {X : Type u} [MeasurableSpace X] [PseudoEMetricSpace X]
 
+/-- Helper function to define lower and upper density of a set. -/
 noncomputable def densityQuotientAt (μ : Measure X := by volume_tac) (s : Set X) (x : X) (r : ℝ≥0) :
     ℝ≥0∞ :=
   letI B := Metric.eball x r
