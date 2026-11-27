@@ -85,8 +85,9 @@ theorem cosDoubling_mem {x : ℝ} {I : Interval Dyadic} {k : ℕ} (hx : Real.cos
   induction k generalizing I with
   | zero => simpa [cosDoubling] using hx
   | succ k ih =>
+    have hk : 2 * (x / 2 ^ (k + 1)) = x / 2 ^ k := by field
     have h := roundOut_mem (sub_mem (mul_mem (ofNat_mem 2) (pow_mem 2 hx)) (ofNat_mem 1)) prec
-    rw [← Real.cos_two_mul, pow_succ, ← div_div, mul_div_cancel₀ _ two_ne_zero] at h
+    rw [← Real.cos_two_mul, hk] at h
     exact ih h
 
 /-- The cosine of an interval `I`, which is `[-1, 1]` when `I` is wider than `2π` (tested as wider
