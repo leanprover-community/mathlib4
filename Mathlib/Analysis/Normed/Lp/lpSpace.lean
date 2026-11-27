@@ -342,20 +342,16 @@ The space of elements of `Π i, E i` satisfying the predicate `Memℓp`.
 -/
 
 /-- **The (little) ℓᵖ space**: the type of functions `f : Π i, E i` such that `Memℓp f p` (i.e.,
-`f` has finite `p`-norm).
-
-This is a structure, rather than a subtype of `Π i, E i`, so that `lp E p` does not inherit any
-structure from `Π i, E i` by unfolding definitions. In particular, the `pi` topology on `Π i, E i`
-would conflict with the normed group topology we will later equip `lp E p` with.
+`f` has finite `p`-norm). This is implemented as a structure bundling a function `Π i, E i` with a
+proof of `Memℓp f p`.
 
 The non-dependent version comes equipped with the notation `ℓ^p(ι, E)` in the `lp` namespace. When
 `p` takes the values `0`, `1` or `2`, the notation `ℓ⁰(ι, E)`, `ℓ¹(ι, E)`, `ℓ²(ι, E)` is also
 available. -/
 structure lp (E : α → Type*) [∀ i, NormedAddCommGroup (E i)] (p : ℝ≥0∞) where
-  /-- The underlying function of an element of `lp E p`. Use the coercion `⇑` instead. -/
+  /-- The underlying function of an element of `lp E p`. -/
   toFun : Π i, E i
-  /-- The underlying function of an element of `lp E p` has finite `p`-norm. Use `lp.memℓp`
-  instead. -/
+  /-- The underlying function of an element of `lp E p` has finite `p`-norm. -/
   memℓp' : Memℓp toFun p
 
 @[inherit_doc] scoped[lp] notation "ℓ^" p "(" ι ", " E ")" => lp (fun _ : ι ↦ E) p
