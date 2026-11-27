@@ -314,7 +314,6 @@ theorem getLast_append_of_right_ne_nil (l₁ l₂ : List α) (h : l₂ ≠ []) :
 theorem getLast_concat' {a : α} (l : List α) : getLast (concat l a) (by simp) = a := by
   simp
 
-@[simp]
 theorem getLast_singleton' (a : α) : getLast [a] (cons_ne_nil a []) = a := rfl
 
 theorem dropLast_append_getLast : ∀ {l : List α} (h : l ≠ []), dropLast l ++ [getLast l h] = l
@@ -469,7 +468,7 @@ theorem exists_mem_iff_get {l : List α} {p : α → Prop} :
 
 theorem forall_mem_iff_getElem {l : List α} {p : α → Prop} :
     (∀ x ∈ l, p x) ↔ ∀ (i : ℕ) (_ : i < l.length), p l[i] := by
-  simp [mem_iff_getElem, @forall_comm α]
+  simp [mem_iff_getElem]
 
 theorem forall_mem_iff_get {l : List α} {p : α → Prop} :
     (∀ x ∈ l, p x) ↔ ∀ (i : Fin l.length), p (l.get i) :=

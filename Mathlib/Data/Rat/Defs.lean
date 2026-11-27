@@ -195,11 +195,11 @@ instance commSemigroup : CommSemigroup ℚ := by infer_instance
 
 instance semigroup : Semigroup ℚ := by infer_instance
 
-@[simp]
+@[deprecated neg_den (since := "2026-11-23")]
 theorem den_neg_eq_den (q : ℚ) : (-q).den = q.den :=
   rfl
 
-@[simp]
+@[deprecated neg_num (since := "2026-11-23")]
 theorem num_neg_eq_neg_num (q : ℚ) : (-q).num = -q.num :=
   rfl
 
@@ -220,7 +220,7 @@ theorem zero_iff_num_zero {q : ℚ} : q = 0 ↔ q.num = 0 :=
 theorem num_one : (1 : ℚ).num = 1 :=
   rfl
 
-@[simp]
+-- `Not `@[simp]` as `den_ofNat` is stronger.
 theorem den_one : (1 : ℚ).den = 1 :=
   rfl
 
