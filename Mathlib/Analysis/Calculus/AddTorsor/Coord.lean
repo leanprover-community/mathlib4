@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Calculus.AddTorsor.AffineMap
 public import Mathlib.Analysis.Normed.Affine.AddTorsorBases
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Barycentric coordinates are smooth
 -/

@@ -256,16 +256,18 @@ theorem isOpenQuotientMap_pow (n : ℕ) [NeZero n] : IsOpenQuotientMap (· ^ n :
 
 theorem isOpenQuotientMap_pow_compl_zero (n : ℕ) [NeZero n] :
     IsOpenQuotientMap
-      fun z : {z : ℂ // z ≠ 0} ↦ (⟨z ^ n, pow_ne_zero n z.2⟩ : {z : ℂ // z ≠ 0}) where
+      fun z : {z : ℂ // z ≠ 0} ↦ (⟨z ^ n, pow_ne_zero n z.property⟩ : {z : ℂ // z ≠ 0}) where
   surjective z := have ⟨w, h⟩ := (isOpenQuotientMap_pow n).surjective z
-    ⟨⟨w, by rintro rfl; exact z.2 (by simpa [zero_pow (NeZero.ne n)] using h.symm)⟩, Subtype.ext h⟩
+    ⟨⟨w, by rintro rfl; exact z.property (by simpa [zero_pow (NeZero.ne n)] using h.symm)⟩,
+      Subtype.ext h⟩
   continuous := by fun_prop
-  isOpenMap := (IsOpen.isOpenEmbedding_subtypeVal isClosed_singleton.1).isOpenMap_iff.mpr <|
-    (isOpenQuotientMap_pow n).isOpenMap.comp isClosed_singleton.1.isOpenMap_subtype_val
+  isOpenMap :=
+    (IsOpen.isOpenEmbedding_subtypeVal isClosed_singleton.isOpen_compl).isOpenMap_iff.mpr <|
+      (isOpenQuotientMap_pow n).isOpenMap.comp isClosed_singleton.isOpen_compl.isOpenMap_subtypeVal
 
 theorem isOpenQuotientMap_zpow_compl_zero (n : ℤ) [NeZero n] :
     IsOpenQuotientMap
-      fun z : {z : ℂ // z ≠ 0} ↦ (⟨z ^ n, zpow_ne_zero n z.2⟩ : {z : ℂ // z ≠ 0}) := by
+      fun z : {z : ℂ // z ≠ 0} ↦ (⟨z ^ n, zpow_ne_zero n z.property⟩ : {z : ℂ // z ≠ 0}) := by
   obtain ⟨n, rfl | rfl⟩ := n.eq_nat_or_neg
   · have : NeZero n := ⟨Nat.cast_ne_zero.mp (NeZero.ne (n : ℤ))⟩
     exact isOpenQuotientMap_pow_compl_zero n

@@ -11,13 +11,15 @@ public import Mathlib.Algebra.Homology.DerivedCategory.KProjective
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexSingle
 public import Mathlib.CategoryTheory.Abelian.Projective.Extend
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Computing `Ext` using a projective resolution
 
 Given a projective resolution `R` of an object `X` in an abelian category `C`,
 we provide an API in order to construct elements in `Ext X Y n` in terms
 of the complex `R.complex` and to make computations in the `Ext`-group.
-
 -/
 
 @[expose] public section

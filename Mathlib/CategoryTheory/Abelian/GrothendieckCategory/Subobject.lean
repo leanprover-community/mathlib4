@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Colim
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
 public import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subobjects in Grothendieck abelian categories
 
@@ -18,7 +21,6 @@ for a functor `F : J ⥤ MonoOver X` from a filtered category,
 we relate the colimit of `F` (computed in `C`) and the
 supremum of the subobjects corresponding to the objects
 in the image of `F`.
-
 -/
 
 @[expose] public section

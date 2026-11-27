@@ -7,6 +7,9 @@ module
 
 public import Mathlib.SetTheory.Cardinal.ENat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Projection from cardinal numbers to natural numbers
 

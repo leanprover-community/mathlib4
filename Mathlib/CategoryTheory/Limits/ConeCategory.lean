@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Comma.Over.Basic
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 public import Mathlib.CategoryTheory.Limits.Shapes.Equivalence
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Limits and the category of (co)cones
 
@@ -17,11 +20,11 @@ This file contains results that stem from the limit API. For the definition and 
 instance of `Cone`, please refer to `Mathlib/CategoryTheory/Limits/Cones.lean`.
 
 ## Main results
+
 * The category of cones on `F : J ⥤ C` is equivalent to the category
   `CostructuredArrow (const J) F`.
 * A cone is limiting iff it is terminal in the category of cones. As a corollary, an equivalence of
   categories of cones preserves limiting properties.
-
 -/
 
 @[expose] public section

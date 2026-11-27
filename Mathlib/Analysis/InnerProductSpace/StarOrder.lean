@@ -10,6 +10,9 @@ public import Mathlib.Analysis.InnerProductSpace.Positive
 
 import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuous linear maps on a Hilbert space are a `StarOrderedRing`
 
@@ -18,7 +21,6 @@ In this file we show that the continuous linear maps on a complex Hilbert space 
 prove that, with respect to this partial order, a map is positive if every element of the
 real spectrum is nonnegative. Consequently, when `H` is a Hilbert space, then `H →L[ℂ] H` is
 equipped with all the usual instances of the continuous functional calculus.
-
 -/
 
 public section

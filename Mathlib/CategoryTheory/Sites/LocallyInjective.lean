@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Sites.LeftExact
 public import Mathlib.CategoryTheory.Sites.PreservesSheafification
 public import Mathlib.CategoryTheory.Sites.Subsheaf
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Locally injective morphisms of (pre)sheaves
 
@@ -20,7 +23,6 @@ if `x` and `y` are two elements of some `F₁.obj U` such
 the images of `x` and `y` in `F₂.obj U` coincide, then
 the equality `x = y` must hold locally, i.e. after restriction
 by the maps of a covering sieve.
-
 -/
 
 @[expose] public section
@@ -110,11 +112,11 @@ lemma isLocallyInjective_iff_equalizerSieve_mem_imp :
     let S := equalizerSieve (φ.app _ x) (φ.app _ y)
     let T : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X.unop⦄ (_ : S f), Sieve Y := fun Y f _ =>
       equalizerSieve (F₁.map f.op x) ((F₁.map f.op y))
-    refine J.superset_covering ?_ (J.transitive h (Sieve.bind S.1 T) ?_)
+    refine J.superset_covering ?_ (J.transitive h (Sieve.bind S.arrows T) ?_)
     · rintro Y f ⟨Z, a, g, hg, ha, rfl⟩
       simpa using! ha
     · intro Y f hf
-      refine J.superset_covering (Sieve.le_pullback_bind S.1 T _ hf)
+      refine J.superset_covering (Sieve.le_pullback_bind S.arrows T _ hf)
         (equalizerSieve_mem J φ _ _ ?_)
       rw [NatTrans.naturality_apply, NatTrans.naturality_apply]
       exact hf
@@ -182,7 +184,7 @@ instance isLocallyInjective_toPlus (P : Cᵒᵖ ⥤ Type (max u v)) :
   equalizerSieve_mem {X} x y h := by
     rw [toPlus_eq_mk, toPlus_eq_mk, eq_mk_iff_exists] at h
     obtain ⟨W, h₁, h₂, eq⟩ := h
-    exact J.superset_covering (fun Y f hf => congr($(eq).val ⟨Y, f, hf⟩)) W.2
+    exact J.superset_covering (fun Y f hf => congr($(eq).val ⟨Y, f, hf⟩)) W.property
 
 set_option backward.isDefEq.respectTransparency false in
 instance isLocallyInjective_toSheafify (P : Cᵒᵖ ⥤ Type (max u v)) :
@@ -225,20 +227,20 @@ instance isLocallyInjective_of_iso [IsIso φ] : IsLocallyInjective φ := by
 lemma mono_of_injective
     (hφ : ∀ (X : Cᵒᵖ), Function.Injective (φ.hom.app X)) : Mono φ :=
   have : ∀ X, Mono (φ.hom.app X) := fun X ↦ ConcreteCategory.mono_of_injective _ (hφ X)
-  (sheafToPresheaf _ _).mono_of_mono_map (NatTrans.mono_of_mono_app φ.1)
+  (sheafToPresheaf _ _).mono_of_mono_map (NatTrans.mono_of_mono_app φ.hom)
 
 variable [J.HasSheafCompose (forget D)]
 
 instance isLocallyInjective_forget [IsLocallyInjective φ] :
     IsLocallyInjective ((sheafCompose J (forget D)).map φ) :=
-  Presheaf.isLocallyInjective_forget J φ.1
+  Presheaf.isLocallyInjective_forget J φ.hom
 
 lemma isLocallyInjective_iff_injective :
     IsLocallyInjective φ ↔ ∀ (X : Cᵒᵖ), Function.Injective (φ.hom.app X) :=
   Presheaf.isLocallyInjective_iff_injective_of_separated _ _ (by
     apply Presieve.IsSheaf.isSeparated
     rw [← isSheaf_iff_isSheaf_of_type]
-    exact ((sheafCompose J (forget D)).obj F₁).2)
+    exact ((sheafCompose J (forget D)).obj F₁).property)
 
 lemma mono_of_isLocallyInjective [IsLocallyInjective φ] : Mono φ := by
   apply mono_of_injective

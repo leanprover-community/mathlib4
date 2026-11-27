@@ -58,7 +58,6 @@ the above cases, it is necessary to temporarily instantiate `C⋆ᵐᵒᵈ(A, E)
 `CStarModule.normedAddCommGroup`, show the resulting type is bilipschitz equivalent to `E` via
 `WithCStarModule.equiv` (in the first and last case, this map is actually trivially an isometry),
 and then replace the uniformity and bornology with the correct ones.
-
 -/
 
 @[expose] public section
@@ -182,7 +181,7 @@ private lemma antilipschitzWith_two_equiv_prod_aux : AntilipschitzWith 2 (equiv 
     · exact norm_snd_le x
 
 private lemma lipschitzWith_one_equiv_prod_aux : LipschitzWith 1 (equiv A (E × F)) :=
-  AddMonoidHomClass.lipschitz_of_bound_nnnorm (linearEquiv ℂ A (E × F)) 1 <| by
+  AddMonoidHomClass.lipschitz_of_bound_nnNorm (linearEquiv ℂ A (E × F)) 1 <| by
     simpa using! norm_equiv_le_norm_prod
 
 private lemma uniformity_prod_eq_aux :
@@ -312,7 +311,7 @@ private lemma antilipschitzWith_card_equiv_pi_aux :
       _ ≤ Fintype.card ι * ‖⇑x‖ := by simp
 
 private lemma lipschitzWith_one_equiv_pi_aux : LipschitzWith 1 (equiv A (Π i, E i)) :=
-  AddMonoidHomClass.lipschitz_of_bound_nnnorm (linearEquiv ℂ A (Π i, E i)) 1 <| by
+  AddMonoidHomClass.lipschitz_of_bound_nnNorm (linearEquiv ℂ A (Π i, E i)) 1 <| by
     simpa using! norm_equiv_le_norm_pi
 
 private lemma uniformity_pi_eq_aux :

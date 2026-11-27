@@ -11,8 +11,10 @@ public import Mathlib.Data.List.MinMax
 public import Mathlib.Order.ConditionallyCompleteLattice.Finset
 public import Mathlib.Order.ConditionallyCompleteLattice.WithTop
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Tropicalization of finitary operations
 
 This file provides the "big-op" or notation-based finitary operations on tropicalized types.
@@ -31,7 +33,6 @@ No concrete (semi)ring is used here, only ones with inferable order/lattice stru
 
 Minima over `List α` are defined as producing a value in `WithTop α` so proofs about lists do not
 directly transfer to minima over multisets or finsets.
-
 -/
 
 public section

@@ -14,12 +14,16 @@ public import Mathlib.Tactic.Positivity
 
 import Mathlib.Basic.Real.Embedding
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Rank one valuations
 
 We define rank one valuations.
 
 ## Main Definitions
+
 * `RankOne` : A valuation has rank one if it is nontrivial and its image (defined as
   `MonoidWithZeroHom.valueGroup₀ v`) is contained in `ℝ≥0`. Note that this class includes the data
   of an inclusion morphism `MonoidWithZeroHom.valueGroup₀ v → ℝ≥0`.

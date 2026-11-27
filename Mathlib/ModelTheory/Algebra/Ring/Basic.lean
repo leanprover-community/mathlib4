@@ -23,7 +23,7 @@ etc. on terms in the language.
 - `FirstOrder.Ring.compatibleRingOfRing` : Given a type `R` with instances for each of the `Ring`
   operations, make a `compatibleRing` instance.
 
-## Implementation Notes
+## Implementation notes
 
 There are implementation difficulties with the model theory of rings caused by the fact that there
 are two different ways to say that `R` is a `Ring`. We can say `Ring R` or

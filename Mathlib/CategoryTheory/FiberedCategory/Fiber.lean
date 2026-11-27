@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.FiberedCategory.HomLift
 
 /-!
-
 # Fibers of functors
 
 In this file we define, for a functor `p : 𝒳 ⥤ 𝒴`, the fiber categories `Fiber p S` for every
@@ -41,16 +40,16 @@ variable {p : 𝒳 ⥤ 𝒮} {S : 𝒮}
 
 /-- `Fiber p S` has the structure of a category with morphisms being those lying over `𝟙 S`. -/
 instance fiberCategory : Category (Fiber p S) where
-  Hom a b := {φ : a.1 ⟶ b.1 // IsHomLift p (𝟙 S) φ}
-  id a := ⟨𝟙 a.1, IsHomLift.id a.2⟩
-  comp φ ψ := ⟨φ.val ≫ ψ.val, by have := φ.2; have := ψ.2; infer_instance⟩
+  Hom a b := {φ : a.val ⟶ b.val // IsHomLift p (𝟙 S) φ}
+  id a := ⟨𝟙 a.val, IsHomLift.id a.property⟩
+  comp φ ψ := ⟨φ.val ≫ ψ.val, by have := φ.property; have := ψ.property; infer_instance⟩
 
 /-- The functor including `Fiber p S` into `𝒳`. -/
 def fiberInclusion : Fiber p S ⥤ 𝒳 where
-  obj a := a.1
-  map φ := φ.1
+  obj a := a.val
+  map φ := φ.val
 
-instance {a b : Fiber p S} (φ : a ⟶ b) : IsHomLift p (𝟙 S) (fiberInclusion.map φ) := φ.2
+instance {a b : Fiber p S} (φ : a ⟶ b) : IsHomLift p (𝟙 S) (fiberInclusion.map φ) := φ.property
 
 @[ext]
 lemma hom_ext {a b : Fiber p S} {φ ψ : a ⟶ b}
@@ -67,11 +66,11 @@ set_option backward.isDefEq.respectTransparency.types false in
 function valued at `S`. -/
 @[simps!]
 def fiberInclusionCompIsoConst : fiberInclusion ⋙ p ≅ (const (Fiber p S)).obj S :=
-  NatIso.ofComponents (fun X ↦ eqToIso X.2)
+  NatIso.ofComponents (fun X ↦ eqToIso X.property)
     (fun φ ↦ by simp [IsHomLift.fac' p (𝟙 S) (fiberInclusion.map φ)])
 
 lemma fiberInclusion_comp_eq_const : fiberInclusion ⋙ p = (const (Fiber p S)).obj S :=
-  Functor.ext_of_iso fiberInclusionCompIsoConst (fun x ↦ x.2)
+  Functor.ext_of_iso fiberInclusionCompIsoConst (fun x ↦ x.property)
 
 /-- The object of the fiber over `S` corresponding to a `a : 𝒳` such that `p(a) = S`. -/
 def mk {p : 𝒳 ⥤ 𝒮} {S : 𝒮} {a : 𝒳} (ha : p.obj a = S) : Fiber p S := ⟨a, ha⟩

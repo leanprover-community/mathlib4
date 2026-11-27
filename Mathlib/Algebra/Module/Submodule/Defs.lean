@@ -8,7 +8,6 @@ module
 public import Mathlib.GroupTheory.GroupAction.SubMulAction
 
 /-!
-
 # Submodules of a module
 
 In this file we define
@@ -234,7 +233,7 @@ lemma smul_mem_iff_of_isUnit (hr : IsUnit r) :
   smul_mem_iff'' p
 
 instance add : Add p :=
-  ⟨fun x y => ⟨x.1 + y.1, add_mem x.2 y.2⟩⟩
+  ⟨fun x y => ⟨x.val + y.val, add_mem x.property y.property⟩⟩
 
 instance zero : Zero p :=
   ⟨⟨0, zero_mem _⟩⟩
@@ -243,7 +242,7 @@ instance inhabited : Inhabited p :=
   ⟨0⟩
 
 instance smul [SMul S R] [SMul S M] [IsScalarTower S R M] : SMul S p :=
-  ⟨fun c x => ⟨c • x.1, smul_of_tower_mem _ c x.2⟩⟩
+  ⟨fun c x => ⟨c • x.val, smul_of_tower_mem _ c x.property⟩⟩
 
 instance isScalarTower [SMul S R] [SMul S M] [IsScalarTower S R M] : IsScalarTower S R p :=
   p.toSubMulAction.isScalarTower
@@ -287,7 +286,7 @@ theorem coe_mk (x : M) (hx : x ∈ p) : ((⟨x, hx⟩ : p) : M) = x :=
   rfl
 
 theorem coe_mem (x : p) : (x : M) ∈ p :=
-  x.2
+  x.property
 
 variable (p)
 

@@ -25,6 +25,7 @@ multiplication from `R⟦Γ⟧`. The scalar action of `R` on `R⟦Γ⟧` is comp
 with the action of `R⟦Γ⟧` on `HahnModule Γ' R V`.
 
 ## Main Definitions
+
 * `HahnModule` is a type alias for `HahnSeries`, which we use for defining scalar multiplication
   of `R⟦Γ⟧` on `HahnModule Γ' R V` for an `R`-module `V`, where `Γ'` admits an ordered
   cancellative vector addition operation from `Γ`. The type alias allows us to avoid a potential
@@ -37,15 +38,18 @@ with the action of `R⟦Γ⟧` on `HahnModule Γ' R V`.
   series such that subtracting one yields a series with strictly positive `orderTop`.
 
 ## Main results
+
 * If `R` is a (commutative) (semi-)ring, then so is `R⟦Γ⟧`.
 * If `V` is an `R`-module, then `HahnModule Γ' R V` is a `R⟦Γ⟧`-module.
 
 ## TODO
+
 The following may be useful for composing vertex operators, but they seem to take time.
 * rightTensorMap: `HahnModule Γ' R U ⊗[R] V →ₗ[R] HahnModule Γ' R (U ⊗[R] V)`
 * leftTensorMap: `U ⊗[R] HahnModule Γ' R V →ₗ[R] HahnModule Γ' R (U ⊗[R] V)`
 
 ## References
+
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
 -/
 
@@ -351,8 +355,8 @@ theorem support_smul_subset_vadd_support' [MulZeroClass R] [SMulWithZero R V] {x
 
 theorem support_smul_subset_vadd_support [MulZeroClass R] [SMulWithZero R V] {x : R⟦Γ⟧}
     {y : HahnModule Γ' R V} :
-    ((of R).symm (x • y)).support ⊆ x.support +ᵥ ((of R).symm y).support := by
-  exact support_smul_subset_vadd_support'
+    ((of R).symm (x • y)).support ⊆ x.support +ᵥ ((of R).symm y).support :=
+  support_smul_subset_vadd_support'
 
 theorem orderTop_vAdd_le_orderTop_smul {Γ Γ'} [LinearOrder Γ] [LinearOrder Γ'] [VAdd Γ Γ']
     [IsOrderedCancelVAdd Γ Γ'] [MulZeroClass R] [SMulWithZero R V] {x : R⟦Γ⟧}

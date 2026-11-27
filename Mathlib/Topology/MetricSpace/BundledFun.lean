@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.Basic.Rel
 public import Mathlib.Data.Finset.Lattice.Fold
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pseudometrics as bundled functions
 
@@ -24,7 +27,6 @@ something like `{ fuel: ℕ, time: ℕ }` even though there is no linear order.
 
 In most cases, the codomain will be a linear ordered additive monoid like
 `ℝ`, `ℝ≥0`, `ℝ≥0∞`, in which all of the axioms below are satisfied.
-
 -/
 
 public section

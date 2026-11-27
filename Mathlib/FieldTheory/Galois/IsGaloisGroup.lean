@@ -265,7 +265,7 @@ theorem fixedPoints_bot :
 
 theorem le_fixedPoints_iff_le_fixingSubgroup :
     F ≤ FixedPoints.intermediateField H ↔ H ≤ fixingSubgroup G (F : Set L) :=
-  ⟨fun h g hg x ↦ h x.2 ⟨g, hg⟩, fun h x hx g ↦ h g.2 ⟨x, hx⟩⟩
+  ⟨fun h g hg x ↦ h x.property ⟨g, hg⟩, fun h x hx g ↦ h g.property ⟨x, hx⟩⟩
 
 theorem fixedPoints_le_of_le (h : H ≤ H') :
     FixedPoints.intermediateField H' ≤ (FixedPoints.intermediateField H : IntermediateField K L) :=
@@ -396,7 +396,7 @@ theorem quotient [Finite G] (N : Subgroup G) [N.Normal] [MulSemiringAction G C]
     [SMulCommClass (G ⧸ N) A B] [SMulDistribClass G B C] [IsScalarTower G (G ⧸ N) B]
     [IsGaloisGroup N B C] :
     IsGaloisGroup (G ⧸ N) A B where
-  faithful.eq_of_smul_eq_smul := fun {g₁} {g₂} ↦ Quotient.inductionOn₂' g₁ g₂ fun g₁ g₂ h ↦ by
+  faithful.eq_of_smul_eq_smul := fun {g₁} {g₂} ↦ Quotient.inductionOn₂ g₁ g₂ fun g₁ g₂ h ↦ by
     have h' : ∀ g : G, (∀ x : B, g • x = x) → g ∈ N := by
       simp [← fixingSubgroup_range_algebraMap G A B C N, mem_fixingSubgroup_iff, ← algebraMap.smul',
         (FaithfulSMul.algebraMap_injective B C).eq_iff]
@@ -531,8 +531,6 @@ theorem map_quotientMk' [Finite G] [IsGaloisGroup G K L] (h : E ≤ F) :
         congrm algebraMap F L $(h ⟨g, ⟨g, hg, rfl⟩⟩))
       exact ⟨a, FaithfulSMul.algebraMap_injective F L
         (by rw [← IsScalarTower.algebraMap_apply, ha])⟩⟩ }
-
-@[deprecated (since := "2026-04-21")] alias quotientMap := map_quotientMk'
 
 end IntermediateField
 

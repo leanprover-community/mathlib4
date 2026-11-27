@@ -9,12 +9,14 @@ public meta import Mathlib.Tactic.CategoryTheory.Monoidal.Datatypes
 public import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
 public import Mathlib.Tactic.CategoryTheory.Monoidal.Datatypes
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Normalization of morphisms in monoidal categories
 
 This file provides the implementation of the normalization given in
 `Mathlib/Tactic/CategoryTheory/Coherence/Normalize.lean`. See this file for more details.
-
 -/
 
 public meta section

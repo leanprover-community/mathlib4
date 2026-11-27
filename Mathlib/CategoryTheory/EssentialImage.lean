@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 public import Mathlib.Order.BooleanAlgebra.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Essential image of a functor
 
@@ -198,7 +201,7 @@ lemma essImage_ι_comp (F : C ⥤ D) (P : ObjectProperty C) :
   ext Y
   constructor
   · rintro ⟨X, ⟨e⟩⟩
-    exact ⟨X.1, X.2, ⟨e⟩⟩
+    exact ⟨X.obj, X.property, ⟨e⟩⟩
   · rintro ⟨X, hX, ⟨e⟩⟩
     exact ⟨⟨X, hX⟩, ⟨e⟩⟩
 

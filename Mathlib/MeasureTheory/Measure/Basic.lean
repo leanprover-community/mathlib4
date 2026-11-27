@@ -126,7 +126,8 @@ theorem measure_biUnion₀ {s : Set β} {f : β → Set α} (hs : s.Countable)
     μ (⋃ b ∈ s, f b) = ∑' p : s, μ (f p) := by
   have := hs.toEncodable
   rw [biUnion_eq_iUnion]
-  exact measure_iUnion₀ (hd.on_injective Subtype.coe_injective fun x => x.2) fun x => h x x.2
+  exact measure_iUnion₀ (hd.on_injective Subtype.coe_injective fun x => x.property)
+    fun x => h x x.property
 
 theorem measure_biUnion {s : Set β} {f : β → Set α} (hs : s.Countable) (hd : s.PairwiseDisjoint f)
     (h : ∀ b ∈ s, MeasurableSet (f b)) : μ (⋃ b ∈ s, f b) = ∑' p : s, μ (f p) :=
@@ -259,7 +260,7 @@ theorem measure_sdiff_le_iff_le_add (hs : NullMeasurableSet s μ) (hst : s ⊆ t
 alias measure_diff_le_iff_le_add := measure_sdiff_le_iff_le_add
 
 theorem measure_eq_measure_of_null_sdiff (hst : s ⊆ t) (h_nullsdiff : μ (t \ s) = 0) :
-    μ s = μ t := measure_congr <| hst.eventuallySubset.antisymm (ae_le_set.mpr h_nullsdiff)
+    μ s = μ t := measure_congr <| hst.eventuallySubset.antisymm (ae_subset.mpr h_nullsdiff)
 
 @[deprecated (since := "2026-06-03")]
 alias measure_eq_measure_of_null_diff := measure_eq_measure_of_null_sdiff
@@ -309,11 +310,11 @@ lemma measure_inter_conull (ht : μ tᶜ = 0) : μ (s ∩ t) = μ s := by
 
 @[simp]
 theorem union_ae_eq_left_iff_ae_subset : s ∪ t =ᵐ[μ] s ↔ t ≤ᵐ[μ] s := by
-  rw [ae_le_set]
+  rw [ae_subset]
   refine
     ⟨fun h => by simpa only [union_sdiff_left] using (ae_eq_set.mp h).1, fun h =>
       eventuallySubset_antisymm_iff.mpr
-        ⟨by rwa [ae_le_set, union_sdiff_left],
+        ⟨by rwa [ae_subset, union_sdiff_left],
           .of_subset subset_union_left⟩⟩
 
 @[simp]
@@ -322,7 +323,7 @@ theorem union_ae_eq_right_iff_ae_subset : s ∪ t =ᵐ[μ] t ↔ s ≤ᵐ[μ] t 
 
 theorem ae_eq_of_ae_subset_of_measure_ge (h₁ : s ≤ᵐ[μ] t) (h₂ : μ t ≤ μ s)
     (hsm : NullMeasurableSet s μ) (ht : μ t ≠ ∞) : s =ᵐ[μ] t := by
-  refine eventuallySubset_antisymm_iff.mpr ⟨h₁, ae_le_set.mpr ?_⟩
+  refine eventuallySubset_antisymm_iff.mpr ⟨h₁, ae_subset.mpr ?_⟩
   replace h₂ : μ t = μ s := h₂.antisymm (measure_mono_ae h₁)
   replace ht : μ s ≠ ∞ := h₂ ▸ ht
   rw [measure_sdiff' t hsm ht, measure_congr (union_ae_eq_left_iff_ae_subset.mpr h₁), h₂, tsub_self]
@@ -502,7 +503,7 @@ lemma ext_of_measurableAtoms [Countable α] {ν : Measure α}
     exact MeasurableSet.measurableAtom_of_countable x
   rw [measure_sUnion h_count h_disj h_meas, measure_sUnion h_count h_disj h_meas]
   congr with s'
-  have hs' := s'.2
+  have hs' := s'.property
   obtain ⟨x, hxs, hx⟩ := hs'
   rw [← hx]
   exact h x

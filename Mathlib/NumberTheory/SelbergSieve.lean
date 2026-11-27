@@ -21,7 +21,8 @@ term of the Λ² sieve.
 We mostly follow the treatment outlined by Heath-Brown in the notes to an old graduate course. One
 minor notational difference is that we write $\nu(n)$ in place of $\frac{\omega(n)}{n}$.
 
-## Results
+## Main statements
+
 * `siftedSum_le_mainSum_errSum_of_UpperBoundSieve` - Every upper bound sieve gives an upper bound
   on the size of the sifted set in terms of `mainSum` and `errSum`
 * `upperMoebius_of_lambda_sq` - Lambda squared weights produce upper bound sieves
@@ -31,7 +32,6 @@ minor notational difference is that we write $\nu(n)$ in place of $\frac{\omega(
 
 * [Heath-Brown, *Lectures on sieves*][heathbrown2002lecturessieves]
 * [Koukoulopoulos, *The Distribution of Prime Numbers*][MR3971232]
-
 -/
 
 @[expose] public section

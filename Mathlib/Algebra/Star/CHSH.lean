@@ -58,7 +58,7 @@ There's a nice proof of both bounds in this setting at
 https://en.wikipedia.org/wiki/Tsirelson%27s_bound
 The proof given here is purely algebraic.
 
-## Future work
+## TODO
 
 One can show that Tsirelson's inequality is tight.
 In the \*-ring of n-by-n complex matrices, if `A ≤ λ I` for some `λ : ℝ`,
@@ -72,7 +72,6 @@ There is a CHSH tuple in 4-by-4 matrices such that
   *Proposed experiment to test local hidden-variable theories*][zbMATH06785026]
 * [Bell, *On the Einstein Podolsky Rosen Paradox*][MR3790629]
 * [Tsirelson, *Quantum generalizations of Bell's inequality*][MR577178]
-
 -/
 
 public section

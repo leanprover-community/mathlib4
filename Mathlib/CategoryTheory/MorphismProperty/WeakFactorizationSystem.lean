@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.MorphismProperty.RetractArgument
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Weak factorization systems
 
@@ -17,8 +20,8 @@ that `W₁` is exactly `W₂.llp`, `W₂` is exactly `W₁.rlp`,
 and any morphism in `C` can be factored a `i ≫ p` with `W₁ i` and `W₂ p`.
 
 ## References
-* https://ncatlab.org/nlab/show/weak+factorization+system
 
+* https://ncatlab.org/nlab/show/weak+factorization+system
 -/
 
 public section
