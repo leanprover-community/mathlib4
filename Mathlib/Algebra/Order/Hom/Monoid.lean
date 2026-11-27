@@ -132,9 +132,8 @@ def OrderMonoidHom.ofClass [OrderHomClass F α β] [MonoidHomClass F α β] (f :
     α →*o β :=
   { (f : α →* β) with monotone' := OrderHomClass.monotone f }
 
-@[to_additive (attr := deprecated (since := "2026-11-26"))] alias
-    OrderMonoidHomClass.toOrderMonoidHom :=
-  OrderMonoidHom.ofClass
+@[to_additive (attr := deprecated (since := "2026-11-26"))]
+alias OrderMonoidHomClass.toOrderMonoidHom := OrderMonoidHom.ofClass
 
 /-- `α ≃*o β` is the type of isomorphisms `α ≃ β` that preserve the ordered monoid structure.
 
