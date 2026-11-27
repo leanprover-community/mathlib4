@@ -214,9 +214,8 @@ lemma nz_of_isRat {n : ℤ} {d : ℕ} [Ring A] [CharZero A] :
   | ⟨inv, eq⟩, h => by
     have h := of_decide_eq_true h
     obtain ⟨m, rfl⟩ := Int.exists_eq_neg_ofNat h.le
-    rw [eq, Ne, mul_invOf_eq_iff_eq_mul_right, zero_mul, Int.cast_neg, Int.cast_natCast,
-      neg_eq_zero, Nat.cast_eq_zero]
-    omega
+    simp [eq, Ne, mul_invOf_eq_iff_eq_mul_right]
+    lia
 
 lemma nz_of_isNNRat {n d : ℕ} [Semiring A] [CharZero A] :
     (NormNum.IsNNRat e n d) → (decide (0 < n)) → ((e : A) ≠ 0)
