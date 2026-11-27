@@ -50,6 +50,7 @@ theorem relfinrank_eq_toNat_relrank : relfinrank A B = toNat (relrank A B) := rf
 
 theorem relrank_pos : 0 < relrank A B := rank_pos
 
+variable {A B} in
 theorem relfinrank_ne_zero_iff : relfinrank A B ≠ 0 ↔ relrank A B < ℵ₀ := by
   simp [relfinrank_eq_toNat_relrank, (relrank_pos A B).ne']
 
@@ -289,24 +290,24 @@ theorem relfinrank_le_of_le_left (hAB : A ≤ B) (hAC : A.relfinrank C ≠ 0) :
     B.relfinrank C ≤ A.relfinrank C :=
   Nat.le_of_dvd hAC.pos (relfinrank_dvd_of_le_left C hAB)
 
+open IntermediateField in
 variable {A B} in
 theorem relrank_sup_left_le (h : A.relrank B < ℵ₀) : A.relrank (A ⊔ B) ≤ A.relrank B := by
   have hAinfB : A ⊓ B ≤ B := inf_le_right
   have : Module.Finite ↥(A ⊓ B) (extendScalars hAinfB) := Module.rank_lt_aleph0_iff.mp h
   let : Algebra ↥(A ⊓ B) A := (inclusion (inf_le_left : A ⊓ B ≤ A)).toAlgebra
   have : IsScalarTower ↥(A ⊓ B) A E := IsScalarTower.of_algebraMap_eq' rfl
-  have hadj : IntermediateField.adjoin A (extendScalars hAinfB : Set E)
+  have hadj : adjoin A (extendScalars hAinfB : Set E)
       = extendScalars (le_sup_left : A ≤ A ⊔ B) := by
-    rw [← IntermediateField.toSubfield_inj]
+    rw [← toSubfield_inj]
     simp [closure_union, algebraMap_ofSubfield]
-  rw [relrank_eq_rank_of_le (le_sup_left : A ≤ A ⊔ B), ← inf_relrank_right A B,
-    relrank_eq_rank_of_le hAinfB, ← hadj]
-  exact IntermediateField.adjoin_rank_le_of_isAlgebraic_right (E := A) (extendScalars hAinfB)
+  rw [relrank_eq_rank_of_le le_sup_left, relrank, ← hadj]
+  exact adjoin_rank_le_of_isAlgebraic_right (E := A) (extendScalars hAinfB)
 
 variable {A B} in
 theorem relfinrank_sup_left_le (h : A.relfinrank B ≠ 0) :
     A.relfinrank (A ⊔ B) ≤ A.relfinrank B := by
-  have h := (relfinrank_ne_zero_iff _ _).mp h
+  rw [relfinrank_ne_zero_iff] at h
   exact Cardinal.toNat_le_toNat (relrank_sup_left_le h) h
 
 variable {A B} in
@@ -318,18 +319,14 @@ subfields of $ℝ(t)$, we have $[B ⊔ C : A ⊔ C] = [ℝ(t) : ℝ] = 𝔠 > �
 theorem relrank_sup_sup_le (h : A.relrank B < ℵ₀) : (A ⊔ C).relrank (B ⊔ C) ≤ A.relrank B := by
   have h1 : (A ⊓ B ⊔ C).relrank B ≤ A.relrank B :=
     (relrank_le_of_le_left B le_sup_left).trans_eq (inf_relrank_right A B)
-  calc
-  _ ≤ ((A ⊓ B) ⊔ C).relrank (B ⊔ C) :=
-    relrank_le_of_le_left (B ⊔ C) <| sup_le_sup_right inf_le_left C
-  _ = ((A ⊓ B) ⊔ C).relrank ((A ⊓ B) ⊔ C ⊔ B) := by
-    rw [sup_right_comm, sup_eq_right.mpr (inf_le_right : A ⊓ B ≤ B)]
-  _ ≤ ((A ⊓ B) ⊔ C).relrank B := relrank_sup_left_le <| h1.trans_lt h
-  _ ≤ A.relrank B := h1
+  have h2 := relrank_sup_left_le <| h1.trans_lt h
+  simp only [sup_right_comm, inf_le_right, sup_of_le_right] at h2
+  grw [← sup_le_sup_right inf_le_left C, h2, h1]
 
 variable {A B} in
 theorem relfinrank_sup_sup_le (h : A.relfinrank B ≠ 0) :
     (A ⊔ C).relfinrank (B ⊔ C) ≤ A.relfinrank B := by
-  have h := (relfinrank_ne_zero_iff _ _).mp h
+  rw [relfinrank_ne_zero_iff] at h
   exact Cardinal.toNat_le_toNat (relrank_sup_sup_le C h) h
 
 end Subfield
@@ -355,8 +352,9 @@ theorem relfinrank_eq_toNat_relrank : relfinrank A B = toNat (relrank A B) := rf
 
 theorem relrank_pos : 0 < relrank A B := rank_pos
 
+variable {A B} in
 theorem relfinrank_ne_zero_iff : relfinrank A B ≠ 0 ↔ relrank A B < ℵ₀ :=
-  Subfield.relfinrank_ne_zero_iff _ _
+  Subfield.relfinrank_ne_zero_iff
 
 variable {A B C}
 
