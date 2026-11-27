@@ -73,6 +73,7 @@ theorem mapIso_injective (F : C ⥤ D) [Faithful F] :
     Function.Injective (F.mapIso : (X ≅ Y) → (F.obj X ≅ F.obj Y)) := fun _ _ h =>
   Iso.ext (map_injective F congr($(h).hom))
 
+@[to_dual self]
 theorem map_surjective (F : C ⥤ D) [Full F] :
     Function.Surjective (F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)) :=
   Full.map_surjective
@@ -138,6 +139,7 @@ structure FullyFaithful where
 namespace FullyFaithful
 
 attribute [to_dual self] preimage map_preimage preimage_map
+attribute [to_dual self (reorder := preimage (X Y), map_preimage (X Y), preimage_map (X Y))] mk
 attribute [simp] map_preimage preimage_map
 
 variable (F) in
