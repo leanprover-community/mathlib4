@@ -133,19 +133,6 @@ lemma self_comp_symm {v} (hv : v ∈ e.source) :
     simp [hv']
 
 @[simp]
-lemma mfderiv_self_comp_symm --FIXME bad
-    [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
-   {v} (hv : v ∈ e.source) :
-   mfderiv% e (e.toOpenPartialHomeomorph.symm (e v))
-    ∘L mfderiv% e.toOpenPartialHomeomorph.symm (e v) = .id 𝕜 _ := by
-  have D₁ := e.mdifferentiableAt_symm I (e.map_source hv)
-  have D₂ := e.mdifferentiableAt I hv
-  rw [← e.symm_apply_apply hv] at D₂
-  rw [← mfderiv_comp (e v) D₂ D₁, (e.self_comp_symm hv).mfderiv_eq]
-  simp
-  rfl
-
-@[simp]
 lemma mfderiv_invFunCast
     [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
     {v : TotalSpace F V} (hv : v ∈ e.source) :
@@ -219,11 +206,10 @@ lemma mfderiv_proj_fst_deriv
     {v : TotalSpace F V} (hv : v ∈ e.source)
     (u : TangentSpace% v) :
     mfderiv (I.prod 𝓘(𝕜, F)) I TotalSpace.proj v u = (e.deriv I v u).1 := by
-  --have := e.fst_comp_eventuallyEq hv
-  stop
-  rw [← this.mfderiv_eq, mfderiv_comp v mdifferentiableAt_fst (e.mdifferentiableAt (I := I) hv v.2)]
+  rw [(e.fst_comp_eventuallyEq ((mem_source e).mp hv)).symm.mfderiv_eq,
+    mfderiv_comp v mdifferentiableAt_fst (e.mdifferentiableAt I hv)]
   simp
-  rfl -- TODO: understand why `simp` does not handle `ContinuousLinearMap.fst`
+  rfl
 
 @[simp]
 lemma mfderiv_proj_derivInv_apply
@@ -274,13 +260,38 @@ lemma bijective_deriv
    constructor
    all_goals { intro u; simp [hv] }
 
+variable
+    {s : M → F} {x : M} (hs : MDiffAt s x)
+    (hx : x ∈ e.baseSet)
+#check mfderiv% (T% (e.funToSec s)) x
+#check e.derivInv I (e.funToSec s x) ∘L .prod (.id 𝕜 <| TangentSpace% x) (d% s x)
+
 lemma mfderiv_total_funToSec
     [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
     {s : M → F} {x : M} (hs : MDiffAt s x)
     (hx : x ∈ e.baseSet) :
     mfderiv% (T% (e.funToSec s)) x =
-      e.derivInv I (e.funToSec s x) ∘L .prod (.id 𝕜 <| TangentSpace% x) (mfderiv% s x) := by
+      e.derivInv I (e.funToSec s x) ∘L .prod (.id 𝕜 <| TangentSpace% x) (d% s x) := by
+  stop
+  --unfold derivInv
   -- TODO build a world where this proof is not pure pain.
+  -- totalSpace_mk_funToSec
+  rw [(e.totalSpace_mk_funToSec hx s).mfderiv_eq, mfderiv_comp x (I' := I.prod 𝓘(𝕜, F)),
+      mfderiv_prodMk, show (fun x : M ↦ x) = id from rfl, mfderiv_id, mvfderiv]
+  · congr
+    · simp
+      sorry
+    · rw [mfderiv_prodMk]
+      · sorry
+      · sorry
+      · sorry
+  · sorry
+  · sorry
+  stop
+  let S := fun x ↦ (x, s x)
+  have : S x ∈ e.target := (mk_mem_target e).2 hx
+  have := e.mdifferentiableAt_symm I this
+  have := mfderiv_comp x (e.mdifferentiableAt_symm I this)
   stop
   rw [(e.totalSpace_mk_funToSec hx s).mfderiv_eq,
       mfderiv_comp x (e.mdifferentiableAt_invFun (I := I) hx (s x))]
@@ -306,11 +317,9 @@ lemma comap_vert
     Bundle.vert v = Submodule.comap (e.deriv I v).toLinearMap
       (Submodule.prod ⊥ ⊤) := by
   ext x
-  stop
-  have : Prod.fst ∘ e =ᶠ[𝓝 v] TotalSpace.proj := e.fst_comp_eventuallyEq hv
   unfold vert
-  stop
-  rw [← this.mfderiv_eq, mfderiv_comp v mdifferentiableAt_fst (e.mdifferentiableAt hv _)]
+  have : Prod.fst ∘ e =ᶠ[𝓝 v] TotalSpace.proj := e.fst_comp_eventuallyEq <| e.mem_source.1 hv
+  rw [this.symm.mfderiv_eq, mfderiv_comp v mdifferentiableAt_fst (e.mdifferentiableAt I hv)]
   simp
   rfl
 
@@ -339,20 +348,20 @@ lemma mfderiv_comp_section
   · apply mdifferentiableAt_id
   · exact (e.mdifferentiableAt_section_iff I σ hx).mp hσ
 
-lemma mfderiv_secToFun_apply
+lemma mvfderiv_secToFun_apply
     [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
     {σ : (x : M) → V x} {x : M} (hσ : MDiffAt (T% σ) x) (hx : x ∈ e.baseSet)
     (u : TangentSpace% x) :
-    mfderiv% (e.secToFun σ) x u =
+    d% (e.secToFun σ) x u =
       (e.deriv I (σ x) (mfderiv% T%σ x u)).2 :=
   congr(Prod.snd $(e.mfderiv_comp_section hσ u hx)).symm
 
-lemma mfderiv_secToFun
+lemma mvfderiv_secToFun
     [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
     {σ : (x : M) → V x} {x : M} (hσ : MDiffAt (T% σ) x) (hx : x ∈ e.baseSet) :
-    mfderiv% (e.secToFun σ) x =
+    d% (e.secToFun σ) x =
       .snd 𝕜 (TangentSpace% x) F ∘L (e.deriv I (σ x)) ∘L (mfderiv% T%σ x) :=
-  ContinuousLinearMap.ext fun u ↦ mfderiv_secToFun_apply e hσ hx u
+  ContinuousLinearMap.ext fun u ↦ mvfderiv_secToFun_apply e hσ hx u
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']

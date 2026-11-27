@@ -78,7 +78,7 @@ section
 variable (e : Trivialization F (π F E)) {v v' : TotalSpace F E} {x : B}
 
 lemma totalSpace_mk_funToSec (hx : x ∈ e.baseSet) (s : B → F) :
-    T% (e.funToSec s) =ᶠ[𝓝 x] e.invFun ∘ fun x ↦ (x, s x) := by
+    T% (e.funToSec s) =ᶠ[𝓝 x] e.toOpenPartialHomeomorph.symm ∘ fun x ↦ (x, s x) := by
   filter_upwards [e.baseSet_mem_nhds hx] with y hy
   exact mk_symm e hy (s y)
 

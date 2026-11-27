@@ -399,7 +399,7 @@ lemma mem_horiz_iff_exists [FiniteDimensional 𝕜 E]
     · exact Trivialization.mdifferentiableAt_secToFun t hvproj σdiff
     · exact t.secToFun_apply_of_eq σval
     · erw [hTvtw]
-      rw [t.mfderiv_secToFun_apply σdiff hvproj, mfderivσ, σval]
+      erw [t.mvfderiv_secToFun_apply σdiff hvproj, mfderivσ, σval] -- TODO: fix erw
       rfl
 
 end CovariantDerivative
