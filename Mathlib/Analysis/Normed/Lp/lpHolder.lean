@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Normed.Lp.lpSpace
 public import Mathlib.Analysis.Normed.Operator.Bilinear
+public import Mathlib.Analysis.Normed.Operator.Mul
 
 import Mathlib.Tactic.Positivity.Finset
 
@@ -41,14 +42,13 @@ variable {p : ℝ≥0∞}
 set_option backward.isDefEq.respectTransparency.types false in
 /-- A uniformly bounded family of continuous linear maps, as a continuous linear map
 on the `lp` space. -/
-@[simps!]
 noncomputable def mapCLM (p : ℝ≥0∞) [Fact (1 ≤ p)]
     (T : ∀ i, E i →L[𝕜] F i) {K : ℝ} (hK : 0 ≤ K) (hTK : ∀ i, ‖T i‖ ≤ K) :
     lp E p →L[𝕜] lp F p :=
   haveI key (i : α) (x : E i) : ‖T i x‖ ≤ K * ‖x‖ := (T i).le_of_opNorm_le (hTK i) _
   LinearMap.mkContinuous
-    { toFun x := ⟨fun i ↦ T i (⇑x i), lp.memℓp x |>.norm.const_mul K |>.mono
-        (fun _ ↦ by simpa [abs_of_nonneg hK] using key ..) |>.of_norm⟩
+    { toFun x := lp.mk (fun i ↦ T i (x i)) <| lp.memℓp x |>.norm.const_mul K |>.mono
+        (fun _ ↦ by simpa [abs_of_nonneg hK] using key ..) |>.of_norm
       map_add' _ _ := by ext; simp
       map_smul' _ _ := by ext; simp }
     K
@@ -57,6 +57,13 @@ noncomputable def mapCLM (p : ℝ≥0∞) [Fact (1 ≤ p)]
       conv_rhs => rw [← norm_toNorm, ← abs_of_nonneg hK, ← Real.norm_eq_abs, ← norm_smul]
       apply norm_mono (zero_lt_one.trans_le Fact.out).ne' fun i ↦ ?_
       simpa [abs_of_nonneg hK] using key ..
+
+@[simp]
+lemma coe_mapCLM_apply (p : ℝ≥0∞) [Fact (1 ≤ p)] (T : ∀ i, E i →L[𝕜] F i) {K : ℝ} (hK : 0 ≤ K)
+    (hTK : ∀ i, ‖T i‖ ≤ K) (x : lp E p) (i : α) : mapCLM p T hK hTK x i = T i (x i) :=
+  rfl
+
+@[deprecated (since := "2026-11-20")] alias mapCLM_apply_coe := coe_mapCLM_apply
 
 lemma norm_mapCLM_le (p : ℝ≥0∞) [Fact (1 ≤ p)]
     (T : ∀ i, E i →L[𝕜] F i) {K : ℝ} (hK : 0 ≤ K) (hTK : ∀ i, ‖T i‖ ≤ K) :
@@ -193,16 +200,31 @@ uniformly bounded family of continuous bilinear maps on the underlying spaces. -
 def holder (B : (i : ι) → E i →L[𝕜] F i →L[𝕜] G i) {K : ℝ} (hBK : ∀ i, ‖B i‖ ≤ K)
     (e : lp E p) (f : lp F q) :
     lp G r where
-  val := fun i ↦ B i (e i) (f i)
+  val := .ofFun fun i ↦ B i (e i) (f i)
   property := (lp.memℓp e).holder _ (lp.memℓp f) B hBK
 
+@[simp]
+lemma coe_holder (B : (i : ι) → E i →L[𝕜] F i →L[𝕜] G i) {K : ℝ} (hBK : ∀ i, ‖B i‖ ≤ K)
+    (e : lp E p) (f : lp F q) (i : ι) : holder r B hBK e f i = B i (e i) (f i) :=
+  rfl
+
+@[deprecated (since := "2026-11-20")] alias holder_coe := coe_holder
+
 /-- `lp.holder` as a bilinear map. -/
-@[simps!]
 noncomputable def holderₗ (B : (i : ι) → E i →L[𝕜] F i →L[𝕜] G i) {K : ℝ} (hBK : ∀ i, ‖B i‖ ≤ K) :
     lp E p →ₗ[𝕜] lp F q →ₗ[𝕜] lp G r :=
   .mk₂ 𝕜 (holder r B hBK) ?_ ?_ ?_ ?_
 where finally
   all_goals intros; ext; simp
+
+@[simp]
+lemma holderₗ_apply_apply (B : (i : ι) → E i →L[𝕜] F i →L[𝕜] G i) {K : ℝ}
+    (hBK : ∀ i, ‖B i‖ ≤ K) (e : lp E p) (f : lp F q) :
+    holderₗ r B hBK e f = holder r B hBK e f :=
+  rfl
+
+@[deprecated (since := "2026-11-20")]
+alias holderₗ_apply_apply_coe := holderₗ_apply_apply
 
 /-- `lp.holder` as a continuous bilinear map. -/
 noncomputable def holderL [Fact (1 ≤ p)] [Fact (1 ≤ q)] [Fact (1 ≤ r)]
@@ -230,7 +252,7 @@ noncomputable def holderL [Fact (1 ≤ p)] [Fact (1 ≤ q)] [Fact (1 ≤ r)]
       have hp := hpqr.pos
       have hq := hpqr.symm.pos
       refine norm_le_of_forall_sum_le hpqr.pos' (by positivity) fun s ↦ ?_
-      simp only [holderₗ_apply_apply_coe]
+      simp only [holderₗ_apply_apply, coe_holder]
       calc
         _ ≤ K ^ r.toReal * (‖e‖ ^ p.toReal) ^ (r.toReal / p.toReal) *
           (‖f‖ ^ q.toReal) ^ (r.toReal / q.toReal) :=
@@ -283,5 +305,22 @@ lemma norm_dualPairing [Fact (1 ≤ p)] [Fact (1 ≤ q)] [p.HolderConjugate q]
     · exact ContinuousLinearMap.norm_postcomp_le _ |>.trans norm_tsumCLM_le
     · exact norm_holderL_le 1 B hBK
   _ = K := one_mul _
+
+variable (ι 𝕜 p q) in
+/-- The map from `ℓ^p(ι, 𝕜)` to `StrongDual 𝕜 ℓ^q(ι, 𝕜)` when `p` and `q` are Hölder conjugate,
+given by `fun f g ↦ ∑' i, f i * g i`. -/
+noncomputable def scalarDualPairing [Fact (1 ≤ p)] [Fact (1 ≤ q)] [p.HolderConjugate q] :
+    ℓ^p(ι, 𝕜) →L[𝕜] StrongDual 𝕜 ℓ^q(ι, 𝕜) :=
+  dualPairing p q (fun _ ↦ ContinuousLinearMap.mul 𝕜 𝕜) (K := 1)
+    fun _ ↦ ContinuousLinearMap.opNorm_mul_le 𝕜 𝕜
+
+lemma scalarDualPairing_apply [Fact (1 ≤ p)] [Fact (1 ≤ q)] [p.HolderConjugate q]
+    (f : ℓ^p(ι, 𝕜)) (g : ℓ^q(ι, 𝕜)) :
+    scalarDualPairing ι 𝕜 p q f g = ∑' i, f i * g i :=
+  rfl
+
+lemma norm_scalarDualPairing_le [Fact (1 ≤ p)] [Fact (1 ≤ q)] [p.HolderConjugate q] :
+    ‖scalarDualPairing ι 𝕜 p q‖ ≤ 1 :=
+  norm_dualPairing ..
 
 end lp

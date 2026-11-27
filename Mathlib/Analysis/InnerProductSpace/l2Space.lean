@@ -135,7 +135,7 @@ instance instInnerProductSpace : InnerProductSpace 𝕜 (lp G 2) :=
       calc
         _ = ∑' i, ⟪(f₁ + f₂) i, g i⟫ := ?_
         _ = ∑' i, (⟪f₁ i, g i⟫ + ⟪f₂ i, g i⟫) := by
-          simp only [inner_add_left, Pi.add_apply, coeFn_add]
+          simp only [inner_add_left, Pi.add_apply, FunLike.coe_add]
         _ = (∑' i, ⟪f₁ i, g i⟫) + ∑' i, ⟪f₂ i, g i⟫ := Summable.tsum_add ?_ ?_
         _ = _ := by congr
       · congr
@@ -147,7 +147,7 @@ instance instInnerProductSpace : InnerProductSpace 𝕜 (lp G 2) :=
         _ = ∑' i, conj c * ⟪f i, g i⟫ := by simp only [inner_smul_left]
         _ = conj c * ∑' i, ⟪f i, g i⟫ := tsum_mul_left
         _ = _ := ?_
-      · simp only [coeFn_smul, Pi.smul_apply]
+      · simp only [FunLike.coe_smul, Pi.smul_apply]
       · congr }
 
 theorem inner_eq_tsum (f g : lp G 2) : ⟪f, g⟫ = ∑' i, ⟪f i, g i⟫ :=
@@ -192,10 +192,10 @@ subspaces into `E`. -/
 protected def linearIsometry (hV : OrthogonalFamily 𝕜 G V) : lp G 2 →ₗᵢ[𝕜] E where
   toFun f := ∑' i, V i (f i)
   map_add' f g := by
-    simp only [(hV.summable_of_lp f).tsum_add (hV.summable_of_lp g), lp.coeFn_add, Pi.add_apply,
+    simp only [(hV.summable_of_lp f).tsum_add (hV.summable_of_lp g), FunLike.coe_add, Pi.add_apply,
       LinearIsometry.map_add]
   map_smul' c f := by
-    simpa only [LinearIsometry.map_smul, Pi.smul_apply, lp.coeFn_smul] using!
+    simpa only [LinearIsometry.map_smul, Pi.smul_apply, FunLike.coe_smul] using!
       (hV.summable_of_lp f).tsum_const_smul c
   norm_map' f := by
     -- needed for lattice instance on `Finset ι`, for `Filter.atTop_neBot`

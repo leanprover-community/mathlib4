@@ -5,6 +5,7 @@ Authors: Heather Macbeth, Jireh Loreaux
 -/
 module
 
+public import Mathlib.Algebra.Algebra.TransferInstance
 public import Mathlib.Algebra.Order.Group.Pointwise.Bounds
 public import Mathlib.Analysis.MeanInequalities
 public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
@@ -340,32 +341,111 @@ The space of elements of `∀ i, E i` satisfying the predicate `Memℓp`.
 -/
 
 
-/-- We define `PreLp E` to be a type synonym for `∀ i, E i` which, importantly, does not inherit
+/-- We define `PreLp E` to be a copy of `∀ i, E i` which, importantly, does not inherit
 the `pi` topology on `∀ i, E i` (otherwise this topology would descend to `lp E p` and conflict
 with the normed group topology we will later equip it with.)
 
-We choose to deal with this issue by making a type synonym for `∀ i, E i` rather than for the `lp`
+We choose to deal with this issue by making a copy of `∀ i, E i` rather than of the `lp`
 subgroup itself, because this allows all the spaces `lp E p` (for varying `p`) to be subgroups of
-the same ambient group, which permits lemma statements like `lp.monotone` (below). -/
-@[nolint unusedArguments]
-def PreLp (E : α → Type*) [∀ i, NormedAddCommGroup (E i)] : Type _ :=
-  ∀ i, E i
+the same ambient group, which permits lemma statements like `lp.monotone` (below).
+
+This is a one-field structure rather than a type synonym to avoid problems related to definitional
+equality. In particular, if `PreLp E` were only a type synonym, then given `x : PreLp E` and
+`i : ι`, applying `x i` would silently treat `x : ∀ i, E i` instead of coercing `x` to a function.
+Since this is unavoidable elaboration behavior, we instead prevent this entirely. -/
+structure PreLp (E : α → Type*) [∀ i, NormedAddCommGroup (E i)] where
+  /-- Converts a function `f : ∀ i, E i` into an element of `PreLp E`. -/
+  ofFun ::
+  /-- Converts an element of `PreLp E` into a function `∀ i, E i`. Use the coercion `⇑` instead. -/
+  toFun : ∀ i, E i
 
 namespace PreLp
 
--- The `SMul` instance exists to avoid a zsmul diamond.
-variable [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] in
-deriving instance SMul 𝕜, AddCommMonoid, AddCommGroup for PreLp E
+instance instDFunLike : DFunLike (PreLp E) α E where
+  coe := toFun
+  coe_injective | ⟨_⟩, ⟨_⟩, rfl => rfl
 
-@[simp] lemma add_apply {x y : PreLp E} {i : α} : (x + y) i = x i + y i := rfl
-@[simp] lemma zero_apply {i : α} : (0 : PreLp E) i = 0 := rfl
-@[simp] lemma sub_apply {x y : PreLp E} {i : α} : (x - y) i = x i - y i := rfl
-@[simp] lemma neg_apply {x : PreLp E} {i : α} : (-x) i = -(x i) := rfl
-@[simp] lemma nsmul_apply {n : ℕ} {x : PreLp E} {i : α} : (n • x) i = n • (x i) := rfl
-@[simp] lemma zsmul_apply {n : ℤ} {x : PreLp E} {i : α} : (n • x) i = n • (x i) := rfl
+/-- See Note [custom simps projection]. -/
+def Simps.coe (x : PreLp E) : ∀ i, E i := x
 
-instance unique [IsEmpty α] : Unique (PreLp E) :=
-  inferInstanceAs <| Unique (∀ _, _)
+initialize_simps_projections PreLp (toFun → coe, as_prefix coe)
+
+@[simp] lemma toFun_eq_coe (x : PreLp E) : x.toFun = ⇑x := rfl
+@[simp] lemma coe_ofFun (f : ∀ i, E i) : ⇑(ofFun f : PreLp E) = f := rfl
+@[simp] lemma ofFun_coe (x : PreLp E) : ofFun ⇑x = x := rfl
+
+lemma ofFun_apply (f : ∀ i, E i) (i : α) : (ofFun f : PreLp E) i = f i := rfl
+
+@[ext] lemma ext {x y : PreLp E} (h : ∀ i, x i = y i) : x = y := DFunLike.ext x y h
+
+lemma ofFun_injective : Function.Injective (ofFun : (∀ i, E i) → PreLp E) :=
+  fun _ _ h ↦ congr(⇑$h)
+
+lemma ofFun_inj {f g : ∀ i, E i} : (ofFun f : PreLp E) = ofFun g ↔ f = g :=
+  ofFun_injective.eq_iff
+
+variable (E) in
+/-- The coercion `⇑` and `PreLp.ofFun` as an equivalence. -/
+@[simps]
+protected def equiv : PreLp E ≃ ∀ i, E i where
+  toFun := (⇑)
+  invFun := ofFun
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+/-! `PreLp E` inherits the algebraic structure of `∀ i, E i`. -/
+
+instance instUnique [IsEmpty α] : Unique (PreLp E) := (PreLp.equiv E).unique
+instance instAddCommGroup : AddCommGroup (PreLp E) := (PreLp.equiv E).addCommGroup
+instance instSMul {M : Type*} [∀ i, SMul M (E i)] : SMul M (PreLp E) := (PreLp.equiv E).smul M
+
+instance : IsZeroApply (PreLp E) where
+instance : IsAddApply (PreLp E) where
+instance : IsNegApply (PreLp E) where
+instance : IsSubApply (PreLp E) where
+instance {M : Type*} [∀ i, SMul M (E i)] : IsSMulApply M (PreLp E) where
+
+@[simp] lemma ofFun_zero : (ofFun 0 : PreLp E) = 0 := rfl
+@[simp] lemma ofFun_add (f g : ∀ i, E i) : (ofFun (f + g) : PreLp E) = ofFun f + ofFun g := rfl
+@[simp] lemma ofFun_neg (f : ∀ i, E i) : (ofFun (-f) : PreLp E) = -ofFun f := rfl
+@[simp] lemma ofFun_sub (f g : ∀ i, E i) : (ofFun (f - g) : PreLp E) = ofFun f - ofFun g := rfl
+@[simp] lemma ofFun_smul {M : Type*} [∀ i, SMul M (E i)] (c : M) (f : ∀ i, E i) :
+    (ofFun (c • f) : PreLp E) = c • ofFun f := rfl
+
+@[deprecated zero_apply +typeChanged (since := "2026-11-20")]
+protected lemma zero_apply {i : α} : (0 : PreLp E) i = 0 := rfl
+@[deprecated add_apply +typeChanged (since := "2026-11-20")]
+protected lemma add_apply {x y : PreLp E} {i : α} : (x + y) i = x i + y i := rfl
+@[deprecated sub_apply +typeChanged (since := "2026-11-20")]
+protected lemma sub_apply {x y : PreLp E} {i : α} : (x - y) i = x i - y i := rfl
+@[deprecated neg_apply +typeChanged (since := "2026-11-20")]
+protected lemma neg_apply {x : PreLp E} {i : α} : (-x) i = -(x i) := rfl
+@[deprecated smul_apply +typeChanged (since := "2026-11-20")]
+protected lemma nsmul_apply {n : ℕ} {x : PreLp E} {i : α} : (n • x) i = n • (x i) := rfl
+@[deprecated smul_apply +typeChanged (since := "2026-11-20")]
+protected lemma zsmul_apply {n : ℤ} {x : PreLp E} {i : α} : (n • x) i = n • (x i) := rfl
+
+variable (E) in
+/-- `PreLp.equiv` as an isomorphism of additive groups. -/
+@[simps! apply symm_apply]
+protected def addEquiv : PreLp E ≃+ ∀ i, E i where
+  __ := PreLp.equiv E
+  map_add' _ _ := rfl
+
+instance instModule {R : Type*} [Semiring R] [∀ i, Module R (E i)] : Module R (PreLp E) :=
+  fast_instance% (PreLp.addEquiv E).module R
+
+instance {M N : Type*} [∀ i, SMul M (E i)] [∀ i, SMul N (E i)] [∀ i, SMulCommClass M N (E i)] :
+    SMulCommClass M N (PreLp E) :=
+  (PreLp.equiv E).smulCommClass M N
+
+instance {M N : Type*} [SMul M N] [∀ i, SMul M (E i)] [∀ i, SMul N (E i)]
+    [∀ i, IsScalarTower M N (E i)] : IsScalarTower M N (PreLp E) :=
+  (PreLp.equiv E).isScalarTower M N
+
+instance {M : Type*} [∀ i, SMul M (E i)] [∀ i, SMul Mᵐᵒᵖ (E i)] [∀ i, IsCentralScalar M (E i)] :
+    IsCentralScalar M (PreLp E) :=
+  (PreLp.equiv E).isCentralScalar M
 
 end PreLp
 
@@ -395,14 +475,33 @@ scoped[lp] notation "ℓ²(" ι ", " E ")" => lp (fun _ : ι ↦ E) 2
 
 namespace lp
 
--- TODO: this instance is bad because it inserts `Subtype.val` as the casting function,
--- which abuses definitional equality.
-instance coeFun : CoeFun (lp E p) fun _ => ∀ i, E i :=
-  ⟨Subtype.val (α := ∀ i, E i)⟩
+@[simp]
+theorem _root_.PreLp.mem_lp_iff {f : PreLp E} : f ∈ lp E p ↔ Memℓp f p :=
+  Iff.rfl
+
+instance instDFunLike : DFunLike (lp E p) α E where
+  coe f := ⇑(f : PreLp E)
+  coe_injective := DFunLike.coe_injective.comp Subtype.coe_injective
+
+@[simp, norm_cast]
+theorem coeFn_coe (f : lp E p) : ⇑(f : PreLp E) = ⇑f :=
+  rfl
+
+/-- The element of `lp E p` given by a function `f : ∀ i, E i` satisfying `Memℓp f p`. -/
+def mk (f : ∀ i, E i) (hf : Memℓp f p) : lp E p :=
+  ⟨.ofFun f, hf⟩
+
+@[simp]
+theorem coeFn_mk (f : ∀ i, E i) (hf : Memℓp f p) : ⇑(lp.mk f hf) = f :=
+  rfl
+
+@[simp]
+theorem coeFn_subtype_mk (f : PreLp E) (hf : f ∈ lp E p) : ⇑(⟨f, hf⟩ : lp E p) = ⇑f :=
+  rfl
 
 @[ext]
 theorem ext {f g : lp E p} (h : (f : ∀ i, E i) = g) : f = g :=
-  Subtype.ext h
+  DFunLike.coe_injective h
 
 theorem eq_zero' [IsEmpty α] (f : lp E p) : f = 0 :=
   Subsingleton.elim f 0
@@ -413,38 +512,35 @@ protected theorem monotone {p q : ℝ≥0∞} (hpq : q ≤ p) : lp E q ≤ lp E 
 protected theorem memℓp (f : lp E p) : Memℓp f p :=
   f.prop
 
-variable (E p)
+instance : IsZeroApply (lp E p) where
+instance : IsAddApply (lp E p) where
+instance : IsNegApply (lp E p) where
+instance : IsSubApply (lp E p) where
+instance : IsSMulApply ℕ (lp E p) where
+instance : IsSMulApply ℤ (lp E p) where
 
-@[simp]
+variable (E p) in
+@[deprecated FunLike.coe_zero +typeChanged (since := "2026-11-20")]
 theorem coeFn_zero : ⇑(0 : lp E p) = 0 :=
   rfl
 
-variable {E p}
-
-@[simp]
-theorem coeFn_neg (f : lp E p) : ⇑(-f) = -f :=
-  rfl
-
-@[simp]
-theorem coeFn_add (f g : lp E p) : ⇑(f + g) = f + g :=
-  rfl
+@[deprecated (since := "2026-11-20")] alias coeFn_neg := FunLike.coe_neg
+@[deprecated (since := "2026-11-20")] alias coeFn_add := FunLike.coe_add
+@[deprecated (since := "2026-11-20")] alias coeFn_sub := FunLike.coe_sub
 
 variable (p E) in
 /-- Coercion to function as an `AddMonoidHom`. -/
-def coeFnAddMonoidHom : lp E p →+ (∀ i, E i) where
-  toFun := (⇑)
-  __ := AddSubgroup.subtype _
+@[deprecated FunLike.coeAddMonoidHom +typeChanged (since := "2026-11-20")]
+def coeFnAddMonoidHom : lp E p →+ (∀ i, E i) :=
+  FunLike.coeAddMonoidHom (lp E p) α E
 
-@[simp]
+@[deprecated FunLike.coeAddMonoidHom_apply +typeChanged (since := "2026-11-20")]
 theorem coeFnAddMonoidHom_apply (x : lp E p) : coeFnAddMonoidHom E p x = ⇑x := rfl
 
+@[deprecated FunLike.coe_sum +typeChanged (since := "2026-11-20")]
 theorem coeFn_sum {ι : Type*} (f : ι → lp E p) (s : Finset ι) :
     ⇑(∑ i ∈ s, f i) = ∑ i ∈ s, ⇑(f i) :=
-  (lp E p).val_finsetSum f s
-
-@[simp]
-theorem coeFn_sub (f g : lp E p) : ⇑(f - g) = f - g :=
-  rfl
+  FunLike.coe_sum s f
 
 instance : Norm (lp E p) where
   norm f :=
@@ -482,9 +578,12 @@ theorem hasSum_norm (hp : 0 < p.toReal) (f : lp E p) :
 
 /-- The sequence of norms of `x : lp E p` as a term of `ℓ^p(α, ℝ)`. Here `E : α → Type*`
 is a dependent type and `ℓ^p(α, ℝ)` is the non-dependent `ℝ`-valued `lp` space. -/
-@[simps]
 def toNorm {p : ℝ≥0∞} (x : lp E p) : ℓ^p(α, ℝ) :=
-  ⟨fun i ↦ ‖x i‖, lp.memℓp x |>.norm⟩
+  lp.mk (fun i ↦ ‖x i‖) (lp.memℓp x).norm
+
+@[simp] lemma toNorm_apply {p : ℝ≥0∞} (x : lp E p) (i : α) : toNorm x i = ‖x i‖ := rfl
+
+@[deprecated (since := "2026-11-20")] alias toNorm_coe := toNorm_apply
 
 lemma norm_toNorm {p : ℝ≥0∞} {x : lp E p} :
     ‖toNorm x‖ = ‖x‖ := by
@@ -536,20 +635,20 @@ theorem norm_eq_zero_iff {f : lp E p} : ‖f‖ = 0 ↔ f = 0 := by
     exact this.1
 
 theorem eq_zero_iff_coeFn_eq_zero {f : lp E p} : f = 0 ↔ ⇑f = 0 := by
-  rw [lp.ext_iff, coeFn_zero]
+  rw [lp.ext_iff, FunLike.coe_zero]
 
 @[simp]
 theorem norm_neg ⦃f : lp E p⦄ : ‖-f‖ = ‖f‖ := by
   rcases p.trichotomy with (rfl | rfl | hp)
-  · simp only [norm_eq_card_dsupport, coeFn_neg, Pi.neg_apply, ne_eq, neg_eq_zero]
+  · simp only [norm_eq_card_dsupport, FunLike.coe_neg, Pi.neg_apply, ne_eq, neg_eq_zero]
   · cases isEmpty_or_nonempty α
     · simp only [lp.eq_zero' f, neg_zero, norm_zero]
     apply (lp.isLUB_norm (-f)).unique
-    simpa only [coeFn_neg, Pi.neg_apply, norm_neg] using lp.isLUB_norm f
+    simpa only [FunLike.coe_neg, Pi.neg_apply, norm_neg] using lp.isLUB_norm f
   · suffices ‖-f‖ ^ p.toReal = ‖f‖ ^ p.toReal by
       exact Real.rpow_left_injOn hp.ne' (norm_nonneg' _) (norm_nonneg' _) this
     apply (lp.hasSum_norm hp (-f)).unique
-    simpa only [coeFn_neg, Pi.neg_apply, _root_.norm_neg] using lp.hasSum_norm hp f
+    simpa only [FunLike.coe_neg, Pi.neg_apply, _root_.norm_neg] using lp.hasSum_norm hp f
 
 instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) :=
   fast_instance% AddGroupNorm.toNormedAddCommGroup
@@ -618,7 +717,7 @@ theorem norm_apply_le_norm (hp : p ≠ 0) (f : lp E p) (i : α) : ‖f i‖ ≤ 
 lemma lipschitzWith_one_eval (p : ℝ≥0∞) [Fact (1 ≤ p)] (i : α) :
     LipschitzWith 1 (fun x : lp E p ↦ x i) :=
   .mk_one fun _ _ ↦ by
-    simp_rw [dist_eq_norm, ← Pi.sub_apply, ← lp.coeFn_sub]
+    simp_rw [dist_eq_norm, ← Pi.sub_apply, ← FunLike.coe_sub]
     exact norm_apply_le_norm (zero_lt_one.trans_le Fact.out).ne' ..
 
 theorem sum_rpow_le_norm_rpow (hp : 0 < p.toReal) (f : lp E p) (s : Finset α) :
@@ -667,18 +766,6 @@ section IsBoundedSMul
 variable [NormedRing 𝕜] [NormedRing 𝕜']
 variable [∀ i, Module 𝕜 (E i)] [∀ i, Module 𝕜' (E i)]
 
-instance : Module 𝕜 (PreLp E) :=
-  inferInstanceAs <| Module 𝕜 (∀ i, E i)
-
-instance [∀ i, SMulCommClass 𝕜' 𝕜 (E i)] : SMulCommClass 𝕜' 𝕜 (PreLp E) :=
-  inferInstanceAs <| SMulCommClass 𝕜' 𝕜 (∀ i, E i)
-
-instance [SMul 𝕜' 𝕜] [∀ i, IsScalarTower 𝕜' 𝕜 (E i)] : IsScalarTower 𝕜' 𝕜 (PreLp E) :=
-  inferInstanceAs <| IsScalarTower 𝕜' 𝕜 (∀ i, E i)
-
-instance [∀ i, Module 𝕜ᵐᵒᵖ (E i)] [∀ i, IsCentralScalar 𝕜 (E i)] : IsCentralScalar 𝕜 (PreLp E) :=
-  inferInstanceAs <| IsCentralScalar 𝕜 (∀ i, E i)
-
 variable [∀ i, IsBoundedSMul 𝕜 (E i)] [∀ i, IsBoundedSMul 𝕜' (E i)]
 
 theorem mem_lp_const_smul (c : 𝕜) (f : lp E p) : c • (f : PreLp E) ∈ lp E p :=
@@ -699,9 +786,9 @@ theorem coe_lpSubmodule : (lpSubmodule 𝕜 E p).toAddSubgroup = lp E p :=
 instance : Module 𝕜 (lp E p) :=
   inferInstanceAs <| Module 𝕜 (lpSubmodule 𝕜 E p)
 
-@[simp]
-theorem coeFn_smul (c : 𝕜) (f : lp E p) : ⇑(c • f) = c • ⇑f :=
-  rfl
+instance : IsSMulApply 𝕜 (lp E p) where
+
+@[deprecated (since := "2026-11-20")] alias coeFn_smul := FunLike.coe_smul
 
 instance [∀ i, SMulCommClass 𝕜' 𝕜 (E i)] : SMulCommClass 𝕜' 𝕜 (lp E p) :=
   ⟨fun _ _ _ => Subtype.ext <| smul_comm _ _ _⟩
@@ -733,7 +820,7 @@ theorem norm_const_smul_le (hp : p ≠ 0) (c : 𝕜) (f : lp E p) : ‖c • f�
       NNReal.hasSum_coe] at hRHS hLHS
     refine hasSum_mono hLHS hRHS fun i => ?_
     dsimp only
-    rw [← NNReal.mul_rpow, lp.coeFn_smul, Pi.smul_apply]
+    rw [← NNReal.mul_rpow, FunLike.coe_smul, Pi.smul_apply]
     gcongr
     apply nnNorm_smul_le
 
@@ -766,7 +853,7 @@ noncomputable def tsumCLM : ℓ¹(α, E) →L[𝕜] E :=
         exacts [rfl, .of_norm (by simpa using f.property.summable),
           .of_norm (by simpa using g.property.summable)]
       map_smul' c f := by
-        simp only [coeFn_smul]
+        simp only [FunLike.coe_smul]
         exact Summable.tsum_const_smul _ (.of_norm (by simpa using f.property.summable)) }
     1 (fun f ↦ by simpa using norm_tsum_le f)
 
@@ -812,7 +899,7 @@ theorem _root_.Memℓp.star_iff {f : ∀ i, E i} : Memℓp (star f) p ↔ Memℓ
   ⟨fun h => star_star f ▸ Memℓp.star_mem h, Memℓp.star_mem⟩
 
 instance : Star (lp E p) where
-  star f := ⟨(star f : ∀ i, E i), f.property.star_mem⟩
+  star f := lp.mk (star ⇑f) f.property.star_mem
 
 @[simp]
 theorem coeFn_star (f : lp E p) : ⇑(star f) = star (⇑f) :=
@@ -823,10 +910,10 @@ protected theorem star_apply (f : lp E p) (i : α) : star f i = star (f i) :=
   rfl
 
 instance instInvolutiveStar : InvolutiveStar (lp E p) where
-  star_involutive x := by simp [star]
+  star_involutive x := ext <| star_star (x : ∀ i, E i)
 
 instance instStarAddMonoid : StarAddMonoid (lp E p) where
-  star_add _f _g := ext <| star_add (R := ∀ i, E i) _ _
+  star_add f g := ext <| star_add (R := ∀ i, E i) f g
 
 instance [hp : Fact (1 ≤ p)] : NormedStarGroup (lp E p) where
   norm_star_le f := le_of_eq <| by
@@ -841,7 +928,7 @@ variable [Star 𝕜] [NormedRing 𝕜]
 variable [∀ i, Module 𝕜 (E i)] [∀ i, IsBoundedSMul 𝕜 (E i)] [∀ i, StarModule 𝕜 (E i)]
 
 instance : StarModule 𝕜 (lp E p) where
-  star_smul _r _f := ext <| star_smul (R := 𝕜) (A := ∀ i, E i) _ _
+  star_smul r f := ext <| star_smul (A := ∀ i, E i) r f
 
 end NormedStarGroup
 
@@ -862,15 +949,15 @@ theorem _root_.Memℓp.infty_mul {f g : ∀ i, B i} (hf : Memℓp f ∞) (hg : M
         ((norm_nonneg _).trans (hCf ⟨i, rfl⟩))
 
 instance : Mul (lp B ∞) where
-  mul f g := ⟨HMul.hMul (α := ∀ i, B i) _ _, f.property.infty_mul g.property⟩
+  mul f g := lp.mk (⇑f * ⇑g) (f.property.infty_mul g.property)
 
-@[simp]
-theorem infty_coeFn_mul (f g : lp B ∞) : ⇑(f * g) = ⇑f * ⇑g :=
-  rfl
+instance : IsMulApply (lp B ∞) where
+
+@[deprecated (since := "2026-11-20")] alias infty_coeFn_mul := FunLike.coe_mul
 
 instance nonUnitalRing : NonUnitalRing (lp B ∞) := fast_instance%
-  Function.Injective.nonUnitalRing lp.coeFun.coe Subtype.coe_injective (lp.coeFn_zero B ∞)
-    lp.coeFn_add infty_coeFn_mul lp.coeFn_neg lp.coeFn_sub (fun _ _ => rfl) fun _ _ => rfl
+  Function.Injective.nonUnitalRing (⇑) DFunLike.coe_injective FunLike.coe_zero FunLike.coe_add
+    FunLike.coe_mul FunLike.coe_neg FunLike.coe_sub (fun _ _ => rfl) fun _ _ => rfl
 
 instance nonUnitalNormedRing : NonUnitalNormedRing (lp B ∞) :=
   { lp.nonUnitalRing, lp.normedAddCommGroup with
@@ -881,7 +968,7 @@ instance nonUnitalNormedRing : NonUnitalNormedRing (lp B ∞) :=
 
 instance nonUnitalNormedCommRing {B : I → Type*} [∀ i, NonUnitalNormedCommRing (B i)] :
     NonUnitalNormedCommRing (lp B ∞) where
-  mul_comm _ _ := ext <| mul_comm ..
+  mul_comm f g := ext <| mul_comm (⇑f) (⇑g)
 
 -- we also want a `NonUnitalNormedCommRing` instance, but this has to wait for https://github.com/leanprover-community/mathlib3/pull/13719
 instance infty_isScalarTower {𝕜} [NormedRing 𝕜] [∀ i, Module 𝕜 (B i)] [∀ i, IsBoundedSMul 𝕜 (B i)]
@@ -916,7 +1003,13 @@ section NormedRing
 variable {I : Type*} {B : I → Type*} [∀ i, NormedRing (B i)]
 
 instance _root_.PreLp.ring : Ring (PreLp B) :=
-  inferInstanceAs (Ring (∀ i, B i))
+  fast_instance% (PreLp.equiv B).ring
+
+instance : IsOneApply (PreLp B) where
+instance : IsMulApply (PreLp B) where
+instance : IsPowApply ℕ (PreLp B) where
+instance : IsNatCastApply (PreLp B) where
+instance : IsIntCastApply (PreLp B) where
 
 variable [∀ i, NormOneClass (B i)]
 
@@ -944,24 +1037,18 @@ theorem _root_.natCast_memℓp_infty (n : ℕ) : Memℓp (n : ∀ i, B i) ∞ :=
 theorem _root_.intCast_memℓp_infty (z : ℤ) : Memℓp (z : ∀ i, B i) ∞ :=
   intCast_mem (lpInftySubring B) z
 
-@[simp]
-theorem infty_coeFn_one : ⇑(1 : lp B ∞) = 1 :=
-  rfl
+instance : IsOneApply (lp B ∞) where
+instance : IsPowApply ℕ (lp B ∞) where
+instance : IsNatCastApply (lp B ∞) where
+instance : IsIntCastApply (lp B ∞) where
 
-@[simp]
-theorem infty_coeFn_pow (f : lp B ∞) (n : ℕ) : ⇑(f ^ n) = (⇑f) ^ n :=
-  rfl
-
-@[simp]
-theorem infty_coeFn_natCast (n : ℕ) : ⇑(n : lp B ∞) = n :=
-  rfl
-
-@[simp]
-theorem infty_coeFn_intCast (z : ℤ) : ⇑(z : lp B ∞) = z :=
-  rfl
+@[deprecated (since := "2026-11-20")] alias infty_coeFn_one := FunLike.coe_one
+@[deprecated (since := "2026-11-20")] alias infty_coeFn_pow := FunLike.coe_pow
+@[deprecated (since := "2026-11-20")] alias infty_coeFn_natCast := FunLike.coe_natCast
+@[deprecated (since := "2026-11-20")] alias infty_coeFn_intCast := FunLike.coe_intCast
 
 instance [Nonempty I] : NormOneClass (lp B ∞) where
-  norm_one := by simp_rw [lp.norm_eq_ciSup, infty_coeFn_one, Pi.one_apply, norm_one, ciSup_const]
+  norm_one := by simp_rw [lp.norm_eq_ciSup, FunLike.coe_one, Pi.one_apply, norm_one, ciSup_const]
 
 instance inftyNormedRing : NormedRing (lp B ∞) :=
   { lp.inftyRing, lp.nonUnitalNormedRing with }
@@ -983,7 +1070,7 @@ variable {I : Type*} {B : I → Type*}
 variable [NormedField 𝕜] [∀ i, NormedRing (B i)] [∀ i, NormedAlgebra 𝕜 (B i)]
 
 instance _root_.PreLp.algebra : Algebra 𝕜 (PreLp B) :=
-  inferInstanceAs <| Algebra 𝕜 (∀ i, B i)
+  (PreLp.equiv B).algebra 𝕜
 
 variable [∀ i, NormOneClass (B i)]
 
@@ -1016,15 +1103,14 @@ variable [DecidableEq α]
 
 /-- The element of `lp E p` which is `a : E i` at the index `i`, and zero elsewhere. -/
 protected def single (p) (i : α) (a : E i) : lp E p :=
-  ⟨Pi.single i a, by
+  lp.mk (Pi.single i a) <| by
     refine (memℓp_zero ?_).of_exponent_ge zero_le
     refine (Set.finite_singleton i).subset ?_
     intro j
-    simp only [Set.mem_singleton_iff, Ne,
-      Set.mem_ofPred_eq]
+    simp only [Set.mem_singleton_iff, Ne, Set.mem_ofPred_eq]
     rw [not_imp_comm]
     intro h
-    exact Pi.single_eq_of_ne h _⟩
+    exact Pi.single_eq_of_ne h _
 
 @[norm_cast]
 protected theorem coeFn_single (p) (i : α) (a : E i) :
@@ -1045,12 +1131,12 @@ protected theorem single_apply_ne (p) (i : α) (a : E i) {j : α} (hij : j ≠ i
 @[simp]
 protected theorem single_zero (p) (i : α) :
     lp.single p i (0 : E i) = 0 :=
-  ext <| Pi.single_zero _
+  ext <| Pi.single_zero i
 
 @[simp]
 protected theorem single_add (p) (i : α) (a b : E i) :
     lp.single p i (a + b) = lp.single p i a + lp.single p i b :=
-  ext <| Pi.single_add _ _ _
+  ext <| Pi.single_add i a b
 
 /-- `single` as an `AddMonoidHom`. -/
 @[simps]
@@ -1061,17 +1147,17 @@ def singleAddMonoidHom (p) (i : α) : E i →+ lp E p where
 
 @[simp]
 protected theorem single_neg (p) (i : α) (a : E i) : lp.single p i (-a) = -lp.single p i a :=
-  ext <| Pi.single_neg _ _
+  ext <| Pi.single_neg i a
 
 @[simp]
 protected theorem single_sub (p) (i : α) (a b : E i) :
     lp.single p i (a - b) = lp.single p i a - lp.single p i b :=
-  ext <| Pi.single_sub _ _ _
+  ext <| Pi.single_sub i a b
 
 @[simp]
 protected theorem single_smul (p) (i : α) (c : 𝕜) (a : E i) :
     lp.single p i (c • a) = c • lp.single p i a :=
-  ext <| Pi.single_smul _ _ _
+  ext <| Pi.single_smul i c a
 
 /-- `single` as a `LinearMap`. -/
 @[simps]
@@ -1085,20 +1171,20 @@ def lsingle (p) (i : α) : E i →ₗ[𝕜] lp E p where
 noncomputable def zeroBasis : Module.Basis α 𝕜 ℓ⁰(α, 𝕜) where
   repr :=
     { toFun x := .ofSupportFinite ⇑x <| memℓp_zero_iff.mp x.property
-      invFun x := ⟨⇑x, memℓp_zero_iff.mpr x.hasFiniteSupport⟩
+      invFun x := lp.mk ⇑x (memℓp_zero_iff.mpr x.hasFiniteSupport)
       map_add' _ _ := Finsupp.ext fun _ ↦ rfl
       map_smul' _ _ := Finsupp.ext fun _ ↦ rfl
       left_inv _ := rfl
       right_inv _ := Finsupp.ext fun _ ↦ rfl }
 
 set_option backward.isDefEq.respectTransparency false in
-lemma zeroBasis_apply (i : α) : zeroBasis i = lp.single 0 i (1 : 𝕜) := by
+lemma zeroBasis_apply (i : α) : (zeroBasis : Module.Basis α 𝕜 ℓ⁰(α, 𝕜)) i = lp.single 0 i 1 := by
   ext; simp [zeroBasis, Finsupp.single_apply, Pi.single, Function.update, eq_comm]
 
 protected theorem norm_sum_single (hp : 0 < p.toReal) (f : ∀ i, E i) (s : Finset α) :
     ‖∑ i ∈ s, lp.single p i (f i)‖ ^ p.toReal = ∑ i ∈ s, ‖f i‖ ^ p.toReal := by
   refine (hasSum_norm hp (∑ i ∈ s, lp.single p i (f i))).unique ?_
-  simp only [lp.coeFn_single, coeFn_sum, Finset.sum_apply, Finset.sum_pi_single]
+  simp only [lp.coeFn_single, FunLike.coe_sum, Finset.sum_apply, Finset.sum_pi_single]
   have h : ∀ i ∉ s, ‖ite (i ∈ s) (f i) 0‖ ^ p.toReal = 0 := fun i hi ↦ by
     simp [ite_eq_right hi, Real.zero_rpow hp.ne']
   have h' : ∀ i ∈ s, ‖f i‖ ^ p.toReal = ‖ite (i ∈ s) (f i) 0‖ ^ p.toReal := by
@@ -1162,12 +1248,12 @@ protected theorem norm_sub_norm_compl_sub_single (hp : 0 < p.toReal) (f : lp E p
   have hF : ∀ i ∉ s, F i = 0 := by
     intro i hi
     suffices ‖f i‖ ^ p.toReal - ‖f i - ite (i ∈ s) (f i) 0‖ ^ p.toReal = 0 by
-      simpa only [coeFn_sub, coeFn_sum, lp.coeFn_single, Pi.sub_apply, Finset.sum_apply,
+      simpa only [FunLike.coe_sub, FunLike.coe_sum, lp.coeFn_single, Pi.sub_apply, Finset.sum_apply,
         Finset.sum_pi_single, F] using this
     simp only [ite_eq_right hi, sub_zero, sub_self]
   have hF' : ∀ i ∈ s, F i = ‖f i‖ ^ p.toReal := by
     intro i hi
-    simp only [F, coeFn_sum, lp.single_apply, ite_eq_left hi, sub_self, coeFn_sub,
+    simp only [F, FunLike.coe_sum, lp.single_apply, ite_eq_left hi, sub_self, FunLike.coe_sub,
       Pi.sub_apply, Finset.sum_apply, Finset.sum_pi_single, sub_eq_self]
     simp [Real.zero_rpow hp.ne']
   have : HasSum F (∑ i ∈ s, F i) := hasSum_sum_of_ne_finset_zero hF
@@ -1193,7 +1279,7 @@ protected theorem hasSum_single [Fact (1 ≤ p)] (hp : p ≠ ⊤) (f : lp E p) :
   simp only [dist_eq_norm, Real.norm_eq_abs] at hs ⊢
   have H : ‖(∑ i ∈ s, lp.single p i (f i : E i)) - f‖ ^ p.toReal =
       ‖f‖ ^ p.toReal - ∑ i ∈ s, ‖f i‖ ^ p.toReal := by
-    simpa only [coeFn_neg, Pi.neg_apply, lp.single_neg, Finset.sum_neg_distrib, neg_sub_neg,
+    simpa only [FunLike.coe_neg, Pi.neg_apply, lp.single_neg, Finset.sum_neg_distrib, neg_sub_neg,
       norm_neg, _root_.norm_neg] using lp.norm_compl_sum_single hp' (-f) s
   rw [← H] at hs
   have : |‖(∑ i ∈ s, lp.single p i (f i : E i)) - f‖ ^ p.toReal| =
@@ -1247,7 +1333,6 @@ def linearMapOfLE (h : p ≤ q) : lp E p →ₗ[𝕜] lp E q where
 lemma coe_linearMapOfLE_apply (h : p ≤ q) (f : lp E p) :
     ⇑(linearMapOfLE 𝕜 E h f) = f := by
   ext; rfl
-
 
 @[simp]
 lemma toAddMonoidHom_linearMapOfLE (h : p ≤ q) :
@@ -1374,7 +1459,7 @@ instance completeSpace : CompleteSpace (lp E p) :=
     -- Since the Cauchy sequence is bounded, its pointwise limit `f` is in `lp E p`.
     have hf' : Memℓp f p := memℓp_of_tendsto hF.isBounded_range hf
     -- And therefore `f` is its limit in the `lp E p` topology as well as pointwise.
-    exact ⟨⟨f, hf'⟩, tendsto_lp_of_tendsto_pi hF hf⟩)
+    exact ⟨lp.mk f hf', tendsto_lp_of_tendsto_pi hF hf⟩)
 
 end Topology
 
