@@ -738,10 +738,7 @@ theorem eDist_eq_eNorm_inv_mul (a b : E) : eDist a b = ‖a⁻¹ * b‖ₑ := by
   rw [eDist_dist, dist_eq_norm_inv_mul, ofReal_norm']
 
 @[to_additive (attr := deprecated (since := "2026-11-06"))]
-alias eDist_eq_enorm_inv_mul := eDist_eq_eNorm_inv_mul
-
-@[to_additive (attr := deprecated (since := "2026-11-27"))]
-alias edist_eq_enorm_inv_mul := eDist_eq_enorm_inv_mul
+alias edist_eq_enorm_inv_mul := eDist_eq_eNorm_inv_mul
 
 @[to_additive]
 lemma eNorm_div_rev {E : Type*} [SeminormedGroup E] (a b : E) : ‖a / b‖ₑ = ‖b / a‖ₑ := by
@@ -934,10 +931,7 @@ theorem eDist_eq_eNorm_div (a b : E) : eDist a b = ‖a / b‖ₑ := by
   rw [eDist_dist, dist_eq_norm_div, ofReal_norm']
 
 @[to_additive (attr := deprecated (since := "2026-11-06"))]
-alias eDist_eq_enorm_div := eDist_eq_eNorm_div
-
-@[to_additive (attr := deprecated (since := "2026-11-27"))]
-alias edist_eq_enorm_div := eDist_eq_enorm_div
+alias edist_eq_enorm_div := eDist_eq_eNorm_div
 
 @[to_additive]
 theorem dist_inv (x y : E) : dist x⁻¹ y = dist x y⁻¹ := by
