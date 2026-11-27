@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.Binomial
 public import Mathlib.RingTheory.PowerSeries.WellKnown
 public import Mathlib.Tactic.SuppressCompilation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Binomial Power Series
 

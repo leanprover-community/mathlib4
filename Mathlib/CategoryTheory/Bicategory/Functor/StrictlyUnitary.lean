@@ -26,7 +26,8 @@ unitary).
 
 - [Kerodon, section 2.2.2.4](https://kerodon.net/tag/008G)
 
-## TODOs
+## TODO
+
 * Define lax-composable (resp. pseudo-composable) arrows as strictly unitary
   lax (resp. pseudo-) functors out of `LocallyDiscrete Fin n`.
 * Define identity-component oplax natural transformations ("icons") between
@@ -180,7 +181,7 @@ lemma comp_id (F : StrictlyUnitaryLaxFunctor B C) :
   ext
   · simp
   all_goals
-  · rw [heq_iff_eq]
+    rw [heq_iff_eq]
     ext
     simp
 
@@ -192,7 +193,7 @@ lemma id_comp (F : StrictlyUnitaryLaxFunctor B C) :
   ext
   · simp
   all_goals
-  · rw [heq_iff_eq]
+    rw [heq_iff_eq]
     ext
     simp
 
@@ -206,7 +207,7 @@ lemma comp_assoc {E : Type u₄} [Bicategory.{w₄, v₄} E]
   ext
   · simp
   all_goals
-  · rw [heq_iff_eq]
+    rw [heq_iff_eq]
     ext
     simp
 

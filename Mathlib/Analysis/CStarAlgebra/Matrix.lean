@@ -112,8 +112,8 @@ lemma continuous_uncurry_toEuclideanCLM :
     LinearEquiv.coe_symm_toEquiv, toMatrix'_symm, OrthonormalBasis.coe_toBasis_repr,
     LinearEquiv.coe_toLinearMap, LinearEquiv.trans_apply, LinearIsometryEquiv.coe_toLinearEquiv,
     linearEquiv_apply, AddEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe,
-    addEquiv_apply, toLin'_apply, LinearEquiv.symm_mk, coe_mk, AddHom.coe_mk, LinearEquiv.coe_mk,
-    LinearEquiv.coe_toEquiv, Finsupp.linearEquivFunOnFinite_apply,
+    addEquiv_apply, toLin'_apply', mulVecLin_apply, LinearEquiv.symm_mk, coe_mk, AddHom.coe_mk,
+    LinearEquiv.coe_mk, LinearEquiv.coe_toEquiv, Finsupp.linearEquivFunOnFinite_apply,
     Finsupp.equivFunOnFinite_symm_apply_apply]
   fun_prop
 
@@ -232,7 +232,7 @@ lemma l2_opNorm_mul (A : Matrix m n 𝕜) (B : Matrix n l 𝕜) :
     |>.opNorm_comp_le <| (toEuclideanLin (n := l) (m := n) (𝕜 := 𝕜) ≪≫ₗ toContinuousLinearMap) B
   convert this
   ext1 x
-  congrm toLp 2 ($(Matrix.toLin'_mul A B) x)
+  congrm toLp 2 ($(Matrix.mulVecLin_mul A B) x)
 
 lemma l2_opNNNorm_mul (A : Matrix m n 𝕜) (B : Matrix n l 𝕜) : ‖A * B‖₊ ≤ ‖A‖₊ * ‖B‖₊ :=
   l2_opNorm_mul A B

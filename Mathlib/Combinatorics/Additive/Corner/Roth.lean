@@ -46,7 +46,7 @@ private lemma mk_mem_triangleIndices : (a, b, c) ∈ triangleIndices A ↔ (a, b
 @[simp] private lemma card_triangleIndices : #(triangleIndices A) = #A := card_map _
 
 private instance triangleIndices.instExplicitDisjoint : ExplicitDisjoint (triangleIndices A) := by
-  constructor <;> simp +contextual
+  constructor <;> simp
 
 private lemma noAccidental (hs : IsCornerFree (A : Set (G × G))) :
     NoAccidental (triangleIndices A) where

@@ -98,9 +98,12 @@ initialize_simps_projections GradedAlgHom (toFun → apply)
 
 @[simp] theorem coe_mk {f : A →ₐ[R] B} (h) : ((⟨f, h⟩ : 𝒜 →ₐᵍ[R] ℬ) : A → B) = f := rfl
 
-@[norm_cast]
-theorem coe_mks {f : A → B} (h₁ h₂ h₃ h₄ h₅ h₆ h₇) :
-    ⇑(⟨⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅, h₆⟩, h₇⟩ : 𝒜 →ₐᵍ[R] ℬ) = f := rfl
+@[simp, norm_cast]
+theorem mk_coe {f : A → B} (h₁ h₂ h₃ h₄ h₅ h₆ h₇) :
+    (⟨⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅, h₆⟩, h₇⟩ : 𝒜 →ₐᵍ[R] ℬ) = f :=
+  rfl
+
+@[deprecated (since := "2026-11-19")] alias coe_mks := mk_coe
 
 theorem coe_toAlgHom_mk {f : A →ₐ[R] B} (h) : ((⟨f, h⟩ : 𝒜 →ₐᵍ[R] ℬ) : A →ₐ[R] B) = f := by
   dsimp only
@@ -154,11 +157,6 @@ theorem ext {f₁ f₂ : 𝒜 →ₐᵍ[R] ℬ} (H : ∀ x, f₁ x = f₂ x) : f
   DFunLike.ext _ _ H
 
 @[simp]
-theorem mk_coe {f : 𝒜 →ₐᵍ[R] ℬ} (h₁ h₂ h₃ h₄ h₅ h₆ h₇) :
-    (⟨⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅, h₆⟩, h₇⟩ : 𝒜 →ₐᵍ[R] ℬ) = f :=
-  rfl
-
-@[simp]
 theorem commutes (r : R) : f (algebraMap R A r) = algebraMap R B r :=
   f.commutes' r
 
@@ -194,7 +192,6 @@ the codomain of `f`, then `g.comp f` is the graded algebra homomorphism `x ↦ g
   { (g : B →ₐ[R] C).comp (f : A →ₐ[R] B),
     (g.toGradedRingHom : ℬ →+*ᵍ 𝒞).comp (f.toGradedRingHom : 𝒜 →+*ᵍ ℬ) with }
 
-@[simp]
 theorem coe_comp (g : B →ₐ[R] C) (f : 𝒜 →ₐᵍ[R] ℬ) : ⇑(g.comp f) = g ∘ f := rfl
 
 theorem comp_toGradedRingHom (g : ℬ →ₐᵍ[R] 𝒞) (f : 𝒜 →ₐᵍ[R] ℬ) :

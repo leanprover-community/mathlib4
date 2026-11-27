@@ -29,8 +29,12 @@ namespace Matrix
 variable (M : Matrix n n R)
 
 @[simp]
-theorem minpoly_toLin' : minpoly R (toLin' M) = minpoly R M :=
+theorem minpoly_mulVecLin : minpoly R M.mulVecLin = minpoly R M :=
   minpoly.algEquiv_eq (toLinAlgEquiv' : Matrix n n R ≃ₐ[R] _) M
+
+@[deprecated minpoly_mulVecLin +typeChanged (since := "2026-11-25")]
+theorem minpoly_toLin' : minpoly R (toLin' M) = minpoly R M :=
+  M.minpoly_mulVecLin
 
 @[simp]
 theorem minpoly_toLin (b : Basis n R N) (M : Matrix n n R) :

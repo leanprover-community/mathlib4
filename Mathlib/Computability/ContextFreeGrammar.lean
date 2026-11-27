@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Computability.Language
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Context-Free Grammars
 

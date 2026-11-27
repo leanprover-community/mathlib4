@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Discrete.Basic
 public import Mathlib.Tactic.ToAdditive
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Walking pairs
 

@@ -12,6 +12,9 @@ public import Mathlib.CategoryTheory.Sites.Abelian
 
 import Mathlib.Algebra.Category.Grp.Zero
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sheaf cohomology
 

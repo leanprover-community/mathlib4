@@ -27,7 +27,7 @@ For a ring `R`:
   `MulRingNorm R` is essentially the same as `AbsoluteValue R ℝ`, and it is recommended to
   use the latter instead to avoid duplicating results.
 
-## Notes
+## Implementation notes
 
 The corresponding hom classes are defined in `Mathlib/Algebra/Order/Hom/Basic.lean` to be used by
 absolute values; see `Mathlib/Algebra/Order/AbsoluteValue/Basic.lean` for the bundled version.
@@ -122,10 +122,11 @@ instance [DecidableEq R] : One (RingSeminorm R) :=
   ⟨{ (1 : AddGroupSeminorm R) with
       mul_le' := fun x y => by
         by_cases h : x * y = 0
-        · refine (ite_eq_left h).trans_le (mul_nonneg ?_ ?_) <;>
-            · change _ ≤ ite _ _ _
-              split_ifs
-              exacts [le_rfl, zero_le_one]
+        · refine (ite_eq_left h).trans_le (mul_nonneg ?_ ?_)
+          all_goals
+            change _ ≤ ite _ _ _
+            split_ifs
+            exacts [le_rfl, zero_le_one]
         · change ite _ _ _ ≤ ite _ _ _ * ite _ _ _
           simp only [ite_false, h, left_ne_zero_of_mul h, right_ne_zero_of_mul h, mul_one,
             le_refl] }⟩

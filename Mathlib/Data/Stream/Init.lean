@@ -45,7 +45,6 @@ protected theorem ext {s₁ s₂ : Stream' α} : (∀ n, get s₁ n = get s₂ n
 theorem get_zero_cons (a : α) (s : Stream' α) : get (a::s) 0 = a :=
   rfl
 
-@[simp]
 theorem head_cons (a : α) (s : Stream' α) : head (a::s) = a :=
   rfl
 
@@ -145,7 +144,6 @@ theorem get_map (n : ℕ) (s : Stream' α) : get (map f s) n = f (get s n) :=
 
 theorem tail_map (s : Stream' α) : tail (map f s) = map f (tail s) := rfl
 
-@[simp]
 theorem head_map (s : Stream' α) : head (map f s) = f (head s) :=
   rfl
 
@@ -251,7 +249,6 @@ theorem iterate_eq (f : α → α) (a : α) : iterate f a = a::iterate f (f a) :
   rw [← Stream'.eta (iterate f a)]
   rw [tail_iterate]; rfl
 
-@[simp]
 theorem get_zero_iterate (f : α → α) (a : α) : get (iterate f a) 0 = a :=
   rfl
 

@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Normed.Group.Basic
 
 import Mathlib.Algebra.Order.Group.Indicator
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Indicator function and (e)norm
 

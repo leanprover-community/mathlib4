@@ -11,6 +11,9 @@ import Mathlib.Algebra.Group.Nat.Range
 import Mathlib.Data.Nat.Choose.Dvd
 import Mathlib.RingTheory.Norm.Transitivity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Eisenstein polynomials
 
