@@ -402,6 +402,8 @@ theorem coe_pow [Pow G M] (f : α → G) (n : M) : ↑(f ^ n) = (f : Germ l G) ^
 theorem const_pow [Pow G M] (a : G) (n : M) : (↑(a ^ n) : Germ l G) = (↑a : Germ l G) ^ n :=
   rfl
 
+attribute [nolint nameComponents] coe_nsmul const_nsmul
+
 -- TODO: https://github.com/leanprover-community/mathlib4/pull/7432
 @[to_additive]
 instance instMonoid [Monoid M] : Monoid (Germ l M) :=
