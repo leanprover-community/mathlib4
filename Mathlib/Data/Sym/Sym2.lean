@@ -420,9 +420,10 @@ theorem map_congr {f g : α → β} {s s' : Sym2 α} (hs : s = s') (h : ∀ x �
   subst hs
   ext y
   simp only [mem_map]
-  constructor <;>
-    · rintro ⟨w, hw, rfl⟩
-      exact ⟨w, hw, by simp [hw, h]⟩
+  constructor
+  all_goals
+    rintro ⟨w, hw, rfl⟩
+    exact ⟨w, hw, by simp [hw, h]⟩
 
 /-- Note: `Sym2.map_id` will not simplify `Sym2.map id z` due to `Sym2.map_congr`. -/
 @[simp]
