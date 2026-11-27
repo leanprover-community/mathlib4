@@ -168,7 +168,7 @@ lemma IsMatching.coeSubgraph {G' : Subgraph G} {M : Subgraph G'.coe} (hM : M.IsM
   refine ⟨?_, fun y hy => ?_⟩
   · obtain ⟨v, hv⟩ := (Set.mem_image _ _ _).mp <| (Subgraph.verts_coeSubgraph M).symm ▸ hv
     simp only [coeSubgraph_adj, Subtype.coe_eta, Subtype.coe_prop, exists_const]
-    exact ⟨hv.2 ▸ v.2, hw.1⟩
+    exact ⟨hv.2 ▸ v.property, hw.1⟩
   · obtain ⟨_, hw', hvw⟩ := (coeSubgraph_adj _ _ _).mp hy
     rw [← hw.2 ⟨y, hw'⟩ hvw]
 
@@ -319,7 +319,7 @@ lemma even_card_of_isPerfectMatching [Fintype V] [DecidableEq V] [DecidableRel G
 
 lemma odd_matches_node_outside [Finite V] {u : Set V}
     (hM : M.IsPerfectMatching) (c : (Subgraph.deleteVerts ⊤ u).coe.oddComponents) :
-    ∃ᵉ (w ∈ u) (v : ((⊤ : G.Subgraph).deleteVerts u).verts), M.Adj v w ∧ v ∈ c.val.supp := by
+    ∃ w ∈ u, ∃ v : ((⊤ : G.Subgraph).deleteVerts u).verts, M.Adj v w ∧ v ∈ c.val.supp := by
   by_contra! h
   have hMmatch : (M.induce c.val.supp).IsMatching := by
     intro v hv

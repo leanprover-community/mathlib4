@@ -83,18 +83,12 @@ section Hom
 variable [FunLike F α β]
 
 /-- Turn an element of a type `F` satisfying `OrderHomClass F α β` and `RingHomClass F α β`
-into an actual `OrderRingHom`.
-This is declared as the default coercion from `F` to `α →+*o β`. -/
-@[coe]
-def OrderRingHomClass.toOrderRingHom [NonAssocSemiring α] [Preorder α] [NonAssocSemiring β]
+into an actual `OrderRingHom`. -/
+def OrderRingHom.ofClass [NonAssocSemiring α] [Preorder α] [NonAssocSemiring β]
     [Preorder β] [OrderHomClass F α β] [RingHomClass F α β] (f : F) : α →+*o β :=
   { (f : α →+* β) with monotone' := OrderHomClass.monotone f }
 
-/-- Any type satisfying `OrderRingHomClass` can be cast into `OrderRingHom` via
-  `OrderRingHomClass.toOrderRingHom`. -/
-instance [NonAssocSemiring α] [Preorder α] [NonAssocSemiring β] [Preorder β]
-    [OrderHomClass F α β] [RingHomClass F α β] : CoeTC F (α →+*o β) :=
-  ⟨OrderRingHomClass.toOrderRingHom⟩
+@[deprecated (since := "2026-11-22")] alias OrderRingHomClass.toOrderRingHom := OrderRingHom.ofClass
 
 end Hom
 
@@ -103,18 +97,12 @@ section Equiv
 variable [EquivLike F α β]
 
 /-- Turn an element of a type `F` satisfying `OrderIsoClass F α β` and `RingEquivClass F α β`
-into an actual `OrderRingIso`.
-This is declared as the default coercion from `F` to `α ≃+*o β`. -/
-@[coe]
-def OrderRingIsoClass.toOrderRingIso [Mul α] [Add α] [LE α] [Mul β] [Add β] [LE β]
+into an actual `OrderRingIso`. -/
+def OrderRingIso.ofClass [Mul α] [Add α] [LE α] [Mul β] [Add β] [LE β]
     [OrderIsoClass F α β] [RingEquivClass F α β] (f : F) : α ≃+*o β :=
-  { (RingEquivClass.toRingEquiv f : α ≃+* β) with map_le_map_iff' := map_le_map_iff f }
+  { RingEquiv.ofClass f with map_le_map_iff' := map_le_map_iff f }
 
-/-- Any type satisfying `OrderRingIsoClass` can be cast into `OrderRingIso` via
-  `OrderRingIsoClass.toOrderRingIso`. -/
-instance [Mul α] [Add α] [LE α] [Mul β] [Add β] [LE β] [OrderIsoClass F α β]
-    [RingEquivClass F α β] : CoeTC F (α ≃+*o β) :=
-  ⟨OrderRingIsoClass.toOrderRingIso⟩
+@[deprecated (since := "2026-11-22")] alias OrderRingIsoClass.toOrderRingIso := OrderRingIso.ofClass
 
 end Equiv
 
@@ -152,6 +140,10 @@ instance : RingHomClass (α →+*o β) α β where
   map_one f := f.map_one'
   map_add f := f.map_add'
   map_zero f := f.map_zero'
+
+@[simp]
+protected theorem coe_ofClass [FunLike F α β] [OrderHomClass F α β] [RingHomClass F α β] (f : F) :
+    ⇑(ofClass f) = f := rfl
 
 theorem toFun_eq_coe (f : α →+*o β) : f.toFun = f :=
   rfl
@@ -326,6 +318,11 @@ instance : RingEquivClass (α ≃+*o β) α β where
 
 instance : CoeOut (α ≃+*o β) (α ≃+* β) where coe := toRingEquiv
 
+@[simp]
+protected theorem coe_ofClass {F : Type*} [EquivLike F α β] [OrderIsoClass F α β]
+    [RingEquivClass F α β] (f : F) :
+    ⇑(ofClass f) = f := rfl
+
 theorem toFun_eq_coe (f : α ≃+*o β) : f.toFun = f :=
   rfl
 
@@ -340,10 +337,6 @@ theorem coe_mk (e : α ≃+* β) (h) : ⇑(⟨e, h⟩ : α ≃+*o β) = e :=
 @[simp]
 theorem mk_coe (e : α ≃+*o β) (h) : (⟨e, h⟩ : α ≃+*o β) = e :=
   ext fun _ => rfl
-
-@[deprecated "Now a syntactic equality" (since := "2026-04-09"), nolint synTaut]
-theorem toRingEquiv_eq_coe (f : α ≃+*o β) : f.toRingEquiv = f :=
-  RingEquiv.ext fun _ => rfl
 
 @[simp]
 theorem toOrderIso_eq_coe (f : α ≃+*o β) : f.toOrderIso = f :=
@@ -418,10 +411,11 @@ theorem trans_toRingEquiv (f : α ≃+*o β) (g : β ≃+*o γ) :
 
 /-- `simp`-normal form of `trans_toRingEquiv`. -/
 @[simp]
-theorem trans_toRingEquiv_aux (f : α ≃+*o β) (g : β ≃+*o γ) :
-    RingEquivClass.toRingEquiv (OrderRingIso.trans f g)
-      = RingEquiv.trans f.toRingEquiv g.toRingEquiv :=
+theorem ringEquivOfClass_trans (f : α ≃+*o β) (g : β ≃+*o γ) :
+    .ofClass (OrderRingIso.trans f g) = RingEquiv.trans f.toRingEquiv g.toRingEquiv :=
   rfl
+
+@[deprecated (since := "2026-11-22")] alias trans_toRingEquiv_aux := ringEquivOfClass_trans
 
 @[simp]
 theorem trans_apply (f : α ≃+*o β) (g : β ≃+*o γ) (a : α) : f.trans g a = g (f a) :=
@@ -457,17 +451,20 @@ variable [NonAssocSemiring α] [Preorder α] [NonAssocSemiring β] [Preorder β]
 def toOrderRingHom (f : α ≃+*o β) : α →+*o β :=
   ⟨f.toRingEquiv.toRingHom, fun _ _ => (map_le_map_iff f).2⟩
 
-@[simp]
-theorem toOrderRingHom_eq_coe (f : α ≃+*o β) : f.toOrderRingHom = f :=
+theorem toOrderRingHom_eq_ofClass (f : α ≃+*o β) : f.toOrderRingHom = .ofClass f :=
   rfl
 
-@[simp, norm_cast]
-theorem coe_toOrderRingHom (f : α ≃+*o β) : ⇑(f : α →+*o β) = f :=
+@[deprecated (since := "2026-11-22")] alias toOrderRingHom_eq_coe := toOrderRingHom_eq_ofClass
+
+@[simp]
+theorem coe_toOrderRingHom (f : α ≃+*o β) : ⇑f.toOrderRingHom = f :=
   rfl
 
 @[simp]
-theorem coe_toOrderRingHom_refl : (OrderRingIso.refl α : α →+*o α) = OrderRingHom.id α :=
+theorem toOrderRingHom_refl : (OrderRingIso.refl α).toOrderRingHom = OrderRingHom.id α :=
   rfl
+
+@[deprecated (since := "2026-11-22")] alias coe_toOrderRingHom_refl := toOrderRingHom_refl
 
 theorem toOrderRingHom_injective : Injective (toOrderRingHom : α ≃+*o β → α →+*o β) :=
   fun f g h => DFunLike.coe_injective <| by convert! DFunLike.ext'_iff.1 h using 0

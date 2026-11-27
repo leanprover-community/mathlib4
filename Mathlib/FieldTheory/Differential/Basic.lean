@@ -8,6 +8,9 @@ module
 public import Mathlib.FieldTheory.PrimitiveElement
 public import Mathlib.RingTheory.Derivation.MapCoeffs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Differential Fields
 
@@ -105,9 +108,8 @@ noncomputable instance (p : F[X]) [Fact (Irreducible p)] [Fact p.Monic] :
       apply dvd_mul_of_dvd_right
       rw [← AdjoinRoot.mk_eq_zero]
       unfold implicitDeriv
-      simp only [AdjoinRoot.aeval_eq, Derivation.coe_add, Derivation.coe_smul, Pi.add_apply,
-        Pi.smul_apply, Derivation.restrictScalars_apply, derivative'_apply, smul_eq_mul, map_add,
-        map_mul, AdjoinRoot.mk_leftInverse Fact.out _]
+      simp only [AdjoinRoot.aeval_eq, add_apply, smul_apply, Derivation.restrictScalars_apply,
+        derivative'_apply, smul_eq_mul, map_add, map_mul, AdjoinRoot.mk_leftInverse Fact.out _]
       rw [div_mul_cancel₀, add_neg_cancel]
       simp only [ne_eq, AdjoinRoot.mk_eq_zero]
       have : 0 < p.natDegree := Irreducible.natDegree_pos (Fact.out)
@@ -166,7 +168,7 @@ noncomputable def uniqueDifferentialAlgebraFiniteDimensional [FiniteDimensional 
   ext x
   apply_fun (aeval x (mapCoeffs (minpoly F x)) + aeval x (derivative (minpoly F x)) * ·)
   · conv_lhs => apply (deriv_aeval_eq ..).symm
-    conv_rhs => apply (@deriv_aeval_eq _ _ _ _ _ default.1 _ default.2 _ _).symm
+    conv_rhs => apply (@deriv_aeval_eq _ _ _ _ _ default.val _ default.property _ _).symm
     simp
   · apply (add_right_injective _).comp
     apply mul_right_injective₀

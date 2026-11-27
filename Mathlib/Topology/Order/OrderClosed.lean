@@ -179,9 +179,6 @@ theorem disjoint_nhds_atBot (a : α) : Disjoint (𝓝 a) atBot := by simp
 @[to_dual (attr := simp) nhds_inf_atTop]
 theorem nhds_inf_atBot (a : α) : 𝓝 a ⊓ atBot = ⊥ := (disjoint_nhds_atBot a).eq_bot
 
-@[deprecated (since := "2026-04-07")] alias inf_nhds_atBot := nhds_inf_atBot
-@[deprecated (since := "2026-04-07")] alias inf_nhds_atTop := nhds_inf_atTop
-
 @[to_dual]
 theorem not_tendsto_nhds_of_tendsto_atBot (hf : Tendsto f l atBot) (a : α) : ¬Tendsto f l (𝓝 a) :=
   hf.not_tendsto (disjoint_nhds_atBot a).symm
@@ -192,6 +189,7 @@ theorem not_tendsto_atBot_of_tendsto_nhds (hf : Tendsto f l (𝓝 a)) : ¬Tendst
 
 end NoBotOrder
 
+@[to_dual]
 theorem iSup_eq_of_forall_le_of_tendsto {ι : Type*} {F : Filter ι} [Filter.NeBot F]
     [ConditionallyCompleteLattice α] [TopologicalSpace α] [ClosedIicTopology α]
     {a : α} {f : ι → α} (hle : ∀ i, f i ≤ a) (hlim : Filter.Tendsto f F (𝓝 a)) :
@@ -199,6 +197,7 @@ theorem iSup_eq_of_forall_le_of_tendsto {ι : Type*} {F : Filter ι} [Filter.NeB
   have := F.nonempty_of_neBot
   (IsLUB.range_of_tendsto hle hlim).ciSup_eq
 
+@[to_dual]
 theorem iUnion_Iic_eq_Iio_of_lt_of_tendsto {ι : Type*} {F : Filter ι} [F.NeBot]
     [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [ClosedIicTopology α]
     {a : α} {f : ι → α} (hlt : ∀ i, f i < a) (hlim : Tendsto f F (𝓝 a)) :
@@ -348,11 +347,11 @@ theorem continuousWithinAt_Ioo_iff_Iio (h : a < b) :
 
 @[to_dual]
 protected theorem CovBy.nhdsLE (H : a ⋖ b) : 𝓝[≤] b = pure b := by
-  rw [← Iio_insert, nhdsWithin_insert, H.nhdsLT, sup_bot_eq]
+  rw [← insert_Iio, nhdsWithin_insert, H.nhdsLT, sup_bot_eq]
 
 @[to_dual]
 protected theorem PredOrder.nhdsLE [PredOrder α] : 𝓝[≤] b = pure b := by
-  rw [← Iio_insert, nhdsWithin_insert, PredOrder.nhdsLT, sup_bot_eq]
+  rw [← insert_Iio, nhdsWithin_insert, PredOrder.nhdsLT, sup_bot_eq]
 
 @[to_dual]
 theorem Ioc_mem_nhdsLE (H : a < b) : Ioc a b ∈ 𝓝[≤] b :=
@@ -399,24 +398,6 @@ end LinearOrder
 
 end ClosedIicTopology
 
-section ClosedIciTopology
-
--- TODO: we're missing some to_dual tags for conditionally complete lattices
-
-@[to_dual existing]
-theorem iInf_eq_of_forall_le_of_tendsto {ι : Type*} {F : Filter ι} [F.NeBot]
-    [ConditionallyCompleteLattice α] [TopologicalSpace α] [ClosedIciTopology α]
-    {a : α} {f : ι → α} (hle : ∀ i, a ≤ f i) (hlim : Tendsto f F (𝓝 a)) :
-    ⨅ i, f i = a :=
-  iSup_eq_of_forall_le_of_tendsto (α := αᵒᵈ) hle hlim
-
-@[to_dual existing]
-theorem iUnion_Ici_eq_Ioi_of_lt_of_tendsto {ι : Type*} {F : Filter ι} [F.NeBot]
-    [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [ClosedIciTopology α]
-    {a : α} {f : ι → α} (hlt : ∀ i, a < f i) (hlim : Tendsto f F (𝓝 a)) :
-    ⋃ i : ι, Ici (f i) = Ioi a :=
-  iUnion_Iic_eq_Iio_of_lt_of_tendsto (α := αᵒᵈ) hlt hlim
-
 section OrderClosedTopology
 
 section Preorder
@@ -428,7 +409,7 @@ namespace Subtype
 -- todo: add `OrderEmbedding.orderClosedTopology`
 instance {p : α → Prop} : OrderClosedTopology (Subtype p) :=
   have : Continuous fun p : Subtype p × Subtype p => ((p.fst : α), (p.snd : α)) :=
-    continuous_subtype_val.prodMap continuous_subtype_val
+    continuous_subtypeVal.prodMap continuous_subtypeVal
   OrderClosedTopology.mk (t.isClosed_le'.preimage this)
 
 end Subtype
@@ -579,6 +560,20 @@ instance (priority := 90) OrderClosedTopology.to_t2Space : T2Space α :=
       t.isClosed_le'.inter (isClosed_le continuous_snd continuous_fst)
 
 end PartialOrder
+
+section Lattice
+
+variable [TopologicalSpace α] [Lattice α] [OrderClosedTopology α]
+
+@[closedness .]
+theorem isClosed_uIcc {a b : α} : IsClosed (uIcc a b) :=
+  isClosed_Icc
+
+@[simp, closedness =]
+lemma closure_uIcc {a b : α} : closure (uIcc a b) = uIcc a b :=
+  isClosed_uIcc.closure_eq
+
+end Lattice
 
 section LinearOrder
 

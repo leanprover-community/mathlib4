@@ -12,13 +12,15 @@ public import Mathlib.Order.SuccPred.Limit
 import Mathlib.CategoryTheory.Limits.Comma
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # An assumption for constructions by transfinite induction
 
 In this file, we introduce the typeclass `HasIterationOfShape J C` which is
 an assumption in order to do constructions by transfinite induction indexed by
 a well-ordered type `J` in a category `C` (see `CategoryTheory.SmallObject`).
-
 -/
 
 public section

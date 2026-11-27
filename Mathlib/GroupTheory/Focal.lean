@@ -33,7 +33,7 @@ This file defines the focal subgroup and proves the Focal Subgroup Theorem.
 
 ## References
 
-* [D. Gorenstein, *Finite Groups*][gorenstein1968]
+* [D. Gorenstein, *Finite Groups*][Gorenstein1968]
 -/
 
 @[expose] public section
@@ -135,7 +135,7 @@ lemma commutator_le_focalSubgroupOf : _root_.commutator H ≤ focalSubgroupOf H 
   rw [focalSubgroupOf_eq_closure]
   apply closure_mono
   rintro - ⟨a, -, b, -, -, rfl⟩
-  exact ⟨a, a.2, b, rfl⟩
+  exact ⟨a, a.property, b, rfl⟩
 
 @[to_additive]
 lemma commutator_le_focalSubgroup : ⁅H, H⁆ ≤ focalSubgroup H := by
@@ -216,7 +216,7 @@ where `P*` is the focal subgroup of `P`.
 theorem commutator_inf_eq_focalSubgroup : _root_.commutator G ⊓ P = P.focalSubgroup := by
   apply le_antisymm
   · apply le_trans ?_ (ker_transferFocal_inf_eq_focalSubgroup P).le
-    exact inf_le_inf_right _ (Abelianization.commutator_subset_ker P.transferFocal)
+    exact inf_le_inf_right _ (Group.Abelianization.commutator_le_ker P.transferFocal)
   · exact le_inf P.focalSubgroup_le_commutator P.focalSubgroup_le
 
 end FocalSubgroupTheorem

@@ -27,7 +27,6 @@ import Mathlib.Algebra.Module.Torsion.Field
 
 * We introduce the notation `R ∙ v` for the span of a singleton, `Submodule.span R {v}`.  This is
   `\span`, not the same as the scalar multiplication `•`/`\bub`.
-
 -/
 
 @[expose] public section
@@ -415,7 +414,7 @@ theorem prod_inf_prod : prod p q₁ ⊓ prod p' q₁' = prod (p ⊓ p') (q₁ �
 theorem prod_sup_prod : prod p q₁ ⊔ prod p' q₁' = prod (p ⊔ p') (q₁ ⊔ q₁') := by
   refine le_antisymm
     (sup_le (prod_mono le_sup_left le_sup_left) (prod_mono le_sup_right le_sup_right)) ?_
-  simp only [IsConcreteLE.le_iff, mem_prod, and_imp, Prod.forall]; intro xx yy hxx hyy
+  simp only [le_iff_mem_imp_mem, mem_prod, and_imp, Prod.forall]; intro xx yy hxx hyy
   rcases mem_sup.1 hxx with ⟨x, hx, x', hx', rfl⟩
   rcases mem_sup.1 hyy with ⟨y, hy, y', hy', rfl⟩
   exact mem_sup.2 ⟨(x, y), ⟨hx, hy⟩, (x', y'), ⟨hx', hy'⟩, rfl⟩
@@ -424,8 +423,8 @@ theorem prod_sup_prod : prod p q₁ ⊔ prod p' q₁' = prod (p ⊔ p') (q₁ �
 submodules. -/
 @[simps]
 def prodEquiv (p : Submodule R M) (q : Submodule R M') : p.prod q ≃ₗ[R] p × q where
-  toFun x := (⟨x.1.1, (mem_prod.1 x.2).1⟩, ⟨x.1.2, (mem_prod.1 x.2).2⟩)
-  invFun y := ⟨(y.1.1, y.2.1), mem_prod.2 ⟨y.1.2, y.2.2⟩⟩
+  toFun x := (⟨x.val.1, (mem_prod.1 x.property).1⟩, ⟨x.val.2, (mem_prod.1 x.property).2⟩)
+  invFun y := ⟨(y.1.val, y.2.val), mem_prod.2 ⟨y.1.property, y.2.property⟩⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
@@ -460,11 +459,11 @@ lemma biSup_comap_subtype_eq_top {ι : Type*} (s : Set ι) (p : ι → Submodule
   exact le_biSup p hi
 
 theorem _root_.LinearMap.exists_ne_zero_of_sSup_eq {N : Submodule R M} {f : N →ₛₗ[σ₁₂] M₂}
-    (h : f ≠ 0) (s : Set (Submodule R M)) (hs : sSup s = N):
+    (h : f ≠ 0) (s : Set (Submodule R M)) (hs : sSup s = N) :
     ∃ m, ∃ h : m ∈ s, f ∘ₛₗ inclusion ((le_sSup h).trans_eq hs) ≠ 0 :=
   have ⟨_, ⟨m, hm, rfl⟩, ne⟩ := LinearMap.exists_ne_zero_of_sSup_eq_top h (comap N.subtype '' s) <|
     by rw [sSup_eq_iSup] at hs; rw [sSup_image, ← hs, biSup_comap_subtype_eq_top]
-  ⟨m, hm, fun eq ↦ ne (LinearMap.ext fun x ↦ congr($eq ⟨x, x.2⟩))⟩
+  ⟨m, hm, fun eq ↦ ne (LinearMap.ext fun x ↦ congr($eq ⟨x, x.property⟩))⟩
 
 lemma span_val_image_eq_iff (p : Submodule R M) (s : Set p) :
     span R (Subtype.val '' s) = p ↔ span R s = ⊤ := by
@@ -683,7 +682,7 @@ variable [DivisionRing K] [AddCommGroup V] [Module K V] {s : Submodule K V} {x :
 /-- There is no vector subspace between `s` and `K ∙ x ⊔ s`, `WCovBy` version. -/
 theorem wcovBy_span_singleton_sup (x : V) (s : Submodule K V) : WCovBy s (K ∙ x ⊔ s) := by
   refine ⟨le_sup_right, fun q hpq hqp ↦ hqp.not_ge ?_⟩
-  rcases IsConcreteLE.exists_of_lt hpq with ⟨y, hyq, hyp⟩
+  rcases exists_mem_notMem_of_lt hpq with ⟨y, hyq, hyp⟩
   obtain ⟨c, z, hz, rfl⟩ : ∃ c : K, ∃ z ∈ s, c • x + z = y := by
     simpa [mem_sup, mem_span_singleton] using hqp.le hyq
   rcases eq_or_ne c 0 with rfl | hc
@@ -711,6 +710,14 @@ lemma isCompl_span_singleton_of_isCoatom_of_notMem (hs : IsCoatom s) (hx : x ∉
   refine ⟨disjoint_span_singleton_of_notMem hx, ?_⟩
   rw [← covBy_top_iff] at hs
   simpa only [codisjoint_iff, sup_comm, not_lt_top_iff] using hs.2 (covBy_span_singleton_sup hx).1
+
+theorem isCoatom_iff_exists_notMem_isCompl_span_singleton :
+    IsCoatom s ↔ ∃ x ∉ s, IsCompl s (K ∙ x) := by
+  refine ⟨fun hs ↦ ?_, fun ⟨x, hx, hc⟩ ↦ ?_⟩
+  · have ⟨b, hb⟩ := SetLike.exists_notMem_of_ne_top s hs.ne_top
+    exact ⟨b, hb, isCompl_span_singleton_of_isCoatom_of_notMem hs hb⟩
+  · rw [← covBy_top_iff, ← hc.symm.sup_eq_top]
+    exact covBy_span_singleton_sup hx
 
 end DivisionRing
 
@@ -783,7 +790,7 @@ theorem toSpanSingleton_smul {S : Type*} [Monoid S] [DistribMulAction S M]
 
 theorem toSpanSingleton_isIdempotentElem_iff {e : R} :
     IsIdempotentElem (toSpanSingleton R R e) ↔ IsIdempotentElem e := by
-  simp_rw [IsIdempotentElem, LinearMap.ext_iff, Module.End.mul_apply, toSpanSingleton_apply,
+  simp_rw [IsIdempotentElem, LinearMap.ext_iff, mul_apply_eq_comp, toSpanSingleton_apply,
     smul_eq_mul, mul_assoc]
   exact ⟨fun h ↦ by conv_rhs => rw [← one_mul e, ← h, one_mul], fun h _ ↦ by rw [h]⟩
 
@@ -791,7 +798,7 @@ theorem isIdempotentElem_map_one_iff {f : Module.End R R} :
     IsIdempotentElem (f 1) ↔ IsIdempotentElem f := by
   rw [IsIdempotentElem, ← smul_eq_mul, ← map_smul, smul_eq_mul, mul_one, IsIdempotentElem,
     LinearMap.ext_iff]
-  simp_rw [Module.End.mul_apply]
+  simp_rw [mul_apply_eq_comp]
   exact ⟨fun h r ↦ by rw [← mul_one r, ← smul_eq_mul, map_smul, map_smul, h], (· 1)⟩
 
 /-- The range of `toSpanSingleton x` is the span of `x`. -/
@@ -933,5 +940,10 @@ theorem coord_self : (coord R M x h) (⟨x, Submodule.mem_span_singleton_self x�
 
 theorem coord_apply_smul (y : Submodule.span R ({x} : Set M)) : coord R M x h y • x = y :=
   Subtype.ext_iff.1 <| (toSpanNonzeroSingleton R M x h).apply_symm_apply _
+
+@[simp]
+theorem coord_mk_smul (a : R) :
+    coord R M x h ⟨a • x, Submodule.mem_span_singleton.mpr ⟨a, rfl⟩⟩ = a :=
+  (symm_apply_eq (toSpanNonzeroSingleton R M x h)).mpr rfl
 
 end LinearEquiv

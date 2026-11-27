@@ -6,7 +6,11 @@ Authors: Kyle Miller
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Basic
-public import Mathlib.Data.Fintype.Sigma
+
+import Mathlib.Data.Fintype.Sigma
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Darts in graphs
@@ -57,11 +61,30 @@ instance Dart.fintype [Fintype V] [DecidableRel G.Adj] : Fintype G.Dart :=
     { toFun := fun s => ⟨(s.fst, s.snd), s.snd.property⟩
       invFun := fun d => ⟨d.fst, d.snd, d.adj⟩ }
 
+instance [Finite V] : Finite G.Dart :=
+  .of_injective Dart.toProd Dart.toProd_injective
+
+theorem finite_dart_iff_finite_of_support_eq_univ (h : G.support = .univ) :
+    Finite G.Dart ↔ Finite V := by
+  refine ⟨fun _ ↦ ?_, fun _ ↦ inferInstance⟩
+  have (v : V) : ∃ u, G.Adj v u := by simp [← mem_support, h]
+  let f (v : V) : G.Dart := { fst := v, snd := (this v).choose, adj := (this v).choose_spec }
+  exact .of_injective f fun u v huv ↦ congrArg (·.fst) huv
+
+theorem infinite_dart_iff_infinite_of_support_eq_univ (h : G.support = .univ) :
+    Infinite G.Dart ↔ Infinite V := by
+  contrapose!
+  exact finite_dart_iff_finite_of_support_eq_univ h
+
 /-- The edge associated to the dart. -/
 def Dart.edge (d : G.Dart) : Sym2 V := s(d.fst, d.snd)
 
 @[simp]
 theorem Dart.edge_mk {p : V × V} (h : G.Adj p.1 p.2) : (Dart.mk p h).edge = s(p.1, p.2) :=
+  rfl
+
+@[simp]
+theorem Dart.sym2Mk_fst_snd (d : G.Dart) : s(d.fst, d.snd) = d.edge :=
   rfl
 
 @[simp]
@@ -95,6 +118,9 @@ theorem Dart.symm_involutive : Function.Involutive (Dart.symm : G.Dart → G.Dar
 
 theorem Dart.symm_ne (d : G.Dart) : d.symm ≠ d :=
   ne_of_apply_ne (Prod.snd ∘ Dart.toProd) d.adj.ne
+
+@[simp]
+theorem Dart.fst_symm (d : G.Dart) : d.symm.fst = d.snd := rfl
 
 theorem dart_edge_eq_iff : ∀ d₁ d₂ : G.Dart, d₁.edge = d₂.edge ↔ d₁ = d₂ ∨ d₁ = d₂.symm := by
   rintro ⟨p, hp⟩ ⟨q, hq⟩

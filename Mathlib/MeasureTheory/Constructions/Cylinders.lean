@@ -39,7 +39,6 @@ a product set.
   σ-algebra
 * `generateFrom_measurableCylinders`: cylinders formed from measurable sets generate the
   product σ-algebra
-
 -/
 
 @[expose] public section
@@ -60,10 +59,14 @@ def squareCylinders (C : ∀ i, Set (Set (α i))) : Set (Set (∀ i, α i)) :=
   {S | ∃ s : Finset ι, ∃ t ∈ univ.pi C, S = (s : Set ι).pi t}
 
 theorem squareCylinders_eq_iUnion_image (C : ∀ i, Set (Set (α i))) :
-    squareCylinders C = ⋃ s : Finset ι, (fun t ↦ (s : Set ι).pi t) '' univ.pi C := by
+    squareCylinders C = ⋃ s : Finset ι, (s : Set ι).pi '' univ.pi C := by
   ext1 f
   simp only [squareCylinders, mem_iUnion, mem_image, mem_univ_pi, mem_ofPred_eq,
     eq_comm (a := f)]
+
+theorem squareCylinders_eq_iUnion_image' {C : ∀ i, Set (Set (α i))} (hC : ∀ i, (C i).Nonempty) :
+    squareCylinders C = ⋃ s : Finset ι, (s : Set ι).pi '' (s : Set ι).pi C := by
+  simp_rw [squareCylinders_eq_iUnion_image, pi_image_pi_of_subset hC (subset_univ _)]
 
 theorem isPiSystem_squareCylinders {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsPiSystem (C i))
     (hC_univ : ∀ i, univ ∈ C i) :
@@ -178,7 +181,7 @@ theorem cylinder_eq_empty_iff [h_nonempty : Nonempty (∀ i, α i)] (s : Finset 
     cylinder s S = ∅ ↔ S = ∅ := by
   refine ⟨fun h ↦ ?_, fun h ↦ by (rw [h]; exact cylinder_empty _)⟩
   by_contra hS
-  rw [← Ne, ← nonempty_iff_ne_empty] at hS
+  rw [← Ne, ne_empty_iff_nonempty] at hS
   let f := hS.some
   have hf : f ∈ S := hS.choose_spec
   classical
@@ -464,7 +467,7 @@ lemma measurable_update_cylinderEvents_left {a : ι} [DecidableEq ι] {x : X a} 
 
 lemma measurable_restrict_cylinderEvents (Δ : Set ι) :
     Measurable[cylinderEvents (X := X) Δ] (domRestrict Δ) := by
-  rw [@measurable_pi_iff]; exact fun i ↦ measurable_cylinderEvent_apply i.2
+  rw [@measurable_pi_iff]; exact fun i ↦ measurable_cylinderEvent_apply i.property
 
 end cylinderEvents
 
@@ -486,7 +489,7 @@ lemma MeasurableSet.eq_preimage_restrict_countable
   simp only [hf, mem_iUnion, mem_preimage, preimage_iUnion, mem_image]
   refine ⟨fun ⟨i, hi⟩ ↦ ⟨i, x, hi, rfl⟩, fun ⟨n, x', hn, hx⟩ ↦ ⟨n, ?_⟩⟩
   have (x : Π i, α i) : (I n).domRestrict x =
-      (fun (x : Π (i : ⋃ k, I k), α i) (i : I n) ↦ x ⟨i.1, subset_iUnion I n i.2⟩)
+      (fun (x : Π (i : ⋃ k, I k), α i) (i : I n) ↦ x ⟨i.val, subset_iUnion I n i.property⟩)
       ((⋃ k, I k).domRestrict x) := rfl
   rwa [this, ← hx, ← this]
 

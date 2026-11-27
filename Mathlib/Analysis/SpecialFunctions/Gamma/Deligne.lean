@@ -137,6 +137,16 @@ lemma Gammaℝ_residue_zero : Tendsto (fun s ↦ s * Gammaℝ s) (𝓝[≠] 0) (
   rw [Gammaℝ]
   ring_nf
 
+/-- `Gammaℂ` has a simple pole at `s = 0` with residue `2`.
+
+This is the complex-place analogue of `Gammaℝ_residue_zero` (whose residue at `0` is also `2`), and
+is twice the residue of `Complex.Gamma` itself (`Complex.tendsto_self_mul_Gamma_nhds_zero`). -/
+lemma Gammaℂ_residue_zero : Tendsto (fun s ↦ s * Gammaℂ s) (𝓝[≠] 0) (𝓝 2) := by
+  -- `s * Gammaℂ s = 2 * (2 * π) ^ (-s) * (s * Gamma s)`, and `s * Gamma s → 1`
+  refine .congr (fun s ↦ mul_left_comm ..) ?_
+  simpa using ((continuous_neg.const_cpow (b := 2 * π) (by simp)).const_mul 2).continuousWithinAt
+    |>.tendsto.mul tendsto_self_mul_Gamma_nhds_zero
+
 end analyticity
 
 section reflection
@@ -150,12 +160,10 @@ lemma Gammaℝ_mul_Gammaℝ_add_one (s : ℂ) : Gammaℝ s * Gammaℝ (s + 1) = 
     rw [← cpow_add _ _ (ofReal_ne_zero.mpr pi_ne_zero), Complex.Gamma_mul_Gamma_add_half,
       sqrt_eq_rpow, ofReal_cpow pi_pos.le, ofReal_div, ofReal_one, ofReal_ofNat]
     ring_nf
-  _ = 2 * ((2 : ℝ) ^ (-s) * π ^ (-s)) * Gamma s := by
-    rw [sub_eq_add_neg, cpow_add _ _ two_ne_zero, cpow_one,
-      ← cpow_add _ _ (ofReal_ne_zero.mpr pi_ne_zero), ofReal_ofNat]
-    ring_nf
   _ = 2 * (2 * π) ^ (-s) * Gamma s := by
-    rw [← mul_cpow_ofReal_nonneg two_pos.le pi_pos.le, ofReal_ofNat]
+    rw [sub_eq_add_neg, cpow_add _ _ two_ne_zero, cpow_one,
+      ← cpow_add _ _ (ofReal_ne_zero.mpr pi_ne_zero), ofNat_mul_cpow]
+    ring_nf
 
 /-- Reformulation of the reflection formula in terms of `Gammaℝ`. -/
 lemma Gammaℝ_one_sub_mul_Gammaℝ_one_add (s : ℂ) :

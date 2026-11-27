@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Preadditiv
 
 import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Localization with respect to a Serre class
 
@@ -20,7 +23,6 @@ in the abelian category `C`, then `D` is an abelian category.
 
 We also show that a functor `G : D ⥤ E` to an abelian category is exact iff
 the composition `L ⋙ G` is.
-
 -/
 
 @[expose] public section
@@ -286,7 +288,7 @@ lemma preservesKernel {X Y : C} (f : X ⟶ Y) :
   suffices ∀ (W : D) (z : W ⟶ L.obj X) (hz : z ≫ L.map f = 0),
       ∃ (l : W ⟶ L.obj (kernel f)), l ≫ L.map (kernel.ι f) = z from
     preservesLimit_of_preserves_limit_cone (kernelIsKernel f)
-      ((KernelFork.isLimitMapConeEquiv _ L).2
+      ((KernelFork.isLimitMapConeEquiv _ L).invFun
         (Fork.IsLimit.ofExistsUnique
           (fun s ↦ existsUnique_of_exists_of_unique
             (this _ _ (KernelFork.condition s))
@@ -316,7 +318,7 @@ lemma preservesCokernel {X Y : C} (f : X ⟶ Y) :
   suffices ∀ (W : D) (z : L.obj Y ⟶ W) (hz : L.map f ≫ z = 0),
       ∃ (l : L.obj (cokernel f) ⟶ W), L.map (cokernel.π f) ≫ l = z from
     preservesColimit_of_preserves_colimit_cocone (cokernelIsCokernel f)
-      ((CokernelCofork.isColimitMapCoconeEquiv _ L).2
+      ((CokernelCofork.isColimitMapCoconeEquiv _ L).invFun
         (Cofork.IsColimit.ofExistsUnique
           (fun s ↦ existsUnique_of_exists_of_unique
             (this _ _ (CokernelCofork.condition s))
@@ -344,7 +346,7 @@ lemma hasKernels : HasKernels D where
       (Localization.essSurj_mapArrow L P.isoModSerre).mem_essImage (Arrow.mk f)
     have := preservesKernel L P g.hom
     have : HasLimit (parallelPair (L.map g.hom) 0) :=
-      ⟨_, (KernelFork.isLimitMapConeEquiv _ L).1
+      ⟨_, (KernelFork.isLimitMapConeEquiv _ L).toFun
         (isLimitOfPreserves L (kernelIsKernel g.hom))⟩
     exact hasLimit_of_iso (show parallelPair (L.map g.hom) 0 ≅ _ from
       parallelPair.ext (Arrow.leftFunc.mapIso e) (Arrow.rightFunc.mapIso e))
@@ -355,7 +357,7 @@ lemma hasCokernels : HasCokernels D where
       (Localization.essSurj_mapArrow L P.isoModSerre).mem_essImage (Arrow.mk f)
     have := preservesCokernel L P g.hom
     have : HasColimit (parallelPair (L.map g.hom) 0) :=
-      ⟨_, (CokernelCofork.isColimitMapCoconeEquiv _ L).1
+      ⟨_, (CokernelCofork.isColimitMapCoconeEquiv _ L).toFun
         (isColimitOfPreserves L (cokernelIsCokernel g.hom))⟩
     exact hasColimit_of_iso (show _ ≅ parallelPair (L.map g.hom) 0 from
       parallelPair.ext (Arrow.leftFunc.mapIso e.symm) (Arrow.rightFunc.mapIso e.symm))
@@ -388,7 +390,7 @@ lemma isNormalMonoCategory : IsNormalMonoCategory D where
       g := L.map hf'.g
       w := by rw [← L.map_comp]; simp [hf'.w]
       isLimit :=
-        (KernelFork.isLimitMapConeEquiv _ L).1
+        (KernelFork.isLimitMapConeEquiv _ L).toFun
           (isLimitOfPreserves L hf'.isLimit) }
 
 lemma isNormalEpiCategory : IsNormalEpiCategory D where
@@ -403,7 +405,7 @@ lemma isNormalEpiCategory : IsNormalEpiCategory D where
       g := L.map hf'.g
       w := by rw [← L.map_comp]; simp [hf'.w]
       isColimit :=
-        (CokernelCofork.isColimitMapCoconeEquiv _ L).1
+        (CokernelCofork.isColimitMapCoconeEquiv _ L).toFun
           (isColimitOfPreserves L hf'.isColimit) }
 
 /-- If `L : C ⥤ D` is a localization functor with respect to a Serre class `P` in
@@ -498,7 +500,6 @@ lemma exactFunctor_comp_iff :
 
 variable (E)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- When `L : C ⥤ D` is a localization functor with respect to a Serre class
 in the abelian category `C`, this is the functor `(D ⥤ₑ E) ⥤ C ⥤ₑ E`
 obtained by precomposition with `L`. -/

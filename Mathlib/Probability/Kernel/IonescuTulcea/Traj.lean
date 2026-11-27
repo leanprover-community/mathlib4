@@ -49,8 +49,8 @@ expectation.
 
 ## Main statements
 
-* `map_traj_succ_self`: the pushforward of `traj κ a` along the the point at time `a + 1` is the
-  kernel `κ a`.
+* `map_traj_succ_self`: the pushforward of `traj κ a` along the point at time `a + 1` is the kernel
+  `κ a`.
 * `eq_traj`: Uniqueness of `traj`: to check that `η = traj κ a` it is enough to show that
   the restriction of `η` to variables `≤ b` is `partialTraj κ a b`.
 * `traj_comp_partialTraj`: Given the distribution up to time `a`, `partialTraj κ a b`
@@ -96,7 +96,7 @@ private lemma Iic_pi_eq {a b : ℕ} (h : a = b) :
     (Π i : Iic a, X i) = (Π i : Iic b, X i) := by cases h; rfl
 
 private lemma cast_pi {s t : Set ℕ} (h : s = t) (x : (i : s) → X i) (i : t) :
-    cast (congrArg (fun u : Set ℕ ↦ (Π i : u, X i)) h) x i = x ⟨i.1, h.symm ▸ i.2⟩ := by
+    cast (congrArg (fun u : Set ℕ ↦ (Π i : u, X i)) h) x i = x ⟨i.val, h.symm ▸ i.property⟩ := by
   cases h; rfl
 
 variable [∀ n, MeasurableSpace (X n)]
@@ -123,7 +123,7 @@ def iterateInduction {a : ℕ} (x : Π i : Iic a, X i)
   | k + 1 => if h : k + 1 ≤ a
       then x ⟨k + 1, mem_Iic.2 h⟩
       else ind k (fun i ↦ iterateInduction x ind i)
-  decreasing_by exact Nat.lt_succ_of_le (mem_Iic.1 i.2)
+  decreasing_by exact Nat.lt_succ_of_le (mem_Iic.1 i.property)
 
 lemma frestrictLe_iterateInduction {a : ℕ} (x : Π i : Iic a, X i)
     (ind : (n : ℕ) → (Π i : Iic n, X i) → X (n + 1)) :
@@ -251,7 +251,7 @@ theorem trajContent_eq_lmarginalPartialTraj {b : ℕ} {S : Set (Π i : Iic b, X 
   apply Set.indicator_const_eq_indicator_const
   rw [mem_cylinder]
   congrm (fun i ↦ ?_) ∈ S
-  simp [updateFinset, i.2]
+  simp [updateFinset, i.property]
 
 lemma trajContent_ne_top {a : ℕ} {x : Π i : Iic a, X i} {s : Set (Π n, X n)} :
     trajContent κ x s ≠ ∞ :=
@@ -278,10 +278,10 @@ theorem le_lmarginalPartialTraj_succ {f : ℕ → (Π n, X n) → ℝ≥0∞} {a
       (update (updateFinset x (Iic k) y) (k + 1) z) := by
   have _ n : Nonempty (X n) := by
     induction n using Nat.case_strong_induction_on with
-    | hz => exact ⟨y ⟨0, mem_Iic.2 zero_le⟩⟩
-    | hi m hm =>
+    | zero => exact ⟨y ⟨0, mem_Iic.2 zero_le⟩⟩
+    | succ m hm =>
       have : Nonempty (Π i : Iic m, X i) :=
-        ⟨fun i ↦ @Classical.ofNonempty _ (hm i.1 (mem_Iic.1 i.2))⟩
+        ⟨fun i ↦ @Classical.ofNonempty _ (hm i.val (mem_Iic.1 i.property))⟩
       exact nonempty_of_isProbabilityMeasure (κ m Classical.ofNonempty)
   -- `Fₙ` is the integral of `fₙ` from time `k + 1` to `aₙ`.
   let F n : (Π n, X n) → ℝ≥0∞ := lmarginalPartialTraj κ (k + 1) (a n) (f n)
@@ -350,10 +350,10 @@ theorem trajContent_tendsto_zero {A : ℕ → Set (Π n, X n)}
     Tendsto (fun n ↦ trajContent κ x₀ (A n)) atTop (𝓝 0) := by
   have _ n : Nonempty (X n) := by
     induction n using Nat.case_strong_induction_on with
-    | hz => exact ⟨x₀ ⟨0, mem_Iic.2 zero_le⟩⟩
-    | hi m hm =>
+    | zero => exact ⟨x₀ ⟨0, mem_Iic.2 zero_le⟩⟩
+    | succ m hm =>
       have : Nonempty (Π i : Iic m, X i) :=
-        ⟨fun i ↦ @Classical.ofNonempty _ (hm i.1 (mem_Iic.1 i.2))⟩
+        ⟨fun i ↦ @Classical.ofNonempty _ (hm i.val (mem_Iic.1 i.property))⟩
       exact nonempty_of_isProbabilityMeasure (κ m Classical.ofNonempty)
   -- `Aₙ` is a cylinder, it can be written as `cylinder (Iic (a n)) Sₙ`.
   have A_cyl n : ∃ a S, MeasurableSet S ∧ A n = cylinder (Iic a) S := by
@@ -427,7 +427,7 @@ theorem trajContent_tendsto_zero {A : ℕ → Set (Π n, X n)}
     | base => exact fun x n ↦ by simpa [z, frestrictLe_iterateInduction] using hpos x n
     | succ k hn h =>
       intro x n
-      convert hind k (fun i ↦ z i.1) h x n
+      convert hind k (fun i ↦ z i.val) h x n
       ext i
       simp only [updateFinset, mem_Iic, frestrictLe_apply, dite_eq_ite, update, z]
       split_ifs with h1 h2 h3 h4 h5
@@ -542,7 +542,7 @@ lemma traj_map_frestrictLe_of_le {a b : ℕ} (hab : a ≤ b) :
       deterministic (frestrictLe₂ hab) (measurable_frestrictLe₂ _) := by
   rw [traj_map_frestrictLe, partialTraj_le]
 
-/-- The pushforward of `traj κ a` along the the point at time `a + 1` is the kernel `κ a`. -/
+/-- The pushforward of `traj κ a` along the point at time `a + 1` is the kernel `κ a`. -/
 lemma map_traj_succ_self {a : ℕ} : (traj κ a).map (fun x ↦ x (a + 1)) = κ a := by
   have hf : (fun x : Π n, X n ↦ x (a + 1)) =
       (fun x ↦ x ⟨a + 1, mem_Iic.2 le_rfl⟩) ∘ frestrictLe (a + 1) := rfl
@@ -586,7 +586,7 @@ theorem traj_eq_prod (a : ℕ) :
   refine (eq_traj' _ (a + 1) _ fun b hb ↦ ?_).symm
   rw [← map_comp_right]
   · conv_lhs => enter [2]; change (IicProdIoc a b) ∘
-      (Prod.map id (fun x i ↦ x ⟨i.1, Set.mem_Ioi.2 (mem_Ioc.1 i.2).1⟩))
+      (Prod.map id (fun x i ↦ x ⟨i.val, Set.mem_Ioi.2 (mem_Ioc.1 i.property).1⟩))
     rw [map_comp_right, ← map_prod_map, ← map_comp_right]
     · conv_lhs => enter [1, 2, 2]; change (Ioc a b).restrict
       rw [← restrict₂_comp_restrict Ioc_subset_Iic_self, ← frestrictLe, map_comp_right,

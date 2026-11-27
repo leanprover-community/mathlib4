@@ -94,19 +94,15 @@ section
 with `Classical.dec` in their statement. -/
 
 open scoped Classical in
-/-- Sum of `f x` as `x` ranges over the elements of the support of `f`, if it's finite. Zero
-otherwise. -/
-noncomputable irreducible_def finsum (lemma := finsum_def') [AddCommMonoid M] (f : α → M) : M :=
-  if h : HasFiniteSupport (f ∘ PLift.down) then ∑ i ∈ h.toFinset, f i.down else 0
-
-open scoped Classical in
 /-- Product of `f x` as `x` ranges over the elements of the multiplicative support of `f`, if it's
 finite. One otherwise. -/
-@[to_additive existing]
-noncomputable irreducible_def finprod (lemma := finprod_def') (f : α → M) : M :=
-  if h : HasFiniteMulSupport (f ∘ PLift.down) then ∏ i ∈ h.toFinset, f i.down else 1
+@[no_expose, to_additive
+/-- Sum of `f x` as `x` ranges over the elements of the support of `f`, if it's finite.
+Zero otherwise. -/]
+noncomputable def finprod (f : α → M) : M :=
+  if h : HasFiniteMulSupport (f ∘ PLift.down) then h.toFinset.prod fun i ↦ f i.down else 1
 
-attribute [to_additive existing] finprod_def'
+@[to_additive] alias finprod_def' := finprod.eq_def
 
 end
 
@@ -376,12 +372,6 @@ theorem finprod_eq_finsetProd_of_mulSupport_subset (f : α → M) {s : Finset α
     simpa [← Finset.coe_subset, Set.coe_toFinset]
   finprod_eq_prod_of_mulSupport_toFinset_subset _ _ h'
 
-@[deprecated (since := "2026-04-08")]
-alias finsum_eq_finset_sum_of_support_subset := finsum_eq_finsetSum_of_support_subset
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-alias finprod_eq_finset_prod_of_mulSupport_subset := finprod_eq_finsetProd_of_mulSupport_subset
-
 @[to_additive]
 theorem finprod_def (f : α → M) [Decidable (HasFiniteMulSupport f)] :
     ∏ᶠ i : α, f i = if h : HasFiniteMulSupport f then ∏ i ∈ h.toFinset, f i else 1 := by
@@ -446,11 +436,6 @@ theorem map_finsetProd {α F : Type*} [Fintype α] [EquivLike F M N] [MulEquivCl
     (g : α → M) : f (∏ i : α, g i) = ∏ i : α, f (g i) := by
   simp [← finprod_eq_prod_of_fintype, MulEquivClass.map_finprod]
 
-@[deprecated (since := "2026-04-08")] alias map_finset_sum := map_finsetSum
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-alias map_finset_prod := map_finsetProd
-
 @[to_additive]
 theorem finprod_cond_eq_prod_of_cond_iff (f : α → M) {p : α → Prop} {t : Finset α}
     (h : ∀ {x}, f x ≠ 1 → (p x ↔ x ∈ t)) : (∏ᶠ (i) (_ : p i), f i) = ∏ i ∈ t, f i := by
@@ -496,7 +481,7 @@ theorem finprod_mem_eq_prod_of_subset (f : α → M) {s : Set α} {t : Finset α
 @[to_additive]
 theorem finprod_mem_eq_prod (f : α → M) {s : Set α} (hf : (s ∩ mulSupport f).Finite) :
     ∏ᶠ i ∈ s, f i = ∏ i ∈ hf.toFinset, f i :=
-  finprod_mem_eq_prod_of_inter_mulSupport_eq _ <| by simp [inter_assoc]
+  finprod_mem_eq_prod_of_inter_mulSupport_eq _ <| by simp
 
 set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
@@ -776,7 +761,7 @@ theorem finprod_mem_empty : (∏ᶠ i ∈ (∅ : Set α), f i) = 1 := by simp
 @[to_additive
 /-- A set `s` is nonempty if the sum of some function over `s` is not equal to `0`. -/]
 theorem nonempty_of_finprod_mem_ne_one (h : ∏ᶠ i ∈ s, f i ≠ 1) : s.Nonempty :=
-  nonempty_iff_ne_empty.2 fun h' => h <| h'.symm ▸ finprod_mem_empty
+  ne_empty_iff_nonempty.1 fun h' => h <| h'.symm ▸ finprod_mem_empty
 
 /-- Given finite sets `s` and `t`, the product of `f i` over `i ∈ s ∪ t` times the product of
 `f i` over `i ∈ s ∩ t` equals the product of `f i` over `i ∈ s` times the product of `f i`
@@ -1053,7 +1038,8 @@ theorem finprod_mem_biUnion {I : Set ι} {t : ι → Set α} (h : I.PairwiseDisj
     (ht : ∀ i ∈ I, (t i).Finite) : ∏ᶠ a ∈ ⋃ x ∈ I, t x, f a = ∏ᶠ i ∈ I, ∏ᶠ j ∈ t i, f j := by
   have := hI.fintype
   rw [biUnion_eq_iUnion, finprod_mem_iUnion, ← finprod_set_coe_eq_finprod_mem]
-  exacts [fun x y hxy => h x.2 y.2 (Subtype.coe_injective.ne hxy), fun b => ht b b.2]
+  exacts [fun x y hxy => h x.property y.property (Subtype.coe_injective.ne hxy),
+    fun b => ht b b.property]
 
 /-- If `t` is a finite set of pairwise disjoint finite sets, then the product of `f a`
 over `a ∈ ⋃₀ t` is the product over `s ∈ t` of the products of `f a` over `a ∈ s`. -/

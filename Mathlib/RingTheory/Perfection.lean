@@ -22,7 +22,6 @@ given a valuation to `ℝ≥0`.
 ## TODO
 
 Define the valuation on the tilt, and define a characteristic predicate for the tilt.
-
 -/
 
 @[expose] public section
@@ -57,13 +56,13 @@ variable (M : Type*) [CommMonoid M] (p : ℕ)
 
 /-- The `n`-th coefficient of an element of the perfection. -/
 def coeffMonoidHom (n : ℕ) : Perfection M p →* M where
-  toFun f := f.1 n
+  toFun f := f.val n
   map_one' := rfl
   map_mul' _ _ := rfl
 
 /-- The `p`-th root of an element of the perfection. -/
 def pthRootMonoidHom : Perfection M p →* Perfection M p where
-  toFun f := ⟨fun n => coeffMonoidHom M p (n + 1) f, fun _ => f.2 _⟩
+  toFun f := ⟨fun n => coeffMonoidHom M p (n + 1) f, fun _ => f.property _⟩
   map_one' := rfl
   map_mul' _ _ := rfl
 
@@ -85,12 +84,12 @@ attribute [local simp] coeffMonoidHom_pthRootMonoidHom
 
 theorem coeffMonoidHom_pow_p (f : Perfection M p) (n : ℕ) :
     coeffMonoidHom M p (n + 1) (f ^ p) = coeffMonoidHom M p n f := by
-  rw [map_pow]; exact f.2 n
+  rw [map_pow]; exact f.property n
 
 @[simp]
 theorem coeffMonoidHom_pow_p' (f : Perfection M p) (n : ℕ) :
     coeffMonoidHom M p (n + 1) f ^ p = coeffMonoidHom M p n f :=
-  f.2 n
+  f.property n
 
 instance : PerfectRing (Perfection M p) p where
   bijective_frobenius := Function.bijective_iff_has_inverse.mpr
@@ -191,7 +190,7 @@ section CommSemiring
 def subsemiring (R : Type*) [CommSemiring R] (p : ℕ) [hp : Fact p.Prime] [CharP R p] :
     Subsemiring (ℕ → R) where
   __ := submonoid R p
-  zero_mem' _ := zero_pow hp.1.ne_zero
+  zero_mem' _ := zero_pow hp.out.ne_zero
   add_mem' hf hg n := (map_add (frobenius R p) _ _).trans congr($(hf n) + $(hg n))
 
 variable (R : Type*) [CommSemiring R] (p : ℕ) [hp : Fact p.Prime] [CharP R p]
@@ -200,7 +199,7 @@ instance : CommSemiring (Perfection R p) :=
   inferInstanceAs <| CommSemiring (subsemiring R p)
 
 instance : CharP (Perfection R p) p :=
-  CharP.subsemiring _ _ (subsemiring R p)
+  inferInstanceAs <| CharP (subsemiring R p) p
 
 /-- The `n`-th coefficient of an element of the perfection. -/
 def coeff (n : ℕ) : Perfection R p →+* R where
@@ -258,7 +257,7 @@ theorem coeff_pow_p (f : Perfection R p) (n : ℕ) :
 
 @[simp]
 theorem coeff_pow_p' (f : Perfection R p) (n : ℕ) : coeff R p (n + 1) f ^ p = coeff R p n f :=
-  f.2 n
+  f.property n
 
 @[simp]
 theorem coeff_frobenius (f : Perfection R p) (n : ℕ) :
@@ -282,7 +281,7 @@ theorem coeff_add_ne_zero {f : Perfection R p} {n : ℕ} (hfn : coeff R p n f �
     coeff R p (n + k) f ≠ 0 :=
   Nat.recOn k hfn fun k ih h => ih <| by
     rw [Nat.add_succ] at h
-    rw [← coeff_pow_p, map_pow, h, zero_pow hp.1.ne_zero]
+    rw [← coeff_pow_p, map_pow, h, zero_pow hp.out.ne_zero]
 
 theorem coeff_ne_zero_of_le {f : Perfection R p} {m n : ℕ} (hfm : coeff R p m f ≠ 0)
     (hmn : m ≤ n) : coeff R p n f ≠ 0 :=
@@ -429,7 +428,7 @@ variable {p R P}
 noncomputable def equiv {π : P →+* R} (m : PerfectionMap p π) : P ≃+* Perfection R p :=
   RingEquiv.ofBijective (Perfection.lift p P R π)
     ⟨fun _ _ hxy => m.injective fun n => congr(Perfection.coeff R p n $hxy), fun f =>
-      let ⟨x, hx⟩ := m.surjective f.1 f.2
+      let ⟨x, hx⟩ := m.surjective f.val f.property
       ⟨x, Perfection.ext hx⟩⟩
 
 theorem equiv_apply {π : P →+* R} (m : PerfectionMap p π) (x : P) :
@@ -464,8 +463,8 @@ noncomputable def lift [PerfectRing R p] (S : Type u₂) [CommSemiring S] [CharP
   left_inv f := by
     simp_rw [← RingHom.comp_assoc, comp_symm_equiv']
     exact (Perfection.lift p R S).symm_apply_apply f
-  right_inv f := by
-    exact RingHom.ext fun x => m.equiv.injective <| (m.equiv.apply_symm_apply _).trans
+  right_inv f :=
+    RingHom.ext fun x => m.equiv.injective <| (m.equiv.apply_symm_apply _).trans
       <| show Perfection.lift p R S (π.comp f) x = RingHom.comp (↑m.equiv) f x from
         RingHom.ext_iff.1 (by rw [← Equiv.eq_symm_apply]; rfl) _
 
@@ -510,10 +509,10 @@ abbrev ModP :=
 namespace ModP
 
 instance [Fact p.Prime] [hvp : Fact (¬ IsUnit (p : O))] : CharP (ModP O p) p :=
-  CharP.quotient O p hvp.1
+  CharP.quotient O p hvp.out
 
 instance [hp : Fact p.Prime] [Fact (¬ IsUnit (p : O))] : Nontrivial (ModP O p) :=
-  CharP.nontrivial_of_char_ne_one hp.1.ne_one
+  CharP.nontrivial_of_char_ne_one hp.out.ne_one
 
 end ModP
 
@@ -600,20 +599,19 @@ theorem mul_ne_zero_of_pow_p_ne_zero {x y : ModP O p} (hx : x ^ p ≠ 0) (hy : y
     x * y ≠ 0 := by
   obtain ⟨r, rfl⟩ := Ideal.Quotient.mk_surjective x
   obtain ⟨s, rfl⟩ := Ideal.Quotient.mk_surjective y
-  have h1p : (0 : ℝ) < 1 / p := one_div_pos.2 (Nat.cast_pos.2 hp.1.pos)
+  have h1p : (0 : ℝ) < 1 / p := one_div_pos.2 (Nat.cast_pos.2 hp.out.pos)
   rw [← (Ideal.Quotient.mk (Ideal.span {(p : O)})).map_mul]
   rw [← (Ideal.Quotient.mk (Ideal.span {(p : O)})).map_pow] at hx hy
   rw [← v_p_lt_val hv] at hx hy ⊢
   rw [map_pow, v.map_pow, ← rpow_lt_rpow_iff h1p, ← rpow_natCast, ← rpow_mul,
-    mul_one_div_cancel (Nat.cast_ne_zero.2 hp.1.ne_zero : (p : ℝ) ≠ 0), rpow_one] at hx hy
+    mul_one_div_cancel (Nat.cast_ne_zero.2 hp.out.ne_zero : (p : ℝ) ≠ 0), rpow_one] at hx hy
   rw [map_mul, v.map_mul]; refine lt_of_le_of_lt ?_ (mul_lt_mul'' hx hy zero_le zero_le)
-  by_cases hvp : v p = 0
+  obtain hvp | hvp := eq_zero_or_pos (v p)
   · rw [hvp]; exact zero_le
-  replace hvp := zero_lt_iff.2 hvp
   conv_lhs => rw [← rpow_one (v p)]
   rw [← rpow_add (ne_of_gt hvp)]
-  refine rpow_le_rpow_of_exponent_ge hvp (map_natCast (algebraMap O K) p ▸ hv.2 _) ?_
-  rw [← add_div, div_le_one (Nat.cast_pos.2 hp.1.pos : 0 < (p : ℝ))]; exact mod_cast hp.1.two_le
+  refine rpow_le_rpow_of_exponent_ge hvp (map_natCast (algebraMap O K) p ▸ hv.map_le_one _) ?_
+  rw [← add_div, div_le_one (Nat.cast_pos.2 hp.out.pos : 0 < (p : ℝ))]; exact mod_cast hp.out.two_le
 
 end Classical
 
@@ -800,7 +798,7 @@ include hv
 
 theorem isDomain : IsDomain (PreTilt O p) := by
   have hp : Nat.Prime p := Fact.out
-  have : Nontrivial (PreTilt O p) := ⟨(CharP.nontrivial_of_char_ne_one hp.ne_one).1⟩
+  have : Nontrivial (PreTilt O p) := ⟨(CharP.nontrivial_of_char_ne_one hp.ne_one).exists_pair_ne⟩
   have : NoZeroDivisors (PreTilt O p) :=
     ⟨fun hfg => by
       simp_rw [← map_eq_zero hv] at hfg ⊢; contrapose! hfg; rw [Valuation.map_mul]
@@ -813,7 +811,7 @@ end PreTilt
 [scholze2011perfectoid]. Given a field `K` with valuation `K → ℝ≥0` and ring of integers `O`,
 this is implemented as the fraction field of the perfection of `O/(p)`. -/
 def Tilt [Fact p.Prime] [hvp : Fact (v p ≠ 1)] :=
-  have _ := Fact.mk <| mt hv.one_of_isUnit <| (map_natCast (algebraMap O K) p).symm ▸ hvp.1
+  have _ := Fact.mk <| mt hv.one_of_isUnit <| (map_natCast (algebraMap O K) p).symm ▸ hvp.out
   FractionRing (PreTilt O p)
 
 namespace Tilt
@@ -821,7 +819,7 @@ namespace Tilt
 noncomputable instance [Fact p.Prime] [hvp : Fact (v p ≠ 1)] : Field (Tilt K v O hv p) :=
   #adaptation_note /-- This type ascription was not needed prior to nightly-2026-05-17. -/
   haveI : Fact ¬IsUnit (p : O) :=
-    Fact.mk <| mt hv.one_of_isUnit <| (map_natCast (algebraMap O K) p).symm ▸ hvp.1
+    Fact.mk <| mt hv.one_of_isUnit <| (map_natCast (algebraMap O K) p).symm ▸ hvp.out
   haveI := PreTilt.isDomain K v O hv p
   inferInstanceAs <| Field (FractionRing (PreTilt O p))
 

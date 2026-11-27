@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.SimpleModule.Basic
 public import Mathlib.Topology.Algebra.Module.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The kernel of a linear function is closed or dense
 

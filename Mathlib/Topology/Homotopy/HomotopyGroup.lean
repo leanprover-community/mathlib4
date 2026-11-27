@@ -38,7 +38,6 @@ We provide a group instance using path composition and show commutativity when `
 * Examples with `𝕊^n`: `π_n (𝕊^n) = ℤ`, `π_m (𝕊^n)` trivial for `m < n`.
 * Actions of π_1 on π_n.
 * Lie algebra: `⁅π_(n+1), π_(m+1)⁆` contained in `π_(n+m+1)`.
-
 -/
 
 @[expose] public section
@@ -108,7 +107,7 @@ namespace GenLoop
 
 @[macro_inline]
 instance instFunLike : FunLike (Ω^ N X x) (I^N) X where
-  coe f := f.1
+  coe f := f.val
   coe_injective := fun ⟨⟨f, _⟩, _⟩ ⟨⟨g, _⟩, _⟩ _ ↦ by congr
 
 @[simp]
@@ -123,14 +122,14 @@ theorem mk_apply (f : C(I^N, X)) (H y) : (⟨f, H⟩ : Ω^ N X x) y = f y :=
   rfl
 
 instance instContinuousEval : ContinuousEval (Ω^ N X x) (I^N) X :=
-  .of_continuous_forget continuous_subtype_val
+  .of_continuous_forget continuous_subtypeVal
 
 instance instContinuousEvalConst : ContinuousEvalConst (Ω^ N X x) (I^N) X := inferInstance
 
 /-- Copy of a `GenLoop` with a new map from the unit cube equal to the old one.
   Useful to fix definitional equalities. -/
 def copy (f : Ω^ N X x) (g : (I^N) → X) (h : g = f) : Ω^ N X x :=
-  ⟨⟨g, h.symm ▸ f.1.2⟩, by convert f.2⟩
+  ⟨⟨g, by rw [h]; fun_prop⟩, by convert f.property⟩
 
 theorem coe_copy (f : Ω^ N X x) {g : (I^N) → X} (h : g = f) : ⇑(copy f g h) = g :=
   rfl
@@ -140,7 +139,7 @@ theorem copy_eq (f : Ω^ N X x) {g : (I^N) → X} (h : g = f) : copy f g h = f :
   congrm $h x
 
 theorem boundary (f : Ω^ N X x) : ∀ y ∈ Cube.boundary N, f y = x :=
-  f.2
+  f.property
 
 /-- The constant `GenLoop` at `x`. -/
 def const : Ω^ N X x :=
@@ -159,10 +158,10 @@ variable {M} (x : X)
 
 /-- Homeomorphism `Ω^M X ≃ₜ Ω^N X` if `M ≃ N`. -/
 def congr (e : M ≃ N) : Ω^ M X x ≃ₜ Ω^ N X x where
-  toFun p := ⟨p.1.comp ⟨fun t m ↦ t (e m), by fun_prop⟩, fun y ⟨n, hn⟩ =>
-    by simpa using p.2 _ ⟨e.symm n, by simpa using hn⟩⟩
-  invFun p := ⟨p.1.comp ⟨fun t n ↦ t (e.symm n), by fun_prop⟩, fun y ⟨m, hm⟩ => by
-    simpa using p.2 _ ⟨e m, by simpa using hm⟩⟩
+  toFun p := ⟨p.val.comp ⟨fun t m ↦ t (e m), by fun_prop⟩, fun y ⟨n, hn⟩ =>
+    by simpa using p.property _ ⟨e.symm n, by simpa using hn⟩⟩
+  invFun p := ⟨p.val.comp ⟨fun t n ↦ t (e.symm n), by fun_prop⟩, fun y ⟨m, hm⟩ => by
+    simpa using p.property _ ⟨e m, by simpa using hm⟩⟩
   left_inv p := by ext t; simp
   right_inv p := by ext t; simp
 
@@ -188,10 +187,10 @@ lemma apply_inl_apply_inr_eq_of_mem_boundary_sum
 /-- Curries an `(M ⊕ N)`-cube into an `M`-cube of `N`-cubes. -/
 @[simps]
 def currySum (q : Ω^ (M ⊕ N) X x) : C(I^M, Ω^ N X x) where
-  toFun a := ⟨(q.1.comp ⟨sumArrowHomeomorphProdArrow.invFun,
+  toFun a := ⟨(q.val.comp ⟨sumArrowHomeomorphProdArrow.invFun,
     sumArrowHomeomorphProdArrow.continuous_invFun⟩).curry.toFun a,
-      fun _ hm => q.2 _ (Cube.boundary_sum_iff.mpr (Or.inr hm))⟩
-  continuous_toFun := Continuous.subtype_mk (q.1.comp
+      fun _ hm => q.property _ (Cube.boundary_sum_iff.mpr (Or.inr hm))⟩
+  continuous_toFun := Continuous.subtype_mk (q.val.comp
     ⟨sumArrowHomeomorphProdArrow.invFun,
       sumArrowHomeomorphProdArrow.continuous_invFun⟩).curry.continuous_toFun _
 
@@ -208,7 +207,7 @@ lemma continuous_currySum : Continuous (currySum x (M := M) (N := N)) :=
 /-- Given an element `p` in the `M`-iterated loop space of the `N`-iterated loop space of `X`,
 this induces a continuous function from `I^M × I^N` to `X`. -/
 protected def uncurry (p : Ω^ M (Ω^ N X x) const) : C((I^M) × (I^N), X) :=
-  .uncurry ⟨fun a => ⟨(p.1 a).1, ContinuousMap.continuous _⟩, (map_continuous p).subtype_val⟩
+  .uncurry ⟨fun a => ⟨(p.val a).val, ContinuousMap.continuous _⟩, (map_continuous p).subtypeVal⟩
 
 @[simp]
 lemma uncurry_apply (p : Ω^ M (Ω^ N X x) const) (y : (I^M) × (I^N)) :
@@ -221,18 +220,18 @@ def genLoopGenLoopEquiv : Ω^ M (Ω^ N X x) GenLoop.const ≃ₜ Ω^ (M ⊕ N) X
   toFun p := ⟨(GenLoop.uncurry x p).comp ⟨sumArrowHomeomorphProdArrow.toFun,
     sumArrowHomeomorphProdArrow.continuous_toFun⟩, fun y hy => by simp [hy]⟩
   invFun q :=
-    ⟨currySum x q, fun _ hm => by ext n; exact q.2 _ (Cube.boundary_sum_iff.mpr (Or.inl hm))⟩
+    ⟨currySum x q, fun _ hm => by ext n; exact q.property _ (Cube.boundary_sum_iff.mpr (Or.inl hm))⟩
   left_inv p := by ext; simp; rfl
   right_inv p := by ext; simp
   continuous_toFun := ((ContinuousMap.continuous_uncurry.comp' ((ContinuousMap.continuous_postcomp
-    ⟨_, continuous_subtype_val⟩).comp continuous_subtype_val)).compCM
+    ⟨_, continuous_subtypeVal⟩).comp continuous_subtypeVal)).compCM
       continuous_const).subtype_mk _
 
 end
 
 /-- The "homotopic relative to boundary" relation between `GenLoop`s. -/
 def Homotopic (f g : Ω^ N X x) : Prop :=
-  f.1.HomotopicRel g.1 (Cube.boundary N)
+  f.val.HomotopicRel g.val (Cube.boundary N)
 
 namespace Homotopic
 
@@ -278,7 +277,7 @@ theorem continuous_toLoop (i : N) : Continuous (@toLoop N X _ x _ i) :=
       (continuous_eval.comp <|
         Continuous.prodMap
           (ContinuousMap.continuous_curry.comp <|
-            (ContinuousMap.continuous_precomp _).comp continuous_subtype_val)
+            (ContinuousMap.continuous_precomp _).comp continuous_subtypeVal)
           continuous_id)
       _
 
@@ -330,17 +329,17 @@ theorem fromLoop_apply (i : N) {p : Ω (Ω^ { j // j ≠ i } X x) const} {t : I^
 /-- Composition with `Cube.insertAt` as a continuous map. -/
 abbrev cCompInsert (i : N) : C(C(I^N, X), C(I × I^{ j // j ≠ i }, X)) :=
   ⟨fun f ↦ f.comp (Cube.insertAt i),
-    (toContinuousMap <| Cube.insertAt i).continuous_precomp⟩
+    (ContinuousMap.ofClass <| Cube.insertAt i).continuous_precomp⟩
 
 /-- A homotopy between `n+1`-dimensional loops `p` and `q` constant on the boundary
   seen as a homotopy between two paths in the space of `n`-dimensional paths. -/
-def homotopyTo (i : N) {p q : Ω^ N X x} (H : p.1.HomotopyRel q.1 (Cube.boundary N)) :
+def homotopyTo (i : N) {p q : Ω^ N X x} (H : p.val.HomotopyRel q.val (Cube.boundary N)) :
     C(I × I, C(I^{ j // j ≠ i }, X)) :=
   ((⟨_, ContinuousMap.continuous_curry⟩ : C(_, _)).comp <|
       (cCompInsert i).comp H.toContinuousMap.curry).uncurry
 
 -- `@[simps]` generates this lemma but it's named `homotopyTo_apply_apply` instead
-theorem homotopyTo_apply (i : N) {p q : Ω^ N X x} (H : p.1.HomotopyRel q.1 <| Cube.boundary N)
+theorem homotopyTo_apply (i : N) {p q : Ω^ N X x} (H : p.val.HomotopyRel q.val <| Cube.boundary N)
     (t : I × I) (tₙ : I^{ j // j ≠ i }) :
     homotopyTo i H t tₙ = H (t.fst, Cube.insertAt i (t.snd, tₙ)) :=
   rfl
@@ -350,7 +349,7 @@ theorem homotopicTo (i : N) {p q : Ω^ N X x} :
     Homotopic p q → (toLoop i p).Homotopic (toLoop i q) := by
   refine Nonempty.map fun H ↦ ⟨⟨⟨fun t ↦ ⟨homotopyTo i H t, ?_⟩, ?_⟩, ?_, ?_⟩, ?_⟩
   · rintro y ⟨i, iH⟩
-    rw [homotopyTo_apply, H.eq_fst, p.2]
+    rw [homotopyTo_apply, H.eq_fst, p.property]
     all_goals apply Cube.insertAt_boundary; right; exact ⟨i, iH⟩
   · fun_prop
   on_goal 1 2 =>
@@ -385,7 +384,7 @@ theorem homotopicFrom (i : N) {p q : Ω^ N X x} :
     · simp only [Prod.map_apply, id_eq, funSplitAt_apply, Function.uncurry_apply_pair]
       rw [H.eq_fst]
       exacts [congr(p $((Cube.splitAt j).left_inv _)), jH]
-    · rw [p.2 _ ⟨j, jH⟩]; apply boundary; exact ⟨⟨j, h⟩, jH⟩
+    · rw [p.property _ ⟨j, jH⟩]; apply boundary; exact ⟨⟨j, h⟩, jH⟩
   all_goals
     intro
     apply (homotopyFrom_apply _ _ _).trans
@@ -407,7 +406,7 @@ def transAt (i : N) (f g : Ω^ N X x) : Ω^ N X x :=
     (by
       ext1; symm
       dsimp only [Path.trans, fromLoop, Path.coe_mk_mk, Function.comp_apply, mk_apply,
-        ContinuousMap.comp_apply, ContinuousMap.coe_coe, funSplitAt_apply,
+        ContinuousMap.comp_apply, ContinuousMap.coe_ofClass, funSplitAt_apply,
         ContinuousMap.uncurry_apply, ContinuousMap.coe_mk, Function.uncurry_apply_pair]
       split_ifs
       · change f _ = _; congr 1
@@ -467,7 +466,7 @@ def genLoopHomeoOfIsEmpty (N x) [IsEmpty N] : Ω^ N X x ≃ₜ X where
   toFun f := f 0
   invFun y := ⟨ContinuousMap.const _ y, fun _ ⟨i, _⟩ ↦ isEmptyElim i⟩
   left_inv f := by ext; congrm f $(Subsingleton.elim ..)
-  continuous_invFun := ContinuousMap.const'.2.subtype_mk _
+  continuous_invFun := by fun_prop
 
 /-- The homotopy "group" indexed by an empty type is in bijection with
   the path components of `X`, aka the `ZerothHomotopy`. -/

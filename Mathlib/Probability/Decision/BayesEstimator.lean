@@ -10,6 +10,9 @@ public import Mathlib.Probability.Kernel.Posterior
 
 import Mathlib.Probability.Decision.Risk.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bayes estimator
 
@@ -45,7 +48,6 @@ the argmin in a measurable way.
 
 Once Mathlib has measurable selection theorems, we will be able to prove `HasArgminEstimator` under
 general conditions on the measurable spaces `𝓧` and/or `𝓨`.
-
 -/
 
 @[expose] public section

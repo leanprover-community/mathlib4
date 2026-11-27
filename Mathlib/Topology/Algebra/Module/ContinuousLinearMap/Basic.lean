@@ -6,14 +6,17 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Fréd
 -/
 module
 
+public import Mathlib.Algebra.Group.Action.FunLike
+public import Mathlib.Algebra.GroupWithZero.Action.FunLike
 public import Mathlib.Algebra.Module.FunLike
-public import Mathlib.Algebra.Module.LinearMap.DivisionRing
 public import Mathlib.Algebra.Module.Submodule.EqLocus
 public import Mathlib.Algebra.Module.Submodule.Invariant
 public import Mathlib.Algebra.Ring.FunLike
 public import Mathlib.Topology.Algebra.Group.ZPow
 public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
 public import Mathlib.Topology.Algebra.Module.Basic
+
+import Mathlib.Algebra.Module.LinearMap.DivisionRing
 
 /-!
 # Continuous linear maps
@@ -43,7 +46,6 @@ Later files endow it with a topological structure, see the docstring of
 * `M →L⋆[σ] N`: the type of conjugate-linear (antilinear) continuous maps from `M` to `N`;
 * `f ∘L g`: the composition of two continuous linear maps;
 * `f ∘SL g`: the composition of two continuous semilinear maps.
-
 -/
 
 @[expose] public section
@@ -129,7 +131,7 @@ instance funLike : FunLike (M₁ →SL[σ₁₂] M₂) M₁ M₂ where
 instance continuousSemilinearMapClass :
     ContinuousSemilinearMapClass (M₁ →SL[σ₁₂] M₂) σ₁₂ M₁ M₂ where
   map_add f := map_add f.toLinearMap
-  map_continuous f := f.2
+  map_continuous f := f.cont
   map_smulₛₗ f := f.toLinearMap.map_smul'
 
 theorem coe_mk (f : M₁ →ₛₗ[σ₁₂] M₂) (h) : (mk f h : M₁ →ₛₗ[σ₁₂] M₂) = f :=
@@ -141,11 +143,11 @@ theorem coe_mk' (f : M₁ →ₛₗ[σ₁₂] M₂) (h) : (mk f h : M₁ → M�
 
 @[continuity, fun_prop]
 protected theorem continuous (f : M₁ →SL[σ₁₂] M₂) : Continuous f :=
-  f.2
+  f.cont
 
 @[continuity, fun_prop]
 protected theorem continuous_toLinearMap (f : M₁ →SL[σ₁₂] M₂) : Continuous f.toLinearMap :=
-  f.2
+  f.cont
 
 @[simp]
 protected theorem uniformContinuous {E₁ E₂ : Type*} [UniformSpace E₁] [UniformSpace E₂]
@@ -238,7 +240,7 @@ theorem ext_ring [TopologicalSpace R₁] {f g : R₁ →L[R₁] M₁} (h : f 1 =
   coe_inj.1 <| LinearMap.ext_ring h
 
 @[simp]
-theorem apply_val_ker (f : M₁ →SL[σ₁₂] M₂) (x : f.ker) : f x = 0 := x.2
+theorem apply_val_ker (f : M₁ →SL[σ₁₂] M₂) (x : f.ker) : f x = 0 := x.property
 
 /-- If two continuous linear maps are equal on a set `s`, then they are equal on the closure
 of the `Submodule.span` of this set. -/
@@ -289,7 +291,7 @@ variable [DistribSMul S₂ M₂] [SMulCommClass R₂ S₂ M₂] [ContinuousConst
 variable [DistribSMul T₂ M₂] [SMulCommClass R₂ T₂ M₂] [ContinuousConstSMul T₂ M₂]
 
 instance instSMul : SMul S₂ (M₁ →SL[σ₁₂] M₂) where
-  smul c f := ⟨c • (f : M₁ →ₛₗ[σ₁₂] M₂), (f.2.const_smul _ : Continuous fun x => c • f x)⟩
+  smul c f := ⟨c • (f : M₁ →ₛₗ[σ₁₂] M₂), (f.cont.const_smul _ : Continuous fun x => c • f x)⟩
 
 instance : IsSMulApply S₂ (M₁ →SL[σ₁₂] M₂) where
 
@@ -414,7 +416,7 @@ section Add
 variable [ContinuousAdd M₂]
 
 instance add : Add (M₁ →SL[σ₁₂] M₂) :=
-  ⟨fun f g => ⟨f + g, f.2.add g.2⟩⟩
+  ⟨fun f g => ⟨f + g, f.cont.add g.cont⟩⟩
 
 instance instIsAddApply : IsAddApply (M₁ →SL[σ₁₂] M₂) where
 
@@ -454,7 +456,7 @@ variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 
 /-- Composition of continuous linear maps. -/
 def comp (g : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂) : M₁ →SL[σ₁₃] M₃ :=
-  ⟨(g : M₂ →ₛₗ[σ₂₃] M₃).comp (f : M₁ →ₛₗ[σ₁₂] M₂), g.2.comp f.2⟩
+  ⟨(g : M₂ →ₛₗ[σ₂₃] M₃).comp (f : M₁ →ₛₗ[σ₁₂] M₂), g.cont.comp f.cont⟩
 
 @[inherit_doc comp]
 infixr:80 " ∘L " =>
@@ -538,15 +540,11 @@ theorem comp_finsetSum {ι : Type*} {s : Finset ι}
   ext
   simp
 
-@[deprecated (since := "2026-04-08")] alias comp_finset_sum := comp_finsetSum
-
 theorem finsetSum_comp {ι : Type*} {s : Finset ι}
     [ContinuousAdd M₃] (g : ι → M₂ →SL[σ₂₃] M₃)
     (f : M₁ →SL[σ₁₂] M₂) : (∑ i ∈ s, g i) ∘SL f = ∑ i ∈ s, (g i) ∘SL f := by
   ext
   simp only [comp_apply, sum_apply]
-
-@[deprecated (since := "2026-04-08")] alias finset_sum_comp := finsetSum_comp
 
 theorem comp_assoc {R₄ : Type*} [Semiring R₄] [Module R₄ M₄] {σ₁₄ : R₁ →+* R₄} {σ₂₄ : R₂ →+* R₄}
     {σ₃₄ : R₃ →+* R₄} [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄] [RingHomCompTriple σ₂₃ σ₃₄ σ₂₄]
@@ -574,6 +572,15 @@ theorem mul_def (f g : M₁ →L[R₁] M₁) : f * g = f ∘L g :=
 @[simp, norm_cast]
 theorem toLinearMap_mul (f g : M₁ →L[R₁] M₁) : (↑(f * g) : M₁ →ₗ[R₁] M₁) = f * g :=
   rfl
+
+instance : NPow (M₁ →L[R₁] M₁) where
+  npow := npowRec
+
+instance : IsNPowApplyEqIterate (M₁ →L[R₁] M₁) where
+  pow_apply_eq_iterate f n x := by
+    induction n generalizing x with
+    | zero => rfl
+    | succ n ih => rw [Function.iterate_succ_apply]; exact ih (f x)
 
 @[deprecated (since := "2026-05-20")] alias coe_mul := toLinearMap_mul
 
@@ -622,8 +629,8 @@ theorem ofNat_apply [ContinuousAdd M₁] (n : ℕ) [n.AtLeastTwo] (m : M₁) :
 /-- Construct a homeomorphism from an invertible continuous linear map. -/
 @[simps]
 def homeomorphOfUnit (T : (M₁ →L[R₁] M₁)ˣ) : M₁ ≃ₜ M₁ where
-  toFun := T.1
-  invFun := T⁻¹.1
+  toFun := T.val
+  invFun := T⁻¹.val
   left_inv x := by rw [← mul_apply_eq_comp, Units.inv_mul, one_apply_eq_self]
   right_inv x := by rw [← mul_apply_eq_comp, Units.mul_inv, one_apply_eq_self]
 
@@ -803,11 +810,11 @@ variable {R : Type*} [Ring R] {R₂ : Type*} [Ring R₂] {R₃ : Type*} [Ring R�
 
 section
 
-protected theorem map_neg (f : M →SL[σ₁₂] M₂) (x : M) : f (-x) = -f x := by
-  exact map_neg f x
+protected theorem map_neg (f : M →SL[σ₁₂] M₂) (x : M) : f (-x) = -f x :=
+  map_neg f x
 
-protected theorem map_sub (f : M →SL[σ₁₂] M₂) (x y : M) : f (x - y) = f x - f y := by
-  exact map_sub f x y
+protected theorem map_sub (f : M →SL[σ₁₂] M₂) (x y : M) : f (x - y) = f x - f y :=
+  map_sub f x y
 
 @[simp]
 theorem sub_apply' (f g : M →SL[σ₁₂] M₂) (x : M) : ((f : M →ₛₗ[σ₁₂] M₂) - g) x = f x - g x :=
@@ -820,7 +827,7 @@ section
 variable [IsTopologicalAddGroup M₂]
 
 instance neg : Neg (M →SL[σ₁₂] M₂) :=
-  ⟨fun f => ⟨-f, f.2.neg⟩⟩
+  ⟨fun f => ⟨-f, f.cont.neg⟩⟩
 
 instance : IsNegApply (M →SL[σ₁₂] M₂) where
 
@@ -839,7 +846,7 @@ theorem toContinuousAddMonoidHom_neg (f : M →SL[σ₁₂] M₂) :
     ↑(-f) = -(f : ContinuousAddMonoidHom M M₂) := rfl
 
 instance sub : Sub (M →SL[σ₁₂] M₂) :=
-  ⟨fun f g => ⟨f - g, f.2.sub g.2⟩⟩
+  ⟨fun f g => ⟨f - g, f.cont.sub g.cont⟩⟩
 
 instance : IsSubApply (M →SL[σ₁₂] M₂) where
 

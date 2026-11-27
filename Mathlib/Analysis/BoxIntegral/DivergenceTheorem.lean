@@ -164,7 +164,7 @@ theorem hasIntegral_GP_pderiv (f : (Fin (n + 1) → ℝ) → E)
   set fI : ℝ → Box (Fin n) → E := fun y J =>
     integral.{0, u, u} J GP (fun x => f (i.insertNth y x)) BoxAdditiveMap.volume
   set fb : Icc (I.lower i) (I.upper i) → Fin n →ᵇᵃ[↑(I.face i)] E := fun x =>
-    (integrable_of_continuousOn GP (Box.continuousOn_face_Icc Hc x.2) volume).toBoxAdditive
+    (integrable_of_continuousOn GP (Box.continuousOn_face_Icc Hc x.property) volume).toBoxAdditive
   set F : Fin (n + 1) →ᵇᵃ[I] E := BoxAdditiveMap.upperSubLower I i fI fb fun x _ J => rfl
   -- Thus our statement follows from some local estimates.
   change HasIntegral I GP (fun x => f' x (Pi.single i 1)) _ (F I)
@@ -178,7 +178,7 @@ theorem hasIntegral_GP_pderiv (f : (Fin (n + 1) → ℝ) → E)
         because each of the integrals is close to `volume (J.face i) • f x`.
         TODO: there should be a shorter and more readable way to formalize this simple proof. -/
     have : ∀ᶠ δ in 𝓝[>] (0 : ℝ), δ ∈ Ioc (0 : ℝ) (1 / 2) ∧
-        (∀ᵉ (y₁ ∈ closedBall x δ ∩ (Box.Icc I)) (y₂ ∈ closedBall x δ ∩ (Box.Icc I)),
+        (∀ y₁ ∈ closedBall x δ ∩ (Box.Icc I), ∀ y₂ ∈ closedBall x δ ∩ (Box.Icc I),
               ‖f y₁ - f y₂‖ ≤ ε / 2) ∧ (2 * δ) ^ (n + 1) * ‖f' x (Pi.single i 1)‖ ≤ ε / 2 := by
       refine .and (Ioc_mem_nhdsGT one_half_pos) (.and ?_ ?_)
       · rcases ((nhdsWithin_hasBasis nhds_basis_closedBall _).tendsto_iff nhds_basis_closedBall).1

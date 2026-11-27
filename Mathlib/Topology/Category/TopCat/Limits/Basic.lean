@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Limits.Types.Colimits
 public import Mathlib.CategoryTheory.Limits.Types.Limits
 public import Mathlib.Topology.Category.TopCat.Adjunctions
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of topological spaces has all limits and colimits
 
@@ -34,7 +37,7 @@ section Limits
 
 variable {J : Type v} [Category.{w} J]
 
-attribute [local fun_prop] continuous_subtype_val
+attribute [local fun_prop] continuous_subtypeVal
 /-- A choice of limit cone for a functor `F : J ⥤ TopCat`.
 Generally you should just use `limit.cone F`, unless you need the actual definition
 (which is in terms of `Types.limitCone`).
@@ -45,10 +48,10 @@ def limitCone (F : J ⥤ TopCat.{max v u}) : Cone F where
     { app := fun j => ofHom
         { toFun := fun u => u.val j
           -- Porting note: `continuity` from the original mathlib3 proof failed here.
-          continuous_toFun := Continuous.comp (continuous_apply _) (continuous_subtype_val) }
+          continuous_toFun := Continuous.comp (continuous_apply _) (continuous_subtypeVal) }
       naturality := fun X Y f => by
         ext a
-        exact (a.2 f).symm }
+        exact (a.property f).symm }
 
 /-- The chosen cone `TopCat.limitCone F` for a functor `F : J ⥤ TopCat` is a limit cone.
 Generally you should just use `limit.isLimit F`, unless you need the actual definition
@@ -62,7 +65,7 @@ def limitConeIsLimit (F : J ⥤ TopCat.{max v u}) : IsLimit (limitCone.{v, u} F)
           rw [← S.w f]
           rfl⟩
       continuous_toFun :=
-        Continuous.subtype_mk (continuous_pi fun j => (S.π.app j).hom.2) fun x i j f => by
+        Continuous.subtype_mk (by fun_prop) fun x i j f => by
           dsimp
           rw [← S.w f]
           rfl }
@@ -140,6 +143,7 @@ theorem induced_of_isLimit :
 
 end IsLimit
 
+set_option fun_prop.projDefaultTransparency true in
 lemma nonempty_isLimit_iff_eq_induced {F : J ⥤ TopCat.{u}} (c : Cone F)
     (hc : IsLimit ((forget).mapCone c)) :
     Nonempty (IsLimit c) ↔ c.pt.str = ⨅ j, (F.obj j).str.induced (c.π.app j) := by
@@ -261,7 +265,6 @@ lemma isOpen_iff_of_isColimit (X : Set c.pt) :
   · simp only [← isOpen_coinduced]
     apply isOpen_iSup_iff
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isClosed_iff_of_isColimit (X : Set c.pt) :
     IsClosed X ↔ ∀ (j : J), IsClosed (c.ι.app j ⁻¹' X) := by
   simp only [← isOpen_compl_iff, isOpen_iff_of_isColimit _ hc,
@@ -274,6 +277,7 @@ lemma continuous_iff_of_isColimit {X : Type u'} [TopologicalSpace X] (f : c.pt �
 
 end IsColimit
 
+set_option fun_prop.projDefaultTransparency true in
 lemma nonempty_isColimit_iff_eq_coinduced (c : Cocone F) (hc : IsColimit ((forget).mapCocone c)) :
     Nonempty (IsColimit c) ↔ c.pt.str = ⨆ j, (F.obj j).str.coinduced (c.ι.app j) := by
   refine ⟨fun ⟨hc⟩ ↦ coinduced_of_isColimit _ hc, fun h ↦ ⟨?_⟩⟩

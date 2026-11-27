@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Algebraic elements and algebraic extensions
 

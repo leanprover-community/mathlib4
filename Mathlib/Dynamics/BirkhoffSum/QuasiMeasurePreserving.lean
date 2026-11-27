@@ -18,7 +18,6 @@ Given a map `f` and measure `μ`, under the assumption of `QuasiMeasurePreservin
 
 - `birkhoffAverage_ae_eq_of_ae_eq`: if observables `φ` and `ψ` are `μ`-a.e. equal then the
   corresponding `birkhoffAverage R f` are `μ`-a.e. equal.
-
 -/
 
 public section

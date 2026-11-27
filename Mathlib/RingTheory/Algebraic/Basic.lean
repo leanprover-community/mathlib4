@@ -5,11 +5,15 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Expand
 public import Mathlib.RingTheory.Adjoin.Polynomial.Basic
 public import Mathlib.RingTheory.Algebraic.Defs
 public import Mathlib.RingTheory.Polynomial.Tower
 public import Mathlib.RingTheory.Polynomial.UniqueFactorization
+
+import Mathlib.Algebra.Polynomial.Expand
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Algebraic elements and algebraic extensions
@@ -43,7 +47,7 @@ theorem IsAlgebraic.nontrivial {a : A} (h : IsAlgebraic R a) : Nontrivial R := b
 variable (R A)
 
 theorem Algebra.IsAlgebraic.nontrivial [alg : Algebra.IsAlgebraic R A] : Nontrivial R :=
-  (alg.1 0).nontrivial
+  (alg.isAlgebraic 0).nontrivial
 
 instance (priority := low) Algebra.transcendental_of_subsingleton [Subsingleton R] :
     Algebra.Transcendental R A :=
@@ -174,8 +178,8 @@ theorem IsLocalization.isAlgebraic [Nontrivial R] (M : Submonoid R) [IsLocalizat
     obtain rfl | hx := eq_or_ne x 0
     · exact isAlgebraic_zero
     have ⟨⟨r, m⟩, h⟩ := surj M x
-    refine ⟨C m.1 * X - C r, fun eq ↦ hx ?_, by simpa [sub_eq_zero, mul_comm x] using h⟩
-    rwa [← eq_mk'_iff_mul_eq, show r = 0 by simpa using congr(coeff $eq 0), mk'_zero] at h
+    refine ⟨C m.val * X - C r, fun eq ↦ hx ?_, by simpa [sub_eq_zero, mul_comm x] using h⟩
+    rwa [← eq_mk'_iff_mul_eq, show r = 0 by simpa using congr(($eq).coeff 0), mk'_zero] at h
 
 open IsScalarTower
 
@@ -336,11 +340,11 @@ theorem transcendental_algebraMap_iff {a : S} (h : Function.Injective (algebraMa
 namespace Subalgebra
 
 theorem isAlgebraic_iff_isAlgebraic_val {S : Subalgebra R A} {x : S} :
-    IsAlgebraic R x ↔ IsAlgebraic R x.1 :=
+    IsAlgebraic R x ↔ IsAlgebraic R x.val :=
   (isAlgebraic_algHom_iff S.val Subtype.val_injective).symm
 
 theorem transcendental_iff_transcendental_val {S : Subalgebra R A} {x : S} :
-    Transcendental R x ↔ Transcendental R x.1 :=
+    Transcendental R x ↔ Transcendental R x.val :=
   isAlgebraic_iff_isAlgebraic_val.not
 
 theorem isAlgebraic_of_isAlgebraic_bot {x : S} (halg : IsAlgebraic (⊥ : Subalgebra R S) x) :
@@ -371,7 +375,7 @@ end Subalgebra
 
 theorem IsAlgebraic.of_pow {r : A} {n : ℕ} (hn : 0 < n) (ht : IsAlgebraic R (r ^ n)) :
     IsAlgebraic R r :=
-  have ⟨p, p_nonzero, hp⟩ := ht
+  have ⟨p, p_ne_zero, hp⟩ := ht
   ⟨_, by rwa [expand_ne_zero hn], by rwa [expand_aeval n p r]⟩
 
 theorem Transcendental.pow {r : A} (ht : Transcendental R r) {n : ℕ} (hn : 0 < n) :
@@ -544,7 +548,7 @@ open Algebra
 
 variable [Ring S] [Algebra R S]
 
-theorem IsAlgebraic.exists_nonzero_coeff_and_aeval_eq_zero
+theorem IsAlgebraic.exists_coeff_ne_zero_and_aeval_eq_zero
     {s : S} (hRs : IsAlgebraic R s) (hs : s ∈ S⁰) :
     ∃ q : R[X], q.coeff 0 ≠ 0 ∧ aeval s q = 0 := by
   obtain ⟨p, hp0, hp⟩ := hRs
@@ -553,27 +557,37 @@ theorem IsAlgebraic.exists_nonzero_coeff_and_aeval_eq_zero
   rw [hpq, map_mul, aeval_X_pow] at hp
   exact ⟨q, hq, (S⁰.pow_mem hs (rootMultiplicity 0 p)).2 (aeval s q) hp⟩
 
-theorem IsAlgebraic.exists_nonzero_eq_adjoin_mul {s : S} (hRs : IsAlgebraic R s) (hs : s ∈ S⁰) :
-    ∃ᵉ (t ∈ R[s]) (r ≠ (0 : R)), s * t = algebraMap R S r := by
-  have ⟨q, hq0, hq⟩ := hRs.exists_nonzero_coeff_and_aeval_eq_zero hs
+@[deprecated (since := "2026-10-13")]
+alias IsAlgebraic.exists_nonzero_coeff_and_aeval_eq_zero :=
+  IsAlgebraic.exists_coeff_ne_zero_and_aeval_eq_zero
+
+theorem IsAlgebraic.exists_ne_zero_eq_adjoin_mul {s : S} (hRs : IsAlgebraic R s) (hs : s ∈ S⁰) :
+    ∃ t ∈ R[s], ∃ r ≠ (0 : R), s * t = algebraMap R S r := by
+  have ⟨q, hq0, hq⟩ := hRs.exists_coeff_ne_zero_and_aeval_eq_zero hs
   have ⟨p, hp⟩ := X_dvd_sub_C (p := q)
   refine ⟨aeval s p, aeval_mem_adjoin_singleton _ _, _, neg_ne_zero.mpr hq0, ?_⟩
   apply_fun aeval s at hp
   rwa [map_sub, hq, zero_sub, map_mul, aeval_X, aeval_C, ← map_neg, eq_comm] at hp
 
-theorem IsAlgebraic.exists_nonzero_dvd {s : S} (hRs : IsAlgebraic R s) (hs : s ∈ S⁰) :
+@[deprecated (since := "2026-10-13")]
+alias IsAlgebraic.exists_nonzero_eq_adjoin_mul := IsAlgebraic.exists_ne_zero_eq_adjoin_mul
+
+theorem IsAlgebraic.exists_ne_zero_dvd {s : S} (hRs : IsAlgebraic R s) (hs : s ∈ S⁰) :
     ∃ r : R, r ≠ 0 ∧ s ∣ algebraMap R S r := by
-  obtain ⟨q, hq0, hq⟩ := hRs.exists_nonzero_coeff_and_aeval_eq_zero hs
+  obtain ⟨q, hq0, hq⟩ := hRs.exists_coeff_ne_zero_and_aeval_eq_zero hs
   have key := map_dvd (aeval s) (X_dvd_sub_C (p := q))
   rw [map_sub, hq, zero_sub, dvd_neg, aeval_X, aeval_C] at key
   exact ⟨q.coeff 0, hq0, key⟩
+
+@[deprecated (since := "2026-10-13")]
+alias IsAlgebraic.exists_nonzero_dvd := IsAlgebraic.exists_ne_zero_dvd
 
 /-- A fraction `(a : S) / (b : S)` can be reduced to `(c : S) / (d : R)`,
 if `b` is algebraic over `R`. -/
 theorem IsAlgebraic.exists_smul_eq_mul
     (a : S) {b : S} (hRb : IsAlgebraic R b) (hb : b ∈ S⁰) :
-    ∃ᵉ (c : S) (d ≠ (0 : R)), d • a = b * c :=
-  have ⟨r, hr, s, h⟩ := hRb.exists_nonzero_dvd hb
+    ∃ c : S, ∃ d ≠ (0 : R), d • a = b * c :=
+  have ⟨r, hr, s, h⟩ := hRb.exists_ne_zero_dvd hb
   ⟨s * a, r, hr, by rw [smul_def, h, mul_assoc]⟩
 
 variable (R)
@@ -582,7 +596,7 @@ variable (R)
 if `b` is algebraic over `R`. -/
 theorem Algebra.IsAlgebraic.exists_smul_eq_mul [NoZeroDivisors S] [Algebra.IsAlgebraic R S]
     (a : S) {b : S} (hb : b ≠ 0) :
-    ∃ᵉ (c : S) (d ≠ (0 : R)), d • a = b * c :=
+    ∃ c : S, ∃ d ≠ (0 : R), d • a = b * c :=
   (isAlgebraic b).exists_smul_eq_mul a (mem_nonZeroDivisors_of_ne_zero hb)
 
 end
@@ -595,7 +609,7 @@ variable (S) {A : Type*} [CommRing S] [NoZeroDivisors S] [Algebra R S]
 open Function (Injective) in
 theorem injective_tower_top (inj : Injective (algebraMap R A)) : Injective (algebraMap S A) := by
   refine (injective_iff_map_eq_zero _).mpr fun s eq ↦ of_not_not fun ne ↦ ?_
-  have ⟨r, ne, dvd⟩ := (alg.1 s).exists_nonzero_dvd (mem_nonZeroDivisors_of_ne_zero ne)
+  have ⟨r, ne, dvd⟩ := (alg.isAlgebraic s).exists_ne_zero_dvd (mem_nonZeroDivisors_of_ne_zero ne)
   refine ne (inj <| map_zero (algebraMap R A) ▸ zero_dvd_iff.mp ?_)
   simp_rw [← eq, IsScalarTower.algebraMap_apply R S A, map_dvd (algebraMap S A) dvd]
 
@@ -635,7 +649,7 @@ theorem Subalgebra.inv_mem_of_root_of_coeff_zero_ne_zero {x : A} {p : K[X]}
     (aeval_eq : aeval x p = 0) (coeff_zero_ne : p.coeff 0 ≠ 0) : (x⁻¹ : L) ∈ A := by
   suffices (x⁻¹ : L) = (-p.coeff 0)⁻¹ • aeval x (divX p) by
     rw [this]
-    exact A.smul_mem (aeval x _).2 _
+    exact A.smul_mem (aeval x _).property _
   have : aeval (x : L) p = 0 := by rw [Subalgebra.aeval_coe, aeval_eq, Subalgebra.coe_zero]
   rw [inv_eq_of_root_of_coeff_zero_ne_zero this coeff_zero_ne, div_eq_inv_mul, Algebra.smul_def,
     aeval_coe, map_inv₀, map_neg, inv_neg, neg_mul]

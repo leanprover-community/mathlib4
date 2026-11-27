@@ -13,6 +13,9 @@ public import Mathlib.RingTheory.Coprime.Ideal
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
 public import Mathlib.RingTheory.SimpleModule.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Torsion submodules
 
@@ -224,7 +227,7 @@ abbrev IsTorsion :=
   ∀ ⦃x : M⦄, ∃ a : R⁰, a • x = 0
 
 theorem isTorsionBySet_annihilator : IsTorsionBySet R M (annihilator R M) :=
-  fun _ r ↦ Module.mem_annihilator.mp r.2 _
+  fun _ r ↦ Module.mem_annihilator.mp r.property _
 
 theorem isTorsionBy_iff_mem_annihilator {a : R} :
     IsTorsionBy R M a ↔ a ∈ annihilator R M := by
@@ -329,7 +332,7 @@ variable [Semiring R] [AddCommMonoid M] [Module R M] (s : Set R) (a : R)
 
 theorem isTorsionBySet_of_subset {s t : Set R} (h : s ⊆ t)
     (ht : IsTorsionBySet R M t) : IsTorsionBySet R M s :=
-  fun m r ↦ @ht m ⟨r, h r.2⟩
+  fun m r ↦ @ht m ⟨r, h r.property⟩
 
 @[simp]
 theorem isTorsionBySet_singleton_iff : IsTorsionBySet R M {a} ↔ IsTorsionBy R M a := by
@@ -458,7 +461,6 @@ theorem sup_torsionBySet_ideal_eq_torsionBySet_inf (P Q : Ideal R) {hc : P ⊔ Q
     simpa [Finset.top_eq_univ, Fin.univ_succ, Fin.isValue, coe_iInf, this] using heq
   · simp_all [Set.pairwise_pair, Fin.univ_succ, map, sup_comm]
 
-set_option backward.defeqAttrib.useBackward true in
 theorem supIndep_torsionBySet_ideal (hp : (S : Set ι).Pairwise fun i j => p i ⊔ p j = ⊤) :
     S.SupIndep fun i => torsionBySet R M <| p i :=
   fun T hT i hi hiT => by

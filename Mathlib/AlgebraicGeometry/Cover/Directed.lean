@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicGeometry.PullbackCarrier
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Locally directed covers
 
@@ -306,7 +309,7 @@ open TopologicalSpace.Opens in
 def directedAffineCover : X.OpenCover where
   I₀ := X.affineOpens
   X U := U
-  f U := U.1.ι
+  f U := U.val.ι
   mem₀ := by
     rw [presieve₀_mem_precoverage_iff]
     refine ⟨fun x ↦ ?_, inferInstance⟩

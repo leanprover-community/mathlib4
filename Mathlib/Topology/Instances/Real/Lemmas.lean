@@ -7,11 +7,14 @@ module
 
 public import Mathlib.Algebra.Field.Periodic
 public import Mathlib.Algebra.Field.Subfield.Basic
-public import Mathlib.Topology.Algebra.Order.Archimedean
 public import Mathlib.Topology.Algebra.Ring.Real
 
 import Mathlib.Algebra.Order.Monoid.Canonical.Basic
 import Mathlib.Topology.Algebra.InfiniteSum.Order
+import Mathlib.Topology.Algebra.Order.Archimedean
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Topological properties of ℝ
@@ -51,10 +54,10 @@ theorem Real.mem_closure_iff {s : Set ℝ} {x : ℝ} :
   simp [mem_closure_iff_nhds_basis nhds_basis_ball, Real.dist_eq]
 
 theorem Real.uniformContinuous_inv (s : Set ℝ) {r : ℝ} (r0 : 0 < r) (H : ∀ x ∈ s, r ≤ |x|) :
-    UniformContinuous fun p : s => p.1⁻¹ :=
+    UniformContinuous fun p : s => p.val⁻¹ :=
   Metric.uniformContinuous_iff.2 fun _ε ε0 =>
     let ⟨δ, δ0, Hδ⟩ := rat_inv_continuous_lemma abs ε0 r0
-    ⟨δ, δ0, fun {a b} h => Hδ (H _ a.2) (H _ b.2) h⟩
+    ⟨δ, δ0, fun {a b} h => Hδ (H _ a.property) (H _ b.property) h⟩
 
 theorem Real.uniformContinuous_abs : UniformContinuous (abs : ℝ → ℝ) :=
   Metric.uniformContinuous_iff.2 fun ε ε0 =>
@@ -65,12 +68,12 @@ theorem Real.continuous_inv : Continuous fun a : { r : ℝ // r ≠ 0 } => a.val
 
 theorem Real.uniformContinuous_mul (s : Set (ℝ × ℝ)) {r₁ r₂ : ℝ}
     (H : ∀ x ∈ s, |(x : ℝ × ℝ).1| < r₁ ∧ |x.2| < r₂) :
-    UniformContinuous fun p : s => p.1.1 * p.1.2 :=
+    UniformContinuous fun p : s => p.val.1 * p.val.2 :=
   Metric.uniformContinuous_iff.2 fun _ε ε0 =>
     let ⟨δ, δ0, Hδ⟩ := rat_mul_continuous_lemma abs ε0
     ⟨δ, δ0, fun {a b} h =>
       let ⟨h₁, h₂⟩ := max_lt_iff.1 h
-      Hδ (H _ a.2).1 (H _ b.2).2 h₁ h₂⟩
+      Hδ (H _ a.property).1 (H _ b.property).2 h₁ h₂⟩
 
 theorem Real.totallyBounded_ball (x ε : ℝ) : TotallyBounded (ball x ε) := by
   rw [Real.ball_eq_Ioo]; apply totallyBounded_Ioo
@@ -112,9 +115,6 @@ theorem closure_of_rat_image_lt {q : ℚ} :
   · congr!; aesop
   · exact (closure_Ioi _).symm
   · exact ⟨q + 1, show (q : ℝ) < _ by linarith, q + 2, show (q : ℝ) < _ by linarith, by simp⟩
-
-@[deprecated (since := "2026-04-07")]
-alias Real.cobounded_eq := IsOrderBornology.cobounded_eq
 
 /- TODO(Mario): Put these back only if needed later
 lemma closure_of_rat_image_le_eq {q : ℚ} : closure ((coe : ℚ → ℝ) '' {x | q ≤ x}) = {r | ↑q ≤ r} :=

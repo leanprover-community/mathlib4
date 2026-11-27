@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicTopology.ModelCategory.RightHomotopy
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Certain quotient categories are localizations
 
@@ -22,7 +25,6 @@ We also deduce a slightly more general result involving
 a full and essentially surjective functor `L : C ⥤ D` instead of the quotient
 functor `functor r : C ⥤ quotient r`.
 Dual results involving path objects are also obtained.
-
 -/
 
 public section

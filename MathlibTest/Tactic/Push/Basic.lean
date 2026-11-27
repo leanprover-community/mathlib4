@@ -55,11 +55,11 @@ info: DiscrTree branch for Or:
   (node
    (* => (node
      (False => (node #[or_false:1000]))
-     (And => (node (* => (node (* => (node #[or_and_left:1000]))))))
+     (And => (chain * => (chain * => (node #[or_and_left:1000]))))
      (True => (node #[or_true:1000]))))
-   (False => (node (* => (node #[false_or:1000]))))
-   (And => (node (* => (node (* => (node (* => (node #[and_or_right:1000]))))))))
-   (True => (node (* => (node #[true_or:1000])))))
+   (False => (chain * => (node #[false_or:1000])))
+   (And => (chain * => (chain * => (chain * => (node #[and_or_right:1000])))))
+   (True => (chain * => (node #[true_or:1000]))))
 -/
 #guard_msgs in
 #push_discr_tree Or

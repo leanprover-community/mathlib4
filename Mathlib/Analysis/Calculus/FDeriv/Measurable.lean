@@ -10,6 +10,9 @@ public import Mathlib.Analysis.Normed.Module.FiniteDimension
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Derivative is measurable
 
@@ -429,7 +432,7 @@ namespace RightDerivMeasurableAux
 at scale `r` by the linear map `h ↦ h • L`, up to an error `ε`. We tweak the definition to
 make sure that this is open on the right. -/
 def A (f : ℝ → F) (L : F) (r ε : ℝ) : Set ℝ :=
-  { x | ∃ r' ∈ Ioc (r / 2) r, ∀ᵉ (y ∈ Icc x (x + r')) (z ∈ Icc x (x + r')),
+  { x | ∃ r' ∈ Ioc (r / 2) r, ∀ y ∈ Icc x (x + r'), ∀ z ∈ Icc x (x + r'),
     ‖f z - f y - (z - y) • L‖ ≤ ε * r }
 
 /-- The set `B f K r s ε` is the set of points `x` around which there exists a vector

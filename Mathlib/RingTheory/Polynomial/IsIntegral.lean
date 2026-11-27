@@ -13,7 +13,6 @@ import Mathlib.Data.Multiset.Fintype
 import Mathlib.RingTheory.AdjoinRoot
 
 /-!
-
 # Results about coefficients of polynomials being integral
 
 ## Main results
@@ -24,7 +23,6 @@ import Mathlib.RingTheory.AdjoinRoot
 - `MvPolynomial.isIntegral_iff_isIntegral_coeff`: `p : MvPolynomial σ S` is integral over
   `MvPolynomial σ R` iff the coefficients of `p` are integral over `R`.
 - We also provide the instance `[IsIntegrallyClosed R] : IsIntegrallyClosed R[X]`.
-
 -/
 
 public section
@@ -99,7 +97,7 @@ lemma IsAlmostIntegral.coeff [IsDomain R] [FaithfulSMul R S]
     simp only [← leadingCoeff_map_of_injective (FaithfulSMul.algebraMap_injective R S), hr] at h ⊢
     rw [← leadingCoeff_pow' h'] at h ⊢
     rw [leadingCoeff_mul' h]
-  induction hn : p.natDegree using Nat.strong_induction_on generalizing p with | h n IH =>
+  induction hn : p.natDegree using Nat.strong_induction_on generalizing p with | ind n IH
   by_cases hp' : p.natDegree = 0
   · obtain ⟨p, rfl⟩ := natDegree_eq_zero.mp hp'
     simp only [coeff_C]

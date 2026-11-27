@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.ProdStdSimplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplexOne
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Binary products `Δ[n] ⊗ Δ[1]`
 
@@ -16,7 +19,6 @@ between `Fin (p + 1)` and the type of nondegenerate `(p + 1)`-simplices
 of `Δ[p] ⊗ Δ[1]`. We use this enumeration of the nondegenerate simplices
 in order to define a filtration `SSet.prodStdSimplex₁.filtration`
 of `Δ[p] ⊗ Δ[1]` by subcomplexes.
-
 -/
 
 @[expose] public section
@@ -94,7 +96,7 @@ noncomputable def filtration (j : Fin (p + 1)) : (Δ[p] ⊗ Δ[1] : SSet.{u}).Su
   ⨆ i : Set.Iic j, .ofSimplex (nonDegenerateEquiv i.val).val
 
 lemma ofSimplex_le_filtration {i j : Fin (p + 1)} (hij : i ≤ j) :
-    .ofSimplex (nonDegenerateEquiv i).1 ≤ filtration.{u} j :=
+    .ofSimplex (nonDegenerateEquiv i).val ≤ filtration.{u} j :=
   le_iSup (fun i : Set.Iic j ↦
     Subcomplex.ofSimplex (nonDegenerateEquiv i.val).val) ⟨i, hij⟩
 
@@ -129,7 +131,7 @@ noncomputable abbrev intersectionNondeg (i j : Fin (p + 1)) :
   .ofSimplex (nonDegenerateEquiv i).val ⊓ .ofSimplex (nonDegenerateEquiv j).val
 
 /-- Given `j : Fin (p + 2)`, this is the non-degenerate `p`-simplex of `Δ[p] ⊗ Δ[1]`
-which correspond to the stricly monotone map `Fin (p + 1) → Fin (p + 1) × Fin 2`
+which correspond to the strictly monotone map `Fin (p + 1) → Fin (p + 1) × Fin 2`
 whose first projection is the identity, and whose second projection takes `j`-times
 the value `0`. -/
 @[simps coe_fst coe_snd]

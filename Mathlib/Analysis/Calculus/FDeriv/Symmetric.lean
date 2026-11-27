@@ -10,6 +10,9 @@ public import Mathlib.Analysis.Calculus.MeanValue
 
 import Mathlib.Analysis.Calculus.Deriv.Pow
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Symmetry of the second derivative
 
@@ -490,7 +493,8 @@ variable (𝕜) in
 /-- `minSmoothness 𝕜 n` is the minimal smoothness exponent larger than or equal to `n` for which
 one can do serious calculus in `𝕜`. If `𝕜` is `ℝ` or `ℂ`, this is just `n`. Otherwise,
 this is `ω` as only analytic functions are well behaved on `ℚₚ`, say. -/
-noncomputable irreducible_def minSmoothness (n : ℕ∞ω) :=
+@[no_expose]
+noncomputable def minSmoothness (n : ℕ∞ω) :=
   if IsRCLikeNormedField 𝕜 then n else ω
 
 @[simp] lemma minSmoothness_of_isRCLikeNormedField [h : IsRCLikeNormedField 𝕜] {n : ℕ∞ω} :

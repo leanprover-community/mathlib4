@@ -12,12 +12,14 @@ public import Mathlib.RingTheory.Flat.Equalizer
 public import Mathlib.RingTheory.RingHom.Flat
 public import Mathlib.RingTheory.TensorProduct.Pi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Limits in `Under R` for a commutative ring `R`
 
 We show that `Under.pushout f` is left-exact, i.e. preserves finite limits, if `f : R ⟶ S` is
 flat.
-
 -/
 
 @[expose] public section
@@ -64,7 +66,6 @@ def tensorProductFan' : Fan (fun i ↦ mkUnder S (S ⊗[R] (P i).right)) :=
   Fan.mk (mkUnder S <| ∀ i, S ⊗[R] (P i).right)
     (fun i ↦ AlgHom.toUnder <| Pi.evalAlgHom S _ i)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The two fans on `i ↦ S ⊗[R] P i` agree if `ι` is finite. -/
 def tensorProductFanIso [Fintype ι] [DecidableEq ι] :
     tensorProductFan S P ≅ tensorProductFan' S P :=

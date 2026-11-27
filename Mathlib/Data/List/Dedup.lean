@@ -5,10 +5,13 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Batteries.Data.List.Pairwise
 public import Mathlib.Data.List.Lattice
 
+import Batteries.Data.List.Pairwise
 import Mathlib.Data.List.Nodup
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Erasure of duplicates in a list
@@ -179,6 +182,13 @@ theorem replicate_dedup {x : α} : ∀ {k}, k ≠ 0 → (replicate k x).dedup = 
   | n + 2, _ => by
     rw [replicate_succ, dedup_cons_of_mem (mem_replicate.2 ⟨n.succ_ne_zero, rfl⟩),
       replicate_dedup n.succ_ne_zero]
+
+lemma dedup_eq_singleton_iff {l : List α} {x : α} :
+    l.dedup = [x] ↔ ∃ n : ℕ, l = List.replicate (n + 1) x := by
+  refine ⟨fun h ↦ ?_, fun ⟨n, h⟩ ↦ by rw [h, replicate_dedup n.succ_ne_zero]⟩
+  cases l with
+  | nil => simp at h
+  | cons a l => exact ⟨_, eq_replicate_of_mem fun y hy ↦ by rwa [← mem_singleton, ← h, mem_dedup]⟩
 
 theorem count_dedup (l : List α) (a : α) : l.dedup.count a = if a ∈ l then 1 else 0 := by
   simp_rw [List.Nodup.count <| nodup_dedup l, mem_dedup]

@@ -13,13 +13,14 @@ public import Mathlib.CategoryTheory.Preadditive.Projective.Preserves
 import Mathlib.Algebra.Category.ModuleCat.Injective
 import Mathlib.Algebra.Category.ModuleCat.Projective
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Ulift functor for ModuleCat
 
 In this file, we define the obvious functor `ModuleCat.{v} R ⥤ ModuleCat.{max v v'} R` and prove
 it is exact, fully faithful and preserves projective and injective objects.
-
 -/
 
 @[expose] public section
@@ -74,7 +75,6 @@ instance : Limits.PreservesLimitsOfSize.{v, v} (uliftFunctor.{v', v} R) :=
 instance : Limits.PreservesFiniteLimits (uliftFunctor.{v', v} R) :=
   Limits.PreservesLimitsOfSize.preservesFiniteLimits _
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma uliftFunctor_map_exact (S : ShortComplex (ModuleCat.{v} R)) (h : S.Exact) :
     (S.map (uliftFunctor R)).Exact := by

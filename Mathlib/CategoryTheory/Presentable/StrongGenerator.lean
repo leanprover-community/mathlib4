@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Functor.KanExtension.Dense
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsCardinalClosure
 public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 
@@ -21,7 +20,6 @@ locally `κ'`-presentable for any regular cardinal `κ'` such that `κ ≤ κ'`.
 
 ## References
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
-
 -/
 
 public section
@@ -82,7 +80,6 @@ instance ObjectProperty.isFiltered_costructuredArrow_colimitsCardinalClosure_ι
 
 variable {κ : Cardinal.{w}} [Fact κ.IsRegular]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma ObjectProperty.IsStrongGenerator.isDense_colimitsCardinalClosure_ι
     [HasColimitsOfSize.{w, w} C] [LocallySmall.{w} C]
     {P : ObjectProperty C} [ObjectProperty.Small.{w} P] (hS₁ : P.IsStrongGenerator)
@@ -119,7 +116,7 @@ lemma ObjectProperty.IsStrongGenerator.isDense_colimitsCardinalClosure_ι
           apply ObjectProperty.prop_colimit
           rintro (_ | _)
           · exact P.le_colimitsCardinalClosure _ _ hG
-          · exact j.left.2⟩
+          · exact j.left.property⟩
       let a : (P.colimitsCardinalClosure κ).ι.obj obj ⟶ X :=
         coequalizer.desc ((E.coconeAt X).ι.app j) (by simpa using h)
       let ψ : j ⟶ CostructuredArrow.mk a :=
@@ -152,7 +149,7 @@ lemma IsStrongGenerator.colimitsCardinalClosure_eq_isCardinalPresentable
   rw [← (P.colimitsCardinalClosure κ).retractClosure_eq_self]
   obtain ⟨j, φ, hφ⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ
     ((P.colimitsCardinalClosure κ).ι.denseAt X) (𝟙 X)
-  exact ⟨_, j.left.2, ⟨{ i := _, r := _, retract := hφ }⟩⟩
+  exact ⟨_, j.left.property, ⟨{ i := _, r := _, retract := hφ }⟩⟩
 
 namespace IsCardinalLocallyPresentable
 

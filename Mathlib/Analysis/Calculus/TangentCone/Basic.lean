@@ -180,7 +180,7 @@ theorem UniqueDiffWithinAt.accPt [T2Space E] [Nontrivial E] (h : UniqueDiffWithi
     AccPt x (𝓟 s) := by
   by_contra h'
   have : Dense (Submodule.span 𝕜 (0 : Set E) : Set E) :=
-    h.1.mono <| by gcongr; exact tangentConeAt_subset_zero h'
+    h.dense_tangentConeAt.mono <| by gcongr; exact tangentConeAt_subset_zero h'
   simp [dense_iff_closure_eq] at this
 
 end Module
@@ -203,7 +203,7 @@ variable [(𝓝[≠] (0 : 𝕜)).NeBot]
 
 @[simp]
 theorem tangentConeAt_univ : tangentConeAt 𝕜 univ x = univ := by
-  simp [tangentConeAt]
+  simp [tangentConeAt_def]
 
 theorem tangentConeAt_of_mem_nhds [ContinuousAdd E] (h : s ∈ 𝓝 x) : tangentConeAt 𝕜 s x = univ := by
   rw [← s.univ_inter, tangentConeAt_inter_nhds h, tangentConeAt_univ]

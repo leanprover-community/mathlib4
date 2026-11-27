@@ -35,7 +35,6 @@ We will try to relax the above hypotheses as much as possible.
 ## Notation
 
 In this file, `e` stands for the ramification index of `P` over `p`, leaving `p` and `P` implicit.
-
 -/
 
 @[expose] public section
@@ -183,7 +182,7 @@ variable (p) in
 lemma ramificationIdx'_map_eq {E : Type*} [EquivLike E S S₁] [AlgEquivClass E R S S₁]
     (P : Ideal S) (e : E) :
     ramificationIdx' p (P.map e) = ramificationIdx' p P := by
-  rw [show P.map e = _ from P.map_comap_of_equiv (RingEquivClass.toRingEquiv e : S ≃+* S₁)]
+  rw [show P.map e = _ from P.map_comap_of_equiv (.ofClass e)]
   exact p.ramificationIdx'_comap_eq (AlgEquiv.ofClass e).symm P
 
 @[deprecated (since := "2026-07-01")] alias ramificationIdx_map_eq := ramificationIdx'_map_eq
@@ -222,8 +221,9 @@ lemma ramificationIdx'_eq_one_of_map_localization
   replace h₂ := Ideal.map_mono («f» := algebraMap S (Localization.AtPrime P)) h₂
   rw [Ideal.map_pow, Localization.AtPrime.map_eq_maximalIdeal, Ideal.map_map,
     ← IsScalarTower.algebraMap_eq, H, pow_two] at h₂
-  have := Submodule.eq_bot_of_le_smul_of_le_jacobson_bot _ _ (IsNoetherian.noetherian _) h₂
-    (maximalIdeal_le_jacobson _)
+  have : maximalIdeal (Localization.AtPrime P) = ⊥ :=
+    Submodule.eq_bot_of_le_smul_of_le_jacobson _ _ (IsNoetherian.noetherian _) h₂
+    (ringJacobson_eq_maximalIdeal (Localization.AtPrime P)).ge
   rw [← Localization.AtPrime.map_eq_maximalIdeal, Ideal.map_eq_bot_iff_of_injective] at this
   · exact hp this
   · exact IsLocalization.injective _ hp'

@@ -121,7 +121,7 @@ protected theorem range : LinearMap.range (e : M →ₛₗ[σ₁₂] M₂) = ⊤
   LinearMap.range_eq_top.2 e.toEquiv.surjective
 
 theorem eq_bot_of_equiv [Module R₂ M₂] (e : p ≃ₛₗ[σ₁₂] (⊥ : Submodule R₂ M₂)) : p = ⊥ := by
-  refine bot_unique (IsConcreteLE.le_iff.2 fun b hb => (Submodule.mem_bot R).2 ?_)
+  refine bot_unique (le_iff_mem_imp_mem.2 fun b hb => (Submodule.mem_bot R).2 ?_)
   rw [← p.mk_eq_zero hb, ← e.map_eq_zero_iff]
   apply Submodule.eq_zero_of_bot_submodule
 
@@ -189,6 +189,10 @@ noncomputable def ofBijective [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair
 theorem ofBijective_apply [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂] {hf} (x : M) :
     ofBijective f hf x = f x :=
   rfl
+
+@[simp]
+lemma toEquiv_ofBijective [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂] {hf} :
+    (ofBijective f hf).toEquiv = .ofBijective f hf := by ext; rfl
 
 @[simp]
 theorem ofBijective_symm_apply_apply [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂] {h} (x : M) :
