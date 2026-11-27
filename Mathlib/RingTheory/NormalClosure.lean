@@ -129,8 +129,6 @@ instance : IsGalois K (FractionRing T) := by
 
 variable [IsDedekindDomain S]
 
-set_option linter.overlappingInstances false
-
 instance : Module.Finite S T :=
   IsIntegralClosure.finite S L E T
 
