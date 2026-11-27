@@ -6,7 +6,8 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-public import Mathlib.Topology.Order.ProjIcc
+
+import Mathlib.Topology.Order.ProjIcc
 
 /-!
 # Inverse trigonometric functions.
@@ -92,7 +93,7 @@ theorem arcsin_inj {x y : ℝ} (hx₁ : -1 ≤ x) (hx₂ : x ≤ 1) (hy₁ : -1 
 
 @[continuity, fun_prop]
 theorem continuous_arcsin : Continuous arcsin :=
-  continuous_subtype_val.comp sinOrderIso.symm.continuous.Icc_extend'
+  continuous_subtypeVal.comp sinOrderIso.symm.continuous.Icc_extend'
 
 @[fun_prop]
 theorem continuousAt_arcsin {x : ℝ} : ContinuousAt arcsin x :=
@@ -377,9 +378,10 @@ theorem pi_div_two_lt_arccos {x : ℝ} : π / 2 < arccos x ↔ x < 0 :=
 @[simp]
 theorem arccos_le_pi_div_four {x} : arccos x ≤ π / 4 ↔ √2 / 2 ≤ x := by
   rw [arccos, ← pi_div_four_le_arcsin]
-  constructor <;>
-    · intro
-      linarith
+  constructor
+  all_goals
+    intro
+    linarith
 
 @[continuity, fun_prop]
 theorem continuous_arccos : Continuous arccos :=

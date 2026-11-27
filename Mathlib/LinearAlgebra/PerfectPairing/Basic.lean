@@ -40,6 +40,16 @@ class IsPerfPair (p : M →ₗ[R] N →ₗ[R] R) where
   bijective_left (p) : Bijective p
   bijective_right (p) : Bijective p.flip
 
+@[nontriviality]
+lemma isPerfPair_of_subsingleton [Subsingleton R] (p : M →ₗ[R] N →ₗ[R] R) :
+    p.IsPerfPair where
+  bijective_left := by
+    have : Subsingleton M := Module.subsingleton R _
+    exact bijective_of_subsingleton' _
+  bijective_right := by
+    have : Subsingleton N := Module.subsingleton R _
+    exact bijective_of_subsingleton' _
+
 /-- Given a perfect pairing between `M` and `N`, we may interchange the roles of `M` and `N`. -/
 protected lemma IsPerfPair.flip (hp : p.IsPerfPair) : p.flip.IsPerfPair where
   bijective_left := IsPerfPair.bijective_right p
@@ -59,7 +69,7 @@ noncomputable def toPerfPair : M ≃ₗ[R] Dual R N :=
     IsPerfPair.bijective_left p
 
 @[simp] lemma toLinearMap_toPerfPair (x : M) : p.toPerfPair x = p x := rfl
-@[simp] lemma toPerfPair_apply (x : M) (y : N) : p.toPerfPair x y = p x y := rfl
+lemma toPerfPair_apply (x : M) (y : N) : p.toPerfPair x y = p x y := rfl
 
 @[simp] lemma apply_symm_toPerfPair_self (f : Dual R N) : p (p.toPerfPair.symm f) = f :=
   p.toPerfPair.apply_symm_apply f
@@ -70,7 +80,7 @@ noncomputable def toPerfPair : M ≃ₗ[R] Dual R N :=
 include p in
 lemma _root_.Module.IsReflexive.of_isPerfPair : IsReflexive R M where
   bijective_dual_eval' := by
-    convert! (p.toPerfPair.trans p.flip.toPerfPair.dualMap.symm).bijective
+    convert (p.toPerfPair.trans p.flip.toPerfPair.dualMap.symm).bijective
     ext x f
     simp
 

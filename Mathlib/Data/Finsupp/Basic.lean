@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.BigOperators.Finsupp.Basic
 public import Mathlib.Algebra.BigOperators.Group.Finset.Preimage
-public import Mathlib.Algebra.Group.Indicator
 public import Mathlib.Data.Rat.BigOperators
 
 /-!
@@ -32,7 +31,6 @@ This file is a `noncomputable theory` and uses classical logic throughout.
 ## TODO
 
 * Expand the list of definitions and important lemmas to the module docstring.
-
 -/
 
 @[expose] public section
@@ -125,8 +123,6 @@ theorem mapRange_multiset_sum (f : F) (m : Multiset (α →₀ M)) :
 theorem mapRange_finsetSum (f : F) (s : Finset ι) (g : ι → α →₀ M) :
     mapRange f (map_zero f) (∑ x ∈ s, g x) = ∑ x ∈ s, mapRange f (map_zero f) (g x) :=
   map_sum (mapRange.addMonoidHom (f : M →+ N)) _ _
-
-@[deprecated (since := "2026-04-08")] alias mapRange_finset_sum := mapRange_finsetSum
 
 end Finsupp
 
@@ -278,19 +274,22 @@ lemma mapDomain_apply (f : α → β) (x : α →₀ M) (b : β) :
   · intro _
     rw [single_zero, coe_zero, Pi.zero_apply]
 
-lemma mapDomain_of_not_mem_image_support {f : α → β} {x : α →₀ M} {b : β}
+lemma mapDomain_of_notMem_image_support {f : α → β} {x : α →₀ M} {b : β}
     (hb : b ∉ f '' x.support) : mapDomain f x b = 0 := by
   rw [mapDomain, sum_apply, sum, Finset.sum_eq_zero]
   exact fun a ha ↦ single_eq_of_ne fun eq => hb <| eq ▸ Set.mem_image_of_mem _ ha
 
+@[deprecated (since := "2026-09-28")]
+alias mapDomain_of_not_mem_image_support := mapDomain_of_notMem_image_support
+
 theorem mapDomain_of_notMem_range {f : α → β} (x : α →₀ M) (a : β) (h : a ∉ Set.range f) :
     mapDomain f x a = 0 :=
-  mapDomain_of_not_mem_image_support <| by grw [Set.image_subset_range]; exact h
+  mapDomain_of_notMem_image_support <| by grw [Set.image_subset_range]; exact h
 
 @[deprecated (since := "2026-07-15")] alias mapDomain_notin_range := mapDomain_of_notMem_range
 
 lemma mem_range_of_mapDomain_ne_zero {f : α → β} {x : α →₀ M} {b : β} (h : mapDomain f x b ≠ 0) :
-    b ∈ Set.range f := by contrapose! h; exact mapDomain_of_notMem_range _ _ h
+    b ∈ Set.range f := by contrapose h; exact mapDomain_of_notMem_range _ _ h
 
 @[to_fun mapDomain_fun_id]
 lemma mapDomain_id : mapDomain id v = v := sum_single _
@@ -313,9 +312,10 @@ theorem mapDomain_single {f : α → β} {a : α} {b : M} : mapDomain f (single 
 theorem mapDomain_zero {f : α → β} : mapDomain f (0 : α →₀ M) = (0 : β →₀ M) :=
   sum_zero_index
 
-@[congr] theorem mapDomain_congr {f g : α → β} (h : ∀ x ∈ v.support, f x = g x) :
-    v.mapDomain f = v.mapDomain g :=
-  Finset.sum_congr rfl fun _ H => by simp only [h _ H]
+@[congr] theorem mapDomain_congr {f g : α → β} (hv : v₁ = v₂) (h : ∀ x ∈ v₁.support, f x = g x) :
+    v₁.mapDomain f = v₂.mapDomain g := by
+  subst hv
+  exact Finset.sum_congr rfl fun _ H ↦ by simp only [h _ H]
 
 theorem mapDomain_add {f : α → β} : mapDomain f (v₁ + v₂) = mapDomain f v₁ + mapDomain f v₂ :=
   sum_add_index' (fun _ => single_zero _) fun _ => single_add _
@@ -360,8 +360,6 @@ theorem mapDomain_finsetSum {f : α → β} {s : Finset ι} {v : ι → α →�
     mapDomain f (∑ i ∈ s, v i) = ∑ i ∈ s, mapDomain f (v i) :=
   map_sum (mapDomain.addMonoidHom f) _ _
 
-@[deprecated (since := "2026-04-08")] alias mapDomain_finset_sum := mapDomain_finsetSum
-
 theorem mapDomain_sum [Zero N] {f : α → β} {s : α →₀ N} {v : α → N → α →₀ M} :
     mapDomain f (s.sum v) = s.sum fun a b => mapDomain f (v a b) :=
   map_finsuppSum (mapDomain.addMonoidHom f : (α →₀ M) →+ β →₀ M) _ _
@@ -379,7 +377,7 @@ theorem mapDomain_apply' (S : Set α) {f : α → β} (x : α →₀ M) (hS : (x
     simp_rw [single_apply]
     by_cases hax : a ∈ x.support
     · rw [← Finset.add_sum_erase _ _ hax, ite_eq_left rfl]
-      convert! add_zero (x a)
+      convert add_zero (x a)
       refine Finset.sum_eq_zero fun i hi => ite_eq_right ?_
       exact (hf.mono hS).ne (Finset.mem_of_mem_erase hi) hax (Finset.ne_of_mem_erase hi)
     · rw [notMem_support_iff.1 hax]
@@ -467,7 +465,7 @@ theorem mapDomain_mapRange [AddCommMonoid N] (f : α → β) (v : α →₀ M) (
     { toFun := g
       map_zero' := h0
       map_add' := hadd }
-  DFunLike.congr_fun (mapDomain.addMonoidHom_comp_mapRange f g') v
+  congr($(mapDomain.addMonoidHom_comp_mapRange f g') v)
 
 theorem sum_update_add [AddZeroClass α] [AddCommMonoid β] (f : ι →₀ α) (i : ι) (a : α)
     (g : ι → α → β) (hg : ∀ i, g i 0 = 0)
@@ -485,9 +483,10 @@ theorem mapDomain_injOn (S : Set α) {f : α → β} (hf : Set.InjOn f S) :
   ext a
   classical
     by_cases h : a ∈ v₁.support ∪ v₂.support
-    · rw [← mapDomain_apply' S _ hv₁ hf _, ← mapDomain_apply' S _ hv₂ hf _, eq] <;>
-        · apply Set.union_subset hv₁ hv₂
-          exact mod_cast h
+    · rw [← mapDomain_apply' S _ hv₁ hf _, ← mapDomain_apply' S _ hv₂ hf _, eq]
+      all_goals
+        apply Set.union_subset hv₁ hv₂
+        exact mod_cast h
     · simp_all
 
 theorem equivMapDomain_eq_mapDomain {M} [AddCommMonoid M] (f : α ≃ β) (l : α →₀ M) :
@@ -533,13 +532,16 @@ theorem eq_zero_of_comapDomain_eq_zero [Zero M] (f : α → β) (l : β →₀ M
   exact h b (hb.2.symm ▸ ha)
 
 @[simp]
-lemma comapDomain_single_of_not_mem_range [Zero M] {f : α → β} {b : β} (hb : b ∉ Set.range f)
+lemma comapDomain_single_of_notMem_range [Zero M] {f : α → β} {b : β} (hb : b ∉ Set.range f)
     (m : M) (hf) : comapDomain f (single b m) hf = 0 := by
   classical
   ext a
   simp only [comapDomain, single_apply, coe_mk, coe_zero, Pi.zero_apply, ite_eq_right_iff]
   rintro rfl
   simp at hb
+
+@[deprecated (since := "2026-09-28")]
+alias comapDomain_single_of_not_mem_range := comapDomain_single_of_notMem_range
 
 section FInjective
 
@@ -660,9 +662,10 @@ def filter (p : α → Prop) [DecidablePred p] (f : α →₀ M) : α →₀ M w
   toFun a := if p a then f a else 0
   support := f.support.filter p
   mem_support_toFun a := by
-    split_ifs with h <;>
-      · simp only [h, mem_filter, mem_support_iff]
-        tauto
+    split_ifs with h
+    all_goals
+      simp only [h, mem_filter, mem_support_iff]
+      tauto
 
 theorem filter_apply (a : α) : f.filter p a = if p a then f a else 0 := rfl
 
@@ -922,8 +925,6 @@ theorem mem_support_finsetSum [AddCommMonoid M] {s : Finset ι} {h : ι → α �
   let ⟨c, hc, Eq⟩ := Multiset.mem_map.1 hf
   ⟨c, hc, Eq.symm ▸ hfa⟩
 
-@[deprecated (since := "2026-04-08")] alias mem_support_finset_sum := mem_support_finsetSum
-
 /-! ### Declarations about `curry` and `uncurry` -/
 
 
@@ -975,7 +976,7 @@ finitely supported functions from `β` to `γ`. -/
 protected def curry (f : α × β →₀ M) : α →₀ β →₀ M where
   toFun a :=
     { toFun b := f (a, b)
-      support := f.support.filterMap (fun x ↦ if x.1 = a then x.2 else none) <| by simp +contextual
+      support := f.support.filterMap (fun x ↦ if x.1 = a then x.2 else none) <| by simp
       mem_support_toFun := by simp }
   support := f.support.image Prod.fst
   mem_support_toFun := by simp [DFunLike.ext_iff]
@@ -1262,10 +1263,10 @@ the type of finitely supported functions from `s`. -/
 -- TODO: add [DecidablePred (· ∈ s)] as an assumption
 @[simps apply] def restrictSupportEquiv (s : Set α) (M : Type*) [AddCommMonoid M] :
     { f : α →₀ M // ↑f.support ⊆ s } ≃ (s →₀ M) where
-  toFun f := subtypeDomain (· ∈ s) f.1
+  toFun f := subtypeDomain (· ∈ s) f.val
   invFun f := letI := Classical.decPred (· ∈ s); ⟨f.extendDomain, support_extendDomain_subset _⟩
   left_inv f :=
-    letI := Classical.decPred (· ∈ s); Subtype.ext <| extendDomain_subtypeDomain f.1 f.prop
+    letI := Classical.decPred (· ∈ s); Subtype.ext <| extendDomain_subtypeDomain f.val f.prop
   right_inv _ := letI := Classical.decPred (· ∈ s); subtypeDomain_extendDomain _
 
 @[simp] lemma restrictSupportEquiv_symm_apply_coe (s : Set α) (M : Type*) [AddCommMonoid M]
@@ -1342,11 +1343,14 @@ def splitSupport (l : (Σ i, αs i) →₀ M) : Finset ι :=
   l.support.image Sigma.fst
 
 set_option backward.isDefEq.respectTransparency false in
-theorem mem_splitSupport_iff_nonzero (i : ι) : i ∈ splitSupport l ↔ split l i ≠ 0 := by
+theorem mem_splitSupport_iff_ne_zero (i : ι) : i ∈ splitSupport l ↔ split l i ≠ 0 := by
   classical rw [splitSupport, mem_image, Ne, ← support_eq_empty, ← Ne,
-    ← Finset.nonempty_iff_ne_empty, split, comapDomain, Finset.Nonempty]
+    Finset.ne_empty_iff_nonempty, split, comapDomain, Finset.Nonempty]
   simp only [Finset.mem_preimage, exists_and_right, exists_eq_right, mem_support_iff,
     Sigma.exists, Ne]
+
+@[deprecated (since := "2026-10-13")]
+alias mem_splitSupport_iff_nonzero := mem_splitSupport_iff_ne_zero
 
 /-- Given `l`, a finitely supported function from the sigma type `Σ i, αs i` to `β` and
 an `ι`-indexed family `g` of functions from `(αs i →₀ β)` to `γ`, `split_comp` defines a
@@ -1357,7 +1361,7 @@ def splitComp [Zero N] (g : ∀ i, (αs i →₀ M) → N) (hg : ∀ i x, x = 0 
   toFun i := g i (split l i)
   mem_support_toFun := by
     intro i
-    rw [mem_splitSupport_iff_nonzero, not_iff_not, hg]
+    rw [mem_splitSupport_iff_ne_zero, not_iff_not, hg]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem sigma_support : l.support = l.splitSupport.sigma fun i => (l.split i).support := by
@@ -1414,7 +1418,7 @@ end Sigma
 
 lemma mem_range_embDomain_iff [AddCommMonoid M] (f : α ↪ β) (x : β →₀ M) :
     x ∈ Set.range (embDomain f) ↔ ↑x.support ⊆ Set.range f := by
-  convert! mem_range_mapDomain_iff _ f.injective _
+  convert mem_range_mapDomain_iff _ f.injective _
   · ext; rw [embDomain_eq_mapDomain]
   · grind
 

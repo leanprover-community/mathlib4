@@ -36,7 +36,7 @@ coincides with **both** the left and right uniform structures.
 
 See `Mathlib/Topology/Algebra/IsUniformGroup/Basic.lean` for further results.
 
-## Implementation Notes
+## Implementation notes
 
 Since the most frequent use case is `G` being a commutative additive groups, `Mathlib` originally
 did essentially all the theory under the assumption `IsUniformGroup G`.
@@ -148,6 +148,24 @@ theorem uniformity_eq_comap_nhds_one_swapped :
     𝓤 Gᵣ = comap (fun x : Gᵣ × Gᵣ => x.1 / x.2) (𝓝 1) := by
   rw [← comap_swap_uniformity, uniformity_eq_comap_nhds_one, comap_comap, Function.comp_def]
   simp
+
+namespace MulOpposite
+
+@[to_additive]
+instance : IsLeftUniformGroup Gᵣᵐᵒᵖ where
+  uniformity_eq := by
+    rw [uniformity_mulOpposite, MulOpposite.opHomeomorph.symm.nhds_eq_comap,
+      IsRightUniformGroup.uniformity_eq, comap_comap, comap_comap]
+    simp [Function.comp_def]
+
+@[to_additive]
+instance : IsRightUniformGroup Gₗᵐᵒᵖ where
+  uniformity_eq := by
+    rw [uniformity_mulOpposite, MulOpposite.opHomeomorph.symm.nhds_eq_comap,
+      IsLeftUniformGroup.uniformity_eq, comap_comap, comap_comap]
+    simp [Function.comp_def]
+
+end MulOpposite
 
 end LeftRight
 

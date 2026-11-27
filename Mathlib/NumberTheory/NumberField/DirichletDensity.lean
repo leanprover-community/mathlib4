@@ -5,10 +5,11 @@ Authors: Chris Birkbeck, Riccardo Brasca, Xavier Roblot
 -/
 module
 
-public import Mathlib.Algebra.CharZero.Infinite
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.NumberTheory.NumberField.Basic
 public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
+
+import Mathlib.Algebra.CharZero.Infinite
 
 /-!
 # Dirichlet density of a set of prime ideals
@@ -33,7 +34,6 @@ it does not exist).
 * `NumberField.hasDirichletDensity_empty` — the empty set has Dirichlet density `0`.
 * `NumberField.dirichletDensity_nonneg` — the Dirichlet density is nonnegative.
 * `NumberField.dirichletDensity_le_one` — the Dirichlet density is at most `1`.
-
 -/
 
 public section
@@ -52,10 +52,10 @@ variable {K : Type*} [Field K] [NumberField K] (S : Set (HeightOneSpectrum (𝓞
 
 /-- The partial Dirichlet series $\sum_{\mathfrak p \in S} \operatorname{N} \mathfrak p^{-s}$. -/
 def primeIdealZetaSum (S : Set (HeightOneSpectrum (𝓞 K))) (s : ℝ) : ℝ :=
-  ∑' 𝔭 : S, (Ideal.absNorm 𝔭.1.asIdeal : ℝ) ^ (-s)
+  ∑' 𝔭 : S, (Ideal.absNorm 𝔭.val.asIdeal : ℝ) ^ (-s)
 
 theorem primeIdealZetaSum_def (s : ℝ) :
-    S.primeIdealZetaSum s = ∑' 𝔭 : S, (Ideal.absNorm 𝔭.1.asIdeal : ℝ) ^ (-s) := by rfl
+    S.primeIdealZetaSum s = ∑' 𝔭 : S, (Ideal.absNorm 𝔭.val.asIdeal : ℝ) ^ (-s) := by rfl
 
 theorem primeIdealZetaSum_nonneg (s : ℝ) :
     0 ≤ S.primeIdealZetaSum s :=
@@ -69,8 +69,7 @@ theorem primeIdealZetaSum_le_card_of_finite (hS : S.Finite) {s : ℝ} (hs : 0 �
     S.primeIdealZetaSum s ≤ S.ncard := by
   replace hS := hS.to_subtype
   grw [primeIdealZetaSum_def, Real.rpow_le_one_of_one_le_of_nonpos] <;>
-  simp [Summable.of_finite, Nat.one_le_iff_ne_zero,
-    Ideal.absNorm_eq_zero_iff, hs, HeightOneSpectrum.ne_bot]
+  simp [Summable.of_finite, Nat.one_le_iff_ne_zero, hs, HeightOneSpectrum.ne_bot]
 
 /-- `S` has Dirichlet density `δ` when the ratio of the partial sum over `S` to the sum over all
 nonzero prime ideals,

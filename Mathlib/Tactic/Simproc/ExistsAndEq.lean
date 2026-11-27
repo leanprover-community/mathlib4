@@ -5,13 +5,13 @@ Authors: Vasilii Nesterov
 -/
 module
 
-public import Mathlib.Init
 public meta import Qq
-public import Qq
-public import Qq.Typ
+public import Mathlib.Init
+
+meta import Qq.Typ
 
 /-!
-# Simproc for `∃ a', ... ∧ a' = a ∧ ...`
+# Simprocs for `∃ a', ... ∧ a' = a ∧ ...` and `∀ a', ... → a' = a → ...`
 
 This module implements the `existsAndEq` simproc, which triggers on goals of the form `∃ a, P`.
 It checks whether `P` allows only one possible value for `a`, and if so, substitutes it, eliminating
@@ -23,6 +23,14 @@ If such an expression is found, all occurrences of `a` are replaced with `a'`. I
 variables bound by existential quantifiers, those quantifiers are moved outside.
 
 For example, `∃ a, p a ∧ ∃ b, a = f b ∧ q b` will be rewritten as `∃ b, p (f b) ∧ q b`.
+
+It also implements the dual `forallImpEq` simproc, which triggers on goals of the form `∀ a, P`.
+It traverses the binders of `P` (universal quantifiers and implications), searching for a hypothesis
+of the form `a = a'` or `a' = a` for `a'` that is independent of `a` and of the binders that stay in
+place. If such an hypothesis is found, all occurrences of `a` are replaced with `a'`. Universal
+quantifiers on the way that do not depend on `a` are moved outside.
+
+For example, `∀ a, p a → ∀ b, a = f b → q b` will be rewritten as `∀ b, p (f b) → f b = f b → q b`.
 -/
 
 public meta section
@@ -31,7 +39,9 @@ open Lean Meta Qq
 
 namespace ExistsAndEq
 
-/-- Type for storing the chosen branch at `And` nodes. -/
+/-- Type for storing the step taken at each node: the chosen branch at an `And` node, and, at an
+`Exists` node, whether we enter its binder type (`existsType`, and then the quantifier stays in
+place) or its body (`existsBody`, and then the quantifier is moved to the front). -/
 inductive GoTo
 | andLeft | andRight | existsType | existsBody
 deriving BEq, Inhabited
@@ -76,10 +86,57 @@ partial def findEqPath {u : Level} {α : Q(Sort u)} (a : Q($α)) (P : Q(Prop)) :
   | And L R =>
     ((.andLeft :: ·) <$> findEqPath a L) <|> ((.andRight :: ·) <$> findEqPath a R)
   | Exists tb pb =>
-    guard !(tb.containsFVar a.fvarId!)
-    let .lam _ _ body _ := pb | failure
-    (.existsBody :: ·) <$> findEqPath a body
+    if !(tb.containsFVar a.fvarId!) then
+      let .lam _ _ body _ := pb | failure
+      (.existsBody :: ·) <$> findEqPath a body
+    else
+      -- This quantifier cannot be moved outside, but the equation may be hidden in `tb` itself.
+      -- It makes sense only when `tb` is a `Prop`. We don't check it here, but if it's not,
+      -- `tb` will not match anything in the `match_expr` above.
+      (.existsType :: ·) <$> findEqPath a tb
   | _ => failure
+
+/-- Assuming `T'` is `T` with existential quantifiers removed and abstracted as `exs` this function
+proves the original `T` from `h : T'`. This is used when we hoist binders from inside `P` in
+`∃ h : P, Q h` and restore the proof `h` that `Q` consumes. -/
+partial def proveFromHoisted {T T' : Q(Prop)} (h : Q($T')) (exs : List VarQ) (path : Path) :
+    MetaM Q($T) := do
+  if path.all (· != .existsBody) then
+    let _ : $T' =Q $T := ⟨⟩
+    return q($h)
+  match path with
+  | [] => panic! "`path` is empty"
+  | .andLeft :: tl =>
+    let ~q($L ∧ $R) := T | panic! "path starts with `andLeft`, but `T` is not `And`"
+    let ~q($L' ∧ $R') := T' | panic! "path starts with `andLeft`, but `T'` is not `And`"
+    let _ : $R' =Q $R := ⟨⟩
+    let pfL : Q($L) ← proveFromHoisted q(And.left $h) exs tl
+    return q(And.intro $pfL (And.right $h))
+  | .andRight :: tl =>
+    let ~q($L ∧ $R) := T | panic! "path starts with `andRight`, but `T` is not `And`"
+    let ~q($L' ∧ $R') := T' | panic! "path starts with `andRight`, but `T'` is not `And`"
+    let _ : $L' =Q $L := ⟨⟩
+    let pfR : Q($R) ← proveFromHoisted q(And.right $h) exs tl
+    return q(And.intro (And.left $h) $pfR)
+  | .existsBody :: tl =>
+    match exs with
+    | [] => panic! "path starts with `existsBody`, but `exs` is empty"
+    | ⟨v, γ, e⟩ :: exsTl =>
+    let ~q(@Exists.{v} $β $pb) := T
+      | panic! "path starts with `existsBody`, but `T` is not `Exists`"
+    let _ : $γ =Q $β := ⟨⟩
+    let pf : Q($pb $e) ← proveFromHoisted h exsTl tl
+    return q(Exists.intro $e $pf)
+  | .existsType :: tl =>
+    let ~q(@Exists $S $c) := T | panic! "path starts with `existsType`, but `T` is not `Exists`"
+    let ~q(@Exists $S' $c') := T' | panic! "path starts with `existsType`, but `T'` is not `Exists`"
+    withLocalDeclQ .anonymous .default S' fun k => do
+    withLocalDeclQ .anonymous .default q($c' $k) fun hc => do
+      let w : Q($S) ← proveFromHoisted k exs tl
+      have hc : Q($c $w) := hc
+      let inner : Q(@Exists $S $c) := q(Exists.intro $w $hc)
+      let f : Q(∀ k, $c' k → @Exists $S $c) ← mkLambdaFVars #[k, hc] inner
+      return q(Exists.elim $h $f)
 
 /-- Given `P : Prop` and `a : α`, traverses the expression `P` to find a subexpression of
 the form `a = a'` or `a' = a` for some `a'`. It branches at each `And` and walks into
@@ -110,15 +167,25 @@ where
     panic!
       "some side of equality must be `a`, and the other must not depend on `a`"
   | .andLeft :: tl =>
-    let ~q($L ∧ $R) := P | panic! "path starts with andLeft, but `P` is not a conjuction"
+    let ~q($L ∧ $R) := P | panic! "path starts with andLeft, but `P` is not a conjunction"
     let (fvars, lctx, P', a') ← go a q($L) tl
     return (fvars, lctx, q($P' ∧ $R), a')
   | .andRight :: tl =>
-    let ~q($L ∧ $R) := P | panic! "path starts with andLeft, but `P` is not a conjuction"
+    let ~q($L ∧ $R) := P | panic! "path starts with andLeft, but `P` is not a conjunction"
     let (fvars, lctx, P', a') ← go a q($R) tl
     return (fvars, lctx, q($L ∧ $P'), a')
-  | .existsType :: _ =>
-    panic! "not implemented"
+  | .existsType :: tl =>
+    let ~q(@Exists $β $pb) := P | panic! "path starts with `existsType`, but `P` is not `Exists`"
+    -- the quantifier stays in place, with its binder type (a proposition, since it contains the
+    -- equation) replaced by what remains of it
+    let (fvars, lctx, T', a') ← go a β tl
+    let node : Q(Prop) ← withLCtx' lctx do
+      withLocalDeclQ .anonymous .default T' fun h => do
+        let anchor : Q($β) ← proveFromHoisted h fvars tl
+        let body : Q(Prop) := q($pb $anchor)
+        let p' : Q($T' → Prop) ← mkLambdaFVars #[h] body
+        return q(Exists $p')
+    return (fvars, lctx, node, a')
   | .existsBody :: tl =>
     let ~q(@Exists $β $pb) := P | panic! "path starts with `existsBody`, but `P` is not `Exists`"
     lambdaBoundedTelescope pb 1 fun bs (body : Q(Prop)) => do
@@ -177,7 +244,14 @@ partial def destruct {P goal : Q(Prop)} (h : Q($P)) (exs : List VarQ) (path : Pa
       let pf ← destruct h' exs tl (acc ++ [⟨q($R), leaf⟩]) k
       let f : Q($L → $R → $goal) ← mkLambdaFVars #[h', leaf] pf
       return q(And.elim $f $h)
-  | .existsType :: _ => panic! "not implemented"
+  | .existsType :: tl =>
+    let ~q(@Exists $β $pb) := P
+      | panic! "path starts with `existsType`, but `P` is not `Exists`"
+    withLocalDeclQ .anonymous .default β fun h₀ => do
+    withLocalDeclQ .anonymous .default q($pb $h₀) fun leaf => do
+      let pf ← destruct h₀ exs tl (acc ++ [⟨q($pb $h₀), leaf⟩]) k
+      let f : Q(∀ h₀, $pb h₀ → $goal) ← mkLambdaFVars #[h₀, leaf] pf
+      return q(Exists.elim $h $f)
 
 /-- Constructs a proof of `goal` following `path`, as the chain of `refine Exists.intro … ?_` and
 `refine And.intro … ?_` in the docstring of `mkBeforeToAfter` does: at an `existsBody` step the
@@ -219,7 +293,17 @@ partial def construct {goal : Q(Prop)} (exs : List VarQ) (path : Path) (leaves :
     have leaf : Q($R) := leaf
     let pf : Q($L) ← construct exs tl leavesTl
     return q(And.intro $pf $leaf)
-  | .existsType :: _ => panic! "not implemented"
+  | .existsType :: tl =>
+    let ~q(@Exists $β $pb) := goal
+      | panic! "path starts with `existsType`, but the goal is not `Exists`"
+    match leaves with
+    | [] => panic! "path starts with `existsType`, but `leaves` is empty"
+    | ⟨B, leaf⟩ :: leavesTl =>
+    let w : Q($β) ← construct exs tl leavesTl
+    -- the leaf proves the body at `w` by proof irrelevance
+    let _ : $B =Q $pb $w := ⟨⟩
+    have leaf : Q($pb $w) := leaf
+    return q(Exists.intro $w $leaf)
 
 /-- Generates a proof of `(∃ a, p a) → P'`. We assume that `fvars = [f₁, ..., fₙ]` are free
 variables and `P' = ∃ f₁ ... fₙ, newBody`, and `path` leads to `a = a'` in `∃ a, p a`.
@@ -359,4 +443,90 @@ simproc ↓ existsAndEq (Exists _) := fun e => withAbstractMVars e existsAndEqCo
 
 end ExistsAndEq
 
+namespace ForallImpEq
+
+/-- Checks whether the binders of `e`, read as a function of the bound variable `.bvar d`, contain a
+hypothesis of the form `.bvar d = _` or `_ = .bvar d`. This is a fast check that quickly rules out
+most expressions on which `forallImpEq` is not applicable. -/
+def hasEqBinder (e : Expr) (d : Nat) : Bool :=
+  match e with
+  | .forallE _ t b _ =>
+    (match t.eq? with
+      | some (_, x, y) => x == .bvar d || y == .bvar d
+      | none => false) ||
+    hasEqBinder b (d + 1)
+  | _ => false
+
+/-- Walks the binders of `e`, introducing them as local variables, until it finds a hypothesis of
+the form `a = a'` or `a' = a` where `a'` doesn't contain any of the free variables in `forbidden`.
+
+At each binder `x : T` on the way, `x` is marked as *hoisted* (to be moved in front of the
+quantifier over `a`) if the rest of `e` depends on `x` and `T` doesn't contain any of the free
+variables in `forbidden`. Otherwise `x` stays in place, and is added to `forbidden`.
+
+Once the equation is found, calls `k xs hoisted h rest a' symm`, where:
+* `xs` are the binders on the way, and `hoisted` says which of them are hoisted.
+* `h` is the hypothesis `a = a'` or `a' = a`.
+* `rest` is the remainder of `e` after `h`.
+* `symm` is `true` if `h : a' = a` and `false` if `h : a = a'`. -/
+partial def walk {β : Type} (a e : Expr) (forbidden : Array FVarId) (xs : Array Expr)
+    (hoisted : Array Bool) (k : Array Expr → Array Bool → Expr → Expr → Expr → Bool → MetaM β) :
+    MetaM (Option β) := do
+  let .forallE n t b bi := e | return none
+  let determines (x y : Expr) : Bool := x == a && !forbidden.any y.containsFVar
+  withLocalDecl n bi t fun x => do
+    let rest := b.instantiate1 x
+    if let some (_, l, r) := t.eq? then
+      if determines l r then return some (← k xs hoisted x rest r false)
+      if determines r l then return some (← k xs hoisted x rest l true)
+    let hoist := b.hasLooseBVars && !forbidden.any t.containsFVar
+    walk a rest (if hoist then forbidden else forbidden.push x.fvarId!) (xs.push x)
+      (hoisted.push hoist) k
+
+/-- The implementation of `forallImpEq`, for an expression without metavariables.
+
+Given `e = ∀ a, ∀ x₁ ... xₙ, ∀ h : a = a', R`, where the `xᵢ` are partitioned into hoisted binders
+`ys` and kept binders `zs`, it produces `e' = ∀ ys, ∀ zs[a'/a], ∀ h : a' = a', R[a'/a]`, along with
+the proof of `e = e'`:
+* `e → e'` is `fun H ys zs h ↦ H a' x₁ ... xₙ h`.
+* `e' → e` is `fun H' a x₁ ... xₙ h ↦ ?_`, where the goal is closed by substituting `a` with `a'`
+  (`substCore`) and applying `H'`. -/
+def forallImpEqCore (e : Expr) : MetaM Simp.Step := do
+  let .forallE n α body bi := e | return .continue
+  unless hasEqBinder body 0 do return .continue
+  withLocalDecl n bi α fun a => do
+  let res? ← walk a (body.instantiate1 a) #[a.fvarId!] #[] #[] fun xs hoisted h rest a' symm => do
+    let ys := (xs.zip hoisted).filterMap fun (x, b) => if b then some x else none
+    let zs := (xs.zip hoisted).filterMap fun (x, b) => if b then none else some x
+    let e' ← mkForallFVars ys <| (← mkForallFVars (zs.push h) rest).replaceFVar a a'
+    let fwd ← withLocalDeclD `h e fun H => do
+      let inner := (← mkLambdaFVars (zs.push h) (mkAppN H (#[a] ++ xs ++ #[h]))).replaceFVar a a'
+      mkLambdaFVars #[H] (← mkLambdaFVars ys inner)
+    let bwd ← withLocalDeclD `h e' fun H' => do
+      let goal ← mkFreshExprSyntheticOpaqueMVar rest
+      let (fvarSubst, goal') ← substCore goal.mvarId! h.fvarId! (symm := symm)
+      goal'.withContext do
+        -- `substCore` replaces `h` with `Eq.refl a'` in the goal
+        let args := (ys ++ zs).map fvarSubst.apply |>.push (← mkEqRefl (fvarSubst.apply a'))
+        goal'.assign (mkAppN H' args)
+      mkLambdaFVars (#[H', a] ++ xs ++ #[h]) (← instantiateMVars goal)
+    return (e', fwd, bwd)
+  let some (e', fwd, bwd) := res? | return .continue
+  have e : Q(Prop) := e; have e' : Q(Prop) := e'
+  have fwd : Q($e → $e') := fwd; have bwd : Q($e' → $e) := bwd
+  return .visit { expr := e', proof? := some q(propext ⟨$fwd, $bwd⟩) }
+
+/-- Triggers at goals of the form `∀ a, body` and checks if `body` has a hypothesis `a = a'` or
+`a' = a`. If so, replaces `a` with `a'` and removes the quantifier.
+
+It looks through nested universal quantifiers and implications searching for the hypothesis.
+Quantifiers on the way that do not depend on `a` are moved outside.
+
+This is the dual of `existsAndEq`. -/
+simproc ↓ forallImpEq (∀ _, _) := fun e =>
+  ExistsAndEq.withAbstractMVars e ForallImpEq.forallImpEqCore
+
+end ForallImpEq
+
 export ExistsAndEq (existsAndEq)
+export ForallImpEq (forallImpEq)

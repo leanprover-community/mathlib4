@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Control.EquivFunctor
 public import Mathlib.Data.Option.Basic
-public import Mathlib.Data.Subtype
-public import Mathlib.Logic.Equiv.Defs
 
 /-!
 # Equivalences for `Option α`
@@ -213,16 +211,16 @@ theorem optionSubtype_apply_symm_apply
   simp
 
 @[simp]
-theorem optionSubtype_symm_apply_apply_coe [DecidableEq β] (x : β) (e : α ≃ { y : β // y ≠ x })
-    (a : α) : ((optionSubtype x).symm e : Option α ≃ β) a = e a :=
-  rfl
-
-@[simp]
 theorem optionSubtype_symm_apply_apply_some
     [DecidableEq β]
     (x : β)
     (e : α ≃ { y : β // y ≠ x })
     (a : α) : ((optionSubtype x).symm e : Option α ≃ β) (some a) = e a :=
+  rfl
+
+@[deprecated optionSubtype_symm_apply_apply_some (since := "2026-11-26")]
+theorem optionSubtype_symm_apply_apply_coe [DecidableEq β] (x : β) (e : α ≃ { y : β // y ≠ x })
+    (a : α) : ((optionSubtype x).symm e : Option α ≃ β) a = e a :=
   rfl
 
 @[simp]
@@ -242,7 +240,7 @@ variable [DecidableEq α] {a b : α}
 /-- Any type with a distinguished element is equivalent to an `Option` type on the subtype excluding
 that element. -/
 @[simps!]
-def optionSubtypeNe (a : α) : Option {b // b ≠ a} ≃ α := optionSubtype a |>.symm (.refl _) |>.1
+def optionSubtypeNe (a : α) : Option {b // b ≠ a} ≃ α := optionSubtype a |>.symm (.refl _) |>.val
 
 lemma optionSubtypeNe_symm_self (a : α) : (optionSubtypeNe a).symm a = none := by simp
 lemma optionSubtypeNe_symm_of_ne (hba : b ≠ a) : (optionSubtypeNe a).symm b = some ⟨b, hba⟩ := by
@@ -267,7 +265,6 @@ theorem optionEquivSumPUnit_none {α} : optionEquivSumPUnit α none = Sum.inr PU
 theorem optionEquivSumPUnit_some {α} (a) : optionEquivSumPUnit α (some a) = Sum.inl a :=
   rfl
 
-@[simp]
 theorem optionEquivSumPUnit_coe {α} (a : α) : optionEquivSumPUnit α a = Sum.inl a :=
   rfl
 
@@ -282,7 +279,7 @@ theorem optionEquivSumPUnit_symm_inr {α} (a) : (optionEquivSumPUnit α).symm (S
 /-- The set of `x : Option α` such that `isSome x` is equivalent to `α`. -/
 @[simps]
 def optionIsSomeEquiv (α) : { x : Option α // x.isSome } ≃ α where
-  toFun o := Option.get _ o.2
+  toFun o := Option.get _ o.property
   invFun x := ⟨some x, rfl⟩
   left_inv _ := Subtype.ext <| Option.some_get _
   right_inv _ := Option.get_some _ _

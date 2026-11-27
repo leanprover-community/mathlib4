@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.Category.Lat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Category of linear orders
 
@@ -66,7 +69,6 @@ lemma coe_id {X : LinOrd} : (𝟙 X : X → X) = id := rfl
 
 lemma coe_comp {X Y Z : LinOrd} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
-@[simp]
 lemma forget_map {X Y : LinOrd} (f : X ⟶ Y) :
     (forget LinOrd).map f = (f : _ → _) := rfl
 

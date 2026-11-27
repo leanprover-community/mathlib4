@@ -6,10 +6,13 @@ Authors: Leonardo de Moura
 module
 
 public import Mathlib.Data.Stream.Defs
-public import Mathlib.Logic.Function.Basic
-public import Mathlib.Data.Nat.Basic
-public import Mathlib.Tactic.Common
 public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Tactic.Common
+
+import Mathlib.Data.Nat.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Streams a.k.a. infinite lists a.k.a. infinite sequences
@@ -42,7 +45,6 @@ protected theorem ext {s₁ s₂ : Stream' α} : (∀ n, get s₁ n = get s₂ n
 theorem get_zero_cons (a : α) (s : Stream' α) : get (a::s) 0 = a :=
   rfl
 
-@[simp]
 theorem head_cons (a : α) (s : Stream' α) : head (a::s) = a :=
   rfl
 
@@ -142,7 +144,6 @@ theorem get_map (n : ℕ) (s : Stream' α) : get (map f s) n = f (get s n) :=
 
 theorem tail_map (s : Stream' α) : tail (map f s) = map f (tail s) := rfl
 
-@[simp]
 theorem head_map (s : Stream' α) : head (map f s) = f (head s) :=
   rfl
 
@@ -248,7 +249,6 @@ theorem iterate_eq (f : α → α) (a : α) : iterate f a = a::iterate f (f a) :
   rw [← Stream'.eta (iterate f a)]
   rw [tail_iterate]; rfl
 
-@[simp]
 theorem get_zero_iterate (f : α → α) (a : α) : get (iterate f a) 0 = a :=
   rfl
 
@@ -467,7 +467,7 @@ lemma get_append_left (h : n < x.length) : (x ++ₛ a).get n = x[n] := by
 @[simp] lemma get_append_length : (x ++ₛ a).get x.length = a.get 0 := get_append_right 0 x a
 
 lemma append_right_injective (h : x ++ₛ a = x ++ₛ b) : a = b := by
-  ext n; replace h := congr_arg (fun a ↦ a.get (x.length + n)) h; simpa using h
+  ext n; replace h := congr($(h).get (x.length + n)); simpa using h
 
 @[simp] lemma append_right_inj : x ++ₛ a = x ++ₛ b ↔ a = b :=
   ⟨append_right_injective x a b, by simp +contextual⟩

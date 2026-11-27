@@ -7,8 +7,12 @@ module
 
 public import Mathlib.Algebra.Category.AlgCat.Basic
 public import Mathlib.Algebra.Category.Ring.Under.Basic
-public import Mathlib.CategoryTheory.Limits.Over
 public import Mathlib.CategoryTheory.WithTerminal.Cone
+
+import Mathlib.CategoryTheory.Limits.Over
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The category of commutative algebras over a commutative ring
@@ -119,9 +123,6 @@ instance : Inhabited (CommAlgCat R) := ⟨of R R⟩
 
 lemma forget_obj (A : CommAlgCat.{v} R) : (forget (CommAlgCat.{v} R)).obj A = A := rfl
 
-@[deprecated ConcreteCategory.forget_map_eq_ofHom (since := "2026-03-06")]
-lemma forget_map (f : A ⟶ B) : (forget (CommAlgCat.{v} R)).map f = (f : _ → _) := rfl
-
 instance : CommRing ((forget (CommAlgCat R)).obj A) := inferInstanceAs <| CommRing A
 
 instance : Algebra R ((forget (CommAlgCat R)).obj A) := inferInstanceAs <| Algebra R A
@@ -153,7 +154,7 @@ variable (A B) in
 def homEquivCommRingCat :
     (A ⟶ B) ≃ {f : CommRingCat.of A ⟶ ↧B // f.hom.comp (algebraMap R A) = algebraMap R B} where
   toFun f := ⟨CommRingCat.ofHom f.hom, congr($f.hom.comp_algebraMap)⟩
-  invFun f := CommAlgCat.ofHom ⟨f.val.hom, fun r ↦ congr($f.prop r)⟩
+  invFun f := CommAlgCat.ofHom { f.val.hom with commutes' r := congr($f.prop r) }
   left_inv _ := rfl
   right_inv _ := rfl
 
@@ -216,7 +217,7 @@ def commAlgCatEquivUnder (R : CommRingCat) : CommAlgCat R ≌ Under R where
   inverse.obj A := ↧A
   inverse.map {A B} f := CommAlgCat.ofHom <| CommRingCat.toAlgHom f
   unitIso := NatIso.ofComponents fun A ↦
-    CommAlgCat.isoMk { toRingEquiv := .refl A, commutes' _ := rfl }
+    CommAlgCat.isoMk (.ofCommutes (.refl A) fun _ ↦ rfl)
   counitIso := .refl _
 
 -- TODO: Generalize to `UnivLE.{u, v}` once `commAlgCatEquivUnder` is generalized.

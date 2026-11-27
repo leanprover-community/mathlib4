@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Affine map restrictions
 
@@ -48,29 +51,40 @@ def AffineMap.restrict (φ : P₁ →ᵃ[k] P₂) {E : AffineSubspace k P₁} {F
     simp only [Subtype.ext_iff, AffineSubspace.coe_vadd]
     apply AffineMap.map_vadd
 
-theorem AffineMap.restrict.coe_apply (φ : P₁ →ᵃ[k] P₂) {E : AffineSubspace k P₁}
+theorem AffineMap.restrict_coe_apply (φ : P₁ →ᵃ[k] P₂) {E : AffineSubspace k P₁}
     {F : AffineSubspace k P₂} [Nonempty E] [Nonempty F] (hEF : E.map φ ≤ F) (x : E) :
     ↑(φ.restrict hEF x) = φ x :=
   rfl
 
-theorem AffineMap.restrict.linear_aux {φ : P₁ →ᵃ[k] P₂} {E : AffineSubspace k P₁}
+@[deprecated (since := "2026-11-26")]
+alias AffineMap.restrict.coe_apply := AffineMap.restrict_coe_apply
+
+protected theorem AffineMap.restrict_linear_aux {φ : P₁ →ᵃ[k] P₂} {E : AffineSubspace k P₁}
     {F : AffineSubspace k P₂} (hEF : E.map φ ≤ F) : E.direction ≤ F.direction.comap φ.linear := by
   rw [← Submodule.map_le_iff_le_comap, ← AffineSubspace.map_direction]
   exact AffineSubspace.direction_le hEF
 
-theorem AffineMap.restrict.linear (φ : P₁ →ᵃ[k] P₂) {E : AffineSubspace k P₁}
+@[deprecated (since := "2026-11-26")]
+alias AffineMap.restrict.linear_aux := AffineMap.restrict_linear_aux
+
+theorem AffineMap.restrict_linear (φ : P₁ →ᵃ[k] P₂) {E : AffineSubspace k P₁}
     {F : AffineSubspace k P₂} [Nonempty E] [Nonempty F] (hEF : E.map φ ≤ F) :
-    (φ.restrict hEF).linear = φ.linear.restrict (AffineMap.restrict.linear_aux hEF) :=
+    (φ.restrict hEF).linear = φ.linear.restrict (AffineMap.restrict_linear_aux hEF) :=
   rfl
 
-theorem AffineMap.restrict.injective {φ : P₁ →ᵃ[k] P₂} (hφ : Function.Injective φ)
+@[deprecated (since := "2026-11-26")] alias AffineMap.restrict.linear := AffineMap.restrict_linear
+
+theorem AffineMap.restrict_injective {φ : P₁ →ᵃ[k] P₂} (hφ : Function.Injective φ)
     {E : AffineSubspace k P₁} {F : AffineSubspace k P₂} [Nonempty E] [Nonempty F]
     (hEF : E.map φ ≤ F) : Function.Injective (AffineMap.restrict φ hEF) := by
   intro x y h
-  simp only [Subtype.ext_iff, AffineMap.restrict.coe_apply] at h ⊢
+  simp only [Subtype.ext_iff, AffineMap.restrict_coe_apply] at h ⊢
   exact hφ h
 
-theorem AffineMap.restrict.surjective (φ : P₁ →ᵃ[k] P₂) {E : AffineSubspace k P₁}
+@[deprecated (since := "2026-11-26")]
+alias AffineMap.restrict.injective := AffineMap.restrict_injective
+
+theorem AffineMap.restrict_surjective (φ : P₁ →ᵃ[k] P₂) {E : AffineSubspace k P₁}
     {F : AffineSubspace k P₂} [Nonempty E] [Nonempty F] (h : E.map φ = F) :
     Function.Surjective (AffineMap.restrict φ (le_of_eq h)) := by
   rintro ⟨x, hx : x ∈ F⟩
@@ -78,9 +92,15 @@ theorem AffineMap.restrict.surjective (φ : P₁ →ᵃ[k] P₂) {E : AffineSubs
   obtain ⟨y, hy, rfl⟩ := hx
   exact ⟨⟨y, hy⟩, rfl⟩
 
-theorem AffineMap.restrict.bijective {E : AffineSubspace k P₁} [Nonempty E] {φ : P₁ →ᵃ[k] P₂}
+@[deprecated (since := "2026-11-26")]
+alias AffineMap.restrict.surjective := AffineMap.restrict_surjective
+
+theorem AffineMap.restrict_bijective {E : AffineSubspace k P₁} [Nonempty E] {φ : P₁ →ᵃ[k] P₂}
     (hφ : Function.Injective φ) : Function.Bijective (φ.restrict (le_refl (E.map φ))) :=
-  ⟨AffineMap.restrict.injective hφ _, AffineMap.restrict.surjective _ rfl⟩
+  ⟨AffineMap.restrict_injective hφ _, AffineMap.restrict_surjective _ rfl⟩
+
+@[deprecated (since := "2026-11-26")]
+alias AffineMap.restrict.bijective := AffineMap.restrict_bijective
 
 namespace AffineEquiv
 
@@ -88,7 +108,7 @@ namespace AffineEquiv
 image. -/
 noncomputable def affineSubspaceMap (e : P₁ ≃ᵃ[k] P₂) (s : AffineSubspace k P₁)
     [Nonempty s] : s ≃ᵃ[k] s.map e.toAffineMap :=
-  .ofBijective (AffineMap.restrict.bijective e.injective)
+  .ofBijective (AffineMap.restrict_bijective e.injective)
 
 @[simp]
 theorem affineSubspaceMap_apply (e : P₁ ≃ᵃ[k] P₂) (s : AffineSubspace k P₁)

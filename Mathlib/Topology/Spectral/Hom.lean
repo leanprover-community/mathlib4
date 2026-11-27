@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Topology.ContinuousMap.Basic
 public import Mathlib.Topology.Maps.Proper.Basic
-public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Spectral maps
@@ -89,14 +88,16 @@ export SpectralMapClass (map_spectral)
 
 attribute [simp] map_spectral
 
+/-- Turn a bundled morphism with a `SpectralMapClass` instance into a `SpectralMap`. -/
+def SpectralMap.ofClass [TopologicalSpace α] [TopologicalSpace β] [FunLike F α β]
+    [SpectralMapClass F α β] (f : F) : SpectralMap α β where
+  toFun := f
+  spectral' := map_spectral f
+
 -- See note [lower instance priority]
 instance (priority := 100) SpectralMapClass.toContinuousMapClass [TopologicalSpace α]
     [TopologicalSpace β] [FunLike F α β] [SpectralMapClass F α β] : ContinuousMapClass F α β :=
   { ‹SpectralMapClass F α β› with map_continuous := fun f => (map_spectral f).continuous }
-
-instance [TopologicalSpace α] [TopologicalSpace β] [FunLike F α β] [SpectralMapClass F α β] :
-    CoeTC F (SpectralMap α β) :=
-  ⟨fun f => ⟨_, map_spectral f⟩⟩
 
 /-! ### Spectral maps -/
 
@@ -109,12 +110,20 @@ variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ] [Topo
 def toContinuousMap (f : SpectralMap α β) : ContinuousMap α β :=
   ⟨_, f.spectral'.continuous⟩
 
+@[macro_inline]
 instance instFunLike : FunLike (SpectralMap α β) α β where
   coe := SpectralMap.toFun
   coe_injective f g h := by cases f; cases g; congr
 
 instance : SpectralMapClass (SpectralMap α β) α β where
   map_spectral f := f.spectral'
+
+@[simp]
+theorem coe_toContinuousMap (f : SpectralMap α β) : ⇑f.toContinuousMap = f := rfl
+
+@[simp]
+protected theorem coe_ofClass [FunLike F α β] [SpectralMapClass F α β] (f : F) :
+    ⇑(ofClass f) = f := rfl
 
 @[simp]
 theorem toFun_eq_coe {f : SpectralMap α β} : f.toFun = (f : α → β) :=
@@ -167,14 +176,17 @@ theorem coe_comp (f : SpectralMap β γ) (g : SpectralMap α β) : (f.comp g : �
 theorem comp_apply (f : SpectralMap β γ) (g : SpectralMap α β) (a : α) : (f.comp g) a = f (g a) :=
   rfl
 
+@[deprecated ContinuousMap.coe_ofClass +typeChanged (since := "2026-11-25")]
 theorem coe_comp_continuousMap (f : SpectralMap β γ) (g : SpectralMap α β) :
-    f ∘ g = (f : ContinuousMap β γ) ∘ (g : ContinuousMap α β) :=
+    f ∘ g = (ContinuousMap.ofClass f) ∘ (ContinuousMap.ofClass g) :=by
   rfl
 
 @[simp]
-theorem coe_comp_continuousMap' (f : SpectralMap β γ) (g : SpectralMap α β) :
-    (f.comp g : ContinuousMap α γ) = (f : ContinuousMap β γ).comp g :=
+theorem toContinuousMap_comp (f : SpectralMap β γ) (g : SpectralMap α β) :
+    (f.comp g).toContinuousMap = f.toContinuousMap.comp g.toContinuousMap :=
   rfl
+
+@[deprecated (since := "2026-11-25")] alias coe_comp_continuousMap' := toContinuousMap_comp
 
 @[simp]
 theorem comp_assoc (f : SpectralMap γ δ) (g : SpectralMap β γ) (h : SpectralMap α β) :
@@ -193,7 +205,7 @@ theorem id_comp (f : SpectralMap α β) : (SpectralMap.id β).comp f = f :=
 theorem cancel_right {g₁ g₂ : SpectralMap β γ} {f : SpectralMap α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => ext <| hf.forall.2 <| DFunLike.ext_iff.1 h,
-   fun a => of_eq (congrFun (congrArg comp a) f)⟩
+   fun a => of_eq congr(comp $a f)⟩
 
 @[simp]
 theorem cancel_left {g : SpectralMap β γ} {f₁ f₂ : SpectralMap α β} (hg : Injective g) :

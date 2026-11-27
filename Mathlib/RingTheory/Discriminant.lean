@@ -5,9 +5,9 @@ Authors: Riccardo Brasca
 -/
 module
 
-public import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
-public import Mathlib.RingTheory.Norm.Transitivity
 public import Mathlib.RingTheory.Trace.Basic
+
+import Mathlib.RingTheory.Norm.Transitivity
 
 /-!
 # Discriminant of a family of vectors
@@ -41,7 +41,7 @@ Given an `A`-algebra `B` and `b`, an `ι`-indexed family of elements of `B`, we 
   be such that `IsIntegral R B.gen`. Then for all, `z : L` we have
   `(discr K B.basis) • z ∈ adjoin R ({B.gen} : Set L)`.
 
-## Implementation details
+## Implementation notes
 
 Our definition works for any `A`-algebra `B`, but note that if `B` is not free as an `A`-module,
 then `trace A B = 0` by definition, so `discr A b = 0` for any `b`.
@@ -189,7 +189,7 @@ theorem discr_powerBasis_eq_prod'' [Algebra.IsSeparable K L] (e : Fin pb.dim ≃
   have h₂ : 2 ∣ pb.dim * (pb.dim - 1) := pb.dim.even_mul_pred_self.two_dvd
   have hne : ((2 : ℕ) : ℚ) ≠ 0 := by simp
   have hle : 1 ≤ pb.dim := by
-    rw [← hn, Nat.one_le_iff_ne_zero, ← zero_lt_iff, Module.finrank_pos_iff]
+    rw [← hn, Nat.one_le_iff_ne_zero, ← pos_iff_ne_zero, Module.finrank_pos_iff]
     infer_instance
   rw [hn, Nat.cast_div h₂ hne, Nat.cast_mul, Nat.cast_sub hle]
   ring
@@ -216,9 +216,7 @@ theorem discr_powerBasis_eq_norm [Algebra.IsSeparable K L] :
   congr
   rw [norm_eq_prod_embeddings, prod_prod_Ioi_mul_eq_prod_prod_off_diag]
   conv_rhs =>
-    congr
-    rfl
-    ext σ
+    enter [2, σ]
     rw [← aeval_algHom_apply, ← eval_map_algebraMap, ← derivative_map,
       (IsAlgClosed.splits _).eval_root_derivative ((minpoly.monic pb.isIntegral_gen).map _)
       (hroots σ), ← Finset.prod_mk _ (hnodup.erase _)]
@@ -273,10 +271,10 @@ theorem discr_mul_isIntegral_mem_adjoin [Algebra.IsSeparable K L] [IsIntegrallyC
     exact Subalgebra.pow_mem _ (subset_adjoin (Set.mem_singleton _)) _
   intro i
   rw [← H, ← mulVec_smul] at cramer
-  replace cramer := congr_arg (mulVec (traceMatrix K B.basis)⁻¹) cramer
+  replace cramer := congr((mulVec (traceMatrix K B.basis)⁻¹) $cramer)
   rw [mulVec_mulVec, nonsing_inv_mul _ hinv, mulVec_mulVec, nonsing_inv_mul _ hinv, one_mulVec,
     one_mulVec] at cramer
-  rw [← congr_fun cramer i, cramer_apply, det_apply]
+  rw [← congr($cramer i), cramer_apply, det_apply]
   refine
     Subalgebra.sum_mem _ fun σ _ => Subalgebra.zsmul_mem _ (Subalgebra.prod_mem _ fun j _ => ?_) _
   by_cases hji : j = i
@@ -295,7 +293,7 @@ section Int
 /-- Two (finite) ℤ-bases have the same discriminant. -/
 theorem discr_eq_discr (b : Basis ι ℤ A) (b' : Basis ι ℤ A) :
     Algebra.discr ℤ b = Algebra.discr ℤ b' := by
-  convert! Algebra.discr_of_matrix_vecMul b' (b'.toMatrix b)
+  convert Algebra.discr_of_matrix_vecMul b' (b'.toMatrix b)
   · rw [Basis.toMatrix_map_vecMul]
   · suffices IsUnit (b'.toMatrix b).det by
       rw [Int.isUnit_iff, ← sq_eq_one_iff] at this

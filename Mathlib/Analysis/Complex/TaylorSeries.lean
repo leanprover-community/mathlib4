@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Complex.CauchyIntegral
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Convergence of Taylor series of holomorphic functions
 
@@ -51,8 +54,8 @@ lemma hasSum_taylorSeries_on_ball :
   have hz' : z - c ∈ Metric.eball 0 r' := by
     rw [Metric.eball_coe]
     simpa only [mem_ball_iff_norm, sub_zero] using hzr'
-  have H := (hf.mono <| Metric.closedBall_subset_ball hr').hasFPowerSeriesOnBall hr'₀
-      |>.hasSum_iteratedFDeriv hz'
+  grw [← hr'] at hf
+  have H := hf.hasFPowerSeriesOnBall hr'₀ |>.hasSum_iteratedFDeriv hz'
   simp only [add_sub_cancel] at H
   convert H with n
   simpa only [iteratedDeriv_eq_iteratedFDeriv, smul_eq_mul, mul_one, Finset.prod_const,

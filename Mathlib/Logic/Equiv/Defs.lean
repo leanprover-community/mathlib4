@@ -5,11 +5,9 @@ Authors: Leonardo de Moura, Mario Carneiro
 -/
 module
 
-public import Mathlib.Basic.Unique
-public import Mathlib.Data.FunLike.Equiv
+public import Mathlib.Basic.FunLike.Equiv
 public import Mathlib.Data.Quot
 public import Mathlib.Data.Subtype
-public import Mathlib.Tactic.Simps
 
 
 /-!
@@ -98,6 +96,7 @@ abbrev Equiv.Perm (α : Sort*) :=
 
 namespace Equiv
 
+@[macro_inline]
 instance : EquivLike (α ≃ β) α β where
   coe := Equiv.toFun
   inv := Equiv.invFun
@@ -229,7 +228,7 @@ protected def cast {α β : Sort _} (h : α = β) : α ≃ β where
   left_inv := by grind
   right_inv := by grind
 
-@[simp] theorem coe_fn_symm_mk (f : α → β) (g l r) : ((Equiv.mk f g l r).symm : β → α) = g := rfl
+theorem coe_fn_symm_mk (f : α → β) (g l r) : ((Equiv.mk f g l r).symm : β → α) = g := rfl
 
 @[simp] theorem coe_refl : (Equiv.refl α : α → α) = id := rfl
 
@@ -296,7 +295,7 @@ theorem symm_apply_eq {α β} (e : α ≃ β) {x y} : e.symm x = y ↔ x = e y :
 
 theorem eq_symm_apply {α β} (e : α ≃ β) {x y} : y = e.symm x ↔ e y = x := by grind
 
-@[deprecated eq_symm_apply (since := "2026-07-26")]
+@[deprecated eq_symm_apply +typeChanged (since := "2026-07-26")]
 theorem apply_eq_iff_eq_symm_apply {x : α} {y : β} (f : α ≃ β) : f x = y ↔ x = f.symm y :=
   f.eq_symm_apply.symm
 
@@ -357,7 +356,7 @@ theorem extend_apply {f : α ≃ β} (g : α → γ) (e' : β → γ) (b : β) :
 is equivalent to the type of equivalences `β ≃ δ`. -/
 def equivCongr {δ : Sort*} (ab : α ≃ β) (cd : γ ≃ δ) : (α ≃ γ) ≃ (β ≃ δ) where
   toFun ac := (ab.symm.trans ac).trans cd
-  invFun bd := ab.trans <| bd.trans <| cd.symm
+  invFun bd := ab.trans <| bd.trans cd.symm
   left_inv ac := by grind
   right_inv ac := by grind
 
@@ -650,7 +649,7 @@ theorem sigmaCongrRight_refl {α} {β : α → Type*} :
 /-- A `PSigma` with `Prop` fibers is equivalent to the subtype. -/
 def psigmaEquivSubtype {α : Type v} (P : α → Prop) : (Σ' i, P i) ≃ Subtype P where
   toFun x := ⟨x.1, x.2⟩
-  invFun x := ⟨x.1, x.2⟩
+  invFun x := ⟨x.val, x.property⟩
 
 /-- A `Sigma` with `PLift` fibers is equivalent to the subtype. -/
 def sigmaPLiftEquivSubtype {α : Type v} (P : α → Prop) : (Σ i, PLift (P i)) ≃ Subtype P :=
@@ -679,7 +678,7 @@ abbrev sigmaCongrRight {α} {β : α → Sort _} (F : ∀ a, Perm (β a)) : Perm
     (sigmaCongrRight F).symm = sigmaCongrRight fun a => (F a).symm :=
   rfl
 
-@[simp] theorem sigmaCongrRight_refl {α} {β : α → Sort _} :
+theorem sigmaCongrRight_refl {α} {β : α → Sort _} :
     (sigmaCongrRight fun a => Equiv.refl (β a)) = Equiv.refl (Σ a, β a) :=
   rfl
 
@@ -816,7 +815,7 @@ protected theorem forall₃_congr'
   (Equiv.forall₃_congr eα.symm eβ.symm eγ.symm h.symm).symm
 
 /-- If `f` is a bijective function, then its domain is equivalent to its codomain. -/
-@[simps (attr := grind =) apply]
+@[implicit_reducible, simps (attr := grind =) apply]
 noncomputable def ofBijective (f : α → β) (hf : Bijective f) : α ≃ β where
   toFun := f
   invFun := surjInv hf.surjective
@@ -920,14 +919,14 @@ variable {α β : Type*}
 /-- The left summand of `α ⊕ β` is equivalent to `α`. -/
 @[simps (attr := grind =)]
 def sumIsLeft : {x : α ⊕ β // x.isLeft} ≃ α where
-  toFun x := x.1.getLeft x.2
+  toFun x := x.val.getLeft x.property
   invFun a := ⟨.inl a, Sum.isLeft_inl⟩
   left_inv | ⟨.inl _a, _⟩ => rfl
 
 /-- The right summand of `α ⊕ β` is equivalent to `β`. -/
 @[simps (attr := grind =)]
 def sumIsRight : {x : α ⊕ β // x.isRight} ≃ β where
-  toFun x := x.1.getRight x.2
+  toFun x := x.val.getRight x.property
   invFun b := ⟨.inr b, Sum.isRight_inr⟩
   left_inv | ⟨.inr _b, _⟩ => rfl
 

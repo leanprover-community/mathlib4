@@ -5,10 +5,15 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.Algebra.Divisibility.Prod
-public import Mathlib.Algebra.Polynomial.FieldDivision
+public import Mathlib.Algebra.Polynomial.Basic
 public import Mathlib.LinearAlgebra.InvariantBasisNumber
 public import Mathlib.RingTheory.Artinian.Module
+
+import Mathlib.Algebra.Divisibility.Prod
+import Mathlib.Algebra.Polynomial.FieldDivision
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Instances related to Artinian rings
@@ -38,6 +43,6 @@ instance : DecompositionMonoid R := MulEquiv.decompositionMonoid (equivPi R)
 
 instance : DecompositionMonoid (Polynomial R) :=
   MulEquiv.decompositionMonoid <|
-    (Polynomial.mapEquiv <| (equivPi R).toRingEquiv).trans (Polynomial.piEquiv _)
+    (Polynomial.mapEquiv (equivPi R).toRingEquiv).trans (Polynomial.piEquiv _)
 
 end IsArtinianRing

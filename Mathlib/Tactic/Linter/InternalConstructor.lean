@@ -5,12 +5,12 @@ Authors: Thomas R. Murrills
 -/
 module
 
+public meta import Lean.Elab.InfoTree.Util
 public meta import Lean.Linter.Basic
-public meta import Lean.Server.InfoUtils
+public meta import Lean.Message
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
-public import Lean.Message
 
 /-!
 # Linting against internal constructors
@@ -20,7 +20,7 @@ access by the user. However, even internal names (e.g. `_mkInternal`) can be use
 anonymous constructor notation `⟨...⟩`. This linter assumes internal constructors are internal for
 a reason, and lints against using them.
 
-## Future work
+## TODO
 
 - This linter could be extensible in multiple ways:
   - Custom predicates (e.g. the ability to register non-internal constructors as forbidden)

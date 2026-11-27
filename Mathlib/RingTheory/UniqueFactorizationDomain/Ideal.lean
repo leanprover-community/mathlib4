@@ -8,10 +8,14 @@ module
 public import Mathlib.RingTheory.Ideal.Operations
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Unique factorization and ascending chain condition on ideals
 
 ## Main results
+
 * `Ideal.setOfPred_isPrincipal_wellFoundedOn_gt`,
   `WfDvdMonoid.of_setOfPred_isPrincipal_wellFoundedOn_gt`
   in a domain, well-foundedness of the strict version of ∣ is equivalent to the ascending
@@ -44,7 +48,7 @@ lemma Ideal.setOfPred_isPrincipal_wellFoundedOn_gt [CommSemiring α] [WfDvdMonoi
     ext
     simp [Submodule.isPrincipal_iff, eq_comm]
   rw [this, Set.wellFoundedOn_image, Set.wellFoundedOn_univ]
-  convert! wellFounded_dvdNotUnit (α := α)
+  convert wellFounded_dvdNotUnit (α := α)
   ext
   exact Ideal.span_singleton_lt_span_singleton
 
@@ -56,9 +60,8 @@ the domain is `WfDvdMonoid`. -/
 lemma WfDvdMonoid.of_setOfPred_isPrincipal_wellFoundedOn_gt [CommSemiring α] [IsDomain α]
     (h : {I : Ideal α | I.IsPrincipal}.WellFoundedOn (· > ·)) :
     WfDvdMonoid α := by
-  have : WellFounded (α := {I : Ideal α // I.IsPrincipal}) (· > ·) := h
-  constructor
-  convert! InvImage.wf (fun a => ⟨Ideal.span ({ a } : Set α), _, rfl⟩) this
+  have : WellFoundedGT {I : Ideal α // I.IsPrincipal} := h
+  convert InvImage.wf (fun a => ⟨Ideal.span ({a} : Set α), _, rfl⟩) this
   ext
   exact Ideal.span_singleton_lt_span_singleton.symm
 

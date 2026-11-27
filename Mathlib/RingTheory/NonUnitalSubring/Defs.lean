@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Group.Subgroup.Defs
 public import Mathlib.RingTheory.NonUnitalSubsemiring.Defs
-public import Mathlib.Tactic.FastInstance
 
 /-!
 # `NonUnitalSubring`s
@@ -34,6 +33,7 @@ Lattice inclusion (e.g. `≤` and `⊓`) is used rather than set notation (`⊆`
 `∈` is defined as membership of a non-unital subring's underlying set.
 
 ## Tags
+
 non-unital subring
 -/
 
@@ -137,7 +137,7 @@ instance : SetLike (NonUnitalSubring R) R where
   coe s := s.carrier
   coe_injective p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
 
-instance : PartialOrder (NonUnitalSubring R) := .ofSetLike (NonUnitalSubring R) R
+instance : PartialOrder (NonUnitalSubring R) := .ofSetLike (NonUnitalSubring R)
 
 /-- The actual `NonUnitalSubring` obtained from an element of a `NonUnitalSubringClass`. -/
 @[simps]
@@ -305,7 +305,6 @@ protected theorem zsmul_mem {x : R} (hx : x ∈ s) (n : ℤ) : n • x ∈ s :=
 theorem val_add (x y : s) : (↑(x + y) : R) = ↑x + ↑y :=
   rfl
 
-@[simp, norm_cast]
 theorem val_neg (x : s) : (↑(-x) : R) = -↑x :=
   rfl
 
@@ -313,7 +312,6 @@ theorem val_neg (x : s) : (↑(-x) : R) = -↑x :=
 theorem val_mul (x y : s) : (↑(x * y) : R) = ↑x * ↑y :=
   rfl
 
-@[simp, norm_cast]
 theorem val_zero : ((0 : s) : R) = 0 :=
   rfl
 
@@ -331,14 +329,12 @@ instance toNonUnitalCommRing {R} [NonUnitalCommRing R] (s : NonUnitalSubring R) 
 theorem mem_toSubsemigroup {s : NonUnitalSubring R} {x : R} : x ∈ s.toSubsemigroup ↔ x ∈ s :=
   Iff.rfl
 
-@[simp]
 theorem coe_toSubsemigroup (s : NonUnitalSubring R) : (s.toSubsemigroup : Set R) = s :=
   rfl
 
 theorem mem_toAddSubgroup {s : NonUnitalSubring R} {x : R} : x ∈ s.toAddSubgroup ↔ x ∈ s :=
   Iff.rfl
 
-@[simp]
 theorem coe_toAddSubgroup (s : NonUnitalSubring R) : (s.toAddSubgroup : Set R) = s :=
   rfl
 
@@ -366,7 +362,7 @@ open NonUnitalRingHom
 
 /-- The ring homomorphism associated to an inclusion of `NonUnitalSubring`s. -/
 def inclusion {S T : NonUnitalSubring R} (h : S ≤ T) : S →ₙ+* T :=
-  NonUnitalRingHom.codRestrict (NonUnitalSubringClass.subtype S) _ fun x => h x.2
+  NonUnitalRingHom.codRestrict (NonUnitalSubringClass.subtype S) _ fun x => h x.property
 
 end NonUnitalSubring
 

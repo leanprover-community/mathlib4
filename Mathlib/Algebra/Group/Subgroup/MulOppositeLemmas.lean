@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Group.Subgroup.Basic
 public import Mathlib.Algebra.Group.Subgroup.MulOpposite
-public import Mathlib.Algebra.Group.Submonoid.MulOpposite
 public import Mathlib.Logic.Encodable.Basic
 
 /-!
@@ -18,8 +17,8 @@ that rely on further theory to define. As such it is a somewhat arbitrary assort
 which might be organized and split up further.
 
 ## Tags
-subgroup, subgroups
 
+subgroup, subgroups
 -/
 
 public section

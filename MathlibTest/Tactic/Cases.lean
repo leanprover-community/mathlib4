@@ -47,7 +47,7 @@ inductive Bar : ℕ → Type
 
 example (x : Bar 0) : True := by
   cases' x with a b c d h
-  · guard_hyp d : ℕ; guard_hyp h : Bar (0 + 1); trivial
+  guard_hyp d : ℕ; guard_hyp h : Bar (0 + 1); trivial
 
 example (n : Nat) : n = n := by
   induction' n with n ih

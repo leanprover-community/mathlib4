@@ -6,9 +6,10 @@ Authors: Christian Merten
 module
 
 public import Mathlib.RingTheory.RingHom.Locally
-public import Mathlib.RingTheory.RingHom.Smooth
 public import Mathlib.RingTheory.RingHom.StandardSmooth
-public import Mathlib.RingTheory.Smooth.StandardSmoothOfFree
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Smooth is locally standard smooth

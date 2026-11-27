@@ -5,11 +5,11 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveTopology
 public import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
-public import Mathlib.CategoryTheory.Sites.LocallySurjective
-/-!
 
+import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveTopology
+
+/-!
 # Locally surjective morphisms of coherent sheaves
 
 This file characterises locally surjective morphisms of presheaves for the coherent, regular
@@ -64,7 +64,7 @@ lemma extensiveTopology.surjective_of_isLocallySurjective_sheaf_of_types [Finita
       (h : Presheaf.IsLocallySurjective (extensiveTopology C) f) {X : C} :
         Function.Surjective (f.app (op X)) := by
   intro x
-  replace h := h.1 x
+  replace h := h.imageSieve_mem x
   rw [mem_sieves_iff_contains_colimit_cofan] at h
   obtain ⟨α, _, Y, π, h, h'⟩ := h
   let y : (a : α) → (F.obj ⟨Y a⟩) := fun a ↦ (h' a).choose
@@ -103,14 +103,13 @@ lemma extensiveTopology.isLocallySurjective_iff [FinitaryExtensive C]
         ∀ (X : C), Function.Surjective (f.hom.app (op X)) :=
   extensiveTopology.presheafIsLocallySurjective_iff _ f.hom
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma regularTopology.isLocallySurjective_sheaf_of_types [Preregular C] [FinitaryPreExtensive C]
     {F G : Cᵒᵖ ⥤ Type w} (f : F ⟶ G) [PreservesFiniteProducts F] [PreservesFiniteProducts G]
       (h : Presheaf.IsLocallySurjective (coherentTopology C) f) :
         Presheaf.IsLocallySurjective (regularTopology C) f where
   imageSieve_mem y := by
-    replace h := h.1 y
+    replace h := h.imageSieve_mem y
     rw [coherentTopology.mem_sieves_iff_hasEffectiveEpiFamily] at h
     obtain ⟨α, _, Z, π, h, h'⟩ := h
     rw [mem_sieves_iff_hasEffectiveEpi]
@@ -126,14 +125,14 @@ lemma regularTopology.isLocallySurjective_sheaf_of_types [Preregular C] [Finitar
       NatTrans.op_app, Cofan.mk_ι_app, Functor.mapIso_symm, Iso.trans_hom, Iso.symm_hom,
       Functor.mapIso_inv, comp_apply, ← f.naturality_apply (Sigma.ι Z a).op, i']
     have : f.app ⟨Z a⟩ (x a) = G.map (π a).op y := (h' a).choose_spec
-    convert! this
+    convert this
     · rw [← Functor.map_comp_apply, opCoproductIsoProduct_inv_comp_ι, ← piComparison_comp_π]
       change ((PreservesProduct.iso F _).hom ≫ _) _ = _
       have := Types.productIso_hom_comp_eval (fun a ↦ F.obj (op (Z a))) a
       rw [← Iso.eq_inv_comp] at this
       simp only [types_comp_apply, Iso.inv_hom_id_apply]
       simp [← comp_apply]
-    · simp only [← Functor.map_comp_apply, ← op_comp, Sigma.ι_desc]
+    · simp only [← Functor.map_comp_apply, ← op_comp, Sigma.ι_comp_desc]
 
 lemma coherentTopology.presheafIsLocallySurjective_iff {F G : Cᵒᵖ ⥤ D} (f : F ⟶ G)
     [Preregular C] [FinitaryPreExtensive C] [PreservesFiniteProducts F] [PreservesFiniteProducts G]

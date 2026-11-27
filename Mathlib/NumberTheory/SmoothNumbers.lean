@@ -5,9 +5,9 @@ Authors: Michael Stoll, Ralf Stephan
 -/
 module
 
-public import Mathlib.Data.Nat.Factorization.Defs
-public import Mathlib.Data.Nat.Squarefree
 public import Mathlib.NumberTheory.PrimeCounting
+
+import Mathlib.Data.Nat.Squarefree
 
 /-!
 # Smooth numbers
@@ -196,7 +196,7 @@ given by `(e, n) ↦ p^e * n` when `p ∉ s` is a prime. See `Nat.factoredNumber
 when `p` is not prime. -/
 def equivProdNatFactoredNumbers {s : Finset ℕ} {p : ℕ} (hp : p.Prime) (hs : p ∉ s) :
     ℕ × factoredNumbers s ≃ factoredNumbers (insert p s) where
-  toFun := fun ⟨e, n⟩ ↦ ⟨p ^ e * n, pow_mul_mem_factoredNumbers hp e n.2⟩
+  toFun := fun ⟨e, n⟩ ↦ ⟨p ^ e * n, pow_mul_mem_factoredNumbers hp e n.property⟩
   invFun := fun ⟨m, _⟩  ↦ (m.factorization p,
                             ⟨(m.primeFactorsList.filter (· ∈ s)).prod, prod_mem_factoredNumbers ..⟩)
   left_inv := by
@@ -222,14 +222,14 @@ def equivProdNatFactoredNumbers {s : Finset ℕ} {p : ℕ} (hp : p.Prime) (hs : 
     exact filter_append_perm (· ∈ s) (primeFactorsList m)
 
 @[simp]
-lemma equivProdNatFactoredNumbers_apply {s : Finset ℕ} {p e m : ℕ} (hp : p.Prime) (hs : p ∉ s)
-    (hm : m ∈ factoredNumbers s) :
-    equivProdNatFactoredNumbers hp hs (e, ⟨m, hm⟩) = p ^ e * m := rfl
-
-@[simp]
 lemma equivProdNatFactoredNumbers_apply' {s : Finset ℕ} {p : ℕ} (hp : p.Prime) (hs : p ∉ s)
     (x : ℕ × factoredNumbers s) :
     equivProdNatFactoredNumbers hp hs x = p ^ x.1 * x.2 := rfl
+
+@[deprecated equivProdNatFactoredNumbers_apply' +typeChanged (since := "2026-11-26")]
+lemma equivProdNatFactoredNumbers_apply {s : Finset ℕ} {p e m : ℕ} (hp : p.Prime) (hs : p ∉ s)
+    (hm : m ∈ factoredNumbers s) :
+    equivProdNatFactoredNumbers hp hs (e, ⟨m, hm⟩) = p ^ e * m := rfl
 
 
 /-!
@@ -372,12 +372,12 @@ def equivProdNatSmoothNumbers {p : ℕ} (hp : p.Prime) :
     Set.equivOfEq <| (smoothNumbers_eq_factoredNumbers (p + 1)) ▸ Finset.range_add_one ▸ rfl
 
 @[simp]
-lemma equivProdNatSmoothNumbers_apply {p e m : ℕ} (hp : p.Prime) (hm : m ∈ p.smoothNumbers) :
-    equivProdNatSmoothNumbers hp (e, ⟨m, hm⟩) = p ^ e * m := rfl
-
-@[simp]
 lemma equivProdNatSmoothNumbers_apply' {p : ℕ} (hp : p.Prime) (x : ℕ × p.smoothNumbers) :
     equivProdNatSmoothNumbers hp x = p ^ x.1 * x.2 := rfl
+
+@[deprecated equivProdNatSmoothNumbers_apply' +typeChanged (since := "2026-11-26")]
+lemma equivProdNatSmoothNumbers_apply {p e m : ℕ} (hp : p.Prime) (hm : m ∈ p.smoothNumbers) :
+    equivProdNatSmoothNumbers hp (e, ⟨m, hm⟩) = p ^ e * m := rfl
 
 
 /-!
@@ -452,7 +452,7 @@ lemma smoothNumbersUpTo_subset_image (N k : ℕ) :
 /-- The cardinality of the set of `k`-smooth numbers `≤ N` is bounded by `2^π(k-1) * √N`. -/
 lemma smoothNumbersUpTo_card_le (N k : ℕ) :
     #(smoothNumbersUpTo N k) ≤ 2 ^ #k.primesBelow * N.sqrt := by
-  convert! (Finset.card_le_card <| smoothNumbersUpTo_subset_image N k).trans <| Finset.card_image_le
+  convert (Finset.card_le_card <| smoothNumbersUpTo_subset_image N k).trans Finset.card_image_le
   simp only [Finset.card_product, Finset.card_powerset, Finset.mem_range, zero_lt_succ,
     Finset.card_erase_of_mem, Finset.card_range, succ_sub_succ_eq_sub, Nat.sub_zero]
 

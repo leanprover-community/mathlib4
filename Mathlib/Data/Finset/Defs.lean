@@ -5,9 +5,9 @@ Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
 module
 
+public import Mathlib.Basic.SetLike.Basic
 public import Mathlib.Data.Multiset.Defs
 public import Mathlib.Data.Set.Pairwise.Basic
-public import Mathlib.Data.SetLike.Basic
 public import Mathlib.Order.Hom.Basic
 
 /-!
@@ -54,7 +54,6 @@ Most constructions involving `Finset`s have been split off to their own files.
 ## Tags
 
 finite sets, finset
-
 -/
 
 @[expose] public section
@@ -83,13 +82,13 @@ instance Multiset.canLiftFinset {α} : CanLift (Multiset α) (Finset α) Finset.
 
 namespace Finset
 
-theorem eq_of_veq : ∀ {s t : Finset α}, s.1 = t.1 → s = t
+theorem eq_of_veq : ∀ {s t : Finset α}, s.val = t.val → s = t
   | ⟨s, _⟩, ⟨t, _⟩, h => by cases h; rfl
 
 theorem val_injective : Injective (val : Finset α → Multiset α) := fun _ _ => eq_of_veq
 
 @[simp]
-theorem val_inj {s t : Finset α} : s.1 = t.1 ↔ s = t :=
+theorem val_inj {s t : Finset α} : s.val = t.val ↔ s = t :=
   val_injective.eq_iff
 
 instance decidableEq [DecidableEq α] : DecidableEq (Finset α)
@@ -99,16 +98,16 @@ instance decidableEq [DecidableEq α] : DecidableEq (Finset α)
 
 /-- Convert a finset to a set in the natural way. -/
 instance : SetLike (Finset α) α where
-  coe s := {a | a ∈ s.1}
+  coe s := {a | a ∈ s.val}
   coe_injective s₁ s₂ h := (val_inj.symm.trans <| s₁.nodup.ext s₂.nodup).2 <| Set.ext_iff.mp h
 
-theorem mem_def {a : α} {s : Finset α} : a ∈ s ↔ a ∈ s.1 :=
+theorem mem_def {a : α} {s : Finset α} : a ∈ s ↔ a ∈ s.val :=
   Iff.rfl
 
 -- If https://github.com/leanprover/lean4/issues/2678 is resolved-
 -- this can be changed back to an `Iff`, but for now we would like `dsimp` to use it.
 @[simp, grind =]
-theorem mem_val {a : α} {s : Finset α} : (a ∈ s.1) = (a ∈ s) := rfl
+theorem mem_val {a : α} {s : Finset α} : (a ∈ s.val) = (a ∈ s) := rfl
 
 @[simp, grind =]
 theorem mem_mk {a : α} {s nd} : a ∈ @Finset.mk α s nd ↔ a ∈ s :=
@@ -120,20 +119,19 @@ instance decidableMem [_h : DecidableEq α] (a : α) (s : Finset α) : Decidable
 @[simp] lemma forall_mem_not_eq {s : Finset α} {a : α} : (∀ b ∈ s, ¬ a = b) ↔ a ∉ s := by grind
 @[simp] lemma forall_mem_not_eq' {s : Finset α} {a : α} : (∀ b ∈ s, ¬ b = a) ↔ a ∉ s := by grind
 
-instance : PartialOrder (Finset α) := .ofSetLike (Finset α) α
+instance : PartialOrder (Finset α) := .ofSetLike (Finset α)
 
 @[norm_cast, grind =]
 theorem mem_coe {a : α} {s : Finset α} : a ∈ (s : Set α) ↔ a ∈ (s : Finset α) :=
   Iff.rfl
 
-@[simp]
 theorem setOfPred_mem {α} {s : Finset α} : { a | a ∈ s } = s :=
   rfl
 
 @[deprecated (since := "2026-07-09")] alias setOf_mem := setOfPred_mem
 
 theorem coe_mem {s : Finset α} (x : (s : Set α)) : ↑x ∈ s :=
-  x.2
+  x.property
 
 theorem mk_coe {s : Finset α} (x : (s : Set α)) {h} : (⟨x, h⟩ : (s : Set α)) = x :=
   Subtype.coe_eta _ _
@@ -190,7 +188,7 @@ variable {s t : Finset α}
 @[deprecated "This is now a syntactic identity" (since := "2026-05-24")]
 theorem subset_of_le : s ≤ t → s ⊆ t := id
 
-theorem subset_def : s ⊆ t ↔ s.1 ⊆ t.1 :=
+theorem subset_def : s ⊆ t ↔ s.val ⊆ t.val :=
   Iff.rfl
 
 theorem ssubset_def : s ⊂ t ↔ s ⊆ t ∧ ¬t ⊆ s :=
@@ -217,7 +215,9 @@ theorem mem_of_subset {s₁ s₂ : Finset α} {a : α} : s₁ ⊆ s₂ → a ∈
 theorem notMem_mono {s t : Finset α} (h : s ⊆ t) {a : α} : a ∉ t → a ∉ s :=
   mt <| @h _
 
-alias not_mem_subset := notMem_mono
+alias notMem_subset := notMem_mono
+
+@[deprecated (since := "2026-09-28")] alias not_mem_subset := notMem_subset
 
 theorem Subset.antisymm {s₁ s₂ : Finset α} (H₁ : s₁ ⊆ s₂) (H₂ : s₂ ⊆ s₁) : s₁ = s₂ :=
   ext fun a => ⟨@H₁ a, @H₂ a⟩
@@ -234,8 +234,8 @@ theorem coe_subset {s₁ s₂ : Finset α} : (s₁ : Set α) ⊆ s₂ ↔ s₁ �
   Iff.rfl
 
 @[simp]
-theorem val_le_iff {s₁ s₂ : Finset α} : s₁.1 ≤ s₂.1 ↔ s₁ ⊆ s₂ :=
-  le_iff_subset s₁.2
+theorem val_le_iff {s₁ s₂ : Finset α} : s₁.val ≤ s₂.val ↔ s₁ ⊆ s₂ :=
+  le_iff_subset s₁.nodup
 
 theorem Subset.antisymm_iff {s₁ s₂ : Finset α} : s₁ = s₂ ↔ s₁ ⊆ s₂ ∧ s₂ ⊆ s₁ :=
   le_antisymm_iff
@@ -263,7 +263,7 @@ theorem coe_ssubset {s₁ s₂ : Finset α} : (s₁ : Set α) ⊂ s₂ ↔ s₁ 
   simp
 
 @[simp]
-theorem val_lt_iff {s₁ s₂ : Finset α} : s₁.1 < s₂.1 ↔ s₁ ⊂ s₂ :=
+theorem val_lt_iff {s₁ s₂ : Finset α} : s₁.val < s₂.val ↔ s₁ ⊂ s₂ :=
   and_congr val_le_iff <| not_congr val_le_iff
 
 lemma val_strictMono : StrictMono (val : Finset α → Multiset α) := fun _ _ ↦ val_lt_iff.2
@@ -286,7 +286,7 @@ theorem ssubset_of_subset_of_ssubset {s₁ s₂ s₃ : Finset α} (hs₁s₂ : s
 theorem exists_of_ssubset {s₁ s₂ : Finset α} (h : s₁ ⊂ s₂) : ∃ x ∈ s₂, x ∉ s₁ :=
   Set.exists_of_ssubset h
 
-instance isWellFounded_ssubset : IsWellFounded (Finset α) (· ⊂ ·) :=
+instance isWellFounded_ssubset : @WellFounded (Finset α) (· ⊂ ·) :=
   Subrelation.isWellFounded (InvImage _ _) val_lt_iff.2
 
 instance wellFoundedLT : WellFoundedLT (Finset α) :=

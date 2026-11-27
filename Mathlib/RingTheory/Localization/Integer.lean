@@ -21,9 +21,12 @@ public import Mathlib.RingTheory.Localization.Defs
 See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
 
 ## Tags
+
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
 -/
+
+open scoped Finset
 
 @[expose] public section
 
@@ -158,7 +161,7 @@ theorem finsetIntegerMultiple_image [DecidableEq R] (s : Finset S) :
 
 @[simp]
 theorem card_finsetIntegerMultiple [DecidableEq R] (s : Finset S) :
-    (finsetIntegerMultiple M s).card = s.card :=
+    #(finsetIntegerMultiple M s) = #s :=
   (Finset.card_image_of_injective _ (integerMultiple_injective M s id injective_id)).trans
     Finset.card_attach
 

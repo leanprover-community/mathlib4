@@ -11,7 +11,6 @@ public import Mathlib.Topology.ContinuousMap.Star
 
 /-!
 # Star structures on bounded continuous functions
-
 -/
 
 @[expose] public section
@@ -54,7 +53,7 @@ variable {𝕜 : Type*} [NormedField 𝕜] [StarRing 𝕜] [TopologicalSpace α]
 variable [NormedSpace 𝕜 β] [StarModule 𝕜 β]
 
 instance instStarAddMonoid : StarAddMonoid (α →ᵇ β) where
-  star f := f.comp star starNormedAddGroupHom.lipschitz
+  star f := f.comp star starNormedAddGroupHom.lipschitzWith
   star_involutive f := ext fun x => star_star (f x)
   star_add f g := ext fun x => star_add (f x) (g x)
 
@@ -103,6 +102,9 @@ variable (𝕜 : Type*) [NormedField 𝕜] [TopologicalSpace α]
 @[simps!]
 def toContinuousMapStarₐ : (α →ᵇ β) →⋆ₐ[𝕜] C(α, β) := { toContinuousMapₐ 𝕜 with
   map_star' _ := rfl }
+
+lemma toContinuousMapStarₐ_apply_apply (f : α →ᵇ β) (a : α) :
+    toContinuousMapStarₐ 𝕜 f a = f a := rfl
 
 @[simp]
 theorem coe_toContinuousMapStarₐ (f : α →ᵇ β) : (f.toContinuousMapStarₐ 𝕜 : α → β) = f := rfl

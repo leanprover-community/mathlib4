@@ -9,7 +9,6 @@ public import Mathlib.Analysis.Asymptotics.Prod
 public import Mathlib.Analysis.Normed.Module.Multilinear.Basic
 public import Mathlib.Analysis.Normed.Operator.Mul
 public import Mathlib.Analysis.Normed.Ring.Units
-public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Invertible
 
 /-!
@@ -40,7 +39,7 @@ is normed) that `‖f x‖` is bounded by a multiple of `‖x‖`. Hence the "bo
   set of continuous linear maps between a pair of Banach spaces.  Placed in this file because its
   proof uses `IsBoundedBilinearMap.continuous`.
 
-## Notes
+## Implementation notes
 
 The main use of this file is `IsBoundedBilinearMap`.
 The file `Mathlib/Analysis/NormedSpace/Multilinear/Basic.lean`
@@ -136,7 +135,7 @@ theorem smul {𝕜' : Type*} (c : 𝕜') [SeminormedRing 𝕜'] [Module 𝕜' F]
       _ = ‖c‖ * M * ‖x‖ := (mul_assoc _ _ _).symm
 
 theorem neg (hf : IsBoundedLinearMap 𝕜 f) : IsBoundedLinearMap 𝕜 fun e => -f e :=
-  ⟨(-hf.1.mk' _).isLinear, by simpa using hf.2⟩
+  ⟨(-hf.toIsLinearMap.mk' _).isLinear, by simpa using hf.bound⟩
 
 theorem add (hf : IsBoundedLinearMap 𝕜 f) (hg : IsBoundedLinearMap 𝕜 g) :
     IsBoundedLinearMap 𝕜 fun e => f e + g e :=
@@ -154,7 +153,7 @@ theorem comp {g : F → G} (hg : IsBoundedLinearMap 𝕜 g) (hf : IsBoundedLinea
     IsBoundedLinearMap 𝕜 (g ∘ f) :=
   let ⟨hlf, Mf, _, hMf⟩ := hf
   let ⟨hlg, Mg, _, hMg⟩ := hg
-  (hg.1.mk' _).comp (hf.1.mk' _) |>.isLinear.with_bound (Mg * Mf) fun x ↦
+  (hg.toIsLinearMap.mk' _).comp (hf.toIsLinearMap.mk' _) |>.isLinear.with_bound (Mg * Mf) fun x ↦
     show ‖g (f x)‖ ≤ _ by grw [hMg, hMf, mul_assoc]
 
 protected theorem tendsto (x : E) (hf : IsBoundedLinearMap 𝕜 f) : Tendsto f (𝓝 x) (𝓝 (f x)) :=
@@ -164,7 +163,7 @@ theorem continuous (hf : IsBoundedLinearMap 𝕜 f) : Continuous f :=
   hf.toContinuousLinearMap.continuous
 
 theorem lim_zero_bounded_linear_map (hf : IsBoundedLinearMap 𝕜 f) : Tendsto f (𝓝 0) (𝓝 0) :=
-  (hf.1.mk' _).map_zero ▸ hf.tendsto 0
+  (hf.toIsLinearMap.mk' _).map_zero ▸ hf.tendsto 0
 
 section
 
@@ -398,7 +397,7 @@ theorem isBoundedBilinearMap_apply : IsBoundedBilinearMap 𝕜 fun p : (E →L[�
 theorem isBoundedBilinearMap_smulRight :
     IsBoundedBilinearMap 𝕜 fun p =>
       (ContinuousLinearMap.smulRight : StrongDual 𝕜 E → F → E →L[𝕜] F) p.1 p.2 :=
-  (smulRightL 𝕜 E F).isBoundedBilinearMap
+  (StrongDual.smulRightL 𝕜 E F).isBoundedBilinearMap
 
 /-- The composition of a continuous linear map with a continuous multilinear map is a bounded
 bilinear operation. -/
@@ -547,7 +546,7 @@ protected theorem ContinuousLinearEquiv.isOpen [CompleteSpace E] :
   refine fun e => IsOpen.mem_nhds ?_ (mem_range_self _)
   let O : (E →L[𝕜] F) → E →L[𝕜] E := fun f => (e.symm : F →L[𝕜] E).comp f
   have h_O : Continuous O := (isBoundedBilinearMap_comp (𝕜 := 𝕜) (F := F) (G := E)).continuous_right
-  convert! show IsOpen (O ⁻¹' {x | IsUnit x}) from Units.isOpen.preimage h_O using 1
+  convert show IsOpen (O ⁻¹' {x | IsUnit x}) from Units.isOpen.preimage h_O using 1
   ext f'
   constructor
   · rintro ⟨e', rfl⟩

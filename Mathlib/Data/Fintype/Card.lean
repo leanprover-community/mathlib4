@@ -19,7 +19,6 @@ We also include some elementary results on the values of `Fintype.card` on speci
 * `Fintype.card α`: Cardinality of a fintype. Equal to `Finset.univ.card`.
 * `Finite.surjective_of_injective`: an injective function from a finite type to
   itself is also surjective.
-
 -/
 
 @[expose] public section
@@ -225,8 +224,8 @@ noncomputable def Fintype.sumRight {α β} [Fintype (α ⊕ β)] : Fintype β :=
 
 theorem Finite.exists_univ_list (α) [Finite α] : ∃ l : List α, l.Nodup ∧ ∀ x : α, x ∈ l := by
   cases nonempty_fintype α
-  obtain ⟨l, e⟩ := Quotient.exists_rep (@univ α _).1
-  have := And.intro (@univ α _).2 (@mem_univ_val α _)
+  obtain ⟨l, e⟩ := Quotient.exists_rep (@univ α _).val
+  have := And.intro (@univ α _).nodup (@mem_univ_val α _)
   exact ⟨_, by rwa [← e] at this⟩
 
 theorem List.Nodup.length_le_card {α : Type*} [Fintype α] {l : List α} (h : l.Nodup) :
@@ -245,7 +244,7 @@ theorem not_injective_of_card_lt (f : α → β) (h : card β < card α) :
   Nat.not_le_of_lt h ∘ card_le_of_injective f
 
 theorem card_le_of_embedding (f : α ↪ β) : card α ≤ card β :=
-  card_le_of_injective f f.2
+  card_le_of_injective f f.inj'
 
 theorem card_lt_of_injective_of_notMem (f : α → β) (h : Function.Injective f) {b : β}
     (w : b ∉ Set.range f) : card α < card β :=
@@ -403,8 +402,9 @@ theorem Fintype.card_subtype_compl [Fintype α] (p : α → Prop) [Fintype { x /
     Fintype.card { x // ¬p x } = Fintype.card α - Fintype.card { x // p x } := by
   classical
     rw [Fintype.card_of_subtype (Set.toFinset { x | p x }ᶜ), Set.toFinset_compl,
-      Finset.card_compl, Fintype.card_of_subtype] <;>
-    · intro
+      Finset.card_compl, Fintype.card_of_subtype]
+    all_goals
+      intro
       simp only [Set.mem_toFinset, Set.mem_compl_iff, Set.mem_ofPred]
 
 theorem Fintype.card_subtype_mono (p q : α → Prop) (h : p ≤ q) [Fintype { x // p x }]
@@ -448,7 +448,7 @@ theorem wellFounded_of_trans_of_irrefl (r : α → α → Prop) [IsTrans α r] [
 -- See note [lower instance priority]
 @[to_dual]
 instance (priority := 100) to_wellFoundedLT [Preorder α] : WellFoundedLT α :=
-  ⟨wellFounded_of_trans_of_irrefl _⟩
+  wellFounded_of_trans_of_irrefl _
 
 end Finite
 

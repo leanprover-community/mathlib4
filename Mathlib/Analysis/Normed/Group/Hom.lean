@@ -85,6 +85,7 @@ variable {f g : NormedAddGroupHom V₁ V₂}
 def ofLipschitz (f : V₁ →+ V₂) {K : ℝ≥0} (h : LipschitzWith K f) : NormedAddGroupHom V₁ V₂ :=
   f.mkNormedAddGroupHom K fun x ↦ by simpa only [map_zero, dist_zero_right] using h.dist_le_mul x 0
 
+@[macro_inline]
 instance funLike : FunLike (NormedAddGroupHom V₁ V₂) V₁ V₂ where
   coe := toFun
   coe_injective f g h := by cases f; cases g; congr
@@ -208,7 +209,8 @@ theorem le_opNorm (x : V₁) : ‖f x‖ ≤ ‖f‖ * ‖x‖ := by
   obtain ⟨C, _Cpos, hC⟩ := f.bound
   replace hC := hC x
   by_cases h : ‖x‖ = 0
-  · rwa [h, mul_zero] at hC ⊢
+  · rw [h, mul_zero] at hC ⊢
+    assumption
   have hlt : 0 < ‖x‖ := lt_of_le_of_ne (norm_nonneg x) (Ne.symm h)
   exact
     (div_le_iff₀ hlt).mp
@@ -221,13 +223,16 @@ theorem le_of_opNorm_le {c : ℝ} (h : ‖f‖ ≤ c) (x : V₁) : ‖f x‖ ≤
   (f.le_opNorm x).trans (by gcongr)
 
 /-- continuous linear maps are Lipschitz continuous. -/
-theorem lipschitz : LipschitzWith ⟨‖f‖, opNorm_nonneg f⟩ f :=
+theorem lipschitzWith : LipschitzWith ⟨‖f‖, opNorm_nonneg f⟩ f :=
   LipschitzWith.of_dist_le_mul fun x y => by
     rw [dist_eq_norm, dist_eq_norm, ← map_sub]
     apply le_opNorm
 
+@[deprecated (since := "2026-09-27")]
+alias lipschitz := lipschitzWith
+
 protected theorem uniformContinuous (f : NormedAddGroupHom V₁ V₂) : UniformContinuous f :=
-  f.lipschitz.uniformContinuous
+  f.lipschitzWith.uniformContinuous
 
 @[continuity]
 protected theorem continuous (f : NormedAddGroupHom V₁ V₂) : Continuous f :=
@@ -235,6 +240,17 @@ protected theorem continuous (f : NormedAddGroupHom V₁ V₂) : Continuous f :=
 
 instance : ContinuousMapClass (NormedAddGroupHom V₁ V₂) V₁ V₂ where
   map_continuous := fun f => f.continuous
+
+section toContinuousAddMonoidHom
+
+/-- Reinterpret a `NormedAddGroupHom V₁ V₂` as
+a continuous morphism of additive monoids `V₁ →ₜ+ V₂`. -/
+def toContinuousAddMonoidHom : V₁ →ₜ+ V₂ := .ofClass f
+
+@[simp]
+lemma coe_toContinuousAddMonoidHom : ⇑f.toContinuousAddMonoidHom = f := rfl
+
+end toContinuousAddMonoidHom
 
 theorem ratio_le_opNorm (x : V₁) : ‖f x‖ / ‖x‖ ≤ ‖f‖ :=
   div_le_of_le_mul₀ (norm_nonneg _) f.opNorm_nonneg (le_opNorm _ _)
@@ -251,7 +267,8 @@ theorem opNorm_eq_of_bounds {M : ℝ} (M_nonneg : 0 ≤ M) (h_above : ∀ x, ‖
 
 theorem opNorm_le_of_lipschitz {f : NormedAddGroupHom V₁ V₂} {K : ℝ≥0} (hf : LipschitzWith K f) :
     ‖f‖ ≤ K :=
-  f.opNorm_le_bound K.2 fun x => by simpa only [dist_zero_right, map_zero] using hf.dist_le_mul x 0
+  f.opNorm_le_bound K.property fun x => by
+    simpa only [dist_zero_right, map_zero] using hf.dist_le_mul x 0
 
 /-- If a bounded group homomorphism map is constructed from a group homomorphism via the constructor
 `AddMonoidHom.mkNormedAddGroupHom`, then its norm is bounded by the bound given to the constructor
@@ -765,7 +782,7 @@ def ι : NormedAddGroupHom (f.equalizer g) V :=
 theorem comp_ι_eq : f.comp (ι f g) = g.comp (ι f g) := by
   ext x
   rw [comp_apply, comp_apply, ← sub_eq_zero, ← NormedAddGroupHom.sub_apply]
-  exact x.2
+  exact x.property
 
 variable {f g}
 

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Conjugating by the square root of a positive element in a C⋆-algebra
 
@@ -25,7 +28,7 @@ public section ConjSqrt
 
 variable {A : Type*} [PartialOrder A] [Ring A] [StarRing A] [TopologicalSpace A]
   [StarOrderedRing A] [Algebra ℝ A] [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
-  [NonnegSpectrumClass ℝ A] [SeparatelyContinuousMul A]
+  [SeparatelyContinuousMul A]
 
 /-- Conjugation by the square root of an element, i.e. `sqrt c * a * sqrt c`. -/
 @[expose]

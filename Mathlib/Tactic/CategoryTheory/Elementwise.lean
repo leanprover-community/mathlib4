@@ -5,9 +5,9 @@ Authors: Kim Morrison, Kyle Miller
 -/
 module
 
+public meta import Mathlib.Tactic.ToAdditive
 public meta import Mathlib.Util.AddRelatedDecl
 public import Mathlib.CategoryTheory.ConcreteCategory.Basic
-public meta import Mathlib.Tactic.ToAdditive
 
 /-!
 # Tools to reformulate category-theoretic lemmas in concrete categories
@@ -91,7 +91,7 @@ def elementwiseExpr (src : Name) (pf : Expr) (simpSides := true) :
         -- check that it's not a simp-trivial equality:
         forallTelescope ty' fun _ ty' => do
           if let some (_, lhs, rhs) := ty'.eq? then
-            if ← Batteries.Tactic.Lint.isSimpEq lhs rhs then
+            if ← Batteries.Linter.isSimpEq lhs rhs then
               throwError "applying simp to both sides reduces elementwise lemma for {src} \
                 to the trivial equality {ty'}. \
                 Either add `nosimp` or remove the `elementwise` attribute."

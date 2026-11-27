@@ -6,7 +6,6 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.Lie.Subalgebra
-public import Mathlib.LinearAlgebra.Finsupp.Span
 
 /-!
 # Lie submodules of a Lie algebra
@@ -55,7 +54,7 @@ instance : SetLike (LieSubmodule R L M) M where
   coe s := s.carrier
   coe_injective N O h := by cases N; cases O; congr; exact SetLike.coe_injective h
 
-instance : PartialOrder (LieSubmodule R L M) := .ofSetLike (LieSubmodule R L M) M
+instance : PartialOrder (LieSubmodule R L M) := .ofSetLike (LieSubmodule R L M)
 
 instance : AddSubgroupClass (LieSubmodule R L M) M where
   add_mem {N} _ _ := N.add_mem'
@@ -152,7 +151,6 @@ instance : LieRingModule L N where
   lie_add := by intro x m n; apply SetCoe.ext; apply lie_add
   leibniz_lie := by intro x y m; apply SetCoe.ext; apply leibniz_lie
 
-@[simp, norm_cast]
 theorem coe_zero : ((0 : N) : M) = (0 : M) :=
   rfl
 
@@ -160,15 +158,12 @@ theorem coe_zero : ((0 : N) : M) = (0 : M) :=
 theorem coe_add (m m' : N) : (↑(m + m') : M) = (m : M) + (m' : M) :=
   rfl
 
-@[simp, norm_cast]
 theorem coe_neg (m : N) : (↑(-m) : M) = -(m : M) :=
   rfl
 
-@[simp, norm_cast]
 theorem coe_sub (m m' : N) : (↑(m - m') : M) = (m : M) - (m' : M) :=
   rfl
 
-@[simp, norm_cast]
 theorem coe_smul (t : R) (m : N) : (↑(t • m) : M) = t • (m : M) :=
   rfl
 
@@ -519,10 +514,10 @@ variable (R L M)
     map_rel_iff' := Iff.rfl }
 
 instance wellFoundedGT_of_noetherian [IsNoetherian R M] : WellFoundedGT (LieSubmodule R L M) :=
-  RelHomClass.isWellFounded (toSubmodule_orderEmbedding R L M).dual.ltEmbedding
+  RelHomClass.wellFounded' (toSubmodule_orderEmbedding R L M).dual.ltEmbedding
 
 instance wellFoundedLT_of_isArtinian [IsArtinian R M] : WellFoundedLT (LieSubmodule R L M) :=
-  RelHomClass.isWellFounded (toSubmodule_orderEmbedding R L M).ltEmbedding
+  RelHomClass.wellFounded' (toSubmodule_orderEmbedding R L M).ltEmbedding
 
 @[simp]
 theorem subsingleton_iff : Subsingleton (LieSubmodule R L M) ↔ Subsingleton M :=
@@ -583,7 +578,7 @@ def inclusion : N →ₗ⁅R,L⁆ N' where
 theorem coe_inclusion (m : N) : (inclusion h m : M) = m :=
   rfl
 
-theorem inclusion_apply (m : N) : inclusion h m = ⟨m.1, h m.2⟩ :=
+theorem inclusion_apply (m : N) : inclusion h m = ⟨m.val, h m.property⟩ :=
   rfl
 
 theorem inclusion_injective : Function.Injective (inclusion h) := fun x y ↦ by
@@ -650,7 +645,7 @@ theorem span_empty : lieSpan R L (∅ : Set M) = ⊥ :=
 
 @[simp]
 theorem span_univ : lieSpan R L (Set.univ : Set M) = ⊤ :=
-  eq_top_iff.2 <| SetLike.le_def.2 <| subset_lieSpan
+  eq_top_iff.2 fun _ _ ↦ subset_lieSpan (Set.mem_univ _)
 
 theorem lieSpan_eq_bot_iff : lieSpan R L s = ⊥ ↔ ∀ m ∈ s, m = (0 : M) := by
   rw [_root_.eq_bot_iff, lieSpan_le, bot_coe, subset_singleton_iff]
@@ -686,7 +681,7 @@ lemma isCompactElement_lieSpan_singleton (m : M) :
     IsCompactElement (lieSpan R L {m}) := by
   rw [isCompactElement_iff_le_of_directed_sSup_le]
   intro s hne hdir hsup
-  replace hsup : m ∈ (↑(sSup s) : Set M) := (SetLike.le_def.mp hsup) (subset_lieSpan rfl)
+  replace hsup : m ∈ (↑(sSup s) : Set M) := (mem_of_le_of_mem hsup) (subset_lieSpan rfl)
   suffices (↑(sSup s) : Set M) = ⋃ N ∈ s, ↑N by simp_all
   replace hne : Nonempty s := Set.nonempty_coe_sort.mpr hne
   have := Submodule.coe_iSup_of_directed _ hdir.directed_val
@@ -703,7 +698,8 @@ lemma sSup_image_lieSpan_singleton : sSup ((fun x ↦ lieSpan R L {x}) '' N) = N
 
 instance instIsCompactlyGenerated : IsCompactlyGenerated (LieSubmodule R L M) :=
   ⟨fun N ↦ ⟨(fun x ↦ lieSpan R L {x}) '' N, fun _ ⟨m, _, hm⟩ ↦
-    hm ▸ isCompactElement_lieSpan_singleton R L m, N.sSup_image_lieSpan_singleton⟩⟩
+    hm ▸ isCompactElement_lieSpan_singleton R L m,
+    isLUB_iff_sSup_eq.mpr N.sSup_image_lieSpan_singleton⟩⟩
 
 end LieSpan
 

@@ -8,20 +8,21 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexOp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The boundary of the standard simplex
 
 We introduce the boundary `∂Δ[n]` of the standard simplex `Δ[n]`.
 (These notations become available by doing `open Simplicial`.)
 
-## Future work
+## TODO
 
 There isn't yet a complete API for simplices, boundaries, and horns.
 As an example, we should have a function that constructs
 from a non-surjective order-preserving function `Fin n → Fin n`
 a morphism `Δ[n] ⟶ ∂Δ[n]`.
-
-
 -/
 
 @[expose] public section
@@ -107,7 +108,7 @@ lemma op_boundary (n : ℕ) :
     stdSimplex.opObjEquiv_opObjEquiv_symm_apply, not_exists]
   constructor
   all_goals
-  · rintro ⟨k, hk⟩
+    rintro ⟨k, hk⟩
     exact ⟨k.rev, fun l _ ↦ hk l.rev (by aesop)⟩
 
 namespace stdSimplex
@@ -201,7 +202,7 @@ lemma hom_ext {n : ℕ} {X : SSet.{u}} {f g : (∂Δ[n + 1] : SSet) ⟶ X}
   simp only [boundary_eq_iSup, stdSimplex.face_singleton_compl, Subfunctor.iSup_obj,
     Set.mem_iUnion, Subcomplex.mem_ofSimplex_obj_iff, op_unop] at hx
   obtain ⟨i, ⟨y, rfl⟩⟩ := hx
-  exact ConcreteCategory.congr_hom (congr_app (h i) _) _
+  congrm $(h i).app _ _
 
 @[ext]
 lemma hom_ext₀ {X : SSet.{u}} {f g : (∂Δ[0] : SSet) ⟶ X} : f = g := by

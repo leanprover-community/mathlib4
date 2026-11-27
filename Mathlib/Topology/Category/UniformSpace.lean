@@ -5,10 +5,14 @@ Authors: Reid Barton, Patrick Massot, Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Adjunction.Reflective
 public import Mathlib.CategoryTheory.Monad.Limits  -- shake: keep (used in `example` only)
 public import Mathlib.Topology.Category.TopCat.Basic
 public import Mathlib.Topology.UniformSpace.Completion
+
+import Mathlib.CategoryTheory.Adjunction.Reflective
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The category of uniform spaces
@@ -56,6 +60,7 @@ instance : LargeCategory.{u} UniformSpaceCat.{u} where
   comp_id := by intros; apply Hom.ext; simp
   assoc := by intros; apply Hom.ext; ext; simp
 
+@[macro_inline]
 instance instFunLike (X Y : UniformSpaceCat) :
     FunLike { f : X → Y // UniformContinuous f } X Y where
   coe := Subtype.val
@@ -164,6 +169,7 @@ instance : Inhabited CpltSepUniformSpace :=
 instance category : LargeCategory CpltSepUniformSpace :=
   inferInstanceAs <| Category (InducedCategory _ toUniformSpace)
 
+@[macro_inline]
 instance instFunLike (X Y : CpltSepUniformSpace) :
     FunLike { f : X → Y // UniformContinuous f } X Y where
   coe := Subtype.val
@@ -187,7 +193,6 @@ theorem hom_id (X : CpltSepUniformSpace) :
     ConcreteCategory.hom (𝟙 X : X ⟶ X) = ⟨id, uniformContinuous_id⟩ :=
   rfl
 
-@[simp]
 theorem hom_ofHom {X Y : Type u} [UniformSpace X] [UniformSpace Y]
     (f : { f : X → Y // UniformContinuous f }) : (UniformSpaceCat.ofHom f).hom = f :=
   rfl
@@ -204,7 +209,7 @@ open CpltSepUniformSpace
 @[simps map]
 noncomputable def completionFunctor : UniformSpaceCat ⥤ CpltSepUniformSpace where
   obj X := ↧(Completion X)
-  map f := ConcreteCategory.ofHom ⟨Completion.map f.1, Completion.uniformContinuous_map⟩
+  map f := ConcreteCategory.ofHom ⟨Completion.map f.hom', Completion.uniformContinuous_map⟩
   map_id _ := InducedCategory.hom_ext (hom_ext (by apply Completion.map_id))
   map_comp f g := InducedCategory.hom_ext (hom_ext (by
     exact (Completion.map_comp g.hom.property f.hom.property).symm))
@@ -235,7 +240,7 @@ theorem extension_comp_hom {X : UniformSpaceCat} {Y : CpltSepUniformSpace}
     (f : toUniformSpace ↧(Completion X) ⟶ toUniformSpace Y) :
     (extensionHom (completionHom X ≫ f)).hom = f := by
   ext x
-  exact congr_fun (Completion.extension_comp_coe f.hom.property) x
+  congrm $(Completion.extension_comp_coe f.hom.property) x
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The completion functor is left adjoint to the forgetful functor. -/
@@ -253,7 +258,7 @@ noncomputable def adj : completionFunctor ⊣ forget₂ CpltSepUniformSpace Unif
       homEquiv_naturality_left_symm := fun {X' X Y} f g => by
         ext x
         dsimp [-Function.comp_apply]
-        erw [Completion.extension_map (γ := Y) g.hom.2 f.hom.2]
+        erw [Completion.extension_map (γ := Y) g.hom.property f.hom.property]
         rfl }
 
 noncomputable instance : Reflective (forget₂ CpltSepUniformSpace UniformSpaceCat) where

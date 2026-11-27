@@ -150,7 +150,7 @@ theorem Disjoint.map [OrderBot α] [OrderBot β] [BotHomClass F α β] [InfHomCl
 
 theorem IsCompl.map [BoundedOrder α] [BoundedOrder β] [BoundedLatticeHomClass F α β] {a b : α}
     (f : F) (h : IsCompl a b) : IsCompl (f a) (f b) :=
-  ⟨h.1.map _, h.2.map _⟩
+  ⟨h.disjoint.map _, h.codisjoint.map _⟩
 
 end BoundedLattice
 
@@ -198,7 +198,7 @@ section Sup
 
 variable [Max β] [Bot β] [Max γ] [Bot γ] [Max δ] [Bot δ]
 
-@[to_dual]
+@[to_dual (attr := macro_inline)]
 instance : FunLike (SupBotHom α β) α β where
   coe f := f.toFun
   coe_injective f g h := by
@@ -362,6 +362,7 @@ variable [Lattice α] [Lattice β] [Lattice γ] [Lattice δ] [BoundedOrder α] [
 def toBoundedOrderHom (f : BoundedLatticeHom α β) : BoundedOrderHom α β :=
   { f, (f.toLatticeHom : α →o β) with }
 
+@[macro_inline]
 instance instFunLike : FunLike (BoundedLatticeHom α β) α β where
   coe f := f.toFun
   coe_injective f g h := by obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f; obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g; congr
@@ -372,10 +373,10 @@ instance instBoundedLatticeHomClass : BoundedLatticeHomClass (BoundedLatticeHom 
   map_top f := f.map_top'
   map_bot f := f.map_bot'
 
-@[simp] lemma toFun_eq_coe (f : BoundedLatticeHom α β) : f.toFun = f := rfl
+lemma toFun_eq_coe (f : BoundedLatticeHom α β) : f.toFun = f := rfl
 
 @[simp] lemma coe_toLatticeHom (f : BoundedLatticeHom α β) : ⇑f.toLatticeHom = f := rfl
-@[to_dual (attr := simp)]
+@[to_dual]
 lemma coe_toSupBotHom (f : BoundedLatticeHom α β) : ⇑f.toSupBotHom = f := rfl
 @[simp] lemma coe_toBoundedOrderHom (f : BoundedLatticeHom α β) : ⇑f.toBoundedOrderHom = f := rfl
 @[simp] lemma coe_mk (f : LatticeHom α β) (hf hf') : ⇑(mk f hf hf') = f := rfl

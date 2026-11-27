@@ -213,11 +213,10 @@ theorem achart_def (x : M) : achart H x = ⟨chartAt H x, chart_mem_atlas H x⟩
 theorem coe_achart (x : M) : (achart H x : OpenPartialHomeomorph M H) = chartAt H x :=
   rfl
 
-@[simp, mfld_simps]
-theorem achart_val (x : M) : (achart H x).1 = chartAt H x :=
+theorem achart_val (x : M) : (achart H x).val = chartAt H x :=
   rfl
 
-theorem mem_achart_source (x : M) : x ∈ (achart H x).1.source :=
+theorem mem_achart_source (x : M) : x ∈ (achart H x).val.source :=
   mem_chart_source H x
 
 open TopologicalSpace
@@ -320,7 +319,7 @@ theorem ChartedSpace.discreteTopology [DiscreteTopology H] : DiscreteTopology M 
   apply discreteTopology_iff_isOpen_singleton.2 (fun x ↦ ?_)
   have : IsOpen ((chartAt H x).source ∩ (chartAt H x) ⁻¹' {chartAt H x x}) :=
     isOpen_inter_preimage _ (isOpen_discrete _)
-  convert! this
+  convert this
   refine Subset.antisymm (by simp) ?_
   simp only [subset_singleton_iff, mem_inter_iff, mem_preimage, mem_singleton_iff, and_imp]
   intro y hy h'y
@@ -354,6 +353,7 @@ theorem chartedSpaceSelf_atlas {H : Type*} [TopologicalSpace H] {e : OpenPartial
   Iff.rfl
 
 /-- In the model space, `chartAt` is always the identity. -/
+@[simp, mfld_simps]
 theorem chartAt_self_eq {H : Type*} [TopologicalSpace H] {x : H} :
     chartAt H x = OpenPartialHomeomorph.refl H := rfl
 
@@ -663,8 +663,8 @@ protected def openPartialHomeomorph (e : PartialEquiv M H) (he : e ∈ c.atlas) 
     @OpenPartialHomeomorph M H c.toTopologicalSpace _ :=
   { __ := c.toTopologicalSpace
     __ := e
-    open_source := by convert! c.open_source' he
-    open_target := by convert! c.open_target he
+    open_source := by convert c.open_source' he
+    open_target := by convert c.open_target he
     continuousOn_toFun := by
       let : TopologicalSpace M := c.toTopologicalSpace
       rw [continuousOn_open_iff (c.open_source' he)]

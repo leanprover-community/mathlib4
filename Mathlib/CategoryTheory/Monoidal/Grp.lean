@@ -5,10 +5,10 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon
+public import Mathlib.Algebra.Group.Invertible.Defs
 public import Mathlib.CategoryTheory.Limits.ExactFunctor
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
-public import Mathlib.Algebra.Group.Invertible.Defs
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon
 
 /-!
 # The category of groups in a Cartesian monoidal category
@@ -105,11 +105,11 @@ instance : Inhabited (Grp C) where
 instance : Category (Grp C) :=
   inferInstanceAs (Category (InducedCategory _ Grp.toMon))
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem id_hom_hom (A : Grp C) : Mon.Hom.hom (InducedCategory.Hom.hom (𝟙 A)) = 𝟙 A.X :=
   rfl
 
-@[to_additive (attr := simp, reassoc)]
+@[to_additive (attr := reassoc)]
 theorem comp_hom_hom {R S T : Grp C} (f : R ⟶ S) (g : S ⟶ T) :
     Mon.Hom.hom (f ≫ g).hom = f.hom.hom ≫ g.hom.hom :=
   rfl
@@ -217,26 +217,14 @@ theorem inv_comp_inv (A : C) [GrpObj A] : ι ≫ ι = 𝟙 A := by
   apply lift_left_mul_ext ι[A]
   rw [right_inv, ← comp_toUnit_assoc ι, ← left_inv, comp_lift_assoc, Category.comp_id]
 
-/-- Transfer `AddGrpObj` along an isomorphism. -/
--- Note: The simps lemmas are not tagged simp because their `#discr_tree_simp_key` are too generic.
-@[simps! -isSimp]
-abbrev _root_.CategoryTheory.AddGrpObj.ofIso {G' X : C} [AddGrpObj G'] (e : G' ≅ X) :
-    AddGrpObj X where
-  toAddMonObj := AddMonObj.ofIso e
-  neg := e.inv ≫ AddGrpObj.neg ≫ e.hom
-  left_neg := by simp +instances [AddMonObj.ofIso]
-  right_neg := by simp +instances [AddMonObj.ofIso]
-
 /-- Transfer `GrpObj` along an isomorphism. -/
 -- Note: The simps lemmas are not tagged simp because their `#discr_tree_simp_key` are too generic.
-@[simps! -isSimp]
+@[to_additive (attr := simps! -isSimp) /-- Transfer `AddGrpObj` along an isomorphism. -/]
 abbrev ofIso (e : G ≅ X) : GrpObj X where
   toMonObj := .ofIso e
   inv := e.inv ≫ ι[G] ≫ e.hom
   left_inv := by simp +instances [MonObj.ofIso]
   right_inv := by simp +instances [MonObj.ofIso]
-
-attribute [to_additive existing] ofIso
 
 @[to_additive]
 instance (A : C) [GrpObj A] : IsIso ι[A] := ⟨ι, by simp, by simp⟩
@@ -336,7 +324,7 @@ lemma toMonObj_injective {X : C} :
   suffices h₁.inv = h₂.inv by cases h₁; congr!
   apply lift_left_mul_ext (𝟙 _)
   rw [left_inv]
-  convert! @left_inv _ _ _ _ h₁ using 2
+  convert @left_inv _ _ _ _ h₁ using 2
   exacts [congr(($e.symm).mul), congr(($e.symm).one)]
 
 @[to_additive (attr := ext)]
@@ -491,9 +479,9 @@ instance instMonoidalCategoryStruct : MonoidalCategoryStruct (Grp C) where
 @[to_additive (attr := simp)]
 lemma tensorUnit_X : (𝟙_ (Grp C)).X = 𝟙_ C := rfl
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma tensorUnit_one : η[(𝟙_ (Grp C)).X] = η[𝟙_ C] := rfl
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma tensorUnit_mul : μ[(𝟙_ (Grp C)).X] = μ[𝟙_ C] := rfl
 
 @[to_additive (attr := simp)]
@@ -530,7 +518,6 @@ instance instMonoidalCategory : MonoidalCategory (Grp C) where
   tensorHom_def := by intros; ext; simp [tensorHom_def]
   triangle _ _ := by ext; exact triangle _ _
 
-set_option backward.defeqAttrib.useBackward true in
 @[to_additive]
 instance instCartesianMonoidalCategory : CartesianMonoidalCategory (Grp C) where
   isTerminalTensorUnit :=
@@ -687,11 +674,11 @@ attribute [local instance] Monoidal.ofChosenFiniteProducts in
 @[to_additive (attr := simps)
 /-- `mapAddGrp` is functorial in the left-exact functor. -/]
 noncomputable def mapGrpFunctor : (C ⥤ₗ D) ⥤ Grp C ⥤ Grp D where
-  obj F := F.1.mapGrp
+  obj F := F.obj.mapGrp
   map {F G} α := { app A := Grp.homMk'' (α.hom.app A.X) }
 
 /-- Pullback a group object along a fully faithful monoidal functor. -/
-@[to_additive (attr := simps)
+@[to_additive
 /-- Pullback an additive group object along a fully faithful monoidal functor. -/]
 abbrev FullyFaithful.grpObj (hF : F.FullyFaithful) (X : C) [GrpObj (F.obj X)] :
     GrpObj X where

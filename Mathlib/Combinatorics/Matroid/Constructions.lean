@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Combinatorics.Matroid.Minor.Restrict
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Some constructions of matroids
 
@@ -23,12 +26,11 @@ For `E : Set α`, ...
 * `freeOn E` is the 'free matroid' whose ground set `E` is the only base.
 * For `I ⊆ E`, `uniqueBaseOn I E` is the matroid with ground set `E` in which `I` is the only base.
 
-## Implementation details
+## Implementation notes
 
 To avoid the tedious process of certifying the matroid axioms for each of these easy examples,
 we bootstrap the definitions starting with `emptyOn α` (which `simp` can prove is a matroid)
 and then construct the other examples using duality and restriction.
-
 -/
 
 @[expose] public section
@@ -266,7 +268,7 @@ instance uniqueBaseOn_finitary : Finitary (uniqueBaseOn I E) := by
   exact fun e heK ↦ singleton_subset_iff.1 <| hK _ (by simpa) (by simp)
 
 lemma uniqueBaseOn_rankPos (hIE : I ⊆ E) (hI : I.Nonempty) : RankPos (uniqueBaseOn I E) where
-  empty_not_isBase := by simpa [uniqueBaseOn_isBase_iff hIE] using Ne.symm <| hI.ne_empty
+  empty_not_isBase := by simpa [uniqueBaseOn_isBase_iff hIE] using Ne.symm hI.ne_empty
 
 end uniqueBaseOn
 

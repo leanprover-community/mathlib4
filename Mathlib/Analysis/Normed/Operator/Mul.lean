@@ -5,7 +5,6 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Bilinear
 public import Mathlib.Analysis.Normed.Operator.NormedSpace
 
 /-!
@@ -111,7 +110,7 @@ instance _root_.NormedAlgebra.instRegularNormedAlgebra {𝕜 R : Type*} [Nontriv
     [SeminormedRing R] [NormedAlgebra 𝕜 R] [NormOneClass R] : RegularNormedAlgebra 𝕜 R where
   isometry_mul' := AddMonoidHomClass.isometry_of_norm (mul 𝕜 R) <|
     fun x => le_antisymm (opNorm_mul_apply_le _ _ _) <| by
-      convert! ratio_le_opNorm ((mul 𝕜 R) x) (1 : R)
+      convert ratio_le_opNorm ((mul 𝕜 R) x) (1 : R)
       simp [norm_one]
 
 variable [RegularNormedAlgebra 𝕜 R]
@@ -210,7 +209,7 @@ theorem opNorm_lsmul_apply_le (x : R) : ‖(lsmul 𝕜 R x : E →L[𝕜] E)‖ 
   ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg x) fun y => norm_smul_le x y
 
 theorem opNNNorm_lsmul_apply_le (x : R) : ‖(lsmul 𝕜 R x : E →L[𝕜] E)‖₊ ≤ ‖x‖₊ :=
-  ContinuousLinearMap.opNNNorm_le_bound _ _ fun y => nnnorm_smul_le x y
+  ContinuousLinearMap.opNNNorm_le_bound _ _ fun y => nnNorm_smul_le x y
 
 /-- The norm of `lsmul` is at most 1 in any semi-normed group. -/
 theorem opNorm_lsmul_le : ‖(lsmul 𝕜 R : R →L[𝕜] E →L[𝕜] E)‖ ≤ 1 :=
@@ -221,7 +220,7 @@ theorem opNNNorm_lsmul_le : ‖(lsmul 𝕜 R : R →L[𝕜] E →L[𝕜] E)‖�
   simpa using opNorm_lsmul_le
 
 theorem opENorm_lsmul_le : ‖(lsmul 𝕜 R : R →L[𝕜] E →L[𝕜] E)‖ₑ ≤ 1 := by
-  rw [enorm_eq_nnnorm]
+  rw [eNorm_eq_nnNorm]
   simpa using opNNNorm_lsmul_le
 
 end SMulLinear
@@ -252,7 +251,7 @@ theorem opNNNorm_mul : ‖mul 𝕜 R‖₊ = 1 :=
 
 @[simp]
 theorem opENorm_mul : ‖mul 𝕜 R‖ₑ = 1 := by
-  simp [enorm_eq_nnnorm]
+  simp [eNorm_eq_nnNorm]
 
 end
 
@@ -278,7 +277,7 @@ theorem opNNNorm_lsmul [NormedDivisionRing R] [NormedAlgebra 𝕜 R] [Module R E
 @[simp]
 theorem opENorm_lsmul [NormedDivisionRing R] [NormedAlgebra 𝕜 R] [Module R E] [NormSMulClass R E]
     [IsScalarTower 𝕜 R E] [Nontrivial E] : ‖(lsmul 𝕜 R : R →L[𝕜] E →L[𝕜] E)‖ₑ = 1 := by
-  simp [enorm_eq_nnnorm]
+  simp [eNorm_eq_nnNorm]
 
 /-- The norm of `lsmul x` equals `‖x‖` in any nontrivial normed group.
 
@@ -304,7 +303,7 @@ theorem opNNNorm_lsmul_apply [NormedDivisionRing R] [NormedAlgebra 𝕜 R] [Modu
 theorem opENorm_lsmul_apply [NormedDivisionRing R] [NormedAlgebra 𝕜 R] [Module R E]
     [NormSMulClass R E] [IsScalarTower 𝕜 R E] [Nontrivial E] {a : R} :
     ‖(lsmul 𝕜 R a : E →L[𝕜] E)‖ₑ = ‖a‖ₑ := by
-  simp [enorm_eq_nnnorm]
+  simp [eNorm_eq_nnNorm]
 
 end ContinuousLinearMap
 

@@ -6,7 +6,6 @@ Authors: María Inés de Frutos-Fernández, Yaël Dillies
 module
 
 public import Mathlib.Algebra.Order.Ring.IsNonarchimedean
-public import Mathlib.Analysis.Normed.Field.Lemmas
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
@@ -28,7 +27,7 @@ For a ring `R`:
   `MulRingNorm R` is essentially the same as `AbsoluteValue R ℝ`, and it is recommended to
   use the latter instead to avoid duplicating results.
 
-## Notes
+## Implementation notes
 
 The corresponding hom classes are defined in `Mathlib/Algebra/Order/Hom/Basic.lean` to be used by
 absolute values; see `Mathlib/Algebra/Order/AbsoluteValue/Basic.lean` for the bundled version.
@@ -38,6 +37,7 @@ absolute values; see `Mathlib/Algebra/Order/AbsoluteValue/Basic.lean` for the bu
 * [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*][bosch-guntzer-remmert]
 
 ## Tags
+
 ring_seminorm, ring_norm
 -/
 
@@ -80,6 +80,7 @@ section NonUnitalRing
 
 variable [NonUnitalRing R]
 
+@[macro_inline]
 instance funLike : FunLike (RingSeminorm R) R ℝ where
   coe f := f.toFun
   coe_injective f g h := by
@@ -87,7 +88,7 @@ instance funLike : FunLike (RingSeminorm R) R ℝ where
     cases g
     congr
     ext x
-    exact congr_fun h x
+    congrm $h x
 
 instance ringSeminormClass : RingSeminormClass (RingSeminorm R) R ℝ where
   map_zero f := f.map_zero'
@@ -121,10 +122,11 @@ instance [DecidableEq R] : One (RingSeminorm R) :=
   ⟨{ (1 : AddGroupSeminorm R) with
       mul_le' := fun x y => by
         by_cases h : x * y = 0
-        · refine (ite_eq_left h).trans_le (mul_nonneg ?_ ?_) <;>
-            · change _ ≤ ite _ _ _
-              split_ifs
-              exacts [le_rfl, zero_le_one]
+        · refine (ite_eq_left h).trans_le (mul_nonneg ?_ ?_)
+          all_goals
+            change _ ≤ ite _ _ _
+            split_ifs
+            exacts [le_rfl, zero_le_one]
         · change ite _ _ _ ≤ ite _ _ _ * ite _ _ _
           simp only [ite_false, h, left_ne_zero_of_mul h, right_ne_zero_of_mul h, mul_one,
             le_refl] }⟩
@@ -224,6 +226,7 @@ section NonUnitalRing
 
 variable [NonUnitalRing R]
 
+@[macro_inline]
 instance funLike : FunLike (RingNorm R) R ℝ where
   coe f := f.toFun
   coe_injective f g h := by
@@ -231,7 +234,7 @@ instance funLike : FunLike (RingNorm R) R ℝ where
     cases g
     congr
     ext x
-    exact congr_fun h x
+    congrm $h x
 
 instance ringNormClass : RingNormClass (RingNorm R) R ℝ where
   map_zero f := f.map_zero'
@@ -279,6 +282,7 @@ namespace MulRingSeminorm
 
 variable [NonAssocRing R]
 
+@[macro_inline]
 instance funLike : FunLike (MulRingSeminorm R) R ℝ where
   coe f := f.toFun
   coe_injective f g h := by
@@ -286,7 +290,7 @@ instance funLike : FunLike (MulRingSeminorm R) R ℝ where
     cases g
     congr
     ext x
-    exact congr_fun h x
+    congrm $h x
 
 instance mulRingSeminormClass : MulRingSeminormClass (MulRingSeminorm R) R ℝ where
   map_zero f := f.map_zero'
@@ -330,6 +334,7 @@ namespace MulRingNorm
 
 variable [NonAssocRing R]
 
+@[macro_inline]
 instance funLike : FunLike (MulRingNorm R) R ℝ where
   coe f := f.toFun
   coe_injective f g h := by
@@ -337,7 +342,7 @@ instance funLike : FunLike (MulRingNorm R) R ℝ where
     cases g
     congr
     ext x
-    exact congr_fun h x
+    congrm $h x
 
 instance mulRingNormClass : MulRingNormClass (MulRingNorm R) R ℝ where
   map_zero f := f.map_zero'

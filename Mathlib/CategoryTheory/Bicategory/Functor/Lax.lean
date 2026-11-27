@@ -6,7 +6,6 @@ Authors: Calle Sönne
 module
 
 public import Mathlib.CategoryTheory.Bicategory.Functor.Prelax
-public import Mathlib.Tactic.CategoryTheory.Slice
 public import Mathlib.Tactic.CategoryTheory.ToApp
 
 /-!
@@ -28,12 +27,11 @@ A lax functor `F` between bicategories `B` and `C` consists of
 * `CategoryTheory.LaxFunctor.PseudoCore` : a structure on a lax functor that promotes a
   lax functor to a pseudofunctor
 
-## Future work
+## TODO
 
 Some constructions in the bicategory library have only been done in terms of oplax functors,
 since lax functors had not yet been added (e.g `FunctorBicategory.lean`). A possible project would
 be to mirror these constructions for lax functors.
-
 -/
 
 @[expose] public section

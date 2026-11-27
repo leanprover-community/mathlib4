@@ -5,8 +5,6 @@ Authors: Aaron Anderson, Jalex Stark, Eric Wieser
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
-public import Mathlib.LinearAlgebra.Matrix.ToLin
 public import Mathlib.RingTheory.PowerBasis
 
 /-!
@@ -17,8 +15,6 @@ This also includes some miscellaneous results about `minpoly` on matrices.
 
 public section
 
-
-noncomputable section
 
 open Matrix Module Polynomial
 
@@ -33,8 +29,12 @@ namespace Matrix
 variable (M : Matrix n n R)
 
 @[simp]
-theorem minpoly_toLin' : minpoly R (toLin' M) = minpoly R M :=
+theorem minpoly_mulVecLin : minpoly R M.mulVecLin = minpoly R M :=
   minpoly.algEquiv_eq (toLinAlgEquiv' : Matrix n n R ≃ₐ[R] _) M
+
+@[deprecated minpoly_mulVecLin +typeChanged (since := "2026-11-25")]
+theorem minpoly_toLin' : minpoly R (toLin' M) = minpoly R M :=
+  M.minpoly_mulVecLin
 
 @[simp]
 theorem minpoly_toLin (b : Basis n R N) (M : Matrix n n R) :
@@ -76,9 +76,7 @@ theorem charpoly_leftMulMatrix {S : Type*} [Ring S] [Algebra R S] (h : PowerBasi
     (leftMulMatrix h.basis h.gen).charpoly = minpoly R h.gen := by
   cases subsingleton_or_nontrivial R; · subsingleton
   apply minpoly.unique' R h.gen (charpoly_monic _)
-  · apply (injective_iff_map_eq_zero (G := S) (leftMulMatrix _)).mp
-      (leftMulMatrix_injective h.basis)
-    rw [← Polynomial.aeval_algHom_apply, aeval_self_charpoly]
+  · exact aeval_charpoly_leftMulMatrix h.basis h.gen
   refine fun q hq => or_iff_not_imp_left.2 fun h0 => ?_
   rw [Matrix.charpoly_degree_eq_dim, Fintype.card_fin] at hq
   contrapose! hq; exact h.dim_le_degree_of_root h0 hq

@@ -44,6 +44,7 @@ Subgroup inclusion is denoted `≤` rather than `⊆`, although `∈` is defined
 membership of a subgroup's underlying set.
 
 ## Tags
+
 subgroup, subgroups
 -/
 
@@ -187,10 +188,10 @@ theorem comap_equiv_eq_map_symm' (f : N ≃* G) (K : Subgroup G) :
 theorem map_symm_eq_iff_map_eq {H : Subgroup N} {e : G ≃* N} :
     H.map ↑e.symm = K ↔ K.map ↑e = H := by
   constructor <;> rintro rfl
-  · rw [map_map, ← MulEquiv.coe_monoidHom_trans, MulEquiv.symm_trans_self,
-      MulEquiv.coe_monoidHom_refl, map_id]
-  · rw [map_map, ← MulEquiv.coe_monoidHom_trans, MulEquiv.self_trans_symm,
-      MulEquiv.coe_monoidHom_refl, map_id]
+  · rw [map_map, ← MulEquiv.toMonoidHom_trans, MulEquiv.symm_trans_self,
+      MulEquiv.toMonoidHom_refl, map_id]
+  · rw [map_map, ← MulEquiv.toMonoidHom_trans, MulEquiv.self_trans_symm,
+      MulEquiv.toMonoidHom_refl, map_id]
 
 @[to_additive]
 theorem map_le_iff_le_comap {f : G →* N} {K : Subgroup G} {H : Subgroup N} :
@@ -289,8 +290,8 @@ def subgroupOf (H K : Subgroup G) : Subgroup K :=
 /-- If `H ≤ K`, then `H` as a subgroup of `K` is isomorphic to `H`. -/]
 def subgroupOfEquivOfLe {G : Type*} [Group G] {H K : Subgroup G} (h : H ≤ K) :
     H.subgroupOf K ≃* H where
-  toFun g := ⟨g.1, g.2⟩
-  invFun g := ⟨⟨g.1, h g.2⟩, g.2⟩
+  toFun g := ⟨g.val, g.property⟩
+  invFun g := ⟨⟨g.val, h g.property⟩, g.property⟩
   map_mul' _g _h := rfl
 
 @[to_additive]
@@ -343,7 +344,7 @@ theorem subgroupOf_bot_eq_top : H.subgroupOf ⊥ = ⊤ :=
 
 @[to_additive (attr := simp)]
 theorem subgroupOf_self : H.subgroupOf H = ⊤ :=
-  top_unique fun g _hg => g.2
+  top_unique fun g _hg => g.property
 
 @[to_additive (attr := simp)]
 theorem subgroupOf_inj {H₁ H₂ K : Subgroup G} :
@@ -497,9 +498,17 @@ def subgroupComap (f : G →* G') (H' : Subgroup G') : H'.comap f →* H' :=
   f.submonoidComap H'.toSubmonoid
 
 @[to_additive]
-lemma subgroupComap_surjective_of_surjective (f : G →* G') (H' : Subgroup G') (hf : Surjective f) :
+lemma subgroupComap_surjective (f : G →* G') (H' : Subgroup G') (hf : Surjective f) :
     Surjective (f.subgroupComap H') :=
-  f.submonoidComap_surjective_of_surjective H'.toSubmonoid hf
+  f.submonoidComap_surjective H'.toSubmonoid hf
+
+@[to_additive (attr := deprecated (since := "2026-09-09"))]
+alias subgroupComap_surjective_of_surjective := subgroupComap_surjective
+
+@[to_additive]
+lemma subgroupComap_injective (f : G →* G') (H' : Subgroup G') (hf : Injective f) :
+    Injective (f.subgroupComap H') :=
+  f.submonoidComap_injective H'.toSubmonoid hf
 
 /-- The `MonoidHom` from a subgroup to its image. -/
 @[to_additive (attr := simps!) /-- the `AddMonoidHom` from an additive subgroup to its image -/]
@@ -510,6 +519,11 @@ def subgroupMap (f : G →* G') (H : Subgroup G) : H →* H.map f :=
 theorem subgroupMap_surjective (f : G →* G') (H : Subgroup G) :
     Function.Surjective (f.subgroupMap H) :=
   f.submonoidMap_surjective H.toSubmonoid
+
+@[to_additive]
+theorem subgroupMap_injective (f : G →* G') (H : Subgroup G) (hf : Function.Injective f) :
+    Function.Injective (f.subgroupMap H) :=
+  f.submonoidMap_injective hf H.toSubmonoid
 
 end MonoidHom
 
@@ -548,7 +562,7 @@ theorem coe_subgroupMap_apply (e : G ≃* G') (H : Subgroup G) (g : H) :
 
 @[to_additive (attr := simp)]
 theorem subgroupMap_symm_apply (e : G ≃* G') (H : Subgroup G) (g : H.map (e : G →* G')) :
-    (e.subgroupMap H).symm g = ⟨e.symm g, SetLike.mem_coe.1 <| Set.mem_image_equiv.1 g.2⟩ :=
+    (e.subgroupMap H).symm g = ⟨e.symm g, SetLike.mem_coe.1 <| Set.mem_image_equiv.1 g.property⟩ :=
   rfl
 
 end MulEquiv

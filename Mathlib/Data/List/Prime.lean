@@ -8,11 +8,13 @@ module
 public import Mathlib.Algebra.BigOperators.Group.List.Lemmas
 public import Mathlib.Algebra.GroupWithZero.Associated
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Products of lists of prime elements.
 
 This file contains some theorems relating `Prime` and products of `List`s.
-
 -/
 
 public section

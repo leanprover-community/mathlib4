@@ -5,16 +5,17 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Group.Pi.Basic
 public import Mathlib.Algebra.Homology.Single
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Homology is an additive functor
 
 When `V` is preadditive, `HomologicalComplex V c` is also preadditive,
 and `homologyFunctor` is additive.
-
 -/
 
 @[expose] public section
@@ -56,7 +57,6 @@ instance hasIntScalar : SMul ℤ (C ⟶ D) :=
     { f := fun i => n • f.f i
       comm' := fun i j _ => by simp [Preadditive.zsmul_comp, Preadditive.comp_zsmul] }⟩
 
-@[simp]
 theorem zero_f_apply (i : ι) : (0 : C ⟶ D).f i = 0 :=
   rfl
 
@@ -72,11 +72,9 @@ theorem neg_f_apply (f : C ⟶ D) (i : ι) : (-f).f i = -f.f i :=
 theorem sub_f_apply (f g : C ⟶ D) (i : ι) : (f - g).f i = f.f i - g.f i :=
   rfl
 
-@[simp]
 theorem nsmul_f_apply (n : ℕ) (f : C ⟶ D) (i : ι) : (n • f).f i = n • f.f i :=
   rfl
 
-@[simp]
 theorem zsmul_f_apply (n : ℤ) (f : C ⟶ D) (i : ι) : (n • f).f i = n • f.f i :=
   rfl
 
@@ -118,8 +116,11 @@ def Functor.mapHomologicalComplex (F : W₁ ⥤ W₂) [F.PreservesZeroMorphisms]
 instance (F : W₁ ⥤ W₂) [F.PreservesZeroMorphisms] (c : ComplexShape ι) :
     (F.mapHomologicalComplex c).PreservesZeroMorphisms where
 
-instance Functor.map_homogical_complex_additive (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) :
-    (F.mapHomologicalComplex c).Additive where
+instance (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) : (F.mapHomologicalComplex c).Additive where
+
+@[deprecated (since := "2026-09-17")]
+alias Functor.map_homogical_complex_additive :=
+  instAdditiveHomologicalComplexMapHomologicalComplex
 
 variable (W₁)
 

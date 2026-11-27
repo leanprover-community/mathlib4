@@ -5,8 +5,8 @@ Authors: Joseph Myers
 -/
 module
 
-public import Mathlib.Algebra.Group.Action.Pointwise.Set.Finite
 public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+public import Mathlib.Algebra.Group.Action.Pointwise.Set.Finite
 public import Mathlib.Algebra.Group.Subgroup.Ker
 public import Mathlib.GroupTheory.Coset.Defs
 
@@ -198,7 +198,7 @@ directly. -/
     fun a b r ↦ by
       rw [QuotientGroup.leftRel_eq] at r
       rw [eq_comm, ← inv_smul_eq_iff, smul_smul, ← MulAction.mem_stabilizer_iff]
-      exact SetLike.le_def.1 (Subgroup.map_subtype_le _) r
+      exact mem_of_le_of_mem (Subgroup.map_subtype_le _) r
 
 instance : CoeOut (PlacedTile ps) (Set X) where
   coe := coeSet
@@ -243,7 +243,7 @@ instance : SMul G (PlacedTile ps) where
 
 @[simp] lemma smul_mk_mk (g h : G) (i : ιₚ) : g • (⟨i, ⟦h⟧⟩ : PlacedTile ps) = ⟨i, g * h⟩ := rfl
 
-@[simp] lemma smul_mk_coe (g h : G) (i : ιₚ) : g • (⟨i, h⟩ : PlacedTile ps) = ⟨i, g * h⟩ := rfl
+lemma smul_mk_coe (g h : G) (i : ιₚ) : g • (⟨i, h⟩ : PlacedTile ps) = ⟨i, g * h⟩ := rfl
 
 @[simp] lemma smul_index (g : G) (pt : PlacedTile ps) : (g • pt).index = pt.index := by
   induction pt using PlacedTile.induction_on

@@ -29,7 +29,6 @@ In this file we use the following type variables:
 ## Tags
 
 bilinear form, bilin form, BilinearForm, matrix, basis
-
 -/
 
 @[expose] public section
@@ -151,23 +150,23 @@ theorem BilinForm.toMatrix'_compRight (B : BilinForm R₁ (n → R₁)) (f : (n 
   B.toMatrix₂'_compl₂ _
 
 theorem BilinForm.mul_toMatrix'_mul (B : BilinForm R₁ (n → R₁)) (M : Matrix o n R₁)
-    (N : Matrix n o R₁) : M * B.toMatrix' * N = (B.comp (Mᵀ).toLin' N.toLin').toMatrix' :=
+    (N : Matrix n o R₁) : M * B.toMatrix' * N = (B.comp (Mᵀ).mulVecLin N.mulVecLin).toMatrix' :=
   B.mul_toMatrix₂'_mul _ _
 
 theorem BilinForm.mul_toMatrix' (B : BilinForm R₁ (n → R₁)) (M : Matrix n n R₁) :
-    M * B.toMatrix' = (B.compLeft (Mᵀ).toLin').toMatrix' :=
+    M * B.toMatrix' = (B.compLeft (Mᵀ).mulVecLin).toMatrix' :=
   LinearMap.mul_toMatrix' B _
 
 theorem BilinForm.toMatrix'_mul (B : BilinForm R₁ (n → R₁)) (M : Matrix n n R₁) :
-    BilinForm.toMatrix' B * M = BilinForm.toMatrix' (B.compRight (Matrix.toLin' M)) :=
+    BilinForm.toMatrix' B * M = BilinForm.toMatrix' (B.compRight M.mulVecLin) :=
   B.toMatrix₂'_mul _
 
 end LinearMap
 
 theorem Matrix.toBilin'_comp (M : Matrix n n R₁) (P Q : Matrix n o R₁) :
-    M.toBilin'.comp P.toLin' Q.toLin' = (Pᵀ * M * Q).toBilin' :=
-  BilinForm.toMatrix'.injective
-    (by simp only [BilinForm.toMatrix'_comp, BilinForm.toMatrix'_toBilin', toMatrix'_toLin'])
+    M.toBilin'.comp P.mulVecLin Q.mulVecLin = (Pᵀ * M * Q).toBilin' :=
+  BilinForm.toMatrix'.injective <| by
+    simp only [BilinForm.toMatrix'_comp, BilinForm.toMatrix'_toBilin', toMatrix'_mulVecLin]
 
 end ToMatrix'
 
@@ -316,6 +315,7 @@ open Matrix
 variable {n : Type*} [Fintype n]
 variable (J J₃ A A' : Matrix n n R₂)
 
+@[deprecated Matrix.isAdjointPair_equiv +typeChanged (since := "2026-11-16")]
 theorem Matrix.isAdjointPair_equiv' [DecidableEq n] (P : Matrix n n R₂) (h : IsUnit P) :
     (Pᵀ * J * P).IsAdjointPair (Pᵀ * J * P) A A' ↔
       J.IsAdjointPair J (P * A * P⁻¹) (P * A' * P⁻¹) :=
@@ -323,24 +323,29 @@ theorem Matrix.isAdjointPair_equiv' [DecidableEq n] (P : Matrix n n R₂) (h : I
 
 variable [DecidableEq n]
 
+@[deprecated mem_pairSelfAdjointMatricesSubmodule +typeChanged (since := "2026-11-16")]
 theorem mem_pairSelfAdjointMatricesSubmodule' :
     A ∈ pairSelfAdjointMatricesSubmodule J J₃ ↔ Matrix.IsAdjointPair J J₃ A A := by
   simp only [mem_pairSelfAdjointMatricesSubmodule]
 
 /-- The submodule of self-adjoint matrices with respect to the bilinear form corresponding to
 the matrix `J`. -/
+@[deprecated selfAdjointMatricesSubmodule +typeChanged (since := "2026-11-16")]
 def selfAdjointMatricesSubmodule' : Submodule R₂ (Matrix n n R₂) :=
   pairSelfAdjointMatricesSubmodule J J
 
+@[deprecated mem_selfAdjointMatricesSubmodule +typeChanged (since := "2026-11-16")]
 theorem mem_selfAdjointMatricesSubmodule' :
     A ∈ selfAdjointMatricesSubmodule J ↔ J.IsSelfAdjoint A := by
   simp only [mem_selfAdjointMatricesSubmodule]
 
 /-- The submodule of skew-adjoint matrices with respect to the bilinear form corresponding to
 the matrix `J`. -/
+@[deprecated skewAdjointMatricesSubmodule +typeChanged (since := "2026-11-16")]
 def skewAdjointMatricesSubmodule' : Submodule R₂ (Matrix n n R₂) :=
   pairSelfAdjointMatricesSubmodule (-J) J
 
+@[deprecated mem_skewAdjointMatricesSubmodule +typeChanged (since := "2026-11-16")]
 theorem mem_skewAdjointMatricesSubmodule' :
     A ∈ skewAdjointMatricesSubmodule J ↔ J.IsSkewAdjoint A := by
   simp only [mem_skewAdjointMatricesSubmodule]
@@ -486,7 +491,7 @@ theorem SeparatingRight.toMatrix {B : BilinForm R₂ M₂} (h : B.SeparatingRigh
   (separatingRight_toMatrix_iff b).mpr h
 
 
-/-! Some shorthands for combining the above with `Matrix.nondegenerate_of_det_ne_zero` -/
+/-! Some shorthands for combining the above with `Matrix.Nondegenerate.of_det_ne_zero` -/
 
 theorem nondegenerate_toBilin'_iff_det_ne_zero {M : Matrix ι ι A} :
     M.toBilin'.Nondegenerate ↔ M.det ≠ 0 := by
@@ -500,9 +505,12 @@ theorem nondegenerate_iff_det_ne_zero {B : BilinForm A M₂} (b : Basis ι A M�
     B.Nondegenerate ↔ (BilinForm.toMatrix b B).det ≠ 0 := by
   rw [← Matrix.nondegenerate_iff_det_ne_zero, nondegenerate_toMatrix_iff]
 
-theorem nondegenerate_of_det_ne_zero (b : Basis ι A M₂) (h : (BilinForm.toMatrix b B₃).det ≠ 0) :
+theorem Nondegenerate.of_det_ne_zero (b : Basis ι A M₂) (h : (BilinForm.toMatrix b B₃).det ≠ 0) :
     B₃.Nondegenerate :=
   (nondegenerate_iff_det_ne_zero b).mpr h
+
+@[deprecated (since := "2026-11-13")] alias nondegenerate_of_det_ne_zero :=
+  Nondegenerate.of_det_ne_zero
 
 end Det
 

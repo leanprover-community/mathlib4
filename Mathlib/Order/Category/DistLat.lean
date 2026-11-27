@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.Category.Lat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of distributive lattices
 
@@ -85,13 +88,10 @@ initialize_simps_projections Hom (hom' → hom)
 The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
 -/
 
-@[simp]
 lemma coe_id {X : DistLat} : (𝟙 X : X → X) = id := rfl
 
-@[simp]
 lemma coe_comp {X Y Z : DistLat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
-@[simp]
 lemma forget_map {X Y : DistLat} (f : X ⟶ Y) :
     (forget DistLat).map f = (f : _ → _) := rfl
 

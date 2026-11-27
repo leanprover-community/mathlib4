@@ -9,6 +9,9 @@ public meta import Mathlib.Tactic.Linarith
 public import Mathlib.Basic.NNReal.Basic -- shake: keep (tactic dependency)
 public import Mathlib.Tactic.Rify
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # NNReal linarith preprocessing
 
@@ -29,7 +32,8 @@ open Lean Meta
 or the negation thereof.
 -/
 partial def isNNRealProp (e : Expr) : MetaM Bool := succeeds do
-  let (_, _, .const ``NNReal _, _, _) ← e.ineqOrNotIneq? | failure
+  let (_, _, ty, _, _) ← e.ineqOrNotIneq?
+  let .const ``NNReal _ := ty.cleanupAnnotations | failure
 
 /-- If `e` is of the form `((x : ℝ≥0) : ℝ)`, `NNReal.toReal e` returns `x`. -/
 def getNNRealToRealArg? (e : Expr) : Option Expr :=

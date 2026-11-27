@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Homology.Embedding.TruncLEHomology
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Complementary embeddings
 
@@ -18,7 +21,6 @@ a partition of the indices of `c`.
 If `e₁.IsTruncLE` and `e₂.IsTruncGE`, and `K : HomologicalComplex C c`,
 we construct a quasi-isomorphism `shortComplexTruncLEX₃ToTruncGE` between
 the cokernel of `K.ιTruncLE e₁ : K.truncLE e₁ ⟶ K` and `K.truncGE e₂`.
-
 -/
 
 @[expose] public section
@@ -278,7 +280,6 @@ end Boundary
 
 end AreComplementary
 
-set_option backward.defeqAttrib.useBackward true in
 lemma embeddingUpInt_areComplementary (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
     AreComplementary (embeddingUpIntLE n₀) (embeddingUpIntGE n₁) where
   disjoint i₁ i₂ := by dsimp; lia
@@ -314,7 +315,6 @@ lemma g_shortComplexTruncLEX₃ToTruncGE :
     (K.shortComplexTruncLE e₁).g ≫ K.shortComplexTruncLEX₃ToTruncGE ac = K.πTruncGE e₂ :=
   cokernel.π_desc _ _ _
 
-set_option backward.defeqAttrib.useBackward true in
 instance : QuasiIso (K.shortComplexTruncLEX₃ToTruncGE ac) where
   quasiIsoAt i := by
     obtain ⟨i₁, rfl⟩ | ⟨i₂, rfl⟩ := ac.union i

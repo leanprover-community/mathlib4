@@ -5,13 +5,14 @@ Authors: Mario Carneiro
 -/
 module
 
+public meta import Aesop
+public import Mathlib.Basic.IsEmpty.Defs
 public import Mathlib.Control.Combinators
 public import Mathlib.Data.Option.Defs
-public import Mathlib.Logic.Relator
-public import Aesop
-public import Batteries.Tactic.Lint.Simp
 public import Mathlib.Logic.Function.Basic
-public import Mathlib.Basic.IsEmpty.Defs
+public import Mathlib.Logic.Relator
+
+import Batteries.Linter.Simp
 
 /-!
 # Option of a type
@@ -31,7 +32,6 @@ This is useful in multiple ways:
 
 `Part` is an alternative to `Option` that can be seen as the type of `True`/`False` values
 along with a term `a : α` if the value is `True`.
-
 -/
 
 @[expose] public section
@@ -87,7 +87,7 @@ theorem bind_eq_bind' {α β : Type u} {f : α → Option β} {x : Option α} : 
 theorem map_coe {α β} {a : α} {f : α → β} : f <$> (a : Option α) = ↑(f a) :=
   rfl
 
-@[simp]
+@[deprecated map_some (since := "2026-11-26")]
 theorem map_coe' {a : α} {f : α → β} : Option.map f (a : Option α) = ↑(f a) :=
   rfl
 
@@ -167,7 +167,6 @@ theorem casesOn'_none (x : β) (f : α → β) : casesOn' none x f = x :=
 theorem casesOn'_some (x : β) (f : α → β) (a : α) : casesOn' (some a) x f = f a :=
   rfl
 
-@[simp]
 theorem casesOn'_coe (x : β) (f : α → β) (a : α) : casesOn' (a : Option α) x f = f a :=
   rfl
 
@@ -212,7 +211,7 @@ lemma elim'_update {α : Type*} {β : Type*} [DecidableEq α]
     (f : β) (g : α → β) (a : α) (x : β) :
     Option.elim' f (update g a x) = update (Option.elim' f g) (some a) x :=
   -- Can't reuse `Option.rec_update` as `Option.elim'` is not defeq.
-  Function.rec_update (α := fun _ => β) (@Option.some.inj _) (Option.elim' f) (fun _ _ => rfl) (fun
+  Function.rec_update (α := fun _ => β) (Option.elim' f) (fun _ _ => rfl) (fun
     | _, _, some _, h => (h _ rfl).elim
     | _, _, none, _ => rfl) _ _ _
 

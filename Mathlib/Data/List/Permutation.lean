@@ -5,16 +5,17 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 -/
 module
 
-public import Mathlib.Data.Nat.Factorial.Basic
-public import Mathlib.Data.List.Count
 public import Mathlib.Data.List.Duplicate
-public import Mathlib.Data.List.InsertIdx
-public import Mathlib.Data.List.Induction
-public import Batteries.Data.List.Perm
-public import Mathlib.Data.List.Perm.Basic
-public import Mathlib.Tactic.Finiteness.Attr
-public import Mathlib.Data.Int.Order.Basic
-public import Mathlib.Order.Basic
+public import Mathlib.Data.Nat.Factorial.Basic
+
+import Batteries.Data.List.Perm
+import Mathlib.Data.Int.Order.Basic
+import Mathlib.Data.List.Count
+import Mathlib.Data.List.Induction
+import Mathlib.Data.List.InsertIdx
+import Mathlib.Data.List.Perm.Basic
+import Mathlib.Order.Basic
+import Mathlib.Tactic.Finiteness.Attr
 
 /-!
 # Permutations of a list
@@ -39,7 +40,7 @@ permutations of `a :: l` are obtained by taking all permutations of `l` in order
 all positions. Hence, to build `[0, 1, 2, 3].permutations'`, it does
 * `[[]]`
 * `[[3]]`
-* `[[2, 3], [3, 2]]]`
+* `[[2, 3], [3, 2]]`
 * `[[1, 2, 3], [2, 1, 3], [2, 3, 1], [1, 3, 2], [3, 1, 2], [3, 2, 1]]`
 * `[[0, 1, 2, 3], [1, 0, 2, 3], [1, 2, 0, 3], [1, 2, 3, 0],`
    `[0, 2, 1, 3], [2, 0, 1, 3], [2, 1, 0, 3], [2, 1, 3, 0],`
@@ -288,9 +289,15 @@ theorem length_permutationsAux :
 theorem length_permutations (l : List α) : length (permutations l) = (length l)! :=
   length_permutationsAux l []
 
-theorem mem_permutations_of_perm_lemma {is l : List α}
+private theorem mem_permutations_of_perm_aux {is l : List α}
     (H : l ~ [] ++ is → (∃ (ts' : _) (_ : ts' ~ []), l = ts' ++ is) ∨ l ∈ permutationsAux is []) :
     l ~ is → l ∈ permutations is := by simpa [permutations, perm_nil] using H
+
+@[deprecated "use `mem_permutations` instead" (since := "2026-11-13")]
+theorem mem_permutations_of_perm_lemma {is l : List α}
+    (H : l ~ [] ++ is → (∃ (ts' : _) (_ : ts' ~ []), l = ts' ++ is) ∨ l ∈ permutationsAux is []) :
+    l ~ is → l ∈ permutations is :=
+  mem_permutations_of_perm_aux H
 
 theorem mem_permutationsAux_of_perm :
     ∀ {ts is l : List α},
@@ -308,12 +315,12 @@ theorem mem_permutationsAux_of_perm :
     have p := (perm_middle.symm.trans p').cons_inv
     rcases l₂ with - | ⟨a, l₂'⟩
     · exact Or.inl ⟨l₁, by simpa using p⟩
-    · exact Or.inr (Or.inr ⟨l₁, a :: l₂', mem_permutations_of_perm_lemma (IH2 _) p, by simp⟩)
+    · exact Or.inr (Or.inr ⟨l₁, a :: l₂', mem_permutations_of_perm_aux (IH2 _) p, by simp⟩)
   · exact Or.inr (Or.inl m)
 
 @[simp]
 theorem mem_permutations {s t : List α} : s ∈ permutations t ↔ s ~ t :=
-  ⟨perm_of_mem_permutations, mem_permutations_of_perm_lemma mem_permutationsAux_of_perm⟩
+  ⟨perm_of_mem_permutations, mem_permutations_of_perm_aux mem_permutationsAux_of_perm⟩
 
 /-- A list is a permutation of the pair `[a, b]` if and only if it is equal to `[a, b]` or to
 `[b, a]`. -/
@@ -417,11 +424,11 @@ theorem get_permutations'Aux (s : List α) (x : α) (n : ℕ)
 
 -- Porting note: temporary theorem to solve diamond issue
 private theorem DecEq_eq [DecidableEq α] :
-    List.instBEq = @instBEqOfDecidableEq (List α) instDecidableEqList :=
-  congr_arg BEq.mk <| by
-    funext l₁ l₂
-    change (l₁ == l₂) = _
-    rw [Bool.eq_iff_iff, @beq_iff_eq _ (_), decide_eq_true_iff]
+    List.instBEq = @instBEqOfDecidableEq (List α) instDecidableEqList := by
+  congrm BEq.mk ?_
+  funext l₁ l₂
+  change (l₁ == l₂) = _
+  rw [Bool.eq_iff_iff, @beq_iff_eq _ (_), decide_eq_true_iff]
 
 theorem count_permutations'Aux_self [DecidableEq α] (l : List α) (x : α) :
     count (x :: l) (permutations'Aux x l) = length (takeWhile (x = ·) l) + 1 := by
@@ -447,7 +454,7 @@ theorem injective_permutations'Aux (x : α) : Function.Injective (permutations'A
   intro s t h
   apply insertIdx_injective s.length x
   dsimp
-  have hl : s.length = t.length := by simpa using congr_arg length h
+  have hl : s.length = t.length := by simpa using congr(length $h)
   rw [← get_permutations'Aux s x s.length (by simp),
     ← get_permutations'Aux t x s.length (by simp [hl])]
   simp only [get_eq_getElem, h, hl]

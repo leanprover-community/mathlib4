@@ -22,7 +22,6 @@ action of `C` on `D`, composing
 `CategoryTheory.MonoidalCategory.MonoidalOpposite.mopFunctor (D ⥤ D)` is
 monoidal, and conversely one can define a left action of `C` on `D` from a monoidal
 functor `C ⥤ (D ⥤ D)ᴹᵒᵖ`.
-
 -/
 
 @[expose] public section
@@ -67,10 +66,10 @@ open MonoidalOpposite in
 composition monoidal structure. -/
 @[simps!]
 instance curriedActionMopMonoidal : (curriedActionMop C D).Monoidal where
-  ε := .mop <| (actionUnitNatIso C D).inv
-  μ _ _ := .mop <| { app _ := αₗ _ _ _ |>.inv }
-  δ _ _ := .mop <| { app _ := αₗ _ _ _ |>.hom }
-  η := .mop <| (actionUnitNatIso C D).hom
+  ε := .mop (actionUnitNatIso C D).inv
+  μ _ _ := .mop { app _ := αₗ _ _ _ |>.inv }
+  δ _ _ := .mop { app _ := αₗ _ _ _ |>.hom }
+  η := .mop (actionUnitNatIso C D).hom
   associativity c₁ c₂ c₃ := by
     apply (mopEquiv (D ⥤ D)).fullyFaithfulInverse.map_injective
     ext d
@@ -216,7 +215,7 @@ namespace endofunctorMonoidalCategory
 Note that in the literature, this is defined as a left action, but mathlib's
 monoidal structure on `C ⥤ C` is the monoidal opposite of the one usually
 considered in the literature. -/
-@[simps! actionObj actionHomLeft actionHomRight actionAssocIso actionUnitIso]
+@[simps! actionAssocIso actionUnitIso]
 scoped instance evaluationRightAction : MonoidalRightAction (C ⥤ C) C :=
   MonoidalRightAction.actionOfMonoidalFunctorToEndofunctor (𝟭 (C ⥤ C))
 

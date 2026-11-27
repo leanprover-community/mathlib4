@@ -7,14 +7,13 @@ module
 
 public import Mathlib.LinearAlgebra.PerfectPairing.Basic
 public import Mathlib.LinearAlgebra.Reflection
-public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Root data and root systems
 
 This file contains basic definitions for root systems and root data.
 
-## Main definitions:
+## Main definitions
 
 * `RootPairing`: Given two perfectly-paired `R`-modules `M` and `N` (over some commutative ring
   `R`) a root pairing with indexing set `ι` is the data of an `ι`-indexed subset of `M`
@@ -26,7 +25,7 @@ This file contains basic definitions for root systems and root data.
   finitely-generated free Abelian groups.
 * `RootSystem`: A root system is a root pairing for which the roots span their ambient module.
 
-## Implementation details
+## Implementation notes
 
 A root datum is sometimes defined as two subsets: roots and coroots, together with a bijection
 between them, subject to hypotheses. However the hypotheses ensure that the bijection is unique and
@@ -57,7 +56,6 @@ and coroots. This is necessary when working with infinite root systems, where th
 uniquely determined by the roots, because without it, the reflection permutations on roots and
 coroots may not correspond. For this purpose, we define a map from `ι` to permutations on `ι`, and
 require that it is compatible with reflections and coreflections.
-
 -/
 
 @[expose] public section
@@ -99,13 +97,16 @@ structure RootPairing extends M →ₗ[R] N →ₗ[R] R where
 
 attribute [instance] RootPairing.isPerfPair_toLinearMap
 
-/-- A root datum is a root pairing with coefficients in the integers and for which the root and
-coroot spaces are finitely-generated free Abelian groups.
+/-- Informally a root datum is a root pairing with coefficients in the integers, for which the root
+and coroot spaces are finitely-generated free Abelian groups.
 
-Note that the latter assumptions `[Finite ℤ X₁] [Finite ℤ X₂]` should be supplied as mixins, and
-that freeness follows automatically since two finitely-generated Abelian groups in perfect pairing
-are necessarily free. Moreover Lean knows this, e.g., via `PerfectPairing.reflexive_left`,
-`IsReflexive.to_isTorsionFree`, `Module.free_of_finite_type_torsion_free'`. -/
+Formally `RootDatum` does not demand the finite generation hypotheses. Thus to capture the informal
+concept one must supply the two assumptions `[Module.Finite ℤ X₁] [Module.Finite ℤ X₂]`.
+
+Finally note that if `[Module.Finite ℤ X₁] [Module.Finite ℤ X₂]` are supplied, one does not need to
+assume freeness since it follows automatically. Moreover Mathlib knows this via
+`Module.IsReflexive.of_isPerfPair`, `Module.IsReflexive.to_isTorsionFree`,
+`Module.free_of_finite_type_torsion_free'`. -/
 abbrev RootDatum (X₁ X₂ : Type*) [AddCommGroup X₁] [AddCommGroup X₂] := RootPairing ι ℤ X₁ X₂
 
 namespace RootPairing
@@ -198,11 +199,9 @@ def pairing : R := P.root' i (P.coroot j)
 lemma root_coroot_eq_pairing : P.toLinearMap (P.root i) (P.coroot j) = P.pairing i j :=
   rfl
 
-@[simp]
 lemma root'_coroot_eq_pairing : P.root' i (P.coroot j) = P.pairing i j :=
   rfl
 
-@[simp]
 lemma root_coroot'_eq_pairing : P.coroot' i (P.root j) = P.pairing j i :=
   rfl
 
@@ -376,7 +375,7 @@ lemma coroot'_reflectionPerm {i j : ι} :
 
 lemma coroot'_reflection {i j : ι} (y : M) :
     P.coroot' j (P.reflection i y) = P.coroot' (P.reflectionPerm i j) y :=
-  (LinearMap.congr_fun P.coroot'_reflectionPerm y).symm
+  congr($P.coroot'_reflectionPerm y).symm
 
 lemma pairing_reflectionPerm (i j k : ι) :
     P.pairing j (P.reflectionPerm i k) = P.pairing (P.reflectionPerm i j) k := by
@@ -422,7 +421,7 @@ lemma ne_neg [NeZero (2 : R)] [IsDomain R] :
     i ≠ -i := by
   have := Module.IsReflexive.of_isPerfPair P.toLinearMap
   intro contra
-  replace contra : P.root i = -P.root i := by simpa using congr_arg P.root contra
+  replace contra : P.root i = -P.root i := by simpa using congr(P.root $contra)
   simp [eq_neg_iff_add_eq_zero, ← two_smul R, NeZero.out, P.ne_zero i] at contra
 
 variable {i j} in
@@ -460,20 +459,20 @@ lemma neg_coroot_mem :
   P.flip.neg_root_mem i
 
 variable {P} in
-lemma smul_coroot_eq_of_root_eq_smul [Finite ι] [IsAddTorsionFree N] (i j : ι) (t : R)
+lemma smul_coroot_eq_of_root_eq_smul [Finite ι] [HasUniqueDiv N] (i j : ι) (t : R)
     (h : P.root j = t • P.root i) :
     t • P.coroot j = P.coroot i := by
   have hij : t * P.pairing i j = 2 := by simpa using ((P.coroot' j).congr_arg h).symm
   refine Module.eq_of_mapsTo_reflection_of_mem (f := P.root' i) (g := P.root' i)
     (finite_range P.coroot) (by simp [hij]) (by simp) (by simp [hij]) (by simp) ?_
     (P.mapsTo_coreflection_coroot i) (mem_range_self i)
-  convert! P.mapsTo_coreflection_coroot j
+  convert P.mapsTo_coreflection_coroot j
   ext x
   replace h : P.root' j = t • P.root' i := by ext; simp [h, root']
   simp [Module.preReflection_apply, coreflection_apply, h, smul_comm _ t, mul_smul]
 
 variable {P} in
-@[simp] lemma coroot_eq_smul_coroot_iff [Finite ι] [IsAddTorsionFree M] [IsAddTorsionFree N]
+@[simp] lemma coroot_eq_smul_coroot_iff [Finite ι] [HasUniqueDiv M] [HasUniqueDiv N]
     {i j : ι} {t : R} :
     P.coroot i = t • P.coroot j ↔ P.root j = t • P.root i :=
   ⟨fun h ↦ (P.flip.smul_coroot_eq_of_root_eq_smul j i t h).symm,
@@ -577,7 +576,7 @@ lemma isOrthogonal_comm (h : IsOrthogonal P i j) : Commute (P.reflection i) (P.r
   rw [commute_iff_eq]
   ext
   replace h : P.pairing i j = 0 ∧ P.pairing j i = 0 := by simpa [IsOrthogonal] using h
-  simp only [LinearEquiv.mul_apply, reflection_apply, LinearMap.flip_apply, map_sub,
+  simp only [mul_apply_eq_comp, reflection_apply, LinearMap.flip_apply, map_sub,
     map_smul, root_coroot_eq_pairing, h, zero_smul, sub_zero]
   abel
 

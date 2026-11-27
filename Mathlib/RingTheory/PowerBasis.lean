@@ -39,7 +39,6 @@ Throughout this file, `R`, `S`, `A`, `B` ... are `CommRing`s, and `K`, `L`, ... 
 ## Tags
 
 power basis, powerbasis
-
 -/
 
 @[expose] public section
@@ -100,15 +99,16 @@ theorem mem_span_pow' {x y : S} {d : ℕ} :
     simp_rw [Set.mem_range, Set.mem_image, Finset.mem_coe, Finset.mem_range]
     exact ⟨fun ⟨⟨i, hi⟩, hy⟩ => ⟨i, hi, hy⟩, fun ⟨i, hi, hy⟩ => ⟨⟨i, hi⟩, hy⟩⟩
   simp [this, mem_span_image_iff_linearCombination, degree_lt_iff_coeff_zero, eq_comm,
-    exists_iff_exists_finsupp, coeff, aeval_def, eval₂_eq_sum, Polynomial.sum, mem_supported',
+    aeval_def, eval₂_eq_sum, Polynomial.sum, mem_supported', Polynomial.support_ofCoeff,
     Finsupp.sum, linearCombination, Algebra.smul_def, AddMonoidAlgebra.coeffEquiv.exists_congr_left]
 
 theorem mem_span_pow {x y : S} {d : ℕ} (hd : d ≠ 0) :
     y ∈ Submodule.span R (Set.range fun i : Fin d => x ^ (i : ℕ)) ↔
       ∃ f : R[X], f.natDegree < d ∧ y = aeval x f := by
   rw [mem_span_pow']
-  constructor <;>
-  · rintro ⟨f, h, hy⟩
+  constructor
+  all_goals
+    rintro ⟨f, h, hy⟩
     refine ⟨f, ?_, hy⟩
     by_cases hf : f = 0
     · simp only [hf, natDegree_zero, Polynomial.degree_zero] at h ⊢
@@ -231,10 +231,10 @@ protected theorem leftMulMatrix (pb : PowerBasis A S) : Algebra.leftMulMatrix pb
   apply (pow_succ' _ _).symm.trans
   split_ifs with h
   · simp_rw [h, neg_smul, Finset.sum_neg_distrib, eq_neg_iff_add_eq_zero]
-    convert! pb.aeval_minpolyGen
+    convert pb.aeval_minpolyGen
     rw [add_comm, aeval_eq_sum_range, Finset.sum_range_succ, ← leadingCoeff,
       pb.minpolyGen_monic.leadingCoeff, one_smul, natDegree_minpolyGen, Finset.sum_range]
-  · rw [Fintype.sum_eq_single (⟨(k : ℕ) + 1, lt_of_le_of_ne k.2 h⟩ : Fin pb.dim), ite_eq_left,
+  · rw [Fintype.sum_eq_single (⟨(k : ℕ) + 1, lt_of_le_of_ne k.isLt h⟩ : Fin pb.dim), ite_eq_left,
       one_smul]
     · rfl
     intro x hx
@@ -267,11 +267,11 @@ theorem constr_pow_aeval (pb : PowerBasis A S) {y : S'} (hy : aeval y (minpoly A
 
 theorem constr_pow_gen (pb : PowerBasis A S) {y : S'} (hy : aeval y (minpoly A pb.gen) = 0) :
     pb.basis.constr A (fun i => y ^ (i : ℕ)) pb.gen = y := by
-  convert! pb.constr_pow_aeval hy X <;> rw [aeval_X]
+  convert pb.constr_pow_aeval hy X <;> rw [aeval_X]
 
 theorem constr_pow_algebraMap (pb : PowerBasis A S) {y : S'} (hy : aeval y (minpoly A pb.gen) = 0)
     (x : A) : pb.basis.constr A (fun i => y ^ (i : ℕ)) (algebraMap A S x) = algebraMap A S' x := by
-  convert! pb.constr_pow_aeval hy (C x) <;> rw [aeval_C]
+  convert pb.constr_pow_aeval hy (C x) <;> rw [aeval_C]
 
 theorem constr_pow_mul (pb : PowerBasis A S) {y : S'} (hy : aeval y (minpoly A pb.gen) = 0)
     (x x' : S) : pb.basis.constr A (fun i => y ^ (i : ℕ)) (x * x') =
@@ -314,7 +314,7 @@ see `liftEquiv'` for the corresponding statement.
 noncomputable def liftEquiv (pb : PowerBasis A S) :
     (S →ₐ[A] S') ≃ { y : S' // aeval y (minpoly A pb.gen) = 0 } where
   toFun f := ⟨f pb.gen, by rw [aeval_algHom_apply, minpoly.aeval, map_zero]⟩
-  invFun y := pb.lift y y.2
+  invFun y := pb.lift y y.property
   left_inv _ := pb.algHom_ext <| lift_gen _ _ _
   right_inv y := Subtype.ext <| lift_gen _ _ y.prop
 
@@ -423,7 +423,8 @@ theorem linearIndependent_pow [Algebra K S] (x : S) :
   · simp_rw [← C_mul_X_pow_eq_monomial]
     exact (degree_eq_natDegree <| minpoly.ne_zero h).symm ▸ degree_sum_fin_lt _
   · apply_fun lcoeff K i at h0
-    simp_rw [map_sum, lcoeff_apply, coeff_monomial, Fin.val_eq_val, Finset.sum_ite_eq'] at h0
+    simp_rw [map_sum, lcoeff_apply, coeff_monomial, Finsupp.single_apply, Fin.val_eq_val,
+      Finset.sum_ite_eq'] at h0
     exact (ite_eq_left <| Finset.mem_univ _).symm.trans h0
 
 theorem IsIntegral.mem_span_pow [Nontrivial R] {x y : S} (hx : IsIntegral R x)

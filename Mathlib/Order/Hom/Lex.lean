@@ -5,10 +5,10 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.Data.Prod.Lex
-public import Mathlib.Data.Sum.Order
 public import Mathlib.Order.Hom.Set
+public import Mathlib.Order.Prod.Lex.Basic
 public import Mathlib.Order.RelIso.Set
+public import Mathlib.Order.Sum.Order
 
 /-!
 # Lexicographic order and order isomorphisms
@@ -49,8 +49,8 @@ def sumLexComplLeft : Sum.Lex (Subrel r (r · x)) (Subrel r (¬ r · x)) ≃r r 
 theorem sumLexComplLeft_apply (a) : sumLexComplLeft r x a = Equiv.sumCompl (r · x) a :=
   rfl
 
-@[simp]
-theorem sumLexComplLeft_symm_apply (a) : sumLexComplLeft r x a = Equiv.sumCompl (r · x) a :=
+theorem sumLexComplLeft_symm_apply (a) :
+    (sumLexComplLeft r x).symm a = (Equiv.sumCompl (r · x)).symm a :=
   rfl
 
 variable (r x) in
@@ -69,8 +69,8 @@ def sumLexComplRight : Sum.Lex (Subrel r (¬ r x ·)) (Subrel r (r x)) ≃r r wh
 theorem sumLexComplRight_apply (a) : sumLexComplRight r x a = Equiv.sumCompl (r x) a.swap :=
   rfl
 
-@[simp]
-theorem sumLexComplRight_symm_apply (a) : sumLexComplRight r x a = Equiv.sumCompl (r x) a.swap :=
+theorem sumLexComplRight_symm_apply (a) :
+    (sumLexComplRight r x).symm a = ((Equiv.sumCompl (r x)).symm a).swap :=
   rfl
 
 end RelIso
@@ -106,11 +106,11 @@ theorem sumLexIioIci_symm_apply_of_ge {y : α} (h : x ≤ y) :
 
 @[simp]
 theorem sumLexIioIci_symm_apply_Iio (a : Iio x) : (sumLexIioIci x).symm a = toLex (Sum.inl a) :=
-  sumLexIioIci_symm_apply_of_lt a.2
+  sumLexIioIci_symm_apply_of_lt a.property
 
 @[simp]
 theorem sumLexIioIci_symm_apply_Ici (a : Ici x) : (sumLexIioIci x).symm a = toLex (Sum.inr a) :=
-  sumLexIioIci_symm_apply_of_ge a.2
+  sumLexIioIci_symm_apply_of_ge a.property
 
 variable (x) in
 /-- A linear order is isomorphic to the lexicographic sum of elements less or equal to `x` and
@@ -137,11 +137,11 @@ theorem sumLexIicIoi_symm_apply_of_lt {y : α} (h : x < y) :
 
 @[simp]
 theorem sumLexIicIoi_symm_apply_Iic (a : Iic x) : (sumLexIicIoi x).symm a = Sum.inl a :=
-  sumLexIicIoi_symm_apply_of_le a.2
+  sumLexIicIoi_symm_apply_of_le a.property
 
 @[simp]
 theorem sumLexIicIoi_symm_apply_Ioi (a : Ioi x) : (sumLexIicIoi x).symm a = Sum.inr a :=
-  sumLexIicIoi_symm_apply_of_lt a.2
+  sumLexIicIoi_symm_apply_of_lt a.property
 
 end OrderIso
 
@@ -184,7 +184,7 @@ theorem uniqueProd_apply [Preorder α] [Unique α] [LE β] (x : α ×ₗ β) :
 def prodLexAssoc (α β γ : Type*)
     [Preorder α] [Preorder β] [Preorder γ] : (α ×ₗ β) ×ₗ γ ≃o α ×ₗ β ×ₗ γ where
   toEquiv := .trans ofLex <| .trans (.prodCongr ofLex <| .refl _) <|
-      .trans (.prodAssoc α β γ) <| .trans (.prodCongr (.refl _) toLex) <| toLex
+      .trans (.prodAssoc α β γ) <| .trans (.prodCongr (.refl _) toLex) toLex
   map_rel_iff' := by
     simp only [Prod.Lex.le_iff, Prod.Lex.lt_iff, Equiv.trans_apply, Equiv.prodCongr_apply,
       Equiv.prodAssoc_apply]

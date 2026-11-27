@@ -5,7 +5,6 @@ Authors: Noam Atar
 -/
 module
 
-public import Mathlib.Order.Ideal
 public import Mathlib.Order.PFilter
 
 /-!
@@ -29,7 +28,6 @@ structure, such as a bottom element, a top element, or a join-semilattice struct
 ## Tags
 
 ideal, prime
-
 -/
 
 @[expose] public section

@@ -15,7 +15,7 @@ public import Mathlib.Order.WellFounded
 This file proves basic facts about minimality and maximality
 of an element with respect to a predicate `P` on an ordered type `α`.
 
-## Implementation Details
+## Implementation notes
 
 This file underwent a refactor from a version where minimality and maximality were defined using
 sets rather than predicates, and with an unbundled order relation rather than a `LE` instance.
@@ -85,7 +85,7 @@ theorem minimal_false : ¬ Minimal (fun _ ↦ False) x := by
 
 @[to_dual (attr := simp)]
 theorem minimal_subtype {x : Subtype Q} :
-    Minimal (fun x ↦ P x.1) x ↔ Minimal (P ⊓ Q) x := by
+    Minimal (fun x ↦ P x.val) x ↔ Minimal (P ⊓ Q) x := by
   obtain ⟨x, hx⟩ := x
   simp only [Minimal, Subtype.forall, Subtype.mk_le_mk, Pi.inf_apply, inf_Prop_eq]
   tauto
@@ -220,8 +220,7 @@ variable [WellFoundedLT α]
 @[to_dual]
 lemma exists_minimalFor_of_wellFoundedLT (P : ι → Prop) (f : ι → α) (hP : ∃ i, P i) :
     ∃ i, MinimalFor P f i := by
-  simpa [not_lt_iff_le_imp_ge, InvImage]
-    using! (instIsWellFoundedInvImage (· < ·) f).wf.has_min _ hP
+  simpa [not_lt_iff_le_imp_ge, InvImage] using! (InvImage.wf f wellFounded_lt).has_min _ hP
 
 @[to_dual]
 lemma exists_minimal_of_wellFoundedLT (P : α → Prop) (hP : ∃ a, P a) : ∃ a, Minimal P a :=
@@ -534,8 +533,6 @@ theorem minimal_apply_mem_iff (ht : t ⊆ Set.range f) :
     Minimal (· ∈ t) (f x) ↔ Minimal (fun x ↦ f x ∈ t) x := by
   rw [← f.minimal_apply_mem_inter_range_iff, inter_eq_self_of_subset_left ht]
 
-@[deprecated (since := "2026-04-07")] alias maximal_apply_iff := maximal_apply_mem_iff
-
 theorem image_setOfPred_minimal : f '' {x | Minimal (· ∈ s) x} = {x | Minimal (· ∈ f '' s) x} :=
   _root_.image_monotone_setOfPred_minimal (by simp [f.le_iff_le])
 
@@ -579,10 +576,10 @@ theorem map_minimal_mem (f : s ≃o t) (hx : Minimal (· ∈ s) x) :
 
 /-- If two sets are order isomorphic, their minimals are also order isomorphic. -/
 def mapSetOfPredMinimal (f : s ≃o t) : {x | Minimal (· ∈ s) x} ≃o {x | Minimal (· ∈ t) x} where
-  toFun x := ⟨f ⟨x, x.2.1⟩, f.map_minimal_mem x.2⟩
-  invFun x := ⟨f.symm ⟨x, x.2.1⟩, f.symm.map_minimal_mem x.2⟩
-  left_inv x := Subtype.ext (congr_arg Subtype.val <| f.left_inv ⟨x, x.2.1⟩ :)
-  right_inv x := Subtype.ext (congr_arg Subtype.val <| f.right_inv ⟨x, x.2.1⟩ :)
+  toFun x := ⟨f ⟨x, x.property.1⟩, f.map_minimal_mem x.property⟩
+  invFun x := ⟨f.symm ⟨x, x.property.1⟩, f.symm.map_minimal_mem x.property⟩
+  left_inv x := Subtype.ext (congr_arg Subtype.val <| f.left_inv ⟨x, x.property.1⟩ :)
+  right_inv x := Subtype.ext (congr_arg Subtype.val <| f.right_inv ⟨x, x.property.1⟩ :)
   map_rel_iff' := f.map_rel_iff
 
 @[deprecated (since := "2026-07-28")] alias mapSetOfMinimal := mapSetOfPredMinimal
@@ -590,10 +587,10 @@ def mapSetOfPredMinimal (f : s ≃o t) : {x | Minimal (· ∈ s) x} ≃o {x | Mi
 /-- If two sets are order isomorphic, their maximals are also order isomorphic. -/
 @[to_dual existing]
 def mapSetOfPredMaximal (f : s ≃o t) : {x | Maximal (· ∈ s) x} ≃o {x | Maximal (· ∈ t) x} where
-  toFun x := ⟨f ⟨x, x.2.1⟩, f.map_maximal_mem x.2⟩
-  invFun x := ⟨f.symm ⟨x, x.2.1⟩, f.symm.map_maximal_mem x.2⟩
-  left_inv x := Subtype.ext (congr_arg Subtype.val <| f.left_inv ⟨x, x.2.1⟩ :)
-  right_inv x := Subtype.ext (congr_arg Subtype.val <| f.right_inv ⟨x, x.2.1⟩ :)
+  toFun x := ⟨f ⟨x, x.property.1⟩, f.map_maximal_mem x.property⟩
+  invFun x := ⟨f.symm ⟨x, x.property.1⟩, f.symm.map_maximal_mem x.property⟩
+  left_inv x := Subtype.ext (congr_arg Subtype.val <| f.left_inv ⟨x, x.property.1⟩ :)
+  right_inv x := Subtype.ext (congr_arg Subtype.val <| f.right_inv ⟨x, x.property.1⟩ :)
   map_rel_iff' := f.map_rel_iff
 
 @[deprecated (since := "2026-07-28")] alias mapSetOfMaximal := mapSetOfPredMaximal
@@ -601,11 +598,8 @@ def mapSetOfPredMaximal (f : s ≃o t) : {x | Maximal (· ∈ s) x} ≃o {x | Ma
 /-- If two sets are antitonically order isomorphic, their minimals/maximals are too. -/
 @[to_dual /-- If two sets are antitonically order isomorphic, their maximals/minimals are too. -/]
 def setOfPredMinimalIsoSetOfPredMaximal (f : s ≃o tᵒᵈ) :
-    {x | Minimal (· ∈ s) x} ≃o {x | Maximal (· ∈ t) (ofDual x)} where
-      toFun x := ⟨(f ⟨x.1, x.2.1⟩).1, ((show s ≃o ofDual ⁻¹' t from f).mapSetOfPredMinimal x).2⟩
-      invFun x := ⟨(f.symm ⟨x.1, x.2.1⟩).1,
-        ((show ofDual ⁻¹' t ≃o s from f.symm).mapSetOfPredMinimal x).2⟩
-      __ := (show s ≃o ofDual ⁻¹' t from f).mapSetOfPredMinimal
+    {x | Minimal (· ∈ s) x} ≃o {x | Maximal (· ∈ t) (ofDual x)} :=
+  f.mapSetOfPredMinimal
 
 @[deprecated (since := "2026-07-09")]
 alias setOfMinimalIsoSetOfMaximal := setOfPredMinimalIsoSetOfPredMaximal

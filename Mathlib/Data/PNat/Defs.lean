@@ -12,6 +12,11 @@ public import Mathlib.Order.Basic
 public import Mathlib.Tactic.Coe
 public import Mathlib.Tactic.Lift
 
+import Mathlib.Tactic.Basify.Attr
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The positive natural numbers
 
@@ -67,7 +72,7 @@ theorem natPred_succPNat (n : ℕ) : n.succPNat.natPred = n :=
 
 @[simp]
 theorem _root_.PNat.succPNat_natPred (n : ℕ+) : n.natPred.succPNat = n :=
-  Subtype.ext <| succ_pred_eq_of_pos n.2
+  Subtype.ext <| succ_pred_eq_of_pos n.property
 
 /-- Convert a natural number to a `PNat`. `n+1` is mapped to itself,
   and `0` becomes `1`. -/
@@ -99,17 +104,17 @@ theorem mk_le_mk (n k : ℕ) (hn : 0 < n) (hk : 0 < k) : (⟨n, hn⟩ : ℕ+) �
 
 theorem mk_lt_mk (n k : ℕ) (hn : 0 < n) (hk : 0 < k) : (⟨n, hn⟩ : ℕ+) < ⟨k, hk⟩ ↔ n < k := by simp
 
-@[simp, norm_cast]
+@[simp, norm_cast, basify_simp ←]
 theorem coe_le_coe (n k : ℕ+) : (n : ℕ) ≤ k ↔ n ≤ k :=
   Iff.rfl
 
-@[simp, norm_cast]
+@[simp, norm_cast, basify_simp ←]
 theorem coe_lt_coe (n k : ℕ+) : (n : ℕ) < k ↔ n < k :=
   Iff.rfl
 
 @[simp]
 theorem pos (n : ℕ+) : 0 < (n : ℕ) :=
-  n.2
+  n.property
 
 theorem eq {m n : ℕ+} : (m : ℕ) = n → m = n :=
   Subtype.ext
@@ -119,11 +124,12 @@ theorem coe_injective : Function.Injective PNat.val :=
 
 @[simp]
 theorem ne_zero (n : ℕ+) : (n : ℕ) ≠ 0 :=
-  n.2.ne'
+  n.property.ne'
 
 instance _root_.NeZero.pnat {a : ℕ+} : NeZero (a : ℕ) :=
   ⟨a.ne_zero⟩
 
+@[basify_simp]
 theorem toPNat'_coe {n : ℕ} : 0 < n → (n.toPNat' : ℕ) = n :=
   succ_pred_eq_of_pos
 
@@ -133,21 +139,20 @@ theorem coe_toPNat' (n : ℕ+) : (n : ℕ).toPNat' = n :=
 
 @[deprecated "use `one_le`" (since := "2026-05-07")]
 protected theorem one_le (n : ℕ+) : (1 : ℕ+) ≤ n :=
-  n.2
+  n.property
 
 @[deprecated "use `not_lt_one`" (since := "2026-05-07")]
 protected theorem not_lt_one (n : ℕ+) : ¬n < 1 :=
-  not_lt_of_ge n.2
+  not_lt_of_ge n.property
 
 instance : Inhabited ℕ+ :=
   ⟨1⟩
 
 -- Some lemmas that rewrite `PNat.mk n h`, for `n` an explicit numeral, into explicit numerals.
-@[simp]
 theorem mk_one {h} : (⟨1, h⟩ : ℕ+) = (1 : ℕ+) :=
   rfl
 
-@[norm_cast]
+@[norm_cast, basify_op]
 theorem one_coe : ((1 : ℕ+) : ℕ) = 1 :=
   rfl
 
@@ -161,7 +166,7 @@ instance : WellFoundedRelation ℕ+ :=
 /-- Strong induction on `ℕ+`. -/
 def strongInductionOn {p : ℕ+ → Sort*} (n : ℕ+) : (∀ k, (∀ m, m < k → p m) → p k) → p n
   | IH => IH _ fun a _ => strongInductionOn a IH
-termination_by n.1
+termination_by n.val
 
 /-- We define `m % k` and `m / k` in the same way as for `ℕ`
   except that when `m = n * k` we take `m % k = k` and
@@ -238,3 +243,11 @@ instance Int.canLiftPNat : CanLift ℤ ℕ+ (↑) ((0 < ·)) :=
         Int.natAbs_of_nonneg hn.le]⟩⟩
 
 end CanLift
+
+
+/-- A `Subtype.mk`-free eliminator for `ℕ+`, exposing the underlying natural and its positivity.
+See `NNReal.recToNNReal` for why `basify` needs this shape. -/
+@[elab_as_elim, basify_elim]
+def PNat.recToPNat {C : ℕ+ → Sort*} (mk : ∀ (n : ℕ) (_pos : 0 < n), C n.toPNat') (t : ℕ+) :
+    C t :=
+  PNat.coe_toPNat' t ▸ mk t t.pos
