@@ -826,4 +826,47 @@ theorem det_fin_three (A : Matrix (Fin 3) (Fin 3) R) :
     Fin.succ_succAbove_zero, sum_singleton, Fin.succ_succAbove_one]
   ring
 
+@[simp]
+theorem det_fin_three_of (a b c d e f g h i : R) :
+    Matrix.det !![a, b, c; d, e, f; g, h, i] =
+      a * e * i - a * f * h - b * d * i + b * f * g + c * d * h - c * e * g :=
+  det_fin_three _
+
+/-- Determinant of 4x4 matrix -/
+theorem det_fin_four (A : Matrix (Fin 4) (Fin 4) R) :
+    det A =
+      A 0 0 * A 1 1 * A 2 2 * A 3 3 - A 0 0 * A 1 1 * A 2 3 * A 3 2
+      - A 0 0 * A 1 2 * A 2 1 * A 3 3 + A 0 0 * A 1 2 * A 2 3 * A 3 1
+      + A 0 0 * A 1 3 * A 2 1 * A 3 2 - A 0 0 * A 1 3 * A 2 2 * A 3 1
+      - A 0 1 * A 1 0 * A 2 2 * A 3 3 + A 0 1 * A 1 0 * A 2 3 * A 3 2
+      + A 0 1 * A 1 2 * A 2 0 * A 3 3 - A 0 1 * A 1 2 * A 2 3 * A 3 0
+      - A 0 1 * A 1 3 * A 2 0 * A 3 2 + A 0 1 * A 1 3 * A 2 2 * A 3 0
+      + A 0 2 * A 1 0 * A 2 1 * A 3 3 - A 0 2 * A 1 0 * A 2 3 * A 3 1
+      - A 0 2 * A 1 1 * A 2 0 * A 3 3 + A 0 2 * A 1 1 * A 2 3 * A 3 0
+      + A 0 2 * A 1 3 * A 2 0 * A 3 1 - A 0 2 * A 1 3 * A 2 1 * A 3 0
+      - A 0 3 * A 1 0 * A 2 1 * A 3 2 + A 0 3 * A 1 0 * A 2 2 * A 3 1
+      + A 0 3 * A 1 1 * A 2 0 * A 3 2 - A 0 3 * A 1 1 * A 2 2 * A 3 0
+      - A 0 3 * A 1 2 * A 2 0 * A 3 1 + A 0 3 * A 1 2 * A 2 1 * A 3 0 := by
+  -- The three `succAbove` values the row-0 expansion leaves behind. Note the
+  -- asymmetry: at the last column the `castSucc` branch is taken, so
+  -- `succAbove 3 2 = 2`, while the other two give `3`.
+  have e1 : (1 : Fin 4).succAbove (2 : Fin 3) = 3 := by decide
+  have e2 : (2 : Fin 4).succAbove (2 : Fin 3) = 3 := by decide
+  have e3 : (3 : Fin 4).succAbove (2 : Fin 3) = 2 := by decide
+  rw [det_succ_row_zero]
+  simp [Fin.sum_univ_succ, det_fin_three, e1, e2, e3]
+  ring
+
+-- Not `@[simp]`: unlike `det_fin_two_of` and `det_fin_three_of`, this rewrites
+-- to 24 terms, which is too large for the default simp set.
+theorem det_fin_four_of (a b c d e f g h i j k l m n o p : R) :
+    Matrix.det !![a, b, c, d; e, f, g, h; i, j, k, l; m, n, o, p] =
+      a * f * k * p - a * f * l * o - a * g * j * p + a * g * l * n
+      + a * h * j * o - a * h * k * n - b * e * k * p + b * e * l * o
+      + b * g * i * p - b * g * l * m - b * h * i * o + b * h * k * m
+      + c * e * j * p - c * e * l * n - c * f * i * p + c * f * l * m
+      + c * h * i * n - c * h * j * m - d * e * j * o + d * e * k * n
+      + d * f * i * o - d * f * k * m - d * g * i * n + d * g * j * m :=
+  det_fin_four _
+
 end Matrix
