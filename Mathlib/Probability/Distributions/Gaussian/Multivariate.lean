@@ -232,11 +232,6 @@ lemma measurePreserving_inner_multivariateGaussian (hS : S.PosSemidef) (t : Eucl
     · rw [coe_innerSL_apply, ← covarianceBilin_self IsGaussian.memLp_two_id,
         covarianceBilin_multivariateGaussian hS]
 
-lemma measurePreserving_multivariateGaussian_inner (hS : S.PosSemidef) (t : EuclideanSpace ℝ ι) :
-    MeasurePreserving (fun x ↦ ⟪x, t⟫) (multivariateGaussian μ S)
-      (gaussianReal ⟪μ, t⟫ (t ⬝ᵥ S *ᵥ t).toNNReal) := by
-  simpa [real_inner_comm _ t] using measurePreserving_inner_multivariateGaussian hS t
-
 lemma measurePreserving_eval_multivariateGaussian (hS : S.PosSemidef) {i : ι} :
     MeasurePreserving (fun x ↦ x i) (multivariateGaussian μ S)
       (gaussianReal (μ i) (S i i).toNNReal) where
@@ -302,12 +297,6 @@ lemma HasLaw.inner_multivariateGaussian
     (hS : S.PosSemidef) (t : EuclideanSpace ℝ ι) :
     HasLaw (fun ω ↦ ⟪t, X ω⟫) (gaussianReal ⟪t, μ⟫ (t ⬝ᵥ S *ᵥ t).toNNReal) P :=
   (measurePreserving_inner_multivariateGaussian hS t).fun_comp_hasLaw hX
-
-lemma HasLaw.multivariateGaussian_inner
-    (hX : HasLaw X (multivariateGaussian μ S) P)
-    (hS : S.PosSemidef) (t : EuclideanSpace ℝ ι) :
-    HasLaw (fun ω ↦ ⟪X ω, t⟫) (gaussianReal ⟪μ, t⟫ (t ⬝ᵥ S *ᵥ t).toNNReal) P :=
-  (measurePreserving_multivariateGaussian_inner hS t).fun_comp_hasLaw hX
 
 end HasLaw
 

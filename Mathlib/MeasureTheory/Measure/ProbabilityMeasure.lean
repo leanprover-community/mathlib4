@@ -638,7 +638,8 @@ noncomputable def map (ν : ProbabilityMeasure Ω) (f : Ω → Ω') :
   ⟨(ν : Measure Ω).map f, inferInstance⟩
 
 @[simp]
-lemma toProbabilityMeasure_map {ν : Measure Ω} [IsProbabilityMeasure ν] {f : Ω → Ω'} :
+lemma _root_.MeasureTheory.Measure.toProbabilityMeasure_map {ν : Measure Ω} [IsProbabilityMeasure ν]
+    {f : Ω → Ω'} :
     (ν.map f).toProbabilityMeasure = ν.toProbabilityMeasure.map f := rfl
 
 @[simp] lemma toMeasure_map (ν : ProbabilityMeasure Ω) {f : Ω → Ω'} :

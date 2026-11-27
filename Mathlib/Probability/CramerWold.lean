@@ -55,4 +55,11 @@ alias ⟨_, TendstoInDistribution.of_inner⟩ := tendstoInDistribution_iff_tends
 
 end MeasureTheory
 
+@[deprecated (since := "2026-11-27")]
+alias tendstoInDistribution_iff_tendstoInDistribution_inner :=
+  MeasureTheory.tendstoInDistribution_iff_tendstoInDistribution_inner
+
+@[deprecated (since := "2026-11-27")]
+alias TendstoInDistribution.of_inner := MeasureTheory.TendstoInDistribution.of_inner
+
 end

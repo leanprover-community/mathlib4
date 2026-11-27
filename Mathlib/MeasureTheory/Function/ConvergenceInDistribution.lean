@@ -143,10 +143,10 @@ theorem TendstoInDistribution.continuous_comp {F : Type*} [OpensMeasurableSpace 
   aemeasurable_limit := hg.measurable.comp_aemeasurable h.aemeasurable_limit
   tendsto := by
     convert! ProbabilityMeasure.tendsto_map_of_tendsto_of_continuous _ _ h.tendsto hg
-    · rw! [← ProbabilityMeasure.toProbabilityMeasure_map, AEMeasurable.map_map_of_aemeasurable
+    · rw! [← Measure.toProbabilityMeasure_map, AEMeasurable.map_map_of_aemeasurable
           hg.aemeasurable (h.forall_aemeasurable _)]
       rfl
-    · rw! [← ProbabilityMeasure.toProbabilityMeasure_map, AEMeasurable.map_map_of_aemeasurable
+    · rw! [← Measure.toProbabilityMeasure_map, AEMeasurable.map_map_of_aemeasurable
           hg.aemeasurable h.aemeasurable_limit]
       rfl
 

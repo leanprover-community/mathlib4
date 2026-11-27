@@ -163,8 +163,6 @@ theorem tendstoInDistribution_inv_sqrt_mul_sum_sub
     simp [field] -- simp [field, h] triggers the unused simp arguments linter
     field_simp [h]
 
-end ProbabilityTheory
-
 section Multivariate
 
 open scoped RealInnerProductSpace Matrix
@@ -183,7 +181,7 @@ following `multivariateGaussian 0 S`, the sequence
 theorem tendstoInDistribution_inv_sqrt_smul_sum_sub
     {S : Matrix ι ι ℝ}
     (hY : HasLaw Y (multivariateGaussian 0 S) P')
-    (h1 : ∀ i j, cov[(X 0 · i), (X 0 · j); P] = S i j)
+    (hcov : ∀ i j, cov[(X 0 · i), (X 0 · j); P] = S i j)
     (hX : MemLp (X 0) 2 P)
     (hindep : iIndepFun X P)
     (hident : ∀ (i : ℕ), IdentDistrib (X i) (X 0) P P) :
@@ -193,34 +191,14 @@ theorem tendstoInDistribution_inv_sqrt_smul_sum_sub
   have hS : S.PosSemidef := by
     convert posSemidef_covariance (fun i ↦ hX.eval_piLp i) using 1
     ext i j
-    exact (h1 i j).symm
+    exact (hcov i j).symm
   refine .of_inner hY.aemeasurable (by fun_prop) fun t ↦ ?_
   have hYmean : P[fun ω ↦ ⟪t, X 0 ω⟫] = ⟪t, P[X 0]⟫ :=
     integral_inner (hX.integrable (by norm_num)) t
-  have hY2 : P[fun ω ↦ ⟪t, X 0 ω⟫ ^ 2] = t ⬝ᵥ S *ᵥ t + ⟪t, P[X 0]⟫ ^ 2 := by
-    calc
-      P[fun ω => ⟪t, X 0 ω⟫ ^ 2] =
-          ∫ ω, ∑ i, ∑ j, (t i * t j) * (X 0 ω i * X 0 ω j) ∂P := by
-        congr with ω
-        simp_rw [PiLp.inner_apply, pow_two, Finset.sum_mul_sum]
-        simp [mul_comm, mul_left_comm, mul_assoc]
-      _ = ∑ i, ∑ j, (t i * t j) * ∫ ω, X 0 ω i * X 0 ω j ∂P := by
-        rw [integral_finsetSum₂]
-        · simp_rw [integral_const_mul]
-        exact fun i _ j _ ↦
-          (hX.eval_piLp i).integrable_mul (hX.eval_piLp j) |>.const_mul _
-      _ = ∑ i, ∑ j, (t i * t j) * (cov[(X 0 · i), (X 0 · j); P] +
-          P[fun ω ↦ X 0 ω i] * P[fun ω ↦ X 0 ω j]) := by
-        simp_rw [covariance_eq_sub (hX.eval_piLp _) (hX.eval_piLp _), Pi.mul_apply, sub_add_cancel]
-      _ = (∑ i, ∑ j, (t i * t j) * cov[(X 0 · i), (X 0 · j); P]) +
-          (∑ i, t i * P[fun ω ↦ X 0 ω i]) ^ 2 := by
-        simp [mul_add, Finset.sum_add_distrib, pow_two, Finset.sum_mul_sum, mul_left_comm,
-          mul_assoc]
-      _ = t ⬝ᵥ S *ᵥ t + ⟪t, P[X 0]⟫ ^ 2 := by
-        simp [h1, ← eval_integral_piLp (hX.integrable (by norm_num)).eval_piLp,
-          dotProduct, Matrix.mulVec, Finset.mul_sum, PiLp.inner_apply, mul_comm, mul_left_comm]
   have hYVar : Var[fun ω ↦ ⟪t, X 0 ω⟫; P] = t ⬝ᵥ S *ᵥ t := by
-    simp [variance_eq_sub (hX.const_inner t), hY2, hYmean]
+    convert variance_fun_sum_mul (fun i ↦ hX.eval_piLp i) t using 2
+    · simp [PiLp.inner_apply, mul_comm]
+    · simp only [hcov]; rfl
   simpa [hYmean, real_inner_comm, real_inner_smul_right, inner_sum, inner_sub_left, inner_sub_right]
     using
     tendstoInDistribution_inv_sqrt_mul_sum_sub (X := fun i ω ↦ ⟪t, X i ω⟫) (Y := fun ω ↦ ⟪t, Y ω⟫)
@@ -234,12 +212,12 @@ square-integrable and with covariance matrix `S`, and a random variable
 `Y : Ω' → EuclideanSpace ℝ ι` following `multivariateGaussian 0 S`, the sequence
 `n ↦ (√n)⁻¹ • ∑ k ∈ Finset.range n, X k` converges to `Y` in distribution. -/
 theorem tendstoInDistribution_inv_sqrt_smul_sum
-    {S : Matrix ι ι ℝ} (hY : HasLaw Y (multivariateGaussian 0 S) P') (h0 : P[X 0] = 0)
-    (h1 : ∀ i j, cov[(X 0 · i), (X 0 · j); P] = S i j) (hX : MemLp (X 0) 2 P)
+    {S : Matrix ι ι ℝ} (hY : HasLaw Y (multivariateGaussian 0 S) P') (hmean : P[X 0] = 0)
+    (hcov : ∀ i j, cov[(X 0 · i), (X 0 · j); P] = S i j) (hX : MemLp (X 0) 2 P)
     (hindep : iIndepFun X P) (hident : ∀ (i : ℕ), IdentDistrib (X i) (X 0) P P) :
     TendstoInDistribution (fun (n : ℕ) ω ↦ (√n)⁻¹ • ∑ k ∈ Finset.range n, X k ω) atTop Y
       (fun _ ↦ P) P' := by
-  simpa [h0] using tendstoInDistribution_inv_sqrt_smul_sum_sub hY h1 hX hindep hident
+  simpa [hmean] using tendstoInDistribution_inv_sqrt_smul_sum_sub hY hcov hX hindep hident
 
 /-- **Multivariate Central Limit Theorem:** Given a sequence of random variables
 `X : ℕ → Ω → EuclideanSpace ℝ ι` that are independent, identically distributed, centered and with
@@ -247,17 +225,19 @@ an identity covariance matrix, and a random variable `Y : Ω' → EuclideanSpace
 `stdGaussian (EuclideanSpace ℝ ι)`, the sequence `n ↦ (√n)⁻¹ • ∑ k ∈ Finset.range n, X k`
 converges to `Y` in distribution. -/
 theorem tendstoInDistribution_inv_sqrt_smul_sum_stdGaussian
-    (hY : HasLaw Y (stdGaussian (EuclideanSpace ℝ ι)) P') (h0 : P[X 0] = 0)
-    (h1 : ∀ i j, cov[(X 0 · i), (X 0 · j); P] = (1 : Matrix _ _ _) i j)
+    (hY : HasLaw Y (stdGaussian (EuclideanSpace ℝ ι)) P') (hmean : P[X 0] = 0)
+    (hcov : ∀ i j, cov[(X 0 · i), (X 0 · j); P] = (1 : Matrix _ _ _) i j)
     (hindep : iIndepFun X P) (hident : ∀ (i : ℕ), IdentDistrib (X i) (X 0) P P) :
     TendstoInDistribution
       (fun (n : ℕ) ω ↦ (√n)⁻¹ • ∑ k ∈ Finset.range n, X k ω) atTop Y (fun _ ↦ P) P' := by
-  apply tendstoInDistribution_inv_sqrt_smul_sum (S := 1) (by simpa) h0 h1 _ hindep hident
+  apply tendstoInDistribution_inv_sqrt_smul_sum (S := 1) (by simpa) hmean hcov _ hindep hident
   refine MemLp.of_eval_piLp fun i ↦ ?_
   have hXi : AEStronglyMeasurable (fun ω ↦ X 0 ω i) P :=
     (hident 0).aemeasurable_fst.aestronglyMeasurable.eval_piLp i
   apply memLp_two_of_variance_ne_zero hXi
-  rw [← covariance_self hXi.aemeasurable, h1]
+  rw [← covariance_self hXi.aemeasurable, hcov]
   simp
 
 end Multivariate
+
+end ProbabilityTheory
