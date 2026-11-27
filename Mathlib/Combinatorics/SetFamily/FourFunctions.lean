@@ -43,9 +43,10 @@ We deduce a number of corollaries:
 * `fkg`: Fortuin-Kasteleyn-Ginibre inequality.
 * `Finset.card_le_card_diffs`: Marica-Schönheim inequality. `|s| ≤ |{a \ b | a, b ∈ s}|`
 
-## TODO
+The Fishburn-Shepp inequality, a consequence of the four functions theorem for linear extensions, is
+`fishburn_shepp` in `Mathlib/Combinatorics/SetFamily/FishburnShepp.lean`.
 
-Prove the Fishburn-Shepp inequality.
+## TODO
 
 Is `collapse` a construct generally useful for set family inductions? If so, we should move it to an
 earlier file and give it a proper API.

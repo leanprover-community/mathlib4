@@ -3833,6 +3833,7 @@ public import Mathlib.Combinatorics.SetFamily.AhlswedeZhang
 public import Mathlib.Combinatorics.SetFamily.Compression.Down
 public import Mathlib.Combinatorics.SetFamily.Compression.UV
 public import Mathlib.Combinatorics.SetFamily.DualVC
+public import Mathlib.Combinatorics.SetFamily.FishburnShepp
 public import Mathlib.Combinatorics.SetFamily.FourFunctions
 public import Mathlib.Combinatorics.SetFamily.HarrisKleitman
 public import Mathlib.Combinatorics.SetFamily.Intersecting
