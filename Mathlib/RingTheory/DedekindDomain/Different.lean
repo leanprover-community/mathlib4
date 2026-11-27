@@ -16,12 +16,14 @@ import Mathlib.RingTheory.Finiteness.Quotient
 /-!
 # The different ideal
 
-## Main definition
+## Main definitions
+
 - `Submodule.traceDual`: The dual `L`-sub `B`-module under the trace form.
 - `FractionalIdeal.dual`: The dual fractional ideal under the trace form.
 - `differentIdeal`: The different ideal of an extension of integral domains.
 
 ## Main results
+
 - `conductor_mul_differentIdeal`:
   If `L = K[x]`, with `x` integral over `A`, then `𝔣 * 𝔇 = (f'(x))`
     with `f` being the minimal polynomial of `x`.
@@ -33,6 +35,7 @@ import Mathlib.RingTheory.Finiteness.Quotient
 - `differentIdeal_eq_differentIdeal_mul_differentIdeal`: Transitivity of the different ideal.
 
 ## TODO
+
 - Show properties of the different ideal
 -/
 
@@ -154,7 +157,7 @@ lemma map_equiv_traceDual [IsDomain A] [IsFractionRing B L] [IsDomain B]
   ext x
   simp only [traceDual, Submodule.mem_comap]
   apply (FractionRing.algEquiv B L).forall_congr
-  simp only [restrictScalars_mem, LinearEquiv.coe_coe, AlgEquiv.coe_symm_toLinearEquiv,
+  simp only [restrictScalars_mem, LinearEquiv.coe_toLinearMap, AlgEquiv.coe_symm_toLinearEquiv,
     traceForm_apply, mem_one, AlgEquiv.toEquiv_eq_coe, EquivLike.coe_coe, mem_comap,
     AlgEquiv.symm_apply_apply]
   refine fun {y} ↦ (forall_congr' fun hy ↦ ?_)
@@ -950,14 +953,14 @@ theorem not_dvd_differentIdeal_iff
     have : Algebra.IsSeparable (A ⧸ P.under A) (B ⧸ P) := by
       contrapose H
       exact dvd_differentIdeal_of_not_isSeparable A hp P H
-    · rw [← Ideal.ramificationIdx_eq_one_iff_of_isSeparable,
-        Ideal.IsDedekindDomain.ramificationIdx_eq_multiplicity (P.under A) P hp']
-      apply multiplicity_eq_of_dvd_of_not_dvd <;> rw [Ideal.dvd_iff_le]
-      · simp [Ideal.map_le_iff_le_comap]
-      · contrapose H
-        rw [← pow_one P, show 1 = 2 - 1 by simp]
-        apply pow_sub_one_dvd_differentIdeal _ _ _ hp
-        simpa [Ideal.dvd_iff_le] using H
+    rw [← Ideal.ramificationIdx_eq_one_iff_of_isSeparable,
+      Ideal.IsDedekindDomain.ramificationIdx_eq_multiplicity (P.under A) P hp']
+    apply multiplicity_eq_of_dvd_of_not_dvd <;> rw [Ideal.dvd_iff_le]
+    · simp [Ideal.map_le_iff_le_comap]
+    · contrapose H
+      rw [← pow_one P, show 1 = 2 - 1 by simp]
+      apply pow_sub_one_dvd_differentIdeal _ _ _ hp
+      simpa [Ideal.dvd_iff_le] using H
   · intro H
     obtain ⟨Q, h₁, h₂⟩ := Ideal.eq_prime_pow_mul_coprime hp' P
     rw [← Ideal.IsDedekindDomain.ramificationIdx_eq_normalizedFactors_count _ _ hp',

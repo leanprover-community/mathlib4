@@ -124,6 +124,9 @@ instance : TestFunctionClass 𝓓^{n}(Ω, F) Ω F n where
   map_hasCompactSupport f := f.hasCompactSupport'
   tsupport_map_subset f := f.tsupport_subset'
 
+/-- Reinterpret a test function `f : 𝓓^{n}(Ω, F)` as a continuous bounded map `E →ᵇ F`. -/
+def toBoundedContinuousFunction (f : 𝓓^{n}(Ω, F)) : E →ᵇ F := .ofClass f
+
 protected theorem contDiff (f : 𝓓^{n}(Ω, F)) : ContDiff ℝ n f := map_contDiff f
 protected theorem hasCompactSupport (f : 𝓓^{n}(Ω, F)) : HasCompactSupport f :=
   map_hasCompactSupport f
@@ -163,9 +166,13 @@ theorem coe_copy (f : 𝓓^{n}(Ω, F)) (f' : E → F) (h : f' = f) : ⇑(f.copy 
 theorem copy_eq (f : 𝓓^{n}(Ω, F)) (f' : E → F) (h : f' = f) : f.copy f' h = f :=
   DFunLike.ext' h
 
-@[simp]
 theorem coe_toBoundedContinuousFunction (f : 𝓓^{n}(Ω, F)) :
-    (f : BoundedContinuousFunction E F) = (f : E → F) := rfl
+    ⇑f.toBoundedContinuousFunction = f := rfl
+
+@[simp]
+theorem toBoundedContinuousFunction_injective :
+    Function.Injective (toBoundedContinuousFunction : 𝓓^{n}(Ω, F) → E →ᵇ F) :=
+  fun f g h ↦ by ext; simp [← coe_toBoundedContinuousFunction, h]
 
 @[simp]
 theorem coe_mk {f : E → F} {contDiff : ContDiff ℝ n f} {hasCompactSupport : HasCompactSupport f}
@@ -402,7 +409,7 @@ functions as a continuous `𝕜`-linear map. -/
 @[simps! apply]
 noncomputable def toBoundedContinuousFunctionCLM [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F] :
     𝓓^{n}(Ω, F) →L[𝕜] E →ᵇ F :=
-  TestFunction.mkCLM 𝕜 (↑) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+  TestFunction.mkCLM 𝕜 toBoundedContinuousFunction (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
     (fun _ _ ↦ (ContDiffMapSupportedIn.toBoundedContinuousFunctionCLM 𝕜).continuous)
 
 lemma toBoundedContinuousFunctionCLM_eq_of_scalars [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F] (𝕜' : Type*)
@@ -410,11 +417,13 @@ lemma toBoundedContinuousFunctionCLM_eq_of_scalars [Algebra ℝ 𝕜] [IsScalarT
     (toBoundedContinuousFunctionCLM 𝕜 : 𝓓^{n}(Ω, F) → _) = toBoundedContinuousFunctionCLM 𝕜' :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 variable (𝕜) in
-theorem injective_toBoundedContinuousFunctionCLM [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F] :
+theorem toBoundedContinuousFunctionCLM_injective [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F] :
     Function.Injective (toBoundedContinuousFunctionCLM 𝕜 : 𝓓^{n}(Ω, F) →L[𝕜] E →ᵇ F) :=
-  fun f g ↦ by simp [toBoundedContinuousFunctionCLM]
+  toBoundedContinuousFunction_injective
+
+@[deprecated (since := "2026-11-24")] alias injective_toBoundedContinuousFunctionCLM :=
+  toBoundedContinuousFunctionCLM_injective
 
 instance : ContinuousEval 𝓓^{n}(Ω, F) E F :=
   ContinuousEval.of_continuous_forget
@@ -422,7 +431,7 @@ instance : ContinuousEval 𝓓^{n}(Ω, F) E F :=
 
 instance : T3Space 𝓓^{n}(Ω, F) :=
   suffices T2Space 𝓓^{n}(Ω, F) from inferInstance
-  .of_injective_continuous (injective_toBoundedContinuousFunctionCLM ℝ)
+  .of_injective_continuous (toBoundedContinuousFunctionCLM_injective ℝ)
     (ContinuousLinearMap.continuous _)
 
 end ToBoundedContinuousFunctionCLM

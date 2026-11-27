@@ -18,6 +18,7 @@ Because our sign convention for differentials is opposite that of Chevalley-Eile
 change of signs in the "action" part of the Lie bracket.
 
 ## Main definitions
+
 * `LieAlgebra.IsExtension`: A `Prop`-valued class characterizing an extension of Lie algebras.
 * `LieAlgebra.Extension`: A bundled structure giving an extension of Lie algebras.
 * `LieAlgebra.IsExtension.extension`: A function that builds the bundled structure from the class.
@@ -31,10 +32,12 @@ change of signs in the "action" part of the Lie bracket.
   of an extension.
 
 ## TODO
+
 * `IsCentral` - central extensions
 * `Equiv` - equivalence of extensions
 
 ## References
+
 * [Chevalley, Eilenberg, *Cohomology Theory of Lie Groups and Lie
   Algebras*][chevalley_eilenberg_1948]
 * [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 1--3*][bourbaki1975]
@@ -453,7 +456,7 @@ lemma d₁₂_oneCochainOfTwoSplitting [IsLieAbelian M] (E : Extension R M L) {s
     simpa [sub_sub, sub_eq_zero] using this h
   simp only [twoCochain_val_apply, d₁₂_apply_apply, oneCochainOfTwoSplitting_apply,
     AddSubgroupClass.coe_sub, twoCocycleOf_coe_coe, LinearMap.sub_apply, LinearMap.compr₂_apply,
-    LinearMap.coe_mk, AddHom.coe_mk, LinearEquiv.coe_coe, LieEquiv.coe_toLinearEquiv]
+    LinearMap.coe_mk, AddHom.coe_mk, LinearEquiv.coe_toLinearMap, LieEquiv.coe_toLinearEquiv]
   nth_rw 1 [← hs x]
   nth_rw 4 [← hs y]
   simp only [← EmbeddingLike.apply_eq_iff_eq E.toKer, ringModuleOf_bracket_proj,

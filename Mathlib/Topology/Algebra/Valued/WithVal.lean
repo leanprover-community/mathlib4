@@ -28,6 +28,7 @@ The `WithVal` type synonym is used to define the completion of `R` with respect 
 fractions of a Dedekind domain with respect to a height-one prime ideal of the domain.
 
 ## Main definitions
+
 - `WithVal` : type synonym for a ring equipped with the topology coming from a valuation.
 - `WithVal.equiv` : the canonical ring equivalence between `WithValuation v` and `R`.
 - `Valuation.Completion` : the uniform space completion of a field `K` according to the
@@ -196,7 +197,7 @@ theorem congr_trans {T : Type*} [Ring T] (u : Valuation T Γ₀) (f : R ≃+* S)
 /-- Canonical valuation on the `WithVal v` type synonym. -/
 def valuation : Valuation (WithVal v) Γ₀ := v.comap (equiv v)
 
-@[simp] lemma valuation_toVal (x : R) : valuation v (toVal v x) = v x := rfl
+lemma valuation_toVal (x : R) : valuation v (toVal v x) = v x := rfl
 
 @[simp] lemma valuation_apply_eq_ofVal (x : WithVal v) : valuation v x = v x.ofVal := rfl
 

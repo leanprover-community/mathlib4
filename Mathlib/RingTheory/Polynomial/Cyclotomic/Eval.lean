@@ -12,12 +12,16 @@ public import Mathlib.RingTheory.RootsOfUnity.CyclotomicUnits
 import Mathlib.NumberTheory.Padics.PadicVal.Basic
 import Mathlib.Topology.Algebra.Polynomial
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Evaluating cyclotomic polynomials
 
 This file states some results about evaluating cyclotomic polynomials in various different ways.
 
 ## Main definitions
+
 * `Polynomial.eval(₂)_one_cyclotomic_prime(_pow)`: `eval 1 (cyclotomic p^k R) = p`.
 * `Polynomial.eval_one_cyclotomic_of_not_isPrimePow`: if `n` is neither `1` nor a prime power,
   then `eval 1 (cyclotomic n R) = 1`.

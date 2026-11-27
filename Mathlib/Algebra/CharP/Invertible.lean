@@ -13,6 +13,9 @@ public import Mathlib.Data.Int.GCD
 
 import Mathlib.Algebra.Ring.Int.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Invertibility of elements given a characteristic
 

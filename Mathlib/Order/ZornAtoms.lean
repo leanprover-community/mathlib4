@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.Atoms
 public import Mathlib.Order.Zorn
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Zorn lemma for (co)atoms
 

@@ -9,6 +9,9 @@ public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
 public import Mathlib.Topology.Order.Basic
 public import Mathlib.Topology.UniformSpace.UniformConvergence
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # TendstoUniformlyOn on ordered spaces
 

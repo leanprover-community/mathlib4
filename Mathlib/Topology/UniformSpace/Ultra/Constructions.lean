@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.UniformSpace.Pi
 public import Mathlib.Topology.UniformSpace.Ultra.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Products of ultrametric (nonarchimedean) uniform spaces
 
@@ -18,7 +21,7 @@ public import Mathlib.Topology.UniformSpace.Ultra.Basic
 * `IsUltraUniformity.pi`: an indexed product of uniform spaces with nonarchimedean uniformities
   has a nonarchimedean uniformity.
 
-## Implementation details
+## Implementation notes
 
 This file can be split to separate imports to have the `Prod` and `Pi` instances separately,
 but would be somewhat unnatural since they are closely related.
@@ -36,8 +39,9 @@ instance SetRel.isTrans_entourageProd {s : SetRel X X} {t : SetRel Y Y} [s.IsTra
 lemma IsUltraUniformity.comap {u : UniformSpace Y} (h : IsUltraUniformity Y) (f : X → Y) :
     @IsUltraUniformity _ (u.comap f) := by
   let := u.comap f
-  refine .mk_of_hasBasis (h.hasBasis.comap (Prod.map f f)) ?_ ?_ <;>
-  · dsimp
+  refine .mk_of_hasBasis (h.hasBasis.comap (Prod.map f f)) ?_ ?_
+  all_goals
+    dsimp
     rintro _ ⟨_, _, _⟩
     infer_instance
 
@@ -45,8 +49,9 @@ lemma IsUltraUniformity.inf {u u' : UniformSpace X} (h : @IsUltraUniformity _ u)
     (h' : @IsUltraUniformity _ u') :
     @IsUltraUniformity _ (u ⊓ u') := by
   let := u ⊓ u'
-  refine .mk_of_hasBasis (h.hasBasis.inf h'.hasBasis) ?_ ?_ <;>
-  · dsimp
+  refine .mk_of_hasBasis (h.hasBasis.inf h'.hasBasis) ?_ ?_
+  all_goals
+    dsimp
     rintro _ ⟨⟨_, _, _⟩, _, _, _⟩
     infer_instance
 
@@ -61,8 +66,9 @@ lemma IsUltraUniformity.iInf {ι : Type*} {U : (i : ι) → UniformSpace X}
     (hU : ∀ i, @IsUltraUniformity X (U i)) :
     @IsUltraUniformity _ (⨅ i, U i : UniformSpace X) := by
   let : UniformSpace X := ⨅ i, U i
-  refine .mk_of_hasBasis (iInf_uniformity ▸ Filter.HasBasis.iInf fun i ↦ (hU i).hasBasis) ?_ ?_ <;>
-  · simp only [forall_and, Subtype.forall, id_eq, Set.iInter_coe_set, and_imp]
+  refine .mk_of_hasBasis (iInf_uniformity ▸ Filter.HasBasis.iInf fun i ↦ (hU i).hasBasis) ?_ ?_
+  all_goals
+    simp only [forall_and, Subtype.forall, id_eq, Set.iInter_coe_set, and_imp]
     rintro _ _ _ _ _
     infer_instance
 

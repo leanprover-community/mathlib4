@@ -8,7 +8,10 @@ module
 public import Mathlib.GroupTheory.FreeGroup.NielsenSchreier
 public import Mathlib.GroupTheory.FreeGroup.Reduce
 
-import Mathlib.GroupTheory.SpecificGroups.Cyclic.Basic
+import Mathlib.GroupTheory.SpecificGroups.Cyclic.Subgroup
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Center and centralizers of free groups
@@ -53,7 +56,7 @@ theorem mem_zpowers_of_iff [DecidableEq α] {a : α} {x : FreeGroup α} :
     refine mul_mem ?_ (ih (by grind))
     obtain ⟨b, _ | _⟩ := p
     all_goals
-    · simp at h
+      simp at h
       simp [h.1, mk_eq_of, mk_eq_inv_of]
 
 @[to_additive]
@@ -135,5 +138,25 @@ theorem commute_iff_exists_zpow {a b : G} :
   obtain ⟨n, hn⟩ := hg ⟨a, mem_centralizer_singleton_iff.mpr h.eq⟩
   obtain ⟨m, hm⟩ := hg ⟨b, mem_centralizer_singleton_iff.mpr rfl⟩
   exact ⟨g, n, m, by simp_all [Subtype.ext_iff]⟩
+
+/-- A nontrivial element of a free group is a positive power of a generator of its own
+centralizer: there are `r ≠ 1` and `n > 0` with `centralizer {v} = zpowers r` and `v = r ^ n`. -/
+@[to_additive]
+theorem exists_zpowers_eq_centralizer_singleton {G : Type*} [Group G] [IsFreeGroup G] {v : G}
+    (hv : v ≠ 1) :
+    ∃ (r : G) (n : ℕ), r ≠ 1 ∧ 0 < n ∧ centralizer {v} = zpowers r ∧
+      v = r ^ n := by
+  obtain ⟨r, hr⟩ := (Subgroup.isCyclic_iff_exists_zpowers_eq _).1 (isCyclic_centralizer hv)
+  obtain ⟨z, rfl⟩ : ∃ (z : ℤ), r ^ z = v := by
+    simp [hr, mem_centralizer_iff, ← mem_zpowers_iff]
+  have hr1 : r ≠ 1 := by contrapose hv; simp [hv]
+  have hz0 : z ≠ 0 := by contrapose hv; simp [hv]
+  rcases lt_or_gt_of_ne hz0.symm with hzpos | hzneg
+  · refine ⟨r, z.natAbs, hr1, Int.natAbs_pos.mpr hz0, hr.symm, ?_⟩
+    rw [← zpow_natCast, Int.natAbs_of_nonneg hzpos.le]
+  · have hneg : (z.natAbs : ℤ) = -z := by grind
+    refine ⟨r⁻¹, z.natAbs, by simpa using hr1, Int.natAbs_pos.mpr hz0,
+      by rw [Subgroup.zpowers_inv, hr], ?_⟩
+    rw [← zpow_natCast, hneg, inv_zpow', neg_neg]
 
 end IsFreeGroup

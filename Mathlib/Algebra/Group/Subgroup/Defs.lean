@@ -50,6 +50,7 @@ Subgroup inclusion is denoted `≤` rather than `⊆`, although `∈` is defined
 membership of a subgroup's underlying set.
 
 ## Tags
+
 subgroup, subgroups
 -/
 
@@ -146,9 +147,10 @@ variable [SetLike S G] [SubgroupClass S G]
 @[to_additive]
 theorem exists_inv_mem_iff_exists_mem {P : G → Prop} :
     (∃ x : G, x ∈ H ∧ P x⁻¹) ↔ ∃ x ∈ H, P x := by
-  constructor <;>
-    · rintro ⟨x, x_in, hx⟩
-      exact ⟨x⁻¹, inv_mem x_in, by simp [hx]⟩
+  constructor
+  all_goals
+    rintro ⟨x, x_in, hx⟩
+    exact ⟨x⁻¹, inv_mem x_in, by simp [hx]⟩
 
 @[to_additive]
 theorem mul_mem_cancel_right {x y : G} (h : x ∈ H) : y * x ∈ H ↔ y ∈ H :=
@@ -240,7 +242,7 @@ theorem coe_subtype : (SubgroupClass.subtype H : H → G) = ((↑) : H → G) :=
 
 variable {H}
 
-@[to_additive (attr := simp, norm_cast)]
+@[to_additive]
 theorem coe_pow (x : H) (n : ℕ) : ((x ^ n : H) : G) = (x : G) ^ n :=
   rfl
 
@@ -519,15 +521,15 @@ instance zpow : Pow H ℤ :=
 theorem coe_mul (x y : H) : (↑(x * y) : G) = ↑x * ↑y :=
   rfl
 
-@[to_additive (attr := simp, norm_cast)]
+@[to_additive]
 theorem coe_one : ((1 : H) : G) = 1 :=
   rfl
 
-@[to_additive (attr := simp, norm_cast)]
+@[to_additive]
 theorem coe_inv (x : H) : ↑(x⁻¹ : H) = (x⁻¹ : G) :=
   rfl
 
-@[to_additive (attr := simp, norm_cast)]
+@[to_additive]
 theorem coe_div (x y : H) : (↑(x / y) : G) = ↑x / ↑y :=
   rfl
 
@@ -535,7 +537,7 @@ theorem coe_div (x y : H) : (↑(x / y) : G) = ↑x / ↑y :=
 theorem coe_mk (x : G) (hx : x ∈ H) : ((⟨x, hx⟩ : H) : G) = x :=
   rfl
 
-@[to_additive (attr := simp, norm_cast)]
+@[to_additive]
 theorem coe_pow (x : H) (n : ℕ) : ((x ^ n : H) : G) = (x : G) ^ n :=
   rfl
 

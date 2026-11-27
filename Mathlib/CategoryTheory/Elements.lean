@@ -25,11 +25,13 @@ so this is mostly just a more convenient API. We prove the equivalence in
 `CategoryTheory.Functor.Elements.structuredArrowEquivalence`.
 
 ## References
+
 * [Emily Riehl, *Category Theory in Context*, Section 2.4][riehl2017]
 * <https://en.wikipedia.org/wiki/Category_of_elements>
 * <https://ncatlab.org/nlab/show/category+of+elements>
 
 ## Tags
+
 category of elements, Grothendieck construction, comma category
 -/
 
@@ -212,7 +214,6 @@ def fromCostructuredArrow (F : Cᵒᵖ ⥤ Type v) :
   obj X := F.elementsMk (Opposite.op X.unop.left) (yonedaEquiv X.unop.hom)
   map f := homMk f.unop.left.op (by simp [yonedaEquiv_naturality])
 
-@[simp]
 theorem fromCostructuredArrow_obj_mk (F : Cᵒᵖ ⥤ Type v) {X : C} (f : yoneda.obj X ⟶ F) :
     (fromCostructuredArrow F).obj (Opposite.op (CostructuredArrow.mk f)) =
       F.elementsMk (Opposite.op X) (yonedaEquiv f) := rfl

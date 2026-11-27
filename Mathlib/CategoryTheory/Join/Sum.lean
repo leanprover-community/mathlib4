@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Join.Basic
 public import Mathlib.CategoryTheory.Sums.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Embedding of `C ⊕ D` into `C ⋆ D`
 

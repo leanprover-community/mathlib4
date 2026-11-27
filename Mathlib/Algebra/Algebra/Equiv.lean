@@ -81,12 +81,10 @@ instance (priority := 100) {F R A B : Type*} [Monoid R] [NonUnitalNonAssocSemiri
     NonUnitalAlgHomClass F R A B :=
   { }
 
-/-- Turn an element of a type `F` satisfying `AlgEquivClass F R A B` into an actual `AlgEquiv`.
-This is declared as the default coercion from `F` to `A ≃ₐ[R] B`. -/
-@[coe]
+/-- Turn an element of a type `F` satisfying `AlgEquivClass F R A B` into an actual `AlgEquiv`. -/
 def _root_.AlgEquiv.ofClass {F R A B : Type*} [Add A] [Add B] [Mul A] [Mul B] [SMul R A] [SMul R B]
     [EquivLike F A B] [AlgEquivClass F R A B] (f : F) : A ≃ₐ[R] B :=
-  { (f : A ≃ B), (RingEquivClass.toRingEquiv f : A ≃+* B) with map_smul' := map_smul f }
+  { (f : A ≃ B), RingEquiv.ofClass f with map_smul' := map_smul f }
 
 @[deprecated (since := "2026-09-08")] alias toAlgEquiv := AlgEquiv.ofClass
 
@@ -191,7 +189,7 @@ end LinearEquiv
 
 instance : CoeOut (A₁ ≃ₐ[R] A₂) (A₁ ≃+* A₂) where coe := toRingEquiv
 
-@[simp]
+@[simp, nolint simpNF] -- `nolint` needed while this uses `EquivLike.toEquiv`
 theorem coe_toEquiv : ((e : A₁ ≃ A₂) : A₁ → A₂) = e :=
   rfl
 

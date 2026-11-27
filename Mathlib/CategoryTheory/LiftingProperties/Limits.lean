@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.Products
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lifting properties and (co)limits
 

@@ -13,6 +13,9 @@ import Mathlib.Algebra.Category.ModuleCat.Products
 import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 import Mathlib.LinearAlgebra.DirectSum.Finite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `forget₂ (FGModuleCat K) (ModuleCat K)` creates all finite colimits.
 

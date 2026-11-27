@@ -8,6 +8,9 @@ module
 public import Mathlib.RepresentationTheory.Homological.FiniteCyclic
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Group cohomology of a finite cyclic group
 

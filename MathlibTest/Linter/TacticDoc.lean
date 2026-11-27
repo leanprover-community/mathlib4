@@ -1,6 +1,6 @@
 module
 
-public import Batteries.Tactic.Lint.Frontend
+public import Batteries.Linter.Frontend
 public import Mathlib.Tactic.Linter.TacticDocumentation
 
 syntax "noDocs" : tactic

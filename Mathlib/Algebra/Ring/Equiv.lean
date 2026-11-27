@@ -101,12 +101,13 @@ instance (priority := 100) toRingHomClass [NonAssocSemiring R] [NonAssocSemiring
 instance (priority := 100) toNonUnitalRingHomClass [NonUnitalNonAssocSemiring R]
     [NonUnitalNonAssocSemiring S] [RingEquivClass F R S] : NonUnitalRingHomClass F R S where
 
-/-- Turn an element of a type `F` satisfying `RingEquivClass F α β` into an actual
-`RingEquiv`. This is declared as the default coercion from `F` to `α ≃+* β`. -/
-@[coe]
-def toRingEquiv [Mul α] [Add α] [Mul β] [Add β] [EquivLike F α β] [RingEquivClass F α β] (f : F) :
+/-- Turn an element of a type `F` satisfying `RingEquivClass F α β` into an actual `RingEquiv`. -/
+def _root_.RingEquiv.ofClass [Mul α] [Add α] [Mul β] [Add β]
+    [EquivLike F α β] [RingEquivClass F α β] (f : F) :
     α ≃+* β :=
   { (f : α ≃* β), (f : α ≃+ β) with }
+
+@[deprecated (since := "2026-11-22")] alias toRingEquiv := RingEquiv.ofClass
 
 end RingEquivClass
 
@@ -134,6 +135,10 @@ instance : RingEquivClass (R ≃+* S) R S where
   map_add f := f.map_add'
   map_mul f := f.map_mul'
 
+@[simp]
+protected theorem coe_ofClass {F : Type*} [EquivLike F R S] [RingEquivClass F R S] (f : F) :
+    ⇑(ofClass f) = f := rfl
+
 /-- Two ring isomorphisms agree if they are defined by the same underlying function. -/
 @[ext]
 theorem ext {f g : R ≃+* S} (h : ∀ x, f x = g x) : f = g :=
@@ -157,7 +162,7 @@ theorem mk_coe (e : R ≃+* S) (e' h₁ h₂ h₃ h₄) : (⟨⟨e, e', h₁, h�
 theorem toEquiv_eq_coe (f : R ≃+* S) : f.toEquiv = f :=
   rfl
 
-@[simp]
+@[simp, nolint simpNF] -- `nolint` needed while this uses `EquivLike.toEquiv`
 theorem coe_toEquiv (f : R ≃+* S) : ⇑(f : R ≃ S) = f :=
   rfl
 
@@ -775,7 +780,7 @@ theorem toRingHom_injective : Function.Injective (toRingHom : R ≃+* S → R �
 @[simp] theorem toRingHom_eq_coe (f : R ≃+* S) : f.toRingHom = ↑f :=
   rfl
 
-@[simp, norm_cast]
+@[simp, norm_cast, nolint simpNF] -- `nolint` needed while this uses `RingHomClass.toRingHom`
 theorem coe_toRingHom (f : R ≃+* S) : ⇑(f : R →+* S) = f :=
   rfl
 
@@ -820,17 +825,14 @@ theorem toEquiv_commutes (f : R ≃+* S) : (f : R ≃+ S).toEquiv = (f : R ≃* 
   rfl
 
 -- TODO: remove lemma when we remove the RingHom.ofClass coercion
-@[simp]
 theorem toRingHom_refl' : (RingEquiv.refl R).toRingHom = RingHom.id R :=
   rfl
 
 -- TODO: Delete this lemma after moving `coe` from `.ofClass` to `.toMonoidHom`, in #43765.
-@[simp]
 theorem toMonoidHom_refl' : (RingEquiv.refl R).toMonoidHom = MonoidHom.id R :=
   rfl
 
 -- TODO: Delete this lemma after moving `coe` from `.ofClass` to `.toAddMonoidHom`, in #43765.
-@[simp]
 theorem toAddMonoidHom_refl' : (RingEquiv.refl R).toAddMonoidHom = AddMonoidHom.id R :=
   rfl
 
@@ -843,7 +845,6 @@ theorem symm_toRingHom_apply_toRingHom_apply (e : R ≃+* S) :
   Equiv.symm_apply_apply e.toEquiv
 
 -- TODO: remove lemma when we remove the RingHom.ofClass coercion
-@[simp]
 theorem toRingHom_trans' (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
     (e₁.trans e₂).toRingHom = e₂.toRingHom.comp e₁.toRingHom :=
   rfl

@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Polynomial.HasseDeriv
 
 import Mathlib.Algebra.Polynomial.Eval.SMul
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Taylor expansions of polynomials
 

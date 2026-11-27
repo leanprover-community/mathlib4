@@ -45,7 +45,8 @@ conditions are equivalent in this case).
   property that `f x ∈ 𝓝 x` for all `x`. Then there is some countable set `s` whose image covers
   the space.
 
-## Implementation Notes
+## Implementation notes
+
 For our applications we are interested in the existence of a countable basis, but we do not need the
 concrete basis itself. This allows us to declare these type classes as `Prop` to use them as mixins.
 

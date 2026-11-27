@@ -218,15 +218,15 @@ lemma one_eq_zero : (1 : AddChar A M) = (0 : AddChar A M) := rfl
 instance instInhabited : Inhabited (AddChar A M) := ⟨1⟩
 
 /-- Composing a `MonoidHom` with an `AddChar` yields another `AddChar`. -/
-def _root_.MonoidHom.compAddChar {N : Type*} [Monoid N] (f : M →* N) (φ : AddChar A M) :
+def _root_.MonoidHom.compAddChar (f : M →* N) (φ : AddChar A M) :
     AddChar A N := toMonoidHomEquiv.symm (f.comp φ.toMonoidHom)
 
 @[simp, norm_cast]
-lemma _root_.MonoidHom.coe_compAddChar {N : Type*} [Monoid N] (f : M →* N) (φ : AddChar A M) :
+lemma _root_.MonoidHom.coe_compAddChar (f : M →* N) (φ : AddChar A M) :
     f.compAddChar φ = f ∘ φ :=
   rfl
 
-@[simp, norm_cast]
+@[deprecated MonoidHom.coe_compAddChar (since := "2026-11-26")]
 lemma _root_.MonoidHom.compAddChar_apply (f : M →* N) (φ : AddChar A M) : f.compAddChar φ = f ∘ φ :=
   rfl
 

@@ -27,7 +27,7 @@ that the integral commutes with the continuous functional calculus under appropr
 + `integrableOn_cfc`, `integrableOn_cfcₙ`, `integrable_cfc`, `integrable_cfcₙ`:
   functions of the form `fun x => cfc (f x) a` are integrable.
 
-## Implementation Notes
+## Implementation notes
 
 The lemmas mentioned above are stated under much stricter hypotheses than necessary
 (typically, simultaneous continuity of `f` in the parameter and the spectrum element).

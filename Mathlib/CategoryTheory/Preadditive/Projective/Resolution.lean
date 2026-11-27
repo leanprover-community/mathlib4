@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Homology.QuasiIso
 public import Mathlib.Algebra.Homology.SingleHomology
 public import Mathlib.CategoryTheory.Preadditive.Projective.Preserves
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Projective resolutions
 
@@ -150,7 +153,6 @@ namespace Hom
 
 attribute [reassoc (attr := simp)] hom_f_zero_comp_π_f_zero
 
-set_option backward.isDefEq.respectTransparency false in
 variable {I I'} in
 @[reassoc (attr := simp)]
 lemma hom_comp_π {f : Z ⟶ Z'} (φ : Hom P P' f) :

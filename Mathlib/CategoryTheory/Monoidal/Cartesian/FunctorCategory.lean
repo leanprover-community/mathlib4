@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 public import Mathlib.CategoryTheory.Monoidal.Types.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functor categories have chosen finite products
 
@@ -59,10 +62,8 @@ namespace Monoidal
 
 open CartesianMonoidalCategory
 
-@[simp]
 lemma tensorObj_obj (F₁ F₂ : J ⥤ C) (j : J) : (F₁ ⊗ F₂).obj j = (F₁.obj j) ⊗ (F₂.obj j) := rfl
 
-@[simp]
 lemma tensorObj_map (F₁ F₂ : J ⥤ C) {j j' : J} (f : j ⟶ j') :
     (F₁ ⊗ F₂).map f = (F₁.map f) ⊗ₘ (F₂.map f) := rfl
 

@@ -27,7 +27,7 @@ We gather miscellaneous results about units given by sums of powers of roots of 
 See `IsPrimitiveRoot.isUnit_sub_one_iff` in `Mathlib.RingTheory.Polynomial.Cyclotomic.Eval` for a
 characterisation of when `ζ - 1` is a unit.
 
-## Implementation details
+## Implementation notes
 
 We sometimes state series of results of the form `a = u * b`, `IsUnit u` and `Associated a b`.
 Often, `Associated a b` is everything one needs, and it is more convenient to use, we include the

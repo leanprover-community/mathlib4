@@ -37,7 +37,7 @@ Given a type `C` with associated `groupoid C` instance.
   vertex `v`, assuming `v` is contained in the `CategoryTheory.Subgroupoid` (meaning, by definition,
   that the arrow `𝟙 v` is contained in the subgroupoid).
 
-## Implementation details
+## Implementation notes
 
 The structure of this file is copied from/inspired by `Mathlib/Algebra/Group/Subgroup/Basic.lean`
 and `Mathlib/Combinatorics/SimpleGraph/Subgraph.lean`.

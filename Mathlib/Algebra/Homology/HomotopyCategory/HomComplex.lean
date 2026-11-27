@@ -31,6 +31,7 @@ We follow the signs conventions appearing in the introduction of
 [Brian Conrad's book *Grothendieck duality and base change*][conrad2000].
 
 ## References
+
 * [Brian Conrad, Grothendieck duality and base change][conrad2000]
 -/
 
@@ -609,7 +610,6 @@ variable (F G n)
 instance : AddCommGroup (Cocycle F G n) :=
   inferInstanceAs <| AddCommGroup (cocycle F G n)
 
-@[simp]
 lemma coe_zero : (↑(0 : Cocycle F G n) : Cochain F G n) = 0 := by rfl
 
 variable {F G n}

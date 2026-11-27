@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Simultaneous eigenvectors and eigenvalues for families of endomorphisms
 
@@ -17,7 +20,8 @@ endomorphism are invariant under the action of all members of the family. It is 
 for commuting endomorphisms but there are important more general situations where it also holds
 (e.g., representations of nilpotent Lie algebras).
 
-## Main definitions / results
+## Main definitions and statements
+
 * `Module.End.independent_iInf_maxGenEigenspace_of_forall_mapsTo`: the simultaneous generalised
   eigenspaces of a compatible family of endomorphisms are independent.
 * `Module.End.iSup_iInf_maxGenEigenspace_eq_top_of_forall_mapsTo`: in finite dimensions, the
