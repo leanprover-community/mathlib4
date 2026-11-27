@@ -67,10 +67,10 @@ protected abbrev _root_.PseudoEMetricSpace.hausdorff : PseudoEMetricSpace (Set �
   edist_comm _ _ := hausdorffEDist_comm
   edist_triangle _ _ _ := hausdorffEDist_triangle
   toUniformSpace := .hausdorff α
-  uniformity_edist := by
+  uniformity_eDist := by
     refine le_antisymm
       (le_iInf₂ fun ε hε => Filter.le_principal_iff.mpr ?_)
-      (uniformity_basis_edist.lift' monotone_hausdorffEntourage |>.ge_iff.mpr fun ε hε =>
+      (uniformity_basis_eDist.lift' monotone_hausdorffEntourage |>.ge_iff.mpr fun ε hε =>
         Filter.mem_iInf_of_mem ε <| Filter.mem_iInf_of_mem hε fun _ =>
         mem_hausdorffEntourage_of_hausdorffEDist_lt)
     obtain ⟨δ, hδ, hδε⟩ := exists_between hε
@@ -94,13 +94,13 @@ instance instEMetricSpace : EMetricSpace (Closeds α) where
 /-- The edistance to a closed set depends continuously on the point and the set -/
 theorem continuous_infEDist :
     Continuous fun p : α × Closeds α => infEDist p.1 p.2 := by
-  refine continuous_of_le_add_edist 2 (by simp) ?_
+  refine continuous_of_le_add_eDist 2 (by simp) ?_
   rintro ⟨x, s⟩ ⟨y, t⟩
   calc
     infEDist x s ≤ infEDist x t + hausdorffEDist (t : Set α) s :=
       infEDist_le_infEDist_add_hausdorffEDist
     _ ≤ infEDist y t + eDist x y + hausdorffEDist (t : Set α) s := by
-      gcongr; apply infEDist_le_infEDist_add_edist
+      gcongr; apply infEDist_le_infEDist_add_eDist
     _ = infEDist y t + (eDist x y + hausdorffEDist (s : Set α) t) := by
       rw [add_assoc, hausdorffEDist_comm]
     _ ≤ infEDist y t + (eDist (x, s) (y, t) + eDist (x, s) (y, t)) := by
@@ -194,7 +194,7 @@ instance instCompleteSpace [CompleteSpace α] : CompleteSpace (Closeds α) := by
           ⟩
   -- Deduce from the above inequalities that the distance between `s n` and `t0` is at most `2 B n`.
   have main : ∀ n : ℕ, eDist (s n) t ≤ 2 * B n := fun n =>
-    hausdorffEDist_le_of_mem_edist (I1 n) (I2 n)
+    hausdorffEDist_le_of_mem_eDist (I1 n) (I2 n)
   -- from this, the convergence of `s n` to `t0` follows.
   refine EMetric.tendsto_atTop.2 fun ε εpos => ?_
   have : Tendsto (fun n => 2 * B n) atTop (𝓝 (2 * 0)) :=

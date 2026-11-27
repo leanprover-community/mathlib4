@@ -980,7 +980,7 @@ protected theorem dist {_ : MeasurableSpace α} {β : Type*} [PseudoMetricSpace 
 protected theorem eDist {_ : MeasurableSpace α} {β : Type*} [PseudoEMetricSpace β] {f g : α → β}
     (hf : StronglyMeasurable f) (hg : StronglyMeasurable g) :
     StronglyMeasurable fun x => eDist (f x) (g x) :=
-  continuous_edist.comp_stronglyMeasurable (hf.prodMk hg)
+  continuous_eDist.comp_stronglyMeasurable (hf.prodMk hg)
 
 @[fun_prop]
 protected theorem norm {_ : MeasurableSpace α} {β : Type*} [SeminormedAddCommGroup β] {f : α → β}

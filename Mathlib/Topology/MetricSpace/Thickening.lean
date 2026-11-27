@@ -143,7 +143,7 @@ theorem mem_thickening_iff_infDist_lt {E : Set X} {x : X} (h : E.Nonempty) :
 it is at distance less than `δ` from some point of `E`. -/
 theorem mem_thickening_iff {E : Set X} {x : X} : x ∈ thickening δ E ↔ ∃ z ∈ E, dist x z < δ := by
   have key_iff : ∀ z : X, eDist x z < ENNReal.ofReal δ ↔ dist x z < δ := fun z ↦ by
-    rw [dist_edist, lt_ofReal_iff_toReal_lt (edist_ne_top _ _)]
+    rw [dist_eDist, lt_ofReal_iff_toReal_lt (edist_ne_top _ _)]
   simp_rw [mem_thickening_iff_exists_edist_lt, key_iff]
 
 @[simp]
@@ -402,7 +402,7 @@ open ENNReal
 theorem _root_.Disjoint.exists_thickenings (hst : Disjoint s t) (hs : IsCompact s)
     (ht : IsClosed t) :
     ∃ δ, 0 < δ ∧ Disjoint (thickening δ s) (thickening δ t) := by
-  obtain ⟨r, hr, h⟩ := exists_pos_forall_lt_edist hs ht hst
+  obtain ⟨r, hr, h⟩ := exists_pos_forall_lt_eDist hs ht hst
   refine ⟨r / 2, half_pos (NNReal.coe_pos.2 hr), ?_⟩
   rw [disjoint_iff_inf_le]
   rintro z ⟨hzs, hzt⟩
@@ -557,7 +557,7 @@ theorem _root_.IsCompact.cthickening_eq_biUnion_closedBall {α : Type*} [PseudoM
   · simp only [cthickening_empty, biUnion_empty]
   refine Subset.antisymm (fun x hx ↦ ?_)
     (iUnion₂_subset fun x hx ↦ closedBall_subset_cthickening hx _)
-  obtain ⟨y, yE, hy⟩ : ∃ y ∈ E, infEDist x E = eDist x y := hE.exists_infEDist_eq_edist hne _
+  obtain ⟨y, yE, hy⟩ : ∃ y ∈ E, infEDist x E = eDist x y := hE.exists_infEDist_eq_eDist hne _
   have D1 : eDist x y ≤ ENNReal.ofReal δ := (le_of_eq hy.symm).trans hx
   have D2 : dist x y ≤ δ := by
     rw [edist_dist] at D1

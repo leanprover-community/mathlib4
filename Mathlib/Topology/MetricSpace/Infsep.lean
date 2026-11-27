@@ -202,7 +202,7 @@ theorem le_einfsep_pi_of_le {X : β → Type*} [Fintype β] [∀ b, PseudoEMetri
   refine le_einfsep fun x hx y hy hxy => ?_
   rw [mem_univ_pi] at hx hy
   rcases Function.ne_iff.mp hxy with ⟨i, hi⟩
-  exact le_trans (le_einfsep_iff.1 (h i) _ (hx _) _ (hy _) hi) (edist_le_pi_edist _ _ i)
+  exact le_trans (le_einfsep_iff.1 (h i) _ (hx _) _ (hy _) hi) (edist_le_pi_eDist _ _ i)
 
 end PseudoEMetricSpace
 
@@ -362,7 +362,7 @@ theorem infsep_pair : ({x, y} : Set α).infsep = dist x y := by
 theorem infsep_triple (hxy : x ≠ y) (hyz : y ≠ z) (hxz : x ≠ z) :
     ({x, y, z} : Set α).infsep = dist x y ⊓ dist x z ⊓ dist y z := by
   simp only [infsep, einfsep_triple hxy hyz hxz, ENNReal.toReal_inf, edist_ne_top x y,
-    edist_ne_top x z, edist_ne_top y z, dist_edist, Ne, inf_eq_top_iff, and_self_iff,
+    edist_ne_top x z, edist_ne_top y z, dist_eDist, Ne, inf_eq_top_iff, and_self_iff,
     not_false_iff]
 
 theorem Nontrivial.infsep_anti (hs : s.Nontrivial) (hst : s ⊆ t) : t.infsep ≤ s.infsep :=

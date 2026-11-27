@@ -58,13 +58,13 @@ variable {G} {H : SimpleGraph W} {u v w : V}
 
 theorem edist_eq_sInf : G.eDist u v = sInf (Set.range fun w : G.Walk u v ↦ (w.length : ℕ∞)) := rfl
 
-protected theorem Reachable.exists_walk_length_eq_edist (hr : G.Reachable u v) :
+protected theorem Reachable.exists_walk_length_eq_eDist (hr : G.Reachable u v) :
     ∃ p : G.Walk u v, p.length = G.eDist u v :=
   csInf_mem <| Set.range_nonempty_iff_nonempty.mpr hr
 
-protected theorem Connected.exists_walk_length_eq_edist (hconn : G.Connected) (u v : V) :
+protected theorem Connected.exists_walk_length_eq_eDist (hconn : G.Connected) (u v : V) :
     ∃ p : G.Walk u v, p.length = G.eDist u v :=
-  (hconn u v).exists_walk_length_eq_edist
+  (hconn u v).exists_walk_length_eq_eDist
 
 theorem edist_le (p : G.Walk u v) :
     G.eDist u v ≤ p.length :=
@@ -93,7 +93,7 @@ theorem reachable_of_edist_ne_top (h : G.eDist u v ≠ ⊤) :
 
 lemma exists_walk_of_edist_ne_top (h : G.eDist u v ≠ ⊤) :
     ∃ p : G.Walk u v, p.length = G.eDist u v :=
-  (reachable_of_edist_ne_top h).exists_walk_length_eq_edist
+  (reachable_of_edist_ne_top h).exists_walk_length_eq_eDist
 
 protected theorem edist_triangle : G.eDist u w ≤ G.eDist u v + G.eDist v w := by
   cases eq_or_ne (G.eDist u v) ⊤ with
@@ -216,7 +216,7 @@ theorem dist_eq_sInf : G.dist u v = sInf (Set.range (Walk.length : G.Walk u v �
   ENat.iInf_toNat
 
 @[grind =]
-lemma Reachable.coe_dist_eq_edist (h : G.Reachable u v) : G.dist u v = G.eDist u v :=
+lemma Reachable.coe_dist_eq_eDist (h : G.Reachable u v) : G.dist u v = G.eDist u v :=
   ENat.natCast_toNat <| edist_ne_top_iff_reachable.mpr h
 
 protected theorem Reachable.exists_walk_length_eq_dist (hr : G.Reachable u v) :
@@ -230,7 +230,7 @@ protected theorem Connected.exists_walk_length_eq_dist (hconn : G.Connected) (u 
 theorem dist_le (p : G.Walk u v) : G.dist u v ≤ p.length :=
   dist_eq_sInf ▸ Nat.sInf_le ⟨p, rfl⟩
 
-theorem natCast_dist_le_edist : G.dist u v ≤ G.eDist u v :=
+theorem natCast_dist_le_eDist : G.dist u v ≤ G.eDist u v :=
   ENat.natCast_toNat_le_self _
 
 @[simp]

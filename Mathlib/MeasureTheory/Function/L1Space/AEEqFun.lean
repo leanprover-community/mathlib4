@@ -132,7 +132,7 @@ theorem edist_def (f g : α →₁[μ] β) : eDist f g = ∫⁻ a, eDist (f a) (
   simp [eDist_eq_eNorm_sub]
 
 theorem dist_def (f g : α →₁[μ] β) : dist f g = (∫⁻ a, eDist (f a) (g a) ∂μ).toReal := by
-  simp_rw [dist_edist, edist_def]
+  simp_rw [dist_eDist, edist_def]
 
 theorem norm_def (f : α →₁[μ] β) : ‖f‖ = (∫⁻ a, ‖f a‖ₑ ∂μ).toReal := by
   rw [Lp.norm_def, eLpNorm_one_eq_lintegral_eNorm (Lp.aestronglyMeasurable f)]
@@ -216,7 +216,7 @@ theorem eNorm_toL1 {f : α → β} (hf : Integrable f μ) : ‖hf.toL1 f‖ₑ =
 
 theorem norm_toL1_eq_lintegral_norm (f : α → β) (hf : Integrable f μ) :
     ‖hf.toL1 f‖ = ENNReal.toReal (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ) := by
-  rw [norm_toL1, lintegral_norm_eq_lintegral_edist]
+  rw [norm_toL1, lintegral_norm_eq_lintegral_eDist]
 
 theorem norm_toL1_eq_lintegral_eNorm (f : α → β) (hf : Integrable f μ) :
     ‖hf.toL1 f‖ = (∫⁻ a, ‖f a‖ₑ ∂μ).toReal := by

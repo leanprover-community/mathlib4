@@ -599,7 +599,7 @@ end Monotone
 /-- The variation of a function on `Iic a` is the sum of the variation on `Iio a` and the
 contribution of `a`, i.e., the distance between the left limit and the value at `a`.
 We give a version relative to a set `s`. -/
-theorem eVariationOn_on_inter_Iic_eq_Iio_add_edist
+theorem eVariationOn_on_inter_Iic_eq_Iio_add_eDist
     [TopologicalSpace α] [OrderTopology α] {f : α → M} {s : Set α} {a : α} {l : M}
     (h : (𝓝[s ∩ Iio a] a).NeBot) (ha : a ∈ s)
     (h'f : Tendsto f (𝓝[s ∩ Iio a] a) (𝓝 l)) :
@@ -666,13 +666,13 @@ theorem eVariationOn_on_inter_Iic_eq_Iio_add_edist
 contribution of `a`, i.e., the distance between the right limit and the value at `a`.
 We give a version relative to a set `s`. -/
 @[to_dual existing]
-theorem eVariationOn_on_inter_Ici_eq_Ioi_add_edist
+theorem eVariationOn_on_inter_Ici_eq_Ioi_add_eDist
     [TopologicalSpace α] [OrderTopology α] {f : α → M} {s : Set α} {a : α} {l : M}
     (h : (𝓝[s ∩ Ioi a] a).NeBot) (ha : a ∈ s)
     (h'f : Tendsto f (𝓝[s ∩ Ioi a] a) (𝓝 l)) :
     eVariationOn f (s ∩ Ici a) = eVariationOn f (s ∩ Ioi a) + eDist (f a) l := by
   rw [← comp_ofDual f, ← comp_ofDual f]
-  exact eVariationOn_on_inter_Iic_eq_Iio_add_edist h ha h'f
+  exact eVariationOn_on_inter_Iic_eq_Iio_add_eDist h ha h'f
 
 /-- If a function is continuous on the left at a point `a`, then its variations on `Iio a` and
 on `Iic a` coincide. We give a version relative to a set `s`. -/
@@ -684,7 +684,7 @@ lemma eVariationOn_inter_Iio_eq_inter_Iic_of_continuousWithinAt
     eVariationOn f (s ∩ Iio a) = eVariationOn f (s ∩ Iic a) := by
   by_cases ha : a ∈ s
   · have : Tendsto f (𝓝[s ∩ Iio a] a) (𝓝 (f a)) := h'.mono (by grind)
-    simp [eVariationOn_on_inter_Iic_eq_Iio_add_edist h ha this]
+    simp [eVariationOn_on_inter_Iic_eq_Iio_add_eDist h ha this]
   · congr 1
     grind
 
@@ -866,7 +866,7 @@ theorem _root_.BoundedVariationOn.tendsto_leftLim [CompleteSpace M] [Topological
   simp
 
 @[to_dual]
-theorem _root_.BoundedVariationOn.eVariationOn_Iic_eq_Iio_add_edist [CompleteSpace M]
+theorem _root_.BoundedVariationOn.eVariationOn_Iic_eq_Iio_add_eDist [CompleteSpace M]
     [DenselyOrdered α] {f : α → M} {a : α} (hf : BoundedVariationOn f univ) :
     eVariationOn f (Iic a) = eVariationOn f (Iio a) + eDist (f a) (f.leftLim a) := by
   let : TopologicalSpace α := Preorder.topology α
@@ -878,7 +878,7 @@ theorem _root_.BoundedVariationOn.eVariationOn_Iic_eq_Iio_add_edist [CompleteSpa
   have : (𝓝[<] a).NeBot := nhdsLT_neBot_of_exists_lt (by simpa [IsBot] using ha)
   have : eVariationOn f (univ ∩ Iic a) = eVariationOn f (univ ∩ Iio a)
       + eDist (f a) (f.leftLim a) := by
-    apply eVariationOn_on_inter_Iic_eq_Iio_add_edist (by simpa) (mem_univ _)
+    apply eVariationOn_on_inter_Iic_eq_Iio_add_eDist (by simpa) (mem_univ _)
     simpa only [univ_inter] using hf.tendsto_leftLim _
   simpa using this
 
@@ -903,7 +903,7 @@ theorem _root_.BoundedVariationOn.tendsto_eVariationOn_Icc_left
       rw [show s ∩ Ici y ∩ Iio x = s ∩ Iio x ∩ Ici y by grind, nhdsWithin_inter_of_mem']
       exact mem_nhdsWithin_of_mem_nhds (Ici_mem_nhds hy.2)
     rw [show s ∩ Icc y x = (s ∩ Ici y) ∩ Iic x by grind,
-      eVariationOn_on_inter_Iic_eq_Iio_add_edist (l := l)]
+      eVariationOn_on_inter_Iic_eq_Iio_add_eDist (l := l)]
     · congr 2; grind
     · convert h using 1
     · exact ⟨hx, hy.2.le⟩

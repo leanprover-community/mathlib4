@@ -427,7 +427,7 @@ theorem lintegral_edist_lt_top {f g : α → β} (hf : Integrable f μ) (hg : In
     (∫⁻ a, eDist (f a) (g a) ∂μ) < ∞ :=
   lt_of_le_of_lt (lintegral_edist_triangle hf.aestronglyMeasurable aestronglyMeasurable_zero)
     (ENNReal.add_lt_top.2 <| by
-      simp_rw [Pi.zero_apply, ← hasFiniteIntegral_iff_edist]
+      simp_rw [Pi.zero_apply, ← hasFiniteIntegral_iff_eDist]
       exact ⟨hf.hasFiniteIntegral, hg.hasFiniteIntegral⟩)
 
 section ESeminormedAddMonoid

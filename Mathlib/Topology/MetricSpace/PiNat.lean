@@ -850,9 +850,9 @@ protected def pseudoEMetricSpace : PseudoEMetricSpace (∀ i, F i) where
       gcongr with n; grw [edist_triangle _ (y n), min_add_distrib, min_le_right]
     _ = _ := tsum_add ..
   toUniformSpace := Pi.uniformSpace _
-  uniformity_edist := by
+  uniformity_eDist := by
     simp only [Pi.uniformity, comap_iInf, gt_iff_lt, preimage_ofPred_eq, comap_principal,
-      PseudoEMetricSpace.uniformity_edist, le_antisymm_iff, le_iInf_iff, le_principal_iff]
+      PseudoEMetricSpace.uniformity_eDist, le_antisymm_iff, le_iInf_iff, le_principal_iff]
     constructor
     · intro ε hε
       obtain ⟨K, hK⟩ : ∃ K : Finset ι, ∑' i : {j // j ∉ K}, 2⁻¹ ^ encode (i : ι) < ε / 2 :=

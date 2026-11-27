@@ -303,7 +303,7 @@ instance : PseudoEMetricSpace (Snowflaking X α hα₀ hα₁) where
     grw [edist_triangle x.ofSnowflaking y.ofSnowflaking z.ofSnowflaking,
       ENNReal.rpow_add_le_add_rpow _ _ hα₀.le hα₁]
   toUniformSpace := inferInstance
-  uniformity_edist := by
+  uniformity_eDist := by
     have H : (𝓤 X).HasBasis (0 < ·) fun x => {p | eDist p.1 p.2 < x ^ (α⁻¹)} := by
       refine EMetric.mk_uniformity_basis (fun _ _ ↦ by positivity) fun ε hε ↦
         ⟨ε ^ α, by positivity, ?_⟩

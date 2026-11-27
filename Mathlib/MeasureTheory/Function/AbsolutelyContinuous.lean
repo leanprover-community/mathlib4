@@ -319,7 +319,7 @@ theorem _root_.LipschitzOnWith.absolutelyContinuousOnInterval {f : ℝ → X} {K
       intro i hi
       have := hfK (hnI₁.left i hi).left (hnI₁.left i hi).right
       apply ENNReal.toReal_mono (Ne.symm (not_eq_of_beq_eq_false rfl)) at this
-      rwa [ENNReal.toReal_mul, ← dist_edist, ← dist_edist] at this
+      rwa [ENNReal.toReal_mul, ← dist_eDist, ← dist_eDist] at this
     _ = K * ∑ i ∈ Finset.range n, dist (I i).1 (I i).2 := by symm; exact Finset.mul_sum _ _ _
     _ ≤ K * (ε / (K + 1)) := by gcongr
     _ < (K + 1) * (ε / (K + 1)) := by gcongr; linarith
@@ -419,7 +419,7 @@ theorem boundedVariationOn (hf : AbsolutelyContinuousOnInterval f a b) :
     have veq : (∑ i ∈ Finset.range p.1, eDist (f (p.2.val (i + 1))) (f (p.2.val i))).toReal =
         ∑ i ∈ Finset.range p.1, dist (f (p.2.val i)) (f (p.2.val (i + 1))) := by
       rw [ENNReal.toReal_sum (by simp [edist_ne_top])]
-      simp_rw [← dist_edist]; congr; ext i; nth_rw 1 [dist_comm]
+      simp_rw [← dist_eDist]; congr; ext i; nth_rw 1 [dist_comm]
     have not_top : ∑ i ∈ Finset.range p.1, eDist (f (p.2.val (i + 1))) (f (p.2.val i)) ≠ ⊤ := by
       simp [edist_ne_top]
     rw [← ENNReal.ofReal_toReal not_top]

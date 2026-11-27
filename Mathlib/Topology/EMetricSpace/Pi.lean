@@ -43,7 +43,7 @@ theorem edist_pi_def [∀ b, EDist (X b)] (f g : ∀ b, X b) :
     eDist f g = Finset.sup univ fun b => eDist (f b) (g b) :=
   rfl
 
-theorem edist_le_pi_edist [∀ b, EDist (X b)] (f g : ∀ b, X b) (b : β) :
+theorem edist_le_pi_eDist [∀ b, EDist (X b)] (f g : ∀ b, X b) (b : β) :
     eDist (f b) (g b) ≤ eDist f g :=
   le_sup (f := fun b => eDist (f b) (g b)) (Finset.mem_univ b)
 
@@ -67,10 +67,10 @@ instance pseudoEMetricSpacePi [∀ b, PseudoEMetricSpace (X b)] : PseudoEMetricS
   edist_self f := bot_unique <| Finset.sup_le <| by simp
   edist_comm f g := by simp [edist_pi_def, edist_comm]
   edist_triangle _ g _ := edist_pi_le_iff.2 fun b => le_trans (edist_triangle _ (g b) _)
-    (add_le_add (edist_le_pi_edist _ _ _) (edist_le_pi_edist _ _ _))
+    (add_le_add (edist_le_pi_eDist _ _ _) (edist_le_pi_eDist _ _ _))
   toUniformSpace := Pi.uniformSpace _
-  uniformity_edist := by
-    simp only [Pi.uniformity, PseudoEMetricSpace.uniformity_edist, comap_iInf, gt_iff_lt,
+  uniformity_eDist := by
+    simp only [Pi.uniformity, PseudoEMetricSpace.uniformity_eDist, comap_iInf, gt_iff_lt,
       preimage_ofPred_eq, comap_principal, edist_pi_def]
     rw [iInf_comm]; congr; funext ε
     rw [iInf_comm]; congr; funext εpos

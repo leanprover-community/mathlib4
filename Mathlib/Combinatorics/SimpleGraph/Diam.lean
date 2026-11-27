@@ -128,7 +128,7 @@ case the distances are not bounded above, or the graph is not connected.
 noncomputable def ediam (G : SimpleGraph α) : ℕ∞ :=
   ⨆ u, G.eccent u
 
-lemma ediam_eq_iSup_iSup_edist : G.ediam = ⨆ u, ⨆ v, G.eDist u v :=
+lemma ediam_eq_iSup_iSup_eDist : G.ediam = ⨆ u, ⨆ v, G.eDist u v :=
   rfl
 
 lemma ediam_def : G.ediam = ⨆ p : α × α, G.eDist p.1 p.2 := by
@@ -341,7 +341,7 @@ section radius
 noncomputable def radius (G : SimpleGraph α) : ℕ∞ :=
   ⨅ u, G.eccent u
 
-lemma radius_eq_iInf_iSup_edist : G.radius = ⨅ u, ⨆ v, G.eDist u v :=
+lemma radius_eq_iInf_iSup_eDist : G.radius = ⨅ u, ⨆ v, G.eDist u v :=
   rfl
 
 lemma radius_le_eccent {u : α} : G.radius ≤ G.eccent u :=

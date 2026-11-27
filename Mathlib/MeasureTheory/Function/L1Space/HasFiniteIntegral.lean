@@ -45,13 +45,13 @@ namespace MeasureTheory
 
 /-! ### Some results about the Lebesgue integral involving a normed group -/
 
-lemma lintegral_eNorm_eq_lintegral_edist (f : α → β) :
+lemma lintegral_eNorm_eq_lintegral_eDist (f : α → β) :
     ∫⁻ a, ‖f a‖ₑ ∂μ = ∫⁻ a, eDist (f a) 0 ∂μ := by simp only [edist_zero_right]
 
 @[deprecated (since := "2026-11-06")]
-alias lintegral_enorm_eq_lintegral_edist := lintegral_eNorm_eq_lintegral_edist
+alias lintegral_enorm_eq_lintegral_eDist := lintegral_eNorm_eq_lintegral_eDist
 
-theorem lintegral_norm_eq_lintegral_edist (f : α → β) :
+theorem lintegral_norm_eq_lintegral_eDist (f : α → β) :
     ∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ = ∫⁻ a, eDist (f a) 0 ∂μ := by
   simp only [ofReal_norm, edist_zero_right]
 
@@ -107,7 +107,7 @@ theorem hasFiniteIntegral_iff_norm (f : α → β) :
     HasFiniteIntegral f μ ↔ (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ) < ∞ := by
   simp only [hasFiniteIntegral_iff_eNorm, ofReal_norm]
 
-theorem hasFiniteIntegral_iff_edist (f : α → β) :
+theorem hasFiniteIntegral_iff_eDist (f : α → β) :
     HasFiniteIntegral f μ ↔ (∫⁻ a, eDist (f a) 0 ∂μ) < ∞ := by
   simp only [hasFiniteIntegral_iff_norm, edist_dist, dist_zero_right]
 

@@ -107,7 +107,7 @@ lemma nnDist_pi_const_le (a b : α) : (nnDist (fun _ : β => a) fun _ => b) ≤ 
 
 @[simp]
 lemma dist_pi_const [Nonempty β] (a b : α) : (dist (fun _ : β => a) fun _ => b) = dist a b := by
-  simpa only [dist_edist] using congr($(edist_pi_const a b).toReal)
+  simpa only [dist_eDist] using congr($(edist_pi_const a b).toReal)
 
 @[simp]
 lemma nnDist_pi_const [Nonempty β] (a b : α) : (nnDist (fun _ : β => a) fun _ => b) = nnDist a b :=
@@ -117,7 +117,7 @@ lemma nnDist_pi_const [Nonempty β] (a b : α) : (nnDist (fun _ : β => a) fun _
 
 lemma nnDist_le_pi_nnDist (f g : ∀ b, X b) (b : β) : nnDist (f b) (g b) ≤ nnDist f g := by
   rw [← ENNReal.coe_le_coe, ← eDist_nnDist, ← eDist_nnDist]
-  exact edist_le_pi_edist f g b
+  exact edist_le_pi_eDist f g b
 
 @[deprecated (since := "2026-11-07")] alias nndist_le_pi_nndist := nnDist_le_pi_nnDist
 

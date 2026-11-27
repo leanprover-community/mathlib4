@@ -103,24 +103,24 @@ end IsAEKolmogorovProcess
 
 section Measurability
 
-lemma IsKolmogorovProcess.stronglyMeasurable_edist
+lemma IsKolmogorovProcess.stronglyMeasurable_eDist
     (hX : IsKolmogorovProcess X P p q M) {s t : T} :
     StronglyMeasurable (fun ω ↦ eDist (X s ω) (X t ω)) := by
   borelize (E × E)
-  exact continuous_edist.stronglyMeasurable.comp_measurable (hX.measurablePair s t)
+  exact continuous_eDist.stronglyMeasurable.comp_measurable (hX.measurablePair s t)
 
-lemma IsAEKolmogorovProcess.aestronglyMeasurable_edist
+lemma IsAEKolmogorovProcess.aestronglyMeasurable_eDist
     (hX : IsAEKolmogorovProcess X P p q M) {s t : T} :
     AEStronglyMeasurable (fun ω ↦ eDist (X s ω) (X t ω)) P := by
   refine ⟨(fun ω ↦ eDist (hX.mk X s ω) (hX.mk X t ω)),
-    hX.IsKolmogorovProcess_mk.stronglyMeasurable_edist, ?_⟩
+    hX.IsKolmogorovProcess_mk.stronglyMeasurable_eDist, ?_⟩
   filter_upwards [hX.ae_eq_mk s, hX.ae_eq_mk t] with ω hω₁ hω₂ using by simp [hω₁, hω₂]
 
-lemma IsKolmogorovProcess.measurable_edist (hX : IsKolmogorovProcess X P p q M) {s t : T} :
-    Measurable (fun ω ↦ eDist (X s ω) (X t ω)) := hX.stronglyMeasurable_edist.measurable
+lemma IsKolmogorovProcess.measurable_eDist (hX : IsKolmogorovProcess X P p q M) {s t : T} :
+    Measurable (fun ω ↦ eDist (X s ω) (X t ω)) := hX.stronglyMeasurable_eDist.measurable
 
-lemma IsAEKolmogorovProcess.aemeasurable_edist (hX : IsAEKolmogorovProcess X P p q M) {s t : T} :
-    AEMeasurable (fun ω ↦ eDist (X s ω) (X t ω)) P := hX.aestronglyMeasurable_edist.aemeasurable
+lemma IsAEKolmogorovProcess.aemeasurable_eDist (hX : IsAEKolmogorovProcess X P p q M) {s t : T} :
+    AEMeasurable (fun ω ↦ eDist (X s ω) (X t ω)) P := hX.aestronglyMeasurable_eDist.aemeasurable
 
 variable [MeasurableSpace E] [BorelSpace E]
 
@@ -156,7 +156,7 @@ lemma IsAEKolmogorovProcess.edist_eq_zero (hX : IsAEKolmogorovProcess X P p q M)
   suffices (fun ω ↦ eDist (X s ω) (X t ω) ^ p) =ᵐ[P] 0 by
     filter_upwards [this] with ω hω
     simpa [hX.p_pos, not_lt_of_gt hX.p_pos] using hω
-  rw [← lintegral_eq_zero_iff' (hX.aemeasurable_edist.pow_const p), ← nonpos_iff_eq_zero]
+  rw [← lintegral_eq_zero_iff' (hX.aemeasurable_eDist.pow_const p), ← nonpos_iff_eq_zero]
   calc ∫⁻ ω, eDist (X s ω) (X t ω) ^ p ∂P
   _ ≤ M * eDist s t ^ q := hX.kolmogorovCondition s t
   _ = 0 := by simp [h, hX.q_pos]
@@ -172,7 +172,7 @@ lemma IsAEKolmogorovProcess.edist_eq_zero_of_const_eq_zero (hX : IsAEKolmogorovP
   suffices (fun ω ↦ eDist (X s ω) (X t ω) ^ p) =ᵐ[P] 0 by
     filter_upwards [this] with ω hω
     simpa [hX.p_pos, not_lt_of_gt hX.p_pos] using hω
-  rw [← lintegral_eq_zero_iff' (hX.aemeasurable_edist.pow_const p), ← nonpos_iff_eq_zero]
+  rw [← lintegral_eq_zero_iff' (hX.aemeasurable_eDist.pow_const p), ← nonpos_iff_eq_zero]
   calc ∫⁻ ω, eDist (X s ω) (X t ω) ^ p ∂P
   _ ≤ 0 * eDist s t ^ q := hX.kolmogorovCondition s t
   _ = 0 := by simp

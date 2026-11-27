@@ -31,7 +31,7 @@ This file introduces:
 * `infEDist_closure`: the edistance to a set and its closure coincide
 * `Metric.mem_closure_iff_infEDist_zero`: a point `x` belongs to the closure of `s` iff
   `infEDist x s = 0`
-* `IsCompact.exists_infEDist_eq_edist`: if `s` is compact and non-empty, there exists a point `y`
+* `IsCompact.exists_infEDist_eq_eDist`: if `s` is compact and non-empty, there exists a point `y`
   which attains this edistance
 * `IsOpen.exists_iUnion_isClosed`: every open set `U` can be written as the increasing union
   of countably many closed subsets of `U`
@@ -120,7 +120,7 @@ theorem infEDist_lt_iff {r : ℝ≥0∞} : infEDist x s < r ↔ ∃ y ∈ s, eDi
 
 /-- The eDist of `x` to `s` is bounded by the sum of the eDist of `y` to `s` and
 the eDist from `x` to `y` -/
-theorem infEDist_le_infEDist_add_edist : infEDist x s ≤ infEDist y s + eDist x y :=
+theorem infEDist_le_infEDist_add_eDist : infEDist x s ≤ infEDist y s + eDist x y :=
   calc
     ⨅ z ∈ s, eDist x z ≤ ⨅ z ∈ s, eDist y z + eDist x y :=
       iInf₂_mono fun _ _ => (edist_triangle _ _ _).trans_eq (add_comm _ _)
@@ -128,7 +128,7 @@ theorem infEDist_le_infEDist_add_edist : infEDist x s ≤ infEDist y s + eDist x
 
 theorem infEDist_le_edist_add_infEDist : infEDist x s ≤ eDist x y + infEDist y s := by
   rw [add_comm]
-  exact infEDist_le_infEDist_add_edist
+  exact infEDist_le_infEDist_add_eDist
 
 theorem edist_le_infEDist_add_ediam (hy : y ∈ s) : eDist x y ≤ infEDist x s + Metric.ediam s := by
   simp_rw [infEDist, ENNReal.iInf_add]
@@ -140,8 +140,8 @@ theorem edist_le_infEDist_add_ediam (hy : y ∈ s) : eDist x y ≤ infEDist x s 
 /-- The eDist to a set depends continuously on the point -/
 @[continuity, fun_prop]
 theorem continuous_infEDist : Continuous fun x => infEDist x s :=
-  continuous_of_le_add_edist 1 (by simp) <| by
-    simp only [one_mul, infEDist_le_infEDist_add_edist, forall₂_true_iff]
+  continuous_of_le_add_eDist 1 (by simp) <| by
+    simp only [one_mul, infEDist_le_infEDist_add_eDist, forall₂_true_iff]
 
 /-- The eDist to a set and to its closure coincide -/
 theorem infEDist_closure : infEDist x (closure s) = infEDist x s := by
@@ -230,13 +230,13 @@ theorem _root_.IsOpen.exists_iUnion_isClosed {U : Set α} (hU : IsOpen U) :
   simp only [F, mem_Ici, mem_preimage] at hx ⊢
   apply le_trans (pow_le_pow_right_of_le_one' a_lt_one.le hmn) hx
 
-theorem _root_.IsCompact.exists_infEDist_eq_edist (hs : IsCompact s) (hne : s.Nonempty) (x : α) :
+theorem _root_.IsCompact.exists_infEDist_eq_eDist (hs : IsCompact s) (hne : s.Nonempty) (x : α) :
     ∃ y ∈ s, infEDist x s = eDist x y := by
   have A : Continuous fun y => eDist x y := by fun_prop
   obtain ⟨y, ys, hy⟩ := hs.exists_isMinOn hne A.continuousOn
   exact ⟨y, ys, le_antisymm (infEDist_le_edist_of_mem ys) (by rwa [le_infEDist])⟩
 
-theorem exists_pos_forall_lt_edist (hs : IsCompact s) (ht : IsClosed t) (hst : Disjoint s t) :
+theorem exists_pos_forall_lt_eDist (hs : IsCompact s) (ht : IsClosed t) (hst : Disjoint s t) :
     ∃ r : ℝ≥0, 0 < r ∧ ∀ x ∈ s, ∀ y ∈ t, (r : ℝ≥0∞) < eDist x y := by
   rcases s.eq_empty_or_nonempty with (rfl | hne)
   · use 1
@@ -286,7 +286,7 @@ theorem hausdorffEDist_le_of_infEDist {r : ℝ≥0∞} (H1 : ∀ x ∈ s, infEDi
 
 /-- Bounding the Hausdorff edistance by exhibiting, for any point in each set,
 another point in the other set at controlled distance -/
-theorem hausdorffEDist_le_of_mem_edist {r : ℝ≥0∞} (H1 : ∀ x ∈ s, ∃ y ∈ t, eDist x y ≤ r)
+theorem hausdorffEDist_le_of_mem_eDist {r : ℝ≥0∞} (H1 : ∀ x ∈ s, ∃ y ∈ t, eDist x y ≤ r)
     (H2 : ∀ x ∈ t, ∃ y ∈ s, eDist x y ≤ r) : hausdorffEDist s t ≤ r := by
   refine hausdorffEDist_le_of_infEDist (fun x xs ↦ ?_) (fun x xt ↦ ?_)
   · rcases H1 x xs with ⟨y, yt, hy⟩
@@ -339,7 +339,7 @@ theorem hausdorffEDist_le_ediam (hs : s.Nonempty) (ht : t.Nonempty) :
     hausdorffEDist s t ≤ Metric.ediam (s ∪ t) := by
   rcases hs with ⟨x, xs⟩
   rcases ht with ⟨y, yt⟩
-  refine hausdorffEDist_le_of_mem_edist ?_ ?_
+  refine hausdorffEDist_le_of_mem_eDist ?_ ?_
   · intro z hz
     exact ⟨y, yt, Metric.edist_le_ediam_of_mem (subset_union_left hz) (subset_union_right yt)⟩
   · intro z hz
@@ -468,7 +468,7 @@ def infDist (x : α) (s : Set α) : ℝ :=
 
 theorem infDist_eq_iInf : infDist x s = ⨅ y : s, dist x y := by
   rw [infDist, infEDist, iInf_subtype', ENNReal.toReal_iInf]
-  · simp only [dist_edist]
+  · simp only [dist_eDist]
   · finiteness
 
 /-- The minimal distance is always nonnegative -/
@@ -498,11 +498,11 @@ theorem infDist_zero_of_mem (h : x ∈ s) : infDist x s = 0 := by
 
 /-- The minimal distance to a singleton is the distance to the unique point in this singleton. -/
 @[simp]
-theorem infDist_singleton : infDist x {y} = dist x y := by simp [infDist, dist_edist]
+theorem infDist_singleton : infDist x {y} = dist x y := by simp [infDist, dist_eDist]
 
 /-- The minimal distance to a set is bounded by the distance to any point in this set. -/
 theorem infDist_le_dist_of_mem (h : y ∈ s) : infDist x s ≤ dist x y := by
-  rw [dist_edist, infDist]
+  rw [dist_eDist, infDist]
   exact ENNReal.toReal_mono (edist_ne_top _ _) (infEDist_le_edist_of_mem h)
 
 /-- The minimal distance is monotone with respect to inclusion. -/
@@ -511,7 +511,7 @@ theorem infDist_le_infDist_of_subset (h : s ⊆ t) (hs : s.Nonempty) : infDist x
 
 lemma le_infDist {r : ℝ} (hs : s.Nonempty) : r ≤ infDist x s ↔ ∀ ⦃y⦄, y ∈ s → r ≤ dist x y := by
   simp_rw [infDist, ← ENNReal.ofReal_le_iff_le_toReal (infEDist_ne_top hs), le_infEDist,
-    ENNReal.ofReal_le_iff_le_toReal (edist_ne_top _ _), ← dist_edist]
+    ENNReal.ofReal_le_iff_le_toReal (edist_ne_top _ _), ← dist_eDist]
 
 /-- The minimal distance to a set `s` is `< r` iff there exists a point in `s` at distance `< r`. -/
 theorem infDist_lt_iff {r : ℝ} (hs : s.Nonempty) : infDist x s < r ↔ ∃ y ∈ s, dist x y < r := by
@@ -520,8 +520,8 @@ theorem infDist_lt_iff {r : ℝ} (hs : s.Nonempty) : infDist x s < r ↔ ∃ y �
 /-- The minimal distance from `x` to `s` is bounded by the distance from `y` to `s`, modulo
 the distance between `x` and `y`. -/
 theorem infDist_le_infDist_add_dist : infDist x s ≤ infDist y s + dist x y := by
-  rw [infDist, infDist, dist_edist]
-  refine ENNReal.toReal_le_add_of_top_imp_top infEDist_le_infEDist_add_edist ?_
+  rw [infDist, infDist, dist_eDist]
+  refine ENNReal.toReal_le_add_of_top_imp_top infEDist_le_infEDist_add_eDist ?_
     (flip absurd (edist_ne_top _ _))
   simp only [infEDist_eq_top_iff, imp_self]
 
@@ -544,7 +544,7 @@ theorem disjoint_closedBall_of_lt_infDist {r : ℝ} (h : r < infDist x s) :
 
 theorem dist_le_infDist_add_diam (hs : IsBounded s) (hy : y ∈ s) :
     dist x y ≤ infDist x s + diam s := by
-  rw [infDist, diam, dist_edist]
+  rw [infDist, diam, dist_eDist]
   exact toReal_le_add (edist_le_infEDist_add_ediam hy) (infEDist_ne_top ⟨y, hy⟩) hs.ediam_ne_top
 
 variable (s)
@@ -615,8 +615,8 @@ theorem infDist_inter_closedBall_of_mem (h : y ∈ s) :
 
 theorem _root_.IsCompact.exists_infDist_eq_dist (h : IsCompact s) (hne : s.Nonempty) (x : α) :
     ∃ y ∈ s, infDist x s = dist x y :=
-  let ⟨y, hys, hy⟩ := h.exists_infEDist_eq_edist hne x
-  ⟨y, hys, by rw [infDist, dist_edist, hy]⟩
+  let ⟨y, hys, hy⟩ := h.exists_infEDist_eq_eDist hne x
+  ⟨y, hys, by rw [infDist, dist_eDist, hy]⟩
 
 theorem _root_.IsClosed.exists_infDist_eq_dist [ProperSpace α] (h : IsClosed s) (hne : s.Nonempty)
     (x : α) : ∃ y ∈ s, infDist x s = dist x y := by
@@ -675,7 +675,7 @@ theorem hausdorffEDist_ne_top_of_nonempty_of_bounded (hs : s.Nonempty) (ht : t.N
   rcases bs.subset_closedBall ct with ⟨rs, hrs⟩
   rcases bt.subset_closedBall cs with ⟨rt, hrt⟩
   have : hausdorffEDist s t ≤ ENNReal.ofReal (max rs rt) := by
-    apply hausdorffEDist_le_of_mem_edist
+    apply hausdorffEDist_le_of_mem_eDist
     · intro x xs
       exists ct, hct
       have : dist x ct ≤ max rs rt := le_trans (hrs xs) (le_max_left _ _)
@@ -834,7 +834,7 @@ theorem _root_.IsClosed.hausdorffDist_zero_iff_eq (hs : IsClosed s) (ht : IsClos
 
 @[simp]
 theorem hausdorffDist_singleton : hausdorffDist {x} {y} = dist x y := by
-  rw [hausdorffDist, hausdorffEDist_singleton, dist_edist]
+  rw [hausdorffDist, hausdorffEDist_singleton, dist_eDist]
 
 end
 

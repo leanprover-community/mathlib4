@@ -107,7 +107,7 @@ protected theorem injective {α : Type*} {β : Type*} [EMetricSpace α] [PseudoE
     {K : ℝ≥0} {f : α → β} (hf : AntilipschitzWith K f) : Function.Injective f := fun x y h => by
   simpa only [h, edist_self, mul_zero, edist_le_zero] using hf x y
 
-theorem mul_le_edist (hf : AntilipschitzWith K f) (x y : α) :
+theorem mul_le_eDist (hf : AntilipschitzWith K f) (x y : α) :
     (K : ℝ≥0∞)⁻¹ * eDist x y ≤ eDist (f x) (f y) := by
   rw [mul_comm, ← div_eq_mul_inv]
   exact ENNReal.div_le_of_le_mul' (hf x y)
@@ -154,7 +154,7 @@ theorem to_rightInverse (hf : AntilipschitzWith K f) {g : β → α} (hg : Funct
   rwa [hg x, hg y] at this
 
 theorem comap_uniformity_le (hf : AntilipschitzWith K f) : (𝓤 β).comap (Prod.map f f) ≤ 𝓤 α := by
-  refine ((uniformity_basis_edist.comap _).le_basis_iff uniformity_basis_edist).2 fun ε h₀ => ?_
+  refine ((uniformity_basis_eDist.comap _).le_basis_iff uniformity_basis_eDist).2 fun ε h₀ => ?_
   refine ⟨(↑K)⁻¹ * ε, ENNReal.mul_pos (ENNReal.inv_ne_zero.2 ENNReal.coe_ne_top) h₀.ne', ?_⟩
   refine fun x hx => (hf x.1 x.2).trans_lt ?_
   rw [mul_comm, ← div_eq_mul_inv] at hx

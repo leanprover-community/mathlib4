@@ -540,7 +540,7 @@ a.e. measurability is much more useful than a.e. strong measurability. -/
 protected theorem eDist {β : Type*} [PseudoEMetricSpace β] {f g : α → β}
     (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) :
     AEMeasurable (fun a => eDist (f a) (g a)) μ :=
-  (continuous_edist.comp_aestronglyMeasurable (hf.prodMk hg)).aemeasurable
+  (continuous_eDist.comp_aestronglyMeasurable (hf.prodMk hg)).aemeasurable
 
 @[fun_prop]
 protected theorem real_toNNReal {f : α → ℝ} (hf : AEStronglyMeasurable f μ) :

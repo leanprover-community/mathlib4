@@ -285,7 +285,7 @@ protected theorem edist_dist (f g : Lp E p μ) : eDist f g = .ofReal (dist f g) 
   rw [edist_def, dist_def, ← eLpNorm_congr_ae (coeFn_sub _ _),
     ENNReal.ofReal_toReal (eLpNorm_ne_top (f - g))]
 
-protected theorem dist_edist (f g : Lp E p μ) : dist f g = (eDist f g).toReal :=
+protected theorem dist_eDist (f g : Lp E p μ) : dist f g = (eDist f g).toReal :=
   MeasureTheory.Lp.dist_eq_eLpNorm_neg_add ..
 
 theorem dist_eq_norm (f g : Lp E p μ) : dist f g = ‖-f + g‖ := rfl

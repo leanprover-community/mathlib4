@@ -394,7 +394,7 @@ lemma variation_vectorMeasure_Ioo_right
   have B : eVariationOn f.rightLim (Ioc a b) = eVariationOn f.rightLim (Ioo a b) +
       eDist (f.rightLim b) (f.leftLim b) := by
     rw [show Ioc a b = Ioc a b ∩ Iic b by grind,
-      eVariationOn.eVariationOn_on_inter_Iic_eq_Iio_add_edist (l := f.leftLim b),
+      eVariationOn.eVariationOn_on_inter_Iic_eq_Iio_add_eDist (l := f.leftLim b),
       show Ioc a b ∩ Iio b = Ioo a b by grind]
     · have : 𝓝[Ioc a b ∩ Iio b] b = 𝓝[<] b := nhdsWithin_inter_of_mem (Ioc_mem_nhdsLT hab)
       rwa [this]
@@ -436,7 +436,7 @@ lemma variation_vectorMeasure_Ico (hf : BoundedVariationOn f univ) {a b : α} :
   have A : eVariationOn f.leftLim (Ico a b) = eVariationOn f.leftLim (Ioo a b) +
       eDist (f.rightLim a) (f.leftLim a) := by
     rw [show Ico a b = Ico a b ∩ Ici a by grind,
-      eVariationOn.eVariationOn_on_inter_Ici_eq_Ioi_add_edist (l := f.rightLim a),
+      eVariationOn.eVariationOn_on_inter_Ici_eq_Ioi_add_eDist (l := f.rightLim a),
       show Ico a b ∩ Ioi a = Ioo a b by grind, edist_comm]
     · have : 𝓝[Ico a b ∩ Ioi a] a = 𝓝[>] a := nhdsWithin_inter_of_mem (Ico_mem_nhdsGT hab)
       rwa [this]
@@ -583,8 +583,8 @@ lemma variation_vectorMeasure_univ_le (hf : BoundedVariationOn f univ) :
   _ = (eVariationOn f (Iio a) + ‖f a - f.leftLim a‖ₑ) +
     (eVariationOn f (Ioi a) + ‖f a - f.rightLim a‖ₑ) := by abel
   _ = eVariationOn f (Iic a) + eVariationOn f (Ici a) := by
-    rw [← eDist_eq_eNorm_sub, ← eDist_eq_eNorm_sub, hf.eVariationOn_Ici_eq_Ioi_add_edist,
-      hf.eVariationOn_Iic_eq_Iio_add_edist]
+    rw [← eDist_eq_eNorm_sub, ← eDist_eq_eNorm_sub, hf.eVariationOn_Ici_eq_Ioi_add_eDist,
+      hf.eVariationOn_Iic_eq_Iio_add_eDist]
   _ = eVariationOn f univ := by
     rw [← eVariationOn.union (x := a) _ isGreatest_Iic isLeast_Ici, Iic_union_Ici]
 

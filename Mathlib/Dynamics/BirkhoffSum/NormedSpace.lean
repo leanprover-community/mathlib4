@@ -135,7 +135,7 @@ theorem uniformEquicontinuous_birkhoffAverage (hf : LipschitzWith 1 f) (hg : Uni
   refine Metric.uniformity_basis_dist_le.uniformEquicontinuous_iff_right.2 fun ε hε ↦ ?_
   rcases (uniformity_basis_edist_le.uniformContinuous_iff Metric.uniformity_basis_dist_le).1 hg ε hε
     with ⟨δ, hδ₀, hδε⟩
-  refine mem_uniformity_edist.2 ⟨δ, hδ₀, fun {x y} h n ↦ ?_⟩
+  refine mem_uniformity_eDist.2 ⟨δ, hδ₀, fun {x y} h n ↦ ?_⟩
   calc
     dist (birkhoffAverage 𝕜 f g n x) (birkhoffAverage 𝕜 f g n y)
       ≤ (∑ k ∈ Finset.range n, dist (g (f^[k] x)) (g (f^[k] y))) / n :=

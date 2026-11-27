@@ -615,7 +615,7 @@ theorem EMetric.cauchySeq_iff_le_tendsto_0 [Nonempty β] [SemilatticeSup β] {s 
     calc eDist (s m) (s n) ≤ b N := b_bound m n N hm hn
     _ < ε := hN
 
-theorem continuous_of_le_add_edist {f : α → ℝ≥0∞} (C : ℝ≥0∞) (hC : C ≠ ∞)
+theorem continuous_of_le_add_eDist {f : α → ℝ≥0∞} (C : ℝ≥0∞) (hC : C ≠ ∞)
     (h : ∀ x y, f x ≤ f y + C * eDist x y) : Continuous f := by
   refine continuous_iff_continuousAt.2 fun x => ENNReal.tendsto_nhds_of_Icc fun ε ε0 => ?_
   rcases ENNReal.exists_nnreal_pos_mul_lt hC ε0.ne' with ⟨δ, δ0, hδ⟩
@@ -624,8 +624,8 @@ theorem continuous_of_le_add_edist {f : α → ℝ≥0∞} (C : ℝ≥0∞) (hC 
   refine ⟨tsub_le_iff_right.2 <| (h x y).trans ?_, (h y x).trans ?_⟩ <;> grw [← hδ.le] <;> gcongr
   exacts [Metric.mem_closedEBall'.1 hy, Metric.mem_closedEBall.1 hy]
 
-theorem continuous_edist : Continuous fun p : α × α => eDist p.1 p.2 := by
-  apply continuous_of_le_add_edist 2 (by decide)
+theorem continuous_eDist : Continuous fun p : α × α => eDist p.1 p.2 := by
+  apply continuous_of_le_add_eDist 2 (by decide)
   rintro ⟨x, y⟩ ⟨x', y'⟩
   calc
     eDist x y ≤ eDist x x' + eDist x' y' + eDist y' y := edist_triangle4 _ _ _ _
@@ -637,11 +637,11 @@ theorem continuous_edist : Continuous fun p : α × α => eDist p.1 p.2 := by
 @[continuity, fun_prop]
 theorem Continuous.eDist [TopologicalSpace β] {f g : β → α} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun b => eDist (f b) (g b) :=
-  continuous_edist.comp (hf.prodMk hg :)
+  continuous_eDist.comp (hf.prodMk hg :)
 
 theorem Filter.Tendsto.eDist {f g : β → α} {x : Filter β} {a b : α} (hf : Tendsto f x (𝓝 a))
     (hg : Tendsto g x (𝓝 b)) : Tendsto (fun x => eDist (f x) (g x)) x (𝓝 (eDist a b)) :=
-  (continuous_edist.tendsto (a, b)).comp (hf.prodMk_nhds hg)
+  (continuous_eDist.tendsto (a, b)).comp (hf.prodMk_nhds hg)
 
 theorem Metric.isClosed_closedEBall {a : α} {r : ℝ≥0∞} : IsClosed (closedEBall a r) :=
   isClosed_le (by fun_prop) continuous_const
@@ -650,7 +650,7 @@ theorem Metric.isClosed_closedEBall {a : α} {r : ℝ≥0∞} : IsClosed (closed
 theorem Metric.ediam_closure (s : Set α) : ediam (closure s) = ediam s := by
   refine le_antisymm (ediam_le fun x hx y hy => ?_) (ediam_mono subset_closure)
   have : eDist x y ∈ closure (Iic (ediam s)) :=
-    map_mem_closure₂ continuous_edist hx hy fun x hx y hy => edist_le_ediam_of_mem hx hy
+    map_mem_closure₂ continuous_eDist hx hy fun x hx y hy => edist_le_ediam_of_mem hx hy
   rwa [closure_Iic] at this
 
 @[simp]

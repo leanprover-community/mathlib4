@@ -202,14 +202,14 @@ section ExistsSeqTendstoAe
 variable [PseudoEMetricSpace E]
 variable {f : ℕ → α → E} {g : α → E}
 
-theorem tendstoInMeasure_of_tendsto_ae_of_measurable_edist [IsFiniteMeasure μ]
+theorem tendstoInMeasure_of_tendsto_ae_of_measurable_eDist [IsFiniteMeasure μ]
     (hf : ∀ n, AEMeasurable (fun a ↦ eDist (f n a) (g a)) μ)
     (hfg : ∀ᵐ x ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (g x))) : TendstoInMeasure μ f atTop g := by
   refine fun ε hε => ENNReal.tendsto_atTop_zero.mpr fun δ hδ => ?_
   by_cases hδi : δ = ∞
   · simp only [hδi, imp_true_iff, le_top, exists_const]
   obtain ⟨t, _, ht, hunif⟩ :=
-    tendstoUniformlyOn_of_ae_tendsto_of_aemeasurable_edist' hf hfg hδ
+    tendstoUniformlyOn_of_ae_tendsto_of_aemeasurable_eDist' hf hfg hδ
   rw [EMetric.tendstoUniformlyOn_iff] at hunif
   obtain ⟨N, hN⟩ := eventually_atTop.1 (hunif ε hε)
   refine ⟨N, fun n hn => ?_⟩
@@ -223,7 +223,7 @@ theorem tendstoInMeasure_of_tendsto_ae_of_measurable_edist [IsFiniteMeasure μ]
 theorem tendstoInMeasure_of_tendsto_ae [IsFiniteMeasure μ] (hf : ∀ n, AEStronglyMeasurable (f n) μ)
     (hfg : ∀ᵐ x ∂μ, Tendsto (fun n ↦ f n x) atTop (𝓝 (g x))) : TendstoInMeasure μ f atTop g := by
   have hg : AEStronglyMeasurable g μ := aestronglyMeasurable_of_tendsto_ae _ hf hfg
-  exact tendstoInMeasure_of_tendsto_ae_of_measurable_edist (fun n ↦ (hf n).eDist hg) hfg
+  exact tendstoInMeasure_of_tendsto_ae_of_measurable_eDist (fun n ↦ (hf n).eDist hg) hfg
 
 namespace ExistsSeqTendstoAe
 

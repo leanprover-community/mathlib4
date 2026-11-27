@@ -146,7 +146,7 @@ alias enorm_tangentSpace_vectorSpace := eNorm_tangentSpace_vectorSpace
 
 open MeasureTheory
 
-lemma lintegral_fderiv_lineMap_eq_edist {x y : E} :
+lemma lintegral_fderiv_lineMap_eq_eDist {x y : E} :
     ∫⁻ t in Icc 0 1, ‖fderivWithin ℝ (ContinuousAffineMap.lineMap (R := ℝ) x y) (Icc 0 1) t 1‖ₑ
       = eDist x y := by
   have : eDist x y = ∫⁻ t in Icc (0 : ℝ) 1, ‖y - x‖ₑ := by
@@ -182,7 +182,7 @@ instance : IsRiemannianManifold 𝓘(ℝ, F) F := by
     apply this.trans_eq
     rw [pathELength_eq_lintegral_mfderivWithin_Icc]
     simp only [mfderivWithin_eq_fderivWithin, eNorm_tangentSpace_vectorSpace]
-    exact lintegral_fderiv_lineMap_eq_edist
+    exact lintegral_fderiv_lineMap_eq_eDist
 
 end
 
@@ -362,7 +362,7 @@ lemma eventually_riemannianEDist_le_edist_extChartAt (x : M) :
   apply this.trans
   -- Finally, we control the length of `γ` thanks to the boundedness of the derivative of
   -- `(extChartAt x).symm` on the whole controlled set.
-  rw [← lintegral_fderiv_lineMap_eq_edist, pathELength_eq_lintegral_mfderivWithin_Icc,
+  rw [← lintegral_fderiv_lineMap_eq_eDist, pathELength_eq_lintegral_mfderivWithin_Icc,
     ← lintegral_const_mul' _ _ ENNReal.coe_ne_top]
   apply setLIntegral_mono' measurableSet_Icc (fun t ht ↦ ?_)
   have : mfderiv[Icc 0 1] γ t =

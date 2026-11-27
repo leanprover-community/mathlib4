@@ -140,7 +140,7 @@ lemma MemHolder.of_le {X : Type*} [PseudoMetricSpace X] [hX : BoundedSpace X]
     {f : X → Y} {s : ℝ≥0} (hf : MemHolder r f) (hs : s ≤ r) :
     MemHolder s f := by
   obtain ⟨C, hf⟩ := hf
-  obtain ⟨C', hC'⟩ := Metric.boundedSpace_iff_edist.1 hX
+  obtain ⟨C', hC'⟩ := Metric.boundedSpace_iff_eDist.1 hX
   exact ⟨C * C' ^ (r - s : ℝ),
     holderOnWith_univ.1 <| (holderOnWith_univ.2 hf).of_le (fun x _ y _ ↦ hC' x y) hs⟩
 
@@ -152,7 +152,7 @@ lemma MemHolder.of_le' {s : ℝ≥0} (hf : MemHolder r f) (hs : s ≤ r)
   obtain ⟨C, hX⟩ := hX
   let := PseudoEMetricSpace.toPseudoMetricSpace
     fun x y ↦ ne_top_of_le_ne_top ENNReal.coe_ne_top (hX x y)
-  have := Metric.boundedSpace_iff_edist.2 ⟨C, hX⟩
+  have := Metric.boundedSpace_iff_eDist.2 ⟨C, hX⟩
   exact hf.of_le hs
 
 /-- If a function is `r`-Hölder over a bounded set, then it is also `s`-Hölder over this set
@@ -175,7 +175,7 @@ lemma HolderOnWith.exists_holderOnWith_of_le' {D s : ℝ≥0} {A : Set X}
   simp_rw [← HolderWith.restrict_iff] at *
   let := PseudoEMetricSpace.toPseudoMetricSpace
     fun x y : A ↦ ne_top_of_le_ne_top ENNReal.coe_ne_top (hA x.property y.property)
-  have : BoundedSpace A := Metric.boundedSpace_iff_edist.2 ⟨D, fun x y ↦ hA x.property y.property⟩
+  have : BoundedSpace A := Metric.boundedSpace_iff_eDist.2 ⟨D, fun x y ↦ hA x.property y.property⟩
   exact MemHolder.of_le hf hs
 
 /-- If a function is locally `r`-Hölder and locally `t`-Hölder,

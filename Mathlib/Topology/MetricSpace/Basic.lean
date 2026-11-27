@@ -201,7 +201,7 @@ theorem dist_congr {w x y z : α} (hl : dist w x = 0) (hr : dist y z = 0) :
   (dist_congr_right hl).trans (dist_congr_left hr)
 
 instance SeparationQuotient.instDist : Dist (SeparationQuotient α) where
-  dist := lift₂ dist fun x y x' y' hx hy ↦ by rw [dist_edist, dist_edist, ← edist_mk x,
+  dist := lift₂ dist fun x y x' y' hx hy ↦ by rw [dist_eDist, dist_eDist, ← edist_mk x,
     ← edist_mk x', mk_eq_mk.2 hx, mk_eq_mk.2 hy]
 
 theorem SeparationQuotient.dist_mk (p q : α) :
@@ -249,7 +249,7 @@ abbrev replaceEDist : PseudoEMetricSpace X where
   edist_self := by simp [hd]
   edist_comm := by simp [hd, edist_comm]
   edist_triangle := by simp [hd, edist_triangle]
-  uniformity_edist := by simp [hd, uniformity_edist]
+  uniformity_eDist := by simp [hd, uniformity_eDist]
   __ := m
 
 lemma replaceEDist_eq : m.replaceEDist d hd = m := by ext : 2; exact hd

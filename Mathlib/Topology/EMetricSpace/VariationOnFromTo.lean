@@ -155,7 +155,7 @@ lemma abs_sub_le_sub_of_le {f : α → ℝ} {s : Set α} (hf : LocallyBoundedVar
     |f c - f b| ≤ variationOnFromTo f s a c - variationOnFromTo f s a b := calc
   _ = dist (f b) (f c) := by rw [dist_comm, Real.dist_eq]
   _ ≤ variationOnFromTo f s b c := by
-    rw [variationOnFromTo.eq_of_le f s bc, dist_edist]
+    rw [variationOnFromTo.eq_of_le f s bc, dist_eDist]
     apply ENNReal.toReal_mono (hf b c bs cs)
     apply eVariationOn.edist_le f
     exacts [⟨bs, le_rfl, bc⟩, ⟨cs, bc, le_rfl⟩]
@@ -204,7 +204,7 @@ theorem tendsto_left {E : Type*} [PseudoMetricSpace E] [TopologicalSpace α] [Or
       (𝓝 (dist (f b) l)) by
     apply Tendsto.congr' _ H
     filter_upwards [self_mem_nhdsWithin] with x hx using by simp [variationOnFromTo, hx.2.le]
-  rw [dist_edist]
+  rw [dist_eDist]
   exact (ENNReal.tendsto_toReal (by simp)).comp (hf.tendsto_eVariationOn_Icc_left h'f hb)
 
 /-- The jump of `variationOnFromTo` on the right of a point is given by the distance between the
@@ -224,7 +224,7 @@ theorem tendsto_right {E : Type*} [PseudoMetricSpace E] [TopologicalSpace α] [O
       (𝓝 (dist (f b) l)) by
     apply Tendsto.congr' _ H
     filter_upwards [self_mem_nhdsWithin] with x hx using by simp [variationOnFromTo, hx.2.le]
-  rw [dist_edist]
+  rw [dist_eDist]
   exact (ENNReal.tendsto_toReal (by simp)).comp (hf.tendsto_eVariationOn_Icc_right h'f hb)
 
 /-- The jump of `variationOnFromTo` on the left of a point is given by the distance between the

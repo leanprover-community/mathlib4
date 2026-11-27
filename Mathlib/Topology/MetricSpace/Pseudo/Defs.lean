@@ -304,10 +304,10 @@ theorem eDist_nnDist (x y : α) : eDist x y = nnDist x y := by
 @[deprecated (since := "2026-11-07")] alias edist_nndist := eDist_nnDist
 
 /-- Express `nnDist` in terms of `eDist` -/
-theorem nnDist_edist (x y : α) : nnDist x y = (eDist x y).toNNReal := by
+theorem nnDist_eDist (x y : α) : nnDist x y = (eDist x y).toNNReal := by
   simp [eDist_nnDist]
 
-@[deprecated (since := "2026-11-07")] alias nndist_edist := nnDist_edist
+@[deprecated (since := "2026-11-07")] alias nndist_eDist := nnDist_eDist
 
 @[simp, norm_cast]
 theorem coe_nnreal_ennreal_nnDist (x y : α) : ↑(nnDist x y) = eDist x y :=
@@ -381,7 +381,7 @@ theorem nnDist_triangle_right (x y z : α) : nnDist x y ≤ nnDist x z + nnDist 
 @[deprecated (since := "2026-11-07")] alias nndist_triangle_right := nnDist_triangle_right
 
 /-- Express `dist` in terms of `eDist` -/
-theorem dist_edist (x y : α) : dist x y = (eDist x y).toReal := by
+theorem dist_eDist (x y : α) : dist x y = (eDist x y).toReal := by
   rw [edist_dist, ENNReal.toReal_ofReal dist_nonneg]
 
 namespace Metric
@@ -680,7 +680,7 @@ lemma boundedSpace_iff_nnDist : BoundedSpace α ↔ ∃ C, ∀ a b : α, nnDist 
 
 @[deprecated (since := "2026-11-07")] alias boundedSpace_iff_nndist := boundedSpace_iff_nnDist
 
-lemma boundedSpace_iff_edist : BoundedSpace α ↔ ∃ C : ℝ≥0, ∀ a b : α, eDist a b ≤ C := by
+lemma boundedSpace_iff_eDist : BoundedSpace α ↔ ∃ C : ℝ≥0, ∀ a b : α, eDist a b ≤ C := by
   simp [Metric.boundedSpace_iff_nnDist]
 
 theorem toUniformSpace_eq :
@@ -996,7 +996,7 @@ theorem Metric.uniformity_edist_aux {α} (d : α → α → ℝ≥0) :
     refine mem_iInf_of_mem (ε : ℝ≥0∞) (mem_iInf_of_mem (ENNReal.coe_pos.2 hε) ?_)
     exact fun _ => ENNReal.coe_lt_coe.1
 
-theorem Metric.uniformity_edist : 𝓤 α = ⨅ ε > 0, 𝓟 { p : α × α | eDist p.1 p.2 < ε } := by
+theorem Metric.uniformity_eDist : 𝓤 α = ⨅ ε > 0, 𝓟 { p : α × α | eDist p.1 p.2 < ε } := by
   simp only [PseudoMetricSpace.uniformity_dist, dist_nnDist, eDist_nnDist,
     Metric.uniformity_edist_aux]
 
@@ -1011,7 +1011,7 @@ instance (priority := 100) PseudoMetricSpace.toPseudoEMetricSpace : PseudoEMetri
       rw [ENNReal.ofReal_le_ofReal_iff _]
       · exact dist_triangle _ _ _
       · simpa using add_le_add (dist_nonneg : 0 ≤ dist x y) dist_nonneg
-    uniformity_edist := Metric.uniformity_edist }
+    uniformity_eDist := Metric.uniformity_eDist }
 
 /-- In a pseudometric space, an open ball of infinite radius is the whole space -/
 theorem Metric.eball_top_eq_univ (x : α) : eball x ∞ = Set.univ :=
@@ -1106,7 +1106,7 @@ abbrev PseudoEMetricSpace.toPseudoMetricSpaceOfDist {X : Type*} [e : PseudoEMetr
   eDist := eDist
   edist_dist _ _ := by simp only [h]
   toUniformSpace := PseudoEMetricSpace.toUniformSpace
-  uniformity_dist := e.uniformity_edist.trans <| by
+  uniformity_dist := e.uniformity_eDist.trans <| by
     simpa [h, dist_nonneg, ENNReal.coe_toNNReal_eq_toReal]
       using (Metric.uniformity_edist_aux fun x y : X => (eDist x y).toNNReal).symm
 

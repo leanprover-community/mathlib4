@@ -188,7 +188,7 @@ theorem dist_indicatorConstLp_eq_norm {t : Set α} {ht : MeasurableSet t} {hμt 
     dist (indicatorConstLp p hs hμs c) (indicatorConstLp p ht hμt c) =
       ‖indicatorConstLp (μ := μ) p (hs.symmDiff ht) (by finiteness) c‖ := by
   -- Squeezed for performance reasons
-  simp only [Lp.dist_edist, edist_indicatorConstLp_eq_eNorm, eNorm, ENNReal.coe_toReal,
+  simp only [Lp.dist_eDist, edist_indicatorConstLp_eq_eNorm, eNorm, ENNReal.coe_toReal,
     Lp.coe_nnNorm]
 
 /-- A family of `indicatorConstLp` functions tends to an `indicatorConstLp`,

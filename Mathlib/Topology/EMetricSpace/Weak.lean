@@ -123,17 +123,17 @@ theorem ball_infty_of_pos {r : ENNReal} (hr : 0 < r) :
 structure, the structure extends naturally to `Option α`. -/
 abbrev WeakPseudoEMetricSpace.OfIsOpenEmbedding {α : Type u} [t : TopologicalSpace α]
     [TopologicalSpace (Option α)] [m : WeakPseudoEMetricSpace α] [inst : EDist (Option α)]
-    (h_edist : inst = Option.toEDist) (h : IsOpenEmbedding (some (α := α))) :
+    (h_eDist : inst = Option.toEDist) (h : IsOpenEmbedding (some (α := α))) :
     WeakPseudoEMetricSpace (Option α) where
   eDist := eDist
-  edist_self := h_edist ▸ edist_self' m
-  edist_comm := h_edist ▸ edist_comm' m
-  edist_triangle := h_edist ▸ edist_triangle' m
+  edist_self := h_eDist ▸ edist_self' m
+  edist_comm := h_eDist ▸ edist_comm' m
+  edist_triangle := h_eDist ▸ edist_triangle' m
   topology_le s so := by
     apply (@EMetric.isOpen_iff (Option α) _ (PseudoEMetricSpace.ofEDist eDist
-      (h_edist ▸ edist_self' m) (h_edist ▸ edist_comm' m) (h_edist ▸ edist_triangle' m))).mpr
+      (h_eDist ▸ edist_self' m) (h_eDist ▸ edist_comm' m) (h_eDist ▸ edist_triangle' m))).mpr
     intro x xs
-    suffices ∃ ε > 0, @Metric.eball (Option α) Option.toEDist x ε ⊆ s by rwa [← h_edist] at this
+    suffices ∃ ε > 0, @Metric.eball (Option α) Option.toEDist x ε ⊆ s by rwa [← h_eDist] at this
     match x with
     | none =>
       exact ⟨1, by norm_num, by simpa [ball_infty_of_pos]⟩
@@ -144,7 +144,7 @@ abbrev WeakPseudoEMetricSpace.OfIsOpenEmbedding {α : Type u} [t : TopologicalSp
       exact ⟨ε, εp, some_eball x ε ▸ image_subset_iff.mpr εt⟩
   topology_eq_on_restrict := by
     intro x r
-    rw [h_edist]
+    rw [h_eDist]
     match x with
     | (x : α) =>
       obtain ⟨s', s'o, s's⟩ := m.topology_eq_on_restrict x r
@@ -168,11 +168,11 @@ abbrev WeakPseudoEMetricSpace.OfIsOpenEmbedding {α : Type u} [t : TopologicalSp
 structure, the structure extends naturally to `Option α`. -/
 abbrev WeakEMetricSpace.OfIsOpenEmbedding {α : Type u} [t : TopologicalSpace α]
     [TopologicalSpace (Option α)] [m : WeakEMetricSpace α] [inst : EDist (Option α)]
-    (h_edist : inst = Option.toEDist) (h : IsOpenEmbedding (some (α := α))) :
+    (h_eDist : inst = Option.toEDist) (h : IsOpenEmbedding (some (α := α))) :
     WeakEMetricSpace (Option α) :=
-  { toWeakPseudoEMetricSpace := WeakPseudoEMetricSpace.OfIsOpenEmbedding h_edist h,
+  { toWeakPseudoEMetricSpace := WeakPseudoEMetricSpace.OfIsOpenEmbedding h_eDist h,
     eq_of_edist_eq_zero {x y} xy := by
-      rw [congr(@eDist _ $h_edist x y)] at xy
+      rw [congr(@eDist _ $h_eDist x y)] at xy
       cases x <;> cases y
       · rfl
       · simp at xy
@@ -291,7 +291,7 @@ theorem edist_le_iff_le_add_right (a b c : ℝ≥0∞) : eDist a b ≤ c ↔ a �
 theorem sub_le_dist (a b : ℝ≥0∞) : a - b ≤ eDist a b := by
   grw [edist_eq_max, ← le_max_left]
 
-theorem le_add_edist (a b : ℝ≥0∞) : a ≤ b + eDist a b := by
+theorem le_add_eDist (a b : ℝ≥0∞) : a ≤ b + eDist a b := by
   grw [← sub_le_dist, ← le_add_tsub]
 
 @[simp]

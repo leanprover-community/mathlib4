@@ -71,7 +71,7 @@ noncomputable instance : PseudoEMetricSpace (α →ᵤ β) where
       iSup_mono fun _ ↦ edist_triangle _ _ _
     _ ≤ (⨆ x, eDist (f₁ x) (f₂ x)) + (⨆ x, eDist (f₂ x) (f₃ x)) := iSup_add_le _ _
   toUniformSpace := inferInstance
-  uniformity_edist := by
+  uniformity_eDist := by
     suffices 𝓤 (α →ᵤ β) = comap (fun x ↦ eDist x.1 x.2) (𝓝 0) by
       simp [this, ENNReal.nhds_zero_basis.comap _ |>.eq_biInf, Set.Iio]
     rw [ENNReal.nhds_zero_basis_Iic.comap _ |>.eq_biInf]
@@ -149,7 +149,7 @@ lemma dist_def [BoundedSpace β] (f g : α →ᵤ β) :
 
 lemma dist_le [BoundedSpace β] {f g : α →ᵤ β} {C : ℝ} (hC : 0 ≤ C) :
     dist f g ≤ C ↔ ∀ x, dist (toFun f x) (toFun g x) ≤ C := by
-  simp_rw [dist_edist, ← ENNReal.le_ofReal_iff_toReal_le (edist_ne_top _ _) hC, edist_le]
+  simp_rw [dist_eDist, ← ENNReal.le_ofReal_iff_toReal_le (edist_ne_top _ _) hC, edist_le]
 
 noncomputable instance [BoundedSpace β] : BoundedSpace (α →ᵤ β) where
   bounded_univ := by
@@ -233,10 +233,10 @@ noncomputable instance : PseudoEMetricSpace (α →ᵤ[𝔖] β) where
   edist_comm := by simp [edist_eq_restrict_sUnion, edist_comm]
   edist_triangle f₁ f₂ f₃ := by simp [edist_eq_restrict_sUnion, edist_triangle]
   toUniformSpace := inferInstance
-  uniformity_edist := by
+  uniformity_eDist := by
     let _ := Fintype.ofFinite 𝔖;
     simp_rw [← isUniformInducing_pi_restrict.comap_uniformity,
-      PseudoEMetricSpace.uniformity_edist, comap_iInf, comap_principal, edist_eq_pi_restrict,
+      PseudoEMetricSpace.uniformity_eDist, comap_iInf, comap_principal, edist_eq_pi_restrict,
       Set.preimage_ofPred_eq]
 
 lemma edist_le {f g : α →ᵤ[𝔖] β} {C : ℝ≥0∞} :

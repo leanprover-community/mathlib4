@@ -60,7 +60,7 @@ theorem IsPreconnected.subset_boundedComponent (hs : IsPreconnected s) (ha : a �
 
 /-- The distance function `x => (eDist a x).toReal` is Lipschitz on any preconnected set `s` that
 contains `a`. -/
-theorem lipschitzOnWith_toReal_edist (hs : IsPreconnected s) (ha : a ∈ s) :
+theorem lipschitzOnWith_toReal_eDist (hs : IsPreconnected s) (ha : a ∈ s) :
     LipschitzOnWith 1 (fun x => (eDist a x).toReal) s := by
   intro x hx y hy
   let : PseudoMetricSpace (boundedComponent a) := boundedComponent.pseudoMetricSpace a
@@ -73,7 +73,7 @@ variable [MeasurableSpace X] [BorelSpace X]
 the one-dimensional Hausdorff measure of the part of `s` lying in the open ball of radius `r` around
 `a`. This lemma is needed in the proof of
 `IsPreconnected.totallyBounded_of_hausdorffMeasure_lt_top`. -/
-theorem IsPreconnected.le_hausdorffMeasure_of_le_edist (hs : IsPreconnected s) (ha : a ∈ s)
+theorem IsPreconnected.le_hausdorffMeasure_of_le_eDist (hs : IsPreconnected s) (ha : a ∈ s)
     (hb : b ∈ s) {r : ℝ≥0∞} (hr : r ≤ eDist a b) :
     r ≤ μH[1] (s ∩ eball a r) :=
   have hrne : r ≠ ∞ := ne_top_of_le_ne_top (hs.edist_ne_top ha hb) hr
@@ -84,21 +84,21 @@ theorem IsPreconnected.le_hausdorffMeasure_of_le_edist (hs : IsPreconnected s) (
         refine measure_mono fun c hc => ?_
         have : Ico 0 r.toReal ⊆ (fun x => (eDist a x).toReal) '' s := calc
           _ ⊆ Icc 0 (eDist a b).toReal := by grind [ENNReal.toReal_mono (hs.edist_ne_top ha hb) hr]
-          _ ⊆ _ := (hs.image _ (lipschitzOnWith_toReal_edist hs ha).continuousOn).Icc_subset
+          _ ⊆ _ := (hs.image _ (lipschitzOnWith_toReal_eDist hs ha).continuousOn).Icc_subset
             ⟨a, ha, by simp⟩ ⟨b, hb, rfl⟩
         obtain ⟨z, hz, hgz⟩ : c ∈ (fun x => (eDist a x).toReal) '' s := this hc
         refine ⟨z, ⟨hz, ?_⟩, hgz⟩
         rw [mem_eball', ← ENNReal.toReal_lt_toReal (hs.edist_ne_top ha hz) hrne]
         exact hgz.le.trans_lt hc.2
     _ ≤ _ := by
-        simpa using ((lipschitzOnWith_toReal_edist hs ha).mono
+        simpa using ((lipschitzOnWith_toReal_eDist hs ha).mono
           inter_subset_left).hausdorffMeasure_image_le zero_le_one
 
 /-- The distance between two points of a preconnected set `s` is at most the one-dimensional
 Hausdorff measure of `s`. -/
 theorem IsPreconnected.edist_le_hausdorffMeasure (hs : IsPreconnected s) (ha : a ∈ s) (hb : b ∈ s) :
     eDist a b ≤ μH[1] s := by
-  grw [hs.le_hausdorffMeasure_of_le_edist ha hb le_rfl, measure_mono inter_subset_left]
+  grw [hs.le_hausdorffMeasure_of_le_eDist ha hb le_rfl, measure_mono inter_subset_left]
 
 /-- The extended diameter of a preconnected set is at most its one-dimensional Hausdorff measure. -/
 theorem IsPreconnected.ediam_le_hausdorffMeasure (hs : IsPreconnected s) :
@@ -138,7 +138,7 @@ theorem IsPreconnected.totallyBounded_of_hausdorffMeasure_lt_top (hs : IsPreconn
     N * (ε / 2) = ∑ _n ∈ Finset.range N, (ε / 2) := by simp
     _ ≤ ∑ n ∈ Finset.range N, μH[1] (s ∩ eball (f n) (ε / 2)) := by
       refine Finset.sum_le_sum fun n _ => ?_
-      apply hs.le_hausdorffMeasure_of_le_edist (hf1 n) (hf1 (n + 1))
+      apply hs.le_hausdorffMeasure_of_le_eDist (hf1 n) (hf1 (n + 1))
       grw [ENNReal.half_le_self, hf2 n (n + 1) n.lt_add_one]
     _ ≤ ∑ n ∈ Finset.range N, μH[1] ((toMeasurable μH[1] s) ∩ eball (f n) (ε / 2)) := by
       refine Finset.sum_le_sum fun n _ => measure_mono ?_

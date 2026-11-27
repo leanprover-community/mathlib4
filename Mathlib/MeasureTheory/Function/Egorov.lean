@@ -198,7 +198,7 @@ uniformly on `s \ t`. We require the index type `ι` to be countable, and usuall
 
 In other words, a sequence of almost everywhere convergent functions converges uniformly except on
 an arbitrarily small set. -/
-theorem tendstoUniformlyOn_of_ae_tendsto_of_measurable_edist
+theorem tendstoUniformlyOn_of_ae_tendsto_of_measurable_eDist
     (hf : ∀ n, Measurable (fun a ↦ eDist (f n a) (g a)))
     (hsm : MeasurableSet s) (hs : μ s ≠ ∞)
     (hfg : ∀ᵐ x ∂μ, x ∈ s → Tendsto (fun n => f n x) atTop (𝓝 (g x))) (hε : 0 < ε) :
@@ -219,7 +219,7 @@ uniformly on `s \ t`. We require the index type `ι` to be countable, and usuall
 
 In other words, a sequence of almost everywhere convergent functions converges uniformly except on
 an arbitrarily small set. -/
-theorem tendstoUniformlyOn_of_ae_tendsto_of_aemeasurable_edist
+theorem tendstoUniformlyOn_of_ae_tendsto_of_aemeasurable_eDist
     (hf : ∀ n, AEMeasurable (fun a ↦ eDist (f n a) (g a)) μ)
     (hsm : NullMeasurableSet s μ) (hs : μ s ≠ ∞)
     (hfg : ∀ᵐ x ∂μ, x ∈ s → Tendsto (fun n => f n x) atTop (𝓝 (g x))) (hε : 0 < ε) :
@@ -241,24 +241,24 @@ theorem tendstoUniformlyOn_of_ae_tendsto (hf : ∀ n, StronglyMeasurable (f n))
     (hg : StronglyMeasurable g) (hsm : MeasurableSet s) (hs : μ s ≠ ∞)
     (hfg : ∀ᵐ x ∂μ, x ∈ s → Tendsto (fun n => f n x) atTop (𝓝 (g x))) (hε : 0 < ε) :
     ∃ t ⊆ s, MeasurableSet t ∧ μ t ≤ ε ∧ TendstoUniformlyOn f g atTop (s \ t) :=
-  tendstoUniformlyOn_of_ae_tendsto_of_measurable_edist
+  tendstoUniformlyOn_of_ae_tendsto_of_measurable_eDist
     (fun n ↦ ((hf n).eDist hg).measurable) hsm hs hfg hε
 
 /-- Egorov's theorem for finite measure spaces.
 Version with measurable distances. -/
-theorem tendstoUniformlyOn_of_ae_tendsto_of_aemeasurable_edist' [IsFiniteMeasure μ]
+theorem tendstoUniformlyOn_of_ae_tendsto_of_aemeasurable_eDist' [IsFiniteMeasure μ]
     (hf : ∀ n, AEMeasurable (fun a ↦ eDist (f n a) (g a)) μ)
     (hfg : ∀ᵐ x ∂μ, Tendsto (fun n ↦ f n x) atTop (𝓝 (g x))) (hε : 0 < ε) :
     ∃ t, MeasurableSet t ∧ μ t ≤ ε ∧ TendstoUniformlyOn f g atTop tᶜ := by
   obtain ⟨t, -, ht, htμ, htf⟩ :=
-    tendstoUniformlyOn_of_ae_tendsto_of_aemeasurable_edist hf nullMeasurableSet_univ
+    tendstoUniformlyOn_of_ae_tendsto_of_aemeasurable_eDist hf nullMeasurableSet_univ
       (measure_ne_top μ Set.univ) (by filter_upwards [hfg] with _ htendsto _ using htendsto) hε
   refine ⟨toMeasurable μ t, measurableSet_toMeasurable μ t, by simpa, ?_⟩
   rw [compl_eq_univ_sdiff]
   exact htf.mono (sdiff_subset_sdiff_right (subset_toMeasurable μ t))
 
-@[deprecated (since := "2026-10-12")] alias tendstoUniformlyOn_of_ae_tendsto_of_measurable_edist'
-  := tendstoUniformlyOn_of_ae_tendsto_of_aemeasurable_edist'
+@[deprecated (since := "2026-10-12")] alias tendstoUniformlyOn_of_ae_tendsto_of_measurable_eDist'
+  := tendstoUniformlyOn_of_ae_tendsto_of_aemeasurable_eDist'
 
 /-- Egorov's theorem for finite measure spaces. -/
 theorem tendstoUniformlyOn_of_ae_tendsto' [IsFiniteMeasure μ]
@@ -266,6 +266,6 @@ theorem tendstoUniformlyOn_of_ae_tendsto' [IsFiniteMeasure μ]
     (hfg : ∀ᵐ x ∂μ, Tendsto (fun n ↦ f n x) atTop (𝓝 (g x))) (hε : 0 < ε) :
     ∃ t, MeasurableSet t ∧ μ t ≤ ε ∧ TendstoUniformlyOn f g atTop tᶜ := by
   have hg : AEStronglyMeasurable g μ := aestronglyMeasurable_of_tendsto_ae atTop hf hfg
-  exact tendstoUniformlyOn_of_ae_tendsto_of_aemeasurable_edist' (fun n ↦ ((hf n).eDist hg)) hfg hε
+  exact tendstoUniformlyOn_of_ae_tendsto_of_aemeasurable_eDist' (fun n ↦ ((hf n).eDist hg)) hfg hε
 
 end MeasureTheory

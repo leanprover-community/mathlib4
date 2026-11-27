@@ -171,18 +171,18 @@ theorem tendsto_measure_thickening_of_isClosed {μ : Measure α} {s : Set α}
 
 variable [SecondCountableTopology α]
 
-theorem measurable_edist : Measurable fun p : α × α => eDist p.1 p.2 :=
-  continuous_edist.measurable
+theorem measurable_eDist : Measurable fun p : α × α => eDist p.1 p.2 :=
+  continuous_eDist.measurable
 
 @[fun_prop]
 theorem Measurable.eDist {f g : β → α} (hf : Measurable f) (hg : Measurable g) :
     Measurable fun b => eDist (f b) (g b) :=
-  continuous_edist.measurable2 hf hg
+  continuous_eDist.measurable2 hf hg
 
 @[fun_prop]
 theorem AEMeasurable.eDist {f g : β → α} {μ : Measure β} (hf : AEMeasurable f μ)
     (hg : AEMeasurable g μ) : AEMeasurable (fun a => eDist (f a) (g a)) μ :=
-  continuous_edist.aemeasurable2 hf hg
+  continuous_eDist.aemeasurable2 hf hg
 
 end PseudoEMetricSpace
 

@@ -94,7 +94,7 @@ theorem ediam_mono (h : s ⊆ t) : ediam s ≤ ediam t :=
 
 /-- The extended diameter of a union is controlled by the diameter of the sets,
 and the edistance between two points in the sets. -/
-theorem ediam_union_le_add_edist (xs : x ∈ s) (yt : y ∈ t) :
+theorem ediam_union_le_add_eDist (xs : x ∈ s) (yt : y ∈ t) :
     ediam (s ∪ t) ≤ ediam s + eDist x y + ediam t := by
   have A : ∀ a ∈ s, ∀ b ∈ t, eDist a b ≤ ediam s + eDist x y + ediam t := fun a ha b hb =>
     calc
@@ -120,7 +120,7 @@ theorem ediam_union_le_add_edist (xs : x ∈ s) (yt : y ∈ t) :
 is estimated from above by the sum of their union. -/
 theorem ediam_union_le (h : (s ∩ t).Nonempty) : ediam (s ∪ t) ≤ ediam s + ediam t := by
   let ⟨x, ⟨xs, xt⟩⟩ := h
-  simpa using ediam_union_le_add_edist xs xt
+  simpa using ediam_union_le_add_eDist xs xt
 
 theorem ediam_closedEBall_le {r : ℝ≥0∞} : ediam (closedEBall x r) ≤ 2 * r :=
   ediam_le fun a ha b hb =>

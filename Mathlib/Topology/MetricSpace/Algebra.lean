@@ -57,7 +57,7 @@ def LipschitzMul.C [_i : LipschitzMul β] : ℝ≥0 := Classical.choose _i.lipsc
 variable {β}
 
 @[to_additive]
-theorem lipschitzWith_lipschitz_const_mul_edist [_i : LipschitzMul β] :
+theorem lipschitzWith_lipschitz_const_mul_eDist [_i : LipschitzMul β] :
     LipschitzWith (LipschitzMul.C β) fun p : β × β => p.1 * p.2 :=
   Classical.choose_spec _i.lipschitz_mul
 
@@ -67,23 +67,23 @@ variable [LipschitzMul β]
 theorem lipschitz_with_lipschitz_const_mul :
     ∀ p q : β × β, dist (p.1 * p.2) (q.1 * q.2) ≤ LipschitzMul.C β * dist p q := by
   rw [← lipschitzWith_iff_dist_le_mul]
-  exact lipschitzWith_lipschitz_const_mul_edist
+  exact lipschitzWith_lipschitz_const_mul_eDist
 
 -- see Note [lower instance priority]
 @[to_additive]
 instance (priority := 100) LipschitzMul.continuousMul : ContinuousMul β :=
-  ⟨lipschitzWith_lipschitz_const_mul_edist.continuous⟩
+  ⟨lipschitzWith_lipschitz_const_mul_eDist.continuous⟩
 
 @[to_additive]
 instance Submonoid.lipschitzMul (s : Submonoid β) : LipschitzMul s where
   lipschitz_mul := ⟨LipschitzMul.C β, by
     rintro ⟨x₁, x₂⟩ ⟨y₁, y₂⟩
-    convert lipschitzWith_lipschitz_const_mul_edist ⟨(x₁ : β), x₂⟩ ⟨y₁, y₂⟩ using 1⟩
+    convert lipschitzWith_lipschitz_const_mul_eDist ⟨(x₁ : β), x₂⟩ ⟨y₁, y₂⟩ using 1⟩
 
 @[to_additive]
 instance MulOpposite.lipschitzMul : LipschitzMul βᵐᵒᵖ where
   lipschitz_mul := ⟨LipschitzMul.C β, fun ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ =>
-    (lipschitzWith_lipschitz_const_mul_edist ⟨x₂.unop, x₁.unop⟩ ⟨y₂.unop, y₁.unop⟩).trans_eq
+    (lipschitzWith_lipschitz_const_mul_eDist ⟨x₂.unop, x₁.unop⟩ ⟨y₂.unop, y₁.unop⟩).trans_eq
       (congr_arg _ <| max_comm _ _)⟩
 
 -- this instance could be deduced from `NormedAddCommGroup.lipschitzAdd`, but we prove it
@@ -100,7 +100,7 @@ instance Real.hasLipschitzAdd : LipschitzAdd ℝ where
 instance NNReal.hasLipschitzAdd : LipschitzAdd ℝ≥0 where
   lipschitz_add := ⟨LipschitzAdd.C ℝ, by
     rintro ⟨x₁, x₂⟩ ⟨y₁, y₂⟩
-    exact lipschitzWith_lipschitz_const_add_edist ⟨(x₁ : ℝ), x₂⟩ ⟨y₁, y₂⟩⟩
+    exact lipschitzWith_lipschitz_const_add_eDist ⟨(x₁ : ℝ), x₂⟩ ⟨y₁, y₂⟩⟩
 
 end LipschitzMul
 

@@ -34,7 +34,7 @@ open scoped Uniformity Topology NNReal ENNReal Pointwise
 variable [TopologicalSpace α] [WeakPseudoEMetricSpace α] [PseudoEMetricSpace γ]
 
 /-- The triangle (polygon) inequality for sequences of points; `Finset.Ico` version. -/
-theorem edist_le_Ico_sum_edist (f : ℕ → α) {m n} (h : m ≤ n) :
+theorem edist_le_Ico_sum_eDist (f : ℕ → α) {m n} (h : m ≤ n) :
     eDist (f m) (f n) ≤ ∑ i ∈ Finset.Ico m n, eDist (f i) (f (i + 1)) := by
   induction n, h using Nat.le_induction with
   | base => rw [Finset.Ico_self, Finset.sum_empty, edist_self]
@@ -46,19 +46,19 @@ theorem edist_le_Ico_sum_edist (f : ℕ → α) {m n} (h : m ≤ n) :
         rw [← Finset.insert_Ico_right_eq_Ico_add_one hle, Finset.sum_insert, add_comm]; simp
 
 /-- The triangle (polygon) inequality for sequences of points; `Finset.range` version. -/
-theorem edist_le_range_sum_edist (f : ℕ → α) (n : ℕ) :
+theorem edist_le_range_sum_eDist (f : ℕ → α) (n : ℕ) :
     eDist (f 0) (f n) ≤ ∑ i ∈ Finset.range n, eDist (f i) (f (i + 1)) :=
-  Nat.Ico_zero_eq_range n ▸ edist_le_Ico_sum_edist f (Nat.zero_le n)
+  Nat.Ico_zero_eq_range n ▸ edist_le_Ico_sum_eDist f (Nat.zero_le n)
 
-/-- A version of `edist_le_Ico_sum_edist` with each intermediate distance replaced
+/-- A version of `edist_le_Ico_sum_eDist` with each intermediate distance replaced
 with an upper estimate. -/
 theorem edist_le_Ico_sum_of_edist_le {f : ℕ → α} {m n} (hmn : m ≤ n) {d : ℕ → ℝ≥0∞}
     (hd : ∀ {k}, m ≤ k → k < n → eDist (f k) (f (k + 1)) ≤ d k) :
     eDist (f m) (f n) ≤ ∑ i ∈ Finset.Ico m n, d i :=
-  le_trans (edist_le_Ico_sum_edist f hmn) <|
+  le_trans (edist_le_Ico_sum_eDist f hmn) <|
     Finset.sum_le_sum fun _k hk => hd (Finset.mem_Ico.1 hk).1 (Finset.mem_Ico.1 hk).2
 
-/-- A version of `edist_le_range_sum_edist` with each intermediate distance replaced
+/-- A version of `edist_le_range_sum_eDist` with each intermediate distance replaced
 with an upper estimate. -/
 theorem edist_le_range_sum_of_edist_le {f : ℕ → α} (n : ℕ) {d : ℕ → ℝ≥0∞}
     (hd : ∀ {k}, k < n → eDist (f k) (f (k + 1)) ≤ d k) :
@@ -71,7 +71,7 @@ theorem isUniformInducing_iff [PseudoEMetricSpace β] {f : γ → β} :
     IsUniformInducing f ↔ UniformContinuous f ∧
       ∀ δ > 0, ∃ ε > 0, ∀ {a b : γ}, eDist (f a) (f b) < ε → eDist a b < δ :=
   isUniformInducing_iff'.trans <| Iff.rfl.and <|
-    ((uniformity_basis_edist.comap _).le_basis_iff uniformity_basis_edist).trans <| by
+    ((uniformity_basis_eDist.comap _).le_basis_iff uniformity_basis_eDist).trans <| by
       simp only [subset_def, Prod.forall]; rfl
 
 /-- ε-δ characterization of uniform embeddings on pseudoemetric spaces -/
@@ -91,7 +91,7 @@ theorem controlled_of_isUniformInducing [PseudoEMetricSpace β] {f : γ → β}
 /-- ε-δ characterization of Cauchy sequences on pseudoemetric spaces -/
 protected theorem cauchy_iff {f : Filter γ} :
     Cauchy f ↔ f ≠ ⊥ ∧ ∀ ε > 0, ∃ t ∈ f, ∀ x, x ∈ t → ∀ y, y ∈ t → eDist x y < ε := by
-  rw [← neBot_iff]; exact uniformity_basis_edist.cauchy_iff
+  rw [← neBot_iff]; exact uniformity_basis_eDist.cauchy_iff
 
 /-- A very useful criterion to show that a space is complete is to show that all sequences
 which satisfy a bound of the form `eDist (u n) (u m) < B N` for all `n m ≥ N` are
@@ -116,7 +116,7 @@ theorem tendstoLocallyUniformlyOn_iff {ι : Type*} [TopologicalSpace β] {F : ι
     TendstoLocallyUniformlyOn F f p s ↔
       ∀ ε > 0, ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, ∀ᶠ n in p, ∀ y ∈ t, eDist (f y) (F n y) < ε := by
   refine ⟨fun H ε hε => H _ (edist_mem_uniformity hε), fun H u hu x hx => ?_⟩
-  rcases mem_uniformity_edist.1 hu with ⟨ε, εpos, hε⟩
+  rcases mem_uniformity_eDist.1 hu with ⟨ε, εpos, hε⟩
   rcases H ε εpos x hx with ⟨t, ht, Ht⟩
   exact ⟨t, ht, Ht.mono fun n hs x hx => hε (hs x hx)⟩
 
@@ -124,7 +124,7 @@ theorem tendstoLocallyUniformlyOn_iff {ι : Type*} [TopologicalSpace β] {F : ι
 theorem tendstoUniformlyOn_iff {ι : Type*} {F : ι → β → γ} {f : β → γ} {p : Filter ι} {s : Set β} :
     TendstoUniformlyOn F f p s ↔ ∀ ε > 0, ∀ᶠ n in p, ∀ x ∈ s, eDist (f x) (F n x) < ε := by
   refine ⟨fun H ε hε => H _ (edist_mem_uniformity hε), fun H u hu => ?_⟩
-  rcases mem_uniformity_edist.1 hu with ⟨ε, εpos, hε⟩
+  rcases mem_uniformity_eDist.1 hu with ⟨ε, εpos, hε⟩
   exact (H ε εpos).mono fun n hs x hx => hε (hs x hx)
 
 /-- Expressing locally uniform convergence using `eDist`. -/
@@ -163,12 +163,12 @@ alias subsingleton_iff_indiscreteTopology := subsingleton_iff_indiscreteTopology
 the pseudoedistance between its elements is arbitrarily small -/
 theorem cauchySeq_iff [Nonempty β] [SemilatticeSup β] {u : β → γ} :
     CauchySeq u ↔ ∀ ε > 0, ∃ N, ∀ m, N ≤ m → ∀ n, N ≤ n → eDist (u m) (u n) < ε :=
-  uniformity_basis_edist.cauchySeq_iff
+  uniformity_basis_eDist.cauchySeq_iff
 
 /-- A variation around the emetric characterization of Cauchy sequences -/
 theorem cauchySeq_iff' [Nonempty β] [SemilatticeSup β] {u : β → γ} :
     CauchySeq u ↔ ∀ ε > (0 : ℝ≥0∞), ∃ N, ∀ n ≥ N, eDist (u n) (u N) < ε :=
-  uniformity_basis_edist.cauchySeq_iff'
+  uniformity_basis_eDist.cauchySeq_iff'
 
 /-- A variation of the emetric characterization of Cauchy sequences that deals with
 `ℝ≥0` upper bounds. -/
@@ -179,14 +179,14 @@ theorem cauchySeq_iff_NNReal [Nonempty β] [SemilatticeSup β] {u : β → γ} :
 theorem totallyBounded_iff {s : Set γ} :
     TotallyBounded s ↔ ∀ ε > 0, ∃ t : Set γ, t.Finite ∧ s ⊆ ⋃ y ∈ t, eball y ε :=
   ⟨fun H _ε ε0 => H _ (edist_mem_uniformity ε0), fun H _r ru =>
-    let ⟨ε, ε0, hε⟩ := mem_uniformity_edist.1 ru
+    let ⟨ε, ε0, hε⟩ := mem_uniformity_eDist.1 ru
     let ⟨t, ft, h⟩ := H ε ε0
     ⟨t, ft, h.trans <| iUnion₂_mono fun _ _ _ => hε⟩⟩
 
 theorem totallyBounded_iff' {s : Set γ} :
     TotallyBounded s ↔ ∀ ε > 0, ∃ t, t ⊆ s ∧ Set.Finite t ∧ s ⊆ ⋃ y ∈ t, eball y ε :=
   ⟨fun H _ε ε0 => (totallyBounded_iff_subset.1 H) _ (edist_mem_uniformity ε0), fun H _r ru =>
-    let ⟨ε, ε0, hε⟩ := mem_uniformity_edist.1 ru
+    let ⟨ε, ε0, hε⟩ := mem_uniformity_eDist.1 ru
     let ⟨t, _, ft, h⟩ := H ε ε0
     ⟨t, ft, h.trans <| iUnion₂_mono fun _ _ _ => hε⟩⟩
 
@@ -300,8 +300,8 @@ instance [PseudoEMetricSpace X] : EMetricSpace (SeparationQuotient X) :=
       edist_comm := surjective_mk.forall₂.2 edist_comm,
       edist_triangle := surjective_mk.forall₃.2 edist_triangle,
       toUniformSpace := inferInstance,
-      uniformity_edist := comap_injective (surjective_mk.prodMap surjective_mk) <| by
-        simp [comap_mk_uniformity, PseudoEMetricSpace.uniformity_edist] } _
+      uniformity_eDist := comap_injective (surjective_mk.prodMap surjective_mk) <| by
+        simp [comap_mk_uniformity, PseudoEMetricSpace.uniformity_eDist] } _
 
 section LebesgueNumberLemma
 
@@ -311,32 +311,32 @@ theorem lebesgue_number_lemma_of_emetric {ι : Sort*} {c : ι → Set γ} (hs : 
     (hc₁ : ∀ i, IsOpen (c i)) (hc₂ : s ⊆ ⋃ i, c i) : ∃ δ > 0, ∀ x ∈ s, ∃ i, eball x δ ⊆ c i := by
   simpa only [eball, SetRel.ball, SetRel.inv, preimage_ofPred_eq, mem_ofPred_eq,
     Prod.fst_swap, Prod.snd_swap, edist_comm]
-    using uniformity_basis_edist.lebesgue_number_lemma hs hc₁ hc₂
+    using uniformity_basis_eDist.lebesgue_number_lemma hs hc₁ hc₂
 
 theorem lebesgue_number_lemma_of_emetric_nhds' {c : (x : γ) → x ∈ s → Set γ} (hs : IsCompact s)
     (hc : ∀ x hx, c x hx ∈ 𝓝 x) : ∃ δ > 0, ∀ x ∈ s, ∃ y : s, eball x δ ⊆ c y y.property := by
   simpa only [eball, SetRel.ball, SetRel.inv, preimage_ofPred_eq, mem_ofPred_eq,
     Prod.fst_swap, Prod.snd_swap, edist_comm]
-    using uniformity_basis_edist.lebesgue_number_lemma_nhds' hs hc
+    using uniformity_basis_eDist.lebesgue_number_lemma_nhds' hs hc
 
 theorem lebesgue_number_lemma_of_emetric_nhds {c : γ → Set γ} (hs : IsCompact s)
     (hc : ∀ x ∈ s, c x ∈ 𝓝 x) : ∃ δ > 0, ∀ x ∈ s, ∃ y, eball x δ ⊆ c y := by
   simpa only [eball, SetRel.ball, SetRel.inv, preimage_ofPred_eq, mem_ofPred_eq,
     Prod.fst_swap, Prod.snd_swap, edist_comm]
-    using uniformity_basis_edist.lebesgue_number_lemma_nhds hs hc
+    using uniformity_basis_eDist.lebesgue_number_lemma_nhds hs hc
 
 theorem lebesgue_number_lemma_of_emetric_nhdsWithin' {c : (x : γ) → x ∈ s → Set γ}
     (hs : IsCompact s) (hc : ∀ x hx, c x hx ∈ 𝓝[s] x) :
     ∃ δ > 0, ∀ x ∈ s, ∃ y : s, eball x δ ∩ s ⊆ c y y.property := by
   simpa only [eball, SetRel.ball, SetRel.inv, preimage_ofPred_eq, mem_ofPred_eq,
     Prod.fst_swap, Prod.snd_swap, edist_comm]
-    using uniformity_basis_edist.lebesgue_number_lemma_nhdsWithin' hs hc
+    using uniformity_basis_eDist.lebesgue_number_lemma_nhdsWithin' hs hc
 
 theorem lebesgue_number_lemma_of_emetric_nhdsWithin {c : γ → Set γ} (hs : IsCompact s)
     (hc : ∀ x ∈ s, c x ∈ 𝓝[s] x) : ∃ δ > 0, ∀ x ∈ s, ∃ y, eball x δ ∩ s ⊆ c y := by
   simpa only [eball, SetRel.ball, SetRel.inv, preimage_ofPred_eq, mem_ofPred_eq,
     Prod.fst_swap, Prod.snd_swap, edist_comm]
-    using uniformity_basis_edist.lebesgue_number_lemma_nhdsWithin hs hc
+    using uniformity_basis_eDist.lebesgue_number_lemma_nhdsWithin hs hc
 
 theorem lebesgue_number_lemma_of_emetric_sUnion {c : Set (Set γ)} (hs : IsCompact s)
     (hc₁ : ∀ t ∈ c, IsOpen t) (hc₂ : s ⊆ ⋃₀ c) : ∃ δ > 0, ∀ x ∈ s, ∃ t ∈ c, eball x δ ⊆ t := by
