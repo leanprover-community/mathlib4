@@ -28,7 +28,7 @@ For an `ℕ`-valued random variable `X`, the probability generating function is
 ## Main results
 
 * `ProbabilityTheory.integrable_pow_pgf`: for `|t| ≤ 1` and a finite measure the defining
-  integrand is integrable, so the generating function is defined on `[-1, 1]`.
+  integrand is integrable, so the generating function is well-defined on `[-1, 1]`.
 * `ProbabilityTheory.pgf_eq_tsum`: the usual power-series form
   `pgf X μ t = ∑' n, μ.real (X ⁻¹' {n}) * t ^ n`.
 * `ProbabilityTheory.hasFPowerSeriesOnBall_pgf`: on the open unit ball, `pgf X μ` is given by
@@ -76,14 +76,12 @@ lemma pgf_nonneg (ht : 0 ≤ t) : 0 ≤ pgf X μ t :=
   integral_nonneg fun _ ↦ pow_nonneg ht _
 
 lemma pgf_congr {Y : Ω → ℕ} (h : X =ᵐ[μ] Y) : pgf X μ t = pgf Y μ t :=
-  integral_congr_ae <| by filter_upwards [h] with ω hω using by rw [hω]
+  integral_congr_ae (h.fun_comp (t ^ ·))
 
 lemma pgf_map {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ : Measure Ω'} {Y : Ω' → Ω}
     (hY : AEMeasurable Y μ) (hX : AEMeasurable X (μ.map Y)) :
-    pgf X (μ.map Y) = pgf (X ∘ Y) μ := by
-  ext t
-  exact integral_map hY
-    ((Measurable.of_discrete (f := fun n : ℕ ↦ t ^ n)).comp_aemeasurable hX).aestronglyMeasurable
+    pgf X (μ.map Y) = pgf (X ∘ Y) μ :=
+  funext fun t ↦ integral_map hY (by fun_prop)
 
 lemma pgf_id_map (hX : AEMeasurable X μ) : pgf id (μ.map X) = pgf X μ :=
   pgf_map hX Measurable.of_discrete.aemeasurable
@@ -108,14 +106,13 @@ lemma pgf_zero (hX : AEMeasurable X μ) : pgf X μ 0 = μ.real (X ⁻¹' {0}) :=
 /-- The generating function evaluated at `exp s` is the moment-generating function of `X`
 viewed as a real random variable. -/
 lemma pgf_exp_eq_mgf (s : ℝ) : pgf X μ (exp s) = mgf (fun ω ↦ (X ω : ℝ)) μ s := by
-  simp only [pgf, mgf, ← Real.exp_natCast_mul, mul_comm s]
+  simp [pgf, mgf, ← Real.exp_natCast_mul, mul_comm s]
 
 /-- For `|t| ≤ 1` the integrand defining `pgf` is integrable with respect to any finite
-measure: the generating function of an `ℕ`-valued variable is always defined on `[-1, 1]`. -/
+measure: the generating function of an `ℕ`-valued variable is well-defined on `[-1, 1]`. -/
 lemma integrable_pow_pgf [IsFiniteMeasure μ] (hX : AEMeasurable X μ) (ht : |t| ≤ 1) :
     Integrable (fun ω ↦ t ^ X ω) μ := by
-  refine Integrable.mono' (integrable_const 1)
-    ((Measurable.of_discrete (f := fun n : ℕ ↦ t ^ n)).comp_aemeasurable hX).aestronglyMeasurable ?_
+  refine Integrable.mono' (integrable_const 1) (by fun_prop) ?_
   filter_upwards with ω
   rw [Real.norm_eq_abs, abs_pow]
   exact pow_le_one₀ (abs_nonneg t) ht
@@ -149,11 +146,8 @@ lemma pgf_le_one [IsProbabilityMeasure μ] (ht₀ : 0 ≤ t) (ht₁ : t ≤ 1) :
 coefficients of the series summing to `pgf X μ t`. -/
 lemma hasSum_pgf [IsFiniteMeasure μ] (hX : AEMeasurable X μ) (ht : |t| ≤ 1) :
     HasSum (fun n ↦ μ.real (X ⁻¹' {n}) * t ^ n) (pgf X μ t) := by
-  have h_int : Integrable (fun n : ℕ ↦ t ^ n) (μ.map X) := by
-    refine Integrable.mono' (integrable_const 1) Measurable.of_discrete.aestronglyMeasurable ?_
-    filter_upwards with n
-    rw [Real.norm_eq_abs, abs_pow]
-    exact pow_le_one₀ (abs_nonneg t) ht
+  have h_int : Integrable (fun n : ℕ ↦ t ^ n) (μ.map X) :=
+    integrable_pow_pgf aemeasurable_id ht
   rw [pgf, ← integral_map hX Measurable.of_discrete.aestronglyMeasurable]
   rw [← Measure.sum_smul_dirac (μ.map X)] at h_int ⊢
   refine (hasSum_integral_measure h_int).congr_fun fun n ↦ ?_
@@ -182,10 +176,8 @@ coefficients are the point masses of `X`. -/
 lemma hasFPowerSeriesOnBall_pgf [IsFiniteMeasure μ] (hX : AEMeasurable X μ) :
     HasFPowerSeriesOnBall (pgf X μ) (ofScalars ℝ fun n ↦ μ.real (X ⁻¹' {n})) 0 1 where
   r_le := by
-    simpa using (ofScalars ℝ fun n ↦ μ.real (X ⁻¹' {n})).le_radius_of_bound (μ.real Set.univ)
-      (r := 1) fun n ↦ by
-        simpa [ofScalars_norm, abs_of_nonneg measureReal_nonneg] using
-          measureReal_mono (μ := μ) (Set.subset_univ (X ⁻¹' {n}))
+    apply (ofScalars ℝ fun n ↦ μ.real (X ⁻¹' {n})).le_radius_of_summable
+    simpa [ofScalars_norm] using (summable_pgf hX (t := 1) (by simp)).norm
   r_pos := zero_lt_one
   hasSum {y} hy := by
     have hy : |y| < 1 := by
@@ -234,8 +226,7 @@ section IndepFun
 and `Y` are independent, so are `t ^ X` and `s ^ Y`. -/
 theorem IndepFun.pow_nat {Y : Ω → ℕ} (h_indep : X ⟂ᵢ[μ] Y) (t s : ℝ) :
     (fun ω ↦ t ^ X ω) ⟂ᵢ[μ] fun ω ↦ s ^ Y ω :=
-  h_indep.comp (Measurable.of_discrete (f := fun n : ℕ ↦ t ^ n))
-    (Measurable.of_discrete (f := fun n : ℕ ↦ s ^ n))
+  h_indep.comp Measurable.of_discrete Measurable.of_discrete
 
 /-- The generating function of a sum of independent variables is the product of the
 generating functions. -/
@@ -243,23 +234,33 @@ theorem IndepFun.pgf_add {Y : Ω → ℕ} (h_indep : X ⟂ᵢ[μ] Y)
     (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ) :
     pgf (X + Y) μ t = pgf X μ t * pgf Y μ t := by
   simp_rw [pgf, Pi.add_apply, pow_add]
-  exact (h_indep.pow_nat t t).integral_mul_eq_mul_integral
-    ((Measurable.of_discrete (f := fun n : ℕ ↦ t ^ n)).comp_aemeasurable hX).aestronglyMeasurable
-    ((Measurable.of_discrete (f := fun n : ℕ ↦ t ^ n)).comp_aemeasurable hY).aestronglyMeasurable
+  exact h_indep.integral_fun_comp_mul_comp hX hY (by fun_prop) (by fun_prop)
 
 /-- The generating function of a sum of finitely many independent variables is the product of
 the generating functions. -/
 theorem iIndepFun.pgf_sum {ι : Type*} {X : ι → Ω → ℕ}
-    (h_indep : iIndepFun X μ) (h_meas : ∀ i, AEMeasurable (X i) μ)
-    (s : Finset ι) : pgf (∑ i ∈ s, X i) μ t = ∏ i ∈ s, pgf (X i) μ t := by
+    (h_indep : iIndepFun X μ) {s : Finset ι} (h_meas : ∀ i ∈ s, AEMeasurable (X i) μ) :
+    pgf (∑ i ∈ s, X i) μ t = ∏ i ∈ s, pgf (X i) μ t := by
   have : IsProbabilityMeasure μ := h_indep.isProbabilityMeasure
   classical
+  -- Only the variables indexed by `s` matter, so replace the others by `0`.
+  let Y : ι → Ω → ℕ := fun i ω ↦ if i ∈ s then X i ω else 0
+  have hY_indep : iIndepFun Y μ :=
+    h_indep.comp (fun i n ↦ if i ∈ s then n else 0) fun _ ↦ Measurable.of_discrete
+  have hY_meas (i : ι) : AEMeasurable (Y i) μ := by
+    by_cases hi : i ∈ s
+    · simpa [Y, hi] using h_meas i hi
+    · simp [Y, hi, aemeasurable_const]
+  have hXY : ∀ i ∈ s, Y i = X i := fun i hi ↦ by simp [Y, hi]
+  rw [← sum_congr rfl hXY, ← prod_congr rfl fun i hi ↦ congrArg (pgf · μ t) (hXY i hi)]
+  clear_value Y
+  clear hXY h_meas
   induction s using Finset.induction_on with
   | empty => simp
   | insert i s hi_notin_s h_rec =>
     rw [sum_insert hi_notin_s,
-      IndepFun.pgf_add (h_indep.indepFun_finsetSum_of_notMem₀ h_meas hi_notin_s).symm
-        (h_meas i) (Finset.aemeasurable_sum s fun j _ ↦ h_meas j),
+      IndepFun.pgf_add (hY_indep.indepFun_finsetSum_of_notMem₀ hY_meas hi_notin_s).symm
+        (hY_meas i) (Finset.aemeasurable_sum s fun j _ ↦ hY_meas j),
       h_rec, prod_insert hi_notin_s]
 
 end IndepFun
