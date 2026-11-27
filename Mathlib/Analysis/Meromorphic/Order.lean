@@ -366,6 +366,7 @@ lemma AnalyticAt.of_meromorphicOrderAt_pos {f : 𝕜 → E} {x : 𝕜}
 /--
 The order of a constant function is `⊤` if the constant is zero and `0` otherwise.
 -/
+@[simp]
 theorem meromorphicOrderAt_const (z₀ : 𝕜) (e : E) [Decidable (e = 0)] :
     meromorphicOrderAt (fun _ ↦ e) z₀ = if e = 0 then ⊤ else (0 : WithTop ℤ) := by
   split_ifs with he
