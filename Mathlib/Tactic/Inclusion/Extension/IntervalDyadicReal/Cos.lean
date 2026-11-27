@@ -63,14 +63,13 @@ theorem cosTaylor_mem {x : Dyadic} (hx : |x.toReal| ≤ 1) (n prec : ℕ) :
     Real.cos x.toReal ∈ cosTaylor x n prec := by
   have h := Real.abs_cos_sub_sum_range_le hx n
   rw [cosTaylor, Dyadic.toReal, Rat.cast_def] at *
-  generalize x.toRat = q at *
-  rw [← hypergeomPartialSum_div (Int.castRingHom ℝ) (fun _ ↦ -q.num ^ 2)
-    (fun j ↦ q.den ^ 2 * ((2 * j + 1) * (2 * j + 2))) (fun j ↦ by positivity)
-    (fun m ↦ (-1) ^ m * ((q.num : ℝ) / q.den) ^ (2 * m) / (2 * m)!) (fun j ↦ by
+  rw [← hypergeomPartialSum_div (Int.castRingHom ℝ) (fun _ ↦ -x.toRat.num ^ 2)
+    (fun j ↦ x.toRat.den ^ 2 * ((2 * j + 1) * (2 * j + 2))) (fun j ↦ by positivity)
+    (fun m ↦ (-1) ^ m * ((x.toRat.num : ℝ) / x.toRat.den) ^ (2 * m) / (2 * m)!) (fun j ↦ by
       push_cast [eq_intCast, mul_add_one, Nat.factorial_succ, pow_add]
       field)] at h
-  obtain ⟨hterm, hden, -⟩ := hypergeomPartialSum_spec (fun _ ↦ -q.num ^ 2)
-    (fun j ↦ q.den ^ 2 * ((2 * j + 1) * (2 * j + 2))) 0 n
+  obtain ⟨hterm, hden, -⟩ := hypergeomPartialSum_spec (fun _ ↦ -x.toRat.num ^ 2)
+    (fun j ↦ x.toRat.den ^ 2 * ((2 * j + 1) * (2 * j + 2))) 0 n
   have hprod (n : ℕ) : ∏ j ∈ range n, (2 * j + 1) * (2 * j + 2) = (2 * n)! := by
     induction n with
     | zero => simp
@@ -100,9 +99,9 @@ theorem cosDoubling_mem {x : ℝ} {I : Interval Dyadic} {k : ℕ} (hx : Real.cos
     exact ih h
 
 /-- The cosine of an interval `I`, which is `[-1, 1]` when `I` is wider than `2π` (tested as wider
-than `7`, so that no enclosure of `π` is needed). Otherwise, with `[a, b] = I.abs`, `cos [a, b]` is
-computed by halving the interval `k` times to a small enough `[a / 2 ^ k, b / 2 ^ k]` so that `cos`
-is antitone on it. The constants are chosen as follows:
+than `7`, so that no enclosure of `π` is needed). Otherwise, `cos I` is computed by halving the
+`I.abs` `k` times to a small enough interval so that `cos` is antitone on it.
+The constants are chosen as follows:
 - `k` is chosen so that `b / 2 ^ k ≤ 2 ^ (-⌊√prec⌋)`. Each term of the series is then smaller than
   the previous one by at least `2 * ⌊√prec⌋ + 1` bits (`2 * ⌊√prec⌋` from the square of the
   argument and `1` from the factorial), so `p / (2 * ⌊√prec⌋ + 1) + 1` terms bring the remainder
