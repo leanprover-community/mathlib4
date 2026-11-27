@@ -59,17 +59,14 @@ theorem weightedTotalDegree_singleton [DecidableEq σ] (p : MvPolynomial σ R) :
   where all of the weights are `1`. -/
 theorem weightedTotalDegree_one (φ : MvPolynomial σ R) :
     weightedTotalDegree (1 : σ → ℕ) φ = φ.totalDegree := by
-  simp only [totalDegree, weightedTotalDegree, weight, LinearMap.toAddMonoidHom_coe,
-    linearCombination, Pi.one_apply, Finsupp.coe_lsum, LinearMap.coe_smulRight, LinearMap.id_coe,
-    id, smul_eq_mul, mul_one]
+  simp [totalDegree, weightedTotalDegree, weight, linearCombination_apply]
 
 /-- The `degreeOf` a variable `i` for a polynomial `p` is a special case of the
   `weightedTotalDegree` of `p` where `i` has the only nonzero weight and that weight is `1`. -/
 @[simp]
 theorem weightedTotalDegree_piSingle [DecidableEq σ] (i : σ) (p : MvPolynomial σ R) :
     weightedTotalDegree (Pi.single i 1) p = degreeOf i p := by
-  simp only [weightedTotalDegree, weight, linearCombination, Pi.single_apply, degreeOf, degrees,
-    Multiset.count_finset_sup]
+  simp only [weightedTotalDegree, weight, degreeOf, degrees, Multiset.count_finset_sup]
   congr; ext d
   simp +contextual
 

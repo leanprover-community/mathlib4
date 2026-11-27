@@ -49,10 +49,12 @@ section LinearCombination
 variable (R)
 variable {α' : Type*} {M' : Type*} [AddCommMonoid M'] [Module R M'] (v : α → M) {v' : α' → M'}
 
-/-- Interprets (l : α →₀ R) as a linear combination of the elements in the family (v : α → M) and
-    evaluates this linear combination. -/
-def linearCombination : (α →₀ R) →ₗ[R] M :=
-  Finsupp.lsum ℕ fun i => LinearMap.id.smulRight (v i)
+/-- Interprets `(l : α →₀ R)` as a linear combination of the elements in the family `(v : α → M)`
+and evaluates this linear combination. -/
+def linearCombination : (α → M) →+ (α →₀ R) →ₗ[R] M where
+  toFun v := lsum ℕ <| smulRight id ∘ v
+  map_zero' := by simp
+  map_add' _ _ := by ext; simp
 
 variable {v}
 
@@ -69,14 +71,15 @@ theorem linearCombination_single (c : R) (a : α) :
     linearCombination R v (single a c) = c • v a := by
   simp [linearCombination_apply, sum_single_index]
 
+@[deprecated "by simp" (since := "2026-10-19")]
 theorem linearCombination_zero_apply (x : α →₀ R) : (linearCombination R (0 : α → M)) x = 0 := by
-  simp [linearCombination_apply]
+  simp
 
 variable (α M)
 
-@[simp]
+@[deprecated map_zero +typeChanged (since := "2026-10-19")]
 theorem linearCombination_zero : linearCombination R (0 : α → M) = 0 :=
-  LinearMap.ext (linearCombination_zero_apply R)
+  map_zero _
 
 @[simp]
 theorem linearCombination_single_index (c : M) (a : α) (f : α →₀ R) [DecidableEq α] :
@@ -277,6 +280,12 @@ theorem linearCombination_onFinset {s : Finset α} {f : α → R} (g : α → M)
 
 variable [Module S M] [SMulCommClass R S M]
 
+@[simp, push]
+theorem linearCombination_smul' (r : S) (v : α → M) :
+    linearCombination R (r • v) = r • linearCombination R v := by
+  ext
+  simp
+
 variable (S) in
 /-- `Finsupp.bilinearCombination R S v f` is the linear combination of vectors in `v` with weights
 in `f`, as a bilinear map of `v` and `f`.
@@ -285,13 +294,20 @@ In the absence of `SMulCommClass R S M`, use `Finsupp.linearCombination`.
 See note [bundled maps over different rings] for why separate `R` and `S` semirings are used.
 -/
 def bilinearCombination : (α → M) →ₗ[S] (α →₀ R) →ₗ[R] M where
-  toFun v := linearCombination R v
-  map_add' u v := by ext; simp [Pi.add_apply, smul_add]
-  map_smul' r v := by ext; simp [smul_comm]
+  __ := linearCombination R
+  map_smul' := linearCombination_smul' R
 
 @[simp]
-theorem bilinearCombination_apply :
-    bilinearCombination R S v = linearCombination R v :=
+theorem coe_bilinearCombination :
+    ⇑(bilinearCombination (α := α) (M := M) R S) = linearCombination R :=
+  rfl
+
+theorem bilinearCombination_apply : bilinearCombination R S v = linearCombination R v :=
+  rfl
+
+@[simp]
+theorem toAddMonoidHom_bilinearCombination :
+    (bilinearCombination (α := α) (M := M) R S).toAddMonoidHom = linearCombination R :=
   rfl
 
 end LinearCombination
