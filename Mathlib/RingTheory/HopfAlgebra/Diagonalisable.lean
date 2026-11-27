@@ -65,7 +65,7 @@ instance IsDiagonalisable.monoidAlgebra [Group G] : IsDiagonalisable R R[G] :=
 instance [Subsingleton R] : IsDiagonalisable R A := by
   have : Subsingleton A := (algebraMap R A).codomain_trivial
   have := BialgEquiv.ofBijective (f := Bialgebra.counitBialgHom R A)
-    (⟨Function.injective_of_subsingleton _, Function.surjective_to_subsingleton _⟩)
+    ⟨Function.injective_of_subsingleton _, Function.surjective_to_subsingleton _⟩
   exact ⟨_, _, ⟨this.trans (bialgEquivOfSubsingleton PUnit).symm⟩⟩
 
 lemma IsDiagonalisable.of_bialgEquiv [IsDiagonalisable R A] (e : A ≃ₐc[R] B) :
