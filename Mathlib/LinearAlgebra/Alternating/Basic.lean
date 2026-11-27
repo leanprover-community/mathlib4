@@ -104,7 +104,6 @@ instance instFunLike : FunLike (M [⋀^ι]→ₗ[R] N) (ι → M) N where
 
 initialize_simps_projections AlternatingMap (toFun → apply)
 
-@[simp]
 theorem toFun_eq_coe : f.toFun = f :=
   rfl
 

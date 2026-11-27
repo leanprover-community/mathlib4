@@ -888,27 +888,27 @@ instance Monoidal.prod' [F.Monoidal] [G.Monoidal] :
   -- automation should work, but it is terribly slow
   ε_η := by
     ext
-    · simp only [CategoryTheory.prod_comp_fst, prod'_ε_fst, prod'_η_fst, ε_η,
+    · simp only [CategoryTheory.prod_comp, prod'_ε_fst, prod'_η_fst, ε_η,
         prodMonoidal_tensorUnit, prod_id]
-    · simp only [CategoryTheory.prod_comp_snd, prod'_ε_snd, prod'_η_snd, ε_η,
+    · simp only [CategoryTheory.prod_comp, prod'_ε_snd, prod'_η_snd, ε_η,
         prodMonoidal_tensorUnit, prod_id]
   η_ε := by
     ext
-    · simp only [CategoryTheory.prod_comp_fst, prod'_ε_fst, prod'_η_fst, η_ε,
+    · simp only [CategoryTheory.prod_comp, prod'_ε_fst, prod'_η_fst, η_ε,
         prod_id, prod'_obj]
-    · simp only [CategoryTheory.prod_comp_snd, prod'_ε_snd, prod'_η_snd, η_ε,
+    · simp only [CategoryTheory.prod_comp, prod'_ε_snd, prod'_η_snd, η_ε,
         prod_id, prod'_obj]
   μ_δ _ _ := by
     ext
-    · simp only [CategoryTheory.prod_comp_fst, prod'_μ_fst, prod'_δ_fst, μ_δ,
+    · simp only [CategoryTheory.prod_comp, prod'_μ_fst, prod'_δ_fst, μ_δ,
         prod'_obj, prodMonoidal_tensorObj, prod_id]
-    · simp only [CategoryTheory.prod_comp_snd, prod'_μ_snd, prod'_δ_snd, μ_δ,
+    · simp only [CategoryTheory.prod_comp, prod'_μ_snd, prod'_δ_snd, μ_δ,
         prod'_obj, prodMonoidal_tensorObj, prod_id]
   δ_μ _ _ := by
     ext
-    · simp only [CategoryTheory.prod_comp_fst, prod'_μ_fst, prod'_δ_fst, δ_μ,
+    · simp only [CategoryTheory.prod_comp, prod'_μ_fst, prod'_δ_fst, δ_μ,
         prod'_obj, prod_id]
-    · simp only [CategoryTheory.prod_comp_snd, prod'_μ_snd, prod'_δ_snd, δ_μ,
+    · simp only [CategoryTheory.prod_comp, prod'_μ_snd, prod'_δ_snd, δ_μ,
         prod'_obj, prod_id]
 
 end Prod'

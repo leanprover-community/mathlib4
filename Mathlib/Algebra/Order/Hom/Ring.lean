@@ -164,7 +164,7 @@ theorem toOrderAddMonoidHom_eq_coe (f : α →+*o β) : f.toOrderAddMonoidHom = 
 theorem toOrderMonoidWithZeroHom_eq_coe (f : α →+*o β) : f.toOrderMonoidWithZeroHom = f :=
   rfl
 
-@[simp]
+@[simp, nolint simpNF] -- `nolint` needed while this uses `RingHomClass.toRingHom`
 theorem coe_toRingHom (f : α →+*o β) : ⇑(f : α →+* β) = f :=
   rfl
 
@@ -174,7 +174,8 @@ theorem coe_toRingHom (f : α →+*o β) : ⇑(f : α →+* β) = f :=
 theorem coe_coe_orderAddMonoidHom (f : α →+*o β) : ⇑(f : α →+o β) = f :=
   rfl
 
-@[simp]
+-- `nolint` needed while this uses `OrderMonoidWithZeroHomClass.toOrderMonoidWithZeroHom`
+@[simp, nolint simpNF]
 theorem coe_coe_orderMonoidWithZeroHom (f : α →+*o β) : ⇑(f : α →*₀o β) = f :=
   rfl
 

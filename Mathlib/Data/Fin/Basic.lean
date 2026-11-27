@@ -531,7 +531,7 @@ lemma sub_succ_le_sub_of_le {n : ℕ} {u v : Fin (n + 2)} (h : u < v) : v - (u +
 end AddGroup
 
 open Fin.NatCast in
-@[simp]
+@[deprecated val_natCast +typeChanged (since := "2026-11-23")]
 theorem coe_natCast_eq_mod (m n : ℕ) [NeZero m] :
     ((n : Fin m) : ℕ) = n % m :=
   rfl

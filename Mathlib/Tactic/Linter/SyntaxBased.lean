@@ -225,7 +225,6 @@ partial def lintSyntax (stx : Syntax) : CommandElabM Unit := do
   match stx with
   | .ident .. => auxLemmaLinter stx
   | .node _ kind args =>
-    args.forM lintSyntax
     match kind with
     | ``cdotTk | ``Lean.Parser.Term.cdot => cdotLinter stx
     | ``«term_$__» => dollarLinter stx
@@ -234,6 +233,13 @@ partial def lintSyntax (stx : Syntax) : CommandElabM Unit := do
     | ``Batteries.ExtendedBinder.«term∃ᵉ_,_» => extendedBinderLinter stx "∃"
     | ``Batteries.ExtendedBinder.«term∀ᵉ_,_» => extendedBinderLinter stx "∀"
     | _ => pure ()
+    -- Instead of writng `args.forM lintSyntax`,
+    -- we pull out the last `lintSyntax` call,
+    -- so that this function uses tail recursion.
+    if h : args.size ≠ 0 then
+      let last := args.size - 1
+      args.forM (stop := last) lintSyntax
+      lintSyntax args[last]
   | _ => pure ()
 
 def syntaxBasedLinter : Linter where
