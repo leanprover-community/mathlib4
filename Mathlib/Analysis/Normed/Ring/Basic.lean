@@ -33,7 +33,7 @@ assert_not_exists AddChar comap_norm_atTop DilationEquiv Finset.sup_mul_le_mul_s
 variable {G α β ι : Type*}
 
 open Filter
-open scoped Topology NNReal
+open scoped Topology NNReal ENNReal
 
 /-- A non-unital seminormed ring is a not-necessarily-unital ring
 endowed with a seminorm which satisfies the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
@@ -540,6 +540,20 @@ lemma norm_pow_sub_pow_le {a b : α} {B : ℝ} (ha : ‖a‖ ≤ B) (hb : ‖b�
       _ ≤ B * ((n + 1) * B ^ n * ‖a - b‖) + ‖a - b‖ * B ^ (n + 1) := by
         grw [norm_add_le, norm_mul_le, norm_mul_le]; gcongr; grw [norm_pow_le', hb]; positivity
       _ = ↑(n + 2) * B ^ (n + 1) * ‖a - b‖ := by push_cast; ring
+
+/-- In a normed ring, `‖aⁿ - bⁿ‖₊ ≤ n * Bⁿ⁻¹ * ‖a - b‖₊` whenever `‖a‖₊, ‖b‖₊ ≤ B`. -/
+lemma nnNorm_pow_sub_pow_le {a b : α} {B : ℝ≥0} (ha : ‖a‖₊ ≤ B) (hb : ‖b‖₊ ≤ B) (n : ℕ) :
+    ‖a ^ n - b ^ n‖₊ ≤ n * B ^ (n - 1) * ‖a - b‖₊ := by
+  simpa [← NNReal.coe_le_coe] using norm_pow_sub_pow_le (B := B) ha hb n
+
+/-- In a normed ring, `‖aⁿ - bⁿ‖ₑ ≤ n * Bⁿ⁻¹ * ‖a - b‖ₑ` whenever `‖a‖ₑ, ‖b‖ₑ ≤ B`. -/
+lemma eNorm_pow_sub_pow_le {a b : α} {B : ℝ≥0∞} (ha : ‖a‖ₑ ≤ B) (hb : ‖b‖ₑ ≤ B) (n : ℕ) :
+    ‖a ^ n - b ^ n‖ₑ ≤ n * B ^ (n - 1) * ‖a - b‖ₑ :=
+  calc ‖a ^ n - b ^ n‖ₑ
+      ≤ n * max ‖a‖ₑ ‖b‖ₑ ^ (n - 1) * ‖a - b‖ₑ := by
+        simp only [eNorm_eq_nnNorm]
+        exact mod_cast nnNorm_pow_sub_pow_le (a := a) (b := b) (le_max_left ..) (le_max_right ..) n
+    _ ≤ n * B ^ (n - 1) * ‖a - b‖ₑ := by grw [max_le ha hb]
 
 /-- A homomorphism `f` between semi_normed_rings is bounded if there exists a positive
   constant `C` such that for all `x` in `α`, `norm (f x) ≤ C * norm x`. -/

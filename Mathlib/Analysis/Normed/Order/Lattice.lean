@@ -187,6 +187,17 @@ lemma norm_finsetSup'_sub_finsetSup'_le {ι : Type*} {s : Finset ι} (hs : s.Non
     grw [Finset.sup'_cons hs, Finset.sup'_cons hs, Finset.sum_cons, norm_sup_sub_sup_le_add_norm,
       ih]
 
+@[to_dual]
+lemma nnNorm_finsetSup'_sub_finsetSup'_le {ι : Type*} {s : Finset ι} (hs : s.Nonempty)
+    (a b : ι → α) : ‖s.sup' hs a - s.sup' hs b‖₊ ≤ ∑ i ∈ s, ‖a i - b i‖₊ := by
+  simpa [← NNReal.coe_le_coe] using norm_finsetSup'_sub_finsetSup'_le hs a b
+
+@[to_dual]
+lemma eNorm_finsetSup'_sub_finsetSup'_le {ι : Type*} {s : Finset ι} (hs : s.Nonempty)
+    (a b : ι → α) : ‖s.sup' hs a - s.sup' hs b‖ₑ ≤ ∑ i ∈ s, ‖a i - b i‖ₑ := by
+  simp only [eNorm_eq_nnNorm]
+  exact mod_cast nnNorm_finsetSup'_sub_finsetSup'_le hs a b
+
 lemma lipschitzWith_posPart : LipschitzWith 1 (posPart : α → α) :=
   lipschitzWith_sup_right 0
 

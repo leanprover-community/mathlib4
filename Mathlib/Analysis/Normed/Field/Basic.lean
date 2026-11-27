@@ -118,6 +118,23 @@ lemma norm_inv_sub_inv_le {A : ℝ} (hA : 0 < A) (hAa : A ≤ ‖a‖) (hAb : A 
     (norm_pos_iff.1 (hA.trans_le hAb)), dist_eq_norm, div_eq_inv_mul, inv_pow, sq]
   gcongr
 
+lemma nnNorm_inv_sub_inv_le {A : ℝ≥0} (hA : 0 < A) (hAa : A ≤ ‖a‖₊) (hAb : A ≤ ‖b‖₊) :
+    ‖a⁻¹ - b⁻¹‖₊ ≤ A⁻¹ ^ 2 * ‖a - b‖₊ := by
+  simpa [← NNReal.coe_le_coe] using norm_inv_sub_inv_le (A := A) hA hAa hAb
+
+lemma eNorm_inv_sub_inv_le {A : ℝ≥0∞} (hAa : A ≤ ‖a‖ₑ) (hAb : A ≤ ‖b‖ₑ) :
+    ‖a⁻¹ - b⁻¹‖ₑ ≤ A⁻¹ ^ 2 * ‖a - b‖ₑ := by
+  obtain rfl | hA := eq_zero_or_pos A
+  · obtain rfl | hab := eq_or_ne a b
+    · simp [eNorm_eq_nnNorm]
+    · rw [ENNReal.inv_zero, ENNReal.top_pow two_ne_zero,
+        ENNReal.top_mul (by simpa [eNorm_eq_nnNorm, sub_eq_zero])]
+      exact le_top
+  lift A to ℝ≥0 using (hAa.trans_lt eNorm_lt_top).ne
+  rw [← ENNReal.coe_inv (mod_cast hA.ne')]
+  simp only [eNorm_eq_nnNorm] at *
+  exact mod_cast nnNorm_inv_sub_inv_le (mod_cast hA) (mod_cast hAa) (mod_cast hAb)
+
 lemma norm_commutator_sub_one_le (ha : a ≠ 0) (hb : b ≠ 0) :
     ‖a * b * a⁻¹ * b⁻¹ - 1‖ ≤ 2 * ‖a‖⁻¹ * ‖b‖⁻¹ * ‖a - 1‖ * ‖b - 1‖ := by
   simpa using norm_commutator_units_sub_one_le (.mk0 a ha) (.mk0 b hb)
@@ -147,6 +164,32 @@ lemma norm_zpow_sub_zpow_le {A B : ℝ} (hA : 0 < A) (hAa : A ≤ ‖a‖) (hAb 
   simp only [zpow_neg, zpow_natCast, abs_neg, Nat.abs_cast, inv_pow]
   push_cast
   ring
+
+/-- In a normed division ring, `‖aⁿ - bⁿ‖₊ ≤ |n| * (Aⁿ⁻¹ ⊔ Bⁿ⁻¹) * ‖a - b‖₊` for all integers `n`
+whenever `0 < A ≤ ‖a‖₊, ‖b‖₊ ≤ B`. -/
+lemma nnNorm_zpow_sub_zpow_le {A B : ℝ≥0} (hA : 0 < A) (hAa : A ≤ ‖a‖₊) (hAb : A ≤ ‖b‖₊)
+    (ha : ‖a‖₊ ≤ B) (hb : ‖b‖₊ ≤ B) (n : ℤ) :
+    ‖a ^ n - b ^ n‖₊ ≤ n.natAbs * (A ^ (n - 1) ⊔ B ^ (n - 1)) * ‖a - b‖₊ := by
+  simpa [← NNReal.coe_le_coe, Nat.cast_natAbs]
+    using norm_zpow_sub_zpow_le (A := A) (B := B) hA hAa hAb ha hb n
+
+/-- In a normed division ring, `‖aⁿ - bⁿ‖ₑ ≤ |n| * (Aⁿ⁻¹ ⊔ Bⁿ⁻¹) * ‖a - b‖ₑ` for all integers `n`
+whenever `A ≤ ‖a‖ₑ, ‖b‖ₑ ≤ B`. -/
+lemma eNorm_zpow_sub_zpow_le {A B : ℝ≥0∞} (hAa : A ≤ ‖a‖ₑ) (hAb : A ≤ ‖b‖ₑ) (ha : ‖a‖ₑ ≤ B)
+    (hb : ‖b‖ₑ ≤ B) (n : ℤ) :
+    ‖a ^ n - b ^ n‖ₑ ≤ n.natAbs * (A ^ (n - 1) ⊔ B ^ (n - 1)) * ‖a - b‖ₑ := by
+  obtain ⟨_ | m, rfl | rfl⟩ := n.eq_nat_or_neg
+  · simp [eNorm_eq_nnNorm]
+  · simp [eNorm_eq_nnNorm]
+  · grw [← le_sup_right, Int.natAbs_natCast, zpow_natCast, zpow_natCast, eNorm_pow_sub_pow_le ha hb]
+    simp
+  have hinv {x : α} (hx : A ≤ ‖x‖ₑ) : ‖x⁻¹‖ₑ ≤ A⁻¹ := by
+    grw [eNorm_eq_nnNorm, nnNorm_inv, ENNReal.coe_inv_le, ← eNorm_eq_nnNorm, ← hx]
+  grw [← le_sup_left, zpow_neg, zpow_neg, zpow_natCast, zpow_natCast, ← inv_pow, ← inv_pow,
+    eNorm_pow_sub_pow_le (hinv hAa) (hinv hAb), eNorm_inv_sub_inv_le hAa hAb]
+  rw [show (-↑(m + 1) : ℤ) - 1 = -(m + 2 : ℕ) by lia, ENNReal.zpow_neg, zpow_natCast,
+    Int.natAbs_neg, Int.natAbs_natCast, Nat.add_sub_cancel, ENNReal.inv_pow, pow_add]
+  simp only [mul_assoc, le_refl]
 
 namespace NormedDivisionRing
 
