@@ -53,7 +53,7 @@ namespace Mathlib.Linter.LongDeclaration
 open Lean Elab Command
 
 /-- Add every source line touched by the half-open range `range` to `lines`. -/
-def addSourceLines (fileMap : FileMap) (range : Syntax.Range)
+def addRangeLines (fileMap : FileMap) (range : Syntax.Range)
     (lines : Std.HashSet Nat) : Std.HashSet Nat := Id.run do
   -- Certain syntax nodes, e.g. `hygieneInfo`, have empty ranges; skip these.
   if range.stop ≤ range.start then return lines
@@ -82,12 +82,12 @@ partial def sourceLines (fileMap : FileMap) (stx : Syntax)
       args.foldl (init := lines) fun lines arg ↦ sourceLines fileMap arg lines
   | .atom (.original _ pos _ endPos) _
   | .ident (.original _ pos _ endPos) .. =>
-    addSourceLines fileMap ⟨pos, endPos⟩ lines
+    addRangeLines fileMap ⟨pos, endPos⟩ lines
   -- Synthetic and missing tokens do not describe code written in the source file.
   | _ => lines
 
 /-- Count all source lines touched by `range`, as a cheap upper bound on the code-line count. -/
-def sourceLineCount (fileMap : FileMap) (range : Syntax.Range) : Nat :=
+def rangeLineCount (fileMap : FileMap) (range : Syntax.Range) : Nat :=
   let first := fileMap.toPosition range.start
   let last := fileMap.toPosition range.stop
   -- Source ranges have exclusive ends, so an end at column zero belongs to the preceding line.
@@ -105,7 +105,7 @@ def checkLongDeclarations : Linter where
     let limit := linter.longDeclaration.maxLines.get (← getOptions)
     -- Raw source length is an upper bound, so most commands need no syntax traversal at all.
     let some range := stx.getRange? true | return
-    if sourceLineCount fileMap range ≤ limit then return
+    if rangeLineCount fileMap range ≤ limit then return
     let lines := (sourceLines fileMap stx {}).size
     if lines > limit then
       Lean.Linter.logLint linter.longDeclaration (.ofRange range)
