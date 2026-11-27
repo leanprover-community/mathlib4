@@ -5,6 +5,7 @@ Authors: Seewoo Lee
 -/
 module
 
+public import Mathlib.Algebra.Module.Lattice.Basic
 public import Mathlib.Algebra.Module.Submodule.Bilinear
 public import Mathlib.LinearAlgebra.BilinearForm.DualLattice
 public import Mathlib.LinearAlgebra.BilinearForm.Hom
@@ -32,6 +33,8 @@ nondegenerate or definite, so this covers indefinite lattices as well.
   integral and `B` takes values in `1` on `L₁ × L₂` and `L₂ × L₁`.
 * `LinearMap.BilinForm.isIntegral_map_iff`, `LinearMap.BilinForm.IsIntegral.comap`: integrality
   under images and preimages along linear maps.
+* `LinearMap.BilinForm.IsIntegral.isLattice`: in finite dimension, an integral submodule on whose
+  span `B` is nondegenerate is a lattice in the sense of `Submodule.IsLattice`.
 -/
 
 @[expose] public section
@@ -113,6 +116,31 @@ variable {K : Type*} [Field K] [Algebra R K] [Module K M] [IsScalarTower R K M]
 /-- A submodule is integral if and only if it is contained in its dual submodule. -/
 lemma isIntegral_iff_le_dualSubmodule : B.IsIntegral L ↔ L ≤ B.dualSubmodule L :=
   Iff.rfl
+
+/-- In finite dimension, an integral submodule is a lattice, provided that `B` is nondegenerate on
+its `K`-span: pairing with a `K`-basis of `span K L` contained in `L` embeds `L` into `R ^ r`. -/
+theorem IsIntegral.isLattice [IsNoetherianRing R] [FaithfulSMul R K] [FiniteDimensional K M]
+    (hL : B.IsIntegral L) (hB : (B.restrict (span K (L : Set M))).Nondegenerate) :
+    L.IsLattice K := by
+  classical
+  obtain ⟨s, hsL, hs, hli⟩ := exists_linearIndependent K (L : Set M)
+  have := hli.setFinite.fintype
+  let ψ : M →ₗ[K] s → K := LinearMap.pi fun v ↦ B (v : M)
+  have hψ : Set.InjOn ψ L := fun x hx y hy hxy ↦ by
+    have hmem : x - y ∈ span K (L : Set M) := subset_span (sub_mem hx hy)
+    have h : span K s ≤ LinearMap.ker (B.flip (x - y)) := span_le.2 fun v hv ↦ by
+      simpa [ψ, sub_eq_zero] using congrFun hxy ⟨v, hv⟩
+    have := hB.2 ⟨x - y, hmem⟩ fun w ↦ h (hs.ge w.property)
+    exact sub_eq_zero.1 (congrArg Subtype.val this)
+  have : (span R (Set.range (Pi.basisFun K s))).IsLattice K :=
+    IsLattice.span_of_linearIndependent K (Pi.basisFun K s).linearIndependent
+  have hle : L.map (ψ.restrictScalars R) ≤ span R (Set.range (Pi.basisFun K s)) := by
+    rintro _ ⟨x, hx, rfl⟩
+    choose n hn using fun v : s ↦ mem_one.1 (hL v (hsL v.property) x hx)
+    refine (mem_span_range_iff_exists_fun R).2 ⟨n, funext fun v ↦ ?_⟩
+    simp [ψ, ← hn, Pi.single_apply, Algebra.smul_def]
+  have := IsLattice.mono K hle
+  exact IsLattice.of_map K L hψ
 
 end Field
 
