@@ -96,8 +96,10 @@ initialize_simps_projections OrderMonoidWithZeroHom (toFun → apply, -toMonoidW
 protected lemma coe_ofClass [FunLike F α β] [OrderHomClass F α β]
     [MonoidWithZeroHomClass F α β] (f : F) : ⇑(ofClass f) = f := rfl
 
-@[deprecated (since := "2026-11-26")] alias coe_toOrderMonoidWithZeroHom :=
-  MonoidWithZeroHom.coe_ofClass
+@[deprecated OrderMonoidWithZeroHom.coe_ofClass +typeChanged (since := "2026-11-27")]
+lemma coe_toOrderMonoidWithZeroHom [FunLike F α β] [OrderHomClass F α β]
+    [MonoidWithZeroHomClass F α β] (f : F) :
+    ⇑(OrderMonoidWithZeroHomClass.toOrderMonoidWithZeroHom f) = f := rfl
 
 attribute [coe] toMonoidWithZeroHom
 
