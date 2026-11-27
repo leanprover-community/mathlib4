@@ -341,7 +341,7 @@ lemma qExpansion_coeff_eq_intervalIntegral {f : ℍ → ℂ} (hh : 0 < h)
   -- now just complex exponential arithmetic to finish
   simp_rw [deriv_circleMap, this, show u + t * I = τ by rfl,
     show ⟨↑τ, τ.coe_im_pos⟩ = τ by rfl, eq_cuspFunction _ hh.ne' hfper, smul_eq_mul, pow_succ]
-  field [(show 𝕢 h τ ≠ 0 from Complex.exp_ne_zero _), Real.pi_ne_zero, NeZero.ne]
+  field_simp [(show 𝕢 h τ ≠ 0 from Complex.exp_ne_zero _), Real.pi_ne_zero, NeZero.ne]
   push_cast
   ring
 
