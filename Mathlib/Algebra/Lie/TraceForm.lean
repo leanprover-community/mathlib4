@@ -335,7 +335,7 @@ variable [IsDomain R] [IsPrincipalIdealRing R]
   (N : LieSubmodule R L M) (I : LieIdeal R L) (h : I ≤ N.idealizer) (x : L) {y : L} (hy : y ∈ I)
 
 lemma trace_eq_trace_restrict_of_le_idealizer
-    (hy' : ∀ m ∈ N, (φ x ∘ₗ φ y) m ∈ N := fun m _ ↦ N.lie_mem (N.mem_idealizer.mp (h hy) m)) :
+    (hy' : MapsTo (φ x ∘ₗ φ y) N N := fun m _ ↦ N.lie_mem (N.mem_idealizer.mp (h hy) m)) :
     trace R M (φ x ∘ₗ φ y) = trace R N ((φ x ∘ₗ φ y).restrict hy') := by
   suffices ∀ m, ⁅x, ⁅y, m⁆⁆ ∈ N by
     have : (trace R { x // x ∈ N }) ((φ x ∘ₗ φ y).restrict _) = (trace R M) (φ x ∘ₗ φ y) :=
@@ -357,7 +357,7 @@ that `N` is trivial over `I` rather than all of `L`. This means that it applies 
 case of an Abelian ideal (which has `M = L` and `N = I`). -/
 lemma traceForm_eq_zero_of_isTrivial [LieModule.IsTrivial I N] :
     trace R M (φ x ∘ₗ φ y) = 0 := by
-  let hy' : ∀ m ∈ N, (φ x ∘ₗ φ y) m ∈ N := fun m _ ↦ N.lie_mem (N.mem_idealizer.mp (h hy) m)
+  have hy' : MapsTo (φ x ∘ₗ φ y) N N := fun m _ ↦ N.lie_mem (N.mem_idealizer.mp (h hy) m)
   suffices (φ x ∘ₗ φ y).restrict hy' = 0 by
     simp [this, N.trace_eq_trace_restrict_of_le_idealizer I h x hy]
   ext (n : N)

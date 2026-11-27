@@ -57,7 +57,7 @@ def AffineMap.restrict (φ : P₁ →ᵃ[k] P₂) {E : AffineSubspace k P₁} {F
     [Nonempty E] [Nonempty F] (hEF : E.map φ ≤ F) : E →ᵃ[k] F := by
   refine ⟨?_, ?_, ?_⟩
   · exact fun x => ⟨φ x, hEF <| AffineSubspace.mem_map.mpr ⟨x, x.property, rfl⟩⟩
-  · exact φ.linear.restrict (AffineMap.restrict.mapsTo_linear hEF)
+  · exact φ.linear.restrict (AffineMap.restrict_mapsTo_linear hEF)
   · intro p v
     simp only [Subtype.ext_iff, AffineSubspace.coe_vadd]
     apply AffineMap.map_vadd
