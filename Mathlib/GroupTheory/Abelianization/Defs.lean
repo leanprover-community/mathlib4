@@ -296,15 +296,15 @@ by the image of `N`. -/
 @[to_additive
 /-- An additive abelianization of `G` induces an additive abelianization of `G ⧸ N`, given by the
 quotient of `A` by the image of `N`. -/]
-theorem quotient (hf : IsAbelianization f) {N : Subgroup G} [N.Normal]
-    (h : (N.map f).Normal := Subgroup.Normal.map inferInstance f hf.surjective) :
-    IsAbelianization (QuotientGroup.map N (N.map f) f (Subgroup.le_comap_map f N)) where
-  surjective := QuotientGroup.map_surjective_of_surjective _ _ _
-    (QuotientGroup.mk_surjective.comp hf.surjective) _
-  ker_eq := by
-    rw [QuotientGroup.ker_map, Subgroup.comap_map_eq, hf.ker_eq, Subgroup.map_sup,
-      QuotientGroup.map_mk'_self, map_commutator_of_surjective (QuotientGroup.mk'_surjective N),
-      bot_sup_eq]
+theorem quotient (hf : IsAbelianization f) {N : Subgroup G} [N.Normal] :
+    letI : (N.map f).Normal := Subgroup.Normal.map inferInstance f hf.surjective
+    IsAbelianization (QuotientGroup.map N (N.map f) f (Subgroup.le_comap_map f N)) := by
+  have : (N.map f).Normal := Subgroup.Normal.map inferInstance f hf.surjective
+  refine ⟨QuotientGroup.map_surjective_of_surjective _ _ _
+    (QuotientGroup.mk_surjective.comp hf.surjective) _, ?_⟩
+  rw [QuotientGroup.ker_map, Subgroup.comap_map_eq, hf.ker_eq, Subgroup.map_sup,
+    QuotientGroup.map_mk'_self, map_commutator_of_surjective (QuotientGroup.mk'_surjective N),
+    bot_sup_eq]
 
 @[to_additive]
 theorem hom_ext (hf : IsAbelianization f) {M : Type*} [Monoid M] {φ ψ : A →* M}
