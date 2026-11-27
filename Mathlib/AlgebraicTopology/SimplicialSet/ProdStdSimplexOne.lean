@@ -101,7 +101,8 @@ lemma ofSimplex_le_filtration {i j : Fin (p + 1)} (hij : i ≤ j) :
 variable (p) in
 lemma filtration_zero :
     filtration.{u} (0 : Fin (p + 1)) = .ofSimplex (nonDegenerateEquiv 0).val :=
-  le_antisymm (by simp [filtration]) (ofSimplex_le_filtration.{u} (by rfl))
+  le_antisymm (iSup_le fun i ↦ (by rw [le_antisymm i.prop (Fin.zero_le _)]))
+    (ofSimplex_le_filtration (by rfl))
 
 variable (p) in
 lemma filtration_last :

@@ -87,6 +87,16 @@ def isoNerve : Δ[p] ⊗ Δ[q] ≅ nerve (ULift.{u} (Fin (p + 1) × Fin (q + 1))
       { toFun f := (ULift.orderIso.symm.monotone.comp f.monotone).functor
         invFun s := ULift.orderIso.toOrderEmbedding.toOrderHom.comp ⟨_, s.monotone⟩ }))
 
+/-- The map from a product of standard simplices induced by a monotone map on vertices. -/
+def toStdSimplex {n : ℕ} (f : Fin (p + 1) × Fin (q + 1) →o Fin (n + 1)) :
+    (Δ[p] ⊗ Δ[q] : SSet.{u}) ⟶ Δ[n] :=
+  (isoNerve p q).hom ≫ nerveMap f.uliftMap.monotone.functor ≫ (stdSimplex.isoNerve n).inv
+
+@[simp]
+lemma toStdSimplex_app_apply {n d : ℕ} (f : Fin (p + 1) × Fin (q + 1) →o Fin (n + 1))
+    (x : (Δ[p] ⊗ Δ[q] : SSet.{u}) _⦋d⦌) (j : Fin (d + 1)) :
+    dsimp% (toStdSimplex f).app _ x j = f (objEquiv x j) := rfl
+
 lemma nonDegenerate_iff_injective_objEquiv {n : ℕ} (z : (Δ[p] ⊗ Δ[q] : SSet.{u}) _⦋n⦌) :
     z ∈ (Δ[p] ⊗ Δ[q]).nonDegenerate n ↔ Function.Injective (objEquiv z) := by
   rw [← nonDegenerate_iff_of_mono (isoNerve p q).hom,

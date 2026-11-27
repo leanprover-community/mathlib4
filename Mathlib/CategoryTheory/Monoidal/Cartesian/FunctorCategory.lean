@@ -87,6 +87,14 @@ lemma fst_app (F₁ F₂ : J ⥤ C) (j : J) : (fst F₁ F₂).app j = fst (F₁.
 lemma snd_app (F₁ F₂ : J ⥤ C) (j : J) : (snd F₁ F₂).app j = snd (F₁.obj j) (F₂.obj j) := rfl
 
 @[simp]
+lemma lift_app_apply_fst {F G H : J ⥤ Type v} (f : F ⟶ G) (g : F ⟶ H) {j : J}
+    (x : F.obj j) : dsimp% ((lift f g).app j x).1 = f.app j x := rfl
+
+@[simp]
+lemma lift_app_apply_snd {F G H : J ⥤ Type v} (f : F ⟶ G) (g : F ⟶ H) {j : J}
+    (x : F.obj j) : dsimp% ((lift f g).app j x).2 = g.app j x := rfl
+
+@[simp]
 lemma leftUnitor_hom_app (F : J ⥤ C) (j : J) :
     (λ_ F).hom.app j = (λ_ (F.obj j)).hom := rfl
 
