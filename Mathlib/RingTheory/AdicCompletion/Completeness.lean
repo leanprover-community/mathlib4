@@ -35,7 +35,6 @@ when the ideal `I` is finitely generated.
 
 * `MvPowerSeries.isAdicComplete`: Multivariate power series is adic complete with respect to
   the ideal spanned by all variables when the index is finite.
-
 -/
 
 public section
@@ -139,8 +138,9 @@ private lemma lsum_smul_comp_finsuppLEquivDirectSum_symm {ι : Type*} [Decidable
   ext
   -- simp [-algebraMap_smul, algebraMap_apply, -smul_eq_mul]
   simp only [algebraMap_apply, Algebra.algebraMap_self, RingHom.id_apply, LinearMap.coe_comp,
-    coe_lsum, LinearMap.coe_smul, LinearMap.id_coe, LinearEquiv.coe_coe, Function.comp_apply,
-    finsuppLEquivDirectSum_symm_lof, Pi.smul_apply, id_eq, smul_zero, sum_single_index, smul_eval,
+    coe_lsum, LinearMap.coe_smul, LinearMap.id_coe, LinearEquiv.coe_toLinearMap,
+    Function.comp_apply, finsuppLEquivDirectSum_symm_lof, Pi.smul_apply, id_eq, smul_zero,
+    sum_single_index, smul_eval,
     mapQ_eq_factor, factor_eq_factor, of_apply, mkQ_apply, Ideal.Quotient.mk_eq_mk, mk_apply_coe,
     sumEquivOfFintype_apply, sum_lof, map_mk, AdicCauchySequence.map_apply_coe, map_smul]
   rw [← Ideal.Quotient.algebraMap_eq, algebraMap_smul]
@@ -216,7 +216,7 @@ instance {σ : Type*} [Finite σ] :
     simp [AdicCompletion.algebraMap_apply, ← MvPolynomial.coe_X, toAdicCompletion_coe]
   rw [← IsAdicComplete.congr_ringEquiv _ (toAdicCompletionAlgEquiv σ R).toRingEquiv, this,
     IsAdicComplete.map_algebraMap_iff]
-  exact AdicCompletion.isAdicComplete (MvPolynomial.idealOfVars_fg σ R)
+  exact AdicCompletion.isAdicComplete (MvPolynomial.fg_idealOfVars σ R)
 
 end MvPowerSeries
 

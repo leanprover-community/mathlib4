@@ -6,11 +6,14 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Group.Basic
-public import Mathlib.Algebra.Group.Semiconj.Defs
+
+import Mathlib.Algebra.Group.Semiconj.Defs
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Lemmas about semiconjugate elements of a group
-
 -/
 
 public section

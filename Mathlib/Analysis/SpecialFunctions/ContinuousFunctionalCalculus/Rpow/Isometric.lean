@@ -33,23 +33,27 @@ namespace CFC
 section nonunital
 
 variable {A : Type*} [NonUnitalNormedRing A] [StarRing A] [NormedSpace ℝ A] [IsScalarTower ℝ A A]
-  [SMulCommClass ℝ A A] [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A]
+  [SMulCommClass ℝ A A] [PartialOrder A] [StarOrderedRing A]
   [NonUnitalIsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 
-lemma nnnorm_nnrpow (a : A) {r : ℝ≥0} (hr : 0 < r) (ha : 0 ≤ a := by cfc_tac) :
+lemma nnNorm_nnrPow (a : A) {r : ℝ≥0} (hr : 0 < r) (ha : 0 ≤ a := by cfc_tac) :
     ‖a ^ r‖₊ = ‖a‖₊ ^ (r : ℝ) :=
-  NNReal.monotone_nnrpow_const r |>.monotoneOn _ |>.nnnorm_cfcₙ _ _
+  NNReal.monotone_nnrpow_const r |>.monotoneOn _ |>.nnNorm_cfcₙ _ _
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_nnrpow := nnNorm_nnrPow
 
 lemma norm_nnrpow (a : A) {r : ℝ≥0} (hr : 0 < r) (ha : 0 ≤ a := by cfc_tac) :
     ‖a ^ r‖ = ‖a‖ ^ (r : ℝ) :=
-  congr(NNReal.toReal $(nnnorm_nnrpow a hr ha))
+  congr(NNReal.toReal $(nnNorm_nnrPow a hr ha))
 
-lemma nnnorm_sqrt (a : A) (ha : 0 ≤ a := by cfc_tac) : ‖sqrt a‖₊ = NNReal.sqrt ‖a‖₊ := by
+lemma nnNorm_sqrt (a : A) (ha : 0 ≤ a := by cfc_tac) : ‖sqrt a‖₊ = NNReal.sqrt ‖a‖₊ := by
   rw [sqrt_eq_nnrpow, NNReal.sqrt_eq_rpow]
-  exact nnnorm_nnrpow a (by simp) ha
+  exact nnNorm_nnrPow a (by simp) ha
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_sqrt := nnNorm_sqrt
 
 lemma norm_sqrt (a : A) (ha : 0 ≤ a := by cfc_tac) : ‖sqrt a‖ = √‖a‖ := by
-  simpa using congr(NNReal.toReal $(nnnorm_sqrt a ha))
+  simpa using congr(NNReal.toReal $(nnNorm_sqrt a ha))
 
 variable [ContinuousStar A] [CompleteSpace A]
 
@@ -66,18 +70,20 @@ end nonunital
 section unital
 
 variable {A : Type*} [NormedRing A] [StarRing A] [NormedAlgebra ℝ A]
-  [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A]
+  [PartialOrder A] [StarOrderedRing A]
   [IsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 
-lemma nnnorm_rpow (a : A) {r : ℝ} (hr : 0 < r) (ha : 0 ≤ a := by cfc_tac) :
+lemma nnNorm_rpow (a : A) {r : ℝ} (hr : 0 < r) (ha : 0 ≤ a := by cfc_tac) :
     ‖a ^ r‖₊ = ‖a‖₊ ^ r := by
   lift r to ℝ≥0 using hr.le
-  rw [← nnrpow_eq_rpow, ← nnnorm_nnrpow a]
+  rw [← nnrpow_eq_rpow, ← nnNorm_nnrPow a]
   all_goals simpa
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_rpow := nnNorm_rpow
 
 lemma norm_rpow (a : A) {r : ℝ} (hr : 0 < r) (ha : 0 ≤ a := by cfc_tac) :
     ‖a ^ r‖ = ‖a‖ ^ r :=
-  congr(NNReal.toReal $(nnnorm_rpow a hr ha))
+  congr(NNReal.toReal $(nnNorm_rpow a hr ha))
 
 lemma continuousOn_rpow [ContinuousStar A] [CompleteSpace A] (r : ℝ) :
     ContinuousOn (· ^ r) {a : A | IsStrictlyPositive a} := by
@@ -91,7 +97,7 @@ section cstar
 
 variable {A : Type*} [PartialOrder A] [NonUnitalNormedRing A] [StarRing A] [CStarRing A]
     [NormedSpace ℝ A] [SMulCommClass ℝ A A] [IsScalarTower ℝ A A] [StarOrderedRing A]
-    [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint] [NonnegSpectrumClass ℝ A]
+    [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 
 lemma norm_star_mul_mul_self_of_nonneg {a : A} (b : A) (ha : 0 ≤ a := by cfc_tac) :
     ‖star b * a * b‖ = ‖CFC.sqrt a * b‖ ^ 2 := by

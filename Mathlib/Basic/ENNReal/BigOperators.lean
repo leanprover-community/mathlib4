@@ -9,6 +9,9 @@ public import Mathlib.Algebra.BigOperators.WithTop
 public import Mathlib.Basic.ENNReal.Inv
 public import Mathlib.Basic.NNReal.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of big operators extended non-negative real numbers
 
@@ -33,15 +36,11 @@ lemma ofNNReal_finsetSum (s : Finset ι) (f : ι → ℝ≥0) : ↑(∑ i ∈ s,
   map_sum ofNNRealHom ..
 
 @[deprecated (since := "2026-06-04")] alias coe_finsetSum := ofNNReal_finsetSum
-@[deprecated (since := "2026-04-08")] alias coe_finset_sum := ofNNReal_finsetSum
-
 @[simp, norm_cast]
 lemma ofNNReal_finsetProd (s : Finset ι) (f : ι → ℝ≥0) :
     ↑(∏ i ∈ s, f i) = ∏ i ∈ s, ofNNReal (f i) := map_prod ofNNRealHom f s
 
 @[deprecated (since := "2026-06-04")] alias coe_finsetProd := ofNNReal_finsetProd
-@[deprecated (since := "2026-04-08")] alias coe_finset_prod := ofNNReal_finsetProd
-
 @[simp, norm_cast]
 lemma ofNNReal_finsuppSum (f : ι →₀ M) (g : ι → M → ℝ≥0) :
     f.sum g = f.sum (fun i m ↦ ofNNReal (g i m)) := map_finsuppSum ofNNRealHom ..

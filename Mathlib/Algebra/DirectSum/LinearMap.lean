@@ -15,7 +15,6 @@ import Mathlib.LinearAlgebra.FreeModule.PID
 
 This file contains results about linear maps which respect direct sum decompositions of their
 domain and codomain.
-
 -/
 
 public section

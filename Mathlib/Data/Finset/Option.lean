@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Finset.Card
 public import Mathlib.Data.Finset.Union
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite sets in `Option α`
 
@@ -25,6 +28,8 @@ Then we prove some basic lemmas about these definitions.
 
 finset, option
 -/
+
+open scoped Finset
 
 @[expose] public section
 
@@ -51,7 +56,7 @@ theorem toFinset_some {a : α} : (some a).toFinset = {a} :=
 theorem mem_toFinset {a : α} {o : Option α} : a ∈ o.toFinset ↔ a ∈ o := by
   cases o <;> simp [eq_comm]
 
-theorem card_toFinset (o : Option α) : o.toFinset.card = o.elim 0 1 := by cases o <;> rfl
+theorem card_toFinset (o : Option α) : #o.toFinset = o.elim 0 1 := by cases o <;> rfl
 
 end Option
 
@@ -79,7 +84,7 @@ lemma none_mem_insertNone {s : Finset α} : none ∈ insertNone s := by simp
 lemma insertNone_nonempty {s : Finset α} : insertNone s |>.Nonempty := ⟨none, none_mem_insertNone⟩
 
 @[simp]
-theorem card_insertNone (s : Finset α) : s.insertNone.card = s.card + 1 := by simp [insertNone]
+theorem card_insertNone (s : Finset α) : #s.insertNone = #s + 1 := by simp [insertNone]
 
 /-- Given `s : Finset (Option α)`, `eraseNone s : Finset α` is the set of `x : α` such that
 `some x ∈ s`. -/

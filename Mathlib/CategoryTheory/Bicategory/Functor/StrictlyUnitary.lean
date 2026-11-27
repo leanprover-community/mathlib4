@@ -23,9 +23,11 @@ satisfies the same condition (i.e. its "underlying" lax functor is strictly
 unitary).
 
 ## References
+
 - [Kerodon, section 2.2.2.4](https://kerodon.net/tag/008G)
 
-## TODOs
+## TODO
+
 * Define lax-composable (resp. pseudo-composable) arrows as strictly unitary
   lax (resp. pseudo-) functors out of `LocallyDiscrete Fin n`.
 * Define identity-component oplax natural transformations ("icons") between
@@ -33,7 +35,6 @@ unitary).
   bicategories, strictly unitary pseudofunctors and icons.
 * Construct the Duskin nerve of a bicategory using lax-composable arrows
 * Construct the 2-nerve of a bicategory using pseudo-composable arrows
-
 -/
 
 @[expose] public section
@@ -180,7 +181,7 @@ lemma comp_id (F : StrictlyUnitaryLaxFunctor B C) :
   ext
   · simp
   all_goals
-  · rw [heq_iff_eq]
+    rw [heq_iff_eq]
     ext
     simp
 
@@ -192,7 +193,7 @@ lemma id_comp (F : StrictlyUnitaryLaxFunctor B C) :
   ext
   · simp
   all_goals
-  · rw [heq_iff_eq]
+    rw [heq_iff_eq]
     ext
     simp
 
@@ -206,7 +207,7 @@ lemma comp_assoc {E : Type u₄} [Bicategory.{w₄, v₄} E]
   ext
   · simp
   all_goals
-  · rw [heq_iff_eq]
+    rw [heq_iff_eq]
     ext
     simp
 
@@ -303,7 +304,6 @@ def mk' (S : StrictlyUnitaryPseudofunctorCore B C) :
   map₂_whisker_right η f := by
     simpa using S.map₂_whisker_right η f
 
-set_option backward.defeqAttrib.useBackward true in
 /-- By forgetting the inverse to `mapComp`, a `StrictlyUnitaryPseudofunctor`
 is a `StrictlyUnitaryLaxFunctor`. -/
 def toStrictlyUnitaryLaxFunctor (F : StrictlyUnitaryPseudofunctor B C) :

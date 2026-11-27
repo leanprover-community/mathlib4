@@ -14,6 +14,9 @@ public import Mathlib.CategoryTheory.Limits.Types.Products
 
 import Mathlib.Basic.Finite.Sigma
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # (Co)limits in the category of finite types
 
@@ -31,7 +34,7 @@ namespace CategoryTheory.Limits.FintypeCat
 
 instance {J : Type} [SmallCategory J] (K : J ⥤ FintypeCat.{u}) (j : J) :
     Finite ((K ⋙ FintypeCat.incl.{u}).obj j) := by
-  simp only [comp_obj, FintypeCat.incl_obj]
+  simp only [comp_obj, ObjectProperty.ι_obj]
   infer_instance
 
 /-- Any functor from a finite category to `Type*` that only involves finite objects,

@@ -13,6 +13,9 @@ public import Mathlib.Topology.MetricSpace.Pseudo.Real
 public import Mathlib.Topology.Metrizable.Uniformity
 public import Mathlib.Topology.Order.LiminfLimsup
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topology on extended non-negative reals
 -/
@@ -277,13 +280,13 @@ theorem tendsto_atTop_zero_iff_lt_of_antitone {β : Type*} [Nonempty β] [Semila
   constructor <;> intro h ε hε
   · obtain ⟨n, hn⟩ := h (min 1 (ε / 2))
       (lt_min_iff.mpr ⟨zero_lt_one, (ENNReal.div_pos_iff.mpr ⟨hε.ne', by finiteness⟩)⟩)
-    · refine ⟨n, hn.trans_lt ?_⟩
-      by_cases hε_top : ε = ∞
-      · simp [hε_top]
-      refine (min_le_right _ _).trans_lt ?_
-      rw [ENNReal.div_lt_iff (Or.inr hε.ne') (Or.inr hε_top)]
-      conv_lhs => rw [← mul_one ε]
-      gcongr; simp
+    refine ⟨n, hn.trans_lt ?_⟩
+    by_cases hε_top : ε = ∞
+    · simp [hε_top]
+    refine (min_le_right _ _).trans_lt ?_
+    rw [ENNReal.div_lt_iff (Or.inr hε.ne') (Or.inr hε_top)]
+    conv_lhs => rw [← mul_one ε]
+    gcongr; simp
   · obtain ⟨n, hn⟩ := h ε hε
     exact ⟨n, hn.le⟩
 
@@ -374,9 +377,6 @@ theorem tendsto_finsetProd_of_ne_top {ι : Type*} {f : ι → α → ℝ≥0∞}
     · exact IH (fun i hi => h _ (Finset.mem_insert_of_mem hi)) fun i hi =>
         h' _ (Finset.mem_insert_of_mem hi)
     · exact Or.inr (h' _ (Finset.mem_insert_self _ _))
-
-@[deprecated (since := "2026-04-08")]
-alias tendsto_finset_prod_of_ne_top := tendsto_finsetProd_of_ne_top
 
 protected theorem continuousAt_const_mul {a b : ℝ≥0∞} (h : a ≠ ∞ ∨ b ≠ 0) :
     ContinuousAt (a * ·) b :=
@@ -560,11 +560,12 @@ variable [EMetricSpace β]
 open ENNReal Filter
 
 /-- In an emetric ball, the distance between points is everywhere finite -/
-theorem edist_ne_top_of_mem_ball {a : β} {r : ℝ≥0∞} (x y : eball a r) : edist x.1 y.1 ≠ ∞ :=
+theorem edist_ne_top_of_mem_ball {a : β} {r : ℝ≥0∞} (x y : eball a r) : edist x.val y.val ≠ ∞ :=
   ne_of_lt <|
     calc
-      edist x y ≤ edist a x + edist a y := edist_triangle_left x.1 y.1 a
-      _ < r + r := by rw [edist_comm a x, edist_comm a y]; exact ENNReal.add_lt_add x.2 y.2
+      edist x y ≤ edist a x + edist a y := edist_triangle_left x.val y.val a
+      _ < r + r := by
+        rw [edist_comm a x, edist_comm a y]; exact ENNReal.add_lt_add x.property y.property
       _ ≤ ∞ := le_top
 
 /-- Each ball in an extended metric space gives us a metric space, as the edist
@@ -575,7 +576,7 @@ def metricSpaceEMetricBall (a : β) (r : ℝ≥0∞) : MetricSpace (eball a r) :
 
 theorem nhds_eq_nhds_emetric_ball (a x : β) (r : ℝ≥0∞) (h : x ∈ eball a r) :
     𝓝 x = map ((↑) : eball a r → β) (𝓝 ⟨x, h⟩) :=
-  (map_nhds_subtype_coe_eq_nhds _ <| isOpen_eball.mem_nhds h).symm
+  (map_nhds_subtypeVal_eq_nhds _ <| isOpen_eball.mem_nhds h).symm
 
 end
 

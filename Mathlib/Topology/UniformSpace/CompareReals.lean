@@ -82,7 +82,7 @@ namespace CompareReals
 
 /-- Type wrapper around ℚ to make sure the absolute value uniform space instance is picked up
 instead of the metric space one. We proved in `Rat.uniformSpace_eq` that they are equal,
-but they are not definitionaly equal, so it would confuse the type class system (and probably
+but they are not definitionally equal, so it would confuse the type class system (and probably
 also human readers). -/
 def Q :=
   ℚ deriving CommRing, Inhabited

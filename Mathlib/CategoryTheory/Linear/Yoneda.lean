@@ -5,7 +5,11 @@ Authors: Kim Morrison
 -/
 module
 
+public import Mathlib.CategoryTheory.Linear.LinearFunctor
 public import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The Yoneda embedding for `R`-linear categories
@@ -13,9 +17,6 @@ public import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
 The Yoneda embedding for `R`-linear categories `C`,
 sends an object `X : C` to the `ModuleCat R`-valued presheaf on `C`,
 with value on `Y : Cᵒᵖ` given by `ModuleCat.of R (unop Y ⟶ X)`.
-
-TODO: `linearYoneda R C` is `R`-linear.
-TODO: In fact, `linearYoneda` itself is additive and `R`-linear.
 -/
 
 @[expose] public section
@@ -27,13 +28,15 @@ open Opposite CategoryTheory.Functor
 
 namespace CategoryTheory
 
+section Ring
+
 variable (R : Type w) [Ring R] {C : Type u} [Category.{v} C] [Preadditive C] [Linear R C]
 variable (C)
 
 /-- The Yoneda embedding for `R`-linear categories `C`
 sending an object `X : C` to the `ModuleCat R`-valued presheaf on `C`,
 with value on `Y : Cᵒᵖ` given by `ModuleCat.of R (unop Y ⟶ X)`. -/
-@[simps]
+@[simps, implicit_reducible]
 def linearYoneda : C ⥤ Cᵒᵖ ⥤ ModuleCat R where
   obj X :=
     { obj := fun Y => ↧(unop Y ⟶ X)
@@ -45,7 +48,7 @@ def linearYoneda : C ⥤ Cᵒᵖ ⥤ ModuleCat R where
 /-- The Yoneda embedding for `R`-linear categories `C`,
 sending an object `Y : Cᵒᵖ` to the `ModuleCat R`-valued copresheaf on `C`,
 with value on `X : C` given by `ModuleCat.of R (unop Y ⟶ X)`. -/
-@[simps]
+@[simps, implicit_reducible]
 def linearCoyoneda : Cᵒᵖ ⥤ C ⥤ ModuleCat R where
   obj Y :=
     { obj := fun X => ↧(unop Y ⟶ X)
@@ -98,5 +101,17 @@ instance faithful_linearYoneda : (linearYoneda R C).Faithful :=
 
 instance faithful_linearCoyoneda : (linearCoyoneda R C).Faithful :=
   Functor.Faithful.of_comp_eq (whiskering_linearCoyoneda R C)
+
+end Ring
+
+section CommRing
+
+variable (R : Type w) [CommRing R] {C : Type u} [Category.{v} C] [Preadditive C] [Linear R C]
+
+instance (X : C) : ((linearYoneda R C).obj X).Linear R where
+
+instance (Y : Cᵒᵖ) : ((linearCoyoneda R C).obj Y).Linear R where
+
+end CommRing
 
 end CategoryTheory

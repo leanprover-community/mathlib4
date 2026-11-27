@@ -9,6 +9,9 @@ public import Mathlib.GroupTheory.Submonoid.Inverses
 public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.Localization.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Submonoid of inverses
 
@@ -22,6 +25,7 @@ public import Mathlib.RingTheory.Localization.Defs
 See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
 
 ## Tags
+
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
 -/

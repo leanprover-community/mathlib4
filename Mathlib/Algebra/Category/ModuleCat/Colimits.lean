@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Category.Grp.Colimits
 public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.LinearAlgebra.DFinsupp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of R-modules has all colimits.
 
@@ -163,7 +166,6 @@ def finsuppCocone : Cofan fun _ : ι ↦ ModuleCat.of R M :=
   Cofan.mk ↧(ι →₀ M) fun i ↦
     ModuleCat.ofHom (Finsupp.lsingle i (R := R) (M := ModuleCat.of R M))
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The concrete coproduct cone is colimiting. -/
 noncomputable

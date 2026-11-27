@@ -164,11 +164,11 @@ theorem lift_injective : Injective lift.{u, v} :=
 theorem lift_inj {a b : Cardinal.{u}} : lift.{v, u} a = lift.{v, u} b ↔ a = b :=
   lift_injective.eq_iff
 
-@[simp]
+@[simp, gcongr]
 theorem lift_le {a b : Cardinal.{v}} : lift.{u} a ≤ lift.{u} b ↔ a ≤ b :=
   liftInitialSeg.le_iff_le
 
-@[simp]
+@[simp, gcongr]
 theorem lift_lt {a b : Cardinal.{u}} : lift.{v, u} a < lift.{v, u} b ↔ a < b :=
   liftInitialSeg.lt_iff_lt
 
@@ -295,9 +295,6 @@ instance canonicallyOrderedAdd : CanonicallyOrderedAdd Cardinal.{u} where
   le_self_add a b := (add_zero a).ge.trans <| add_right_mono bot_le
   le_add_self a b := (zero_add a).ge.trans <| add_left_mono bot_le
 
-@[deprecated zero_le +typeChanged (since := "2026-04-17")]
-protected theorem zero_le (a : Cardinal) : 0 ≤ a := zero_le
-
 instance isOrderedRing : IsOrderedRing Cardinal.{u} :=
   CanonicallyOrderedAdd.toIsOrderedRing
 
@@ -380,10 +377,6 @@ theorem sInf_empty : sInf (∅ : Set Cardinal.{u}) = 0 :=
 /-- Note that the successor of `c` is not the same as `c + 1` except in the case of finite `c`. -/
 @[no_expose] instance : SuccOrder Cardinal := .ofLinearWellFoundedLT _
 
-@[deprecated Order.succ_eq_csInf +typeChanged (since := "2026-03-21")]
-theorem succ_def (c : Cardinal) : succ c = sInf { c' | c < c' } :=
-  Order.succ_eq_csInf c
-
 theorem succ_pos : ∀ c : Cardinal, 0 < succ c := by simp
 
 @[simp]
@@ -398,10 +391,6 @@ theorem add_one_le_of_lt {a b : Cardinal} (h : a < b) : a + 1 ≤ b := by
   obtain ⟨b, hb⟩ := hf
   rw [← mk_option]
   exact (f.optionElim b hb).cardinal_le
-
-@[deprecated add_one_le_of_lt +typeChanged (since := "2026-03-21")]
-theorem add_one_le_succ (c : Cardinal) : c + 1 ≤ succ c :=
-  add_one_le_of_lt (lt_succ c)
 
 @[simp]
 theorem lift_succ (a) : lift.{v, u} (succ a) = succ (lift.{v, u} a) := by
@@ -440,9 +429,6 @@ See `IsStrongPrelimit` for a version including `0`. -/
 structure IsStrongLimit (c : Cardinal) : Prop where
   ne_zero : c ≠ 0
   protected isStrongPrelimit : IsStrongPrelimit c
-
-@[deprecated (since := "2026-03-31")]
-alias IsStrongLimit.two_power_lt := IsStrongLimit.isStrongPrelimit
 
 protected theorem IsStrongPrelimit.isSuccPrelimit {c} (hc : IsStrongPrelimit c) :
     IsSuccPrelimit c :=
@@ -502,7 +488,7 @@ theorem mk_le_mk_mul_of_mk_preimage_le {c : Cardinal} (f : α → β) (hf : ∀ 
 
 theorem lift_mk_le_lift_mk_mul_of_lift_mk_preimage_le {α : Type u} {β : Type v} {c : Cardinal}
     (f : α → β) (hf : ∀ b : β, lift.{v} #(f ⁻¹' {b}) ≤ c) : lift.{v} #α ≤ lift.{u} #β * c :=
-  (mk_le_mk_mul_of_mk_preimage_le fun x : ULift.{v} α => ULift.up.{u} (f x.1)) <|
+  (mk_le_mk_mul_of_mk_preimage_le fun x : ULift.{v} α => ULift.up.{u} (f x.down)) <|
     ULift.forall.2 fun b =>
       (mk_congr <|
             (Equiv.ulift.image _).trans
@@ -554,25 +540,7 @@ lemma exists_wellFoundedGT : ∃ (_ : LinearOrder α), WellFoundedGT α := by
   classical
   exact ⟨linearOrderOfSTO (Function.swap WellOrderingRel), WellOrderingRel.isWellOrder.wf⟩
 
-@[deprecated (since := "2026-04-12")] alias exists_wellOrder := exists_wellFoundedLT
-
 namespace Cardinal
-
-@[deprecated exists_eq_ciSup_of_not_isSuccPrelimit +typeChanged (since := "2026-04-13")]
-lemma exists_eq_of_iSup_eq_of_not_isSuccPrelimit
-    {ι : Type u} (f : ι → Cardinal.{v}) (ω : Cardinal.{v})
-    (hω : ¬ IsSuccPrelimit ω)
-    (h : ⨆ i : ι, f i = ω) : ∃ i, f i = ω := by
-  subst h
-  exact exists_eq_ciSup_of_not_isSuccPrelimit hω
-
-@[deprecated exists_eq_ciSup_of_not_isSuccLimit +typeChanged (since := "2026-04-13")]
-lemma exists_eq_of_iSup_eq_of_not_isSuccLimit
-    {ι : Type u} [hι : Nonempty ι] (f : ι → Cardinal.{v}) (hf : BddAbove (range f))
-    {c : Cardinal.{v}} (hc : ¬ IsSuccLimit c)
-    (h : ⨆ i, f i = c) : ∃ i, f i = c := by
-  subst h
-  exact exists_eq_ciSup_of_not_isSuccLimit hf hc
 
 /-! ### Indexed cardinal `prod` -/
 
@@ -584,7 +552,7 @@ theorem sum_lt_prod {ι} (f g : ι → Cardinal) (H : ∀ i, f i < g i) : sum f 
       rw [mk_out]
       exact (H i).ne_bot
     let G := invFun F
-    have sG : Surjective G := invFun_surjective F.2
+    have sG : Surjective G := invFun_surjective F.inj'
     choose C hc using
       show ∀ i, ∃ b, ∀ a, G ⟨i, a⟩ i ≠ b by
         intro i

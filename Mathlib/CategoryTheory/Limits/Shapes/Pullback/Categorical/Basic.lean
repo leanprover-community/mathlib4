@@ -37,11 +37,13 @@ equivalent to `CatCommSqOver F G X`.
   `CategoricalPullback (whiskeringRight X A B|>.obj F) (whiskeringRight X C B|>.obj G)`.
 
 ## References
+
 * [Kerodon: section 1.4.5.2](https://kerodon.net/tag/032Y)
 * [Niles Johnson, Donald Yau, *2-Dimensional Categories*](https://arxiv.org/abs/2002.06055),
   example 5.3.9, although we take a slightly different (equivalent) model of the object.
 
-## TODOs:
+## TODO
+
 * 2-functoriality of the construction with respect to "transformation of categorical
   cospans".
 * Full equivalence-invariance of the notion (follows from suitable 2-functoriality).
@@ -286,7 +288,6 @@ def e :
     sndFunctor F G X ⋙ (whiskeringRight X C B).obj G :=
   NatIso.ofComponents (fun S ↦ S.iso)
 
-set_option backward.defeqAttrib.useBackward true in
 variable {F G X} in
 /-- A constructor for isomorphisms in CatCommSqOver -/
 @[simps!]
@@ -464,7 +465,6 @@ variable {A₁ : Type u₄} {B₁ : Type u₅} {C₁ : Type u₆}
   [Category.{v₄} A₁] [Category.{v₅} B₁] [Category.{v₆} C₁]
   {F₁ : A₁ ⥤ B₁} {G₁ : C₁ ⥤ B₁}
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Functorially transform a `CatCommSqOver F G X` by whiskering it with a
 `CatCospanTransform`. -/
 @[simps!]
@@ -606,7 +606,6 @@ variable
     {X : Type u₄} {Y : Type u₅} {Z : Type u₆}
     [Category.{v₄} X] [Category.{v₅} Y] [Category.{v₆} Z]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- A functor `U : X ⥤ Y` (functorially) induces a functor
 `CatCommSqOver F G Y ⥤ CatCommSqOver F G X` by whiskering left the underlying
 categorical commutative square by U. -/

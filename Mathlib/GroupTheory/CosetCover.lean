@@ -44,7 +44,6 @@ set of all minimal polynomials (not proved here).
 [1] [Neumann-1954], *Groups Covered By Permutable Subsets*, Lemma 4.1
 [2] <https://mathoverflow.net/a/17398/3332>
 [3] <http://alpha.math.uga.edu/~pete/Neumann54.pdf>
-
 -/
 
 public section
@@ -72,7 +71,7 @@ theorem exists_leftTransversal_of_FiniteIndex
   · rintro ⟨⟨y, hy⟩, -, d, h, rfl⟩
     exact H.mul_mem hy (hD_le_H h)
   · intro hx
-    exact ⟨_, (ht.1.toLeftFun ⟨x, hx⟩).2, _,
+    exact ⟨_, (ht.1.toLeftFun ⟨x, hx⟩).property, _,
       ht.1.inv_toLeftFun_mul_mem ⟨x, hx⟩, mul_inv_cancel_left _ _⟩
 
 variable {ι : Type*} {s : Finset ι} {H : Subgroup G} {g : ι → G}
@@ -184,7 +183,7 @@ theorem exists_finiteIndex_of_leftCoset_cover_aux [DecidableEq (Subgroup G)]
     -- If `G` is the union of the cosets of `H k` in the new covering, we are done.
     by_cases hcovers' : ⋃ i ∈ Finset.filter (K · = K k) Finset.univ, f i • (K i : Set G) = Set.univ
     · rw [Set.iUnion₂_congr fun i hi => by rw [(Finset.mem_filter.mp hi).right]] at hcovers'
-      exact ⟨k.1, Finset.mem_of_mem_filter k.1.1 k.1.2, hK k,
+      exact ⟨k.1, Finset.mem_of_mem_filter k.1.val k.1.property, hK k,
         finiteIndex_of_leftCoset_cover_const hcovers'⟩
     -- Otherwise, by the induction hypothesis, one of the subgroups `H k ≠ H j` has finite index.
     have hn' : (Finset.univ.image K).card < n := hn ▸ by
@@ -193,7 +192,7 @@ theorem exists_finiteIndex_of_leftCoset_cover_aux [DecidableEq (Subgroup G)]
       rw [mem_image_univ_iff_mem_range, Set.mem_range]
       exact fun ⟨k, hk⟩ => hk ▸ hK' k
     have ⟨k', hk'⟩ := ih _ hn' hcovers k (Finset.mem_univ k) hcovers' rfl
-    exact ⟨k'.1.1, Finset.mem_of_mem_filter k'.1.1 k'.1.2, hK k', hk'.2.2⟩
+    exact ⟨k'.1.val, Finset.mem_of_mem_filter k'.1.val k'.1.property, hK k', hk'.2.2⟩
 
 /-- Let the group `G` be the union of finitely many left cosets `g i • H i`.
 Then at least one subgroup `H i` has finite index in `G`. -/
@@ -230,14 +229,14 @@ theorem leftCoset_cover_filter_FiniteIndex_aux
   choose t ht using fun i hi hfi =>
     exists_leftTransversal_of_FiniteIndex (H := H i) (hD_le hi hfi)
   -- We construct a cover of `G` by the cosets of subgroups of infinite index and of `D`.
-  let κ := (i : s) × { x // x ∈ if h : (H i.1).FiniteIndex then t i.1 i.2 h else {1} }
+  let κ := (i : s) × { x // x ∈ if h : (H i.val).FiniteIndex then t i.val i.property h else {1} }
   let f (k : κ) : G := g k.1 * k.2.val
   let K (k : κ) : Subgroup G := if (H k.1).FiniteIndex then D else H k.1
   have hcovers' : ⋃ k ∈ Finset.univ, f k • (K k : Set G) = Set.univ := by
     rw [← s.filter_union_filter_not_eq (fun i => (H i).FiniteIndex)] at hcovers
     rw [← hcovers, ← Finset.univ.filter_union_filter_not_eq (fun k => (H k.1).FiniteIndex),
       Finset.set_biUnion_union, Finset.set_biUnion_union]
-    apply congrArg₂ (· ∪ ·) <;> rw [Set.iUnion_sigma, Set.iUnion_subtype] <;>
+    congr <;> rw [Set.iUnion_sigma, Set.iUnion_subtype] <;>
         refine Set.iUnion_congr fun i => ?_
     · by_cases hfi : (H i).FiniteIndex <;>
         simp [← Set.smul_set_iUnion₂, Set.iUnion_subtype, ← leftCoset_assoc, f, K, ht, hfi]
@@ -245,7 +244,7 @@ theorem leftCoset_cover_filter_FiniteIndex_aux
         simp [Set.iUnion_subtype, f, K, hfi]
   -- There is at least one coset of a subgroup of finite index in the original covering.
   -- Therefore a coset of `D` occurs in the new covering.
-  have ⟨k, hkfi, hk⟩ : ∃ k, (H k.1.1).FiniteIndex ∧ K k = D :=
+  have ⟨k, hkfi, hk⟩ : ∃ k, (H k.1.val).FiniteIndex ∧ K k = D :=
     have ⟨j, hj, hjfi⟩ := exists_finiteIndex_of_leftCoset_cover hcovers
     have ⟨x, hx⟩ : (t j hj hjfi).Nonempty := Finset.nonempty_coe_sort.mp
       (ht j hj hjfi).1.leftQuotientEquiv.symm.nonempty
@@ -257,7 +256,7 @@ theorem leftCoset_cover_filter_FiniteIndex_aux
     by_contra! h
     obtain ⟨i, -, hi⟩ :=
       exists_finiteIndex_of_leftCoset_cover_aux hcovers' k (Finset.mem_univ k) h
-    by_cases hfi : (H i.1.1).FiniteIndex <;> simp [K, hfi, hkfi] at hi
+    by_cases hfi : (H i.1.val).FiniteIndex <;> simp [K, hfi, hkfi] at hi
   -- The result follows by restoring the original cosets of subgroups of finite index
   -- from the cosets of `D` into which they have been decomposed.
   have hHD (i) : ¬(H i).FiniteIndex → H i ≠ D := fun hfi hD' => (hD' ▸ hfi) hD
@@ -268,9 +267,9 @@ theorem leftCoset_cover_filter_FiniteIndex_aux
       Finset.sum_sigma, Finset.sum_coe_sort_eq_attach]
     refine Finset.sum_congr rfl fun i _ => ?_
     by_cases hfi : (H i).FiniteIndex
-    · rw [← relIndex_mul_index (hD_le i.2 hfi), Nat.cast_mul, mul_comm,
+    · rw [← relIndex_mul_index (hD_le i.property hfi), Nat.cast_mul, mul_comm,
         mul_inv_cancel_right₀ (Nat.cast_ne_zero.mpr hfi.index_ne_zero)]
-      simpa [K, hfi] using! (ht i.1 i.2 hfi).1.card_left
+      simpa [K, hfi] using! (ht i.val i.property hfi).1.card_left
     · rw [of_not_not (FiniteIndex.mk.mt hfi), Nat.cast_zero, inv_zero, zero_mul]
       simpa [K, hfi] using! hHD i hfi
   refine ⟨?_, ?_, ?_⟩
@@ -293,7 +292,7 @@ theorem leftCoset_cover_filter_FiniteIndex_aux
     -- We know the `f k • K k` are pairwise disjoint and need to prove that the `g i • H i` are.
     rw [Set.mem_ofPred_eq] at hi hj
     have hk' (i) (hi : i ∈ s ∧ (H i).FiniteIndex) (hi' : c ≤ g i • (H i : Set G)) :
-        ∃ (k : κ), k.1.1 = i ∧ K k = D ∧ x ∈ f k • (D : Set G) := by
+        ∃ (k : κ), k.1.val = i ∧ K k = D ∧ x ∈ f k • (D : Set G) := by
       rw [← (ht i hi.1 hi.2).2] at hi'
       suffices ∃ r : H i, r ∈ t i hi.1 hi.2 ∧ x ∈ (g i * r) • (D : Set G) by
         have ⟨r, hr, hxr⟩ := this
@@ -360,7 +359,7 @@ theorem exists_index_le_card_of_leftCoset_cover :
     | inl hindex =>
       rwa [hindex, Nat.cast_zero, inv_zero, inv_pos, Nat.cast_pos]
     | inr hindex =>
-      exact inv_strictAnti₀ (by exact_mod_cast hs') (by exact_mod_cast h i hi ⟨hindex⟩)
+      exact inv_strictAnti₀ (mod_cast hs') (mod_cast h i hi ⟨hindex⟩)
   apply (Finset.sum_lt_sum_of_nonempty hs hlt).trans_eq
   rw [Finset.sum_const, nsmul_eq_mul, mul_inv_cancel₀ (Nat.cast_ne_zero.mpr hs'.ne')]
 

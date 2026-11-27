@@ -8,13 +8,15 @@ module
 public import Mathlib.Algebra.Group.Defs
 public import Mathlib.Algebra.Notation.Bracket
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The bracket on a group given by commutator.
 
 ## Notation
 
 After `open scoped commutatorElement`, `⁅g₁, g₂⁆` is syntax for `g₁ * g₂ * g₁⁻¹ * g₂⁻¹`.
-
 -/
 
 @[expose] public section

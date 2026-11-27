@@ -17,6 +17,7 @@ commonly presented by diagrams and natural transformations in `I ⥤ C`.
 
 
 ## References
+
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Proposition 6.1.15 (though
   our proof is more direct).
 -/
@@ -104,10 +105,9 @@ def ϕ : F₁ f g P₁ P₂ ⟶ F₂ f g P₁ P₂ where
   naturality _ _ h := by
     have := h.w
     simp only [prod'_map, Functor.comp_map, Prod.hom_ext_iff,
-      CostructuredArrow.hom_eq_iff] at this
+      CostructuredArrow.ext_iff] at this
     exact this.1
 
-set_option backward.defeqAttrib.useBackward true in
 theorem hf : f = IsColimit.map (isColimit₁ f g P₁ P₂)
     (Cocone.mk B (ι₂ f g P₁ P₂)) (whiskerRight (ϕ f g P₁ P₂) yoneda) := by
   refine (isColimit₁ f g P₁ P₂).hom_ext (fun i => ?_)
@@ -120,10 +120,9 @@ def ψ : F₁ f g P₁ P₂ ⟶ F₂ f g P₁ P₂ where
   naturality _ _ h := by
     have := h.w
     simp only [prod'_map, Functor.comp_map, Prod.hom_ext_iff,
-      CostructuredArrow.hom_eq_iff] at this
+      CostructuredArrow.ext_iff] at this
     exact this.2
 
-set_option backward.defeqAttrib.useBackward true in
 theorem hg : g = IsColimit.map (isColimit₁ f g P₁ P₂)
     (Cocone.mk B (ι₂ f g P₁ P₂)) (whiskerRight (ψ f g P₁ P₂) yoneda) := by
   refine (isColimit₁ f g P₁ P₂).hom_ext (fun i => ?_)

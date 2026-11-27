@@ -36,7 +36,6 @@ holomorphic vector/line bundles, including:
 Another direction would be to develop the relationship with sheaf theory, building the sheaves of
 holomorphic and meromorphic functions on a complex manifold and proving algebraic results about the
 stalks, such as the Weierstrass preparation theorem.
-
 -/
 
 public section
@@ -88,7 +87,7 @@ that `‖f x‖` takes its maximum value on `U` at `c ∈ U`. Then `‖f x‖ = 
 theorem norm_eqOn_of_isPreconnected_of_isMaxOn {f : M → F} {U : Set M} {c : M}
     (hd : MDiff[U] f) (hc : IsPreconnected U) (ho : IsOpen U)
     (hcU : c ∈ U) (hm : IsMaxOn (norm ∘ f) U c) : EqOn (norm ∘ f) (const M ‖f c‖) U := by
-  set V := {z ∈ U | ‖f z‖ = ‖f c‖}
+  set V := U ∩ {z | ‖f z‖ = ‖f c‖}
   suffices U ⊆ V from fun x hx ↦ (this hx).2
   have hVo : IsOpen V := by
     refine isOpen_iff_mem_nhds.2 fun x hx ↦ inter_mem (ho.mem_nhds hx.1) ?_
@@ -128,7 +127,7 @@ theorem apply_eq_of_isPreconnected_isCompact_isOpen {f : M → F} {U : Set M} {a
   wlog hb₀ : f b = 0 generalizing f
   -- TODO: Add `MDifferentiableOn.sub` etc
   · have hd' : MDiff[U] (f · - f b) := fun x hx ↦
-      ⟨(hd x hx).1.sub continuousWithinAt_const, (hd x hx).2.sub_const _⟩
+      ⟨(hd x hx).continuousWithinAt.sub continuousWithinAt_const, (hd x hx).prop.sub_const _⟩
     simpa [sub_eq_zero] using this hd' (sub_self _)
   rcases hc.exists_isMaxOn ⟨a, ha⟩ hd.continuousOn.norm with ⟨c, hcU, hc⟩
   have : ∀ x ∈ U, ‖f x‖ = ‖f c‖ :=

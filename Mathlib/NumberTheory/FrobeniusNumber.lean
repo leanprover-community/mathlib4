@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.Ideal.NatInt
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Frobenius Number
 
@@ -22,7 +25,7 @@ largest positive integer that cannot be expressed as a sum of nonnegative multip
 integers. Here we show the Frobenius number of two relatively prime integers `m` and `n` greater
 than 1 is `m * n - m - n`. This result is also known as the Chicken McNugget Theorem.
 
-## Implementation Notes
+## Implementation notes
 
 First we define Frobenius numbers in general using `IsGreatest` and `AddSubmonoid.closure`. Then
 we proceed to compute the Frobenius number of `m` and `n`.
@@ -151,9 +154,9 @@ theorem exists_mem_span_nat_finset_of_ge :
   -- It suffices to show `r + n` lies in the ℕ-span of `t`.
   obtain ⟨rx, hrx⟩ : setGcd s ∣ r := (dvd_mod_iff (setGcd_dvd_of_mem hxs)).mpr <|
     (Nat.dvd_add_right <| dvd_mul_of_dvd_right (Finset.dvd_sum fun i _ ↦
-      dvd_mul_of_dvd_right (setGcd_dvd_of_mem (hts i.2)) _) _).mp dvd
+      dvd_mul_of_dvd_right (setGcd_dvd_of_mem (hts i.property)) _) _).mp dvd
   convert
-    (sum_mem fun i _ ↦ mul_mem_left _ _ (subset_span i.2) :
+    (sum_mem fun i _ ↦ mul_mem_left _ _ (subset_span i.property) :
       -- an explicit ℕ-linear combination of elements of `t` that is equal to `r + n`
        ∑ i : t, (if 0 ≤ a i then rx else x / setGcd s - rx) * (a i).natAbs * i ∈ span t)
   simp_rw [← Int.natCast_inj, hrx, n, Finset.mul_sum, mul_comm _ rx, cast_add, cast_sum, cast_mul,

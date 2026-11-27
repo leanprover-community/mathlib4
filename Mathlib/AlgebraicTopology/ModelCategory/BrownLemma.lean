@@ -26,8 +26,8 @@ morphisms `i`, `p` and `s` are weak equivalences.
 between fibrant objects.)
 
 ## References
-* [Brown, Kenneth S., *Abstract homotopy theory and generalized sheaf cohomology*, §I.1][brown-1973]
 
+* [Brown, Kenneth S., *Abstract homotopy theory and generalized sheaf cohomology*, §I.1][brown-1973]
 -/
 
 @[expose] public section

@@ -9,6 +9,8 @@ public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 public import Mathlib.RingTheory.Ideal.GoingUp
 public import Mathlib.RingTheory.Spectrum.Prime.RingHom
 
+import Mathlib.RingTheory.Flat.Localization
+
 /-!
 # Properties of faithfully flat algebras
 
@@ -33,7 +35,6 @@ Conversely, let `B` be a flat `A`-algebra:
 - `Module.FaithfullyFlat.of_comap_surjective`: `B` is faithfully flat over `A`,
   if the induced map on prime spectra is surjective.
 - `Module.FaithfullyFlat.of_flat_of_isLocalHom`: flat + local implies faithfully flat
-
 -/
 
 public section
@@ -64,15 +65,21 @@ lemma Module.FaithfullyFlat.of_flat_of_isLocalHom [IsLocalRing A] [IsLocalRing B
   by_contra eqt
   have : Submodule.restrictScalars A (Ideal.map (algebraMap A B) (IsLocalRing.maximalIdeal A)) ≤
       Submodule.restrictScalars A (IsLocalRing.maximalIdeal B) :=
-    ((IsLocalRing.local_hom_TFAE (algebraMap A B)).out 1 3).mp ‹_›
+    ((IsLocalRing.local_hom_tfae (algebraMap A B)).out 1 3).mp ‹_›
   rw [eqt, top_le_iff, Submodule.restrictScalars_eq_top_iff] at this
   exact Ideal.IsPrime.ne_top' this
+
+instance [Module.Flat A B] (p : Ideal A) (q : Ideal B) [p.IsPrime] [q.IsPrime] [q.LiesOver p]
+    [Algebra (Localization.AtPrime p) (Localization.AtPrime q)]
+    [IsScalarTower A (Localization.AtPrime p) (Localization.AtPrime q)] :
+    Module.FaithfullyFlat (Localization.AtPrime p) (Localization.AtPrime q) :=
+  Module.FaithfullyFlat.of_flat_of_isLocalHom
 
 instance Module.FaithfullyFlat.of_isIntegral_of_isDomain [IsDomain B] [Module.Flat A B]
     [Algebra.IsIntegral A B] [FaithfulSMul A B] :
     Module.FaithfullyFlat A B := by
   refine Module.FaithfullyFlat.of_comap_surjective fun P ↦ ?_
-  obtain ⟨P, hP₁, hP₂⟩ := Ideal.exists_ideal_over_prime_of_isIntegral_of_isDomain P.1 (S := B)
+  obtain ⟨P, hP₁, hP₂⟩ := Ideal.exists_ideal_over_prime_of_isIntegral_of_isDomain P.asIdeal (S := B)
     (by simp [(RingHom.injective_iff_ker_eq_bot _).mp (FaithfulSMul.algebraMap_injective A B)])
   exact ⟨⟨P, hP₁⟩, PrimeSpectrum.ext_iff.mpr hP₂⟩
 
@@ -90,7 +97,7 @@ lemma Module.FaithfullyFlat.tensorProduct_mk_injective (M : Type*) [AddCommGroup
     apply TensorProduct.ext'
     intro x y
     simp
-  rw [this, coe_comp, LinearEquiv.coe_coe, EmbeddingLike.comp_injective]
+  rw [this, coe_comp, LinearEquiv.coe_toLinearMap, EmbeddingLike.comp_injective]
   exact Algebra.TensorProduct.mk_one_injective_of_isScalarTower _
 
 instance Module.FaithfullyFlat.faithfulSMul : FaithfulSMul A B := by
@@ -120,7 +127,7 @@ lemma Ideal.comap_map_eq_self_of_faithfullyFlat (I : Ideal A) :
   have : ((quotIdealMapEquivTensorQuot B I).symm.toLinearEquiv.toLinearMap.restrictScalars _ ∘ₗ
       TensorProduct.mk A B (A ⧸ I) 1) x = 0 := by
     simp [← Algebra.algebraMap_eq_smul_one, hx]
-  simp [this]
+  simpa using this
 
 /-- If `B` is a faithfully-flat `A`-algebra, every ideal in `A` is the preimage of some ideal
 in `B`. -/

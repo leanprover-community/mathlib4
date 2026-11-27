@@ -9,13 +9,15 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
 public import Mathlib.CategoryTheory.Limits.Preorder
 public import Mathlib.CategoryTheory.Limits.Set
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The evaluation functor on subcomplexes
 
 We define an evaluation functor `SSet.Subcomplex.evaluation : X.Subcomplex ⥤ Set (X.obj j)`
 when `X : SSet` and `j : SimplexCategoryᵒᵖ`. We use it to show that the functor
 `Subcomplex.toSSetFunctor : X.Subcomplex ⥤ SSet` preserves filtered colimits.
-
 -/
 
 @[expose] public section

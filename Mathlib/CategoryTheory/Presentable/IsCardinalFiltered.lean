@@ -22,8 +22,8 @@ A preordered type `J` is a `κ`-filtered category (i.e. `κ`-directed set)
 if any subset of `J` of cardinality `< κ` has an upper bound.
 
 ## References
-* [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 
+* [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 -/
 
 @[expose] public section
@@ -166,8 +166,6 @@ lemma IsCardinalFiltered.nonempty (J : Type u) [Category.{v} J]
   have := isFiltered_of_isCardinalFiltered J κ
   IsFiltered.nonempty
 
-attribute [local instance] Cardinal.fact_isRegular_aleph0
-
 lemma isCardinalFiltered_aleph0_iff (J : Type u) [Category.{v} J] :
     IsCardinalFiltered J Cardinal.aleph0.{w} ↔ IsFiltered J := by
   constructor
@@ -227,7 +225,6 @@ instance isCardinalFiltered_under
               dsimp at this ⊢
               simp only [reassoc_of% this, Category.comp_id] } }⟩
 
-set_option backward.defeqAttrib.useBackward true in
 instance isCardinalFiltered_prod (J₁ : Type u) (J₂ : Type u')
     [Category.{v} J₁] [Category.{v'} J₂] (κ : Cardinal.{w}) [Fact κ.IsRegular]
     [IsCardinalFiltered J₁ κ] [IsCardinalFiltered J₂ κ] :
@@ -287,7 +284,6 @@ lemma isCardinalFiltered_iff_aux₂ {ι : Type w} {j : ι → J} {k : J}
   obtain ⟨l, a, b, h⟩ := isCardinalFiltered_iff_aux₁ h₁ h₂ p hι
   exact ⟨l, b, fun i ↦ by grind⟩
 
-set_option backward.defeqAttrib.useBackward true in
 variable (J κ) in
 /-- A category is `κ`-filtered iff
 1. any family of objects of cardinality `< κ` admits a map towards a common object, and
@@ -374,7 +370,6 @@ lemma IsCardinalFiltered.of_final
       exact ⟨F.obj (IsFiltered.max j' k'), b ≫ F.map (IsFiltered.rightToMax _ _),
         a ≫ F.map (IsFiltered.leftToMax _ _), by simp⟩
 
-set_option backward.defeqAttrib.useBackward true in
 lemma Limits.IsTerminal.isCardinalFiltered {J : Type u} [Category.{v} J]
     {X : J} (hX : IsTerminal X) (κ : Cardinal.{w}) [Fact κ.IsRegular] :
     IsCardinalFiltered J κ where

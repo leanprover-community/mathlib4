@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Jeremy Avigad, Simon Hudon
 -/
 module
 
+public meta import Aesop
 public import Mathlib.Data.Set.Subsingleton
 public import Mathlib.Tactic.ToAdditive
 
@@ -21,6 +22,7 @@ translate back and forth between a partial value with a decidable domain and an 
 `Option α` and `Part α` are classically equivalent. In general, `Part α` is bigger than `Option α`.
 
 ## Main declarations
+
 `Option`-like declarations:
 * `Part.none`: The partial value whose domain is `False`.
 * `Part.some a`: The partial value whose domain is `True` and whose value is `a`.
@@ -41,6 +43,7 @@ Other:
 * `Part.unwrap`: Gets the value of a partial value regardless of its domain. Unsound.
 
 ## Notation
+
 For `a : α`, `o : Part α`, `a ∈ o` means that `o` is defined and equal to `a`. Formally, it means
 `o.Dom` and `o.get _ = a`.
 -/
@@ -98,6 +101,7 @@ theorem mem_eq (a : α) (o : Part α) : (a ∈ o) = ∃ h, o.get h = a :=
 theorem dom_iff_mem : ∀ {o : Part α}, o.Dom ↔ ∃ y, y ∈ o
   | ⟨_, f⟩ => ⟨fun h => ⟨f h, h, rfl⟩, fun ⟨_, h, rfl⟩ => h⟩
 
+@[simp, grind →]
 theorem get_mem {o : Part α} (h) : get o h ∈ o :=
   ⟨_, rfl⟩
 
@@ -130,9 +134,11 @@ def some (a : α) : Part α :=
 theorem some_dom (a : α) : (some a).Dom :=
   trivial
 
+@[grind <=]
 theorem mem_unique : ∀ {a b : α} {o : Part α}, a ∈ o → b ∈ o → a = b
   | _, _, ⟨_, _⟩, ⟨_, rfl⟩, ⟨_, rfl⟩ => rfl
 
+@[grind <=]
 theorem mem_right_unique : ∀ {a : α} {o p : Part α}, a ∈ o → a ∈ p → o = p
   | _, _, _, ⟨ho, _⟩, ⟨hp, _⟩ => ext' (iff_of_true ho hp) (by simp [*])
 
@@ -526,7 +532,7 @@ theorem bind_some_right (x : Part α) : x.bind some = x := by
 theorem pure_eq_some (a : α) : pure a = some a :=
   rfl
 
-@[simp]
+@[deprecated pure_eq_some (since := "2026-11-24")]
 theorem ret_eq_some (a : α) : (return a : Part α) = some a :=
   rfl
 

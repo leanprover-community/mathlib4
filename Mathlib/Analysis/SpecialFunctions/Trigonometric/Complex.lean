@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Complex trigonometric functions
 
@@ -88,7 +91,7 @@ theorem cos_eq_cos_iff {x y : ℂ} : cos x = cos y ↔ ∃ k : ℤ, y = 2 * k * 
       apply or_congr <;>
         simp only [field, sin_eq_zero_iff, eq_sub_iff_add_eq',
           sub_eq_iff_eq_add, mul_comm (2 : ℂ), mul_right_comm _ (2 : ℂ)]
-      constructor <;> · rintro ⟨k, rfl⟩; use -k; simp
+      constructor <;> rintro ⟨k, rfl⟩ <;> use -k <;> simp
     _ ↔ ∃ k : ℤ, y = 2 * k * π + x ∨ y = 2 * k * π - x := exists_or.symm
 
 theorem sin_eq_sin_iff {x y : ℂ} :
@@ -347,7 +350,7 @@ theorem tan_eq_zero_iff {θ : ℝ} : tan θ = 0 ↔ ∃ k : ℤ, k * π / 2 = θ
 
 theorem tan_eq_zero_iff' {θ : ℝ} (hθ : cos θ ≠ 0) : tan θ = 0 ↔ ∃ k : ℤ, k * π = θ := by
   revert hθ
-  exact_mod_cast @Complex.tan_eq_zero_iff' θ
+  exact mod_cast @Complex.tan_eq_zero_iff' θ
 
 theorem tan_ne_zero_iff {θ : ℝ} : tan θ ≠ 0 ↔ ∀ k : ℤ, k * π / 2 ≠ θ :=
   mod_cast @Complex.tan_ne_zero_iff θ
@@ -377,7 +380,7 @@ theorem sin_mul_sum_sin (n : ℕ) (a b : ℝ) :
 
 theorem sum_sin (n : ℕ) {a : ℝ} (h : ∀ k : ℤ, a ≠ k * (2 * π)) (b : ℝ) :
     ∑ i ∈ range n, sin (a * i + b) = sin (n * a / 2) * sin ((n - 1) * a / 2 + b) / sin (a / 2) := by
-  have h := Complex.sum_sin n (a := a) (by exact_mod_cast h) b
+  have h := Complex.sum_sin n (a := a) (mod_cast h) b
   exact_mod_cast congr($(h).re)
 
 theorem sin_mul_sum_cos (n : ℕ) (a b : ℝ) :
@@ -386,7 +389,7 @@ theorem sin_mul_sum_cos (n : ℕ) (a b : ℝ) :
 
 theorem sum_cos (n : ℕ) {a : ℝ} (h : ∀ k : ℤ, a ≠ k * (2 * π)) (b : ℝ) :
     ∑ i ∈ range n, cos (a * i + b) = sin (n * a / 2) * cos ((n - 1) * a / 2 + b) / sin (a / 2) := by
-  have h := Complex.sum_cos n (a := a) (by exact_mod_cast h) b
+  have h := Complex.sum_cos n (a := a) (mod_cast h) b
   exact_mod_cast congr($(h).re)
 
 end Real

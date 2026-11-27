@@ -28,7 +28,6 @@ algebra homomorphisms between the topological `R`-algebras `A` and `B` is denote
 
 See also `ContinuousAlgEquiv R A B`, denoted by `A ≃A[R] B`, for the type of isomorphisms between
 the topological `R`-algebras `A` and `B`.
-
 -/
 
 @[expose] public section
@@ -161,9 +160,6 @@ attribute [coe] ContinuousAlgHom.toAlgHom
 
 instance : Coe (A →A[R] B) (A →ₐ[R] B) where coe := toAlgHom
 
-@[deprecated "Now a syntactic equality" (since := "2026-04-29"), nolint synTaut]
-theorem toAlgHom_eq_coe (f : A →A[R] B) : f.toAlgHom = f := rfl
-
 @[simp, norm_cast]
 theorem coe_inj {f g : A →A[R] B} : (f : A →ₐ[R] B) = g ↔ f = g := by
   cases f; cases g; simp only [mk.injEq]
@@ -177,10 +173,10 @@ theorem coe_mk' (f : A →ₐ[R] B) (h) : (mk f h : A → B) = f := rfl
 theorem coe_coe (f : A →A[R] B) : ⇑(f : A →ₐ[R] B) = f := rfl
 
 instance : ContinuousMapClass (A →A[R] B) A B where
-  map_continuous f := f.2
+  map_continuous f := f.cont
 
 @[fun_prop]
-protected theorem continuous (f : A →A[R] B) : Continuous f := f.2
+protected theorem continuous (f : A →A[R] B) : Continuous f := f.cont
 
 protected theorem uniformContinuous {E₁ E₂ : Type*} [UniformSpace E₁] [UniformSpace E₂]
     [Ring E₁] [Ring E₂] [Algebra R E₁] [Algebra R E₂] [IsUniformAddGroup E₁]
@@ -342,7 +338,7 @@ variable {B : Type*} [Semiring B] [TopologicalSpace B] [Algebra R A] [Algebra R 
 
 /-- Composition of continuous algebra homomorphisms. -/
 def comp (g : B →A[R] C) (f : A →A[R] B) : A →A[R] C :=
-  ⟨(g : B →ₐ[R] C).comp (f : A →ₐ[R] B), g.2.comp f.2⟩
+  ⟨(g : B →ₐ[R] C).comp (f : A →ₐ[R] B), g.cont.comp f.cont⟩
 
 @[simp, norm_cast]
 theorem coe_comp (h : B →A[R] C) (f : A →A[R] B) :
@@ -402,7 +398,7 @@ variable {B : Type*} [Semiring B] [TopologicalSpace B] [Algebra R A] [Algebra R 
 /-- The Cartesian product of two continuous algebra morphisms as a continuous algebra morphism. -/
 protected def prod (f₁ : A →A[R] B) (f₂ : A →A[R] C) :
     A →A[R] B × C :=
-  ⟨(f₁ : A →ₐ[R] B).prod f₂, f₁.2.prodMk f₂.2⟩
+  ⟨(f₁ : A →ₐ[R] B).prod f₂, f₁.cont.prodMk f₂.cont⟩
 
 @[simp, norm_cast]
 theorem coe_prod (f₁ : A →A[R] B) (f₂ : A →A[R] C) :
@@ -525,7 +521,7 @@ theorem coe_rangeRestrict (f : A →A[R] B) :
 
 /-- `Subalgebra.val` as a `ContinuousAlgHom`. -/
 def _root_.Subalgebra.valA (p : Subalgebra R A) : p →A[R] A where
-  cont := continuous_subtype_val
+  cont := continuous_subtypeVal
   toAlgHom := p.val
 
 @[simp, norm_cast]
@@ -660,7 +656,7 @@ def Algebra.elemental (x : A) : Subalgebra R A :=
 
 namespace Algebra.elemental
 
-@[simp, aesop safe (rule_sets := [SetLike])]
+@[simp, aesop safe (rule_sets := [SetLike]), membership .]
 theorem self_mem (x : A) : x ∈ elemental R x :=
   le_topologicalClosure _ <| self_mem_adjoin_singleton R x
 

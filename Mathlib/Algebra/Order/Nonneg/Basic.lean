@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 public import Mathlib.Algebra.Ring.InjSurj
 public import Mathlib.Data.Nat.Cast.Order.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The type of nonnegative elements
 
@@ -20,7 +23,7 @@ Currently we only state instances and states some `simp`/`norm_cast` lemmas.
 
 When `α` is `ℝ`, this will give us some properties about `ℝ≥0`.
 
-## Implementation Notes
+## Implementation notes
 
 Instead of `{x : α // 0 ≤ x}` we could also use `Set.Ici (0 : α)`, which is definitionally equal.
 However, using the explicit subtype has a big advantage: when writing an element explicitly
@@ -64,7 +67,7 @@ theorem mk_eq_zero [Zero α] [Preorder α] {x : α} (hx : 0 ≤ x) :
   Subtype.ext_iff
 
 instance add [AddZeroClass α] [Preorder α] [AddLeftMono α] : Add (Nonneg α) :=
-  ⟨fun x y => ⟨x + y, add_nonneg x.2 y.2⟩⟩
+  ⟨fun x y => ⟨x + y, add_nonneg x.property y.property⟩⟩
 
 @[simp]
 theorem mk_add_mk [AddZeroClass α] [Preorder α] [AddLeftMono α] {x y : α}
@@ -124,7 +127,7 @@ section Mul
 variable [MulZeroClass α] [Preorder α] [PosMulMono α]
 
 instance mul : Mul (Nonneg α) where
-  mul x y := ⟨x * y, mul_nonneg x.2 y.2⟩
+  mul x y := ⟨x * y, mul_nonneg x.property y.property⟩
 
 @[simp, norm_cast]
 protected theorem coe_mul (a b : Nonneg α) :
@@ -152,7 +155,7 @@ def coeAddMonoidHom : Nonneg α →+ α :=
     map_zero' := Nonneg.coe_zero
     map_add' := Nonneg.coe_add }
 
-@[norm_cast]
+@[deprecated Nonneg.coe_nsmul (since := "2026-11-16")]
 theorem nsmul_coe (n : ℕ) (r : Nonneg α) :
     ↑(n • r) = n • (r : α) :=
   Nonneg.coeAddMonoidHom.map_nsmul _ _
@@ -206,7 +209,7 @@ section Pow
 variable [MonoidWithZero α] [Preorder α] [ZeroLEOneClass α] [PosMulMono α]
 
 instance pow : Pow (Nonneg α) ℕ where
-  pow x n := ⟨(x : α) ^ n, pow_nonneg x.2 n⟩
+  pow x n := ⟨(x : α) ^ n, pow_nonneg x.property n⟩
 
 @[simp, norm_cast]
 protected theorem coe_pow (a : Nonneg α) (n : ℕ) :
@@ -272,7 +275,7 @@ theorem toNonneg_of_nonneg {a : α} (h : 0 ≤ a) : toNonneg a = ⟨a, h⟩ := b
 
 @[simp]
 theorem toNonneg_coe {a : Nonneg α} : toNonneg (a : α) = a :=
-  toNonneg_of_nonneg a.2
+  toNonneg_of_nonneg a.property
 
 @[simp]
 theorem toNonneg_le {a : α} {b : Nonneg α} : toNonneg a ≤ b ↔ a ≤ b := by

@@ -8,13 +8,15 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.Basic
 public import Mathlib.CategoryTheory.Subfunctor.OfSection
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subcomplexes of a simplicial set
 
 Given a simplicial set `X`, this file defines the type `X.Subcomplex`
 of subcomplexes of `X` as an abbreviation for `Subfunctor X`.
 It also introduces a coercion from `X.Subcomplex` to `SSet`.
-
 -/
 
 @[expose] public section
@@ -66,6 +68,10 @@ abbrev ι (A : Subcomplex X) : Quiver.Hom (V := SSet) A X := Subfunctor.ι A
 
 instance (A : X.Subcomplex) : Mono A.ι :=
   inferInstanceAs (Mono (Subfunctor.ι A))
+
+@[ext]
+lemma hom_ext {A : X.Subcomplex} {f g : Y ⟶ A} (h : f ≫ A.ι = g ≫ A.ι) : f = g := by
+  simpa only [cancel_mono] using h
 
 section
 
@@ -186,7 +192,7 @@ abbrev range : Y.Subcomplex := Subfunctor.range f
 /-- The morphism `X ⟶ Subcomplex.range f` induced by `f : X ⟶ Y`. -/
 abbrev toRange : X ⟶ Subcomplex.range f := Subfunctor.toRange f
 
-@[simp, reassoc]
+@[reassoc]
 lemma toRange_ι : toRange f ≫ (Subcomplex.range f).ι = f := rfl
 
 @[simp]
@@ -226,7 +232,7 @@ lemma lift_ι : lift f hf ≫ B.ι = f := rfl
 
 @[simp]
 lemma lift_app_coe {n : SimplexCategoryᵒᵖ} (x : X.obj n) :
-    dsimp% ((lift f hf).app _ x).1 = f.app _ x := rfl
+    dsimp% ((lift f hf).app _ x).val = f.app _ x := rfl
 
 end
 
@@ -291,7 +297,6 @@ lemma image_comp {Z : SSet.{u}} (g : Y ⟶ Z) :
 lemma range_comp {Z : SSet.{u}} (g : Y ⟶ Z) :
     Subcomplex.range (f ≫ g) = (Subcomplex.range f).image g := by aesop
 
-set_option backward.defeqAttrib.useBackward true in
 lemma image_eq_range : A.image f = range (A.ι ≫ f) := by aesop
 
 lemma image_iSup {ι : Type*} (S : ι → X.Subcomplex) (f : X ⟶ Y) :
@@ -364,8 +369,8 @@ lemma image_le_image_iff (f : X ⟶ Y) [Mono f] {S₁ S₂ : X.Subcomplex} :
 lemma preimage_image_of_isIso (f : X ⟶ Y) (B : Y.Subcomplex) [IsIso f] :
     (B.preimage f).image f = B := by
   apply le_antisymm (B.image_preimage_le f)
-  · intro n y hy
-    exact ⟨(inv f).app _ y, by simpa [← NatIso.isIso_inv_app, ← NatTrans.comp_app_apply]⟩
+  intro n y hy
+  exact ⟨(inv f).app _ y, by simpa [← NatIso.isIso_inv_app, ← NatTrans.comp_app_apply]⟩
 
 lemma preimage_inv {X Y : SSet.{u}} (A : Subcomplex X) (f : X ⟶ Y) [IsIso f] :
     A.preimage (inv f) = A.image f := by

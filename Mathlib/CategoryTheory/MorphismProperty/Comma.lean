@@ -26,14 +26,13 @@ where the structural morphism satisfies `P` and where the horizontal morphisms s
 Common examples of the latter are e.g. the category of schemes étale (finite, affine, etc.)
 over a base `X`. Here `Q = ⊤`.
 
-## Implementation details
+## Implementation notes
 
 - We provide the general constructor `P.Comma L R Q W` to obtain `Over X` and `Under X` as
   special cases of the more general setup.
 
 - Most results are developed only in the case where `Q = ⊤` and `W = ⊤`, but the definition
   is setup in the general case to allow for a later generalization if needed.
-
 -/
 
 set_option backward.defeqAttrib.useBackward true
@@ -289,7 +288,6 @@ lemma inv_hom {X Y : P.Comma L R Q W} (f : X ⟶ Y) [IsIso f] : (inv f).hom = in
 
 variable (L R P Q W)
 
-set_option backward.defeqAttrib.useBackward true in
 instance [Q.RespectsIso] [W.RespectsIso] : (forget L R P Q W).ReflectsIsomorphisms where
   reflects f hf := by
     simp only [forget_obj, forget_map] at hf
@@ -331,13 +329,13 @@ variable [Q.IsMultiplicative] [Q'.IsMultiplicative] [W.IsMultiplicative] [W'.IsM
 
 /-- Weaken the conditions on all components. -/
 def changeProp : P.Comma L R Q W ⥤ P'.Comma L R Q' W' where
-  obj X := ⟨X.toComma, hP _ X.2⟩
-  map f := ⟨f.toCommaMorphism, hQ _ f.2, hW _ f.3⟩
+  obj X := ⟨X.toComma, hP _ X.prop⟩
+  map f := ⟨f.toCommaMorphism, hQ _ f.prop_hom_left, hW _ f.prop_hom_right⟩
 
 /-- Weakening the condition on the structure morphisms is fully faithful. -/
 def fullyFaithfulChangeProp :
     (changeProp (Q := Q) (W := W) L R hP le_rfl le_rfl).FullyFaithful where
-  preimage f := ⟨f.toCommaMorphism, f.2, f.3⟩
+  preimage f := ⟨f.toCommaMorphism, f.prop_hom_left, f.prop_hom_right⟩
 
 instance : (changeProp L R hP hQ hW).Faithful where
   map_injective {X Y} f g h := by ext : 1; congrm $(h).hom

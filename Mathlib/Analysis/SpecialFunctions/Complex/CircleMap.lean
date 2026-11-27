@@ -41,7 +41,9 @@ theorem circleMap_zero (R θ : ℝ) : circleMap 0 R θ = R * exp (θ * I) := zer
 theorem norm_circleMap_zero (R : ℝ) (θ : ℝ) : ‖circleMap 0 R θ‖ = |R| := by simp [circleMap]
 
 @[simp]
-theorem nnnorm_circleMap_zero (R : ℝ) (θ : ℝ) : ‖circleMap 0 R θ‖₊ = ‖R‖₊ := by simp [circleMap]
+theorem nnNorm_circleMap_zero (R : ℝ) (θ : ℝ) : ‖circleMap 0 R θ‖₊ = ‖R‖₊ := by simp [circleMap]
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_circleMap_zero := nnNorm_circleMap_zero
 
 theorem circleMap_notMem_ball (c : ℂ) (R : ℝ) (θ : ℝ) : circleMap c R θ ∉ ball c R := by
   simp [Complex.dist_eq, le_abs_self]
@@ -107,11 +109,11 @@ lemma circleMap_zero_inv (R θ : ℝ) : (circleMap 0 R θ)⁻¹ = circleMap 0 R�
 
 lemma circleMap_zero_pow (n : ℕ) (R θ : ℝ) :
     (circleMap 0 R θ) ^ n = circleMap 0 (R ^ n) (n * θ) := by
-  simp [circleMap_zero, mul_pow, ← Complex.exp_nat_mul, ← mul_assoc]
+  simp [circleMap_zero, mul_pow, ← Complex.exp_natCast_mul, ← mul_assoc]
 
 lemma circleMap_zero_zpow (n : ℤ) (R θ : ℝ) :
     (circleMap 0 R θ) ^ n = circleMap 0 (R ^ n) (n * θ) := by
-  simp [circleMap_zero, mul_zpow, ← exp_int_mul, ← mul_assoc]
+  simp [circleMap_zero, mul_zpow, ← Complex.exp_intCast_mul, ← mul_assoc]
 
 lemma conj_circleMap_zero (r θ : ℝ) :
     conj (circleMap 0 r θ) = circleMap 0 r (-θ) := by
@@ -126,6 +128,34 @@ lemma circleMap_zero_re (r θ : ℝ) : (circleMap 0 r θ).re = r * Real.cos θ :
 
 lemma circleMap_zero_im (r θ : ℝ) : (circleMap 0 r θ).im = r * Real.sin θ := by
   simp [circleMap_zero]
+
+@[simp] lemma circleMap_zero_norm_arg (z : ℂ) : circleMap 0 ‖z‖ z.arg = z := by
+  rw [circleMap_zero, norm_mul_exp_arg_mul_I]
+
+/--
+Law of cosines for the chord between two points `circleMap c r θ` and `circleMap c s φ`.
+-/
+lemma norm_circleMap_sub_circleMap_sq (c : ℂ) (r s θ φ : ℝ) :
+    ‖circleMap c r θ - circleMap c s φ‖ ^ 2 =
+      r ^ 2 + s ^ 2 - 2 * r * s * Real.cos (θ - φ) := by
+  suffices ‖circleMap 0 r θ - circleMap 0 s φ‖ ^ 2 = r ^ 2 + s ^ 2 - 2 * r * s * Real.cos (θ - φ) by
+    simpa [circleMap] using this ..
+  rw [← normSq_eq_norm_sq, normSq_sub, conj_circleMap_zero]
+  simp [circleMap_zero_mul, circleMap_zero_re, normSq_eq_norm_sq, sub_eq_add_neg, mul_assoc]
+
+/--
+Points of the circle `circleMap 0 r` keep distance at least `r * |sin ((θ - arg a) / 2)|` from any
+point `a`. The bound is sharp: equality holds for `a = 0` and `θ = π`.
+-/
+theorem mul_abs_sin_le_norm_circleMap_zero_sub (r θ : ℝ) (a : ℂ) :
+    r * |Real.sin ((θ - a.arg) / 2)| ≤ ‖circleMap 0 r θ - a‖ := by
+  obtain hr | hr := le_total r 0
+  · exact (mul_nonpos_of_nonpos_of_nonneg hr (abs_nonneg _)).trans (norm_nonneg _)
+  refine le_of_pow_le_pow_left₀ two_ne_zero (norm_nonneg _) ?_
+  conv_rhs => rw [← circleMap_zero_norm_arg a, norm_circleMap_sub_circleMap_sq]
+  rw [mul_pow, sq_abs, Real.sin_sq_eq_half_sub, mul_div_cancel₀ _ two_ne_zero]
+  nlinarith [Real.cos_le_one (θ - a.arg), Real.neg_one_le_cos (θ - a.arg), norm_nonneg a,
+    sq_nonneg (r - ‖a‖), mul_nonneg hr (norm_nonneg a)]
 
 lemma circleMap_pi_div_two (c : ℂ) (R : ℝ) : circleMap c R (π / 2) = c + R * I := by
   simp only [circleMap, ofReal_div, ofReal_ofNat, exp_pi_div_two_mul_I]

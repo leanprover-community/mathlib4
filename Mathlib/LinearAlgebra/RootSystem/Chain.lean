@@ -17,14 +17,14 @@ independent roots in finite crystallographic root pairings, these chains are alw
 of the form: `β - q • α, ..., β - α, β, β + α, ..., β + p • α` for natural numbers `p`, `q`, and the
 length, `p + q` is at most 3.
 
-## Main definitions / results:
+## Main definitions and statements
+
 * `RootPairing.chainTopCoeff`: the natural number `p` in the chain
   `β - q • α, ..., β - α, β, β + α, ..., β + p • α`
 * `RootPairing.chainTopCoeff`: the natural number `q` in the chain
   `β - q • α, ..., β - α, β, β + α, ..., β + p • α`
 * `RootPairing.root_add_zsmul_mem_range_iff`: every chain is an interval (aka unbroken).
 * `RootPairing.chainBotCoeff_add_chainTopCoeff_le`: every chain has length at most three.
-
 -/
 
 @[expose] public section
@@ -44,7 +44,7 @@ variable {P : RootPairing ι R M N} [P.IsCrystallographic] {i j : ι}
 to invoke this lemma directly. -/
 lemma setOfPred_root_add_zsmul_eq_Icc_of_linearIndependent
     (h : LinearIndependent R ![P.root i, P.root j]) :
-    ∃ᵉ (q ≤ 0) (p ≥ 0), {z : ℤ | P.root j + z • P.root i ∈ range P.root} = Icc q p := by
+    ∃ q ≤ 0, ∃ p ≥ 0, {z : ℤ | P.root j + z • P.root i ∈ range P.root} = Icc q p := by
   replace h := LinearIndependent.pair_iff.mp <| h.restrict_scalars' ℤ
   set S : Set ℤ := {z | P.root j + z • P.root i ∈ range P.root} with S_def
   have hS₀ : 0 ∈ S := by simp [S]

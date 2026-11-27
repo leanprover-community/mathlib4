@@ -15,8 +15,8 @@ public import Mathlib.Algebra.Module.Submodule.Ker
 * `LinearMap.eqLocus`: the submodule of elements `x : M` such that `f x = g x`
 
 ## Tags
-linear algebra, vector space, module
 
+linear algebra, vector space, module
 -/
 
 @[expose] public section

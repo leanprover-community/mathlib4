@@ -60,7 +60,6 @@ Ported from Haskell's `Data.Set`.
 ## Tags
 
 ordered map, ordered set, data structure
-
 -/
 
 @[expose] public section

@@ -51,7 +51,7 @@ import Mathlib.Logic.Encodable.Lattice
   set of indices `S : Set ι`. `piiUnionInter π S` is the set of sets that can be written
   as `⋂ x ∈ t, f x` for some finset `t ∈ S` and sets `f x ∈ π x`.
 
-## Implementation details
+## Implementation notes
 
 * `IsPiSystem` is a predicate, not a type. Thus, we don't explicitly define the Galois
   insertion, nor do we define a complete lattice. In theory, we could define a complete
@@ -71,7 +71,7 @@ variable {α β : Type*}
   non-disjoint sets. Usually it is also required that the collection is nonempty, but we don't do
   that here. -/
 def IsPiSystem (C : Set (Set α)) : Prop :=
-  ∀ᵉ (s ∈ C) (t ∈ C), (s ∩ t : Set α).Nonempty → s ∩ t ∈ C
+  ∀ s ∈ C, ∀ t ∈ C, (s ∩ t : Set α).Nonempty → s ∩ t ∈ C
 
 namespace MeasurableSpace
 
@@ -186,7 +186,7 @@ theorem isPiSystem_Ici : IsPiSystem (range Ici : Set (Set α)) :=
 theorem isPiSystem_Ixx_mem {Ixx : α → α → Set α} {p : α → α → Prop}
     (Hne : ∀ {a b}, (Ixx a b).Nonempty → p a b)
     (Hi : ∀ {a₁ b₁ a₂ b₂}, Ixx a₁ b₁ ∩ Ixx a₂ b₂ = Ixx (max a₁ a₂) (min b₁ b₂)) (s t : Set α) :
-    IsPiSystem { S | ∃ᵉ (l ∈ s) (u ∈ t), p l u ∧ Ixx l u = S } := by
+    IsPiSystem { S | ∃ l ∈ s, ∃ u ∈ t, p l u ∧ Ixx l u = S } := by
   rintro _ ⟨l₁, hls₁, u₁, hut₁, _, rfl⟩ _ ⟨l₂, hls₂, u₂, hut₂, _, rfl⟩
   simp only [Hi]
   exact fun H => ⟨l₁ ⊔ l₂, sup_ind l₁ l₂ hls₁ hls₂, u₁ ⊓ u₂, inf_ind u₁ u₂ hut₁ hut₂, Hne H, rfl⟩
@@ -198,7 +198,7 @@ theorem isPiSystem_Ixx {Ixx : α → α → Set α} {p : α → α → Prop}
   simpa only [exists_range_iff] using isPiSystem_Ixx_mem (@Hne) (@Hi) (range f) (range g)
 
 theorem isPiSystem_Ioo_mem (s t : Set α) :
-    IsPiSystem { S | ∃ᵉ (l ∈ s) (u ∈ t), l < u ∧ Ioo l u = S } :=
+    IsPiSystem { S | ∃ l ∈ s, ∃ u ∈ t, l < u ∧ Ioo l u = S } :=
   isPiSystem_Ixx_mem (Ixx := Ioo) (fun ⟨_, hax, hxb⟩ => hax.trans hxb) Ioo_inter_Ioo s t
 
 theorem isPiSystem_Ioo (f : ι → α) (g : ι' → α) :
@@ -206,7 +206,7 @@ theorem isPiSystem_Ioo (f : ι → α) (g : ι' → α) :
   isPiSystem_Ixx (Ixx := Ioo) (fun ⟨_, hax, hxb⟩ => hax.trans hxb) Ioo_inter_Ioo f g
 
 theorem isPiSystem_Ioc_mem (s t : Set α) :
-    IsPiSystem { S | ∃ᵉ (l ∈ s) (u ∈ t), l < u ∧ Ioc l u = S } :=
+    IsPiSystem { S | ∃ l ∈ s, ∃ u ∈ t, l < u ∧ Ioc l u = S } :=
   isPiSystem_Ixx_mem (Ixx := Ioc) (fun ⟨_, hax, hxb⟩ => hax.trans_le hxb) Ioc_inter_Ioc s t
 
 theorem isPiSystem_Ioc (f : ι → α) (g : ι' → α) :
@@ -214,7 +214,7 @@ theorem isPiSystem_Ioc (f : ι → α) (g : ι' → α) :
   isPiSystem_Ixx (Ixx := Ioc) (fun ⟨_, hax, hxb⟩ => hax.trans_le hxb) Ioc_inter_Ioc f g
 
 theorem isPiSystem_Ico_mem (s t : Set α) :
-    IsPiSystem { S | ∃ᵉ (l ∈ s) (u ∈ t), l < u ∧ Ico l u = S } :=
+    IsPiSystem { S | ∃ l ∈ s, ∃ u ∈ t, l < u ∧ Ico l u = S } :=
   isPiSystem_Ixx_mem (Ixx := Ico) (fun ⟨_, hax, hxb⟩ => hax.trans_lt hxb) Ico_inter_Ico s t
 
 theorem isPiSystem_Ico (f : ι → α) (g : ι' → α) :
@@ -222,7 +222,7 @@ theorem isPiSystem_Ico (f : ι → α) (g : ι' → α) :
   isPiSystem_Ixx (Ixx := Ico) (fun ⟨_, hax, hxb⟩ => hax.trans_lt hxb) Ico_inter_Ico f g
 
 theorem isPiSystem_Icc_mem (s t : Set α) :
-    IsPiSystem { S | ∃ᵉ (l ∈ s) (u ∈ t), l ≤ u ∧ Icc l u = S } :=
+    IsPiSystem { S | ∃ l ∈ s, ∃ u ∈ t, l ≤ u ∧ Icc l u = S } :=
   isPiSystem_Ixx_mem (Ixx := Icc) nonempty_Icc.1 (by exact Icc_inter_Icc) s t
 
 theorem isPiSystem_Icc (f : ι → α) (g : ι' → α) :
@@ -348,14 +348,15 @@ theorem mem_generatePiSystem_iUnion_elim' {α β} {g : β → Set (Set α)} {s :
     ⟨T.image (fun x : s => (x : β)),
       Function.extend (fun x : s => (x : β)) f fun _ : β => (∅ : Set α), by simp, ?_, ?_⟩
   · ext a
-    constructor <;>
-      · simp -proj only
-          [Set.mem_iInter, Subtype.forall, Finset.set_biInter_finset_image]
-        intro h1 b h_b h_b_in_T
-        have h2 := h1 b h_b h_b_in_T
-        revert h2
-        rw [Subtype.val_injective.extend_apply]
-        apply id
+    constructor
+    all_goals
+      simp -proj only
+        [Set.mem_iInter, Subtype.forall, Finset.set_biInter_finset_image]
+      intro h1 b h_b h_b_in_T
+      have h2 := h1 b h_b h_b_in_T
+      revert h2
+      rw [Subtype.val_injective.extend_apply]
+      apply id
   · intro b h_b
     simp_rw [Finset.mem_image, Subtype.exists, exists_and_right, exists_eq_right]
       at h_b
@@ -442,14 +443,13 @@ theorem isPiSystem_piiUnionInter (π : ι → Set (Set α)) (hpi : ∀ x, IsPiSy
   use p1 ∪ p2, hp_union_ss, g
   have h_inter_eq : t1 ∩ t2 = ⋂ i ∈ p1 ∪ p2, g i := by
     rw [ht1_eq, ht2_eq]
-    simp_rw [← Set.inf_eq_inter]
     ext1 x
-    simp only [inf_eq_inter, mem_inter_iff, mem_iInter]
+    simp only [mem_inter_iff, mem_iInter]
     grind
   refine ⟨fun n hn => ?_, h_inter_eq⟩
   simp only [g]
   split_ifs with hn1 hn2 h
-  · refine hpi n (f1 n) (hf1m n hn1) (f2 n) (hf2m n hn2) (Set.nonempty_iff_ne_empty.2 fun h => ?_)
+  · refine hpi n (f1 n) (hf1m n hn1) (f2 n) (hf2m n hn2) (Set.ne_empty_iff_nonempty.1 fun h => ?_)
     rw [h_inter_eq] at h_nonempty
     suffices h_empty : ⋂ i ∈ p1 ∪ p2, g i = ∅ from
       (Set.not_nonempty_iff_eq_empty.mpr h_empty) h_nonempty
@@ -641,7 +641,7 @@ def toMeasurableSpace (h_inter : ∀ s₁ s₂, d.Has s₁ → d.Has s₂ → d.
     rw [← iUnion_disjointed]
     exact
       d.has_iUnion (disjoint_disjointed _) fun n =>
-        disjointedRec (fun (t : Set α) i h => h_inter _ _ h <| d.has_compl <| hf i) (hf n)
+        disjointedRec (p := d.Has) (fun t i h => h_inter _ _ h <| d.has_compl <| hf i) (hf n)
 
 theorem ofMeasurableSpace_toMeasurableSpace
     (h_inter : ∀ s₁ s₂, d.Has s₁ → d.Has s₂ → d.Has (s₁ ∩ s₂)) :

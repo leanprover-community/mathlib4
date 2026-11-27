@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Logic.Encodable.Pi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # W types
 
@@ -21,7 +24,7 @@ are commonly used to formalize syntax, e.g. terms and expressions in a given lan
 is illustrated in the example found in the file `prop_encodable` in the `archive/examples` folder of
 mathlib.
 
-## Implementation details
+## Implementation notes
 
 While the name `WType` is somewhat verbose, it is preferable to putting a single character
 identifier `W` in the root namespace.
@@ -153,7 +156,8 @@ private def f (n : ℕ) : WType' β (n + 1) → Σ a : α, β a → WType' β n
 private def finv (n : ℕ) : (Σ a : α, β a → WType' β n) → WType' β (n + 1)
   | ⟨a, f⟩ =>
     let f' := fun i : β a => (f i).val
-    have : WType.depth ⟨a, f'⟩ ≤ n + 1 := Nat.add_le_add_right (Finset.sup_le fun b _ => (f b).2) 1
+    have : WType.depth ⟨a, f'⟩ ≤ n + 1 :=
+      Nat.add_le_add_right (Finset.sup_le fun b _ => (f b).property) 1
     ⟨⟨a, f'⟩, this⟩
 
 variable [Encodable α]
@@ -173,7 +177,7 @@ encodable. -/
 instance : Encodable (WType β) := by
   haveI h' : ∀ n, Encodable (WType' β n) := fun n => Nat.rec encodable_zero encodable_succ n
   let f : WType β → Σ n, WType' β n := fun t => ⟨t.depth, ⟨t, le_rfl⟩⟩
-  let finv : (Σ n, WType' β n) → WType β := fun p => p.2.1
+  let finv : (Σ n, WType' β n) → WType β := fun p => p.2.val
   have : ∀ t, finv (f t) = t := fun t => rfl
   exact Encodable.ofLeftInverse f finv this
 

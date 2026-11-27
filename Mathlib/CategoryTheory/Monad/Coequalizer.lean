@@ -6,8 +6,11 @@ Authors: Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Reflexive
-public import Mathlib.CategoryTheory.Limits.Shapes.SplitCoequalizer
+public import Mathlib.CategoryTheory.Limits.Shapes.SplitEqualizer
 public import Mathlib.CategoryTheory.Monad.Algebra
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Special coequalizers associated to a monad
@@ -21,7 +24,6 @@ monadicity theorem).
 
 This file has been adapted to `Mathlib/CategoryTheory/Monad/Equalizer.lean`.
 Please try to keep them in sync.
-
 -/
 
 @[expose] public section
@@ -84,7 +86,6 @@ def beckAlgebraCofork : Cofork (FreeCoequalizer.topMap X) (FreeCoequalizer.botto
   Cofork.ofπ _ (FreeCoequalizer.condition X)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The cofork constructed is a colimit. This shows that any algebra is a (reflexive) coequalizer of
 free algebras.
 -/

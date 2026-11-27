@@ -176,7 +176,7 @@ private theorem restrictNonposSeq_succ (n : ℕ) :
   rw [restrictNonposSeq]
 
 private theorem restrictNonposSeq_subset (n : ℕ) : restrictNonposSeq s i n ⊆ i := by
-  cases n <;> · rw [restrictNonposSeq]; exact someExistsOneDivLT_subset'
+  cases n <;> rw [restrictNonposSeq] <;> exact someExistsOneDivLT_subset'
 
 private theorem restrictNonposSeq_lt (n : ℕ) (hn : ¬s ≤[i \ ⋃ k ≤ n, restrictNonposSeq s i k] 0) :
     (1 / (findExistsOneDivLT s (i \ ⋃ k ≤ n, restrictNonposSeq s i k) + 1) : ℝ) <
@@ -202,9 +202,10 @@ private theorem measure_of_restrictNonposSeq (hi₂ : ¬s ≤[i] 0) (n : ℕ)
 
 private theorem restrictNonposSeq_measurableSet (n : ℕ) :
     MeasurableSet (restrictNonposSeq s i n) := by
-  cases n <;>
-    · rw [restrictNonposSeq]
-      exact someExistsOneDivLT_measurableSet
+  cases n
+  all_goals
+    rw [restrictNonposSeq]
+    exact someExistsOneDivLT_measurableSet
 
 private theorem restrictNonposSeq_disjoint' {n m : ℕ} (h : n < m) :
     restrictNonposSeq s i n ∩ restrictNonposSeq s i m = ∅ := by
@@ -278,10 +279,11 @@ theorem exists_subset_restrict_nonpos (hi : s i < 0) :
   set bdd : ℕ → ℕ := fun n => findExistsOneDivLT s (i \ ⋃ k ≤ n, restrictNonposSeq s i k)
   have hn' : ∀ n : ℕ, ¬s ≤[i \ ⋃ l ≤ n, restrictNonposSeq s i l] 0 := by
     intro n
-    convert hn (n + 1) using 5 <;>
-      · ext l
-        simp only [exists_prop, Set.mem_iUnion, and_congr_left_iff]
-        exact fun _ => Nat.lt_succ_iff.symm
+    convert hn (n + 1) using 5
+    all_goals
+      ext l
+      simp only [exists_prop, Set.mem_iUnion, and_congr_left_iff]
+      exact fun _ => Nat.lt_succ_iff.symm
   have h₁ : s i = s A + ∑' l, s (restrictNonposSeq s i l) := by
     rw [hA, ← s.of_disjoint_iUnion, add_comm, of_add_of_sdiff]
     · exact MeasurableSet.iUnion fun _ => restrictNonposSeq_measurableSet _
@@ -417,30 +419,30 @@ theorem of_symmDiff_compl_positive_negative {s : SignedMeasure α} {i j : Set α
     (hi : MeasurableSet i) (hj : MeasurableSet j) (hi' : 0 ≤[i] s ∧ s ≤[iᶜ] 0)
     (hj' : 0 ≤[j] s ∧ s ≤[jᶜ] 0) : s (i ∆ j) = 0 ∧ s (iᶜ ∆ jᶜ) = 0 := by
   rw [restrict_le_restrict_iff s 0, restrict_le_restrict_iff 0 s] at hi' hj'
-  constructor
-  · rw [Set.symmDiff_def, Set.sdiff_eq_compl_inter, Set.sdiff_eq_compl_inter, of_union,
-      le_antisymm (hi'.2 (hi.compl.inter hj) Set.inter_subset_left)
-        (hj'.1 (hi.compl.inter hj) Set.inter_subset_right),
-      le_antisymm (hj'.2 (hj.compl.inter hi) Set.inter_subset_left)
-        (hi'.1 (hj.compl.inter hi) Set.inter_subset_right), zero_apply, zero_apply, zero_add]
-    · exact
-        Set.disjoint_of_subset_left Set.inter_subset_left
-          (Set.disjoint_of_subset_right Set.inter_subset_right
-            (disjoint_comm.1 (IsCompl.disjoint isCompl_compl)))
-    · exact hj.compl.inter hi
-    · exact hi.compl.inter hj
-  · rw [Set.symmDiff_def, Set.sdiff_eq_compl_inter, Set.sdiff_eq_compl_inter, compl_compl,
-      compl_compl, of_union,
-      le_antisymm (hi'.2 (hj.inter hi.compl) Set.inter_subset_right)
-        (hj'.1 (hj.inter hi.compl) Set.inter_subset_left),
-      le_antisymm (hj'.2 (hi.inter hj.compl) Set.inter_subset_right)
-        (hi'.1 (hi.inter hj.compl) Set.inter_subset_left), zero_apply, zero_apply, zero_add]
-    · exact
-        Set.disjoint_of_subset_left Set.inter_subset_left
-          (Set.disjoint_of_subset_right Set.inter_subset_right
-            (IsCompl.disjoint isCompl_compl))
-    · exact hj.inter hi.compl
-    · exact hi.inter hj.compl
+  · constructor
+    · rw [Set.symmDiff_def, Set.sdiff_eq_compl_inter, Set.sdiff_eq_compl_inter, of_union,
+        le_antisymm (hi'.2 (hi.compl.inter hj) Set.inter_subset_left)
+          (hj'.1 (hi.compl.inter hj) Set.inter_subset_right),
+        le_antisymm (hj'.2 (hj.compl.inter hi) Set.inter_subset_left)
+          (hi'.1 (hj.compl.inter hi) Set.inter_subset_right), zero_apply, zero_apply, zero_add]
+      · exact
+          Set.disjoint_of_subset_left Set.inter_subset_left
+            (Set.disjoint_of_subset_right Set.inter_subset_right
+              (disjoint_comm.1 (IsCompl.disjoint isCompl_compl)))
+      · exact hj.compl.inter hi
+      · exact hi.compl.inter hj
+    · rw [Set.symmDiff_def, Set.sdiff_eq_compl_inter, Set.sdiff_eq_compl_inter, compl_compl,
+        compl_compl, of_union,
+        le_antisymm (hi'.2 (hj.inter hi.compl) Set.inter_subset_right)
+          (hj'.1 (hj.inter hi.compl) Set.inter_subset_left),
+        le_antisymm (hj'.2 (hi.inter hj.compl) Set.inter_subset_right)
+          (hi'.1 (hi.inter hj.compl) Set.inter_subset_left), zero_apply, zero_apply, zero_add]
+      · exact
+          Set.disjoint_of_subset_left Set.inter_subset_left
+            (Set.disjoint_of_subset_right Set.inter_subset_right
+              (IsCompl.disjoint isCompl_compl))
+      · exact hj.inter hi.compl
+      · exact hi.inter hj.compl
   all_goals measurability
 
 end SignedMeasure

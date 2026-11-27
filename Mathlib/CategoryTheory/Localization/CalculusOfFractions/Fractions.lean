@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Localization.CalculusOfFractions
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas on fractions
 
@@ -22,14 +25,13 @@ When `W` has a left calculus of fractions, we generalize the lemmas
 `Localization.exists_leftFraction₃`, and
 `LeftFraction.map_eq_iff` as `LeftFraction₂.map_eq_iff`.
 
-## Implementation note
+## Implementation notes
 
 The lemmas in this file are phrased with data that is bundled into structures like
 `LeftFraction₂` or `LeftFraction₃`. It could have been possible to phrase them
 with "unbundled data". However, this would require introducing 4 or 5 variables instead
 of one. It is also very convenient to use dot notation.
 Many definitions have been made reducible so as to ease rewrites when this API is used.
-
 -/
 
 @[expose] public section

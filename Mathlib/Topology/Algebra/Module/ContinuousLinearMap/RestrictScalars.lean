@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Restriction of scalars for continuous linear maps
 
@@ -44,7 +47,7 @@ theorem coe_restrictScalars' (f : M₁ →L[A] M₂) : ⇑(f.restrictScalars R) 
 
 @[simp]
 theorem toContinuousAddMonoidHom_restrictScalars (f : M₁ →L[A] M₂) :
-    ↑(f.restrictScalars R) = (f : ContinuousAddMonoidHom M₁ M₂) := rfl
+    (f.restrictScalars R).toContinuousAddMonoidHom = f.toContinuousAddMonoidHom := rfl
 
 @[simp] lemma restrictScalars_zero : (0 : M₁ →L[A] M₂).restrictScalars R = 0 := rfl
 

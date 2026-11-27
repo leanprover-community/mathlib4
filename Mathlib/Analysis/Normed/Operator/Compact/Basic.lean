@@ -34,7 +34,7 @@ in order to avoid a heavy import. There, we prove :
 * `isCompactOperator_id_iff_finiteDimensional` : the identity of `E` is compact if and only if
   `E` has finite dimension.
 
-## Implementation details
+## Implementation notes
 
 We define `IsCompactOperator` as a predicate, because the space of compact operators inherits all
 of its structure from the space of continuous linear maps (e.g we want to have the usual operator
@@ -82,9 +82,6 @@ theorem isCompactOperator_id_iff_locallyCompactSpace {E : Type*}
 
 alias ⟨LocallyCompactSpace.of_isCompactOperator_id, _⟩ :=
   isCompactOperator_id_iff_locallyCompactSpace
-
-@[deprecated (since := "2026-03-04")] alias IsCompactOperator.locallyCompactSpace :=
-  LocallyCompactSpace.of_isCompactOperator_id
 
 lemma isCompactOperator_id {E : Type*} [AddGroup E] [TopologicalSpace E] [IsTopologicalAddGroup E]
     [LocallyCompactSpace E] : IsCompactOperator (id : E → E) :=

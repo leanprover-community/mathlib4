@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Sites.Point.Conservative
 public import Mathlib.CategoryTheory.Sites.Point.Monoidal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Monoidal structure on sheaves using enough points
 
@@ -19,7 +22,6 @@ check the assumptions of `Sheaf.monoidalCategory` in the
 file `Mathlib/CategoryTheory/Sites/Monoidal.lean`,
 i.e. this can be used in order to construct the monoidal
 category structure on `Sheaf J A`.
-
 -/
 
 public section

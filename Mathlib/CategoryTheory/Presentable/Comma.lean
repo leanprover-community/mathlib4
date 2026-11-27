@@ -42,8 +42,8 @@ and similarly the colimit of those `g.right` for `g ⟶ f` in `J κ f`
 identify to `f.right`.
 
 ## References
-* [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 
+* [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 -/
 
 universe w
@@ -66,7 +66,7 @@ variable [F₁.IsCardinalAccessible κ]
   [HasCardinalFilteredColimits C₁ κ] [HasCardinalFilteredColimits C₂ κ]
 
 instance : HasCardinalFilteredColimits (Comma F₁ F₂) κ where
-  hasColimitsOfShape J _ _ := by
+  hasColimitsOfShape' J _ _ := by
     have := HasCardinalFilteredColimits.hasColimitsOfShape C₁ κ J
     have := HasCardinalFilteredColimits.hasColimitsOfShape C₂ κ J
     have := Functor.preservesColimitsOfShape_of_isCardinalAccessible F₁ κ J
@@ -186,11 +186,11 @@ variable {F₁ F₂} (f : Comma F₁ F₂)
 where both the first and second objects of `g` are `κ`-presentable. -/
 private abbrev J := CostructuredArrow (Comma.isCardinalPresentable F₁ F₂ κ).ι f
 
-/-- Given `f : Comma F₁ F₂`, this is the category of morpshims `X ⟶ f.left`
+/-- Given `f : Comma F₁ F₂`, this is the category of morphisms `X ⟶ f.left`
 where `X` is `κ`-presentable. -/
 private abbrev J₁ := CostructuredArrow (isCardinalPresentable C₁ κ).ι f.left
 
-/-- Given `f : Comma F₁ F₂`, this is the category of morpshims `Y ⟶ f.right`
+/-- Given `f : Comma F₁ F₂`, this is the category of morphisms `Y ⟶ f.right`
 where `Y` is `κ`-presentable. -/
 private abbrev J₂ := CostructuredArrow (isCardinalPresentable C₂ κ).ι f.right
 
@@ -279,7 +279,9 @@ private lemma J.exists_hom {j j' : J κ f} (g₁ : j.fst ⟶ j'.fst) (g₂ : j.s
       g₂.left.hom ≫ b.left.hom.right = a.left.hom.right := by
   obtain ⟨j₂, a, ha⟩ := J.exists_hom' g₁ g₂
   exact ⟨J.mk j'.fst j₂ (j'.left.obj.hom ≫ F₂.map a.left.hom)
-    (by simp [← dsimp% (CostructuredArrow.w a)]), J.homMk g₁ (g₂ ≫ a) (by simpa),
+    (by simp [← dsimp% (CostructuredArrow.w a),
+      -ObjectProperty.CostructuredArrow.left_hom_comp_hom]),
+    J.homMk g₁ (g₂ ≫ a) (by simpa),
     J.homMk (𝟙 _) a (by simp), by simp⟩
 
 private lemma exists_of_j₁_of_j₂' (j₁ : J₁ κ f) (j₂ : J₂ κ f) :
@@ -413,9 +415,9 @@ private instance : (π₂ κ f).Final := by
 instance : (Comma.isCardinalPresentable F₁ F₂ κ).ι.IsDense where
   isDenseAt f :=
     ⟨Comma.fstSndJointlyReflectColimit
-      ((Functor.Final.isColimitWhiskerEquiv (π₁ κ f) _).2
+      ((Functor.Final.isColimitWhiskerEquiv (π₁ κ f) _).invFun
         ((isCardinalPresentable C₁ κ).ι.denseAt f.left))
-      ((Functor.Final.isColimitWhiskerEquiv (π₂ κ f) _).2
+      ((Functor.Final.isColimitWhiskerEquiv (π₂ κ f) _).invFun
         ((isCardinalPresentable C₂ κ).ι.denseAt f.right))⟩
 
 end isCardinalAccessibleCategory

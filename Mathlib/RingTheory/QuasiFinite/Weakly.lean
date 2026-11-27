@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.QuasiFinite.Basic
 
 /-!
-
 # Weakly Quasi-finite primes
 
 The definition `Algebra.QuasiFiniteAt` is equivalent to the usual definition "isolated in fibers"
@@ -20,7 +19,7 @@ equivalent to `Algebra.QuasiFiniteAt` under all relevant scenarios.
 This class should only be used in stating (and proving) Zariski's main theorem and should not be
 used elsewhere, and all public API shall have a `Algebra.QuasiFiniteAt` version.
 
-## Implementation details
+## Implementation notes
 
 The definition of `Algebra.QuasiFiniteAt R q` as is says that the whole `S_q` is quasi-finite,
 which requires not only `q` to be quasi-finite, but also all primes below it (i.e. all generic
@@ -30,7 +29,6 @@ This is fine mathematically because the set of quasi-finite primes is open
 to be stated with an a priori weaker notion of quasi-finite.
 Hence we introduce `Algebra.WeaklyQuasiFiniteAt` where we mod out all the primes that lie in a
 different fiber.
-
 -/
 
 @[expose] public section
@@ -93,7 +91,7 @@ lemma of_algHom_localization (p : Ideal S) [p.IsPrime] [WeaklyQuasiFiniteAt R p]
     intro x hx
     by_contra hx'
     have : IsLocalHom f.toRingHom := .of_surjective _ hf
-    have := this.1 (algebraMap _ _ x) (by
+    have := this.map_nonunit (algebraMap _ _ x) (by
       suffices IsUnit (IsLocalization.mk' (M := q.primeCompl) (Localization.AtPrime q)
         (algebraMap _ _ x) 1) by simpa [IsLocalization.mk'_one] using! this
       simpa [IsLocalization.AtPrime.isUnit_mk'_iff])
@@ -134,13 +132,15 @@ lemma finite_residueField
   exact .of_injective (IsScalarTower.toAlgHom _ _ r.ResidueField).toLinearMap (RingHom.injective _)
 
 /-- By `infer_instance` for `Algebra.QuasiFiniteAt R p`. -/
-lemma finite_locoalization {K : Type*} [Field K] [Algebra K S] [WeaklyQuasiFiniteAt K q] :
+lemma finite_localization {K : Type*} [Field K] [Algebra K S] [WeaklyQuasiFiniteAt K q] :
     Module.Finite K (Localization.AtPrime q) := by
   have H : Algebra.WeaklyQuasiFiniteAt K q := ‹_›
   rw [Algebra.weaklyQuasiFiniteAt_iff, ← Ideal.over_def q ⊥, Ideal.map_bot] at H
   have : QuasiFinite K (Localization.AtPrime q) := .of_surjective_algHom
-    (AlgEquiv.quotientBot K _).toAlgHom (AlgEquiv.quotientBot K _).surjective
+    (AlgEquiv.quotientBot K (Localization.AtPrime q)).toAlgHom (AlgEquiv.quotientBot K _).surjective
   exact .of_quasiFinite
+
+@[deprecated (since := "2026-10-08")] alias finite_locoalization := finite_localization
 
 /-- Use `Algebra.QuasiFiniteAt.eq_of_le_of_under_eq` instead for `Algebra.QuasiFiniteAt R p`. -/
 lemma eq_of_le_of_under_eq {P Q : Ideal S} [P.IsPrime] [Q.IsPrime]
