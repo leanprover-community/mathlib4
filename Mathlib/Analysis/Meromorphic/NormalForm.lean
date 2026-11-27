@@ -66,7 +66,7 @@ theorem meromorphicNFAt_iff_analyticAt_or :
         apply MeromorphicAt.congr _ (h₃g.filter_mono nhdsWithin_le_nhds).symm
         fun_prop
       have : meromorphicOrderAt f x = n := by
-        rw [meromorphicOrderAt_eq_int_iff hf]
+        rw [hf.meromorphicOrderAt_eq_intCast_iff]
         use g, h₁g, h₂g
         exact eventually_nhdsWithin_of_eventually_nhds h₃g
       by_cases! hn : 0 ≤ n
@@ -90,7 +90,7 @@ theorem meromorphicNFAt_iff_analyticAt_or :
         simpa
     · right
       lift meromorphicOrderAt f x to ℤ using LT.lt.ne_top h₂ with n hn
-      obtain ⟨g, h₁g, h₂g, h₃g⟩ := (meromorphicOrderAt_eq_int_iff h₁).1 hn.symm
+      obtain ⟨g, h₁g, h₂g, h₃g⟩ := h₁.meromorphicOrderAt_eq_intCast_iff.1 hn.symm
       use n, g, h₁g, h₂g
       filter_upwards [eventually_nhdsWithin_iff.1 h₃g]
       intro z hz
@@ -132,7 +132,7 @@ lemma MeromorphicNFAt.isTheta_pow_sub
     _ =Θ[𝓝 x] fun z ↦ (z - x) ^ (meromorphicOrderAt f x).untop hf' := by
       congr!
       rw [Eq.comm, WithTop.untop_eq_iff, meromorphicOrderAt_congr
-        (hev.filter_mono nhdsWithin_le_nhds), meromorphicOrderAt_eq_int_iff <|
+        (hev.filter_mono nhdsWithin_le_nhds), MeromorphicAt.meromorphicOrderAt_eq_intCast_iff <|
           hf.meromorphicAt.congr <| hev.filter_mono nhdsWithin_le_nhds]
       exact ⟨g, hgan, hgne, by simp⟩
 
@@ -191,7 +191,7 @@ theorem MeromorphicNFAt.meromorphicOrderAt_eq_zero_iff (hf : MeromorphicNFAt f x
         simp only [Pi.smul_apply', Pi.pow_apply, sub_self, zero_zpow n hContra, zero_smul] at this
         tauto
       simp only [this, zpow_zero] at h₃g
-      apply (meromorphicOrderAt_eq_int_iff hf.meromorphicAt).2
+      apply hf.meromorphicAt.meromorphicOrderAt_eq_intCast_iff.2
       use g, h₁g, h₂g
       simp only [zpow_zero]
       exact h₃g.filter_mono nhdsWithin_le_nhds
@@ -487,7 +487,7 @@ noncomputable def toMeromorphicNFAt :
   · classical -- do not complain about decidability issues in Function.update
     apply Function.update f x
     by_cases h₁f : meromorphicOrderAt f x = (0 : ℤ)
-    · rw [meromorphicOrderAt_eq_int_iff hf] at h₁f
+    · rw [hf.meromorphicOrderAt_eq_intCast_iff] at h₁f
       exact (Classical.choose h₁f) x
     · exact 0
   · exact 0
@@ -524,7 +524,7 @@ theorem meromorphicNFAt_toMeromorphicNFAt :
       rw [analyticAt_congr this]
       exact analyticAt_const
     · lift meromorphicOrderAt f x to ℤ using h₂f with n hn
-      obtain ⟨g, h₁g, h₂g, h₃g⟩ := (meromorphicOrderAt_eq_int_iff hf).1 hn.symm
+      obtain ⟨g, h₁g, h₂g, h₃g⟩ := hf.meromorphicOrderAt_eq_intCast_iff.1 hn.symm
       right
       use n, g, h₁g, h₂g
       apply eventuallyEq_nhds_of_eventuallyEq_nhdsNE (hf.eq_nhdsNE_toMeromorphicNFAt.symm.trans h₃g)
@@ -532,7 +532,7 @@ theorem meromorphicNFAt_toMeromorphicNFAt :
         WithTop.coe_eq_zero, ne_eq, Function.update_self, sub_self]
       split_ifs with h₃f
       · obtain ⟨h₁G, _, h₃G⟩ :=
-          Classical.choose_spec ((meromorphicOrderAt_eq_int_iff hf).1 (h₃f ▸ hn.symm))
+          Classical.choose_spec (hf.meromorphicOrderAt_eq_intCast_iff.1 (h₃f ▸ hn.symm))
         apply Filter.EventuallyEq.eq_of_nhds
         apply (h₁G.continuousAt.eventuallyEq_nhds_iff_eventuallyEq_nhdsNE (by fun_prop)).1
         filter_upwards [h₃g, h₃G]
@@ -592,7 +592,7 @@ lemma MeromorphicAt.toMeromorphicNFAt_eventuallyEq_nhds_iff {f g : 𝕜 → E} (
       · obtain ⟨n, g, h₁g, h₂g, h₃g⟩ := h₁f
         rw [Filter.EventuallyEq.eq_of_nhds h₃g]
         have : meromorphicOrderAt f x = n := by
-          rw [meromorphicOrderAt_eq_int_iff h₀f.meromorphicAt]
+          rw [h₀f.meromorphicAt.meromorphicOrderAt_eq_intCast_iff]
           use g, h₁g, h₂g
           exact eventually_nhdsWithin_of_eventually_nhds h₃g
         by_cases h₃f : meromorphicOrderAt f x = 0
@@ -603,9 +603,9 @@ lemma MeromorphicAt.toMeromorphicNFAt_eventuallyEq_nhds_iff {f g : 𝕜 → E} (
           simp_rw [hn]
           simp only [zpow_zero, one_smul]
           have : g =ᶠ[𝓝 x]
-              Classical.choose ((meromorphicOrderAt_eq_int_iff h₀f.meromorphicAt).1 h₃f) := by
+              Classical.choose (h₀f.meromorphicAt.meromorphicOrderAt_eq_intCast_iff.1 h₃f) := by
             obtain ⟨h₀, h₁, h₂⟩ := Classical.choose_spec
-              ((meromorphicOrderAt_eq_int_iff h₀f.meromorphicAt).1 h₃f)
+              (h₀f.meromorphicAt.meromorphicOrderAt_eq_intCast_iff.1 h₃f)
             rw [← h₁g.continuousAt.eventuallyEq_nhds_iff_eventuallyEq_nhdsNE h₀.continuousAt]
             rw [hn] at h₃g
             simp only [zpow_zero, one_smul, ne_eq] at h₃g h₂

@@ -922,7 +922,7 @@ lemma meromorphic_derivWeierstrassP : Meromorphic ℘'[L] := by
 lemma order_weierstrassP (l₀ : ℂ) (h : l₀ ∈ L.lattice) :
     meromorphicOrderAt ℘[L] l₀ = -2 := by
   trans ↑(-2 : ℤ)
-  · rw [meromorphicOrderAt_eq_int_iff (L.meromorphic_weierstrassP l₀)]
+  · rw [MeromorphicAt.meromorphicOrderAt_eq_intCast_iff (L.meromorphic_weierstrassP l₀)]
     refine ⟨fun z ↦ (z - l₀) ^ 2 * ℘[L - l₀] z + 1 - (z - l₀) ^ 2 / l₀ ^ 2, ?_, ?_, ?_⟩
     · have : AnalyticAt ℂ ℘[L - l₀] l₀ := L.analyticOnNhd_weierstrassPExcept l₀ l₀ (by simp)
       suffices AnalyticAt ℂ (fun z ↦ (z - l₀) ^ 2 / l₀ ^ 2) l₀ by fun_prop

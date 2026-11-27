@@ -245,7 +245,7 @@ theorem min_divisor_le_divisor_add {f₁ f₂ : 𝕜 → E} {z : 𝕜} {U : Set 
   · simp_all
   rw [← WithTop.untop₀_min h₁ h₂]
   apply WithTop.untop₀_le_untop₀ h₃
-  exact meromorphicOrderAt_add (hf₁ z hz) (hf₂ z hz)
+  exact le_meromorphicOrderAt_add (hf₁ z hz) (hf₂ z hz)
 
 /--
 The pole divisor of `f₁ + f₂` is smaller than or equal to the maximum of the pole divisors of `f₁`
@@ -450,7 +450,7 @@ theorem negPart_divisor_add_of_analyticNhdOn_right {f₁ f₂ : 𝕜 → E} (hf�
       _ ≤ min (meromorphicOrderAt f₁ x) (meromorphicOrderAt f₂ x) :=
         le_inf h (hf₂ x hx).meromorphicOrderAt_nonneg
       _ ≤ meromorphicOrderAt (f₁ + f₂) x :=
-        meromorphicOrderAt_add (hf₁ x hx) (hf₂ x hx).meromorphicAt
+        le_meromorphicOrderAt_add (hf₁ x hx) (hf₂ x hx).meromorphicAt
     · suffices meromorphicOrderAt f₁ x < meromorphicOrderAt f₂ x by
         rwa [meromorphicOrderAt_add_eq_left_of_lt (hf₂.meromorphicOn x hx)]
       calc meromorphicOrderAt f₁ x
@@ -472,7 +472,7 @@ lemma divisor_sub_const_of_ne {U : Set 𝕜} {z₀ x : 𝕜} (hx : x ≠ z₀) :
   · rw [divisor_apply (show MeromorphicOn (· - z₀) U by fun_prop) hu,
       ← untop₀_coe 0]
     congr
-    exact (meromorphicOrderAt_eq_int_iff (by fun_prop)).mpr
+    exact (MeromorphicAt.meromorphicOrderAt_eq_intCast_iff (by fun_prop)).mpr
       ⟨(· - z₀), analyticAt_id.fun_sub analyticAt_const, by simp [sub_ne_zero_of_ne hx]⟩
   · exact Function.locallyFinsuppWithin.apply_eq_zero_of_notMem _ hu
 
@@ -481,7 +481,8 @@ open WithTop in
 lemma divisor_sub_const_self {z₀ : 𝕜} {U : Set 𝕜} (h : z₀ ∈ U) : divisor (· - z₀) U z₀ = 1 := by
   rw [divisor_apply (show MeromorphicOn (· - z₀) U by fun_prop) h, ← untop₀_coe 1]
   congr
-  exact (meromorphicOrderAt_eq_int_iff (by fun_prop)).mpr ⟨fun _ ↦ 1, analyticAt_const, by simp⟩
+  exact (MeromorphicAt.meromorphicOrderAt_eq_intCast_iff (by fun_prop)).mpr
+    ⟨fun _ ↦ 1, analyticAt_const, by simp⟩
 
 open scoped Pointwise
 
@@ -499,7 +500,7 @@ theorem divisor_comp_add_const_eq_divisor {c x : 𝕜} {f : 𝕜 → E} :
       Function.locallyFinsuppWithin.apply_eq_zero_of_notMem]
     <;> simp_all [← sub_eq_add_neg]
   rw [divisor_apply, divisor_apply]
-  <;> simp_all [← sub_eq_add_neg, meromorphicOrderAt_comp_add_const_eq_meromorphicOrderAt]
+  <;> simp_all [← sub_eq_add_neg, meromorphicOrderAt_comp_add_const]
 
 /-- Divisors are invariant under translation. -/
 @[to_fun divisor_fun_comp_sub_const_eq_divisor]

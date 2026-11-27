@@ -99,8 +99,8 @@ The canonical factor `CanonicalFactor R w` has a simple pole at `z = w`.
 theorem meromorphicOrderAt_canonicalFactor (h : w ∈ ball 0 R) :
     meromorphicOrderAt (canonicalFactor R w) w = -1 := by
   unfold canonicalFactor
-  rw [fun_meromorphicOrderAt_div (by fun_prop) (by fun_prop),
-    fun_meromorphicOrderAt_mul (by fun_prop) (by fun_prop)]
+  rw [meromorphicOrderAt_fun_div (by fun_prop) (by fun_prop),
+    meromorphicOrderAt_fun_mul (by fun_prop) (by fun_prop)]
   have : meromorphicOrderAt (fun z ↦ ↑R ^ 2 - (starRingEnd ℂ) w * z) w = 0 := by
     refine (MeromorphicNFAt.meromorphicOrderAt_eq_zero_iff ?_).2 ?_
     · apply AnalyticAt.meromorphicNFAt
