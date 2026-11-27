@@ -156,27 +156,39 @@ theorem ext {f g : α →+*o β} (h : ∀ a, f a = g a) : f = g :=
 theorem toRingHom_eq_coe (f : α →+*o β) : f.toRingHom = f :=
   RingHom.ext fun _ => rfl
 
-@[simp]
-theorem toOrderAddMonoidHom_eq_coe (f : α →+*o β) : f.toOrderAddMonoidHom = f :=
+theorem toOrderAddMonoidHom_eq_ofClass (f : α →+*o β) : f.toOrderAddMonoidHom = .ofClass f :=
   rfl
 
+@[deprecated (since := "2026-11-26")] alias toOrderAddMonoidHom_eq_coe :=
+  toOrderAddMonoidHom_eq_ofClass
+
 @[simp]
-theorem toOrderMonoidWithZeroHom_eq_coe (f : α →+*o β) : f.toOrderMonoidWithZeroHom = f :=
+theorem coe_toOrderMonoidWithZeroHom (f : α →+*o β) :
+    ⇑f.toOrderMonoidWithZeroHom = f := rfl
+
+theorem toOrderMonoidWithZeroHom_eq_ofClass (f : α →+*o β) :
+    f.toOrderMonoidWithZeroHom = .ofClass f :=
   rfl
 
-@[simp, nolint simpNF] -- `nolint` needed while this uses `RingHomClass.toRingHom`
+@[deprecated (since := "2026-11-26")] alias toOrderMonoidWithZeroHom_eq_coe :=
+  toOrderMonoidWithZeroHom_eq_ofClass
+
+@[simp]
 theorem coe_toRingHom (f : α →+*o β) : ⇑(f : α →+* β) = f :=
   rfl
 
 @[deprecated (since := "2026-05-05")] alias coe_coe_ringHom := coe_toRingHom
 
 @[simp]
-theorem coe_coe_orderAddMonoidHom (f : α →+*o β) : ⇑(f : α →+o β) = f :=
+theorem coe_toOrderAddMonoidHom (f : α →+*o β) : ⇑f.toOrderAddMonoidHom = f :=
   rfl
 
--- `nolint` needed while this uses `OrderMonoidWithZeroHomClass.toOrderMonoidWithZeroHom`
-@[simp, nolint simpNF]
-theorem coe_coe_orderMonoidWithZeroHom (f : α →+*o β) : ⇑(f : α →*₀o β) = f :=
+@[deprecated OrderAddMonoidHom.coe_ofClass +typeChanged (since := "2026-11-26")]
+theorem coe_coe_orderAddMonoidHom (f : α →+*o β) : ⇑(.ofClass f : α →+o β) = f :=
+  rfl
+
+@[deprecated OrderMonoidWithZeroHom.coe_ofClass +typeChanged (since := "2026-11-26")]
+theorem coe_coe_orderMonoidWithZeroHom (f : α →+*o β) : ⇑(.ofClass f : α →*₀o β) = f :=
   rfl
 
 @[norm_cast]
@@ -185,12 +197,13 @@ theorem toRingHom_apply (f : α →+*o β) (a : α) : (f : α →+* β) a = f a 
 
 @[deprecated (since := "2026-05-05")] alias coe_ringHom_apply := toRingHom_apply
 
-@[norm_cast]
-theorem coe_orderAddMonoidHom_apply (f : α →+*o β) (a : α) : (f : α →+o β) a = f a :=
+@[deprecated OrderAddMonoidHom.coe_ofClass +typeChanged (since := "2026-11-26")]
+theorem coe_orderAddMonoidHom_apply (f : α →+*o β) (a : α) : (.ofClass f : α →+o β) a = f a :=
   rfl
 
-@[norm_cast]
-theorem coe_orderMonoidWithZeroHom_apply (f : α →+*o β) (a : α) : (f : α →*₀o β) a = f a :=
+@[deprecated OrderMonoidWithZeroHom.coe_ofClass +typeChanged (since := "2026-11-27")]
+theorem coe_orderMonoidWithZeroHom_apply (f : α →+*o β) (a : α) :
+    ⇑(OrderMonoidWithZeroHomClass.toOrderMonoidWithZeroHom f) a = f a :=
   rfl
 
 /-- Copy of an `OrderRingHom` with a new `toFun` equal to the old one. Useful to fix definitional
@@ -231,13 +244,18 @@ theorem toRingHom_id : (OrderRingHom.id α : α →+* α) = RingHom.id α :=
 @[deprecated (since := "2026-05-05")] alias coe_ringHom_id := toRingHom_id
 
 @[simp]
-theorem coe_orderAddMonoidHom_id : (OrderRingHom.id α : α →+o α) = OrderAddMonoidHom.id α :=
+theorem toOrderAddMonoidHom_id : (OrderRingHom.id α).toOrderAddMonoidHom = OrderAddMonoidHom.id α :=
   rfl
 
+@[deprecated (since := "2026-11-26")] alias coe_orderAddMonoidHom_id := toOrderAddMonoidHom_id
+
 @[simp]
-theorem coe_orderMonoidWithZeroHom_id :
-    (OrderRingHom.id α : α →*₀o α) = OrderMonoidWithZeroHom.id α :=
+theorem toOrderMonoidWithZeroHom_id :
+    (OrderRingHom.id α).toOrderMonoidWithZeroHom = OrderMonoidWithZeroHom.id α :=
   rfl
+
+@[deprecated (since := "2026-11-26")] alias coe_orderMonoidWithZeroHom_id :=
+  toOrderMonoidWithZeroHom_id
 
 /-- Composition of two `OrderRingHom`s as an `OrderRingHom`. -/
 protected def comp (f : β →+*o γ) (g : α →+*o β) : α →+*o γ :=
@@ -339,16 +357,17 @@ theorem coe_mk (e : α ≃+* β) (h) : ⇑(⟨e, h⟩ : α ≃+*o β) = e :=
 theorem mk_coe (e : α ≃+*o β) (h) : (⟨e, h⟩ : α ≃+*o β) = e :=
   ext fun _ => rfl
 
-@[simp]
-theorem toOrderIso_eq_coe (f : α ≃+*o β) : f.toOrderIso = f :=
+theorem toOrderIso_eq_ofClass (f : α ≃+*o β) : f.toOrderIso = .ofClass f :=
   OrderIso.ext rfl
+
+@[deprecated (since := "2026-11-26")] alias toOrderIso_eq_coe := toOrderIso_eq_ofClass
 
 @[simp]
 theorem coe_toRingEquiv (f : α ≃+*o β) : ⇑(f : α ≃+* β) = f :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_toOrderIso (f : α ≃+*o β) : DFunLike.coe (f : α ≃o β) = f :=
+theorem coe_toOrderIso (f : α ≃+*o β) : DFunLike.coe f.toOrderIso = f :=
   rfl
 
 variable (α)
@@ -372,8 +391,10 @@ theorem toRingEquiv_refl : (OrderRingIso.refl α : α ≃+* α) = RingEquiv.refl
 @[deprecated (since := "2026-05-05")] alias coe_ringEquiv_refl := toRingEquiv_refl
 
 @[simp]
-theorem coe_orderIso_refl : (OrderRingIso.refl α : α ≃o α) = OrderIso.refl α :=
+theorem toOrderIso_refl : (OrderRingIso.refl α).toOrderIso = OrderIso.refl α :=
   rfl
+
+@[deprecated (since := "2026-11-26")] alias coe_orderIso_refl := toOrderIso_refl
 
 variable {α}
 

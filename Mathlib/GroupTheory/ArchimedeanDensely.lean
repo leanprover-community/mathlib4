@@ -536,7 +536,7 @@ instance [Monoid X] : LocallyFiniteOrder (Units X) :=
   OrderEmbedding.locallyFiniteOrder (⟨⟨Units.val, Units.val_injective⟩, by simp⟩ : Units X ↪o X)
 
 instance [Group X] : LocallyFiniteOrder (WithZero X)ˣ :=
-  OrderIso.locallyFiniteOrder (OrderMonoidIso.unitsWithZero (α := X) : (WithZero X)ˣ ≃o X)
+  OrderIso.locallyFiniteOrder (OrderMonoidIso.unitsWithZero (α := X)).toOrderIso
 
 end LocallyFiniteOrder
 
