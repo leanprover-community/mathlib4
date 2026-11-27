@@ -258,7 +258,8 @@ private def cfcAux : C(σ 𝕜 x, 𝕜) →⋆ₐ[𝕜] Unitization 𝕜 A :=
 private lemma toProd_cfcAux (f : C(σ 𝕜 x, 𝕜)) :
     (cfcAux x hx f).toProd =
       (f ⟨x.fst, fst_mem_spectrum x⟩,
-        cfcₙHom hx (f.comp (quasispectrumHomeomorphSpectrum x)).toContinuousMapZero) :=
+        cfcₙHom hx
+          (f.comp (quasispectrumHomeomorphSpectrum x).toContinuousMap).toContinuousMapZero) :=
   Prod.ext (by simp [cfcAux]) (by simp [cfcAux])
 
 private lemma continuous_cfcAux : Continuous (cfcAux x hx) := by
@@ -298,7 +299,8 @@ lemma toProd_cfcHom [ContinuousFunctionalCalculus 𝕜 (Unitization 𝕜 A) p₁
     (hp₁ : ∀ y : Unitization 𝕜 A, p₁ y ↔ p y.snd) (f : C(σ 𝕜 x, 𝕜)) :
     (cfcHom ((hp₁ x).mpr hx) f).toProd =
       (f ⟨x.fst, fst_mem_spectrum x⟩,
-        cfcₙHom hx (f.comp (quasispectrumHomeomorphSpectrum x)).toContinuousMapZero) := by
+        cfcₙHom hx
+          (f.comp (quasispectrumHomeomorphSpectrum x).toContinuousMap).toContinuousMapZero) := by
   rw [cfcHom_eq_of_continuous_of_map_id _ _ (continuous_cfcAux x hx) (cfcAux_id x hx),
     toProd_cfcAux]
 
