@@ -209,7 +209,7 @@ theorem finrank_range_comp_add_finrank_range_comp_le [FiniteDimensional K V]
   have h₁ := finrank_map_add_finrank_inf_ker f (range g)
   have h₂ := finrank_map_add_finrank_inf_ker f (range (g ∘ₗ h))
   have hle : finrank K ↥(range (g ∘ₗ h) ⊓ ker f) ≤ finrank K ↥(range g ⊓ ker f) :=
-    Submodule.finrank_mono (inf_le_inf_right _ (range_comp_le_range h g))
+    finrank_mono (inf_le_inf_right _ (range_comp_le_range h g))
   rw [range_comp g f, range_comp (g ∘ₗ h) f]
   lia
 
