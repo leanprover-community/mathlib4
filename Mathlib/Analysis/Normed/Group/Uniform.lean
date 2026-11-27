@@ -312,7 +312,8 @@ theorem eDist_mul_mul_le (a₁ a₂ b₁ b₂ : E) :
   norm_cast
   apply nnDist_mul_mul_le
 
-@[deprecated (since := "2026-11-27")] alias edist_mul_mul_le := eDist_mul_mul_le
+@[to_additive (attr := deprecated (since := "2026-11-27"))]
+alias edist_mul_mul_le := eDist_mul_mul_le
 
 section PseudoEMetricSpace
 variable {α E : Type*} [SeminormedCommGroup E] [PseudoEMetricSpace α] {K Kf Kg : ℝ≥0}

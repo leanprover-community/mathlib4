@@ -52,10 +52,7 @@ lemma lintegral_eNorm_eq_lintegral_eDist (f : α → β) :
 alias lintegral_eNorm_eq_lintegral_edist := lintegral_eNorm_eq_lintegral_eDist
 
 @[deprecated (since := "2026-11-06")]
-alias lintegral_enorm_eq_lintegral_eDist := lintegral_eNorm_eq_lintegral_eDist
-
-@[deprecated (since := "2026-11-27")]
-alias lintegral_enorm_eq_lintegral_edist := lintegral_enorm_eq_lintegral_eDist
+alias lintegral_enorm_eq_lintegral_edist := lintegral_eNorm_eq_lintegral_eDist
 
 theorem lintegral_norm_eq_lintegral_eDist (f : α → β) :
     ∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ = ∫⁻ a, eDist (f a) 0 ∂μ := by

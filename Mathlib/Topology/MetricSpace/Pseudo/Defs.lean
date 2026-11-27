@@ -311,7 +311,7 @@ theorem nnDist_eDist (x y : α) : nnDist x y = (eDist x y).toNNReal := by
 
 @[deprecated (since := "2026-11-27")] alias nnDist_edist := nnDist_eDist
 
-@[deprecated (since := "2026-11-07")] alias nndist_eDist := nnDist_eDist
+@[deprecated (since := "2026-11-07")] alias nndist_edist := nnDist_eDist
 
 @[simp, norm_cast]
 theorem coe_nnreal_ennreal_nnDist (x y : α) : ↑(nnDist x y) = eDist x y :=

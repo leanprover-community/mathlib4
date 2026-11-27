@@ -314,7 +314,7 @@ variable [FunLike F α β] [IsometryClass F α β] (f : F)
 protected theorem eDist_eq (x y : α) : eDist (f x) (f y) = eDist x y :=
   (IsometryClass.isometry f).eDist_eq x y
 
-@[deprecated (since := "2026-11-27")] alias edist_eq := eDist_eq
+@[deprecated (since := "2026-11-27")] protected alias edist_eq := IsometryClass.eDist_eq
 
 protected theorem continuous : Continuous f :=
   (IsometryClass.isometry f).continuous
@@ -422,7 +422,7 @@ protected theorem surjective (h : α ≃ᵢ β) : Surjective h :=
 protected theorem eDist_eq (h : α ≃ᵢ β) (x y : α) : eDist (h x) (h y) = eDist x y :=
   h.isometry.eDist_eq x y
 
-@[deprecated (since := "2026-11-27")] alias edist_eq := eDist_eq
+@[deprecated (since := "2026-11-27")] protected alias edist_eq := IsometryEquiv.eDist_eq
 
 protected theorem dist_eq {α β : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β] (h : α ≃ᵢ β)
     (x y : α) : dist (h x) (h y) = dist x y :=

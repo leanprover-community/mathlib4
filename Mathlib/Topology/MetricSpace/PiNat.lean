@@ -808,7 +808,7 @@ The distance we use here is `eDist x y = ∑' i, min (1/2)^(encode i) (eDist (x 
 protected def eDist : EDist (∀ i, F i) where
   eDist x y := ∑' i, min (2⁻¹ ^ encode i) (eDist (x i) (y i))
 
-@[deprecated (since := "2026-11-27")] alias edist := eDist
+@[deprecated (since := "2026-11-27")] protected alias edist := PiCountable.eDist
 
 attribute [scoped instance] PiCountable.eDist
 

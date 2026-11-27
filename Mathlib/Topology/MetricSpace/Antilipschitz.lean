@@ -44,7 +44,7 @@ protected lemma AntilipschitzWith.eDist_lt_top [PseudoEMetricSpace α] [PseudoMe
   (h x y).trans_lt <| by finiteness
 
 @[deprecated (since := "2026-11-27")]
-alias AntilipschitzWith.edist_lt_top := AntilipschitzWith.eDist_lt_top
+protected alias AntilipschitzWith.edist_lt_top := AntilipschitzWith.eDist_lt_top
 
 theorem AntilipschitzWith.eDist_ne_top [PseudoEMetricSpace α] [PseudoMetricSpace β] {K : ℝ≥0}
     {f : α → β} (h : AntilipschitzWith K f) (x y : α) : eDist x y ≠ ⊤ :=

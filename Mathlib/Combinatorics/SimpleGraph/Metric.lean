@@ -67,21 +67,21 @@ protected theorem Reachable.exists_walk_length_eq_eDist (hr : G.Reachable u v) :
   csInf_mem <| Set.range_nonempty_iff_nonempty.mpr hr
 
 @[deprecated (since := "2026-11-27")]
-alias Reachable.exists_walk_length_eq_edist := Reachable.exists_walk_length_eq_eDist
+protected alias Reachable.exists_walk_length_eq_edist := Reachable.exists_walk_length_eq_eDist
 
 protected theorem Connected.exists_walk_length_eq_eDist (hconn : G.Connected) (u v : V) :
     ∃ p : G.Walk u v, p.length = G.eDist u v :=
   (hconn u v).exists_walk_length_eq_eDist
 
 @[deprecated (since := "2026-11-27")]
-alias Connected.exists_walk_length_eq_edist := Connected.exists_walk_length_eq_eDist
+protected alias Connected.exists_walk_length_eq_edist := Connected.exists_walk_length_eq_eDist
 
 theorem eDist_le (p : G.Walk u v) :
     G.eDist u v ≤ p.length :=
   sInf_le ⟨p, rfl⟩
 protected alias Walk.eDist_le := eDist_le
 
-@[deprecated (since := "2026-11-27")] alias Walk.edist_le := Walk.eDist_le
+@[deprecated (since := "2026-11-27")] protected alias Walk.edist_le := Walk.eDist_le
 
 @[simp]
 theorem eDist_eq_zero_iff : G.eDist u v = 0 ↔ u = v := by
@@ -133,7 +133,7 @@ protected theorem eDist_triangle : G.eDist u w ≤ G.eDist u v + G.eDist v w := 
       rw [← hp, ← hq, ← Nat.cast_add, ← Walk.length_append]
       exact eDist_le _
 
-@[deprecated (since := "2026-11-27")] alias edist_triangle := eDist_triangle
+@[deprecated (since := "2026-11-27")] protected alias edist_triangle := SimpleGraph.eDist_triangle
 
 theorem eDist_comm : G.eDist u v = G.eDist v u := by
   rw [eDist_eq_sInf, ← Set.image_univ, ← Set.image_univ_of_surjective Walk.reverse_surjective,

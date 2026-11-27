@@ -296,7 +296,7 @@ protected theorem eDist_self (f : PiLp p β) : eDist f f = 0 := by
   · simp [eDist_eq_iSup]
   · simp [eDist_eq_sum h, ENNReal.zero_rpow_of_pos h, ENNReal.zero_rpow_of_pos (inv_pos.2 h)]
 
-@[deprecated (since := "2026-11-27")] alias edist_self := eDist_self
+@[deprecated (since := "2026-11-27")] protected alias edist_self := PiLp.eDist_self
 
 /-- This holds independent of `p` and does not require `[Fact (1 ≤ p)]`. We keep it separate
 from `pi_Lp.pseudo_emetric_space` so it can be used also for `p < 1`. -/
@@ -306,7 +306,7 @@ protected theorem eDist_comm (f g : PiLp p β) : eDist f g = eDist g f := by
   · simp only [eDist_eq_iSup, eDist_comm]
   · simp only [eDist_eq_sum h, eDist_comm]
 
-@[deprecated (since := "2026-11-27")] alias edist_comm := eDist_comm
+@[deprecated (since := "2026-11-27")] protected alias edist_comm := PiLp.eDist_comm
 
 end EDistProp
 

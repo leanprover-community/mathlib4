@@ -43,11 +43,13 @@ instance {α : Type*} [PseudoEMetricSpace α] : PseudoEMetricSpace αᵐᵒᵖ :
 @[to_additive]
 theorem eDist_unop (x y : αᵐᵒᵖ) : eDist (unop x) (unop y) = eDist x y := rfl
 
-@[deprecated (since := "2026-11-27")] alias edist_unop := eDist_unop
+@[to_additive (attr := deprecated (since := "2026-11-27"))]
+alias edist_unop := eDist_unop
 
 @[to_additive]
 theorem eDist_op (x y : α) : eDist (op x) (op y) = eDist x y := rfl
 
-@[deprecated (since := "2026-11-27")] alias edist_op := eDist_op
+@[to_additive (attr := deprecated (since := "2026-11-27"))]
+alias edist_op := eDist_op
 
 end MulOpposite

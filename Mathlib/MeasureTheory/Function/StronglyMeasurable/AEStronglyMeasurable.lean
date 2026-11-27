@@ -542,7 +542,7 @@ protected theorem eDist {β : Type*} [PseudoEMetricSpace β] {f g : α → β}
     AEMeasurable (fun a => eDist (f a) (g a)) μ :=
   (continuous_eDist.comp_aestronglyMeasurable (hf.prodMk hg)).aemeasurable
 
-@[deprecated (since := "2026-11-27")] alias edist := eDist
+@[deprecated (since := "2026-11-27")] protected alias edist := AEStronglyMeasurable.eDist
 
 @[fun_prop]
 protected theorem real_toNNReal {f : α → ℝ} (hf : AEStronglyMeasurable f μ) :

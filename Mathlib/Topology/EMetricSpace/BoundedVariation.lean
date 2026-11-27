@@ -892,7 +892,7 @@ theorem _root_.BoundedVariationOn.eVariationOn_Iic_eq_Iio_add_eDist [CompleteSpa
     simpa only [univ_inter] using hf.tendsto_leftLim _
   simpa using this
 
-@[deprecated (since := "2026-11-27")]
+@[to_dual (attr := deprecated (since := "2026-11-27"))]
 alias _root_.BoundedVariationOn.eVariationOn_Iic_eq_Iio_add_edist :=
   _root_.BoundedVariationOn.eVariationOn_Iic_eq_Iio_add_eDist
 

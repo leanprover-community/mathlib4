@@ -177,7 +177,7 @@ theorem mul_eDist_le (h : LipschitzWith K f) (x y : α) :
 protected theorem of_eDist_le (h : ∀ x y, eDist (f x) (f y) ≤ eDist x y) : LipschitzWith 1 f :=
   fun x y => by simp only [ENNReal.coe_one, one_mul, h]
 
-@[deprecated (since := "2026-11-27")] alias of_edist_le := of_eDist_le
+@[deprecated (since := "2026-11-27")] protected alias of_edist_le := LipschitzWith.of_eDist_le
 
 protected theorem weaken (hf : LipschitzWith K f) {K' : ℝ≥0} (h : K ≤ K') : LipschitzWith K' f :=
   fun x y => le_trans (hf x y) <| mul_left_mono (ENNReal.coe_le_coe.2 h)
