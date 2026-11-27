@@ -235,14 +235,10 @@ theorem quadraticChar_card_sqrts (hF : ringChar F ≠ 2) (a : F) :
       simp only [neg_add_cancel, Int.natCast_eq_zero, card_eq_zero, eq_empty_iff_forall_notMem]
       simpa [s, isSquare_iff_exists_sq, eq_comm] using h
 
-open Finset in
 /-- The number of solutions to `x^2 = f x` is determined by the sum of the quadratic characters. -/
-theorem quadraticChar_card_sqrts_eq_fun {ι : Type*} [Fintype ι]
-    (hF : ringChar F ≠ 2) (f : ι → F) :
-    #{(x, y) : ι × F | y ^ 2 = f x}.toFinset
-      = Fintype.card ι + ∑ x, quadraticChar F (f x) := by
-  have h : #{(x, y) : ι × F | y ^ 2 = f x}.toFinset =
-      ∑ x, #{y : F | y ^ 2 = f x}.toFinset := by
+theorem quadraticChar_card_sqrts_eq_fun {ι : Type*} [Fintype ι] (hF : ringChar F ≠ 2) (f : ι → F) :
+    #{(x, y) : ι × F | y ^ 2 = f x}.toFinset = Fintype.card ι + ∑ x, quadraticChar F (f x) := by
+  have h : #{(x, y) : ι × F | y ^ 2 = f x}.toFinset = ∑ x, #{y : F | y ^ 2 = f x}.toFinset := by
     simp_rw [Set.toFinset_ofPred, card_filter, Fintype.sum_prod_type]
   simp_rw [h, Nat.cast_sum, quadraticChar_card_sqrts hF]
   simp [sum_add_distrib, add_comm]
