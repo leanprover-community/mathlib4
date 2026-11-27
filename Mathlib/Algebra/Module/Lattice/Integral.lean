@@ -5,186 +5,118 @@ Authors: Seewoo Lee
 -/
 module
 
-public import Mathlib.Algebra.Module.Lattice.Basic
-public import Mathlib.Analysis.InnerProductSpace.Orthonormal
+public import Mathlib.Algebra.Module.Submodule.Bilinear
 public import Mathlib.LinearAlgebra.BilinearForm.DualLattice
+public import Mathlib.LinearAlgebra.BilinearForm.Hom
 
 /-!
-# Integral lattices
+# Integral lattices with respect to a bilinear form
 
-A `ℤ`-submodule `L` of a real inner product space is *integral* if `⟪x, y⟫` is an integer for all
-`x, y ∈ L`.
+Let `S` be an `R`-algebra and let `B` be an `S`-bilinear form on `M`. An `R`-submodule `L` of `M` is
+*integral* with respect to `B` if `B x y` lies in the image of `R` in `S` for all `x, y ∈ L`. The
+typical example is `R = ℤ` and `S = ℚ` or `S = ℝ`. The form `B` is not assumed to be symmetric,
+nondegenerate or definite, so this covers indefinite lattices as well.
+
+For the special case of the inner product on a real inner product space, see
+`Submodule.IsIntegral`.
 
 ## Main definitions
 
-* `Submodule.IsIntegral L`: the predicate that `⟪x, y⟫` is an integer for all `x, y ∈ L`.
+* `LinearMap.BilinForm.IsIntegral B L`: the predicate that `B x y ∈ (1 : Submodule R S)` for all
+  `x, y ∈ L`.
 
 ## Main results
 
-* `Submodule.isIntegral_iff_le_dualSubmodule`: `L` is integral if and only if it is contained in
-  its dual lattice with respect to the inner product.
-* `Submodule.isIntegral_span_iff`: the `ℤ`-span of a set `s` is integral if and only if `⟪x, y⟫` is
-  an integer for all `x, y ∈ s`. See also `Submodule.isIntegral_iff_of_basis`.
-* `Submodule.isIntegral_sup_iff`: `L₁ ⊔ L₂` is integral if and only if `L₁` and `L₂` are integral
-  and `⟪x, y⟫` is an integer for all `x ∈ L₁` and `y ∈ L₂`.
-* `Submodule.isIntegral_span_of_orthonormal`: the `ℤ`-span of an orthonormal family is integral.
-* `Submodule.IsIntegral.one_le_norm`: every nonzero vector of an integral lattice has norm at least
-  `1`.
-* `Submodule.IsIntegral.discreteTopology`: an integral lattice is discrete.
-* `Submodule.IsIntegral.isLattice`: in finite dimension, an integral `ℤ`-submodule is a lattice in
-  the sense of `Submodule.IsLattice`.
-* `Submodule.IsIntegral.comap`, `Submodule.IsIntegral.map`: integrality is preserved under linear
-  isometries.
+* `LinearMap.BilinForm.isIntegral_iff_le_dualSubmodule`: `L` is integral if and only if it is
+  contained in its dual submodule with respect to `B`.
+* `LinearMap.BilinForm.isIntegral_span_iff`: the `R`-span of a set `s` is integral if and only if
+  `B x y ∈ 1` for all `x, y ∈ s`. See also `LinearMap.BilinForm.isIntegral_iff_of_basis`.
+* `LinearMap.BilinForm.isIntegral_sup_iff`: `L₁ ⊔ L₂` is integral if and only if `L₁` and `L₂` are
+  integral and `B` takes values in `1` on `L₁ × L₂` and `L₂ × L₁`.
+* `LinearMap.BilinForm.isIntegral_map_iff`, `LinearMap.BilinForm.IsIntegral.comap`: integrality
+  under images and preimages along linear maps.
 -/
 
 @[expose] public section
 
-open scoped InnerProductSpace
+open LinearMap (BilinForm)
+open Submodule
 
-namespace Submodule
+namespace LinearMap.BilinForm
 
-variable {E F : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [NormedAddCommGroup F]
-  [InnerProductSpace ℝ F] {L L' : Submodule ℤ E}
+variable {R S M M' : Type*} [CommRing R] [CommRing S] [Algebra R S]
+  [AddCommGroup M] [Module R M] [Module S M] [AddCommGroup M'] [Module R M'] [Module S M']
+  {B : BilinForm S M} {L L' : Submodule R M}
 
-/-- A `ℤ`-submodule `L` of a real inner product space is *integral* if `⟪x, y⟫` is an integer for
-all `x, y ∈ L`. -/
-def IsIntegral (L : Submodule ℤ E) : Prop :=
-  ∀ x ∈ L, ∀ y ∈ L, ∃ n : ℤ, ⟪x, y⟫_ℝ = n
+/-- An `R`-submodule `L` is *integral* with respect to an `S`-bilinear form `B` if `B x y` lies in
+the image of `R` in `S` for all `x, y ∈ L`. -/
+def IsIntegral (B : BilinForm S M) (L : Submodule R M) : Prop :=
+  ∀ x ∈ L, ∀ y ∈ L, B x y ∈ (1 : Submodule R S)
 
-lemma isIntegral_bot : IsIntegral (⊥ : Submodule ℤ E) := by
-  intro x hx y hy
-  rw [mem_bot] at hx
-  exact ⟨0, by simp [hx]⟩
+lemma isIntegral_bot : B.IsIntegral (⊥ : Submodule R M) := by
+  rintro x hx y -
+  simp [(mem_bot R).1 hx]
 
-/-- A lattice is integral if and only if it is contained in its dual lattice with respect to the
-inner product. -/
-lemma isIntegral_iff_le_dualSubmodule :
-    IsIntegral L ↔ L ≤ LinearMap.BilinForm.dualSubmodule (innerₗ E) L := by
-  simp [IsIntegral, le_iff_mem_imp_mem, LinearMap.BilinForm.mem_dualSubmodule, mem_one, eq_comm]
+lemma IsIntegral.mono (hL : B.IsIntegral L) (h : L' ≤ L) : B.IsIntegral L' :=
+  fun x hx y hy ↦ hL x (h hx) y (h hy)
 
-/-- The `ℤ`-span of a set `s` is integral if and only if `⟪x, y⟫` is an integer for all
+variable [IsScalarTower R S M] [IsScalarTower R S M']
+
+/-- The `R`-span of a set `s` is integral if and only if `B x y` lies in the image of `R` for all
 `x, y ∈ s`. -/
-lemma isIntegral_span_iff {s : Set E} :
-    IsIntegral (span ℤ s) ↔ ∀ x ∈ s, ∀ y ∈ s, ∃ n : ℤ, ⟪x, y⟫_ℝ = n := by
-  refine ⟨fun h x hx y hy ↦ h x (subset_span hx) y (subset_span hy), fun h x hx y hy ↦ ?_⟩
-  induction hx, hy using span_induction₂ with
-  | mem_mem x y hx hy => exact h x hx y hy
-  | zero_left => exact ⟨0, by simp⟩
-  | zero_right => exact ⟨0, by simp⟩
-  | add_left x y z _ _ _ h₁ h₂ =>
-    obtain ⟨a, ha⟩ := h₁
-    obtain ⟨b, hb⟩ := h₂
-    exact ⟨a + b, by simp [inner_add_left, ha, hb]⟩
-  | add_right x y z _ _ _ h₁ h₂ =>
-    obtain ⟨a, ha⟩ := h₁
-    obtain ⟨b, hb⟩ := h₂
-    exact ⟨a + b, by simp [inner_add_right, ha, hb]⟩
-  | smul_left r x y _ _ h =>
-    obtain ⟨a, ha⟩ := h
-    exact ⟨r * a, by simp [← Int.cast_smul_eq_zsmul ℝ, real_inner_smul_left, ha]⟩
-  | smul_right r x y _ _ h =>
-    obtain ⟨a, ha⟩ := h
-    exact ⟨r * a, by simp [← Int.cast_smul_eq_zsmul ℝ, real_inner_smul_right, ha]⟩
+lemma isIntegral_span_iff {s : Set M} :
+    B.IsIntegral (span R s) ↔ ∀ x ∈ s, ∀ y ∈ s, B x y ∈ (1 : Submodule R S) := by
+  have := map₂_le (f := B.restrictScalars₁₂ R R) (p := span R s) (q := span R s) (r := 1)
+  rw [map₂_span_span, span_le, Set.image2_subset_iff] at this
+  exact this.symm
 
-lemma isIntegral_span_range_iff {ι : Type*} {v : ι → E} :
-    IsIntegral (span ℤ (Set.range v)) ↔ ∀ i j, ∃ n : ℤ, ⟪v i, v j⟫_ℝ = n := by
+lemma isIntegral_span_range_iff {ι : Type*} {v : ι → M} :
+    B.IsIntegral (span R (Set.range v)) ↔ ∀ i j, B (v i) (v j) ∈ (1 : Submodule R S) := by
   simp [isIntegral_span_iff]
 
-lemma isIntegral_span_singleton_iff {v : E} : IsIntegral (ℤ ∙ v) ↔ ∃ n : ℤ, ⟪v, v⟫_ℝ = n := by
+lemma isIntegral_span_singleton_iff {v : M} :
+    B.IsIntegral (R ∙ v) ↔ B v v ∈ (1 : Submodule R S) := by
   simp [isIntegral_span_iff]
 
-/-- A lattice is integral if and only if the inner products of its basis vectors are integers. -/
-lemma isIntegral_iff_of_basis {ι : Type*} (b : Module.Basis ι ℤ L) :
-    IsIntegral L ↔ ∀ i j, ∃ n : ℤ, ⟪(b i : E), b j⟫_ℝ = n := by
-  have h : span ℤ (Set.range fun i ↦ (b i : E)) = L :=
+/-- A submodule is integral if and only if `B` takes values in the image of `R` on a basis. -/
+lemma isIntegral_iff_of_basis {ι : Type*} (b : Module.Basis ι R L) :
+    B.IsIntegral L ↔ ∀ i j, B (b i : M) (b j) ∈ (1 : Submodule R S) := by
+  have h : span R (Set.range fun i ↦ (b i : M)) = L :=
     (span_range_subtype_eq_top_iff L fun i ↦ (b i).property).1 b.span_eq
   rw [← isIntegral_span_range_iff, h]
 
-lemma isIntegral_sup_iff {L₁ L₂ : Submodule ℤ E} :
-    IsIntegral (L₁ ⊔ L₂) ↔
-      IsIntegral L₁ ∧ IsIntegral L₂ ∧ ∀ x ∈ L₁, ∀ y ∈ L₂, ∃ n : ℤ, ⟪x, y⟫_ℝ = n := by
-  refine ⟨fun h ↦ ⟨fun x hx y hy ↦ h x (mem_sup_left hx) y (mem_sup_left hy),
-    fun x hx y hy ↦ h x (mem_sup_right hx) y (mem_sup_right hy),
-    fun x hx y hy ↦ h x (mem_sup_left hx) y (mem_sup_right hy)⟩, fun ⟨h₁, h₂, h₁₂⟩ ↦ ?_⟩
+lemma isIntegral_sup_iff {L₁ L₂ : Submodule R M} :
+    B.IsIntegral (L₁ ⊔ L₂) ↔ B.IsIntegral L₁ ∧ B.IsIntegral L₂ ∧
+      (∀ x ∈ L₁, ∀ y ∈ L₂, B x y ∈ (1 : Submodule R S)) ∧
+      ∀ x ∈ L₁, ∀ y ∈ L₂, B y x ∈ (1 : Submodule R S) := by
+  refine ⟨fun h ↦ ⟨h.mono le_sup_left, h.mono le_sup_right,
+    fun x hx y hy ↦ h x (mem_sup_left hx) y (mem_sup_right hy),
+    fun x hx y hy ↦ h y (mem_sup_right hy) x (mem_sup_left hx)⟩, fun ⟨h₁, h₂, h₁₂, h₂₁⟩ ↦ ?_⟩
   rw [← span_eq L₁, ← span_eq L₂, ← span_union, isIntegral_span_iff]
   rintro x (hx | hx) y (hy | hy)
-  · exact h₁ x hx y hy
-  · exact h₁₂ x hx y hy
-  · simpa [real_inner_comm] using h₁₂ y hy x hx
-  · exact h₂ x hx y hy
+  exacts [h₁ x hx y hy, h₁₂ x hx y hy, h₂₁ y hy x hx, h₂ x hx y hy]
 
-/-- The `ℤ`-span of an orthonormal family is integral. -/
-lemma isIntegral_span_of_orthonormal {ι : Type*} {v : ι → E} (hv : Orthonormal ℝ v) :
-    IsIntegral (span ℤ (Set.range v)) := by
-  classical
-  refine isIntegral_span_range_iff.2 fun i j ↦ ?_
-  rw [orthonormal_iff_ite.1 hv i j]
-  split_ifs
-  exacts [⟨1, by simp⟩, ⟨0, by simp⟩]
+/-- The image of `L` under a linear map `f` is integral with respect to `B` if and only if `L` is
+integral with respect to the pullback of `B` along `f`. -/
+lemma isIntegral_map_iff {B : BilinForm S M'} {f : M →ₗ[S] M'} :
+    B.IsIntegral (L.map (f.restrictScalars R)) ↔ (B.comp f f).IsIntegral L := by
+  simp [IsIntegral]
 
-namespace IsIntegral
+/-- The preimage of an integral submodule under a linear map `f` is integral with respect to the
+pullback of the bilinear form along `f`. -/
+lemma IsIntegral.comap {B : BilinForm S M'} {L : Submodule R M'} (hL : B.IsIntegral L)
+    (f : M →ₗ[S] M') : (B.comp f f).IsIntegral (L.comap (f.restrictScalars R)) :=
+  fun _ hx _ hy ↦ hL _ hx _ hy
 
-lemma mono (hL : IsIntegral L) (h : L' ≤ L) : IsIntegral L' :=
-  fun x hx y hy ↦ hL x (h hx) y (h hy)
+section Field
 
-/-- The norm squared of a vector in an integral lattice is a natural number. -/
-lemma exists_norm_sq_eq (hL : IsIntegral L) {x : E} (hx : x ∈ L) : ∃ n : ℕ, ‖x‖ ^ 2 = n := by
-  obtain ⟨n, hn⟩ := hL x hx x hx
-  rw [real_inner_self_eq_norm_sq] at hn
-  obtain ⟨m, rfl⟩ := Int.eq_ofNat_of_zero_le (by exact_mod_cast hn ▸ sq_nonneg ‖x‖)
-  exact ⟨m, by simpa using hn⟩
+variable {K : Type*} [Field K] [Algebra R K] [Module K M] [IsScalarTower R K M]
+  {B : BilinForm K M}
 
-/-- Every nonzero vector of an integral lattice has norm at least `1`. -/
-lemma one_le_norm (hL : IsIntegral L) {x : E} (hx : x ∈ L) (hx₀ : x ≠ 0) : 1 ≤ ‖x‖ := by
-  obtain ⟨n, hn⟩ := hL.exists_norm_sq_eq hx
-  rw [← one_le_sq_iff₀ (norm_nonneg x), hn, Nat.one_le_cast, Nat.one_le_iff_ne_zero]
-  rintro rfl
-  simp_all
+/-- A submodule is integral if and only if it is contained in its dual submodule. -/
+lemma isIntegral_iff_le_dualSubmodule : B.IsIntegral L ↔ L ≤ B.dualSubmodule L :=
+  Iff.rfl
 
-/-- An integral lattice is discrete. -/
-lemma discreteTopology (hL : IsIntegral L) : DiscreteTopology L := by
-  rw [discreteTopology_iff_isOpen_singleton_zero, Metric.isOpen_singleton_iff]
-  refine ⟨1, one_pos, fun y hy ↦ by_contra fun hy₀ ↦ ?_⟩
-  exact (hL.one_le_norm y.property (by simpa using hy₀)).not_gt (by simpa using hy)
+end Field
 
-/-- In finite dimension, an integral `ℤ`-submodule is a lattice: taking inner products with an
-`ℝ`-basis of `span ℝ L` contained in `L` embeds `L` into `ℤ ^ r`. -/
-lemma isLattice [FiniteDimensional ℝ E] (hL : IsIntegral L) : L.IsLattice ℝ := by
-  classical
-  obtain ⟨s, hsL, hs, hli⟩ := exists_linearIndependent ℝ (L : Set E)
-  have := hli.setFinite.fintype
-  let ψ : E →ₗ[ℝ] s → ℝ := LinearMap.pi fun v ↦ innerₗ E (v : E)
-  have hψ : Set.InjOn ψ L := fun x hx y hy hxy ↦ by
-    have h : span ℝ s ≤ LinearMap.ker (innerₗ E (x - y)) := span_le.2 fun v hv ↦ by
-      simpa [ψ, inner_sub_left, sub_eq_zero, real_inner_comm] using congrFun hxy ⟨v, hv⟩
-    exact sub_eq_zero.1 <| inner_self_eq_zero.1 <| h <| hs ▸ subset_span (sub_mem hx hy)
-  have : (span ℤ (Set.range (Pi.basisFun ℝ s))).IsLattice ℝ :=
-    IsLattice.span_of_linearIndependent ℝ (Pi.basisFun ℝ s).linearIndependent
-  have hle : L.map (ψ.restrictScalars ℤ) ≤ span ℤ (Set.range (Pi.basisFun ℝ s)) := by
-    rintro _ ⟨x, hx, rfl⟩
-    choose n hn using fun v : s ↦ hL v (hsL v.property) x hx
-    refine (mem_span_range_iff_exists_fun ℤ).2 ⟨n, funext fun v ↦ ?_⟩
-    simp [ψ, hn, Pi.single_apply]
-  have := IsLattice.mono ℝ hle
-  have hker : L ⊓ LinearMap.ker (ψ.restrictScalars ℤ) = ⊥ :=
-    eq_bot_iff.2 fun x ⟨hxL, hx⟩ ↦ hψ hxL (zero_mem L) (by simpa using hx)
-  refine ⟨fg_of_fg_map_of_fg_inf_ker _ (IsLattice.fg ℝ _) (hker ▸ fg_bot), fun t ht hti ↦ ?_⟩
-  refine .of_comp ψ ((linearIndepOn_iff_image (hψ.mono ht)).2 ?_)
-  exact IsLattice.linearIndepOn (M := L.map (ψ.restrictScalars ℤ)) _
-    (Set.image_subset_iff.2 fun x hx ↦ mem_map_of_mem (ht hx))
-    (hti.id_imageₛ (f := ψ.restrictScalars ℤ) (hψ.mono (span_le.2 ht)))
-
-/-- The preimage of an integral lattice under a linear isometry is integral. -/
-lemma comap (hL : IsIntegral L) (e : F →ₗᵢ[ℝ] E) :
-    IsIntegral (L.comap (e.toLinearMap.restrictScalars ℤ)) :=
-  fun _ hx _ hy ↦ by simpa [LinearIsometry.inner_map_map] using hL _ hx _ hy
-
-/-- The image of an integral lattice under a linear isometry is integral. -/
-lemma map (hL : IsIntegral L) (e : E →ₗᵢ[ℝ] F) :
-    IsIntegral (L.map (e.toLinearMap.restrictScalars ℤ)) := by
-  rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩
-  simpa [LinearIsometry.inner_map_map] using hL x hx y hy
-
-end IsIntegral
-
-end Submodule
+end LinearMap.BilinForm
