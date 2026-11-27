@@ -385,7 +385,6 @@ public def isBadNameWithUnderscore (name : Name) : Bool := Id.run do
   if declName.toString.contains "_" then return true
   else return false
 
-open Batteries.Linter in
 /-- Linter that checks for definitions whose name contains an underscore:
 such names violate the naming convention. -/
 @[env_linter] public def defsWithUnderscore : Batteries.Linter where
@@ -431,7 +430,7 @@ public def isMisnamedCoercion (name : Name) : MetaM <| Option <| Array Name := d
 /-- Linter that checks for lemmas whose name contains the string "coe",
 but which don't reference any declaration named like this: most likely,
 these are coercion lemmas violating mathlib's naming convention. -/
-@[env_linter] public def misnamedCoercionLemmas : Batteries.Tactic.Lint.Linter where
+@[env_linter] public def misnamedCoercionLemmas : Batteries.Linter where
   noErrorsFound := "no badly named coercion lemmas found."
   errorsFound := "FOUND most-likely badly named coercion lemmas."
   test declName := do
