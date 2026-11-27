@@ -5,14 +5,14 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.Order.Bounds.Defs
 public import Mathlib.Order.Directed
-public import Mathlib.Order.GaloisConnection.Defs
 public import Mathlib.Order.Hom.Basic
 public import Mathlib.Order.Interval.Set.Defs
 public import Mathlib.Order.SetNotation
 
 import Mathlib.Data.Set.Lattice.Indexed
+import Mathlib.Order.Bounds.Defs
+import Mathlib.Order.GaloisConnection.Defs
 
 /-!
 # Cofinal sets
@@ -115,6 +115,12 @@ theorem isCofinal_iff_iUnion_Iio_eq_univ [NoMaxOrder α] {s : Set α} :
     obtain ⟨z, hz, hz'⟩ := hs y
     exact ⟨z, hz, hy.trans_le hz'⟩
 
+@[simp]
+theorem not_isCofinal_Iio (x : α) : ¬ IsCofinal (Iio x) := by
+  intro hx
+  have := hx x
+  grind
+
 end Preorder
 
 section PartialOrder
@@ -190,7 +196,7 @@ alias ⟨_, IsCofinal.not_bddAbove⟩ := not_bddAbove_iff_isCofinal
 
 theorem IsCofinal.noMaxOrder [NoMaxOrder α] {s : Set α} (hs : IsCofinal s) : NoMaxOrder s where
   exists_gt x := by
-    obtain ⟨y, hxy⟩ := exists_gt x.1
+    obtain ⟨y, hxy⟩ := exists_gt x.val
     obtain ⟨z, hz, hyz⟩ := hs y
     exact ⟨⟨z, hz⟩, hxy.trans_le hyz⟩
 

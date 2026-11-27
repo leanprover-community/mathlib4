@@ -8,13 +8,15 @@ module
 public import Mathlib.Algebra.Homology.Embedding.Extend
 public import Mathlib.Algebra.Homology.Embedding.Restriction
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The stupid truncation of homological complexes
 
 Given an embedding `e : c.Embedding c'` of complex shapes, we define
 a functor `stupidTruncFunctor : HomologicalComplex C c' ⥤ HomologicalComplex C c'`
 which sends `K` to `K.stupidTrunc e` which is defined as `(K.restriction e).extend e`.
-
 -/
 
 @[expose] public section

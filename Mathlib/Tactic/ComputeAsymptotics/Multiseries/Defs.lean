@@ -10,7 +10,6 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Corecursion
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Majorized
 
 /-!
-
 # Multiseries definitions
 
 In this file, we define the multiseries and its main properties: sortedness and approximation.
@@ -32,11 +31,10 @@ in the basis `[b₂, ..., bₙ]` (`basis_tl`).
 * `MultiseriesExpansion.Approximates ms` means that the multiseries `ms` can be used to obtain
   an asymptotical approximation of its attached function.
 
-## Implementation details
+## Implementation notes
 
 * `Multiseries basis_hd basis_tl` is defined as a `Seq (ℝ × MultiseriesExpansion basis_tl)`, so
   we need to port some `Seq` API to `Multiseries`.
-
 -/
 
 @[expose] public section

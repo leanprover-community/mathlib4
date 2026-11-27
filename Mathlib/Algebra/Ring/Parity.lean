@@ -264,7 +264,7 @@ end Ring
 namespace Nat
 variable {m n : ℕ}
 
-@[grind =]
+@[grind =, lia =]
 lemma odd_iff : Odd n ↔ n % 2 = 1 :=
   ⟨fun ⟨m, hm⟩ ↦ by lia, fun h ↦ ⟨n / 2, by lia⟩⟩
 
@@ -272,8 +272,8 @@ instance : DecidablePred (Odd : ℕ → Prop) := fun _ ↦ decidable_of_iff _ od
 
 lemma not_odd_iff : ¬Odd n ↔ n % 2 = 0 := by grind
 
-@[simp, grind =] lemma not_odd_iff_even : ¬Odd n ↔ Even n := by grind
-@[simp] lemma not_even_iff_odd : ¬Even n ↔ Odd n := by grind
+@[simp, grind =, push] lemma not_odd_iff_even : ¬Odd n ↔ Even n := by grind
+@[simp, push] lemma not_even_iff_odd : ¬Even n ↔ Odd n := by grind
 
 @[simp] lemma not_odd_zero : ¬Odd 0 := by grind
 
@@ -287,8 +287,9 @@ lemma even_or_odd' (n : ℕ) : ∃ k, n = 2 * k ∨ n = 2 * k + 1 := by
   simpa only [← two_mul, exists_or, Odd, Even] using even_or_odd n
 
 lemma even_xor_odd' (n : ℕ) : ∃ k, Xor (n = 2 * k) (n = 2 * k + 1) := by
-  obtain ⟨k, rfl⟩ | ⟨k, rfl⟩ := even_or_odd n <;>
-  · use k
+  obtain ⟨k, rfl⟩ | ⟨k, rfl⟩ := even_or_odd n
+  all_goals
+    use k
     grind
 
 lemma odd_add_one {n : ℕ} : Odd (n + 1) ↔ ¬ Odd n := by grind

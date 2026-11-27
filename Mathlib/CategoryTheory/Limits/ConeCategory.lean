@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Comma.Over.Basic
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 public import Mathlib.CategoryTheory.Limits.Shapes.Equivalence
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Limits and the category of (co)cones
 
@@ -17,11 +20,11 @@ This file contains results that stem from the limit API. For the definition and 
 instance of `Cone`, please refer to `Mathlib/CategoryTheory/Limits/Cones.lean`.
 
 ## Main results
+
 * The category of cones on `F : J ⥤ C` is equivalent to the category
   `CostructuredArrow (const J) F`.
 * A cone is limiting iff it is terminal in the category of cones. As a corollary, an equivalence of
   categories of cones preserves limiting properties.
-
 -/
 
 @[expose] public section
@@ -282,8 +285,6 @@ def Cocone.fromCostructuredArrow (F : C ⥤ D) {X : D} (G : J ⥤ CostructuredAr
   pt := X
   ι := { app := fun j => (G.obj j).hom }
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a cocone `c : Cocone K` and a map `f : F.obj c.X ⟶ X`, we can construct a cocone of
     costructured arrows over `X` with `f` as the cone point. -/
 @[simps]

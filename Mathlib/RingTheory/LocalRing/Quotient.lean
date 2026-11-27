@@ -16,11 +16,13 @@ import Mathlib.RingTheory.LocalRing.RingHom.Basic
 import Mathlib.RingTheory.Nakayama
 
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Quotients of local rings
 
 We gather results about the quotients of local rings.
-
 -/
 
 @[expose] public section

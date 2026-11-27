@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.List.Nodup
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # List duplicates
 
@@ -14,10 +17,9 @@ public import Mathlib.Data.List.Nodup
 
 * `List.Duplicate x l : Prop` is an inductive property that holds when `x` is a duplicate in `l`
 
-## Implementation details
+## Implementation notes
 
 In this file, `x ∈+ l` notation is shorthand for `List.Duplicate x l`.
-
 -/
 
 public section

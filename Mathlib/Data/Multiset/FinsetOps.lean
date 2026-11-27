@@ -88,13 +88,14 @@ theorem ndinsert_le {a : α} {s t : Multiset α} : ndinsert a s ≤ t ↔ s ≤ 
 
 theorem attach_ndinsert (a : α) (s : Multiset α) :
     (s.ndinsert a).attach =
-      ndinsert ⟨a, mem_ndinsert_self a s⟩ (s.attach.map fun p => ⟨p.1, mem_ndinsert_of_mem p.2⟩) :=
+      ndinsert ⟨a, mem_ndinsert_self a s⟩
+        (s.attach.map fun p => ⟨p.val, mem_ndinsert_of_mem p.property⟩) :=
   have eq :
-    ∀ h : ∀ p : { x // x ∈ s }, p.1 ∈ s,
+    ∀ h : ∀ p : { x // x ∈ s }, p.val ∈ s,
       (fun p : { x // x ∈ s } => ⟨p.val, h p⟩ : { x // x ∈ s } → { x // x ∈ s }) = id :=
     fun _ => funext fun _ => Subtype.ext rfl
   have : ∀ (t) (eq : s.ndinsert a = t), t.attach = ndinsert ⟨a, eq ▸ mem_ndinsert_self a s⟩
-      (s.attach.map fun p => ⟨p.1, eq ▸ mem_ndinsert_of_mem p.2⟩) := by
+      (s.attach.map fun p => ⟨p.val, eq ▸ mem_ndinsert_of_mem p.property⟩) := by
     intro t ht
     by_cases h : a ∈ s
     · rw [ndinsert_of_mem h] at ht
@@ -254,6 +255,6 @@ alias ⟨_, Disjoint.ndinter_eq_zero⟩ := ndinter_eq_zero_iff_disjoint
 
 theorem Subset.ndinter_eq_left {s t : Multiset α} (h : s ⊆ t) : s.ndinter t = s := by
   induction s, t using Quot.induction_on₂
-  rw [quot_mk_to_coe'', quot_mk_to_coe'', coe_ndinter, List.Subset.inter_eq_left h]
+  rw [quot_mk_to_coe', quot_mk_to_coe', coe_ndinter, List.Subset.inter_eq_left h]
 
 end Multiset

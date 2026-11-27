@@ -5,9 +5,10 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
 -/
 module
 
-public import Mathlib.GroupTheory.QuotientGroup.Basic
 public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.LinearAlgebra.Quotient.Defs
+
+import Mathlib.GroupTheory.QuotientGroup.Basic
 
 /-!
 # Quotients by submodules
@@ -22,7 +23,6 @@ public import Mathlib.LinearAlgebra.Quotient.Defs
 * `Submodule.liftQ`: lift a map `M → M₂` to a map `M ⧸ p → M₂` if the kernel is contained in `p`
 * `Submodule.mapQ`: lift a map `M → M₂` to a map `M ⧸ p → M₂ ⧸ q` if the image of `p` is contained
   in `q`
-
 -/
 
 @[expose] public section
@@ -51,7 +51,7 @@ where `P : Submodule R M`.
 def restrictScalarsEquiv [Ring S] [SMul S R] [Module S M] [IsScalarTower S R M]
     (P : Submodule R M) : (M ⧸ P.restrictScalars S) ≃ₗ[S] M ⧸ P :=
   { Quotient.congrRight fun _ _ => Iff.rfl with
-    map_add' := fun x y => Quotient.inductionOn₂' x y fun _x' _y' => rfl
+    map_add' := fun x y => Quotient.inductionOn₂ x y fun _x' _y' => rfl
     map_smul' := fun _c x => Submodule.Quotient.induction_on _ x fun _x' => rfl }
 
 @[simp]
@@ -253,7 +253,6 @@ please refer to the dedicated version `Submodule.factorPow`. -/
 abbrev factor (H : p ≤ p') : M ⧸ p →ₗ[R] M ⧸ p' :=
   mapQ _ _ LinearMap.id H
 
-@[simp]
 theorem factor_mk (H : p ≤ p') (x : M) : factor H (mkQ p x) = mkQ p' x :=
   rfl
 

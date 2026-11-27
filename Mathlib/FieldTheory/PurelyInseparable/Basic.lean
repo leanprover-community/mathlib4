@@ -9,7 +9,6 @@ public import Mathlib.Algebra.CharP.IntermediateField
 public import Mathlib.FieldTheory.IsSepClosed
 
 /-!
-
 # Basic results about purely inseparable extensions
 
 This file contains basic definitions and results about purely inseparable extensions.
@@ -83,7 +82,6 @@ This file contains basic definitions and results about purely inseparable extens
 ## Tags
 
 separable degree, degree, separable closure, purely inseparable
-
 -/
 
 @[expose] public section
@@ -332,7 +330,7 @@ lemma IsPurelyInseparable.finrank_eq_pow
     by_cases h : (⊥ : IntermediateField F E) = ⊤
     · rw [← finrank_top', ← h, IntermediateField.finrank_bot] at hd
       exact ⟨0, ((pow_zero q).trans hd).symm⟩
-    obtain ⟨x, -, hx⟩ := IsConcreteLE.exists_of_lt (lt_of_le_of_ne bot_le h :)
+    obtain ⟨x, -, hx⟩ := exists_mem_notMem_of_lt (lt_of_le_of_ne bot_le h :)
     obtain ⟨m, y, e⟩ := IsPurelyInseparable.minpoly_eq_X_pow_sub_C F q x
     have : finrank F F⟮x⟯ = q ^ m := by
       rw [adjoin.finrank (Algebra.IsIntegral.isIntegral x), e, natDegree_sub_C, natDegree_X_pow]
@@ -504,7 +502,7 @@ theorem separableClosure_le (L : IntermediateField F E)
     [h : IsPurelyInseparable L E] : separableClosure F E ≤ L := fun x hx ↦ by
   obtain ⟨y, rfl⟩ := h.inseparable' _ <|
     IsSeparable.tower_top L (mem_separableClosure_iff.1 hx)
-  exact y.2
+  exact y.property
 
 /-- If `E / F` is algebraic, then an intermediate field of `E / F` contains the
 separable closure of `F` in `E` if and only if `E` is purely inseparable over it. -/
@@ -617,7 +615,7 @@ lemma adjoin_eq_of_isAlgebraic_of_isSeparable [Algebra.IsAlgebraic F E]
     have : IsPurelyInseparable S K := separableClosure.isPurelyInseparable F K
     have := IsPurelyInseparable.tower_top S L K
     obtain ⟨y, rfl⟩ := IsPurelyInseparable.surjective_algebraMap_of_isSeparable L K x
-    exact y.2
+    exact y.property
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- If `K / E / F` is a field extension tower, such that `E / F` is algebraic, then
@@ -671,25 +669,26 @@ lemma IsPurelyInseparable.exists_pow_pow_mem_range_tensorProduct_of_expChar
     ∃ n, x ^ q ^ n ∈ (algebraMap R (R ⊗[k] K)).range := by
   nontriviality (R ⊗[k] K)
   obtain (hq | hq) := expChar_is_prime_or_one k q
-  induction x with
-  | add x y h h' =>
-    have : ExpChar (R ⊗[k] K) q := expChar_of_injective_ringHom (algebraMap k _).injective q
-    simp_rw [RingHom.mem_range, ← RingHom.mem_rangeS, ← Subalgebra.mem_perfectClosure_iff] at h h' ⊢
-    exact add_mem h h'
-  | tmul x y =>
-    obtain ⟨n, a, ha⟩ := IsPurelyInseparable.pow_mem k q y
-    use n
-    have : (x ^ q ^ n) ⊗ₜ[k] (y ^ q ^ n) =
-        (x ^ q ^ n) ⊗ₜ[k] (1 : K) * (1 : R) ⊗ₜ[k] (y ^ q ^ n) := by
-      rw [Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul]
-    rw [Algebra.TensorProduct.tmul_pow, this]
-    refine Subring.mul_mem _ ⟨x ^ q ^ n, rfl⟩ ⟨algebraMap k R a, ?_⟩
-    rw [← IsScalarTower.algebraMap_apply, Algebra.TensorProduct.algebraMap_apply,
-      Algebra.TensorProduct.tmul_one_eq_one_tmul, ha]
-  subst hq
-  have : CharZero k := charZero_of_expChar_one' k
-  exact ⟨0, (Algebra.TensorProduct.includeLeft_surjective R _ <|
-    IsPurelyInseparable.surjective_algebraMap_of_isSeparable k K) _⟩
+  · induction x with
+    | add x y h h' =>
+      have : ExpChar (R ⊗[k] K) q := expChar_of_injective_ringHom (algebraMap k _).injective q
+      simp_rw [RingHom.mem_range, ← RingHom.mem_rangeS,
+        ← Subalgebra.mem_perfectClosure_iff] at h h' ⊢
+      exact add_mem h h'
+    | tmul x y =>
+      obtain ⟨n, a, ha⟩ := IsPurelyInseparable.pow_mem k q y
+      use n
+      have : (x ^ q ^ n) ⊗ₜ[k] (y ^ q ^ n) =
+          (x ^ q ^ n) ⊗ₜ[k] (1 : K) * (1 : R) ⊗ₜ[k] (y ^ q ^ n) := by
+        rw [Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul]
+      rw [Algebra.TensorProduct.tmul_pow, this]
+      refine Subring.mul_mem _ ⟨x ^ q ^ n, rfl⟩ ⟨algebraMap k R a, ?_⟩
+      rw [← IsScalarTower.algebraMap_apply, Algebra.TensorProduct.algebraMap_apply,
+        Algebra.TensorProduct.tmul_one_eq_one_tmul, ha]
+  · subst hq
+    have : CharZero k := charZero_of_expChar_one' k
+    exact ⟨0, (Algebra.TensorProduct.includeLeft_surjective R _ <|
+      IsPurelyInseparable.surjective_algebraMap_of_isSeparable k K) _⟩
 
 lemma IsPurelyInseparable.exists_pow_mem_range_tensorProduct [IsPurelyInseparable k K]
     (x : R ⊗[k] K) : ∃ n > 0, x ^ n ∈ (algebraMap R (R ⊗[k] K)).range := by

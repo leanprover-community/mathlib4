@@ -41,7 +41,7 @@ theorem addHaar_frontier (hs : Convex ℝ s) : μ (frontier s) = 0 := by
   rcases ne_or_eq (affineSpan ℝ s) ⊤ with hspan | hspan
   · refine measure_mono_null ?_ (addHaar_affineSubspace _ _ hspan)
     exact frontier_subset_closure.trans
-      (closure_minimal (subset_affineSpan _ _) (affineSpan ℝ s).closed_of_finiteDimensional)
+      (closure_minimal (subset_affineSpan _ _) (affineSpan ℝ s).isClosed_of_finiteDimensional)
   rw [← hs.interior_nonempty_iff_affineSpan_eq_top] at hspan
   rcases hspan with ⟨x, hx⟩
   /- Without loss of generality, `s` is bounded. Indeed, `∂s ⊆ ⋃ n, ∂(s ∩ ball x (n + 1))`, hence it

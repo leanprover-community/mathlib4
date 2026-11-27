@@ -5,9 +5,11 @@ Authors: María Inés de Frutos-Fernández, Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Module.FunLike
 public import Mathlib.Basic.NNReal.Defs
 public import Mathlib.Order.ConditionallyCompleteLattice.Group
+
+import Mathlib.Algebra.Group.Action.FunLike
+import Mathlib.Algebra.Module.FunLike
 
 /-!
 # Group seminorms
@@ -28,7 +30,7 @@ is positive-semidefinite and subadditive. A norm further only maps zero to zero.
 * `NonarchAddGroupNorm`: A nonarchimedean seminorm `f` such that `f x = 0 → x = 0` for all `x`.
 * `GroupNorm`: A seminorm `f` such that `f x = 0 → x = 1` for all `x`.
 
-## Notes
+## Implementation notes
 
 The corresponding hom classes are defined in `Analysis.Order.Hom.Basic` to be used by absolute
 values.
@@ -266,13 +268,13 @@ open scoped Classical in
 noncomputable instance : SupSet (GroupSeminorm E) where
   sSup s :=
     if h : BddAbove s then
-      { toFun x := ⨆ p : s, p.1 x
+      { toFun x := ⨆ p : s, p.val x
         map_one' := by simp
         mul_le' x y := by
           obtain (rfl | hs) := eq_empty_or_nonempty s
           · simp
           · have : Nonempty s := hs.to_subtype
-            refine ciSup_le fun p ↦ (map_mul_le_add p.1 x y).trans ?_
+            refine ciSup_le fun p ↦ (map_mul_le_add p.val x y).trans ?_
             gcongr
             all_goals
               apply le_ciSup (f := (DFunLike.coe · _) ∘ Subtype.val) ?_ p
@@ -493,13 +495,13 @@ open scoped Classical in
 noncomputable instance : SupSet (NonarchAddGroupSeminorm E) where
   sSup s :=
     if h : BddAbove s then
-      { toFun x := ⨆ p : s, p.1 x
+      { toFun x := ⨆ p : s, p.val x
         map_zero' := by simp
         add_le_max' x y := by
           obtain (rfl | hs) := eq_empty_or_nonempty s
           · simp
           · have : Nonempty s := hs.to_subtype
-            refine ciSup_le fun p ↦ (map_add_le_max p.1 x y).trans ?_
+            refine ciSup_le fun p ↦ (map_add_le_max p.val x y).trans ?_
             gcongr
             all_goals
               apply le_ciSup (f := (DFunLike.coe · _) ∘ Subtype.val) ?_ p

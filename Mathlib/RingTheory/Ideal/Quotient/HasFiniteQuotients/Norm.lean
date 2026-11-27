@@ -13,7 +13,6 @@ public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 For a ring with finite quotients, there are only finitely many ideals of bounded norm, see
 `Ring.HasFiniteQuotients.finite_cardQuot_le`. This file records the resulting `Northcott`
 instances.
-
 -/
 
 public section

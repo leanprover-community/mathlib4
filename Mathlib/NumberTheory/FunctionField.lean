@@ -27,18 +27,21 @@ This file defines a function field and the ring of integers corresponding to it.
   as the integral closure of `F[X]` in the function field.
 
 ## Implementation notes
+
 The definitions that involve a field of fractions choose a canonical field of fractions,
 but are independent of that choice. We also omit assumptions like
 `IsScalarTower F[X] (FractionRing F[X]) K` in definitions,
 adding them back in lemmas when they are needed.
 
 ## References
+
 * [D. Marcus, *Number Fields*][marcus1977number]
 * [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
 * [P. Samuel, *Algebraic Theory of Numbers*][samuel1967]
 * [M. Rosen, *Number Theory in Function Fields*][rosen2002]
 
 ## Tags
+
 function field, ring of integers
 -/
 
@@ -156,8 +159,8 @@ theorem FiniteDimensional.adjoin_algebraMap_X :
   .of_restrictScalars_finite F⟮(X : F⟮X⟯)⟯ _ _
 
 theorem Algebra.IsAlgebraic.adjoin_algebraMap_X :
-    Algebra.IsAlgebraic F⟮algebraMap _ K (X : F⟮X⟯)⟯ K := by
-  exact .tower_top (K := F⟮(X : F⟮X⟯)⟯) _
+    Algebra.IsAlgebraic F⟮algebraMap _ K (X : F⟮X⟯)⟯ K :=
+  .tower_top (K := F⟮(X : F⟮X⟯)⟯) _
 
 variable {y : K}
 
@@ -172,13 +175,6 @@ lemma finiteDimensional_of_adjoin_transcendental (hy : Transcendental F y) :
   let x := algebraMap _ K (X : F⟮X⟯)
   let Fyx := restrictScalars F F⟮y⟯⟮x⟯
   let Fxy := restrictScalars F F⟮x⟯⟮y⟯
-  -- Recalling instance to speed up search
-  let : Algebra F⟮y⟯ Fyx := F⟮y⟯⟮x⟯.algebra
-  let : Module F⟮y⟯ Fyx := Algebra.toModule
-  let : SMul F⟮y⟯ Fyx := Algebra.toSMul
-  let : Algebra F⟮x⟯ Fxy := F⟮x⟯⟮y⟯.algebra
-  let : Module F⟮x⟯ Fxy := Algebra.toModule
-  let : SMul F⟮x⟯ Fxy := Algebra.toSMul
   have : FiniteDimensional F⟮y⟯ Fyx :=
     adjoin.finiteDimensional
       (isAlgebraic_iff_isIntegral.mp (isAlgebraic_X_over_adjoin_transcendental hy))
@@ -186,9 +182,7 @@ lemma finiteDimensional_of_adjoin_transcendental (hy : Transcendental F y) :
     have := FiniteDimensional.adjoin_algebraMap_X (F := F) (K := K)
     unfold Fyx
     rw [adjoin_simple_comm]
-    have : IsScalarTower F⟮x⟯ Fxy K := isScalarTower_mid' F⟮x⟯⟮y⟯
     exact .right F⟮x⟯ Fxy K
-  have : IsScalarTower F⟮y⟯ Fyx K := isScalarTower_mid' F⟮y⟯⟮x⟯
   .trans F⟮y⟯ Fyx K
 
 end AdjoinTranscendental

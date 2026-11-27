@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Sites.Plus
 public import Mathlib.CategoryTheory.Sites.Whiskering
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Compatibility of the plus construction with functors
 
@@ -16,7 +19,6 @@ preserve the correct limits and colimits.
 
 See `CategoryTheory/Sites/CompatibleSheafification` for the compatibility
 of sheafification, which follows easily from the content in this file.
-
 -/
 
 @[expose] public section

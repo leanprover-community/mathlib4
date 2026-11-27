@@ -73,7 +73,7 @@ theorem map_id (x : ClassGroup A) : map (RingHom.id A) Function.injective_id x =
   ext : 1
   simp only [Units.coe_map, MonoidHom.coe_ofClass, RingHom.toMonoidHom_eq_coe,
     FractionalIdeal.extendedHom'_apply]
-  rw [← FractionalIdeal.coeToSubmodule_inj, FractionalIdeal.coe_extended_eq_span]
+  rw [← FractionalIdeal.coeToSubmodule_inj, FractionalIdeal.coeToSubmodule_extended_eq_span]
   have : ⇑(IsLocalization.map (FractionRing A) (RingHom.id A)
       (nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _ Function.injective_id) :
         FractionRing A →+* FractionRing A) = id :=
@@ -93,8 +93,9 @@ theorem map_map (f : A →+* B) (hf : Function.Injective f) (g : B →+* C)
 theorem map_mk0 {A B : Type*} [CommRing A] [CommRing B] [IsDedekindDomain A]
     [IsDedekindDomain B] (f : A →+* B)
     (hf : Function.Injective f) (I : (Ideal A)⁰) :
-    map f hf (ClassGroup.mk0 I) = ClassGroup.mk0 ⟨I.1.map f, mem_nonZeroDivisors_iff_ne_zero.mpr <|
-      (Ideal.map_eq_bot_iff_of_injective hf).not.mpr (mem_nonZeroDivisors_iff_ne_zero.mp I.2)⟩ := by
+    map f hf (ClassGroup.mk0 I) = ClassGroup.mk0 ⟨I.val.map f,
+      mem_nonZeroDivisors_iff_ne_zero.mpr <| (Ideal.map_eq_bot_iff_of_injective hf).not.mpr
+        (mem_nonZeroDivisors_iff_ne_zero.mp I.property)⟩ := by
   rw [mk0_eq_quotientMk, mk0_eq_quotientMk, map_quotientMk]
   congr 1
   ext : 1
@@ -115,9 +116,9 @@ noncomputable def mulEquiv (g : A ≃+* B) : ClassGroup A ≃* ClassGroup B wher
 
 theorem mulEquiv_mk0 {A B : Type*} [CommRing A] [CommRing B] [IsDedekindDomain A]
     [IsDedekindDomain B] (g : A ≃+* B) (I : (Ideal A)⁰) :
-    mulEquiv g (ClassGroup.mk0 I) = ClassGroup.mk0 ⟨I.1.map g,
+    mulEquiv g (ClassGroup.mk0 I) = ClassGroup.mk0 ⟨I.val.map g,
       mem_nonZeroDivisors_iff_ne_zero.mpr <| (Ideal.map_eq_bot_iff_of_injective g.injective).not.mpr
-        (mem_nonZeroDivisors_iff_ne_zero.mp I.2)⟩ := by
+        (mem_nonZeroDivisors_iff_ne_zero.mp I.property)⟩ := by
   simp [map_mk0, Ideal.map_coe]
 
 end Map
@@ -149,9 +150,9 @@ theorem extendedHom_mk (I : (FractionalIdeal A⁰ (FractionRing A))ˣ) :
 
 /-- The extension of a nonzero integral ideal along an injective extension of domains. -/
 abbrev extendedIdeal (I : (Ideal A)⁰) : (Ideal B)⁰ :=
-  ⟨I.1.map (algebraMap A B), mem_nonZeroDivisors_iff_ne_zero.mpr <|
+  ⟨I.val.map (algebraMap A B), mem_nonZeroDivisors_iff_ne_zero.mpr <|
     (Ideal.map_eq_bot_iff_of_injective (FaithfulSMul.algebraMap_injective A B)).not.mpr
-      (mem_nonZeroDivisors_iff_ne_zero.mp I.2)⟩
+      (mem_nonZeroDivisors_iff_ne_zero.mp I.property)⟩
 
 @[simp]
 theorem extendedIdeal_extendedIdeal (C : Type*) [CommRing C] [IsDomain C] [Algebra B C]
@@ -199,7 +200,7 @@ theorem extendedHom_eq_one_of_forall_isPrincipal
   ext x
   obtain ⟨I, rfl⟩ := ClassGroup.mk0_surjective x
   rw [extendedHom_mk0, MonoidHom.one_apply]
-  exact (ClassGroup.mk0_eq_one_iff (extendedIdeal A B I).2).mpr (by simpa using h I)
+  exact (ClassGroup.mk0_eq_one_iff (extendedIdeal A B I).property).mpr (by simpa using h I)
 
 end DedekindDomain
 

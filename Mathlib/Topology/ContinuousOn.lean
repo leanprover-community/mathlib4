@@ -19,7 +19,6 @@ related to continuity, which are defined in previous definition files.
 Their basic properties studied in this file include the relationships between
 these restricted notions and the corresponding notions for the subtype
 equipped with the subspace topology.
-
 -/
 
 public section
@@ -55,6 +54,12 @@ theorem continuousWithinAt_iff_continuousAt_domRestrict (f : α → β) {x : α}
 
 @[deprecated (since := "2026-07-19")] alias continuousWithinAt_iff_continuousAt_restrict :=
   continuousWithinAt_iff_continuousAt_domRestrict
+
+theorem continuousWithinAt_inter_iff_continuousWithinAt_domRestrict (f : α → β) {x : α}
+    {s t : Set α} (h : x ∈ s) :
+    ContinuousWithinAt f (s ∩ t) x ↔
+      ContinuousWithinAt (s.domRestrict f) ((↑) ⁻¹' t) ⟨x, h⟩ :=
+  tendsto_nhdsWithin_inter_iff_subtype h f _
 
 theorem ContinuousWithinAt.tendsto_nhdsWithin {t : Set β}
     (h : ContinuousWithinAt f s x) (ht : MapsTo f s t) :
@@ -127,9 +132,10 @@ theorem continuousOn_iff' :
     intro t
     rw [isOpen_induced_iff, Set.domRestrict_eq, Set.preimage_comp]
     simp only [Subtype.preimage_coe_eq_preimage_coe_iff]
-    constructor <;>
-      · rintro ⟨u, ou, useq⟩
-        exact ⟨u, ou, by simpa only [Set.inter_comm, eq_comm] using useq⟩
+    constructor
+    all_goals
+      rintro ⟨u, ou, useq⟩
+      exact ⟨u, ou, by simpa only [Set.inter_comm, eq_comm] using useq⟩
   rw [continuousOn_iff_continuous_domRestrict, continuous_def]; simp only [this]
 
 /-- If a function is continuous on a set for some topologies, then it is
@@ -858,7 +864,7 @@ theorem IsOpenMap.continuousOn_image_of_leftInvOn {f : α → β} {s : Set α}
     ContinuousOn finv (f '' s) := by
   refine continuousOn_iff'.2 fun t ht => ⟨f '' (t ∩ s), ?_, ?_⟩
   · rw [← image_domRestrict]
-    exact h _ (ht.preimage continuous_subtype_val)
+    exact h _ (ht.preimage continuous_subtypeVal)
   · rw [inter_eq_self_of_subset_left (image_mono inter_subset_right), hleft.image_inter']
 
 theorem IsOpenMap.continuousOn_range_of_leftInverse {f : α → β} (hf : IsOpenMap f) {finv : β → α}

@@ -20,7 +20,7 @@ sides of the equivalence are `Fintype`s.
 - `Equiv.Perm.viaFintypeEmbedding : Perm α → (α ↪ β) → Perm β` extends the domain of
   a permutation, fixing everything outside the range of the embedding
 
-## Implementation details
+## Implementation notes
 
 - `Function.Embedding.toEquivRange` uses a computable inverse, but one that has poor
   computational performance, since it operates by exhaustive search over the input `Fintype`s.
@@ -141,7 +141,7 @@ theorem extendSubtype_apply_of_mem (e : { x // p x } ≃ { x // q x }) (x) (hx :
 
 theorem extendSubtype_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : p x) :
     q (e.extendSubtype x) :=
-  (e.extendSubtype_apply_of_mem _ hx).symm ▸ (e ⟨x, hx⟩).2
+  (e.extendSubtype_apply_of_mem _ hx).symm ▸ (e ⟨x, hx⟩).property
 
 theorem extendSubtype_apply_of_not_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : ¬p x) :
     e.extendSubtype x = e.toCompl ⟨x, hx⟩ := by
@@ -149,7 +149,7 @@ theorem extendSubtype_apply_of_not_mem (e : { x // p x } ≃ { x // q x }) (x) (
 
 theorem extendSubtype_not_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : ¬p x) :
     ¬q (e.extendSubtype x) :=
-  e.extendSubtype_apply_of_not_mem _ hx ▸ (e.toCompl ⟨x, hx⟩).2
+  e.extendSubtype_apply_of_not_mem _ hx ▸ (e.toCompl ⟨x, hx⟩).property
 
 /-- Given two injective functions `f` and `g` from a finite type `α` to any type `β`,
 there exists a permutation of `β` that maps `f` to `g`. -/
@@ -170,6 +170,6 @@ theorem Perm.exists_map_finset_eq
     Subtype.val_injective (Subtype.val_injective.comp (s.equivOfCardEq h).injective)
   refine ⟨σ, Finset.eq_of_subset_of_card_le (fun b hb => ?_) (by simp [h])⟩
   obtain ⟨a, ha, rfl⟩ := Finset.mem_map.mp hb
-  exact (hσ ⟨a, ha⟩) ▸ ((s.equivOfCardEq h) ⟨a, ha⟩).2
+  exact (hσ ⟨a, ha⟩) ▸ ((s.equivOfCardEq h) ⟨a, ha⟩).property
 
 end Equiv

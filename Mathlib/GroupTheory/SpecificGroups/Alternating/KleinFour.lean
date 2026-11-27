@@ -48,7 +48,6 @@ and then characteristic.
 
 Prove `alternatingGroup.kleinFour α = commutator (alternatingGroup α)`
 without any assumption on `Nat.card α`.
-
 -/
 
 @[expose] public section
@@ -83,7 +82,7 @@ theorem mem_kleinFour_of_order_two_pow (hα4 : Nat.card α = 4) {g : Perm α}
       exact Nat.prime_eq_prime_of_dvd_pow Nat.prime_three Nat.prime_two (hg 3 hk)
     · contrapose! hg0
       obtain ⟨t, ht⟩ := Multiset.exists_cons_of_mem hk
-      rw [ht, Multiset.sum_cons, add_le_iff_nonpos_right, le_zero_iff,
+      rw [ht, Multiset.sum_cons, add_le_iff_nonpos_right, nonpos_iff_eq_zero,
         Multiset.sum_eq_zero_iff, ← Multiset.eq_replicate_card] at h1
       have h : 0 ∉ g.cycleType := Nat.not_succ_lt_self ∘ one_lt_of_mem_cycleType
       replace h : t = 0 := by simpa [h1 ▸ ht, Multiset.mem_replicate] using h
@@ -118,7 +117,7 @@ theorem coe_two_sylow_of_card_eq_four
   · -- `inclusion S ⊆ {1} ∪ {g | cycleType g = { 2, 2 }}`
     obtain ⟨n, hn⟩ := (IsPGroup.iff_orderOf.mp S.isPGroup) ⟨k, hk⟩
     replace hn : (orderOf (k : Perm α)) = 2 ^ n := by simpa using hn
-    convert mem_kleinFour_of_order_two_pow hα4 k.2 hn.dvd
+    convert mem_kleinFour_of_order_two_pow hα4 k.property hn.dvd
     simp
   · -- `card (kleinFour α) ≤ card S`
     simp_rw [← Nat.card_eq_fintype_card]

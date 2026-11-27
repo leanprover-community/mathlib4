@@ -42,7 +42,7 @@ The more standard Banach-Steinhaus theorem for normed spaces is then deduced fro
   Any family `𝓕 : ι → E →L[𝕜] F` of continuous linear maps that is pointwise von Neumann bounded
   is (uniformly) equicontinuous.
 
-## Implementation details
+## Implementation notes
 
 Barrelled spaces are defined in Bourbaki as locally convex spaces where barrels (aka closed
 balanced absorbing convex sets) are neighborhoods of zero. One can then show that barrels in a

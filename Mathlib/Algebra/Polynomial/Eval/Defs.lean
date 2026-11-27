@@ -12,6 +12,7 @@ public import Mathlib.Algebra.Polynomial.Basic
 # Evaluating a polynomial
 
 ## Main definitions
+
 * `Polynomial.eval₂`: evaluate `p : R[X]` in `S` given a ring hom `f : R →+* S` and `x : S`.
 * `Polynomial.eval`: evaluate `p : R[X]` given `x : R`.
 * `Polynomial.IsRoot`: `x : R` is a root of `p : R[X]`.
@@ -25,7 +26,6 @@ We also provide the following bundled versions:
 * `Polynomial.mapRingHom`
 
 We include results on applying the definitions to `C`, `X` and ring operations.
-
 -/
 
 @[expose] public section
@@ -133,16 +133,18 @@ theorem eval₂_finsetSum (s : Finset ι) (g : ι → R[X]) (x : S) :
     (∑ i ∈ s, g i).eval₂ f x = ∑ i ∈ s, (g i).eval₂ f x :=
   map_sum (eval₂AddMonoidHom f x) _ _
 
+theorem eval₂_eq_liftNC {f : R →+* S} {x : S} {p : R[X]} :
+    eval₂ f x p = liftNC f (powersHom S x) p := by
+  simp [eval₂_eq_sum, sum, support, liftNC, Finsupp.sum]
+
+@[deprecated eval₂_eq_liftNC +typeChanged (since := "2026-10-25")]
 theorem eval₂_ofFinsupp {f : R →+* S} {x : S} {p : R[ℕ]} :
-    eval₂ f x (⟨p⟩ : R[X]) = liftNC (↑f) (powersHom S x) p := by
-  simp only [eval₂_eq_sum, sum, support, coeff]
-  rfl
+    eval₂ f x (ofFinsupp p : R[X]) = liftNC (↑f) (powersHom S x) p :=
+  eval₂_eq_liftNC
 
 theorem eval₂_mul_noncomm (hf : ∀ k, Commute (f <| q.coeff k) x) :
     eval₂ f x (p * q) = eval₂ f x p * eval₂ f x q := by
-  rcases p with ⟨p⟩; rcases q with ⟨q⟩
-  simp only [coeff] at hf
-  simp only [← ofFinsupp_mul, eval₂_ofFinsupp]
+  simp only [eval₂_eq_liftNC]
   exact liftNC_mul _ _ p q fun {k n} _hn => (hf k).pow_right n
 
 @[simp]
@@ -472,9 +474,10 @@ theorem pow_comp {R : Type*} [CommSemiring R] (p q : R[X]) (n : ℕ) :
 
 theorem comp_assoc {R : Type*} [CommSemiring R] (φ ψ χ : R[X]) :
     (φ.comp ψ).comp χ = φ.comp (ψ.comp χ) := by
-  refine Polynomial.induction_on φ ?_ ?_ ?_ <;>
-    · intros
-      simp_all only [add_comp, mul_comp, C_comp, X_comp, pow_succ, ← mul_assoc]
+  refine Polynomial.induction_on φ ?_ ?_ ?_
+  all_goals
+    intros
+    simp_all only [add_comp, mul_comp, C_comp, X_comp, pow_succ, ← mul_assoc]
 
 @[simp] lemma sum_comp (s : Finset ι) (p : ι → R[X]) (q : R[X]) :
     (∑ i ∈ s, p i).comp q = ∑ i ∈ s, (p i).comp q := Polynomial.eval₂_finsetSum _ _ _ _

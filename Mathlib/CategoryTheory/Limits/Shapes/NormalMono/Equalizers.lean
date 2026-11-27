@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Limits.Shapes.NormalMono.Basic
 
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Normal mono categories with finite products and kernels have all equalizers.
 

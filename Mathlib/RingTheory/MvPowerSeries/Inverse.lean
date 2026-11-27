@@ -32,7 +32,6 @@ Instances are defined:
 * The morphism `MvPowerSeries.map σ f : MvPowerSeries σ A →* MvPowerSeries σ B`
   induced by a local morphism `f : A →+* B` (`IsLocalHom f`)
   of commutative rings is a *local* morphism.
-
 -/
 
 @[expose] public section
@@ -151,9 +150,10 @@ instance [IsLocalRing R] : IsLocalRing (MvPowerSeries σ R) :=
   IsLocalRing.of_isUnit_or_isUnit_one_sub_self <| by
     intro φ
     obtain ⟨u, h⟩ | ⟨u, h⟩ := IsLocalRing.isUnit_or_isUnit_one_sub_self (constantCoeff φ) <;>
-        [left; right] <;>
-      · refine .of_mul_eq_one _ (mul_invOfUnit _ u ?_)
-        simpa using h.symm
+        [left; right]
+    all_goals
+      refine .of_mul_eq_one _ (mul_invOfUnit _ u ?_)
+      simpa using h.symm
 
 -- TODO(jmc): once adic topology lands, show that this is complete
 end CommRing

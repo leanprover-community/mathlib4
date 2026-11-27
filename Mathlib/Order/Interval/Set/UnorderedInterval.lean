@@ -13,6 +13,9 @@ public import Mathlib.Order.MinMax
 public import Mathlib.Tactic.Attr.Core
 public import Mathlib.Tactic.Common
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Intervals without endpoints ordering
 
@@ -36,7 +39,6 @@ subcube containing both `a` and `b`.
 
 We use the localized notation `[[a, b]]` for `uIcc a b`. One can open the scope `Interval` to
 make the notation available.
-
 -/
 
 @[expose] public section

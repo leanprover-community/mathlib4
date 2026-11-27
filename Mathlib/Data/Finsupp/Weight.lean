@@ -63,7 +63,6 @@ as well as a function `w : σ → M`. (The important case is `R = ℕ`.)
 
 * Maybe `Finsupp.weight w` and `Finsupp.degree` should have similar types,
   both `AddMonoidHom` or both functions.
-
 -/
 
 @[expose] public section
@@ -275,9 +274,6 @@ theorem degree_mapDomain {τ : Type*} (f : σ → τ) [AddCommMonoid M] (x : σ 
   simp [mapDomain, sum]
   dsimp [degree_apply]
 
-@[deprecated (since := "2026-04-27")]
-alias degree_mapDomain_eq_of_subsingletonAddUnits := degree_mapDomain
-
 set_option backward.isDefEq.respectTransparency false in
 theorem degree_comapDomain_le_of_canonicallyOrderedAdd {τ : Type*} {f : σ → τ} [AddCommMonoid M]
     [PartialOrder M] [CanonicallyOrderedAdd M] {x : τ →₀ M} (hf : Set.InjOn f (f ⁻¹' x.support)) :
@@ -333,7 +329,7 @@ lemma nsmul_single_one_image {α : Type*} {n : ℕ} {s : Set α} :
   | succ n ih =>
     rw [succ_nsmul, ih]
     refine subset_antisymm ?_ fun f ⟨f_deg, f_supp⟩ ↦ ?_
-    · simp [Set.subset_def, Set.mem_add, @forall_comm (α →₀ ℕ)]; grind
+    · simp [Set.subset_def, Set.mem_add]; grind
     obtain ⟨i, hi⟩ : f.support.Nonempty := by aesop
     obtain ⟨x, hx⟩ := le_iff_exists_add'.mp
       (show single i 1 ≤ f by simpa [Nat.one_le_iff_ne_zero] using hi)

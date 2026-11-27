@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Sites.PrecoverageToGrothendieck
 public import Mathlib.CategoryTheory.Sites.Sheaf
 
 /-!
-
 # Coverages
 
 A coverage `K` on a category `C` is a set of presieves associated to every object `X : C`,
@@ -42,6 +41,7 @@ All definitions are in the `CategoryTheory` namespace.
   it is a sheaf for `J`.
 
 ## References
+
 We don't follow any particular reference, but the arguments can probably be distilled from
 the following sources:
 - [Elephant]: *Sketches of an Elephant*, P. T. Johnstone: C2.1.

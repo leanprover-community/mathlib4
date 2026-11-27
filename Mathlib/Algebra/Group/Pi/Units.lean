@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Group.Pi.Basic
 public import Mathlib.Algebra.Group.Units.Defs
 public import Mathlib.Util.Delaborators
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-! # Units in pi types -/
 
 @[expose] public section
@@ -41,5 +44,5 @@ instance Pi.instSubsingletonUnits [∀ i, Subsingleton (M i)ˣ] : Subsingleton (
 alias ⟨IsUnit.apply, _⟩ := Pi.isUnit_iff
 
 @[to_additive]
-lemma IsUnit.val_inv_apply (hx : IsUnit x) (i : ι) : (hx.unit⁻¹).1 i = (hx.apply i).unit⁻¹ := by
+lemma IsUnit.val_inv_apply (hx : IsUnit x) (i : ι) : (hx.unit⁻¹).val i = (hx.apply i).unit⁻¹ := by
   rw [← Units.inv_eq_val_inv, ← MulEquiv.val_inv_piUnits_apply]; congr; ext; rfl

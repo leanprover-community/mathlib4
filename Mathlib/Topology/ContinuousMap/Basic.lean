@@ -50,7 +50,7 @@ protected theorem continuousAt (f : C(α, β)) (x : α) : ContinuousAt f x :=
   map_continuousAt f x
 
 theorem map_specializes (f : C(α, β)) {x y : α} (h : x ⤳ y) : f x ⤳ f y :=
-  h.map f.2
+  h.map (by fun_prop)
 
 section DiscreteTopology
 variable [DiscreteTopology α]
@@ -196,6 +196,17 @@ def prodMap (f : C(α₁, α₂)) (g : C(β₁, β₂)) : C(α₁ × β₁, α�
 theorem prod_eval (f : C(α, β₁)) (g : C(α, β₂)) (a : α) : (prodMk f g) a = (f a, g a) :=
   rfl
 
+variable (α β₁ β₂) in
+/-- The equivalence `C(α, β₁ × β₂) ≃ C(α, β₁) × C(α, β₂)`, `f ↦ (fst ∘ f, snd ∘ f)`, whose inverse
+is `(f, g) ↦ f.prodMk g`. See `ContinuousMap.prodHomeomorph` and `ContinuousMap.prodHomeomorph'`
+for the corresponding homeomorphisms for the compact-open topologies. -/
+@[simps]
+def prodEquiv : C(α, β₁ × β₂) ≃ C(α, β₁) × C(α, β₂) where
+  toFun f := (fst.comp f, snd.comp f)
+  invFun p := p.1.prodMk p.2
+  left_inv _ := rfl
+  right_inv _ := rfl
+
 /-- `Prod.swap` bundled as a `ContinuousMap`. -/
 @[simps!]
 def prodSwap : C(α × β, β × α) := .prodMk .snd .fst
@@ -288,7 +299,6 @@ theorem coe_restrict (f : C(α, β)) : ⇑(f.restrict s) = s.domRestrict f :=
 theorem restrict_apply (f : C(α, β)) (s : Set α) (x : s) : f.restrict s x = f x :=
   rfl
 
-@[simp]
 theorem restrict_apply_mk (f : C(α, β)) (s : Set α) (x : α) (hx : x ∈ s) :
     f.restrict s ⟨x, hx⟩ = f x :=
   rfl
@@ -414,7 +424,7 @@ end Gluing
 @[simps!]
 def subtypeVal (s : Set α) : C(s, α) where
   toFun := Subtype.val
-  continuous_toFun := continuous_subtype_val
+  continuous_toFun := continuous_subtypeVal
 
 /-- `Set.inclusion` as a bundled continuous map. -/
 @[simps!]
@@ -472,7 +482,8 @@ variable (hf : IsQuotientMap f) (g : C(X, Z)) (h : Function.FactorsThrough g f)
 noncomputable def lift : C(Y, Z) where
   toFun := ((fun i ↦ Quotient.liftOn' i g (fun _ _ (hab : f _ = f _) ↦ h hab)) :
     Quotient (Setoid.ker f) → Z) ∘ hf.homeomorph.symm
-  continuous_toFun := Continuous.comp (continuous_quot_lift _ g.2) (Homeomorph.continuous _)
+  continuous_toFun :=
+    Continuous.comp (continuous_quot_lift _ (by fun_prop)) (Homeomorph.continuous _)
 
 /--
 The obvious triangle induced by `IsQuotientMap.lift` commutes:
@@ -513,23 +524,28 @@ instance instContinuousMapClass : ContinuousMapClass (α ≃ₜ β) α β where
   map_continuous f := f.continuous_toFun
 
 @[simp]
-theorem coe_refl : (Homeomorph.refl α : C(α, α)) = ContinuousMap.id α :=
+theorem toContinuousMap_refl : (Homeomorph.refl α).toContinuousMap = ContinuousMap.id α :=
   rfl
 
+@[deprecated (since := "2026-11-25")] alias coe_refl := toContinuousMap_refl
+
 @[simp]
-theorem coe_trans : (f.trans g : C(α, γ)) = (g : C(β, γ)).comp f :=
+theorem toContinuousMap_trans :
+    (f.trans g).toContinuousMap = g.toContinuousMap.comp f.toContinuousMap :=
   rfl
+
+@[deprecated (since := "2026-11-25")] alias coe_trans := toContinuousMap_trans
 
 /-- Left inverse to a continuous map from a homeomorphism, mirroring `Equiv.symm_comp_self`. -/
 @[simp]
 theorem symm_comp_toContinuousMap :
-    (f.symm : C(β, α)).comp (f : C(α, β)) = ContinuousMap.id α := by
-  rw [← coe_trans, self_trans_symm, coe_refl]
+    f.symm.toContinuousMap.comp f.toContinuousMap = ContinuousMap.id α := by
+  rw [← toContinuousMap_trans, self_trans_symm, toContinuousMap_refl]
 
 /-- Right inverse to a continuous map from a homeomorphism, mirroring `Equiv.self_comp_symm`. -/
 @[simp]
 theorem toContinuousMap_comp_symm :
-    (f : C(α, β)).comp (f.symm : C(β, α)) = ContinuousMap.id β := by
-  rw [← coe_trans, symm_trans_self, coe_refl]
+    f.toContinuousMap.comp f.symm.toContinuousMap = ContinuousMap.id β := by
+  rw [← toContinuousMap_trans, symm_trans_self, toContinuousMap_refl]
 
 end Homeomorph

@@ -682,8 +682,7 @@ theorem rnDeriv_smul_same (ν μ : Measure α) [IsFiniteMeasure ν]
 /-- Radon-Nikodym derivative of a sum of two measures.
 See also `rnDeriv_add'`, which requires sigma-finite `ν₁`, `ν₂` and `μ`. -/
 lemma rnDeriv_add (ν₁ ν₂ μ : Measure α) [IsFiniteMeasure ν₁] [IsFiniteMeasure ν₂]
-    [ν₁.HaveLebesgueDecomposition μ] [ν₂.HaveLebesgueDecomposition μ]
-    [(ν₁ + ν₂).HaveLebesgueDecomposition μ] :
+    [ν₁.HaveLebesgueDecomposition μ] [ν₂.HaveLebesgueDecomposition μ] :
     (ν₁ + ν₂).rnDeriv μ =ᵐ[μ] ν₁.rnDeriv μ + ν₂.rnDeriv μ := by
   rw [← withDensity_eq_iff]
   · suffices (ν₁ + ν₂).singularPart μ + μ.withDensity ((ν₁ + ν₂).rnDeriv μ)
@@ -731,8 +730,8 @@ theorem exists_positive_of_not_mutuallySingular (μ ν : Measure α) [IsFiniteMe
     rw [ENNReal.coe_eq_zero]
     by_cases! hb : 0 < νA
     · suffices ∀ b, 0 < b → μA ≤ b by
-        by_contra h
-        have h' := this (μA / 2) (half_pos (zero_lt_iff.2 h))
+        by_contra! h
+        have h' := this (μA / 2) (half_pos h.pos)
         rw [← @Classical.not_not (μA ≤ μA / 2)] at h'
         exact h' (not_le.2 (NNReal.half_lt_self h))
       intro c hc
@@ -750,8 +749,7 @@ theorem exists_positive_of_not_mutuallySingular (μ ν : Measure α) [IsFiniteMe
       refine le_trans ?_ h'.le
       rw [← ENNReal.coe_le_coe, ENNReal.coe_mul]
       exact hA₃ n
-    · rw [le_zero_iff] at hb
-      simpa [hb] using hA₃ 0
+    · simpa [hb.eq_zero] using hA₃ 0
   -- since `μ` and `ν` are not mutually singular, `μ A = 0` implies `ν Aᶜ > 0`
   rw [MutuallySingular] at h; push Not at h
   have := h _ hAmeas hμ

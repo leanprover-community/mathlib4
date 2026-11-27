@@ -190,13 +190,13 @@ namespace Matrix.SpecialLinearGroup
 
 /-- The image of `SL(n, ℤ)` in `GL(n, ℝ)` is discrete. -/
 instance discreteSpecialLinearGroupIntRange : DiscreteTopology (mapGL (n := n) (R := ℤ) ℝ).range :=
-  (isEmbedding_mapGL Real.isClosedEmbedding_intCast.1).toHomeomorph.discreteTopology
+  (isEmbedding_mapGL Real.isClosedEmbedding_intCast.toIsEmbedding).toHomeomorph.discreteTopology
 
 /-- The image of `SL(n, ℤ)` in `SL(n, ℝ)` is discrete. -/
 instance discreteSpecialLinearGroupIntRangeSL :
     DiscreteTopology (SpecialLinearGroup.map (Int.castRingHom ℝ) (n := n)).range := by
   refine (Topology.IsEmbedding.toHomeomorph ?_).discreteTopology
-  exact Real.isClosedEmbedding_intCast.specialLinearGroup_map.1
+  exact Real.isClosedEmbedding_intCast.specialLinearGroup_map.toIsEmbedding
 
 lemma isClosedEmbedding_mapGLInt : Topology.IsClosedEmbedding (mapGL ℝ : SL n ℤ → GL n ℝ) :=
   isClosedEmbedding_mapGL Real.isClosedEmbedding_intCast
@@ -220,14 +220,15 @@ by `𝒢` and `-1`. -/
 def adjoinNegOne (𝒢 : Subgroup G) : Subgroup G where
   carrier := {g | g ∈ 𝒢 ∨ -g ∈ 𝒢}
   mul_mem' ha hb := by
-    rcases ha with ha | ha <;>
-      rcases hb with hb | hb <;>
-      · have := mul_mem ha hb
-        aesop
+    rcases ha with ha | ha <;> rcases hb with hb | hb
+    all_goals
+      have := mul_mem ha hb
+      aesop
   one_mem' := by simp
   inv_mem' ha := by
-    rcases ha with (ha | ha) <;>
-    · have := inv_mem ha
+    rcases ha with (ha | ha)
+    all_goals
+      have := inv_mem ha
       aesop
 
 @[simp] lemma mem_adjoinNegOne_iff {𝒢 : Subgroup G} {g : G} :

@@ -33,7 +33,6 @@ divergences.
   kernel `P` with a Markov kernel): `riskIncrease ℓ (η ∘ₖ P) π ≤ riskIncrease ℓ P π`.
 * `riskIncrease_map_le`: version of the data-processing inequality for a measurable function instead
   of a Markov kernel. `riskIncrease ℓ (P.map f) π ≤ riskIncrease ℓ P π`.
-
 -/
 
 @[expose] public section

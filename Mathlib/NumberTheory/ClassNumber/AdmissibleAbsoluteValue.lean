@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Order.AbsoluteValue.Euclidean
 public import Mathlib.Basic.Real.Basic
 public import Mathlib.Combinatorics.Pigeonhole
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Admissible absolute values
 
