@@ -12,6 +12,9 @@ public import Mathlib.CategoryTheory.Presentable.Basic
 import Mathlib.Algebra.Homology.ShortComplex.HomologyCofork
 import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory.ExactColimits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The homology functor on a Grothendieck abelian category is accessible
 

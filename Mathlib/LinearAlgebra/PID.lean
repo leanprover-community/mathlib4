@@ -9,6 +9,9 @@ public import Mathlib.LinearAlgebra.Trace
 
 import Mathlib.LinearAlgebra.FreeModule.PID
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Linear maps of modules with coefficients in a principal ideal domain
 
@@ -18,7 +21,8 @@ developed only for vector spaces may be generalised to any module with coefficie
 This file is a location for such results and exists to avoid making large parts of the linear
 algebra import hierarchy have to depend on the theory of PIDs.
 
-## Main results:
+## Main results
+
 * `LinearMap.trace_restrict_eq_of_forall_mem`
 -/
 

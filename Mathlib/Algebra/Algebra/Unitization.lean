@@ -298,35 +298,27 @@ lemma toAddEquiv_linearEquiv [Semiring S] [AddCommMonoid R] [AddCommMonoid A]
     [Module S R] [Module S A] : (linearEquiv S R A).toAddEquiv = addEquiv R A :=
   rfl
 
-@[simp]
 theorem fst_zero [Zero R] [Zero A] : (0 : Unitization R A).fst = 0 :=
   rfl
 
-@[simp]
 theorem snd_zero [Zero R] [Zero A] : (0 : Unitization R A).snd = 0 :=
   rfl
 
-@[simp]
 theorem fst_add [Add R] [Add A] (x₁ x₂ : Unitization R A) : (x₁ + x₂).fst = x₁.fst + x₂.fst :=
   rfl
 
-@[simp]
 theorem snd_add [Add R] [Add A] (x₁ x₂ : Unitization R A) : (x₁ + x₂).snd = x₁.snd + x₂.snd :=
   rfl
 
-@[simp]
 theorem fst_neg [Neg R] [Neg A] (x : Unitization R A) : (-x).fst = -x.fst :=
   rfl
 
-@[simp]
 theorem snd_neg [Neg R] [Neg A] (x : Unitization R A) : (-x).snd = -x.snd :=
   rfl
 
-@[simp]
 theorem fst_smul [SMul S R] [SMul S A] (s : S) (x : Unitization R A) : (s • x).fst = s • x.fst :=
   rfl
 
-@[simp]
 theorem snd_smul [SMul S R] [SMul S A] (s : S) (x : Unitization R A) : (s • x).snd = s • x.snd :=
   rfl
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Normed.Group.Real
 public import Mathlib.Topology.Instances.Int
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-! # ℤ as a normed group -/
 
 public section

@@ -5,15 +5,19 @@ Authors: Amir Livne Bar-on, Bernhard Reinke
 -/
 module
 
+public import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
 public import Mathlib.GroupTheory.FreeGroup.Reduce
 
 import Mathlib.Tactic.Group
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Cyclically reduced words in free groups
 
 This file defines some extra lemmas for free groups, in particular about cyclically reduced words.
-We show that free groups are (strongly) torsion-free in the sense of `IsMulTorsionFree`, i.e.,
+We show that free groups are (strongly) torsion-free in the sense of `HasUniqueRoots`, i.e.,
 taking powers by every non-zero element `n : ℕ` is injective.
 
 ## Main declarations
@@ -207,7 +211,6 @@ theorem reduce_flatten_replicate (h : IsReduced L) (n : ℕ) :
 
 end reduceCyclically
 
-section IsMulTorsionFree
 open reduceCyclically
 
 /-- Free groups are torsion-free, i.e., taking powers is injective. Our proof idea is as follows:
@@ -242,5 +245,10 @@ instance : HasUniqueRoots (FreeGroup α) where
     have := congr(mk $((conj_conjugator_reduceCyclically x.toWord).symm))
     rwa [hc, hm, conj_conjugator_reduceCyclically, mk_toWord, mk_toWord] at this
 
-end IsMulTorsionFree
+/-- A group isomorphic to a free group has unique roots. -/
+@[to_additive]
+instance {G : Type*} [Group G] [IsFreeGroup G] : HasUniqueRoots G :=
+  Function.Injective.hasUniqueRoots (IsFreeGroup.basis G).repr.toMonoidHom
+    (IsFreeGroup.basis G).repr.injective
+
 end FreeGroup

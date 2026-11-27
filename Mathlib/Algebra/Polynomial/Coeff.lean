@@ -12,6 +12,9 @@ public import Mathlib.Data.Nat.Choose.Sum
 
 import Mathlib.Algebra.MonoidAlgebra.Support
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Theory of univariate polynomials
 
@@ -37,7 +40,6 @@ variable [Semiring R] {p q r : R[X]}
 
 section Coeff
 
-@[simp]
 theorem coeff_add (p q : R[X]) (n : ℕ) : coeff (p + q) n = coeff p n + coeff q n := rfl
 
 @[deprecated AddMonoidAlgebra.coeff_smul_apply +typeChanged (since := "2026-09-03")]

@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Action.Basic
 public import Mathlib.CategoryTheory.Linear.LinearFunctor
 public import Mathlib.RepresentationTheory.Continuous.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topological representations
 
@@ -272,7 +275,6 @@ section invariantsResMap
 
 variable {G H : Type*} [Group G]
 
-@[simp]
 lemma resFunctor_map_hom [Monoid H] (φ : H →* G) {A B : TopRep k G} (f : A ⟶ B) :
     ((resFunctor φ).map f).hom = f.hom.restrict φ := rfl
 

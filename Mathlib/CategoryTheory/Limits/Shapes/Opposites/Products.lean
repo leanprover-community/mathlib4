@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 import Mathlib.CategoryTheory.Limits.Opposites
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Products and coproducts in `C` and `Cᵒᵖ`
 
@@ -305,8 +308,9 @@ def opProdIsoCoprod : op (A ⨯ B) ≅ (op A ⨿ op B) where
   hom := (prod.lift coprod.inl.unop coprod.inr.unop).op
   inv := coprod.desc prod.fst.op prod.snd.op
   hom_inv_id := by
-    ext <;>
-    · apply Quiver.Hom.op_inj
+    ext
+    all_goals
+      apply Quiver.Hom.op_inj
       simp
 
 @[reassoc (attr := simp)]

@@ -5,10 +5,11 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Divisibility
 public import Mathlib.Algebra.Ring.Int.Parity
 public import Mathlib.Algebra.Ring.Rat
 public import Mathlib.Data.PNat.Defs
+
+import Mathlib.Algebra.GroupWithZero.Divisibility
 
 /-!
 # Further lemmas for the Rational Numbers
@@ -223,8 +224,7 @@ theorem add_num_den' (q r : ℚ) :
 
 theorem sub_num_den' (q r : ℚ) :
     (q - r).num * q.den * r.den = (q.num * r.den - r.num * q.den) * (q - r).den := by
-  rw [sub_eq_add_neg, sub_eq_add_neg, ← neg_mul, ← num_neg_eq_neg_num, ← den_neg_eq_den r,
-    add_num_den' q (-r)]
+  rw [sub_eq_add_neg, sub_eq_add_neg, ← neg_mul, ← neg_num, ← neg_den r, add_num_den' q (-r)]
 
 @[deprecated (since := "2026-09-17")] alias substr_num_den' := sub_num_den'
 

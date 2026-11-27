@@ -6,15 +6,16 @@ Authors: Johan Commelin, Eric Wieser
 module
 
 public import Mathlib.Data.Nat.Totient
-public import Mathlib.LinearAlgebra.Dimension.Localization
 public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.LinearAlgebra.Matrix.Diagonal
 public import Mathlib.LinearAlgebra.Matrix.DotProduct
-public import Mathlib.LinearAlgebra.Matrix.Dual
-public import Mathlib.LinearAlgebra.Matrix.Nondegenerate
-public import Mathlib.RingTheory.SimpleModule.Basic
+
+import Mathlib.LinearAlgebra.Dimension.Localization
+import Mathlib.LinearAlgebra.Matrix.Dual
+import Mathlib.LinearAlgebra.Matrix.Nondegenerate
+import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Rank of matrices
@@ -395,7 +396,7 @@ theorem rank_eq_finrank_range_toLin [Fintype n] [Finite m] [DecidableEq n] {M₁
   have aux₂ := Basis.equiv_apply (Pi.basisFun R n) i v₂
   rw [toLin_eq_toLin', toLin'_apply'] at aux₁
   rw [Pi.basisFun_apply] at aux₁ aux₂
-  simp only [e₁, e₂, LinearMap.comp_apply, LinearEquiv.coe_coe, Equiv.refl_apply,
+  simp only [e₁, e₂, LinearMap.comp_apply, LinearEquiv.coe_toLinearMap, Equiv.refl_apply,
     aux₁, aux₂, LinearMap.coe_single, toLin_self, map_sum, map_smul, Basis.equiv_apply]
 
 theorem rank_le_card_height [Fintype m] [Semiring R] [StrongRankCondition R]
@@ -433,7 +434,7 @@ variable [Field R]
 /-- The rank of a diagonal matrix is the count of non-zero elements on its main diagonal -/
 theorem rank_diagonal [Fintype m] [DecidableEq m] [DecidableEq R] (w : m → R) :
     (diagonal w).rank = Fintype.card {i // (w i) ≠ 0} := by
-  rw [← finrank_range_mulVecLin, ← Matrix.toLin'_apply', Module.finrank, ← LinearMap.rank,
+  rw [← finrank_range_mulVecLin, Module.finrank, ← LinearMap.rank,
     LinearMap.rank_diagonal, Cardinal.toNat_natCast]
 
 open TransvectionStruct in
@@ -654,9 +655,9 @@ end Matrix
 set_option backward.isDefEq.respectTransparency false in
 -- TODO: generalize to `cRank` then deprecate
 theorem Matrix.rank_vecMulVec.{u} {K m n : Type u} [CommRing K] [Fintype n]
-    [DecidableEq n] (w : m → K) (v : n → K) : (Matrix.vecMulVec w v).toLin'.rank ≤ 1 := by
+    (w : m → K) (v : n → K) : (Matrix.vecMulVec w v).mulVecLin.rank ≤ 1 := by
   nontriviality K
-  rw [Matrix.vecMulVec_eq (Fin 1), Matrix.toLin'_mul]
+  rw [Matrix.vecMulVec_eq (Fin 1), Matrix.mulVecLin_mul]
   refine le_trans (LinearMap.rank_comp_le_left _ _) ?_
   refine (LinearMap.rank_le_domain _).trans_eq ?_
   rw [rank_fun', Fintype.card_ofSubsingleton, Nat.cast_one]

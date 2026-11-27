@@ -7,9 +7,12 @@ module
 
 public import Mathlib.CategoryTheory.Generator.Presheaf
 public import Mathlib.CategoryTheory.Presentable.Adjunction
-public import Mathlib.CategoryTheory.Presentable.StrongGenerator
 
 import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
+import Mathlib.CategoryTheory.Presentable.StrongGenerator
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Categories of presheaves are locally presentable

@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Matrix.Basis
 public import Mathlib.LinearAlgebra.StdBasis
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Standard basis on matrices
 

@@ -57,7 +57,7 @@ theorem Icc_symm (x y : X) : Icc R x y = Icc R y x := by
   ext z
   constructor
   all_goals
-  · rintro ⟨m, n, hm , hn , hmn , hz⟩
+    rintro ⟨m, n, hm , hn , hmn , hz⟩
     rw [convexCombPair_symm] at hz
     exact ⟨n, m, hn, hm, add_comm m n ▸ hmn, hz⟩
 
@@ -66,7 +66,7 @@ theorem Ioo_symm (x y : X) : Ioo R x y = Ioo R y x := by
   ext z
   constructor
   all_goals
-  · rintro ⟨m, n, hm , hn , hmn , hz⟩
+    rintro ⟨m, n, hm , hn , hmn , hz⟩
     rw [convexCombPair_symm] at hz
     exact ⟨n, m, hn, hm, add_comm m n ▸ hmn, hz⟩
 
@@ -246,9 +246,10 @@ theorem Ioo_self (x : X) : Ioo R x x = {x} := by
 
 end DenselyOrdered
 
-section Field
+section DivisionSemiring
 
-variable (K) {X} [Field K] [LinearOrder K] [IsStrictOrderedRing K] [ConvexSpace K X] {s : Set X}
+variable (K) {X} [DivisionSemiring K] [LinearOrder K] [IsStrictOrderedRing K] [ConvexSpace K X]
+variable {s : Set X}
 
 theorem isConvexSet_iff_Icc_subset_of_mem : IsConvexSet K s ↔ ∀ x ∈ s, ∀ y ∈ s, Icc K x y ⊆ s := by
   refine ⟨fun h x hx y hy ↦ ?_, fun h ↦ IsConvexSet.of_convexCombPair_mem ?_⟩
@@ -257,7 +258,7 @@ theorem isConvexSet_iff_Icc_subset_of_mem : IsConvexSet K s ↔ ∀ x ∈ s, ∀
     apply h x hx y hy
     exact ⟨a, b, ha, hb, hab, by simp⟩
 
-end Field
+end DivisionSemiring
 
 end
 

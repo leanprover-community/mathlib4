@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Presentations of modules
 
@@ -31,6 +34,7 @@ contains all the data and properties involved in a presentation of `M` by
 generators and relations.
 
 ## TODO
+
 * Relate this to `Module.FinitePresentation`
 * Behaviour of presentations with respect to the extension of scalars and the restriction of scalars
 -/
@@ -387,7 +391,7 @@ lemma of_linearEquiv (e : M ≃ₗ[A] N) : (solution.postcomp e.toLinearMap).IsP
   bijective := by
     have : (solution.postcomp e.toLinearMap).fromQuotient =
       e.toLinearMap.comp (solution.fromQuotient) := by aesop
-    rw [this, LinearMap.coe_comp, LinearEquiv.coe_coe]
+    rw [this, LinearMap.coe_comp, LinearEquiv.coe_toLinearMap]
     exact Function.Bijective.comp e.bijective h.bijective
 
 end IsPresentation
