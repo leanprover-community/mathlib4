@@ -232,8 +232,8 @@ theorem dist_map (x y : E) : dist (f x) (f y) = dist x y :=
   f.isometry.dist_eq x y
 
 @[simp]
-theorem edist_map (x y : E) : eDist (f x) (f y) = eDist x y :=
-  f.isometry.edist_eq x y
+theorem eDist_map (x y : E) : eDist (f x) (f y) = eDist x y :=
+  f.isometry.eDist_eq x y
 
 protected theorem injective : Injective f₁ :=
   Isometry.injective (LinearIsometry.isometry f₁)
@@ -911,8 +911,8 @@ theorem dist_map (x y : E) : dist (e x) (e y) = dist x y :=
   e.toLinearIsometry.dist_map x y
 
 @[simp]
-theorem edist_map (x y : E) : eDist (e x) (e y) = eDist x y :=
-  e.toLinearIsometry.edist_map x y
+theorem eDist_map (x y : E) : eDist (e x) (e y) = eDist x y :=
+  e.toLinearIsometry.eDist_map x y
 
 protected theorem bijective : Bijective e :=
   e.toLinearEquiv.bijective

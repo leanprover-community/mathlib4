@@ -56,7 +56,7 @@ noncomputable def eDist (u v : V) : ℕ∞ :=
 
 variable {G} {H : SimpleGraph W} {u v w : V}
 
-theorem edist_eq_sInf : G.eDist u v = sInf (Set.range fun w : G.Walk u v ↦ (w.length : ℕ∞)) := rfl
+theorem eDist_eq_sInf : G.eDist u v = sInf (Set.range fun w : G.Walk u v ↦ (w.length : ℕ∞)) := rfl
 
 protected theorem Reachable.exists_walk_length_eq_eDist (hr : G.Reachable u v) :
     ∃ p : G.Walk u v, p.length = G.eDist u v :=
@@ -66,36 +66,36 @@ protected theorem Connected.exists_walk_length_eq_eDist (hconn : G.Connected) (u
     ∃ p : G.Walk u v, p.length = G.eDist u v :=
   (hconn u v).exists_walk_length_eq_eDist
 
-theorem edist_le (p : G.Walk u v) :
+theorem eDist_le (p : G.Walk u v) :
     G.eDist u v ≤ p.length :=
   sInf_le ⟨p, rfl⟩
-protected alias Walk.edist_le := edist_le
+protected alias Walk.eDist_le := eDist_le
 
 @[simp]
-theorem edist_eq_zero_iff : G.eDist u v = 0 ↔ u = v := by
+theorem eDist_eq_zero_iff : G.eDist u v = 0 ↔ u = v := by
   simp [eDist]
 
 @[simp]
-theorem edist_self : eDist G v v = 0 :=
-  edist_eq_zero_iff.mpr rfl
+theorem eDist_self : eDist G v v = 0 :=
+  eDist_eq_zero_iff.mpr rfl
 
-theorem edist_pos_of_ne (hne : u ≠ v) :
+theorem eDist_pos_of_ne (hne : u ≠ v) :
     0 < G.eDist u v :=
-  pos_iff_ne_zero.mpr <| edist_eq_zero_iff.ne.mpr hne
+  pos_iff_ne_zero.mpr <| eDist_eq_zero_iff.ne.mpr hne
 
-lemma edist_eq_top_of_not_reachable (h : ¬G.Reachable u v) :
+lemma eDist_eq_top_of_not_reachable (h : ¬G.Reachable u v) :
     G.eDist u v = ⊤ := by
   simp [eDist, not_reachable_iff_isEmpty_walk.mp h]
 
 theorem reachable_of_edist_ne_top (h : G.eDist u v ≠ ⊤) :
     G.Reachable u v :=
-  not_not.mp <| edist_eq_top_of_not_reachable.mt h
+  not_not.mp <| eDist_eq_top_of_not_reachable.mt h
 
 lemma exists_walk_of_edist_ne_top (h : G.eDist u v ≠ ⊤) :
     ∃ p : G.Walk u v, p.length = G.eDist u v :=
   (reachable_of_edist_ne_top h).exists_walk_length_eq_eDist
 
-protected theorem edist_triangle : G.eDist u w ≤ G.eDist u v + G.eDist v w := by
+protected theorem eDist_triangle : G.eDist u w ≤ G.eDist u v + G.eDist v w := by
   cases eq_or_ne (G.eDist u v) ⊤ with
   | inl huv => simp [huv]
   | inr huv =>
@@ -105,12 +105,12 @@ protected theorem edist_triangle : G.eDist u w ≤ G.eDist u v + G.eDist v w := 
       obtain ⟨p, hp⟩ := exists_walk_of_edist_ne_top huv
       obtain ⟨q, hq⟩ := exists_walk_of_edist_ne_top hvw
       rw [← hp, ← hq, ← Nat.cast_add, ← Walk.length_append]
-      exact edist_le _
+      exact eDist_le _
 
-theorem edist_comm : G.eDist u v = G.eDist v u := by
-  rw [edist_eq_sInf, ← Set.image_univ, ← Set.image_univ_of_surjective Walk.reverse_surjective,
+theorem eDist_comm : G.eDist u v = G.eDist v u := by
+  rw [eDist_eq_sInf, ← Set.image_univ, ← Set.image_univ_of_surjective Walk.reverse_surjective,
     ← Set.image_comp, Set.image_univ, Function.comp_def]
-  simp_rw [Walk.length_reverse, ← edist_eq_sInf]
+  simp_rw [Walk.length_reverse, ← eDist_eq_sInf]
 
 lemma exists_walk_of_edist_eq_coe {k : ℕ} (h : G.eDist u v = k) :
     ∃ p : G.Walk u v, p.length = k :=
@@ -118,7 +118,7 @@ lemma exists_walk_of_edist_eq_coe {k : ℕ} (h : G.eDist u v = k) :
   have ⟨p, hp⟩ := exists_walk_of_edist_ne_top this
   ⟨p, Nat.cast_injective (hp.trans h)⟩
 
-lemma edist_ne_top_iff_reachable : G.eDist u v ≠ ⊤ ↔ G.Reachable u v := by
+lemma eDist_ne_top_iff_reachable : G.eDist u v ≠ ⊤ ↔ G.Reachable u v := by
   refine ⟨reachable_of_edist_ne_top, fun h ↦ ?_⟩
   by_contra hx
   simp only [eDist, iInf_eq_top, ENat.natCast_ne_top] at hx
@@ -128,25 +128,25 @@ lemma edist_ne_top_iff_reachable : G.eDist u v ≠ ⊤ ↔ G.Reachable u v := by
 The extended distance between vertices is equal to `1` if and only if these vertices are adjacent.
 -/
 @[simp]
-theorem edist_eq_one_iff_adj : G.eDist u v = 1 ↔ G.Adj u v := by
+theorem eDist_eq_one_iff_adj : G.eDist u v = 1 ↔ G.Adj u v := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · obtain ⟨w, hw⟩ := exists_walk_of_edist_ne_top <| by rw [h]; simp
     exact w.adj_of_length_eq_one <| Nat.cast_eq_one.mp <| h ▸ hw
-  · exact le_antisymm (edist_le h.toWalk) (Order.one_le_iff_pos.mpr <| edist_pos_of_ne h.ne)
+  · exact le_antisymm (eDist_le h.toWalk) (Order.one_le_iff_pos.mpr <| eDist_pos_of_ne h.ne)
 
-lemma edist_le_one_iff_adj_or_eq : G.eDist u v ≤ 1 ↔ G.Adj u v ∨ u = v := by
+lemma eDist_le_one_iff_adj_or_eq : G.eDist u v ≤ 1 ↔ G.Adj u v ∨ u = v := by
   by_cases huv : u = v
   · simp [huv]
   · simp only [huv, or_false]
-    have h : 0 < G.eDist u v := edist_pos_of_ne huv
+    have h : 0 < G.eDist u v := eDist_pos_of_ne huv
     rw [(Order.one_le_iff_pos.mpr h).ge_iff_eq']
-    exact edist_eq_one_iff_adj
+    exact eDist_eq_one_iff_adj
 
-lemma edist_eq_two_iff {u v : V} :
+lemma eDist_eq_two_iff {u v : V} :
     G.eDist u v = 2 ↔ u ≠ v ∧ ¬ G.Adj u v ∧ (G.commonNeighbors u v).Nonempty := by
   refine ⟨fun h ↦ ⟨?_, ?_, ?_⟩, fun h ↦ le_antisymm ?_ ?_⟩
-  · simp +decide [← G.edist_eq_zero_iff.not (b := u = v), h]
-  · simp +decide [← edist_eq_one_iff_adj, h]
+  · simp +decide [← G.eDist_eq_zero_iff.not (b := u = v), h]
+  · simp +decide [← eDist_eq_one_iff_adj, h]
   · obtain ⟨w, hw⟩ := exists_walk_of_edist_eq_coe h
     use w.getVert 1
     suffices w.getVert 1 ∈ G.commonNeighbors (w.getVert 0) (w.getVert w.length) by simpa
@@ -154,7 +154,7 @@ lemma edist_eq_two_iff {u v : V} :
     exact ⟨w.adj_getVert_succ (by simp [hw]), (w.adj_getVert_succ (by simp [hw])).symm⟩
   · obtain ⟨w, hw⟩ := h.2.2
     rw [mem_commonNeighbors] at hw
-    have := (Walk.cons hw.1 <| .cons hw.2.symm .nil).edist_le
+    have := (Walk.cons hw.1 <| .cons hw.2.symm .nil).eDist_le
     simp_all
   · by_contra
     simp_all [Order.le_one_iff]
@@ -163,41 +163,41 @@ lemma two_lt_edist_iff {u v : V} :
     2 < G.eDist u v ↔ u ≠ v ∧ ¬ G.Adj u v ∧ (G.commonNeighbors u v) = ∅ := by
   refine ⟨fun h ↦ ?_, fun h ↦ lt_of_le_of_ne ?_ (Ne.symm ?_)⟩
   · have hn : u ≠ v := fun hc ↦ by simp [hc] at h
-    have : ¬ G.Adj u v := fun hc ↦ by simp +decide [edist_eq_one_iff_adj.mpr hc] at h
+    have : ¬ G.Adj u v := fun hc ↦ by simp +decide [eDist_eq_one_iff_adj.mpr hc] at h
     use hn, this
     by_contra! hc
-    simp [edist_eq_two_iff.mpr ⟨hn, this, hc⟩] at h
+    simp [eDist_eq_two_iff.mpr ⟨hn, this, hc⟩] at h
   · rw [← one_add_one_eq_two]
     refine Order.add_one_le_of_lt <| lt_of_le_of_ne ?_ ?_
-    <;> grind [Order.one_le_iff_pos, pos_iff_ne_zero, edist_eq_zero_iff, edist_eq_one_iff_adj]
-  · simp_all [edist_eq_two_iff]
+    <;> grind [Order.one_le_iff_pos, pos_iff_ne_zero, eDist_eq_zero_iff, eDist_eq_one_iff_adj]
+  · simp_all [eDist_eq_two_iff]
 
-lemma edist_bot_of_ne (h : u ≠ v) : (⊥ : SimpleGraph V).eDist u v = ⊤ := by
-  rwa [ne_eq, ← reachable_bot.not, ← edist_ne_top_iff_reachable.not, not_not] at h
+lemma eDist_bot_of_ne (h : u ≠ v) : (⊥ : SimpleGraph V).eDist u v = ⊤ := by
+  rwa [ne_eq, ← reachable_bot.not, ← eDist_ne_top_iff_reachable.not, not_not] at h
 
-lemma edist_bot [DecidableEq V] : (⊥ : SimpleGraph V).eDist u v = (if u = v then 0 else ⊤) := by
-  by_cases h : u = v <;> simp [h, edist_bot_of_ne]
+lemma eDist_bot [DecidableEq V] : (⊥ : SimpleGraph V).eDist u v = (if u = v then 0 else ⊤) := by
+  by_cases h : u = v <;> simp [h, eDist_bot_of_ne]
 
-lemma edist_top_of_ne (h : u ≠ v) : (⊤ : SimpleGraph V).eDist u v = 1 := by
+lemma eDist_top_of_ne (h : u ≠ v) : (⊤ : SimpleGraph V).eDist u v = 1 := by
   simp [h]
 
-lemma edist_top [DecidableEq V] : (⊤ : SimpleGraph V).eDist u v = (if u = v then 0 else 1) := by
+lemma eDist_top [DecidableEq V] : (⊤ : SimpleGraph V).eDist u v = (if u = v then 0 else 1) := by
   by_cases h : u = v <;> simp [h]
 
-theorem Hom.edist_le (f : G →g H) (u v : V) : H.eDist (f u) (f v) ≤ G.eDist u v := by
+theorem Hom.eDist_le (f : G →g H) (u v : V) : H.eDist (f u) (f v) ≤ G.eDist u v := by
   refine le_iInf fun p ↦ ?_
-  simpa using (p.map f).edist_le
+  simpa using (p.map f).eDist_le
 
 @[simp]
-theorem Iso.edist_eq (f : G ≃g H) (u v : V) : H.eDist (f u) (f v) = G.eDist u v := by
-  apply le_antisymm (f.toHom.edist_le u v)
-  simpa using f.symm.toHom.edist_le (f u) (f v)
+theorem Iso.eDist_eq (f : G ≃g H) (u v : V) : H.eDist (f u) (f v) = G.eDist u v := by
+  apply le_antisymm (f.toHom.eDist_le u v)
+  simpa using f.symm.toHom.eDist_le (f u) (f v)
 
 /-- Supergraphs have smaller or equal extended distances to their subgraphs. -/
 @[gcongr]
-theorem edist_anti {G' : SimpleGraph V} (h : G ≤ G') :
+theorem eDist_anti {G' : SimpleGraph V} (h : G ≤ G') :
     G'.eDist u v ≤ G.eDist u v :=
-  (Hom.ofLE h).edist_le u v
+  (Hom.ofLE h).eDist_le u v
 
 end eDist
 
@@ -217,7 +217,7 @@ theorem dist_eq_sInf : G.dist u v = sInf (Set.range (Walk.length : G.Walk u v �
 
 @[grind =]
 lemma Reachable.coe_dist_eq_eDist (h : G.Reachable u v) : G.dist u v = G.eDist u v :=
-  ENat.natCast_toNat <| edist_ne_top_iff_reachable.mpr h
+  ENat.natCast_toNat <| eDist_ne_top_iff_reachable.mpr h
 
 protected theorem Reachable.exists_walk_length_eq_dist (hr : G.Reachable u v) :
     ∃ p : G.Walk u v, p.length = G.dist u v :=
@@ -286,17 +286,17 @@ lemma Reachable.dist_triangle_left (h : G.Reachable u v) (w) :
   by_cases! h' : ¬G.Reachable u w
   · grind [dist_eq_zero_iff_eq_or_not_reachable]
   rw [← ENat.natCast_le_natCast, ENat.natCast_add]
-  grind [SimpleGraph.edist_triangle, Reachable.trans, Reachable.symm]
+  grind [SimpleGraph.eDist_triangle, Reachable.trans, Reachable.symm]
 
 lemma Reachable.dist_triangle_right (h : G.Reachable v w) (u) :
     G.dist u w ≤ G.dist u v + G.dist v w := by
   by_cases! h' : ¬G.Reachable u w
   · grind [dist_eq_zero_iff_eq_or_not_reachable]
   rw [← ENat.natCast_le_natCast, ENat.natCast_add]
-  grind [SimpleGraph.edist_triangle, Reachable.trans, Reachable.symm]
+  grind [SimpleGraph.eDist_triangle, Reachable.trans, Reachable.symm]
 
 theorem dist_comm : G.dist u v = G.dist v u := by
-  rw [dist, dist, edist_comm]
+  rw [dist, dist, eDist_comm]
 
 lemma dist_ne_zero_iff_ne_and_reachable : G.dist u v ≠ 0 ↔ u ≠ v ∧ G.Reachable u v := by
   simp
@@ -313,7 +313,7 @@ The distance between vertices is equal to `1` if and only if these vertices are 
 -/
 @[simp]
 theorem dist_eq_one_iff_adj : G.dist u v = 1 ↔ G.Adj u v := by
-  rw [dist, ENat.toNat_eq_iff, ENat.natCast_one, edist_eq_one_iff_adj]
+  rw [dist, ENat.toNat_eq_iff, ENat.natCast_one, eDist_eq_one_iff_adj]
   decide
 
 theorem Adj.diff_dist_adj (hadj : G.Adj v w) :
@@ -369,11 +369,11 @@ lemma length_eq_dist_of_subwalk {u' v' : V} {p₁ : G.Walk u v} {p₂ : G.Walk u
   lia
 
 theorem Hom.dist_le (f : G →g H) (hr : G.Reachable u v) : H.dist (f u) (f v) ≤ G.dist u v :=
-  ENat.toNat_le_toNat (f.edist_le u v) (edist_ne_top_iff_reachable.mpr hr)
+  ENat.toNat_le_toNat (f.eDist_le u v) (eDist_ne_top_iff_reachable.mpr hr)
 
 @[simp]
 theorem Iso.dist_eq (f : G ≃g H) (u v : V) : H.dist (f u) (f v) = G.dist u v :=
-  congr($(f.edist_eq u v).toNat)
+  congr($(f.eDist_eq u v).toNat)
 
 /-- Supergraphs have smaller or equal distances to their subgraphs. -/
 @[gcongr]
@@ -432,16 +432,16 @@ theorem ball_one : G.ball c 1 = {c} := by
 theorem ball_two : G.ball c 2 = insert c (G.neighborSet c) := by
   ext v
   simp [one_add_one_eq_two.symm, ENat.lt_add_one_iff ENat.one_ne_top,
-    edist_le_one_iff_adj_or_eq, adj_comm, or_comm]
+    eDist_le_one_iff_adj_or_eq, adj_comm, or_comm]
 
 /-- The ball of radius `⊤` is the connected component of the center. -/
 theorem ball_top :
     G.ball c ⊤ = (G.connectedComponentMk c).supp := by
-  simp [Set.ext_iff, lt_top_iff_ne_top, edist_ne_top_iff_reachable]
+  simp [Set.ext_iff, lt_top_iff_ne_top, eDist_ne_top_iff_reachable]
 
 /-- A vertex is in the ball of radius `⊤` iff it is reachable from the center. -/
 theorem mem_ball_top : v ∈ G.ball c ⊤ ↔ G.Reachable v c := by
-  simp [lt_top_iff_ne_top, edist_ne_top_iff_reachable]
+  simp [lt_top_iff_ne_top, eDist_ne_top_iff_reachable]
 
 /-- Balls are monotone in the radius. -/
 @[gcongr]
@@ -454,7 +454,7 @@ theorem mem_ball_self (hr : 0 < r) : c ∈ G.ball c r := by
 
 /-- Ball membership is symmetric in center and point. -/
 theorem mem_ball_comm : v ∈ G.ball c r ↔ c ∈ G.ball v r := by
-  simp [ball, edist_comm]
+  simp [ball, eDist_comm]
 
 end ball
 

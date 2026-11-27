@@ -173,7 +173,7 @@ variable {𝕂 𝔸 : Type*} [RCLike 𝕂] [NormedCommRing 𝔸] [NormedAlgebra 
 /-- The exponential map in a commutative Banach algebra `𝔸` over `𝕂 = ℝ` or `𝕂 = ℂ` has strict
 Fréchet derivative `NormedSpace.exp x • 1 : 𝔸 →L[𝕂] 𝔸` at any point `x`. -/
 theorem hasStrictFDerivAt_exp {x : 𝔸} : HasStrictFDerivAt exp (exp x • (1 : 𝔸 →L[𝕂] 𝔸)) x :=
-  hasStrictFDerivAt_exp_of_mem_ball ((expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _)
+  hasStrictFDerivAt_exp_of_mem_ball ((expSeries_radius_eq_top 𝕂 𝔸).symm ▸ eDist_lt_top _ _)
 
 /-- The exponential map in a commutative Banach algebra `𝔸` over `𝕂 = ℝ` or `𝕂 = ℂ` has
 Fréchet derivative `NormedSpace.exp x • 1 : 𝔸 →L[𝕂] 𝔸` at any point `x`. -/
@@ -189,7 +189,7 @@ variable {𝕂 : Type*} [RCLike 𝕂]
 /-- The exponential map in `𝕂 = ℝ` or `𝕂 = ℂ` has strict derivative `NormedSpace.exp x`
 at any point `x`. -/
 theorem hasStrictDerivAt_exp {x : 𝕂} : HasStrictDerivAt exp (exp x) x :=
-  hasStrictDerivAt_exp_of_mem_ball ((expSeries_radius_eq_top 𝕂 𝕂).symm ▸ edist_lt_top _ _)
+  hasStrictDerivAt_exp_of_mem_ball ((expSeries_radius_eq_top 𝕂 𝕂).symm ▸ eDist_lt_top _ _)
 
 /-- The exponential map in `𝕂 = ℝ` or `𝕂 = ℂ` has derivative `NormedSpace.exp x`
 at any point `x`. -/
@@ -347,46 +347,46 @@ variable [CompleteSpace 𝔸]
 theorem hasFDerivAt_exp_smul_const (x : 𝔸) (t : 𝕊) :
     HasFDerivAt (fun u : 𝕊 => exp (u • x)) (exp (t • x) • (1 : 𝕊 →L[𝕂] 𝕊).smulRight x) t :=
   hasFDerivAt_exp_smul_const_of_mem_ball 𝕂 _ _ <|
-    (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _
+    (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ eDist_lt_top _ _
 
 theorem hasFDerivAt_exp_smul_const' (x : 𝔸) (t : 𝕊) :
     HasFDerivAt (fun u : 𝕊 => exp (u • x))
       (((1 : 𝕊 →L[𝕂] 𝕊).smulRight x).smulRight (exp (t • x))) t :=
   hasFDerivAt_exp_smul_const_of_mem_ball' 𝕂 _ _ <|
-    (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _
+    (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ eDist_lt_top _ _
 
 theorem hasStrictFDerivAt_exp_smul_const (x : 𝔸) (t : 𝕊) :
     HasStrictFDerivAt (fun u : 𝕊 => exp (u • x))
       (exp (t • x) • (1 : 𝕊 →L[𝕂] 𝕊).smulRight x) t :=
   hasStrictFDerivAt_exp_smul_const_of_mem_ball 𝕂 _ _ <|
-    (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _
+    (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ eDist_lt_top _ _
 
 theorem hasStrictFDerivAt_exp_smul_const' (x : 𝔸) (t : 𝕊) :
     HasStrictFDerivAt (fun u : 𝕊 => exp (u • x))
       (((1 : 𝕊 →L[𝕂] 𝕊).smulRight x).smulRight (exp (t • x))) t :=
   hasStrictFDerivAt_exp_smul_const_of_mem_ball' 𝕂 _ _ <|
-    (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _
+    (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ eDist_lt_top _ _
 
 variable {𝕂}
 
 theorem hasStrictDerivAt_exp_smul_const (x : 𝔸) (t : 𝕂) :
     HasStrictDerivAt (fun u : 𝕂 => exp (u • x)) (exp (t • x) * x) t :=
   hasStrictDerivAt_exp_smul_const_of_mem_ball _ _ <|
-    (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _
+    (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ eDist_lt_top _ _
 
 theorem hasStrictDerivAt_exp_smul_const' (x : 𝔸) (t : 𝕂) :
     HasStrictDerivAt (fun u : 𝕂 => exp (u • x)) (x * exp (t • x)) t :=
   hasStrictDerivAt_exp_smul_const_of_mem_ball' _ _ <|
-    (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _
+    (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ eDist_lt_top _ _
 
 theorem hasDerivAt_exp_smul_const (x : 𝔸) (t : 𝕂) :
     HasDerivAt (fun u : 𝕂 => exp (u • x)) (exp (t • x) * x) t :=
-  hasDerivAt_exp_smul_const_of_mem_ball _ _ <| (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _
+  hasDerivAt_exp_smul_const_of_mem_ball _ _ <| (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ eDist_lt_top _ _
 
 theorem hasDerivAt_exp_smul_const' (x : 𝔸) (t : 𝕂) :
     HasDerivAt (fun u : 𝕂 => exp (u • x)) (x * exp (t • x)) t :=
   hasDerivAt_exp_smul_const_of_mem_ball' _ _ <|
-    (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _
+    (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ eDist_lt_top _ _
 
 variable (𝕂) in
 @[fun_prop]

@@ -85,11 +85,11 @@ theorem eq_of_edist_zero_on {f f' : α → E} {s : Set α} (h : ∀ ⦃x⦄, x �
   dsimp only [eVariationOn]
   congr 1 with p : 1
   congr 1 with i : 1
-  rw [edist_congr_right (h <| p.snd.prop.2 (i + 1)), edist_congr_left (h <| p.snd.prop.2 i)]
+  rw [eDist_congr_right (h <| p.snd.prop.2 (i + 1)), eDist_congr_left (h <| p.snd.prop.2 i)]
 
 theorem eq_of_eqOn {f f' : α → E} {s : Set α} (h : EqOn f f' s) :
     eVariationOn f s = eVariationOn f' s :=
-  eq_of_edist_zero_on fun x xs => by rw [h xs, edist_self]
+  eq_of_edist_zero_on fun x xs => by rw [h xs, eDist_self]
 
 theorem sum_le {f : α → E} {s : Set α} {n : ℕ} {u : ℕ → α} (hu : Monotone u) (us : ∀ i, u i ∈ s) :
     (∑ i ∈ Finset.range n, eDist (f (u (i + 1))) (f (u i))) ≤ eVariationOn f s :=
@@ -141,7 +141,7 @@ theorem eVariationOn_eq_strictMonoOn (f : α → E) (s : Set α) :
         simp only [Finset.sum_range_succ, Sigma.exists, Subtype.exists, mem_Iic, exists_and_left,
           exists_prop]
         rcases (u_mono (Nat.le_add_right n 1)).eq_or_lt with hn | hn
-        · simp only [← hn, edist_self, add_zero]
+        · simp only [← hn, eDist_self, add_zero]
           exact ⟨m, v, hv, ⟨v_mono, v_mem⟩, h'v⟩
         · refine ⟨m + 1, fun i ↦ if i ≤ m then v i else u (n + 1), by simp,
             by grind [StrictMonoOn], ?_⟩
@@ -185,10 +185,10 @@ theorem _root_.BoundedVariationOn.locallyBoundedVariationOn {f : α → E} {s : 
 theorem congr {f g : α → E} {s : Set α} (h : EqOn f g s) : eVariationOn f s = eVariationOn g s := by
   grind [eVariationOn]
 
-theorem edist_le (f : α → E) {s : Set α} {x y : α} (hx : x ∈ s) (hy : y ∈ s) :
+theorem eDist_le (f : α → E) {s : Set α} {x y : α} (hx : x ∈ s) (hy : y ∈ s) :
     eDist (f x) (f y) ≤ eVariationOn f s := by
   wlog hxy : y ≤ x generalizing x y
-  · rw [edist_comm]
+  · rw [eDist_comm]
     exact this hy hx (le_of_not_ge hxy)
   let u : ℕ → α := fun n => if n = 0 then y else x
   have hu : Monotone u := monotone_nat_of_le_succ fun
@@ -204,7 +204,7 @@ theorem eq_zero_iff (f : α → E) {s : Set α} :
   constructor
   · rintro h x xs y ys
     rw [← nonpos_iff_eq_zero, ← h]
-    exact edist_le f xs ys
+    exact eDist_le f xs ys
   · rintro h
     dsimp only [eVariationOn]
     rw [ENNReal.iSup_eq_zero]
@@ -215,7 +215,7 @@ theorem constant_on {f : α → E} {s : Set α} (hf : (f '' s).Subsingleton) :
     eVariationOn f s = 0 := by
   rw [eq_zero_iff]
   rintro x xs y ys
-  rw [hf ⟨x, xs, rfl⟩ ⟨y, ys, rfl⟩, edist_self]
+  rw [hf ⟨x, xs, rfl⟩ ⟨y, ys, rfl⟩, eDist_self]
 
 @[simp]
 protected theorem subsingleton (f : α → E) {s : Set α} (hs : s.Subsingleton) :
@@ -263,8 +263,8 @@ theorem lowerSemicontinuous_uniformOn (s : Set α) :
 theorem _root_.BoundedVariationOn.dist_le {E : Type*} [PseudoMetricSpace E] {f : α → E}
     {s : Set α} (h : BoundedVariationOn f s) {x y : α} (hx : x ∈ s) (hy : y ∈ s) :
     dist (f x) (f y) ≤ (eVariationOn f s).toReal := by
-  rw [← ENNReal.ofReal_le_ofReal_iff ENNReal.toReal_nonneg, ENNReal.ofReal_toReal h, ← edist_dist]
-  exact edist_le f hx hy
+  rw [← ENNReal.ofReal_le_ofReal_iff ENNReal.toReal_nonneg, ENNReal.ofReal_toReal h, ← eDist_dist]
+  exact eDist_le f hx hy
 
 theorem _root_.BoundedVariationOn.sub_le {f : α → ℝ} {s : Set α} (h : BoundedVariationOn f s)
     {x y : α} (hx : x ∈ s) (hy : y ∈ s) : f x - f y ≤ (eVariationOn f s).toReal := by
@@ -344,7 +344,7 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
         have C : N - 1 < N + 1 := lt_of_le_of_lt N.pred_le N.lt_succ_self
         rw [Finset.sum_eq_sum_Ico_succ_bot C, Finset.sum_eq_sum_Ico_succ_bot B, A, Finset.Ico_self,
           Finset.sum_empty, add_zero, add_comm (eDist _ _)]
-        exact edist_triangle _ _ _
+        exact eDist_triangle _ _ _
       _ = ∑ j ∈ Finset.range (n + 1), eDist (f (w (j + 1))) (f (w j)) := by
         rw [Finset.sum_Ico_consecutive, Finset.sum_Ico_consecutive, Finset.range_eq_Ico] <;> grind
 
@@ -440,14 +440,14 @@ theorem sum' (f : α → E) {I : ℕ → α} (hI : Monotone I) {n : ℕ} :
 @[simp]
 theorem pair (f : α → E) (a b : α) : eVariationOn f {a, b} = eDist (f a) (f b) := by
   wlog hab : a ≤ b generalizing a b
-  · simpa [edist_comm, pair_comm] using this b a (le_of_not_ge hab)
-  · apply le_antisymm _ (edist_le f (by simp) (by simp))
+  · simpa [eDist_comm, pair_comm] using this b a (le_of_not_ge hab)
+  · apply le_antisymm _ (eDist_le f (by simp) (by simp))
     simp only [eVariationOn_eq_strictMonoOn, iSup_le_iff]
     rintro ⟨n, u, hmono, hi⟩
     rcases (by omega : n = 0 ∨ n = 1 ∨ 2 ≤ n) with rfl | rfl | hn
     · simp
     · have := hmono (by simp) (by simp) zero_lt_one
-      simp [(by grind : u 0 = a), (by grind : u 1 = b), edist_comm]
+      simp [(by grind : u 0 = a), (by grind : u 1 = b), eDist_comm]
     · have := hmono (by simp) (by grind) zero_lt_one
       have := hmono (by grind) (by grind) one_lt_two
       grind
@@ -516,7 +516,7 @@ theorem comp_le_of_antitoneOn (f : α → E) {s : Set α} {t : Set β} (φ : β 
     le_rfl
   rw [Finset.mem_range] at hx
   dsimp only [Subtype.coe_mk, Function.comp_apply]
-  rw [edist_comm]
+  rw [eDist_comm]
   congr 4 <;> lia
 
 theorem comp_eq_of_monotoneOn (f : α → E) {t : Set β} (φ : β → α) (hφ : MonotoneOn φ t) :
@@ -627,7 +627,7 @@ theorem eVariationOn_on_inter_Iic_eq_Iio_add_eDist
         simp only [Finset.sum_range_succ, add_assoc]
         gcongr with i h
         · grind
-        · grw [add_comm (eDist _ _), ← edist_triangle]
+        · grw [add_comm (eDist _ _), ← eDist_triangle]
           grind
       have B : ∑ i ∈ Finset.range (n + 2), eDist (f (v (i + 1))) (f (v i)) ≤
             eVariationOn f (s ∩ Iio a) + eDist (f a) (f y) := by
@@ -807,7 +807,7 @@ theorem _root_.BoundedVariationOn.exists_tendsto_left_of_filter [CompleteSpace M
   · simp only [mem_map]
     apply mem_of_superset (hL y y_mem) (subset_preimage_image _ _)
   · rintro - ⟨a, ha, rfl⟩ - ⟨b, hb, rfl⟩
-    exact (eVariationOn.edist_le _ ha hb).trans_lt hy
+    exact (eVariationOn.eDist_le _ ha hb).trans_lt hy
 
 /-- If a function has bounded variation, then the variation on small closed-open
 intervals to the left of any point tends to `0`. -/
@@ -1117,7 +1117,7 @@ theorem MonotoneOn.eVariationOn_eq (hf : MonotoneOn f s) (as : a ∈ s) (bs : b 
         _ = ∑ i ∈ range n, .ofReal (f (u (i + 1)) - f (u i)) := by
           refine sum_congr rfl fun i hi => ?_
           simp only [Finset.mem_range] at hi
-          rw [edist_dist, Real.dist_eq, abs_of_nonneg]
+          rw [eDist_dist, Real.dist_eq, abs_of_nonneg]
           exact sub_nonneg_of_le (hf (us i).1 (us (i + 1)).1 (hu (Nat.le_succ _)))
         _ = .ofReal (∑ i ∈ range n, (f (u (i + 1)) - f (u i))) := by
           rw [ofReal_sum_of_nonneg]

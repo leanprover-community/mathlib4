@@ -287,9 +287,9 @@ space. The instance is recorded on the type synonym `LevyProkhorov (Measure Ω) 
 noncomputable instance instPseudoEMetricSpaceMeasure :
     PseudoEMetricSpace (LevyProkhorov (Measure Ω)) where
   eDist μ ν := levyProkhorovEDist μ.toMeasure ν.toMeasure
-  edist_self _ := levyProkhorovEDist_self _
-  edist_comm _ _ := levyProkhorovEDist_comm ..
-  edist_triangle _ _ _ := levyProkhorovEDist_triangle ..
+  eDist_self _ := levyProkhorovEDist_self _
+  eDist_comm _ _ := levyProkhorovEDist_comm ..
+  eDist_triangle _ _ _ := levyProkhorovEDist_triangle ..
 
 /-- The Lévy-Prokhorov distance `levyProkhorovDist` makes `FiniteMeasure Ω` a pseudometric
 space. The instance is recorded on the type synonym
@@ -301,7 +301,7 @@ noncomputable instance instPseudoMetricSpaceFiniteMeasure :
   dist_self _ := levyProkhorovDist_self _
   dist_comm _ _ := levyProkhorovDist_comm ..
   dist_triangle _ _ _ := levyProkhorovDist_triangle ..
-  edist_dist μ ν := by simp [levyProkhorovDist, levyProkhorovEDist_ne_top]
+  eDist_dist μ ν := by simp [levyProkhorovDist, levyProkhorovEDist_ne_top]
 
 /-- The Lévy-Prokhorov distance `levyProkhorovDist` makes `ProbabilityMeasure Ω` a pseudometric
 space. The instance is recorded on the type synonym
@@ -313,16 +313,16 @@ noncomputable instance instPseudoMetricSpaceProbabilityMeasure :
     PseudoMetricSpace (LevyProkhorov (ProbabilityMeasure Ω)) :=
   .induced (LevyProkhorov.ofMeasure ·.toMeasure.toFiniteMeasure) inferInstance
 
-lemma edist_measure_def (μ ν : LevyProkhorov (Measure Ω)) :
+lemma eDist_measure_def (μ ν : LevyProkhorov (Measure Ω)) :
     eDist μ ν = levyProkhorovEDist μ.toMeasure ν.toMeasure := rfl
 
-lemma edist_finiteMeasure_def (μ ν : LevyProkhorov (FiniteMeasure Ω)) :
+lemma eDist_finiteMeasure_def (μ ν : LevyProkhorov (FiniteMeasure Ω)) :
     eDist μ ν = levyProkhorovEDist μ.toMeasure.toMeasure ν.toMeasure.toMeasure := rfl
 
 lemma dist_finiteMeasure_def (μ ν : LevyProkhorov (FiniteMeasure Ω)) :
     dist μ ν = levyProkhorovDist μ.toMeasure.toMeasure ν.toMeasure.toMeasure := rfl
 
-lemma edist_probabilityMeasure_def (μ ν : LevyProkhorov (ProbabilityMeasure Ω)) :
+lemma eDist_probabilityMeasure_def (μ ν : LevyProkhorov (ProbabilityMeasure Ω)) :
     eDist μ ν = levyProkhorovEDist μ.toMeasure.toMeasure ν.toMeasure.toMeasure := rfl
 
 lemma dist_probabilityMeasure_def (μ ν : LevyProkhorov (ProbabilityMeasure Ω)) :

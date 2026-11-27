@@ -143,7 +143,7 @@ theorem uniformEquicontinuous_birkhoffAverage (hf : LipschitzWith 1 f) (hg : Uni
     _ ≤ (∑ _k ∈ Finset.range n, ε) / n := by
       gcongr
       refine hδε _ _ ?_
-      simpa using (hf.iterate _).edist_le_mul_of_le h.le
+      simpa using (hf.iterate _).eDist_le_mul_of_le h.le
     _ = n * ε / n := by simp
     _ ≤ ε := by
       rcases eq_or_ne n 0 with hn | hn <;> simp [hn, hε.le, mul_div_cancel_left₀]

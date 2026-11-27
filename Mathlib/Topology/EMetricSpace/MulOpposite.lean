@@ -41,9 +41,9 @@ instance {α : Type*} [PseudoEMetricSpace α] : PseudoEMetricSpace αᵐᵒᵖ :
   PseudoEMetricSpace.induced unop ‹_›
 
 @[to_additive]
-theorem edist_unop (x y : αᵐᵒᵖ) : eDist (unop x) (unop y) = eDist x y := rfl
+theorem eDist_unop (x y : αᵐᵒᵖ) : eDist (unop x) (unop y) = eDist x y := rfl
 
 @[to_additive]
-theorem edist_op (x y : α) : eDist (op x) (op y) = eDist x y := rfl
+theorem eDist_op (x y : α) : eDist (op x) (op y) = eDist x y := rfl
 
 end MulOpposite

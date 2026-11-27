@@ -220,9 +220,9 @@ This holds independent of `p` and does not require `[Fact (1 ≤ p)]`. We keep i
 from `WithLp.instProdPseudoEMetricSpace` so it can be used also for `p < 1`. -/
 theorem prod_edist_comm (f g : WithLp p (α × β)) : eDist f g = eDist g f := by
   rcases p.trichotomy with (rfl | rfl | h)
-  · simp only [prod_edist_eq_card, edist_comm]
-  · simp only [prod_edist_eq_sup, edist_comm]
-  · simp only [prod_edist_eq_add h, edist_comm]
+  · simp only [prod_edist_eq_card, eDist_comm]
+  · simp only [prod_edist_eq_sup, eDist_comm]
+  · simp only [prod_edist_eq_add h, eDist_comm]
 
 end EDistProp
 
@@ -331,19 +331,19 @@ by the product one using this pseudoemetric space and `PseudoEMetricSpace.replac
 @[instance_reducible]
 def prodPseudoEMetricAux [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     PseudoEMetricSpace (WithLp p (α × β)) where
-  edist_self := prod_edist_self p
-  edist_comm := prod_edist_comm p
-  edist_triangle f g h := by
+  eDist_self := prod_edist_self p
+  eDist_comm := prod_edist_comm p
+  eDist_triangle f g h := by
     rcases p.dichotomy with (rfl | hp)
     · simp only [prod_edist_eq_sup]
-      exact sup_le ((edist_triangle _ g.fst _).trans <| add_le_add le_sup_left le_sup_left)
-        ((edist_triangle _ g.snd _).trans <| add_le_add le_sup_right le_sup_right)
+      exact sup_le ((eDist_triangle _ g.fst _).trans <| add_le_add le_sup_left le_sup_left)
+        ((eDist_triangle _ g.snd _).trans <| add_le_add le_sup_right le_sup_right)
     · simp only [prod_edist_eq_add (zero_lt_one.trans_le hp)]
       calc
         (eDist f.fst h.fst ^ p.toReal + eDist f.snd h.snd ^ p.toReal) ^ (1 / p.toReal) ≤
             ((eDist f.fst g.fst + eDist g.fst h.fst) ^ p.toReal +
               (eDist f.snd g.snd + eDist g.snd h.snd) ^ p.toReal) ^ (1 / p.toReal) := by
-          gcongr <;> apply edist_triangle
+          gcongr <;> apply eDist_triangle
         _ ≤
             (eDist f.fst g.fst ^ p.toReal + eDist f.snd g.snd ^ p.toReal) ^ (1 / p.toReal) +
               (eDist g.fst h.fst ^ p.toReal + eDist g.snd h.snd ^ p.toReal) ^ (1 / p.toReal) := by
@@ -363,7 +363,7 @@ for use outside this file. -/
 theorem prod_sup_edist_ne_top_aux [PseudoMetricSpace α] [PseudoMetricSpace β]
     (f g : WithLp ∞ (α × β)) :
     eDist f.fst g.fst ⊔ eDist f.snd g.snd ≠ ⊤ :=
-  ne_of_lt <| by simp [eDist, PseudoMetricSpace.edist_dist]
+  ne_of_lt <| by simp [eDist, PseudoMetricSpace.eDist_dist]
 
 variable (α β)
 
@@ -389,14 +389,14 @@ abbrev prodPseudoMetricAux [PseudoMetricSpace α] [PseudoMetricSpace β] :
     · refine ENNReal.eq_of_forall_le_nnreal_iff fun r ↦ ?_
       simp [prod_edist_eq_sup, prod_dist_eq_sup]
     · have : 0 < p.toReal := by rw [ENNReal.toReal_pos_iff_ne_top]; rintro rfl; norm_num at h
-      simp only [prod_edist_eq_add, edist_dist, one_div, prod_dist_eq_add, this]
+      simp only [prod_edist_eq_add, eDist_dist, one_div, prod_dist_eq_add, this]
       rw [← ENNReal.ofReal_rpow_of_nonneg, ENNReal.ofReal_add, ← ENNReal.ofReal_rpow_of_nonneg,
         ← ENNReal.ofReal_rpow_of_nonneg] <;> simp [Real.rpow_nonneg, add_nonneg]
 
 attribute [local instance] WithLp.prodPseudoMetricAux
 
 variable {α β} in
-private theorem edist_proj_le_edist_aux [PseudoEMetricSpace α] [PseudoEMetricSpace β]
+private theorem eDist_proj_le_edist_aux [PseudoEMetricSpace α] [PseudoEMetricSpace β]
     (x y : WithLp p (α × β)) :
     eDist x.fst y.fst ≤ eDist x y ∧ eDist x.snd y.snd ≤ eDist x y := by
   rcases p.dichotomy with (rfl | h)
@@ -422,7 +422,7 @@ private lemma prod_lipschitzWith_ofLp_aux [PseudoEMetricSpace α] [PseudoEMetric
   intro x y
   change max _ _ ≤ _
   rw [ENNReal.coe_one, one_mul, sup_le_iff]
-  exact edist_proj_le_edist_aux p x y
+  exact eDist_proj_le_edist_aux p x y
 
 private lemma prod_antilipschitzWith_ofLp_aux [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     AntilipschitzWith ((2 : ℝ≥0) ^ (1 / p).toReal) (@ofLp p (α × β)) := by
@@ -625,23 +625,23 @@ theorem prod_nnDist_eq_sup [PseudoMetricSpace α] [PseudoMetricSpace β] (x y : 
 
 @[deprecated (since := "2026-11-07")] alias prod_nndist_eq_sup := prod_nnDist_eq_sup
 
-theorem edist_fst_le [PseudoEMetricSpace α] [PseudoEMetricSpace β] (x y : WithLp p (α × β)) :
+theorem eDist_fst_le [PseudoEMetricSpace α] [PseudoEMetricSpace β] (x y : WithLp p (α × β)) :
     eDist x.fst y.fst ≤ eDist x y :=
-  (edist_proj_le_edist_aux p x y).1
+  (eDist_proj_le_edist_aux p x y).1
 
-theorem edist_snd_le [PseudoEMetricSpace α] [PseudoEMetricSpace β] (x y : WithLp p (α × β)) :
+theorem eDist_snd_le [PseudoEMetricSpace α] [PseudoEMetricSpace β] (x y : WithLp p (α × β)) :
     eDist x.snd y.snd ≤ eDist x y :=
-  (edist_proj_le_edist_aux p x y).2
+  (eDist_proj_le_edist_aux p x y).2
 
 theorem nnDist_fst_le [PseudoMetricSpace α] [PseudoMetricSpace β] (x y : WithLp p (α × β)) :
     nnDist x.fst y.fst ≤ nnDist x y := by
-  simpa [← coe_nnreal_ennreal_nnDist] using edist_fst_le x y
+  simpa [← coe_nnreal_ennreal_nnDist] using eDist_fst_le x y
 
 @[deprecated (since := "2026-11-07")] alias nndist_fst_le := nnDist_fst_le
 
 theorem nnDist_snd_le [PseudoMetricSpace α] [PseudoMetricSpace β] (x y : WithLp p (α × β)) :
     nnDist x.snd y.snd ≤ nnDist x y := by
-  simpa [← coe_nnreal_ennreal_nnDist] using edist_snd_le x y
+  simpa [← coe_nnreal_ennreal_nnDist] using eDist_snd_le x y
 
 @[deprecated (since := "2026-11-07")] alias nndist_snd_le := nnDist_snd_le
 
@@ -702,13 +702,13 @@ variable {β p}
 
 theorem eNorm_fst_le [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] (x : WithLp p (α × β)) :
     ‖x.fst‖ₑ ≤ ‖x‖ₑ := by
-  simpa using edist_fst_le x 0
+  simpa using eDist_fst_le x 0
 
 @[deprecated (since := "2026-11-06")] alias enorm_fst_le := eNorm_fst_le
 
 theorem eNorm_snd_le [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] (x : WithLp p (α × β)) :
     ‖x.snd‖ₑ ≤ ‖x‖ₑ := by
-  simpa using edist_snd_le x 0
+  simpa using eDist_snd_le x 0
 
 @[deprecated (since := "2026-11-06")] alias enorm_snd_le := eNorm_snd_le
 
@@ -926,11 +926,11 @@ lemma dist_toLp_snd (y₁ y₂ : β) :
   congr($(nnDist_toLp_snd p α β y₁ y₂))
 
 @[simp]
-lemma edist_toLp_fst (x₁ x₂ : α) : eDist (toLp p (x₁, (0 : β))) (toLp p (x₂, 0)) = eDist x₁ x₂ := by
+lemma eDist_toLp_fst (x₁ x₂ : α) : eDist (toLp p (x₁, (0 : β))) (toLp p (x₂, 0)) = eDist x₁ x₂ := by
   simp only [eDist_nnDist, nnDist_toLp_fst p α β x₁ x₂]
 
 @[simp]
-lemma edist_toLp_snd (y₁ y₂ : β) :
+lemma eDist_toLp_snd (y₁ y₂ : β) :
     eDist (toLp p ((0 : α), y₁)) (toLp p (0, y₂)) = eDist y₁ y₂ := by
   simp only [eDist_nnDist, nnDist_toLp_snd p α β y₁ y₂]
 
@@ -1148,8 +1148,8 @@ theorem Isometry.withLpProdMap {f : α → α'} (hf : Isometry f) {g : β → β
   intro _ _
   rcases p.trichotomy with rfl | rfl | hp
   · absurd hp.elim; simp
-  · simp [WithLp.prod_edist_eq_sup, hf.edist_eq, hg.edist_eq]
-  · simp [WithLp.prod_edist_eq_add hp, hf.edist_eq, hg.edist_eq]
+  · simp [WithLp.prod_edist_eq_sup, hf.eDist_eq, hg.eDist_eq]
+  · simp [WithLp.prod_edist_eq_add hp, hf.eDist_eq, hg.eDist_eq]
 
 namespace IsometryEquiv
 
@@ -1196,8 +1196,8 @@ def withLpProdUnique [Unique β] : WithLp p (α × β) ≃ᵢ α where
   isometry_toFun x y : eDist x.fst y.fst = eDist x y := by
     rcases p.trichotomy with rfl | rfl | hp
     · absurd hp.elim; simp
-    · simp_rw [WithLp.prod_edist_eq_sup, Unique.eq_default, edist_self, max_zero]
-    · simp_rw [WithLp.prod_edist_eq_add hp, Unique.eq_default, edist_self,
+    · simp_rw [WithLp.prod_edist_eq_sup, Unique.eq_default, eDist_self, max_zero]
+    · simp_rw [WithLp.prod_edist_eq_add hp, Unique.eq_default, eDist_self,
         ENNReal.zero_rpow_of_pos hp, add_zero, one_div, ENNReal.rpow_rpow_inv hp.ne']
 
 theorem coe_withLpProdUnique [Unique β] : ⇑(withLpProdUnique p α β) = WithLp.fst :=

@@ -104,16 +104,16 @@ lemma LocallyLipschitzOn.exists_lipschitzOnWith_of_compact {f : α → β} {s : 
     the distances from `f z` to `f x` and `f y` using the bounds `K z hz` and `K' z hz`, and then
     using the triangle inequality again for `eDist z y ≤ eDist x z + eDist x y ≤ 2 * eDist x y`. -/
     calc eDist (f x) (f y)
-      _ ≤ eDist (f z) (f x) + eDist (f z) (f y) := edist_triangle_left _ _ _
+      _ ≤ eDist (f z) (f x) + eDist (f z) (f y) := eDist_triangle_left _ _ _
       _ ≤ (K _ z.property) * eDist z.val x + eDist (f z) (f y) := add_le_add_left
         (hf _ z.property ⟨mem_ball_self <| hε _ z.property, z.property⟩
           ⟨hx'.2.trans <| half_lt_self <| hε _ z.property, hx⟩) _
       _ ≤ (K _ z.property) * eDist z.val x + (K' _ z.property) * eDist z.val y :=
         add_le_add_right (hK' _ z.property _ ⟨hy, hy'⟩) _
       _ ≤ (K _ z.property) * eDist z.val x + (K' _ z.property) * (eDist x z.val + eDist x y) := by
-        gcongr; exact edist_triangle_left z.val y x
+        gcongr; exact eDist_triangle_left z.val y x
       _ ≤ (K _ z.property) * eDist x y + (K' _ z.property) * (eDist x y + eDist x y) := by
-        simp_rw [edist_dist, dist_comm _ x]
+        simp_rw [eDist_dist, dist_comm _ x]
         gcongr <;> linarith [mem_ball.1 hx'.2, (not_lt (α := ℝ)).1 hy', dist_triangle_left y z x]
       _ = ↑(K _ z.property + 2 * K' _ z.property) * eDist x y := by push_cast; ring
       _ ≤ _ := by gcongr; exact .trans (by rfl) (t.le_sup hz)

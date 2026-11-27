@@ -39,13 +39,13 @@ linear operators, see `antilipschitzWith_iff_exists_mul_le_norm`. -/
 def AntilipschitzWith [PseudoEMetricSpace α] [PseudoEMetricSpace β] (K : ℝ≥0) (f : α → β) :=
   ∀ x y, eDist x y ≤ K * eDist (f x) (f y)
 
-protected lemma AntilipschitzWith.edist_lt_top [PseudoEMetricSpace α] [PseudoMetricSpace β]
+protected lemma AntilipschitzWith.eDist_lt_top [PseudoEMetricSpace α] [PseudoMetricSpace β]
     {K : ℝ≥0} {f : α → β} (h : AntilipschitzWith K f) (x y : α) : eDist x y < ⊤ :=
   (h x y).trans_lt <| by finiteness
 
-theorem AntilipschitzWith.edist_ne_top [PseudoEMetricSpace α] [PseudoMetricSpace β] {K : ℝ≥0}
+theorem AntilipschitzWith.eDist_ne_top [PseudoEMetricSpace α] [PseudoMetricSpace β] {K : ℝ≥0}
     {f : α → β} (h : AntilipschitzWith K f) (x y : α) : eDist x y ≠ ⊤ :=
-  (h.edist_lt_top x y).ne
+  (h.eDist_lt_top x y).ne
 
 section Metric
 
@@ -105,7 +105,7 @@ protected def k (_hf : AntilipschitzWith K f) : ℝ≥0 := K
 
 protected theorem injective {α : Type*} {β : Type*} [EMetricSpace α] [PseudoEMetricSpace β]
     {K : ℝ≥0} {f : α → β} (hf : AntilipschitzWith K f) : Function.Injective f := fun x y h => by
-  simpa only [h, edist_self, mul_zero, edist_le_zero] using hf x y
+  simpa only [h, eDist_self, mul_zero, eDist_le_zero] using hf x y
 
 theorem mul_le_eDist (hf : AntilipschitzWith K f) (x y : α) :
     (K : ℝ≥0∞)⁻¹ * eDist x y ≤ eDist (f x) (f y) := by
@@ -114,7 +114,7 @@ theorem mul_le_eDist (hf : AntilipschitzWith K f) (x y : α) :
 
 theorem ediam_preimage_le (hf : AntilipschitzWith K f) (s : Set β) :
     ediam (f ⁻¹' s) ≤ K * ediam s :=
-  ediam_le fun x hx y hy => by grw [hf x y, edist_le_ediam_of_mem (mem_preimage.1 hx) hy]
+  ediam_le fun x hx y hy => by grw [hf x y, eDist_le_ediam_of_mem (mem_preimage.1 hx) hy]
 
 theorem le_mul_ediam_image (hf : AntilipschitzWith K f) (s : Set α) :
     ediam s ≤ K * ediam (f '' s) :=
@@ -141,7 +141,7 @@ theorem codRestrict (hf : AntilipschitzWith K f) {s : Set β} (hs : ∀ x, f x �
 theorem to_rightInvOn' {s : Set α} (hf : AntilipschitzWith K (s.domRestrict f)) {g : β → α}
     {t : Set β} (g_maps : MapsTo g t s) (g_inv : RightInvOn g f t) :
     LipschitzWith K (t.domRestrict g) := fun x y => by
-  simpa only [domRestrict_apply, g_inv x.mem, g_inv y.mem, Subtype.edist_mk_mk]
+  simpa only [domRestrict_apply, g_inv x.mem, g_inv y.mem, Subtype.eDist_mk_mk]
     using! hf ⟨g x, g_maps x.mem⟩ ⟨g y, g_maps y.mem⟩
 
 theorem to_rightInvOn (hf : AntilipschitzWith K f) {g : β → α} {t : Set β} (h : RightInvOn g f t) :
@@ -202,12 +202,12 @@ theorem subtypeVal (s : Set α) : AntilipschitzWith 1 ((↑) : s → α) :=
 
 @[nontriviality]
 theorem of_subsingleton [Subsingleton α] {K : ℝ≥0} : AntilipschitzWith K f := fun x y => by
-  simp only [Subsingleton.elim x y, edist_self, zero_le]
+  simp only [Subsingleton.elim x y, eDist_self, zero_le]
 
 /-- If `f : α → β` is `0`-antilipschitz, then `α` is a `subsingleton`. -/
 protected theorem subsingleton {α β} [EMetricSpace α] [PseudoEMetricSpace β] {f : α → β}
     (h : AntilipschitzWith 0 f) : Subsingleton α :=
-  ⟨fun x y => edist_le_zero.1 <| (h x y).trans_eq <| zero_mul _⟩
+  ⟨fun x y => eDist_le_zero.1 <| (h x y).trans_eq <| zero_mul _⟩
 
 /-- If `f : α → β` is `K`-antilipschitz and `α` is nontrivial, `K` is positive. -/
 protected theorem pos {α} [EMetricSpace α] [Nontrivial α] {f : α → β}

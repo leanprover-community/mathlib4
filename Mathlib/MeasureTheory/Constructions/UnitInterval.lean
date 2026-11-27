@@ -110,7 +110,7 @@ lemma volume_Icc : volume (Icc x y) = .ofReal (y - x) := by
 @[simp]
 lemma volume_uIcc : volume (uIcc x y) = eDist y x := by
   simp only [uIcc, volume_apply, image_subtypeVal_Icc, Icc.coe_inf, Icc.coe_sup, Real.volume_Icc,
-    max_sub_min_eq_abs, edist_dist, Subtype.dist_eq, Real.dist_eq]
+    max_sub_min_eq_abs, eDist_dist, Subtype.dist_eq, Real.dist_eq]
 
 @[simp]
 lemma volume_Ico : volume (Ico x y) = .ofReal (y - x) := by
@@ -123,7 +123,7 @@ lemma volume_Ioc : volume (Ioc x y) = .ofReal (y - x) := by
 @[simp]
 lemma volume_uIoc : volume (uIoc x y) = eDist y x := by
   simp only [uIoc, volume_apply, image_subtypeVal_Ioc, Icc.coe_inf, Icc.coe_sup, Real.volume_Ioc,
-    max_sub_min_eq_abs, edist_dist, Subtype.dist_eq, Real.dist_eq]
+    max_sub_min_eq_abs, eDist_dist, Subtype.dist_eq, Real.dist_eq]
 
 
 @[simp]
@@ -133,6 +133,6 @@ lemma volume_Ioo : volume (Ioo x y) = .ofReal (y - x) := by
 @[simp]
 lemma volume_uIoo : volume (uIoo x y) = eDist y x := by
   simp only [uIoo, volume_apply, image_subtypeVal_Ioo, Icc.coe_inf, Icc.coe_sup, Real.volume_Ioo,
-    max_sub_min_eq_abs, edist_dist, Subtype.dist_eq, Real.dist_eq]
+    max_sub_min_eq_abs, eDist_dist, Subtype.dist_eq, Real.dist_eq]
 
 end unitInterval

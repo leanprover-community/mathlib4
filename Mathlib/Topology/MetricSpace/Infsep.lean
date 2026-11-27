@@ -178,7 +178,7 @@ variable [PseudoEMetricSpace α] {x y z : α} {s : Set α}
 theorem einfsep_pair (hxy : x ≠ y) : ({x, y} : Set α).einfsep = eDist x y := by
   nth_rw 1 [← min_self (eDist x y)]
   convert einfsep_pair_eq_inf hxy using 2
-  rw [edist_comm]
+  rw [eDist_comm]
 
 theorem einfsep_insert : einfsep (insert x s) =
     (⨅ (y ∈ s) (_ : x ≠ y), eDist x y) ⊓ s.einfsep := by
@@ -187,7 +187,7 @@ theorem einfsep_insert : einfsep (insert x s) =
   rintro y (rfl | hy) z (rfl | hz) hyz
   · exact False.elim (hyz rfl)
   · exact Or.inl (iInf_le_of_le _ (iInf₂_le hz hyz))
-  · rw [edist_comm]
+  · rw [eDist_comm]
     exact Or.inl (iInf_le_of_le _ (iInf₂_le hy hyz.symm))
   · exact Or.inr (einfsep_le_edist_of_mem hy hz hyz)
 
@@ -202,7 +202,7 @@ theorem le_einfsep_pi_of_le {X : β → Type*} [Fintype β] [∀ b, PseudoEMetri
   refine le_einfsep fun x hx y hy hxy => ?_
   rw [mem_univ_pi] at hx hy
   rcases Function.ne_iff.mp hxy with ⟨i, hi⟩
-  exact le_trans (le_einfsep_iff.1 (h i) _ (hx _) _ (hy _) hi) (edist_le_pi_eDist _ _ i)
+  exact le_trans (le_einfsep_iff.1 (h i) _ (hx _) _ (hy _) hi) (eDist_le_pi_eDist _ _ i)
 
 end PseudoEMetricSpace
 
@@ -212,7 +212,7 @@ variable [PseudoMetricSpace α] {s : Set α}
 
 theorem subsingleton_of_einfsep_eq_top (hs : s.einfsep = ∞) : s.Subsingleton := by
   rw [einfsep_top] at hs
-  exact fun _ hx _ hy => of_not_not fun hxy => edist_ne_top _ _ (hs _ hx _ hy hxy)
+  exact fun _ hx _ hy => of_not_not fun hxy => eDist_ne_top _ _ (hs _ hx _ hy hxy)
 
 theorem einfsep_eq_top_iff : s.einfsep = ∞ ↔ s.Subsingleton :=
   ⟨subsingleton_of_einfsep_eq_top, Subsingleton.einfsep⟩
@@ -233,7 +233,7 @@ theorem einfsep_ne_top_iff : s.einfsep ≠ ∞ ↔ s.Nontrivial :=
 
 theorem le_einfsep_of_forall_dist_le {d} (h : ∀ x ∈ s, ∀ y ∈ s, x ≠ y → d ≤ dist x y) :
     ENNReal.ofReal d ≤ s.einfsep :=
-  le_einfsep fun x hx y hy hxy => (edist_dist x y).symm ▸ ENNReal.ofReal_le_ofReal (h x hx y hy hxy)
+  le_einfsep fun x hx y hy hxy => (eDist_dist x y).symm ▸ ENNReal.ofReal_le_ofReal (h x hx y hy hxy)
 
 end PseudoMetricSpace
 
@@ -245,7 +245,7 @@ theorem einfsep_pos_of_finite [Finite s] : 0 < s.einfsep := by
   cases nonempty_fintype s
   by_cases hs : s.Nontrivial
   · rcases hs.einfsep_exists_of_finite with ⟨x, _hx, y, _hy, hxy, hxy'⟩
-    exact hxy'.symm ▸ edist_pos.2 hxy
+    exact hxy'.symm ▸ eDist_pos.2 hxy
   · rw [not_nontrivial_iff] at hs
     exact hs.einfsep.symm ▸ WithTop.top_pos
 
@@ -318,7 +318,7 @@ variable [PseudoEMetricSpace α] {x y : α}
 theorem infsep_pair_eq_toReal : ({x, y} : Set α).infsep = (eDist x y).toReal := by
   by_cases hxy : x = y
   · rw [hxy]
-    simp only [infsep_singleton, pair_eq_singleton, edist_self, ENNReal.toReal_zero]
+    simp only [infsep_singleton, pair_eq_singleton, eDist_self, ENNReal.toReal_zero]
   · rw [infsep, einfsep_pair hxy]
 
 end PseudoEMetricSpace
@@ -329,7 +329,7 @@ variable [PseudoMetricSpace α] {x y z : α} {s t : Set α}
 
 theorem Nontrivial.le_infsep_iff {d} (hs : s.Nontrivial) :
     d ≤ s.infsep ↔ ∀ x ∈ s, ∀ y ∈ s, x ≠ y → d ≤ dist x y := by
-  simp_rw [infsep, ← ENNReal.ofReal_le_iff_le_toReal hs.einfsep_ne_top, le_einfsep_iff, edist_dist,
+  simp_rw [infsep, ← ENNReal.ofReal_le_iff_le_toReal hs.einfsep_ne_top, le_einfsep_iff, eDist_dist,
     ENNReal.ofReal_le_ofReal_iff dist_nonneg]
 
 theorem Nontrivial.infsep_lt_iff {d} (hs : s.Nontrivial) :
@@ -356,13 +356,13 @@ theorem infsep_le_of_mem_of_edist_le {d x} (hx : x ∈ s) {y} (hy : y ∈ s) (hx
   le_trans (infsep_le_dist_of_mem hx hy hxy) hxy'
 
 theorem infsep_pair : ({x, y} : Set α).infsep = dist x y := by
-  rw [infsep_pair_eq_toReal, edist_dist]
+  rw [infsep_pair_eq_toReal, eDist_dist]
   exact ENNReal.toReal_ofReal dist_nonneg
 
 theorem infsep_triple (hxy : x ≠ y) (hyz : y ≠ z) (hxz : x ≠ z) :
     ({x, y, z} : Set α).infsep = dist x y ⊓ dist x z ⊓ dist y z := by
-  simp only [infsep, einfsep_triple hxy hyz hxz, ENNReal.toReal_inf, edist_ne_top x y,
-    edist_ne_top x z, edist_ne_top y z, dist_eDist, Ne, inf_eq_top_iff, and_self_iff,
+  simp only [infsep, einfsep_triple hxy hyz hxz, ENNReal.toReal_inf, eDist_ne_top x y,
+    eDist_ne_top x z, eDist_ne_top y z, dist_eDist, Ne, inf_eq_top_iff, and_self_iff,
     not_false_iff]
 
 theorem Nontrivial.infsep_anti (hs : s.Nontrivial) (hst : s ⊆ t) : t.infsep ≤ s.infsep :=

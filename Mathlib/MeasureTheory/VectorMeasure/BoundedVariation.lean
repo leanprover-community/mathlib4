@@ -98,7 +98,7 @@ private lemma exists_vectorMeasure_le_measureAux (hf : BoundedVariationOn f univ
     rw [ENNReal.ofReal_toReal]; swap
     · exact ((eVariationOn.mono _ (subset_univ _)).trans_lt hf.rightLim.lt_top).ne
     rw [← eDist_eq_eNorm_sub]
-    exact eVariationOn.edist_le _ (by grind) (by grind)
+    exact eVariationOn.eDist_le _ (by grind) (by grind)
   have B : hα = generateFrom {s | ∃ u v, u ≤ v ∧ s = Ioc u v} := by
     borelize α
     convert borel_eq_generateFrom_Ioc_le α using 2
@@ -437,7 +437,7 @@ lemma variation_vectorMeasure_Ico (hf : BoundedVariationOn f univ) {a b : α} :
       eDist (f.rightLim a) (f.leftLim a) := by
     rw [show Ico a b = Ico a b ∩ Ici a by grind,
       eVariationOn.eVariationOn_on_inter_Ici_eq_Ioi_add_eDist (l := f.rightLim a),
-      show Ico a b ∩ Ioi a = Ioo a b by grind, edist_comm]
+      show Ico a b ∩ Ioi a = Ioo a b by grind, eDist_comm]
     · have : 𝓝[Ico a b ∩ Ioi a] a = 𝓝[>] a := nhdsWithin_inter_of_mem (Ico_mem_nhdsGT hab)
       rwa [this]
     · grind
@@ -578,7 +578,7 @@ lemma variation_vectorMeasure_univ_le (hf : BoundedVariationOn f univ) :
     · exact variation_vectorMeasure_Iio_le _
     · rw [variation_vectorMeasure_singleton]
       simp only [← eDist_eq_eNorm_sub]
-      apply edist_triangle_left
+      apply eDist_triangle_left
     · exact variation_vectorMeasure_Ioi_le _
   _ = (eVariationOn f (Iio a) + ‖f a - f.leftLim a‖ₑ) +
     (eVariationOn f (Ioi a) + ‖f a - f.rightLim a‖ₑ) := by abel

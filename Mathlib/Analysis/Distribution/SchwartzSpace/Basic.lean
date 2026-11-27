@@ -1074,7 +1074,7 @@ variable (𝕜) in
 /-- Translating the argument as a continuous linear map on Schwartz space. -/
 def compSubConstCLM (a : E) : 𝓢(E, F) →L[𝕜] 𝓢(E, F) :=
   compCLMOfAntilipschitz (g := fun x ↦ x - a) (K := 1) 𝕜 (by fun_prop)
-    (fun _ _ ↦ by simp [edist_dist, dist_eq_norm])
+    (fun _ _ ↦ by simp [eDist_dist, dist_eq_norm])
 
 @[simp]
 theorem compSubConstCLM_apply (f : 𝓢(E, F)) (a x : E) :

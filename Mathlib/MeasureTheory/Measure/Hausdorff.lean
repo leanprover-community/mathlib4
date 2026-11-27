@@ -222,7 +222,7 @@ theorem borel_le_caratheodory (hm : IsMetric μ) : borel X ≤ μ.caratheodory :
   rcases infEDist_lt_iff.mp this with ⟨z, hzt, hyz⟩
   have hxz : (↑(2 * i + 1 + r))⁻¹ ≤ eDist x z := le_infEDist.1 hx.2 _ hzt
   apply ENNReal.le_of_add_le_add_right hyz.ne_top
-  refine le_trans ?_ (edist_triangle _ _ _)
+  refine le_trans ?_ (eDist_triangle _ _ _)
   refine (add_le_add le_rfl hyz.le).trans (Eq.trans_le ?_ hxz)
   rw [tsub_add_cancel_of_le A.le]
 
@@ -315,7 +315,7 @@ theorem mkMetric'_isMetric (m : Set X → ℝ≥0∞) : (mkMetric' m).IsMetric :
   rintro ε ⟨_, εr⟩
   refine boundedBy_union_of_top_of_nonempty_inter ?_
   rintro u ⟨x, hxs, hxu⟩ ⟨y, hyt, hyu⟩
-  have : ε < ediam u := εr.trans_le ((hr x hxs y hyt).trans <| edist_le_ediam_of_mem hxu hyu)
+  have : ε < ediam u := εr.trans_le ((hr x hxs y hyt).trans <| eDist_le_ediam_of_mem hxu hyu)
   exact iInf_eq_top.2 fun h => (this.not_ge h).elim
 
 /-- If `c ∉ {0, ∞}` and `m₁ d ≤ c * m₂ d` for `d < ε` for some `ε > 0`
@@ -608,7 +608,7 @@ theorem isSeparable_of_hausdorffMeasure_ne_top {d : ℝ} {s : Set X} (h : μH[d]
     refine ⟨range fun m : {n // (t n).Nonempty} ↦ m.property.some, countable_range _, fun x hx ↦ ?_⟩
     obtain ⟨n, hn⟩ := mem_iUnion.1 (hst hx)
     exact mem_biUnion (mem_range_self ⟨n, x, hn⟩)
-      (mem_closedEBall.2 ((edist_le_ediam_of_mem hn (Nonempty.some_mem _)).trans (htd n)))
+      (mem_closedEBall.2 ((eDist_le_ediam_of_mem hn (Nonempty.some_mem _)).trans (htd n)))
   exact ⟨c, hcc, hsc⟩
 
 variable (X) in

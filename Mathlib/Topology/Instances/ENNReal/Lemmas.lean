@@ -560,19 +560,19 @@ variable [EMetricSpace β]
 open ENNReal Filter
 
 /-- In an emetric ball, the distance between points is everywhere finite -/
-theorem edist_ne_top_of_mem_ball {a : β} {r : ℝ≥0∞} (x y : eball a r) : eDist x.val y.val ≠ ∞ :=
+theorem eDist_ne_top_of_mem_ball {a : β} {r : ℝ≥0∞} (x y : eball a r) : eDist x.val y.val ≠ ∞ :=
   ne_of_lt <|
     calc
-      eDist x y ≤ eDist a x + eDist a y := edist_triangle_left x.val y.val a
+      eDist x y ≤ eDist a x + eDist a y := eDist_triangle_left x.val y.val a
       _ < r + r := by
-        rw [edist_comm a x, edist_comm a y]; exact ENNReal.add_lt_add x.property y.property
+        rw [eDist_comm a x, eDist_comm a y]; exact ENNReal.add_lt_add x.property y.property
       _ ≤ ∞ := le_top
 
 /-- Each ball in an extended metric space gives us a metric space, as the eDist
 is everywhere finite. -/
 @[instance_reducible]
 def metricSpaceEMetricBall (a : β) (r : ℝ≥0∞) : MetricSpace (eball a r) :=
-  EMetricSpace.toMetricSpace edist_ne_top_of_mem_ball
+  EMetricSpace.toMetricSpace eDist_ne_top_of_mem_ball
 
 theorem nhds_eq_nhds_emetric_ball (a x : β) (r : ℝ≥0∞) (h : x ∈ eball a r) :
     𝓝 x = map ((↑) : eball a r → β) (𝓝 ⟨x, h⟩) :=
@@ -601,7 +601,7 @@ theorem EMetric.cauchySeq_iff_le_tendsto_0 [Nonempty β] [SemilatticeSup β] {s 
     /- `s` is Cauchy sequence. Let `b n` be the diameter of the set `s '' Set.Ici n`. -/
     refine ⟨fun N => Metric.ediam (s '' Ici N), fun n m N hn hm => ?_, ?_⟩
     -- Prove that it bounds the distances of points in the Cauchy sequence
-    · exact Metric.edist_le_ediam_of_mem (mem_image_of_mem _ hn) (mem_image_of_mem _ hm)
+    · exact Metric.eDist_le_ediam_of_mem (mem_image_of_mem _ hn) (mem_image_of_mem _ hm)
     -- Prove that it tends to `0`, by using the Cauchy property of `s`
     · refine ENNReal.tendsto_nhds_zero.2 fun ε ε0 => ?_
       rcases hs ε ε0 with ⟨N, hN⟩
@@ -628,8 +628,8 @@ theorem continuous_eDist : Continuous fun p : α × α => eDist p.1 p.2 := by
   apply continuous_of_le_add_eDist 2 (by decide)
   rintro ⟨x, y⟩ ⟨x', y'⟩
   calc
-    eDist x y ≤ eDist x x' + eDist x' y' + eDist y' y := edist_triangle4 _ _ _ _
-    _ = eDist x' y' + (eDist x x' + eDist y y') := by rw [edist_comm y y']; abel
+    eDist x y ≤ eDist x x' + eDist x' y' + eDist y' y := eDist_triangle4 _ _ _ _
+    _ = eDist x' y' + (eDist x x' + eDist y y') := by rw [eDist_comm y y']; abel
     _ ≤ eDist x' y' + (eDist (x, y) (x', y') + eDist (x, y) (x', y')) := by
       gcongr <;> apply_rules [le_max_left, le_max_right]
     _ = eDist x' y' + 2 * eDist (x, y) (x', y') := by rw [← mul_two, mul_comm]
@@ -650,7 +650,7 @@ theorem Metric.isClosed_closedEBall {a : α} {r : ℝ≥0∞} : IsClosed (closed
 theorem Metric.ediam_closure (s : Set α) : ediam (closure s) = ediam s := by
   refine le_antisymm (ediam_le fun x hx y hy => ?_) (ediam_mono subset_closure)
   have : eDist x y ∈ closure (Iic (ediam s)) :=
-    map_mem_closure₂ continuous_eDist hx hy fun x hx y hy => edist_le_ediam_of_mem hx hy
+    map_mem_closure₂ continuous_eDist hx hy fun x hx y hy => eDist_le_ediam_of_mem hx hy
   rwa [closure_Iic] at this
 
 @[simp]

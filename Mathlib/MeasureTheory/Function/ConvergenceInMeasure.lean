@@ -103,10 +103,10 @@ lemma tendstoInMeasure_iff_dist [PseudoMetricSpace E] {f : ι → α → E} {l :
       ↔ ∀ ε, 0 < ε → Tendsto (fun i => μ { x | ε ≤ dist (f i x) (g x) }) l (𝓝 0) := by
   refine ⟨fun h ε hε ↦ ?_, fun h ↦ ?_⟩
   · convert! h (ENNReal.ofReal ε) (ENNReal.ofReal_pos.mpr hε) with i a
-    rw [edist_dist, ENNReal.ofReal_le_ofReal_iff (by positivity)]
+    rw [eDist_dist, ENNReal.ofReal_le_ofReal_iff (by positivity)]
   · refine tendstoInMeasure_of_ne_top fun ε hε hε_top ↦ ?_
     convert! h ε.toReal (ENNReal.toReal_pos hε.ne' hε_top) with i a
-    rw [edist_dist, ENNReal.le_ofReal_iff_toReal_le hε_top (by positivity)]
+    rw [eDist_dist, ENNReal.le_ofReal_iff_toReal_le hε_top (by positivity)]
 
 /-- `TendstoInMeasure` expressed with the real-valued measure of a set defined with a distance.
 
@@ -216,7 +216,7 @@ theorem tendstoInMeasure_of_tendsto_ae_of_measurable_eDist [IsFiniteMeasure μ]
   suffices { x : α | ε ≤ eDist (f n x) (g x) } ⊆ t from (measure_mono this).trans ht
   rw [← Set.compl_subset_compl]
   intro x hx
-  rw [Set.mem_compl_iff, Set.notMem_ofPred_iff, edist_comm, not_le]
+  rw [Set.mem_compl_iff, Set.notMem_ofPred_iff, eDist_comm, not_le]
   exact hN n hn x hx
 
 /-- Convergence a.e. implies convergence in measure in a finite measure space. -/

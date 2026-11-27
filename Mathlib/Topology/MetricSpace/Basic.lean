@@ -201,8 +201,8 @@ theorem dist_congr {w x y z : α} (hl : dist w x = 0) (hr : dist y z = 0) :
   (dist_congr_right hl).trans (dist_congr_left hr)
 
 instance SeparationQuotient.instDist : Dist (SeparationQuotient α) where
-  dist := lift₂ dist fun x y x' y' hx hy ↦ by rw [dist_eDist, dist_eDist, ← edist_mk x,
-    ← edist_mk x', mk_eq_mk.2 hx, mk_eq_mk.2 hy]
+  dist := lift₂ dist fun x y x' y' hx hy ↦ by rw [dist_eDist, dist_eDist, ← eDist_mk x,
+    ← eDist_mk x', mk_eq_mk.2 hx, mk_eq_mk.2 hy]
 
 theorem SeparationQuotient.dist_mk (p q : α) :
     dist (mk p) (mk q) = dist p q :=
@@ -210,7 +210,7 @@ theorem SeparationQuotient.dist_mk (p q : α) :
 
 instance SeparationQuotient.instMetricSpace : MetricSpace (SeparationQuotient α) :=
   EMetricSpace.toMetricSpaceOfDist dist (surjective_mk.forall₂.2 fun _ _ ↦ dist_nonneg) <|
-    surjective_mk.forall₂.2 edist_dist
+    surjective_mk.forall₂.2 eDist_dist
 
 theorem nnDist_congr_right {x y z : α} (h : nnDist x y = 0) :
     nnDist x z = nnDist y z := by
@@ -246,9 +246,9 @@ PseudoMetric, Emetric and Metric spaces. -/
 -- See note [reducible non-instances]
 abbrev replaceEDist : PseudoEMetricSpace X where
   eDist := d
-  edist_self := by simp [hd]
-  edist_comm := by simp [hd, edist_comm]
-  edist_triangle := by simp [hd, edist_triangle]
+  eDist_self := by simp [hd]
+  eDist_comm := by simp [hd, eDist_comm]
+  eDist_triangle := by simp [hd, eDist_triangle]
   uniformity_eDist := by simp [hd, uniformity_eDist]
   __ := m
 
@@ -273,7 +273,7 @@ abbrev replaceDist : PseudoMetricSpace X where
   dist_self := by simp [hd]
   dist_comm := by simp [hd, dist_comm]
   dist_triangle := by simp [hd, dist_triangle]
-  edist_dist := by simp [hd, edist_dist]
+  eDist_dist := by simp [hd, eDist_dist]
   uniformity_dist := by simp [hd, uniformity_dist]
   cobounded_sets := by simp [hd, cobounded_sets]
   __ := m
@@ -303,9 +303,9 @@ PseudoEMetric, PseudoMetric and Metric spaces. -/
 -- See note [reducible non-instances]
 noncomputable abbrev replaceEDist : EMetricSpace X where
   eDist := d
-  edist_self := by simp [hd]
-  edist_comm := by simp [hd, edist_comm]
-  edist_triangle := by simp [hd, edist_triangle]
+  eDist_self := by simp [hd]
+  eDist_comm := by simp [hd, eDist_comm]
+  eDist_triangle := by simp [hd, eDist_triangle]
   eq_of_edist_eq_zero := by simp [hd]
 
 lemma replaceEDist_eq : m.replaceEDist d hd = m := by ext : 2; exact hd

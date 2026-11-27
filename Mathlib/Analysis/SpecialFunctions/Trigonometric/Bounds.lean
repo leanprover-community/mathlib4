@@ -278,10 +278,10 @@ theorem lipschitzWith_cos : LipschitzWith 1 cos :=
   lipschitzWith_of_nnNorm_deriv_le differentiable_cos <| by simpa using! abs_sin_le_one
 
 theorem abs_sin_sub_sin_le (x y : ℝ) : |sin x - sin y| ≤ |x - y| := by
-  simpa [edist_dist] using! lipschitzWith_sin x y
+  simpa [eDist_dist] using! lipschitzWith_sin x y
 
 theorem abs_cos_sub_cos_le (x y : ℝ) : |cos x - cos y| ≤ |x - y| := by
-  simpa [edist_dist] using! lipschitzWith_cos x y
+  simpa [eDist_dist] using! lipschitzWith_cos x y
 
 theorem norm_exp_I_mul_ofReal_sub_one_le {x : ℝ} : ‖.exp (.I * x) - (1 : ℂ)‖ ≤ ‖x‖ := by
   rw [Complex.norm_exp_I_mul_ofReal_sub_one]

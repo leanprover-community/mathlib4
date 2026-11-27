@@ -25,7 +25,7 @@ We also develop basic API about these equivalences.
 
 open scoped NNReal ENNReal
 open Function Filter Bornology
-open Dilation (ratio ratio_ne_zero ratio_pos edist_eq)
+open Dilation (ratio ratio_ne_zero ratio_pos eDist_eq)
 
 section Class
 
@@ -34,7 +34,7 @@ variable (F : Type*) (X Y : outParam Type*) [PseudoEMetricSpace X] [PseudoEMetri
 /-- Typeclass saying that `F` is a type of bundled equivalences such that all `e : F` are
 dilations. -/
 class DilationEquivClass [EquivLike F X Y] : Prop where
-  edist_eq' : ∀ f : F, ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ x y : X, eDist (f x) (f y) = r * eDist x y
+  eDist_eq' : ∀ f : F, ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ x y : X, eDist (f x) (f y) = r * eDist x y
 
 instance (priority := 100) [EquivLike F X Y] [DilationEquivClass F X Y] : DilationClass F X Y :=
   { (inferInstance : FunLike F X Y), ‹DilationEquivClass F X Y› with }
@@ -63,7 +63,7 @@ instance : EquivLike (X ≃ᵈ Y) X Y where
   coe_injective' := by rintro ⟨⟩ ⟨⟩ h -; congr; exact DFunLike.ext' h
 
 instance : DilationEquivClass (X ≃ᵈ Y) X Y where
-  edist_eq' f := f.edist_eq'
+  eDist_eq' f := f.eDist_eq'
 
 @[simp] theorem coe_toEquiv (e : X ≃ᵈ Y) : ⇑e.toEquiv = e := rfl
 
@@ -74,9 +74,9 @@ protected theorem ext {e e' : X ≃ᵈ Y} (h : ∀ x, e x = e' x) : e = e' :=
 /-- Inverse `DilationEquiv`. -/
 def symm (e : X ≃ᵈ Y) : Y ≃ᵈ X where
   toEquiv := e.toEquiv.symm
-  edist_eq' := by
+  eDist_eq' := by
     refine ⟨(ratio e)⁻¹, inv_ne_zero <| ratio_ne_zero e, e.surjective.forall₂.2 fun x y ↦ ?_⟩
-    simp_rw [Equiv.toFun_as_coe, Equiv.symm_apply_apply, coe_toEquiv, edist_eq]
+    simp_rw [Equiv.toFun_as_coe, Equiv.symm_apply_apply, coe_toEquiv, eDist_eq]
     rw [← mul_assoc, ← ENNReal.coe_mul, inv_mul_cancel₀ (ratio_ne_zero e),
       ENNReal.coe_one, one_mul]
 
@@ -105,7 +105,7 @@ lemma ratio_toDilation (e : X ≃ᵈ Y) : ratio e.toDilation = ratio e := rfl
 @[simps! -fullyApplied apply]
 def refl (X : Type*) [PseudoEMetricSpace X] : X ≃ᵈ X where
   toEquiv := .refl X
-  edist_eq' := ⟨1, one_ne_zero, fun _ _ ↦ by simp⟩
+  eDist_eq' := ⟨1, one_ne_zero, fun _ _ ↦ by simp⟩
 
 @[simp] theorem refl_symm : (refl X).symm = refl X := rfl
 @[simp] theorem ratio_refl : ratio (refl X) = 1 := Dilation.ratio_id
@@ -191,7 +191,7 @@ theorem coe_pow (e : X ≃ᵈ X) (n : ℕ) : ⇑(e ^ n) = e^[n] := by
 -- of `DilationEquivClass` assuming `IsometryEquivClass`.
 /-- Every isometry equivalence is a dilation equivalence of ratio `1`. -/
 def _root_.IsometryEquiv.toDilationEquiv (e : X ≃ᵢ Y) : X ≃ᵈ Y where
-  edist_eq' := ⟨1, one_ne_zero, by simpa using! e.isometry⟩
+  eDist_eq' := ⟨1, one_ne_zero, by simpa using! e.isometry⟩
   __ := e.toEquiv
 
 @[simp]

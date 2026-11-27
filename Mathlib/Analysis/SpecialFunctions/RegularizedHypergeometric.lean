@@ -394,7 +394,7 @@ theorem analyticAt_regularizedHGFun_of_card_eq_add_one (h : a.card = b.card + 1)
     (hz : ‖z‖ < 1) :
     AnalyticAt ℂ (regularizedHGFun a b) z := by
   apply analyticOnNhd_regularizedHGFun_of_card_eq_add_one h
-  rwa [Metric.mem_eball, edist_zero_right, ← ofReal_norm, ENNReal.ofReal_lt_one]
+  rwa [Metric.mem_eball, eDist_zero_right, ← ofReal_norm, ENNReal.ofReal_lt_one]
 
 theorem regularizedHGFun_zero_singleton_neg_nat_add_one (n : ℕ) (z : ℂ) :
     regularizedHGFun 0 {-(n : ℂ) + 1} z = z ^ n * regularizedHGFun 0 {(n : ℂ) + 1} z :=

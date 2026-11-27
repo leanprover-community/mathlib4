@@ -94,7 +94,7 @@ theorem nearestPtInd_le (e : ℕ → α) (N : ℕ) (x : α) : nearestPtInd e N x
     split_ifs
     exacts [le_rfl, ihN.trans N.le_succ]
 
-theorem edist_nearestPt_le (e : ℕ → α) (x : α) {k N : ℕ} (hk : k ≤ N) :
+theorem eDist_nearestPt_le (e : ℕ → α) (x : α) {k N : ℕ} (hk : k ≤ N) :
     eDist (nearestPt e N x) x ≤ eDist (e k) x := by
   induction N generalizing k with
   | zero => simp [nonpos_iff_eq_zero.1 hk]
@@ -112,8 +112,8 @@ theorem tendsto_nearestPt {e : ℕ → α} {x : α} (hx : x ∈ closure (range e
     Tendsto (fun N => nearestPt e N x) atTop (𝓝 x) := by
   refine (atTop_basis.tendsto_iff nhds_basis_eball).2 fun ε hε => ?_
   rcases EMetric.mem_closure_iff.1 hx ε hε with ⟨_, ⟨N, rfl⟩, hN⟩
-  rw [edist_comm] at hN
-  exact ⟨N, trivial, fun n hn => (edist_nearestPt_le e x hn).trans_lt hN⟩
+  rw [eDist_comm] at hN
+  exact ⟨N, trivial, fun n hn => (eDist_nearestPt_le e x hn).trans_lt hN⟩
 
 variable [MeasurableSpace β] {f : β → α}
 
@@ -163,24 +163,24 @@ theorem tendsto_approxOn {f : β → α} (hf : Measurable f) {s : Set α} {y₀ 
     Subset.trans (image_closure_subset_closure_image continuous_subtypeVal)
       subset_union_right
 
-theorem edist_approxOn_mono {f : β → α} (hf : Measurable f) {s : Set α} {y₀ : α} (h₀ : y₀ ∈ s)
+theorem eDist_approxOn_mono {f : β → α} (hf : Measurable f) {s : Set α} {y₀ : α} (h₀ : y₀ ∈ s)
     [SeparableSpace s] (x : β) {m n : ℕ} (h : m ≤ n) :
     eDist (approxOn f hf s y₀ h₀ n x) (f x) ≤ eDist (approxOn f hf s y₀ h₀ m x) (f x) := by
   dsimp only [approxOn, coe_comp, Function.comp_def]
-  exact edist_nearestPt_le _ _ ((nearestPtInd_le _ _ _).trans h)
+  exact eDist_nearestPt_le _ _ ((nearestPtInd_le _ _ _).trans h)
 
-theorem edist_approxOn_le {f : β → α} (hf : Measurable f) {s : Set α} {y₀ : α} (h₀ : y₀ ∈ s)
+theorem eDist_approxOn_le {f : β → α} (hf : Measurable f) {s : Set α} {y₀ : α} (h₀ : y₀ ∈ s)
     [SeparableSpace s] (x : β) (n : ℕ) : eDist (approxOn f hf s y₀ h₀ n x) (f x) ≤ eDist y₀ (f x) :=
-  edist_approxOn_mono hf h₀ x zero_le
+  eDist_approxOn_mono hf h₀ x zero_le
 
-theorem edist_approxOn_y0_le {f : β → α} (hf : Measurable f) {s : Set α} {y₀ : α} (h₀ : y₀ ∈ s)
+theorem eDist_approxOn_y0_le {f : β → α} (hf : Measurable f) {s : Set α} {y₀ : α} (h₀ : y₀ ∈ s)
     [SeparableSpace s] (x : β) (n : ℕ) :
     eDist y₀ (approxOn f hf s y₀ h₀ n x) ≤ eDist y₀ (f x) + eDist y₀ (f x) :=
   calc
     eDist y₀ (approxOn f hf s y₀ h₀ n x) ≤
         eDist y₀ (f x) + eDist (approxOn f hf s y₀ h₀ n x) (f x) :=
-      edist_triangle_right _ _ _
-    _ ≤ eDist y₀ (f x) + eDist y₀ (f x) := by grw [edist_approxOn_le hf h₀ x n]
+      eDist_triangle_right _ _ _
+    _ ≤ eDist y₀ (f x) + eDist y₀ (f x) := by grw [eDist_approxOn_le hf h₀ x n]
 
 end SimpleFunc
 

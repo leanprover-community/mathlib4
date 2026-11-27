@@ -42,7 +42,7 @@ instance (priority := 100) BaireSpace.of_completelyPseudoMetrizable : BaireSpace
     intro n x δ δpos
     have : x ∈ closure (f n) := hd n x
     rcases EMetric.mem_closure_iff.1 this (δ / 2) (ENNReal.half_pos δpos) with ⟨y, ys, xy⟩
-    rw [edist_comm] at xy
+    rw [eDist_comm] at xy
     obtain ⟨r, rpos, hr⟩ : ∃ r > 0, closedEBall y r ⊆ f n :=
       nhds_basis_closedEBall.mem_iff.1 (isOpen_iff_mem_nhds.1 (ho n) y ys)
     refine ⟨y, min (min (δ / 2) r) (B (n + 1)), ?_, ?_, fun z hz => ⟨?_, ?_⟩⟩
@@ -52,7 +52,7 @@ instance (priority := 100) BaireSpace.of_completelyPseudoMetrizable : BaireSpace
       exact min_le_right _ _
     · show z ∈ closedEBall x δ
       calc
-        eDist z x ≤ eDist z y + eDist y x := edist_triangle _ _ _
+        eDist z x ≤ eDist z y + eDist y x := eDist_triangle _ _ _
         _ ≤ min (min (δ / 2) r) (B (n + 1)) + δ / 2 := add_le_add hz (le_of_lt xy)
         _ ≤ δ / 2 + δ / 2 := (add_le_add (le_trans (min_le_left _ _) (min_le_left _ _)) le_rfl)
         _ = δ := ENNReal.add_halves δ
@@ -86,7 +86,7 @@ instance (priority := 100) BaireSpace.of_completelyPseudoMetrizable : BaireSpace
     fun n => Hball n (c n) (r n) (r0 n)
   have cdist : ∀ n, eDist (c n) (c (n + 1)) ≤ B n := by
     intro n
-    rw [edist_comm]
+    rw [eDist_comm]
     have A : c (n + 1) ∈ closedEBall (c (n + 1)) (r (n + 1)) := mem_closedEBall_self
     have I :=
       calc

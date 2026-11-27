@@ -70,8 +70,8 @@ variable [MeasurableSpace β] [MeasurableSpace E] [NormedAddCommGroup E] [Normed
 theorem nnNorm_approxOn_le [OpensMeasurableSpace E] {f : β → E} (hf : Measurable f) {s : Set E}
     {y₀ : E} (h₀ : y₀ ∈ s) [SeparableSpace s] (x : β) (n : ℕ) :
     ‖approxOn f hf s y₀ h₀ n x - f x‖₊ ≤ ‖f x - y₀‖₊ := by
-  have := edist_approxOn_le hf h₀ x n
-  rw [edist_comm y₀] at this
+  have := eDist_approxOn_le hf h₀ x n
+  rw [eDist_comm y₀] at this
   simp only [eDist_nnDist, nnDist_eq_nnNorm] at this
   exact mod_cast this
 
@@ -81,13 +81,13 @@ theorem norm_approxOn_y₀_le [OpensMeasurableSpace E] {f : β → E} (hf : Meas
     {y₀ : E} (h₀ : y₀ ∈ s) [SeparableSpace s] (x : β) (n : ℕ) :
     ‖approxOn f hf s y₀ h₀ n x - y₀‖ ≤ ‖f x - y₀‖ + ‖f x - y₀‖ := by
   simpa [eNorm, eDist_eq_eNorm_sub, ← ENNReal.coe_add, norm_sub_rev]
-    using! edist_approxOn_y0_le hf h₀ x n
+    using! eDist_approxOn_y0_le hf h₀ x n
 
 theorem norm_approxOn_zero_le [OpensMeasurableSpace E] {f : β → E} (hf : Measurable f) {s : Set E}
     (h₀ : (0 : E) ∈ s) [SeparableSpace s] (x : β) (n : ℕ) :
     ‖approxOn f hf s 0 h₀ n x‖ ≤ ‖f x‖ + ‖f x‖ := by
   simpa [eNorm, eDist_eq_eNorm_sub, ← ENNReal.coe_add, norm_sub_rev]
-    using! edist_approxOn_y0_le hf h₀ x n
+    using! eDist_approxOn_y0_le hf h₀ x n
 
 theorem tendsto_approxOn_Lp_eLpNorm' [OpensMeasurableSpace E] {p : ℝ} {f : β → E} {μ : Measure β}
     (hf : Measurable f) {s : Set E} {y₀ : E} (h₀ : y₀ ∈ s) [SeparableSpace s] (hp : 0 < p)

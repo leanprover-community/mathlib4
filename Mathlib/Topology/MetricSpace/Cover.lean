@@ -36,7 +36,7 @@ section PseudoEMetricSpace
 variable [PseudoEMetricSpace X] [PseudoEMetricSpace Y] {ε δ : ℝ≥0} {s t N N₁ N₂ : Set X} {x : X}
 
 instance : SetRel.IsRefl {(x, y) : X × X | eDist x y ≤ ε} where refl := by simp
-instance : SetRel.IsSymm {(x, y) : X × X | eDist x y ≤ ε} where symm := by simp [edist_comm]
+instance : SetRel.IsSymm {(x, y) : X × X | eDist x y ≤ ε} where symm := by simp [eDist_comm]
 
 /-- A set `N` is an *`ε`-cover* of a set `s` if every point of `s` lies at distance at most `ε` of
 some point of `N`.
@@ -81,11 +81,11 @@ lemma _root_.Isometry.isCover_image_iff {f : X → Y} (hf : Isometry f) (C : Set
   refine ⟨fun h x hx ↦ ?_, fun h ↦ by simpa using h.image_lipschitz hf.lipschitzWith⟩
   obtain ⟨c, hc_mem, hc⟩ := h (Set.mem_image_of_mem _ hx)
   obtain ⟨c', hc', rfl⟩ := hc_mem
-  exact ⟨c', hc', le_of_eq_of_le (hf.edist_eq _ _).symm hc⟩
+  exact ⟨c', hc', le_of_eq_of_le (hf.eDist_eq _ _).symm hc⟩
 
 lemma IsCover.singleton_of_ediam_le (hA : ediam s ≤ ε) (hx : x ∈ s) :
     IsCover ε s ({x} : Set X) :=
-  fun _ h_mem ↦ ⟨x, by simp, (edist_le_ediam_of_mem h_mem hx).trans hA⟩
+  fun _ h_mem ↦ ⟨x, by simp, (eDist_le_ediam_of_mem h_mem hx).trans hA⟩
 
 lemma isCover_iff_subset_iUnion_closedEBall :
     IsCover ε s N ↔ s ⊆ ⋃ y ∈ N, Metric.closedEBall y ε := by

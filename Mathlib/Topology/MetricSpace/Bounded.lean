@@ -444,13 +444,13 @@ theorem diam_pair : diam ({x, y} : Set α) = dist x y := by
 theorem diam_triple :
     diam ({x, y, z} : Set α) = max (max (dist x y) (dist x z)) (dist y z) := by
   simp only [diam, ediam_triple, dist_eDist]
-  rw [ENNReal.toReal_max, ENNReal.toReal_max] <;> apply_rules [ne_of_lt, edist_lt_top, max_lt]
+  rw [ENNReal.toReal_max, ENNReal.toReal_max] <;> apply_rules [ne_of_lt, eDist_lt_top, max_lt]
 
 /-- If the distance between any two points in a set is bounded by some constant `C`,
 then `ENNReal.ofReal C` bounds the emetric diameter of this set. -/
 theorem ediam_le_of_forall_dist_le {C : ℝ} (h : ∀ x ∈ s, ∀ y ∈ s, dist x y ≤ C) :
     ediam s ≤ ENNReal.ofReal C :=
-  ediam_le fun x hx y hy => (edist_dist x y).symm ▸ ENNReal.ofReal_le_ofReal (h x hx y hy)
+  ediam_le fun x hx y hy => (eDist_dist x y).symm ▸ ENNReal.ofReal_le_ofReal (h x hx y hy)
 
 /-- The emetric diameter of a closed ball of radius `r` is at most `2 * ENNReal.ofReal r`. -/
 theorem ediam_closedBall_le {r : ℝ} : ediam (closedBall x r) ≤ 2 * ENNReal.ofReal r := by
@@ -479,7 +479,7 @@ theorem diam_le_of_forall_dist_le_of_nonempty (hs : s.Nonempty) {C : ℝ}
 theorem dist_le_diam_of_mem' (h : ediam s ≠ ⊤) (hx : x ∈ s) (hy : y ∈ s) :
     dist x y ≤ diam s := by
   rw [diam, dist_eDist]
-  exact ENNReal.toReal_mono h <| edist_le_ediam_of_mem hx hy
+  exact ENNReal.toReal_mono h <| eDist_le_ediam_of_mem hx hy
 
 /-- Characterize the boundedness of a set in terms of the finiteness of its emetric.diameter. -/
 theorem isBounded_iff_ediam_ne_top : IsBounded s ↔ ediam s ≠ ⊤ :=
@@ -528,7 +528,7 @@ theorem diam_union {t : Set α} (xs : x ∈ s) (yt : y ∈ t) :
     diam (s ∪ t) ≤ diam s + dist x y + diam t := by
   simp only [diam, dist_eDist]
   grw [ENNReal.toReal_le_add_of_top_imp_top (ediam_union_le_add_eDist xs yt), ENNReal.toReal_add_le]
-  · simp only [ENNReal.add_eq_top, edist_ne_top, or_false]
+  · simp only [ENNReal.add_eq_top, eDist_ne_top, or_false]
     exact fun h ↦ top_unique <| h ▸ ediam_mono subset_union_left
   · exact fun h ↦ top_unique <| h ▸ ediam_mono subset_union_right
 

@@ -150,7 +150,7 @@ end Measurability
 
 section ZeroDist
 
-lemma IsAEKolmogorovProcess.edist_eq_zero (hX : IsAEKolmogorovProcess X P p q M)
+lemma IsAEKolmogorovProcess.eDist_eq_zero (hX : IsAEKolmogorovProcess X P p q M)
     {s t : T} (h : eDist s t = 0) :
     ∀ᵐ ω ∂P, eDist (X s ω) (X t ω) = 0 := by
   suffices (fun ω ↦ eDist (X s ω) (X t ω) ^ p) =ᵐ[P] 0 by
@@ -161,12 +161,12 @@ lemma IsAEKolmogorovProcess.edist_eq_zero (hX : IsAEKolmogorovProcess X P p q M)
   _ ≤ M * eDist s t ^ q := hX.kolmogorovCondition s t
   _ = 0 := by simp [h, hX.q_pos]
 
-lemma IsKolmogorovProcess.edist_eq_zero (hX : IsKolmogorovProcess X P p q M)
+lemma IsKolmogorovProcess.eDist_eq_zero (hX : IsKolmogorovProcess X P p q M)
     {s t : T} (h : eDist s t = 0) :
     ∀ᵐ ω ∂P, eDist (X s ω) (X t ω) = 0 :=
-  hX.IsAEKolmogorovProcess.edist_eq_zero h
+  hX.IsAEKolmogorovProcess.eDist_eq_zero h
 
-lemma IsAEKolmogorovProcess.edist_eq_zero_of_const_eq_zero (hX : IsAEKolmogorovProcess X P p q 0)
+lemma IsAEKolmogorovProcess.eDist_eq_zero_of_const_eq_zero (hX : IsAEKolmogorovProcess X P p q 0)
     (s t : T) :
     ∀ᵐ ω ∂P, eDist (X s ω) (X t ω) = 0 := by
   suffices (fun ω ↦ eDist (X s ω) (X t ω) ^ p) =ᵐ[P] 0 by
@@ -177,10 +177,10 @@ lemma IsAEKolmogorovProcess.edist_eq_zero_of_const_eq_zero (hX : IsAEKolmogorovP
   _ ≤ 0 * eDist s t ^ q := hX.kolmogorovCondition s t
   _ = 0 := by simp
 
-lemma IsKolmogorovProcess.edist_eq_zero_of_const_eq_zero (hX : IsKolmogorovProcess X P p q 0)
+lemma IsKolmogorovProcess.eDist_eq_zero_of_const_eq_zero (hX : IsKolmogorovProcess X P p q 0)
     (s t : T) :
     ∀ᵐ ω ∂P, eDist (X s ω) (X t ω) = 0 :=
-  hX.IsAEKolmogorovProcess.edist_eq_zero_of_const_eq_zero s t
+  hX.IsAEKolmogorovProcess.eDist_eq_zero_of_const_eq_zero s t
 
 end ZeroDist
 

@@ -118,7 +118,7 @@ noncomputable def pushforward :
         (mul_singleton_mem_nhds_of_nhds_one b (inv_mem_nhds_one B hU)) hb) ?_
       rintro - ⟨⟨t, ht, b, rfl, -, rfl⟩, htb⟩
       have h (a) (ha : a ∈ S) : eDist (H.pullback f (t * b) a) (H.pullback f b a) ≤ .ofReal δ := by
-        rw [edist_dist]
+        rw [eDist_dist]
         exact ENNReal.ofReal_le_ofReal (@hf ⟨t * b * φ a, b * φ a⟩ (by simpa)).le
       grw [Set.mem_ofPred_eq, dist_integral_le_lintegral_eDist (H.pullback f (t * b)).integrable
         (H.pullback f b).integrable, ← setLIntegral_eq_of_support_subset]
@@ -126,7 +126,7 @@ noncomputable def pushforward :
         rwa [lintegral_const, restrict_apply_univ]
       · intro y hy
         contrapose hy
-        rw [Function.notMem_support, hS htb hy, hS (mem_of_mem_nhds hb) hy, edist_self] }
+        rw [Function.notMem_support, hS htb hy, hS (mem_of_mem_nhds hb) hy, eDist_self] }
   map_add' f g := by
     ext c
     exact integral_add (pullback H f _).integrable (pullback H g _).integrable

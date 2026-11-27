@@ -33,7 +33,7 @@ abbrev PseudoMetricSpace.induced {α β} (f : α → β) (m : PseudoMetricSpace 
   dist_comm _ _ := dist_comm _ _
   dist_triangle _ _ _ := dist_triangle _ _ _
   eDist x y := eDist (f x) (f y)
-  edist_dist _ _ := edist_dist _ _
+  eDist_dist _ _ := eDist_dist _ _
   toUniformSpace := UniformSpace.comap f m.toUniformSpace
   uniformity_dist := (uniformity_basis_dist.comap _).eq_biInf
   toBornology := Bornology.induced f
@@ -199,7 +199,7 @@ instance Prod.pseudoMetricSpaceMax : PseudoMetricSpace (α × β) :=
   let i := PseudoEMetricSpace.toPseudoMetricSpaceOfDist
     (fun x y : α × β => dist x.1 y.1 ⊔ dist x.2 y.2)
     (fun x y ↦ by positivity) fun x y => by
-      simp only [ENNReal.ofReal_max, Prod.edist_eq, edist_dist]
+      simp only [ENNReal.ofReal_max, Prod.eDist_eq, eDist_dist]
   i.replaceBornology fun s => by
     simp only [← isBounded_image_fst_and_snd, isBounded_iff_eventually, forall_mem_image, ←
       eventually_and, ← forall_and, ← max_le_iff]

@@ -69,7 +69,7 @@ lemma analyticOn_of_locally_analyticOn {f : E → F} {s : Set E}
       r_le := min_le_of_right_le fp.r_le
       hasSum := by
         intro y ys yr
-        simp only [mem_eball, lt_min_iff, edist_lt_ofReal, dist_zero_right] at yr
+        simp only [mem_eball, lt_min_iff, eDist_lt_ofReal, dist_zero_right] at yr
         apply fp.hasSum
         · simp only [mem_insert_iff, add_eq_left] at ys
           rcases ys with rfl | ys
@@ -91,7 +91,7 @@ lemma IsOpen.analyticOn_iff_analyticOnNhd {f : E → F} {s : Set E} (hs : IsOpen
     r_le := min_le_of_right_le fp.r_le
     hasSum := by
       intro y ym
-      simp only [mem_eball, lt_min_iff, edist_lt_ofReal, dist_zero_right] at ym
+      simp only [mem_eball, lt_min_iff, eDist_lt_ofReal, dist_zero_right] at ym
       refine fp.hasSum ?_ ym.2
       apply mem_insert_of_mem
       apply rs
@@ -122,8 +122,8 @@ lemma hasFPowerSeriesWithinOnBall_iff_exists_hasFPowerSeriesOnBall [CompleteSpac
         · simp only [add_sub_cancel] at e1
           exact e1.unique e0
         · simpa only [add_sub_cancel]
-        · simpa only [mem_eball, edist_zero_right]
-      · simp only [mem_eball, edist_zero_right]
+        · simpa only [mem_eball, eDist_zero_right]
+      · simp only [mem_eball, eDist_zero_right]
         exact lt_of_lt_of_le yb h.r_le
     · refine ⟨h.r_le, h.r_pos, ?_⟩
       intro y lt
@@ -157,7 +157,7 @@ lemma hasFPowerSeriesWithinAt_iff_exists_hasFPowerSeriesAt [CompleteSpace F] {f 
     refine hasFPowerSeriesWithinOnBall_iff_exists_hasFPowerSeriesOnBall.mpr ⟨g, ?_, ?_⟩
     · intro y ⟨ys, xy⟩
       refine hfg ?_ ys
-      simp only [mem_eball, lt_min_iff, edist_lt_ofReal] at xy
+      simp only [mem_eball, lt_min_iff, eDist_lt_ofReal] at xy
       exact xy.2
     · exact hg.mono (lt_min hg.r_pos (by positivity)) (min_le_left _ _)
 

@@ -63,7 +63,7 @@ lemma eVariationOn_bilinear_comp_le (hf : ∀ x ∈ s, ‖f x‖ₑ ≤ C) (hg :
       ∑ i ∈ range n, eDist (B (f (u i)) (g (u (i + 1)))) (B (f (u i)) (g (u i))) := by
     rw [← Finset.sum_add_distrib]
     gcongr with i hi
-    apply edist_triangle
+    apply eDist_triangle
   _ = ∑ i ∈ range n, ‖B (f (u (i + 1)) - f (u i)) (g (u (i + 1)))‖ₑ +
       ∑ i ∈ range n, ‖B (f (u i)) (g (u (i + 1)) - g (u i))‖ₑ := by simp [eDist_eq_eNorm_sub]
   _ ≤ ∑ i ∈ range n, ‖B‖ₑ * ‖f (u (i + 1)) - f (u i)‖ₑ * ‖g (u (i + 1))‖ₑ +
@@ -110,10 +110,10 @@ lemma BoundedVariationOn.bilinear_comp
   suffices eVariationOn (fun x ↦ (B (f x)) (g x)) s < ∞ from ne_of_lt this
   have A (y) (hy : y ∈ s) : ‖f y‖ₑ ≤ ‖f x‖ₑ + eVariationOn f s := by
     grw [show f y = f x + (f y - f x) by abel, eNorm_add_le, ← eDist_eq_eNorm_sub,
-      eVariationOn.edist_le _ hy hx]
+      eVariationOn.eDist_le _ hy hx]
   have A' (y) (hy : y ∈ s) : ‖g y‖ₑ ≤ ‖g x‖ₑ + eVariationOn g s := by
     grw [show g y = g x + (g y - g x) by abel, eNorm_add_le, ← eDist_eq_eNorm_sub,
-      eVariationOn.edist_le _ hy hx]
+      eVariationOn.eDist_le _ hy hx]
   grw [eVariationOn_bilinear_comp_le A A']
   finiteness
 

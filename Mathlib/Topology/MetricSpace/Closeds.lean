@@ -39,7 +39,7 @@ theorem mem_hausdorffEntourage_of_hausdorffEDist_lt {s t : Set α} {δ : ℝ≥0
     (h : hausdorffEDist s t < δ) : (s, t) ∈ hausdorffEntourage {p | eDist p.1 p.2 < δ} := by
   rw [hausdorffEDist_def, max_lt_iff] at h
   rw [hausdorffEntourage, Set.mem_ofPred]
-  conv => enter [2, 2, 1, 1, _]; rw [edist_comm]
+  conv => enter [2, 2, 1, 1, _]; rw [eDist_comm]
   have {s t : Set α} (h : ⨆ x ∈ s, infEDist x t < δ) :
       s ⊆ SetRel.preimage {p | eDist p.1 p.2 < δ} t := by
     intro x hx
@@ -50,7 +50,7 @@ theorem hausdorffEDist_le_of_mem_hausdorffEntourage {s t : Set α} {δ : ℝ≥0
     (h : (s, t) ∈ hausdorffEntourage {p | eDist p.1 p.2 ≤ δ}) : hausdorffEDist s t ≤ δ := by
   rw [hausdorffEDist_def, max_le_iff]
   rw [hausdorffEntourage, Set.mem_ofPred] at h
-  conv at h => enter [2, 2, 1, 1, _]; rw [edist_comm]
+  conv at h => enter [2, 2, 1, 1, _]; rw [eDist_comm]
   have {s t : Set α} (h : s ⊆ SetRel.preimage {p | eDist p.1 p.2 ≤ δ} t) :
       ⨆ x ∈ s, infEDist x t ≤ δ := by
     rw [iSup₂_le_iff]
@@ -63,9 +63,9 @@ theorem hausdorffEDist_le_of_mem_hausdorffEntourage {s t : Set α} {δ : ℝ≥0
 See note [reducible non-instances]. -/
 protected abbrev _root_.PseudoEMetricSpace.hausdorff : PseudoEMetricSpace (Set α) where
   eDist s t := hausdorffEDist s t
-  edist_self _ := hausdorffEDist_self
-  edist_comm _ _ := hausdorffEDist_comm
-  edist_triangle _ _ _ := hausdorffEDist_triangle
+  eDist_self _ := hausdorffEDist_self
+  eDist_comm _ _ := hausdorffEDist_comm
+  eDist_triangle _ _ _ := hausdorffEDist_triangle
   toUniformSpace := .hausdorff α
   uniformity_eDist := by
     refine le_antisymm
@@ -108,7 +108,7 @@ theorem continuous_infEDist :
     _ = infEDist y t + 2 * eDist (x, s) (y, t) := by rw [← mul_two, mul_comm]
 
 /-- By definition, the edistance on `Closeds α` is given by the Hausdorff edistance -/
-theorem edist_eq {s t : Closeds α} : eDist s t = hausdorffEDist (s : Set α) t :=
+theorem eDist_eq {s t : Closeds α} : eDist s t = hausdorffEDist (s : Set α) t :=
   rfl
 
 /-- In a complete space, the type of closed subsets is complete for the Hausdorff edistance. -/
@@ -129,7 +129,7 @@ instance instCompleteSpace [CompleteSpace α] : CompleteSpace (Closeds α) := by
   let t0 := ⋂ n, closure (⋃ m ≥ n, s m : Set α)
   let t : Closeds α := ⟨t0, isClosed_iInter fun _ => isClosed_closure⟩
   use t
-  -- The inequality is written this way to agree with `edist_le_of_edist_le_geometric_of_tendsto₀`
+  -- The inequality is written this way to agree with `eDist_le_of_edist_le_geometric_of_tendsto₀`
   have I1 : ∀ n, ∀ x ∈ s n, ∃ y ∈ t0, eDist x y ≤ 2 * B n := by
     /- This is the main difficulty of the proof. Starting from `x ∈ s n`, we want
            to find a point in `t0` which is close to `x`. Define inductively a sequence of
@@ -169,7 +169,7 @@ instance instCompleteSpace [CompleteSpace α] : CompleteSpace (Closeds α) := by
     -- Then, we check that `y` is close to `x = z n`. This follows from the fact that `y`
     -- is the limit of `z k`, and the distance between `z n` and `z k` has already been estimated.
     rw [← hz₀]
-    exact edist_le_of_edist_le_geometric_two_of_tendsto₀ (B n) hz y_lim
+    exact eDist_le_of_edist_le_geometric_two_of_tendsto₀ (B n) hz y_lim
   have I2 : ∀ n, ∀ x ∈ t0, ∃ y ∈ s n, eDist x y ≤ 2 * B n := by
     /- For the (much easier) reverse inequality, we start from a point `x ∈ t0` and we want
             to find a point `y ∈ s n` which is close to `x`.
@@ -188,7 +188,7 @@ instance instCompleteSpace [CompleteSpace α] : CompleteSpace (Closeds α) := by
     exact
       ⟨y, hy,
         calc
-          eDist x y ≤ eDist x z + eDist z y := edist_triangle _ _ _
+          eDist x y ≤ eDist x z + eDist z y := eDist_triangle _ _ _
           _ ≤ B n + B n := by gcongr
           _ = 2 * B n := (two_mul _).symm
           ⟩
@@ -229,7 +229,7 @@ instance instEMetricSpace : EMetricSpace (Compacts α) where
     have : closure (s : Set α) = closure t := hausdorffEDist_zero_iff_closure_eq_closure.1 h
     rwa [s.isCompact.isClosed.closure_eq, t.isCompact.isClosed.closure_eq] at this
 
-theorem edist_eq {s t : Compacts α} : eDist s t = hausdorffEDist (s : Set α) t :=
+theorem eDist_eq {s t : Compacts α} : eDist s t = hausdorffEDist (s : Set α) t :=
   rfl
 
 theorem isometry_toCloseds : Isometry (Compacts.toCloseds (α := α)) :=
@@ -302,7 +302,7 @@ theorem lipschitz_infDist_const (x : α) :
     LipschitzWith 1 fun s : NonemptyCompacts α => infDist x s :=
   LipschitzWith.of_le_add fun s t => by
     rw [dist_comm]
-    exact infDist_le_infDist_add_hausdorffDist (edist_ne_top t s)
+    exact infDist_le_infDist_add_hausdorffDist (eDist_ne_top t s)
 
 theorem lipschitz_infDist : LipschitzWith 2 fun p : α × NonemptyCompacts α => infDist p.1 p.2 := by
   rw [← one_add_one_eq_two]

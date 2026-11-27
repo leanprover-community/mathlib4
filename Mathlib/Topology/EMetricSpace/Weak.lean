@@ -61,19 +61,19 @@ instance (priority := low) toEDist {α : Type u} [EDist α] : EDist (Option α) 
 variable [m : WeakPseudoEMetricSpace α]
 
 @[simp]
-theorem edist_none_none : eDist (self := Option.toEDist (α := α))
+theorem eDist_none_none : eDist (self := Option.toEDist (α := α))
     none none = 0 := rfl
 
 @[simp]
-theorem edist_none_some {a : α} :
+theorem eDist_none_some {a : α} :
     eDist (self := Option.toEDist (α := α)) none a = ⊤ := rfl
 
 @[simp]
-theorem edist_some_none {a : α} :
+theorem eDist_some_none {a : α} :
     eDist (self := Option.toEDist (α := α)) a none = ⊤ := rfl
 
 @[simp]
-theorem edist_some_some {a b : α} :
+theorem eDist_some_some {a b : α} :
     eDist (self := Option.toEDist (α := α)) a b = eDist a b := rfl
 
 theorem some_eball (a : α) (r : ENNReal) :
@@ -88,21 +88,21 @@ theorem some_eball (a : α) (r : ENNReal) :
   | (y : α) =>
     exact ⟨y, h, rfl⟩
 
-lemma edist_self' {α : Type u} [TopologicalSpace α] (m : WeakPseudoEMetricSpace α) :
+lemma eDist_self' {α : Type u} [TopologicalSpace α] (m : WeakPseudoEMetricSpace α) :
     ∀ x : Option α, eDist x x = 0
   | (_ : α) => by simp
   | none => rfl
 
-lemma edist_comm' {α : Type u} [TopologicalSpace α] (m : WeakPseudoEMetricSpace α) :
+lemma eDist_comm' {α : Type u} [TopologicalSpace α] (m : WeakPseudoEMetricSpace α) :
     ∀ x y : Option α, eDist x y = eDist y x
-  | (_ : α), (_ : α) => by simp [m.edist_comm]
+  | (_ : α), (_ : α) => by simp [m.eDist_comm]
   | (_ : α), none => by simp
   | none, (_ : α) => by simp
   | none, none => by simp
 
-lemma edist_triangle' {α : Type u} [TopologicalSpace α] (m : WeakPseudoEMetricSpace α) :
+lemma eDist_triangle' {α : Type u} [TopologicalSpace α] (m : WeakPseudoEMetricSpace α) :
     ∀ x y z : Option α, eDist x z ≤ eDist x y + eDist y z
-  | (_ : α), (_ : α), (_ : α) => by simp [m.edist_triangle]
+  | (_ : α), (_ : α), (_ : α) => by simp [m.eDist_triangle]
   | none, (_ : α), (_ : α) => by simp
   | (_ : α), none, (_ : α) => by simp
   | none, none, (_ : α) => by simp
@@ -126,12 +126,12 @@ abbrev WeakPseudoEMetricSpace.OfIsOpenEmbedding {α : Type u} [t : TopologicalSp
     (h_eDist : inst = Option.toEDist) (h : IsOpenEmbedding (some (α := α))) :
     WeakPseudoEMetricSpace (Option α) where
   eDist := eDist
-  edist_self := h_eDist ▸ edist_self' m
-  edist_comm := h_eDist ▸ edist_comm' m
-  edist_triangle := h_eDist ▸ edist_triangle' m
+  eDist_self := h_eDist ▸ eDist_self' m
+  eDist_comm := h_eDist ▸ eDist_comm' m
+  eDist_triangle := h_eDist ▸ eDist_triangle' m
   topology_le s so := by
     apply (@EMetric.isOpen_iff (Option α) _ (PseudoEMetricSpace.ofEDist eDist
-      (h_eDist ▸ edist_self' m) (h_eDist ▸ edist_comm' m) (h_eDist ▸ edist_triangle' m))).mpr
+      (h_eDist ▸ eDist_self' m) (h_eDist ▸ eDist_comm' m) (h_eDist ▸ eDist_triangle' m))).mpr
     intro x xs
     suffices ∃ ε > 0, @Metric.eball (Option α) Option.toEDist x ε ⊆ s by rwa [← h_eDist] at this
     match x with
@@ -139,7 +139,7 @@ abbrev WeakPseudoEMetricSpace.OfIsOpenEmbedding {α : Type u} [t : TopologicalSp
       exact ⟨1, by norm_num, by simpa [ball_infty_of_pos]⟩
     | (x : α) =>
       obtain ⟨ε, εp, εt⟩ := (@EMetric.isOpen_iff α _ (PseudoEMetricSpace.ofEDist eDist
-        m.edist_self m.edist_comm m.edist_triangle)).mp
+        m.eDist_self m.eDist_comm m.eDist_triangle)).mp
           (m.topology_le _ <| h.continuous.isOpen_preimage s so) x (mem_preimage.mpr xs)
       exact ⟨ε, εp, some_eball x ε ▸ image_subset_iff.mpr εt⟩
   topology_eq_on_restrict := by
@@ -260,65 +260,65 @@ noncomputable instance instWeakEMetricSpaceENat : WeakEMetricSpace ℕ∞ :=
 namespace ENNReal
 
 @[simp]
-theorem edist_top_coe (a : ℝ≥0) : eDist ∞ ↑a = ∞ :=
+theorem eDist_top_coe (a : ℝ≥0) : eDist ∞ ↑a = ∞ :=
   rfl
 
 @[simp]
-theorem edist_coe_top (a : ℝ≥0) : eDist ↑a ∞ = ∞ :=
+theorem eDist_coe_top (a : ℝ≥0) : eDist ↑a ∞ = ∞ :=
   rfl
 
 @[simp, norm_cast]
-theorem edist_coe (a b : ℝ≥0) : eDist (a : ℝ≥0∞) b = eDist a b :=
+theorem eDist_coe (a b : ℝ≥0) : eDist (a : ℝ≥0∞) b = eDist a b :=
   rfl
 
 @[simp]
-theorem edist_eq_top_iff (a b : ℝ≥0∞) : eDist a b = ∞ ↔ a ≠ b ∧ (a = ∞ ∨ b = ∞) := by
+theorem eDist_eq_top_iff (a b : ℝ≥0∞) : eDist a b = ∞ ↔ a ≠ b ∧ (a = ∞ ∨ b = ∞) := by
   cases a <;> cases b <;> simp
 
-theorem edist_eq_max (a b : ℝ≥0∞) : eDist a b = max (a - b) (b - a) := by
+theorem eDist_eq_max (a b : ℝ≥0∞) : eDist a b = max (a - b) (b - a) := by
   cases a <;> cases b
   case coe.coe =>
-    rw [edist_coe, ← coe_nnreal_ennreal_nnDist, NNReal.nnDist_eq]
+    rw [eDist_coe, ← coe_nnreal_ennreal_nnDist, NNReal.nnDist_eq]
     norm_cast
   all_goals simp
 
-theorem edist_le_iff_le_add_left (a b c : ℝ≥0∞) : eDist a b ≤ c ↔ a ≤ c + b ∧ b ≤ c + a := by
-  simp [edist_eq_max]
+theorem eDist_le_iff_le_add_left (a b c : ℝ≥0∞) : eDist a b ≤ c ↔ a ≤ c + b ∧ b ≤ c + a := by
+  simp [eDist_eq_max]
 
-theorem edist_le_iff_le_add_right (a b c : ℝ≥0∞) : eDist a b ≤ c ↔ a ≤ b + c ∧ b ≤ a + c := by
-  simp only [edist_le_iff_le_add_left, add_comm]
+theorem eDist_le_iff_le_add_right (a b c : ℝ≥0∞) : eDist a b ≤ c ↔ a ≤ b + c ∧ b ≤ a + c := by
+  simp only [eDist_le_iff_le_add_left, add_comm]
 
 theorem sub_le_dist (a b : ℝ≥0∞) : a - b ≤ eDist a b := by
-  grw [edist_eq_max, ← le_max_left]
+  grw [eDist_eq_max, ← le_max_left]
 
 theorem le_add_eDist (a b : ℝ≥0∞) : a ≤ b + eDist a b := by
   grw [← sub_le_dist, ← le_add_tsub]
 
 @[simp]
-theorem edist_zero_left (a : ℝ≥0∞) : eDist 0 a = a := by
-  simp [edist_eq_max]
+theorem eDist_zero_left (a : ℝ≥0∞) : eDist 0 a = a := by
+  simp [eDist_eq_max]
 
 @[simp]
-theorem edist_zero_right (a : ℝ≥0∞) : eDist a 0 = a := by
-  simp [edist_eq_max]
+theorem eDist_zero_right (a : ℝ≥0∞) : eDist a 0 = a := by
+  simp [eDist_eq_max]
 
 @[simp]
-theorem edist_add_left (a b : ℝ≥0∞) {c : ℝ≥0∞} (hc : c ≠ ∞) :
+theorem eDist_add_left (a b : ℝ≥0∞) {c : ℝ≥0∞} (hc : c ≠ ∞) :
     eDist (c + a) (c + b) = eDist a b := by
-  simp only [edist_eq_max, add_sub_add_eq_sub_left hc]
+  simp only [eDist_eq_max, add_sub_add_eq_sub_left hc]
 
 @[simp]
-theorem edist_add_right (a b : ℝ≥0∞) {c : ℝ≥0∞} (hc : c ≠ ∞) :
+theorem eDist_add_right (a b : ℝ≥0∞) {c : ℝ≥0∞} (hc : c ≠ ∞) :
     eDist (a + c) (b + c) = eDist a b := by
-  simp only [edist_eq_max, add_sub_add_eq_sub_right hc]
+  simp only [eDist_eq_max, add_sub_add_eq_sub_right hc]
 
-theorem edist_mul_left (a b : ℝ≥0∞) {c : ℝ≥0∞} (hc : c ≠ ∞) :
+theorem eDist_mul_left (a b : ℝ≥0∞) {c : ℝ≥0∞} (hc : c ≠ ∞) :
     eDist (c * a) (c * b) = c * eDist a b := by
-  simp_rw [edist_eq_max, mul_max, ENNReal.mul_sub fun _ _ => hc]
+  simp_rw [eDist_eq_max, mul_max, ENNReal.mul_sub fun _ _ => hc]
 
-theorem edist_mul_right (a b : ℝ≥0∞) {c : ℝ≥0∞} (hc : c ≠ ∞) :
+theorem eDist_mul_right (a b : ℝ≥0∞) {c : ℝ≥0∞} (hc : c ≠ ∞) :
     eDist (a * c) (b * c) = eDist a b * c := by
-  simp_rw [edist_eq_max, max_mul, ENNReal.sub_mul fun _ _ => hc]
+  simp_rw [eDist_eq_max, max_mul, ENNReal.sub_mul fun _ _ => hc]
 
 end ENNReal
 

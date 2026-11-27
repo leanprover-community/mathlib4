@@ -42,7 +42,7 @@ variable [NormedRing 𝕜] [SeminormedAddCommGroup E]
 variable [Module 𝕜 E] [NormSMulClass 𝕜 E]
 
 theorem ediam_smul₀ (c : 𝕜) (s : Set E) : ediam (c • s) = ‖c‖₊ • ediam s := by
-  simp_rw [ediam, ← image_smul, iSup_image, edist_smul₀, ENNReal.smul_iSup]
+  simp_rw [ediam, ← image_smul, iSup_image, eDist_smul₀, ENNReal.smul_iSup]
 
 theorem diam_smul₀ (c : 𝕜) (x : Set E) : diam (c • x) = ‖c‖ * diam x := by
   simp_rw [diam, ediam_smul₀, ENNReal.toReal_smul, NNReal.smul_def, coe_nnNorm, smul_eq_mul]
@@ -50,7 +50,7 @@ theorem diam_smul₀ (c : 𝕜) (x : Set E) : diam (c • x) = ‖c‖ * diam x 
 theorem infEDist_smul_of_nonempty₀ (c : 𝕜) {s : Set E} (hs : s.Nonempty) (x : E) :
     infEDist (c • x) (c • s) = ‖c‖₊ • infEDist x s := by
   have : Nonempty s := hs.to_subtype
-  simp_rw [infEDist, ← Set.image_smul, iInf_image, edist_smul₀, iInf_subtype']
+  simp_rw [infEDist, ← Set.image_smul, iInf_image, eDist_smul₀, iInf_subtype']
   exact (ENNReal.mul_iInf (by simp)).symm
 
 theorem infEDist_smul₀ {c : 𝕜} (hc : c ≠ 0) (s : Set E) (x : E) :
@@ -245,10 +245,10 @@ theorem infEDist_thickening (hδ : 0 < δ) (s : Set E) (x : E) :
       have := hs.trans_lt ((infEDist_le_edist_of_mem hz).trans_lt h)
       rw [ofReal_eq_coe_nnreal hδ.le] at this
       exact mod_cast this
-    rw [edist_lt_coe, ← dist_lt_coe, ← add_sub_cancel δ ↑r] at h
+    rw [eDist_lt_coe, ← dist_lt_coe, ← add_sub_cancel δ ↑r] at h
     obtain ⟨y, hxy, hyz⟩ := exists_dist_lt_lt hr hδ h
     refine (ENNReal.add_lt_add_right ofReal_ne_top <|
-      infEDist_lt_iff.2 ⟨_, mem_thickening_iff.2 ⟨_, hz, hyz⟩, edist_lt_ofReal.2 hxy⟩).trans_le ?_
+      infEDist_lt_iff.2 ⟨_, mem_thickening_iff.2 ⟨_, hz, hyz⟩, eDist_lt_ofReal.2 hxy⟩).trans_le ?_
     rw [← ofReal_add hr.le hδ.le, sub_add_cancel, ofReal_coe_nnreal]
 
 @[simp]

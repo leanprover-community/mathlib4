@@ -63,7 +63,7 @@ theorem eventually_nhds_zero_forall_closedEBall_subset (hK : ∀ i, IsClosed (K 
       (closedEBall_mem_nhds x (tsub_pos_iff_lt.2 hrR))] with p hp z hz
   apply hR
   calc
-    eDist z x ≤ eDist z p.2 + eDist p.2 x := edist_triangle _ _ _
+    eDist z x ≤ eDist z p.2 + eDist p.2 x := eDist_triangle _ _ _
     _ ≤ p.1 + (R - p.1) := add_le_add hz <| le_trans hp.2 <| tsub_le_tsub_left hp.1.out.le _
     _ = R := add_tsub_cancel_of_le (lt_trans (by exact hp.1) hrR).le
 

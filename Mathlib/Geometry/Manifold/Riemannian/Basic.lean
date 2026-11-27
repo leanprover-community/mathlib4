@@ -150,7 +150,7 @@ lemma lintegral_fderiv_lineMap_eq_eDist {x y : E} :
     ∫⁻ t in Icc 0 1, ‖fderivWithin ℝ (ContinuousAffineMap.lineMap (R := ℝ) x y) (Icc 0 1) t 1‖ₑ
       = eDist x y := by
   have : eDist x y = ∫⁻ t in Icc (0 : ℝ) 1, ‖y - x‖ₑ := by
-    simp [edist_comm x y, eDist_eq_eNorm_sub]
+    simp [eDist_comm x y, eDist_eq_eNorm_sub]
   rw [this]
   apply setLIntegral_congr_fun measurableSet_Icc (fun z hz ↦ ?_)
   rw [show y - x = fderiv ℝ (ContinuousAffineMap.lineMap (R := ℝ) x y) z 1 by simp]
@@ -171,7 +171,7 @@ instance : IsRiemannianManifold 𝓘(ℝ, F) F := by
       pathELength_eq_lintegral_mfderivWithin_Icc]
     simp only [mfderivWithin_eq_fderivWithin, eNorm_tangentSpace_vectorSpace]
     conv_lhs =>
-      rw [edist_comm, eDist_eq_eNorm_sub, show x = e 0 by simp [e], show y = e 1 by simp [e]]
+      rw [eDist_comm, eDist_eq_eNorm_sub, show x = e 0 by simp [e], show y = e 1 by simp [e]]
     exact (eNorm_sub_le_lintegral_derivWithin_Icc_of_contDiffOn_Icc D zero_le_one).trans_eq rfl
   · let γ := ContinuousAffineMap.lineMap (R := ℝ) x y
     have : riemannianEDist 𝓘(ℝ, F) x y ≤ pathELength 𝓘(ℝ, F) γ 0 1 := by

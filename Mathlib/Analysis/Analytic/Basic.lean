@@ -858,7 +858,7 @@ theorem HasFPowerSeriesWithinOnBall.image_sub_sub_deriv_le
     ∃ C, ∀ y ∈ insert x s ∩ Metric.eball x r', ∀ z ∈ insert x s ∩ Metric.eball x r',
       ‖f y - f z - p 1 fun _ => y - z‖ ≤ C * max ‖y - x‖ ‖z - x‖ * ‖y - z‖ := by
   have := hf.isBigO_image_sub_image_sub_deriv_principal hr
-  simp only [isBigO_principal, mem_inter_iff, Metric.mem_eball, Prod.edist_eq, max_lt_iff, mem_prod,
+  simp only [isBigO_principal, mem_inter_iff, Metric.mem_eball, Prod.eDist_eq, max_lt_iff, mem_prod,
     norm_mul, Real.norm_eq_abs, abs_norm, and_imp, Prod.forall, mul_assoc] at this ⊢
   rcases this with ⟨C, hC⟩
   exact ⟨C, fun y ys hy z zs hz ↦ hC y z hy hz ys zs⟩
@@ -1121,7 +1121,7 @@ theorem hasFPowerSeriesAt_iff :
       simp [norm_smul, mul_comm]
     refine lt_of_lt_of_le ?_ this
     rwa [ENNReal.coe_pos, pos_iff_ne_zero, nnNorm_ne_zero_iff, ← norm_pos_iff]
-  · simp only [Metric.mem_eball, lt_inf_iff, edist_lt_coe, apply_eq_pow_smul_coeff, and_imp,
+  · simp only [Metric.mem_eball, lt_inf_iff, eDist_lt_coe, apply_eq_pow_smul_coeff, and_imp,
       dist_zero_right] at h ⊢
     refine fun {y} _ hyr => h ?_
     simpa [nnDist_eq_nnNorm, Real.lt_toNNReal_iff_coe_lt] using hyr

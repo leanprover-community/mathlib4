@@ -359,13 +359,13 @@ noncomputable def invertibleExpOfMemBall [CharZero 𝕂] {x : 𝔸}
   invOf := exp (-x)
   invOf_mul_self := by
     have hnx : -x ∈ Metric.eball (0 : 𝔸) (expSeries 𝕂 𝔸).radius := by
-      rw [Metric.mem_eball, ← neg_zero, edist_neg_neg]
+      rw [Metric.mem_eball, ← neg_zero, eDist_neg_neg]
       exact hx
     rw [← exp_add_of_commute_of_mem_ball (Commute.neg_left <| Commute.refl x) hnx hx,
       neg_add_cancel, exp_zero]
   mul_invOf_self := by
     have hnx : -x ∈ Metric.eball (0 : 𝔸) (expSeries 𝕂 𝔸).radius := by
-      rw [Metric.mem_eball, ← neg_zero, edist_neg_neg]
+      rw [Metric.mem_eball, ← neg_zero, eDist_neg_neg]
       exact hx
     rw [← exp_add_of_commute_of_mem_ball (Commute.neg_right <| Commute.refl x) hx hnx,
       add_neg_cancel, exp_zero]
@@ -466,14 +466,14 @@ theorem expSeries_radius_pos : 0 < (expSeries 𝕂 𝔸).radius := by
 variable {𝕂 𝔸}
 
 theorem norm_expSeries_summable (x : 𝔸) : Summable fun n => ‖expSeries 𝕂 𝔸 n fun _ => x‖ :=
-  norm_expSeries_summable_of_mem_ball x ((expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _)
+  norm_expSeries_summable_of_mem_ball x ((expSeries_radius_eq_top 𝕂 𝔸).symm ▸ eDist_lt_top _ _)
 
 theorem norm_expSeries_summable' (x : 𝔸) : Summable fun n => ‖(n !⁻¹ : 𝕂) • x ^ n‖ :=
-  norm_expSeries_summable_of_mem_ball' x ((expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _)
+  norm_expSeries_summable_of_mem_ball' x ((expSeries_radius_eq_top 𝕂 𝔸).symm ▸ eDist_lt_top _ _)
 
 theorem algebraMap_exp_comm [CompleteSpace 𝕂] (x : 𝕂) :
     algebraMap 𝕂 𝔸 (exp x) = exp (algebraMap 𝕂 𝔸 x) :=
-  algebraMap_exp_comm_of_mem_ball x <| (expSeries_radius_eq_top 𝕂 𝕂).symm ▸ edist_lt_top _ _
+  algebraMap_exp_comm_of_mem_ball x <| (expSeries_radius_eq_top 𝕂 𝕂).symm ▸ eDist_lt_top _ _
 
 variable [CompleteSpace 𝔸]
 
@@ -484,10 +484,10 @@ theorem expSeries_summable' (x : 𝔸) : Summable fun n => (n !⁻¹ : 𝕂) •
   (norm_expSeries_summable' x).of_norm
 
 theorem expSeries_hasSum_exp (x : 𝔸) : HasSum (fun n => expSeries 𝕂 𝔸 n fun _ => x) (exp x) :=
-  expSeries_hasSum_exp_of_mem_ball x ((expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _)
+  expSeries_hasSum_exp_of_mem_ball x ((expSeries_radius_eq_top 𝕂 𝔸).symm ▸ eDist_lt_top _ _)
 
 theorem exp_series_hasSum_exp' (x : 𝔸) : HasSum (fun n => (n !⁻¹ : 𝕂) • x ^ n) (exp x) :=
-  expSeries_hasSum_exp_of_mem_ball' x ((expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _)
+  expSeries_hasSum_exp_of_mem_ball' x ((expSeries_radius_eq_top 𝕂 𝔸).symm ▸ eDist_lt_top _ _)
 
 theorem exp_hasFPowerSeriesOnBall : HasFPowerSeriesOnBall exp (expSeries 𝕂 𝔸) 0 ∞ :=
   expSeries_radius_eq_top 𝕂 𝔸 ▸ hasFPowerSeriesOnBall_exp_of_radius_pos (expSeries_radius_pos _ _)
@@ -496,7 +496,7 @@ theorem exp_hasFPowerSeriesAt_zero : HasFPowerSeriesAt exp (expSeries 𝕂 𝔸)
   exp_hasFPowerSeriesOnBall.hasFPowerSeriesAt
 
 theorem exp_analytic (x : 𝔸) : AnalyticAt 𝕂 exp x :=
-  analyticAt_exp_of_mem_ball x ((expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _)
+  analyticAt_exp_of_mem_ball x ((expSeries_radius_eq_top 𝕂 𝔸).symm ▸ eDist_lt_top _ _)
 
 end AnyAlgebra
 
@@ -518,19 +518,19 @@ lemma _root_.Filter.Tendsto.exp {α : Type*} {l : Filter α} {f : α → 𝔸} {
 /-- In a Banach-algebra `𝔸` over `𝕂 = ℝ` or `𝕂 = ℂ`, if `x` and `y` commute, then
 `NormedSpace.exp (x+y) = (NormedSpace.exp x) * (NormedSpace.exp y)`. -/
 theorem exp_add_of_commute {x y : 𝔸} (hxy : Commute x y) : exp (x + y) = exp x * exp y :=
-  exp_add_of_commute_of_mem_ball hxy ((expSeries_radius_eq_top ℚ 𝔸).symm ▸ edist_lt_top _ _)
-    ((expSeries_radius_eq_top ℚ 𝔸).symm ▸ edist_lt_top _ _)
+  exp_add_of_commute_of_mem_ball hxy ((expSeries_radius_eq_top ℚ 𝔸).symm ▸ eDist_lt_top _ _)
+    ((expSeries_radius_eq_top ℚ 𝔸).symm ▸ eDist_lt_top _ _)
 
 /-- `NormedSpace.exp x` has explicit two-sided inverse `NormedSpace.exp (-x)`. -/
 @[instance_reducible]
 noncomputable def invertibleExp (x : 𝔸) : Invertible (exp x) :=
-  invertibleExpOfMemBall <| (expSeries_radius_eq_top ℚ 𝔸).symm ▸ edist_lt_top _ _
+  invertibleExpOfMemBall <| (expSeries_radius_eq_top ℚ 𝔸).symm ▸ eDist_lt_top _ _
 
 theorem isUnit_exp (x : 𝔸) : IsUnit (exp x) :=
-  isUnit_exp_of_mem_ball <| (expSeries_radius_eq_top ℚ 𝔸).symm ▸ edist_lt_top _ _
+  isUnit_exp_of_mem_ball <| (expSeries_radius_eq_top ℚ 𝔸).symm ▸ eDist_lt_top _ _
 
 theorem invOf_exp (x : 𝔸) [Invertible (exp x)] : ⅟(exp x) = exp (-x) :=
-  invOf_exp_of_mem_ball <| (expSeries_radius_eq_top ℚ 𝔸).symm ▸ edist_lt_top _ _
+  invOf_exp_of_mem_ball <| (expSeries_radius_eq_top ℚ 𝔸).symm ▸ eDist_lt_top _ _
 
 theorem _root_.Ring.inverse_exp (x : 𝔸) : (exp x)⁻¹ʳ = exp (-x) :=
   letI := invertibleExp x
@@ -579,7 +579,7 @@ theorem exp_nsmul (n : ℕ) (x : 𝔸) : exp (n • x) = exp x ^ n := by
 theorem map_exp [Algebra ℚ 𝔹]
     {F} [FunLike F 𝔸 𝔹] [RingHomClass F 𝔸 𝔹] (f : F) (hf : Continuous f) (x : 𝔸) :
     f (exp x) = exp (f x) :=
-  map_exp_of_mem_ball f hf x <| (expSeries_radius_eq_top ℚ 𝔸).symm ▸ edist_lt_top _ _
+  map_exp_of_mem_ball f hf x <| (expSeries_radius_eq_top ℚ 𝔸).symm ▸ eDist_lt_top _ _
 
 theorem exp_smul {G} [Monoid G] [MulSemiringAction G 𝔸] [ContinuousConstSMul G 𝔸] (g : G) (x : 𝔸) :
     exp (g • x) = g • exp x :=
@@ -629,7 +629,7 @@ variable {𝔸 : Type*} [NormedDivisionRing 𝔸] [NormedAlgebra ℚ 𝔸]
 
 theorem norm_expSeries_div_summable (x : 𝔸) : Summable fun n => ‖(x ^ n / n ! : 𝔸)‖ :=
   norm_expSeries_div_summable_of_mem_ball ℚ x
-    ((expSeries_radius_eq_top ℚ 𝔸).symm ▸ edist_lt_top _ _)
+    ((expSeries_radius_eq_top ℚ 𝔸).symm ▸ eDist_lt_top _ _)
 
 variable [CompleteSpace 𝔸]
 
@@ -637,10 +637,10 @@ theorem expSeries_div_summable (x : 𝔸) : Summable fun n => x ^ n / n ! :=
   (norm_expSeries_div_summable x).of_norm
 
 theorem expSeries_div_hasSum_exp (x : 𝔸) : HasSum (fun n => x ^ n / n !) (exp x) :=
-  expSeries_div_hasSum_exp_of_mem_ball ℚ x ((expSeries_radius_eq_top ℚ 𝔸).symm ▸ edist_lt_top _ _)
+  expSeries_div_hasSum_exp_of_mem_ball ℚ x ((expSeries_radius_eq_top ℚ 𝔸).symm ▸ eDist_lt_top _ _)
 
 theorem exp_neg (x : 𝔸) : exp (-x) = (exp x)⁻¹ :=
-  exp_neg_of_mem_ball ℚ <| (expSeries_radius_eq_top ℚ 𝔸).symm ▸ edist_lt_top _ _
+  exp_neg_of_mem_ball ℚ <| (expSeries_radius_eq_top ℚ 𝔸).symm ▸ eDist_lt_top _ _
 
 theorem exp_zsmul (z : ℤ) (x : 𝔸) : exp (z • x) = exp x ^ z := by
   obtain ⟨n, rfl | rfl⟩ := z.eq_nat_or_neg
@@ -662,8 +662,8 @@ variable {𝕂 𝔸 : Type*} [NormedCommRing 𝔸] [NormedAlgebra ℚ 𝔸] [Com
 /-- In a commutative Banach-algebra `𝔸` over `𝕂 = ℝ` or `𝕂 = ℂ`,
 `NormedSpace.exp (x+y) = (NormedSpace.exp x) * (NormedSpace.exp y)`. -/
 theorem exp_add {x y : 𝔸} : exp (x + y) = exp x * exp y :=
-  exp_add_of_mem_ball ((expSeries_radius_eq_top ℚ 𝔸).symm ▸ edist_lt_top _ _)
-    ((expSeries_radius_eq_top ℚ 𝔸).symm ▸ edist_lt_top _ _)
+  exp_add_of_mem_ball ((expSeries_radius_eq_top ℚ 𝔸).symm ▸ eDist_lt_top _ _)
+    ((expSeries_radius_eq_top ℚ 𝔸).symm ▸ eDist_lt_top _ _)
 
 /-- A version of `NormedSpace.exp_sum_of_commute` for a commutative Banach-algebra. -/
 theorem exp_sum {ι} (s : Finset ι) (f : ι → 𝔸) : exp (∑ i ∈ s, f i) = ∏ i ∈ s, exp (f i) := by

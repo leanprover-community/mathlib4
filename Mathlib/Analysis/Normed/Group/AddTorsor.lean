@@ -190,13 +190,13 @@ theorem nnDist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
 
 @[deprecated (since := "2026-11-07")] alias nndist_vsub_vsub_le := nnDist_vsub_vsub_le
 
-theorem edist_vadd_vadd_le (v v' : V) (p p' : P) :
+theorem eDist_vadd_vadd_le (v v' : V) (p p' : P) :
     eDist (v +ᵥ p) (v' +ᵥ p') ≤ eDist v v' + eDist p p' := by
   simp only [eDist_nnDist]
   norm_cast
   apply dist_vadd_vadd_le
 
-theorem edist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
+theorem eDist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
     eDist (p₁ -ᵥ p₂) (p₃ -ᵥ p₄) ≤ eDist p₁ p₃ + eDist p₂ p₄ := by
   simp only [eDist_nnDist]
   norm_cast
@@ -232,7 +232,7 @@ theorem LipschitzWith.vadd [PseudoEMetricSpace α] {f : α → V} {g : α → P}
   fun x y =>
   calc
     eDist (f x +ᵥ g x) (f y +ᵥ g y) ≤ eDist (f x) (f y) + eDist (g x) (g y) :=
-      edist_vadd_vadd_le _ _ _ _
+      eDist_vadd_vadd_le _ _ _ _
     _ ≤ Kf * eDist x y + Kg * eDist x y := add_le_add (hf x y) (hg x y)
     _ = (Kf + Kg) * eDist x y := (add_mul _ _ _).symm
 
@@ -241,7 +241,7 @@ theorem LipschitzWith.vsub [PseudoEMetricSpace α] {f g : α → P} {Kf Kg : ℝ
   fun x y =>
   calc
     eDist (f x -ᵥ g x) (f y -ᵥ g y) ≤ eDist (f x) (f y) + eDist (g x) (g y) :=
-      edist_vsub_vsub_le _ _ _ _
+      eDist_vsub_vsub_le _ _ _ _
     _ ≤ Kf * eDist x y + Kg * eDist x y := add_le_add (hf x y) (hg x y)
     _ = (Kf + Kg) * eDist x y := (add_mul _ _ _).symm
 

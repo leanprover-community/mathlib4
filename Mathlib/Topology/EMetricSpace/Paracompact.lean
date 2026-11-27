@@ -130,7 +130,7 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
       have : z ∉ eball x (2⁻¹ ^ k) := fun hz' => H n (by lia) i (hsub hz')
       apply this
       calc
-        eDist z x ≤ eDist y z + eDist y x := edist_triangle_left _ _ _
+        eDist z x ≤ eDist y z + eDist y x := eDist_triangle_left _ _ _
         _ < 2⁻¹ ^ m + 2⁻¹ ^ (n + k + 1) := ENNReal.add_lt_add hz hyx
         _ ≤ 2⁻¹ ^ (k + 1) + 2⁻¹ ^ (k + 1) :=
           (add_le_add (hpow_le <| by lia) (hpow_le <| by lia))
@@ -145,9 +145,9 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
       rcases memD.1 hzD with ⟨z', rfl, -, -, hdistz⟩
       suffices eDist z' y' < 3 * 2⁻¹ ^ m from notMem_of_lt_ind h (hsuby this)
       calc
-        eDist z' y' ≤ eDist z' x + eDist x y' := edist_triangle _ _ _
+        eDist z' y' ≤ eDist z' x + eDist x y' := eDist_triangle _ _ _
         _ ≤ eDist z z' + eDist z x + (eDist y x + eDist y y') :=
-          (add_le_add (edist_triangle_left _ _ _) (edist_triangle_left _ _ _))
+          (add_le_add (eDist_triangle_left _ _ _) (eDist_triangle_left _ _ _))
         _ < 2⁻¹ ^ m + 2⁻¹ ^ (n + k + 1) + (2⁻¹ ^ (n + k + 1) + 2⁻¹ ^ m) := by
           apply_rules [ENNReal.add_lt_add]
         _ = 2 * (2⁻¹ ^ m + 2⁻¹ ^ (n + k + 1)) := by simp only [two_mul, add_comm]

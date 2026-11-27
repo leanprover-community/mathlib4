@@ -143,7 +143,7 @@ class PseudoMetricSpace (α : Type u) : Type u extends Dist α where
   dist_triangle : ∀ x y z : α, dist x z ≤ dist x y + dist y z
   /-- Extended distance between two points -/
   eDist : α → α → ℝ≥0∞ := fun x y => ENNReal.ofNNReal (.mk (dist x y) (dist_nonneg' _ ‹_› ‹_› ‹_›))
-  edist_dist : ∀ x y : α, eDist x y = ENNReal.ofReal (dist x y) := by
+  eDist_dist : ∀ x y : α, eDist x y = ENNReal.ofReal (dist x y) := by
     intro x y; exact ENNReal.coe_nnreal_eq _
   toUniformSpace : UniformSpace α := .ofDist dist dist_self dist_comm dist_triangle
   uniformity_dist : 𝓤 α = ⨅ ε > 0, 𝓟 { p : α × α | dist p.1 p.2 < ε } := by intros; rfl
@@ -205,8 +205,8 @@ theorem dist_self (x : α) : dist x x = 0 :=
 theorem dist_comm (x y : α) : dist x y = dist y x :=
   PseudoMetricSpace.dist_comm x y
 
-theorem edist_dist (x y : α) : eDist x y = ENNReal.ofReal (dist x y) :=
-  PseudoMetricSpace.edist_dist x y
+theorem eDist_dist (x y : α) : eDist x y = ENNReal.ofReal (dist x y) :=
+  PseudoMetricSpace.eDist_dist x y
 
 @[bound]
 theorem dist_triangle (x y z : α) : dist x z ≤ dist x y + dist y z :=
@@ -299,9 +299,9 @@ theorem coe_nnDist (x y : α) : ↑(nnDist x y) = dist x y := rfl
 
 /-- Express `eDist` in terms of `nnDist` -/
 theorem eDist_nnDist (x y : α) : eDist x y = nnDist x y := by
-  rw [edist_dist, dist_nnDist, ENNReal.ofReal_coe_nnreal]
+  rw [eDist_dist, dist_nnDist, ENNReal.ofReal_coe_nnreal]
 
-@[deprecated (since := "2026-11-07")] alias edist_nndist := eDist_nnDist
+@[deprecated (since := "2026-11-07")] alias eDist_nndist := eDist_nnDist
 
 /-- Express `nnDist` in terms of `eDist` -/
 theorem nnDist_eDist (x y : α) : nnDist x y = (eDist x y).toNNReal := by
@@ -316,21 +316,21 @@ theorem coe_nnreal_ennreal_nnDist (x y : α) : ↑(nnDist x y) = eDist x y :=
 @[deprecated (since := "2026-11-07")] alias coe_nnreal_ennreal_nndist := coe_nnreal_ennreal_nnDist
 
 @[simp, norm_cast]
-theorem edist_lt_coe {x y : α} {c : ℝ≥0} : eDist x y < c ↔ nnDist x y < c := by
+theorem eDist_lt_coe {x y : α} {c : ℝ≥0} : eDist x y < c ↔ nnDist x y < c := by
   rw [eDist_nnDist, ENNReal.coe_lt_coe]
 
 @[simp, norm_cast]
-theorem edist_le_coe {x y : α} {c : ℝ≥0} : eDist x y ≤ c ↔ nnDist x y ≤ c := by
+theorem eDist_le_coe {x y : α} {c : ℝ≥0} : eDist x y ≤ c ↔ nnDist x y ≤ c := by
   rw [eDist_nnDist, ENNReal.coe_le_coe]
 
 /-- In a pseudometric space, the extended distance is always finite -/
-theorem edist_lt_top {α : Type*} [PseudoMetricSpace α] (x y : α) : eDist x y < ⊤ :=
-  (edist_dist x y).symm ▸ ENNReal.ofReal_lt_top
+theorem eDist_lt_top {α : Type*} [PseudoMetricSpace α] (x y : α) : eDist x y < ⊤ :=
+  (eDist_dist x y).symm ▸ ENNReal.ofReal_lt_top
 
 /-- In a pseudometric space, the extended distance is always finite -/
 @[aesop (rule_sets := [finiteness]) safe apply, simp]
-theorem edist_ne_top (x y : α) : eDist x y ≠ ⊤ :=
-  (edist_lt_top x y).ne
+theorem eDist_ne_top (x y : α) : eDist x y ≠ ⊤ :=
+  (eDist_lt_top x y).ne
 
 /-- `nnDist x x` vanishes -/
 @[simp] theorem nnDist_self (a : α) : nnDist a a = 0 := NNReal.coe_eq_zero.1 (dist_self a)
@@ -346,13 +346,13 @@ theorem dist_le_coe {x y : α} {c : ℝ≥0} : dist x y ≤ c ↔ nnDist x y ≤
   Iff.rfl
 
 @[simp]
-theorem edist_lt_ofReal {x y : α} {r : ℝ} : eDist x y < ENNReal.ofReal r ↔ dist x y < r := by
-  rw [edist_dist, ENNReal.ofReal_lt_ofReal_iff_of_nonneg dist_nonneg]
+theorem eDist_lt_ofReal {x y : α} {r : ℝ} : eDist x y < ENNReal.ofReal r ↔ dist x y < r := by
+  rw [eDist_dist, ENNReal.ofReal_lt_ofReal_iff_of_nonneg dist_nonneg]
 
 @[simp]
-theorem edist_le_ofReal {x y : α} {r : ℝ} (hr : 0 ≤ r) :
+theorem eDist_le_ofReal {x y : α} {r : ℝ} (hr : 0 ≤ r) :
     eDist x y ≤ ENNReal.ofReal r ↔ dist x y ≤ r := by
-  rw [edist_dist, ENNReal.ofReal_le_ofReal_iff hr]
+  rw [eDist_dist, ENNReal.ofReal_le_ofReal_iff hr]
 
 /-- Express `nnDist` in terms of `dist` -/
 theorem nnDist_dist (x y : α) : nnDist x y = Real.toNNReal (dist x y) := by
@@ -382,7 +382,7 @@ theorem nnDist_triangle_right (x y z : α) : nnDist x y ≤ nnDist x z + nnDist 
 
 /-- Express `dist` in terms of `eDist` -/
 theorem dist_eDist (x y : α) : dist x y = (eDist x y).toReal := by
-  rw [edist_dist, ENNReal.toReal_ofReal dist_nonneg]
+  rw [eDist_dist, ENNReal.toReal_ofReal dist_nonneg]
 
 namespace Metric
 
@@ -1004,10 +1004,10 @@ theorem Metric.uniformity_eDist : 𝓤 α = ⨅ ε > 0, 𝓟 { p : α × α | eD
 /-- A pseudometric space induces a pseudoemetric space -/
 instance (priority := 100) PseudoMetricSpace.toPseudoEMetricSpace : PseudoEMetricSpace α :=
   { ‹PseudoMetricSpace α› with
-    edist_self := by simp [edist_dist]
-    edist_comm := fun _ _ => by simp only [edist_dist, dist_comm]
-    edist_triangle := fun x y z => by
-      simp only [edist_dist, ← ENNReal.ofReal_add, dist_nonneg]
+    eDist_self := by simp [eDist_dist]
+    eDist_comm := fun _ _ => by simp only [eDist_dist, dist_comm]
+    eDist_triangle := fun x y z => by
+      simp only [eDist_dist, ← ENNReal.ofReal_add, dist_nonneg]
       rw [ENNReal.ofReal_le_ofReal_iff _]
       · exact dist_triangle _ _ _
       · simpa using add_le_add (dist_nonneg : 0 ≤ dist x y) dist_nonneg
@@ -1015,13 +1015,13 @@ instance (priority := 100) PseudoMetricSpace.toPseudoEMetricSpace : PseudoEMetri
 
 /-- In a pseudometric space, an open ball of infinite radius is the whole space -/
 theorem Metric.eball_top_eq_univ (x : α) : eball x ∞ = Set.univ :=
-  Set.eq_univ_iff_forall.mpr fun y => edist_lt_top y x
+  Set.eq_univ_iff_forall.mpr fun y => eDist_lt_top y x
 
 /-- Balls defined using the distance or the edistance coincide -/
 @[simp]
 theorem Metric.eball_ofReal {x : α} {ε : ℝ} : eball x (.ofReal ε) = ball x ε := by
   ext y
-  simp only [mem_eball, mem_ball, edist_dist]
+  simp only [mem_eball, mem_ball, eDist_dist]
   exact ENNReal.ofReal_lt_ofReal_iff_of_nonneg dist_nonneg
 
 /-- Balls defined using the distance or the edistance coincide -/
@@ -1033,7 +1033,7 @@ theorem Metric.eball_coe {x : α} {ε : ℝ≥0} : eball x ε = ball x ε := by
 /-- Closed balls defined using the distance or the edistance coincide -/
 theorem Metric.closedEBall_ofReal {x : α} {ε : ℝ} (h : 0 ≤ ε) :
     closedEBall x (.ofReal ε) = closedBall x ε := by
-  ext y; simp [edist_le_ofReal h]
+  ext y; simp [eDist_le_ofReal h]
 
 /-- Closed balls defined using the distance or the edistance coincide -/
 @[simp]
@@ -1046,11 +1046,11 @@ theorem Metric.closedEBall_coe {x : α} {ε : ℝ≥0} :
 For `r ≥ 0`, this inclusion is an equality, see `Metric.closedEBall_ofReal`. -/
 theorem Metric.closedBall_subset_closedEBall {x : α} {r : ℝ} :
     closedBall x r ⊆ closedEBall x (.ofReal r) := by
-  simp +contextual [subset_def, edist_dist, ENNReal.ofReal_le_ofReal]
+  simp +contextual [subset_def, eDist_dist, ENNReal.ofReal_le_ofReal]
 
 @[simp]
 theorem Metric.eball_top (x : α) : eball x ⊤ = univ :=
-  eq_univ_of_forall fun _ => edist_lt_top _ _
+  eq_univ_of_forall fun _ => eDist_lt_top _ _
 
 /-- Build a new pseudometric space from an old one where the bundled uniform structure is provably
 (but typically non-definitionally) equal to some given uniform structure.
@@ -1099,12 +1099,12 @@ abbrev PseudoEMetricSpace.toPseudoMetricSpaceOfDist {X : Type*} [e : PseudoEMetr
   dist := dist
   dist_self x := by
     refine le_antisymm ?_ (dist_nonneg x x)
-    rw [← ENNReal.zero_eq_ofReal, ← h x x, edist_self]
-  dist_comm x y := by simpa [h, dist_nonneg] using edist_comm x y
+    rw [← ENNReal.zero_eq_ofReal, ← h x x, eDist_self]
+  dist_comm x y := by simpa [h, dist_nonneg] using eDist_comm x y
   dist_triangle x y z := by
-    simpa [h, dist_nonneg, add_nonneg, ← ENNReal.ofReal_add] using edist_triangle x y z
+    simpa [h, dist_nonneg, add_nonneg, ← ENNReal.ofReal_add] using eDist_triangle x y z
   eDist := eDist
-  edist_dist _ _ := by simp only [h]
+  eDist_dist _ _ := by simp only [h]
   toUniformSpace := PseudoEMetricSpace.toUniformSpace
   uniformity_dist := e.uniformity_eDist.trans <| by
     simpa [h, dist_nonneg, ENNReal.coe_toNNReal_eq_toReal]
@@ -1121,9 +1121,9 @@ abbrev PseudoEMetricSpace.toPseudoMetricSpace {α : Type u} [PseudoEMetricSpace 
 abbrev boundedComponent.pseudoMetricSpace {X : Type*} [PseudoEMetricSpace X] (a : X) :
     PseudoMetricSpace (boundedComponent a) :=
   PseudoEMetricSpace.toPseudoMetricSpace fun p q ↦ by
-    refine ((edist_triangle p.val a q.val).trans_lt
+    refine ((eDist_triangle p.val a q.val).trans_lt
       (ENNReal.add_lt_top.2 ⟨?_, q.property.lt_top⟩)).ne
-    rw [edist_comm]
+    rw [eDist_comm]
     exact p.property.lt_top
 
 /-- Build a new pseudometric space from an old one where the bundled bornology structure is provably

@@ -174,21 +174,21 @@ theorem eNorm_indicatorConstLp_le :
 
 @[deprecated (since := "2026-11-06")] alias enorm_indicatorConstLp_le := eNorm_indicatorConstLp_le
 
-theorem edist_indicatorConstLp_eq_eNorm {t : Set α} {ht : MeasurableSet t} {hμt : μ t ≠ ∞} :
+theorem eDist_indicatorConstLp_eq_eNorm {t : Set α} {ht : MeasurableSet t} {hμt : μ t ≠ ∞} :
     eDist (indicatorConstLp p hs hμs c) (indicatorConstLp p ht hμt c) =
       ‖indicatorConstLp (μ := μ) p (hs.symmDiff ht) (by finiteness) c‖ₑ := by
   unfold indicatorConstLp
-  rw [Lp.edist_toLp_toLp, eLpNorm_indicator_sub_indicator _ hs.nullMeasurableSet
+  rw [Lp.eDist_toLp_toLp, eLpNorm_indicator_sub_indicator _ hs.nullMeasurableSet
     ht.nullMeasurableSet, Lp.eNorm_toLp]
 
 @[deprecated (since := "2026-11-06")]
-alias edist_indicatorConstLp_eq_enorm := edist_indicatorConstLp_eq_eNorm
+alias eDist_indicatorConstLp_eq_enorm := eDist_indicatorConstLp_eq_eNorm
 
 theorem dist_indicatorConstLp_eq_norm {t : Set α} {ht : MeasurableSet t} {hμt : μ t ≠ ∞} :
     dist (indicatorConstLp p hs hμs c) (indicatorConstLp p ht hμt c) =
       ‖indicatorConstLp (μ := μ) p (hs.symmDiff ht) (by finiteness) c‖ := by
   -- Squeezed for performance reasons
-  simp only [Lp.dist_eDist, edist_indicatorConstLp_eq_eNorm, eNorm, ENNReal.coe_toReal,
+  simp only [Lp.dist_eDist, eDist_indicatorConstLp_eq_eNorm, eNorm, ENNReal.coe_toReal,
     Lp.coe_nnNorm]
 
 /-- A family of `indicatorConstLp` functions tends to an `indicatorConstLp`,

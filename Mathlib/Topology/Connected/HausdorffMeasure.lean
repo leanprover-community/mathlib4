@@ -48,15 +48,15 @@ open scoped ENNReal
 variable {X : Type*} [EMetricSpace X] {s : Set X} {a b : X}
 
 /-- In a preconnected subset of an extended metric space, any two points are at finite distance. -/
-theorem IsPreconnected.edist_ne_top (hs : IsPreconnected s) (ha : a ∈ s) (hb : b ∈ s) :
+theorem IsPreconnected.eDist_ne_top (hs : IsPreconnected s) (ha : a ∈ s) (hb : b ∈ s) :
     eDist a b ≠ ∞ := by
-  rw [edist_comm, ← lt_top_iff_ne_top, ← mem_eball]
+  rw [eDist_comm, ← lt_top_iff_ne_top, ← mem_eball]
   exact hs.subset_isClopen isClopen_eball_top ⟨a, ha, by simp⟩ hb
 
 /-- A preconnected set lies in the bounded component of any of its points. -/
 theorem IsPreconnected.subset_boundedComponent (hs : IsPreconnected s) (ha : a ∈ s) :
     s ⊆ boundedComponent a :=
-  fun _ hb => hs.edist_ne_top ha hb
+  fun _ hb => hs.eDist_ne_top ha hb
 
 /-- The distance function `x => (eDist a x).toReal` is Lipschitz on any preconnected set `s` that
 contains `a`. -/
@@ -65,7 +65,7 @@ theorem lipschitzOnWith_toReal_eDist (hs : IsPreconnected s) (ha : a ∈ s) :
   intro x hx y hy
   let : PseudoMetricSpace (boundedComponent a) := boundedComponent.pseudoMetricSpace a
   exact LipschitzWith.dist_right (⟨a, by simp [boundedComponent]⟩ : boundedComponent a)
-    ⟨x, hs.edist_ne_top ha hx⟩ ⟨y, hs.edist_ne_top ha hy⟩
+    ⟨x, hs.eDist_ne_top ha hx⟩ ⟨y, hs.eDist_ne_top ha hy⟩
 
 variable [MeasurableSpace X] [BorelSpace X]
 
@@ -76,19 +76,19 @@ the one-dimensional Hausdorff measure of the part of `s` lying in the open ball 
 theorem IsPreconnected.le_hausdorffMeasure_of_le_eDist (hs : IsPreconnected s) (ha : a ∈ s)
     (hb : b ∈ s) {r : ℝ≥0∞} (hr : r ≤ eDist a b) :
     r ≤ μH[1] (s ∩ eball a r) :=
-  have hrne : r ≠ ∞ := ne_top_of_le_ne_top (hs.edist_ne_top ha hb) hr
+  have hrne : r ≠ ∞ := ne_top_of_le_ne_top (hs.eDist_ne_top ha hb) hr
   calc
     r = ENNReal.ofReal r.toReal := (ENNReal.ofReal_toReal hrne).symm
     _ = μH[1] (Ico 0 r.toReal) := by rw [hausdorffMeasure_real, Real.volume_Ico, sub_zero]
     _ ≤ μH[1] ((fun x => (eDist a x).toReal) '' (s ∩ eball a r)) := by
         refine measure_mono fun c hc => ?_
         have : Ico 0 r.toReal ⊆ (fun x => (eDist a x).toReal) '' s := calc
-          _ ⊆ Icc 0 (eDist a b).toReal := by grind [ENNReal.toReal_mono (hs.edist_ne_top ha hb) hr]
+          _ ⊆ Icc 0 (eDist a b).toReal := by grind [ENNReal.toReal_mono (hs.eDist_ne_top ha hb) hr]
           _ ⊆ _ := (hs.image _ (lipschitzOnWith_toReal_eDist hs ha).continuousOn).Icc_subset
             ⟨a, ha, by simp⟩ ⟨b, hb, rfl⟩
         obtain ⟨z, hz, hgz⟩ : c ∈ (fun x => (eDist a x).toReal) '' s := this hc
         refine ⟨z, ⟨hz, ?_⟩, hgz⟩
-        rw [mem_eball', ← ENNReal.toReal_lt_toReal (hs.edist_ne_top ha hz) hrne]
+        rw [mem_eball', ← ENNReal.toReal_lt_toReal (hs.eDist_ne_top ha hz) hrne]
         exact hgz.le.trans_lt hc.2
     _ ≤ _ := by
         simpa using ((lipschitzOnWith_toReal_eDist hs ha).mono
@@ -96,14 +96,14 @@ theorem IsPreconnected.le_hausdorffMeasure_of_le_eDist (hs : IsPreconnected s) (
 
 /-- The distance between two points of a preconnected set `s` is at most the one-dimensional
 Hausdorff measure of `s`. -/
-theorem IsPreconnected.edist_le_hausdorffMeasure (hs : IsPreconnected s) (ha : a ∈ s) (hb : b ∈ s) :
+theorem IsPreconnected.eDist_le_hausdorffMeasure (hs : IsPreconnected s) (ha : a ∈ s) (hb : b ∈ s) :
     eDist a b ≤ μH[1] s := by
   grw [hs.le_hausdorffMeasure_of_le_eDist ha hb le_rfl, measure_mono inter_subset_left]
 
 /-- The extended diameter of a preconnected set is at most its one-dimensional Hausdorff measure. -/
 theorem IsPreconnected.ediam_le_hausdorffMeasure (hs : IsPreconnected s) :
     ediam s ≤ μH[1] s :=
-  ediam_le fun _ ha _ hb => hs.edist_le_hausdorffMeasure ha hb
+  ediam_le fun _ ha _ hb => hs.eDist_le_hausdorffMeasure ha hb
 
 /-- A preconnected set with finite `d`-dimensional Hausdorff measure for some `d < 1` is a
 subsingleton. -/
@@ -129,7 +129,7 @@ theorem IsPreconnected.totallyBounded_of_hausdorffMeasure_lt_top (hs : IsPreconn
   have hgreedy (t : Finset X) : ∃ y, y ∈ s ∧ ∀ x ∈ t, ε ≤ eDist x y := by
     obtain ⟨z, hz, hznotin⟩ := not_subset.1 (hcov t t.finite_toSet)
     refine ⟨z, hz, fun x hx => ?_⟩
-    simpa [mem_eball, not_lt, edist_comm] using fun hmem => hznotin (mem_biUnion hx hmem)
+    simpa [mem_eball, not_lt, eDist_comm] using fun hmem => hznotin (mem_biUnion hx hmem)
   -- A greedy choice of an `ε`-separated sequence inside `s`.
   obtain ⟨f, hf1, hf2⟩ :=
     exists_seq_of_forall_finset_exists (· ∈ s) (fun x y => ε ≤ eDist x y) (fun t _ => hgreedy t)

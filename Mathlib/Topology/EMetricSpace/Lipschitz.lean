@@ -139,23 +139,23 @@ variable {K : ℝ≥0} {f : α → β} {x y : α} {r : ℝ≥0∞} {s : Set α}
 protected theorem lipschitzOnWith (h : LipschitzWith K f) : LipschitzOnWith K f s :=
   fun x _ y _ => h x y
 
-theorem edist_le_mul (h : LipschitzWith K f) (x y : α) : eDist (f x) (f y) ≤ K * eDist x y :=
+theorem eDist_le_mul (h : LipschitzWith K f) (x y : α) : eDist (f x) (f y) ≤ K * eDist x y :=
   h x y
 
-theorem edist_le_mul_of_le (h : LipschitzWith K f) (hr : eDist x y ≤ r) :
+theorem eDist_le_mul_of_le (h : LipschitzWith K f) (hr : eDist x y ≤ r) :
     eDist (f x) (f y) ≤ K * r :=
   (h x y).trans <| mul_right_mono hr
 
-theorem edist_lt_mul_of_lt (h : LipschitzWith K f) (hK : K ≠ 0) (hr : eDist x y < r) :
+theorem eDist_lt_mul_of_lt (h : LipschitzWith K f) (hK : K ≠ 0) (hr : eDist x y < r) :
     eDist (f x) (f y) < K * r := by grw [h x y]; gcongr; simp
 
 theorem mapsTo_closedEBall (h : LipschitzWith K f) (x : α) (r : ℝ≥0∞) :
-    MapsTo f (closedEBall x r) (closedEBall (f x) (K * r)) := fun _y hy => h.edist_le_mul_of_le hy
+    MapsTo f (closedEBall x r) (closedEBall (f x) (K * r)) := fun _y hy => h.eDist_le_mul_of_le hy
 
 theorem mapsTo_eball (h : LipschitzWith K f) (hK : K ≠ 0) (x : α) (r : ℝ≥0∞) :
-    MapsTo f (eball x r) (eball (f x) (K * r)) := fun _y hy => h.edist_lt_mul_of_lt hK hy
+    MapsTo f (eball x r) (eball (f x) (K * r)) := fun _y hy => h.eDist_lt_mul_of_lt hK hy
 
-theorem edist_lt_top (hf : LipschitzWith K f) {x y : α} (h : eDist x y ≠ ⊤) :
+theorem eDist_lt_top (hf : LipschitzWith K f) {x y : α} (h : eDist x y ≠ ⊤) :
     eDist (f x) (f y) < ⊤ :=
   (hf x y).trans_lt (by finiteness)
 
@@ -174,9 +174,9 @@ theorem ediam_image_le (hf : LipschitzWith K f) (s : Set α) :
     Metric.ediam (f '' s) ≤ K * Metric.ediam s := by
   apply Metric.ediam_le
   rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩
-  exact hf.edist_le_mul_of_le (Metric.edist_le_ediam_of_mem hx hy)
+  exact hf.eDist_le_mul_of_le (Metric.eDist_le_ediam_of_mem hx hy)
 
-theorem edist_lt_of_edist_lt_div (hf : LipschitzWith K f) {x y : α} {d : ℝ≥0∞}
+theorem eDist_lt_of_edist_lt_div (hf : LipschitzWith K f) {x y : α} {d : ℝ≥0∞}
     (h : eDist x y < d / K) : eDist (f x) (f y) < d :=
   calc
     eDist (f x) (f y) ≤ K * eDist x y := hf x y
@@ -185,7 +185,7 @@ theorem edist_lt_of_edist_lt_div (hf : LipschitzWith K f) {x y : α} {d : ℝ≥
 /-- A Lipschitz function is uniformly continuous. -/
 protected theorem uniformContinuous (hf : LipschitzWith K f) : UniformContinuous f :=
   EMetric.uniformContinuous_iff.2 fun ε εpos =>
-    ⟨ε / K, ENNReal.div_pos_iff.2 ⟨ne_of_gt εpos, ENNReal.coe_ne_top⟩, hf.edist_lt_of_edist_lt_div⟩
+    ⟨ε / K, ENNReal.div_pos_iff.2 ⟨ne_of_gt εpos, ENNReal.coe_ne_top⟩, hf.eDist_lt_of_edist_lt_div⟩
 
 /-- A Lipschitz function is continuous. -/
 protected theorem continuous (hf : LipschitzWith K f) : Continuous f :=
@@ -193,10 +193,10 @@ protected theorem continuous (hf : LipschitzWith K f) : Continuous f :=
 
 /-- Constant functions are Lipschitz (with any constant). -/
 protected theorem const (b : β) : LipschitzWith 0 fun _ : α => b := fun x y => by
-  simp only [edist_self, zero_le]
+  simp only [eDist_self, zero_le]
 
 protected theorem const' (b : β) {K : ℝ≥0} : LipschitzWith K fun _ : α => b := fun x y => by
-  simp only [edist_self, zero_le]
+  simp only [eDist_self, zero_le]
 
 @[simp]
 lemma zero_iff {β : Type*} [EMetricSpace β] (f : α → β) : LipschitzWith 0 f ↔ ∀ x y, f x = f y := by
@@ -219,7 +219,7 @@ theorem subtype_mk (hf : LipschitzWith K f) {p : β → Prop} (hp : ∀ x, p (f 
 
 protected theorem eval {α : ι → Type u} [∀ i, PseudoEMetricSpace (α i)] [Fintype ι] (i : ι) :
     LipschitzWith 1 (Function.eval i : (∀ i, α i) → α i) :=
-  LipschitzWith.of_edist_le fun f g => by convert edist_le_pi_eDist f g i
+  LipschitzWith.of_edist_le fun f g => by convert eDist_le_pi_eDist f g i
 
 /-- The restriction of a `K`-Lipschitz function is `K`-Lipschitz. -/
 protected theorem restrict (hf : LipschitzWith K f) (s : Set α) :
@@ -247,7 +247,7 @@ protected theorem prod_snd : LipschitzWith 1 (@Prod.snd α β) :=
 protected theorem prodMk {f : α → β} {Kf : ℝ≥0} (hf : LipschitzWith Kf f) {g : α → γ} {Kg : ℝ≥0}
     (hg : LipschitzWith Kg g) : LipschitzWith (max Kf Kg) fun x => (f x, g x) := by
   intro x y
-  rw [ENNReal.coe_mono.map_max, Prod.edist_eq, max_mul]
+  rw [ENNReal.coe_mono.map_max, Prod.eDist_eq, max_mul]
   exact max_le_max (hf x y) (hg x y)
 
 protected theorem prodMk_left (a : α) : LipschitzWith 1 (Prod.mk a : β → α × β) := by
@@ -260,7 +260,7 @@ protected theorem uncurry {f : α → β → γ} {Kα Kβ : ℝ≥0} (hα : ∀ 
     (hβ : ∀ a, LipschitzWith Kβ (f a)) : LipschitzWith (Kα + Kβ) (Function.uncurry f) := by
   rintro ⟨a₁, b₁⟩ ⟨a₂, b₂⟩
   simp only [Function.uncurry, ENNReal.coe_add, add_mul]
-  apply le_trans (edist_triangle _ (f a₂ b₁) _)
+  apply le_trans (eDist_triangle _ (f a₂ b₁) _)
   exact
     add_le_add (le_trans (hα _ _ _) <| mul_right_mono <| le_max_left _ _)
       (le_trans (hβ _ _ _) <| mul_right_mono <| le_max_right _ _)
@@ -270,7 +270,7 @@ protected theorem iterate {f : α → α} (hf : LipschitzWith K f) : ∀ n, Lips
   | 0 => by simpa only [pow_zero] using! LipschitzWith.id
   | n + 1 => by rw [pow_succ]; exact (LipschitzWith.iterate hf n).comp hf
 
-theorem edist_iterate_succ_le_geometric {f : α → α} (hf : LipschitzWith K f) (x n) :
+theorem eDist_iterate_succ_le_geometric {f : α → α} (hf : LipschitzWith K f) (x n) :
     eDist (f^[n] x) (f^[n + 1] x) ≤ eDist x (f x) * (K : ℝ≥0∞) ^ n := by
   rw [iterate_succ, mul_comm]
   simpa only [ENNReal.coe_pow] using! (hf.iterate n) x (f x)
@@ -317,14 +317,14 @@ protected theorem weaken (hf : LipschitzOnWith K f s) {K' : ℝ≥0} (h : K ≤ 
     LipschitzOnWith K' f s :=
   fun _ hx _ hy => (hf hx hy).trans <| mul_left_mono (ENNReal.coe_le_coe.2 h)
 
-theorem edist_le_mul_of_le (h : LipschitzOnWith K f s) {x y : α} (hx : x ∈ s) (hy : y ∈ s)
+theorem eDist_le_mul_of_le (h : LipschitzOnWith K f s) {x y : α} (hx : x ∈ s) (hy : y ∈ s)
     {r : ℝ≥0∞} (hr : eDist x y ≤ r) :
     eDist (f x) (f y) ≤ K * r :=
   (h hx hy).trans <| mul_right_mono hr
 
-theorem edist_lt_of_edist_lt_div (hf : LipschitzOnWith K f s) {x y : α} (hx : x ∈ s) (hy : y ∈ s)
+theorem eDist_lt_of_edist_lt_div (hf : LipschitzOnWith K f s) {x y : α} (hx : x ∈ s) (hy : y ∈ s)
     {d : ℝ≥0∞} (hd : eDist x y < d / K) : eDist (f x) (f y) < d :=
-  hf.to_restrict.edist_lt_of_edist_lt_div <| show eDist (⟨x, hx⟩ : s) ⟨y, hy⟩ < d / K from hd
+  hf.to_restrict.eDist_lt_of_edist_lt_div <| show eDist (⟨x, hx⟩ : s) ⟨y, hy⟩ < d / K from hd
 
 protected theorem comp {g : β → γ} {t : Set β} {Kg : ℝ≥0} (hg : LipschitzOnWith Kg g t)
     (hf : LipschitzOnWith K f s) (hmaps : MapsTo f s t) : LipschitzOnWith (Kg * K) (g ∘ f) s :=
@@ -334,7 +334,7 @@ protected theorem comp {g : β → γ} {t : Set β} {Kg : ℝ≥0} (hg : Lipschi
 protected theorem prodMk {g : α → γ} {Kf Kg : ℝ≥0} (hf : LipschitzOnWith Kf f s)
     (hg : LipschitzOnWith Kg g s) : LipschitzOnWith (max Kf Kg) (fun x => (f x, g x)) s := by
   intro _ hx _ hy
-  rw [ENNReal.coe_mono.map_max, Prod.edist_eq, max_mul]
+  rw [ENNReal.coe_mono.map_max, Prod.eDist_eq, max_mul]
   exact max_le_max (hf hx hy) (hg hx hy)
 
 theorem ediam_image2_le (f : α → β → γ) {K₁ K₂ : ℝ≥0} (s : Set α) (t : Set β)
@@ -342,11 +342,11 @@ theorem ediam_image2_le (f : α → β → γ) {K₁ K₂ : ℝ≥0} (s : Set α
     Metric.ediam (Set.image2 f s t) ≤ ↑K₁ * Metric.ediam s + ↑K₂ * Metric.ediam t := by
   simp only [Metric.ediam_le_iff, forall_mem_image2]
   intro a₁ ha₁ b₁ hb₁ a₂ ha₂ b₂ hb₂
-  refine (edist_triangle _ (f a₂ b₁) _).trans ?_
+  refine (eDist_triangle _ (f a₂ b₁) _).trans ?_
   exact
     add_le_add
-      ((hf₁ b₁ hb₁ ha₁ ha₂).trans <| mul_right_mono <| Metric.edist_le_ediam_of_mem ha₁ ha₂)
-      ((hf₂ a₂ ha₂ hb₁ hb₂).trans <| mul_right_mono <| Metric.edist_le_ediam_of_mem hb₁ hb₂)
+      ((hf₁ b₁ hb₁ ha₁ ha₂).trans <| mul_right_mono <| Metric.eDist_le_ediam_of_mem ha₁ ha₂)
+      ((hf₂ a₂ ha₂ hb₁ hb₂).trans <| mul_right_mono <| Metric.eDist_le_ediam_of_mem hb₁ hb₂)
 
 end LipschitzOnWith
 
@@ -449,13 +449,13 @@ theorem continuousOn_prod_of_subset_closure_continuousOn_lipschitzOnWith [Pseudo
   filter_upwards [nhdsWithin_prod A B] with ⟨a, b⟩ ⟨⟨has, hax⟩, ⟨hbt, hby⟩⟩
   calc
     eDist (f (a, b)) (f (x, y)) ≤ eDist (f (a, b)) (f (x', b)) + eDist (f (x', b)) (f (x', y)) +
-        eDist (f (x', y)) (f (x, y)) := edist_triangle4 _ _ _ _
+        eDist (f (x', y)) (f (x, y)) := eDist_triangle4 _ _ _ _
     _ ≤ K * (δ + δ) + ε / 2 + K * δ := by
       gcongr
-      · refine (hb b hbt).edist_le_mul_of_le has (hs' hx') ?_
-        exact (edist_triangle _ _ _).trans (add_le_add (le_of_lt hax) hxx'.le)
+      · refine (hb b hbt).eDist_le_mul_of_le has (hs' hx') ?_
+        exact (eDist_triangle _ _ _).trans (add_le_add (le_of_lt hax) hxx'.le)
       · exact hby
-      · exact (hb y hy).edist_le_mul_of_le (hs' hx') hx ((edist_comm _ _).trans_le hxx'.le)
+      · exact (hb y hy).eDist_le_mul_of_le (hs' hx') hx ((eDist_comm _ _).trans_le hxx'.le)
     _ = δ * ↑(3 * K) + ε / 2 := by push_cast; ring
     _ ≤ ε / 2 + ε / 2 := by gcongr
     _ = ε := ENNReal.add_halves _

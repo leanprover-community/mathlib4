@@ -47,11 +47,11 @@ instance : SetLike (MeasuredSets μ) α where
 
 noncomputable instance : PseudoEMetricSpace (MeasuredSets μ) where
   eDist s t := μ ((s : Set α) ∆ t)
-  edist_self := by simp
-  edist_comm := by grind
-  edist_triangle s t u := measure_symmDiff_le _ _ _
+  eDist_self := by simp
+  eDist_comm := by grind
+  eDist_triangle s t u := measure_symmDiff_le _ _ _
 
-lemma MeasuredSets.edist_def (s t : MeasuredSets μ) : eDist s t = μ ((s : Set α) ∆ t) := rfl
+lemma MeasuredSets.eDist_def (s t : MeasuredSets μ) : eDist s t = μ ((s : Set α) ∆ t) := rfl
 
 /-- Measure on `MeasuredSets` is a 1-lipschitz function.
 
@@ -67,7 +67,7 @@ lemma MeasuredSets.continuous_measure : Continuous (fun (s : MeasuredSets μ) �
 noncomputable instance [IsFiniteMeasure μ] : PseudoMetricSpace (MeasuredSets μ) :=
   PseudoEMetricSpace.toPseudoMetricSpaceOfDist
     (fun s t ↦ μ.real ((s : Set α) ∆ t)) (fun s t ↦ ENNReal.toReal_nonneg)
-    (fun s t ↦ by simp [Measure.real, MeasuredSets.edist_def])
+    (fun s t ↦ by simp [Measure.real, MeasuredSets.eDist_def])
 
 lemma MeasuredSets.dist_def [IsFiniteMeasure μ] (s t : MeasuredSets μ) :
     dist s t = μ.real ((s : Set α) ∆ t) := rfl
@@ -75,7 +75,7 @@ lemma MeasuredSets.dist_def [IsFiniteMeasure μ] (s t : MeasuredSets μ) :
 lemma MeasuredSets.real_sub_real_le_dist [IsFiniteMeasure μ] (s t : MeasuredSets μ) :
     μ.real s - μ.real t ≤ dist s t := by
   grw [dist_eDist, ← sub_le_eDist]
-  exacts [ENNReal.le_toReal_sub (measure_ne_top _ _), edist_ne_top _ _]
+  exacts [ENNReal.le_toReal_sub (measure_ne_top _ _), eDist_ne_top _ _]
 
 lemma MeasuredSets.lipschitzWith_measureReal [IsFiniteMeasure μ] :
     LipschitzWith 1 (fun s : MeasuredSets μ ↦ μ.real s) :=
@@ -189,7 +189,7 @@ lemma dense_of_generateFrom_isSetRing [IsFiniteMeasure μ]
     ⟨t, tC, ht⟩
   have t_meas : MeasurableSet t := by rw [h]; exact measurableSet_generateFrom tC
   refine ⟨⟨t, t_meas⟩, ?_, tC⟩
-  simpa [MeasuredSets.edist_def] using! ht
+  simpa [MeasuredSets.eDist_def] using! ht
 
 /-- Given a semiring of sets `C` covering the space modulo `0` and generating the measurable space
 structure, finite unions of elements of `C` are dense among measurable sets. -/
@@ -201,7 +201,7 @@ lemma dense_of_generateFrom_isSetSemiring [IsFiniteMeasure μ]
   rintro s ε εpos
   rcases exists_measure_symmDiff_lt_of_generateFrom_isSetSemiring hC h'C h s.property εpos
     with ⟨t, tC, ht⟩
-  refine ⟨⟨t, ?_⟩, by simpa [MeasuredSets.edist_def] using! ht, tC⟩
+  refine ⟨⟨t, ?_⟩, by simpa [MeasuredSets.eDist_def] using! ht, tC⟩
   rw [h]
   exact measurableSet_generateFrom_of_mem_supClosure tC
 

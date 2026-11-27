@@ -38,7 +38,7 @@ instance pseudoMetricSpacePi : PseudoMetricSpace (∀ b, X b) := by
   let i := PseudoEMetricSpace.toPseudoMetricSpaceOfDist
     (fun f g : ∀ b, X b => ((sup univ fun b => nnDist (f b) (g b) : ℝ≥0) : ℝ))
     (fun f g => NNReal.zero_le_coe)
-    (fun f g => by simp [edist_pi_def])
+    (fun f g => by simp [eDist_pi_def])
   refine i.replaceBornology fun s => ?_
   simp only [isBounded_iff_eventually, ← forall_isBounded_image_eval_iff,
     forall_mem_image, ← Filter.eventually_all, @dist_nnDist (X _)]
@@ -107,7 +107,7 @@ lemma nnDist_pi_const_le (a b : α) : (nnDist (fun _ : β => a) fun _ => b) ≤ 
 
 @[simp]
 lemma dist_pi_const [Nonempty β] (a b : α) : (dist (fun _ : β => a) fun _ => b) = dist a b := by
-  simpa only [dist_eDist] using congr($(edist_pi_const a b).toReal)
+  simpa only [dist_eDist] using congr($(eDist_pi_const a b).toReal)
 
 @[simp]
 lemma nnDist_pi_const [Nonempty β] (a b : α) : (nnDist (fun _ : β => a) fun _ => b) = nnDist a b :=
@@ -117,7 +117,7 @@ lemma nnDist_pi_const [Nonempty β] (a b : α) : (nnDist (fun _ : β => a) fun _
 
 lemma nnDist_le_pi_nnDist (f g : ∀ b, X b) (b : β) : nnDist (f b) (g b) ≤ nnDist f g := by
   rw [← ENNReal.coe_le_coe, ← eDist_nnDist, ← eDist_nnDist]
-  exact edist_le_pi_eDist f g b
+  exact eDist_le_pi_eDist f g b
 
 @[deprecated (since := "2026-11-07")] alias nndist_le_pi_nndist := nnDist_le_pi_nnDist
 

@@ -70,7 +70,7 @@ section EMetric
 variable [PseudoEMetricSpace X] [Group G] [MulAction G X] [IsIsometricSMul G X]
 
 @[to_additive (attr := simp)]
-theorem edist_smul_left [SMul M X] [IsIsometricSMul M X] (c : M) (x y : X) :
+theorem eDist_smul_left [SMul M X] [IsIsometricSMul M X] (c : M) (x y : X) :
     eDist (c • x) (c • y) = eDist x y :=
   isometry_smul X c x y
 
@@ -85,7 +85,7 @@ theorem isometry_mul_left [Mul M] [PseudoEMetricSpace M] [IsIsometricSMul M M] (
   isometry_smul M a
 
 @[to_additive (attr := simp)]
-theorem edist_mul_left [Mul M] [PseudoEMetricSpace M] [IsIsometricSMul M M] (a b c : M) :
+theorem eDist_mul_left [Mul M] [PseudoEMetricSpace M] [IsIsometricSMul M M] (a b c : M) :
     eDist (a * b) (a * c) = eDist b c :=
   isometry_mul_left a b c
 
@@ -95,34 +95,34 @@ theorem isometry_mul_right [Mul M] [PseudoEMetricSpace M] [IsIsometricSMul Mᵐ�
   isometry_smul M (MulOpposite.op a)
 
 @[to_additive (attr := simp)]
-theorem edist_mul_right [Mul M] [PseudoEMetricSpace M] [IsIsometricSMul Mᵐᵒᵖ M] (a b c : M) :
+theorem eDist_mul_right [Mul M] [PseudoEMetricSpace M] [IsIsometricSMul Mᵐᵒᵖ M] (a b c : M) :
     eDist (a * c) (b * c) = eDist a b :=
   isometry_mul_right c a b
 
 @[to_additive (attr := simp)]
-theorem edist_div_right [DivInvMonoid M] [PseudoEMetricSpace M] [IsIsometricSMul Mᵐᵒᵖ M]
+theorem eDist_div_right [DivInvMonoid M] [PseudoEMetricSpace M] [IsIsometricSMul Mᵐᵒᵖ M]
     (a b c : M) : eDist (a / c) (b / c) = eDist a b := by
-  simp only [div_eq_mul_inv, edist_mul_right]
+  simp only [div_eq_mul_inv, eDist_mul_right]
 
 @[to_additive (attr := simp)]
-theorem edist_inv_inv [PseudoEMetricSpace G] [IsIsometricSMul G G] [IsIsometricSMul Gᵐᵒᵖ G]
+theorem eDist_inv_inv [PseudoEMetricSpace G] [IsIsometricSMul G G] [IsIsometricSMul Gᵐᵒᵖ G]
     (a b : G) : eDist a⁻¹ b⁻¹ = eDist a b := by
-  rw [← edist_mul_left a, ← edist_mul_right _ _ b, mul_inv_cancel, one_mul, inv_mul_cancel_right,
-    edist_comm]
+  rw [← eDist_mul_left a, ← eDist_mul_right _ _ b, mul_inv_cancel, one_mul, inv_mul_cancel_right,
+    eDist_comm]
 
 @[to_additive]
 theorem isometry_inv [PseudoEMetricSpace G] [IsIsometricSMul G G] [IsIsometricSMul Gᵐᵒᵖ G] :
     Isometry (Inv.inv : G → G) :=
-  edist_inv_inv
+  eDist_inv_inv
 
 @[to_additive]
-theorem edist_inv [PseudoEMetricSpace G] [IsIsometricSMul G G] [IsIsometricSMul Gᵐᵒᵖ G]
-    (x y : G) : eDist x⁻¹ y = eDist x y⁻¹ := by rw [← edist_inv_inv, inv_inv]
+theorem eDist_inv [PseudoEMetricSpace G] [IsIsometricSMul G G] [IsIsometricSMul Gᵐᵒᵖ G]
+    (x y : G) : eDist x⁻¹ y = eDist x y⁻¹ := by rw [← eDist_inv_inv, inv_inv]
 
 @[to_additive (attr := simp)]
-theorem edist_div_left [PseudoEMetricSpace G] [IsIsometricSMul G G] [IsIsometricSMul Gᵐᵒᵖ G]
+theorem eDist_div_left [PseudoEMetricSpace G] [IsIsometricSMul G G] [IsIsometricSMul Gᵐᵒᵖ G]
     (a b c : G) : eDist (a / b) (a / c) = eDist b c := by
-  rw [div_eq_mul_inv, div_eq_mul_inv, edist_mul_left, edist_inv_inv]
+  rw [div_eq_mul_inv, div_eq_mul_inv, eDist_mul_left, eDist_inv_inv]
 
 namespace IsometryEquiv
 
@@ -145,7 +145,7 @@ variable [PseudoEMetricSpace G]
 @[to_additive (attr := simps! apply toEquiv) /-- Addition `y ↦ x + y` as an `IsometryEquiv`. -/]
 def mulLeft [IsIsometricSMul G G] (c : G) : G ≃ᵢ G where
   toEquiv := Equiv.mulLeft c
-  isometry_toFun := edist_mul_left c
+  isometry_toFun := eDist_mul_left c
 
 @[to_additive (attr := simp)]
 theorem mulLeft_symm [IsIsometricSMul G G] (x : G) :
@@ -156,7 +156,7 @@ theorem mulLeft_symm [IsIsometricSMul G G] (x : G) :
 @[to_additive (attr := simps! apply toEquiv) /-- Addition `y ↦ y + x` as an `IsometryEquiv`. -/]
 def mulRight [IsIsometricSMul Gᵐᵒᵖ G] (c : G) : G ≃ᵢ G where
   toEquiv := Equiv.mulRight c
-  isometry_toFun a b := edist_mul_right a b c
+  isometry_toFun a b := eDist_mul_right a b c
 
 @[to_additive (attr := simp)]
 theorem mulRight_symm [IsIsometricSMul Gᵐᵒᵖ G] (x : G) : (mulRight x).symm = mulRight x⁻¹ :=
@@ -166,7 +166,7 @@ theorem mulRight_symm [IsIsometricSMul Gᵐᵒᵖ G] (x : G) : (mulRight x).symm
 @[to_additive (attr := simps! apply toEquiv) /-- Subtraction `y ↦ y - x` as an `IsometryEquiv`. -/]
 def divRight [IsIsometricSMul Gᵐᵒᵖ G] (c : G) : G ≃ᵢ G where
   toEquiv := Equiv.divRight c
-  isometry_toFun a b := edist_div_right a b c
+  isometry_toFun a b := eDist_div_right a b c
 
 @[to_additive (attr := simp)]
 theorem divRight_symm [IsIsometricSMul Gᵐᵒᵖ G] (c : G) : (divRight c).symm = mulRight c :=
@@ -179,7 +179,7 @@ variable [IsIsometricSMul G G] [IsIsometricSMul Gᵐᵒᵖ G]
   /-- Subtraction `y ↦ x - y` as an `IsometryEquiv`. -/]
 def divLeft (c : G) : G ≃ᵢ G where
   toEquiv := Equiv.divLeft c
-  isometry_toFun := edist_div_left c
+  isometry_toFun := eDist_div_left c
 
 variable (G)
 
@@ -187,7 +187,7 @@ variable (G)
 @[to_additive (attr := simps! apply toEquiv) /-- Negation `x ↦ -x` as an `IsometryEquiv`. -/]
 def inv : G ≃ᵢ G where
   toEquiv := Equiv.inv G
-  isometry_toFun := edist_inv_inv
+  isometry_toFun := eDist_inv_inv
 
 @[to_additive (attr := simp)] theorem inv_symm : (inv G).symm = inv G := rfl
 
@@ -416,7 +416,7 @@ instance Units.isIsometricSMul [Monoid M] : IsIsometricSMul Mˣ X :=
 
 @[to_additive]
 instance : IsIsometricSMul M Xᵐᵒᵖ :=
-  ⟨fun c x y => by simpa only using! edist_smul_left c x.unop y.unop⟩
+  ⟨fun c x y => by simpa only using! eDist_smul_left c x.unop y.unop⟩
 
 @[to_additive]
 instance ULift.isIsometricSMul : IsIsometricSMul (ULift M) X :=
@@ -424,7 +424,7 @@ instance ULift.isIsometricSMul : IsIsometricSMul (ULift M) X :=
 
 @[to_additive]
 instance ULift.isIsometricSMul' : IsIsometricSMul M (ULift X) :=
-  ⟨fun c x y => by simpa only using! edist_smul_left c x.down y.down⟩
+  ⟨fun c x y => by simpa only using! eDist_smul_left c x.down y.down⟩
 
 @[to_additive]
 instance {ι} {X : ι → Type*} [Fintype ι] [∀ i, SMul M (X i)] [∀ i, PseudoEMetricSpace (X i)]
@@ -448,11 +448,11 @@ instance Additive.isIsIsometricVAdd : IsIsometricVAdd (Additive M) X :=
 
 instance Additive.isIsIsometricVAdd' [Mul M] [PseudoEMetricSpace M] [IsIsometricSMul M M] :
     IsIsometricVAdd (Additive M) (Additive M) :=
-  ⟨fun c x y => edist_smul_left c.toMul x.toMul y.toMul⟩
+  ⟨fun c x y => eDist_smul_left c.toMul x.toMul y.toMul⟩
 
 instance Additive.isIsIsometricVAdd'' [Mul M] [PseudoEMetricSpace M] [IsIsometricSMul Mᵐᵒᵖ M] :
     IsIsometricVAdd (Additive M)ᵃᵒᵖ (Additive M) :=
-  ⟨fun c x y => edist_smul_left (MulOpposite.op c.unop.toMul) x.toMul y.toMul⟩
+  ⟨fun c x y => eDist_smul_left (MulOpposite.op c.unop.toMul) x.toMul y.toMul⟩
 
 instance Multiplicative.isIsometricSMul {M X} [VAdd M X] [PseudoEMetricSpace X]
     [IsIsometricVAdd M X] : IsIsometricSMul (Multiplicative M) X :=
@@ -460,10 +460,10 @@ instance Multiplicative.isIsometricSMul {M X} [VAdd M X] [PseudoEMetricSpace X]
 
 instance Multiplicative.isIsometricSMul' [Add M] [PseudoEMetricSpace M] [IsIsometricVAdd M M] :
     IsIsometricSMul (Multiplicative M) (Multiplicative M) :=
-  ⟨fun c x y => edist_vadd_left c.toAdd x.toAdd y.toAdd⟩
+  ⟨fun c x y => eDist_vadd_left c.toAdd x.toAdd y.toAdd⟩
 
 instance Multiplicative.isIsIsometricVAdd'' [Add M] [PseudoEMetricSpace M]
     [IsIsometricVAdd Mᵃᵒᵖ M] : IsIsometricSMul (Multiplicative M)ᵐᵒᵖ (Multiplicative M) :=
-  ⟨fun c x y => edist_vadd_left (AddOpposite.op c.unop.toAdd) x.toAdd y.toAdd⟩
+  ⟨fun c x y => eDist_vadd_left (AddOpposite.op c.unop.toAdd) x.toAdd y.toAdd⟩
 
 end Instances

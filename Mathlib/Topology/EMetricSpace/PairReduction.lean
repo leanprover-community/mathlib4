@@ -79,7 +79,7 @@ To prove (1) we have that
 (see `card_pairSet_le`).
 
 (2) follows easily from the definition of K and the fact that `rᵢ ≤ n` for each `i`
-(see `edist_le_of_mem_pairSet` and `radius_logSizeBallSeq_le`)
+(see `eDist_le_of_mem_pairSet` and `radius_logSizeBallSeq_le`)
 
 Finally we prove (3). Let `s, t ∈ J` such that `d(s, t) ≤ c`. Let `i` be the largest integer
 such that both `s, t ∈ Vᵢ`. WLOG suppose `s ∉ Vᵢ₊₁` so that in particular `s ∈ Bᵢ` which means
@@ -377,7 +377,7 @@ lemma card_pairSet_le (ha : 1 < a) : #(pairSet J a c) ≤ a * #J := by
   intro i _
   exact (Finset.filter_subset _ _).trans (finset_logSizeBallSeq_subset_logSizeBallSeq_init _ _)
 
-lemma edist_le_of_mem_pairSet (ha : 1 < a) (hJ_card : #J ≤ a ^ n) {s t : T}
+lemma eDist_le_of_mem_pairSet (ha : 1 < a) (hJ_card : #J ≤ a ^ n) {s t : T}
     (h : (s, t) ∈ pairSet J a c) : eDist s t ≤ n * c := by
   obtain ⟨i, hiJ, h'⟩ : ∃ i < #J, (s, t) ∈ pairSetSeq J a c i := by simpa [pairSet] using h
   have hJ : J.Nonempty := Finset.card_pos.mp (Nat.zero_lt_of_lt hiJ)
@@ -422,8 +422,8 @@ lemma iSup_edist_pairSet {E : Type*} [TopologicalSpace E] [WeakPseudoEMetricSpac
       simp only [Decidable.not_not] at h
       have hP := Nat.findGreatest_is_greatest (lt_add_one l) (Nat.add_one_le_of_lt hl)
       simpa [P, h] using hP
-    have hts : eDist t s ≤ c := by rw [edist_comm]; exact hst
-    rw [edist_comm]
+    have hts : eDist t s ≤ c := by rw [eDist_comm]; exact hst
+    rw [eDist_comm]
     have hP : P = (fun l ↦
       t ∈ (logSizeBallSeq J hJ a c l).finset ∧ s ∈ (logSizeBallSeq J hJ a c l).finset) := by
         ext; simp [P, and_comm]
@@ -436,7 +436,7 @@ lemma iSup_edist_pairSet {E : Type*} [TopologicalSpace E] [WeakPseudoEMetricSpac
     grw [h, tsub_le_self]
   have htB : t ∈ (logSizeBallSeq J hJ a c l).ball c := by
     simp only [logSizeBallStruct.ball, Finset.mem_filter, htV, true_and]
-    apply le_trans (edist_triangle _ s _)
+    apply le_trans (eDist_triangle _ s _)
     apply le_of_le_of_eq (add_le_add h hst)
     nth_rw 3 [← one_mul c]
     rw [← add_mul]
@@ -460,8 +460,8 @@ lemma iSup_edist_pairSet {E : Type*} [TopologicalSpace E] [WeakPseudoEMetricSpac
     refine Finset.mem_range.mpr <| lt_of_le_of_lt (Nat.findGreatest_le (#J - 1)) ?_
     exact Nat.sub_lt (Finset.card_pos.mpr hJ) zero_lt_one
   rw [two_mul]
-  apply le_trans (edist_triangle _ (f (logSizeBallSeq J hJ a c l).point) _)
-  rw [edist_comm]
+  apply le_trans (eDist_triangle _ (f (logSizeBallSeq J hJ a c l).point) _)
+  rw [eDist_comm]
   apply add_le_add (sup_bound hsP) (sup_bound htP)
 
 end PairReduction
@@ -497,4 +497,4 @@ theorem EMetric.pair_reduction (hJ_card : #J ≤ a ^ n) (c : ℝ≥0∞) (E : Ty
       · rwa [Finset.one_le_card, ← Finset.nonempty_coe_sort]
     simp_all
   · exact ⟨pairSet J a c, pairSet_subset, card_pairSet_le ha1,
-      fun _ _ ↦ edist_le_of_mem_pairSet ha1 hJ_card, iSup_edist_pairSet ha1⟩
+      fun _ _ ↦ eDist_le_of_mem_pairSet ha1 hJ_card, iSup_edist_pairSet ha1⟩

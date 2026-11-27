@@ -275,19 +275,19 @@ variable [EDist X]
 instance : EDist (Snowflaking X α hα₀ hα₁) where
   eDist x y := eDist x.ofSnowflaking y.ofSnowflaking ^ α
 
-theorem edist_def (x y : Snowflaking X α hα₀ hα₁) :
+theorem eDist_def (x y : Snowflaking X α hα₀ hα₁) :
     eDist x y = eDist x.ofSnowflaking y.ofSnowflaking ^ α :=
   rfl
 
 @[simp]
-theorem edist_toSnowflaking_toSnowflaking (x y : X) :
+theorem eDist_toSnowflaking_toSnowflaking (x y : X) :
     eDist (toSnowflaking x : Snowflaking X α hα₀ hα₁) (toSnowflaking y) = eDist x y ^ α :=
   rfl
 
 @[simp]
-theorem edist_ofSnowflaking_ofSnowflaking (x y : Snowflaking X α hα₀ hα₁) :
+theorem eDist_ofSnowflaking_ofSnowflaking (x y : Snowflaking X α hα₀ hα₁) :
     eDist x.ofSnowflaking y.ofSnowflaking = eDist x y ^ α⁻¹ := by
-  rw [edist_def, ENNReal.rpow_rpow_inv hα₀.ne']
+  rw [eDist_def, ENNReal.rpow_rpow_inv hα₀.ne']
 
 end EDist
 
@@ -296,11 +296,11 @@ section PseudoEMetricSpace
 variable [PseudoEMetricSpace X]
 
 instance : PseudoEMetricSpace (Snowflaking X α hα₀ hα₁) where
-  edist_self x := by simp [edist_def, hα₀]
-  edist_comm x y := by rw [edist_def, edist_def, edist_comm]
-  edist_triangle x y z := by
-    simp only [edist_def]
-    grw [edist_triangle x.ofSnowflaking y.ofSnowflaking z.ofSnowflaking,
+  eDist_self x := by simp [eDist_def, hα₀]
+  eDist_comm x y := by rw [eDist_def, eDist_def, eDist_comm]
+  eDist_triangle x y z := by
+    simp only [eDist_def]
+    grw [eDist_triangle x.ofSnowflaking y.ofSnowflaking z.ofSnowflaking,
       ENNReal.rpow_add_le_add_rpow _ _ hα₀.le hα₁]
   toUniformSpace := inferInstance
   uniformity_eDist := by
@@ -364,7 +364,7 @@ theorem ediam_image_ofSnowflaking (s : Set (Snowflaking X α hα₀ hα₁)) :
     ediam (ofSnowflaking '' s) = ediam s ^ α⁻¹ := by
   refine eq_of_forall_ge_iff fun c ↦ ?_
   simp only [ENNReal.rpow_inv_le_iff hα₀, ediam_le_iff, Set.forall_mem_image,
-    edist_ofSnowflaking_ofSnowflaking]
+    eDist_ofSnowflaking_ofSnowflaking]
 
 @[simp]
 theorem ediam_preimage_toSnowflaking (s : Set (Snowflaking X α hα₀ hα₁)) :
@@ -414,8 +414,8 @@ instance : PseudoMetricSpace (Snowflaking X α hα₀ hα₁) :=
       (by intro x y; cases x; cases y; rw [dist_toSnowflaking_toSnowflaking]; positivity)
       (by
         intro x y; cases x; cases y
-        rw [edist_toSnowflaking_toSnowflaking, dist_toSnowflaking_toSnowflaking,
-          ← ENNReal.ofReal_rpow_of_nonneg, ← edist_dist] <;> positivity)
+        rw [eDist_toSnowflaking_toSnowflaking, dist_toSnowflaking_toSnowflaking,
+          ← ENNReal.ofReal_rpow_of_nonneg, ← eDist_dist] <;> positivity)
   aux.replaceBornology fun s ↦ by
     rw [← isBounded_preimage_toSnowflaking_iff, Metric.isBounded_iff, Metric.isBounded_iff]
     constructor

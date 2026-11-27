@@ -194,7 +194,7 @@ theorem hausdorffDist_coe : Metric.hausdorffDist (K : Set V) L = dist K L :=
 
 @[simp, norm_cast]
 theorem hausdorffEDist_coe : Metric.hausdorffEDist (K : Set V) L = eDist K L := by
-  rw [edist_dist]
+  rw [eDist_dist]
   exact (ENNReal.ofReal_toReal hausdorffEDist_ne_top).symm
 
 open Filter

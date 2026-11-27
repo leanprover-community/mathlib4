@@ -340,12 +340,12 @@ theorem packingNumber_two_mul_le_externalCoveringNumber (ε : ℝ≥0) (A : Set 
   apply Set.Pairwise.eq hD_separated x.property y.property
   simp only [not_lt]
   calc
-    eDist (x : X) y ≤ eDist (x : X) (f x) + eDist (f x : X) y := edist_triangle ..
+    eDist (x : X) y ≤ eDist (x : X) (f x) + eDist (f x : X) y := eDist_triangle ..
     _ ≤ 2 * ε := by
       rw [two_mul]
       gcongr
       · exact hf' x
-      · simpa [edist_comm, hxy] using hf' y
+      · simpa [eDist_comm, hxy] using hf' y
 
 theorem coveringNumber_le_packingNumber (ε : ℝ≥0) (A : Set X) :
     coveringNumber ε A ≤ packingNumber ε A := by

@@ -94,16 +94,16 @@ protected theorem sub_left {f : α → E} {s : Set α} (hf : LocallyBoundedVaria
   rw [← variationOnFromTo.add hf ha hc hb, add_sub_cancel_right]
 
 variable {f s} in
-protected theorem edist_zero_of_eq_zero (hf : LocallyBoundedVariationOn f s)
+protected theorem eDist_zero_of_eq_zero (hf : LocallyBoundedVariationOn f s)
     {a b : α} (ha : a ∈ s) (hb : b ∈ s) (h : variationOnFromTo f s a b = 0) :
     eDist (f a) (f b) = 0 := by
   wlog h' : a ≤ b
-  · rw [edist_comm]
+  · rw [eDist_comm]
     apply this hf hb ha _ (le_of_not_ge h')
     rw [variationOnFromTo.eq_neg_swap, h, neg_zero]
   · rw [← nonpos_iff_eq_zero, ← ENNReal.ofReal_zero, ← h, variationOnFromTo.eq_of_le f s h',
       ENNReal.ofReal_toReal (hf a b ha hb)]
-    apply eVariationOn.edist_le
+    apply eVariationOn.eDist_le
     exacts [⟨ha, ⟨le_rfl, h'⟩⟩, ⟨hb, ⟨h', le_rfl⟩⟩]
 
 protected theorem eq_left_iff {f : α → E} {s : Set α} (hf : LocallyBoundedVariationOn f s)
@@ -157,7 +157,7 @@ lemma abs_sub_le_sub_of_le {f : α → ℝ} {s : Set α} (hf : LocallyBoundedVar
   _ ≤ variationOnFromTo f s b c := by
     rw [variationOnFromTo.eq_of_le f s bc, dist_eDist]
     apply ENNReal.toReal_mono (hf b c bs cs)
-    apply eVariationOn.edist_le f
+    apply eVariationOn.eDist_le f
     exacts [⟨bs, le_rfl, bc⟩, ⟨cs, bc, le_rfl⟩]
   _ = variationOnFromTo f s a c - variationOnFromTo f s a b := by
     rw [← variationOnFromTo.add hf as bs cs, add_sub_cancel_left]
@@ -291,7 +291,7 @@ theorem continuousWithinAt_variationOnFromTo_inter_Ici_iff (hg : BoundedVariatio
   filter_upwards [self_mem_nhdsWithin] with y hy
   grw [eDist_eq_eNorm_sub, variationOnFromTo.sub_right hg.locallyBoundedVariationOn as hy.1 xs,
     variationOnFromTo.eq_of_le _ _ hy.2,
-    eVariationOn.edist_le (s := s ∩ Icc x y) _ (by grind) (by grind)]
+    eVariationOn.eDist_le (s := s ∩ Icc x y) _ (by grind) (by grind)]
   have : eVariationOn g (s ∩ Icc x y) ≠ ∞ := hg.mono inter_subset_left
   simp [this]
 
@@ -333,7 +333,7 @@ theorem continuousWithinAt_variationOnFromTo_inter_Iic_iff (hg : BoundedVariatio
   filter_upwards [self_mem_nhdsWithin] with y hy
   grw [eDist_eq_eNorm_sub, variationOnFromTo.sub_right hg.locallyBoundedVariationOn as hy.1 xs,
     variationOnFromTo.eq_of_ge _ _ hy.2, eNorm_neg,
-    eVariationOn.edist_le (s := s ∩ Icc y x) _ (by grind) (by grind)]
+    eVariationOn.eDist_le (s := s ∩ Icc y x) _ (by grind) (by grind)]
   have : eVariationOn g (s ∩ Icc y x) ≠ ∞ := hg.mono inter_subset_left
   simp [this]
 

@@ -91,7 +91,7 @@ lemma egirth_le_two_mul_ediam_add_one (h : ¬ G.IsAcyclic) : G.egirth ≤ 2 * G.
     have := hp.exists_isCycle_length_le_add_of_ne (hw.isPath_take (by lia)) (by grind [take_length])
     grind [ENat.natCast_le_natCast, take_length, IsCycle.egirth_le_length]
   have h2 : (w.length : ℕ∞) ≤ 2 * (w.length / 2 :) + 1 := by norm_cast; lia
-  grw [hwl, h2, half_g_le_eDist, natCast_dist_le_eDist, edist_le_ediam]
+  grw [hwl, h2, half_g_le_eDist, natCast_dist_le_eDist, eDist_le_ediam]
 
 @[gcongr only]
 lemma IsContained.egirth_le (h : G ⊑ G') : G'.egirth ≤ G.egirth := by

@@ -441,7 +441,7 @@ theorem nnDist_one_right (a : E) : nnDist a 1 = ‖a‖₊ := by
 alias nndist_one_right := nnDist_one_right
 
 @[to_additive (attr := simp)]
-lemma edist_one_right (a : E) : eDist a 1 = ‖a‖ₑ := by simp [eDist_nnDist, nnDist_one_right, eNorm]
+lemma eDist_one_right (a : E) : eDist a 1 = ‖a‖ₑ := by simp [eDist_nnDist, nnDist_one_right, eNorm]
 
 @[to_additive (attr := simp) nnNorm_zero]
 theorem nnNorm_one' : ‖(1 : E)‖₊ = 0 := NNReal.eq norm_one'
@@ -511,7 +511,7 @@ theorem nnDist_one_left (a : E) : nnDist 1 a = ‖a‖₊ := by simp [nnDist_eq_
 alias nndist_one_left := nnDist_one_left
 
 @[to_additive (attr := simp)]
-theorem edist_one_left (a : E) : eDist 1 a = ‖a‖₊ := by
+theorem eDist_one_left (a : E) : eDist 1 a = ‖a‖₊ := by
   rw [eDist_nnDist, nnDist_one_left]
 
 open scoped symmDiff in
@@ -617,7 +617,7 @@ alias toReal_coe_nnnorm' := toReal_coe_nnNorm'
 
 open scoped symmDiff in
 @[to_additive]
-theorem edist_mulIndicator (s t : Set α) (f : α → E) (x : α) :
+theorem eDist_mulIndicator (s t : Set α) (f : α → E) (x : α) :
     eDist (s.mulIndicator f x) (t.mulIndicator f x) = ‖(s ∆ t).mulIndicator f x‖₊ := by
   rw [eDist_nnDist, nnDist_mulIndicator]
 
@@ -726,10 +726,10 @@ alias enorm_inv' := eNorm_inv'
 
 @[to_additive]
 theorem eDist_eq_eNorm_inv_mul (a b : E) : eDist a b = ‖a⁻¹ * b‖ₑ := by
-  rw [edist_dist, dist_eq_norm_inv_mul, ofReal_norm']
+  rw [eDist_dist, dist_eq_norm_inv_mul, ofReal_norm']
 
 @[to_additive (attr := deprecated (since := "2026-11-06"))]
-alias edist_eq_enorm_inv_mul := eDist_eq_eNorm_inv_mul
+alias eDist_eq_enorm_inv_mul := eDist_eq_eNorm_inv_mul
 
 @[to_additive]
 lemma eNorm_div_rev {E : Type*} [SeminormedGroup E] (a b : E) : ‖a / b‖ₑ = ‖b / a‖ₑ := by
@@ -739,7 +739,7 @@ lemma eNorm_div_rev {E : Type*} [SeminormedGroup E] (a b : E) : ‖a / b‖ₑ =
 
 @[to_additive]
 theorem mem_eball_one_iff {r : ℝ≥0∞} : a ∈ eball 1 r ↔ ‖a‖ₑ < r := by
-  rw [Metric.mem_eball, edist_one_right]
+  rw [Metric.mem_eball, eDist_one_right]
 
 end ENorm
 
@@ -919,10 +919,10 @@ alias nndist_eq_nnnorm := nnDist_eq_nnNorm
 
 @[to_additive]
 theorem eDist_eq_eNorm_div (a b : E) : eDist a b = ‖a / b‖ₑ := by
-  rw [edist_dist, dist_eq_norm_div, ofReal_norm']
+  rw [eDist_dist, dist_eq_norm_div, ofReal_norm']
 
 @[to_additive (attr := deprecated (since := "2026-11-06"))]
-alias edist_eq_enorm_div := eDist_eq_eNorm_div
+alias eDist_eq_enorm_div := eDist_eq_eNorm_div
 
 @[to_additive]
 theorem dist_inv (x y : E) : dist x⁻¹ y = dist x y⁻¹ := by

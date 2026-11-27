@@ -61,12 +61,12 @@ lemma IsSeparated.subset (hst : s ⊆ t) (hs : IsSeparated ε t) : IsSeparated �
 
 lemma isSeparated_insert :
     IsSeparated ε (insert x s) ↔ IsSeparated ε s ∧ ∀ y ∈ s, x ≠ y → ε < eDist x y :=
-  have : Std.Symm (α := X) (ε < eDist · ·) := by simp [symm_def, edist_comm]
+  have : Std.Symm (α := X) (ε < eDist · ·) := by simp [symm_def, eDist_comm]
   pairwise_insert_of_symm
 
 lemma isSeparated_insert_of_notMem (hx : x ∉ s) :
     IsSeparated ε (insert x s) ↔ IsSeparated ε s ∧ ∀ y ∈ s, ε < eDist x y :=
-  have : Std.Symm (α := X) (ε < eDist · ·) := by simp [symm_def, edist_comm]
+  have : Std.Symm (α := X) (ε < eDist · ·) := by simp [symm_def, eDist_comm]
   pairwise_insert_of_symm_of_notMem hx
 
 protected lemma IsSeparated.insert (hs : IsSeparated ε s) (h : ∀ y ∈ s, x ≠ y → ε < eDist x y) :
@@ -103,7 +103,7 @@ namespace AreSeparated
 @[symm]
 theorem symm (h : AreSeparated s t) : AreSeparated t s :=
   let ⟨r, r0, hr⟩ := h
-  ⟨r, r0, fun y hy x hx => edist_comm x y ▸ hr x hx y hy⟩
+  ⟨r, r0, fun y hy x hx => eDist_comm x y ▸ hr x hx y hy⟩
 
 theorem comm : AreSeparated s t ↔ AreSeparated t s := ⟨symm, symm⟩
 

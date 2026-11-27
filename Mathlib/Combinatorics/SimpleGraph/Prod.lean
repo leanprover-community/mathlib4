@@ -266,12 +266,12 @@ lemma reachable_boxProd {x y : α × β} :
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-lemma edist_boxProd (x y : α × β) :
+lemma eDist_boxProd (x y : α × β) :
     (G □ H).eDist x y = G.eDist x.1 y.1 + H.eDist x.2 y.2 := by
   classical
   -- The case `(G □ H).eDist x y = ⊤` is used twice, so better to factor it out.
   have top_case : (G □ H).eDist x y = ⊤ ↔ G.eDist x.1 y.1 = ⊤ ∨ H.eDist x.2 y.2 = ⊤ := by
-    simp_rw [← not_ne_iff, edist_ne_top_iff_reachable, reachable_boxProd, not_and_or]
+    simp_rw [← not_ne_iff, eDist_ne_top_iff_reachable, reachable_boxProd, not_and_or]
   by_cases h : (G □ H).eDist x y = ⊤
   · rw [top_case] at h
     aesop
@@ -282,11 +282,11 @@ lemma edist_boxProd (x y : α × β) :
     have w_len : w_app.length = wG.length + wH.length := by
       unfold w_app Walk.boxProdLeft Walk.boxProdRight; simp
     refine le_antisymm ?_ ?_
-    · calc (G □ H).eDist x y ≤ w_app.length := by exact edist_le _
+    · calc (G □ H).eDist x y ≤ w_app.length := by exact eDist_le _
           _ = wG.length + wH.length := mod_cast w_len
           _ = G.eDist x.1 y.1 + H.eDist x.2 y.2 := by simp only [hwG, hwH]
     · have ⟨w, hw⟩ := exists_walk_of_edist_ne_top h
       rw [← hw, Walk.length_boxProd]
-      exact add_le_add (edist_le w.ofBoxProdLeft) (edist_le w.ofBoxProdRight)
+      exact add_le_add (eDist_le w.ofBoxProdLeft) (eDist_le w.ofBoxProdRight)
 
 end SimpleGraph

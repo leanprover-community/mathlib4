@@ -262,7 +262,7 @@ theorem nnDist_of_re_eq {z w : ℂ} (h : z.re = w.re) : nnDist z w = nnDist z.im
 
 @[deprecated (since := "2026-11-07")] alias nndist_of_re_eq := nnDist_of_re_eq
 
-theorem edist_of_re_eq {z w : ℂ} (h : z.re = w.re) : eDist z w = eDist z.im w.im := by
+theorem eDist_of_re_eq {z w : ℂ} (h : z.re = w.re) : eDist z w = eDist z.im w.im := by
   rw [eDist_nnDist, eDist_nnDist, nnDist_of_re_eq h]
 
 theorem dist_of_im_eq {z w : ℂ} (h : z.im = w.im) : dist z w = dist z.re w.re := by
@@ -273,7 +273,7 @@ theorem nnDist_of_im_eq {z w : ℂ} (h : z.im = w.im) : nnDist z w = nnDist z.re
 
 @[deprecated (since := "2026-11-07")] alias nndist_of_im_eq := nnDist_of_im_eq
 
-theorem edist_of_im_eq {z w : ℂ} (h : z.im = w.im) : eDist z w = eDist z.re w.re := by
+theorem eDist_of_im_eq {z w : ℂ} (h : z.im = w.im) : eDist z w = eDist z.re w.re := by
   rw [eDist_nnDist, eDist_nnDist, nnDist_of_im_eq h]
 
 theorem dist_conj_self (z : ℂ) : dist (conj z) z = 2 * |z.im| := by

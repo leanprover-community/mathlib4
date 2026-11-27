@@ -67,7 +67,7 @@ structure Dilation where
 
   Do NOT use directly. Use the coercion instead. -/
   toFun : α → β
-  edist_eq' : ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ x y : α, eDist (toFun x) (toFun y) = r * eDist x y
+  eDist_eq' : ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ x y : α, eDist (toFun x) (toFun y) = r * eDist x y
 
 @[inherit_doc] infixl:25 " →ᵈ " => Dilation
 
@@ -75,7 +75,7 @@ structure Dilation where
 You should extend this typeclass when you extend `Dilation`. -/
 class DilationClass (F : Type*) (α β : outParam Type*) [PseudoEMetricSpace α] [PseudoEMetricSpace β]
     [FunLike F α β] : Prop where
-  edist_eq' : ∀ f : F, ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ x y : α, eDist (f x) (f y) = r * eDist x y
+  eDist_eq' : ∀ f : F, ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ x y : α, eDist (f x) (f y) = r * eDist x y
 
 end Defs
 
@@ -93,7 +93,7 @@ instance funLike : FunLike (α →ᵈ β) α β where
   coe_injective f g h := by cases f; cases g; congr
 
 instance toDilationClass : DilationClass (α →ᵈ β) α β where
-  edist_eq' f := edist_eq' f
+  eDist_eq' f := eDist_eq' f
 
 @[simp]
 theorem toFun_eq_coe {f : α →ᵈ β} : f.toFun = (f : α → β) :=
@@ -122,7 +122,7 @@ equalities. -/
 @[simps -fullyApplied]
 protected def copy (f : α →ᵈ β) (f' : α → β) (h : f' = ⇑f) : α →ᵈ β where
   toFun := f'
-  edist_eq' := h.symm ▸ f.edist_eq'
+  eDist_eq' := h.symm ▸ f.eDist_eq'
 
 theorem copy_eq_self (f : α →ᵈ β) {f' : α → β} (h : f' = f) : f.copy f' h = f :=
   DFunLike.ext' h
@@ -133,7 +133,7 @@ open scoped Classical in
 /-- The ratio of a dilation `f`. If the ratio is undefined (i.e., the distance between any two
 points in `α` is either zero or infinity), then we choose one as the ratio. -/
 def ratio [DilationClass F α β] (f : F) : ℝ≥0 :=
-  if ∀ x y : α, eDist x y = 0 ∨ eDist x y = ⊤ then 1 else (DilationClass.edist_eq' f).choose
+  if ∀ x y : α, eDist x y = 0 ∨ eDist x y = ⊤ then 1 else (DilationClass.eDist_eq' f).choose
 
 theorem ratio_of_trivial [DilationClass F α β] (f : F)
     (h : ∀ x y : α, eDist x y = 0 ∨ eDist x y = ∞) : ratio f = 1 :=
@@ -146,27 +146,27 @@ theorem ratio_of_subsingleton [Subsingleton α] [DilationClass F α β] (f : F) 
 theorem ratio_ne_zero [DilationClass F α β] (f : F) : ratio f ≠ 0 := by
   rw [ratio]; split_ifs
   · exact one_ne_zero
-  exact (DilationClass.edist_eq' f).choose_spec.1
+  exact (DilationClass.eDist_eq' f).choose_spec.1
 
 theorem ratio_pos [DilationClass F α β] (f : F) : 0 < ratio f :=
   (ratio_ne_zero f).bot_lt
 
 @[simp]
-theorem edist_eq [DilationClass F α β] (f : F) (x y : α) :
+theorem eDist_eq [DilationClass F α β] (f : F) (x y : α) :
     eDist (f x) (f y) = ratio f * eDist x y := by
   rw [ratio]; split_ifs with key
-  · rcases DilationClass.edist_eq' f with ⟨r, hne, hr⟩
+  · rcases DilationClass.eDist_eq' f with ⟨r, hne, hr⟩
     replace hr := hr x y
     rcases key x y with h | h
     · simp only [hr, h, mul_zero]
     · simp [hr, h, hne]
-  exact (DilationClass.edist_eq' f).choose_spec.2 x y
+  exact (DilationClass.eDist_eq' f).choose_spec.2 x y
 
 @[simp]
 theorem nnDist_eq {α β F : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β] [FunLike F α β]
     [DilationClass F α β] (f : F) (x y : α) :
     nnDist (f x) (f y) = ratio f * nnDist x y := by
-  simp only [← ENNReal.coe_inj, ← eDist_nnDist, ENNReal.coe_mul, edist_eq]
+  simp only [← ENNReal.coe_inj, ← eDist_nnDist, ENNReal.coe_mul, eDist_eq]
 
 @[deprecated (since := "2026-11-07")] alias nndist_eq := nnDist_eq
 
@@ -180,14 +180,14 @@ theorem dist_eq {α β F : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β] 
 `dist` and `nnDist` versions below -/
 theorem ratio_unique [DilationClass F α β] {f : F} {x y : α} {r : ℝ≥0} (h₀ : eDist x y ≠ 0)
     (htop : eDist x y ≠ ⊤) (hr : eDist (f x) (f y) = r * eDist x y) : r = ratio f := by
-  simpa only [hr, ENNReal.mul_left_inj h₀ htop, ENNReal.coe_inj] using edist_eq f x y
+  simpa only [hr, ENNReal.mul_left_inj h₀ htop, ENNReal.coe_inj] using eDist_eq f x y
 
 /-- The `ratio` is equal to the distance ratio for any two points
 with nonzero finite distance; `nnDist` version -/
 theorem ratio_unique_of_nnDist_ne_zero {α β F : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β]
     [FunLike F α β] [DilationClass F α β] {f : F} {x y : α} {r : ℝ≥0} (hxy : nnDist x y ≠ 0)
     (hr : nnDist (f x) (f y) = r * nnDist x y) : r = ratio f :=
-  ratio_unique (by rwa [eDist_nnDist, ENNReal.coe_ne_zero]) (edist_ne_top x y)
+  ratio_unique (by rwa [eDist_nnDist, ENNReal.coe_ne_zero]) (eDist_ne_top x y)
     (by rw [eDist_nnDist, eDist_nnDist, hr, ENNReal.coe_mul])
 
 @[deprecated (since := "2026-11-07")]
@@ -205,7 +205,7 @@ theorem ratio_unique_of_dist_ne_zero {α β} {F : Type*} [PseudoMetricSpace α] 
 def mkOfNNDistEq {α β} [PseudoMetricSpace α] [PseudoMetricSpace β] (f : α → β)
     (h : ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ x y : α, nnDist (f x) (f y) = r * nnDist x y) : α →ᵈ β where
   toFun := f
-  edist_eq' := by
+  eDist_eq' := by
     rcases h with ⟨r, hne, h⟩
     refine ⟨r, hne, fun x y => ?_⟩
     rw [eDist_nnDist, eDist_nnDist, ← ENNReal.coe_mul, h x y]
@@ -251,7 +251,7 @@ variable (f : F)
 @[simps]
 def _root_.Isometry.toDilation (f : α → β) (hf : Isometry f) : α →ᵈ β where
   toFun := f
-  edist_eq' := ⟨1, one_ne_zero, by simpa using! hf⟩
+  eDist_eq' := ⟨1, one_ne_zero, by simpa using! hf⟩
 
 @[simp]
 lemma _root_.Isometry.toDilation_ratio {f : α → β} {hf : Isometry f} : ratio hf.toDilation = 1 := by
@@ -260,7 +260,7 @@ lemma _root_.Isometry.toDilation_ratio {f : α → β} {hf : Isometry f} : ratio
   · obtain ⟨x, y, h₁, h₂⟩ := h
     exact ratio_unique h₁ h₂ (by simp [hf x y]) |>.symm
 
-theorem lipschitzWith : LipschitzWith (ratio f) (f : α → β) := fun x y => (edist_eq f x y).le
+theorem lipschitzWith : LipschitzWith (ratio f) (f : α → β) := fun x y => (eDist_eq f x y).le
 
 @[deprecated (since := "2026-09-11")]
 alias lipschitz := lipschitzWith
@@ -268,7 +268,7 @@ alias lipschitz := lipschitzWith
 theorem antilipschitzWith : AntilipschitzWith (ratio f)⁻¹ (f : α → β) := fun x y => by
   have hr : ratio f ≠ 0 := ratio_ne_zero f
   exact mod_cast
-    (ENNReal.mul_le_iff_le_inv (ENNReal.coe_ne_zero.2 hr) ENNReal.coe_ne_top).1 (edist_eq f x y).ge
+    (ENNReal.mul_le_iff_le_inv (ENNReal.coe_ne_zero.2 hr) ENNReal.coe_ne_top).1 (eDist_eq f x y).ge
 
 @[deprecated (since := "2026-09-11")]
 alias antilipschitz := antilipschitzWith
@@ -282,7 +282,7 @@ protected theorem injective {α : Type*} [EMetricSpace α] [FunLike F α β] [Di
 /-- The identity is a dilation -/
 protected def id (α) [PseudoEMetricSpace α] : α →ᵈ α where
   toFun := id
-  edist_eq' := ⟨1, one_ne_zero, fun x y => by simp only [id, ENNReal.coe_one, one_mul]⟩
+  eDist_eq' := ⟨1, one_ne_zero, fun x y => by simp only [id, ENNReal.coe_one, one_mul]⟩
 
 instance : Inhabited (α →ᵈ α) :=
   ⟨Dilation.id α⟩
@@ -301,8 +301,8 @@ theorem ratio_id : ratio (Dilation.id α) = 1 := by
 /-- The composition of dilations is a dilation -/
 def comp (g : β →ᵈ γ) (f : α →ᵈ β) : α →ᵈ γ where
   toFun := g ∘ f
-  edist_eq' := ⟨ratio g * ratio f, mul_ne_zero (ratio_ne_zero g) (ratio_ne_zero f),
-    fun x y => by simp_rw [Function.comp, edist_eq, ENNReal.coe_mul, mul_assoc]⟩
+  eDist_eq' := ⟨ratio g * ratio f, mul_ne_zero (ratio_ne_zero g) (ratio_ne_zero f),
+    fun x y => by simp_rw [Function.comp, eDist_eq, ENNReal.coe_mul, mul_assoc]⟩
 
 theorem comp_assoc {δ : Type*} [PseudoEMetricSpace δ] (f : α →ᵈ β) (g : β →ᵈ γ)
     (h : γ →ᵈ δ) : (h.comp g).comp f = h.comp (g.comp f) :=
@@ -323,8 +323,8 @@ version works for most general spaces, see also `Dilation.ratio_comp` for a vers
 theorem ratio_comp' {g : β →ᵈ γ} {f : α →ᵈ β}
     (hne : ∃ x y : α, eDist x y ≠ 0 ∧ eDist x y ≠ ⊤) : ratio (g.comp f) = ratio g * ratio f := by
   rcases hne with ⟨x, y, hα⟩
-  have hgf := (edist_eq (g.comp f) x y).symm
-  simp_rw [coe_comp, Function.comp, edist_eq, ← mul_assoc, ENNReal.mul_left_inj hα.1 hα.2]
+  have hgf := (eDist_eq (g.comp f) x y).symm
+  simp_rw [coe_comp, Function.comp, eDist_eq, ← mul_assoc, ENNReal.mul_left_inj hα.1 hα.2]
     at hgf
   rwa [← ENNReal.coe_inj, ENNReal.coe_mul]
 
@@ -413,12 +413,12 @@ theorem ediam_range : ediam (range (f : α → β)) = ratio f * ediam (univ : Se
 /-- A dilation maps balls to balls and scales the radius by `ratio f`. -/
 theorem mapsTo_eball (x : α) (r : ℝ≥0∞) :
     MapsTo (f : α → β) (Metric.eball x r) (Metric.eball (f x) (ratio f * r)) :=
-  fun y (hy : _ < r) ↦ by rw [Metric.mem_eball, edist_eq f y x]; gcongr <;> simp [ratio_ne_zero, *]
+  fun y (hy : _ < r) ↦ by rw [Metric.mem_eball, eDist_eq f y x]; gcongr <;> simp [ratio_ne_zero, *]
 
 /-- A dilation maps closed balls to closed balls and scales the radius by `ratio f`. -/
 theorem mapsTo_closedEBall (x : α) (r' : ℝ≥0∞) :
     MapsTo (f : α → β) (Metric.closedEBall x r') (Metric.closedEBall (f x) (ratio f * r')) :=
-  fun y hy => (edist_eq f y x).trans_le <| by gcongr; exact hy
+  fun y hy => (eDist_eq f y x).trans_le <| by gcongr; exact hy
 
 theorem comp_continuousOn_iff {γ} [TopologicalSpace γ] {g : γ → α} {s : Set γ} :
     ContinuousOn ((f : α → β) ∘ g) s ↔ ContinuousOn g s :=
@@ -461,7 +461,7 @@ See also `Dilation.ratio_comp'` for a version that works for more general spaces
 theorem ratio_comp [MetricSpace α] [Nontrivial α] [PseudoEMetricSpace β]
     [PseudoEMetricSpace γ] {g : β →ᵈ γ} {f : α →ᵈ β} : ratio (g.comp f) = ratio g * ratio f :=
   ratio_comp' <|
-    let ⟨x, y, hne⟩ := exists_pair_ne α; ⟨x, y, mt edist_eq_zero.1 hne, edist_ne_top _ _⟩
+    let ⟨x, y, hne⟩ := exists_pair_ne α; ⟨x, y, mt eDist_eq_zero.1 hne, eDist_ne_top _ _⟩
 
 section PseudoMetricDilation
 

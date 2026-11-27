@@ -62,7 +62,7 @@ lemma congruent_iff_pairwise_edist_eq :
 namespace Congruent
 
 /-- A congruence preserves extended distance. Forward direction of `congruent_iff_edist_eq`. -/
-alias ⟨edist_eq, _⟩ := congruent_iff_edist_eq
+alias ⟨eDist_eq, _⟩ := congruent_iff_edist_eq
 
 /-- Congruence follows from preserved extended distance. Backward direction of
 `congruent_iff_edist_eq`. -/
@@ -88,14 +88,14 @@ lemma _root_.congruent_comm : v₁ ≅ v₂ ↔ v₂ ≅ v₁ :=
 
 /-- Change the index set ι to an index ι' that maps to ι. -/
 lemma index_map (h : v₁ ≅ v₂) (f : ι' → ι) : (v₁ ∘ f) ≅ (v₂ ∘ f) :=
-  fun i₁ i₂ ↦ edist_eq h (f i₁) (f i₂)
+  fun i₁ i₂ ↦ eDist_eq h (f i₁) (f i₂)
 
 /-- Change between equivalent index sets ι and ι'. -/
 @[simp] lemma index_equiv {E : Type*} [EquivLike E ι' ι] (f : E) (v₁ : ι → P₁) (v₂ : ι → P₂) :
     v₁ ∘ f ≅ v₂ ∘ f ↔ v₁ ≅ v₂ := by
   refine ⟨fun h i₁ i₂ ↦ ?_, fun h ↦ index_map h f⟩
   simpa [(EquivLike.toEquiv f).right_inv i₁, (EquivLike.toEquiv f).right_inv i₂]
-    using edist_eq h ((EquivLike.toEquiv f).symm i₁) ((EquivLike.toEquiv f).symm i₂)
+    using eDist_eq h ((EquivLike.toEquiv f).symm i₁) ((EquivLike.toEquiv f).symm i₂)
 
 /-- Families with at most a single point are always congruent. -/
 @[nontriviality, simp]
