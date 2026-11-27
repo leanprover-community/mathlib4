@@ -363,13 +363,13 @@ instance transIsLittleOIsLittleO :
 
 @[gcongr]
 theorem isBigO_imp_isBigO {f₁ f₂ : α → E'} {g₁ g₂ : α → F'} (hf : f₁ =O[l] f₂)
-    (hg : g₁ =O[l] g₂) : f₂ =O[l] g₁ → f₁ =O[l] g₂ :=
-  fun h ↦ hf.trans (h.trans hg)
+    (hg : g₁ =O[l] g₂) (h : f₂ =O[l] g₁) : f₁ =O[l] g₂ :=
+  hf.trans (h.trans hg)
 
 @[gcongr]
 theorem isLittleO_imp_isLittleO {f₁ f₂ : α → E'} {g₁ g₂ : α → F'} (hf : f₁ =O[l] f₂)
-    (hg : g₁ =O[l] g₂) : f₂ =o[l] g₁ → f₁ =o[l] g₂ :=
-  fun h ↦ hf.trans_isLittleO (h.trans_isBigO hg)
+    (hg : g₁ =O[l] g₂) (h : f₂ =o[l] g₁) : f₁ =o[l] g₂ :=
+  hf.trans_isLittleO (h.trans_isBigO hg)
 
 @[gcongr strict]
 theorem isBigO_imp_isLittleO_left {f₁ f₂ : α → E} {g : α → F'} (hf : f₁ =o[l] f₂) :
