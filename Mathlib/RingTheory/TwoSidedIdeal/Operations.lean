@@ -394,10 +394,10 @@ lemma asIdealOpposite_injective :
   ext; simp [mem_asIdealOpposite]
 
 @[simp] lemma asIdealOpposite_eq_top {I : TwoSidedIdeal R} : asIdealOpposite I = ⊤ ↔ I = ⊤ := by
-  rw [← top_asIdealOpposite, asIdealOpposite_inj]
+  rw [← asIdealOpposite_top, asIdealOpposite_inj]
 
 @[simp] lemma asIdealOpposite_eq_bot {I : TwoSidedIdeal R} : asIdealOpposite I = ⊥ ↔ I = ⊥ := by
-  rw [← bot_asIdealOpposite, asIdealOpposite_inj]
+  rw [← asIdealOpposite_bot, asIdealOpposite_inj]
 
 end Ring
 
