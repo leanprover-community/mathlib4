@@ -37,6 +37,9 @@ This file defines the following linters:
   by containing a double underscore. The `defsWithUnderscore` environment linter checks for
   definitions whose name contains an underscore: that is also very likely to be a violation of
   mathlib's naming convention.
+- the `misnamedCoercionLemmas` linter flags coercion lemmas which are badly named:
+  coercion lemmas should be named after the coercion they reference; in particular,
+  mentioning `coe` and not referencing `DFunLike.coe` or similar violates the style guide.
 
 All of these linters are enabled in mathlib by default, but disabled globally
 since they enforce conventions which are inherently subjective.
