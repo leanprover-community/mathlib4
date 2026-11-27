@@ -192,7 +192,7 @@ variable [Preorder α] [Preorder β] [Preorder γ] {f : α → β → γ} {s : S
 
 section MonotoneMonotone
 
-variable (h₀ : ∀ b, Monotone (swap f b)) (h₁ : ∀ a, Monotone (f a))
+variable (h₀ : ∀ b, Monotone (dflip f b)) (h₁ : ∀ a, Monotone (f a))
 
 include h₀ h₁
 
@@ -222,7 +222,7 @@ end MonotoneMonotone
 
 section MonotoneAntitone
 
-variable (h₀ : ∀ b, Monotone (swap f b)) (h₁ : ∀ a, Antitone (f a))
+variable (h₀ : ∀ b, Monotone (dflip f b)) (h₁ : ∀ a, Antitone (f a))
 
 include h₀ h₁
 
@@ -253,7 +253,7 @@ end MonotoneAntitone
 
 section AntitoneAntitone
 
-variable (h₀ : ∀ b, Antitone (swap f b)) (h₁ : ∀ a, Antitone (f a))
+variable (h₀ : ∀ b, Antitone (dflip f b)) (h₁ : ∀ a, Antitone (f a))
 
 include h₀ h₁
 
@@ -282,7 +282,7 @@ end AntitoneAntitone
 
 section AntitoneMonotone
 
-variable (h₀ : ∀ b, Antitone (swap f b)) (h₁ : ∀ a, Monotone (f a))
+variable (h₀ : ∀ b, Antitone (dflip f b)) (h₁ : ∀ a, Monotone (f a))
 
 include h₀ h₁
 

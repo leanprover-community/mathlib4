@@ -134,7 +134,7 @@ theorem _root_.Monotone.isBoundedUnder_le_comp [Preorder α] [Preorder β] {l : 
 theorem _root_.Antitone.isBoundedUnder_le_comp [Preorder α] [Preorder β] {l : Filter γ} {u : γ → α}
     {v : α → β} (hv : Antitone v) (hl : l.IsBoundedUnder (fun x1 x2 ↦ x2 ≤ x1) u) :
     l.IsBoundedUnder (· ≤ ·) (v ∘ u) :=
-  hl.comp (swap hv)
+  hl.comp (dflip hv)
 
 @[to_dual]
 theorem not_isBoundedUnder_of_tendsto_atTop [Preorder β] [NoMaxOrder β] {f : α → β} {l : Filter α}
