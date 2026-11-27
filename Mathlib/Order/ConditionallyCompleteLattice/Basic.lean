@@ -93,13 +93,8 @@ section ConditionallyCompleteLattice
 variable [ConditionallyCompleteLattice α] {s t : Set α} {a b : α}
 
 @[to_dual]
-theorem exists_isLUB_cond (hn : s.Nonempty) (hb : BddAbove s := by bddDefault) :
-    ∃ a, IsLUB s a :=
-  ConditionallyCompleteLattice.exists_isLUB_cond s hn hb
-
-@[to_dual]
 theorem isLUB_csSup (hn : s.Nonempty) (hb : BddAbove s := by bddDefault) : IsLUB s (sSup s) :=
-  exists_isLUB_iff_isLUB_sSup.mp (exists_isLUB_cond hn hb)
+  exists_isLUB_iff_isLUB_sSup.mp (ConditionallyCompleteLattice.exists_isLUB_cond _ hn hb)
 
 @[to_dual csInf_le]
 theorem le_csSup (h₁ : BddAbove s) (h₂ : a ∈ s) : a ≤ sSup s :=
