@@ -157,22 +157,17 @@ structure OrderMonoidIso (α β : Type*) [Preorder α] [Preorder β] [Mul α] [M
 infixr:25 " ≃*o " => OrderMonoidIso
 
 /-- Turn an element of a type `F` satisfying `OrderIsoClass F α β` and `MulEquivClass F α β`
-into an actual `OrderMonoidIso`. This is declared as the default coercion from `F` to `α ≃*o β`. -/
-@[to_additive (attr := coe)
+into an actual `OrderMonoidIso` -/
+@[to_additive
   /-- Turn an element of a type `F` satisfying `OrderIsoClass F α β` and `AddEquivClass F α β`
-  into an actual `OrderAddMonoidIso`.
-  This is declared as the default coercion from `F` to `α ≃+o β`. -/]
-def OrderMonoidIsoClass.toOrderMonoidIso [EquivLike F α β] [OrderIsoClass F α β]
-    [MulEquivClass F α β] (f : F) :
-    α ≃*o β :=
+  into an actual `OrderAddMonoidIso`. -/]
+def OrderMonoidIso.ofClass {α β : Type*} [Preorder α] [Preorder β] [Mul α] [Mul β] [EquivLike F α β]
+    [OrderIsoClass F α β] [MulEquivClass F α β] (f : F) : α ≃*o β :=
   { (f : α ≃* β) with map_le_map_iff' := OrderIsoClass.map_le_map_iff f }
 
-/-- Any type satisfying `OrderMonoidIsoClass` can be cast into `OrderMonoidIso` via
-  `OrderMonoidIsoClass.toOrderMonoidIso`. -/
-@[to_additive /-- Any type satisfying `OrderAddMonoidIsoClass` can be cast into `OrderAddMonoidIso`
-  via `OrderAddMonoidIsoClass.toOrderAddMonoidIso`. -/]
-instance [EquivLike F α β] [OrderIsoClass F α β] [MulEquivClass F α β] : CoeTC F (α ≃*o β) :=
-  ⟨OrderMonoidIsoClass.toOrderMonoidIso⟩
+@[to_additive (attr := deprecated (since := "2026-11-26"))] alias
+    OrderMonoidIsoClass.toOrderMonoidIso :=
+  OrderMonoidIso.ofClass
 
 end Monoid
 
@@ -311,14 +306,16 @@ theorem mk_coe (f : α →*o β) (h) : OrderMonoidHom.mk (f : α →* β) h = f 
 def toOrderHom (f : α →*o β) : α →o β :=
   { f with }
 
-@[to_additive (attr := simp)]
+-- `nolint` needed while this uses `MonoidHom.ofClass`
+@[to_additive (attr := simp, nolint simpNF)]
 theorem coe_toMonoidHom (f : α →*o β) : ((f : α →* β) : α → β) = f :=
   rfl
 
 @[to_additive (attr := deprecated (since := "2026-09-15"))]
 alias coe_monoidHom := coe_toMonoidHom
 
-@[to_additive (attr := simp)]
+-- `nolint` needed while this uses `OrderHom.ofClass`
+@[to_additive (attr := simp, nolint simpNF)]
 theorem coe_orderHom (f : α →*o β) : ((f : α →o β) : α → β) = f :=
   rfl
 
@@ -522,6 +519,10 @@ instance : OrderIsoClass (α ≃*o β) α β where
 instance : MulEquivClass (α ≃*o β) α β where
   map_mul f := map_mul f.toMulEquiv
 
+@[to_additive (attr := simp)]
+protected theorem coe_ofClass [EquivLike F α β] [OrderIsoClass F α β] [MulEquivClass F α β]
+    (f : F) : ⇑(ofClass f) = f := rfl
+
 -- Other lemmas should be accessed through the `FunLike` API
 @[to_additive (attr := ext)]
 theorem ext (h : ∀ a, f a = g a) : f = g :=
@@ -549,7 +550,8 @@ def toOrderIso (f : α ≃*o β) : α ≃o β :=
 theorem coe_mulEquiv (f : α ≃*o β) : ((f : α ≃* β) : α → β) = f :=
   rfl
 
-@[to_additive (attr := simp)]
+-- `nolint` needed while this uses `OrderHom.ofClass`
+@[to_additive (attr := simp, nolint simpNF)]
 theorem coe_orderIso (f : α ≃*o β) : ((f : α →o β) : α → β) = f :=
   rfl
 

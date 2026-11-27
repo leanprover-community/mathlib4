@@ -50,7 +50,6 @@ theorem unop_add {X Y : Cᵒᵖ} (f g : X ⟶ Y) : (f + g).unop = f.unop + g.uno
 theorem unop_sub {X Y : Cᵒᵖ} (f g : X ⟶ Y) : (f - g).unop = f.unop - g.unop :=
   rfl
 
-@[simp]
 theorem unop_zsmul {X Y : Cᵒᵖ} (k : ℤ) (f : X ⟶ Y) : (k • f).unop = k • f.unop :=
   rfl
 
@@ -66,7 +65,6 @@ theorem op_add {X Y : C} (f g : X ⟶ Y) : (f + g).op = f.op + g.op :=
 theorem op_sub {X Y : C} (f g : X ⟶ Y) : (f - g).op = f.op - g.op :=
   rfl
 
-@[simp]
 theorem op_zsmul {X Y : C} (k : ℤ) (f : X ⟶ Y) : (k • f).op = k • f.op :=
   rfl
 

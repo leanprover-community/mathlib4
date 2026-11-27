@@ -59,11 +59,11 @@ open Lean.PrettyPrinter.Delaborator in
 @[app_delab HopfAlgCat.of]
 meta def delabOf : Delab := CategoryTheory.delabOf
 
-@[simp]
+@[deprecated "holds by reducible rfl" (since := "2026-11-26")]
 lemma of_comul {X : Type v} [Ring X] [HopfAlgebra R X] :
     Coalgebra.comul (A := of R X) = Coalgebra.comul (R := R) (A := X) := rfl
 
-@[simp]
+@[deprecated "holds by reducible rfl" (since := "2026-11-26")]
 lemma of_counit {X : Type v} [Ring X] [HopfAlgebra R X] :
     Coalgebra.counit (A := of R X) = Coalgebra.counit (R := R) (A := X) := rfl
 

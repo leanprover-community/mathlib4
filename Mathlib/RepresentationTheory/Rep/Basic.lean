@@ -151,11 +151,9 @@ def mkIso (e : ρ.Equiv σ) : of ρ ≅ of σ where
   hom := ofHom e.toIntertwiningMap
   inv := ofHom e.symm.toIntertwiningMap
 
-@[simp]
 lemma mkIso_hom_hom_apply (e : ρ.Equiv σ) (x : X) :
     (mkIso e).hom.hom x = e.toLinearMap x := rfl
 
-@[simp]
 lemma mkIso_hom_hom_toLinearMap (e : ρ.Equiv σ) :
     (mkIso e).hom.hom.toLinearMap = e.toLinearMap := rfl
 
@@ -295,7 +293,6 @@ lemma trivial_V {V : Type w} [AddCommGroup V] [Module k V] : (trivial k G V).V =
 lemma trivial_ρ {V : Type w} [AddCommGroup V] [Module k V] (g : G) :
     (trivial k G V).ρ g = LinearMap.id := rfl
 
-@[simp]
 lemma trivial_ρ_apply {V : Type w} [AddCommGroup V] [Module k V] (g : G) (v : V) :
     (trivial k G V).ρ g v = v := rfl
 
@@ -972,7 +969,7 @@ end Finsupp
 
 /-- The monoidal functor sending a type `H` with a `G`-action to the induced `k`-linear
 `G`-representation on `k[H].` -/
-@[simps]
+@[simps map]
 abbrev linearization : Action (Type w) G ⥤ Rep.{max w u} k G where
   obj X := .of <| .linearize k G X
   map f := Rep.ofHom <| Representation.linearizeMap f
