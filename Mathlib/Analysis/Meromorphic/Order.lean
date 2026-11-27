@@ -75,13 +75,13 @@ lemma meromorphicOrderAt_eq_top_iff :
     WithTop.natCast_ne_top, or_false]
   by_cases h : analyticOrderAt (fun z ↦ (z - x) ^ hf.choose • f z) x = ⊤
   · simp only [h, eventually_nhdsWithin_iff, mem_compl_iff, mem_singleton_iff, true_iff]
-    rw [analyticOrderAt_eq_top] at h
+    rw [analyticOrderAt_eq_top_iff] at h
     filter_upwards [h] with z hf hz
     rwa [smul_eq_zero_iff_right <| pow_ne_zero _ (sub_ne_zero.mpr hz)] at hf
   · obtain ⟨m, hm⟩ := ENat.ne_top_iff_exists.mp h
     simp only [← hm, ENat.natCast_ne_top, false_iff]
     contrapose h
-    rw [analyticOrderAt_eq_top]
+    rw [analyticOrderAt_eq_top_iff]
     rw [← hf.choose_spec.frequently_eq_iff_eventually_eq analyticAt_const]
     apply Eventually.frequently
     filter_upwards [h] with z hfz
@@ -100,7 +100,7 @@ lemma meromorphicOrderAt_eq_int_iff {n : ℤ} (hf : MeromorphicAt f x) : meromor
   by_cases h : analyticOrderAt (fun z ↦ (z - x) ^ hf.choose • f z) x = ⊤
   · rw [h, ENat.map_top, ← WithTop.coe_natCast, top_sub,
       eq_false_intro WithTop.top_ne_coe, false_iff]
-    rw [analyticOrderAt_eq_top] at h
+    rw [analyticOrderAt_eq_top_iff] at h
     refine fun ⟨g, hg_an, hg_ne, hg_eq⟩ ↦ hg_ne ?_
     apply EventuallyEq.eq_of_nhds
     rw [EventuallyEq, ← AnalyticAt.frequently_eq_iff_eventually_eq hg_an analyticAt_const]
@@ -111,7 +111,7 @@ lemma meromorphicOrderAt_eq_int_iff {n : ℤ} (hf : MeromorphicAt f x) : meromor
     exact mul_ne_zero (pow_ne_zero _ (sub_ne_zero.mpr hz)) (zpow_ne_zero _ (sub_ne_zero.mpr hz))
   · obtain ⟨m, h⟩ := ENat.ne_top_iff_exists.mp h
     rw [← h, ENat.map_natCast, ← WithTop.coe_natCast, ← coe_sub, WithTop.coe_inj]
-    obtain ⟨g, hg_an, hg_ne, hg_eq⟩ := hf.choose_spec.analyticOrderAt_eq_natCast.mp h.symm
+    obtain ⟨g, hg_an, hg_ne, hg_eq⟩ := hf.choose_spec.analyticOrderAt_eq_natCast_iff.mp h.symm
     replace hg_eq : ∀ᶠ (z : 𝕜) in 𝓝[≠] x, f z = (z - x) ^ (↑m - ↑hf.choose : ℤ) • g z := by
       rw [eventually_nhdsWithin_iff]
       filter_upwards [hg_eq] with z hg_eq hz
@@ -304,9 +304,9 @@ lemma AnalyticAt.meromorphicOrderAt_eq (hf : AnalyticAt 𝕜 f x) :
     meromorphicOrderAt f x = (analyticOrderAt f x).map (↑) := by
   cases hn : analyticOrderAt f x
   · rw [ENat.map_top, meromorphicOrderAt_eq_top_iff]
-    exact (analyticOrderAt_eq_top.mp hn).filter_mono nhdsWithin_le_nhds
+    exact (analyticOrderAt_eq_top_iff.mp hn).filter_mono nhdsWithin_le_nhds
   · simp_rw [ENat.map_natCast, meromorphicOrderAt_eq_int_iff hf.meromorphicAt, zpow_natCast]
-    rcases hf.analyticOrderAt_eq_natCast.mp hn with ⟨g, h1, h2, h3⟩
+    rcases hf.analyticOrderAt_eq_natCast_iff.mp hn with ⟨g, h1, h2, h3⟩
     exact ⟨g, h1, h2, h3.filter_mono nhdsWithin_le_nhds⟩
 
 /--
@@ -889,7 +889,7 @@ theorem codiscrete_setOfPred_meromorphicOrderAt_eq_zero_or_top (hf : Meromorphic
     simp only [mem_compl_iff, Set.mem_sdiff, mem_image, mem_ofPred_eq, Subtype.exists,
       exists_and_right, exists_eq_right, not_exists, not_or, not_and, not_forall, Decidable.not_not]
     rcases h₁a with h' | h'
-    · simp +contextual [h'.meromorphicOrderAt_eq, h'.analyticOrderAt_eq_zero.2, h'₁a]
+    · simp +contextual [h'.meromorphicOrderAt_eq, h'.analyticOrderAt_eq_zero_iff.2, h'₁a]
     · exact fun ha ↦ (h' ha).elim
 
 @[deprecated (since := "2026-07-09")]
@@ -931,7 +931,7 @@ lemma MeromorphicAt.meromorphicOrderAt_comp (hf : MeromorphicAt f (g x)) (hg : A
     · rw [meromorphicOrderAt_eq_top_iff] at hf' ⊢
       rw [Function.comp_def, ← eventually_map (P := (f · = 0))]
       exact EventuallyEq.filter_mono hf' (hg.map_nhdsNE hg_nc)
-    · simp [(show AnalyticAt 𝕜 (g · - g x) x by fun_prop).analyticOrderAt_eq_zero]
+    · simp [(show AnalyticAt 𝕜 (g · - g x) x by fun_prop).analyticOrderAt_eq_zero_iff]
   -- Now the interesting case. First unpack the data
   have hr := (WithTop.coe_untop₀_of_ne_top hf').symm
   rw [meromorphicOrderAt_ne_top_iff hf] at hf'
@@ -942,7 +942,7 @@ lemma MeromorphicAt.meromorphicOrderAt_comp (hf : MeromorphicAt f (g x)) (hg : A
   have aux1 : f ∘ g =ᶠ[𝓝[≠] x] (g · - g x) ^ r • (F ∘ g) := hFev.comp_tendsto (hg.map_nhdsNE hg_nc)
   have aux2 : meromorphicOrderAt (F ∘ g) x = 0 := by
     rw [AnalyticAt.meromorphicOrderAt_eq (by fun_prop),
-      analyticOrderAt_eq_zero.mpr (by exact .inr hFne), ENat.map_zero, CharP.cast_eq_zero,
+      analyticOrderAt_eq_zero_iff.mpr (by exact .inr hFne), ENat.map_zero, CharP.cast_eq_zero,
       WithTop.coe_zero]
   rw [meromorphicOrderAt_congr aux1, meromorphicOrderAt_smul ?_ (AnalyticAt.meromorphicAt ?_),
     aux2, add_zero, meromorphicOrderAt_zpow, AnalyticAt.meromorphicOrderAt_eq] <;>
@@ -987,7 +987,7 @@ lemma meromorphicOrderAt_smul_of_ne_zero (hg : AnalyticAt 𝕜 g x) (hg' : g x �
     meromorphicOrderAt (g • f) x = meromorphicOrderAt f x := by
   by_cases hf : MeromorphicAt f x
   · simp [meromorphicOrderAt_smul hg.meromorphicAt hf, hg.meromorphicOrderAt_eq,
-      hg.analyticOrderAt_eq_zero.mpr hg']
+      hg.analyticOrderAt_eq_zero_iff.mpr hg']
   · rw [meromorphicOrderAt_of_not_meromorphicAt hf, meromorphicOrderAt_of_not_meromorphicAt]
     rwa [meromorphicAt_smul_iff_of_ne_zero hg hg']
 

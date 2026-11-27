@@ -446,11 +446,12 @@ lemma MeromorphicAt.comp_analyticAt {f : 𝕜' → F} {g : 𝕜 → 𝕜'}
   by_cases hg' : analyticOrderAt (g · - g x) x = ⊤
   · -- trivial case: `g` is locally constant near `x`
     refine .congr (.const (f (g x)) x) ?_
-    filter_upwards [nhdsWithin_le_nhds <| analyticOrderAt_eq_top.mp hg'] with z hz
+    filter_upwards [nhdsWithin_le_nhds <| analyticOrderAt_eq_top_iff.mp hg'] with z hz
     grind
   · -- interesting case: `g z - g x` looks like `(z - x) ^ n` times a non-vanishing function
     obtain ⟨n, hn⟩ := WithTop.ne_top_iff_exists.mp hg'
-    obtain ⟨h, han, hne, heq⟩ := (hg.fun_sub analyticAt_const).analyticOrderAt_eq_natCast.mp hn.symm
+    obtain ⟨h, han, hne, heq⟩ :=
+      (hg.fun_sub analyticAt_const).analyticOrderAt_eq_natCast_iff.mp hn.symm
     set j := fun z ↦ (z - g x) ^ r • f z
     have : AnalyticAt 𝕜 (fun i ↦ (h i)⁻¹ ^ r • j (g i)) x :=
       ((han.inv hne).pow r).smul (hr.restrictScalars.comp hg)
