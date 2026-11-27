@@ -6,8 +6,8 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.Analysis.Normed.Field.Basic
-public import Mathlib.LinearAlgebra.Eigenspace.Basic
 public import Mathlib.LinearAlgebra.Determinant
+public import Mathlib.LinearAlgebra.Eigenspace.Basic
 
 /-!
 # Gershgorin's circle theorem
@@ -15,7 +15,7 @@ public import Mathlib.LinearAlgebra.Determinant
 This file gives the proof of Gershgorin's circle theorem `eigenvalue_mem_ball` on the eigenvalues
 of matrices and some applications.
 
-## Reference
+## References
 
 * https://en.wikipedia.org/wiki/Gershgorin_circle_theorem
 -/
@@ -27,7 +27,7 @@ variable {K n : Type*} [NormedField K] [Fintype n] [DecidableEq n] {A : Matrix n
 /-- **Gershgorin's circle theorem**: for any eigenvalue `μ` of a square matrix `A`, there exists an
 index `k` such that `μ` lies in the closed ball of center the diagonal term `A k k` and of
 radius the sum of the norms `∑ j ≠ k, ‖A k j‖`. -/
-theorem eigenvalue_mem_ball {μ : K} (hμ : Module.End.HasEigenvalue (Matrix.toLin' A) μ) :
+theorem eigenvalue_mem_ball {μ : K} (hμ : Module.End.HasEigenvalue A.mulVecLin μ) :
     ∃ k, μ ∈ Metric.closedBall (A k k) (∑ j ∈ Finset.univ.erase k, ‖A k j‖) := by
   cases isEmpty_or_nonempty n
   · exfalso
@@ -50,7 +50,7 @@ theorem eigenvalue_mem_ball {μ : K} (hμ : Module.End.HasEigenvalue (Matrix.toL
       _ = ‖(A i i * v i - ∑ j, A i j * v j) * (v i)⁻¹‖ := by
                 rw [show μ * v i = ∑ x : n, A i x * v x by
                   rw [← dotProduct, ← Matrix.mulVec]
-                  exact (congrFun (Module.End.mem_eigenspace_iff.mp h_eg) i).symm]
+                  exact congr($(Module.End.mem_eigenspace_iff.mp h_eg) i).symm]
       _ = ‖(∑ j ∈ Finset.univ.erase i, A i j * v j) * (v i)⁻¹‖ := by
                 rw [Finset.sum_erase_eq_sub (Finset.mem_univ i), ← neg_sub, neg_mul, norm_neg]
       _ ≤ ∑ j ∈ Finset.univ.erase i, ‖A i j‖ * ‖v j * (v i)⁻¹‖ := by
@@ -67,7 +67,7 @@ theorem det_ne_zero_of_sum_row_lt_diag (h : ∀ k, ∑ j ∈ Finset.univ.erase k
     exact this.imp (fun a h ↦ by rwa [mem_closedBall_iff_norm', sub_zero] at h)
   refine eigenvalue_mem_ball ?_
   rw [Module.End.hasEigenvalue_iff, Module.End.eigenspace_zero, ne_comm]
-  exact ne_of_lt (LinearMap.bot_lt_ker_of_det_eq_zero (by rwa [LinearMap.det_toLin']))
+  exact ne_of_lt (LinearMap.bot_lt_ker_of_det_eq_zero (by rwa [Matrix.det_mulVecLin]))
 
 /-- If `A` is a column strictly dominant diagonal matrix, then its determinant is nonzero. -/
 theorem det_ne_zero_of_sum_col_lt_diag (h : ∀ k, ∑ i ∈ Finset.univ.erase k, ‖A i k‖ < ‖A k k‖) :

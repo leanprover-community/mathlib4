@@ -112,8 +112,6 @@ deriving Inhabited
 /-- The data used to represent coefficients in exponents. This is the same data that `ring` uses. -/
 abbrev btℕ (e : Q(ℕ)) : Type := _root_.Mathlib.Tactic.Ring.RatCoeff q($e)
 
-instance (e : Expr) : Inhabited <| btℕ e := ⟨⟨0, none⟩⟩
-
 universe u v
 
 /-!
@@ -551,7 +549,7 @@ theorem add_pf_add_overlap
 
 theorem add_pf_add_overlap_zero
     (h : IsNat (a₁ + b₁) (nat_lit 0)) (h₄ : a₂ + b₂ = c) : (a₁ + a₂ : R) + (b₁ + b₂) = c := by
-  subst_vars; rw [add_add_add_comm, h.1, Nat.cast_zero, add_pf_zero_add]
+  subst_vars; rw [add_add_add_comm, h.out, Nat.cast_zero, add_pf_zero_add]
 
 theorem add_pf_add_lt (a₁ : R) (_ : a₂ + b = c) : (a₁ + a₂) + b = a₁ + c := by simp [*, add_assoc]
 
@@ -1270,7 +1268,7 @@ changes to `eval` should be kept in sync:
 * `Common.isAtomOrDerivable`
 * `Algebra.collectScalarRings`
 -/
-partial def eval  {u : Lean.Level}
+partial def eval {u : Lean.Level}
     {α : Q(Type u)} {bt : Q($α) → Type} {sα : Q(CommSemiring $α)} (rc : RingCompute bt sα)
     (c : Cache sα) (e : Q($α)) : AtomM (Result (ExSum bt sα) e) := Lean.withIncRecDepth do
   let els := do

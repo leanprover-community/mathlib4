@@ -6,9 +6,10 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.CategoryTheory.Limits.Creates
-public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
-public import Mathlib.CategoryTheory.FinCategory.AsType
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Creation of finite limits

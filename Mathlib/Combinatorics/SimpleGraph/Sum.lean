@@ -5,9 +5,10 @@ Authors: Iván Renison
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Basic
 public import Mathlib.Combinatorics.SimpleGraph.Coloring.Vertex
-public import Mathlib.Combinatorics.SimpleGraph.Maps
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Disjoint sum of graphs

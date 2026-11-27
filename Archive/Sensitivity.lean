@@ -92,7 +92,7 @@ theorem succ_n_eq (p q : Q n.succ) : p = q ↔ p 0 = q 0 ∧ π p = π q := by
     by_cases hx : x = 0
     · rwa [hx]
     · rw [← Fin.succ_pred x hx]
-      convert! congr_fun h (Fin.pred x hx)
+      convert! congr($h (Fin.pred x hx))
 
 /-- The adjacency relation defining the graph structure on `Q n`:
 `p.adjacent q` if there is an edge from `p` to `q` in `Q n`. -/
@@ -170,12 +170,18 @@ variable (n : ℕ)
 /-! `V n` is a real vector space whose equality relation is computable. -/
 
 
-instance : DecidableEq (V n) := by induction n <;> · dsimp only [V]; infer_instance
+instance : DecidableEq (V n) := by
+  induction n
+  all_goals dsimp only [V]; infer_instance
 
-instance : AddCommGroup (V n) := by induction n <;> · dsimp only [V]; infer_instance
+instance : AddCommGroup (V n) := by
+  induction n
+  all_goals dsimp only [V]; infer_instance
 
 set_option backward.isDefEq.respectTransparency false in
-instance : Module ℝ (V n) := by induction n <;> · dsimp only [V]; infer_instance
+instance : Module ℝ (V n) := by
+  induction n
+  all_goals dsimp only [V]; infer_instance
 
 end V
 

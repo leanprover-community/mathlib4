@@ -5,8 +5,7 @@ Authors: Nicolò Cavalleri, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.FunLike.Basic
-public import Mathlib.Tactic.Continuity
+public import Mathlib.Basic.FunLike.Basic
 public import Mathlib.Tactic.Lift
 public import Mathlib.Topology.Defs.Basic
 
@@ -61,14 +60,13 @@ variable {F X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [FunLike F X 
 variable [ContinuousMapClass F X Y]
 
 /-- Coerce a bundled morphism with a `ContinuousMapClass` instance to a `ContinuousMap`. -/
-@[coe, reducible] def toContinuousMap (f : F) : C(X, Y) := ⟨f, map_continuous f⟩
+def ContinuousMap.ofClass (f : F) : C(X, Y) := ⟨f, map_continuous f⟩
 
-instance : CoeTC F C(X, Y) := ⟨toContinuousMap⟩
+@[deprecated (since := "2026-10-14")] alias toContinuousMap := ContinuousMap.ofClass
 
 end ContinuousMapClass
 
 /-! ### Continuous maps -/
-
 
 namespace ContinuousMap
 
@@ -95,21 +93,28 @@ def Simps.apply (f : C(X, Y)) : X → Y := f
 initialize_simps_projections ContinuousMap (toFun → apply)
 
 @[simp]
-protected theorem coe_coe {F : Type*} [FunLike F X Y] [ContinuousMapClass F X Y] (f : F) :
-    ⇑(f : C(X, Y)) = f :=
+protected theorem coe_ofClass {F : Type*} [FunLike F X Y] [ContinuousMapClass F X Y] (f : F) :
+    ⇑(ofClass f) = f :=
   rfl
 
+@[deprecated (since := "2026-10-15")] protected alias coe_coe := ContinuousMap.coe_ofClass
+
+@[deprecated ContinuousMap.coe_ofClass +typeChanged (since := "2026-11-24")]
 protected theorem coe_apply {F : Type*} [FunLike F X Y] [ContinuousMapClass F X Y] (f : F) (x : X) :
-    (f : C(X, Y)) x = f x :=
+    (ofClass f : C(X, Y)) x = f x :=
   rfl
 
 /-- Coercion to a `ContinuousMap` is injective.
 
 The unprimed version `ContinuousMap.coe_injective`
 is used for the coercion from `C(X, Y)` to `X → Y`. -/
-protected theorem coe_injective' {F : Type*} [FunLike F X Y] [ContinuousMapClass F X Y] :
-    Injective (toContinuousMap : F → C(X, Y)) :=
+protected theorem injective_ofClass
+    {F : Type*} [FunLike F X Y] [ContinuousMapClass F X Y] :
+    Injective (ContinuousMap.ofClass : F → C(X, Y)) :=
   .of_comp (f := DFunLike.coe) DFunLike.coe_injective
+
+@[deprecated (since := "2026-10-15")]
+protected alias coe_injective' := ContinuousMap.injective_ofClass
 
 @[ext]
 theorem ext {f g : C(X, Y)} (h : ∀ a, f a = g a) : f = g :=

@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.AlgebraicTopology.SimplicialSet.Basic
 public import Mathlib.AlgebraicTopology.SimplexCategory.Truncated
+public import Mathlib.AlgebraicTopology.SimplicialSet.Basic
 
 /-!
 # Edges and "triangles" in truncated simplicial sets
@@ -18,7 +18,6 @@ Given a `2`-truncated simplicial set `X`, we introduce two types:
   `e₀₂ : Edge x₀ x₂`, a structure `CompStruct e₀₁ e₁₂ e₀₂` which records the
   data of a `2`-simplex with faces `e₁₂`, `e₀₂` and `e₀₁` respectively. This data
   will allow to obtain relations in the homotopy category of `X`.
-
 -/
 
 @[expose] public section
@@ -57,7 +56,7 @@ lemma exists_of_simplex (s : X _⦋1⦌₂) :
   ⟨_, _, mk' s, rfl⟩
 
 /-- The constant edge on a `0`-simplex. -/
-@[simps]
+@[simps, implicit_reducible]
 def id (x : X _⦋0⦌₂) : Edge x x where
   edge := X.map (σ₂ 0).op x
   src_eq := by simp [← Functor.map_comp_apply, ← op_comp]
@@ -108,7 +107,7 @@ lemma exists_of_simplex (s : X _⦋2⦌₂) :
     X.map (Hom.tr (SimplexCategory.const _ _ 2)).op s,
     .mk _ ?_ ?_, .mk _ ?_ ?_, .mk _ ?_ ?_, .mk s rfl rfl rfl, rfl⟩
   all_goals
-  · rw [← Functor.map_comp_apply, ← op_comp]
+    rw [← Functor.map_comp_apply, ← op_comp]
     apply congr_fun; congr
     decide
 

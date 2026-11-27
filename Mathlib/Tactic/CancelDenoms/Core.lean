@@ -8,7 +8,6 @@ module
 public meta import Mathlib.Algebra.Group.Nat.Defs
 public meta import Mathlib.Basic.Logic.Basic
 public meta import Mathlib.Data.Tree.Basic
-
 public import Mathlib.Algebra.Field.Basic
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Data.Tree.Basic
@@ -106,7 +105,7 @@ be able to cancel all the numeric denominators in `e`. The returned `Tree` descr
 distribute the value `n` over products inside `e`.
 -/
 partial def findCancelFactor (e : Expr) : ℕ × BinaryTree ℕ :=
-  match e.getAppFnArgs with
+  match e.consumeMData.getAppFnArgs with
   | (``HAdd.hAdd, #[_, _, _, _, e1, e2]) | (``HSub.hSub, #[_, _, _, _, e1, e2]) =>
     let (v1, t1) := findCancelFactor e1
     let (v2, t2) := findCancelFactor e2
@@ -237,7 +236,7 @@ def derive (e : Expr) : MetaM (ℕ × Expr) := do
   let ⟨u, tp, e⟩ ← inferTypeQ' eSimpNormNum.expr
   let stp : Q(Field $tp) ← synthInstanceQ q(Field $tp)
   try
-    have n' := (← mkOfNat tp q(inferInstance) <| mkRawNatLit <| n).1
+    have n' := (← mkOfNat tp q(inferInstance) <| mkRawNatLit n).1
     let r ← mkProdPrf tp stp n n' t e
     trace[CancelDenoms] "pf : {← inferType r.pf}"
     let pf' ←

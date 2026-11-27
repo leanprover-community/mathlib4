@@ -5,15 +5,14 @@ Authors: Claus Clausen, Patrick Massot
 -/
 module
 
-public import Mathlib.Probability.CDF
 public import Mathlib.Probability.Distributions.Gamma
-public import Mathlib.Tactic.CrossRefAttribute
 
 /-! # Exponential distributions over ℝ
 
 Define the Exponential measure over the reals.
 
 ## Main definitions
+
 * `exponentialPDFReal`: the function `r x ↦ r * exp (-(r * x)` for `0 ≤ x`
   or `0` else, which is the probability density function of an exponential distribution with
   rate `r` (when `hr : 0 < r`).
@@ -22,6 +21,7 @@ Define the Exponential measure over the reals.
 * `expMeasure`: an exponential measure on `ℝ`, parametrized by its rate `r`.
 
 ## Main results
+
 * `cdf_expMeasure_eq`: Proof that the CDF of the exponential measure equals the
   known function given as `r x ↦ 1 - exp (- (r * x))` for `0 ≤ x` or `0` else.
 -/
@@ -112,7 +112,7 @@ open Topology
 
 lemma hasDerivAt_neg_exp_mul_exp {r x : ℝ} :
     HasDerivAt (fun a ↦ -exp (-(r * a))) (r * exp (-(r * x))) x := by
-  convert! (((hasDerivAt_id x).const_mul (-r)).exp.const_mul (-1)) using 1
+  convert (((hasDerivAt_id x).const_mul (-r)).exp.const_mul (-1)) using 1
   · simp only [one_mul, id_eq, neg_mul]
   simp only [id_eq, neg_mul, mul_one, mul_neg, one_mul, neg_neg, mul_comm]
 
@@ -146,7 +146,7 @@ lemma lintegral_exponentialPDF_eq_antiDeriv {r : ℝ} (hr : 0 < r) (x : ℝ) :
         (f := fun a ↦ -1 * rexp (-(r * a))) _ _]
       · rw [ENNReal.toReal_ofReal_eq_iff.2
           (sub_nonneg.2 (Real.exp_le_one_iff.2 <| by nlinarith))]
-        norm_num; ring
+        simp; ring
       · simp only [intervalIntegrable_iff, uIoc_of_le h]
         exact Integrable.const_mul (exp_neg_integrableOn_Ioc hr) _
       · have : Continuous (fun a ↦ rexp (-(r * a))) := by

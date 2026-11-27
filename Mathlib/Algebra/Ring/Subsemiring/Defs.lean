@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.NonUnitalSubsemiring.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bundled subsemirings
 
@@ -29,7 +32,7 @@ class AddSubmonoidWithOneClass (S : Type*) (R : outParam Type*) [AddMonoidWithOn
 
 variable {S R : Type*} [AddMonoidWithOne R] [SetLike S R] (s : S)
 
-@[simp, aesop safe (rule_sets := [SetLike])]
+@[simp, aesop safe (rule_sets := [SetLike]), membership .]
 theorem natCast_mem [AddSubmonoidWithOneClass S R] (n : ℕ) : (n : R) ∈ s := by
   induction n <;> simp [zero_mem, add_mem, one_mem, *]
 
@@ -37,6 +40,9 @@ theorem natCast_mem [AddSubmonoidWithOneClass S R] (n : ℕ) : (n : R) ∈ s := 
 lemma ofNat_mem [AddSubmonoidWithOneClass S R] (s : S) (n : ℕ) [n.AtLeastTwo] :
     ofNat(n) ∈ s := by
   rw [← Nat.cast_ofNat]; exact natCast_mem s n
+
+/- `no_index` breaks the default pattern so we can't use the `grind` attribute -/
+grind_pattern [membership] ofNat_mem => OfNat.ofNat n ∈ s
 
 instance (priority := 74) AddSubmonoidWithOneClass.toAddMonoidWithOne
     [AddSubmonoidWithOneClass S R] : AddMonoidWithOne s :=
@@ -142,7 +148,7 @@ instance : SetLike (Subsemiring R) R where
   coe s := s.carrier
   coe_injective p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
 
-instance : PartialOrder (Subsemiring R) := .ofSetLike (Subsemiring R) R
+instance : PartialOrder (Subsemiring R) := .ofSetLike (Subsemiring R)
 
 initialize_simps_projections Subsemiring (carrier → coe, as_prefix coe)
 
@@ -284,11 +290,9 @@ protected theorem add_mem {x y : R} : x ∈ s → y ∈ s → x + y ∈ s :=
 instance toNonAssocSemiring : NonAssocSemiring s :=
   SubsemiringClass.toNonAssocSemiring _
 
-@[simp, norm_cast]
 theorem coe_one : ((1 : s) : R) = (1 : R) :=
   rfl
 
-@[simp, norm_cast]
 theorem coe_zero : ((0 : s) : R) = (0 : R) :=
   rfl
 
@@ -298,6 +302,10 @@ theorem coe_add (x y : s) : ((x + y : s) : R) = (x + y : R) :=
 
 @[simp, norm_cast]
 theorem coe_mul (x y : s) : ((x * y : s) : R) = (x * y : R) :=
+  rfl
+
+@[simp, norm_cast]
+theorem coe_natCast (n : ℕ) : ((n : s) : R) = (n : R) :=
   rfl
 
 instance nontrivial [Nontrivial R] : Nontrivial s :=
@@ -315,7 +323,6 @@ instance noZeroDivisors [NoZeroDivisors R] : NoZeroDivisors s where
 instance toSemiring {R} [Semiring R] (s : Subsemiring R) : Semiring s :=
   { s.toNonAssocSemiring, s.toSubmonoid.toMonoid with }
 
-@[simp, norm_cast]
 theorem coe_pow {R} [Semiring R] (s : Subsemiring R) (x : s) (n : ℕ) :
     ((x ^ n : s) : R) = (x : R) ^ n := rfl
 

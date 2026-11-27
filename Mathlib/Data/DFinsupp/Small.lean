@@ -6,8 +6,10 @@ Authors: Sophie Morel, Antoine Chambert-Loir
 module
 
 public import Mathlib.Data.Finsupp.ToDFinsupp
-public import Mathlib.Data.DFinsupp.Defs
 public import Mathlib.Logic.Small.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Smallness of the `DFinsupp` type
@@ -28,7 +30,7 @@ section Small
 
 instance DFinsupp.small [Small.{w} ι] [∀ (i : ι), Small.{w} (π i)] :
     Small.{w} (DFinsupp π) :=
-  small_of_injective (f := fun x j ↦ x j) (fun f f' eq ↦ by ext j; exact congr_fun eq j)
+  small_of_injective (f := fun x j ↦ x j) (fun f f' eq ↦ by ext j; congrm $eq j)
 
 instance Finsupp.small {σ : Type*} {R : Type*} [Zero R]
     [Small.{u} R] [Small.{u} σ] :

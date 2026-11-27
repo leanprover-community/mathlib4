@@ -5,11 +5,11 @@ Authors: Jake Levinson
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Data.Finset.Preimage
 public import Mathlib.Data.Finset.Prod
-public import Mathlib.Data.SetLike.Basic
 public import Mathlib.Order.UpperLower.Basic
+
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Young diagrams
@@ -49,7 +49,6 @@ Young diagram
 ## References
 
 <https://en.wikipedia.org/wiki/Young_tableau>
-
 -/
 
 @[expose] public section
@@ -76,7 +75,7 @@ instance : SetLike YoungDiagram (ℕ × ℕ) where
   coe y := y.cells
   coe_injective μ ν h := by rwa [YoungDiagram.ext_iff, ← Finset.coe_inj]
 
-instance : PartialOrder YoungDiagram := .ofSetLike YoungDiagram (ℕ × ℕ)
+instance : PartialOrder YoungDiagram := .ofSetLike YoungDiagram
 
 @[simp]
 theorem mem_cells {μ : YoungDiagram} (c : ℕ × ℕ) : c ∈ μ.cells ↔ c ∈ μ :=
@@ -202,9 +201,10 @@ theorem transpose_transpose (μ : YoungDiagram) : μ.transpose.transpose = μ :=
   simp
 
 theorem transpose_eq_iff_eq_transpose {μ ν : YoungDiagram} : μ.transpose = ν ↔ μ = ν.transpose := by
-  constructor <;>
-    · rintro rfl
-      simp
+  constructor
+  all_goals
+    rintro rfl
+    simp
 
 @[simp]
 theorem transpose_eq_iff {μ ν : YoungDiagram} : μ.transpose = ν.transpose ↔ μ = ν := by
@@ -221,7 +221,7 @@ protected theorem le_of_transpose_le {μ ν : YoungDiagram} (h_le : μ.transpose
 @[simp]
 theorem transpose_le_iff {μ ν : YoungDiagram} : μ.transpose ≤ ν.transpose ↔ μ ≤ ν :=
   ⟨fun h => by
-    convert! YoungDiagram.le_of_transpose_le h
+    convert YoungDiagram.le_of_transpose_le h
     simp, fun h => by
     rw [← transpose_transpose μ] at h
     exact YoungDiagram.le_of_transpose_le h ⟩
@@ -319,7 +319,7 @@ theorem mem_col_iff {μ : YoungDiagram} {j : ℕ} {c : ℕ × ℕ} : c ∈ μ.co
 theorem mk_mem_col_iff {μ : YoungDiagram} {i j : ℕ} : (i, j) ∈ μ.col j ↔ (i, j) ∈ μ := by simp [col]
 
 protected theorem exists_notMem_col (μ : YoungDiagram) (j : ℕ) : ∃ i, (i, j) ∉ μ.cells := by
-  convert! μ.transpose.exists_notMem_row j using 1
+  convert μ.transpose.exists_notMem_row j using 1
   simp
 
 /-- Length of a column of a Young diagram -/
@@ -350,7 +350,7 @@ theorem colLen_eq_card (μ : YoungDiagram) {j : ℕ} : μ.colLen j = (μ.col j).
 
 @[gcongr, mono]
 theorem colLen_anti (μ : YoungDiagram) (j1 j2 : ℕ) (hj : j1 ≤ j2) : μ.colLen j2 ≤ μ.colLen j1 := by
-  convert! μ.transpose.rowLen_anti j1 j2 hj using 1 <;> simp
+  convert μ.transpose.rowLen_anti j1 j2 hj using 1 <;> simp
 
 end Columns
 
@@ -361,7 +361,6 @@ section RowLens
 This section defines `μ.rowLens : List ℕ`, the list of row lengths of a Young diagram `μ`.
   1. `YoungDiagram.rowLens_sorted` : It is weakly decreasing (`List.SortedGE`).
   2. `YoungDiagram.rowLens_pos` : It is strictly positive.
-
 -/
 
 
@@ -410,7 +409,6 @@ of positive natural numbers, corresponding to row lengths of the diagram:
   `YoungDiagram ≃ {w : List ℕ // w.SortedGE ∧ ∀ x ∈ w, 0 < x}`
 
 The two directions are `YoungDiagram.rowLens` (defined above) and `YoungDiagram.ofRowLens`.
-
 -/
 
 
@@ -477,7 +475,7 @@ A Young diagram `μ` is equivalent to a list of row lengths. -/
 @[simps]
 def equivListRowLens : YoungDiagram ≃ { w : List ℕ // w.SortedGE ∧ ∀ x ∈ w, 0 < x } where
   toFun μ := ⟨μ.rowLens, μ.rowLens_sorted, μ.pos_of_mem_rowLens⟩
-  invFun ww := ofRowLens ww.1 ww.2.1
+  invFun ww := ofRowLens ww.val ww.property.1
   left_inv _ := ofRowLens_to_rowLens_eq_self
   right_inv := fun ⟨_, hw⟩ => Subtype.mk_eq_mk.mpr (rowLens_ofRowLens_eq_self hw.2)
 

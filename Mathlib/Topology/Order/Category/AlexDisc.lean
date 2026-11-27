@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Specialization
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Category of Alexandrov-discrete topological spaces
 
@@ -45,7 +48,7 @@ instance forgetToTop_full : (forget₂ AlexDisc TopCat).Full where
 instance forgetToTop_faithful : (forget₂ AlexDisc TopCat).Faithful where
   map_injective {X Y f g} h := by
     ext x
-    exact ConcreteCategory.congr_hom h x
+    congrm $h x
 
 
 /-- Construct a bundled `AlexDisc` from the underlying topological space. -/
@@ -67,8 +70,8 @@ lemma coe_of (α : Type*) [TopologicalSpace α] [AlexandrovDiscrete α] : ↥(of
 /-- Constructs an equivalence between preorders from an order isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : AlexDisc} (e : α ≃ₜ β) : α ≅ β where
-  hom := ConcreteCategory.ofHom (e : ContinuousMap α β)
-  inv := ConcreteCategory.ofHom (e.symm : ContinuousMap β α)
+  hom := ConcreteCategory.ofHom e.toContinuousMap
+  inv := ConcreteCategory.ofHom e.symm.toContinuousMap
   hom_inv_id := by ext; apply e.symm_apply_apply
   inv_hom_id := by ext; apply e.apply_symm_apply
 

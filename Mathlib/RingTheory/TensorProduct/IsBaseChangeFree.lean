@@ -5,16 +5,14 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
 public import Mathlib.LinearAlgebra.FreeModule.Basic
-public import Mathlib.LinearAlgebra.DirectSum.Finsupp
+public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
 
 /-! # Base change of a free module
 
 * `IsBaseChange.basis` : the natural basis of the base change of a module with a basis
 
 * `IsBaseChange.free` : a base change of a free module is free.
-
 -/
 
 @[expose] public section
@@ -118,7 +116,7 @@ theorem of_fintype_basis [Fintype ι] :
         Module.Basis.span_eq, b.linearIndependent]
   · intro x
     -- simp? [Fintype.linearCombination_apply] says:
-    simp only [LinearEquiv.ofBijective_apply, LinearMap.coe_comp, LinearEquiv.coe_coe,
+    simp only [LinearEquiv.ofBijective_apply, LinearMap.coe_comp, LinearEquiv.coe_toLinearMap,
       Function.comp_apply, Fintype.linearCombination_apply]
     congr
     ext i

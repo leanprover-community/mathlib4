@@ -175,8 +175,9 @@ instance [Group G] [Group H] [TopologicalSpace G] [MulDistribMulAction H G]
     DiscreteTopology ↑(h • 𝒢) := by
   simp only [← SetLike.coe_sort_coe, ← isDiscrete_iff_discreteTopology] at *
   refine IsDiscrete.image_of_isOpenMap ‹_› ?_ fun x y ↦ by simp
-  apply IsOpenMap.of_inverse (f' := fun x ↦ h⁻¹ • x) (continuous_const_smul _) <;>
-  · intro x
+  apply IsOpenMap.of_inverse (f' := fun x ↦ h⁻¹ • x) (continuous_const_smul _)
+  all_goals
+    intro x
     simp
 
 variable [TopologicalSpace G] [Inv G] [Mul G]
@@ -242,11 +243,11 @@ variable (G)
 
 @[to_additive]
 theorem nhds_one_symm : comap Inv.inv (𝓝 (1 : G)) = 𝓝 (1 : G) :=
-  ((Homeomorph.inv G).comap_nhds_eq _).trans (congr_arg 𝓝 inv_one)
+  ((Homeomorph.inv G).comap_nhds_eq _).trans congr(𝓝 $inv_one)
 
 @[to_additive]
 theorem nhds_one_symm' : map Inv.inv (𝓝 (1 : G)) = 𝓝 (1 : G) :=
-  ((Homeomorph.inv G).map_nhds_eq _).trans (congr_arg 𝓝 inv_one)
+  ((Homeomorph.inv G).map_nhds_eq _).trans congr(𝓝 $inv_one)
 
 @[to_additive]
 theorem inv_mem_nhds_one {S : Set G} (hS : S ∈ (𝓝 1 : Filter G)) : S⁻¹ ∈ 𝓝 (1 : G) := by
@@ -384,7 +385,7 @@ instance (priority := 100) SeparableWeaklyLocallyCompactGroup.sigmaCompactSpace 
     obtain ⟨_, ⟨n, rfl⟩, hn⟩ : (range (denseSeq G) ∩ (fun y => x * y) ⁻¹' L).Nonempty := by
       rw [← (Homeomorph.mulLeft x).apply_symm_apply 1] at hL1
       exact (denseRange_denseSeq G).inter_nhds_nonempty
-          ((Homeomorph.mulLeft x).continuous.continuousAt <| hL1)
+          ((Homeomorph.mulLeft x).continuous.continuousAt hL1)
     exact ⟨n, hn⟩
 
 /-- Given two compact sets in a noncompact topological group, there is a translate of the second

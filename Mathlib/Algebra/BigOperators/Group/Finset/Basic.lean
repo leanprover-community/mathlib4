@@ -100,6 +100,12 @@ theorem prod_image [DecidableEq ι] {s : Finset κ} {g : κ → ι} :
 lemma prod_attach (s : Finset ι) (f : ι → M) : ∏ x ∈ s.attach, f x = ∏ x ∈ s, f x := by
   classical rw [← prod_image Subtype.coe_injective.injOn, attach_image_val]
 
+/-- This is a specialization of `prod_attach` which `simp` is better at unifying. -/
+@[to_additive (attr := simp)]
+lemma prod_attach_index {s : Finset ι} (f : ι → κ) {h : ι → κ → M} :
+    ∏ x ∈ s.attach, h x (f x) = ∏ x ∈ s, h x (f x) :=
+  prod_attach _ fun x ↦ h x (f x)
+
 @[to_additive (attr := congr)]
 theorem prod_congr (h : s₁ = s₂) : (∀ x ∈ s₂, f x = g x) → s₁.prod f = s₂.prod g := by
   rw [h]; exact fold_congr
@@ -173,7 +179,7 @@ theorem prod_filter_xor (p q : ι → Prop) [DecidablePred p] [DecidablePred q] 
 theorem _root_.IsCompl.prod_mul_prod [Fintype ι] {s t : Finset ι} (h : IsCompl s t) (f : ι → M) :
     (∏ i ∈ s, f i) * ∏ i ∈ t, f i = ∏ i, f i :=
   (Finset.prod_disjUnion h.disjoint).symm.trans <| by
-    classical rw [Finset.disjUnion_eq_union, ← Finset.sup_eq_union, h.sup_eq_top]; rfl
+    classical rw [Finset.disjUnion_eq_union, h.sup_eq_top]; rfl
 
 /-- Multiplying the products of a function over `s` and over `sᶜ` gives the whole product.
 For a version expressed with subtypes, see `Fintype.prod_subtype_mul_prod_subtype`. -/
@@ -494,12 +500,36 @@ theorem prod_extend_by_one [DecidableEq ι] (s : Finset ι) (f : ι → M) :
     ∏ i ∈ s, (if i ∈ s then f i else 1) = ∏ i ∈ s, f i :=
   (prod_congr rfl) fun _i hi => ite_eq_left hi
 
+@[to_additive]
+theorem prod_extend [DecidableEq κ] {t : Finset κ} {f : ι → κ} {g : ι → M} (j : κ → M)
+    (hfg : FactorsThrough g f) (hf : Set.BijOn f s (t ∩ Set.range f)) :
+    ∏ i ∈ t, extend f g j i = (∏ i ∈ t \ s.image f, j i) * ∏ i ∈ s, g i := by
+  have : s.image f ⊆ t := by simp [← coe_subset, hf.image_eq]
+  rw [← prod_sdiff this, prod_image hf.injOn]
+  congrm $(prod_congr rfl fun i hi ↦ ?_) * $(prod_congr rfl fun i hi ↦ hfg.extend_apply _ _)
+  refine extend_apply' _ _ _ fun hfi ↦ ?_
+  obtain ⟨hit, hifs⟩ := mem_sdiff.mp hi
+  obtain ⟨a, rfl⟩ := hfi
+  simp [← mem_coe, hf.image_eq, hit] at hifs
+
+@[to_additive]
+theorem prod_extend_one {t : Finset κ} {f : ι → κ} {g : ι → M} (hfg : FactorsThrough g f)
+    (hf : Set.BijOn f s (t ∩ Set.range f)) :
+    ∏ i ∈ t, extend f g 1 i = ∏ i ∈ s, g i := by
+  classical simp [prod_extend 1 hfg hf]
+
+@[to_additive]
+theorem prod_extend_one_of_injective [Fintype ι] {t : Finset κ} {f : ι → κ} (g : ι → M)
+    (hf : Injective f) (ht : ∀ i, f i ∈ t) :
+    ∏ i ∈ t, extend f g 1 i = ∏ i, g i := by
+  apply prod_extend_one (hf.factorsThrough _)
+  convert hf.bijOn_image
+  simpa [Set.range_subset_iff] using ht
+
 /-- Also see `Finset.prod_ite_mem_eq` -/
 @[to_additive /-- Also see `Finset.sum_ite_mem_eq` -/]
-theorem prod_eq_prod_extend (f : s → M) : ∏ x, f x = ∏ x ∈ s, Subtype.val.extend f 1 x := by
-  rw [univ_eq_attach, ← Finset.prod_attach s]
-  congr with ⟨x, hx⟩
-  rw [Subtype.val_injective.extend_apply]
+theorem prod_eq_prod_extend (f : s → M) : ∏ x, f x = ∏ x ∈ s, Subtype.val.extend f 1 x :=
+  (prod_extend_one_of_injective _ Subtype.val_injective fun i ↦ i.prop).symm
 
 @[to_additive]
 theorem prod_bij_ne_one {s : Finset ι} {t : Finset κ} {f : ι → M} {g : κ → M}
@@ -612,7 +642,7 @@ theorem prod_multiset_count_of_subset [DecidableEq M] (m : Multiset M) (s : Fins
     (hs : m.toFinset ⊆ s) : m.prod = ∏ i ∈ s, i ^ m.count i := by
   revert hs
   refine Quot.induction_on m fun l => ?_
-  simp only [quot_mk_to_coe'', prod_coe, coe_count]
+  simp only [quot_mk_to_coe', prod_coe, coe_count]
   apply prod_list_count_of_subset l s
 
 /-- For any product along `{0, ..., n - 1}` of a commutative-monoid-valued function, we can verify
@@ -1002,7 +1032,7 @@ end Nat
 end Finset
 
 namespace Fintype
-variable {ι κ ι : Type*} [Fintype ι] [Fintype κ]
+variable {ι κ : Type*} [Fintype ι] [Fintype κ]
 
 open Finset
 
@@ -1137,6 +1167,10 @@ lemma IsUnit.prod_iff [CommMonoid M] {f : ι → M} :
 @[to_additive]
 lemma IsUnit.prod_univ_iff [Fintype ι] [CommMonoid M] {f : ι → M} :
     IsUnit (∏ a, f a) ↔ ∀ a, IsUnit (f a) := by simp
+
+@[simp] theorem Int.natAbs_prod (s : Finset ι) (f : ι → ℤ) :
+    (∏ i ∈ s, f i).natAbs = ∏ i ∈ s, (f i).natAbs := by
+  induction s using Finset.cons_induction with grind [natAbs_mul]
 
 theorem Int.natAbs_sum_le (s : Finset ι) (f : ι → ℤ) :
     (∑ i ∈ s, f i).natAbs ≤ ∑ i ∈ s, (f i).natAbs := by

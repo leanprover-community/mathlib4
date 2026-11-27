@@ -5,13 +5,15 @@ Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Ne
 -/
 module
 
-public import Mathlib.Algebra.Ring.InjSurj
 public import Mathlib.Algebra.Group.Units.Hom
 public import Mathlib.Algebra.Ring.Hom.Defs
+public import Mathlib.Algebra.Ring.InjSurj
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Units in semirings and rings
-
 -/
 
 public section
@@ -39,7 +41,6 @@ mapping this element to its additive inverse. -/
 protected theorem val_neg (u : αˣ) : (↑(-u) : α) = -u :=
   rfl
 
-@[simp, norm_cast]
 protected theorem coe_neg_one : ((-1 : αˣ) : α) = -1 :=
   rfl
 

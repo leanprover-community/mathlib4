@@ -22,7 +22,6 @@ stated via `[QuasiSober α] [T0Space α]`.
 * `IsGenericPoint` : `x` is the generic point of `S` if `S` is the closure of `x`.
 * `QuasiSober` : A space is quasi-sober if every irreducible closed subset has a generic point.
 * `genericPoints` : The set of generic points of irreducible components.
-
 -/
 
 @[expose] public section
@@ -104,7 +103,7 @@ end genericPoint
 
 section Sober
 
-/-- A space is sober if every irreducible closed subset has a generic point. -/
+/-- A space is quasi-sober if every irreducible closed subset has a generic point. -/
 @[mk_iff, stacks 004X "(3)"]
 class QuasiSober (α : Type*) [TopologicalSpace α] : Prop where
   sober : ∀ {S : Set α}, IsIrreducible S → IsClosed S → ∃ x, IsGenericPoint x S
@@ -122,7 +121,7 @@ theorem IsIrreducible.isGenericPoint_genericPoint_closure
 theorem IsIrreducible.isGenericPoint_genericPoint [QuasiSober α] {S : Set α}
     (hS : IsIrreducible S) (hS' : IsClosed S) :
     IsGenericPoint hS.genericPoint S := by
-  convert! hS.isGenericPoint_genericPoint_closure; exact hS'.closure_eq.symm
+  convert hS.isGenericPoint_genericPoint_closure; exact hS'.closure_eq.symm
 
 @[simp]
 theorem IsIrreducible.genericPoint_closure_eq [QuasiSober α] {S : Set α} (hS : IsIrreducible S) :
@@ -159,12 +158,12 @@ attribute [local instance] specializationOrder
 /-- The closed irreducible subsets of a sober space bijects with the points of the space. -/
 noncomputable def irreducibleSetEquivPoints [QuasiSober α] [T0Space α] :
     TopologicalSpace.IrreducibleCloseds α ≃o α where
-  toFun s := s.2.genericPoint
+  toFun s := s.isIrreducible'.genericPoint
   invFun x := ⟨closure ({x} : Set α), isIrreducible_singleton.closure, isClosed_closure⟩
   left_inv s := by
     refine TopologicalSpace.IrreducibleCloseds.ext ?_
     simp only [IsIrreducible.genericPoint_closure_eq, TopologicalSpace.IrreducibleCloseds.coe_mk,
-      closure_eq_iff_isClosed.mpr s.3]
+      closure_eq_iff_isClosed.mpr s.isClosed']
     rfl
   right_inv x := isIrreducible_singleton.closure.isGenericPoint_genericPoint_closure.eq
       (by rw [closure_closure]; exact isGenericPoint_closure)
@@ -214,19 +213,19 @@ theorem Topology.IsOpenEmbedding.quasiSober {f : α → β} (hf : IsOpenEmbeddin
 lemma TopologicalSpace.IsOpenCover.quasiSober_iff_forall {ι : Type*} {U : ι → Opens α}
     (hU : TopologicalSpace.IsOpenCover U) : QuasiSober α ↔ ∀ i, QuasiSober (U i) := by
   refine ⟨fun h i ↦ (U i).isOpenEmbedding'.quasiSober, fun hU' ↦ (quasiSober_iff _).mpr ?_⟩
-  · rintro t ⟨⟨x, hx⟩, h⟩ h'
-    obtain ⟨i, hi⟩ := hU.exists_mem x
-    have H : IsIrreducible ((↑) ⁻¹' t : Set (U i)) :=
-      ⟨⟨⟨x, hi⟩, hx⟩, h.preimage (U i).isOpenEmbedding'⟩
-    use H.genericPoint
-    apply le_antisymm
-    · simpa [h'.closure_subset_iff, h'.closure_eq] using!
-        continuous_subtype_val.closure_preimage_subset _ H.isGenericPoint_genericPoint_closure.mem
-    rw [← image_singleton, ← closure_image_closure continuous_subtype_val,
-      H.isGenericPoint_genericPoint_closure.def]
-    refine (subset_closure_inter_of_isPreirreducible_of_isOpen h (U i).isOpen ⟨x, ⟨hx, hi⟩⟩).trans
-      (closure_mono ?_)
-    simpa only [inter_comm t, ← Subtype.image_preimage_coe] using! Set.image_mono subset_closure
+  rintro t ⟨⟨x, hx⟩, h⟩ h'
+  obtain ⟨i, hi⟩ := hU.exists_mem x
+  have H : IsIrreducible ((↑) ⁻¹' t : Set (U i)) :=
+    ⟨⟨⟨x, hi⟩, hx⟩, h.preimage (U i).isOpenEmbedding'⟩
+  use H.genericPoint
+  apply le_antisymm
+  · simpa [h'.closure_subset_iff, h'.closure_eq] using!
+      continuous_subtypeVal.closure_preimage_subset _ H.isGenericPoint_genericPoint_closure.mem
+  rw [← image_singleton, ← closure_image_closure continuous_subtypeVal,
+    H.isGenericPoint_genericPoint_closure.def]
+  refine (subset_closure_inter_of_isPreirreducible_of_isOpen h (U i).isOpen ⟨x, ⟨hx, hi⟩⟩).trans
+    (closure_mono ?_)
+  simpa only [inter_comm t, ← Subtype.image_preimage_coe] using! Set.image_mono subset_closure
 
 lemma TopologicalSpace.IsOpenCover.quasiSober {ι : Type*} {U : ι → Opens α}
     (hU : TopologicalSpace.IsOpenCover U) [∀ i, QuasiSober (U i)] : QuasiSober α :=
@@ -291,9 +290,9 @@ namespace genericPoints
 
 /-- The irreducible component of a generic point -/
 def component (x : genericPoints α) : irreducibleComponents α :=
-  ⟨closure {x.1}, x.2⟩
+  ⟨closure {x.val}, x.property⟩
 
-lemma isGenericPoint (x : genericPoints α) : IsGenericPoint x.1 (component x).1 := rfl
+lemma isGenericPoint (x : genericPoints α) : IsGenericPoint x.val (component x).val := rfl
 
 lemma component_injective [T0Space α] : Function.Injective (component (α := α)) :=
   fun x y e ↦ Subtype.ext ((isGenericPoint x).eq (e ▸ isGenericPoint y))
@@ -301,12 +300,14 @@ lemma component_injective [T0Space α] : Function.Injective (component (α := α
 /-- The generic point of an irreducible component. -/
 noncomputable
 def ofComponent [QuasiSober α] (x : irreducibleComponents α) : genericPoints α :=
-  ⟨x.2.1.genericPoint, show _ ∈ irreducibleComponents α from
-    (x.2.1.isGenericPoint_genericPoint (isClosed_of_mem_irreducibleComponents x.1 x.2)).symm ▸ x.2⟩
+  ⟨x.property.1.genericPoint, show _ ∈ irreducibleComponents α from
+    (x.property.1.isGenericPoint_genericPoint
+      (isClosed_of_mem_irreducibleComponents x.val x.property)).symm ▸ x.property⟩
 
 lemma isGenericPoint_ofComponent [QuasiSober α] (x : irreducibleComponents α) :
-    IsGenericPoint (ofComponent x).1 x :=
-    x.2.1.isGenericPoint_genericPoint (isClosed_of_mem_irreducibleComponents x.1 x.2)
+    IsGenericPoint (ofComponent x).val x :=
+    x.property.1.isGenericPoint_genericPoint
+      (isClosed_of_mem_irreducibleComponents x.val x.property)
 
 @[simp]
 lemma component_ofComponent [QuasiSober α] (x : irreducibleComponents α) :
@@ -334,7 +335,7 @@ lemma closure [QuasiSober α] : closure (genericPoints α) = Set.univ := by
   refine Set.eq_univ_iff_forall.mpr fun x ↦ Set.subset_def.mp ?_ x mem_irreducibleComponent
   refine (isGenericPoint_ofComponent
     ⟨_, irreducibleComponent_mem_irreducibleComponents x⟩).symm.trans_subset (closure_mono ?_)
-  exact Set.singleton_subset_iff.mpr (ofComponent _).2
+  exact Set.singleton_subset_iff.mpr (ofComponent _).property
 
 end genericPoints
 

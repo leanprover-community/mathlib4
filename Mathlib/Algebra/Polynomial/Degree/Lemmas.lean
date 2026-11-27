@@ -6,24 +6,17 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 module
 
 public import Mathlib.Algebra.Polynomial.Eval.Degree
-public import Mathlib.Algebra.Prime.Lemmas
 
 /-!
 # Theory of degrees of polynomials
 
 Some of the main results include
 - `natDegree_comp_le` : The degree of the composition is at most the product of degrees
-
 -/
 
 public section
 
-
-noncomputable section
-
-open Polynomial
-
-open Finset
+open AddMonoidAlgebra Finset Polynomial
 
 namespace Polynomial
 
@@ -44,7 +37,7 @@ theorem natDegree_comp_le : natDegree (p.comp q) ≤ natDegree p * natDegree q :
     WithBot.coe_le_coe.1 <|
       calc
         ↑(natDegree (p.comp q)) = degree (p.comp q) := (degree_eq_natDegree h0).symm
-        _ = _ := congr_arg degree comp_eq_sum_left
+        _ = _ := congr(degree $comp_eq_sum_left)
         _ ≤ _ := degree_sum_le _ _
         _ ≤ _ :=
           Finset.sup_le fun n hn =>
@@ -82,7 +75,7 @@ theorem natDegree_add_le_iff_left {n : ℕ} (p q : R[X]) (qn : q.natDegree ≤ n
     (p + q).natDegree ≤ n ↔ p.natDegree ≤ n := by
   refine ⟨fun h => ?_, fun h => natDegree_add_le_of_degree_le h qn⟩
   refine natDegree_le_iff_coeff_eq_zero.mpr fun m hm => ?_
-  convert! natDegree_le_iff_coeff_eq_zero.mp h m hm using 1
+  convert natDegree_le_iff_coeff_eq_zero.mp h m hm using 1
   rw [coeff_add, natDegree_le_iff_coeff_eq_zero.mp qn _ hm, add_zero]
 
 theorem natDegree_add_le_iff_right {n : ℕ} (p q : R[X]) (pn : p.natDegree ≤ n) :
@@ -166,7 +159,7 @@ theorem coeff_pow_eq_ite_of_natDegree_le_of_le {o : ℕ}
 
 theorem coeff_add_eq_left_of_lt (qn : q.natDegree < n) : (p + q).coeff n = p.coeff n :=
   (coeff_add _ _ _).trans <|
-    (congr_arg _ <| coeff_eq_zero_of_natDegree_lt <| qn).trans <| add_zero _
+    (congr_arg _ <| coeff_eq_zero_of_natDegree_lt qn).trans <| add_zero _
 
 theorem coeff_add_eq_right_of_lt (pn : p.natDegree < n) : (p + q).coeff n = q.coeff n := by
   rw [add_comm]
@@ -415,8 +408,28 @@ end NoZeroDivisors
   simp [((Commute.neg_one_left _).pow_left _).eq, h]
 
 @[simp]
+lemma natDegree_comp_neg_X [Ring R] {p : R[X]} : (p.comp (-X)).natDegree = p.natDegree := by
+  nontriviality R
+  rcases eq_or_ne p 0 with rfl | hp
+  · rw [zero_comp]
+  rw [natDegree_comp_eq_of_mul_ne_zero (by simp [hp]), natDegree_neg, natDegree_X, mul_one]
+
+@[simp]
+theorem comp_neg_X_eq_C_iff [Ring R] {p : R[X]} {a : R} : p.comp (-X) = C a ↔ p = C a := by
+  grind [→ eq_C_of_natDegree_eq_zero, natDegree_C, natDegree_comp_neg_X, C_comp]
+
+@[simp]
 theorem comp_neg_X_eq_zero_iff [Ring R] {p : R[X]} : p.comp (-X) = 0 ↔ p = 0 := by
-  simp [← leadingCoeff_eq_zero]
+  simpa using comp_neg_X_eq_C_iff (p := p) (a := 0)
+
+@[simp]
+theorem comp_neg_X_eq_one_iff [Ring R] {p : R[X]} : p.comp (-X) = 1 ↔ p = 1 := by
+  simpa using comp_neg_X_eq_C_iff (p := p) (a := 1)
+
+@[simp] lemma degree_comp_neg_X [Ring R] {p : R[X]} : (p.comp (-X)).degree = p.degree := by
+  rcases eq_or_ne p 0 with rfl | hp
+  · rw [zero_comp]
+  rw [degree_eq_natDegree (by simp [hp]), degree_eq_natDegree hp, natDegree_comp_neg_X]
 
 lemma comp_eq_zero_iff [Semiring R] [NoZeroDivisors R] {p q : R[X]} :
     p.comp q = 0 ↔ p = 0 ∨ p.eval (q.coeff 0) = 0 ∧ q = C (q.coeff 0) := by
@@ -439,13 +452,6 @@ lemma degree_comp [Semiring R] [NoZeroDivisors R] {p q : R[X]} (hq : 0 < q.degre
   apply degree_eq_natDegree
   simp_rw [Ne, comp_eq_zero_iff, hp, false_or, not_and_or, ← degree_le_zero_iff]
   simp [hq]
-
-@[simp] lemma degree_comp_neg_X [Ring R] {p : R[X]} : (p.comp (-X)).degree = p.degree := by
-  nontriviality R
-  rcases eq_or_ne p 0 with rfl | hp
-  · rw [zero_comp]
-  rw [degree_eq_natDegree (by simp [hp]), degree_eq_natDegree hp, Nat.cast_inj,
-    natDegree_comp_eq_of_mul_ne_zero (by simp [hp]), natDegree_neg, natDegree_X, mul_one]
 
 section DivisionRing
 

@@ -6,7 +6,6 @@ Authors: Leonardo de Moura
 module
 
 public import Mathlib.Data.Set.Defs
-public import Batteries.Tactic.Alias
 public import Mathlib.Tactic.ExtendDoc
 
 
@@ -182,11 +181,20 @@ lemma total_of [Std.Total r] (a b : α) : a ≺ b ∨ b ≺ a := Std.Total.total
 @[elab_without_expected_type]
 lemma trichotomous_of [Std.Trichotomous r] : ∀ a b : α, a ≺ b ∨ a = b ∨ b ≺ a := trichotomous
 
-section
+theorem stdIsPreorder_iff {α : Type*} [LE α] : Std.IsPreorder α ↔ IsPreorder α (· ≤ ·) :=
+  ⟨fun _ ↦ {}, fun _ ↦ ⟨refl, fun _ _ _ ↦ _root_.trans⟩⟩
 
-/-- `Std.Refl` as a definition, suitable for use in proofs. -/
-@[deprecated Std.Refl (since := "2026-03-27")]
-def Reflexive := ∀ x, x ≺ x
+theorem stdIsPartialOrder_iff {α : Type*} [LE α] :
+    Std.IsPartialOrder α ↔ IsPartialOrder α (· ≤ ·) := by
+  refine ⟨fun _ ↦ {}, fun _ ↦ { toIsPreorder := ?_, le_antisymm _ _ := antisymm }⟩
+  exact stdIsPreorder_iff.mpr inferInstance
+
+theorem stdIsLinearOrder_iff {α : Type*} [LE α] :
+    Std.IsLinearOrder α ↔ IsLinearOrder α (· ≤ ·) := by
+  refine ⟨fun _ ↦ {}, fun _ ↦ { toIsPartialOrder := ?_, le_total := total_of _ }⟩
+  exact stdIsPartialOrder_iff.mpr inferInstance
+
+section
 
 /-- `Std.Symm` as a definition, suitable for use in proofs. -/
 @[deprecated Std.Symm (since := "2026-06-10")]
@@ -194,8 +202,6 @@ def Symmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x
 
 theorem Equivalence.stdRefl (h : Equivalence r) : Std.Refl r where
   refl := h.refl
-
-@[deprecated (since := "2026-03-27")] alias Equivalence.reflexive := Equivalence.stdRefl
 
 theorem Equivalence.stdSymm (h : Equivalence r) : Std.Symm r where
   symm _ _ := h.symm

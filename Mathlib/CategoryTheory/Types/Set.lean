@@ -7,14 +7,15 @@ module
 
 public import Mathlib.CategoryTheory.Category.Preorder
 public import Mathlib.CategoryTheory.Types.Basic
-public import Mathlib.Data.Set.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The functor from `Set X` to types
 
 Given `X : Type u`, we define the functor `Set.functorToTypes : Set X ⥤ Type u`
 which sends `A : Set X` to its underlying type.
-
 -/
 
 @[expose] public section

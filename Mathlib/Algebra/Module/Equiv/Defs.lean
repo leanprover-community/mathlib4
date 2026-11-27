@@ -8,6 +8,8 @@ module
 
 public import Mathlib.Algebra.Module.LinearMap.Defs
 
+import Mathlib.Algebra.Group.IsApply
+
 /-!
 # (Semi)linear equivalences
 
@@ -115,10 +117,11 @@ instance (priority := 100) [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
 variable {F}
 
 /-- Reinterpret an element of a type of semilinear equivalences as a semilinear equivalence. -/
-@[coe]
-def semilinearEquiv [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
+def _root_.LinearEquiv.ofClass [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
     [EquivLike F M M₂] [SemilinearEquivClass F σ M M₂] (f : F) : M ≃ₛₗ[σ] M₂ :=
   { (f : M ≃+ M₂), (f : M →ₛₗ[σ] M₂) with }
+
+@[deprecated (since := "2026-11-22")] alias semilinearEquiv := LinearEquiv.ofClass
 
 end SemilinearEquivClass
 
@@ -185,6 +188,11 @@ theorem coe_injective : @Injective (M ≃ₛₗ[σ] M₂) (M → M₂) DFunLike.
   DFunLike.coe_injective
 
 @[simp]
+protected lemma coe_ofClass {F : Type*} [EquivLike F M M₂]
+    [SemilinearEquivClass F σ M M₂] (f : F) :
+    ⇑(.ofClass f : M ≃ₛₗ[σ] M₂) = f := rfl
+
+@[deprecated LinearEquiv.coe_ofClass +typeChanged (since := "2026-11-22")]
 lemma _root_.SemilinearEquivClass.semilinearEquiv_apply {F : Type*} [EquivLike F M M₂]
     [SemilinearEquivClass F σ M M₂] (f : F) (x : M) :
     SemilinearEquivClass.semilinearEquiv (M₂ := M₂) f x = f x := rfl
@@ -201,17 +209,14 @@ variable {module_M : Module R M} {module_S_M₂ : Module S M₂} {σ : R →+* S
 variable {re₁ : RingHomInvPair σ σ'} {re₂ : RingHomInvPair σ' σ}
 variable (e e' : M ≃ₛₗ[σ] M₂)
 
-@[simp, norm_cast]
-theorem coe_coe : ⇑(e : M →ₛₗ[σ] M₂) = e :=
-  rfl
-
 @[simp]
 theorem coe_toEquiv : ⇑(e.toEquiv) = e :=
   rfl
 
-@[simp]
-theorem coe_toLinearMap : ⇑e.toLinearMap = e :=
-  rfl
+@[simp, norm_cast]
+theorem coe_toLinearMap : ⇑e.toLinearMap = e := rfl
+
+@[deprecated (since := "2026-11-23")] protected alias coe_coe := coe_toLinearMap
 
 theorem toFun_eq_coe : e.toFun = e := by dsimp
 
@@ -227,7 +232,7 @@ protected theorem congr_arg {x x'} : x = x' → e x = e x' :=
   DFunLike.congr_arg e
 
 protected theorem congr_fun (h : e = e') (x : M) : e x = e' x :=
-  DFunLike.congr_fun h x
+  congr($h x)
 
 end
 
@@ -449,7 +454,7 @@ theorem comp_toLinearMap_eq_iff (f g : M₃ →ₛₗ[σ₃₁] M₁) :
 @[simp]
 theorem eq_comp_toLinearMap_iff (f g : M₂ →ₛₗ[σ₂₃] M₃) :
     f.comp e₁₂.toLinearMap = g.comp e₁₂.toLinearMap ↔ f = g := by
-  refine ⟨fun h => ?_, fun a ↦ congrFun (congrArg LinearMap.comp a) e₁₂.toLinearMap⟩
+  refine ⟨fun h => ?_, fun a ↦ congr(LinearMap.comp $a e₁₂.toLinearMap)⟩
   rw [(eq_comp_toLinearMap_symm g (f.comp e₁₂.toLinearMap)).mpr h.symm, eq_comp_toLinearMap_symm]
 
 lemma comp_symm_cancel_left (e : M₁ ≃ₛₗ[σ₁₂] M₂) (f : M₃ →ₛₗ[σ₃₂] M₂) :
@@ -542,7 +547,6 @@ theorem coe_symm_mk [Module R M] [Module R M₂]
     ⇑(⟨⟨⟨to_fun, map_add⟩, map_smul⟩, inv_fun, left_inv, right_inv⟩ : M ≃ₗ[R] M₂).symm = inv_fun :=
   rfl
 
-@[simp]
 theorem coe_symm_mk' [Module R M] [Module R M₂]
     {f inv_fun left_inv right_inv} :
     ⇑(⟨f, inv_fun, left_inv, right_inv⟩ : M ≃ₗ[R] M₂).symm = inv_fun := rfl
@@ -587,32 +591,9 @@ def _root_.RingEquiv.toSemilinearEquiv (f : R ≃+* S) :
     toFun := f
     map_smul' := f.map_mul }
 
-#adaptation_note
-/--
-After https://github.com/leanprover/lean4/pull/14624:
-
-We had to use the `instanceSearchTypes` and `respectTransparency` backward compatibility flags to
-make an instance search succeed. Concretely, the following instance cannot be synthesized:
-`CoeFun (R ≃ₛₗ[↑f] S) ?m`
-so without them the application below reports
-`Function expected at f.symm.toSemilinearEquiv.symm`.
-
-The failure happens while applying `@instEquivLike` to `EquivLike (R ≃ₛₗ[↑f] S) ?α ?β`: assigning
-one of its instance-implicit-argument metavariables is rejected because the metavariable's type and
-the type of the assigned value do not match at `.instances` transparency. The metavariable's
-expected type is `RingHomInvPair ↑f ↑f.symm`, whereas the assigned value
-`RingHomInvPair.symm ↑f.symm ↑f.symm.symm` has type `RingHomInvPair ↑f.symm.symm ↑f.symm`. Lean
-falls back to synthesizing `RingHomInvPair ↑f ↑f.symm`, but no such instnace is found, so the
-assignment fails.
-
-This is the intended behavior.
-A quick fix could be to provide the required instance via `haveI` or as a local instance.
--/
-set_option backward.isDefEq.respectTransparency false in
-set_option backward.isDefEq.respectTransparency.instanceSearchTypes false in
 @[simp]
 lemma _root_.RingEquiv.symm_toSemilinearEquiv_symm_apply (f : R ≃+* S) (x : R) :
-  f.symm.toSemilinearEquiv.symm (σ' := RingHomClass.toRingHom f) x = f x := rfl
+  dsimp% f.symm.toSemilinearEquiv.symm x = f x := rfl
 
 variable [AddCommMonoid M]
 
@@ -642,7 +623,8 @@ instance : SMul Sˣ (V ≃ₗ[R] W) where smul α e :=
     left_inv _ := by simp [LinearMapClass.map_smul_of_tower e.symm, smul_smul]
     right_inv _ := by simp [smul_smul] }
 
-@[simp] theorem smul_apply (α : Sˣ) (e : V ≃ₗ[R] W) (x : V) : (α • e) x = (α : S) • e x := rfl
+@[simp]
+protected theorem smul_apply (α : Sˣ) (e : V ≃ₗ[R] W) (x : V) : (α • e) x = (α : S) • e x := rfl
 
 theorem symm_smul_apply (e : V ≃ₗ[R] W) (α : Sˣ) (x : W) :
     (α • e).symm x = (↑α⁻¹ : S) • e.symm x := rfl

@@ -5,11 +5,12 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Geometry.Manifold.Algebra.Structures
 public import Mathlib.Geometry.Manifold.BumpFunction
 public import Mathlib.Geometry.Manifold.VectorBundle.ContMDiffSection
 public import Mathlib.Topology.MetricSpace.PartitionOfUnity
-public import Mathlib.Topology.ShrinkingLemma
+
+import Mathlib.Geometry.Manifold.Algebra.Structures
+import Mathlib.Topology.ShrinkingLemma
 
 /-!
 # Smooth partition of unity
@@ -164,7 +165,10 @@ theorem sum_le_one (x : M) : ∑ᶠ i, f i x ≤ 1 :=
 /-- Reinterpret a smooth partition of unity as a continuous partition of unity. -/
 @[simps]
 def toPartitionOfUnity : PartitionOfUnity ι M s :=
-  { f with toFun := fun i => f i }
+  { f with toFun := fun i => (f i).toContinuousMap }
+
+lemma toPartitionOfUnity_toFun_apply (i : ι) (a : M) :
+    f.toPartitionOfUnity i a = f i a := rfl
 
 theorem contMDiff_sum : CMDiff ∞ fun x => ∑ᶠ i, f i x :=
   contMDiff_finsum (fun i => (f i).contMDiff) f.locallyFinite
@@ -563,7 +567,7 @@ theorem exists_isSubordinate {s : Set M} (hs : IsClosed s) (U : ι → Set M) (h
     exact ⟨f.toSmoothPartitionOfUnity hf, hfU.toSmoothPartitionOfUnity hf⟩
   · intro s t hs ht hd
     rcases exists_contMDiffMap_zero_one_of_isClosed I hs ht hd with ⟨f, hf⟩
-    exact ⟨f, f.contMDiff, hf⟩
+    exact ⟨f.toContinuousMap, f.contMDiff, hf⟩
 
 theorem exists_isSubordinate_chartAt_source_of_isClosed {s : Set M} (hs : IsClosed s) :
     ∃ f : SmoothPartitionOfUnity s I M s,
@@ -644,8 +648,8 @@ theorem exists_contMDiffMap_forall_mem_convex_of_local (ht : ∀ x, Convex ℝ (
     ∃ g : C^n⟮I, M; 𝓘(ℝ, F), F⟯, ∀ x, g x ∈ t x :=
   let ⟨s, hs⟩ := exists_contMDiffSection_forall_mem_convex_of_local I (fun _ ↦ F) t ht
     (fun x₀ ↦ let ⟨U, hU, g, hgs, hgt⟩ := Hloc x₀
-      ⟨U, hU, g, fun y hy ↦ Bundle.contMDiffWithinAt_section |>.mpr <| hgs y hy, hgt⟩)
-  ⟨⟨s, (Bundle.contMDiffAt_section _ |>.mp <| s.contMDiff ·)⟩, hs⟩
+      ⟨U, hU, g, fun y hy ↦ contMDiffWithinAt_section_iff |>.mpr <| hgs y hy, hgt⟩)
+  ⟨⟨s, (contMDiffAt_section_iff _ |>.mp <| s.contMDiff ·)⟩, hs⟩
 
 /-- Let `M` be a σ-compact Hausdorff finite-dimensional topological manifold. Let `t : M → Set F` be
 a family of convex sets. Suppose that for each point `x : M` there exists a vector `c : F` such that
@@ -727,9 +731,7 @@ theorem IsOpen.exists_contMDiff_support_eq {s : Set M} (hs : IsOpen s) :
         simp [(chartAt H c).left_inv (hf c Hx), hx, (chartAt H c).map_source (hf c Hx)]
       apply finsum_pos (fun c ↦ h''g c x) B
       apply (f.locallyFinite.point_finite x).subset
-      apply compl_subset_compl.2
-      rintro c (hc : f c x = 0)
-      simpa only [mul_eq_zero] using! Or.inl hc
+      exact fun c hc h ↦ hc <| by simp [h]
     · apply finsum_eq_zero_of_forall_eq_zero
       intro c
       by_cases Hx : x ∈ tsupport (f c)

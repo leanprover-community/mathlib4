@@ -5,7 +5,6 @@ Authors: Yaël Dillies, Violeta Hernández Palacios, Grayson Burton, Floris van 
 -/
 module
 
-public import Mathlib.Order.Antisymmetrization
 public import Mathlib.Order.Interval.Set.OrdConnected
 public import Mathlib.Order.Interval.Set.WithBotTop
 
@@ -502,12 +501,6 @@ namespace Bool
 @[simp] theorem wcovBy_iff : ∀ {a b : Bool}, a ⩿ b ↔ a ≤ b := by unfold WCovBy; decide
 @[simp] theorem covBy_iff : ∀ {a b : Bool}, a ⋖ b ↔ a < b := by unfold CovBy; decide
 
-instance instDecidableRelWCovBy : DecidableRel (· ⩿ · : Bool → Bool → Prop) := fun _ _ ↦
-  decidable_of_iff _ wcovBy_iff.symm
-
-instance instDecidableRelCovBy : DecidableRel (· ⋖ · : Bool → Bool → Prop) := fun _ _ ↦
-  decidable_of_iff _ covBy_iff.symm
-
 end Bool
 
 namespace Set
@@ -522,7 +515,7 @@ variable {s t : Set α} {a : α}
 
 @[simp] lemma sdiff_singleton_wcovBy (s : Set α) (a : α) : s \ {a} ⩿ s := by
   by_cases ha : a ∈ s
-  · convert! wcovBy_insert a _
+  · convert wcovBy_insert a _
     ext
     simp [ha]
   · simp [ha]
@@ -534,7 +527,8 @@ variable {s t : Set α} {a : α}
   insert_empty_eq (β := Set α) a ▸ covBy_insert <| notMem_empty a
 
 @[simp] lemma sdiff_singleton_covBy (ha : a ∈ s) : s \ {a} ⋖ s :=
-  ⟨sdiff_lt (singleton_subset_iff.2 ha) <| singleton_ne_empty _, (sdiff_singleton_wcovBy _ _).2⟩
+  ⟨sdiff_lt (singleton_subset_iff.2 ha) <| (singleton_nonempty _).ne_empty,
+    (sdiff_singleton_wcovBy _ _).2⟩
 
 lemma _root_.CovBy.exists_set_insert (h : s ⋖ t) : ∃ a ∉ s, insert a s = t :=
   let ⟨a, ha, hst⟩ := ssubset_iff_insert.1 h.lt
@@ -543,7 +537,7 @@ lemma _root_.CovBy.exists_set_insert (h : s ⋖ t) : ∃ a ∉ s, insert a s = t
 lemma _root_.CovBy.exists_set_sdiff_singleton (h : s ⋖ t) : ∃ a ∈ t, t \ {a} = s :=
   let ⟨a, ha, hst⟩ := ssubset_iff_sdiff_singleton.1 h.lt
   ⟨a, ha, (hst.eq_of_not_ssubset fun h' ↦ h.2 h' <|
-    sdiff_lt (singleton_subset_iff.2 ha) <| singleton_ne_empty _).symm⟩
+    sdiff_lt (singleton_subset_iff.2 ha) <| (singleton_nonempty _).ne_empty).symm⟩
 
 lemma covBy_iff_exists_insert : s ⋖ t ↔ ∃ a ∉ s, insert a s = t :=
   ⟨CovBy.exists_set_insert, by rintro ⟨a, ha, rfl⟩; exact covBy_insert ha⟩

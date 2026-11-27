@@ -6,8 +6,8 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.LinearAlgebra.CliffordAlgebra.Grading
-public import Mathlib.LinearAlgebra.TensorProduct.Graded.Internal
 public import Mathlib.LinearAlgebra.QuadraticForm.Prod
+public import Mathlib.LinearAlgebra.TensorProduct.Graded.Internal
 
 /-!
 # Clifford algebras of a direct sum of two vector spaces
@@ -15,7 +15,7 @@ public import Mathlib.LinearAlgebra.QuadraticForm.Prod
 We show that the Clifford algebra of a direct sum is the graded tensor product of the Clifford
 algebras, as `CliffordAlgebra.equivProd`.
 
-## Main definitions:
+## Main definitions
 
 * `CliffordAlgebra.equivProd : CliffordAlgebra (Q₁.prod Q₂) ≃ₐ[R] (evenOdd Q₁ ᵍ⊗[R] evenOdd Q₂)`
 
@@ -23,7 +23,6 @@ algebras, as `CliffordAlgebra.equivProd`.
 
 Introduce morphisms and equivalences of graded algebras, and upgrade `CliffordAlgebra.equivProd`
 to a graded algebra equivalence.
-
 -/
 
 @[expose] public section

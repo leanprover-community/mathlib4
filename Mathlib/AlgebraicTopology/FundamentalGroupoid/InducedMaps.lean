@@ -5,9 +5,8 @@ Authors: Praneeth Kolichala, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.Homotopy.Equiv
-public import Mathlib.CategoryTheory.Equivalence
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.Product
+public import Mathlib.Topology.Homotopy.Equiv
 
 /-!
 # Homotopic maps induce naturally isomorphic functors
@@ -44,7 +43,7 @@ theorem Path.Homotopic.map_trans_evalAt {X Y : Type*} [TopologicalSpace X] [Topo
   /- Let `G` be the continuous map on the unit square sending `(t, s)` to `F(t, p(s))`.
   Then our homotopy is the image under `G` of a homotopy
   between the two paths from `(0, 0)` to `(1, 1)` along the sides of the square. -/
-  set G : C(I × I, Y) := F.toContinuousMap.comp (.prodMap (.id _) p)
+  set G : C(I × I, Y) := F.toContinuousMap.comp (.prodMap (.id _) p.toContinuousMap)
   set p₁ : Path ((0, 0) : I × I) (1, 1) := .prod (.trans (.refl _) .id) (.trans .id (.refl _))
   set p₂ : Path ((0, 0) : I × I) (1, 1) := .prod (.trans .id (.refl _)) (.trans (.refl _) .id)
   set Fsq : p₁.Homotopy p₂ :=
@@ -108,11 +107,7 @@ then deprecate the rest of them.
 
 namespace unitInterval
 
-/-- The path 0 ⟶ 1 in `I` -/
-def path01 : Path (0 : I) 1 where
-  toFun := id
-  source' := rfl
-  target' := rfl
+@[deprecated (since := "2026-10-07")] alias path01 := Path.id
 
 /-- The path 0 ⟶ 1 in `ULift I` -/
 def upath01 : Path (ULift.up 0 : ULift.{u} I) (ULift.up 1) where
@@ -153,10 +148,10 @@ theorem heq_path_of_eq_image :
   exact hfg
 
 set_option backward.privateInPublic true in
-private theorem start_path : f x₀ = g x₂ := by convert! hfg 0 <;> simp only [Path.source]
+private theorem start_path : f x₀ = g x₂ := by convert hfg 0 <;> simp only [Path.source]
 
 set_option backward.privateInPublic true in
-private theorem end_path : f x₁ = g x₃ := by convert! hfg 1 <;> simp only [Path.target]
+private theorem end_path : f x₁ = g x₃ := by convert hfg 1 <;> simp only [Path.target]
 
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in

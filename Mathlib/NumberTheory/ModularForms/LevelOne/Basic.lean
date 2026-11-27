@@ -5,10 +5,15 @@ Authors: Chris Birkbeck
 -/
 module
 
-public import Mathlib.Analysis.Complex.AbsMax
-public import Mathlib.LinearAlgebra.Matrix.FixedDetMatrices
 public import Mathlib.NumberTheory.Modular
 public import Mathlib.NumberTheory.ModularForms.QExpansion
+
+import Mathlib.Analysis.Complex.AbsMax
+import Mathlib.LinearAlgebra.Matrix.FixedDetMatrices
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Level one modular forms
 
@@ -48,7 +53,7 @@ variable (k) in
 lemma wt_eq_zero_of_eq_const {f : F} {c : ℂ} (hf : ⇑f = Function.const _ c) :
     k = 0 ∨ c = 0 := by
   have : SlashInvariantFormClass F Γ(1) k := Gamma_one_coe_eq_SL ▸ ‹_›
-  have hI := slash_action_eqn_SL'' f (mem_Gamma_one S) I
+  have hI := slash_action_eqn_SL'' f (mem_Gamma_one S) .I
   have h2I2 := slash_action_eqn_SL'' f (mem_Gamma_one S) ((⟨2, two_pos⟩ : {x : ℝ // 0 < x}) • .I)
   simp_rw [sl_moeb, hf, Function.const, denom_S] at hI h2I2
   suffices (2 : ℂ) ^ k = 1 ↔ k = 0 by
@@ -92,7 +97,7 @@ private theorem levelOne_nonpos_wt_const (hk : k ≤ 0) (f : F) :
     f = Function.const ℍ (cuspFunction 1 f 0) := by
   ext z
   have hQ : 𝕢 1 z ∈ (Metric.ball 0 1) := by
-    simpa using (norm_qParam_lt_iff zero_lt_one 0 z.1).mpr z.2
+    simpa using (norm_qParam_lt_iff zero_lt_one 0 z.coe).mpr z.coe_im_pos
   simpa [← SlashInvariantFormClass.eq_cuspFunction f _ one_mem_strictPeriods_SL one_ne_zero]
     using cuspFunction_eqOn_const_of_nonpos_wt hk f hQ
 

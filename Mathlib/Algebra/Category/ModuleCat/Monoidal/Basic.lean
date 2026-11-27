@@ -6,9 +6,12 @@ Authors: Kevin Buzzard, Kim Morrison, Jakob von Raumer
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Basic
-public import Mathlib.LinearAlgebra.TensorProduct.Associator
 public import Mathlib.CategoryTheory.Monoidal.Linear
 public import Mathlib.CategoryTheory.Monoidal.Transport
+public import Mathlib.LinearAlgebra.TensorProduct.Associator
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The monoidal category structure on R-modules

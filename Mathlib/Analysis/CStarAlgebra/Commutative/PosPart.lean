@@ -6,10 +6,14 @@ Authors: Jireh Loreaux
 
 module
 
-public import Mathlib.Analysis.RCLike.ContinuousMap
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
+public import Mathlib.Analysis.RCLike.ContinuousMap
+
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Range
 import Mathlib.Analysis.CStarAlgebra.Hom
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-! # monotonicity of `a ↦ a⁺` on commuting elements in a C⋆-algebra -/
 

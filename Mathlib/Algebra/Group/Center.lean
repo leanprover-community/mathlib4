@@ -251,7 +251,7 @@ lemma mul_mem_centralizer (ha : a ∈ centralizer S) (hb : b ∈ centralizer S) 
 
 @[to_additive (attr := simp) addCentralizer_eq_top_iff_subset]
 theorem centralizer_eq_top_iff_subset : centralizer S = Set.univ ↔ S ⊆ center M :=
-  eq_top_iff.trans <| ⟨
+  eq_top_iff.trans ⟨
     fun h _ hx ↦ Semigroup.mem_center_iff.mpr fun _ ↦ by rw [h trivial _ hx],
     fun h _ _ _ hm ↦ (h hm).comm _⟩
 
@@ -316,6 +316,10 @@ theorem units_inv_mem_center {a : Mˣ} (ha : ↑a ∈ Set.center M) : ↑a⁻¹ 
 theorem invOf_mem_center {a : M} [Invertible a] (ha : a ∈ Set.center M) : ⅟a ∈ Set.center M := by
   rw [Semigroup.mem_center_iff] at *
   exact (Commute.invOf_right <| ha ·)
+
+@[to_additive (attr := simp) nsmul_mem_addCenter]
+theorem npow_mem_center {a : M} (n : ℕ) (ha : a ∈ Set.center M) : a ^ n ∈ Set.center M :=
+  Semigroup.mem_center_iff.mpr fun m => ((ha.comm m).pow_left n).eq.symm
 
 end Monoid
 

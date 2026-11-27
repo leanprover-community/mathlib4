@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Complex.Circle
 public import Mathlib.LinearAlgebra.Determinant
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
+
 import Mathlib.Tactic.SuppressCompilation
 
 /-!
@@ -69,8 +70,8 @@ theorem rotation_trans (a b : Circle) : (rotation a).trans (rotation b) = rotati
 
 theorem rotation_ne_conjLIE (a : Circle) : rotation a ≠ conjLIE := by
   intro h
-  have h1 : rotation a 1 = conj 1 := LinearIsometryEquiv.congr_fun h 1
-  have hI : rotation a I = conj I := LinearIsometryEquiv.congr_fun h I
+  have h1 : rotation a 1 = conj 1 := congr($h 1)
+  have hI : rotation a I = conj I := congr($h I)
   rw [rotation_apply, map_one, mul_one] at h1
   rw [rotation_apply, conj_I, ← neg_one_mul, mul_left_inj' I_ne_zero, h1, eq_neg_self_iff] at hI
   exact one_ne_zero hI
@@ -120,11 +121,12 @@ theorem linear_isometry_complex_aux {f : ℂ ≃ₗᵢ[ℝ] ℂ} (h : f 1 = 1) :
     · apply @LinearIsometry.im_apply_eq_im_or_neg_of_re_apply_eq_re f.toLinearIsometry
       intro z
       rw [@LinearIsometry.re_apply_eq_re f.toLinearIsometry h]
-  refine h0.imp (fun h' : f I = I => ?_) fun h' : f I = -I => ?_ <;>
-    · apply LinearIsometryEquiv.toLinearEquiv_injective
-      apply Complex.basisOneI.ext'
-      intro i
-      fin_cases i <;> simp [h, h']
+  refine h0.imp (fun h' : f I = I => ?_) fun h' : f I = -I => ?_
+  all_goals
+    apply LinearIsometryEquiv.toLinearEquiv_injective
+    apply Complex.basisOneI.ext'
+    intro i
+    fin_cases i <;> simp [h, h']
 
 set_option backward.isDefEq.respectTransparency false in
 theorem linear_isometry_complex (f : ℂ ≃ₗᵢ[ℝ] ℂ) :
@@ -142,7 +144,7 @@ theorem toMatrix_rotation (a : Circle) :
     LinearMap.toMatrix basisOneI basisOneI (rotation a).toLinearEquiv =
       Matrix.planeConformalMatrix (re a) (im a) (by simp [pow_two, ← normSq_apply]) := by
   ext i j
-  simp only [LinearMap.toMatrix_apply, coe_basisOneI, LinearEquiv.coe_coe,
+  simp only [LinearMap.toMatrix_apply, coe_basisOneI, LinearEquiv.coe_toLinearMap,
     LinearIsometryEquiv.coe_toLinearEquiv, rotation_apply, coe_basisOneI_repr, mul_re, mul_im,
     Matrix.val_planeConformalMatrix, Matrix.of_apply, Matrix.cons_val', Matrix.empty_val',
     Matrix.cons_val_fin_one]

@@ -7,9 +7,10 @@ Authors: David Loeffler
 module
 
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.FinTwo
-public import Mathlib.Topology.Algebra.Algebra
 public import Mathlib.Topology.Algebra.Group.Units
 public import Mathlib.Topology.Instances.Matrix
+
+import Mathlib.Topology.Algebra.Algebra
 
 /-!
 # Topology on matrix groups
@@ -59,7 +60,7 @@ lemma _root_.Topology.IsClosedEmbedding.generalLinearGroup_map [T0Space R]
 /-- The determinant is continuous as a map from the general linear group to the units. -/
 @[continuity, fun_prop] protected lemma continuous_det :
     Continuous (det : GL n R → Rˣ) := by
-  simp_rw [Units.continuous_iff, ← map_inv]
+  simp_rw [Units.continuous_iff, ← map_inv, Function.comp_def, val_det_apply]
   constructor <;> fun_prop
 
 @[continuity, fun_prop]
@@ -67,8 +68,9 @@ lemma continuous_upperRightHom {R : Type*} [Ring R] [TopologicalSpace R] [IsTopo
     Continuous (upperRightHom (R := R)) := by
   simp only [continuous_induced_rng, Function.comp_def, upperRightHom_apply,
     Units.embedProduct_apply, Units.inv_mk, continuous_prodMk, MulOpposite.unop_op]
-  constructor <;>
-  · refine continuous_matrix fun i j ↦ ?_
+  constructor
+  all_goals
+    refine continuous_matrix fun i j ↦ ?_
     fin_cases i <;> fin_cases j <;> simp [continuous_const, continuous_neg, continuous_id']
 
 end Matrix.GeneralLinearGroup
@@ -93,16 +95,18 @@ theorem continuous_apply {α : Type*} [TopologicalSpace α]
 @[fun_prop]
 lemma _root_.Continuous.specialLinearGroup_map (hf : Continuous f) :
     Continuous (map (n := n) f) := by
-  refine IsInducing.subtypeVal.continuous_iff.mpr ?_
-  exact (continuous_id.matrix_map hf).comp continuous_subtype_val
+  refine (IsInducing.subtypeVal (t := {A : Matrix n n S | A.det = 1})).continuous_iff.mpr ?_
+  exact (continuous_id.matrix_map hf).comp continuous_subtypeVal
 
 lemma _root_.Topology.IsInducing.specialLinearGroup_map (hf : IsInducing f) :
     IsInducing (map (n := n) f) :=
-  (hf.matrix_map.comp .subtypeVal).of_comp (by fun_prop) continuous_subtype_val
+  (hf.matrix_map.comp (IsInducing.subtypeVal (t := {A : Matrix n n R | A.det = 1}))).of_comp
+    (by fun_prop) continuous_subtypeVal
 
 lemma _root_.Topology.IsEmbedding.specialLinearGroup_map (hf : IsEmbedding f) :
     IsEmbedding (map (n := n) f) :=
-  (hf.matrix_map.comp .subtypeVal).of_comp (by fun_prop) continuous_subtype_val
+  (hf.matrix_map.comp (IsEmbedding.subtypeVal (p := fun A : Matrix n n R ↦ A.det = 1))).of_comp
+    (by fun_prop) continuous_subtypeVal
 
 variable [IsTopologicalRing R]
 
@@ -134,6 +138,7 @@ instance isTopologicalGroup : IsTopologicalGroup (SL n R) where
 -/
 section toGL
 
+set_option fun_prop.projDefaultTransparency true in
 /-- The natural map from `SL n A` to `GL n A` is continuous. -/
 @[fun_prop]
 lemma continuous_toGL : Continuous (toGL : SL n R → GL n R) := by

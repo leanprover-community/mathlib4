@@ -5,10 +5,9 @@ Authors: Yuma Mizuno, Junyan Xu
 -/
 module
 
-public import Mathlib.CategoryTheory.PathCategory.Basic
-public import Mathlib.CategoryTheory.Functor.FullyFaithful
 public import Mathlib.CategoryTheory.Bicategory.Free
 public import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
+public import Mathlib.CategoryTheory.PathCategory.Basic
 
 /-!
 # The coherence theorem for bicategories
@@ -155,7 +154,7 @@ def normalizeIso {a : B} :
 @[simp] theorem normalizeIso_id {a : B} {b : FreeBicategory B} (p : Path a b) :
     normalizeIso p (𝟙 b) = ρ_ _ := rfl
 
-@[simp] theorem quot_whisker_left {a b c : FreeBicategory B} (f : a ⟶ b) {g h : b ⟶ c}
+theorem quot_whisker_left {a b c : FreeBicategory B} (f : a ⟶ b) {g h : b ⟶ c}
     (η : Hom₂ g h) : Quot.mk Rel (Hom₂.whisker_left f η) = f ◁ (Quot.mk Rel η) := rfl
 
 /-- Given a 2-morphism between `f` and `g` in the free bicategory, we have the equality
@@ -169,7 +168,7 @@ theorem normalizeAux_congr {a b c : B} (p : Path a b) {f g : Hom b c} (η : f �
   induction η' with
   | vcomp _ _ _ _ => apply Eq.trans <;> assumption
   | whisker_left _ _ ih => funext; apply congr_fun ih
-  | whisker_right _ _ ih => funext; apply congr_arg₂ _ (congr_fun ih _) rfl
+  | whisker_right _ _ ih => funext; apply congr_arg₂ _ congr($ih _) rfl
   | _ => funext; rfl
 
 set_option backward.defeqAttrib.useBackward true in

@@ -5,15 +5,17 @@ Authors: Bhavik Mehta, Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Subobject.Basic
 public import Mathlib.CategoryTheory.Preadditive.Basic
+public import Mathlib.CategoryTheory.Subobject.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Factoring through subobjects
 
 The predicate `h : P.Factors f`, for `P : Subobject Y` and `f : X ⟶ Y`
 asserts the existence of some `P.factorThru f : X ⟶ (P : C)` making the obvious diagram commute.
-
 -/
 
 @[expose] public section
@@ -87,7 +89,7 @@ theorem factors_comp_arrow {X Y : C} {P : Subobject Y} (f : X ⟶ P) : P.Factors
 
 theorem factors_of_factors_right {X Y Z : C} {P : Subobject Z} (f : X ⟶ Y) {g : Y ⟶ Z}
     (h : P.Factors g) : P.Factors (f ≫ g) := by
-  induction P using Quotient.ind'
+  induction P using Quotient.ind
   obtain ⟨g, rfl⟩ := h
   exact ⟨f ≫ g, by simp⟩
 

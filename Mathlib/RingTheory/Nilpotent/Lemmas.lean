@@ -6,10 +6,11 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.LinearAlgebra.Matrix.ToLin
-public import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.RingTheory.Ideal.Maps
-public import Mathlib.RingTheory.Nilpotent.Defs
 public import Mathlib.RingTheory.Radical.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Nilpotent elements
@@ -68,7 +69,7 @@ theorem nilradical_eq_zero (R : Type*) [CommSemiring R] [IsReduced R] : nilradic
   Ideal.ext fun _ => isNilpotent_iff_eq_zero
 
 theorem nilradical_eq_bot_iff : nilradical R = ⊥ ↔ IsReduced R := by
-  simp_rw [eq_bot_iff, IsConcreteLE.le_iff, Submodule.mem_bot, mem_nilradical, isReduced_iff]
+  simp_rw [eq_bot_iff, le_iff_mem_imp_mem, Submodule.mem_bot, mem_nilradical, isReduced_iff]
 
 open UniqueFactorizationMonoid in
 lemma Ideal.radical_span_singleton_eq_span_radical [UniqueFactorizationMonoid R]
@@ -114,12 +115,17 @@ lemma isNilpotent_toMatrix_iff (b : Basis ι R M) (f : M →ₗ[R] M) :
 end LinearMap
 
 @[simp]
-lemma Matrix.isNilpotent_toLin'_iff {ι : Type*} [DecidableEq ι] [Fintype ι] [CommSemiring R]
+lemma Matrix.isNilpotent_mulVecLin_iff {ι : Type*} [DecidableEq ι] [Fintype ι] [CommSemiring R]
     (A : Matrix ι ι R) :
-    IsNilpotent A.toLin' ↔ IsNilpotent A := by
-  have : A.toLin'.toMatrix (Pi.basisFun R ι) (Pi.basisFun R ι) = A := LinearMap.toMatrix'_toLin' A
+    IsNilpotent A.mulVecLin ↔ IsNilpotent A := by
+  have : A.mulVecLin.toMatrix (Pi.basisFun R ι) (Pi.basisFun R ι) = A := A.toMatrix'_mulVecLin
   conv_rhs => rw [← this]
   rw [LinearMap.isNilpotent_toMatrix_iff]
+
+@[deprecated Matrix.isNilpotent_mulVecLin_iff +typeChanged (since := "2026-11-25")]
+lemma Matrix.isNilpotent_toLin'_iff {ι : Type*} [DecidableEq ι] [Fintype ι] [CommSemiring R]
+    (A : Matrix ι ι R) : IsNilpotent A.toLin' ↔ IsNilpotent A :=
+  A.isNilpotent_mulVecLin_iff
 
 namespace Module.End
 
@@ -134,11 +140,11 @@ lemma isNilpotent_restrict_of_le {f : End R M} {p q : Submodule R M}
   obtain ⟨n, hn⟩ := hf
   use n
   ext ⟨x, hx⟩
-  replace hn := DFunLike.congr_fun hn ⟨x, h hx⟩
+  replace hn := congr($hn ⟨x, h hx⟩)
   simp_rw [LinearMap.zero_apply, ZeroMemClass.coe_zero, ZeroMemClass.coe_eq_zero] at hn ⊢
   rw [Module.End.pow_restrict, LinearMap.restrict_apply] at hn ⊢
   ext
-  exact (congr_arg Subtype.val hn :)
+  congrm $(hn).val
 
 set_option backward.isDefEq.respectTransparency false in
 lemma isNilpotent.restrict

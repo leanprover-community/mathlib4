@@ -5,9 +5,8 @@ Authors: Michael Rothgang
 -/
 module
 
-public import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
-public import Mathlib.Topology.Algebra.Module.Equiv
 public import Mathlib.Topology.Algebra.ContinuousAffineMap
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 
 /-!
 # Continuous affine equivalences
@@ -16,6 +15,7 @@ In this file, we define continuous affine equivalences, affine equivalences
 which are continuous with continuous inverse.
 
 ## Main definitions
+
 * `ContinuousAffineEquiv.refl k P`: the identity map as a `ContinuousAffineEquiv`;
 * `e.symm`: the inverse map of a `ContinuousAffineEquiv` as a `ContinuousAffineEquiv`;
 * `e.trans e'`: composition of two `ContinuousAffineEquiv`s; note that the order
@@ -29,9 +29,9 @@ which are continuous with continuous inverse.
 * `ContinuousAffineEquiv.constVAdd`: `AffineEquiv.constVAdd` as a continuous affine equivalence
 
 ## TODO
+
 - equip `ContinuousAffineEquiv k P P` with a `Group` structure,
   with multiplication corresponding to composition in `AffineEquiv.group`.
-
 -/
 
 @[expose] public section
@@ -95,7 +95,7 @@ instance instFunLike : FunLike (P₁ ≃ᴬ[k] P₂) P₁ P₂ where
 theorem coe_coe (e : P₁ ≃ᴬ[k] P₂) : ⇑(e : P₁ ≃ᵃ[k] P₂) = e :=
   rfl
 
-@[simp]
+@[deprecated "AffineEquiv.coe_toEquiv and ContinuousAffineEquiv.coe_coe" (since := "2026-11-26")]
 theorem coe_toEquiv (e : P₁ ≃ᴬ[k] P₂) : ⇑e.toEquiv = e :=
   rfl
 
@@ -104,8 +104,7 @@ theorem ext {e e' : P₁ ≃ᴬ[k] P₂} (h : ∀ x, e x = e' x) : e = e' :=
   DFunLike.ext _ _ h
 
 @[continuity]
-protected theorem continuous (e : P₁ ≃ᴬ[k] P₂) : Continuous e :=
-  e.2
+protected theorem continuous (e : P₁ ≃ᴬ[k] P₂) : Continuous e := by fun_prop
 
 /-- A continuous affine equivalence is a continuous affine map. -/
 def toContinuousAffineMap (e : P₁ ≃ᴬ[k] P₂) : P₁ →ᴬ[k] P₂ where
@@ -131,13 +130,14 @@ lemma toContinuousAffineMap_toAffineMap (e : P₁ ≃ᴬ[k] P₂) :
   rfl
 
 lemma toContinuousAffineMap_toContinuousMap (e : P₁ ≃ᴬ[k] P₂) :
-    e.toContinuousAffineMap.toContinuousMap = toContinuousMap e.toHomeomorph :=
+    e.toContinuousAffineMap.toContinuousMap = ContinuousMap.ofClass e.toHomeomorph :=
   rfl
 
 end Basic
 
 section ReflSymmTrans
 
+set_option fun_prop.projDefaultTransparency true in
 variable (k P₁) in
 /-- Identity map as a `ContinuousAffineEquiv`. -/
 def refl : P₁ ≃ᴬ[k] P₁ where
@@ -157,7 +157,6 @@ theorem refl_apply (x : P₁) : refl k P₁ x = x :=
 theorem toAffineEquiv_refl : (refl k P₁).toAffineEquiv = AffineEquiv.refl k P₁ :=
   rfl
 
-@[simp]
 theorem toEquiv_refl : (refl k P₁).toEquiv = Equiv.refl P₁ :=
   rfl
 
@@ -187,10 +186,8 @@ theorem toAffineEquiv_symm (e : P₁ ≃ᴬ[k] P₂) : e.symm.toAffineEquiv = e.
 @[simp]
 theorem coe_symm_toAffineEquiv (e : P₁ ≃ᴬ[k] P₂) : ⇑e.toAffineEquiv.symm = e.symm := rfl
 
-@[simp]
 theorem toEquiv_symm (e : P₁ ≃ᴬ[k] P₂) : e.symm.toEquiv = e.toEquiv.symm := rfl
 
-@[simp]
 theorem coe_symm_toEquiv (e : P₁ ≃ᴬ[k] P₂) : ⇑e.toEquiv.symm = e.symm := rfl
 
 @[simp]
@@ -265,7 +262,6 @@ theorem image_symm_image (e : P₁ ≃ᴬ[k] P₂) (s : Set P₂) : e '' e.symm 
 theorem refl_symm : (refl k P₁).symm = refl k P₁ :=
   rfl
 
-@[simp]
 theorem symm_refl : (refl k P₁).symm = refl k P₁ :=
   rfl
 
@@ -439,6 +435,9 @@ def prodComm : P₁ × P₂ ≃ᴬ[k] P₂ × P₁ where
 @[simp]
 theorem prodComm_symm : (prodComm k P₁ P₂).symm = prodComm k P₂ P₁ :=
   rfl
+
+@[simp]
+theorem prodComm_trans_prodComm : (prodComm k P₁ P₂).trans (prodComm k P₂ P₁) = .refl _ _ := rfl
 
 set_option backward.defeqAttrib.useBackward true in
 /-- Product of affine spaces is associative up to continuous affine isomorphism. -/

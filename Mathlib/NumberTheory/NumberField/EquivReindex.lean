@@ -7,6 +7,9 @@ module
 
 public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Reindexed basis
 
@@ -53,7 +56,7 @@ theorem conj_basisMatrix :
 
 theorem det_of_basisMatrix_non_zero [DecidableEq (K →+* ℂ)] : (basisMatrix K).det ≠ 0 := by
   rw [basisMatrix_eq_embeddingsMatrixReindex, ← pow_ne_zero_iff two_ne_zero]
-  convert!
+  convert
     (map_ne_zero_iff _ (algebraMap ℚ ℂ).injective).mpr
       (Algebra.discr_not_zero_of_basis ℚ (integralBasis K))
   rw [← Algebra.discr_reindex ℚ (integralBasis K) (equivReindex K).symm]

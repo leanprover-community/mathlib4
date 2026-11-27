@@ -37,7 +37,7 @@ Given a type `C` with associated `groupoid C` instance.
   vertex `v`, assuming `v` is contained in the `CategoryTheory.Subgroupoid` (meaning, by definition,
   that the arrow `𝟙 v` is contained in the subgroupoid).
 
-## Implementation details
+## Implementation notes
 
 The structure of this file is copied from/inspired by `Mathlib/Algebra/Group/Subgroup/Basic.lean`
 and `Mathlib/Combinatorics/SimpleGraph/Subgraph.lean`.
@@ -116,7 +116,7 @@ theorem mem_objs_of_tgt {c d : C} {f : c ⟶ d} (h : f ∈ S.arrows c d) : d ∈
 
 theorem id_mem_of_nonempty_isotropy (c : C) : c ∈ objs S → 𝟙 c ∈ S.arrows c c := by
   rintro ⟨γ, hγ⟩
-  convert! S.mul hγ (S.inv hγ)
+  convert S.mul hγ (S.inv hγ)
   simp only [inv_eq_inv, IsIso.hom_inv_id]
 
 theorem id_mem_of_src {c d : C} {f : c ⟶ d} (h : f ∈ S.arrows c d) : 𝟙 c ∈ S.arrows c c :=
@@ -172,13 +172,13 @@ instance : SetLike (Subgroupoid C) (Σ c d : C, c ⟶ d) where
   coe := toSet
   coe_injective := fun ⟨S, _, _⟩ ⟨T, _, _⟩ h => by ext c d f; apply Set.ext_iff.1 h ⟨c, d, f⟩
 
-instance : PartialOrder (Subgroupoid C) := .ofSetLike (Subgroupoid C) (Σ c d : C, c ⟶ d)
+instance : PartialOrder (Subgroupoid C) := .ofSetLike (Subgroupoid C)
 
 theorem mem_iff (S : Subgroupoid C) (F : Σ c d, c ⟶ d) : F ∈ S ↔ F.2.2 ∈ S.arrows F.1 F.2.1 :=
   Iff.rfl
 
 theorem le_iff (S T : Subgroupoid C) : S ≤ T ↔ ∀ {c d}, S.arrows c d ⊆ T.arrows c d := by
-  rw [IsConcreteLE.le_iff, Sigma.forall]; exact forall_congr' fun c => Sigma.forall
+  rw [le_iff_mem_imp_mem, Sigma.forall]; exact forall_congr' fun c => Sigma.forall
 
 instance : Top (Subgroupoid C) :=
   ⟨{  arrows := fun _ _ => Set.univ
@@ -305,7 +305,7 @@ structure IsNormal : Prop extends IsWide S where
 
 theorem IsNormal.conj' {S : Subgroupoid C} (Sn : IsNormal S) :
     ∀ {c d} (p : d ⟶ c) {γ : c ⟶ c}, γ ∈ S.arrows c c → p ≫ γ ≫ Groupoid.inv p ∈ S.arrows d d :=
-  fun p γ hs => by convert! Sn.conj (Groupoid.inv p) hs; simp
+  fun p γ hs => by convert Sn.conj (Groupoid.inv p) hs; simp
 
 theorem IsNormal.conjugation_bij (Sn : IsNormal S) {c d} (p : c ⟶ d) :
     Set.BijOn (fun γ : c ⟶ c => Groupoid.inv p ≫ γ ≫ p) (S.arrows c c) (S.arrows d d) := by
@@ -548,7 +548,7 @@ theorem isTotallyDisconnected_iff :
     S.IsTotallyDisconnected ↔ ∀ c d, (S.arrows c d).Nonempty → c = d := by
   constructor
   · rintro h c d ⟨f, fS⟩
-    exact congr_arg Subtype.val <| h ⟨c, mem_objs_of_src S fS⟩ ⟨d, mem_objs_of_tgt S fS⟩ ⟨f, fS⟩
+    congrm $(h ⟨c, mem_objs_of_src S fS⟩ ⟨d, mem_objs_of_tgt S fS⟩ ⟨f, fS⟩).val
   · rintro h ⟨c, hc⟩ ⟨d, hd⟩ ⟨f, fS⟩
     simp only [Subtype.mk_eq_mk]
     exact h c d ⟨f, fS⟩
@@ -613,7 +613,7 @@ theorem full_mono {D E : Set C} (h : D ≤ E) : full D ≤ full E := by
   exact fun ⟨hc, hd⟩ => ⟨h hc, h hd⟩
 
 theorem full_arrow_eq_iff {c d : (full D).objs} {f g : c ⟶ d} :
-    f = g ↔ f.1 = g.1 :=
+    f = g ↔ f.val = g.val :=
   Subtype.ext_iff
 
 end Full

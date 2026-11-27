@@ -5,10 +5,10 @@ Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
 -/
 module
 
-public import Mathlib.Data.Set.Prod
 public import Mathlib.Logic.Equiv.Fin.Basic
 public import Mathlib.ModelTheory.LanguageMap
-public import Mathlib.Algebra.Order.Group.Nat
+
+import Mathlib.Algebra.Order.Group.Nat
 
 /-!
 # Basics on First-Order Syntax
@@ -40,7 +40,7 @@ This file defines first-order terms, formulas, sentences, and theories in a styl
   `FirstOrder.Language.BoundedFormula.constantsVarsEquiv` switch terms and formulas between having
   constants in the language and having extra free variables indexed by the same type.
 
-## Implementation Notes
+## Implementation notes
 
 - `BoundedFormula` uses a locally nameless representation with bound variables as well-scoped de
   Bruijn levels (the variable bounded by the outermost quantifier is indexed by `0`). Specifically,
@@ -216,7 +216,7 @@ def constantsVarsEquiv : L[[γ]].Term α ≃ L.Term (γ ⊕ α) :=
     intro t
     induction t with
     | var x => cases x <;> rfl
-    | @func n f _ ih => cases n <;> · simp [varsToConstants, constantsToVars, ih]⟩
+    | @func n f _ ih => cases n <;> simp [varsToConstants, constantsToVars, ih]⟩
 
 /-- A bijection between terms with constants and terms with extra variables. -/
 def constantsVarsEquivLeft : L[[γ]].Term (α ⊕ β) ≃ L.Term ((γ ⊕ α) ⊕ β) :=
@@ -542,7 +542,7 @@ theorem sumElim_comp_relabelAux {m : ℕ} {g : α → β ⊕ (Fin n)} {v : β �
 theorem relabelAux_sumInl (k : ℕ) :
     relabelAux (Sum.inl : α → α ⊕ (Fin n)) k = Sum.map id (natAdd n) := by
   ext x
-  cases x <;> · simp [relabelAux]
+  cases x <;> simp [relabelAux]
 
 /-- Relabels a bounded formula's variables along a particular function. -/
 def relabel (g : α → β ⊕ (Fin n)) {k} (φ : L.BoundedFormula α k) : L.BoundedFormula β (n + k) :=
@@ -898,7 +898,7 @@ theorem distinctConstantsTheory_eq_iUnion (s : Set α) :
   classical
     simp only [distinctConstantsTheory]
     rw [← image_iUnion, ← iUnion_inter]
-    refine congr(_ '' ($(?_) ∩ _))
+    congrm _ '' (?_ ∩ _)
     ext ⟨i, j⟩
     simp only [prodMk_mem_set_prod_eq, Finset.coe_map, Function.Embedding.coe_subtype, mem_iUnion,
       mem_image, Finset.mem_coe, Subtype.exists, exists_and_right, exists_eq_right]

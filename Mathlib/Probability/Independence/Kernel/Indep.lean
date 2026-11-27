@@ -6,8 +6,8 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.Probability.Kernel.Basic
-public import Mathlib.Tactic.Peel
-public import Mathlib.Analysis.Normed.Group.Basic
+
+import Mathlib.Tactic.Peel
 
 /-!
 # Independence of families of sets with respect to a kernel and a measure
@@ -135,8 +135,9 @@ variable {β : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)}
 lemma iIndepSets_congr (h : κ =ᵐ[μ] η) : iIndepSets π κ μ ↔ iIndepSets π η μ := by
   unfold iIndepSets
   congr! 3
-  refine ⟨fun h' ↦ ?_, fun h' ↦ ?_⟩ <;>
-  · filter_upwards [h, h'] with a ha h'a
+  refine ⟨fun h' ↦ ?_, fun h' ↦ ?_⟩
+  all_goals
+    filter_upwards [h, h'] with a ha h'a
     simpa [ha] using h'a
 
 alias ⟨iIndepSets.congr, _⟩ := iIndepSets_congr
@@ -144,8 +145,9 @@ alias ⟨iIndepSets.congr, _⟩ := iIndepSets_congr
 lemma indepSets_congr (h : κ =ᵐ[μ] η) : IndepSets s1 s2 κ μ ↔ IndepSets s1 s2 η μ := by
   unfold IndepSets
   congr! 4
-  refine ⟨fun h' ↦ ?_, fun h' ↦ ?_⟩ <;>
-  · filter_upwards [h, h'] with a ha h'a
+  refine ⟨fun h' ↦ ?_, fun h' ↦ ?_⟩
+  all_goals
+    filter_upwards [h, h'] with a ha h'a
     simpa [ha] using h'a
 
 alias ⟨IndepSets.congr, _⟩ := indepSets_congr
@@ -226,7 +228,7 @@ lemma iIndepSets.precomp (hg : Function.Injective g) (h : iIndepSets π κ μ) :
 lemma iIndepSets.of_precomp (hg : Function.Surjective g) (h : iIndepSets (π ∘ g) κ μ) :
     iIndepSets π κ μ := by
   obtain ⟨g', hg'⟩ := hg.hasRightInverse
-  convert! h.precomp hg'.injective
+  convert h.precomp hg'.injective
   rw [Function.comp_assoc, hg'.comp_eq_id, Function.comp_id]
 
 lemma iIndepSets_precomp_of_bijective (hg : Function.Bijective g) :

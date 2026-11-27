@@ -5,8 +5,11 @@ Authors: Chris Hughes
 -/
 module
 
+public import Mathlib.Basic.PEquiv
 public import Mathlib.Data.Matrix.Mul
-public import Mathlib.Data.PEquiv
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # partial equivalences for matrices
@@ -65,7 +68,7 @@ theorem toMatrix_mul_apply [Fintype m] [DecidableEq m] [NonAssocSemiring α] (f 
   dsimp [toMatrix, Matrix.mul_apply]
   rcases h : f i with - | fi
   · simp
-  · rw [Finset.sum_eq_single fi] <;> simp +contextual [eq_comm]
+  · rw [Finset.sum_eq_single fi] <;> simp
 
 theorem mul_toMatrix_apply [Fintype m] [NonAssocSemiring α] [DecidableEq n] (M : Matrix l m α)
     (f : m ≃. n) (i j) : (M * f.toMatrix :) i j = Option.casesOn (f.symm j) 0 (M i) := by
@@ -88,7 +91,7 @@ theorem toMatrix_symm [DecidableEq m] [DecidableEq n] [Zero α] [One α] (f : m 
 theorem toMatrix_refl [DecidableEq n] [Zero α] [One α] :
     ((PEquiv.refl n).toMatrix : Matrix n n α) = 1 := by
   ext
-  simp [toMatrix_apply, one_apply]
+  simp [toMatrix_apply, Matrix.one_apply]
 
 @[simp]
 theorem toMatrix_toPEquiv_apply [DecidableEq n] [Zero α] [One α] (f : m ≃ n) (i) :
@@ -185,7 +188,7 @@ theorem single_mul_single_right [Fintype n] [Fintype k] [DecidableEq n] [Decidab
   rw [← Matrix.mul_assoc, single_mul_single]
 
 /-- We can also define permutation matrices by permuting the rows of the identity matrix. -/
-theorem toMatrix_toPEquiv_eq [DecidableEq n] [Zero α] [One α] (σ : Equiv.Perm n) :
+theorem toMatrix_toPEquiv_eq [DecidableEq n] [Zero α] [One α] (σ : m ≃ n) :
     σ.toPEquiv.toMatrix = (1 : Matrix n n α).submatrix σ id :=
   Matrix.ext fun _ _ => if_congr Option.some_inj rfl rfl
 

@@ -5,13 +5,12 @@ Authors: Kim Morrison, Nicolò Cavalleri
 -/
 module
 
-public import Mathlib.Topology.Algebra.Star
 public import Mathlib.Algebra.Star.StarAlgHom
+public import Mathlib.Topology.Algebra.Star
 public import Mathlib.Topology.ContinuousMap.Algebra
 
 /-!
 # Star structures on continuous maps.
-
 -/
 
 @[expose] public section
@@ -28,7 +27,6 @@ If `β` is a ⋆-ring, then `C(α, β)` inherits a ⋆-ring structure.
 
 If `β` is a ⋆-ring and a ⋆-module over `R`, then the space of continuous functions from `α` to `β`
 is a ⋆-module over `R`.
-
 -/
 
 
@@ -159,16 +157,16 @@ variable [ContinuousStar A] [Algebra 𝕜 A]
 actually a homeomorphism. -/
 @[simps]
 def compStarAlgEquiv' (f : X ≃ₜ Y) : C(Y, A) ≃⋆ₐ[𝕜] C(X, A) :=
-  { (f : C(X, Y)).compStarAlgHom' 𝕜 A with
-    toFun := (f : C(X, Y)).compStarAlgHom' 𝕜 A
-    invFun := (f.symm : C(Y, X)).compStarAlgHom' 𝕜 A
+  { f.toContinuousMap.compStarAlgHom' 𝕜 A with
+    toFun := f.toContinuousMap.compStarAlgHom' 𝕜 A
+    invFun := f.symm.toContinuousMap.compStarAlgHom' 𝕜 A
     left_inv := fun g => by
       simp only [ContinuousMap.compStarAlgHom'_apply, ContinuousMap.comp_assoc,
         toContinuousMap_comp_symm, ContinuousMap.comp_id]
     right_inv := fun g => by
       simp only [ContinuousMap.compStarAlgHom'_apply, ContinuousMap.comp_assoc,
         symm_comp_toContinuousMap, ContinuousMap.comp_id]
-    map_smul' := fun k a => map_smul ((f : C(X, Y)).compStarAlgHom' 𝕜 A) k a }
+    map_smul' := fun k a => map_smul (f.toContinuousMap.compStarAlgHom' 𝕜 A) k a }
 
 end Homeomorph
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 public import Mathlib.Topology.Category.CompHausLike.Limits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cartesian monoidal structure on `CompHausLike`
 
@@ -49,7 +52,7 @@ def productIsLimit : IsLimit (productCone X Y) := by
   refine BinaryFan.isLimitMk (fun s ↦ ofHom _ { toFun x := (s.fst x, s.snd x) })
     (by rfl_cat) (by rfl_cat) fun _ _ h₁ h₂ ↦ ?_
   ext x
-  exacts [ConcreteCategory.congr_hom h₁ _, ConcreteCategory.congr_hom h₂ _]
+  exacts [congr($h₁ _), congr($h₂ _)]
 
 /--
 When the predicate `P` is preserved under taking type-theoretic products and `PUnit` satisfies it,
@@ -87,7 +90,7 @@ def coproductIsColimit : IsColimit (coproductCocone X Y) := by
   refine BinaryCofan.isColimitMk (fun s ↦ ofHom _ { toFun := Sum.elim s.inl s.inr })
     (by rfl_cat) (by rfl_cat) fun _ _ h₁ h₂ ↦ ?_
   ext ⟨⟩
-  exacts [ConcreteCategory.congr_hom h₁ _, ConcreteCategory.congr_hom h₂ _]
+  exacts [congr($h₁ _), congr($h₂ _)]
 
 end Coproduct
 
