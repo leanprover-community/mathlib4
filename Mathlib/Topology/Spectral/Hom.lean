@@ -176,9 +176,9 @@ theorem coe_comp (f : SpectralMap β γ) (g : SpectralMap α β) : (f.comp g : �
 theorem comp_apply (f : SpectralMap β γ) (g : SpectralMap α β) (a : α) : (f.comp g) a = f (g a) :=
   rfl
 
-@[deprecated coe_toContinuousMap +typeChanged (since := "2026-11-25")]
+@[deprecated ContinuousMap.coe_ofClass +typeChanged (since := "2026-11-25")]
 theorem coe_comp_continuousMap (f : SpectralMap β γ) (g : SpectralMap α β) :
-    f ∘ g = f.toContinuousMap ∘ g.toContinuousMap :=
+    f ∘ g = (ContinuousMap.ofClass f) ∘ (ContinuousMap.ofClass g) :=by
   rfl
 
 @[simp]

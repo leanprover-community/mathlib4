@@ -91,16 +91,22 @@ theorem toContinuousMap_coe (f : P →ᴬ[R] Q) : f.toContinuousMap = ↑f := rf
 theorem coe_toAffineMap (f : P →ᴬ[R] Q) : ((f : P →ᵃ[R] Q) : P → Q) = f := rfl
 
 @[simp, norm_cast]
+theorem coe_toContinuousMap (f : P →ᴬ[R] Q) : ⇑f.toContinuousMap = f := rfl
+
+@[deprecated ContinuousMap.coe_ofClass +typeChanged (since := "2026-11-27")]
 theorem coe_to_continuousMap (f : P →ᴬ[R] Q) : ((f : C(P, Q)) : P → Q) = f := rfl
 
-theorem to_continuousMap_injective {f g : P →ᴬ[R] Q} (h : (f : C(P, Q)) = (g : C(P, Q))) :
+theorem toContinuousMap_injective {f g : P →ᴬ[R] Q} (h : (f : C(P, Q)) = (g : C(P, Q))) :
     f = g := by
   ext a
   congrm $h a
 
+@[deprecated (since := "2026-11-27")] alias to_continuousMap_injective := toContinuousMap_injective
+
 @[norm_cast]
 theorem coe_toAffineMap_mk (f : P →ᵃ[R] Q) (h) : ((⟨f, h⟩ : P →ᴬ[R] Q) : P →ᵃ[R] Q) = f := rfl
 
+@[norm_cast]
 theorem coe_continuousMap_mk (f : P →ᵃ[R] Q) (h) : ((⟨f, h⟩ : P →ᴬ[R] Q) : C(P, Q)) = ⟨f, h⟩ := rfl
 
 @[simp]

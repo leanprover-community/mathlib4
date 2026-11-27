@@ -180,8 +180,7 @@ theorem toContinuousAddMonoidHom_inj {f g : M₁ →SL[σ₁₂] M₂} :
     f.toContinuousAddMonoidHom = g.toContinuousAddMonoidHom ↔ f = g :=
   toContinuousAddMonoidHom_injective.eq_iff
 
-/-- Reinterpret a continuous linear map `M₁ →SL[σ₁₂] M₂` as
-a continuous morphism of additive monoids `M₁ →ₜ+ M₂`. -/
+/-- Reinterpret a continuous linear map `M₁ →SL[σ₁₂] M₂` as a continuous map `C(M₁, M₂)`. -/
 def toContinuousMap (f : M₁ →SL[σ₁₂] M₂) : C(M₁, M₂) := .ofClass f
 
 @[simp]

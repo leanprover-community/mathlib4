@@ -271,8 +271,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
       convert I.mul_mem_left (star g) hI
       ext
       simp only [comp_apply, coe_mk, ContinuousLinearMap.coe_toContinuousMap, algebraMapCLM_apply,
-        map_pow, mul_apply, star_apply, star_def]
-      simp only [RCLike.conj_mul]
+        map_pow, mul_apply, star_apply, star_def, RCLike.conj_mul]
       rfl
   /- Get the function `g'` which is guaranteed to exist above. By the extreme value theorem and
     compactness of `t`, there is some `0 < c` such that `c ≤ g' x` for all `x ∈ t`. Then by
