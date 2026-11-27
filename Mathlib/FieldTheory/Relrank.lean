@@ -295,12 +295,10 @@ variable {A B} in
 theorem relrank_sup_left_le (h : A.relrank B < ℵ₀) : A.relrank (A ⊔ B) ≤ A.relrank B := by
   have hAinfB : A ⊓ B ≤ B := inf_le_right
   have : Module.Finite ↥(A ⊓ B) (extendScalars hAinfB) := Module.rank_lt_aleph0_iff.mp h
-  let : Algebra ↥(A ⊓ B) A := (inclusion (inf_le_left : A ⊓ B ≤ A)).toAlgebra
+  let : Algebra ↥(A ⊓ B) A := (inclusion inf_le_left).toAlgebra
   have : IsScalarTower ↥(A ⊓ B) A E := IsScalarTower.of_algebraMap_eq' rfl
-  have hadj : adjoin A (extendScalars hAinfB : Set E)
-      = extendScalars (le_sup_left : A ≤ A ⊔ B) := by
-    rw [← toSubfield_inj]
-    simp [closure_union, algebraMap_ofSubfield]
+  have hadj : adjoin A (extendScalars hAinfB) = extendScalars (le_sup_left : A ≤ A ⊔ B) := by
+    simp [← toSubfield_inj, closure_union, algebraMap_ofSubfield]
   rw [relrank_eq_rank_of_le le_sup_left, relrank, ← hadj]
   exact adjoin_rank_le_of_isAlgebraic_right (E := A) (extendScalars hAinfB)
 
