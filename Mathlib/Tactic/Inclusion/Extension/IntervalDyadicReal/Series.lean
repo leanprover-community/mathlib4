@@ -103,7 +103,7 @@ theorem hypergeomPartialSum_spec {R K : Type*} [Semiring R] [Semifield K] [CharZ
     letI X := hypergeomPartialSum p q a k
     t 0 * f X.termNum / X.den = t k ∧ t 0 * f X.sumNum / X.den = ∑ m ∈ range k, t m := by
   fun_induction hypergeomPartialSum p q a k generalizing t with
-  | case1 a => simp
+  | case1 => simp
   | case2 a m X b _ ih =>
     obtain ⟨hXt, hXs⟩ := ih t ht
     have hb : (q b : K) ≠ 0 := mod_cast hq b
