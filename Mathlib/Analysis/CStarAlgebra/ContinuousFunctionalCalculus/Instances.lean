@@ -35,7 +35,7 @@ public import Mathlib.Topology.ContinuousMap.ContinuousMapZero.Unitization
 continuous functional calculus, normal, selfadjoint
 -/
 
-@[expose] public section
+public section
 
 open Topology
 
@@ -77,7 +77,7 @@ This range of this map is contained in the range of `(↑) : A → A⁺¹` (see 
 and so we may restrict it to `A` to get the necessary homomorphism for the non-unital continuous
 functional calculus.
 -/
-def cfcₙAux : C(σₙ 𝕜 a, 𝕜)₀ →⋆ₙₐ[𝕜] A⁺¹ :=
+@[expose] def cfcₙAux : C(σₙ 𝕜 a, 𝕜)₀ →⋆ₙₐ[𝕜] A⁺¹ :=
   (cfcHom (R := 𝕜) (hp₁.mpr ha)).toNonUnitalStarAlgHom |>.comp
       (Homeomorph.compStarAlgEquiv' 𝕜 𝕜 <| .setCongr
         (quasispectrum_eq_spectrum_inr' 𝕜 𝕜 a).symm).toNonUnitalStarAlgHom
@@ -194,7 +194,7 @@ variable (x : Unitization R A)
 
 /-- For `x : Unitization R A`, the map `fun r : R ↦ r + x.fst` is a homemorphism between the
 sets `quasispectrum R x.snd` and `spectrum R x`. -/
-def quasispectrumHomeomorphSpectrum : σₙ R x.snd ≃ₜ σ R x :=
+@[expose] def quasispectrumHomeomorphSpectrum : σₙ R x.snd ≃ₜ σ R x :=
   (Homeomorph.addRight x.fst).subtype fun _ ↦ by simp [Unitization.mem_spectrum_iff]
 
 @[simp]
