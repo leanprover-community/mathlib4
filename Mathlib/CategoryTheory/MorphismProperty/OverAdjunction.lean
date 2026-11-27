@@ -346,7 +346,7 @@ variable [P.IsStableUnderComposition] [Q.IsStableUnderCobaseChange]
 
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
-attribute [local instance] hasPushouts_symmetry_of_hasPushoutsAlong in
+attribute [local instance] hasPushout_symmetry in
 /-- `P.Under.pushout` is left adjoint to `P.Under.map` if pushouts of morphisms satisfying `P`
 exist along `f` and are also in `P`, and `f` is in both `P` and `Q`. -/
 @[simps! unit_app counit_app]

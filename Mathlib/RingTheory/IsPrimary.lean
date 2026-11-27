@@ -22,7 +22,7 @@ A proper submodule `S : Submodule R M` is primary iff
   See https://mathoverflow.net/questions/3910/primary-decomposition-for-modules
   for a comparison of this definition (a la Atiyah-Macdonald) vs "locally nilpotent" (Matsumura).
 
-## Implementation details
+## Implementation notes
 
 This is a generalization of `Ideal.IsPrimary`. For brevity, the pointwise instances are used
 to define the nilpotency of `r : R`.

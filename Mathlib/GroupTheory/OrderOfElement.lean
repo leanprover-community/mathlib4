@@ -19,6 +19,9 @@ import Mathlib.Algebra.Group.Commute.Basic
 import Mathlib.Algebra.Group.Subgroup.Finite
 import Mathlib.Algebra.Order.Group.Action
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Order of an element
 
@@ -35,6 +38,7 @@ This file defines the order of an element of a finite group. For a finite group 
 * `addOrderOf` is the additive analogue of `orderOf`.
 
 ## Tags
+
 order of an element
 -/
 

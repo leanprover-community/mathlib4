@@ -21,7 +21,7 @@ set_option doc.verso.suggestions false
 * `functor_norm`
 * `monad_norm`
 
-## Implementation Details
+## Implementation notes
 
 Set of rewrite rules and automation for monads in general and
 `ReaderT`, `StateT`, `ExceptT` and `OptionT` in particular.

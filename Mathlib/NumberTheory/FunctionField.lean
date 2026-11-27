@@ -27,18 +27,21 @@ This file defines a function field and the ring of integers corresponding to it.
   as the integral closure of `F[X]` in the function field.
 
 ## Implementation notes
+
 The definitions that involve a field of fractions choose a canonical field of fractions,
 but are independent of that choice. We also omit assumptions like
 `IsScalarTower F[X] (FractionRing F[X]) K` in definitions,
 adding them back in lemmas when they are needed.
 
 ## References
+
 * [D. Marcus, *Number Fields*][marcus1977number]
 * [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
 * [P. Samuel, *Algebraic Theory of Numbers*][samuel1967]
 * [M. Rosen, *Number Theory in Function Fields*][rosen2002]
 
 ## Tags
+
 function field, ring of integers
 -/
 

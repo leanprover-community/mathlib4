@@ -115,15 +115,15 @@ theorem mk_smul (r : S) (x : M) : (mk (r • x) : M ⧸ p) = r • mk x :=
 
 instance smulCommClass (T : Type*) [SMul T R] [SMul T M] [IsScalarTower T R M]
     [SMulCommClass S T M] : SMulCommClass S T (M ⧸ P) where
-  smul_comm _x _y := Quotient.ind' fun _z => congr(mk $(smul_comm ..))
+  smul_comm _x _y := Quotient.ind fun _z => congr(mk $(smul_comm ..))
 
 instance isScalarTower (T : Type*) [SMul T R] [SMul T M] [IsScalarTower T R M] [SMul S T]
     [IsScalarTower S T M] : IsScalarTower S T (M ⧸ P) where
-  smul_assoc _x _y := Quotient.ind' fun _z => congr(mk $(smul_assoc ..))
+  smul_assoc _x _y := Quotient.ind fun _z => congr(mk $(smul_assoc ..))
 
 instance isCentralScalar [SMul Sᵐᵒᵖ R] [SMul Sᵐᵒᵖ M] [IsScalarTower Sᵐᵒᵖ R M]
     [IsCentralScalar S M] : IsCentralScalar S (M ⧸ P) where
-  op_smul_eq_smul _x := Quotient.ind' fun _z => congr(mk $(op_smul_eq_smul ..))
+  op_smul_eq_smul _x := Quotient.ind fun _z => congr(mk $(op_smul_eq_smul ..))
 
 end SMul
 
@@ -201,7 +201,7 @@ end Module
 
 @[elab_as_elim]
 theorem induction_on {C : M ⧸ p → Prop} (x : M ⧸ p) (H : ∀ z, C (Submodule.Quotient.mk z)) :
-    C x := Quotient.inductionOn' x H
+    C x := Quotient.inductionOn x H
 
 theorem mk_surjective : Function.Surjective (@mk _ _ _ _ _ p) := by
   rintro ⟨x⟩

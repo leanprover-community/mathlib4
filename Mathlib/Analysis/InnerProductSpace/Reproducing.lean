@@ -48,6 +48,7 @@ positive semidefinite matrices.
 - Privatize `RKHS.H₀`
 
 ## References
+
 * [Paulsen, Vern I. and Raghupathi, Mrinal,
   *An introduction to the theory of reproducing kernel Hilbert spaces*][MR3526117]
 -/
@@ -558,15 +559,17 @@ instance instRKHSSubmodule : RKHS 𝕜 H₀ X V where
   coeCLM := (coeCLM 𝕜).comp H₀.subtypeL
   coeCLM_injective := coeCLM_injective.comp H₀.subtype_injective
 
+-- Keep this lemma out of `simp` because its discrimination-tree key
+-- `@DFunLike.coe _ _ _ _ _.1` is too general.
+-- It may be possible to add `@[simp]` if https://github.com/leanprover/lean4/pull/8883 is merged.
 omit [CompleteSpace H] [CompleteSpace V] [CompleteSpace H₀] in
-@[simp]
 lemma coe_coe (f : H₀) : ⇑(f : H) = f := rfl
 
 lemma kerFun_submodule (x : X) :
     kerFun H₀ x = H₀.orthogonalProjectionOnto.comp (kerFun H x) := by
   ext1
   refine ext_inner_right 𝕜 fun v ↦ ?_
-  simp
+  simp [coe_coe]
 
 lemma kernel_submodule (x y : X) :
     kernel H₀ x y = (kerFun H x).adjoint ∘L (H₀.starProjection.comp (kerFun H y)) := by

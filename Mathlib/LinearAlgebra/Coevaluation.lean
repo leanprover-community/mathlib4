@@ -20,7 +20,7 @@ from `K` to `V ⊗ Dual K V` which corresponds to the identity function on `V`.
 
 coevaluation, dual module, tensor product
 
-## Future work
+## TODO
 
 * Prove that this is independent of the choice of basis on `V`.
 -/

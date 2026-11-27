@@ -198,7 +198,7 @@ theorem _root_.Pi.intrinsicStar_comul [Π i, CoalgebraStruct R (B i)]
   ext i x
   have := by simpa using congr($(h i) x)
   simp only [coe_comp, coe_single, Function.comp_apply, intrinsicStar_apply, Pi.star_single,
-    Pi.comul_single, LinearEquiv.coe_coe]
+    Pi.comul_single, LinearEquiv.coe_toLinearMap]
   rw [star_map_apply_eq_map_intrinsicStar, this, map_comm]
   simp
 
@@ -216,9 +216,11 @@ end convRing
 end LinearMap
 
 section matrix
-variable {R m n : Type*} [CommSemiring R] [StarRing R] [Fintype m] [DecidableEq m]
+variable {R m n : Type*} [CommSemiring R] [StarRing R] [Fintype m]
 
 namespace LinearMap
+
+variable [DecidableEq m]
 
 theorem toMatrix'_intrinsicStar (f : WithConv ((m → R) →ₗ[R] (n → R))) :
     (star f).ofConv.toMatrix' = f.ofConv.toMatrix'.map star := by
@@ -236,15 +238,28 @@ end LinearMap
 
 namespace Matrix
 
-theorem intrinsicStar_toLin' (A : Matrix n m R) :
-    star (toConv A.toLin') = toConv (A.map star).toLin' := by
+theorem intrinsicStar_mulVecLin (A : Matrix n m R) :
+    star (toConv A.mulVecLin) = toConv (A.map star).mulVecLin := by
+  classical
   simp [← LinearMap.toMatrix'.injective.eq_iff, LinearMap.toMatrix'_intrinsicStar, WithConv.ext_iff]
 
-/-- Given a matrix `A`, `A.toLin'` is self-adjoint (with respect to the intrinsic star)
+/-- Given a matrix `A`, `A.mulVecLin` is self-adjoint (with respect to the intrinsic star)
 iff all its elements are self-adjoint. -/
+theorem IntrinsicStar.isSelfAdjoint_mulVecLin_iff (A : Matrix n m R) :
+    IsSelfAdjoint (toConv A.mulVecLin) ↔ ∀ i j, IsSelfAdjoint (A i j) := by
+  simp [IsSelfAdjoint, intrinsicStar_mulVecLin, ← ext_iff]
+
+variable [DecidableEq m]
+
+@[deprecated intrinsicStar_mulVecLin +typeChanged (since := "2026-11-25")]
+theorem intrinsicStar_toLin' (A : Matrix n m R) :
+    star (toConv A.toLin') = toConv (A.map star).toLin' :=
+  intrinsicStar_mulVecLin A
+
+@[deprecated IntrinsicStar.isSelfAdjoint_mulVecLin_iff +typeChanged (since := "2026-11-25")]
 theorem IntrinsicStar.isSelfAdjoint_toLin'_iff (A : Matrix n m R) :
-    IsSelfAdjoint (toConv A.toLin') ↔ ∀ i j, IsSelfAdjoint (A i j) := by
-  simp [IsSelfAdjoint, intrinsicStar_toLin', ← ext_iff]
+    IsSelfAdjoint (toConv A.toLin') ↔ ∀ i j, IsSelfAdjoint (A i j) :=
+  IntrinsicStar.isSelfAdjoint_mulVecLin_iff A
 
 end Matrix
 end matrix

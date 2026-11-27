@@ -64,6 +64,7 @@ is a field" is a `def` rather than an `instance`, so if you want to reason about
 fractions `K`, assume `[Field K]` instead of just `[CommRing K]`.
 
 ## Tags
+
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
 -/
@@ -310,7 +311,7 @@ noncomputable def atUnits (H : M ≤ IsUnit.submonoid R) : R ≃ₐ[R] S := by
     obtain ⟨⟨x, s⟩, eq⟩ := IsLocalization.surj M y
     obtain ⟨u, hu⟩ := H s.prop
     use x * u.inv
-    dsimp [Algebra.ofId, RingHom.toFun_eq_coe, AlgHom.coe_mks]
+    dsimp [Algebra.ofId, RingHom.toFun_eq_coe]
     rw [map_mul, ← eq, ← hu, mul_assoc, ← map_mul]
     simp
 

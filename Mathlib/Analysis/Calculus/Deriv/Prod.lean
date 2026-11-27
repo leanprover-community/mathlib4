@@ -18,7 +18,7 @@ In this file we prove lemmas about derivatives of functions `f : 𝕜 → E × F
 For a more detailed overview of one-dimensional derivatives in mathlib, see the module docstring of
 `Mathlib/Analysis/Calculus/Deriv/Basic.lean`.
 
-## Keywords
+## Tags
 
 derivative
 -/

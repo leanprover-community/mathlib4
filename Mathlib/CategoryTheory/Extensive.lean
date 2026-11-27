@@ -18,10 +18,12 @@ import Mathlib.CategoryTheory.Limits.Types.Pullbacks
 # Extensive categories
 
 ## Main definitions
+
 - `CategoryTheory.FinitaryExtensive`: A category is (finitary) extensive if it has finite
   coproducts, and binary coproducts are van Kampen.
 
 ## Main Results
+
 - `CategoryTheory.hasStrictInitialObjects_of_finitaryExtensive`: The initial object
   in extensive categories is strict.
 - `CategoryTheory.FinitaryExtensive.mono_inr_of_isColimit`: Coproduct injections are monic in
@@ -37,6 +39,7 @@ import Mathlib.CategoryTheory.Limits.Types.Pullbacks
   finitary extensive category are van Kampen.
 
 ## References
+
 - https://ncatlab.org/nlab/show/extensive+category
 - [Carboni et al, Introduction to extensive and distributive categories][CARBONI1993145]
 -/

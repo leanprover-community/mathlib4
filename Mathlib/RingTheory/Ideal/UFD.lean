@@ -15,6 +15,7 @@ import Mathlib.RingTheory.UniqueFactorizationDomain.Kaplansky
 # UFD criteria via height `1` prime ideals and localization
 
 ## Main results
+
 * `UniqueFactorizationMonoid.iff_forall_isPrincipal_of_height_eq_one` : Let `R` be a
   Noetherian domain. Then `R` is a UFD if and only if every height `1` prime ideal is principal.
 
