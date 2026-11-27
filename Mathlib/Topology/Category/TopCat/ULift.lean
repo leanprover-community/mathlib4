@@ -10,6 +10,9 @@ public import Mathlib.Topology.Homeomorph.Lemmas
 
 import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lifting topological spaces to a higher universe
 

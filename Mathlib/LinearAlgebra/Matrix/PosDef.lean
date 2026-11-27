@@ -8,12 +8,13 @@ module
 public import Mathlib.Algebra.CharP.Invertible
 public import Mathlib.Algebra.Order.Ring.Star
 public import Mathlib.Basic.Real.Star
-public import Mathlib.Data.Int.Interval
 public import Mathlib.LinearAlgebra.Matrix.BilinearForm
 public import Mathlib.LinearAlgebra.Matrix.DotProduct
 public import Mathlib.LinearAlgebra.Matrix.Hermitian
-public import Mathlib.LinearAlgebra.Matrix.Vec
 public import Mathlib.LinearAlgebra.QuadraticForm.Basic
+
+import Mathlib.Data.Int.Interval
+import Mathlib.LinearAlgebra.Matrix.Vec
 
 /-! # Positive Definite Matrices
 
@@ -207,9 +208,9 @@ protected theorem diagonal [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R
   left := isHermitian_diagonal_of_self_adjoint _ <| funext fun i => IsSelfAdjoint.of_nonneg (h i).le
   right x hx := by
     refine Finsupp.sum_pos' (fun _ _ ↦ Finsupp.sum_nonneg ?_) ?_
-    · simp +contextual [diagonal, apply_ite, star_left_conjugate_nonneg (h _).le]
+    · simp [diagonal, apply_ite, star_left_conjugate_nonneg (h _).le]
     obtain ⟨i, hxi⟩ := by simpa [Finsupp.ext_iff] using hx
-    refine ⟨i, ?_, Finsupp.sum_pos' ?_ ⟨i, ?_, ?_⟩⟩ <;> simp +contextual [diagonal,
+    refine ⟨i, ?_, Finsupp.sum_pos' ?_ ⟨i, ?_, ?_⟩⟩ <;> simp [diagonal,
       apply_ite, star_left_conjugate_nonneg (h _).le,
       star_left_conjugate_pos (h i), IsRegular.of_ne_zero hxi, Finsupp.mem_support_iff.mpr hxi]
 
@@ -342,7 +343,7 @@ theorem _root_.Matrix.posSemidef_iff_submatrix_of_forall_finset {ι : Type*} {κ
     M.PosSemidef ↔ ∀ i, (M.submatrix (f i) (f i)).PosSemidef := by
   refine ⟨fun h i ↦ h.submatrix _, fun h ↦ posSemidef_iff_submatrix_finset.mpr fun s ↦ ?_⟩
   obtain ⟨i, hi⟩ := hf s
-  choose g hg using fun x : s ↦ hi x.2
+  choose g hg using fun x : s ↦ hi x.property
   exact funext hg ▸ (h i).submatrix g
 
 omit [Fintype m] in
@@ -528,7 +529,7 @@ theorem _root_.Matrix.posDef_iff_submatrix_of_forall_finset {ι : Type*} {κ : �
     M.PosDef ↔ ∀ i, (M.submatrix (f i) (f i)).PosDef := by
   refine ⟨fun h i ↦ h.submatrix (hf_inj i), fun h ↦ posDef_iff_submatrix_finset.mpr fun s ↦ ?_⟩
   obtain ⟨i, hi⟩ := hf s
-  choose g hg using fun x : s ↦ hi x.2
+  choose g hg using fun x : s ↦ hi x.property
   have hfg : f i ∘ g = (↑) := funext hg
   exact hfg ▸ (h i).submatrix (.of_comp (hfg ▸ Subtype.coe_injective))
 

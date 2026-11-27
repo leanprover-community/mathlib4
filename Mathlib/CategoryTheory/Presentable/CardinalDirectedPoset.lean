@@ -29,6 +29,7 @@ the objects `J` such that the underlying type `J.obj` has
 cardinality `< κ'`.
 
 ## References
+
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 -/
 
@@ -282,7 +283,7 @@ def PropSetWithTop (κ' : Cardinal.{u}) [Fact κ'.IsRegular]
 variable (κ' : Cardinal.{u}) [Fact κ'.IsRegular]
 
 instance (S : Subtype (J.PropSetWithTop κ')) : HasTerminal S :=
-  IsTerminal.hasTerminal (X := ⟨⊤, S.2.2⟩)
+  IsTerminal.hasTerminal (X := ⟨⊤, S.property.2⟩)
     (IsTerminal.ofUniqueHom (fun _ ↦ homOfLE (by rw [Subtype.mk_le_mk]; exact le_top))
       (fun _ _ ↦ rfl))
 
@@ -298,7 +299,7 @@ instance : IsCardinalFiltered (Subtype (J.PropSetWithTop κ')) κ' :=
       hasCardinalLT_union hκ' (hasCardinalLT_iUnion _ hK (fun k ↦ (α k).property.left))
         (hasCardinalLT_of_finite _ _ hκ'), by simp⟩, fun k ↦ ?_⟩
     rw [Subtype.mk_le_mk]
-    exact subset_trans (Set.subset_iUnion (fun i ↦ (α i).1) k) Set.subset_union_left)
+    exact subset_trans (Set.subset_iUnion (fun i ↦ (α i).val) k) Set.subset_union_left)
 
 instance : IsFiltered (Subtype (J.PropSetWithTop κ')) :=
   isFiltered_of_isCardinalFiltered _ κ'
@@ -344,11 +345,11 @@ protected lemma isCardinalPresentable_iff (h : κ ≤ κ') :
   obtain ⟨X, f, hf⟩ :=
     IsCardinalPresentable.exists_hom_of_isColimit κ' (isColimitCoconeWithTop J κ')
       (ObjectProperty.homMk (PartOrdEmb.ofHom WithTop.coeOrderHom))
-  replace hf : OrderEmbedding.subtype (· ∈ X.1) ∘ f = WithTop.coeOrderHom := by
+  replace hf : OrderEmbedding.subtype (· ∈ X.val) ∘ f = WithTop.coeOrderHom := by
     ext x
     congrm $hf x
-  refine X.2.1.of_injective f (Function.Injective.of_comp
-    (f := OrderEmbedding.subtype (· ∈ X.1)) ?_)
+  refine X.property.1.of_injective f (Function.Injective.of_comp
+    (f := OrderEmbedding.subtype (· ∈ X.val)) ?_)
   dsimp at hf ⊢
   rw [hf]
   exact WithTop.coe_injective
@@ -398,7 +399,7 @@ instance : IsCardinalFiltered (Subtype J.PropSet) κ :=
               IsCardinalFiltered.toMax _ hK k) }
     refine ⟨⟨S, ?_, isTerminalTop.hasTerminal⟩, fun k ↦ ?_⟩
     · have hκ : Cardinal.aleph0 ≤ κ :=  Cardinal.IsRegular.aleph0_le Fact.out
-      exact hasCardinalLT_union hκ (hasCardinalLT_iUnion _ hK (fun k ↦ (α k).2.1))
+      exact hasCardinalLT_union hκ (hasCardinalLT_iUnion _ hK (fun k ↦ (α k).property.1))
         (hasCardinalLT_of_finite _ _ hκ)
     · simp only [← Subtype.coe_le_coe]
       exact subset_trans (Set.subset_iUnion_of_subset k (subset_refl _)) Set.subset_union_left )

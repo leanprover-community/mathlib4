@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Fin.Embedding
 public import Mathlib.Data.Finset.Card
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finsets in `Fin n`
 

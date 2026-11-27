@@ -47,7 +47,7 @@ theorem exists_continuousOn_eqOn_exp_comp (hUc : IsSimplyConnected U) (hUo : IsO
   lift x₀ to U using hx₀U
   rcases isCoveringMapOn_exp.existsUnique_continuousMap_lifts
     ⟨U.domRestrict g, continuousOn_iff_continuous_domRestrict.mp hgc⟩ (exp_log hx₀)
-    (fun x ↦ ne_of_mem_of_not_mem (mem_image_of_mem g x.2) hU₀) with ⟨f, ⟨-, hf⟩, -⟩
+    (fun x ↦ ne_of_mem_of_not_mem (mem_image_of_mem g x.property) hU₀) with ⟨f, ⟨-, hf⟩, -⟩
   obtain ⟨g, hg⟩ : ∃ g : X → ℂ, ∀ z : U, g z = f z :=
     ⟨fun z ↦ if hz : z ∈ U then f ⟨z, hz⟩ else 0, by simp⟩
   refine ⟨g, ?hg_cont, ?hg_inv⟩

@@ -234,7 +234,6 @@ namespace NonUnitalSubsemiring
 variable [NonUnitalNonAssocSemiring S]
 variable (s : NonUnitalSubsemiring R)
 
-@[simp, norm_cast]
 theorem coe_zero : ((0 : s) : R) = (0 : R) :=
   rfl
 
@@ -352,6 +351,6 @@ open NonUnitalRingHom NonUnitalSubsemiringClass
 /-- The non-unital ring homomorphism associated to an inclusion of
 non-unital subsemirings. -/
 def inclusion {S T : NonUnitalSubsemiring R} (h : S ≤ T) : S →ₙ+* T :=
-  codRestrict (subtype S) _ fun x => h x.2
+  codRestrict (subtype S) _ fun x => h x.property
 
 end NonUnitalSubsemiring

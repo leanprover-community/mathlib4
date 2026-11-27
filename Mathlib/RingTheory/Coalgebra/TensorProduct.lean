@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.Coalgebra.Equiv
 import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.RingTheory.Coalgebra.CoassocSimps
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tensor products of coalgebras
 

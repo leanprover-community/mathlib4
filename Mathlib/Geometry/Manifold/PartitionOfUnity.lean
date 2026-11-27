@@ -165,7 +165,10 @@ theorem sum_le_one (x : M) : ∑ᶠ i, f i x ≤ 1 :=
 /-- Reinterpret a smooth partition of unity as a continuous partition of unity. -/
 @[simps]
 def toPartitionOfUnity : PartitionOfUnity ι M s :=
-  { f with toFun := fun i => f i }
+  { f with toFun := fun i => (f i).toContinuousMap }
+
+lemma toPartitionOfUnity_toFun_apply (i : ι) (a : M) :
+    f.toPartitionOfUnity i a = f i a := rfl
 
 theorem contMDiff_sum : CMDiff ∞ fun x => ∑ᶠ i, f i x :=
   contMDiff_finsum (fun i => (f i).contMDiff) f.locallyFinite
@@ -564,7 +567,7 @@ theorem exists_isSubordinate {s : Set M} (hs : IsClosed s) (U : ι → Set M) (h
     exact ⟨f.toSmoothPartitionOfUnity hf, hfU.toSmoothPartitionOfUnity hf⟩
   · intro s t hs ht hd
     rcases exists_contMDiffMap_zero_one_of_isClosed I hs ht hd with ⟨f, hf⟩
-    exact ⟨f, f.contMDiff, hf⟩
+    exact ⟨f.toContinuousMap, f.contMDiff, hf⟩
 
 theorem exists_isSubordinate_chartAt_source_of_isClosed {s : Set M} (hs : IsClosed s) :
     ∃ f : SmoothPartitionOfUnity s I M s,

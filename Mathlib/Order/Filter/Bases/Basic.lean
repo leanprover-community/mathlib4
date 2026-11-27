@@ -65,8 +65,6 @@ of this form. The other two can be emulated using `s = id` or `p = fun _ ↦ Tru
 With this approach sometimes one needs to `simp` the statement provided by the `Filter.HasBasis`
 machinery, e.g., `simp only [true_and_iff]` or `simp only [forall_const]` can help with the case
 `p = fun _ ↦ True`.
-
-## Main statements
 -/
 
 @[expose] public section
@@ -246,7 +244,7 @@ noncomputable def HasBasis.index (h : l.HasBasis p s) (t : Set α) (ht : t ∈ l
   ⟨(h.mem_iff.1 ht).choose, (h.mem_iff.1 ht).choose_spec.1⟩
 
 theorem HasBasis.property_index (h : l.HasBasis p s) (ht : t ∈ l) : p (h.index t ht) :=
-  (h.index t ht).2
+  (h.index t ht).property
 
 theorem HasBasis.set_index_mem (h : l.HasBasis p s) (ht : t ∈ l) : s (h.index t ht) ∈ l :=
   h.mem_of_mem <| h.property_index _

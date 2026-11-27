@@ -10,6 +10,9 @@ public import Mathlib.GroupTheory.MonoidLocalization.Maps
 
 import Mathlib.RingTheory.OreLocalization.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Localizations of commutative monoids with zeroes
 -/
@@ -33,7 +36,7 @@ theorem LocalizationMap.subsingleton (f : LocalizationMap S N) (h : 0 ∈ S) : S
 
 theorem LocalizationMap.subsingleton_iff (f : LocalizationMap S N) : Subsingleton N ↔ 0 ∈ S :=
   ⟨fun _ ↦ have ⟨c, eq⟩ := f.exists_of_eq (Subsingleton.elim (f 0) (f 1))
-    by rw [mul_zero, mul_one] at eq; exact eq ▸ c.2, f.subsingleton⟩
+    by rw [mul_zero, mul_one] at eq; exact eq ▸ c.property, f.subsingleton⟩
 
 theorem LocalizationMap.nontrivial (f : LocalizationMap S N) (h : 0 ∉ S) : Nontrivial N := by
   rwa [← not_subsingleton_iff_nontrivial, f.subsingleton_iff]

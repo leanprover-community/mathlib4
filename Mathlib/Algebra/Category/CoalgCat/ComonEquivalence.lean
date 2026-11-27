@@ -12,6 +12,9 @@ public import Mathlib.RingTheory.Coalgebra.TensorProduct
 
 import Mathlib.Tactic.SuppressCompilation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category equivalence between `R`-coalgebras and comonoid objects in `R-Mod`
 

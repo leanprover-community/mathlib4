@@ -6,7 +6,8 @@ Authors: Antoine Chambert-Loir
 module
 
 public import Mathlib.RingTheory.MvPolynomial.MonomialOrder
-public import Mathlib.RingTheory.MvPolynomial.WeightedHomogeneous
+
+import Mathlib.RingTheory.MvPolynomial.WeightedHomogeneous
 
 /-! # Division algorithm with respect to monomial orders
 
@@ -38,7 +39,9 @@ The proof is done by induction, using two standard constructions
 * `MonomialOrder.div_single` is the variant of `MonomialOrder.div` for a single polynomial.
 
 
-## Reference : [Becker-Weispfenning1993]
+## References
+
+[Becker-Weispfenning1993]
 -/
 
 @[expose] public section
@@ -99,7 +102,7 @@ theorem degree_reduce_lt {f b : MvPolynomial σ R} (hb : IsUnit (m.leadingCoeff 
       apply hf
       simp [hf0]
   have H' : (m.reduce hb f).coeff (m.degree f) = 0 := by
-    simp only [reduce, coeff_sub, sub_eq_zero]
+    simp only [reduce, AddMonoidAlgebra.coeff_sub, Finsupp.sub_apply, sub_eq_zero]
     nth_rewrite 3 [H]
     rw [coeff_mul_of_degree_add (m := m), leadingCoeff_monomial, mul_comm, ← mul_assoc,
       IsUnit.mul_val_inv, one_mul, ← leadingCoeff]
@@ -246,11 +249,7 @@ theorem div_single {b : MvPolynomial σ R}
   simp only [Set.mem_singleton_iff, forall_eq] at h2
   simp only at h1
   refine ⟨q, r, ?_, h1, h2⟩
-  rw [hgr]
-  simp only [Finsupp.linearCombination, Finsupp.coe_lsum, LinearMap.coe_smulRight, LinearMap.id_coe,
-    id_eq, smul_eq_mul, add_left_inj]
-  rw [Finsupp.sum_eq_single ⟨b, by simp⟩ _ (by simp)]
-  simp +contextual
+  simp [Finsupp.linearCombination, Finsupp.sum_eq_single (⟨b, by simp⟩ : ({b} : Set _)), q, hgr]
 
 theorem div_single_of_isWeightedHomogeneous {M : Type*} [AddCommMonoid M] [PartialOrder M]
     [CanonicallyOrderedAdd M] [Sub M] [OrderedSub M] [AddLeftReflectLE M] {w : σ → M} {i n : M}

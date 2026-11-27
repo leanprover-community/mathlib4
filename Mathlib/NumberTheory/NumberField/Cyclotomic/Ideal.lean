@@ -101,6 +101,11 @@ theorem inertiaDeg_span_zeta_sub_one : inertiaDeg (span {hζ.toInteger - 1}) ℤ
   rw [← Nat.pow_right_inj hp.out.one_lt, pow_one, pow_inertiaDeg,
     absNorm_span_zeta_sub_one]
 
+#adaptation_note
+/-- After https://github.com/leanprover-community/mathlib4/pull/45954 (generalization of
+`AlgEquiv` to non-unital),
+`attribute [-instance] ZSMul.toSMul` is necessary, otherwise we get instance diamonds. -/
+attribute [-instance] ZSMul.toSMul in
 attribute [local instance] FractionRing.liftAlgebra in
 theorem map_eq_span_zeta_sub_one_pow :
     (map (algebraMap ℤ (𝓞 K)) 𝒑) = span {hζ.toInteger - 1} ^ Module.finrank ℚ K := by
@@ -283,35 +288,46 @@ theorem ramificationIdxIn_eq_of_prime :
 
 end Prime
 
+section toInteger
+
+variable {m K} [NeZero m] [IsCyclotomicExtension {m} ℚ K]
+
+/-- If `ζ` is a primitive `m`-th root of unity, then the exponent of `ζ` in `𝓞 K` is `1`. -/
+theorem _root_.IsPrimitiveRoot.exponent_toInteger {ζ : K} (hζ : IsPrimitiveRoot ζ m) :
+    exponent hζ.toInteger = 1 :=
+  exponent_eq_one_iff.mpr (adjoin_singleton_eq_top hζ)
+
+/-- If `ζ` is a primitive `m`-th root of unity, then no prime divides the exponent of `ζ`
+in `𝓞 K`. -/
+theorem _root_.IsPrimitiveRoot.not_dvd_exponent_toInteger {ζ : K} (hζ : IsPrimitiveRoot ζ m) :
+    ¬ p ∣ exponent hζ.toInteger := by
+  rw [hζ.exponent_toInteger]
+  exact hp.out.not_dvd_one
+
+end toInteger
+
 section notDvd
 
 open NumberField.Ideal Polynomial
 
 variable {m} [NeZero m] [hK : IsCyclotomicExtension {m} ℚ K]
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem inertiaDeg_eq_of_not_dvd (hm : ¬ p ∣ m) :
     inertiaDeg P ℤ = orderOf (p : ZMod m) := by
   replace hm : p.Coprime m := hp.out.coprime_iff_not_dvd.mpr hm
   let ζ := (zeta_spec m ℚ K).toInteger
-  have h₁ : ¬ p ∣ exponent ζ := by
-    rw [exponent_eq_one_iff.mpr <| adjoin_singleton_eq_top (zeta_spec m ℚ K)]
-    exact hp.out.not_dvd_one
+  have h₁ : ¬ p ∣ exponent ζ := (zeta_spec m ℚ K).not_dvd_exponent_toInteger p
   rw [inertiaDeg_primesOverSpanEquivMonicFactorsMod_apply h₁ ⟨P, ⟨hP₁, hP₂⟩⟩,
     natDegree_of_dvd_cyclotomic_of_irreducible (by simp) hm (f := 1)]
   · simpa using (orderOf_injective _ Units.coeHom_injective (ZMod.unitOfCoprime p hm)).symm
   · refine dvd_trans (monicFactorsMod_dvd_map_minpoly _) ?_
-    rw [← map_cyclotomic_int, cyclotomic_eq_minpoly (zeta_spec m ℚ K) (NeZero.pos _),
-      ← (zeta_spec m ℚ K).coe_toInteger, ← RingOfIntegers.minpoly_coe ζ]
-    simp [ζ]
+    rw [(zeta_spec m ℚ K).minpoly_toInteger, map_cyclotomic_int]
   · exact irreducible_monicFactorsMod _
 
 theorem ramificationIdx_eq_of_not_dvd (hm : ¬ p ∣ m) :
     ramificationIdx P ℤ = 1 := by
   let ζ := (zeta_spec m ℚ K).toInteger
-  have h₁ : ¬ p ∣ exponent ζ := by
-    rw [exponent_eq_one_iff.mpr <| adjoin_singleton_eq_top (zeta_spec m ℚ K)]
-    exact hp.out.not_dvd_one
+  have h₁ : ¬ p ∣ exponent ζ := (zeta_spec m ℚ K).not_dvd_exponent_toInteger p
   rw [ramificationIdx_primesOverSpanEquivMonicFactorsMod_apply h₁ ⟨P, ⟨hP₁, hP₂⟩⟩]
   refine multiplicity_eq_of_emultiplicity_eq_some (le_antisymm ?_ ?_)
   · apply emultiplicity_le_one_of_separable

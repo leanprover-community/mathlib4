@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Shift.CommShift
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Shift induced from a category to another
 

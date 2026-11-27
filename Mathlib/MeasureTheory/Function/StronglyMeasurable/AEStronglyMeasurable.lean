@@ -21,6 +21,7 @@ Almost everywhere strongly measurable functions form the largest class of functi
 integrated using the Bochner integral.
 
 ## Main definitions
+
 * `AEStronglyMeasurable f μ`: `f` is almost everywhere equal to a `StronglyMeasurable` function.
 * `AEFinStronglyMeasurable f μ`: `f` is almost everywhere equal to a `FinStronglyMeasurable`
   function.
@@ -149,7 +150,7 @@ lemma aestronglyMeasurable_id_of_isSeparable [TopologicalSpace α]
     Filter.mem_of_superset h2 (fun x hx ↦ by simp [subset_closure hx])⟩
   have h : StronglyMeasurable ((↑) : closure s → α) := by
     have := h1.closure.secondCountableTopology
-    exact continuous_subtype_val.stronglyMeasurable
+    exact continuous_subtypeVal.stronglyMeasurable
   have : (closure s).piecewise id (fun _ ↦ a) =
       ((↑) : closure s → α).extend ((↑) : closure s → α) (fun _ ↦ a) := by
     ext x
@@ -157,7 +158,7 @@ lemma aestronglyMeasurable_id_of_isSeparable [TopologicalSpace α]
     · simp [Function.extend_val_apply, hx]
     · simp [hx]
   rw [this]
-  exact (MeasurableEmbedding.subtype_coe isClosed_closure.measurableSet).stronglyMeasurable_extend
+  exact (MeasurableEmbedding.subtypeVal isClosed_closure.measurableSet).stronglyMeasurable_extend
     h stronglyMeasurable_const
 
 namespace AEStronglyMeasurable
@@ -241,6 +242,11 @@ theorem _root_.Continuous.aestronglyMeasurable [TopologicalSpace α] [OpensMeasu
     [PseudoMetrizableSpace β] [SecondCountableTopologyEither α β] (hf : Continuous f) :
     AEStronglyMeasurable f μ :=
   hf.stronglyMeasurable.aestronglyMeasurable
+
+protected theorem eval {δ : Type*} {π : δ → Type*} [∀ i, TopologicalSpace (π i)]
+    {i : δ} {f : α → ∀ i, π i} (hf : AEStronglyMeasurable[m] f μ) :
+    AEStronglyMeasurable[m] (fun x ↦ f x i) μ :=
+  (continuous_apply i).comp_aestronglyMeasurable hf
 
 @[fun_prop]
 protected theorem fst {f : α → β × γ} (hf : AEStronglyMeasurable[m] f μ) :

@@ -42,7 +42,7 @@ of `1` in `L`.
 
   Note: This is defined to be the trivial character if `L` does not have enough roots of unity.
 
-## Implementation note
+## Implementation notes
 
 In theory this could be set up as some theory about monoids, being a character
 on monoid isomorphisms, but under the hypotheses that the `n`-th roots of unity
@@ -71,7 +71,6 @@ universe u
 variable {L : Type u} [CommRing L] [IsDomain L]
 
 /-
-
 ## The mod n theory
 -/
 
@@ -289,8 +288,8 @@ theorem toZModPow_toFun (n : ℕ) :
   simp [modularCyclotomicCharacter, modularCyclotomicCharacter', modularCyclotomicCharacter.toFun]
 
 theorem toFun_spec (g : L ≃+* L) {n : ℕ} (t : rootsOfUnity (p ^ n) L) :
-    g (t : Lˣ) = t.1 ^ ((χ p g).toZModPow n).val := by
-  rw [toZModPow_toFun, ← modularCyclotomicCharacter.spec (ht := t.2)]
+    g (t : Lˣ) = t.val ^ ((χ p g).toZModPow n).val := by
+  rw [toZModPow_toFun, ← modularCyclotomicCharacter.spec (ht := t.property)]
 
 end cyclotomicCharacter
 

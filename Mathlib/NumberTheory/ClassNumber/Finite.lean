@@ -20,6 +20,7 @@ In this file, we use the notion of "admissible absolute value" to prove
 finiteness of the class group for number fields and function fields.
 
 ## Main definitions
+
 - `ClassGroup.fintypeOfAdmissibleOfAlgebraic`: if `R` has an admissible absolute value,
   its integral closure has a finite class group
 -/
@@ -278,13 +279,13 @@ theorem exists_mk0_eq_mk0 [IsDedekindDomain S] [Algebra.IsAlgebraic R S] (I : (I
   set M := ∏ m ∈ finsetApprox bS adm, m
   have hM : algebraMap R S M ≠ 0 := prod_finsetApprox_ne_zero bS adm
   obtain ⟨b, b_mem, b_ne_zero, b_min⟩ := exists_min abv I
-  suffices Ideal.span {b} ∣ Ideal.span {algebraMap _ _ M} * I.1 by
+  suffices Ideal.span {b} ∣ Ideal.span {algebraMap _ _ M} * I.val by
     obtain ⟨J, hJ⟩ := this
     refine ⟨⟨J, ?_⟩, ?_, ?_⟩
     · rw [mem_nonZeroDivisors_iff_ne_zero]
       rintro rfl
       rw [Ideal.zero_eq_bot, Ideal.mul_bot] at hJ
-      exact hM (Ideal.span_singleton_eq_bot.mp (I.2.2 _ hJ))
+      exact hM (Ideal.span_singleton_eq_bot.mp (I.property.2 _ hJ))
     · rw [ClassGroup.mk0_eq_mk0_iff]
       exact ⟨algebraMap _ _ M, b, hM, b_ne_zero, hJ⟩
     rw [← SetLike.mem_coe, ← Set.singleton_subset_iff, ← Ideal.span_le, ← Ideal.dvd_iff_le]
@@ -300,8 +301,8 @@ theorem exists_mk0_eq_mk0 [IsDedekindDomain S] [Algebra.IsAlgebraic R S] (I : (I
   obtain ⟨q, r, r_mem, lt⟩ := exists_mem_finset_approx' bS adm a b_ne_zero
   apply @dvd_of_mul_left_dvd _ _ q
   simp only [Algebra.smul_def] at lt
-  rw [←
-    sub_eq_zero.mp (b_min _ (I.1.sub_mem (I.1.mul_mem_left _ ha) (I.1.mul_mem_left _ b_mem)) lt)]
+  rw [← sub_eq_zero.mp
+    (b_min _ (I.val.sub_mem (I.val.mul_mem_left _ ha) (I.val.mul_mem_left _ b_mem)) lt)]
   refine mul_dvd_mul_right (dvd_trans (map_dvd _ ?_) hr') _
   exact Multiset.dvd_prod (Multiset.mem_map.mpr ⟨_, r_mem, rfl⟩)
 
@@ -311,7 +312,8 @@ By showing this function is surjective, we prove that the class group is finite.
 noncomputable def mkMMem [IsDedekindDomain S]
     (J : { J : Ideal S // algebraMap _ _ (∏ m ∈ finsetApprox bS adm, m) ∈ J }) : ClassGroup S :=
   ClassGroup.mk0
-    ⟨J.1, mem_nonZeroDivisors_iff_ne_zero.mpr (ne_bot_of_prod_finsetApprox_mem bS adm J.1 J.2)⟩
+    ⟨J.val, mem_nonZeroDivisors_iff_ne_zero.mpr
+      (ne_bot_of_prod_finsetApprox_mem bS adm J.val J.property)⟩
 
 theorem mkMMem_surjective [IsDedekindDomain S] [Algebra.IsAlgebraic R S] :
     Function.Surjective (ClassGroup.mkMMem bS adm) := by

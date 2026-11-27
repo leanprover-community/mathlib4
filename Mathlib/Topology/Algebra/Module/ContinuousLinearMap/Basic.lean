@@ -9,13 +9,14 @@ module
 public import Mathlib.Algebra.Group.Action.FunLike
 public import Mathlib.Algebra.GroupWithZero.Action.FunLike
 public import Mathlib.Algebra.Module.FunLike
-public import Mathlib.Algebra.Module.LinearMap.DivisionRing
 public import Mathlib.Algebra.Module.Submodule.EqLocus
 public import Mathlib.Algebra.Module.Submodule.Invariant
 public import Mathlib.Algebra.Ring.FunLike
 public import Mathlib.Topology.Algebra.Group.ZPow
 public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
 public import Mathlib.Topology.Algebra.Module.Basic
+
+import Mathlib.Algebra.Module.LinearMap.DivisionRing
 
 /-!
 # Continuous linear maps
@@ -161,14 +162,29 @@ theorem coe_inj {f g : M₁ →SL[σ₁₂] M₂} : (f : M₁ →ₛₗ[σ₁₂
 theorem coeFn_injective : @Function.Injective (M₁ →SL[σ₁₂] M₂) (M₁ → M₂) (↑) :=
   DFunLike.coe_injective
 
+/-- Reinterpret a continuous linear map `M₁ →SL[σ₁₂] M₂` as
+a continuous morphism of additive monoids `M₁ →ₜ+ M₂`. -/
+@[coe]
+def toContinuousAddMonoidHom (f : M₁ →SL[σ₁₂] M₂) : M₁ →ₜ+ M₂ := .ofClass f
+
+@[simp]
+lemma coe_toContinuousAddMonoidHom (f : M₁ →SL[σ₁₂] M₂) : ⇑f.toContinuousAddMonoidHom = f := rfl
+
 theorem toContinuousAddMonoidHom_injective :
-    Function.Injective ((↑) : (M₁ →SL[σ₁₂] M₂) → ContinuousAddMonoidHom M₁ M₂) :=
+    Function.Injective
+      (toContinuousAddMonoidHom : (M₁ →SL[σ₁₂] M₂) → ContinuousAddMonoidHom M₁ M₂) :=
   (DFunLike.coe_injective.of_comp_iff _).1 DFunLike.coe_injective
 
 @[simp, norm_cast]
 theorem toContinuousAddMonoidHom_inj {f g : M₁ →SL[σ₁₂] M₂} :
-    (f : ContinuousAddMonoidHom M₁ M₂) = g ↔ f = g :=
+    f.toContinuousAddMonoidHom = g.toContinuousAddMonoidHom ↔ f = g :=
   toContinuousAddMonoidHom_injective.eq_iff
+
+/-- Reinterpret a continuous linear map `M₁ →SL[σ₁₂] M₂` as a continuous map `C(M₁, M₂)`. -/
+def toContinuousMap (f : M₁ →SL[σ₁₂] M₂) : C(M₁, M₂) := .ofClass f
+
+@[simp]
+lemma coe_toContinuousMap (f : M₁ →SL[σ₁₂] M₂) : ⇑f.toContinuousMap = f := rfl
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
   because it is a composition of multiple projections. -/
@@ -239,7 +255,7 @@ theorem ext_ring [TopologicalSpace R₁] {f g : R₁ →L[R₁] M₁} (h : f 1 =
   coe_inj.1 <| LinearMap.ext_ring h
 
 @[simp]
-theorem apply_val_ker (f : M₁ →SL[σ₁₂] M₂) (x : f.ker) : f x = 0 := x.2
+theorem apply_val_ker (f : M₁ →SL[σ₁₂] M₂) (x : f.ker) : f x = 0 := x.property
 
 /-- If two continuous linear maps are equal on a set `s`, then they are equal on the closure
 of the `Submodule.span` of this set. -/
@@ -347,7 +363,7 @@ theorem toLinearMap_zero : ((0 : M₁ →SL[σ₁₂] M₂) : M₁ →ₛₗ[σ�
 
 @[simp, norm_cast]
 theorem toContinuousAddMonoidHom_zero :
-    ((0 : M₁ →SL[σ₁₂] M₂) : ContinuousAddMonoidHom M₁ M₂) = 0 := rfl
+    (0 : M₁ →SL[σ₁₂] M₂).toContinuousAddMonoidHom = 0 := rfl
 
 instance uniqueOfLeft [Subsingleton M₁] : Unique (M₁ →SL[σ₁₂] M₂) :=
   coe_injective.unique
@@ -398,7 +414,7 @@ theorem toLinearMap_one : ((1 : M₁ →L[R₁] M₁) : M₁ →ₗ[R₁] M₁) 
 
 @[simp, norm_cast]
 theorem toContinuousAddMonoidHom_id :
-    (ContinuousLinearMap.id R₁ M₁ : ContinuousAddMonoidHom M₁ M₁) = .id _ := rfl
+    (ContinuousLinearMap.id R₁ M₁).toContinuousAddMonoidHom = .id _ := rfl
 
 @[simp, norm_cast]
 theorem coe_eq_id {f : M₁ →L[R₁] M₁} : (f : M₁ →ₗ[R₁] M₁) = LinearMap.id ↔ f = .id _ _ := by
@@ -431,7 +447,8 @@ theorem toLinearMap_add (f g : M₁ →SL[σ₁₂] M₂) : (↑(f + g) : M₁ �
 
 @[simp, norm_cast]
 theorem toContinuousAddMonoidHom_add (f g : M₁ →SL[σ₁₂] M₂) :
-    ↑(f + g) = (f + g : ContinuousAddMonoidHom M₁ M₂) := rfl
+    (f + g).toContinuousAddMonoidHom =
+      f.toContinuousAddMonoidHom + g.toContinuousAddMonoidHom := rfl
 
 -- The `AddMonoid` instance exists to help speedup unification
 instance : AddMonoid (M₁ →SL[σ₁₂] M₂) := fast_instance% FunLike.addMonoid
@@ -479,7 +496,8 @@ theorem coe_comp (h : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂)
 
 @[simp, norm_cast]
 theorem toContinuousAddMonoidHom_comp (h : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂) :
-    (↑(h ∘SL f) : ContinuousAddMonoidHom M₁ M₃) = (h : ContinuousAddMonoidHom M₂ M₃).comp f := rfl
+    (h ∘SL f).toContinuousAddMonoidHom =
+      h.toContinuousAddMonoidHom.comp f.toContinuousAddMonoidHom := rfl
 
 @[simp, grind =]
 theorem comp_apply (g : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂) (x : M₁) : (g ∘SL f) x = g (f x) :=
@@ -815,7 +833,6 @@ protected theorem map_neg (f : M →SL[σ₁₂] M₂) (x : M) : f (-x) = -f x :
 protected theorem map_sub (f : M →SL[σ₁₂] M₂) (x y : M) : f (x - y) = f x - f y :=
   map_sub f x y
 
-@[simp]
 theorem sub_apply' (f g : M →SL[σ₁₂] M₂) (x : M) : ((f : M →ₛₗ[σ₁₂] M₂) - g) x = f x - g x :=
   rfl
 
@@ -842,7 +859,7 @@ theorem toLinearMap_neg (f : M →SL[σ₁₂] M₂) : (↑(-f) : M →ₛₗ[σ
 
 @[simp, norm_cast]
 theorem toContinuousAddMonoidHom_neg (f : M →SL[σ₁₂] M₂) :
-    ↑(-f) = -(f : ContinuousAddMonoidHom M M₂) := rfl
+    (-f).toContinuousAddMonoidHom = -f.toContinuousAddMonoidHom := rfl
 
 instance sub : Sub (M →SL[σ₁₂] M₂) :=
   ⟨fun f g => ⟨f - g, f.cont.sub g.cont⟩⟩
@@ -863,7 +880,8 @@ theorem toLinearMap_sub (f g : M →SL[σ₁₂] M₂) : (↑(f - g) : M →ₛ�
 
 @[simp, norm_cast]
 theorem toContinuousAddMonoidHom_sub (f g : M →SL[σ₁₂] M₂) :
-    ↑(f - g) = (f - g : ContinuousAddMonoidHom M M₂) := rfl
+    (f - g).toContinuousAddMonoidHom =
+      f.toContinuousAddMonoidHom - g.toContinuousAddMonoidHom := rfl
 
 end
 

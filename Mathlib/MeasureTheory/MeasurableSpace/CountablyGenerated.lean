@@ -346,7 +346,7 @@ theorem CountablySeparated.subtype_iff [MeasurableSpace α] {s : Set α} :
 instance (priority := 100) Subtype.separatesPoints [MeasurableSpace α] [h : SeparatesPoints α]
     {s : Set α} : SeparatesPoints s :=
   ⟨fun _ _ hxy ↦ Subtype.val_injective <| h.separates _ _ fun _ ht ↦
-    hxy _ <| measurable_subtype_coe ht⟩
+    hxy _ <| measurable_subtypeVal ht⟩
 
 instance (priority := 100) Subtype.countablySeparated [MeasurableSpace α]
     [h : CountablySeparated α] {s : Set α} : CountablySeparated s := by
@@ -472,10 +472,11 @@ lemma measurableSet_succ_memPartition (t : ℕ → Set α) (n : ℕ) {s : Set α
     (hs : s ∈ memPartition t n) :
     MeasurableSet[generateFrom (memPartition t (n + 1))] s := by
   rw [← sdiff_union_inter s (t n)]
-  refine MeasurableSet.union ?_ ?_ <;>
-    · refine measurableSet_generateFrom ?_
-      rw [memPartition_succ]
-      exact ⟨s, hs, by simp⟩
+  refine MeasurableSet.union ?_ ?_
+  all_goals
+    refine measurableSet_generateFrom ?_
+    rw [memPartition_succ]
+    exact ⟨s, hs, by simp⟩
 
 lemma generateFrom_memPartition_le_succ (t : ℕ → Set α) (n : ℕ) :
     generateFrom (memPartition t n) ≤ generateFrom (memPartition t (n + 1)) :=

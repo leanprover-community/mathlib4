@@ -296,7 +296,7 @@ theorem roots_list_prod (L : List R[X]) :
 
 theorem roots_multiset_prod (m : Multiset R[X]) : (0 : R[X]) ∉ m → m.prod.roots = m.bind roots := by
   rcases m with ⟨L⟩
-  simpa only [Multiset.prod_coe, quot_mk_to_coe''] using! roots_list_prod L
+  simpa only [Multiset.prod_coe, quot_mk_to_coe'] using! roots_list_prod L
 
 theorem roots_prod {ι : Type*} (f : ι → R[X]) (s : Finset ι) :
     s.prod f ≠ 0 → (s.prod f).roots = s.val.bind fun i => roots (f i) := by
@@ -730,9 +730,9 @@ theorem smul_mem_rootSet_iff [CommRing S] [Algebra S R] {G : Type*}
 instance [CommRing S] [Algebra S R] (G : Type*)
     [Monoid G] [MulSemiringAction G R] [SMulCommClass G S R] (f : S[X]) :
     MulAction G (f.rootSet R) where
-  smul g x := ⟨g • x.1, smul_mem_rootSet g x.2⟩
-  one_smul x := Subtype.ext (one_smul G x.1)
-  mul_smul g h x := Subtype.ext (mul_smul g h x.1)
+  smul g x := ⟨g • x.val, smul_mem_rootSet g x.property⟩
+  one_smul x := Subtype.ext (one_smul G x.val)
+  mul_smul g h x := Subtype.ext (mul_smul g h x.val)
 
 @[simp]
 theorem rootSet.coe_smul [CommRing S] [Algebra S R] {G : Type*}

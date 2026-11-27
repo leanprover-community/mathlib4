@@ -114,9 +114,12 @@ theorem coe_toContinuousMap : ⇑γ.toContinuousMap = γ :=
   rfl
 
 @[simp]
-theorem range_coe : range ((↑) : Path x y → C(I, X)) = {f | f 0 = x ∧ f 1 = y} :=
+theorem range_toContinuousMap :
+    range (toContinuousMap : Path x y → C(I, X)) = {f | f 0 = x ∧ f 1 = y} :=
   Subset.antisymm (range_subset_iff.mpr fun γ ↦ ⟨γ.source, γ.target⟩) fun f ⟨hf₀, hf₁⟩ ↦
     ⟨⟨f, hf₀, hf₁⟩, rfl⟩
+
+@[deprecated (since := "2026-11-27")] alias range_coe := range_toContinuousMap
 
 /-- Any function `φ : Π (a : α), Path (x a) (y a)` can be seen as a function `α × I → X`. -/
 instance instHasUncurryPath {α : Type*} {x y : α → X} :
@@ -178,7 +181,7 @@ open ContinuousMap
 compact-open topology on the space `C(I,X)` of continuous maps from `I` to `X`.
 -/
 instance instTopologicalSpace : TopologicalSpace (Path x y) :=
-  TopologicalSpace.induced ((↑) : _ → C(I, X)) ContinuousMap.compactOpen
+  TopologicalSpace.induced (toContinuousMap : _ → C(I, X)) ContinuousMap.compactOpen
 
 instance : ContinuousEval (Path x y) I X := .of_continuous_forget continuous_induced_dom
 
@@ -233,7 +236,7 @@ theorem extend_range {a b : X} (γ : Path a b) :
 theorem image_extend_of_subset (γ : Path x y) {s : Set ℝ} (h : I ⊆ s) :
     γ.extend '' s = range γ :=
   (γ.extend_range ▸ image_subset_range _ _).antisymm <| range_subset_iff.mpr <| fun t ↦
-    ⟨t, h t.2, extend_extends' _ _⟩
+    ⟨t, h t.property, extend_extends' _ _⟩
 
 theorem extend_of_le_zero {a b : X} (γ : Path a b) {t : ℝ}
     (ht : t ≤ 0) : γ.extend t = a :=
@@ -257,7 +260,7 @@ theorem extend_symm (γ : Path x y) : γ.symm.extend = (γ.extend <| 1 - ·) :=
 /-- The path obtained from a map defined on `ℝ` by restriction to the unit interval. -/
 def ofLine {f : ℝ → X} (hf : ContinuousOn f I) (h₀ : f 0 = x) (h₁ : f 1 = y) : Path x y where
   toFun := f ∘ ((↑) : unitInterval → ℝ)
-  continuous_toFun := hf.comp_continuous continuous_subtype_val Subtype.prop
+  continuous_toFun := hf.comp_continuous continuous_subtypeVal Subtype.prop
   source' := h₀
   target' := h₁
 
@@ -279,7 +282,7 @@ def trans (γ : Path x y) (γ' : Path y z) : Path x z where
   continuous_toFun := by
     refine
       (Continuous.if_le ?_ ?_ continuous_id continuous_const (by simp)).comp
-        continuous_subtype_val <;>
+        continuous_subtypeVal <;>
     fun_prop
   source' := by simp
   target' := by norm_num
@@ -287,8 +290,8 @@ def trans (γ : Path x y) (γ' : Path y z) : Path x z where
 @[grind =]
 theorem trans_apply (γ : Path x y) (γ' : Path y z) (t : I) :
     (γ.trans γ') t =
-      if h : (t : ℝ) ≤ 1 / 2 then γ ⟨2 * t, (mul_pos_mem_iff zero_lt_two).2 ⟨t.2.1, h⟩⟩
-      else γ' ⟨2 * t - 1, two_mul_sub_one_mem_iff.2 ⟨(not_le.1 h).le, t.2.2⟩⟩ :=
+      if h : (t : ℝ) ≤ 1 / 2 then γ ⟨2 * t, (mul_pos_mem_iff zero_lt_two).2 ⟨t.property.1, h⟩⟩
+      else γ' ⟨2 * t - 1, two_mul_sub_one_mem_iff.2 ⟨(not_le.1 h).le, t.property.2⟩⟩ :=
   show ite _ _ _ = _ by split_ifs <;> rw [extend_apply]
 
 @[simp]
@@ -437,7 +440,7 @@ theorem trans_continuous_family {ι : Type*} [TopologicalSpace ι]
   have h₁' := Path.continuous_uncurry_extend_of_continuous_family γ₁ h₁
   have h₂' := Path.continuous_uncurry_extend_of_continuous_family γ₂ h₂
   simp only [HasUncurry.uncurry, Path.trans]
-  refine Continuous.if_le ?_ ?_ (continuous_subtype_val.comp continuous_snd) continuous_const ?_
+  refine Continuous.if_le ?_ ?_ (continuous_subtypeVal.comp continuous_snd) continuous_const ?_
   · change
       Continuous ((fun p : ι × ℝ => (γ₁ p.1).extend p.2) ∘ Prod.map id (fun x => 2 * x : I → ℝ))
     exact h₁'.comp (by fun_prop)
@@ -582,7 +585,7 @@ the uncurried function which maps `(t₀, t₁, s)` to `γ.truncate t₀ t₁ s`
 theorem truncate_continuous_family {a b : X} (γ : Path a b) :
     Continuous (fun x => γ.truncate x.1 x.2.1 x.2.2 : ℝ × ℝ × I → X) :=
   γ.continuous_extend.comp
-    (((continuous_subtype_val.comp (continuous_snd.comp continuous_snd)).max continuous_fst).min
+    (((continuous_subtypeVal.comp (continuous_snd.comp continuous_snd)).max continuous_fst).min
       (continuous_fst.comp continuous_snd))
 
 @[continuity]
@@ -610,7 +613,7 @@ theorem truncate_zero_one {a b : X} (γ : Path a b) :
     γ.truncate 0 1 = γ.cast (by simp) (by simp) := by
   ext x
   rw [cast_coe]
-  have : ↑x ∈ (Icc 0 1 : Set ℝ) := x.2
+  have : ↑x ∈ (Icc 0 1 : Set ℝ) := x.property
   rw [truncate, coe_mk_mk, max_eq_left this.1, min_eq_left this.2, extend_extends']
 
 /-! #### Reparametrising a path -/
@@ -645,7 +648,7 @@ theorem range_reparam (γ : Path x y) {f : I → I} (hfcont : Continuous f) (hf�
     have h₁ : Continuous (Set.IccExtend (zero_le_one' ℝ) f) := by fun_prop
     have := intermediate_value_Icc (zero_le_one' ℝ) h₁.continuousOn
     rw [IccExtend_left, IccExtend_right, Icc.mk_zero, Icc.mk_one, hf₀, hf₁] at this
-    rcases this t.2 with ⟨w, hw₁, hw₂⟩
+    rcases this t.property with ⟨w, hw₁, hw₂⟩
     rw [IccExtend_of_mem _ _ hw₁] at hw₂
     exact ⟨_, hw₂⟩
   rw [range_comp, this, image_univ]

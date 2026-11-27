@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Logic.Function.Const
 public import Mathlib.Order.CompleteLattice.Basic
-public import Mathlib.Order.GaloisConnection.Basic
+
+import Mathlib.Order.GaloisConnection.Basic
 
 /-!
 # Equivalence relations
@@ -120,9 +121,9 @@ def prodQuotientEquiv (r : Setoid α) (s : Setoid β) :
     fun x y hxy ↦ Prod.ext (by simpa [Quotient.eq] using hxy.1) (by simpa [Quotient.eq] using hxy.2)
   left_inv q := by
     rcases q with ⟨qa, qb⟩
-    induction qa, qb using Quotient.inductionOn₂'
+    induction qa, qb using Quotient.inductionOn₂
     rfl
-  right_inv q := by induction q using Quotient.inductionOn'; rfl
+  right_inv q := by induction q using Quotient.inductionOn; rfl
 
 /-- A bijection between an indexed product of quotients and the quotient by the product of the
 equivalence relations. -/
@@ -137,7 +138,7 @@ noncomputable def piQuotientEquiv {ι : Sort*} {α : ι → Sort*} (r : ∀ i, S
     ext i
     simp
   right_inv q := by
-    induction q using Quotient.inductionOn'
+    induction q using Quotient.inductionOn
     simp only [Quotient.liftOn'_mk'', Quotient.eq'']
     intro i
     change Setoid.r _ _
@@ -349,9 +350,9 @@ theorem ker_iff_mem_preimage {f : α → β} {x y} : ker f x y ↔ x ∈ f ⁻¹
 /-- Equivalence between functions `α → β` such that `r x y → f x = f y` and functions
 `quotient r → β`. -/
 def liftEquiv (r : Setoid α) : { f : α → β // r ≤ ker f } ≃ (Quotient r → β) where
-  toFun f := Quotient.lift (f : α → β) f.2
+  toFun f := Quotient.lift (f : α → β) f.property
   invFun f := ⟨f ∘ Quotient.mk'', fun x y h => by simp [ker_def, Quotient.sound' h]⟩
-  right_inv _ := funext fun x => Quotient.inductionOn' x fun _ => rfl
+  right_inv _ := funext fun x => Quotient.inductionOn x fun _ => rfl
 
 /-- The uniqueness part of the universal property for quotients of an arbitrary type. -/
 theorem lift_unique {r : Setoid α} {f : α → β} (H : r ≤ ker f) (g : Quotient r → β)
@@ -370,7 +371,7 @@ theorem kerLift_mk (f : α → β) (x : α) : kerLift f ⟦x⟧ = f x :=
 /-- Given a map f from α to β, the natural map from the quotient of α by the kernel of f is
 injective. -/
 theorem kerLift_injective (f : α → β) : Injective <| kerLift f :=
-  fun x y => Quotient.inductionOn₂' x y fun _ _ h => Quotient.sound' h
+  fun x y => Quotient.inductionOn₂ x y fun _ _ h => Quotient.sound' h
 
 /-- Given a map f from α to β, the kernel of f is the unique equivalence relation on α whose
 induced map from the quotient of α to β is injective. -/
@@ -408,7 +409,7 @@ def quotientKerEquivOfRightInverse (g : β → α) (hf : Function.RightInverse g
     Quotient (ker f) ≃ β where
   toFun := kerLift f
   invFun b := Quotient.mk'' (g b)
-  left_inv a := Quotient.inductionOn' a fun a => Quotient.sound' <| hf (f a)
+  left_inv a := Quotient.inductionOn a fun a => Quotient.sound' <| hf (f a)
   right_inv := hf
 
 /-- The quotient of α by the kernel of a surjective function f bijects with f's codomain.
@@ -565,13 +566,13 @@ def quotientQuotientEquivQuotient (s : Setoid α) (h : r ≤ s) :
   toFun x :=
     (Quotient.liftOn' x fun w =>
         (Quotient.liftOn' w (@Quotient.mk'' _ s)) fun _ _ H => Quotient.sound <| h H)
-      fun x y => Quotient.inductionOn₂' x y fun _ _ H => show @Quot.mk _ _ _ = @Quot.mk _ _ _ from H
+      fun x y => Quotient.inductionOn₂ x y fun _ _ H => show @Quot.mk _ _ _ = @Quot.mk _ _ _ from H
   invFun x :=
     (Quotient.liftOn' x fun w => @Quotient.mk'' _ (ker <| Quot.mapRight h) <| @Quotient.mk'' _ r w)
       fun _ _ H => Quotient.sound' <| show @Quot.mk _ _ _ = @Quot.mk _ _ _ from Quotient.sound H
   left_inv x :=
-    Quotient.inductionOn' x fun y => Quotient.inductionOn' y fun w => by change ⟦_⟧ = _; rfl
-  right_inv x := Quotient.inductionOn' x fun y => by change ⟦_⟧ = _; rfl
+    Quotient.inductionOn x fun y => Quotient.inductionOn y fun w => by change ⟦_⟧ = _; rfl
+  right_inv x := Quotient.inductionOn x fun y => by change ⟦_⟧ = _; rfl
 
 variable {r f}
 
@@ -580,11 +581,12 @@ open Quotient
 /-- Given an equivalence relation `r` on `α`, the order-preserving bijection between the set of
 equivalence relations containing `r` and the equivalence relations on the quotient of `α` by `r`. -/
 def correspondence (r : Setoid α) : { s // r ≤ s } ≃o Setoid (Quotient r) where
-  toFun s := ⟨Quotient.lift₂ s.1.r fun _ _ _ _ h₁ h₂ ↦ Eq.propIntro
-      (fun h ↦ s.1.trans' (s.1.trans' (s.1.symm' (s.2 h₁)) h) (s.2 h₂))
-      (fun h ↦ s.1.trans' (s.1.trans' (s.2 h₁) h) (s.1.symm' (s.2 h₂))),
-    ⟨Quotient.ind s.1.iseqv.refl, fun {x y} ↦ Quotient.inductionOn₂ x y fun _ _ ↦ s.1.iseqv.symm,
-      fun {x y z} ↦ Quotient.inductionOn₃ x y z fun _ _ _ ↦ s.1.iseqv.trans⟩⟩
+  toFun s := ⟨Quotient.lift₂ s.val.r fun _ _ _ _ h₁ h₂ ↦ Eq.propIntro
+      (fun h ↦ s.val.trans' (s.val.trans' (s.val.symm' (s.property h₁)) h) (s.property h₂))
+      (fun h ↦ s.val.trans' (s.val.trans' (s.property h₁) h) (s.val.symm' (s.property h₂))),
+    ⟨Quotient.ind s.val.iseqv.refl,
+      fun {x y} ↦ Quotient.inductionOn₂ x y fun _ _ ↦ s.val.iseqv.symm,
+      fun {x y z} ↦ Quotient.inductionOn₃ x y z fun _ _ _ ↦ s.val.iseqv.trans⟩⟩
   invFun s := ⟨comap Quotient.mk' s, fun x y h => by rw [comap_rel, Quotient.eq'.2 h]⟩
   right_inv _ := ext fun x y ↦ Quotient.inductionOn₂ x y fun _ _ ↦ Iff.rfl
   map_rel_iff' :=

@@ -767,7 +767,7 @@ theorem integral_coe_le_of_lintegral_coe_le {f : α → ℝ≥0} {b : ℝ≥0} (
     ∫ a, (f a : ℝ) ∂μ ≤ b := by
   by_cases hf : Integrable (fun a => (f a : ℝ)) μ
   · exact (lintegral_coe_le_coe_iff_integral_le hf).1 h
-  · rw [integral_undef hf]; exact b.2
+  · rw [integral_undef hf]; exact b.property
 
 theorem integral_eq_zero_iff_of_nonneg_ae {f : α → ℝ} (hf : 0 ≤ᵐ[μ] f) (hfi : Integrable f μ) :
     ∫ x, f x ∂μ = 0 ↔ f =ᵐ[μ] 0 := by
@@ -1048,11 +1048,14 @@ theorem integral_finsetSum_measure {ι} {m : MeasurableSpace α} {f : α → G} 
     rw [Finset.sum_cons, Finset.sum_cons, ← ih hf.2]
     exact integral_add_measure hf.1 (integrable_finsetSum_measure.2 hf.2)
 
-theorem nndist_integral_add_measure_le_lintegral
+theorem nnDist_integral_add_measure_le_lintegral
     {f : α → G} (h₁ : Integrable f μ) (h₂ : Integrable f ν) :
-    (nndist (∫ x, f x ∂μ) (∫ x, f x ∂(μ + ν)) : ℝ≥0∞) ≤ ∫⁻ x, ‖f x‖ₑ ∂ν := by
-  rw [integral_add_measure h₁ h₂, nndist_comm, nnDist_eq_nnNorm, add_sub_cancel_left]
+    (nnDist (∫ x, f x ∂μ) (∫ x, f x ∂(μ + ν)) : ℝ≥0∞) ≤ ∫⁻ x, ‖f x‖ₑ ∂ν := by
+  rw [integral_add_measure h₁ h₂, nnDist_comm, nnDist_eq_nnNorm, add_sub_cancel_left]
   exact eNorm_integral_le_lintegral_eNorm _
+
+@[deprecated (since := "2026-11-07")]
+alias nndist_integral_add_measure_le_lintegral := nnDist_integral_add_measure_le_lintegral
 
 @[simp]
 theorem integral_smul_measure (f : α → G) (c : ℝ≥0∞) :
@@ -1130,8 +1133,8 @@ theorem MeasurePreserving.integral_comp' {β} [MeasurableSpace β] {ν} {f : α 
 theorem integral_subtype_comap {α} [MeasurableSpace α] {μ : Measure α} {s : Set α}
     (hs : MeasurableSet s) (f : α → G) :
     ∫ x : s, f (x : α) ∂(Measure.comap Subtype.val μ) = ∫ x in s, f x ∂μ := by
-  rw [← map_comap_subtype_coe hs]
-  exact ((MeasurableEmbedding.subtype_coe hs).integral_map _).symm
+  rw [← map_comap_subtypeVal hs]
+  exact ((MeasurableEmbedding.subtypeVal hs).integral_map _).symm
 
 attribute [local instance] Measure.Subtype.measureSpace in
 theorem integral_subtype {α} [MeasureSpace α] {s : Set α} (hs : MeasurableSet s) (f : α → G) :

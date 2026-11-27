@@ -28,7 +28,7 @@ the complement of `v.supp`. -/
 noncomputable def Valuation.extendToLocalization : Valuation B Γ :=
   let f := IsLocalization.toLocalizationMap S B
   let h : ∀ s : S, IsUnit (v.toMonoidWithZeroHom.toMonoidHom s) := fun s =>
-    isUnit_iff_ne_zero.2 (hS s.2)
+    isUnit_iff_ne_zero.2 (hS s.property)
   { f.lift h with
     map_zero' := by convert! f.lift_eq (P := Γ) _ 0 <;> simp [f]
     map_add_le_max' := fun x y => by
@@ -36,9 +36,10 @@ noncomputable def Valuation.extendToLocalization : Valuation B Γ :=
         obtain ⟨a, s, rfl⟩ := f.mk'_surjective x
         obtain ⟨b, t, rfl⟩ := f.mk'_surjective y
         use a * t, b * s, s * t
-        constructor <;>
-          · rw [f.mk'_eq_iff_eq, Submonoid.coe_mul]
-            ring_nf
+        constructor
+        all_goals
+          rw [f.mk'_eq_iff_eq, Submonoid.coe_mul]
+          ring_nf
       convert_to! f.lift h (f.mk' (a + b) s) ≤ max (f.lift h _) (f.lift h _)
       · congrm f.lift h $(IsLocalization.eq_mk'_iff_mul_eq.2 ?_)
         rw [add_mul, map_add]
@@ -54,7 +55,7 @@ theorem Valuation.extendToLocalization_mk' (x : A) (y : S) :
     (v.extendToLocalization hS B) (IsLocalization.mk' _ x y) = v x * (v y)⁻¹ :=
   (Submonoid.LocalizationMap.lift_mk' _ _ _ _).trans (by
     simp [IsUnit.coe_liftRight (v.toMonoidWithZeroHom.domRestrict S)
-      (fun y ↦ isUnit_iff_ne_zero.2 (hS y.2)) y])
+      (fun y ↦ isUnit_iff_ne_zero.2 (hS y.property)) y])
 
 @[simp]
 theorem Valuation.extendToLocalization_apply_map_apply (a : A) :

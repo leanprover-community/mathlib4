@@ -8,6 +8,9 @@ module
 public import Mathlib.ModelTheory.Algebra.Ring.Basic
 public import Mathlib.RingTheory.FreeCommRing
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Making a term in the language of rings from an element of the FreeCommRing
 

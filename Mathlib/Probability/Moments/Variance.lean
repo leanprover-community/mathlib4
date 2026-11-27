@@ -306,6 +306,23 @@ lemma variance_fun_sum [IsFiniteMeasure μ] [Fintype ι] (hX : ∀ i, MemLp (X i
   convert! variance_sum hX
   simp
 
+open scoped Matrix in
+/-- The variance of a linear combination `∑ i, t i * Z i` is the quadratic form of the covariance
+matrix of the `Z i`, evaluated at `t`. -/
+lemma variance_fun_sum_mul [IsFiniteMeasure μ] [Fintype ι] {Z : ι → Ω → ℝ}
+    (hZ : ∀ i, MemLp (Z i) 2 μ) (t : ι → ℝ) :
+    Var[fun ω ↦ ∑ i, t i * Z i ω; μ] = t ⬝ᵥ (Matrix.of fun i j ↦ cov[Z i, Z j; μ]) *ᵥ t := by
+  rw [variance_fun_sum fun i ↦ (hZ i).const_mul (t i)]
+  simp only [covariance_const_mul_left, covariance_const_mul_right, dotProduct, Matrix.mulVec,
+    Matrix.of_apply, mul_sum]
+  exact sum_congr rfl fun i _ ↦ sum_congr rfl fun j _ ↦ by ring
+
+lemma posSemidef_covariance [IsFiniteMeasure μ] [Finite ι] {Z : ι → Ω → ℝ}
+    (hZ : ∀ i, MemLp (Z i) 2 μ) : (Matrix.of fun i j ↦ cov[Z i, Z j; μ]).PosSemidef := by
+  let := Fintype.ofFinite ι
+  refine .of_dotProduct_mulVec_nonneg (by ext; simp [covariance_comm]) fun t ↦ ?_
+  simp [← variance_fun_sum_mul hZ]
+
 variable {X : Ω → ℝ}
 
 @[simp]
@@ -430,7 +447,7 @@ nonrec theorem IndepFun.variance_sum {ι : Type*} {X : ι → Ω → ℝ} {s : F
     · symm
       refine Finset.sum_eq_zero fun i hi ↦ ?_
       simp [variance_congr (h'' i hi)]
-    · have := fun (i : s) ↦ h'' i.1 i.2
+    · have := fun (i : s) ↦ h'' i.val i.property
       filter_upwards [ae_all_iff.2 this] with ω hω
       simp only [Finset.sum_apply, Pi.zero_apply]
       exact Finset.sum_eq_zero fun i hi ↦ hω ⟨i, hi⟩

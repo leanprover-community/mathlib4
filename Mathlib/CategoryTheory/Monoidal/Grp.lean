@@ -105,11 +105,11 @@ instance : Inhabited (Grp C) where
 instance : Category (Grp C) :=
   inferInstanceAs (Category (InducedCategory _ Grp.toMon))
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem id_hom_hom (A : Grp C) : Mon.Hom.hom (InducedCategory.Hom.hom (𝟙 A)) = 𝟙 A.X :=
   rfl
 
-@[to_additive (attr := simp, reassoc)]
+@[to_additive (attr := reassoc)]
 theorem comp_hom_hom {R S T : Grp C} (f : R ⟶ S) (g : S ⟶ T) :
     Mon.Hom.hom (f ≫ g).hom = f.hom.hom ≫ g.hom.hom :=
   rfl
@@ -479,9 +479,9 @@ instance instMonoidalCategoryStruct : MonoidalCategoryStruct (Grp C) where
 @[to_additive (attr := simp)]
 lemma tensorUnit_X : (𝟙_ (Grp C)).X = 𝟙_ C := rfl
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma tensorUnit_one : η[(𝟙_ (Grp C)).X] = η[𝟙_ C] := rfl
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma tensorUnit_mul : μ[(𝟙_ (Grp C)).X] = μ[𝟙_ C] := rfl
 
 @[to_additive (attr := simp)]
@@ -678,7 +678,7 @@ noncomputable def mapGrpFunctor : (C ⥤ₗ D) ⥤ Grp C ⥤ Grp D where
   map {F G} α := { app A := Grp.homMk'' (α.hom.app A.X) }
 
 /-- Pullback a group object along a fully faithful monoidal functor. -/
-@[to_additive (attr := simps)
+@[to_additive
 /-- Pullback an additive group object along a fully faithful monoidal functor. -/]
 abbrev FullyFaithful.grpObj (hF : F.FullyFaithful) (X : C) [GrpObj (F.obj X)] :
     GrpObj X where

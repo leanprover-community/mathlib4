@@ -50,7 +50,7 @@ variable [IsPrecomplete I R]
 
 theorem exists_teichmullerFun (x : Perfection (R ⧸ I) p) :
     ∃ y : R, ∀ n, teichmullerAux x n ≡ y [SMOD I ^ n • (⊤ : Ideal R)] :=
-  IsPrecomplete.prec' _ (teichmullerCauchy x).2
+  IsPrecomplete.prec' _ (teichmullerCauchy x).property
 
 /-- Given an `I`-adically **pre**complete ring `R`, where `p ∈ I`, this is the underlying function
 of the Teichmüller map. It is defined as the limit of `p^n`-th powers of arbitrary lifts in `R` of
@@ -135,7 +135,7 @@ noncomputable def teichmuller₀ : Perfection (R ⧸ I) p →*₀ R where
 @[simp] lemma teichmuller_eq_teichmuller₀_toMonoidHom :
     teichmuller p I = (teichmuller₀ p I).toMonoidHom := rfl
 
-@[simp] lemma coe_teichmuller_eq_teichmuller₀ :
+lemma coe_teichmuller_eq_teichmuller₀ :
     ⇑(teichmuller p I) = teichmuller₀ p I := rfl
 
 @[simp] lemma teichmullerFun_eq_teichmuller₀ :

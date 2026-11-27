@@ -10,6 +10,9 @@ public import Mathlib.Order.Fin.Basic
 import Batteries.Data.Fin.Lemmas
 import Mathlib.Order.MinMax
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about `Fin.clamp`
 -/

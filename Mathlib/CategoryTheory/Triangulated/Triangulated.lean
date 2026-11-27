@@ -70,9 +70,9 @@ a distinguished triangle and the completed diagram commutes:
 structure Octahedron
   {X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ : C}
   {u₁₂ : X₁ ⟶ X₂} {u₂₃ : X₂ ⟶ X₃} {u₁₃ : X₁ ⟶ X₃} (comm : u₁₂ ≫ u₂₃ = u₁₃)
-  {v₁₂ : X₂ ⟶ Z₁₂} {w₁₂ : Z₁₂ ⟶ X₁⟦(1 : ℤ)⟧} (h₁₂ : Triangle.mk u₁₂ v₁₂ w₁₂ ∈ distTriang C)
-  {v₂₃ : X₃ ⟶ Z₂₃} {w₂₃ : Z₂₃ ⟶ X₂⟦(1 : ℤ)⟧} (h₂₃ : Triangle.mk u₂₃ v₂₃ w₂₃ ∈ distTriang C)
-  {v₁₃ : X₃ ⟶ Z₁₃} {w₁₃ : Z₁₃ ⟶ X₁⟦(1 : ℤ)⟧} (h₁₃ : Triangle.mk u₁₃ v₁₃ w₁₃ ∈ distTriang C) where
+  {v₁₂ : X₂ ⟶ Z₁₂} {w₁₂ : Z₁₂ ⟶ X₁⟦1⟧} (h₁₂ : Triangle.mk u₁₂ v₁₂ w₁₂ ∈ distTriang C)
+  {v₂₃ : X₃ ⟶ Z₂₃} {w₂₃ : Z₂₃ ⟶ X₂⟦1⟧} (h₂₃ : Triangle.mk u₂₃ v₂₃ w₂₃ ∈ distTriang C)
+  {v₁₃ : X₃ ⟶ Z₁₃} {w₁₃ : Z₁₃ ⟶ X₁⟦1⟧} (h₁₃ : Triangle.mk u₁₃ v₁₃ w₁₃ ∈ distTriang C) where
   /-- `m₁` is the morphism `a` of (TR 4) as presented in Stacks. -/
   m₁ : Z₁₂ ⟶ Z₁₃
   /-- `m₃` is the morphism `b` of (TR 4) as presented in Stacks. -/
@@ -96,9 +96,9 @@ attribute [reassoc] comm₁ comm₂ comm₃ comm₄
 
 variable {X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ : C}
   {u₁₂ : X₁ ⟶ X₂} {u₂₃ : X₂ ⟶ X₃} {u₁₃ : X₁ ⟶ X₃} {comm : u₁₂ ≫ u₂₃ = u₁₃}
-  {v₁₂ : X₂ ⟶ Z₁₂} {w₁₂ : Z₁₂ ⟶ X₁⟦(1 : ℤ)⟧} {h₁₂ : Triangle.mk u₁₂ v₁₂ w₁₂ ∈ distTriang C}
-  {v₂₃ : X₃ ⟶ Z₂₃} {w₂₃ : Z₂₃ ⟶ X₂⟦(1 : ℤ)⟧} {h₂₃ : Triangle.mk u₂₃ v₂₃ w₂₃ ∈ distTriang C}
-  {v₁₃ : X₃ ⟶ Z₁₃} {w₁₃ : Z₁₃ ⟶ X₁⟦(1 : ℤ)⟧} {h₁₃ : Triangle.mk u₁₃ v₁₃ w₁₃ ∈ distTriang C}
+  {v₁₂ : X₂ ⟶ Z₁₂} {w₁₂ : Z₁₂ ⟶ X₁⟦1⟧} {h₁₂ : Triangle.mk u₁₂ v₁₂ w₁₂ ∈ distTriang C}
+  {v₂₃ : X₃ ⟶ Z₂₃} {w₂₃ : Z₂₃ ⟶ X₂⟦1⟧} {h₂₃ : Triangle.mk u₂₃ v₂₃ w₂₃ ∈ distTriang C}
+  {v₁₃ : X₃ ⟶ Z₁₃} {w₁₃ : Z₁₃ ⟶ X₁⟦1⟧} {h₁₃ : Triangle.mk u₁₃ v₁₃ w₁₃ ∈ distTriang C}
   (h : Octahedron comm h₁₂ h₂₃ h₁₃)
 
 /-- The triangle `Z₁₂ ⟶ Z₁₃ ⟶ Z₂₃ ⟶ Z₁₂⟦1⟧` given by an octahedron. -/
@@ -142,11 +142,11 @@ def ofIso {X₁' X₂' X₃' Z₁₂' Z₂₃' Z₁₃' : C} (u₁₂' : X₁' �
     (comm' : u₁₂' ≫ u₂₃' = u₁₃')
     (e₁ : X₁ ≅ X₁') (e₂ : X₂ ≅ X₂') (e₃ : X₃ ≅ X₃')
     (comm₁₂ : u₁₂ ≫ e₂.hom = e₁.hom ≫ u₁₂') (comm₂₃ : u₂₃ ≫ e₃.hom = e₂.hom ≫ u₂₃')
-    (v₁₂' : X₂' ⟶ Z₁₂') (w₁₂' : Z₁₂' ⟶ X₁'⟦(1 : ℤ)⟧)
+    (v₁₂' : X₂' ⟶ Z₁₂') (w₁₂' : Z₁₂' ⟶ X₁'⟦1⟧)
     (h₁₂' : Triangle.mk u₁₂' v₁₂' w₁₂' ∈ distTriang C)
-    (v₂₃' : X₃' ⟶ Z₂₃') (w₂₃' : Z₂₃' ⟶ X₂'⟦(1 : ℤ)⟧)
+    (v₂₃' : X₃' ⟶ Z₂₃') (w₂₃' : Z₂₃' ⟶ X₂'⟦1⟧)
     (h₂₃' : Triangle.mk u₂₃' v₂₃' w₂₃' ∈ distTriang C)
-    (v₁₃' : X₃' ⟶ Z₁₃') (w₁₃' : Z₁₃' ⟶ X₁'⟦(1 : ℤ)⟧)
+    (v₁₃' : X₃' ⟶ Z₁₃') (w₁₃' : Z₁₃' ⟶ X₁'⟦1⟧)
     (h₁₃' : Triangle.mk (u₁₃') v₁₃' w₁₃' ∈ distTriang C)
     (H : Octahedron comm' h₁₂' h₂₃' h₁₃') : Octahedron comm h₁₂ h₂₃ h₁₃ := by
   let iso₁₂ := isoTriangleOfIso₁₂ _ _ h₁₂ h₁₂' e₁ e₂ comm₁₂
@@ -227,9 +227,9 @@ a distinguished triangle and the completed diagram commutes:
 structure Octahedron'
   {X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ : C}
   {u₁₂ : X₁ ⟶ X₂} {u₂₃ : X₂ ⟶ X₃} {u₁₃ : X₁ ⟶ X₃} (comm : u₁₂ ≫ u₂₃ = u₁₃)
-  {v₁₂ : Z₁₂ ⟶ X₁} {w₁₂ : X₂ ⟶ Z₁₂⟦(1 : ℤ)⟧} (h₁₂ : Triangle.mk v₁₂ u₁₂ w₁₂ ∈ distTriang C)
-  {v₂₃ : Z₂₃ ⟶ X₂} {w₂₃ : X₃ ⟶ Z₂₃⟦(1 : ℤ)⟧} (h₂₃ : Triangle.mk v₂₃ u₂₃ w₂₃ ∈ distTriang C)
-  {v₁₃ : Z₁₃ ⟶ X₁} {w₁₃ : X₃ ⟶ Z₁₃⟦(1 : ℤ)⟧} (h₁₃ : Triangle.mk v₁₃ u₁₃ w₁₃ ∈ distTriang C) where
+  {v₁₂ : Z₁₂ ⟶ X₁} {w₁₂ : X₂ ⟶ Z₁₂⟦1⟧} (h₁₂ : Triangle.mk v₁₂ u₁₂ w₁₂ ∈ distTriang C)
+  {v₂₃ : Z₂₃ ⟶ X₂} {w₂₃ : X₃ ⟶ Z₂₃⟦1⟧} (h₂₃ : Triangle.mk v₂₃ u₂₃ w₂₃ ∈ distTriang C)
+  {v₁₃ : Z₁₃ ⟶ X₁} {w₁₃ : X₃ ⟶ Z₁₃⟦1⟧} (h₁₃ : Triangle.mk v₁₃ u₁₃ w₁₃ ∈ distTriang C) where
   /-- `m₁` is the morphism `a` of (TR 4) as presented in Stacks. -/
   m₁ : Z₁₂ ⟶ Z₁₃
   /-- `m₁` is the morphism `b` of (TR 4) as presented in Stacks. -/
@@ -246,9 +246,9 @@ attribute [reassoc] comm₁ comm₂ comm₃ comm₄
 
 variable {X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ : C}
   {u₁₂ : X₁ ⟶ X₂} {u₂₃ : X₂ ⟶ X₃} {u₁₃ : X₁ ⟶ X₃} (comm : u₁₂ ≫ u₂₃ = u₁₃)
-  {v₁₂ : Z₁₂ ⟶ X₁} {w₁₂ : X₂ ⟶ Z₁₂⟦(1 : ℤ)⟧} (h₁₂ : Triangle.mk v₁₂ u₁₂ w₁₂ ∈ distTriang C)
-  {v₂₃ : Z₂₃ ⟶ X₂} {w₂₃ : X₃ ⟶ Z₂₃⟦(1 : ℤ)⟧} (h₂₃ : Triangle.mk v₂₃ u₂₃ w₂₃ ∈ distTriang C)
-  {v₁₃ : Z₁₃ ⟶ X₁} {w₁₃ : X₃ ⟶ Z₁₃⟦(1 : ℤ)⟧} (h₁₃ : Triangle.mk v₁₃ u₁₃ w₁₃ ∈ distTriang C)
+  {v₁₂ : Z₁₂ ⟶ X₁} {w₁₂ : X₂ ⟶ Z₁₂⟦1⟧} (h₁₂ : Triangle.mk v₁₂ u₁₂ w₁₂ ∈ distTriang C)
+  {v₂₃ : Z₂₃ ⟶ X₂} {w₂₃ : X₃ ⟶ Z₂₃⟦1⟧} (h₂₃ : Triangle.mk v₂₃ u₂₃ w₂₃ ∈ distTriang C)
+  {v₁₃ : Z₁₃ ⟶ X₁} {w₁₃ : X₃ ⟶ Z₁₃⟦1⟧} (h₁₃ : Triangle.mk v₁₃ u₁₃ w₁₃ ∈ distTriang C)
   (h : Octahedron' comm h₁₂ h₂₃ h₁₃)
 
 /-- The triangle `Z₁₂ ⟶ Z₁₃ ⟶ Z₂₃ ⟶ Z₁₂⟦1⟧` given by an `Octahedron'`. -/
@@ -302,9 +302,9 @@ class IsTriangulated : Prop where
   octahedron_axiom :
     ∀ {X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ : C}
       {u₁₂ : X₁ ⟶ X₂} {u₂₃ : X₂ ⟶ X₃} {u₁₃ : X₁ ⟶ X₃} (comm : u₁₂ ≫ u₂₃ = u₁₃)
-      {v₁₂ : X₂ ⟶ Z₁₂} {w₁₂ : Z₁₂ ⟶ X₁⟦(1 : ℤ)⟧} (h₁₂ : Triangle.mk u₁₂ v₁₂ w₁₂ ∈ distTriang C)
-      {v₂₃ : X₃ ⟶ Z₂₃} {w₂₃ : Z₂₃ ⟶ X₂⟦(1 : ℤ)⟧} (h₂₃ : Triangle.mk u₂₃ v₂₃ w₂₃ ∈ distTriang C)
-      {v₁₃ : X₃ ⟶ Z₁₃} {w₁₃ : Z₁₃ ⟶ X₁⟦(1 : ℤ)⟧} (h₁₃ : Triangle.mk u₁₃ v₁₃ w₁₃ ∈ distTriang C),
+      {v₁₂ : X₂ ⟶ Z₁₂} {w₁₂ : Z₁₂ ⟶ X₁⟦1⟧} (h₁₂ : Triangle.mk u₁₂ v₁₂ w₁₂ ∈ distTriang C)
+      {v₂₃ : X₃ ⟶ Z₂₃} {w₂₃ : Z₂₃ ⟶ X₂⟦1⟧} (h₂₃ : Triangle.mk u₂₃ v₂₃ w₂₃ ∈ distTriang C)
+      {v₁₃ : X₃ ⟶ Z₁₃} {w₁₃ : Z₁₃ ⟶ X₁⟦1⟧} (h₁₃ : Triangle.mk u₁₃ v₁₃ w₁₃ ∈ distTriang C),
       Nonempty (Octahedron comm h₁₂ h₂₃ h₁₃)
 
 variable {C}
@@ -313,9 +313,9 @@ variable {C}
 @[no_expose] def Triangulated.someOctahedron [IsTriangulated C]
     {X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ : C}
     {u₁₂ : X₁ ⟶ X₂} {u₂₃ : X₂ ⟶ X₃} {u₁₃ : X₁ ⟶ X₃} (comm : u₁₂ ≫ u₂₃ = u₁₃)
-    {v₁₂ : X₂ ⟶ Z₁₂} {w₁₂ : Z₁₂ ⟶ X₁⟦(1 : ℤ)⟧} (h₁₂ : Triangle.mk u₁₂ v₁₂ w₁₂ ∈ distTriang C)
-    {v₂₃ : X₃ ⟶ Z₂₃} {w₂₃ : Z₂₃ ⟶ X₂⟦(1 : ℤ)⟧} (h₂₃ : Triangle.mk u₂₃ v₂₃ w₂₃ ∈ distTriang C)
-    {v₁₃ : X₃ ⟶ Z₁₃} {w₁₃ : Z₁₃ ⟶ X₁⟦(1 : ℤ)⟧} (h₁₃ : Triangle.mk u₁₃ v₁₃ w₁₃ ∈ distTriang C) :
+    {v₁₂ : X₂ ⟶ Z₁₂} {w₁₂ : Z₁₂ ⟶ X₁⟦1⟧} (h₁₂ : Triangle.mk u₁₂ v₁₂ w₁₂ ∈ distTriang C)
+    {v₂₃ : X₃ ⟶ Z₂₃} {w₂₃ : Z₂₃ ⟶ X₂⟦1⟧} (h₂₃ : Triangle.mk u₂₃ v₂₃ w₂₃ ∈ distTriang C)
+    {v₁₃ : X₃ ⟶ Z₁₃} {w₁₃ : Z₁₃ ⟶ X₁⟦1⟧} (h₁₃ : Triangle.mk u₁₃ v₁₃ w₁₃ ∈ distTriang C) :
     Octahedron comm h₁₂ h₂₃ h₁₃ :=
   (IsTriangulated.octahedron_axiom comm h₁₂ h₂₃ h₁₃).some
 
@@ -323,9 +323,9 @@ variable {C}
 @[no_expose] def Triangulated.someOctahedron' [IsTriangulated C]
     {X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ : C}
     {u₁₂ : X₁ ⟶ X₂} {u₂₃ : X₂ ⟶ X₃} {u₁₃ : X₁ ⟶ X₃} (comm : u₁₂ ≫ u₂₃ = u₁₃)
-    {v₁₂ : Z₁₂ ⟶ X₁} {w₁₂ : X₂ ⟶ Z₁₂⟦(1 : ℤ)⟧} (h₁₂ : Triangle.mk v₁₂ u₁₂ w₁₂ ∈ distTriang C)
-    {v₂₃ : Z₂₃ ⟶ X₂} {w₂₃ : X₃ ⟶ Z₂₃⟦(1 : ℤ)⟧} (h₂₃ : Triangle.mk v₂₃ u₂₃ w₂₃ ∈ distTriang C)
-    {v₁₃ : Z₁₃ ⟶ X₁} {w₁₃ : X₃ ⟶ Z₁₃⟦(1 : ℤ)⟧} (h₁₃ : Triangle.mk v₁₃ u₁₃ w₁₃ ∈ distTriang C) :
+    {v₁₂ : Z₁₂ ⟶ X₁} {w₁₂ : X₂ ⟶ Z₁₂⟦1⟧} (h₁₂ : Triangle.mk v₁₂ u₁₂ w₁₂ ∈ distTriang C)
+    {v₂₃ : Z₂₃ ⟶ X₂} {w₂₃ : X₃ ⟶ Z₂₃⟦1⟧} (h₂₃ : Triangle.mk v₂₃ u₂₃ w₂₃ ∈ distTriang C)
+    {v₁₃ : Z₁₃ ⟶ X₁} {w₁₃ : X₃ ⟶ Z₁₃⟦1⟧} (h₁₃ : Triangle.mk v₁₃ u₁₃ w₁₃ ∈ distTriang C) :
     Octahedron' comm h₁₂ h₂₃ h₁₃ := by
   let o := someOctahedron comm (rot_of_distTriang _ h₁₂) (rot_of_distTriang _ h₂₃)
     (rot_of_distTriang _ h₁₃)
@@ -356,9 +356,9 @@ variable {C}
     rw [assoc, assoc, Iso.hom_inv_id_app_assoc]
     nth_rw 2 [← assoc]
     rw [← Functor.map_comp, ← eq₄, ← Functor.map_comp, shiftFunctorCompIsoId_naturality_1]
-  · apply isomorphic_distinguished _ ((Triangle.shift_distinguished_iff _ (-1 : ℤ)).mpr o.mem)
-    refine Triangle.isoMk _ _ (shiftShiftNeg Z₁₂ (1 : ℤ)).symm
-      (-(shiftShiftNeg Z₁₃ (1 : ℤ)).symm) (shiftShiftNeg Z₂₃ (1 : ℤ)).symm (comm₃ := ?_)
+  · apply isomorphic_distinguished _ ((Triangle.shift_distinguished_iff _ (-1)).mpr o.mem)
+    refine Triangle.isoMk _ _ (shiftShiftNeg Z₁₂ 1).symm
+      (-(shiftShiftNeg Z₁₃ 1).symm) (shiftShiftNeg Z₂₃ 1).symm (comm₃ := ?_)
     dsimp
     simp only [Int.reduceNeg, assoc, Int.negOnePow_neg, Int.negOnePow_one, neg_comp,
       Functor.map_neg, Functor.map_comp, smul_neg, Units.neg_smul, one_smul, neg_neg]

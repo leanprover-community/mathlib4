@@ -159,11 +159,9 @@ section CoeLemmas
 
 variable (A B : GL n R)
 
-@[simp]
 theorem coe_mul : ↑(A * B) = (↑A : Matrix n n R) * (↑B : Matrix n n R) :=
   rfl
 
-@[simp]
 theorem coe_one : ↑(1 : GL n R) = (1 : Matrix n n R) :=
   rfl
 
@@ -175,7 +173,6 @@ theorem coe_inv : ↑A⁻¹ = (↑A : Matrix n n R)⁻¹ :=
 theorem coe_toLin : (toLin A : (n → R) →ₗ[R] n → R) = Matrix.mulVecLin A :=
   rfl
 
-@[simp]
 theorem toLin_apply (v : n → R) : (toLin A : _ → n → R) v = Matrix.mulVecLin A v :=
   rfl
 
@@ -398,7 +395,7 @@ variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v} [CommRing R]
 
 /-- `toGL` is the map from the special linear group to the general linear group. -/
 def toGL : Matrix.SpecialLinearGroup n R →* Matrix.GeneralLinearGroup n R where
-  toFun A := ⟨↑A, ↑A⁻¹, congr_arg (·.1) (mul_inv_cancel A), congr_arg (·.1) (inv_mul_cancel A)⟩
+  toFun A := ⟨↑A, ↑A⁻¹, congr_arg (·.val) (mul_inv_cancel A), congr_arg (·.val) (inv_mul_cancel A)⟩
   map_one' := Units.ext rfl
   map_mul' _ _ := Units.ext rfl
 
@@ -433,7 +430,7 @@ lemma range_toGL_eq_ker_det :
 @[simps]
 def toGLKerEquiv : SpecialLinearGroup n R ≃* (GeneralLinearGroup.det : GL n R →* Rˣ).ker where
   toFun g := ⟨toGL g, coeToGL_det g⟩
-  invFun A := ⟨A.val.val, by simpa using congrArg Units.val A.2⟩
+  invFun A := ⟨A.val.val, by simpa using congrArg Units.val A.property⟩
   left_inv _ := rfl
   right_inv _ := by ext; rfl
   map_mul' _ _ := by ext; rfl
@@ -517,11 +514,9 @@ instance : Neg (GLPos n R) :=
 theorem GLPos.coe_neg_GL (g : GLPos n R) : ↑(-g) = -(g : GL n R) :=
   rfl
 
-@[simp]
 theorem GLPos.coe_neg (g : GLPos n R) : (↑(-g) : GL n R) = -((g : GL n R) : Matrix n n R) :=
   rfl
 
-@[simp]
 theorem GLPos.coe_neg_apply (g : GLPos n R) (i j : n) :
     ((↑(-g) : GL n R) : Matrix n n R) i j = -((g : GL n R) : Matrix n n R) i j :=
   rfl

@@ -97,6 +97,7 @@ def coconeOfLE : Cocone (restrictionLT F hi) :=
 
 /-- The functor `Set.Iic i ⥤ C` obtained by "restriction" of `F : Set.Iic j ⥤ C`
 when `i ≤ j`. -/
+@[implicit_reducible]
 def restrictionLE : Set.Iic i ⥤ C :=
   (Set.initialSegIicIicOfLE hi).monotone.functor ⋙ F
 
@@ -397,7 +398,7 @@ instance subsingleton : Subsingleton (Φ.Iteration j) where
         simp only [MapEq, ← arrowMap_restrictionLE _ h₄.le _ _ _ (by rfl), this]
       · obtain rfl : j = k₂ := le_antisymm (by simpa using h₄) h₃
         have : restrictionLT iter₁.F le_rfl = restrictionLT iter₂.F le_rfl :=
-          Arrow.functor_ext (fun _ l _ ↦ this _ _ _ _ l.2)
+          Arrow.functor_ext (fun _ l _ ↦ this _ _ _ _ l.property)
         by_cases h₅ : k₁ < j
         · dsimp [MapEq]
           simp_rw [arrowMap_limit _ _ h₁ _ _ h₅, this]

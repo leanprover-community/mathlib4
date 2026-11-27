@@ -6,7 +6,8 @@ Authors: Mario Carneiro, Johannes Hölzl, Patrick Massot
 module
 
 public import Mathlib.Data.Set.Image
-public import Mathlib.Data.Sum.Basic
+
+import Mathlib.Data.Sum.Basic
 
 /-!
 # Sets in product and pi types
@@ -486,7 +487,7 @@ def Function.Pullback.snd {f : X → Y} {g : Z → Y} (p : f.Pullback g) : Z := 
 
 open Function.Pullback in
 lemma Function.pullback_comm_sq (f : X → Y) (g : Z → Y) :
-    f ∘ @fst X Y Z f g = g ∘ @snd X Y Z f g := funext fun p ↦ p.2
+    f ∘ @fst X Y Z f g = g ∘ @snd X Y Z f g := funext fun p ↦ p.property
 
 /-- The diagonal map $\Delta: X \to X \times_Y X$. -/
 @[simps]
@@ -503,7 +504,7 @@ def Function.mapPullback {X₁ X₂ Y₁ Y₂ Z₁ Z₂}
     (commX : f₂ ∘ mapX = mapY ∘ f₁) (commZ : g₂ ∘ mapZ = mapY ∘ g₁)
     (p : f₁.Pullback g₁) : f₂.Pullback g₂ :=
   ⟨(mapX p.fst, mapZ p.snd),
-    (congr_fun commX _).trans <| (congr_arg mapY p.2).trans <| congr_fun commZ.symm _⟩
+    (congr_fun commX _).trans <| (congr_arg mapY p.property).trans <| congr_fun commZ.symm _⟩
 
 open Function.Pullback in
 /-- The projection $(X \times_Y Z) \times_Z (X \times_Y Z) \to X \times_Y X$. -/
@@ -722,9 +723,10 @@ theorem pi_if {p : ι → Prop} [h : DecidablePred p] (s : Set ι) (t₁ t₂ : 
       pi ({ i ∈ s | p i }) t₁ ∩ pi ({ i ∈ s | ¬p i }) t₂ := by
   ext f
   refine ⟨fun h => ?_, ?_⟩
-  · constructor <;>
-      · rintro i ⟨his, hpi⟩
-        simpa [*] using h i
+  · constructor
+    all_goals
+      rintro i ⟨his, hpi⟩
+      simpa [*] using h i
   · rintro ⟨ht₁, ht₂⟩ i his
     by_cases p i <;> simp_all
 

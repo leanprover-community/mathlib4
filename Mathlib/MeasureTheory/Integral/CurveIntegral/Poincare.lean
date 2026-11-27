@@ -53,7 +53,7 @@ variable [NormedSpace ℝ E] [NormedSpace ℝ F] {a b c d : E}
 set_option backward.isDefEq.respectTransparency false in
 private theorem curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt_off_countable_real
     {ω : E → E →L[ℝ] F} {dω : E → E →L[ℝ] E →L[ℝ] F}
-    (φ : (γ₁ : C(I, E)).Homotopy γ₂)
+    (φ : γ₁.toContinuousMap.Homotopy γ₂.toContinuousMap)
     (hs : s.Countable)
     (hφt : ∀ a ∈ Ioo 0 1, ∀ b ∈ Ioo 0 1, φ (a, b) ∈ t)
     (hω : ∀ a ∈ Ioo (0 : I) 1, ∀ b ∈ Ioo (0 : I) 1, (a, b) ∉ s →
@@ -152,7 +152,8 @@ private theorem curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt_off_coun
       apply intervalIntegral.integral_congr
       rw [uIcc_of_le zero_le_one]
       intro t ht
-      simp [Path.extend, hf (s, t), Prod.le_def, s.2.1, s.2.2, ht.1, ht.2, Function.comp_def, hψ]
+      simp [Path.extend, hf (s, t), Prod.le_def, s.property.1, s.property.2, ht.1, ht.2,
+        Function.comp_def, hψ]
     have hf₀ : ∫ t in 0..1, f (0, t) = ∫ᶜ x in γ₁, ω x := by
       simpa [curveIntegral_def, curveIntegralFun_def, Path.extend] using hfi 0
     have hf₁ : ∫ t in 0..1, f (1, t) = curveIntegral ω γ₂ := by
@@ -163,7 +164,7 @@ private theorem curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt_off_coun
       rw [uIcc_of_le zero_le_one]
       intro s hs
       simp only [hs, Path.extend_apply, φ.evalAt_apply]
-      simp [hg (s, t), Prod.le_def, hs.1, hs.2, t.2.1, t.2.2, Function.comp_def, hψ]
+      simp [hg (s, t), Prod.le_def, hs.1, hs.2, t.property.1, t.property.2, Function.comp_def, hψ]
     rw [← hf₀, ← hf₁, hgi, hgi]
     linear_combination (norm := {dsimp; abel}) -this
   -- Write a formula for the derivative of `η`.
@@ -230,7 +231,7 @@ under a smooth map is zero. We may ignore the behavior on a countable set.
 This theorem is stated in terms of a `C^2` homotopy between two paths. -/
 theorem curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt_off_countable
     {ω : E → E →L[𝕜] F} {dω : E → E →L[ℝ] E →L[𝕜] F}
-    (φ : (γ₁ : C(I, E)).Homotopy γ₂)
+    (φ : γ₁.toContinuousMap.Homotopy γ₂.toContinuousMap)
     (hs : s.Countable)
     (hφt : ∀ a ∈ Ioo 0 1, ∀ b ∈ Ioo 0 1, φ (a, b) ∈ t)
     (hω : ∀ a ∈ Ioo (0 : I) 1, ∀ b ∈ Ioo (0 : I) 1, (a, b) ∉ s →
@@ -255,7 +256,7 @@ under a smooth map is zero.
 This theorem is stated in terms of a `C^2` homotopy between two paths. -/
 theorem curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt
     {ω : E → E →L[𝕜] F} {dω : E → E →L[ℝ] E →L[𝕜] F}
-    (φ : (γ₁ : C(I, E)).Homotopy γ₂)
+    (φ : γ₁.toContinuousMap.Homotopy γ₂.toContinuousMap)
     (hφt : ∀ a ∈ Ioo 0 1, ∀ b ∈ Ioo 0 1, φ (a, b) ∈ t)
     (hω : ∀ x ∈ t, HasFDerivWithinAt ω (dω x) t x)
     (hωc : ContinuousOn ω (closure t))
@@ -272,7 +273,7 @@ under a smooth map is zero, a version stated in terms of `DiffContOnC1`.
 
 This theorem is stated in terms of a `C^2` homotopy between two paths. -/
 theorem curveIntegral_add_curveIntegral_eq_of_diffContOnCl
-    {ω : E → E →L[𝕜] F} (φ : (γ₁ : C(I, E)).Homotopy γ₂)
+    {ω : E → E →L[𝕜] F} (φ : γ₁.toContinuousMap.Homotopy γ₂.toContinuousMap)
     (hφt : ∀ a ∈ Ioo 0 1, ∀ b ∈ Ioo 0 1, φ (a, b) ∈ t)
     (hω : DiffContOnCl ℝ ω t)
     (hdω_symm : ∀ x ∈ t, ∀ u ∈ tangentConeAt ℝ t x, ∀ v ∈ tangentConeAt ℝ t x,
@@ -304,7 +305,8 @@ theorem curveIntegral_segment_add_eq_of_hasFDerivWithinAt_symmetric (hs : Convex
     (hdω : ∀ a ∈ s, ∀ x ∈ tangentConeAt ℝ s a, ∀ y ∈ tangentConeAt ℝ s a, dω a x y = dω a y x)
     (ha : a ∈ s) (hb : b ∈ s) (hc : c ∈ s) :
     (∫ᶜ x in .segment a b, ω x) + ∫ᶜ x in .segment b c, ω x = ∫ᶜ x in .segment a c, ω x := by
-  set φ := ContinuousMap.Homotopy.affine (Path.segment a b : C(I, E)) (Path.segment a c)
+  set φ := ContinuousMap.Homotopy.affine (Path.segment a b).toContinuousMap
+    (Path.segment a c).toContinuousMap
   have hφs : range φ ⊆ s := by
     rw [range_subset_iff]
     intro x

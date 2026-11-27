@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Homology.Embedding.RestrictionHomology
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Connecting a chain complex and a cochain complex
 

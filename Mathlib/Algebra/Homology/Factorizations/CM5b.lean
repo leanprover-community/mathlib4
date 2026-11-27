@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Homology.Embedding.CochainComplex
 public import Mathlib.Algebra.Homology.Factorizations.Basic
 public import Mathlib.Algebra.Homology.HomotopyCategory.MappingCone
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Factorization lemma
 

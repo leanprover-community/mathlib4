@@ -50,7 +50,7 @@ attribute [instance] IsLocallyFreeData.isIso
 
 instance IsLocallyFreeData.shrink {M : SheafOfModules.{u} R} (q : M.LocalGeneratorsData)
     [q.IsLocallyFreeData] : q.shrink.IsLocallyFreeData where
-  isIso i := inferInstanceAs (IsIso (q.generators i.2.choose).π)
+  isIso i := inferInstanceAs (IsIso (q.generators i.property.choose).π)
 
 end LocalGeneratorsData
 

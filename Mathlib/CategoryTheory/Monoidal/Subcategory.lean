@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 public import Mathlib.CategoryTheory.Monoidal.Linear
 public import Mathlib.CategoryTheory.Monoidal.Transport
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Full monoidal subcategories
 
@@ -22,6 +25,7 @@ When `C` is also braided/symmetric, the full monoidal subcategory also inherits 
 braided/symmetric structure.
 
 ## TODO
+
 * Add monoidal/braided versions of `ObjectProperty.Lift`
 -/
 
@@ -104,7 +108,7 @@ instance monoidalι : P.ι.Monoidal :=
 open Functor.LaxMonoidal Functor.OplaxMonoidal
 
 @[simp] lemma ι_ε : ε P.ι = 𝟙 _ := rfl
-@[simp] lemma ι_η : ε P.ι = 𝟙 _ := rfl
+@[simp] lemma ι_η : η P.ι = 𝟙 _ := rfl
 @[simp] lemma ι_μ (X Y : FullSubcategory P) : μ P.ι X Y = 𝟙 _ := rfl
 @[simp] lemma ι_δ (X Y : FullSubcategory P) : δ P.ι X Y = 𝟙 _ := rfl
 

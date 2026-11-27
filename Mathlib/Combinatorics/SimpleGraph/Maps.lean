@@ -6,8 +6,9 @@ Authors: Hunter Monroe, Kyle Miller
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Dart
-public import Mathlib.Data.FunLike.Fintype
-public import Mathlib.Logic.Embedding.Set
+
+import Mathlib.Data.FunLike.Fintype
+import Mathlib.Logic.Embedding.Set
 
 /-!
 # Maps between graphs
@@ -539,10 +540,8 @@ theorem coe_comp (f' : G' →g G'') (f : G →g G') : ⇑(f'.comp f) = f' ∘ f 
 theorem comp_assoc (f : G'' →g G''') (g : G' →g G'') (h : G →g G') :
     f.comp (g.comp h) = (f.comp g).comp h := rfl
 
-@[simp]
 theorem comp_id (f : G →g G') : f.comp .id = f := rfl
 
-@[simp]
 theorem id_comp (f : G →g G') : .comp .id f = f := rfl
 
 @[simp]
@@ -563,7 +562,7 @@ abbrev refl : G ↪g G :=
 abbrev toHom : G →g G' :=
   f.toRelHom
 
-@[simp] lemma coe_toHom (f : G ↪g H) : ⇑f.toHom = f := rfl
+lemma coe_toHom (f : G ↪g H) : ⇑f.toHom = f := rfl
 
 @[simp] theorem map_adj_iff {v w : V} : G'.Adj (f v) (f w) ↔ G.Adj v w :=
   f.map_rel_iff
@@ -592,7 +591,7 @@ def mapEdgeSet : G.edgeSet ↪ G'.edgeSet where
 /-- A graph embedding induces an embedding of neighbor sets. -/
 @[simps]
 def mapNeighborSet (v : V) : G.neighborSet v ↪ G'.neighborSet (f v) where
-  toFun w := ⟨f w, f.apply_mem_neighborSet_iff.mpr w.2⟩
+  toFun w := ⟨f w, f.apply_mem_neighborSet_iff.mpr w.property⟩
   inj' := by
     rintro ⟨w₁, h₁⟩ ⟨w₂, h₂⟩ h
     rw [Subtype.mk_eq_mk] at h ⊢
@@ -654,17 +653,14 @@ variable {G'' : SimpleGraph X} {G''' : SimpleGraph Y}
 abbrev comp (f' : G' ↪g G'') (f : G ↪g G') : G ↪g G'' :=
   f.trans f'
 
-@[simp]
 theorem coe_comp (f' : G' ↪g G'') (f : G ↪g G') : ⇑(f'.comp f) = f' ∘ f :=
   rfl
 
 theorem comp_assoc (f : G'' ↪g G''') (g : G' ↪g G'') (h : G ↪g G') :
     f.comp (g.comp h) = (f.comp g).comp h := rfl
 
-@[simp]
 theorem comp_refl (f : G ↪g G') : f.comp .refl = f := rfl
 
-@[simp]
 theorem refl_comp (f : G ↪g G') : .comp .refl f = f := rfl
 
 /-- Graph embeddings from `G` to `H` are the same thing as graph embeddings from `Gᶜ` to `Hᶜ`. -/
@@ -788,10 +784,10 @@ def mapEdgeSet : G.edgeSet ≃ G'.edgeSet where
 /-- A graph isomorphism induces an equivalence of neighbor sets. -/
 @[simps]
 def mapNeighborSet (v : V) : G.neighborSet v ≃ G'.neighborSet (f v) where
-  toFun w := ⟨f w, f.apply_mem_neighborSet_iff.mpr w.2⟩
+  toFun w := ⟨f w, f.apply_mem_neighborSet_iff.mpr w.property⟩
   invFun w :=
     ⟨f.symm w, by
-      simpa [RelIso.symm_apply_apply] using f.symm.apply_mem_neighborSet_iff.mpr w.2⟩
+      simpa [RelIso.symm_apply_apply] using f.symm.apply_mem_neighborSet_iff.mpr w.property⟩
   left_inv w := by simp
   right_inv w := by simp
 
@@ -854,10 +850,8 @@ theorem coe_comp (f' : G' ≃g G'') (f : G ≃g G') : ⇑(f'.comp f) = f' ∘ f 
 theorem comp_assoc (f : G'' ≃g G''') (g : G' ≃g G'') (h : G ≃g G') :
     f.comp (g.comp h) = (f.comp g).comp h := rfl
 
-@[simp]
 theorem comp_refl (f : G ≃g G') : f.comp .refl = f := rfl
 
-@[simp]
 theorem refl_comp (f : G ≃g G') : .comp .refl f = f := rfl
 
 section induce

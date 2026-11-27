@@ -5,12 +5,16 @@ Authors: Brian Nugent
 -/
 module
 
-public import Mathlib.Algebra.Category.Grp.AB
 public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Sheaf
-public import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 public import Mathlib.Topology.Sheaves.Limits
 public import Mathlib.Topology.Sheaves.Skyscraper
+
+import Mathlib.Algebra.Category.Grp.AB
+import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Sheaves over Abelian categories
@@ -41,14 +45,7 @@ noncomputable instance : Abelian (Presheaf C X) := inferInstanceAs (Abelian (_ â
 
 namespace Sheaf
 
-noncomputable instance : Abelian (Sheaf C X) :=
-  inferInstanceAs (Abelian (CategoryTheory.Sheaf _ _))
-
 instance : (Sheaf.forget C X).Additive where
-
-instance {D : Type*} [Category.{u} D] [Abelian D] [IsGrothendieckAbelian.{u} D]
-    [HasSheafify (Opens.grothendieckTopology X) D] : IsGrothendieckAbelian.{u} (Sheaf D X) :=
-  inferInstanceAs (IsGrothendieckAbelian (CategoryTheory.Sheaf _ _))
 
 end Sheaf
 

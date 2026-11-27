@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Category.TopCat.Monoidal
 public import Mathlib.Topology.Path
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Paths between points of an object of `TopCat`
 
@@ -41,7 +44,7 @@ variable {X} in
 @[simps!]
 def pathEquiv {x y : X} : X.Path x y ≃ _root_.Path x y where
   toFun p :=
-    { toContinuousMap := p.hom.hom.comp TopCat.I.homeomorph.symm
+    { toContinuousMap := p.hom.hom.comp TopCat.I.homeomorph.symm.toContinuousMap
       source' := p.hom₀
       target' := p.hom₁ }
   invFun p :=

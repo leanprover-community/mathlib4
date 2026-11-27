@@ -7,11 +7,11 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
 public import Mathlib.Analysis.Normed.Lp.Matrix
-public import Mathlib.Analysis.Normed.Order.Lattice
-public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.LinearAlgebra.UnitaryGroup
 public import Mathlib.Util.Superscript
 
+import Mathlib.Analysis.Normed.Order.Lattice
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
 
 /-!
@@ -184,9 +184,11 @@ theorem EuclideanSpace.dist_sq_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fint
     (x y : EuclideanSpace 𝕜 n) : dist x y ^ 2 = ∑ i, dist (x i) (y i) ^ 2 :=
   PiLp.dist_sq_eq_of_L2 x y
 
-theorem EuclideanSpace.nndist_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
-    (x y : EuclideanSpace 𝕜 n) : nndist x y = NNReal.sqrt (∑ i, nndist (x i) (y i) ^ 2) :=
-  PiLp.nndist_eq_of_L2 x y
+theorem EuclideanSpace.nnDist_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
+    (x y : EuclideanSpace 𝕜 n) : nnDist x y = NNReal.sqrt (∑ i, nnDist (x i) (y i) ^ 2) :=
+  PiLp.nnDist_eq_of_L2 x y
+
+@[deprecated (since := "2026-11-07")] alias EuclideanSpace.nndist_eq := EuclideanSpace.nnDist_eq
 
 theorem EuclideanSpace.edist_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
     (x y : EuclideanSpace 𝕜 n) : edist x y = (∑ i, edist (x i) (y i) ^ 2) ^ (1 / 2 : ℝ) :=
@@ -251,7 +253,7 @@ def restrict₂ (hIJ : I ⊆ J) :
 
 @[simp]
 lemma restrict₂_apply (hIJ : I ⊆ J) (x : EuclideanSpace 𝕜 J) (i : I) :
-    EuclideanSpace.restrict₂ hIJ x i = x ⟨i.1, hIJ i.2⟩ := rfl
+    EuclideanSpace.restrict₂ hIJ x i = x ⟨i.val, hIJ i.property⟩ := rfl
 
 end restrict₂
 
@@ -395,8 +397,8 @@ instance instFunLike : FunLike (OrthonormalBasis ι 𝕜 E) ι E where
         have : k = k • (1 : 𝕜) := by rw [smul_eq_mul, mul_one]
         rw [this, Pi.single_smul]
         replace h := congr($h i)
-        simp only [LinearEquiv.comp_coe, map_smul, LinearEquiv.coe_coe, LinearEquiv.trans_apply,
-          coe_symm_linearEquiv, PiLp.toLp_single,
+        simp only [LinearEquiv.comp_coe, map_smul, LinearEquiv.coe_toLinearMap,
+          LinearEquiv.trans_apply, coe_symm_linearEquiv, PiLp.toLp_single,
           LinearIsometryEquiv.coe_symm_toLinearEquiv] at h ⊢
         rw [h]
 

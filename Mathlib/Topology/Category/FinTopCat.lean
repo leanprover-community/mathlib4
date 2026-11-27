@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.FintypeCat
 public import Mathlib.Topology.Category.TopCat.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Category of finite topological spaces
 

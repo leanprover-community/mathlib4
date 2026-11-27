@@ -887,10 +887,10 @@ lemma height_eq_krullDim_Iic (x : α) : (height x : ℕ∞) = krullDim (Set.Iic 
     simp only [le_top, iSup_pos, ge_iff_le]
     exact le_iSup (fun p ↦ (p.length : ℕ∞)) q
   · apply iSup_le; intro p; apply iSup_le; intro _
-    have mono : StrictMono (fun (y : Set.Iic x) ↦ y.1) := fun _ _ h ↦ h
-    rw [← LTSeries.map_length p (fun x ↦ x.1) mono]
-    refine le_iSup₂ (f := fun p hp ↦ (p.length : ℕ∞)) (p.map (fun x ↦ x.1) mono) ?_
-    exact (p.toFun (Fin.last p.length)).2
+    have mono : StrictMono (fun (y : Set.Iic x) ↦ y.val) := fun _ _ h ↦ h
+    rw [← LTSeries.map_length p (fun x ↦ x.val) mono]
+    refine le_iSup₂ (f := fun p hp ↦ (p.length : ℕ∞)) (p.map (fun x ↦ x.val) mono) ?_
+    exact (p.toFun (Fin.last p.length)).property
 
 lemma coheight_eq_krullDim_Ici {α : Type*} [Preorder α] (x : α) :
     (coheight x : ℕ∞) = krullDim (Set.Ici x) := by

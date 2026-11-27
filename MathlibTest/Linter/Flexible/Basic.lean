@@ -739,3 +739,29 @@ example {a b : Nat} (h : a ≤ b) : a + 0 ≤ b + 1 := by
 example {a b : Nat} (h : a ≤ b) : a + 0 ≤ b + 1 := by
   simp_all! only [Nat.add_zero]
   exact Nat.le_succ_of_le h
+
+-- `cbv` is flexible: it may follow a flexible tactic, and a rigid tactic may not follow it.
+def cbvFoo (n : Nat) : Nat := n + 1
+
+#guard_msgs in
+example : 0 + cbvFoo 1 = 2 := by
+  simp
+  cbv
+
+#guard_msgs in
+example (h : [1, 2].reverse.length = 2) : 2 = 2 := by
+  cbv at h
+  simp at h ⊢
+
+/--
+warning: `cbv at h` is a flexible tactic modifying `h`.
+
+Note: This linter can be disabled with `set_option linter.flexible false`
+---
+info: `exact h`
+uses `h`, which was modified by the flexible tactic `cbv` on line
+-/
+#guard_msgs (substring := true) in
+example (k : Nat) (h : k = cbvFoo 1) : k = 2 := by
+  cbv at h
+  exact h

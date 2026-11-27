@@ -77,7 +77,6 @@ theorem Polynomial.algebraMap_pi_eq_aeval :
     (algebraMap R[X] (S → T) : R[X] → S → T) = fun p z => algebraMap _ _ (aeval z p) :=
   rfl
 
-@[simp]
 theorem Polynomial.algebraMap_pi_self_eq_eval :
     (algebraMap R[X] (R → R) : R[X] → R → R) = fun p z => eval z p :=
   rfl

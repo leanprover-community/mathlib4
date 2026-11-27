@@ -5,10 +5,10 @@ Authors: Riccardo Brasca
 -/
 module
 
-public import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Embeddings
 public import Mathlib.NumberTheory.NumberField.Discriminant.Different
 
+import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 import Mathlib.NumberTheory.Cyclotomic.Discriminant
 import Mathlib.RingTheory.Polynomial.Eisenstein.IsIntegral
 import Mathlib.RingTheory.Prime
@@ -20,6 +20,7 @@ We gather results about cyclotomic extensions of `ℚ`. In particular, we comput
 integers of a cyclotomic extension of `ℚ`.
 
 ## Main results
+
 * `IsCyclotomicExtension.Rat.isIntegralClosure_adjoin_singleton`: if `K` is a cyclotomic
   extension of `ℚ`, then `adjoin ℤ {ζ}` is the integral closure of `ℤ` in `K`.
 * `IsCyclotomicExtension.Rat.cyclotomicRing_isIntegralClosure`: the integral
@@ -137,7 +138,7 @@ theorem cyclotomicRing_isIntegralClosure_of_prime_pow :
   have hζ := zeta_spec (p ^ k) ℚ (CyclotomicField (p ^ k) ℚ)
   refine ⟨IsFractionRing.injective _ _, @fun x => ⟨fun h => ⟨⟨x, ?_⟩, rfl⟩, ?_⟩⟩
   · obtain ⟨y, rfl⟩ := (isIntegralClosure_adjoin_singleton_of_prime_pow hζ).isIntegral_iff.1 h
-    refine adjoin_mono ?_ y.2
+    refine adjoin_mono ?_ y.property
     simp only [Set.singleton_subset_iff, Set.mem_ofPred_eq]
     exact hζ.pow_eq_one
   · rintro ⟨y, rfl⟩
@@ -188,7 +189,7 @@ abbrev toInteger {k : ℕ} [NeZero k] (hζ : IsPrimitiveRoot ζ k) : 𝓞 K :=
 
 end CharZero
 
-lemma coe_toInteger {k : ℕ} [NeZero k] (hζ : IsPrimitiveRoot ζ k) : hζ.toInteger.1 = ζ := rfl
+lemma coe_toInteger {k : ℕ} [NeZero k] (hζ : IsPrimitiveRoot ζ k) : hζ.toInteger.val = ζ := rfl
 
 @[simp]
 lemma toInteger_coe {k : ℕ} [NeZero k] {x : 𝓞 K} (hx : IsPrimitiveRoot (x : K) k) :
@@ -217,6 +218,13 @@ lemma toInteger_isPrimitiveRoot {k : ℕ} [NeZero k] (hζ : IsPrimitiveRoot ζ k
   IsPrimitiveRoot.of_map_of_injective (by exact hζ) RingOfIntegers.coe_injective
 
 variable [CharZero K]
+
+/-- The minimal polynomial over `ℤ` of a primitive `k`-th root of unity seen in `𝓞 K` is the
+`k`-th cyclotomic polynomial. -/
+@[simp]
+theorem minpoly_toInteger {k : ℕ} [NeZero k] (hζ : IsPrimitiveRoot ζ k) :
+    minpoly ℤ hζ.toInteger = cyclotomic k ℤ := by
+  rw [← RingOfIntegers.minpoly_coe, hζ.coe_toInteger, cyclotomic_eq_minpoly hζ (NeZero.pos k)]
 
 @[simp]
 theorem integralPowerBasisOfPrimePow_gen [hcycl : IsCyclotomicExtension {p ^ k} ℚ K]
@@ -449,12 +457,12 @@ theorem not_exists_int_prime_dvd_sub_of_prime_pow_ne_two
   have := pB.basis_eq_pow ⟨1, hdim⟩
   rw [hζ.integralPowerBasisOfPrimePow_gen] at this
   simp only [PowerBasis.coe_basis, pow_one] at this
-  rw [← this, show pB.gen = pB.gen ^ (⟨1, hdim⟩ : Fin pB.dim).1 by simp, ← pB.basis_eq_pow,
+  rw [← this, show pB.gen = pB.gen ^ (⟨1, hdim⟩ : Fin pB.dim).val by simp, ← pB.basis_eq_pow,
     pB.basis.repr_self_apply] at h
   simp only [↓reduceIte, map_add, Finsupp.coe_add, Pi.add_apply] at h
   rw [show (p : 𝓞 K) * x = (p : ℤ) • x by simp, ← pB.basis.coord_apply,
     map_smul, ← zsmul_one, ← pB.basis.coord_apply, map_smul,
-    show 1 = pB.gen ^ (⟨0, by lia⟩ : Fin pB.dim).1 by simp, ← pB.basis_eq_pow,
+    show 1 = pB.gen ^ (⟨0, by lia⟩ : Fin pB.dim).val by simp, ← pB.basis_eq_pow,
     pB.basis.coord_apply, pB.basis.coord_apply, pB.basis.repr_self_apply] at h
   simp only [smul_eq_mul, Fin.mk.injEq, zero_ne_one, ↓reduceIte, mul_zero, add_zero] at h
   exact (Int.prime_iff_natAbs_prime.2 (by simp [hp.out])).not_dvd_one ⟨_, h⟩
@@ -811,7 +819,7 @@ theorem cyclotomicRing_isIntegralClosure :
   have hζ := zeta_spec n ℚ (CyclotomicField n ℚ)
   refine ⟨IsFractionRing.injective _ _, fun {x} => ⟨fun h => ⟨⟨x, ?_⟩, rfl⟩, ?_⟩⟩
   · obtain ⟨y, rfl⟩ := (isIntegralClosure_adjoin_singleton hζ).isIntegral_iff.1 h
-    refine adjoin_mono ?_ y.2
+    refine adjoin_mono ?_ y.property
     simp only [Set.singleton_subset_iff, Set.mem_ofPred_eq]
     exact hζ.pow_eq_one
   · rintro ⟨y, rfl⟩

@@ -9,6 +9,9 @@ public import Mathlib.MeasureTheory.MeasurableSpace.Embedding
 public import Mathlib.MeasureTheory.Measure.CompleteLattice
 public import Mathlib.MeasureTheory.Measure.Dirac.Def
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pushforward of a measure
 

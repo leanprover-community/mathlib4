@@ -42,7 +42,7 @@ This file is a place to collect results which are specific to bimodules.
 * `Subbimodule.toSubmodule`
 * `Subbimodule.toSubmodule'`
 
-## Implementation details
+## Implementation notes
 
 For many definitions and lemmas it is preferable to set things up without opposites, i.e., as:
 `[Module S M] [SMulCommClass R S M]` rather than `[Module Sᵐᵒᵖ M] [SMulCommClass R Sᵐᵒᵖ M]`.

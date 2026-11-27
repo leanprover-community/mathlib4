@@ -12,6 +12,9 @@ public import Mathlib.Topology.UrysohnsLemma
 
 import Mathlib.Topology.ContinuousMap.Compact
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ideals of continuous functions
 
@@ -58,7 +61,7 @@ herein called `WeakDual.CharacterSpace.homeoEval`.
 * `ContinuousMap.ideal_isMaximal_iff`: when `X` is compact Hausdorff and `RCLike 𝕜`, a closed
   ideal of `C(X, 𝕜)` is maximal if and only if it is `idealOfSet 𝕜 {x}ᶜ` for some `x : X`.
 
-## Implementation details
+## Implementation notes
 
 Because there does not currently exist a bundled type of closed ideals, we don't provide the actual
 order isomorphism described above, and instead we only consider the Galois insertion
@@ -193,7 +196,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
   refine (fun f hf => Metric.mem_closure_iff.mpr fun ε hε => ?_)
   lift ε to ℝ≥0 using hε.lt.le
   replace hε := show (0 : ℝ≥0) < ε from hε
-  simp_rw [dist_nndist]
+  simp_rw [dist_nnDist]
   norm_cast
   -- Let `t := {x : X | ε / 2 ≤ ‖f x‖₊}` which is closed and disjoint from `set_of_ideal I`.
   set t := {x : X | ε / 2 ≤ ‖f x‖₊}
@@ -207,31 +210,29 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
     Indeed, then `‖f - f * ↑g‖ ≤ ‖f * (1 - ↑g)‖ ≤ ⨆ ‖f * (1 - ↑g) x‖`. When `x ∉ t`, `‖f x‖ < ε / 2`
     and `‖(1 - ↑g) x‖ ≤ 1`, and when `x ∈ t`, `(1 - ↑g) x = 0`, and clearly `f * ↑g ∈ I`. -/
   suffices
-    ∃ g : C(X, ℝ≥0), (algebraMapCLM ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g ∈ I ∧ (∀ x, g x ≤ 1) ∧ t.EqOn g 1 by
+    ∃ g : C(X, ℝ≥0), (algebraMapCLM ℝ≥0 𝕜).toContinuousMap.comp g ∈ I ∧
+      (∀ x, g x ≤ 1) ∧ t.EqOn g 1 by
     obtain ⟨g, hgI, hg, hgt⟩ := this
-    refine ⟨f * (algebraMapCLM ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g, I.mul_mem_left f hgI, ?_⟩
+    refine ⟨f * (algebraMapCLM ℝ≥0 𝕜).toContinuousMap.comp g, I.mul_mem_left f hgI, ?_⟩
     rw [nnDist_eq_nnNorm]
     refine (nnNorm_lt_iff _ hε).2 fun x => ?_
     simp only [coe_sub, coe_mul, Pi.sub_apply, Pi.mul_apply]
     by_cases hx : x ∈ t
-    · simpa only [hgt hx, comp_apply, Pi.one_apply, ContinuousMap.coe_ofClass, algebraMapCLM_apply,
-        map_one, mul_one, sub_self, nnNorm_zero] using! hε
+    · simpa [hgt hx] using! hε
     · refine lt_of_le_of_lt ?_ (half_lt_self hε)
       have :=
         calc
-          ‖((1 - (algebraMapCLM ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g) x : 𝕜)‖₊ =
-              ‖1 - algebraMap ℝ≥0 𝕜 (g x)‖₊ := by
-            simp only [coe_sub, coe_one, coe_comp, ContinuousMap.coe_ofClass, Pi.sub_apply,
-              Pi.one_apply, Function.comp_apply, algebraMapCLM_apply]
+          ‖((1 - (algebraMapCLM ℝ≥0 𝕜).toContinuousMap.comp g) x : 𝕜)‖₊ =
+              ‖1 - algebraMap ℝ≥0 𝕜 (g x)‖₊ := by simp
           _ = ‖algebraMap ℝ≥0 𝕜 (1 - g x)‖₊ := by
             simp only [Algebra.algebraMap_eq_smul_one, NNReal.smul_def, NNReal.coe_sub (hg x),
               NNReal.coe_one, sub_smul, one_smul]
           _ ≤ 1 := (nnNorm_algebraMap_nnReal 𝕜 (1 - g x)).trans_le tsub_le_self
       calc
-        ‖f x - f x * (algebraMapCLM ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g x‖₊ =
-            ‖f x * (1 - (algebraMapCLM ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g) x‖₊ := by
+        ‖f x - f x * (algebraMapCLM ℝ≥0 𝕜).toContinuousMap.comp g x‖₊ =
+            ‖f x * (1 - (algebraMapCLM ℝ≥0 𝕜).toContinuousMap.comp g) x‖₊ := by
           simp only [mul_sub, coe_sub, coe_one, Pi.sub_apply, Pi.one_apply, mul_one]
-        _ ≤ ε / 2 * ‖(1 - (algebraMapCLM ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g) x‖₊ :=
+        _ ≤ ε / 2 * ‖(1 - (algebraMapCLM ℝ≥0 𝕜).toContinuousMap.comp g) x‖₊ :=
           ((nnNorm_mul_le _ _).trans
             (mul_le_mul_left (not_le.mp <| show ¬ε / 2 ≤ ‖f x‖₊ from hx).le _))
         _ ≤ ε / 2 := by simpa only [mul_one] using! mul_le_mul_right this _
@@ -241,7 +242,8 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
     `fₓ x ≠ 0` for some `fₓ ∈ I` and so `fun y ↦ ‖(star fₓ * fₓ) y‖₊` is strictly positive in a
     neighborhood of `y`. Moreover, `(‖(star fₓ * fₓ) y‖₊ : 𝕜) = (star fₓ * fₓ) y`, so composition of
     this map with the natural embedding is just `star fₓ * fₓ ∈ I`. -/
-  have : ∃ g' : C(X, ℝ≥0), (algebraMapCLM ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g' ∈ I ∧ ∀ x ∈ t, 0 < g' x := by
+  have : ∃ g' : C(X, ℝ≥0), (algebraMapCLM ℝ≥0 𝕜).toContinuousMap.comp g' ∈ I ∧
+      ∀ x ∈ t, 0 < g' x := by
     refine ht.isCompact.induction_on ?_ ?_ ?_ ?_
     · refine ⟨0, ?_, fun x hx => False.elim hx⟩
       convert I.zero_mem
@@ -268,9 +270,8 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
             pow_pos (norm_pos_iff.mpr hx.1) 2⟩⟩
       convert I.mul_mem_left (star g) hI
       ext
-      simp only [comp_apply, coe_mk, algebraMapCLM_apply, map_pow,
-        mul_apply, star_apply, star_def]
-      simp only [RCLike.conj_mul]
+      simp only [comp_apply, coe_mk, ContinuousLinearMap.coe_toContinuousMap, algebraMapCLM_apply,
+        map_pow, mul_apply, star_apply, star_def, RCLike.conj_mul]
       rfl
   /- Get the function `g'` which is guaranteed to exist above. By the extreme value theorem and
     compactness of `t`, there is some `0 < c` such that `c ≤ g' x` for all `x ∈ t`. Then by
@@ -283,7 +284,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
       ⟨g' x, hgt' x hx, hx'⟩
   obtain ⟨g, hg, hgc⟩ := exists_mul_le_one_eqOn_ge g' hc
   refine ⟨g * g', ?_, hg, hgc.mono hgc'⟩
-  convert I.mul_mem_left ((algebraMapCLM ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g) hI'
+  convert I.mul_mem_left ((algebraMapCLM ℝ≥0 𝕜).toContinuousMap.comp g) hI'
   ext
   simp
 

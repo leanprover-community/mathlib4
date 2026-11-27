@@ -676,13 +676,11 @@ theorem coe_sumCoords : (b.sumCoords : M → R) = fun m => (b.repr m).sum fun _ 
 @[simp high]
 theorem coe_sumCoords_of_fintype [Fintype ι] : (b.sumCoords : M → R) = ∑ i, b.coord i := by
   ext m
-  simp only [sumCoords, Finsupp.sum_fintype, LinearMap.id_coe, LinearEquiv.coe_coe, coord_apply,
-    id, Fintype.sum_apply, imp_true_iff, Finsupp.coe_lsum, LinearMap.coe_comp, comp_apply,
-    LinearMap.coe_sum]
+  simp [sumCoords, Finsupp.sum_fintype]
 
 @[simp]
 theorem sumCoords_self_apply : b.sumCoords (b i) = 1 := by
-  simp only [Basis.sumCoords, LinearMap.id_coe, LinearEquiv.coe_coe, id, Basis.repr_self,
+  simp only [Basis.sumCoords, LinearMap.id_coe, LinearEquiv.coe_toLinearMap, id, Basis.repr_self,
     Function.comp_apply, Finsupp.coe_lsum, LinearMap.coe_comp, Finsupp.sum_single_index]
 
 theorem dvd_coord_smul (i : ι) (m : M) (r : R) : r ∣ b.coord i (r • m) :=
@@ -695,7 +693,7 @@ theorem coord_repr_symm (b : Basis ι R M) (i : ι) (f : ι →₀ R) :
 theorem coe_sumCoords_eq_finsum : (b.sumCoords : M → R) = fun m => ∑ᶠ i, b.coord i m := by
   ext m
   simp only [Basis.sumCoords, Basis.coord, Finsupp.lapply_apply, LinearMap.id_coe,
-    LinearEquiv.coe_coe, Function.comp_apply, Finsupp.coe_lsum, LinearMap.coe_comp,
+    LinearEquiv.coe_toLinearMap, Function.comp_apply, Finsupp.coe_lsum, LinearMap.coe_comp,
     finsum_eq_sum _ (b.repr m).hasFiniteSupport, Finsupp.sum, Finset.finite_toSet_toFinset, id,
     Finsupp.fun_support_eq]
 

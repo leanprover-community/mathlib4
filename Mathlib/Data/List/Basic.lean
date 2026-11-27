@@ -314,7 +314,6 @@ theorem getLast_append_of_right_ne_nil (l₁ l₂ : List α) (h : l₂ ≠ []) :
 theorem getLast_concat' {a : α} (l : List α) : getLast (concat l a) (by simp) = a := by
   simp
 
-@[simp]
 theorem getLast_singleton' (a : α) : getLast [a] (cons_ne_nil a []) = a := rfl
 
 theorem dropLast_append_getLast : ∀ {l : List α} (h : l ≠ []), dropLast l ++ [getLast l h] = l
@@ -469,7 +468,7 @@ theorem exists_mem_iff_get {l : List α} {p : α → Prop} :
 
 theorem forall_mem_iff_getElem {l : List α} {p : α → Prop} :
     (∀ x ∈ l, p x) ↔ ∀ (i : ℕ) (_ : i < l.length), p l[i] := by
-  simp [mem_iff_getElem, @forall_comm α]
+  simp [mem_iff_getElem]
 
 theorem forall_mem_iff_get {l : List α} {p : α → Prop} :
     (∀ x ∈ l, p x) ↔ ∀ (i : Fin l.length), p (l.get i) :=
@@ -920,9 +919,9 @@ theorem filterMap_eq_flatMap_toList (f : α → Option β) (l : List α) :
   rcases f a <;> simp [ih]
 
 @[congr]
-theorem filterMap_congr {f g : α → Option β} {l : List α}
-    (h : ∀ x ∈ l, f x = g x) : l.filterMap f = l.filterMap g := by
-  induction l <;> simp_all [filterMap_cons]
+theorem filterMap_congr {f g : α → Option β} {l l' : List α}
+    (hl : l = l') (h : ∀ x ∈ l, f x = g x) : l.filterMap f = l'.filterMap g := by
+  subst hl; induction l <;> simp_all [filterMap_cons]
 
 theorem filterMap_eq_map_iff_forall_eq_some {f : α → Option β} {g : α → β} {l : List α} :
     l.filterMap f = l.map g ↔ ∀ x ∈ l, f x = some (g x) where
@@ -933,7 +932,7 @@ theorem filterMap_eq_map_iff_forall_eq_some {f : α → Option β} {g : α → �
       have : (filterMap f l).length = l.length + 1 := by grind
       grind
     · simp +contextual [ha, ih]
-  mpr h := Eq.trans (filterMap_congr <| by simpa) congr($filterMap_eq_map _)
+  mpr h := Eq.trans (filterMap_congr rfl <| by simpa) congr($filterMap_eq_map _)
 
 @[simp]
 lemma filterMap_none (l : List α) :
@@ -1117,7 +1116,7 @@ end Forall
 /-! ### Miscellaneous lemmas -/
 
 theorem get_attach (l : List α) (i) :
-    (l.attach.get i).1 = l.get ⟨i, length_attach (l := l) ▸ i.2⟩ := by simp
+    (l.attach.get i).val = l.get ⟨i, length_attach (l := l) ▸ i.isLt⟩ := by simp
 
 section Disjoint
 

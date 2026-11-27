@@ -22,6 +22,7 @@ Given any commutative ring `R` and `R`-module `M`, we construct the sheaf `M^~` 
 such that `M^~(U)` is the set of dependent functions that are locally fractions.
 
 ## Main definitions
+
 * `AlgebraicGeometry.tilde` : `M^~` as a sheaf of `𝒪_{Spec R}`-modules.
 * `AlgebraicGeometry.tilde.adjunction` : `~` is left adjoint to taking global sections.
 -/
@@ -212,19 +213,19 @@ protected lemma map_id {M : ModuleCat R} : tilde.map (𝟙 M) = 𝟙 _ := by
 protected lemma map_comp {M N P : ModuleCat R} (f : M ⟶ N) (g : N ⟶ P) :
     tilde.map (f ≫ g) = tilde.map f ≫ tilde.map g := by
   ext p x
-  exact Subtype.ext (funext fun y ↦ congr($(IsLocalizedModule.map_comp' y.1.asIdeal.primeCompl
-      (LocalizedModule.mkLinearMap y.1.asIdeal.primeCompl M)
-      (LocalizedModule.mkLinearMap y.1.asIdeal.primeCompl N)
-      (LocalizedModule.mkLinearMap y.1.asIdeal.primeCompl P) _ _) _))
+  exact Subtype.ext (funext fun y ↦ congr($(IsLocalizedModule.map_comp' y.val.asIdeal.primeCompl
+      (LocalizedModule.mkLinearMap y.val.asIdeal.primeCompl M)
+      (LocalizedModule.mkLinearMap y.val.asIdeal.primeCompl N)
+      (LocalizedModule.mkLinearMap y.val.asIdeal.primeCompl P) _ _) _))
 
 @[reassoc (attr := simp)]
 lemma toOpen_map_app {M N : ModuleCat R} (f : M ⟶ N)
     (U : TopologicalSpace.Opens (PrimeSpectrum R)) :
     toOpen M U ≫ (modulesSpecToSheaf.map (tilde.map f)).hom.app _ =
     f ≫ toOpen N U := by
-  ext x; exact Subtype.ext (funext fun y ↦ IsLocalizedModule.map_apply y.1.asIdeal.primeCompl
-    (LocalizedModule.mkLinearMap y.1.asIdeal.primeCompl M)
-     (LocalizedModule.mkLinearMap y.1.asIdeal.primeCompl N) _ x)
+  ext x; exact Subtype.ext (funext fun y ↦ IsLocalizedModule.map_apply y.val.asIdeal.primeCompl
+    (LocalizedModule.mkLinearMap y.val.asIdeal.primeCompl M)
+     (LocalizedModule.mkLinearMap y.val.asIdeal.primeCompl N) _ x)
 
 variable (R) in
 /-- Tilde as a functor -/
@@ -294,7 +295,7 @@ lemma Scheme.Modules.toOpen_fromTildeΓ_app (M : (Spec R).Modules) (U) :
       NatTrans.naturality, ← Category.assoc, this, ← Functor.map_comp, ← op_comp, homOfLE_comp]
     simp
   subst hU
-  simp only [fromTildeΓ, inducedFunctor_obj, homOfLE_leOfHom, Functor.FullyFaithful.map_preimage,
+  simp only [fromTildeΓ, inducedFunctor_obj, Functor.FullyFaithful.map_preimage,
     TopCat.Sheaf.extend_hom_app]
   ext x
   refine (IsLocalizedModule.lift_apply (.powers (M := R) 1)
@@ -595,7 +596,7 @@ lemma Scheme.Modules.exists_isOpenCover_presentation {X : Scheme.{u}} (M : X.Mod
     have : PreservesColimitsOfSize.{u, u} (restrictFunctor u) := inferInstance
     let F := (overEquiv (W i.1)).functor ⋙ restrictFunctor u
     let iso : SheafOfModules.overFunctor X.ringCatSheaf _ ⋙ F ≅ restrictFunctor
-      (Scheme.Opens.ι i.2.1) := (Functor.associator _ _ _).symm ≪≫
+      (Scheme.Opens.ι i.2.val) := (Functor.associator _ _ _).symm ≪≫
         Functor.isoWhiskerRight (Scheme.Modules.overFunctorEquiv _) _ ≪≫
         (restrictFunctorComp _ _).symm ≪≫ (restrictFunctorCongr (by simp [u]))
     exact SheafOfModules.Presentation.ofIsIso.{u, u, u} (iso.app M).hom <|
@@ -605,7 +606,7 @@ lemma Scheme.Modules.exists_isOpenCover_presentation {X : Scheme.{u}} (M : X.Mod
     refine iSup_congr fun i ↦ ?_
     rw [heq i, sSup_eq_iSup']
   · intro j
-    exact hsub _ j.2.2
+    exact hsub _ j.2.property
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma Scheme.Modules.exists_affineOpenCover_presentation {X : Scheme.{u}} (M : X.Modules)
@@ -812,9 +813,9 @@ private lemma aux_basicOpen_of_aux_restrict (M : (Spec R).Modules) (g : R)
     have := congr((e _ hf).hom $ht)
     dsimp [M'] at this
     rw [← ConcreteCategory.comp_apply] at this
-    simp only [homOfLE_leOfHom, Iso.trans_hom, Functor.mapIso_hom, Iso.op_hom, eqToIso.hom,
-      eqToHom_op, Iso.trans_inv, Functor.mapIso_inv, Iso.op_inv, eqToIso.inv, e, iso] at this ⊢
-    simp only [homOfLE_leOfHom, Scheme.Modules.map_restrictAppIso_hom_assoc, AddCommGrpCat.hom_comp,
+    simp only [Iso.trans_hom, Functor.mapIso_hom, Iso.op_hom, eqToIso.hom, eqToHom_op,
+      Iso.trans_inv, Functor.mapIso_inv, Iso.op_inv, eqToIso.inv, e, iso] at this ⊢
+    simp only [Scheme.Modules.map_restrictAppIso_hom_assoc, AddCommGrpCat.hom_comp,
       AddMonoidHom.coe_comp, Function.comp_apply, ← map_pow, ψ] at this
     rw [Scheme.Modules.restrictAppIso_smul_Spec] at this
     simpa [← Functor.map_comp_apply, eqToHom_comp_homOfLE_op, homOfLE_op_comp_eqToHom] using this

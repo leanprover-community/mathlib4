@@ -228,7 +228,7 @@ protected def cast {α β : Sort _} (h : α = β) : α ≃ β where
   left_inv := by grind
   right_inv := by grind
 
-@[simp] theorem coe_fn_symm_mk (f : α → β) (g l r) : ((Equiv.mk f g l r).symm : β → α) = g := rfl
+theorem coe_fn_symm_mk (f : α → β) (g l r) : ((Equiv.mk f g l r).symm : β → α) = g := rfl
 
 @[simp] theorem coe_refl : (Equiv.refl α : α → α) = id := rfl
 
@@ -649,7 +649,7 @@ theorem sigmaCongrRight_refl {α} {β : α → Type*} :
 /-- A `PSigma` with `Prop` fibers is equivalent to the subtype. -/
 def psigmaEquivSubtype {α : Type v} (P : α → Prop) : (Σ' i, P i) ≃ Subtype P where
   toFun x := ⟨x.1, x.2⟩
-  invFun x := ⟨x.1, x.2⟩
+  invFun x := ⟨x.val, x.property⟩
 
 /-- A `Sigma` with `PLift` fibers is equivalent to the subtype. -/
 def sigmaPLiftEquivSubtype {α : Type v} (P : α → Prop) : (Σ i, PLift (P i)) ≃ Subtype P :=
@@ -678,7 +678,7 @@ abbrev sigmaCongrRight {α} {β : α → Sort _} (F : ∀ a, Perm (β a)) : Perm
     (sigmaCongrRight F).symm = sigmaCongrRight fun a => (F a).symm :=
   rfl
 
-@[simp] theorem sigmaCongrRight_refl {α} {β : α → Sort _} :
+theorem sigmaCongrRight_refl {α} {β : α → Sort _} :
     (sigmaCongrRight fun a => Equiv.refl (β a)) = Equiv.refl (Σ a, β a) :=
   rfl
 
@@ -919,14 +919,14 @@ variable {α β : Type*}
 /-- The left summand of `α ⊕ β` is equivalent to `α`. -/
 @[simps (attr := grind =)]
 def sumIsLeft : {x : α ⊕ β // x.isLeft} ≃ α where
-  toFun x := x.1.getLeft x.2
+  toFun x := x.val.getLeft x.property
   invFun a := ⟨.inl a, Sum.isLeft_inl⟩
   left_inv | ⟨.inl _a, _⟩ => rfl
 
 /-- The right summand of `α ⊕ β` is equivalent to `β`. -/
 @[simps (attr := grind =)]
 def sumIsRight : {x : α ⊕ β // x.isRight} ≃ β where
-  toFun x := x.1.getRight x.2
+  toFun x := x.val.getRight x.property
   invFun b := ⟨.inr b, Sum.isRight_inr⟩
   left_inv | ⟨.inr _b, _⟩ => rfl
 

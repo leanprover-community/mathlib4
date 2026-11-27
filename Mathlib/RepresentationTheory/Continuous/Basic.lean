@@ -50,6 +50,7 @@ related basic results.
   and a continuous intertwining map `f : π.restrict φ →ⁱL π'`, given by `F ↦ f ∘ F ∘ φ`.
 
 ## Tags
+
 continuous representation, algebra
 -/
 
@@ -149,6 +150,9 @@ instance {π₁ : ContRepresentation R G V} {π₂ : ContRepresentation R G W} :
   coe_injective := toFun_injective
 
 lemma id_apply (v : V) : (.id : π₁ →ⁱL π₁) v = v := rfl
+
+@[simp]
+lemma coe_toContinuousLinearMap (f : π₁ →ⁱL π₂) : ⇑f.toContinuousLinearMap = f := rfl
 
 lemma toContinuousLinearMap_apply (f : π₁ →ⁱL π₂) (v : V) :
   f.toContinuousLinearMap v = f v := rfl
@@ -587,7 +591,7 @@ def coind (π : ContRepresentation R G V) : ContRepresentation R H (π.coindV φ
     map_add' _ _ := by simp
     map_smul' _ _ := by simp
     cont := continuous_induced_rng.2 <| by
-      simpa using! (ContinuousMap.mulRight h).continuous_precomp.comp continuous_subtype_val}
+      simpa using! (ContinuousMap.mulRight h).continuous_precomp.comp continuous_subtypeVal}
   toMonoidHom.map_one' := by ext; simp
   toMonoidHom.map_mul' h1 h2 := by ext; simp [ContinuousMap.mulRight_mul]
 
@@ -610,7 +614,7 @@ is an intertwining map. -/
 def coind₁ (π : ContRepresentation R G V) :
     ContRepresentation R G C(G, V) where
   toMonoidHom.toFun g := {
-    toFun f := .comp (π g) (f.comp (ContinuousMap.mulLeft g⁻¹))
+    toFun f := .comp (π g).toContinuousMap (f.comp (ContinuousMap.mulLeft g⁻¹))
     map_add' _ _ := by ext; simp
     map_smul' _ _ := by ext; simp
     cont := (continuous_postcomp _).comp (continuous_precomp _)
@@ -626,7 +630,7 @@ lemma coind₁_apply_apply (π : ContRepresentation R G V) (g : G) (f : C(G, V))
 @[simps]
 def coind₁Map {π₁ : ContRepresentation R G V} {π₂ : ContRepresentation R G W} (f : π₁ →ⁱL π₂) :
     coind₁ π₁ →ⁱL coind₁ π₂ where
-  toFun := (f : ContinuousMap _ _).comp
+  toFun := f.toContinuousMap.comp
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
   isIntertwining' g := by ext; simp [f.isIntertwining]
@@ -658,15 +662,15 @@ linearly equivalent to `C(G, V)`, via the twist `f ↦ fun g ↦ π g (f g⁻¹)
 @[simps]
 def coindLEquivCoind₁ (hπ : Continuous fun gv : G × V ↦ π gv.1 gv.2) :
     (trivial R Unit V).coindV (1 : Unit →ₜ* G) ≃L[R] C(G, V) where
-  toFun f := ⟨fun g ↦ π g (f.1 g⁻¹),
-      hπ.comp <| continuous_id.prodMk <| f.1.continuous.comp continuous_inv⟩
+  toFun f := ⟨fun g ↦ π g (f.val g⁻¹),
+      hπ.comp <| continuous_id.prodMk <| f.val.continuous.comp continuous_inv⟩
   invFun f' := ⟨⟨fun g ↦ π g (f' g⁻¹),
       hπ.comp <| continuous_id.prodMk <| f'.continuous.comp continuous_inv⟩, by simp⟩
   left_inv _ := by ext; simp
   right_inv _ := by ext; simp
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
-  continuous_toFun := by exact (continuous_coindEquivCoind₁_aux π hπ).comp continuous_subtype_val
+  continuous_toFun := by exact (continuous_coindEquivCoind₁_aux π hπ).comp continuous_subtypeVal
   continuous_invFun := by exact (continuous_coindEquivCoind₁_aux π hπ).subtype_mk (by simp)
 
 /-- If the action map `G × V → V`, `(g, v) ↦ π g v` is (jointly) continuous, then the coinduction

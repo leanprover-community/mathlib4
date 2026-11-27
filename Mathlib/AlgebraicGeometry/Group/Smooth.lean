@@ -13,6 +13,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.LocalFlatDescent
 # Smoothness of group schemes
 
 ## Main results
+
 - `AlgebraicGeometry.smooth_of_grpObj`:
   If `G` is a group scheme over a field `k` that is geometrically reduced and locally
   of finite type, then `G` is smooth over `k`.
@@ -45,8 +46,8 @@ private lemma smooth_of_grpObj_of_isAlgClosed [IsReduced G] [IsAlgClosed K] : Sm
     nonempty_inter_closedPoints H f.smoothLocus.is_open'.isClosed_compl.isLocallyClosed
   obtain ⟨y, hy : y ∈ f.smoothLocus, hyc⟩ := nonempty_inter_closedPoints
     f.dense_smoothLocus_of_perfectField.nonempty f.smoothLocus.is_open'.isLocallyClosed
-  let x' : 𝟙_ _ ⟶ Over.mk f := Over.homMk _ ((pointEquivClosedPoint f).symm ⟨x, hxc⟩).2
-  let y' : 𝟙_ _ ⟶ Over.mk f := Over.homMk _ ((pointEquivClosedPoint f).symm ⟨y, hyc⟩).2
+  let x' : 𝟙_ _ ⟶ Over.mk f := Over.homMk _ ((pointEquivClosedPoint f).symm ⟨x, hxc⟩).property
+  let y' : 𝟙_ _ ⟶ Over.mk f := Over.homMk _ ((pointEquivClosedPoint f).symm ⟨y, hyc⟩).property
   let α := (GrpObj.mulRight (A := Over.mk f) x').symm ≪≫
     (GrpObj.mulRight (A := Over.mk f) y')
   have hα : x' ≫ α.hom = y' := by

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Ring.NegOnePow
 public import Mathlib.CategoryTheory.Triangulated.Rotate
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The shift on the category of triangles
 
@@ -122,7 +125,7 @@ noncomputable def invRotateInvRotateInvRotateIso :
       (by simp)
       (by
         dsimp [shiftFunctorCompIsoId]
-        simp [shiftFunctorComm_eq C _ _ _ (add_neg_cancel (1 : ℤ))]))
+        simp [shiftFunctorComm_eq C _ _ _ (add_neg_cancel 1)]))
     (by cat_disch)
 
 /-- The inverse of the rotation of triangles can be expressed using a double
@@ -154,7 +157,7 @@ noncomputable instance : HasShift (Triangle C) ℤ :=
       assoc_hom_app := fun a b c T => by
         ext
         all_goals
-        · dsimp
+          dsimp
           simp only [shiftFunctorAdd'_hom_app_hom₁, mk_obj₁,
             shiftFunctorAdd'_hom_app_hom₂, mk_obj₂,
             shiftFunctorAdd'_hom_app_hom₃, mk_obj₃]

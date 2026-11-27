@@ -304,7 +304,6 @@ lemma toSubcomplex_simplex (h : CompStruct e₀₁ e₁₂ e₀₂) (A : X.Subco
     (mem : h.simplex ∈ A.obj _) :
     (h.toSubcomplex A mem).simplex = ⟨h.simplex, mem⟩ := rfl
 
-@[simp]
 lemma toSubcomplex_edge (e : Edge x₀ x₁) (A : X.Subcomplex)
     (h : e.edge ∈ A.obj _) :
   (e.toSubcomplex A h).edge = ⟨e.edge, h⟩ := rfl
