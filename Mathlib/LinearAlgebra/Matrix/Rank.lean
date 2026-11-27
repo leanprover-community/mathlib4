@@ -12,6 +12,7 @@ public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.LinearAlgebra.Matrix.Diagonal
 public import Mathlib.LinearAlgebra.Matrix.DotProduct
 
+import Mathlib.Data.ENat.BigOperators
 import Mathlib.LinearAlgebra.Dimension.Localization
 import Mathlib.LinearAlgebra.Matrix.Dual
 import Mathlib.LinearAlgebra.Matrix.Nondegenerate
@@ -69,6 +70,11 @@ theorem cRank_subsingleton [Subsingleton R] (A : Matrix m n R) : A.cRank = 1 :=
 
 lemma cRank_toNat_eq_finrank (A : Matrix m n R) :
     A.cRank.toNat = Module.finrank R (span R (range A.col)) := rfl
+
+@[simp]
+theorem rank_linearCombination_col (M : Matrix m n R) :
+    (Finsupp.linearCombination R M.col).rank = M.cRank :=
+  congr(Module.rank R $(Finsupp.range_linearCombination R))
 
 lemma lift_cRank_submatrix_le (A : Matrix m n R) (r : m₀ → m) (c : n₀ → n) :
     lift.{um} (A.submatrix r c).cRank ≤ lift.{um₀} A.cRank := by
@@ -426,6 +432,65 @@ theorem rank_le_card_of_support_subset [Finite n] [CommSemiring R] [StrongRankCo
     _ ≤ (A.submatrix Subtype.val id).rank := rank_mul_le_right _ _
     _ ≤ Fintype.card {x // x ∈ s} := rank_le_card_height _
     _ = s.card := Fintype.card_coe s
+
+section HasRankNullity
+variable {R : Type uR} [Ring R] [HasRankNullity.{max uR um} R]
+
+theorem cRank_add_le (A B : Matrix m n R) : (A + B).cRank ≤ A.cRank + B.cRank := by
+  simp [← rank_linearCombination_col, LinearMap.rank_add_le]
+
+theorem eRank_add_le (A B : Matrix m n R) : (A + B).eRank ≤ A.eRank + B.eRank := by
+  unfold eRank
+  grw [cRank_add_le, map_add]
+
+theorem rank_add_le_of_finite_width [StrongRankCondition R] [Finite n] (A B : Matrix m n R) :
+    (A + B).rank ≤ A.rank + B.rank := by
+  grw [← eRank_toNat_eq_rank, eRank_add_le, ENat.toNat_add, eRank_toNat_eq_rank,
+    eRank_toNat_eq_rank]
+  all_goals
+    repeat grw [eRank_le_card_width]
+    simpa
+
+theorem rank_add_le_of_finite_height [StrongRankCondition R] [Finite m] (A B : Matrix m n R) :
+    (A + B).rank ≤ A.rank + B.rank := by
+  grw [← eRank_toNat_eq_rank, eRank_add_le, ENat.toNat_add, eRank_toNat_eq_rank,
+    eRank_toNat_eq_rank]
+  all_goals
+    repeat grw [eRank_le_card_height]
+    simpa
+
+theorem cRank_sum_le {ι : Type*} (s : Finset ι) (M : ι → Matrix m n R) :
+    (∑ i ∈ s, M i).cRank ≤ ∑ i ∈ s, (M i).cRank := by
+  simp [← rank_linearCombination_col, LinearMap.rank_finsetSum_le]
+
+theorem eRank_sum_le {ι : Type*} (s : Finset ι) (M : ι → Matrix m n R) :
+    (∑ i ∈ s, M i).eRank ≤ ∑ i ∈ s, (M i).eRank := by
+  unfold eRank
+  grw [cRank_sum_le, map_sum]
+
+theorem rank_sum_le_of_finite_width [StrongRankCondition R] [Finite n] {ι : Type*} (s : Finset ι)
+    (M : ι → Matrix m n R) : (∑ i ∈ s, M i).rank ≤ ∑ i ∈ s, (M i).rank := by
+  grw [← eRank_toNat_eq_rank, eRank_sum_le, ENat.toNat_sum]
+  · simp
+  · grw [eRank_le_card_width]
+    intros
+    simpa
+  · grw [eRank_le_card_width, ENat.sum_ne_top]
+    intros
+    simpa
+
+theorem rank_sum_le_of_finite_height [StrongRankCondition R] [Finite m] {ι : Type*} (s : Finset ι)
+    (M : ι → Matrix m n R) : (∑ i ∈ s, M i).rank ≤ ∑ i ∈ s, (M i).rank := by
+  grw [← eRank_toNat_eq_rank, eRank_sum_le, ENat.toNat_sum]
+  · simp
+  · grw [eRank_le_card_height]
+    intros
+    simpa
+  · grw [eRank_le_card_height, ENat.sum_ne_top]
+    intros
+    simpa
+
+end HasRankNullity
 
 section Field
 
