@@ -42,8 +42,6 @@ The series is summed without rounding, so an argument with many bits is slow at 
 
 public section
 
-open Finset
-
 open scoped Nat
 
 namespace Inclusion
@@ -63,21 +61,15 @@ theorem cosTaylor_mem {x : Dyadic} (hx : |x.toReal| ≤ 1) (n prec : ℕ) :
     Real.cos x.toReal ∈ cosTaylor x n prec := by
   have h := Real.abs_cos_sub_sum_range_le hx n
   rw [cosTaylor, Dyadic.toReal, Rat.cast_def] at *
-  rw [← hypergeomPartialSum_div (Int.castRingHom ℝ) (fun _ ↦ -x.toRat.num ^ 2)
+  obtain ⟨hterm, hsum⟩ := hypergeomPartialSum_div (Int.castRingHom ℝ) (fun _ ↦ -x.toRat.num ^ 2)
     (fun j ↦ x.toRat.den ^ 2 * ((2 * j + 1) * (2 * j + 2))) (fun j ↦ by positivity)
     (fun m ↦ (-1) ^ m * ((x.toRat.num : ℝ) / x.toRat.den) ^ (2 * m) / (2 * m)!) (fun j ↦ by
       push_cast [eq_intCast, mul_add_one, Nat.factorial_succ, pow_add]
-      field)] at h
-  obtain ⟨hterm, hden, -⟩ := hypergeomPartialSum_spec (fun _ ↦ -x.toRat.num ^ 2)
-    (fun j ↦ x.toRat.den ^ 2 * ((2 * j + 1) * (2 * j + 2))) 0 n
-  have hprod (n : ℕ) : ∏ j ∈ range n, (2 * j + 1) * (2 * j + 2) = (2 * n)! := by
-    induction n with
-    | zero => simp
-    | succ n ih =>
-      rw [prod_range_succ, ih, mul_add_one, Nat.factorial_succ, Nat.factorial_succ]
-      ring
+      field) n
   refine ratBall_mem ?_ prec
-  convert h using 1 <;> simp [hterm, hden, hprod, prod_mul_distrib, div_pow, pow_mul, div_div]
+  convert h using 1
+  · simp [← hsum]
+  · simpa [abs_div, abs_mul, abs_pow] using congrArg abs hterm
 
 /-- Apply the double-angle formula `cos (2 * x) = 2 * cos x ^ 2 - 1` `k` times to an enclosure `I`
 of `cos x`, rounding outward after each step. -/
