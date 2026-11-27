@@ -122,6 +122,14 @@ theorem card_aut_eq_finrank [FiniteDimensional F E] [IsGalois F E] :
   apply Nat.card_congr
   exact Equiv.mk (fun ϕ => iso.trans (ϕ.trans iso.symm)) fun ϕ => iso.symm.trans (ϕ.trans iso)
 
+variable {F E} in
+/-- If a finite Galois extension `E/F` embeds into `L`, then there are exactly `finrank F E`
+embeddings of `E` into `L`. -/
+theorem card_algHom_eq_finrank {L : Type*} [Field L] [Algebra F L] [FiniteDimensional F E]
+    [IsGalois F E] (φ : E →ₐ[F] L) :
+    Nat.card (E →ₐ[F] L) = finrank F E :=
+  AlgHom.natCard_of_splits _ _ _ fun x ↦ Polynomial.Splits.of_algHom (splits F x) φ
+
 /-- A galois extension with finite galois group is finite dimensional.
 The dimension is then equal to the order of the galois group via `IsGalois.card_aut_eq_finrank`. -/
 lemma finiteDimensional_of_finite [IsGalois F E] [Finite Gal(E/F)] : FiniteDimensional F E := by
