@@ -324,8 +324,7 @@ def eraseUsedTactics (exceptions : Std.HashSet SyntaxNodeKind)
         if getNames i.mctxBefore == getNames i.mctxAfter then
           return withMsg m!"`swap_var` does not change the variable names in the goal"
       | `Batteries.Tactic.seq_focus =>
-        -- In `t <;> [t1; t2; ...]`, lint each subtactic individually,
-        -- but never report the padding `skip`s.
+        -- In `t <;> [t1; t2; ...]`, lint each subtactic individually, except padding `skip`s.
         -- A padding `skip` is always a direct element of the bracketed list,
         -- which is the fourth child of the `seq_focus` node.
         let ranges := ranges.erase r
