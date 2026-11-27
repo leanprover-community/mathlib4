@@ -35,7 +35,6 @@ of `sup` over `inf`, on the left or on the right.
 ## Tags
 
 semilattice, lattice
-
 -/
 
 @[expose] public section

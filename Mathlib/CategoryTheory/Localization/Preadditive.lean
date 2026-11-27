@@ -8,9 +8,11 @@ module
 public import Mathlib.CategoryTheory.Localization.Predicate
 public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Localization of natural transformations to preadditive categories
-
 -/
 
 public section

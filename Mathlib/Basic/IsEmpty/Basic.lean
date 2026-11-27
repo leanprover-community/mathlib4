@@ -9,6 +9,9 @@ public import Mathlib.Basic.IsEmpty.Defs
 public import Mathlib.Logic.Function.Basic
 public import Mathlib.Logic.Relator
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic properties of `IsEmpty`
 

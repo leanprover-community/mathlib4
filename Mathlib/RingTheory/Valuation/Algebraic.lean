@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.Valuation.Basic
 
 import Mathlib.RingTheory.Algebraic.Integral
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Valuation of an algebraic element
 

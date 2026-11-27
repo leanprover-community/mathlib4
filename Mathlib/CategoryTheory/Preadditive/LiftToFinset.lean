@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Preadditive.Basic
 
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Additional results about the `liftToFinset` construction
 
@@ -35,7 +38,7 @@ variable [HasFiniteCoproducts C]
 set_option backward.defeqAttrib.useBackward true in
 theorem finiteSubcoproductsCocone_ι_app_eq_sum {α : Type w} [DecidableEq α] (f : α → C)
     [HasCoproduct f] (S : Finset (Discrete α)) :
-    (finiteSubcoproductsCocone f).ι.app S = ∑ a ∈ S.attach, Sigma.π _ a ≫ Sigma.ι _ a.1.as := by
+    (finiteSubcoproductsCocone f).ι.app S = ∑ a ∈ S.attach, Sigma.π _ a ≫ Sigma.ι _ a.val.as := by
   dsimp only [liftToFinsetObj_obj, Discrete.functor_obj_eq_as, finiteSubcoproductsCocone_pt,
     Functor.const_obj_obj, finiteSubcoproductsCocone_ι_app]
   ext v
@@ -56,7 +59,7 @@ set_option backward.defeqAttrib.useBackward true in
 theorem finiteSubproductsCocone_π_app_eq_sum {α : Type w} [DecidableEq α] (f : α → C) [HasProduct f]
     (S : (Finset (Discrete α))ᵒᵖ) :
     (finiteSubproductsCone f).π.app S =
-      ∑ a ∈ S.unop.attach, Pi.π f a.1.as ≫ Pi.ι (fun a => f a.1.as) a := by
+      ∑ a ∈ S.unop.attach, Pi.π f a.val.as ≫ Pi.ι (fun a => f a.val.as) a := by
   dsimp only [finiteSubproductsCone_pt, Functor.const_obj_obj, liftToFinsetObj_obj,
     Discrete.functor_obj_eq_as, finiteSubproductsCone_π_app]
   ext v

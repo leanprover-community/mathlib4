@@ -212,7 +212,6 @@ def toDistribMulActionHom (f : M →ₛₗ[σ] M₃) : DistribMulActionHom σ.to
 @[simp]
 theorem coe_toAddHom (f : M →ₛₗ[σ] M₃) : ⇑f.toAddHom = f := rfl
 
-@[simp]
 theorem toFun_eq_coe {f : M →ₛₗ[σ] M₃} : f.toFun = (f : M → M₃) := rfl
 
 @[ext]
@@ -625,7 +624,7 @@ instance : SemilinearMapClass (M →ₑ+[σ.toMonoidHom] M₂) σ M M₂ where
 /-- A `DistribMulActionHom` between two modules is a linear map. -/
 instance : LinearMapClass (M →+[R] M₃) R M M₃ where
 
-@[simp]
+@[simp, nolint simpNF] -- `nolint` needed while this uses `LinearMap.ofClass`
 theorem coe_toLinearMap (f : M →ₑ+[σ.toMonoidHom] M₂) : ((f : M →ₛₗ[σ] M₂) : M → M₂) = f :=
   rfl
 
@@ -647,8 +646,8 @@ variable [Module R M] [Module R M₂]
 /-- Convert an `IsLinearMap` predicate to a `LinearMap` -/
 def mk' (f : M → M₂) (lin : IsLinearMap R f) : M →ₗ[R] M₂ where
   toFun := f
-  map_add' := lin.1
-  map_smul' := lin.2
+  map_add' := lin.map_add
+  map_smul' := lin.map_smul
 
 @[simp]
 theorem mk'_apply {f : M → M₂} (lin : IsLinearMap R f) (x : M) : mk' f lin x = f x :=

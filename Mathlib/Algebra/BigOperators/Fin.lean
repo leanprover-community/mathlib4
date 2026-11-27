@@ -86,12 +86,12 @@ theorem prod_univ_castSucc (f : Fin (n + 1) → M) :
   simpa [mul_comm] using prod_univ_succAbove f (last n)
 
 @[to_additive (attr := simp)]
-theorem prod_univ_getElem (l : List M) : ∏ i : Fin l.length, l[i.1] = l.prod := by
+theorem prod_univ_getElem (l : List M) : ∏ i : Fin l.length, l[i.val] = l.prod := by
   simp [Finset.prod_eq_multiset_prod]
 
 @[to_additive (attr := simp)]
 theorem prod_univ_fun_getElem (l : List ι) (f : ι → M) :
-    ∏ i : Fin l.length, f l[i.1] = (l.map f).prod := by
+    ∏ i : Fin l.length, f l[i.val] = (l.map f).prod := by
   simp [Finset.prod_eq_multiset_prod]
 
 @[to_additive (attr := simp)]
@@ -464,7 +464,7 @@ theorem sum_pow_mul_eq_add_pow {n : ℕ} {R : Type*} [CommSemiring R] (a b : R) 
   simpa using Fintype.sum_pow_mul_eq_add_pow (Fin n) a b
 
 lemma sum_neg_one_pow (R : Type*) [Ring R] (m : ℕ) :
-    (∑ n : Fin m, (-1) ^ n.1 : R) = if Even m then 0 else 1 := by
+    (∑ n : Fin m, (-1) ^ n.val : R) = if Even m then 0 else 1 := by
   induction m with
   | zero => simp
   | succ n IH =>
@@ -689,7 +689,7 @@ def finSigmaFinEquiv {m : ℕ} {n : Fin m → ℕ} : (i : Fin m) × Fin (n i) �
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem finSigmaFinEquiv_apply {m : ℕ} {n : Fin m → ℕ} (k : (i : Fin m) × Fin (n i)) :
-    (finSigmaFinEquiv k : ℕ) = ∑ i : Fin k.1, n (Fin.castLE k.1.2.le i) + k.2 := by
+    (finSigmaFinEquiv k : ℕ) = ∑ i : Fin k.1, n (Fin.castLE k.1.isLt.le i) + k.2 := by
   induction m with
   | zero => exact k.fst.elim0
   | succ m ih =>
@@ -740,7 +740,7 @@ theorem prod_take_ofFn {n : ℕ} (f : Fin n → M) (i : ℕ) :
         rw [take_of_length_le this, take_of_length_le (le_trans this (Nat.le_succ _))]
       have B : ∀ j : Fin n, ((j : ℕ) < i.succ) = ((j : ℕ) < i) := by
         intro j
-        have : (j : ℕ) < i := lt_of_lt_of_le j.2 (not_lt.mp h)
+        have : (j : ℕ) < i := lt_of_lt_of_le j.isLt (not_lt.mp h)
         simp [this, lt_trans this (Nat.lt_succ_self _)]
       simp [← A, B, IH]
 

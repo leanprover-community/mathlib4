@@ -66,6 +66,7 @@ Currently, the simp lemmas don't rewrite `𝟙 X ⊗ₘ f` and `f ⊗ₘ 𝟙 Y`
 respectively, since it requires a huge refactoring. We hope to add these simp lemmas soon.
 
 ## References
+
 * Tensor categories, Etingof, Gelaki, Nikshych, Ostrik,
   http://www-math.mit.edu/~etingof/egnobookfinal.pdf
 * <https://stacks.math.columbia.edu/tag/0FFK>.
@@ -998,14 +999,14 @@ abbrev MonoidalCategory.fullSubcategory
     (tensorUnit : P (𝟙_ C))
     (tensorObj : ∀ X Y, P X → P Y → P (X ⊗ Y)) :
     MonoidalCategory P.FullSubcategory where
-  tensorObj X Y := ⟨X.1 ⊗ Y.1, tensorObj X.1 Y.1 X.2 Y.2⟩
+  tensorObj X Y := ⟨X.obj ⊗ Y.obj, tensorObj X.obj Y.obj X.property Y.property⟩
   whiskerLeft X _ _ f := homMk (X.obj ◁ f.hom)
   whiskerRight f X := homMk (f.hom ▷ X.obj)
   tensorHom f g := homMk (f.hom ⊗ₘ g.hom)
   tensorUnit := ⟨𝟙_ C, tensorUnit⟩
-  associator X Y Z := P.fullyFaithfulι.preimageIso (α_ X.1 Y.1 Z.1)
-  leftUnitor X := P.fullyFaithfulι.preimageIso (λ_ X.1)
-  rightUnitor X := P.fullyFaithfulι.preimageIso (ρ_ X.1)
+  associator X Y Z := P.fullyFaithfulι.preimageIso (α_ X.obj Y.obj Z.obj)
+  leftUnitor X := P.fullyFaithfulι.preimageIso (λ_ X.obj)
+  rightUnitor X := P.fullyFaithfulι.preimageIso (ρ_ X.obj)
   tensorHom_def _ _ := by ext; apply tensorHom_def
 
 end ObjectProperty

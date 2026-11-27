@@ -16,6 +16,7 @@ A binary (co)fan is a (co)cone over a walking-pair diagram. These will be used (
 file) to define binary products and coproducts.
 
 ## References
+
 * [Stacks: Products of pairs](https://stacks.math.columbia.edu/tag/001R)
 * [Stacks: coproducts of pairs](https://stacks.math.columbia.edu/tag/04AN)
 -/
@@ -245,10 +246,10 @@ variable (F) in
 abbrev BinaryFan.map {X Y : C} (s : BinaryFan X Y) : BinaryFan (F.obj X) (F.obj Y) :=
   mk (F.map s.fst) (F.map s.snd)
 
-@[to_dual (attr := simp) map_inl]
+@[to_dual map_inl]
 lemma BinaryFan.map_fst {X Y : C} (s : BinaryFan X Y) : (s.map F).fst = F.map s.fst := rfl
 
-@[to_dual (attr := simp) map_inr]
+@[to_dual map_inr]
 lemma BinaryFan.map_snd {X Y : C} (s : BinaryFan X Y) : (s.map F).snd = F.map s.snd := rfl
 
 /-- `F.mapCone s` being limiting is the same as the induced binary fan being limiting. -/

@@ -122,7 +122,6 @@ theorem lift_apply (f : M →ₗ[A] N →ₗ[R] P) (a : M ⊗[R] N) :
     AlgebraTensorModule.lift f a = TensorProduct.lift (LinearMap.restrictScalars R f) a :=
   rfl
 
-@[simp]
 theorem lift_tmul (f : M →ₗ[A] N →ₗ[R] P) (x : M) (y : N) : lift f (x ⊗ₜ y) = f x y :=
   rfl
 
@@ -839,7 +838,7 @@ lemma baseChange_eq_span : p.baseChange A = span A (p.map (TensorProduct.mk R A 
     refine fun _ ⟨a, m, h⟩ ↦ ?_
     rw [← h, SetLike.mem_coe, mem_comap, LinearMap.baseChange_tmul, ← mul_one a, ← smul_eq_mul,
       ← smul_tmul']
-    exact smul_mem _ a (subset_span ⟨m, m.2, rfl⟩)
+    exact smul_mem _ a (subset_span ⟨m, m.property, rfl⟩)
   · refine span_le.2 fun _ ⟨m, hm, h⟩ ↦ h ▸ ⟨1 ⊗ₜ[R] ⟨m, hm⟩, rfl⟩
 
 variable {A p} in

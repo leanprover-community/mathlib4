@@ -10,8 +10,10 @@ public import Mathlib.CategoryTheory.Limits.HasExactLimitsOfShape
 
 import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # AB axioms in functor categories
 
 This file proves that, when the relevant limits and colimits exist, exactness of limits and

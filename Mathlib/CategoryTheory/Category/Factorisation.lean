@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Factorisation Category of a Category
 
@@ -125,7 +128,7 @@ IsTerminal.ofUnique _
 instance : HasTerminal (Factorisation f) := Limits.hasTerminal_of_unique Factorisation.terminal
 
 /-- The forgetful functor from `Factorisation f` to the underlying category `C`. -/
-@[simps]
+@[simps, implicit_reducible]
 def forget : Factorisation f ⥤ C where
   obj := Factorisation.mid
   map f := f.h

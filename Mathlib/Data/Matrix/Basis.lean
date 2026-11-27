@@ -131,7 +131,7 @@ theorem single_add [AddZeroClass α] (i : m) (j : n) (a b : α) :
   simp only [single, of_apply]
   split_ifs with h <;> simp [h]
 
-lemma single_neg [NegZeroClass α] (i j : n) (b : α) :
+lemma single_neg [NegZeroClass α] (i : m) (j : n) (b : α) :
     - single i j b = single i j (-b) :=
   neg_of _ |>.trans <| ext fun x y ↦ by simp [single, neg_ite]
 
@@ -144,7 +144,7 @@ theorem single_mulVec [NonUnitalNonAssocSemiring α] [Fintype m]
   · simp
   simp [h, h.symm]
 
-lemma single_mulVec_eq [Fintype n] [NonAssocSemiring α] (i j : n) (b : α) (w : n → α) :
+lemma single_mulVec_eq [Fintype n] [NonAssocSemiring α] (i : m) (j : n) (b : α) (w : n → α) :
     single i j b *ᵥ w = (b * w j) • Pi.single i (1 : α) := by
   ext
   simp [Matrix.single_mulVec, Function.update_apply, Pi.single_apply]
@@ -152,7 +152,7 @@ lemma single_mulVec_eq [Fintype n] [NonAssocSemiring α] (i j : n) (b : α) (w :
 lemma sum_single_eq_diagonal [AddCommMonoid α] [Fintype m] (f : m → α) :
     ∑ i : m, single i i (f i) = Matrix.diagonal f := by
   ext j k
-  rw [Matrix.sum_apply, diagonal_apply, Finset.sum_eq_single j] <;> simp +contextual [single]
+  rw [Matrix.sum_apply, diagonal_apply, Finset.sum_eq_single j] <;> simp [single]
 
 lemma sum_single_one [AddCommMonoid α] [One α] [Fintype m] :
     ∑ i : m, single i i (1 : α) = 1 :=

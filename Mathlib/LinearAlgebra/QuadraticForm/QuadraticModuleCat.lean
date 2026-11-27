@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of quadratic modules
 -/
@@ -34,7 +37,7 @@ open QuadraticForm QuadraticMap
 instance : CoeSort (QuadraticModuleCat.{v} R) (Type v) :=
   ⟨(·.carrier)⟩
 
-@[simp] theorem moduleCat_of_toModuleCat (X : QuadraticModuleCat.{v} R) :
+theorem moduleCat_of_toModuleCat (X : QuadraticModuleCat.{v} R) :
     ↧X.toModuleCat = X.toModuleCat :=
   rfl
 

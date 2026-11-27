@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Convex.Between
 public import Mathlib.Analysis.InnerProductSpace.Affine
 public import Mathlib.Analysis.InnerProductSpace.Orthogonal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Perpendicular bisector of a segment
 
@@ -17,7 +20,7 @@ We define `AffineSubspace.perpBisector p₁ p₂` to be the perpendicular bisect
 bisector if and only if it is equidistant from `p₁` and `p₂`, as well as a few linear equations that
 define this subspace.
 
-## Keywords
+## Tags
 
 euclidean geometry, perpendicular, perpendicular bisector, line segment bisector, equidistant
 -/

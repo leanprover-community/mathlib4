@@ -113,9 +113,6 @@ instance ObjectProperty.FullSubcategory.hasForget₂ (P : ObjectProperty C) :
   forget₂ := P.ι
   forget_comp := rfl
 
-@[deprecated (since := "2026-04-18")] alias FullSubcategory.hasForget₂ :=
-  ObjectProperty.FullSubcategory.hasForget₂
-
 /-- In order to construct a “partially forgetting” functor, we do not need to verify functor laws;
 it suffices to ensure that compositions agree with `forget₂ C D ⋙ forget D = forget C`.
 -/

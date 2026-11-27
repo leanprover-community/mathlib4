@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Monoidal.Opposite
 public import Mathlib.CategoryTheory.Monoidal.Rigid.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Dual Functors for Rigid Categories
 
@@ -21,7 +24,7 @@ to `(Cᵒᵖ)ᴹᵒᵖ` (the monoidal opposite of the opposite category).
 * `rightDualFunctor C`: For a right rigid category, the functor `C ⥤ (Cᵒᵖ)ᴹᵒᵖ` sending
   `X` to `Xᘁ` and `f` to `fᘁ`.
 
-## Future work
+## TODO
 
 * Show that in a `RigidCategory`, these functors are monoidal equivalences.
 -/

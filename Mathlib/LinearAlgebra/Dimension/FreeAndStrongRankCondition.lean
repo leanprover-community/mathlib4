@@ -8,14 +8,12 @@ module
 public import Mathlib.LinearAlgebra.Dimension.Constructions
 
 /-!
-
 # Some results on free modules over rings satisfying strong rank condition
 
 This file contains some results on free modules over rings satisfying strong rank condition.
 Most of them are generalized from the same result assuming the base ring being a division ring,
 and are moved from the files `Mathlib/LinearAlgebra/Dimension/DivisionRing.lean`
 and `Mathlib/LinearAlgebra/FiniteDimensional/Basic.lean`.
-
 -/
 
 @[expose] public section
@@ -162,7 +160,7 @@ theorem Submodule.rank_le_one_iff_isPrincipal (W : Submodule K V) [Module.Free K
     exact ⟨m, ⟨fun v hv => ⟨f ⟨v, hv⟩, congr($(hf ⟨v, hv⟩))⟩, hm⟩⟩
   · rintro ⟨a, ⟨h, ha⟩⟩
     choose f hf using h
-    exact ⟨⟨a, ha⟩, fun v => ⟨f v.1 v.2, Subtype.ext (hf v.1 v.2)⟩⟩
+    exact ⟨⟨a, ha⟩, fun v => ⟨f v.val v.property, Subtype.ext (hf v.val v.property)⟩⟩
 
 theorem Module.rank_le_one_iff_top_isPrincipal [Module.Free K V] :
     Module.rank K V ≤ 1 ↔ (⊤ : Submodule K V).IsPrincipal := by

@@ -8,6 +8,9 @@ module
 public import Mathlib.Combinatorics.Enumerative.Partition.Basic
 public import Mathlib.Combinatorics.Young.YoungDiagram
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Young diagram of a partition
 
@@ -19,7 +22,6 @@ Using this equivalence, the conjugate of a partition is also defined. Given the 
 diagram `μ` representing a partition `λ`, its conjugate `λ'` is the partition obtained
 by flipping `μ` about the main diagonal, i.e. the columns of `μ` are the parts of `λ'`.
 This is implemented here directly via `YoungDiagram.transpose`.
-
 -/
 
 @[expose] public section
@@ -63,7 +65,7 @@ theorem toPartition_ofPartition {n : ℕ} {p : Nat.Partition n} :
 
 /-- Equivalence between Young diagrams of cardinality `n` and partitions of `n`. -/
 def equivPartition {n : ℕ} : { μ : YoungDiagram // μ.card = n } ≃ Nat.Partition n where
-  toFun μ := toPartition μ μ.2
+  toFun μ := toPartition μ μ.property
   invFun p := ⟨ofPartition p, card_ofPartition p⟩
   left_inv := fun ⟨_, h⟩ => Subtype.mk_eq_mk.mpr (ofPartition_toPartition h)
   right_inv := fun _ => toPartition_ofPartition

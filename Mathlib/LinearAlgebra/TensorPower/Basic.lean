@@ -17,7 +17,7 @@ We define the `n`th tensor power of `M` as the n-ary tensor product indexed by `
 This file introduces the notation `⨂[R]^n M` for `TensorPower R n M`, which in turn is an
 abbreviation for `⨂[R] i : Fin n, M`.
 
-## Main definitions:
+## Main definitions
 
 * `TensorPower.gsemiring`: the tensor powers form a graded semiring.
 * `TensorPower.galgebra`: the tensor powers form a graded algebra.

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Center
 public import Mathlib.Algebra.Ring.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Centralizers of rings
 -/

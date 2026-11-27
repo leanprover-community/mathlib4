@@ -68,7 +68,8 @@ lemma apply_eq_apply_of_inseparable {F : Type*} [FunLike F M N] [AddMonoidHomCla
 @[simps]
 noncomputable def liftNormedAddGroupHom (f : NormedAddGroupHom M N)
     (hf : ∀ x, ‖x‖ = 0 → f x = 0) : NormedAddGroupHom (SeparationQuotient M) N where
-  toFun := SeparationQuotient.liftContinuousAddMonoidHom f <| apply_eq_apply_of_inseparable f hf
+  toFun := SeparationQuotient.liftContinuousAddMonoidHom f.toContinuousAddMonoidHom
+    <| apply_eq_apply_of_inseparable f hf
   map_add' v₁ v₂ := map_add ..
   bound' := by
     refine ⟨‖f‖, fun v ↦ ?_⟩

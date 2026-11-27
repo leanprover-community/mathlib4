@@ -65,7 +65,7 @@ private theorem ghostComponent_teichmullerFun (r : R) (n : ℕ) :
     tsub_zero]
   · rfl
   · intro i _ h0
-    simp [teichmullerFun, h0, hp.1.ne_zero]
+    simp [teichmullerFun, h0, hp.out.ne_zero]
   · rw [Finset.mem_range]; intro h; exact (h (Nat.succ_pos n)).elim
 
 private theorem map_teichmullerFun (f : R →+* S) (r : R) :
@@ -112,7 +112,7 @@ theorem teichmuller_coeff_pos (r : R) : ∀ (n : ℕ) (_ : 0 < n), (teichmuller 
 
 @[simp]
 theorem teichmuller_zero : teichmuller p (0 : R) = 0 := by
-  ext ⟨⟩ <;> · rw [zero_coeff]; rfl
+  ext ⟨⟩ <;> rw [zero_coeff] <;> rfl
 
 /-- `teichmuller` is a natural transformation. -/
 @[simp]

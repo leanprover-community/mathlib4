@@ -11,6 +11,9 @@ public import Mathlib.CategoryTheory.Monoidal.Internal.Types.CommGrp_
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 public import Mathlib.CategoryTheory.Preadditive.CommGrp_
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The forgetful functor `(C ⥤ₗ AddCommGroup) ⥤ (C ⥤ₗ Type v)` is an equivalence
 
@@ -63,7 +66,7 @@ noncomputable def inverseAux : (C ⥤ₗ Type v) ⥤ C ⥤ AddCommGrpCat.{v} :=
 instance (F : C ⥤ₗ Type v) : PreservesFiniteLimits (inverseAux.obj F) where
   preservesFiniteLimits J _ _ :=
     have : PreservesLimitsOfShape J (inverseAux.obj F ⋙ forget AddCommGrpCat) :=
-      inferInstanceAs (PreservesLimitsOfShape J F.1)
+      inferInstanceAs (PreservesLimitsOfShape J F.obj)
     preservesLimitsOfShape_of_reflects_of_preserves _ (forget AddCommGrpCat)
 
 /-- Implementation, see `leftExactFunctorForgetEquivalence`. -/

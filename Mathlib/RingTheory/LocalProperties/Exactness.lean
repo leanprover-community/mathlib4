@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.LocalProperties.Submodule
 
 import Mathlib.RingTheory.Localization.Algebra
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Local properties about linear maps
 
@@ -139,44 +142,44 @@ variable
   [∀ r : s, AddCommMonoid (Mₚ r)]
   [∀ r : s, Module R (Mₚ r)]
   (f : ∀ r : s, M →ₗ[R] Mₚ r)
-  [∀ r : s, IsLocalizedModule.Away r.1 (f r)]
+  [∀ r : s, IsLocalizedModule.Away r.val (f r)]
   (Nₚ : ∀ _ : s, Type*)
   [∀ r : s, AddCommMonoid (Nₚ r)]
   [∀ r : s, Module R (Nₚ r)]
   (g : ∀ r : s, N →ₗ[R] Nₚ r)
-  [∀ r : s, IsLocalizedModule.Away r.1 (g r)]
+  [∀ r : s, IsLocalizedModule.Away r.val (g r)]
   (Lₚ : ∀ _ : s, Type*)
   [∀ r : s, AddCommMonoid (Lₚ r)]
   [∀ r : s, Module R (Lₚ r)]
   (h : ∀ r : s, L →ₗ[R] Lₚ r)
-  [∀ r : s, IsLocalizedModule.Away r.1 (h r)]
+  [∀ r : s, IsLocalizedModule.Away r.val (h r)]
   (F : M →ₗ[R] N) (G : N →ₗ[R] L)
 
 theorem injective_of_isLocalized_span
-    (H : ∀ r : s, Function.Injective (map (.powers r.1) (f r) (g r) F)) :
+    (H : ∀ r : s, Function.Injective (map (.powers r.val) (f r) (g r) F)) :
     Function.Injective F :=
   fun x y eq ↦ Module.eq_of_isLocalized_span _ spn _ f _ _ fun P ↦ H P <| by simp [eq]
 
 theorem surjective_of_isLocalized_span
-    (H : ∀ r : s, Function.Surjective (map (.powers r.1) (f r) (g r) F)) :
+    (H : ∀ r : s, Function.Surjective (map (.powers r.val) (f r) (g r) F)) :
     Function.Surjective F :=
   range_eq_top.mp <| eq_top_of_isLocalized₀_span s spn Nₚ g fun r ↦
     (range_localizedMap_eq_localized₀_range _ (f r) (g r) F).symm.trans <| range_eq_top.mpr <| H r
 
 theorem bijective_of_isLocalized_span
-    (H : ∀ r : s, Function.Bijective (map (.powers r.1) (f r) (g r) F)) :
+    (H : ∀ r : s, Function.Bijective (map (.powers r.val) (f r) (g r) F)) :
     Function.Bijective F :=
   ⟨injective_of_isLocalized_span _ spn Mₚ f Nₚ g F fun r ↦ (H r).1,
   surjective_of_isLocalized_span _ spn Mₚ f Nₚ g F fun r ↦ (H r).2⟩
 
 lemma exact_of_isLocalized_span (H : ∀ r : s, Function.Exact
-    (map (.powers r.1) (f r) (g r) F) (map (.powers r.1) (g r) (h r) G)) :
+    (map (.powers r.val) (f r) (g r) F) (map (.powers r.val) (g r) (h r) G)) :
     Function.Exact F G := by
   simp only [LinearMap.exact_iff] at H ⊢
   apply Submodule.eq_of_isLocalized₀_span s spn Nₚ g
   intro r
   rw [← LinearMap.range_localizedMap_eq_localized₀_range _ (f r) (g r) F]
-  rw [← LinearMap.ker_localizedMap_eq_localized₀_ker (.powers r.1) (g r) (h r) G]
+  rw [← LinearMap.ker_localizedMap_eq_localized₀_ker (.powers r.val) (g r) (h r) G]
   have := SetLike.ext_iff.mp <| H r
   ext x
   simp only [mem_range, mem_ker] at this ⊢
@@ -192,23 +195,23 @@ variable {R M N L : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
 include spn
 
 theorem injective_of_localized_span
-    (h : ∀ r : s, Function.Injective (map (.powers r.1) f)) :
+    (h : ∀ r : s, Function.Injective (map (.powers r.val) f)) :
     Function.Injective f :=
   injective_of_isLocalized_span s spn _ (fun _ ↦ mkLinearMap _ _) _ (fun _ ↦ mkLinearMap _ _) f h
 
 theorem surjective_of_localized_span
-    (h : ∀ r : s, Function.Surjective (map (.powers r.1) f)) :
+    (h : ∀ r : s, Function.Surjective (map (.powers r.val) f)) :
     Function.Surjective f :=
   surjective_of_isLocalized_span s spn _ (fun _ ↦ mkLinearMap _ _) _ (fun _ ↦ mkLinearMap _ _) f h
 
 theorem bijective_of_localized_span
-    (h : ∀ r : s, Function.Bijective (map (.powers r.1) f)) :
+    (h : ∀ r : s, Function.Bijective (map (.powers r.val) f)) :
     Function.Bijective f :=
   ⟨injective_of_localized_span _ spn _ fun r ↦ (h r).1,
   surjective_of_localized_span _ spn _ fun r ↦ (h r).2⟩
 
 lemma exact_of_localized_span
-    (h : ∀ r : s, Function.Exact (map (.powers r.1) f) (map (.powers r.1) g)) :
+    (h : ∀ r : s, Function.Exact (map (.powers r.val) f) (map (.powers r.val) g)) :
     Function.Exact f g :=
   exact_of_isLocalized_span s spn _ (fun _ ↦ mkLinearMap _ _) _ (fun _ ↦ mkLinearMap _ _)
     _ (fun _ ↦ mkLinearMap _ _) f g h
@@ -294,7 +297,7 @@ variable (f : R →+* S) [∀ r, IsLocalization.Away r.val (Rᵣ r)]
 include hs
 
 lemma injective_of_isLocalization_of_span_eq_top
-    (h : ∀ r : s, Function.Injective (IsLocalization.Away.map (Rᵣ r) (Sᵣ r) f r.1)) :
+    (h : ∀ r : s, Function.Injective (IsLocalization.Away.map (Rᵣ r) (Sᵣ r) f r.val)) :
     Function.Injective f := by
   algebraize [f]
   let (r : s) : Algebra R (Sᵣ r) := (algebraMap S (Sᵣ r)).comp f |>.toAlgebra
@@ -308,7 +311,7 @@ lemma injective_of_isLocalization_of_span_eq_top
   simpa [IsLocalization.map_linearMap_eq_toLinearMap_mapₐ] using! h
 
 lemma surjective_of_isLocalization_of_span_eq_top
-    (h : ∀ r : s, Function.Surjective (IsLocalization.Away.map (Rᵣ r) (Sᵣ r) f r.1)) :
+    (h : ∀ r : s, Function.Surjective (IsLocalization.Away.map (Rᵣ r) (Sᵣ r) f r.val)) :
     Function.Surjective f := by
   algebraize [f]
   let (r : s) : Algebra R (Sᵣ r) := (algebraMap S (Sᵣ r)).comp f |>.toAlgebra
@@ -322,7 +325,7 @@ lemma surjective_of_isLocalization_of_span_eq_top
   simpa [IsLocalization.map_linearMap_eq_toLinearMap_mapₐ] using! h
 
 lemma bijective_of_isLocalization_of_span_eq_top
-    (h : ∀ r : s, Function.Bijective (IsLocalization.Away.map (Rᵣ r) (Sᵣ r) f r.1)) :
+    (h : ∀ r : s, Function.Bijective (IsLocalization.Away.map (Rᵣ r) (Sᵣ r) f r.val)) :
     Function.Bijective f :=
   ⟨injective_of_isLocalization_of_span_eq_top hs _ _ _ (fun r ↦ (h r).1),
     surjective_of_isLocalization_of_span_eq_top hs _ _ _ (fun r ↦ (h r).2)⟩

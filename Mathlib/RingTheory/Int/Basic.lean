@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Squarefree.Basic
 public import Mathlib.Data.Nat.Prime.Int
 public import Mathlib.RingTheory.PrincipalIdealDomain
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Divisibility over ℤ
 
@@ -49,9 +52,10 @@ theorem sq_of_gcd_eq_one {a b c : ℤ} (h : Int.gcd a b = 1) (heq : a * b = c ^ 
   obtain ⟨d, ⟨u, hu⟩⟩ := exists_associated_pow_of_mul_eq_pow h' heq
   use d
   rw [← hu]
-  rcases Int.units_eq_one_or u with hu' | hu' <;>
-    · rw [hu']
-      simp
+  rcases Int.units_eq_one_or u with hu' | hu'
+  all_goals
+    rw [hu']
+    simp
 
 theorem sq_of_isCoprime {a b c : ℤ} (h : IsCoprime a b) (heq : a * b = c ^ 2) :
     ∃ a0 : ℤ, a = a0 ^ 2 ∨ a = -a0 ^ 2 :=

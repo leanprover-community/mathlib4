@@ -314,7 +314,6 @@ theorem Quotient.lift_surjective {α β : Sort*} {s : Setoid α} (f : α → β)
     Function.Surjective (Quotient.lift f h : Quotient s → β) :=
   (Quot.surjective_lift h).mpr hf
 
-@[simp]
 theorem Quotient.lift₂_mk {α : Sort*} {β : Sort*} {γ : Sort*} {_ : Setoid α} {_ : Setoid β}
     (f : α → β → γ)
     (h : ∀ (a₁ : α) (a₂ : β) (b₁ : α) (b₂ : β), a₁ ≈ b₁ → a₂ ≈ b₂ → f a₁ a₂ = f b₁ b₂)
@@ -326,7 +325,6 @@ theorem Quotient.liftOn_mk {s : Setoid α} (f : α → β) (h : ∀ a b : α, a 
     Quotient.liftOn (Quotient.mk s x) f h = f x :=
   rfl
 
-@[simp]
 theorem Quotient.liftOn₂_mk {α : Sort*} {β : Sort*} {γ : Sort*} {_ : Setoid α} {_ : Setoid β}
     (f : α → β → γ)
     (h : ∀ (a₁ : α) (b₁ : β) (a₂ : α) (b₂ : β), a₁ ≈ a₂ → b₁ ≈ b₂ → f a₁ b₁ = f a₂ b₂)
@@ -615,14 +613,14 @@ protected theorem liftOn₂'_mk'' (f : α → β → γ) (h) (a : α) (b : β) :
 
 /-- A version of `Quotient.ind` taking `{s : Setoid α}` as an implicit argument instead of an
 instance argument. -/
-@[elab_as_elim]
+@[elab_as_elim, deprecated Quotient.ind (since := "2026-11-25")]
 protected theorem ind' {p : Quotient s₁ → Prop} (h : ∀ a, p (Quotient.mk'' a)) (q : Quotient s₁) :
     p q :=
   Quotient.ind h q
 
 /-- A version of `Quotient.ind₂` taking `{s₁ : Setoid α} {s₂ : Setoid β}` as implicit arguments
 instead of instance arguments. -/
-@[elab_as_elim]
+@[elab_as_elim, deprecated Quotient.ind₂ (since := "2026-11-25")]
 protected theorem ind₂' {p : Quotient s₁ → Quotient s₂ → Prop}
     (h : ∀ a₁ a₂, p (Quotient.mk'' a₁) (Quotient.mk'' a₂))
     (q₁ : Quotient s₁) (q₂ : Quotient s₂) : p q₁ q₂ :=
@@ -630,14 +628,14 @@ protected theorem ind₂' {p : Quotient s₁ → Quotient s₂ → Prop}
 
 /-- A version of `Quotient.inductionOn` taking `{s : Setoid α}` as an implicit argument instead
 of an instance argument. -/
-@[elab_as_elim]
+@[elab_as_elim, deprecated Quotient.inductionOn (since := "2026-11-25")]
 protected theorem inductionOn' {p : Quotient s₁ → Prop} (q : Quotient s₁)
     (h : ∀ a, p (Quotient.mk'' a)) : p q :=
   Quotient.inductionOn q h
 
 /-- A version of `Quotient.inductionOn₂` taking `{s₁ : Setoid α} {s₂ : Setoid β}` as implicit
 arguments instead of instance arguments. -/
-@[elab_as_elim]
+@[elab_as_elim, deprecated Quotient.inductionOn₂ (since := "2026-11-25")]
 protected theorem inductionOn₂' {p : Quotient s₁ → Quotient s₂ → Prop} (q₁ : Quotient s₁)
     (q₂ : Quotient s₂)
     (h : ∀ a₁ a₂, p (Quotient.mk'' a₁) (Quotient.mk'' a₂)) : p q₁ q₂ :=
@@ -645,7 +643,7 @@ protected theorem inductionOn₂' {p : Quotient s₁ → Quotient s₂ → Prop}
 
 /-- A version of `Quotient.inductionOn₃` taking `{s₁ : Setoid α} {s₂ : Setoid β} {s₃ : Setoid γ}`
 as implicit arguments instead of instance arguments. -/
-@[elab_as_elim]
+@[elab_as_elim, deprecated Quotient.inductionOn₃ (since := "2026-11-25")]
 protected theorem inductionOn₃' {p : Quotient s₁ → Quotient s₂ → Quotient s₃ → Prop}
     (q₁ : Quotient s₁) (q₂ : Quotient s₂) (q₃ : Quotient s₃)
     (h : ∀ a₁ a₂ a₃, p (Quotient.mk'' a₁) (Quotient.mk'' a₂) (Quotient.mk'' a₃)) :
@@ -654,7 +652,7 @@ protected theorem inductionOn₃' {p : Quotient s₁ → Quotient s₂ → Quoti
 
 /-- A version of `Quotient.recOnSubsingleton` taking `{s₁ : Setoid α}` as an implicit argument
 instead of an instance argument. -/
-@[elab_as_elim]
+@[elab_as_elim, deprecated Quotient.recOnSubsingleton (since := "2026-11-25")]
 protected def recOnSubsingleton' {φ : Quotient s₁ → Sort*} [∀ a, Subsingleton (φ ⟦a⟧)]
     (q : Quotient s₁)
     (f : ∀ a, φ (Quotient.mk'' a)) : φ q :=
@@ -662,7 +660,7 @@ protected def recOnSubsingleton' {φ : Quotient s₁ → Sort*} [∀ a, Subsingl
 
 /-- A version of `Quotient.recOnSubsingleton₂` taking `{s₁ : Setoid α} {s₂ : Setoid α}`
 as implicit arguments instead of instance arguments. -/
-@[elab_as_elim]
+@[elab_as_elim, deprecated Quotient.recOnSubsingleton₂ (since := "2026-11-25")]
 protected def recOnSubsingleton₂' {φ : Quotient s₁ → Quotient s₂ → Sort*}
     [∀ a b, Subsingleton (φ ⟦a⟧ ⟦b⟧)]
     (q₁ : Quotient s₁) (q₂ : Quotient s₂) (f : ∀ a₁ a₂, φ (Quotient.mk'' a₁) (Quotient.mk'' a₂)) :
@@ -748,11 +746,9 @@ variable {s : Setoid α}
 protected theorem mk''_eq_mk : Quotient.mk'' = Quotient.mk s :=
   rfl
 
-@[simp]
 protected theorem liftOn'_mk (x : α) (f : α → β) (h) : (Quotient.mk s x).liftOn' f h = f x :=
   rfl
 
-@[simp]
 protected theorem liftOn₂'_mk {t : Setoid β} (f : α → β → γ) (h) (a : α) (b : β) :
     Quotient.liftOn₂' (Quotient.mk s a) (Quotient.mk t b) f h = f a b :=
   rfl

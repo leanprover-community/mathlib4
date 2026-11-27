@@ -8,12 +8,14 @@ module
 public import Mathlib.AlgebraicTopology.ModelCategory.CategoryWithCofibrations
 public import Mathlib.CategoryTheory.MorphismProperty.WeakFactorizationSystem
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Consequences of model category axioms
 
 In this file, we deduce basic properties of fibrations, cofibrations,
 and weak equivalences from the axioms of model categories.
-
 -/
 
 public section

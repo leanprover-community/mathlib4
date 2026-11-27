@@ -27,7 +27,8 @@ in the literature only for the Gaussian case, it is implicit in the definition o
 function (`p = 0` and `q = 1`).
 To recover the usual hypergeometric function, simply multiply by `∏ i, Gamma (b i)`.
 
-## Definitions
+## Main definitions
+
 For the general case we have
 * `Complex.regularizedHGFunCoeff`: the coefficients
 * `Complex.regularizedHGFunSeries`: the formal multilinear series
@@ -37,7 +38,7 @@ For the Gaussian case (`p = 2` and `q = 1`), we define
 * `Complex.regularizedGaussHGFunSeries`: the formal multilinear series
 * `Complex.regularizedGaussHGFun`: the function
 
-## Results
+## Main statements
 
 Convergence:
 * `radius_regularizedHGFunSeries_eq_top_of_finite`: in the case that the series reduces to a
@@ -48,7 +49,6 @@ Convergence:
   `1`.
 * `Complex.radius_regularizedGaussHGFunSeries_eq_one`: the Gaussian hypergeometric series has
   convergence radius `1`.
-
 -/
 
 @[expose] public noncomputable section
@@ -141,6 +141,23 @@ theorem mul_regularizedHGFunCoeff_of_mem_right (n : ℕ) {u : ℂ} (h : u ∈ b)
       grind [Multiset.prod_map_erase]
     _ = 1 / (n ! * (Multiset.map (fun x ↦ Gamma (x + n)) ((u - 1) ::ₘ b.erase u)).prod) := by
       grind [Multiset.map_cons, Multiset.prod_cons]
+
+theorem mul_regularizedHGFunCoeff (n : ℕ) :
+    (n + 1) * regularizedHGFunCoeff a b (n + 1) =
+      a.prod * regularizedHGFunCoeff (a.map (· + 1)) (b.map (· + 1)) n := by
+  unfold regularizedHGFunCoeff
+  simp only [Nat.cast_add, Nat.cast_one, Multiset.map_map, Function.comp_apply]
+  calc
+    _ = (a.map ((ascPochhammer ℂ (n + 1)).eval ·)).prod /
+        (n ! * (b.map fun x ↦ Gamma (x + (n + 1))).prod) := by
+      rw [Nat.factorial_succ]
+      push_cast
+      field
+    _ = a.prod * (a.map fun x ↦ (ascPochhammer ℂ n).eval (x + 1)).prod /
+        (n ! * (b.map fun x ↦ Gamma (x + (n + 1))).prod) := by
+      simp [ascPochhammer, Multiset.prod_map_mul]
+    _ = _ := by
+      grind
 
 @[simp]
 theorem regularizedHGFunCoeff_zero_neg_nat_add_one (n i : ℕ) :
@@ -399,6 +416,23 @@ theorem regularizedHGFun_zero_singleton_neg_nat_add_one (n : ℕ) (z : ℂ) :
       ring
     _ = _ := by
       simp [regularizedHGFun, FormalMultilinearSeries.sum]
+
+section Derivative
+
+theorem hasDerivAt_regularizedHGFun {z : ℂ} (hz : ‖z‖ₑ < (regularizedHGFunSeries a b).radius) :
+    HasDerivAt (regularizedHGFun a b)
+      (a.prod * regularizedHGFun (a.map (· + 1)) (b.map (· + 1)) z) z := by
+  refine ((regularizedHGFunSeries a b).hasDerivAt_sum hz).congr_deriv ?_
+  suffices ∑' n, z ^ n * ((n + 1) * C a b (n + 1)) =
+      a.prod * ∑' n, z ^ n * C (a.map (· + 1)) (b.map (· + 1)) n by
+    simpa [regularizedHGFun, FormalMultilinearSeries.sum]
+  grind [tsum_mul_left, mul_regularizedHGFunCoeff]
+
+theorem deriv_regularizedHGFun {z : ℂ} (hz : ‖z‖ₑ < (regularizedHGFunSeries a b).radius) :
+    deriv (regularizedHGFun a b) z = a.prod * regularizedHGFun (a.map (· + 1)) (b.map (· + 1)) z :=
+  (hasDerivAt_regularizedHGFun hz).deriv
+
+end Derivative
 
 section ZeroZero
 

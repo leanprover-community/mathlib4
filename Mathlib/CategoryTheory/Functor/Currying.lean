@@ -40,12 +40,7 @@ variable {B : Type u₁} [Category.{v₁} B] {C : Type u₂} [Category.{v₂} C]
 def uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E where
   obj F :=
     { obj := fun X => (F.obj X.1).obj X.2
-      map := fun {X} {Y} f => (F.map f.1).app X.2 ≫ (F.obj Y.1).map f.2
-      map_comp := fun f g => by
-        simp only [prod_comp_fst, prod_comp_snd, Functor.map_comp, NatTrans.comp_app,
-          Category.assoc]
-        slice_lhs 2 3 => rw [← NatTrans.naturality]
-        rw [Category.assoc] }
+      map := fun {X} {Y} f => (F.map f.1).app X.2 ≫ (F.obj Y.1).map f.2 }
   map T :=
     { app := fun X => (T.app X.1).app X.2
       naturality := fun X Y f => by
@@ -53,6 +48,8 @@ def uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E where
         slice_lhs 2 3 => rw [NatTrans.naturality]
         slice_lhs 1 2 => rw [← NatTrans.comp_app, NatTrans.naturality, NatTrans.comp_app]
         rw [Category.assoc] }
+
+to_dual_for uncurry_obj_map := by simp
 
 /-- The object level part of the currying functor. (See `curry` for the functorial version.)
 -/

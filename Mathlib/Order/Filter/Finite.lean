@@ -146,18 +146,18 @@ theorem mem_biInf_principal {ι : Type*} {p : ι → Prop} {s : ι → Set α} {
   · rintro ⟨I, hIf, hpI, hst⟩
     rw [biInter_eq_iInter] at hst
     refine mem_iInf_of_iInter hIf (fun i ↦ ?_) hst
-    simp [hpI i i.2]
+    simp [hpI i i.property]
 
 /-! ### Lattice equations -/
 
 theorem _root_.Pairwise.exists_mem_filter_of_disjoint {ι : Type*} [Finite ι] {l : ι → Filter α}
     (hd : Pairwise (Disjoint on l)) :
     ∃ s : ι → Set α, (∀ i, s i ∈ l i) ∧ Pairwise (Disjoint on s) := by
-  have : Pairwise fun i j => ∃ (s : {s // s ∈ l i}) (t : {t // t ∈ l j}), Disjoint s.1 t.1 := by
+  have : Pairwise fun i j => ∃ (s : {s // s ∈ l i}) (t : {t // t ∈ l j}), Disjoint s.val t.val := by
     simpa only [Pairwise, Function.onFun, Filter.disjoint_iff, exists_prop, Subtype.exists] using hd
   choose! s t hst using this
   refine ⟨fun i => ⋂ j, @s i j ∩ @t j i, fun i => ?_, fun i j hij => ?_⟩
-  exacts [iInter_mem.2 fun j => inter_mem (@s i j).2 (@t j i).2,
+  exacts [iInter_mem.2 fun j => inter_mem (@s i j).property (@t j i).property,
     (hst hij).mono ((iInter_subset _ j).trans inter_subset_left)
       ((iInter_subset _ i).trans inter_subset_right)]
 
@@ -168,7 +168,7 @@ theorem _root_.Set.PairwiseDisjoint.exists_mem_filter {ι : Type*} {l : ι → F
   rcases (hd.subtype _ _).exists_mem_filter_of_disjoint with ⟨s, hsl, hsd⟩
   lift s to (i : t) → {s // s ∈ l i} using hsl
   rcases @Subtype.exists_pi_extension ι (fun i => { s // s ∈ l i }) _ _ s with ⟨s, rfl⟩
-  exact ⟨fun i => s i, fun i => (s i).2, hsd.set_of_subtype _ _⟩
+  exact ⟨fun i => s i, fun i => (s i).property, hsd.set_of_subtype _ _⟩
 
 
 theorem iInf_sets_eq_finite {ι : Type*} (f : ι → Filter α) :
@@ -200,7 +200,7 @@ theorem mem_iInf_finset {s : Finset α} {f : α → Filter β} {t : Set β} :
     rintro ⟨a, ha⟩
     simp [ha]
   · rintro ⟨p, hpf, rfl⟩
-    exact iInter_mem.2 fun a => mem_iInf_of_mem a (hpf a a.2)
+    exact iInter_mem.2 fun a => mem_iInf_of_mem a (hpf a a.property)
 
 /-! #### `principal` equations -/
 
@@ -315,7 +315,7 @@ lemma _root_.Set.Finite.eventuallySubset_iUnion {ι : Type*} {s : Set ι} (hs : 
     {f g : ι → Set α} (hle : ∀ i ∈ s, f i ≤ᶠ[l] g i) : (⋃ i ∈ s, f i) ≤ᶠ[l] (⋃ i ∈ s, g i) := by
   have := hs.to_subtype
   rw [biUnion_eq_iUnion, biUnion_eq_iUnion]
-  exact .iUnion fun i ↦ hle i.1 i.2
+  exact .iUnion fun i ↦ hle i.val i.property
 
 alias EventuallySubset.biUnion := Set.Finite.eventuallySubset_iUnion
 
@@ -336,7 +336,7 @@ lemma _root_.Set.Finite.eventuallySubset_iInter {ι : Type*} {s : Set ι} (hs : 
     {f g : ι → Set α} (hle : ∀ i ∈ s, f i ≤ᶠ[l] g i) : (⋂ i ∈ s, f i) ≤ᶠ[l] (⋂ i ∈ s, g i) := by
   have := hs.to_subtype
   rw [biInter_eq_iInter, biInter_eq_iInter]
-  exact .iInter fun i ↦ hle i.1 i.2
+  exact .iInter fun i ↦ hle i.val i.property
 
 alias EventuallySubset.biInter := Set.Finite.eventuallySubset_iInter
 

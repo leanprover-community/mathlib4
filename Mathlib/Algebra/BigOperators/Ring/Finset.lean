@@ -35,7 +35,7 @@ namespace Finset
 
 lemma prod_neg [CommMonoid M] [HasDistribNeg M] (f : ι → M) :
     ∏ x ∈ s, -f x = (-1) ^ #s * ∏ x ∈ s, f x := by
-  simpa using (s.1.map f).prod_map_neg
+  simpa using (s.val.map f).prod_map_neg
 
 section AddCommMonoidWithOne
 variable [AddCommMonoidWithOne R]
@@ -125,7 +125,7 @@ variable [DecidableEq ι]
 /-- The product over a sum can be written as a sum over the product of sets, `Finset.Pi`.
   `Finset.prod_univ_sum` is an alternative statement when the product is over `univ`. -/
 lemma prod_sum {κ : ι → Type*} (s : Finset ι) (t : ∀ i, Finset (κ i)) (f : ∀ i, κ i → R) :
-    ∏ a ∈ s, ∑ b ∈ t a, f a b = ∑ p ∈ s.pi t, ∏ x ∈ s.attach, f x.1 (p x.1 x.2) := by
+    ∏ a ∈ s, ∑ b ∈ t a, f a b = ∑ p ∈ s.pi t, ∏ x ∈ s.attach, f x.val (p x.val x.property) := by
   classical
   induction s using Finset.induction with
   | empty => simp
@@ -178,7 +178,7 @@ theorem prod_add (f g : ι → R) (s : Finset ι) :
     ∏ i ∈ s, (f i + g i) =
         ∏ i ∈ s, ∑ p ∈ ({True, False} : Finset Prop), if p then f i else g i := by simp
     _ = ∑ p ∈ (s.pi fun _ => {True, False} : Finset (∀ a ∈ s, Prop)),
-          ∏ a ∈ s.attach, if p a.1 a.2 then f a.1 else g a.1 := prod_sum _ _ _
+          ∏ a ∈ s.attach, if p a.val a.property then f a.val else g a.val := prod_sum _ _ _
     _ = ∑ t ∈ s.powerset, (∏ a ∈ t, f a) * ∏ a ∈ s \ t, g a :=
       sum_bij'
         (fun f _ ↦ {a ∈ s | ∃ h : a ∈ s, f a h})

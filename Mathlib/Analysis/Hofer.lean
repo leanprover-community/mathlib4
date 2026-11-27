@@ -15,7 +15,7 @@ application to the bubbling-off analysis for holomorphic curves in symplectic to
 We are *very* far away from having these applications, but the proof here is a nice
 example of a proof needing to construct a sequence by induction in the middle of the proof.
 
-## References:
+## References
 
 * H. Hofer and C. Viterbo, *The Weinstein conjecture in the presence of holomorphic spheres*
 -/
@@ -51,8 +51,8 @@ theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (
   have hu :
     ∀ n,
       d (u n) x ≤ 2 * ε ∧ 2 ^ n * ϕ x ≤ ϕ (u n) →
-        d (u n) (u <| n + 1) ≤ ε / 2 ^ n ∧ 2 * ϕ (u n) < ϕ (u <| n + 1) := by
-    exact fun n ↦ hF n (u n)
+        d (u n) (u <| n + 1) ≤ ε / 2 ^ n ∧ 2 * ϕ (u n) < ϕ (u <| n + 1) :=
+    fun n ↦ hF n (u n)
   -- Key properties of u, to be proven by induction
   have key : ∀ n, d (u n) (u (n + 1)) ≤ ε / 2 ^ n ∧ 2 * ϕ (u n) < ϕ (u (n + 1)) := by
     intro n
