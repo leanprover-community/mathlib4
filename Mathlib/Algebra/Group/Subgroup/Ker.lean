@@ -642,3 +642,14 @@ lemma map_range_powMonoidHom (e : M ≃* N) (n : ℕ) :
   rw [map_range, H, range_comp, e.range_eq_top, Subgroup.map_top]
 
 end MulEquiv
+
+namespace FunLike
+
+variable {F α : Type*} {β : α → Type*} [DFunLike F α β] {f : (a : α) → β a}
+
+@[to_additive (attr := simp high)]
+theorem mem_range_coeMonoidHom [Group F] [∀ a, Group (β a)] [IsOneApply F] [IsMulApply F] :
+    f ∈ (coeMonoidHom F α β).range ↔ f ∈ Set.range ((⇑) : F → (a : α) → β a) :=
+  Iff.rfl
+
+end FunLike

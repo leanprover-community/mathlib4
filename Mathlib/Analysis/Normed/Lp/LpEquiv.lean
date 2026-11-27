@@ -27,9 +27,9 @@ structure, although the topological, uniform and bornological structures coincid
 These structures are only defined on `PiLp` for `Fintype α`, so there are no issues of convergence
 to consider.
 
-While `PreLp` is also a type synonym for `Π i, E i`, it allows for infinite index types. On this
-type there is a predicate `Memℓp` which says that the relevant `p`-norm is finite and `lp E p` is
-the subtype of `PreLp` satisfying `Memℓp`.
+On the other hand, `lp E p` allows for infinite index types. On `Π i, E i` there is a predicate
+`Memℓp` which says that the relevant `p`-norm is finite, and `lp E p` is a structure bundling a
+function `Π i, E i` with a proof that it satisfies `Memℓp`.
 
 ## TODO
 
@@ -60,7 +60,7 @@ def Equiv.lpPiLp : lp E p ≃ PiLp p E where
 theorem coe_equiv_lpPiLp (f : lp E p) : Equiv.lpPiLp f = ⇑f :=
   rfl
 
-theorem coe_equiv_lpPiLp_symm (f : PiLp p E) : (Equiv.lpPiLp.symm f : ∀ i, E i) = f :=
+theorem coe_equiv_lpPiLp_symm (f : PiLp p E) : (Equiv.lpPiLp.symm f : Π i, E i) = f :=
   rfl
 
 /-- The canonical `AddEquiv` between `lp E p` and `PiLp p E` when `E : α → Type u` with
@@ -72,7 +72,7 @@ theorem coe_addEquiv_lpPiLp (f : lp E p) : AddEquiv.lpPiLp f = ⇑f :=
   rfl
 
 theorem coe_addEquiv_lpPiLp_symm (f : PiLp p E) :
-    (AddEquiv.lpPiLp.symm f : ∀ i, E i) = f :=
+    (AddEquiv.lpPiLp.symm f : Π i, E i) = f :=
   rfl
 
 end Finite
@@ -97,11 +97,11 @@ noncomputable def lpPiLpₗᵢ [Fact (1 ≤ p)] : lp E p ≃ₗᵢ[𝕜] PiLp p 
 
 variable {𝕜 E}
 
-theorem coe_lpPiLpₗᵢ [Fact (1 ≤ p)] (f : lp E p) : (lpPiLpₗᵢ E 𝕜 f : ∀ i, E i) = f :=
+theorem coe_lpPiLpₗᵢ [Fact (1 ≤ p)] (f : lp E p) : (lpPiLpₗᵢ E 𝕜 f : Π i, E i) = f :=
   rfl
 
 theorem coe_lpPiLpₗᵢ_symm [Fact (1 ≤ p)] (f : PiLp p E) :
-    ((lpPiLpₗᵢ E 𝕜).symm f : ∀ i, E i) = f :=
+    ((lpPiLpₗᵢ E 𝕜).symm f : Π i, E i) = f :=
   rfl
 
 @[simp]
@@ -120,14 +120,14 @@ open scoped BoundedContinuousFunction
 open BoundedContinuousFunction
 
 variable {α E R A : Type*} (𝕜 : Type*) [TopologicalSpace α] [DiscreteTopology α]
-variable [NormedRing A] [NormOneClass A] [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 A]
+variable [NormedRing A] [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 A]
 variable [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NonUnitalNormedRing R]
 
 section NormedAddCommGroup
 
 /-- The canonical map between `lp (fun _ : α ↦ E) ∞` and `α →ᵇ E` as an `AddEquiv`. -/
 noncomputable def AddEquiv.lpBCF : lp (fun _ : α ↦ E) ∞ ≃+ (α →ᵇ E) where
-  toFun f := ofNormedAddCommGroupDiscrete f ‖f‖ <| le_ciSup (memℓp_infty_iff.mp f.prop)
+  toFun f := ofNormedAddCommGroupDiscrete f ‖f‖ <| le_ciSup (memℓp_infty_iff.mp f.memℓp)
   invFun f := ⟨⇑f, f.bddAbove_range_norm_comp⟩
   map_add' _f _g := rfl
 
@@ -173,8 +173,6 @@ theorem coe_ringEquiv_lpBCF_symm (f : α →ᵇ R) : (RingEquiv.lpBCF.symm f : �
 variable (α)
 
 -- even `α` needs to be explicit here for elaboration
--- the `NormOneClass A` shouldn't really be necessary, but currently it is for
--- `one_memℓp_infty` to get the `Ring` instance on `lp`.
 /-- The canonical map between `lp (fun _ : α ↦ A) ∞` and `α →ᵇ A` as an `AlgEquiv`. -/
 noncomputable def AlgEquiv.lpBCF : lp (fun _ : α ↦ A) ∞ ≃ₐ[𝕜] α →ᵇ A :=
   { RingEquiv.lpBCF with map_smul' _ _ := rfl }

@@ -43,7 +43,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 on the `lp` space. -/
 @[simps!]
 noncomputable def mapCLM (p : ℝ≥0∞) [Fact (1 ≤ p)]
-    (T : ∀ i, E i →L[𝕜] F i) {K : ℝ} (hK : 0 ≤ K) (hTK : ∀ i, ‖T i‖ ≤ K) :
+    (T : Π i, E i →L[𝕜] F i) {K : ℝ} (hK : 0 ≤ K) (hTK : ∀ i, ‖T i‖ ≤ K) :
     lp E p →L[𝕜] lp F p :=
   haveI key (i : α) (x : E i) : ‖T i x‖ ≤ K * ‖x‖ := (T i).le_of_opNorm_le (hTK i) _
   LinearMap.mkContinuous
@@ -58,8 +58,10 @@ noncomputable def mapCLM (p : ℝ≥0∞) [Fact (1 ≤ p)]
       apply norm_mono (zero_lt_one.trans_le Fact.out).ne' fun i ↦ ?_
       simpa [abs_of_nonneg hK] using key ..
 
+@[deprecated (since := "2026-11-27")] alias mapCLM_apply_coe := coe_mapCLM_apply
+
 lemma norm_mapCLM_le (p : ℝ≥0∞) [Fact (1 ≤ p)]
-    (T : ∀ i, E i →L[𝕜] F i) {K : ℝ} (hK : 0 ≤ K) (hTK : ∀ i, ‖T i‖ ≤ K) :
+    (T : Π i, E i →L[𝕜] F i) {K : ℝ} (hK : 0 ≤ K) (hTK : ∀ i, ‖T i‖ ≤ K) :
     ‖mapCLM p T hK hTK‖ ≤ K :=
   LinearMap.mkContinuous_norm_le _ hK _
 
@@ -83,7 +85,7 @@ variable {p q : ℝ≥0∞} (r : ℝ≥0∞) [hpqr : p.HolderTriple q r]
 
 namespace Memℓp
 
-theorem bilin_of_top_left (B : (i : ι) → E i →L[𝕜] F i →L[𝕜] G i)
+theorem bilin_of_top_left (B : Π i, E i →L[𝕜] F i →L[𝕜] G i)
     {K : ℝ} (hBK : ∀ i, ‖B i‖ ≤ K) {e : Π i, E i} {f : Π i, F i}
     (he : Memℓp e ∞) (hf : Memℓp f q) :
     Memℓp (fun i ↦ B i (e i) (f i)) q := by
@@ -97,25 +99,25 @@ theorem bilin_of_top_left (B : (i : ι) → E i →L[𝕜] F i →L[𝕜] G i)
     ‖B i (e i) (f i)‖ ≤ ‖B i‖ * ‖e i‖ * ‖f i‖ := (B i (e i)).le_of_opNorm_le ((B i).le_opNorm _) _
     _ ≤ K * C * ‖f i‖ := by gcongr; exacts [hBK i, hC i]
 
-theorem bilin_of_top_right (B : (i : ι) → E i →L[𝕜] F i →L[𝕜] G i)
+theorem bilin_of_top_right (B : Π i, E i →L[𝕜] F i →L[𝕜] G i)
     {K : ℝ} (hBK : ∀ i, ‖B i‖ ≤ K) {e : Π i, E i} {f : Π i, F i}
     (he : Memℓp e p) (hf : Memℓp f ∞) :
     Memℓp (fun i ↦ B i (e i) (f i)) p :=
   hf.bilin_of_top_left (fun i ↦ (B i).flip) (by simpa using hBK) he
 
-theorem bilin_of_zero_left (B : (i : ι) → E i →L[𝕜] F i →L[𝕜] G i)
+theorem bilin_of_zero_left (B : Π i, E i →L[𝕜] F i →L[𝕜] G i)
     {e : Π i, E i} {f : Π i, F i} (he : Memℓp e 0) :
     Memℓp (fun i ↦ B i (e i) (f i)) 0 := by
   rw [memℓp_zero_iff] at he ⊢
   exact he.subset fun i hi h ↦ hi <| by simp [h]
 
-theorem bilin_of_zero_right (B : (i : ι) → E i →L[𝕜] F i →L[𝕜] G i)
+theorem bilin_of_zero_right (B : Π i, E i →L[𝕜] F i →L[𝕜] G i)
     {e : Π i, E i} {f : Π i, F i} (hf : Memℓp f 0) :
     Memℓp (fun i ↦ B i (e i) (f i)) 0 :=
   hf.bilin_of_zero_left (fun i ↦ (B i).flip)
 
 lemma holder_top_left_bound
-    {e : (i : ι) → E i} {f : (i : ι) → F i} (B : (i : ι) → E i →L[𝕜] F i →L[𝕜] G i)
+    {e : Π i, E i} {f : Π i, F i} (B : Π i, E i →L[𝕜] F i →L[𝕜] G i)
     {K C D : ℝ} (hBK : ∀ i, ‖B i‖ ≤ K) (hK : 0 ≤ K) (hC : 0 ≤ C)
     (hCe : ∀ i, ‖e i‖ ≤ C) (hDf : ∀ s, ∑ i ∈ s, ‖f i‖ ^ q.toReal ≤ D) (s : Finset ι) :
     ∑ i ∈ s, ‖B i (e i) (f i)‖ ^ q.toReal ≤ (K * C) ^ q.toReal * D := by
@@ -126,15 +128,15 @@ lemma holder_top_left_bound
   exact (B i (e i)).le_of_opNorm_le ((B i).le_of_opNorm_le_of_le (hBK i) (hCe i)) _
 
 lemma holder_top_right_bound
-    {e : (i : ι) → E i} {f : (i : ι) → F i} (B : (i : ι) → E i →L[𝕜] F i →L[𝕜] G i)
+    {e : Π i, E i} {f : Π i, F i} (B : Π i, E i →L[𝕜] F i →L[𝕜] G i)
     {K C D : ℝ} (hBK : ∀ i, ‖B i‖ ≤ K) (hK : 0 ≤ K) (hD : 0 ≤ D)
     (hCe : ∀ s, ∑ i ∈ s, ‖e i‖ ^ p.toReal ≤ C) (hDf : ∀ i, ‖f i‖ ≤ D) (s : Finset ι) :
     ∑ i ∈ s, ‖B i (e i) (f i)‖ ^ p.toReal ≤ (K * D) ^ p.toReal * C :=
   holder_top_left_bound (B · |>.flip) (by simpa) hK hD hDf hCe s
 
-lemma holder_gen_bound {e : (i : ι) → E i} {f : (i : ι) → F i}
+lemma holder_gen_bound {e : Π i, E i} {f : Π i, F i}
     (hp : 0 < p.toReal) (hq : 0 < q.toReal)
-    (B : (i : ι) → E i →L[𝕜] F i →L[𝕜] G i) {K C D : ℝ} (hBK : ∀ i, ‖B i‖ ≤ K)
+    (B : Π i, E i →L[𝕜] F i →L[𝕜] G i) {K C D : ℝ} (hBK : ∀ i, ‖B i‖ ≤ K)
     (hK : 0 ≤ K) (hC : 0 ≤ C) (hCe : ∀ s, ∑ i ∈ s, ‖e i‖ ^ p.toReal ≤ C)
     (hDf : ∀ s, ∑ i ∈ s, ‖f i‖ ^ q.toReal ≤ D) (s : Finset ι) :
     ∑ i ∈ s, ‖B i (e i) (f i)‖ ^ r.toReal ≤
@@ -162,8 +164,8 @@ lemma holder_gen_bound {e : (i : ι) → E i} {f : (i : ι) → F i}
       · exact hCe s
       · exact hDf s
 
-lemma holder {e : (i : ι) → E i} {f : (i : ι) → F i} (he : Memℓp e p) (hf : Memℓp f q)
-    (B : (i : ι) → E i →L[𝕜] F i →L[𝕜] G i) {K : ℝ} (hBK : ∀ i, ‖B i‖ ≤ K) :
+lemma holder {e : Π i, E i} {f : Π i, F i} (he : Memℓp e p) (hf : Memℓp f q)
+    (B : Π i, E i →L[𝕜] F i →L[𝕜] G i) {K : ℝ} (hBK : ∀ i, ‖B i‖ ≤ K) :
     Memℓp (fun i ↦ B i (e i) (f i)) r := by
   obtain (h | h) := isEmpty_or_nonempty ι
   · exact all _
@@ -190,23 +192,28 @@ namespace lp
 /-- The map between `lp` spaces satisfying `ENNReal.HolderTriple` induced by a
 uniformly bounded family of continuous bilinear maps on the underlying spaces. -/
 @[simps]
-def holder (B : (i : ι) → E i →L[𝕜] F i →L[𝕜] G i) {K : ℝ} (hBK : ∀ i, ‖B i‖ ≤ K)
+def holder (B : Π i, E i →L[𝕜] F i →L[𝕜] G i) {K : ℝ} (hBK : ∀ i, ‖B i‖ ≤ K)
     (e : lp E p) (f : lp F q) :
     lp G r where
-  val := fun i ↦ B i (e i) (f i)
-  property := (lp.memℓp e).holder _ (lp.memℓp f) B hBK
+  toFun := fun i ↦ B i (e i) (f i)
+  memℓp' := (lp.memℓp e).holder _ (lp.memℓp f) B hBK
+
+@[deprecated (since := "2026-11-27")] alias holder_coe := coe_holder
 
 /-- `lp.holder` as a bilinear map. -/
 @[simps!]
-noncomputable def holderₗ (B : (i : ι) → E i →L[𝕜] F i →L[𝕜] G i) {K : ℝ} (hBK : ∀ i, ‖B i‖ ≤ K) :
+noncomputable def holderₗ (B : Π i, E i →L[𝕜] F i →L[𝕜] G i) {K : ℝ} (hBK : ∀ i, ‖B i‖ ≤ K) :
     lp E p →ₗ[𝕜] lp F q →ₗ[𝕜] lp G r :=
   .mk₂ 𝕜 (holder r B hBK) ?_ ?_ ?_ ?_
 where finally
   all_goals intros; ext; simp
 
+@[deprecated (since := "2026-11-27")]
+alias holderₗ_apply_apply_coe := coe_holderₗ_apply_apply
+
 /-- `lp.holder` as a continuous bilinear map. -/
 noncomputable def holderL [Fact (1 ≤ p)] [Fact (1 ≤ q)] [Fact (1 ≤ r)]
-    (B : (i : ι) → E i →L[𝕜] F i →L[𝕜] G i) {K : ℝ≥0} (hBK : ∀ i, ‖B i‖ ≤ K) :
+    (B : Π i, E i →L[𝕜] F i →L[𝕜] G i) {K : ℝ≥0} (hBK : ∀ i, ‖B i‖ ≤ K) :
     lp E p →L[𝕜] lp F q →L[𝕜] lp G r :=
   holderₗ r B hBK |>.mkContinuous₂ K fun e f ↦ by
     obtain ⟨(rfl | hp), (rfl | hq)⟩ := And.intro p.dichotomy q.dichotomy
@@ -230,7 +237,7 @@ noncomputable def holderL [Fact (1 ≤ p)] [Fact (1 ≤ q)] [Fact (1 ≤ r)]
       have hp := hpqr.pos
       have hq := hpqr.symm.pos
       refine norm_le_of_forall_sum_le hpqr.pos' (by positivity) fun s ↦ ?_
-      simp only [holderₗ_apply_apply_coe]
+      simp only [coe_holderₗ_apply_apply]
       calc
         _ ≤ K ^ r.toReal * (‖e‖ ^ p.toReal) ^ (r.toReal / p.toReal) *
           (‖f‖ ^ q.toReal) ^ (r.toReal / q.toReal) :=
@@ -245,7 +252,7 @@ noncomputable def holderL [Fact (1 ≤ p)] [Fact (1 ≤ q)] [Fact (1 ≤ r)]
           all_goals positivity
 
 lemma norm_holderL_le [Fact (1 ≤ p)] [Fact (1 ≤ q)] [Fact (1 ≤ r)]
-    (B : (i : ι) → E i →L[𝕜] F i →L[𝕜] G i) {K : ℝ≥0} (hBK : ∀ i, ‖B i‖ ≤ K) :
+    (B : Π i, E i →L[𝕜] F i →L[𝕜] G i) {K : ℝ≥0} (hBK : ∀ i, ‖B i‖ ≤ K) :
     ‖holderL (p := p) (q := q) r B hBK‖ ≤ K :=
   LinearMap.mkContinuous₂_norm_le _ K.property _
 
@@ -253,7 +260,7 @@ variable {H : Type*} [NormedAddCommGroup H] [NormedSpace 𝕜 H] [CompleteSpace 
 
 variable (p q) in
 /-- The natural pairing between `lp E p` and `lp F q` (for Hölder conjugate `p q : ℝ≥0∞`) with
-values in a space `H` induced by a family of bilinear maps `B : (i : ι) → E i →L[𝕜] F i →L[𝕜] H`.
+values in a space `H` induced by a family of bilinear maps `B : Π i, E i →L[𝕜] F i →L[𝕜] H`.
 
 This is given by `∑' i, B (e i) (f i)`.
 
@@ -262,18 +269,18 @@ definitionally the same as `B := ContinuousLinearMap.id 𝕜 (E →L[𝕜] 𝕜)
 `lp (fun _ ↦ StrongDual 𝕜 E) p →L[𝕜] StrongDual 𝕜 (lp E q)`.
 -/
 noncomputable def dualPairing [Fact (1 ≤ p)] [Fact (1 ≤ q)] [p.HolderConjugate q]
-    (B : (i : ι) → E i →L[𝕜] F i →L[𝕜] H) {K : ℝ≥0} (hBK : ∀ i, ‖B i‖ ≤ K) :
+    (B : Π i, E i →L[𝕜] F i →L[𝕜] H) {K : ℝ≥0} (hBK : ∀ i, ‖B i‖ ≤ K) :
     lp E p →L[𝕜] lp F q →L[𝕜] H :=
   (tsumCLM 𝕜 ι H |>.postcomp <| lp F q) ∘L (holderL 1 B hBK)
 
 lemma dualPairing_apply [Fact (1 ≤ p)] [Fact (1 ≤ q)] [p.HolderConjugate q]
-    (B : (i : ι) → E i →L[𝕜] F i →L[𝕜] H) {K : ℝ≥0} (hBK : ∀ i, ‖B i‖ ≤ K)
+    (B : Π i, E i →L[𝕜] F i →L[𝕜] H) {K : ℝ≥0} (hBK : ∀ i, ‖B i‖ ≤ K)
     (e : lp E p) (f : lp F q) :
     dualPairing p q B hBK e f = ∑' i, B i (e i) (f i) :=
   rfl
 
 lemma norm_dualPairing [Fact (1 ≤ p)] [Fact (1 ≤ q)] [p.HolderConjugate q]
-    (B : (i : ι) → E i →L[𝕜] F i →L[𝕜] H) {K : ℝ≥0} (hBK : ∀ i, ‖B i‖ ≤ K) :
+    (B : Π i, E i →L[𝕜] F i →L[𝕜] H) {K : ℝ≥0} (hBK : ∀ i, ‖B i‖ ≤ K) :
     ‖dualPairing p q B hBK‖ ≤ K := calc
   ‖dualPairing p q B hBK‖
   _ ≤ ‖(tsumCLM 𝕜 ι H).postcomp (lp F q)‖ * ‖holderL 1 B hBK‖ :=

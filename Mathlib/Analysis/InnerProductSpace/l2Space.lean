@@ -135,7 +135,7 @@ instance instInnerProductSpace : InnerProductSpace 𝕜 (lp G 2) :=
       calc
         _ = ∑' i, ⟪(f₁ + f₂) i, g i⟫ := ?_
         _ = ∑' i, (⟪f₁ i, g i⟫ + ⟪f₂ i, g i⟫) := by
-          simp only [inner_add_left, Pi.add_apply, coeFn_add]
+          simp only [inner_add_left, Pi.add_apply, FunLike.coe_add]
         _ = (∑' i, ⟪f₁ i, g i⟫) + ∑' i, ⟪f₂ i, g i⟫ := Summable.tsum_add ?_ ?_
         _ = _ := by congr
       · congr
@@ -147,7 +147,7 @@ instance instInnerProductSpace : InnerProductSpace 𝕜 (lp G 2) :=
         _ = ∑' i, conj c * ⟪f i, g i⟫ := by simp only [inner_smul_left]
         _ = conj c * ∑' i, ⟪f i, g i⟫ := tsum_mul_left
         _ = _ := ?_
-      · simp only [coeFn_smul, Pi.smul_apply]
+      · simp only [FunLike.coe_smul, Pi.smul_apply]
       · congr }
 
 theorem inner_eq_tsum (f g : lp G 2) : ⟪f, g⟫ = ∑' i, ⟪f i, g i⟫ :=
@@ -177,7 +177,7 @@ end lp
 
 namespace OrthogonalFamily
 
-variable [CompleteSpace E] {V : ∀ i, G i →ₗᵢ[𝕜] E} (hV : OrthogonalFamily 𝕜 G V)
+variable [CompleteSpace E] {V : Π i, G i →ₗᵢ[𝕜] E} (hV : OrthogonalFamily 𝕜 G V)
 include hV
 
 protected theorem summable_of_lp (f : lp G 2) :
@@ -192,10 +192,10 @@ subspaces into `E`. -/
 protected def linearIsometry (hV : OrthogonalFamily 𝕜 G V) : lp G 2 →ₗᵢ[𝕜] E where
   toFun f := ∑' i, V i (f i)
   map_add' f g := by
-    simp only [(hV.summable_of_lp f).tsum_add (hV.summable_of_lp g), lp.coeFn_add, Pi.add_apply,
+    simp only [(hV.summable_of_lp f).tsum_add (hV.summable_of_lp g), FunLike.coe_add, Pi.add_apply,
       LinearIsometry.map_add]
   map_smul' c f := by
-    simpa only [LinearIsometry.map_smul, Pi.smul_apply, lp.coeFn_smul] using!
+    simpa only [LinearIsometry.map_smul, Pi.smul_apply, FunLike.coe_smul] using!
       (hV.summable_of_lp f).tsum_const_smul c
   norm_map' f := by
     -- needed for lattice instance on `Finset ι`, for `Filter.atTop_neBot`
@@ -255,7 +255,7 @@ end OrthogonalFamily
 section IsHilbertSum
 
 variable (𝕜 G)
-variable [CompleteSpace E] (V : ∀ i, G i →ₗᵢ[𝕜] E) (F : ι → Submodule 𝕜 E)
+variable [CompleteSpace E] (V : Π i, G i →ₗᵢ[𝕜] E) (F : ι → Submodule 𝕜 E)
 
 /-- Given a family of Hilbert spaces `G : ι → Type*`, a Hilbert sum of `G` consists of a Hilbert
 space `E` and an orthogonal family `V : Π i, G i →ₗᵢ[𝕜] E` such that the induced isometry
@@ -335,7 +335,7 @@ elements of `E`. -/
 @[simp]
 protected theorem IsHilbertSum.linearIsometryEquiv_apply_dfinsupp_sum_single
     [DecidableEq ι] [∀ i, DecidableEq (G i)] (hV : IsHilbertSum 𝕜 G V) (W₀ : Π₀ i : ι, G i) :
-    ((W₀.sum (γ := lp G 2) fun a b ↦ hV.linearIsometryEquiv (V a b)) : ∀ i, G i) = W₀ := by
+    ((W₀.sum (γ := lp G 2) fun a b ↦ hV.linearIsometryEquiv (V a b)) : Π i, G i) = W₀ := by
   rw [← map_dfinsuppSum]
   rw [← hV.linearIsometryEquiv_symm_apply_dfinsupp_sum_single]
   rw [LinearIsometryEquiv.apply_symm_apply]
