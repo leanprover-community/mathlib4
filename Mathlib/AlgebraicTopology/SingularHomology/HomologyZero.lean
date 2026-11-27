@@ -9,6 +9,9 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.HomologyZero
 public import Mathlib.AlgebraicTopology.SingularHomology.Basic
 public import Mathlib.Topology.Homotopy.TopCat.ZerothHomotopy
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Singular homology in degree 0
 

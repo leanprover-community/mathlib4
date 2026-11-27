@@ -5,17 +5,17 @@ Authors: Anne Baanen, Alex J. Best
 -/
 module
 
-public import Mathlib.Algebra.CharP.Quotient
-public import Mathlib.Data.SetLike.Fintype
 public import Mathlib.FieldTheory.Finite.Basic
-public import Mathlib.LinearAlgebra.FreeModule.Determinant
 public import Mathlib.LinearAlgebra.FreeModule.Finite.CardQuotient
 public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
-public import Mathlib.RingTheory.Ideal.Basis
 public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients.Basic
-public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicative
 
+import Mathlib.Algebra.CharP.Quotient
+import Mathlib.Data.SetLike.Fintype
+import Mathlib.LinearAlgebra.FreeModule.Determinant
+import Mathlib.RingTheory.Ideal.Basis
 import Mathlib.RingTheory.Norm.Basic
+import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicative
 
 /-!
 # Ideal norms
@@ -166,7 +166,7 @@ theorem cardQuot_pow_of_prime [IsDedekindDomain S] (hP : P ≠ ⊥) {i : ℕ} :
     rw [pow_succ' (cardQuot P), ← ih, cardQuot_apply (P ^ i.succ), ←
       card_quotient_mul_card_quotient (P ^ i) (P ^ i.succ) this.le, cardQuot_apply (P ^ i),
       cardQuot_apply P, Nat.card_congr hquot]
-  choose a a_mem a_notMem using IsConcreteLE.exists_of_lt this
+  choose a a_mem a_notMem using exists_mem_notMem_of_lt this
   choose f g hg hf using fun c (hc : c ∈ P ^ i) =>
     Ideal.exists_mul_add_mem_pow_succ hP a c a_mem a_notMem hc
   choose k hk_mem hk_eq using fun c' (hc' : c' ∈ map (mkQ (P ^ i.succ)) (P ^ i)) =>
@@ -547,7 +547,7 @@ lemma exists_prime_and_absNorm_eq_pow (P : Ideal S) [P.IsMaximal] :
   have hP : P.absNorm = p ^ (n : ℕ) := by
     rw [Ideal.absNorm_eq_natCard]
     exact Nat.card_eq_fintype_card.trans e
-  refine ⟨p, n, n.2, ?_, hp, hP⟩
+  refine ⟨p, n, n.property, ?_, hp, hP⟩
   rw [← Ideal.IsPrime.pow_mem_iff_mem (I := P) inferInstance _ n.pos, ← Nat.cast_pow, ← hP]
   exact P.absNorm_mem
 

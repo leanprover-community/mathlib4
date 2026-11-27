@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.MorphismProperty.Basic
 
 import Mathlib.Logic.Small.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Small classes of morphisms
 
@@ -49,7 +52,7 @@ lemma isSmall_iff_eq_ofHoms :
       W = ofHoms f := by
   constructor
   · intro
-    refine ⟨Shrink.{w} W.toSet, _, _, fun i ↦ ((equivShrink _).symm i).1.hom, ?_⟩
+    refine ⟨Shrink.{w} W.toSet, _, _, fun i ↦ ((equivShrink _).symm i).val.hom, ?_⟩
     ext A B f
     rw [ofHoms_iff]
     constructor

@@ -36,7 +36,7 @@ with integral coefficients.
   composition of the `m`-th and `n`-th Chebyshev polynomials of the first kind. There is a similar
   statement `Polynomial.Chebyshev.C_mul` for the `C` polynomials.
 
-## Implementation details
+## Implementation notes
 
 Since Chebyshev polynomials have interesting behaviour over the complex numbers and modulo `p`,
 we define them to have coefficients in an arbitrary commutative ring, even though

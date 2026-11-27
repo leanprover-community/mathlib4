@@ -150,7 +150,7 @@ lemma Coe.ringHom_apply (x : ℤ_[p]) : ringHom x = x := rfl
 @[simp, norm_cast]
 theorem coe_pow (x : ℤ_[p]) (n : ℕ) : (↑(x ^ n) : ℚ_[p]) = (↑x : ℚ_[p]) ^ n := rfl
 
-theorem mk_coe (k : ℤ_[p]) : (⟨k, k.2⟩ : ℤ_[p]) = k := rfl
+theorem mk_coe (k : ℤ_[p]) : (⟨k, k.property⟩ : ℤ_[p]) = k := rfl
 
 @[simp]
 lemma coe_sum {α : Type*} (s : Finset α) (f : α → ℤ_[p]) :
@@ -225,7 +225,7 @@ variable {p}
 /-! ### Norm -/
 
 @[bound]
-theorem norm_le_one (z : ℤ_[p]) : ‖z‖ ≤ 1 := z.2
+theorem norm_le_one (z : ℤ_[p]) : ‖z‖ ≤ 1 := z.property
 
 theorem nonarchimedean (q r : ℤ_[p]) : ‖q + r‖ ≤ max ‖q‖ ‖r‖ := Padic.nonarchimedean _ _
 
@@ -440,7 +440,7 @@ theorem unitCoeff_spec {x : ℤ_[p]} (hx : x ≠ 0) :
 theorem isUnit_den {p : ℕ} [hp_prime : Fact p.Prime] (r : ℚ) (h : ‖(r : ℚ_[p])‖ ≤ 1) :
     IsUnit (r.den : ℤ_[p]) := by
   rw [isUnit_iff]
-  apply le_antisymm (r.den : ℤ_[p]).2
+  apply le_antisymm (r.den : ℤ_[p]).property
   rw [← not_lt]
   intro norm_denom_lt
   have hr : ‖(r * r.den : ℚ_[p])‖ = ‖(r.num : ℚ_[p])‖ := by

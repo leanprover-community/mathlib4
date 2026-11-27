@@ -116,7 +116,6 @@ def tateComplex.map (φ : X ⟶ Y) : tateComplex X ⟶ tateComplex Y := by
 @[simp]
 lemma tateComplex.map_zero : tateComplex.map (0 : X ⟶ Y) = 0 := by cat_disch
 
-set_option backward.isDefEq.respectTransparency false in
 lemma tateComplex.map_add (f g : X ⟶ Y) : tateComplex.map (f + g) =
     tateComplex.map f + tateComplex.map g := by
   ext (i | i) : 1

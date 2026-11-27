@@ -14,6 +14,9 @@ public import Mathlib.NumberTheory.ModularForms.LevelOne.Basic
 public import Mathlib.NumberTheory.TsumDivisorsAntidiagonal
 public import Mathlib.Tactic.NormNum.Parity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Eisenstein series q-expansions
 
@@ -40,11 +43,9 @@ gives the q-expansion with a Riemann zeta factor, which we simplify using the fo
 public section
 
 open Set Metric TopologicalSpace Function Filter Complex ArithmeticFunction
-  ModularForm EisensteinSeries
+  ModularForm EisensteinSeries UpperHalfPlane
 
 open scoped Real Nat ArithmeticFunction.sigma Topology
-
-open UpperHalfPlane hiding I
 
 local notation "ℍₒ" => upperHalfPlaneSet
 
@@ -245,7 +246,7 @@ lemma tsum_eisSummand_eq_tsum_sigma_mul_cexp_pow {k : ℕ} (hk : 3 ≤ k) (hk2 :
 lemma eisSummand_of_gammaSet_eq_divIntMap (k : ℤ) (z : ℍ) {n : ℕ} (v : gammaSet 1 n 0) :
     eisSummand k v z = ((n : ℂ) ^ k)⁻¹ * eisSummand k (divIntMap n v) z := by
   simp_rw [eisSummand]
-  nth_rw 1 2 [gammaSet_eq_gcd_mul_divIntMap v.2]
+  nth_rw 1 2 [gammaSet_eq_gcd_mul_divIntMap v.property]
   simp [← mul_inv, ← mul_zpow, mul_add, mul_assoc]
 
 lemma tsum_eisSummand_eq_riemannZeta_mul_eisensteinSeries {k : ℕ} (hk : 3 ≤ k) (z : ℍ) :

@@ -213,11 +213,11 @@ indexed by `ℤ × Fin l` from a spectral object indexed by `Fin (l + 1)`. -/
 def coreE₂CohomologicalFin (l : ℕ) :
     SpectralSequenceDataCore (Fin (l + 1))
     (fun r ↦ ComplexShape.spectralSequenceFin l ⟨r, 1 - r⟩) 2 where
-  deg pq := pq.1 + pq.2.1
-  i₀ r pq hr := ⟨(pq.2.1 - (r - 2)).toNat, by grind⟩
+  deg pq := pq.1 + pq.2.val
+  i₀ r pq hr := ⟨(pq.2.val - (r - 2)).toNat, by grind⟩
   i₁ pq := pq.2.castSucc
   i₂ pq := pq.2.succ
-  i₃ r pq hr := Fin.clamp (pq.2.1 + (r - 1)).toNat _
+  i₃ r pq hr := Fin.clamp (pq.2.val + (r - 1)).toNat _
   le₀₁ := by rintro r ⟨p, q, hq⟩ hr; simp; lia
   le₁₂ pq := by simp [Fin.le_iff_val_le_val]
   le₂₃ r pq hr := by

@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.PointwiseLeftDerived
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.PointwiseRightDerived
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Deriving functors using a derivability structure
 

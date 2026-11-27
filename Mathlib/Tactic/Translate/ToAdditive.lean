@@ -166,21 +166,14 @@ mismatch error.
     If none of the arguments have a multiplicative structure, then the heuristic should not apply at
     all. This can be achieved with `(relevant_arg := _)`.
 * Option 2: It additivized a declaration `d` that should remain multiplicative. Solution:
-  * Make sure the first argument of `d` is a type with a multiplicative structure. If not, can you
-    reorder the (implicit) arguments of `d` so that the first argument becomes a type with a
-    multiplicative structure (and not some indexing type)?
-    The reason is that `@[to_additive]` doesn't additivize declarations if their first argument
+  * Make sure the `relevant_arg` of `d` is a type with a multiplicative structure.
+    You can see the value of `relevant_arg` using `to_additive?` on `d`.
+    The reason is that `@[to_additive]` doesn't additivize declarations if their `relevant_arg`
     contains fixed types like `ℕ` or `ℝ`. See section Heuristics.
-    If the first argument is not the argument with a multiplicative type-class, `@[to_additive]`
-    should have automatically added the attribute `(relevant_arg := ...)` to the declaration.
-    You can test this by running the following (where `d` is the full name of the declaration):
-    ```
-      open Lean in run_cmd logInfo m!"{ToAdditive.relevantArgAttr.find? (← getEnv) `d}"
-    ```
-    The expected output is `n` where the `n`-th (0-indexed) argument of `d` is a type (family)
-    with a multiplicative structure on it. `none` means `0`.
-    If you get a different output (or a failure), you could add the attribute
-    `@[to_additive (relevant_arg := n)]` manually, where `n` is an (1-indexed) argument with a
+    The expected output of `to_additive?` is `(relevant_arg := n)` where the `n`-th argument is
+    a type (family) with a multiplicative structure on it.
+    If the `relevant_arg` is wrong, you should add the attribute
+    `@[to_additive (relevant_arg := α)]` manually, where `α` is the name of an argument with a
     multiplicative structure.
 * Option 3: Arguments / universe levels are incorrectly ordered in the additive version.
   This likely only happens when the multiplicative declaration involves `pow`/`^`. Solutions:

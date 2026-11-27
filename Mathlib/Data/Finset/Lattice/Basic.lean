@@ -23,7 +23,7 @@ In Lean, we use lattice notation to talk about things involving unions and inter
 `⊥ = ∅` and `⊤` is called `top` with `⊤ = univ`.
 
 
-## Implementation Notes
+## Implementation notes
 
 All the theorems and instances expect `DecidableEq` instance for `α`
 

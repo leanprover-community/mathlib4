@@ -130,7 +130,7 @@ theorem HasIntegral.of_aeEq_zero {l : IntegrationParams} {I : Box ι} {f : (ι �
   choose r hrU using this
   refine ⟨fun _ => r, fun c => l.rCond_of_bRiemann_eq_false hl, fun c π hπ _ => ?_⟩
   rw [dist_eq_norm, sub_zero, ← integralSum_fiberwise fun J => N (π.tag J)]
-  grw [← hcε, ← sum_le_hasSum _ (fun n _ => (δ n).2) (NNReal.hasSum_coe.2 hδc)]
+  grw [← hcε, ← sum_le_hasSum _ (fun n _ => (δ n).property) (NNReal.hasSum_coe.2 hδc)]
   apply norm_sum_le_of_le
   rintro n -
   dsimp [integralSum]
@@ -218,8 +218,8 @@ theorem IntegrableOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} {
   have hfi' := fun n => ((f n).hasBoxIntegral μ I l hl).integrable
   have hfg_mono : ∀ (x) {m n}, m ≤ n → ‖f n x - g x‖ ≤ ‖f m x - g x‖ := by
     intro x m n hmn
-    rw [← dist_eq_norm, ← dist_eq_norm, dist_nndist, dist_nndist, NNReal.coe_le_coe, ←
-      ENNReal.coe_le_coe, ← edist_nndist, ← edist_nndist]
+    rw [← dist_eq_norm, ← dist_eq_norm, dist_nnDist, dist_nnDist, NNReal.coe_le_coe, ←
+      ENNReal.coe_le_coe, ← eDist_nnDist, ← eDist_nnDist]
     exact SimpleFunc.edist_approxOn_mono hg.measurable _ x hmn
   /- Now consider `ε > 0`. We need to find `r` such that for any tagged partition subordinate
     to `r`, the integral sum is `(μ I + 1 + 1) * ε`-close to the Bochner integral. -/
@@ -268,7 +268,7 @@ theorem IntegrableOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} {
     grw [← hcε]
     refine
       (dist_sum_sum_le_of_le _ fun n hn => ?_).trans
-        (sum_le_hasSum _ (fun n _ => (δ n).2) (NNReal.hasSum_coe.2 hδc))
+        (sum_le_hasSum _ (fun n _ => (δ n).property) (NNReal.hasSum_coe.2 hδc))
     have hNxn : ∀ J ∈ π.filter fun J => Nx (π.tag J) = n, Nx (π.tag J) = n := fun J hJ =>
       (π.mem_filter.1 hJ).2
     have hrn : ∀ J ∈ π.filter fun J => Nx (π.tag J) = n,

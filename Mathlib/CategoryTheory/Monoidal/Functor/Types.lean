@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Monoidal.Types.Basic
 public import Mathlib.Control.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Convert from `Applicative` to `CategoryTheory.Functor.LaxMonoidal`
 

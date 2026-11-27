@@ -21,7 +21,7 @@ set_option doc.verso.suggestions false
 In this file we define `ENat` (notation: `ℕ∞`) to be `WithTop ℕ` and prove some basic lemmas
 about this type.
 
-## Implementation details
+## Implementation notes
 
 There are two natural coercions from `ℕ` to `WithTop ℕ = ENat`: `WithTop.some` and `Nat.cast`. In
 Lean 3, this difference was hidden in typeclass instances. Since these instances were definitionally

@@ -5,9 +5,10 @@ Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Subalgebra.Pointwise
 public import Mathlib.RingTheory.DedekindDomain.Basic
 public import Mathlib.RingTheory.FractionalIdeal.Inverse
+
+import Mathlib.Algebra.Algebra.Subalgebra.Pointwise
 
 /-!
 # Dedekind domains and invertible ideals
@@ -22,7 +23,7 @@ Further results on the structure of ideals in a Dedekind domain are found in
 - `isDedekindDomain_iff_mul_inv_cancel` shows an integral domain is
   a Dedekind domain iff every nonzero fractional ideal is invertible.
 
-## Main results:
+## Main results
 
 - `isDedekindDomain_iff_mul_inv_cancel`
 - `Ideal.uniqueFactorizationMonoid`
@@ -135,7 +136,7 @@ lemma not_inv_le_one_of_ne_bot (hI0 : I ≠ ⊥) (hI1 : I ≠ ⊤) :
   -- such that removing element `M` from the product is not contained in `J`.
   obtain ⟨Z, hle, hnle⟩ := PrimeSpectrum.exists_multiset_prod_cons_le_and_prod_not_le hNF hJ0 hJI
   -- Choose an element `b` of the product that is not in `J`.
-  obtain ⟨b, hbZ, hbJ⟩ := IsConcreteLE.not_le_iff_exists.mp hnle
+  obtain ⟨b, hbZ, hbJ⟩ := not_le_iff_exists_mem_notMem.mp hnle
   have hnz_fa : algebraMap A K a ≠ 0 :=
     mt ((injective_iff_map_eq_zero _).mp (IsFractionRing.injective A K) a) ha0
   -- Then `b a⁻¹ : K` is in `M⁻¹` but not in `1`.
@@ -300,7 +301,7 @@ theorem dimensionLEOne : DimensionLEOne A := by
     rw [← inv_mul_cancel₀ M'_ne]; gcongr
   obtain ⟨y, _hy, rfl⟩ := (mem_coeIdeal _).mp (le_one hx)
   -- Since `M` is strictly greater than `P`, let `z ∈ M \ P`.
-  obtain ⟨z, hzM, hzp⟩ := IsConcreteLE.exists_of_lt hM
+  obtain ⟨z, hzM, hzp⟩ := exists_mem_notMem_of_lt hM
   -- We have `z * y ∈ M * (M⁻¹ * P) = P`.
   have zy_mem := mul_mem_mul (mem_coeIdeal_of_mem A⁰ hzM) hx
   rw [← map_mul, ← mul_assoc, mul_inv_cancel₀ M'_ne, one_mul] at zy_mem
@@ -356,10 +357,10 @@ instance : PosMulStrictMono (FractionalIdeal A⁰ K) := PosMulMono.toPosMulStric
 instance : MulPosStrictMono (FractionalIdeal A⁰ K) := MulPosMono.toMulPosStrictMono
 
 instance : PosMulReflectLE (FractionalIdeal A⁰ K) where
-  elim I J K hJK := by simpa [I.2.ne'] using mul_right_mono (a := I.1⁻¹) hJK
+  elim I J K hJK := by simpa [I.property.ne'] using mul_right_mono (a := I.val⁻¹) hJK
 
 instance : MulPosReflectLE (FractionalIdeal A⁰ K) where
-  elim I J K hJK := by simpa [I.2.ne'] using mul_left_mono (a := I.1⁻¹) hJK
+  elim I J K hJK := by simpa [I.property.ne'] using mul_left_mono (a := I.val⁻¹) hJK
 
 lemma mul_left_strictMono {I : FractionalIdeal A⁰ K} (hI : I ≠ 0) : StrictMono (· * I) :=
   fun _J _K hJK ↦ mul_lt_mul_of_pos_right hJK <| pos_iff_ne_zero.2 hI
@@ -371,8 +372,8 @@ instance : PosMulReflectLE (Ideal A) where
   elim I J K e := by
     dsimp
     rwa [← FractionalIdeal.coeIdeal_le_coeIdeal (FractionRing A),
-      ← mul_le_mul_iff_right₀ (α := FractionalIdeal A⁰ (FractionRing A)) (a := I.1)
-        (by simpa [pos_iff_ne_zero] using I.2.ne'),
+      ← mul_le_mul_iff_right₀ (α := FractionalIdeal A⁰ (FractionRing A)) (a := I.val)
+        (by simpa [pos_iff_ne_zero] using I.property.ne'),
       ← FractionalIdeal.coeIdeal_mul, ← FractionalIdeal.coeIdeal_mul,
       FractionalIdeal.coeIdeal_le_coeIdeal]
 
@@ -439,7 +440,7 @@ instance Ideal.uniqueFactorizationMonoid : UniqueFactorizationMonoid (Ideal A) :
           intro J hJ
           obtain ⟨_J_ne, H, hunit, P_eq⟩ := Ideal.dvdNotUnit_iff_lt.mpr hJ
           exact Ideal.isUnit_iff.mp ((hirr.isUnit_or_isUnit P_eq).resolve_right hunit)
-        simp_rw [Ideal.dvd_iff_le, IsConcreteLE.le_iff]
+        simp_rw [Ideal.dvd_iff_le, le_iff_mem_imp_mem]
         contrapose!
         rintro ⟨⟨x, x_mem, x_notMem⟩, ⟨y, y_mem, y_notMem⟩⟩
         exact

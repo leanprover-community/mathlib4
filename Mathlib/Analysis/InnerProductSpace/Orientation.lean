@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.InnerProductSpace.GramSchmidtOrtho
 public import Mathlib.LinearAlgebra.Orientation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Orientations of real inner product spaces.
 

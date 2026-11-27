@@ -50,8 +50,7 @@ local notation "σₙ" => quasispectrum
 theorem cfc_tsub {A : Type*} [TopologicalSpace A] [Ring A] [PartialOrder A] [StarRing A]
     [StarOrderedRing A] [Algebra ℝ A] [IsTopologicalRing A] [T2Space A]
     [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
-    [NonnegSpectrumClass ℝ A] (f g : ℝ≥0 → ℝ≥0)
-    (a : A) (hfg : ∀ x ∈ spectrum ℝ≥0 a, g x ≤ f x) (ha : 0 ≤ a := by cfc_tac)
+    (f g : ℝ≥0 → ℝ≥0) (a : A) (hfg : ∀ x ∈ spectrum ℝ≥0 a, g x ≤ f x) (ha : 0 ≤ a := by cfc_tac)
     (hf : ContinuousOn f (spectrum ℝ≥0 a) := by cfc_cont_tac)
     (hg : ContinuousOn g (spectrum ℝ≥0 a) := by cfc_cont_tac) :
     cfc (fun x ↦ f x - g x) a = cfc f a - cfc g a := by
@@ -62,14 +61,13 @@ theorem cfc_tsub {A : Type*} [TopologicalSpace A] [Ring A] [PartialOrder A] [Sta
   rw [cfc_nnreal_eq_real .., cfc_nnreal_eq_real .., cfc_nnreal_eq_real .., cfc_congr this]
   refine cfc_sub _ _ a ?_ ?_
   all_goals
-    exact continuous_subtype_val.comp_continuousOn <|
+    exact continuous_subtypeVal.comp_continuousOn <|
       ContinuousOn.comp ‹_› continuous_real_toNNReal.continuousOn <| ha'.image ▸ Set.mapsTo_image ..
 
 theorem cfcₙ_tsub {A : Type*} [TopologicalSpace A] [NonUnitalRing A] [PartialOrder A] [StarRing A]
     [StarOrderedRing A] [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A]
     [IsTopologicalRing A] [T2Space A] [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
-    [NonnegSpectrumClass ℝ A] (f g : ℝ≥0 → ℝ≥0)
-    (a : A) (hfg : ∀ x ∈ σₙ ℝ≥0 a, g x ≤ f x) (ha : 0 ≤ a := by cfc_tac)
+    (f g : ℝ≥0 → ℝ≥0) (a : A) (hfg : ∀ x ∈ σₙ ℝ≥0 a, g x ≤ f x) (ha : 0 ≤ a := by cfc_tac)
     (hf : ContinuousOn f (σₙ ℝ≥0 a) := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac)
     (hg : ContinuousOn g (σₙ ℝ≥0 a) := by cfc_cont_tac) (hg0 : g 0 = 0 := by cfc_zero_tac) :
     cfcₙ (fun x ↦ f x - g x) a = cfcₙ f a - cfcₙ g a := by
@@ -80,7 +78,7 @@ theorem cfcₙ_tsub {A : Type*} [TopologicalSpace A] [NonUnitalRing A] [PartialO
   rw [cfcₙ_nnreal_eq_real .., cfcₙ_nnreal_eq_real .., cfcₙ_nnreal_eq_real .., cfcₙ_congr this]
   refine cfcₙ_sub _ _ a ?_ (by simpa) ?_
   all_goals
-    exact continuous_subtype_val.comp_continuousOn <|
+    exact continuous_subtypeVal.comp_continuousOn <|
       ContinuousOn.comp ‹_› continuous_real_toNNReal.continuousOn <| ha'.image ▸ Set.mapsTo_image ..
 
 namespace Unitization
@@ -116,7 +114,7 @@ end Unitization
 /-- `cfc_le_iff` only applies to a scalar ring where `R` is an actual `Ring`, and not a `Semiring`.
 However, this theorem still holds for `ℝ≥0` as long as the algebra `A` itself is an `ℝ`-algebra. -/
 lemma cfc_nnreal_le_iff {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [PartialOrder A]
-    [StarOrderedRing A] [Algebra ℝ A] [IsTopologicalRing A] [NonnegSpectrumClass ℝ A]
+    [StarOrderedRing A] [Algebra ℝ A] [IsTopologicalRing A]
     [T2Space A] [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
     (f : ℝ≥0 → ℝ≥0) (g : ℝ≥0 → ℝ≥0) (a : A)
     (ha_spec : SpectrumRestricts a ContinuousMap.realToNNReal)
@@ -133,7 +131,7 @@ open ContinuousFunctionalCalculus in
 /-- In a unital `ℝ`-algebra `A` with a continuous functional calculus, an element `a : A` is larger
 than some `algebraMap ℝ A r` if and only if every element of the `ℝ`-spectrum is positive. -/
 lemma CFC.exists_pos_algebraMap_le_iff {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A]
-    [PartialOrder A] [StarOrderedRing A] [Algebra ℝ A] [NonnegSpectrumClass ℝ A] [Nontrivial A]
+    [PartialOrder A] [StarOrderedRing A] [Algebra ℝ A] [Nontrivial A]
     [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
     (a : A) (ha : IsSelfAdjoint a := by cfc_tac) :
     (∃ r > 0, algebraMap ℝ A r ≤ a) ↔ (∀ x ∈ spectrum ℝ a, 0 < x) := by
@@ -218,7 +216,7 @@ lemma norm_le_iff_le_algebraMap (a : A) {r : ℝ} (hr : 0 ≤ r) (ha : 0 ≤ a :
 lemma nnNorm_le_iff_of_nonneg (a : A) (r : ℝ≥0) (ha : 0 ≤ a := by cfc_tac) :
     ‖a‖₊ ≤ r ↔ a ≤ algebraMap ℝ≥0 A r := by
   rw [← NNReal.coe_le_coe]
-  exact norm_le_iff_le_algebraMap a r.2
+  exact norm_le_iff_le_algebraMap a r.property
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_le_iff_of_nonneg := nnNorm_le_iff_of_nonneg
 
@@ -257,7 +255,7 @@ lemma mem_Icc_algebraMap_iff_norm_le {x : A} {r : ℝ} (hr : 0 ≤ r) :
 
 lemma mem_Icc_algebraMap_iff_nnNorm_le {x : A} {r : ℝ≥0} :
     x ∈ Icc 0 (algebraMap ℝ≥0 A r) ↔ 0 ≤ x ∧ ‖x‖₊ ≤ r :=
-  mem_Icc_algebraMap_iff_norm_le (hr := r.2)
+  mem_Icc_algebraMap_iff_norm_le (hr := r.property)
 
 @[deprecated (since := "2026-10-31")]
 alias mem_Icc_algebraMap_iff_nnnorm_le := mem_Icc_algebraMap_iff_nnNorm_le
