@@ -42,34 +42,23 @@ variable (C : Type u) [Category.{v} C]
 namespace TopCat
 
 /-- The category of `C`-valued presheaves on a (bundled) topological space `X`. -/
-/-@[implicit_reducible]
-def Presheaf (X : TopCat.{w}) : Type max u v w :=
-  (Opens X)ᵒᵖ ⥤ C-/
 abbrev Presheaf (X : TopCat.{w}) : Type max u v w :=
   (Opens X)ᵒᵖ ⥤ C
-
-instance (X : TopCat.{w}) : Category (Presheaf.{w, v, u} C X) :=
-  inferInstanceAs (Category ((Opens X)ᵒᵖ ⥤ C : Type max u v w))
 
 variable {C}
 
 namespace Presheaf
 
-set_option linter.deprecated.automationAttr false in
-@[deprecated " with abbrev there is no need of this" (since := "2026-26-11")]
+@[deprecated " with an abbrev definition there is no need of this" (since := "2026-26-11")]
 theorem comp_app {X : TopCat.{w}} {U : (Opens X)ᵒᵖ} {P Q R : Presheaf C X}
     (f : P ⟶ Q) (g : Q ⟶ R) :
     (f ≫ g).app U = f.app U ≫ g.app U := rfl
 
-@[ext]
+@[deprecated " with an abbrev definition there is no need of this" (since := "2026-26-11")]
 lemma ext {X : TopCat.{w}} {P Q : Presheaf C X} {f g : P ⟶ Q}
     (w : ∀ U : Opens X, f.app (op U) = g.app (op U)) :
     f = g := by
   aesop
-  /-apply NatTrans.ext
-  ext U
-  induction U with | _ U => ?_
-  apply w-/
 
 /-- attribute `sheaf_restrict` to mark lemmas related to restricting sheaves -/
 macro "sheaf_restrict" : attr =>
@@ -384,13 +373,13 @@ lemma pullbackObjIso_hom_naturality {X Y : TopCat.{v}} {f : X ⟶ Y} (hf : IsOpe
    (hf.pullbackObjIso ℱ).hom ≫ Functor.whiskerLeft hf.functor.op u := by
   ext U
   dsimp [pullbackObjIso, pullbackObjObjOfImageOpen]
-  refine ((Opens.map f).op.isPointwiseLeftKanExtensionLeftKanExtensionUnit ℱ (op U)).hom_ext
+  refine ((Opens.map f).op.isPointwiseLeftKanExtensionLeftKanExtensionUnit ℱ  U).hom_ext
     (fun j ↦ ?_)
   have eq : ((LeftExtension.mk ((Opens.map f).op.leftKanExtension ℱ)
-      ((Opens.map f).op.leftKanExtensionUnit ℱ)).coconeAt (op U)).ι.app j
-      ≫ ((pullback C f).map u).app (op U) = NatTrans.app (Functor.whiskerLeft _ u) j ≫
+      ((Opens.map f).op.leftKanExtensionUnit ℱ)).coconeAt U).ι.app j
+      ≫ ((pullback C f).map u).app U = NatTrans.app (Functor.whiskerLeft _ u) j ≫
       ((LeftExtension.mk ((Opens.map f).op.leftKanExtension 𝒢)
-      ((Opens.map f).op.leftKanExtensionUnit 𝒢)).coconeAt (op U)).ι.app j := by
+      ((Opens.map f).op.leftKanExtensionUnit 𝒢)).coconeAt U).ι.app j := by
     dsimp [pullback]
     simp only [Category.assoc, NatTrans.naturality]
     have := congr($((Opens.map f).op.lanUnit.naturality u).app j.left)

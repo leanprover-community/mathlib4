@@ -114,7 +114,6 @@ def pushforwardDiagramToColimit (F : J ⥤ PresheafedSpace.{_, _, v} C) :
     induction U with
     | op U =>
       simp [opEquiv]
-      rfl
   map_comp {j₁ j₂ j₃} f g := by
     apply (opEquiv _ _).injective
     refine NatTrans.ext (funext fun U => ?_)
@@ -166,7 +165,8 @@ def colimitCocone (F : J ⥤ PresheafedSpace.{_, _, v} C) : Cocone F where
         · ext x
           exact colimit.w_apply (F ⋙ PresheafedSpace.forget C) f x
         · ext ⟨⟩
-          simp [← congr($(limit.w (pushforwardDiagramToColimit F).leftOp f.op).app)] }
+          simp [← congr($(limit.w (pushforwardDiagramToColimit F).leftOp f.op).app)]
+          aesop }
 
 variable [HasLimitsOfShape Jᵒᵖ C]
 
@@ -236,7 +236,7 @@ theorem desc_fac (F : J ⥤ PresheafedSpace.{_, _, v} C) (s : Cocone F) (j : J) 
   -- but this has to be expanded a bit
   ext U
   · simp [desc]
-  · simp only [op_obj, desc, descCApp, Presheaf.comp_app, comp_c_app, colimitCocone_ι_app_c, assoc]
+  · simp only [op_obj, desc, descCApp, NatTrans.comp_app, comp_c_app, colimitCocone_ι_app_c, assoc]
     rw [limitObjIsoLimitCompEvaluation_inv_π_app_assoc]
     simp
 

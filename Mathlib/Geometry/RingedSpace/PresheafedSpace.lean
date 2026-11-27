@@ -232,15 +232,14 @@ def sheafIsoOfIso (H : X ≅ Y) : Y.presheaf ≅ H.hom.base _* X.presheaf where
   hom_inv_id := by
     ext U
     rw [NatTrans.comp_app]
-    simpa using! congr_arg (fun f => f ≫ eqToHom _) (congr_app H.inv_hom_id (op U))
+    simpa using! congr_arg (fun f => f ≫ eqToHom _) (congr_app H.inv_hom_id U)
   inv_hom_id := by
     ext U
     dsimp
-    rw [NatTrans.id_app]
     simp only [Presheaf.pushforwardToOfIso_app, eqToHom_map, assoc]
-    have eq₁ := congr_app H.hom_inv_id (op ((Opens.map H.hom.base).obj U))
+    have eq₁ := congr_app H.hom_inv_id (op ((Opens.map H.hom.base).obj U.unop))
     have eq₂ := H.hom.c.naturality (eqToHom (congr_obj (congr_arg Opens.map
-      ((forget C).congr_map H.inv_hom_id.symm)) U)).op
+      ((forget C).congr_map H.inv_hom_id.symm)) U.unop)).op
     rw [id_c, NatTrans.id_app, id_comp, eqToHom_map, comp_c_app] at eq₁
     rw [eqToHom_op, eqToHom_map] at eq₂
     erw [eq₂, reassoc_of% eq₁]
@@ -294,14 +293,14 @@ instance ofRestrict_mono {U : TopCat} (X : PresheafedSpace C) (f : U ⟶ X.carri
     rw [cancel_mono] at this
     exact this
   · ext V
-    have hV : (Opens.map (X.ofRestrict hf).base).obj (hf.functor.obj V) = V := by
+    have hV : (Opens.map (X.ofRestrict hf).base).obj (hf.functor.obj V.unop) = V.unop := by
       ext1
       exact Set.preimage_image_eq _ hf.injective
     have :
-      IsIso (hf.isOpenMap.adjunction.counit.app (unop (op (hf.functor.obj V)))) :=
+      IsIso (hf.isOpenMap.adjunction.counit.app (unop (op (hf.functor.obj V.unop)))) :=
         NatIso.isIso_app_of_isIso
-          (whiskerLeft hf.functor hf.isOpenMap.adjunction.counit) V
-    have := PresheafedSpace.congr_app eq (op (hf.functor.obj V))
+          (whiskerLeft hf.functor hf.isOpenMap.adjunction.counit) V.unop
+    have := PresheafedSpace.congr_app eq (op (hf.functor.obj V.unop))
     rw [PresheafedSpace.comp_c_app, PresheafedSpace.comp_c_app,
       PresheafedSpace.ofRestrict_c_app, Category.assoc, cancel_epi] at this
     have h : _ ≫ _ = _ ≫ _ ≫ _ :=
