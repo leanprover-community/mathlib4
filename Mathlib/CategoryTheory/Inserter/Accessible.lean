@@ -868,6 +868,7 @@ end
 end Seg
 
 end limit
+
 /- TODOs (@robin-carlier):
   - Prove Lemma 4.5 of [positselski2024]
   - Use the lemma to show that given an inserter E, the canonical functor
