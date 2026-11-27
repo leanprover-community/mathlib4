@@ -48,7 +48,7 @@ variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommMonoid E] [Modu
 
 instance : Coe (Submodule R E) (PointedCone R E) := ⟨ofSubmodule⟩
 
-@[simp] lemma coe_ofSubmodule (S : Submodule R E) : (ofSubmodule S : Set E) = S := rfl
+lemma coe_ofSubmodule (S : Submodule R E) : (ofSubmodule S : Set E) = S := rfl
 
 lemma mem_ofSubmodule_iff {S : Submodule R E} {x : E} : x ∈ (S : PointedCone R E) ↔ x ∈ S := .rfl
 
@@ -222,7 +222,7 @@ lemma mem_hull_singleton {x y : E} :
 
 theorem le_hull_singleton_iff {C : PointedCone R E} {x : E} :
     C ≤ R ∙₊ x ↔ ∀ y ∈ C, ∃ r : R, 0 ≤ r ∧ r • x = y := by
-  simp_rw [IsConcreteLE.le_iff, mem_hull_singleton]
+  simp_rw [le_iff_mem_imp_mem, mem_hull_singleton]
 
 end Definitions
 

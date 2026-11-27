@@ -6,11 +6,12 @@ Authors: Robert Y. Lewis, Keeley Hoek
 module
 
 public import Batteries.Data.Fin.Basic
-public import Mathlib.Data.Int.DivMod
 public import Mathlib.Data.Nat.Init
 public import Mathlib.Logic.Equiv.Defs
 public import Mathlib.Tactic.Attr.Core
 public import Mathlib.Tactic.Common
+
+import Mathlib.Data.Int.DivMod
 
 /-!
 # The finite type with `n` elements
@@ -530,7 +531,7 @@ lemma sub_succ_le_sub_of_le {n : ℕ} {u v : Fin (n + 2)} (h : u < v) : v - (u +
 end AddGroup
 
 open Fin.NatCast in
-@[simp]
+@[deprecated val_natCast +typeChanged (since := "2026-11-23")]
 theorem coe_natCast_eq_mod (m n : ℕ) [NeZero m] :
     ((n : Fin m) : ℕ) = n % m :=
   rfl

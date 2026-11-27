@@ -6,13 +6,13 @@ Authors: Jeremy Parker, Lua Viana Reis
 module
 
 public import Mathlib.Dynamics.BirkhoffSum.NormedSpace
-public import Mathlib.Dynamics.Ergodic.MeasurePreserving
-public import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
 public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 public import Mathlib.MeasureTheory.Measure.Support
 
+import Mathlib.Dynamics.Ergodic.MeasurePreserving
 import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
 import Mathlib.MeasureTheory.Measure.DiracProba
+import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
 import Mathlib.MeasureTheory.Measure.Prokhorov
 import Mathlib.Topology.ContinuousMap.Bounded.Basic
 
@@ -129,7 +129,8 @@ public theorem exists_measurePreserving_probabilityMeasure
     · simp_rw [← g.toBoundedContinuousFunction_apply]
       rw [← ContinuousMap.coe_mk f hf]
       simp_rw [← g.toBoundedContinuousFunction.compContinuous_apply ⟨f,hf⟩, ← hμν]
-      refine ProbabilityMeasure.integral_comp_eq_integral_of_mapClusterPt hf hμ (g := g) ?_
+      refine ProbabilityMeasure.integral_comp_eq_integral_of_mapClusterPt hf hμ
+        (g := g.toBoundedContinuousFunction) ?_
       refine tendsto_integral_comp_sub_integral_empiricalMeasure_of_isBoundedUnder f x g ?_
       exact g.toBoundedContinuousFunction.isBounded_range.subset <| Set.range_comp_subset_range ..
     · exact g.continuous.aestronglyMeasurable

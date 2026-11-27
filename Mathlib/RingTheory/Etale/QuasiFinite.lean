@@ -16,6 +16,7 @@ import Mathlib.RingTheory.Ideal.Quotient.Over
 We construct etale neighborhoods that split fibers of finite algebras.
 
 ## Main results
+
 - `Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq`:
   Let `S` be a module-finite `R`-algebra, and `q` a prime lying over `p`.
   We may construct an etale `R`-algebra `R'` and a prime `P` lying over `p` with `κ(P) = κ(p)`,
@@ -168,6 +169,7 @@ lemma Algebra.exists_notMem_and_isIntegral_forall_mem_of_ne_of_liesOver
     fun q' _ hq'q _ ↦ hm ▸ Ideal.mul_mem_left _ _ (Ideal.mul_mem_right _ _ (hs₁ q' ‹_› hq'q ‹_›)),
     fun q' _ hq'q _ ↦ ?_⟩
   let : Algebra (integralClosure R S) (Localization.Away s₂.val) := OreLocalization.instAlgebra
+  let : SMul (integralClosure R S) (Localization.Away s₂.val) := Algebra.toSMul
   let e : Localization.Away s₂ ≃ₐ[integralClosure R S] Localization.Away s₂.val :=
     .ofBijective (Localization.awayMapₐ (Algebra.ofId _ _) s₂) hs₂
   let q's : Ideal (Localization.Away s₂) := q'.map (algebraMap _ _)

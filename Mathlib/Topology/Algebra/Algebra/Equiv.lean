@@ -94,7 +94,7 @@ instance equivLike : EquivLike (A ≃A[R] B) A B where
 instance continuousAlgEquivClass : ContinuousAlgEquivClass (A ≃A[R] B) R A B where
   map_add f := f.map_add'
   map_mul f := f.map_mul'
-  commutes f := f.commutes'
+  map_smulₛₗ f := f.map_smul'
   map_continuous := continuous_toFun
   inv_continuous := continuous_invFun
 
@@ -135,7 +135,6 @@ instance : Coe (A ≃A[R] B) (A ≃L[R] B) := ⟨toContinuousLinearEquiv⟩
 
 @[simp] theorem coe_coeCLE (e : A ≃A[R] B) : ⇑(e : A ≃L[R] B) = e := rfl
 
-@[simp]
 theorem toContinuousLinearEquiv_apply (e : A ≃A[R] B) (a : A) :
     e.toContinuousLinearEquiv a = e a := rfl
 
@@ -211,7 +210,6 @@ theorem coeCLE_refl : (refl R A).toContinuousLinearEquiv = ContinuousLinearEquiv
 @[simp]
 theorem coe_refl' : ⇑(refl R A) = id := rfl
 
-@[simp]
 theorem refl_toContinuousLinearEquiv :
     (refl R A).toContinuousLinearEquiv = .refl R A := rfl
 

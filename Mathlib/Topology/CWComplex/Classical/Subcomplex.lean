@@ -14,10 +14,12 @@ In this file we discuss subcomplexes of CW complexes.
 The definition of subcomplexes is in the file `Mathlib/Topology/CWComplex/Classical/Basic.lean`.
 
 ## Main results
+
 * `RelCWComplex.Subcomplex.instRelCWComplex`: a subcomplex of a (relative) CW complex is again a
   (relative) CW complex.
 
 ## References
+
 * [K. Jänich, *Topology*][Janich1984]
 -/
 
@@ -124,12 +126,10 @@ instance CWComplex.Subcomplex.instCWComplex [T2Space X] [CWComplex C] (E : Subco
     CWComplex (E : Set X) :=
   RelCWComplex.toCWComplex (E : Set X)
 
-@[simp]
 lemma CWComplex.Subcomplex.cell_def [T2Space X] [CWComplex C] (E : Subcomplex C)
     (n : ℕ) : cell (E : Set X) n = E.I (C := C) n :=
   rfl
 
-@[simp]
 lemma CWComplex.Subcomplex.map_def [T2Space X] [CWComplex C] (E : Subcomplex C) (n : ℕ)
     (i : E.I n) : map (C := E) n i = map (C := C) n i :=
   rfl

@@ -882,7 +882,6 @@ def codRestrict (p : L.Substructure N) (f : M ↪[L] N) (h : ∀ c, f c ∈ p) :
     rw [Hom.subtype_comp_codRestrict, ← f.map_rel]
     rfl
 
-@[simp]
 theorem codRestrict_apply (p : L.Substructure N) (f : M ↪[L] N) {h} (x : M) :
     (codRestrict p f h x : N) = f x :=
   rfl

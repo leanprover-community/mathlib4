@@ -9,6 +9,9 @@ public import Mathlib.AlgebraicTopology.DoldKan.Compatibility
 public import Mathlib.AlgebraicTopology.DoldKan.EquivalenceAdditive
 public import Mathlib.CategoryTheory.Idempotents.SimplicialObject
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Dold-Kan correspondence for pseudoabelian categories
 

@@ -75,21 +75,21 @@ section proper_orbit_map
 
 /-- Preliminary lemma for compactness of the orbit map. -/
 private lemma cdsq_le {K : Set ℍ} (hK : IsCompact K) :
-    ∃ A, ∀ g : SL(2, ℝ), g • I ∈ K → g 1 0 ^ 2 + g 1 1 ^ 2 ≤ A := by
+    ∃ A, ∀ g : SL(2, ℝ), g • .I ∈ K → g 1 0 ^ 2 + g 1 1 ^ 2 ≤ A := by
   rcases K.eq_empty_or_nonempty with rfl | hKne; · simp
   obtain ⟨δ, hδ, hδK⟩ : ∃ δ > 0, ∀ z ∈ K, δ ≤ z.im :=
     match hK.exists_isMinOn hKne continuous_im.continuousOn with | ⟨z, _, h⟩ => ⟨_, z.im_pos, h⟩
   refine ⟨1 / δ, fun g hg ↦ ?_⟩
-  specialize hδK (g • I) hg
+  specialize hδK (g • .I) hg
   simp only [MulAction.compHom_smul_def, im_smul_eq_div_normSq, Matrix.SpecialLinearGroup.det_mapGL,
     Units.val_one, abs_one, I_im, mul_one] at hδK
-  rw [le_div_iff₀ (normSq_denom_pos (Matrix.SpecialLinearGroup.mapGL ℝ g) (show I.im ≠ 0 by simp)),
-    mul_comm, ← le_div_iff₀ hδ] at hδK
+  rw [le_div_iff₀ (normSq_denom_pos (Matrix.SpecialLinearGroup.mapGL ℝ g)
+    (show (.I : ℍ).im ≠ 0 by simp)), mul_comm, ← le_div_iff₀ hδ] at hδK
   simpa [Complex.normSq, add_comm, denom, sq] using hδK
 
 /-- Preliminary lemma for compactness of the orbit map. -/
 private lemma absq_le {K : Set ℍ} (hK : IsCompact K) :
-    ∃ A : ℝ, ∀ g : SL(2, ℝ), g • I ∈ K → g 0 0 ^ 2 + g 0 1 ^ 2 ≤ A := by
+    ∃ A : ℝ, ∀ g : SL(2, ℝ), g • .I ∈ K → g 0 0 ^ 2 + g 0 1 ^ 2 ≤ A := by
   let S : SL(2, ℝ) := ⟨!![0, -1; 1, 0], by simp⟩
   obtain ⟨A, hA⟩ := cdsq_le (K := S • K) (hK.image <| continuous_const_smul S)
   refine ⟨A, fun g hg ↦ ?_⟩
@@ -98,7 +98,7 @@ private lemma absq_le {K : Set ℍ} (hK : IsCompact K) :
   simp
 
 /-- The orbit map `g ↦ g • I` is a proper map `SL(2, ℝ) → ℍ`. -/
-lemma isProperMap_smul_I : IsProperMap fun g : SL(2, ℝ) ↦ g • I := by
+lemma isProperMap_smul_I : IsProperMap fun g : SL(2, ℝ) ↦ (g • .I : ℍ) := by
   refine isProperMap_iff_isCompact_preimage.mpr ⟨by fun_prop, fun K hK ↦ ?_⟩
   obtain ⟨A, hA⟩ := absq_le hK
   obtain ⟨A', hA'⟩ := cdsq_le hK

@@ -9,6 +9,9 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 
 import Mathlib.AlgebraicTopology.SimplexCategory.ToMkOne
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Simplices in `Δ[1]`
 

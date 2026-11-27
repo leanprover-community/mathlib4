@@ -8,6 +8,9 @@ module
 public import Mathlib.Geometry.Euclidean.Angle.Oriented.Affine
 public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Projection
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Oriented angles and orthogonal projection.
 

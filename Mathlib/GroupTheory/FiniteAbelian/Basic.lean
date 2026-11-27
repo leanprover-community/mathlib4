@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Module.PID
 
 import Mathlib.Data.ZMod.QuotientRing
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Structure of finite(ly generated) abelian groups
 
@@ -241,7 +244,7 @@ lemma isFiniteRelIndex_of_map_linearMapMulLeft_le {A B : Submodule R K} {n : ℕ
   have := isFiniteRelIndex_map_nsmulAddMonoidHom_of_fg this hn
   refine isFiniteRelIndex_of_le_left (H := A.toAddSubgroup.map (nsmulAddMonoidHom n))
     A.toAddSubgroup ?_
-  rw [IsConcreteLE.le_iff] at h ⊢
+  rw [le_iff_mem_imp_mem] at h ⊢
   simpa using h
 
 end Submodule

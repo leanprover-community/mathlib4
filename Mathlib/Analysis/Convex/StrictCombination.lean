@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Convex.StrictConvexSpace
 public import Mathlib.Analysis.Normed.Group.AddTorsor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Convex combinations in strictly convex sets and spaces.
 

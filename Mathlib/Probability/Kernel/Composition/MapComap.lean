@@ -587,7 +587,6 @@ lemma comap_sectL (κ : Kernel (α × β) γ) (b : β) {f : δ → α} (hf : Mea
   ext d s
   rw [comap_apply, sectL_apply, comap_apply]
 
-@[simp]
 lemma sectL_prodMkLeft (α : Type*) [MeasurableSpace α] (κ : Kernel β γ) (a : α) {b : β} :
     sectL (prodMkLeft α κ) b a = κ b := rfl
 
@@ -635,7 +634,6 @@ lemma comap_sectR (κ : Kernel (α × β) γ) (a : α) {f : δ → β} (hf : Mea
 lemma sectR_prodMkLeft (α : Type*) [MeasurableSpace α] (κ : Kernel β γ) (a : α) :
     sectR (prodMkLeft α κ) a = κ := rfl
 
-@[simp]
 lemma sectR_prodMkRight (β : Type*) [MeasurableSpace β] (κ : Kernel α γ) (b : β) {a : α} :
     sectR (prodMkRight β κ) a b = κ a := rfl
 

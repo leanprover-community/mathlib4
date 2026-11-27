@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Asymptotics.Basic
 public import Mathlib.Analysis.Normed.Operator.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Asymptotic statements about the operator norm
 
