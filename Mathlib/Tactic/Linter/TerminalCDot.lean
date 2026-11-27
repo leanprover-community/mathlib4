@@ -11,10 +11,9 @@ public import Mathlib.Tactic.TacticAnalysis
 # Terminal cdot linter
 
 This linter flags uses of the focus dot (`·`) where there is only one goal,
-and where the preceding tactic is not wrapped in a focus dot.
-A sequence of tactics each starting with `·` is allowed because it looks nice.
-
-Usually, the `·` can simply be removed
+and where the preceding tactic is not a focus dot.
+A sequence of focused tactic blocks is allowed because it looks nice.
+Usually, the `·` can simply be removed.
 
 ## Implementation notes
 
@@ -48,12 +47,13 @@ register_option linter.style.terminalCDot : Bool := {
 }
 
 @[tacticAnalysis linter.style.terminalCDot, inherit_doc linter.style.terminalCDot]
-def terminalCDotLinter : TacticAnalysis.Config where run seq := do
-  let some last := seq.back? | return
-  unless last.tacI.stx.isOfKind ``cdot && last.tacI.goalsBefore matches [_] do return
-  if _ : 2 ≤ seq.size then
-    if seq[seq.size - 2].tacI.stx.isOfKind ``cdot then
-      return
-  logWarningAt last.tacI.stx[0]
-    m!"Unnecessary focusing dot `·`: you should be able to remove it.\n\
-    If this `·` follows a `<;>` combinator, consider using `all_goals` instead of `<;>`."
+def terminalCDotLinter : TacticAnalysis.Config where
+  run seq := do
+    let some last := seq.back? | return
+    unless last.tacI.stx.isOfKind ``cdot && last.tacI.goalsBefore matches [_] do return
+    if _ : 2 ≤ seq.size then
+      if seq[seq.size - 2].tacI.stx.isOfKind ``cdot then
+        return
+    logWarningAt last.tacI.stx[0]
+      m!"Unnecessary focusing dot `·`: you should be able to remove it.\n\
+      If this `·` follows a `<;>` combinator, consider using `all_goals` instead of `<;>`."
