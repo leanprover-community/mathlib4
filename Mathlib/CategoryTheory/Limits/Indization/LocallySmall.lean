@@ -8,13 +8,16 @@ module
 public import Mathlib.CategoryTheory.Limits.IndYoneda
 public import Mathlib.CategoryTheory.Limits.Indization.IndObject
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # There are only `v`-many natural transformations between Ind-objects
 
 We provide the instance `LocallySmall.{v} (FullSubcategory (IsIndObject (C := C)))`, which will
 serve as the basis for our definition of the category of Ind-objects.
 
-## Future work
+## TODO
 
 The equivalence established here serves as the basis for a well-known calculation of hom-sets of
 ind-objects as a limit of a colimit.
@@ -76,8 +79,8 @@ end
 
 instance : LocallySmall.{v} (ObjectProperty.FullSubcategory (IsIndObject (C := C))) where
   hom_small X Y := by
-    obtain ⟨⟨P⟩⟩ := X.2
-    obtain ⟨⟨Q⟩⟩ := Y.2
+    obtain ⟨⟨P⟩⟩ := X.property
+    obtain ⟨⟨Q⟩⟩ := Y.property
     let e₁ := IsColimit.coconePointUniqueUpToIso (P.isColimit) (colimit.isColimit _)
     let e₂ := IsColimit.coconePointUniqueUpToIso (Q.isColimit) (colimit.isColimit _)
     let e₃ := Iso.homCongr e₁ e₂

@@ -16,6 +16,7 @@ import Mathlib.Analysis.LocallyConvex.Separation
 Define the interior and boundary of a manifold.
 
 ## Main definitions
+
 - **IsInteriorPoint x**: `x ∈ M` is an interior point if, with `φ` being the preferred chart at `x`,
   `φ x` is an interior point of `φ.target`.
 - **IsBoundaryPoint x**: `x ∈ M` is a boundary point if `(extChartAt I x) x ∈ frontier (range I)`.
@@ -23,6 +24,7 @@ Define the interior and boundary of a manifold.
 - **boundary I M** is the **boundary** of `M`, the set of its boundary points.
 
 ## Main results
+
 - `ModelWithCorners.univ_eq_interior_union_boundary`: `M` is the union of its interior and boundary
 - `ModelWithCorners.interior_boundary_disjoint`: interior and boundary of `M` are disjoint
 - `BoundarylessManifold.isInteriorPoint`: if `M` is boundaryless, every point is an interior point
@@ -59,9 +61,11 @@ Define the interior and boundary of a manifold.
   so is their disjoint union `M ⊔ M'`
 
 ## Tags
+
 manifold, interior, boundary
 
 ## TODO
+
 - the interior of `M` is dense, the boundary nowhere dense
 - the interior of `M` is a boundaryless manifold
 - `boundary M` is a submanifold (possibly with boundary and corners):
@@ -451,14 +455,15 @@ open TopologicalSpace
 
 /-- For `u : Opens M`, `x : u` is an interior point iff `x.val : M` is. -/
 lemma isInteriorPoint_iff_isInteriorPoint_val {u : Opens M} {x : u} :
-    I.IsInteriorPoint x ↔ I.IsInteriorPoint x.1 := by
+    I.IsInteriorPoint x ↔ I.IsInteriorPoint x.val := by
   simpa [I.isInteriorPoint_iff, u.chartAt_eq,
     OpenPartialHomeomorph.subtypeRestr, mem_interior_iff_mem_nhds] using!
-    fun _ _ ↦ (chartAt H x.1).extend_preimage_mem_nhds (mem_chart_source H x.1) (u.2.mem_nhds x.2)
+    fun _ _ ↦ (chartAt H x.val).extend_preimage_mem_nhds (mem_chart_source H x.val)
+      (u.is_open'.mem_nhds x.property)
 
 /-- For `u : Opens M`, `x : u` is a boundary point iff `x.val : M` is. -/
 lemma isBoundaryPoint_iff_isBoundaryPoint_val {u : Opens M} {x : u} :
-    I.IsBoundaryPoint x ↔ I.IsBoundaryPoint x.1 := by
+    I.IsBoundaryPoint x ↔ I.IsBoundaryPoint x.val := by
   simpa [I.isInteriorPoint_iff_not_isBoundaryPoint, not_iff_not] using
     I.isInteriorPoint_iff_isInteriorPoint_val
 

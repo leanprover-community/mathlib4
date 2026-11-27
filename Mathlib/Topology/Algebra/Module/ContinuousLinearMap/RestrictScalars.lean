@@ -47,7 +47,7 @@ theorem coe_restrictScalars' (f : M₁ →L[A] M₂) : ⇑(f.restrictScalars R) 
 
 @[simp]
 theorem toContinuousAddMonoidHom_restrictScalars (f : M₁ →L[A] M₂) :
-    ↑(f.restrictScalars R) = (f : ContinuousAddMonoidHom M₁ M₂) := rfl
+    (f.restrictScalars R).toContinuousAddMonoidHom = f.toContinuousAddMonoidHom := rfl
 
 @[simp] lemma restrictScalars_zero : (0 : M₁ →L[A] M₂).restrictScalars R = 0 := rfl
 

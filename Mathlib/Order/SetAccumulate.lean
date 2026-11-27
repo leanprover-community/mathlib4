@@ -9,6 +9,9 @@ module
 public import Mathlib.Order.Lattice.Nat
 public import Mathlib.Order.PartialSups
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Accumulate
 

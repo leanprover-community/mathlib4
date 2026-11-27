@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.Elements
 public import Mathlib.CategoryTheory.Sites.Point.Conservative
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Points of presheaf toposes
 

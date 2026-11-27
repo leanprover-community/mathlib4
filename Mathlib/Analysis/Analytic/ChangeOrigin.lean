@@ -104,7 +104,7 @@ Given a formal multilinear series `p` and a point `x` in its ball of convergence
 `p.sum (x+y) = (p.changeOrigin x).sum y` when this makes sense. Its `k`-th term is the sum of
 the series `p.changeOriginSeries k`. -/
 def changeOriginSeries (k : ℕ) : FormalMultilinearSeries 𝕜 E (E [×k]→L[𝕜] F) := fun l =>
-  ∑ s : { s : Finset (Fin (k + l)) // Finset.card s = l }, p.changeOriginSeriesTerm k l s s.2
+  ∑ s : { s : Finset (Fin (k + l)) // Finset.card s = l }, p.changeOriginSeriesTerm k l s s.property
 
 theorem nnNorm_changeOriginSeries_le_tsum (k l : ℕ) :
     ‖p.changeOriginSeries k l‖₊ ≤
@@ -163,7 +163,7 @@ def changeOriginIndexEquiv :
 
 lemma changeOriginSeriesTerm_changeOriginIndexEquiv_symm (n t) :
     let s := changeOriginIndexEquiv.symm ⟨n, t⟩
-    p.changeOriginSeriesTerm s.1 s.2.1 s.2.2 s.2.2.2 (fun _ ↦ x) (fun _ ↦ y) =
+    p.changeOriginSeriesTerm s.1 s.2.1 s.2.2 s.2.2.property (fun _ ↦ x) (fun _ ↦ y) =
     p n (t.piecewise (fun _ ↦ x) fun _ ↦ y) := by
   have : ∀ (m) (hm : n = m), p n (t.piecewise (fun _ ↦ x) fun _ ↦ y) =
       p m ((t.map (finCongr hm).toEmbedding).piecewise (fun _ ↦ x) fun _ ↦ y) := by
@@ -280,7 +280,7 @@ theorem changeOrigin_eval (h : (‖x‖₊ + ‖y‖₊ : ℝ≥0∞) < p.radius
     refine mem_eball_zero_iff.2 (lt_of_le_of_lt ?_ h)
     exact mod_cast nnNorm_add_le x y
   set f : (Σ k l : ℕ, { s : Finset (Fin (k + l)) // s.card = l }) → F := fun s =>
-    p.changeOriginSeriesTerm s.1 s.2.1 s.2.2 s.2.2.2 (fun _ => x) fun _ => y
+    p.changeOriginSeriesTerm s.1 s.2.1 s.2.2 s.2.2.property (fun _ => x) fun _ => y
   have hsf : Summable f := by
     refine .of_nnNorm_bounded (p.changeOriginSeries_summable_aux₁ h) ?_
     rintro ⟨k, l, s, hs⟩

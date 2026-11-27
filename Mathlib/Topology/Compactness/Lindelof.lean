@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.Filter.CountableInter
 public import Mathlib.Topology.Compactness.SigmaCompact
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lindelöf sets and Lindelöf spaces
 
@@ -27,7 +30,7 @@ We define the following properties for sets in a topological space:
 * `isLindelof_iff_countable_subcover`: A set is Lindelöf iff every open cover has a
   countable subcover.
 
-## Implementation details
+## Implementation notes
 
 * This API is mainly based on the API for IsCompact and follows notation and style as much
   as possible.
@@ -155,9 +158,9 @@ theorem IsLindelof.elim_countable_subcover {ι : Type v} (hs : IsLindelof s) (U 
 
 theorem IsLindelof.elim_nhds_subcover' (hs : IsLindelof s) (U : ∀ x ∈ s, Set X)
     (hU : ∀ x (hx : x ∈ s), U x ‹x ∈ s› ∈ 𝓝 x) :
-    ∃ t : Set s, t.Countable ∧ s ⊆ ⋃ x ∈ t, U (x : s) x.2 := by
-  have := hs.elim_countable_subcover (fun x : s ↦ interior (U x x.2)) (fun _ ↦ isOpen_interior)
-    fun x hx ↦
+    ∃ t : Set s, t.Countable ∧ s ⊆ ⋃ x ∈ t, U (x : s) x.property := by
+  have := hs.elim_countable_subcover (fun x : s ↦ interior (U x x.property))
+    (fun _ ↦ isOpen_interior) fun x hx ↦
       mem_iUnion.2 ⟨⟨x, hx⟩, mem_interior_iff_mem_nhds.2 <| hU _ _⟩
   rcases this with ⟨r, ⟨hr, hs⟩⟩
   use r, hr
@@ -396,7 +399,7 @@ theorem isLindelof_open_iff_eq_countable_iUnion_of_isTopologicalBasis (b : ι �
     · refine Set.Subset.trans ht.2 ?_
       simp only [Set.iUnion_subset_iff]
       intro i hi
-      rw [← Set.iUnion_subtype (fun x : ι => x ∈ t.image f') fun i => b i.1]
+      rw [← Set.iUnion_subtype (fun x : ι => x ∈ t.image f') fun i => b i.val]
       exact Set.subset_iUnion (fun i : t.image f' => b i) ⟨_, mem_image_of_mem _ hi⟩
     · apply Set.iUnion₂_subset
       rintro i hi
@@ -489,7 +492,7 @@ instance (priority := 10) Subsingleton.lindelofSpace [Subsingleton X] : Lindelof
   ⟨subsingleton_univ.isLindelof⟩
 
 theorem isLindelof_univ_iff : IsLindelof (univ : Set X) ↔ LindelofSpace X :=
-  ⟨fun h => ⟨h⟩, fun h => h.1⟩
+  ⟨fun h => ⟨h⟩, fun h => h.isLindelof_univ⟩
 
 theorem isLindelof_univ [h : LindelofSpace X] : IsLindelof (univ : Set X) :=
   h.isLindelof_univ

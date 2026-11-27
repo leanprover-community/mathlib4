@@ -20,8 +20,11 @@ the class group of its ring of integers. It also proves some elementary results
 on the class number.
 
 ## Main definitions
-We denote by `M K` the Minkowski bound of a number field `K`, defined as
-`(4 / π) ^ nrComplexPlaces K * ((finrank ℚ K)! / (finrank ℚ K) ^ (finrank ℚ K) * √|discr K|)`.
+
+- `NumberField.minkowskiNormBound`: the Minkowski bound of a number field `K`, defined as
+  `(4 / π) ^ nrComplexPlaces K * ((finrank ℚ K)! / (finrank ℚ K) ^ (finrank ℚ K) * √|discr K|)`.
+  Every class in the class group of `𝓞 K` contains an integral ideal of norm at most this bound.
+  In this file we denote it by `M K`.
 - `NumberField.classNumber`: the class number of a number field is the (finite)
   cardinality of the class group of its ring of integers
 - `isPrincipalIdealRing_of_isPrincipal_of_pow_le_of_mem_primesOver_of_mem_Icc`: let `K`
@@ -49,10 +52,21 @@ open Module NumberField InfinitePlace Ideal Nat
 
 variable (K : Type*) [Field K] [NumberField K]
 
-local notation "M " K:70 => (4 / π) ^ nrComplexPlaces K *
-  ((finrank ℚ K)! / (finrank ℚ K) ^ (finrank ℚ K) * √|discr K|)
-
 namespace NumberField
+
+/-- The Minkowski bound of a number field `K`, i.e. the real number
+`(4 / π) ^ r₂ * (n ! / n ^ n * √|discr K|)`, where `n` is the degree of `K` over `ℚ` and `r₂` is the
+number of complex places of `K`. Every class in the class group of `𝓞 K` contains an integral ideal
+of norm at most `minkowskiNormBound K`, see `NumberField.exists_ideal_in_class_of_norm_le`.
+
+This should not be confused with `NumberField.mixedEmbedding.minkowskiBound`, the bound that appears
+in Minkowski's convex body theorem. -/
+noncomputable def minkowskiNormBound : ℝ :=
+  letI r₂ := nrComplexPlaces K
+  letI n := finrank ℚ K
+  (4 / π) ^ r₂ * (n ! / n ^ n * √|discr K|)
+
+@[inherit_doc] local notation "M " K:70 => minkowskiNormBound K
 
 namespace RingOfIntegers
 

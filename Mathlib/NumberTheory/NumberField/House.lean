@@ -15,10 +15,12 @@ This file defines the house of an algebraic number `α`, which is
 the largest of the modulus of its conjugates.
 
 ## References
+
 * [D. Marcus, *Number Fields*][marcus1977number]
 * [Hua, L.-K., *Introduction to number theory*][hua1982house]
 
 ## Tags
+
 number field, algebraic number, house
 -/
 
@@ -311,7 +313,7 @@ private theorem asiegel_remark : ‖asiegel K a‖ ≤ c₂ K * A := by
 private def c₁ := finrank ℚ K * c₂ K
 
 include habs Apos hxbound hpq in
-private theorem house_le_bound : ∀ l, house (ξ K x l).1 ≤ (c₁ K) *
+private theorem house_le_bound : ∀ l, house (ξ K x l).val ≤ (c₁ K) *
     ((c₁ K * q * A) ^ ((p : ℝ) / (q - p))) := by
   let h := finrank ℚ K
   intro l
@@ -347,7 +349,7 @@ include hpq h0p cardα cardβ ha habs in
 non-trivial underdetermined system of linear equations with algebraic integer coefficients. -/
 theorem exists_ne_zero_int_vec_house_le :
     ∃ (ξ : β → 𝓞 K), ξ ≠ 0 ∧ a *ᵥ ξ = 0 ∧
-    ∀ l, house (ξ l).1 ≤ c₁ K * ((c₁ K * q * A) ^ ((p : ℝ) / (q - p))) := by
+    ∀ l, house (ξ l).val ≤ c₁ K * ((c₁ K * q * A) ^ ((p : ℝ) / (q - p))) := by
   let h := finrank ℚ K
   have hphqh : p * h < q * h := by gcongr; exact finrank_pos
   have h0ph : 0 < p * h := by rw [mul_pos_iff]; exact Or.inl ⟨h0p, finrank_pos⟩

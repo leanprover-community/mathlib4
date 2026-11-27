@@ -52,7 +52,7 @@ all intermediate fields `E` with `E/K` finite dimensional.
   every element of `E`. In particular, we distinguish between `Gal(L/E)` and `Gal(L/E)`, since the
   former is defined to be a subgroup of `Gal(L/K)`, while the latter is a group in its own right.
 
-## Implementation Notes
+## Implementation notes
 
 - `krullTopology K L` is defined as an instance for type class inference.
 -/

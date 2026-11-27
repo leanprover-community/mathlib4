@@ -32,9 +32,11 @@ definition and show that it is a generalization of `‖(f : LinearMap 𝕜 U U).
 spaces instead of matrices, and allow the codomain to have infinite dimension.
 
 ## Main definition
+
 * `LinearMap.normDet` : the norm determinant of a linear map.
 
-## Main result
+## Main results
+
 * `ContinuousLinearMap.normDet_sq` and `LinearMap.normDet_sq`: The square of `f.normDet`
   equals to the determinant of `f.adjoint ∘ₗ f`.
 * `LinearMap.normDet_sq_eq_det_gram`: The square of `LinearMap.normDet` equals to the determinant of
@@ -410,8 +412,8 @@ theorem hausdorffMeasure_image [MeasurableSpace U] [BorelSpace U] [MeasurableSpa
   · suffices μH[finrank ℝ U] (f.range.subtypeₗᵢ '' (f.rangeRestrict '' s)) = 0 by
       simpa [(f.normDet_eq_zero_tfae.out 2 1).mp h, Set.image_image]
     rw [(LinearIsometry.isometry _).hausdorffMeasure_image (by simp)]
-    have h : (finrank ℝ f.range : ℝ) < finrank ℝ U := by
-      exact mod_cast (f.normDet_eq_zero_tfae.out 2 4).mp h
+    have h : (finrank ℝ f.range : ℝ) < finrank ℝ U :=
+      mod_cast (f.normDet_eq_zero_tfae.out 2 4).mp h
     simp [Real.hausdorffMeasure_of_finrank_lt h]
 
 /--

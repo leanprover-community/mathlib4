@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.EffectiveEpi.Basic
 public import Mathlib.CategoryTheory.Sites.SheafOfTypes
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Effective epimorphic sieves
 

@@ -8,8 +8,9 @@ module
 public import Mathlib.Algebra.Algebra.Pi
 public import Mathlib.Algebra.BigOperators.RingEquiv
 public import Mathlib.Data.Matrix.Mul
-public import Mathlib.GroupTheory.DedekindFinite
 public import Mathlib.LinearAlgebra.Pi
+
+import Mathlib.GroupTheory.DedekindFinite
 
 /-!
 # Matrices
@@ -746,8 +747,7 @@ See also `Matrix.transposeAlgEquiv` for a version that doesn't take the opposite
 given that its multiplication is commutative. -/
 @[simps!] def mopMatrix : Matrix m m αᵐᵒᵖ ≃ₐ[R] (Matrix m m α)ᵐᵒᵖ where
   __ := RingEquiv.mopMatrix
-  commutes' _ := MulOpposite.unop_injective <| by
-    ext; simp [algebraMap_matrix_apply, eq_comm, apply_ite MulOpposite.unop]
+  map_smul' _ _ := MulOpposite.unop_injective <| by ext; simp
 
 end AlgEquiv
 
@@ -946,7 +946,7 @@ variable (R) [CommSemiring R] [Π i, Semiring (β i)] [Π i, Algebra R (β i)]
 /-- `piEquiv` as an `AlgEquiv`. -/
 @[simps!] def piAlgEquiv : Matrix n n (Π i, β i) ≃ₐ[R] Π i, Matrix n n (β i) where
   __ := piRingEquiv
-  commutes' := (AlgHom.mk' (piRingEquiv (β := β) (n := n)).toRingHom fun _ _ ↦ rfl).commutes
+  map_smul' := map_smul (AlgHom.mk' (piRingEquiv (β := β) (n := n)).toRingHom fun _ _ ↦ rfl)
 
 @[simp] theorem toRingEquiv_piAlgEquiv :
     (piAlgEquiv (n := n) R (ι := ι) (β := β) :
@@ -1041,14 +1041,13 @@ variable (R m α)
 See also `AlgEquiv.mopMatrix` for a version that doesn't require `α` to have commutative
 multiplication, by taking its opposite. -/
 @[simps!]
-def transposeAlgEquiv [CommSemiring R] [CommSemiring α] [Fintype m] [DecidableEq m] [Algebra R α] :
+def transposeAlgEquiv [CommSemiring R] [CommSemiring α] [Fintype m] [Algebra R α] :
     Matrix m m α ≃ₐ[R] (Matrix m m α)ᵐᵒᵖ where
   __ := transposeRingEquiv m α
-  commutes' r := by simp [algebraMap_eq_diagonal]
+  map_smul' := by simp
 
 @[simp]
-theorem toRingEquiv_transposeAlgEquiv [CommSemiring R] [CommSemiring α] [Fintype m]
-    [DecidableEq m] [Algebra R α] :
+theorem toRingEquiv_transposeAlgEquiv [CommSemiring R] [CommSemiring α] [Fintype m] [Algebra R α] :
     transposeAlgEquiv m R α = transposeRingEquiv m α := rfl
 
 end Transpose

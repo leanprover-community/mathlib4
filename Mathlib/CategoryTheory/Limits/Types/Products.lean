@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.BinaryProducts
 public import Mathlib.CategoryTheory.Limits.Shapes.Products
 public import Mathlib.CategoryTheory.Limits.Types.Limits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Products in `Type`
 
@@ -26,10 +29,6 @@ namespace CategoryTheory.Limits.Types
 
 example : HasProducts.{v} (Type v) := inferInstance
 example [UnivLE.{v, u}] : HasProducts.{v} (Type u) := inferInstance
-
--- This shortcut instance is required in `Mathlib/CategoryTheory/Closed/Types.lean`,
--- although I don't understand why, and wish it wasn't.
-instance : HasProducts.{v} (Type v) := inferInstance
 
 /-- A restatement of `Types.Limit.lift_π_apply` that uses `Pi.π` and `Pi.lift`. -/
 -- The increased `@[simp]` priority here results in a minor speed up in

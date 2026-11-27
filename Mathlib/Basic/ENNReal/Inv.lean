@@ -349,8 +349,10 @@ theorem top_div_of_lt_top (h : a < ∞) : ∞ / a = ∞ := top_div_of_ne_top h.n
 
 @[simp] protected theorem zero_div : 0 / a = 0 := zero_mul a⁻¹
 
-theorem div_eq_top : a / b = ∞ ↔ a ≠ 0 ∧ b = 0 ∨ a = ∞ ∧ b ≠ ∞ := by
+@[simp] theorem div_eq_top_iff : a / b = ∞ ↔ a ≠ 0 ∧ b = 0 ∨ a = ∞ ∧ b ≠ ∞ := by
   simp [div_eq_mul_inv, ENNReal.mul_eq_top]
+
+@[deprecated (since := "2026-11-24")] alias div_eq_top := div_eq_top_iff
 
 /-- See `ENNReal.div_div_cancel` for a simpler version assuming `a ≠ 0`, `a ≠ ∞`. -/
 protected lemma div_div_cancel' (h₀ : a = 0 → b = 0) (h₁ : a = ∞ → b = 0) :
@@ -606,31 +608,29 @@ lemma le_mul_of_forall_lt {a b c : ℝ≥0∞} (h₁ : a ≠ 0 ∨ b ≠ ∞) (h
     (h _ (ENNReal.lt_inv_iff_lt_inv.1 ha') _ (ENNReal.lt_inv_iff_lt_inv.1 hb')).trans_eq
     (ENNReal.mul_inv (Or.inr hb'.ne_top) (Or.inl ha'.ne_top)).symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The birational order isomorphism between `ℝ≥0∞` and the unit interval `Set.Iic (1 : ℝ≥0∞)`. -/
 @[simps! apply_coe]
 def orderIsoIicOneBirational : ℝ≥0∞ ≃o Iic (1 : ℝ≥0∞) := by
   refine StrictMono.orderIsoOfRightInverse
     (fun x => ⟨(x⁻¹ + 1)⁻¹, ENNReal.inv_le_one.2 le_add_self⟩)
-    (fun x y hxy => ?_) (fun x => (x.1⁻¹ - 1)⁻¹) fun x => Subtype.ext ?_
+    (fun x y hxy => ?_) (fun x => (x.val⁻¹ - 1)⁻¹) fun x => Subtype.ext ?_
   · simpa only [Subtype.mk_lt_mk, ENNReal.inv_lt_inv, ENNReal.add_lt_add_iff_right one_ne_top]
-  · have : (1 : ℝ≥0∞) ≤ x.1⁻¹ := ENNReal.one_le_inv.2 x.2
+  · have : (1 : ℝ≥0∞) ≤ x.val⁻¹ := ENNReal.one_le_inv.2 x.property
     simp only [inv_inv, tsub_add_cancel_of_le this]
 
 @[simp]
 theorem orderIsoIicOneBirational_symm_apply (x : Iic (1 : ℝ≥0∞)) :
-    orderIsoIicOneBirational.symm x = (x.1⁻¹ - 1)⁻¹ :=
+    orderIsoIicOneBirational.symm x = (x.val⁻¹ - 1)⁻¹ :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Order isomorphism between an initial interval in `ℝ≥0∞` and an initial interval in `ℝ≥0`. -/
 @[simps! apply_coe]
 def orderIsoIicCoe (a : ℝ≥0) : Iic (a : ℝ≥0∞) ≃o Iic a :=
   OrderIso.symm
-    { toFun := fun x => ⟨x, coe_le_coe.2 x.2⟩
-      invFun := fun x => ⟨ENNReal.toNNReal x, coe_le_coe.1 <| coe_toNNReal_le_self.trans x.2⟩
+    { toFun := fun x => ⟨x, coe_le_coe.2 x.property⟩
+      invFun := fun x => ⟨ENNReal.toNNReal x, coe_le_coe.1 <| coe_toNNReal_le_self.trans x.property⟩
       left_inv := fun _ => Subtype.ext <| toNNReal_coe _
-      right_inv := fun x => Subtype.ext <| coe_toNNReal (ne_top_of_le_ne_top coe_ne_top x.2)
+      right_inv := fun x => Subtype.ext <| coe_toNNReal (ne_top_of_le_ne_top coe_ne_top x.property)
       map_rel_iff' := fun {_ _} => by
         simp only [Equiv.coe_fn_mk, Subtype.mk_le_mk, coe_le_coe, Subtype.coe_le_coe] }
 
@@ -706,8 +706,14 @@ theorem zpow_lt_top (ha : a ≠ 0) (h'a : a ≠ ∞) (n : ℤ) : a ^ n < ∞ := 
 lemma zpow_ne_top {a : ℝ≥0∞} (ha : a ≠ 0) (h'a : a ≠ ∞) (n : ℤ) : a ^ n ≠ ∞ :=
   (ENNReal.zpow_lt_top ha h'a n).ne
 
-theorem exists_mem_Ico_zpow {x y : ℝ≥0∞} (hx : x ≠ 0) (h'x : x ≠ ∞) (hy : 1 < y) (h'y : y ≠ ⊤) :
+theorem exists_mem_Ico_zpow {x y : ℝ≥0∞} (hx : x ≠ 0) (h'x : x ≠ ∞) (hy : 1 < y) :
     ∃ n : ℤ, x ∈ Ico (y ^ n) (y ^ (n + 1)) := by
+  obtain rfl | h'y := eq_or_ne y ⊤
+  · obtain hx1 | hx1 := lt_or_ge x 1
+    · use -1
+      simpa [zpow_neg_one]
+    · use 0
+      simpa using ⟨hx1, h'x.lt_top⟩
   lift x to ℝ≥0 using h'x
   lift y to ℝ≥0 using h'y
   have A : y ≠ 0 := by simpa only [Ne, coe_eq_zero] using (zero_lt_one.trans hy).ne'
@@ -718,8 +724,14 @@ theorem exists_mem_Ico_zpow {x y : ℝ≥0∞} (hx : x ≠ 0) (h'x : x ≠ ∞) 
   · rwa [← ENNReal.coe_zpow A, ENNReal.coe_le_coe]
   · rwa [← ENNReal.coe_zpow A, ENNReal.coe_lt_coe]
 
-theorem exists_mem_Ioc_zpow {x y : ℝ≥0∞} (hx : x ≠ 0) (h'x : x ≠ ∞) (hy : 1 < y) (h'y : y ≠ ⊤) :
+theorem exists_mem_Ioc_zpow {x y : ℝ≥0∞} (hx : x ≠ 0) (h'x : x ≠ ∞) (hy : 1 < y) :
     ∃ n : ℤ, x ∈ Ioc (y ^ n) (y ^ (n + 1)) := by
+  obtain rfl | h'y := eq_or_ne y ⊤
+  · obtain hx1 | hx1 := le_or_gt x 1
+    · use -1
+      simpa [zpow_neg_one] using ⟨hx.pos, hx1⟩
+    · use 0
+      simpa
   lift x to ℝ≥0 using h'x
   lift y to ℝ≥0 using h'y
   have A : y ≠ 0 := by simpa only [Ne, coe_eq_zero] using (zero_lt_one.trans hy).ne'
@@ -736,7 +748,7 @@ theorem Ioo_zero_top_eq_iUnion_Ico_zpow {y : ℝ≥0∞} (hy : 1 < y) (h'y : y �
   simp only [mem_iUnion, mem_Ioo, mem_Ico]
   constructor
   · rintro ⟨hx, h'x⟩
-    exact exists_mem_Ico_zpow hx.ne' h'x.ne hy h'y
+    exact exists_mem_Ico_zpow hx.ne' h'x.ne hy
   · rintro ⟨n, hn, h'n⟩
     constructor
     · apply lt_of_lt_of_le _ hn

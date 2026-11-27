@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Homology.HomotopyCategory.KProjective
 
 import Mathlib.Algebra.Homology.Embedding.ExtendHomotopy
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Morphisms from K-projective complexes in the derived category
 

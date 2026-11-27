@@ -11,6 +11,9 @@ import Mathlib.Order.Fin.InsertNth
 import Mathlib.Order.Fin.Prod
 import Mathlib.Order.Preorder.Finite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Binary product of standard simplices
 
@@ -145,8 +148,9 @@ lemma strictMono_orderHomOfSimplex_iff {n : ℕ} (x : (Δ[p] ⊗ Δ[q] : SSet.{u
 
 lemma strictMono_orderHomOfSimplex {n : ℕ} (x : (Δ[p] ⊗ Δ[q] : SSet.{u}).nonDegenerate n) {m : ℕ}
     (hm : p + q = m) :
-    StrictMono (orderHomOfSimplex x.1 hm) := by
-  simpa only [strictMono_orderHomOfSimplex_iff, ← nonDegenerate_iff_strictMono_objEquiv] using x.2
+    StrictMono (orderHomOfSimplex x.val hm) := by
+  simpa only [strictMono_orderHomOfSimplex_iff, ← nonDegenerate_iff_strictMono_objEquiv] using
+    x.property
 
 instance : (Δ[p] ⊗ Δ[q] : SSet.{u}).HasDimensionLE (p + q) where
   degenerate_eq_top n hn := by
@@ -164,7 +168,7 @@ instance : (Δ[p] ⊗ Δ[q] : SSet.{u}).Finite :=
   finite_of_hasDimensionLT _ (p + q + 1) inferInstance
 
 lemma le_orderHomOfSimplex {n : ℕ} (x : (Δ[p] ⊗ Δ[q] : SSet.{u}).nonDegenerate n) {m : ℕ}
-    (hm : p + q = m) (i : Fin (n + 1)) : i.1 ≤ orderHomOfSimplex x.1 hm i := by
+    (hm : p + q = m) (i : Fin (n + 1)) : i.val ≤ orderHomOfSimplex x.val hm i := by
   induction i using Fin.induction with
   | zero => simp
   | succ i hi =>
@@ -183,28 +187,28 @@ lemma nonDegenerate_max_dim_iff {n : ℕ} (z : (Δ[p] ⊗ Δ[q] : SSet.{u}) _⦋
     simp only [hab]
 
 lemma nonDegenerate_ext₁ {n : ℕ} {z₁ z₂ : (Δ[p] ⊗ Δ[q] : SSet.{u}).nonDegenerate n}
-    (h : z₁.1.1 = z₂.1.1) (hn : p + q = n := by lia) :
+    (h : z₁.val.1 = z₂.val.1) (hn : p + q = n := by lia) :
     z₁ = z₂ := by
   ext
   apply objEquiv.injective
   ext i : 3
   · congrm $h i
-  · have h₁ := z₁.2
-    have h₂ := z₂.2
+  · have h₁ := z₁.property
+    have h₂ := z₂.property
     rw [nonDegenerate_max_dim_iff] at h₁ h₂
     simpa only [orderHomOfSimplex_coe, h, Fin.ext_iff, add_right_inj]
       using! congr($(h₁.trans h₂.symm) i)
 
 lemma nonDegenerate_ext₂ {n : ℕ} {z₁ z₂ : (Δ[p] ⊗ Δ[q] : SSet.{u}).nonDegenerate n}
-    (h : z₁.1.2 = z₂.1.2) (hn : p + q = n := by lia) :
+    (h : z₁.val.2 = z₂.val.2) (hn : p + q = n := by lia) :
     z₁ = z₂ :=
   (nonDegenerateEquivOfIso (β_ _ _)).injective (nonDegenerate_ext₁ h)
 
 private lemma exists_nonDegenerate_max_dim_aux {d : ℕ}
     (x : (Δ[p] ⊗ Δ[q] : SSet.{u}).nonDegenerate d) (hd : d < p + q) :
     ∃ (y : (Δ[p] ⊗ Δ[q] : SSet.{u}).nonDegenerate (d + 1)),
-      x.1 ∈ (Subcomplex.ofSimplex y.1).obj _ := by
-  have hx := (nonDegenerate_iff_strictMono_objEquiv _).1 x.2
+      x.val ∈ (Subcomplex.ofSimplex y.val).obj _ := by
+  have hx := (nonDegenerate_iff_strictMono_objEquiv _).1 x.property
   suffices ∃ (i : Fin (d + 2)) (u : Fin (p + 1) × Fin (q + 1)),
       StrictMono (Fin.insertNth (α := fun _ ↦ Fin (p + 1) × Fin (q + 1)) i u
         (objEquiv x.val)) by
@@ -218,7 +222,7 @@ private lemma exists_nonDegenerate_max_dim_aux {d : ℕ}
     rw [yonedaEquiv_symm_app, Equiv.apply_symm_apply, ← SimplicialObject.δ_def]
     simp [objEquiv_δ_apply]
   let S : Finset (Fin (d + 1)) :=
-    { i | i.castLE (by lia) < orderHomOfSimplex x.1 rfl i }
+    { i | i.castLE (by lia) < orderHomOfSimplex x.val rfl i }
   by_cases hS : S.Nonempty
   · generalize hi₀ : S.min' hS = i₀
     obtain rfl | ⟨i₀, rfl⟩ := Fin.eq_zero_or_eq_succ i₀

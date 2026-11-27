@@ -17,6 +17,7 @@ The scheme `Proj 𝒜` for a graded ring `𝒜` is constructed in
 In this file we provide basic properties of the scheme.
 
 ## Main results
+
 - `AlgebraicGeometry.Proj.toSpecZero`: The structure map `Proj A ⟶ Spec (A 0)`.
 - `AlgebraicGeometry.Proj.basicOpenIsoSpec`:
   The canonical isomorphism `Proj A |_ D₊(f) ≅ Spec (A_f)₀`
@@ -116,7 +117,7 @@ lemma iSup_basicOpen_eq_top' {ι : Type*} (f : ι → A)
   | algebraMap r =>
     convert zero_mem (Ideal.span _)
     rw [sub_eq_zero]
-    exact (DirectSum.decompose_of_mem_same 𝒜 r.2).symm
+    exact (DirectSum.decompose_of_mem_same 𝒜 r.property).symm
   | add x y hx hy _ _ =>
     rw [map_add, add_sub_add_comm]
     exact add_mem ‹_› ‹_›
@@ -224,7 +225,7 @@ lemma awayMap_awayToSection :
   apply Subtype.ext
   ext ⟨i, hi⟩
   obtain ⟨⟨n, a, ⟨b, hb'⟩, i, rfl : _ = b⟩, rfl⟩ := mk_surjective a
-  simp only [homOfLE_leOfHom, CommRingCat.hom_comp, RingHom.coe_comp, Function.comp_apply]
+  simp only [CommRingCat.hom_comp, RingHom.coe_comp, Function.comp_apply]
   erw [ProjectiveSpectrum.Proj.awayToSection_apply]
   rw [CommRingCat.hom_ofHom, val_awayMap_mk, Localization.mk_eq_mk', IsLocalization.map_mk',
     ← Localization.mk_eq_mk']
@@ -256,7 +257,8 @@ def pullbackAwayιIso :
     IsOpenImmersion.isoOfRangeEq (Limits.pullback.fst _ _ ≫ awayι 𝒜 f f_deg hm)
       (awayι 𝒜 x (hx ▸ SetLike.mul_mem_graded f_deg g_deg) (hm.trans_le (m.le_add_right m'))) <| by
   rw [IsOpenImmersion.range_pullback_to_base_of_left]
-  change ((awayι 𝒜 f _ _).opensRange ⊓ (awayι 𝒜 g _ _).opensRange).1 = (awayι 𝒜 _ _ _).opensRange.1
+  change ((awayι 𝒜 f _ _).opensRange ⊓ (awayι 𝒜 g _ _).opensRange).carrier =
+    (awayι 𝒜 _ _ _).opensRange.carrier
   rw [opensRange_awayι, opensRange_awayι, opensRange_awayι, ← basicOpen_mul, hx]
 
 @[reassoc (attr := simp)]
@@ -333,7 +335,8 @@ def affineOpenCoverOfIrrelevantLESpan {ι : Type*} (f : ι → A) {m : ι → �
 @[simps! f] noncomputable
 def affineOpenCover : (Proj 𝒜).AffineOpenCover :=
   affineOpenCoverOfIrrelevantLESpan 𝒜
-    (ι := Σ i : PNat, 𝒜 i) (m := fun i ↦ i.1) (fun i ↦ i.2) (fun i ↦ i.2.2) (fun i ↦ i.1.2) <| by
+    (ι := Σ i : PNat, 𝒜 i) (m := fun i ↦ i.1) (fun i ↦ i.2) (fun i ↦ i.2.property)
+    (fun i ↦ i.1.property) <| by
   classical
   intro z hz
   rw [← DirectSum.sum_support_decompose 𝒜 z]
@@ -463,9 +466,8 @@ lemma fromOfGlobalSections_preimage_basicOpen {r : A} {n : ℕ} (hn : 0 < n) (hr
       ← Scheme.Hom.comp_apply, fromOfGlobalSections, Scheme.Cover.ι_glueMorphisms] at hx
     simp only [openCoverOfMapIrrelevantEqTop,
       toBasicOpenOfGlobalSections, Scheme.isoOfEq_inv, Category.assoc, basicOpenIsoSpec_inv_ι] at hx
-    simp only [Scheme.Hom.comp_base, Scheme.homOfLE_base, homOfLE_leOfHom, TopCat.hom_comp,
-      ContinuousMap.comp_assoc, ContinuousMap.comp_apply, morphismRestrict_base,
-      TopologicalSpace.Opens.carrier_eq_coe] at hx
+    simp only [Scheme.Hom.comp_base, Scheme.homOfLE_base, TopCat.hom_comp, ContinuousMap.comp_assoc,
+      ContinuousMap.comp_apply, morphismRestrict_base, TopologicalSpace.Opens.carrier_eq_coe] at hx
     rw [← SetLike.mem_coe, ← Set.mem_preimage, ← TopologicalSpace.Opens.map_coe,
       Proj.awayι_preimage_basicOpen (𝒜 := 𝒜) i.2.2.2 i.2.2.1 hr hn,
       ← Set.mem_preimage, ← TopologicalSpace.Opens.map_coe, ← Function.Injective.mem_set_image

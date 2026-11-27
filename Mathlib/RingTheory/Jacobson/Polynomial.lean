@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.Jacobson.Ideal
 public import Mathlib.RingTheory.Polynomial.Quotient
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Jacobson radical of polynomial ring
 -/

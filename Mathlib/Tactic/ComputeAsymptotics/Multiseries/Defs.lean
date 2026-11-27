@@ -31,7 +31,7 @@ in the basis `[b₂, ..., bₙ]` (`basis_tl`).
 * `MultiseriesExpansion.Approximates ms` means that the multiseries `ms` can be used to obtain
   an asymptotical approximation of its attached function.
 
-## Implementation details
+## Implementation notes
 
 * `Multiseries basis_hd basis_tl` is defined as a `Seq (ℝ × MultiseriesExpansion basis_tl)`, so
   we need to port some `Seq` API to `Multiseries`.

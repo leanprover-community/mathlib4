@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Homology.LeftResolution.Basic
 
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functorial projective resolutions of modules
 

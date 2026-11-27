@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
 public import Mathlib.Analysis.PSeries
 public import Mathlib.Order.Interval.Finset.Box
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Summability of Eisenstein series
 
@@ -206,8 +209,8 @@ lemma summable_one_div_norm_rpow {k : ℝ} (hk : 2 < k) :
     refine ⟨fun n ↦ (hasSum_fintype (β := box (α := ℤ × ℤ) n) _).summable, ?_⟩
     suffices Summable fun n : ℕ ↦ ∑' (_ : box (α := ℤ × ℤ) n), (n : ℝ) ^ (-k) by
       refine this.congr fun n ↦ tsum_congr fun p ↦ ?_
-      simp only [← Int.mem_box.mp p.2, Nat.cast_max, norm_eq_max_natAbs, Matrix.cons_val_zero,
-        Matrix.cons_val_one]
+      simp only [← Int.mem_box.mp p.property, Nat.cast_max, norm_eq_max_natAbs,
+        Matrix.cons_val_zero, Matrix.cons_val_one]
     simp only [tsum_fintype, univ_eq_attach, sum_const, card_attach, nsmul_eq_mul]
     apply ((Real.summable_nat_rpow.mpr (by linarith : 1 - k < -1)).mul_left
       8).of_norm_bounded_eventually_nat
@@ -264,10 +267,10 @@ private lemma aux_isBigO_linear (z : ℍ) (a b : ℤ) :
     fun (m : Fin 2 → ℤ) ↦ ‖![m 0 + a, m 1 + b]‖⁻¹ := by
   rw [Asymptotics.isBigO_iff]
   have h0 : z ∈ verticalStrip |z.re| (z.im) := by simp [mem_verticalStrip_iff]
-  use ‖r ⟨⟨|z.re|, z.im⟩, z.2⟩‖⁻¹
+  use ‖r ⟨⟨|z.re|, z.im⟩, z.coe_im_pos⟩‖⁻¹
   filter_upwards with m
   apply le_trans (by simpa [Real.rpow_neg_one, add_assoc] using
-    summand_bound_of_mem_verticalStrip zero_le_one ![m 0 + a, m 1 + b] z.2 h0)
+    summand_bound_of_mem_verticalStrip zero_le_one ![m 0 + a, m 1 + b] z.coe_im_pos h0)
   simp [abs_of_pos (r_pos _)]
 
 lemma isLittleO_const_left_of_properSpace_of_discreteTopology

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Field.IsField
 public import Mathlib.Algebra.Ring.Int.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-! # `ℤ` is not a field -/
 
 /-- `ℤ` with its usual ring structure is not a field. -/
