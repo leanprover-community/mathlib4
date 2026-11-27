@@ -85,19 +85,25 @@ def main() -> None:
 
             line = lines[line_num]
 
+            # Use Lean's suggested qualification for a standalone name. A projection
+            # needs a bare field name and can only keep its receiver if the namespace agrees.
+            replacement = new_name
+            if line[:col_num].endswith('.'):
+                new_namespace, _, replacement = new_name.rpartition('.')
+                if old_name.rpartition('.')[0] != new_namespace:
+                    print(f"  ⚠ Line {line_num + 1}, col {col_num}: Field moved to another namespace")
+                    skipped.append((filepath, line_num + 1, col_num, old_name, "field moved"))
+                    continue
+
             # Try progressively shorter versions by removing namespace prefixes.
             # E.g., for "Fin.lt_iff_val_lt_val", try "Fin.lt_iff_val_lt_val", then "lt_iff_val_lt_val".
             old_parts = old_name.split('.')
-            new_parts = new_name.split('.')
-
             replaced = False
             for i in range(len(old_parts)):
                 old_suffix = '.'.join(old_parts[i:])
-                new_suffix = '.'.join(new_parts[i:]) if i < len(new_parts) else new_name
-
                 if line[col_num:col_num+len(old_suffix)] == old_suffix:
-                    lines[line_num] = line[:col_num] + new_suffix + line[col_num+len(old_suffix):]
-                    print(f"  Line {line_num + 1}, col {col_num}: {old_suffix} → {new_suffix}")
+                    lines[line_num] = line[:col_num] + replacement + line[col_num+len(old_suffix):]
+                    print(f"  Line {line_num + 1}, col {col_num}: {old_suffix} → {replacement}")
                     made_changes = True
                     total_changes += 1
                     replaced = True
@@ -118,7 +124,7 @@ def main() -> None:
     print("="*80)
     print(f"Changed {total_changes} deprecations in {files_changed} files")
     if skipped:
-        print(f"Skipped {len(skipped)} warnings (could not find exact match at position)")
+        print(f"Skipped {len(skipped)} warnings")
     print("="*80)
 
 if __name__ == '__main__':
