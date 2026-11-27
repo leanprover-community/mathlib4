@@ -81,9 +81,7 @@ lemma isIntegral_span_singleton_iff {v : M} :
 /-- A submodule is integral if and only if `B` takes values in the image of `R` on a basis. -/
 lemma isIntegral_iff_of_basis {ι : Type*} (b : Module.Basis ι R L) :
     B.IsIntegral L ↔ ∀ i j, B (b i : M) (b j) ∈ (1 : Submodule R S) := by
-  have h : span R (Set.range fun i ↦ (b i : M)) = L :=
-    (span_range_subtype_eq_top_iff L fun i ↦ (b i).property).1 b.span_eq
-  rw [← isIntegral_span_range_iff, h]
+  rw [← isIntegral_span_range_iff, Module.Basis.span_range_coe]
 
 lemma isIntegral_sup_iff {L₁ L₂ : Submodule R M} :
     B.IsIntegral (L₁ ⊔ L₂) ↔ B.IsIntegral L₁ ∧ B.IsIntegral L₂ ∧
