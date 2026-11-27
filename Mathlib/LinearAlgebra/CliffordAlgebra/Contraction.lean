@@ -128,8 +128,8 @@ theorem contractLeft_ι_mul (a : M) (b : CliffordAlgebra Q) :
 /-- This is [grinberg_clifford_2016] Theorem 12 -/
 theorem contractRight_mul_ι (a : M) (b : CliffordAlgebra Q) :
     b * ι Q a⌊d = d a • b - b⌊d * ι Q a := by
-  rw [contractRight_eq, reverse.map_mul, reverse_ι, contractLeft_ι_mul, map_sub, map_smul,
-    reverse_reverse, reverse.map_mul, reverse_ι, contractRight_eq]
+  rw [contractRight_eq, reverse_mul, reverse_ι, contractLeft_ι_mul, map_sub, map_smul,
+    reverse_reverse, reverse_mul, reverse_ι, contractRight_eq]
 
 theorem contractLeft_algebraMap_mul (r : R) (b : CliffordAlgebra Q) :
     d⌋(algebraMap _ _ r * b) = algebraMap _ _ r * (d⌋b) := by
@@ -159,7 +159,7 @@ theorem contractLeft_ι (x : M) : d⌋ι Q x = algebraMap R _ (d x) := by
 
 @[simp]
 theorem contractRight_ι (x : M) : ι Q x⌊d = algebraMap R _ (d x) := by
-  rw [contractRight_eq, reverse_ι, contractLeft_ι, reverse.commutes]
+  rw [contractRight_eq, reverse_ι, contractLeft_ι, reverse_algebraMap]
 
 @[simp]
 theorem contractLeft_algebraMap (r : R) : d⌋algebraMap R (CliffordAlgebra Q) r = 0 := by
@@ -169,7 +169,7 @@ theorem contractLeft_algebraMap (r : R) : d⌋algebraMap R (CliffordAlgebra Q) r
 
 @[simp]
 theorem contractRight_algebraMap (r : R) : algebraMap R (CliffordAlgebra Q) r⌊d = 0 := by
-  rw [contractRight_eq, reverse.commutes, contractLeft_algebraMap, map_zero]
+  rw [contractRight_eq, reverse_algebraMap, contractLeft_algebraMap, map_zero]
 
 @[simp]
 theorem contractLeft_one : d⌋(1 : CliffordAlgebra Q) = 0 := by

@@ -104,18 +104,24 @@ def reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q :=
 theorem reverse_ι (m : M) : reverse (ι Q m) = ι Q m := by simp [reverse]
 
 @[simp]
-theorem reverse.commutes (r : R) :
+theorem reverse_algebraMap (r : R) :
     reverse (algebraMap R (CliffordAlgebra Q) r) = algebraMap R _ r :=
   op_injective <| reverseOp.commutes r
 
-@[simp]
-protected theorem reverse.map_one : reverse (1 : CliffordAlgebra Q) = 1 :=
-  op_injective (map_one reverseOp)
+@[deprecated (since := "2026-11-27")] alias reverse.commutes := reverse_algebraMap
 
 @[simp]
-protected theorem reverse.map_mul (a b : CliffordAlgebra Q) :
+theorem reverse_one : reverse (1 : CliffordAlgebra Q) = 1 :=
+  op_injective (map_one reverseOp)
+
+@[deprecated (since := "2026-11-27")] protected alias reverse.map_one := reverse_one
+
+@[simp]
+theorem reverse_mul (a b : CliffordAlgebra Q) :
     reverse (a * b) = reverse b * reverse a :=
   op_injective (map_mul reverseOp a b)
+
+@[deprecated (since := "2026-11-27")] protected alias reverse.map_mul := reverse_mul
 
 @[simp]
 theorem reverse_involutive : Function.Involutive (reverse (Q := Q)) :=
@@ -143,7 +149,7 @@ theorem reverse_comp_involute :
   induction x using CliffordAlgebra.induction with
   | algebraMap => simp
   | ι => simp
-  | mul a b ha hb => simp only [ha, hb, reverse.map_mul, map_mul]
+  | mul a b ha hb => simp only [ha, hb, reverse_mul, map_mul]
   | add a b ha hb => simp only [ha, hb, reverse.map_add, map_add]
 
 /-- `CliffordAlgebra.reverse` and `CliffordAlgebra.involute` commute. Note that the composition

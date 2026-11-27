@@ -106,16 +106,16 @@ theorem foldl_ι (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) (m : M) : foldl Q 
 @[simp]
 theorem foldl_algebraMap (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) (r : R) :
     foldl Q f hf n (algebraMap R _ r) = r • n := by
-  rw [← foldr_reverse, reverse.commutes, foldr_algebraMap]
+  rw [← foldr_reverse, reverse_algebraMap, foldr_algebraMap]
 
 @[simp]
 theorem foldl_one (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) : foldl Q f hf n 1 = n := by
-  rw [← foldr_reverse, reverse.map_one, foldr_one]
+  rw [← foldr_reverse, reverse_one, foldr_one]
 
 @[simp]
 theorem foldl_mul (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) (a b : CliffordAlgebra Q) :
     foldl Q f hf n (a * b) = foldl Q f hf (foldl Q f hf n a) b := by
-  rw [← foldr_reverse, ← foldr_reverse, ← foldr_reverse, reverse.map_mul, foldr_mul]
+  rw [← foldr_reverse, ← foldr_reverse, ← foldr_reverse, reverse_mul, foldr_mul]
 
 /-- This lemma demonstrates the origin of the `foldl` name. -/
 theorem foldl_prod_map_ι (l : List M) (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) :
@@ -150,9 +150,9 @@ theorem left_induction {P : CliffordAlgebra Q → Prop} (algebraMap : ∀ r : R,
   refine reverse_involutive.surjective.forall.2 ?_
   intro x
   induction x using CliffordAlgebra.right_induction with
-  | algebraMap r => simpa only [reverse.commutes] using algebraMap r
+  | algebraMap r => simpa only [reverse_algebraMap] using algebraMap r
   | add _ _ hx hy => simpa only [map_add] using add _ _ hx hy
-  | mul_ι _ _ hx => simpa only [reverse.map_mul, reverse_ι] using ι_mul _ _ hx
+  | mul_ι _ _ hx => simpa only [reverse_mul, reverse_ι] using ι_mul _ _ hx
 
 /-! ### Versions with extra state -/
 

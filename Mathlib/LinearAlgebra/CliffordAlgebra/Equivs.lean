@@ -87,9 +87,9 @@ instance : CommRing (CliffordAlgebra (0 : QuadraticForm R Unit)) where
 theorem reverse_apply (x : CliffordAlgebra (0 : QuadraticForm R Unit)) :
     x.reverse = x := by
   induction x using CliffordAlgebra.induction with
-  | algebraMap r => exact reverse.commutes _
+  | algebraMap r => exact reverse_algebraMap _
   | ι x => rw [ι_eq_zero, LinearMap.zero_apply, reverse.map_zero]
-  | mul x₁ x₂ hx₁ hx₂ => rw [reverse.map_mul, mul_comm, hx₁, hx₂]
+  | mul x₁ x₂ hx₁ hx₂ => rw [reverse_mul, mul_comm, hx₁, hx₂]
   | add x₁ x₂ hx₁ hx₂ => rw [reverse.map_add, hx₁, hx₂]
 
 @[simp]
@@ -198,9 +198,9 @@ instance : CommRing (CliffordAlgebra Q) where
 /-- `reverse` is a no-op over `CliffordAlgebraComplex.Q`. -/
 theorem reverse_apply (x : CliffordAlgebra Q) : x.reverse = x := by
   induction x using CliffordAlgebra.induction with
-  | algebraMap r => exact reverse.commutes _
+  | algebraMap r => exact reverse_algebraMap _
   | ι x => rw [reverse_ι]
-  | mul x₁ x₂ hx₁ hx₂ => rw [reverse.map_mul, mul_comm, hx₁, hx₂]
+  | mul x₁ x₂ hx₁ hx₂ => rw [reverse_mul, mul_comm, hx₁, hx₂]
   | add x₁ x₂ hx₁ hx₂ => rw [reverse.map_add, hx₁, hx₂]
 
 @[simp]

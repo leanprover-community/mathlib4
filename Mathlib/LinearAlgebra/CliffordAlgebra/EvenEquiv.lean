@@ -209,11 +209,11 @@ theorem coe_toEven_reverse_involute (x : CliffordAlgebra Q) :
     ↑(toEven Q (reverse (involute x))) =
       reverse (Q := Q' Q) (toEven Q x : CliffordAlgebra (Q' Q)) := by
   induction x using CliffordAlgebra.induction with
-  | algebraMap r => simp only [AlgHom.commutes, Subalgebra.coe_algebraMap, reverse.commutes]
+  | algebraMap r => simp only [AlgHom.commutes, Subalgebra.coe_algebraMap, reverse_algebraMap]
   | ι m =>
-    simp only [involute_ι, Subalgebra.coe_neg, toEven_ι, reverse.map_mul, reverse_v, reverse_e0,
+    simp only [involute_ι, Subalgebra.coe_neg, toEven_ι, reverse_mul, reverse_v, reverse_e0,
       reverse_ι, neg_e0_mul_v, map_neg]
-  | mul x y hx hy => simp only [map_mul, Subalgebra.coe_mul, reverse.map_mul, hx, hy]
+  | mul x y hx hy => simp only [map_mul, Subalgebra.coe_mul, reverse_mul, hx, hy]
   | add x y hx hy => simp only [map_add, Subalgebra.coe_add, hx, hy]
 
 /-! ### Constructions needed for `CliffordAlgebra.evenEquivEvenNeg` -/
