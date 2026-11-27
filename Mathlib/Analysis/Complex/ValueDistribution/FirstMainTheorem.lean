@@ -302,10 +302,7 @@ theorem isBigO_characteristic_sub_characteristic_moebius {a b c d : ℂ} {f : �
     apply transitivity₁ (a * f ·)
     · convert isBigO_characteristic_sub_characteristic_shift (a₀ := -b) (f := a • f) (by fun_prop)
       simp
-    apply transitivity₁ f
-    · convert isBigO_characteristic_sub_characteristic_const_mul (s := a) (f := f)
-        (by fun_prop) (by aesop)
-    simp [IsBigO.of_norm_le]
+    exact isBigO_characteristic_sub_characteristic_const_mul hf (by aesop)
   · -- Case `c ≠ 0`.
     by_cases hord : ∀ z, meromorphicOrderAt (c * f · + d) z ≠ ⊤
     · have hne : ∀ᶠ z in codiscrete ℂ, c * f z + d ≠ 0 :=
@@ -322,11 +319,8 @@ theorem isBigO_characteristic_sub_characteristic_moebius {a b c d : ℂ} {f : �
       · apply isBigO_characteristic_sub_characteristic_const_mul (by fun_prop)
         grind
       apply transitivity₁ (f · + d / c) (isBigO_characteristic_sub_characteristic_inv (by fun_prop))
-      apply transitivity₁
-      · simp_rw [← sub_neg_eq_add]
-        apply isBigO_characteristic_sub_characteristic_shift (by fun_prop)
-      rw [sub_self]
-      apply Asymptotics.isBigO_const_one
+      simp_rw [← sub_neg_eq_add]
+      exact isBigO_characteristic_sub_characteristic_shift hf
     · -- Degenerate case: the denominator vanishes away from a codiscrete set.
       simp only [ne_eq, not_forall, Decidable.not_not] at hord
       rw [Meromorphic.exists_meromorphicOrderAt_eq_top_iff_eventually_zero (by fun_prop)] at hord
