@@ -102,7 +102,6 @@ def reverse {u v : V} (w : G.Walk u v) : G.Walk v u := w.reverseAux nil
 theorem cons_append {u v w x : V} (h : G.Adj u v) (p : G.Walk v w) (q : G.Walk w x) :
     (cons h p).append q = cons h (p.append q) := rfl
 
-@[simp]
 theorem cons_nil_append {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
     (cons h nil).append p = cons h p := rfl
 

@@ -168,7 +168,7 @@ end CoeLemmas
 instance : Group (SpecialLinearGroup R V) := fast_instance%
   Function.Injective.group _ Subtype.coe_injective coe_one coe_mul coe_inv coe_div coe_pow coe_zpow
 
-/-- A version of `Matrix.toLin' A` that produces linear equivalences. -/
+/-- The coercion `SpecialLinearGroup R V → V ≃ₗ[R] V`, bundled as a monoid hom. -/
 def toLinearEquiv : SpecialLinearGroup R V →* V ≃ₗ[R] V where
   toFun A := A.val
   map_one' := coe_one
@@ -272,7 +272,6 @@ theorem congr_linearEquiv_coe_apply (e : V ≃ₗ[R] W) (f : SpecialLinearGroup 
     (congr_linearEquiv e f : W ≃ₗ[R] W) = e.symm ≪≫ₗ f ≪≫ₗ e :=
   rfl
 
-@[simp]
 theorem congr_linearEquiv_apply_apply (e : V ≃ₗ[R] W) (f : SpecialLinearGroup R V) (x : W) :
     congr_linearEquiv e f x = e (f (e.symm x)) :=
   rfl
@@ -305,9 +304,9 @@ def toLin'_equiv : SpecialLinearGroup n R ≃* _root_.SpecialLinearGroup R (n �
       by simp [← LinearEquiv.coe_det, u.prop]⟩
   left_inv A := Subtype.coe_injective <| by
     rw [← LinearEquiv.eq_symm_apply, LinearMap.toMatrix'_symm,
-      Matrix.SpecialLinearGroup.toLin'_to_linearMap]
-  right_inv u := Subtype.coe_injective <| by
-    simp [← LinearEquiv.toLinearMap_inj, Matrix.SpecialLinearGroup.toLin']
+      Matrix.SpecialLinearGroup.toLin'_to_linearMap, Matrix.toLin'_apply']
+  right_inv u := Subtype.coe_injective <| LinearEquiv.toLinearMap_injective <|
+    LinearMap.toMatrix'.symm_apply_apply _
   map_mul' A B := Subtype.coe_injective (by simp)
 
 /-- The isomorphism from `Matrix.SpecialLinearGroup n R`
@@ -541,8 +540,9 @@ theorem centerCongr_toLin_equiv_trans_centerEquivRootsOfUnity_eq (g) :
       Matrix.SpecialLinearGroup.center_equiv_rootsOfUnity g := by
   nontriviality R
   by_cases hV : Subsingleton V
-  · convert Eq.refl (1 : Rˣ) <;>
-    · apply rootsOfUnity.eq_one
+  · convert Eq.refl (1 : Rˣ)
+    all_goals
+      apply rootsOfUnity.eq_one
       rw [← Module.finrank_eq_zero_iff_of_free (R := R)] at hV
       simp only [hV, sup_eq_right, zero_le_one, ← Module.finrank_eq_card_basis b]
   · have hι : ¬ IsEmpty ι := fun hι ↦ hV (by
