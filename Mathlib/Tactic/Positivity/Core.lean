@@ -172,12 +172,15 @@ lemma nonneg_of_isNat' {n : ℕ}
   rw [NormNum.IsNat.to_eq h rfl]
   exact Nat.cast_nonneg' n
 
-lemma nz_of_isNegNat {n : ℕ} [Ring A] [PartialOrder A] [IsStrictOrderedRing A]
+lemma nz_of_isNat {n : ℕ} [AddMonoidWithOne A] [CharZero A]
+    (h : NormNum.IsNat e n) (w : Nat.ble 1 n = true) : (e : A) ≠ 0 := by
+  rw [NormNum.IsNat.to_eq h rfl]
+  exact Nat.cast_ne_zero.2 (by simpa using! w : 0 < n).ne'
+
+lemma nz_of_isNegNat {n : ℕ} [Ring A] [CharZero A]
     (h : NormNum.IsInt e (.negOfNat n)) (w : Nat.ble 1 n = true) : (e : A) ≠ 0 := by
-  rw [NormNum.IsInt.neg_to_eq h rfl]
-  simp only [ne_eq, neg_eq_zero]
-  apply ne_of_gt
-  simpa using! w
+  rw [NormNum.IsInt.neg_to_eq h rfl, neg_ne_zero]
+  exact Nat.cast_ne_zero.2 (by simpa using! w : 0 < n).ne'
 
 lemma pos_of_isNNRat {n d : ℕ} [Semiring A] [LinearOrder A] [IsStrictOrderedRing A] :
     (NormNum.IsNNRat e n d) → (decide (0 < n)) → ((0 : A) < (e : A))
@@ -203,14 +206,20 @@ lemma nonneg_of_isRat {n : ℤ} {d : ℕ} [Ring A] [LinearOrder A] :
     (NormNum.IsRat e n d) → (decide (n = 0)) → (0 ≤ (e : A))
   | ⟨inv, eq⟩, h => by rw [eq, of_decide_eq_true h]; simp
 
-lemma nz_of_isRat {n : ℤ} {d : ℕ} [Ring A] [LinearOrder A] [IsStrictOrderedRing A] :
+lemma nz_of_isNNRat {n d : ℕ} [Semiring A] [CharZero A] :
+    (NormNum.IsNNRat e n d) → (decide (0 < n)) → ((e : A) ≠ 0)
+  | ⟨_, eq⟩, h => by
+    rw [eq, Ne, mul_invOf_eq_iff_eq_mul_right, zero_mul, Nat.cast_eq_zero]
+    exact (of_decide_eq_true h).ne'
+
+lemma nz_of_isRat {n : ℤ} {d : ℕ} [Ring A] [CharZero A] :
     (NormNum.IsRat e n d) → (decide (n < 0)) → ((e : A) ≠ 0)
-  | ⟨inv, eq⟩, h => by
-    have pos_invOf_d : (0 < ⅟(d : A)) := pos_invOf_of_invertible_cast d
-    have neg_n : ((n : A) < 0) := Int.cast_lt_zero (n := n) |>.2 (of_decide_eq_true h)
-    have neg := mul_neg_of_neg_of_pos neg_n pos_invOf_d
-    rw [eq]
-    exact ne_iff_lt_or_gt.2 (Or.inl neg)
+  | ⟨_, eq⟩, h => by
+    have h := of_decide_eq_true h
+    obtain ⟨m, rfl⟩ := Int.exists_eq_neg_ofNat h.le
+    rw [eq, Ne, mul_invOf_eq_iff_eq_mul_right, zero_mul, Int.cast_neg, Int.cast_natCast,
+      neg_eq_zero, Nat.cast_eq_zero]
+    omega
 
 variable {zα} in
 /-- Converts a `MetaM Strictness` which can fail
@@ -310,6 +319,43 @@ def normNumPositivity (pα : Q(PartialOrder $α)) (e : Q($α))
     else -- should not be reachable, but just in case
       haveI' w : decide (Int.negOfNat $n = 0) =Q true := ⟨⟩
       pure (.nonnegative q(nonneg_of_isRat $p $w))
+
+/-- Attempts to prove `e ≠ 0` when `e` evaluates to a nonzero literal number in a characteristic
+zero type. Unlike `normNumPositivity`, this does not need a `PartialOrder`. -/
+def normNumNonzero {pα?} (e : Q($α)) : MetaM (Strictness zα e pα?) := catchNone do
+  match ← NormNum.derive e with
+  | .isBool .. => failure
+  | .isNat _ lit p =>
+    unless 0 < lit.natLit! do failure
+    let _a ← synthInstanceQ q(AddMonoidWithOne $α)
+    let _a ← synthInstanceQ q(CharZero $α)
+    assumeInstancesCommute
+    have p : Q(NormNum.IsNat $e $lit) := p
+    haveI' p' : Nat.ble 1 $lit =Q true := ⟨⟩
+    pure (.nonzero q(nz_of_isNat $p $p'))
+  | .isNegNat _ lit p =>
+    let _a ← synthInstanceQ q(Ring $α)
+    let _a ← synthInstanceQ q(CharZero $α)
+    assumeInstancesCommute
+    have p : Q(NormNum.IsInt $e (Int.negOfNat $lit)) := p
+    haveI' p' : Nat.ble 1 $lit =Q true := ⟨⟩
+    pure (.nonzero q(nz_of_isNegNat $p $p'))
+  | .isNNRat _i q n d p =>
+    unless 0 < q do failure
+    let _a ← synthInstanceQ q(Semiring $α)
+    let _a ← synthInstanceQ q(CharZero $α)
+    assumeInstancesCommute
+    have p : Q(NormNum.IsNNRat $e $n $d) := p
+    haveI' w : decide (0 < $n) =Q true := ⟨⟩
+    pure (.nonzero q(nz_of_isNNRat $p $w))
+  | .isNegNNRat _i q n d p =>
+    unless q < 0 do failure
+    let _a ← synthInstanceQ q(Ring $α)
+    let _a ← synthInstanceQ q(CharZero $α)
+    assumeInstancesCommute
+    have p : Q(NormNum.IsRat $e (.negOfNat $n) $d) := p
+    haveI' w : decide (Int.negOfNat $n < 0) =Q true := ⟨⟩
+    pure (.nonzero q(nz_of_isRat $p $w))
 
 /-- Attempts to prove that `e ≥ 0` using `zero_le` in a `CanonicallyOrderedAdd` monoid. -/
 def positivityCanon (pα : Q(PartialOrder $α)) (e : Q($α)) : MetaM (Strictness zα e (some pα)) := do
@@ -462,6 +508,9 @@ def core (pα? : Option Q(PartialOrder $α)) (e : Q($α)) : MetaM (Strictness z�
     throwNone (pure (h ▸ res))
   | .none, _ =>
     trace[Tactic.positivity] "{α} has no PartialOrder"
+    if let .none := result then
+      result ← normNumNonzero zα e
+      trace[Tactic.positivity] "current result from normNum: {result.toString}"
     if let .nonzero _ := result then
       trace[Tactic.positivity] "{e} => {result.toString}"
       return result
