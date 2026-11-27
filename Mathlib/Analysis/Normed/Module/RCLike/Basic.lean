@@ -103,7 +103,7 @@ to apply for eg continuous linear maps also, without a coercion in the goal.
 -/
 lemma antilipschitz_of_bound_of_norm_one {𝓕 E F : Type*}
     [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
-    [FunLike 𝓕 E F] [AddMonoidHomClass 𝓕 E F] [MulActionHomClass 𝓕 𝕜 E F]
+    [FunLike 𝓕 E F] [AddMonoidHomClass 𝓕] [MulActionHomClass 𝓕 𝕜 E F]
     (f : 𝓕) {K : NNReal} (h : ∀ x, ‖x‖ = 1 → 1 ≤ K * ‖f x‖) :
     AntilipschitzWith K f :=
   AddMonoidHomClass.antilipschitz_of_bound f fun x ↦ by

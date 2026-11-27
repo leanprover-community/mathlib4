@@ -22,13 +22,13 @@ open Complex Filter Bornology
 
 /--
 error: failed to synthesize
-  AddMonoidHomClass (AddGroupSeminorm ℂ) ℂ ℝ
+  AddMonoidHomClass (AddGroupSeminorm ℂ)
 
 Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
 -/
 #guard_msgs in
 set_option synthInstance.maxHeartbeats 3000 in
-#synth AddMonoidHomClass (AddGroupSeminorm ℂ) ℂ ℝ
+#synth AddMonoidHomClass (AddGroupSeminorm ℂ)
 
 set_option synthInstance.maxHeartbeats 3000 in
 -- This then results in a near failure (or failure on nightly-testing) of the simpNF linter on

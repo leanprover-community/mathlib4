@@ -163,8 +163,8 @@ private theorem Nat.isSemilinearSet_of_isSlice {ι : Type*} [Finite ι] {s : Set
 variable {M N ι κ : Type*} [AddCommMonoid M] [AddCommMonoid N] {s s₁ s₂ : Set M}
 
 private theorem Nat.isSemilinearSet_setOfPred_eq [Finite ι] {F G : Type*}
-    [FunLike F (ι → ℕ) M] [AddMonoidHomClass F (ι → ℕ) M] [FunLike G (ι → ℕ) M]
-    [AddMonoidHomClass G (ι → ℕ) M] (a b : M) (f : F) (g : G) :
+    [FunLike F (ι → ℕ) M] [AddMonoidHomClass F] [FunLike G (ι → ℕ) M]
+    [AddMonoidHomClass G] (a b : M) (f : F) (g : G) :
     IsSemilinearSet { x | a + f x = b + g x } := by
   apply isSemilinearSet_of_isSlice
   intro x hx y z hy hz
@@ -174,7 +174,7 @@ private theorem Nat.isSemilinearSet_setOfPred_eq [Finite ι] {F G : Type*}
 /-- The set of solutions to a linear equation `a + f x = b + g y` in a finitely generated monoid is
 semilinear. -/
 public theorem isSemilinearSet_setOfPred_eq [AddMonoid.FG M] {F G : Type*} [FunLike F M N]
-    [AddMonoidHomClass F M N] [FunLike G M N] [AddMonoidHomClass G M N] (a b : N) (f : F) (g : G) :
+    [AddMonoidHomClass F] [FunLike G M N] [AddMonoidHomClass G] (a b : N) (f : F) (g : G) :
     IsSemilinearSet { x | a + f x = b + g x } := by
   rcases fg_iff_exists_fin_addMonoidHom.1 (AddMonoid.FG.fg_top (M := M)) with ⟨n, h, hh⟩
   rw [AddMonoidHom.mrange_eq_top] at hh
@@ -210,7 +210,7 @@ public theorem Nat.isLinearSet_iff_exists_matrix {s : Set (ι → ℕ)} :
     ⟨A.mulVecLin, ?_⟩⟩ <;> ext <;> simp [*, mem_vadd_set]
 
 private lemma Nat.isSemilinearSet_preimage_of_isLinearSet [Finite ι] {F : Type*}
-    [FunLike F (ι → ℕ) M] [AddMonoidHomClass F (ι → ℕ) M] {s : Set M} (hs : IsLinearSet s) (f : F) :
+    [FunLike F (ι → ℕ) M] [AddMonoidHomClass F] {s : Set M} (hs : IsLinearSet s) (f : F) :
     IsSemilinearSet (f ⁻¹' s) := by
   rw [isLinearSet_iff_exists_fin_addMonoidHom] at hs
   rcases hs with ⟨a, n, g, rfl⟩
@@ -223,7 +223,7 @@ private lemma Nat.isSemilinearSet_preimage_of_isLinearSet [Finite ι] {F : Type*
   simp [LinearMap.funLeft]
 
 private theorem Nat.isSemilinearSet_preimage [Finite ι] {F : Type*}
-    [FunLike F (ι → ℕ) M] [AddMonoidHomClass F (ι → ℕ) M] {s : Set M} (hs : IsSemilinearSet s)
+    [FunLike F (ι → ℕ) M] [AddMonoidHomClass F] {s : Set M} (hs : IsSemilinearSet s)
     (f : F) : IsSemilinearSet (f ⁻¹' s) := by
   rcases hs with ⟨S, hS, hS', rfl⟩
   simp_rw [sUnion_eq_biUnion, preimage_iUnion]
@@ -232,7 +232,7 @@ private theorem Nat.isSemilinearSet_preimage [Finite ι] {F : Type*}
 /-- The preimage of a semilinear set under a homomorphism in a finitely generated monoid is
 semilinear. -/
 public theorem IsSemilinearSet.preimage [AddMonoid.FG M] {F : Type*} [FunLike F M N]
-    [AddMonoidHomClass F M N] {s : Set N} (hs : IsSemilinearSet s) (f : F) :
+    [AddMonoidHomClass F] {s : Set N} (hs : IsSemilinearSet s) (f : F) :
     IsSemilinearSet (f ⁻¹' s) := by
   rcases fg_iff_exists_fin_addMonoidHom.1 (AddMonoid.FG.fg_top (M := M)) with ⟨n, g, hg⟩
   rw [AddMonoidHom.mrange_eq_top] at hg

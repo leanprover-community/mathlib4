@@ -387,7 +387,7 @@ theorem sum_single_index {N} [AddCommMonoid N] {a : G} {b : k} {h : G → k → 
 
 @[deprecated map_finsuppSum +typeChanged (since := "2026-07-04")]
 theorem map_sum {N P : Type*} [AddCommMonoid N] [AddCommMonoid P] {H : Type*} [FunLike H N P]
-    [AddMonoidHomClass H N P] (h : H) (f : SkewMonoidAlgebra k G) (g : G → k → N) :
+    [AddMonoidHomClass H] (h : H) (f : SkewMonoidAlgebra k G) (g : G → k → N) :
     h (sum f g) = sum f fun a b ↦ h (g a b) :=
   _root_.map_sum h _ _
 
@@ -654,7 +654,7 @@ theorem sum_smul_index' {N R : Type*} [AddCommMonoid k]
 
 @[simp]
 theorem liftNC_one {g_hom R : Type*} [NonAssocSemiring k] [One G] [Semiring R] [FunLike g_hom G R]
-    [OneHomClass g_hom G R] (f : k →+* R) (g : g_hom) : liftNC (f : k →+ R) g 1 = 1 := by
+    [OneHomClass g_hom] (f : k →+* R) (g : g_hom) : liftNC (f : k →+ R) g 1 = 1 := by
   simp only [one_def, liftNC_single, AddMonoidHom.coe_ofClass, map_one, mul_one]
 
 end Mul
@@ -691,7 +691,7 @@ instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring k] [DistribSMu
 variable {R : Type*} [Semiring R] [NonAssocSemiring k] [SMul G k]
 
 theorem liftNC_mul {g_hom : Type*} [FunLike g_hom G R]
-    [MulHomClass g_hom G R] (f : k →+* R) (g : g_hom) (a b : SkewMonoidAlgebra k G)
+    [MulHomClass g_hom] (f : k →+* R) (g : g_hom) (a b : SkewMonoidAlgebra k G)
     (h_comm : ∀ {x y}, y ∈ a.support → (f (y • b.coeff x)) * g y = (g y) * (f (b.coeff x))) :
     liftNC (f : k →+ R) g (a * b) = liftNC (f : k →+ R) g a * liftNC (f : k →+ R) g b := by
   conv_rhs => rw [← sum_coeff_single a, ← sum_coeff_single b]
@@ -1067,7 +1067,7 @@ section MapDomain
 variable {α α₂ β F : Type*} [Semiring β] [Monoid α] [Monoid α₂] [FunLike F α α₂]
 
 /-- Like `mapDomain_zero`, but for the `1` we define in this file -/
-theorem mapDomain_one [MonoidHomClass F α α₂] (f : F) :
+theorem mapDomain_one [MonoidHomClass F] (f : F) :
     (mapDomain f (1 : SkewMonoidAlgebra β α) : SkewMonoidAlgebra β α₂) =
       (1 : SkewMonoidAlgebra β α₂) := by
   simp_rw [one_def, mapDomain_single, map_one]
@@ -1075,7 +1075,7 @@ theorem mapDomain_one [MonoidHomClass F α α₂] (f : F) :
 /-- Like `mapDomain_add`, but for the skewed convolutive multiplication we define in this
   file. This theorem holds assuming that `(hf : ∀ (a : α) (x : β), a • x = (f a) • x)`. -/
 theorem mapDomain_mul [MulSemiringAction α β] [MulSemiringAction α₂ β]
-    [MulHomClass F α α₂] {f : F} (x y : SkewMonoidAlgebra β α)
+    [MulHomClass F] {f : F} (x y : SkewMonoidAlgebra β α)
     (hf : ∀ (a : α) (x : β), a • x = (f a) • x) :
     mapDomain f (x * y) = mapDomain f x * mapDomain f y := by
   induction x with
@@ -1089,7 +1089,7 @@ theorem mapDomain_mul [MulSemiringAction α β] [MulSemiringAction α₂ β]
   `∀ (a : G) (x : k), a • x = (f a) • x`, then `mapDomain f` is a ring homomorphism
   between their skew monoid algebras. -/
 def mapDomainRingHom [MulSemiringAction α β] [MulSemiringAction α₂ β]
-    [MonoidHomClass F α α₂] {f : F} (hf : ∀ (a : α) (x : β), a • x = (f a) • x) :
+    [MonoidHomClass F] {f : F} (hf : ∀ (a : α) (x : β), a • x = (f a) • x) :
     SkewMonoidAlgebra β α →+* SkewMonoidAlgebra β α₂ where
   __ := (mapDomain f : SkewMonoidAlgebra β α →+ SkewMonoidAlgebra β α₂)
   map_one' := mapDomain_one f

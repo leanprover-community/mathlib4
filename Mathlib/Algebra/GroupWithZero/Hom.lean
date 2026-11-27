@@ -40,7 +40,7 @@ assert_not_exists DenselyOrdered Ring
 open Function
 
 namespace NeZero
-variable {F α β : Type*} [Zero α] [Zero β] [FunLike F α β] [ZeroHomClass F α β] {a : α}
+variable {F α β : Type*} [Zero α] [Zero β] [FunLike F α β] [ZeroHomClass F] {a : α}
 
 lemma of_map (f : F) [neZero : NeZero (f a)] : NeZero a :=
   ⟨fun h ↦ ne (f a) <| by rw [h]; exact ZeroHomClass.map_zero f⟩
@@ -59,7 +59,7 @@ variable {F α β γ δ M₀ : Type*} [MulZeroOneClass α] [MulZeroOneClass β] 
 You should also extend this typeclass when you extend `MonoidWithZeroHom`. -/
 class MonoidWithZeroHomClass (F : Type*) (α β : outParam Type*) [MulZeroOneClass α]
     [MulZeroOneClass β] [FunLike F α β] : Prop
-  extends MonoidHomClass F α β, ZeroHomClass F α β
+  extends MonoidHomClass F, ZeroHomClass F
 
 /-- `α →*₀ β` is the type of functions `α → β` that preserve
 the `MonoidWithZero` structure.

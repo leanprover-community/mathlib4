@@ -227,7 +227,7 @@ lemma map_cast' {β : Type*} [One β] [Neg β] [Zero β]
 
 /-- Casting out of `SignType` respects composition with suitable bundled homomorphism types. -/
 lemma map_cast {α β F : Type*} [AddGroupWithOne α] [One β] [SubtractionMonoid β]
-    [FunLike F α β] [AddMonoidHomClass F α β] [OneHomClass F α β] (f : F) (s : SignType) :
+    [FunLike F α β] [AddMonoidHomClass F] [OneHomClass F] (f : F) (s : SignType) :
     f s = s := by
   apply map_cast' <;> simp
 
@@ -302,7 +302,7 @@ variable [Zero α] [LinearOrder α] {a : α}
 
 /-- `SignType.sign` respects strictly monotone zero-preserving maps. -/
 lemma StrictMono.sign_comp {β F : Type*} [Zero β] [Preorder β] [DecidableLT β]
-    [FunLike F α β] [ZeroHomClass F α β] {f : F} (hf : StrictMono f) (a : α) :
+    [FunLike F α β] [ZeroHomClass F] {f : F} (hf : StrictMono f) (a : α) :
     sign (f a) = sign a := by
   simp only [sign_apply, ← map_zero f, hf.lt_iff_lt]
 

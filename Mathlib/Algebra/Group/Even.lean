@@ -114,7 +114,7 @@ grind_pattern IsSquare.one => IsSquare (1 : α)
 grind_pattern Even.zero => Even (0 : α)
 
 section MonoidHom
-variable [MulOneClass α] [MulOneClass β] [FunLike F α β] [MonoidHomClass F α β]
+variable [MulOneClass α] [MulOneClass β] [FunLike F α β] [MonoidHomClass F]
 
 @[to_additive (attr := aesop unsafe 90%, grind .)]
 lemma IsSquare.map {a : α} (f : F) : IsSquare a → IsSquare (f a) :=

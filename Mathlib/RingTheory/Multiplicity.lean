@@ -416,7 +416,7 @@ theorem emultiplicity_eq_emultiplicity_iff {c d : β} :
     fun h => le_antisymm (emultiplicity_le_emultiplicity_iff.2 fun n => (h n).mp)
       (emultiplicity_le_emultiplicity_iff.2 fun n => (h n).mpr)⟩
 
-theorem le_emultiplicity_map {F : Type*} [FunLike F α β] [MonoidHomClass F α β]
+theorem le_emultiplicity_map {F : Type*} [FunLike F α β] [MonoidHomClass F]
     (f : F) {a b : α} :
     emultiplicity a b ≤ emultiplicity (f a) (f b) :=
   emultiplicity_le_emultiplicity_iff.2 fun n ↦ by rw [← map_pow]; exact map_dvd f

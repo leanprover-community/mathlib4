@@ -65,12 +65,12 @@ instance decidableMemCenter (z : G) [Decidable (∀ g, g * z = z * g)] : Decidab
   decidable_of_iff' _ mem_center_iff
 
 @[to_additive]
-theorem map_center_le_center {F} [FunLike F G H] [MonoidHomClass F G H] {f : F}
+theorem map_center_le_center {F} [FunLike F G H] [MonoidHomClass F] {f : F}
     (hf : Function.Surjective f) : map f (center G) ≤ center H :=
   Set.image_center_subset hf
 
 @[to_additive]
-theorem comap_center_le_center {F} [FunLike F G H] [MonoidHomClass F G H] {f : F}
+theorem comap_center_le_center {F} [FunLike F G H] [MonoidHomClass F] {f : F}
     (hf : Function.Injective f) : comap f (center H) ≤ center G :=
   Set.preimage_center_subset hf
 

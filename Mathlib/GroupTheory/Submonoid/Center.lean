@@ -80,12 +80,12 @@ protected theorem center_pi {ι : Type*} {M : ι → Type*} [Π i, MulOneClass (
   SetLike.coe_injective Set.center_pi
 
 @[to_additive]
-theorem map_center_le_center {F} [FunLike F M N] [MonoidHomClass F M N] {f : F}
+theorem map_center_le_center {F} [FunLike F M N] [MonoidHomClass F] {f : F}
     (hf : Function.Surjective f) : map f (center M) ≤ center N :=
   Set.image_center_subset hf
 
 @[to_additive]
-theorem comap_center_le_center {F} [FunLike F M N] [MonoidHomClass F M N] {f : F}
+theorem comap_center_le_center {F} [FunLike F M N] [MonoidHomClass F] {f : F}
     (hf : Function.Injective f) : comap f (center N) ≤ center M :=
   Set.preimage_center_subset hf
 

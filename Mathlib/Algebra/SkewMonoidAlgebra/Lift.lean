@@ -95,7 +95,7 @@ theorem lift_unique (F : AlgHom k (SkewMonoidAlgebra k G) A)
 `mapDomain f` is an algebra homomorphism between their monoid algebras. -/
 @[simps!]
 def mapDomainAlgHom (k A : Type*) [CommSemiring k] [Semiring A] [Algebra k A] {H F : Type*}
-    [Monoid H] [FunLike F G H] [MonoidHomClass F G H] [MulSemiringAction G A]
+    [Monoid H] [FunLike F G H] [MonoidHomClass F] [MulSemiringAction G A]
     [MulSemiringAction H A] [SMulCommClass G k A] [SMulCommClass H k A] {f : F}
     (hf : ∀ (a : G) (x : A), a • x = (f a) • x) :
     SkewMonoidAlgebra A G →ₐ[k] SkewMonoidAlgebra A H where

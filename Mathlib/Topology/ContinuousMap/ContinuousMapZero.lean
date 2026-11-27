@@ -56,7 +56,7 @@ instance instFunLike : FunLike C(X, R)₀ X R where
 instance instContinuousMapClass : ContinuousMapClass C(X, R)₀ X R where
   map_continuous f := f.continuous
 
-instance instZeroHomClass : ZeroHomClass C(X, R)₀ X R where
+instance instZeroHomClass : ZeroHomClass C(X, R)₀ where
   map_zero f := f.map_zero'
 
 /-- not marked as an instance because it would be a bad one in general, but it can

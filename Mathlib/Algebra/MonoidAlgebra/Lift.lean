@@ -61,7 +61,7 @@ section Mul
 
 variable [Semiring k] [Mul G] [Semiring R]
 
-theorem liftNC_mul {g_hom : Type*} [FunLike g_hom G R] [MulHomClass g_hom G R]
+theorem liftNC_mul {g_hom : Type*} [FunLike g_hom G R] [MulHomClass g_hom]
     (f : k →+* R) (g : g_hom) (a b : k[G])
     (h_comm : ∀ {x y}, y ∈ a.coeff.support → Commute (f (b.coeff x)) (g y)) :
     liftNC (f : k →+ R) g (a * b) = liftNC (f : k →+ R) g a * liftNC (f : k →+ R) g b := by
@@ -77,7 +77,7 @@ section One
 variable [NonAssocSemiring R] [Semiring k] [One G]
 
 @[simp]
-theorem liftNC_one {g_hom : Type*} [FunLike g_hom G R] [OneHomClass g_hom G R]
+theorem liftNC_one {g_hom : Type*} [FunLike g_hom G R] [OneHomClass g_hom]
     (f : k →+* R) (g : g_hom) :
     liftNC (f : k →+ R) g 1 = 1 := by simp [one_def]
 
@@ -134,7 +134,7 @@ section Mul
 variable [Semiring k] [Add G] [Semiring R]
 
 theorem liftNC_mul {g_hom : Type*}
-    [FunLike g_hom (Multiplicative G) R] [MulHomClass g_hom (Multiplicative G) R]
+    [FunLike g_hom (Multiplicative G) R] [MulHomClass g_hom]
     (f : k →+* R) (g : g_hom) (a b : k[G])
     (h_comm : ∀ {x y}, y ∈ a.coeff.support → Commute (f (b.coeff x)) (g <| .ofAdd y)) :
     liftNC (f : k →+ R) g (a * b) = liftNC (f : k →+ R) g a * liftNC (f : k →+ R) g b := by
@@ -151,7 +151,7 @@ variable [Semiring k] [Zero G] [NonAssocSemiring R]
 
 @[simp]
 theorem liftNC_one {g_hom : Type*}
-    [FunLike g_hom (Multiplicative G) R] [OneHomClass g_hom (Multiplicative G) R]
+    [FunLike g_hom (Multiplicative G) R] [OneHomClass g_hom]
     (f : k →+* R) (g : g_hom) : liftNC (f : k →+ R) g 1 = 1 :=
   MonoidAlgebra.liftNC_one f g
 

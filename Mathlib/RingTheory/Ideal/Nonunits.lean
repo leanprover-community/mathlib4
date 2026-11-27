@@ -49,7 +49,7 @@ theorem one_notMem_nonunits [Monoid α] : (1 : α) ∉ nonunits α :=
   not_not_intro isUnit_one
 
 @[simp high] -- High priority shortcut lemma
-theorem map_mem_nonunits_iff [Monoid α] [Monoid β] [FunLike F α β] [MonoidHomClass F α β] (f : F)
+theorem map_mem_nonunits_iff [Monoid α] [Monoid β] [FunLike F α β] [MonoidHomClass F] (f : F)
     [IsLocalHom f] (a) : f a ∈ nonunits β ↔ a ∈ nonunits α :=
   ⟨fun h ha => h <| ha.map f, fun h ha => h ha.of_map⟩
 

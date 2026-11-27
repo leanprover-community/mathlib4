@@ -114,7 +114,7 @@ section MapRange
 
 namespace Finsupp
 variable [AddCommMonoid M] [AddCommMonoid N]
-variable {F : Type*} [FunLike F M N] [AddMonoidHomClass F M N]
+variable {F : Type*} [FunLike F M N] [AddMonoidHomClass F]
 
 theorem mapRange_multiset_sum (f : F) (m : Multiset (α →₀ M)) :
     mapRange f (map_zero f) m.sum = (m.map fun x => mapRange f (map_zero f) x).sum :=

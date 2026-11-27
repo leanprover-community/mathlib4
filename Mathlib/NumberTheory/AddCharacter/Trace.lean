@@ -108,7 +108,7 @@ theorem compAddChar_traceChar_algebraMap {S : Type*} [CommRing S] [Algebra R S]
 
 /-- If a homomorphism of `R` sends `ζ` to `ζ ^ m`, then it sends the value of `traceChar` at `x`
 to the value at `x` of the shift of `traceChar` by `m`. -/
-theorem map_traceChar_apply_eq_mulShift {G : Type*} [FunLike G R R] [MonoidHomClass G R R] {f : G}
+theorem map_traceChar_apply_eq_mulShift {G : Type*} [FunLike G R R] [MonoidHomClass G] {f : G}
     {m : ℕ} (h : f ζ = ζ ^ m) (x : A) :
     f (traceChar A hζ x) = (traceChar A hζ).mulShift (m : A) x := by
   rw [mulShift_apply, traceChar_apply, traceChar_apply, map_pow, h, ← pow_mul,

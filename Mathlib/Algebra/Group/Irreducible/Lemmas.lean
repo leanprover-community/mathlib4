@@ -94,7 +94,7 @@ alias ⟨_, Irreducible.map⟩ := MulEquiv.irreducible_iff
 
 end MulEquivClass
 
-lemma Irreducible.of_map [FunLike F M N] [MonoidHomClass F M N] [IsLocalHom f]
+lemma Irreducible.of_map [FunLike F M N] [MonoidHomClass F] [IsLocalHom f]
     (hfx : Irreducible (f x)) : Irreducible x where
   not_isUnit hu := hfx.not_isUnit <| hu.map f
   isUnit_or_isUnit := by

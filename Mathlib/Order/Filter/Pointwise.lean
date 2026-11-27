@@ -160,7 +160,7 @@ theorem pureOneHom_apply (a : α) : pureOneHom a = pure a :=
 variable [One β]
 
 @[to_additive]
-protected theorem map_one [FunLike F α β] [OneHomClass F α β] (φ : F) : map φ 1 = 1 := by
+protected theorem map_one [FunLike F α β] [OneHomClass F] (φ : F) : map φ 1 = 1 := by
   simp
 
 end One
@@ -368,7 +368,7 @@ instance mulRightMono : MulRightMono (Filter α) :=
   ⟨fun _ _ _ => map₂_mono_right⟩
 
 @[to_additive]
-protected theorem map_mul [FunLike F α β] [MulHomClass F α β] (m : F) :
+protected theorem map_mul [FunLike F α β] [MulHomClass F] (m : F) :
     (f₁ * f₂).map m = f₁.map m * f₂.map m :=
   map_map₂_distrib <| map_mul m
 
@@ -542,20 +542,20 @@ variable [FunLike F α β]
 `Filter α →* Filter β` induced by `map φ`. -/
 @[to_additive /-- If `φ : α →+ β` then `mapAddMonoidHom φ` is the monoid homomorphism
 `Filter α →+ Filter β` induced by `map φ`. -/]
-def mapMonoidHom [MonoidHomClass F α β] (φ : F) : Filter α →* Filter β where
+def mapMonoidHom [MonoidHomClass F] (φ : F) : Filter α →* Filter β where
   toFun := map φ
   map_one' := Filter.map_one φ
   map_mul' _ _ := Filter.map_mul φ
 
 -- The other direction does not hold in general
 @[to_additive]
-theorem comap_mul_comap_le [MulHomClass F α β] (m : F) {f g : Filter β} :
+theorem comap_mul_comap_le [MulHomClass F] (m : F) {f g : Filter β} :
     f.comap m * g.comap m ≤ (f * g).comap m := fun _ ⟨_, ⟨t₁, ht₁, t₂, ht₂, t₁t₂⟩, mt⟩ =>
   ⟨m ⁻¹' t₁, ⟨t₁, ht₁, Subset.rfl⟩, m ⁻¹' t₂, ⟨t₂, ht₂, Subset.rfl⟩,
     (preimage_mul_preimage_subset _).trans <| (preimage_mono t₁t₂).trans mt⟩
 
 @[to_additive]
-theorem Tendsto.mul_mul [MulHomClass F α β] (m : F) {f₁ g₁ : Filter α} {f₂ g₂ : Filter β} :
+theorem Tendsto.mul_mul [MulHomClass F] (m : F) {f₁ g₁ : Filter α} {f₂ g₂ : Filter β} :
     Tendsto m f₁ f₂ → Tendsto m g₁ g₂ → Tendsto m (f₁ * g₁) (f₂ * g₂) := fun hf hg =>
   (Filter.map_mul m).trans_le <| mul_le_mul' hf hg
 
@@ -730,7 +730,7 @@ end MulZeroClass
 
 section Group
 
-variable [Group α] [DivisionMonoid β] [FunLike F α β] [MonoidHomClass F α β]
+variable [Group α] [DivisionMonoid β] [FunLike F α β] [MonoidHomClass F]
   (m : F) {f g f₁ g₁ : Filter α} {f₂ g₂ : Filter β}
 
 /-! Note that `Filter α` is not a group because `f / f ≠ 1` in general -/

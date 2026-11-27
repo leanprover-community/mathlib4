@@ -90,7 +90,7 @@ theorem MonoidHom.map_cyclic [h : IsCyclic G] (σ : G →* G) :
 
 @[to_additive]
 theorem isCyclic_of_surjective {F : Type*} [hH : IsCyclic G']
-    [FunLike F G' G] [MonoidHomClass F G' G] (f : F) (hf : Function.Surjective f) :
+    [FunLike F G' G] [MonoidHomClass F] (f : F) (hf : Function.Surjective f) :
     IsCyclic G := by
   obtain ⟨x, hx⟩ := hH
   refine ⟨f x, fun a ↦ ?_⟩

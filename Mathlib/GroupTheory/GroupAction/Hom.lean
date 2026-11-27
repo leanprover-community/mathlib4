@@ -641,7 +641,7 @@ class DistribMulActionSemiHomClass (F : Type*)
     [Monoid M] [Monoid N]
     [AddMonoid A] [AddMonoid B] [DistribMulAction M A] [DistribMulAction N B]
     [FunLike F A B] : Prop
-    extends MulActionSemiHomClass F φ A B, AddMonoidHomClass F A B
+    extends MulActionSemiHomClass F φ A B, AddMonoidHomClass F
 
 /-- `MulDistribMulActionSemiHomClass F φ A B` states that `F` is a type of morphisms
 preserving the monoid structure and equivariant with respect to `φ`.
@@ -653,7 +653,7 @@ class MulDistribMulActionSemiHomClass (F : Type*)
     [Monoid M] [Monoid N]
     [Monoid A] [Monoid B] [MulDistribMulAction M A] [MulDistribMulAction N B]
     [FunLike F A B] : Prop
-    extends MulActionSemiHomClass F φ A B, MonoidHomClass F A B
+    extends MulActionSemiHomClass F φ A B, MonoidHomClass F
 
 /-- `MulDistribMulActionHomClass F M A B` states that `F` is a type of morphisms preserving
 the monoid structure and equivariant with respect to the action of `M`.

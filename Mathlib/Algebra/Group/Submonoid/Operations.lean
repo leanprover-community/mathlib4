@@ -163,7 +163,7 @@ end
 
 namespace Submonoid
 
-variable {F : Type*} [FunLike F M N] [mc : MonoidHomClass F M N]
+variable {F : Type*} [FunLike F M N] [mc : MonoidHomClass F]
 
 open Set
 
@@ -609,7 +609,7 @@ end Submonoid
 
 namespace MonoidHom
 
-variable {F : Type*} [FunLike F M N] [mc : MonoidHomClass F M N]
+variable {F : Type*} [FunLike F M N] [mc : MonoidHomClass F]
 
 open Submonoid
 
@@ -1013,7 +1013,7 @@ theorem bot_or_exists_ne_one (S : Submonoid M) : S = ⊥ ∨ ∃ x ∈ S, x ≠ 
   S.bot_or_nontrivial.imp_right S.nontrivial_iff_exists_ne_one.mp
 
 @[to_additive]
-lemma codisjoint_map {F : Type*} [FunLike F M N] [MonoidHomClass F M N] {f : F}
+lemma codisjoint_map {F : Type*} [FunLike F M N] [MonoidHomClass F] {f : F}
     (hf : Function.Surjective f) {H K : Submonoid M} (h : Codisjoint H K) :
     Codisjoint (H.map f) (K.map f) := by
   rw [codisjoint_iff, ← map_sup, codisjoint_iff.mp h, ← MonoidHom.mrange_eq_map,
@@ -1181,7 +1181,7 @@ end Units
 
 namespace Submonoid
 
-variable {F : Type*} [FunLike F M N] [mc : MonoidHomClass F M N]
+variable {F : Type*} [FunLike F M N] [mc : MonoidHomClass F]
 
 @[to_additive]
 theorem map_comap_eq (f : F) (S : Submonoid N) : (S.comap f).map f = S ⊓ MonoidHom.mrange f :=

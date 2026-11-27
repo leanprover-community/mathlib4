@@ -213,7 +213,7 @@ For the iff statement on the triviality of the kernel, see `injective_iff_map_eq
   its kernel is trivial. For the iff statement on the triviality of the kernel,
   see `injective_iff_map_eq_zero'`. -/]
 theorem _root_.injective_iff_map_eq_one {G H} [Group G] [MulOneClass H]
-    [FunLike F G H] [MonoidHomClass F G H]
+    [FunLike F G H] [MonoidHomClass F]
     (f : F) : Function.Injective f ↔ ∀ a, f a = 1 → a = 1 :=
   ⟨fun h _ => (map_eq_one_iff f h).mp, fun h x y hxy =>
     mul_inv_eq_one.1 <| h _ <| by rw [map_mul, hxy, ← map_mul, mul_inv_cancel, map_one]⟩
@@ -226,7 +226,7 @@ For the implication, see `injective_iff_map_eq_one`. -/
   kernel is trivial, stated as an iff on the triviality of the kernel. For the implication, see
   `injective_iff_map_eq_zero`. -/]
 theorem _root_.injective_iff_map_eq_one' {G H} [Group G] [MulOneClass H]
-    [FunLike F G H] [MonoidHomClass F G H]
+    [FunLike F G H] [MonoidHomClass F]
     (f : F) : Function.Injective f ↔ ∀ a, f a = 1 ↔ a = 1 :=
   (injective_iff_map_eq_one f).trans <|
     forall_congr' fun _ => ⟨fun h => ⟨h, fun H => H.symm ▸ map_one f⟩, Iff.mp⟩

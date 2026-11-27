@@ -33,7 +33,7 @@ namespace Finsupp
 section Zero
 variable [Zero M] [Zero N] [Zero O]
 
-lemma apply_single [FunLike F M N] [ZeroHomClass F M N] (e : F) (i : ι) (m : M) (b : ι) :
+lemma apply_single [FunLike F M N] [ZeroHomClass F] (e : F) (i : ι) (m : M) (b : ι) :
     e (single i m b) = single i (e m) b := apply_single' e (map_zero e) i m b
 
 /-- Composition with a fixed zero-preserving homomorphism is itself a zero-preserving homomorphism
@@ -128,7 +128,7 @@ lemma mapRange_add {hf : f 0 = 0} (hf' : ∀ x y, f (x + y) = f x + f y) (v₁ v
     mapRange f hf (v₁ + v₂) = mapRange f hf v₁ + mapRange f hf v₂ :=
   ext fun _ => by simp only [hf', add_apply, mapRange_apply]
 
-lemma mapRange_add' [FunLike F M N] [AddMonoidHomClass F M N] {f : F} (g₁ g₂ : ι →₀ M) :
+lemma mapRange_add' [FunLike F M N] [AddMonoidHomClass F] {f : F} (g₁ g₂ : ι →₀ M) :
     mapRange f (map_zero f) (g₁ + g₂) = mapRange f (map_zero f) g₁ + mapRange f (map_zero f) g₂ :=
   mapRange_add (map_add f) g₁ g₂
 
@@ -448,12 +448,12 @@ lemma mapRange_sub [SubNegZeroMonoid G] [SubNegZeroMonoid H] {f : G → H} {hf :
 section AddGroup
 variable [AddGroup G] {v : ι →₀ G}
 
-lemma mapRange_neg' [SubtractionMonoid H] [FunLike F G H] [AddMonoidHomClass F G H]
+lemma mapRange_neg' [SubtractionMonoid H] [FunLike F G H] [AddMonoidHomClass F]
     {f : F} (v : ι →₀ G) :
     mapRange f (map_zero f) (-v) = -mapRange f (map_zero f) v :=
   mapRange_neg (map_neg f) v
 
-lemma mapRange_sub' [SubtractionMonoid H] [FunLike F G H] [AddMonoidHomClass F G H]
+lemma mapRange_sub' [SubtractionMonoid H] [FunLike F G H] [AddMonoidHomClass F]
     {f : F} (v₁ v₂ : ι →₀ G) :
     mapRange f (map_zero f) (v₁ - v₂) = mapRange f (map_zero f) v₁ - mapRange f (map_zero f) v₂ :=
   mapRange_sub (map_sub f) v₁ v₂

@@ -295,7 +295,7 @@ open Function
 
 variable [FunLike F M N]
 
-theorem map_of_injective [MonoidHomClass F M N] (h : IsPrimitiveRoot ζ k) (hf : Injective f) :
+theorem map_of_injective [MonoidHomClass F] (h : IsPrimitiveRoot ζ k) (hf : Injective f) :
     IsPrimitiveRoot (f ζ) k where
   pow_eq_one := by rw [← map_pow, h.pow_eq_one, map_one]
   dvd_of_pow_eq_one := by
@@ -304,7 +304,7 @@ theorem map_of_injective [MonoidHomClass F M N] (h : IsPrimitiveRoot ζ k) (hf :
     rw [← map_pow, ← map_one f] at hl
     exact orderOf_dvd_of_pow_eq_one (hf hl)
 
-theorem of_map_of_injective [MonoidHomClass F M N] (h : IsPrimitiveRoot (f ζ) k)
+theorem of_map_of_injective [MonoidHomClass F] (h : IsPrimitiveRoot (f ζ) k)
     (hf : Injective f) : IsPrimitiveRoot ζ k where
   pow_eq_one := by apply_fun f; rw [map_pow, map_one, h.pow_eq_one]
   dvd_of_pow_eq_one := by
@@ -314,7 +314,7 @@ theorem of_map_of_injective [MonoidHomClass F M N] (h : IsPrimitiveRoot (f ζ) k
     rw [map_pow, map_one] at hl
     exact orderOf_dvd_of_pow_eq_one hl
 
-theorem map_iff_of_injective [MonoidHomClass F M N] (hf : Injective f) :
+theorem map_iff_of_injective [MonoidHomClass F] (hf : Injective f) :
     IsPrimitiveRoot (f ζ) k ↔ IsPrimitiveRoot ζ k :=
   ⟨fun h => h.of_map_of_injective hf, fun h => h.map_of_injective hf⟩
 
@@ -528,7 +528,7 @@ theorem zpowers_eq {k : ℕ} [NeZero k] {ζ : Rˣ} (h : IsPrimitiveRoot ζ k) :
     _ = Nat.card (ZMod k) := (Nat.card_zmod k).symm
     _ = Nat.card (Subgroup.zpowers ζ) := Nat.card_congr h.zmodEquivZPowers.toEquiv
 
-lemma map_rootsOfUnity {S F} [CommRing S] [IsDomain S] [FunLike F R S] [MonoidHomClass F R S]
+lemma map_rootsOfUnity {S F} [CommRing S] [IsDomain S] [FunLike F R S] [MonoidHomClass F]
     {ζ : R} {n : ℕ} [NeZero n] (hζ : IsPrimitiveRoot ζ n) {f : F} (hf : Function.Injective f) :
     (rootsOfUnity n R).map (Units.map f) = rootsOfUnity n S := by
   let : CommMonoid Sˣ := inferInstance
@@ -543,7 +543,7 @@ Also see `IsPrimitiveRoot.map_rootsOfUnity` for the equality as `Subgroup Sˣ`. 
 @[simps! -isSimp apply_coe_val apply_coe_inv_val]
 noncomputable
 def _root_.rootsOfUnityEquivOfPrimitiveRoots {S F} [CommRing S] [IsDomain S]
-    [FunLike F R S] [MonoidHomClass F R S]
+    [FunLike F R S] [MonoidHomClass F]
     {n : ℕ} [NeZero n] {f : F} (hf : Function.Injective f) (hζ : (primitiveRoots n R).Nonempty) :
     (rootsOfUnity n R) ≃* rootsOfUnity n S :=
   (Subgroup.equivMapOfInjective _ (Units.map f) (Units.map_injective hf)).trans
@@ -551,7 +551,7 @@ def _root_.rootsOfUnityEquivOfPrimitiveRoots {S F} [CommRing S] [IsDomain S]
       ((mem_primitiveRoots <| NeZero.pos n).mp hζ.choose_spec).map_rootsOfUnity hf)
 
 lemma _root_.rootsOfUnityEquivOfPrimitiveRoots_symm_apply
-    {S F} [CommRing S] [IsDomain S] [FunLike F R S] [MonoidHomClass F R S] {n : ℕ} [NeZero n]
+    {S F} [CommRing S] [IsDomain S] [FunLike F R S] [MonoidHomClass F] {n : ℕ} [NeZero n]
     {f : F} (hf : Function.Injective f) (hζ : (primitiveRoots n R).Nonempty) (η) :
     f ((rootsOfUnityEquivOfPrimitiveRoots hf hζ).symm η : Rˣ) = (η : Sˣ) := by
   obtain ⟨ε, rfl⟩ := (rootsOfUnityEquivOfPrimitiveRoots hf hζ).surjective η

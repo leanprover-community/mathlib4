@@ -968,7 +968,7 @@ theorem univ_mul (ht : t.Nonempty) : (univ : Set α) * t = univ :=
   eq_univ_of_forall fun b => ⟨b * a⁻¹, trivial, a, ha, inv_mul_cancel_right ..⟩
 
 @[to_additive]
-lemma image_inv [DivisionMonoid β] [FunLike F α β] [MonoidHomClass F α β] (f : F) (s : Set α) :
+lemma image_inv [DivisionMonoid β] [FunLike F α β] [MonoidHomClass F] (f : F) (s : Set α) :
     f '' s⁻¹ = (f '' s)⁻¹ := by
   rw [← image_inv_eq_inv, ← image_inv_eq_inv]; exact image_comm (map_inv _)
 
@@ -976,7 +976,7 @@ end Group
 
 section Mul
 
-variable [Mul α] [Mul β] [FunLike F α β] [MulHomClass F α β] (m : F) {s t : Set α}
+variable [Mul α] [Mul β] [FunLike F α β] [MulHomClass F] (m : F) {s t : Set α}
 
 @[to_additive]
 theorem image_mul : m '' (s * t) = m '' s * m '' t :=
@@ -1007,18 +1007,18 @@ section Monoid
 variable [Monoid α] [Monoid β] [FunLike F α β]
 
 @[to_additive]
-lemma image_pow_of_ne_zero [MulHomClass F α β] :
+lemma image_pow_of_ne_zero [MulHomClass F] :
     ∀ {n}, n ≠ 0 → ∀ (f : F) (s : Set α), f '' (s ^ n) = (f '' s) ^ n
   | 1, _ => by simp
   | n + 2, _ => by simp [image_mul, pow_succ _ n.succ, image_pow_of_ne_zero]
 
 @[to_additive]
-lemma image_pow [MonoidHomClass F α β] (f : F) (s : Set α) : ∀ n, f '' (s ^ n) = (f '' s) ^ n
+lemma image_pow [MonoidHomClass F] (f : F) (s : Set α) : ∀ n, f '' (s ^ n) = (f '' s) ^ n
   | 0 => by simp [singleton_one]
   | n + 1 => image_pow_of_ne_zero n.succ_ne_zero ..
 
 @[to_additive]
-lemma preimage_pow_subset [MonoidHomClass F α β] (f : F) (s : Set β) :
+lemma preimage_pow_subset [MonoidHomClass F] (f : F) (s : Set β) :
     ∀ n, (f ⁻¹' s) ^ n ⊆ f ⁻¹' (s ^ n)
   | 0 => by simp [Set.subset_def]
   | n + 1 => by simpa [pow_succ] using Subset.trans (mul_subset_mul_right
@@ -1028,7 +1028,7 @@ end Monoid
 
 section Group
 
-variable [Group α] [DivisionMonoid β] [FunLike F α β] [MonoidHomClass F α β] (m : F) {s t : Set α}
+variable [Group α] [DivisionMonoid β] [FunLike F α β] [MonoidHomClass F] (m : F) {s t : Set α}
 
 @[to_additive]
 theorem image_div : m '' (s / t) = m '' s / m '' t :=

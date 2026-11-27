@@ -981,7 +981,7 @@ lemma surjective_of_card_ker_le_div {G M : Type*} [Group G] [Group M] [Finite G]
 open Finset
 
 variable {G M F : Type*} [Group G] [Fintype G] [Monoid M] [DecidableEq M]
-  [FunLike F G M] [MonoidHomClass F G M]
+  [FunLike F G M] [MonoidHomClass F]
 
 @[to_additive]
 lemma card_fiber_eq_of_mem_range (f : F) {x y : M} (hx : x ∈ Set.range f) (hy : y ∈ Set.range f) :

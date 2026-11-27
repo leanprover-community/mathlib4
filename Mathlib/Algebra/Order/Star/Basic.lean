@@ -533,7 +533,7 @@ splitting into real and imaginary parts. -/
 @[aesop safe apply (rule_sets := [CStarAlgebra])]
 lemma IsSelfAdjoint.map' {F E R : Type*} [AddCommGroup E] [PartialOrder E] [StarAddMonoid E]
     [NonUnitalRing R] [PartialOrder R] [StarRing R] [StarOrderedRing R]
-    [SelfAdjointDecompose E] [FunLike F E R] [OrderHomClass F E R] [AddMonoidHomClass F E R]
+    [SelfAdjointDecompose E] [FunLike F E R] [OrderHomClass F E R] [AddMonoidHomClass F]
     {a : E} (ha : IsSelfAdjoint a) (f : F) :
     IsSelfAdjoint (f a) := by
   obtain ⟨b, c, hb, hc, rfl⟩ := ha.exists_nonneg_sub_nonneg

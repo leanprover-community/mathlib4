@@ -273,7 +273,7 @@ variable {G}
 
 @[to_additive]
 protected theorem Topology.IsInducing.isTopologicalGroup {F : Type*} [Group H] [TopologicalSpace H]
-    [FunLike F H G] [MonoidHomClass F H G] (f : F) (hf : IsInducing f) : IsTopologicalGroup H :=
+    [FunLike F H G] [MonoidHomClass F] (f : F) (hf : IsInducing f) : IsTopologicalGroup H :=
   { toContinuousMul := hf.continuousMul _
     toContinuousInv := hf.continuousInv (map_inv f) }
 
@@ -281,7 +281,7 @@ protected theorem Topology.IsInducing.isTopologicalGroup {F : Type*} [Group H] [
 protected alias Topology.IsInducing.topologicalGroup := Topology.IsInducing.isTopologicalGroup
 
 @[to_additive]
-theorem isTopologicalGroup_induced {F : Type*} [Group H] [FunLike F H G] [MonoidHomClass F H G]
+theorem isTopologicalGroup_induced {F : Type*} [Group H] [FunLike F H G] [MonoidHomClass F]
     (f : F) :
     @IsTopologicalGroup H (induced f ‹_›) _ :=
   letI := induced f ‹_›

@@ -148,7 +148,7 @@ instance AddCommMonoid.nat_isScalarTower : IsScalarTower ℕ R M where
 end AddCommMonoid
 
 theorem map_natCast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type*} [FunLike F M M₂]
-    [AddMonoidHomClass F M M₂] (f : F) (R S : Type*) [Semiring R] [Semiring S] [Module R M]
+    [AddMonoidHomClass F] (f : F) (R S : Type*) [Semiring R] [Semiring S] [Module R M]
     [Module S M₂] (x : ℕ) (a : M) : f ((x : R) • a) = (x : S) • f a := by
   simp only [Nat.cast_smul_eq_nsmul, map_nsmul]
 
@@ -196,7 +196,7 @@ instance AddCommMonoid.subsingletonIntModule [AddCommMonoid M] : Subsingleton (M
     AddCommGroup.uniqueIntModule.instSubsingleton.allEq a b
 
 theorem map_intCast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*} [FunLike F M M₂]
-    [AddMonoidHomClass F M M₂] (f : F) (R S : Type*) [Ring R] [Ring S] [Module R M] [Module S M₂]
+    [AddMonoidHomClass F] (f : F) (R S : Type*) [Ring R] [Ring S] [Module R M] [Module S M₂]
     (x : ℤ) (a : M) :
     f ((x : R) • a) = (x : S) • f a := by simp only [Int.cast_smul_eq_zsmul, map_zsmul]
 

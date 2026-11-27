@@ -304,7 +304,7 @@ lemma isMulFreimanIso_empty : IsMulFreimanIso n (∅ : Set α) (∅ : Set β) f 
     rw [Pi.mul_def, prod_map_mul, prod_map_mul, h₁.map_prod_eq_map_prod hsA htA hs ht h,
       h₂.map_prod_eq_map_prod hsA htA hs ht h]
 
-@[to_additive] lemma MulHomClass.isMulFreimanHom [FunLike F α β] [MulHomClass F α β] (f : F)
+@[to_additive] lemma MulHomClass.isMulFreimanHom [FunLike F α β] [MulHomClass F] (f : F)
     (hfAB : MapsTo f A B) : IsMulFreimanHom n A B f :=
   match n with
   | 0 => by simpa

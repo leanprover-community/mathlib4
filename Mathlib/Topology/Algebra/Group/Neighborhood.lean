@@ -100,7 +100,7 @@ See also `uniformContinuous_of_continuousAt_one`. -/
   saving a rewrite of `f 0 = 0` compared to `continuous_of_continuousAt_zero` in some cases.
   See also `uniformContinuous_of_continuousAt_zero`. -/]
 theorem continuous_of_tendsto_nhds_one {M hom : Type*} [MulOneClass M] [TopologicalSpace M]
-    [ContinuousMul M] [FunLike hom G M] [MonoidHomClass hom G M] (f : hom)
+    [ContinuousMul M] [FunLike hom G M] [MonoidHomClass hom] (f : hom)
     (hf : Tendsto f (𝓝 1) (𝓝 1)) :
     Continuous f :=
   continuous_iff_continuousAt.2 fun x ↦ by
@@ -116,7 +116,7 @@ also `uniformContinuous_of_continuousAt_one`. -/
   continuous provided that it is continuous at zero. See also
   `uniformContinuous_of_continuousAt_zero`. -/]
 theorem continuous_of_continuousAt_one {M hom : Type*} [MulOneClass M] [TopologicalSpace M]
-    [ContinuousMul M] [FunLike hom G M] [MonoidHomClass hom G M] (f : hom)
+    [ContinuousMul M] [FunLike hom G M] [MonoidHomClass hom] (f : hom)
     (hf : ContinuousAt f 1) :
     Continuous f :=
   continuous_of_tendsto_nhds_one f <| by simpa using hf.tendsto
@@ -136,7 +136,7 @@ theorem continuous_of_continuousAt_one₂ {H M : Type*} [CommMonoid M] [Topologi
 @[to_additive]
 lemma IsTopologicalGroup.isInducing_iff_nhds_one
     {H : Type*} [Group H] [TopologicalSpace H] [IsTopologicalGroup H] {F : Type*}
-    [FunLike F G H] [MonoidHomClass F G H] {f : F} :
+    [FunLike F G H] [MonoidHomClass F] {f : F} :
     Topology.IsInducing f ↔ 𝓝 (1 : G) = (𝓝 (1 : H)).comap f := by
   rw [Topology.isInducing_iff_nhds]
   refine ⟨(map_one f ▸ · 1), fun hf x ↦ ?_⟩
@@ -148,7 +148,7 @@ lemma IsTopologicalGroup.isInducing_iff_nhds_one
 @[to_additive]
 lemma IsTopologicalGroup.isOpenMap_iff_nhds_one
     {H : Type*} [Monoid H] [TopologicalSpace H] [ContinuousConstSMul H H]
-    {F : Type*} [FunLike F G H] [MonoidHomClass F G H] {f : F} :
+    {F : Type*} [FunLike F G H] [MonoidHomClass F] {f : F} :
     IsOpenMap f ↔ 𝓝 1 ≤ .map f (𝓝 1) := by
   refine ⟨fun H ↦ map_one f ▸ H.nhds_le 1, fun h ↦ IsOpenMap.of_nhds_le fun x ↦ ?_⟩
   have : Filter.map (f x * ·) (𝓝 1) = 𝓝 (f x) := by
@@ -168,7 +168,7 @@ continuous surjective additive group homomorphism. Assume furthermore that `φ` 
 open map. -/]
 lemma MonoidHom.isOpenQuotientMap_of_isQuotientMap {A : Type*} [Group A]
     [TopologicalSpace A] [ContinuousMul A] {B : Type*} [Group B] [TopologicalSpace B]
-    {F : Type*} [FunLike F A B] [MonoidHomClass F A B] {φ : F}
+    {F : Type*} [FunLike F A B] [MonoidHomClass F] {φ : F}
     (hφ : IsQuotientMap φ) : IsOpenQuotientMap φ where
     surjective := hφ.surjective
     continuous := hφ.continuous
@@ -195,7 +195,7 @@ lemma MonoidHom.isOpenQuotientMap_of_isQuotientMap {A : Type*} [Group A]
 @[to_additive]
 lemma MonoidHom.isOpenQuotientMap_iff_isQuotientMap {A : Type*} [Group A]
     [TopologicalSpace A] [ContinuousMul A] {B : Type*} [Group B] [TopologicalSpace B]
-    {F : Type*} [FunLike F A B] [MonoidHomClass F A B] {φ : F} :
+    {F : Type*} [FunLike F A B] [MonoidHomClass F] {φ : F} :
     IsOpenQuotientMap φ ↔ IsQuotientMap φ :=
   ⟨fun hf => hf.isQuotientMap, MonoidHom.isOpenQuotientMap_of_isQuotientMap⟩
 

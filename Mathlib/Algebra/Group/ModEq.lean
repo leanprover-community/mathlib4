@@ -135,7 +135,7 @@ protected theorem add_nsmul (n : ℕ) : a ≡ b [PMOD p] → a + n • p ≡ b [
 protected theorem nsmul_add (n : ℕ) : a ≡ b [PMOD p] → n • p + a ≡ b [PMOD p] :=
   (nsmul_add_modEq _).trans
 
-theorem map {N F : Type*} [AddCommMonoid N] [FunLike F M N] [AddMonoidHomClass F M N]
+theorem map {N F : Type*} [AddCommMonoid N] [FunLike F M N] [AddMonoidHomClass F]
     (f : F) (h : a ≡ b [PMOD p]) : f a ≡ f b [PMOD f p] := by
   rw [modEq_iff_nsmul] at *
   rcases h with ⟨m, n, h⟩
@@ -144,7 +144,7 @@ theorem map {N F : Type*} [AddCommMonoid N] [FunLike F M N] [AddMonoidHomClass F
 
 end ModEq
 
-theorem map_modEq_iff {N F : Type*} [AddCommMonoid N] [FunLike F M N] [AddMonoidHomClass F M N]
+theorem map_modEq_iff {N F : Type*} [AddCommMonoid N] [FunLike F M N] [AddMonoidHomClass F]
     (f : F) (hf : Function.Injective f) : f a ≡ f b [PMOD f p] ↔ a ≡ b [PMOD p] := by
   simp only [modEq_iff_nsmul, ← map_nsmul, ← map_add, hf.eq_iff]
 

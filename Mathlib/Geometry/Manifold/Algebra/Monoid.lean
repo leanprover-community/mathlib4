@@ -298,7 +298,7 @@ instance : FunLike (ContMDiffMonoidMorphism I I' n G G') G G' where
   coe_injective f g h := by cases f; cases g; congr; exact DFunLike.ext' h
 
 @[to_additive]
-instance : MonoidHomClass (ContMDiffMonoidMorphism I I' n G G') G G' where
+instance : MonoidHomClass (ContMDiffMonoidMorphism I I' n G G') where
   map_one f := f.map_one
   map_mul f := f.map_mul
 

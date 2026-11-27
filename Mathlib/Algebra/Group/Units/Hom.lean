@@ -52,7 +52,7 @@ equal at `x⁻¹`. -/
   /-- If two homomorphisms from a subtraction monoid to an additive monoid are equal at an
   additive unit `x`, then they are equal at `-x`. -/]
 theorem IsUnit.eq_on_inv {F G N} [DivisionMonoid G] [Monoid N] [FunLike F G N]
-    [MonoidHomClass F G N] {x : G} (hx : IsUnit x) (f g : F) (h : f x = g x) : f x⁻¹ = g x⁻¹ :=
+    [MonoidHomClass F] {x : G} (hx : IsUnit x) (f g : F) (h : f x = g x) : f x⁻¹ = g x⁻¹ :=
   left_inv_eq_right_inv (map_mul_eq_one f hx.inv_mul_cancel)
     (h.symm ▸ map_mul_eq_one g (hx.mul_inv_cancel))
 
@@ -60,7 +60,7 @@ theorem IsUnit.eq_on_inv {F G N} [DivisionMonoid G] [Monoid N] [FunLike F G N]
 @[to_additive
     /-- If two homomorphism from an additive group to an additive monoid are equal at `x`,
     then they are equal at `-x`. -/]
-theorem eq_on_inv {F G M} [Group G] [Monoid M] [FunLike F G M] [MonoidHomClass F G M]
+theorem eq_on_inv {F G M} [Group G] [Monoid M] [FunLike F G M] [MonoidHomClass F]
     (f g : F) {x : G} (h : f x = g x) : f x⁻¹ = g x⁻¹ :=
   (Group.isUnit x).eq_on_inv f g h
 
@@ -128,7 +128,7 @@ theorem val_zpow_eq_zpow_val : ∀ (u : αˣ) (n : ℤ), ((u ^ n : αˣ) : α) =
   (Units.coeHom α).map_zpow
 
 @[to_additive (attr := simp)]
-theorem _root_.map_units_inv {F : Type*} [FunLike F M α] [MonoidHomClass F M α]
+theorem _root_.map_units_inv {F : Type*} [FunLike F M α] [MonoidHomClass F]
     (f : F) (u : Units M) :
     f ↑u⁻¹ = (f u)⁻¹ := ((f : M →* α).comp (Units.coeHom M)).map_inv u
 
@@ -205,27 +205,27 @@ section Monoid
 variable [Monoid M] [Monoid N]
 
 @[to_additive]
-theorem map [MonoidHomClass F M N] (f : F) {x : M} (h : IsUnit x) : IsUnit (f x) := by
+theorem map [MonoidHomClass F] (f : F) {x : M} (h : IsUnit x) : IsUnit (f x) := by
   rcases h with ⟨y, rfl⟩; exact (Units.map (f : M →* N) y).isUnit
 
 @[to_additive]
-theorem unit_map [MonoidHomClass F M N] (f : F) {x : M} (h : IsUnit x) :
+theorem unit_map [MonoidHomClass F] (f : F) {x : M} (h : IsUnit x) :
     (h.map f).unit = f h.unit :=
   rfl
 
 @[to_additive]
-theorem unit_inv_map [MonoidHomClass F M N] (f : F) {x : M} (h : IsUnit x) :
+theorem unit_inv_map [MonoidHomClass F] (f : F) {x : M} (h : IsUnit x) :
     (h.map f).unit⁻¹ = f ↑h.unit⁻¹ :=
   Units.inv_eq_of_mul_eq_one_left <| by simp [← map_mul]
 
 @[to_additive]
-theorem of_leftInverse [MonoidHomClass G N M] {f : F} {x : M} (g : G)
+theorem of_leftInverse [MonoidHomClass G] {f : F} {x : M} (g : G)
     (hfg : Function.LeftInverse g f) (h : IsUnit (f x)) : IsUnit x := by
   simpa only [hfg x] using h.map g
 
 /-- Prefer `IsLocalHom.of_leftInverse`, but we can't get rid of this because of `ToAdditive`. -/
 @[to_additive]
-theorem _root_.isUnit_map_of_leftInverse [MonoidHomClass F M N] [MonoidHomClass G N M]
+theorem _root_.isUnit_map_of_leftInverse [MonoidHomClass F] [MonoidHomClass G]
     {f : F} {x : M} (g : G) (hfg : Function.LeftInverse g f) :
     IsUnit (f x) ↔ IsUnit x := ⟨of_leftInverse g hfg, map _⟩
 
@@ -277,13 +277,13 @@ theorem IsUnit.of_map (f : F) [IsLocalHom f] (a : R) (h : IsUnit (f a)) : IsUnit
 -- TODO : remove alias, change the parenthesis of `f` and `a`
 alias isUnit_of_map_unit := IsUnit.of_map
 
-variable [MonoidHomClass F R S]
+variable [MonoidHomClass F]
 
 @[simp]
 theorem isUnit_map_iff (f : F) [IsLocalHom f] (a : R) : IsUnit (f a) ↔ IsUnit a :=
   ⟨IsLocalHom.map_nonunit a, IsUnit.map f⟩
 
-theorem isLocalHom_of_leftInverse [FunLike G S R] [MonoidHomClass G S R]
+theorem isLocalHom_of_leftInverse [FunLike G S R] [MonoidHomClass G]
     {f : F} (g : G) (hfg : Function.LeftInverse g f) : IsLocalHom f where
   map_nonunit a ha := by rwa [isUnit_map_of_leftInverse g hfg] at ha
 

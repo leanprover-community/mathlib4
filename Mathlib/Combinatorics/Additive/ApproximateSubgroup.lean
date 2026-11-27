@@ -102,7 +102,7 @@ lemma card_mul_self_le [DecidableEq G] {A : Finset G} (hA : IsApproximateSubgrou
     #(A * A) ≤ K * #A := by simpa [sq] using hA.card_pow_le (n := 2)
 
 @[to_additive]
-lemma image {F H : Type*} [Group H] [FunLike F G H] [MonoidHomClass F G H] (f : F)
+lemma image {F H : Type*} [Group H] [FunLike F G H] [MonoidHomClass F] (f : F)
     (hA : IsApproximateSubgroup K A) : IsApproximateSubgroup K (f '' A) where
   one_mem := ⟨1, hA.one_mem, map_one _⟩
   inv_eq_self := by simp [← Set.image_inv, hA.inv_eq_self]

@@ -45,7 +45,7 @@ variable [CommMonoidWithZero M]
 section Map
 
 variable [CommMonoidWithZero N] {F : Type*} {G : Type*} [FunLike F M N]
-variable [MonoidWithZeroHomClass F M N] [FunLike G N M] [MulHomClass G N M]
+variable [MonoidWithZeroHomClass F M N] [FunLike G N M] [MulHomClass G]
 variable (f : F) (g : G) {p : M}
 
 theorem comap_prime (hinv : ∀ a, g (f a : N) = a) (hp : Prime (f p)) : Prime p :=
@@ -205,7 +205,7 @@ theorem pow_inj_of_not_isUnit {q : M} (hq : ¬IsUnit q)
 end CancelCommMonoidWithZero
 
 lemma IsRelPrime.of_map
-    {M N F : Type*} [Monoid M] [Monoid N] [FunLike F M N] [MulHomClass F M N]
+    {M N F : Type*} [Monoid M] [Monoid N] [FunLike F M N] [MulHomClass F]
     (f : F) [IsLocalHom f] {a b : M}
     (hab : IsRelPrime (f a) (f b)) : IsRelPrime a b :=
   fun _ h₁ h₂ ↦ .of_map _ _ (hab (map_dvd f h₁) (map_dvd f h₂))

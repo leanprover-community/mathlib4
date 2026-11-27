@@ -228,7 +228,7 @@ lemma addLECancellable_iff_ne_top [Nonempty α] [Preorder α]
 
 --  There is no `WithTop.map_mul_of_mulHom`, since `WithTop` does not have a multiplication.
 @[simp]
-protected theorem map_add {F} [Add β] [FunLike F α β] [AddHomClass F α β]
+protected theorem map_add {F} [Add β] [FunLike F α β] [AddHomClass F]
     (f : F) (a b : WithTop α) :
     (a + b).map f = a.map f + b.map f := by
   induction a
@@ -596,7 +596,7 @@ lemma add_le_add_iff_right' {α : Type*} [Add α] [LE α]
 
 --  There is no `WithBot.map_mul_of_mulHom`, since `WithBot` does not have a multiplication.
 @[simp]
-protected theorem map_add {F} [Add β] [FunLike F α β] [AddHomClass F α β]
+protected theorem map_add {F} [Add β] [FunLike F α β] [AddHomClass F]
     (f : F) (a b : WithBot α) :
     (a + b).map f = a.map f + b.map f := by
   induction a

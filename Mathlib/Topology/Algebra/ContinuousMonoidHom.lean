@@ -37,7 +37,7 @@ variable [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C] [Topolog
 
 When possible, instead of parametrizing results over `(f : ContinuousAddMonoidHom A B)`,
 you should parametrize
-over `(F : Type*) [FunLike F A B] [ContinuousMapClass F A B] [AddMonoidHomClass F A B] (f : F)`.
+over `(F : Type*) [FunLike F A B] [ContinuousMapClass F A B] [AddMonoidHomClass F] (f : F)`.
 
 When you extend this structure,
 make sure to extend `ContinuousMapClass` and/or `AddMonoidHomClass`, if needed. -/
@@ -48,7 +48,7 @@ structure ContinuousAddMonoidHom (A B : Type*) [AddMonoid A] [AddMonoid B] [Topo
 
 When possible, instead of parametrizing results over `(f : ContinuousMonoidHom A B)`,
 you should parametrize
-over `(F : Type*) [FunLike F A B] [ContinuousMapClass F A B] [MonoidHomClass F A B] (f : F)`.
+over `(F : Type*) [FunLike F A B] [ContinuousMapClass F A B] [MonoidHomClass F] (f : F)`.
 
 When you extend this structure,
 make sure to extend `ContinuousMapClass` and/or `MonoidHomClass`, if needed. -/
@@ -85,7 +85,7 @@ instance instFunLike : FunLike (A →ₜ* B) A B where
     congr
 
 @[to_additive]
-instance instMonoidHomClass : MonoidHomClass (A →ₜ* B) A B where
+instance instMonoidHomClass : MonoidHomClass (A →ₜ* B) where
   map_mul f := f.map_mul'
   map_one f := f.map_one'
 
@@ -106,32 +106,32 @@ section
 
 variable {F : Type*} [FunLike F A B]
 
-/-- Turn an element of a type `F` satisfying `MonoidHomClass F A B` and `ContinuousMapClass F A B`
+/-- Turn an element of a type `F` satisfying `MonoidHomClass F` and `ContinuousMapClass F A B`
 into a `ContinuousMonoidHom`. -/
 @[to_additive /-- Turn an element of a type `F` satisfying
-`AddMonoidHomClass F A B` and `ContinuousMapClass F A B` into a `ContinuousAddMonoidHom`. -/]
-def ofClass [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) : A →ₜ* B :=
+`AddMonoidHomClass F` and `ContinuousMapClass F A B` into a `ContinuousAddMonoidHom`. -/]
+def ofClass [MonoidHomClass F] [ContinuousMapClass F A B] (f : F) : A →ₜ* B :=
   { MonoidHom.ofClass f with
     continuous_toFun := by dsimp; fun_prop }
 
 @[to_additive (attr := deprecated (since := "2026-11-24"))] alias toContinuousMonoidHom := ofClass
 
 @[to_additive (attr := simp)]
-protected lemma coe_ofClass [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) :
+protected lemma coe_ofClass [MonoidHomClass F] [ContinuousMapClass F A B] (f : F) :
     ⇑(ofClass f) = f := rfl
 
 @[to_additive (attr := deprecated (since := "2026-11-24"))] protected alias coe_coe :=
   ContinuousMonoidHom.coe_ofClass
 
 @[to_additive (attr := simp)]
-lemma toMonoidHom_ofClass [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) :
+lemma toMonoidHom_ofClass [MonoidHomClass F] [ContinuousMapClass F A B] (f : F) :
     (ofClass f : A →* B) = f := rfl
 
 @[to_additive (attr := deprecated (since := "2026-11-24"))] alias
     toMonoidHom_toContinuousMonoidHom := toMonoidHom_ofClass
 
 @[to_additive (attr := simp)]
-lemma toContinuousMap_ofClass [MonoidHomClass F A B] [ContinuousMapClass F A B]
+lemma toContinuousMap_ofClass [MonoidHomClass F] [ContinuousMapClass F A B]
     (f : F) : (ofClass f).toContinuousMap = .ofClass f := rfl
 
 @[to_additive (attr := deprecated (since := "2026-11-24"))] alias

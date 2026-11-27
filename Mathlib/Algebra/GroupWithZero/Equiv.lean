@@ -22,7 +22,7 @@ variable {F α β : Type*} [EquivLike F α β]
 
 -- See note [lower instance priority]
 instance (priority := 100) toZeroHomClass [MulZeroClass α] [MulZeroClass β] [MulEquivClass F α β] :
-    ZeroHomClass F α β where
+    ZeroHomClass F where
   map_zero f :=
     calc
       f 0 = f 0 * f (EquivLike.inv f 0) := by rw [← map_mul, zero_mul]

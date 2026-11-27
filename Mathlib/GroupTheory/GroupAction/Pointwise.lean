@@ -90,7 +90,7 @@ theorem preimage_smul_setₛₗ_of_isUnit_isUnit (f : F)
 
 /-- `preimage_smul_setₛₗ` when `c` is a unit and `σ` is a monoid homomorphism. -/
 @[to_additive]
-theorem IsUnit.preimage_smul_setₛₗ {F G : Type*} [FunLike G M N] [MonoidHomClass G M N]
+theorem IsUnit.preimage_smul_setₛₗ {F G : Type*} [FunLike G M N] [MonoidHomClass G]
     (σ : G) [FunLike F α β] [MulActionSemiHomClass F σ α β] (f : F) (hc : IsUnit c) (t : Set β) :
     f ⁻¹' (σ c • t) = c • f ⁻¹' t :=
   preimage_smul_setₛₗ_of_isUnit_isUnit _ hc (hc.map _) _

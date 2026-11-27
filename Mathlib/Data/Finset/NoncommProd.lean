@@ -173,14 +173,14 @@ lemma noncommProd_induction (s : Multiset α) (comm)
 variable [FunLike F α β]
 
 @[to_additive]
-protected theorem map_noncommProd_aux [MulHomClass F α β] (s : Multiset α)
+protected theorem map_noncommProd_aux [MulHomClass F] (s : Multiset α)
     (comm : { x | x ∈ s }.Pairwise Commute) (f : F) : { x | x ∈ s.map f }.Pairwise Commute := by
   simp only [Multiset.mem_map]
   rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩ _
   exact (comm.forall₂ hx hy).map f
 
 @[to_additive]
-theorem map_noncommProd [MonoidHomClass F α β] (s : Multiset α) (comm) (f : F) :
+theorem map_noncommProd [MonoidHomClass F] (s : Multiset α) (comm) (f : F) :
     f (s.noncommProd comm) = (s.map f).noncommProd (Multiset.map_noncommProd_aux s comm f) := by
   induction s using Quotient.inductionOn
   simpa using map_list_prod f _
@@ -319,7 +319,7 @@ theorem noncommProd_singleton (a : α) (f : α → β) :
 variable [FunLike F β γ]
 
 @[to_additive]
-theorem map_noncommProd [MonoidHomClass F β γ] (s : Finset α) (f : α → β) (comm) (g : F) :
+theorem map_noncommProd [MonoidHomClass F] (s : Finset α) (f : α → β) (comm) (g : F) :
     g (s.noncommProd f comm) =
       s.noncommProd (fun i => g (f i)) fun _ hx _ hy _ => (comm.forall₂ hx hy).map g := by
   simp [noncommProd, Multiset.map_noncommProd]

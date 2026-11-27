@@ -142,7 +142,7 @@ theorem le_def : c ≤ d ↔ ∀ {x y}, c x y → d x y := .rfl
 
 @[gcongr]
 theorem comap_mono
-    {F : Type*} [FunLike F R R'] [AddHomClass F R R'] [MulHomClass F R R']
+    {F : Type*} [FunLike F R R'] [AddHomClass F] [MulHomClass F]
     {J J' : RingCon R'} {f : F} (h : J ≤ J') :
     J.comap f ≤ J'.comap f :=
   fun _ _ h₁ ↦ h h₁
@@ -325,12 +325,12 @@ theorem sSup_eq_ringConGen (S : Set (RingCon R)) :
 
 open scoped Function
 
-theorem le_comap_ringConGen {F} [FunLike F R' R] [MulHomClass F R' R] [AddHomClass F R' R]
+theorem le_comap_ringConGen {F} [FunLike F R' R] [MulHomClass F] [AddHomClass F]
     (r : R → R → Prop) (f : F) :
     ringConGen (r on f) ≤ (ringConGen r).comap f :=
   ringConGen_le.2 fun _ _ h => RingConGen.Rel.of _ _ h
 
-theorem comap_injective {F} [FunLike F R' R] [MulHomClass F R' R] [AddHomClass F R' R]
+theorem comap_injective {F} [FunLike F R' R] [MulHomClass F] [AddHomClass F]
     (f : F) (hf : Function.Surjective f) :
     Function.Injective (comap · f) :=
   .of_comp (f := toCon) <| (Con.comap_injective f hf <| map_mul f).comp toCon_injective

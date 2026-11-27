@@ -174,7 +174,7 @@ lemma Algebra.isPushout_of_isLocalization [IsLocalization (Algebra.algebraMapSub
   (Algebra.isLocalization_iff_isPushout S _).mp inferInstance
 
 lemma Submonoid.map_isUnit_le_isUnit {M N : Type*} [Monoid M] [Monoid N]
-    {F : Type*} [FunLike F M N] [MonoidHomClass F M N] (f : F) :
+    {F : Type*} [FunLike F M N] [MonoidHomClass F] (f : F) :
     Submonoid.map f (IsUnit.submonoid M) ≤ IsUnit.submonoid N := by
   rintro x ⟨y, hy, rfl⟩
   exact hy.map _

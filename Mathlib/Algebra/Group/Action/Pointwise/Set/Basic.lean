@@ -95,14 +95,14 @@ open scoped RightActions
 end Mul
 
 @[to_additive]
-lemma image_smul_distrib [Mul α] [Mul β] [FunLike F α β] [MulHomClass F α β]
+lemma image_smul_distrib [Mul α] [Mul β] [FunLike F α β] [MulHomClass F]
     (f : F) (a : α) (s : Set α) :
     f '' (a • s) = f a • f '' s :=
   image_comm <| map_mul _ _
 
 open scoped RightActions in
 @[to_additive]
-lemma image_op_smul_distrib [Mul α] [Mul β] [FunLike F α β] [MulHomClass F α β]
+lemma image_op_smul_distrib [Mul α] [Mul β] [FunLike F α β] [MulHomClass F]
     (f : F) (a : α) (s : Set α) : f '' (s <• a) = f '' s <• f a := image_comm fun _ ↦ map_mul ..
 
 section Semigroup
@@ -396,7 +396,7 @@ variable [Monoid α] [MulAction α β] {s : Set β} {a : α} {b : β}
 end Monoid
 
 section Group
-variable [Group α] [CommGroup β] [FunLike F α β] [MonoidHomClass F α β]
+variable [Group α] [CommGroup β] [FunLike F α β] [MonoidHomClass F]
 
 @[to_additive]
 lemma smul_graphOn (x : α × β) (s : Set α) (f : F) :

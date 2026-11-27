@@ -41,7 +41,7 @@ variable {M}
 namespace Con
 
 section Mul
-variable {F} [Mul M] [Mul N] [Mul P] [FunLike F M N] [MulHomClass F M N]
+variable {F} [Mul M] [Mul N] [Mul P] [FunLike F M N] [MulHomClass F]
 
 /-- The natural homomorphism from a magma to its quotient by a congruence relation. -/
 @[to_additive (attr := simps) /-- The natural homomorphism from an additive magma to its quotient by

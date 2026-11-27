@@ -540,7 +540,7 @@ theorem Filter.HasBasis.uniformity_of_nhds_one_inv_mul_swapped {ι} {p : ι → 
 
 @[to_additive]
 theorem uniformContinuous_of_tendsto_one {hom : Type*} [UniformSpace β] [Group β] [IsUniformGroup β]
-    [FunLike hom α β] [MonoidHomClass hom α β] {f : hom} (h : Tendsto f (𝓝 1) (𝓝 1)) :
+    [FunLike hom α β] [MonoidHomClass hom] {f : hom} (h : Tendsto f (𝓝 1) (𝓝 1)) :
     UniformContinuous f := by
   have :
     ((fun x : β × β => x.2 / x.1) ∘ fun x : α × α => (f x.1, f x.2)) = fun x : α × α =>
@@ -556,7 +556,7 @@ two uniform groups is uniformly continuous provided that it is continuous at one
 `AddMonoidHomClass`) between two uniform additive groups is uniformly continuous provided that it
 is continuous at zero. See also `continuous_of_continuousAt_zero`. -/]
 theorem uniformContinuous_of_continuousAt_one {hom : Type*} [UniformSpace β] [Group β]
-    [IsUniformGroup β] [FunLike hom α β] [MonoidHomClass hom α β]
+    [IsUniformGroup β] [FunLike hom α β] [MonoidHomClass hom]
     (f : hom) (hf : ContinuousAt f 1) :
     UniformContinuous f :=
   uniformContinuous_of_tendsto_one (by simpa using hf.tendsto)
@@ -571,7 +571,7 @@ its kernel is open. -/
 @[to_additive /-- A homomorphism from a uniform additive group to a discrete uniform additive group
 is continuous if and only if its kernel is open. -/]
 theorem IsUniformGroup.uniformContinuous_iff_isOpen_ker {hom : Type*} [UniformSpace β]
-    [DiscreteTopology β] [Group β] [IsUniformGroup β] [FunLike hom α β] [MonoidHomClass hom α β]
+    [DiscreteTopology β] [Group β] [IsUniformGroup β] [FunLike hom α β] [MonoidHomClass hom]
     {f : hom} :
     UniformContinuous f ↔ IsOpen ((f : α →* β).ker : Set α) := by
   refine ⟨fun hf => ?_, fun hf => ?_⟩
@@ -582,7 +582,7 @@ theorem IsUniformGroup.uniformContinuous_iff_isOpen_ker {hom : Type*} [UniformSp
 
 @[to_additive]
 theorem uniformContinuous_monoidHom_of_continuous {hom : Type*} [UniformSpace β] [Group β]
-    [IsUniformGroup β] [FunLike hom α β] [MonoidHomClass hom α β] {f : hom} (h : Continuous f) :
+    [IsUniformGroup β] [FunLike hom α β] [MonoidHomClass hom] {f : hom} (h : Continuous f) :
     UniformContinuous f :=
   uniformContinuous_of_tendsto_one <|
     suffices Tendsto f (𝓝 1) (𝓝 (f 1)) by rwa [map_one] at this
@@ -590,14 +590,14 @@ theorem uniformContinuous_monoidHom_of_continuous {hom : Type*} [UniformSpace β
 
 @[to_additive]
 theorem MonoidHom.isUniformInducing_of_isInducing {Hom : Type*} [UniformSpace β] [Group β]
-    [IsUniformGroup β] [FunLike Hom α β] [MonoidHomClass Hom α β] {f : Hom} (h : IsInducing f) :
+    [IsUniformGroup β] [FunLike Hom α β] [MonoidHomClass Hom] {f : Hom} (h : IsInducing f) :
     IsUniformInducing f where
   comap_uniformity := by
     simp [uniformity_eq_comap_nhds_one, comap_comap, Function.comp_def, h.nhds_eq_comap]
 
 @[to_additive]
 theorem MonoidHom.isUniformEmbedding_of_isEmbedding {Hom : Type*} [UniformSpace β] [Group β]
-    [IsUniformGroup β] [FunLike Hom α β] [MonoidHomClass Hom α β] {f : Hom} (h : IsEmbedding f) :
+    [IsUniformGroup β] [FunLike Hom α β] [MonoidHomClass Hom] {f : Hom} (h : IsEmbedding f) :
     IsUniformEmbedding f where
   toIsUniformInducing := MonoidHom.isUniformInducing_of_isInducing h.isInducing
   injective := h.injective

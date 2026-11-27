@@ -110,7 +110,7 @@ lemma HasIndepIncrements.indepFun_eval_sub [SubNegZeroMonoid E] (hX : HasIndepIn
   filter_upwards [h] with ω hω using by simp [hω]
 
 protected lemma HasIndepIncrements.map' {F G : Type*} [MeasurableSpace G] [FunLike F E G]
-    [AddGroup E] [SubtractionMonoid G] [AddMonoidHomClass F E G] {f : F} (hf : Measurable f)
+    [AddGroup E] [SubtractionMonoid G] [AddMonoidHomClass F] {f : F} (hf : Measurable f)
     (hX : HasIndepIncrements X P) :
     HasIndepIncrements (fun t ω ↦ f (X t ω)) P := by
   intro n t ht

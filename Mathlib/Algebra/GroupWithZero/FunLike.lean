@@ -31,7 +31,7 @@ section Comp
 
 variable [FunLike F α α] [Zero F] [One F] [Mul F] [NPow F] [Zero α]
   [IsZeroApply F] [IsOneApplyEqSelf F] [IsMulApplyEqComp F] [IsNPowApplyEqIterate F]
-  [ZeroHomClass F α α]
+  [ZeroHomClass F]
 
 /-- A `FunLike` type with `(f * g) x = f (g x)` is a `MonoidWithZero` -/
 protected abbrev compMonoidWithZero : MonoidWithZero F where

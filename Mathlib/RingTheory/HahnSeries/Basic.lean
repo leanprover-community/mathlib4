@@ -139,7 +139,7 @@ theorem support_eq_empty_iff {x : R⟦Γ⟧} : x.support = ∅ ↔ x = 0 :=
 
 /-- The map of Hahn series induced by applying a zero-preserving map to each coefficient. -/
 @[simps]
-def map [Zero S] (x : R⟦Γ⟧) {F : Type*} [FunLike F R S] [ZeroHomClass F R S] (f : F) : S⟦Γ⟧ where
+def map [Zero S] (x : R⟦Γ⟧) {F : Type*} [FunLike F R S] [ZeroHomClass F] (f : F) : S⟦Γ⟧ where
   coeff g := f (x.coeff g)
   isPWO_support' := x.isPWO_support.mono <| Function.support_comp_subset (ZeroHomClass.map_zero f) _
 

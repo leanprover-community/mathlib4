@@ -47,7 +47,7 @@ section Comap
 
 @[to_additive]
 lemma IsUniformInducing.isUniformGroup [UniformSpace G] [UniformSpace H]
-    [IsUniformGroup H] [FunLike hom G H] [MonoidHomClass hom G H]
+    [IsUniformGroup H] [FunLike hom G H] [MonoidHomClass hom]
     (f : hom) (hf : IsUniformInducing f) :
     IsUniformGroup G where
   uniformContinuous_div := by
@@ -56,7 +56,7 @@ lemma IsUniformInducing.isUniformGroup [UniformSpace G] [UniformSpace H]
 
 @[to_additive]
 protected theorem IsUniformGroup.comap {u : UniformSpace H} [IsUniformGroup H]
-    [FunLike hom G H] [MonoidHomClass hom G H] (f : hom) :
+    [FunLike hom G H] [MonoidHomClass hom] (f : hom) :
     @IsUniformGroup G (u.comap f) _ :=
   letI : UniformSpace G := u.comap f; IsUniformInducing.isUniformGroup f ⟨rfl⟩
 

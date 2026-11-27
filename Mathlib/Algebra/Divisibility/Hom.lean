@@ -24,7 +24,7 @@ divisibility, divides
 
 public section
 
-variable {E F M N : Type*} [Semigroup M] [Semigroup N] [FunLike F M N] [MulHomClass F M N]
+variable {E F M N : Type*} [Semigroup M] [Semigroup N] [FunLike F M N] [MulHomClass F]
   [EquivLike E M N] [MulEquivClass E M N] {a b : M}
 
 @[gcongr] lemma map_dvd (f : F) : a ∣ b → f a ∣ f b | ⟨c, h⟩ => ⟨f c, h.symm ▸ map_mul f a c⟩

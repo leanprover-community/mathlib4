@@ -67,7 +67,7 @@ protected def setoid (M : Type*) [Monoid M] :
   r := Associated
   iseqv := ⟨Associated.refl, Associated.symm, Associated.trans⟩
 
-theorem map {M N : Type*} [Monoid M] [Monoid N] {F : Type*} [FunLike F M N] [MonoidHomClass F M N]
+theorem map {M N : Type*} [Monoid M] [Monoid N] {F : Type*} [FunLike F M N] [MonoidHomClass F]
     (f : F) {x y : M} (ha : Associated x y) : Associated (f x) (f y) := by
   obtain ⟨u, ha⟩ := ha
   exact ⟨Units.map f u, by rw [← ha, map_mul, Units.coe_map, MonoidHom.coe_ofClass]⟩

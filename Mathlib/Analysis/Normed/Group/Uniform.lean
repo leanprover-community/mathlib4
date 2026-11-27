@@ -36,12 +36,12 @@ theorem Isometry.norm_map_of_map_one {f : E → F} (hi : Isometry f) (h₁ : f 1
     ‖f x‖ = ‖x‖ := by rw [← dist_one_right, ← h₁, hi.dist_eq, dist_one_right]
 
 @[to_additive (attr := simp) norm_map]
-theorem norm_map' [FunLike 𝓕 E F] [IsometryClass 𝓕 E F] [OneHomClass 𝓕 E F] (f : 𝓕) (x : E) :
+theorem norm_map' [FunLike 𝓕 E F] [IsometryClass 𝓕 E F] [OneHomClass 𝓕] (f : 𝓕) (x : E) :
     ‖f x‖ = ‖x‖ :=
   (IsometryClass.isometry f).norm_map_of_map_one (map_one f) x
 
 @[to_additive (attr := simp) nnNorm_map]
-theorem nnNorm_map' [FunLike 𝓕 E F] [IsometryClass 𝓕 E F] [OneHomClass 𝓕 E F] (f : 𝓕) (x : E) :
+theorem nnNorm_map' [FunLike 𝓕 E F] [IsometryClass 𝓕 E F] [OneHomClass 𝓕] (f : 𝓕) (x : E) :
     ‖f x‖₊ = ‖x‖₊ :=
   NNReal.eq <| norm_map' f x
 
@@ -49,7 +49,7 @@ theorem nnNorm_map' [FunLike 𝓕 E F] [IsometryClass 𝓕 E F] [OneHomClass �
 alias nnnorm_map' := nnNorm_map'
 
 @[to_additive (attr := simp) eNorm_map]
-lemma eNorm_map' [FunLike 𝓕 E F] [IsometryClass 𝓕 E F] [OneHomClass 𝓕 E F] (f : 𝓕) (x : E) :
+lemma eNorm_map' [FunLike 𝓕 E F] [IsometryClass 𝓕 E F] [OneHomClass 𝓕] (f : 𝓕) (x : E) :
     ‖f x‖ₑ = ‖x‖ₑ := by simp [eNorm]
 
 @[to_additive (attr := deprecated (since := "2026-11-06")) enorm_map] alias enorm_map' := eNorm_map'
@@ -70,7 +70,7 @@ for all `x`, one has `‖f x‖ ≤ C * ‖x‖`. The analogous condition for a 
 @[to_additive /-- A homomorphism `f` of seminormed groups is Lipschitz, if there exists a constant
 `C` such that for all `x`, one has `‖f x‖ ≤ C * ‖x‖`. The analogous condition for a linear map of
 (semi)normed spaces is in `Mathlib/Analysis/Normed/Operator/Basic.lean`. -/]
-theorem MonoidHomClass.lipschitz_of_bound [MonoidHomClass 𝓕 E F] (f : 𝓕) (C : ℝ)
+theorem MonoidHomClass.lipschitz_of_bound [MonoidHomClass 𝓕] (f : 𝓕) (C : ℝ)
     (h : ∀ x, ‖f x‖ ≤ C * ‖x‖) : LipschitzWith (Real.toNNReal C) f :=
   LipschitzWith.of_dist_le' fun x y => by
     simpa only [dist_eq_norm_inv_mul, map_mul, map_inv] using h (x⁻¹ * y)
@@ -107,17 +107,17 @@ theorem LipschitzWith.norm_inv_mul_le_of_le {f : E → F} {C : ℝ≥0} (h : Lip
 for all `x`, one has `‖f x‖ ≤ C * ‖x‖`. -/
 @[to_additive /-- A homomorphism `f` of seminormed groups is continuous, if there exists a constant
 `C` such that for all `x`, one has `‖f x‖ ≤ C * ‖x‖`. -/]
-theorem MonoidHomClass.continuous_of_bound [MonoidHomClass 𝓕 E F] (f : 𝓕) (C : ℝ)
+theorem MonoidHomClass.continuous_of_bound [MonoidHomClass 𝓕] (f : 𝓕) (C : ℝ)
     (h : ∀ x, ‖f x‖ ≤ C * ‖x‖) : Continuous f :=
   (MonoidHomClass.lipschitz_of_bound f C h).continuous
 
 @[to_additive]
-theorem MonoidHomClass.uniformContinuous_of_bound [MonoidHomClass 𝓕 E F] (f : 𝓕) (C : ℝ)
+theorem MonoidHomClass.uniformContinuous_of_bound [MonoidHomClass 𝓕] (f : 𝓕) (C : ℝ)
     (h : ∀ x, ‖f x‖ ≤ C * ‖x‖) : UniformContinuous f :=
   (MonoidHomClass.lipschitz_of_bound f C h).uniformContinuous
 
 @[to_additive]
-theorem MonoidHomClass.isometry_iff_norm [MonoidHomClass 𝓕 E F] (f : 𝓕) :
+theorem MonoidHomClass.isometry_iff_norm [MonoidHomClass 𝓕] (f : 𝓕) :
     Isometry f ↔ ∀ x, ‖f x‖ = ‖x‖ := by
   simp only [isometry_iff_dist_eq, dist_eq_norm_inv_mul, ← map_inv, ← map_mul]
   refine ⟨fun h x => ?_, fun h x y => h _⟩
@@ -130,7 +130,7 @@ attribute [to_additive] MonoidHomClass.isometry_of_norm
 section NNNorm
 
 @[to_additive]
-theorem MonoidHomClass.lipschitz_of_bound_nnNorm [MonoidHomClass 𝓕 E F] (f : 𝓕) (C : ℝ≥0)
+theorem MonoidHomClass.lipschitz_of_bound_nnNorm [MonoidHomClass 𝓕] (f : 𝓕) (C : ℝ≥0)
     (h : ∀ x, ‖f x‖₊ ≤ C * ‖x‖₊) : LipschitzWith C f :=
   @Real.toNNReal_coe C ▸ MonoidHomClass.lipschitz_of_bound f C h
 
@@ -138,7 +138,7 @@ theorem MonoidHomClass.lipschitz_of_bound_nnNorm [MonoidHomClass 𝓕 E F] (f : 
 alias MonoidHomClass.lipschitz_of_bound_nnnorm := MonoidHomClass.lipschitz_of_bound_nnNorm
 
 @[to_additive]
-theorem MonoidHomClass.antilipschitz_of_bound [MonoidHomClass 𝓕 E F] (f : 𝓕) {K : ℝ≥0}
+theorem MonoidHomClass.antilipschitz_of_bound [MonoidHomClass 𝓕] (f : 𝓕) {K : ℝ≥0}
     (h : ∀ x, ‖x‖ ≤ K * ‖f x‖) : AntilipschitzWith K f :=
   AntilipschitzWith.of_le_mul_dist fun x y => by
     simpa only [dist_eq_norm_inv_mul, map_inv, map_mul] using h (x⁻¹ * y)
@@ -164,7 +164,7 @@ theorem AntilipschitzWith.le_mul_norm' {f : E → F} {K : ℝ≥0} (h : Antilips
   simpa only [dist_one_right, hf] using h.le_mul_dist x 1
 
 @[to_additive antilipschitzWith_iff_exists_mul_le_norm]
-theorem antilipschitzWith_iff_exists_mul_le_norm' [MonoidHomClass 𝓕 E F] {f : 𝓕} :
+theorem antilipschitzWith_iff_exists_mul_le_norm' [MonoidHomClass 𝓕] {f : 𝓕} :
     (∃ K, AntilipschitzWith K f) ↔ ∃ c > 0, ∀ x, c * ‖x‖ ≤ ‖f x‖ := by
   refine ⟨fun ⟨K, hK⟩ ↦ ⟨(K + 1)⁻¹, by positivity, fun x ↦ ?_⟩, fun ⟨c, hc0, hc⟩ ↦
     ⟨.mk c⁻¹ (by positivity), MonoidHomClass.antilipschitz_of_bound f fun x ↦ ?_⟩⟩
@@ -181,7 +181,7 @@ theorem AntilipschitzWith.le_mul_nnNorm' {f : E → F} {K : ℝ≥0} (h : Antili
 alias AntilipschitzWith.le_mul_nnnorm' := AntilipschitzWith.le_mul_nnNorm'
 
 @[to_additive]
-theorem OneHomClass.bound_of_antilipschitz [OneHomClass 𝓕 E F] (f : 𝓕) {K : ℝ≥0}
+theorem OneHomClass.bound_of_antilipschitz [OneHomClass 𝓕] (f : 𝓕) {K : ℝ≥0}
     (h : AntilipschitzWith K f) (x) : ‖x‖ ≤ K * ‖f x‖ :=
   h.le_mul_nnNorm' (map_one f) x
 

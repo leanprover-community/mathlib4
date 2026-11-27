@@ -396,7 +396,7 @@ theorem monotone_map_iff {f : ℕ → α} [Preorder α] : Monotone (ENat.map f) 
   WithTop.monotone_map_iff
 
 @[simp]
-protected theorem map_add {β F} [Add β] [FunLike F ℕ β] [AddHomClass F ℕ β]
+protected theorem map_add {β F} [Add β] [FunLike F ℕ β] [AddHomClass F]
     (f : F) (a b : ℕ∞) : (a + b).map f = a.map f + b.map f :=
   WithTop.map_add f a b
 
