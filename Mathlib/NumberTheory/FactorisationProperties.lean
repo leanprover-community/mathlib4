@@ -9,7 +9,7 @@ public import Mathlib.NumberTheory.Divisors
 public import Mathlib.Tactic.NormNum
 
 import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Ring.GeomSum
+import Mathlib.Algebra.Order.Ring.GeomSum
 import Mathlib.Tactic.NormNum.Prime
 
 /-!
@@ -157,15 +157,8 @@ theorem Prime.not_perfect (h : Prime p) : ¬ Perfect p :=
 
 /-- Any natural number power of a prime is deficient -/
 theorem Prime.deficient_pow (h : Prime n) : Deficient (n ^ m) := by
-  rcases Nat.eq_zero_or_pos m with (rfl | _)
-  · simpa using deficient_one
-  · rw [Deficient, properDivisors_prime_pow h]
-    calc
-      ∑ x ∈ Finset.map ⟨(n ^ ·), Nat.pow_right_injective h.two_le⟩ (range m), x
-        = ∑ i ∈ range m, n ^ i := by simp
-      _ = (n ^ m - 1) / (n - 1) := (Nat.geomSum_eq (Prime.two_le h) _)
-      _ ≤ (n ^ m - 1) := Nat.div_le_self (n ^ m - 1) (n - 1)
-      _ < n ^ m := sub_lt (pow_pos (Prime.pos h) m) (Nat.one_pos)
+  rw [Deficient, properDivisors_prime_pow h, sum_map]
+  exact Nat.geomSum_lt h.two_le fun _ ↦ mem_range.1
 
 theorem _root_.IsPrimePow.deficient (h : IsPrimePow n) : Deficient n := by
   obtain ⟨p, k, hp, -, rfl⟩ := h
