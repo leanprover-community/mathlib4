@@ -16,12 +16,14 @@ the completion of `K` with respect to its `v`-adic valuation, denoted `v.adicCom
 ring of integers, denoted `v.adicCompletionIntegers`.
 
 ## Main definitions
+
 - `IsDedekindDomain.HeightOneSpectrum.adicCompletion v` is the completion of `K` with respect
   to its `v`-adic valuation.
 - `IsDedekindDomain.HeightOneSpectrum.adicCompletionIntegers v` is the ring of integers of
   `v.adicCompletion`.
 
 ## Tags
+
 dedekind domain, dedekind ring, adic valuation, completion
 -/
 
@@ -212,7 +214,7 @@ instance : Coe (WithVal (v.valuation K)) (adicCompletion K v) where
 instance (priority := 99) : Coe K (adicCompletion K v) where
   coe k := ofCompletion (k : (v.valuation K).Completion)
 
-@[simp] lemma coe_toCompletion (k : K) :
+lemma coe_toCompletion (k : K) :
     (↑k : adicCompletion K v).toCompletion = (k : (v.valuation K).Completion) := rfl
 
 theorem extension_apply_eq_valued (y : (v.valuation K).Completion) :

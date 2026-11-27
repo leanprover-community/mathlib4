@@ -14,7 +14,7 @@ public import Mathlib.RingTheory.AdjoinRoot
 In this file we establish relations between finitely presented as an algebra and
 finitely presented as a module.
 
-## Main results:
+## Main results
 
 - `Algebra.FinitePresentation.of_finitePresentation`: If `S` is finitely presented as a
   module over `R`, then it is finitely presented as an algebra over `R`.

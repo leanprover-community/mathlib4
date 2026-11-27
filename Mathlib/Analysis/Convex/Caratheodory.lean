@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Convex.Combination
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Carathéodory's convexity theorem
 
@@ -27,11 +30,12 @@ in `𝕜ᵈ` is the union of the convex hulls of the `(d + 1)`-tuples in `s`.
 
 * `convexHull_eq_union`: Carathéodory's convexity theorem
 
-## Implementation details
+## Implementation notes
 
 This theorem was formalized as part of the Sphere Eversion project.
 
 ## Tags
+
 convex hull, caratheodory
 -/
 

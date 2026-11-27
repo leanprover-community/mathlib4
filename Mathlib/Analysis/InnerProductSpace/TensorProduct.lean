@@ -20,7 +20,7 @@ This file provides the inner product space structure on tensor product spaces.
 We define the inner product on `E ⊗ F` by `⟪a ⊗ₜ b, c ⊗ₜ d⟫ = ⟪a, c⟫ * ⟪b, d⟫`, when `E` and `F` are
 inner product spaces.
 
-## Main definitions:
+## Main definitions
 
 * `TensorProduct.instNormedAddCommGroup`: the normed additive group structure on tensor products,
   where `‖x ⊗ₜ y‖ = ‖x‖ * ‖y‖`.
@@ -40,7 +40,7 @@ inner product spaces.
 * `OrthonormalBasis.tensorProduct`: the orthonormal basis of the tensor product of two orthonormal
   bases.
 
-## TODO:
+## TODO
 
 * Define the normed space without needing inner products, this should be analogous to
   `Mathlib/Analysis/NormedSpace/PiTensorProduct/InjectiveSeminorm.lean`.
@@ -161,9 +161,11 @@ theorem dist_tmul_le (x x' : E) (y y' : F) :
     dist (x ⊗ₜ[𝕜] y) (x' ⊗ₜ y') ≤ ‖x‖ * ‖y‖ + ‖x'‖ * ‖y'‖ := by
   grw [dist_eq_norm, norm_sub_le]; simp
 
-theorem nndist_tmul_le (x x' : E) (y y' : F) :
-    nndist (x ⊗ₜ[𝕜] y) (x' ⊗ₜ y') ≤ ‖x‖₊ * ‖y‖₊ + ‖x'‖₊ * ‖y'‖₊ := by
+theorem nnDist_tmul_le (x x' : E) (y y' : F) :
+    nnDist (x ⊗ₜ[𝕜] y) (x' ⊗ₜ y') ≤ ‖x‖₊ * ‖y‖₊ + ‖x'‖₊ * ‖y'‖₊ := by
   grw [nnDist_eq_nnNorm, nnNorm_sub_le]; simp
+
+@[deprecated (since := "2026-11-07")] alias nndist_tmul_le := nnDist_tmul_le
 
 theorem edist_tmul_le (x x' : E) (y y' : F) :
     edist (x ⊗ₜ[𝕜] y) (x' ⊗ₜ y') ≤ ‖x‖ₑ * ‖y‖ₑ + ‖x'‖ₑ * ‖y'‖ₑ := by

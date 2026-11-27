@@ -18,6 +18,7 @@ We construct the bundled function `AlternatingMap`, which extends `MultilinearMa
 arguments of the same type.
 
 ## Main definitions
+
 * `AlternatingMap R M N ι` is the space of `R`-linear alternating maps from `ι → M` to `N`.
 * `f.map_eq_zero_of_eq` expresses that `f` is zero when two inputs are equal.
 * `f.map_swap` expresses that `f` is negated when two inputs are swapped.
@@ -30,6 +31,7 @@ arguments of the same type.
   by `Fin n.succ`.
 
 ## Implementation notes
+
 `AlternatingMap` is defined in terms of `map_eq_zero_of_eq`, as this is easier to work with than
 using `map_swap` as a definition, and does not require `Neg N`.
 
@@ -102,7 +104,6 @@ instance instFunLike : FunLike (M [⋀^ι]→ₗ[R] N) (ι → M) N where
 
 initialize_simps_projections AlternatingMap (toFun → apply)
 
-@[simp]
 theorem toFun_eq_coe : f.toFun = f :=
   rfl
 

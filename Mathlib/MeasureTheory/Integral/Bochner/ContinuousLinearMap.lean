@@ -11,6 +11,9 @@ public import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 
 import Mathlib.Topology.Algebra.Module.Equiv.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuous linear maps composed with integration
 

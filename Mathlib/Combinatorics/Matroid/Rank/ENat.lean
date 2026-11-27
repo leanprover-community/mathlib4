@@ -50,7 +50,7 @@ The cardinal-valued rank functions `Matroid.cRank` and `Matroid.cRk` are defined
 `Mathlib/Combinatorics/Matroid/Rank/Cardinal.lean`, but have less desirable properties in general.
 See the module docstring of that file for a discussion.
 
-## Implementation Details
+## Implementation notes
 
 It would be equivalent to define `Matroid.eRank (M : Matroid α) := (Matroid.cRank M).toENat`
 and similar for `Matroid.eRk`, and some of the API for `cRank`/`cRk` would carry over

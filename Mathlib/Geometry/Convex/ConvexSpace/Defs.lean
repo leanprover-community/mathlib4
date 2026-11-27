@@ -326,8 +326,8 @@ private lemma map_join (f : StdSimplex R (StdSimplex R X)) (g : X → Y) :
 
 end Semiring
 
-section Semifield
-variable [Semifield K] [LinearOrder K] [IsStrictOrderedRing K]
+section DivisionSemiring
+variable [DivisionSemiring K] [LinearOrder K] [IsStrictOrderedRing K]
 
 private lemma restrict_nonneg_aux {w : StdSimplex K X} {p : X → Prop} [DecidablePred p] :
     0 ≤ (filter p w.weights).sum fun _x k ↦ k :=
@@ -372,7 +372,7 @@ lemma support_weights_restrict (w : StdSimplex K X) (s : Set X) (hs) [DecidableP
   rintro rfl
   simpa using hx
 
-end Semifield
+end DivisionSemiring
 end StdSimplex
 
 /--
@@ -451,8 +451,7 @@ lemma iConvexComb_single (x : StdSimplex R I) :
     x.iConvexComb single = x := by
   aesop
 
-variable [Semifield K] [LinearOrder K] [IsStrictOrderedRing K]
-
+variable [DivisionSemiring K] [LinearOrder K] [IsStrictOrderedRing K] in
 lemma convexCombPair_restrict_restrict_compl (w : StdSimplex K I) (s : Set I) (hs hs')
     [DecidablePred (· ∈ s)] :
     convexCombPair

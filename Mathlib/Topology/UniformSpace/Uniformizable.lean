@@ -24,7 +24,7 @@ generates the same topology) iff it is completely regular.
 * `completelyRegularSpace_iff_exists_uniformSpace`: A space is completely regular
   iff it is uniformizable
 
-## Implementation Details
+## Implementation notes
 
 Urysohn's lemma is reused in the proof of `UniformSpace.completelyRegularSpace`.
 
@@ -72,8 +72,9 @@ theorem urysohns_main {c u : Set X} (IsThickeningcu : IsThickening c u) :
   refine ⟨(ds ○ uc ○ ds).ball x, isOpen_ball x ho, ?_, subset_trans ?_ hsub,
       ⟨x, uc, ds, huc, ucu, rfl, subset_rfl, hdsu⟩,
       ⟨x, ds ○ uc ○ ds, ds, ho, mem_of_superset ucu (right_subset_comp.trans left_subset_comp),
-        rfl, hsub, hdsu⟩⟩ <;>
-  · refine closure_ball_subset.trans (SetRel.ball_mono ?_ x)
+        rfl, hsub, hdsu⟩⟩
+  all_goals
+    refine closure_ball_subset.trans (SetRel.ball_mono ?_ x)
     rw [closure_eq_inter_uniformity]
     exact iInter₂_subset_of_subset ds hdsu (by simp [comp_assoc])
 

@@ -71,7 +71,7 @@ instance : SMulMemClass (ClosedSubmodule R M) R M where
 instance : Coe (ClosedSubmodule R M) (Submodule R M) where
   coe := toSubmodule
 
-@[simp] lemma carrier_eq_coe (s : ClosedSubmodule R M) : s.carrier = s := rfl
+lemma carrier_eq_coe (s : ClosedSubmodule R M) : s.carrier = s := rfl
 
 @[simp] lemma mem_mk {s : Submodule R M} {hs} : x ∈ mk s hs ↔ x ∈ s := .rfl
 
@@ -82,7 +82,6 @@ lemma coe_toSubmodule (s : ClosedSubmodule R M) : (s.toSubmodule : Set M) = s :=
 lemma mem_toSubmodule_iff (x : M) (s : ClosedSubmodule R M) : x ∈ s.toSubmodule ↔ x ∈ s := by
   rfl
 
-@[simp]
 lemma coe_toCloseds (s : ClosedSubmodule R M) : (s.toCloseds : Set M) = s := rfl
 
 lemma isClosed (s : ClosedSubmodule R M) : IsClosed (s : Set M) := s.isClosed'
@@ -357,7 +356,8 @@ lemma closure_map_eq_mapEquiv_closure (s : Submodule R M) :
     (s.map f.toLinearMap).closure = s.closure.mapEquiv f := by
   ext x
   simp only [Submodule.carrier_eq_coe, coe_toSubmodule, Submodule.coe_closure, Submodule.map_coe,
-    LinearEquiv.coe_coe, ContinuousLinearEquiv.coe_toLinearEquiv, mapEquiv_apply, Set.mem_image]
+    LinearEquiv.coe_toLinearMap, ContinuousLinearEquiv.coe_toLinearEquiv, mapEquiv_apply,
+    Set.mem_image]
   rw [← ContinuousLinearEquiv.image_closure]
   simp
 
@@ -366,7 +366,7 @@ lemma mapEquiv_sup_eq (f : M ≃L[R] N) {s t : ClosedSubmodule R M} :
     (s ⊔ t).mapEquiv f = s.mapEquiv f ⊔ t.mapEquiv f := by
   ext x
   simp only [mapEquiv_apply, toSubmodule_sup, Submodule.carrier_eq_coe, Submodule.map_coe,
-    LinearEquiv.coe_coe, ContinuousLinearEquiv.coe_toLinearEquiv, coe_toSubmodule,
+    LinearEquiv.coe_toLinearMap, ContinuousLinearEquiv.coe_toLinearEquiv, coe_toSubmodule,
     Submodule.coe_closure, Set.mem_image]
   have : f = f.toLinearEquiv.toLinearMap :=
     LinearMap.ext (congrFun rfl)

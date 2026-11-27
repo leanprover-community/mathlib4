@@ -8,6 +8,9 @@ module
 public import Mathlib.RepresentationTheory.AlgebraRepresentation.Basic
 public import Mathlib.RepresentationTheory.Intertwining
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Irreducible representations
 

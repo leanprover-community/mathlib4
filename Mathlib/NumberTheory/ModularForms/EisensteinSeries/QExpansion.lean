@@ -14,6 +14,9 @@ public import Mathlib.NumberTheory.ModularForms.LevelOne.Basic
 public import Mathlib.NumberTheory.TsumDivisorsAntidiagonal
 public import Mathlib.Tactic.NormNum.Parity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Eisenstein series q-expansions
 
@@ -40,11 +43,9 @@ gives the q-expansion with a Riemann zeta factor, which we simplify using the fo
 public section
 
 open Set Metric TopologicalSpace Function Filter Complex ArithmeticFunction
-  ModularForm EisensteinSeries
+  ModularForm EisensteinSeries UpperHalfPlane
 
 open scoped Real Nat ArithmeticFunction.sigma Topology
-
-open UpperHalfPlane hiding I
 
 local notation "ℍₒ" => upperHalfPlaneSet
 

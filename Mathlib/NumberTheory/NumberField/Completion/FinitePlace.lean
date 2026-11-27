@@ -25,7 +25,8 @@ Many of the results in this file are expressed in the generality of: `R` is a De
 with field of fractions `K` such that `Ring.HasFiniteQuotients R`, as holds for `𝓞 K` when `K` is
 a number field. This is so that `ℤ` and `𝓞 ℚ` can be used interchangeably.
 
-## Main Definitions and Results
+## Main definitions and statements
+
 * `NumberField.adicAbv`: a `v`-adic absolute value on `K`.
 * `NumberField.FinitePlace`: the type of finite places of a number field `K`.
 * `NumberField.FinitePlace.embedding`: the canonical embedding of a number field `K` to the
@@ -40,6 +41,7 @@ a number field. This is so that `ℤ` and `𝓞 ℚ` can be used interchangeably
    discrete valuation rings.
 
 ## Tags
+
 number field, places, finite places
 -/
 

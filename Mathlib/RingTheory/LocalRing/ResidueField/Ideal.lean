@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.SurjectiveOnStalks
 
 import Mathlib.RingTheory.Localization.FractionRing
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The residue field of a prime ideal
 

@@ -37,6 +37,7 @@ The top row is `IsDedekindDomain.HeightOneSpectrum.primesEquiv`, which sends `v`
 norm of the ideal of `ℤ` below `v.asIdeal`.
 
 ## Main definitions
+
 - `Rat.HeightOneSpectrum.padicEquiv v` : the continuous `ℚ`-algebra isomorphism
   `v.adicCompletion ℚ ≃A[ℚ] ℚ_[primesEquiv v]`.
 - `Padic.adicCompletionEquiv p` : the continuous `ℚ`-algebra isomorphism

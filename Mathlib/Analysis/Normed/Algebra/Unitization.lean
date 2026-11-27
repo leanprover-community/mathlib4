@@ -50,7 +50,7 @@ is then also a C⋆-norm.
   is an isometry, or in mathematical parlance, the norm on `A` extends to a norm on
   `Unitization 𝕜 A`.
 
-## Implementation details
+## Implementation notes
 
 We ensure that the uniform structure, and hence also the topological structure, is definitionally
 equal to the pullback of `instUniformSpaceProd` along `Unitization.addEquiv` (this is essentially
@@ -264,8 +264,10 @@ lemma isometry_inr : Isometry ((↑) : A → Unitization 𝕜 A) :=
 lemma dist_inr (a b : A) : dist (a : Unitization 𝕜 A) (b : Unitization 𝕜 A) = dist a b :=
   isometry_inr.dist_eq a b
 
-lemma nndist_inr (a b : A) : nndist (a : Unitization 𝕜 A) (b : Unitization 𝕜 A) = nndist a b :=
-  isometry_inr.nndist_eq a b
+lemma nnDist_inr (a b : A) : nnDist (a : Unitization 𝕜 A) (b : Unitization 𝕜 A) = nnDist a b :=
+  isometry_inr.nnDist_eq a b
+
+@[deprecated (since := "2026-11-07")] alias nndist_inr := nnDist_inr
 
 /-! These examples verify that the bornology and uniformity (hence also the topology) are the
 correct ones. -/

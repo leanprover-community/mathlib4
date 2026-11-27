@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Combinatorics.Hypergraph.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Combinatorial Designs
 
@@ -25,7 +28,7 @@ The primary difference is that `Hypergraph` edges are not indexed and do not all
 * `IncidenceSystem.IsSimple`: An incidence system is simple if there are no duplicate blocks.
 * `IncidenceSystem.IsUniform`: An incidence system is `k`-uniform if every block has size `k`.
 
-## Implementation details
+## Implementation notes
 
 We place everything in the `IncidenceSystem` namespace, because this still allows one to write
 `{α β : Type*} (d : Design α β) [d.IsSimple] [d.IsUniform]`.

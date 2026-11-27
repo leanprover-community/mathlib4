@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.Localization.Basic
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Localizations away from an element
 
@@ -26,6 +29,7 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
 See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
 
 ## Tags
+
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
 -/

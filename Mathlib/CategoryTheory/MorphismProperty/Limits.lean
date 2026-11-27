@@ -28,7 +28,7 @@ We also introduce properties `IsStableUnderProductsOfShape`, `IsStableUnderLimit
 
 @[expose] public section
 
-universe w w' v u
+universe w w'
 
 namespace CategoryTheory
 
@@ -36,7 +36,7 @@ open Category Limits
 
 namespace MorphismProperty
 
-variable {C : Type u} [Category.{v} C]
+variable {C D : Type*} [Category* C] [Category* D]
 
 section
 
@@ -91,6 +91,30 @@ instance : P.pullbacks.RespectsIso :=
     rintro q q' e ⟨X, Y, p, f, g, hp, h⟩
     exact ⟨X, Y, p, e.inv.left ≫ f, e.inv.right ≫ g, hp,
       IsPullback.paste_horiz (IsPullback.of_horiz_isIso ⟨e.inv.w⟩) h⟩)
+
+lemma map_pushouts {X Y : C} {f : X ⟶ Y}
+    (hf : P.pushouts f) (F : C ⥤ D) [PreservesColimitsOfShape WalkingSpan F] :
+    (P.map F).pushouts (F.map f) := by
+  obtain ⟨_, _, l, _, _, hl, sq⟩ := hf
+  exact ⟨_, _, _, _, _, P.map_mem_map F l hl, sq.map F⟩
+
+lemma map_pushouts_le (F : C ⥤ D) [PreservesColimitsOfShape WalkingSpan F] :
+    P.pushouts.map F ≤ (P.map F).pushouts := by
+  rw [map_le_iff]
+  intro _ _ _ hf
+  exact P.map_pushouts hf F
+
+lemma map_pullbacks {X Y : C} {f : X ⟶ Y}
+    (hf : P.pullbacks f) (F : C ⥤ D) [PreservesLimitsOfShape WalkingCospan F] :
+    (P.map F).pullbacks (F.map f) := by
+  obtain ⟨_, _, l, _, _, hl, sq⟩ := hf
+  exact ⟨_, _, _, _, _, P.map_mem_map F l hl, sq.map F⟩
+
+lemma map_pullbacks_le (F : C ⥤ D) [PreservesLimitsOfShape WalkingCospan F] :
+    P.pullbacks.map F ≤ (P.map F).pullbacks := by
+  rw [map_le_iff]
+  intro _ _ _ hf
+  exact P.map_pullbacks hf F
 
 /-- If `P : MorphismProperty C` is such that any object in `C` maps to the
 target of some morphism in `P`, then `P.pushouts` contains the isomorphisms. -/
@@ -240,7 +264,7 @@ theorem overPullbackMap [IsStableUnderBaseChange P] {S S' : C} (f : S' ⟶ S)
     P ((Over.pullback f).map g).left :=
   pullbackLift_fst_snd f (g.w.symm) H
 
-attribute [local instance] hasPullback_symmetry_of_hasPullbacksAlong in
+attribute [local instance] hasPullback_symmetry in
 theorem pullbackMap
     [IsStableUnderBaseChange P] [P.IsStableUnderComposition] {S X X' Y Y' : C} {f : X ⟶ S}
     [HasPullbacksAlong f] {g : Y ⟶ S} {f' : X' ⟶ S} {g' : Y' ⟶ S} {i₁ : X ⟶ X'}
@@ -351,7 +375,7 @@ theorem underPushoutMap [IsStableUnderCobaseChange P] {S S' : C} (f : S' ⟶ S)
   pushoutDesc_inl_inr f g.w.symm H
 
 set_option backward.isDefEq.respectTransparency false in
-attribute [local instance] hasPushouts_symmetry_of_hasPushoutsAlong in
+attribute [local instance] hasPushout_symmetry in
 theorem pushoutMap
     [IsStableUnderCobaseChange P] [P.IsStableUnderComposition] {S X X' Y Y' : C} {f : S ⟶ X}
     {g : S ⟶ Y} {f' : S ⟶ X'} {g' : S ⟶ Y'} {i₁ : X ⟶ X'} [HasPushoutsAlong f]
@@ -460,6 +484,29 @@ lemma limitsOfShape_limMap {X Y : J ⥤ C}
     W.limitsOfShape J (limMap f) :=
   ⟨_, _, _, _, limit.isLimit X, _, _, hf⟩
 
+variable {J} in
+lemma map_limitsOfShape {X Y : C} {f : X ⟶ Y} (hf : W.limitsOfShape J f) (F : C ⥤ D)
+    [PreservesLimitsOfShape J F] :
+    (W.map F).limitsOfShape J (F.map f) := by
+  obtain ⟨_, _, c₁, c₂, hc₁, hc₂, φ, hφ⟩ := hf
+  let hc₂' := isLimitOfPreserves F hc₂
+  have : F.map (hc₂.lift { pt := _, π := c₁.π ≫ φ }) =
+    hc₂'.lift { pt := _, π := (F.mapCone c₁).π ≫ Functor.whiskerRight φ F } :=
+      hc₂'.hom_ext (fun j ↦ by
+        rw [IsLimit.fac]
+        dsimp
+        rw [← F.map_comp, IsLimit.fac, NatTrans.comp_app, Functor.map_comp])
+  rw [this]
+  exact ⟨_, _, _, _, isLimitOfPreserves F hc₁, _, _,
+    fun j ↦ W.map_mem_map F (φ.app j) (hφ j)⟩
+
+lemma map_limitsOfShape_le (F : C ⥤ D)
+    (J : Type*) [Category* J] [PreservesLimitsOfShape J F] :
+    (W.limitsOfShape J).map F ≤ (W.map F).limitsOfShape J := by
+  rintro X Y f ⟨_, _, g, hg, ⟨e⟩⟩
+  rw [← ((W.map F).limitsOfShape J).arrow_mk_iso_iff e]
+  exact W.map_limitsOfShape hg F
+
 /-- The property that a morphism property `W` is stable under limits
 indexed by a category `J`. -/
 class IsStableUnderLimitsOfShape : Prop where
@@ -487,6 +534,15 @@ protected lemma limMap [W.IsStableUnderLimitsOfShape J] {X Y : J ⥤ C}
     (f : X ⟶ Y) [HasLimit X] [HasLimit Y] (hf : W.functorCategory _ f) :
     W (limMap f) :=
   limitsOfShape_le _ (limitsOfShape_limMap _ hf)
+
+instance (W : MorphismProperty D) [W.RespectsIso] [W.IsStableUnderLimitsOfShape J]
+    (F : C ⥤ D) [PreservesLimitsOfShape J F] :
+    (W.inverseImage F).IsStableUnderLimitsOfShape J := by
+  rw [isStableUnderLimitsOfShape_iff_limitsOfShape_le]
+  intro X Y f hf
+  have hW := W.map_inverseImage_le F
+  rw [W.isoClosure_eq_self] at hW
+  exact W.limitsOfShape_le _ (limitsOfShape_monotone hW J _ (map_limitsOfShape _ hf F))
 
 end LimitsOfShape
 
@@ -572,6 +628,29 @@ lemma colimitsOfShape.of_isColimit
         rw [Category.id_comp, ← Functor.map_comp]
         rfl } h _ (by simp)
 
+variable {J} in
+lemma map_colimitsOfShape {X Y : C} {f : X ⟶ Y} (hf : W.colimitsOfShape J f) (F : C ⥤ D)
+    [PreservesColimitsOfShape J F] :
+    (W.map F).colimitsOfShape J (F.map f) := by
+  obtain ⟨_, _, c₁, c₂, hc₁, hc₂, φ, hφ⟩ := hf
+  let hc₁' := isColimitOfPreserves F hc₁
+  have : F.map (hc₁.desc { pt := _, ι := φ ≫ c₂.ι }) =
+    hc₁'.desc { pt := _, ι := Functor.whiskerRight φ F ≫ (F.mapCocone c₂).ι } :=
+      hc₁'.hom_ext (fun j ↦ by
+        rw [IsColimit.fac]
+        dsimp
+        rw [← F.map_comp, IsColimit.fac, NatTrans.comp_app, Functor.map_comp])
+  rw [this]
+  exact ⟨_, _, _, _, _, isColimitOfPreserves F hc₂, _,
+    fun j ↦ W.map_mem_map F (φ.app j) (hφ j)⟩
+
+lemma map_colimitsOfShape_le (F : C ⥤ D)
+    (J : Type*) [Category* J] [PreservesColimitsOfShape J F] :
+    (W.colimitsOfShape J).map F ≤ (W.map F).colimitsOfShape J := by
+  rintro X Y f ⟨_, _, g, hg, ⟨e⟩⟩
+  rw [← ((W.map F).colimitsOfShape J).arrow_mk_iso_iff e]
+  exact W.map_colimitsOfShape hg F
+
 /-- The property that a morphism property `W` is stable under colimits
 indexed by a category `J`. -/
 class IsStableUnderColimitsOfShape : Prop where
@@ -609,6 +688,15 @@ instance IsStableUnderColimitsOfShape.isomorphisms :
       h₁.hom_ext (fun j ↦ by simp [reassoc_of% (hφ j)]),
       h₂.hom_ext (by simp [hφ])⟩
 
+instance (W : MorphismProperty D) [W.RespectsIso] [W.IsStableUnderColimitsOfShape J]
+    (F : C ⥤ D) [PreservesColimitsOfShape J F] :
+    (W.inverseImage F).IsStableUnderColimitsOfShape J := by
+  rw [isStableUnderColimitsOfShape_iff_colimitsOfShape_le]
+  intro X Y f hf
+  have hW := W.map_inverseImage_le F
+  rw [W.isoClosure_eq_self] at hW
+  exact W.colimitsOfShape_le _ (colimitsOfShape_monotone hW J _ (map_colimitsOfShape _ hf F))
+
 end ColimitsOfShape
 
 /-- The condition that a property of morphisms is stable by filtered colimits. -/
@@ -637,6 +725,12 @@ lemma colimitsOfShape_le_coproducts (J : Type w) :
 lemma coproducts_iff {X Y : C} (f : X ⟶ Y) :
     coproducts.{w} W f ↔ ∃ (J : Type w), W.colimitsOfShape (Discrete J) f := by
   simp only [coproducts, iSup_iff]
+
+instance (W : MorphismProperty C) : (coproducts.{w} W).RespectsIso :=
+  RespectsIso.of_respects_arrow_iso _ (fun f g e hf ↦ by
+    rw [coproducts_iff] at hf ⊢
+    obtain ⟨J, hf⟩ := hf
+    exact ⟨J, (MorphismProperty.arrow_mk_iso_iff _ e).mp hf⟩)
 
 lemma coproducts_of_small {X Y : C} (f : X ⟶ Y) {J : Type w'}
     (hf : W.colimitsOfShape (Discrete J) f) [Small.{w} J] :
@@ -670,6 +764,20 @@ lemma coproducts_monotone : Monotone (coproducts.{w} (C := C)) := by
   obtain ⟨J, hf⟩ := hf
   exact W₂.colimitsOfShape_le_coproducts J _
     (colimitsOfShape_monotone h _ _ hf)
+
+lemma map_coproducts {X Y : C} {f : X ⟶ Y}
+    (hf : coproducts.{w} W f) (F : C ⥤ D)
+    [∀ (J : Type w), PreservesColimitsOfShape (Discrete J) F] :
+    coproducts.{w} (W.map F) (F.map f) := by
+  rw [coproducts_iff] at hf ⊢
+  obtain ⟨J, hf⟩ := hf
+  exact ⟨J, W.map_colimitsOfShape hf F⟩
+
+lemma map_coproducts_le (F : C ⥤ D) [∀ (J : Type w), PreservesColimitsOfShape (Discrete J) F] :
+    (coproducts.{w} W).map F ≤ coproducts.{w} (W.map F) := by
+  rw [map_le_iff]
+  intro _ _ _ hf
+  exact W.map_coproducts hf F
 
 end Coproducts
 
@@ -770,6 +878,10 @@ lemma coproducts_le_iff {P Q : MorphismProperty C} [IsStableUnderCoproducts.{w} 
   · exact le_trans P.le_coproducts
   · intro h
     exact le_trans (coproducts_monotone h) Q.coproducts_le
+
+instance (W : MorphismProperty D) [W.RespectsIso] [IsStableUnderCoproducts.{w} W] (F : C ⥤ D)
+    [∀ (J : Type w), PreservesColimitsOfShape (Discrete J) F] :
+    IsStableUnderCoproducts.{w} (W.inverseImage F) where
 
 end Products
 

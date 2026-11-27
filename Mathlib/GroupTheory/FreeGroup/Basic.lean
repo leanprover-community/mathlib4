@@ -35,7 +35,7 @@ the forgetful functor from groups to types, see `Mathlib/Algebra/Category/Grp/Ad
 * `FreeGroup.freeGroupUnitEquivInt`: The free group over the one-point type
   is isomorphic to the integers.
 
-## Implementation details
+## Implementation notes
 
 First we introduce the one step reduction relation `FreeGroup.Red.Step`:
 `w * x * x⁻¹ * v   ~>   w * v`, its reflexive transitive closure `FreeGroup.Red.trans`
@@ -475,7 +475,7 @@ theorem quot_lift_mk (β : Type v) (f : List (α × Bool) → β)
     (H : ∀ L₁ L₂, Red.Step L₁ L₂ → f L₁ = f L₂) : Quot.lift f H (mk L) = f L :=
   rfl
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem quot_liftOn_mk (β : Type v) (f : List (α × Bool) → β)
     (H : ∀ L₁ L₂, Red.Step L₁ L₂ → f L₁ = f L₂) : Quot.liftOn (mk L) f H = f L :=
   rfl

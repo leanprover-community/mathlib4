@@ -24,7 +24,7 @@ As a generalization, this also allows:
 * `ConjAct Mˣ` to act on `M`, when `M` is a `Monoid`
 * `ConjAct G₀` to act on `G₀`, when `G₀` is a `GroupWithZero`
 
-## Implementation Notes
+## Implementation notes
 
 The scalar action in defined in this file can also be written using `MulAut.conj g • h`. This
 has the advantage of not using the type alias `ConjAct`, but the downside of this approach

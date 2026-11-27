@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.FreeMonoid.Basic
 public import Mathlib.Data.Finset.Lattice.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The finite set of symbols in a FreeMonoid element
 

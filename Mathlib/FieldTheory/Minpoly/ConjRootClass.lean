@@ -7,6 +7,9 @@ module
 
 public import Mathlib.FieldTheory.Minpoly.IsConjRoot
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Conjugate root classes
 

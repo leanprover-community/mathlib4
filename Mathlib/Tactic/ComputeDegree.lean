@@ -30,7 +30,7 @@ Lean to try harder to close the goal.
 
 See the doc-strings for more details.
 
-## Future work
+## TODO
 
 * Currently, `compute_degree` does not deal correctly with some edge cases.  For instance,
   ```lean
@@ -45,7 +45,7 @@ See the doc-strings for more details.
 * Add support for proving goals of the from `natDegree f ≠ 0` and `degree f ≠ 0`.
 * Make sure that `degree`, `natDegree` and `coeff` are equally supported.
 
-## Implementation details
+## Implementation notes
 
 Assume that `f : R[X]` is a polynomial with coefficients in a semiring `R` and
 `d` is either in `ℕ` or in `WithBot ℕ`.
@@ -251,6 +251,7 @@ def twoHeadsArgs (e : Expr) : Name × Name × (Name ⊕ Name) × List Bool := Id
           (``AddMonoidAlgebra.coeff, pol, [rhs.isMVar, c.isMVar])
         | _ => return (.anonymous, eq_or_le, .inl .anonymous, [])
     | _ => return (.anonymous, eq_or_le, .inl .anonymous, [])
+  let pol := pol.consumeMData
   let head := match pol.numeral? with
     -- can I avoid the tri-splitting `n = 0`, `n = 1`, and generic `n`?
     | some 0 => .inl `zero

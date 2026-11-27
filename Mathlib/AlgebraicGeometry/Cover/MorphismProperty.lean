@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicGeometry.Sites.MorphismProperty
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Covers of schemes
 
@@ -14,7 +17,7 @@ This file provides the basic API for covers of schemes. A cover of a scheme `X` 
 a morphism property `P` is a jointly surjective indexed family of scheme morphisms with
 target `X` all satisfying `P`.
 
-## Implementation details
+## Implementation notes
 
 The definition on the pullback of a cover along a morphism depends on results that
 are developed later in the import tree. Hence in this file, they have additional assumptions

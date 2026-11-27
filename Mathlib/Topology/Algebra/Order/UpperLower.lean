@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.UpperLower
 public import Mathlib.Topology.Algebra.Group.Pointwise
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topological facts about upper/lower/order-connected sets
 

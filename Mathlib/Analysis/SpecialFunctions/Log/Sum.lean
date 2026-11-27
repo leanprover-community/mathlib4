@@ -10,6 +10,9 @@ public import Mathlib.Analysis.SumIntegralComparisons
 import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 import Mathlib.Analysis.SpecialFunctions.Stirling
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bounds on the partial sums of the logarithm
 
