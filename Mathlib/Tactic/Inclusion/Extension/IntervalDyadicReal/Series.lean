@@ -28,8 +28,11 @@ In a normal evaluator, this divide-and-conquer based approach is faster than lin
 since it reduces the number of computations on larger numerals. However, the performance gain
 is limited for kernel checks, since GMP arithmetic is still not the bottleneck even at ~10k bits,
 while the binary splitting approach takes more kernel steps than a simple linear recursion.
+
 An optimisation is implemented where blocks of up to 32 terms are evaluated linearly to reduce the
-number of kernel steps.
+number of kernel steps. The block size is empirical: a smaller block does less arithmetic on
+large numbers and takes more kernel steps, and therefore would be better for higher precision or
+faster kernel. A larger block size is faster for the other case (lower precision, slower kernel).
 
 The benefit of this approach is therefore mainly in reducing the recursion depth (`O(log n)`,
 compared to `O(n)` for linear computation) rather than performance.
@@ -63,6 +66,13 @@ structure HypergeomSum (R : Type*) where
 
 /-- The sum of the first `k` terms of the series starting with `1` where each later term is
 the previous one multiplied by `p j / q j` for `j ∈ [a, a + k - 1)`, computed by binary splitting.
+
+When `p` and `q` are polynomials in `j`, this is a hypergeometric series in the sense of Graham,
+Knuth and Patashnik: factoring `p` and `q` into linear factors `j + c`, the products of the `p j`
+and of the `q j` become, up to constant factors, products of Pochhammer symbols, as in the usual
+`ₚF_q` form. Nothing here requires `p` and `q` to be polynomials, but binary splitting is only
+efficient when the factors `p j` and `q j` stay small, as they do for polynomials.
+
 If no `q j` is zero, `sumNum / den` is the sum (`hypergeomPartialSum_spec` states this precisely).
 The recursion needs `termNum` to append a term or to join two blocks of terms, since every term
 of the later block is scaled by `termNum / den`. -/
@@ -93,7 +103,7 @@ theorem hypergeomPartialSum_spec {R K : Type*} [Semiring R] [Semifield K] [CharZ
     letI X := hypergeomPartialSum p q a k
     t 0 * f X.termNum / X.den = t k ∧ t 0 * f X.sumNum / X.den = ∑ m ∈ range k, t m := by
   fun_induction hypergeomPartialSum p q a k generalizing t with
-  | case1 a => simp
+  | case1 => simp
   | case2 a m X b _ ih =>
     obtain ⟨hXt, hXs⟩ := ih t ht
     have hb : (q b : K) ≠ 0 := mod_cast hq b
