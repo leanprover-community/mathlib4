@@ -234,7 +234,7 @@ theorem even_torsionOrder :
     apply orderOf_dvd_natCard
   simp [← Subgroup.orderOf_coe, ringChar.eq_zero]
 
-section odd
+section nrRealPlaces_pos
 
 variable {K}
 
@@ -250,7 +250,7 @@ theorem torsion_eq_one_or_neg_one_of_nrRealPlaces_pos (h : 0 < nrRealPlaces K) (
     · rw [← orderOf_units, CharP.orderOf_eq_two_iff 0 (by decide)] at hi
       simp [← Units.val_inj, ← Units.val_inj, Units.val_neg, Units.val_one, hi]
 
-/-- If `K` has a real place, it has `2` roots of unity. -/
+/-- If `K` has a real place, it has exactly two roots of unity. -/
 theorem torsionOrder_eq_two_of_nrRealPlaces_pos (h : 0 < nrRealPlaces K) :
     torsionOrder K = 2 := by
   classical
@@ -278,7 +278,7 @@ theorem torsionOrder_eq_two_of_odd_finrank (h : Odd (Module.finrank ℚ K)) :
     torsionOrder K = 2 :=
   torsionOrder_eq_two_of_nrRealPlaces_pos (nrRealPlaces_pos_of_odd_finrank h)
 
-end odd
+end nrRealPlaces_pos
 
 end torsion
 
