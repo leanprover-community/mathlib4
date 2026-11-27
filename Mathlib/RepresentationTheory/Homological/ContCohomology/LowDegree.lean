@@ -39,14 +39,14 @@ lemma cocycles₀IsoAux (σ : (homogeneousCochains X).X 0)
   intro g
   rw [d_succ, hom_sub, hom_ofHom, ContIntertwiningMap.sub_apply, d_zero,
     ZeroMemClass.coe_zero, sub_eq_zero] at hσ
-  replace hσ := DFunLike.ext_iff.1 (DFunLike.ext_iff.1 hσ 1) g⁻¹
+  replace hσ := DFunLike.ext_iff.1 (DFunLike.ext_iff.1 hσ 1) g
   simp only [Nat.reduceAdd, coind₁ι_toFun, ContinuousMap.const_apply, ConcreteCategory.hom_ofHom,
     coind₁Map_toFun, ContinuousMap.comp_apply, ContinuousMap.coe_mk] at hσ
-  simpa [hσ] using DFunLike.ext_iff.1 (σ.property g) 1
+  simpa [hσ] using DFunLike.ext_iff.1 ((mem_invariants _).1 σ.property g) 1
 
 lemma mem_const_resol₀ (x : X) (hx : x ∈ X.ρ.invariants) :
     ContinuousMap.const G x ∈ ((resolution' X).X 0).ρ.invariants :=
-  ContRepresentation.mem_invariants _|>.1 fun _ ↦ ContinuousMap.ext fun _ ↦ hx _
+  (mem_invariants _).2 fun g ↦ ContinuousMap.ext fun _ ↦ (mem_invariants x).1 hx g
 
 lemma cocycles₀IsoAux' (x : X) (h : ContinuousMap.const G x ∈ ((resolution' X).X 0).ρ.invariants) :
     ⟨ContinuousMap.const G x, h⟩ ∈ ((homogeneousCochains X).d 0 1).hom.ker := by

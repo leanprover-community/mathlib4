@@ -85,6 +85,11 @@ lemma ContRepresentation.apply_inv_apply {G : Type*} [Group G] (π : ContReprese
     (g : G) (v : V) : π g (π g⁻¹ v) = v := by
   rw [← mul_apply_eq_comp, ← map_mul, mul_inv_cancel, map_one, one_apply_eq_self]
 
+@[simp]
+lemma ContRepresentation.inv_apply_apply {G : Type*} [Group G] (π : ContRepresentation R G V)
+    (g : G) (v : V) : π g⁻¹ (π g v) = v := by
+  rw [← mul_apply_eq_comp, ← map_mul, inv_mul_cancel, map_one, one_apply_eq_self]
+
 /-- Every continuous representation "is" a representation. -/
 abbrev ContRepresentation.toRepresentation (π : ContRepresentation R G V) :
     Representation R G V :=
@@ -501,16 +506,25 @@ lemma _root_.ContIntertwiningMap.restrict_sub {H : Type*} [Monoid H]
     {π : ContRepresentation R G V} {π' : ContRepresentation R G W} (φ : H →* G)
     (f g : π →ⁱL π') : (f - g).restrict φ = f.restrict φ - g.restrict φ := rfl
 
-/-- The submodule of `G`-invariant elements of a continuous representation. -/
-def invariants (π : ContRepresentation R G V) : Submodule R V where
-  carrier := {v | ∀ g, π g v = v}
+/--
+For `ρ : ContRepresentation R G V` and a subgroup `N` of `G`,
+`ρ.relInvariants N` is the `R`-submodule of `V` consisting of the `N`-invariant elements.
+-/
+def relInvariants (π : ContRepresentation R G V) (N : Submonoid G) : Submodule R V where
+  carrier   := {v : V | ∀ n ∈ N, π n v = v}
+  add_mem'  := by simp +contextual
   zero_mem' := by simp
-  add_mem' _ _ := by simp_all
-  smul_mem' _ _ hv g := by simp [hv g]
+  smul_mem' := by simp +contextual
+
+@[simp] lemma mem_relInvariants {π : ContRepresentation R G V} {N : Submonoid G} (v : V) :
+    v ∈ π.relInvariants N ↔ ∀ n ∈ N, π n v = v := Iff.rfl
+
+/-- The submodule of `G`-invariant elements of a continuous representation. -/
+def invariants (π : ContRepresentation R G V) : Submodule R V := π.relInvariants ⊤
 
 @[simp]
 lemma mem_invariants {π : ContRepresentation R G V} (v : V) :
-    v ∈ π.invariants ↔ ∀ g, π g v = v := Iff.rfl
+    v ∈ π.invariants ↔ ∀ g, π g v = v := by simp [invariants]
 
 /-- The map induced on `G`-invariant elements by a continuous intertwining map. -/
 def _root_.ContIntertwiningMap.mapInvariants
@@ -558,11 +572,189 @@ lemma _root_.ContIntertwiningMap.mk_mapInvariantsOfRes_apply (φ : H →* G)
     (f : π.restrict φ →ⁱL π') (v : V) (hv : v ∈ π.invariants) :
     f.mapInvariantsOfRes φ ⟨v, hv⟩ = f v := rfl
 
+open scoped Pointwise in
+class _root_.Submonoid.Normal (N : Submonoid G) : Prop where
+  isNormal (g : G) : g • (N : Set G) = MulOpposite.op g • N
+
 -- TODO : define `IsTopologicalMonoid` and then replace `Homeomorph.mulLeft g⁻¹` with the
 -- `ContinuousMap.mulRight g` to make `coind₁` work for monoids.
-variable {G H : Type*} [Group G] [TopologicalSpace G] [TopologicalSpace R]
-  [ContinuousSMul R V] [ContinuousSMul R W] [Group H] [TopologicalSpace H]
-  (φ : G →ₜ* H) (π : ContRepresentation R G V)
+-- variable {G H : Type*} [Group G] [Group H] (N : Subgroup G) [hN : N.Normal]
+--   (π : ContRepresentation R G V)
+  -- [TopologicalSpace G] [TopologicalSpace R]
+  -- [ContinuousSMul R V] [ContinuousSMul R W] [TopologicalSpace H]
+  -- (φ : G →ₜ* H)
+
+variable (N : Submonoid G) [N.Normal]
+
+instance {G : Type*} [Group G] (N : Subgroup G) [N.Normal] : N.toSubmonoid.Normal where
+  isNormal := (normal_iff_eq_cosets N).mp ‹_›
+
+/-- The smallest congruence relation on `G` identifying every element of `N` with `1`. -/
+def _root_.Submonoid.quotientCon (N : Submonoid G) : Con G := conGen fun x y ↦ x ∈ N ∧ y = 1
+
+instance : HasQuotient G (Submonoid G) where
+  Quotient N := N.quotientCon.Quotient
+
+instance (N : Submonoid G) : Monoid (G ⧸ N) := inferInstanceAs (Monoid N.quotientCon.Quotient)
+
+instance [TopologicalSpace G] (N : Submonoid G) : TopologicalSpace (G ⧸ N) :=
+  instTopologicalSpaceQuot
+
+/-- Translations on `G ⧸ N` are continuous: a map out of `G ⧸ N` is continuous iff its composite
+with the quotient map is. Joint continuity of multiplication would need the product of two quotient
+maps to be a quotient map, which can fail when the quotient map is not open. -/
+instance [TopologicalSpace G] [SeparatelyContinuousMul G] (N : Submonoid G) :
+    SeparatelyContinuousMul (G ⧸ N) where
+  continuous_const_mul {a} := by
+    induction a using Con.induction_on with
+    | H x => exact isQuotientMap_quot_mk.continuous_iff.2 <|
+        continuous_quot_mk.comp (continuous_const_mul x)
+  continuous_mul_const {a} := by
+    induction a using Con.induction_on with
+    | H x => exact isQuotientMap_quot_mk.continuous_iff.2 <|
+        continuous_quot_mk.comp (continuous_mul_const x)
+
+/-- The quotient map `G →* G ⧸ N`. -/
+def _root_.Submonoid.mkQ (N : Submonoid G) : G →* G ⧸ N := N.quotientCon.mk'
+
+/-- The quotient map `G →ₜ* G ⧸ N` as a continuous monoid homomorphism. -/
+def _root_.QuotientTopMonoid.mk [TopologicalSpace G] (N : Submonoid G) : G →ₜ* G ⧸ N where
+  toMonoidHom := N.mkQ
+  continuous_toFun := continuous_quot_mk
+
+@[simp]
+lemma _root_.QuotientTopMonoid.coe_mk [TopologicalSpace G] (N : Submonoid G) :
+    ↑(QuotientTopMonoid.mk N) = N.mkQ := rfl
+
+/-- A monoid homomorphism that kills `N` factors through `G ⧸ N`. -/
+def _root_.Submonoid.liftQ (N : Submonoid G) {M : Type*} [Monoid M] (f : G →* M)
+    (hf : N ≤ MonoidHom.mker f) : G ⧸ N →* M :=
+  N.quotientCon.lift f <| Con.conGen_le.2 fun x y ⟨hx, hy⟩ ↦ by
+    simpa [Con.ker_rel, hy] using hf hx
+
+open scoped Pointwise in
+lemma _root_.Submonoid.Normal.exists_mul_eq_mul {n : G} (hn : n ∈ N) (g : G) :
+    ∃ n' ∈ N, n * g = g * n' := by
+  obtain ⟨n', hn', h : g * n' = n * g⟩ : n * g ∈ g • (N : Set G) := by
+    rw [Submonoid.Normal.isNormal]
+    exact ⟨n, hn, rfl⟩
+  exact ⟨n', hn', h.symm⟩
+
+/-- For a normal submonoid `N` of `G`, the equivalence relation on `G` given by `x ~ y` iff
+`x * n₁ = y * n₂` for some `n₁ n₂ ∈ N`. It underlies the congruence `Submonoid.Normal.con N`. -/
+def _root_.Submonoid.Normal.setoid : Setoid G where
+  r x y := ∃ n₁ ∈ N, ∃ n₂ ∈ N, x * n₁ = y * n₂
+  iseqv := {
+    refl _ := ⟨1, N.one_mem, 1, N.one_mem, rfl⟩
+    symm := fun ⟨n₁, h₁, n₂, h₂, h⟩ ↦ ⟨n₂, h₂, n₁, h₁, h.symm⟩
+    trans := fun ⟨n₁, h₁, n₂, h₂, h⟩ ⟨m₁, k₁, m₂, k₂, h'⟩ ↦ by
+      obtain ⟨n₃, h₃, e⟩ := Submonoid.Normal.exists_mul_eq_mul N h₂ m₁
+      exact ⟨n₁ * m₁, N.mul_mem h₁ k₁, m₂ * n₃, N.mul_mem k₂ h₃, by
+        rw [← mul_assoc, h, mul_assoc, e, ← mul_assoc, h', mul_assoc]⟩ }
+
+/-- The congruence relation of a normal submonoid `N` of `G`: `x ~ y` iff `x * n₁ = y * n₂` for
+some `n₁ n₂ ∈ N`. It is the smallest congruence relation identifying every element of `N` with `1`
+(`Submonoid.Normal.con_eq_conGen`), so its quotient is the quotient monoid of `G` by `N`. For a
+normal subgroup it is `QuotientGroup.con` (`Submonoid.Normal.con_toSubmonoid`). -/
+def _root_.Submonoid.Normal.con : Con G where
+  toSetoid := Submonoid.Normal.setoid N
+  mul' {_ y z _} := fun ⟨n₁, h₁, n₂, h₂, h⟩ ⟨m₁, k₁, m₂, k₂, h'⟩ ↦ by
+    obtain ⟨n₁', h₁', e₁⟩ := Submonoid.Normal.exists_mul_eq_mul N h₁ z
+    obtain ⟨n₂', h₂', e₂⟩ := Submonoid.Normal.exists_mul_eq_mul N h₂ z
+    -- multiply the first relation on the right by `z`, the second on the left by `y`
+    exact (Submonoid.Normal.setoid N).iseqv.trans (y := y * z)
+      ⟨n₁', h₁', n₂', h₂', by rw [mul_assoc, ← e₁, ← mul_assoc, h, mul_assoc, e₂, mul_assoc]⟩
+      ⟨m₁, k₁, m₂, k₂, by rw [mul_assoc, h', mul_assoc]⟩
+
+lemma _root_.Submonoid.Normal.con_eq_conGen :
+    Submonoid.Normal.con N = conGen fun x y ↦ x ∈ N ∧ y = 1 := by
+  apply le_antisymm
+  · rintro x y ⟨n₁, h₁, n₂, h₂, h⟩
+    set c := conGen fun x y : G ↦ x ∈ N ∧ y = 1
+    have hn (n : G) (hn : n ∈ N) : c n 1 := ConGen.Rel.of n 1 ⟨hn, rfl⟩
+    have e₁ : c (x * n₁) x := by simpa using c.mul (c.refl x) (hn n₁ h₁)
+    have e₂ : c (y * n₂) y := by simpa using c.mul (c.refl y) (hn n₂ h₂)
+    exact c.trans (c.symm e₁) (h ▸ e₂)
+  · exact Con.conGen_le.2 fun x y ⟨hx, hy⟩ ↦
+      hy ▸ (⟨1, N.one_mem, x, hx, by simp⟩ : Submonoid.Normal.con N x 1)
+
+lemma _root_.Submonoid.Normal.con_le_ker {M : Type*} [Monoid M] (f : G →* M)
+    (hf : N ≤ MonoidHom.mker f) : Submonoid.Normal.con N ≤ Con.ker f := by
+  rintro x y ⟨n₁, h₁, n₂, h₂, h⟩
+  have e₁ : f n₁ = 1 := hf h₁
+  have e₂ : f n₂ = 1 := hf h₂
+  rw [Con.ker_rel]
+  simpa [e₁, e₂] using congrArg f h
+
+lemma _root_.Submonoid.Normal.con_toSubmonoid {G : Type*} [Group G] (N : Subgroup G)
+    [N.Normal] : Submonoid.Normal.con N.toSubmonoid = QuotientGroup.con N := by
+  refine Con.ext fun x y ↦ ?_
+  change _ ↔ QuotientGroup.leftRel N x y
+  rw [QuotientGroup.leftRel_apply]
+  constructor
+  · rintro ⟨n₁, h₁, n₂, h₂, h⟩
+    have : x⁻¹ * y = n₁ * n₂⁻¹ := by
+      rw [inv_mul_eq_iff_eq_mul, ← mul_assoc, h, mul_inv_cancel_right]
+    exact this ▸ N.mul_mem h₁ (N.inv_mem h₂)
+  · intro h
+    exact ⟨x⁻¹ * y, h, 1, N.one_mem, by simp⟩
+
+open scoped Pointwise in
+lemma rho_mem_relInvariants' {v : V} (hv : v ∈ π.relInvariants N) (g : G) :
+    π g v ∈ π.relInvariants N := by
+  intro n hn
+  obtain ⟨n', hn', h : g * n' = n * g⟩ : n * g ∈ g • (N : Set G) := by
+    rw [Submonoid.Normal.isNormal]
+    exact ⟨n, hn, rfl⟩
+  rw [← mul_apply_eq_comp, ← map_mul, ← h, map_mul, mul_apply_eq_comp, hv n' hn']
+
+/-- For a normal subgroup `N` of `G`, `ρ.relInvariantsRho N` is the representation of `G` on
+the `N`-invariants `ρ.relInvariants N` induced by `ρ`. -/
+@[simps] def relInvariantsRho : ContRepresentation R G (π.relInvariants N) := ⟨{
+  toFun g       := (π g).restrict (fun _ hv ↦ π.rho_mem_relInvariants' N hv g)
+  map_one'      := by ext; simp
+  map_mul' _ _  := by ext; simp
+}⟩
+
+/-- A continuous intertwining map `f : ρ →ⁱL ρ'` restricts to a continuous intertwining map
+`ρ.relInvariantsRho N →ⁱL ρ'.relInvariantsRho N` on `N`-invariants. -/
+def relInvariantsIntertwining {π'' : ContRepresentation R G W} (f : π →ⁱL π'') :
+    π.relInvariantsRho N →ⁱL π''.relInvariantsRho N where
+  toContinuousLinearMap := f.toContinuousLinearMap.restrict (by
+    intro v hv n hn
+    have := (f.isIntertwining n v).symm
+    rwa [hv n hn] at this)
+  isIntertwining' g := by
+    ext v
+    simp only [ContinuousLinearMap.coe_comp, Function.comp_apply,
+      ContinuousLinearMap.coe_restrict_apply]
+    exact f.isIntertwining g v
+
+lemma le_relInvariantsRho_ker : N ≤ MonoidHom.mker (π.relInvariantsRho N).toMonoidHom := by
+  intro n hn
+  rw [MonoidHom.mem_mker]
+  ext ⟨_,hv⟩
+  apply hv _ hn
+
+/-- The representation of the quotient monoid `G ⧸ N` on the `N`-invariants `π.relInvariants N`,
+obtained by factoring `π.relInvariantsRho N` through the quotient map `N.mkQ : G →* G ⧸ N`. -/
+def relInvariantsInfl :
+    ContRepresentation R (G ⧸ N) (π.relInvariants N) :=
+  ⟨N.liftQ (π.relInvariantsRho N).toMonoidHom (π.le_relInvariantsRho_ker N)⟩
+
+/-- The continuous intertwining map `π.relInvariantsInfl N →ⁱL π''.relInvariantsInfl N` of
+representations of the quotient monoid, induced by a continuous intertwining map
+`f : π →ⁱL π''`. -/
+def relInvariantsIntertwining' {π'' : ContRepresentation R G W} (f : π →ⁱL π'') :
+    π.relInvariantsInfl N →ⁱL π''.relInvariantsInfl N where
+  toContinuousLinearMap := (relInvariantsIntertwining N f).toContinuousLinearMap
+  isIntertwining' g := by
+    induction g using Con.induction_on with
+    | H g => exact (relInvariantsIntertwining N f).isIntertwining' g
+
+variable [TopologicalSpace G] [TopologicalSpace H] [TopologicalSpace R]
+  [ContinuousSMul R V] [ContinuousSMul R W]
+  (φ : G →ₜ* H) (π)
 
 /-- The underlying module of the coinduced continuous representation. -/
 @[simps]
@@ -578,7 +770,8 @@ lemma mem_coindV (f : C(H, V)) : f ∈ π.coindV φ ↔ ∀ g h, f (φ g * h) = 
 instance : ContinuousSMul R (π.coindV φ) where
   continuous_smul := by continuity
 
-variable [IsTopologicalGroup H]
+variable [SeparatelyContinuousMul H]
+--variable [IsTopologicalGroup H]
 
 /-- The coinduced continuous representation where the action of `H` is defined by
   `h ↦ f ↦ f ∘ (· * h)`. -/
@@ -599,7 +792,7 @@ lemma coind_apply_coe (h : H) (f : π.coindV φ) :
     ↑(coind φ π h f) = f.val.comp (ContinuousMap.mulRight h) := by ext; dsimp
 
 open ContinuousMap
-variable [IsTopologicalGroup G]
+variable [SeparatelyContinuousMul G]
 
 /-- Given a continuous representation `π` of `G` on `V`,
 this defines a continuous representation `π.coind₁` of `G` on the function space `C(G, V)`.
@@ -611,7 +804,7 @@ is an intertwining map. -/
 def coind₁ (π : ContRepresentation R G V) :
     ContRepresentation R G C(G, V) where
   toMonoidHom.toFun g := {
-    toFun f := .comp (π g) (f.comp (ContinuousMap.mulLeft g⁻¹))
+    toFun f := .comp (π g) (f.comp (ContinuousMap.mulRight g))
     map_add' _ _ := by ext; simp
     map_smul' _ _ := by ext; simp
     cont := (continuous_postcomp _).comp (continuous_precomp _)
@@ -621,7 +814,7 @@ def coind₁ (π : ContRepresentation R G V) :
 
 @[simp]
 lemma coind₁_apply_apply (π : ContRepresentation R G V) (g : G) (f : C(G, V)) (x : G) :
-    π.coind₁ g f x = π g (f (g⁻¹ * x)) := rfl
+    π.coind₁ g f x = π g (f (x * g)) := rfl
 
 /-- The functoriality of `coind₁`. -/
 @[simps]
@@ -643,39 +836,45 @@ def coind₁ι (π : ContRepresentation R G V) : π →ⁱL coind₁ π where
   isIntertwining' := by aesop
   cont := continuous_const'
 
-omit [TopologicalSpace R] in
-/-- Continuity of the twist `f ↦ fun g ↦ π g (f g⁻¹)` underlying `coindEquivCoind₁`. -/
-private lemma continuous_coindEquivCoind₁_aux (π : ContRepresentation R G V)
-    (hπ : Continuous fun gv : G × V ↦ π gv.1 gv.2) :
-    Continuous fun F : C(G, V) ↦ ContinuousMap.mk (fun g ↦ π g (F g⁻¹))
-      (hπ.comp <| continuous_id.prodMk <| F.continuous.comp continuous_inv) :=
-  (((continuous_postcomp ⟨_, hπ⟩).comp <| (ContinuousMap.continuous_prodMk.comp <|
-    (continuous_const (y := ContinuousMap.id G)).prodMk continuous_id).comp <|
-      continuous_precomp (⟨Inv.inv, continuous_inv⟩ : C(G, G))).congr fun _ ↦ rfl)
+section Group
 
-/-- If the action map `(g, v) ↦ π g v` is jointly continuous, the underlying module of the
-coinduction along `1 : Unit →ₜ* G` of the trivial representation of `Unit` on `V` is continuously
-linearly equivalent to `C(G, V)`, via the twist `f ↦ fun g ↦ π g (f g⁻¹)` in both directions. -/
+variable {G : Type*} [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
+  (π : ContRepresentation R G V)
+
+omit [TopologicalSpace R] in
+/-- Continuity of the twist `F ↦ fun x ↦ π (a x) (F x)` of `C(G, V)`, for `a : C(G, G)`. It
+underlies `coindLEquivCoind₁`. -/
+private lemma continuous_coindEquivCoind₁_aux (hπ : Continuous fun gv : G × V ↦ π gv.1 gv.2)
+    (a : C(G, G)) :
+    Continuous fun F : C(G, V) ↦
+      (⟨fun x ↦ π (a x) (F x), hπ.comp <| a.continuous.prodMk F.continuous⟩ : C(G, V)) :=
+  (continuous_postcomp ⟨_, hπ⟩).comp <| ContinuousMap.continuous_prodMk.comp <|
+    (continuous_const (y := a)).prodMk continuous_id
+
+/-- If `G` is a topological group and the action map `(g, v) ↦ π g v` is jointly continuous, then
+the underlying module of the coinduction along `1 : Unit →ₜ* G` of the trivial representation of
+`Unit` on `V` is continuously linearly equivalent to `C(G, V)`, via the twist
+`f ↦ fun x ↦ π x⁻¹ (f x)`, whose inverse is `f ↦ fun x ↦ π x (f x)`. -/
 @[simps]
 def coindLEquivCoind₁ (hπ : Continuous fun gv : G × V ↦ π gv.1 gv.2) :
     (trivial R Unit V).coindV (1 : Unit →ₜ* G) ≃L[R] C(G, V) where
-  toFun f := ⟨fun g ↦ π g (f.val g⁻¹),
-      hπ.comp <| continuous_id.prodMk <| f.val.continuous.comp continuous_inv⟩
-  invFun f' := ⟨⟨fun g ↦ π g (f' g⁻¹),
-      hπ.comp <| continuous_id.prodMk <| f'.continuous.comp continuous_inv⟩, by simp⟩
+  toFun f := ⟨fun x ↦ π x⁻¹ (f.val x), hπ.comp <| continuous_inv.prodMk f.val.continuous⟩
+  invFun f := ⟨⟨fun x ↦ π x (f x), hπ.comp <| continuous_id.prodMk f.continuous⟩, by simp⟩
   left_inv _ := by ext; simp
   right_inv _ := by ext; simp
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
-  continuous_toFun := by exact (continuous_coindEquivCoind₁_aux π hπ).comp continuous_subtypeVal
-  continuous_invFun := by exact (continuous_coindEquivCoind₁_aux π hπ).subtype_mk (by simp)
+  continuous_toFun := by
+    exact (continuous_coindEquivCoind₁_aux π hπ ⟨Inv.inv, continuous_inv⟩).comp
+      continuous_subtypeVal
+  continuous_invFun := by
+    exact continuous_induced_rng.2 (continuous_coindEquivCoind₁_aux π hπ (.id G))
 
-/-- If the action map `G × V → V`, `(g, v) ↦ π g v` is (jointly) continuous, then the coinduction
-along `1 : Unit →ₜ* G` of the trivial representation of the trivial group on `V` is equivalent to
-`π.coind₁`. The underlying equivalence of `C(G, V)` is given in both directions by the twist
-`f ↦ fun g ↦ π g (f g⁻¹)`. -/
-def coindEquivCoind₁ (π : ContRepresentation R G V)
-    (hπ : Continuous fun gv : G × V ↦ π gv.1 gv.2) :
+/-- If `G` is a topological group and the action map `G × V → V`, `(g, v) ↦ π g v` is (jointly)
+continuous, then the coinduction along `1 : Unit →ₜ* G` of the trivial representation of the
+trivial group on `V` is equivalent to `π.coind₁`. The underlying equivalence of `C(G, V)` is the
+twist `f ↦ fun x ↦ π x⁻¹ (f x)` (see `coindLEquivCoind₁`). -/
+def coindEquivCoind₁ (hπ : Continuous fun gv : G × V ↦ π gv.1 gv.2) :
     ((trivial R Unit V).coind (1 : PUnit →ₜ* G)).Equiv π.coind₁ :=
   .mk (coindLEquivCoind₁ π hπ) fun g ↦ by ext; simp
 
@@ -686,6 +885,8 @@ def coind₁Equivcoind : (coind₁ (.trivial R (⊥ : Subgroup G) V)).Equiv
     (coind 1 (.trivial R G V)) :=
   (coindEquivCoind₁ _ (by simpa using continuous_snd)).symm.trans <|
     .mk (ContinuousLinearEquiv.ofEq _ _ (by ext; simp)) fun _ ↦ rfl
+
+end Group
 
 section coind₁ResMap
 

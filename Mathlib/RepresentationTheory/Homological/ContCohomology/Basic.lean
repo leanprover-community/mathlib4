@@ -44,8 +44,8 @@ See `TopRep.d`.
 
 @[expose] public section
 
-variable {k G : Type*} [Ring k] [Group G] [TopologicalSpace k]
-  [TopologicalSpace G] [IsTopologicalGroup G]
+variable {k G : Type*} [Ring k] [Monoid G] [TopologicalSpace k]
+  [TopologicalSpace G] [SeparatelyContinuousMul G]
 
 open CategoryTheory ContRepresentation
 
