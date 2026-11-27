@@ -8,13 +8,17 @@ module
 public import Mathlib.CategoryTheory.Category.Basic
 public import Mathlib.LinearAlgebra.RootSystem.Hom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of root pairings
 
 This file defines the category of root pairings, following the definition of category of root data
 given in SGA III Exp. 21 Section 6.
 
-## Main definitions:
+## Main definitions
+
 * `RootPairingCat`: Objects are root pairings.
 
 ## TODO
@@ -22,7 +26,7 @@ given in SGA III Exp. 21 Section 6.
 * Forgetful functors
 * Functions passing between module maps and root pairing homs
 
-## Implementation details
+## Implementation notes
 
 This is mostly copied from `ModuleCat`.
 -/

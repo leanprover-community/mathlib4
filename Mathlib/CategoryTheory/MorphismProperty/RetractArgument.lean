@@ -18,7 +18,8 @@ If `W₁` has the left lifting property with respect to `W₂`
 then `W₂.llp = W₁` if `W₁` is stable under retracts,
 and `W₁.rlp = W₂` if `W₂` is.
 
-## Reference
+## References
+
 - https://ncatlab.org/nlab/show/weak+factorization+system#retract_argument
 -/
 

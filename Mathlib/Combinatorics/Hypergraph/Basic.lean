@@ -41,7 +41,7 @@ For `H : Hypergraph α`:
 * `H.EAdj e f` means that there exists some vertex that is incident to the edges `e` and
   `f : Set α`.
 
-## Implementation details
+## Implementation notes
 
 This implementation is heavily inspired by Peter Nelson and Jun Kwon's `Graph` implementation,
 which was in turn inspired by `Matroid`.

@@ -31,6 +31,7 @@ import Mathlib.RingTheory.Localization.Basic
 See `RingTheory.Localization.Basic` for a design overview.
 
 ## Tags
+
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
 -/

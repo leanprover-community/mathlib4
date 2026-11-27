@@ -13,7 +13,8 @@ public import Mathlib.Data.ENat.Monoid
 
 This file implements the `enat_to_nat` tactic that shifts `ENat`s in the context to `Nat`.
 
-## Implementation details
+## Implementation notes
+
 The implementation follows these steps:
 1. Apply the `cases` tactic to each `ENat` variable, producing two goals: one where the variable
    is `⊤`, and one where it is a finite natural number.

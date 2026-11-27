@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Bicategory.Basic
 public import Mathlib.CategoryTheory.EqToHom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `eqToHom` in bicategories
 
@@ -30,6 +33,7 @@ structure morphisms such as unitors, associators and whiskering conjugate
 well under `eqToHom`s.
 
 ## TODO
+
 * Define `eqToEquiv` that puts the `eqToHom`s in an `Equivalence` between
   objects.
 -/

@@ -13,7 +13,7 @@ public import Mathlib.RingTheory.Ideal.Quotient.Basic
 /-!
 # More operations on modules and ideals related to quotients
 
-## Main results:
+## Main results
 
 - `RingHom.quotientKerEquivRange` : the **first isomorphism theorem** for commutative rings.
 - `RingHom.quotientKerEquivRangeS` : the **first isomorphism theorem**
@@ -365,7 +365,7 @@ variable [Algebra R₁ A] [Algebra R₂ A]
 instance Quotient.algebra {I : Ideal A} [I.IsTwoSided] : Algebra R₁ (A ⧸ I) where
   algebraMap := (Ideal.Quotient.mk I).comp (algebraMap R₁ A)
   smul_def' := fun _ x =>
-    Quotient.inductionOn' x fun _ =>
+    Quotient.inductionOn x fun _ =>
       ((Quotient.mk I).congr_arg <| Algebra.smul_def _ _).trans (map_mul _ _ _)
   commutes' := by rintro r ⟨x⟩; congrm ⟦$(Algebra.commutes r x)⟧
 
@@ -388,7 +388,7 @@ def Quotient.mkₐ (I : Ideal A) [I.IsTwoSided] : A →ₐ[R₁] A ⧸ I where
 theorem Quotient.algHom_ext {I : Ideal A} [I.IsTwoSided]
     {S} [Semiring S] [Algebra R₁ S] ⦃f g : A ⧸ I →ₐ[R₁] S⦄
     (h : f.comp (Quotient.mkₐ R₁ I) = g.comp (Quotient.mkₐ R₁ I)) : f = g :=
-  AlgHom.ext fun x => Quotient.inductionOn' x <| AlgHom.congr_fun h
+  AlgHom.ext fun x => Quotient.inductionOn x <| AlgHom.congr_fun h
 
 theorem Quotient.alg_map_eq {A} [CommRing A] [Algebra R₁ A] (I : Ideal A) :
     algebraMap R₁ (A ⧸ I) = (algebraMap A (A ⧸ I)).comp (algebraMap R₁ A) :=

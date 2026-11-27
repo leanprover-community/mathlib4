@@ -10,6 +10,9 @@ public import Mathlib.Algebra.GroupWithZero.Nat
 public import Mathlib.Algebra.Order.Group.Unbundled.Int
 public import Mathlib.Algebra.Ring.Int.Units
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # ℕ and ℤ are normalized GCD monoids.
 
@@ -22,6 +25,7 @@ public import Mathlib.Algebra.Ring.Int.Units
 * ℤ is a `StrongNormalizedGCDMonoid`
 
 ## Tags
+
 natural numbers, integers, normalization monoid, gcd monoid, greatest common divisor
 -/
 

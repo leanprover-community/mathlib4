@@ -23,7 +23,7 @@ Ring norms
 * `MulRingSeminormClass`: Homs are ring seminorms that are multiplicative.
 * `MulRingNormClass`: Homs are ring norms that are multiplicative.
 
-## Notes
+## Implementation notes
 
 Typeclasses for seminorms are defined here while types of seminorms are defined in
 `Analysis.Normed.Group.Seminorm` and `Analysis.Normed.Ring.Seminorm` because absolute values are

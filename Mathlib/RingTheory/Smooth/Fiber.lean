@@ -16,6 +16,7 @@ import Mathlib.RingTheory.Smooth.Local
 # Flat and smooth fibers imply smooth
 
 ## Main results
+
 - `Algebra.FormallySmooth.of_formallySmooth_residueField_tensor`:
   Let `(R, m, k)` be a local ring, `S` be a local `R`-algebra that is flat,
   essentially of finite presentation, and `k ⊗[R] S` is `k`-formally smooth.

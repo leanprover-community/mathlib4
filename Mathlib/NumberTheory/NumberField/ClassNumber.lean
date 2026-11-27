@@ -20,6 +20,7 @@ the class group of its ring of integers. It also proves some elementary results
 on the class number.
 
 ## Main definitions
+
 - `NumberField.minkowskiNormBound`: the Minkowski bound of a number field `K`, defined as
   `(4 / π) ^ nrComplexPlaces K * ((finrank ℚ K)! / (finrank ℚ K) ^ (finrank ℚ K) * √|discr K|)`.
   Every class in the class group of `𝓞 K` contains an integral ideal of norm at most this bound.

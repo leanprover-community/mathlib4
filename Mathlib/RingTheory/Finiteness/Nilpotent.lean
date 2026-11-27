@@ -48,8 +48,8 @@ theorem isNilpotent_transpose_iff :
 
 theorem isNilpotent_iff :
     IsNilpotent A ↔ ∀ v, ∃ n : ℕ, A ^ n *ᵥ v = 0 := by
-  simp_rw [← isNilpotent_toLin'_iff, Module.End.isNilpotent_iff_of_finite, ← toLin'_pow,
-    toLin'_apply]
+  simp_rw [← isNilpotent_mulVecLin_iff, Module.End.isNilpotent_iff_of_finite, ← mulVecLin_pow,
+    mulVecLin_apply]
 
 theorem isNilpotent_iff_forall_row :
     IsNilpotent A ↔ ∀ i, ∃ n : ℕ, (A ^ n).row i = 0 := by

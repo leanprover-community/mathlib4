@@ -1071,7 +1071,7 @@ private theorem mem_inverse_graph_snd_eq_zero (hf : f.ker = ⊥) (x : F × E)
   rcases x with ⟨x, y⟩
   subst hv'
   simp only [Submodule.map_equiv_eq_comap_symm, Submodule.mem_comap, LinearEquiv.symm_prodComm,
-    LinearEquiv.coe_coe, LinearEquiv.prodComm_apply, mem_graph_iff, Prod.swap] at hv
+    LinearEquiv.coe_toLinearMap, LinearEquiv.prodComm_apply, mem_graph_iff, Prod.swap] at hv
   rcases hv with ⟨z, rfl, hz⟩
   rw [LinearPMap.ker_eq_bot'] at hf
   simp [hf z hz]

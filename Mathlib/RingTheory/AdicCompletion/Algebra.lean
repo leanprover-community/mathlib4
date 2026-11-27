@@ -22,7 +22,7 @@ completion of any module is a module over the adic completion of the ring.
 - `AdicCompletion.liftRingHom`: given a compatible family of ring maps
   `R →+* S ⧸ I ^ n`, the lift ring map `R →+* AdicCompletion I S`.
 
-## Implementation details
+## Implementation notes
 
 We do not make a separate adic completion type in algebra case, to not duplicate all
 module-theoretic results on adic completions. This choice does cause some trouble though,
@@ -56,12 +56,12 @@ theorem transitionMap_map_one {m n : ℕ} (hmn : m ≤ n) : transitionMap I R hm
 @[local simp]
 theorem transitionMap_map_mul {m n : ℕ} (hmn : m ≤ n) (x y : R ⧸ (I ^ n • ⊤ : Ideal R)) :
     transitionMap I R hmn (x * y) = transitionMap I R hmn x * transitionMap I R hmn y :=
-  Quotient.inductionOn₂' x y (fun _ _ ↦ rfl)
+  Quotient.inductionOn₂ x y (fun _ _ ↦ rfl)
 
 @[local simp]
 theorem transitionMap_map_pow {m n a : ℕ} (hmn : m ≤ n) (x : R ⧸ (I ^ n • ⊤ : Ideal R)) :
     transitionMap I R hmn (x ^ a) = transitionMap I R hmn x ^ a :=
-  Quotient.inductionOn' x (fun _ ↦ rfl)
+  Quotient.inductionOn x (fun _ ↦ rfl)
 
 /-- `AdicCompletion.transitionMap` as an algebra homomorphism. -/
 def transitionMapₐ {m n : ℕ} (hmn : m ≤ n) :
@@ -275,11 +275,10 @@ good definitional behaviour for the module instance on adic completions -/
 instance : SMul (R ⧸ (I • ⊤ : Ideal R)) (M ⧸ (I • ⊤ : Submodule R M)) where
   smul r x :=
     Quotient.liftOn r (· • x) fun b₁ b₂ h ↦ by
-      induction x using Quotient.inductionOn'
+      induction x using Submodule.Quotient.induction_on
       have h : b₁ - b₂ ∈ (I : Submodule R R) := by
         rwa [show I = I • ⊤ by simp, ← Submodule.quotientRel_def]
-      rw [← sub_eq_zero, ← sub_smul, Submodule.Quotient.mk''_eq_mk,
-        ← Submodule.Quotient.mk_smul, Submodule.Quotient.mk_eq_zero]
+      rw [← sub_eq_zero, ← sub_smul, ← Submodule.Quotient.mk_smul, Submodule.Quotient.mk_eq_zero]
       exact Submodule.smul_mem_smul h mem_top
 
 @[local simp]
@@ -298,7 +297,7 @@ instance : Module (R ⧸ (I • ⊤ : Ideal R)) (M ⧸ (I • ⊤ : Submodule R 
 
 instance : IsScalarTower R (R ⧸ (I • ⊤ : Ideal R)) (M ⧸ (I • ⊤ : Submodule R M)) where
   smul_assoc r s x := by
-    induction s, x using Quotient.inductionOn₂' with | _ s x
+    induction s, x using Quotient.inductionOn₂ with | _ s x
     simp only [Submodule.Quotient.mk''_eq_mk]
     rw [← Submodule.Quotient.mk_smul, Ideal.Quotient.mk_eq_mk, mk_smul_mk, smul_assoc]
     rfl
