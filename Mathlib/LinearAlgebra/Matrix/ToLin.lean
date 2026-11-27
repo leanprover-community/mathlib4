@@ -336,13 +336,17 @@ theorem Matrix.mulVecLin_mul [Fintype m] (M : Matrix l m R) (N : Matrix m n R) :
     Matrix.mulVecLin (M * N) = (Matrix.mulVecLin M).comp (Matrix.mulVecLin N) :=
   LinearMap.ext fun _ ↦ (mulVec_mulVec _ _ _).symm
 
+/-- `Matrix.mulVecLin` bundled as a monoid hom `Matrix n n R →* Module.End R (n → R)`. -/
+@[simps]
+def Matrix.mulVecModuleEnd [DecidableEq n] : Matrix n n R →* Module.End R (n → R) where
+  toFun := mulVecLin
+  map_one' := mulVecLin_one
+  map_mul' := mulVecLin_mul
+
 @[simp]
 theorem Matrix.mulVecLin_pow [DecidableEq n] (M : Matrix n n R) (k : ℕ) :
     (M ^ k).mulVecLin = M.mulVecLin ^ k :=
-  map_pow ({
-    toFun := mulVecLin,
-    map_one' := mulVecLin_one,
-    map_mul' := mulVecLin_mul } : Matrix n n R →* Module.End R (n → R)) _ _
+  map_pow mulVecModuleEnd M k
 
 theorem Matrix.ker_mulVecLin_eq_bot_iff {M : Matrix m n R} :
     (LinearMap.ker M.mulVecLin) = ⊥ ↔ ∀ v, M *ᵥ v = 0 → v = 0 := by
@@ -391,8 +395,8 @@ def LinearMap.toMatrix' : ((n → R) →ₗ[R] m → R) ≃ₗ[R] Matrix m n R w
 
 /-- A `Matrix m n R` is linearly equivalent to a linear map `(n → R) →ₗ[R] (m → R)`.
 
-Note that the forward-direction does not require `DecidableEq` and is `Matrix.mulVecLin`,
-so all lemmas about `M.toLin'` were deprecated in favor of the `Matrix.mulVecLin` spelling. -/
+Note that the forward-direction does not require `DecidableEq` and is `Matrix.mulVecLin`.
+Lemmas are stated in terms of the simp-normal form `Matrix.mulVecLin` rather than `M.toLin'`. -/
 def Matrix.toLin' : Matrix m n R ≃ₗ[R] (n → R) →ₗ[R] m → R :=
   LinearMap.toMatrix'.symm
 

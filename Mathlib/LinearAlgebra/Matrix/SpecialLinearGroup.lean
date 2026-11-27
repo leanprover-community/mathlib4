@@ -205,10 +205,8 @@ instance : Group (SpecialLinearGroup n R) :=
 
 /-- A version of `Matrix.mulVecLin A` that produces linear equivalences. -/
 def toLin' : SpecialLinearGroup n R →* (n → R) ≃ₗ[R] n → R where
-  toFun A :=
-    LinearEquiv.ofLinearMap (Matrix.mulVecLin ↑ₘA) (Matrix.mulVecLin ↑ₘA⁻¹)
-      (by rw [← mulVecLin_mul, ← coe_mul, mul_inv_cancel, coe_one, mulVecLin_one])
-      (by rw [← mulVecLin_mul, ← coe_mul, inv_mul_cancel, coe_one, mulVecLin_one])
+  toFun A := Matrix.toLin'OfInv (M := ↑ₘA⁻¹) (M' := ↑ₘA)
+    (by rw [← coe_mul, inv_mul_cancel, coe_one]) (by rw [← coe_mul, mul_inv_cancel, coe_one])
   map_one' := LinearEquiv.toLinearMap_injective Matrix.mulVecLin_one
   map_mul' A B := LinearEquiv.toLinearMap_injective <| Matrix.mulVecLin_mul ↑ₘA ↑ₘB
 

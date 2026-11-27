@@ -168,7 +168,7 @@ end CoeLemmas
 instance : Group (SpecialLinearGroup R V) := fast_instance%
   Function.Injective.group _ Subtype.coe_injective coe_one coe_mul coe_inv coe_div coe_pow coe_zpow
 
-/-- A version of `Matrix.mulVecLin A` that produces linear equivalences. -/
+/-- The coercion `SpecialLinearGroup R V → V ≃ₗ[R] V`, bundled as a monoid hom. -/
 def toLinearEquiv : SpecialLinearGroup R V →* V ≃ₗ[R] V where
   toFun A := A.val
   map_one' := coe_one
@@ -306,8 +306,8 @@ def toLin'_equiv : SpecialLinearGroup n R ≃* _root_.SpecialLinearGroup R (n �
   left_inv A := Subtype.coe_injective <| by
     rw [← LinearEquiv.eq_symm_apply, LinearMap.toMatrix'_symm,
       Matrix.SpecialLinearGroup.toLin'_to_linearMap, Matrix.toLin'_apply']
-  right_inv u := Subtype.coe_injective <| by
-    simp [← LinearEquiv.toLinearMap_inj, Matrix.SpecialLinearGroup.toLin']
+  right_inv u := Subtype.coe_injective <| LinearEquiv.toLinearMap_injective <|
+    LinearMap.toMatrix'.symm_apply_apply _
   map_mul' A B := Subtype.coe_injective (by simp)
 
 /-- The isomorphism from `Matrix.SpecialLinearGroup n R`

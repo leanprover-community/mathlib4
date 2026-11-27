@@ -40,13 +40,13 @@ lemma hasEigenvector_toLin_diagonal (d : n → R) (i : n) (b : Basis n R M) :
 
 /-- Standard basis vectors are eigenvectors of any associated diagonal linear operator. -/
 lemma hasEigenvector_mulVecLin_diagonal (d : n → R) (i : n) :
-    HasEigenvector (diagonal d).mulVecLin (d i) (Pi.basisFun R n i) :=
-  hasEigenvector_toLin_diagonal _ _ (Pi.basisFun R n)
+    HasEigenvector (diagonal d).mulVecLin (d i) (Pi.single i 1) := by
+  simpa [toLin_eq_toLin'] using hasEigenvector_toLin_diagonal d i (Pi.basisFun R n)
 
 @[deprecated hasEigenvector_mulVecLin_diagonal +typeChanged (since := "2026-11-25")]
 lemma hasEigenvector_toLin'_diagonal (d : n → R) (i : n) :
-    HasEigenvector (toLin' (diagonal d)) (d i) (Pi.basisFun R n i) :=
-  hasEigenvector_mulVecLin_diagonal d i
+    HasEigenvector (toLin' (diagonal d)) (d i) (Pi.basisFun R n i) := by
+  simpa using hasEigenvector_mulVecLin_diagonal d i
 
 set_option linter.overlappingInstances false
 
