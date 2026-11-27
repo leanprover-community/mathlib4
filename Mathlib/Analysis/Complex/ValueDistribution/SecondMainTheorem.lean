@@ -70,7 +70,7 @@ theorem exists_sum_posLog_inv_norm_sub_le (s : Finset 𝕜) :
       · simpa [Finset.infsep_pos_iff_nontrivial]
       · refine fun a ha b hb hab ↦ ?_
         grw [min_le_right, ← dist_eq_norm]
-        exact Set.le_edist_of_le_infsep ha hb hab le_rfl
+        exact Set.le_eDist_of_le_infsep ha hb hab le_rfl
     have hq2 : (2 : ℝ) ≤ #s := mod_cast hs.two_le_card
     have hlogq : 0 ≤ log #s := by positivity
     have hposA : 0 ≤ log⁺ (2 * #s / δ) := posLog_nonneg

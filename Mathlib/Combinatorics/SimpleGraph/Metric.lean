@@ -87,13 +87,13 @@ lemma eDist_eq_top_of_not_reachable (h : ¬G.Reachable u v) :
     G.eDist u v = ⊤ := by
   simp [eDist, not_reachable_iff_isEmpty_walk.mp h]
 
-theorem reachable_of_edist_ne_top (h : G.eDist u v ≠ ⊤) :
+theorem reachable_of_eDist_ne_top (h : G.eDist u v ≠ ⊤) :
     G.Reachable u v :=
   not_not.mp <| eDist_eq_top_of_not_reachable.mt h
 
-lemma exists_walk_of_edist_ne_top (h : G.eDist u v ≠ ⊤) :
+lemma exists_walk_of_eDist_ne_top (h : G.eDist u v ≠ ⊤) :
     ∃ p : G.Walk u v, p.length = G.eDist u v :=
-  (reachable_of_edist_ne_top h).exists_walk_length_eq_eDist
+  (reachable_of_eDist_ne_top h).exists_walk_length_eq_eDist
 
 protected theorem eDist_triangle : G.eDist u w ≤ G.eDist u v + G.eDist v w := by
   cases eq_or_ne (G.eDist u v) ⊤ with
@@ -102,8 +102,8 @@ protected theorem eDist_triangle : G.eDist u w ≤ G.eDist u v + G.eDist v w := 
     cases eq_or_ne (G.eDist v w) ⊤ with
     | inl hvw => simp [hvw]
     | inr hvw =>
-      obtain ⟨p, hp⟩ := exists_walk_of_edist_ne_top huv
-      obtain ⟨q, hq⟩ := exists_walk_of_edist_ne_top hvw
+      obtain ⟨p, hp⟩ := exists_walk_of_eDist_ne_top huv
+      obtain ⟨q, hq⟩ := exists_walk_of_eDist_ne_top hvw
       rw [← hp, ← hq, ← Nat.cast_add, ← Walk.length_append]
       exact eDist_le _
 
@@ -112,14 +112,14 @@ theorem eDist_comm : G.eDist u v = G.eDist v u := by
     ← Set.image_comp, Set.image_univ, Function.comp_def]
   simp_rw [Walk.length_reverse, ← eDist_eq_sInf]
 
-lemma exists_walk_of_edist_eq_coe {k : ℕ} (h : G.eDist u v = k) :
+lemma exists_walk_of_eDist_eq_coe {k : ℕ} (h : G.eDist u v = k) :
     ∃ p : G.Walk u v, p.length = k :=
   have : G.eDist u v ≠ ⊤ := by rw [h]; exact ENat.natCast_ne_top _
-  have ⟨p, hp⟩ := exists_walk_of_edist_ne_top this
+  have ⟨p, hp⟩ := exists_walk_of_eDist_ne_top this
   ⟨p, Nat.cast_injective (hp.trans h)⟩
 
 lemma eDist_ne_top_iff_reachable : G.eDist u v ≠ ⊤ ↔ G.Reachable u v := by
-  refine ⟨reachable_of_edist_ne_top, fun h ↦ ?_⟩
+  refine ⟨reachable_of_eDist_ne_top, fun h ↦ ?_⟩
   by_contra hx
   simp only [eDist, iInf_eq_top, ENat.natCast_ne_top] at hx
   exact h.elim hx
@@ -130,7 +130,7 @@ The extended distance between vertices is equal to `1` if and only if these vert
 @[simp]
 theorem eDist_eq_one_iff_adj : G.eDist u v = 1 ↔ G.Adj u v := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · obtain ⟨w, hw⟩ := exists_walk_of_edist_ne_top <| by rw [h]; simp
+  · obtain ⟨w, hw⟩ := exists_walk_of_eDist_ne_top <| by rw [h]; simp
     exact w.adj_of_length_eq_one <| Nat.cast_eq_one.mp <| h ▸ hw
   · exact le_antisymm (eDist_le h.toWalk) (Order.one_le_iff_pos.mpr <| eDist_pos_of_ne h.ne)
 
@@ -147,7 +147,7 @@ lemma eDist_eq_two_iff {u v : V} :
   refine ⟨fun h ↦ ⟨?_, ?_, ?_⟩, fun h ↦ le_antisymm ?_ ?_⟩
   · simp +decide [← G.eDist_eq_zero_iff.not (b := u = v), h]
   · simp +decide [← eDist_eq_one_iff_adj, h]
-  · obtain ⟨w, hw⟩ := exists_walk_of_edist_eq_coe h
+  · obtain ⟨w, hw⟩ := exists_walk_of_eDist_eq_coe h
     use w.getVert 1
     suffices w.getVert 1 ∈ G.commonNeighbors (w.getVert 0) (w.getVert w.length) by simpa
     refine hw ▸ G.mem_commonNeighbors.mp ?_
@@ -159,7 +159,7 @@ lemma eDist_eq_two_iff {u v : V} :
   · by_contra
     simp_all [Order.le_one_iff]
 
-lemma two_lt_edist_iff {u v : V} :
+lemma two_lt_eDist_iff {u v : V} :
     2 < G.eDist u v ↔ u ≠ v ∧ ¬ G.Adj u v ∧ (G.commonNeighbors u v) = ∅ := by
   refine ⟨fun h ↦ ?_, fun h ↦ lt_of_le_of_ne ?_ (Ne.symm ?_)⟩
   · have hn : u ≠ v := fun hc ↦ by simp [hc] at h

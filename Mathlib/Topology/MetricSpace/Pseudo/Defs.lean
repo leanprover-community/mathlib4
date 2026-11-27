@@ -984,7 +984,7 @@ lemma DiscreteTopology.of_forall_le_dist {α} [PseudoMetricSpace α] {r : ℝ} (
 we need to show that the uniform structure coming from the edistance and the
 distance coincide. -/
 
-theorem Metric.uniformity_edist_aux {α} (d : α → α → ℝ≥0) :
+theorem Metric.uniformity_eDist_aux {α} (d : α → α → ℝ≥0) :
     ⨅ ε > (0 : ℝ), 𝓟 { p : α × α | ↑(d p.1 p.2) < ε } =
       ⨅ ε > (0 : ℝ≥0∞), 𝓟 { p : α × α | ↑(d p.1 p.2) < ε } := by
   simp only [le_antisymm_iff, le_iInf_iff, le_principal_iff]
@@ -998,7 +998,7 @@ theorem Metric.uniformity_edist_aux {α} (d : α → α → ℝ≥0) :
 
 theorem Metric.uniformity_eDist : 𝓤 α = ⨅ ε > 0, 𝓟 { p : α × α | eDist p.1 p.2 < ε } := by
   simp only [PseudoMetricSpace.uniformity_dist, dist_nnDist, eDist_nnDist,
-    Metric.uniformity_edist_aux]
+    Metric.uniformity_eDist_aux]
 
 -- see Note [lower instance priority]
 /-- A pseudometric space induces a pseudoemetric space -/
@@ -1108,7 +1108,7 @@ abbrev PseudoEMetricSpace.toPseudoMetricSpaceOfDist {X : Type*} [e : PseudoEMetr
   toUniformSpace := PseudoEMetricSpace.toUniformSpace
   uniformity_dist := e.uniformity_eDist.trans <| by
     simpa [h, dist_nonneg, ENNReal.coe_toNNReal_eq_toReal]
-      using (Metric.uniformity_edist_aux fun x y : X => (eDist x y).toNNReal).symm
+      using (Metric.uniformity_eDist_aux fun x y : X => (eDist x y).toNNReal).symm
 
 /-- One gets a pseudometric space from an emetric space if the edistance
 is everywhere finite, by pushing the edistance to reals. We set it up so that the eDist and the

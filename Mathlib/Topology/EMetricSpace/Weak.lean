@@ -171,13 +171,13 @@ abbrev WeakEMetricSpace.OfIsOpenEmbedding {α : Type u} [t : TopologicalSpace α
     (h_eDist : inst = Option.toEDist) (h : IsOpenEmbedding (some (α := α))) :
     WeakEMetricSpace (Option α) :=
   { toWeakPseudoEMetricSpace := WeakPseudoEMetricSpace.OfIsOpenEmbedding h_eDist h,
-    eq_of_edist_eq_zero {x y} xy := by
+    eq_of_eDist_eq_zero {x y} xy := by
       rw [congr(@eDist _ $h_eDist x y)] at xy
       cases x <;> cases y
       · rfl
       · simp at xy
       · simp at xy
-      rw [m.eq_of_edist_eq_zero xy]
+      rw [m.eq_of_eDist_eq_zero xy]
     }
 
 end Option

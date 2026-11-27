@@ -586,7 +586,7 @@ variable [PseudoEMetricSpace α]
 
 open EMetric
 
-theorem tendsto_iff_edist_tendsto_0 {l : Filter β} {f : β → α} {y : α} :
+theorem tendsto_iff_eDist_tendsto_0 {l : Filter β} {f : β → α} {y : α} :
     Tendsto f l (𝓝 y) ↔ Tendsto (fun x => eDist (f x) y) l (𝓝 0) := by
   simp only [Metric.nhds_basis_eball.tendsto_right_iff, Metric.mem_eball,
     @tendsto_order ℝ≥0∞ β _ _, forall_prop_of_false ENNReal.not_lt_zero, forall_const, true_and]

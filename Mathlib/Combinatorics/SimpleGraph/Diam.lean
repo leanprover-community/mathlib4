@@ -45,7 +45,7 @@ lemma eccent_def : G.eccent = fun u ↦ ⨆ v, G.eDist u v := rfl
 lemma eDist_le_eccent {u v : α} : G.eDist u v ≤ G.eccent u :=
   le_iSup (G.eDist u) v
 
-lemma exists_edist_eq_eccent_of_finite [Finite α] (u : α) :
+lemma exists_eDist_eq_eccent_of_finite [Finite α] (u : α) :
     ∃ v, G.eDist u v = G.eccent u :=
   have : Nonempty α := Nonempty.intro u
   exists_eq_ciSup_of_finite
@@ -140,7 +140,7 @@ lemma eccent_le_ediam {u : α} : G.eccent u ≤ G.ediam :=
 lemma eDist_le_ediam {u v : α} : G.eDist u v ≤ G.ediam :=
   le_iSup₂ (f := G.eDist) u v
 
-lemma ediam_le_of_edist_le {k : ℕ∞} (h : ∀ u v, G.eDist u v ≤ k) : G.ediam ≤ k :=
+lemma ediam_le_of_eDist_le {k : ℕ∞} (h : ∀ u v, G.eDist u v ≤ k) : G.ediam ≤ k :=
   iSup₂_le h
 
 lemma ediam_le_iff {k : ℕ∞} : G.ediam ≤ k ↔ ∀ u v, G.eDist u v ≤ k :=
@@ -205,12 +205,12 @@ lemma exists_eccent_eq_ediam_of_finite [Nonempty α] [Finite α] :
     ∃ u, G.eccent u = G.ediam :=
   exists_eq_ciSup_of_finite
 
-lemma exists_edist_eq_ediam_of_ne_top [Nonempty α] (h : G.ediam ≠ ⊤) :
+lemma exists_eDist_eq_ediam_of_ne_top [Nonempty α] (h : G.ediam ≠ ⊤) :
     ∃ u v, G.eDist u v = G.ediam :=
   ENat.exists_eq_iSup₂_of_lt_top h.lt_top
 
 -- Note: Neither `Finite α` nor `G.ediam ≠ ⊤` implies the other.
-lemma exists_edist_eq_ediam_of_finite [Nonempty α] [Finite α] :
+lemma exists_eDist_eq_ediam_of_finite [Nonempty α] [Finite α] :
     ∃ u v, G.eDist u v = G.ediam :=
   Prod.exists'.mp <| ediam_def ▸ exists_eq_ciSup_of_finite
 
@@ -219,7 +219,7 @@ if and only if the extended diameter is not `⊤`.
 See `connected_of_ediam_ne_top` for one of the implications without
 the finiteness assumptions -/
 lemma connected_iff_ediam_ne_top [Nonempty α] [Finite α] : G.Connected ↔ G.ediam ≠ ⊤ :=
-  have ⟨u, v, huv⟩ := G.exists_edist_eq_ediam_of_finite
+  have ⟨u, v, huv⟩ := G.exists_eDist_eq_ediam_of_finite
   ⟨fun h ↦ huv ▸ eDist_ne_top_iff_reachable.mpr (h u v),
    fun h ↦ G.connected_of_ediam_ne_top h⟩
 
@@ -245,7 +245,7 @@ lemma ediam_eq_one [Nontrivial α] : G.ediam = 1 ↔ G = ⊤ := by
   exact eccent_ne_zero u
 
 lemma ediam_le_two_mul_eccent (u : α) : G.ediam ≤ 2 * G.eccent u := by
-  refine ediam_le_of_edist_le fun v w ↦ ?_
+  refine ediam_le_of_eDist_le fun v w ↦ ?_
   calc
     G.eDist v w
       ≤ G.eDist v u + G.eDist u w := G.eDist_triangle
@@ -289,7 +289,7 @@ lemma exists_dist_eq_diam [Nonempty α] :
     ∃ u v, G.dist u v = G.diam := by
   by_cases h : G.diam = 0
   · simp [h]
-  · obtain ⟨u, v, huv⟩ := exists_edist_eq_ediam_of_ne_top <| ediam_ne_top_of_diam_ne_zero h
+  · obtain ⟨u, v, huv⟩ := exists_eDist_eq_ediam_of_ne_top <| ediam_ne_top_of_diam_ne_zero h
     use u, v
     rw [diam, dist, congrArg ENat.toNat huv]
 
@@ -350,10 +350,10 @@ lemma radius_le_eccent {u : α} : G.radius ≤ G.eccent u :=
 lemma exists_eccent_eq_radius [Nonempty α] : ∃ u, G.eccent u = G.radius :=
   ENat.exists_eq_iInf G.eccent
 
-lemma exists_edist_eq_radius_of_finite [Nonempty α] [Finite α] :
+lemma exists_eDist_eq_radius_of_finite [Nonempty α] [Finite α] :
     ∃ u v, G.eDist u v = G.radius := by
   obtain ⟨w, hw⟩ := G.exists_eccent_eq_radius
-  obtain ⟨v, hv⟩ := G.exists_edist_eq_eccent_of_finite w
+  obtain ⟨v, hv⟩ := G.exists_eDist_eq_eccent_of_finite w
   use w, v
   rw [hv, hw]
 
@@ -365,7 +365,7 @@ lemma radius_eq_top_of_isEmpty [IsEmpty α] : G.radius = ⊤ :=
 
 lemma radius_ne_top_iff [Nonempty α] [Finite α] : G.radius ≠ ⊤ ↔ G.Connected := by
   refine ⟨Not.imp_symm radius_eq_top_of_not_connected, fun h ↦ ?_⟩
-  obtain ⟨u, v, huv⟩ := G.exists_edist_eq_radius_of_finite
+  obtain ⟨u, v, huv⟩ := G.exists_eDist_eq_radius_of_finite
   rw [← huv, eDist_ne_top_iff_reachable]
   exact h u v
 
@@ -403,7 +403,7 @@ lemma ediam_le_two_mul_radius : G.ediam ≤ 2 * G.radius := by
   · by_cases hdiam : G.ediam = ⊤
     · simp [hdiam, ediam_eq_top_iff_radius_eq_top.mp hdiam]
     · obtain ⟨w, hw⟩ := G.exists_eccent_eq_radius
-      obtain ⟨_, _, h⟩ := G.exists_edist_eq_ediam_of_ne_top hdiam
+      obtain ⟨_, _, h⟩ := G.exists_eDist_eq_ediam_of_ne_top hdiam
       apply le_trans (h ▸ G.eDist_triangle (v := w))
       rw [two_mul]
       exact hw ▸ add_le_add (G.eDist_comm ▸ G.eDist_le_eccent) G.eDist_le_eccent

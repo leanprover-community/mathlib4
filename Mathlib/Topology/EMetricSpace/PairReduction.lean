@@ -91,7 +91,7 @@ hence `(tᵢ, s), (tᵢ, t) ∈ K`. Furthermore
 ```
 d(f(s), f(t)) ≤ d(f(tᵢ), f(s)) + d(f(tᵢ), f(t))
 ```
-taking supremums completes the proof (see `iSup_edist_pairSet`).
+taking supremums completes the proof (see `iSup_eDist_pairSet`).
 
 ## References
 
@@ -392,7 +392,7 @@ lemma eDist_le_of_mem_pairSet (ha : 1 < a) (hJ_card : #J ≤ a ^ n) {s t : T}
   obtain ⟨⟨ht, hdist⟩, rfl⟩ := h'
   grw [hdist, radius_logSizeBallSeq_le hJ ha hn hJ_card i]
 
-lemma iSup_edist_pairSet {E : Type*} [TopologicalSpace E] [WeakPseudoEMetricSpace E] (ha : 1 < a)
+lemma iSup_eDist_pairSet {E : Type*} [TopologicalSpace E] [WeakPseudoEMetricSpace E] (ha : 1 < a)
     (f : T → E) :
     ⨆ (s : J) (t : { t : J // eDist s t ≤ c}), eDist (f s) (f t)
         ≤ 2 * ⨆ p : pairSet J a c, eDist (f p.val.1) (f p.val.2) := by
@@ -497,4 +497,4 @@ theorem EMetric.pair_reduction (hJ_card : #J ≤ a ^ n) (c : ℝ≥0∞) (E : Ty
       · rwa [Finset.one_le_card, ← Finset.nonempty_coe_sort]
     simp_all
   · exact ⟨pairSet J a c, pairSet_subset, card_pairSet_le ha1,
-      fun _ _ ↦ eDist_le_of_mem_pairSet ha1 hJ_card, iSup_edist_pairSet ha1⟩
+      fun _ _ ↦ eDist_le_of_mem_pairSet ha1 hJ_card, iSup_eDist_pairSet ha1⟩

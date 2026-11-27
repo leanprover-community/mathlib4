@@ -94,7 +94,7 @@ instance (priority := 100) BaireSpace.of_completelyPseudoMetrizable : BaireSpace
           Subset.trans (incl n) inter_subset_left
         _ ⊆ closedEBall (c n) (B n) := closedEBall_subset_closedEBall (rB n)
     exact I A
-  have : CauchySeq c := cauchySeq_of_edist_le_geometric_two _ ENNReal.one_ne_top cdist
+  have : CauchySeq c := cauchySeq_of_eDist_le_geometric_two _ ENNReal.one_ne_top cdist
   -- as the sequence `c n` is Cauchy in a complete space, it converges to a limit `y`.
   rcases cauchySeq_tendsto_of_complete this with ⟨y, ylim⟩
   -- this point `y` will be the desired point. We will check that it belongs to all

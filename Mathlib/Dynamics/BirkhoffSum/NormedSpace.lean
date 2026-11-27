@@ -133,7 +133,7 @@ is a uniformly equicontinuous family of functions. -/
 theorem uniformEquicontinuous_birkhoffAverage (hf : LipschitzWith 1 f) (hg : UniformContinuous g) :
     UniformEquicontinuous (birkhoffAverage 𝕜 f g) := by
   refine Metric.uniformity_basis_dist_le.uniformEquicontinuous_iff_right.2 fun ε hε ↦ ?_
-  rcases (uniformity_basis_edist_le.uniformContinuous_iff Metric.uniformity_basis_dist_le).1 hg ε hε
+  rcases (uniformity_basis_eDist_le.uniformContinuous_iff Metric.uniformity_basis_dist_le).1 hg ε hε
     with ⟨δ, hδ₀, hδε⟩
   refine mem_uniformity_eDist.2 ⟨δ, hδ₀, fun {x y} h n ↦ ?_⟩
   calc

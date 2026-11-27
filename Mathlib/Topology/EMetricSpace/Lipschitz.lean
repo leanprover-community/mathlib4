@@ -159,12 +159,12 @@ theorem eDist_lt_top (hf : LipschitzWith K f) {x y : α} (h : eDist x y ≠ ⊤)
     eDist (f x) (f y) < ⊤ :=
   (hf x y).trans_lt (by finiteness)
 
-theorem mul_edist_le (h : LipschitzWith K f) (x y : α) :
+theorem mul_eDist_le (h : LipschitzWith K f) (x y : α) :
     (K⁻¹ : ℝ≥0∞) * eDist (f x) (f y) ≤ eDist x y := by
   rw [mul_comm, ← div_eq_mul_inv]
   exact ENNReal.div_le_of_le_mul' (h x y)
 
-protected theorem of_edist_le (h : ∀ x y, eDist (f x) (f y) ≤ eDist x y) : LipschitzWith 1 f :=
+protected theorem of_eDist_le (h : ∀ x y, eDist (f x) (f y) ≤ eDist x y) : LipschitzWith 1 f :=
   fun x y => by simp only [ENNReal.coe_one, one_mul, h]
 
 protected theorem weaken (hf : LipschitzWith K f) {K' : ℝ≥0} (h : K ≤ K') : LipschitzWith K' f :=
@@ -176,7 +176,7 @@ theorem ediam_image_le (hf : LipschitzWith K f) (s : Set α) :
   rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩
   exact hf.eDist_le_mul_of_le (Metric.eDist_le_ediam_of_mem hx hy)
 
-theorem eDist_lt_of_edist_lt_div (hf : LipschitzWith K f) {x y : α} {d : ℝ≥0∞}
+theorem eDist_lt_of_eDist_lt_div (hf : LipschitzWith K f) {x y : α} {d : ℝ≥0∞}
     (h : eDist x y < d / K) : eDist (f x) (f y) < d :=
   calc
     eDist (f x) (f y) ≤ K * eDist x y := hf x y
@@ -185,7 +185,7 @@ theorem eDist_lt_of_edist_lt_div (hf : LipschitzWith K f) {x y : α} {d : ℝ≥
 /-- A Lipschitz function is uniformly continuous. -/
 protected theorem uniformContinuous (hf : LipschitzWith K f) : UniformContinuous f :=
   EMetric.uniformContinuous_iff.2 fun ε εpos =>
-    ⟨ε / K, ENNReal.div_pos_iff.2 ⟨ne_of_gt εpos, ENNReal.coe_ne_top⟩, hf.eDist_lt_of_edist_lt_div⟩
+    ⟨ε / K, ENNReal.div_pos_iff.2 ⟨ne_of_gt εpos, ENNReal.coe_ne_top⟩, hf.eDist_lt_of_eDist_lt_div⟩
 
 /-- A Lipschitz function is continuous. -/
 protected theorem continuous (hf : LipschitzWith K f) : Continuous f :=
@@ -204,11 +204,11 @@ lemma zero_iff {β : Type*} [EMetricSpace β] (f : α → β) : LipschitzWith 0 
 
 /-- The identity is 1-Lipschitz. -/
 protected theorem id : LipschitzWith 1 (@id α) :=
-  LipschitzWith.of_edist_le fun _ _ => le_rfl
+  LipschitzWith.of_eDist_le fun _ _ => le_rfl
 
 /-- The inclusion of a subset is 1-Lipschitz. -/
 protected theorem subtypeVal (s : Set α) : LipschitzWith 1 (Subtype.val : s → α) :=
-  LipschitzWith.of_edist_le fun _ _ => le_rfl
+  LipschitzWith.of_eDist_le fun _ _ => le_rfl
 
 @[deprecated (since := "2026-11-10")]
 protected alias subtype_val := LipschitzWith.subtypeVal
@@ -219,7 +219,7 @@ theorem subtype_mk (hf : LipschitzWith K f) {p : β → Prop} (hp : ∀ x, p (f 
 
 protected theorem eval {α : ι → Type u} [∀ i, PseudoEMetricSpace (α i)] [Fintype ι] (i : ι) :
     LipschitzWith 1 (Function.eval i : (∀ i, α i) → α i) :=
-  LipschitzWith.of_edist_le fun f g => by convert eDist_le_pi_eDist f g i
+  LipschitzWith.of_eDist_le fun f g => by convert eDist_le_pi_eDist f g i
 
 /-- The restriction of a `K`-Lipschitz function is `K`-Lipschitz. -/
 protected theorem restrict (hf : LipschitzWith K f) (s : Set α) :
@@ -238,10 +238,10 @@ theorem comp_lipschitzOnWith {Kf Kg : ℝ≥0} {f : β → γ} {g : α → β} {
   lipschitzOnWith_iff_restrict.mpr <| hf.comp hg.to_restrict
 
 protected theorem prod_fst : LipschitzWith 1 (@Prod.fst α β) :=
-  LipschitzWith.of_edist_le fun _ _ => le_max_left _ _
+  LipschitzWith.of_eDist_le fun _ _ => le_max_left _ _
 
 protected theorem prod_snd : LipschitzWith 1 (@Prod.snd α β) :=
-  LipschitzWith.of_edist_le fun _ _ => le_max_right _ _
+  LipschitzWith.of_eDist_le fun _ _ => le_max_right _ _
 
 /-- If `f` and `g` are Lipschitz functions, so is the induced map `f × g` to the product type. -/
 protected theorem prodMk {f : α → β} {Kf : ℝ≥0} (hf : LipschitzWith Kf f) {g : α → γ} {Kg : ℝ≥0}
@@ -322,9 +322,9 @@ theorem eDist_le_mul_of_le (h : LipschitzOnWith K f s) {x y : α} (hx : x ∈ s)
     eDist (f x) (f y) ≤ K * r :=
   (h hx hy).trans <| mul_right_mono hr
 
-theorem eDist_lt_of_edist_lt_div (hf : LipschitzOnWith K f s) {x y : α} (hx : x ∈ s) (hy : y ∈ s)
+theorem eDist_lt_of_eDist_lt_div (hf : LipschitzOnWith K f s) {x y : α} (hx : x ∈ s) (hy : y ∈ s)
     {d : ℝ≥0∞} (hd : eDist x y < d / K) : eDist (f x) (f y) < d :=
-  hf.to_restrict.eDist_lt_of_edist_lt_div <| show eDist (⟨x, hx⟩ : s) ⟨y, hy⟩ < d / K from hd
+  hf.to_restrict.eDist_lt_of_eDist_lt_div <| show eDist (⟨x, hx⟩ : s) ⟨y, hy⟩ < d / K from hd
 
 protected theorem comp {g : β → γ} {t : Set β} {Kg : ℝ≥0} (hg : LipschitzOnWith Kg g t)
     (hf : LipschitzOnWith K f s) (hmaps : MapsTo f s t) : LipschitzOnWith (Kg * K) (g ∘ f) s :=

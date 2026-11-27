@@ -52,7 +52,7 @@ theorem eDist_le_range_sum_eDist (f : ℕ → α) (n : ℕ) :
 
 /-- A version of `eDist_le_Ico_sum_eDist` with each intermediate distance replaced
 with an upper estimate. -/
-theorem eDist_le_Ico_sum_of_edist_le {f : ℕ → α} {m n} (hmn : m ≤ n) {d : ℕ → ℝ≥0∞}
+theorem eDist_le_Ico_sum_of_eDist_le {f : ℕ → α} {m n} (hmn : m ≤ n) {d : ℕ → ℝ≥0∞}
     (hd : ∀ {k}, m ≤ k → k < n → eDist (f k) (f (k + 1)) ≤ d k) :
     eDist (f m) (f n) ≤ ∑ i ∈ Finset.Ico m n, d i :=
   le_trans (eDist_le_Ico_sum_eDist f hmn) <|
@@ -60,10 +60,10 @@ theorem eDist_le_Ico_sum_of_edist_le {f : ℕ → α} {m n} (hmn : m ≤ n) {d :
 
 /-- A version of `eDist_le_range_sum_eDist` with each intermediate distance replaced
 with an upper estimate. -/
-theorem eDist_le_range_sum_of_edist_le {f : ℕ → α} (n : ℕ) {d : ℕ → ℝ≥0∞}
+theorem eDist_le_range_sum_of_eDist_le {f : ℕ → α} (n : ℕ) {d : ℕ → ℝ≥0∞}
     (hd : ∀ {k}, k < n → eDist (f k) (f (k + 1)) ≤ d k) :
     eDist (f 0) (f n) ≤ ∑ i ∈ Finset.range n, d i :=
-  Nat.Ico_zero_eq_range n ▸ eDist_le_Ico_sum_of_edist_le zero_le fun _ => hd
+  Nat.Ico_zero_eq_range n ▸ eDist_le_Ico_sum_of_eDist_le zero_le fun _ => hd
 
 namespace EMetric
 
@@ -174,7 +174,7 @@ theorem cauchySeq_iff' [Nonempty β] [SemilatticeSup β] {u : β → γ} :
 `ℝ≥0` upper bounds. -/
 theorem cauchySeq_iff_NNReal [Nonempty β] [SemilatticeSup β] {u : β → γ} :
     CauchySeq u ↔ ∀ ε : ℝ≥0, 0 < ε → ∃ N, ∀ n, N ≤ n → eDist (u n) (u N) < ε :=
-  uniformity_basis_edist_nnreal.cauchySeq_iff'
+  uniformity_basis_eDist_nnreal.cauchySeq_iff'
 
 theorem totallyBounded_iff {s : Set γ} :
     TotallyBounded s ↔ ∀ ε > 0, ∃ t : Set γ, t.Finite ∧ s ⊆ ⋃ y ∈ t, eball y ε :=
@@ -203,7 +203,7 @@ theorem subset_countable_closure_of_almost_dense_set (s : Set α)
       ∃ t, t ⊆ s ∧ t.Countable ∧ s ⊆ @closure α m.toUniformSpace.toTopologicalSpace t := by
     apply UniformSpace.subset_countable_closure_of_almost_dense_set
     intro U hU
-    obtain ⟨ε, hε, hεU⟩ := uniformity_basis_edist_le.mem_iff.1 hU
+    obtain ⟨ε, hε, hεU⟩ := uniformity_basis_eDist_le.mem_iff.1 hU
     obtain ⟨t, tC, ht⟩ := hs ε hε
     refine ⟨t, tC, ht.trans (iUnion₂_mono fun x hx y hy =>
       SetRel.ball_mono hεU x ?_)⟩
@@ -248,7 +248,7 @@ variable {γ : Type w} [EMetricSpace γ]
 -- see Note [lower instance priority]
 /-- An emetric space is separated -/
 instance (priority := 100) EMetricSpace.instT0Space : T0Space γ where
-  t0 _ _ h := eq_of_edist_eq_zero <| EMetric.inseparable_iff.1 h
+  t0 _ _ h := eq_of_eDist_eq_zero <| EMetric.inseparable_iff.1 h
 
 /-- A map between emetric spaces is a uniform embedding if and only if the edistance between `f x`
 and `f y` is controlled in terms of the distance between `x` and `y` and conversely. -/
@@ -263,7 +263,7 @@ theorem EMetric.isUniformEmbedding_iff' [PseudoEMetricSpace β] {f : γ → β} 
 abbrev EMetricSpace.ofT0PseudoEMetricSpace (α : Type*) [PseudoEMetricSpace α] [T0Space α] :
     EMetricSpace α :=
   { ‹PseudoEMetricSpace α› with
-    eq_of_edist_eq_zero := fun h => (EMetric.inseparable_iff.2 h).eq }
+    eq_of_eDist_eq_zero := fun h => (EMetric.inseparable_iff.2 h).eq }
 
 /-- The product of two emetric spaces, with the max distance, is an extended
 metric spaces. We make sure that the uniform structure thus constructed is the one

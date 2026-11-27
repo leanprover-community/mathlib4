@@ -315,7 +315,7 @@ alias eventually_enorm_mfderivWithin_symm_extChartAt_lt :=
 set_option backward.isDefEq.respectTransparency false in
 /-- Around any point `x`, the Riemannian distance between two points is controlled by the distance
 in the extended chart. In other words, the extended chart is locally Lipschitz. -/
-lemma eventually_riemannianEDist_le_edist_extChartAt (x : M) :
+lemma eventually_riemannianEDist_le_eDist_extChartAt (x : M) :
     ∃ C > (0 : ℝ≥0), ∀ᶠ y in 𝓝 x,
     riemannianEDist I x y ≤ C * eDist (extChartAt I x x) (extChartAt I x y) := by
   /- To construct a path with controlled distance from `x` to `y`, we consider the segment from
@@ -385,7 +385,7 @@ lemma eventually_riemannianEDist_le_edist_extChartAt (x : M) :
 /-- If points are close for the topology, then their Riemannian distance is small. -/
 lemma eventually_riemannianEDist_lt (x : M) {c : ℝ≥0∞} (hc : 0 < c) :
     ∀ᶠ y in 𝓝 x, riemannianEDist I x y < c := by
-  rcases eventually_riemannianEDist_le_edist_extChartAt I x with ⟨C, C_pos, hC⟩
+  rcases eventually_riemannianEDist_le_eDist_extChartAt I x with ⟨C, C_pos, hC⟩
   have : (extChartAt I x) ⁻¹' (Metric.eball (extChartAt I x x) (c / C)) ∈ 𝓝 x := by
     apply (continuousAt_extChartAt x).preimage_mem_nhds
     exact Metric.eball_mem_nhds _ (ENNReal.div_pos hc.ne' (by simp))

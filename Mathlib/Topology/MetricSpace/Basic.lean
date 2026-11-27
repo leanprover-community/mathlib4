@@ -306,7 +306,7 @@ noncomputable abbrev replaceEDist : EMetricSpace X where
   eDist_self := by simp [hd]
   eDist_comm := by simp [hd, eDist_comm]
   eDist_triangle := by simp [hd, eDist_triangle]
-  eq_of_edist_eq_zero := by simp [hd]
+  eq_of_eDist_eq_zero := by simp [hd]
 
 lemma replaceEDist_eq : m.replaceEDist d hd = m := by ext : 2; exact hd
 

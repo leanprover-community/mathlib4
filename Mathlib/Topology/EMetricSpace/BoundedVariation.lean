@@ -80,7 +80,7 @@ theorem nonempty_monotone_mem {s : Set α} (hs : s.Nonempty) :
   obtain ⟨x, hx⟩ := hs
   exact ⟨⟨fun _ => x, fun i j _ => le_rfl, fun _ => hx⟩⟩
 
-theorem eq_of_edist_zero_on {f f' : α → E} {s : Set α} (h : ∀ ⦃x⦄, x ∈ s → eDist (f x) (f' x) = 0) :
+theorem eq_of_eDist_zero_on {f f' : α → E} {s : Set α} (h : ∀ ⦃x⦄, x ∈ s → eDist (f x) (f' x) = 0) :
     eVariationOn f s = eVariationOn f' s := by
   dsimp only [eVariationOn]
   congr 1 with p : 1
@@ -89,7 +89,7 @@ theorem eq_of_edist_zero_on {f f' : α → E} {s : Set α} (h : ∀ ⦃x⦄, x �
 
 theorem eq_of_eqOn {f f' : α → E} {s : Set α} (h : EqOn f f' s) :
     eVariationOn f s = eVariationOn f' s :=
-  eq_of_edist_zero_on fun x xs => by rw [h xs, eDist_self]
+  eq_of_eDist_zero_on fun x xs => by rw [h xs, eDist_self]
 
 theorem sum_le {f : α → E} {s : Set α} {n : ℕ} {u : ℕ → α} (hu : Monotone u) (us : ∀ i, u i ∈ s) :
     (∑ i ∈ Finset.range n, eDist (f (u (i + 1))) (f (u i))) ≤ eVariationOn f s :=

@@ -272,7 +272,7 @@ lemma lipschitzWith_thickenedIndicator {δ : ℝ} (δ_pos : 0 < δ) (E : Set α)
       rw [← ENNReal.sub_mul (by simp [δ_pos]), mul_comm, eDist_comm]
       gcongr
       simp only [tsub_le_iff_right]
-      exact infEDist_le_edist_add_infEDist
+      exact infEDist_le_eDist_add_infEDist
   · simp only [tsub_le_iff_right]
     rw [tsub_eq_zero_of_le (not_le.mp h_le).le, add_zero, mul_comm]
     calc 1
@@ -280,7 +280,7 @@ lemma lipschitzWith_thickenedIndicator {δ : ℝ} (δ_pos : 0 < δ) (E : Set α)
     _ ≤ eDist x y * (↑δ.toNNReal)⁻¹ + infEDist x E * (↑δ.toNNReal)⁻¹ := by
       rw [← add_mul, eDist_comm]
       gcongr
-      exact infEDist_le_edist_add_infEDist
+      exact infEDist_le_eDist_add_infEDist
 
 end thickenedIndicator
 

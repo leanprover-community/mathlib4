@@ -74,7 +74,7 @@ protected abbrev _root_.PseudoEMetricSpace.hausdorff : PseudoEMetricSpace (Set �
         Filter.mem_iInf_of_mem ε <| Filter.mem_iInf_of_mem hε fun _ =>
         mem_hausdorffEntourage_of_hausdorffEDist_lt)
     obtain ⟨δ, hδ, hδε⟩ := exists_between hε
-    filter_upwards [Filter.mem_lift' (uniformity_basis_edist_le.mem_of_mem hδ)]
+    filter_upwards [Filter.mem_lift' (uniformity_basis_eDist_le.mem_of_mem hδ)]
       with _ h using hδε.trans_le' <| hausdorffEDist_le_of_mem_hausdorffEntourage h
 
 end Metric
@@ -89,7 +89,7 @@ namespace Closeds
 on the type of closed subsets -/
 instance instEMetricSpace : EMetricSpace (Closeds α) where
   __ := PseudoEMetricSpace.hausdorff.induced SetLike.coe
-  eq_of_edist_eq_zero {s t} h := Closeds.ext <| (s.isClosed.hausdorffEDist_zero_iff t.isClosed).1 h
+  eq_of_eDist_eq_zero {s t} h := Closeds.ext <| (s.isClosed.hausdorffEDist_zero_iff t.isClosed).1 h
 
 /-- The edistance to a closed set depends continuously on the point and the set -/
 theorem continuous_infEDist :
@@ -129,7 +129,7 @@ instance instCompleteSpace [CompleteSpace α] : CompleteSpace (Closeds α) := by
   let t0 := ⋂ n, closure (⋃ m ≥ n, s m : Set α)
   let t : Closeds α := ⟨t0, isClosed_iInter fun _ => isClosed_closure⟩
   use t
-  -- The inequality is written this way to agree with `eDist_le_of_edist_le_geometric_of_tendsto₀`
+  -- The inequality is written this way to agree with `eDist_le_of_eDist_le_geometric_of_tendsto₀`
   have I1 : ∀ n, ∀ x ∈ s n, ∃ y ∈ t0, eDist x y ≤ 2 * B n := by
     /- This is the main difficulty of the proof. Starting from `x ∈ s n`, we want
            to find a point in `t0` which is close to `x`. Define inductively a sequence of
@@ -144,7 +144,7 @@ instance instCompleteSpace [CompleteSpace α] : CompleteSpace (Closeds α) := by
       have : ∀ (l) (z : s (n + l)), ∃ z' : s (n + l + 1), eDist (z : α) z' ≤ B n / 2 ^ l := by
         intro l z
         obtain ⟨z', z'_mem, hz'⟩ : ∃ z' ∈ s (n + l + 1), eDist (z : α) z' < B n / 2 ^ l := by
-          refine exists_edist_lt_of_hausdorffEDist_lt (s := s (n + l)) z.property ?_
+          refine exists_eDist_lt_of_hausdorffEDist_lt (s := s (n + l)) z.property ?_
           simp only [ENNReal.inv_pow, div_eq_mul_inv]
           rw [← pow_add]
           apply hs <;> simp
@@ -153,7 +153,7 @@ instance instCompleteSpace [CompleteSpace α] : CompleteSpace (Closeds α) := by
       simp only [Nat.add_zero, Nat.rec_zero, true_and]
       exact fun k => (this k _).choose_spec
     -- it follows from the previous bound that `z` is a Cauchy sequence
-    have : CauchySeq fun k => (z k : α) := cauchySeq_of_edist_le_geometric_two (B n) (B_ne_top n) hz
+    have : CauchySeq fun k => (z k : α) := cauchySeq_of_eDist_le_geometric_two (B n) (B_ne_top n) hz
     -- therefore, it converges
     rcases cauchySeq_tendsto_of_complete this with ⟨y, y_lim⟩
     use y
@@ -169,7 +169,7 @@ instance instCompleteSpace [CompleteSpace α] : CompleteSpace (Closeds α) := by
     -- Then, we check that `y` is close to `x = z n`. This follows from the fact that `y`
     -- is the limit of `z k`, and the distance between `z n` and `z k` has already been estimated.
     rw [← hz₀]
-    exact eDist_le_of_edist_le_geometric_two_of_tendsto₀ (B n) hz y_lim
+    exact eDist_le_of_eDist_le_geometric_two_of_tendsto₀ (B n) hz y_lim
   have I2 : ∀ n, ∀ x ∈ t0, ∃ y ∈ s n, eDist x y ≤ 2 * B n := by
     /- For the (much easier) reverse inequality, we start from a point `x ∈ t0` and we want
             to find a point `y ∈ s n` which is close to `x`.
@@ -184,7 +184,7 @@ instance instCompleteSpace [CompleteSpace α] : CompleteSpace (Closeds α) := by
     obtain ⟨m : ℕ, m_ge_n : m ≥ n, hm : z ∈ (s m : Set α)⟩ := hz
     have : hausdorffEDist (s m : Set α) (s n) < B n := hs n m n m_ge_n (le_refl n)
     obtain ⟨y : α, hy : y ∈ (s n : Set α), Dzy : eDist z y < B n⟩ :=
-      exists_edist_lt_of_hausdorffEDist_lt hm this
+      exists_eDist_lt_of_hausdorffEDist_lt hm this
     exact
       ⟨y, hy,
         calc
@@ -209,10 +209,10 @@ theorem isometry_singleton : Isometry ({·} : α → Closeds α) :=
   fun _ _ => hausdorffEDist_singleton
 
 theorem lipschitz_sup : LipschitzWith 1 fun p : Closeds α × Closeds α => p.1 ⊔ p.2 :=
-  .of_edist_le fun _ _ => hausdorffEDist_union_le
+  .of_eDist_le fun _ _ => hausdorffEDist_union_le
 
 theorem lipschitz_prod : LipschitzWith 1 fun p : Closeds α × Closeds β => p.1 ×ˢ p.2 :=
-  .of_edist_le fun _ _ => hausdorffEDist_prod_le
+  .of_eDist_le fun _ _ => hausdorffEDist_prod_le
 
 end Closeds
 
@@ -225,7 +225,7 @@ instance instEMetricSpace : EMetricSpace (Compacts α) where
   `UniformSpace.hausdorff`, we replace the uniformity by `Compacts.uniformSpace`, which has
   the right topology. -/
   __ := (PseudoEMetricSpace.hausdorff.induced SetLike.coe).replaceUniformity <| by rfl
-  eq_of_edist_eq_zero {s t} h := Compacts.ext <| by
+  eq_of_eDist_eq_zero {s t} h := Compacts.ext <| by
     have : closure (s : Set α) = closure t := hausdorffEDist_zero_iff_closure_eq_closure.1 h
     rwa [s.isCompact.isClosed.closure_eq, t.isCompact.isClosed.closure_eq] at this
 
@@ -240,11 +240,11 @@ theorem isometry_singleton : Isometry ({·} : α → Compacts α) :=
 
 theorem lipschitz_sup :
     LipschitzWith 1 fun p : Compacts α × Compacts α => p.1 ⊔ p.2 :=
-  .of_edist_le fun _ _ => hausdorffEDist_union_le
+  .of_eDist_le fun _ _ => hausdorffEDist_union_le
 
 theorem lipschitz_prod :
     LipschitzWith 1 fun p : Compacts α × Compacts β => p.1 ×ˢ p.2 :=
-  .of_edist_le fun _ _ => hausdorffEDist_prod_le
+  .of_eDist_le fun _ _ => hausdorffEDist_prod_le
 
 end Compacts
 
@@ -257,7 +257,7 @@ instance instEMetricSpace : EMetricSpace (NonemptyCompacts α) where
   `UniformSpace.hausdorff`, we replace the uniformity by `NonemptyCompacts.uniformSpace`, which has
   the right topology. -/
   __ := (PseudoEMetricSpace.hausdorff.induced SetLike.coe).replaceUniformity <| by rfl
-  eq_of_edist_eq_zero {s t} h := NonemptyCompacts.ext <| by
+  eq_of_eDist_eq_zero {s t} h := NonemptyCompacts.ext <| by
     have : closure (s : Set α) = closure t := hausdorffEDist_zero_iff_closure_eq_closure.1 h
     rwa [s.isCompact.isClosed.closure_eq, t.isCompact.isClosed.closure_eq] at this
 
@@ -273,11 +273,11 @@ theorem isometry_singleton : Isometry ({·} : α → NonemptyCompacts α) :=
 
 theorem lipschitz_sup :
     LipschitzWith 1 fun p : NonemptyCompacts α × NonemptyCompacts α => p.1 ⊔ p.2 :=
-  .of_edist_le fun _ _ => hausdorffEDist_union_le
+  .of_eDist_le fun _ _ => hausdorffEDist_union_le
 
 theorem lipschitz_prod :
     LipschitzWith 1 fun p : NonemptyCompacts α × NonemptyCompacts β => p.1 ×ˢ p.2 :=
-  .of_edist_le fun _ _ => hausdorffEDist_prod_le
+  .of_eDist_le fun _ _ => hausdorffEDist_prod_le
 
 end NonemptyCompacts
 

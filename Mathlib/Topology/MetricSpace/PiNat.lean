@@ -813,7 +813,7 @@ attribute [scoped instance] PiCountable.eDist
 lemma eDist_eq_tsum (x y : ∀ i, F i) :
     eDist x y = ∑' i, min (2⁻¹ ^ encode i) (eDist (x i) (y i)) := rfl
 
-lemma min_edist_le_edist_pi (x y : ∀ i, F i) (i : ι) :
+lemma min_eDist_le_eDist_pi (x y : ∀ i, F i) (i : ι) :
     min (2⁻¹ ^ encode i) (eDist (x i) (y i)) ≤ eDist x y := by
   grw [eDist_eq_tsum, ← le_tsum _ i]
 
@@ -823,9 +823,9 @@ lemma eDist_le_two : eDist x y ≤ 2 :=
 
 lemma eDist_lt_top : eDist x y < ∞ := eDist_le_two.trans_lt (by simp)
 
-lemma eDist_le_edist_pi_of_edist_lt (h : eDist x y < 2⁻¹ ^ encode i) :
+lemma eDist_le_eDist_pi_of_eDist_lt (h : eDist x y < 2⁻¹ ^ encode i) :
     eDist (x i) (y i) ≤ eDist x y := by
-  simpa only [not_le.2 h, false_or] using min_le_iff.1 (min_edist_le_edist_pi x y i)
+  simpa only [not_le.2 h, false_or] using min_le_iff.1 (min_eDist_le_eDist_pi x y i)
 
 end EDist
 
@@ -889,7 +889,7 @@ protected def pseudoEMetricSpace : PseudoEMetricSpace (∀ i, F i) where
       refine mem_iInf_of_mem (min (2⁻¹ ^ encode i) ε) <| mem_iInf_of_mem (by positivity) ?_
       simp only [and_imp, Prod.forall, ofPred_subset_ofPred, lt_min_iff, mem_principal]
       intro x y hn
-      exact (eDist_le_edist_pi_of_edist_lt hn).trans_lt
+      exact (eDist_le_eDist_pi_of_eDist_lt hn).trans_lt
 
 end PseudoEMetricSpace
 
@@ -905,7 +905,7 @@ It is highly non-canonical, though, and therefore not registered as a global ins
 The distance we use here is `eDist x y = ∑' i, min (1/2)^(encode i) (eDist (x i) (y i))`. -/
 @[instance_reducible]
 protected def emetricSpace : EMetricSpace (∀ i, F i) where
-  eq_of_edist_eq_zero := by simp [eDist_eq_tsum, funext_iff]
+  eq_of_eDist_eq_zero := by simp [eDist_eq_tsum, funext_iff]
 
 end EMetricSpace
 

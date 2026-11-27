@@ -80,7 +80,7 @@ theorem eDist_eq (hf : Isometry f) (x y : α) : eDist (f x) (f y) = eDist x y :=
   hf x y
 
 theorem lipschitzWith (h : Isometry f) : LipschitzWith 1 f :=
-  LipschitzWith.of_edist_le fun x y => (h x y).le
+  LipschitzWith.of_eDist_le fun x y => (h x y).le
 
 @[deprecated (since := "2026-08-16")] alias lipschitz := lipschitzWith
 

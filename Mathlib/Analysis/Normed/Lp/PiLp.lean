@@ -422,7 +422,7 @@ attribute [local instance] PiLp.pseudoEmetricAux
 set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary lemma used twice in the proof of `PiLp.pseudoMetricAux` below. Not intended for
 use outside this file. -/
-theorem iSup_edist_ne_top_aux {ι : Type*} [Finite ι] {α : ι → Type*}
+theorem iSup_eDist_ne_top_aux {ι : Type*} [Finite ι] {α : ι → Type*}
     [∀ i, PseudoMetricSpace (α i)] (f g : PiLp ∞ α) : (⨆ i, eDist (f i) (g i)) ≠ ⊤ := by
   cases nonempty_fintype ι
   obtain ⟨M, hM⟩ := Finite.exists_le fun i => (⟨dist (f i) (g i), dist_nonneg⟩ : ℝ≥0)
@@ -466,7 +466,7 @@ abbrev pseudoMetricAux : PseudoMetricSpace (PiLp p α) :=
 attribute [local instance] PiLp.pseudoMetricAux
 
 variable {p β} in
-private theorem eDist_apply_le_edist_aux (x y : PiLp p β) (i : ι) :
+private theorem eDist_apply_le_eDist_aux (x y : PiLp p β) (i : ι) :
     eDist (x i) (y i) ≤ eDist x y := by
   rcases p.dichotomy with (rfl | h)
   · simpa only [eDist_eq_iSup] using le_iSup (fun i => eDist (x i) (y i)) i
@@ -479,9 +479,9 @@ private theorem eDist_apply_le_edist_aux (x y : PiLp p β) (i : ι) :
         grw [← Finset.single_le_sum (fun i _ => (bot_le : (0 : ℝ≥0∞) ≤ _)) (Finset.mem_univ i)]
 
 private lemma lipschitzWith_ofLp_aux : LipschitzWith 1 (@ofLp p (∀ i, β i)) :=
-  .of_edist_le fun x y => by
+  .of_eDist_le fun x y => by
     simp_rw [eDist_pi_def, Finset.sup_le_iff, Finset.mem_univ, forall_true_left]
-    exact eDist_apply_le_edist_aux _ _
+    exact eDist_apply_le_eDist_aux _ _
 
 private lemma antilipschitzWith_ofLp_aux :
     AntilipschitzWith ((Fintype.card ι : ℝ≥0) ^ (1 / p).toReal) (@ofLp p (∀ i, β i)) := by
@@ -647,7 +647,7 @@ variable {β p}
 
 theorem eDist_apply_le [∀ i, PseudoEMetricSpace (β i)] (x y : PiLp p β) (i : ι) :
     eDist (x i) (y i) ≤ eDist x y :=
-  eDist_apply_le_edist_aux x y i
+  eDist_apply_le_eDist_aux x y i
 
 theorem nnDist_apply_le [∀ i, PseudoMetricSpace (β i)] (x y : PiLp p β) (i : ι) :
     nnDist (x i) (y i) ≤ nnDist x y := by

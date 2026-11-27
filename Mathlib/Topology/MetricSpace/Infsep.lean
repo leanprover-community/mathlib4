@@ -90,17 +90,17 @@ theorem le_einfsep_image_iff {d} {f : β → α} {s : Set β} : d ≤ einfsep (f
     ↔ ∀ x ∈ s, ∀ y ∈ s, f x ≠ f y → d ≤ eDist (f x) (f y) := by
   simp_rw [le_einfsep_iff, forall_mem_image]
 
-theorem le_edist_of_le_einfsep {d x} (hx : x ∈ s) {y} (hy : y ∈ s) (hxy : x ≠ y)
+theorem le_eDist_of_le_einfsep {d x} (hx : x ∈ s) {y} (hy : y ∈ s) (hxy : x ≠ y)
     (hd : d ≤ s.einfsep) : d ≤ eDist x y :=
   le_einfsep_iff.1 hd x hx y hy hxy
 
-theorem einfsep_le_edist_of_mem {x} (hx : x ∈ s) {y} (hy : y ∈ s) (hxy : x ≠ y) :
+theorem einfsep_le_eDist_of_mem {x} (hx : x ∈ s) {y} (hy : y ∈ s) (hxy : x ≠ y) :
     s.einfsep ≤ eDist x y :=
-  le_edist_of_le_einfsep hx hy hxy le_rfl
+  le_eDist_of_le_einfsep hx hy hxy le_rfl
 
-theorem einfsep_le_of_mem_of_edist_le {d x} (hx : x ∈ s) {y} (hy : y ∈ s) (hxy : x ≠ y)
+theorem einfsep_le_of_mem_of_eDist_le {d x} (hx : x ∈ s) {y} (hy : y ∈ s) (hxy : x ≠ y)
     (hxy' : eDist x y ≤ d) : s.einfsep ≤ d :=
-  le_trans (einfsep_le_edist_of_mem hx hy hxy) hxy'
+  le_trans (einfsep_le_eDist_of_mem hx hy hxy) hxy'
 
 theorem le_einfsep {d} (h : ∀ x ∈ s, ∀ y ∈ s, x ≠ y → d ≤ eDist x y) : d ≤ s.einfsep :=
   le_einfsep_iff.2 h
@@ -117,11 +117,11 @@ theorem einfsep_iUnion_mem_option {ι : Type*} (o : Option ι) (s : ι → Set �
     (⋃ i ∈ o, s i).einfsep = ⨅ i ∈ o, (s i).einfsep := by cases o <;> simp
 
 theorem einfsep_anti (hst : s ⊆ t) : t.einfsep ≤ s.einfsep :=
-  le_einfsep fun _x hx _y hy => einfsep_le_edist_of_mem (hst hx) (hst hy)
+  le_einfsep fun _x hx _y hy => einfsep_le_eDist_of_mem (hst hx) (hst hy)
 
 theorem einfsep_insert_le : (insert x s).einfsep ≤ ⨅ (y ∈ s) (_ : x ≠ y), eDist x y := by
   simp_rw [le_iInf_iff]
-  exact fun _ hy hxy => einfsep_le_edist_of_mem (mem_insert _ _) (mem_insert_of_mem _ hy) hxy
+  exact fun _ hy hxy => einfsep_le_eDist_of_mem (mem_insert _ _) (mem_insert_of_mem _ hy) hxy
 
 theorem le_einfsep_pair : eDist x y ⊓ eDist y x ≤ ({x, y} : Set α).einfsep := by
   simp_rw [le_einfsep_iff, inf_le_iff, mem_insert_iff, mem_singleton_iff]
@@ -129,7 +129,7 @@ theorem le_einfsep_pair : eDist x y ⊓ eDist y x ≤ ({x, y} : Set α).einfsep 
     contradiction
 
 theorem einfsep_pair_le_left (hxy : x ≠ y) : ({x, y} : Set α).einfsep ≤ eDist x y :=
-  einfsep_le_edist_of_mem (mem_insert _ _) (mem_insert_of_mem _ (mem_singleton _)) hxy
+  einfsep_le_eDist_of_mem (mem_insert _ _) (mem_insert_of_mem _ (mem_singleton _)) hxy
 
 theorem einfsep_pair_le_right (hxy : x ≠ y) : ({x, y} : Set α).einfsep ≤ eDist y x := by
   rw [pair_comm]; exact einfsep_pair_le_left hxy.symm
@@ -189,7 +189,7 @@ theorem einfsep_insert : einfsep (insert x s) =
   · exact Or.inl (iInf_le_of_le _ (iInf₂_le hz hyz))
   · rw [eDist_comm]
     exact Or.inl (iInf_le_of_le _ (iInf₂_le hy hyz.symm))
-  · exact Or.inr (einfsep_le_edist_of_mem hy hz hyz)
+  · exact Or.inr (einfsep_le_eDist_of_mem hy hz hyz)
 
 theorem einfsep_triple (hxy : x ≠ y) (hyz : y ≠ z) (hxz : x ≠ z) :
     einfsep ({x, y, z} : Set α) = eDist x y ⊓ eDist x z ⊓ eDist y z := by
@@ -340,7 +340,7 @@ theorem Nontrivial.le_infsep {d} (hs : s.Nontrivial)
     (h : ∀ x ∈ s, ∀ y ∈ s, x ≠ y → d ≤ dist x y) : d ≤ s.infsep :=
   hs.le_infsep_iff.2 h
 
-theorem le_edist_of_le_infsep {d x} (hx : x ∈ s) {y} (hy : y ∈ s) (hxy : x ≠ y)
+theorem le_eDist_of_le_infsep {d x} (hx : x ∈ s) {y} (hy : y ∈ s) (hxy : x ≠ y)
     (hd : d ≤ s.infsep) : d ≤ dist x y := by
   by_cases hs : s.Nontrivial
   · exact hs.le_infsep_iff.1 hd x hx y hy hxy
@@ -349,9 +349,9 @@ theorem le_edist_of_le_infsep {d x} (hx : x ∈ s) {y} (hy : y ∈ s) (hxy : x �
     exact le_trans hd dist_nonneg
 
 theorem infsep_le_dist_of_mem (hx : x ∈ s) (hy : y ∈ s) (hxy : x ≠ y) : s.infsep ≤ dist x y :=
-  le_edist_of_le_infsep hx hy hxy le_rfl
+  le_eDist_of_le_infsep hx hy hxy le_rfl
 
-theorem infsep_le_of_mem_of_edist_le {d x} (hx : x ∈ s) {y} (hy : y ∈ s) (hxy : x ≠ y)
+theorem infsep_le_of_mem_of_eDist_le {d x} (hx : x ∈ s) {y} (hy : y ∈ s) (hxy : x ≠ y)
     (hxy' : dist x y ≤ d) : s.infsep ≤ d :=
   le_trans (infsep_le_dist_of_mem hx hy hxy) hxy'
 

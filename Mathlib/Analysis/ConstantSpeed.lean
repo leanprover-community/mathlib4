@@ -259,7 +259,7 @@ theorem has_unit_speed_naturalParameterization (f : α → E) {s : Set α}
     rw [←
       eVariationOn.comp_inter_Icc_eq_of_monotoneOn (naturalParameterization f s a) _
         (variationOnFromTo.monotoneOn hf as) bs cs]
-    rw [eVariationOn.eq_of_edist_zero_on (f' := f)]
+    rw [eVariationOn.eq_of_eDist_zero_on (f' := f)]
     · rw [variationOnFromTo.eq_of_le _ _ bc, ENNReal.ofReal_toReal (hf b c bs cs)]
     · rintro x ⟨xs, _, _⟩
       exact eDist_naturalParameterization_eq_zero hf as xs

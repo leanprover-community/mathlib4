@@ -114,10 +114,10 @@ theorem measurableSet_eball : MeasurableSet (Metric.eball x ε) :=
   Metric.isOpen_eball.measurableSet
 
 @[fun_prop]
-theorem measurable_edist_right : Measurable (eDist x) := by fun_prop
+theorem measurable_eDist_right : Measurable (eDist x) := by fun_prop
 
 @[fun_prop]
-theorem measurable_edist_left : Measurable fun y ↦ eDist y x := by fun_prop
+theorem measurable_eDist_left : Measurable fun y ↦ eDist y x := by fun_prop
 
 theorem measurable_infEDist {s : Set α} : Measurable fun x => infEDist x s :=
   continuous_infEDist.measurable

@@ -55,7 +55,7 @@ theorem lintegral_norm_eq_lintegral_eDist (f : α → β) :
     ∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ = ∫⁻ a, eDist (f a) 0 ∂μ := by
   simp only [ofReal_norm, eDist_zero_right]
 
-theorem lintegral_edist_triangle {f g h : α → β} (hf : AEStronglyMeasurable f μ)
+theorem lintegral_eDist_triangle {f g h : α → β} (hf : AEStronglyMeasurable f μ)
     (hh : AEStronglyMeasurable h μ) :
     (∫⁻ a, eDist (f a) (g a) ∂μ) ≤ (∫⁻ a, eDist (f a) (h a) ∂μ) + ∫⁻ a, eDist (g a) (h a) ∂μ := by
   rw [← lintegral_add_left' (hf.eDist hh)]

@@ -101,7 +101,7 @@ theorem tendsto_approxOn_Lp_eLpNorm' [OpensMeasurableSpace E] {p : ℝ} {f : β 
   have hF_meas n : Measurable fun x => ‖approxOn f hf s y₀ h₀ n x - f x‖ₑ ^ p := by
     simpa only [← eDist_eq_eNorm_sub] using
       (approxOn f hf s y₀ h₀ n).measurable_bind (fun y x => eDist y (f x) ^ p) fun y =>
-        (measurable_edist_right.comp hf).pow_const p
+        (measurable_eDist_right.comp hf).pow_const p
   -- (2) The functions "`p`-th power of distance between `f` and the approximation" are uniformly
   -- bounded, at any given point, by `fun x => ‖f x - y₀‖ ^ p.toReal`
   have h_bound n :

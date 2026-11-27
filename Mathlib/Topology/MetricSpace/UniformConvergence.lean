@@ -75,7 +75,7 @@ noncomputable instance : PseudoEMetricSpace (α →ᵤ β) where
     suffices 𝓤 (α →ᵤ β) = comap (fun x ↦ eDist x.1 x.2) (𝓝 0) by
       simp [this, ENNReal.nhds_zero_basis.comap _ |>.eq_biInf, Set.Iio]
     rw [ENNReal.nhds_zero_basis_Iic.comap _ |>.eq_biInf]
-    rw [UniformFun.hasBasis_uniformity_of_basis α β uniformity_basis_edist_le |>.eq_biInf]
+    rw [UniformFun.hasBasis_uniformity_of_basis α β uniformity_basis_eDist_le |>.eq_biInf]
     simp [UniformFun.gen, eDist_le, Set.Iic]
 
 noncomputable instance {β : Type*} [EMetricSpace β] : EMetricSpace (α →ᵤ β) :=

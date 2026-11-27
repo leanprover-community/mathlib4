@@ -62,7 +62,7 @@ noncomputable def nearestPtInd (e : ℕ → α) : ℕ → α →ₛ ℕ
     piecewise (⋂ k ≤ N, { x | eDist (e (N + 1)) x < eDist (e k) x })
       (MeasurableSet.iInter fun _ =>
         MeasurableSet.iInter fun _ =>
-          measurableSet_lt measurable_edist_right measurable_edist_right)
+          measurableSet_lt measurable_eDist_right measurable_eDist_right)
       (const α <| N + 1) (nearestPtInd e N)
 
 /-- `nearestPt e N x` is the nearest point to `x` among the points `e 0`, ..., `e N`. If more than

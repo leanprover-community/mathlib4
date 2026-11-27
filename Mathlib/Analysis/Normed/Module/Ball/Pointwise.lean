@@ -242,7 +242,7 @@ theorem infEDist_thickening (hδ : 0 < δ) (s : Set E) (x : E) :
   | coe r =>
     have hr : 0 < ↑r - δ := by
       refine sub_pos_of_lt ?_
-      have := hs.trans_lt ((infEDist_le_edist_of_mem hz).trans_lt h)
+      have := hs.trans_lt ((infEDist_le_eDist_of_mem hz).trans_lt h)
       rw [ofReal_eq_coe_nnreal hδ.le] at this
       exact mod_cast this
     rw [eDist_lt_coe, ← dist_lt_coe, ← add_sub_cancel δ ↑r] at h

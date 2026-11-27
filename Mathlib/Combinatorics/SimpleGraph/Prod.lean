@@ -276,8 +276,8 @@ lemma eDist_boxProd (x y : α × β) :
   · rw [top_case] at h
     aesop
   · have rGH : G.eDist x.1 y.1 ≠ ⊤ ∧ H.eDist x.2 y.2 ≠ ⊤ := by rw [top_case] at h; aesop
-    have ⟨wG, hwG⟩ := exists_walk_of_edist_ne_top rGH.1
-    have ⟨wH, hwH⟩ := exists_walk_of_edist_ne_top rGH.2
+    have ⟨wG, hwG⟩ := exists_walk_of_eDist_ne_top rGH.1
+    have ⟨wH, hwH⟩ := exists_walk_of_eDist_ne_top rGH.2
     let w_app := (wG.boxProdLeft _ _).append (wH.boxProdRight _ _)
     have w_len : w_app.length = wG.length + wH.length := by
       unfold w_app Walk.boxProdLeft Walk.boxProdRight; simp
@@ -285,7 +285,7 @@ lemma eDist_boxProd (x y : α × β) :
     · calc (G □ H).eDist x y ≤ w_app.length := by exact eDist_le _
           _ = wG.length + wH.length := mod_cast w_len
           _ = G.eDist x.1 y.1 + H.eDist x.2 y.2 := by simp only [hwG, hwH]
-    · have ⟨w, hw⟩ := exists_walk_of_edist_ne_top h
+    · have ⟨w, hw⟩ := exists_walk_of_eDist_ne_top h
       rw [← hw, Walk.length_boxProd]
       exact add_le_add (eDist_le w.ofBoxProdLeft) (eDist_le w.ofBoxProdRight)
 

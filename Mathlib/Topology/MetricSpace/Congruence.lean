@@ -46,13 +46,13 @@ def Congruent (v₁ : ι → P₁) (v₂ : ι → P₂) : Prop :=
 scoped[Congruent] infixl:25 " ≅ " => Congruent
 
 /-- Congruence holds if and only if all extended distances are the same. -/
-lemma congruent_iff_edist_eq :
+lemma congruent_iff_eDist_eq :
     Congruent v₁ v₂ ↔ ∀ i₁ i₂, eDist (v₁ i₁) (v₁ i₂) = eDist (v₂ i₁) (v₂ i₂) :=
   Iff.rfl
 
 /-- Congruence holds if and only if all extended distances between points with different
 indices are the same. -/
-lemma congruent_iff_pairwise_edist_eq :
+lemma congruent_iff_pairwise_eDist_eq :
     Congruent v₁ v₂ ↔ Pairwise fun i₁ i₂ ↦ eDist (v₁ i₁) (v₁ i₂) = eDist (v₂ i₁) (v₂ i₂) := by
   refine ⟨fun h ↦ fun _ _ _ ↦ h _ _, fun h ↦ fun i₁ i₂ ↦ ?_⟩
   by_cases hi : i₁ = i₂
@@ -61,20 +61,20 @@ lemma congruent_iff_pairwise_edist_eq :
 
 namespace Congruent
 
-/-- A congruence preserves extended distance. Forward direction of `congruent_iff_edist_eq`. -/
-alias ⟨eDist_eq, _⟩ := congruent_iff_edist_eq
+/-- A congruence preserves extended distance. Forward direction of `congruent_iff_eDist_eq`. -/
+alias ⟨eDist_eq, _⟩ := congruent_iff_eDist_eq
 
 /-- Congruence follows from preserved extended distance. Backward direction of
-`congruent_iff_edist_eq`. -/
-alias ⟨_, of_edist_eq⟩ := congruent_iff_edist_eq
+`congruent_iff_eDist_eq`. -/
+alias ⟨_, of_eDist_eq⟩ := congruent_iff_eDist_eq
 
 /-- A congruence pairwise preserves extended distance. Forward direction of
-`congruent_iff_pairwise_edist_eq`. -/
-alias ⟨pairwise_edist_eq, _⟩ := congruent_iff_pairwise_edist_eq
+`congruent_iff_pairwise_eDist_eq`. -/
+alias ⟨pairwise_eDist_eq, _⟩ := congruent_iff_pairwise_eDist_eq
 
 /-- Congruence follows from pairwise preserved extended distance. Backward direction of
-`congruent_iff_pairwise_edist_eq`. -/
-alias ⟨_, of_pairwise_edist_eq⟩ := congruent_iff_pairwise_edist_eq
+`congruent_iff_pairwise_eDist_eq`. -/
+alias ⟨_, of_pairwise_eDist_eq⟩ := congruent_iff_pairwise_eDist_eq
 
 @[refl] protected lemma refl (v₁ : ι → P₁) : v₁ ≅ v₁ := fun _ _ ↦ rfl
 
@@ -142,7 +142,7 @@ lemma congruent_iff_nnDist_eq :
 indices are the same. -/
 lemma congruent_iff_pairwise_nnDist_eq :
     Congruent v₁ v₂ ↔ Pairwise fun i₁ i₂ ↦ nnDist (v₁ i₁) (v₁ i₂) = nnDist (v₂ i₁) (v₂ i₂) := by
-  simp_rw [congruent_iff_pairwise_edist_eq, eDist_nnDist]
+  simp_rw [congruent_iff_pairwise_eDist_eq, eDist_nnDist]
   exact mod_cast Iff.rfl
 
 @[deprecated (since := "2026-11-07")]

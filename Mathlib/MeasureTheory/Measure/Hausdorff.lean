@@ -165,7 +165,7 @@ theorem borel_le_caratheodory (hm : IsMetric μ) : borel X ≤ μ.caratheodory :
   set S : ℕ → Set X := fun n => {x ∈ s | (↑n)⁻¹ ≤ infEDist x t}
   have Ssep (n) : Metric.AreSeparated (S n) t :=
     ⟨n⁻¹, ENNReal.inv_ne_zero.2 (ENNReal.natCast_ne_top _),
-      fun x hx y hy ↦ hx.2.trans <| infEDist_le_edist_of_mem hy⟩
+      fun x hx y hy ↦ hx.2.trans <| infEDist_le_eDist_of_mem hy⟩
   have Ssep' : ∀ n, Metric.AreSeparated (S n) (s ∩ t) := fun n =>
     (Ssep n).mono Subset.rfl inter_subset_right
   have S_sub (n) : S n ⊆ s \ t := fun x hx ↦ ⟨hx.1, (Ssep n).subset_compl_right hx⟩

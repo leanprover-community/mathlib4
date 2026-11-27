@@ -23,7 +23,7 @@ uniform continuity.
 
 The class `EMetricSpace` therefore extends `UniformSpace` (and `TopologicalSpace`).
 
-Since a lot of elementary properties don't require `eq_of_edist_eq_zero` we start setting up the
+Since a lot of elementary properties don't require `eq_of_eDist_eq_zero` we start setting up the
 theory of `PseudoEMetricSpace`, where we don't require `eDist x y = 0 → x = y` and we specialize
 to `EMetricSpace` at the end.
 -/
@@ -294,7 +294,7 @@ variable [PseudoEMetricSpace α]
 accumulating to zero, then `f i`-neighborhoods of the diagonal form a basis of `𝓤 α`.
 
 For specific bases see `uniformity_basis_eDist`, `uniformity_basis_eDist'`,
-`uniformity_basis_edist_nnreal`, and `uniformity_basis_edist_inv_nat`. -/
+`uniformity_basis_eDist_nnreal`, and `uniformity_basis_eDist_inv_nat`. -/
 protected theorem EMetric.mk_uniformity_basis {β : Type*} {p : β → Prop}
     {f : β → ℝ≥0∞} (hf₀ : ∀ x, p x → 0 < f x) (hf : ∀ ε, 0 < ε → ∃ x, p x ∧ f x ≤ ε) :
     (𝓤 α).HasBasis p fun x => { p : α × α | eDist p.1 p.2 < f x } := by
@@ -308,7 +308,7 @@ protected theorem EMetric.mk_uniformity_basis {β : Type*} {p : β → Prop}
 /-- Given `f : β → ℝ≥0∞`, if `f` sends `{i | p i}` to a set of positive numbers
 accumulating to zero, then closed `f i`-neighborhoods of the diagonal form a basis of `𝓤 α`.
 
-For specific bases see `uniformity_basis_edist_le` and `uniformity_basis_edist_le'`. -/
+For specific bases see `uniformity_basis_eDist_le` and `uniformity_basis_eDist_le'`. -/
 protected theorem EMetric.mk_uniformity_basis_le {β : Type*} {p : β → Prop} {f : β → ℝ≥0∞}
     (hf₀ : ∀ x, p x → 0 < f x) (hf : ∀ ε, 0 < ε → ∃ x, p x ∧ f x ≤ ε) :
     (𝓤 α).HasBasis p fun x => { p : α × α | eDist p.1 p.2 ≤ f x } := by
@@ -320,7 +320,7 @@ protected theorem EMetric.mk_uniformity_basis_le {β : Type*} {p : β → Prop} 
     exact ⟨i, hi, fun x hx => hε <| lt_of_le_of_lt (le_trans hx.out H) hε'.2⟩
   · exact fun ⟨i, hi, H⟩ => ⟨f i, hf₀ i hi, fun x hx => H (le_of_lt hx.out)⟩
 
-theorem uniformity_basis_edist_le :
+theorem uniformity_basis_eDist_le :
     (𝓤 α).HasBasis (fun ε : ℝ≥0∞ => 0 < ε) fun ε => { p : α × α | eDist p.1 p.2 ≤ ε } :=
   EMetric.mk_uniformity_basis_le (fun _ => id) fun ε ε₀ => ⟨ε, ε₀, le_refl ε⟩
 
@@ -330,31 +330,31 @@ theorem uniformity_basis_eDist' (ε' : ℝ≥0∞) (hε' : 0 < ε') :
     let ⟨δ, hδ⟩ := exists_between hε'
     ⟨min ε δ, ⟨lt_min ε₀ hδ.1, lt_of_le_of_lt (min_le_right _ _) hδ.2⟩, min_le_left _ _⟩
 
-theorem uniformity_basis_edist_le' (ε' : ℝ≥0∞) (hε' : 0 < ε') :
+theorem uniformity_basis_eDist_le' (ε' : ℝ≥0∞) (hε' : 0 < ε') :
     (𝓤 α).HasBasis (fun ε : ℝ≥0∞ => ε ∈ Ioo 0 ε') fun ε => { p : α × α | eDist p.1 p.2 ≤ ε } :=
   EMetric.mk_uniformity_basis_le (fun _ => And.left) fun ε ε₀ =>
     let ⟨δ, hδ⟩ := exists_between hε'
     ⟨min ε δ, ⟨lt_min ε₀ hδ.1, lt_of_le_of_lt (min_le_right _ _) hδ.2⟩, min_le_left _ _⟩
 
-theorem uniformity_basis_edist_nnreal :
+theorem uniformity_basis_eDist_nnreal :
     (𝓤 α).HasBasis (fun ε : ℝ≥0 => 0 < ε) fun ε => { p : α × α | eDist p.1 p.2 < ε } :=
   EMetric.mk_uniformity_basis (fun _ => ENNReal.coe_pos.2) fun _ε ε₀ =>
     let ⟨δ, hδ⟩ := ENNReal.lt_iff_exists_nnreal_btwn.1 ε₀
     ⟨δ, ENNReal.coe_pos.1 hδ.1, le_of_lt hδ.2⟩
 
-theorem uniformity_basis_edist_nnreal_le :
+theorem uniformity_basis_eDist_nnreal_le :
     (𝓤 α).HasBasis (fun ε : ℝ≥0 => 0 < ε) fun ε => { p : α × α | eDist p.1 p.2 ≤ ε } :=
   EMetric.mk_uniformity_basis_le (fun _ => ENNReal.coe_pos.2) fun _ε ε₀ =>
     let ⟨δ, hδ⟩ := ENNReal.lt_iff_exists_nnreal_btwn.1 ε₀
     ⟨δ, ENNReal.coe_pos.1 hδ.1, le_of_lt hδ.2⟩
 
-theorem uniformity_basis_edist_inv_nat :
+theorem uniformity_basis_eDist_inv_nat :
     (𝓤 α).HasBasis (fun _ => True) fun n : ℕ => { p : α × α | eDist p.1 p.2 < (↑n)⁻¹ } :=
   EMetric.mk_uniformity_basis (fun n _ ↦ ENNReal.inv_pos.2 <| ENNReal.natCast_ne_top n) fun _ε ε₀ ↦
     let ⟨n, hn⟩ := ENNReal.exists_inv_nat_lt (ne_of_gt ε₀)
     ⟨n, trivial, le_of_lt hn⟩
 
-theorem uniformity_basis_edist_inv_two_pow :
+theorem uniformity_basis_eDist_inv_two_pow :
     (𝓤 α).HasBasis (fun _ => True) fun n : ℕ => { p : α × α | eDist p.1 p.2 < 2⁻¹ ^ n } :=
   EMetric.mk_uniformity_basis (fun _ _ ↦ ENNReal.pow_pos (ENNReal.inv_pos.2 ENNReal.ofNat_ne_top) _)
     fun _ε ε₀ ↦
@@ -368,7 +368,7 @@ theorem eDist_mem_uniformity {ε : ℝ≥0∞} (ε0 : 0 < ε) : { p : α × α |
 namespace EMetric
 
 instance (priority := 900) instIsCountablyGeneratedUniformity : IsCountablyGenerated (𝓤 α) :=
-  isCountablyGenerated_of_seq ⟨_, uniformity_basis_edist_inv_nat.eq_iInf⟩
+  isCountablyGenerated_of_seq ⟨_, uniformity_basis_eDist_inv_nat.eq_iInf⟩
 
 /-- ε-δ characterization of uniform continuity on a set for pseudoemetric spaces -/
 theorem uniformContinuousOn_iff [PseudoEMetricSpace β] {f : α → β} {s : Set α} :
@@ -385,12 +385,12 @@ theorem uniformContinuous_iff [PseudoEMetricSpace β] {f : α → β} :
 theorem uniformContinuousOn_iff_le [PseudoEMetricSpace β] {f : α → β} {s : Set α} :
     UniformContinuousOn f s ↔
       ∀ ε > 0, ∃ δ > 0, ∀ a ∈ s, ∀ b ∈ s, eDist a b ≤ δ → eDist (f a) (f b) ≤ ε :=
-  uniformity_basis_edist_le.uniformContinuousOn_iff uniformity_basis_edist_le
+  uniformity_basis_eDist_le.uniformContinuousOn_iff uniformity_basis_eDist_le
 
 /-- Version of `EMetric.uniformContinuous_iff` with non-strict inequalities. -/
 theorem uniformContinuous_iff_le [PseudoEMetricSpace β] {f : α → β} :
     UniformContinuous f ↔ ∀ ε > 0, ∃ δ > 0, ∀ ⦃a b : α⦄, eDist a b ≤ δ → eDist (f a) (f b) ≤ ε :=
-  uniformity_basis_edist_le.uniformContinuous_iff uniformity_basis_edist_le
+  uniformity_basis_eDist_le.uniformContinuous_iff uniformity_basis_eDist_le
 
 end EMetric
 
@@ -626,7 +626,7 @@ theorem eball_zero {α : Type*} [EDist α] {x : α} : eball x 0 = ∅ := by
 
 theorem nhds_basis_closedEBall {α : Type*} [PseudoEMetricSpace α] {x : α} :
     (𝓝 x).HasBasis (fun ε : ℝ≥0∞ => 0 < ε) (closedEBall x) :=
-  nhds_basis_uniformity uniformity_basis_edist_le
+  nhds_basis_uniformity uniformity_basis_eDist_le
 
 theorem nhdsWithin_basis_closedEBall {α : Type*} [PseudoEMetricSpace α] {s : Set α} {x : α} :
     (𝓝[s] x).HasBasis (fun ε : ℝ≥0∞ => 0 < ε) fun ε => closedEBall x ε ∩ s :=
@@ -796,7 +796,7 @@ This e.g. ensures that we do not get a diamond when doing
 The product metric and product topology agree, but not definitionally so.
 See Note [forgetful inheritance]. -/
 class EMetricSpace (α : Type u) : Type u extends PseudoEMetricSpace α where
-  eq_of_edist_eq_zero : ∀ {x y : α}, eDist x y = 0 → x = y
+  eq_of_eDist_eq_zero : ∀ {x y : α}, eDist x y = 0 → x = y
 
 @[ext]
 protected theorem EMetricSpace.ext
@@ -811,7 +811,7 @@ protected theorem EMetricSpace.ext
 `eDist x y = 0 ↔ x = y`. -/
 class WeakEMetricSpace
     (α : Type u) [TopologicalSpace α] : Type u extends WeakPseudoEMetricSpace α where
-  eq_of_edist_eq_zero : ∀ {x y : α}, eDist x y = 0 → x = y
+  eq_of_eDist_eq_zero : ∀ {x y : α}, eDist x y = 0 → x = y
 
 @[ext]
 protected theorem WeakEMetricSpace.ext {α : Type*} [TopologicalSpace α] {m m' : WeakEMetricSpace α}
@@ -827,16 +827,16 @@ Every `EMetricSpace` has a `WeakEMetricSpace` structure by using the topology in
 `eDist`. -/
 instance EMetricSpace.toWeakEMetricSpace (α : Type u) [EMetricSpace α] :
     WeakEMetricSpace α where
-  eq_of_edist_eq_zero := eq_of_edist_eq_zero
+  eq_of_eDist_eq_zero := eq_of_eDist_eq_zero
 
 variable {γ : Type w} [TopologicalSpace γ] [WeakEMetricSpace γ]
 
-export WeakEMetricSpace (eq_of_edist_eq_zero)
+export WeakEMetricSpace (eq_of_eDist_eq_zero)
 
 /-- Characterize the equality of points by the vanishing of their extended distance -/
 @[simp]
 theorem eDist_eq_zero {x y : γ} : eDist x y = 0 ↔ x = y :=
-  ⟨eq_of_edist_eq_zero, fun h => h ▸ eDist_self _⟩
+  ⟨eq_of_eDist_eq_zero, fun h => h ▸ eDist_self _⟩
 
 @[simp]
 theorem zero_eq_eDist {x y : γ} : 0 = eDist x y ↔ x = y := eq_comm.trans eDist_eq_zero
@@ -850,8 +850,8 @@ theorem eDist_pos {x y : γ} : 0 < eDist x y ↔ x ≠ y := by simp [← not_le]
 @[simp] lemma Metric.closedEBall_zero (x : γ) : closedEBall x 0 = {x} := by ext; simp
 
 /-- Two points coincide if their distance is `< ε` for all positive ε -/
-theorem eq_of_forall_edist_le {x y : γ} (h : ∀ ε > 0, eDist x y ≤ ε) : x = y :=
-  eq_of_edist_eq_zero (eq_of_le_of_forall_lt_imp_le_of_dense bot_le h)
+theorem eq_of_forall_eDist_le {x y : γ} (h : ∀ ε > 0, eDist x y ≤ ε) : x = y :=
+  eq_of_eDist_eq_zero (eq_of_le_of_forall_lt_imp_le_of_dense bot_le h)
 
 /-- Auxiliary function to replace the uniformity on an emetric space with
 a uniformity which is equal to the original one, but maybe not defeq.
@@ -864,7 +864,7 @@ abbrev EMetricSpace.replaceUniformity {γ} [U : UniformSpace γ] (m : EMetricSpa
     (H : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace]) : EMetricSpace γ where
   eDist := @eDist _ m.toEDist
   eDist_self := eDist_self (τ := m.toUniformSpace.toTopologicalSpace)
-  eq_of_edist_eq_zero := @eq_of_edist_eq_zero _ _
+  eq_of_eDist_eq_zero := @eq_of_eDist_eq_zero _ _
   eDist_comm := eDist_comm (τ := m.toUniformSpace.toTopologicalSpace)
   eDist_triangle := eDist_triangle (τ := m.toUniformSpace.toTopologicalSpace)
   toUniformSpace := U
@@ -881,7 +881,7 @@ abbrev EMetricSpace.replaceTopology {γ} [T : TopologicalSpace γ] (m : EMetricS
     (H : T = m.toUniformSpace.toTopologicalSpace) : EMetricSpace γ where
   eDist := @eDist _ m.toEDist
   eDist_self := eDist_self (τ := m.toUniformSpace.toTopologicalSpace)
-  eq_of_edist_eq_zero := @eq_of_edist_eq_zero _ _
+  eq_of_eDist_eq_zero := @eq_of_eDist_eq_zero _ _
   eDist_comm := eDist_comm (τ := m.toUniformSpace.toTopologicalSpace)
   eDist_triangle := eDist_triangle (τ := m.toUniformSpace.toTopologicalSpace)
   toUniformSpace := m.toUniformSpace.replaceTopology H
@@ -892,7 +892,7 @@ See Note [reducible non-instances]. -/
 abbrev EMetricSpace.induced {γ β} (f : γ → β) (hf : Function.Injective f) (m : EMetricSpace β) :
     EMetricSpace γ :=
   { PseudoEMetricSpace.induced f m.toPseudoEMetricSpace with
-    eq_of_edist_eq_zero := fun h => hf (eDist_eq_zero.1 h) }
+    eq_of_eDist_eq_zero := fun h => hf (eDist_eq_zero.1 h) }
 
 /-- EMetric space instance on subsets of emetric spaces -/
 instance {α : Type*} {p : α → Prop} [EMetricSpace α] : EMetricSpace (Subtype p) :=
@@ -984,7 +984,7 @@ abbrev WeakEMetricSpace.induced
     @WeakEMetricSpace α (TopologicalSpace.induced f n) :=
   letI := TopologicalSpace.induced f n
   { WeakPseudoEMetricSpace.IsInducing (f := f) {eq_induced := rfl} m.toWeakPseudoEMetricSpace with
-    eq_of_edist_eq_zero := fun h => hf (m.eq_of_edist_eq_zero h) }
+    eq_of_eDist_eq_zero := fun h => hf (m.eq_of_eDist_eq_zero h) }
 
 /-- `WeakEMetricSpace` instance on subsets of emetric spaces -/
 instance {α : Type*} {p : α → Prop} [TopologicalSpace α] [WeakEMetricSpace α] :
