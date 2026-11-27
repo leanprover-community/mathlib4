@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Module.Presentation.Cokernel
 public import Mathlib.Algebra.Module.Presentation.DirectSum
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Presentation of the restriction of scalars of a module
 

@@ -100,7 +100,6 @@ def comapComp (f : K → J) (g : J → I) : comap C g ⋙ comap (C ∘ g) f ≅ 
   { app := fun X b => 𝟙 (X (g (f b)))
     naturality := fun X Y f' => by simp only [comap, Function.comp]; funext; simp }
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The natural isomorphism between pulling back then evaluating, and just evaluating. -/
 @[simps!]
 def comapEvalIsoEval (h : J → I) (j : J) : comap C h ⋙ eval (C ∘ h) j ≅ eval C (h j) :=
@@ -234,8 +233,6 @@ variable {C}
 variable {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
 variable {F G : ∀ i, C i ⥤ D i}
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- Assemble an `I`-indexed family of natural transformations into a single natural transformation.
 -/
 @[simps!]
@@ -260,7 +257,6 @@ variable {C}
 variable {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
 variable {F G : ∀ i, C i ⥤ D i}
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Assemble an `I`-indexed family of natural isomorphisms into a single natural isomorphism.
 -/
 @[simps]
@@ -268,7 +264,6 @@ def pi (e : ∀ i, F i ≅ G i) : Functor.pi F ≅ Functor.pi G where
   hom := NatTrans.pi (fun i => (e i).hom)
   inv := NatTrans.pi (fun i => (e i).inv)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Assemble an `I`-indexed family of natural isomorphisms into a single natural isomorphism.
 -/
 @[simps]

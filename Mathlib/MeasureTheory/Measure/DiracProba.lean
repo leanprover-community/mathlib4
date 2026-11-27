@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 public import Mathlib.Topology.Separation.CompletelyRegular
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Dirac deltas as probability measures and embedding of a space into probability measures on it
 

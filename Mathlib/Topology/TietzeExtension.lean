@@ -78,7 +78,7 @@ continuous function `g : C(X, Y)` such that `g ∘ e = f`. -/
 theorem ContinuousMap.exists_extension (he : IsClosedEmbedding e) (f : C(X₁, Y)) :
     ∃ (g : C(X, Y)), g.comp ⟨e, he.continuous⟩ = f := by
   let e' : X₁ ≃ₜ Set.range e := he.isEmbedding.toHomeomorph
-  obtain ⟨g, hg⟩ := (f.comp e'.symm).exists_restrict_eq he.isClosed_range
+  obtain ⟨g, hg⟩ := (f.comp e'.symm.toContinuousMap).exists_restrict_eq he.isClosed_range
   exact ⟨g, by ext x; simpa using! congr($hg ⟨e' x, x, rfl⟩)⟩
 
 /-- **Tietze extension theorem** for `TietzeExtension` spaces. Let `e` be a closed embedding of a
@@ -153,7 +153,7 @@ theorem TietzeExtension.of_retract {Y : Type v} {Z : Type w} [TopologicalSpace Y
 theorem TietzeExtension.of_homeo {Y : Type v} {Z : Type w} [TopologicalSpace Y]
     [TopologicalSpace Z] [TietzeExtension.{u, w} Z] (e : Y ≃ₜ Z) :
     TietzeExtension.{u, v} Y :=
-  .of_retract (e : C(Y, Z)) (e.symm : C(Z, Y)) <| by simp
+  .of_retract e.toContinuousMap e.symm.toContinuousMap <| by simp
 
 end TietzeExtensionClass
 

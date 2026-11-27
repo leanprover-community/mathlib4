@@ -160,7 +160,6 @@ instance : FunLike (A →ₛₙₐ[φ] B) A B where
   coe f := f.toFun
   coe_injective := by rintro ⟨⟨⟨f, _⟩, _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
 
-@[simp]
 theorem toFun_eq_coe (f : A →ₛₙₐ[φ] B) : f.toFun = ⇑f :=
   rfl
 
@@ -215,7 +214,6 @@ theorem toMulHom_eq_coe (f : A →ₛₙₐ[φ] B) : f.toMulHom = ↑f :=
 theorem coe_to_distribMulActionHom (f : A →ₛₙₐ[φ] B) : ⇑(f : A →ₑ+[φ] B) = f :=
   rfl
 
-@[simp, norm_cast]
 theorem coe_to_mulHom (f : A →ₛₙₐ[φ] B) : ⇑(f : A →ₙ* B) = f :=
   rfl
 
@@ -250,6 +248,18 @@ protected theorem map_mul (f : A →ₛₙₐ[φ] B) (x y : A) : f (x * y) = f x
 
 protected theorem map_zero (f : A →ₛₙₐ[φ] B) : f 0 = 0 :=
   map_zero _
+
+section toLinearMap
+
+variable {R A B : Type*} [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A]
+  [NonUnitalNonAssocSemiring B] [Module R B]
+
+/-- Interpret a `NonUnitalAlgHom` as a `LinearMap`. -/
+protected def toLinearMap (f : A →ₙₐ[R] B) : A →ₗ[R] B where __ := f
+
+@[simp] lemma coe_toLinearMap (f : A →ₙₐ[R] B) : ⇑f.toLinearMap = f := rfl
+
+end toLinearMap
 
 /-- The identity map as a `NonUnitalAlgHom`. -/
 protected def id (R A : Type*) [Monoid R] [NonUnitalNonAssocSemiring A]

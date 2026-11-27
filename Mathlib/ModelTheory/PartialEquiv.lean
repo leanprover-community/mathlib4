@@ -424,8 +424,9 @@ def FGEquiv.symm (f : L.FGEquiv M N) : L.FGEquiv N M :=
 
 lemma isExtensionPair_iff_cod : L.IsExtensionPair M N ↔
     ∀ (f : L.FGEquiv N M) (m : M), ∃ g, m ∈ g.val.cod ∧ f ≤ g := by
-  refine Iff.intro ?_ ?_ <;>
-  · intro h f m
+  refine Iff.intro ?_ ?_
+  all_goals
+    intro h f m
     obtain ⟨g, h1, h2⟩ := h f.symm m
     exact ⟨g.symm, h1, monotone_symm h2⟩
 

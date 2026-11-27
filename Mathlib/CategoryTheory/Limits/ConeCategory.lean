@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Comma.Over.Basic
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 public import Mathlib.CategoryTheory.Limits.Shapes.Equivalence
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Limits and the category of (co)cones
 

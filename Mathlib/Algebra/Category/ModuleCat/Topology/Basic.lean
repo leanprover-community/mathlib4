@@ -25,7 +25,8 @@ We also provide various adjunctions:
 - `TopModuleCat.freeAdj`:
   the free-forgetful adjunction between `TopModuleCat R` and `TopCat`.
 
-## Future projects
+## TODO
+
 Show that the forgetful functor to `TopCat` preserves filtered colimits.
 -/
 
@@ -198,7 +199,7 @@ instance : (forget₂ (TopModuleCat R) TopCat).ReflectsIsomorphisms where
 
 @[simp]
 lemma hom_forget₂_TopCat_map {X Y : TopModuleCat R} (f : X ⟶ Y) :
-    ((forget₂ _ TopCat).map f).hom = f.hom := rfl
+    ((forget₂ _ TopCat).map f).hom = f.hom.toContinuousMap := rfl
 
 @[simp]
 lemma forget₂_TopCat_obj {X : TopModuleCat R} : ((forget₂ _ TopCat).obj X : Type _) = X := rfl

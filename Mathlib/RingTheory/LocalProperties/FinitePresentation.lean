@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Module.FinitePresentation
 
 import Mathlib.RingTheory.Localization.Finiteness
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Module.FinitePresentation` is a local property
 

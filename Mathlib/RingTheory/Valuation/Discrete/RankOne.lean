@@ -9,6 +9,9 @@ public import Mathlib.Data.Int.WithZero
 public import Mathlib.RingTheory.Valuation.Discrete.Basic
 public import Mathlib.RingTheory.Valuation.RankOne
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Discrete valuations have rank one
 

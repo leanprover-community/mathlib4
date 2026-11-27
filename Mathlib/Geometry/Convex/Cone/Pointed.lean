@@ -48,7 +48,7 @@ variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommMonoid E] [Modu
 
 instance : Coe (Submodule R E) (PointedCone R E) := ⟨ofSubmodule⟩
 
-@[simp] lemma coe_ofSubmodule (S : Submodule R E) : (ofSubmodule S : Set E) = S := rfl
+lemma coe_ofSubmodule (S : Submodule R E) : (ofSubmodule S : Set E) = S := rfl
 
 lemma mem_ofSubmodule_iff {S : Submodule R E} {x : E} : x ∈ (S : PointedCone R E) ↔ x ∈ S := .rfl
 

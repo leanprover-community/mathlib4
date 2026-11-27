@@ -65,8 +65,7 @@ variable {R A B F : Type*} [CommSemiring R]
   [CoalgHomClass F R A B]
 
 /-- Turn an element of a type `F` satisfying `CoalgHomClass F R A B` into an actual
-`CoalgHom`. This is declared as the default coercion from `F` to `A →ₗc[R] B`. -/
-@[coe]
+`CoalgHom`. -/
 def _root_.CoalgHom.ofClass (f : F) : A →ₗc[R] B :=
   { (f : A →ₗ[R] B) with
     toFun := f
@@ -74,8 +73,6 @@ def _root_.CoalgHom.ofClass (f : F) : A →ₗc[R] B :=
     map_comp_comul := CoalgHomClass.map_comp_comul f }
 
 @[deprecated (since := "2026-09-09")] alias toCoalgHom := CoalgHom.ofClass
-
-instance instCoeToCoalgHom : CoeHead F (A →ₗc[R] B) := ⟨.ofClass⟩
 
 @[simp]
 theorem counit_comp_apply (f : F) (x : A) : counit (f x) = counit (R := R) x :=
@@ -131,9 +128,11 @@ protected theorem coe_ofClass {F : Type*} [FunLike F A B] [CoalgHomClass F R A B
 theorem coe_mk {f : A →ₗ[R] B} (h h₁) : ((⟨f, h, h₁⟩ : A →ₗc[R] B) : A → B) = f :=
   rfl
 
-@[norm_cast]
-theorem coe_mks {f : A → B} (h₁ h₂ h₃ h₄) : ⇑(⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩ : A →ₗc[R] B) = f :=
+@[simp, norm_cast]
+theorem mk_coe {f : A → B} (h₁ h₂ h₃ h₄) : ⇑(⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩ : A →ₗc[R] B) = f :=
   rfl
+
+@[deprecated (since := "2026-11-19")] alias coe_mks := mk_coe
 
 @[simp, norm_cast]
 theorem coe_linearMap_mk {f : A →ₗ[R] B} (h h₁) : ((⟨f, h, h₁⟩ : A →ₗc[R] B) : A →ₗ[R] B) = f :=
@@ -145,11 +144,12 @@ theorem toLinearMap_eq_ofClass (f : A →ₗc[R] B) : f.toLinearMap = f :=
 
 @[deprecated (since := "2026-09-09")] alias toLinearMap_eq_coe := toLinearMap_eq_ofClass
 
-@[simp, norm_cast]
 theorem coe_linearMapOfClass (f : A →ₗc[R] B) : ⇑(f : A →ₗ[R] B) = f :=
   rfl
 
-@[deprecated (since := "2026-09-09")] alias coe_toLinearMap := coe_linearMapOfClass
+@[simp]
+theorem coe_toLinearMap (f : A →ₗc[R] B) : ⇑f.toLinearMap = f :=
+  rfl
 
 @[norm_cast]
 theorem coe_toAddMonoidHom (f : A →ₗc[R] B) : ⇑(f : A →+ B) = f :=
@@ -189,10 +189,6 @@ theorem ext {φ₁ φ₂ : A →ₗc[R] B} (H : ∀ x, φ₁ x = φ₂ x) : φ�
 @[ext high]
 theorem ext_of_ring {f g : R →ₗc[R] A} (h : f 1 = g 1) : f = g :=
   linearMapOfClass_injective (by ext; assumption)
-
-@[simp]
-theorem mk_coe {f : A →ₗc[R] B} (h₁ h₂ h₃ h₄) : (⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩ : A →ₗc[R] B) = f :=
-  ext fun _ => rfl
 
 /-- Copy of a `CoalgHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
