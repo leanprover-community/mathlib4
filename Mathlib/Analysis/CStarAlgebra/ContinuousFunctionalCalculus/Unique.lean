@@ -182,7 +182,8 @@ instance NNReal.instContinuousMap.UniqueHom [T2Space A] :
     let s' : Set ℝ := (↑) '' s
     let e : s ≃ₜ s' := NNReal.isEmbedding_coe.homeomorphImage s
     have (ξ : C(s, ℝ≥0) →⋆ₐ[ℝ≥0] A) (hξ : Continuous ξ) :
-        (let ξ' := ξ.realContinuousMapOfNNReal.comp <| ContinuousMap.compStarAlgHom' ℝ ℝ e
+        (let ξ' := ξ.realContinuousMapOfNNReal.comp <| ContinuousMap.compStarAlgHom' ℝ ℝ
+          e.toContinuousMap
         Continuous ξ' ∧ ξ' (.restrict s' <| .id ℝ) = ξ (.restrict s <| .id ℝ≥0)) := by
       intro ξ'
       refine ⟨ξ.continuous_realContinuousMapOfNNReal hξ |>.comp <|
@@ -193,9 +194,9 @@ instance NNReal.instContinuousMap.UniqueHom [T2Space A] :
     have hs' : CompactSpace s' := e.compactSpace
     have h' := ContinuousMap.UniqueHom.eq_of_continuous_of_map_id s' _ _ hφ' hψ'
       (hφ_id ▸ hψ_id ▸ h)
-    have h'' := congr($(h').comp <| ContinuousMap.compStarAlgHom' ℝ ℝ (e.symm : C(s', s)))
-    have : (ContinuousMap.compStarAlgHom' ℝ ℝ (e : C(s, s'))).comp
-        (ContinuousMap.compStarAlgHom' ℝ ℝ (e.symm : C(s', s))) = StarAlgHom.id _ _ := by
+    have h'' := congr($(h').comp <| ContinuousMap.compStarAlgHom' ℝ ℝ e.symm.toContinuousMap)
+    have : (ContinuousMap.compStarAlgHom' ℝ ℝ e.toContinuousMap).comp
+        (ContinuousMap.compStarAlgHom' ℝ ℝ e.symm.toContinuousMap) = StarAlgHom.id _ _ := by
       ext1; simp
     simp only [StarAlgHom.comp_assoc, this, StarAlgHom.comp_id] at h''
     exact StarAlgHom.realContinuousMapOfNNReal_injective h''
@@ -233,7 +234,8 @@ variable {X : Type*} [TopologicalSpace X] [Zero X]
 namespace ContinuousMapZero
 
 /-- This map sends `f : C(X, ℝ)` to `Real.toNNReal ∘ f`, bundled as a continuous map `C(X, ℝ≥0)`. -/
-noncomputable def toNNReal (f : C(X, ℝ)₀) : C(X, ℝ≥0)₀ := ⟨.realToNNReal |>.comp f, by simp⟩
+noncomputable def toNNReal (f : C(X, ℝ)₀) : C(X, ℝ≥0)₀ :=
+  ⟨.realToNNReal |>.comp f.toContinuousMap, by simp⟩
 
 @[simp]
 lemma toNNReal_apply (f : C(X, ℝ)₀) (x : X) : f.toNNReal x = Real.toNNReal (f x) := rfl
@@ -241,7 +243,7 @@ lemma toNNReal_apply (f : C(X, ℝ)₀) (x : X) : f.toNNReal x = Real.toNNReal (
 @[fun_prop]
 lemma continuous_toNNReal : Continuous (toNNReal (X := X)) := by
   rw [continuous_induced_rng]
-  convert_to! Continuous (ContinuousMap.toNNReal ∘ ((↑) : C(X, ℝ)₀ → C(X, ℝ))) using 1
+  convert_to! Continuous (ContinuousMap.toNNReal ∘ (toContinuousMap : C(X, ℝ)₀ → C(X, ℝ))) using 1
   exact ContinuousMap.continuous_postcomp _ |>.comp continuous_induced_dom
 
 lemma toContinuousMapHom_toNNReal (f : C(X, ℝ)₀) :
@@ -266,14 +268,14 @@ lemma toNNReal_mul_add_neg_mul_add_mul_neg_eq (f g : C(X, ℝ)₀) :
     ((-(f * g)).toNNReal + f.toNNReal * g.toNNReal + (-f).toNNReal * (-g).toNNReal) := by
   apply toContinuousMap_injective
   simpa only [map_add, map_mul, map_neg, toContinuousMapHom_toNNReal]
-    using! (f : C(X, ℝ)).toNNReal_mul_add_neg_mul_add_mul_neg_eq g
+    using! f.toContinuousMap.toNNReal_mul_add_neg_mul_add_mul_neg_eq g.toContinuousMap
 
 lemma toNNReal_add_add_neg_add_neg_eq (f g : C(X, ℝ)₀) :
     ((f + g).toNNReal + (-f).toNNReal + (-g).toNNReal) =
       ((-(f + g)).toNNReal + f.toNNReal + g.toNNReal) := by
   apply toContinuousMap_injective
   simpa only [map_add, map_mul, map_neg, toContinuousMapHom_toNNReal]
-    using! (f : C(X, ℝ)).toNNReal_add_add_neg_add_neg_eq g
+    using! f.toContinuousMap.toNNReal_add_add_neg_add_neg_eq g.toContinuousMap
 
 end ContinuousMapZero
 
@@ -362,11 +364,11 @@ instance NNReal.instContinuousMapZero.UniqueHom
     let s' : Set ℝ := (↑) '' s
     let e : s ≃ₜ s' := NNReal.isEmbedding_coe.homeomorphImage s
     have : Fact (0 ∈ s') := ⟨0, Fact.out, coe_zero⟩
-    have e0 : e 0 = 0 := rfl
-    have e0' : e.symm 0 = 0 := e.symm_apply_eq.mpr e0
+    have e0 : e.toContinuousMap 0 = 0 := rfl
+    have e0' : e.symm.toContinuousMap 0 = 0 := e.symm_apply_eq.mpr e0
     have (ξ : C(s, ℝ≥0)₀ →⋆ₙₐ[ℝ≥0] A) (hξ : Continuous ξ) :
         (let ξ' := ξ.realContinuousMapZeroOfNNReal.comp <|
-          ContinuousMapZero.nonUnitalStarAlgHom_precomp ℝ ⟨e, e0⟩;
+          ContinuousMapZero.nonUnitalStarAlgHom_precomp ℝ ⟨e.toContinuousMap, e0⟩;
           Continuous ξ' ∧ ξ' (.id s') = ξ (.id s)) := by
       intro ξ'
       refine ⟨ξ.continuous_realContinuousMapZeroOfNNReal hξ |>.comp <| ?_, ?_⟩
@@ -380,9 +382,9 @@ instance NNReal.instContinuousMapZero.UniqueHom
     have h' := ContinuousMapZero.UniqueHom.eq_of_continuous_of_map_id
       s' _ _ hφ' hψ' (hφ_id ▸ hψ_id ▸ h)
     have h'' := congr($(h').comp <|
-      ContinuousMapZero.nonUnitalStarAlgHom_precomp ℝ ⟨(e.symm : C(s', s)), e0'⟩)
-    have : (ContinuousMapZero.nonUnitalStarAlgHom_precomp ℝ ⟨(e : C(s, s')), e0⟩).comp
-        (ContinuousMapZero.nonUnitalStarAlgHom_precomp ℝ ⟨(e.symm : C(s', s)), e0'⟩) =
+      ContinuousMapZero.nonUnitalStarAlgHom_precomp ℝ ⟨e.symm.toContinuousMap, e0'⟩)
+    have : (ContinuousMapZero.nonUnitalStarAlgHom_precomp ℝ ⟨e.toContinuousMap, e0⟩).comp
+        (ContinuousMapZero.nonUnitalStarAlgHom_precomp ℝ ⟨e.symm.toContinuousMap, e0'⟩) =
         NonUnitalStarAlgHom.id _ _ := by
       ext; simp
     simp only [NonUnitalStarAlgHom.comp_assoc, this, NonUnitalStarAlgHom.comp_id] at h''

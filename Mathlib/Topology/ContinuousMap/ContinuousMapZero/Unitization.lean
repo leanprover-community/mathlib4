@@ -57,7 +57,7 @@ lemma unitizationStarAlgEquiv_apply_apply (f : Unitization R C(X, R)₀) (x : X)
   rfl
 
 lemma unitizationStarAlgEquiv_apply (f : Unitization R C(X, R)₀) :
-    unitizationStarAlgEquiv X R f = .const X f.fst + f.snd := by
+    unitizationStarAlgEquiv X R f = .const X f.fst + f.snd.toContinuousMap := by
   ext; simp
 
 lemma symm_unitizationStarAlgEquiv_apply (g : C(X, R)) :
@@ -80,7 +80,8 @@ lemma unitizationStarAlgEquiv_inl (r : R) :
   ext; simp
 
 @[simp]
-lemma unitizationStarAlgEquiv_inr (f : C(X, R)₀) : unitizationStarAlgEquiv X R f = f := by
+lemma unitizationStarAlgEquiv_inr (f : C(X, R)₀) :
+    unitizationStarAlgEquiv X R f = f.toContinuousMap := by
   ext; simp
 
 end ContinuousMapZero

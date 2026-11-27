@@ -41,7 +41,7 @@ lemma cocycles₀IsoAux (σ : (homogeneousCochains X).X 0)
     ZeroMemClass.coe_zero, sub_eq_zero] at hσ
   replace hσ := DFunLike.ext_iff.1 (DFunLike.ext_iff.1 hσ 1) g⁻¹
   simp only [Nat.reduceAdd, coind₁ι_toFun, ContinuousMap.const_apply, ConcreteCategory.hom_ofHom,
-    coind₁Map_toFun, ContinuousMap.comp_apply, ContinuousMap.coe_mk] at hσ
+    coind₁Map_toFun, ContinuousMap.comp_apply] at hσ
   simpa [hσ] using DFunLike.ext_iff.1 (σ.property g) 1
 
 lemma mem_const_resol₀ (x : X) (hx : x ∈ X.ρ.invariants) :
