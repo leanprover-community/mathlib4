@@ -267,16 +267,6 @@ def getNames (mctx : MetavarContext) : List Name :=
   let locDecls := (lcts.map (PersistentArray.toList ∘ LocalContext.decls)).flatten.reduceOption
   locDecls.map LocalDecl.userName
 
-/-- Removes from `ranges` all the `skip` tactics occurring in `stx`-/
-partial def eraseSkips (stx : Syntax)
-    (ranges : Std.HashMap Syntax.Range (Syntax × Option MessageData)) :
-    Std.HashMap Syntax.Range (Syntax × Option MessageData) :=
-  if stx.getKind == ``Lean.Parser.Tactic.skip then
-    if let some r := stx.getRange? true then ranges.erase r else ranges
-  else match stx with
-    | .node _ _ args => args.foldl (fun ranges arg => eraseSkips arg ranges) ranges
-    | _ => ranges
-
 /--
 For each `TacticInfo` in the info tree that corresponds to a tactic syntax:
 - If the tactic is used, erase it from the set of tactics.
@@ -300,7 +290,7 @@ def eraseUsedTactics (exceptions : Std.HashSet SyntaxNodeKind)
       | [] => return withMsg m!"`<;>` can be removed"
       | [_] => return withMsg m!"`<;>` can be replaced with `;`"
       | _ => return ranges.erase r
-    | .node _ kind _ =>
+    | .node _ kind args =>
       unless tactics.contains kind || convs.contains kind do return ranges
       -- if the tactic is allowed to not change the goals
       if exceptions.contains kind then
@@ -336,7 +326,15 @@ def eraseUsedTactics (exceptions : Std.HashSet SyntaxNodeKind)
       | `Batteries.Tactic.seq_focus =>
         -- In `t <;> [t1; t2; ...]`, lint each subtactic individually,
         -- but never report the padding `skip`s.
-        return eraseSkips stx (ranges.erase r)
+        -- A padding `skip` is always a direct element of the bracketed list,
+        -- which is the fourth child of the `seq_focus` node.
+        let ranges := ranges.erase r
+        let some list := args[3]? | return ranges
+        let .node _ _ elems := list | return ranges
+        return elems.foldl (fun ranges el =>
+          if el.getKind == ``Lean.Parser.Tactic.skip then
+            if let some r' := el.getRange? true then ranges.erase r' else ranges
+          else ranges) ranges
       | _ =>
         -- The tactic is unused if the goals stay the same.
         if i.goalsAfter == i.goalsBefore then
