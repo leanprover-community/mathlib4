@@ -186,11 +186,11 @@ lemma inv_hom_apply {A B : ProfiniteGrp.{u}} (e : A ≅ B) (x : A) : e.inv (e.ho
 lemma hom_inv_apply {A B : ProfiniteGrp.{u}} (e : A ≅ B) (x : B) : e.hom (e.inv x) = x := by
   simp
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem coe_id (X : ProfiniteGrp) : (𝟙 X : X → X) = id :=
   rfl
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem coe_comp {X Y Z : ProfiniteGrp} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g : X → Z) = g ∘ f :=
   rfl
@@ -383,7 +383,7 @@ lemma limit_ext (x y : limit F) (hxy : ∀ j, x.val j = y.val j) : x = y :=
 lemma limit_one_val (j : J) : (1 : limit F).val j = 1 :=
   rfl
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma limit_mul_val (x y : limit F) (j : J) : (x * y).val j = x.val j * y.val j :=
   rfl
 

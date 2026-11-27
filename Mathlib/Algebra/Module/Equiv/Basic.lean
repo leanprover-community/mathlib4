@@ -529,6 +529,25 @@ theorem toLinearMap_ofLinearMap (h₁ h₂) : (ofLinearMap f g h₁ h₂ : M ≃
 
 @[deprecated (since := "2026-08-04")] alias ofLinear_toLinearMap := toLinearMap_ofLinearMap
 
+/-- The equivalence created from `LinearMap.id` maps is definitionally `LinearEquiv.refl R M`.
+
+See also `ofLinearMap_id_left` and `ofLinearMap_id_right` for stronger but non-defeq versions. -/
+@[simp]
+theorem ofLinearMap_id : ofLinearMap .id .id rfl rfl = .refl R M := rfl
+
+@[simp]
+theorem ofLinearMap_id_left (f : M →ₗ[R] M) (h₁ h₂) :
+    ofLinearMap .id f h₁ h₂ = .refl R M := by
+  ext
+  simp
+
+@[simp]
+theorem ofLinearMap_id_right (f : M →ₗ[R] M) (h₁ h₂) :
+    ofLinearMap f .id h₁ h₂ = .refl R M := by
+  ext
+  rw [eq_comm, ← symm_apply_eq]
+  simp
+
 end
 
 end AddCommMonoid

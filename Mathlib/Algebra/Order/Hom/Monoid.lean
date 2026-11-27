@@ -306,14 +306,16 @@ theorem mk_coe (f : α →*o β) (h) : OrderMonoidHom.mk (f : α →* β) h = f 
 def toOrderHom (f : α →*o β) : α →o β :=
   { f with }
 
-@[to_additive (attr := simp)]
+-- `nolint` needed while this uses `MonoidHom.ofClass`
+@[to_additive (attr := simp, nolint simpNF)]
 theorem coe_toMonoidHom (f : α →*o β) : ((f : α →* β) : α → β) = f :=
   rfl
 
 @[to_additive (attr := deprecated (since := "2026-09-15"))]
 alias coe_monoidHom := coe_toMonoidHom
 
-@[to_additive (attr := simp)]
+-- `nolint` needed while this uses `OrderHom.ofClass`
+@[to_additive (attr := simp, nolint simpNF)]
 theorem coe_orderHom (f : α →*o β) : ((f : α →o β) : α → β) = f :=
   rfl
 
@@ -548,7 +550,8 @@ def toOrderIso (f : α ≃*o β) : α ≃o β :=
 theorem coe_mulEquiv (f : α ≃*o β) : ((f : α ≃* β) : α → β) = f :=
   rfl
 
-@[to_additive (attr := simp)]
+-- `nolint` needed while this uses `OrderHom.ofClass`
+@[to_additive (attr := simp, nolint simpNF)]
 theorem coe_orderIso (f : α ≃*o β) : ((f : α →o β) : α → β) = f :=
   rfl
 

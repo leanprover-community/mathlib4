@@ -188,7 +188,7 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   -- TODO: reduce this dependency by upstreaming `Data.String.Defs to batteries
   (`Mathlib.Util.FormatTable, `Mathlib.Data.String.Defs),
 
-  (`Mathlib.Lean, `Batteries.Tactic.Lint),
+  (`Mathlib.Lean, `Batteries.Linter),
   (`Mathlib.Lean, `Batteries.CodeAction),
   -- TODO: should this be minimised further?
   (`Mathlib.Lean.Meta.CongrTheorems, `Batteries),
@@ -332,6 +332,7 @@ outside `Mathlib/Algebra/Notation.lean`.
 -/
 def overrideAllowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Algebra.Lie, `Mathlib.RepresentationTheory),
+  (`Mathlib.Algebra.Module.Lattice, `Mathlib.Analysis),
   (`Mathlib.Algebra.Module.ZLattice, `Mathlib.Analysis),
   (`Mathlib.Algebra.Notation, `Mathlib.Algebra.Notation),
   (`Mathlib.AlgebraicGeometry.EllipticCurve, `Mathlib.Probability), -- For L-functions
