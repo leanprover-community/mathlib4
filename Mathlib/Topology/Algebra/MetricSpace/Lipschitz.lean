@@ -69,11 +69,11 @@ lemma LocallyLipschitzOn.exists_lipschitzOnWith_of_compact {f : α → β} {s : 
     let ⟨ε, hε, hε'⟩ := Metric.mem_nhdsWithin_iff.1 ht
     exact ⟨ε, hε, K, hf.mono hε'⟩
   choose ε hε K hf using hf
-  /- We also have constants `K' x hx` for all `x ∈ s` such that `edist (f x) (f y) ≤ K' * edist x y`
+  /- We also have constants `K' x hx` for all `x ∈ s` such that `eDist (f x) (f y) ≤ K' * eDist x y`
   for all `y ∈ s` outside of `ball x (ε x hx)`, by continuity of
   `fun y ↦ dist (f x) (f y) / dist x y` on the compact set `s.diff (ball x (ε x hx))`. -/
   have (x) (hx : x ∈ s) : ∃ K' : ℝ≥0, ∀ y ∈ s.diff (ball x (ε x hx)),
-      edist (f x) (f y) ≤ K' * edist x y := by
+      eDist (f x) (f y) ≤ K' * eDist x y := by
     let ⟨K', hK'⟩ := (hs.diff isOpen_ball).bddAbove_image
       (f := fun y ↦ dist (f x) (f y) / dist x y) <| .div (.mono (by fun_prop) s.sdiff_subset)
         (by fun_prop) fun y hy ↦ ((hε x hx).trans_le <| not_lt.1 <| dist_comm x y ▸ hy.2).ne'
@@ -102,18 +102,18 @@ lemma LocallyLipschitzOn.exists_lipschitzOnWith_of_compact {f : α → β} {s : 
     exact ENNReal.coe_le_coe.2 <| t.le_sup_of_le hz le_self_add
   · /- For `y ∉ ball z (ε z hz)` this follows by using the triangle inequality, bounding
     the distances from `f z` to `f x` and `f y` using the bounds `K z hz` and `K' z hz`, and then
-    using the triangle inequality again for `edist z y ≤ edist x z + edist x y ≤ 2 * edist x y`. -/
-    calc edist (f x) (f y)
-      _ ≤ edist (f z) (f x) + edist (f z) (f y) := edist_triangle_left _ _ _
-      _ ≤ (K _ z.property) * edist z.val x + edist (f z) (f y) := add_le_add_left
+    using the triangle inequality again for `eDist z y ≤ eDist x z + eDist x y ≤ 2 * eDist x y`. -/
+    calc eDist (f x) (f y)
+      _ ≤ eDist (f z) (f x) + eDist (f z) (f y) := edist_triangle_left _ _ _
+      _ ≤ (K _ z.property) * eDist z.val x + eDist (f z) (f y) := add_le_add_left
         (hf _ z.property ⟨mem_ball_self <| hε _ z.property, z.property⟩
           ⟨hx'.2.trans <| half_lt_self <| hε _ z.property, hx⟩) _
-      _ ≤ (K _ z.property) * edist z.val x + (K' _ z.property) * edist z.val y :=
+      _ ≤ (K _ z.property) * eDist z.val x + (K' _ z.property) * eDist z.val y :=
         add_le_add_right (hK' _ z.property _ ⟨hy, hy'⟩) _
-      _ ≤ (K _ z.property) * edist z.val x + (K' _ z.property) * (edist x z.val + edist x y) := by
+      _ ≤ (K _ z.property) * eDist z.val x + (K' _ z.property) * (eDist x z.val + eDist x y) := by
         gcongr; exact edist_triangle_left z.val y x
-      _ ≤ (K _ z.property) * edist x y + (K' _ z.property) * (edist x y + edist x y) := by
+      _ ≤ (K _ z.property) * eDist x y + (K' _ z.property) * (eDist x y + eDist x y) := by
         simp_rw [edist_dist, dist_comm _ x]
         gcongr <;> linarith [mem_ball.1 hx'.2, (not_lt (α := ℝ)).1 hy', dist_triangle_left y z x]
-      _ = ↑(K _ z.property + 2 * K' _ z.property) * edist x y := by push_cast; ring
+      _ = ↑(K _ z.property + 2 * K' _ z.property) * eDist x y := by push_cast; ring
       _ ≤ _ := by gcongr; exact .trans (by rfl) (t.le_sup hz)

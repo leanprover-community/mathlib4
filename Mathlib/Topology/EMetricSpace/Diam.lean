@@ -31,29 +31,29 @@ section WeakPseudoEMetricSpace
 
 /-- The diameter of a set in a pseudoemetric space as an extended nonnegative real number. -/
 noncomputable def ediam [EDist X] (s : Set X) :=
-  ⨆ (x ∈ s) (y ∈ s), edist x y
+  ⨆ (x ∈ s) (y ∈ s), eDist x y
 
 variable [TopologicalSpace X] [WeakPseudoEMetricSpace X]
 
-theorem ediam_eq_sSup (s : Set X) : ediam s = sSup (image2 edist s s) := sSup_image2.symm
+theorem ediam_eq_sSup (s : Set X) : ediam s = sSup (image2 eDist s s) := sSup_image2.symm
 
-theorem ediam_le_iff {d : ℝ≥0∞} : ediam s ≤ d ↔ ∀ x ∈ s, ∀ y ∈ s, edist x y ≤ d := by
+theorem ediam_le_iff {d : ℝ≥0∞} : ediam s ≤ d ↔ ∀ x ∈ s, ∀ y ∈ s, eDist x y ≤ d := by
   simp only [ediam, iSup_le_iff]
 
 theorem ediam_image_le_iff {d : ℝ≥0∞} {f : α → X} {s : Set α} :
-    ediam (f '' s) ≤ d ↔ ∀ x ∈ s, ∀ y ∈ s, edist (f x) (f y) ≤ d := by
+    ediam (f '' s) ≤ d ↔ ∀ x ∈ s, ∀ y ∈ s, eDist (f x) (f y) ≤ d := by
   simp only [ediam_le_iff, forall_mem_image]
 
-theorem edist_le_of_ediam_le {d} (hx : x ∈ s) (hy : y ∈ s) (hd : ediam s ≤ d) : edist x y ≤ d :=
+theorem edist_le_of_ediam_le {d} (hx : x ∈ s) (hy : y ∈ s) (hd : ediam s ≤ d) : eDist x y ≤ d :=
   ediam_le_iff.1 hd x hx y hy
 
 /-- If two points belong to some set, their edistance is bounded by the diameter of the set -/
-theorem edist_le_ediam_of_mem (hx : x ∈ s) (hy : y ∈ s) : edist x y ≤ ediam s :=
+theorem edist_le_ediam_of_mem (hx : x ∈ s) (hy : y ∈ s) : eDist x y ≤ ediam s :=
   edist_le_of_ediam_le hx hy le_rfl
 
 /-- If the distance between any two points in a set is bounded by some constant, this constant
 bounds the diameter. -/
-theorem ediam_le {d : ℝ≥0∞} (h : ∀ x ∈ s, ∀ y ∈ s, edist x y ≤ d) : ediam s ≤ d :=
+theorem ediam_le {d : ℝ≥0∞} (h : ∀ x ∈ s, ∀ y ∈ s, eDist x y ≤ d) : ediam s ≤ d :=
   ediam_le_iff.2 h
 
 /-- The diameter of a subsingleton vanishes. -/
@@ -79,12 +79,12 @@ theorem ediam_one [One X] : ediam (1 : Set X) = 0 :=
 theorem ediam_iUnion_mem_option {ι : Type*} (o : Option ι) (s : ι → Set X) :
     ediam (⋃ i ∈ o, s i) = ⨆ i ∈ o, ediam (s i) := by cases o <;> simp
 
-theorem ediam_insert : ediam (insert x s) = max (⨆ y ∈ s, edist x y) (ediam s) :=
+theorem ediam_insert : ediam (insert x s) = max (⨆ y ∈ s, eDist x y) (ediam s) :=
   eq_of_forall_ge_iff fun d => by simp +contextual [ediam_le_iff, edist_comm]
 
-theorem ediam_pair : ediam {x, y} = edist x y := by simp [ediam_insert]
+theorem ediam_pair : ediam {x, y} = eDist x y := by simp [ediam_insert]
 
-theorem ediam_triple : ediam {x, y, z} = max (max (edist x y) (edist x z)) (edist y z) := by
+theorem ediam_triple : ediam {x, y, z} = max (max (eDist x y) (eDist x z)) (eDist y z) := by
   simp only [ediam_insert, iSup_insert, iSup_singleton, ediam_singleton, max_zero]
 
 /-- The extended diameter is monotonous with respect to inclusion -/
@@ -95,26 +95,26 @@ theorem ediam_mono (h : s ⊆ t) : ediam s ≤ ediam t :=
 /-- The extended diameter of a union is controlled by the diameter of the sets,
 and the edistance between two points in the sets. -/
 theorem ediam_union_le_add_edist (xs : x ∈ s) (yt : y ∈ t) :
-    ediam (s ∪ t) ≤ ediam s + edist x y + ediam t := by
-  have A : ∀ a ∈ s, ∀ b ∈ t, edist a b ≤ ediam s + edist x y + ediam t := fun a ha b hb =>
+    ediam (s ∪ t) ≤ ediam s + eDist x y + ediam t := by
+  have A : ∀ a ∈ s, ∀ b ∈ t, eDist a b ≤ ediam s + eDist x y + ediam t := fun a ha b hb =>
     calc
-      edist a b ≤ edist a x + edist x y + edist y b := edist_triangle4 _ _ _ _
-      _ ≤ ediam s + edist x y + ediam t := by
+      eDist a b ≤ eDist a x + eDist x y + eDist y b := edist_triangle4 _ _ _ _
+      _ ≤ ediam s + eDist x y + ediam t := by
         gcongr
         exacts [edist_le_ediam_of_mem ha xs, edist_le_ediam_of_mem yt hb]
   refine ediam_le fun a ha b hb => ?_
   rw [mem_union] at ha hb
   rcases ha with h'a | h'a <;> rcases hb with h'b | h'b
   · calc
-      edist a b ≤ ediam s := edist_le_ediam_of_mem h'a h'b
-      _ ≤ ediam s + (edist x y + ediam t) := le_self_add
-      _ = ediam s + edist x y + ediam t := (add_assoc _ _ _).symm
+      eDist a b ≤ ediam s := edist_le_ediam_of_mem h'a h'b
+      _ ≤ ediam s + (eDist x y + ediam t) := le_self_add
+      _ = ediam s + eDist x y + ediam t := (add_assoc _ _ _).symm
   · exact A a h'a b h'b
   · have Z := A b h'b a h'a
     rwa [edist_comm] at Z
   · calc
-      edist a b ≤ ediam t := edist_le_ediam_of_mem h'a h'b
-      _ ≤ ediam s + edist x y + ediam t := le_add_self
+      eDist a b ≤ ediam t := edist_le_ediam_of_mem h'a h'b
+      _ ≤ ediam s + eDist x y + ediam t := le_add_self
 
 /-- If two sets have nonempty intersection, then the extended diameter of their union
 is estimated from above by the sum of their union. -/
@@ -125,7 +125,7 @@ theorem ediam_union_le (h : (s ∩ t).Nonempty) : ediam (s ∪ t) ≤ ediam s + 
 theorem ediam_closedEBall_le {r : ℝ≥0∞} : ediam (closedEBall x r) ≤ 2 * r :=
   ediam_le fun a ha b hb =>
     calc
-      edist a b ≤ edist a x + edist b x := edist_triangle_right _ _ _
+      eDist a b ≤ eDist a x + eDist b x := edist_triangle_right _ _ _
       _ ≤ r + r := add_le_add ha hb
       _ = 2 * r := (two_mul r).symm
 

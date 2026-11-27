@@ -147,7 +147,7 @@ lemma MemHolder.of_le {X : Type*} [PseudoMetricSpace X] [hX : BoundedSpace X]
 /-- If a function is `r`-Hölder over a bounded space, then it is also `s`-Hölder when `s ≤ r`.
 See `MemHolder.of_le` for the version in a pseudometric space. -/
 lemma MemHolder.of_le' {s : ℝ≥0} (hf : MemHolder r f) (hs : s ≤ r)
-    (hX : ∃ C : ℝ≥0, ∀ x y : X, edist x y ≤ C) :
+    (hX : ∃ C : ℝ≥0, ∀ x y : X, eDist x y ≤ C) :
     MemHolder s f := by
   obtain ⟨C, hX⟩ := hX
   let := PseudoEMetricSpace.toPseudoMetricSpace
@@ -170,7 +170,7 @@ then it is also `s`-Hölder over this set when `s ≤ r`. See `HolderOnWith.exis
 for the version in a pseudometric space. -/
 lemma HolderOnWith.exists_holderOnWith_of_le' {D s : ℝ≥0} {A : Set X}
     (hf : ∃ C, HolderOnWith C r f A) (hs : s ≤ r)
-    (hA : ∀ ⦃x⦄, x ∈ A → ∀ ⦃y⦄, y ∈ A → edist x y ≤ D) :
+    (hA : ∀ ⦃x⦄, x ∈ A → ∀ ⦃y⦄, y ∈ A → eDist x y ≤ D) :
     ∃ C, HolderOnWith C s f A := by
   simp_rw [← HolderWith.restrict_iff] at *
   let := PseudoEMetricSpace.toPseudoMetricSpace
@@ -210,7 +210,7 @@ lemma eHolderNorm_eq_zero {r : ℝ≥0} {f : X → Y} :
     · rw [eHolderNorm, ← ENNReal.bot_eq_zero, iInf₂_eq_bot] at h
       rw [← edist_eq_zero, ← nonpos_iff_eq_zero]
       refine le_of_forall_gt fun b hb => ?_
-      obtain ⟨C, hC, hC'⟩ := h (b / edist x₁ x₂ ^ (r : ℝ))
+      obtain ⟨C, hC, hC'⟩ := h (b / eDist x₁ x₂ ^ (r : ℝ))
         (ENNReal.div_pos hb.ne.symm (ENNReal.rpow_lt_top_of_nonneg zero_le_coe
           (edist_lt_top x₁ x₂).ne).ne)
       exact lt_of_le_of_lt (hC x₁ x₂) <| ENNReal.mul_lt_of_lt_div hC'
@@ -228,9 +228,9 @@ lemma MemHolder.holderWith {r : ℝ≥0} {f : X → Y} (hf : MemHolder r f) :
   · simp only [hx, edist_self, zero_le]
   rw [nnHolderNorm, eHolderNorm, coe_toNNReal]
   on_goal 2 => exact hf.eHolderNorm_lt_top.ne
-  have h₁ : edist x₁ x₂ ^ (r : ℝ) ≠ 0 :=
+  have h₁ : eDist x₁ x₂ ^ (r : ℝ) ≠ 0 :=
     (Ne.symm <| ne_of_lt <| ENNReal.rpow_pos (edist_pos.2 hx) (edist_lt_top x₁ x₂).ne)
-  have h₂ : edist x₁ x₂ ^ (r : ℝ) ≠ ∞ := by
+  have h₂ : eDist x₁ x₂ ^ (r : ℝ) ≠ ∞ := by
     simp [(edist_lt_top x₁ x₂).ne]
   rw [← ENNReal.div_le_iff h₁ h₂]
   refine le_iInf₂ fun C hC => ?_

@@ -263,7 +263,7 @@ end UniformSpace
 ### Extended distance and a (pseudo) extended metric space structure
 
 Th extended distance on `Snowflaking X α hα₀ hα₁`
-is given by `edist x y = (edist x.ofSnowflaking y.ofSnowflaking) ^ α`.
+is given by `eDist x y = (eDist x.ofSnowflaking y.ofSnowflaking) ^ α`.
 
 If the original space is a (pseudo) extended metric space, then so is `Snowflaking X α hα₀ hα₁`.
 -/
@@ -273,20 +273,20 @@ section EDist
 variable [EDist X]
 
 instance : EDist (Snowflaking X α hα₀ hα₁) where
-  edist x y := edist x.ofSnowflaking y.ofSnowflaking ^ α
+  eDist x y := eDist x.ofSnowflaking y.ofSnowflaking ^ α
 
 theorem edist_def (x y : Snowflaking X α hα₀ hα₁) :
-    edist x y = edist x.ofSnowflaking y.ofSnowflaking ^ α :=
+    eDist x y = eDist x.ofSnowflaking y.ofSnowflaking ^ α :=
   rfl
 
 @[simp]
 theorem edist_toSnowflaking_toSnowflaking (x y : X) :
-    edist (toSnowflaking x : Snowflaking X α hα₀ hα₁) (toSnowflaking y) = edist x y ^ α :=
+    eDist (toSnowflaking x : Snowflaking X α hα₀ hα₁) (toSnowflaking y) = eDist x y ^ α :=
   rfl
 
 @[simp]
 theorem edist_ofSnowflaking_ofSnowflaking (x y : Snowflaking X α hα₀ hα₁) :
-    edist x.ofSnowflaking y.ofSnowflaking = edist x y ^ α⁻¹ := by
+    eDist x.ofSnowflaking y.ofSnowflaking = eDist x y ^ α⁻¹ := by
   rw [edist_def, ENNReal.rpow_rpow_inv hα₀.ne']
 
 end EDist
@@ -304,7 +304,7 @@ instance : PseudoEMetricSpace (Snowflaking X α hα₀ hα₁) where
       ENNReal.rpow_add_le_add_rpow _ _ hα₀.le hα₁]
   toUniformSpace := inferInstance
   uniformity_edist := by
-    have H : (𝓤 X).HasBasis (0 < ·) fun x => {p | edist p.1 p.2 < x ^ (α⁻¹)} := by
+    have H : (𝓤 X).HasBasis (0 < ·) fun x => {p | eDist p.1 p.2 < x ^ (α⁻¹)} := by
       refine EMetric.mk_uniformity_basis (fun _ _ ↦ by positivity) fun ε hε ↦
         ⟨ε ^ α, by positivity, ?_⟩
       rw [ENNReal.rpow_rpow_inv hα₀.ne']

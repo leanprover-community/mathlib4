@@ -803,33 +803,33 @@ variable [∀ i, EDist (F i)] {x y : ∀ i, F i} {i : ι}
 one may put an extended distance on their product `Π i, E i`.
 
 It is highly non-canonical, though, and therefore not registered as a global instance.
-The distance we use here is `edist x y = ∑' i, min (1/2)^(encode i) (edist (x i) (y i))`. -/
+The distance we use here is `eDist x y = ∑' i, min (1/2)^(encode i) (eDist (x i) (y i))`. -/
 @[instance_reducible]
-protected def edist : EDist (∀ i, F i) where
-  edist x y := ∑' i, min (2⁻¹ ^ encode i) (edist (x i) (y i))
+protected def eDist : EDist (∀ i, F i) where
+  eDist x y := ∑' i, min (2⁻¹ ^ encode i) (eDist (x i) (y i))
 
-attribute [scoped instance] PiCountable.edist
+attribute [scoped instance] PiCountable.eDist
 
 lemma edist_eq_tsum (x y : ∀ i, F i) :
-    edist x y = ∑' i, min (2⁻¹ ^ encode i) (edist (x i) (y i)) := rfl
+    eDist x y = ∑' i, min (2⁻¹ ^ encode i) (eDist (x i) (y i)) := rfl
 
 lemma min_edist_le_edist_pi (x y : ∀ i, F i) (i : ι) :
-    min (2⁻¹ ^ encode i) (edist (x i) (y i)) ≤ edist x y := by
+    min (2⁻¹ ^ encode i) (eDist (x i) (y i)) ≤ eDist x y := by
   grw [edist_eq_tsum, ← le_tsum _ i]
 
-lemma edist_le_two : edist x y ≤ 2 :=
+lemma edist_le_two : eDist x y ≤ 2 :=
   (ENNReal.tsum_geometric_two_encode_le_two).trans' <| by
     grw [edist_eq_tsum, min_le_left]
 
-lemma edist_lt_top : edist x y < ∞ := edist_le_two.trans_lt (by simp)
+lemma edist_lt_top : eDist x y < ∞ := edist_le_two.trans_lt (by simp)
 
-lemma edist_le_edist_pi_of_edist_lt (h : edist x y < 2⁻¹ ^ encode i) :
-    edist (x i) (y i) ≤ edist x y := by
+lemma edist_le_edist_pi_of_edist_lt (h : eDist x y < 2⁻¹ ^ encode i) :
+    eDist (x i) (y i) ≤ eDist x y := by
   simpa only [not_le.2 h, false_or] using min_le_iff.1 (min_edist_le_edist_pi x y i)
 
 end EDist
 
-attribute [scoped instance] PiCountable.edist
+attribute [scoped instance] PiCountable.eDist
 
 section PseudoEMetricSpace
 variable [∀ i, PseudoEMetricSpace (F i)]
@@ -838,15 +838,15 @@ variable [∀ i, PseudoEMetricSpace (F i)]
 one may put an extended distance on their product `Π i, E i`.
 
 It is highly non-canonical, though, and therefore not registered as a global instance.
-The distance we use here is `edist x y = ∑' i, min (1/2)^(encode i) (edist (x i) (y i))`. -/
+The distance we use here is `eDist x y = ∑' i, min (1/2)^(encode i) (eDist (x i) (y i))`. -/
 @[instance_reducible]
 protected def pseudoEMetricSpace : PseudoEMetricSpace (∀ i, F i) where
   edist_self x := by simp [edist_eq_tsum]
   edist_comm x y := by simp [edist_eq_tsum, edist_comm]
   edist_triangle x y z := calc
-        ∑' i, min (2⁻¹ ^ encode i) (edist (x i) (z i))
-    _ ≤ ∑' i, (min (2⁻¹ ^ encode i) (edist (x i) (y i)) +
-         min (2⁻¹ ^ encode i) (edist (y i) (z i))) := by
+        ∑' i, min (2⁻¹ ^ encode i) (eDist (x i) (z i))
+    _ ≤ ∑' i, (min (2⁻¹ ^ encode i) (eDist (x i) (y i)) +
+         min (2⁻¹ ^ encode i) (eDist (y i) (z i))) := by
       gcongr with n; grw [edist_triangle _ (y n), min_add_distrib, min_le_right]
     _ = _ := tsum_add ..
   toUniformSpace := Pi.uniformSpace _
@@ -862,18 +862,18 @@ protected def pseudoEMetricSpace : PseudoEMetricSpace (∀ i, F i) where
       obtain ⟨δ, δpos, hδ⟩ : ∃ δ, 0 < δ ∧ δ * #K < ε / 2 :=
         ENNReal.exists_pos_mul_lt (by simp) (by simpa using hε.ne')
       apply @mem_iInf_of_iInter _ _ _ _ _ K.finite_toSet fun i =>
-          {p : (∀ i : ι, F i) × ∀ i : ι, F i | edist (p.fst i) (p.snd i) < δ}
+          {p : (∀ i : ι, F i) × ∀ i : ι, F i | eDist (p.fst i) (p.snd i) < δ}
       · rintro ⟨i, hi⟩
         refine mem_iInf_of_mem δ (mem_iInf_of_mem δpos ?_)
         simp only [mem_principal, Subset.rfl]
       · rintro ⟨x, y⟩ hxy
         simp only [mem_iInter, mem_ofPred_eq, SetCoe.forall, Finset.mem_coe] at hxy
         calc
-          edist x y = ∑' i : ι, min (2⁻¹ ^ encode i) (edist (x i) (y i)) := rfl
-          _ = ∑ i ∈ K, min (2⁻¹ ^ encode i) (edist (x i) (y i)) +
-                ∑' i : ↑(K : Set ι)ᶜ, min (2⁻¹ ^ encode (i : ι)) (edist (x i) (y i)) :=
+          eDist x y = ∑' i : ι, min (2⁻¹ ^ encode i) (eDist (x i) (y i)) := rfl
+          _ = ∑ i ∈ K, min (2⁻¹ ^ encode i) (eDist (x i) (y i)) +
+                ∑' i : ↑(K : Set ι)ᶜ, min (2⁻¹ ^ encode (i : ι)) (eDist (x i) (y i)) :=
             (sum_add_tsum_compl ..).symm
-          _ ≤ ∑ i ∈ K, edist (x i) (y i) + ∑' i : ↑(K : Set ι)ᶜ, 2⁻¹ ^ encode (i : ι) := by
+          _ ≤ ∑ i ∈ K, eDist (x i) (y i) + ∑' i : ↑(K : Set ι)ᶜ, 2⁻¹ ^ encode (i : ι) := by
             gcongr
             · apply min_le_right
             · apply min_le_left
@@ -902,7 +902,7 @@ variable [∀ i, EMetricSpace (F i)]
 one may put an extended distance on their product `Π i, E i`.
 
 It is highly non-canonical, though, and therefore not registered as a global instance.
-The distance we use here is `edist x y = ∑' i, min (1/2)^(encode i) (edist (x i) (y i))`. -/
+The distance we use here is `eDist x y = ∑' i, min (1/2)^(encode i) (eDist (x i) (y i))`. -/
 @[instance_reducible]
 protected def emetricSpace : EMetricSpace (∀ i, F i) where
   eq_of_edist_eq_zero := by simp [edist_eq_tsum, funext_iff]
@@ -952,7 +952,7 @@ protected def pseudoMetricSpace : PseudoMetricSpace (∀ i, F i) :=
     rw [edist_eq_tsum, dist_eq_tsum,
       ENNReal.ofReal_tsum_of_nonneg (fun _ ↦ by positivity) (dist_summable ..)]
     congr! with a
-    simp [edist, ENNReal.inv_pow, PseudoMetricSpace.edist_dist (x a) (y a)]
+    simp [eDist, ENNReal.inv_pow, PseudoMetricSpace.edist_dist (x a) (y a)]
 
 end PseudoMetricSpace
 
@@ -963,7 +963,7 @@ variable [∀ i, MetricSpace (F i)]
 /-- Given a countable family of metric spaces, one may put a distance on their product `Π i, E i`.
 
 It is highly non-canonical, though, and therefore not registered as a global instance.
-The distance we use here is `edist x y = ∑' i, min (1/2)^(encode i) (edist (x i) (y i))`. -/
+The distance we use here is `eDist x y = ∑' i, min (1/2)^(encode i) (eDist (x i) (y i))`. -/
 @[instance_reducible]
 protected def metricSpace : MetricSpace (∀ i, F i) :=
   EMetricSpace.toMetricSpaceOfDist dist (by simp) (by simp [edist_dist])
@@ -1027,7 +1027,7 @@ noncomputable instance : PseudoEMetricSpace (PiNatEmbed X Y f) :=
   .induced (embed X Y f) PiCountable.pseudoEMetricSpace
 
 lemma edist_def (x y : PiNatEmbed X Y f) :
-    edist x y = ∑' i, min (2⁻¹ ^ encode i) (edist (f i x.ofPiNat) (f i y.ofPiNat)) := rfl
+    eDist x y = ∑' i, min (2⁻¹ ^ encode i) (eDist (f i x.ofPiNat) (f i y.ofPiNat)) := rfl
 
 lemma isometry_embed : Isometry (embed X Y f) := PseudoEMetricSpace.isometry_induced _
 

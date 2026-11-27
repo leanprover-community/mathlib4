@@ -11,7 +11,7 @@ public import Mathlib.Topology.MetricSpace.Dilation
 # Dilation equivalence
 
 In this file we define `DilationEquiv X Y`, a type of bundled equivalences between `X` and `Y` such
-that `edist (f x) (f y) = r * edist x y` for some `r : ℝ≥0`, `r ≠ 0`.
+that `eDist (f x) (f y) = r * eDist x y` for some `r : ℝ≥0`, `r ≠ 0`.
 
 We also develop basic API about these equivalences.
 
@@ -34,14 +34,14 @@ variable (F : Type*) (X Y : outParam Type*) [PseudoEMetricSpace X] [PseudoEMetri
 /-- Typeclass saying that `F` is a type of bundled equivalences such that all `e : F` are
 dilations. -/
 class DilationEquivClass [EquivLike F X Y] : Prop where
-  edist_eq' : ∀ f : F, ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ x y : X, edist (f x) (f y) = r * edist x y
+  edist_eq' : ∀ f : F, ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ x y : X, eDist (f x) (f y) = r * eDist x y
 
 instance (priority := 100) [EquivLike F X Y] [DilationEquivClass F X Y] : DilationClass F X Y :=
   { (inferInstance : FunLike F X Y), ‹DilationEquivClass F X Y› with }
 
 end Class
 
-/-- Type of equivalences `X ≃ Y` such that `∀ x y, edist (f x) (f y) = r * edist x y` for some
+/-- Type of equivalences `X ≃ Y` such that `∀ x y, eDist (f x) (f y) = r * eDist x y` for some
 `r : ℝ≥0`, `r ≠ 0`. -/
 structure DilationEquiv (X Y : Type*) [PseudoEMetricSpace X] [PseudoEMetricSpace Y]
     extends X ≃ Y, Dilation X Y
@@ -132,8 +132,8 @@ protected theorem injective (e : X ≃ᵈ Y) : Injective e := e.toEquiv.injectiv
 @[simp]
 theorem ratio_trans (e : X ≃ᵈ Y) (e' : Y ≃ᵈ Z) : ratio (e.trans e') = ratio e * ratio e' := by
   -- If `X` is trivial, then so is `Y`, otherwise we apply `Dilation.ratio_comp'`
-  by_cases! hX : ∀ x y : X, edist x y = 0 ∨ edist x y = ∞
-  · have hY : ∀ x y : Y, edist x y = 0 ∨ edist x y = ∞ := e.surjective.forall₂.2 fun x y ↦ by
+  by_cases! hX : ∀ x y : X, eDist x y = 0 ∨ eDist x y = ∞
+  · have hY : ∀ x y : Y, eDist x y = 0 ∨ eDist x y = ∞ := e.surjective.forall₂.2 fun x y ↦ by
       refine (hX x y).imp (fun h ↦ ?_) fun h ↦ ?_ <;> simp [*, Dilation.ratio_ne_zero]
     simp [Dilation.ratio_of_trivial, *]
   exact (Dilation.ratio_comp' (g := e'.toDilation) (f := e.toDilation) hX).trans (mul_comm _ _)

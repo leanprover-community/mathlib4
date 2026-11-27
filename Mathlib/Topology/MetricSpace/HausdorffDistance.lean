@@ -75,16 +75,16 @@ variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] {x y : α} {s t : Set �
 
 /-- The minimal edistance of a point to a set -/
 def infEDist (x : α) (s : Set α) : ℝ≥0∞ :=
-  ⨅ y ∈ s, edist x y
+  ⨅ y ∈ s, eDist x y
 
 @[simp]
 theorem infEDist_empty : infEDist x ∅ = ∞ :=
   iInf_emptyset
 
-theorem le_infEDist {d} : d ≤ infEDist x s ↔ ∀ y ∈ s, d ≤ edist x y := by
+theorem le_infEDist {d} : d ≤ infEDist x s ↔ ∀ y ∈ s, d ≤ eDist x y := by
   simp only [infEDist, le_iInf_iff]
 
-/-- The edist to a union is the minimum of the edists -/
+/-- The eDist to a union is the minimum of the edists -/
 @[simp]
 theorem infEDist_union : infEDist x (s ∪ t) = infEDist x s ⊓ infEDist x t :=
   iInf_union
@@ -96,66 +96,66 @@ theorem infEDist_iUnion (f : ι → Set α) (x : α) : infEDist x (⋃ i, f i) =
 lemma infEDist_biUnion {ι : Type*} (f : ι → Set α) (I : Set ι) (x : α) :
     infEDist x (⋃ i ∈ I, f i) = ⨅ i ∈ I, infEDist x (f i) := by simp only [infEDist_iUnion]
 
-/-- The edist to a singleton is the edistance to the single point of this singleton -/
+/-- The eDist to a singleton is the edistance to the single point of this singleton -/
 @[simp]
-theorem infEDist_singleton : infEDist x {y} = edist x y :=
+theorem infEDist_singleton : infEDist x {y} = eDist x y :=
   iInf_singleton
 
-/-- The edist to a set is bounded above by the edist to any of its points -/
-theorem infEDist_le_edist_of_mem (h : y ∈ s) : infEDist x s ≤ edist x y :=
+/-- The eDist to a set is bounded above by the eDist to any of its points -/
+theorem infEDist_le_edist_of_mem (h : y ∈ s) : infEDist x s ≤ eDist x y :=
   iInf₂_le y h
 
-/-- If a point `x` belongs to `s`, then its edist to `s` vanishes -/
+/-- If a point `x` belongs to `s`, then its eDist to `s` vanishes -/
 theorem infEDist_zero_of_mem (h : x ∈ s) : infEDist x s = 0 :=
   nonpos_iff_eq_zero.1 <| edist_self x ▸ infEDist_le_edist_of_mem h
 
-/-- The edist is antitone with respect to inclusion. -/
+/-- The eDist is antitone with respect to inclusion. -/
 @[gcongr]
 theorem infEDist_anti (h : s ⊆ t) : infEDist x t ≤ infEDist x s :=
   iInf_le_iInf_of_subset h
 
-/-- The edist to a set is `< r` iff there exists a point in the set at edistance `< r` -/
-theorem infEDist_lt_iff {r : ℝ≥0∞} : infEDist x s < r ↔ ∃ y ∈ s, edist x y < r := by
+/-- The eDist to a set is `< r` iff there exists a point in the set at edistance `< r` -/
+theorem infEDist_lt_iff {r : ℝ≥0∞} : infEDist x s < r ↔ ∃ y ∈ s, eDist x y < r := by
   simp_rw [infEDist, iInf_lt_iff, exists_prop]
 
-/-- The edist of `x` to `s` is bounded by the sum of the edist of `y` to `s` and
-the edist from `x` to `y` -/
-theorem infEDist_le_infEDist_add_edist : infEDist x s ≤ infEDist y s + edist x y :=
+/-- The eDist of `x` to `s` is bounded by the sum of the eDist of `y` to `s` and
+the eDist from `x` to `y` -/
+theorem infEDist_le_infEDist_add_edist : infEDist x s ≤ infEDist y s + eDist x y :=
   calc
-    ⨅ z ∈ s, edist x z ≤ ⨅ z ∈ s, edist y z + edist x y :=
+    ⨅ z ∈ s, eDist x z ≤ ⨅ z ∈ s, eDist y z + eDist x y :=
       iInf₂_mono fun _ _ => (edist_triangle _ _ _).trans_eq (add_comm _ _)
-    _ = (⨅ z ∈ s, edist y z) + edist x y := by simp only [ENNReal.iInf_add]
+    _ = (⨅ z ∈ s, eDist y z) + eDist x y := by simp only [ENNReal.iInf_add]
 
-theorem infEDist_le_edist_add_infEDist : infEDist x s ≤ edist x y + infEDist y s := by
+theorem infEDist_le_edist_add_infEDist : infEDist x s ≤ eDist x y + infEDist y s := by
   rw [add_comm]
   exact infEDist_le_infEDist_add_edist
 
-theorem edist_le_infEDist_add_ediam (hy : y ∈ s) : edist x y ≤ infEDist x s + Metric.ediam s := by
+theorem edist_le_infEDist_add_ediam (hy : y ∈ s) : eDist x y ≤ infEDist x s + Metric.ediam s := by
   simp_rw [infEDist, ENNReal.iInf_add]
   refine le_iInf₂ fun i hi => ?_
   calc
-    edist x y ≤ edist x i + edist i y := edist_triangle _ _ _
-    _ ≤ edist x i + Metric.ediam s := add_le_add le_rfl (Metric.edist_le_ediam_of_mem hi hy)
+    eDist x y ≤ eDist x i + eDist i y := edist_triangle _ _ _
+    _ ≤ eDist x i + Metric.ediam s := add_le_add le_rfl (Metric.edist_le_ediam_of_mem hi hy)
 
-/-- The edist to a set depends continuously on the point -/
+/-- The eDist to a set depends continuously on the point -/
 @[continuity, fun_prop]
 theorem continuous_infEDist : Continuous fun x => infEDist x s :=
   continuous_of_le_add_edist 1 (by simp) <| by
     simp only [one_mul, infEDist_le_infEDist_add_edist, forall₂_true_iff]
 
-/-- The edist to a set and to its closure coincide -/
+/-- The eDist to a set and to its closure coincide -/
 theorem infEDist_closure : infEDist x (closure s) = infEDist x s := by
   refine le_antisymm (infEDist_anti subset_closure) ?_
   refine ENNReal.le_of_forall_pos_le_add fun ε εpos h => ?_
   have ε0 : 0 < (ε / 2 : ℝ≥0∞) := by simpa [pos_iff_ne_zero] using εpos
   have : infEDist x (closure s) < infEDist x (closure s) + ε / 2 :=
     ENNReal.lt_add_right h.ne ε0.ne'
-  obtain ⟨y : α, ycs : y ∈ closure s, hy : edist x y < infEDist x (closure s) + ↑ε / 2⟩ :=
+  obtain ⟨y : α, ycs : y ∈ closure s, hy : eDist x y < infEDist x (closure s) + ↑ε / 2⟩ :=
     infEDist_lt_iff.mp this
-  obtain ⟨z : α, zs : z ∈ s, dyz : edist y z < ↑ε / 2⟩ := EMetric.mem_closure_iff.1 ycs (ε / 2) ε0
+  obtain ⟨z : α, zs : z ∈ s, dyz : eDist y z < ↑ε / 2⟩ := EMetric.mem_closure_iff.1 ycs (ε / 2) ε0
   calc
-    infEDist x s ≤ edist x z := infEDist_le_edist_of_mem zs
-    _ ≤ edist x y + edist y z := edist_triangle _ _ _
+    infEDist x s ≤ eDist x z := infEDist_le_edist_of_mem zs
+    _ ≤ eDist x y + eDist y z := edist_triangle _ _ _
     _ ≤ infEDist x (closure s) + ε / 2 + ε / 2 := add_le_add (le_of_lt hy) (le_of_lt dyz)
     _ = infEDist x (closure s) + ↑ε := by rw [add_assoc, ENNReal.add_halves]
 
@@ -193,7 +193,7 @@ theorem disjoint_closedEBall_of_lt_infEDist {r : ℝ≥0∞} (h : r < infEDist x
   intro y hy h'y
   apply lt_irrefl (infEDist x s)
   calc
-    infEDist x s ≤ edist x y := infEDist_le_edist_of_mem h'y
+    infEDist x s ≤ eDist x y := infEDist_le_edist_of_mem h'y
     _ ≤ r := by rwa [Metric.mem_closedEBall, edist_comm] at hy
     _ < infEDist x s := h
 
@@ -231,13 +231,13 @@ theorem _root_.IsOpen.exists_iUnion_isClosed {U : Set α} (hU : IsOpen U) :
   apply le_trans (pow_le_pow_right_of_le_one' a_lt_one.le hmn) hx
 
 theorem _root_.IsCompact.exists_infEDist_eq_edist (hs : IsCompact s) (hne : s.Nonempty) (x : α) :
-    ∃ y ∈ s, infEDist x s = edist x y := by
-  have A : Continuous fun y => edist x y := by fun_prop
+    ∃ y ∈ s, infEDist x s = eDist x y := by
+  have A : Continuous fun y => eDist x y := by fun_prop
   obtain ⟨y, ys, hy⟩ := hs.exists_isMinOn hne A.continuousOn
   exact ⟨y, ys, le_antisymm (infEDist_le_edist_of_mem ys) (by rwa [le_infEDist])⟩
 
 theorem exists_pos_forall_lt_edist (hs : IsCompact s) (ht : IsClosed t) (hst : Disjoint s t) :
-    ∃ r : ℝ≥0, 0 < r ∧ ∀ x ∈ s, ∀ y ∈ t, (r : ℝ≥0∞) < edist x y := by
+    ∃ r : ℝ≥0, 0 < r ∧ ∀ x ∈ s, ∀ y ∈ t, (r : ℝ≥0∞) < eDist x y := by
   rcases s.eq_empty_or_nonempty with (rfl | hne)
   · use 1
     simp
@@ -286,8 +286,8 @@ theorem hausdorffEDist_le_of_infEDist {r : ℝ≥0∞} (H1 : ∀ x ∈ s, infEDi
 
 /-- Bounding the Hausdorff edistance by exhibiting, for any point in each set,
 another point in the other set at controlled distance -/
-theorem hausdorffEDist_le_of_mem_edist {r : ℝ≥0∞} (H1 : ∀ x ∈ s, ∃ y ∈ t, edist x y ≤ r)
-    (H2 : ∀ x ∈ t, ∃ y ∈ s, edist x y ≤ r) : hausdorffEDist s t ≤ r := by
+theorem hausdorffEDist_le_of_mem_edist {r : ℝ≥0∞} (H1 : ∀ x ∈ s, ∃ y ∈ t, eDist x y ≤ r)
+    (H2 : ∀ x ∈ t, ∃ y ∈ s, eDist x y ≤ r) : hausdorffEDist s t ≤ r := by
   refine hausdorffEDist_le_of_infEDist (fun x xs ↦ ?_) (fun x xt ↦ ?_)
   · rcases H1 x xs with ⟨y, yt, hy⟩
     exact le_trans (infEDist_le_edist_of_mem yt) hy
@@ -303,7 +303,7 @@ theorem infEDist_le_hausdorffEDist_of_mem (h : x ∈ s) : infEDist x t ≤ hausd
 /-- If the Hausdorff distance is `< r`, then any point in one of the sets has
 a corresponding point at distance `< r` in the other set. -/
 theorem exists_edist_lt_of_hausdorffEDist_lt {r : ℝ≥0∞} (h : x ∈ s) (H : hausdorffEDist s t < r) :
-    ∃ y ∈ t, edist x y < r :=
+    ∃ y ∈ t, eDist x y < r :=
   infEDist_lt_iff.mp <|
     calc
       infEDist x t ≤ hausdorffEDist s t := infEDist_le_hausdorffEDist_of_mem h
@@ -317,14 +317,14 @@ theorem infEDist_le_infEDist_add_hausdorffEDist :
     have ε0 : (ε / 2 : ℝ≥0∞) ≠ 0 := by simpa [pos_iff_ne_zero] using εpos
     have : infEDist x s < infEDist x s + ε / 2 :=
       ENNReal.lt_add_right (ENNReal.add_lt_top.1 h).1.ne ε0
-    obtain ⟨y : α, ys : y ∈ s, dxy : edist x y < infEDist x s + ↑ε / 2⟩ := infEDist_lt_iff.mp this
+    obtain ⟨y : α, ys : y ∈ s, dxy : eDist x y < infEDist x s + ↑ε / 2⟩ := infEDist_lt_iff.mp this
     have : hausdorffEDist s t < hausdorffEDist s t + ε / 2 :=
       ENNReal.lt_add_right (ENNReal.add_lt_top.1 h).2.ne ε0
-    obtain ⟨z : α, zt : z ∈ t, dyz : edist y z < hausdorffEDist s t + ↑ε / 2⟩ :=
+    obtain ⟨z : α, zt : z ∈ t, dyz : eDist y z < hausdorffEDist s t + ↑ε / 2⟩ :=
       exists_edist_lt_of_hausdorffEDist_lt ys this
     calc
-      infEDist x t ≤ edist x z := infEDist_le_edist_of_mem zt
-      _ ≤ edist x y + edist y z := edist_triangle _ _ _
+      infEDist x t ≤ eDist x z := infEDist_le_edist_of_mem zt
+      _ ≤ eDist x y + eDist y z := edist_triangle _ _ _
       _ ≤ infEDist x s + ε / 2 + (hausdorffEDist s t + ε / 2) := add_le_add dxy.le dyz.le
       _ = infEDist x s + hausdorffEDist s t + ε := by
         rw [add_add_add_comm, ENNReal.add_halves]
@@ -421,7 +421,7 @@ theorem empty_or_nonempty_of_hausdorffEDist_ne_top (fin : hausdorffEDist s t ≠
   · exact Or.inr ⟨hs, nonempty_of_hausdorffEDist_ne_top hs fin⟩
 
 @[simp]
-theorem hausdorffEDist_singleton : hausdorffEDist {x} {y} = edist x y := by
+theorem hausdorffEDist_singleton : hausdorffEDist {x} {y} = eDist x y := by
   simp_rw [hausdorffEDist, iSup_singleton, infEDist_singleton]
   nth_rw 2 [edist_comm]
   exact max_self _

@@ -12,12 +12,12 @@ public import Mathlib.Topology.ContinuousMap.Compact
 
 When `β` is a (pseudo, extended) metric space it is a uniform space, and therefore we may
 consider the type `α →ᵤ β` of functions equipped with the topology of uniform convergence. The
-natural (pseudo, extended) metric on this space is given by `fun f g ↦ ⨆ x, edist (f x) (g x)`,
+natural (pseudo, extended) metric on this space is given by `fun f g ↦ ⨆ x, eDist (f x) (g x)`,
 and this induces the existing uniformity. Unless `β` is a bounded space, this will not be a (pseudo)
 metric space (except in the trivial case where `α` is empty).
 
 When `𝔖 : Set (Set α)` is a collection of subsets, we may equip the space of functions with the
-(pseudo, extended) metric `fun f g ↦ ⨆ x ∈ ⋃₀ 𝔖, edist (f x) (g x)`. *However*, this only induces
+(pseudo, extended) metric `fun f g ↦ ⨆ x ∈ ⋃₀ 𝔖, eDist (f x) (g x)`. *However*, this only induces
 the pre-existing uniformity on `α →ᵤ[𝔖] β` if `𝔖` is finite, and hence we only have an instance in
 that case. Nevertheless, this still covers the most important case, such as when `𝔖` is a singleton.
 
@@ -27,7 +27,7 @@ indeed, the uniformity of `α →ᵤ[𝔖] β` is countably generated only when 
 and for every `s ∈ 𝔖`, there is some `n` such that `s ⊆ Finset.sup (t n)` (see
 `UniformOnFun.isCountablyGenerated_uniformity`). So, while the `𝔖` for which `α →ᵤ[𝔖] β` is
 metrizable include some non-finite `𝔖`, there are some `𝔖` which are not metrizable, and moreover,
-it is only when `𝔖` is finite that `⨆ x ∈ ⋃₀ 𝔖, edist (f x) (g x)` is a metric which induces the
+it is only when `𝔖` is finite that `⨆ x ∈ ⋃₀ 𝔖, eDist (f x) (g x)` is a metric which induces the
 uniformity.
 
 There are a few advantages of equipping this space with this metric structure.
@@ -52,27 +52,27 @@ section EMetric
 variable [PseudoEMetricSpace β]
 
 noncomputable instance : EDist (α →ᵤ β) where
-  edist f g := ⨆ x, edist (toFun f x) (toFun g x)
+  eDist f g := ⨆ x, eDist (toFun f x) (toFun g x)
 
 lemma edist_def (f g : α →ᵤ β) :
-    edist f g = ⨆ x, edist (toFun f x) (toFun g x) :=
+    eDist f g = ⨆ x, eDist (toFun f x) (toFun g x) :=
   rfl
 
 lemma edist_le {f g : α →ᵤ β} {C : ℝ≥0∞} :
-    edist f g ≤ C ↔ ∀ x, edist (toFun f x) (toFun g x) ≤ C :=
+    eDist f g ≤ C ↔ ∀ x, eDist (toFun f x) (toFun g x) ≤ C :=
   iSup_le_iff
 
-/-- The natural `EMetric` structure on `α →ᵤ β` given by `edist f g = ⨆ x, edist (f x) (g x)`. -/
+/-- The natural `EMetric` structure on `α →ᵤ β` given by `eDist f g = ⨆ x, eDist (f x) (g x)`. -/
 noncomputable instance : PseudoEMetricSpace (α →ᵤ β) where
   edist_self := by simp [edist_def]
   edist_comm := by simp [edist_def, edist_comm]
   edist_triangle f₁ f₂ f₃ := calc
-    ⨆ x, edist (f₁ x) (f₃ x) ≤ ⨆ x, edist (f₁ x) (f₂ x) + edist (f₂ x) (f₃ x) :=
+    ⨆ x, eDist (f₁ x) (f₃ x) ≤ ⨆ x, eDist (f₁ x) (f₂ x) + eDist (f₂ x) (f₃ x) :=
       iSup_mono fun _ ↦ edist_triangle _ _ _
-    _ ≤ (⨆ x, edist (f₁ x) (f₂ x)) + (⨆ x, edist (f₂ x) (f₃ x)) := iSup_add_le _ _
+    _ ≤ (⨆ x, eDist (f₁ x) (f₂ x)) + (⨆ x, eDist (f₂ x) (f₃ x)) := iSup_add_le _ _
   toUniformSpace := inferInstance
   uniformity_edist := by
-    suffices 𝓤 (α →ᵤ β) = comap (fun x ↦ edist x.1 x.2) (𝓝 0) by
+    suffices 𝓤 (α →ᵤ β) = comap (fun x ↦ eDist x.1 x.2) (𝓝 0) by
       simp [this, ENNReal.nhds_zero_basis.comap _ |>.eq_biInf, Set.Iio]
     rw [ENNReal.nhds_zero_basis_Iic.comap _ |>.eq_biInf]
     rw [UniformFun.hasBasis_uniformity_of_basis α β uniformity_basis_edist_le |>.eq_biInf]
@@ -115,7 +115,7 @@ lemma _root_.LipschitzOnWith.uniformEquicontinuousOn (f : α → γ → β) (K :
   exact h.uniformContinuousOn
 
 lemma edist_eval_le {f g : α →ᵤ β} {x : α} :
-    edist (toFun f x) (toFun g x) ≤ edist f g :=
+    eDist (toFun f x) (toFun g x) ≤ eDist f g :=
   edist_le.mp le_rfl x
 
 lemma lipschitzWith_eval (x : α) :
@@ -173,7 +173,7 @@ lemma isometry_ofFun_continuousMap [TopologicalSpace α] [CompactSpace α] :
 
 lemma edist_continuousMapMk [TopologicalSpace α] [CompactSpace α]
     {f g : α →ᵤ β} (hf : Continuous (toFun f)) (hg : Continuous (toFun g)) :
-    edist (⟨_, hf⟩ : C(α, β)) ⟨_, hg⟩ = edist f g := by
+    eDist (⟨_, hf⟩ : C(α, β)) ⟨_, hg⟩ = eDist f g := by
   simp [← isometry_ofFun_continuousMap.edist_eq]
 
 end Metric
@@ -201,24 +201,24 @@ lemma continuous_of_forall_lipschitzWith {f : γ → α →ᵤ[𝔖] β} (K : Se
 
 @[nolint unusedArguments]
 noncomputable instance [Finite 𝔖] : EDist (α →ᵤ[𝔖] β) where
-  edist f g := ⨆ x ∈ ⋃₀ 𝔖, edist (toFun 𝔖 f x) (toFun 𝔖 g x)
+  eDist f g := ⨆ x ∈ ⋃₀ 𝔖, eDist (toFun 𝔖 f x) (toFun 𝔖 g x)
 
 lemma edist_def [Finite 𝔖] (f g : α →ᵤ[𝔖] β) :
-    edist f g = ⨆ x ∈ ⋃₀ 𝔖, edist (toFun 𝔖 f x) (toFun 𝔖 g x) :=
+    eDist f g = ⨆ x ∈ ⋃₀ 𝔖, eDist (toFun 𝔖 f x) (toFun 𝔖 g x) :=
   rfl
 
 lemma edist_def' [Finite 𝔖] (f g : α →ᵤ[𝔖] β) :
-    edist f g = ⨆ s ∈ 𝔖, ⨆ x ∈ s, edist (toFun 𝔖 f x) (toFun 𝔖 g x) := by
+    eDist f g = ⨆ s ∈ 𝔖, ⨆ x ∈ s, eDist (toFun 𝔖 f x) (toFun 𝔖 g x) := by
   simp [edist_def, iSup_and, iSup_comm (ι := α)]
 
 lemma edist_eq_restrict_sUnion [Finite 𝔖] {f g : α →ᵤ[𝔖] β} :
-    edist f g = edist
+    eDist f g = eDist
       (UniformFun.ofFun ((⋃₀ 𝔖).domRestrict (toFun 𝔖 f)))
       (UniformFun.ofFun ((⋃₀ 𝔖).domRestrict (toFun 𝔖 g))) :=
   iSup_subtype'
 
 lemma edist_eq_pi_restrict [Fintype 𝔖] {f g : α →ᵤ[𝔖] β} :
-    edist f g = edist
+    eDist f g = eDist
       (fun s : 𝔖 ↦ UniformFun.ofFun ((s : Set α).domRestrict (toFun 𝔖 f)))
       (fun s : 𝔖 ↦ UniformFun.ofFun ((s : Set α).domRestrict (toFun 𝔖 g))) := by
   simp_rw [edist_def', iSup_subtype', edist_pi_def, Finset.sup_univ_eq_iSup]
@@ -227,7 +227,7 @@ lemma edist_eq_pi_restrict [Fintype 𝔖] {f g : α →ᵤ[𝔖] β} :
 variable [Finite 𝔖]
 
 /-- The natural `EMetric` structure on `α →ᵤ[𝔖] β` when `𝔖` is finite given by
-`edist f g = ⨆ x ∈ ⋃₀ 𝔖, edist (f x) (g x)`. -/
+`eDist f g = ⨆ x ∈ ⋃₀ 𝔖, eDist (f x) (g x)`. -/
 noncomputable instance : PseudoEMetricSpace (α →ᵤ[𝔖] β) where
   edist_self f := by simp [edist_eq_restrict_sUnion]
   edist_comm := by simp [edist_eq_restrict_sUnion, edist_comm]
@@ -240,7 +240,7 @@ noncomputable instance : PseudoEMetricSpace (α →ᵤ[𝔖] β) where
       Set.preimage_ofPred_eq]
 
 lemma edist_le {f g : α →ᵤ[𝔖] β} {C : ℝ≥0∞} :
-    edist f g ≤ C ↔ ∀ x ∈ ⋃₀ 𝔖, edist (toFun 𝔖 f x) (toFun 𝔖 g x) ≤ C := by
+    eDist f g ≤ C ↔ ∀ x ∈ ⋃₀ 𝔖, eDist (toFun 𝔖 f x) (toFun 𝔖 g x) ≤ C := by
   simp_rw [edist_def, iSup₂_le_iff]
 
 lemma lipschitzWith_iff {f : γ → α →ᵤ[𝔖] β} {K : ℝ≥0} :
@@ -254,7 +254,7 @@ lemma lipschitzOnWith_iff {f : γ → α →ᵤ[𝔖] β} {K : ℝ≥0} {s : Set
   rfl
 
 lemma edist_eval_le {f g : α →ᵤ[𝔖] β} {x : α} (hx : x ∈ ⋃₀ 𝔖) :
-    edist (toFun 𝔖 f x) (toFun 𝔖 g x) ≤ edist f g :=
+    eDist (toFun 𝔖 f x) (toFun 𝔖 g x) ≤ eDist f g :=
   edist_le.mp le_rfl x hx
 
 lemma lipschitzWith_eval {x : α} (hx : x ∈ ⋃₀ 𝔖) :
@@ -309,13 +309,13 @@ noncomputable instance [BoundedSpace β] : BoundedSpace (α →ᵤ[𝔖] β) whe
 lemma edist_continuousRestrict [TopologicalSpace α] {f g : α →ᵤ[𝔖] β}
     [CompactSpace (⋃₀ 𝔖)] (hf : ContinuousOn (toFun 𝔖 f) (⋃₀ 𝔖))
     (hg : ContinuousOn (toFun 𝔖 g) (⋃₀ 𝔖)) :
-    edist (⟨_, hf.domRestrict⟩ : C(⋃₀ 𝔖, β)) ⟨_, hg.domRestrict⟩ = edist f g := by
+    eDist (⟨_, hf.domRestrict⟩ : C(⋃₀ 𝔖, β)) ⟨_, hg.domRestrict⟩ = eDist f g := by
   simp [ContinuousMap.edist_eq_iSup, iSup_subtype, edist_def]
 
 lemma edist_continuousRestrict_of_singleton [TopologicalSpace α] {s : Set α}
     {f g : α →ᵤ[{s}] β} [CompactSpace s] (hf : ContinuousOn (toFun {s} f) s)
     (hg : ContinuousOn (toFun {s} g) s) :
-    edist (⟨_, hf.domRestrict⟩ : C(s, β)) ⟨_, hg.domRestrict⟩ = edist f g := by
+    eDist (⟨_, hf.domRestrict⟩ : C(s, β)) ⟨_, hg.domRestrict⟩ = eDist f g := by
   simp [ContinuousMap.edist_eq_iSup, iSup_subtype, edist_def]
 
 end Metric

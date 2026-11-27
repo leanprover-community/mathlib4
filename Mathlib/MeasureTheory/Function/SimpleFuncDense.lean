@@ -59,7 +59,7 @@ points `e 0`, ..., `e N`. If more than one point are at the same distance from `
 noncomputable def nearestPtInd (e : ℕ → α) : ℕ → α →ₛ ℕ
   | 0 => const α 0
   | N + 1 =>
-    piecewise (⋂ k ≤ N, { x | edist (e (N + 1)) x < edist (e k) x })
+    piecewise (⋂ k ≤ N, { x | eDist (e (N + 1)) x < eDist (e k) x })
       (MeasurableSet.iInter fun _ =>
         MeasurableSet.iInter fun _ =>
           measurableSet_lt measurable_edist_right measurable_edist_right)
@@ -81,7 +81,7 @@ theorem nearestPt_zero (e : ℕ → α) : nearestPt e 0 = const α (e 0) :=
 
 theorem nearestPtInd_succ (e : ℕ → α) (N : ℕ) (x : α) :
     nearestPtInd e (N + 1) x =
-      if ∀ k ≤ N, edist (e (N + 1)) x < edist (e k) x then N + 1 else nearestPtInd e N x := by
+      if ∀ k ≤ N, eDist (e (N + 1)) x < eDist (e k) x then N + 1 else nearestPtInd e N x := by
   simp only [nearestPtInd, coe_piecewise, Set.piecewise]
   congr
   simp
@@ -95,7 +95,7 @@ theorem nearestPtInd_le (e : ℕ → α) (N : ℕ) (x : α) : nearestPtInd e N x
     exacts [le_rfl, ihN.trans N.le_succ]
 
 theorem edist_nearestPt_le (e : ℕ → α) (x : α) {k N : ℕ} (hk : k ≤ N) :
-    edist (nearestPt e N x) x ≤ edist (e k) x := by
+    eDist (nearestPt e N x) x ≤ eDist (e k) x := by
   induction N generalizing k with
   | zero => simp [nonpos_iff_eq_zero.1 hk]
   | succ N ihN =>
@@ -165,22 +165,22 @@ theorem tendsto_approxOn {f : β → α} (hf : Measurable f) {s : Set α} {y₀ 
 
 theorem edist_approxOn_mono {f : β → α} (hf : Measurable f) {s : Set α} {y₀ : α} (h₀ : y₀ ∈ s)
     [SeparableSpace s] (x : β) {m n : ℕ} (h : m ≤ n) :
-    edist (approxOn f hf s y₀ h₀ n x) (f x) ≤ edist (approxOn f hf s y₀ h₀ m x) (f x) := by
+    eDist (approxOn f hf s y₀ h₀ n x) (f x) ≤ eDist (approxOn f hf s y₀ h₀ m x) (f x) := by
   dsimp only [approxOn, coe_comp, Function.comp_def]
   exact edist_nearestPt_le _ _ ((nearestPtInd_le _ _ _).trans h)
 
 theorem edist_approxOn_le {f : β → α} (hf : Measurable f) {s : Set α} {y₀ : α} (h₀ : y₀ ∈ s)
-    [SeparableSpace s] (x : β) (n : ℕ) : edist (approxOn f hf s y₀ h₀ n x) (f x) ≤ edist y₀ (f x) :=
+    [SeparableSpace s] (x : β) (n : ℕ) : eDist (approxOn f hf s y₀ h₀ n x) (f x) ≤ eDist y₀ (f x) :=
   edist_approxOn_mono hf h₀ x zero_le
 
 theorem edist_approxOn_y0_le {f : β → α} (hf : Measurable f) {s : Set α} {y₀ : α} (h₀ : y₀ ∈ s)
     [SeparableSpace s] (x : β) (n : ℕ) :
-    edist y₀ (approxOn f hf s y₀ h₀ n x) ≤ edist y₀ (f x) + edist y₀ (f x) :=
+    eDist y₀ (approxOn f hf s y₀ h₀ n x) ≤ eDist y₀ (f x) + eDist y₀ (f x) :=
   calc
-    edist y₀ (approxOn f hf s y₀ h₀ n x) ≤
-        edist y₀ (f x) + edist (approxOn f hf s y₀ h₀ n x) (f x) :=
+    eDist y₀ (approxOn f hf s y₀ h₀ n x) ≤
+        eDist y₀ (f x) + eDist (approxOn f hf s y₀ h₀ n x) (f x) :=
       edist_triangle_right _ _ _
-    _ ≤ edist y₀ (f x) + edist y₀ (f x) := by grw [edist_approxOn_le hf h₀ x n]
+    _ ≤ eDist y₀ (f x) + eDist y₀ (f x) := by grw [edist_approxOn_le hf h₀ x n]
 
 end SimpleFunc
 

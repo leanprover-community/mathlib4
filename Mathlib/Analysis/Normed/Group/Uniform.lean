@@ -307,7 +307,7 @@ alias nndist_mul_mul_le := nnDist_mul_mul_le
 
 @[to_additive]
 theorem edist_mul_mul_le (a₁ a₂ b₁ b₂ : E) :
-    edist (a₁ * a₂) (b₁ * b₂) ≤ edist a₁ b₁ + edist a₂ b₂ := by
+    eDist (a₁ * a₂) (b₁ * b₂) ≤ eDist a₁ b₁ + eDist a₂ b₂ := by
   simp only [eDist_nnDist]
   norm_cast
   apply nnDist_mul_mul_le
@@ -346,10 +346,10 @@ alias ⟨LocallyLipschitzOn.of_inv, LocallyLipschitzOn.inv⟩ := locallyLipschit
 lemma LipschitzOnWith.mul (hf : LipschitzOnWith Kf f s) (hg : LipschitzOnWith Kg g s) :
     LipschitzOnWith (Kf + Kg) (fun x ↦ f x * g x) s := fun x hx y hy ↦
   calc
-    edist (f x * g x) (f y * g y) ≤ edist (f x) (f y) + edist (g x) (g y) :=
+    eDist (f x * g x) (f y * g y) ≤ eDist (f x) (f y) + eDist (g x) (g y) :=
       edist_mul_mul_le _ _ _ _
-    _ ≤ Kf * edist x y + Kg * edist x y := add_le_add (hf hx hy) (hg hx hy)
-    _ = (Kf + Kg) * edist x y := (add_mul _ _ _).symm
+    _ ≤ Kf * eDist x y + Kg * eDist x y := add_le_add (hf hx hy) (hg hx hy)
+    _ = (Kf + Kg) * eDist x y := (add_mul _ _ _).symm
 
 @[to_additive]
 lemma LipschitzWith.mul (hf : LipschitzWith Kf f) (hg : LipschitzWith Kg g) :

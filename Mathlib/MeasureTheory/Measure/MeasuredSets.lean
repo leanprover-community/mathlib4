@@ -14,7 +14,7 @@ import Mathlib.Topology.MetricSpace.Lipschitz
 # Measured sets
 
 Consider a measure `μ` on a measurable space. One can define an extended distance on the space
-of measurable sets, by `edist s t := μ (s ∆ t)`. In this file, we introduce this definition
+of measurable sets, by `eDist s t := μ (s ∆ t)`. In this file, we introduce this definition
 on the type synonym `MeasuredSets μ`, and we prove that `μ` is a continuous function on this space.
 
 We also give a density criterion for this distance,
@@ -37,7 +37,7 @@ variable {α : Type*} [mα : MeasurableSpace α] {μ : Measure α}
 
 set_option linter.unusedVariables false in
 /-- The subtype of all measurable sets. We denote it as `MeasuredSets μ`, with an explicit but
-unused parameter `μ`, to be able to define a distance on it given by `edist s t = μ (s ∆ t)` -/
+unused parameter `μ`, to be able to define a distance on it given by `eDist s t = μ (s ∆ t)` -/
 @[nolint unusedArguments]
 def MeasuredSets (μ : Measure α) : Type _ := {s : Set α // MeasurableSet s}
 
@@ -46,17 +46,17 @@ instance : SetLike (MeasuredSets μ) α where
   coe_injective := Subtype.coe_injective
 
 noncomputable instance : PseudoEMetricSpace (MeasuredSets μ) where
-  edist s t := μ ((s : Set α) ∆ t)
+  eDist s t := μ ((s : Set α) ∆ t)
   edist_self := by simp
   edist_comm := by grind
   edist_triangle s t u := measure_symmDiff_le _ _ _
 
-lemma MeasuredSets.edist_def (s t : MeasuredSets μ) : edist s t = μ ((s : Set α) ∆ t) := rfl
+lemma MeasuredSets.edist_def (s t : MeasuredSets μ) : eDist s t = μ ((s : Set α) ∆ t) := rfl
 
 /-- Measure on `MeasuredSets` is a 1-lipschitz function.
 
 We cannot state this in terms of `LipschitzWith`, because `ℝ≥0∞` is not a `PseudoEMetricSpace`. -/
-lemma MeasuredSets.sub_le_edist (s t : MeasuredSets μ) : μ s - μ t ≤ edist s t :=
+lemma MeasuredSets.sub_le_edist (s t : MeasuredSets μ) : μ s - μ t ≤ eDist s t :=
   le_measure_sdiff.trans <| measure_mono subset_union_left
 
 lemma MeasuredSets.continuous_measure : Continuous (fun (s : MeasuredSets μ) ↦ μ s) := by

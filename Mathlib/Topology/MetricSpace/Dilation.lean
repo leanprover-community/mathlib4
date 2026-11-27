@@ -14,7 +14,7 @@ import Mathlib.Topology.MetricSpace.Lipschitz
 # Dilations
 
 We define dilations, i.e., maps between emetric spaces that satisfy
-`edist (f x) (f y) = r * edist x y` for some `r ∉ {0, ∞}`.
+`eDist (f x) (f y) = r * eDist x y` for some `r ∉ {0, ∞}`.
 
 The value `r = 0` is not allowed because we want dilations of (e)metric spaces to be automatically
 injective. The value `r = ∞` is not allowed because this way we can define `Dilation.ratio f : ℝ≥0`,
@@ -67,7 +67,7 @@ structure Dilation where
 
   Do NOT use directly. Use the coercion instead. -/
   toFun : α → β
-  edist_eq' : ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ x y : α, edist (toFun x) (toFun y) = r * edist x y
+  edist_eq' : ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ x y : α, eDist (toFun x) (toFun y) = r * eDist x y
 
 @[inherit_doc] infixl:25 " →ᵈ " => Dilation
 
@@ -75,7 +75,7 @@ structure Dilation where
 You should extend this typeclass when you extend `Dilation`. -/
 class DilationClass (F : Type*) (α β : outParam Type*) [PseudoEMetricSpace α] [PseudoEMetricSpace β]
     [FunLike F α β] : Prop where
-  edist_eq' : ∀ f : F, ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ x y : α, edist (f x) (f y) = r * edist x y
+  edist_eq' : ∀ f : F, ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ x y : α, eDist (f x) (f y) = r * eDist x y
 
 end Defs
 
@@ -133,10 +133,10 @@ open scoped Classical in
 /-- The ratio of a dilation `f`. If the ratio is undefined (i.e., the distance between any two
 points in `α` is either zero or infinity), then we choose one as the ratio. -/
 def ratio [DilationClass F α β] (f : F) : ℝ≥0 :=
-  if ∀ x y : α, edist x y = 0 ∨ edist x y = ⊤ then 1 else (DilationClass.edist_eq' f).choose
+  if ∀ x y : α, eDist x y = 0 ∨ eDist x y = ⊤ then 1 else (DilationClass.edist_eq' f).choose
 
 theorem ratio_of_trivial [DilationClass F α β] (f : F)
-    (h : ∀ x y : α, edist x y = 0 ∨ edist x y = ∞) : ratio f = 1 :=
+    (h : ∀ x y : α, eDist x y = 0 ∨ eDist x y = ∞) : ratio f = 1 :=
   ite_eq_left h
 
 @[nontriviality]
@@ -153,7 +153,7 @@ theorem ratio_pos [DilationClass F α β] (f : F) : 0 < ratio f :=
 
 @[simp]
 theorem edist_eq [DilationClass F α β] (f : F) (x y : α) :
-    edist (f x) (f y) = ratio f * edist x y := by
+    eDist (f x) (f y) = ratio f * eDist x y := by
   rw [ratio]; split_ifs with key
   · rcases DilationClass.edist_eq' f with ⟨r, hne, hr⟩
     replace hr := hr x y
@@ -178,8 +178,8 @@ theorem dist_eq {α β F : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β] 
 
 /-- The `ratio` is equal to the distance ratio for any two points with nonzero finite distance.
 `dist` and `nnDist` versions below -/
-theorem ratio_unique [DilationClass F α β] {f : F} {x y : α} {r : ℝ≥0} (h₀ : edist x y ≠ 0)
-    (htop : edist x y ≠ ⊤) (hr : edist (f x) (f y) = r * edist x y) : r = ratio f := by
+theorem ratio_unique [DilationClass F α β] {f : F} {x y : α} {r : ℝ≥0} (h₀ : eDist x y ≠ 0)
+    (htop : eDist x y ≠ ⊤) (hr : eDist (f x) (f y) = r * eDist x y) : r = ratio f := by
   simpa only [hr, ENNReal.mul_left_inj h₀ htop, ENNReal.coe_inj] using edist_eq f x y
 
 /-- The `ratio` is equal to the distance ratio for any two points
@@ -255,7 +255,7 @@ def _root_.Isometry.toDilation (f : α → β) (hf : Isometry f) : α →ᵈ β 
 
 @[simp]
 lemma _root_.Isometry.toDilation_ratio {f : α → β} {hf : Isometry f} : ratio hf.toDilation = 1 := by
-  by_cases! h : ∀ x y : α, edist x y = 0 ∨ edist x y = ⊤
+  by_cases! h : ∀ x y : α, eDist x y = 0 ∨ eDist x y = ⊤
   · exact ratio_of_trivial hf.toDilation h
   · obtain ⟨x, y, h₁, h₂⟩ := h
     exact ratio_unique h₁ h₂ (by simp [hf x y]) |>.symm
@@ -292,7 +292,7 @@ protected theorem coe_id : ⇑(Dilation.id α) = id :=
   rfl
 
 theorem ratio_id : ratio (Dilation.id α) = 1 := by
-  by_cases! h : ∀ x y : α, edist x y = 0 ∨ edist x y = ∞
+  by_cases! h : ∀ x y : α, eDist x y = 0 ∨ eDist x y = ∞
   · rw [ratio, ite_eq_left h]
   · rcases h with ⟨x, y, hne⟩
     refine (ratio_unique hne.1 hne.2 ?_).symm
@@ -321,7 +321,7 @@ that there exist two points in `α` at extended distance neither `0` nor `∞` b
 version works for most general spaces, see also `Dilation.ratio_comp` for a version assuming that
 `α` is a nontrivial metric space. -/
 theorem ratio_comp' {g : β →ᵈ γ} {f : α →ᵈ β}
-    (hne : ∃ x y : α, edist x y ≠ 0 ∧ edist x y ≠ ⊤) : ratio (g.comp f) = ratio g * ratio f := by
+    (hne : ∃ x y : α, eDist x y ≠ 0 ∧ eDist x y ≠ ⊤) : ratio (g.comp f) = ratio g * ratio f := by
   rcases hne with ⟨x, y, hα⟩
   have hgf := (edist_eq (g.comp f) x y).symm
   simp_rw [coe_comp, Function.comp, edist_eq, ← mul_assoc, ENNReal.mul_left_inj hα.1 hα.2]
@@ -365,7 +365,7 @@ theorem coe_mul (f g : α →ᵈ α) : ⇑(f * g) = f ∘ g :=
 
 @[simp]
 theorem ratio_mul (f g : α →ᵈ α) : ratio (f * g) = ratio f * ratio g := by
-  by_cases! h : ∀ x y : α, edist x y = 0 ∨ edist x y = ∞
+  by_cases! h : ∀ x y : α, eDist x y = 0 ∨ eDist x y = ∞
   · simp [ratio_of_trivial, h]
   exact ratio_comp' h
 

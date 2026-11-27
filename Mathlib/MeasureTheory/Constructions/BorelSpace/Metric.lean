@@ -114,10 +114,10 @@ theorem measurableSet_eball : MeasurableSet (Metric.eball x ε) :=
   Metric.isOpen_eball.measurableSet
 
 @[fun_prop]
-theorem measurable_edist_right : Measurable (edist x) := by fun_prop
+theorem measurable_edist_right : Measurable (eDist x) := by fun_prop
 
 @[fun_prop]
-theorem measurable_edist_left : Measurable fun y ↦ edist y x := by fun_prop
+theorem measurable_edist_left : Measurable fun y ↦ eDist y x := by fun_prop
 
 theorem measurable_infEDist {s : Set α} : Measurable fun x => infEDist x s :=
   continuous_infEDist.measurable
@@ -171,17 +171,17 @@ theorem tendsto_measure_thickening_of_isClosed {μ : Measure α} {s : Set α}
 
 variable [SecondCountableTopology α]
 
-theorem measurable_edist : Measurable fun p : α × α => edist p.1 p.2 :=
+theorem measurable_edist : Measurable fun p : α × α => eDist p.1 p.2 :=
   continuous_edist.measurable
 
 @[fun_prop]
-theorem Measurable.edist {f g : β → α} (hf : Measurable f) (hg : Measurable g) :
-    Measurable fun b => edist (f b) (g b) :=
+theorem Measurable.eDist {f g : β → α} (hf : Measurable f) (hg : Measurable g) :
+    Measurable fun b => eDist (f b) (g b) :=
   continuous_edist.measurable2 hf hg
 
 @[fun_prop]
-theorem AEMeasurable.edist {f g : β → α} {μ : Measure β} (hf : AEMeasurable f μ)
-    (hg : AEMeasurable g μ) : AEMeasurable (fun a => edist (f a) (g a)) μ :=
+theorem AEMeasurable.eDist {f g : β → α} {μ : Measure β} (hf : AEMeasurable f μ)
+    (hg : AEMeasurable g μ) : AEMeasurable (fun a => eDist (f a) (g a)) μ :=
   continuous_edist.aemeasurable2 hf hg
 
 end PseudoEMetricSpace

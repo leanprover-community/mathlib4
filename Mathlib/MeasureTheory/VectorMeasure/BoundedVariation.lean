@@ -392,7 +392,7 @@ lemma variation_vectorMeasure_Ioo_right
   have A : hf.vectorMeasure.variation (Ioc a b) = eVariationOn f.rightLim (Ioc a b) :=
     variation_vectorMeasure_Ioc _
   have B : eVariationOn f.rightLim (Ioc a b) = eVariationOn f.rightLim (Ioo a b) +
-      edist (f.rightLim b) (f.leftLim b) := by
+      eDist (f.rightLim b) (f.leftLim b) := by
     rw [show Ioc a b = Ioc a b ∩ Iic b by grind,
       eVariationOn.eVariationOn_on_inter_Iic_eq_Iio_add_edist (l := f.leftLim b),
       show Ioc a b ∩ Iio b = Ioo a b by grind]
@@ -434,7 +434,7 @@ lemma variation_vectorMeasure_Ico (hf : BoundedVariationOn f univ) {a b : α} :
   · simp [hab]
   have : (𝓝[>] a).NeBot := nhdsGT_neBot_of_exists_gt ⟨b, hab⟩
   have A : eVariationOn f.leftLim (Ico a b) = eVariationOn f.leftLim (Ioo a b) +
-      edist (f.rightLim a) (f.leftLim a) := by
+      eDist (f.rightLim a) (f.leftLim a) := by
     rw [show Ico a b = Ico a b ∩ Ici a by grind,
       eVariationOn.eVariationOn_on_inter_Ici_eq_Ioi_add_edist (l := f.rightLim a),
       show Ico a b ∩ Ioi a = Ioo a b by grind, edist_comm]

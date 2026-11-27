@@ -415,12 +415,12 @@ theorem boundedVariationOn (hf : AbsolutelyContinuousOnInterval f a b) :
           rw [dist_comm, Real.dist_eq, abs_eq_self.mpr]
           linarith [@hp₁ i (i + 1) (by lia)]
         linarith [mem_Icc.mp (hp₂ p.1), mem_Icc.mp (hp₂ 0)]
-    -- Reduce edist in the goal to dist and clear up
-    have veq : (∑ i ∈ Finset.range p.1, edist (f (p.2.val (i + 1))) (f (p.2.val i))).toReal =
+    -- Reduce eDist in the goal to dist and clear up
+    have veq : (∑ i ∈ Finset.range p.1, eDist (f (p.2.val (i + 1))) (f (p.2.val i))).toReal =
         ∑ i ∈ Finset.range p.1, dist (f (p.2.val i)) (f (p.2.val (i + 1))) := by
       rw [ENNReal.toReal_sum (by simp [edist_ne_top])]
       simp_rw [← dist_edist]; congr; ext i; nth_rw 1 [dist_comm]
-    have not_top : ∑ i ∈ Finset.range p.1, edist (f (p.2.val (i + 1))) (f (p.2.val i)) ≠ ⊤ := by
+    have not_top : ∑ i ∈ Finset.range p.1, eDist (f (p.2.val (i + 1))) (f (p.2.val i)) ≠ ⊤ := by
       simp [edist_ne_top]
     rw [← ENNReal.ofReal_toReal not_top]
     convert ENNReal.ofReal_le_ofReal (veq.symm ▸ vf.le)

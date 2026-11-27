@@ -336,13 +336,13 @@ alias enorm_integral_le_lintegral_enorm := eNorm_integral_le_lintegral_eNorm
 
 theorem dist_integral_le_lintegral_edist
     {f g : α → G} (hf : Integrable f μ) (hg : Integrable g μ) :
-    dist (∫ a, f a ∂μ) (∫ a, g a ∂μ) ≤ (∫⁻ a, edist (f a) (g a) ∂μ).toReal := by
+    dist (∫ a, f a ∂μ) (∫ a, g a ∂μ) ≤ (∫⁻ a, eDist (f a) (g a) ∂μ).toReal := by
   grw [dist_eq_norm, ← integral_sub hf hg, norm_integral_le_lintegral_norm]
   simp [eDist_eq_eNorm_sub]
 
 theorem edist_integral_le_lintegral_edist
     {f g : α → G} (hf : Integrable f μ) (hg : Integrable g μ) :
-    edist (∫ a, f a ∂μ) (∫ a, g a ∂μ) ≤ ∫⁻ a, edist (f a) (g a) ∂μ := by
+    eDist (∫ a, f a ∂μ) (∫ a, g a ∂μ) ≤ ∫⁻ a, eDist (f a) (g a) ∂μ := by
   rw [edist_dist]
   exact ENNReal.ofReal_le_of_le_toReal (dist_integral_le_lintegral_edist hf hg)
 

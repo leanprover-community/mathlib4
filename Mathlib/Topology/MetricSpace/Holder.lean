@@ -17,14 +17,14 @@ properties of Hölder continuous functions.
 ## Main definitions
 
 * `HolderOnWith`: `f : X → Y` is said to be *Hölder continuous* with constant `C : ℝ≥0` and
-  exponent `r : ℝ≥0` on a set `s`, if `edist (f x) (f y) ≤ C * edist x y ^ r` for all `x y ∈ s`;
+  exponent `r : ℝ≥0` on a set `s`, if `eDist (f x) (f y) ≤ C * eDist x y ^ r` for all `x y ∈ s`;
 * `HolderWith`: `f : X → Y` is said to be *Hölder continuous* with constant `C : ℝ≥0` and exponent
-  `r : ℝ≥0`, if `edist (f x) (f y) ≤ C * edist x y ^ r` for all `x y : X`.
+  `r : ℝ≥0`, if `eDist (f x) (f y) ≤ C * eDist x y ^ r` for all `x y : X`.
 
 ## Implementation notes
 
 We use the type `ℝ≥0` (a.k.a. `NNReal`) for `C` because this type has coercion both to `ℝ` and
-`ℝ≥0∞`, so it can be easily used both in inequalities about `dist` and `edist`. We also use `ℝ≥0`
+`ℝ≥0∞`, so it can be easily used both in inequalities about `dist` and `eDist`. We also use `ℝ≥0`
 for `r` to ensure that `d ^ r` is monotone in `d`. It might be a good idea to use
 `ℝ>0` for `r` but we don't have this type in `mathlib` (yet).
 
@@ -46,15 +46,15 @@ section EMetric
 variable [PseudoEMetricSpace X] [PseudoEMetricSpace Y] [PseudoEMetricSpace Z]
 
 /-- A function `f : X → Y` between two `PseudoEMetricSpace`s is Hölder continuous with constant
-`C : ℝ≥0` and exponent `r : ℝ≥0`, if `edist (f x) (f y) ≤ C * edist x y ^ r` for all `x y : X`. -/
+`C : ℝ≥0` and exponent `r : ℝ≥0`, if `eDist (f x) (f y) ≤ C * eDist x y ^ r` for all `x y : X`. -/
 def HolderWith (C r : ℝ≥0) (f : X → Y) : Prop :=
-  ∀ x y, edist (f x) (f y) ≤ (C : ℝ≥0∞) * edist x y ^ (r : ℝ)
+  ∀ x y, eDist (f x) (f y) ≤ (C : ℝ≥0∞) * eDist x y ^ (r : ℝ)
 
 /-- A function `f : X → Y` between two `PseudoEMetricSpace`s is Hölder continuous with constant
-`C : ℝ≥0` and exponent `r : ℝ≥0` on a set `s : Set X`, if `edist (f x) (f y) ≤ C * edist x y ^ r`
+`C : ℝ≥0` and exponent `r : ℝ≥0` on a set `s : Set X`, if `eDist (f x) (f y) ≤ C * eDist x y ^ r`
 for all `x y ∈ s`. -/
 def HolderOnWith (C r : ℝ≥0) (f : X → Y) (s : Set X) : Prop :=
-  ∀ x ∈ s, ∀ y ∈ s, edist (f x) (f y) ≤ (C : ℝ≥0∞) * edist x y ^ (r : ℝ)
+  ∀ x ∈ s, ∀ y ∈ s, eDist (f x) (f y) ≤ (C : ℝ≥0∞) * eDist x y ^ (r : ℝ)
 
 @[simp]
 theorem holderOnWith_empty (C r : ℝ≥0) (f : X → Y) : HolderOnWith C r f ∅ := fun _ hx => hx.elim
@@ -94,11 +94,11 @@ namespace HolderOnWith
 variable {C r : ℝ≥0} {f : X → Y} {s t : Set X}
 
 theorem edist_le (h : HolderOnWith C r f s) {x y : X} (hx : x ∈ s) (hy : y ∈ s) :
-    edist (f x) (f y) ≤ (C : ℝ≥0∞) * edist x y ^ (r : ℝ) :=
+    eDist (f x) (f y) ≤ (C : ℝ≥0∞) * eDist x y ^ (r : ℝ) :=
   h x hx y hy
 
 theorem edist_le_of_le (h : HolderOnWith C r f s) {x y : X} (hx : x ∈ s) (hy : y ∈ s) {d : ℝ≥0∞}
-    (hd : edist x y ≤ d) : edist (f x) (f y) ≤ (C : ℝ≥0∞) * d ^ (r : ℝ) :=
+    (hd : eDist x y ≤ d) : eDist (f x) (f y) ≤ (C : ℝ≥0∞) * d ^ (r : ℝ) :=
   (h.edist_le hx hy).trans <| by gcongr
 
 theorem comp {Cg rg : ℝ≥0} {g : Y → Z} {t : Set Y} (hg : HolderOnWith Cg rg g t) {Cf rf : ℝ≥0}
@@ -162,12 +162,12 @@ lemma interpolate {C₁ C₂ s t₁ t₂ : ℝ≥0} {A : Set X}
     (hf₁ : HolderOnWith C₁ r f A) (hf₂ : HolderOnWith C₂ s f A) (ht : t₁ + t₂ = 1) :
     HolderOnWith (C₁ ^ (t₁ : ℝ) * C₂ ^ (t₂ : ℝ)) (r * t₁ + s * t₂) f A := by
   intro x hx y hy
-  calc edist (f x) (f y)
-      = (edist (f x) (f y)) ^ (t₁ : ℝ) * (edist (f x) (f y)) ^ (t₂ : ℝ) := by
+  calc eDist (f x) (f y)
+      = (eDist (f x) (f y)) ^ (t₁ : ℝ) * (eDist (f x) (f y)) ^ (t₂ : ℝ) := by
         simp [← ENNReal.rpow_add_of_nonneg, ← NNReal.coe_add, ht]
-    _ ≤ (C₁ * (edist x y) ^ (r : ℝ)) ^ (t₁ : ℝ) * (C₂ * (edist x y) ^ (s : ℝ)) ^ (t₂ : ℝ) := by
+    _ ≤ (C₁ * (eDist x y) ^ (r : ℝ)) ^ (t₁ : ℝ) * (C₂ * (eDist x y) ^ (s : ℝ)) ^ (t₂ : ℝ) := by
         nth_grw 1 [hf₁ x hx y hy, hf₂ x hx y hy]
-    _ = ↑(C₁ ^ (t₁ : ℝ) * C₂ ^ (t₂ : ℝ)) * (edist x y) ^ (↑(r * t₁ + s * t₂) : ℝ) := by
+    _ = ↑(C₁ ^ (t₁ : ℝ) * C₂ ^ (t₂ : ℝ)) * (eDist x y) ^ (↑(r * t₁ + s * t₂) : ℝ) := by
         push_cast
         simp (discharger := positivity) only [ENNReal.mul_rpow_of_nonneg,
           ENNReal.rpow_add_of_nonneg, ENNReal.rpow_mul, ENNReal.coe_rpow_of_nonneg]
@@ -175,7 +175,7 @@ lemma interpolate {C₁ C₂ s t₁ t₂ : ℝ≥0} {A : Set X}
 
 /-- If a function is Hölder over a bounded set, then it is bounded. -/
 lemma holderOnWith_zero_of_bounded {C D : ℝ≥0} {A : Set X}
-    (hA : ∀ x ∈ A, ∀ y ∈ A, edist x y ≤ D) (hf : HolderOnWith C r f A) :
+    (hA : ∀ x ∈ A, ∀ y ∈ A, eDist x y ≤ D) (hf : HolderOnWith C r f A) :
     HolderOnWith (C * D ^ (r : ℝ)) 0 f A := by
   intro x hx y hy
   simp only [NNReal.coe_zero, ENNReal.rpow_zero, mul_one]
@@ -183,7 +183,7 @@ lemma holderOnWith_zero_of_bounded {C D : ℝ≥0} {A : Set X}
 
 /-- If a function is `r`-Hölder over a bounded set, then it is also `s`-Hölder when `s ≤ r`. -/
 lemma of_le {C D s : ℝ≥0} {A : Set X}
-    (hA : ∀ x ∈ A, ∀ y ∈ A, edist x y ≤ D) (hf : HolderOnWith C r f A) (hsr : s ≤ r) :
+    (hA : ∀ x ∈ A, ∀ y ∈ A, eDist x y ≤ D) (hf : HolderOnWith C r f A) (hsr : s ≤ r) :
     HolderOnWith (C * D ^ (r - s : ℝ)) s f A := by
   obtain rfl | ht := eq_zero_or_pos s
   · simpa using hf.holderOnWith_zero_of_bounded hA
@@ -250,11 +250,11 @@ theorem restrict_iff {s : Set X} : HolderWith C r (s.domRestrict f) ↔ HolderOn
 protected alias ⟨_, _root_.HolderOnWith.holderWith⟩ := restrict_iff
 
 theorem edist_le (h : HolderWith C r f) (x y : X) :
-    edist (f x) (f y) ≤ (C : ℝ≥0∞) * edist x y ^ (r : ℝ) :=
+    eDist (f x) (f y) ≤ (C : ℝ≥0∞) * eDist x y ^ (r : ℝ) :=
   h x y
 
-theorem edist_le_of_le (h : HolderWith C r f) {x y : X} {d : ℝ≥0∞} (hd : edist x y ≤ d) :
-    edist (f x) (f y) ≤ (C : ℝ≥0∞) * d ^ (r : ℝ) :=
+theorem edist_le_of_le (h : HolderWith C r f) {x y : X} {d : ℝ≥0∞} (hd : eDist x y ≤ d) :
+    eDist (f x) (f y) ≤ (C : ℝ≥0∞) * d ^ (r : ℝ) :=
   (h.holderOnWith univ).edist_le_of_le trivial trivial hd
 
 theorem comp {Cg rg : ℝ≥0} {g : Y → Z} (hg : HolderWith Cg rg g) {Cf rf : ℝ≥0} {f : X → Y}
@@ -299,12 +299,12 @@ lemma interpolate {C₁ C₂ s t₁ t₂ : ℝ≥0}
 
 /-- If a function is Hölder over a bounded space, then it is bounded. -/
 lemma holderWith_zero_of_bounded {C D : ℝ≥0}
-    (h : ∀ x y : X, edist x y ≤ D) (hf : HolderWith C r f) :
+    (h : ∀ x y : X, eDist x y ≤ D) (hf : HolderWith C r f) :
     HolderWith (C * D ^ (r : ℝ)) 0 f :=
   holderOnWith_univ.1 ((holderOnWith_univ.2 hf).holderOnWith_zero_of_bounded (fun x _ y _ ↦ h x y))
 
 /-- If a function is `r`-Hölder over a bounded space, then it is also `s`-Hölder when `s ≤ r`. -/
-lemma of_le {C D s : ℝ≥0} (h : ∀ x y : X, edist x y ≤ D) (hf : HolderWith C r f) (hsr : s ≤ r) :
+lemma of_le {C D s : ℝ≥0} (h : ∀ x y : X, eDist x y ≤ D) (hf : HolderWith C r f) (hsr : s ≤ r) :
     HolderWith (C * D ^ (r - s : ℝ)) s f :=
   holderOnWith_univ.1 ((holderOnWith_univ.2 hf).of_le (fun x _ y _ ↦ h x y) hsr)
 

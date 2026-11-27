@@ -38,8 +38,8 @@ variable {ι X : Type*} [Zero X] {p : ℝ≥0} [Fact (1 ≤ p)]
 
 /-- The L^1 extended metric on `ι`-many copies of a metric space `X` -/
 noncomputable instance [PseudoEMetricSpace X] : PseudoEMetricSpace (WithLp p <| ι →₀ X) where
-  edist f g :=
-  ((f.ofLp.zipWith edist (edist_self _) g.ofLp).sum fun i r ↦ r ^ (p : ℝ)) ^ (p⁻¹ : ℝ)
+  eDist f g :=
+  ((f.ofLp.zipWith eDist (edist_self _) g.ofLp).sum fun i r ↦ r ^ (p : ℝ)) ^ (p⁻¹ : ℝ)
   edist_self f := by
     have : 0 < p := zero_lt_one.trans_le Fact.out
     simp [sum, *]
@@ -62,8 +62,8 @@ noncomputable instance [PseudoEMetricSpace X] : PseudoEMetricSpace (WithLp p <| 
 
 lemma edist_def [PseudoEMetricSpace X] {p : ℝ≥0} [Fact (1 ≤ p)]
     (f g : WithLp p <| ι →₀ X) :
-    edist f g =
-      ((f.ofLp.zipWith edist (edist_self _) g.ofLp).sum fun _i r ↦ r ^ (p : ℝ)) ^ (p⁻¹ : ℝ) := rfl
+    eDist f g =
+      ((f.ofLp.zipWith eDist (edist_self _) g.ofLp).sum fun _i r ↦ r ^ (p : ℝ)) ^ (p⁻¹ : ℝ) := rfl
 
 /-- The L^1 extended metric on `ι`-many copies of a metric space `X` -/
 noncomputable instance [EMetricSpace X] : EMetricSpace (WithLp p <| ι →₀ X) where

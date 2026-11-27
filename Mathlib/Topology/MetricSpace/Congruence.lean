@@ -40,20 +40,20 @@ variable [PseudoEMetricSpace P₃] [PseudoEMetricSpace P₄]
 /-- A congruence between indexed sets of vertices v₁ and v₂.
 Use `open scoped Congruent` to access the `v₁ ≅ v₂` notation. -/
 def Congruent (v₁ : ι → P₁) (v₂ : ι → P₂) : Prop :=
-  ∀ i₁ i₂, edist (v₁ i₁) (v₁ i₂) = edist (v₂ i₁) (v₂ i₂)
+  ∀ i₁ i₂, eDist (v₁ i₁) (v₁ i₂) = eDist (v₂ i₁) (v₂ i₂)
 
 @[inherit_doc]
 scoped[Congruent] infixl:25 " ≅ " => Congruent
 
 /-- Congruence holds if and only if all extended distances are the same. -/
 lemma congruent_iff_edist_eq :
-    Congruent v₁ v₂ ↔ ∀ i₁ i₂, edist (v₁ i₁) (v₁ i₂) = edist (v₂ i₁) (v₂ i₂) :=
+    Congruent v₁ v₂ ↔ ∀ i₁ i₂, eDist (v₁ i₁) (v₁ i₂) = eDist (v₂ i₁) (v₂ i₂) :=
   Iff.rfl
 
 /-- Congruence holds if and only if all extended distances between points with different
 indices are the same. -/
 lemma congruent_iff_pairwise_edist_eq :
-    Congruent v₁ v₂ ↔ Pairwise fun i₁ i₂ ↦ edist (v₁ i₁) (v₁ i₂) = edist (v₂ i₁) (v₂ i₂) := by
+    Congruent v₁ v₂ ↔ Pairwise fun i₁ i₂ ↦ eDist (v₁ i₁) (v₁ i₂) = eDist (v₂ i₁) (v₂ i₂) := by
   refine ⟨fun h ↦ fun _ _ _ ↦ h _ _, fun h ↦ fun i₁ i₂ ↦ ?_⟩
   by_cases hi : i₁ = i₂
   · simp [hi]

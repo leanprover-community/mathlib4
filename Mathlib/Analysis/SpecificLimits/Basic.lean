@@ -448,10 +448,10 @@ decaying terms.
 section EDistLeGeometric
 
 variable [PseudoEMetricSpace α] (r C : ℝ≥0∞) (hr : r < 1) (hC : C ≠ ⊤) {f : ℕ → α}
-  (hu : ∀ n, edist (f n) (f (n + 1)) ≤ C * r ^ n)
+  (hu : ∀ n, eDist (f n) (f (n + 1)) ≤ C * r ^ n)
 
 include hr hC hu in
-/-- If `edist (f n) (f (n+1))` is bounded by `C * r^n`, `C ≠ ∞`, `r < 1`,
+/-- If `eDist (f n) (f (n+1))` is bounded by `C * r^n`, `C ≠ ∞`, `r < 1`,
 then `f` is a Cauchy sequence. -/
 theorem cauchySeq_of_edist_le_geometric : CauchySeq f := by
   refine cauchySeq_of_edist_le_of_tsum_ne_top _ hu ?_
@@ -459,18 +459,18 @@ theorem cauchySeq_of_edist_le_geometric : CauchySeq f := by
   finiteness [(tsub_pos_iff_lt.2 hr).ne']
 
 include hu in
-/-- If `edist (f n) (f (n+1))` is bounded by `C * r^n`, then the distance from
+/-- If `eDist (f n) (f (n+1))` is bounded by `C * r^n`, then the distance from
 `f n` to the limit of `f` is bounded above by `C * r^n / (1 - r)`. -/
 theorem edist_le_of_edist_le_geometric_of_tendsto {a : α} (ha : Tendsto f atTop (𝓝 a)) (n : ℕ) :
-    edist (f n) a ≤ C * r ^ n / (1 - r) := by
+    eDist (f n) a ≤ C * r ^ n / (1 - r) := by
   convert edist_le_tsum_of_edist_le_of_tendsto _ hu ha _
   simp only [pow_add, ENNReal.tsum_mul_left, ENNReal.tsum_geometric, div_eq_mul_inv, mul_assoc]
 
 include hu in
-/-- If `edist (f n) (f (n+1))` is bounded by `C * r^n`, then the distance from
+/-- If `eDist (f n) (f (n+1))` is bounded by `C * r^n`, then the distance from
 `f 0` to the limit of `f` is bounded above by `C / (1 - r)`. -/
 theorem edist_le_of_edist_le_geometric_of_tendsto₀ {a : α} (ha : Tendsto f atTop (𝓝 a)) :
-    edist (f 0) a ≤ C / (1 - r) := by
+    eDist (f 0) a ≤ C / (1 - r) := by
   simpa only [_root_.pow_zero, mul_one] using edist_le_of_edist_le_geometric_of_tendsto r C hu ha 0
 
 end EDistLeGeometric
@@ -478,28 +478,28 @@ end EDistLeGeometric
 section EDistLeGeometricTwo
 
 variable [PseudoEMetricSpace α] (C : ℝ≥0∞) (hC : C ≠ ⊤) {f : ℕ → α}
-  (hu : ∀ n, edist (f n) (f (n + 1)) ≤ C / 2 ^ n) {a : α} (ha : Tendsto f atTop (𝓝 a))
+  (hu : ∀ n, eDist (f n) (f (n + 1)) ≤ C / 2 ^ n) {a : α} (ha : Tendsto f atTop (𝓝 a))
 
 include hC hu in
-/-- If `edist (f n) (f (n+1))` is bounded by `C * 2^-n`, then `f` is a Cauchy sequence. -/
+/-- If `eDist (f n) (f (n+1))` is bounded by `C * 2^-n`, then `f` is a Cauchy sequence. -/
 theorem cauchySeq_of_edist_le_geometric_two : CauchySeq f := by
   simp only [div_eq_mul_inv, ENNReal.inv_pow] at hu
   refine cauchySeq_of_edist_le_geometric 2⁻¹ C ?_ hC hu
   simp
 
 include hu ha in
-/-- If `edist (f n) (f (n+1))` is bounded by `C * 2^-n`, then the distance from
+/-- If `eDist (f n) (f (n+1))` is bounded by `C * 2^-n`, then the distance from
 `f n` to the limit of `f` is bounded above by `2 * C * 2^-n`. -/
-theorem edist_le_of_edist_le_geometric_two_of_tendsto (n : ℕ) : edist (f n) a ≤ 2 * C / 2 ^ n := by
+theorem edist_le_of_edist_le_geometric_two_of_tendsto (n : ℕ) : eDist (f n) a ≤ 2 * C / 2 ^ n := by
   simp only [div_eq_mul_inv, ENNReal.inv_pow] at *
   rw [mul_assoc, mul_comm]
   convert edist_le_of_edist_le_geometric_of_tendsto 2⁻¹ C hu ha n using 1
   rw [ENNReal.one_sub_inv_two, div_eq_mul_inv, inv_inv]
 
 include hu ha in
-/-- If `edist (f n) (f (n+1))` is bounded by `C * 2^-n`, then the distance from
+/-- If `eDist (f n) (f (n+1))` is bounded by `C * 2^-n`, then the distance from
 `f 0` to the limit of `f` is bounded above by `2 * C`. -/
-theorem edist_le_of_edist_le_geometric_two_of_tendsto₀ : edist (f 0) a ≤ 2 * C := by
+theorem edist_le_of_edist_le_geometric_two_of_tendsto₀ : eDist (f 0) a ≤ 2 * C := by
   simpa only [_root_.pow_zero, div_eq_mul_inv, inv_one, mul_one] using
     edist_le_of_edist_le_geometric_two_of_tendsto C hu ha 0
 

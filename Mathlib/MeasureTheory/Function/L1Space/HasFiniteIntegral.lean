@@ -46,19 +46,19 @@ namespace MeasureTheory
 /-! ### Some results about the Lebesgue integral involving a normed group -/
 
 lemma lintegral_eNorm_eq_lintegral_edist (f : α → β) :
-    ∫⁻ a, ‖f a‖ₑ ∂μ = ∫⁻ a, edist (f a) 0 ∂μ := by simp only [edist_zero_right]
+    ∫⁻ a, ‖f a‖ₑ ∂μ = ∫⁻ a, eDist (f a) 0 ∂μ := by simp only [edist_zero_right]
 
 @[deprecated (since := "2026-11-06")]
 alias lintegral_enorm_eq_lintegral_edist := lintegral_eNorm_eq_lintegral_edist
 
 theorem lintegral_norm_eq_lintegral_edist (f : α → β) :
-    ∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ = ∫⁻ a, edist (f a) 0 ∂μ := by
+    ∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ = ∫⁻ a, eDist (f a) 0 ∂μ := by
   simp only [ofReal_norm, edist_zero_right]
 
 theorem lintegral_edist_triangle {f g h : α → β} (hf : AEStronglyMeasurable f μ)
     (hh : AEStronglyMeasurable h μ) :
-    (∫⁻ a, edist (f a) (g a) ∂μ) ≤ (∫⁻ a, edist (f a) (h a) ∂μ) + ∫⁻ a, edist (g a) (h a) ∂μ := by
-  rw [← lintegral_add_left' (hf.edist hh)]
+    (∫⁻ a, eDist (f a) (g a) ∂μ) ≤ (∫⁻ a, eDist (f a) (h a) ∂μ) + ∫⁻ a, eDist (g a) (h a) ∂μ := by
+  rw [← lintegral_add_left' (hf.eDist hh)]
   refine lintegral_mono fun a => ?_
   apply edist_triangle_right
 
@@ -108,7 +108,7 @@ theorem hasFiniteIntegral_iff_norm (f : α → β) :
   simp only [hasFiniteIntegral_iff_eNorm, ofReal_norm]
 
 theorem hasFiniteIntegral_iff_edist (f : α → β) :
-    HasFiniteIntegral f μ ↔ (∫⁻ a, edist (f a) 0 ∂μ) < ∞ := by
+    HasFiniteIntegral f μ ↔ (∫⁻ a, eDist (f a) 0 ∂μ) < ∞ := by
   simp only [hasFiniteIntegral_iff_norm, edist_dist, dist_zero_right]
 
 theorem hasFiniteIntegral_iff_ofReal {f : α → ℝ} (h : 0 ≤ᵐ[μ] f) :

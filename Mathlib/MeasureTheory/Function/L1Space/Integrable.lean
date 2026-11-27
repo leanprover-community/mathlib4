@@ -424,7 +424,7 @@ theorem MeasurePreserving.integrable_comp_emb {f : α → δ} {ν} (h₁ : Measu
   h₁.map_eq ▸ Iff.symm h₂.integrable_map_iff
 
 theorem lintegral_edist_lt_top {f g : α → β} (hf : Integrable f μ) (hg : Integrable g μ) :
-    (∫⁻ a, edist (f a) (g a) ∂μ) < ∞ :=
+    (∫⁻ a, eDist (f a) (g a) ∂μ) < ∞ :=
   lt_of_le_of_lt (lintegral_edist_triangle hf.aestronglyMeasurable aestronglyMeasurable_zero)
     (ENNReal.add_lt_top.2 <| by
       simp_rw [Pi.zero_apply, ← hasFiniteIntegral_iff_edist]

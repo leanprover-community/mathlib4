@@ -441,7 +441,7 @@ theorem nnDist_one_right (a : E) : nnDist a 1 = ‖a‖₊ := by
 alias nndist_one_right := nnDist_one_right
 
 @[to_additive (attr := simp)]
-lemma edist_one_right (a : E) : edist a 1 = ‖a‖ₑ := by simp [eDist_nnDist, nnDist_one_right, eNorm]
+lemma edist_one_right (a : E) : eDist a 1 = ‖a‖ₑ := by simp [eDist_nnDist, nnDist_one_right, eNorm]
 
 @[to_additive (attr := simp) nnNorm_zero]
 theorem nnNorm_one' : ‖(1 : E)‖₊ = 0 := NNReal.eq norm_one'
@@ -511,7 +511,7 @@ theorem nnDist_one_left (a : E) : nnDist 1 a = ‖a‖₊ := by simp [nnDist_eq_
 alias nndist_one_left := nnDist_one_left
 
 @[to_additive (attr := simp)]
-theorem edist_one_left (a : E) : edist 1 a = ‖a‖₊ := by
+theorem edist_one_left (a : E) : eDist 1 a = ‖a‖₊ := by
   rw [eDist_nnDist, nnDist_one_left]
 
 open scoped symmDiff in
@@ -618,7 +618,7 @@ alias toReal_coe_nnnorm' := toReal_coe_nnNorm'
 open scoped symmDiff in
 @[to_additive]
 theorem edist_mulIndicator (s t : Set α) (f : α → E) (x : α) :
-    edist (s.mulIndicator f x) (t.mulIndicator f x) = ‖(s ∆ t).mulIndicator f x‖₊ := by
+    eDist (s.mulIndicator f x) (t.mulIndicator f x) = ‖(s ∆ t).mulIndicator f x‖₊ := by
   rw [eDist_nnDist, nnDist_mulIndicator]
 
 @[to_additive nontrivialTopology_iff_exists_nnNorm_ne_zero]
@@ -725,7 +725,7 @@ lemma eNorm_inv' (a : E) : ‖a⁻¹‖ₑ = ‖a‖ₑ := by simp [eNorm]
 alias enorm_inv' := eNorm_inv'
 
 @[to_additive]
-theorem eDist_eq_eNorm_inv_mul (a b : E) : edist a b = ‖a⁻¹ * b‖ₑ := by
+theorem eDist_eq_eNorm_inv_mul (a b : E) : eDist a b = ‖a⁻¹ * b‖ₑ := by
   rw [edist_dist, dist_eq_norm_inv_mul, ofReal_norm']
 
 @[to_additive (attr := deprecated (since := "2026-11-06"))]
@@ -918,7 +918,7 @@ alias nnDist_eq_nnNorm := nnDist_eq_nnNorm_sub
 alias nndist_eq_nnnorm := nnDist_eq_nnNorm
 
 @[to_additive]
-theorem eDist_eq_eNorm_div (a b : E) : edist a b = ‖a / b‖ₑ := by
+theorem eDist_eq_eNorm_div (a b : E) : eDist a b = ‖a / b‖ₑ := by
   rw [edist_dist, dist_eq_norm_div, ofReal_norm']
 
 @[to_additive (attr := deprecated (since := "2026-11-06"))]

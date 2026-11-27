@@ -37,7 +37,7 @@ open scoped Topology ENNReal
 /-- An isometry (also known as isometric embedding) is a map preserving the edistance
 between pseudoemetric spaces, or equivalently the distance between pseudometric space. -/
 def Isometry [PseudoEMetricSpace α] [PseudoEMetricSpace β] (f : α → β) : Prop :=
-  ∀ x1 x2 : α, edist (f x1) (f x2) = edist x1 x2
+  ∀ x1 x2 : α, eDist (f x1) (f x2) = eDist x1 x2
 
 /-- On pseudometric spaces, a map is an isometry if and only if it preserves nonnegative
 distances. -/
@@ -76,7 +76,7 @@ variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ]
 variable {f : α → β} {x : α}
 
 /-- An isometry preserves edistances. -/
-theorem edist_eq (hf : Isometry f) (x y : α) : edist (f x) (f y) = edist x y :=
+theorem edist_eq (hf : Isometry f) (x y : α) : eDist (f x) (f y) = eDist x y :=
   hf x y
 
 theorem lipschitzWith (h : Isometry f) : LipschitzWith 1 f :=
@@ -309,7 +309,7 @@ variable [PseudoEMetricSpace α] [PseudoEMetricSpace β]
 section
 variable [FunLike F α β] [IsometryClass F α β] (f : F)
 
-protected theorem edist_eq (x y : α) : edist (f x) (f y) = edist x y :=
+protected theorem edist_eq (x y : α) : eDist (f x) (f y) = eDist x y :=
   (IsometryClass.isometry f).edist_eq x y
 
 protected theorem continuous : Continuous f :=
@@ -415,7 +415,7 @@ protected theorem injective (h : α ≃ᵢ β) : Injective h :=
 protected theorem surjective (h : α ≃ᵢ β) : Surjective h :=
   h.toEquiv.surjective
 
-protected theorem edist_eq (h : α ≃ᵢ β) (x y : α) : edist (h x) (h y) = edist x y :=
+protected theorem edist_eq (h : α ≃ᵢ β) (x y : α) : eDist (h x) (h y) = eDist x y :=
   h.isometry.edist_eq x y
 
 protected theorem dist_eq {α β : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β] (h : α ≃ᵢ β)
@@ -609,7 +609,7 @@ def piCongrLeft' {ι' : Type*} [Fintype ι] [Fintype ι'] {Y : ι → Type*}
   toEquiv := Equiv.piCongrLeft' _ e
   isometry_toFun x1 x2 := by
     simp_rw [edist_pi_def, Finset.sup_univ_eq_iSup]
-    exact (Equiv.iSup_comp (g := fun b ↦ edist (x1 b) (x2 b)) e.symm)
+    exact (Equiv.iSup_comp (g := fun b ↦ eDist (x1 b) (x2 b)) e.symm)
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
@@ -636,7 +636,7 @@ theorem sumArrowIsometryEquivProdArrow_toHomeomorph {α β : Type*} [Fintype α]
   rfl
 
 theorem _root_.Fin.edist_append_eq_max_edist (m n : ℕ) {x x2 : Fin m → α} {y y2 : Fin n → α} :
-    edist (Fin.append x y) (Fin.append x2 y2) = max (edist x x2) (edist y y2) := by
+    eDist (Fin.append x y) (Fin.append x2 y2) = max (eDist x x2) (eDist y y2) := by
   simp [edist_pi_def, Finset.sup_univ_eq_iSup, ← Equiv.iSup_comp (e := finSumFinEquiv),
     iSup_sum]
 

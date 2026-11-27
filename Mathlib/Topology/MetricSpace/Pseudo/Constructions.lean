@@ -32,7 +32,7 @@ abbrev PseudoMetricSpace.induced {α β} (f : α → β) (m : PseudoMetricSpace 
   dist_self _ := dist_self _
   dist_comm _ _ := dist_comm _ _
   dist_triangle _ _ _ := dist_triangle _ _ _
-  edist x y := edist (f x) (f y)
+  eDist x y := eDist (f x) (f y)
   edist_dist _ _ := edist_dist _ _
   toUniformSpace := UniformSpace.comap f m.toUniformSpace
   uniformity_dist := (uniformity_basis_dist.comap _).eq_biInf

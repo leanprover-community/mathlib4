@@ -268,7 +268,7 @@ lemma lipschitzWith_thickenedIndicator {δ : ℝ} (δ_pos : 0 < δ) (E : Set α)
   · calc 1 - infEDist x E * (↑δ.toNNReal)⁻¹ - (1 - infEDist y E * (↑δ.toNNReal)⁻¹)
     _ ≤ infEDist y E * (↑δ.toNNReal)⁻¹ - infEDist x E * (↑δ.toNNReal)⁻¹ := by
       rw [ENNReal.sub_sub_sub_cancel_left (by finiteness) h_le]
-    _ ≤ (↑δ.toNNReal)⁻¹ * edist x y := by
+    _ ≤ (↑δ.toNNReal)⁻¹ * eDist x y := by
       rw [← ENNReal.sub_mul (by simp [δ_pos]), mul_comm, edist_comm]
       gcongr
       simp only [tsub_le_iff_right]
@@ -277,7 +277,7 @@ lemma lipschitzWith_thickenedIndicator {δ : ℝ} (δ_pos : 0 < δ) (E : Set α)
     rw [tsub_eq_zero_of_le (not_le.mp h_le).le, add_zero, mul_comm]
     calc 1
     _ ≤ infEDist y E * (↑δ.toNNReal)⁻¹ := (not_le.mp h_le).le
-    _ ≤ edist x y * (↑δ.toNNReal)⁻¹ + infEDist x E * (↑δ.toNNReal)⁻¹ := by
+    _ ≤ eDist x y * (↑δ.toNNReal)⁻¹ + infEDist x E * (↑δ.toNNReal)⁻¹ := by
       rw [← add_mul, edist_comm]
       gcongr
       exact infEDist_le_edist_add_infEDist

@@ -126,12 +126,12 @@ theorem aestronglyMeasurable_coeFn (f : α →₁[μ] β) : AEStronglyMeasurable
 theorem aemeasurable_coeFn [MeasurableSpace β] [BorelSpace β] (f : α →₁[μ] β) : AEMeasurable f μ :=
   (Lp.stronglyMeasurable f).measurable.aemeasurable
 
-theorem edist_def (f g : α →₁[μ] β) : edist f g = ∫⁻ a, edist (f a) (g a) ∂μ := by
+theorem edist_def (f g : α →₁[μ] β) : eDist f g = ∫⁻ a, eDist (f a) (g a) ∂μ := by
   rw [Lp.edist_def, eLpNorm_one_eq_lintegral_eNorm
     ((Lp.aestronglyMeasurable f).sub (Lp.aestronglyMeasurable g))]
   simp [eDist_eq_eNorm_sub]
 
-theorem dist_def (f g : α →₁[μ] β) : dist f g = (∫⁻ a, edist (f a) (g a) ∂μ).toReal := by
+theorem dist_def (f g : α →₁[μ] β) : dist f g = (∫⁻ a, eDist (f a) (g a) ∂μ).toReal := by
   simp_rw [dist_edist, edist_def]
 
 theorem norm_def (f : α →₁[μ] β) : ‖f‖ = (∫⁻ a, ‖f a‖ₑ ∂μ).toReal := by
@@ -204,7 +204,7 @@ theorem toL1_sub (f g : α → β) (hf : Integrable f μ) (hg : Integrable g μ)
   rfl
 
 theorem norm_toL1 (f : α → β) (hf : Integrable f μ) :
-    ‖hf.toL1 f‖ = (∫⁻ a, edist (f a) 0 ∂μ).toReal := by
+    ‖hf.toL1 f‖ = (∫⁻ a, eDist (f a) 0 ∂μ).toReal := by
   rw [toL1, Lp.norm_toLp, eLpNorm_one_eq_lintegral_eNorm hf.aestronglyMeasurable]
   simp only [edist_zero_right]
 
@@ -227,15 +227,15 @@ alias norm_toL1_eq_lintegral_enorm := norm_toL1_eq_lintegral_eNorm
 
 @[simp]
 theorem edist_toL1_toL1 (f g : α → β) (hf : Integrable f μ) (hg : Integrable g μ) :
-    edist (hf.toL1 f) (hg.toL1 g) = ∫⁻ a, edist (f a) (g a) ∂μ := by
-  change edist ((memLp_one_iff_integrable.2 hf).toLp f)
+    eDist (hf.toL1 f) (hg.toL1 g) = ∫⁻ a, eDist (f a) (g a) ∂μ := by
+  change eDist ((memLp_one_iff_integrable.2 hf).toLp f)
     ((memLp_one_iff_integrable.2 hg).toLp g) = _
   rw [Lp.edist_toLp_toLp,
     eLpNorm_one_eq_lintegral_eNorm (hf.aestronglyMeasurable.sub hg.aestronglyMeasurable)]
   simp [eDist_eq_eNorm_sub]
 
 theorem edist_toL1_zero (f : α → β) (hf : Integrable f μ) :
-    edist (hf.toL1 f) 0 = ∫⁻ a, edist (f a) 0 ∂μ := by
+    eDist (hf.toL1 f) 0 = ∫⁻ a, eDist (f a) 0 ∂μ := by
   simp only [edist_zero_right, Lp.eNorm_def, toL1_eq_mk, eLpNorm_aeeqFun]
   apply eLpNorm_one_eq_lintegral_eNorm hf.aestronglyMeasurable
 

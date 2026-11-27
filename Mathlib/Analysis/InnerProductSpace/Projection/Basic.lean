@@ -250,7 +250,7 @@ alias nndist_starProjection_eq_infNndist := nnDist_starProjection_eq_infNndist
 distance to that subspace as given by `Metric.infEDist`. -/
 theorem edist_starProjection_eq_infEDist
     (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] (y : E) :
-    edist y (U.starProjection y) = Metric.infEDist y U := by
+    eDist y (U.starProjection y) = Metric.infEDist y U := by
   rw [edist_dist, dist_starProjection_eq_infDist, Metric.infDist,
     ENNReal.ofReal_toReal (Metric.infEDist_ne_top U.nonempty)]
 

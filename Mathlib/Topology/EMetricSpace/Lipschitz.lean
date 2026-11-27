@@ -12,7 +12,7 @@ public import Mathlib.Topology.EMetricSpace.Diam
 # Lipschitz continuous functions
 
 A map `f : α → β` between two (extended) metric spaces is called *Lipschitz continuous*
-with constant `K ≥ 0` if for all `x, y` we have `edist (f x) (f y) ≤ K * edist x y`.
+with constant `K ≥ 0` if for all `x, y` we have `eDist (f x) (f y) ≤ K * eDist x y`.
 For a metric space, the latter inequality is equivalent to `dist (f x) (f y) ≤ K * dist x y`.
 There is also a version asserting this inequality only for `x` and `y` in some set `s`.
 Finally, `f : α → β` is called *locally Lipschitz continuous* if each `x : α` has a neighbourhood
@@ -56,12 +56,12 @@ variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] {K : ℝ≥0} {s t : Se
 
 /-- A function `f` is **Lipschitz continuous** with constant `K ≥ 0` if for all `x, y`
 we have `dist (f x) (f y) ≤ K * dist x y`. -/
-def LipschitzWith (K : ℝ≥0) (f : α → β) := ∀ x y, edist (f x) (f y) ≤ K * edist x y
+def LipschitzWith (K : ℝ≥0) (f : α → β) := ∀ x y, eDist (f x) (f y) ≤ K * eDist x y
 
 /-- A function `f` is **Lipschitz continuous** with constant `K ≥ 0` **on `s`** if
 for all `x, y` in `s` we have `dist (f x) (f y) ≤ K * dist x y`. -/
 def LipschitzOnWith (K : ℝ≥0) (f : α → β) (s : Set α) :=
-  ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → edist (f x) (f y) ≤ K * edist x y
+  ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → eDist (f x) (f y) ≤ K * eDist x y
 
 /-- `f : α → β` is called **locally Lipschitz continuous** iff every point `x`
 has a neighbourhood on which `f` is Lipschitz. -/
@@ -139,15 +139,15 @@ variable {K : ℝ≥0} {f : α → β} {x y : α} {r : ℝ≥0∞} {s : Set α}
 protected theorem lipschitzOnWith (h : LipschitzWith K f) : LipschitzOnWith K f s :=
   fun x _ y _ => h x y
 
-theorem edist_le_mul (h : LipschitzWith K f) (x y : α) : edist (f x) (f y) ≤ K * edist x y :=
+theorem edist_le_mul (h : LipschitzWith K f) (x y : α) : eDist (f x) (f y) ≤ K * eDist x y :=
   h x y
 
-theorem edist_le_mul_of_le (h : LipschitzWith K f) (hr : edist x y ≤ r) :
-    edist (f x) (f y) ≤ K * r :=
+theorem edist_le_mul_of_le (h : LipschitzWith K f) (hr : eDist x y ≤ r) :
+    eDist (f x) (f y) ≤ K * r :=
   (h x y).trans <| mul_right_mono hr
 
-theorem edist_lt_mul_of_lt (h : LipschitzWith K f) (hK : K ≠ 0) (hr : edist x y < r) :
-    edist (f x) (f y) < K * r := by grw [h x y]; gcongr; simp
+theorem edist_lt_mul_of_lt (h : LipschitzWith K f) (hK : K ≠ 0) (hr : eDist x y < r) :
+    eDist (f x) (f y) < K * r := by grw [h x y]; gcongr; simp
 
 theorem mapsTo_closedEBall (h : LipschitzWith K f) (x : α) (r : ℝ≥0∞) :
     MapsTo f (closedEBall x r) (closedEBall (f x) (K * r)) := fun _y hy => h.edist_le_mul_of_le hy
@@ -155,16 +155,16 @@ theorem mapsTo_closedEBall (h : LipschitzWith K f) (x : α) (r : ℝ≥0∞) :
 theorem mapsTo_eball (h : LipschitzWith K f) (hK : K ≠ 0) (x : α) (r : ℝ≥0∞) :
     MapsTo f (eball x r) (eball (f x) (K * r)) := fun _y hy => h.edist_lt_mul_of_lt hK hy
 
-theorem edist_lt_top (hf : LipschitzWith K f) {x y : α} (h : edist x y ≠ ⊤) :
-    edist (f x) (f y) < ⊤ :=
+theorem edist_lt_top (hf : LipschitzWith K f) {x y : α} (h : eDist x y ≠ ⊤) :
+    eDist (f x) (f y) < ⊤ :=
   (hf x y).trans_lt (by finiteness)
 
 theorem mul_edist_le (h : LipschitzWith K f) (x y : α) :
-    (K⁻¹ : ℝ≥0∞) * edist (f x) (f y) ≤ edist x y := by
+    (K⁻¹ : ℝ≥0∞) * eDist (f x) (f y) ≤ eDist x y := by
   rw [mul_comm, ← div_eq_mul_inv]
   exact ENNReal.div_le_of_le_mul' (h x y)
 
-protected theorem of_edist_le (h : ∀ x y, edist (f x) (f y) ≤ edist x y) : LipschitzWith 1 f :=
+protected theorem of_edist_le (h : ∀ x y, eDist (f x) (f y) ≤ eDist x y) : LipschitzWith 1 f :=
   fun x y => by simp only [ENNReal.coe_one, one_mul, h]
 
 protected theorem weaken (hf : LipschitzWith K f) {K' : ℝ≥0} (h : K ≤ K') : LipschitzWith K' f :=
@@ -177,9 +177,9 @@ theorem ediam_image_le (hf : LipschitzWith K f) (s : Set α) :
   exact hf.edist_le_mul_of_le (Metric.edist_le_ediam_of_mem hx hy)
 
 theorem edist_lt_of_edist_lt_div (hf : LipschitzWith K f) {x y : α} {d : ℝ≥0∞}
-    (h : edist x y < d / K) : edist (f x) (f y) < d :=
+    (h : eDist x y < d / K) : eDist (f x) (f y) < d :=
   calc
-    edist (f x) (f y) ≤ K * edist x y := hf x y
+    eDist (f x) (f y) ≤ K * eDist x y := hf x y
     _ < d := ENNReal.mul_lt_of_lt_div' h
 
 /-- A Lipschitz function is uniformly continuous. -/
@@ -229,9 +229,9 @@ protected theorem restrict (hf : LipschitzWith K f) (s : Set α) :
 protected theorem comp {Kf Kg : ℝ≥0} {f : β → γ} {g : α → β} (hf : LipschitzWith Kf f)
     (hg : LipschitzWith Kg g) : LipschitzWith (Kf * Kg) (f ∘ g) := fun x y =>
   calc
-    edist (f (g x)) (f (g y)) ≤ Kf * edist (g x) (g y) := hf _ _
-    _ ≤ Kf * (Kg * edist x y) := mul_right_mono (hg _ _)
-    _ = (Kf * Kg : ℝ≥0) * edist x y := by rw [← mul_assoc, ENNReal.coe_mul]
+    eDist (f (g x)) (f (g y)) ≤ Kf * eDist (g x) (g y) := hf _ _
+    _ ≤ Kf * (Kg * eDist x y) := mul_right_mono (hg _ _)
+    _ = (Kf * Kg : ℝ≥0) * eDist x y := by rw [← mul_assoc, ENNReal.coe_mul]
 
 theorem comp_lipschitzOnWith {Kf Kg : ℝ≥0} {f : β → γ} {g : α → β} {s : Set α}
     (hf : LipschitzWith Kf f) (hg : LipschitzOnWith Kg g s) : LipschitzOnWith (Kf * Kg) (f ∘ g) s :=
@@ -271,7 +271,7 @@ protected theorem iterate {f : α → α} (hf : LipschitzWith K f) : ∀ n, Lips
   | n + 1 => by rw [pow_succ]; exact (LipschitzWith.iterate hf n).comp hf
 
 theorem edist_iterate_succ_le_geometric {f : α → α} (hf : LipschitzWith K f) (x n) :
-    edist (f^[n] x) (f^[n + 1] x) ≤ edist x (f x) * (K : ℝ≥0∞) ^ n := by
+    eDist (f^[n] x) (f^[n + 1] x) ≤ eDist x (f x) * (K : ℝ≥0∞) ^ n := by
   rw [iterate_succ, mul_comm]
   simpa only [ENNReal.coe_pow] using! (hf.iterate n) x (f x)
 
@@ -318,13 +318,13 @@ protected theorem weaken (hf : LipschitzOnWith K f s) {K' : ℝ≥0} (h : K ≤ 
   fun _ hx _ hy => (hf hx hy).trans <| mul_left_mono (ENNReal.coe_le_coe.2 h)
 
 theorem edist_le_mul_of_le (h : LipschitzOnWith K f s) {x y : α} (hx : x ∈ s) (hy : y ∈ s)
-    {r : ℝ≥0∞} (hr : edist x y ≤ r) :
-    edist (f x) (f y) ≤ K * r :=
+    {r : ℝ≥0∞} (hr : eDist x y ≤ r) :
+    eDist (f x) (f y) ≤ K * r :=
   (h hx hy).trans <| mul_right_mono hr
 
 theorem edist_lt_of_edist_lt_div (hf : LipschitzOnWith K f s) {x y : α} (hx : x ∈ s) (hy : y ∈ s)
-    {d : ℝ≥0∞} (hd : edist x y < d / K) : edist (f x) (f y) < d :=
-  hf.to_restrict.edist_lt_of_edist_lt_div <| show edist (⟨x, hx⟩ : s) ⟨y, hy⟩ < d / K from hd
+    {d : ℝ≥0∞} (hd : eDist x y < d / K) : eDist (f x) (f y) < d :=
+  hf.to_restrict.edist_lt_of_edist_lt_div <| show eDist (⟨x, hx⟩ : s) ⟨y, hy⟩ < d / K from hd
 
 protected theorem comp {g : β → γ} {t : Set β} {Kg : ℝ≥0} (hg : LipschitzOnWith Kg g t)
     (hf : LipschitzOnWith K f s) (hmaps : MapsTo f s t) : LipschitzOnWith (Kg * K) (g ∘ f) s :=
@@ -444,12 +444,12 @@ theorem continuousOn_prod_of_subset_closure_continuousOn_lipschitzOnWith [Pseudo
   rcases EMetric.mem_closure_iff.1 (hss' hx) δ δpos with ⟨x', hx', hxx'⟩
   have A : s ∩ Metric.eball x δ ∈ 𝓝[s] x :=
     inter_mem_nhdsWithin _ (Metric.eball_mem_nhds _ δpos)
-  have B : t ∩ { b | edist (f (x', b)) (f (x', y)) ≤ ε / 2 } ∈ 𝓝[t] y :=
+  have B : t ∩ { b | eDist (f (x', b)) (f (x', y)) ≤ ε / 2 } ∈ 𝓝[t] y :=
     inter_mem self_mem_nhdsWithin (ha x' hx' y hy (Metric.closedEBall_mem_nhds (f (x', y)) ε0))
   filter_upwards [nhdsWithin_prod A B] with ⟨a, b⟩ ⟨⟨has, hax⟩, ⟨hbt, hby⟩⟩
   calc
-    edist (f (a, b)) (f (x, y)) ≤ edist (f (a, b)) (f (x', b)) + edist (f (x', b)) (f (x', y)) +
-        edist (f (x', y)) (f (x, y)) := edist_triangle4 _ _ _ _
+    eDist (f (a, b)) (f (x, y)) ≤ eDist (f (a, b)) (f (x', b)) + eDist (f (x', b)) (f (x', y)) +
+        eDist (f (x', y)) (f (x, y)) := edist_triangle4 _ _ _ _
     _ ≤ K * (δ + δ) + ε / 2 + K * δ := by
       gcongr
       · refine (hb b hbt).edist_le_mul_of_le has (hs' hx') ?_

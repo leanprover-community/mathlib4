@@ -177,7 +177,7 @@ theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero_aux [CompleteSpace F] {f 
     it follows that `f` vanishes on a neighborhood of `x`, proving the claim. -/
   rintro x ⟨xu, xU⟩
   rcases hf x xU with ⟨p, r, hp⟩
-  obtain ⟨y, yu, hxy⟩ : ∃ y ∈ u, edist x y < r / 2 :=
+  obtain ⟨y, yu, hxy⟩ : ∃ y ∈ u, eDist x y < r / 2 :=
     EMetric.mem_closure_iff.1 xu (r / 2) (ENNReal.half_pos hp.r_pos.ne')
   let q := p.changeOrigin (y - x)
   have has_series : HasFPowerSeriesOnBall f q y (r / 2) := by

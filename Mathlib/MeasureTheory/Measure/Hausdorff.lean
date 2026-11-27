@@ -41,7 +41,7 @@ applied to `MeasureTheory.extend m`.
 
 We also define a predicate `MeasureTheory.OuterMeasure.IsMetric` which says that an outer measure
 is additive on metric separated pairs of sets: `μ (s ∪ t) = μ s + μ t` provided that
-`⨅ (x ∈ s) (y ∈ t), edist x y ≠ 0`. This is the property required for Carathéodory's theorem
+`⨅ (x ∈ s) (y ∈ t), eDist x y ≠ 0`. This is the property required for Carathéodory's theorem
 `MeasureTheory.OuterMeasure.IsMetric.borel_le_caratheodory`, so we prove this theorem for any
 metric outer measure, then prove that outer measures constructed using `mkMetric'` are metric outer
 measures.
@@ -220,7 +220,7 @@ theorem borel_le_caratheodory (hm : IsMetric μ) : borel X ≤ μ.caratheodory :
     fun x hx y hy => ?_⟩
   have : infEDist y t < (↑(2 * j + r))⁻¹ := not_le.1 fun hle => hy.2 ⟨hy.1, hle⟩
   rcases infEDist_lt_iff.mp this with ⟨z, hzt, hyz⟩
-  have hxz : (↑(2 * i + 1 + r))⁻¹ ≤ edist x z := le_infEDist.1 hx.2 _ hzt
+  have hxz : (↑(2 * i + 1 + r))⁻¹ ≤ eDist x z := le_infEDist.1 hx.2 _ hzt
   apply ENNReal.le_of_add_le_add_right hyz.ne_top
   refine le_trans ?_ (edist_triangle _ _ _)
   refine (add_le_add le_rfl hyz.le).trans (Eq.trans_le ?_ hxz)
@@ -1100,7 +1100,7 @@ theorem hausdorffMeasure_lineMap_image (x y : P) (s : Set ℝ) :
 
 /-- The measure of a segment is the distance between its endpoints. -/
 @[simp]
-theorem hausdorffMeasure_affineSegment (x y : P) : μH[1] (affineSegment ℝ x y) = edist x y := by
+theorem hausdorffMeasure_affineSegment (x y : P) : μH[1] (affineSegment ℝ x y) = eDist x y := by
   rw [affineSegment, hausdorffMeasure_lineMap_image, hausdorffMeasure_real, Real.volume_Icc,
     sub_zero, ENNReal.ofReal_one, ← Algebra.algebraMap_eq_smul_one]
   exact (eDist_nnDist _ _).symm
@@ -1110,7 +1110,7 @@ end RealAffine
 /-- The measure of a segment is the distance between its endpoints. -/
 @[simp]
 theorem hausdorffMeasure_segment {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [MeasurableSpace E] [BorelSpace E] (x y : E) : μH[1] (segment ℝ x y) = edist x y := by
+    [MeasurableSpace E] [BorelSpace E] (x y : E) : μH[1] (segment ℝ x y) = eDist x y := by
   rw [← affineSegment_eq_segment, hausdorffMeasure_affineSegment]
 
 /--

@@ -267,24 +267,24 @@ lemma reachable_boxProd {x y : α × β} :
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma edist_boxProd (x y : α × β) :
-    (G □ H).edist x y = G.edist x.1 y.1 + H.edist x.2 y.2 := by
+    (G □ H).eDist x y = G.eDist x.1 y.1 + H.eDist x.2 y.2 := by
   classical
-  -- The case `(G □ H).edist x y = ⊤` is used twice, so better to factor it out.
-  have top_case : (G □ H).edist x y = ⊤ ↔ G.edist x.1 y.1 = ⊤ ∨ H.edist x.2 y.2 = ⊤ := by
+  -- The case `(G □ H).eDist x y = ⊤` is used twice, so better to factor it out.
+  have top_case : (G □ H).eDist x y = ⊤ ↔ G.eDist x.1 y.1 = ⊤ ∨ H.eDist x.2 y.2 = ⊤ := by
     simp_rw [← not_ne_iff, edist_ne_top_iff_reachable, reachable_boxProd, not_and_or]
-  by_cases h : (G □ H).edist x y = ⊤
+  by_cases h : (G □ H).eDist x y = ⊤
   · rw [top_case] at h
     aesop
-  · have rGH : G.edist x.1 y.1 ≠ ⊤ ∧ H.edist x.2 y.2 ≠ ⊤ := by rw [top_case] at h; aesop
+  · have rGH : G.eDist x.1 y.1 ≠ ⊤ ∧ H.eDist x.2 y.2 ≠ ⊤ := by rw [top_case] at h; aesop
     have ⟨wG, hwG⟩ := exists_walk_of_edist_ne_top rGH.1
     have ⟨wH, hwH⟩ := exists_walk_of_edist_ne_top rGH.2
     let w_app := (wG.boxProdLeft _ _).append (wH.boxProdRight _ _)
     have w_len : w_app.length = wG.length + wH.length := by
       unfold w_app Walk.boxProdLeft Walk.boxProdRight; simp
     refine le_antisymm ?_ ?_
-    · calc (G □ H).edist x y ≤ w_app.length := by exact edist_le _
+    · calc (G □ H).eDist x y ≤ w_app.length := by exact edist_le _
           _ = wG.length + wH.length := mod_cast w_len
-          _ = G.edist x.1 y.1 + H.edist x.2 y.2 := by simp only [hwG, hwH]
+          _ = G.eDist x.1 y.1 + H.eDist x.2 y.2 := by simp only [hwG, hwH]
     · have ⟨w, hw⟩ := exists_walk_of_edist_ne_top h
       rw [← hw, Walk.length_boxProd]
       exact add_le_add (edist_le w.ofBoxProdLeft) (edist_le w.ofBoxProdRight)

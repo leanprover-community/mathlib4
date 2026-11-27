@@ -50,31 +50,31 @@ section
 namespace Option
 
 /-- Given some (extended) distance function on `α`, it can be extended to a distance function on
-`Option α` by defining `edist none a = 0` if `a = none` and `∞` otherwise. -/
+`Option α` by defining `eDist none a = 0` if `a = none` and `∞` otherwise. -/
 instance (priority := low) toEDist {α : Type u} [EDist α] : EDist (Option α) where
-  edist
+  eDist
   | none, (x : α) => ∞
   | none, none => 0
   | (x : α), none => ∞
-  | (x : α), (y : α) => edist x y
+  | (x : α), (y : α) => eDist x y
 
 variable [m : WeakPseudoEMetricSpace α]
 
 @[simp]
-theorem edist_none_none : edist (self := Option.toEDist (α := α))
+theorem edist_none_none : eDist (self := Option.toEDist (α := α))
     none none = 0 := rfl
 
 @[simp]
 theorem edist_none_some {a : α} :
-    edist (self := Option.toEDist (α := α)) none a = ⊤ := rfl
+    eDist (self := Option.toEDist (α := α)) none a = ⊤ := rfl
 
 @[simp]
 theorem edist_some_none {a : α} :
-    edist (self := Option.toEDist (α := α)) a none = ⊤ := rfl
+    eDist (self := Option.toEDist (α := α)) a none = ⊤ := rfl
 
 @[simp]
 theorem edist_some_some {a b : α} :
-    edist (self := Option.toEDist (α := α)) a b = edist a b := rfl
+    eDist (self := Option.toEDist (α := α)) a b = eDist a b := rfl
 
 theorem some_eball (a : α) (r : ENNReal) :
     Option.some '' Metric.eball a r = Metric.eball (α := Option α) a r := by
@@ -89,19 +89,19 @@ theorem some_eball (a : α) (r : ENNReal) :
     exact ⟨y, h, rfl⟩
 
 lemma edist_self' {α : Type u} [TopologicalSpace α] (m : WeakPseudoEMetricSpace α) :
-    ∀ x : Option α, edist x x = 0
+    ∀ x : Option α, eDist x x = 0
   | (_ : α) => by simp
   | none => rfl
 
 lemma edist_comm' {α : Type u} [TopologicalSpace α] (m : WeakPseudoEMetricSpace α) :
-    ∀ x y : Option α, edist x y = edist y x
+    ∀ x y : Option α, eDist x y = eDist y x
   | (_ : α), (_ : α) => by simp [m.edist_comm]
   | (_ : α), none => by simp
   | none, (_ : α) => by simp
   | none, none => by simp
 
 lemma edist_triangle' {α : Type u} [TopologicalSpace α] (m : WeakPseudoEMetricSpace α) :
-    ∀ x y z : Option α, edist x z ≤ edist x y + edist y z
+    ∀ x y z : Option α, eDist x z ≤ eDist x y + eDist y z
   | (_ : α), (_ : α), (_ : α) => by simp [m.edist_triangle]
   | none, (_ : α), (_ : α) => by simp
   | (_ : α), none, (_ : α) => by simp
@@ -125,12 +125,12 @@ abbrev WeakPseudoEMetricSpace.OfIsOpenEmbedding {α : Type u} [t : TopologicalSp
     [TopologicalSpace (Option α)] [m : WeakPseudoEMetricSpace α] [inst : EDist (Option α)]
     (h_edist : inst = Option.toEDist) (h : IsOpenEmbedding (some (α := α))) :
     WeakPseudoEMetricSpace (Option α) where
-  edist := edist
+  eDist := eDist
   edist_self := h_edist ▸ edist_self' m
   edist_comm := h_edist ▸ edist_comm' m
   edist_triangle := h_edist ▸ edist_triangle' m
   topology_le s so := by
-    apply (@EMetric.isOpen_iff (Option α) _ (PseudoEMetricSpace.ofEDist edist
+    apply (@EMetric.isOpen_iff (Option α) _ (PseudoEMetricSpace.ofEDist eDist
       (h_edist ▸ edist_self' m) (h_edist ▸ edist_comm' m) (h_edist ▸ edist_triangle' m))).mpr
     intro x xs
     suffices ∃ ε > 0, @Metric.eball (Option α) Option.toEDist x ε ⊆ s by rwa [← h_edist] at this
@@ -138,7 +138,7 @@ abbrev WeakPseudoEMetricSpace.OfIsOpenEmbedding {α : Type u} [t : TopologicalSp
     | none =>
       exact ⟨1, by norm_num, by simpa [ball_infty_of_pos]⟩
     | (x : α) =>
-      obtain ⟨ε, εp, εt⟩ := (@EMetric.isOpen_iff α _ (PseudoEMetricSpace.ofEDist edist
+      obtain ⟨ε, εp, εt⟩ := (@EMetric.isOpen_iff α _ (PseudoEMetricSpace.ofEDist eDist
         m.edist_self m.edist_comm m.edist_triangle)).mp
           (m.topology_le _ <| h.continuous.isOpen_preimage s so) x (mem_preimage.mpr xs)
       exact ⟨ε, εp, some_eball x ε ▸ image_subset_iff.mpr εt⟩
@@ -172,7 +172,7 @@ abbrev WeakEMetricSpace.OfIsOpenEmbedding {α : Type u} [t : TopologicalSpace α
     WeakEMetricSpace (Option α) :=
   { toWeakPseudoEMetricSpace := WeakPseudoEMetricSpace.OfIsOpenEmbedding h_edist h,
     eq_of_edist_eq_zero {x y} xy := by
-      rw [congr(@edist _ $h_edist x y)] at xy
+      rw [congr(@eDist _ $h_edist x y)] at xy
       cases x <;> cases y
       · rfl
       · simp at xy
@@ -193,11 +193,11 @@ theorem WithTop.isOpenEmbedding_some : IsOpenEmbedding (some (α := α)) :=
 
 @[to_dual]
 instance [EDist α] : EDist (WithTop α) where
-  edist
+  eDist
   | ⊤, (x : α) => ∞
   | ⊤, ⊤ => 0
   | (x : α), ⊤ => ∞
-  | (x : α), (y : α) => edist x y
+  | (x : α), (y : α) => eDist x y
 
 /-- If `α` has a topology induced by a linear order and is a weak pseudo extended metric space,
 so is `WithTop α` -/
@@ -221,11 +221,11 @@ instance instWeakEMetricSpaceWithTop [m : WeakEMetricSpace α] : WeakEMetricSpac
 
 open scoped OnePoint in
 instance [EDist α] : EDist (OnePoint α) where
-  edist
+  eDist
   | ∞, (x : α) => none
   | ∞, ∞ => 0
   | (x : α), ∞ => none
-  | (x : α), (y : α) => edist x y
+  | (x : α), (y : α) => eDist x y
 
 /-- The one point compactification of a weak pseudo extended metric space is again a weak pseudo
 extended metric space. -/
@@ -260,66 +260,66 @@ noncomputable instance instWeakEMetricSpaceENat : WeakEMetricSpace ℕ∞ :=
 namespace ENNReal
 
 @[simp]
-theorem edist_top_coe (a : ℝ≥0) : edist ∞ ↑a = ∞ :=
+theorem edist_top_coe (a : ℝ≥0) : eDist ∞ ↑a = ∞ :=
   rfl
 
 @[simp]
-theorem edist_coe_top (a : ℝ≥0) : edist ↑a ∞ = ∞ :=
+theorem edist_coe_top (a : ℝ≥0) : eDist ↑a ∞ = ∞ :=
   rfl
 
 @[simp, norm_cast]
-theorem edist_coe (a b : ℝ≥0) : edist (a : ℝ≥0∞) b = edist a b :=
+theorem edist_coe (a b : ℝ≥0) : eDist (a : ℝ≥0∞) b = eDist a b :=
   rfl
 
 @[simp]
-theorem edist_eq_top_iff (a b : ℝ≥0∞) : edist a b = ∞ ↔ a ≠ b ∧ (a = ∞ ∨ b = ∞) := by
+theorem edist_eq_top_iff (a b : ℝ≥0∞) : eDist a b = ∞ ↔ a ≠ b ∧ (a = ∞ ∨ b = ∞) := by
   cases a <;> cases b <;> simp
 
-theorem edist_eq_max (a b : ℝ≥0∞) : edist a b = max (a - b) (b - a) := by
+theorem edist_eq_max (a b : ℝ≥0∞) : eDist a b = max (a - b) (b - a) := by
   cases a <;> cases b
   case coe.coe =>
     rw [edist_coe, ← coe_nnreal_ennreal_nnDist, NNReal.nnDist_eq]
     norm_cast
   all_goals simp
 
-theorem edist_le_iff_le_add_left (a b c : ℝ≥0∞) : edist a b ≤ c ↔ a ≤ c + b ∧ b ≤ c + a := by
+theorem edist_le_iff_le_add_left (a b c : ℝ≥0∞) : eDist a b ≤ c ↔ a ≤ c + b ∧ b ≤ c + a := by
   simp [edist_eq_max]
 
-theorem edist_le_iff_le_add_right (a b c : ℝ≥0∞) : edist a b ≤ c ↔ a ≤ b + c ∧ b ≤ a + c := by
+theorem edist_le_iff_le_add_right (a b c : ℝ≥0∞) : eDist a b ≤ c ↔ a ≤ b + c ∧ b ≤ a + c := by
   simp only [edist_le_iff_le_add_left, add_comm]
 
-theorem sub_le_dist (a b : ℝ≥0∞) : a - b ≤ edist a b := by
+theorem sub_le_dist (a b : ℝ≥0∞) : a - b ≤ eDist a b := by
   grw [edist_eq_max, ← le_max_left]
 
-theorem le_add_edist (a b : ℝ≥0∞) : a ≤ b + edist a b := by
+theorem le_add_edist (a b : ℝ≥0∞) : a ≤ b + eDist a b := by
   grw [← sub_le_dist, ← le_add_tsub]
 
 @[simp]
-theorem edist_zero_left (a : ℝ≥0∞) : edist 0 a = a := by
+theorem edist_zero_left (a : ℝ≥0∞) : eDist 0 a = a := by
   simp [edist_eq_max]
 
 @[simp]
-theorem edist_zero_right (a : ℝ≥0∞) : edist a 0 = a := by
+theorem edist_zero_right (a : ℝ≥0∞) : eDist a 0 = a := by
   simp [edist_eq_max]
 
 @[simp]
 theorem edist_add_left (a b : ℝ≥0∞) {c : ℝ≥0∞} (hc : c ≠ ∞) :
-    edist (c + a) (c + b) = edist a b := by
+    eDist (c + a) (c + b) = eDist a b := by
   simp only [edist_eq_max, add_sub_add_eq_sub_left hc]
 
 @[simp]
 theorem edist_add_right (a b : ℝ≥0∞) {c : ℝ≥0∞} (hc : c ≠ ∞) :
-    edist (a + c) (b + c) = edist a b := by
+    eDist (a + c) (b + c) = eDist a b := by
   simp only [edist_eq_max, add_sub_add_eq_sub_right hc]
 
 theorem edist_mul_left (a b : ℝ≥0∞) {c : ℝ≥0∞} (hc : c ≠ ∞) :
-    edist (c * a) (c * b) = c * edist a b := by
+    eDist (c * a) (c * b) = c * eDist a b := by
   simp_rw [edist_eq_max, mul_max, ENNReal.mul_sub fun _ _ => hc]
 
 theorem edist_mul_right (a b : ℝ≥0∞) {c : ℝ≥0∞} (hc : c ≠ ∞) :
-    edist (a * c) (b * c) = edist a b * c := by
+    eDist (a * c) (b * c) = eDist a b * c := by
   simp_rw [edist_eq_max, max_mul, ENNReal.sub_mul fun _ _ => hc]
 
 end ENNReal
 
---TODO: Add lemmas about `edist` on `ℕ∞` etc.
+--TODO: Add lemmas about `eDist` on `ℕ∞` etc.

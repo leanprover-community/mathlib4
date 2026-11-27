@@ -71,7 +71,7 @@ variable [PseudoEMetricSpace X] [Group G] [MulAction G X] [IsIsometricSMul G X]
 
 @[to_additive (attr := simp)]
 theorem edist_smul_left [SMul M X] [IsIsometricSMul M X] (c : M) (x y : X) :
-    edist (c • x) (c • y) = edist x y :=
+    eDist (c • x) (c • y) = eDist x y :=
   isometry_smul X c x y
 
 @[to_additive (attr := simp)]
@@ -86,7 +86,7 @@ theorem isometry_mul_left [Mul M] [PseudoEMetricSpace M] [IsIsometricSMul M M] (
 
 @[to_additive (attr := simp)]
 theorem edist_mul_left [Mul M] [PseudoEMetricSpace M] [IsIsometricSMul M M] (a b c : M) :
-    edist (a * b) (a * c) = edist b c :=
+    eDist (a * b) (a * c) = eDist b c :=
   isometry_mul_left a b c
 
 @[to_additive]
@@ -96,17 +96,17 @@ theorem isometry_mul_right [Mul M] [PseudoEMetricSpace M] [IsIsometricSMul Mᵐ�
 
 @[to_additive (attr := simp)]
 theorem edist_mul_right [Mul M] [PseudoEMetricSpace M] [IsIsometricSMul Mᵐᵒᵖ M] (a b c : M) :
-    edist (a * c) (b * c) = edist a b :=
+    eDist (a * c) (b * c) = eDist a b :=
   isometry_mul_right c a b
 
 @[to_additive (attr := simp)]
 theorem edist_div_right [DivInvMonoid M] [PseudoEMetricSpace M] [IsIsometricSMul Mᵐᵒᵖ M]
-    (a b c : M) : edist (a / c) (b / c) = edist a b := by
+    (a b c : M) : eDist (a / c) (b / c) = eDist a b := by
   simp only [div_eq_mul_inv, edist_mul_right]
 
 @[to_additive (attr := simp)]
 theorem edist_inv_inv [PseudoEMetricSpace G] [IsIsometricSMul G G] [IsIsometricSMul Gᵐᵒᵖ G]
-    (a b : G) : edist a⁻¹ b⁻¹ = edist a b := by
+    (a b : G) : eDist a⁻¹ b⁻¹ = eDist a b := by
   rw [← edist_mul_left a, ← edist_mul_right _ _ b, mul_inv_cancel, one_mul, inv_mul_cancel_right,
     edist_comm]
 
@@ -117,11 +117,11 @@ theorem isometry_inv [PseudoEMetricSpace G] [IsIsometricSMul G G] [IsIsometricSM
 
 @[to_additive]
 theorem edist_inv [PseudoEMetricSpace G] [IsIsometricSMul G G] [IsIsometricSMul Gᵐᵒᵖ G]
-    (x y : G) : edist x⁻¹ y = edist x y⁻¹ := by rw [← edist_inv_inv, inv_inv]
+    (x y : G) : eDist x⁻¹ y = eDist x y⁻¹ := by rw [← edist_inv_inv, inv_inv]
 
 @[to_additive (attr := simp)]
 theorem edist_div_left [PseudoEMetricSpace G] [IsIsometricSMul G G] [IsIsometricSMul Gᵐᵒᵖ G]
-    (a b c : G) : edist (a / b) (a / c) = edist b c := by
+    (a b c : G) : eDist (a / b) (a / c) = eDist b c := by
   rw [div_eq_mul_inv, div_eq_mul_inv, edist_mul_left, edist_inv_inv]
 
 namespace IsometryEquiv

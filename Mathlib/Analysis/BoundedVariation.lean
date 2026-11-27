@@ -58,9 +58,9 @@ lemma eVariationOn_bilinear_comp_le (hf : ∀ x ∈ s, ‖f x‖ₑ ≤ C) (hg :
       ‖B‖ₑ * (C * eVariationOn g s + D * eVariationOn f s) := by
   apply iSup_le
   rintro ⟨n, ⟨u, u_mono, u_mem⟩⟩
-  calc ∑ i ∈ range n, edist (B (f (u (i + 1))) (g (u (i + 1)))) (B (f (u i)) (g (u i)))
-  _ ≤ ∑ i ∈ range n, edist (B (f (u (i + 1))) (g (u (i + 1)))) (B (f (u i)) (g (u (i + 1)))) +
-      ∑ i ∈ range n, edist (B (f (u i)) (g (u (i + 1)))) (B (f (u i)) (g (u i))) := by
+  calc ∑ i ∈ range n, eDist (B (f (u (i + 1))) (g (u (i + 1)))) (B (f (u i)) (g (u i)))
+  _ ≤ ∑ i ∈ range n, eDist (B (f (u (i + 1))) (g (u (i + 1)))) (B (f (u i)) (g (u (i + 1)))) +
+      ∑ i ∈ range n, eDist (B (f (u i)) (g (u (i + 1)))) (B (f (u i)) (g (u i))) := by
     rw [← Finset.sum_add_distrib]
     gcongr with i hi
     apply edist_triangle

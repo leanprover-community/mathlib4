@@ -16,7 +16,7 @@ set_option doc.verso.suggestions false
 # Antilipschitz functions
 
 We say that a map `f : α → β` between two (extended) metric spaces is
-`AntilipschitzWith K`, `K ≥ 0`, if for all `x, y` we have `edist x y ≤ K * edist (f x) (f y)`.
+`AntilipschitzWith K`, `K ≥ 0`, if for all `x, y` we have `eDist x y ≤ K * eDist (f x) (f y)`.
 For a metric space, the latter inequality is equivalent to `dist x y ≤ K * dist (f x) (f y)`.
 
 ## Implementation notes
@@ -34,17 +34,17 @@ open scoped NNReal ENNReal Uniformity
 variable {α β γ : Type*}
 
 /-- We say that `f : α → β` is `AntilipschitzWith K` if for any two points `x`, `y` we have
-`edist x y ≤ K * edist (f x) (f y)`. This can also be used as a predicate for bounded below
+`eDist x y ≤ K * eDist (f x) (f y)`. This can also be used as a predicate for bounded below
 linear operators, see `antilipschitzWith_iff_exists_mul_le_norm`. -/
 def AntilipschitzWith [PseudoEMetricSpace α] [PseudoEMetricSpace β] (K : ℝ≥0) (f : α → β) :=
-  ∀ x y, edist x y ≤ K * edist (f x) (f y)
+  ∀ x y, eDist x y ≤ K * eDist (f x) (f y)
 
 protected lemma AntilipschitzWith.edist_lt_top [PseudoEMetricSpace α] [PseudoMetricSpace β]
-    {K : ℝ≥0} {f : α → β} (h : AntilipschitzWith K f) (x y : α) : edist x y < ⊤ :=
+    {K : ℝ≥0} {f : α → β} (h : AntilipschitzWith K f) (x y : α) : eDist x y < ⊤ :=
   (h x y).trans_lt <| by finiteness
 
 theorem AntilipschitzWith.edist_ne_top [PseudoEMetricSpace α] [PseudoMetricSpace β] {K : ℝ≥0}
-    {f : α → β} (h : AntilipschitzWith K f) (x y : α) : edist x y ≠ ⊤ :=
+    {f : α → β} (h : AntilipschitzWith K f) (x y : α) : eDist x y ≠ ⊤ :=
   (h.edist_lt_top x y).ne
 
 section Metric
@@ -108,7 +108,7 @@ protected theorem injective {α : Type*} {β : Type*} [EMetricSpace α] [PseudoE
   simpa only [h, edist_self, mul_zero, edist_le_zero] using hf x y
 
 theorem mul_le_edist (hf : AntilipschitzWith K f) (x y : α) :
-    (K : ℝ≥0∞)⁻¹ * edist x y ≤ edist (f x) (f y) := by
+    (K : ℝ≥0∞)⁻¹ * eDist x y ≤ eDist (f x) (f y) := by
   rw [mul_comm, ← div_eq_mul_inv]
   exact ENNReal.div_le_of_le_mul' (hf x y)
 
@@ -126,8 +126,8 @@ protected theorem id : AntilipschitzWith 1 (id : α → α) := fun x y => by
 theorem comp {Kg : ℝ≥0} {g : β → γ} (hg : AntilipschitzWith Kg g) {Kf : ℝ≥0} {f : α → β}
     (hf : AntilipschitzWith Kf f) : AntilipschitzWith (Kf * Kg) (g ∘ f) := fun x y =>
   calc
-    edist x y ≤ Kf * edist (f x) (f y) := hf x y
-    _ ≤ Kf * (Kg * edist (g (f x)) (g (f y))) := mul_right_mono (hg _ _)
+    eDist x y ≤ Kf * eDist (f x) (f y) := hf x y
+    _ ≤ Kf * (Kg * eDist (g (f x)) (g (f y))) := mul_right_mono (hg _ _)
     _ = _ := by rw [ENNReal.coe_mul, mul_assoc]; rfl
 
 theorem domRestrict (hf : AntilipschitzWith K f) (s : Set α) :

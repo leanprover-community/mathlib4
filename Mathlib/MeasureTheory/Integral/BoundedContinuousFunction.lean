@@ -40,13 +40,13 @@ lemma apply_le_nnDist_zero (f : X →ᵇ ℝ≥0) (x : X) :
 @[deprecated (since := "2026-11-07")] alias apply_le_nndist_zero := apply_le_nnDist_zero
 
 lemma apply_le_edist_zero (f : X →ᵇ ℝ≥0) (x : X) :
-    f x ≤ edist 0 f := by
+    f x ≤ eDist 0 f := by
   simpa [← ENNReal.coe_le_coe] using f.apply_le_nnDist_zero x
 
 variable [MeasurableSpace X]
 
 lemma lintegral_le_edist_mul (f : X →ᵇ ℝ≥0) (μ : Measure X) :
-    (∫⁻ x, f x ∂μ) ≤ edist 0 f * (μ Set.univ) :=
+    (∫⁻ x, f x ∂μ) ≤ eDist 0 f * (μ Set.univ) :=
   le_trans (lintegral_mono (fun x ↦ ENNReal.coe_le_coe.mpr (f.apply_le_nnDist_zero x))) (by simp)
 
 theorem measurable_coe_ennreal_comp [OpensMeasurableSpace X] (f : X →ᵇ ℝ≥0) :

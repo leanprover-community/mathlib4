@@ -226,7 +226,7 @@ instance instNNNorm : NNNorm (Lp E p μ) where nnNorm f := .mk ‖f‖ ENNReal.t
 
 instance instDist : Dist (Lp E p μ) where dist f g := ‖-f + g‖
 
-instance instEDist : EDist (Lp E p μ) where edist f g := eLpNorm (-⇑f + ⇑g) p μ
+instance instEDist : EDist (Lp E p μ) where eDist f g := eLpNorm (-⇑f + ⇑g) p μ
 
 theorem norm_def (f : Lp E p μ) : ‖f‖ = ENNReal.toReal (eLpNorm f p μ) :=
   rfl
@@ -274,30 +274,30 @@ theorem dist_def (f g : Lp E p μ) : dist f g = (eLpNorm (⇑f - ⇑g) p μ).toR
   congr 2
   abel
 
-theorem edist_eq_eLpNorm_neg_add (f g : Lp E p μ) : edist f g = eLpNorm (-⇑f + ⇑g) p μ := rfl
+theorem edist_eq_eLpNorm_neg_add (f g : Lp E p μ) : eDist f g = eLpNorm (-⇑f + ⇑g) p μ := rfl
 
-theorem edist_def (f g : Lp E p μ) : edist f g = eLpNorm (⇑f - ⇑g) p μ := by
+theorem edist_def (f g : Lp E p μ) : eDist f g = eLpNorm (⇑f - ⇑g) p μ := by
   rw [edist_eq_eLpNorm_neg_add, ← eLpNorm_neg]
   congr 1
   abel
 
-protected theorem edist_dist (f g : Lp E p μ) : edist f g = .ofReal (dist f g) := by
+protected theorem edist_dist (f g : Lp E p μ) : eDist f g = .ofReal (dist f g) := by
   rw [edist_def, dist_def, ← eLpNorm_congr_ae (coeFn_sub _ _),
     ENNReal.ofReal_toReal (eLpNorm_ne_top (f - g))]
 
-protected theorem dist_edist (f g : Lp E p μ) : dist f g = (edist f g).toReal :=
+protected theorem dist_edist (f g : Lp E p μ) : dist f g = (eDist f g).toReal :=
   MeasureTheory.Lp.dist_eq_eLpNorm_neg_add ..
 
 theorem dist_eq_norm (f g : Lp E p μ) : dist f g = ‖-f + g‖ := rfl
 
 @[simp]
 theorem edist_toLp_toLp (f g : α → E) (hf : MemLp f p μ) (hg : MemLp g p μ) :
-    edist (hf.toLp f) (hg.toLp g) = eLpNorm (f - g) p μ := by
+    eDist (hf.toLp f) (hg.toLp g) = eLpNorm (f - g) p μ := by
   rw [edist_def]
   exact eLpNorm_congr_ae (hf.coeFn_toLp.sub hg.coeFn_toLp)
 
 @[simp]
-theorem edist_toLp_zero (f : α → E) (hf : MemLp f p μ) : edist (hf.toLp f) 0 = eLpNorm f p μ := by
+theorem edist_toLp_zero (f : α → E) (hf : MemLp f p μ) : eDist (hf.toLp f) 0 = eLpNorm f p μ := by
   simpa using edist_toLp_toLp f 0 hf .zero
 
 @[simp]
@@ -453,7 +453,7 @@ instance instNormedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (Lp E
           simp only [Lp.eNorm_def]
           exact (eLpNorm_congr_ae (AEEqFun.coeFn_add _ _)).trans_le (eLpNorm_add_le hp.out)
         eq_zero_of_map_eq_zero' _ := (norm_eq_zero_iff <| zero_lt_one.trans_le hp.out).1 } with
-    edist := edist
+    eDist := eDist
     edist_dist := Lp.edist_dist }
 
 -- check no diamond is created

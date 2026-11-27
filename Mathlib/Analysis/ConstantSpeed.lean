@@ -152,7 +152,7 @@ theorem HasConstantSpeedOnWith.Icc_Icc {x y z : ℝ} (hfs : HasConstantSpeedOnWi
       inf_of_le_right vz]
 
 theorem hasConstantSpeedOnWith_zero_iff :
-    HasConstantSpeedOnWith f s 0 ↔ ∀ x ∈ s, ∀ y ∈ s, edist (f x) (f y) = 0 := by
+    HasConstantSpeedOnWith f s 0 ↔ ∀ x ∈ s, ∀ y ∈ s, eDist (f x) (f y) = 0 := by
   dsimp [HasConstantSpeedOnWith]
   simp only [zero_mul, ENNReal.ofReal_zero, ← eVariationOn.eq_zero_iff]
   constructor
@@ -237,7 +237,7 @@ noncomputable def naturalParameterization (f : α → E) (s : Set α) (a : α) :
 
 theorem edist_naturalParameterization_eq_zero {f : α → E} {s : Set α}
     (hf : LocallyBoundedVariationOn f s) {a : α} (as : a ∈ s) {b : α} (bs : b ∈ s) :
-    edist (naturalParameterization f s a (variationOnFromTo f s a b)) (f b) = 0 := by
+    eDist (naturalParameterization f s a (variationOnFromTo f s a b)) (f b) = 0 := by
   dsimp only [naturalParameterization]
   have : Nonempty α := ⟨a⟩
   obtain ⟨cs, hc⟩ := Function.invFunOn_pos (b := variationOnFromTo f s a b) ⟨b, bs, rfl⟩

@@ -175,7 +175,7 @@ theorem eNorm_indicatorConstLp_le :
 @[deprecated (since := "2026-11-06")] alias enorm_indicatorConstLp_le := eNorm_indicatorConstLp_le
 
 theorem edist_indicatorConstLp_eq_eNorm {t : Set α} {ht : MeasurableSet t} {hμt : μ t ≠ ∞} :
-    edist (indicatorConstLp p hs hμs c) (indicatorConstLp p ht hμt c) =
+    eDist (indicatorConstLp p hs hμs c) (indicatorConstLp p ht hμt c) =
       ‖indicatorConstLp (μ := μ) p (hs.symmDiff ht) (by finiteness) c‖ₑ := by
   unfold indicatorConstLp
   rw [Lp.edist_toLp_toLp, eLpNorm_indicator_sub_indicator _ hs.nullMeasurableSet

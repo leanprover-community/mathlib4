@@ -331,7 +331,7 @@ theorem packingNumber_two_mul_le_externalCoveringNumber (ε : ℝ≥0) (A : Set 
   -- For each point in D, choose a point in C which is ε-close to it
   let f : D → C := fun x ↦
     ⟨(hC_cover (hD_subset x.property)).choose, (hC_cover (hD_subset x.property)).choose_spec.1⟩
-  have hf' (x : D) : edist x.val (f x) ≤ ε := (hC_cover (hD_subset x.property)).choose_spec.2
+  have hf' (x : D) : eDist x.val (f x) ≤ ε := (hC_cover (hD_subset x.property)).choose_spec.2
   -- `⊢ D.encard ≤ C.encard`
   -- It suffices to prove that `f` is injective
   simp only [← Set.toENat_cardinalMk]
@@ -340,7 +340,7 @@ theorem packingNumber_two_mul_le_externalCoveringNumber (ε : ℝ≥0) (A : Set 
   apply Set.Pairwise.eq hD_separated x.property y.property
   simp only [not_lt]
   calc
-    edist (x : X) y ≤ edist (x : X) (f x) + edist (f x : X) y := edist_triangle ..
+    eDist (x : X) y ≤ eDist (x : X) (f x) + eDist (f x : X) y := edist_triangle ..
     _ ≤ 2 * ε := by
       rw [two_mul]
       gcongr

@@ -78,7 +78,7 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
     rw [Nat.strongRec_eq]
   have memD {n i y} :
       y ∈ D n i ↔ ∃ x : α, ind x = i ∧ eball x (3 * 2⁻¹ ^ n) ⊆ s i ∧
-        (∀ m < n, ∀ (j : ι), x ∉ D m j) ∧ edist y x < 2⁻¹ ^ n := by
+        (∀ m < n, ∀ (j : ι), x ∉ D m j) ∧ eDist y x < 2⁻¹ ^ n := by
     rw [Dn n i]
     simp only [mem_iUnion, mem_eball, exists_prop]
   -- The sets `D n i` cover the whole space. Indeed, for each `x` we can choose `n` such that
@@ -130,7 +130,7 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
       have : z ∉ eball x (2⁻¹ ^ k) := fun hz' => H n (by lia) i (hsub hz')
       apply this
       calc
-        edist z x ≤ edist y z + edist y x := edist_triangle_left _ _ _
+        eDist z x ≤ eDist y z + eDist y x := edist_triangle_left _ _ _
         _ < 2⁻¹ ^ m + 2⁻¹ ^ (n + k + 1) := ENNReal.add_lt_add hz hyx
         _ ≤ 2⁻¹ ^ (k + 1) + 2⁻¹ ^ (k + 1) :=
           (add_le_add (hpow_le <| by lia) (hpow_le <| by lia))
@@ -143,10 +143,10 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
       · exact this z hzD hzB y hyD hyB h'.symm (h'.lt_or_gt.resolve_left h)
       rcases memD.1 hyD with ⟨y', rfl, hsuby, -, hdisty⟩
       rcases memD.1 hzD with ⟨z', rfl, -, -, hdistz⟩
-      suffices edist z' y' < 3 * 2⁻¹ ^ m from notMem_of_lt_ind h (hsuby this)
+      suffices eDist z' y' < 3 * 2⁻¹ ^ m from notMem_of_lt_ind h (hsuby this)
       calc
-        edist z' y' ≤ edist z' x + edist x y' := edist_triangle _ _ _
-        _ ≤ edist z z' + edist z x + (edist y x + edist y y') :=
+        eDist z' y' ≤ eDist z' x + eDist x y' := edist_triangle _ _ _
+        _ ≤ eDist z z' + eDist z x + (eDist y x + eDist y y') :=
           (add_le_add (edist_triangle_left _ _ _) (edist_triangle_left _ _ _))
         _ < 2⁻¹ ^ m + 2⁻¹ ^ (n + k + 1) + (2⁻¹ ^ (n + k + 1) + 2⁻¹ ^ m) := by
           apply_rules [ENNReal.add_lt_add]

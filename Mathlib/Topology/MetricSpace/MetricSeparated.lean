@@ -40,10 +40,10 @@ In this section we define the predicate `Metric.IsSeparated` for `ε`-separated 
 
 /-- A set `s` is `ε`-separated if the extended distance between any two distinct
 elements is strictly greater than `ε`. -/
-def IsSeparated (ε : ℝ≥0∞) (s : Set X) : Prop := s.Pairwise (ε < edist · ·)
+def IsSeparated (ε : ℝ≥0∞) (s : Set X) : Prop := s.Pairwise (ε < eDist · ·)
 
 lemma isSeparated_iff_setRelIsSeparated :
-    IsSeparated ε s ↔ SetRel.IsSeparated {(x, y) | edist x y ≤ ε} s := by
+    IsSeparated ε s ↔ SetRel.IsSeparated {(x, y) | eDist x y ≤ ε} s := by
   simp [IsSeparated, SetRel.IsSeparated]
 
 @[grind .]
@@ -60,16 +60,16 @@ nonrec lemma IsSeparated.anti (hεδ : ε ≤ δ) (hs : IsSeparated δ s) : IsSe
 lemma IsSeparated.subset (hst : s ⊆ t) (hs : IsSeparated ε t) : IsSeparated ε s := hs.mono hst
 
 lemma isSeparated_insert :
-    IsSeparated ε (insert x s) ↔ IsSeparated ε s ∧ ∀ y ∈ s, x ≠ y → ε < edist x y :=
-  have : Std.Symm (α := X) (ε < edist · ·) := by simp [symm_def, edist_comm]
+    IsSeparated ε (insert x s) ↔ IsSeparated ε s ∧ ∀ y ∈ s, x ≠ y → ε < eDist x y :=
+  have : Std.Symm (α := X) (ε < eDist · ·) := by simp [symm_def, edist_comm]
   pairwise_insert_of_symm
 
 lemma isSeparated_insert_of_notMem (hx : x ∉ s) :
-    IsSeparated ε (insert x s) ↔ IsSeparated ε s ∧ ∀ y ∈ s, ε < edist x y :=
-  have : Std.Symm (α := X) (ε < edist · ·) := by simp [symm_def, edist_comm]
+    IsSeparated ε (insert x s) ↔ IsSeparated ε s ∧ ∀ y ∈ s, ε < eDist x y :=
+  have : Std.Symm (α := X) (ε < eDist · ·) := by simp [symm_def, edist_comm]
   pairwise_insert_of_symm_of_notMem hx
 
-protected lemma IsSeparated.insert (hs : IsSeparated ε s) (h : ∀ y ∈ s, x ≠ y → ε < edist x y) :
+protected lemma IsSeparated.insert (hs : IsSeparated ε s) (h : ∀ y ∈ s, x ≠ y → ε < eDist x y) :
     IsSeparated ε (insert x s) := isSeparated_insert.2 ⟨hs, h⟩
 
 @[simp]
@@ -80,7 +80,7 @@ lemma IsSeparated.image_antilipschitz {ε K₁ : ℝ≥0} {f : X → Y}
     (hs : IsSeparated ε s) (hf : AntilipschitzWith K₁ f) (hK₁ : 0 < K₁) :
     IsSeparated ↑(ε / K₁) (f '' s) := by
   rintro x' ⟨x, hx, rfl⟩ y' ⟨y, hy, rfl⟩ hne
-  have hmul : (↑ε : ℝ≥0∞) < edist (f x) (f y) * ↑K₁ :=
+  have hmul : (↑ε : ℝ≥0∞) < eDist (f x) (f y) * ↑K₁ :=
     lt_of_lt_of_le (hs hx hy (by grind)) (by rw [mul_comm]; exact hf x y)
   exact ENNReal.coe_div hK₁.ne' ▸ ENNReal.div_lt_of_lt_mul hmul
 
@@ -96,7 +96,7 @@ This notion is useful, e.g., to define metric outer measures.
 
 /-- Two sets in an (extended) metric space are called *metric separated* if the (extended) distance
 between `x ∈ s` and `y ∈ t` is bounded from below by a positive constant. -/
-def AreSeparated (s t : Set X) := ∃ r, r ≠ 0 ∧ ∀ x ∈ s, ∀ y ∈ t, r ≤ edist x y
+def AreSeparated (s t : Set X) := ∃ r, r ≠ 0 ∧ ∀ x ∈ s, ∀ y ∈ t, r ≤ eDist x y
 
 namespace AreSeparated
 

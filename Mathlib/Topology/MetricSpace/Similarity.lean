@@ -41,22 +41,22 @@ variable [PseudoEMetricSpace P₁] [PseudoEMetricSpace P₂] [PseudoEMetricSpace
 /-- Similarity between indexed sets of vertices v₁ and v₂.
 Use `open scoped Similar` to access the `v₁ ∼ v₂` notation. -/
 def Similar (v₁ : ι → P₁) (v₂ : ι → P₂) : Prop :=
-  ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ (i₁ i₂ : ι), (edist (v₁ i₁) (v₁ i₂) = r * edist (v₂ i₁) (v₂ i₂))
+  ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ (i₁ i₂ : ι), (eDist (v₁ i₁) (v₁ i₂) = r * eDist (v₂ i₁) (v₂ i₂))
 
 @[inherit_doc]
 scoped[Similar] infixl:25 " ∼ " => Similar
 
 /-- Similarity holds if and only if all extended distances are proportional. -/
 lemma similar_iff_exists_edist_eq :
-    Similar v₁ v₂ ↔ (∃ r : ℝ≥0, r ≠ 0 ∧ ∀ (i₁ i₂ : ι), (edist (v₁ i₁) (v₁ i₂) =
-      r * edist (v₂ i₁) (v₂ i₂))) :=
+    Similar v₁ v₂ ↔ (∃ r : ℝ≥0, r ≠ 0 ∧ ∀ (i₁ i₂ : ι), (eDist (v₁ i₁) (v₁ i₂) =
+      r * eDist (v₂ i₁) (v₂ i₂))) :=
   Iff.rfl
 
 /-- Similarity holds if and only if all extended distances between points with different
 indices are proportional. -/
 lemma similar_iff_exists_pairwise_edist_eq :
-    Similar v₁ v₂ ↔ (∃ r : ℝ≥0, r ≠ 0 ∧ Pairwise fun i₁ i₂ ↦ (edist (v₁ i₁) (v₁ i₂) =
-      r * edist (v₂ i₁) (v₂ i₂))) := by
+    Similar v₁ v₂ ↔ (∃ r : ℝ≥0, r ≠ 0 ∧ Pairwise fun i₁ i₂ ↦ (eDist (v₁ i₁) (v₁ i₂) =
+      r * eDist (v₂ i₁) (v₂ i₂))) := by
   rw [similar_iff_exists_edist_eq]
   refine ⟨?_, ?_⟩ <;> rintro ⟨r, hr, h⟩ <;> refine ⟨r, hr, fun i₁ i₂ ↦ ?_⟩
   · exact fun _ ↦ h i₁ i₂

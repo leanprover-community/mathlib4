@@ -97,7 +97,7 @@ lemma exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]
     ∃ m' : VectorMeasure α E, (∀ s ∈ C, m' s = m s) ∧ ∀ s, ‖m' s‖ₑ ≤ μ s := by
   /- We will extend by continuity the function `m` from the class `C` to all measurable sets,
   thanks to the fact that `C` is dense. To implement this properly, we work in the space
-  `MeasuredSets μ` with the distance `edist s t = μ (s ∆ t)`. The assumptions guarantee that
+  `MeasuredSets μ` with the distance `eDist s t = μ (s ∆ t)`. The assumptions guarantee that
   `m` is Lipschitz on `C` there, and therefore extends to a Lipschitz function. We check that
   the extension is still finitely additive by approximating disjoint measurable sets by disjoint
   measurable sets in `C`. Moreover, the extension is still dominated by `μ`.
@@ -121,7 +121,7 @@ lemma exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]
   -- It is Lipschitz continuous
   have lip : LipschitzWith 1 m₀ := by
     intro s t
-    have : edist s t = edist (s : MeasuredSets μ) t := rfl
+    have : eDist s t = eDist (s : MeasuredSets μ) t := rfl
     simp only [ENNReal.coe_one, one_mul, this, MeasuredSets.edist_def, m₀, eDist_eq_eNorm_sub]
     rw [measure_symmDiff_eq (by exact s.val.property.nullMeasurableSet)
       (by exact t.val.property.nullMeasurableSet)]

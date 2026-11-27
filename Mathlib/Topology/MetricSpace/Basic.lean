@@ -74,22 +74,22 @@ theorem isUniformEmbedding_bot_of_pairwise_le_dist {β : Type*} {ε : ℝ} (hε 
 end Metric
 
 /-- One gets a metric space from an emetric space if the edistance
-is everywhere finite, by pushing the edistance to reals. We set it up so that the edist and the
+is everywhere finite, by pushing the edistance to reals. We set it up so that the eDist and the
 uniformity are defeq in the metric space and the emetric space. In this definition, the distance
 is given separately, to be able to prescribe some expression which is not defeq to the push-forward
 of the edistance to reals. -/
 abbrev EMetricSpace.toMetricSpaceOfDist {α : Type u} [EMetricSpace α] (dist : α → α → ℝ)
-    (dist_nonneg : ∀ x y, 0 ≤ dist x y) (h : ∀ x y, edist x y = .ofReal (dist x y)) :
+    (dist_nonneg : ∀ x y, 0 ≤ dist x y) (h : ∀ x y, eDist x y = .ofReal (dist x y)) :
     MetricSpace α :=
   letI := PseudoEMetricSpace.toPseudoMetricSpaceOfDist dist dist_nonneg h
   MetricSpace.ofT0PseudoMetricSpace _
 
 /-- One gets a metric space from an emetric space if the edistance
-is everywhere finite, by pushing the edistance to reals. We set it up so that the edist and the
+is everywhere finite, by pushing the edistance to reals. We set it up so that the eDist and the
 uniformity are defeq in the metric space and the emetric space. -/
-abbrev EMetricSpace.toMetricSpace {α : Type u} [EMetricSpace α] (h : ∀ x y : α, edist x y ≠ ⊤) :
+abbrev EMetricSpace.toMetricSpace {α : Type u} [EMetricSpace α] (h : ∀ x y : α, eDist x y ≠ ⊤) :
     MetricSpace α :=
-  EMetricSpace.toMetricSpaceOfDist (ENNReal.toReal <| edist · ·) (by simp) (by simp [h])
+  EMetricSpace.toMetricSpaceOfDist (ENNReal.toReal <| eDist · ·) (by simp) (by simp [h])
 
 /-- Metric space structure pulled back by an injective function. Injectivity is necessary to
 ensure that `dist x y = 0` only if `x = y`. -/
@@ -237,7 +237,7 @@ namespace PseudoEMetricSpace
 
 open ENNReal
 
-variable {X : Type*} (m : PseudoEMetricSpace X) (d : X → X → ℝ≥0∞) (hd : d = edist)
+variable {X : Type*} (m : PseudoEMetricSpace X) (d : X → X → ℝ≥0∞) (hd : d = eDist)
 
 /-- Build new pseudoemetric space from an old one where the edistance is provably (but typically
 non-definitionally) equal to some given edistance. We also provide convenience versions for
@@ -245,7 +245,7 @@ PseudoMetric, Emetric and Metric spaces. -/
 -- See note [forgetful inheritance]
 -- See note [reducible non-instances]
 abbrev replaceEDist : PseudoEMetricSpace X where
-  edist := d
+  eDist := d
   edist_self := by simp [hd]
   edist_comm := by simp [hd, edist_comm]
   edist_triangle := by simp [hd, edist_triangle]
@@ -294,7 +294,7 @@ namespace EMetricSpace
 
 open ENNReal
 
-variable {X : Type*} (m : EMetricSpace X) (d : X → X → ℝ≥0∞) (hd : d = edist)
+variable {X : Type*} (m : EMetricSpace X) (d : X → X → ℝ≥0∞) (hd : d = eDist)
 
 /-- Build new emetric space from an old one where the edistance is provably (but typically
 non-definitionally) equal to some given edistance. We also provide convenience versions for
@@ -302,7 +302,7 @@ PseudoEMetric, PseudoMetric and Metric spaces. -/
 -- See note [forgetful inheritance]
 -- See note [reducible non-instances]
 noncomputable abbrev replaceEDist : EMetricSpace X where
-  edist := d
+  eDist := d
   edist_self := by simp [hd]
   edist_comm := by simp [hd, edist_comm]
   edist_triangle := by simp [hd, edist_triangle]

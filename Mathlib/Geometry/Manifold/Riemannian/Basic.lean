@@ -78,7 +78,7 @@ This is a `Prop`-valued typeclass, on top of existing data.
 If you need to *construct* a distance using a Riemannian structure,
 see `EMetricSpace.ofRiemannianMetric`. -/
 class IsRiemannianManifold : Prop where
-  out (x y : M) : edist x y = riemannianEDist I x y
+  out (x y : M) : eDist x y = riemannianEDist I x y
 
 end
 
@@ -148,8 +148,8 @@ open MeasureTheory
 
 lemma lintegral_fderiv_lineMap_eq_edist {x y : E} :
     ∫⁻ t in Icc 0 1, ‖fderivWithin ℝ (ContinuousAffineMap.lineMap (R := ℝ) x y) (Icc 0 1) t 1‖ₑ
-      = edist x y := by
-  have : edist x y = ∫⁻ t in Icc (0 : ℝ) 1, ‖y - x‖ₑ := by
+      = eDist x y := by
+  have : eDist x y = ∫⁻ t in Icc (0 : ℝ) 1, ‖y - x‖ₑ := by
     simp [edist_comm x y, eDist_eq_eNorm_sub]
   rw [this]
   apply setLIntegral_congr_fun measurableSet_Icc (fun z hz ↦ ?_)
@@ -317,7 +317,7 @@ set_option backward.isDefEq.respectTransparency false in
 in the extended chart. In other words, the extended chart is locally Lipschitz. -/
 lemma eventually_riemannianEDist_le_edist_extChartAt (x : M) :
     ∃ C > (0 : ℝ≥0), ∀ᶠ y in 𝓝 x,
-    riemannianEDist I x y ≤ C * edist (extChartAt I x x) (extChartAt I x y) := by
+    riemannianEDist I x y ≤ C * eDist (extChartAt I x x) (extChartAt I x y) := by
   /- To construct a path with controlled distance from `x` to `y`, we consider the segment from
   `extChartAt x x` to `extChartAt x y` in the chart, and we push it by `(extChartAt x).symm`. As
   the derivative of the latter is locally bounded, this only multiplies the length by a bounded
@@ -391,7 +391,7 @@ lemma eventually_riemannianEDist_lt (x : M) {c : ℝ≥0∞} (hc : 0 < c) :
     exact Metric.eball_mem_nhds _ (ENNReal.div_pos hc.ne' (by simp))
   filter_upwards [this, hC] with y hy h'y
   apply h'y.trans_lt
-  have : edist (extChartAt I x x) (extChartAt I x y) < c / C := by
+  have : eDist (extChartAt I x x) (extChartAt I x y) < c / C := by
     simpa only [mem_preimage, Metric.mem_eball'] using hy
   rwa [ENNReal.lt_div_iff_mul_lt, mul_comm] at this
   · exact Or.inl (mod_cast C_pos.ne')

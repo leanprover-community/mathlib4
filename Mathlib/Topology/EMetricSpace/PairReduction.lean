@@ -110,7 +110,7 @@ variable {T : Type*} [TopologicalSpace T] [WeakPseudoEMetricSpace T]
 namespace PairReduction
 
 lemma exists_radius_le (t : T) (V : Finset T) (ha : 1 < a) (c : ℝ≥0∞) :
-    ∃ r : ℕ, 1 ≤ r ∧ #(V.filter fun x ↦ edist t x ≤ r * c) ≤ a ^ r := by
+    ∃ r : ℕ, 1 ≤ r ∧ #(V.filter fun x ↦ eDist t x ≤ r * c) ≤ a ^ r := by
   have := ENNReal.tendsto_nhds_top_iff_nat.1
     ((ENNReal.tendsto_rpow_atTop_of_one_lt_base ha).comp tendsto_natCast_atTop_atTop) #V
   simp only [Function.comp_apply, ENNReal.rpow_natCast, Filter.eventually_atTop] at this
@@ -130,13 +130,13 @@ lemma one_le_logSizeRadius (ha : 1 < a) :
   exact (Nat.find_spec (exists_radius_le t V ha c)).1
 
 lemma card_le_logSizeRadius_le_pow_logSizeRadius (ha : 1 < a) :
-    #(V.filter fun x ↦ edist t x ≤ logSizeRadius t V a c * c) ≤ a ^ (logSizeRadius t V a c) := by
+    #(V.filter fun x ↦ eDist t x ≤ logSizeRadius t V a c * c) ≤ a ^ (logSizeRadius t V a c) := by
   rw [logSizeRadius, dite_eq_left ha]
   exact (Nat.find_spec (exists_radius_le t V ha c)).2
 
 lemma pow_logSizeRadius_le_card_le_logSizeRadius (ha : 1 < a) (ht : t ∈ V) :
     a ^ (logSizeRadius t V a c - 1)
-      ≤ #(V.filter fun x ↦ edist t x ≤ (logSizeRadius t V a c - 1) * c) := by
+      ≤ #(V.filter fun x ↦ eDist t x ≤ (logSizeRadius t V a c - 1) * c) := by
   by_cases h_one : logSizeRadius t V a c = 1
   · simp only [h_one, tsub_self, pow_zero, Nat.cast_one, zero_mul, nonpos_iff_eq_zero,
       Nat.one_le_cast, Finset.one_le_card]
@@ -164,14 +164,14 @@ structure logSizeBallStruct (T : Type*) where
 noncomputable
 def logSizeBallStruct.smallBall (struct : logSizeBallStruct T) (c : ℝ≥0∞) :
     Finset T :=
-  struct.finset.filter fun x ↦ edist struct.point x ≤ (struct.radius - 1) * c
+  struct.finset.filter fun x ↦ eDist struct.point x ≤ (struct.radius - 1) * c
 
 /-- If `(V, t, r)` is a `logSizeBallStruct` then `logSizeBallStruct.ball`
   is `{x ∈ V | d(t, x) ≤ rc}`. -/
 noncomputable
 def logSizeBallStruct.ball (struct : logSizeBallStruct T) (c : ℝ≥0∞) :
     Finset T :=
-  struct.finset.filter fun x ↦ edist struct.point x ≤ struct.radius * c
+  struct.finset.filter fun x ↦ eDist struct.point x ≤ struct.radius * c
 
 variable [DecidableEq T]
 
@@ -378,7 +378,7 @@ lemma card_pairSet_le (ha : 1 < a) : #(pairSet J a c) ≤ a * #J := by
   exact (Finset.filter_subset _ _).trans (finset_logSizeBallSeq_subset_logSizeBallSeq_init _ _)
 
 lemma edist_le_of_mem_pairSet (ha : 1 < a) (hJ_card : #J ≤ a ^ n) {s t : T}
-    (h : (s, t) ∈ pairSet J a c) : edist s t ≤ n * c := by
+    (h : (s, t) ∈ pairSet J a c) : eDist s t ≤ n * c := by
   obtain ⟨i, hiJ, h'⟩ : ∃ i < #J, (s, t) ∈ pairSetSeq J a c i := by simpa [pairSet] using h
   have hJ : J.Nonempty := Finset.card_pos.mp (Nat.zero_lt_of_lt hiJ)
   wlog! hn : 1 ≤ n
@@ -394,8 +394,8 @@ lemma edist_le_of_mem_pairSet (ha : 1 < a) (hJ_card : #J ≤ a ^ n) {s t : T}
 
 lemma iSup_edist_pairSet {E : Type*} [TopologicalSpace E] [WeakPseudoEMetricSpace E] (ha : 1 < a)
     (f : T → E) :
-    ⨆ (s : J) (t : { t : J // edist s t ≤ c}), edist (f s) (f t)
-        ≤ 2 * ⨆ p : pairSet J a c, edist (f p.val.1) (f p.val.2) := by
+    ⨆ (s : J) (t : { t : J // eDist s t ≤ c}), eDist (f s) (f t)
+        ≤ 2 * ⨆ p : pairSet J a c, eDist (f p.val.1) (f p.val.2) := by
   rw [iSup_le_iff]; rintro ⟨s, hs⟩
   rw [iSup_le_iff]; rintro ⟨⟨t, ht⟩, hst⟩
   have hJ : J.Nonempty := ⟨s, hs⟩
@@ -422,7 +422,7 @@ lemma iSup_edist_pairSet {E : Type*} [TopologicalSpace E] [WeakPseudoEMetricSpac
       simp only [Decidable.not_not] at h
       have hP := Nat.findGreatest_is_greatest (lt_add_one l) (Nat.add_one_le_of_lt hl)
       simpa [P, h] using hP
-    have hts : edist t s ≤ c := by rw [edist_comm]; exact hst
+    have hts : eDist t s ≤ c := by rw [edist_comm]; exact hst
     rw [edist_comm]
     have hP : P = (fun l ↦
       t ∈ (logSizeBallSeq J hJ a c l).finset ∧ s ∈ (logSizeBallSeq J hJ a c l).finset) := by
@@ -451,7 +451,7 @@ lemma iSup_edist_pairSet {E : Type*} [TopologicalSpace E] [WeakPseudoEMetricSpac
   have htP : ((logSizeBallSeq J hJ a c l).point, t) ∈ pairSetSeq J a c l := by
     simp [pairSetSeq, hJ, htB]
   have sup_bound {x y : T} (hxy : (x, y) ∈ pairSetSeq J a c l) :
-    edist (f x) (f y) ≤ ⨆ p : pairSet J a c, edist (f p.val.1) (f p.val.2) := by
+    eDist (f x) (f y) ≤ ⨆ p : pairSet J a c, eDist (f p.val.1) (f p.val.2) := by
     simp only [iSup_subtype]
     apply le_iSup_of_le (i := (x, y))
     apply le_iSup_of_le
@@ -478,10 +478,10 @@ theorem EMetric.pair_reduction (hJ_card : #J ≤ a ^ n) (c : ℝ≥0∞) (E : Ty
       [WeakPseudoEMetricSpace E] :
     ∃ K : Finset (T × T), K ⊆ J ×ˢ J
       ∧ #K ≤ a * #J
-      ∧ (∀ s t, (s, t) ∈ K → edist s t ≤ n * c)
+      ∧ (∀ s t, (s, t) ∈ K → eDist s t ≤ n * c)
       ∧ (∀ f : T → E,
-        ⨆ (s : J) (t : { t : J // edist s t ≤ c}), edist (f s) (f t)
-        ≤ 2 * ⨆ p : K, edist (f p.val.1) (f p.val.2)) := by
+        ⨆ (s : J) (t : { t : J // eDist s t ≤ c}), eDist (f s) (f t)
+        ≤ 2 * ⨆ p : K, eDist (f p.val.1) (f p.val.2)) := by
   classical
   rcases le_or_gt a 1 with ha1 | ha1
   · rcases isEmpty_or_nonempty J with hJ | hJ

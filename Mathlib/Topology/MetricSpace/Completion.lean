@@ -164,7 +164,7 @@ theorem coe_isometry : Isometry ((↑) : α → Completion α) :=
   Isometry.of_dist_eq Completion.dist_eq
 
 @[simp]
-protected theorem edist_eq (x y : α) : edist (x : Completion α) y = edist x y :=
+protected theorem edist_eq (x y : α) : eDist (x : Completion α) y = eDist x y :=
   coe_isometry x y
 
 instance {M} [Zero M] [Zero α] [SMul M α] [PseudoMetricSpace M] [IsBoundedSMul M α] :

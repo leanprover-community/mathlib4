@@ -96,7 +96,7 @@ protected theorem sub_left {f : α → E} {s : Set α} (hf : LocallyBoundedVaria
 variable {f s} in
 protected theorem edist_zero_of_eq_zero (hf : LocallyBoundedVariationOn f s)
     {a b : α} (ha : a ∈ s) (hb : b ∈ s) (h : variationOnFromTo f s a b = 0) :
-    edist (f a) (f b) = 0 := by
+    eDist (f a) (f b) = 0 := by
   wlog h' : a ≤ b
   · rw [edist_comm]
     apply this hf hb ha _ (le_of_not_ge h')
@@ -114,21 +114,21 @@ protected theorem eq_left_iff {f : α → E} {s : Set α} (hf : LocallyBoundedVa
 protected theorem eq_zero_iff_of_le {f : α → E} {s : Set α} (hf : LocallyBoundedVariationOn f s)
     {a b : α} (ha : a ∈ s) (hb : b ∈ s) (ab : a ≤ b) :
     variationOnFromTo f s a b = 0 ↔
-      ∀ ⦃x⦄ (_hx : x ∈ s ∩ Icc a b) ⦃y⦄ (_hy : y ∈ s ∩ Icc a b), edist (f x) (f y) = 0 := by
+      ∀ ⦃x⦄ (_hx : x ∈ s ∩ Icc a b) ⦃y⦄ (_hy : y ∈ s ∩ Icc a b), eDist (f x) (f y) = 0 := by
   rw [variationOnFromTo.eq_of_le _ _ ab, ENNReal.toReal_eq_zero_iff, or_iff_left (hf a b ha hb),
     eVariationOn.eq_zero_iff]
 
 protected theorem eq_zero_iff_of_ge {f : α → E} {s : Set α} (hf : LocallyBoundedVariationOn f s)
     {a b : α} (ha : a ∈ s) (hb : b ∈ s) (ba : b ≤ a) :
     variationOnFromTo f s a b = 0 ↔
-      ∀ ⦃x⦄ (_hx : x ∈ s ∩ Icc b a) ⦃y⦄ (_hy : y ∈ s ∩ Icc b a), edist (f x) (f y) = 0 := by
+      ∀ ⦃x⦄ (_hx : x ∈ s ∩ Icc b a) ⦃y⦄ (_hy : y ∈ s ∩ Icc b a), eDist (f x) (f y) = 0 := by
   rw [variationOnFromTo.eq_of_ge _ _ ba, neg_eq_zero, ENNReal.toReal_eq_zero_iff,
     or_iff_left (hf b a hb ha), eVariationOn.eq_zero_iff]
 
 protected theorem eq_zero_iff {f : α → E} {s : Set α} (hf : LocallyBoundedVariationOn f s) {a b : α}
     (ha : a ∈ s) (hb : b ∈ s) :
     variationOnFromTo f s a b = 0 ↔
-      ∀ ⦃x⦄ (_hx : x ∈ s ∩ uIcc a b) ⦃y⦄ (_hy : y ∈ s ∩ uIcc a b), edist (f x) (f y) = 0 := by
+      ∀ ⦃x⦄ (_hx : x ∈ s ∩ uIcc a b) ⦃y⦄ (_hy : y ∈ s ∩ uIcc a b), eDist (f x) (f y) = 0 := by
   rcases le_total a b with (ab | ba)
   · rw [uIcc_of_le ab]
     exact variationOnFromTo.eq_zero_iff_of_le hf ha hb ab

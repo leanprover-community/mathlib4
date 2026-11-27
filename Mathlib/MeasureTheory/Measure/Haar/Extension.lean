@@ -117,7 +117,7 @@ noncomputable def pushforward :
       refine Filter.mem_of_superset (Filter.inter_mem
         (mul_singleton_mem_nhds_of_nhds_one b (inv_mem_nhds_one B hU)) hb) ?_
       rintro - ⟨⟨t, ht, b, rfl, -, rfl⟩, htb⟩
-      have h (a) (ha : a ∈ S) : edist (H.pullback f (t * b) a) (H.pullback f b a) ≤ .ofReal δ := by
+      have h (a) (ha : a ∈ S) : eDist (H.pullback f (t * b) a) (H.pullback f b a) ≤ .ofReal δ := by
         rw [edist_dist]
         exact ENNReal.ofReal_le_ofReal (@hf ⟨t * b * φ a, b * φ a⟩ (by simpa)).le
       grw [Set.mem_ofPred_eq, dist_integral_le_lintegral_edist (H.pullback f (t * b)).integrable

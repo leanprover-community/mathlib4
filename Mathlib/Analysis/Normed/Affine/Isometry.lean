@@ -136,7 +136,7 @@ theorem nnDist_map (x y : P) : nnDist (f x) (f y) = nnDist x y := by simp [nnDis
 @[deprecated (since := "2026-11-07")] alias nndist_map := nnDist_map
 
 @[simp]
-theorem edist_map (x y : P) : edist (f x) (f y) = edist x y := by simp [edist_dist]
+theorem edist_map (x y : P) : eDist (f x) (f y) = eDist x y := by simp [edist_dist]
 
 protected theorem isometry : Isometry f :=
   f.edist_map
@@ -652,7 +652,7 @@ theorem dist_map (x y : P) : dist (e x) (e y) = dist x y :=
   e.toAffineIsometry.dist_map x y
 
 @[simp]
-theorem edist_map (x y : P) : edist (e x) (e y) = edist x y :=
+theorem edist_map (x y : P) : eDist (e x) (e y) = eDist x y :=
   e.toAffineIsometry.edist_map x y
 
 protected theorem bijective : Bijective e :=

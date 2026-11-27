@@ -108,7 +108,7 @@ export Dist (dist)
 -- the uniform structure and the emetric space structure are embedded in the metric space structure
 -- to avoid instance diamond issues. See Note [forgetful inheritance].
 set_option backward.privateInPublic true in
-/-- This is an internal lemma used inside the default of `PseudoMetricSpace.edist`. -/
+/-- This is an internal lemma used inside the default of `PseudoMetricSpace.eDist`. -/
 private theorem dist_nonneg' {α} {x y : α} (dist : α → α → ℝ)
     (dist_self : ∀ x : α, dist x x = 0) (dist_comm : ∀ x y : α, dist x y = dist y x)
     (dist_triangle : ∀ x y z : α, dist x z ≤ dist x y + dist y z) : 0 ≤ dist x y :=
@@ -142,8 +142,8 @@ class PseudoMetricSpace (α : Type u) : Type u extends Dist α where
   dist_comm : ∀ x y : α, dist x y = dist y x
   dist_triangle : ∀ x y z : α, dist x z ≤ dist x y + dist y z
   /-- Extended distance between two points -/
-  edist : α → α → ℝ≥0∞ := fun x y => ENNReal.ofNNReal (.mk (dist x y) (dist_nonneg' _ ‹_› ‹_› ‹_›))
-  edist_dist : ∀ x y : α, edist x y = ENNReal.ofReal (dist x y) := by
+  eDist : α → α → ℝ≥0∞ := fun x y => ENNReal.ofNNReal (.mk (dist x y) (dist_nonneg' _ ‹_› ‹_› ‹_›))
+  edist_dist : ∀ x y : α, eDist x y = ENNReal.ofReal (dist x y) := by
     intro x y; exact ENNReal.coe_nnreal_eq _
   toUniformSpace : UniformSpace α := .ofDist dist dist_self dist_comm dist_triangle
   uniformity_dist : 𝓤 α = ⨅ ε > 0, 𝓟 { p : α × α | dist p.1 p.2 < ε } := by intros; rfl
@@ -174,7 +174,7 @@ attribute [instance_reducible, instance]
 
 -- see Note [lower instance priority]
 instance (priority := 200) PseudoMetricSpace.toEDist : EDist α :=
-  ⟨PseudoMetricSpace.edist⟩
+  ⟨PseudoMetricSpace.eDist⟩
 
 /-- Construct a pseudo-metric space structure whose underlying topological space structure
 (definitionally) agrees which a pre-existing topology which is compatible with a given distance
@@ -205,7 +205,7 @@ theorem dist_self (x : α) : dist x x = 0 :=
 theorem dist_comm (x y : α) : dist x y = dist y x :=
   PseudoMetricSpace.dist_comm x y
 
-theorem edist_dist (x y : α) : edist x y = ENNReal.ofReal (dist x y) :=
+theorem edist_dist (x y : α) : eDist x y = ENNReal.ofReal (dist x y) :=
   PseudoMetricSpace.edist_dist x y
 
 @[bound]
@@ -297,39 +297,39 @@ theorem coe_nnDist (x y : α) : ↑(nnDist x y) = dist x y := rfl
 
 @[deprecated (since := "2026-11-07")] alias coe_nndist := coe_nnDist
 
-/-- Express `edist` in terms of `nnDist` -/
-theorem eDist_nnDist (x y : α) : edist x y = nnDist x y := by
+/-- Express `eDist` in terms of `nnDist` -/
+theorem eDist_nnDist (x y : α) : eDist x y = nnDist x y := by
   rw [edist_dist, dist_nnDist, ENNReal.ofReal_coe_nnreal]
 
 @[deprecated (since := "2026-11-07")] alias edist_nndist := eDist_nnDist
 
-/-- Express `nnDist` in terms of `edist` -/
-theorem nnDist_edist (x y : α) : nnDist x y = (edist x y).toNNReal := by
+/-- Express `nnDist` in terms of `eDist` -/
+theorem nnDist_edist (x y : α) : nnDist x y = (eDist x y).toNNReal := by
   simp [eDist_nnDist]
 
 @[deprecated (since := "2026-11-07")] alias nndist_edist := nnDist_edist
 
 @[simp, norm_cast]
-theorem coe_nnreal_ennreal_nnDist (x y : α) : ↑(nnDist x y) = edist x y :=
+theorem coe_nnreal_ennreal_nnDist (x y : α) : ↑(nnDist x y) = eDist x y :=
   (eDist_nnDist x y).symm
 
 @[deprecated (since := "2026-11-07")] alias coe_nnreal_ennreal_nndist := coe_nnreal_ennreal_nnDist
 
 @[simp, norm_cast]
-theorem edist_lt_coe {x y : α} {c : ℝ≥0} : edist x y < c ↔ nnDist x y < c := by
+theorem edist_lt_coe {x y : α} {c : ℝ≥0} : eDist x y < c ↔ nnDist x y < c := by
   rw [eDist_nnDist, ENNReal.coe_lt_coe]
 
 @[simp, norm_cast]
-theorem edist_le_coe {x y : α} {c : ℝ≥0} : edist x y ≤ c ↔ nnDist x y ≤ c := by
+theorem edist_le_coe {x y : α} {c : ℝ≥0} : eDist x y ≤ c ↔ nnDist x y ≤ c := by
   rw [eDist_nnDist, ENNReal.coe_le_coe]
 
 /-- In a pseudometric space, the extended distance is always finite -/
-theorem edist_lt_top {α : Type*} [PseudoMetricSpace α] (x y : α) : edist x y < ⊤ :=
+theorem edist_lt_top {α : Type*} [PseudoMetricSpace α] (x y : α) : eDist x y < ⊤ :=
   (edist_dist x y).symm ▸ ENNReal.ofReal_lt_top
 
 /-- In a pseudometric space, the extended distance is always finite -/
 @[aesop (rule_sets := [finiteness]) safe apply, simp]
-theorem edist_ne_top (x y : α) : edist x y ≠ ⊤ :=
+theorem edist_ne_top (x y : α) : eDist x y ≠ ⊤ :=
   (edist_lt_top x y).ne
 
 /-- `nnDist x x` vanishes -/
@@ -346,12 +346,12 @@ theorem dist_le_coe {x y : α} {c : ℝ≥0} : dist x y ≤ c ↔ nnDist x y ≤
   Iff.rfl
 
 @[simp]
-theorem edist_lt_ofReal {x y : α} {r : ℝ} : edist x y < ENNReal.ofReal r ↔ dist x y < r := by
+theorem edist_lt_ofReal {x y : α} {r : ℝ} : eDist x y < ENNReal.ofReal r ↔ dist x y < r := by
   rw [edist_dist, ENNReal.ofReal_lt_ofReal_iff_of_nonneg dist_nonneg]
 
 @[simp]
 theorem edist_le_ofReal {x y : α} {r : ℝ} (hr : 0 ≤ r) :
-    edist x y ≤ ENNReal.ofReal r ↔ dist x y ≤ r := by
+    eDist x y ≤ ENNReal.ofReal r ↔ dist x y ≤ r := by
   rw [edist_dist, ENNReal.ofReal_le_ofReal_iff hr]
 
 /-- Express `nnDist` in terms of `dist` -/
@@ -380,8 +380,8 @@ theorem nnDist_triangle_right (x y z : α) : nnDist x y ≤ nnDist x z + nnDist 
 
 @[deprecated (since := "2026-11-07")] alias nndist_triangle_right := nnDist_triangle_right
 
-/-- Express `dist` in terms of `edist` -/
-theorem dist_edist (x y : α) : dist x y = (edist x y).toReal := by
+/-- Express `dist` in terms of `eDist` -/
+theorem dist_edist (x y : α) : dist x y = (eDist x y).toReal := by
   rw [edist_dist, ENNReal.toReal_ofReal dist_nonneg]
 
 namespace Metric
@@ -680,7 +680,7 @@ lemma boundedSpace_iff_nnDist : BoundedSpace α ↔ ∃ C, ∀ a b : α, nnDist 
 
 @[deprecated (since := "2026-11-07")] alias boundedSpace_iff_nndist := boundedSpace_iff_nnDist
 
-lemma boundedSpace_iff_edist : BoundedSpace α ↔ ∃ C : ℝ≥0, ∀ a b : α, edist a b ≤ C := by
+lemma boundedSpace_iff_edist : BoundedSpace α ↔ ∃ C : ℝ≥0, ∀ a b : α, eDist a b ≤ C := by
   simp [Metric.boundedSpace_iff_nnDist]
 
 theorem toUniformSpace_eq :
@@ -996,7 +996,7 @@ theorem Metric.uniformity_edist_aux {α} (d : α → α → ℝ≥0) :
     refine mem_iInf_of_mem (ε : ℝ≥0∞) (mem_iInf_of_mem (ENNReal.coe_pos.2 hε) ?_)
     exact fun _ => ENNReal.coe_lt_coe.1
 
-theorem Metric.uniformity_edist : 𝓤 α = ⨅ ε > 0, 𝓟 { p : α × α | edist p.1 p.2 < ε } := by
+theorem Metric.uniformity_edist : 𝓤 α = ⨅ ε > 0, 𝓟 { p : α × α | eDist p.1 p.2 < ε } := by
   simp only [PseudoMetricSpace.uniformity_dist, dist_nnDist, eDist_nnDist,
     Metric.uniformity_edist_aux]
 
@@ -1089,13 +1089,13 @@ theorem PseudoMetricSpace.replaceTopology_eq {γ} [U : TopologicalSpace γ] (m :
   rfl
 
 /-- One gets a pseudometric space from an emetric space if the edistance
-is everywhere finite, by pushing the edistance to reals. We set it up so that the edist and the
+is everywhere finite, by pushing the edistance to reals. We set it up so that the eDist and the
 uniformity are defeq in the pseudometric space and the pseudoemetric space. In this definition, the
 distance is given separately, to be able to prescribe some expression which is not defeq to the
 push-forward of the edistance to reals. See note [reducible non-instances]. -/
 abbrev PseudoEMetricSpace.toPseudoMetricSpaceOfDist {X : Type*} [e : PseudoEMetricSpace X]
     (dist : X → X → ℝ) (dist_nonneg : ∀ x y, 0 ≤ dist x y)
-    (h : ∀ x y, edist x y = .ofReal (dist x y)) : PseudoMetricSpace X where
+    (h : ∀ x y, eDist x y = .ofReal (dist x y)) : PseudoMetricSpace X where
   dist := dist
   dist_self x := by
     refine le_antisymm ?_ (dist_nonneg x x)
@@ -1103,19 +1103,19 @@ abbrev PseudoEMetricSpace.toPseudoMetricSpaceOfDist {X : Type*} [e : PseudoEMetr
   dist_comm x y := by simpa [h, dist_nonneg] using edist_comm x y
   dist_triangle x y z := by
     simpa [h, dist_nonneg, add_nonneg, ← ENNReal.ofReal_add] using edist_triangle x y z
-  edist := edist
+  eDist := eDist
   edist_dist _ _ := by simp only [h]
   toUniformSpace := PseudoEMetricSpace.toUniformSpace
   uniformity_dist := e.uniformity_edist.trans <| by
     simpa [h, dist_nonneg, ENNReal.coe_toNNReal_eq_toReal]
-      using (Metric.uniformity_edist_aux fun x y : X => (edist x y).toNNReal).symm
+      using (Metric.uniformity_edist_aux fun x y : X => (eDist x y).toNNReal).symm
 
 /-- One gets a pseudometric space from an emetric space if the edistance
-is everywhere finite, by pushing the edistance to reals. We set it up so that the edist and the
+is everywhere finite, by pushing the edistance to reals. We set it up so that the eDist and the
 uniformity are defeq in the pseudometric space and the emetric space. -/
 abbrev PseudoEMetricSpace.toPseudoMetricSpace {α : Type u} [PseudoEMetricSpace α]
-    (h : ∀ x y : α, edist x y ≠ ⊤) : PseudoMetricSpace α :=
-  PseudoEMetricSpace.toPseudoMetricSpaceOfDist (ENNReal.toReal <| edist · ·) (by simp) (by simp [h])
+    (h : ∀ x y : α, eDist x y ≠ ⊤) : PseudoMetricSpace α :=
+  PseudoEMetricSpace.toPseudoMetricSpaceOfDist (ENNReal.toReal <| eDist · ·) (by simp) (by simp [h])
 
 /-- The bounded component of an element forms a pseudometric space. -/
 abbrev boundedComponent.pseudoMetricSpace {X : Type*} [PseudoEMetricSpace X] (a : X) :

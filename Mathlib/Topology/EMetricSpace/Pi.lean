@@ -37,26 +37,26 @@ open Finset
 variable {X : β → Type*} [Fintype β]
 
 instance [∀ b, EDist (X b)] : EDist (∀ b, X b) where
-  edist f g := Finset.sup univ fun b => edist (f b) (g b)
+  eDist f g := Finset.sup univ fun b => eDist (f b) (g b)
 
 theorem edist_pi_def [∀ b, EDist (X b)] (f g : ∀ b, X b) :
-    edist f g = Finset.sup univ fun b => edist (f b) (g b) :=
+    eDist f g = Finset.sup univ fun b => eDist (f b) (g b) :=
   rfl
 
 theorem edist_le_pi_edist [∀ b, EDist (X b)] (f g : ∀ b, X b) (b : β) :
-    edist (f b) (g b) ≤ edist f g :=
-  le_sup (f := fun b => edist (f b) (g b)) (Finset.mem_univ b)
+    eDist (f b) (g b) ≤ eDist f g :=
+  le_sup (f := fun b => eDist (f b) (g b)) (Finset.mem_univ b)
 
 theorem edist_pi_le_iff [∀ b, EDist (X b)] {f g : ∀ b, X b} {d : ℝ≥0∞} :
-    edist f g ≤ d ↔ ∀ b, edist (f b) (g b) ≤ d :=
+    eDist f g ≤ d ↔ ∀ b, eDist (f b) (g b) ≤ d :=
   Finset.sup_le_iff.trans <| by simp only [Finset.mem_univ, forall_const]
 
-theorem edist_pi_const_le (a b : α) : (edist (fun _ : β => a) fun _ => b) ≤ edist a b :=
+theorem edist_pi_const_le (a b : α) : (eDist (fun _ : β => a) fun _ => b) ≤ eDist a b :=
   edist_pi_le_iff.2 fun _ => le_rfl
 
 @[simp]
-theorem edist_pi_const [Nonempty β] (a b : α) : (edist (fun _ : β => a) fun _ => b) = edist a b :=
-  Finset.sup_const univ_nonempty (edist a b)
+theorem edist_pi_const [Nonempty β] (a b : α) : (eDist (fun _ : β => a) fun _ => b) = eDist a b :=
+  Finset.sup_const univ_nonempty (eDist a b)
 
 /-- The product of a finite number of pseudoemetric spaces, with the max distance, is still
 a pseudoemetric space.
