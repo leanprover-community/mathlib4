@@ -56,6 +56,9 @@ class EDist (α : Type*) where
 
 export EDist (eDist)
 
+@[deprecated (since := "2026-11-27")] alias EDist.edist := EDist.eDist
+export EDist (edist)
+
 namespace Metric
 
 variable {x y : α} {ε ε₁ ε₂ : ℝ≥0∞} [EDist α]
@@ -125,6 +128,15 @@ class PseudoEMetricSpace (α : Type u) : Type u extends EDist α where
   eDist_triangle : ∀ x y z : α, eDist x z ≤ eDist x y + eDist y z
   toUniformSpace : UniformSpace α := uniformSpaceOfEDist eDist eDist_self eDist_comm eDist_triangle
   uniformity_eDist : 𝓤 α = ⨅ ε > 0, 𝓟 { p : α × α | eDist p.1 p.2 < ε } := by rfl
+
+@[deprecated (since := "2026-11-27")]
+alias PseudoEMetricSpace.edist_self := PseudoEMetricSpace.eDist_self
+@[deprecated (since := "2026-11-27")]
+alias PseudoEMetricSpace.edist_comm := PseudoEMetricSpace.eDist_comm
+@[deprecated (since := "2026-11-27")]
+alias PseudoEMetricSpace.edist_triangle := PseudoEMetricSpace.eDist_triangle
+@[deprecated (since := "2026-11-27")]
+alias PseudoEMetricSpace.uniformity_edist := PseudoEMetricSpace.uniformity_eDist
 
 attribute [instance_reducible, instance] PseudoEMetricSpace.toUniformSpace
 
@@ -239,6 +251,14 @@ instance PseudoEMetricSpace.toWeakPseudoEMetricSpace (α : Type u) [inst : Pseud
 export WeakPseudoEMetricSpace (eDist_self eDist_comm eDist_triangle)
 
 attribute [simp] eDist_self
+
+@[deprecated (since := "2026-11-27")]
+alias WeakPseudoEMetricSpace.edist_self := WeakPseudoEMetricSpace.eDist_self
+@[deprecated (since := "2026-11-27")]
+alias WeakPseudoEMetricSpace.edist_comm := WeakPseudoEMetricSpace.eDist_comm
+@[deprecated (since := "2026-11-27")]
+alias WeakPseudoEMetricSpace.edist_triangle := WeakPseudoEMetricSpace.eDist_triangle
+export WeakPseudoEMetricSpace (edist_self edist_comm edist_triangle)
 
 section
 
@@ -846,6 +866,9 @@ See Note [forgetful inheritance]. -/
 class EMetricSpace (α : Type u) : Type u extends PseudoEMetricSpace α where
   eq_of_eDist_eq_zero : ∀ {x y : α}, eDist x y = 0 → x = y
 
+@[deprecated (since := "2026-11-27")]
+alias EMetricSpace.eq_of_edist_eq_zero := EMetricSpace.eq_of_eDist_eq_zero
+
 @[ext]
 protected theorem EMetricSpace.ext
     {α : Type*} {m m' : EMetricSpace α} (h : m.toEDist = m'.toEDist) : m = m' := by
@@ -880,6 +903,10 @@ instance EMetricSpace.toWeakEMetricSpace (α : Type u) [EMetricSpace α] :
 variable {γ : Type w} [TopologicalSpace γ] [WeakEMetricSpace γ]
 
 export WeakEMetricSpace (eq_of_eDist_eq_zero)
+
+@[deprecated (since := "2026-11-27")]
+alias WeakEMetricSpace.eq_of_edist_eq_zero := WeakEMetricSpace.eq_of_eDist_eq_zero
+export WeakEMetricSpace (eq_of_edist_eq_zero)
 
 /-- Characterize the equality of points by the vanishing of their extended distance -/
 @[simp]
