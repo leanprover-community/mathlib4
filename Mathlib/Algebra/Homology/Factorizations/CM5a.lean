@@ -437,7 +437,7 @@ def zero [Mono f] (n : ℤ) [K.IsStrictlyGE (n + 1)] [L.IsStrictlyGE (n + 1)] :
       rw [quasiIsoAt_iff_isIso_homologyMap]
       apply IsZero.isIso
       all_goals
-      · rw [← exactAt_iff_isZero_homology]
+        rw [← exactAt_iff_isZero_homology]
         exact exactAt_of_isGE _ (n + 1) i)
 
 variable {f} in
