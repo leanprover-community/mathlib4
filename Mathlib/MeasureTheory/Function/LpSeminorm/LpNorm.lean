@@ -80,8 +80,7 @@ lemma ae_le_lpNorm_exponent_top (hf : MemLp f ∞ μ) : ∀ᵐ x ∂μ, ‖f x�
 lemma lpNorm_exponent_top_eq_essSup (hf : MemLp f ∞ μ) : lpNorm f ∞ μ = essSup (‖f ·‖) μ := by
   simp only [← toReal_eLpNorm,
     eLpNorm_exponent_top hf.aestronglyMeasurable, eLpNormEssSup]
-  refine ENNReal.toReal_essSup (.of_forall fun _ ↦ eNorm_ne_top) ⟨lpNorm f ∞ μ, ?_⟩
-  simpa [-toReal_eNorm, lpNorm] using! ae_le_lpNorm_exponent_top hf
+  exact ENNReal.toReal_essSup (.of_forall fun _ ↦ eNorm_ne_top)
 
 @[simp]
 lemma lpNorm_zero (p : ℝ≥0∞) (μ : Measure α) : lpNorm (0 : α → E) p μ = 0 := by simp [lpNorm]
