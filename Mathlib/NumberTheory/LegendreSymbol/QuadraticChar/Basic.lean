@@ -235,18 +235,17 @@ theorem quadraticChar_card_sqrts (hF : ringChar F ≠ 2) (a : F) :
       simp only [neg_add_cancel, Int.natCast_eq_zero, card_eq_zero, eq_empty_iff_forall_notMem]
       simpa [s, isSquare_iff_exists_sq, eq_comm] using h
 
-/-- Counts pairs satisfying `y ^ 2 = f x` over a finite field of odd characteristic. -/
-theorem FiniteField.card_sq_eq_card_add_sum_quadraticChar {ι : Type*} [Fintype ι]
+open Finset in
+/-- The number of solutions to `x^2 = f x` is determined by the sum of the quadratic characters. -/
+theorem quadraticChar_card_sqrts_eq_fun {ι : Type*} [Fintype ι]
     (hF : ringChar F ≠ 2) (f : ι → F) :
-    ({xy : ι × F | xy.2 ^ 2 = f xy.1}.toFinset.card : ℤ) =
-      Fintype.card ι + ∑ x, quadraticChar F (f x) := by
-  classical
-  have hfibers : {xy : ι × F | xy.2 ^ 2 = f xy.1}.toFinset.card =
-      ∑ x, {y : F | y ^ 2 = f x}.toFinset.card := by
-    simp only [Set.toFinset_ofPred, Finset.card_filter, Fintype.sum_prod_type]
-  rw [hfibers, Nat.cast_sum]
-  simp_rw [quadraticChar_card_sqrts hF]
-  simp [Finset.sum_add_distrib, add_comm]
+    #{(x, y) : ι × F | y ^ 2 = f x}.toFinset
+      = Fintype.card ι + ∑ x, quadraticChar F (f x) := by
+  have h : #{(x, y) : ι × F | y ^ 2 = f x}.toFinset =
+      ∑ x, #{y : F | y ^ 2 = f x}.toFinset := by
+    simp_rw [Set.toFinset_ofPred, card_filter, Fintype.sum_prod_type]
+  simp_rw [h, Nat.cast_sum, quadraticChar_card_sqrts hF]
+  simp [sum_add_distrib, add_comm]
 
 /-- The sum over the values of the quadratic character is zero when the characteristic is odd. -/
 theorem quadraticChar_sum_zero (hF : ringChar F ≠ 2) : ∑ a : F, quadraticChar F a = 0 :=
