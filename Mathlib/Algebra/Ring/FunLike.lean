@@ -28,13 +28,13 @@ namespace FunLike
 
 section RingHom
 
-variable [FunLike F α β] [NonAssocSemiring F] [NonAssocSemiring β]
+variable [DFunLike F α β] [NonAssocSemiring F] [∀ a, NonAssocSemiring (β a)]
   [IsZeroApply F] [IsOneApply F] [IsAddApply F] [IsMulApply F]
 
 variable (F) in
 /-- Coercion as a ring homomorphism. -/
 @[expose]
-def coeRingHom : F →+* α → β where
+def coeRingHom : F →+* (a : α) → β a where
   toFun f := f
   map_zero' := by simp
   map_one' := by simp
@@ -45,40 +45,41 @@ def coeRingHom : F →+* α → β where
 theorem coeRingHom_apply (f : F) : coeRingHom F f = f := rfl
 
 @[norm_cast]
-theorem coe_coeRingHom : (coeRingHom F : F → α → β) = DFunLike.coe := rfl
+theorem coe_coeRingHom : (coeRingHom F : F → (a : α) → β a) = DFunLike.coe := rfl
 
 @[simp, norm_cast]
-theorem toMonoidHom_coeRingHom : (coeRingHom F : F →* α → β) = coeMonoidHom F α β := rfl
+theorem toMonoidHom_coeRingHom : (coeRingHom F : F →* (a : α) → β a) = coeMonoidHom F α β := rfl
 
 @[simp, norm_cast]
-theorem toAddMonoidHom_coeRingHom : (coeRingHom F : F →+ α → β) = coeAddMonoidHom F α β := rfl
+theorem toAddMonoidHom_coeRingHom : (coeRingHom F : F →+ (a : α) → β a) = coeAddMonoidHom F α β :=
+  rfl
 
 @[simp, norm_cast]
-theorem toMulHom_coeRingHom : (coeRingHom F : F →ₙ* α → β) = coeMulHom F α β := rfl
+theorem toMulHom_coeRingHom : (coeRingHom F : F →ₙ* (a : α) → β a) = coeMulHom F α β := rfl
 
 @[simp, norm_cast]
-theorem toAddHom_coeRingHom : (coeRingHom F : F →ₙ+ α → β) = coeAddHom F α β := rfl
+theorem toAddHom_coeRingHom : (coeRingHom F : F →ₙ+ (a : α) → β a) = coeAddHom F α β := rfl
 
 variable (F) in
 /-- Evaluation as a ring homomorphism. -/
 @[expose]
-def evalRingHom (x : α) : F →+* β := (Pi.evalRingHom _ x).comp (coeRingHom F)
+def evalRingHom (x : α) : F →+* β x := (Pi.evalRingHom _ x).comp (coeRingHom F)
 
 @[simp]
 theorem evalRingHom_apply (x : α) (f : F) : evalRingHom F x f = f x := rfl
 
 @[simp, norm_cast]
-theorem toMonoidHom_evalRingHom (x : α) : (evalRingHom F x : F →* β) = evalMonoidHom F x := rfl
+theorem toMonoidHom_evalRingHom (x : α) : (evalRingHom F x : F →* β x) = evalMonoidHom F x := rfl
 
 @[simp, norm_cast]
-theorem toAddMonoidHom_evalRingHom (x : α) : (evalRingHom F x : F →+ β) = evalAddMonoidHom F x :=
+theorem toAddMonoidHom_evalRingHom (x : α) : (evalRingHom F x : F →+ β x) = evalAddMonoidHom F x :=
   rfl
 
 @[simp, norm_cast]
-theorem toMulHom_evalRingHom (x : α) : (evalRingHom F x : F →ₙ* β) = evalMulHom F x := rfl
+theorem toMulHom_evalRingHom (x : α) : (evalRingHom F x : F →ₙ* β x) = evalMulHom F x := rfl
 
 @[simp, norm_cast]
-theorem toAddHom_evalRingHom (x : α) : (evalRingHom F x : F →ₙ+ β) = evalAddHom F x := rfl
+theorem toAddHom_evalRingHom (x : α) : (evalRingHom F x : F →ₙ+ β x) = evalAddHom F x := rfl
 
 end RingHom
 
