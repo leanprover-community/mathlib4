@@ -59,17 +59,16 @@ def cosTaylor (x : Dyadic) (n prec : ℕ) : Interval Dyadic :=
 
 theorem cosTaylor_mem {x : Dyadic} (hx : |x.toReal| ≤ 1) (n prec : ℕ) :
     Real.cos x.toReal ∈ cosTaylor x n prec := by
-  have h := Real.abs_cos_sub_sum_range_le hx n
-  rw [cosTaylor, Dyadic.toReal, Rat.cast_def] at *
   obtain ⟨hterm, hsum⟩ := hypergeomPartialSum_spec (Int.castRingHom ℝ) (fun _ ↦ -x.toRat.num ^ 2)
     (fun j ↦ x.toRat.den ^ 2 * ((2 * j + 1) * (2 * j + 2))) (fun j ↦ by positivity) 0
-    (fun m ↦ (-1) ^ m * ((x.toRat.num : ℝ) / x.toRat.den) ^ (2 * m) / (2 * m)!) (fun j ↦ by
+    (fun m ↦ (-1) ^ m * x.toReal ^ (2 * m) / (2 * m)!) (fun j ↦ by
+      rw [Dyadic.toReal, Rat.cast_def]
       push_cast [eq_intCast, mul_add_one, Nat.factorial_succ, pow_add]
       field) n
   refine ratBall_mem ?_ prec
-  convert h using 1
+  convert Real.abs_cos_sub_sum_range_le hx n using 1
   · simp [← hsum]
-  · simpa [abs_div, abs_mul, abs_pow] using congrArg abs hterm
+  · simpa [abs_div] using congrArg abs hterm
 
 /-- Apply the double-angle formula `cos (2 * x) = 2 * cos x ^ 2 - 1` `k` times to an enclosure `I`
 of `cos x`, rounding outward after each step. -/
