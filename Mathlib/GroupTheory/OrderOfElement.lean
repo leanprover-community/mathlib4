@@ -6,17 +6,21 @@ Authors: Johannes Hölzl, Julian Kuelshammer
 module
 
 public import Mathlib.Algebra.CharP.Two
-public import Mathlib.Algebra.Group.Commute.Basic
 public import Mathlib.Algebra.Group.Pointwise.Set.Finite
-public import Mathlib.Algebra.Group.Subgroup.Finite
 public import Mathlib.Algebra.Group.TransferInstance
-public import Mathlib.Algebra.Order.Group.Action
 public import Mathlib.Algebra.Order.Ring.Abs
 public import Mathlib.Data.Int.ModEq
 public import Mathlib.Dynamics.PeriodicPts.Lemmas
 public import Mathlib.GroupTheory.Index
 public import Mathlib.NumberTheory.Divisors
 public import Mathlib.Order.Interval.Set.Infinite
+
+import Mathlib.Algebra.Group.Commute.Basic
+import Mathlib.Algebra.Group.Subgroup.Finite
+import Mathlib.Algebra.Order.Group.Action
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Order of an element
@@ -34,6 +38,7 @@ This file defines the order of an element of a finite group. For a finite group 
 * `addOrderOf` is the additive analogue of `orderOf`.
 
 ## Tags
+
 order of an element
 -/
 
@@ -947,7 +952,7 @@ variable [Monoid G] {x : G} {n : ℕ}
 theorem sum_card_orderOf_eq_card_pow_eq_one [Fintype G] [DecidableEq G] (hn : n ≠ 0) :
     ∑ m ∈ divisors n, #{x : G | orderOf x = m} = #{x : G | x ^ n = 1} := by
   refine (Finset.card_biUnion ?_).symm.trans ?_
-  · simp +contextual [Set.PairwiseDisjoint, Set.Pairwise, disjoint_iff, Finset.ext_iff]
+  · simp [Set.PairwiseDisjoint, Set.Pairwise, disjoint_iff, Finset.ext_iff]
   · congr; ext; simp [hn, orderOf_dvd_iff_pow_eq_one]
 
 @[to_additive]

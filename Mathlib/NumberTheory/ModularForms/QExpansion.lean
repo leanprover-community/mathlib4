@@ -52,12 +52,11 @@ and bounded at infinity.
   the present file does not import Fourier theory.
 -/
 
-assert_not_exists fourierCoeffOn -- guard against import creep
+assert_not_exists AddCircle.fourierCoeffOn -- guard against import creep
 
 @[expose] public noncomputable section
 
-open ModularForm Complex Filter Function Matrix.SpecialLinearGroup Metric Set
-open UpperHalfPlane hiding I
+open ModularForm Complex Filter Function Matrix.SpecialLinearGroup Metric Set UpperHalfPlane
 
 open scoped Real MatrixGroups CongruenceSubgroup Topology Manifold
 
@@ -340,7 +339,7 @@ lemma qExpansion_coeff_eq_intervalIntegral {f : ℍ → ℂ} (hh : 0 < h)
     have := I_sq
     grind
   -- now just complex exponential arithmetic to finish
-  simp_rw [deriv_circleMap, this, show ↑I = Complex.I by rfl, show u + t * Complex.I = τ by rfl,
+  simp_rw [deriv_circleMap, this, show u + t * I = τ by rfl,
     show ⟨↑τ, τ.coe_im_pos⟩ = τ by rfl, eq_cuspFunction _ hh.ne' hfper, smul_eq_mul, pow_succ]
   field [(show 𝕢 h τ ≠ 0 from Complex.exp_ne_zero _), Real.pi_ne_zero, NeZero.ne]
   push_cast

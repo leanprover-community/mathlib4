@@ -42,6 +42,7 @@ quotients of `V*`, the dual of `V`. In symbols, this means that the first defini
 to `G(n - k, V; F)` and also to `G(k, V →ₗ[F] F; F)`, where `n` is the dimension of `V`.
 
 ## TODO
+
 - Define and recover the subspace-definition (i.e. the first definition above).
 - Define `chart x` indexed by `x : Fin k → M` as a subtype consisting of those
   `N ∈ G(k, A ⊗[R] M; A)` such that the composition `R^k → M → M⧸N` is an isomorphism.
@@ -172,11 +173,12 @@ theorem map_comp (N : G(k, A ⊗[R] M; A)) :
     induction z using TensorProduct.inductionOn with
     | tmul c m =>
       simp only [fAC, fBC, e, baseChangeMkQ, LinearMap.comp_apply, cancelBaseChange_symm_tmul,
-         LinearMap.baseChange_tmul, Submodule.mkQ_apply, LinearEquiv.coe_trans, LinearEquiv.coe_coe,
-         LinearEquiv.coe_baseChange, LinearMap.quotKerEquivOfSurjective_apply_mk]
+         LinearMap.baseChange_tmul, Submodule.mkQ_apply, LinearEquiv.coe_trans,
+         LinearEquiv.coe_toLinearMap, LinearEquiv.coe_baseChange,
+         LinearMap.quotKerEquivOfSurjective_apply_mk]
       simp [fAB, baseChangeMkQ]
     | add x y hx hy =>
-      simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, map_add] at *
+      simp only [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply, map_add] at *
       rw [hx, hy]
   rw [hfAC_ker_eq, hfBC_ker_eq, hcomp, LinearEquiv.ker_comp]
 

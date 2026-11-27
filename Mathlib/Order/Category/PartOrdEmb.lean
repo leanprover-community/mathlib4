@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 public import Mathlib.CategoryTheory.Limits.Types.Filtered
 public import Mathlib.Order.Category.PartOrd
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Category of partial orders, with order embeddings as morphisms
 
@@ -85,10 +88,8 @@ The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep 
 @[simp]
 lemma coe_id {X : PartOrdEmb} : (𝟙 X : X → X) = id := rfl
 
-@[simp]
 lemma coe_comp {X Y Z : PartOrdEmb} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
-@[simp]
 lemma forget_map {X Y : PartOrdEmb} (f : X ⟶ Y) :
     (forget PartOrdEmb).map f = (f : _ → _) := rfl
 

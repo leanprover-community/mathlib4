@@ -228,7 +228,7 @@ protected def cast {α β : Sort _} (h : α = β) : α ≃ β where
   left_inv := by grind
   right_inv := by grind
 
-@[simp] theorem coe_fn_symm_mk (f : α → β) (g l r) : ((Equiv.mk f g l r).symm : β → α) = g := rfl
+theorem coe_fn_symm_mk (f : α → β) (g l r) : ((Equiv.mk f g l r).symm : β → α) = g := rfl
 
 @[simp] theorem coe_refl : (Equiv.refl α : α → α) = id := rfl
 
@@ -678,7 +678,7 @@ abbrev sigmaCongrRight {α} {β : α → Sort _} (F : ∀ a, Perm (β a)) : Perm
     (sigmaCongrRight F).symm = sigmaCongrRight fun a => (F a).symm :=
   rfl
 
-@[simp] theorem sigmaCongrRight_refl {α} {β : α → Sort _} :
+theorem sigmaCongrRight_refl {α} {β : α → Sort _} :
     (sigmaCongrRight fun a => Equiv.refl (β a)) = Equiv.refl (Σ a, β a) :=
   rfl
 

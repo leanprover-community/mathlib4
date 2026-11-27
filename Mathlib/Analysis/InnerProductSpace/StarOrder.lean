@@ -10,6 +10,9 @@ public import Mathlib.Analysis.InnerProductSpace.Positive
 
 import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuous linear maps on a Hilbert space are a `StarOrderedRing`
 

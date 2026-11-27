@@ -25,12 +25,12 @@ We show that `ind P` inherits stability properties from `P`.
 - `CategoryTheory.MorphismProperty.ind`: `f` satisfies `ind P` if `f` is a filtered colimit of
   morphisms in `P`.
 
-## Main results:
+## Main results
 
 - `CategoryTheory.MorphismProperty.ind_ind`: If `P` implies finitely presentable, then
   `P.ind.ind = P.ind`.
 
-## TODOs:
+## TODO
 
 - Dualise to obtain `pro P`.
 - Show `ind P` is stable under composition if `P` spreads out (Christian).

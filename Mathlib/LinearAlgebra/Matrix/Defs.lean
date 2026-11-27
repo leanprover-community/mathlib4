@@ -6,8 +6,9 @@ Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu
 module
 
 public import Mathlib.Algebra.Module.Pi
-public import Mathlib.Basic.Nontrivial.Basic
 public import Mathlib.Tactic.Attr.Core
+
+import Mathlib.Basic.Nontrivial.Basic
 
 /-!
 # Matrices
@@ -94,7 +95,6 @@ def of : (m → n → α) ≃ Matrix m n α :=
 theorem of_apply (f : m → n → α) (i j) : of f i j = f i j :=
   rfl
 
-@[simp]
 theorem of_symm_apply (f : Matrix m n α) (i j) : of.symm f i j = f i j :=
   rfl
 

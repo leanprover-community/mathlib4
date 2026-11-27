@@ -16,7 +16,8 @@ import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Lemmas
 This file contains proofs that `RootPairing.GeckConstruction.lieAlgebra` contains `sl₂` triples
 satisfying relations associated to the Cartan matrix of the input root system.
 
-## Main definitions:
+## Main definitions
+
 * `RootPairing.GeckConstruction.isSl2Triple`: a distinguished family of `sl₂` triples contained in
   the Geck construction.
 * `RootPairing.GeckConstruction.lie_h_e`: an interaction relation between different `sl₂` triples.

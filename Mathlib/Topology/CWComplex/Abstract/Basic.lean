@@ -23,7 +23,7 @@ This file defines (relative) CW-complexes using a categorical approach.
 
 * `CWComplex`: A CW-complex is a relative CW-complex whose `sk 0` (i.e., $(-1)$-skeleton) is empty.
 
-## Implementation Notes
+## Implementation notes
 
 This file provides a categorical approach to CW complexes,
 defining them via colimits and transfinite compositions.

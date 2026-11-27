@@ -22,6 +22,7 @@ be a rank function. We show that the inclusion `A.ι` is a relative
 cell complex with basic cells given by horn inclusions.
 
 ## References
+
 * [Sean Moss, *Another approach to the Kan-Quillen model structure*][moss-2020]
 -/
 
@@ -571,7 +572,7 @@ lemma isPushout (j : ι) :
         ← Subcomplex.ofSimplex_map_of_epi g₂]
       · simp [← dsimp% (f.b j).naturality_apply, hg₁, hg₂, dsimp% h]
       all_goals
-      · rw [Subcomplex.mem_nonDegenerate_iff]
+        rw [Subcomplex.mem_nonDegenerate_iff]
         apply f.isPushout_aux₁)
     obtain rfl := X.unique_nonDegenerate_map (x := (((f.b _)).app _ x₁).val)
       g₁ ⟨_, f.isPushout_aux₁ s₁⟩

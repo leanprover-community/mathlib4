@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 public import Mathlib.RepresentationTheory.Rep.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Restriction of representations
 
@@ -78,7 +81,6 @@ abbrev liftHomOfSurj {X Y : Rep k G} (hf : Function.Surjective f) (f' : res f X 
   ofHom ⟨f'.hom.toLinearMap, fun g ↦ by
     obtain ⟨h, rfl⟩ := hf g; simpa using f'.hom.isIntertwining' h⟩
 
-@[simp]
 lemma liftHomOfSurj_toLinearMap {X Y : Rep k G} (hf : Function.Surjective f)
     (f' : res f X ⟶ res f Y) : (liftHomOfSurj f hf f').hom.toLinearMap =
       f'.hom.toLinearMap := rfl

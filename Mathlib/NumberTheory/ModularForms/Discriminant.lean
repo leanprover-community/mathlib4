@@ -6,13 +6,12 @@ Authors: Chris Birkbeck
 module
 
 public import Mathlib.Analysis.Complex.SqrtDeriv
-public import Mathlib.Analysis.Normed.Ring.InfiniteProd
-public import Mathlib.NumberTheory.ModularForms.Basic
-public import Mathlib.NumberTheory.ModularForms.DedekindEta
 public import Mathlib.NumberTheory.ModularForms.Derivative
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Transform
 
 import Mathlib.Analysis.Normed.Ring.InfiniteProd
+import Mathlib.NumberTheory.ModularForms.Basic
+import Mathlib.NumberTheory.ModularForms.DedekindEta
 
 /-!
 # The modular discriminant Δ
@@ -37,13 +36,9 @@ function, and proves its key properties including invariance under the generator
 * [F. Diamond and J. Shurman, *A First Course in Modular Forms*][diamondshurman2005], section 1.2
 -/
 
-open Function Complex SlashInvariantForm Filter
+open Function Complex SlashInvariantForm Filter UpperHalfPlane
 
-open scoped MatrixGroups
-
-open UpperHalfPlane hiding I
-
-open scoped Real Topology
+open scoped MatrixGroups Real Topology
 
 noncomputable section
 

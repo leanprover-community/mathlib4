@@ -19,6 +19,7 @@ import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
 # Weierstrass `℘` functions
 
 ## Main definitions and results
+
 - `PeriodPair.weierstrassP`: The Weierstrass `℘`-function associated to a pair of periods.
 - `PeriodPair.hasSumLocallyUniformly_weierstrassP`:
   The summands of `℘` sums to `℘` locally uniformly.

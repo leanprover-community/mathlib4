@@ -12,6 +12,9 @@ public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 import Mathlib.Algebra.Order.Interval.Set.Group
 import Mathlib.Tactic.Bound
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Betweenness in affine spaces
 
@@ -108,11 +111,12 @@ theorem affineSegment_eq_segment (x y : V) : affineSegment R x y = segment R x y
 
 theorem affineSegment_comm (x y : P) : affineSegment R x y = affineSegment R y x := by
   refine Set.ext fun z => ?_
-  constructor <;>
-    · rintro ⟨t, ht, hxy⟩
-      refine ⟨1 - t, ?_, ?_⟩
-      · rwa [Set.sub_mem_Icc_iff_right, sub_self, sub_zero]
-      · rwa [lineMap_apply_one_sub]
+  constructor
+  all_goals
+    rintro ⟨t, ht, hxy⟩
+    refine ⟨1 - t, ?_, ?_⟩
+    · rwa [Set.sub_mem_Icc_iff_right, sub_self, sub_zero]
+    · rwa [lineMap_apply_one_sub]
 
 theorem left_mem_affineSegment (x y : P) : x ∈ affineSegment R x y :=
   ⟨0, Set.left_mem_Icc.2 zero_le_one, lineMap_apply_zero _ _⟩

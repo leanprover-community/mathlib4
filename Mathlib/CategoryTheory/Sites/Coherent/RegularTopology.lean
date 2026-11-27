@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Sites.Coherent.RegularSheaves
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Description of the covering sieves of the regular topology
 

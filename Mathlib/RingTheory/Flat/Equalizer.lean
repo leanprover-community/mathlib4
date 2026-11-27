@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.Flat.Basic
 
 import Mathlib.Algebra.Module.SnakeLemma
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Base change along flat modules preserves equalizers
 
@@ -37,6 +40,14 @@ lemma Module.Flat.ker_lTensor_eq [Module.Flat R M] :
       LinearMap.range (AlgebraTensorModule.lTensor S M (LinearMap.ker f).subtype) := by
   rw [← LinearMap.exact_iff]
   exact Module.Flat.lTensor_exact M (LinearMap.exact_subtype_ker_map f)
+
+lemma LinearMap.ker_baseChange [Module.Flat R S] :
+    (f.baseChange S).ker = f.ker.baseChange S := Module.Flat.ker_lTensor_eq ..
+
+lemma Submodule.baseChange_comap [Module.Flat R S] (p : Submodule R P) :
+    (p.comap f).baseChange S = (p.baseChange S).comap (f.baseChange S) := by
+  simp_rw [← p.ker_mkQ, ← LinearMap.ker_comp, ← LinearMap.ker_baseChange, LinearMap.baseChange_comp,
+    LinearMap.ker_comp]
 
 lemma Module.Flat.eqLocus_lTensor_eq [Module.Flat R M] :
     LinearMap.eqLocus (AlgebraTensorModule.lTensor S M f)
@@ -296,7 +307,7 @@ def AlgHom.tensorEqualizerEquiv [Module.Flat R T] :
       AlgHom.equalizer (Algebra.TensorProduct.map (AlgHom.id S T) f)
         (Algebra.TensorProduct.map (AlgHom.id S T) g) :=
   AlgEquiv.ofLinearEquiv (LinearMap.tensorEqLocusEquiv S T f.toLinearMap g.toLinearMap)
-    rfl (AlgHom.tensorEqualizerAux_mul S T f g)
+    (AlgHom.tensorEqualizerAux_mul S T f g)
 
 @[simp]
 lemma AlgHom.tensorEqualizerEquiv_apply [Module.Flat R T]
@@ -317,7 +328,7 @@ def Algebra.kerTensorProductMapIdToAlgHomEquiv
   let φ : A ⊗[R] S →ₐ[A] A ⊗[R] T :=
     Algebra.TensorProduct.map (.id _ _) (IsScalarTower.toAlgHom _ _ _)
   let ePp : A ⊗[R] S ≃ₐ[S] S ⊗[R] A :=
-    { __ := Algebra.TensorProduct.comm _ _ _, commutes' _ := rfl }
+    .ofCommutes (Algebra.TensorProduct.comm _ _ _).toRingEquiv fun _ ↦ rfl
   let e₃ : (RingHom.ker φ) ≃ₗ[R] A ⊗[R] (RingHom.ker (algebraMap S T)) :=
     (LinearMap.kerLTensorEquivOfSurjective (IsScalarTower.toAlgHom R S T).toLinearMap
       h₁ A).restrictScalars R

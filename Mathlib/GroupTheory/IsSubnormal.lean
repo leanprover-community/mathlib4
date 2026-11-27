@@ -34,7 +34,7 @@ These should cover most of the results needed in this case.
   reaching `⊤` in a finite number of steps.
 * `IsSubnormal.trans`: The relation of being `IsSubnormal` is transitive.
 
-## Implementation Notes
+## Implementation notes
 
 We deviate from the common informal definition of subnormality and use an inductive predicate.
 This turns out to be more convenient to work with.

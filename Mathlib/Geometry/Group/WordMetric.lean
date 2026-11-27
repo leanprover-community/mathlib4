@@ -39,6 +39,7 @@ family given by `Group.Generators`. The word length defines a norm on `G` induci
   characterized by `wordLength_le_iff`, so we tag it with `@[no_expose]`.
 
 ## TODO
+
 * Relate the word metric to the distance in the Cayley graph.
 
 ## Tags

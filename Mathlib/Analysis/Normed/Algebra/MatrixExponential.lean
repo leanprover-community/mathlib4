@@ -6,10 +6,10 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Analysis.Normed.Algebra.Exponential
-public import Mathlib.LinearAlgebra.Matrix.Hermitian
 public import Mathlib.Topology.Instances.Matrix
 
 import Mathlib.Analysis.Matrix.Normed
+import Mathlib.LinearAlgebra.Matrix.Hermitian
 import Mathlib.Topology.UniformSpace.Matrix
 
 /-!
