@@ -518,6 +518,9 @@ Q510197:
 
 Q512897:
   title: Brooks's theorem
+  authors: Rotem Ashkenazi
+  date: 2026
+  url: https://github.com/rotem4997/brooks-lean/blob/251ee8296f777c1543081c92d09fbbca050dffdb/BrooksLean/Basic.lean#L629
 
 Q523832:
   title: Carathéodory–Jacobi–Lie theorem
