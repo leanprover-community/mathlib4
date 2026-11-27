@@ -181,8 +181,8 @@ lemma meas_countablePartitionSet_le_of_fst_le (hκν : fst κ ≤ ν) (n : ℕ) 
 
 lemma densityProcess_le_one (hκν : fst κ ≤ ν) (n : ℕ) (a : α) (x : γ) (s : Set β) :
     densityProcess κ ν n a x s ≤ 1 := by
-  refine toReal_le_of_le_ofReal zero_le_one (div_le_of_le_mul ?_)
-  rw [ofReal_one, one_mul]
+  refine toReal_le_one_of_le_one (div_le_of_le_mul ?_)
+  rw [one_mul]
   exact meas_countablePartitionSet_le_of_fst_le hκν n a x s
 
 lemma eLpNorm_densityProcess_le (hκν : fst κ ≤ ν) (n : ℕ) (a : α) {s : Set β}
