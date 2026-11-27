@@ -915,7 +915,7 @@ pairs of terms are related if there is a third term they are both
 related to.  For example, if `r` is a relation representing rewrites
 in a term rewriting system, then *confluence* is the property that if
 `a` rewrites to both `b` and `c`, then `join r` relates `b` and `c`
-(see `Relation.IsConfluent.of_reflGen_reflTransGen`).
+(see `Relation.IsStronglyConfluent.isConfluent`).
 -/
 def Join (r : α → α → Prop) : α → α → Prop := fun a b ↦ ∃ c, r a c ∧ r b c
 
@@ -961,7 +961,7 @@ theorem ReflTransGen.exists_reflGen_reflTransGen [IsStronglyConfluent r]
       exact ⟨g, heg, hcf.trans hfg⟩
 
 /-- A strongly confluent relation is confluent. -/
-theorem IsConfluent.of_reflGen_reflTransGen [IsStronglyConfluent r] : IsConfluent r where
+theorem IsStronglyConfluent.isConfluent [IsStronglyConfluent r] : IsConfluent r where
   join_of_rel_of_rel a b c hab hac := by
     induction hab with
     | refl => exact ⟨c, hac, refl⟩
@@ -970,11 +970,11 @@ theorem IsConfluent.of_reflGen_reflTransGen [IsStronglyConfluent r] : IsConfluen
       rcases hdb.exists_reflGen_reflTransGen hde with ⟨a, hba, hea⟩
       exact ⟨a, hea, hcb.trans hba.to_reflTransGen⟩
 
-@[deprecated IsConfluent.of_reflGen_reflTransGen +typeChanged (since := "2026-11-12")]
+@[deprecated IsStronglyConfluent.isConfluent +typeChanged (since := "2026-11-12")]
 theorem church_rosser (h : ∀ a b c, r a b → r a c → ∃ d, ReflGen r b d ∧ ReflTransGen r c d)
     (hab : ReflTransGen r a b) (hac : ReflTransGen r a c) : Join (ReflTransGen r) b c :=
   have : IsStronglyConfluent r := ⟨h⟩
-  IsConfluent.of_reflGen_reflTransGen.join_of_rel_of_rel hab hac
+  IsStronglyConfluent.isConfluent.join_of_rel_of_rel hab hac
 
 theorem le_join_of_refl [Std.Refl r] : r ≤ Join r :=
   fun _ b hab ↦ ⟨b, hab, refl b⟩
@@ -1019,11 +1019,9 @@ theorem join_reflTransGen_eq_eqvGen [IsConfluent r] :
   Subrelation.antisymm (join_reflTransGen_le_eqvGen r)
     (eqvGen_le_join_reflTransGen_iff.mpr inferInstance)
 
-theorem equivalence_join_reflTransGen
-    (h : ∀ a b c, r a b → r a c → ∃ d, ReflGen r b d ∧ ReflTransGen r c d) :
+theorem equivalence_join_reflTransGen [IsConfluent r] :
     Equivalence (Join (ReflTransGen r)) :=
-  have : IsStronglyConfluent r := ⟨h⟩
-  equivalence_join IsConfluent.of_reflGen_reflTransGen.join_of_rel_of_rel
+  equivalence_join (IsDiamond.join_of_rel_of_rel (r := ReflTransGen r))
 
 theorem join_le_of_equivalence_of_le {r' : α → α → Prop} (hr : Equivalence r) (h : r' ≤ r) :
     Join r' ≤ r :=
