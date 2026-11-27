@@ -103,7 +103,6 @@ theorem evalFrom_nil (S : Set σ) : M.evalFrom S [] = S :=
   rfl
 
 variable (M) in
-@[simp]
 theorem evalFrom_singleton (S : Set σ) (a : α) : M.evalFrom S [a] = M.stepSet S a :=
   rfl
 
@@ -224,7 +223,7 @@ private theorem mem_acceptsFrom_sep_fact {S : Set σ} {p : Prop} {x : List α} :
   | cons a x ih =>
     have h : M.stepSet {s ∈ S | p} a = {s ∈ M.stepSet S a | p} := by
       ext s; simp only [stepSet, mem_ofPred_eq, mem_iUnion, exists_prop]; tauto
-    simp [h, ih]
+    simp [*]
 
 variable (M) in
 /-- `M.eval x` computes all possible paths though `M` with input `x` starting at an element of
@@ -312,7 +311,7 @@ def toDFA : DFA α (Set σ) where
 theorem toDFA_correct : M.toDFA.accepts = M.accepts := by
   ext x
   rw [mem_accepts, DFA.mem_accepts]
-  constructor <;> · exact fun ⟨w, h2, h3⟩ => ⟨w, h3, h2⟩
+  constructor <;> exact fun ⟨w, h2, h3⟩ => ⟨w, h3, h2⟩
 
 theorem pumping_lemma [Fintype σ] {x : List α} (hx : x ∈ M.accepts)
     (hlen : Fintype.card (Set σ) ≤ List.length x) :

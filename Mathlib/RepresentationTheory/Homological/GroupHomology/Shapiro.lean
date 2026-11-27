@@ -9,6 +9,9 @@ public import Mathlib.RepresentationTheory.Coinduced
 public import Mathlib.RepresentationTheory.Homological.GroupHomology.Basic
 public import Mathlib.RepresentationTheory.Induced
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Shapiro's lemma for group homology
 
@@ -33,7 +36,6 @@ group homology, we conclude Shapiro's lemma: `Hₙ(G, Ind_S^G(A)) ≅ Hₙ(S, A)
 
 * `groupHomology.indIso A n`: Shapiro's lemma for group homology: an isomorphism
   `Hₙ(G, Ind_S^G(A)) ≅ Hₙ(S, A)`, given a subgroup `S ≤ G` and an `S`-representation `A`.
-
 -/
 
 @[expose] public section
@@ -62,7 +64,7 @@ noncomputable abbrev coinvariantsTensorResProjectiveResolutionIso
 -- three times as slow.
 /-- Shapiro's lemma: given a subgroup `S ≤ G` and an `S`-representation `A`, we have
 `Hₙ(G, Ind_S^G(A)) ≅ Hₙ(S, A).` -/
-noncomputable def indIso [DecidableEq G] (A : Rep.{u} k S) (n : ℕ) :
+noncomputable def indIso (A : Rep.{u} k S) (n : ℕ) :
     groupHomology (ind S.subtype A) n ≅ groupHomology A n :=
   (HomologicalComplex.homologyFunctor (ModuleCat k) (ComplexShape.down ℕ) n).mapIso
   (inhomogeneousChainsIso (ind S.subtype A :) ≪≫

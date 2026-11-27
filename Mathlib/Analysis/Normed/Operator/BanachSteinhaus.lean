@@ -10,6 +10,9 @@ public import Mathlib.Analysis.Normed.Operator.NormedSpace
 import Mathlib.Analysis.LocallyConvex.Barrelled
 import Mathlib.Topology.Baire.CompleteMetrizable
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Banach-Steinhaus theorem: Uniform Boundedness Principle
 
@@ -36,7 +39,7 @@ bounded, then the norms of these linear maps are uniformly bounded.
 See also `WithSeminorms.banach_steinhaus` for the general statement in barrelled spaces. -/
 theorem banach_steinhaus {ι : Type*} [CompleteSpace E] {g : ι → E →SL[σ₁₂] F}
     (h : ∀ x, ∃ C, ∀ i, ‖g i x‖ ≤ C) : ∃ C', ∀ i, ‖g i‖ ≤ C' := by
-  rw [show (∃ C, ∀ i, ‖g i‖ ≤ C) ↔ _ from (NormedSpace.equicontinuous_TFAE g).out 6 3]
+  rw [show (∃ C, ∀ i, ‖g i‖ ≤ C) ↔ _ from (NormedSpace.equicontinuous_tfae g).out 6 3]
   refine (norm_withSeminorms 𝕜₂ F).banach_steinhaus (fun _ x ↦ ?_)
   simpa [bddAbove_def, forall_mem_range] using h x
 
@@ -44,8 +47,11 @@ open ENNReal
 
 /-- This version of Banach-Steinhaus is stated in terms of suprema of `↑‖·‖₊ : ℝ≥0∞`
 for convenience. -/
-theorem banach_steinhaus_iSup_nnnorm {ι : Type*} [CompleteSpace E] {g : ι → E →SL[σ₁₂] F}
+theorem banach_steinhaus_iSup_nnNorm {ι : Type*} [CompleteSpace E] {g : ι → E →SL[σ₁₂] F}
     (h : ∀ x, (⨆ i, ↑‖g i x‖₊) < ∞) : (⨆ i, ↑‖g i‖₊) < ∞ := by
-  rw [show ((⨆ i, ↑‖g i‖₊) < ∞) ↔ _ from (NormedSpace.equicontinuous_TFAE g).out 9 3]
+  rw [show ((⨆ i, ↑‖g i‖₊) < ∞) ↔ _ from (NormedSpace.equicontinuous_tfae g).out 9 3]
   refine (norm_withSeminorms 𝕜₂ F).banach_steinhaus (fun _ x ↦ ?_)
   simpa [← NNReal.bddAbove_coe, ← Set.range_comp] using! ENNReal.iSup_coe_lt_top.1 (h x)
+
+@[deprecated (since := "2026-10-31")]
+alias banach_steinhaus_iSup_nnnorm := banach_steinhaus_iSup_nnNorm

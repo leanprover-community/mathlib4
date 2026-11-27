@@ -8,13 +8,16 @@ module
 public import Mathlib.Order.CompleteLattice.Basic
 public import Mathlib.Order.WithBot
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Galois connections, insertions and coinsertions
 
 This file contains basic results on Galois connections, insertions and coinsertions in various
 order structures, and provides constructions that lift order structures from one type to another.
 
-## Implementation details
+## Implementation notes
 
 Galois insertions can be used to lift order structures from one type to another.
 For example, if `α` is a complete lattice, and `l : α → β` and `u : β → α` form a Galois insertion,
@@ -311,9 +314,6 @@ theorem l_biInf_of_u_l_eq_self [CompleteLattice α] [CompleteLattice β] (gi : G
   rw [iInf_subtype', iInf_subtype']
   exact gi.l_iInf_of_u_l_eq_self _ fun _ => hf _ _
 
-@[deprecated (since := "2026-04-10")] alias l_iInf_of_ul_eq_self := l_iInf_of_u_l_eq_self
-@[deprecated (since := "2026-04-10")] alias l_biInf_of_ul_eq_self := l_biInf_of_u_l_eq_self
-
 @[to_dual]
 theorem isLUB_of_u_image [Preorder α] [Preorder β] (gi : GaloisInsertion l u) {s : Set β} {a : α}
     (hs : IsLUB (u '' s) a) : IsLUB s (l a) :=
@@ -360,13 +360,8 @@ abbrev liftSemilatticeInf [SemilatticeInf α] (gi : GaloisInsertion l u) : Semil
 
 -- See note [reducible non-instances]
 /-- Lift the suprema and infima along a Galois insertion -/
+@[to_dual /-- Lift the suprema and infima along a Galois coinsertion -/]
 abbrev liftLattice [Lattice α] (gi : GaloisInsertion l u) : Lattice β :=
-  { gi.liftSemilatticeSup, gi.liftSemilatticeInf with }
-
--- See note [reducible non-instances]
-/-- Lift the suprema and infima along a Galois coinsertion -/
-@[to_dual existing]
-abbrev _root_.GaloisCoinsertion.liftLattice [Lattice α] (gi : GaloisCoinsertion u l) : Lattice β :=
   { gi.liftSemilatticeSup, gi.liftSemilatticeInf with }
 
 -- See note [reducible non-instances]
@@ -402,13 +397,6 @@ abbrev liftCompleteLattice [CompleteLattice α] (gi : GaloisInsertion l u) : Com
 end lift
 
 end GaloisInsertion
-
-namespace GaloisCoinsertion
-
-@[deprecated (since := "2026-04-10")] alias u_iSup_of_lu_eq_self := u_iSup_of_l_u_eq_self
-@[deprecated (since := "2026-04-10")] alias u_biSup_of_lu_eq_self := u_biSup_of_l_u_eq_self
-
-end GaloisCoinsertion
 
 /-- `sSup` and `Iic` form a Galois connection. -/
 theorem gc_sSup_Iic [CompleteSemilatticeSup α] :

@@ -37,7 +37,6 @@ instead turn on the corresponding `ofChosenFiniteProducts` declaration for that 
 - Construct an instance of chosen finite products in the category of affine scheme, using
   the tensor product.
 - Construct chosen finite products in other categories appearing "in nature".
-
 -/
 
 @[expose] public section
@@ -205,9 +204,9 @@ abbrev ofChosenFiniteProducts : CartesianMonoidalCategory C :=
   fst X Y := BinaryFan.fst (ℬ X Y).cone
   snd X Y := BinaryFan.snd (ℬ X Y).cone
   tensorProductIsBinaryProduct X Y := BinaryFan.IsLimit.mk _
-    (fun f g ↦ (BinaryFan.IsLimit.lift' (ℬ X Y).isLimit f g).1)
-    (fun f g ↦ (BinaryFan.IsLimit.lift' (ℬ X Y).isLimit f g).2.1)
-    (fun f g ↦ (BinaryFan.IsLimit.lift' (ℬ X Y).isLimit f g).2.2)
+    (fun f g ↦ (BinaryFan.IsLimit.lift' (ℬ X Y).isLimit f g).val)
+    (fun f g ↦ (BinaryFan.IsLimit.lift' (ℬ X Y).isLimit f g).property.1)
+    (fun f g ↦ (BinaryFan.IsLimit.lift' (ℬ X Y).isLimit f g).property.2)
     (fun f g m hf hg ↦
       BinaryFan.IsLimit.hom_ext (ℬ X Y).isLimit (by simpa using hf) (by simpa using hg))
   fst_def X Y := (((ℬ X 𝒯.cone.pt).isLimit.fac
@@ -232,15 +231,15 @@ open MonoidalCategory
 Constructs a morphism to the product given its two components.
 -/
 def lift {T X Y : C} (f : T ⟶ X) (g : T ⟶ Y) : T ⟶ X ⊗ Y :=
-  (BinaryFan.IsLimit.lift' (tensorProductIsBinaryProduct X Y) f g).1
+  (BinaryFan.IsLimit.lift' (tensorProductIsBinaryProduct X Y) f g).val
 
 @[reassoc (attr := simp)]
 lemma lift_fst {T X Y : C} (f : T ⟶ X) (g : T ⟶ Y) : lift f g ≫ fst _ _ = f :=
-  (BinaryFan.IsLimit.lift' (tensorProductIsBinaryProduct X Y) f g).2.1
+  (BinaryFan.IsLimit.lift' (tensorProductIsBinaryProduct X Y) f g).property.1
 
 @[reassoc (attr := simp)]
 lemma lift_snd {T X Y : C} (f : T ⟶ X) (g : T ⟶ Y) : lift f g ≫ snd _ _ = g :=
-  (BinaryFan.IsLimit.lift' (tensorProductIsBinaryProduct X Y) f g).2.2
+  (BinaryFan.IsLimit.lift' (tensorProductIsBinaryProduct X Y) f g).property.2
 
 instance mono_lift_of_mono_left {W X Y : C} (f : W ⟶ X) (g : W ⟶ Y)
     [Mono f] : Mono (lift f g) :=
@@ -637,7 +636,6 @@ theorem prodComparison_inv_natural_whiskerRight (f : A ⟶ A') [IsIso (prodCompa
 
 end
 
-set_option backward.defeqAttrib.useBackward true in
 lemma prodComparison_comp :
     prodComparison (F ⋙ G) A B =
       G.map (prodComparison F A B) ≫ prodComparison G (F.obj A) (F.obj B) := by
@@ -648,7 +646,6 @@ lemma prodComparison_comp :
 lemma prodComparison_id :
     prodComparison (𝟭 C) A B = 𝟙 (A ⊗ B) := lift_fst_snd
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The product comparison morphism from `F(A ⊗ -)` to `FA ⊗ F-`, whose components are given by
 `prodComparison`. -/
 @[simps]
@@ -661,18 +658,15 @@ def prodComparisonNatTrans (A : C) :
       Functor.comp_map, curriedTensor_obj_map, Category.assoc, prodComparison_fst, whiskerLeft_fst,
       prodComparison_snd, prodComparison_snd_assoc, whiskerLeft_snd, ← F.map_comp]
 
-set_option backward.defeqAttrib.useBackward true in
 theorem prodComparisonNatTrans_comp :
     prodComparisonNatTrans (F ⋙ G) A = Functor.whiskerRight (prodComparisonNatTrans F A) G ≫
       Functor.whiskerLeft F (prodComparisonNatTrans G (F.obj A)) := by
   ext; simp [prodComparison_comp]
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma prodComparisonNatTrans_id :
     prodComparisonNatTrans (𝟭 C) A = 𝟙 _ := by ext; simp
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The product comparison morphism from `F(- ⊗ -)` to `F- ⊗ F-`, whose components are given by
 `prodComparison`. -/
 @[simps]
@@ -686,7 +680,6 @@ def prodComparisonBifunctorNatTrans :
 
 variable {E : Type u₂} [Category.{v₂} E] [CartesianMonoidalCategory E] (G : D ⥤ E)
 
-set_option backward.defeqAttrib.useBackward true in
 theorem prodComparisonBifunctorNatTrans_comp : prodComparisonBifunctorNatTrans (F ⋙ G) =
     Functor.whiskerRight
       (prodComparisonBifunctorNatTrans F) ((Functor.whiskeringRight _ _ _).obj G) ≫
@@ -735,7 +728,6 @@ instance isIso_prodComparison_of_preservesLimit_pair : IsIso (prodComparison F A
 
 @[simp] lemma prodComparisonIso_id : prodComparisonIso (𝟭 C) A B = .refl _ := by ext <;> simp
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma prodComparisonIso_comp [PreservesLimit (pair A B) (F ⋙ G)]
     [PreservesLimit (pair (F.obj A) (F.obj B)) G] :
@@ -793,7 +785,6 @@ end prodComparison
 
 end CartesianMonoidalCategoryComparison
 
-set_option backward.defeqAttrib.useBackward true in
 /-- In a cartesian monoidal category, `tensorLeft X` is naturally isomorphic `prod.functor.obj X`.
 -/
 noncomputable def tensorLeftIsoProd [HasBinaryProducts C] (X : C) :
@@ -806,7 +797,6 @@ open Limits
 
 variable {P : ObjectProperty C}
 
-set_option backward.defeqAttrib.useBackward true in
 -- TODO: Introduce `ClosedUnderFiniteProducts`?
 /-- The restriction of a Cartesian-monoidal category along an object property that's closed under
 finite products is Cartesian-monoidal. -/
@@ -819,15 +809,15 @@ instance fullSubcategory
       (P.prop_of_isLimit isTerminalTensorUnit (by simp))
       (fun X Y hX hY ↦ P.prop_of_isLimit (tensorProductIsBinaryProduct X Y)
         (by rintro (_ | _) <;> assumption))
-  isTerminalTensorUnit := .ofUniqueHom (fun X ↦ ObjectProperty.homMk (toUnit X.1))
+  isTerminalTensorUnit := .ofUniqueHom (fun X ↦ ObjectProperty.homMk (toUnit X.obj))
     fun _ _ ↦ by ext; apply toUnit_unique
-  fst X Y := ObjectProperty.homMk (fst X.1 Y.1)
-  snd X Y := ObjectProperty.homMk (snd X.1 Y.1)
+  fst X Y := ObjectProperty.homMk (fst X.obj Y.obj)
+  snd X Y := ObjectProperty.homMk (snd X.obj Y.obj)
   tensorProductIsBinaryProduct X Y :=
     BinaryFan.IsLimit.mk _ (fun f g ↦ ObjectProperty.homMk (lift f.hom g.hom))
       (by aesop_cat) (by aesop_cat) (by aesop_cat)
-  fst_def X Y := by ext; exact fst_def X.1 Y.1
-  snd_def X Y := by ext; exact snd_def X.1 Y.1
+  fst_def X Y := by ext; exact fst_def X.obj Y.obj
+  snd_def X Y := by ext; exact snd_def X.obj Y.obj
 
 end CartesianMonoidalCategory
 
@@ -923,7 +913,6 @@ lemma μ_fst (X Y : C) : μ F X Y ≫ F.map (fst X Y) = fst (F.obj X) (F.obj Y) 
 lemma μ_snd (X Y : C) : μ F X Y ≫ F.map (snd X Y) = snd (F.obj X) (F.obj Y) :=
   (cancel_epi (μIso _ _ _).inv).1 (by simp)
 
-set_option backward.defeqAttrib.useBackward true in
 attribute [-instance] Functor.LaxMonoidal.comp Functor.Monoidal.instComp in
 @[reassoc]
 lemma μ_comp [(F ⋙ G).Monoidal] (X Y : C) : μ (F ⋙ G) X Y = μ G _ _ ≫ G.map (μ F X Y) := by

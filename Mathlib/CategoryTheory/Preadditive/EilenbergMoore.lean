@@ -8,12 +8,14 @@ module
 public import Mathlib.CategoryTheory.Monad.Algebra
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Preadditive structure on algebras over a monad
 
 If `C` is a preadditive category and `T` is an additive monad on `C` then `Algebra T` is also
 preadditive. Dually, if `U` is an additive comonad on `C` then `Coalgebra U` is preadditive as well.
-
 -/
 
 public section

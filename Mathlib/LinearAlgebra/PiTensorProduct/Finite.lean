@@ -10,9 +10,11 @@ public import Mathlib.RingTheory.Finiteness.Basic
 
 import Mathlib.LinearAlgebra.PiTensorProduct.Generators
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # A multiple tensor product of finitely generated modules is finitely generated
-
 -/
 
 public section

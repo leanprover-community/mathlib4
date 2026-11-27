@@ -36,7 +36,7 @@ are hard to prove without `Matroid.restrict` API.
 
 * `Matroidᵣ α` is a type synonym for `Matroid α`, equipped with the `PartialOrder` `≤r`.
 
-## Implementation Notes
+## Implementation notes
 
 Since `R` and `M.E` are both terms in `Set α`, to define the restriction `M ↾ R`,
 we need to either insist that `R ⊆ M.E`, or to say what happens when `R` contains the junk

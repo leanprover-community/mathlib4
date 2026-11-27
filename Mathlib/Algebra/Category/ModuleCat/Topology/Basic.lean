@@ -5,7 +5,7 @@ Authors: Richard Hill, Andrew Yang
 -/
 module
 
-public import Lean.Meta.Tactic.Rfl
+public meta import Lean.Meta.Tactic.Rfl
 public import Mathlib.Algebra.Category.ModuleCat.Colimits
 public import Mathlib.Algebra.Category.ModuleCat.Limits
 public import Mathlib.Topology.Algebra.Module.ModuleTopology
@@ -25,7 +25,8 @@ We also provide various adjunctions:
 - `TopModuleCat.freeAdj`:
   the free-forgetful adjunction between `TopModuleCat R` and `TopCat`.
 
-## Future projects
+## TODO
+
 Show that the forgetful functor to `TopCat` preserves filtered colimits.
 -/
 
@@ -176,8 +177,8 @@ lemma hom_smul {M₁ M₂ : TopModuleCat S} (s : S) (φ : M₁ ⟶ M₂) : (s �
 
 end CommRing
 
-instance (M : TopModuleCat R) : TopologicalSpace M := M.2
-instance (M : TopModuleCat R) : IsTopologicalAddGroup M := M.3
+instance (M : TopModuleCat R) : TopologicalSpace M := M.topologicalSpace
+instance (M : TopModuleCat R) : IsTopologicalAddGroup M := M.isTopologicalAddGroup
 
 instance : HasForget₂ (TopModuleCat R) (ModuleCat R) where
   forget₂ :=
@@ -187,7 +188,7 @@ instance : HasForget₂ (TopModuleCat R) (ModuleCat R) where
 instance : HasForget₂ (TopModuleCat R) TopCat where
   forget₂ :=
   { obj M := ↧M
-    map φ := TopCat.ofHom ⟨φ, φ.1.2⟩ }
+    map φ := TopCat.ofHom ⟨φ, φ.hom'.cont⟩ }
 
 instance : (forget₂ (TopModuleCat R) TopCat).ReflectsIsomorphisms where
   reflects {X Y} f hf := by
@@ -198,7 +199,7 @@ instance : (forget₂ (TopModuleCat R) TopCat).ReflectsIsomorphisms where
 
 @[simp]
 lemma hom_forget₂_TopCat_map {X Y : TopModuleCat R} (f : X ⟶ Y) :
-    ((forget₂ _ TopCat).map f).hom = f.hom := rfl
+    ((forget₂ _ TopCat).map f).hom = f.hom.toContinuousMap := rfl
 
 @[simp]
 lemma forget₂_TopCat_obj {X : TopModuleCat R} : ((forget₂ _ TopCat).obj X : Type _) = X := rfl
@@ -249,7 +250,7 @@ def isColimit {J : Type*} [Category* J] {F : J ⥤ TopModuleCat R}
     change Continuous (X := F.obj i) (Y := s.pt)
       (c.ι.app i ≫ hc.desc ((forget₂ _ (ModuleCat R)).mapCocone s)).hom
     rw [hc.fac]
-    exact (s.ι.app i).hom.2⟩
+    exact (s.ι.app i).hom.cont⟩
   fac s i := by ext x; congrm $(hc.fac ((forget₂ _ _).mapCocone s) i).hom x
   uniq s m H := by
     ext x
@@ -311,7 +312,7 @@ def isLimit {J : Type*} [Category* J] {F : J ⥤ TopModuleCat R}
     change Continuous (X := s.pt) (Y := F.obj i)
       (hc.lift ((forget₂ _ (ModuleCat R)).mapCone s) ≫ c.π.app i).hom
     rw [hc.fac]
-    exact (s.π.app i).hom.2⟩
+    exact (s.π.app i).hom.cont⟩
   fac s i := by ext x; congrm $(hc.fac ((forget₂ _ _).mapCone s) i).hom x
   uniq s m H := by
     ext x
@@ -336,7 +337,7 @@ instance {J : Type*} [Category* J] {F : J ⥤ TopModuleCat.{v} R}
     PreservesLimit F (forget₂ _ TopCat) :=
   preservesLimit_of_preserves_limit_cone (isLimit (limit.isLimit _))
     (TopCat.isLimitConeOfForget (F := F ⋙ forget₂ _ TopCat)
-      ((forget _).mapCone (getLimitCone (F ⋙ forget₂ _ (ModuleCat.{v} R))).1 :)
+      ((forget _).mapCone (getLimitCone (F ⋙ forget₂ _ (ModuleCat.{v} R))).cone :)
       (isLimitOfPreserves (forget (ModuleCat R)) (limit.isLimit _)))
 
 instance {J : Type*} [Category* J]
@@ -422,7 +423,7 @@ def freeMap {X Y : TopCat.{v}} (f : X ⟶ Y) : freeObj R X ⟶ freeObj R Y :=
     refine sInf_le ⟨continuousSMul_induced (Finsupp.lmapDomain _ _ f.hom),
       continuousAdd_induced (Finsupp.lmapDomain _ _ f.hom), ?_⟩
     rw [← coinduced_le_iff_le_induced]
-    grw [← hτ₃, ← coinduced_mono (continuous_iff_coinduced_le.mp f.hom.2)]
+    grw [← hτ₃, ← coinduced_mono (continuous_iff_coinduced_le.mp (map_continuous f.hom))]
     rw [coinduced_compose, coinduced_compose]
     congr! 1
     ext x

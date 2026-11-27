@@ -48,9 +48,11 @@ is obtained by removing `x (l.pred _)` from the walk.
 
 
 ## References
-* [Sean Moss, *Another approach to the Kan-Quillen model structure*][moss-2020]
 
+* [Sean Moss, *Another approach to the Kan-Quillen model structure*][moss-2020]
 -/
+
+open scoped Finset
 
 @[expose] public section
 
@@ -494,7 +496,6 @@ lemma IsType₂.type₁_eq_of_δ_eq
     rw [φ_castSucc]
     ext : 1
     · simp [← s.isIndex.simplex_fst_castSucc]
-      rfl
     · change (s.x.cast s.hd).simplex.2
         (s.index.castSucc.succAbove (min s.δ rfl)) = _
       rw [s.isIndex.min_δ, Fin.succAbove_castSucc_self]
@@ -581,7 +582,7 @@ set_option backward.defeqAttrib.useBackward true in
 /-- A weak rank function for `pairingCore k n`. -/
 noncomputable def weakRankFunction {m : ℕ} (k : Fin (m + 1)) (n : ℕ) :
     (pairingCore.{u} k n).WeakRankFunction ℕ where
-  rank s := (finset s.x rfl).card
+  rank s := #(finset s.x rfl)
   lt := by
     intro ⟨s, d, hds, is, hs⟩ ⟨t, d', hdt, it, ht⟩ ⟨h₁, h₂⟩ h₃
     obtain ⟨ds, s, hs₁, hs₂, rfl⟩ := Subcomplex.N.mk_surjective s
@@ -609,7 +610,7 @@ noncomputable def weakRankFunction {m : ℕ} (k : Fin (m + 1)) (n : ℕ) :
         simp [Sδ, Ss, stdSimplex.δ_apply]
       have hSt (i : Fin (d + 1)) : i ∈ Sδ ↔ it.succ.succAbove i ∈ St := by
         simp [Sδ, St, stdSimplex.δ_apply, hδ]
-      suffices Ss.card = Sδ.card ∧ St.card = Sδ.card + 1 by grind
+      suffices #Ss = #Sδ ∧ #St = #Sδ + 1 by grind
       constructor
       · suffices Ss = Finset.image is.castSucc.succAbove Sδ by
           rw [this]

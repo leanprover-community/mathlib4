@@ -22,13 +22,12 @@ The intended application is that as `Ring ≌ Mon Ab` (not yet constructed!),
 we have `presheaf Ring X ≌ presheaf (Mon Ab) X ≌ Mon (presheaf Ab X)`,
 and we can model a module over a presheaf of rings as a module object in `presheaf Ab X`.
 
-## Future work
+## TODO
+
 Presumably this statement is not specific to monoids,
 and could be generalised to any internal algebraic objects,
 if the appropriate framework was available.
 -/
-
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -287,6 +286,7 @@ def inverse : (C ⥤ CommMon D) ⥤ CommMon (C ⥤ D) where
   map α :=
     CommMon.homMk ((monFunctorCategoryEquivalence C D).inverse.map (Functor.whiskerRight α _))
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency.types false in
 /-- The unit for the equivalence `CommMon (C ⥤ D) ≌ C ⥤ CommMon D`.
 -/
@@ -294,6 +294,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 def unitIso : 𝟭 (CommMon (C ⥤ D)) ≅ functor ⋙ inverse :=
   NatIso.ofComponents (fun A => CommMon.mkIso (Iso.refl _))
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency.types false in
 /-- The counit for the equivalence `CommMon (C ⥤ D) ≌ C ⥤ CommMon D`.
 -/
@@ -305,6 +306,7 @@ end CommMonFunctorCategoryEquivalence
 
 open CommMonFunctorCategoryEquivalence
 
+set_option backward.defeqAttrib.useBackward true in
 /-- When `D` is a braided monoidal category,
 commutative monoid objects in `C ⥤ D` are the same thing
 as functors from `C` into the commutative monoid objects of `D`.

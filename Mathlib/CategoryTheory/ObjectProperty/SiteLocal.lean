@@ -20,7 +20,7 @@ We say that
 - `P` is local if for every `X : C`, `P` holds for `X` if and only if it holds for `Uᵢ` for a
   `K`-cover `{Uᵢ}` of `X`.
 
-## Implementation details
+## Implementation notes
 
 The covers appearing in the definitions have index type in the morphism universe of `C`.
 -/

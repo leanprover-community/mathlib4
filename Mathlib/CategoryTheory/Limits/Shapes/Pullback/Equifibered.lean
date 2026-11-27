@@ -9,10 +9,10 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 public import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 /-!
-
 # Equifibered natural transformation
 
 ## Main definition
+
 - `CategoryTheory.NatTrans.Equifibered`:
   A natural transformation `α : F ⟶ G` is equifibered if every commutative square of the following
   form is a pullback.
@@ -22,7 +22,6 @@ public import Mathlib.CategoryTheory.MorphismProperty.Composition
   G(X) → G(Y)
   ```
 - `CategoryTheory.NatTrans.Coequifibered`: The dual notion.
-
 -/
 
 @[expose] public section

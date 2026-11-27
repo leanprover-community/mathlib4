@@ -154,7 +154,7 @@ lemma homogeneousSubmodule_zero :
 
 theorem isHomogeneous_C (r : R) : IsHomogeneous (C r : MvPolynomial σ R) 0 := by
   apply isHomogeneous_monomial
-  simp only [degree_apply, Finsupp.support_zero, zero_apply, Finset.sum_const_zero]
+  simp
 
 variable (R)
 
@@ -323,6 +323,29 @@ lemma degree_eq_sum_deg_support (hφ : φ.IsHomogeneous n) {s : σ →₀ ℕ} (
     n = ∑ i ∈ s.support, s i := by
   simp [← hφ <| mem_support_iff.mp hs, ← degree_apply, degree_eq_weight_one, Pi.one_def]
 
+/-- Scaling the input of a degree `d` homogeneous polynomial by a factor of `c`,
+scales the output by a factor of `c ^ d`. -/
+lemma eval₂_smul {F : MvPolynomial σ R} {d : ℕ} (hF : F.IsHomogeneous d) (f : R →+* S) (c : R)
+    (p : σ → S) :
+    F.eval₂ f (f c • p) = f (c ^ d) * F.eval₂ f p := by
+  simp only [eval₂_eq, Pi.smul_apply, smul_eq_mul, Finset.mul_sum, mul_pow,
+    Finset.prod_mul_distrib, Finset.prod_pow_eq_pow_sum, map_pow]
+  congr! 1 with x hx
+  rw [hF.degree_eq_sum_deg_support hx, mul_left_comm]
+
+/-- Scaling the input of a degree `d` homogeneous polynomial by a factor of `c`,
+scales the output by a factor of `c ^ d`. -/
+lemma aeval_smul [Algebra R S] {F : MvPolynomial σ R} {d : ℕ} (hF : F.IsHomogeneous d) (c : R)
+    (p : σ → S) :
+    F.aeval (c • p) = c ^ d • F.aeval p := by
+  simpa [aeval_def, Algebra.smul_def (A := S)] using hF.eval₂_smul (algebraMap R S) c p
+
+/-- Scaling the input of a degree `d` homogeneous polynomial by a factor of `c`,
+scales the output by a factor of `c ^ d`. -/
+lemma eval_smul {F : MvPolynomial σ R} {d : ℕ} (hF : F.IsHomogeneous d) (c : R) (p : σ → R) :
+    F.eval (c • p) = c ^ d * F.eval p :=
+  hF.eval₂_smul ..
+
 theorem rename_isHomogeneous {f : σ → τ} (h : φ.IsHomogeneous n) :
     (rename f φ).IsHomogeneous n := by
   rw [← φ.support_sum_monomial_coeff, map_sum]; simp_rw [rename_monomial]
@@ -427,7 +450,7 @@ lemma exists_eval_ne_zero_of_totalDegree_le_card_aux {N : ℕ} {F : MvPolynomial
       linarith [natDegree_finSuccEquiv F, degreeOf_le_totalDegree F 0, hF.totalDegree hF₀]
     obtain ⟨i, hi⟩ : ∃ i : ℕ, (finSuccEquiv R N F).coeff i ≠ 0 := by
       contrapose! hF₀
-      exact (finSuccEquiv _ _).injective <| Polynomial.ext <| by simpa using! hF₀
+      exact (finSuccEquiv _ _).injective <| by ext n : 2; simpa using hF₀ n
     have hin : i ≤ n := by
       contrapose! hi
       exact coeff_eq_zero_of_natDegree_lt <| (Nat.le_of_lt_succ hdeg).trans_lt hi
@@ -435,7 +458,7 @@ lemma exists_eval_ne_zero_of_totalDegree_le_card_aux {N : ℕ} {F : MvPolynomial
     · exact hF.exists_eval_ne_zero_of_coeff_finSuccEquiv_ne_zero_aux hFn
     have hin : i < n := hin.lt_or_eq.elim id <| by aesop
     obtain ⟨j, hj⟩ : ∃ j, i + (j + 1) = n := (Nat.exists_eq_add_of_lt hin).imp <| by lia
-    obtain ⟨r, hr⟩ : ∃ r, (eval r) (Polynomial.coeff ((finSuccEquiv R N) F) i) ≠ 0 :=
+    obtain ⟨r, hr⟩ : ∃ r, eval r ((finSuccEquiv R N F).coeff i) ≠ 0 :=
       IH (hF.finSuccEquiv_coeff_isHomogeneous _ _ hj) hi (.trans (by norm_cast; lia) hnR)
     set φ : R[X] := Polynomial.map (eval r) (finSuccEquiv _ _ F) with hφ
     have hφ₀ : φ ≠ 0 := fun hφ₀ ↦ hr <| by

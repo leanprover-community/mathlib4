@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
 public import Mathlib.Topology.UnitInterval
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Classes for probability measures
 
@@ -123,7 +126,7 @@ lemma isProbabilityMeasure_iff_real {μ : Measure α} :
 
 instance {f : α → β} : IsProbabilityMeasure (map f μ) where
   measure_univ := by
-    rw [Measure.map]
+    rw [Measure.map_def]
     split_ifs with hf hμ
     · simp [mapₗ_mk_apply_of_aemeasurable, hf]
     · have := measure_univ (μ := μ)
@@ -203,7 +206,7 @@ section IsZeroOrProbabilityMeasure
 instance isZeroOrProbabilityMeasureSMul :
     IsZeroOrProbabilityMeasure ((μ univ)⁻¹ • μ) := by
   rcases eq_zero_or_neZero μ with rfl | h
-  · rw [Measure.coe_zero, Pi.zero_apply, inv_zero, smul_zero]; infer_instance
+  · rw [FunLike.coe_zero, Pi.zero_apply, inv_zero, smul_zero]; infer_instance
   rcases eq_top_or_lt_top (μ univ) with h | h
   · rw [h, inv_top, zero_smul]; infer_instance
   have : IsFiniteMeasure μ := ⟨h⟩

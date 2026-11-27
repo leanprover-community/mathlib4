@@ -7,13 +7,16 @@ module
 
 public import Mathlib.Topology.EMetricSpace.Basic
 public import Mathlib.Topology.MetricSpace.Pseudo.Defs
-public import Mathlib.Topology.Metrizable.Basic
+
+import Mathlib.Topology.Metrizable.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Pseudo-metric spaces
 
 Further results about pseudo-metric spaces.
-
 -/
 
 public section
@@ -82,13 +85,6 @@ theorem controlled_of_isUniformInducing [PseudoMetricSpace β] {f : α → β}
     (∀ ε > 0, ∃ δ > 0, ∀ {a b : α}, dist a b < δ → dist (f a) (f b) < ε) ∧
       ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, dist (f a) (f b) < ε → dist a b < δ :=
   ⟨uniformContinuous_iff.1 h.uniformContinuous, (isUniformInducing_iff.1 h).2⟩
-
-@[deprecated controlled_of_isUniformInducing +typeChanged (since := "2026-04-01")]
-theorem controlled_of_isUniformEmbedding [PseudoMetricSpace β] {f : α → β}
-    (h : IsUniformEmbedding f) :
-    (∀ ε > 0, ∃ δ > 0, ∀ {a b : α}, dist a b < δ → dist (f a) (f b) < ε) ∧
-      ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, dist (f a) (f b) < ε → dist a b < δ :=
-  controlled_of_isUniformInducing h.toIsUniformInducing
 
 theorem totallyBounded_iff {s : Set α} :
     TotallyBounded s ↔ ∀ ε > 0, ∃ t : Set α, t.Finite ∧ s ⊆ ⋃ y ∈ t, ball y ε :=
@@ -181,13 +177,18 @@ end Metric
 
 open Metric
 
-theorem Metric.inseparable_iff_nndist {x y : α} : Inseparable x y ↔ nndist x y = 0 := by
-  rw [EMetric.inseparable_iff, edist_nndist, ENNReal.coe_eq_zero]
+theorem Metric.inseparable_iff_nnDist {x y : α} : Inseparable x y ↔ nnDist x y = 0 := by
+  rw [EMetric.inseparable_iff, eDist_nnDist, ENNReal.coe_eq_zero]
 
-alias ⟨Inseparable.nndist_eq_zero, _⟩ := Metric.inseparable_iff_nndist
+@[deprecated (since := "2026-11-07")]
+alias Metric.inseparable_iff_nndist := Metric.inseparable_iff_nnDist
+
+alias ⟨Inseparable.nnDist_eq_zero, _⟩ := Metric.inseparable_iff_nnDist
+
+@[deprecated (since := "2026-11-07")] alias Inseparable.nndist_eq_zero := Inseparable.nnDist_eq_zero
 
 theorem Metric.inseparable_iff {x y : α} : Inseparable x y ↔ dist x y = 0 := by
-  rw [Metric.inseparable_iff_nndist, dist_nndist, NNReal.coe_eq_zero]
+  rw [Metric.inseparable_iff_nnDist, dist_nnDist, NNReal.coe_eq_zero]
 
 alias ⟨Inseparable.dist_eq_zero, _⟩ := Metric.inseparable_iff
 

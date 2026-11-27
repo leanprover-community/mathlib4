@@ -15,6 +15,7 @@ import Mathlib.RingTheory.Localization.InvSubmonoid
 # Unramified locus of an algebra
 
 ## Main results
+
 - `Algebra.unramifiedLocus` : The set of primes that is unramified over the base.
 - `Algebra.basicOpen_subset_unramifiedLocus_iff` :
   `D(f)` is contained in the unramified locus if and only if `A_f` is unramified over `R`.
@@ -76,7 +77,7 @@ open _root_.TensorProduct in
 then `κ(P) ⊗ A` is unramified at `Q'` (the prime corresponding to `Q`) over `κ(P)`. -/
 theorem IsUnramifiedAt.residueField
     (P : Ideal R) [P.IsPrime] (Q : Ideal A) [Q.IsPrime]
-    [Q.LiesOver P] [Algebra.IsUnramifiedAt R Q]
+    [Algebra.IsUnramifiedAt R Q]
     (Q' : Ideal (P.Fiber A)) [Q'.IsPrime]
     (hQ' : Q = Q'.comap Algebra.TensorProduct.includeRight.toRingHom) :
     IsUnramifiedAt P.ResidueField Q' := by
@@ -134,11 +135,11 @@ lemma unramifiedLocus_eq_univ_iff :
     Module.support_eq_empty_iff, Algebra.formallyUnramified_iff]
 
 theorem formallyUnramified_iff_forall :
-    FormallyUnramified R A ↔ ∀ q : PrimeSpectrum A, IsUnramifiedAt R q.1 :=
+    FormallyUnramified R A ↔ ∀ q : PrimeSpectrum A, IsUnramifiedAt R q.asIdeal :=
   unramifiedLocus_eq_univ_iff.symm.trans Set.eq_univ_iff_forall
 
 theorem unramified_iff_forall [FiniteType R A] :
-    Unramified R A ↔ ∀ q : PrimeSpectrum A, IsUnramifiedAt R q.1 :=
+    Unramified R A ↔ ∀ q : PrimeSpectrum A, IsUnramifiedAt R q.asIdeal :=
   .trans ⟨fun h ↦ h.formallyUnramified, fun h ↦ ⟨h, inferInstance⟩⟩ formallyUnramified_iff_forall
 
 lemma isOpen_unramifiedLocus [EssFiniteType R A] : IsOpen (unramifiedLocus R A) := by

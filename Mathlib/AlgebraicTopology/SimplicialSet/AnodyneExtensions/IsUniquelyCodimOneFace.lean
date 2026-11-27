@@ -19,8 +19,8 @@ file `Mathlib/AlgebraicTopology/SimplicialSet/AnodyneExtensions/Pairing.lean` fo
 study of strong (inner) anodyne extensions.
 
 ## References
-* [Sean Moss, *Another approach to the Kan-Quillen model structure*][moss-2020]
 
+* [Sean Moss, *Another approach to the Kan-Quillen model structure*][moss-2020]
 -/
 
 @[expose] public section

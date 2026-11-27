@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Normed.Field.Lemmas
 public import Mathlib.Analysis.SpecificLimits.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Proper nontrivially normed fields
 
@@ -17,7 +20,7 @@ Nontrivially normed fields are `ProperSpaces` when they are `WeaklyLocallyCompac
 
 * `ProperSpace.of_nontriviallyNormedField_of_weaklyLocallyCompactSpace`
 
-## Implementation details
+## Implementation notes
 
 This is a special case of `ProperSpace.of_locallyCompactSpace` from
 `Mathlib/Analysis/Normed/Module/FiniteDimension.lean`, specialized to be on the field itself

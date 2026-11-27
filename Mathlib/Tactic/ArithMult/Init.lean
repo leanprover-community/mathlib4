@@ -5,8 +5,11 @@ Authors: Arend Mellendijk
 -/
 module
 
-public import Aesop
+public meta import Aesop
 public import Mathlib.Init
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # `arith_mult` Rule Set

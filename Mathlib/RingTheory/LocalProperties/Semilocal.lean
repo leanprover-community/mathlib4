@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.KrullDimension.PID
 
 import Mathlib.RingTheory.DedekindDomain.PID
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Local properties for semilocal rings
 
@@ -55,15 +58,16 @@ theorem Module.Finite.of_isLocalized_maximal
     Module.Finite R M := by
   classical
   have : Fintype (MaximalSpectrum R) := Fintype.ofFinite _
-  choose s hs using fun P : MaximalSpectrum R ↦ (H P.1).fg_top
-  choose frac hfrac using fun P : MaximalSpectrum R ↦ IsLocalizedModule.surj P.1.primeCompl (f P.1)
+  choose s hs using fun P : MaximalSpectrum R ↦ (H P.asIdeal).fg_top
+  choose frac hfrac using fun P : MaximalSpectrum R ↦
+    IsLocalizedModule.surj P.asIdeal.primeCompl (f P.asIdeal)
   use Finset.biUnion Finset.univ fun P ↦ Finset.image (frac P · |>.1) (s P)
   refine Submodule.eq_top_of_localization_maximal Rₚ Mₚ f _ fun P hP ↦ ?_
   rw [eq_top_iff, ← hs ⟨P, hP⟩, Submodule.localized'_span, Submodule.span_le]
   intro x hx
   lift x to s ⟨P, hP⟩ using hx
   rw [SetLike.mem_coe, ← IsLocalization.smul_mem_iff (s := (frac ⟨P, hP⟩ x).2), hfrac]
-  exact Submodule.subset_span ⟨_, by simpa using ⟨_, _, x.2, rfl⟩, rfl⟩
+  exact Submodule.subset_span ⟨_, by simpa using ⟨_, _, x.property, rfl⟩, rfl⟩
 
 variable {M} in
 /-- A submodule `N` of a module `M` over a semilocal ring `R` is finitely generated if

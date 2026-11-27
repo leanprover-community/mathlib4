@@ -11,6 +11,9 @@ public import Mathlib.Order.Filter.AtTopBot.Finite
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Tactic.Positivity.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `a * c ^ n < (n - d)!` holds true for sufficiently large `n`.
 -/
@@ -31,5 +34,5 @@ theorem FloorSemiring.eventually_mul_pow_lt_factorial_sub (a c : K) (d : ℕ) :
     _ = ↑(⌈|a|⌉₊ * ⌈|c|⌉₊ ^ n) := ?_
     _ < (n - d)! := Nat.cast_lt.mpr h
   · rw [abs_mul, abs_pow]
-    gcongr <;> try first | positivity | apply Nat.le_ceil
+    gcongr <;> apply Nat.le_ceil
   · simp_rw [Nat.cast_mul, Nat.cast_pow]

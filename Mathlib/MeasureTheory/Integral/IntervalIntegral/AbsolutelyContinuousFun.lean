@@ -23,8 +23,11 @@ This file proves that:
   `∫ x in a..b, f x * deriv g x = f b * g b - f a * g a - ∫ x in a..b, deriv f x * g x`.
 
 ## Tags
+
 absolutely continuous, fundamental theorem of calculus, integration by parts
 -/
+
+open scoped Finset
 
 public section
 
@@ -70,8 +73,7 @@ lemma exists_dist_slope_lt_pairwiseDisjoint_hasSum {f f' : ℝ → F} {d b η : 
       have evn_bound {α : ℝ} (hα : 0 < α) : ∀ᶠ (ε : ℝ) in 𝓝[>] 0, ε < α := by
         rw [eventually_nhdsWithin_iff, eventually_nhds_iff]
         exact ⟨Ioo (-α) α, by grind, isOpen_Ioo, by grind⟩
-      have evn_pos : ∀ᶠ (ε : ℝ) in 𝓝[>] 0, 0 < ε :=
-        eventually_mem_of_tendsto_nhdsWithin (fun _ a ↦ a)
+      have evn_pos : ∀ᶠ (ε : ℝ) in 𝓝[>] 0, 0 < ε := eventually_mem_nhdsWithin
       filter_upwards [evn_pos, evn_bound hη, evn_bound hδ₁,
                       evn_bound (α := (b - x) / 2) (by simp [hx.left.right])]
         with ε hε₁ hε₂ hε₃ hε₄
@@ -120,7 +122,7 @@ lemma AbsolutelyContinuousOnInterval.dist_le_of_pairwiseDisjoint_hasSum {f : ℝ
   replace hu₂ (s : Finset u) : (SetLike.coe (u_coe s)).PairwiseDisjoint fun z ↦ Icc z.1 z.2 :=
     hu₂.subset (by grind)
   let T (s : Finset u) :=
-    ((u_coe s).card + 1, fun (i : ℕ) ↦ (u_coe s).intervalGapsWithin rfl d b i)
+    (#(u_coe s) + 1, fun (i : ℕ) ↦ (u_coe s).intervalGapsWithin rfl d b i)
   have hT₁ (s : Finset u) (i : ℕ) := (u_coe s).intervalGapsWithin_le_fst rfl i (hu₁ s)
   have hT₂ (s : Finset u) (i : ℕ) :=
     (u_coe s).intervalGapsWithin_fst_le_snd rfl i hdb (hu₁ s) (hu₂ s)

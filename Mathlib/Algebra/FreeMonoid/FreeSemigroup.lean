@@ -13,12 +13,16 @@ public import Mathlib.Data.Set.Operations
 import Mathlib.Algebra.Group.Units.Basic
 import Mathlib.Data.Set.Insert
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Relation between the free semigroup and the free monoid
 
 We provide some constructions relating the free semigroup and the free monoid on the same type.
 
 ## Main definitions
+
 * `FreeSemigroup.toFreeMonoid`: the natural embedding of the free semigroup into the free monoid.
 * `FreeMonoid.equivWithOneFreeSemigroup`: the free monoid is isomorphic to the free semigroup
   with a `1` added.
@@ -57,8 +61,7 @@ lemma toFreeMonoid_mk_eq_cons (x : α) (xs : List α) :
 @[to_additive (attr := grind .)]
 lemma toFreeMonoid_injective : Function.Injective (@toFreeMonoid α) := by
   rintro ⟨x, xs⟩ ⟨y, ys⟩ h
-  simp only [toFreeMonoid_mk_eq_cons, Equiv.apply_eq_iff_eq] at h
-  simpa using h
+  simpa [toFreeMonoid_mk_eq_cons, FreeMonoid.ext_iff] using h
 
 @[to_additive (attr := simp, grind .)]
 lemma toFreeMonoid_ne_one (x : FreeSemigroup α) : toFreeMonoid x ≠ 1 := by

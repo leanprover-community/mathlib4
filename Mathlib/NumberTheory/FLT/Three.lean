@@ -18,10 +18,12 @@ import Mathlib.NumberTheory.NumberField.Cyclotomic.PID
 The goal of this file is to prove Fermat's Last Theorem in the case `n = 3`.
 
 ## Main results
+
 * `fermatLastTheoremThree`: Fermat's Last Theorem for `n = 3`: if `a b c : ℕ` are all non-zero then
   `a ^ 3 + b ^ 3 ≠ c ^ 3`.
 
-## Implementation details
+## Implementation notes
+
 We follow the proof in <https://webusers.imj-prg.fr/~marc.hindry/Cours-arith.pdf>, page 43.
 
 The strategy is the following:
@@ -49,7 +51,6 @@ The strategy is the following:
   elementary on paper, would be quite annoying to formalize: indeed it involves a lot of explicit
   computations in `ℤ[ζ₃] / (λ)`: this ring is isomorphic to `ℤ / 9ℤ`, but of course, even if we
   construct such an isomorphism, tactics like `decide` would not work.
-
 -/
 
 section case1
@@ -268,8 +269,9 @@ lemma a_cube_b_cube_congr_one_or_neg_one :
 /-- Given `S' : Solution'`, we have that `λ ^ 4` divides `S'.c ^ 3`. -/
 lemma lambda_pow_four_dvd_c_cube : λ ^ 4 ∣ S'.c ^ 3 := by
   rcases a_cube_b_cube_congr_one_or_neg_one S' with
-    ⟨⟨x, hx⟩, ⟨y, hy⟩⟩ | ⟨⟨x, hx⟩, ⟨y, hy⟩⟩ <;>
-  · refine ⟨S'.u⁻¹ * (x + y), ?_⟩
+    ⟨⟨x, hx⟩, ⟨y, hy⟩⟩ | ⟨⟨x, hx⟩, ⟨y, hy⟩⟩
+  all_goals
+    refine ⟨S'.u⁻¹ * (x + y), ?_⟩
     symm
     calc _ = S'.u⁻¹ * (λ ^ 4 * x + λ ^ 4 * y) := by ring
     _ = S'.u⁻¹ * (S'.a ^ 3 + S'.b ^ 3) := by rw [← hx, ← hy]; ring
@@ -450,8 +452,8 @@ lemma associated_of_dvd_a_add_eta_mul_b_of_dvd_a_add_eta_sq_mul_b {p : 𝓞 K} (
   rw [one_mul, mul_one, IsUnit.dvd_mul_right <| (gcd_isUnit_iff _ _).2 S.coprime] at this
   convert (dvd_mul_of_dvd_left (dvd_mul_of_dvd_left this η) η) using 1
   symm
-  calc _ = (-η.1 - 1 - η) * (-η - 1) := by rw [eta_sq, mul_assoc, ← pow_two, eta_sq]
-  _ = 2 * η.1 ^ 2 + 3 * η + 1 := by ring
+  calc _ = (-(η).val - 1 - η) * (-η - 1) := by rw [eta_sq, mul_assoc, ← pow_two, eta_sq]
+  _ = 2 * (η).val ^ 2 + 3 * η + 1 := by ring
   _ = λ := by rw [eta_sq, coe_eta]; ring
 
 end IsCyclotomicExtension
@@ -630,8 +632,8 @@ lemma u₄_def : S.u₄ = η * S.u₃ * S.u₂⁻¹ := rfl
 noncomputable def u₅ := -η ^ 2 * S.u₁ * S.u₂⁻¹
 lemma u₅_def : S.u₅ = -η ^ 2 * S.u₁ * S.u₂⁻¹ := rfl
 
-example (a b : 𝓞 K) (ha : a ≠ 0) (hb : b ≠ 0) : a * b ≠ 0 := by
-  exact mul_ne_zero ha hb
+example (a b : 𝓞 K) (ha : a ≠ 0) (hb : b ≠ 0) : a * b ≠ 0 :=
+  mul_ne_zero ha hb
 
 -- This is just a computation and the formulas are too long.
 set_option linter.style.whitespace false in

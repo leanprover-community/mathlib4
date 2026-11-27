@@ -10,6 +10,9 @@ public import Mathlib.NumberTheory.Harmonic.Defs
 
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Euler-Mascheroni constant `γ`
 
@@ -127,6 +130,7 @@ lemma eulerMascheroniSeq_lt_eulerMascheroniSeq' (m n : ℕ) :
 end UpperSequence
 
 /-- The Euler-Mascheroni constant `γ`. -/
+@[oeis A001620 "decimal expansion"]
 noncomputable def eulerMascheroniConstant : ℝ := limUnder atTop eulerMascheroniSeq
 
 lemma tendsto_eulerMascheroniSeq :

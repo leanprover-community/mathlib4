@@ -76,7 +76,7 @@ def Bornology.ofBounded {α : Type*} (B : Set (Set α))
 
 /-- A constructor for bornologies by specifying the bounded sets,
 and showing that they satisfy the appropriate conditions. -/
-@[simps! cobounded, instance_reducible]
+@[instance_reducible]
 def Bornology.ofBounded' {α : Type*} (B : Set (Set α))
     (empty_mem : ∅ ∈ B)
     (subset_mem : ∀ s₁ ∈ B, ∀ s₂ ⊆ s₁, s₂ ∈ B)
@@ -127,8 +127,7 @@ theorem isBounded_empty : IsBounded (∅ : Set α) := by
   exact univ_mem
 
 theorem nonempty_of_not_isBounded (h : ¬IsBounded s) : s.Nonempty := by
-  rw [nonempty_iff_ne_empty]
-  rintro rfl
+  by_contra! rfl
   exact h isBounded_empty
 
 @[simp]
@@ -294,7 +293,7 @@ namespace Bornology
 variable [Bornology α]
 
 theorem isBounded_univ : IsBounded (univ : Set α) ↔ BoundedSpace α :=
-  ⟨fun h => ⟨h⟩, fun h => h.1⟩
+  ⟨fun h => ⟨h⟩, fun h => h.bounded_univ⟩
 
 theorem cobounded_eq_bot_iff : cobounded α = ⊥ ↔ BoundedSpace α := by
   rw [← isBounded_univ, isBounded_def, compl_univ, empty_mem_iff_bot]

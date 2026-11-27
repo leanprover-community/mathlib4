@@ -8,13 +8,15 @@ module
 public import Mathlib.Tactic.Order
 public import Mathlib.Topology.Order.IsLUB
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Monotone functions on an order topology
 
 This file contains lemmas about limits and continuity for monotone / antitone functions on
 linearly-ordered sets (with the order topology). For example, we prove that a monotone function
 has left and right limits at any point (`Monotone.tendsto_nhdsLT`, `Monotone.tendsto_nhdsGT`).
-
 -/
 
 public section

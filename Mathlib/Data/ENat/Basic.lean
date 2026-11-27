@@ -12,13 +12,16 @@ public import Mathlib.Order.Nat
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Tactic.Basify.Attr
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Definition and basic properties of extended natural numbers
 
 In this file we define `ENat` (notation: `ℕ∞`) to be `WithTop ℕ` and prove some basic lemmas
 about this type.
 
-## Implementation details
+## Implementation notes
 
 There are two natural coercions from `ℕ` to `WithTop ℕ = ENat`: `WithTop.some` and `Nat.cast`. In
 Lean 3, this difference was hidden in typeclass instances. Since these instances were definitionally
@@ -234,6 +237,10 @@ theorem natCast_toNat_eq_self : ENat.toNat n = n ↔ n ≠ ⊤ :=
 alias ⟨_, natCast_toNat⟩ := natCast_toNat_eq_self
 
 @[deprecated (since := "2026-07-17")] alias coe_toNat := natCast_toNat
+
+@[simp] lemma le_natCast_toNat_self_iff : n ≤ n.toNat ↔ n ≠ ⊤ where
+  mp := by rintro hn rfl; simp at hn
+  mpr hn := by rw [natCast_toNat hn]
 
 @[simp] lemma toNat_eq_iff_eq_natCast (n : ℕ∞) (m : ℕ) [NeZero m] :
     n.toNat = m ↔ n = m := by

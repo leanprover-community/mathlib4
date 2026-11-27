@@ -253,7 +253,7 @@ theorem getElem_eq_getElem_rotate (l : List α) (n : ℕ) (k : Nat) (hk : k < l.
 from right to left. -/
 theorem get_eq_get_rotate (l : List α) (n : ℕ) (k : Fin l.length) :
     l.get k = (l.rotate n).get ⟨(l.length - n % l.length + k) % l.length,
-      (Nat.mod_lt _ (k.1.zero_le.trans_lt k.2)).trans_eq (length_rotate _ _).symm⟩ := by
+      (Nat.mod_lt _ (k.val.zero_le.trans_lt k.isLt)).trans_eq (length_rotate _ _).symm⟩ := by
   simpa using getElem_eq_getElem_rotate _ _ _ _
 
 theorem rotate_eq_self_iff_eq_replicate [hα : Nonempty α] :
@@ -444,9 +444,10 @@ theorem IsRotated.reverse (h : l ~r l') : l.reverse ~r l'.reverse := by
   exact ⟨_, (reverse_rotate _ _).symm⟩
 
 theorem isRotated_reverse_comm_iff : l.reverse ~r l' ↔ l ~r l'.reverse := by
-  constructor <;>
-    · intro h
-      simpa using h.reverse
+  constructor
+  all_goals
+    intro h
+    simpa using h.reverse
 
 @[simp]
 theorem isRotated_reverse_iff : l.reverse ~r l'.reverse ↔ l ~r l' := by

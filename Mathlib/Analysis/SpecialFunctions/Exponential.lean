@@ -8,7 +8,8 @@ module
 public import Mathlib.Analysis.Calculus.FDeriv.Analytic
 public import Mathlib.Analysis.Complex.Exponential
 public import Mathlib.Analysis.Normed.Algebra.Exponential
-public import Mathlib.Topology.MetricSpace.CauSeqFilter
+
+import Mathlib.Topology.MetricSpace.CauSeqFilter
 
 /-!
 # Calculus results on exponential in a Banach algebra
@@ -52,7 +53,6 @@ We prove most results for an arbitrary field `𝕂`, and then specialize to `�
 
 - `Complex.exp_eq_exp_ℂ` : `Complex.exp = NormedSpace.exp ℂ ℂ`
 - `Real.exp_eq_exp_ℝ` : `Real.exp = NormedSpace.exp ℝ ℝ`
-
 -/
 
 public section
@@ -208,7 +208,7 @@ end DerivRCLike
 
 theorem Complex.exp_eq_exp_ℂ : Complex.exp = NormedSpace.exp := by
   refine funext fun x => ?_
-  rw [Complex.exp, exp_eq_tsum_div]
+  rw [Complex.exp_def, exp_eq_tsum_div]
   exact tendsto_nhds_unique x.exp'.tendsto_limit (expSeries_div_summable x).hasSum.tendsto_sum_nat
 
 theorem Real.exp_eq_exp_ℝ : Real.exp = NormedSpace.exp := by

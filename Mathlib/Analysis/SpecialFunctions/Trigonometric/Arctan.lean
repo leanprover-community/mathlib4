@@ -9,6 +9,9 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
 
 import Mathlib.Topology.Order.AtTopBotIxx
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The `arctan` function.
 
@@ -204,14 +207,14 @@ theorem arctan_one : arctan 1 = π / 4 :=
 theorem arctan_sqrt_three : arctan (√3) = π / 3 := by
   rw [← tan_pi_div_three, arctan_tan]
   all_goals
-  · field_simp
+    field_simp
     norm_num
 
 @[simp]
 theorem arctan_inv_sqrt_three : arctan (√3)⁻¹ = π / 6 := by
   rw [inv_eq_one_div, ← tan_pi_div_six, arctan_tan]
   all_goals
-  · field_simp
+    field_simp
     norm_num
 
 @[simp]
@@ -365,7 +368,7 @@ theorem sin_arctan_le_zero : sin (arctan x) ≤ 0 ↔ x ≤ 0 := by
 
 @[continuity, fun_prop]
 theorem continuous_arctan : Continuous arctan :=
-  continuous_subtype_val.comp tanOrderIso.toHomeomorph.continuous_invFun
+  continuous_subtypeVal.comp tanOrderIso.toHomeomorph.continuous_invFun
 
 theorem continuousAt_arctan : ContinuousAt arctan x :=
   continuous_arctan.continuousAt

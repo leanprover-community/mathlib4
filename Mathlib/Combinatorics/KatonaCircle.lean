@@ -11,6 +11,9 @@ public import Mathlib.Data.Nat.Choose.Cast
 
 import Mathlib.Data.Fintype.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Katona circle method
 
@@ -54,22 +57,22 @@ def prefixed (s : Finset X) : Finset (Numbering X) := {f | IsPrefix f s}
 -/
 def prefixedEquiv (s : Finset X) : prefixed s ≃ Numbering s × Numbering ↑(sᶜ) where
   toFun f :=
-    { fst.toFun x := ⟨f.1 x, by simp [← mem_prefixed.1 f.2 x]⟩
+    { fst.toFun x := ⟨f.val x, by simp [← mem_prefixed.1 f.property x]⟩
       fst.invFun n :=
-        ⟨f.1.symm ⟨n, n.2.trans_le <| by simpa using s.card_le_univ⟩, by
-          rw [mem_prefixed.1 f.2]; simpa using n.2⟩
+        ⟨f.val.symm ⟨n, n.isLt.trans_le <| by simpa using s.card_le_univ⟩, by
+          rw [mem_prefixed.1 f.property]; simpa using n.isLt⟩
       fst.left_inv x := by simp
       fst.right_inv n := by simp
-      snd.toFun x := ⟨f.1 x - #s, by
-        have := (mem_prefixed.1 f.2 x).not.1 (Finset.mem_compl.1 x.2)
+      snd.toFun x := ⟨f.val x - #s, by
+        have := (mem_prefixed.1 f.property x).not.1 (Finset.mem_compl.1 x.property)
         simp at this ⊢
-        omega⟩
+        lia⟩
       snd.invFun n :=
-        ⟨f.1.symm ⟨n + #s, Nat.add_lt_of_lt_sub <| by simpa using n.2⟩, by
-          rw [s.mem_compl, mem_prefixed.1 f.2]; simp⟩
+        ⟨f.val.symm ⟨n + #s, Nat.add_lt_of_lt_sub <| by simpa using n.isLt⟩, by
+          rw [s.mem_compl, mem_prefixed.1 f.property]; simp⟩
       snd.left_inv := by
         rintro ⟨x, hx⟩
-        rw [s.mem_compl, mem_prefixed.1 f.2, not_lt] at hx
+        rw [s.mem_compl, mem_prefixed.1 f.property, not_lt] at hx
         simp [Nat.sub_add_cancel hx]
       snd.right_inv := by rintro ⟨n, hn⟩; simp }
   invFun := fun (g, g') ↦
@@ -82,14 +85,14 @@ def prefixedEquiv (s : Finset X) : prefixed s ≃ Numbering s × Numbering ↑(s
         if hn : n < #s then
           g.symm ⟨n, by simpa using hn⟩
         else
-          g'.symm ⟨n - #s, by simp; omega⟩
+          g'.symm ⟨n - #s, by simp; lia⟩
       val.left_inv x := by
         by_cases hx : x ∈ s
-        · have : g ⟨x, hx⟩ < #s := by simpa using (g ⟨x, hx⟩).2
+        · have : g ⟨x, hx⟩ < #s := by simpa using (g ⟨x, hx⟩).isLt
           simp [hx, this]
         · simp [hx]
       val.right_inv n := by
-        obtain hns | hsn := lt_or_ge n.1 #s
+        obtain hns | hsn := lt_or_ge n.val #s
         · simp [hns]
         · simp [hsn.not_gt, hsn, mem_compl.1 <| Subtype.prop _]
       property := mem_prefixed.2 fun x ↦ by
@@ -101,7 +104,7 @@ def prefixedEquiv (s : Finset X) : prefixed s ≃ Numbering s × Numbering ↑(s
     ext x
     by_cases hx : x ∈ s
     · simp [hx]
-    · rw [mem_prefixed.1 f.2, not_lt] at hx
+    · rw [mem_prefixed.1 f.property, not_lt] at hx
       simp [hx]
   right_inv g := by simp +contextual [Prod.ext_iff, DFunLike.ext_iff]
 

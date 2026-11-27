@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.WittVector.Truncated
 
 import Mathlib.Algebra.MvPolynomial.Supported
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Leading terms of Witt vector multiplication
 
@@ -25,7 +28,6 @@ that needs to happen in characteristic 0.
 
 * `WittVector.nth_mul_coeff`: expresses the coefficient of a product of Witt vectors
   in terms of the previous coefficients of the multiplicands.
-
 -/
 
 @[expose] public section
@@ -57,8 +59,9 @@ def wittPolyProd (n : ℕ) : 𝕄 :=
 theorem wittPolyProd_vars (n : ℕ) : (wittPolyProd p n).vars ⊆ univ ×ˢ range (n + 1) := by
   rw [wittPolyProd]
   apply Subset.trans (vars_mul _ _)
-  refine union_subset ?_ ?_ <;>
-  · refine Subset.trans (vars_rename _ _) ?_
+  refine union_subset ?_ ?_
+  all_goals
+    refine Subset.trans (vars_rename _ _) ?_
     simp [wittPolynomial_vars, image_subset_iff]
 
 /-- The "remainder term" of `WittVector.wittPolyProd`. See `mul_polyOfInterest_aux2`. -/
@@ -95,8 +98,9 @@ def remainder (n : ℕ) : 𝕄 :=
 theorem remainder_vars (n : ℕ) : (remainder p n).vars ⊆ univ ×ˢ range (n + 1) := by
   rw [remainder]
   apply Subset.trans (vars_mul _ _)
-  refine union_subset ?_ ?_ <;>
-  · refine Subset.trans (vars_sum_subset _ _) ?_
+  refine union_subset ?_ ?_
+  all_goals
+    refine Subset.trans (vars_sum_subset _ _) ?_
     rw [biUnion_subset]
     intro x hx
     rw [rename_monomial, vars_monomial, Finsupp.mapDomain_single]
@@ -123,9 +127,8 @@ theorem mul_polyOfInterest_aux1 (n : ℕ) :
       rw [Finsupp.support_eq_singleton]
       simp only [and_true, Finsupp.single_eq_same, Ne]
       exact pow_ne_zero _ hp.out.ne_zero
-    simp only [bind₁_monomial, hsupp, Int.cast_natCast, prod_singleton, eq_intCast,
-      Finsupp.single_eq_same, Int.cast_pow]
-  · simp only [map_mul, bind₁_X_right]
+    rw [aeval_monomial, Finsupp.prod_single_index (by simp), map_pow, map_natCast]
+  · simp only [map_mul, aeval_X]
 
 theorem mul_polyOfInterest_aux2 (n : ℕ) :
     (p : 𝕄) ^ n * wittMul p n + wittPolyProdRemainder p n = wittPolyProd p n := by

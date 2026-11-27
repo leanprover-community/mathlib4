@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Center.Basic
 public import Mathlib.CategoryTheory.Shift.CommShift
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Twisting a shift
 
@@ -17,7 +20,6 @@ invertible elements in the center of the category `C` (typically, `C` will
 be preadditive, and these will be signs), which allow to introduce a type
 synonym category `t.Category` with identical shift functors as `C` but where
 the isomorphisms `shiftFunctorAdd` have been modified.
-
 -/
 
 @[expose] public section
@@ -51,7 +53,6 @@ lemma z_zero_left (b : A) : t.z 0 b = 1 := by simpa using t.assoc 0 0 b
 
 attribute [instance] commShift
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma shift_z_app (a b c : A) (X : C) :
     ((t.z a b).val.app X)⟦c⟧' = (t.z a b).val.app (X⟦c⟧) := by
@@ -65,7 +66,6 @@ protected def Category (_ : TwistShiftData C A) : Type u := C
 
 instance : Category t.Category := inferInstanceAs (Category C)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given `t : TwistShiftData C A`, the shift on the category `TwistShift t` has
 the same shift functors as `C`, the same isomorphism `shiftFunctorZero` isomorphism,
@@ -102,12 +102,12 @@ lemma shiftFunctor_map {X Y : t.Category} (f : X ⟶ Y) (m : A) :
 
 lemma shiftFunctorZero_hom_app (X : t.Category) :
     (shiftFunctorZero t.Category A).hom.app X =
-      (shiftIso t (0 : A)).hom.app X ≫ (shiftFunctorZero C A).hom.app X :=
+      (shiftIso t 0).hom.app X ≫ (shiftFunctorZero C A).hom.app X :=
   (Category.id_comp _).symm
 
 lemma shiftFunctorZero_inv_app (X : t.Category) :
     (shiftFunctorZero t.Category A).inv.app X =
-      (shiftFunctorZero C A).inv.app X ≫ (shiftIso t (0 : A)).inv.app X :=
+      (shiftFunctorZero C A).inv.app X ≫ (shiftIso t 0).inv.app X :=
   (Category.comp_id _).symm
 
 set_option backward.isDefEq.respectTransparency false in
