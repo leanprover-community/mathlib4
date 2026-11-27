@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Matrix.GelfandRadius
 public import Mathlib.Analysis.Normed.Unbundled.AlgebraNorm
 public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Gelfand radius as an algebra norm
 

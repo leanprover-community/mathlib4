@@ -10,6 +10,9 @@ public import Mathlib.LinearAlgebra.Matrix.Charpoly.LinearMap
 
 import Mathlib.RingTheory.FiniteType
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Minimal polynomials on a finite algebra
 

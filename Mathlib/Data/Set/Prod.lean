@@ -6,7 +6,8 @@ Authors: Mario Carneiro, Johannes Hölzl, Patrick Massot
 module
 
 public import Mathlib.Data.Set.Image
-public import Mathlib.Data.Sum.Basic
+
+import Mathlib.Data.Sum.Basic
 
 /-!
 # Sets in product and pi types
@@ -722,9 +723,10 @@ theorem pi_if {p : ι → Prop} [h : DecidablePred p] (s : Set ι) (t₁ t₂ : 
       pi ({ i ∈ s | p i }) t₁ ∩ pi ({ i ∈ s | ¬p i }) t₂ := by
   ext f
   refine ⟨fun h => ?_, ?_⟩
-  · constructor <;>
-      · rintro i ⟨his, hpi⟩
-        simpa [*] using h i
+  · constructor
+    all_goals
+      rintro i ⟨his, hpi⟩
+      simpa [*] using h i
   · rintro ⟨ht₁, ht₂⟩ i his
     by_cases p i <;> simp_all
 

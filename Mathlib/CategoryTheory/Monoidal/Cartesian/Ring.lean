@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Category.Ring.Basic
 public import Mathlib.CategoryTheory.Monoidal.Ring
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Yoneda embedding of `RingCatObj C`
 -/

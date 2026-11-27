@@ -20,6 +20,7 @@ import Mathlib.Algebra.Regular.Basic
 This file defines vector and matrix multiplication
 
 ## Main definitions
+
 * `dotProduct`: the dot product between two vectors
 * `Matrix.mul`: multiplication of two matrices
 * `Matrix.mulVec`: multiplication of a matrix with a vector
@@ -334,8 +335,9 @@ theorem two_mul_expl {R : Type*} [NonUnitalNonAssocSemiring R] (A B : Matrix (Fi
     (A * B) 0 1 = A 0 0 * B 0 1 + A 0 1 * B 1 1 ∧
     (A * B) 1 0 = A 1 0 * B 0 0 + A 1 1 * B 1 0 ∧
     (A * B) 1 1 = A 1 0 * B 0 1 + A 1 1 * B 1 1 := by
-  refine ⟨?_, ?_, ?_, ?_⟩ <;>
-  · rw [Matrix.mul_apply, Finset.sum_fin_eq_sum_range, Finset.sum_range_succ, Finset.sum_range_succ]
+  refine ⟨?_, ?_, ?_, ?_⟩
+  all_goals
+    rw [Matrix.mul_apply, Finset.sum_fin_eq_sum_range, Finset.sum_range_succ, Finset.sum_range_succ]
     simp
 
 section AddCommMonoid
@@ -623,7 +625,7 @@ theorem IsStablyFiniteRing.of_injective [FunLike F R S] [RingHomClass F R S] (f 
 
 theorem RingEquiv.isStablyFiniteRing_iff [EquivLike F R S] [RingEquivClass F R S] (f : F) :
     IsStablyFiniteRing R ↔ IsStablyFiniteRing S where
-  mp _ := .of_injective _ (RingEquivClass.toRingEquiv f).symm.injective
+  mp _ := .of_injective _ (ofClass f).symm.injective
   mpr _ := .of_injective f (EquivLike.injective f)
 
 instance (priority := low) [SetLike F R] [SubsemiringClass F R] (S : F) [IsStablyFiniteRing R] :

@@ -14,6 +14,7 @@ import Mathlib.Algebra.CharP.Algebra
 # The field structure of rational functions
 
 ## Main definitions
+
 Working with rational functions as polynomials:
 - `RatFunc.instField` provides a field structure
 
@@ -517,9 +518,8 @@ The equivalence between `K⟮X⟯` and the field of fractions of `K[X]`
 -/
 @[simps! apply]
 def toFractionRingAlgEquiv (R : Type*) [CommSemiring R] [Algebra R K[X]] :
-    K⟮X⟯ ≃ₐ[R] FractionRing K[X] where
-  __ := RatFunc.toFractionRingRingEquiv K
-  commutes' r := by
+    K⟮X⟯ ≃ₐ[R] FractionRing K[X] :=
+  .ofCommutes (RatFunc.toFractionRingRingEquiv K) fun r ↦ by
     change (RatFunc.mk (algebraMap R K[X] r) 1).toFractionRing = _
     rw [mk_one']; rfl
 

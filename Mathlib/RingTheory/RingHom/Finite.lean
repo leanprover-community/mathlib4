@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.Localization.Finiteness
 
 import Mathlib.RingTheory.TensorProduct.Finite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The meta properties of finite ring homomorphisms.
 

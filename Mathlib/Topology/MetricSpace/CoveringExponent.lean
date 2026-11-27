@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 public import Mathlib.Topology.MetricSpace.CoveringNumbers
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sets with bounded covering exponent
 

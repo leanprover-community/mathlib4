@@ -5,9 +5,9 @@ Authors: Judith Ludwig, Christian Merten
 -/
 module
 
-public import Mathlib.RingTheory.Extension.Presentation.Core
 public import Mathlib.RingTheory.Smooth.StandardSmoothOfFree
 
+import Mathlib.RingTheory.Extension.Presentation.Core
 import Mathlib.RingTheory.MvPolynomial.Homogeneous
 
 /-!
@@ -165,7 +165,7 @@ lemma exists_kerSquareLift_comp_eq_id :
   choose p hp using fun i ↦ (D.h i).mem_range_map_iff_coeffs_subset.mpr (D.coeffs_h_subset R i)
   refine ⟨?_, ?_⟩
   · refine Ideal.Quotient.liftₐ _ ((Ideal.Quotient.mkₐ _ _).comp <| aeval p) ?_
-    simp_rw [← RingHom.mem_ker, ← IsConcreteLE.le_iff, Ideal.span_le, Set.range_subset_iff]
+    simp_rw [← RingHom.mem_ker, ← le_iff_mem_imp_mem, Ideal.span_le, Set.range_subset_iff]
     intro i
     simp only [← AlgHom.comap_ker, Ideal.coe_comap, Set.mem_preimage, SetLike.mem_coe]
     rw [← RingHom.ker_coe_toRingHom, Ideal.Quotient.mkₐ_ker,

@@ -42,6 +42,7 @@ Lattice inclusion (e.g. `≤` and `⊓`) is used rather than set notation (`⊆`
 `∈` is defined as membership of a subfield's underlying set.
 
 ## Tags
+
 subfield, subfields
 -/
 
@@ -274,11 +275,9 @@ instance toField {K} [Field K] (s : Subfield K) : Field s := SubfieldClass.toFie
 theorem coe_add (x y : s) : (↑(x + y) : K) = ↑x + ↑y :=
   rfl
 
-@[simp, norm_cast]
 theorem coe_sub (x y : s) : (↑(x - y) : K) = ↑x - ↑y :=
   rfl
 
-@[simp, norm_cast]
 theorem coe_neg (x : s) : (↑(-x) : K) = -↑x :=
   rfl
 
@@ -294,11 +293,9 @@ theorem coe_div (x y : s) : (↑(x / y) : K) = ↑x / ↑y :=
 theorem coe_inv (x : s) : (↑x⁻¹ : K) = (↑x)⁻¹ :=
   rfl
 
-@[simp, norm_cast]
 theorem coe_zero : ((0 : s) : K) = 0 :=
   rfl
 
-@[simp, norm_cast]
 theorem coe_one : ((1 : s) : K) = 1 :=
   rfl
 
@@ -331,14 +328,12 @@ theorem toSubring_subtype_eq_subtype (S : Subfield K) :
 theorem mem_toSubmonoid {s : Subfield K} {x : K} : x ∈ s.toSubmonoid ↔ x ∈ s :=
   Iff.rfl
 
-@[simp]
 theorem coe_toSubmonoid : (s.toSubmonoid : Set K) = s :=
   rfl
 
 theorem mem_toAddSubgroup {s : Subfield K} {x : K} : x ∈ s.toAddSubgroup ↔ x ∈ s :=
   Iff.rfl
 
-@[simp]
 theorem coe_toAddSubgroup : (s.toAddSubgroup : Set K) = s :=
   rfl
 

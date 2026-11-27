@@ -11,7 +11,8 @@ public import Mathlib.AlgebraicGeometry.Over
 /-!
 # Restriction of Schemes and Morphisms
 
-## Main definition
+## Main definitions
+
 - `AlgebraicGeometry.Scheme.restrict`: The restriction of a scheme along an open embedding.
   The map `X.restrict f ⟶ X` is `AlgebraicGeometry.Scheme.ofRestrict`.
   `U : X.Opens` has a coercion to `Scheme` and `U.ι` is a shorthand
@@ -81,7 +82,6 @@ lemma ι_app (V) : U.ι.app V = X.presheaf.map
     (homOfLE (x := U.ι ''ᵁ U.ι ⁻¹ᵁ V) (Set.image_preimage_subset _ _)).op :=
   rfl
 
-@[simp]
 lemma ι_appTop :
     U.ι.appTop = X.presheaf.map (homOfLE (x := U.ι ''ᵁ ⊤) le_top).op :=
   rfl
@@ -325,8 +325,8 @@ lemma Scheme.Hom.appIso_homOfLE_inv {X : Scheme.{u}} {U V : X.Opens} (h : U ≤ 
         simp [← Scheme.Hom.comp_image]) := by
   rw [eq_comm, ← Iso.hom_comp_eq_id]
   dsimp
-  simp only [appIso_hom, homOfLE_app, homOfLE_leOfHom, eqToHom_op, Opens.toScheme_presheaf_map,
-    eqToHom_unop, ← X.presheaf.map_comp, Category.assoc, ← X.presheaf.map_id]
+  simp only [appIso_hom, homOfLE_app, eqToHom_op, Opens.toScheme_presheaf_map, eqToHom_unop,
+    ← X.presheaf.map_comp, Category.assoc, ← X.presheaf.map_id]
   rfl
 
 @[simp]
@@ -831,7 +831,7 @@ lemma resLE_appLE {U : Y.Opens} {V : X.Opens} (e : V ≤ f ⁻¹ᵁ U)
     (f.resLE U V e).appLE O W e' =
       f.appLE (U.ι ''ᵁ O) (V.ι ''ᵁ W) ((le_resLE_preimage_iff f e O W).mp e') := by
   dsimp [appLE, resLE]
-  simp only [morphismRestrict_app', appLE, homOfLE_leOfHom, homOfLE_app, Category.assoc]
+  simp only [morphismRestrict_app', appLE, homOfLE_app, Category.assoc]
   rw [← X.presheaf.map_comp, ← X.presheaf.map_comp]
   rfl
 

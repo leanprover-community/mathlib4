@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.InducedCategory
 public import Mathlib.CategoryTheory.ObjectProperty.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The full subcategory associated to a property of objects
 

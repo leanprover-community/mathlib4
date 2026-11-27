@@ -7,9 +7,10 @@ module
 
 public import Mathlib.LinearAlgebra.FreeModule.Basic
 public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
-public import Mathlib.LinearAlgebra.LinearPMap
 public import Mathlib.LinearAlgebra.Projection
 public import Mathlib.Tactic.Field
+
+import Mathlib.LinearAlgebra.LinearPMap
 
 /-!
 # Bases in a vector space
@@ -321,7 +322,7 @@ instance [Nontrivial V] [Nontrivial V'] : Nontrivial (V →ₗ[K] V') := by
 `f : V →ₗ[K] K` such that `p ≤ ker f`. -/
 theorem Submodule.exists_le_ker_of_lt_top (p : Submodule K V) (hp : p < ⊤) :
     ∃ (f : V →ₗ[K] K), f ≠ 0 ∧ p ≤ ker f := by
-  rcases IsConcreteLE.exists_of_lt hp with ⟨v, -, hpv⟩
+  rcases exists_mem_notMem_of_lt hp with ⟨v, -, hpv⟩
   rcases exists_le_ker_of_notMem hpv with ⟨f, hfv, hpf⟩
   exact ⟨f, ne_of_apply_ne (· v) hfv, hpf⟩
 

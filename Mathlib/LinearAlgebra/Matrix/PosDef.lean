@@ -8,12 +8,13 @@ module
 public import Mathlib.Algebra.CharP.Invertible
 public import Mathlib.Algebra.Order.Ring.Star
 public import Mathlib.Basic.Real.Star
-public import Mathlib.Data.Int.Interval
 public import Mathlib.LinearAlgebra.Matrix.BilinearForm
 public import Mathlib.LinearAlgebra.Matrix.DotProduct
 public import Mathlib.LinearAlgebra.Matrix.Hermitian
-public import Mathlib.LinearAlgebra.Matrix.Vec
 public import Mathlib.LinearAlgebra.QuadraticForm.Basic
+
+import Mathlib.Data.Int.Interval
+import Mathlib.LinearAlgebra.Matrix.Vec
 
 /-! # Positive Definite Matrices
 
@@ -207,9 +208,9 @@ protected theorem diagonal [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R
   left := isHermitian_diagonal_of_self_adjoint _ <| funext fun i => IsSelfAdjoint.of_nonneg (h i).le
   right x hx := by
     refine Finsupp.sum_pos' (fun _ _ ↦ Finsupp.sum_nonneg ?_) ?_
-    · simp +contextual [diagonal, apply_ite, star_left_conjugate_nonneg (h _).le]
+    · simp [diagonal, apply_ite, star_left_conjugate_nonneg (h _).le]
     obtain ⟨i, hxi⟩ := by simpa [Finsupp.ext_iff] using hx
-    refine ⟨i, ?_, Finsupp.sum_pos' ?_ ⟨i, ?_, ?_⟩⟩ <;> simp +contextual [diagonal,
+    refine ⟨i, ?_, Finsupp.sum_pos' ?_ ⟨i, ?_, ?_⟩⟩ <;> simp [diagonal,
       apply_ite, star_left_conjugate_nonneg (h _).le,
       star_left_conjugate_pos (h i), IsRegular.of_ne_zero hxi, Finsupp.mem_support_iff.mpr hxi]
 

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Comma.Over.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lifting properties in Over categories
 

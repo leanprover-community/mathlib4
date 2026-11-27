@@ -6,10 +6,11 @@ Authors: David Loeffler
 
 module
 
-public import Mathlib.Analysis.Asymptotics.Theta
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-public import Mathlib.Data.EReal.Inv
 public import Mathlib.NumberTheory.ModularForms.QExpansion
+
+import Mathlib.Analysis.Asymptotics.Theta
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+import Mathlib.Data.EReal.Inv
 
 /-!
 # Order at infinity

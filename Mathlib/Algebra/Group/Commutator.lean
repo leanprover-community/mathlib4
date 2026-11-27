@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Defs
 public import Mathlib.Algebra.Notation.Bracket
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The bracket on a group given by commutator.
 

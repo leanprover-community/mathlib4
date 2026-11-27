@@ -19,7 +19,7 @@ function when the base is coprime to the modulus.
 * `pow_totient_mod`: If `x` is coprime to `n`, then the modular exponentiation
   `x ^ k % n` can be reduced to `x ^ (k % φ n) % n`.
 
-## TODOs
+## TODO
 
 - Extend to results in cases where the base is not coprime to the modulus.
 - Write a tactic or simproc that can automatically reduce exponents

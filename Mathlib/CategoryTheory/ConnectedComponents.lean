@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Sigma.Basic
 
 import Mathlib.Data.List.Chain
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Connected components of a category
 
@@ -97,7 +100,7 @@ abbrev ConnectedComponents.mk (j : J) : ConnectedComponents J :=
 
 /-- Each connected component of the category is nonempty. -/
 instance (j : ConnectedComponents J) : Nonempty j.Component := by
-  induction j using Quotient.inductionOn'
+  induction j using Quotient.inductionOn
   exact ⟨⟨_, rfl⟩⟩
 
 instance (j : ConnectedComponents J) : Inhabited j.Component :=

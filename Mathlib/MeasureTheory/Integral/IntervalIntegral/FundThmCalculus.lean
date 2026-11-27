@@ -7,10 +7,11 @@ module
 
 public import Mathlib.Analysis.Calculus.Deriv.Comp
 public import Mathlib.Analysis.Calculus.FDeriv.Measurable
-public import Mathlib.Analysis.Calculus.TangentCone.Prod
-public import Mathlib.MeasureTheory.Integral.Bochner.FundThmCalculus
-public import Mathlib.MeasureTheory.Integral.Bochner.VitaliCaratheodory
 public import Mathlib.MeasureTheory.Integral.DominatedConvergence
+
+import Mathlib.Analysis.Calculus.TangentCone.Prod
+import Mathlib.MeasureTheory.Integral.Bochner.FundThmCalculus
+import Mathlib.MeasureTheory.Integral.Bochner.VitaliCaratheodory
 
 /-!
 # Fundamental Theorem of Calculus
@@ -1055,9 +1056,10 @@ theorem sub_le_integral_of_hasDeriv_right_of_le_Ico (hab : a ≤ b)
   calc
     g b - g a ≤ ∫ y in a..b, (G' y).toReal := main (right_mem_Icc.2 hab)
     _ ≤ (∫ y in a..b, φ y) + ε := by
-      convert hG'.le <;>
-        · rw [intervalIntegral.integral_of_le hab]
-          simp only [integral_Icc_eq_integral_Ioc', Real.volume_singleton]
+      convert hG'.le
+      all_goals
+        rw [intervalIntegral.integral_of_le hab]
+        simp only [integral_Icc_eq_integral_Ioc', Real.volume_singleton]
 
 /-- Hard part of FTC-2 for integrable derivatives, real-valued functions: one has
 `g b - g a ≤ ∫ y in a..b, g' y` when `g'` is integrable.

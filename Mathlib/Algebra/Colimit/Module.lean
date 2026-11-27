@@ -10,6 +10,9 @@ public import Mathlib.Algebra.DirectSum.Module
 public import Mathlib.Algebra.Module.Congruence.Defs
 public import Mathlib.Tactic.SuppressCompilation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Direct limit of modules and abelian groups
 
@@ -96,7 +99,7 @@ some component of the directed system. -/
 theorem exists_of [Nonempty ι] [IsDirectedOrder ι] (z : DirectLimit G f) :
     ∃ i x, of R ι G f i x = z :=
   Nonempty.elim (by infer_instance) fun ind : ι ↦
-    Quotient.inductionOn' z fun z ↦
+    Quotient.inductionOn z fun z ↦
       DirectSum.induction_on z ⟨ind, 0, map_zero _⟩ (fun i x ↦ ⟨i, x, rfl⟩)
         fun p q ⟨i, x, ihx⟩ ⟨j, y, ihy⟩ ↦
         let ⟨k, hik, hjk⟩ := exists_ge_ge i j
