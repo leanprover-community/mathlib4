@@ -201,9 +201,10 @@ theorem transpose_transpose (μ : YoungDiagram) : μ.transpose.transpose = μ :=
   simp
 
 theorem transpose_eq_iff_eq_transpose {μ ν : YoungDiagram} : μ.transpose = ν ↔ μ = ν.transpose := by
-  constructor <;>
-    · rintro rfl
-      simp
+  constructor
+  all_goals
+    rintro rfl
+    simp
 
 @[simp]
 theorem transpose_eq_iff {μ ν : YoungDiagram} : μ.transpose = ν.transpose ↔ μ = ν := by
@@ -474,7 +475,7 @@ A Young diagram `μ` is equivalent to a list of row lengths. -/
 @[simps]
 def equivListRowLens : YoungDiagram ≃ { w : List ℕ // w.SortedGE ∧ ∀ x ∈ w, 0 < x } where
   toFun μ := ⟨μ.rowLens, μ.rowLens_sorted, μ.pos_of_mem_rowLens⟩
-  invFun ww := ofRowLens ww.1 ww.2.1
+  invFun ww := ofRowLens ww.val ww.property.1
   left_inv _ := ofRowLens_to_rowLens_eq_self
   right_inv := fun ⟨_, hw⟩ => Subtype.mk_eq_mk.mpr (rowLens_ofRowLens_eq_self hw.2)
 

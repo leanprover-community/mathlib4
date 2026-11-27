@@ -35,7 +35,7 @@ These are parts 1 and 2 of Lemma 3.2 of [arXiv:2503.07846](https://arxiv.org/abs
 * `IsLocalRing.minpoly_map_residue`: the minimal polynomial of `β` over `R` maps to the
   minimal polynomial of `β mod m_S` over the residue field.
 
-## Future work
+## TODO
 
 The following results from [arXiv:2503.07846](https://arxiv.org/abs/2503.07846) (formalized at [uw-math-ai/monogenic-extensions](https://github.com/uw-math-ai/monogenic-extensions)) are planned for
 future PRs:

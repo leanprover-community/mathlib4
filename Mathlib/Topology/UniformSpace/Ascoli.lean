@@ -34,7 +34,7 @@ a family of compact subsets of `X`, and `α` is a uniform space.
 * The **Arzela-Ascoli theorem** follows from the previous fact and Tykhonov's theorem.
   All of its variations can be found under the `ArzelaAscoli` namespace.
 
-## Implementation details
+## Implementation notes
 
 * The statements in this file may be a bit daunting because we prove everything for families and
   embeddings instead of subspaces with the subspace topology. This is done because, in practice,
@@ -439,9 +439,9 @@ theorem ArzelaAscoli.compactSpace_of_closed_inducing' [TopologicalSpace ι] {�
   -- the range of `(⋃₀ 𝔖).domRestrict ∘ F` is still closed in the product topology.
   -- But it's contained in the product of the `Q x`s, which is compact by Tykhonov, hence
   -- it is compact as well.
-  refine IsCompact.of_isClosed_subset (isCompact_univ_pi fun x ↦ Q_compact x x.2)
+  refine IsCompact.of_isClosed_subset (isCompact_univ_pi fun x ↦ Q_compact x x.property)
     (EquicontinuousOn.isClosed_range_pi_of_uniformOnFun' 𝔖_compact F_eqcont F_cl)
-    (range_subset_iff.mpr fun i x _ ↦ F_in_Q x x.2 i)
+    (range_subset_iff.mpr fun i x _ ↦ F_in_Q x x.property i)
 
 /-- A version of the **Arzela-Ascoli theorem**.
 

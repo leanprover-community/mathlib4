@@ -132,9 +132,10 @@ theorem continuousOn_iff' :
     intro t
     rw [isOpen_induced_iff, Set.domRestrict_eq, Set.preimage_comp]
     simp only [Subtype.preimage_coe_eq_preimage_coe_iff]
-    constructor <;>
-      · rintro ⟨u, ou, useq⟩
-        exact ⟨u, ou, by simpa only [Set.inter_comm, eq_comm] using useq⟩
+    constructor
+    all_goals
+      rintro ⟨u, ou, useq⟩
+      exact ⟨u, ou, by simpa only [Set.inter_comm, eq_comm] using useq⟩
   rw [continuousOn_iff_continuous_domRestrict, continuous_def]; simp only [this]
 
 /-- If a function is continuous on a set for some topologies, then it is
@@ -863,7 +864,7 @@ theorem IsOpenMap.continuousOn_image_of_leftInvOn {f : α → β} {s : Set α}
     ContinuousOn finv (f '' s) := by
   refine continuousOn_iff'.2 fun t ht => ⟨f '' (t ∩ s), ?_, ?_⟩
   · rw [← image_domRestrict]
-    exact h _ (ht.preimage continuous_subtype_val)
+    exact h _ (ht.preimage continuous_subtypeVal)
   · rw [inter_eq_self_of_subset_left (image_mono inter_subset_right), hleft.image_inter']
 
 theorem IsOpenMap.continuousOn_range_of_leftInverse {f : α → β} (hf : IsOpenMap f) {finv : β → α}

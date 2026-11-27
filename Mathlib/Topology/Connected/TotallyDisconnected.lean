@@ -5,14 +5,19 @@ Authors: Kenny Lau, Patrick Massot, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Logic.Function.Const
 public import Mathlib.Topology.Connected.Clopen
 public import Mathlib.Topology.InductiveDimension.Classes
+
+import Mathlib.Logic.Function.Const
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Totally disconnected and totally separated topological spaces
 
 ## Main definitions
+
 We define the following properties for sets in a topological space:
 
 * `IsTotallyDisconnected`: all of its connected components are singletons.

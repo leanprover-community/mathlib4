@@ -20,9 +20,10 @@ public meta import Mathlib.Tactic.Linter.HashCommandLinter
 public meta import Mathlib.Tactic.Linter.HaveILetI
 public meta import Mathlib.Tactic.Linter.Header
 public meta import Mathlib.Tactic.Linter.InternalConstructor
--- The following module imports `Batteries.Tactic.Lint`, where `#lint` is defined.
+-- The following module imports `Batteries.Linter`, where `#lint` is defined.
 public meta import Mathlib.Tactic.Linter.Lint
 public meta import Mathlib.Tactic.Linter.Multigoal
+public meta import Mathlib.Tactic.Linter.NumericProjection
 public meta import Mathlib.Tactic.Linter.PrivateModule
 public meta import Mathlib.Tactic.Linter.Style
 public meta import Mathlib.Tactic.Linter.SyntaxBased
@@ -107,6 +108,7 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.openClassical
   linter.style.maxHeartbeats
   linter.style.missingEnd
+  linter.style.numericProjections
   linter.style.setOption
   linter.style.show
   linter.style.whitespace

@@ -160,7 +160,7 @@ theorem Submodule.rank_le_one_iff_isPrincipal (W : Submodule K V) [Module.Free K
     exact ⟨m, ⟨fun v hv => ⟨f ⟨v, hv⟩, congr($(hf ⟨v, hv⟩))⟩, hm⟩⟩
   · rintro ⟨a, ⟨h, ha⟩⟩
     choose f hf using h
-    exact ⟨⟨a, ha⟩, fun v => ⟨f v.1 v.2, Subtype.ext (hf v.1 v.2)⟩⟩
+    exact ⟨⟨a, ha⟩, fun v => ⟨f v.val v.property, Subtype.ext (hf v.val v.property)⟩⟩
 
 theorem Module.rank_le_one_iff_top_isPrincipal [Module.Free K V] :
     Module.rank K V ≤ 1 ↔ (⊤ : Submodule K V).IsPrincipal := by

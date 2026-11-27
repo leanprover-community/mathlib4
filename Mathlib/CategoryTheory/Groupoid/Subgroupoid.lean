@@ -37,7 +37,7 @@ Given a type `C` with associated `groupoid C` instance.
   vertex `v`, assuming `v` is contained in the `CategoryTheory.Subgroupoid` (meaning, by definition,
   that the arrow `𝟙 v` is contained in the subgroupoid).
 
-## Implementation details
+## Implementation notes
 
 The structure of this file is copied from/inspired by `Mathlib/Algebra/Group/Subgroup/Basic.lean`
 and `Mathlib/Combinatorics/SimpleGraph/Subgraph.lean`.
@@ -178,7 +178,7 @@ theorem mem_iff (S : Subgroupoid C) (F : Σ c d, c ⟶ d) : F ∈ S ↔ F.2.2 �
   Iff.rfl
 
 theorem le_iff (S T : Subgroupoid C) : S ≤ T ↔ ∀ {c d}, S.arrows c d ⊆ T.arrows c d := by
-  rw [IsConcreteLE.le_iff, Sigma.forall]; exact forall_congr' fun c => Sigma.forall
+  rw [le_iff_mem_imp_mem, Sigma.forall]; exact forall_congr' fun c => Sigma.forall
 
 instance : Top (Subgroupoid C) :=
   ⟨{  arrows := fun _ _ => Set.univ
@@ -613,7 +613,7 @@ theorem full_mono {D E : Set C} (h : D ≤ E) : full D ≤ full E := by
   exact fun ⟨hc, hd⟩ => ⟨h hc, h hd⟩
 
 theorem full_arrow_eq_iff {c d : (full D).objs} {f g : c ⟶ d} :
-    f = g ↔ f.1 = g.1 :=
+    f = g ↔ f.val = g.val :=
   Subtype.ext_iff
 
 end Full

@@ -571,7 +571,7 @@ lemma chevalley_polynomialC {R : Type*} [CommRing R] (M : Submodule ℤ R) (hM :
     gcongr
     · simpa [Submodule.one_eq_span]
     · refine Submodule.span_le.mpr ?_
-      simp [Set.subset_def, hM, forall_comm (α := R), hS y hy]
+      simp [Set.subset_def, hM, hS y hy]
     · delta powBound
       by_cases h : S.degBound = 0
       · have : degBound ⟨y.g⟩ = 0 := by nlinarith
@@ -880,7 +880,7 @@ lemma chevalley_mvPolynomial_mvPolynomial
       · intro i
         obtain j | j := j
         · simp [σ, MvPolynomial.coeff_map, degrees_C]
-        · simp only [MvPolynomial.algebraMap_eq, Sum.elim_inr, MvPolynomial.coeff_sub,
+        · simp only [MvPolynomial.algebraMap_eq, Sum.elim_inr, AddMonoidAlgebra.coeff_sub_apply,
             MvPolynomial.coeff_C, MvPolynomial.coeff_map, σ]
           refine degrees_sub_le.trans ?_
           simp only [degrees_C, apply_ite, degrees_zero,

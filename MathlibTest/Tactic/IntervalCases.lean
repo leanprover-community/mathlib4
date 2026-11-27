@@ -85,8 +85,8 @@ example (n : ℕ) (h1 : 4 < n) (h2 : n ≤ 6) : n < 20 := by
 
 example (n : ℕ) (w₁ : n % 3 < 1) : n % 3 = 0 := by
   interval_cases h : n % 3
-  · guard_hyp h : n % 3 = 0
-    rfl
+  guard_hyp h : n % 3 = 0
+  rfl
 
 example (n : ℕ) (w₁ : n % 3 < 1) : n % 3 = 0 := by
   interval_cases n % 3

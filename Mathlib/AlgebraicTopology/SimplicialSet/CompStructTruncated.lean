@@ -56,7 +56,7 @@ lemma exists_of_simplex (s : X _⦋1⦌₂) :
   ⟨_, _, mk' s, rfl⟩
 
 /-- The constant edge on a `0`-simplex. -/
-@[simps]
+@[simps, implicit_reducible]
 def id (x : X _⦋0⦌₂) : Edge x x where
   edge := X.map (σ₂ 0).op x
   src_eq := by simp [← Functor.map_comp_apply, ← op_comp]
@@ -107,7 +107,7 @@ lemma exists_of_simplex (s : X _⦋2⦌₂) :
     X.map (Hom.tr (SimplexCategory.const _ _ 2)).op s,
     .mk _ ?_ ?_, .mk _ ?_ ?_, .mk _ ?_ ?_, .mk s rfl rfl rfl, rfl⟩
   all_goals
-  · rw [← Functor.map_comp_apply, ← op_comp]
+    rw [← Functor.map_comp_apply, ← op_comp]
     apply congr_fun; congr
     decide
 

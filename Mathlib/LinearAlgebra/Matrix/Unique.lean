@@ -14,10 +14,12 @@ This file proves that one by one matrices over a base are equivalent to the base
 canonical map that sends a one by one matrix `!![a]` to `a`.
 
 ## Main results
+
 - `Matrix.uniqueRingEquiv`
 - `Matrix.uniqueAlgEquiv`
 
 ## Tags
+
 Matrix, Unique, AlgEquiv
 -/
 
@@ -57,6 +59,6 @@ def uniqueRingEquiv [NonUnitalNonAssocSemiring A] : Matrix m m A ≃+* A where
 @[simps!]
 def uniqueAlgEquiv [Semiring A] [CommSemiring R] [Algebra R A] : Matrix m m A ≃ₐ[R] A where
   __ := uniqueRingEquiv
-  commutes' r := by aesop
+  map_smul' r := by aesop
 
 end Matrix

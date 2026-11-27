@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 public import Mathlib.CategoryTheory.Localization.HomEquiv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Induction principles for structured and costructured arrows
 

@@ -33,7 +33,7 @@ the group theory library.
 
 periodic group, aperiodic group, torsion subgroup, torsion abelian group
 
-## Future work
+## TODO
 
 * generalize to π-torsion(-free) groups for a set of primes π
 * free, free solvable and free abelian groups are torsion free
@@ -393,7 +393,7 @@ lemma torsion_eq_top_iff : torsion G = ⊤ ↔ IsMulTorsion G :=
 
 @[to_additive]
 lemma isMulTorsionFree_iff_torsion_eq_bot : IsMulTorsionFree G ↔ CommGroup.torsion G = ⊥ := by
-  rw [isMulTorsionFree_iff_not_isOfFinOrder, eq_bot_iff, IsConcreteLE.le_iff]
+  rw [isMulTorsionFree_iff_not_isOfFinOrder, eq_bot_iff, le_iff_mem_imp_mem]
   simp [not_imp_not, CommGroup.mem_torsion]
 
 @[to_additive]

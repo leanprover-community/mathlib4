@@ -13,6 +13,9 @@ import Mathlib.Algebra.Homology.SingleHomology
 import Mathlib.CategoryTheory.Category.Factorisation
 import Mathlib.CategoryTheory.Functor.OfSequence
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Factorization lemma
 
@@ -268,7 +271,7 @@ lemma degreewiseEpiWithInjectiveKernel_π :
     degreewiseEpiWithInjectiveKernel (π f n) := by
   intro i
   rw [epiWithInjectiveKernel_iff]
-  exact ⟨_, inferInstance, (mappingCocone.inr (α f n)).1.v (i - 1) i (by lia), by simp,
+  exact ⟨_, inferInstance, (mappingCocone.inr (α f n)).val.v (i - 1) i (by lia), by simp,
     ⟨{r := (mappingCocone.snd (α f n)).v _ _ (by lia)
       s := (mappingCocone.inl (α f n)).v _ _ (by lia)
       id := (add_comm _ _).trans (by simp [mappingCocone.id_X]) }⟩⟩
@@ -277,7 +280,7 @@ lemma isIso_π_f (i : ℤ) (hi : i ≤ n) : IsIso ((π f n).f i) := by
   refine ⟨(mappingCocone.inl (α f n)).v i i (add_zero i), ?_, by simp⟩
   simp [← mappingCocone.id_X (α f n) i (i - 1) (by lia),
     (isZero_single_obj_X _ _ _ _ (by lia)).eq_of_src
-      ((mappingCocone.inr (α f n)).1.v (i - 1) i (by lia)) 0]
+      ((mappingCocone.inr (α f n)).val.v (i - 1) i (by lia)) 0]
 
 section
 
@@ -434,7 +437,7 @@ def zero [Mono f] (n : ℤ) [K.IsStrictlyGE (n + 1)] [L.IsStrictlyGE (n + 1)] :
       rw [quasiIsoAt_iff_isIso_homologyMap]
       apply IsZero.isIso
       all_goals
-      · rw [← exactAt_iff_isZero_homology]
+        rw [← exactAt_iff_isZero_homology]
         exact exactAt_of_isGE _ (n + 1) i)
 
 variable {f} in

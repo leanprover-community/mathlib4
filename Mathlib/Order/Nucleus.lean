@@ -18,6 +18,7 @@ Sublocales of a locale generalize the concept of subspaces in topology to the po
 A nucleus is an endomorphism of a frame which corresponds to a sublocale.
 
 ## References
+
 https://ncatlab.org/nlab/show/sublocale
 https://ncatlab.org/nlab/show/nucleus
 -/
@@ -243,7 +244,8 @@ set_option backward.privateInPublic true in
 /-- See `Nucleus.giRestrict` for the public-facing version. -/
 private def giAux (n : Nucleus X) : GaloisInsertion (rangeFactorization n) Subtype.val where
   choice x hx := ⟨x, mem_range.2 <| hx.antisymm n.le_apply⟩
-  gc x y := ClosureOperator.IsClosed.closure_le_iff (c := n.toClosureOperator) <| mem_range.1 y.2
+  gc x y := ClosureOperator.IsClosed.closure_le_iff (c := n.toClosureOperator) <|
+    mem_range.1 y.property
   le_l_u x := le_apply
   choice_eq x hx := by ext; exact le_apply.antisymm hx
 
@@ -254,7 +256,7 @@ instance : CompleteLattice (range n) := n.giAux.liftCompleteLattice
 instance : Frame (range n) := .ofMinimalAxioms {
   inf_sSup_le_iSup_inf a s := by
     simp_rw [← Subtype.coe_le_coe, iSup_subtype', iSup, sSup, n.giAux.gc.u_inf]
-    rw [rangeFactorization_coe, ← mem_range.1 a.prop, ← map_inf]
+    rw [subtypeVal_rangeFactorization, ← mem_range.1 a.prop, ← map_inf]
     apply n.monotone
     simp_rw [inf_sSup_eq, sSup_image, iSup_range, iSup_image, iSup_subtype', n.giAux.gc.u_inf,
       le_rfl] }

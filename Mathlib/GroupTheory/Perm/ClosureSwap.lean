@@ -49,7 +49,7 @@ theorem exists_smul_notMem_of_subset_orbit_closure (S : Set G) (T : Set α) {a :
     have ⟨b, hb⟩ := nonempty
     obtain ⟨σ, rfl⟩ := subset hb
     contrapose notMem with h
-    exact smul_mem_smul_set_iff.mp ((h σ.2).symm ▸ hb)
+    exact smul_mem_smul_set_iff.mp ((h σ.property).symm ▸ hb)
   contrapose! key0
   refine (closure_le _).mpr fun σ hσ ↦ ?_
   simp_rw [SetLike.mem_coe, mem_stabilizer_iff, Set.ext_iff, mem_smul_set_iff_inv_smul_mem]

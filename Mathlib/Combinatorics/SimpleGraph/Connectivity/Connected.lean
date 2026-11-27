@@ -29,6 +29,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Paths
   contained in any cycle.
 
 ## Tags
+
 trails, paths, cycles, bridge edges
 -/
 
@@ -482,7 +483,7 @@ theorem connectedComponentMk_eq_of_adj {v w : V} (a : G.Adj v w) :
 assumption that the vertices are connected by a path. -/
 protected def lift {β : Sort*} (f : V → β)
     (h : ∀ (v w : V) (p : G.Walk v w), p.IsPath → f v = f w) : G.ConnectedComponent → β :=
-  Quot.lift f fun v w (h' : G.Reachable v w) => h'.elim_path fun hp => h v w hp hp.2
+  Quot.lift f fun v w (h' : G.Reachable v w) => h'.elim_path fun hp => h v w hp hp.property
 
 @[simp]
 protected theorem lift_mk {β : Sort*} {f : V → β}
@@ -532,7 +533,7 @@ def recOn
     (h : ∀ (u v : V) (p : G.Walk u v) (_ : p.IsPath),
       ConnectedComponent.sound p.reachable ▸ f u = f v) :
     motive c :=
-  Quot.recOn c f fun u v r => r.elim_path fun p => h u v p p.2
+  Quot.recOn c f fun u v r => r.elim_path fun p => h u v p p.property
 
 /-- The map on connected components induced by a graph homomorphism. -/
 def map (φ : G →g G') (C : G.ConnectedComponent) : G'.ConnectedComponent :=
@@ -1051,8 +1052,9 @@ lemma IsTrail.notMem_support_of_subsingleton_neighborSet (hw : w.IsTrail) (hxu :
     (hxv : x ≠ v) (hx : (G.neighborSet x).Subsingleton) : x ∉ w.support := by
   rintro hxw
   obtain ⟨y, -, hxy⟩ := adj_of_mem_walk_support w (by rintro ⟨⟩; simp_all) hxw
-  refine hw.notMem_support_of_not_reachable (x := y) ?_ ?_ hxw <;>
-  · rintro ⟨p⟩
+  refine hw.notMem_support_of_not_reachable (x := y) ?_ ?_ hxw
+  all_goals
+    rintro ⟨p⟩
     obtain ⟨hx₂, -, hy₂⟩ : G.Adj x p.penultimate ∧ _ ∧ ¬p.penultimate = y := by
       simpa using p.reverse.adj_snd (not_nil_of_ne ‹_›)
     exact hy₂ <| hx hx₂ hxy

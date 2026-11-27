@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Sites.CoverLifting
 public import Mathlib.CategoryTheory.Sites.Point.OfIsCofiltered
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The image of a point by a cocontinuous functor
 

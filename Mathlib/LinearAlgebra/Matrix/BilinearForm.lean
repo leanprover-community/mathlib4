@@ -150,23 +150,23 @@ theorem BilinForm.toMatrix'_compRight (B : BilinForm R₁ (n → R₁)) (f : (n 
   B.toMatrix₂'_compl₂ _
 
 theorem BilinForm.mul_toMatrix'_mul (B : BilinForm R₁ (n → R₁)) (M : Matrix o n R₁)
-    (N : Matrix n o R₁) : M * B.toMatrix' * N = (B.comp (Mᵀ).toLin' N.toLin').toMatrix' :=
+    (N : Matrix n o R₁) : M * B.toMatrix' * N = (B.comp (Mᵀ).mulVecLin N.mulVecLin).toMatrix' :=
   B.mul_toMatrix₂'_mul _ _
 
 theorem BilinForm.mul_toMatrix' (B : BilinForm R₁ (n → R₁)) (M : Matrix n n R₁) :
-    M * B.toMatrix' = (B.compLeft (Mᵀ).toLin').toMatrix' :=
+    M * B.toMatrix' = (B.compLeft (Mᵀ).mulVecLin).toMatrix' :=
   LinearMap.mul_toMatrix' B _
 
 theorem BilinForm.toMatrix'_mul (B : BilinForm R₁ (n → R₁)) (M : Matrix n n R₁) :
-    BilinForm.toMatrix' B * M = BilinForm.toMatrix' (B.compRight (Matrix.toLin' M)) :=
+    BilinForm.toMatrix' B * M = BilinForm.toMatrix' (B.compRight M.mulVecLin) :=
   B.toMatrix₂'_mul _
 
 end LinearMap
 
 theorem Matrix.toBilin'_comp (M : Matrix n n R₁) (P Q : Matrix n o R₁) :
-    M.toBilin'.comp P.toLin' Q.toLin' = (Pᵀ * M * Q).toBilin' :=
-  BilinForm.toMatrix'.injective
-    (by simp only [BilinForm.toMatrix'_comp, BilinForm.toMatrix'_toBilin', toMatrix'_toLin'])
+    M.toBilin'.comp P.mulVecLin Q.mulVecLin = (Pᵀ * M * Q).toBilin' :=
+  BilinForm.toMatrix'.injective <| by
+    simp only [BilinForm.toMatrix'_comp, BilinForm.toMatrix'_toBilin', toMatrix'_mulVecLin]
 
 end ToMatrix'
 
@@ -491,7 +491,7 @@ theorem SeparatingRight.toMatrix {B : BilinForm R₂ M₂} (h : B.SeparatingRigh
   (separatingRight_toMatrix_iff b).mpr h
 
 
-/-! Some shorthands for combining the above with `Matrix.nondegenerate_of_det_ne_zero` -/
+/-! Some shorthands for combining the above with `Matrix.Nondegenerate.of_det_ne_zero` -/
 
 theorem nondegenerate_toBilin'_iff_det_ne_zero {M : Matrix ι ι A} :
     M.toBilin'.Nondegenerate ↔ M.det ≠ 0 := by
@@ -505,9 +505,12 @@ theorem nondegenerate_iff_det_ne_zero {B : BilinForm A M₂} (b : Basis ι A M�
     B.Nondegenerate ↔ (BilinForm.toMatrix b B).det ≠ 0 := by
   rw [← Matrix.nondegenerate_iff_det_ne_zero, nondegenerate_toMatrix_iff]
 
-theorem nondegenerate_of_det_ne_zero (b : Basis ι A M₂) (h : (BilinForm.toMatrix b B₃).det ≠ 0) :
+theorem Nondegenerate.of_det_ne_zero (b : Basis ι A M₂) (h : (BilinForm.toMatrix b B₃).det ≠ 0) :
     B₃.Nondegenerate :=
   (nondegenerate_iff_det_ne_zero b).mpr h
+
+@[deprecated (since := "2026-11-13")] alias nondegenerate_of_det_ne_zero :=
+  Nondegenerate.of_det_ne_zero
 
 end Det
 

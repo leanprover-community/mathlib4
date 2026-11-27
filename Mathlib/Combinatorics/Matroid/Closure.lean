@@ -36,7 +36,7 @@ We also define a predicate `Spanning`, to describe a set whose closure is the en
 * For `M : Matroid α` and `S ⊆ M.E`, `M.Spanning S` means that `S` has closure equal to `M.E`,
   or equivalently that `S` contains an isBase of `M`.
 
-## Implementation details
+## Implementation notes
 
 If `X : Set α` satisfies `X ⊆ M.E`, then it is clear how `M.closure X` should be defined.
 But `M.closure X` also needs to be defined for all `X : Set α`,
@@ -114,11 +114,11 @@ in which the `IsClosed` sets correspond to flats.
 (We can't define such an operator on all of `Set α`,
 since this would incorrectly force `univ` to always be a flat.) -/
 def subtypeClosure (M : Matroid α) : ClosureOperator (Iic M.E) :=
-  ClosureOperator.ofCompletePred (fun F ↦ M.IsFlat F.1) fun s hs ↦ by
+  ClosureOperator.ofCompletePred (fun F ↦ M.IsFlat F.val) fun s hs ↦ by
     obtain (rfl | hne) := s.eq_empty_or_nonempty
     · simp
     have _ := hne.coe_sort
-    convert IsFlat.iInter (M := M) (Fs := fun (F : s) ↦ F.1.1) (fun F ↦ hs F.1 F.2)
+    convert IsFlat.iInter (M := M) (Fs := fun (F : s) ↦ F.val.val) (fun F ↦ hs F.val F.property)
     ext
     aesop
 
@@ -182,7 +182,7 @@ lemma IsFlat.closure (hF : M.IsFlat F) : M.closure F = F :=
 
 variable (X) in
 @[simp] lemma isFlat_closure : M.IsFlat (M.closure X) := by
-  rw [closure, sInter_eq_iInter]; exact .iInter (·.2.1)
+  rw [closure, sInter_eq_iInter]; exact .iInter (·.property.1)
 
 lemma isFlat_iff_closure_eq : M.IsFlat F ↔ M.closure F = F := ⟨(·.closure), (· ▸ isFlat_closure F)⟩
 
@@ -538,8 +538,9 @@ lemma Indep.inter_isBasis_iInter [Nonempty ι] {X : ι → Set α} (hI : M.Indep
     (h : ∀ i, M.IsBasis ((X i) ∩ I) (X i)) : M.IsBasis ((⋂ i, X i) ∩ I) (⋂ i, X i) := by
   convert
     hI.inter_isBasis_biInter (ι := PLift ι) univ_nonempty (X := fun i ↦ X i.down)
-      (by simpa using fun (i : PLift ι) ↦ h i.down) <;>
-  · simp only [mem_univ, iInter_true]
+      (by simpa using fun (i : PLift ι) ↦ h i.down)
+  all_goals
+    simp only [mem_univ, iInter_true]
     exact (iInter_plift_down X).symm
 
 lemma Indep.inter_isBasis_sInter {Xs : Set (Set α)} (hI : M.Indep I) (hXs : Xs.Nonempty)

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Ring.NegOnePow
 public import Mathlib.CategoryTheory.Center.Preadditive
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Powers of `-1` in the center of a preadditive category
 -/

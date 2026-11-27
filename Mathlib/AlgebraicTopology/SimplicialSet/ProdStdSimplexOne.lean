@@ -9,6 +9,9 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.Nonsingular
 public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplexOne
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Binary products `Δ[n] ⊗ Δ[1]`
 
@@ -127,7 +130,7 @@ noncomputable def filtration (j : Fin (p + 1)) : (Δ[p] ⊗ Δ[1] : SSet.{u}).Su
   ⨆ i : Set.Iic j, .ofSimplex (nonDegenerateEquiv i.val).val
 
 lemma ofSimplex_le_filtration {i j : Fin (p + 1)} (hij : i ≤ j) :
-    .ofSimplex (nonDegenerateEquiv i).1 ≤ filtration.{u} j :=
+    .ofSimplex (nonDegenerateEquiv i).val ≤ filtration.{u} j :=
   le_iSup (fun i : Set.Iic j ↦
     Subcomplex.ofSimplex (nonDegenerateEquiv i.val).val) ⟨i, hij⟩
 

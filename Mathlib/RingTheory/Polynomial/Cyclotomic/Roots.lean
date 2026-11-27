@@ -25,7 +25,7 @@ root of unity.
   `n`-th root of unity `μ`.
 * `Polynomial.cyclotomic.irreducible` : `cyclotomic n ℤ` is irreducible.
 
-## Implementation details
+## Implementation notes
 
 To prove `Polynomial.cyclotomic.irreducible`, the irreducibility of `cyclotomic n ℤ`, we show in
 `Polynomial.cyclotomic_eq_minpoly` that `cyclotomic n ℤ` is the minimal polynomial of any `n`-th
@@ -222,7 +222,7 @@ polynomial. See de Launey–Flannery, *Algebraic Design Theory*, Lemma 2.8.5. -/
 lemma sum_eq_zero_iff_forall_eq (hp : p.Prime) (hζ : IsPrimitiveRoot ζ p) (α : Fin p → ℚ) :
     ∑ i, α i * ζ ^ i.val = 0 ↔ ∀ i j, α i = α j := by
   have : Fact p.Prime := ⟨hp⟩
-  let P : ℚ[X] := ∑ i, C (α i) * X ^ i.1
+  let P : ℚ[X] := ∑ i, C (α i) * X ^ i.val
   have hP (i : Fin p) : α i = P.coeff i := by simp [P, ← Fin.ext_iff]
   have hP' : P.degree ≤ ↑(p - 1) :=
     (degree_sum_le ..).trans (Finset.sup_le fun _ _ ↦ by grw [degree_C_mul_X_pow_le]; simp; grind)

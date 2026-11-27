@@ -152,7 +152,6 @@ section
 
 open ToPartrec
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The alphabet for the stacks in the program. `bit0` and `bit1` are used to represent `ℕ` values
 as lists of binary digits, `cons` is used to separate `List ℕ` values, and `consₗ` is used to
 separate `List (List ℕ)` values. See the section documentation. -/
@@ -991,7 +990,7 @@ theorem trStmts₁_trans {q q'} : q' ∈ trStmts₁ q → trStmts₁ q' ⊆ trSt
     · exact Or.inr (Or.inr <| Or.inr <| q₂_ih h h')
 
 theorem trStmts₁_self (q) : q ∈ trStmts₁ q := by
-  induction q <;> · first | apply Finset.mem_singleton_self | apply Finset.mem_insert_self
+  induction q <;> first | apply Finset.mem_singleton_self | apply Finset.mem_insert_self
 
 /-- The (finite!) set of machine states visited during the course of evaluation of `c`,
 including the state `ret k` but not any states after that (that is, the states visited while

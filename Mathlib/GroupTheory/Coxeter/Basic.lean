@@ -39,7 +39,7 @@ product $s_{i_1} \cdots s_{i_\ell} \in W$ (`CoxeterSystem.wordProd`). Every elem
 product of some word (`CoxeterSystem.wordProd_surjective`). The words that alternate between two
 elements of $B$ (`CoxeterSystem.alternatingWord`) are particularly important.
 
-## Implementation details
+## Implementation notes
 
 Much of the literature on Coxeter groups conflates the set $S = \{s_i : i \in B\} \subseteq W$ of
 simple reflections with the set $B$ that indexes the simple reflections. This is usually permissible

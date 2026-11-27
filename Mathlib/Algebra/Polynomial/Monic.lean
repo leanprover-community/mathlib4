@@ -243,22 +243,24 @@ abbrev MonicDegreeEq : Type _ := { p : R[X] // p.coeff n = 1 ∧ ∀ i > n, p.co
 
 @[simp]
 lemma MonicDegreeEq.natDegree [Nontrivial R] (p : MonicDegreeEq R n) :
-    p.1.natDegree = n :=
-  natDegree_eq_of_le_of_coeff_ne_zero (natDegree_le_iff_coeff_eq_zero.mpr p.2.2) (by simp [p.2.1])
+    p.val.natDegree = n :=
+  natDegree_eq_of_le_of_coeff_ne_zero (natDegree_le_iff_coeff_eq_zero.mpr p.property.2)
+    (by simp [p.property.1])
 
 @[simp]
 lemma MonicDegreeEq.degree [Nontrivial R] (p : MonicDegreeEq R n) :
-    p.1.degree = n :=
-  degree_eq_of_le_of_coeff_ne_zero (degree_le_of_natDegree_le p.natDegree.le) (by simp [p.2.1])
+    p.val.degree = n :=
+  degree_eq_of_le_of_coeff_ne_zero (degree_le_of_natDegree_le p.natDegree.le)
+    (by simp [p.property.1])
 
 lemma MonicDegreeEq.monic (p : MonicDegreeEq R n) :
-    p.1.Monic := by
+    p.val.Monic := by
   nontriviality R
-  rw [Monic, leadingCoeff, p.natDegree, p.2.1]
+  rw [Monic, leadingCoeff, p.natDegree, p.property.1]
 
 lemma MonicDegreeEq.coeff_of_ge (p : MonicDegreeEq R n) (i : ℕ) (hi : n ≤ i) :
-    p.1.coeff i = if i = n then 1 else 0 := by
-  split_ifs <;> simp_all [p.2.1, p.2.2 _ (hi.lt_of_ne (.symm _))]
+    p.val.coeff i = if i = n then 1 else 0 := by
+  split_ifs <;> simp_all [p.property.1, p.property.2 _ (hi.lt_of_ne (.symm _))]
 
 /-- The constructor for `MonicDegreeEq` given a monic polynomial of degree `n`. -/
 @[simps]
@@ -270,7 +272,7 @@ def MonicDegreeEq.mk (p : R[X]) (hp : p.Monic) (hp' : p.natDegree = n) :
 @[simps] noncomputable
 def MonicDegreeEq.map (p : MonicDegreeEq R n) (f : R →+* S) :
     MonicDegreeEq S n :=
-  ⟨p.1.map f, by simp +contextual [coeff_map, p.2]⟩
+  ⟨p.val.map f, by simp +contextual [coeff_map, p.property]⟩
 
 end MonicDegreeEq
 

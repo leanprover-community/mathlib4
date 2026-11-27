@@ -6,8 +6,9 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne 
 -/
 module
 
-public import Mathlib.Algebra.Group.IsApply
 public import Mathlib.Algebra.Module.LinearMap.Defs
+
+import Mathlib.Algebra.Group.IsApply
 
 /-!
 # (Semi)linear equivalences
@@ -116,10 +117,11 @@ instance (priority := 100) [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
 variable {F}
 
 /-- Reinterpret an element of a type of semilinear equivalences as a semilinear equivalence. -/
-@[coe]
-def semilinearEquiv [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
+def _root_.LinearEquiv.ofClass [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
     [EquivLike F M M₂] [SemilinearEquivClass F σ M M₂] (f : F) : M ≃ₛₗ[σ] M₂ :=
   { (f : M ≃+ M₂), (f : M →ₛₗ[σ] M₂) with }
+
+@[deprecated (since := "2026-11-22")] alias semilinearEquiv := LinearEquiv.ofClass
 
 end SemilinearEquivClass
 
@@ -186,6 +188,11 @@ theorem coe_injective : @Injective (M ≃ₛₗ[σ] M₂) (M → M₂) DFunLike.
   DFunLike.coe_injective
 
 @[simp]
+protected lemma coe_ofClass {F : Type*} [EquivLike F M M₂]
+    [SemilinearEquivClass F σ M M₂] (f : F) :
+    ⇑(.ofClass f : M ≃ₛₗ[σ] M₂) = f := rfl
+
+@[deprecated LinearEquiv.coe_ofClass +typeChanged (since := "2026-11-22")]
 lemma _root_.SemilinearEquivClass.semilinearEquiv_apply {F : Type*} [EquivLike F M M₂]
     [SemilinearEquivClass F σ M M₂] (f : F) (x : M) :
     SemilinearEquivClass.semilinearEquiv (M₂ := M₂) f x = f x := rfl
@@ -202,17 +209,14 @@ variable {module_M : Module R M} {module_S_M₂ : Module S M₂} {σ : R →+* S
 variable {re₁ : RingHomInvPair σ σ'} {re₂ : RingHomInvPair σ' σ}
 variable (e e' : M ≃ₛₗ[σ] M₂)
 
-@[simp, norm_cast]
-theorem coe_coe : ⇑(e : M →ₛₗ[σ] M₂) = e :=
-  rfl
-
 @[simp]
 theorem coe_toEquiv : ⇑(e.toEquiv) = e :=
   rfl
 
-@[simp]
-theorem coe_toLinearMap : ⇑e.toLinearMap = e :=
-  rfl
+@[simp, norm_cast]
+theorem coe_toLinearMap : ⇑e.toLinearMap = e := rfl
+
+@[deprecated (since := "2026-11-23")] protected alias coe_coe := coe_toLinearMap
 
 theorem toFun_eq_coe : e.toFun = e := by dsimp
 

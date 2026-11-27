@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Sheaves.SheafCondition.PairwiseIntersections
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The sheaf condition in terms of an equalizer of products
 
@@ -226,10 +229,7 @@ def coneEquivFunctor :
   map {c c'} f :=
     { hom := f.hom
       w := fun j => by
-        cases j <;>
-          · dsimp
-            ext
-            simp }
+        cases j <;> dsimp <;> ext <;> simp }
 
 end
 
@@ -312,15 +312,17 @@ def coneEquivUnitIsoApp (c : Cone ((diagram U).op ⋙ F)) :
     { hom := 𝟙 _
       w := fun j => by
         induction j with | op j => ?_
-        rcases j with ⟨⟩ <;>
-        · dsimp [coneEquivInverse]
+        rcases j with ⟨⟩
+        all_goals
+          dsimp [coneEquivInverse]
           simp only [Limits.Fan.mk_π_app, Category.id_comp, Limits.limit.lift_π] }
   inv :=
     { hom := 𝟙 _
       w := fun j => by
         induction j with | op j => ?_
-        rcases j with ⟨⟩ <;>
-        · dsimp [coneEquivInverse]
+        rcases j with ⟨⟩
+        all_goals
+          dsimp [coneEquivInverse]
           simp only [Limits.Fan.mk_π_app, Category.id_comp, Limits.limit.lift_π] }
 
 set_option backward.defeqAttrib.useBackward true in

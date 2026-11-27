@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicTopology.Quasicategory.TwoTruncatedQuasicategory
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Composition of edges in quasicategories
 
