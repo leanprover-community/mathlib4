@@ -9,6 +9,7 @@ public import Mathlib.Analysis.SpecialFunctions.Gamma.Deligne
 public import Mathlib.NumberTheory.Harmonic.EulerMascheroni
 
 import Mathlib.Analysis.Convex.Deriv
+import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
@@ -156,6 +157,200 @@ lemma hasDerivAt_Gamma_one_half : HasDerivAt Gamma (-√π * (γ + 2 * log 2)) (
     apply HasDerivAt.const_sub
     exact hasDerivAt_mul_const (2 : ℝ)
   _ = -√π * (γ + 2 * log 2) := by ring
+
+section EulerIntegral
+
+open MeasureTheory intervalIntegral
+
+/-- The integral `∫₀ˣ (1 - e⁻ʷ) / w dw`, auxiliary for the integral form of `γ`. -/
+private noncomputable def einG (x : ℝ) : ℝ := ∫ w in (0 : ℝ)..x, (1 - exp (-w)) / w
+
+/-- The integral `∫₀ˣ log w · e⁻ʷ dw`, auxiliary for the integral form of `γ`. -/
+private noncomputable def logH (x : ℝ) : ℝ := ∫ w in (0 : ℝ)..x, log w * exp (-w)
+
+private lemma intervalIntegrable_einG (x : ℝ) (hx : 0 ≤ x) :
+    IntervalIntegrable (fun w : ℝ => (1 - exp (-w)) / w) volume 0 x := by
+  rw [intervalIntegrable_iff_integrableOn_Ioc_of_le hx]
+  refine Measure.integrableOn_of_bounded (M := 1) (by simp)
+    (by fun_prop : Measurable fun w : ℝ => (1 - exp (-w)) / w).aestronglyMeasurable ?_
+  filter_upwards [ae_restrict_mem measurableSet_Ioc] with w hw
+  have h0 : 0 < w := hw.1
+  have hnn : 0 ≤ 1 - exp (-w) := by
+    have : exp (-w) ≤ 1 := Real.exp_le_one_iff.mpr (by linarith)
+    linarith
+  have hle : 1 - exp (-w) ≤ w := by
+    have := Real.one_sub_le_exp_neg w
+    linarith
+  rw [Real.norm_eq_abs, abs_of_nonneg (div_nonneg hnn h0.le), div_le_one h0]
+  exact hle
+
+private lemma intervalIntegrable_logH (x : ℝ) :
+    IntervalIntegrable (fun w : ℝ => log w * exp (-w)) volume 0 x :=
+  intervalIntegrable_log'.mul_continuousOn
+    (by fun_prop : Continuous fun w : ℝ => exp (-w)).continuousOn
+
+private lemma hasDerivAt_einG {x : ℝ} (hx : 0 < x) : HasDerivAt einG ((1 - exp (-x)) / x) x := by
+  have hnum : Continuous fun w : ℝ => 1 - exp (-w) :=
+    continuous_const.sub (continuous_exp.comp continuous_neg)
+  have hgc : ContinuousOn (fun w : ℝ => (1 - exp (-w)) / w) (Ioi 0) :=
+    ContinuousOn.div hnum.continuousOn continuousOn_id (fun w (hw : w ∈ Ioi 0) => hw.ne')
+  have hsm := hgc.stronglyMeasurableAtFilter (μ := volume) isOpen_Ioi x hx
+  have hcont : ContinuousAt (fun w : ℝ => (1 - exp (-w)) / w) x :=
+    hgc.continuousAt (Ioi_mem_nhds hx)
+  exact integral_hasDerivAt_right (intervalIntegrable_einG x hx.le) hsm hcont
+
+private lemma hasDerivAt_logH {x : ℝ} (hx : 0 < x) : HasDerivAt logH (log x * exp (-x)) x := by
+  have hgc : ContinuousOn (fun w : ℝ => log w * exp (-w)) (Ioi 0) :=
+    ContinuousOn.mul (Real.continuousOn_log.mono fun w (hw : w ∈ Ioi 0) => hw.ne')
+      (continuous_exp.comp continuous_neg).continuousOn
+  have hsm := hgc.stronglyMeasurableAtFilter (μ := volume) isOpen_Ioi x hx
+  have hcont : ContinuousAt (fun w : ℝ => log w * exp (-w)) x :=
+    hgc.continuousAt (Ioi_mem_nhds hx)
+  exact integral_hasDerivAt_right (intervalIntegrable_logH x) hsm hcont
+
+private lemma hasDerivAt_auxD_zero {y : ℝ} (hy : 0 < y) :
+    HasDerivAt (fun x => einG x - log x + exp (-x) * log x + logH x) 0 y := by
+  have h1 := hasDerivAt_einG hy
+  have h2 := Real.hasDerivAt_log hy.ne'
+  have he : HasDerivAt (fun x : ℝ => exp (-x)) (exp (-y) * (-1)) y := (hasDerivAt_neg y).exp
+  have h3 := he.mul h2
+  have h4 := hasDerivAt_logH hy
+  have := ((h1.sub h2).add h3).add h4
+  convert this using 1
+  ring
+
+private lemma integrableOn_log_mul_exp_Ioi :
+    IntegrableOn (fun t : ℝ => log t * exp (-t)) (Ioi 0) := by
+  have hsplit : Ioi (0 : ℝ) = Ioc 0 1 ∪ Ioi 1 := by
+    ext t; simp only [mem_Ioi, mem_union, mem_Ioc]
+    constructor
+    · intro h; by_cases h1 : t ≤ 1
+      · exact Or.inl ⟨h, h1⟩
+      · exact Or.inr (lt_of_not_ge h1)
+    · rintro (h | h)
+      · exact h.1
+      · exact zero_lt_one.trans h
+  rw [hsplit]
+  refine IntegrableOn.union ?_ ?_
+  · have hi : IntervalIntegrable (fun t : ℝ => log t * exp (-t)) volume 0 1 :=
+      intervalIntegrable_log'.mul_continuousOn (continuous_exp.comp continuous_neg).continuousOn
+    exact (intervalIntegrable_iff_integrableOn_Ioc_of_le zero_le_one).mp hi
+  · have hmono : IntegrableOn (fun t : ℝ => t * exp (-t)) (Ioi 1) := by
+      have h := Real.GammaIntegral_convergent (s := 2) two_pos
+      have h2 : (fun x : ℝ => rexp (-x) * x ^ ((2 : ℝ) - 1)) = fun x => exp (-x) * x := by
+        funext x; norm_num
+      rw [h2] at h
+      exact (h.mono_set (fun t ht => (show (0 : ℝ) < t from zero_lt_one.trans ht))).congr_fun_ae
+        (Filter.Eventually.of_forall fun t => by simp only [mul_comm])
+    refine Integrable.mono' hmono.integrable ?_ ?_
+    · exact (measurable_log.mul
+        (continuous_exp.comp continuous_neg).measurable).aestronglyMeasurable
+    · filter_upwards [ae_restrict_mem measurableSet_Ioi] with t ht
+      have h1 : (1 : ℝ) < t := ht
+      have hl : 0 ≤ log t := Real.log_nonneg h1.le
+      have he : 0 < exp (-t) := exp_pos _
+      rw [Real.norm_eq_abs, abs_of_nonneg (mul_nonneg hl he.le)]
+      exact mul_le_mul_of_nonneg_right (Real.log_le_self (by linarith)) he.le
+
+private lemma tendsto_einG_zero : Tendsto einG (𝓝[>] 0) (𝓝 0) := by
+  have hnum : IntegrableOn (fun w : ℝ => (1 - exp (-w)) / w) (uIcc 0 1) := by
+    rw [uIcc_of_le zero_le_one]
+    exact (intervalIntegrable_iff_integrableOn_Icc_of_le zero_le_one).mp
+      (intervalIntegrable_einG 1 zero_le_one)
+  have hc : ContinuousOn einG (uIcc 0 1) := continuousOn_primitive_interval hnum
+  have hmem : uIcc (0 : ℝ) 1 ∈ 𝓝[>] (0 : ℝ) := by
+    rw [uIcc_of_le zero_le_one]; exact Icc_mem_nhdsGT zero_lt_one
+  have h := (hc 0 (left_mem_uIcc)).tendsto.mono_left (nhdsWithin_le_of_mem hmem)
+  have h0 : einG 0 = 0 := by simp [einG]
+  rw [h0] at h
+  exact h
+
+private lemma tendsto_logH_zero : Tendsto logH (𝓝[>] 0) (𝓝 0) := by
+  have hi : IntegrableOn (fun w : ℝ => log w * exp (-w)) (uIcc 0 1) := by
+    rw [uIcc_of_le zero_le_one]
+    exact (intervalIntegrable_iff_integrableOn_Icc_of_le zero_le_one).mp (intervalIntegrable_logH 1)
+  have hc : ContinuousOn logH (uIcc 0 1) := continuousOn_primitive_interval hi
+  have hmem : uIcc (0 : ℝ) 1 ∈ 𝓝[>] (0 : ℝ) := by
+    rw [uIcc_of_le zero_le_one]; exact Icc_mem_nhdsGT zero_lt_one
+  have h := (hc 0 (left_mem_uIcc)).tendsto.mono_left (nhdsWithin_le_of_mem hmem)
+  have h0 : logH 0 = 0 := by simp [logH]
+  rw [h0] at h
+  exact h
+
+private lemma tendsto_exp_sub_one_mul_log_zero :
+    Tendsto (fun ε : ℝ => (exp (-ε) - 1) * log ε) (𝓝[>] 0) (𝓝 0) := by
+  have hml : Tendsto (fun ε : ℝ => ε * log ε) (𝓝[>] 0) (𝓝 0) := by
+    have := (Real.continuous_mul_log.tendsto 0).mono_left (nhdsWithin_le_nhds (s := Ioi 0))
+    simpa using this
+  have hA : Tendsto (fun ε : ℝ => 2 * |ε * log ε|) (𝓝[>] 0) (𝓝 0) := by
+    have := (hml.abs).const_mul 2
+    simpa using this
+  refine squeeze_zero_norm' ?_ hA
+  filter_upwards [Ioo_mem_nhdsGT zero_lt_one] with ε hε
+  have hε0 : 0 < ε := hε.1
+  have hb : |exp (-ε) - 1| ≤ 2 * ε := by
+    have h := Real.abs_exp_sub_one_le (x := -ε) (by rw [abs_neg, abs_of_pos hε0]; linarith [hε.2])
+    rwa [abs_neg, abs_of_pos hε0] at h
+  rw [Real.norm_eq_abs, abs_mul]
+  calc |exp (-ε) - 1| * |log ε| ≤ (2 * ε) * |log ε| := mul_le_mul_of_nonneg_right hb (abs_nonneg _)
+    _ = 2 * |ε * log ε| := by rw [abs_mul, abs_of_pos hε0]; ring
+
+private noncomputable def auxD (x : ℝ) : ℝ := einG x - log x + exp (-x) * log x + logH x
+
+private lemma auxD_const {ε x : ℝ} (hε : 0 < ε) (hεx : ε < x) : auxD x = auxD ε := by
+  have hcons := constant_of_has_deriv_right_zero (f := auxD) (a := ε) (b := x)
+    (fun y hy => (hasDerivAt_auxD_zero (by linarith [hy.1])).continuousAt.continuousWithinAt)
+    (fun y hy => (hasDerivAt_auxD_zero (by linarith [hy.1])).hasDerivWithinAt)
+  exact hcons x ⟨hεx.le, le_rfl⟩
+
+private lemma auxD_eq_zero {x : ℝ} (hx : 0 < x) : auxD x = 0 := by
+  have hD0 : Tendsto auxD (𝓝[>] 0) (𝓝 0) := by
+    have heq : auxD = fun ε => einG ε + (exp (-ε) - 1) * log ε + logH ε := by
+      funext ε; simp only [auxD]; ring
+    rw [heq]
+    have := (tendsto_einG_zero.add tendsto_exp_sub_one_mul_log_zero).add tendsto_logH_zero
+    simpa using this
+  have ht : Tendsto auxD (𝓝[>] 0) (𝓝 (auxD x)) :=
+    tendsto_const_nhds.congr' (by
+      filter_upwards [Ioo_mem_nhdsGT hx] with ε hε
+      exact auxD_const hε.1 hε.2)
+  exact (tendsto_nhds_unique hD0 ht).symm
+
+private lemma tendsto_exp_neg_mul_log_atTop :
+    Tendsto (fun x : ℝ => exp (-x) * log x) atTop (𝓝 0) := by
+  have hg : Tendsto (fun x : ℝ => x * exp (-x)) atTop (𝓝 0) := by
+    simpa using Real.tendsto_pow_mul_exp_neg_atTop_nhds_zero 1
+  refine squeeze_zero' ?_ ?_ hg
+  · filter_upwards [eventually_ge_atTop 1] with x hx
+    exact mul_nonneg (exp_pos _).le (Real.log_nonneg hx)
+  · filter_upwards [eventually_ge_atTop 1] with x hx
+    have := mul_le_mul_of_nonneg_left (Real.log_le_self (by linarith : (0 : ℝ) ≤ x))
+      (exp_pos (-x)).le
+    linarith [mul_comm x (exp (-x))]
+
+/-- The integral form of the Euler–Mascheroni constant:
+`∫₀ˣ (1 - e⁻ʷ) / w dw - log x → γ` as `x → ∞`. -/
+theorem tendsto_integral_one_sub_exp_div_sub_log_atTop :
+    Tendsto (fun x : ℝ => (∫ w in (0 : ℝ)..x, (1 - exp (-w)) / w) - log x) atTop (𝓝 γ) := by
+  have hI : ∫ t in Ioi (0 : ℝ), log t * exp (-t) = -γ := by
+    rw [eulerMascheroniConstant_eq_neg_integral_log]; ring
+  have hH : Tendsto logH atTop (𝓝 (-γ)) := by
+    rw [← hI]
+    exact intervalIntegral_tendsto_integral_Ioi 0 integrableOn_log_mul_exp_Ioi tendsto_id
+  have hev : ∀ᶠ x in atTop, (∫ w in (0 : ℝ)..x, (1 - exp (-w)) / w) - log x =
+      -(exp (-x) * log x) - logH x := by
+    filter_upwards [eventually_gt_atTop 0] with x hx
+    have := auxD_eq_zero hx
+    simp only [auxD, einG] at this
+    linarith
+  have hT : Tendsto (fun x : ℝ => -(exp (-x) * log x) - logH x) atTop
+      (𝓝 (-0 - -γ)) :=
+    (tendsto_exp_neg_mul_log_atTop.neg).sub hH
+  have hT' : Tendsto (fun x : ℝ => -(exp (-x) * log x) - logH x) atTop (𝓝 γ) := by
+    convert hT using 2; ring
+  exact hT'.congr' (hev.mono fun x hx => hx.symm)
+
+end EulerIntegral
 
 end Real
 
