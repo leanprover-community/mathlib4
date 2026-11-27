@@ -115,18 +115,14 @@ lemma artinSchreier_irreducible [hp : Fact p.Prime]
 
 lemma artinSchreier_irreducible_or_splits (a : F) :
     Irreducible (artinSchreier a) ∨ Splits (artinSchreier a) := by
+  rcases Multiset.empty_or_exists_mem (artinSchreier a).roots with h | ⟨c, hc⟩; swap
+  · exact Or.inr (artinSchreier_splits (isRoot_of_mem_roots hc))
   let p := ringExpChar F
   have : ExpChar F p := ringExpChar.expChar F
   rcases expChar_is_prime_or_one F p with hp | hp1
   · have := Fact.mk hp
-    by_cases hr : (artinSchreier a).roots = 0
-    · left; exact artinSchreier_irreducible p hr
-    · right
-      have ⟨_, hc⟩ := exists_mem_of_ne_zero hr
-      simp only [mem_roots', ne_eq] at hc
-      exact artinSchreier_splits hc.2
-  · right
-    simp [artinSchreier_def p, hp1]
+    exact Or.inl (artinSchreier_irreducible p h)
+  · simp [artinSchreier_def p, hp1]
 
 end Field
 
