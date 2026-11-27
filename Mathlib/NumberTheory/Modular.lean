@@ -399,7 +399,7 @@ theorem eq_zero_of_mem_fdo_of_T_zpow_mem_fdo {n : ℤ} (hz : z ∈ 𝒟ᵒ) (hg 
   have h₂ := hg.2
   rw [re_T_zpow_smul] at h₂
   calc
-    |(n : ℝ)| ≤ |z.re| + |z.re + (n : ℝ)| := abs_add' (n : ℝ) z.re
+    |(n : ℝ)| ≤ |z.re| + |z.re + (n : ℝ)| := abs_add (n : ℝ) z.re
     _ < 1 / 2 + 1 / 2 := add_lt_add h₁ h₂
     _ = 1 := add_halves 1
 

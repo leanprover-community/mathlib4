@@ -491,9 +491,7 @@ theorem EMetric.pair_reduction (hJ_card : #J ≤ a ^ n) (c : ℝ≥0∞) (E : Ty
       rw [← Finset.card_eq_one]
       refine le_antisymm ?_ ?_
       · suffices (#J : ENNReal) ≤ 1 by norm_cast at this
-        refine hJ_card.trans ?_
-        conv_rhs => rw [← one_pow n]
-        exact ENNReal.pow_le_pow_left ha1
+        grw [hJ_card, ha1, one_pow]
       · rwa [Finset.one_le_card, ← Finset.nonempty_coe_sort]
     simp_all
   · exact ⟨pairSet J a c, pairSet_subset, card_pairSet_le ha1,

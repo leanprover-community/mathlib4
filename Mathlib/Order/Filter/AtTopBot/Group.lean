@@ -153,7 +153,7 @@ theorem comap_mabs_atTop [IsOrderedMonoid G] : comap (mabs : G → G) atTop = at
       (sup_le tendsto_mabs_atBot_atTop.le_comap tendsto_mabs_atTop_atTop.le_comap)
   rintro ⟨a, b⟩ -
   refine ⟨max (a⁻¹) b, trivial, fun x hx => ?_⟩
-  rw [mem_preimage, mem_Ici, le_mabs', max_le_iff, ← min_inv_inv', le_min_iff, inv_inv] at hx
+  rw [mem_preimage, mem_Ici, le_mabs', max_le_iff, ← min_inv_inv, le_min_iff, inv_inv] at hx
   exact hx.imp And.left And.right
 
 end LinearOrderedCommGroup

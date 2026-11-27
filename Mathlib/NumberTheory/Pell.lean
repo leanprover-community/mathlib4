@@ -570,7 +570,7 @@ theorem mul_inv_x_pos {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solut
 the `x`-coordinate decreases. -/
 theorem mul_inv_x_lt_x {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solution₁ d} (hax : 1 < a.x)
     (hay : 0 < a.y) : (a * a₁⁻¹).x < a.x := by
-  simp only [x_mul, x_inv, y_inv, mul_neg, add_neg_lt_iff_le_add']
+  simp only [x_mul, x_inv, y_inv, mul_neg, add_neg_lt_iff_le_add]
   refine lt_of_mul_lt_mul_left ?_ h.2.1.le
   calc a₁.y * (a.x * a₁.x)
     _ = a.x * a₁.y * a₁.x := by ring

@@ -196,8 +196,7 @@ theorem apply_le {f : ℕ → ℕ} (hf : IsBonza f) {n : ℕ} (hn : 0 < n) : f n
       rw [hk] at apply_dvd_three_pow_sub_one
       calc
         _ ≤ 2 ^ multiplicity 2 (3 ^ n - 1) := by
-          rwa [hk, Nat.pow_le_pow_iff_right le.refl, ← multiplicity_dvd_iff_le
-            (by grind [one_lt_pow])]
+          grw [hk, (multiplicity_dvd_iff_le <| by grind).1 apply_dvd_three_pow_sub_one]
         _ = 4 * 2 ^ multiplicity 2 n := by
           have : multiplicity 2 (3 ^ n - 1) + 1 = 3 + multiplicity 2 n := by
             simpa [← factorization_def _ prime_two, ← primeFactorsList_count_eq] using

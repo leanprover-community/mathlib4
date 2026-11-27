@@ -167,12 +167,12 @@ theorem ofPowerSeries_pow (q : ℕ) {k : ℕ} (hk : k ≠ 0) (f : PowerSeries R)
       rw [ofPowerSeries_apply_pow hq, PowerSeries.coeff_subst_X_pow hk]
       split_ifs with hn
       · obtain ⟨j, rfl⟩ := hn
-        rw [pow_mul, ofPowerSeries_apply_pow (one_lt_pow' hq hk)]
+        rw [pow_mul, ofPowerSeries_apply_pow (one_lt_pow hq hk)]
         simp [hk]
-      · rw [ofPowerSeries_apply (one_lt_pow' hq hk), Function.extend_apply', Pi.zero_apply]
+      · rw [ofPowerSeries_apply (one_lt_pow hq hk), Function.extend_apply', Pi.zero_apply]
         simp_rw [← pow_mul, Nat.pow_right_inj hq, eq_comm, ← dvd_def]
         exact hn
-    · rwa [ofPowerSeries_apply hq, ofPowerSeries_apply (one_lt_pow' hq hk),
+    · rwa [ofPowerSeries_apply hq, ofPowerSeries_apply (one_lt_pow hq hk),
         Function.extend_apply', Function.extend_apply']
       contrapose hn
       obtain ⟨i, rfl⟩ := hn

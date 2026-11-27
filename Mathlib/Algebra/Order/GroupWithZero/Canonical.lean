@@ -156,7 +156,7 @@ lemma denselyOrdered_iff_denselyOrdered_units_and_nontrivial_units :
   · refine ⟨fun x y h ↦ ?_⟩
     lift y to αˣ using (ne_zero_of_lt h).isUnit
     obtain rfl | hx := eq_zero_or_pos x
-    · obtain ⟨z, hz⟩ := exists_one_lt' (α := αˣ)
+    · obtain ⟨z, hz⟩ := exists_one_lt (α := αˣ)
       exact ⟨(y * z⁻¹ : αˣ), by simp, Units.val_lt_val.mpr <| by simp [hz]⟩
     · lift x to αˣ using hx.ne'.isUnit
       obtain ⟨z, hz, hz'⟩ := H₂.dense x y (Units.val_lt_val.mpr h)

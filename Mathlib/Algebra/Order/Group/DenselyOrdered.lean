@@ -115,11 +115,7 @@ theorem exists_pow_lt_of_one_lt (hx : 1 < x) : ∀ n : ℕ, ∃ y : M, 1 < y ∧
   | n + 2 => by
     obtain ⟨y, hy, hyx⟩ := exists_pow_lt_of_one_lt hx (n + 1)
     obtain ⟨z, hz, hzy⟩ := exists_pow_two_le_of_one_lt hy
-    refine ⟨z, hz, hyx.trans_le' ?_⟩
-    calc z ^ (n + 2)
-      _ ≤ z ^ (2 * (n + 1)) := pow_right_monotone hz.le (by lia)
-      _ = (z ^ 2) ^ (n + 1) := by rw [pow_mul]
-      _ ≤ y ^ (n + 1) := pow_le_pow_left' hzy (n + 1)
+    exact ⟨z, hz, by grw [← hyx, ← hzy, ← pow_mul]; gcongr <;> grind⟩
 
 end Monoid
 
@@ -130,6 +126,6 @@ variable [CommGroup M] [IsOrderedCancelMonoid M]
 theorem exists_lt_pow_of_lt_one (hx : x < 1) (n : ℕ) : ∃ y : M, y < 1 ∧ x < y ^ n := by
   obtain ⟨y, hy, hy'⟩ := exists_pow_lt_of_one_lt (one_lt_inv_of_inv hx) n
   use y⁻¹, inv_lt_one_of_one_lt hy
-  simpa [lt_inv'] using hy'
+  simpa [lt_inv] using hy'
 
 end Group

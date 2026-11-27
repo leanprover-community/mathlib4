@@ -351,10 +351,13 @@ theorem max_mul_mul_le_max_mul_max' : max (a * b) (c * d) ≤ max a c * max b d 
   max_le (mul_le_mul' (le_max_left _ _) <| le_max_left _ _) <|
     mul_le_mul' (le_max_right _ _) <| le_max_right _ _
 
-@[to_additive min_add_min_le_min_add_add]
-theorem min_mul_min_le_min_mul_mul' : min a c * min b d ≤ min (a * b) (c * d) :=
+@[to_additive]
+theorem min_mul_min_le_min_mul_mul : min a c * min b d ≤ min (a * b) (c * d) :=
   le_min (mul_le_mul' (min_le_left _ _) <| min_le_left _ _) <|
     mul_le_mul' (min_le_right _ _) <| min_le_right _ _
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.min_add_min_le_min_add_add]
+alias min_mul_min_le_min_mul_mul' := min_mul_min_le_min_mul_mul
 
 end LinearOrder
 end Mul
@@ -730,8 +733,11 @@ The lemma assuming left covariance is `Left.one_lt_mul'`. -/
 The lemma assuming left covariance is `Left.add_pos'`. -/]
 alias Right.one_lt_mul' := lt_mul_of_one_lt_of_lt'
 
-@[to_additive add_nonpos]
-alias mul_le_one' := Left.mul_le_one
+@[to_additive]
+alias mul_le_one := Left.mul_le_one
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.add_nonpos]
+alias mul_le_one' := mul_le_one
 
 @[to_additive add_neg_of_nonpos_of_neg]
 alias mul_lt_one_of_le_of_lt := Left.mul_lt_one_of_le_of_lt
@@ -895,33 +901,45 @@ variable [Mul α] [Preorder α] [Preorder β] {f g : β → α} {s : Set β}
 theorem Monotone.const_mul' [MulLeftMono α] (hf : Monotone f) (a : α) : Monotone fun x ↦ a * f x :=
   mul_right_mono.comp hf
 
-@[to_additive const_add]
-theorem MonotoneOn.const_mul' [MulLeftMono α] (hf : MonotoneOn f s) (a : α) :
+@[to_additive]
+theorem MonotoneOn.const_mul [MulLeftMono α] (hf : MonotoneOn f s) (a : α) :
     MonotoneOn (fun x => a * f x) s := mul_right_mono.comp_monotoneOn hf
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.MonotoneOn.const_add]
+alias MonotoneOn.const_mul' := MonotoneOn.const_mul
 
 @[to_additive const_add]
 theorem Antitone.const_mul' [MulLeftMono α] (hf : Antitone f) (a : α) : Antitone fun x ↦ a * f x :=
   mul_right_mono.comp_antitone hf
 
-@[to_additive const_add]
-theorem AntitoneOn.const_mul' [MulLeftMono α] (hf : AntitoneOn f s) (a : α) :
+@[to_additive]
+theorem AntitoneOn.const_mul [MulLeftMono α] (hf : AntitoneOn f s) (a : α) :
     AntitoneOn (fun x => a * f x) s := mul_right_mono.comp_antitoneOn hf
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.AntitoneOn.const_add]
+alias AntitoneOn.const_mul' := AntitoneOn.const_mul
 
 @[to_additive add_const]
 theorem Monotone.mul_const' [MulRightMono α] (hf : Monotone f) (a : α) :
     Monotone fun x => f x * a := mul_left_mono.comp hf
 
-@[to_additive add_const]
-theorem MonotoneOn.mul_const' [MulRightMono α] (hf : MonotoneOn f s) (a : α) :
+@[to_additive]
+theorem MonotoneOn.mul_const [MulRightMono α] (hf : MonotoneOn f s) (a : α) :
     MonotoneOn (fun x => f x * a) s := mul_left_mono.comp_monotoneOn hf
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.MonotoneOn.add_const]
+alias MonotoneOn.mul_const' := MonotoneOn.mul_const
 
 @[to_additive add_const]
 theorem Antitone.mul_const' [MulRightMono α] (hf : Antitone f) (a : α) : Antitone fun x ↦ f x * a :=
   mul_left_mono.comp_antitone hf
 
-@[to_additive add_const]
-theorem AntitoneOn.mul_const' [MulRightMono α] (hf : AntitoneOn f s) (a : α) :
+@[to_additive]
+theorem AntitoneOn.mul_const [MulRightMono α] (hf : AntitoneOn f s) (a : α) :
     AntitoneOn (fun x => f x * a) s := mul_left_mono.comp_antitoneOn hf
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.AntitoneOn.add_const]
+alias AntitoneOn.mul_const' := AntitoneOn.mul_const
 
 /-- The product of two monotone functions is monotone. -/
 @[to_additive add /-- The sum of two monotone functions is monotone. -/]
@@ -943,11 +961,14 @@ theorem Antitone.mul' [MulLeftMono α]
     Antitone fun x => f x * g x := fun _ _ h => mul_le_mul' (hf h) (hg h)
 
 /-- The product of two antitone functions is antitone. -/
-@[to_additive add /-- The sum of two antitone functions is antitone. -/]
-theorem AntitoneOn.mul' [MulLeftMono α]
+@[to_additive /-- The sum of two antitone functions is antitone. -/]
+theorem AntitoneOn.mul [MulLeftMono α]
     [MulRightMono α] (hf : AntitoneOn f s) (hg : AntitoneOn g s) :
     AntitoneOn (fun x => f x * g x) s :=
   fun _ hx _ hy h => mul_le_mul' (hf hx hy h) (hg hx hy h)
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.AntitoneOn.add]
+alias AntitoneOn.mul' := AntitoneOn.mul
 
 section Left
 
@@ -957,19 +978,25 @@ variable [MulLeftStrictMono α]
 theorem StrictMono.const_mul' (hf : StrictMono f) (c : α) : StrictMono fun x => c * f x :=
   fun _ _ ab => mul_lt_mul_right (hf ab) c
 
-@[to_additive const_add]
-theorem StrictMonoOn.const_mul' (hf : StrictMonoOn f s) (c : α) :
+@[to_additive]
+theorem StrictMonoOn.const_mul (hf : StrictMonoOn f s) (c : α) :
     StrictMonoOn (fun x => c * f x) s :=
   fun _ ha _ hb ab => mul_lt_mul_right (hf ha hb ab) c
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.StrictMonoOn.const_add]
+alias StrictMonoOn.const_mul' := StrictMonoOn.const_mul
 
 @[to_additive const_add]
 theorem StrictAnti.const_mul' (hf : StrictAnti f) (c : α) : StrictAnti fun x => c * f x :=
   fun _ _ ab => mul_lt_mul_right (hf ab) c
 
-@[to_additive const_add]
-theorem StrictAntiOn.const_mul' (hf : StrictAntiOn f s) (c : α) :
+@[to_additive]
+theorem StrictAntiOn.const_mul (hf : StrictAntiOn f s) (c : α) :
     StrictAntiOn (fun x => c * f x) s :=
   fun _ ha _ hb ab => mul_lt_mul_right (hf ha hb ab) c
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.StrictAntiOn.const_add]
+alias StrictAntiOn.const_mul' := StrictAntiOn.const_mul
 
 end Left
 
@@ -981,19 +1008,25 @@ variable [MulRightStrictMono α]
 theorem StrictMono.mul_const' (hf : StrictMono f) (c : α) : StrictMono fun x => f x * c :=
   fun _ _ ab => mul_lt_mul_left (hf ab) c
 
-@[to_additive add_const]
-theorem StrictMonoOn.mul_const' (hf : StrictMonoOn f s) (c : α) :
+@[to_additive]
+theorem StrictMonoOn.mul_const (hf : StrictMonoOn f s) (c : α) :
     StrictMonoOn (fun x => f x * c) s :=
   fun _ ha _ hb ab => mul_lt_mul_left (hf ha hb ab) c
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.StrictMonoOn.add_const]
+alias StrictMonoOn.mul_const' := StrictMonoOn.mul_const
 
 @[to_additive add_const]
 theorem StrictAnti.mul_const' (hf : StrictAnti f) (c : α) : StrictAnti fun x => f x * c :=
   fun _ _ ab => mul_lt_mul_left (hf ab) c
 
-@[to_additive add_const]
-theorem StrictAntiOn.mul_const' (hf : StrictAntiOn f s) (c : α) :
+@[to_additive]
+theorem StrictAntiOn.mul_const (hf : StrictAntiOn f s) (c : α) :
     StrictAntiOn (fun x => f x * c) s :=
   fun _ ha _ hb ab => mul_lt_mul_left (hf ha hb ab) c
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.StrictAntiOn.add_const]
+alias StrictAntiOn.mul_const' := StrictAntiOn.mul_const
 
 end Right
 
@@ -1005,25 +1038,34 @@ theorem StrictMono.mul' [MulLeftStrictMono α]
   mul_lt_mul_of_lt_of_lt (hf ab) (hg ab)
 
 /-- The product of two strictly monotone functions is strictly monotone. -/
-@[to_additive add /-- The sum of two strictly monotone functions is strictly monotone. -/]
-theorem StrictMonoOn.mul' [MulLeftStrictMono α]
+@[to_additive /-- The sum of two strictly monotone functions is strictly monotone. -/]
+theorem StrictMonoOn.mul [MulLeftStrictMono α]
     [MulRightStrictMono α] (hf : StrictMonoOn f s) (hg : StrictMonoOn g s) :
     StrictMonoOn (fun x => f x * g x) s :=
   fun _ ha _ hb ab => mul_lt_mul_of_lt_of_lt (hf ha hb ab) (hg ha hb ab)
 
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.StrictMonoOn.add]
+alias StrictMonoOn.mul' := StrictMonoOn.mul
+
 /-- The product of two strictly antitone functions is strictly antitone. -/
-@[to_additive add /-- The sum of two strictly antitone functions is strictly antitone. -/]
-theorem StrictAnti.mul' [MulLeftStrictMono α]
+@[to_additive /-- The sum of two strictly antitone functions is strictly antitone. -/]
+theorem StrictAnti.mul [MulLeftStrictMono α]
     [MulRightStrictMono α] (hf : StrictAnti f) (hg : StrictAnti g) :
     StrictAnti fun x => f x * g x :=
   fun _ _ ab => mul_lt_mul_of_lt_of_lt (hf ab) (hg ab)
 
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.StrictAnti.add]
+alias StrictAnti.mul' := StrictAnti.mul
+
 /-- The product of two strictly antitone functions is strictly antitone. -/
-@[to_additive add /-- The sum of two strictly antitone functions is strictly antitone. -/]
-theorem StrictAntiOn.mul' [MulLeftStrictMono α]
+@[to_additive /-- The sum of two strictly antitone functions is strictly antitone. -/]
+theorem StrictAntiOn.mul [MulLeftStrictMono α]
     [MulRightStrictMono α] (hf : StrictAntiOn f s) (hg : StrictAntiOn g s) :
     StrictAntiOn (fun x => f x * g x) s :=
   fun _ ha _ hb ab => mul_lt_mul_of_lt_of_lt (hf ha hb ab) (hg ha hb ab)
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.StrictAntiOn.add]
+alias StrictAntiOn.mul' := StrictAntiOn.mul
 
 /-- The product of a monotone function and a strictly monotone function is strictly monotone. -/
 @[to_additive add_strictMono /-- The sum of a monotone function and a strictly monotone function is
@@ -1035,30 +1077,39 @@ theorem Monotone.mul_strictMono' [MulLeftStrictMono α]
   fun _ _ h => mul_lt_mul_of_le_of_lt (hf h.le) (hg h)
 
 /-- The product of a monotone function and a strictly monotone function is strictly monotone. -/
-@[to_additive add_strictMono /-- The sum of a monotone function and a strictly monotone function is
+@[to_additive /-- The sum of a monotone function and a strictly monotone function is
 strictly monotone. -/]
-theorem MonotoneOn.mul_strictMono' [MulLeftStrictMono α]
+theorem MonotoneOn.mul_strictMono [MulLeftStrictMono α]
     [MulRightMono α] {f g : β → α} (hf : MonotoneOn f s)
     (hg : StrictMonoOn g s) : StrictMonoOn (fun x => f x * g x) s :=
   fun _ hx _ hy h => mul_lt_mul_of_le_of_lt (hf hx hy h.le) (hg hx hy h)
 
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.MonotoneOn.add_strictMono]
+alias MonotoneOn.mul_strictMono' := MonotoneOn.mul_strictMono
+
 /-- The product of an antitone function and a strictly antitone function is strictly antitone. -/
-@[to_additive add_strictAnti /-- The sum of an antitone function and a strictly antitone function is
+@[to_additive /-- The sum of an antitone function and a strictly antitone function is
 strictly antitone. -/]
-theorem Antitone.mul_strictAnti' [MulLeftStrictMono α]
+theorem Antitone.mul_strictAnti [MulLeftStrictMono α]
     [MulRightMono α] {f g : β → α} (hf : Antitone f)
     (hg : StrictAnti g) :
     StrictAnti fun x => f x * g x :=
   fun _ _ h => mul_lt_mul_of_le_of_lt (hf h.le) (hg h)
 
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.Antitone.add_strictAnti]
+alias Antitone.mul_strictAnti' := Antitone.mul_strictAnti
+
 /-- The product of an antitone function and a strictly antitone function is strictly antitone. -/
-@[to_additive add_strictAnti /-- The sum of an antitone function and a strictly antitone function is
+@[to_additive /-- The sum of an antitone function and a strictly antitone function is
 strictly antitone. -/]
-theorem AntitoneOn.mul_strictAnti' [MulLeftStrictMono α]
+theorem AntitoneOn.mul_strictAnti [MulLeftStrictMono α]
     [MulRightMono α] {f g : β → α} (hf : AntitoneOn f s)
     (hg : StrictAntiOn g s) :
     StrictAntiOn (fun x => f x * g x) s :=
   fun _ hx _ hy h => mul_lt_mul_of_le_of_lt (hf hx hy h.le) (hg hx hy h)
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.AntitoneOn.add_strictAnti]
+alias AntitoneOn.mul_strictAnti' := AntitoneOn.mul_strictAnti
 
 variable [MulLeftMono α] [MulRightStrictMono α]
 
@@ -1070,37 +1121,52 @@ theorem StrictMono.mul_monotone' (hf : StrictMono f) (hg : Monotone g) :
   fun _ _ h => mul_lt_mul_of_lt_of_le (hf h) (hg h.le)
 
 /-- The product of a strictly monotone function and a monotone function is strictly monotone. -/
-@[to_additive add_monotone /-- The sum of a strictly monotone function and a monotone function is
+@[to_additive /-- The sum of a strictly monotone function and a monotone function is
 strictly monotone. -/]
-theorem StrictMonoOn.mul_monotone' (hf : StrictMonoOn f s) (hg : MonotoneOn g s) :
+theorem StrictMonoOn.mul_monotone (hf : StrictMonoOn f s) (hg : MonotoneOn g s) :
     StrictMonoOn (fun x => f x * g x) s :=
   fun _ hx _ hy h => mul_lt_mul_of_lt_of_le (hf hx hy h) (hg hx hy h.le)
 
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.StrictMonoOn.add_monotone]
+alias StrictMonoOn.mul_monotone' := StrictMonoOn.mul_monotone
+
 /-- The product of a strictly antitone function and an antitone function is strictly antitone. -/
-@[to_additive add_antitone /-- The sum of a strictly antitone function and an antitone function is
+@[to_additive /-- The sum of a strictly antitone function and an antitone function is
 strictly antitone. -/]
-theorem StrictAnti.mul_antitone' (hf : StrictAnti f) (hg : Antitone g) :
+theorem StrictAnti.mul_antitone (hf : StrictAnti f) (hg : Antitone g) :
     StrictAnti fun x => f x * g x :=
   fun _ _ h => mul_lt_mul_of_lt_of_le (hf h) (hg h.le)
 
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.StrictAnti.add_antitone]
+alias StrictAnti.mul_antitone' := StrictAnti.mul_antitone
+
 /-- The product of a strictly antitone function and an antitone function is strictly antitone. -/
-@[to_additive add_antitone /-- The sum of a strictly antitone function and an antitone function is
+@[to_additive /-- The sum of a strictly antitone function and an antitone function is
 strictly antitone. -/]
-theorem StrictAntiOn.mul_antitone' (hf : StrictAntiOn f s) (hg : AntitoneOn g s) :
+theorem StrictAntiOn.mul_antitone (hf : StrictAntiOn f s) (hg : AntitoneOn g s) :
     StrictAntiOn (fun x => f x * g x) s :=
   fun _ hx _ hy h => mul_lt_mul_of_lt_of_le (hf hx hy h) (hg hx hy h.le)
 
-@[to_additive (attr := simp) cmp_add_left]
-theorem cmp_mul_left' {α : Type*} [Mul α] [LinearOrder α] [MulLeftStrictMono α]
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.StrictAntiOn.add_antitone]
+alias StrictAntiOn.mul_antitone' := StrictAntiOn.mul_antitone
+
+@[to_additive (attr := simp)]
+theorem cmp_mul_left {α : Type*} [Mul α] [LinearOrder α] [MulLeftStrictMono α]
     (a b c : α) :
     cmp (a * b) (a * c) = cmp b c :=
   (strictMono_id.const_mul' a).cmp_map_eq b c
 
-@[to_additive (attr := simp) cmp_add_right]
-theorem cmp_mul_right' {α : Type*} [Mul α] [LinearOrder α]
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.cmp_add_left]
+alias cmp_mul_left' := cmp_mul_left
+
+@[to_additive (attr := simp)]
+theorem cmp_mul_right {α : Type*} [Mul α] [LinearOrder α]
     [MulRightStrictMono α] (a b c : α) :
     cmp (a * c) (b * c) = cmp a b :=
   (strictMono_id.mul_const' c).cmp_map_eq a b
+
+@[deprecated (since := "2026-11-22"), to_additive existing _root_.cmp_add_right]
+alias cmp_mul_right' := cmp_mul_right
 
 end Mono
 

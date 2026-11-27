@@ -935,7 +935,7 @@ lemma sSameSide_affineSpan_faceOpposite_of_sign_eq {w₁ w₂ : Fin (n + 1) → 
   left
   rcases h0.lt_or_gt with h | h
   · rw [sign_neg h, eq_comm, sign_eq_neg_one_iff] at hs
-    exact (mul_pos_of_neg_of_neg hs (inv_neg''.2 h)).le
+    exact (mul_pos_of_neg_of_neg hs (by simpa)).le
   · rw [sign_pos h, eq_comm, sign_eq_one_iff] at hs
     positivity
 

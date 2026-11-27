@@ -118,7 +118,7 @@ theorem denseRange_zpow_iff_surjective {a : G} :
     · have H : range (a⁻¹ ^ · : ℤ → G) = range (a ^ · : ℤ → G) := by
         simpa only [← inv_zpow, zpow_neg, comp_def] using neg_surjective.range_comp (a ^ · : ℤ → G)
       rw [← H]
-      apply this <;> simpa only [H, one_lt_inv']
+      apply this <;> simpa only [H, one_lt_inv]
   intro b
   obtain ⟨m, hm, hm'⟩ : ∃ m : ℤ, a ^ m ∈ Ioo b (b * a * a) := by
     have hne : (Ioo b (b * a * a)).Nonempty := ⟨b * a, by simpa⟩

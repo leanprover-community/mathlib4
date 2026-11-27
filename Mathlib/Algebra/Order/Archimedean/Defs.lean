@@ -51,7 +51,7 @@ variable [CommMonoid R] [PartialOrder R] [MulLeftStrictMono R] [MulArchimedean R
 @[to_additive]
 theorem exists_lt_pow {a : R} (ha : 1 < a) (b : R) : ∃ n : ℕ, b < a ^ n :=
   let ⟨k, hk⟩ := MulArchimedean.arch b ha
-  ⟨k + 1, hk.trans_lt <| pow_lt_pow_right' ha k.lt_succ_self⟩
+  ⟨k + 1, hk.trans_lt <| pow_lt_pow_right ha k.lt_succ_self⟩
 
 end OrderedMonoid
 
@@ -60,7 +60,7 @@ variable [CommGroup R] [LinearOrder R] [IsOrderedMonoid R] [MulArchimedean R]
 
 @[to_additive]
 theorem exists_pow_lt {a : R} (ha : a < 1) (b : R) : ∃ n : ℕ, a ^ n < b :=
-  (exists_lt_pow (one_lt_inv'.mpr ha) b⁻¹).imp <| by simp
+  (exists_lt_pow (one_lt_inv.mpr ha) b⁻¹).imp <| by simp
 
 end OrderedGroup
 

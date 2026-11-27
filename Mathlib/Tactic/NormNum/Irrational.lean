@@ -71,8 +71,8 @@ private theorem not_power_nat_of_bounds {n k d : ℕ}
     n ≠ m ^ d := by
   intro h
   rw [h] at h_left h_right
-  have : k < m := lt_of_pow_lt_pow_left' d h_left
-  have : m < k + 1 := lt_of_pow_lt_pow_left' d h_right
+  have : k < m := lt_of_pow_lt_pow_left d h_left
+  have : m < k + 1 := lt_of_pow_lt_pow_left d h_right
   lia
 
 private theorem not_power_nat_pow_of_bounds {n k p q : ℕ}

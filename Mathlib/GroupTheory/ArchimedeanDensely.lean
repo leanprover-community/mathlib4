@@ -186,7 +186,7 @@ lemma Subgroup.isLeast_of_closure_iff_eq_mabs {a b : G} :
     · convert! @this (a⁻¹) ?_ (by simpa using le_of_not_ge ha) using 4
       · simp
       · rwa [mabs_inv]
-    rw [mabs, sup_eq_left.mpr ((inv_le_one'.mpr ha).trans ha)] at h
+    rw [mabs_of_one_le ha] at h
     rcases h with ⟨rfl, h⟩
     refine ⟨?_, ?_⟩
     · simp [h]
@@ -417,7 +417,7 @@ lemma LinearOrderedCommGroup.wellFoundedOn_setOfPred_ge_gt_iff_nonempty_discrete
   rw [← wellFoundedOn_setOfPred_le_lt_iff_nonempty_discrete (g := g⁻¹)]
   refine ⟨fun h ↦ (h.mapsTo (·⁻¹) ?_).mono' ?_, fun h ↦ (h.mapsTo (·⁻¹) ?_).mono' ?_⟩ <;>
   · intro
-    simp [Function.onFun, inv_le']
+    simp [Function.onFun, inv_le]
 
 @[deprecated (since := "2026-07-09")]
 alias LinearOrderedCommGroup.wellFoundedOn_setOf_ge_gt_iff_nonempty_discrete :=

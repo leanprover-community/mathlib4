@@ -89,7 +89,7 @@ theorem Subgroup.exists_isLeast_one_lt {H : Subgroup G} (hbot : H ≠ ⊥) {a : 
   by_contra hxmin
   simp only [IsLeast, not_and, mem_ofPred_eq, mem_lowerBounds, not_exists, not_forall,
     not_le] at hxmin
-  rcases hxmin x ⟨hxH, (one_le_pow_of_one_le'  h₀.le _).trans_lt hnx⟩ with ⟨y, ⟨hyH, hy₀⟩, hxy⟩
+  rcases hxmin x ⟨hxH, (one_le_pow_of_one_le h₀.le _).trans_lt hnx⟩ with ⟨y, ⟨hyH, hy₀⟩, hxy⟩
   obtain ⟨m, hm, hya⟩ := hex y hy₀
   rcases lt_or_ge m n with hmn | hnm
   · exact hmin m hmn ⟨y, hyH, hm, hya⟩

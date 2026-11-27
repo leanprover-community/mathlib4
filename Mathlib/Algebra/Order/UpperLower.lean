@@ -74,11 +74,11 @@ theorem IsLowerSet.mul_right (hs : IsLowerSet s) : IsLowerSet (s * t) := hs.toDu
 
 @[to_additive]
 theorem IsUpperSet.inv {α : Type*} [CommGroup α] [PartialOrder α] [IsOrderedMonoid α]
-  {s : Set α} (hs : IsUpperSet s) : IsLowerSet s⁻¹ := fun _ _ h ↦ hs <| inv_le_inv' h
+  {s : Set α} (hs : IsUpperSet s) : IsLowerSet s⁻¹ := fun _ _ h ↦ hs <| by gcongr
 
 @[to_additive]
 theorem IsLowerSet.inv {α : Type*} [CommGroup α] [PartialOrder α] [IsOrderedMonoid α]
-  {s : Set α} (hs : IsLowerSet s) : IsUpperSet s⁻¹ := fun _ _ h ↦ hs <| inv_le_inv' h
+  {s : Set α} (hs : IsLowerSet s) : IsUpperSet s⁻¹ := fun _ _ h ↦ hs <| by gcongr
 
 @[to_additive]
 theorem IsUpperSet.div_left {α : Type*} [CommGroup α] [PartialOrder α] [IsOrderedMonoid α]

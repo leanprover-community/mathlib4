@@ -86,12 +86,12 @@ meta def abs.unexpander : Lean.PrettyPrinter.Unexpander
 variable [MulLeftMono α]
 
 @[to_additive] lemma mabs_of_one_le (h : 1 ≤ a) : |a|ₘ = a :=
-  sup_eq_left.2 <| (inv_le_one'.2 h).trans h
+  sup_eq_left.2 <| by grw [← h]; simpa
 
 @[to_additive] lemma mabs_of_one_lt (h : 1 < a) : |a|ₘ = a := mabs_of_one_le h.le
 
 @[to_additive] lemma mabs_of_le_one (h : a ≤ 1) : |a|ₘ = a⁻¹ :=
-  sup_eq_right.2 <| h.trans (one_le_inv'.2 h)
+  sup_eq_right.2 <| by grw [h]; simpa
 
 @[to_additive] lemma mabs_of_lt_one (h : a < 1) : |a|ₘ = a⁻¹ := mabs_of_le_one h.le
 
@@ -238,7 +238,7 @@ variable [MulLeftMono α] {a b : α}
 
 @[to_additive] lemma inv_mabs_le (a : α) : |a|ₘ⁻¹ ≤ a := by
   obtain h | h := le_total 1 a
-  · simpa [mabs_of_one_le h] using (inv_le_one'.2 h).trans h
+  · grw [mabs_of_one_le h, ← h]; simpa
   · simp [mabs_of_le_one h]
 
 @[to_additive add_abs_nonneg] lemma one_le_mul_mabs (a : α) : 1 ≤ a * |a|ₘ := by
@@ -260,7 +260,7 @@ variable [MulRightMono α]
   rw [mabs_of_le_one ha, mabs_of_le_one (hab.trans ha)]; exact inv_le_inv_iff.mpr hab
 
 @[to_additive] lemma mabs_lt : |a|ₘ < b ↔ b⁻¹ < a ∧ a < b :=
-  max_lt_iff.trans <| and_comm.trans <| by rw [inv_lt']
+  max_lt_iff.trans <| and_comm.trans <| by rw [inv_lt]
 
 @[to_additive] lemma inv_lt_of_mabs_lt (h : |a|ₘ < b) : b⁻¹ < a := (mabs_lt.mp h).1
 

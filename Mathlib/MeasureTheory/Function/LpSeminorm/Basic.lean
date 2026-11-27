@@ -1035,7 +1035,7 @@ variable {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
 theorem ae_eq_zero_of_eLpNorm'_eq_zero {f : α → ε} (hq0 : 0 ≤ q) (hf : AEStronglyMeasurable f μ)
     (h : eLpNorm' f q μ = 0) : f =ᵐ[μ] 0 := by
   simp only [eLpNorm'_eq_lintegral_eNorm, lintegral_eq_zero_iff' (hf.eNorm.pow_const q), one_div,
-    ENNReal.rpow_eq_zero_iff, inv_pos, inv_neg'', hq0.not_gt, and_false, or_false] at h
+    ENNReal.rpow_eq_zero_iff, inv_pos, inv_neg', hq0.not_gt, and_false, or_false] at h
   refine h.left.mono fun x hx ↦ ?_
   simp only [Pi.ofNat_apply, ENNReal.rpow_eq_zero_iff, eNorm_eq_zero, h.2.not_gt, and_false,
     or_false] at hx

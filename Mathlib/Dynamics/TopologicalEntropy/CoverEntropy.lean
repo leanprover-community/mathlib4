@@ -126,13 +126,13 @@ lemma IsDynCoverOf.iterate_le_pow (F_inv : MapsTo T F F) [U.IsSymm] (n : ℕ) {s
   rcases F.eq_empty_or_nonempty with rfl | F_nemp
   · exact ⟨∅, by simp⟩
   have _ : Nonempty X := F_nemp.nonempty
-  have s_nemp := h.nonempty F_nemp
+  have s_nemp : s.Nonempty := h.nonempty F_nemp
   obtain ⟨x, x_F⟩ := F_nemp
   rcases m.eq_zero_or_pos with rfl | m_pos
   · use {x}
     simp only [zero_mul, Finset.coe_singleton, Finset.card_singleton]
     exact ⟨isDynCoverOf_zero T F (U ○ U) (singleton_nonempty x),
-      one_le_pow_of_one_le' (Nat.one_le_of_lt (Finset.Nonempty.card_pos s_nemp)) n⟩
+      Nat.one_le_pow _ _ s_nemp.card_pos⟩
   -- The proof goes as follows. Given an orbit of length `(m * n)` starting from `y`, each of its
   -- iterates `y`, `T^[m] y`, `T^[m]^[2] y` ... is `(dynEntourage T U m)`-close to a point of `s`.
   -- Conversely, given a sequence `t 0`, `t 1`, `t 2` of points in `s`, we choose a point
@@ -170,8 +170,6 @@ lemma IsDynCoverOf.iterate_le_pow (F_inv : MapsTo T F F) [U.IsSymm] (n : ℕ) {s
     -- such that `y`, `T^[m] y`, `T^[m]^[2] y` ... is `(dynEntourage T U m)`-close to `t 0`, `t 1`,
     -- `t 2`... Then `dyncover t` is a point of `range dyncover` which satisfies the conclusion
     -- of the lemma.
-    rw [Finset.coe_nonempty] at s_nemp
-    have _ : Nonempty s := Finset.Nonempty.coe_sort s_nemp
     intro y y_F
     have key : ∀ k : Fin n,
         ∃ z : s, y ∈ T^[m * k] ⁻¹' (dynEntourage T U m).ball z := by
@@ -180,6 +178,7 @@ lemma IsDynCoverOf.iterate_le_pow (F_inv : MapsTo T F F) [U.IsSymm] (n : ℕ) {s
       simp only [Finset.mem_coe] at this
       obtain ⟨z, z_s, hz⟩ := this
       exact ⟨⟨z, z_s⟩, hz⟩
+    have : Nonempty s := s_nemp.coe_sort
     choose! t ht using key
     simp only [toFinset_range, Finset.coe_image, Finset.coe_univ, image_univ, mem_range,
       exists_exists_eq_and, sn]

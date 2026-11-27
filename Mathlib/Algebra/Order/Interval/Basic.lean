@@ -190,7 +190,7 @@ variable [Monoid α] [Preorder α]
 @[to_additive]
 instance NonemptyInterval.instPow [MulLeftMono α] [MulRightMono α] :
     Pow (NonemptyInterval α) ℕ :=
-  ⟨fun s n => ⟨s.toProd ^ n, pow_le_pow_left' s.fst_le_snd _⟩⟩
+  ⟨fun s n => ⟨s.toProd ^ n, pow_le_pow_left s.fst_le_snd _⟩⟩
 
 namespace NonemptyInterval
 
@@ -375,7 +375,7 @@ section Div
 variable [Preorder α] [CommGroup α] [MulLeftMono α]
 
 instance : Div (NonemptyInterval α) :=
-  ⟨fun s t => ⟨(s.fst / t.snd, s.snd / t.fst), div_le_div'' s.fst_le_snd t.fst_le_snd⟩⟩
+  ⟨fun s t => ⟨(s.fst / t.snd, s.snd / t.fst), div_le_div s.fst_le_snd t.fst_le_snd⟩⟩
 
 instance : Div (Interval α) :=
   ⟨WithBot.map₂ (· / ·)⟩
@@ -397,7 +397,7 @@ theorem coe_div_interval : (↑(s / t) : Interval α) = s / t :=
   rfl
 
 theorem div_mem_div (ha : a ∈ s) (hb : b ∈ t) : a / b ∈ s / t :=
-  ⟨div_le_div'' ha.1 hb.2, div_le_div'' ha.2 hb.1⟩
+  ⟨div_le_div ha.1 hb.2, div_le_div ha.2 hb.1⟩
 
 @[simp]
 theorem pure_div_pure : pure a / pure b = pure (a / b) :=
@@ -430,7 +430,7 @@ variable [CommGroup α] [PartialOrder α] [IsOrderedMonoid α]
 
 @[to_additive]
 instance : Inv (NonemptyInterval α) :=
-  ⟨fun s => ⟨(s.snd⁻¹, s.fst⁻¹), inv_le_inv' s.fst_le_snd⟩⟩
+  ⟨fun s => ⟨(s.snd⁻¹, s.fst⁻¹), inv_le_inv s.fst_le_snd⟩⟩
 
 @[to_additive]
 instance : Inv (Interval α) :=
@@ -454,7 +454,7 @@ theorem coe_inv_interval : (↑(s⁻¹) : Interval α) = (↑s)⁻¹ :=
 
 @[to_additive]
 theorem inv_mem_inv (ha : a ∈ s) : a⁻¹ ∈ s⁻¹ :=
-  ⟨inv_le_inv' ha.2, inv_le_inv' ha.1⟩
+  ⟨inv_le_inv ha.2, inv_le_inv ha.1⟩
 
 @[to_additive (attr := simp)]
 theorem inv_pure : (pure a)⁻¹ = pure a⁻¹ :=

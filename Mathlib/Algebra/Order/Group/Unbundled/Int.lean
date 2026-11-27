@@ -124,9 +124,11 @@ theorem abs_ediv_le_abs : ∀ a b : ℤ, |a / b| ≤ |a| :=
 theorem abs_sign_of_ne_zero {z : ℤ} (hz : z ≠ 0) : |z.sign| = 1 := by
   rw [abs_eq_natAbs, natAbs_sign_of_ne_zero hz, Int.ofNat_one]
 
-protected theorem sign_eq_ediv_abs' (a : ℤ) : sign a = a / |a| :=
+protected theorem sign_eq_ediv_abs (a : ℤ) : sign a = a / |a| :=
   if az : a = 0 then by simp [az]
   else (Int.ediv_eq_of_eq_mul_left (mt abs_eq_zero.1 az) (sign_mul_abs _).symm).symm
+
+@[deprecated (since := "2026-11-22")] protected alias sign_eq_ediv_abs' := Int.sign_eq_ediv_abs
 
 protected theorem sign_eq_abs_ediv (a : ℤ) : sign a = |a| / a :=
   if az : a = 0 then by simp [az]
