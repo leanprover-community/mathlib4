@@ -279,6 +279,14 @@ theorem coe_fixingSubgroupEquiv_symm_apply (σ : Gal(E/K)) :
     ⇑(K.fixingSubgroupEquiv.symm σ).val = ⇑σ :=
   rfl
 
+@[simp]
+theorem fixingSubgroupEquiv_apply_apply (σ : fixingSubgroup K) (x : E) :
+    fixingSubgroupEquiv K σ x = σ • x := rfl
+
+@[simp]
+theorem fixingSubgroupEquiv_symm_apply_apply (σ : Gal(E/K)) (x : E) :
+    (fixingSubgroupEquiv K).symm σ • x = σ x := rfl
+
 theorem fixingSubgroup_fixedField [FiniteDimensional F E] : fixingSubgroup (fixedField H) = H := by
   have H_le : H ≤ fixingSubgroup (fixedField H) :=
     (le_fixedField_iff_le_fixingSubgroup _ _).mp le_rfl
@@ -378,6 +386,11 @@ def intermediateFieldEquivSubgroup [FiniteDimensional F E] [IsGalois F E] :
     rw [← fixedField_fixingSubgroup L, le_fixedField_iff_le_fixingSubgroup,
       fixedField_fixingSubgroup L]
     rfl
+
+theorem _root_.IntermediateField.fixingSubgroup_inf [FiniteDimensional F E] [IsGalois F E]
+    {K L : IntermediateField F E} :
+    (K ⊓ L).fixingSubgroup = K.fixingSubgroup ⊔ L.fixingSubgroup :=
+  intermediateFieldEquivSubgroup.map_inf K L
 
 section
 variable [FiniteDimensional F E] [IsGalois F E]
