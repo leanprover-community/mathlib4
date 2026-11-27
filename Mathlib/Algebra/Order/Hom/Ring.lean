@@ -201,10 +201,6 @@ theorem toRingHom_apply (f : α →+*o β) (a : α) : (f : α →+* β) a = f a 
 theorem coe_orderAddMonoidHom_apply (f : α →+*o β) (a : α) : (.ofClass f : α →+o β) a = f a :=
   rfl
 
-theorem orderMonoidWithZeroHomOfClass_apply (f : α →+*o β) (a : α) :
-    (.ofClass f : α →*₀o β) a = f a :=
-  rfl
-
 @[deprecated OrderMonoidWithZeroHom.coe_ofClass +typeChanged (since := "2026-11-27")]
 theorem coe_orderMonoidWithZeroHom_apply (f : α →+*o β) (a : α) :
     ⇑(OrderMonoidWithZeroHomClass.toOrderMonoidWithZeroHom f) a = f a :=

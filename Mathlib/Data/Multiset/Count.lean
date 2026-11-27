@@ -107,7 +107,7 @@ theorem countP_congr {s s' : Multiset α} (hs : s = s')
   revert hs hp
   exact Quot.induction_on₂ s s'
     (fun l l' hs hp => by
-      simp only [quot_mk_to_coe'', coe_eq_coe] at hs
+      simp only [quot_mk_to_coe', coe_eq_coe] at hs
       apply hs.countP_congr
       simpa using hp)
 
@@ -222,7 +222,7 @@ variable {s : Multiset α} {a : α}
 
 theorem nodup_iff_count_le_one [DecidableEq α] {s : Multiset α} : Nodup s ↔ ∀ a, count a s ≤ 1 :=
   Quot.induction_on s fun _l => by
-    simp only [quot_mk_to_coe'', coe_nodup, coe_count]
+    simp only [quot_mk_to_coe', coe_nodup, coe_count]
     exact List.nodup_iff_count_le_one
 
 theorem nodup_iff_count_eq_one [DecidableEq α] : Nodup s ↔ ∀ a ∈ s, count a s = 1 :=

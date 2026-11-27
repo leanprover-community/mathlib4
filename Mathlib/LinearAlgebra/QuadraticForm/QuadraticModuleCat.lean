@@ -37,7 +37,7 @@ open QuadraticForm QuadraticMap
 instance : CoeSort (QuadraticModuleCat.{v} R) (Type v) :=
   ⟨(·.carrier)⟩
 
-@[simp] theorem moduleCat_of_toModuleCat (X : QuadraticModuleCat.{v} R) :
+theorem moduleCat_of_toModuleCat (X : QuadraticModuleCat.{v} R) :
     ↧X.toModuleCat = X.toModuleCat :=
   rfl
 

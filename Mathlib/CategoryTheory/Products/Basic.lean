@@ -40,7 +40,7 @@ section
 variable (C : Type u₁) [CategoryStruct.{v₁} C] (D : Type u₂) [CategoryStruct.{v₂} D]
 
 /-- `CategoryStruct.prod C D` gives the Cartesian product of two `CategoryStruct`'s. -/
-@[simps id_fst id_snd comp_fst comp_snd Hom]
+@[simps id_fst id_snd Hom]
 instance prod : CategoryStruct.{max v₁ v₂} (C × D) where
   Hom X Y := (X.1 ⟶ Y.1) × (X.2 ⟶ Y.2)
   id X := ⟨𝟙 X.1, 𝟙 X.2⟩
@@ -85,6 +85,16 @@ theorem prod_id' (X : C) (Y : D) : 𝟙 (X, Y) = (𝟙 X, 𝟙 Y) :=
 @[simp]
 theorem prod_comp {P Q R : C} {S T U : D} (f : (P, S) ⟶ (Q, T)) (g : (Q, T) ⟶ (R, U)) :
     f ≫ g = f.1 ≫ g.1 ×ₘ f.2 ≫ g.2 :=
+  rfl
+
+@[deprecated prod_comp +typeChanged (since := "2026-11-24")]
+theorem prod_comp_fst {P Q R : C} {S T U : D} (f : (P, S) ⟶ (Q, T)) (g : (Q, T) ⟶ (R, U)) :
+    (f ≫ g).1 = f.1 ≫ g.1 :=
+  rfl
+
+@[deprecated prod_comp +typeChanged (since := "2026-11-24")]
+theorem prod_comp_snd {P Q R : C} {S T U : D} (f : (P, S) ⟶ (Q, T)) (g : (Q, T) ⟶ (R, U)) :
+    (f ≫ g).2 = f.2 ≫ g.2 :=
   rfl
 
 /-! Two `eqToHom` lemmas about projections. -/

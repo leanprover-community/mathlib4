@@ -642,7 +642,7 @@ theorem prod_multiset_count_of_subset [DecidableEq M] (m : Multiset M) (s : Fins
     (hs : m.toFinset ⊆ s) : m.prod = ∏ i ∈ s, i ^ m.count i := by
   revert hs
   refine Quot.induction_on m fun l => ?_
-  simp only [quot_mk_to_coe'', prod_coe, coe_count]
+  simp only [quot_mk_to_coe', prod_coe, coe_count]
   apply prod_list_count_of_subset l s
 
 /-- For any product along `{0, ..., n - 1}` of a commutative-monoid-valued function, we can verify
