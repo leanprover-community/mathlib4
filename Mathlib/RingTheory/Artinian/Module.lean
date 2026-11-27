@@ -5,10 +5,12 @@ Authors: Chris Hughes
 -/
 module
 
+public import Mathlib.Algebra.Module.Torsion.Basic
 public import Mathlib.Data.SetLike.Fintype
 public import Mathlib.Order.Filter.EventuallyConst
 public import Mathlib.RingTheory.Artinian.Defs
 public import Mathlib.RingTheory.Jacobson.Semiprimary
+public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 public import Mathlib.RingTheory.Spectrum.Maximal.Basic
 public import Mathlib.RingTheory.Spectrum.Prime.Basic
 
@@ -673,3 +675,95 @@ instance : IsSemiprimaryRing R where
 end Ring
 
 end IsArtinianRing
+
+/-- A finite module annihilated by a maximal ideal is Artinian, since it
+is finite-dimensional over the residue field. -/
+theorem isArtinian_of_finite_of_maximal_annihilates
+    {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+    [Module.Finite R M] (I : Ideal R) (hI : I.IsMaximal)
+    (h : Module.IsTorsionBySet R M I) : IsArtinian R M := by
+  let : Field (R ⧸ I) := Ideal.Quotient.field I
+  let : Module (R ⧸ I) M := h.module
+  let : IsScalarTower R (R ⧸ I) M := h.isScalarTower
+  have : Module.Finite (R ⧸ I) M := by
+    obtain ⟨s, hs⟩ := (Module.Finite.fg_top : (⊤ : Submodule R M).FG)
+    have hle : Submodule.span R (↑s : Set M) ≤
+        (Submodule.span (R ⧸ I) (↑s : Set M)).restrictScalars R :=
+      Submodule.span_le.mpr (by
+        intro x hx
+        change x ∈ Submodule.span (R ⧸ I) (↑s : Set M)
+        exact Submodule.subset_span hx)
+    refine ⟨⟨s, eq_top_iff.mpr (fun x _ => ?_)⟩⟩
+    exact hle (by rw [hs]; trivial)
+  have hk : IsArtinian (R ⧸ I) M := inferInstance
+  let lift (p : Submodule R M) : Submodule (R ⧸ I) M :=
+    { carrier := p
+      zero_mem' := p.zero_mem
+      add_mem' := fun ha hb => p.add_mem ha hb
+      smul_mem' := by rintro ⟨b⟩ x hx; exact p.smul_mem b hx }
+  have hstrict : StrictMono lift := by
+    intro a b hab
+    change a < b
+    exact hab
+  exact Subrelation.wf (fun {a b : Submodule R M} (hab : a < b) =>
+    hstrict hab) (InvImage.wf lift hk)
+
+/-- A finite module killed by a power of the maximal ideal of a
+Noetherian local ring is Artinian. The proof uses the successive
+quotients by the maximal-ideal filtration. -/
+theorem isArtinian_of_maximal_pow_smul_eq_bot
+    {R : Type*} [CommRing R] [IsLocalRing R] [IsNoetherianRing R]
+    (n : ℕ) : ∀ (M : Type*) [AddCommGroup M] [Module R M] [Module.Finite R M],
+      (IsLocalRing.maximalIdeal R) ^ n • (⊤ : Submodule R M) = ⊥ →
+        IsArtinian R M := by
+  let I := IsLocalRing.maximalIdeal R
+  induction n with
+  | zero =>
+    intro M _ _ _ h
+    have htop : (⊤ : Submodule R M) = ⊥ := by simpa [I] using h
+    have : Subsingleton M := ⟨by
+      intro x y
+      have hx : x ∈ (⊤ : Submodule R M) := Submodule.mem_top
+      have hy : y ∈ (⊤ : Submodule R M) := Submodule.mem_top
+      rw [htop] at hx hy
+      have hx0 : x = 0 := by simpa using hx
+      have hy0 : y = 0 := by simpa using hy
+      exact hx0.trans hy0.symm⟩
+    infer_instance
+  | succ n ih =>
+    intro M _ _ _ h
+    have : IsNoetherian R M := inferInstance
+    let N : Submodule R M := I • (⊤ : Submodule R M)
+    have : Module.Finite R N := inferInstance
+    have hAnnN : Module.IsTorsionBySet R N (↑(I ^ n) : Set R) := by
+      intro x a
+      rcases x with ⟨v, hv⟩
+      apply Subtype.ext
+      change (a : R) • v = 0
+      change v ∈ I • (⊤ : Submodule R M) at hv
+      refine Submodule.smul_induction_on (p := fun t => (a : R) • t = 0)
+        hv ?_ ?_
+      · intro b hb w _
+        have hab : (a : R) * b ∈ I ^ (n + 1) := by
+          rw [pow_succ]
+          exact Ideal.mul_mem_mul a.property hb
+        have hz : ((a : R) * b) • w ∈
+            I ^ (n + 1) • (⊤ : Submodule R M) :=
+          Submodule.smul_mem_smul hab Submodule.mem_top
+        rw [h] at hz
+        simpa only [mul_smul] using (by simpa using hz : ((a : R) * b) • w = 0)
+      · intro v w hv hw
+        simp [smul_add, hv, hw]
+    have hNpow : I ^ n • (⊤ : Submodule R N) = ⊥ := by
+      apply eq_bot_iff.mpr
+      apply Submodule.smul_le.mpr
+      intro a ha x _
+      have hz : a • x = 0 := hAnnN (x := x) (a := ⟨a, ha⟩)
+      simp [hz]
+    have : IsArtinian R N := ih N hNpow
+    have : IsArtinian R (M ⧸ N) :=
+      isArtinian_of_finite_of_maximal_annihilates I
+        (IsLocalRing.maximalIdeal.isMaximal R)
+        (Module.isTorsionBySet_quotient_ideal_smul M I)
+    exact isArtinian_of_range_eq_ker N.subtype N.mkQ (by
+      rw [Submodule.range_subtype, Submodule.ker_mkQ])
