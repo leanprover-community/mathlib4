@@ -60,15 +60,13 @@ namespace Ideal
 open Polynomial
 
 /-- If `n` divides `g(a)`, then `g(θ)` belongs to the ideal spanned by `n` and `θ - a`. -/
-theorem mem_span_pair_sub_of_dvd_eval {R : Type*} [CommRing R] {θ α : R} (n a : ℤ) (g : ℤ[X])
-    (hα : aeval θ g = α) (hg : n ∣ g.eval a) : α ∈ span {(n : R), θ - a} := by
-  obtain ⟨q, hq⟩ := X_sub_C_dvd_sub_C_eval (p := g) (a := a)
+theorem mem_span_pair_sub_of_dvd_eval {R S : Type*} [CommRing R] [CommRing S] [Algebra S R]
+    (θ : R) {n a : S} {g : S[X]} (hg : n ∣ g.eval a) :
+    aeval θ g ∈ span {algebraMap S R n, θ - algebraMap S R a} := by
   obtain ⟨k, hk⟩ := hg
-  rw [mem_span_pair]
-  refine ⟨k, aeval θ q, ?_⟩
-  have := congr_arg (aeval θ) hq
-  simp [hk, hα] at this
-  grind
+  obtain ⟨q, hq⟩ := sub_dvd_eval_sub θ (algebraMap S R a) (g.map (algebraMap S R))
+  rw [eval_map_algebraMap, eval_map, eval₂_at_apply, hk, map_mul, sub_eq_iff_eq_add'] at hq
+  exact mem_span_pair.mpr ⟨algebraMap S R k, q, by grind⟩
 
 end Ideal
 
