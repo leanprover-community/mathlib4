@@ -536,10 +536,8 @@ theorem coe_comp (f' : G' →g G'') (f : G →g G') : ⇑(f'.comp f) = f' ∘ f 
 theorem comp_assoc (f : G'' →g G''') (g : G' →g G'') (h : G →g G') :
     f.comp (g.comp h) = (f.comp g).comp h := rfl
 
-@[simp]
 theorem comp_id (f : G →g G') : f.comp .id = f := rfl
 
-@[simp]
 theorem id_comp (f : G →g G') : .comp .id f = f := rfl
 
 @[simp]
@@ -560,7 +558,7 @@ abbrev refl : G ↪g G :=
 abbrev toHom : G →g G' :=
   f.toRelHom
 
-@[simp] lemma coe_toHom (f : G ↪g H) : ⇑f.toHom = f := rfl
+lemma coe_toHom (f : G ↪g H) : ⇑f.toHom = f := rfl
 
 @[simp] theorem map_adj_iff {v w : V} : G'.Adj (f v) (f w) ↔ G.Adj v w :=
   f.map_rel_iff
@@ -651,17 +649,14 @@ variable {G'' : SimpleGraph X} {G''' : SimpleGraph Y}
 abbrev comp (f' : G' ↪g G'') (f : G ↪g G') : G ↪g G'' :=
   f.trans f'
 
-@[simp]
 theorem coe_comp (f' : G' ↪g G'') (f : G ↪g G') : ⇑(f'.comp f) = f' ∘ f :=
   rfl
 
 theorem comp_assoc (f : G'' ↪g G''') (g : G' ↪g G'') (h : G ↪g G') :
     f.comp (g.comp h) = (f.comp g).comp h := rfl
 
-@[simp]
 theorem comp_refl (f : G ↪g G') : f.comp .refl = f := rfl
 
-@[simp]
 theorem refl_comp (f : G ↪g G') : .comp .refl f = f := rfl
 
 /-- Graph embeddings from `G` to `H` are the same thing as graph embeddings from `Gᶜ` to `Hᶜ`. -/
@@ -851,10 +846,8 @@ theorem coe_comp (f' : G' ≃g G'') (f : G ≃g G') : ⇑(f'.comp f) = f' ∘ f 
 theorem comp_assoc (f : G'' ≃g G''') (g : G' ≃g G'') (h : G ≃g G') :
     f.comp (g.comp h) = (f.comp g).comp h := rfl
 
-@[simp]
 theorem comp_refl (f : G ≃g G') : f.comp .refl = f := rfl
 
-@[simp]
 theorem refl_comp (f : G ≃g G') : .comp .refl f = f := rfl
 
 section induce

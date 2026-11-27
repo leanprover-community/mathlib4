@@ -171,11 +171,12 @@ theorem measurable_rnDeriv (s : SignedMeasure α) (μ : Measure α) : Measurable
   fun_prop
 
 theorem integrable_rnDeriv (s : SignedMeasure α) (μ : Measure α) : Integrable (rnDeriv s μ) μ := by
-  refine Integrable.sub ?_ ?_ <;>
-    · constructor
-      · apply Measurable.aestronglyMeasurable
-        fun_prop
-      exact hasFiniteIntegral_toReal_of_lintegral_ne_top (lintegral_rnDeriv_lt_top _ μ).ne
+  refine Integrable.sub ?_ ?_
+  all_goals
+    constructor
+    · apply Measurable.aestronglyMeasurable
+      fun_prop
+    exact hasFiniteIntegral_toReal_of_lintegral_ne_top (lintegral_rnDeriv_lt_top _ μ).ne
 
 variable (s μ)
 

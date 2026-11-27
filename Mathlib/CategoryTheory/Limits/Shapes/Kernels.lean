@@ -95,7 +95,7 @@ theorem KernelFork.app_one (s : KernelFork f) : s.π.app one = 0 := by
 abbrev KernelFork.ofι {Z : C} (ι : Z ⟶ X) (w : ι ≫ f = 0) : KernelFork f :=
   Fork.ofι ι <| by rw [w, HasZeroMorphisms.comp_zero]
 
-@[to_dual (attr := simp)]
+@[to_dual]
 theorem KernelFork.ι_ofι {X Y P : C} (f : X ⟶ Y) (ι : P ⟶ X) (w : ι ≫ f = 0) :
     Fork.ι (KernelFork.ofι ι w) = ι := rfl
 

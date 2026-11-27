@@ -1060,7 +1060,6 @@ abbrev multifork : Multifork I :=
 theorem multifork_ι (a) : (Multiequalizer.multifork I).ι a = Multiequalizer.ι I a :=
   rfl
 
-@[simp]
 theorem multifork_π_app_left (a) :
     (Multiequalizer.multifork I).π.app (WalkingMulticospan.left a) = Multiequalizer.ι I a :=
   rfl

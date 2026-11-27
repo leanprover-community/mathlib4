@@ -383,8 +383,8 @@ alias OrderMonoidWithZeroHom.ofClass_monotone := ofClass_eq_toMonoidWithZeroHom
 /-- An ordered monoid isomorphism `Γ₀ ≃ Γ'₀` induces an equivalence
 `Valuation R Γ₀ ≃ Valuation R Γ'₀`. -/
 def congr (f : Γ₀ ≃*o Γ'₀) : Valuation R Γ₀ ≃ Valuation R Γ'₀ where
-  toFun := map f
-  invFun := map f.symm
+  toFun := map f.toOrderMonoidWithZeroHom
+  invFun := map f.symm.toOrderMonoidWithZeroHom
   left_inv _ := by ext; simp [map]
   right_inv _ := by ext; simp [map]
 

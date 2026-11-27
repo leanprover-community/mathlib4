@@ -213,7 +213,6 @@ theorem achart_def (x : M) : achart H x = ⟨chartAt H x, chart_mem_atlas H x⟩
 theorem coe_achart (x : M) : (achart H x : OpenPartialHomeomorph M H) = chartAt H x :=
   rfl
 
-@[simp, mfld_simps]
 theorem achart_val (x : M) : (achart H x).val = chartAt H x :=
   rfl
 

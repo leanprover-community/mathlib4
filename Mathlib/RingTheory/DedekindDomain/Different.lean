@@ -953,14 +953,14 @@ theorem not_dvd_differentIdeal_iff
     have : Algebra.IsSeparable (A ⧸ P.under A) (B ⧸ P) := by
       contrapose H
       exact dvd_differentIdeal_of_not_isSeparable A hp P H
-    · rw [← Ideal.ramificationIdx_eq_one_iff_of_isSeparable,
-        Ideal.IsDedekindDomain.ramificationIdx_eq_multiplicity (P.under A) P hp']
-      apply multiplicity_eq_of_dvd_of_not_dvd <;> rw [Ideal.dvd_iff_le]
-      · simp [Ideal.map_le_iff_le_comap]
-      · contrapose H
-        rw [← pow_one P, show 1 = 2 - 1 by simp]
-        apply pow_sub_one_dvd_differentIdeal _ _ _ hp
-        simpa [Ideal.dvd_iff_le] using H
+    rw [← Ideal.ramificationIdx_eq_one_iff_of_isSeparable,
+      Ideal.IsDedekindDomain.ramificationIdx_eq_multiplicity (P.under A) P hp']
+    apply multiplicity_eq_of_dvd_of_not_dvd <;> rw [Ideal.dvd_iff_le]
+    · simp [Ideal.map_le_iff_le_comap]
+    · contrapose H
+      rw [← pow_one P, show 1 = 2 - 1 by simp]
+      apply pow_sub_one_dvd_differentIdeal _ _ _ hp
+      simpa [Ideal.dvd_iff_le] using H
   · intro H
     obtain ⟨Q, h₁, h₂⟩ := Ideal.eq_prime_pow_mul_coprime hp' P
     rw [← Ideal.IsDedekindDomain.ramificationIdx_eq_normalizedFactors_count _ _ hp',

@@ -471,7 +471,7 @@ instance [AddMonoid R] : Monoid (MinTropical R) where
   npow_zero := fun _ => untrop_injective <| by simp
   npow_succ := fun _ _ => untrop_injective <| succ_nsmul _ _
 
-@[to_dual (attr := simp)]
+@[to_dual]
 theorem trop_nsmul [AddMonoid R] (x : R) (n : ℕ) : trop (n • x) = trop x ^ n :=
   rfl
 
@@ -491,11 +491,11 @@ instance [AddGroup R] : Group (MinTropical R) where
 instance [AddCommGroup R] : CommGroup (MinTropical R) where
   mul_comm := fun _ _ => untrop_injective (add_comm _ _)
 
-@[to_dual (attr := simp)]
+@[to_dual]
 theorem untrop_zpow [AddGroup R] (x : MinTropical R) (n : ℤ) : untrop (x ^ n) = n • untrop x :=
   rfl
 
-@[to_dual (attr := simp)]
+@[to_dual]
 theorem trop_zsmul [AddGroup R] (x : R) (n : ℤ) : trop (n • x) = trop x ^ n :=
   rfl
 

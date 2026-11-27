@@ -297,7 +297,6 @@ theorem coe_restrict (f : C(α, β)) : ⇑(f.restrict s) = s.domRestrict f :=
 theorem restrict_apply (f : C(α, β)) (s : Set α) (x : s) : f.restrict s x = f x :=
   rfl
 
-@[simp]
 theorem restrict_apply_mk (f : C(α, β)) (s : Set α) (x : α) (hx : x ∈ s) :
     f.restrict s ⟨x, hx⟩ = f x :=
   rfl

@@ -60,7 +60,6 @@ noncomputable def fintype {X : FintypeCat} : Fintype X :=
   Fintype.ofFinite X.obj
 
 /-- The fully faithful embedding of `FintypeCat` into the category of types. -/
-@[simps!]
 abbrev incl : FintypeCat ⥤ Type* := ObjectProperty.ι _
 
 instance : incl.Full := ObjectProperty.full_ι _

@@ -107,7 +107,6 @@ section
 
 attribute [local instance] coeFromHom
 
-@[simp]
 theorem coe_hom {X Y : T} (f : Y ⟶ X) : (f : Over X).hom = f :=
   rfl
 

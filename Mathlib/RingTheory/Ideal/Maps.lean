@@ -292,7 +292,6 @@ theorem smul_top_eq_map {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra
   Eq.trans (smul_restrictScalars I (⊤ : Ideal S)).symm <|
     congrArg _ <| Eq.trans (Ideal.smul_eq_mul _ _) (Ideal.mul_top _)
 
-@[simp]
 theorem coe_restrictScalars {R S : Type*} [Semiring R] [Semiring S] [Module R S]
     [IsScalarTower R S S] (I : Ideal S) : (I.restrictScalars R : Set S) = ↑I :=
   rfl

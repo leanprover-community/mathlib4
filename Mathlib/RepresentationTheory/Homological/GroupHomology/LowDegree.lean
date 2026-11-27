@@ -420,7 +420,6 @@ variable (A) in
 abbrev boundariesToCycles₁ : boundaries₁ A →ₗ[k] cycles₁ A :=
   Submodule.inclusion (boundaries₁_le_cycles₁ A)
 
-@[simp]
 lemma boundariesToCycles₁_apply (x : boundaries₁ A) :
     (boundariesToCycles₁ A x).val = x.val := rfl
 
@@ -457,7 +456,6 @@ variable (A) in
 abbrev boundariesToCycles₂ : boundaries₂ A →ₗ[k] cycles₂ A :=
   Submodule.inclusion (boundaries₂_le_cycles₂ A)
 
-@[simp]
 lemma boundariesToCycles₂_apply (x : boundaries₂ A) :
     (boundariesToCycles₂ A x).val = x.val := rfl
 
