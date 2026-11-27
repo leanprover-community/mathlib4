@@ -37,7 +37,7 @@ This file is opt-in so that `dyadic_interval` doesn't import unnecessary theorie
 The number of halvings beyond the size of the argument is `⌊√prec⌋`, which is not tuned. A smaller
 number is faster for an argument with few bits.
 
-The series is summed exactly, so an argument with many bits is slow at high precision.
+The series is summed without rounding, so an argument with many bits is slow at high precision.
 -/
 
 public section
@@ -51,22 +51,19 @@ namespace Inclusion
 namespace IntervalDyadicReal
 open Inclusion.IntervalDyadicReal
 
-/-- An enclosure of `cos (x / 2 ^ k)` for `0 ≤ x ≤ 2 ^ k` by the first `n` terms of its series and
-the remainder bound of `Real.abs_cos_sub_sum_range_le`, rounded outward to precision `prec`. -/
+/-- An enclosure of `cos x` for `|x| ≤ 1` by the first `n` terms of its series and the remainder
+bound of `Real.abs_cos_sub_sum_range_le`, rounded outward to precision `prec`. -/
 @[expose]
-def cosShiftRightTaylor (x : Dyadic) (k n prec : ℕ) : Interval Dyadic :=
-  let X := hypergeomPartialSum (fun _ ↦ -(x >>> k).toRat.num ^ 2)
-    (fun j ↦ (x >>> k).toRat.den ^ 2 * ((2 * j + 1) * (2 * j + 2))) 0 n
+def cosTaylor (x : Dyadic) (n prec : ℕ) : Interval Dyadic :=
+  let X := hypergeomPartialSum (fun _ ↦ -x.toRat.num ^ 2)
+    (fun j ↦ x.toRat.den ^ 2 * ((2 * j + 1) * (2 * j + 2))) 0 n
   ratBall X.sumNum |X.termNum| X.den prec
 
-theorem cosShiftRightTaylor_mem {x : Dyadic} {k : ℕ} (h0 : 0 ≤ x.toReal) (hx : x.toReal ≤ 2 ^ k)
-    (n prec : ℕ) : Real.cos (x.toReal / 2 ^ k) ∈ cosShiftRightTaylor x k n prec := by
-  have hs : x.toReal / 2 ^ k = (x >>> k).toRat := by
-    simp [Dyadic.toReal, Dyadic.toRat_shiftRight_nat]
-  have h := Real.abs_cos_sub_sum_range_le (r := x.toReal / 2 ^ k)
-    (by rwa [abs_of_nonneg (by positivity), div_le_one (by positivity)]) n
-  rw [cosShiftRightTaylor, hs, Rat.cast_def] at *
-  generalize (x >>> k).toRat = q at *
+theorem cosTaylor_mem {x : Dyadic} (hx : |x.toReal| ≤ 1) (n prec : ℕ) :
+    Real.cos x.toReal ∈ cosTaylor x n prec := by
+  have h := Real.abs_cos_sub_sum_range_le hx n
+  rw [cosTaylor, Dyadic.toReal, Rat.cast_def] at *
+  generalize x.toRat = q at *
   rw [← hypergeomPartialSum_div (Int.castRingHom ℝ) (fun _ ↦ -q.num ^ 2)
     (fun j ↦ q.den ^ 2 * ((2 * j + 1) * (2 * j + 2))) (fun j ↦ by positivity)
     (fun m ↦ (-1) ^ m * ((q.num : ℝ) / q.den) ^ (2 * m) / (2 * m)!) (fun j ↦ by
@@ -120,7 +117,7 @@ def cos (I : Interval Dyadic) (prec : ℕ) : Interval Dyadic :=
     if l + 7 < u then Interval.Icc (-1 : Dyadic) (1 : Dyadic) else
       let k := Nat.clog 2 ⌈b.toRat⌉₊ + Nat.sqrt prec
       let p := prec + 2 * k + 8
-      let taylor (x : Dyadic) := cosShiftRightTaylor x k (p / (2 * Nat.sqrt prec + 1) + 1) p
+      let taylor (x : Dyadic) := cosTaylor (x >>> k) (p / (2 * Nat.sqrt prec + 1) + 1) p
       roundOut (cosDoubling k ⟨(taylor b).lb, (taylor a).ub⟩ p) (prec + 1)
   | _, _ => Interval.Icc (-1 : Dyadic) (1 : Dyadic)
 
@@ -143,10 +140,14 @@ theorem cos_mem {x : ℝ} {I : Interval Dyadic} (hx : x ∈ I) (prec : ℕ) :
   have hb : b.toReal ≤ 2 ^ k := (Rat.cast_le.mpr (Nat.ceil_le.mp
     ((Nat.clog_le_iff_le_pow one_lt_two).mp (by lia : _ ≤ k)))).trans_eq (by norm_cast)
   have hπ := (div_le_one_of_le₀ hb (by positivity)).trans (one_le_two.trans Real.two_le_pi)
+  have hs (d : Dyadic) : (d >>> k).toReal = d.toReal / 2 ^ k := by
+    simp [Dyadic.toReal, Dyadic.toRat_shiftRight_nat]
+  have hs1 {d : Dyadic} (hd0 : 0 ≤ d.toReal) (hd : d.toReal ≤ 2 ^ k) : |(d >>> k).toReal| ≤ 1 := by
+    rwa [hs, abs_of_nonneg (by positivity), div_le_one (by positivity)]
   rw [← Real.cos_abs]
   refine roundOut_mem (cosDoubling_mem (Interval.mem_Icc_of_le
-    (cosShiftRightTaylor_mem (ha.trans (hax.trans hxb)) hb _ _) ?_ ?_
-    (cosShiftRightTaylor_mem ha ((hax.trans hxb).trans hb) _ _)) _) _ <;>
+    (cosTaylor_mem (hs1 (ha.trans (hax.trans hxb)) hb) _ _) ?_ ?_
+    (cosTaylor_mem (hs1 ha ((hax.trans hxb).trans hb)) _ _)) _) _ <;> rw [hs] <;>
   exact Real.cos_le_cos_of_nonneg_of_le_pi (by positivity) (le_trans (by gcongr) hπ) (by gcongr)
 
 end IntervalDyadicReal
