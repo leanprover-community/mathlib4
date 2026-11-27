@@ -35,7 +35,7 @@ instance instLE : LE (ι →₀ M) where le f g := ∀ i, f i ≤ g i
 
 lemma le_def : f ≤ g ↔ ∀ i, f i ≤ g i := .rfl
 
-@[simp, norm_cast] lemma coe_le_coe : ⇑f ≤ g ↔ f ≤ g := .rfl
+@[simp, norm_cast, to_dual self] lemma coe_le_coe : ⇑f ≤ g ↔ f ≤ g := .rfl
 
 /-- The order on `Finsupp`s over a partial order embeds into the order on functions -/
 @[simps]
