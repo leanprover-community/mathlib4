@@ -1,4 +1,7 @@
-import Mathlib
+module
+
+public import Mathlib
+public meta import Lean.LibrarySuggestions.SymbolFrequency
 
 open Lean LibrarySuggestions
 

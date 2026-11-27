@@ -1,6 +1,7 @@
 module
 
 public import Mathlib
+public meta import Lean.LibrarySuggestions.SineQuaNon
 
 set_library_suggestions Lean.LibrarySuggestions.sineQuaNonSelector
 
