@@ -201,7 +201,8 @@ theorem toEquiv_eq_coe (f : M ≃* N) : f.toEquiv = f :=
   rfl
 
 /-- The `simp`-normal form to turn something into a `MulHom` is via `MulHomClass.toMulHom`. -/
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) /-- The `simp`-normal form to turn something into an `AddHom` is via
+`AddHomClass.toAddHom`. -/]
 theorem toMulHom_eq_coe (f : M ≃* N) : f.toMulHom = ↑f :=
   rfl
 
@@ -209,7 +210,7 @@ theorem toMulHom_eq_coe (f : M ≃* N) : f.toMulHom = ↑f :=
 theorem toFun_eq_coe (f : M ≃* N) : f.toFun = f := rfl
 
 /-- `simp`-normal form of `toFun_eq_coe`. -/
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) /-- `simp`-normal form of `toFun_eq_coe`. -/]
 theorem coe_toEquiv (f : M ≃* N) : ⇑(f : M ≃ N) = f := rfl
 
 @[to_additive (attr := simp)]
@@ -273,7 +274,9 @@ section symm
 /-- An alias for `h.symm.map_mul`. Introduced to fix the issue in
 https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/!4.234183.20.60simps.60.20maximum.20recursion.20depth
 -/
-@[to_additive]
+@[to_additive /-- An alias for `h.symm.map_add`. Introduced to fix the issue in
+https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/!4.234183.20.60simps.60.20maximum.20recursion.20depth
+-/]
 lemma symm_map_mul {M N : Type*} [Mul M] [Mul N] (h : M ≃* N) (x y : N) :
     h.symm (x * y) = h.symm x * h.symm y :=
   map_mul (h.toMulHom.inverse h.toEquiv.symm h.left_inv h.right_inv) x y
@@ -287,7 +290,7 @@ def symm {M N : Type*} [Mul M] [Mul N] (h : M ≃* N) : N ≃* M :=
 theorem invFun_eq_symm {f : M ≃* N} : f.invFun = f.symm := rfl
 
 /-- `simp`-normal form of `invFun_eq_symm`. -/
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) /-- `simp`-normal form of `invFun_eq_symm`. -/]
 theorem coe_toEquiv_symm (f : M ≃* N) : ((f : M ≃ N).symm : N → M) = f.symm := rfl
 
 @[to_additive (attr := simp)]
