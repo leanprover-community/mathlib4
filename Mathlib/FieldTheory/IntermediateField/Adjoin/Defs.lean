@@ -313,6 +313,7 @@ theorem _root_.AlgEquiv.fieldRange_eq_top (f : E ≃ₐ[F] K) :
   AlgHom.fieldRange_eq_top.mpr f.surjective
 
 section fieldEqualizer
+
 variable {R : Type*} [Ring R] [Algebra F R]
 
 theorem _root_.AlgHom.adjoin_le_fieldEqualizer (φ₁ φ₂ : E →ₐ[F] R) {s : Set E} (h : s.EqOn φ₁ φ₂) :

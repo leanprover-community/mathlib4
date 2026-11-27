@@ -589,6 +589,7 @@ end AlgHom
 section fieldEqualizer
 
 namespace AlgHom
+
 variable {R : Type*} [Ring R] [Algebra K R]
 
 /-- The equalizer of two field homomorphisms both fixing `K`. -/
