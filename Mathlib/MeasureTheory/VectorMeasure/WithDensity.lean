@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Function.AEEqOfIntegral
 public import Mathlib.MeasureTheory.VectorMeasure.Relations
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Vector measure defined by an integral
 

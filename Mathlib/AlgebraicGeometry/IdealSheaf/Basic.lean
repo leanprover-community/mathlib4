@@ -13,7 +13,8 @@ public import Mathlib.AlgebraicGeometry.Properties
 
 We define ideal sheaves of schemes and provide various constructors for it.
 
-## Main definition
+## Main definitions
+
 * `AlgebraicGeometry.Scheme.IdealSheafData`: A structure that contains the data to uniquely define
   an ideal sheaf, consisting of
   1. an ideal `I(U) ≤ Γ(X, U)` for every affine open `U`
@@ -27,6 +28,7 @@ We define ideal sheaves of schemes and provide various constructors for it.
 * `AlgebraicGeometry.Scheme.Hom.ker`: The kernel of a morphism.
 
 ## Main results
+
 * `AlgebraicGeometry.Scheme.IdealSheafData.gc`:
   `support` and `vanishingIdeal` forms a Galois connection.
 * `AlgebraicGeometry.Scheme.Hom.support_ker`: The support of a kernel of a quasi-compact morphism
@@ -226,7 +228,7 @@ lemma map_ideal {U V : X.affineOpens} (h : U ≤ V) :
   apply_fun Ideal.map (X.presheaf.germ (X.basicOpen g) x (hfg ▸ hxf)).hom at this
   simp only [Ideal.map_map, ← CommRingCat.hom_comp, affineBasicOpen_coe, X.presheaf.germ_res]
     at this ⊢
-  simp only [homOfLE_leOfHom, TopCat.Presheaf.germ_res', this]
+  simp only [TopCat.Presheaf.germ_res', this]
 
 /-- A form of `map_ideal` that is easier to rewrite with. -/
 lemma map_ideal' {U V : X.affineOpens} (h : Opposite.op V.val ⟶ .op U.val) :
@@ -751,8 +753,8 @@ lemma ker_of_isAffine {X Y : Scheme} (f : X ⟶ Y) [IsAffine Y] :
     f.ker = ofIdealTop (RingHom.ker f.appTop.hom) := by
   refine (le_of_isAffine ((f.ideal_ker_le _).trans (by simp))).antisymm
     (le_ofIdeals_iff.mpr fun U ↦ ?_)
-  simp only [ofIdealTop_ideal, homOfLE_leOfHom, Ideal.map_le_iff_le_comap, RingHom.comap_ker,
-    ← CommRingCat.hom_comp, f.naturality]
+  simp only [ofIdealTop_ideal, Ideal.map_le_iff_le_comap, RingHom.comap_ker, ← CommRingCat.hom_comp,
+    f.naturality]
   intro x
   simp +contextual
 
@@ -781,14 +783,14 @@ lemma Hom.iInf_ker_openCover_map_comp_apply
   apply X.IsSheaf.section_ext
   rintro x hxU
   obtain ⟨i, x, rfl⟩ := 𝒰.exists_eq x
-  simp only [homOfLE_leOfHom, map_zero, exists_and_left]
+  simp only [map_zero, exists_and_left]
   refine ⟨𝒰.f i ''ᵁ 𝒰.f i ⁻¹ᵁ f ⁻¹ᵁ U.val, ⟨_, hxU, rfl⟩,
     Set.image_preimage_subset (𝒰.f i) (f ⁻¹ᵁ U), ?_⟩
   apply ((𝒰.f i).appIso _).commRingCatIsoToRingEquiv.injective
   rw [map_zero, ← RingEquiv.coe_toRingHom, Iso.commRingCatIsoToRingEquiv_toRingHom,
     Scheme.Hom.appIso_hom']
-  simp only [homOfLE_leOfHom, Scheme.Hom.app_eq_appLE, ← RingHom.comp_apply,
-    ← CommRingCat.hom_comp, Scheme.Hom.appLE_map, Scheme.Hom.appLE_comp_appLE]
+  simp only [Scheme.Hom.app_eq_appLE, ← RingHom.comp_apply, ← CommRingCat.hom_comp,
+    Scheme.Hom.appLE_map, Scheme.Hom.appLE_comp_appLE]
   simpa [Scheme.Hom.appLE] using! ideal_ker_le _ _ (Ideal.mem_iInf.mp hs i)
 
 lemma Hom.iInf_ker_openCover_map_comp (f : X ⟶ Y) [QuasiCompact f] (𝒰 : X.OpenCover) :

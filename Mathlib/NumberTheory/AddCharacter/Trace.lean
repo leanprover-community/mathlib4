@@ -7,6 +7,9 @@ module
 
 public import Mathlib.NumberTheory.LegendreSymbol.AddCharacter
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The additive character attached to the trace
 

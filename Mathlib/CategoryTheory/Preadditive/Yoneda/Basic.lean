@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Category.ModuleCat.Basic
 
 import Mathlib.CategoryTheory.Preadditive.Opposite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Yoneda embedding for preadditive categories
 
@@ -21,6 +24,7 @@ We also show that this presheaf is additive and that it is compatible with the n
 embedding in the expected way and deduce that the preadditive Yoneda embedding is fully faithful.
 
 ## TODO
+
 * The Yoneda embedding is additive itself
 -/
 

@@ -32,6 +32,7 @@ For `m : ℕ`, we introduce the notation `SL(m,R)` for the special linear group 
 `n = Fin m`, in the scope `MatrixGroups`.
 
 ## Implementation notes
+
 The inverse operation in the `SpecialLinearGroup` is defined to be the adjugate
 matrix, so that `SpecialLinearGroup n R` has a group structure for all `CommRing R`.
 
@@ -202,34 +203,33 @@ instance : Group (SpecialLinearGroup n R) :=
       ext1
       simp [adjugate_mul] }
 
-/-- A version of `Matrix.toLin' A` that produces linear equivalences. -/
+/-- A version of `Matrix.mulVecLin A` that produces linear equivalences. -/
 def toLin' : SpecialLinearGroup n R →* (n → R) ≃ₗ[R] n → R where
-  toFun A :=
-    LinearEquiv.ofLinearMap (Matrix.toLin' ↑ₘA) (Matrix.toLin' ↑ₘA⁻¹)
-      (by rw [← toLin'_mul, ← coe_mul, mul_inv_cancel, coe_one, toLin'_one])
-      (by rw [← toLin'_mul, ← coe_mul, inv_mul_cancel, coe_one, toLin'_one])
-  map_one' := LinearEquiv.toLinearMap_injective Matrix.toLin'_one
-  map_mul' A B := LinearEquiv.toLinearMap_injective <| Matrix.toLin'_mul ↑ₘA ↑ₘB
+  toFun A := Matrix.toLin'OfInv (M := ↑ₘA⁻¹) (M' := ↑ₘA)
+    (by rw [← coe_mul, inv_mul_cancel, coe_one]) (by rw [← coe_mul, mul_inv_cancel, coe_one])
+  map_one' := LinearEquiv.toLinearMap_injective Matrix.mulVecLin_one
+  map_mul' A B := LinearEquiv.toLinearMap_injective <| Matrix.mulVecLin_mul ↑ₘA ↑ₘB
 
 theorem toLin'_apply (A : SpecialLinearGroup n R) (v : n → R) :
-    SpecialLinearGroup.toLin' A v = Matrix.toLin' (↑ₘA) v :=
+    SpecialLinearGroup.toLin' A v = ↑ₘA *ᵥ v :=
   rfl
 
 theorem toLin'_to_linearMap (A : SpecialLinearGroup n R) :
-    ↑(SpecialLinearGroup.toLin' A) = Matrix.toLin' ↑ₘA :=
+    ↑(SpecialLinearGroup.toLin' A) = (↑ₘA).mulVecLin :=
   rfl
 
 theorem toLin'_symm_apply (A : SpecialLinearGroup n R) (v : n → R) :
-    A.toLin'.symm v = Matrix.toLin' (↑ₘA⁻¹) v :=
+    A.toLin'.symm v = ↑ₘA⁻¹ *ᵥ v :=
   rfl
 
 theorem toLin'_symm_to_linearMap (A : SpecialLinearGroup n R) :
-    ↑A.toLin'.symm = Matrix.toLin' ↑ₘA⁻¹ :=
+    ↑A.toLin'.symm = (↑ₘA⁻¹).mulVecLin :=
   rfl
 
 theorem toLin'_injective :
     Function.Injective ↑(toLin' : SpecialLinearGroup n R →* (n → R) ≃ₗ[R] n → R) := fun _ _ h =>
-  Subtype.coe_injective <| Matrix.toLin'.injective <| LinearEquiv.toLinearMap_injective.eq_iff.mpr h
+  Subtype.coe_injective <| Matrix.mulVecLin_injective <|
+    LinearEquiv.toLinearMap_injective.eq_iff.mpr h
 
 variable {S T : Type*} [CommRing S] [CommRing T]
 

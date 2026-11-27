@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Action.End
 public import Mathlib.GroupTheory.GroupAction.SubMulAction
 public import Mathlib.GroupTheory.QuotientGroup.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # MulAction and MulDistribMulAction of quotient group on fixed points
 

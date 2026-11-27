@@ -12,6 +12,9 @@ public import Mathlib.CategoryTheory.Generator.Basic
 
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.EpiMono
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Generators for the category of presheaves of modules
 

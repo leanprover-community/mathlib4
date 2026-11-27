@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 public import Mathlib.CategoryTheory.Limits.Types.Colimits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `sigmaConst.obj` preserves colimits
 

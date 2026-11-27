@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.DirectSum.Decomposition
 public import Mathlib.Algebra.Lie.Derivation.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Graded Lie algebras
 

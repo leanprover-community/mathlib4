@@ -7,6 +7,9 @@ module
 
 public import Mathlib.GroupTheory.MonoidLocalization.Maps
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Submonoid of pairs with quotient in a submonoid
 

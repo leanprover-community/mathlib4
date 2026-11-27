@@ -9,13 +9,16 @@ public import Mathlib.Analysis.Normed.Group.Quotient
 public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
 public import Mathlib.Topology.Instances.AddCircle.Real  -- shake: keep (used in type annotation)
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The additive circle as a normed group
 
 We define the normed group structure on `AddCircle p`, for `p : ℝ`. For example if `p = 1` then:
 `‖(x : AddCircle 1)‖ = |x - round x|` for any `x : ℝ` (see `UnitAddCircle.norm_eq`).
 
-## Main definitions:
+## Main definitions
 
 * `AddCircle.norm_eq`: a characterisation of the norm on `AddCircle p`
 

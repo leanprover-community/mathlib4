@@ -14,6 +14,7 @@ public import Mathlib.RingTheory.Length
 This file proves results relating lengths along extensions of local rings.
 
 ## Main results
+
 - `IsLocalRing.length_restrictScalars`: If `B/A` is an extension of local rings, and if `M`
   is a `B`-module, then `ℓ_A(M) = ℓ_B(M) * [κ(B) : κ(A)]`.
 - `IsLocalRing.length_baseChange`: If `B/A` is a flat extension of local rings, and if `M` is an

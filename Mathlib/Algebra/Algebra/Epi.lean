@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.Localization.FractionRing
 public import Mathlib.RingTheory.TensorProduct.Finite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Algebras which are commutative ring epimorphisms
 -/

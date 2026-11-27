@@ -75,7 +75,7 @@ theorem domCoprod.summand_add_swap_smul_eq_zero (a : Mᵢ [⋀^ιa]→ₗ[R'] N�
     (b : Mᵢ [⋀^ιb]→ₗ[R'] N₂) (σ : Perm.ModSumCongr ιa ιb) {v : ιa ⊕ ιb → Mᵢ}
     {i j : ιa ⊕ ιb} (hv : v i = v j) (hij : i ≠ j) :
     domCoprod.summand a b σ v + domCoprod.summand a b (swap i j • σ) v = 0 := by
-  induction σ using Quotient.inductionOn'
+  induction σ using Quotient.inductionOn
   dsimp only [Quotient.liftOn'_mk'', Quotient.map'_mk'', MulAction.Quotient.smul_mk,
     domCoprod.summand]
   rw [smul_eq_mul, Perm.sign_mul, Perm.sign_swap hij]
@@ -92,7 +92,7 @@ theorem domCoprod.summand_eq_zero_of_smul_invariant (a : Mᵢ [⋀^ιa]→ₗ[R'
     (b : Mᵢ [⋀^ιb]→ₗ[R'] N₂) (σ : Perm.ModSumCongr ιa ιb) {v : ιa ⊕ ιb → Mᵢ}
     {i j : ιa ⊕ ιb} (hv : v i = v j) (hij : i ≠ j) :
     swap i j • σ = σ → domCoprod.summand a b σ v = 0 := by
-  induction σ using Quotient.inductionOn' with | _ σ
+  induction σ using Quotient.inductionOn with | _ σ
   dsimp only [Quotient.liftOn'_mk'', Quotient.map'_mk'', _root_.smul_apply,
     MultilinearMap.domDomCongr_apply, MultilinearMap.domCoprod_apply, domCoprod.summand]
   intro hσ
@@ -163,7 +163,7 @@ def domCoprod' :
         sum_apply, domCoprod.summand]
       congr
       ext σ
-      induction σ using Quotient.inductionOn'
+      induction σ using Quotient.inductionOn
       simp only [Quotient.liftOn'_mk'', toMultilinearMap_add, toMultilinearMap_smul, smul_apply,
         ← MultilinearMap.domCoprod'_apply]
       simp only [TensorProduct.add_tmul, ← TensorProduct.smul_tmul', TensorProduct.tmul_add,
@@ -212,7 +212,7 @@ theorem MultilinearMap.domCoprod_alternatization [DecidableEq ιa] [DecidableEq 
     Finset.sum_partition (QuotientGroup.leftRel (Perm.sumCongrHom ιa ιb).range)]
   congr 1
   ext1 σ
-  induction σ using Quotient.inductionOn' with
+  induction σ using Quotient.inductionOn with
   | h σ =>
   set f := sumCongrHom ιa ιb
   calc

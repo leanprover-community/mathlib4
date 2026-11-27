@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.RepresentationTheory.Rep.Res
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Coinvariants of a group representation
 

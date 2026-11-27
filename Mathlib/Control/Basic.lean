@@ -11,6 +11,9 @@ public import Mathlib.Tactic.CasesM
 
 import Mathlib.Tactic.Attr.Register
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic control operations
 

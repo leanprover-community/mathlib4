@@ -12,6 +12,9 @@ public import Mathlib.Tactic.Ring
 import Mathlib.Algebra.Group.Nat.Units
 import Mathlib.Algebra.Ring.Divisibility.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Coprime elements of a ring or monoid
 
