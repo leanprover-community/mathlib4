@@ -4,12 +4,50 @@
 Usage: scripts/fix_long_lines.py <path>:<line> ...
 
 For each specified (path, line) pair, if that line exceeds 100 chars,
-find the last comma before column 100 and break there, indenting the
-continuation with the original indent + 2 spaces. If that doesn't bring
-the line under 100, keep cutting at earlier commas.
+break at the last code comma before column 100, indenting the continuation
+with the original indent + 2 spaces. Leave the line alone if the scanner
+cannot identify a suitable comma.
 """
+import re
 import sys
 from pathlib import Path
+
+
+# Only recognize the spans that may contain a literal comma. Inside a block
+# comment only its nesting delimiters matter, even when the text contains quotes.
+BLOCK_DELIMITER = re.compile(r"/-|-/")
+
+CODE_DELIMITER = re.compile(r"""
+    --[^\n]* | /- | ,
+  | «[^»]*(?:»|\Z)
+  | (?<![\w'!?»]) '(?:\\.|[^'\\])'
+  | (?<![\w'!?.»]) r(?P<hashes>\#*)" .*? (?:"(?P=hashes)|\Z)
+  | " (?: [^"\\{] | \\. | \{[\w\s.]*\} )* (?: " | (?P<complex_hole>\{) | \Z )
+""", re.VERBOSE | re.DOTALL)
+
+
+def last_code_comma(text: str, start: int, end: int) -> int:
+    """Return the column of the last code comma in [start, end), or -1."""
+    pos = 0
+    comment_depth = 0
+    cut = -1
+    while pos < end:
+        match = (BLOCK_DELIMITER if comment_depth else CODE_DELIMITER).search(text, pos)
+        if match is None or match.start() >= end:
+            break
+        pos = match.end()
+        token = match[0]
+        if token == "/-":
+            comment_depth += 1
+        elif token == "-/":
+            comment_depth -= 1
+        elif token == "," and match.start() >= start:
+            cut = match.start() - start
+        elif match.lastgroup == "complex_hole":
+            # Interpolants can contain arbitrary Lean terms with nested strings.
+            # Once the quote boundary is uncertain, leave later commas alone.
+            break
+    return cut
 
 
 def fix_line(text: str, lineno: int) -> str:
@@ -21,8 +59,8 @@ def fix_line(text: str, lineno: int) -> str:
         return text
     indent = len(line) - len(line.lstrip())
     leading = line[:indent]
-    # Find last comma at or before col 99 (0-indexed 98)
-    cut = line.rfind(",", 0, 100)
+    start = sum(len(previous) for previous in lines[:lineno - 1])
+    cut = last_code_comma(text, start, start + 100)
     if cut == -1:
         return text
     head = line[: cut + 1]
