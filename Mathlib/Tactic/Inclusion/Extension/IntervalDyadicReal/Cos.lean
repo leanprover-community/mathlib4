@@ -30,14 +30,11 @@ the Taylor series is evaluated at the two endpoints.
 We do not use reduction modulo `π` since that requires high precision of `π` itself, while halving
 is exact on dyadic numbers.
 
-This file is opt-in so that `dyadic_interval` doesn't import unnecessary theories.
-
-## TODO
-
 The number of halvings beyond the size of the argument is `⌊√prec⌋`, which is not tuned. A smaller
-number is faster for an argument with few bits.
+number is faster for an argument with few bits and slower for an argument with many bits at high
+precision.
 
-The series is summed without rounding, so an argument with many bits is slow at high precision.
+This file is opt-in so that `dyadic_interval` doesn't import unnecessary theories.
 -/
 
 public section
@@ -90,9 +87,9 @@ theorem cosDoubling_mem {x : ℝ} {I : Interval Dyadic} {k : ℕ} (hx : Real.cos
     rw [← Real.cos_two_mul, hk] at h
     exact ih h
 
-/-- The cosine of an interval `I`, which is `[-1, 1]` when `I` is wider than `2π` (tested as wider
-than `7`, so that no enclosure of `π` is needed). Otherwise, `cos I` is computed by halving the
-`I.abs` `k` times to a small enough interval so that `cos` is antitone on it.
+/-- The cosine of an interval `I = [a, b]`, which is `[-1, 1]` when `I` is wider than `2π` (tested
+as wider than `7`, so that no enclosure of `π` is needed). Otherwise, `cos I` is computed by halving
+the `I.abs` `k` times to a small enough interval so that `cos` is antitone on it.
 The constants are chosen as follows:
 - `k` is chosen so that `b / 2 ^ k ≤ 2 ^ (-⌊√prec⌋)`. Each term of the series is then smaller than
   the previous one by at least `2 * ⌊√prec⌋ + 1` bits (`2 * ⌊√prec⌋` from the square of the
@@ -112,7 +109,7 @@ def cos (I : Interval Dyadic) (prec : ℕ) : Interval Dyadic :=
         let p := prec + 2 * k + 8
         let taylor (x : Dyadic) := cosTaylor (x >>> k) (p / (2 * Nat.sqrt prec + 1) + 1) p
         roundOut (cosDoubling k ⟨(taylor b).lb, (taylor a).ub⟩ p) (prec + 1)
-      | _ => Interval.Icc (-1 : Dyadic) 1 -- impossible since `I` is bounded
+      | _ => Interval.Icc (-1 : Dyadic) 1 -- impossible due to the outer match
   | _ => Interval.Icc (-1 : Dyadic) 1
 
 @[inclusion_op interval_dyadic_real]
@@ -134,8 +131,9 @@ theorem cos_mem {x : ℝ} {I : Interval Dyadic} (hx : x ∈ I) (prec : ℕ) :
       rw [hJ] at habs h0
       obtain ⟨hax, hxb⟩ := (mem_mk_coe |x| a b).mp habs
       have ha : 0 ≤ a.toReal := by simpa [Dyadic.toReal, WithBot.some_eq_coe] using h0
-      have hb : b.toReal ≤ 2 ^ k := (Rat.cast_le.mpr (Nat.ceil_le.mp
-        ((Nat.clog_le_iff_le_pow one_lt_two).mp (by lia : _ ≤ k)))).trans_eq (by norm_cast)
+      have hb : b.toReal ≤ 2 ^ k := by
+        rw [Dyadic.toReal]
+        exact_mod_cast Nat.ceil_le.mp ((Nat.clog_le_iff_le_pow one_lt_two).mp (by lia : _ ≤ k))
       have hs (d : Dyadic) : (d >>> k).toReal = d.toReal / 2 ^ k := by
         simp [Dyadic.toReal, Dyadic.toRat_shiftRight_nat]
       rw [hs, hs]
