@@ -18,7 +18,7 @@ import Mathlib.Analysis.PSeriesComplex
 * `completedRiemannZeta`: the completed zeta function `Λ : ℂ → ℂ`, which satisfies
   `Λ(s) = π ^ (-s / 2) Γ(s / 2) ζ(s)` (away from the poles of `Γ(s / 2)`).
 * `completedRiemannZeta₀`: the entire function `Λ₀` satisfying
-  `Λ₀(s) = Λ(s) + 1 / s - 1 / (s - 1)` wherever the RHS is defined.
+  `Λ₀(s) = Λ(s) + 1 / s + 1 / (1 - s)` wherever the RHS is defined.
 
 Note that mathematically `ζ(s)` is undefined at `s = 1`, while `Λ(s)` is undefined at both `s = 0`
 and `s = 1`. Our construction assigns some values at these points; exact formulae involving the
@@ -60,7 +60,7 @@ noncomputable section
 ## Definition of the completed Riemann zeta
 -/
 
-/-- The completed Riemann zeta function with its poles removed, `Λ(s) + 1 / s - 1 / (s - 1)`. -/
+/-- The completed Riemann zeta function with its poles removed, `Λ(s) + 1 / s + 1 / (1 - s)`. -/
 def completedRiemannZeta₀ (s : ℂ) : ℂ := completedHurwitzZetaEven₀ 0 s
 
 /-- The completed Riemann zeta function, `Λ(s)`, which satisfies
