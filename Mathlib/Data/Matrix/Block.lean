@@ -169,33 +169,41 @@ theorem fromBlocks_submatrix_sum_swap_sum_swap {l m n o α : Type*} (A : Matrix 
 def IsTwoBlockDiagonal [Zero α] (A : Matrix (n ⊕ o) (l ⊕ m) α) : Prop :=
   toBlocks₁₂ A = 0 ∧ toBlocks₂₁ A = 0
 
-/-- Let `p` pick out certain rows and `q` pick out certain columns of a matrix `M`. Then
-  `toBlock M p q` is the corresponding block matrix. -/
-def toBlock (M : Matrix m n α) (p : m → Prop) (q : n → Prop) : Matrix { a // p a } { a // q a } α :=
+/-- Let `p` pick out certain rows and `q` pick out certain columns of a matrix `M`.
+Then `toBlock M p q` is the corresponding block matrix.
+
+This is a convenience alias for a special case of `Matrix.submatrix`. -/
+abbrev toBlock (M : Matrix m n α) (p : m → Prop) (q : n → Prop) :
+    Matrix { a // p a } { a // q a } α :=
   M.submatrix (↑) (↑)
 
-@[simp]
+theorem toBlock_def (M : Matrix m n α) (p : m → Prop) (q : n → Prop) :
+    toBlock M p q = M.submatrix (↑) (↑) :=
+  rfl
+
 theorem toBlock_apply (M : Matrix m n α) (p : m → Prop) (q : n → Prop) (i : { a // p a })
     (j : { a // q a }) : toBlock M p q i j = M ↑i ↑j :=
   rfl
 
 /-- Let `p` pick out certain rows and columns of a square matrix `M`. Then
   `toSquareBlockProp M p` is the corresponding block matrix. -/
-def toSquareBlockProp (M : Matrix m m α) (p : m → Prop) : Matrix { a // p a } { a // p a } α :=
+@[deprecated toBlock +typeChanged (since := "2026-11-15")]
+abbrev toSquareBlockProp (M : Matrix m m α) (p : m → Prop) : Matrix { a // p a } { a // p a } α :=
   toBlock M _ _
 
+@[deprecated "unfold `submatrix` instead or use `toBlock_apply`" (since := "2026-11-15")]
 theorem toSquareBlockProp_def (M : Matrix m m α) (p : m → Prop) :
     toSquareBlockProp M p = of (fun i j : { a // p a } => M ↑i ↑j) :=
   rfl
 
 /-- Let `b` map rows and columns of a square matrix `M` to blocks. Then
   `toSquareBlock M b k` is the block `k` matrix. -/
-def toSquareBlock (M : Matrix m m α) (b : m → β) (k : β) :
+abbrev toSquareBlock (M : Matrix m m α) (b : m → β) (k : β) :
     Matrix { a // b a = k } { a // b a = k } α :=
-  toSquareBlockProp M _
+  toBlock M _ _
 
 theorem toSquareBlock_def (M : Matrix m m α) (b : m → β) (k : β) :
-    toSquareBlock M b k = of (fun i j : { a // b a = k } => M ↑i ↑j) :=
+    toSquareBlock M b k = toBlock M (b · = k) (b · = k) :=
   rfl
 
 theorem fromBlocks_smul [SMul R α] (x : R) (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
@@ -829,11 +837,8 @@ variable [CommRing R]
 
 theorem toBlock_mul_eq_mul {m n k : Type*} [Fintype n] (p : m → Prop) (q : k → Prop)
     (A : Matrix m n R) (B : Matrix n k R) :
-    (A * B).toBlock p q = A.toBlock p ⊤ * B.toBlock ⊤ q := by
-  ext i k
-  simp only [toBlock_apply, Matrix.mul_apply]
-  rw [Finset.sum_subtype]
-  simp [Pi.top_apply, Prop.top_eq_true]
+    (A * B).toBlock p q = A.toBlock p ⊤ * B.toBlock ⊤ q :=
+  submatrix_mul _ _ _ _ _ <| (Equiv.Set.univ _).bijective
 
 theorem toBlock_mul_eq_add {m n k : Type*} [Fintype n] (p : m → Prop) (q : n → Prop)
     [DecidablePred q] (r : k → Prop) (A : Matrix m n R) (B : Matrix n k R) : (A * B).toBlock p r =

@@ -258,8 +258,8 @@ a `ContinuousMulEquiv` between `ProfiniteGrp`s. -/
 @[to_additive /-- Build an isomorphism in the category `ProfiniteAddGrp` from
 a `ContinuousAddEquiv` between `ProfiniteAddGrp`s. -/]
 def ContinuousMulEquiv.toProfiniteGrpIso {X Y : ProfiniteGrp} (e : X ≃ₜ* Y) : X ≅ Y where
-  hom := ofHom e
-  inv := ofHom e.symm
+  hom := ofHom e.toContinuousMonoidHom
+  inv := ofHom e.symm.toContinuousMonoidHom
 
 /-- The functor mapping a profinite group to its underlying profinite space. -/
 @[to_additive /-- The functor mapping a profinite additive group to its underlying profinite
