@@ -113,8 +113,8 @@ lemma under_smul [SMulCommClass G A B] : (g • P : Ideal B).under A = P.under A
 @[simp]
 theorem smul_under [MulSemiringAction G A] [SMulDistribClass G A B] :
     g • P.under A = (g • P).under A := by
-  conv_lhs => rw [pointwise_smul_eq_comap, ← comap_coe, under_def, comap_comap]
-  conv_rhs => rw [pointwise_smul_eq_comap, ← comap_coe, under_def, comap_comap]
+  conv_lhs => rw [pointwise_smul_eq_comap, under_def, comap_comap]
+  conv_rhs => rw [pointwise_smul_eq_comap, under_def, comap_comap]
   congr
   ext
   simp [algebraMap.smul']
@@ -152,18 +152,18 @@ lemma isPrime_of_liesOver [P.LiesOver p] [P.IsPrime] : p.IsPrime := by
 
 variable {P}
 
-theorem LiesOver.of_eq_comap [Q.LiesOver p] {F : Type*} [FunLike F B C]
-    [AlgHomClass F A B C] (f : F) (h : P = Q.comap f) : P.LiesOver p where
+theorem LiesOver.of_eq_comap [Q.LiesOver p] (f : B →ₐ[A] C) (h : P = Q.comap f.toRingHom) :
+    P.LiesOver p where
   over := by
     rw [h]
     exact (over_def Q p).trans <|
-      congrFun (congrFun (congrArg
-        comap ((AlgHom.ofClass f).comp_algebraMap.symm)) _) Q
+      congrFun (congrArg comap f.comp_algebraMap.symm) _
 
-theorem LiesOver.of_eq_map_equiv [P.LiesOver p] {E : Type*} [EquivLike E B C]
-    [AlgEquivClass E A B C] (σ : E) (h : Q = P.map σ) : Q.LiesOver p := by
-  rw [← show _ = P.map σ from comap_symm (.ofClass σ)] at h
-  exact of_eq_comap p (AlgEquiv.ofClass σ).symm h
+theorem LiesOver.of_eq_map_equiv [P.LiesOver p] (σ : B ≃ₐ[A] C) (h : Q = P.map σ) :
+    Q.LiesOver p := by
+  apply of_eq_comap p (σ.symm : C →ₐ[A] B) (Q := P)
+  rw [h]
+  exact (comap_symm (RingEquiv.ofClass σ)).symm
 
 variable {p} in
 instance LiesOver.smul [SMulCommClass G A B] [h : P.LiesOver p] : (g • P).LiesOver p :=
@@ -171,12 +171,10 @@ instance LiesOver.smul [SMulCommClass G A B] [h : P.LiesOver p] : (g • P).Lies
 
 variable (P) (Q)
 
-instance comap_liesOver [Q.LiesOver p] {F : Type*} [FunLike F B C] [AlgHomClass F A B C]
-    (f : F) : (Q.comap f).LiesOver p :=
+instance comap_liesOver [Q.LiesOver p] (f : B →ₐ[A] C) : (Q.comap (f : B →+* C)).LiesOver p :=
   LiesOver.of_eq_comap p f rfl
 
-instance map_equiv_liesOver [P.LiesOver p] {E : Type*} [EquivLike E B C] [AlgEquivClass E A B C]
-    (σ : E) : (P.map σ).LiesOver p :=
+instance map_equiv_liesOver [P.LiesOver p] (σ : B ≃ₐ[A] C) : (P.map (σ : B →+* C)).LiesOver p :=
   LiesOver.of_eq_map_equiv p σ rfl
 
 end Semiring
@@ -217,7 +215,7 @@ theorem map_under_le_under_map {C D : Type*} [CommSemiring C] [Semiring D] [Alge
     [Algebra C D] [Algebra A D] [Algebra B D] [IsScalarTower A C D] [IsScalarTower A B D] :
     map (algebraMap A C) (under A P) ≤ under C (map (algebraMap B D) P) := by
   apply le_comap_of_map_le
-  rw [map_map, ← IsScalarTower.algebraMap_eq, map_le_iff_le_comap,
+  rw [map_map, ← RingHom.coe_comp, ← IsScalarTower.algebraMap_eq, map_le_iff_le_comap,
     IsScalarTower.algebraMap_eq A B D, ← comap_comap]
   exact comap_mono le_comap_map
 
@@ -315,7 +313,7 @@ theorem nontrivial_of_liesOver_of_isPrime [hp : p.IsPrime] : Nontrivial (B ⧸ P
 
 section algEquiv
 
-variable {P} {E : Type*} [EquivLike E B C] [AlgEquivClass E A B C] (σ : E)
+variable {P} {E : Type*} (σ : B ≃ₐ[A] C)
 
 /-- An `A ⧸ p`-algebra isomorphism between `B ⧸ P` and `C ⧸ Q` induced by an `A`-algebra
   isomorphism between `B` and `C`, where `Q = σ P`. -/
@@ -325,16 +323,18 @@ def algEquivOfEqMap (h : Q = P.map σ) : (B ⧸ P) ≃ₐ[A ⧸ p] (C ⧸ Q) :=
     exact congrArg (Ideal.Quotient.mk Q) (AlgHomClass.commutes σ x)
 
 @[simp]
-theorem algEquivOfEqMap_apply (h : Q = P.map σ) (x : B) : algEquivOfEqMap p σ h x = σ x :=
+theorem algEquivOfEqMap_apply (h : Q = P.map σ.toRingHom) (x : B) : algEquivOfEqMap p σ h x = σ x :=
   rfl
 
 /-- An `A ⧸ p`-algebra isomorphism between `B ⧸ P` and `C ⧸ Q` induced by an `A`-algebra
   isomorphism between `B` and `C`, where `P = σ⁻¹ Q`. -/
-def algEquivOfEqComap (h : P = Q.comap σ) : (B ⧸ P) ≃ₐ[A ⧸ p] (C ⧸ Q) :=
-  algEquivOfEqMap p σ ((congrArg (map σ) h).trans (Q.map_comap_eq_self_of_equiv σ)).symm
+def algEquivOfEqComap (h : P = Q.comap σ.toRingHom) : (B ⧸ P) ≃ₐ[A ⧸ p] (C ⧸ Q) :=
+  algEquivOfEqMap p σ ((congrArg (map σ.toRingHom) h).trans
+    (Q.map_comap_eq_self_of_equiv σ.toRingEquiv)).symm
 
 @[simp]
-theorem algEquivOfEqComap_apply (h : P = Q.comap σ) (x : B) : algEquivOfEqComap p σ h x = σ x :=
+theorem algEquivOfEqComap_apply (h : P = Q.comap σ.toRingHom) (x : B) :
+    algEquivOfEqComap p σ h x = σ x :=
   rfl
 
 end algEquiv

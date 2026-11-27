@@ -46,7 +46,7 @@ section Rat
 set_option backward.isDefEq.respectTransparency false in
 theorem Rat.RingOfIntegers.isUnit_iff {x : 𝓞 ℚ} : IsUnit x ↔ (x : ℚ) = 1 ∨ (x : ℚ) = -1 := by
   simp_rw [(isUnit_map_iff (Rat.ringOfIntegersEquiv : 𝓞 ℚ →+* ℤ) x).symm, Int.isUnit_iff,
-    RingEquiv.coe_toRingHom, RingEquiv.map_eq_one_iff, RingEquiv.map_eq_neg_one_iff, ←
+    RingHom.coe_coe, RingEquiv.map_eq_one_iff, RingEquiv.map_eq_neg_one_iff, ←
     Subtype.coe_injective.eq_iff]; rfl
 
 end Rat

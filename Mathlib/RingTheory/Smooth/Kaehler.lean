@@ -55,8 +55,9 @@ and a section `g : S →ₐ[R] P` (as an algebra homomorphism),
 we get an `R`-derivation `P → I` via `x ↦ x - g (f x)`.
 -/
 @[simps]
-def derivationOfSectionOfKerSqZero (f : P →ₐ[R] S) (hf' : (RingHom.ker f) ^ 2 = ⊥) (g : S →ₐ[R] P)
-    (hg : f.comp g = AlgHom.id R S) : Derivation R P (RingHom.ker f) where
+def derivationOfSectionOfKerSqZero (f : P →ₐ[R] S)
+    (hf' : (RingHom.ker (f : P →+* S)) ^ 2 = ⊥) (g : S →ₐ[R] P)
+    (hg : f.comp g = AlgHom.id R S) : Derivation R P (RingHom.ker (f : P →+* S)) where
   toFun x := ⟨x - g (f x), by
     simpa [RingHom.mem_ker, sub_eq_zero] using congr($hg.symm (f x))⟩
   map_add' x y := by simp only [map_add, AddMemClass.mk_add_mk, Subtype.mk.injEq]; ring

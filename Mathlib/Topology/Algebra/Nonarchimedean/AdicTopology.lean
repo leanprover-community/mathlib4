@@ -65,15 +65,14 @@ theorem adic_basis (I : Ideal R) : SubmodulesRingBasis fun n : ℕ => (I ^ n •
       intro i j
       exact ⟨max i j, pow_le_pow_right (le_max_left i j), pow_le_pow_right (le_max_right i j)⟩
     leftMul := by
-      suffices ∀ (a : R) (i : ℕ), ∃ j : ℕ, a • I ^ j ≤ I ^ i by
-        simpa only [smul_top_eq_map, Algebra.algebraMap_self, map_id] using! this
+      suffices ∀ (a : R) (i : ℕ), ∃ j : ℕ, a • I ^ j ≤ I ^ i by simpa using! this
       intro r n
       use n
       rintro a ⟨x, hx, rfl⟩
       exact (I ^ n).smul_mem r hx
     mul := by
       suffices ∀ i : ℕ, ∃ j : ℕ, (↑(I ^ j) * ↑(I ^ j) : Set R) ⊆ (↑(I ^ i) : Set R) by
-        simpa only [smul_top_eq_map, Algebra.algebraMap_self, map_id] using! this
+        simpa using! this
       intro n
       use n
       rintro a ⟨x, _hx, b, hb, rfl⟩
@@ -266,10 +265,10 @@ variable {R} in
 /-- A ring equivalence induces a uniform equivalence with respect to the adic topologies,
 provided it preserves the defining ideals. -/
 def uniformEquiv {S : Type*} [CommRing S] [WithIdeal S] (e : R ≃+* S)
-    (h : i.map e.toRingHom = i) : UniformEquiv R S where
+    (h : i.map e = i) : UniformEquiv R S where
   __ := e
-  uniformContinuous_toFun := uniformContinuous_of_map_le (f := e.toRingHom) (by rw [h])
-  uniformContinuous_invFun := uniformContinuous_of_map_le (f := e.symm.toRingHom) (by simp [← h])
+  uniformContinuous_toFun := uniformContinuous_of_map_le (f := (e : R →+* S)) (by simp [h])
+  uniformContinuous_invFun := uniformContinuous_of_map_le (f := (e.symm : S →+* R)) (by simp [← h])
 
 variable {R} in
 lemma isTopologicallyNilpotent_of_mem {a : R} (ha : a ∈ i) : IsTopologicallyNilpotent a := by

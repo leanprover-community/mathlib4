@@ -312,10 +312,11 @@ def tensorH1CotangentOfIsLocalization (M : Submonoid S) [IsLocalization M T] :
       Extension.equivH1CotangentOfFormallySmooth _
   · exact RingHom.formallyEtale_algebraMap.mpr
       (FormallyEtale.of_isLocalization (M := M') (Rₘ := Localization M'))
-  · let F : P.ker →ₗ[P.Ring] RingHom.ker fQ := f.mapKer rfl
+  · let F : P.ker →ₗ[P.Ring] RingHom.ker (fQ : Localization M' →+* T) := f.mapKer rfl
     refine (isLocalizedModule_iff_isBaseChange M' (Localization M') F).mp ?_
     have : (LinearMap.ker <| Algebra.linearMap P.Ring S).localized' (Localization M') M'
-        (Algebra.linearMap P.Ring (Localization M')) = RingHom.ker fQ := by
+        (Algebra.linearMap P.Ring (Localization M')) =
+          RingHom.ker (fQ : Localization M' →+* T) := by
       rw [LinearMap.localized'_ker_eq_ker_localizedMap (Localization M') M'
         (Algebra.linearMap P.Ring (Localization M'))
         (f' := (IsScalarTower.toAlgHom P.Ring S T).toLinearMap)]

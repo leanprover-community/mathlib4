@@ -226,7 +226,8 @@ lemma map_ideal {U V : X.affineOpens} (h : U ≤ V) :
   have := I.map_ideal_basicOpen_of_eq (V := X.affineBasicOpen g) f (Subtype.ext hfg.symm)
   rw [← I.map_ideal_basicOpen] at this
   apply_fun Ideal.map (X.presheaf.germ (X.basicOpen g) x (hfg ▸ hxf)).hom at this
-  simp only [Ideal.map_map, ← CommRingCat.hom_comp, affineBasicOpen_coe, X.presheaf.germ_res]
+  simp only [Ideal.map_map, ← CommRingCat.hom_comp, affineBasicOpen_coe, X.presheaf.germ_res,
+    ← RingHom.coe_comp]
     at this ⊢
   simp only [TopCat.Presheaf.germ_res', this]
 
@@ -466,7 +467,8 @@ section IsAffine
 def ofIdealTop (I : Ideal Γ(X, ⊤)) : IdealSheafData X :=
   mkOfMemSupportIff
     (fun U ↦ I.map (X.presheaf.map (homOfLE le_top).op).hom)
-    (fun U f ↦ by rw [Ideal.map_map, ← CommRingCat.hom_comp, ← Functor.map_comp]; rfl)
+    (fun U f ↦ by rw [Ideal.map_map, ← RingHom.coe_comp, ← CommRingCat.hom_comp,
+      ← Functor.map_comp]; rfl)
     (X.zeroLocus (U := ⊤) I)
     (fun U x hxU ↦ by
       simp only [Ideal.map, zeroLocus_span, zeroLocus_map, Set.mem_union, Set.mem_compl_iff,
@@ -787,10 +789,9 @@ lemma Hom.iInf_ker_openCover_map_comp_apply
   refine ⟨𝒰.f i ''ᵁ 𝒰.f i ⁻¹ᵁ f ⁻¹ᵁ U.val, ⟨_, hxU, rfl⟩,
     Set.image_preimage_subset (𝒰.f i) (f ⁻¹ᵁ U), ?_⟩
   apply ((𝒰.f i).appIso _).commRingCatIsoToRingEquiv.injective
-  rw [map_zero, ← RingEquiv.coe_toRingHom, Iso.commRingCatIsoToRingEquiv_toRingHom,
-    Scheme.Hom.appIso_hom']
-  simp only [Scheme.Hom.app_eq_appLE, ← RingHom.comp_apply, ← CommRingCat.hom_comp,
-    Scheme.Hom.appLE_map, Scheme.Hom.appLE_comp_appLE]
+  rw [map_zero, ← RingHom.coe_coe, Iso.commRingCatIsoToRingEquiv_toRingHom, Scheme.Hom.appIso_hom']
+  simp only [homOfLE_leOfHom, Scheme.Hom.app_eq_appLE, ← RingHom.comp_apply,
+    ← CommRingCat.hom_comp, Scheme.Hom.appLE_map, Scheme.Hom.appLE_comp_appLE]
   simpa [Scheme.Hom.appLE] using! ideal_ker_le _ _ (Ideal.mem_iInf.mp hs i)
 
 lemma Hom.iInf_ker_openCover_map_comp (f : X ⟶ Y) [QuasiCompact f] (𝒰 : X.OpenCover) :

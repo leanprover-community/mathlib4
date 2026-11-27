@@ -61,10 +61,11 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The map `R[X₁, ..., Xₙ] → S` factors via `T`, because the `bᵢ` are in `I`. -/
 def hom : D.T →ₐ[R] S := Ideal.Quotient.liftₐ _ (aeval P.val) <| by
+  rw [← RingHom.coe_coe (aeval P.val)]
   simp_rw [← RingHom.mem_ker, ← le_iff_mem_imp_mem, Ideal.span_le, Set.range_subset_iff]
   intro i
   simpa only [Generators.toExtension_Ring, Generators.toExtension_commRing, Function.comp_apply,
-    SetLike.mem_coe, RingHom.mem_ker, ← P.algebraMap_apply] using (D.f _).property
+    SetLike.mem_coe, RingHom.mem_ker, ← P.algebraMap_apply, RingHom.coe_coe] using (D.f _).property
 
 instance : Algebra D.T S := D.hom.toAlgebra
 

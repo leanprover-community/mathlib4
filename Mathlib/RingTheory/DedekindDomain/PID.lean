@@ -209,12 +209,12 @@ theorem IsLocalization.OverPrime.mem_normalizedFactors_of_isPrime [IsDomain S]
   rw [← Multiset.singleton_le, ← normalize_eq P, ←
     normalizedFactors_irreducible (Ideal.prime_of_isPrime hP0 hP).irreducible, ←
     dvd_iff_normalizedFactors_le_normalizedFactors hP0, dvd_iff_le,
-    IsScalarTower.algebraMap_eq R (Localization.AtPrime p) Sₚ, ← Ideal.map_map,
+    IsScalarTower.algebraMap_eq R (Localization.AtPrime p) Sₚ, RingHom.coe_comp, ← Ideal.map_map,
     Localization.AtPrime.map_eq_maximalIdeal, Ideal.map_le_iff_le_comap,
     hpu (IsLocalRing.maximalIdeal _) ⟨this, _⟩, hpu (comap _ _) ⟨_, _⟩]
   · have : Algebra.IsIntegral (Localization.AtPrime p) Sₚ := ⟨isIntegral_localization⟩
     exact mt (Ideal.eq_bot_of_under_eq_bot) hP0
-  · exact Ideal.comap_isPrime (algebraMap (Localization.AtPrime p) Sₚ) P
+  · exact Ideal.comap_isPrime P (algebraMap (Localization.AtPrime p) Sₚ)
   · exact (IsLocalRing.maximalIdeal.isMaximal _).isPrime
   · rw [Ne, zero_eq_bot, Ideal.map_eq_bot_iff_of_injective]
     · assumption

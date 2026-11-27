@@ -101,10 +101,11 @@ theorem eq_bot_of_lt [Ring.DimensionLEOne R] (p P : Ideal R) [p.IsPrime] [P.IsPr
 variable {A} in
 theorem of_ringEquiv [hA : Ring.DimensionLEOne A] (e : R ≃+* A) : Ring.DimensionLEOne R where
   maximalOfPrime {P} hP_ne hP_prime := by
-    rw [← Ideal.map_comap_eq_self_of_equiv e.symm P,
+    rw [← Ideal.map_comap_eq_self_of_equiv e.symm P, ← RingHom.coe_coe,
       Ideal.isMaximal_map_iff_of_bijective _ e.symm.bijective]
-    apply Ring.DimensionLEOne.maximalOfPrime ?_ (P.comap_isPrime e.symm)
-    simp [Ideal.map_eq_bot_iff_of_injective e.injective, hP_ne]
+    apply Ring.DimensionLEOne.maximalOfPrime ?_ (P.comap_isPrime (e.symm : A →+* R))
+    rwa [comap_symm, ← RingEquiv.coe_toRingHom, ne_eq, Ideal.map_eq_bot_iff_of_injective]
+    exact e.injective
 
 -- TODO: replace `Ring.DimensionLEOne` with `Ring.KrullDimLE`.
 instance (priority := low) {R : Type*} [CommRing R] [Ring.DimensionLEOne R] : Ring.KrullDimLE 1 R :=

@@ -223,9 +223,14 @@ theorem _root_.Algebra.IsStandardSmoothOfRelativeDimension.exists_etale_mvPolyno
       congrm $H
     relation := e.symm ∘ P.relation
     span_range_relation_eq_ker := by
-      rw [Set.range_comp, ← AlgEquiv.coe_toRingEquiv e.symm, AlgEquiv.symm_toRingEquiv,
-        ← Ideal.map_span, P.span_range_relation_eq_ker, Ideal.map_symm]
-      exact congr(RingHom.ker $H).symm
+      calc
+        _ = Ideal.span (e.symm.toRingHom '' Set.range P.relation) := by simp [Set.range_comp]
+        _ = Ideal.map (e.toRingEquiv.symm) P.ker := by
+          rw [← Ideal.map_span, P.span_range_relation_eq_ker]
+          simp
+        _ = _ := by
+          rw [Ideal.map_symm]
+          exact congr(RingHom.ker $H).symm
     map := _
     map_inj := Function.injective_id }
   let P' : Algebra.SubmersivePresentation (MvPolynomial (Fin n) R) S σ σ :=

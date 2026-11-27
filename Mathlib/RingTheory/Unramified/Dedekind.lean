@@ -38,9 +38,9 @@ theorem IsDedekindDomain.of_formallyUnramified : IsDedekindDomain B :=
     let : Field (A ⧸ p) := Ideal.Quotient.field p
     have := IsArtinianRing.of_finite (A ⧸ p) (B ⧸ p.map (algebraMap A B))
     suffices q' = (p.map (algebraMap A B)).map (algebraMap B (Localization.AtPrime q)) by
-      rw [this, Ideal.map_map, ← IsScalarTower.algebraMap_eq,
+      rw [this, Ideal.map_map, ← RingHom.coe_comp, ← IsScalarTower.algebraMap_eq,
         IsScalarTower.algebraMap_eq A (Localization.AtPrime p) (Localization.AtPrime q),
-        ← Ideal.map_map]
+        RingHom.coe_comp, ← Ideal.map_map]
       infer_instance
     rw [← (Algebra.FormallyUnramified.isRadical_map_isMaximal A B p).radical,
       IsLocalization.map_radical q.primeCompl,

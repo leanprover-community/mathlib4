@@ -122,11 +122,13 @@ set_option linter.deprecated.deprecatedTarget false in
 
 @[deprecated "Use `Ideal.inertiaDeg` instead." (since := "2026-08-14")]
 lemma inertiaDeg'_comap_eq (e : S ≃ₐ[R] S₁) (P : Ideal S₁) :
-    inertiaDeg' p (P.comap e) = inertiaDeg' p P := by
+    inertiaDeg' p (P.comap (e : S →+* S₁)) = inertiaDeg' p P := by
   have he : (P.comap e).comap (algebraMap R S) = p ↔ P.comap (algebraMap R S₁) = p := by
-    rw [← comap_coe e, comap_comap, ← e.toAlgHom_toRingHom, AlgHom.comp_algebraMap]
+    rw [comap_comap, ← e.toAlgHom_toRingHom, AlgHom.comp_algebraMap]
   by_cases h : P.LiesOver p
-  · rw [inertiaDeg'_algebraMap, inertiaDeg'_algebraMap]
+  · have : (comap (e : S →+* S₁) P).LiesOver p := comap_liesOver P p (e : S →ₐ[R] S₁)
+    rw [inertiaDeg'_algebraMap, inertiaDeg'_algebraMap]
+    have : (comap e.toRingEquiv.toRingHom P).LiesOver p := comap_liesOver P p (e : S →ₐ[R] S₁)
     exact (Quotient.algEquivOfEqComap p e rfl).toLinearEquiv.finrank_eq
   · rw [inertiaDeg', dite_eq_right (fun eq => h ⟨(he.mp eq).symm⟩)]
     rw [inertiaDeg', dite_eq_right (fun eq => h ⟨eq.symm⟩)]

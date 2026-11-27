@@ -416,10 +416,9 @@ theorem continuousMapEval_bijective : Bijective (continuousMapEval X 𝕜) := by
     simpa only [continuousMapEval_apply_apply, ContinuousMap.comp_apply, coe_mk, Ne,
       RCLike.ofReal_inj] using
       ((fx (Set.mem_singleton x)).symm ▸ (fy (Set.mem_singleton y)).symm ▸ zero_ne_one : f x ≠ f y)
-  · obtain ⟨x, hx⟩ := (ideal_isMaximal_iff (RingHom.ker φ)).mp inferInstance
+  · obtain ⟨x, hx⟩ := (ideal_isMaximal_iff ((φ : C(X, 𝕜) →+* 𝕜).ker)).mp inferInstance
     refine ⟨x, CharacterSpace.ext_ker <| Ideal.ext fun f => ?_⟩
-    simpa only [RingHom.mem_ker, continuousMapEval_apply_apply, mem_idealOfSet_compl_singleton,
-      RingHom.mem_ker] using SetLike.ext_iff.mp hx f
+    simpa using SetLike.ext_iff.mp hx f
 
 /-- This is the natural homeomorphism between a compact Hausdorff space `X` and the
 `WeakDual.characterSpace 𝕜 C(X, 𝕜)`. -/

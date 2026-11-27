@@ -143,7 +143,7 @@ lemma isUnramifiedAt_iff_map_eq :
   congr!
   rw [Localization.AtPrime.algebraMap_eq,
     ← Localization.AtPrime.map_eq_maximalIdeal, Ideal.map_map, Localization.localRingHom,
-    IsLocalization.map_comp, ← IsScalarTower.algebraMap_eq]
+    ← RingHom.coe_comp, IsLocalization.map_comp, ← IsScalarTower.algebraMap_eq]
 
 instance [Algebra.IsUnramifiedAt R q] : Algebra.IsSeparable p.ResidueField q.ResidueField :=
   ((Algebra.isUnramifiedAt_iff_map_eq _ _ _).mp inferInstance).1

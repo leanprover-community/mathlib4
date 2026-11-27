@@ -84,7 +84,7 @@ variable {A B : Type*} [Ring A] [Ring B] [Algebra R A] [Algebra R B]
 
 theorem isIntegral_algHom_iff (f : A →ₐ[R] B) (hf : Function.Injective f) {x : A} :
     IsIntegral R (f x) ↔ IsIntegral R x := by
-  simp [IsIntegral, ← RingHom.IsIntegralElem.map_iff (g := (f : A →+* B)) hf]
+  simp [IsIntegral, ← RingHom.IsIntegralElem.map_iff (g := f.toRingHom) hf]
 
 end
 

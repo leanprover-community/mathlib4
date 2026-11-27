@@ -53,7 +53,7 @@ theorem sum_ramification_inertia_eq_finrank_fiber
   apply Finset.sum_congr rfl
   intro q _
   simp_rw [toEquiv_symm, coe_symm_toEquiv, coe_primesOverOrderIsoFiber_symm_apply]
-  set r := q.asIdeal.comap Algebra.TensorProduct.includeRight
+  set r := q.asIdeal.comap (RingHomClass.toRingHom Algebra.TensorProduct.includeRight)
   let := Localization.AtPrime.algebraOfLiesOver p r
   rw [ramificationIdx_eq p r, inertiaDeg_eq p r]
   let Rp := Localization.AtPrime p

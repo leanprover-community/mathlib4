@@ -159,17 +159,17 @@ lemma coeffs_q_subset (i) :
 set_option backward.isDefEq.respectTransparency false in
 lemma exists_kerSquareLift_comp_eq_id :
     ∃ (σ₀ : D.P.ModelOfHasCoeffs (D.subalgebra R) →ₐ[D.subalgebra R]
-        MvPolynomial D.vars (D.subalgebra R) ⧸ (RingHom.ker f₀ ^ 2)),
+        MvPolynomial D.vars (D.subalgebra R) ⧸ (RingHom.ker (AlgHom.toRingHom f₀) ^ 2)),
       (AlgHom.kerSquareLift f₀).comp σ₀ =
         .id (D.subalgebra R) (Presentation.ModelOfHasCoeffs (D.subalgebra R)) := by
   choose p hp using fun i ↦ (D.h i).mem_range_map_iff_coeffs_subset.mpr (D.coeffs_h_subset R i)
   refine ⟨?_, ?_⟩
   · refine Ideal.Quotient.liftₐ _ ((Ideal.Quotient.mkₐ _ _).comp <| aeval p) ?_
+    rw [← RingHom.coe_coe]
     simp_rw [← RingHom.mem_ker, ← le_iff_mem_imp_mem, Ideal.span_le, Set.range_subset_iff]
     intro i
     simp only [← AlgHom.comap_ker, Ideal.coe_comap, Set.mem_preimage, SetLike.mem_coe]
-    rw [← RingHom.ker_coe_toRingHom, Ideal.Quotient.mkₐ_ker,
-      ← RingHom.ker_coe_toRingHom, Ideal.Quotient.mkₐ_ker]
+    rw [Ideal.Quotient.mkₐ_ker, AlgHom.toRingHom_eq_coe, Ideal.Quotient.mkₐ_ker]
     have hinj : Function.Injective
         (MvPolynomial.map (σ := D.vars) (algebraMap (D.subalgebra R) A)) :=
       map_injective _ (FaithfulSMul.algebraMap_injective (D.subalgebra R) A)
@@ -179,7 +179,7 @@ lemma exists_kerSquareLift_comp_eq_id :
     · rw [hq]
       exact D.hphom i
     · simp_rw [map_eval, Function.comp_def, Presentation.map_relationOfHasCoeffs,
-        hq, D.hp, MvPolynomial.map_aeval, hp]
+        hq, D.hp, RingHom.coe_coe, MvPolynomial.map_aeval, hp]
       simp [MvPolynomial.eval₂_map_comp_C, Presentation.map_relationOfHasCoeffs, aeval_def]
   · have hf₀ : Function.Surjective f₀ := Ideal.Quotient.mk_surjective
     rw [← AlgHom.cancel_right hf₀]
@@ -217,15 +217,16 @@ public theorem exists_subalgebra_fg [Smooth A B] :
       A₀.FG ∧ Smooth A₀ B₀ ∧ Nonempty (B ≃ₐ[A] A ⊗[A₀] B₀) := by
   let P := Presentation.ofFinitePresentation A B
   let f : P.Ring →ₐ[A] B := IsScalarTower.toAlgHom _ _ _
-  have hkerf : RingHom.ker f = Ideal.span (.range P.relation) :=
+  have hkerf : RingHom.ker (f : P.Ring →+* B) = Ideal.span (.range P.relation) :=
     P.span_range_relation_eq_ker.symm
-  obtain ⟨(σ : B →ₐ[A] MvPolynomial _ A ⧸ RingHom.ker f ^ 2), hsig⟩ :=
+  obtain ⟨(σ : B →ₐ[A] MvPolynomial _ A ⧸ RingHom.ker (f : P.Ring →+* B) ^ 2), hsig⟩ :=
     (FormallySmooth.iff_split_surjection f P.algebraMap_surjective).mp inferInstance
   have (i : _) := Ideal.Quotient.mk_surjective (σ <| P.val i)
   choose h hh using this
   have hdiag : (Ideal.Quotient.mkₐ _ _).comp (aeval h) = σ.comp (aeval P.val) :=
-    algHom_ext (by simp [hh])
-  have (j : _) : Ideal.Quotient.mk (RingHom.ker f ^ 2) (aeval h (P.relation j)) = 0 := by
+    algHom_ext (by simp [hh, -AlgHom.toRingHom_eq_coe])
+  have (j : _) :
+      Ideal.Quotient.mk (RingHom.ker (f : P.Ring →+* B) ^ 2) (aeval h (P.relation j)) = 0 := by
     suffices ho : σ (aeval P.val (P.relation j)) = 0 by
       convert ho
       congrm $hdiag _

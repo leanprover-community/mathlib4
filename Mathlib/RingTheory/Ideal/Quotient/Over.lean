@@ -27,7 +27,7 @@ lemma Ideal.ncard_primesOver_lt_of_not_le
   rw [← Set.ncard_image_of_injective _ (Ideal.comap_injective_of_surjective _ Hf)]
   refine Set.ncard_lt_ncard (Set.ssubset_iff_exists.mpr ⟨?_, P', ⟨‹_›, ‹_›⟩, ?_⟩) H
   · rintro _ ⟨q, ⟨_, _⟩, rfl⟩
-    exact ⟨inferInstance, inferInstanceAs ((q.comap f).LiesOver _)⟩
+    exact ⟨inferInstance, inferInstanceAs ((q.comap (f : S →+* T)).LiesOver _)⟩
   · rintro ⟨q, ⟨_, _⟩, rfl⟩; exact hkP' (Ideal.ker_le_comap _)
 
 lemma Ideal.ncard_primesOver_quotient_singleton_lt_of_notMem

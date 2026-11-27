@@ -205,11 +205,11 @@ private noncomputable abbrev eqv1 :
   have : g.symm.toRingEquiv.toRingHom.comp g = RingHom.id _ :=
     g.toRingEquiv.symm_toRingHom_comp_toRingHom
   calc
-    _ = Ideal.map ((RingHom.id _).comp <| varChange f) I := by rw [id_comp, Ideal.map_coe]
-    _ = (I.map (varChange f)).map (RingHom.id _) := by simp only [← Ideal.map_map, Ideal.map_coe]
+    _ = Ideal.map ((RingHom.id _).comp <| varChange f) I := by simp
+    _ = (I.map (varChange f)).map (RingHom.id _) := by simp
     _ = (I.map (varChange f)).map (g.symm.toAlgHom.toRingHom.comp g) :=
       congr(Ideal.map $(this.symm) (I.map (varChange f)))
-    _ = _ := by simp [← Ideal.map_map, Ideal.map_coe]
+    _ = _ := by simp [← Ideal.map_map]
 
 /-- `eqv2` is the isomorphism from `k[X_0,...,X_n]/T(I)` into `k[X_0,...,X_n]/I`,
 induced by `T`. -/
@@ -220,10 +220,9 @@ private noncomputable abbrev eqv2 :
     _ = I.map ((varChange f).symm.toRingEquiv.toRingHom.comp (varChange f)) := by
       have : (varChange f).symm.toRingEquiv.toRingHom.comp (varChange f) = RingHom.id _ :=
         RingEquiv.symm_toRingHom_comp_toRingHom _
-      rw [this, Ideal.map_id]
+      rw [this, RingHom.coe_id, Ideal.map_id]
     _ = _ := by
-      rw [← Ideal.map_map, Ideal.map_coe, Ideal.map_coe]
-      exact congrArg _ rfl
+      simp [← Ideal.map_map]
 
 /-- `hom2` is the composition of maps above, from `k[X_0,...X_(n-1)]` to `k[X_0,...X_n]/I`. -/
 private noncomputable def hom2 : MvPolynomial (Fin n) k →ₐ[k] MvPolynomial (Fin (n + 1)) k ⧸ I :=
@@ -266,7 +265,8 @@ theorem exists_integral_inj_algHom_of_quotient (I : Ideal (MvPolynomial (Fin n) 
     · obtain ⟨f, fi, fne⟩ := Submodule.exists_mem_ne_zero_of_ne_bot eqi
       set ϕ := kerLiftAlg <| hom2 f I
       have := Quotient.nontrivial_iff.mpr hi
-      obtain ⟨s, _, g, injg, intg⟩ := hd (ker <| hom2 f I) (ker_ne_top <| hom2 f I)
+      obtain ⟨s, _, g, injg, intg⟩ := hd (ker <| (RingHomClass.toRingHom <| hom2 f I))
+        (ker_ne_top _)
       exact ⟨s, by lia, ϕ.comp g, (ϕ.coe_comp g) ▸ (kerLiftAlg_injective _).comp injg,
         intg.trans g.toRingHom ϕ.toRingHom (hom2_isIntegral f I fne fi).kerLift⟩
 
@@ -283,7 +283,8 @@ theorem exists_integral_inj_algHom_of_fg : ∃ s, ∃ g : (MvPolynomial (Fin s) 
     Function.Injective g ∧ g.IsIntegral := by
   obtain ⟨n, f, fsurj⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial''.mp fin
   set ϕ := quotientKerAlgEquivOfSurjective fsurj
-  obtain ⟨s, _, g, injg, intg⟩ := exists_integral_inj_algHom_of_quotient (ker f) (ker_ne_top _)
+  obtain ⟨s, _, g, injg, intg⟩ := exists_integral_inj_algHom_of_quotient
+    (ker (RingHomClass.toRingHom f)) (ker_ne_top _)
   use s, ϕ.toAlgHom.comp g
   simp only [AlgHom.coe_comp, AlgEquiv.coe_toAlgHom, EmbeddingLike.comp_injective,
     AlgHom.toRingHom_eq_coe]

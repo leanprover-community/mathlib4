@@ -127,7 +127,9 @@ protected lemma _root_.LinearEquiv.isSemisimple_iff {M₂ : Type*} [AddCommGroup
 lemma eq_zero_of_isNilpotent_isSemisimple (hn : IsNilpotent f) (hs : f.IsSemisimple) : f = 0 := by
   have ⟨n, h0⟩ := hn
   rw [← aeval_X (R := R) f]; rw [← aeval_X_pow (R := R) f] at h0
-  rw [← RingHom.mem_ker, ← AEval.annihilator_eq_ker_aeval (M := M)] at h0 ⊢
+  -- TODO: this can be a `rw` as soon as `RingHomClass.toRingHom` is not an automatic coercion
+  -- anymore
+  erw [← RingHom.coe_coe, ← RingHom.mem_ker, ← AEval.annihilator_eq_ker_aeval (M := M) f] at h0 ⊢
   exact hs.annihilator_isRadical _ _ ⟨n, h0⟩
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -217,8 +219,11 @@ lemma IsSemisimple_smul (t : K) (h : f.IsSemisimple) :
 
 theorem isSemisimple_of_squarefree_aeval_eq_zero {p : K[X]}
     (hp : Squarefree p) (hpf : aeval f p = 0) : f.IsSemisimple := by
-  rw [← RingHom.mem_ker, ← AEval.annihilator_eq_ker_aeval (M := M), mem_annihilator,
-      ← IsTorsionBy, ← isTorsionBySet_singleton_iff, isTorsionBySet_iff_is_torsion_by_span] at hpf
+  -- TODO: this can be a `rw` as soon as `RingHomClass.toRingHom` is not an automatic coercion
+  -- anymore
+  erw [← RingHom.coe_coe, ← RingHom.mem_ker, ← AEval.annihilator_eq_ker_aeval (M := M),
+    mem_annihilator, ← IsTorsionBy, ← isTorsionBySet_singleton_iff,
+    isTorsionBySet_iff_is_torsion_by_span] at hpf
   let R := K[X] ⧸ Ideal.span {p}
   have : IsReduced R :=
     (Ideal.isRadical_iff_quotient_reduced _).mp (isRadical_iff_span_singleton.mp hp.isRadical)
@@ -296,8 +301,8 @@ theorem IsSemisimple.of_mem_adjoin_pair {a : End K M} (ha : a ∈ K[f, g]) :
   · rintro ⟨p⟩; exact p.induction_on (fun k ↦ by simp [R, commute_algebraMap_left])
       (fun p q hp hq ↦ by simpa [R] using! hp.add_left hq)
       fun n k ↦ by simpa [R, pow_succ, ← mul_assoc _ _ X] using! (·.mul_left comm)
-  · simpa only [RingHom.mem_ker, eval₂AlgHom_apply, eval₂_map, AlgHom.comp_algebraMap_of_tower]
-      using! minpoly.aeval K g
+  · simpa only [RingHom.mem_ker, AlgHom.toRingHom_eq_coe, AlgHom.coe_toRingHom, eval₂AlgHom_apply,
+      eval₂_map, AlgHom.comp_algebraMap_of_tower] using! minpoly.aeval K g
   have : K[f, g] ≤ φ.range := adjoin_le fun x ↦ by
     rintro (hx | hx) <;> rw [hx]
     · exact ⟨AdjoinRoot.of _ (AdjoinRoot.root _), (eval₂_C _ _).trans (aeval_X f)⟩

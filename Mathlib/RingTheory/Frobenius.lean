@@ -78,7 +78,7 @@ lemma card_pos : 0 < Nat.card (R ⧸ Q.under R) :=
 lemma le_comap : Q ≤ Q.comap φ := by
   intro x hx
   simp_all only [Ideal.mem_comap, ← Ideal.Quotient.eq_zero_iff_mem (I := Q), H.mk_apply,
-    zero_pow_eq, ite_eq_right_iff, H.card_pos.ne', false_implies]
+    zero_pow_eq, ite_eq_right_iff, H.card_pos.ne', false_implies, RingHom.coe_coe]
 
 /-- A Frobenius element at `Q` restricts to the Frobenius map on `S ⧸ Q`. -/
 def restrict : S ⧸ Q →ₐ[R ⧸ Q.under R] S ⧸ Q where
@@ -103,7 +103,7 @@ lemma restrict_injective [Q.IsPrime] :
 lemma comap_eq [Q.IsPrime] : Q.comap φ = Q := by
   refine le_antisymm (fun x hx ↦ ?_) H.le_comap
   rwa [← Ideal.Quotient.eq_zero_iff_mem, ← H.restrict_injective.eq_iff, map_zero, restrict_mk,
-    Ideal.Quotient.eq_zero_iff_mem, ← Ideal.mem_comap]
+    Ideal.Quotient.eq_zero_iff_mem, ← RingHom.coe_coe, ← Ideal.mem_comap]
 
 /-- Suppose `S` is a domain, and `φ : S →ₐ[R] S` is a Frobenius at `Q : Ideal S`.
 Let `ζ` be a `m`-th root of unity with `Q ∤ m`, then `φ` sends `ζ` to `ζ ^ q`. -/
@@ -209,11 +209,11 @@ lemma mul_inv_mem_inertia (H : IsArithFrobAt R σ Q) (H' : IsArithFrobAt R σ' Q
 lemma conj (H : IsArithFrobAt R σ Q) (τ : G) : IsArithFrobAt R (τ * σ * τ⁻¹) (τ • Q) := by
   intro x
   have : (Q.map (MulSemiringAction.toRingEquiv G S τ)).under R = Q.under R := by
-    rw [← Ideal.comap_symm, ← Ideal.comap_coe, Ideal.under, Ideal.comap_comap]
+    rw [← Ideal.comap_symm, Ideal.under, Ideal.comap_comap]
     congr 1
     exact (MulSemiringAction.toAlgEquiv R S τ).symm.toAlgHom.comp_algebraMap
   rw [Ideal.pointwise_smul_eq_comap, Ideal.mem_comap]
-  simpa [smul_sub, mul_smul, this] using H (τ⁻¹ • x)
+  simpa [smul_sub, mul_smul, this, Ideal.comap_symm] using H (τ⁻¹ • x)
 
 variable [Finite G] [Algebra.IsInvariant R S G]
 

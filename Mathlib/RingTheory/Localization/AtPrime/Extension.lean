@@ -189,8 +189,9 @@ theorem ramificationIdx_map_eq_ramificationIdx [P.IsPrime] :
     (Localization.algEquiv P.primeCompl R₁).bijective
   have key : p.map (algebraMap R R₂) =
       ((maximalIdeal Rₚ).map (algebraMap Rₚ R₁)).comap (algebraMap R₂ R₁) := by
-    rw [← IsLocalization.AtPrime.map_eq_maximalIdeal p, p.map_map, ← IsScalarTower.algebraMap_eq,
-      IsScalarTower.algebraMap_eq R R₂ R₁, ← p.map_map, comap_map_of_bijective _ h]
+    rw [← IsLocalization.AtPrime.map_eq_maximalIdeal p, p.map_map, ← RingHom.coe_comp,
+      ← IsScalarTower.algebraMap_eq, IsScalarTower.algebraMap_eq R R₂ R₁, RingHom.coe_comp,
+      ← p.map_map, comap_map_of_bijective _ h]
   rw [Module.length_quotient, Module.length_quotient, key, coheight_comap_of_surjective _ h.2]
 
 end IsLocalization.AtPrime

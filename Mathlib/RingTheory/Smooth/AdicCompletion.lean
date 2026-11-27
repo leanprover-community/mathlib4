@@ -43,13 +43,14 @@ noncomputable def liftAdicCompletionAux : (m : ℕ) → A →ₐ[R] S ⧸ (I ^ m
   | 1 => (Ideal.quotientEquivAlgOfEq R (show I = I ^ 1 by simp)).toAlgHom.comp f
   | m + 2 =>
     letI T := S ⧸ I ^ (m + 1 + 1)
-    letI J : Ideal T := (I ^ (m + 1)).map (Ideal.Quotient.mkₐ R (I ^ (m + 1 + 1)))
+    letI J : Ideal T := (I ^ (m + 1)).map (Submodule.Quotient.mk : S → S ⧸ I ^ (m + 1 + 1))
     letI q : A →ₐ[R] T ⧸ J :=
       (DoubleQuot.quotQuotEquivQuotOfLEₐ R
         (Ideal.pow_le_pow_right (I := I) (m + 1).le_succ)).symm.toAlgHom.comp
       (liftAdicCompletionAux (m + 1))
     haveI : J ^ (m + 1 + 1) = 0 := by
-      rw [← Ideal.map_pow, Submodule.zero_eq_bot, ← pow_mul]
+      unfold J
+      rw [← Ideal.Quotient.coe_mk, ← Ideal.map_pow, Submodule.zero_eq_bot, ← pow_mul]
       exact eq_bot_mono (Ideal.map_mono <| Ideal.pow_le_pow_right (by simp))
         (Ideal.map_quotient_self _)
     FormallySmooth.lift J ⟨m + 1 + 1, this⟩ q
@@ -105,7 +106,7 @@ public lemma exists_mkₐ_comp_eq_of_isAdicComplete {I : Ideal S} [IsAdicComplet
 /-- If `A` is formally smooth over `R`, the projection from the adic completion of
 `S` at the kernel of `f : S →ₐ[R] A` has a section. -/
 public lemma exists_kerProj_comp_eq_id (f : S →ₐ[R] A) (hf : Function.Surjective f) :
-    ∃ (g : A →ₐ[R] AdicCompletion (ker f) S),
+    ∃ (g : A →ₐ[R] AdicCompletion (ker (f : S →+* A)) S),
     (AdicCompletion.kerProj hf).comp g = AlgHom.id R A := by
   obtain ⟨g, hg⟩ := exists_adicCompletionEvalOneₐ_comp_eq
     (Ideal.quotientKerAlgEquivOfSurjective hf).symm.toAlgHom

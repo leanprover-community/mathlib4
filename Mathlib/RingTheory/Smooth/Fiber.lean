@@ -94,14 +94,15 @@ private lemma FormallySmooth.of_formallySmooth_residueField_tensor_aux
     (KaehlerDifferential.tensorKaehlerEquiv R 𝓀[R] P Pp).symm
   have : Module.Free Pp Ω[Pp⁄𝓀[R]] := .of_equiv e₀.symm
   have : Module.Finite Pp Ω[Pp⁄𝓀[R]] := .of_surjective e₀.symm.toLinearMap e₀.symm.surjective
-  let e₁ : RingHom.ker φ ≃ₗ[Pp] Pp ⊗[P] RingHom.ker (algebraMap P S) :=
+  let e₁ : RingHom.ker (RingHomClass.toRingHom φ) ≃ₗ[Pp] Pp ⊗[P] RingHom.ker (algebraMap P S) :=
     kerTensorProductMapIdToAlgHomEquiv _ _ _ _ h₁
   have h₁' : Function.Surjective φ := LinearMap.lTensor_surjective _ h₁
-  have h₂' : (RingHom.ker φ).FG := by
-    suffices Module.Finite Pp (RingHom.ker φ) from (Submodule.fg_top _).mp this.fg_top
+  have h₂' : (RingHom.ker (RingHomClass.toRingHom φ)).FG := by
+    suffices Module.Finite Pp (RingHom.ker (RingHomClass.toRingHom φ)) from
+      (Submodule.fg_top _).mp this.fg_top
     have : Module.Finite P (RingHom.ker (algebraMap P S)) := ⟨(Submodule.fg_top _).mpr h₂⟩
     exact .equiv e₁.symm
-  have h₃ : 𝓂[Sp] ≤ RingHom.ker ψ := by
+  have h₃ : 𝓂[Sp] ≤ RingHom.ker (RingHomClass.toRingHom ψ) := by
     intro x hx
     obtain ⟨x, rfl⟩ := TensorProduct.mk_surjective _ _ _ (by exact residue_surjective) x
     have : ¬IsUnit x := fun h ↦ hx <| h.map TensorProduct.includeRight
@@ -121,7 +122,8 @@ private lemma FormallySmooth.of_formallySmooth_residueField_tensor_aux
     (AlgebraTensorModule.congr (.refl 𝓀[S] _) e₀).restrictScalars S ≪≫ₗ
       (AlgebraTensorModule.cancelBaseChange P Pp Sp 𝓀[S] Ω[P⁄R]).restrictScalars S
   -- and `K ⊗[k ⊗ᵣ S] (k ⊗ᵣ I) = K ⊗[k ⊗ᵣ P] ((k ⊗ᵣ P) ⊗[P] S) = K ⊗[P] S`.
-  let eₗ : 𝓀[S] ⊗[Pp] RingHom.ker φ ≃ₗ[S] 𝓀[S] ⊗[P] RingHom.ker (algebraMap P S) :=
+  let eₗ : 𝓀[S] ⊗[Pp] RingHom.ker (RingHomClass.toRingHom φ) ≃ₗ[S]
+      𝓀[S] ⊗[P] RingHom.ker (algebraMap P S) :=
     (AlgebraTensorModule.congr (.refl 𝓀[S] 𝓀[S]) e₁).restrictScalars S ≪≫ₗ
       (AlgebraTensorModule.cancelBaseChange P Pp Sp 𝓀[S] _).restrictScalars S
   -- It remains to check that the two maps are equal under the identifications above.
@@ -153,7 +155,7 @@ lemma FormallySmooth.of_formallySmooth_residueField_tensor (M : Submonoid P)
   -/
   obtain ⟨n, f₀, hf₀⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial''.mp
     (inferInstance : Algebra.FiniteType R P)
-  let M' := M.comap f₀
+  let M' := M.comap (RingHomClass.toRingHom f₀)
   let P' := Localization M'
   let fP : P' →ₐ[R] S := IsLocalization.liftAlgHom (M := M')
       (f := (IsScalarTower.toAlgHom R P S).comp f₀) fun x ↦ by
@@ -165,7 +167,7 @@ lemma FormallySmooth.of_formallySmooth_residueField_tensor (M : Submonoid P)
     obtain ⟨s, rfl⟩ := hf₀ s
     refine ⟨IsLocalization.mk' (M := M') _ x ⟨s, hs⟩, ?_⟩
     simp [fP, IsLocalization.lift_mk', Units.mul_inv_eq_iff_eq_mul, IsUnit.liftRight]
-  have hfP : (RingHom.ker fP).FG := by
+  have hfP : (RingHom.ker (RingHomClass.toRingHom fP)).FG := by
     have := Algebra.FinitePresentation.ker_fG_of_surjective _ hf₀
     convert this.map (algebraMap _ P')
     refine le_antisymm ?_ (Ideal.map_le_iff_le_comap.mpr fun x hx ↦ by simp_all [fP])

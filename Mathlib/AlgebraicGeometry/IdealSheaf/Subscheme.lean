@@ -75,8 +75,7 @@ lemma ker_glueDataObjι_appTop (U : X.affineOpens) :
   rw [← Ideal.mk_ker (I := I.ideal _)]
   change RingHom.ker (Spec.map φ ≫ _).appTop.hom = (RingHom.ker φ.hom).comap _
   rw [← RingHom.ker_equiv_comp _ (Scheme.ΓSpecIso _).commRingCatIsoToRingEquiv, RingHom.comap_ker,
-    RingEquiv.toRingHom_eq_coe, Iso.commRingCatIsoToRingEquiv_toRingHom, ← CommRingCat.hom_comp,
-    ← CommRingCat.hom_comp]
+    Iso.commRingCatIsoToRingEquiv_toRingHom, ← CommRingCat.hom_comp, ← CommRingCat.hom_comp]
   congr 2
   simp only [Scheme.Hom.comp_app, TopologicalSpace.Opens.map_top, Category.assoc,
     Scheme.ΓSpecIso_naturality, Scheme.Opens.topIso_hom]
@@ -569,7 +568,7 @@ lemma ker_subschemeι_app (U : X.affineOpens) :
       I.subscheme.presheaf.mapIso (eqToIso (by simp)).op
   change RingHom.ker (e.commRingCatIsoToRingEquiv.toRingHom.comp
     (Ideal.Quotient.mk (I.ideal U))) = _
-  rw [RingHom.ker_equiv_comp, Ideal.mk_ker]
+  rw [RingEquiv.toRingHom_eq_coe, RingHom.ker_equiv_comp, Ideal.mk_ker]
 
 @[simp]
 lemma ker_subschemeι : I.subschemeι.ker = I := by

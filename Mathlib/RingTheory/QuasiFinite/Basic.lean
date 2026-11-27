@@ -96,10 +96,10 @@ instance (p : Ideal R) (q : Ideal S) [q.LiesOver p] [q.IsPrime] [QuasiFinite R S
   have : p.IsPrime := isPrime_of_liesOver q p
   let Sq := Localization.AtPrime q
   let r := PrimeSpectrum.primesOverOrderIsoFiber R S p (primesOver.mk p q)
-  have : q = r.asIdeal.comap Algebra.TensorProduct.includeRight := by
+  have : q = r.asIdeal.comap (RingHomClass.toRingHom <| Algebra.TensorProduct.includeRight) := by
     rw [← PrimeSpectrum.coe_primesOverOrderIsoFiber_symm_apply, OrderIso.symm_apply_apply]
   let := Localization.AtPrime.algebraOfLiesOver p
-    (r.asIdeal.comap Algebra.TensorProduct.includeRight)
+    (r.asIdeal.comap <| RingHomClass.toRingHom <| Algebra.TensorProduct.includeRight)
   convert (Fiber.localizationAlgEquivQuotient p r.asIdeal).toRingEquiv.isArtinianRing
 
 lemma finite_comap_preimage [QuasiFinite R S] {s : Set (PrimeSpectrum R)} (hs : s.Finite) :
@@ -147,7 +147,7 @@ private lemma finite_of_isArtinianRing_of_isLocalRing
   · refine Ideal.mk_ker.trans_le ?_
     rw [Ideal.map_le_iff_le_comap, ← Ring.KrullDimLE.nilradical_eq_maximalIdeal]
     exact fun x hx ↦ IsNilpotent.map hx _
-  · rw [← RingHom.ker_coe_toRingHom, Ideal.Quotient.mkₐ_ker]
+  · rw [AlgHom.toRingHom_eq_coe, Ideal.Quotient.mkₐ_ker]
     exact Ideal.FG.map (IsNoetherian.noetherian _) _
 
 lemma _root_.Module.Finite.of_quasiFinite [IsArtinianRing R] [QuasiFinite R S] :
@@ -394,11 +394,11 @@ set_option backward.isDefEq.respectTransparency false in
 omit [Algebra S T] in
 lemma QuasiFiniteAt.of_surjectiveOnStalks (p : Ideal S) [p.IsPrime] [QuasiFiniteAt R p]
     (f : S →ₐ[R] T) (hf : f.SurjectiveOnStalks) (q : Ideal T) [q.IsPrime]
-    (hq : p = q.comap f.toRingHom) :
+    (hq : p = q.comap (f : S →+* T)) :
     QuasiFiniteAt R q := by
   subst hq
   refine .of_surjective_algHom
-    { Localization.localRingHom _ q f.toRingHom rfl with commutes' := ?_ }
+    { Localization.localRingHom _ q (f : S →+* T) rfl with commutes' := ?_ }
     (hf q ‹_›)
   simp [IsScalarTower.algebraMap_apply R S (Localization.AtPrime (q.comap _)),
     IsScalarTower.algebraMap_apply R T (Localization.AtPrime _)]

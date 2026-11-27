@@ -213,8 +213,8 @@ def mapCotangent (I₁ : Ideal A) (I₂ : Ideal B) (f : A →ₐ[R] B) (h : I₁
       Ideal.smul_eq_mul, ← pow_two] at hx
     rw [Submodule.mem_comap, Submodule.restrictScalars_mem,
       Submodule.mem_smul_top_iff, f.toLinearMap.coe_restrict_apply h,
-      AlgHom.toLinearMap_apply, Ideal.smul_eq_mul, ← pow_two, ← Ideal.mem_comap]
-    exact Ideal.le_comap_pow f 2 (Ideal.pow_right_mono h 2 hx)
+      AlgHom.toLinearMap_apply, Ideal.smul_eq_mul, ← pow_two, ← RingHom.coe_coe, ← Ideal.mem_comap]
+    exact Ideal.le_comap_pow (f : A →+* B) 2 (Ideal.pow_right_mono h 2 hx)
 
 @[simp]
 lemma mapCotangent_toCotangent

@@ -282,11 +282,11 @@ theorem localRingHom_comp {S : Type*} [CommSemiring S] (J : Ideal S) [hJ : J.IsP
 
 /-- Isomorphic rings have isomorphic localizations. -/
 @[simps]
-noncomputable def localRingEquiv (J : Ideal P) [J.IsPrime] (f : R ≃+* P) (hIJ : I = J.comap f) :
+noncomputable def localRingEquiv (J : Ideal P) [J.IsPrime] (f : R ≃+* P)
+    (hIJ : I = J.comap f.toRingHom) :
     Localization.AtPrime I ≃+* Localization.AtPrime J where
-  __ := localRingHom I J f hIJ
-  invFun := localRingHom J I f.symm
-    (by rw [hIJ, ← Ideal.comap_coe f, Ideal.comap_comap, RingEquiv.comp_symm, Ideal.comap_id])
+  __ := localRingHom I J f.toRingHom hIJ
+  invFun := localRingHom J I f.symm.toRingHom (by rw [hIJ, Ideal.comap_comap]; simp)
   left_inv x := by simp [localRingHom, map_map]
   right_inv x := by simp [localRingHom, map_map]
 
@@ -615,7 +615,7 @@ local notation "pS" => Ideal.map (algebraMap R S) p
 local notation "pSₚ" => Ideal.map (algebraMap Rₚ Sₚ) (maximalIdeal Rₚ)
 
 lemma under_map_eq_map : (Ideal.map (algebraMap R Sₚ) p).under S = pS := by
-  rw [IsScalarTower.algebraMap_eq R S Sₚ, ← Ideal.map_map, eq_comm]
+  rw [IsScalarTower.algebraMap_eq R S Sₚ, RingHom.coe_comp, ← Ideal.map_map, eq_comm]
   apply Ideal.le_comap_map.antisymm
   intro x hx
   obtain ⟨α, hα, hαx⟩ : ∃ α ∉ p, α • x ∈ pS := by
@@ -651,12 +651,13 @@ the complement of `p`
 -/
 noncomputable def equivQuotientMapMaximalIdeal : S ⧸ pS ≃+* Sₚ ⧸ pSₚ := by
   haveI h : pSₚ = Ideal.map (algebraMap S Sₚ) pS := by
-    rw [← map_eq_maximalIdeal p, Ideal.map_map,
-      ← IsScalarTower.algebraMap_eq, Ideal.map_map, ← IsScalarTower.algebraMap_eq]
+    rw [← map_eq_maximalIdeal p, Ideal.map_map, ← RingHom.coe_comp, ← IsScalarTower.algebraMap_eq,
+      Ideal.map_map, ← RingHom.coe_comp, ← IsScalarTower.algebraMap_eq]
   refine (Ideal.quotEquivOfEq ?_).trans
     (RingHom.quotientKerEquivOfSurjective (f := algebraMap S (Sₚ ⧸ pSₚ)) ?_)
   · rw [IsScalarTower.algebraMap_eq S Sₚ, Ideal.Quotient.algebraMap_eq, ← RingHom.comap_ker,
-      Ideal.mk_ker, h, Ideal.map_map, ← IsScalarTower.algebraMap_eq, ← under_def, under_map_eq_map]
+      Ideal.mk_ker, h, Ideal.map_map, ← RingHom.coe_comp, ← IsScalarTower.algebraMap_eq,
+      ← under_def, under_map_eq_map]
   · intro x
     obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
     obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq

@@ -420,6 +420,9 @@ theorem toMonoidHom_eq_coe (f : α →+* β) : f.toMonoidHom = f :=
   rfl
 
 @[simp]
+protected theorem coe_toMonoidHom (f : α →+* β) : ⇑f.toMonoidHom = f := rfl
+
+@[simp]
 theorem toMonoidHom_mk (f : α →* β) (h₁ h₂) : ((⟨f, h₁, h₂⟩ : α →+* β) : α →* β) = f :=
   rfl
 

@@ -40,12 +40,11 @@ This is available as an instance in the `Pointwise` locale. -/
 @[instance_reducible]
 protected def pointwiseDistribMulAction : DistribMulAction M (Ideal R) where
   smul a := Ideal.map (MulSemiringAction.toRingHom _ _ a)
-  one_smul I :=
-    congr_arg (I.map ·) (RingHom.ext <| one_smul M) |>.trans I.map_id
+  one_smul I := congr_arg (I.map ·) (by ext; simp) |>.trans I.map_id
   mul_smul _ _ I :=
-    congr_arg (I.map ·) (RingHom.ext <| mul_smul _ _) |>.trans (I.map_map _ _).symm
+    congr_arg (I.map ·) (by ext; simp [mul_smul]) |>.trans (I.map_map _ _).symm
   smul_zero _ := Ideal.map_bot
-  smul_add _ I J := Ideal.map_sup _ I J
+  smul_add _ I J := by apply Ideal.map_sup I J
 
 scoped[Pointwise] attribute [instance] Ideal.pointwiseDistribMulAction
 
@@ -95,21 +94,21 @@ theorem smul_closure (a : M) (s : Set R) : a • span s = span (a • s) :=
 
 instance pointwise_central_scalar [MulSemiringAction Mᵐᵒᵖ R] [IsCentralScalar M R] :
     IsCentralScalar M (Ideal R) :=
-  ⟨fun _ S => (congr_arg fun f => S.map f) <| RingHom.ext <| op_smul_eq_smul _⟩
+  ⟨fun _ S => (congr_arg fun f => S.map f) <| (by ext; simp)⟩
 
 @[simp]
 theorem pointwise_smul_toAddSubmonoid (a : M) (S : Ideal R)
     (ha : Function.Surjective fun r : R => a • r) :
     (a • S).toAddSubmonoid = a • S.toAddSubmonoid := by
   ext
-  exact Ideal.mem_map_iff_of_surjective _ <| by exact ha
+  exact Ideal.mem_map_iff_of_surjective _ ha
 
 @[simp]
 theorem pointwise_smul_toAddSubgroup {R : Type*} [Ring R] [MulSemiringAction M R]
     (a : M) (S : Ideal R) (ha : Function.Surjective fun r : R => a • r) :
     (a • S).toAddSubgroup = a • S.toAddSubgroup := by
   ext
-  exact Ideal.mem_map_iff_of_surjective _ <| by exact ha
+  exact Ideal.mem_map_iff_of_surjective _ ha
 
 end Monoid
 
@@ -120,9 +119,9 @@ variable [Group M] [Semiring R] [MulSemiringAction M R]
 open scoped Pointwise
 
 theorem pointwise_smul_eq_comap {a : M} (S : Ideal R) :
-    a • S = S.comap (MulSemiringAction.toRingAut _ _ a).symm := by
+    a • S = S.comap (MulSemiringAction.toRingAut M R a).symm := by
   ext
-  simp [pointwise_smul_def]
+  rw [pointwise_smul_def, comap_symm]
   rfl
 
 @[simp]

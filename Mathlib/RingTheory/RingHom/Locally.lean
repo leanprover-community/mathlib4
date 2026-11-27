@@ -180,7 +180,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 lemma locally_respectsIso (hPi : RespectsIso P) : RespectsIso (Locally P) where
   left {R S T} _ _ _ f e := fun ⟨s, hsone, hs⟩ ↦ by
     refine ⟨e '' s, ?_, ?_⟩
-    · rw [← Ideal.map_span, hsone, Ideal.map_top]
+    · rw [← RingHom.coe_coe, ← Ideal.map_span, hsone, Ideal.map_top]
     · rintro - ⟨a, ha, rfl⟩
       let e' : Localization.Away a ≃+* Localization.Away (e a) :=
         IsLocalization.ringEquivOfRingEquiv _ _ e (Submonoid.map_powers e a)
@@ -286,12 +286,13 @@ lemma locally_isStableUnderBaseChange (hPi : RespectsIso P) (hPb : IsStableUnder
     IsStableUnderBaseChange (Locally P) := by
   apply IsStableUnderBaseChange.mk (locally_respectsIso hPi)
   introv hf
-  rw [locally_iff_span_eq_top, eq_top_iff, ← Ideal.map_top Algebra.TensorProduct.includeRight,
+  rw [locally_iff_span_eq_top, eq_top_iff,
+    ← Ideal.map_top (RingHomClass.toRingHom Algebra.TensorProduct.includeRight),
     ← hf.span_eq_top, Ideal.map_le_iff_le_comap, Ideal.span_le]
   intro g hg
   apply Ideal.subset_span
-  simp only [Set.mem_ofPred_eq, Algebra.TensorProduct.includeRight_apply,
-    ← IsScalarTower.algebraMap_eq] at hg ⊢
+  simp only [← IsScalarTower.algebraMap_eq, Set.mem_ofPred_eq, coe_coe,
+    Algebra.TensorProduct.includeRight_apply] at hg ⊢
   let e := IsLocalization.Away.tensorProductEquivTMulRight R S g (Localization.Away g)
   rw [← e.toAlgHom.comp_algebraMap]
   exact hPi.left _ _ (hPb.tensorProduct _ hg)

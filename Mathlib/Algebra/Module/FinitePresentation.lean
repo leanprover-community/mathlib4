@@ -99,8 +99,11 @@ theorem Module.FinitePresentation.exists_fin' [fp : Module.FinitePresentation R 
       Function.Surjective f ∧ Function.Exact g f := by
   obtain ⟨n, K, e, h⟩ := exists_fin R M
   obtain ⟨m, g', hg'⟩ := K.fg_iff_exists_fin_linearMap.mp h
-  exact ⟨n, m, e.symm ∘ₗ K.mkQ, g', by simpa using K.mkQ_surjective,
-    e.symm.injective.comp_exact_iff_exact.mpr (by simp [LinearMap.exact_iff, hg'])⟩
+  use n, m, e.symm ∘ₗ K.mkQ, g'
+  constructor
+  · simpa using K.mkQ_surjective
+  rw [e.symm.injective.comp_exact_iff_exact, LinearMap.exact_iff, hg']
+  simp
 
 /-- A finitely presented module is isomorphic to the quotient of a finite free module by a finitely
 generated submodule. -/
@@ -329,7 +332,9 @@ lemma Module.FinitePresentation.trans (S : Type*) [CommRing S] [Algebra R S]
   let f : (Fin n → S) →ₗ[R] M := (e.symm ∘ₗ K.mkQ).restrictScalars R
   refine Module.finitePresentation_of_surjective f (fun m ↦ ?_) ?_
   · obtain ⟨a, ha⟩ := K.mkQ_surjective (e m)
-    exact ⟨a, by simp [f, ha]⟩
+    use a
+    simp at ha
+    simp [f, ha]
   · have : Module.Finite S
         (Submodule.restrictScalars R (LinearMap.ker (e.symm.toLinearMap ∘ₗ K.mkQ))) :=
       .of_fg <| show (LinearMap.ker (e.symm.toLinearMap ∘ₗ K.mkQ)).FG by simpa

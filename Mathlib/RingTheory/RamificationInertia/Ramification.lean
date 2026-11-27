@@ -78,7 +78,8 @@ theorem ramificationIdx_eq_one [q.IsPrime] [Algebra.EssFiniteType R S]
   have : Algebra.EssFiniteType Rp Sq := Algebra.EssFiniteType.of_comp R Rp Sq
   rw [ramificationIdx_def, ENat.toNat_eq_iff_eq_natCast, Nat.cast_one, Module.length_eq_one_iff,
     isSimpleModule_iff_isCoatom, ← Ideal.isMaximal_def, IsLocalRing.isMaximal_iff,
-    IsScalarTower.algebraMap_eq R Rp Sq, ← map_map, Localization.AtPrime.map_eq_maximalIdeal]
+    IsScalarTower.algebraMap_eq R Rp Sq, RingHom.coe_comp, ← map_map,
+    Localization.AtPrime.map_eq_maximalIdeal]
   exact Algebra.FormallyUnramified.map_maximalIdeal
 
 @[deprecated (since := "2026-07-01")] alias ramificationIdx'_eq_one := ramificationIdx_eq_one
@@ -87,10 +88,10 @@ theorem ramificationIdx_eq_one [q.IsPrime] [Algebra.EssFiniteType R S]
 @[simp]
 theorem ramificationIdx_bot_eq_one [IsDomain S] : (⊥ : Ideal S).ramificationIdx R = 1 := by
   let Sq := Localization.AtPrime (⊥ : Ideal S)
-  rw [ramificationIdx_def, IsScalarTower.algebraMap_eq R S Sq, ← Ideal.map_map, Ideal.under,
-    map_comap_bot, map_bot, ENat.toNat_eq_iff_eq_natCast, Nat.cast_one, Module.length_eq_one_iff,
-    isSimpleModule_iff_isCoatom, ← Ideal.isMaximal_def, IsLocalRing.isMaximal_iff,
-    ← Localization.AtPrime.map_eq_maximalIdeal, Ideal.map_bot]
+  rw [ramificationIdx_def, IsScalarTower.algebraMap_eq R S Sq, RingHom.coe_comp, ← Ideal.map_map,
+    Ideal.under, map_comap_bot, map_bot, ENat.toNat_eq_iff_eq_natCast, Nat.cast_one,
+    Module.length_eq_one_iff, isSimpleModule_iff_isCoatom, ← Ideal.isMaximal_def,
+    IsLocalRing.isMaximal_iff, ← Localization.AtPrime.map_eq_maximalIdeal, Ideal.map_bot]
 
 variable {q R} in
 theorem ramificationIdx_eq_one_iff_of_isSeparable [q.IsPrime] [Algebra.EssFiniteType R S]
@@ -107,7 +108,8 @@ theorem ramificationIdx_eq_one_iff_of_isSeparable [q.IsPrime] [Algebra.EssFinite
   have := Algebra.EssFiniteType.of_comp R Rp Sq
   suffices Algebra.FormallyUnramified Rp Sq from Algebra.FormallyUnramified.comp R Rp Sq
   rw [Algebra.FormallyUnramified.iff_map_maximalIdeal_eq,
-    ← Localization.AtPrime.map_eq_maximalIdeal, map_map, ← IsScalarTower.algebraMap_eq]
+    ← Localization.AtPrime.map_eq_maximalIdeal, map_map, ← RingHom.coe_comp,
+    ← IsScalarTower.algebraMap_eq]
   exact ⟨‹_›, h⟩
 
 variable {q R} in
@@ -144,7 +146,8 @@ theorem ramificationIdx_pos_of_mem_minimalPrimes [q.LiesOver p] [q.IsPrime]
   rw [ramificationIdx_eq p q]
   apply ENat.toNat_pos
   · rw [← pos_iff_ne_zero, Module.length_pos_iff, Submodule.Quotient.nontrivial_iff,
-      IsScalarTower.algebraMap_eq R S, ← map_map, ← lt_top_iff_ne_top, q.over_def p]
+      IsScalarTower.algebraMap_eq R S, RingHom.coe_comp, ← map_map, ← lt_top_iff_ne_top,
+      q.over_def p]
     grw [map_mono map_comap_le, Localization.AtPrime.map_eq_maximalIdeal, hmax.lt_top]
   · rw [Module.length_eq_of_surjective (R := Sq ⧸ p.map (algebraMap R Sq)) Quotient.mk_surjective,
       Module.length_ne_top_iff, ← isArtinianRing_iff_isFiniteLength,
@@ -228,7 +231,8 @@ theorem ramificationIdx_eq_normalizedFactors_count [IsDedekindDomain S]
     exact hq.ne_top
   have := isDiscreteValuationRing_of_dedekind_domain S hq0 (Localization.AtPrime q)
   apply ramificationIdx_eq_of_map_eq_pow p q
-  conv_lhs => rw [IsScalarTower.algebraMap_eq R S, ← map_map, h, Ideal.map_mul, Ideal.map_pow,]
+  conv_lhs => rw [IsScalarTower.algebraMap_eq R S, RingHom.coe_comp, ← map_map, h, Ideal.map_mul,
+    Ideal.map_pow,]
   rw [map_eq_maximalIdeal, map_eq_top_of_not_le (Localization.AtPrime q) hqI, mul_top]
 
 theorem ramificationIdx_eq_factors_count [IsDedekindDomain S]
@@ -274,12 +278,13 @@ theorem ramificationIdx_tower' [q.IsPrime] [r.IsPrime] [r.LiesOver q]
     r.ramificationIdx R = q.ramificationIdx R * r.ramificationIdx S := by
   have : q.LiesOver (r.under R) := LiesOver.tower_bot r q (r.under R)
   let f := (Ideal.quotientEquivAlgOfEq (Localization.AtPrime r)
-    (by rw [map_map, ← IsScalarTower.algebraMap_eq])).trans
+    (by rw [map_map, ← RingHom.coe_comp, ← IsScalarTower.algebraMap_eq])).trans
       (Algebra.TensorProduct.quotIdealMapEquivTensorQuot (Localization.AtPrime r)
         ((r.under R).map (algebraMap R (Localization.AtPrime q))))
   rw [ramificationIdx_def, ramificationIdx_eq (r.under R), ramificationIdx_eq q,
     f.toLinearEquiv.length_eq, IsLocalRing.length_baseChange, ENat.toNat_mul,
-    ← Localization.AtPrime.map_eq_maximalIdeal, map_map, ← IsScalarTower.algebraMap_eq]
+    ← Localization.AtPrime.map_eq_maximalIdeal, map_map, ← RingHom.coe_comp,
+    ← IsScalarTower.algebraMap_eq]
 
 @[deprecated (since := "2026-07-01")] alias ramificationIdx'_tower' := ramificationIdx_tower'
 
@@ -333,15 +338,19 @@ theorem ramificationIdx_smul {G : Type*} [Group G] [MulSemiringAction G S] [SMul
     let f₀ := MulSemiringAction.toAlgAut G R S g
     have hg : g • q = q.map f₀ := q.pointwise_smul_def
     let Sq := Localization.AtPrime q
+    have : (map f₀ q).IsPrime := map_isPrime_of_equiv f₀.toRingEquiv
     let Sq' := Localization.AtPrime (q.map f₀)
     let f : Sq ≃ₐ[R] Sq' :=
-      Localization.localAlgEquiv q (q.map f₀) f₀ (comap_map_of_bijective f₀ f₀.bijective).symm
+      Localization.localAlgEquiv q (q.map f₀) f₀
+        (comap_map_of_bijective (RingHomClass.toRingHom f₀) f₀.bijective).symm
     let : Algebra Sq Sq' := f.toRingHom.toAlgebra
     have : IsScalarTower R Sq Sq' := IsScalarTower.of_algHom f.toAlgHom
     let e : (Sq ⧸ p.map (algebraMap R Sq)) ≃ₐ[Sq] Sq' ⧸ p.map (algebraMap R Sq') :=
       Ideal.quotientEquivAlg _ _ (AlgEquiv.ofBijective (Algebra.ofId Sq Sq') f.bijective)
         (by rw [IsScalarTower.algebraMap_eq R Sq Sq', Ideal.map_map,
-          ← AlgEquiv.toAlgHom_toRingHom, AlgEquiv.toAlgHom_ofBijective, Algebra.toRingHom_ofId])
+          ← AlgEquiv.toAlgHom_toRingHom, AlgEquiv.toAlgHom_ofBijective, Algebra.toRingHom_ofId,
+          RingHom.coe_comp])
+    have : (map (⇑f₀) q).LiesOver p := map_equiv_liesOver q p f₀
     rw [hg, ramificationIdx_eq p q, ramificationIdx_eq p (q.map f₀),
       e.toLinearEquiv.length_eq, Module.length_eq_of_surjective f.surjective]
 

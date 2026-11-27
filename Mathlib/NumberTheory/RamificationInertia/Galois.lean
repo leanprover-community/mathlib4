@@ -91,7 +91,12 @@ variable (K L : Type*) [Field K] [Field L] [Algebra A K] [IsFractionRing A K] [A
   [IsIntegralClosure B A L] [FiniteDimensional K L]
 
 noncomputable instance : MulAction Gal(L/K) (primesOver p B) where
-  smul σ Q := primesOver.mk p (map (galRestrict A K L B σ) Q.val)
+  smul σ Q :=
+    haveI : (map ⇑((galRestrict A K L B) σ) ↑Q).IsPrime :=
+      map_isPrime_of_equiv ((galRestrict A K L B) σ).toRingEquiv
+    haveI : (map ⇑((galRestrict A K L B) σ) ↑Q).LiesOver p := by
+      convert! map_equiv_liesOver ↑Q p ((galRestrict A K L B) σ)
+    primesOver.mk p (map (galRestrict A K L B σ) Q.val)
   one_smul Q := by
     apply Subtype.val_inj.mp
     change map _ Q.val = Q.val

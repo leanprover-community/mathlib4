@@ -324,12 +324,13 @@ theorem relNorm_map_algEquiv {T : Type*} [CommRing T] [IsDedekindDomain T] [IsIn
   refine le_antisymm (relNorm_map_algEquiv_aux σ I) ?_
   convert relNorm_map_algEquiv_aux σ.symm (I.map σ)
   change I = map σ.symm.toAlgHom (map σ.toAlgHom I)
-  simp [map_mapₐ]
+  simp [map_mapₐ, -AlgEquiv.coe_toAlgHom]
 
 @[simp]
 theorem relNorm_comap_algEquiv {T : Type*} [CommRing T] [IsDedekindDomain T] [IsIntegrallyClosed T]
     [Algebra R T] [Module.Finite R T] [IsTorsionFree R T] (σ : S ≃ₐ[R] T) (I : Ideal T) :
-    relNorm R (I.comap σ) = relNorm R I := map_symm σ.toRingEquiv ▸ relNorm_map_algEquiv σ.symm I
+    relNorm R (I.comap (σ : S →+* T)) = relNorm R I :=
+  map_symm σ.toRingEquiv ▸ relNorm_map_algEquiv σ.symm I
 
 variable (R)
 
@@ -358,8 +359,9 @@ theorem relNorm_algebraMap (I : Ideal R) :
   let Rₚ := Localization.AtPrime P
   let K := FractionRing R
   rw [← spanIntNorm_localization R _ _ P.primeCompl_le_nonZeroDivisors (Localization P'),
-      Ideal.map_pow, I.map_map, ← IsScalarTower.algebraMap_eq, IsScalarTower.algebraMap_eq R Rₚ,
-      ← I.map_map, ← (I.map _).span_singleton_generator, Ideal.map_span, Set.image_singleton,
+      Ideal.map_pow, I.map_map, ← RingHom.coe_comp, ← IsScalarTower.algebraMap_eq,
+      IsScalarTower.algebraMap_eq R Rₚ, RingHom.coe_comp, ← I.map_map,
+      ← (I.map _).span_singleton_generator, Ideal.map_span, Set.image_singleton,
       spanNorm_singleton, Ideal.span_singleton_pow]
   congr 2
   apply IsFractionRing.injective Rₚ K
@@ -373,7 +375,7 @@ variable (R)
 theorem relNorm_algebraMap' {R'} [CommRing R'] (I : Ideal R') [Algebra R' R]
     [Algebra R' S] [IsScalarTower R' R S] :
     relNorm R (I.map (algebraMap R' S)) = I.map (algebraMap R' R) ^ finrank R S := by
-  rw [← relNorm_algebraMap, Ideal.map_map, IsScalarTower.algebraMap_eq R' R S]
+  rw [← relNorm_algebraMap, Ideal.map_map, IsScalarTower.algebraMap_eq R' R S, RingHom.coe_comp]
 
 section relNorm_prime
 

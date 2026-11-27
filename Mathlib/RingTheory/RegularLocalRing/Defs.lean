@@ -110,7 +110,8 @@ lemma IsRegularRing.of_ringEquiv {R' : Type*} [CommRing R'] (e : R ≃+* R') [Is
   rw [isRegularRing_iff]
   intro p hp
   exact IsRegularLocalRing.of_ringEquiv <| IsLocalization.ringEquivOfRingEquiv
-    (Localization.AtPrime (p.comap e)) (Localization.AtPrime p) e (e.map_primeCompl_comap_eq p)
+    (Localization.AtPrime (p.comap (e : R →+* R'))) (Localization.AtPrime p) e
+    (e.map_primeCompl_comap_eq p)
 
 lemma IsRegularLocalRing.of_isRegularRing_of_isLocalRing [IsLocalRing R] [IsRegularRing R] :
     IsRegularLocalRing R := by

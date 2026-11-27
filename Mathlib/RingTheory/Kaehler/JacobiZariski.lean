@@ -77,10 +77,11 @@ lemma Cotangent.surjective_map_ofComp :
   intro x
   obtain ⟨⟨x, hx⟩, rfl⟩ := Extension.Cotangent.mk_surjective x
   have : x ∈ Q.ker := hx
-  rw [← map_ofComp_ker Q P, Ideal.mem_map_iff_of_surjective
-    _ (toAlgHom_ofComp_surjective Q P)] at this
-  obtain ⟨x, hx', rfl⟩ := this
-  exact ⟨.mk ⟨x, hx'⟩, Extension.Cotangent.map_mk _ _⟩
+  rw [← map_ofComp_ker Q P, ← RingHom.coe_coe,
+    Ideal.mem_map_iff_of_surjective (RingHomClass.toRingHom (Q.ofComp P).toAlgHom)] at this
+  · obtain ⟨x, hx', rfl⟩ := this
+    exact ⟨.mk ⟨x, hx'⟩, Extension.Cotangent.map_mk _ _⟩
+  · exact toAlgHom_ofComp_surjective Q P
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -111,8 +112,9 @@ lemma Cotangent.exact :
     obtain ⟨⟨x : (Q.comp P).Ring, hx'⟩, rfl⟩ := Extension.Cotangent.mk_surjective x
     replace hx : (Q.ofComp P).toAlgHom x ∈ Q.ker ^ 2 := by
       simpa only [map_mk, val_mk, val_zero, Ideal.toCotangent_eq_zero] using! congr(($hx).val)
-    rw [pow_two, ← map_ofComp_ker (P := P), ← Ideal.map_mul, Ideal.mem_map_iff_of_surjective
-      _ (toAlgHom_ofComp_surjective Q P)] at hx
+    rw [pow_two, ← map_ofComp_ker (P := P), ← RingHom.coe_coe, ← Ideal.map_mul,
+      Ideal.mem_map_iff_of_surjective] at hx
+    swap; · exact toAlgHom_ofComp_surjective Q P
     obtain ⟨y, hy, e⟩ := hx
     rw [eq_comm, ← sub_eq_zero, ← map_sub, ← RingHom.mem_ker, ← map_toComp_ker] at e
     rw [LinearMap.range_liftBaseChange]
@@ -133,7 +135,7 @@ lemma Cotangent.exact :
       Subtype.exists, exists_and_right, exists_eq_right,
       toExtension_Ring]
     refine ⟨?_, Submodule.subset_span ⟨Extension.Cotangent.mk ⟨w, hw⟩, ?_⟩⟩
-    · simp only [ker_eq_ker_aeval_val, RingHom.mem_ker, Hom.algebraMap_toAlgHom]
+    · simp only [ker_eq_ker_aeval_val, RingHom.mem_ker, RingHom.coe_coe, Hom.algebraMap_toAlgHom]
       rw [aeval_val_eq_zero hw, map_zero]
     · rw [map_mk]
       rfl
@@ -472,8 +474,7 @@ lemma liftBaseChange_range_le :
   ext; suffices (Q.ofComp P).toAlgHom ((Q.toComp P).toAlgHom x) ∈ Q.toExtension.ker ^ 2 by
     simpa [Ideal.toCotangent_eq_zero]
   rw [← Generators.ker, Generators.ker_eq_ker_aeval_val] at x_in
-  rw [toComp_toAlgHom, toAlgHom_ofComp_rename, Generators.algebraMap_eq, RingHom.coe_coe,
-    x_in, RingHom.map_zero]
+  rw [toComp_toAlgHom, toAlgHom_ofComp_rename, Generators.algebraMap_eq, x_in, RingHom.map_zero]
   exact Ideal.zero_mem _
 
 set_option backward.isDefEq.respectTransparency.types false in

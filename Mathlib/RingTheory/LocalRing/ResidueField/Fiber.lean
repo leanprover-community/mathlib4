@@ -80,7 +80,7 @@ noncomputable def Fiber.algEquivQuotient :
     p.Fiber S ≃ₐ[S] Sp ⧸ pSp :=
   (commRight R S p.ResidueField).symm.trans <| (tensorQuotientEquiv S _ S _).trans
     (.ofCommutes (Ideal.quotientEquiv _ _ (Localization.tensorLeftAlgEquiv p.primeCompl S) (by
-        rw [← Ideal.map_coe includeRight, Ideal.map_map]
+        rw [Ideal.map_map]
         congr
         ext
         simp [Localization.tensorLeftAlgEquiv_apply_one_tmul p.primeCompl]))
@@ -94,12 +94,12 @@ noncomputable def Fiber.algEquivAux₁ :
     p.Fiber S ≃ₐ[S] Sp ⧸ pS.map (algebraMap S Sp) :=
   letI : Algebra S (p.Fiber S) := rightAlgebra
   (Fiber.algEquivQuotient p).trans <| quotientEquivAlgOfEq S <| by
-    rw [← Localization.AtPrime.map_eq_maximalIdeal, map_map, ← IsScalarTower.algebraMap_eq,
-      IsScalarTower.algebraMap_eq R S, ← map_map]
+    rw [← Localization.AtPrime.map_eq_maximalIdeal, map_map, ← RingHom.coe_comp,
+      ← IsScalarTower.algebraMap_eq, IsScalarTower.algebraMap_eq R S, RingHom.coe_comp, ← map_map]
 
 /-- The localization of the fiber `p.Fiber S` is isomorphic to a quotient of a localization. -/
 noncomputable def Fiber.algEquivAux₂ (q : Ideal (p.Fiber S)) [q.IsPrime] :
-    letI r := q.comap includeRight
+    letI r := q.comap (RingHomClass.toRingHom includeRight)
     letI Sr := Localization.AtPrime r
     letI pS := p.map (algebraMap R S)
     Localization.AtPrime q ≃ₐ[R] Sr ⧸ pS.map (algebraMap S Sr) :=
@@ -107,10 +107,10 @@ noncomputable def Fiber.algEquivAux₂ (q : Ideal (p.Fiber S)) [q.IsPrime] :
   letI Sp := Localization (algebraMapSubmonoid S p.primeCompl)
   letI pS := p.map (algebraMap R S)
   letI SpS := S ⧸ pS
-  letI r := q.comap includeRight
+  letI r := q.comap (RingHomClass.toRingHom includeRight)
   letI Sr := Localization.AtPrime r
   letI e₁ : p.Fiber S ≃ₐ[S] Sp ⧸ pS.map (algebraMap S Sp) := algEquivAux₁ p
-  letI q' : Ideal (Sp ⧸ pS.map (algebraMap S Sp)) := q.comap e₁.symm
+  letI q' : Ideal (Sp ⧸ pS.map (algebraMap S Sp)) := q.comap (AlgHom.ofClass e₁.symm)
   haveI : (q'.under SpS).LiesOver r := under_liesOver_of_liesOver SpS q' (q.under S)
   haveI : algebraMapSubmonoid SpS r.primeCompl = (q'.under SpS).primeCompl :=
     algebraMapSubmonoid_primeCompl_of_liesOver_surjective (q'.under SpS) r Quotient.mk_surjective
@@ -125,9 +125,11 @@ noncomputable def Fiber.algEquivAux₂ (q : Ideal (p.Fiber S)) [q.IsPrime] :
 
 /-- The localization of the fiber `p.Fiber S` is isomorphic to a quotient of a localization. -/
 noncomputable def Fiber.localizationAlgEquivQuotient (q : Ideal (p.Fiber S)) [q.IsPrime]
-    [Algebra (Localization.AtPrime p) (Localization.AtPrime (q.comap includeRight))]
-    [IsScalarTower R (Localization.AtPrime p) (Localization.AtPrime (q.comap includeRight))] :
-    letI r := q.comap includeRight
+    [Algebra (Localization.AtPrime p)
+      (Localization.AtPrime (q.comap (RingHomClass.toRingHom includeRight)))]
+    [IsScalarTower R (Localization.AtPrime p)
+      (Localization.AtPrime (q.comap (RingHomClass.toRingHom includeRight)))] :
+    letI r := q.comap (RingHomClass.toRingHom includeRight)
     letI Sr := Localization.AtPrime r
     Localization.AtPrime q ≃ₐ[Localization.AtPrime p] Sr ⧸ p.map (algebraMap R Sr) :=
   ((algEquivAux₂ p q).extendScalarsOfIsLocalization (Localization.AtPrime p) p.primeCompl).trans
@@ -226,5 +228,6 @@ noncomputable def PrimeSpectrum.preimageHomeomorphFiber (R S : Type*) [CommRing 
 
 @[simp]
 theorem PrimeSpectrum.coe_primesOverOrderIsoFiber_symm_apply (q : PrimeSpectrum (p.Fiber S)) :
-    (primesOverOrderIsoFiber R S p).symm q = q.asIdeal.comap Algebra.TensorProduct.includeRight :=
+    (primesOverOrderIsoFiber R S p).symm q =
+    q.asIdeal.comap (RingHomClass.toRingHom includeRight) :=
   rfl

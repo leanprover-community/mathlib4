@@ -151,7 +151,7 @@ theorem comap_map_eq_map_adjoin_of_coprime_conductor
       rw [Submonoid.mk_smul, smul_eq_mul, mul_one]
     rwa [← this]
   · -- The converse inclusion is trivial
-    rw [IsScalarTower.algebraMap_eq R R<x> S, ← Ideal.map_map]
+    rw [IsScalarTower.algebraMap_eq R R<x> S, RingHom.coe_comp, ← Ideal.map_map]
     apply Ideal.le_comap_map
 
 /-- The canonical morphism of rings from `R<x> ⧸ (I*R<x>)` to `S ⧸ (I*S)` is an isomorphism
@@ -163,7 +163,8 @@ noncomputable def quotAdjoinEquivQuotMap (hx : (conductor R x).comap (algebraMap
     (Ideal.Quotient.lift (I.map (algebraMap R R<x>))
       ((Ideal.Quotient.mk (I.map (algebraMap R S))).comp (algebraMap R<x> S)) (fun r hr => by
       have : algebraMap R S = (algebraMap R<x> S).comp (algebraMap R R<x>) := by ext; rfl
-      rw [RingHom.comp_apply, Ideal.Quotient.eq_zero_iff_mem, this, ← Ideal.map_map]
+      rw [RingHom.comp_apply, Ideal.Quotient.eq_zero_iff_mem, this, RingHom.coe_comp,
+        ← Ideal.map_map]
       exact Ideal.mem_map_of_mem _ hr))
   refine RingEquiv.ofBijective f ⟨?_, ?_⟩
   · --the kernel of the map is clearly `(I * S) ∩ R<x>`. To get injectivity, we need to show that

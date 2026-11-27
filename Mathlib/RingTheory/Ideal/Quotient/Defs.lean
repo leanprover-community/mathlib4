@@ -87,6 +87,9 @@ def mk : R →+* R ⧸ I where
   map_mul' _ _ := rfl
   map_add' _ _ := rfl
 
+@[norm_cast]
+theorem coe_mk : ⇑(Quotient.mk I) = Submodule.Quotient.mk := rfl
+
 instance : Coe R (R ⧸ I) :=
   ⟨Ideal.Quotient.mk I⟩
 

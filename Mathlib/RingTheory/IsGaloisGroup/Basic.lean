@@ -143,7 +143,7 @@ attribute [local instance] FractionRing.liftAlgebra in
     have : FaithfulSMul G B := IsGaloisGroup.faithful A
     refine ⟨fun _ _ ↦ eq_of_smul_eq_smul ∘ DFunLike.ext_iff.mp, fun φ ↦ ?_⟩
     obtain ⟨g, hg⟩ := Ideal.Quotient.stabilizerHom_surjective G ⊥ ⊥
-      (Ideal.Quotient.algEquivOfEqMap (⊥ : Ideal A) φ Ideal.map_bot.symm)
+      (Ideal.Quotient.algEquivOfEqMap (⊥ : Ideal A) φ (by rw [← RingHom.coe_coe, Ideal.map_bot]))
     use g
     rw [AlgEquiv.ext_iff] at hg ⊢
     exact fun x ↦ (AlgEquiv.quotientBot A B).symm.injective (hg x))

@@ -75,7 +75,8 @@ lemma isPrincipalIdealRing_iff_not_denselyOrdered [MulArchimedean (MonoidHom.mra
   refine ⟨fun _ ↦ not_denselyOrdered_of_isPrincipalIdealRing hv, fun H ↦ ?_⟩
   rcases subsingleton_or_nontrivial (MonoidHom.mrange v)ˣ with hs | _
   · have := bijective_algebraMap_of_subsingleton_units_mrange hv
-    exact .of_surjective _ (RingEquiv.ofBijective _ this).symm.surjective
+    exact .of_surjective (RingEquiv.ofBijective (algebraMap O F) this).symm.toRingHom
+      (RingEquiv.ofBijective (algebraMap O F) this).symm.surjective
   have : IsDomain O := hv.hom_inj.isDomain
   have : ValuationRing O := ValuationRing.of_integers v hv
   have := ((IsBezout.tfae (R := O)).out 2 4)

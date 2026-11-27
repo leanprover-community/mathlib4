@@ -154,6 +154,7 @@ variable (P) in
 noncomputable def tensorModelOfHasCoeffsHom : R ⊗[R₀] P.ModelOfHasCoeffs R₀ →ₐ[R] S :=
   Algebra.TensorProduct.lift (Algebra.ofId R S)
     (Ideal.Quotient.liftₐ _ (MvPolynomial.aeval P.val) <| by
+      rw [← RingHom.coe_coe]
       simp_rw [← RingHom.mem_ker, ← le_iff_mem_imp_mem, Ideal.span_le]
       rintro a ⟨i, rfl⟩
       simp)
@@ -170,13 +171,11 @@ noncomputable def tensorModelOfHasCoeffsInv : S →ₐ[R] R ⊗[R₀] P.ModelOfH
   (Ideal.Quotient.liftₐ _
     ((Algebra.TensorProduct.map (.id R R) (Ideal.Quotient.mkₐ _ _)).comp
       (MvPolynomial.algebraTensorAlgEquiv R₀ R).symm.toAlgHom) <| by
+    rw [← RingHom.coe_coe]
     simp_rw [← RingHom.mem_ker, ← le_iff_mem_imp_mem]
     rw [← P.span_range_relation_eq_ker, Ideal.span_le]
     rintro a ⟨i, rfl⟩
-    simp only [SetLike.mem_coe, RingHom.mem_ker, AlgHom.coe_comp,
-      AlgEquiv.coe_toAlgHom, Function.comp_apply, algebraTensorAlgEquiv_symm_relation]
-    simp only [TensorProduct.map_tmul, AlgHom.coe_id, id_eq, Ideal.Quotient.mkₐ_eq_mk,
-      Ideal.Quotient.mk_span_range, tmul_zero]).comp
+    simp).comp
     (P.quotientEquiv.restrictScalars R).symm.toAlgHom
 
 set_option backward.isDefEq.respectTransparency.types false in

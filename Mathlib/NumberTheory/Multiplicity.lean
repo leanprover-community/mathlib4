@@ -131,7 +131,7 @@ theorem odd_sq_dvd_geom_sum₂_sub (hp : Odd p) :
       norm_cast
       simp only [Finset.sum_range_id]
       norm_cast
-      simp only [Nat.cast_mul, map_mul,
+      simp only [← Ideal.Quotient.coe_mk, Nat.cast_mul, map_mul,
           Nat.mul_div_assoc p (even_iff_two_dvd.mp (Nat.Odd.sub_odd hp odd_one))]
       ring_nf
       rw [mul_assoc, mul_assoc]

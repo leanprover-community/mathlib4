@@ -48,7 +48,8 @@ lemma Algebra.FiniteType.exists_fgAlgCatSkeleton (A : Type v) [CommRing A] [Alge
     [h : Algebra.FiniteType R A] :
     ∃ (P : FGAlgCatSkeleton R), Nonempty (A ≃ₐ[R] P.eval.obj) := by
   obtain ⟨n, f, hf⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial''.mp h
-  exact ⟨⟨n, RingHom.ker f⟩, ⟨(Ideal.quotientKerAlgEquivOfSurjective hf).symm⟩⟩
+  exact ⟨⟨n, RingHom.ker (RingHomClass.toRingHom f)⟩,
+    ⟨(Ideal.quotientKerAlgEquivOfSurjective hf).symm⟩⟩
 
 lemma RingHom.FiniteType.exists_smallRepr {S : Type v} [CommRing S] {f : R →+* S}
     (hf : f.FiniteType) :
