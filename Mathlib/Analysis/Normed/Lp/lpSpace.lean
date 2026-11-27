@@ -55,6 +55,7 @@ say that `‖-f‖ = ‖f‖`, instead of the non-working `f.norm_neg`.
   rings which has `‖∑' i, f i * g i‖` rather than `∑' i, ‖f i‖ * g i‖` on the RHS; a version for
   three exponents satisfying `1 / r = 1 / p + 1 / q`)
 -/
+set_option linter.style.longFile 1700
 
 @[expose] public section
 
