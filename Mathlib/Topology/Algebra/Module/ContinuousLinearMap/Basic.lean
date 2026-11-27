@@ -180,6 +180,12 @@ theorem toContinuousAddMonoidHom_inj {f g : M₁ →SL[σ₁₂] M₂} :
     f.toContinuousAddMonoidHom = g.toContinuousAddMonoidHom ↔ f = g :=
   toContinuousAddMonoidHom_injective.eq_iff
 
+/-- Reinterpret a continuous linear map `M₁ →SL[σ₁₂] M₂` as a continuous map `C(M₁, M₂)`. -/
+def toContinuousMap (f : M₁ →SL[σ₁₂] M₂) : C(M₁, M₂) := .ofClass f
+
+@[simp]
+lemma coe_toContinuousMap (f : M₁ →SL[σ₁₂] M₂) : ⇑f.toContinuousMap = f := rfl
+
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
   because it is a composition of multiple projections. -/
 def Simps.apply (h : M₁ →SL[σ₁₂] M₂) : M₁ → M₂ :=
@@ -827,7 +833,6 @@ protected theorem map_neg (f : M →SL[σ₁₂] M₂) (x : M) : f (-x) = -f x :
 protected theorem map_sub (f : M →SL[σ₁₂] M₂) (x y : M) : f (x - y) = f x - f y :=
   map_sub f x y
 
-@[simp]
 theorem sub_apply' (f g : M →SL[σ₁₂] M₂) (x : M) : ((f : M →ₛₗ[σ₁₂] M₂) - g) x = f x - g x :=
   rfl
 

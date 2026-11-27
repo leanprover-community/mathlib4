@@ -113,7 +113,6 @@ theorem fork_pt : (fork F U).pt = F.obj (op (iSup U)) :=
 theorem fork_ι : (fork F U).ι = res F U :=
   rfl
 
-@[simp]
 theorem fork_π_app_walkingParallelPair_zero : (fork F U).π.app WalkingParallelPair.zero = res F U :=
   rfl
 
@@ -229,10 +228,7 @@ def coneEquivFunctor :
   map {c c'} f :=
     { hom := f.hom
       w := fun j => by
-        cases j <;>
-          · dsimp
-            ext
-            simp }
+        cases j <;> dsimp <;> ext <;> simp }
 
 end
 
@@ -315,15 +311,17 @@ def coneEquivUnitIsoApp (c : Cone ((diagram U).op ⋙ F)) :
     { hom := 𝟙 _
       w := fun j => by
         induction j with | op j => ?_
-        rcases j with ⟨⟩ <;>
-        · dsimp [coneEquivInverse]
+        rcases j with ⟨⟩
+        all_goals
+          dsimp [coneEquivInverse]
           simp only [Limits.Fan.mk_π_app, Category.id_comp, Limits.limit.lift_π] }
   inv :=
     { hom := 𝟙 _
       w := fun j => by
         induction j with | op j => ?_
-        rcases j with ⟨⟩ <;>
-        · dsimp [coneEquivInverse]
+        rcases j with ⟨⟩
+        all_goals
+          dsimp [coneEquivInverse]
           simp only [Limits.Fan.mk_π_app, Category.id_comp, Limits.limit.lift_π] }
 
 set_option backward.defeqAttrib.useBackward true in

@@ -11,7 +11,7 @@ public import Mathlib.Algebra.Ring.Nat
 public import Mathlib.Data.Sigma.Basic
 public import Mathlib.Util.CompileInductive
 
-import Batteries.Tactic.Lint.TypeClass
+import Batteries.Linter.TypeClass
 
 /-!
 # A computable model of ZFA without infinity

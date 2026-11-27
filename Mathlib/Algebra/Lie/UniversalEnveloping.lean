@@ -138,7 +138,7 @@ theorem lift_ι_apply' (x : L) :
 
 theorem lift_unique (g : UniversalEnvelopingAlgebra R L →ₐ[R] A) : g ∘ ι R = f ↔ g = lift R f := by
   refine Iff.trans ?_ (lift R).symm_apply_eq
-  constructor <;> · intro h; ext; simp [← h]
+  constructor <;> intro h <;> ext <;> simp [← h]
 
 /-- See note [partially-applied ext lemmas]. -/
 @[ext]

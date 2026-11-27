@@ -130,8 +130,8 @@ end Map
 /-- A homeomorphism between topological spaces gives an isomorphism between their modules of
 measures. -/
 def arrowCongrLeft (φ : X ≃ₜ Y) : AbstractMeasure X R E ≃ₗ[R] AbstractMeasure Y R E :=
-  { map φ with
-    invFun := map φ.symm
+  { map φ.toContinuousMap with
+    invFun := map φ.symm.toContinuousMap
     left_inv μ := by apply DFunLike.ext; simp
     right_inv μ := by apply DFunLike.ext; simp }
 
@@ -146,7 +146,7 @@ lemma coe_arrowCongrLeft (φ : X ≃ₜ Y) :
   (rfl)
 
 @[simp] lemma arrowCongrLeft_apply (φ : X ≃ₜ Y) (μ : AbstractMeasure X R E) (f : C(Y, R)) :
-    arrowCongrLeft φ μ f = μ (f.comp φ) :=
+    arrowCongrLeft φ μ f = μ (f.comp φ.toContinuousMap) :=
   (rfl)
 
 section Prod
@@ -160,7 +160,7 @@ section Prod
 /-- Send a measure `ν` on `Y` and a function `f` on `X × Y` to the function on `X` given by
 `x ↦ ν (f (x, ·))`, or more suggestively, `x ↦ ∫ f(x, y) dμ(y)`. -/
 def contractSnd : D(Y, R) →ₗ[R] C(X × Y, R) →ₗ[R] C(X, R) :=
-  LinearMap.mk₂ R (fun ν f ↦ comp ν f.curry) ?_ ?_ ?_ ?_
+  LinearMap.mk₂ R (fun ν f ↦ comp ν.toCLMEquiv.toContinuousMap f.curry) ?_ ?_ ?_ ?_
 where finally
   all_goals intros; ext; simp
 

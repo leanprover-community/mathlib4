@@ -161,7 +161,7 @@ theorem i_fourteenSet : i fourteenSet = Ioo 0 1 ∪ Ioo 1 2 := by
   rw [fourteenSet, interior_union_of_disjoint_closure, interior_union_of_disjoint_closure]
   · simp [(isOpen_Ioo.union isOpen_Ioo).interior_eq, this]
   all_goals
-  · simp [k_Icc_4_5_inter_rat, -union_singleton, closure_union, disjoint_iff_inter_eq_empty,
+    simp [k_Icc_4_5_inter_rat, -union_singleton, closure_union, disjoint_iff_inter_eq_empty,
     Icc_inter_Icc]
     norm_num
 

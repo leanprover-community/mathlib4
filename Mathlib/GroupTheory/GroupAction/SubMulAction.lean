@@ -302,7 +302,7 @@ theorem smul_mem (r : R) (h : x ∈ p) : r • x ∈ p :=
 instance : SMul R p where smul c x := ⟨c • x.val, smul_mem _ c x.property⟩
 
 variable {p} in
-@[to_additive (attr := norm_cast, simp)]
+@[to_additive]
 theorem val_smul (r : R) (x : p) : (↑(r • x) : M) = r • (x : M) :=
   rfl
 
@@ -384,7 +384,7 @@ instance isScalarTower' {S' : Type*} [SMul S' R] [SMul S' S] [SMul S' M] [IsScal
     [IsScalarTower S' S M] : IsScalarTower S' S p where
   smul_assoc s r x := Subtype.ext <| smul_assoc s r (x : M)
 
-@[to_additive (attr := norm_cast, simp)]
+@[to_additive]
 theorem val_smul_of_tower (s : S) (x : p) : ((s • x : p) : M) = s • (x : M) :=
   rfl
 
