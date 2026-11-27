@@ -158,7 +158,7 @@ theorem symplectic_det (hA : A ∈ symplecticGroup l R) : IsUnit <| det A := by
   rw [mul_comm A.det, mul_assoc] at hA
   exact hA
 
-theorem map_mem {F S : Type*} [CommRing S] [FunLike F R S] [RingHomClass F R S]
+theorem map_mem {F S : Type*} [CommRing S] [FunLike F R S] [RingHomClass F]
     (hA : A ∈ symplecticGroup l R) (f : F) : A.map f ∈ symplecticGroup l S := by
   simp_rw [mem_iff, ← transpose_map, ← map_J _ f, ← Matrix.map_mul, mem_iff.mp hA]
 

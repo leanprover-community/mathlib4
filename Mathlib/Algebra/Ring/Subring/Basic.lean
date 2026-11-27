@@ -377,11 +377,11 @@ theorem mem_center_iff {R : Type*} [Ring R] {z : R} : z ∈ center R ↔ ∀ g, 
 instance decidableMemCenter {R} [Ring R] [DecidableEq R] [Fintype R] :
     DecidablePred (· ∈ center R) := fun _ => decidable_of_iff' _ mem_center_iff
 
-theorem map_center_le_center {F} [FunLike F R S] [RingHomClass F R S] {f : F}
+theorem map_center_le_center {F} [FunLike F R S] [RingHomClass F] {f : F}
     (hf : Function.Surjective f) : map f (center R) ≤ center S :=
   Set.image_center_subset hf
 
-theorem comap_center_le_center {F} [FunLike F R S] [RingHomClass F R S] {f : F}
+theorem comap_center_le_center {F} [FunLike F R S] [RingHomClass F] {f : F}
     (hf : Function.Injective f) : comap f (center S) ≤ center R :=
   Set.preimage_center_subset hf
 

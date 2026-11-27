@@ -442,7 +442,7 @@ theorem map_mem_nthRootsFinset {S F : Type*} [CommRing S] [IsDomain S] [FunLike 
       (Nat.pos_of_ne_zero hn) a).1 hx]
 
 theorem map_mem_nthRootsFinset_one {S F : Type*} [CommRing S] [IsDomain S] [FunLike F R S]
-    [RingHomClass F R S] {x : R} (hx : x ∈ nthRootsFinset n 1) (f : F) :
+    [RingHomClass F] {x : R} (hx : x ∈ nthRootsFinset n 1) (f : F) :
     f x ∈ nthRootsFinset n 1 := by
   rw [← (map_one f)]
   exact map_mem_nthRootsFinset hx _

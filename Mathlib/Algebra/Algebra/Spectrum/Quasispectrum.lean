@@ -207,7 +207,7 @@ lemma isQuasiregular_iff' {x : R} : IsQuasiregular x ↔ IsUnit (PreQuasiregular
 end PreQuasiregular
 
 lemma IsQuasiregular.map {F R S : Type*} [NonUnitalSemiring R] [NonUnitalSemiring S]
-    [FunLike F R S] [NonUnitalRingHomClass F R S] (f : F) {x : R} (hx : IsQuasiregular x) :
+    [FunLike F R S] [NonUnitalRingHomClass F] (f : F) {x : R} (hx : IsQuasiregular x) :
     IsQuasiregular (f x) := by
   rw [isQuasiregular_iff] at hx ⊢
   obtain ⟨y, hy₁, hy₂⟩ := hx

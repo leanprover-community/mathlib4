@@ -210,7 +210,7 @@ variable [Algebra S B] {FRS FAB : Type*}
 
 section
 
-variable [FunLike FRS R S] [RingHomClass FRS R S] [FunLike FAB A B] [RingHomClass FAB A B]
+variable [FunLike FRS R S] [RingHomClass FRS] [FunLike FAB A B] [RingHomClass FAB]
   (f : FRS) (g : FAB) {a : A}
 
 theorem IsAlgebraic.ringHom_of_comp_eq (halg : IsAlgebraic R a)
@@ -275,7 +275,7 @@ end
 
 section
 
-variable [EquivLike FRS R S] [RingEquivClass FRS R S] [FunLike FAB A B] [RingHomClass FAB A B]
+variable [EquivLike FRS R S] [RingEquivClass FRS R S] [FunLike FAB A B] [RingHomClass FAB]
   (f : FRS) (g : FAB)
 
 theorem isAlgebraic_ringHom_iff_of_comp_eq

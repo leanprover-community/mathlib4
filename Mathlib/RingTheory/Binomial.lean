@@ -170,7 +170,7 @@ theorem multichoose_two (k : ℕ) : multichoose (2 : R) k = k + 1 := by
 
 attribute [local instance] BinomialRing.toHasUniqueDiv in
 lemma map_multichoose {R S F : Type*} [Ring R] [Ring S] [BinomialRing R] [BinomialRing S]
-    [FunLike F R S] [RingHomClass F R S] (f : F) (a : R) (n : ℕ) :
+    [FunLike F R S] [RingHomClass F] (f : F) (a : R) (n : ℕ) :
     f (Ring.multichoose a n) = Ring.multichoose (f a) n := by
   apply nsmul_right_injective n.factorial_ne_zero
   simp only [← map_nsmul, Ring.factorial_nsmul_multichoose_eq_ascPochhammer,
@@ -536,7 +536,7 @@ theorem add_choose_eq [Ring R] [BinomialRing R] {r s : R} (k : ℕ) (h : Commute
   simp [mul_assoc, descPochhammer_eq_factorial_smul_choose]
 
 lemma map_choose {R S F : Type*} [Ring R] [Ring S] [BinomialRing R] [BinomialRing S]
-    [FunLike F R S] [RingHomClass F R S] (f : F) (a : R) (n : ℕ) :
+    [FunLike F R S] [RingHomClass F] (f : F) (a : R) (n : ℕ) :
     f (Ring.choose a n) = Ring.choose (f a) n := by
   simpa using! Ring.map_multichoose f (a - n + 1) n
 

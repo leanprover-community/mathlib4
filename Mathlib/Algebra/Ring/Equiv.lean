@@ -95,11 +95,11 @@ attribute [instance 100] toAddEquivClass
 
 -- See note [lower instance priority]
 instance (priority := 100) toRingHomClass [NonAssocSemiring R] [NonAssocSemiring S]
-    [RingEquivClass F R S] : RingHomClass F R S where
+    [RingEquivClass F R S] : RingHomClass F where
 
 -- See note [lower instance priority]
 instance (priority := 100) toNonUnitalRingHomClass [NonUnitalNonAssocSemiring R]
-    [NonUnitalNonAssocSemiring S] [RingEquivClass F R S] : NonUnitalRingHomClass F R S where
+    [NonUnitalNonAssocSemiring S] [RingEquivClass F R S] : NonUnitalRingHomClass F where
 
 /-- Turn an element of a type `F` satisfying `RingEquivClass F α β` into an actual `RingEquiv`. -/
 def _root_.RingEquiv.ofClass [Mul α] [Add α] [Mul β] [Add β]
@@ -439,23 +439,23 @@ theorem map_ne_zero_iff : f x ≠ 0 ↔ x ≠ 0 :=
 variable [FunLike F R S]
 
 /-- Produce a ring isomorphism from a bijective ring homomorphism. -/
-noncomputable def ofBijective [NonUnitalRingHomClass F R S] (f : F) (hf : Function.Bijective f) :
+noncomputable def ofBijective [NonUnitalRingHomClass F] (f : F) (hf : Function.Bijective f) :
     R ≃+* S :=
   { Equiv.ofBijective f hf with
     map_mul' := map_mul f
     map_add' := map_add f }
 
 @[simp]
-theorem coe_ofBijective [NonUnitalRingHomClass F R S] (f : F) (hf : Function.Bijective f) :
+theorem coe_ofBijective [NonUnitalRingHomClass F] (f : F) (hf : Function.Bijective f) :
     (ofBijective f hf : R → S) = f :=
   rfl
 
-theorem ofBijective_apply [NonUnitalRingHomClass F R S] (f : F) (hf : Function.Bijective f)
+theorem ofBijective_apply [NonUnitalRingHomClass F] (f : F) (hf : Function.Bijective f)
     (x : R) : ofBijective f hf x = f x :=
   rfl
 
 -- TODO: Make simp once `toEquiv` is simp nf
-lemma toEquiv_ofBijective [NonUnitalRingHomClass F R S] (f : F) (hf : Function.Bijective f) :
+lemma toEquiv_ofBijective [NonUnitalRingHomClass F] (f : F) (hf : Function.Bijective f) :
     (ofBijective f hf).toEquiv = .ofBijective f hf := rfl
 
 @[simp]

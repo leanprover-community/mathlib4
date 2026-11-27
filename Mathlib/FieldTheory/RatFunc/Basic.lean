@@ -354,7 +354,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 to a `R⟮X⟯ →+* S⟮X⟯`,
 on the condition that `φ` maps non-zero-divisors to non-zero-divisors,
 by mapping both the numerator and denominator and quotienting them. -/
-def mapRingHom [RingHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap φ) :
+def mapRingHom [RingHomClass F] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap φ) :
     R⟮X⟯ →+* S⟮X⟯ :=
   { map φ hφ with
     map_zero' := by
@@ -371,7 +371,7 @@ def mapRingHom [RingHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.co
         -- the wrong occurrence.
         Submonoid.mk_mul_mk S[X]⁰] }
 
-theorem coe_mapRingHom_eq_coe_map [RingHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap φ) :
+theorem coe_mapRingHom_eq_coe_map [RingHomClass F] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap φ) :
     (mapRingHom φ hφ : R⟮X⟯ → S⟮X⟯) = map φ hφ :=
   rfl
 

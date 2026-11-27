@@ -207,18 +207,18 @@ open Rat
 
 variable [FunLike F α β]
 
-@[simp] lemma map_nnratCast [DivisionSemiring α] [DivisionSemiring β] [RingHomClass F α β] (f : F)
+@[simp] lemma map_nnratCast [DivisionSemiring α] [DivisionSemiring β] [RingHomClass F] (f : F)
     (q : ℚ≥0) : f q = q := by simp_rw [NNRat.cast_def, map_div₀, map_natCast]
 
 @[simp]
-lemma eq_nnratCast [DivisionSemiring α] [FunLike F ℚ≥0 α] [RingHomClass F ℚ≥0 α] (f : F) (q : ℚ≥0) :
+lemma eq_nnratCast [DivisionSemiring α] [FunLike F ℚ≥0 α] [RingHomClass F] (f : F) (q : ℚ≥0) :
     f q = q := by rw [← map_nnratCast f, NNRat.cast_id]
 
 @[simp]
-theorem map_ratCast [DivisionRing α] [DivisionRing β] [RingHomClass F α β] (f : F) (q : ℚ) :
+theorem map_ratCast [DivisionRing α] [DivisionRing β] [RingHomClass F] (f : F) (q : ℚ) :
     f q = q := by rw [cast_def, map_div₀, map_intCast, map_natCast, cast_def]
 
-@[simp] lemma eq_ratCast [DivisionRing α] [FunLike F ℚ α] [RingHomClass F ℚ α] (f : F) (q : ℚ) :
+@[simp] lemma eq_ratCast [DivisionRing α] [FunLike F ℚ α] [RingHomClass F] (f : F) (q : ℚ) :
     f q = q := by rw [← map_ratCast f, Rat.cast_id]
 
 namespace MonoidWithZeroHomClass
@@ -285,7 +285,7 @@ end MonoidWithZeroHomClass
 
 /-- Any two ring homomorphisms from `ℚ` to a semiring are equal. If the codomain is a division ring,
 then this lemma follows from `eq_ratCast`. -/
-theorem RingHom.ext_rat {R : Type*} [Semiring R] [FunLike F ℚ R] [RingHomClass F ℚ R] (f g : F) :
+theorem RingHom.ext_rat {R : Type*} [Semiring R] [FunLike F ℚ R] [RingHomClass F] (f g : F) :
     f = g :=
   MonoidWithZeroHomClass.ext_rat' <|
     RingHom.congr_fun <|

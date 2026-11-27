@@ -54,7 +54,7 @@ variable {F α β γ : Type*}
 homomorphisms too.
 
 When possible, instead of parametrizing results over `(f : α →ₙ+* β)`,
-you should parametrize over `(F : Type*) [NonUnitalRingHomClass F α β] (f : F)`.
+you should parametrize over `(F : Type*) [NonUnitalRingHomClass F] (f : F)`.
 
 When you extend this structure, make sure to extend `NonUnitalRingHomClass`. -/
 structure NonUnitalRingHom (α β : Type*) [NonUnitalNonAssocSemiring α]
@@ -73,16 +73,16 @@ add_decl_doc NonUnitalRingHom.toAddMonoidHom
 
 section NonUnitalRingHomClass
 
-/-- `NonUnitalRingHomClass F α β` states that `F` is a type of non-unital (semi)ring
+/-- `NonUnitalRingHomClass F` states that `F` is a type of non-unital (semi)ring
 homomorphisms. You should extend this class when you extend `NonUnitalRingHom`. -/
-class NonUnitalRingHomClass (F : Type*) (α β : outParam Type*) [NonUnitalNonAssocSemiring α]
+class NonUnitalRingHomClass (F : Type*) {α β : outParam Type*} [NonUnitalNonAssocSemiring α]
   [NonUnitalNonAssocSemiring β] [FunLike F α β] : Prop
   extends MulHomClass F α β, AddMonoidHomClass F α β
 
 variable [NonUnitalNonAssocSemiring α] [NonUnitalNonAssocSemiring β] [FunLike F α β]
-variable [NonUnitalRingHomClass F α β]
+variable [NonUnitalRingHomClass F]
 
-/-- Turn an element of a type `F` satisfying `NonUnitalRingHomClass F α β` into an actual
+/-- Turn an element of a type `F` satisfying `NonUnitalRingHomClass F` into an actual
 `NonUnitalRingHom`. This is declared as the default coercion from `F` to `α →ₙ+* β`. -/
 @[coe]
 def NonUnitalRingHomClass.toNonUnitalRingHom (f : F) : α →ₙ+* β :=
@@ -111,7 +111,7 @@ instance : FunLike (α →ₙ+* β) α β where
     apply DFunLike.coe_injective
     exact h
 
-instance : NonUnitalRingHomClass (α →ₙ+* β) α β where
+instance : NonUnitalRingHomClass (α →ₙ+* β) where
   map_add := NonUnitalRingHom.map_add'
   map_zero := NonUnitalRingHom.map_zero'
   map_mul f := f.map_mul'
@@ -329,22 +329,22 @@ add_decl_doc RingHom.toNonUnitalRingHom
 
 section RingHomClass
 
-/-- `RingHomClass F α β` states that `F` is a type of (semi)ring homomorphisms.
+/-- `RingHomClass F` states that `F` is a type of (semi)ring homomorphisms.
 You should extend this class when you extend `RingHom`.
 
 This extends from both `MonoidHomClass` and `MonoidWithZeroHomClass` in
 order to put the fields in a sensible order, even though
 `MonoidWithZeroHomClass` already extends `MonoidHomClass`. -/
-class RingHomClass (F : Type*) (α β : outParam Type*)
+class RingHomClass (F : Type*) {α β : outParam Type*}
     [NonAssocSemiring α] [NonAssocSemiring β] [FunLike F α β] : Prop
   extends MonoidHomClass F α β, AddMonoidHomClass F α β, MonoidWithZeroHomClass F α β
 
 variable [FunLike F α β]
 
 -- See note [implicit instance arguments].
-variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β} [RingHomClass F α β]
+variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β} [RingHomClass F]
 
-/-- Turn an element of a type `F` satisfying `RingHomClass F α β` into an actual
+/-- Turn an element of a type `F` satisfying `RingHomClass F` into an actual
 `RingHom`. This is declared as the default coercion from `F` to `α →+* β`. -/
 @[coe]
 def RingHomClass.toRingHom (f : F) : α →+* β :=
@@ -354,8 +354,8 @@ def RingHomClass.toRingHom (f : F) : α →+* β :=
 instance : CoeTC F (α →+* β) :=
   ⟨RingHomClass.toRingHom⟩
 
-instance (priority := 100) RingHomClass.toNonUnitalRingHomClass : NonUnitalRingHomClass F α β :=
-  { ‹RingHomClass F α β› with }
+instance (priority := 100) RingHomClass.toNonUnitalRingHomClass : NonUnitalRingHomClass F :=
+  { ‹RingHomClass F› with }
 
 end RingHomClass
 
@@ -380,7 +380,7 @@ instance instFunLike : FunLike (α →+* β) α β where
     apply DFunLike.coe_injective
     exact h
 
-instance instRingHomClass : RingHomClass (α →+* β) α β where
+instance instRingHomClass : RingHomClass (α →+* β) where
   map_add := RingHom.map_add'
   map_zero := RingHom.map_zero'
   map_mul f := f.map_mul'
@@ -396,7 +396,7 @@ theorem coe_mk (f : α →* β) (h₁ h₂) : ((⟨f, h₁, h₂⟩ : α →+* �
   rfl
 
 @[simp]
-theorem coe_coe {F : Type*} [FunLike F α β] [RingHomClass F α β] (f : F) :
+theorem coe_coe {F : Type*} [FunLike F α β] [RingHomClass F] (f : F) :
     ((f : α →+* β) : α → β) = f :=
   rfl
 

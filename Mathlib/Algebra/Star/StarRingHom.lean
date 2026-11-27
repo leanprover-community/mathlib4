@@ -59,16 +59,16 @@ You should also extend this typeclass when you extend `NonUnitalStarRingHom`. -/
 @[deprecated StarHomClass +typeChanged (since := "2026-10-07")]
 class NonUnitalStarRingHomClass (F : Type*) (A B : outParam Type*)
     [NonUnitalNonAssocSemiring A] [Star A] [NonUnitalNonAssocSemiring B] [Star B]
-    [FunLike F A B] [NonUnitalRingHomClass F A B] : Prop extends StarHomClass F A B
+    [FunLike F A B] [NonUnitalRingHomClass F] : Prop extends StarHomClass F A B
 
 namespace NonUnitalStarRingHomClass
 
 variable {F A B : Type*}
 variable [NonUnitalNonAssocSemiring A] [Star A]
 variable [NonUnitalNonAssocSemiring B] [Star B]
-variable [FunLike F A B] [NonUnitalRingHomClass F A B]
+variable [FunLike F A B] [NonUnitalRingHomClass F]
 
-/-- Turn an element of a type `F` satisfying `NonUnitalRingHomClass F A B` and `StarHomClass F A B`
+/-- Turn an element of a type `F` satisfying `NonUnitalRingHomClass F` and `StarHomClass F A B`
 into an actual `NonUnitalStarRingHom`. -/
 def _root_.NonUnitalStarRingHom.ofClass [StarHomClass F A B] (f : F) : A →⋆ₙ+* B :=
   { (f : A →ₙ+* B) with
@@ -93,7 +93,7 @@ instance : FunLike (A →⋆ₙ+* B) A B where
   coe f := f.toFun
   coe_injective := by rintro ⟨⟨⟨f, _⟩, _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
 
-instance : NonUnitalRingHomClass (A →⋆ₙ+* B) A B where
+instance : NonUnitalRingHomClass (A →⋆ₙ+* B) where
   map_mul f := f.map_mul'
   map_add f := f.map_add'
   map_zero f := f.map_zero'
@@ -107,7 +107,7 @@ def Simps.apply (f : A →⋆ₙ+* B) : A → B := f
 initialize_simps_projections NonUnitalStarRingHom (toFun → apply)
 
 @[simp]
-protected theorem coe_ofClass {F : Type*} [FunLike F A B] [NonUnitalRingHomClass F A B]
+protected theorem coe_ofClass {F : Type*} [FunLike F A B] [NonUnitalRingHomClass F]
     [StarHomClass F A B] (f : F) : ⇑(ofClass f) = f :=
   rfl
 
@@ -437,7 +437,7 @@ section Bijective
 variable {F G A B : Type*}
 variable [NonUnitalNonAssocSemiring A] [Star A]
 variable [NonUnitalNonAssocSemiring B] [Star B]
-variable [FunLike F A B] [NonUnitalRingHomClass F A B] [StarHomClass F A B]
+variable [FunLike F A B] [NonUnitalRingHomClass F] [StarHomClass F A B]
 variable [FunLike G B A]
 
 /-- If a (unital or non-unital) star ring morphism has an inverse, it is an isomorphism of
