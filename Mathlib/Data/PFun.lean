@@ -108,7 +108,7 @@ theorem ext {f g : α →. β} (H : ∀ a b, b ∈ f a ↔ b ∈ g a) : f = g :=
 
 /-- Turns a partial function into a function out of its domain. -/
 def asSubtype (f : α →. β) (s : f.Dom) : β :=
-  f.fn s s.2
+  f.fn s s.property
 
 /-- The type of partial functions `α →. β` is equivalent to
 the type of pairs `(p : α → Prop, f : Subtype p → β)`. -/
@@ -400,7 +400,6 @@ theorem image_union (s t : Set α) : f.image (s ∪ t) = f.image s ∪ f.image t
   SetRel.image_union _ s t
 
 lemma image_subset_ran {S : Set α} : f.image S ⊆ f.ran := by
-  intro a
   grind [mem_image, ran]
 
 @[simp]
@@ -410,7 +409,6 @@ lemma ran_restrict {S : Set α} (hS : S ⊆ f.Dom) : (f.restrict hS).ran = f.ima
 
 @[simp]
 lemma image_map (g : β → γ) (f : α →. β) (S : Set α) : (f.map g).image S = g '' f.image S := by
-  ext a
   grind [mem_image, mem_map]
 
 /-- Preimage of a set under a partial function. -/

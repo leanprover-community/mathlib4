@@ -43,7 +43,6 @@ This file defines notions of spheres being tangent to affine subspaces and other
 * `EuclideanGeometry.Sphere.IsExtTangent`: the property of two spheres being externally tangent.
 
 * `EuclideanGeometry.Sphere.IsIntTangent`: the property of two spheres being internally tangent.
-
 -/
 
 @[expose] public section

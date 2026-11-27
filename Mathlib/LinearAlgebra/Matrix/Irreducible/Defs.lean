@@ -127,7 +127,7 @@ theorem pow_apply_pos_iff_nonempty_path
       · simp_all
     · simp [Quiver.Path.eq_of_length_zero p hp]
   | succ m ih =>
-    rw [pow_succ, mul_apply]
+    rw [pow_succ, Matrix.mul_apply]
     constructor
     · intro h_pos
       obtain ⟨l, hl_mem, hl_pos⟩ :
@@ -164,7 +164,7 @@ theorem isIrreducible_iff_exists_pow_pos
   let : Quiver n := toQuiver A
   constructor
   · intro h_irr i j
-    obtain ⟨p, hp_len⟩ := h_irr.2 i j
+    obtain ⟨p, hp_len⟩ := h_irr.connected i j
     refine ⟨p.length, hp_len, ?_⟩
     have : Nonempty {q : Path i j // q.length = p.length} := ⟨⟨p, rfl⟩⟩
     have hpos :=

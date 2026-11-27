@@ -82,18 +82,22 @@ theorem isInitial_ord (c : Cardinal) : IsInitial c.ord := by
 theorem isInitial_natCast (n : ℕ) : IsInitial n := by
   rw [IsInitial, card_nat, ord_natCast]
 
-theorem isInitial_zero : IsInitial 0 := by
-  exact_mod_cast isInitial_natCast 0
+theorem isInitial_zero : IsInitial 0 :=
+  mod_cast isInitial_natCast 0
 
-theorem isInitial_one : IsInitial 1 := by
-  exact_mod_cast isInitial_natCast 1
+theorem isInitial_one : IsInitial 1 :=
+  mod_cast isInitial_natCast 1
 
 theorem isInitial_omega0 : IsInitial ω := by
   rw [IsInitial, card_omega0, ord_aleph0]
 
-theorem isInitial_succ {o : Ordinal} : IsInitial (succ o) ↔ o < ω :=
+theorem isInitial_add_one {o : Ordinal} : IsInitial (o + 1) ↔ o < ω :=
   ⟨Function.mtr fun hwo ↦ ne_of_lt <| by simp_all [ord_card_le],
   fun how ↦ (Ordinal.lt_omega0.1 how).rec fun n h ↦ h ▸ isInitial_natCast (n + 1)⟩
+
+@[deprecated isInitial_add_one +typeChanged (since := "2026-10-14")]
+theorem isInitial_succ {o : Ordinal} : IsInitial (succ o) ↔ o < ω :=
+  isInitial_add_one
 
 theorem isCofinal_setOfPred_isInitial : IsCofinal {x | IsInitial x} :=
   fun _ ↦ ⟨_, isInitial_ord _, (lt_ord_succ_card _).le⟩
@@ -105,11 +109,11 @@ theorem not_bddAbove_isInitial : ¬ BddAbove {x | IsInitial x} :=
 /-- Initial ordinals are order-isomorphic to the cardinals. -/
 @[simps!]
 def isInitialIso : {x // IsInitial x} ≃o Cardinal where
-  toFun x := x.1.card
+  toFun x := x.val.card
   invFun x := ⟨x.ord, isInitial_ord _⟩
-  left_inv x := Subtype.ext x.2.ord_card
+  left_inv x := Subtype.ext x.property.ord_card
   right_inv x := card_ord x
-  map_rel_iff' {a _} := a.2.card_le_card
+  map_rel_iff' {a _} := a.property.card_le_card
 
 /-- The "pre-omega" function gives the initial ordinals listed by their ordinal index.
 `preOmega n = n`, `preOmega ω = ω`, `preOmega (ω + 1) = ω₁`, etc.
@@ -393,6 +397,10 @@ theorem preAleph_le_of_strictMono {f : Ordinal → Cardinal} (hf : StrictMono f)
     preAleph o ≤ f o := by
   simpa using (hf.comp preAleph.symm.strictMono).id_le (preAleph o)
 
+theorem _root_.Ordinal.card_le_preAleph_iff {x y : Ordinal} :
+    x.card ≤ preAleph y ↔ x < preOmega (y + 1) := by
+  rw [card_le_iff, succ_preAleph, ord_preAleph]
+
 /-- The `aleph` function gives the infinite cardinals listed by their ordinal index. `aleph 0 = ℵ₀`,
 `aleph 1 = succ ℵ₀` is the first uncountable cardinal, and so on.
 
@@ -466,6 +474,14 @@ theorem aleph0_le_aleph (o : Ordinal) : ℵ₀ ≤ ℵ_ o := by
 theorem aleph0_lt_aleph {o : Ordinal} : ℵ₀ < ℵ_ o ↔ 0 < o := by
   rw [← aleph_zero, aleph_lt_aleph]
 
+@[simp]
+theorem aleph_eq_aleph0 {o : Ordinal} : ℵ_ o = ℵ₀ ↔ o = 0 := by
+  rw [← aleph_zero, aleph.eq_iff_eq]
+
+@[simp]
+theorem aleph0_eq_aleph {o : Ordinal} : ℵ₀ = ℵ_ o ↔ o = 0 := by
+  rw [eq_comm, aleph_eq_aleph0]
+
 theorem aleph_pos (o : Ordinal) : 0 < ℵ_ o :=
   aleph0_pos.trans_le (aleph0_le_aleph o)
 
@@ -517,6 +533,9 @@ theorem aleph0_lt_aleph_one : ℵ₀ < ℵ₁ := by simp
 theorem preAleph_of_omega0_sq_le {o : Ordinal} (ho : ω ^ 2 ≤ o) : preAleph o = ℵ_ o := by
   simpa [← ord_inj] using preOmega_of_omega0_sq_le ho
 
+theorem _root_.Ordinal.card_le_aleph_iff {x y : Ordinal} : x.card ≤ ℵ_ y ↔ x < ω_ (y + 1) := by
+  rw [card_le_iff, succ_aleph, ord_aleph]
+
 theorem countable_toType_of_lt_omega_one {o : Ordinal} (h : o < ω₁) : Countable (ToType o) := by
   rwa [← mk_le_aleph0_iff, mk_toType, card_le_iff, succ_aleph0, ord_aleph]
 
@@ -538,7 +557,7 @@ For the usual function starting at `ℵ₀`, see `Cardinal.beth`. -/
 def preBeth (o : Ordinal.{u}) : Cardinal.{u} :=
   ⨆ a : Iio o, 2 ^ preBeth a
 termination_by o
-decreasing_by exact a.2
+decreasing_by exact a.property
 
 theorem preBeth_strictMono : StrictMono preBeth := by
   intro a b h
@@ -585,20 +604,22 @@ theorem preBeth_limit {o : Ordinal} (ho : IsSuccPrelimit o) :
   rw [ciSup_le_iff' bddAbove_of_small]
   intro a
   rw [← preBeth_add_one]
-  exact le_ciSup bddAbove_of_small (⟨_, ho.succ_lt a.2⟩ : Iio o)
+  exact le_ciSup bddAbove_of_small (⟨_, ho.succ_lt a.property⟩ : Iio o)
 
 theorem isNormal_preBeth : Order.IsNormal preBeth := by
   rw [isNormal_iff]
   refine ⟨preBeth_strictMono, fun o ho ↦ ?_⟩
   simp [preBeth_limit ho.isSuccPrelimit, ciSup_le_iff' bddAbove_of_small]
 
-theorem preBeth_nat : ∀ n : ℕ, preBeth n = (2 ^ ·)^[n] (0 : ℕ)
+theorem preBeth_natCast : ∀ n : ℕ, preBeth n = (2 ^ ·)^[n] (0 : ℕ)
   | 0 => by simp
-  | n + 1 => by simp [Function.iterate_succ_apply', preBeth_nat]
+  | n + 1 => by simp [Function.iterate_succ_apply', preBeth_natCast]
+
+@[deprecated (since := "2026-10-14")] alias preBeth_nat := preBeth_natCast
 
 @[simp]
 theorem preBeth_one : preBeth 1 = 1 := by
-  simpa using preBeth_nat 1
+  simpa using preBeth_natCast 1
 
 @[simp]
 theorem preBeth_omega : preBeth ω = ℵ₀ := by
@@ -606,7 +627,7 @@ theorem preBeth_omega : preBeth ω = ℵ₀ := by
   · rw [preBeth_limit isSuccLimit_omega0.isSuccPrelimit, ciSup_le_iff' bddAbove_of_small]
     rintro ⟨a, ha⟩
     obtain ⟨n, rfl⟩ := lt_omega0.1 ha
-    rw [preBeth_nat]
+    rw [preBeth_natCast]
     exact natCast_le_aleph0
   · simpa using preAleph_le_preBeth ω
 
@@ -636,7 +657,7 @@ theorem isStrongPrelimit_preBeth {o : Ordinal} :
     · simp
   · rw [preBeth_limit ho] at hx
     obtain ⟨a, ha⟩ := exists_lt_of_lt_ciSup' hx
-    apply (preBeth_strictMono (ho.add_one_lt a.2)).trans_le'
+    apply (preBeth_strictMono (ho.add_one_lt a.property)).trans_le'
     simpa using power_le_power_left two_ne_zero ha.le
 
 @[simp]
@@ -699,7 +720,7 @@ theorem beth_zero : ℶ_ 0 = ℵ₀ := by
 theorem beth_add_one (o : Ordinal) : ℶ_ (o + 1) = 2 ^ ℶ_ o := by
   simp [beth, ← add_assoc]
 
--- TODO; deprecate
+@[deprecated beth_add_one +typeChanged (since := "2026-10-14")]
 theorem beth_succ (o : Ordinal) : ℶ_ (succ o) = 2 ^ ℶ_ o :=
   beth_add_one o
 

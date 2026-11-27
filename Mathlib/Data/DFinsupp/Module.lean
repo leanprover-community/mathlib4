@@ -5,9 +5,13 @@ Authors: Johannes Hölzl, Kenny Lau
 -/
 module
 
-public import Mathlib.Algebra.Module.LinearMap.Defs
 public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Data.DFinsupp.Defs
+
+import Mathlib.Algebra.Module.LinearMap.Defs
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Group actions on `DFinsupp`

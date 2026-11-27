@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Order.Group.Equiv
 public import Mathlib.Algebra.Order.Hom.MonoidWithZero
 public import Mathlib.Algebra.Order.Monoid.Lex
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Order homomorphisms for products of linearly ordered groups with zero
 
@@ -24,7 +27,6 @@ the plain product `αˣ × βˣ` would not be linearly ordered.
 ## TODO
 
 Create the "LinOrdCommGrpWithZero" category.
-
 -/
 
 @[expose] public section

@@ -6,7 +6,7 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Algebra.FreeAbelianGroup.Finsupp
-public import Mathlib.Algebra.Polynomial.Basic
+public import Mathlib.Algebra.MonoidAlgebra.Module
 public import Mathlib.LinearAlgebra.DFinsupp
 public import Mathlib.LinearAlgebra.Finsupp.Span
 public import Mathlib.LinearAlgebra.FreeModule.Basic
@@ -17,7 +17,6 @@ public import Mathlib.LinearAlgebra.Projection
 
 This file contains results on the `R`-module structure on functions of finite support from a type
 `ι` to an `R`-module `M`, in particular in the case that `R` is a field.
-
 -/
 
 @[expose] public section
@@ -153,7 +152,8 @@ lemma lcomapDomain_eq_linearProjOfIsCompl {α β : Type*}
         (lmapDomain _ _ u) (mapDomain_injective hu) (isCompl_range_lmapDomain_span h) := by
   classical
   refine Finsupp.basisSingleOne.ext fun i ↦ ?_
-  obtain ⟨i, rfl⟩ | ⟨i, rfl⟩ : i ∈ Set.range u ⊔ .range v := by rw [codisjoint_iff.mp h.2]; trivial
+  obtain ⟨i, rfl⟩ | ⟨i, rfl⟩ : i ∈ Set.range u ⊔ .range v := by
+    rw [codisjoint_iff.mp h.codisjoint]; trivial
   · have : single (u i) 1 = lmapDomain R R u (.single i 1) := by simp
     simp only [coe_basisSingleOne, lcomapDomain_apply, comapDomain_single]
     rw [this, LinearMap.linearProjOfIsCompl_apply_left]
@@ -162,7 +162,7 @@ lemma lcomapDomain_eq_linearProjOfIsCompl {α β : Type*}
       simp only [coe_basisSingleOne, lcomapDomain_apply, comapDomain_apply, single_apply,
         coe_zero, Pi.zero_apply, ite_eq_right_iff]
       intro hij
-      exact (Set.disjoint_range_iff.mp h.1 j i hij.symm).elim
+      exact (Set.disjoint_range_iff.mp h.disjoint j i hij.symm).elim
     · exact Submodule.subset_span ⟨i, rfl⟩
 
 end Ring
@@ -212,12 +212,12 @@ theorem Module.Basis.repr_smul' (i : ι) (r : R) (s : S) :
 
 end Algebra
 
-namespace FreeAbelianGroup
+namespace FreeAddCommGroup
 
-instance {σ : Type*} : Module.Free ℤ (FreeAbelianGroup σ) where
-  exists_basis := ⟨σ, ⟨(FreeAbelianGroup.equivFinsupp _).toIntLinearEquiv⟩⟩
+instance {σ : Type*} : Module.Free ℤ (FreeAddCommGroup σ) where
+  exists_basis := ⟨σ, ⟨(FreeAddCommGroup.equivFinsupp _).toIntLinearEquiv⟩⟩
 
-end FreeAbelianGroup
+end FreeAddCommGroup
 
 namespace AddMonoidAlgebra
 variable {M R S : Type*} [Semiring R] [Semiring S] [Module R S] [Module.Free R S]
@@ -232,10 +232,3 @@ variable {M R S : Type*} [Semiring R] [Semiring S] [Module R S] [Module.Free R S
 instance : Module.Free R S[M] := .of_equiv (coeffLinearEquiv _).symm
 
 end MonoidAlgebra
-
-namespace Polynomial
-variable {R : Type*} [Semiring R]
-
-instance : Module.Free R R[X] := .of_equiv (Polynomial.toFinsuppIsoLinear _).symm
-
-end Polynomial

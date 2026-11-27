@@ -6,7 +6,8 @@ Authors: Mario Carneiro, Johannes Hölzl, Patrick Massot
 module
 
 public import Mathlib.Data.Set.Image
-public import Mathlib.Data.Sum.Basic
+
+import Mathlib.Data.Sum.Basic
 
 /-!
 # Sets in product and pi types
@@ -345,7 +346,7 @@ theorem prod_eq_prod_iff :
     rintro ⟨rfl, rfl⟩
     exact prod_eq_empty_iff.mp h
   rw [prod_eq_prod_iff_of_nonempty h]
-  rw [nonempty_iff_ne_empty, Ne, prod_eq_empty_iff] at h
+  rw [← ne_empty_iff_nonempty, Ne, prod_eq_empty_iff] at h
   simp_rw [h, false_and, or_false]
 
 @[simp]
@@ -486,7 +487,7 @@ def Function.Pullback.snd {f : X → Y} {g : Z → Y} (p : f.Pullback g) : Z := 
 
 open Function.Pullback in
 lemma Function.pullback_comm_sq (f : X → Y) (g : Z → Y) :
-    f ∘ @fst X Y Z f g = g ∘ @snd X Y Z f g := funext fun p ↦ p.2
+    f ∘ @fst X Y Z f g = g ∘ @snd X Y Z f g := funext fun p ↦ p.property
 
 /-- The diagonal map $\Delta: X \to X \times_Y X$. -/
 @[simps]
@@ -503,7 +504,7 @@ def Function.mapPullback {X₁ X₂ Y₁ Y₂ Z₁ Z₂}
     (commX : f₂ ∘ mapX = mapY ∘ f₁) (commZ : g₂ ∘ mapZ = mapY ∘ g₁)
     (p : f₁.Pullback g₁) : f₂.Pullback g₂ :=
   ⟨(mapX p.fst, mapZ p.snd),
-    (congr_fun commX _).trans <| (congr_arg mapY p.2).trans <| congr_fun commZ.symm _⟩
+    (congr_fun commX _).trans <| (congr_arg mapY p.property).trans <| congr_fun commZ.symm _⟩
 
 open Function.Pullback in
 /-- The projection $(X \times_Y Z) \times_Z (X \times_Y Z) \to X \times_Y X$. -/
@@ -682,6 +683,14 @@ theorem uniqueElim_preimage [Unique ι] (t : ∀ i, Set (α i)) :
 
 section Nonempty
 
+lemma pi_image_pi_of_subset {C : (i : ι) → Set (Set (α i))} (hC : ∀ i, (C i).Nonempty)
+    (hs : s₁ ⊆ s₂) : s₁.pi '' s₁.pi C = s₁.pi '' s₂.pi C := by
+  ext
+  choose C_mem _ using hC
+  classical
+  exact ⟨fun ⟨x, _⟩ ↦ ⟨fun i ↦ if i ∈ s₁ then x i else C_mem i, by grind⟩,
+    fun ⟨w, _⟩ ↦ ⟨w, by grind⟩⟩
+
 variable [∀ i, Nonempty (α i)]
 
 theorem pi_eq_empty_iff' : s.pi t = ∅ ↔ ∃ i ∈ s, t i = ∅ := by simp [pi_eq_empty_iff]
@@ -835,7 +844,7 @@ theorem univ_pi_eq_singleton_iff {a} : pi univ t = {a} ↔ ∀ i, t i = {a i} :=
 theorem pi_subset_pi_iff : pi s t₁ ⊆ pi s t₂ ↔ (∀ i ∈ s, t₁ i ⊆ t₂ i) ∨ pi s t₁ = ∅ := by
   refine
     ⟨fun h => or_iff_not_imp_right.2 ?_, fun h => h.elim pi_mono fun h' => h'.symm ▸ empty_subset _⟩
-  rw [← Ne, ← nonempty_iff_ne_empty]
+  rw [← Ne, ne_empty_iff_nonempty]
   intro hne i hi
   simpa only [eval_image_pi hi hne, eval_image_pi hi (hne.mono h)] using
     image_mono (f := fun f : ∀ i, α i => f i) h

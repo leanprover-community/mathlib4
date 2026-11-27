@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.ConditionallyCompleteLattice.Defs
 public import Mathlib.Order.Int.LeastGreatest
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `ℤ` forms a conditionally complete linear order
 
@@ -24,7 +27,6 @@ noncomputable section
 
 namespace Int
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 instance : ConditionallyCompleteLinearOrder ℤ where
   __ := instLinearOrder
@@ -75,11 +77,11 @@ theorem csInf_of_not_bddBelow {s : Set ℤ} (h : ¬BddBelow s) : sInf s = 0 :=
   dite_eq_right (by simp [h])
 
 theorem csSup_mem {s : Set ℤ} (h1 : s.Nonempty) (h2 : BddAbove s) : sSup s ∈ s := by
-  convert (greatestOfBdd _ (Classical.choose_spec h2) h1).2.1
+  convert (greatestOfBdd _ (Classical.choose_spec h2) h1).property.1
   exact dite_eq_left ⟨h1, h2⟩
 
 theorem csInf_mem {s : Set ℤ} (h1 : s.Nonempty) (h2 : BddBelow s) : sInf s ∈ s := by
-  convert (leastOfBdd _ (Classical.choose_spec h2) h1).2.1
+  convert (leastOfBdd _ (Classical.choose_spec h2) h1).property.1
   exact dite_eq_left ⟨h1, h2⟩
 
 end Int

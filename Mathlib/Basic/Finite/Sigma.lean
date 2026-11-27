@@ -6,9 +6,12 @@ Authors: Kyle Miller
 module
 
 public import Mathlib.Data.Fintype.Sigma
-public import Mathlib.Logic.Equiv.Sigma
 
 import Mathlib.Data.Fintype.EquivFin
+import Mathlib.Logic.Equiv.Sigma
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Finiteness of sigma types
@@ -40,10 +43,10 @@ namespace Set
 lemma Finite.sigma {s : Set α} {t : ∀ i, Set (β i)} (hs : s.Finite) (ht : ∀ i ∈ s, (t i).Finite) :
     (s.sigma t).Finite := by
   have := hs.to_subtype
-  have : ∀ i : s, Finite (t i) := fun i ↦ (ht i i.2).to_subtype
+  have : ∀ i : s, Finite (t i) := fun i ↦ (ht i i.property).to_subtype
   exact (Set.univ.sigma fun i : s ↦ t i).toFinite.of_equiv _ {
-    toFun := fun x ↦ ⟨⟨x.1.1, x.1.2⟩, ⟨x.1.1.2, x.2.2⟩⟩
-    invFun := fun x ↦ ⟨⟨⟨x.1.1, x.2.1⟩, x.1.2⟩, ⟨Set.mem_univ _, x.2.2⟩⟩
+    toFun := fun x ↦ ⟨⟨x.val.1, x.val.2⟩, ⟨x.val.1.property, x.property.2⟩⟩
+    invFun := fun x ↦ ⟨⟨⟨x.val.1, x.property.1⟩, x.val.2⟩, ⟨Set.mem_univ _, x.property.2⟩⟩
   }
 
 end Set

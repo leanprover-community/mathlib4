@@ -52,7 +52,6 @@ section
 
 variable [HasZeroObject C] [HasZeroMorphisms C]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary construction for `desc`. -/
 def descFZero {Y Z : C} (f : Z ⟶ Y) (I : InjectiveResolution Y) (J : InjectiveResolution Z) :
     J.cocomplex.X 0 ⟶ I.cocomplex.X 0 :=
@@ -68,7 +67,6 @@ lemma exact₀ {Z : C} (I : InjectiveResolution Z) :
     (ShortComplex.mk _ _ I.ι_f_zero_comp_complex_d).Exact :=
   ShortComplex.exact_of_f_is_kernel _ I.isLimitKernelFork
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary construction for `desc`. -/
 def descFOne {Y Z : C} (f : Z ⟶ Y) (I : InjectiveResolution Y) (J : InjectiveResolution Z) :
     J.cocomplex.X 1 ⟶ I.cocomplex.X 1 :=
@@ -97,7 +95,6 @@ def desc {Y Z : C} (f : Z ⟶ Y) (I : InjectiveResolution Y) (J : InjectiveResol
   CochainComplex.mkHom _ _ (descFZero f _ _) (descFOne f _ _) (descFOne_zero_comm f I J).symm
     fun n ⟨g, g', w⟩ => ⟨(descFSucc I J n g g' w.symm).1, (descFSucc I J n g g' w.symm).2.symm⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The resolution maps intertwine the descent of a morphism and that morphism. -/
 @[reassoc (attr := simp)]
 theorem desc_commutes {Y Z : C} (f : Z ⟶ Y) (I : InjectiveResolution Y)
@@ -326,7 +323,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- In any abelian category with enough injectives,
 `InjectiveResolution.of Z` constructs an injective resolution of the object `Z`.
 -/
-irreducible_def of : InjectiveResolution Z where
+@[no_expose] def of : InjectiveResolution Z where
   cocomplex := ofCocomplex Z
   ι := (CochainComplex.fromSingle₀Equiv _ _).symm ⟨Injective.ι Z,
     by rw [ofCocomplex_d_0_1, cokernel.condition_assoc, zero_comp]⟩

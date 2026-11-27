@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Countable
 public import Mathlib.CategoryTheory.Limits.Final
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+
 /-!
 # Countable limits and colimits
 
@@ -23,7 +24,6 @@ limits, see `sequentialFunctor_initial`.
   limits.
 
 * Prove the dual result for filtered colimits.
-
 -/
 
 @[expose] public section
@@ -43,15 +43,28 @@ class HasCountableLimits : Prop where
   and which has countably many objects and morphisms -/
   out (J : Type) [SmallCategory J] [CountableCategory J] : HasLimitsOfShape J C := by infer_instance
 
+/--
+A category has all countable colimits if every functor `J ⥤ C` with a `CountableCategory J`
+instance and `J : Type` has a colimit.
+-/
+@[to_dual]
+class HasCountableColimits : Prop where
+  /-- `C` has all limits over any type `J` whose objects and morphisms lie in the same universe
+  and which has countably many objects and morphisms -/
+  out (J : Type) [SmallCategory J] [CountableCategory J] : HasColimitsOfShape J C
+
+@[to_dual]
 instance (priority := 100) hasFiniteLimits_of_hasCountableLimits [HasCountableLimits C] :
     HasFiniteLimits C where
   out J := HasCountableLimits.out J
 
+@[to_dual]
 instance (priority := 100) hasCountableLimits_of_hasLimits [HasLimits C] :
     HasCountableLimits C where
   out := inferInstance
 
 universe v in
+@[to_dual]
 instance [HasCountableLimits C] [Category.{v} J] [CountableCategory J] : HasLimitsOfShape J C :=
   have : HasLimitsOfShape (HomAsType J) C := HasCountableLimits.out (HomAsType J)
   hasLimitsOfShape_of_equivalence (homAsTypeEquiv J)
@@ -60,71 +73,32 @@ instance [HasCountableLimits C] [Category.{v} J] [CountableCategory J] : HasLimi
 class HasCountableProducts where
   out (J : Type) [Countable J] : HasProductsOfShape J C
 
+/-- A category has countable coproducts if it has all coproducts indexed by countable types. -/
+@[to_dual]
+class HasCountableCoproducts where
+  out (J : Type) [Countable J] : HasCoproductsOfShape J C
+
+@[to_dual]
 instance [HasCountableProducts C] (J : Type*) [Countable J] : HasProductsOfShape J C :=
   have : Countable (Shrink.{0} J) := Countable.of_equiv _ (equivShrink.{0} J)
   have : HasLimitsOfShape (Discrete (Shrink.{0} J)) C := HasCountableProducts.out _
   hasLimitsOfShape_of_equivalence (Discrete.equivalence (equivShrink.{0} J)).symm
 
+@[to_dual]
 instance (priority := 100) hasCountableProducts_of_hasProducts [HasProducts C] :
     HasCountableProducts C where
   out _ :=
     have : HasProducts.{0} C := has_smallest_products_of_hasProducts
     inferInstance
 
+@[to_dual]
 instance (priority := 100) hasCountableProducts_of_hasCountableLimits [HasCountableLimits C] :
     HasCountableProducts C where
   out _ := inferInstance
 
+@[to_dual]
 instance (priority := 100) hasFiniteProducts_of_hasCountableProducts [HasCountableProducts C] :
     HasFiniteProducts C where
-  out _ := inferInstance
-
-/--
-A category has all countable colimits if every functor `J ⥤ C` with a `CountableCategory J`
-instance and `J : Type` has a colimit.
--/
-class HasCountableColimits : Prop where
-  /-- `C` has all limits over any type `J` whose objects and morphisms lie in the same universe
-  and which has countably many objects and morphisms -/
-  out (J : Type) [SmallCategory J] [CountableCategory J] : HasColimitsOfShape J C
-
-instance (priority := 100) hasFiniteColimits_of_hasCountableColimits [HasCountableColimits C] :
-    HasFiniteColimits C where
-  out J := HasCountableColimits.out J
-
-instance (priority := 100) hasCountableColimits_of_hasColimits [HasColimits C] :
-    HasCountableColimits C where
-  out := inferInstance
-
--- See note [instance argument order]
-universe v in
-instance [HasCountableColimits C] (J : Type*) [Category.{v} J] [CountableCategory J] :
-    HasColimitsOfShape J C :=
-  have : HasColimitsOfShape (HomAsType J) C := HasCountableColimits.out (HomAsType J)
-  hasColimitsOfShape_of_equivalence (homAsTypeEquiv J)
-
-/-- A category has countable coproducts if it has all coproducts indexed by countable types. -/
-class HasCountableCoproducts where
-  out (J : Type) [Countable J] : HasCoproductsOfShape J C
-
-instance (priority := 100) hasCountableCoproducts_of_hasCoproducts [HasCoproducts C] :
-    HasCountableCoproducts C where
-  out _ :=
-    have : HasCoproducts.{0} C := has_smallest_coproducts_of_hasCoproducts
-    inferInstance
-
--- See note [instance argument order]
-instance [HasCountableCoproducts C] (J : Type*) [Countable J] : HasCoproductsOfShape J C :=
-  have : Countable (Shrink.{0} J) := Countable.of_equiv _ (equivShrink.{0} J)
-  have : HasColimitsOfShape (Discrete (Shrink.{0} J)) C := HasCountableCoproducts.out _
-  hasColimitsOfShape_of_equivalence (Discrete.equivalence (equivShrink.{0} J)).symm
-
-instance (priority := 100) hasCountableCoproducts_of_hasCountableColimits [HasCountableColimits C] :
-    HasCountableCoproducts C where
-  out _ := inferInstance
-
-instance (priority := 100) hasFiniteCoproducts_of_hasCountableCoproducts
-    [HasCountableCoproducts C] : HasFiniteCoproducts C where
   out _ := inferInstance
 
 section Preorder

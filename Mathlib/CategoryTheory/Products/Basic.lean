@@ -57,6 +57,7 @@ lemma hom_ext {X Y : C × D} {f g : X ⟶ Y} (h₁ : f.1 = g.1) (h₂ : f.2 = g.
 /-- Construct a morphism in a product category by giving its constituent components.
 This constructor should be preferred over `Prod.mk`, because Lean infers better the
 source and target of the resulting morphism. -/
+@[to_dual self]
 abbrev mkHom {X₁ X₂ : C} {Y₁ Y₂ : D} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) : (X₁, Y₁) ⟶ (X₂, Y₂) :=
   ⟨f, g⟩
 
@@ -211,13 +212,10 @@ variable {C D}
 
 /-- Any morphism in a product factors as a morphism whose left component is an identity
 followed by a morphism whose right component is an identity. -/
-@[reassoc]
-lemma fac {x y : C × D} (f : x ⟶ y) : f = (𝟙 x.1 ×ₘ f.2) ≫ (f.1 ×ₘ (𝟙 y.2)) := by cat_disch
-
+@[to_dual (attr := reassoc) fac'
 /-- Any morphism in a product factors as a morphism whose right component is an identity
-followed by a morphism whose left component is an identity. -/
-@[reassoc]
-lemma fac' {x y : C × D} (f : x ⟶ y) : f = (f.1 ×ₘ 𝟙 x.2) ≫ ((𝟙 y.1) ×ₘ f.2) := by cat_disch
+followed by a morphism whose left component is an identity. -/]
+lemma fac {x y : C × D} (f : x ⟶ y) : f = (𝟙 x.1 ×ₘ f.2) ≫ (f.1 ×ₘ (𝟙 y.2)) := by cat_disch
 
 end Prod
 
@@ -425,6 +423,7 @@ section Opposite
 
 open Opposite
 
+variable (D) in
 /-- The equivalence between the opposite of a product and the product of the opposites. -/
 @[implicit_reducible, simps!]
 def prodOpEquiv : (C × D)ᵒᵖ ≌ Cᵒᵖ × Dᵒᵖ where

@@ -7,8 +7,10 @@ module
 
 public import Mathlib.Algebra.Module.LocalizedModule.Basic
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Integer elements of a localized module
 
 This is a mirror of the corresponding notion for localizations of rings.
@@ -21,7 +23,6 @@ This is a mirror of the corresponding notion for localizations of rings.
 
 After `IsLocalizedModule` and `IsLocalization` are unified, the two `IsInteger` predicates
 can be unified.
-
 -/
 
 @[expose] public section
