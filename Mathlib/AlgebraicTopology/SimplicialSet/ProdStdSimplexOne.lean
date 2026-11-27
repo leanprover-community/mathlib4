@@ -90,7 +90,7 @@ lemma nonDegenerateEquiv_snd (i : Fin (p + 1)) :
     dsimp% (nonDegenerateEquiv i).val.2 =
       stdSimplex.objMk₁ i.succ.castSucc := rfl
 
-lemma mem_range_objEquiv_nonDegenerateEquiv₀_iff (i x : Fin (p + 1)) :
+lemma prod_zero_mem_range_objEquiv_nonDegenerateEquiv_iff (i x : Fin (p + 1)) :
     dsimp% (x, 0) ∈ Set.range (prodStdSimplex.objEquiv (nonDegenerateEquiv i).val) ↔ x ≤ i := by
   constructor
   · rintro ⟨y, hy⟩
@@ -109,7 +109,7 @@ lemma mem_range_objEquiv_nonDegenerateEquiv₀_iff (i x : Fin (p + 1)) :
         Fin.castPred_castSucc]
     · simpa [stdSimplex.objMk₁_apply_eq_zero_iff]
 
-lemma mem_range_objEquiv_nonDegenerateEquiv₁_iff (i x : Fin (p + 1)) :
+lemma prod_one_mem_range_objEquiv_nonDegenerateEquiv_iff (i x : Fin (p + 1)) :
     dsimp% (x, 1) ∈ Set.range (prodStdSimplex.objEquiv (nonDegenerateEquiv i).val) ↔ i ≤ x := by
   constructor
   · intro ⟨y, hy⟩
@@ -230,8 +230,8 @@ lemma intersectionNondeg_le_intersectionNondeg (i j k : Fin (p + 1))
   simp only [Set.mem_inter_iff] at hxy ⊢
   fin_cases y
   all_goals
-  · grind [mem_range_objEquiv_nonDegenerateEquiv₀_iff,
-      mem_range_objEquiv_nonDegenerateEquiv₁_iff]
+  · grind [prod_zero_mem_range_objEquiv_nonDegenerateEquiv_iff,
+      prod_one_mem_range_objEquiv_nonDegenerateEquiv_iff]
 
 lemma intersectionNondeg_le_intersectionNondeg' (i j k : Fin (p + 1))
     (hij : i ≤ j) (hij : j ≤ k) :
@@ -244,12 +244,12 @@ lemma intersectionNondeg_le_intersectionNondeg' (i j k : Fin (p + 1))
   simp only [Set.mem_inter_iff] at hxy ⊢
   fin_cases y
   all_goals
-  · grind [mem_range_objEquiv_nonDegenerateEquiv₀_iff,
-      mem_range_objEquiv_nonDegenerateEquiv₁_iff]
+  · grind [prod_zero_mem_range_objEquiv_nonDegenerateEquiv_iff,
+      prod_one_mem_range_objEquiv_nonDegenerateEquiv_iff]
 
 lemma filtration.bicartSq (j : Fin p) :
-    Subcomplex.BicartSq (Subcomplex.ofSimplex (codimOneSimplex.{u} j.succ.castSucc).1)
-      (filtration.{u} j.castSucc) (.ofSimplex (nonDegenerateEquiv j.succ).1)
+    Subcomplex.BicartSq (Subcomplex.ofSimplex (codimOneSimplex.{u} j.succ.castSucc).val)
+      (filtration.{u} j.castSucc) (.ofSimplex (nonDegenerateEquiv j.succ).val)
       (filtration.{u} j.succ) where
   inf_eq := by
     rw [ofSimplex_codimOneSimplex]
