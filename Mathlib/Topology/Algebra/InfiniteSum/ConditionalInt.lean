@@ -14,6 +14,9 @@ import Mathlib.Analysis.Normed.Group.Uniform
 import Mathlib.Order.Filter.AtTopBot.Interval
 
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sums over symmetric integer intervals
 

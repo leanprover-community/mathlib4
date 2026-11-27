@@ -13,6 +13,9 @@ public import Mathlib.RingTheory.Localization.FractionRing
 
 import Mathlib.Algebra.Order.Archimedean.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Divisible Hull of an abelian group
 

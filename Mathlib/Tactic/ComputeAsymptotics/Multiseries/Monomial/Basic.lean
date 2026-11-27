@@ -8,6 +8,9 @@ module
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basis
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Monomial.Predicates
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Computing limits of monomials
 

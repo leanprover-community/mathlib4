@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Cat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The strict bicategory associated to a Cat-enriched category
 

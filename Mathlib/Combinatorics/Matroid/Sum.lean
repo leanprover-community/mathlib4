@@ -35,7 +35,7 @@ To this end, we define five separate versions of the sum construction.
 * If `M N : Matroid α` and `h : Disjoint M.E N.E`, then `Matroid.disjointSum M N h` is the sum
   of `M` and `N` as a `Matroid α` with ground set `M.E ∪ N.E`.
 
-## Implementation details
+## Implementation notes
 
 We only directly define a matroid for `Matroid.sigma`. All other versions of sum are
 defined indirectly, using `Matroid.sigma` and the API in `Matroid.map`.

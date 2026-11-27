@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Action.Concrete
 public import Mathlib.CategoryTheory.Action.Limits
 public import Mathlib.CategoryTheory.Galois.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Examples of Galois categories and fiber functors
 

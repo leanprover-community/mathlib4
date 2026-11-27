@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Adjunction.Mates
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Compatibilities for left adjoints from compatibilities satisfied by right adjoints
 

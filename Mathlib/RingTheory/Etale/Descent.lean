@@ -24,7 +24,7 @@ base change.
 
 We also provide the corresponding `RingHom.CodescendsAlong` lemmas.
 
-## TODOs
+## TODO
 
 - The lemma `Algebra.FormallySmooth.of_formallySmooth_tensorProduct_of_faithfullyFlat` has an
   additional `Algebra.FinitePresentation` assumption, because the proof uses that a flat module

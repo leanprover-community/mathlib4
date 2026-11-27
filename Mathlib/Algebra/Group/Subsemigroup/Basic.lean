@@ -9,6 +9,9 @@ module
 public import Mathlib.Algebra.Group.Subsemigroup.Defs
 public import Mathlib.Data.Set.Lattice.Image
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subsemigroups: `CompleteLattice` structure
 
@@ -39,6 +42,7 @@ This file is designed to have very few dependencies. In particular, it should no
 numbers.
 
 ## Tags
+
 subsemigroup, subsemigroups
 -/
 

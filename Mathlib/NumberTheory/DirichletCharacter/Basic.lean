@@ -16,7 +16,7 @@ Let `R` be a commutative monoid with zero. A Dirichlet character `χ` of level `
 multiplicative character from `ZMod n` to `R` sending non-units to 0. We then obtain some properties
 of `toUnitHom χ`, the restriction of `χ` to a group homomorphism `(ZMod n)ˣ →* Rˣ`.
 
-Main definitions:
+Main definitions
 
 - `DirichletCharacter`: The type representing a Dirichlet character.
 - `changeLevel`: Extend the Dirichlet character χ of level `n` to level `m`, where `n` divides `m`.

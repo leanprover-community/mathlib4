@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Sites.Descent.IsStack
 import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
 import Mathlib.CategoryTheory.Limits.Shapes.Connected
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Characterization of (pre)stacks for a precoverage
 

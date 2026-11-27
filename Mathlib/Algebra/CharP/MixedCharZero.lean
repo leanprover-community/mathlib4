@@ -48,7 +48,7 @@ characteristic case for convenience:
 - `split_by_characteristic_domain` : In a domain we can assume that `p` is prime.
 - `split_by_characteristic_localRing` : In a local ring we can assume that `p` is a prime power.
 
-## Implementation Notes
+## Implementation notes
 
 We use the terms `EqualCharZero` and `AlgebraRat` despite there not being any such definitions
 in mathlib.

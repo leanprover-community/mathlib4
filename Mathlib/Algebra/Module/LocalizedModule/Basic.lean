@@ -32,7 +32,7 @@ localize `M` by `S`. This gives us a `Localization S`-module.
   by `S`.
 * `LocalizedModule.isModule` : `LocalizedModule M S` is a `Localization S`-module.
 
-## Future work
+## TODO
 
 * Redefine `Localization` for monoids and rings to coincide with `LocalizedModule`.
 -/
@@ -557,14 +557,14 @@ instance IsLocalizedModule.of_linearEquiv (e : M' ≃ₗ[R] M'') [hf : IsLocaliz
   map_units s := by
     rw [show algebraMap R (Module.End R M'') s = e ∘ₗ (algebraMap R (Module.End R M') s) ∘ₗ e.symm
       by ext; simp, Module.End.isUnit_iff, LinearMap.coe_comp, LinearMap.coe_comp,
-      LinearEquiv.coe_coe, LinearEquiv.coe_coe, EquivLike.comp_bijective, EquivLike.bijective_comp]
+      LinearEquiv.coe_toLinearMap, LinearEquiv.coe_toLinearMap, EquivLike.comp_bijective,
+      EquivLike.bijective_comp]
     exact (Module.End.isUnit_iff _).mp <| hf.map_units s
   surj x := by
     obtain ⟨p, h⟩ := hf.surj (e.symm x)
-    exact ⟨p, by rw [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, ← e.congr_arg h,
-      Submonoid.smul_def, Submonoid.smul_def, map_smul, LinearEquiv.apply_symm_apply]⟩
+    exact ⟨p, by simp [← e.congr_arg h, Submonoid.smul_def, LinearEquiv.apply_symm_apply]⟩
   exists_of_eq h := by
-    simp_rw [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+    simp_rw [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply,
       EmbeddingLike.apply_eq_iff_eq] at h
     exact hf.exists_of_eq h
 
@@ -575,7 +575,7 @@ instance IsLocalizedModule.of_linearEquiv_right (e : M'' ≃ₗ[R] M) [hf : IsLo
     obtain ⟨⟨p, s⟩, h⟩ := hf.surj x
     exact ⟨⟨e.symm p, s⟩, by simpa using h⟩
   exists_of_eq h := by
-    simp_rw [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply] at h
+    simp_rw [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply] at h
     obtain ⟨c, hc⟩ := hf.exists_of_eq h
     exact ⟨c, by simpa only [Submonoid.smul_def, map_smul, e.symm_apply_apply]
       using congr(e.symm $hc)⟩
@@ -901,7 +901,8 @@ theorem iso_symm_apply' (m : M') (a : M) (b : S) (eq1 : b • m = f a) :
 
 theorem iso_symm_comp : (iso S f).symm.toLinearMap.comp f = LocalizedModule.mkLinearMap S M := by
   ext m
-  rw [LinearMap.comp_apply, LocalizedModule.mkLinearMap_apply, LinearEquiv.coe_coe, iso_symm_apply']
+  rw [LinearMap.comp_apply, LocalizedModule.mkLinearMap_apply, LinearEquiv.coe_toLinearMap,
+    iso_symm_apply']
   exact one_smul _ _
 
 @[simp]
@@ -1228,8 +1229,8 @@ lemma map_apply (h : M →ₗ[R] N) (x) : map S f g h (f x) = g (h x) :=
 @[simp]
 lemma map_mk' (h : M →ₗ[R] N) (x) (s : S) :
     map S f g h (IsLocalizedModule.mk' f x s) = (IsLocalizedModule.mk' g (h x) s) := by
-  simp only [map, lift, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.coe_comp, LinearEquiv.coe_coe,
-    Function.comp_apply]
+  simp only [map, lift, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.coe_comp,
+    LinearEquiv.coe_toLinearMap, Function.comp_apply]
   rw [iso_symm_apply' S f (mk' f x s) x s (mk'_cancel' f x s), LocalizedModule.lift_mk]
   rfl
 

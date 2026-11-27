@@ -36,7 +36,7 @@ monoids, expressing that an element is a primitive root of unity.
 * `nthRootsFinset_eq_of_prime`: for `p` prime, the `p`-th roots of unity are the primitive `p`-th
   roots of unity together with `1`.
 
-## Implementation details
+## Implementation notes
 
 For primitive roots of unity, it is desirable to have a predicate
 not just on units, but directly on elements of the ring/field.

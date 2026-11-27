@@ -13,6 +13,9 @@ public import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
 import Mathlib.Algebra.Order.BigOperators.Expect
 import Mathlib.Analysis.Normed.Group.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Real quadratic forms
 

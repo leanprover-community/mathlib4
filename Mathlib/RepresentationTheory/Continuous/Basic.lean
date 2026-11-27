@@ -50,6 +50,7 @@ related basic results.
   and a continuous intertwining map `f : π.restrict φ →ⁱL π'`, given by `F ↦ f ∘ F ∘ φ`.
 
 ## Tags
+
 continuous representation, algebra
 -/
 

@@ -16,6 +16,7 @@ import Mathlib.Data.Nat.Find
 # Characteristic of semirings
 
 ## Main definitions
+
 * `CharP R p` expresses that the ring (additive monoid with one) `R` has characteristic `p`
 * `ringChar`: the characteristic of a ring
 * `ExpChar R p` expresses that the ring (additive monoid with one) `R` has

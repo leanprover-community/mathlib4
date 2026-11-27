@@ -28,7 +28,7 @@ The hierarchy is extended further by `Module`, defined elsewhere.
 
 - `a • b` is used as notation for `SMul.smul a b`.
 
-## Implementation details
+## Implementation notes
 
 This file should avoid depending on other parts of `GroupTheory`, to avoid import cycles.
 More sophisticated lemmas belong in `GroupTheory.GroupAction`.

@@ -11,6 +11,9 @@ public import Mathlib.CategoryTheory.Sites.Point.Conservative
 
 import Mathlib.CategoryTheory.Functor.TypeValuedFlat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Points of the étale site
 

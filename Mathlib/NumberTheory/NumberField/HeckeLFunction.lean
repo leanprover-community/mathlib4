@@ -13,6 +13,9 @@ public import Mathlib.RingTheory.PowerSeries.Inverse
 
 import Mathlib.NumberTheory.NumberField.Completion.FinitePlace
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Hecke L-Functions
 

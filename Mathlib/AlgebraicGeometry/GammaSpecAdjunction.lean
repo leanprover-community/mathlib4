@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Category.CommAlgCat.Basic
 public import Mathlib.AlgebraicGeometry.Restrict
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Adjunction between `Γ` and `Spec`
 

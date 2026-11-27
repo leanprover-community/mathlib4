@@ -10,6 +10,9 @@ public import Mathlib.Data.Fintype.Option
 
 import Mathlib.CategoryTheory.Localization.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Localization of product categories
 

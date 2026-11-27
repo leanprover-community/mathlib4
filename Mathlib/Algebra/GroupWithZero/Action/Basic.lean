@@ -36,7 +36,7 @@ interaction of different group actions,
 - `a • b` is used as notation for `SMul.smul a b`.
 - `a +ᵥ b` is used as notation for `VAdd.vadd a b`.
 
-## Implementation details
+## Implementation notes
 
 This file should avoid depending on other parts of `GroupTheory`, to avoid import cycles.
 More sophisticated lemmas belong in `GroupTheory.GroupAction`.

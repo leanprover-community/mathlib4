@@ -11,6 +11,9 @@ import Mathlib.Order.Fin.InsertNth
 import Mathlib.Order.Fin.Prod
 import Mathlib.Order.Preorder.Finite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Binary product of standard simplices
 

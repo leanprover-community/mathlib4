@@ -23,7 +23,7 @@ In this file we define `lipschitzGroup`, `pinGroup` and `spinGroup` and show the
 * `pinGroup`: the Pin group defined as the infimum of `lipschitzGroup` and `unitary`.
 * `spinGroup`: the Spin group defined as the infimum of `pinGroup` and `CliffordAlgebra.even`.
 
-## Implementation Notes
+## Implementation notes
 
 The definition of the Lipschitz group
 $\{ x \in \mathop{\mathcal{C}\ell} | x \text{ is invertible and } x v x^{-1} ∈ V \}$ is given by:

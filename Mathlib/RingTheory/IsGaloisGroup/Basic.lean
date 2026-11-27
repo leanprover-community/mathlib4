@@ -210,11 +210,11 @@ noncomputable def mulSemiringActionQuotient [IsGaloisGroup N B C] [N.Normal] :
       rw [algebraMap.smul', algebraMap.smul', smul_eq_iff_eq_inv_smul, ← smul_assoc, smul_eq_mul,
         Subgroup.smul_algebraMap C (by rwa [← QuotientGroup.leftRel_apply])]
     one_smul x := one_smul G x
-    mul_smul q₁ q₂ x := Quotient.inductionOn₂' q₁ q₂ fun g h ↦ mul_smul g h x
-    smul_add q x y := Quotient.inductionOn' q fun g ↦ smul_add g x y
-    smul_zero q := Quotient.inductionOn' q fun g ↦ smul_zero g
-    smul_one q := Quotient.inductionOn' q fun g ↦ smul_one g
-    smul_mul q x y := Quotient.inductionOn' q fun g ↦ smul_mul' g x y }
+    mul_smul q₁ q₂ x := Quotient.inductionOn₂ q₁ q₂ fun g h ↦ mul_smul g h x
+    smul_add q x y := Quotient.inductionOn q fun g ↦ smul_add g x y
+    smul_zero q := Quotient.inductionOn q fun g ↦ smul_zero g
+    smul_one q := Quotient.inductionOn q fun g ↦ smul_one g
+    smul_mul q x y := Quotient.inductionOn q fun g ↦ smul_mul' g x y }
 
 theorem mulSemiringActionQuotient_smul_def [MulSemiringAction G B] [SMulDistribClass G B C]
     [IsGaloisGroup N B C] [N.Normal] (g : G) (b : B) :
@@ -229,7 +229,7 @@ instance isScalarTower_mulSemiringActionQuotient [MulSemiringAction G B] [SMulDi
     letI := mulSemiringActionQuotient G B C N
     IsScalarTower G (G ⧸ N) B :=
   let := mulSemiringActionQuotient G B C N
-  ⟨fun g q b ↦ Quotient.inductionOn' q fun h ↦ by
+  ⟨fun g q b ↦ Quotient.inductionOn q fun h ↦ by
     simp [mul_smul, mulSemiringActionQuotient_smul_def]⟩
 
 /-- If `G` acts on `C` commuting with `A`, then the action of `G ⧸ N` on `B` commutes with `A`. -/
@@ -237,7 +237,7 @@ theorem smulCommClassQuotient [N.Normal] [Algebra A B] [IsScalarTower A B C] [SM
     [MulSemiringAction G B] [MulAction (G ⧸ N) B] [SMulDistribClass G B C]
     [IsScalarTower G (G ⧸ N) B] :
     SMulCommClass (G ⧸ N) A B :=
-  ⟨fun g k x ↦ Quotient.inductionOn' g fun g ↦
+  ⟨fun g k x ↦ Quotient.inductionOn g fun g ↦
     FaithfulSMul.algebraMap_injective B C (by
       simp [algebraMap.smul, algebraMap.smul', smul_comm])⟩
 

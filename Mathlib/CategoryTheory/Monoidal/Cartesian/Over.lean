@@ -12,6 +12,9 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 public import Mathlib.CategoryTheory.Monoidal.CommMon_
 public import Mathlib.CategoryTheory.Monoidal.Grp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `CartesianMonoidalCategory` for `Over X`
 

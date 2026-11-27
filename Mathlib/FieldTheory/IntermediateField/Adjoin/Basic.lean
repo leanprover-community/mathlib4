@@ -14,6 +14,9 @@ import Mathlib.RingTheory.Adjoin.Dimension
 import Mathlib.RingTheory.TensorProduct.Finite
 import Mathlib.SetTheory.Cardinal.Subfield
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Adjoining Elements to Fields
 
