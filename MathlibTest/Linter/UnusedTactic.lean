@@ -310,26 +310,26 @@ example : True := by
 
 end allowing_more_unused_tactics
 
-section ignore_tactic_kind
 
-syntax (name := doEmitWarningStx) "doEmitWarning" tactic : command
-macro_rules
-  | `(command| doEmitWarning $tac) => `(command| example : True := by $tac ; constructor)
+-- Allowing subtactics has the desired effect of silencing the linter
+namespace TestIgnoredKinds
 
-syntax (name := doNotEmitWarningStx) "doNotEmitWarning" tactic : command
-macro_rules
-  | `(command| doNotEmitWarning $tac) => `(command| example : True := by $tac ; constructor)
+scoped allow_unused_subtactics_inside Batteries.Tactic.seq_focus
 
--- `#eval` instead of `initialize` so that the effect can be tested in this file
-#eval Mathlib.Linter.UnusedTactic.addIgnoreTacticKind ``doNotEmitWarningStx
+#guard_msgs in
+example : True ∧ True := by
+  constructor <;> [trivial; all_goals trivial]
 
+end TestIgnoredKinds
+
+-- The linter is not silenced by `set_option ... in`.
 /--
-warning: Unused tactic linter: `congr` does not change the goal.
+warning: Unused tactic linter: `change 1 = 1` does not change the goal.
 
 Note: This linter can be disabled with `set_option linter.unusedTactic false`
 -/
-#guard_msgs in doEmitWarning congr
-
-#guard_msgs in doNotEmitWarning congr
-
-end ignore_tactic_kind
+#guard_msgs in
+set_option maxHeartbeats 1000 in
+example : 1 = 1 := by
+  change 1 = 1
+  rfl
