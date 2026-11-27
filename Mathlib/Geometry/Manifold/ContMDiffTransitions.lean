@@ -78,14 +78,12 @@ namespace IsLocalHomeomorph
 /-- If `ContMDiffTransitions I n f` holds, the transition map between two local inverses of `f`
 is `C^n` on its source. -/
 lemma contMDiffOn_localInverseAt_symm_trans (h : ContMDiffTransitions I n f) (x y : M) :
-    letI s : Set M := (hf.localInverseAt x).target ∩ f ⁻¹' (hf.localInverseAt y).source
     letI τ : OpenPartialHomeomorph M M := (hf.localInverseAt x).symm ≫ₕ hf.localInverseAt y
-    CMDiff[s] n τ := by
+    CMDiff[τ.source] n τ := by
   set τ := (hf.localInverseAt x).symm ≫ₕ hf.localInverseAt y
   have hτ {z : M} (hz : z ∈ τ.source) : f (τ z) = f z := by
     simpa [τ] using hf.apply_localInverseAt_of_mem (by simpa using hz.2)
   intro z hz
-  replace hz : z ∈ τ.source := by simpa [τ]
   obtain ⟨σ, hσz, hσ, hfσ⟩ := h (hτ hz).symm
   refine (hσ.congr_of_eventuallyEq ?_).contMDiffWithinAt
   have ht : (hf.localInverseAt y).target ∈ 𝓝 (σ z) :=
