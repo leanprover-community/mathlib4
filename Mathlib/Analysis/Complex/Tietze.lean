@@ -115,7 +115,7 @@ theorem exists_norm_eq_domRestrict_eq (f : s →ᵇ E) :
   by_cases hf : ‖f‖ = 0; · exact ⟨0, by aesop⟩
   have := Metric.instTietzeExtensionClosedBall.{u, v} 𝕜 (0 : E) (by simp_all : 0 < ‖f‖)
   have hf' x : f x ∈ Metric.closedBall 0 ‖f‖ := by simpa using! f.norm_coe_le_norm x
-  obtain ⟨g, hg_mem, hg⟩ := (f : C(s, E)).exists_forall_mem_restrict_eq hs hf'
+  obtain ⟨g, hg_mem, hg⟩ := f.toContinuousMap.exists_forall_mem_restrict_eq hs hf'
   simp only [Metric.mem_closedBall, dist_zero_right] at hg_mem
   let g' : X →ᵇ E := .ofNormedAddCommGroup g (map_continuous g) ‖f‖ hg_mem
   refine ⟨g', ?_, by ext x; congrm($(hg) x)⟩

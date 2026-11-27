@@ -36,7 +36,8 @@ We also define completed versions of these functions with nicer functional equat
 modified versions with a subscript `0`, which are entire functions differing from the above by
 multiples of `1 / s` and `1 / (1 - s)`.
 
-## Main definitions and theorems
+## Main definitions and statements
+
 * `hurwitzZetaEven` and `cosZeta`: the zeta functions
 * `completedHurwitzZetaEven` and `completedCosZeta`: completed variants
 * `differentiableAt_hurwitzZetaEven` and `differentiableAt_cosZeta`:

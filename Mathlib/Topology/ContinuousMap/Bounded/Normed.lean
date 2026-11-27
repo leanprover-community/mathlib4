@@ -206,7 +206,7 @@ instance instNormedAddCommGroup {α β} [TopologicalSpace α] [NormedAddCommGrou
   { instSeminormedAddCommGroup with
     eq_of_dist_eq_zero }
 
-theorem nnNorm_def : ‖f‖₊ = nndist f 0 := rfl
+theorem nnNorm_def : ‖f‖₊ = nnDist f 0 := rfl
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_def := nnNorm_def
 
@@ -215,7 +215,7 @@ theorem nnNorm_coe_le_nnNorm (x : α) : ‖f x‖₊ ≤ ‖f‖₊ :=
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_coe_le_nnnorm := nnNorm_coe_le_nnNorm
 
-theorem nnDist_le_two_nnNorm (x y : α) : nndist (f x) (f y) ≤ 2 * ‖f‖₊ :=
+theorem nnDist_le_two_nnNorm (x y : α) : nnDist (f x) (f y) ≤ 2 * ‖f‖₊ :=
   dist_le_two_norm _ _ _
 
 @[deprecated (since := "2026-10-31")] alias nndist_le_two_nnnorm := nnDist_le_two_nnNorm
@@ -550,12 +550,14 @@ protected def AlgHom.compLeftContinuousBounded [NormedRing β] [NormedAlgebra �
 /-- The algebra-homomorphism forgetting that a bounded continuous function is bounded. -/
 @[simps]
 def toContinuousMapₐ : (α →ᵇ γ) →ₐ[𝕜] C(α, γ) where
-  toFun := (↑)
+  toFun := toContinuousMap
   map_one' := rfl
   map_mul' _ _ := rfl
   map_zero' := rfl
   map_add' _ _ := rfl
   commutes' _ := rfl
+
+lemma toContinuousMapₐ_apply_apply (f : α →ᵇ γ) (a : α) : f.toContinuousMapₐ 𝕜 a = f a := rfl
 
 @[simp]
 theorem coe_toContinuousMapₐ (f : α →ᵇ γ) : (f.toContinuousMapₐ 𝕜 : α → γ) = f := rfl

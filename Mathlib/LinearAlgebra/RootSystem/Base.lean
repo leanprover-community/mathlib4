@@ -12,6 +12,15 @@ public import Mathlib.LinearAlgebra.RootSystem.Chain
 
 This file contains a theory of bases for root pairings / systems.
 
+## Main definitions and statements
+
+* `RootSystem.Base`: a base of a root pairing.
+* `RootSystem.Base.IsPos`: the predicate that a (co)root is positive relative to a base.
+* `RootSystem.Base.induction_add`: an induction principle for predicates on (co)roots which
+  respect addition of a simple root.
+* `RootSystem.Base.induction_reflect`: an induction principle for predicates on (co)roots which
+  respect reflection in a simple root.
+
 ## Implementation notes
 
 For reduced root pairings `RootSystem.Base` is equivalent to the usual definition appearing in the
@@ -29,14 +38,6 @@ roots.
 
 For infinite root systems, `RootSystem.Base` is usually not the right notion: linear independence
 is too strong.
-
-## Main definitions / results:
-* `RootSystem.Base`: a base of a root pairing.
-* `RootSystem.Base.IsPos`: the predicate that a (co)root is positive relative to a base.
-* `RootSystem.Base.induction_add`: an induction principle for predicates on (co)roots which
-  respect addition of a simple root.
-* `RootSystem.Base.induction_reflect`: an induction principle for predicates on (co)roots which
-  respect reflection in a simple root.
 
 ## TODO
 

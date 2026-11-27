@@ -9,17 +9,22 @@ public import Mathlib.Analysis.Normed.Group.Ultra
 public import Mathlib.RingTheory.Valuation.RankOne
 public import Mathlib.Topology.Algebra.Valued.ValuationTopology
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Correspondence between nontrivial nonarchimedean norms and rank one valuations
 
 Nontrivial nonarchimedean norms correspond to rank one valuations.
 
 ## Main Definitions
+
 * `NormedField.toValued` : the valued field structure on a nonarchimedean normed field `K`,
   determined by the norm.
 * `Valued.toNormedField` : the normed field structure determined by a rank one valuation.
 
 ## Main Results
+
 * The valuation of a normed field has rank at most one.
 
 ## Tags

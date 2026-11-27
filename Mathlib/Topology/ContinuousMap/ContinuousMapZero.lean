@@ -75,15 +75,19 @@ lemma ext {f g : C(X, R)₀} (h : ∀ x, f x = g x) : f = g := DFunLike.ext f g 
 @[simp]
 lemma coe_mk {f : C(X, R)} {h0 : f 0 = 0} : ⇑(mk f h0) = f := rfl
 
-lemma toContinuousMap_injective : Injective ((↑) : C(X, R)₀ → C(X, R)) :=
+@[simp]
+lemma coe_toContinuousMap (f : C(X, R)₀) : ⇑f.toContinuousMap = f := rfl
+
+lemma toContinuousMap_injective : Injective (toContinuousMap : C(X, R)₀ → C(X, R)) :=
   fun _ _ h ↦ congr(.mk $h _)
 
-lemma range_toContinuousMap : range ((↑) : C(X, R)₀ → C(X, R)) = {f : C(X, R) | f 0 = 0} :=
+lemma range_toContinuousMap :
+    range (toContinuousMap : C(X, R)₀ → C(X, R)) = {f : C(X, R) | f 0 = 0} :=
   Set.ext fun f ↦ ⟨fun ⟨f', hf'⟩ ↦ hf' ▸ map_zero f', fun hf ↦ ⟨⟨f, hf⟩, rfl⟩⟩
 
 /-- Composition of continuous maps which map zero to zero. -/
 def comp (g : C(Y, R)₀) (f : C(X, Y)₀) : C(X, R)₀ where
-  toContinuousMap := (g : C(Y, R)).comp (f : C(X, Y))
+  toContinuousMap := g.toContinuousMap.comp f.toContinuousMap
   map_zero' := show g (f 0) = 0 from map_zero f ▸ map_zero g
 
 @[simp]
@@ -98,9 +102,9 @@ instance instPartialOrder [PartialOrder R] : PartialOrder C(X, R)₀ := fast_ins
 lemma le_def [PartialOrder R] (f g : C(X, R)₀) : f ≤ g ↔ ∀ x, f x ≤ g x := Iff.rfl
 
 protected instance instTopologicalSpace : TopologicalSpace C(X, R)₀ := fast_instance%
-  TopologicalSpace.induced ((↑) : C(X, R)₀ → C(X, R)) inferInstance
+  TopologicalSpace.induced (toContinuousMap : C(X, R)₀ → C(X, R)) inferInstance
 
-lemma isEmbedding_toContinuousMap : IsEmbedding ((↑) : C(X, R)₀ → C(X, R)) where
+lemma isEmbedding_toContinuousMap : IsEmbedding (toContinuousMap : C(X, R)₀ → C(X, R)) where
   eq_induced := rfl
   injective _ _ h := ext fun x ↦ congr($h x)
 
@@ -119,7 +123,7 @@ instance instContinuousEval [LocallyCompactPair X R] : ContinuousEval C(X, R)₀
   .of_continuous_forget isEmbedding_toContinuousMap.continuous
 
 lemma isClosedEmbedding_toContinuousMap [T1Space R] :
-    IsClosedEmbedding ((↑) : C(X, R)₀ → C(X, R)) where
+    IsClosedEmbedding (toContinuousMap : C(X, R)₀ → C(X, R)) where
   toIsEmbedding := isEmbedding_toContinuousMap
   isClosed_range := by
     rw [range_toContinuousMap]
@@ -128,7 +132,7 @@ lemma isClosedEmbedding_toContinuousMap [T1Space R] :
 @[fun_prop]
 lemma continuous_precomp (f : C(X, Y)₀) : Continuous fun g : C(Y, R)₀ ↦ g.comp f := by
   rw [continuous_induced_rng]
-  change Continuous fun g : C(Y, R)₀ ↦ (g : C(Y, R)).comp (f : C(X, Y))
+  change Continuous fun g : C(Y, R)₀ ↦ g.toContinuousMap.comp f.toContinuousMap
   fun_prop
 
 theorem postcomp_injective (g : C(Y, R)₀) (hg : Injective g) :
@@ -148,7 +152,7 @@ protected def id (s : Set R) [Fact (0 ∈ s)] : C(s, R)₀ :=
 
 @[simp]
 lemma toContinuousMap_id {s : Set R} [Fact (0 ∈ s)] :
-    (ContinuousMapZero.id s : C(s, R)) = .restrict s (.id R) :=
+    (ContinuousMapZero.id s).toContinuousMap = .restrict s (.id R) :=
   rfl
 
 end Basic
@@ -210,7 +214,7 @@ lemma mkD_apply_of_continuousOn {s : Set X} [Zero s] {f : X → R} {g : C(s, R)�
 open ContinuousMap in
 /-- Link between `ContinuousMapZero.mkD` and `ContinuousMap.mkD`. -/
 lemma mkD_eq_mkD_of_map_zero [Zero X] (f : X → R) (g : C(X, R)₀) (f_zero : f 0 = 0) :
-    mkD f g = ContinuousMap.mkD f g := by
+    (mkD f g).toContinuousMap = ContinuousMap.mkD f g.toContinuousMap := by
   ext
   by_cases f_cont : Continuous f <;>
     simp [*, ContinuousMap.mkD_of_continuous, mkD_of_continuous, mkD_of_not_continuous,
@@ -235,7 +239,7 @@ instance [Zero R] : IsZeroApply C(X, R)₀ where
 protected lemma coe_zero [Zero R] : ⇑(0 : C(X, R)₀) = 0 := rfl
 
 instance instAdd [AddZeroClass R] [ContinuousAdd R] : Add C(X, R)₀ where
-  add f g := ⟨f + g, by simp⟩
+  add f g := ⟨f.toContinuousMap + g.toContinuousMap, by simp⟩
 
 instance [AddZeroClass R] [ContinuousAdd R] : IsAddApply C(X, R)₀ where
 
@@ -244,7 +248,7 @@ protected lemma coe_add [AddZeroClass R] [ContinuousAdd R] (f g : C(X, R)₀) :
   ⇑(f + g) = f + g := rfl
 
 instance instNeg [NegZeroClass R] [ContinuousNeg R] : Neg C(X, R)₀ where
-  neg f := ⟨- f, by simp⟩
+  neg f := ⟨- f.toContinuousMap, by simp⟩
 
 instance [NegZeroClass R] [ContinuousNeg R] : IsNegApply C(X, R)₀ where
 
@@ -252,7 +256,7 @@ instance [NegZeroClass R] [ContinuousNeg R] : IsNegApply C(X, R)₀ where
 protected lemma coe_neg [NegZeroClass R] [ContinuousNeg R] (f : C(X, R)₀) : ⇑(-f) = -f := rfl
 
 instance instSub [SubNegZeroMonoid R] [ContinuousSub R] : Sub C(X, R)₀ where
-  sub f g := ⟨f - g, by simp⟩
+  sub f g := ⟨f.toContinuousMap - g.toContinuousMap, by simp⟩
 
 instance [SubNegZeroMonoid R] [ContinuousSub R] : IsSubApply C(X, R)₀ where
 
@@ -261,7 +265,7 @@ protected lemma coe_sub [SubNegZeroMonoid R] [ContinuousSub R] (f g : C(X, R)₀
     ⇑(f - g) = f - g := rfl
 
 instance instMul [MulZeroClass R] [ContinuousMul R] : Mul C(X, R)₀ where
-  mul f g := ⟨f * g, by simp⟩
+  mul f g := ⟨f.toContinuousMap * g.toContinuousMap, by simp⟩
 
 instance [MulZeroClass R] [ContinuousMul R] : IsMulApply C(X, R)₀ where
 
@@ -271,7 +275,7 @@ protected lemma coe_mul [MulZeroClass R] [ContinuousMul R] (f g : C(X, R)₀) :
 
 instance instSMul {M : Type*} [Zero R] [SMulZeroClass M R] [ContinuousConstSMul M R] :
     SMul M C(X, R)₀ where
-  smul m f := ⟨m • f, by simp⟩
+  smul m f := ⟨m • f.toContinuousMap, by simp⟩
 
 instance {M : Type*} [Zero R] [SMulZeroClass M R] [ContinuousConstSMul M R] :
     IsSMulApply M C(X, R)₀ where
@@ -321,7 +325,7 @@ instance instIsScalarTower' {M : Type*} [SMulZeroClass M R] [IsScalarTower M R R
     [ContinuousConstSMul M R] : IsScalarTower M C(X, R)₀ C(X, R)₀ := FunLike.isScalarTowerSelf
 
 instance instStarRing [StarRing R] [ContinuousStar R] : StarRing C(X, R)₀ where
-  star f := ⟨star f, by simp⟩
+  star f := ⟨star f.toContinuousMap, by simp⟩
   star_involutive _ := ext fun _ ↦ star_star _
   star_mul _ _ := ext fun _ ↦ star_mul ..
   star_add _ _ := ext fun _ ↦ star_add ..
@@ -335,12 +339,12 @@ instance instStarModule [StarRing R] {M : Type*} [SMulZeroClass M R] [Continuous
 instance [StarRing R] [ContinuousStar R] [TrivialStar R] : TrivialStar C(X, R)₀ where
   star_trivial _ := DFunLike.ext _ _ fun _ ↦ star_trivial _
 
-instance instCanLift : CanLift C(X, R) C(X, R)₀ (↑) (fun f ↦ f 0 = 0) where
+instance instCanLift : CanLift C(X, R) C(X, R)₀ toContinuousMap (fun f ↦ f 0 = 0) where
   prf f hf := ⟨⟨f, hf⟩, rfl⟩
 
 /-- The coercion `C(X, R)₀ → C(X, R)` bundled as a non-unital star algebra homomorphism. -/
 def toContinuousMapHom [StarRing R] [ContinuousStar R] : C(X, R)₀ →⋆ₙₐ[R] C(X, R) where
-  toFun f := f
+  toFun f := f.toContinuousMap
   map_smul' _ _ := rfl
   map_zero' := rfl
   map_add' _ _ := rfl
@@ -353,16 +357,19 @@ lemma toContinuousMapHom_apply_apply [StarRing R] [ContinuousStar R] (f : C(X, R
   rfl
 
 @[simp] lemma coe_toContinuousMapHom [StarRing R] [ContinuousStar R] :
-    ⇑(toContinuousMapHom (X := X) (R := R)) = (↑) :=
+    ⇑(toContinuousMapHom (X := X) (R := R)) = toContinuousMap :=
   rfl
 
 /-- The coercion `C(X, R)₀ → C(X, R)` bundled as a continuous linear map. -/
 @[simps]
 def toContinuousMapCLM (M : Type*) [Semiring M] [Module M R] [ContinuousConstSMul M R] :
     C(X, R)₀ →L[M] C(X, R) where
-  toFun f := f
+  toFun f := f.toContinuousMap
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
+
+lemma toContinuousMapCLM_apply_apply (M : Type*) [Semiring M] [Module M R] [ContinuousConstSMul M R]
+    (f : C(X, R)₀) (x : X) : f.toContinuousMapCLM M x = f x := rfl
 
 /-- The evaluation at a point, as a continuous linear map from `C(X, R)₀` to `R`. -/
 def evalCLM (𝕜 : Type*) [Semiring 𝕜] [Module 𝕜 R] [ContinuousConstSMul 𝕜 R] (x : X) :
@@ -416,7 +423,7 @@ protected instance instUniformSpace : UniformSpace C(X, R)₀ :=
   fast_instance% .comap toContinuousMap inferInstance
 
 lemma isUniformEmbedding_toContinuousMap :
-    IsUniformEmbedding ((↑) : C(X, R)₀ → C(X, R)) where
+    IsUniformEmbedding (toContinuousMap : C(X, R)₀ → C(X, R)) where
   comap_uniformity := rfl
   injective _ _ h := ext fun x ↦ congr($h x)
 
@@ -434,15 +441,15 @@ lemma isUniformEmbedding_comp {Y : Type*} [UniformSpace Y] [Zero Y] (g : C(Y, R)
 sending `0 : X` to `0 : Y`. -/
 def _root_.UniformEquiv.arrowCongrLeft₀ {Y : Type*} [TopologicalSpace Y] [Zero Y] (f : X ≃ₜ Y)
     (hf : f 0 = 0) : C(X, R)₀ ≃ᵤ C(Y, R)₀ where
-  toFun g := g.comp ⟨f.symm, (f.eq_symm_apply.eq ▸ hf).symm⟩
-  invFun g := g.comp ⟨f, hf⟩
+  toFun g := g.comp ⟨f.symm.toContinuousMap, (f.eq_symm_apply.eq ▸ hf).symm⟩
+  invFun g := g.comp ⟨f.toContinuousMap, hf⟩
   left_inv g := ext fun _ ↦ congrArg g <| f.left_inv _
   right_inv g := ext fun _ ↦ congrArg g <| f.right_inv _
   uniformContinuous_toFun := isUniformEmbedding_toContinuousMap.uniformContinuous_iff.mpr <|
-    ContinuousMap.uniformContinuous_comp_left (f.symm : C(Y, X)) |>.comp
+    ContinuousMap.uniformContinuous_comp_left f.symm.toContinuousMap |>.comp
     isUniformEmbedding_toContinuousMap.uniformContinuous
   uniformContinuous_invFun := isUniformEmbedding_toContinuousMap.uniformContinuous_iff.mpr <|
-    ContinuousMap.uniformContinuous_comp_left (f : C(X, Y)) |>.comp
+    ContinuousMap.uniformContinuous_comp_left f.toContinuousMap |>.comp
     isUniformEmbedding_toContinuousMap.uniformContinuous
 
 end UniformSpace
@@ -487,8 +494,8 @@ algebra equivalence between `C(Y, R)₀` and `C(X, R)₀`. -/
 def starAlgEquivPrecomp (f : X ≃ₜ Y) (hf : f 0 = 0) :
     C(Y, R)₀ ≃⋆ₐ[R] C(X, R)₀ :=
   .ofNonUnitalStarAlgHom
-    (nonUnitalStarAlgHom_precomp R ⟨f, hf⟩)
-    (nonUnitalStarAlgHom_precomp R ⟨f.symm, by simpa using congr(f.symm $hf.symm)⟩)
+    (nonUnitalStarAlgHom_precomp R ⟨f.toContinuousMap, by simpa⟩)
+    (nonUnitalStarAlgHom_precomp R ⟨f.symm.toContinuousMap, by simpa using congr(f.symm $hf.symm)⟩)
     (by ext; simp) (by ext; simp)
 
 end CompHoms
@@ -505,25 +512,25 @@ lemma isometry_toContinuousMap [MetricSpace R] [Zero R] :
   fun _ _ ↦ rfl
 
 noncomputable instance [NormedAddCommGroup R] : Norm C(α, R)₀ where
-  norm f := ‖(f : C(α, R))‖
+  norm f := ‖f.toContinuousMap‖
 
-lemma norm_def [NormedAddCommGroup R] (f : C(α, R)₀) : ‖f‖ = ‖(f : C(α, R))‖ :=
+lemma norm_def [NormedAddCommGroup R] (f : C(α, R)₀) : ‖f‖ = ‖f.toContinuousMap‖ :=
   rfl
 
 noncomputable instance [NormedAddCommGroup R] : NormedAddCommGroup C(α, R)₀ where
-  dist_eq f g := NormedAddGroup.dist_eq (f : C(α, R)) g
+  dist_eq f g := NormedAddGroup.dist_eq f.toContinuousMap g.toContinuousMap
 
 noncomputable instance [NormedCommRing R] : NonUnitalNormedCommRing C(α, R)₀ where
-  dist_eq f g := NormedAddGroup.dist_eq (f : C(α, R)) g
-  norm_mul_le f g := norm_mul_le (f : C(α, R)) g
+  dist_eq f g := NormedAddGroup.dist_eq f.toContinuousMap g.toContinuousMap
+  norm_mul_le f g := norm_mul_le f.toContinuousMap g.toContinuousMap
   mul_comm f g := mul_comm f g
 
 noncomputable instance [NormedField 𝕜] [NormedCommRing R] [NormedAlgebra 𝕜 R] :
     NormedSpace 𝕜 C(α, R)₀ where
-  norm_smul_le r f := norm_smul_le r (f : C(α, R))
+  norm_smul_le r f := norm_smul_le r f.toContinuousMap
 
 instance [NormedCommRing R] [StarRing R] [CStarRing R] : CStarRing C(α, R)₀ where
-  norm_mul_self_le f := CStarRing.norm_mul_self_le (f : C(α, R))
+  norm_mul_self_le f := CStarRing.norm_mul_self_le f.toContinuousMap
 
 end Norm
 
@@ -546,9 +553,15 @@ def toContinuousMapZero (g : C(X, R)) : C(X, R)₀ where
 lemma toContinuousMapZero_apply (g : C(X, R)) (x : X) : g.toContinuousMapZero x = g x - g 0 := rfl
 
 @[simp]
-lemma coe_toContinuousMapZero (g : C(X, R)) :
-    (g.toContinuousMapZero : C(X, R)) = g - const X (g 0) :=
+lemma toContinuousMap_toContinuousMapZero (g : C(X, R)) :
+    g.toContinuousMapZero.toContinuousMap = g - const X (g 0) :=
   rfl
+
+@[deprecated (since := "2026-11-27")] alias ofClass_toContinuousMapZero :=
+  toContinuousMap_toContinuousMapZero
+
+@[deprecated (since := "2026-11-24")] alias coe_toContinuousMapZero :=
+  toContinuousMap_toContinuousMapZero
 
 @[simp]
 lemma toContinuousMapZero_const (r : R) : (const X r).toContinuousMapZero = 0 := by ext; simp
@@ -578,12 +591,16 @@ lemma toContinuousMapZero_smul {M : Type*} [DistribSMul M R] [ContinuousConstSMu
   ext; simp [smul_sub]
 
 @[simp]
-lemma toContinuousMapZero_coe (f : C(X, R)₀) : (f : C(X, R)).toContinuousMapZero = f := by
+lemma toContinuousMapZero_toContinuousMap (f : C(X, R)₀) :
+    f.toContinuousMap.toContinuousMapZero = f := by
   ext; simp
+
+@[deprecated (since := "2026-11-27")] alias toContinuousMapZero_coe :=
+  toContinuousMapZero_toContinuousMap
 
 lemma toContinuousMapZero_surjective :
     Function.Surjective (toContinuousMapZero (X := X) (R := R)) :=
-  fun f ↦ ⟨f, toContinuousMapZero_coe f⟩
+  fun f ↦ ⟨f.toContinuousMap, toContinuousMapZero_toContinuousMap f⟩
 
 @[fun_prop]
 lemma continuous_toContinuousMapZero :

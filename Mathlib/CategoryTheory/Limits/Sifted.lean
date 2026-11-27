@@ -22,6 +22,7 @@ Sifted categories can be characterized as those such that the colimit functor `(
 preserves finite products. We achieve this characterization in this file.
 
 ## Main results
+
 - `isSifted_of_hasBinaryCoproducts_and_nonempty`: A nonempty category with binary coproducts is
   sifted.
 - `IsSifted.colimPreservesFiniteProductsOfIsSifted`: The `Type`-valued colimit functor for sifted

@@ -50,8 +50,7 @@ local notation "σₙ" => quasispectrum
 theorem cfc_tsub {A : Type*} [TopologicalSpace A] [Ring A] [PartialOrder A] [StarRing A]
     [StarOrderedRing A] [Algebra ℝ A] [IsTopologicalRing A] [T2Space A]
     [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
-    [NonnegSpectrumClass ℝ A] (f g : ℝ≥0 → ℝ≥0)
-    (a : A) (hfg : ∀ x ∈ spectrum ℝ≥0 a, g x ≤ f x) (ha : 0 ≤ a := by cfc_tac)
+    (f g : ℝ≥0 → ℝ≥0) (a : A) (hfg : ∀ x ∈ spectrum ℝ≥0 a, g x ≤ f x) (ha : 0 ≤ a := by cfc_tac)
     (hf : ContinuousOn f (spectrum ℝ≥0 a) := by cfc_cont_tac)
     (hg : ContinuousOn g (spectrum ℝ≥0 a) := by cfc_cont_tac) :
     cfc (fun x ↦ f x - g x) a = cfc f a - cfc g a := by
@@ -68,8 +67,7 @@ theorem cfc_tsub {A : Type*} [TopologicalSpace A] [Ring A] [PartialOrder A] [Sta
 theorem cfcₙ_tsub {A : Type*} [TopologicalSpace A] [NonUnitalRing A] [PartialOrder A] [StarRing A]
     [StarOrderedRing A] [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A]
     [IsTopologicalRing A] [T2Space A] [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
-    [NonnegSpectrumClass ℝ A] (f g : ℝ≥0 → ℝ≥0)
-    (a : A) (hfg : ∀ x ∈ σₙ ℝ≥0 a, g x ≤ f x) (ha : 0 ≤ a := by cfc_tac)
+    (f g : ℝ≥0 → ℝ≥0) (a : A) (hfg : ∀ x ∈ σₙ ℝ≥0 a, g x ≤ f x) (ha : 0 ≤ a := by cfc_tac)
     (hf : ContinuousOn f (σₙ ℝ≥0 a) := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac)
     (hg : ContinuousOn g (σₙ ℝ≥0 a) := by cfc_cont_tac) (hg0 : g 0 = 0 := by cfc_zero_tac) :
     cfcₙ (fun x ↦ f x - g x) a = cfcₙ f a - cfcₙ g a := by
@@ -116,7 +114,7 @@ end Unitization
 /-- `cfc_le_iff` only applies to a scalar ring where `R` is an actual `Ring`, and not a `Semiring`.
 However, this theorem still holds for `ℝ≥0` as long as the algebra `A` itself is an `ℝ`-algebra. -/
 lemma cfc_nnreal_le_iff {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [PartialOrder A]
-    [StarOrderedRing A] [Algebra ℝ A] [IsTopologicalRing A] [NonnegSpectrumClass ℝ A]
+    [StarOrderedRing A] [Algebra ℝ A] [IsTopologicalRing A]
     [T2Space A] [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
     (f : ℝ≥0 → ℝ≥0) (g : ℝ≥0 → ℝ≥0) (a : A)
     (ha_spec : SpectrumRestricts a ContinuousMap.realToNNReal)
@@ -133,7 +131,7 @@ open ContinuousFunctionalCalculus in
 /-- In a unital `ℝ`-algebra `A` with a continuous functional calculus, an element `a : A` is larger
 than some `algebraMap ℝ A r` if and only if every element of the `ℝ`-spectrum is positive. -/
 lemma CFC.exists_pos_algebraMap_le_iff {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A]
-    [PartialOrder A] [StarOrderedRing A] [Algebra ℝ A] [NonnegSpectrumClass ℝ A] [Nontrivial A]
+    [PartialOrder A] [StarOrderedRing A] [Algebra ℝ A] [Nontrivial A]
     [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
     (a : A) (ha : IsSelfAdjoint a := by cfc_tac) :
     (∃ r > 0, algebraMap ℝ A r ≤ a) ↔ (∀ x ∈ spectrum ℝ a, 0 < x) := by

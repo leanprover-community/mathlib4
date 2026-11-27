@@ -42,7 +42,7 @@ We then prove the complex version for star subalgebras `A`, by separately approx
 the real and imaginary parts using the real subalgebra of real-valued functions in `A`
 (which still separates points, by taking the norm-square of a separating function).
 
-## Future work
+## TODO
 
 Extend to cover the case of subalgebras of the continuous functions vanishing at infinity,
 on non-compact spaces.
@@ -635,7 +635,7 @@ lemma ContinuousMapZero.adjoin_id_dense (s : Set 𝕜) [Fact (0 ∈ s)]
     ← ContinuousMap.ker_evalStarAlgHom_eq_closure_adjoin_id s h0']
   apply Set.eq_univ_of_forall fun f ↦ ?_
   simp only [Set.mem_preimage, SetLike.mem_coe, RingHom.mem_ker,
-    ContinuousMap.evalStarAlgHom_apply, ContinuousMap.coe_ofClass]
+    ContinuousMap.evalStarAlgHom_apply]
   exact map_zero f
 
 open NonUnitalStarAlgebra in

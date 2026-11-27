@@ -600,7 +600,7 @@ lemma IsDenseInducing.isUniformInducing_extend {γ : Type*} [UniformSpace γ]
   suffices Subtype.val ∘ fwd = SeparationQuotient.mk ∘ hid.extend f by
     rw [← SeparationQuotient.isUniformInducing_mk.of_comp_iff, ← this]
     exact (isUniformInducing_val _).comp hfu
-  rw [← coe_comp_rangeFactorization (SeparationQuotient.mk ∘ hid.extend f),
+  rw [← subtypeVal_comp_rangeFactorization (SeparationQuotient.mk ∘ hid.extend f),
     ← val_comp_inclusion hrr, Function.comp_assoc, Subtype.val_injective.comp_left.eq_iff]
   refine hid.extend_unique ?_ ?_
   · simp [ff, hid.inseparable_extend h.uniformContinuous.continuous.continuousAt, sf]

@@ -16,7 +16,8 @@ import Mathlib.LinearAlgebra.QuadraticForm.Dual
 /-!
 # Existence of bases for crystallographic root systems
 
-## Main results:
+## Main results
+
 * `RootPairing.Base.mk'`: an alternate constructor for `RootPairing.Base` which demands the axioms
   for roots but not for coroots.
 * `RootPairing.nonempty_base`: base existence proof for reduced crystallographic root systems.

@@ -22,7 +22,7 @@ but at present we are a long way off.
 
 * `chudnovskySum`: The infinite sum in Chudnovsky's formula
 
-## Future work
+## TODO
 
 * Use this formula to give approximations for `π`.
 * Prove the sum equals `π⁻¹`, as stated using `proof_wanted` in
