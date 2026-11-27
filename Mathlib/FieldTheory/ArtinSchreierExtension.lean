@@ -27,6 +27,11 @@ theory).
 
 public section
 
+theorem ExpChar.nontrivial (R : Type*) [Semiring R] (p : ℕ) [ExpChar R p] : Nontrivial R := by
+  rcases ‹ExpChar R p› with _ | h
+  · infer_instance
+  · exact CharP.nontrivial_of_char_ne_one h.ne_one
+
 section CommRing
 
 variable {F : Type*} [CommRing F]
@@ -37,7 +42,7 @@ open IntermediateField Polynomial
 The Artin-Schreier polynomial defined by an element `a` of a ring `F` of exponential characteristic
 `p` is `X ^ p - X - C a`.
 -/
-noncomputable def artinSchreierPoly (a : F) : Polynomial F := X ^ ringExpChar F -  X - C a
+noncomputable def artinSchreierPoly (a : F) : Polynomial F := X ^ ringExpChar F - X - C a
 
 lemma artinSchreierPoly_def (p : ℕ) [ExpChar F p] (a : F) :
     artinSchreierPoly a = X ^ p - X - C a := by simp [artinSchreierPoly, ringExpChar.eq F p]
@@ -57,8 +62,7 @@ lemma artinSchreierPoly_map (p : ℕ) [ExpChar F p] (a : F) {K : Type*}
 @[simp]
 lemma artinSchreierPoly_isMonicOfDegree (p : ℕ) [ExpChar F p] [hp : Fact p.Prime]
     (a : F) : (artinSchreierPoly a).IsMonicOfDegree p := by
-  have : CharP F p := (expChar_prime_iff F hp.elim).mp ‹ExpChar F p›
-  have : Nontrivial F := CharP.nontrivial_of_char_ne_one hp.elim.ne_one
+  have : Nontrivial F := ExpChar.nontrivial F p
   rw [artinSchreierPoly_def p]
   constructor
   · compute_degree <;> grind [one_ne_zero, hp.elim.one_lt]
