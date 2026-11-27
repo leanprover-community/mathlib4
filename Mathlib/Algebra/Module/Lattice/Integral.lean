@@ -17,9 +17,6 @@ Let `S` be an `R`-algebra and let `B` be an `S`-bilinear form on `M`. An `R`-sub
 typical example is `R = ℤ` and `S = ℚ` or `S = ℝ`. The form `B` is not assumed to be symmetric,
 nondegenerate or definite, so this covers indefinite lattices as well.
 
-For the special case of the inner product on a real inner product space, see
-`Submodule.IsIntegral`.
-
 ## Main definitions
 
 * `LinearMap.BilinForm.IsIntegral B L`: the predicate that `B x y ∈ (1 : Submodule R S)` for all
