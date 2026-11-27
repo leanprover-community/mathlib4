@@ -210,13 +210,14 @@ theorem MDifferentiableWithinAt.prodMk {f : M → M'} {g : M → M''}
     MDiffAt[s] (fun x ↦ (f x, g x)) x :=
   ⟨hf.continuousWithinAt.prodMk hg.continuousWithinAt, hf.prop.prodMk hg.prop⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f` and `g` have derivatives `df` and `dg` within `s` at `x`, respectively,
 then `x ↦ (f x, g x)` has derivative `df.prod dg` within `s`. -/
 theorem HasMFDerivWithinAt.prodMk {f : M → M'} {g : M → M''}
     {df : TangentSpace% x →L[𝕜] TangentSpace% (f x)} (hf : HasMFDerivAt[s] f x df)
     {dg : TangentSpace% x →L[𝕜] TangentSpace% (g x)} (hg : HasMFDerivAt[s] g x dg) :
-    HasMFDerivAt[s] (fun y ↦ (f y, g y)) x (df.prod dg) :=
-  ⟨hf.1.prodMk hg.1, hf.2.prodMk hg.2⟩
+    HasMFDerivAt[s] (fun y ↦ (f y, g y)) x (df.prod dg) := by
+  exact ⟨hf.1.prodMk hg.1, hf.2.prodMk hg.2⟩
 
 lemma mfderivWithin_prodMk {f : M → M'} {g : M → M''} (hf : MDiffAt[s] f x) (hg : MDiffAt[s] g x)
     (hs : UniqueMDiffAt[s] x) :
@@ -233,6 +234,7 @@ theorem MDifferentiableAt.prodMk {f : M → M'} {g : M → M''} (hf : MDiffAt f 
     MDiffAt (fun x ↦ (f x, g x)) x :=
   ⟨hf.continuousWithinAt.prodMk hg.continuousWithinAt, hf.prop.prodMk hg.prop⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f` and `g` have derivatives `df` and `dg` at `x`, respectively,
 then `x ↦ (f x, g x)` has derivative `df.prod dg`. -/
 theorem HasMFDerivAt.prodMk {f : M → M'} {g : M → M''}
@@ -480,6 +482,7 @@ theorem MDifferentiableOn.prodMap (hf : MDiff[s] f) (hg : MDiff[r] g) :
 theorem MDifferentiable.prodMap (hf : MDiff f) (hg : MDiff g) : MDiff (Prod.map f g) := fun p ↦
   (hf p.1).prodMap' (hg p.2)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma HasMFDerivWithinAt.prodMap {s : Set <| M × M'} {p : M × M'} {f : M → N} {g : M' → N'}
     {df : TangentSpace% p.1 →L[𝕜] TangentSpace% (f p.1)}
     (hf : HasMFDerivAt[Prod.fst '' s] f p.1 df)
