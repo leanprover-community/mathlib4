@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Category.BialgCat.Basic
 public import Mathlib.RingTheory.HopfAlgebra.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of Hopf algebras over a commutative ring
 
@@ -56,11 +59,11 @@ open Lean.PrettyPrinter.Delaborator in
 @[app_delab HopfAlgCat.of]
 meta def delabOf : Delab := CategoryTheory.delabOf
 
-@[simp]
+@[deprecated "holds by reducible rfl" (since := "2026-11-26")]
 lemma of_comul {X : Type v} [Ring X] [HopfAlgebra R X] :
     Coalgebra.comul (A := of R X) = Coalgebra.comul (R := R) (A := X) := rfl
 
-@[simp]
+@[deprecated "holds by reducible rfl" (since := "2026-11-26")]
 lemma of_counit {X : Type v} [Ring X] [HopfAlgebra R X] :
     Coalgebra.counit (A := of R X) = Coalgebra.counit (R := R) (A := X) := rfl
 
@@ -136,8 +139,8 @@ variable [HopfAlgebra R X] [HopfAlgebra R Y] [HopfAlgebra R Z]
 `BialgEquiv`. -/
 @[simps]
 def toHopfAlgIso (e : X ≃ₐc[R] Y) : HopfAlgCat.of R X ≅ HopfAlgCat.of R Y where
-  hom := HopfAlgCat.ofHom e
-  inv := HopfAlgCat.ofHom e.symm
+  hom := HopfAlgCat.ofHom e.toBialgHom
+  inv := HopfAlgCat.ofHom e.symm.toBialgHom
   hom_inv_id := Hom.ext <| DFunLike.ext _ _ e.left_inv
   inv_hom_id := Hom.ext <| DFunLike.ext _ _ e.right_inv
 
@@ -170,7 +173,7 @@ def toHopfAlgEquiv (i : X ≅ Y) : X ≃ₐc[R] Y :=
     right_inv := fun x => congr($(i.inv_hom_id).toBialgHom x) }
 
 @[simp] theorem toHopfAlgEquiv_toBialgHom (i : X ≅ Y) :
-    (i.toHopfAlgEquiv : X →ₐc[R] Y) = i.hom.toBialgHom' := rfl
+    i.toHopfAlgEquiv.toBialgHom = i.hom.toBialgHom' := rfl
 
 @[simp] theorem toHopfAlgEquiv_refl : toHopfAlgEquiv (.refl X) = .refl _ _ :=
   rfl

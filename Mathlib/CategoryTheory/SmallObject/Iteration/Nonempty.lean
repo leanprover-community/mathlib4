@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.SmallObject.Iteration.ExtendToSucc
 public import Mathlib.CategoryTheory.SmallObject.Iteration.FunctorOfCocone
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Existence of the iteration of a successor structure
 

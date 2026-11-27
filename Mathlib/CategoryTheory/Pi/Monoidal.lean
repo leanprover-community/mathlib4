@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The pointwise monoidal structure on the product of families of monoidal categories
 
@@ -194,7 +197,6 @@ instance opLaxMonoidalPi' {D : Type*} [Category* D] [MonoidalCategory D]
   oplax_right_unitality X := by ext; simp
 
 set_option backward.defeqAttrib.useBackward true in
-@[simps!]
 instance monoidalPi' {D : Type*} [Category* D] [MonoidalCategory D]
     (F : ∀ i : I, D ⥤ C i) [∀ i, (F i).Monoidal] :
     (Functor.pi' F).Monoidal where
@@ -233,7 +235,6 @@ instance opLaxMonoidalPi {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
   oplax_right_unitality X := by ext; simp
 
 set_option backward.defeqAttrib.useBackward true in
-@[simps!]
 instance monoidalPi {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
     [∀ i, MonoidalCategory (D i)] (F : ∀ i : I, D i ⥤ C i)
     [∀ i, (F i).Monoidal] :

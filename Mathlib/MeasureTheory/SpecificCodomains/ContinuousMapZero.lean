@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.SpecificCodomains.ContinuousMap
 public import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Specific results about `ContinuousMapZero`-valued integration
 

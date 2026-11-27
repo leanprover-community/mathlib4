@@ -6,8 +6,9 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.LinearAlgebra.InvariantBasisNumber
-public import Mathlib.LinearAlgebra.Matrix.SemiringInverse
 public import Mathlib.LinearAlgebra.Matrix.ToLin
+
+import Mathlib.LinearAlgebra.Matrix.SemiringInverse
 
 /-!
 # Invertible matrices over a ring with invariant basis number are square.

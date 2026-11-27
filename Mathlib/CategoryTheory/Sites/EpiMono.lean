@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Sites.LocallyBijective
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Morphisms of sheaves factor as a locally surjective followed by a locally injective morphism
 

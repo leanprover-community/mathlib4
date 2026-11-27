@@ -32,7 +32,7 @@ example (h : a ∧ b ∨ c ∨ d) : True := by
 
 example (h : a ∧ b ∨ c ∨ d) : True := by
   fail_if_success cases_type* And -- no match expected
-  · clear ‹a ∧ b ∨ c ∨ d›; trivial
+  clear ‹a ∧ b ∨ c ∨ d›; trivial
 
 example (h : a ∧ b ∨ c ∨ d) : True := by
   cases_type Or
@@ -47,15 +47,15 @@ example (h : a ∧ b ∨ c ∨ d) : True := by
 
 example (h : a ∧ b ∨ c ∨ d) : True := by
   fail_if_success cases_type!* And Or -- no match expected
-  · clear ‹a ∧ b ∨ c ∨ d›; trivial
+  clear ‹a ∧ b ∨ c ∨ d›; trivial
 
 example (h : a ∧ b ∧ (c ∨ d)) : True := by
   cases_type! And Or
-  · clear ‹a› ‹b ∧ (c ∨ d)›; trivial
+  clear ‹a› ‹b ∧ (c ∨ d)›; trivial
 
 example (h : a ∧ b ∧ (c ∨ d)) : True := by
   cases_type!* And Or
-  · clear ‹a› ‹b› ‹c ∨ d›; trivial
+  clear ‹a› ‹b› ‹c ∨ d›; trivial
 
 inductive Test : Nat → Prop
   | foo : Test 0
@@ -63,7 +63,7 @@ inductive Test : Nat → Prop
 
 example (_ : Test n) (h2 : Test (m + 1)) : True := by
   cases_type!* Test
-  · clear ‹Test n› ‹False›; trivial
+  clear ‹Test n› ‹False›; trivial
 
 example (_ : Test n) (h2 : Test (m + 1)) : True := by
   cases_type Test

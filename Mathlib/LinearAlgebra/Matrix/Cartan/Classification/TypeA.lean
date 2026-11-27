@@ -121,12 +121,12 @@ private lemma not_isFiniteCartan_addLeaf_A_interior_multiple {u : Fin n} {a b : 
   simp [A] at this
   lia
 
-/-- Arms `(1, 1, p)`: `Dₙ₊₁`. -/
-private lemma addLeaf_A_penultimate_eq_D (u : Fin n) (hu0 : 0 < u.val) (hu : u.val + 2 = n) :
-    addLeaf (A n) u (-1) (-1) = D (n + 1) := by
+/-- Arms `(1, 1, p)`: `Dₙ₊₁`, with the order of the indices reversed. -/
+private lemma addLeaf_A_penultimate_eq_D (u : Fin n) (hu : u.val + 2 = n) :
+    addLeaf (A n) u (-1) (-1) = (D (n + 1)).submatrix Fin.revPerm Fin.revPerm := by
   ext i j
   induction i using Fin.lastCases <;> induction j using Fin.lastCases <;>
-    simp [A, D, Fin.ext_iff] <;> lia
+    simp [A, D, Fin.ext_iff] <;> split_ifs <;> lia
 
 /-- Arms `(1, 2, 2)`: `E₆`. -/
 private lemma addLeaf_A_five_eq : addLeaf (A 5) 2 (-1) (-1) =
@@ -193,7 +193,7 @@ theorem IsFiniteCartan.hasDynkinType_addLeaf_A {u : Fin n} {a b : ℤ}
   · exact absurd h (not_isFiniteCartan_addLeaf_A_interior_multiple (by lia) hint hm)
   -- arms `(1, 1, p)`: `Dₙ₊₁`
   obtain h1 | h2 | h3 : u.val + 2 = n ∨ u.val + 3 = n ∨ u.val + 3 < n := by lia
-  · exact addLeaf_A_penultimate_eq_D u (by lia) h1 ▸ hasDynkinType_D _
+  · exact .of_eq_submatrix _ (addLeaf_A_penultimate_eq_D u h1) (hasDynkinType_D _)
   -- arms `(1, 2, p)`: `E₆, E₇, E₈` for `p ≤ 4`, contains affine `E₈` for `p ≥ 5`
   · obtain h4 | h5 : u.val < 5 ∨ 5 ≤ u.val := by lia
     · exact hasDynkinType_addLeaf_A_E u h2 (by lia) (by lia)

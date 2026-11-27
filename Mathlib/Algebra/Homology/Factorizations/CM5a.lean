@@ -13,6 +13,9 @@ import Mathlib.Algebra.Homology.SingleHomology
 import Mathlib.CategoryTheory.Category.Factorisation
 import Mathlib.CategoryTheory.Functor.OfSequence
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Factorization lemma
 
@@ -434,7 +437,7 @@ def zero [Mono f] (n : ℤ) [K.IsStrictlyGE (n + 1)] [L.IsStrictlyGE (n + 1)] :
       rw [quasiIsoAt_iff_isIso_homologyMap]
       apply IsZero.isIso
       all_goals
-      · rw [← exactAt_iff_isZero_homology]
+        rw [← exactAt_iff_isZero_homology]
         exact exactAt_of_isGE _ (n + 1) i)
 
 variable {f} in

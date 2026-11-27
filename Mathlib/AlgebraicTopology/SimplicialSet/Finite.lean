@@ -10,6 +10,9 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplices
 
 import Mathlib.Basic.Finite.Sigma
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite simplicial sets
 

@@ -57,6 +57,7 @@ We prove the main properties of the Jacobi symbol, including the following.
 We define the notation `J(a | b)` for `jacobiSym a b`, localized to `NumberTheorySymbols`.
 
 ## Tags
+
 Jacobi symbol, quadratic reciprocity
 -/
 
@@ -468,7 +469,7 @@ theorem mod_right' (a : ℕ) {b : ℕ} (hb : Odd b) : J(a | b) = J(a | b % (4 * 
   · congr 1
     · simp_rw [qrSign]
       rw [χ₄_nat_mod_four, χ₄_nat_mod_four (b % (4 * a)), mod_mod_of_dvd b (dvd_mul_right 4 a)]
-    · rw [mod_left ↑(b % _), mod_left b, Int.natCast_mod, Int.emod_emod_of_dvd b]
+    · rw [mod_left ↑(b % _), mod_left b, Int.natCast_emod, Int.emod_emod_of_dvd b]
       simp only [ha₂, Nat.cast_mul, ← mul_assoc]
       apply dvd_mul_left
   rcases e with - | e; · simp
@@ -543,7 +544,7 @@ private theorem fastJacobiSymAux.eq_jacobiSym {a b : ℕ} {flip : Bool} {ha0 : a
     refine eq_zero_iff.mpr ⟨fun h ↦ absurd (h ▸ hb1) (by decide), ?_⟩
     rwa [Int.gcd_natCast_natCast, Nat.gcd_eq_left (Nat.dvd_of_mod_eq_zero hba)]
   rw [IH (b % a) (b.mod_lt ha0) (Nat.mod_two_ne_zero.mp ha2) (lt_of_le_of_ne ha0 (Ne.symm ha1))]
-  simp only [Int.natCast_mod, ← mod_left]
+  simp only [Int.natCast_emod, ← mod_left]
   rw [← quadratic_reciprocity_if (Nat.mod_two_ne_zero.mp ha2) hb2]
   by_cases h : a % 4 = 3 ∧ b % 4 = 3 <;> simp [h]; cases flip <;> simp
 

@@ -200,7 +200,7 @@ theorem direction_lt_of_nonempty {s₁ s₂ : AffineSubspace k P} (h : s₁ < s�
   obtain ⟨p, hp⟩ := hn
   rw [lt_iff_le_and_exists] at h
   rcases h with ⟨hle, p₂, hp₂, hp₂s₁⟩
-  rw [IsConcreteLE.lt_iff_le_and_exists]
+  rw [lt_iff_le_and_exists_mem_notMem]
   use direction_le hle, p₂ -ᵥ p, vsub_mem_direction hp₂ (hle hp)
   intro hm
   rw [vsub_right_mem_direction_iff_mem hp p₂] at hm
@@ -819,7 +819,7 @@ theorem map_symm (e : P₁ ≃ᵃ[k] P₂) (s : AffineSubspace k P₂) :
 
 theorem comap_span (f : P₁ ≃ᵃ[k] P₂) (s : Set P₂) :
     (affineSpan k s).comap (f : P₁ →ᵃ[k] P₂) = affineSpan k (f ⁻¹' s) := by
-  rw [← map_symm, map_span, AffineEquiv.coe_coe, f.image_symm]
+  rw [← map_symm, map_span, AffineEquiv.coe_toAffineMap, f.image_symm]
 
 /-- `map f` and `comap f` form a `GaloisCoinsertion` when `f` is injective. -/
 def gciMapComap {f : P₁ →ᵃ[k] P₂} (hf : Function.Injective f) :

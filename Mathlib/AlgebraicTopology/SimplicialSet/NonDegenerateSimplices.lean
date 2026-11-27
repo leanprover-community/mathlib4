@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.Degenerate
 public import Mathlib.AlgebraicTopology.SimplicialSet.Simplices
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The partially ordered type of non degenerate simplices of a simplicial set
 
@@ -120,7 +123,7 @@ lemma subcomplex_injective {x y : X.N} (h : x.subcomplex = y.subcomplex) :
     x = y := by
   apply le_antisymm
   all_goals
-  · rw [le_iff, h]
+    rw [le_iff, h]
 
 lemma subcomplex_injective_iff {x y : X.N} :
     x.subcomplex = y.subcomplex ↔ x = y :=

@@ -138,7 +138,6 @@ def functoriality : BinaryBicone P Q ⥤ BinaryBicone (F.obj P) (F.obj Q) where
       winl := by simp [-BinaryBiconeMorphism.winl, ← f.winl]
       winr := by simp [-BinaryBiconeMorphism.winr, ← f.winr] }
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance functoriality_full [F.Full] [F.Faithful] : (functoriality P Q F).Full where
   map_surjective t :=
    ⟨{ hom := F.preimage t.hom
@@ -172,10 +171,8 @@ theorem toCone_π_app_left (c : BinaryBicone P Q) : c.toCone.π.app ⟨WalkingPa
 theorem toCone_π_app_right (c : BinaryBicone P Q) : c.toCone.π.app ⟨WalkingPair.right⟩ = c.snd :=
   rfl
 
-@[simp]
 theorem binary_fan_fst_toCone (c : BinaryBicone P Q) : BinaryFan.fst c.toCone = c.fst := rfl
 
-@[simp]
 theorem binary_fan_snd_toCone (c : BinaryBicone P Q) : BinaryFan.snd c.toCone = c.snd := rfl
 
 /-- Extract the cocone from a binary bicone. -/
@@ -192,11 +189,9 @@ theorem toCocone_ι_app_left (c : BinaryBicone P Q) : c.toCocone.ι.app ⟨Walki
 theorem toCocone_ι_app_right (c : BinaryBicone P Q) :
     c.toCocone.ι.app ⟨WalkingPair.right⟩ = c.inr := rfl
 
-@[simp]
 theorem binary_cofan_inl_toCocone (c : BinaryBicone P Q) : BinaryCofan.inl c.toCocone = c.inl :=
   rfl
 
-@[simp]
 theorem binary_cofan_inr_toCocone (c : BinaryBicone P Q) : BinaryCofan.inr c.toCocone = c.inr :=
   rfl
 

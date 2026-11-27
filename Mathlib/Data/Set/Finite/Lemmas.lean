@@ -5,10 +5,11 @@ Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 -/
 module
 
-public import Mathlib.Data.Finset.Max
 public import Mathlib.Data.Fintype.Powerset
 public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.Logic.Embedding.Set
+
+import Mathlib.Data.Finset.Max
 
 /-!
 # Lemmas on finiteness of sets

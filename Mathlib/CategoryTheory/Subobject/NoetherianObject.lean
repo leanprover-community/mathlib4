@@ -11,6 +11,9 @@ public import Mathlib.CategoryTheory.Subobject.Lattice
 
 import Mathlib.Order.OrderIsoNat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Noetherian objects
 
