@@ -117,7 +117,7 @@ section lift
 -- So far we have built `Gᵃᵇ` and proved it's an abelian group.
 -- Furthermore we defined the canonical projection `of : G → Gᵃᵇ`
 -- Let `A` be an abelian group and let `f` be a group homomorphism from `G` to `A`.
-variable {A : Type*} [Group A] [IsMulCommutative A] (f : G →* A)
+variable {A} [IsMulCommutative A] (f : G →* A)
 
 @[to_additive]
 theorem commutator_le_ker : commutator G ≤ f.ker := by
@@ -157,11 +157,10 @@ theorem lift_of : lift of = MonoidHom.id (Abelianization G) :=
 
 end lift
 
-variable {A : Type*} [Monoid A]
-
 -- See note [partially-applied ext lemmas].
 @[to_additive (attr := ext)]
-theorem hom_ext (φ ψ : Abelianization G →* A) (h : φ.comp of = ψ.comp of) : φ = ψ :=
+theorem hom_ext {A : Type*} [Monoid A]
+     (φ ψ : Abelianization G →* A) (h : φ.comp of = ψ.comp of) : φ = ψ :=
   MonoidHom.ext fun x => QuotientGroup.induction_on x <| DFunLike.congr_fun h
 
 section Map
