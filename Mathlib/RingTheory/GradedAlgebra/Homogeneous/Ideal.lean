@@ -631,3 +631,40 @@ lemma irrelevant_le {P : HomogeneousIdeal 𝒜} :
 end HomogeneousIdeal
 
 end IrrelevantIdeal
+
+section HomogeneousSumMem
+
+variable {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
+variable (𝒜 : ℕ → Submodule R A) [GradedAlgebra 𝒜]
+variable (I : Ideal A)
+
+/-- Membership of a sum of homogeneous terms in a homogeneous ideal
+can be checked degree by degree. -/
+theorem homogeneous_sum_mem_ideal_iff
+    (hI : I.IsHomogeneous 𝒜)
+    (s : Finset ℕ) (p : ℕ → A)
+    (hp : ∀ n ∈ s, p n ∈ 𝒜 n) :
+    (∑ n ∈ s, p n) ∈ I ↔ ∀ n ∈ s, p n ∈ I := by
+  constructor
+  · intro hsum n hn
+    have hproj_eq : GradedRing.proj 𝒜 n (∑ j ∈ s, p j) = p n := by
+      rw [map_sum]
+      calc
+        (∑ j ∈ s, GradedRing.proj 𝒜 n (p j)) =
+            ∑ j ∈ s, if j = n then p j else 0 := by
+          apply Finset.sum_congr rfl
+          intro j hj
+          by_cases h : j = n
+          · subst j
+            simp [GradedRing.proj_apply,
+              DirectSum.decompose_of_mem_same 𝒜 (hp n hj)]
+          · simp [h, GradedRing.proj_apply,
+              DirectSum.decompose_of_mem_ne 𝒜 (hp j hj) h]
+        _ = p n := by simp [hn]
+    have hproj := hI n hsum
+    rw [GradedRing.proj_apply] at hproj_eq
+    rwa [hproj_eq] at hproj
+  · intro h
+    exact Ideal.sum_mem _ (fun n hn => h n hn)
+
+end HomogeneousSumMem
