@@ -56,7 +56,6 @@ noncomputable abbrev weakEqualizer.fork : Fork f g :=
 theorem weakEqualizer.fork_ι : (weakEqualizer.fork f g).ι = weakEqualizer.ι f g :=
   rfl
 
-@[simp]
 theorem weakEqualizer.fork_π_app_zero :
     (weakEqualizer.fork f g).π.app WalkingParallelPair.zero = weakEqualizer.ι f g :=
   rfl

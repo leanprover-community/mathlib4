@@ -306,7 +306,8 @@ theorem mk_coe (f : α →*o β) (h) : OrderMonoidHom.mk (f : α →* β) h = f 
 def toOrderHom (f : α →*o β) : α →o β :=
   { f with }
 
-@[to_additive (attr := simp)]
+-- `nolint` needed while this uses `MonoidHom.ofClass`
+@[to_additive (attr := simp, nolint simpNF)]
 theorem coe_toMonoidHom (f : α →*o β) : ((f : α →* β) : α → β) = f :=
   rfl
 

@@ -166,7 +166,24 @@ lemma neg_negPart_le {a : A} (ha : IsSelfAdjoint a := by cfc_tac) : -a⁻ ≤ a 
   simpa only [posPart_sub_negPart a, ← sub_eq_add_neg]
     using le_add_of_nonneg_left (a := -a⁻) (posPart_nonneg a)
 
-variable [NonnegSpectrumClass ℝ A]
+/-- In a star-ordered `ℝ`-algebra with a (non-unital) continuous functional calculus,
+nonnegative elements have nonnegative quasispectrum. -/
+instance (priority := 100) _root_.NonnegSpectrumClass.of_starOrderedRing :
+    NonnegSpectrumClass ℝ A where
+  quasispectrum_nonneg_of_nonneg a ha := by
+    suffices Set.EqOn (fun x ↦ x⁻ * x * x⁻) 0 (quasispectrum ℝ a) from fun x hx ↦ by
+      grind [mul_eq_zero, negPart_eq_zero, show x⁻ * x * x⁻ = 0 from this hx]
+    have key (x : ℝ) : x⁻ * x * x⁻ ≤ 0 := by
+      obtain h | h := le_total 0 x
+      · simp [negPart_eq_zero.mpr h]
+      · simpa [negPart_eq_neg.mpr h, pow_succ] using Odd.pow_nonpos (n := 3) (by decide) h
+    /- `a⁻ * a * a⁻` is nonnegative because it is a conjugate of the nonnegative element `a`.
+    At the same time `a⁻ * a * a⁻ = cfcₙ (fun x ↦ x⁻ * x * x⁻) a ≤ 0`. -/
+    refine eqOn_of_cfcₙ_eq_cfcₙ ?_
+    rw [cfcₙ_zero]
+    refine le_antisymm (cfcₙ_nonpos _ a fun x _ ↦ (key x)) ?_
+    rw [cfcₙ_mul .., cfcₙ_mul .., cfcₙ_id' ℝ a]
+    exact cfcₙ_predicate (·⁻ : ℝ → ℝ) a |>.conjugate_nonneg ha
 
 lemma posPart_eq_self (a : A) : a⁺ = a ↔ 0 ≤ a := by
   refine ⟨fun ha ↦ ha ▸ posPart_nonneg a, fun ha ↦ ?_⟩

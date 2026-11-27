@@ -219,9 +219,10 @@ alias exists_cartanMatrix_diagaonal_mul_posDef := exists_cartanMatrix_diagonal_m
 open LinearMap Module.End in
 lemma det_four_sub_cartanMatrix_ne_zero [DecidableEq ι] [P.IsRootSystem] :
     (4 - b.cartanMatrix).det ≠ 0 := by
-  suffices ¬ HasEigenvalue b.cartanMatrix.toLin' 4 by
-    have aux : (4 - b.cartanMatrix).toLin' = - (b.cartanMatrix.toLin' - (4 : ℤ) • 1) := by ext; simp
-    rwa [ne_eq, ← det_toLin', det_eq_zero_iff_ker_ne_bot, aux, ker_neg, ← eigenspace_def,
+  suffices ¬ HasEigenvalue b.cartanMatrix.mulVecLin 4 by
+    have aux : (4 - b.cartanMatrix).mulVecLin = - (b.cartanMatrix.mulVecLin - (4 : ℤ) • 1) := by
+      ext; simp
+    rwa [ne_eq, ← det_mulVecLin, det_eq_zero_iff_ker_ne_bot, aux, ker_neg, ← eigenspace_def,
       ← hasEigenvalue_iff]
   obtain ⟨d, hd, hdS⟩ := b.exists_cartanMatrix_diagonal_mul_posDef
   have aux (i j : b.support) : b.cartanMatrix i j ≤ if i = j then 2 else 0 := by

@@ -586,7 +586,6 @@ theorem id_toEmbedding : (id α).toEmbedding = Function.Embedding.refl α :=
 abbrev comp (f : α ↪o β) (g : β ↪o γ) : α ↪o γ :=
   RelEmbedding.trans f g
 
-@[simp]
 theorem coe_comp (f : α ↪o β) (g : β ↪o γ) : f.comp g = g ∘ f :=
   rfl
 
@@ -898,7 +897,6 @@ theorem symm_injective : Function.Injective (symm : α ≃o β → β ≃o α) :
 theorem toEquiv_symm (e : α ≃o β) : e.symm.toEquiv = e.toEquiv.symm :=
   rfl
 
-@[simp]
 theorem coe_toEquiv (e : α ≃o β) : ⇑e.toEquiv = e := rfl
 
 @[simp]
@@ -1042,7 +1040,6 @@ theorem orderIsoCongr_apply (f : α ≃o γ) (g : β ≃o δ) (h : α ≃o β) :
     orderIsoCongr f g h = .trans (.trans f.symm h) g :=
   rfl
 
-@[simp]
 theorem orderIsoCongr_symm_apply (f : α ≃o γ) (g : β ≃o δ) (h : γ ≃o δ) :
     (orderIsoCongr f g).symm h = .trans (.trans f h) g.symm :=
   rfl

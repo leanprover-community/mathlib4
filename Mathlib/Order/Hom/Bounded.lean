@@ -138,28 +138,22 @@ end Equiv
 
 variable [FunLike F α β]
 
-/-- Turn an element of a type `F` satisfying `TopHomClass F α β` into an actual
-`TopHom`. This is declared as the default coercion from `F` to `TopHom α β`. -/
-@[to_dual (attr := coe) /--
-Turn an element of a type `F` satisfying `BotHomClass F α β` into an actual
-`BotHom`. This is declared as the default coercion from `F` to `BotHom α β`. -/]
-def TopHomClass.toTopHom [Top α] [Top β] [TopHomClass F α β] (f : F) : TopHom α β :=
+/-- Turn an element of a type `F` satisfying `TopHomClass F α β` into an actual `TopHom`. -/
+@[to_dual /--
+Turn an element of a type `F` satisfying `BotHomClass F α β` into an actual `BotHom`. -/]
+def TopHom.ofClass [Top α] [Top β] [TopHomClass F α β] (f : F) : TopHom α β :=
   ⟨f, map_top f⟩
 
-@[to_dual]
-instance [Top α] [Top β] [TopHomClass F α β] : CoeTC F (TopHom α β) :=
-  ⟨TopHomClass.toTopHom⟩
+@[to_dual (attr := deprecated (since := "2026-11-27"))] alias TopHomClass.toTopHom := TopHom.ofClass
 
 /-- Turn an element of a type `F` satisfying `BoundedOrderHomClass F α β` into an actual
-`BoundedOrderHom`. This is declared as the default coercion from `F` to `BoundedOrderHom α β`. -/
-@[coe]
-def BoundedOrderHomClass.toBoundedOrderHom [Preorder α] [Preorder β] [BoundedOrder α]
+`BoundedOrderHom`. -/
+def BoundedOrderHom.ofClass [Preorder α] [Preorder β] [BoundedOrder α]
     [BoundedOrder β] [BoundedOrderHomClass F α β] (f : F) : BoundedOrderHom α β :=
   { (f : α →o β) with toFun := f, map_top' := map_top f, map_bot' := map_bot f }
 
-instance [Preorder α] [Preorder β] [BoundedOrder α] [BoundedOrder β] [BoundedOrderHomClass F α β] :
-    CoeTC F (BoundedOrderHom α β) :=
-  ⟨BoundedOrderHomClass.toBoundedOrderHom⟩
+@[deprecated (since := "2026-11-27")] alias BoundedOrderHomClass.toBoundedOrderHom :=
+  BoundedOrderHom.ofClass
 
 /-! ### Top and bot homomorphisms -/
 
@@ -184,6 +178,9 @@ instance : TopHomClass (TopHom α β) α β where
 -- this must come after the coe_to_fun definition
 initialize_simps_projections TopHom (toFun → apply)
 initialize_simps_projections BotHom (toFun → apply)
+
+@[to_dual (attr := simp)]
+protected theorem coe_ofClass [TopHomClass F α β] (f : F) : ⇑(ofClass f) = f := rfl
 
 @[to_dual (attr := ext)]
 theorem ext {f g : TopHom α β} (h : ∀ a, f a = g a) : f = g :=
@@ -379,6 +376,9 @@ instance : BoundedOrderHomClass (BoundedOrderHom α β) α β where
   map_top f := f.map_top'
   map_bot f := f.map_bot'
 
+@[simp]
+protected theorem coe_ofClass [BoundedOrderHomClass F α β] (f : F) : ⇑(ofClass f) = f := rfl
+
 @[ext]
 theorem ext {f g : BoundedOrderHom α β} (h : ∀ a, f a = g a) : f = g :=
   DFunLike.ext f g h
@@ -433,9 +433,16 @@ theorem coe_comp_orderHom (f : BoundedOrderHom β γ) (g : BoundedOrderHom α β
   rfl
 
 @[to_dual (attr := simp)]
-theorem coe_comp_topHom (f : BoundedOrderHom β γ) (g : BoundedOrderHom α β) :
-    (f.comp g : TopHom α γ) = (f : TopHom β γ).comp g :=
+theorem toTopHom_comp (f : BoundedOrderHom β γ) (g : BoundedOrderHom α β) :
+    (f.comp g).toTopHom = f.toTopHom.comp g.toTopHom :=
   rfl
+
+@[to_dual (attr := simp)]
+theorem topHomOfClass_comp (f : BoundedOrderHom β γ) (g : BoundedOrderHom α β) :
+    TopHom.ofClass (f.comp g) = (TopHom.ofClass f).comp (.ofClass g) :=
+  rfl
+
+@[deprecated (since := "2026-11-27")] alias coe_comp_topHom := topHomOfClass_comp
 
 @[simp]
 theorem comp_assoc (f : BoundedOrderHom γ δ) (g : BoundedOrderHom β γ) (h : BoundedOrderHom α β) :
@@ -535,3 +542,15 @@ theorem symm_dual_comp (g : BoundedOrderHom βᵒᵈ γᵒᵈ) (f : BoundedOrder
   rfl
 
 end BoundedOrderHom
+
+namespace OrderIso
+
+variable [Preorder α] [BoundedOrder α] [PartialOrder β] [BoundedOrder β]
+
+/-- Reinterpret an `OrderIso` as a `BoundedOrderHom`. -/
+def toBoundedOrderHom (f : α ≃o β) : BoundedOrderHom α β := .ofClass f
+
+@[simp]
+lemma coe_toBoundedOrderHom (f : α ≃o β) : ⇑f.toBoundedOrderHom = f := rfl
+
+end OrderIso
