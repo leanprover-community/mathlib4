@@ -181,7 +181,7 @@ include hx in
 lemma map_comp_cotangentCompAwaySec :
     (Extension.Cotangent.map ((localizationAway T g).ofComp P).toExtensionHom) ∘ₗ
       cotangentCompAwaySec g P x = .id := by
-  refine (basisCotangentAway T g).ext fun r ↦ ?_
+  refine (basisCotangentAway T g).ext_linearMap fun r ↦ ?_
   simpa only [LinearMap.coe_comp, Function.comp_apply, basisCotangentAway_apply,
     cotangentCompAwaySec_apply]
 

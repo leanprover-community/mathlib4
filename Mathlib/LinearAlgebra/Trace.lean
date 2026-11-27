@@ -155,7 +155,7 @@ theorem trace_eq_contract_of_basis [Finite ι] (b : Basis ι R M) :
     LinearMap.trace R M ∘ₗ dualTensorHom R M M = contractLeft R M := by
   classical
     cases nonempty_fintype ι
-    apply Basis.ext (Basis.tensorProduct (Basis.dualBasis b) b)
+    apply Basis.ext_linearMap (Basis.tensorProduct (Basis.dualBasis b) b)
     rintro ⟨i, j⟩
     simp only [Function.comp_apply, Basis.tensorProduct_apply, Basis.coe_dualBasis, coe_comp]
     rw [trace_eq_matrix_trace R b, toMatrix_dualTensorHom]
@@ -408,8 +408,9 @@ lemma Module.Free.bijective_algebraMap_of_finrank_eq_one {R S : Type*} [CommRing
     .map (.tensorProduct (.dualBasis <| basisUnique Unit h) (basisUnique Unit h))
       (dualTensorHomEquiv R S S)
   have h2 : (f ∘ₗ Algebra.linearMap R S) ∘ₗ LinearMap.trace R S = LinearMap.id :=
-    b.ext fun i ↦
-      (basisUnique Unit h).ext fun j ↦ (by simp [f, b, Basis.tensorProduct, dualTensorHomEquiv])
+    b.ext_linearMap fun i ↦
+      (basisUnique Unit h).ext_linearMap fun j ↦ by
+        simp [f, b, Basis.tensorProduct, dualTensorHomEquiv]
   let eq : R ≃ₗ[R] End R S := .ofLinearMap (f ∘ₗ Algebra.linearMap R S) (.trace R S) h2 h1
   have hf : Function.Bijective f := ⟨Algebra.lmul_injective, .of_comp eq.surjective⟩
   exact (Function.Bijective.of_comp_iff' hf _).mp eq.bijective

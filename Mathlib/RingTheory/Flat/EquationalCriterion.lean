@@ -141,7 +141,7 @@ theorem tfae_equational_criterion : List.TFAE [
     use Finsupp.linearCombination R (fun i ↦ equivFunOnFinite.symm (a' i))
     use Finsupp.linearCombination R y'
     constructor
-    · apply Finsupp.basisSingleOne.ext
+    · apply Finsupp.basisSingleOne.ext_linearMap
       intro i
       simpa [linearCombination_apply, sum_fintype, Finsupp.single_apply] using ha'y' i
     · ext j

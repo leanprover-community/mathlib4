@@ -652,7 +652,7 @@ open IsBaseChange
     Fintype.linearCombination S fun i ↦ MvPolynomial.X (Sum.inl i)
   let vM : M := fun i ↦ MvPolynomial.X (Sum.inr i)
   have hf : ibc.toDual fM = f := by
-    apply b.ext
+    apply b.ext_linearMap
     intro i
     rw [← hε, toDual_comp_apply, Fintype.linearCombination_apply_single,
       one_smul, RingHom.algebraMap_toAlgebra, hε]

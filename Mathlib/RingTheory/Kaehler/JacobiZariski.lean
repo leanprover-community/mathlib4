@@ -152,7 +152,7 @@ lemma CotangentSpace.compEquiv_symm_inr :
       LinearMap.inr T Q.toExtension.CotangentSpace (T ⊗[S] P.toExtension.CotangentSpace) =
         (Extension.CotangentSpace.map (Q.toComp P).toExtensionHom).liftBaseChange T := by
   classical
-  apply (P.cotangentSpaceBasis.baseChange T).ext
+  apply (P.cotangentSpaceBasis.baseChange T).ext_linearMap
   intro i
   apply (Q.comp P).cotangentSpaceBasis.repr.injective
   ext j
@@ -176,7 +176,7 @@ lemma CotangentSpace.fst_compEquiv :
     LinearMap.fst T Q.toExtension.CotangentSpace (T ⊗[S] P.toExtension.CotangentSpace) ∘ₗ
       (compEquiv Q P).toLinearMap = Extension.CotangentSpace.map (Q.ofComp P).toExtensionHom := by
   classical
-  apply (Q.comp P).cotangentSpaceBasis.ext
+  apply (Q.comp P).cotangentSpaceBasis.ext_linearMap
   intro i
   apply Q.cotangentSpaceBasis.repr.injective
   ext j
@@ -369,7 +369,7 @@ lemma exact_δ_map :
   simp only [δ]
   apply SnakeLemma.exact_δ_left (π₂ := (Q.comp P).toExtension.toKaehler)
     (hπ₂ := (Q.comp P).toExtension.exact_cotangentComplex_toKaehler)
-  · apply (P.cotangentSpaceBasis.baseChange T).ext
+  · apply (P.cotangentSpaceBasis.baseChange T).ext_linearMap
     intro i
     simp only [Basis.baseChange_apply, LinearMap.coe_comp, Function.comp_apply,
       LinearMap.baseChange_tmul, toKaehler_cotangentSpaceBasis, mapBaseChange_tmul, map_D,

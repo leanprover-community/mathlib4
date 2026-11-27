@@ -204,7 +204,7 @@ lemma toRightFDRepComp_in_rightRegular [IsDomain k] (η : Aut (forget k G)) :
     ∃ (s : G), (η.asIso.hom.hom.app rightFDRep).hom.hom = rightRegular s := by
   classical
   obtain ⟨s, hs⟩ := ((evalAlgHom _ _ 1).comp (algHomOfRightFDRepComp η)).eq_piEvalAlgHom
-  refine ⟨s, (basisFun k G).ext fun u ↦ ?_⟩
+  refine ⟨s, (basisFun k G).ext_linearMap fun u ↦ ?_⟩
   simp only [rightFDRep, forget_obj]
   ext t
   have nat := η.asIso.hom.hom.naturality (leftRegularFDRepHom t⁻¹).asHom

@@ -120,7 +120,7 @@ theorem ofIsLocalizedModule_repr_apply (m : M) (i : ι) :
   suffices ((b.ofIsLocalizedModule Rₛ S f).repr.toLinearMap.restrictScalars R) ∘ₗ f =
       Finsupp.mapRange.linearMap (Algebra.linearMap R Rₛ) ∘ₗ b.repr.toLinearMap by
     congrm $this m i
-  refine ext b fun i ↦ ?_
+  refine ext_linearMap b fun i ↦ ?_
   rw [LinearMap.coe_comp, Function.comp_apply, LinearMap.coe_restrictScalars,
     LinearEquiv.coe_toLinearMap, ← b.ofIsLocalizedModule_apply Rₛ S f, repr_self,
     LinearMap.coe_comp,
