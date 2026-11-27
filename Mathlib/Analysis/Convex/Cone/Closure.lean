@@ -9,6 +9,9 @@ public import Mathlib.Geometry.Convex.Cone.Pointed
 public import Mathlib.Topology.Algebra.ConstMulAction
 public import Mathlib.Topology.Algebra.Monoid.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Closure of cones
 

@@ -55,6 +55,7 @@ The `ValuativeRel` class should eventually replace the existing `Valued` typecla
 Once such a refactor happens, `ValuativeRel` could be renamed to `Valued`.
 
 ## TODO
+
 Split this file. For instance, the universal properties of `ValueGroupWithZero` and definition of
 `IsRankLeOne` could be separated out.
 -/
@@ -487,8 +488,9 @@ instance : CommMonoidWithZero (ValueGroupWithZero R) where
   mul_comm a b := by
     induction a using ValueGroupWithZero.ind
     induction b using ValueGroupWithZero.ind
-    apply ValuativeRel.ValueGroupWithZero.sound <;>
-    · simp only [Submonoid.coe_mul]
+    apply ValuativeRel.ValueGroupWithZero.sound
+    all_goals
+      simp only [Submonoid.coe_mul]
       nth_grw 2 [veq_mul_comm]
       nth_grw 6 [veq_mul_comm]
   npow n := ValueGroupWithZero.lift (fun a b => ValueGroupWithZero.mk (a ^ n) (b ^ n)) <| by

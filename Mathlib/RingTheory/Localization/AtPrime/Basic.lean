@@ -8,8 +8,9 @@ module
 public import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
 public import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-public import Mathlib.RingTheory.Localization.Basic
 public import Mathlib.RingTheory.Localization.Ideal
+
+import Mathlib.RingTheory.Localization.Basic
 
 /-!
 # Localizations of commutative rings at the complement of a prime ideal
@@ -30,6 +31,7 @@ public import Mathlib.RingTheory.Localization.Ideal
 See `RingTheory.Localization.Basic` for a design overview.
 
 ## Tags
+
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
 -/
@@ -554,7 +556,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 noncomputable
 def equivQuotMaximalIdealPow (n : ℕ) : (R ⧸ p ^ n) ≃ₐ[R] Rₚ ⧸ IsLocalRing.maximalIdeal Rₚ ^ n := by
   refine AlgEquiv.ofAlgHom (Ideal.Quotient.liftₐ _ (Algebra.ofId _ _) ?_) ?_ ?_ ?_
-  · simp_rw [ofId_apply, ← RingHom.mem_ker, ← IsConcreteLE.le_iff]
+  · simp_rw [ofId_apply, ← RingHom.mem_ker, ← le_iff_mem_imp_mem]
     rw [← Quotient.mk_comp_algebraMap, ← RingHom.comap_ker, mk_ker, ← under_def,
       under_maximalIdeal_pow p]
   · refine Ideal.Quotient.liftₐ _
@@ -696,6 +698,6 @@ end isomorphisms
 lemma map_eq_top_of_not_le {I : Ideal R} {p : Ideal R} [p.IsPrime] [IsLocalization.AtPrime S p]
     (hle : ¬ I ≤ p) : Ideal.map (algebraMap R S) I = ⊤ := by
   apply IsLocalization.map_eq_top_of_not_subset p.primeCompl
-  simpa [IsConcreteLE.le_iff, Set.not_subset_iff_exists_mem_notMem] using hle
+  simpa [le_iff_mem_imp_mem, Set.not_subset_iff_exists_mem_notMem] using hle
 
 end IsLocalization.AtPrime

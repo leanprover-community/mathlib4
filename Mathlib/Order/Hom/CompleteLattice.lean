@@ -461,7 +461,7 @@ def toBoundedLatticeHom (f : CompleteLatticeHom α β) : BoundedLatticeHom α β
 
 lemma toFun_eq_coe (f : CompleteLatticeHom α β) : f.toFun = f := rfl
 
-@[to_dual (attr := simp)]
+@[to_dual]
 lemma coe_tosInfHom (f : CompleteLatticeHom α β) : ⇑f.tosInfHom = f := rfl
 
 @[simp]

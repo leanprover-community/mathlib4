@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Convex.Between
 public import Mathlib.Data.List.Triplewise
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Betweenness for lists of points.
 

@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Algebra.DirectSum.Basic
 public import Mathlib.Algebra.GradedMonoid
-public import Mathlib.Algebra.Ring.Associator
+
+import Mathlib.Algebra.Ring.Associator
 
 /-!
 # Additively-graded multiplicative structures on `⨁ i, A i`
@@ -68,7 +69,7 @@ instances for:
 If `sSupIndep A`, these provide a gradation of `⨆ i, A i`, and the mapping `⨁ i, A i →+ ⨆ i, A i`
 can be obtained as `DirectSum.toMonoid (fun i ↦ AddSubmonoid.inclusion <| le_iSup A i)`.
 
-## Implementation details
+## Implementation notes
 
 The instances on `A 0` are scoped to the `DirectSum` namespace, because they have
 very general discriminantion tree keys.

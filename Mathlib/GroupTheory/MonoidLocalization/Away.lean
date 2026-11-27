@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Submonoid.Membership
 public import Mathlib.GroupTheory.MonoidLocalization.Maps
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Localizing commutative monoids away from an element
 
@@ -15,6 +18,7 @@ We treat the special case of localizing away from an element in the sections
 `AwayMap` and `Away`.
 
 ## Tags
+
 localization, monoid localization, quotient monoid, congruence relation, characteristic predicate,
 commutative monoid, grothendieck group
 -/

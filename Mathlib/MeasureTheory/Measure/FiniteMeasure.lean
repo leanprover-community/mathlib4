@@ -450,20 +450,20 @@ theorem testAgainstNN_smul [IsScalarTower R ℝ≥0 ℝ≥0] [PseudoMetricSpace 
   exact lintegral_const_mul (c • (1 : ℝ≥0∞)) f.measurable_coe_ennreal_comp
 
 theorem testAgainstNN_lipschitz_estimate (μ : FiniteMeasure Ω) (f g : Ω →ᵇ ℝ≥0) :
-    μ.testAgainstNN f ≤ μ.testAgainstNN g + nndist f g * μ.mass := by
-  simp only [← μ.testAgainstNN_const (nndist f g), ← testAgainstNN_add, ← ENNReal.coe_le_coe,
+    μ.testAgainstNN f ≤ μ.testAgainstNN g + nnDist f g * μ.mass := by
+  simp only [← μ.testAgainstNN_const (nnDist f g), ← testAgainstNN_add, ← ENNReal.coe_le_coe,
     FunLike.coe_add, const_apply, ENNReal.coe_add, Pi.add_apply,
-    coe_nnreal_ennreal_nndist, testAgainstNN_coe_eq]
+    coe_nnreal_ennreal_nnDist, testAgainstNN_coe_eq]
   apply lintegral_mono
-  have le_dist : ∀ ω, dist (f ω) (g ω) ≤ nndist f g := BoundedContinuousFunction.dist_coe_le_dist
+  have le_dist : ∀ ω, dist (f ω) (g ω) ≤ nnDist f g := BoundedContinuousFunction.dist_coe_le_dist
   intro ω
-  have le' : f ω ≤ g ω + nndist f g := by
+  have le' : f ω ≤ g ω + nnDist f g := by
     calc f ω
-     _ ≤ g ω + nndist (f ω) (g ω) := NNReal.le_add_nndist (f ω) (g ω)
-     _ ≤ g ω + nndist f g := (add_le_add_iff_left (g ω)).mpr (le_dist ω)
-  have le : (f ω : ℝ≥0∞) ≤ (g ω : ℝ≥0∞) + nndist f g := by
+     _ ≤ g ω + nnDist (f ω) (g ω) := NNReal.le_add_nnDist (f ω) (g ω)
+     _ ≤ g ω + nnDist f g := (add_le_add_iff_left (g ω)).mpr (le_dist ω)
+  have le : (f ω : ℝ≥0∞) ≤ (g ω : ℝ≥0∞) + nnDist f g := by
     simpa only [← ENNReal.coe_add] using (mod_cast le')
-  rwa [coe_nnreal_ennreal_nndist] at le
+  rwa [coe_nnreal_ennreal_nnDist] at le
 
 theorem testAgainstNN_lipschitz (μ : FiniteMeasure Ω) :
     LipschitzWith μ.mass fun f : Ω →ᵇ ℝ≥0 ↦ μ.testAgainstNN f := by
@@ -476,7 +476,7 @@ theorem testAgainstNN_lipschitz (μ : FiniteMeasure Ω) :
   · have key := μ.testAgainstNN_lipschitz_estimate f₂ f₁
     rw [mul_comm] at key
     suffices ↑(μ.testAgainstNN f₂) ≤ ↑(μ.testAgainstNN f₁) + ↑μ.mass * dist f₁ f₂ by linarith
-    simpa [nndist_comm] using NNReal.coe_mono key
+    simpa [nnDist_comm] using NNReal.coe_mono key
   · have key := μ.testAgainstNN_lipschitz_estimate f₁ f₂
     rw [mul_comm] at key
     suffices ↑(μ.testAgainstNN f₁) ≤ ↑(μ.testAgainstNN f₂) + ↑μ.mass * dist f₁ f₂ by linarith
@@ -513,7 +513,7 @@ theorem continuous_testAgainstNN_eval (f : Ω →ᵇ ℝ≥0) :
     Continuous fun μ : FiniteMeasure Ω ↦ μ.testAgainstNN f := by
   change Continuous ((fun φ : WeakDual ℝ≥0 (Ω →ᵇ ℝ≥0) ↦ φ f) ∘ toWeakDualBCNN)
   refine Continuous.comp ?_ (toWeakDualBCNN_continuous (Ω := Ω))
-  exact WeakBilin.eval_continuous _ _
+  exact WeakDual.continuous_eval continuous_id _
 
 /-- The total mass of a finite measure depends continuously on the measure. -/
 @[fun_prop] theorem continuous_mass : Continuous fun μ : FiniteMeasure Ω ↦ μ.mass := by
@@ -533,7 +533,7 @@ theorem tendsto_iff_forall_toWeakDualBCNN_tendsto {γ : Type*} {F : Filter γ}
     {μs : γ → FiniteMeasure Ω} {μ : FiniteMeasure Ω} :
     Tendsto μs F (𝓝 μ) ↔
       ∀ f : Ω →ᵇ ℝ≥0, Tendsto (fun i ↦ (μs i).toWeakDualBCNN f) F (𝓝 (μ.toWeakDualBCNN f)) := by
-  rw [tendsto_iff_weakDual_tendsto, tendsto_iff_forall_eval_tendsto_topDualPairing]; rfl
+  rw [tendsto_iff_weakDual_tendsto, WeakDual.tendsto_iff_forall_eval_tendsto]
 
 theorem tendsto_iff_forall_testAgainstNN_tendsto {γ : Type*} {F : Filter γ}
     {μs : γ → FiniteMeasure Ω} {μ : FiniteMeasure Ω} :
@@ -552,9 +552,9 @@ theorem tendsto_zero_testAgainstNN_of_tendsto_zero_mass {γ : Type*} {F : Filter
   have obs := fun i ↦ (μs i).testAgainstNN_lipschitz_estimate f 0
   simp_rw [testAgainstNN_zero, zero_add] at obs
   simp_rw [show ∀ i, dist ((μs i).testAgainstNN f) 0 = (μs i).testAgainstNN f by
-      simp only [dist_nndist, NNReal.nndist_zero_eq_val', imp_true_iff]]
+      simp only [dist_nnDist, NNReal.nnDist_zero_eq_val', imp_true_iff]]
   apply squeeze_zero (fun i ↦ NNReal.coe_nonneg _) obs
-  have lim_pair : Tendsto (fun i ↦ (⟨nndist f 0, (μs i).mass⟩ : ℝ × ℝ)) F (𝓝 ⟨nndist f 0, 0⟩) :=
+  have lim_pair : Tendsto (fun i ↦ (⟨nnDist f 0, (μs i).mass⟩ : ℝ × ℝ)) F (𝓝 ⟨nnDist f 0, 0⟩) :=
     (Prod.tendsto_iff _ _).mpr ⟨tendsto_const_nhds, (NNReal.continuous_coe.tendsto 0).comp mass_lim⟩
   simpa using! tendsto_mul.comp lim_pair
 
@@ -754,11 +754,12 @@ theorem tendsto_iff_forall_integral_rclike_tendsto {γ : Type*} (𝕜 : Type*) [
   · rw [← integral_re_add_im (integrable μ f)]
     simp_rw [← integral_re_add_im (integrable (μs _) f)]
     refine Tendsto.add ?_ ?_
-    · exact (RCLike.continuous_ofReal.tendsto _).comp (h (f.comp RCLike.re RCLike.lipschitzWith_re))
+    · exact (RCLike.continuous_ofReal.tendsto _).comp
+        (h (f.comp RCLike.re RCLike.lipschitzWith_one_re))
     · exact (Tendsto.comp (RCLike.continuous_ofReal.tendsto _)
-        (h (f.comp RCLike.im RCLike.lipschitzWith_im))).mul_const _
+        (h (f.comp RCLike.im RCLike.lipschitzWith_one_im))).mul_const _
   · specialize h ((RCLike.ofRealAm (K := 𝕜)).compLeftContinuousBounded ℝ
-      RCLike.lipschitzWith_ofReal f)
+      RCLike.lipschitzWith_one_ofReal f)
     simp only [AlgHom.compLeftContinuousBounded_apply_apply, RCLike.ofRealAm_coe,
       integral_ofReal] at h
     exact tendsto_ofReal_iff'.mp h
@@ -958,8 +959,9 @@ lemma tendsto_map_of_tendsto_of_continuous {ι : Type*} {L : Filter ι}
     Tendsto (fun i ↦ (νs i).map f) L (𝓝 (ν.map f)) := by
   rw [FiniteMeasure.tendsto_iff_forall_lintegral_tendsto] at lim ⊢
   intro g
-  convert! lim (g.compContinuous ⟨f, f_cont⟩) <;>
-  · simp only [map, compContinuous_apply, ContinuousMap.coe_mk]
+  convert! lim (g.compContinuous ⟨f, f_cont⟩)
+  all_goals
+    simp only [map, compContinuous_apply, ContinuousMap.coe_mk]
     refine lintegral_map ?_ f_cont.measurable
     exact (ENNReal.continuous_coe.comp g.continuous).measurable
 

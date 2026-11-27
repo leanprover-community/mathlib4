@@ -8,10 +8,13 @@ module
 public import Mathlib.Algebra.Polynomial.BigOperators
 public import Mathlib.Algebra.Polynomial.Derivative
 public import Mathlib.Data.Nat.Choose.Cast
-public import Mathlib.Data.Nat.Choose.Vandermonde
 public import Mathlib.Tactic.Positivity
 
+import Mathlib.Data.Nat.Choose.Vandermonde
 import Mathlib.Tactic.Field
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Hasse derivative of polynomials
@@ -36,7 +39,7 @@ In the following, we write `D k` for the `k`-th Hasse derivative `hasse_deriv k`
 For the identity principle, see `Polynomial.eq_zero_of_hasseDeriv_eq_zero`
 in `Mathlib/Algebra/Polynomial/Taylor.lean`.
 
-## Reference
+## References
 
 https://math.fontein.de/2009/08/12/the-hasse-derivative/
 -/

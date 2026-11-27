@@ -234,7 +234,7 @@ theorem first_vote_neg (p q : ℕ) (h : 0 < p + q) :
   rw [compl_compl, first_vote_pos _ _ h] at this
   rw [ENNReal.eq_sub_of_add_eq _ this, ENNReal.eq_div_iff, ENNReal.mul_sub, mul_one,
     ENNReal.mul_div_cancel, ENNReal.add_sub_cancel_left]
-  all_goals simp_all [ENNReal.div_eq_top]
+  all_goals simp_all
 
 theorem ballot_same (p : ℕ) : uniformOn (countedSequence (p + 1) (p + 1)) staysPositive = 0 := by
   rw [uniformOn_eq_zero_iff (countedSequence_finite _ _), eq_empty_iff_forall_notMem]
@@ -256,12 +256,13 @@ theorem countedSequence_int_pos_counted_succ_succ (p q : ℕ) :
     countedSequence (p + 1) (q + 1) ∩ {l | l.headI = 1} =
       (countedSequence p (q + 1)).image (List.cons 1) := by
   rw [counted_succ_succ, union_inter_distrib_right,
-      (_ : List.cons (-1) '' countedSequence (p + 1) q ∩ {l | l.headI = 1} = ∅), union_empty] <;>
-    · ext
-      simp only [mem_inter_iff, mem_image, mem_ofPred_eq, and_iff_left_iff_imp, mem_empty_iff_false,
-        iff_false, not_and, forall_exists_index, and_imp]
-      rintro y _ rfl
-      norm_num
+      (_ : List.cons (-1) '' countedSequence (p + 1) q ∩ {l | l.headI = 1} = ∅), union_empty]
+  all_goals
+    ext
+    simp only [mem_inter_iff, mem_image, mem_ofPred_eq, and_iff_left_iff_imp, mem_empty_iff_false,
+      iff_false, not_and, forall_exists_index, and_imp]
+    rintro y _ rfl
+    norm_num
 
 theorem ballot_pos (p q : ℕ) :
     uniformOn (countedSequence (p + 1) (q + 1) ∩ {l | l.headI = 1}) staysPositive =
@@ -283,12 +284,13 @@ theorem countedSequence_int_neg_counted_succ_succ (p q : ℕ) :
       (countedSequence (p + 1) q).image (List.cons (-1)) := by
   rw [counted_succ_succ, union_inter_distrib_right,
       (_ : List.cons 1 '' countedSequence p (q + 1) ∩ {l : List ℤ | l.headI = 1}ᶜ = ∅),
-      empty_union] <;>
-    · ext
-      simp only [mem_inter_iff, mem_image, and_iff_left_iff_imp, mem_empty_iff_false,
-        iff_false, not_and, forall_exists_index, and_imp]
-      rintro y _ rfl
-      norm_num
+      empty_union]
+  all_goals
+    ext
+    simp only [mem_inter_iff, mem_image, and_iff_left_iff_imp, mem_empty_iff_false,
+      iff_false, not_and, forall_exists_index, and_imp]
+    rintro y _ rfl
+    norm_num
 
 theorem ballot_neg (p q : ℕ) (qp : q < p) :
     uniformOn (countedSequence (p + 1) (q + 1) ∩ {l | l.headI = 1}ᶜ) staysPositive =
@@ -341,7 +343,7 @@ theorem ballot_problem' :
         linarith
       simp [field, h₄, h₅, h₆] at *
       ring
-    all_goals exact ENNReal.mul_ne_top (by finiteness) (by simp [Ne, ENNReal.div_eq_top])
+    all_goals exact ENNReal.mul_ne_top (by finiteness) (by simp [Ne])
 
 /-- The ballot problem. -/
 theorem ballot_problem :
@@ -357,7 +359,7 @@ theorem ballot_problem :
       ENNReal.toReal_sub_of_le, ENNReal.toReal_natCast, ENNReal.toReal_natCast]
     exacts [Nat.cast_le.2 qp.le, ENNReal.natCast_ne_top _]
   rwa [ENNReal.toReal_eq_toReal_iff' (measure_lt_top _ _).ne] at this
-  simp only [Ne, ENNReal.div_eq_top, tsub_eq_zero_iff_le, Nat.cast_le, not_le,
+  simp only [Ne, ENNReal.div_eq_top_iff, tsub_eq_zero_iff_le, Nat.cast_le, not_le,
     add_eq_zero, Nat.cast_eq_zero, ENNReal.add_eq_top, ENNReal.natCast_ne_top, or_self_iff,
     not_false_iff, and_true]
   push Not

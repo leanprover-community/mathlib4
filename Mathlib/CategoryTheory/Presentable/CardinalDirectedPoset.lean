@@ -29,6 +29,7 @@ the objects `J` such that the underlying type `J.obj` has
 cardinality `< κ'`.
 
 ## References
+
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 -/
 

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Localization.HomEquiv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Shrinking morphisms in localized categories
 

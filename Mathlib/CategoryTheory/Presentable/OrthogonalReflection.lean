@@ -59,6 +59,7 @@ in the book by Adámek and Rosický (note that according to the
 errata to this book, the implication (ii) → (i) is wrong when `κ = ℵ₀`).
 
 ## References
+
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 -/
 
@@ -430,7 +431,7 @@ lemma isLocal_reflectionObj :
       (f ≫ g₁) (f ≫ g₂) (by simpa)
     have hg := iteration_map_succ_injectivity f hf
       (g₁ ≫ H.F.map u) (g₂ ≫ H.F.map u) (by simpa using hk)
-    simp only [homOfLE_leOfHom, Category.assoc] at hg
+    simp only [Category.assoc] at hg
     have := H.incl.naturality (u ≫ homOfLE (Order.le_succ k))
     simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.comp_id] at this
     simp only [← this, Functor.map_comp, Category.assoc]

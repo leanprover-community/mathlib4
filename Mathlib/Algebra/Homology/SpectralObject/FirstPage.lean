@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Homology.SpectralObject.SpectralSequence
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The first page of the spectral sequence of a spectral object
 

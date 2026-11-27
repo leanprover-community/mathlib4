@@ -176,7 +176,7 @@ lemma generate_presieveOfSections
 lemma generate_presieveOfSections_mem_grothendieckTopology
     {U : X.AffineZariskiSite} {s : Set Γ(X, U.toOpens)} :
     Sieve.generate (presieveOfSections U s) ∈ grothendieckTopology X U ↔ Ideal.span s = ⊤ := by
-  rw [← U.property.self_le_iSup_basicOpen_iff, mem_grothendieckTopology, IsConcreteLE.le_iff]
+  rw [← U.property.self_le_iSup_basicOpen_iff, mem_grothendieckTopology, le_iff_mem_imp_mem]
   refine forall₂_congr fun x hx ↦ ?_
   simp only [exists_and_left, TopologicalSpace.Opens.iSup_mk,
     TopologicalSpace.Opens.carrier_eq_coe, Set.iUnion_coe_set, TopologicalSpace.Opens.mem_mk,
@@ -208,7 +208,7 @@ variable (X) in
 /-- The directed cover of a scheme indexed by `X.AffineZariskiSite`.
 Note the related `Scheme.directedAffineCover`, which has the same (defeq) cover but a different
 category instance on the indices. -/
-@[simps] abbrev directedCover : X.OpenCover where
+abbrev directedCover : X.OpenCover where
   I₀ := X.AffineZariskiSite
   X U := U.val
   f U := U.val.ι

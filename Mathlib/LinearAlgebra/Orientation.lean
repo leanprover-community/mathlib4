@@ -125,7 +125,7 @@ theorem Orientation.map_of_isEmpty [IsEmpty ι] (x : Orientation R M ι) (f : M 
   ext i
   rw [AlternatingMap.compLinearMap_apply]
   congr
-  simp only [LinearEquiv.coe_coe, eq_iff_true_of_subsingleton]
+  simp only [LinearEquiv.coe_toLinearMap, eq_iff_true_of_subsingleton]
 
 end OrderedCommSemiring
 

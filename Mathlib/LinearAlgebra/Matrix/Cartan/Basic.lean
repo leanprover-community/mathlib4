@@ -149,15 +149,19 @@ def C (n : ℕ) : Matrix (Fin n) (Fin n) ℤ :=
       if i.val = n - 1 then -2 else -1
     else 0
 
-/-- The Cartan matrix of type Dₙ (rank n, corresponding to so(2n)). -/
+/-- The Cartan matrix of type Dₙ (rank n, corresponding to so(2n)).
+
+Note that rows are columns have the opposite ordering to Bourbaki. Thus the first three nodes in the
+corresponding Dynkin diagram are the non-linear part of the diagram. See `CartanMatrix.D_three` and
+`CartanMatrix.D_four`. -/
 def D (n : ℕ) : Matrix (Fin n) (Fin n) ℤ :=
   Matrix.of fun i j =>
     if i = j then 2
     else if n ≤ 2 then 0
-    else if i.val + 1 = j.val ∧ j.val + 2 < n then -1
-    else if j.val + 1 = i.val ∧ i.val + 2 < n then -1
-    else if i.val + 3 = n ∧ (j.val + 2 = n ∨ j.val + 1 = n) then -1
-    else if j.val + 3 = n ∧ (i.val + 2 = n ∨ i.val + 1 = n) then -1
+    else if i.val = 2 ∧ j.val < 2 then -1
+    else if j.val = 2 ∧ i.val < 2 then -1
+    else if i.val + 1 = j.val ∧ i.val ≥ 2 then -1
+    else if j.val + 1 = i.val ∧ j.val ≥ 2 then -1
     else 0
 
 /-! ### Properties -/
@@ -210,15 +214,26 @@ theorem A_submatrix_revPerm :
   simp [A, Fin.ext_iff]
   lia
 
-/-- Swapping the two short arms `n-2` and `n-1` is a symmetry of `Dₙ`. -/
-theorem D_submatrix_swap (hn : n ≠ 0) :
-    (D n).submatrix (Equiv.swap ⟨n - 2, by lia⟩ ⟨n - 1, by lia⟩)
-      (Equiv.swap ⟨n - 2, by lia⟩ ⟨n - 1, by lia⟩) = D n := by
+/-- Swapping the two short arms `0` and `1` is a symmetry of `Dₙ`: a permutation that exchanges
+`0` and `1` and fixes every other index preserves `D n`. -/
+theorem D_submatrix_swap [n.AtLeastTwo] (e : Equiv.Perm (Fin n)) (he₀ : e 0 = 1) (he₁ : e 1 = 0)
+    (he : ∀ i, 2 ≤ i.val → e i = i) :
+    (D n).submatrix e e = D n := by
+  have h1 : ((1 : Fin n) : ℕ) = 1 := by
+    rw [Fin.val_one', Nat.mod_eq_of_lt Nat.AtLeastTwo.one_lt]
+  have key (i : Fin n) : (i : ℕ) = 0 ∧ (e i : ℕ) = 1 ∨ (i : ℕ) = 1 ∧ (e i : ℕ) = 0 ∨
+      2 ≤ (i : ℕ) ∧ (e i : ℕ) = i := by
+    obtain h | h | h : (i : ℕ) = 0 ∨ (i : ℕ) = 1 ∨ 2 ≤ (i : ℕ) := by lia
+    · obtain rfl : i = 0 := Fin.ext h
+      exact .inl ⟨h, by rw [he₀, h1]⟩
+    · obtain rfl : i = 1 := Fin.ext (h.trans h1.symm)
+      exact .inr (.inl ⟨h, by rw [he₁, Fin.val_zero]⟩)
+    · exact .inr (.inr ⟨h, by rw [he i h]⟩)
   ext i j
-  simp only [D, submatrix_apply, of_apply, Equiv.swap_apply_def, Fin.ext_iff]
-  by_cases hi1 : (i : ℕ) = n - 2 <;> by_cases hi2 : (i : ℕ) = n - 1 <;>
-    by_cases hj1 : (j : ℕ) = n - 2 <;> by_cases hj2 : (j : ℕ) = n - 1 <;>
-    simp only [hi1, hi2, hj1, hj2, ite_true, ite_false] <;> grind
+  have hi := key i
+  have hj := key j
+  simp only [D, submatrix_apply, of_apply, Fin.ext_iff]
+  split_ifs <;> lia
 
 /-! ### Small cases -/
 
@@ -246,16 +261,16 @@ theorem B_two : B 2 = !![ 2, -2;
 theorem C_two : C 2 = !![ 2, -1;
                          -2,  2] := by decide
 
-theorem D_three : D 3 = !![ 2, -1, -1;
-                           -1,  2,  0;
-                           -1,  0,  2] := by decide
+theorem D_three : D 3 = !![ 2,  0, -1;
+                            0,  2, -1;
+                           -1, -1,  2] := by decide
 
-theorem D_three' : (D 3).reindex c[0, 1] c[0, 1] = A 3 := by decide
+theorem D_three' : (D 3).reindex c[1, 2] c[1, 2] = A 3 := by decide
 
-theorem D_four : D 4 = !![ 2, -1,  0,  0;
-                          -1,  2, -1, -1;
-                           0, -1,  2,  0;
-                           0, -1,  0,  2] := by decide
+theorem D_four : D 4 = !![ 2,  0, -1,  0;
+                           0,  2, -1,  0;
+                          -1, -1,  2, -1;
+                           0,  0, -1,  2] := by decide
 
 
 

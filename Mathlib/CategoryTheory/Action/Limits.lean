@@ -11,6 +11,9 @@ public import Mathlib.CategoryTheory.Action.Basic
 public import Mathlib.CategoryTheory.Linear.FunctorCategory
 public import Mathlib.CategoryTheory.Linear.LinearFunctor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Categorical properties of `Action V G`
 
@@ -322,8 +325,8 @@ instance : SMul ℤ (X ⟶ Y) where
 @[simp] lemma add_hom (f g : X ⟶ Y) : (f + g).hom = f.hom + g.hom := rfl
 @[simp] lemma neg_hom (f : X ⟶ Y) : (-f).hom = -f.hom := rfl
 @[simp] lemma sub_hom (f g : X ⟶ Y) : (f - g).hom = f.hom - g.hom := rfl
-@[simp] lemma nsmul_hom (n : ℕ) (f : X ⟶ Y) : (n • f).hom = n • f.hom := rfl
-@[simp] lemma zsmul_hom (n : ℤ) (f : X ⟶ Y) : (n • f).hom = n • f.hom := rfl
+lemma nsmul_hom (n : ℕ) (f : X ⟶ Y) : (n • f).hom = n • f.hom := rfl
+lemma zsmul_hom (n : ℤ) (f : X ⟶ Y) : (n • f).hom = n • f.hom := rfl
 
 instance : Preadditive (Action V G) where
   homGroup X Y :=

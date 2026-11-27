@@ -199,7 +199,6 @@ def coeHom : ℚ≥0 →+* ℚ where
 
 @[simp, norm_cast] lemma coe_natCast (n : ℕ) : (↑(↑n : ℚ≥0) : ℚ) = n := rfl
 
-@[simp]
 theorem mk_natCast (n : ℕ) : @Eq ℚ≥0 (⟨(n : ℚ), Nat.cast_nonneg' n⟩ : ℚ≥0) n :=
   rfl
 

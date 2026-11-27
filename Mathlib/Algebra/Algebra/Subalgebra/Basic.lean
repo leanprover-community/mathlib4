@@ -358,7 +358,6 @@ protected theorem coe_neg {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algeb
 protected theorem coe_sub {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R A]
     {S : Subalgebra R A} (x y : S) : (↑(x - y) : A) = ↑x - ↑y := rfl
 
-@[simp, norm_cast]
 theorem coe_smul [SMul R' R] [SMul R' A] [IsScalarTower R' R A] (r : R') (x : S) :
     (↑(r • x) : A) = r • (x : A) := rfl
 
@@ -647,8 +646,8 @@ set_option backward.isDefEq.respectTransparency.types false in
 `subalgebraMap` is the induced equivalence between `S` and `S.map e` -/
 @[simps!]
 def subalgebraMap (e : A ≃ₐ[R] B) (S : Subalgebra R A) : S ≃ₐ[R] S.map (e : A →ₐ[R] B) :=
-  { e.toRingEquiv.subsemiringMap S.toSubsemiring with
-    commutes' := fun r => by ext; exact e.commutes r }
+  .ofCommutes (e.toRingEquiv.subsemiringMap S.toSubsemiring)
+    fun r => by ext; exact e.commutes r
 
 end AlgEquiv
 
@@ -740,7 +739,6 @@ def equivOfEq (S T : Subalgebra R A) (h : S = T) : S ≃ₐ[R] T where
   toFun x := ⟨x, h ▸ x.property⟩
   invFun x := ⟨x, h.symm ▸ x.property⟩
   map_mul' _ _ := rfl
-  commutes' _ := rfl
 
 @[simp]
 theorem equivOfEq_symm (S T : Subalgebra R A) (h : S = T) :
@@ -939,7 +937,7 @@ theorem map_center_eq (f : A ≃ₐ[R] B) : map f (center R A) = center R B :=
 def centerCongr (e : A ≃ₐ[R] B) :
     center R A ≃ₐ[R] center R B where
   toRingEquiv := Subsemiring.centerCongr e.toRingEquiv
-  commutes' r := Subtype.ext <| e.commutes r
+  map_smul' _ _ := Subtype.ext <| e.map_smul' _ _
 
 @[simp] lemma toRingEquiv_centerCongr (e : A ≃ₐ[R] B) :
     (centerCongr e).toRingEquiv = Subsemiring.centerCongr e.toRingEquiv := rfl

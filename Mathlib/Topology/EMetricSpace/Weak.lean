@@ -12,6 +12,9 @@ public import Mathlib.Topology.Instances.Nat
 public import Mathlib.Topology.Order.Real
 public import Mathlib.Topology.Order.WithTop
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas around weak (pseudo) extended metric spaces.
 
@@ -275,7 +278,7 @@ theorem edist_eq_top_iff (a b : ℝ≥0∞) : edist a b = ∞ ↔ a ≠ b ∧ (a
 theorem edist_eq_max (a b : ℝ≥0∞) : edist a b = max (a - b) (b - a) := by
   cases a <;> cases b
   case coe.coe =>
-    rw [edist_coe, ← coe_nnreal_ennreal_nndist, NNReal.nndist_eq]
+    rw [edist_coe, ← coe_nnreal_ennreal_nnDist, NNReal.nnDist_eq]
     norm_cast
   all_goals simp
 

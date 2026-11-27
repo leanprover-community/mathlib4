@@ -6,12 +6,12 @@ Authors: Andrew Yang, Christian Merten, Junyan Xu
 module
 
 public import Mathlib.Algebra.MvPolynomial.Nilpotent
-public import Mathlib.Algebra.MvPolynomial.NoZeroDivisors
-public import Mathlib.Algebra.Order.Ring.Finset
 public import Mathlib.FieldTheory.SeparableClosure
-public import Mathlib.RingTheory.Polynomial.GaussLemma
 
 import Mathlib.Algebra.CharP.IntermediateField
+import Mathlib.Algebra.MvPolynomial.NoZeroDivisors
+import Mathlib.Algebra.Order.Ring.Finset
+import Mathlib.RingTheory.Polynomial.GaussLemma
 
 /-!
 # Separably generated extensions
@@ -27,6 +27,7 @@ Let `K/k` be a finitely generated field extension with characteristic `p > 0`, t
 5. `k` and `Kᵖ` are linearly disjoint over `kᵖ` in `K`.
 
 ## Main result
+
 - `exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow`: (2) ⇒ (1)
 -/
 
@@ -295,7 +296,7 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_of_essFin
   have ⟨i, hi₁, hi₂⟩ := exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow'
     p hp (a := id) H s n hs hns
   rw [Set.image_id] at hi₂
-  refine not_lt_iff_le_imp_ge.mpr (Hs hi₁) (IsConcreteLE.lt_iff_le_and_exists.mpr ⟨?_, n, ?_, hn⟩)
+  refine not_lt_iff_le_imp_ge.mpr (Hs hi₁) (lt_iff_le_and_exists_mem_notMem.mpr ⟨?_, n, ?_, hn⟩)
   · rw [separableClosure_le_separableClosure_iff, adjoin_le_iff]
     intro x hx
     obtain rfl | ne := eq_or_ne x i

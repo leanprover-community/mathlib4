@@ -7,12 +7,15 @@ module
 
 public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Range of affine maps
 
 The range of an affine map `f : P₁ →ᵃ[R] P₂` is an affine subspace of `P₂`.
 
-# Implementation note
+# Implementation notes
 
 Follows `LinearMap.range`.
 -/

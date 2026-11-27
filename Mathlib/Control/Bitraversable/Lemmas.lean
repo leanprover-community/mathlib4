@@ -11,6 +11,7 @@ public import Mathlib.Control.Bitraversable.Basic
 # Bitraversable Lemmas
 
 ## Main definitions
+
   * tfst - traverse on first functor argument
   * tsnd - traverse on second functor argument
 

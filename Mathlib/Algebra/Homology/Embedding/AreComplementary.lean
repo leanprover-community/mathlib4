@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Homology.Embedding.TruncLEHomology
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Complementary embeddings
 

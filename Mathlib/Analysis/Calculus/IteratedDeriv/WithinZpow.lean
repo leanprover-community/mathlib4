@@ -17,7 +17,7 @@ set_option doc.verso.suggestions false
 
 In this file we prove theorems about iterated derivatives of `x ^ m`, `m : ℤ` within an open set.
 
-## Keywords
+## Tags
 
 iterated, derivative, power, open set
 -/

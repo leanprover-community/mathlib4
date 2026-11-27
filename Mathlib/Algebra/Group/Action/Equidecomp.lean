@@ -30,7 +30,7 @@ bijection `f : A ≃ B` such that for some `S : Finset G`, `f a ∈ S • a` for
 We take this as our definition as it is easier to work with. It is implemented as an element
 `PartialEquiv X X` with source `A` and target `B`.
 
-## Implementation Notes
+## Implementation notes
 
 * Equidecompositions are implemented as elements of `PartialEquiv X X` together with a
   `Finset` of elements of the acting group and a proof that every point in the source is moved

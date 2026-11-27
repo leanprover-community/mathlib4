@@ -31,6 +31,7 @@ We define and prove basic results about the regulator of a number field `K`.
   index of `U` inside `V`.
 
 ## Tags
+
 number field, units, regulator
 -/
 
@@ -117,7 +118,7 @@ theorem isMaxRank_iff_closure_finiteIndex {u : Fin (rank K) → (𝓞 K)ˣ} :
     have := index_map (closure (Set.range u)) (QuotientGroup.mk' (torsion K))
     rw [QuotientGroup.ker_mk', QuotientGroup.range_mk', index_top, mul_one] at this
     rw [← this, ← index_toAddSubgroup, ← AddSubgroup.index_map_equiv
-        _ (logEmbeddingEquiv K).toAddEquiv, Set.range_comp, ← LinearEquiv.coe_coe,
+        _ (logEmbeddingEquiv K).toAddEquiv, Set.range_comp, ← LinearEquiv.coe_toLinearMap,
       ← map_span (logEmbeddingEquiv K).toLinearMap,
       map_toAddSubgroup, span_int_eq_addSubgroupClosure,
       MonoidHom.map_closure, toAddSubgroup_closure, Set.range_comp, Set.range_comp,
@@ -208,7 +209,7 @@ theorem abs_det_eq_abs_det (u : Fin (rank K) → (𝓞 K)ˣ)
     convert h
     · ext; simp only [ne_eq, reindex_apply, submatrix_apply, of_apply, Equiv.apply_symm_apply,
         Equiv.trans_apply, Fin.succAbove_zero, id_eq, finSuccEquiv_succ,
-        Equiv.optionSubtype_symm_apply_apply_coe, f]
+        Equiv.optionSubtype_symm_apply_apply_some, f]
     · ext; simp only [ne_eq, Equiv.coe_trans, reindex_apply, submatrix_apply, Function.comp_apply,
         Equiv.apply_symm_apply, id_eq, of_apply]; rfl
   · intro _

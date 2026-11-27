@@ -22,11 +22,13 @@ Similarly, every nonzero fractional ideal `I` of a Dedekind domain `R` can be fa
 prove some of its properties. If `I = 0`, we define `val_v(I) = 0`.
 
 ## Main definitions
+
 - `FractionalIdeal.count` : If `I` is a nonzero fractional ideal, `a ∈ R`, and `J` is an ideal of
   `R` such that `I = a⁻¹J`, then we define `val_v(I)` as `(val_v(J) - val_v(a))`. If `I = 0`, we
   set `val_v(I) = 0`.
 
 ## Main results
+
 - `Ideal.finite_factors` : Only finitely many maximal ideals of `R` divide a given nonzero ideal.
 - `Ideal.finprod_heightOneSpectrum_factorization` : The ideal `I` equals the finprod
   `∏_v v^(val_v(I))`, where `val_v(I)` denotes the multiplicity of `v` in the factorization of `I`
@@ -48,10 +50,12 @@ prove some of its properties. If `I = 0`, we define `val_v(I) = 0`.
   in an extension is the product of the primes over `p` to the power the ramification index.
 
 ## Implementation notes
+
 Since we are only interested in the factorization of nonzero fractional ideals, we define
 `val_v(0) = 0` so that every `val_v` is in `ℤ` and we can avoid having to use `WithTop ℤ`.
 
 ## Tags
+
 dedekind domain, fractional ideal, ideal, factorization
 -/
 
@@ -635,7 +639,7 @@ lemma IsDedekindDomain.exists_sup_span_eq {I J : Ideal R} (hIJ : I ≤ J) (hI : 
     · rw [Ideal.zero_eq_bot, bot_lt_iff_ne_bot, ← Ideal.zero_eq_bot,
         mul_ne_zero_iff, Finset.prod_ne_zero_iff]
       exact ⟨hJ, fun x _ ↦ x.ne_bot⟩
-  choose! a ha ha' using fun p hps ↦ IsConcreteLE.exists_of_lt (this p hps)
+  choose! a ha ha' using fun p hps ↦ exists_mem_notMem_of_lt (this p hps)
   obtain ⟨K, hK⟩ : J ∣ Ideal.span {∑ p ∈ s, a p} := by
     rw [Ideal.dvd_iff_le, Ideal.span_singleton_le_iff_mem]
     exact sum_mem fun p hp ↦ Ideal.mul_le_left (ha p hp)

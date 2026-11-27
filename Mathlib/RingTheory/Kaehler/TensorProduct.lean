@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.Localization.BaseChange
 # Kähler differential module under base change
 
 ## Main results
+
 - `KaehlerDifferential.tensorKaehlerEquivBase`: `(S ⊗[R] Ω[A⁄R]) ≃ₗ[S] Ω[B⁄S]` for `B = S ⊗[R] A`.
 - `KaehlerDifferential.tensorKaehlerEquiv`: `(B ⊗[A] Ω[A⁄R]) ≃ₗ[B] Ω[B⁄S]` for `B = S ⊗[R] A`.
 - `KaehlerDifferential.isLocalizedModule_of_isLocalizedModule`:
@@ -215,7 +216,7 @@ lemma isBaseChange [h : Algebra.IsPushout R S A B] :
     (TensorProduct.isBaseChange R Ω[A⁄R] S).comp
       (IsBaseChange.ofEquiv (tensorKaehlerEquivBase R S A B))
   refine LinearMap.ext fun x ↦ ?_
-  simp only [LinearMap.coe_restrictScalars, LinearMap.coe_comp, LinearEquiv.coe_coe,
+  simp only [LinearMap.coe_restrictScalars, LinearMap.coe_comp, LinearEquiv.coe_toLinearMap,
     Function.comp_apply, mk_apply, tensorKaehlerEquivBase_tmul, one_smul]
 
 instance isLocalizedModule (p : Submonoid R) [IsLocalization p S]
