@@ -166,7 +166,7 @@ instance mono_pullback_to_prod {C : Type*} [Category* C] {X Y Z : C} (f : X ⟶ 
 
 /-- The pullback of `f, g` is also the pullback of `f ≫ i, g ≫ i` for any mono `i`. -/
 @[to_dual pushoutIsPushoutOfEpiComp
-/-- The pushout of `f, g` is also the pullback of `h ≫ f, h ≫ g` for any epi `h`. -/]
+/-- The pushout of `f, g` is also the pushout of `h ≫ f, h ≫ g` for any epi `h`. -/]
 noncomputable def pullbackIsPullbackOfCompMono (f : X ⟶ W) (g : Y ⟶ W) (i : W ⟶ Z) [Mono i]
     [HasPullback f g] : IsLimit (PullbackCone.mk (pullback.fst f g) (pullback.snd f g)
       -- Porting note: following used to be _
