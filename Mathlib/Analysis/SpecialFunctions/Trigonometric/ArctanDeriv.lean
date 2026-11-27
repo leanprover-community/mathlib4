@@ -8,6 +8,8 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.ComplexDeriv
 
+import Mathlib.Analysis.Calculus.Deriv.Pow
+
 /-!
 # Derivatives of the `tan` and `arctan` functions.
 
@@ -100,6 +102,36 @@ theorem contDiff_arctan {n : WithTop ℕ∞} : ContDiff ℝ n arctan :=
     have : cos (arctan x) ≠ 0 := (cos_arctan_pos x).ne'
     tanPartialHomeomorph.contDiffAt_symm_deriv (by simpa) trivial (hasDerivAt_tan this)
       (contDiffAt_tan.2 this)
+
+/-- The derivative of the difference between `arctan` and its Taylor series at `0` up to order `n`.
+Thanks to the geometric series it has the simple form `(-y ^ 2) ^ n / (1 + y ^ 2)`. -/
+theorem hasDerivAt_arctan_sub_sum_range (n : ℕ) (y : ℝ) :
+    HasDerivAt (fun x ↦ arctan x - ∑ i ∈ Finset.range n, (-1) ^ i * x ^ (2 * i + 1) / (2 * i + 1))
+      ((-y ^ 2) ^ n / (1 + y ^ 2)) y := by
+  refine ((hasDerivAt_arctan y).sub (.fun_sum fun i _ ↦
+    ((hasDerivAt_pow _ _).const_mul _).div_const _)).congr_deriv ?_
+  have : ∑ i ∈ Finset.range n, (-1) ^ i * (↑(2 * i + 1) * y ^ (2 * i + 1 - 1)) / (2 * i + 1) =
+      ∑ i ∈ Finset.range n, (-y ^ 2) ^ i := by
+    congr with i
+    simp [field, neg_pow (y ^ 2), ← pow_mul]
+  have hy : -y ^ 2 ≠ 1 := by nlinarith [sq_nonneg y]
+  rw [this, geom_sum_eq hy]
+  field
+
+/-- For `0 ≤ x`, the partial sums of the series of `arctan x` are within the first omitted term of
+`arctan x`. -/
+theorem abs_arctan_sub_sum_range_le {x : ℝ} (hx : 0 ≤ x) (n : ℕ) :
+    |arctan x - ∑ i ∈ Finset.range n, (-1) ^ i * x ^ (2 * i + 1) / (2 * i + 1)| ≤
+      x ^ (2 * n + 1) / (2 * n + 1) := by
+  refine image_norm_le_of_norm_deriv_right_le_deriv_boundary
+    (fun t _ ↦ (hasDerivAt_arctan_sub_sum_range n t).continuousAt.continuousWithinAt)
+    (fun t _ ↦ (hasDerivAt_arctan_sub_sum_range n t).hasDerivWithinAt) (by simp)
+    (B := fun t ↦ t ^ (2 * n + 1) / (2 * n + 1)) (B' := fun t ↦ t ^ (2 * n))
+    (fun t ↦ ?_) (fun t _ ↦ ?_) ⟨hx, le_rfl⟩
+  · convert (hasDerivAt_pow (2 * n + 1) t).div_const (2 * n + 1 : ℝ) using 1
+    simp [field]
+  · simpa [abs_div, pow_mul, abs_of_pos (by positivity : (0 : ℝ) < 1 + t ^ 2)] using
+      div_le_self (pow_nonneg (sq_nonneg t) n) (le_add_of_nonneg_right (sq_nonneg t))
 
 end Real
 
