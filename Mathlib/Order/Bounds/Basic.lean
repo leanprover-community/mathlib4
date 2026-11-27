@@ -737,6 +737,11 @@ theorem exists_isLUB_iff_isLUB_sSup [OrderSupSet α] {s : Set α} :
     (∃ a, IsLUB s a) ↔ IsLUB s (sSup s) :=
   ⟨fun ⟨_, h⟩ ↦ h.isLUB_sSup, fun h ↦ ⟨_, h⟩⟩
 
+@[to_dual]
+theorem exists_isBot_iff_isBot_sSup_empty [OrderSupSet α] :
+    (∃ a : α, IsBot a) ↔ IsBot (sSup (∅ : Set α)) := by
+  simpa only [isLUB_empty_iff] using exists_isLUB_iff_isLUB_sSup (s := ∅)
+
 /-- Constructs an `OrderInfSet` from an `OrderSupSet` by defining the infimum of a set as the
 supremum of its lower bounds. -/
 @[to_dual

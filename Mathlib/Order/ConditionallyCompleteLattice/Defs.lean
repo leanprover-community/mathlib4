@@ -133,19 +133,28 @@ instance : ConditionallyCompleteLattice my_T :=
   __ := conditionallyCompleteLatticeOfsInf my_T ...
 ```
 -/]
-def conditionallyCompleteLatticeOfsSup (α : Type*) [H1 : PartialOrder α] [H2 : OrderSupSet α]
+def conditionallyCompleteLatticeOfsSup (α : Type*) [H1 : PartialOrder α] [H2 : SupSet α]
     (bddAbove_pair : ∀ a b : α, BddAbove ({a, b} : Set α))
     (bddBelow_pair : ∀ a b : α, BddBelow ({a, b} : Set α))
-    (isLUB_sSup : ∀ s : Set α, BddAbove s → s.Nonempty → IsLUB s (sSup s)) :
-    ConditionallyCompleteLattice α where
-  toLattice := Lattice.ofIsLUBofIsGLB (fun a b ↦ sSup {a, b}) (fun a b ↦ sSup (lowerBounds {a, b}))
-    (fun a b ↦ isLUB_sSup {a, b} (bddAbove_pair a b) (insert_nonempty _ _))
-    (fun a b ↦ isLUB_lowerBounds.mp <| isLUB_sSup (lowerBounds {a, b})
-      (insert_nonempty _ _).bddAbove_lowerBounds (bddBelow_pair a b))
-  toOrderSupSet := H2
-  toOrderInfSet := .ofOrderSupSet
-  exists_isLUB_cond _ hn hb := ⟨_, isLUB_sSup _ hb hn⟩
-  exists_isGLB_cond _ hn hb := ⟨_, isLUB_lowerBounds.mp (isLUB_sSup _ hn.bddAbove_lowerBounds hb)⟩
+    (isLUB_sSup : ∀ s : Set α, BddAbove s → s.Nonempty → IsLUB s (sSup s))
+    (isBot_sSup_empty : (∃ a : α, IsBot a) → IsBot (sSup (∅ : Set α))) :
+    ConditionallyCompleteLattice α :=
+  letI : OrderSupSet α := {
+    isLUB_sSup_of_isLUB s a h := by
+      obtain rfl | hn := s.eq_empty_or_nonempty
+      · rw [isLUB_empty_iff] at h ⊢
+        exact isBot_sSup_empty ⟨a, h⟩
+      · exact isLUB_sSup s h.bddAbove hn }
+  { toLattice := Lattice.ofIsLUBofIsGLB
+      (fun a b ↦ sSup {a, b}) (fun a b ↦ sSup (lowerBounds {a, b}))
+      (fun a b ↦ isLUB_sSup {a, b} (bddAbove_pair a b) (insert_nonempty _ _))
+      (fun a b ↦ isLUB_lowerBounds.mp <| isLUB_sSup (lowerBounds {a, b})
+        (insert_nonempty _ _).bddAbove_lowerBounds (bddBelow_pair a b))
+    toOrderSupSet := inferInstance
+    toOrderInfSet := .ofOrderSupSet
+    exists_isLUB_cond _ hn hb := ⟨_, isLUB_sSup _ hb hn⟩
+    exists_isGLB_cond _ hn hb :=
+      ⟨_, isLUB_lowerBounds.mp (isLUB_sSup _ hn.bddAbove_lowerBounds hb)⟩ }
 
 /-- A version of `conditionallyCompleteLatticeOfsSup` when we already know that `α` is a lattice.
 
@@ -154,14 +163,15 @@ This should only be used when it is both hard and unnecessary to provide `sInf` 
 /-- A version of `conditionallyCompleteLatticeOfsInf` when we already know that `α` is a lattice.
 
 This should only be used when it is both hard and unnecessary to provide `sSup` explicitly. -/]
-def conditionallyCompleteLatticeOfLatticeOfsSup (α : Type*) [H1 : Lattice α] [OrderSupSet α]
-    (isLUB_sSup : ∀ s : Set α, BddAbove s → s.Nonempty → IsLUB s (sSup s)) :
+def conditionallyCompleteLatticeOfLatticeOfsSup (α : Type*) [H1 : Lattice α] [SupSet α]
+    (isLUB_sSup : ∀ s : Set α, BddAbove s → s.Nonempty → IsLUB s (sSup s))
+    (isBot_sSup_empty : (∃ a : α, IsBot a) → IsBot (sSup (∅ : Set α))) :
     ConditionallyCompleteLattice α :=
   { H1,
     conditionallyCompleteLatticeOfsSup α
       (fun a b => ⟨a ⊔ b, forall_insert_of_forall (forall_eq.mpr le_sup_right) le_sup_left⟩)
       (fun a b => ⟨a ⊓ b, forall_insert_of_forall (forall_eq.mpr inf_le_right) inf_le_left⟩)
-      isLUB_sSup with }
+      isLUB_sSup isBot_sSup_empty with }
 
 open scoped Classical in
 /-- A well-founded linear order is conditionally complete, with a bottom element. -/
@@ -173,8 +183,10 @@ noncomputable abbrev WellFoundedLT.conditionallyCompleteLinearOrderBot (α : Typ
   __ := LinearOrder.toLattice
   __ :=
     letI : OrderInfSet α := .choose ⊥
-    conditionallyCompleteLatticeOfLatticeOfsInf _ fun s _ hn ↦
-      (IsLeast.isGLB ⟨WellFounded.min_mem ‹_› s hn, fun _ hx ↦ WellFoundedLT.min_le hx⟩).isGLB_sInf
+    conditionallyCompleteLatticeOfLatticeOfsInf _
+      (fun s _ hn ↦ IsLeast.isGLB
+        ⟨WellFounded.min_mem ‹_› s hn, fun _ hx ↦ WellFoundedLT.min_le hx⟩ |>.isGLB_sInf)
+      exists_isTop_iff_isTop_sInf_empty.mp
   csSup_of_not_bddAbove _ H :=
     (dite_eq_right (fun ⟨_, hx⟩ ↦ H (isGLB_upperBounds.mp hx).bddAbove)).trans sSup_empty.symm
   csInf_of_not_bddBelow s H := (H (OrderBot.bddBelow s)).elim
