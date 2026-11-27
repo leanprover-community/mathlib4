@@ -105,15 +105,15 @@ The constants are chosen as follows:
 def cos (I : Interval Dyadic) (prec : ℕ) : Interval Dyadic :=
   match I with
   | ⟨some l, some u⟩ =>
-    if l + 7 < u then Interval.Icc (-1 : Dyadic) (1 : Dyadic) else
+    if l + 7 < u then Interval.Icc (-1 : Dyadic) 1 else
       match I.abs with
       | ⟨some a, some b⟩ =>
         let k := Nat.clog 2 ⌈b.toRat⌉₊ + Nat.sqrt prec
         let p := prec + 2 * k + 8
         let taylor (x : Dyadic) := cosTaylor (x >>> k) (p / (2 * Nat.sqrt prec + 1) + 1) p
         roundOut (cosDoubling k ⟨(taylor b).lb, (taylor a).ub⟩ p) (prec + 1)
-      | _ => Interval.Icc (-1 : Dyadic) (1 : Dyadic) -- impossible since `I` is bounded
-  | _ => Interval.Icc (-1 : Dyadic) (1 : Dyadic)
+      | _ => Interval.Icc (-1 : Dyadic) 1 -- impossible since `I` is bounded
+  | _ => Interval.Icc (-1 : Dyadic) 1
 
 @[inclusion_op interval_dyadic_real]
 theorem cos_mem {x : ℝ} {I : Interval Dyadic} (hx : x ∈ I) (prec : ℕ) :
@@ -127,25 +127,27 @@ theorem cos_mem {x : ℝ} {I : Interval Dyadic} (hx : x ∈ I) (prec : ℕ) :
   split
   · exact h1
   split <;> [skip; exact h1]
-  rename_i a b hJ
-  rw [hJ] at habs h0
-  obtain ⟨hax, hxb⟩ := (mem_mk_coe |x| a b).mp habs
-  have ha : 0 ≤ a.toReal := by simpa using Dyadic.toReal_le_toReal.mpr (WithBot.coe_le_coe.mp h0)
-  generalize hk : Nat.clog 2 ⌈b.toRat⌉₊ + Nat.sqrt prec = k
-  have hb : b.toReal ≤ 2 ^ k := (Rat.cast_le.mpr (Nat.ceil_le.mp
-    ((Nat.clog_le_iff_le_pow one_lt_two).mp (by lia : _ ≤ k)))).trans_eq (by norm_cast)
-  have hπ := (div_le_one_of_le₀ hb (by positivity)).trans (one_le_two.trans Real.two_le_pi)
-  have hs (d : Dyadic) : (d >>> k).toReal = d.toReal / 2 ^ k := by
-    simp [Dyadic.toReal, Dyadic.toRat_shiftRight_nat]
-  have hs1 {d : Dyadic} (hd0 : 0 ≤ d.toReal) (hd : d.toReal ≤ 2 ^ k) : |(d >>> k).toReal| ≤ 1 := by
-    rwa [hs, abs_of_nonneg (by positivity), div_le_one (by positivity)]
-  have hab := hax.trans hxb
-  rw [← Real.cos_abs]
-  refine roundOut_mem (cosDoubling_mem ?_ _) _
-  refine Interval.mem_Icc_of_le (cosTaylor_mem (hs1 (ha.trans hab) hb) _ _) ?_ ?_
-    (cosTaylor_mem (hs1 ha (hab.trans hb)) _ _) <;> rw [hs]
-  · exact Real.cos_le_cos_of_nonneg_of_le_pi (by positivity) hπ (by gcongr)
-  · exact Real.cos_le_cos_of_nonneg_of_le_pi (by positivity) (le_trans (by gcongr) hπ) (by gcongr)
+  next a b hJ =>
+    generalize hk : Nat.clog 2 ⌈b.toRat⌉₊ + Nat.sqrt prec = k
+    obtain ⟨h0a, hay, hyb, hb1⟩ : 0 ≤ (a >>> k).toReal ∧ (a >>> k).toReal ≤ |x| / 2 ^ k ∧
+        |x| / 2 ^ k ≤ (b >>> k).toReal ∧ (b >>> k).toReal ≤ 1 := by
+      rw [hJ] at habs h0
+      obtain ⟨hax, hxb⟩ := (mem_mk_coe |x| a b).mp habs
+      have ha : 0 ≤ a.toReal := by simpa [Dyadic.toReal, WithBot.some_eq_coe] using h0
+      have hb : b.toReal ≤ 2 ^ k := (Rat.cast_le.mpr (Nat.ceil_le.mp
+        ((Nat.clog_le_iff_le_pow one_lt_two).mp (by lia : _ ≤ k)))).trans_eq (by norm_cast)
+      have hs (d : Dyadic) : (d >>> k).toReal = d.toReal / 2 ^ k := by
+        simp [Dyadic.toReal, Dyadic.toRat_shiftRight_nat]
+      rw [hs, hs]
+      exact ⟨by positivity, by gcongr, by gcongr, div_le_one_of_le₀ hb (by positivity)⟩
+    have hy (n p : ℕ) : Real.cos (|x| / 2 ^ k) ∈
+        (⟨(cosTaylor (b >>> k) n p).lb, (cosTaylor (a >>> k) n p).ub⟩ : Interval Dyadic) := by
+      refine Interval.mem_Icc_of_le (cosTaylor_mem (abs_le.2 ⟨?_, ?_⟩) n p)
+        (Real.cos_le_cos_of_nonneg_of_le_pi ?_ ?_ hyb)
+        (Real.cos_le_cos_of_nonneg_of_le_pi h0a ?_ hay)
+        (cosTaylor_mem (abs_le.2 ⟨?_, ?_⟩) n p) <;> linarith [Real.two_le_pi]
+    rw [← Real.cos_abs]
+    exact roundOut_mem (cosDoubling_mem (hy _ _) _) _
 
 end IntervalDyadicReal
 
