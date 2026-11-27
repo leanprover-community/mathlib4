@@ -276,17 +276,25 @@ theorem dist_def (f g : Lp E p μ) : dist f g = (eLpNorm (⇑f - ⇑g) p μ).toR
 
 theorem eDist_eq_eLpNorm_neg_add (f g : Lp E p μ) : eDist f g = eLpNorm (-⇑f + ⇑g) p μ := rfl
 
+@[deprecated (since := "2026-11-27")] alias edist_eq_eLpNorm_neg_add := eDist_eq_eLpNorm_neg_add
+
 theorem eDist_def (f g : Lp E p μ) : eDist f g = eLpNorm (⇑f - ⇑g) p μ := by
   rw [eDist_eq_eLpNorm_neg_add, ← eLpNorm_neg]
   congr 1
   abel
 
+@[deprecated (since := "2026-11-27")] alias edist_def := eDist_def
+
 protected theorem eDist_dist (f g : Lp E p μ) : eDist f g = .ofReal (dist f g) := by
   rw [eDist_def, dist_def, ← eLpNorm_congr_ae (coeFn_sub _ _),
     ENNReal.ofReal_toReal (eLpNorm_ne_top (f - g))]
 
+@[deprecated (since := "2026-11-27")] alias edist_dist := eDist_dist
+
 protected theorem dist_eDist (f g : Lp E p μ) : dist f g = (eDist f g).toReal :=
   MeasureTheory.Lp.dist_eq_eLpNorm_neg_add ..
+
+@[deprecated (since := "2026-11-27")] alias dist_edist := dist_eDist
 
 theorem dist_eq_norm (f g : Lp E p μ) : dist f g = ‖-f + g‖ := rfl
 
@@ -296,9 +304,13 @@ theorem eDist_toLp_toLp (f g : α → E) (hf : MemLp f p μ) (hg : MemLp g p μ)
   rw [eDist_def]
   exact eLpNorm_congr_ae (hf.coeFn_toLp.sub hg.coeFn_toLp)
 
+@[deprecated (since := "2026-11-27")] alias edist_toLp_toLp := eDist_toLp_toLp
+
 @[simp]
 theorem eDist_toLp_zero (f : α → E) (hf : MemLp f p μ) : eDist (hf.toLp f) 0 = eLpNorm f p μ := by
   simpa using eDist_toLp_toLp f 0 hf .zero
+
+@[deprecated (since := "2026-11-27")] alias edist_toLp_zero := eDist_toLp_zero
 
 @[simp]
 theorem nnNorm_zero : ‖(0 : Lp E p μ)‖₊ = 0 := by

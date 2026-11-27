@@ -392,6 +392,8 @@ lemma eDist_le_of_mem_pairSet (ha : 1 < a) (hJ_card : #J ≤ a ^ n) {s t : T}
   obtain ⟨⟨ht, hdist⟩, rfl⟩ := h'
   grw [hdist, radius_logSizeBallSeq_le hJ ha hn hJ_card i]
 
+@[deprecated (since := "2026-11-27")] alias edist_le_of_mem_pairSet := eDist_le_of_mem_pairSet
+
 lemma iSup_eDist_pairSet {E : Type*} [TopologicalSpace E] [WeakPseudoEMetricSpace E] (ha : 1 < a)
     (f : T → E) :
     ⨆ (s : J) (t : { t : J // eDist s t ≤ c}), eDist (f s) (f t)
@@ -463,6 +465,8 @@ lemma iSup_eDist_pairSet {E : Type*} [TopologicalSpace E] [WeakPseudoEMetricSpac
   apply le_trans (eDist_triangle _ (f (logSizeBallSeq J hJ a c l).point) _)
   rw [eDist_comm]
   apply add_le_add (sup_bound hsP) (sup_bound htP)
+
+@[deprecated (since := "2026-11-27")] alias iSup_edist_pairSet := iSup_eDist_pairSet
 
 end PairReduction
 

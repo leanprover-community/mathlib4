@@ -74,6 +74,8 @@ theorem eDist_smul_left [SMul M X] [IsIsometricSMul M X] (c : M) (x y : X) :
     eDist (c • x) (c • y) = eDist x y :=
   isometry_smul X c x y
 
+@[deprecated (since := "2026-11-27")] alias edist_smul_left := eDist_smul_left
+
 @[to_additive (attr := simp)]
 theorem ediam_smul [SMul M X] [IsIsometricSMul M X] (c : M) (s : Set X) :
     Metric.ediam (c • s) = Metric.ediam s :=
@@ -89,6 +91,8 @@ theorem eDist_mul_left [Mul M] [PseudoEMetricSpace M] [IsIsometricSMul M M] (a b
     eDist (a * b) (a * c) = eDist b c :=
   isometry_mul_left a b c
 
+@[deprecated (since := "2026-11-27")] alias edist_mul_left := eDist_mul_left
+
 @[to_additive]
 theorem isometry_mul_right [Mul M] [PseudoEMetricSpace M] [IsIsometricSMul Mᵐᵒᵖ M] (a : M) :
     Isometry fun x => x * a :=
@@ -99,16 +103,22 @@ theorem eDist_mul_right [Mul M] [PseudoEMetricSpace M] [IsIsometricSMul Mᵐᵒ�
     eDist (a * c) (b * c) = eDist a b :=
   isometry_mul_right c a b
 
+@[deprecated (since := "2026-11-27")] alias edist_mul_right := eDist_mul_right
+
 @[to_additive (attr := simp)]
 theorem eDist_div_right [DivInvMonoid M] [PseudoEMetricSpace M] [IsIsometricSMul Mᵐᵒᵖ M]
     (a b c : M) : eDist (a / c) (b / c) = eDist a b := by
   simp only [div_eq_mul_inv, eDist_mul_right]
+
+@[deprecated (since := "2026-11-27")] alias edist_div_right := eDist_div_right
 
 @[to_additive (attr := simp)]
 theorem eDist_inv_inv [PseudoEMetricSpace G] [IsIsometricSMul G G] [IsIsometricSMul Gᵐᵒᵖ G]
     (a b : G) : eDist a⁻¹ b⁻¹ = eDist a b := by
   rw [← eDist_mul_left a, ← eDist_mul_right _ _ b, mul_inv_cancel, one_mul, inv_mul_cancel_right,
     eDist_comm]
+
+@[deprecated (since := "2026-11-27")] alias edist_inv_inv := eDist_inv_inv
 
 @[to_additive]
 theorem isometry_inv [PseudoEMetricSpace G] [IsIsometricSMul G G] [IsIsometricSMul Gᵐᵒᵖ G] :
@@ -119,10 +129,14 @@ theorem isometry_inv [PseudoEMetricSpace G] [IsIsometricSMul G G] [IsIsometricSM
 theorem eDist_inv [PseudoEMetricSpace G] [IsIsometricSMul G G] [IsIsometricSMul Gᵐᵒᵖ G]
     (x y : G) : eDist x⁻¹ y = eDist x y⁻¹ := by rw [← eDist_inv_inv, inv_inv]
 
+@[deprecated (since := "2026-11-27")] alias edist_inv := eDist_inv
+
 @[to_additive (attr := simp)]
 theorem eDist_div_left [PseudoEMetricSpace G] [IsIsometricSMul G G] [IsIsometricSMul Gᵐᵒᵖ G]
     (a b c : G) : eDist (a / b) (a / c) = eDist b c := by
   rw [div_eq_mul_inv, div_eq_mul_inv, eDist_mul_left, eDist_inv_inv]
+
+@[deprecated (since := "2026-11-27")] alias edist_div_left := eDist_div_left
 
 namespace IsometryEquiv
 

@@ -268,12 +268,18 @@ theorem eDist_eq_card (f g : PiLp 0 β) :
     eDist f g = {i | eDist (f i) (g i) ≠ 0}.toFinite.toFinset.card :=
   ite_eq_left rfl
 
+@[deprecated (since := "2026-11-27")] alias edist_eq_card := eDist_eq_card
+
 theorem eDist_eq_sum {p : ℝ≥0∞} (hp : 0 < p.toReal) (f g : PiLp p β) :
     eDist f g = (∑ i, eDist (f i) (g i) ^ p.toReal) ^ (1 / p.toReal) :=
   let hp' := ENNReal.toReal_pos_iff.mp hp
   (ite_eq_right hp'.1.ne').trans (ite_eq_right hp'.2.ne)
 
+@[deprecated (since := "2026-11-27")] alias edist_eq_sum := eDist_eq_sum
+
 theorem eDist_eq_iSup (f g : PiLp ∞ β) : eDist f g = ⨆ i, eDist (f i) (g i) := rfl
+
+@[deprecated (since := "2026-11-27")] alias edist_eq_iSup := eDist_eq_iSup
 
 end EDist
 
@@ -290,6 +296,8 @@ protected theorem eDist_self (f : PiLp p β) : eDist f f = 0 := by
   · simp [eDist_eq_iSup]
   · simp [eDist_eq_sum h, ENNReal.zero_rpow_of_pos h, ENNReal.zero_rpow_of_pos (inv_pos.2 h)]
 
+@[deprecated (since := "2026-11-27")] alias edist_self := eDist_self
+
 /-- This holds independent of `p` and does not require `[Fact (1 ≤ p)]`. We keep it separate
 from `pi_Lp.pseudo_emetric_space` so it can be used also for `p < 1`. -/
 protected theorem eDist_comm (f g : PiLp p β) : eDist f g = eDist g f := by
@@ -297,6 +305,8 @@ protected theorem eDist_comm (f g : PiLp p β) : eDist f g = eDist g f := by
   · simp only [eDist_eq_card, eDist_comm]
   · simp only [eDist_eq_iSup, eDist_comm]
   · simp only [eDist_eq_sum h, eDist_comm]
+
+@[deprecated (since := "2026-11-27")] alias edist_comm := eDist_comm
 
 end EDistProp
 
@@ -429,6 +439,8 @@ theorem iSup_eDist_ne_top_aux {ι : Type*} [Finite ι] {α : ι → Type*}
   refine ne_of_lt ((iSup_le fun i => ?_).trans_lt (@ENNReal.coe_lt_top M))
   simp only [eDist, PseudoMetricSpace.eDist_dist, ENNReal.ofReal_eq_coe_nnreal dist_nonneg]
   exact mod_cast hM i
+
+@[deprecated (since := "2026-11-27")] alias iSup_edist_ne_top_aux := iSup_eDist_ne_top_aux
 
 /-- Endowing the space `PiLp p α` with the `L^p` pseudometric structure. This definition is not
 satisfactory, as it does not register the fact that the topology, the uniform structure, and the
@@ -649,6 +661,8 @@ theorem eDist_apply_le [∀ i, PseudoEMetricSpace (β i)] (x y : PiLp p β) (i :
     eDist (x i) (y i) ≤ eDist x y :=
   eDist_apply_le_eDist_aux x y i
 
+@[deprecated (since := "2026-11-27")] alias edist_apply_le := eDist_apply_le
+
 theorem nnDist_apply_le [∀ i, PseudoMetricSpace (β i)] (x y : PiLp p β) (i : ι) :
     nnDist (x i) (y i) ≤ nnDist x y := by
   simpa [← coe_nnreal_ennreal_nnDist] using eDist_apply_le x y i
@@ -794,6 +808,8 @@ set_option backward.isDefEq.respectTransparency false in
 theorem eDist_eq_of_L1 (x y : PiLp 1 β) : eDist x y = ∑ i, eDist (x i) (y i) := by
   simp [PiLp.eDist_eq_sum]
 
+@[deprecated (since := "2026-11-27")] alias edist_eq_of_L1 := eDist_eq_of_L1
+
 end L1
 
 section L2
@@ -837,6 +853,8 @@ theorem nnDist_eq_of_L2 (x y : PiLp 2 β) :
 
 theorem eDist_eq_of_L2 (x y : PiLp 2 β) :
     eDist x y = (∑ i, eDist (x i) (y i) ^ 2) ^ (1 / 2 : ℝ) := by simp [PiLp.eDist_eq_sum]
+
+@[deprecated (since := "2026-11-27")] alias edist_eq_of_L2 := eDist_eq_of_L2
 
 end L2
 
@@ -1118,6 +1136,8 @@ lemma dist_single_same (i : ι) (b₁ b₂ : β i) :
 lemma eDist_single_same (i : ι) (b₁ b₂ : β i) :
     eDist (single p i b₁) (single p i b₂) = eDist b₁ b₂ := by
   simp only [eDist_nnDist, nnDist_single_same p β i b₁ b₂]
+
+@[deprecated (since := "2026-11-27")] alias edist_single_same := eDist_single_same
 
 end Single
 

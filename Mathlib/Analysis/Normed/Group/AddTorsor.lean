@@ -196,11 +196,15 @@ theorem eDist_vadd_vadd_le (v v' : V) (p p' : P) :
   norm_cast
   apply dist_vadd_vadd_le
 
+@[deprecated (since := "2026-11-27")] alias edist_vadd_vadd_le := eDist_vadd_vadd_le
+
 theorem eDist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
     eDist (p₁ -ᵥ p₂) (p₃ -ᵥ p₄) ≤ eDist p₁ p₃ + eDist p₂ p₄ := by
   simp only [eDist_nnDist]
   norm_cast
   apply dist_vsub_vsub_le
+
+@[deprecated (since := "2026-11-27")] alias edist_vsub_vsub_le := eDist_vsub_vsub_le
 
 /-- The pseudodistance defines a pseudometric space structure on the torsor. This
 is not an instance because it depends on `V` to define a `MetricSpace P`. -/

@@ -61,6 +61,9 @@ theorem lipschitzWith_lipschitz_const_mul_eDist [_i : LipschitzMul β] :
     LipschitzWith (LipschitzMul.C β) fun p : β × β => p.1 * p.2 :=
   Classical.choose_spec _i.lipschitz_mul
 
+@[deprecated (since := "2026-11-27")]
+alias lipschitzWith_lipschitz_const_mul_edist := lipschitzWith_lipschitz_const_mul_eDist
+
 variable [LipschitzMul β]
 
 @[to_additive]

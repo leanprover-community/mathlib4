@@ -106,6 +106,8 @@ protected theorem eDist_zero_of_eq_zero (hf : LocallyBoundedVariationOn f s)
     apply eVariationOn.eDist_le
     exacts [⟨ha, ⟨le_rfl, h'⟩⟩, ⟨hb, ⟨h', le_rfl⟩⟩]
 
+@[deprecated (since := "2026-11-27")] alias edist_zero_of_eq_zero := eDist_zero_of_eq_zero
+
 protected theorem eq_left_iff {f : α → E} {s : Set α} (hf : LocallyBoundedVariationOn f s)
     {a b c : α} (ha : a ∈ s) (hb : b ∈ s) (hc : c ∈ s) :
     variationOnFromTo f s a b = variationOnFromTo f s a c ↔ variationOnFromTo f s b c = 0 := by

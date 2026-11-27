@@ -97,9 +97,13 @@ theorem eDist_le (h : HolderOnWith C r f s) {x y : X} (hx : x ∈ s) (hy : y ∈
     eDist (f x) (f y) ≤ (C : ℝ≥0∞) * eDist x y ^ (r : ℝ) :=
   h x hx y hy
 
+@[deprecated (since := "2026-11-27")] alias edist_le := eDist_le
+
 theorem eDist_le_of_le (h : HolderOnWith C r f s) {x y : X} (hx : x ∈ s) (hy : y ∈ s) {d : ℝ≥0∞}
     (hd : eDist x y ≤ d) : eDist (f x) (f y) ≤ (C : ℝ≥0∞) * d ^ (r : ℝ) :=
   (h.eDist_le hx hy).trans <| by gcongr
+
+@[deprecated (since := "2026-11-27")] alias edist_le_of_le := eDist_le_of_le
 
 theorem comp {Cg rg : ℝ≥0} {g : Y → Z} {t : Set Y} (hg : HolderOnWith Cg rg g t) {Cf rf : ℝ≥0}
     {f : X → Y} (hf : HolderOnWith Cf rf f s) (hst : MapsTo f s t) :
@@ -253,9 +257,13 @@ theorem eDist_le (h : HolderWith C r f) (x y : X) :
     eDist (f x) (f y) ≤ (C : ℝ≥0∞) * eDist x y ^ (r : ℝ) :=
   h x y
 
+@[deprecated (since := "2026-11-27")] alias edist_le := eDist_le
+
 theorem eDist_le_of_le (h : HolderWith C r f) {x y : X} {d : ℝ≥0∞} (hd : eDist x y ≤ d) :
     eDist (f x) (f y) ≤ (C : ℝ≥0∞) * d ^ (r : ℝ) :=
   (h.holderOnWith univ).eDist_le_of_le trivial trivial hd
+
+@[deprecated (since := "2026-11-27")] alias edist_le_of_le := eDist_le_of_le
 
 theorem comp {Cg rg : ℝ≥0} {g : Y → Z} (hg : HolderWith Cg rg g) {Cf rf : ℝ≥0} {f : X → Y}
     (hf : HolderWith Cf rf f) : HolderWith (Cg * Cf ^ (rg : ℝ)) (rg * rf) (g ∘ f) :=

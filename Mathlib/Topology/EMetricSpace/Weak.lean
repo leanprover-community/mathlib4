@@ -64,17 +64,25 @@ variable [m : WeakPseudoEMetricSpace α]
 theorem eDist_none_none : eDist (self := Option.toEDist (α := α))
     none none = 0 := rfl
 
+@[deprecated (since := "2026-11-27")] alias edist_none_none := eDist_none_none
+
 @[simp]
 theorem eDist_none_some {a : α} :
     eDist (self := Option.toEDist (α := α)) none a = ⊤ := rfl
+
+@[deprecated (since := "2026-11-27")] alias edist_none_some := eDist_none_some
 
 @[simp]
 theorem eDist_some_none {a : α} :
     eDist (self := Option.toEDist (α := α)) a none = ⊤ := rfl
 
+@[deprecated (since := "2026-11-27")] alias edist_some_none := eDist_some_none
+
 @[simp]
 theorem eDist_some_some {a b : α} :
     eDist (self := Option.toEDist (α := α)) a b = eDist a b := rfl
+
+@[deprecated (since := "2026-11-27")] alias edist_some_some := eDist_some_some
 
 theorem some_eball (a : α) (r : ENNReal) :
     Option.some '' Metric.eball a r = Metric.eball (α := Option α) a r := by
@@ -93,12 +101,16 @@ lemma eDist_self' {α : Type u} [TopologicalSpace α] (m : WeakPseudoEMetricSpac
   | (_ : α) => by simp
   | none => rfl
 
+@[deprecated (since := "2026-11-27")] alias edist_self' := eDist_self'
+
 lemma eDist_comm' {α : Type u} [TopologicalSpace α] (m : WeakPseudoEMetricSpace α) :
     ∀ x y : Option α, eDist x y = eDist y x
   | (_ : α), (_ : α) => by simp [m.eDist_comm]
   | (_ : α), none => by simp
   | none, (_ : α) => by simp
   | none, none => by simp
+
+@[deprecated (since := "2026-11-27")] alias edist_comm' := eDist_comm'
 
 lemma eDist_triangle' {α : Type u} [TopologicalSpace α] (m : WeakPseudoEMetricSpace α) :
     ∀ x y z : Option α, eDist x z ≤ eDist x y + eDist y z
@@ -110,6 +122,8 @@ lemma eDist_triangle' {α : Type u} [TopologicalSpace α] (m : WeakPseudoEMetric
   | none, (_ : α), none => by simp
   | (_ : α), none, none => by simp
   | none, none, none => by simp
+
+@[deprecated (since := "2026-11-27")] alias edist_triangle' := eDist_triangle'
 
 theorem ball_infty_of_pos {r : ENNReal} (hr : 0 < r) :
     Metric.eball (none : Option α) r = {none} := by
@@ -263,17 +277,25 @@ namespace ENNReal
 theorem eDist_top_coe (a : ℝ≥0) : eDist ∞ ↑a = ∞ :=
   rfl
 
+@[deprecated (since := "2026-11-27")] alias edist_top_coe := eDist_top_coe
+
 @[simp]
 theorem eDist_coe_top (a : ℝ≥0) : eDist ↑a ∞ = ∞ :=
   rfl
+
+@[deprecated (since := "2026-11-27")] alias edist_coe_top := eDist_coe_top
 
 @[simp, norm_cast]
 theorem eDist_coe (a b : ℝ≥0) : eDist (a : ℝ≥0∞) b = eDist a b :=
   rfl
 
+@[deprecated (since := "2026-11-27")] alias edist_coe := eDist_coe
+
 @[simp]
 theorem eDist_eq_top_iff (a b : ℝ≥0∞) : eDist a b = ∞ ↔ a ≠ b ∧ (a = ∞ ∨ b = ∞) := by
   cases a <;> cases b <;> simp
+
+@[deprecated (since := "2026-11-27")] alias edist_eq_top_iff := eDist_eq_top_iff
 
 theorem eDist_eq_max (a b : ℝ≥0∞) : eDist a b = max (a - b) (b - a) := by
   cases a <;> cases b
@@ -282,11 +304,17 @@ theorem eDist_eq_max (a b : ℝ≥0∞) : eDist a b = max (a - b) (b - a) := by
     norm_cast
   all_goals simp
 
+@[deprecated (since := "2026-11-27")] alias edist_eq_max := eDist_eq_max
+
 theorem eDist_le_iff_le_add_left (a b c : ℝ≥0∞) : eDist a b ≤ c ↔ a ≤ c + b ∧ b ≤ c + a := by
   simp [eDist_eq_max]
 
+@[deprecated (since := "2026-11-27")] alias edist_le_iff_le_add_left := eDist_le_iff_le_add_left
+
 theorem eDist_le_iff_le_add_right (a b c : ℝ≥0∞) : eDist a b ≤ c ↔ a ≤ b + c ∧ b ≤ a + c := by
   simp only [eDist_le_iff_le_add_left, add_comm]
+
+@[deprecated (since := "2026-11-27")] alias edist_le_iff_le_add_right := eDist_le_iff_le_add_right
 
 theorem sub_le_dist (a b : ℝ≥0∞) : a - b ≤ eDist a b := by
   grw [eDist_eq_max, ← le_max_left]
@@ -294,31 +322,45 @@ theorem sub_le_dist (a b : ℝ≥0∞) : a - b ≤ eDist a b := by
 theorem le_add_eDist (a b : ℝ≥0∞) : a ≤ b + eDist a b := by
   grw [← sub_le_dist, ← le_add_tsub]
 
+@[deprecated (since := "2026-11-27")] alias le_add_edist := le_add_eDist
+
 @[simp]
 theorem eDist_zero_left (a : ℝ≥0∞) : eDist 0 a = a := by
   simp [eDist_eq_max]
 
+@[deprecated (since := "2026-11-27")] alias edist_zero_left := eDist_zero_left
+
 @[simp]
 theorem eDist_zero_right (a : ℝ≥0∞) : eDist a 0 = a := by
   simp [eDist_eq_max]
+
+@[deprecated (since := "2026-11-27")] alias edist_zero_right := eDist_zero_right
 
 @[simp]
 theorem eDist_add_left (a b : ℝ≥0∞) {c : ℝ≥0∞} (hc : c ≠ ∞) :
     eDist (c + a) (c + b) = eDist a b := by
   simp only [eDist_eq_max, add_sub_add_eq_sub_left hc]
 
+@[deprecated (since := "2026-11-27")] alias edist_add_left := eDist_add_left
+
 @[simp]
 theorem eDist_add_right (a b : ℝ≥0∞) {c : ℝ≥0∞} (hc : c ≠ ∞) :
     eDist (a + c) (b + c) = eDist a b := by
   simp only [eDist_eq_max, add_sub_add_eq_sub_right hc]
 
+@[deprecated (since := "2026-11-27")] alias edist_add_right := eDist_add_right
+
 theorem eDist_mul_left (a b : ℝ≥0∞) {c : ℝ≥0∞} (hc : c ≠ ∞) :
     eDist (c * a) (c * b) = c * eDist a b := by
   simp_rw [eDist_eq_max, mul_max, ENNReal.mul_sub fun _ _ => hc]
 
+@[deprecated (since := "2026-11-27")] alias edist_mul_left := eDist_mul_left
+
 theorem eDist_mul_right (a b : ℝ≥0∞) {c : ℝ≥0∞} (hc : c ≠ ∞) :
     eDist (a * c) (b * c) = eDist a b * c := by
   simp_rw [eDist_eq_max, max_mul, ENNReal.sub_mul fun _ _ => hc]
+
+@[deprecated (since := "2026-11-27")] alias edist_mul_right := eDist_mul_right
 
 end ENNReal
 

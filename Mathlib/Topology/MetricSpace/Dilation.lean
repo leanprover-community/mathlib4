@@ -162,6 +162,8 @@ theorem eDist_eq [DilationClass F α β] (f : F) (x y : α) :
     · simp [hr, h, hne]
   exact (DilationClass.eDist_eq' f).choose_spec.2 x y
 
+@[deprecated (since := "2026-11-27")] alias edist_eq := eDist_eq
+
 @[simp]
 theorem nnDist_eq {α β F : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β] [FunLike F α β]
     [DilationClass F α β] (f : F) (x y : α) :

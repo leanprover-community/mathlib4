@@ -79,6 +79,8 @@ variable {f : α → β} {x : α}
 theorem eDist_eq (hf : Isometry f) (x y : α) : eDist (f x) (f y) = eDist x y :=
   hf x y
 
+@[deprecated (since := "2026-11-27")] alias edist_eq := eDist_eq
+
 theorem lipschitzWith (h : Isometry f) : LipschitzWith 1 f :=
   LipschitzWith.of_eDist_le fun x y => (h x y).le
 
@@ -312,6 +314,8 @@ variable [FunLike F α β] [IsometryClass F α β] (f : F)
 protected theorem eDist_eq (x y : α) : eDist (f x) (f y) = eDist x y :=
   (IsometryClass.isometry f).eDist_eq x y
 
+@[deprecated (since := "2026-11-27")] alias edist_eq := eDist_eq
+
 protected theorem continuous : Continuous f :=
   (IsometryClass.isometry f).continuous
 
@@ -417,6 +421,8 @@ protected theorem surjective (h : α ≃ᵢ β) : Surjective h :=
 
 protected theorem eDist_eq (h : α ≃ᵢ β) (x y : α) : eDist (h x) (h y) = eDist x y :=
   h.isometry.eDist_eq x y
+
+@[deprecated (since := "2026-11-27")] alias edist_eq := eDist_eq
 
 protected theorem dist_eq {α β : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β] (h : α ≃ᵢ β)
     (x y : α) : dist (h x) (h y) = dist x y :=
@@ -639,6 +645,9 @@ theorem _root_.Fin.eDist_append_eq_max_eDist (m n : ℕ) {x x2 : Fin m → α} {
     eDist (Fin.append x y) (Fin.append x2 y2) = max (eDist x x2) (eDist y y2) := by
   simp [eDist_pi_def, Finset.sup_univ_eq_iSup, ← Equiv.iSup_comp (e := finSumFinEquiv),
     iSup_sum]
+
+@[deprecated (since := "2026-11-27")]
+alias _root_.Fin.edist_append_eq_max_edist := _root_.Fin.eDist_append_eq_max_eDist
 
 /-- The natural `IsometryEquiv` between `(Fin m → α) × (Fin n → α)` and `Fin (m + n) → α`.
 `Fin.appendEquiv` as an `IsometryEquiv`. -/

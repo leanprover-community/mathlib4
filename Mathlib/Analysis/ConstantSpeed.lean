@@ -244,6 +244,9 @@ theorem eDist_naturalParameterization_eq_zero {f : α → E} {s : Set α}
   rw [variationOnFromTo.eq_left_iff hf as cs bs] at hc
   apply variationOnFromTo.eDist_zero_of_eq_zero hf cs bs hc
 
+@[deprecated (since := "2026-11-27")]
+alias edist_naturalParameterization_eq_zero := eDist_naturalParameterization_eq_zero
+
 theorem has_unit_speed_naturalParameterization (f : α → E) {s : Set α}
     (hf : LocallyBoundedVariationOn f s) {a : α} (as : a ∈ s) :
     HasUnitSpeedOn (naturalParameterization f s a) (variationOnFromTo f s a '' s) := by

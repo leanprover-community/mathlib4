@@ -443,6 +443,8 @@ alias nndist_one_right := nnDist_one_right
 @[to_additive (attr := simp)]
 lemma eDist_one_right (a : E) : eDist a 1 = ‖a‖ₑ := by simp [eDist_nnDist, nnDist_one_right, eNorm]
 
+@[deprecated (since := "2026-11-27")] alias edist_one_right := eDist_one_right
+
 @[to_additive (attr := simp) nnNorm_zero]
 theorem nnNorm_one' : ‖(1 : E)‖₊ = 0 := NNReal.eq norm_one'
 
@@ -513,6 +515,8 @@ alias nndist_one_left := nnDist_one_left
 @[to_additive (attr := simp)]
 theorem eDist_one_left (a : E) : eDist 1 a = ‖a‖₊ := by
   rw [eDist_nnDist, nnDist_one_left]
+
+@[deprecated (since := "2026-11-27")] alias edist_one_left := eDist_one_left
 
 open scoped symmDiff in
 @[to_additive]
@@ -620,6 +624,8 @@ open scoped symmDiff in
 theorem eDist_mulIndicator (s t : Set α) (f : α → E) (x : α) :
     eDist (s.mulIndicator f x) (t.mulIndicator f x) = ‖(s ∆ t).mulIndicator f x‖₊ := by
   rw [eDist_nnDist, nnDist_mulIndicator]
+
+@[deprecated (since := "2026-11-27")] alias edist_mulIndicator := eDist_mulIndicator
 
 @[to_additive nontrivialTopology_iff_exists_nnNorm_ne_zero]
 theorem nontrivialTopology_iff_exists_nnNorm_ne_zero' :
@@ -730,6 +736,8 @@ theorem eDist_eq_eNorm_inv_mul (a b : E) : eDist a b = ‖a⁻¹ * b‖ₑ := by
 
 @[to_additive (attr := deprecated (since := "2026-11-06"))]
 alias eDist_eq_enorm_inv_mul := eDist_eq_eNorm_inv_mul
+
+@[deprecated (since := "2026-11-27")] alias edist_eq_enorm_inv_mul := eDist_eq_enorm_inv_mul
 
 @[to_additive]
 lemma eNorm_div_rev {E : Type*} [SeminormedGroup E] (a b : E) : ‖a / b‖ₑ = ‖b / a‖ₑ := by
@@ -923,6 +931,8 @@ theorem eDist_eq_eNorm_div (a b : E) : eDist a b = ‖a / b‖ₑ := by
 
 @[to_additive (attr := deprecated (since := "2026-11-06"))]
 alias eDist_eq_enorm_div := eDist_eq_eNorm_div
+
+@[deprecated (since := "2026-11-27")] alias edist_eq_enorm_div := eDist_eq_enorm_div
 
 @[to_additive]
 theorem dist_inv (x y : E) : dist x⁻¹ y = dist x y⁻¹ := by

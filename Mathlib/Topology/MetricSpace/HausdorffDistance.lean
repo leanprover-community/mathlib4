@@ -105,6 +105,8 @@ theorem infEDist_singleton : infEDist x {y} = eDist x y :=
 theorem infEDist_le_eDist_of_mem (h : y ∈ s) : infEDist x s ≤ eDist x y :=
   iInf₂_le y h
 
+@[deprecated (since := "2026-11-27")] alias infEDist_le_edist_of_mem := infEDist_le_eDist_of_mem
+
 /-- If a point `x` belongs to `s`, then its eDist to `s` vanishes -/
 theorem infEDist_zero_of_mem (h : x ∈ s) : infEDist x s = 0 :=
   nonpos_iff_eq_zero.1 <| eDist_self x ▸ infEDist_le_eDist_of_mem h
@@ -126,9 +128,15 @@ theorem infEDist_le_infEDist_add_eDist : infEDist x s ≤ infEDist y s + eDist x
       iInf₂_mono fun _ _ => (eDist_triangle _ _ _).trans_eq (add_comm _ _)
     _ = (⨅ z ∈ s, eDist y z) + eDist x y := by simp only [ENNReal.iInf_add]
 
+@[deprecated (since := "2026-11-27")]
+alias infEDist_le_infEDist_add_edist := infEDist_le_infEDist_add_eDist
+
 theorem infEDist_le_eDist_add_infEDist : infEDist x s ≤ eDist x y + infEDist y s := by
   rw [add_comm]
   exact infEDist_le_infEDist_add_eDist
+
+@[deprecated (since := "2026-11-27")]
+alias infEDist_le_edist_add_infEDist := infEDist_le_eDist_add_infEDist
 
 theorem eDist_le_infEDist_add_ediam (hy : y ∈ s) : eDist x y ≤ infEDist x s + Metric.ediam s := by
   simp_rw [infEDist, ENNReal.iInf_add]
@@ -136,6 +144,9 @@ theorem eDist_le_infEDist_add_ediam (hy : y ∈ s) : eDist x y ≤ infEDist x s 
   calc
     eDist x y ≤ eDist x i + eDist i y := eDist_triangle _ _ _
     _ ≤ eDist x i + Metric.ediam s := add_le_add le_rfl (Metric.eDist_le_ediam_of_mem hi hy)
+
+@[deprecated (since := "2026-11-27")]
+alias edist_le_infEDist_add_ediam := eDist_le_infEDist_add_ediam
 
 /-- The eDist to a set depends continuously on the point -/
 @[continuity, fun_prop]
@@ -236,6 +247,9 @@ theorem _root_.IsCompact.exists_infEDist_eq_eDist (hs : IsCompact s) (hne : s.No
   obtain ⟨y, ys, hy⟩ := hs.exists_isMinOn hne A.continuousOn
   exact ⟨y, ys, le_antisymm (infEDist_le_eDist_of_mem ys) (by rwa [le_infEDist])⟩
 
+@[deprecated (since := "2026-11-27")]
+alias _root_.IsCompact.exists_infEDist_eq_edist := _root_.IsCompact.exists_infEDist_eq_eDist
+
 theorem exists_pos_forall_lt_eDist (hs : IsCompact s) (ht : IsClosed t) (hst : Disjoint s t) :
     ∃ r : ℝ≥0, 0 < r ∧ ∀ x ∈ s, ∀ y ∈ t, (r : ℝ≥0∞) < eDist x y := by
   rcases s.eq_empty_or_nonempty with (rfl | hne)
@@ -246,6 +260,8 @@ theorem exists_pos_forall_lt_eDist (hs : IsCompact s) (ht : IsClosed t) (hst : D
     pos_iff_ne_zero.2 fun H => hst.le_bot ⟨hx, (mem_iff_infEDist_zero_of_closed ht).mpr H⟩
   rcases ENNReal.lt_iff_exists_nnreal_btwn.1 this with ⟨r, h₀, hr⟩
   exact ⟨r, ENNReal.coe_pos.mp h₀, fun y hy z hz => hr.trans_le <| le_infEDist.1 (h hy) z hz⟩
+
+@[deprecated (since := "2026-11-27")] alias exists_pos_forall_lt_edist := exists_pos_forall_lt_eDist
 
 theorem infEDist_prod (x : α × β) (s : Set α) (t : Set β) :
     infEDist x (s ×ˢ t) = max (infEDist x.1 s) (infEDist x.2 t) := by
@@ -294,6 +310,9 @@ theorem hausdorffEDist_le_of_mem_eDist {r : ℝ≥0∞} (H1 : ∀ x ∈ s, ∃ y
   · rcases H2 x xt with ⟨y, ys, hy⟩
     exact le_trans (infEDist_le_eDist_of_mem ys) hy
 
+@[deprecated (since := "2026-11-27")]
+alias hausdorffEDist_le_of_mem_edist := hausdorffEDist_le_of_mem_eDist
+
 /-- The distance to a set is controlled by the Hausdorff distance. -/
 theorem infEDist_le_hausdorffEDist_of_mem (h : x ∈ s) : infEDist x t ≤ hausdorffEDist s t := by
   rw [hausdorffEDist]
@@ -308,6 +327,9 @@ theorem exists_eDist_lt_of_hausdorffEDist_lt {r : ℝ≥0∞} (h : x ∈ s) (H :
     calc
       infEDist x t ≤ hausdorffEDist s t := infEDist_le_hausdorffEDist_of_mem h
       _ < r := H
+
+@[deprecated (since := "2026-11-27")]
+alias exists_edist_lt_of_hausdorffEDist_lt := exists_eDist_lt_of_hausdorffEDist_lt
 
 /-- The distance from `x` to `s` or `t` is controlled in terms of the Hausdorff distance
 between `s` and `t`. -/

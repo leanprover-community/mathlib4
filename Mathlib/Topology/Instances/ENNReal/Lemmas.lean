@@ -568,6 +568,8 @@ theorem eDist_ne_top_of_mem_ball {a : β} {r : ℝ≥0∞} (x y : eball a r) : e
         rw [eDist_comm a x, eDist_comm a y]; exact ENNReal.add_lt_add x.property y.property
       _ ≤ ∞ := le_top
 
+@[deprecated (since := "2026-11-27")] alias edist_ne_top_of_mem_ball := eDist_ne_top_of_mem_ball
+
 /-- Each ball in an extended metric space gives us a metric space, as the eDist
 is everywhere finite. -/
 @[instance_reducible]
@@ -590,6 +592,9 @@ theorem tendsto_iff_eDist_tendsto_0 {l : Filter β} {f : β → α} {y : α} :
     Tendsto f l (𝓝 y) ↔ Tendsto (fun x => eDist (f x) y) l (𝓝 0) := by
   simp only [Metric.nhds_basis_eball.tendsto_right_iff, Metric.mem_eball,
     @tendsto_order ℝ≥0∞ β _ _, forall_prop_of_false ENNReal.not_lt_zero, forall_const, true_and]
+
+@[deprecated (since := "2026-11-27")]
+alias tendsto_iff_edist_tendsto_0 := tendsto_iff_eDist_tendsto_0
 
 /-- Yet another metric characterization of Cauchy sequences on integers. This one is often the
 most efficient. -/
@@ -624,6 +629,8 @@ theorem continuous_of_le_add_eDist {f : α → ℝ≥0∞} (C : ℝ≥0∞) (hC 
   refine ⟨tsub_le_iff_right.2 <| (h x y).trans ?_, (h y x).trans ?_⟩ <;> grw [← hδ.le] <;> gcongr
   exacts [Metric.mem_closedEBall'.1 hy, Metric.mem_closedEBall.1 hy]
 
+@[deprecated (since := "2026-11-27")] alias continuous_of_le_add_edist := continuous_of_le_add_eDist
+
 theorem continuous_eDist : Continuous fun p : α × α => eDist p.1 p.2 := by
   apply continuous_of_le_add_eDist 2 (by decide)
   rintro ⟨x, y⟩ ⟨x', y'⟩
@@ -634,14 +641,20 @@ theorem continuous_eDist : Continuous fun p : α × α => eDist p.1 p.2 := by
       gcongr <;> apply_rules [le_max_left, le_max_right]
     _ = eDist x' y' + 2 * eDist (x, y) (x', y') := by rw [← mul_two, mul_comm]
 
+@[deprecated (since := "2026-11-27")] alias continuous_edist := continuous_eDist
+
 @[continuity, fun_prop]
 theorem Continuous.eDist [TopologicalSpace β] {f g : β → α} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun b => eDist (f b) (g b) :=
   continuous_eDist.comp (hf.prodMk hg :)
 
+@[deprecated (since := "2026-11-27")] alias Continuous.edist := Continuous.eDist
+
 theorem Filter.Tendsto.eDist {f g : β → α} {x : Filter β} {a b : α} (hf : Tendsto f x (𝓝 a))
     (hg : Tendsto g x (𝓝 b)) : Tendsto (fun x => eDist (f x) (g x)) x (𝓝 (eDist a b)) :=
   (continuous_eDist.tendsto (a, b)).comp (hf.prodMk_nhds hg)
+
+@[deprecated (since := "2026-11-27")] alias Filter.Tendsto.edist := Filter.Tendsto.eDist
 
 theorem Metric.isClosed_closedEBall {a : α} {r : ℝ≥0∞} : IsClosed (closedEBall a r) :=
   isClosed_le (by fun_prop) continuous_const

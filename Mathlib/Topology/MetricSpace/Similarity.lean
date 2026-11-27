@@ -52,6 +52,9 @@ lemma similar_iff_exists_eDist_eq :
       r * eDist (v₂ i₁) (v₂ i₂))) :=
   Iff.rfl
 
+@[deprecated (since := "2026-11-27")]
+alias similar_iff_exists_edist_eq := similar_iff_exists_eDist_eq
+
 /-- Similarity holds if and only if all extended distances between points with different
 indices are proportional. -/
 lemma similar_iff_exists_pairwise_eDist_eq :
@@ -63,6 +66,9 @@ lemma similar_iff_exists_pairwise_eDist_eq :
   · by_cases hi : i₁ = i₂
     · simp [hi]
     · exact h hi
+
+@[deprecated (since := "2026-11-27")]
+alias similar_iff_exists_pairwise_edist_eq := similar_iff_exists_pairwise_eDist_eq
 
 lemma Congruent.similar {v₁ : ι → P₁} {v₂ : ι → P₂} (h : Congruent v₁ v₂) : Similar v₁ v₂ :=
   ⟨1, one_ne_zero, fun i₁ i₂ ↦ by simpa using h i₁ i₂⟩

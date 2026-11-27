@@ -289,4 +289,6 @@ lemma eDist_boxProd (x y : α × β) :
       rw [← hw, Walk.length_boxProd]
       exact add_le_add (eDist_le w.ofBoxProdLeft) (eDist_le w.ofBoxProdRight)
 
+@[deprecated (since := "2026-11-27")] alias edist_boxProd := eDist_boxProd
+
 end SimpleGraph

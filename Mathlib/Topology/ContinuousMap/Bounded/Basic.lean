@@ -251,6 +251,8 @@ theorem eDist_eq_iSup : eDist f g = ⨆ x, eDist (f x) (g x) := by
   rintro - ⟨x, hx, rfl⟩
   exact nnDist_coe_le_nnDist x
 
+@[deprecated (since := "2026-11-27")] alias edist_eq_iSup := eDist_eq_iSup
+
 theorem tendsto_iff_tendstoUniformly {ι : Type*} {F : ι → α →ᵇ β} {f : α →ᵇ β} {l : Filter ι} :
     Tendsto F l (𝓝 f) ↔ TendstoUniformly (fun i => F i) f l :=
   Iff.intro

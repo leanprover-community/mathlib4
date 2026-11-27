@@ -458,6 +458,9 @@ theorem cauchySeq_of_eDist_le_geometric : CauchySeq f := by
   rw [ENNReal.tsum_mul_left, ENNReal.tsum_geometric]
   finiteness [(tsub_pos_iff_lt.2 hr).ne']
 
+@[deprecated (since := "2026-11-27")]
+alias cauchySeq_of_edist_le_geometric := cauchySeq_of_eDist_le_geometric
+
 include hu in
 /-- If `eDist (f n) (f (n+1))` is bounded by `C * r^n`, then the distance from
 `f n` to the limit of `f` is bounded above by `C * r^n / (1 - r)`. -/
@@ -466,12 +469,18 @@ theorem eDist_le_of_eDist_le_geometric_of_tendsto {a : α} (ha : Tendsto f atTop
   convert eDist_le_tsum_of_eDist_le_of_tendsto _ hu ha _
   simp only [pow_add, ENNReal.tsum_mul_left, ENNReal.tsum_geometric, div_eq_mul_inv, mul_assoc]
 
+@[deprecated (since := "2026-11-27")]
+alias edist_le_of_edist_le_geometric_of_tendsto := eDist_le_of_eDist_le_geometric_of_tendsto
+
 include hu in
 /-- If `eDist (f n) (f (n+1))` is bounded by `C * r^n`, then the distance from
 `f 0` to the limit of `f` is bounded above by `C / (1 - r)`. -/
 theorem eDist_le_of_eDist_le_geometric_of_tendsto₀ {a : α} (ha : Tendsto f atTop (𝓝 a)) :
     eDist (f 0) a ≤ C / (1 - r) := by
   simpa only [_root_.pow_zero, mul_one] using eDist_le_of_eDist_le_geometric_of_tendsto r C hu ha 0
+
+@[deprecated (since := "2026-11-27")]
+alias edist_le_of_edist_le_geometric_of_tendsto₀ := eDist_le_of_eDist_le_geometric_of_tendsto₀
 
 end EDistLeGeometric
 
@@ -487,6 +496,9 @@ theorem cauchySeq_of_eDist_le_geometric_two : CauchySeq f := by
   refine cauchySeq_of_eDist_le_geometric 2⁻¹ C ?_ hC hu
   simp
 
+@[deprecated (since := "2026-11-27")]
+alias cauchySeq_of_edist_le_geometric_two := cauchySeq_of_eDist_le_geometric_two
+
 include hu ha in
 /-- If `eDist (f n) (f (n+1))` is bounded by `C * 2^-n`, then the distance from
 `f n` to the limit of `f` is bounded above by `2 * C * 2^-n`. -/
@@ -496,12 +508,19 @@ theorem eDist_le_of_eDist_le_geometric_two_of_tendsto (n : ℕ) : eDist (f n) a 
   convert eDist_le_of_eDist_le_geometric_of_tendsto 2⁻¹ C hu ha n using 1
   rw [ENNReal.one_sub_inv_two, div_eq_mul_inv, inv_inv]
 
+@[deprecated (since := "2026-11-27")]
+alias edist_le_of_edist_le_geometric_two_of_tendsto := eDist_le_of_eDist_le_geometric_two_of_tendsto
+
 include hu ha in
 /-- If `eDist (f n) (f (n+1))` is bounded by `C * 2^-n`, then the distance from
 `f 0` to the limit of `f` is bounded above by `2 * C`. -/
 theorem eDist_le_of_eDist_le_geometric_two_of_tendsto₀ : eDist (f 0) a ≤ 2 * C := by
   simpa only [_root_.pow_zero, div_eq_mul_inv, inv_one, mul_one] using
     eDist_le_of_eDist_le_geometric_two_of_tendsto C hu ha 0
+
+@[deprecated (since := "2026-11-27")]
+alias edist_le_of_edist_le_geometric_two_of_tendsto₀ :=
+  eDist_le_of_eDist_le_geometric_two_of_tendsto₀
 
 end EDistLeGeometricTwo
 

@@ -94,13 +94,20 @@ theorem le_eDist_of_le_einfsep {d x} (hx : x ∈ s) {y} (hy : y ∈ s) (hxy : x 
     (hd : d ≤ s.einfsep) : d ≤ eDist x y :=
   le_einfsep_iff.1 hd x hx y hy hxy
 
+@[deprecated (since := "2026-11-27")] alias le_edist_of_le_einfsep := le_eDist_of_le_einfsep
+
 theorem einfsep_le_eDist_of_mem {x} (hx : x ∈ s) {y} (hy : y ∈ s) (hxy : x ≠ y) :
     s.einfsep ≤ eDist x y :=
   le_eDist_of_le_einfsep hx hy hxy le_rfl
 
+@[deprecated (since := "2026-11-27")] alias einfsep_le_edist_of_mem := einfsep_le_eDist_of_mem
+
 theorem einfsep_le_of_mem_of_eDist_le {d x} (hx : x ∈ s) {y} (hy : y ∈ s) (hxy : x ≠ y)
     (hxy' : eDist x y ≤ d) : s.einfsep ≤ d :=
   le_trans (einfsep_le_eDist_of_mem hx hy hxy) hxy'
+
+@[deprecated (since := "2026-11-27")]
+alias einfsep_le_of_mem_of_edist_le := einfsep_le_of_mem_of_eDist_le
 
 theorem le_einfsep {d} (h : ∀ x ∈ s, ∀ y ∈ s, x ≠ y → d ≤ eDist x y) : d ≤ s.einfsep :=
   le_einfsep_iff.2 h
@@ -348,12 +355,17 @@ theorem le_eDist_of_le_infsep {d x} (hx : x ∈ s) {y} (hy : y ∈ s) (hxy : x �
     rw [hs.infsep_zero] at hd
     exact le_trans hd dist_nonneg
 
+@[deprecated (since := "2026-11-27")] alias le_edist_of_le_infsep := le_eDist_of_le_infsep
+
 theorem infsep_le_dist_of_mem (hx : x ∈ s) (hy : y ∈ s) (hxy : x ≠ y) : s.infsep ≤ dist x y :=
   le_eDist_of_le_infsep hx hy hxy le_rfl
 
 theorem infsep_le_of_mem_of_eDist_le {d x} (hx : x ∈ s) {y} (hy : y ∈ s) (hxy : x ≠ y)
     (hxy' : dist x y ≤ d) : s.infsep ≤ d :=
   le_trans (infsep_le_dist_of_mem hx hy hxy) hxy'
+
+@[deprecated (since := "2026-11-27")]
+alias infsep_le_of_mem_of_edist_le := infsep_le_of_mem_of_eDist_le
 
 theorem infsep_pair : ({x, y} : Set α).infsep = dist x y := by
   rw [infsep_pair_eq_toReal, eDist_dist]

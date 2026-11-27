@@ -53,6 +53,9 @@ theorem IsPreconnected.eDist_ne_top (hs : IsPreconnected s) (ha : a ∈ s) (hb :
   rw [eDist_comm, ← lt_top_iff_ne_top, ← mem_eball]
   exact hs.subset_isClopen isClopen_eball_top ⟨a, ha, by simp⟩ hb
 
+@[deprecated (since := "2026-11-27")]
+alias IsPreconnected.edist_ne_top := IsPreconnected.eDist_ne_top
+
 /-- A preconnected set lies in the bounded component of any of its points. -/
 theorem IsPreconnected.subset_boundedComponent (hs : IsPreconnected s) (ha : a ∈ s) :
     s ⊆ boundedComponent a :=
@@ -66,6 +69,9 @@ theorem lipschitzOnWith_toReal_eDist (hs : IsPreconnected s) (ha : a ∈ s) :
   let : PseudoMetricSpace (boundedComponent a) := boundedComponent.pseudoMetricSpace a
   exact LipschitzWith.dist_right (⟨a, by simp [boundedComponent]⟩ : boundedComponent a)
     ⟨x, hs.eDist_ne_top ha hx⟩ ⟨y, hs.eDist_ne_top ha hy⟩
+
+@[deprecated (since := "2026-11-27")]
+alias lipschitzOnWith_toReal_edist := lipschitzOnWith_toReal_eDist
 
 variable [MeasurableSpace X] [BorelSpace X]
 
@@ -94,11 +100,18 @@ theorem IsPreconnected.le_hausdorffMeasure_of_le_eDist (hs : IsPreconnected s) (
         simpa using ((lipschitzOnWith_toReal_eDist hs ha).mono
           inter_subset_left).hausdorffMeasure_image_le zero_le_one
 
+@[deprecated (since := "2026-11-27")]
+alias IsPreconnected.le_hausdorffMeasure_of_le_edist :=
+  IsPreconnected.le_hausdorffMeasure_of_le_eDist
+
 /-- The distance between two points of a preconnected set `s` is at most the one-dimensional
 Hausdorff measure of `s`. -/
 theorem IsPreconnected.eDist_le_hausdorffMeasure (hs : IsPreconnected s) (ha : a ∈ s) (hb : b ∈ s) :
     eDist a b ≤ μH[1] s := by
   grw [hs.le_hausdorffMeasure_of_le_eDist ha hb le_rfl, measure_mono inter_subset_left]
+
+@[deprecated (since := "2026-11-27")]
+alias IsPreconnected.edist_le_hausdorffMeasure := IsPreconnected.eDist_le_hausdorffMeasure
 
 /-- The extended diameter of a preconnected set is at most its one-dimensional Hausdorff measure. -/
 theorem IsPreconnected.ediam_le_hausdorffMeasure (hs : IsPreconnected s) :

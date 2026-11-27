@@ -87,6 +87,8 @@ theorem eq_of_eDist_zero_on {f f' : α → E} {s : Set α} (h : ∀ ⦃x⦄, x �
   congr 1 with i : 1
   rw [eDist_congr_right (h <| p.snd.prop.2 (i + 1)), eDist_congr_left (h <| p.snd.prop.2 i)]
 
+@[deprecated (since := "2026-11-27")] alias eq_of_edist_zero_on := eq_of_eDist_zero_on
+
 theorem eq_of_eqOn {f f' : α → E} {s : Set α} (h : EqOn f f' s) :
     eVariationOn f s = eVariationOn f' s :=
   eq_of_eDist_zero_on fun x xs => by rw [h xs, eDist_self]
@@ -198,6 +200,8 @@ theorem eDist_le (f : α → E) {s : Set α} {x y : α} (hx : x ∈ s) (hy : y �
   | 0 => hy
   | (_ + 1) => hx
   simpa only [Finset.sum_range_one] using! sum_le (n := 1) hu us
+
+@[deprecated (since := "2026-11-27")] alias edist_le := eDist_le
 
 theorem eq_zero_iff (f : α → E) {s : Set α} :
     eVariationOn f s = 0 ↔ ∀ x ∈ s, ∀ y ∈ s, eDist (f x) (f y) = 0 := by
@@ -662,6 +666,9 @@ theorem eVariationOn_on_inter_Iic_eq_Iio_add_eDist
       sum_le_of_monotoneOn_Iic (by grind [MonotoneOn, StrictMonoOn]) (by grind)
     exact A.trans B
 
+@[deprecated (since := "2026-11-27")]
+alias eVariationOn_on_inter_Iic_eq_Iio_add_edist := eVariationOn_on_inter_Iic_eq_Iio_add_eDist
+
 /-- The variation of a function on `Ici a` is the sum of the variation on `Ioi a` and the
 contribution of `a`, i.e., the distance between the right limit and the value at `a`.
 We give a version relative to a set `s`. -/
@@ -673,6 +680,9 @@ theorem eVariationOn_on_inter_Ici_eq_Ioi_add_eDist
     eVariationOn f (s ∩ Ici a) = eVariationOn f (s ∩ Ioi a) + eDist (f a) l := by
   rw [← comp_ofDual f, ← comp_ofDual f]
   exact eVariationOn_on_inter_Iic_eq_Iio_add_eDist h ha h'f
+
+@[deprecated (since := "2026-11-27")]
+alias eVariationOn_on_inter_Ici_eq_Ioi_add_edist := eVariationOn_on_inter_Ici_eq_Ioi_add_eDist
 
 /-- If a function is continuous on the left at a point `a`, then its variations on `Iio a` and
 on `Iic a` coincide. We give a version relative to a set `s`. -/
@@ -881,6 +891,10 @@ theorem _root_.BoundedVariationOn.eVariationOn_Iic_eq_Iio_add_eDist [CompleteSpa
     apply eVariationOn_on_inter_Iic_eq_Iio_add_eDist (by simpa) (mem_univ _)
     simpa only [univ_inter] using hf.tendsto_leftLim _
   simpa using this
+
+@[deprecated (since := "2026-11-27")]
+alias _root_.BoundedVariationOn.eVariationOn_Iic_eq_Iio_add_edist :=
+  _root_.BoundedVariationOn.eVariationOn_Iic_eq_Iio_add_eDist
 
 /-- If a function has bounded variation, then the variation on
 small closed intervals to the left of this point tends to the contribution of the point, i.e.,

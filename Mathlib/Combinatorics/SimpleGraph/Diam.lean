@@ -45,10 +45,15 @@ lemma eccent_def : G.eccent = fun u ↦ ⨆ v, G.eDist u v := rfl
 lemma eDist_le_eccent {u v : α} : G.eDist u v ≤ G.eccent u :=
   le_iSup (G.eDist u) v
 
+@[deprecated (since := "2026-11-27")] alias edist_le_eccent := eDist_le_eccent
+
 lemma exists_eDist_eq_eccent_of_finite [Finite α] (u : α) :
     ∃ v, G.eDist u v = G.eccent u :=
   have : Nonempty α := Nonempty.intro u
   exists_eq_ciSup_of_finite
+
+@[deprecated (since := "2026-11-27")]
+alias exists_edist_eq_eccent_of_finite := exists_eDist_eq_eccent_of_finite
 
 lemma eccent_eq_top_of_not_connected (h : ¬ G.Connected) (u : α) :
     G.eccent u = ⊤ := by
@@ -131,6 +136,8 @@ noncomputable def ediam (G : SimpleGraph α) : ℕ∞ :=
 lemma ediam_eq_iSup_iSup_eDist : G.ediam = ⨆ u, ⨆ v, G.eDist u v :=
   rfl
 
+@[deprecated (since := "2026-11-27")] alias ediam_eq_iSup_iSup_edist := ediam_eq_iSup_iSup_eDist
+
 lemma ediam_def : G.ediam = ⨆ p : α × α, G.eDist p.1 p.2 := by
   rw [ediam, eccent_def, iSup_prod]
 
@@ -140,8 +147,12 @@ lemma eccent_le_ediam {u : α} : G.eccent u ≤ G.ediam :=
 lemma eDist_le_ediam {u v : α} : G.eDist u v ≤ G.ediam :=
   le_iSup₂ (f := G.eDist) u v
 
+@[deprecated (since := "2026-11-27")] alias edist_le_ediam := eDist_le_ediam
+
 lemma ediam_le_of_eDist_le {k : ℕ∞} (h : ∀ u v, G.eDist u v ≤ k) : G.ediam ≤ k :=
   iSup₂_le h
+
+@[deprecated (since := "2026-11-27")] alias ediam_le_of_edist_le := ediam_le_of_eDist_le
 
 lemma ediam_le_iff {k : ℕ∞} : G.ediam ≤ k ↔ ∀ u v, G.eDist u v ≤ k :=
   iSup₂_le_iff
@@ -209,10 +220,16 @@ lemma exists_eDist_eq_ediam_of_ne_top [Nonempty α] (h : G.ediam ≠ ⊤) :
     ∃ u v, G.eDist u v = G.ediam :=
   ENat.exists_eq_iSup₂_of_lt_top h.lt_top
 
+@[deprecated (since := "2026-11-27")]
+alias exists_edist_eq_ediam_of_ne_top := exists_eDist_eq_ediam_of_ne_top
+
 -- Note: Neither `Finite α` nor `G.ediam ≠ ⊤` implies the other.
 lemma exists_eDist_eq_ediam_of_finite [Nonempty α] [Finite α] :
     ∃ u v, G.eDist u v = G.ediam :=
   Prod.exists'.mp <| ediam_def ▸ exists_eq_ciSup_of_finite
+
+@[deprecated (since := "2026-11-27")]
+alias exists_edist_eq_ediam_of_finite := exists_eDist_eq_ediam_of_finite
 
 /-- In a finite graph with nontrivial vertex set, the graph is connected
 if and only if the extended diameter is not `⊤`.
@@ -344,6 +361,8 @@ noncomputable def radius (G : SimpleGraph α) : ℕ∞ :=
 lemma radius_eq_iInf_iSup_eDist : G.radius = ⨅ u, ⨆ v, G.eDist u v :=
   rfl
 
+@[deprecated (since := "2026-11-27")] alias radius_eq_iInf_iSup_edist := radius_eq_iInf_iSup_eDist
+
 lemma radius_le_eccent {u : α} : G.radius ≤ G.eccent u :=
   iInf_le G.eccent u
 
@@ -356,6 +375,9 @@ lemma exists_eDist_eq_radius_of_finite [Nonempty α] [Finite α] :
   obtain ⟨v, hv⟩ := G.exists_eDist_eq_eccent_of_finite w
   use w, v
   rw [hv, hw]
+
+@[deprecated (since := "2026-11-27")]
+alias exists_edist_eq_radius_of_finite := exists_eDist_eq_radius_of_finite
 
 lemma radius_eq_top_of_not_connected (h : ¬ G.Connected) : G.radius = ⊤ := by
   simp [radius, eccent_eq_top_of_not_connected h]

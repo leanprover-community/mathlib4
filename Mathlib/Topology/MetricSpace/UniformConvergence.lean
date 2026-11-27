@@ -58,9 +58,13 @@ lemma eDist_def (f g : α →ᵤ β) :
     eDist f g = ⨆ x, eDist (toFun f x) (toFun g x) :=
   rfl
 
+@[deprecated (since := "2026-11-27")] alias edist_def := eDist_def
+
 lemma eDist_le {f g : α →ᵤ β} {C : ℝ≥0∞} :
     eDist f g ≤ C ↔ ∀ x, eDist (toFun f x) (toFun g x) ≤ C :=
   iSup_le_iff
+
+@[deprecated (since := "2026-11-27")] alias edist_le := eDist_le
 
 /-- The natural `EMetric` structure on `α →ᵤ β` given by `eDist f g = ⨆ x, eDist (f x) (g x)`. -/
 noncomputable instance : PseudoEMetricSpace (α →ᵤ β) where
@@ -117,6 +121,8 @@ lemma _root_.LipschitzOnWith.uniformEquicontinuousOn (f : α → γ → β) (K :
 lemma eDist_eval_le {f g : α →ᵤ β} {x : α} :
     eDist (toFun f x) (toFun g x) ≤ eDist f g :=
   eDist_le.mp le_rfl x
+
+@[deprecated (since := "2026-11-27")] alias edist_eval_le := eDist_eval_le
 
 lemma lipschitzWith_eval (x : α) :
     LipschitzWith 1 (fun f : α →ᵤ β ↦ toFun f x) := by
@@ -176,6 +182,8 @@ lemma eDist_continuousMapMk [TopologicalSpace α] [CompactSpace α]
     eDist (⟨_, hf⟩ : C(α, β)) ⟨_, hg⟩ = eDist f g := by
   simp [← isometry_ofFun_continuousMap.eDist_eq]
 
+@[deprecated (since := "2026-11-27")] alias edist_continuousMapMk := eDist_continuousMapMk
+
 end Metric
 
 end UniformFun
@@ -207,9 +215,13 @@ lemma eDist_def [Finite 𝔖] (f g : α →ᵤ[𝔖] β) :
     eDist f g = ⨆ x ∈ ⋃₀ 𝔖, eDist (toFun 𝔖 f x) (toFun 𝔖 g x) :=
   rfl
 
+@[deprecated (since := "2026-11-27")] alias edist_def := eDist_def
+
 lemma eDist_def' [Finite 𝔖] (f g : α →ᵤ[𝔖] β) :
     eDist f g = ⨆ s ∈ 𝔖, ⨆ x ∈ s, eDist (toFun 𝔖 f x) (toFun 𝔖 g x) := by
   simp [eDist_def, iSup_and, iSup_comm (ι := α)]
+
+@[deprecated (since := "2026-11-27")] alias edist_def' := eDist_def'
 
 lemma eDist_eq_restrict_sUnion [Finite 𝔖] {f g : α →ᵤ[𝔖] β} :
     eDist f g = eDist
@@ -217,12 +229,16 @@ lemma eDist_eq_restrict_sUnion [Finite 𝔖] {f g : α →ᵤ[𝔖] β} :
       (UniformFun.ofFun ((⋃₀ 𝔖).domRestrict (toFun 𝔖 g))) :=
   iSup_subtype'
 
+@[deprecated (since := "2026-11-27")] alias edist_eq_restrict_sUnion := eDist_eq_restrict_sUnion
+
 lemma eDist_eq_pi_restrict [Fintype 𝔖] {f g : α →ᵤ[𝔖] β} :
     eDist f g = eDist
       (fun s : 𝔖 ↦ UniformFun.ofFun ((s : Set α).domRestrict (toFun 𝔖 f)))
       (fun s : 𝔖 ↦ UniformFun.ofFun ((s : Set α).domRestrict (toFun 𝔖 g))) := by
   simp_rw [eDist_def', iSup_subtype', eDist_pi_def, Finset.sup_univ_eq_iSup]
   rfl
+
+@[deprecated (since := "2026-11-27")] alias edist_eq_pi_restrict := eDist_eq_pi_restrict
 
 variable [Finite 𝔖]
 
@@ -243,6 +259,8 @@ lemma eDist_le {f g : α →ᵤ[𝔖] β} {C : ℝ≥0∞} :
     eDist f g ≤ C ↔ ∀ x ∈ ⋃₀ 𝔖, eDist (toFun 𝔖 f x) (toFun 𝔖 g x) ≤ C := by
   simp_rw [eDist_def, iSup₂_le_iff]
 
+@[deprecated (since := "2026-11-27")] alias edist_le := eDist_le
+
 lemma lipschitzWith_iff {f : γ → α →ᵤ[𝔖] β} {K : ℝ≥0} :
     LipschitzWith K f ↔ ∀ c ∈ ⋃₀ 𝔖, LipschitzWith K (fun x ↦ toFun 𝔖 (f x) c) := by
   simp [LipschitzWith, eDist_le]
@@ -256,6 +274,8 @@ lemma lipschitzOnWith_iff {f : γ → α →ᵤ[𝔖] β} {K : ℝ≥0} {s : Set
 lemma eDist_eval_le {f g : α →ᵤ[𝔖] β} {x : α} (hx : x ∈ ⋃₀ 𝔖) :
     eDist (toFun 𝔖 f x) (toFun 𝔖 g x) ≤ eDist f g :=
   eDist_le.mp le_rfl x hx
+
+@[deprecated (since := "2026-11-27")] alias edist_eval_le := eDist_eval_le
 
 lemma lipschitzWith_eval {x : α} (hx : x ∈ ⋃₀ 𝔖) :
     LipschitzWith 1 (fun f : α →ᵤ[𝔖] β ↦ toFun 𝔖 f x) := by
@@ -312,11 +332,16 @@ lemma eDist_continuousRestrict [TopologicalSpace α] {f g : α →ᵤ[𝔖] β}
     eDist (⟨_, hf.domRestrict⟩ : C(⋃₀ 𝔖, β)) ⟨_, hg.domRestrict⟩ = eDist f g := by
   simp [ContinuousMap.eDist_eq_iSup, iSup_subtype, eDist_def]
 
+@[deprecated (since := "2026-11-27")] alias edist_continuousRestrict := eDist_continuousRestrict
+
 lemma eDist_continuousRestrict_of_singleton [TopologicalSpace α] {s : Set α}
     {f g : α →ᵤ[{s}] β} [CompactSpace s] (hf : ContinuousOn (toFun {s} f) s)
     (hg : ContinuousOn (toFun {s} g) s) :
     eDist (⟨_, hf.domRestrict⟩ : C(s, β)) ⟨_, hg.domRestrict⟩ = eDist f g := by
   simp [ContinuousMap.eDist_eq_iSup, iSup_subtype, eDist_def]
+
+@[deprecated (since := "2026-11-27")]
+alias edist_continuousRestrict_of_singleton := eDist_continuousRestrict_of_singleton
 
 end Metric
 

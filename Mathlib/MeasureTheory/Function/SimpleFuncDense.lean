@@ -108,6 +108,8 @@ theorem eDist_nearestPt_le (e : ℕ → α) (x : α) {k N : ℕ} (hk : k ≤ N) 
       rcases hk.eq_or_lt with (rfl | hk)
       exacts [(ihN hlN).trans hxl, ihN (Nat.lt_succ_iff.1 hk)]
 
+@[deprecated (since := "2026-11-27")] alias edist_nearestPt_le := eDist_nearestPt_le
+
 theorem tendsto_nearestPt {e : ℕ → α} {x : α} (hx : x ∈ closure (range e)) :
     Tendsto (fun N => nearestPt e N x) atTop (𝓝 x) := by
   refine (atTop_basis.tendsto_iff nhds_basis_eball).2 fun ε hε => ?_
@@ -169,9 +171,13 @@ theorem eDist_approxOn_mono {f : β → α} (hf : Measurable f) {s : Set α} {y�
   dsimp only [approxOn, coe_comp, Function.comp_def]
   exact eDist_nearestPt_le _ _ ((nearestPtInd_le _ _ _).trans h)
 
+@[deprecated (since := "2026-11-27")] alias edist_approxOn_mono := eDist_approxOn_mono
+
 theorem eDist_approxOn_le {f : β → α} (hf : Measurable f) {s : Set α} {y₀ : α} (h₀ : y₀ ∈ s)
     [SeparableSpace s] (x : β) (n : ℕ) : eDist (approxOn f hf s y₀ h₀ n x) (f x) ≤ eDist y₀ (f x) :=
   eDist_approxOn_mono hf h₀ x zero_le
+
+@[deprecated (since := "2026-11-27")] alias edist_approxOn_le := eDist_approxOn_le
 
 theorem eDist_approxOn_y0_le {f : β → α} (hf : Measurable f) {s : Set α} {y₀ : α} (h₀ : y₀ ∈ s)
     [SeparableSpace s] (x : β) (n : ℕ) :
@@ -181,6 +187,8 @@ theorem eDist_approxOn_y0_le {f : β → α} (hf : Measurable f) {s : Set α} {y
         eDist y₀ (f x) + eDist (approxOn f hf s y₀ h₀ n x) (f x) :=
       eDist_triangle_right _ _ _
     _ ≤ eDist y₀ (f x) + eDist y₀ (f x) := by grw [eDist_approxOn_le hf h₀ x n]
+
+@[deprecated (since := "2026-11-27")] alias edist_approxOn_y0_le := eDist_approxOn_y0_le
 
 end SimpleFunc
 

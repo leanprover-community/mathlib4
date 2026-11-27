@@ -208,6 +208,8 @@ theorem dist_comm (x y : α) : dist x y = dist y x :=
 theorem eDist_dist (x y : α) : eDist x y = ENNReal.ofReal (dist x y) :=
   PseudoMetricSpace.eDist_dist x y
 
+@[deprecated (since := "2026-11-27")] alias edist_dist := eDist_dist
+
 @[bound]
 theorem dist_triangle (x y z : α) : dist x z ≤ dist x y + dist y z :=
   PseudoMetricSpace.dist_triangle x y z
@@ -307,6 +309,8 @@ theorem eDist_nnDist (x y : α) : eDist x y = nnDist x y := by
 theorem nnDist_eDist (x y : α) : nnDist x y = (eDist x y).toNNReal := by
   simp [eDist_nnDist]
 
+@[deprecated (since := "2026-11-27")] alias nnDist_edist := nnDist_eDist
+
 @[deprecated (since := "2026-11-07")] alias nndist_eDist := nnDist_eDist
 
 @[simp, norm_cast]
@@ -319,18 +323,26 @@ theorem coe_nnreal_ennreal_nnDist (x y : α) : ↑(nnDist x y) = eDist x y :=
 theorem eDist_lt_coe {x y : α} {c : ℝ≥0} : eDist x y < c ↔ nnDist x y < c := by
   rw [eDist_nnDist, ENNReal.coe_lt_coe]
 
+@[deprecated (since := "2026-11-27")] alias edist_lt_coe := eDist_lt_coe
+
 @[simp, norm_cast]
 theorem eDist_le_coe {x y : α} {c : ℝ≥0} : eDist x y ≤ c ↔ nnDist x y ≤ c := by
   rw [eDist_nnDist, ENNReal.coe_le_coe]
+
+@[deprecated (since := "2026-11-27")] alias edist_le_coe := eDist_le_coe
 
 /-- In a pseudometric space, the extended distance is always finite -/
 theorem eDist_lt_top {α : Type*} [PseudoMetricSpace α] (x y : α) : eDist x y < ⊤ :=
   (eDist_dist x y).symm ▸ ENNReal.ofReal_lt_top
 
+@[deprecated (since := "2026-11-27")] alias edist_lt_top := eDist_lt_top
+
 /-- In a pseudometric space, the extended distance is always finite -/
 @[aesop (rule_sets := [finiteness]) safe apply, simp]
 theorem eDist_ne_top (x y : α) : eDist x y ≠ ⊤ :=
   (eDist_lt_top x y).ne
+
+@[deprecated (since := "2026-11-27")] alias edist_ne_top := eDist_ne_top
 
 /-- `nnDist x x` vanishes -/
 @[simp] theorem nnDist_self (a : α) : nnDist a a = 0 := NNReal.coe_eq_zero.1 (dist_self a)
@@ -349,10 +361,14 @@ theorem dist_le_coe {x y : α} {c : ℝ≥0} : dist x y ≤ c ↔ nnDist x y ≤
 theorem eDist_lt_ofReal {x y : α} {r : ℝ} : eDist x y < ENNReal.ofReal r ↔ dist x y < r := by
   rw [eDist_dist, ENNReal.ofReal_lt_ofReal_iff_of_nonneg dist_nonneg]
 
+@[deprecated (since := "2026-11-27")] alias edist_lt_ofReal := eDist_lt_ofReal
+
 @[simp]
 theorem eDist_le_ofReal {x y : α} {r : ℝ} (hr : 0 ≤ r) :
     eDist x y ≤ ENNReal.ofReal r ↔ dist x y ≤ r := by
   rw [eDist_dist, ENNReal.ofReal_le_ofReal_iff hr]
+
+@[deprecated (since := "2026-11-27")] alias edist_le_ofReal := eDist_le_ofReal
 
 /-- Express `nnDist` in terms of `dist` -/
 theorem nnDist_dist (x y : α) : nnDist x y = Real.toNNReal (dist x y) := by
@@ -383,6 +399,8 @@ theorem nnDist_triangle_right (x y z : α) : nnDist x y ≤ nnDist x z + nnDist 
 /-- Express `dist` in terms of `eDist` -/
 theorem dist_eDist (x y : α) : dist x y = (eDist x y).toReal := by
   rw [eDist_dist, ENNReal.toReal_ofReal dist_nonneg]
+
+@[deprecated (since := "2026-11-27")] alias dist_edist := dist_eDist
 
 namespace Metric
 
@@ -682,6 +700,8 @@ lemma boundedSpace_iff_nnDist : BoundedSpace α ↔ ∃ C, ∀ a b : α, nnDist 
 
 lemma boundedSpace_iff_eDist : BoundedSpace α ↔ ∃ C : ℝ≥0, ∀ a b : α, eDist a b ≤ C := by
   simp [Metric.boundedSpace_iff_nnDist]
+
+@[deprecated (since := "2026-11-27")] alias boundedSpace_iff_edist := boundedSpace_iff_eDist
 
 theorem toUniformSpace_eq :
     ‹PseudoMetricSpace α›.toUniformSpace = .ofDist dist dist_self dist_comm dist_triangle :=
@@ -996,9 +1016,14 @@ theorem Metric.uniformity_eDist_aux {α} (d : α → α → ℝ≥0) :
     refine mem_iInf_of_mem (ε : ℝ≥0∞) (mem_iInf_of_mem (ENNReal.coe_pos.2 hε) ?_)
     exact fun _ => ENNReal.coe_lt_coe.1
 
+@[deprecated (since := "2026-11-27")]
+alias Metric.uniformity_edist_aux := Metric.uniformity_eDist_aux
+
 theorem Metric.uniformity_eDist : 𝓤 α = ⨅ ε > 0, 𝓟 { p : α × α | eDist p.1 p.2 < ε } := by
   simp only [PseudoMetricSpace.uniformity_dist, dist_nnDist, eDist_nnDist,
     Metric.uniformity_eDist_aux]
+
+@[deprecated (since := "2026-11-27")] alias Metric.uniformity_edist := Metric.uniformity_eDist
 
 -- see Note [lower instance priority]
 /-- A pseudometric space induces a pseudoemetric space -/

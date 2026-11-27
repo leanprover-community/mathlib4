@@ -43,9 +43,15 @@ protected lemma AntilipschitzWith.eDist_lt_top [PseudoEMetricSpace α] [PseudoMe
     {K : ℝ≥0} {f : α → β} (h : AntilipschitzWith K f) (x y : α) : eDist x y < ⊤ :=
   (h x y).trans_lt <| by finiteness
 
+@[deprecated (since := "2026-11-27")]
+alias AntilipschitzWith.edist_lt_top := AntilipschitzWith.eDist_lt_top
+
 theorem AntilipschitzWith.eDist_ne_top [PseudoEMetricSpace α] [PseudoMetricSpace β] {K : ℝ≥0}
     {f : α → β} (h : AntilipschitzWith K f) (x y : α) : eDist x y ≠ ⊤ :=
   (h.eDist_lt_top x y).ne
+
+@[deprecated (since := "2026-11-27")]
+alias AntilipschitzWith.edist_ne_top := AntilipschitzWith.eDist_ne_top
 
 section Metric
 
@@ -111,6 +117,8 @@ theorem mul_le_eDist (hf : AntilipschitzWith K f) (x y : α) :
     (K : ℝ≥0∞)⁻¹ * eDist x y ≤ eDist (f x) (f y) := by
   rw [mul_comm, ← div_eq_mul_inv]
   exact ENNReal.div_le_of_le_mul' (hf x y)
+
+@[deprecated (since := "2026-11-27")] alias mul_le_edist := mul_le_eDist
 
 theorem ediam_preimage_le (hf : AntilipschitzWith K f) (s : Set β) :
     ediam (f ⁻¹' s) ≤ K * ediam s :=

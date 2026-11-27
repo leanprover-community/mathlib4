@@ -54,46 +54,72 @@ It is `⊤` if no such walk exists.
 noncomputable def eDist (u v : V) : ℕ∞ :=
   ⨅ w : G.Walk u v, w.length
 
+@[deprecated (since := "2026-11-27")] alias edist := eDist
+
 variable {G} {H : SimpleGraph W} {u v w : V}
 
 theorem eDist_eq_sInf : G.eDist u v = sInf (Set.range fun w : G.Walk u v ↦ (w.length : ℕ∞)) := rfl
+
+@[deprecated (since := "2026-11-27")] alias edist_eq_sInf := eDist_eq_sInf
 
 protected theorem Reachable.exists_walk_length_eq_eDist (hr : G.Reachable u v) :
     ∃ p : G.Walk u v, p.length = G.eDist u v :=
   csInf_mem <| Set.range_nonempty_iff_nonempty.mpr hr
 
+@[deprecated (since := "2026-11-27")]
+alias Reachable.exists_walk_length_eq_edist := Reachable.exists_walk_length_eq_eDist
+
 protected theorem Connected.exists_walk_length_eq_eDist (hconn : G.Connected) (u v : V) :
     ∃ p : G.Walk u v, p.length = G.eDist u v :=
   (hconn u v).exists_walk_length_eq_eDist
+
+@[deprecated (since := "2026-11-27")]
+alias Connected.exists_walk_length_eq_edist := Connected.exists_walk_length_eq_eDist
 
 theorem eDist_le (p : G.Walk u v) :
     G.eDist u v ≤ p.length :=
   sInf_le ⟨p, rfl⟩
 protected alias Walk.eDist_le := eDist_le
 
+@[deprecated (since := "2026-11-27")] alias Walk.edist_le := Walk.eDist_le
+
 @[simp]
 theorem eDist_eq_zero_iff : G.eDist u v = 0 ↔ u = v := by
   simp [eDist]
+
+@[deprecated (since := "2026-11-27")] alias edist_eq_zero_iff := eDist_eq_zero_iff
 
 @[simp]
 theorem eDist_self : eDist G v v = 0 :=
   eDist_eq_zero_iff.mpr rfl
 
+@[deprecated (since := "2026-11-27")] alias edist_self := eDist_self
+
 theorem eDist_pos_of_ne (hne : u ≠ v) :
     0 < G.eDist u v :=
   pos_iff_ne_zero.mpr <| eDist_eq_zero_iff.ne.mpr hne
+
+@[deprecated (since := "2026-11-27")] alias edist_pos_of_ne := eDist_pos_of_ne
 
 lemma eDist_eq_top_of_not_reachable (h : ¬G.Reachable u v) :
     G.eDist u v = ⊤ := by
   simp [eDist, not_reachable_iff_isEmpty_walk.mp h]
 
+@[deprecated (since := "2026-11-27")]
+alias edist_eq_top_of_not_reachable := eDist_eq_top_of_not_reachable
+
 theorem reachable_of_eDist_ne_top (h : G.eDist u v ≠ ⊤) :
     G.Reachable u v :=
   not_not.mp <| eDist_eq_top_of_not_reachable.mt h
 
+@[deprecated (since := "2026-11-27")] alias reachable_of_edist_ne_top := reachable_of_eDist_ne_top
+
 lemma exists_walk_of_eDist_ne_top (h : G.eDist u v ≠ ⊤) :
     ∃ p : G.Walk u v, p.length = G.eDist u v :=
   (reachable_of_eDist_ne_top h).exists_walk_length_eq_eDist
+
+@[deprecated (since := "2026-11-27")]
+alias exists_walk_of_edist_ne_top := exists_walk_of_eDist_ne_top
 
 protected theorem eDist_triangle : G.eDist u w ≤ G.eDist u v + G.eDist v w := by
   cases eq_or_ne (G.eDist u v) ⊤ with
@@ -107,10 +133,14 @@ protected theorem eDist_triangle : G.eDist u w ≤ G.eDist u v + G.eDist v w := 
       rw [← hp, ← hq, ← Nat.cast_add, ← Walk.length_append]
       exact eDist_le _
 
+@[deprecated (since := "2026-11-27")] alias edist_triangle := eDist_triangle
+
 theorem eDist_comm : G.eDist u v = G.eDist v u := by
   rw [eDist_eq_sInf, ← Set.image_univ, ← Set.image_univ_of_surjective Walk.reverse_surjective,
     ← Set.image_comp, Set.image_univ, Function.comp_def]
   simp_rw [Walk.length_reverse, ← eDist_eq_sInf]
+
+@[deprecated (since := "2026-11-27")] alias edist_comm := eDist_comm
 
 lemma exists_walk_of_eDist_eq_coe {k : ℕ} (h : G.eDist u v = k) :
     ∃ p : G.Walk u v, p.length = k :=
@@ -118,11 +148,16 @@ lemma exists_walk_of_eDist_eq_coe {k : ℕ} (h : G.eDist u v = k) :
   have ⟨p, hp⟩ := exists_walk_of_eDist_ne_top this
   ⟨p, Nat.cast_injective (hp.trans h)⟩
 
+@[deprecated (since := "2026-11-27")]
+alias exists_walk_of_edist_eq_coe := exists_walk_of_eDist_eq_coe
+
 lemma eDist_ne_top_iff_reachable : G.eDist u v ≠ ⊤ ↔ G.Reachable u v := by
   refine ⟨reachable_of_eDist_ne_top, fun h ↦ ?_⟩
   by_contra hx
   simp only [eDist, iInf_eq_top, ENat.natCast_ne_top] at hx
   exact h.elim hx
+
+@[deprecated (since := "2026-11-27")] alias edist_ne_top_iff_reachable := eDist_ne_top_iff_reachable
 
 /--
 The extended distance between vertices is equal to `1` if and only if these vertices are adjacent.
@@ -134,6 +169,8 @@ theorem eDist_eq_one_iff_adj : G.eDist u v = 1 ↔ G.Adj u v := by
     exact w.adj_of_length_eq_one <| Nat.cast_eq_one.mp <| h ▸ hw
   · exact le_antisymm (eDist_le h.toWalk) (Order.one_le_iff_pos.mpr <| eDist_pos_of_ne h.ne)
 
+@[deprecated (since := "2026-11-27")] alias edist_eq_one_iff_adj := eDist_eq_one_iff_adj
+
 lemma eDist_le_one_iff_adj_or_eq : G.eDist u v ≤ 1 ↔ G.Adj u v ∨ u = v := by
   by_cases huv : u = v
   · simp [huv]
@@ -141,6 +178,8 @@ lemma eDist_le_one_iff_adj_or_eq : G.eDist u v ≤ 1 ↔ G.Adj u v ∨ u = v := 
     have h : 0 < G.eDist u v := eDist_pos_of_ne huv
     rw [(Order.one_le_iff_pos.mpr h).ge_iff_eq']
     exact eDist_eq_one_iff_adj
+
+@[deprecated (since := "2026-11-27")] alias edist_le_one_iff_adj_or_eq := eDist_le_one_iff_adj_or_eq
 
 lemma eDist_eq_two_iff {u v : V} :
     G.eDist u v = 2 ↔ u ≠ v ∧ ¬ G.Adj u v ∧ (G.commonNeighbors u v).Nonempty := by
@@ -159,6 +198,8 @@ lemma eDist_eq_two_iff {u v : V} :
   · by_contra
     simp_all [Order.le_one_iff]
 
+@[deprecated (since := "2026-11-27")] alias edist_eq_two_iff := eDist_eq_two_iff
+
 lemma two_lt_eDist_iff {u v : V} :
     2 < G.eDist u v ↔ u ≠ v ∧ ¬ G.Adj u v ∧ (G.commonNeighbors u v) = ∅ := by
   refine ⟨fun h ↦ ?_, fun h ↦ lt_of_le_of_ne ?_ (Ne.symm ?_)⟩
@@ -172,32 +213,48 @@ lemma two_lt_eDist_iff {u v : V} :
     <;> grind [Order.one_le_iff_pos, pos_iff_ne_zero, eDist_eq_zero_iff, eDist_eq_one_iff_adj]
   · simp_all [eDist_eq_two_iff]
 
+@[deprecated (since := "2026-11-27")] alias two_lt_edist_iff := two_lt_eDist_iff
+
 lemma eDist_bot_of_ne (h : u ≠ v) : (⊥ : SimpleGraph V).eDist u v = ⊤ := by
   rwa [ne_eq, ← reachable_bot.not, ← eDist_ne_top_iff_reachable.not, not_not] at h
+
+@[deprecated (since := "2026-11-27")] alias edist_bot_of_ne := eDist_bot_of_ne
 
 lemma eDist_bot [DecidableEq V] : (⊥ : SimpleGraph V).eDist u v = (if u = v then 0 else ⊤) := by
   by_cases h : u = v <;> simp [h, eDist_bot_of_ne]
 
+@[deprecated (since := "2026-11-27")] alias edist_bot := eDist_bot
+
 lemma eDist_top_of_ne (h : u ≠ v) : (⊤ : SimpleGraph V).eDist u v = 1 := by
   simp [h]
+
+@[deprecated (since := "2026-11-27")] alias edist_top_of_ne := eDist_top_of_ne
 
 lemma eDist_top [DecidableEq V] : (⊤ : SimpleGraph V).eDist u v = (if u = v then 0 else 1) := by
   by_cases h : u = v <;> simp [h]
 
+@[deprecated (since := "2026-11-27")] alias edist_top := eDist_top
+
 theorem Hom.eDist_le (f : G →g H) (u v : V) : H.eDist (f u) (f v) ≤ G.eDist u v := by
   refine le_iInf fun p ↦ ?_
   simpa using (p.map f).eDist_le
+
+@[deprecated (since := "2026-11-27")] alias Hom.edist_le := Hom.eDist_le
 
 @[simp]
 theorem Iso.eDist_eq (f : G ≃g H) (u v : V) : H.eDist (f u) (f v) = G.eDist u v := by
   apply le_antisymm (f.toHom.eDist_le u v)
   simpa using f.symm.toHom.eDist_le (f u) (f v)
 
+@[deprecated (since := "2026-11-27")] alias Iso.edist_eq := Iso.eDist_eq
+
 /-- Supergraphs have smaller or equal extended distances to their subgraphs. -/
 @[gcongr]
 theorem eDist_anti {G' : SimpleGraph V} (h : G ≤ G') :
     G'.eDist u v ≤ G.eDist u v :=
   (Hom.ofLE h).eDist_le u v
+
+@[deprecated (since := "2026-11-27")] alias edist_anti := eDist_anti
 
 end eDist
 
@@ -219,6 +276,9 @@ theorem dist_eq_sInf : G.dist u v = sInf (Set.range (Walk.length : G.Walk u v �
 lemma Reachable.coe_dist_eq_eDist (h : G.Reachable u v) : G.dist u v = G.eDist u v :=
   ENat.natCast_toNat <| eDist_ne_top_iff_reachable.mpr h
 
+@[deprecated (since := "2026-11-27")]
+alias Reachable.coe_dist_eq_edist := Reachable.coe_dist_eq_eDist
+
 protected theorem Reachable.exists_walk_length_eq_dist (hr : G.Reachable u v) :
     ∃ p : G.Walk u v, p.length = G.dist u v :=
   dist_eq_sInf ▸ Nat.sInf_mem (Set.range_nonempty_iff_nonempty.mpr hr)
@@ -232,6 +292,8 @@ theorem dist_le (p : G.Walk u v) : G.dist u v ≤ p.length :=
 
 theorem natCast_dist_le_eDist : G.dist u v ≤ G.eDist u v :=
   ENat.natCast_toNat_le_self _
+
+@[deprecated (since := "2026-11-27")] alias natCast_dist_le_edist := natCast_dist_le_eDist
 
 @[simp]
 theorem dist_eq_zero_iff_eq_or_not_reachable :

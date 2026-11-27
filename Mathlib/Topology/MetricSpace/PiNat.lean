@@ -808,24 +808,37 @@ The distance we use here is `eDist x y = ∑' i, min (1/2)^(encode i) (eDist (x 
 protected def eDist : EDist (∀ i, F i) where
   eDist x y := ∑' i, min (2⁻¹ ^ encode i) (eDist (x i) (y i))
 
+@[deprecated (since := "2026-11-27")] alias edist := eDist
+
 attribute [scoped instance] PiCountable.eDist
 
 lemma eDist_eq_tsum (x y : ∀ i, F i) :
     eDist x y = ∑' i, min (2⁻¹ ^ encode i) (eDist (x i) (y i)) := rfl
 
+@[deprecated (since := "2026-11-27")] alias edist_eq_tsum := eDist_eq_tsum
+
 lemma min_eDist_le_eDist_pi (x y : ∀ i, F i) (i : ι) :
     min (2⁻¹ ^ encode i) (eDist (x i) (y i)) ≤ eDist x y := by
   grw [eDist_eq_tsum, ← le_tsum _ i]
+
+@[deprecated (since := "2026-11-27")] alias min_edist_le_edist_pi := min_eDist_le_eDist_pi
 
 lemma eDist_le_two : eDist x y ≤ 2 :=
   (ENNReal.tsum_geometric_two_encode_le_two).trans' <| by
     grw [eDist_eq_tsum, min_le_left]
 
+@[deprecated (since := "2026-11-27")] alias edist_le_two := eDist_le_two
+
 lemma eDist_lt_top : eDist x y < ∞ := eDist_le_two.trans_lt (by simp)
+
+@[deprecated (since := "2026-11-27")] alias edist_lt_top := eDist_lt_top
 
 lemma eDist_le_eDist_pi_of_eDist_lt (h : eDist x y < 2⁻¹ ^ encode i) :
     eDist (x i) (y i) ≤ eDist x y := by
   simpa only [not_le.2 h, false_or] using min_le_iff.1 (min_eDist_le_eDist_pi x y i)
+
+@[deprecated (since := "2026-11-27")]
+alias edist_le_edist_pi_of_edist_lt := eDist_le_eDist_pi_of_eDist_lt
 
 end EDist
 
@@ -1028,6 +1041,8 @@ noncomputable instance : PseudoEMetricSpace (PiNatEmbed X Y f) :=
 
 lemma eDist_def (x y : PiNatEmbed X Y f) :
     eDist x y = ∑' i, min (2⁻¹ ^ encode i) (eDist (f i x.ofPiNat) (f i y.ofPiNat)) := rfl
+
+@[deprecated (since := "2026-11-27")] alias edist_def := eDist_def
 
 lemma isometry_embed : Isometry (embed X Y f) := PseudoEMetricSpace.isometry_induced _
 

@@ -142,12 +142,18 @@ protected theorem lipschitzOnWith (h : LipschitzWith K f) : LipschitzOnWith K f 
 theorem eDist_le_mul (h : LipschitzWith K f) (x y : α) : eDist (f x) (f y) ≤ K * eDist x y :=
   h x y
 
+@[deprecated (since := "2026-11-27")] alias edist_le_mul := eDist_le_mul
+
 theorem eDist_le_mul_of_le (h : LipschitzWith K f) (hr : eDist x y ≤ r) :
     eDist (f x) (f y) ≤ K * r :=
   (h x y).trans <| mul_right_mono hr
 
+@[deprecated (since := "2026-11-27")] alias edist_le_mul_of_le := eDist_le_mul_of_le
+
 theorem eDist_lt_mul_of_lt (h : LipschitzWith K f) (hK : K ≠ 0) (hr : eDist x y < r) :
     eDist (f x) (f y) < K * r := by grw [h x y]; gcongr; simp
+
+@[deprecated (since := "2026-11-27")] alias edist_lt_mul_of_lt := eDist_lt_mul_of_lt
 
 theorem mapsTo_closedEBall (h : LipschitzWith K f) (x : α) (r : ℝ≥0∞) :
     MapsTo f (closedEBall x r) (closedEBall (f x) (K * r)) := fun _y hy => h.eDist_le_mul_of_le hy
@@ -159,13 +165,19 @@ theorem eDist_lt_top (hf : LipschitzWith K f) {x y : α} (h : eDist x y ≠ ⊤)
     eDist (f x) (f y) < ⊤ :=
   (hf x y).trans_lt (by finiteness)
 
+@[deprecated (since := "2026-11-27")] alias edist_lt_top := eDist_lt_top
+
 theorem mul_eDist_le (h : LipschitzWith K f) (x y : α) :
     (K⁻¹ : ℝ≥0∞) * eDist (f x) (f y) ≤ eDist x y := by
   rw [mul_comm, ← div_eq_mul_inv]
   exact ENNReal.div_le_of_le_mul' (h x y)
 
+@[deprecated (since := "2026-11-27")] alias mul_edist_le := mul_eDist_le
+
 protected theorem of_eDist_le (h : ∀ x y, eDist (f x) (f y) ≤ eDist x y) : LipschitzWith 1 f :=
   fun x y => by simp only [ENNReal.coe_one, one_mul, h]
+
+@[deprecated (since := "2026-11-27")] alias of_edist_le := of_eDist_le
 
 protected theorem weaken (hf : LipschitzWith K f) {K' : ℝ≥0} (h : K ≤ K') : LipschitzWith K' f :=
   fun x y => le_trans (hf x y) <| mul_left_mono (ENNReal.coe_le_coe.2 h)
@@ -181,6 +193,8 @@ theorem eDist_lt_of_eDist_lt_div (hf : LipschitzWith K f) {x y : α} {d : ℝ≥
   calc
     eDist (f x) (f y) ≤ K * eDist x y := hf x y
     _ < d := ENNReal.mul_lt_of_lt_div' h
+
+@[deprecated (since := "2026-11-27")] alias edist_lt_of_edist_lt_div := eDist_lt_of_eDist_lt_div
 
 /-- A Lipschitz function is uniformly continuous. -/
 protected theorem uniformContinuous (hf : LipschitzWith K f) : UniformContinuous f :=
@@ -275,6 +289,9 @@ theorem eDist_iterate_succ_le_geometric {f : α → α} (hf : LipschitzWith K f)
   rw [iterate_succ, mul_comm]
   simpa only [ENNReal.coe_pow] using! (hf.iterate n) x (f x)
 
+@[deprecated (since := "2026-11-27")]
+alias edist_iterate_succ_le_geometric := eDist_iterate_succ_le_geometric
+
 protected theorem mul_end {f g : Function.End α} {Kf Kg} (hf : LipschitzWith Kf f)
     (hg : LipschitzWith Kg g) : LipschitzWith (Kf * Kg) (f * g : Function.End α) :=
   hf.comp hg
@@ -322,9 +339,13 @@ theorem eDist_le_mul_of_le (h : LipschitzOnWith K f s) {x y : α} (hx : x ∈ s)
     eDist (f x) (f y) ≤ K * r :=
   (h hx hy).trans <| mul_right_mono hr
 
+@[deprecated (since := "2026-11-27")] alias edist_le_mul_of_le := eDist_le_mul_of_le
+
 theorem eDist_lt_of_eDist_lt_div (hf : LipschitzOnWith K f s) {x y : α} (hx : x ∈ s) (hy : y ∈ s)
     {d : ℝ≥0∞} (hd : eDist x y < d / K) : eDist (f x) (f y) < d :=
   hf.to_restrict.eDist_lt_of_eDist_lt_div <| show eDist (⟨x, hx⟩ : s) ⟨y, hy⟩ < d / K from hd
+
+@[deprecated (since := "2026-11-27")] alias edist_lt_of_edist_lt_div := eDist_lt_of_eDist_lt_div
 
 protected theorem comp {g : β → γ} {t : Set β} {Kg : ℝ≥0} (hg : LipschitzOnWith Kg g t)
     (hf : LipschitzOnWith K f s) (hmaps : MapsTo f s t) : LipschitzOnWith (Kg * K) (g ∘ f) s :=

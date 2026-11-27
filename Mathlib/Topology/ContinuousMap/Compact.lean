@@ -147,6 +147,8 @@ theorem eDist_eq_iSup : eDist f g = ⨆ (x : α), eDist (f x) (g x) := by
   simp [← isometryEquivBoundedOfCompact α β |>.eDist_eq f g,
     BoundedContinuousFunction.eDist_eq_iSup]
 
+@[deprecated (since := "2026-11-27")] alias edist_eq_iSup := eDist_eq_iSup
+
 instance {R} [Zero R] [Zero β] [PseudoMetricSpace R] [SMul R β] [IsBoundedSMul R β] :
     IsBoundedSMul R C(α, β) where
   dist_smul_pair' r f g := by

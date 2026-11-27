@@ -219,6 +219,10 @@ theorem tendstoInMeasure_of_tendsto_ae_of_measurable_eDist [IsFiniteMeasure μ]
   rw [Set.mem_compl_iff, Set.notMem_ofPred_iff, eDist_comm, not_le]
   exact hN n hn x hx
 
+@[deprecated (since := "2026-11-27")]
+alias tendstoInMeasure_of_tendsto_ae_of_measurable_edist :=
+  tendstoInMeasure_of_tendsto_ae_of_measurable_eDist
+
 /-- Convergence a.e. implies convergence in measure in a finite measure space. -/
 theorem tendstoInMeasure_of_tendsto_ae [IsFiniteMeasure μ] (hf : ∀ n, AEStronglyMeasurable (f n) μ)
     (hfg : ∀ᵐ x ∂μ, Tendsto (fun n ↦ f n x) atTop (𝓝 (g x))) : TendstoInMeasure μ f atTop g := by

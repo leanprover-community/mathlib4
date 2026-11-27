@@ -99,6 +99,9 @@ theorem mem_thickening_iff_exists_eDist_lt {δ : ℝ} (E : Set α) (x : α) :
     x ∈ thickening δ E ↔ ∃ z ∈ E, eDist x z < ENNReal.ofReal δ :=
   infEDist_lt_iff
 
+@[deprecated (since := "2026-11-27")]
+alias mem_thickening_iff_exists_edist_lt := mem_thickening_iff_exists_eDist_lt
+
 /-- The frontier of the (open) thickening of a set is contained in an `Metric.infEDist` level
 set. -/
 theorem frontier_thickening_subset (E : Set α) {δ : ℝ} :
@@ -198,6 +201,9 @@ lemma eventually_notMem_cthickening_of_infEDist_pos {E : Set α} {x : α} (h : x
 theorem mem_cthickening_of_eDist_le (x y : α) (δ : ℝ) (E : Set α) (h : y ∈ E)
     (h' : eDist x y ≤ ENNReal.ofReal δ) : x ∈ cthickening δ E :=
   (infEDist_le_eDist_of_mem h).trans h'
+
+@[deprecated (since := "2026-11-27")]
+alias mem_cthickening_of_edist_le := mem_cthickening_of_eDist_le
 
 theorem mem_cthickening_of_dist_le {α : Type*} [PseudoMetricSpace α] (x y : α) (δ : ℝ) (E : Set α)
     (h : y ∈ E) (h' : dist x y ≤ δ) : x ∈ cthickening δ E := by

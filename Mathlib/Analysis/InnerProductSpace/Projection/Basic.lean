@@ -254,6 +254,9 @@ theorem eDist_starProjection_eq_infEDist
   rw [eDist_dist, dist_starProjection_eq_infDist, Metric.infDist,
     ENNReal.ofReal_toReal (Metric.infEDist_ne_top U.nonempty)]
 
+@[deprecated (since := "2026-11-27")]
+alias edist_starProjection_eq_infEDist := eDist_starProjection_eq_infEDist
+
 /-- The norm of the orthogonal projection of `y` onto `U` equals the distance to the orthogonal
 complement of `U` as given by `Metric.infDist`. -/
 theorem norm_starProjection_eq_infDist

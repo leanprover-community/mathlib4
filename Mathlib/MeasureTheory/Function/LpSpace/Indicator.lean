@@ -181,8 +181,14 @@ theorem eDist_indicatorConstLp_eq_eNorm {t : Set α} {ht : MeasurableSet t} {hμ
   rw [Lp.eDist_toLp_toLp, eLpNorm_indicator_sub_indicator _ hs.nullMeasurableSet
     ht.nullMeasurableSet, Lp.eNorm_toLp]
 
+@[deprecated (since := "2026-11-27")]
+alias edist_indicatorConstLp_eq_eNorm := eDist_indicatorConstLp_eq_eNorm
+
 @[deprecated (since := "2026-11-06")]
 alias eDist_indicatorConstLp_eq_enorm := eDist_indicatorConstLp_eq_eNorm
+
+@[deprecated (since := "2026-11-27")]
+alias edist_indicatorConstLp_eq_enorm := eDist_indicatorConstLp_eq_enorm
 
 theorem dist_indicatorConstLp_eq_norm {t : Set α} {ht : MeasurableSet t} {hμt : μ t ≠ ∞} :
     dist (indicatorConstLp p hs hμs c) (indicatorConstLp p ht hμt c) =

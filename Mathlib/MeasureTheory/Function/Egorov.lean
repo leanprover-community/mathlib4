@@ -211,6 +211,10 @@ theorem tendstoUniformlyOn_of_ae_tendsto_of_measurable_eDist
   · exact Egorov.measure_iUnionNotConvergentSeq hε hf' hsm' hs hfg
   · exact Egorov.tendstoUniformlyOn_sdiff_iUnionNotConvergentSeq hε hf' hsm' hs hfg
 
+@[deprecated (since := "2026-11-27")]
+alias tendstoUniformlyOn_of_ae_tendsto_of_measurable_edist :=
+  tendstoUniformlyOn_of_ae_tendsto_of_measurable_eDist
+
 /-- **Egorov's theorem**: If `f : ι → α → β` is a sequence of functions that
 converges to `g : α → β` almost everywhere on a null measurable set `s` of finite measure,
 and the distance between `f n a` and `g a` is a.e. measurable for all `n`,
@@ -229,6 +233,10 @@ theorem tendstoUniformlyOn_of_ae_tendsto_of_aemeasurable_eDist
   · exact Egorov.nullMeasurableSet_iUnionNotConvergentSeq hε hf hsm hs hfg
   · exact Egorov.measure_iUnionNotConvergentSeq hε hf hsm hs hfg
   · exact Egorov.tendstoUniformlyOn_sdiff_iUnionNotConvergentSeq hε hf hsm hs hfg
+
+@[deprecated (since := "2026-11-27")]
+alias tendstoUniformlyOn_of_ae_tendsto_of_aemeasurable_edist :=
+  tendstoUniformlyOn_of_ae_tendsto_of_aemeasurable_eDist
 
 /-- **Egorov's theorem**: If `f : ι → α → β` is a sequence of strongly measurable functions that
 converges to `g : α → β` almost everywhere on a measurable set `s` of finite measure,
@@ -256,6 +264,10 @@ theorem tendstoUniformlyOn_of_ae_tendsto_of_aemeasurable_eDist' [IsFiniteMeasure
   refine ⟨toMeasurable μ t, measurableSet_toMeasurable μ t, by simpa, ?_⟩
   rw [compl_eq_univ_sdiff]
   exact htf.mono (sdiff_subset_sdiff_right (subset_toMeasurable μ t))
+
+@[deprecated (since := "2026-11-27")]
+alias tendstoUniformlyOn_of_ae_tendsto_of_aemeasurable_edist' :=
+  tendstoUniformlyOn_of_ae_tendsto_of_aemeasurable_eDist'
 
 @[deprecated (since := "2026-10-12")] alias tendstoUniformlyOn_of_ae_tendsto_of_measurable_eDist'
   := tendstoUniformlyOn_of_ae_tendsto_of_aemeasurable_eDist'

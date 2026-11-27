@@ -430,6 +430,8 @@ theorem lintegral_eDist_lt_top {f g : α → β} (hf : Integrable f μ) (hg : In
       simp_rw [Pi.zero_apply, ← hasFiniteIntegral_iff_eDist]
       exact ⟨hf.hasFiniteIntegral, hg.hasFiniteIntegral⟩)
 
+@[deprecated (since := "2026-11-27")] alias lintegral_edist_lt_top := lintegral_eDist_lt_top
+
 section ESeminormedAddMonoid
 
 variable {ε' : Type*} [TopologicalSpace ε'] [ESeminormedAddMonoid ε']

@@ -53,11 +53,15 @@ noncomputable instance : PseudoEMetricSpace (MeasuredSets μ) where
 
 lemma MeasuredSets.eDist_def (s t : MeasuredSets μ) : eDist s t = μ ((s : Set α) ∆ t) := rfl
 
+@[deprecated (since := "2026-11-27")] alias MeasuredSets.edist_def := MeasuredSets.eDist_def
+
 /-- Measure on `MeasuredSets` is a 1-lipschitz function.
 
 We cannot state this in terms of `LipschitzWith`, because `ℝ≥0∞` is not a `PseudoEMetricSpace`. -/
 lemma MeasuredSets.sub_le_eDist (s t : MeasuredSets μ) : μ s - μ t ≤ eDist s t :=
   le_measure_sdiff.trans <| measure_mono subset_union_left
+
+@[deprecated (since := "2026-11-27")] alias MeasuredSets.sub_le_edist := MeasuredSets.sub_le_eDist
 
 lemma MeasuredSets.continuous_measure : Continuous (fun (s : MeasuredSets μ) ↦ μ s) := by
   refine continuous_of_le_add_eDist 1 ENNReal.one_ne_top fun s t ↦ ?_

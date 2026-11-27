@@ -131,6 +131,8 @@ theorem eDist_def (f g : α →₁[μ] β) : eDist f g = ∫⁻ a, eDist (f a) (
     ((Lp.aestronglyMeasurable f).sub (Lp.aestronglyMeasurable g))]
   simp [eDist_eq_eNorm_sub]
 
+@[deprecated (since := "2026-11-27")] alias edist_def := eDist_def
+
 theorem dist_def (f g : α →₁[μ] β) : dist f g = (∫⁻ a, eDist (f a) (g a) ∂μ).toReal := by
   simp_rw [dist_eDist, eDist_def]
 
@@ -234,10 +236,14 @@ theorem eDist_toL1_toL1 (f g : α → β) (hf : Integrable f μ) (hg : Integrabl
     eLpNorm_one_eq_lintegral_eNorm (hf.aestronglyMeasurable.sub hg.aestronglyMeasurable)]
   simp [eDist_eq_eNorm_sub]
 
+@[deprecated (since := "2026-11-27")] alias edist_toL1_toL1 := eDist_toL1_toL1
+
 theorem eDist_toL1_zero (f : α → β) (hf : Integrable f μ) :
     eDist (hf.toL1 f) 0 = ∫⁻ a, eDist (f a) 0 ∂μ := by
   simp only [eDist_zero_right, Lp.eNorm_def, toL1_eq_mk, eLpNorm_aeeqFun]
   apply eLpNorm_one_eq_lintegral_eNorm hf.aestronglyMeasurable
+
+@[deprecated (since := "2026-11-27")] alias edist_toL1_zero := eDist_toL1_zero
 
 variable {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 β] [IsBoundedSMul 𝕜 β]
 

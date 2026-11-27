@@ -65,6 +65,8 @@ lemma eDist_def [PseudoEMetricSpace X] {p : ℝ≥0} [Fact (1 ≤ p)]
     eDist f g =
       ((f.ofLp.zipWith eDist (eDist_self _) g.ofLp).sum fun _i r ↦ r ^ (p : ℝ)) ^ (p⁻¹ : ℝ) := rfl
 
+@[deprecated (since := "2026-11-27")] alias edist_def := eDist_def
+
 /-- The L^1 extended metric on `ι`-many copies of a metric space `X` -/
 noncomputable instance [EMetricSpace X] : EMetricSpace (WithLp p <| ι →₀ X) where
   eq_of_eDist_eq_zero {f g} hfg := by simp_all [eDist_def, sum, WithLp.ext_iff, DFunLike.ext_iff]

@@ -167,6 +167,8 @@ theorem coe_isometry : Isometry ((↑) : α → Completion α) :=
 protected theorem eDist_eq (x y : α) : eDist (x : Completion α) y = eDist x y :=
   coe_isometry x y
 
+@[deprecated (since := "2026-11-27")] alias edist_eq := eDist_eq
+
 instance {M} [Zero M] [Zero α] [SMul M α] [PseudoMetricSpace M] [IsBoundedSMul M α] :
     IsBoundedSMul M (Completion α) where
   dist_smul_pair' c x₁ x₂ := by

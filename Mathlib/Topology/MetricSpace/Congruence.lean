@@ -50,6 +50,8 @@ lemma congruent_iff_eDist_eq :
     Congruent v₁ v₂ ↔ ∀ i₁ i₂, eDist (v₁ i₁) (v₁ i₂) = eDist (v₂ i₁) (v₂ i₂) :=
   Iff.rfl
 
+@[deprecated (since := "2026-11-27")] alias congruent_iff_edist_eq := congruent_iff_eDist_eq
+
 /-- Congruence holds if and only if all extended distances between points with different
 indices are the same. -/
 lemma congruent_iff_pairwise_eDist_eq :
@@ -58,6 +60,9 @@ lemma congruent_iff_pairwise_eDist_eq :
   by_cases hi : i₁ = i₂
   · simp [hi]
   · exact h hi
+
+@[deprecated (since := "2026-11-27")]
+alias congruent_iff_pairwise_edist_eq := congruent_iff_pairwise_eDist_eq
 
 namespace Congruent
 

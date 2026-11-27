@@ -109,6 +109,9 @@ lemma IsKolmogorovProcess.stronglyMeasurable_eDist
   borelize (E × E)
   exact continuous_eDist.stronglyMeasurable.comp_measurable (hX.measurablePair s t)
 
+@[deprecated (since := "2026-11-27")]
+alias IsKolmogorovProcess.stronglyMeasurable_edist := IsKolmogorovProcess.stronglyMeasurable_eDist
+
 lemma IsAEKolmogorovProcess.aestronglyMeasurable_eDist
     (hX : IsAEKolmogorovProcess X P p q M) {s t : T} :
     AEStronglyMeasurable (fun ω ↦ eDist (X s ω) (X t ω)) P := by
@@ -116,11 +119,21 @@ lemma IsAEKolmogorovProcess.aestronglyMeasurable_eDist
     hX.IsKolmogorovProcess_mk.stronglyMeasurable_eDist, ?_⟩
   filter_upwards [hX.ae_eq_mk s, hX.ae_eq_mk t] with ω hω₁ hω₂ using by simp [hω₁, hω₂]
 
+@[deprecated (since := "2026-11-27")]
+alias IsAEKolmogorovProcess.aestronglyMeasurable_edist :=
+  IsAEKolmogorovProcess.aestronglyMeasurable_eDist
+
 lemma IsKolmogorovProcess.measurable_eDist (hX : IsKolmogorovProcess X P p q M) {s t : T} :
     Measurable (fun ω ↦ eDist (X s ω) (X t ω)) := hX.stronglyMeasurable_eDist.measurable
 
+@[deprecated (since := "2026-11-27")]
+alias IsKolmogorovProcess.measurable_edist := IsKolmogorovProcess.measurable_eDist
+
 lemma IsAEKolmogorovProcess.aemeasurable_eDist (hX : IsAEKolmogorovProcess X P p q M) {s t : T} :
     AEMeasurable (fun ω ↦ eDist (X s ω) (X t ω)) P := hX.aestronglyMeasurable_eDist.aemeasurable
+
+@[deprecated (since := "2026-11-27")]
+alias IsAEKolmogorovProcess.aemeasurable_edist := IsAEKolmogorovProcess.aemeasurable_eDist
 
 variable [MeasurableSpace E] [BorelSpace E]
 
@@ -161,10 +174,16 @@ lemma IsAEKolmogorovProcess.eDist_eq_zero (hX : IsAEKolmogorovProcess X P p q M)
   _ ≤ M * eDist s t ^ q := hX.kolmogorovCondition s t
   _ = 0 := by simp [h, hX.q_pos]
 
+@[deprecated (since := "2026-11-27")]
+alias IsAEKolmogorovProcess.edist_eq_zero := IsAEKolmogorovProcess.eDist_eq_zero
+
 lemma IsKolmogorovProcess.eDist_eq_zero (hX : IsKolmogorovProcess X P p q M)
     {s t : T} (h : eDist s t = 0) :
     ∀ᵐ ω ∂P, eDist (X s ω) (X t ω) = 0 :=
   hX.IsAEKolmogorovProcess.eDist_eq_zero h
+
+@[deprecated (since := "2026-11-27")]
+alias IsKolmogorovProcess.edist_eq_zero := IsKolmogorovProcess.eDist_eq_zero
 
 lemma IsAEKolmogorovProcess.eDist_eq_zero_of_const_eq_zero (hX : IsAEKolmogorovProcess X P p q 0)
     (s t : T) :
@@ -177,10 +196,18 @@ lemma IsAEKolmogorovProcess.eDist_eq_zero_of_const_eq_zero (hX : IsAEKolmogorovP
   _ ≤ 0 * eDist s t ^ q := hX.kolmogorovCondition s t
   _ = 0 := by simp
 
+@[deprecated (since := "2026-11-27")]
+alias IsAEKolmogorovProcess.edist_eq_zero_of_const_eq_zero :=
+  IsAEKolmogorovProcess.eDist_eq_zero_of_const_eq_zero
+
 lemma IsKolmogorovProcess.eDist_eq_zero_of_const_eq_zero (hX : IsKolmogorovProcess X P p q 0)
     (s t : T) :
     ∀ᵐ ω ∂P, eDist (X s ω) (X t ω) = 0 :=
   hX.IsAEKolmogorovProcess.eDist_eq_zero_of_const_eq_zero s t
+
+@[deprecated (since := "2026-11-27")]
+alias IsKolmogorovProcess.edist_eq_zero_of_const_eq_zero :=
+  IsKolmogorovProcess.eDist_eq_zero_of_const_eq_zero
 
 end ZeroDist
 

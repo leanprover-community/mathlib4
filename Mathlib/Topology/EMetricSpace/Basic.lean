@@ -45,10 +45,14 @@ theorem eDist_le_Ico_sum_eDist (f : ℕ → α) {m n} (h : m ≤ n) :
       _ = ∑ i ∈ Finset.Ico m (n + 1), _ := by
         rw [← Finset.insert_Ico_right_eq_Ico_add_one hle, Finset.sum_insert, add_comm]; simp
 
+@[deprecated (since := "2026-11-27")] alias edist_le_Ico_sum_edist := eDist_le_Ico_sum_eDist
+
 /-- The triangle (polygon) inequality for sequences of points; `Finset.range` version. -/
 theorem eDist_le_range_sum_eDist (f : ℕ → α) (n : ℕ) :
     eDist (f 0) (f n) ≤ ∑ i ∈ Finset.range n, eDist (f i) (f (i + 1)) :=
   Nat.Ico_zero_eq_range n ▸ eDist_le_Ico_sum_eDist f (Nat.zero_le n)
+
+@[deprecated (since := "2026-11-27")] alias edist_le_range_sum_edist := eDist_le_range_sum_eDist
 
 /-- A version of `eDist_le_Ico_sum_eDist` with each intermediate distance replaced
 with an upper estimate. -/
@@ -58,12 +62,18 @@ theorem eDist_le_Ico_sum_of_eDist_le {f : ℕ → α} {m n} (hmn : m ≤ n) {d :
   le_trans (eDist_le_Ico_sum_eDist f hmn) <|
     Finset.sum_le_sum fun _k hk => hd (Finset.mem_Ico.1 hk).1 (Finset.mem_Ico.1 hk).2
 
+@[deprecated (since := "2026-11-27")]
+alias edist_le_Ico_sum_of_edist_le := eDist_le_Ico_sum_of_eDist_le
+
 /-- A version of `eDist_le_range_sum_eDist` with each intermediate distance replaced
 with an upper estimate. -/
 theorem eDist_le_range_sum_of_eDist_le {f : ℕ → α} (n : ℕ) {d : ℕ → ℝ≥0∞}
     (hd : ∀ {k}, k < n → eDist (f k) (f (k + 1)) ≤ d k) :
     eDist (f 0) (f n) ≤ ∑ i ∈ Finset.range n, d i :=
   Nat.Ico_zero_eq_range n ▸ eDist_le_Ico_sum_of_eDist_le zero_le fun _ => hd
+
+@[deprecated (since := "2026-11-27")]
+alias edist_le_range_sum_of_edist_le := eDist_le_range_sum_of_eDist_le
 
 namespace EMetric
 
@@ -292,6 +302,9 @@ instance [PseudoEMetricSpace X] : EDist (SeparationQuotient X) where
 @[simp] theorem SeparationQuotient.eDist_mk [PseudoEMetricSpace X] (x y : X) :
     eDist (mk x) (mk y) = eDist x y :=
   rfl
+
+@[deprecated (since := "2026-11-27")]
+alias SeparationQuotient.edist_mk := SeparationQuotient.eDist_mk
 
 open SeparationQuotient in
 instance [PseudoEMetricSpace X] : EMetricSpace (SeparationQuotient X) :=

@@ -120,6 +120,8 @@ theorem dist_smul_Lp (c : Mᵈᵐᵃ) (f g : Lp E p μ) : dist (c • f) (c • 
 theorem eDist_smul_Lp (c : Mᵈᵐᵃ) (f g : Lp E p μ) : eDist (c • f) (c • g) = eDist f g := by
   simp only [Lp.eDist_dist, dist_smul_Lp]
 
+@[deprecated (since := "2026-11-27")] alias edist_smul_Lp := eDist_smul_Lp
+
 variable [Fact (1 ≤ p)]
 
 @[to_additive]

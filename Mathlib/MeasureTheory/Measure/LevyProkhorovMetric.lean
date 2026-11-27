@@ -316,14 +316,21 @@ noncomputable instance instPseudoMetricSpaceProbabilityMeasure :
 lemma eDist_measure_def (μ ν : LevyProkhorov (Measure Ω)) :
     eDist μ ν = levyProkhorovEDist μ.toMeasure ν.toMeasure := rfl
 
+@[deprecated (since := "2026-11-27")] alias edist_measure_def := eDist_measure_def
+
 lemma eDist_finiteMeasure_def (μ ν : LevyProkhorov (FiniteMeasure Ω)) :
     eDist μ ν = levyProkhorovEDist μ.toMeasure.toMeasure ν.toMeasure.toMeasure := rfl
+
+@[deprecated (since := "2026-11-27")] alias edist_finiteMeasure_def := eDist_finiteMeasure_def
 
 lemma dist_finiteMeasure_def (μ ν : LevyProkhorov (FiniteMeasure Ω)) :
     dist μ ν = levyProkhorovDist μ.toMeasure.toMeasure ν.toMeasure.toMeasure := rfl
 
 lemma eDist_probabilityMeasure_def (μ ν : LevyProkhorov (ProbabilityMeasure Ω)) :
     eDist μ ν = levyProkhorovEDist μ.toMeasure.toMeasure ν.toMeasure.toMeasure := rfl
+
+@[deprecated (since := "2026-11-27")]
+alias edist_probabilityMeasure_def := eDist_probabilityMeasure_def
 
 lemma dist_probabilityMeasure_def (μ ν : LevyProkhorov (ProbabilityMeasure Ω)) :
     dist μ ν = levyProkhorovDist μ.toMeasure.toMeasure ν.toMeasure.toMeasure := rfl

@@ -60,6 +60,8 @@ theorem lipschitzWith_smul (s : α) : LipschitzWith ‖s‖₊ (s • · : β �
 theorem eDist_smul_le (s : α) (x y : β) : eDist (s • x) (s • y) ≤ ‖s‖₊ • eDist x y :=
   lipschitzWith_smul s x y
 
+@[deprecated (since := "2026-11-27")] alias edist_smul_le := eDist_smul_le
+
 end SeminormedAddGroup
 
 /-- Left multiplication is bounded. -/
@@ -182,6 +184,8 @@ theorem nnDist_smul₀ (s : α) (x y : β) : nnDist (s • x) (s • y) = ‖s�
 
 theorem eDist_smul₀ (s : α) (x y : β) : eDist (s • x) (s • y) = ‖s‖₊ • eDist x y := by
   simp only [eDist_nnDist, nnDist_smul₀, ENNReal.coe_mul, ENNReal.smul_def, smul_eq_mul]
+
+@[deprecated (since := "2026-11-27")] alias edist_smul₀ := eDist_smul₀
 
 instance NormSMulClass.toIsBoundedSMul : IsBoundedSMul α β :=
   .of_norm_smul_le fun r x ↦ (norm_smul r x).le

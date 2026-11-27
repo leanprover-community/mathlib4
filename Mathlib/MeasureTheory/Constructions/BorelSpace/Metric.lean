@@ -116,8 +116,12 @@ theorem measurableSet_eball : MeasurableSet (Metric.eball x ε) :=
 @[fun_prop]
 theorem measurable_eDist_right : Measurable (eDist x) := by fun_prop
 
+@[deprecated (since := "2026-11-27")] alias measurable_edist_right := measurable_eDist_right
+
 @[fun_prop]
 theorem measurable_eDist_left : Measurable fun y ↦ eDist y x := by fun_prop
+
+@[deprecated (since := "2026-11-27")] alias measurable_edist_left := measurable_eDist_left
 
 theorem measurable_infEDist {s : Set α} : Measurable fun x => infEDist x s :=
   continuous_infEDist.measurable
@@ -174,15 +178,21 @@ variable [SecondCountableTopology α]
 theorem measurable_eDist : Measurable fun p : α × α => eDist p.1 p.2 :=
   continuous_eDist.measurable
 
+@[deprecated (since := "2026-11-27")] alias measurable_edist := measurable_eDist
+
 @[fun_prop]
 theorem Measurable.eDist {f g : β → α} (hf : Measurable f) (hg : Measurable g) :
     Measurable fun b => eDist (f b) (g b) :=
   continuous_eDist.measurable2 hf hg
 
+@[deprecated (since := "2026-11-27")] alias Measurable.edist := Measurable.eDist
+
 @[fun_prop]
 theorem AEMeasurable.eDist {f g : β → α} {μ : Measure β} (hf : AEMeasurable f μ)
     (hg : AEMeasurable g μ) : AEMeasurable (fun a => eDist (f a) (g a)) μ :=
   continuous_eDist.aemeasurable2 hf hg
+
+@[deprecated (since := "2026-11-27")] alias AEMeasurable.edist := AEMeasurable.eDist
 
 end PseudoEMetricSpace
 

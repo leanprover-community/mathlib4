@@ -187,13 +187,19 @@ theorem prod_eDist_eq_card (f g : WithLp 0 (α × β)) :
       (if eDist f.fst g.fst = 0 then 0 else 1) + (if eDist f.snd g.snd = 0 then 0 else 1) := by
   convert! ite_eq_left rfl
 
+@[deprecated (since := "2026-11-27")] alias prod_edist_eq_card := prod_eDist_eq_card
+
 theorem prod_eDist_eq_add (hp : 0 < p.toReal) (f g : WithLp p (α × β)) :
     eDist f g = (eDist f.fst g.fst ^ p.toReal + eDist f.snd g.snd ^ p.toReal) ^ (1 / p.toReal) :=
   let hp' := ENNReal.toReal_pos_iff.mp hp
   (ite_eq_right hp'.1.ne').trans (ite_eq_right hp'.2.ne)
 
+@[deprecated (since := "2026-11-27")] alias prod_edist_eq_add := prod_eDist_eq_add
+
 theorem prod_eDist_eq_sup (f g : WithLp ∞ (α × β)) :
     eDist f g = eDist f.fst g.fst ⊔ eDist f.snd g.snd := rfl
+
+@[deprecated (since := "2026-11-27")] alias prod_edist_eq_sup := prod_eDist_eq_sup
 
 end EDist
 
@@ -214,6 +220,8 @@ theorem prod_eDist_self (f : WithLp p (α × β)) : eDist f f = 0 := by
   · simp [prod_eDist_eq_add h, ENNReal.zero_rpow_of_pos h,
       ENNReal.zero_rpow_of_pos (inv_pos.2 h)]
 
+@[deprecated (since := "2026-11-27")] alias prod_edist_self := prod_eDist_self
+
 /-- The distance is symmetric.
 
 This holds independent of `p` and does not require `[Fact (1 ≤ p)]`. We keep it separate
@@ -223,6 +231,8 @@ theorem prod_eDist_comm (f g : WithLp p (α × β)) : eDist f g = eDist g f := b
   · simp only [prod_eDist_eq_card, eDist_comm]
   · simp only [prod_eDist_eq_sup, eDist_comm]
   · simp only [prod_eDist_eq_add h, eDist_comm]
+
+@[deprecated (since := "2026-11-27")] alias prod_edist_comm := prod_eDist_comm
 
 end EDistProp
 
@@ -364,6 +374,8 @@ theorem prod_sup_eDist_ne_top_aux [PseudoMetricSpace α] [PseudoMetricSpace β]
     (f g : WithLp ∞ (α × β)) :
     eDist f.fst g.fst ⊔ eDist f.snd g.snd ≠ ⊤ :=
   ne_of_lt <| by simp [eDist, PseudoMetricSpace.eDist_dist]
+
+@[deprecated (since := "2026-11-27")] alias prod_sup_edist_ne_top_aux := prod_sup_eDist_ne_top_aux
 
 variable (α β)
 
@@ -629,9 +641,13 @@ theorem eDist_fst_le [PseudoEMetricSpace α] [PseudoEMetricSpace β] (x y : With
     eDist x.fst y.fst ≤ eDist x y :=
   (eDist_proj_le_eDist_aux p x y).1
 
+@[deprecated (since := "2026-11-27")] alias edist_fst_le := eDist_fst_le
+
 theorem eDist_snd_le [PseudoEMetricSpace α] [PseudoEMetricSpace β] (x y : WithLp p (α × β)) :
     eDist x.snd y.snd ≤ eDist x y :=
   (eDist_proj_le_eDist_aux p x y).2
+
+@[deprecated (since := "2026-11-27")] alias edist_snd_le := eDist_snd_le
 
 theorem nnDist_fst_le [PseudoMetricSpace α] [PseudoMetricSpace β] (x y : WithLp p (α × β)) :
     nnDist x.fst y.fst ≤ nnDist x y := by
@@ -826,6 +842,8 @@ theorem prod_eDist_eq_of_L1 (x y : WithLp 1 (α × β)) :
     eDist x y = eDist x.fst y.fst + eDist x.snd y.snd := by
   simp [prod_eDist_eq_add]
 
+@[deprecated (since := "2026-11-27")] alias prod_edist_eq_of_L1 := prod_eDist_eq_of_L1
+
 end L1
 
 section L2
@@ -863,6 +881,8 @@ theorem prod_nnDist_eq_of_L2 (x y : WithLp 2 (α × β)) :
 theorem prod_eDist_eq_of_L2 (x y : WithLp 2 (α × β)) :
     eDist x y = (eDist x.fst y.fst ^ 2 + eDist x.snd y.snd ^ 2) ^ (1 / 2 : ℝ) := by
   simp [prod_eDist_eq_add]
+
+@[deprecated (since := "2026-11-27")] alias prod_edist_eq_of_L2 := prod_eDist_eq_of_L2
 
 end L2
 
@@ -929,10 +949,14 @@ lemma dist_toLp_snd (y₁ y₂ : β) :
 lemma eDist_toLp_fst (x₁ x₂ : α) : eDist (toLp p (x₁, (0 : β))) (toLp p (x₂, 0)) = eDist x₁ x₂ := by
   simp only [eDist_nnDist, nnDist_toLp_fst p α β x₁ x₂]
 
+@[deprecated (since := "2026-11-27")] alias edist_toLp_fst := eDist_toLp_fst
+
 @[simp]
 lemma eDist_toLp_snd (y₁ y₂ : β) :
     eDist (toLp p ((0 : α), y₁)) (toLp p (0, y₂)) = eDist y₁ y₂ := by
   simp only [eDist_nnDist, nnDist_toLp_snd p α β y₁ y₂]
+
+@[deprecated (since := "2026-11-27")] alias edist_toLp_snd := eDist_toLp_snd
 
 end Single
 

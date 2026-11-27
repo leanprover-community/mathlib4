@@ -279,15 +279,23 @@ theorem eDist_def (x y : Snowflaking X α hα₀ hα₁) :
     eDist x y = eDist x.ofSnowflaking y.ofSnowflaking ^ α :=
   rfl
 
+@[deprecated (since := "2026-11-27")] alias edist_def := eDist_def
+
 @[simp]
 theorem eDist_toSnowflaking_toSnowflaking (x y : X) :
     eDist (toSnowflaking x : Snowflaking X α hα₀ hα₁) (toSnowflaking y) = eDist x y ^ α :=
   rfl
 
+@[deprecated (since := "2026-11-27")]
+alias edist_toSnowflaking_toSnowflaking := eDist_toSnowflaking_toSnowflaking
+
 @[simp]
 theorem eDist_ofSnowflaking_ofSnowflaking (x y : Snowflaking X α hα₀ hα₁) :
     eDist x.ofSnowflaking y.ofSnowflaking = eDist x y ^ α⁻¹ := by
   rw [eDist_def, ENNReal.rpow_rpow_inv hα₀.ne']
+
+@[deprecated (since := "2026-11-27")]
+alias edist_ofSnowflaking_ofSnowflaking := eDist_ofSnowflaking_ofSnowflaking
 
 end EDist
 

@@ -47,9 +47,13 @@ theorem ediam_image_le_iff {d : ℝ≥0∞} {f : α → X} {s : Set α} :
 theorem eDist_le_of_ediam_le {d} (hx : x ∈ s) (hy : y ∈ s) (hd : ediam s ≤ d) : eDist x y ≤ d :=
   ediam_le_iff.1 hd x hx y hy
 
+@[deprecated (since := "2026-11-27")] alias edist_le_of_ediam_le := eDist_le_of_ediam_le
+
 /-- If two points belong to some set, their edistance is bounded by the diameter of the set -/
 theorem eDist_le_ediam_of_mem (hx : x ∈ s) (hy : y ∈ s) : eDist x y ≤ ediam s :=
   eDist_le_of_ediam_le hx hy le_rfl
+
+@[deprecated (since := "2026-11-27")] alias edist_le_ediam_of_mem := eDist_le_ediam_of_mem
 
 /-- If the distance between any two points in a set is bounded by some constant, this constant
 bounds the diameter. -/
@@ -115,6 +119,8 @@ theorem ediam_union_le_add_eDist (xs : x ∈ s) (yt : y ∈ t) :
   · calc
       eDist a b ≤ ediam t := eDist_le_ediam_of_mem h'a h'b
       _ ≤ ediam s + eDist x y + ediam t := le_add_self
+
+@[deprecated (since := "2026-11-27")] alias ediam_union_le_add_edist := ediam_union_le_add_eDist
 
 /-- If two sets have nonempty intersection, then the extended diameter of their union
 is estimated from above by the sum of their union. -/

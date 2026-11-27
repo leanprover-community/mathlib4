@@ -194,6 +194,8 @@ theorem EuclideanSpace.eDist_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintyp
     (x y : EuclideanSpace 𝕜 n) : eDist x y = (∑ i, eDist (x i) (y i) ^ 2) ^ (1 / 2 : ℝ) :=
   PiLp.eDist_eq_of_L2 x y
 
+@[deprecated (since := "2026-11-27")] alias EuclideanSpace.edist_eq := EuclideanSpace.eDist_eq
+
 theorem EuclideanSpace.ball_zero_eq {n : Type*} [Fintype n] (r : ℝ) (hr : 0 ≤ r) :
     Metric.ball (0 : EuclideanSpace ℝ n) r = {x | ∑ i, x i ^ 2 < r ^ 2} := by
   ext x

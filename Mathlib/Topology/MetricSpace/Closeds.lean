@@ -111,6 +111,8 @@ theorem continuous_infEDist :
 theorem eDist_eq {s t : Closeds α} : eDist s t = hausdorffEDist (s : Set α) t :=
   rfl
 
+@[deprecated (since := "2026-11-27")] alias edist_eq := eDist_eq
+
 /-- In a complete space, the type of closed subsets is complete for the Hausdorff edistance. -/
 instance instCompleteSpace [CompleteSpace α] : CompleteSpace (Closeds α) := by
   /- We will show that, if a sequence of sets `s n` satisfies
@@ -231,6 +233,8 @@ instance instEMetricSpace : EMetricSpace (Compacts α) where
 
 theorem eDist_eq {s t : Compacts α} : eDist s t = hausdorffEDist (s : Set α) t :=
   rfl
+
+@[deprecated (since := "2026-11-27")] alias edist_eq := eDist_eq
 
 theorem isometry_toCloseds : Isometry (Compacts.toCloseds (α := α)) :=
   fun _ _ => rfl

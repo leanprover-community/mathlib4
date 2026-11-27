@@ -43,20 +43,30 @@ theorem eDist_pi_def [∀ b, EDist (X b)] (f g : ∀ b, X b) :
     eDist f g = Finset.sup univ fun b => eDist (f b) (g b) :=
   rfl
 
+@[deprecated (since := "2026-11-27")] alias edist_pi_def := eDist_pi_def
+
 theorem eDist_le_pi_eDist [∀ b, EDist (X b)] (f g : ∀ b, X b) (b : β) :
     eDist (f b) (g b) ≤ eDist f g :=
   le_sup (f := fun b => eDist (f b) (g b)) (Finset.mem_univ b)
+
+@[deprecated (since := "2026-11-27")] alias edist_le_pi_edist := eDist_le_pi_eDist
 
 theorem eDist_pi_le_iff [∀ b, EDist (X b)] {f g : ∀ b, X b} {d : ℝ≥0∞} :
     eDist f g ≤ d ↔ ∀ b, eDist (f b) (g b) ≤ d :=
   Finset.sup_le_iff.trans <| by simp only [Finset.mem_univ, forall_const]
 
+@[deprecated (since := "2026-11-27")] alias edist_pi_le_iff := eDist_pi_le_iff
+
 theorem eDist_pi_const_le (a b : α) : (eDist (fun _ : β => a) fun _ => b) ≤ eDist a b :=
   eDist_pi_le_iff.2 fun _ => le_rfl
+
+@[deprecated (since := "2026-11-27")] alias edist_pi_const_le := eDist_pi_const_le
 
 @[simp]
 theorem eDist_pi_const [Nonempty β] (a b : α) : (eDist (fun _ : β => a) fun _ => b) = eDist a b :=
   Finset.sup_const univ_nonempty (eDist a b)
+
+@[deprecated (since := "2026-11-27")] alias edist_pi_const := eDist_pi_const
 
 /-- The product of a finite number of pseudoemetric spaces, with the max distance, is still
 a pseudoemetric space.

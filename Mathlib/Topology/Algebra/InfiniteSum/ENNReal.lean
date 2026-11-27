@@ -621,11 +621,17 @@ theorem cauchySeq_of_eDist_le_of_summable {f : ℕ → α} (d : ℕ → ℝ≥0)
   refine lt_of_le_of_lt (eDist_le_Ico_sum_of_eDist_le hn fun _ _ ↦ hf _) ?_
   exact mod_cast hN.1
 
+@[deprecated (since := "2026-11-27")]
+alias cauchySeq_of_edist_le_of_summable := cauchySeq_of_eDist_le_of_summable
+
 theorem cauchySeq_of_eDist_le_of_tsum_ne_top {f : ℕ → α} (d : ℕ → ℝ≥0∞)
     (hf : ∀ n, eDist (f n) (f n.succ) ≤ d n) (hd : tsum d ≠ ∞) : CauchySeq f := by
   lift d to ℕ → NNReal using fun i => ne_top_of_tsum_ne_top hd i
   rw [ENNReal.tsum_coe_ne_top_iff_summable] at hd
   exact cauchySeq_of_eDist_le_of_summable d hf hd
+
+@[deprecated (since := "2026-11-27")]
+alias cauchySeq_of_edist_le_of_tsum_ne_top := cauchySeq_of_eDist_le_of_tsum_ne_top
 
 /-- If `eDist (f n) (f (n+1))` is bounded above by a function `d : ℕ → ℝ≥0∞`,
 then the distance from `f n` to the limit is bounded by `∑'_{k=n}^∞ d k`. -/
@@ -638,11 +644,17 @@ theorem eDist_le_tsum_of_eDist_le_of_tendsto {f : ℕ → α} (d : ℕ → ℝ�
   rw [Finset.sum_Ico_eq_sum_range]
   exact CompleteLattice.summable.sum_le_tsum _ (fun _ _ => zero_le)
 
+@[deprecated (since := "2026-11-27")]
+alias edist_le_tsum_of_edist_le_of_tendsto := eDist_le_tsum_of_eDist_le_of_tendsto
+
 /-- If `eDist (f n) (f (n+1))` is bounded above by a function `d : ℕ → ℝ≥0∞`,
 then the distance from `f 0` to the limit is bounded by `∑'_{k=0}^∞ d k`. -/
 theorem eDist_le_tsum_of_eDist_le_of_tendsto₀ {f : ℕ → α} (d : ℕ → ℝ≥0∞)
     (hf : ∀ n, eDist (f n) (f n.succ) ≤ d n) {a : α} (ha : Tendsto f atTop (𝓝 a)) :
     eDist (f 0) a ≤ ∑' m, d m := by simpa using eDist_le_tsum_of_eDist_le_of_tendsto d hf ha 0
+
+@[deprecated (since := "2026-11-27")]
+alias edist_le_tsum_of_edist_le_of_tendsto₀ := eDist_le_tsum_of_eDist_le_of_tendsto₀
 
 
 namespace ENNReal

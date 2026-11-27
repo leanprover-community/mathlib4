@@ -158,6 +158,9 @@ lemma lintegral_fderiv_lineMap_eq_eDist {x y : E} :
   exact fderivWithin_eq_fderiv (uniqueDiffOn_Icc zero_lt_one _ hz)
     (ContinuousAffineMap.differentiableAt _)
 
+@[deprecated (since := "2026-11-27")]
+alias lintegral_fderiv_lineMap_eq_edist := lintegral_fderiv_lineMap_eq_eDist
+
 /-- An inner product vector space is a Riemannian manifold, i.e., the distance between two points
 is the infimum of the lengths of paths between these points. -/
 instance : IsRiemannianManifold 𝓘(ℝ, F) F := by
@@ -381,6 +384,10 @@ lemma eventually_riemannianEDist_le_eDist_extChartAt (x : M) :
   · exact (hη.2 ht).le
   · simp only [mfderivWithin_eq_fderivWithin]
     exact le_of_eq rfl
+
+@[deprecated (since := "2026-11-27")]
+alias eventually_riemannianEDist_le_edist_extChartAt :=
+  eventually_riemannianEDist_le_eDist_extChartAt
 
 /-- If points are close for the topology, then their Riemannian distance is small. -/
 lemma eventually_riemannianEDist_lt (x : M) {c : ℝ≥0∞} (hc : 0 < c) :
