@@ -8,7 +8,7 @@ module
 public import Mathlib.Order.BoundedOrder.Basic
 
 /-!
-# The order on partial orders
+# Ordering orders by inclusion
 
 Partial orders on a fixed type are ordered by inclusion of their LE relations.
 The bottom partial order `⊥` is the discrete order, which is given by the Eq relation.
@@ -47,7 +47,7 @@ class DiscreteOrder (α : Type*) [p : PartialOrder α] : Prop where
   eq_bot : p = ⊥
 
 instance (α : Type*) : @DiscreteOrder α ⊥ :=
-  @DiscreteOrder.mk α ⊥ rfl
+  @DiscreteOrder.mk α (⊥ : PartialOrder α) rfl
 
 namespace DiscreteOrder
 

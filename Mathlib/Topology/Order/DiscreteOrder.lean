@@ -5,7 +5,7 @@ Authors: Pavel Zorin-Kranich
 -/
 module
 
-public import Mathlib.Order.Defs.PartialOrders
+public import Mathlib.Order.OrderOnOrders
 public import Mathlib.Topology.Order.OrderClosed
 
 /-!

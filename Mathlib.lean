@@ -6333,7 +6333,6 @@ public import Mathlib.Order.Cover
 public import Mathlib.Order.Defs.Lattice
 public import Mathlib.Order.Defs.LinearOrder
 public import Mathlib.Order.Defs.PartialOrder
-public import Mathlib.Order.Defs.PartialOrders
 public import Mathlib.Order.Defs.Prop
 public import Mathlib.Order.Defs.Unbundled
 public import Mathlib.Order.DirSupClosed
@@ -6503,6 +6502,7 @@ public import Mathlib.Order.OmegaCompletePartialOrder
 public import Mathlib.Order.OrdContinuous
 public import Mathlib.Order.OrderDual
 public import Mathlib.Order.OrderIsoNat
+public import Mathlib.Order.OrderOnOrders
 public import Mathlib.Order.PFilter
 public import Mathlib.Order.PSigma
 public import Mathlib.Order.Part

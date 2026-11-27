@@ -6,7 +6,7 @@ Authors: Pavel Zorin-Kranich
 module
 
 public import Mathlib.Algebra.Order.Monoid.Defs
-public import Mathlib.Order.Defs.PartialOrders
+public import Mathlib.Order.OrderOnOrders
 
 /-!
 # Discrete order on monoids
