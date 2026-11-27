@@ -46,6 +46,12 @@ lemma hasCokernel_of_hasCokernel_app [∀ j, HasCokernel (f.app j)] : HasCokerne
       (parallelPair.ext (Iso.refl _) (Iso.refl _))
   functorCategoryHasColimit _
 
+instance [HasKernels C] : HasKernels (J ⥤ C) where
+  has_limit _ := hasKernel_of_hasKernel_app _
+
+instance [HasCokernels C] : HasCokernels (J ⥤ C) where
+  has_colimit _ := hasCokernel_of_hasCokernel_app _
+
 lemma evaluation_preservesLimit_of_hasKernel_app [∀ j, HasKernel (f.app j)] (j : J) :
     PreservesLimit (parallelPair f 0) ((evaluation _ _).obj j) :=
   have (j : J) : HasLimit ((parallelPair f 0).flip.obj j) :=
@@ -65,5 +71,47 @@ lemma evaluation_preservesColimit_of_hasCokernel_app [∀ j, HasCokernel (f.app 
     (combinedIsColimit (F := parallelPair f 0)
       (fun j ↦ getColimitCocone ((parallelPair f 0).flip.obj j)))
     (colimit.isColimit _)
+
+section
+
+variable [HasCokernel f] [∀ j, HasCokernel (f.app j)]
+
+@[no_expose]
+noncomputable def cokernelObjIso (j : J) : (cokernel f).obj j ≅ cokernel (f.app j) :=
+  haveI := evaluation_preservesColimit_of_hasCokernel_app f j
+  (IsColimit.coconePointUniqueUpToIso
+    (CokernelCofork.mapIsColimit _ (cokernelIsCokernel f) ((evaluation _ _).obj j))
+    (cokernelIsCokernel (f.app j)) :)
+
+@[reassoc (attr := simp)]
+lemma π_cokernelObjIso_hom (j : J) :
+    (cokernel.π f).app j ≫ (cokernelObjIso f j).hom = cokernel.π (f.app j) :=
+  have := evaluation_preservesColimit_of_hasCokernel_app f j
+  IsColimit.comp_coconePointUniqueUpToIso_hom
+    (CokernelCofork.mapIsColimit _ (cokernelIsCokernel f) ((evaluation _ _).obj j))
+      (cokernelIsCokernel (f.app j)) .one
+
+@[simps!]
+noncomputable def cokernelπAppArrowIso (j : J) :
+    Arrow.mk ((cokernel.π f).app j) ≅ Arrow.mk (cokernel.π (f.app j)) :=
+  Arrow.isoMk (Iso.refl _) (cokernelObjIso f j)
+
+instance (j : J) : Epi ((cokernel.π f).app j) :=
+  ((MorphismProperty.epimorphisms _).arrow_mk_iso_iff
+    (cokernelπAppArrowIso f j)).2 inferInstance
+
+@[reassoc (attr := simp)]
+lemma cokernelObjIso_hom_cokernel_map {i j : J} (g : i ⟶ j) :
+    (cokernelObjIso f i).hom ≫
+      cokernel.map (f.app i) (f.app j) (F₁.map g) (F₂.map g) (by simp) =
+    (cokernel f).map g ≫ (cokernelObjIso f j).hom := by
+  simp [← cancel_epi ((cokernel.π f).app i), ← NatTrans.naturality_assoc]
+
+noncomputable def cokernelMapArrowIso {i j : J} (g : i ⟶ j) :
+    Arrow.mk ((cokernel f).map g) ≅
+      Arrow.mk (cokernel.map (f.app i) (f.app j) (F₁.map g) (F₂.map g) (by simp)) :=
+  Arrow.isoMk (cokernelObjIso f i) (cokernelObjIso f j)
+
+end
 
 end CategoryTheory.Limits

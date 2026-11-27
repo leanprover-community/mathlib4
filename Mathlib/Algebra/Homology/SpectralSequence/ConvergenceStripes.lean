@@ -9,6 +9,8 @@ public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 public import Mathlib.Algebra.Homology.SpectralSequence.PageInfinity
 public import Mathlib.CategoryTheory.Filtration.Basic
 public import Mathlib.Order.Preorder.Finite
+public import Mathlib.Order.SuccPred.Fin
+public import Mathlib.Order.SuccPred.Int
 
 /-!
 # Convergence of spectral sequences
@@ -19,16 +21,75 @@ public import Mathlib.Order.Preorder.Finite
 
 namespace CategoryTheory
 
-open Category Limits Preadditive
+open Category Limits Preadditive ZeroObject
 
 variable {C : Type*} [Category* C] [Abelian C]
-  (ι : Type*) {c : ℤ → ComplexShape ι} {r₀ : ℤ}
+  {ι : Type*} {c : ℤ → ComplexShape ι} {r₀ : ℤ}
 
 namespace SpectralSequence
 
-variable {σ : Type*} (α : σ → Type*) [∀ n, LinearOrder (α n)]
+variable {σ : Type*} {α : σ → Type*}
+  [∀ n, LinearOrder (α n)] [∀ n, PredOrder (α n)] [∀ n, IsPredArchimedean (α n)]
 
+variable (ι α) in
 structure ConvergenceStripes where
+  stripe : ι → σ
+  position (n : σ) (i : α n) (hi : ¬ IsBot i) : ι
+  stripe_position (n : σ) (i : α n) (hi : ¬ IsBot i) : stripe (position n i hi) = n := by grind
+
+@[simps, implicit_reducible]
+def cohomologicalStripes :
+    ConvergenceStripes (ℤ × ℤ) (fun (_ : ℤ) ↦ ℤ) where
+  stripe pq := pq.1 + pq.2
+  position n i _ := ⟨n + 1 - i, i - 1⟩
+
+@[simps, implicit_reducible]
+def cohomomologicalStripesFin (l : ℕ) :
+    ConvergenceStripes (ℤ × Fin l) (fun (_ : ℤ) ↦ Fin (l + 1)) where
+  stripe pq := pq.1 + pq.2.val
+  position n i hi := --⟨n - i.val, i⟩
+    ⟨n + 1 - i.val, i.pred (by simpa using! hi)⟩
+
+@[simps, implicit_reducible]
+def cohomologicalStripesNat :
+    ConvergenceStripes (ℕ × ℕ) (fun (n : ℕ) ↦ Fin (n + 2)) where
+  stripe pq := pq.1 + pq.2
+  position n i hi := ⟨n + 1 - i.val, (i.pred (by simpa using! hi)).val⟩
+
+section
+
+variable (E : SpectralSequence C c r₀) (s : ConvergenceStripes ι α)
+
+-- better design: replace `X` by a filtered object, and set up suitable
+-- typeclasses for the "convergence" of this filtered object
+structure VeryWeaklyConvergesToInDegree (n : σ) (X : C) where
+  hasPageInfinityAt (pq : ι) (_ : s.stripe pq = n) : E.HasPageInfinityAt pq
+  filtration : Filtration X (α n)
+  π (i : α n) (pq : ι) (hi : ¬ IsBot i) (hpq : s.position n i hi = pq) :
+      filtration.obj i ⟶ E.pageInfinity pq
+  epi_π (i : α n) (pq : ι) (hi : ¬ IsBot i) (hpq : s.position n i hi = pq) : Epi (π i pq hi hpq)
+  comp_π (i j : α n) (hij : Order.pred j = i) (hj : ¬ IsBot j) (pq : ι)
+    (hpq : s.position n j hj = pq) :
+    filtration.diagram.map (homOfLE (show i ≤ j by simpa [← hij] using Order.pred_le j)) ≫
+      π j pq hj hpq = 0
+  exact_π (i j : α n) (hij : Order.pred j = i) (hj : ¬ IsBot j) (pq : ι)
+    (hpq : s.position n j hj = pq) :
+    (ShortComplex.mk _ _ (comp_π i j hij hj pq hpq)).Exact
+
+structure WeaklyConvergesToInDegree (n : σ) (X : C)
+    extends E.VeryWeaklyConvergesToInDegree s n X where
+  nonempty_isColimit : Nonempty (IsColimit (Cocone.mk _ filtration.ι))
+
+structure ConvergesToInDegree (n : σ) (X : C)
+    extends E.WeaklyConvergesToInDegree s n X where
+  nonempty_isLimit : Nonempty (IsLimit (Cone.mk (F := filtration.diagram) (pt := 0) 0))
+
+structure VeryStronglyConvergesToInDegree (n : σ) (X : C)
+    extends E.WeaklyConvergesToInDegree s n X where
+  exists_isZero : ∃ (j : α n), IsZero (filtration.obj j)
+  exists_isIso : ∃ (j : α n), IsIso (filtration.ι.app j)
+
+/-structure ConvergenceStripes where
   pred (n : σ) (i : α n) : WithBot (α n)
   pred_lt n (i : α n) : pred n i < WithBot.some i := by aesop
   stripe : ι → σ
@@ -205,7 +266,7 @@ lemma isIso_natTrans_of_isIso_mapPageInfinity :
 
 end Hom
 
-end VeryStronglyConvergesToInDegree
+end VeryStronglyConvergesToInDegree-/
 
 end SpectralSequence
 
