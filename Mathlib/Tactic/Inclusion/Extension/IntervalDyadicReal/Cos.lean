@@ -61,8 +61,8 @@ theorem cosTaylor_mem {x : Dyadic} (hx : |x.toReal| ≤ 1) (n prec : ℕ) :
     Real.cos x.toReal ∈ cosTaylor x n prec := by
   have h := Real.abs_cos_sub_sum_range_le hx n
   rw [cosTaylor, Dyadic.toReal, Rat.cast_def] at *
-  obtain ⟨hterm, hsum⟩ := hypergeomPartialSum_div (Int.castRingHom ℝ) (fun _ ↦ -x.toRat.num ^ 2)
-    (fun j ↦ x.toRat.den ^ 2 * ((2 * j + 1) * (2 * j + 2))) (fun j ↦ by positivity)
+  obtain ⟨hterm, hsum⟩ := hypergeomPartialSum_spec (Int.castRingHom ℝ) (fun _ ↦ -x.toRat.num ^ 2)
+    (fun j ↦ x.toRat.den ^ 2 * ((2 * j + 1) * (2 * j + 2))) (fun j ↦ by positivity) 0
     (fun m ↦ (-1) ^ m * ((x.toRat.num : ℝ) / x.toRat.den) ^ (2 * m) / (2 * m)!) (fun j ↦ by
       push_cast [eq_intCast, mul_add_one, Nat.factorial_succ, pow_add]
       field) n
