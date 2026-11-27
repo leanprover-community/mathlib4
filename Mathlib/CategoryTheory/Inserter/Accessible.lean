@@ -472,7 +472,7 @@ end succ
 
 section limit
 
-/- This section sets up the limit cate of the transfinite induction extending a partial
+/- This section sets up the limit case of the transfinite induction extending a partial
 chain to a section of `PartialChainUpTo.functor`. -/
 
 /-- A wrapper around restricted sections of `PartialChainUpTo.functor`.
