@@ -555,6 +555,8 @@ end IntermediateField
 
 namespace AlgHom
 
+section fieldRange
+
 variable (f : L →ₐ[K] L')
 
 /-- The range of an algebra homomorphism, as an intermediate field. -/
@@ -582,11 +584,9 @@ noncomputable def equivFieldRange : L ≃ₐ[K] f.fieldRange :=
 
 @[deprecated (since := "2026-06-20")] alias equivFieldRange_apply := equivFieldRange_apply_coe
 
-end AlgHom
+end fieldRange
 
 section fieldEqualizer
-
-namespace AlgHom
 
 variable {R : Type*} [Ring R] [Algebra K R]
 
@@ -606,9 +606,9 @@ theorem mem_fieldEqualizer (φ ψ : L →ₐ[K] R) (x : L) : x ∈ fieldEqualize
 theorem le_fieldEqualizer {φ ψ : L →ₐ[K] R} {S : IntermediateField K L} :
     S ≤ fieldEqualizer φ ψ ↔ Set.EqOn φ ψ S := Iff.rfl
 
-end AlgHom
-
 end fieldEqualizer
+
+end AlgHom
 
 variable (K L L') in
 theorem IsScalarTower.toAlgHom_fieldRange [Algebra L L'] [IsScalarTower K L L'] :
