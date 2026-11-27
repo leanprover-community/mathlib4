@@ -348,11 +348,11 @@ lemma toSL2R_apply (z : ℍ) : z.toSL2R =
 
 @[simp] lemma coe_toSL2R (z : ℍ) : z.toSL2R = !![√z.im, z.re / √z.im; 0, 1 / √z.im] := (rfl)
 
-@[simp] lemma toSL2R_smul_I (z : ℍ) : z.toSL2R • I = z := by
+@[simp] lemma toSL2R_smul_I (z : ℍ) : z.toSL2R • .I = z := by
   have : √z.im ≠ (0 : ℂ) := by simpa [Real.sqrt_ne_zero'] using z.im_pos
   ext
   suffices z.re / √z.im + √z.im * Complex.I = z * (↑√z.im)⁻¹ by
-    rw [coe_specialLinearGroup_apply, div_eq_iff (mod_cast denom_ne_zero z.toSL2R I)]
+    rw [coe_specialLinearGroup_apply, div_eq_iff (mod_cast denom_ne_zero z.toSL2R .I)]
     simpa [add_comm]
   rw [div_add' (hc := this), mul_right_comm, ← Complex.ofReal_mul, ← Real.sqrt_mul z.im_pos.le,
     Real.sqrt_mul_self z.im_pos.le, re_add_im, div_eq_mul_inv]

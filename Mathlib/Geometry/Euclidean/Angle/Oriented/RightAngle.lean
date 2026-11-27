@@ -8,6 +8,9 @@ module
 public import Mathlib.Geometry.Euclidean.Angle.Oriented.Affine
 public import Mathlib.Geometry.Euclidean.Angle.Unoriented.RightAngle
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Oriented angles in right-angled triangles.
 

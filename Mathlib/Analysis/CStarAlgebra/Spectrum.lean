@@ -267,7 +267,6 @@ variable [FunLike F A B] [NonUnitalAlgHomClass F ℂ A B] [StarHomClass F A B]
 
 open Unitization
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- A non-unital star algebra homomorphism of complex C⋆-algebras is norm contractive. -/
 lemma nnNorm_apply_le (φ : F) (a : A) : ‖φ a‖₊ ≤ ‖a‖₊ := by
   have h (ψ : Unitization ℂ A →⋆ₐ[ℂ] Unitization ℂ B) (x : Unitization ℂ A) :
@@ -304,7 +303,7 @@ end NonUnitalStarAlgHom
 namespace StarAlgEquiv
 
 variable {F A B : Type*} [NonUnitalCStarAlgebra A] [NonUnitalCStarAlgebra B] [EquivLike F A B]
-variable [NonUnitalAlgEquivClass F ℂ A B] [StarHomClass F A B]
+variable [AlgEquivClass F ℂ A B] [StarHomClass F A B]
 
 lemma nnNorm_map (φ : F) (a : A) : ‖φ a‖₊ = ‖a‖₊ :=
   le_antisymm (NonUnitalStarAlgHom.nnNorm_apply_le φ a) <| by

@@ -6,10 +6,10 @@ Authors: Kevin Buzzard, Johan Commelin, Patrick Massot, Filippo A. E. Nuccio
 module
 
 public import Mathlib.Algebra.Order.GroupWithZero.Range
-public import Mathlib.Algebra.Ring.Torsion
 public import Mathlib.RingTheory.Ideal.Maps
 
 import Mathlib.Algebra.Order.Ring.Basic
+import Mathlib.Algebra.Ring.Torsion
 
 /-!
 # The basics of valuation theory.
@@ -49,7 +49,7 @@ sense. Note that we use 1.27(iii) of [wedhorn_adic] as the definition of equival
 * `AddValuation R Γ₀`, the type of additive valuations on `R` with values in a
   linearly ordered additive commutative group with a top element, `Γ₀`.
 
-## Implementation Details
+## Implementation notes
 
 `AddValuation R Γ₀` is implemented as `Valuation R (Multiplicative Γ₀)ᵒᵈ`.
 

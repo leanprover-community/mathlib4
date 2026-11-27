@@ -70,6 +70,7 @@ lemma IsRegular.ne_zero (H : c.IsRegular) : c ≠ 0 :=
 theorem isRegular_aleph0 : IsRegular ℵ₀ :=
   ⟨le_rfl, by simp⟩
 
+@[instance]
 lemma fact_isRegular_aleph0 : Fact (IsRegular ℵ₀) where
   out := isRegular_aleph0
 

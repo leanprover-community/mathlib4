@@ -122,8 +122,9 @@ theorem ofIsLocalizedModule_repr_apply (m : M) (i : ι) :
     congrm $this m i
   refine ext b fun i ↦ ?_
   rw [LinearMap.coe_comp, Function.comp_apply, LinearMap.coe_restrictScalars,
-    LinearEquiv.coe_coe, ← b.ofIsLocalizedModule_apply Rₛ S f, repr_self, LinearMap.coe_comp,
-    Function.comp_apply, LinearEquiv.coe_coe, repr_self, Finsupp.mapRange.linearMap_apply,
+    LinearEquiv.coe_toLinearMap, ← b.ofIsLocalizedModule_apply Rₛ S f, repr_self,
+    LinearMap.coe_comp,
+    Function.comp_apply, LinearEquiv.coe_toLinearMap, repr_self, Finsupp.mapRange.linearMap_apply,
     Finsupp.mapRange_single, Algebra.linearMap_apply, map_one]
 
 theorem ofIsLocalizedModule_span :

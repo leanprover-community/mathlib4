@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
 public import Mathlib.CategoryTheory.Sites.PrecoverageToGrothendieck
 public import Mathlib.CategoryTheory.Sites.Sheaf
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # 1-hypercovers
 
@@ -72,8 +75,9 @@ def sieve₁ {i₁ i₂ : E.I₀} {W : C} (p₁ : W ⟶ E.X i₁) (p₂ : W ⟶ 
 lemma pullback_sieve₁ {i₁ i₂ : E.I₀} {W : C} (p₁ : W ⟶ E.X i₁) (p₂ : W ⟶ E.X i₂)
     {T : C} (f : T ⟶ W) :
     Sieve.pullback f (E.sieve₁ p₁ p₂) = E.sieve₁ (f ≫ p₁) (f ≫ p₂) := by
-  refine le_antisymm ?_ ?_ <;>
-  · intro Z g ⟨k, u, hu₁, hu₂⟩
+  refine le_antisymm ?_ ?_
+  all_goals
+    intro Z g ⟨k, u, hu₁, hu₂⟩
     cat_disch
 
 section

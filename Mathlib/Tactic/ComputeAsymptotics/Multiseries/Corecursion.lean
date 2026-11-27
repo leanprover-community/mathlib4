@@ -49,7 +49,7 @@ where f is friendly.
 * `FriendlyOperation.eq_of_bisim`: a generalisation of `Seq.eq_of_bisim'` that allows using a
   friendly operation in the tail of the sequences.
 
-## Implementation details
+## Implementation notes
 
 To prove that the definition of the form
 ```

@@ -10,6 +10,9 @@ public import Mathlib.GroupTheory.SpecificGroups.Cyclic
 
 import Mathlib.Data.Fintype.Lattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # p-groups
 
@@ -333,7 +336,7 @@ theorem card_modEq_card_fixedPoints : Nat.card α ≡ Nat.card (fixedPoints G α
         (Finset.sum_bij_ne_zero (fun a _ _ => Quotient.mk'' a.val) (fun _ _ _ => Finset.mem_univ _)
           (fun a₁ _ _ a₂ _ _ h =>
             Subtype.ext (mem_fixedPoints'.mp a₂.property a₁.val (Quotient.exact' h)))
-          (fun b => Quotient.inductionOn' b fun b _ hb => ?_) fun a ha _ => by
+          (fun b => Quotient.inductionOn b fun b _ hb => ?_) fun a ha _ => by
           rw [key, mem_fixedPoints_iff_card_orbit_eq_one.mp a.property])
     obtain ⟨k, hk⟩ := hG.card_orbit b
     rw [Nat.card_eq_fintype_card] at hk

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Module.RingHom
 public import Mathlib.Algebra.Order.Module.Defs
 public import Mathlib.Algebra.Order.Nonneg.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Modules over nonnegative elements
 

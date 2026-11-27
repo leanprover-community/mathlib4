@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Sites.LeftExact
 public import Mathlib.CategoryTheory.Sites.PreservesSheafification
 public import Mathlib.CategoryTheory.Sites.Subsheaf
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Locally injective morphisms of (pre)sheaves
 

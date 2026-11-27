@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
 
 import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Stability properties of morphism properties on functor categories
 

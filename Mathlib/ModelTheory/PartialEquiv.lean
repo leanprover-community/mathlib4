@@ -14,6 +14,7 @@ public import Mathlib.Order.Ideal
 This file defines partial isomorphisms between first-order structures.
 
 ## Main Definitions
+
 - `FirstOrder.Language.PartialEquiv` is defined so that `L.PartialEquiv M N`, annotated
   `M ≃ₚ[L] N`, is the type of equivalences between substructures of `M` and `N`. These can be
   ordered, with an order that is defined here in terms of a commutative square, but could also be
@@ -26,6 +27,7 @@ This file defines partial isomorphisms between first-order structures.
   element `m : M` in its domain.
 
 ## Main Results
+
 - `FirstOrder.Language.embedding_from_cg` shows that if structures `M` and `N` form an equivalence
   pair with `M` countably-generated, then any finite-generated partial equivalence between them
   can be extended to an embedding `M ↪[L] N`.
@@ -422,8 +424,9 @@ def FGEquiv.symm (f : L.FGEquiv M N) : L.FGEquiv N M :=
 
 lemma isExtensionPair_iff_cod : L.IsExtensionPair M N ↔
     ∀ (f : L.FGEquiv N M) (m : M), ∃ g, m ∈ g.val.cod ∧ f ≤ g := by
-  refine Iff.intro ?_ ?_ <;>
-  · intro h f m
+  refine Iff.intro ?_ ?_
+  all_goals
+    intro h f m
     obtain ⟨g, h1, h2⟩ := h f.symm m
     exact ⟨g.symm, h1, monotone_symm h2⟩
 

@@ -11,6 +11,9 @@ public import Mathlib.Order.Interval.Set.SuccOrder
 
 import Mathlib.Order.Shrink
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Classes of morphisms that are stable under transfinite composition
 
@@ -384,6 +387,15 @@ lemma transfiniteCompositions_le_iff {P Q : MorphismProperty C}
   · exact (le_transfiniteCompositions P).trans
   · intro h
     exact (transfiniteCompositions_monotone.{w} h).trans Q.transfiniteCompositions_le
+
+instance (W : MorphismProperty D)
+    (J : Type w) [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J]
+    [W.IsStableUnderTransfiniteCompositionOfShape J] (F : C ⥤ D)
+    [PreservesWellOrderContinuousOfShape J F] [PreservesColimitsOfShape J F] :
+    (W.inverseImage F).IsStableUnderTransfiniteCompositionOfShape J where
+  le := by
+    intro X Y f ⟨hf⟩
+    exact W.transfiniteCompositionsOfShape_le _ _ hf.map.mem
 
 namespace TransfiniteCompositionOfShape
 

@@ -176,7 +176,7 @@ theorem linearDisjoint_op :
     M.LinearDisjoint N ↔ (equivOpposite.symm (MulOpposite.op N)).LinearDisjoint
       (equivOpposite.symm (MulOpposite.op M)) := by
   simp only [linearDisjoint_iff, mulMap_op, LinearMap.coe_comp,
-    LinearEquiv.coe_coe, EquivLike.comp_injective, EquivLike.injective_comp]
+    LinearEquiv.coe_toLinearMap, EquivLike.comp_injective, EquivLike.injective_comp]
 
 alias ⟨LinearDisjoint.op, LinearDisjoint.of_op⟩ := linearDisjoint_op
 
@@ -212,7 +212,7 @@ theorem of_basis_left' {ι : Type*} (m : Basis ι R M)
     (H : Function.Injective (mulLeftMap N m)) : M.LinearDisjoint N := by
   classical simp_rw [mulLeftMap_eq_mulMap_comp, ← Basis.coe_repr_symm,
     ← LinearEquiv.coe_rTensor, LinearEquiv.comp_coe, LinearMap.coe_comp,
-    LinearEquiv.coe_coe, EquivLike.injective_comp] at H
+    LinearEquiv.coe_toLinearMap, EquivLike.injective_comp] at H
   exact ⟨H⟩
 
 /-- If `{ n_i }` is an `R`-basis of `N`, which is also `M`-linearly independent
@@ -222,7 +222,7 @@ theorem of_basis_right' {ι : Type*} (n : Basis ι R N)
     (H : Function.Injective (mulRightMap M n)) : M.LinearDisjoint N := by
   classical simp_rw [mulRightMap_eq_mulMap_comp, ← Basis.coe_repr_symm,
     ← LinearEquiv.coe_lTensor, LinearEquiv.comp_coe, LinearMap.coe_comp,
-    LinearEquiv.coe_coe, EquivLike.injective_comp] at H
+    LinearEquiv.coe_toLinearMap, EquivLike.injective_comp] at H
   exact ⟨H⟩
 
 /-- If `{ m_i }` is an `R`-basis of `M`, if `{ n_i }` is an `R`-basis of `N`,
@@ -238,7 +238,8 @@ theorem of_basis_mul' {κ ι : Type*} (m : Basis κ R M) (n : Basis ι R N)
   have : i = Finsupp.linearCombination R fun i : κ × ι ↦ (m i.1 * n i.2 : S) := by
     ext x
     simp [i, i0, i1, finsuppTensorFinsupp'_symm_single_eq_single_one_tmul]
-  simp_rw [← this, i, LinearMap.coe_comp, LinearEquiv.coe_coe, EquivLike.injective_comp] at H
+  simp_rw [← this, i, LinearMap.coe_comp, LinearEquiv.coe_toLinearMap,
+    EquivLike.injective_comp] at H
   exact ⟨H⟩
 
 /-- The zero module is linearly disjoint with any other submodules. -/
@@ -329,7 +330,7 @@ to the sum of `m_i * n_i` (`Submodule.mulLeftMap N m`) has trivial kernel. -/
 theorem linearIndependent_left_of_flat (H : M.LinearDisjoint N) [Module.Flat R N]
     {ι : Type*} {m : ι → M} (hm : LinearIndependent R m) : LinearMap.ker (mulLeftMap N m) = ⊥ := by
   refine LinearMap.ker_eq_bot_of_injective ?_
-  classical simp_rw [mulLeftMap_eq_mulMap_comp, LinearMap.coe_comp, LinearEquiv.coe_coe,
+  classical simp_rw [mulLeftMap_eq_mulMap_comp, LinearMap.coe_comp, LinearEquiv.coe_toLinearMap,
     ← Function.comp_assoc, EquivLike.injective_comp]
   rw [LinearIndependent] at hm
   exact H.injective.comp (Module.Flat.rTensor_preserves_injective_linearMap (M := N) _ hm)
@@ -348,7 +349,7 @@ to the sum of `m_i * n_i` (`Submodule.mulRightMap M n`) has trivial kernel. -/
 theorem linearIndependent_right_of_flat (H : M.LinearDisjoint N) [Module.Flat R M]
     {ι : Type*} {n : ι → N} (hn : LinearIndependent R n) : LinearMap.ker (mulRightMap M n) = ⊥ := by
   refine LinearMap.ker_eq_bot_of_injective ?_
-  classical simp_rw [mulRightMap_eq_mulMap_comp, LinearMap.coe_comp, LinearEquiv.coe_coe,
+  classical simp_rw [mulRightMap_eq_mulMap_comp, LinearMap.coe_comp, LinearEquiv.coe_toLinearMap,
     ← Function.comp_assoc, EquivLike.injective_comp]
   rw [LinearIndependent] at hn
   exact H.injective.comp (Module.Flat.lTensor_preserves_injective_linearMap (M := M) _ hn)
