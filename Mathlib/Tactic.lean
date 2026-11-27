@@ -190,6 +190,7 @@ public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Hypotheses
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Init
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Log
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Rational
+public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Series
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Sqrt
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Tactic
 public import Mathlib.Tactic.Inclusion.Extension.IntervalInt.Basic
@@ -240,6 +241,7 @@ public import Mathlib.Tactic.Linter.HaveLetLinter
 public import Mathlib.Tactic.Linter.Header
 public import Mathlib.Tactic.Linter.InternalConstructor
 public import Mathlib.Tactic.Linter.Lint
+public import Mathlib.Tactic.Linter.LongDeclaration
 public import Mathlib.Tactic.Linter.MinImports
 public import Mathlib.Tactic.Linter.Multigoal
 public import Mathlib.Tactic.Linter.NumericProjection
