@@ -236,7 +236,7 @@ theorem Module.infinite_of_rank_pos [Infinite R] (h : 0 < Module.rank R M) : Inf
   apply Infinite.of_injective (fun r : R ↦ r • (v 0))
   exact LinearIndependent.smul_left_injective hv 0
 
-/-- A module of positive finite rank over an infinite ring is infinite. -/
+/-- A module of positive `finrank` over an infinite ring is infinite. -/
 theorem Module.infinite_of_finrank_pos [Infinite R] (h : 0 < finrank R M) : Infinite M :=
   infinite_of_rank_pos (by simpa using lt_rank_of_lt_finrank h)
 
