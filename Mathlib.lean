@@ -2596,6 +2596,7 @@ public import Mathlib.CategoryTheory.Abelian.DiagramLemmas.KernelCokernelComp
 public import Mathlib.CategoryTheory.Abelian.EpiWithInjectiveKernel
 public import Mathlib.CategoryTheory.Abelian.Exact
 public import Mathlib.CategoryTheory.Abelian.Ext
+public import Mathlib.CategoryTheory.Abelian.Flat.Basic
 public import Mathlib.CategoryTheory.Abelian.FreydMitchell
 public import Mathlib.CategoryTheory.Abelian.FunctorCategory
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
@@ -2962,6 +2963,7 @@ public import Mathlib.CategoryTheory.Idempotents.Karoubi
 public import Mathlib.CategoryTheory.Idempotents.KaroubiKaroubi
 public import Mathlib.CategoryTheory.Idempotents.SimplicialObject
 public import Mathlib.CategoryTheory.InducedCategory
+public import Mathlib.CategoryTheory.Inserter.Accessible
 public import Mathlib.CategoryTheory.Inserter.Basic
 public import Mathlib.CategoryTheory.Inserter.Limits
 public import Mathlib.CategoryTheory.IsConnected
@@ -7761,6 +7763,7 @@ public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Hypotheses
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Init
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Log
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Rational
+public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Series
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Sqrt
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Tactic
 public import Mathlib.Tactic.Inclusion.Extension.IntervalInt.Basic
@@ -7811,6 +7814,7 @@ public import Mathlib.Tactic.Linter.HaveLetLinter
 public import Mathlib.Tactic.Linter.Header
 public import Mathlib.Tactic.Linter.InternalConstructor
 public import Mathlib.Tactic.Linter.Lint
+public import Mathlib.Tactic.Linter.LongDeclaration
 public import Mathlib.Tactic.Linter.MinImports
 public import Mathlib.Tactic.Linter.Multigoal
 public import Mathlib.Tactic.Linter.NumericProjection

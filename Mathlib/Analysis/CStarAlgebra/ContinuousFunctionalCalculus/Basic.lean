@@ -45,8 +45,6 @@ relevant instances on C⋆-algebra can be found in the `Instances` file.
   are compact Hausdorff, it is a homeomorphism.
 * `IsStarNormal.instContinuousFunctionalCalculus`: the continuous functional calculus for normal
   elements in a unital C⋆-algebra over `ℂ`.
-* `CStarAlgebra.instNonnegSpectrumClass`: In a unital C⋆-algebra over `ℂ` which is also a
-  `StarOrderedRing`, the spectrum of a nonnegative element is nonnegative.
 -/
 
 @[expose] public section
@@ -172,7 +170,7 @@ instance IsStarNormal.instIsometricContinuousFunctionalCalculus :
 
 instance IsSelfAdjoint.instIsometricContinuousFunctionalCalculus :
     IsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint :=
-  SpectrumRestricts.isometric_cfc Complex.reCLM Complex.isometry_ofReal (.zero _)
+  SpectrumRestricts.isometric_cfc Complex.reCLM.toContinuousMap Complex.isometry_ofReal (.zero _)
     fun _ ↦ isSelfAdjoint_iff_isStarNormal_and_quasispectrumRestricts
 
 end Unital
@@ -209,8 +207,8 @@ instance IsStarNormal.instNonUnitalIsometricContinuousFunctionalCalculus :
 
 instance IsSelfAdjoint.instNonUnitalIsometricContinuousFunctionalCalculus :
     NonUnitalIsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint :=
-  QuasispectrumRestricts.isometric_cfc Complex.reCLM Complex.isometry_ofReal (.zero _)
-    fun _ ↦ isSelfAdjoint_iff_isStarNormal_and_quasispectrumRestricts
+  QuasispectrumRestricts.isometric_cfc Complex.reCLM.toContinuousMap Complex.isometry_ofReal
+    (.zero _) fun _ ↦ isSelfAdjoint_iff_isStarNormal_and_quasispectrumRestricts
 
 end NonUnital
 
@@ -282,9 +280,7 @@ lemma SpectrumRestricts.smul_of_nonneg {A : Type*} [Ring A] [Algebra ℝ A] {a :
     refine le_of_smul_le_smul_left ?_ (inv_pos.mpr <| lt_of_le_of_ne hr <| ne_comm.mpr hr')
     simpa [Units.smul_def] using ha _ hx
 
-/-- The `ℝ`-spectrum of an element of the form `star b * b` in a C⋆-algebra is nonnegative.
-
-This is the key result used to establish `CStarAlgebra.instNonnegSpectrumClass`. -/
+/-- The `ℝ`-spectrum of an element of the form `star b * b` in a C⋆-algebra is nonnegative. -/
 lemma spectrum_star_mul_self_nonneg {b : A} : ∀ x ∈ spectrum ℝ (star b * b), 0 ≤ x := by
   -- for convenience we'll work with `a := star b * b`, which is selfadjoint.
   set a := star b * b with a_def
@@ -335,20 +331,6 @@ section NonnegSpectrumClass
 
 variable [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
-instance CStarAlgebra.instNonnegSpectrumClass : NonnegSpectrumClass ℝ A :=
-  .of_spectrum_nonneg fun a ha ↦ by
-    rw [StarOrderedRing.nonneg_iff] at ha
-    induction ha using AddSubmonoid.closure_induction with
-    | mem x hx =>
-      obtain ⟨b, rfl⟩ := hx
-      exact spectrum_star_mul_self_nonneg
-    | zero =>
-      nontriviality A
-      simp
-    | add x y x_mem y_mem hx hy =>
-      rw [← SpectrumRestricts.nnreal_iff] at hx hy ⊢
-      rw [← StarOrderedRing.nonneg_iff] at x_mem y_mem
-      exact hx.nnreal_add (.of_nonneg x_mem) (.of_nonneg y_mem) hy
 
 open ComplexOrder in
 instance CStarAlgebra.instNonnegSpectrumClassComplexUnital : NonnegSpectrumClass ℂ A where
@@ -428,20 +410,6 @@ section NonnegSpectrumClass
 
 variable [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
-open scoped CStarAlgebra in
-instance CStarAlgebra.instNonnegSpectrumClass' : NonnegSpectrumClass ℝ A where
-  quasispectrum_nonneg_of_nonneg a ha := by
-    rw [Unitization.quasispectrum_eq_spectrum_inr' _ ℂ]
-    -- should this actually be an instance on the `Unitization`? (probably scoped)
-    let _ := CStarAlgebra.spectralOrder A⁺¹
-    have := CStarAlgebra.spectralOrderedRing A⁺¹
-    apply spectrum_nonneg_of_nonneg
-    rw [StarOrderedRing.nonneg_iff] at ha ⊢
-    have := AddSubmonoid.mem_map_of_mem (Unitization.inrNonUnitalStarAlgHom ℂ A) ha
-    rw [AddMonoidHom.map_mclosure, ← Set.range_comp] at this
-    apply AddSubmonoid.closure_mono ?_ this
-    rintro _ ⟨s, rfl⟩
-    exact ⟨s, by simp⟩
 
 end NonnegSpectrumClass
 

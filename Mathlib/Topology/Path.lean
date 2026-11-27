@@ -114,9 +114,12 @@ theorem coe_toContinuousMap : ⇑γ.toContinuousMap = γ :=
   rfl
 
 @[simp]
-theorem range_coe : range ((↑) : Path x y → C(I, X)) = {f | f 0 = x ∧ f 1 = y} :=
+theorem range_toContinuousMap :
+    range (toContinuousMap : Path x y → C(I, X)) = {f | f 0 = x ∧ f 1 = y} :=
   Subset.antisymm (range_subset_iff.mpr fun γ ↦ ⟨γ.source, γ.target⟩) fun f ⟨hf₀, hf₁⟩ ↦
     ⟨⟨f, hf₀, hf₁⟩, rfl⟩
+
+@[deprecated (since := "2026-11-27")] alias range_coe := range_toContinuousMap
 
 /-- Any function `φ : Π (a : α), Path (x a) (y a)` can be seen as a function `α × I → X`. -/
 instance instHasUncurryPath {α : Type*} {x y : α → X} :
@@ -178,7 +181,7 @@ open ContinuousMap
 compact-open topology on the space `C(I,X)` of continuous maps from `I` to `X`.
 -/
 instance instTopologicalSpace : TopologicalSpace (Path x y) :=
-  TopologicalSpace.induced ((↑) : _ → C(I, X)) ContinuousMap.compactOpen
+  TopologicalSpace.induced (toContinuousMap : _ → C(I, X)) ContinuousMap.compactOpen
 
 instance : ContinuousEval (Path x y) I X := .of_continuous_forget continuous_induced_dom
 

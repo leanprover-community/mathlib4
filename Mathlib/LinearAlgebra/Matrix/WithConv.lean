@@ -120,22 +120,34 @@ def matrixToLin'StarAlgEquiv :
     WithConv (Matrix m n α) ≃⋆ₐ[α] WithConv ((n → α) →ₗ[α] m → α) where
   __ := congrLinearEquiv toLin'
   map_mul' _ _ := by ext; simp
-  map_star' _ := by exact Matrix.intrinsicStar_toLin' _ |>.symm
+  map_star' _ := by exact Matrix.intrinsicStar_mulVecLin _ |>.symm
 
 @[simp] lemma matrixToLin'StarAlgEquiv_apply (x : WithConv (Matrix m n α)) :
-    matrixToLin'StarAlgEquiv m n α x = toConv x.ofConv.toLin' := rfl
+    matrixToLin'StarAlgEquiv m n α x = toConv x.ofConv.mulVecLin := rfl
 @[simp] lemma symm_matrixToLin'StarAlgEquiv_apply (x : WithConv ((n → α) →ₗ[α] m → α)) :
     (matrixToLin'StarAlgEquiv m n α).symm x = toConv x.ofConv.toMatrix' := rfl
 
 end WithConv
 
 omit [StarRing α] in
-lemma Matrix.toLin'_hadamard (x y : Matrix m n α) :
-    (x ⊙ y).toLin' = (toConv x.toLin' * toConv y.toLin').ofConv := by ext; simp
+lemma Matrix.mulVecLin_hadamard (x y : Matrix m n α) :
+    (x ⊙ y).mulVecLin = (toConv x.mulVecLin * toConv y.mulVecLin).ofConv := by ext; simp
 
-theorem Matrix.isSymm_iff_intrinsicStar_toLin' {A : Matrix n n α} :
-    A.IsSymm ↔ star (toConv A.toLin') = toConv (star A).toLin' := by
-  rw [intrinsicStar_toLin', toConv_injective.eq_iff, toLin'.injective.eq_iff,
+omit [StarRing α] in
+@[deprecated Matrix.mulVecLin_hadamard +typeChanged (since := "2026-11-25")]
+lemma Matrix.toLin'_hadamard (x y : Matrix m n α) :
+    (x ⊙ y).toLin' = (toConv x.toLin' * toConv y.toLin').ofConv :=
+  x.mulVecLin_hadamard y
+
+omit [DecidableEq n] in
+theorem Matrix.isSymm_iff_intrinsicStar_mulVecLin {A : Matrix n n α} :
+    A.IsSymm ↔ star (toConv A.mulVecLin) = toConv (star A).mulVecLin := by
+  rw [intrinsicStar_mulVecLin, toConv_injective.eq_iff, mulVecLin_inj,
     ← transpose_conjTranspose, star_eq_conjTranspose, conjTranspose_inj, IsSymm]
+
+@[deprecated Matrix.isSymm_iff_intrinsicStar_mulVecLin +typeChanged (since := "2026-11-25")]
+theorem Matrix.isSymm_iff_intrinsicStar_toLin' {A : Matrix n n α} :
+    A.IsSymm ↔ star (toConv A.toLin') = toConv (star A).toLin' :=
+  isSymm_iff_intrinsicStar_mulVecLin
 
 end toLin'

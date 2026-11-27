@@ -111,11 +111,9 @@ homeomorphism in its normal form, i.e., in terms of its coercion to a function. 
 theorem toFun_eq_coe (e : PartialHomeomorph X Y) : e.toFun = e :=
   rfl
 
-@[simp]
 theorem invFun_eq_coe (e : PartialHomeomorph X Y) : e.invFun = e.symm :=
   rfl
 
-@[simp]
 theorem coe_toPartialEquiv : (e.toPartialEquiv : X → Y) = e :=
   rfl
 

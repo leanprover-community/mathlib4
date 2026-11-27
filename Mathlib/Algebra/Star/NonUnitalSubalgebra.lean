@@ -224,7 +224,6 @@ theorem mem_toNonUnitalSubring {R : Type u} {A : Type v} [CommRing R] [NonUnital
     [Star A] {S : NonUnitalStarSubalgebra R A} {x} : x ∈ S.toNonUnitalSubring ↔ x ∈ S :=
   Iff.rfl
 
-@[simp]
 theorem coe_toNonUnitalSubring {R : Type u} {A : Type v} [CommRing R] [NonUnitalRing A] [Module R A]
     [Star A] (S : NonUnitalStarSubalgebra R A) : (↑S.toNonUnitalSubring : Set A) = S :=
   rfl
@@ -318,7 +317,6 @@ protected theorem coe_sub {R : Type u} {A : Type v} [CommRing R] [NonUnitalNonAs
     [Module R A] [Star A] {S : NonUnitalStarSubalgebra R A} (x y : S) : (↑(x - y) : A) = ↑x - ↑y :=
   rfl
 
-@[simp, norm_cast]
 theorem coe_smul [SMul R' R] [SMul R' A] [IsScalarTower R' R A] (r : R') (x : S) :
     ↑(r • x) = r • (x : A) :=
   rfl

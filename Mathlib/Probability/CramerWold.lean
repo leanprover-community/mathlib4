@@ -28,6 +28,8 @@ open MeasureTheory Filter RealInnerProductSpace
 
 public section
 
+namespace MeasureTheory
+
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
   [MeasurableSpace E] [BorelSpace E] [FiniteDimensional ℝ E]
 
@@ -50,5 +52,14 @@ theorem tendstoInDistribution_iff_tendstoInDistribution_inner
     rw [charFun_map_eq_charFun_map_inner_one (hX n)]
 
 alias ⟨_, TendstoInDistribution.of_inner⟩ := tendstoInDistribution_iff_tendstoInDistribution_inner
+
+end MeasureTheory
+
+@[deprecated (since := "2026-11-27")]
+alias tendstoInDistribution_iff_tendstoInDistribution_inner :=
+  MeasureTheory.tendstoInDistribution_iff_tendstoInDistribution_inner
+
+@[deprecated (since := "2026-11-27")]
+alias TendstoInDistribution.of_inner := MeasureTheory.TendstoInDistribution.of_inner
 
 end
