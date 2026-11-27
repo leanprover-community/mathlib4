@@ -53,11 +53,11 @@ theorem pullbackConeOfLeftIso_snd : (pullbackConeOfLeftIso f g).snd = 𝟙 _ := 
 @[to_dual]
 theorem pullbackConeOfLeftIso_π_app_none : (pullbackConeOfLeftIso f g).π.app none = g := by simp
 
-@[to_dual (attr := simp)]
+@[to_dual]
 theorem pullbackConeOfLeftIso_π_app_left : (pullbackConeOfLeftIso f g).π.app left = g ≫ inv f :=
   rfl
 
-@[to_dual (attr := simp)]
+@[to_dual]
 theorem pullbackConeOfLeftIso_π_app_right : (pullbackConeOfLeftIso f g).π.app right = 𝟙 _ := rfl
 
 /-- Verify that the constructed limit cone is indeed a limit. -/
