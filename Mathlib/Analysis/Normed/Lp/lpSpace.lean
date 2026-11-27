@@ -773,6 +773,23 @@ theorem monotone_range_coeLinearMap :
     Monotone fun p ↦ (FunLike.coeLinearMap 𝕜 (lp E p) α E).range :=
   fun _ _ ↦ range_coeLinearMap_mono
 
+@[deprecated Memℓp.const_smul +typeChanged (since := "2026-11-27")]
+theorem mem_lp_const_smul (c : 𝕜) (f : lp E p) : Memℓp (c • ⇑f) p :=
+  f.memℓp.const_smul c
+
+variable (𝕜 E p) in
+/-- The `𝕜`-submodule of elements of `Π i, E i` whose `lp` norm is finite. -/
+@[deprecated "use `LinearMap.range (FunLike.coeLinearMap 𝕜 (lp E p) α E)`"
+  (since := "2026-11-27")]
+def _root_.lpSubmodule : Submodule 𝕜 (Π i, E i) :=
+  LinearMap.range (FunLike.coeLinearMap 𝕜 (lp E p) α E)
+
+@[deprecated "use `LinearMap.range (FunLike.coeLinearMap 𝕜 (lp E p) α E)`"
+  (since := "2026-11-27")]
+theorem coe_lpSubmodule :
+    (lpSubmodule 𝕜 E p).toAddSubgroup = (FunLike.coeAddMonoidHom (lp E p) α E).range :=
+  rfl
+
 theorem norm_const_smul_le (hp : p ≠ 0) (c : 𝕜) (f : lp E p) : ‖c • f‖ ≤ ‖c‖ * ‖f‖ := by
   rcases p.trichotomy with (rfl | rfl | hp)
   · exact absurd rfl hp
