@@ -496,6 +496,8 @@ instance (R : Type*) [CommSemiring R] [Algebra R K[X]] : Algebra R K⟮X⟯ wher
       IsLocalization.mul_mk'_eq_mk'_of_mul, Algebra.smul_def]
   commutes' _ _ := mul_comm _ _
 
+abbrev _root_.Polynomial.toRatFunc (p : K[X]) : K⟮X⟯ := algebraMap _ _ p
+
 variable {K}
 
 /-- The coercion from polynomials to rational functions, implemented as the algebra map from a

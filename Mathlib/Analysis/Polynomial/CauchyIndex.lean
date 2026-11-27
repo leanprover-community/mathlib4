@@ -104,7 +104,7 @@ theorem jump_eq_zero_of_eval_denom_ne_zero {f : K⟮X⟯} {x : K} (h : f.denom.e
   simp [jump, rootMultiplicity_eq_zero h]
 
 @[simp]
-theorem jump_algebraMap (p : K[X]) (x : K) : jump (algebraMap _ _ p) x = 0 :=
+theorem jump_algebraMap (p : K[X]) (x : K) : jump p.toRatFunc x = 0 :=
   jump_eq_zero_of_eval_denom_ne_zero (by simp)
 
 @[simp]
@@ -117,14 +117,14 @@ quotient of polynomials.
 Note that the statement uses truncated `ℕ` subtraction since if `x` is a root of both `p` and `q`
 but with greater multiplicity in the numerator `q`, then there is no jump. -/
 theorem jump_div [IsStrictOrderedRing K] (p q : K[X]) (x : K) :
-    jump (algebraMap _ _ q / algebraMap _ _ p) x =
+    jump (q.toRatFunc / p.toRatFunc) x =
       if Odd (rootMultiplicity x p - rootMultiplicity x q) then (signRight x (p * q) : ℤ)
         else 0 := by
   rcases eq_or_ne p 0 with rfl | hp
   · simp
   rcases eq_or_ne q 0 with rfl | hq
   · simp
-  set f := algebraMap K[X] K⟮X⟯ q / algebraMap _ _ p
+  set f := q.toRatFunc / p.toRatFunc
   have hn : f.num ≠ 0 := num_ne_zero (div_ne_zero (algebraMap_ne_zero hq) (algebraMap_ne_zero hp))
   have hd := f.denom_ne_zero
   have key : f.num * p = q * f.denom := (num_mul_eq_mul_denom_iff hp).2 rfl
@@ -143,10 +143,11 @@ theorem jump_div [IsStrictOrderedRing K] (p q : K[X]) (x : K) :
 /-- Adding a polynomial does not change the jump. -/
 @[simp]
 theorem jump_add_algebraMap [IsStrictOrderedRing K] (f : K⟮X⟯) (g : K[X]) (x : K) :
-    jump (f + algebraMap _ _ g) x = jump f x := by
+    jump (f + g.toRatFunc) x = jump f x := by
   have hd := f.denom_ne_zero
-  have hf : f + algebraMap _ _ g =
-      algebraMap K[X] K⟮X⟯ (f.num + g * f.denom) / algebraMap _ _ f.denom := by
+  have hf : f + g.toRatFunc =
+      (f.num + g * f.denom).toRatFunc / f.denom.toRatFunc := by
+    unfold toRatFunc
     rw [map_add, map_mul, add_div, mul_div_cancel_right₀ _ (algebraMap_ne_zero hd), num_div_denom]
   rw [hf, jump_div]
   conv_rhs => rw [← num_div_denom f, jump_div]
@@ -160,17 +161,18 @@ theorem jump_add_algebraMap [IsStrictOrderedRing K] (f : K⟮X⟯) (g : K[X]) (x
 
 @[simp]
 theorem jump_algebraMap_add [IsStrictOrderedRing K] (f : K⟮X⟯) (g : K[X]) (x : K) :
-    jump (algebraMap _ _ g + f) x = jump f x := by
+    jump (g.toRatFunc + f) x = jump f x := by
   rw [add_comm, jump_add_algebraMap]
 
 /-- Multiplying by a polynomial `g` that does not vanish at `x` multiplies the jump at `x` by the
 sign of `g` at `x`. -/
 theorem jump_algebraMap_mul [IsStrictOrderedRing K] {g : K[X]} {x : K} (hg : g.eval x ≠ 0)
     (f : K⟮X⟯) :
-    jump (algebraMap _ _ g * f) x = sign (g.eval x) * jump f x := by
+    jump (g.toRatFunc * f) x = sign (g.eval x) * jump f x := by
   have hd := f.denom_ne_zero
   have hg0 : g ≠ 0 := by rintro rfl; simp at hg
-  have hf : algebraMap _ _ g * f = algebraMap K[X] K⟮X⟯ (g * f.num) / algebraMap _ _ f.denom := by
+  have hf : g.toRatFunc * f = (g * f.num).toRatFunc / f.denom.toRatFunc := by
+    unfold toRatFunc
     rw [map_mul, mul_div_assoc, num_div_denom]
   rw [hf, jump_div]
   conv_rhs => rw [← num_div_denom f, jump_div]
@@ -196,7 +198,7 @@ theorem jump_neg [IsStrictOrderedRing K] (f : K⟮X⟯) (x : K) : jump (-f) x = 
 /-- At a root `x` of `p`, the jump of `derivative p * q / p` is the sign of `q` at `x`. -/
 theorem jump_derivative_mul_div [IsStrictOrderedRing K] {p : K[X]} {x : K}
     (hp : p ≠ 0) (hx : p.eval x = 0) (q : K[X]) :
-    jump (algebraMap _ _ (derivative p * q) / algebraMap _ _ p) x = sign (q.eval x) := by
+    jump ((derivative p * q).toRatFunc / p.toRatFunc) x = sign (q.eval x) := by
   rw [jump_div]
   rcases eq_or_ne q 0 with rfl | hq
   · simp
@@ -220,17 +222,18 @@ theorem jump_derivative_mul_div [IsStrictOrderedRing K] {p : K[X]} {x : K}
 multiplicity, and `0` otherwise. -/
 @[simp]
 theorem jump_inv_algebraMap [IsStrictOrderedRing K] (p : K[X]) (x : K) :
-    jump (algebraMap K[X] K⟮X⟯ p)⁻¹ x =
+    jump p.toRatFunc⁻¹ x =
       if Odd (rootMultiplicity x p) then (signRight x p : ℤ) else 0 := by
   have h := jump_div p (1 : K[X]) x
+  unfold toRatFunc at h
   rwa [map_one, one_div, mul_one, rootMultiplicity_eq_zero (p := 1) (by simp), Nat.sub_zero] at h
 
 /-- Dividing by a polynomial `g` that does not vanish at `x` multiplies the jump at `x` by the
 sign of `g` at `x`. -/
 theorem jump_div_algebraMap [IsStrictOrderedRing K] {g : K[X]} {x : K} (hg : g.eval x ≠ 0)
-    (f : K⟮X⟯) : jump (f / algebraMap _ _ g) x = sign (g.eval x) * jump f x := by
+    (f : K⟮X⟯) : jump (f / g.toRatFunc) x = sign (g.eval x) * jump f x := by
   have hg0 : g ≠ 0 := by rintro rfl; simp at hg
-  have h := jump_algebraMap_mul hg (f / algebraMap _ _ g)
+  have h := jump_algebraMap_mul hg (f / g.toRatFunc)
   rw [mul_div_cancel₀ _ (algebraMap_ne_zero hg0)] at h
   rcases lt_or_gt_of_ne hg with hlt | hgt
   · simp_all [sign_neg hlt]
@@ -239,11 +242,11 @@ theorem jump_div_algebraMap [IsStrictOrderedRing K] {g : K[X]} {x : K} (hg : g.e
 /-- The jumps of `f` and of `1 / f` at `x` add up to the jump of `1 / (f.num * f.denom)`: since
 `f.num` and `f.denom` are coprime, `x` is a pole of at most one of `f` and `1 / f`. -/
 theorem jump_add_jump_inv [IsStrictOrderedRing K] (f : K⟮X⟯) (x : K) :
-    jump f x + jump f⁻¹ x = jump (algebraMap K[X] K⟮X⟯ (f.num * f.denom))⁻¹ x := by
+    jump f x + jump f⁻¹ x = jump (f.num * f.denom).toRatFunc⁻¹ x := by
   rcases eq_or_ne f 0 with rfl | hf
   · simp
   have hn : f.num ≠ 0 := num_ne_zero hf
-  have hinv : f⁻¹ = algebraMap _ _ f.denom / algebraMap _ _ f.num := by
+  have hinv : f⁻¹ = f.denom.toRatFunc / f.num.toRatFunc := by
     rw [← inv_div, num_div_denom]
   have hcop : f.num.eval x ≠ 0 ∨ f.denom.eval x ≠ 0 :=
     aeval_ne_zero_of_isCoprime f.isCoprime_num_denom x
@@ -270,14 +273,14 @@ theorem cauchyIndex_eq_sum {f : K⟮X⟯} {p : K[X]} {a b : K} (hp : p ≠ 0) (h
 
 /-- The Cauchy index of `q / p` is the sum of its jumps at the roots of `p`. -/
 theorem cauchyIndex_div (p q : K[X]) (a b : K) :
-    cauchyIndex (algebraMap _ _ q / algebraMap _ _ p) a b =
-      ∑ x ∈ p.roots.toFinset with x ∈ Ioo a b, jump (algebraMap _ _ q / algebraMap _ _ p) x := by
+    cauchyIndex (q.toRatFunc / p.toRatFunc) a b =
+      ∑ x ∈ p.roots.toFinset with x ∈ Ioo a b, jump (q.toRatFunc / p.toRatFunc) x := by
   rcases eq_or_ne p 0 with rfl | hp
   · simp [cauchyIndex]
   exact cauchyIndex_eq_sum hp (denom_div_dvd q p)
 
 @[simp]
-theorem cauchyIndex_algebraMap (p : K[X]) (a b : K) : cauchyIndex (algebraMap _ _ p) a b = 0 :=
+theorem cauchyIndex_algebraMap (p : K[X]) (a b : K) : cauchyIndex p.toRatFunc a b = 0 :=
   Finset.sum_eq_zero fun x _ => jump_algebraMap p x
 
 @[simp]
@@ -291,21 +294,21 @@ theorem cauchyIndex_of_le (f : K⟮X⟯) {a b : K} (h : b ≤ a) : cauchyIndex f
 /-- Adding a polynomial does not change the Cauchy index. -/
 @[simp]
 theorem cauchyIndex_add_algebraMap [IsStrictOrderedRing K] (f : K⟮X⟯) (g : K[X]) (a b : K) :
-    cauchyIndex (f + algebraMap _ _ g) a b = cauchyIndex f a b := by
-  have h : (f + algebraMap _ _ g).denom ∣ f.denom := by
-    simpa using denom_add_dvd f (algebraMap _ _ g)
+    cauchyIndex (f + g.toRatFunc) a b = cauchyIndex f a b := by
+  have h : (f + g.toRatFunc).denom ∣ f.denom := by
+    simpa using denom_add_dvd f g.toRatFunc
   rw [cauchyIndex_eq_sum f.denom_ne_zero h, cauchyIndex]
   simp only [jump_add_algebraMap]
 
 @[simp]
 theorem cauchyIndex_algebraMap_add [IsStrictOrderedRing K] (f : K⟮X⟯) (g : K[X]) (a b : K) :
-    cauchyIndex (algebraMap _ _ g + f) a b = cauchyIndex f a b := by
+    cauchyIndex (g.toRatFunc + f) a b = cauchyIndex f a b := by
   rw [add_comm, cauchyIndex_add_algebraMap]
 
 /-- The Cauchy index of `q / p` only depends on `q` modulo `p`. -/
 theorem cauchyIndex_div_mod [IsStrictOrderedRing K] (p q : K[X]) (a b : K) :
-    cauchyIndex (algebraMap _ _ q / algebraMap _ _ p) a b =
-      cauchyIndex (algebraMap _ _ (q % p) / algebraMap _ _ p) a b := by
+    cauchyIndex (q.toRatFunc / p.toRatFunc) a b =
+      cauchyIndex ((q % p).toRatFunc / p.toRatFunc) a b := by
   rcases eq_or_ne p 0 with rfl | hp
   · simp
   conv_rhs => rw [← cauchyIndex_add_algebraMap _ (q / p)]
@@ -316,7 +319,7 @@ theorem cauchyIndex_smul [IsStrictOrderedRing K] (c : K) (f : K⟮X⟯) (a b : K
     cauchyIndex (c • f) a b = sign c * cauchyIndex f a b := by
   have h : (c • f).denom ∣ f.denom := by
     simpa [Algebra.smul_def, IsScalarTower.algebraMap_apply K K[X] K⟮X⟯] using
-      denom_mul_dvd (algebraMap K[X] K⟮X⟯ (C c)) f
+      denom_mul_dvd (C c).toRatFunc f
   rw [cauchyIndex_eq_sum f.denom_ne_zero h, cauchyIndex, Finset.mul_sum]
   simp only [jump_smul]
 
@@ -365,7 +368,7 @@ theorem cauchyIndex_congr_of_eval_denom_ne_zero {f : K⟮X⟯} {a₁ a₂ b₁ b
 `(a, b)` by `s`. -/
 theorem cauchyIndex_div_algebraMap [IsStrictOrderedRing K] {g : K[X]} {s : SignType} {a b : K}
     (f : K⟮X⟯) (hs : s ≠ 0) (hg : ∀ x ∈ Ioo a b, sign (g.eval x) = s) :
-    cauchyIndex (f / algebraMap _ _ g) a b = s * cauchyIndex f a b := by
+    cauchyIndex (f / g.toRatFunc) a b = s * cauchyIndex f a b := by
   rcases (Ioo a b).eq_empty_or_nonempty with he | ⟨y, hy⟩
   · simp [cauchyIndex, he]
   have hgx {x : K} (hx : x ∈ Ioo a b) : g.eval x ≠ 0 := by
@@ -374,7 +377,7 @@ theorem cauchyIndex_div_algebraMap [IsStrictOrderedRing K] {g : K[X]} {s : SignT
   have hp : f.denom * g ≠ 0 :=
     mul_ne_zero f.denom_ne_zero (by rintro rfl; exact hgx hy eval_zero)
   -- `f / g = f.num / (f.denom * g)`, so the poles of `f / g` are roots of `f.denom * g`
-  have hd : (f / algebraMap _ _ g).denom ∣ f.denom * g := by
+  have hd : (f / g.toRatFunc).denom ∣ f.denom * g := by
     have h := denom_div_dvd f.num (f.denom * g)
     rwa [map_mul, ← div_div, num_div_denom] at h
   rw [cauchyIndex_eq_sum hp hd, cauchyIndex_eq_sum hp (dvd_mul_right _ _), Finset.mul_sum]
@@ -386,7 +389,7 @@ theorem cauchyIndex_div_algebraMap [IsStrictOrderedRing K] {g : K[X]} {s : SignT
 `b`. -/
 theorem two_mul_cauchyIndex_inv_algebraMap {p : ℝ[X]} {a b : ℝ} (hab : a ≤ b)
     (ha : p.eval a ≠ 0) (hb : p.eval b ≠ 0) :
-    2 * cauchyIndex (algebraMap ℝ[X] ℝ⟮X⟯ p)⁻¹ a b = sign (p.eval b) - sign (p.eval a) := by
+    2 * cauchyIndex p.toRatFunc⁻¹ a b = sign (p.eval b) - sign (p.eval a) := by
   induction hn : p.natDegree using Nat.strong_induction_on generalizing p a b with
   | _ n ih =>
   have hp0 : p ≠ 0 := by rintro rfl; simp at ha
@@ -428,15 +431,16 @@ theorem two_mul_cauchyIndex_inv_algebraMap {p : ℝ[X]} {a b : ℝ} (hab : a ≤
     exact sign_pos (pow_pos (sub_pos.mpr hx) m)
   -- `1 / p = (1 / g) / (X - C r) ^ m`, so on each side of `r` the Cauchy index of `1 / p` is
   -- that of `1 / g` up to this sign
-  have hfg : (algebraMap ℝ[X] ℝ⟮X⟯ ((X - C r) ^ m * g))⁻¹ =
-      (algebraMap ℝ[X] ℝ⟮X⟯ g)⁻¹ / algebraMap _ _ ((X - C r) ^ m) := by
+  have hfg : ((X - C r) ^ m * g).toRatFunc⁻¹ =
+      g.toRatFunc⁻¹ / ((X - C r) ^ m).toRatFunc := by
+    unfold toRatFunc
     rw [map_mul, mul_inv, div_eq_mul_inv, mul_comm]
-  have hleft := cauchyIndex_div_algebraMap (a := a) (b := r) (algebraMap ℝ[X] ℝ⟮X⟯ g)⁻¹
+  have hleft := cauchyIndex_div_algebraMap (a := a) (b := r) g.toRatFunc⁻¹
     (s := if Odd m then -1 else 1) (by split_ifs <;> decide) fun x hx => hlt hx.2
-  have hright := cauchyIndex_div_algebraMap (a := r) (b := b) (algebraMap ℝ[X] ℝ⟮X⟯ g)⁻¹
+  have hright := cauchyIndex_div_algebraMap (a := r) (b := b) g.toRatFunc⁻¹
     one_ne_zero fun x hx => hgt hx.1
   -- at `r`, the jump is `sign (g.eval r)` if `m` is odd and `0` otherwise
-  have hjump : jump (algebraMap ℝ[X] ℝ⟮X⟯ ((X - C r) ^ m * g))⁻¹ r =
+  have hjump : jump ((X - C r) ^ m * g).toRatFunc⁻¹ r =
       if Odd m then (sign (g.eval r) : ℤ) else 0 := by
     rw [jump_inv_algebraMap, rootMultiplicity_mul hp0, rootMultiplicity_X_sub_C_pow,
       rootMultiplicity_eq_zero hgr, add_zero, signRight_mul, signRight_X_sub_C_pow,
@@ -453,7 +457,7 @@ theorem two_mul_cauchyIndex_inv_algebraMap {p : ℝ[X]} {a b : ℝ} (hab : a ≤
 `1 / (f.num * f.denom)`. -/
 theorem cauchyIndex_add_cauchyIndex_inv [IsStrictOrderedRing K] (f : K⟮X⟯) (a b : K) :
     cauchyIndex f a b + cauchyIndex f⁻¹ a b =
-      cauchyIndex (algebraMap K[X] K⟮X⟯ (f.num * f.denom))⁻¹ a b := by
+      cauchyIndex (f.num * f.denom).toRatFunc⁻¹ a b := by
   rcases eq_or_ne f 0 with rfl | hf
   · simp
   have hp : f.num * f.denom ≠ 0 := mul_ne_zero (num_ne_zero hf) f.denom_ne_zero
@@ -476,10 +480,10 @@ theorem two_mul_cauchyIndex_add_cauchyIndex_inv {f : ℝ⟮X⟯} {a b : ℝ} (ha
 `p * q`. -/
 theorem sign_eval_num_mul_denom_div [IsStrictOrderedRing K] {p : K[X]} (q : K[X]) {x : K}
     (hp : p.eval x ≠ 0) :
-    sign (((algebraMap K[X] K⟮X⟯ q / algebraMap _ _ p).num *
-      (algebraMap K[X] K⟮X⟯ q / algebraMap _ _ p).denom).eval x) = sign ((p * q).eval x) := by
+    sign (((q.toRatFunc / p.toRatFunc).num *
+      (q.toRatFunc / p.toRatFunc).denom).eval x) = sign ((p * q).eval x) := by
   have hp0 : p ≠ 0 := by rintro rfl; simp at hp
-  set f := algebraMap K[X] K⟮X⟯ q / algebraMap _ _ p
+  set f := q.toRatFunc / p.toRatFunc
   have key : f.num * p = q * f.denom := (num_mul_eq_mul_denom_iff hp0).2 rfl
   have hd : f.denom.eval x ≠ 0 := fun h =>
     hp (eval_eq_zero_of_dvd_of_eval_eq_zero (denom_div_dvd q p) h)
@@ -497,11 +501,11 @@ theorem sign_eval_num_mul_denom_div [IsStrictOrderedRing K] {p : K[X]} (q : K[X]
 theorem two_mul_cauchyIndex_div_add_cauchyIndex_div {p q : ℝ[X]} {a b : ℝ} (hab : a ≤ b)
     (hpa : p.eval a ≠ 0) (hqa : q.eval a ≠ 0)
     (hpb : p.eval b ≠ 0) (hqb : q.eval b ≠ 0) :
-    2 * (cauchyIndex (algebraMap _ _ q / algebraMap _ _ p) a b +
-      cauchyIndex (algebraMap _ _ p / algebraMap _ _ q) a b) =
+    2 * (cauchyIndex (q.toRatFunc / p.toRatFunc) a b +
+      cauchyIndex (p.toRatFunc / q.toRatFunc) a b) =
       sign ((p * q).eval b) - sign ((p * q).eval a) := by
   have hp0 : p ≠ 0 := by rintro rfl; simp at hpa
-  set f := algebraMap ℝ[X] ℝ⟮X⟯ q / algebraMap _ _ p with hf
+  set f := q.toRatFunc / p.toRatFunc with hf
   have key : f.num * p = q * f.denom := (num_mul_eq_mul_denom_iff hp0).2 rfl
   -- `f.denom` divides `p`, and `f.num * p = q * f.denom`, so neither vanishes at `a` or `b`
   have hd {x : ℝ} (hpx : p.eval x ≠ 0) : f.denom.eval x ≠ 0 := fun h =>
@@ -509,7 +513,7 @@ theorem two_mul_cauchyIndex_div_add_cauchyIndex_div {p q : ℝ[X]} {a b : ℝ} (
   have hn {x : ℝ} (hpx : p.eval x ≠ 0) (hqx : q.eval x ≠ 0) : f.num.eval x ≠ 0 := fun h => by
     have := congrArg (eval x) key
     simp [h, hqx, hd hpx] at this
-  rw [← inv_div (algebraMap ℝ[X] ℝ⟮X⟯ q), ← hf, ← sign_eval_num_mul_denom_div q hpa,
+  rw [← inv_div q.toRatFunc, ← hf, ← sign_eval_num_mul_denom_div q hpa,
     ← sign_eval_num_mul_denom_div q hpb]
   exact two_mul_cauchyIndex_add_cauchyIndex_inv hab (hn hpa hqa) (hd hpa) (hn hpb hqb) (hd hpb)
 
