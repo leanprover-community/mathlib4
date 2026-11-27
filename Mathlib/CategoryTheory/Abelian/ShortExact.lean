@@ -16,7 +16,6 @@ This file contains lemmas about short exact sequences in abelian categories.
 ## Main results
 
 * `ShortComplex.Exact.subobjectOrderIso`: the correspondence theorem for short exact sequences.
-
 -/
 
 public section
@@ -56,5 +55,15 @@ noncomputable def Exact.subobjectOrderIso (hS : S.Exact) [Mono S.f] [Epi S.g] :
     Subobject S.X₃ ≃o Set.Ici (Subobject.mk S.f) :=
   (Abelian.Subobject.epiOrderIso S.g).trans (Set.orderIsoOfEq _ _
     (by rw [← Limits.imageSubobject_mono S.f, (exact_iff_image_eq_kernel S).mp hS]))
+
+@[simp]
+lemma Exact.subobjectOrderIso_apply_coe (hS : S.Exact) [Mono S.f] [Epi S.g]
+    (P : Subobject S.X₃) :
+    (hS.subobjectOrderIso P : Subobject S.X₂) = (Subobject.pullback S.g).obj P := by rfl
+
+@[simp]
+lemma Exact.subobjectOrderIso_symm_apply (hS : S.Exact) [Mono S.f] [Epi S.g]
+    (P : Set.Ici (Subobject.mk S.f)) :
+    hS.subobjectOrderIso.symm P = (Subobject.«exists» S.g).obj P := by rfl
 
 end CategoryTheory.ShortComplex
