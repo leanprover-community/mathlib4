@@ -356,7 +356,6 @@ initialize_simps_projections LieHom (toFun → apply)
 theorem coe_toLinearMap (f : L₁ →ₗ⁅R⁆ L₂) : ⇑(f : L₁ →ₗ[R] L₂) = f :=
   rfl
 
-@[simp]
 theorem toFun_eq_coe (f : L₁ →ₗ⁅R⁆ L₂) : f.toFun = ⇑f :=
   rfl
 

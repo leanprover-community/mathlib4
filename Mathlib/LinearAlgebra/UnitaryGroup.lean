@@ -159,7 +159,7 @@ After the group structure on `Matrix.unitaryGroup n` is defined, we show in
 `Matrix.UnitaryGroup.toLinearEquiv` that this gives a linear equivalence.
 -/
 def toLin' (A : unitaryGroup n α) :=
-  Matrix.toLin' A.val
+  A.val.mulVecLin
 
 theorem ext_iff (A B : unitaryGroup n α) : A = B ↔ ∀ i j, A i j = B i j :=
   Subtype.ext_iff.trans ⟨fun h i j => congr($h i j), Matrix.ext⟩
@@ -181,23 +181,23 @@ variable (A B : unitaryGroup n α)
 
 @[simp] theorem inv_val : ↑A⁻¹ = (star A : Matrix n n α) := rfl
 
-@[simp] theorem inv_apply : ⇑A⁻¹ = (star A : Matrix n n α) := rfl
+theorem inv_apply : ⇑A⁻¹ = (star A : Matrix n n α) := rfl
 
-@[simp] theorem mul_val : ↑(A * B) = A.val * B.val := rfl
+theorem mul_val : ↑(A * B) = A.val * B.val := rfl
 
-@[simp] theorem mul_apply : ⇑(A * B) = A.val * B.val := rfl
+theorem mul_apply : ⇑(A * B) = A.val * B.val := rfl
 
-@[simp] theorem one_val : ↑(1 : unitaryGroup n α) = (1 : Matrix n n α) := rfl
+theorem one_val : ↑(1 : unitaryGroup n α) = (1 : Matrix n n α) := rfl
 
-@[simp] theorem one_apply : ⇑(1 : unitaryGroup n α) = (1 : Matrix n n α) := rfl
+theorem one_apply : ⇑(1 : unitaryGroup n α) = (1 : Matrix n n α) := rfl
 
 @[simp]
 theorem toLin'_mul : toLin' (A * B) = (toLin' A).comp (toLin' B) :=
-  Matrix.toLin'_mul A.val B.val
+  Matrix.mulVecLin_mul A.val B.val
 
 @[simp]
 theorem toLin'_one : toLin' (1 : unitaryGroup n α) = LinearMap.id :=
-  Matrix.toLin'_one
+  Matrix.mulVecLin_one
 
 end CoeLemmas
 
@@ -209,7 +209,7 @@ example : unitaryGroup n α →* GeneralLinearGroup α (n → α) :=
 /-- `Matrix.unitaryGroup.toLinearEquiv A` is matrix multiplication of vectors by `A`, as a linear
 equivalence. -/
 def toLinearEquiv (A : unitaryGroup n α) : (n → α) ≃ₗ[α] n → α :=
-  { Matrix.toLin' A.val with
+  { toLin' A with
     invFun := toLin' A⁻¹
     left_inv := fun x =>
       calc
