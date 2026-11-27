@@ -5,9 +5,7 @@ Authors: Seewoo Lee
 -/
 module
 
-public import Mathlib.Algebra.Module.ZLattice.Integral
-
-import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.Analysis.InnerProductSpace.IntegralLattice
 
 /-!
 # Even lattices
@@ -18,26 +16,26 @@ and `E₈`.
 
 ## Main definitions
 
-* `ZLattice.IsEven L`: the predicate that `⟪x, x⟫` is an even integer for every `x ∈ L`.
+* `Submodule.IsEven L`: the predicate that `⟪x, x⟫` is an even integer for every `x ∈ L`.
 
 ## Main results
 
-* `ZLattice.IsEven.isIntegral`: an even lattice is integral.
-* `ZLattice.IsEven.sqrt_two_le_norm`: every nonzero vector of an even lattice has norm at least
+* `Submodule.IsEven.isIntegral`: an even lattice is integral.
+* `Submodule.IsEven.sqrt_two_le_norm`: every nonzero vector of an even lattice has norm at least
   `√2`.
-* `ZLattice.IsEven.discreteTopology`: an even lattice is discrete.
+* `Submodule.IsEven.discreteTopology`: an even lattice is discrete.
 -/
 
 @[expose] public section
 
 open scoped InnerProductSpace
 
-namespace ZLattice
+namespace Submodule
 
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] {L : Submodule ℤ E}
 
 /-- A `ℤ`-submodule `L` of a real inner product space is *even* if `⟪x, x⟫` is an even integer
-for every `x ∈ L`. An even lattice is integral, see `ZLattice.IsEven.isIntegral`. -/
+for every `x ∈ L`. An even lattice is integral, see `Submodule.IsEven.isIntegral`. -/
 def IsEven (L : Submodule ℤ E) : Prop :=
   ∀ x ∈ L, ∃ n : ℤ, ⟪x, x⟫_ℝ = 2 * n
 
@@ -47,7 +45,7 @@ lemma isEven_iff_norm_sq : IsEven L ↔ ∀ x ∈ L, ∃ n : ℤ, ‖x‖ ^ 2 = 
 namespace IsEven
 
 /-- An even lattice is integral. -/
-lemma isIntegral (hL : IsEven L) : IsIntegral L := fun x hx y hy ↦ by
+lemma isIntegral (hL : IsEven L) : L.IsIntegral := fun x hx y hy ↦ by
   obtain ⟨a, ha⟩ := hL _ (L.add_mem hx hy)
   obtain ⟨b, hb⟩ := hL x hx
   obtain ⟨c, hc⟩ := hL y hy
@@ -66,4 +64,4 @@ lemma discreteTopology (hL : IsEven L) : DiscreteTopology L :=
 
 end IsEven
 
-end ZLattice
+end Submodule

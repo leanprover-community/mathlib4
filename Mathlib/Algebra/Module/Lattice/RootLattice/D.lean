@@ -5,8 +5,9 @@ Authors: Bhavik Mehta, Gareth Ma, Seewoo Lee
 -/
 module
 
-public import Mathlib.Algebra.Module.ZLattice.Basic
-public import Mathlib.Algebra.Module.ZLattice.Even
+public import Mathlib.Algebra.Module.Lattice.Even
+public import Mathlib.Algebra.Module.Lattice.Full
+public import Mathlib.Analysis.InnerProductSpace.PiL2
 
 /-!
 # The checkerboard lattice `Dₙ`
@@ -28,8 +29,8 @@ vectors whose coordinates have even sum. For `n ≥ 3` this is the root lattice 
 * `Submodule.mem_checkerboardLattice`: if `R` has characteristic zero, then `v : Fin n → R` lies in
   `Submodule.checkerboardLattice R n` if and only if all coordinates of `v` are integers and their
   sum is even.
-* `Submodule.checkerboardLattice ℝ n` is a `ℤ`-lattice in `Fin n → ℝ`: it is discrete and spans
-  `Fin n → ℝ` over `ℝ`. Hence so is `EuclideanSpace.checkerboardLattice n` in
+* `Submodule.checkerboardLattice ℝ n` is a full lattice in `Fin n → ℝ`, in the sense of
+  `Submodule.IsFullLattice`. Hence so is `EuclideanSpace.checkerboardLattice n` in
   `EuclideanSpace ℝ (Fin n)`.
 * `EuclideanSpace.isEven_checkerboardLattice`: the checkerboard lattice is even.
 * `EuclideanSpace.isIntegral_checkerboardLattice`: the checkerboard lattice is integral.
@@ -81,11 +82,9 @@ lemma checkerboardLattice_le_span (n : ℕ) :
   (Module.Basis.mem_span_iff_repr_mem ℤ _ _).2 fun i ↦ by
     simpa using ((mem_checkerboardLattice n).1 hv).1 i
 
-instance (n : ℕ) : DiscreteTopology (checkerboardLattice ℝ n) :=
-  ZSpan.discreteTopology_pi_basisFun.of_subset (checkerboardLattice_le_span n)
-
-instance (n : ℕ) : IsZLattice ℝ (checkerboardLattice ℝ n) where
-  span_top := by
+instance (n : ℕ) : IsFullLattice ℝ (checkerboardLattice ℝ n) where
+  toIsLattice := IsLattice.mono ℝ (checkerboardLattice_le_span n)
+  span_eq_top := by
     refine eq_top_iff.2 ((Pi.basisFun ℝ (Fin n)).span_eq.ge.trans (span_le.2 ?_))
     rintro _ ⟨i, rfl⟩
     have h : Pi.single i (2 : ℝ) ∈ checkerboardLattice ℝ n := by
@@ -103,10 +102,11 @@ open scoped InnerProductSpace
 
 /-- The checkerboard lattice `Dₙ` as a submodule of `n`-dimensional Euclidean space. -/
 noncomputable abbrev checkerboardLattice (n : ℕ) : Submodule ℤ (EuclideanSpace ℝ (Fin n)) :=
-  ZLattice.comap ℝ (Submodule.checkerboardLattice ℝ n) (EuclideanSpace.equiv (Fin n) ℝ).toLinearMap
+  (Submodule.checkerboardLattice ℝ n).comap
+    ((EuclideanSpace.equiv (Fin n) ℝ).toLinearEquiv.restrictScalars ℤ).toLinearMap
 
 /-- The checkerboard lattice is even: `‖v‖ ^ 2` is an even integer for every `v ∈ Dₙ`. -/
-theorem isEven_checkerboardLattice (n : ℕ) : ZLattice.IsEven (checkerboardLattice n) := by
+theorem isEven_checkerboardLattice (n : ℕ) : (checkerboardLattice n).IsEven := by
   intro x hx
   change x.ofLp ∈ Submodule.checkerboardLattice ℝ n at hx
   obtain ⟨w, hw, hx⟩ := Submodule.mem_map.1 hx
@@ -120,7 +120,7 @@ theorem isEven_checkerboardLattice (n : ℕ) : ZLattice.IsEven (checkerboardLatt
   exact_mod_cast (by linarith : ∑ i, w i * w i = 2 * (z + m))
 
 /-- The checkerboard lattice is integral: `⟪v, w⟫` is an integer for all `v, w ∈ Dₙ`. -/
-theorem isIntegral_checkerboardLattice (n : ℕ) : ZLattice.IsIntegral (checkerboardLattice n) :=
+theorem isIntegral_checkerboardLattice (n : ℕ) : (checkerboardLattice n).IsIntegral :=
   (isEven_checkerboardLattice n).isIntegral
 
 end EuclideanSpace

@@ -5,8 +5,8 @@ Authors: Bhavik Mehta, Gareth Ma, Seewoo Lee
 -/
 module
 
-public import Mathlib.Algebra.Module.ZLattice.Covolume
-public import Mathlib.Algebra.Module.ZLattice.RootLattice.D
+public import Mathlib.Algebra.Module.Lattice.Covolume
+public import Mathlib.Algebra.Module.Lattice.RootLattice.D
 public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
 
 import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
@@ -334,11 +334,12 @@ noncomputable abbrev E8Lattice : Submodule ℤ (EuclideanSpace ℝ (Fin 8)) :=
   (Submodule.E8 ℝ).map (WithLp.linearEquiv 2 ℤ (Fin 8 → ℝ)).symm.toLinearMap
 
 lemma E8Lattice_eq_comap :
-    E8Lattice = ZLattice.comap ℝ (Submodule.E8 ℝ) (EuclideanSpace.equiv (Fin 8) ℝ).toLinearMap :=
+    E8Lattice = (Submodule.E8 ℝ).comap
+      ((EuclideanSpace.equiv (Fin 8) ℝ).toLinearEquiv.restrictScalars ℤ).toLinearMap :=
   Submodule.ext fun _ ↦ ⟨fun ⟨_, hv, h⟩ ↦ h ▸ hv, fun hx ↦ ⟨_, hx, rfl⟩⟩
 
 /-- The `E₈` lattice is even: `‖v‖ ^ 2` is an even integer for every `v ∈ E₈`. -/
-theorem isEven_E8Lattice : ZLattice.IsEven E8Lattice := by
+theorem isEven_E8Lattice : E8Lattice.IsEven := by
   intro x hx
   obtain ⟨v, hv, rfl⟩ := Submodule.mem_map.1 hx
   change ∃ n : ℤ, v ⬝ᵥ v = 2 * n
@@ -356,7 +357,7 @@ theorem isEven_E8Lattice : ZLattice.IsEven E8Lattice := by
   simp [h4, parity_simps]
 
 /-- The `E₈` lattice is integral: `⟪v, w⟫` is an integer for all `v, w ∈ E₈`. -/
-theorem isIntegral_E8Lattice : ZLattice.IsIntegral E8Lattice :=
+theorem isIntegral_E8Lattice : E8Lattice.IsIntegral :=
   isEven_E8Lattice.isIntegral
 
 lemma E8_norm_lower_bound (v : Fin 8 → ℝ) (hv : v ∈ Submodule.E8 ℝ) :
@@ -364,23 +365,19 @@ lemma E8_norm_lower_bound (v : Fin 8 → ℝ) (hv : v ∈ Submodule.E8 ℝ) :
   or_iff_not_imp_left.2 fun hv₀ ↦
     isEven_E8Lattice.sqrt_two_le_norm (Submodule.mem_map_of_mem hv) (by simpa using hv₀)
 
-instance instDiscreteE8Lattice : DiscreteTopology E8Lattice :=
-  isEven_E8Lattice.discreteTopology
-
 lemma span_E8_eq_top : Submodule.span ℝ (Submodule.E8 ℝ : Set (Fin 8 → ℝ)) = ⊤ :=
   eq_top_iff.2 <| (span_E8Matrix_eq_top ℝ).ge.trans <|
     Submodule.span_mono (range_E8Matrix_row_subset ℝ)
 
-instance instDiscreteE8 : DiscreteTopology (Submodule.E8 ℝ) :=
-  (inferInstance : DiscreteTopology (Submodule.span ℤ (Set.range (E8Basis ℝ)))).of_subset
-    (span_E8Basis ℝ).ge
+instance instIsFullLatticeE8 : (Submodule.E8 ℝ).IsFullLattice ℝ :=
+  span_E8Basis ℝ ▸ inferInstance
 
-instance instIsZLatticeE8 : IsZLattice ℝ (Submodule.E8 ℝ) := ⟨span_E8_eq_top⟩
+instance instIsFullLatticeE8Lattice : E8Lattice.IsFullLattice ℝ :=
+  E8Lattice_eq_comap ▸ inferInstance
 
 lemma span_E8_eq_top' :
-    Submodule.span ℝ (E8Lattice : Set (EuclideanSpace ℝ (Fin 8))) = ⊤ := by
-  rw [E8Lattice_eq_comap]
-  exact IsZLattice.span_top
+    Submodule.span ℝ (E8Lattice : Set (EuclideanSpace ℝ (Fin 8))) = ⊤ :=
+  Submodule.IsFullLattice.span_eq_top
 
 lemma span_E8Matrix_eq_E8Lattice :
     Submodule.span ℤ
@@ -388,9 +385,6 @@ lemma span_E8Matrix_eq_E8Lattice :
       E8Lattice := by
   rw [E8Lattice, ← span_E8Matrix ℝ, Submodule.map_span, ← Set.range_comp]
   rfl
-
-instance instIsZLatticeE8Lattice : IsZLattice ℝ E8Lattice where
-  span_top := span_E8_eq_top'
 
 /-- The rows of `E8Matrix`, as a `ℤ`-basis of `E8Lattice`. -/
 noncomputable def E8LatticeBasis : Basis (Fin 8) ℤ E8Lattice := by
@@ -409,8 +403,8 @@ lemma coe_E8LatticeBasis_apply (i : Fin 8) :
     E8LatticeBasis i = (WithLp.linearEquiv 2 ℤ (Fin 8 → ℝ)).symm ((E8Matrix ℝ).row i) := by
   rw [E8LatticeBasis, Basis.coe_mk]
 
-lemma E8LatticeBasis_ofZLatticeBasis_apply (i : Fin 8) :
-    E8LatticeBasis.ofZLatticeBasis ℝ E8Lattice i =
+lemma E8LatticeBasis_extendOfIsFullLattice_apply (i : Fin 8) :
+    E8LatticeBasis.extendOfIsFullLattice ℝ i =
       (WithLp.toLp 2) ((E8Matrix ℝ).row i) := by
   simp [coe_E8LatticeBasis_apply]
 
@@ -423,11 +417,16 @@ lemma E8LatticeBasis_apply_norm : ∀ i : Fin 8, ‖E8LatticeBasis i‖ ≤ 2 :=
   simpa [coe_E8LatticeBasis_apply, E8Basis_apply] using E8Basis_apply_norm i
 
 open MeasureTheory in
-theorem covolume_E8 : ZLattice.covolume (Submodule.E8 ℝ) = 1 := by
-  rw [← span_E8Basis, ZLattice.covolume_eq_measure_fundamentalDomain _ _
-    (ZSpan.isAddFundamentalDomain (E8Basis ℝ) volume), ZSpan.volume_real_fundamentalDomain,
-    of_basis_eq_matrix, E8Matrix_unimodular, abs_one]
+theorem covolume_E8 : (Submodule.E8 ℝ).covolume = 1 := by
+  rw [← span_E8Basis, Submodule.covolume_eq_det _
+    (Basis.span ((E8Basis ℝ).linearIndependent.restrict_scalars' ℤ))]
+  have h : Matrix.of (Subtype.val ∘ Basis.span ((E8Basis ℝ).linearIndependent.restrict_scalars' ℤ))
+      = E8Matrix ℝ := by
+    rw [← of_basis_eq_matrix]
+    ext i j
+    simp [Basis.span_apply]
+  rw [h, E8Matrix_unimodular, abs_one]
 
-theorem covolume_E8Lattice : ZLattice.covolume E8Lattice = 1 := by
-  rw [E8Lattice_eq_comap, ZLattice.covolume_comap _ _ _ (PiLp.volume_preserving_ofLp (Fin 8)),
+theorem covolume_E8Lattice : E8Lattice.covolume = 1 := by
+  rw [E8Lattice_eq_comap, Submodule.covolume_comap _ _ _ (PiLp.volume_preserving_ofLp (Fin 8)),
     covolume_E8]
