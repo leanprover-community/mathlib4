@@ -230,6 +230,16 @@ lemma exists_linearIndependent_of_le_finrank {n : ℕ} (hn : n ≤ finrank R M) 
   have ⟨_, hs, hs'⟩ := exists_finset_linearIndependent_of_le_finrank hn
   ⟨_, (linearIndependent_equiv (Finset.equivFinOfCardEq hs).symm).mpr hs'⟩
 
+/-- A module of positive rank over an infinite ring is infinite. -/
+theorem Module.infinite_of_rank_pos [Infinite R] (h : 0 < Module.rank R M) : Infinite M := by
+  obtain ⟨v, hv⟩ := exists_linearIndependent_of_le_rank (Cardinal.one_le_iff_pos.mpr h)
+  apply Infinite.of_injective (fun r : R ↦ r • (v 0))
+  exact LinearIndependent.smul_left_injective hv 0
+
+/-- A module of positive finite rank over an infinite ring is infinite. -/
+theorem Module.infinite_of_finrank_pos [Infinite R] (h : 0 < finrank R M) : Infinite M :=
+  infinite_of_rank_pos (by simpa using lt_rank_of_lt_finrank h)
+
 variable [Module.Finite R M] [StrongRankCondition R] in
 theorem Module.Finite.not_linearIndependent_of_infinite {ι : Type*} [Infinite ι]
     (v : ι → M) : ¬LinearIndependent R v := mt LinearIndependent.finite <| @not_finite _ _
