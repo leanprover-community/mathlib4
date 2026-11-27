@@ -234,14 +234,14 @@ include G P in
 theorem inertiaDegIn_eq : 𝓟.inertiaDegIn B = p.inertiaDegIn B :=
   (ramificationIdxIn_eq_and_inertiaDegIn_eq G P R p 𝓟).2
 
-include G P in
+include G in
 /-- The ramification index of `P` over `R` equals the ramification index of `p` in `B`. -/
 theorem ramificationIdx_eq : P.ramificationIdx R = p.ramificationIdxIn B := by
   have := IsGaloisGroup.finite G A B
   rw [← (P.under R).ramificationIdxIn_eq_ramificationIdx P (stabilizer G P),
     ramificationIdxIn_eq G P R p (P.under R)]
 
-include G P in
+include G in
 /-- The inertia degree of `P` over `R` equals the inertia degree of `p` in `B`. -/
 theorem inertiaDeg_eq : P.inertiaDeg R = p.inertiaDegIn B := by
   have := IsGaloisGroup.finite G A B

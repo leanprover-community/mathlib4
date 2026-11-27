@@ -188,6 +188,8 @@ variable (C : Type*) [CommRing C] [Algebra A C] [Algebra B C]
   (GAC : Type*) [Group GAC] [Finite GAC] [MulSemiringAction GAC C] [IsGaloisGroup GAC A C]
   (GBC : Type*) [Group GBC] [Finite GBC] [MulSemiringAction GBC C] [IsGaloisGroup GBC B C]
 
+-- Note that `hPp` is not needed in this section: indeed `Nonempty (P.primesOver C)` implies
+-- that `P` is prime (see `Ideal.isPrime_of_liesOver`).
 omit hPp
 
 include G GAC GBC in
