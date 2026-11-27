@@ -164,7 +164,7 @@ Note this is a special case of `Matrix.vecMulBilin`. -/
 abbrev Matrix.vecMulLinear [Fintype m] (M : Matrix m n R) : (m → R) →ₗ[R] n → R :=
   Matrix.vecMulBilin R Rᵐᵒᵖ |>.flip M
 
-@[simp] theorem Matrix.vecMulLinear_apply [Fintype m] (M : Matrix m n R) (x : m → R) :
+theorem Matrix.vecMulLinear_apply [Fintype m] (M : Matrix m n R) (x : m → R) :
     M.vecMulLinear x = x ᵥ* M := rfl
 
 theorem Matrix.coe_vecMulLinear [Fintype m] (M : Matrix m n R) :
@@ -289,7 +289,6 @@ abbrev Matrix.mulVecLin [Fintype n] (M : Matrix m n R) : (n → R) →ₗ[R] m �
 theorem Matrix.coe_mulVecLin [Fintype n] (M : Matrix m n R) :
     (M.mulVecLin : _ → _) = M.mulVec := rfl
 
-@[simp]
 theorem Matrix.mulVecLin_apply [Fintype n] (M : Matrix m n R) (v : n → R) :
     M.mulVecLin v = M *ᵥ v :=
   rfl

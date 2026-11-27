@@ -140,7 +140,6 @@ theorem toCoalgHom_eq_ofClass (f : A ≃ₗc[R] B) : f.toCoalgHom = .ofClass f :
 @[simp]
 theorem coe_toCoalgHom : ⇑e.toCoalgHom = e := rfl
 
-@[simp]
 theorem coe_toLinearEquiv : ⇑(e : A ≃ₗ[R] B) = e :=
   rfl
 

@@ -178,7 +178,7 @@ instance : Coe α (α ⧸ s) :=
 
 @[to_additive] alias induction_on' := induction_on
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem quotient_liftOn_mk {β} (f : α → β) (h) (x : α) : Quotient.liftOn' (x : α ⧸ s) f h = f x :=
   rfl
 

@@ -144,39 +144,31 @@ theorem RightExactFunctor.ofExact_obj (F : C ⥤ₑ D) :
     (RightExactFunctor.ofExact C D).obj F = ⟨F.obj, F.property.2⟩ :=
   rfl
 
-@[simp]
 theorem LeftExactFunctor.ofExact_map_hom {F G : C ⥤ₑ D} (α : F ⟶ G) :
     ((LeftExactFunctor.ofExact C D).map α).hom = α.hom :=
   rfl
 
-@[simp]
 theorem RightExactFunctor.ofExact_map_hom {F G : C ⥤ₑ D} (α : F ⟶ G) :
     ((RightExactFunctor.ofExact C D).map α).hom = α.hom :=
   rfl
 
-@[simp]
 theorem LeftExactFunctor.forget_obj (F : C ⥤ₗ D) : (LeftExactFunctor.forget C D).obj F = F.obj :=
   rfl
 
-@[simp]
 theorem RightExactFunctor.forget_obj (F : C ⥤ᵣ D) : (RightExactFunctor.forget C D).obj F = F.obj :=
   rfl
 
-@[simp]
 theorem ExactFunctor.forget_obj (F : C ⥤ₑ D) : (ExactFunctor.forget C D).obj F = F.obj :=
   rfl
 
-@[simp]
 theorem LeftExactFunctor.forget_map {F G : C ⥤ₗ D} (α : F ⟶ G) :
     (LeftExactFunctor.forget C D).map α = α.hom :=
   rfl
 
-@[simp]
 theorem RightExactFunctor.forget_map {F G : C ⥤ᵣ D} (α : F ⟶ G) :
     (RightExactFunctor.forget C D).map α = α.hom :=
   rfl
 
-@[simp]
 theorem ExactFunctor.forget_map {F G : C ⥤ₑ D} (α : F ⟶ G) :
     (ExactFunctor.forget C D).map α = α.hom :=
   rfl

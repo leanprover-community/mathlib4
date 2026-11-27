@@ -113,7 +113,6 @@ theorem fork_pt : (fork F U).pt = F.obj (op (iSup U)) :=
 theorem fork_ι : (fork F U).ι = res F U :=
   rfl
 
-@[simp]
 theorem fork_π_app_walkingParallelPair_zero : (fork F U).π.app WalkingParallelPair.zero = res F U :=
   rfl
 
