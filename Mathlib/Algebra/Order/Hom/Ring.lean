@@ -199,8 +199,10 @@ theorem orderMonoidWithZeroHomOfClass_apply (f : α →+*o β) (a : α) :
     (.ofClass f : α →*₀o β) a = f a :=
   rfl
 
-@[deprecated (since := "2026-11-26")] alias coe_orderMonoidWithZeroHom_apply :=
-  orderMonoidWithZeroHomOfClass_apply
+@[deprecated OrderMonoidWithZeroHom.coe_ofClass +typeChanged (since := "2026-11-27")]
+theorem coe_orderMonoidWithZeroHom_apply (f : α →+*o β) (a : α) :
+    ⇑(OrderMonoidWithZeroHomClass.toOrderMonoidWithZeroHom f) a = f a :=
+  rfl
 
 /-- Copy of an `OrderRingHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
