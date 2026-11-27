@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
 public import Mathlib.CategoryTheory.Limits.Types.Multicoequalizer
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Colimits involving subcomplexes of a simplicial set
 

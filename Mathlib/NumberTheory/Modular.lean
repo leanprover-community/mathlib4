@@ -66,11 +66,9 @@ The characterization of cases with `z ∈ 𝒟` and `g • z ∈ 𝒟` follows T
 
 @[expose] public section
 
-open Complex hiding I
+open Complex Matrix.SpecialLinearGroup UpperHalfPlane ModularGroup Topology
 
 open Matrix hiding mul_smul zpow_neg_one
-
-open Matrix.SpecialLinearGroup UpperHalfPlane ModularGroup Topology
 
 noncomputable section
 
@@ -250,7 +248,7 @@ theorem tendsto_abs_re_smul {p : Fin 2 → ℤ} (hp : IsCoprime (p 0) (p 1)) :
     ((g : SL(2, ℤ)) • z).re =
       lcRow0 p ↑(↑g : SL(2, ℝ)) / ((p 0 : ℝ) ^ 2 + (p 1 : ℝ) ^ 2) +
         Complex.re (((p 1 : ℂ) * z - p 0) / (((p 0 : ℂ) ^ 2 + (p 1 : ℂ) ^ 2) * (p 0 * z + p 1)))
-  exact mod_cast congr_arg Complex.re (smul_eq_lcRow0_add z hp g.2)
+  exact mod_cast congr_arg Complex.re (smul_eq_lcRow0_add z hp g.property)
 
 end TendstoLemmas
 
@@ -283,11 +281,11 @@ theorem exists_row_one_eq_and_min_re {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0
     let ⟨x, hx⟩ := bottom_row_surj hcd
     ⟨⟨x, hx.2⟩⟩
   obtain ⟨g, hg⟩ := Filter.Tendsto.exists_forall_le (tendsto_abs_re_smul z hcd)
-  refine ⟨g, g.2, ?_⟩
+  refine ⟨g, g.property, ?_⟩
   intro g1 hg1
   have : g1 ∈ (fun g : SL(2, ℤ) => g 1) ⁻¹' {cd} := by
     rw [Set.mem_preimage, Set.mem_singleton_iff]
-    exact Eq.trans hg1.symm (Set.mem_singleton_iff.mp (Set.mem_preimage.mp g.2))
+    exact Eq.trans hg1.symm (Set.mem_singleton_iff.mp (Set.mem_preimage.mp g.property))
   exact hg ⟨g1, this⟩
 
 theorem coe_T_zpow_smul_eq {n : ℤ} : (↑(T ^ n • z) : ℂ) = z + n := by
@@ -368,7 +366,7 @@ lemma fdo_subset_fd : 𝒟ᵒ ⊆ 𝒟 := fun _ ⟨hx, hx'⟩ ↦ ⟨hx.le, hx'.
 lemma ρ_mem_fd : ρ ∈ 𝒟 := by
   constructor <;> norm_num [ρ, ← pow_two, div_pow]
 
-lemma I_mem_fd : I ∈ 𝒟 := by
+lemma I_mem_fd : .I ∈ 𝒟 := by
   constructor <;> simp
 
 theorem abs_two_mul_re_lt_one_of_mem_fdo (h : z ∈ 𝒟ᵒ) : |2 * z.re| < 1 := by
@@ -703,28 +701,28 @@ lemma cases_of_mem_fd_smul_mem_fd (hz : z ∈ 𝒟) (hg : g • z ∈ 𝒟) :
 
 /-- If `z ∈ 𝒟` and `z ≠ I, ρ, 1 + ρ`, then the stabilizer of `z` in `SL(2, ℤ)` is `± 1`. -/
 lemma stabilizer_of_ne (hz : z ∈ 𝒟) (hg : g • z = z)
-    (hzI : z ≠ I) (hzρ : z ≠ ρ) (hzρ' : z ≠ (1 : ℝ) +ᵥ ρ) :
+    (hzI : z ≠ .I) (hzρ : z ≠ ρ) (hzρ' : z ≠ (1 : ℝ) +ᵥ ρ) :
     g = 1 ∨ g = -1 := by
   have : T • z ≠ z := by
     apply_fun UpperHalfPlane.re
     simp [-sl_moeb, re_T_smul]
   have : T⁻¹ • z ≠ z := by rwa [ne_eq, inv_smul_eq_iff, eq_comm]
-  have : (z : ℂ) ≠ -I := by grind [neg_im, coe_I, Complex.I_im, z.coe_im_pos]
+  have : (z : ℂ) ≠ -.I := by grind [neg_im, Complex.I_im, z.coe_im_pos]
   have : S • z ≠ z := by
     contrapose hzI
     rw [UpperHalfPlane.ext_iff, modular_S_smul, coe_mk, ← mul_one (_ : ℂ)⁻¹,
       inv_mul_eq_iff_eq_mul₀ (neg_ne_zero.mpr z.ne_zero), neg_mul, ← neg_eq_iff_eq_neg, ← I_sq,
       ← sq, sq_eq_sq_iff_eq_or_eq_neg, ← coe_I, ← UpperHalfPlane.ext_iff] at hzI
-    grind
+    grind [coe_I]
   grind [cases_of_mem_fd_smul_mem_fd hz (hg ▸ hz), SL_neg_smul]
 
-lemma stabilizer_I : g • I = I ↔ g ∈ ({1, -1, S, -S} : Finset SL(2, ℤ)) := by
+lemma stabilizer_I : (g • .I : ℍ) = .I ↔ g ∈ ({1, -1, S, -S} : Finset SL(2, ℤ)) := by
   constructor
   · intro hg
     have := cases_of_mem_fd_smul_mem_fd I_mem_fd (hg.symm ▸ I_mem_fd)
     simp [UpperHalfPlane.ext_iff, Complex.ext_iff, ρ] at this
     grind
-  · suffices S • I = I by simp +contextual [-sl_moeb, or_imp, this]
+  · suffices (S • .I : ℍ) = .I by simp +contextual [-sl_moeb, or_imp, this]
     rw [modular_S_smul, UpperHalfPlane.ext_iff]
     simp
 
@@ -869,7 +867,7 @@ private lemma mem_closure_of_arc {x : ℍ} (hxnorm : ‖(x : ℂ)‖ = 1) (hxre 
   rw [← closure_closure]
   -- Consider a vertical line going upwards from `x` (parametrized by `ℝ≥0`)
   apply mem_closure_of_frequently_of_tendsto (b := 𝓝[>] 0)
-    (f := fun t : ℝ≥0 ↦ ⟨x + t * Complex.I, by
+    (f := fun t : ℝ≥0 ↦ ⟨x + t * I, by
       simpa using! add_pos_of_pos_of_nonneg x.coe_im_pos t.property⟩)
   · apply Filter.Eventually.frequently
     filter_upwards [self_mem_nhdsWithin] with a (ha : 0 < a)
@@ -882,7 +880,7 @@ private lemma mem_closure_of_arc {x : ℍ} (hxnorm : ‖(x : ℂ)‖ = 1) (hxre 
     rw [hxnorm, one_pow, add_assoc, lt_add_iff_pos_right]
     positivity
   · refine .mono_left ?_ nhdsWithin_le_nhds
-    simpa [show 𝓝 (x : ℂ) = 𝓝 (x + (((0 : ℝ≥0) : ℝ) : ℂ) * Complex.I) by simp,
+    simpa [show 𝓝 (x : ℂ) = 𝓝 (x + (((0 : ℝ≥0) : ℝ) : ℂ) * I) by simp,
       isOpenEmbedding_coe.tendsto_nhds_iff] using! Continuous.tendsto (by fun_prop) _
 
 lemma fd_eq_closure_fdo : 𝒟 = closure 𝒟ᵒ := by

@@ -41,7 +41,7 @@ form by operations on its rows and columns, a variant of Gauss' pivot algorithm.
   transvections, and invariant under product, is true for all matrices.
 * `diagonal_transvection_induction_of_det_ne_zero` is the same statement over invertible matrices.
 
-## Implementation details
+## Implementation notes
 
 The proof of the reduction results is done inductively on the size of the matrices, reducing an
 `(r + 1) × (r + 1)` matrix to a matrix whose last row and column are zeroes, except possibly for
@@ -424,7 +424,7 @@ theorem listTransvecCol_mul_last_col (hM : M (inr unit) (inr unit) ≠ 0) (i : F
     simp only [length_listTransvecCol, le_refl, List.drop_eq_nil_of_le, List.prod_nil,
       Matrix.one_mul]
     rw [ite_eq_right]
-    simpa only [not_le] using i.2
+    simpa only [not_le] using i.isLt
 
 /-- Multiplying by some of the matrices in `listTransvecRow M` does not change the last column. -/
 theorem mul_listTransvecRow_last_col_take (i : Fin r ⊕ Unit) {k : ℕ} (hk : k ≤ r) :

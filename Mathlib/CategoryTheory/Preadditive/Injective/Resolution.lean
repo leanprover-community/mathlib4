@@ -92,7 +92,6 @@ lemma exact_succ (n : ℕ) :
 theorem ι_f_succ (n : ℕ) : I.ι.f (n + 1) = 0 :=
   (isZero_single_obj_X _ _ _ _ (by simp)).eq_of_src _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem ι_f_zero_comp_complex_d :
     I.ι.f 0 ≫ I.cocomplex.d 0 1 = 0 := by
@@ -153,7 +152,6 @@ namespace Hom
 
 attribute [reassoc (attr := simp)] ι_f_zero_comp_hom_f_zero
 
-set_option backward.isDefEq.respectTransparency false in
 variable {I I'} in
 @[reassoc (attr := simp)]
 lemma ι_comp_hom {f : Z ⟶ Z'} (φ : Hom I I' f) :

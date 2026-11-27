@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Functor.KanExtension.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pointwise Kan extensions
 
@@ -25,6 +28,7 @@ and if this holds for all `Y : D`, we construct a functor
 A dual API for pointwise right Kan extension is also formalized.
 
 ## References
+
 * https://ncatlab.org/nlab/show/Kan+extension
 -/
 

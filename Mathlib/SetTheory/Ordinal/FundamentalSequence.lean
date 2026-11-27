@@ -44,10 +44,10 @@ structure IsFundamentalSeq (f : Iio a → Iio o) : Prop where
 namespace IsFundamentalSeq
 variable {f : Iio a → Iio o} {g : Iio b → Iio a}
 
-theorem iSup_add_one_eq (hf : IsFundamentalSeq f) : ⨆ i, (f i).1 + 1 = o := by
+theorem iSup_add_one_eq (hf : IsFundamentalSeq f) : ⨆ i, (f i).val + 1 = o := by
   apply le_antisymm
   · simp_rw [Ordinal.iSup_le_iff, add_one_le_iff]
-    exact fun i ↦ (f i).2
+    exact fun i ↦ (f i).property
   · refine le_of_forall_lt fun b hb ↦ ?_
     obtain ⟨_, ⟨c, rfl⟩, hc : b ≤ _⟩ := hf.isCofinal_range ⟨b, hb⟩
     apply hc.trans_lt
@@ -59,7 +59,7 @@ theorem ord_cof (hf : IsFundamentalSeq f) : o.cof.ord = a := by
   rw [← hf.iSup_add_one_eq, cof_iSup_Iio_add_one hf.strictMono]
   exact ord_cof_le a
 
-theorem iSup_eq (hf : IsFundamentalSeq f) (ha : 1 < a) : ⨆ i, (f i).1 = o := by
+theorem iSup_eq (hf : IsFundamentalSeq f) (ha : 1 < a) : ⨆ i, (f i).val = o := by
   rw [← iSup_Iio_add_one hf.strictMono, hf.iSup_add_one_eq]
   rw [← hf.ord_cof]
   apply (isSuccLimit_ord _).isSuccPrelimit
@@ -96,7 +96,8 @@ protected theorem comp (hf : IsFundamentalSeq f) (hg : IsFundamentalSeq g) :
 fundamental sequence for `g o`. -/
 theorem comp_isNormal {g : Ordinal → Ordinal}
     (hg : IsNormal g) (hf : IsFundamentalSeq f) (ho : IsSuccLimit o) :
-    IsFundamentalSeq fun i ↦ ⟨g (f i), mem_Iio.2 <| hg.strictMono.imp <| mem_Iio.1 (f i).2⟩ where
+    IsFundamentalSeq fun i ↦
+      ⟨g (f i), mem_Iio.2 <| hg.strictMono.imp <| mem_Iio.1 (f i).property⟩ where
   strictMono := hg.strictMono.comp hf.strictMono
   le_ord_cof := by rw [cof_map_of_isNormal hg ho, hf.ord_cof]
   isCofinal_range := by
@@ -104,7 +105,7 @@ theorem comp_isNormal {g : Ordinal → Ordinal}
     rw [mem_Iio, hg.lt_iff_exists_lt ho] at hb
     obtain ⟨c, hc, hc'⟩ := hb
     obtain ⟨_, ⟨d, rfl⟩, hd⟩ := hf.isCofinal_range ⟨c, hc⟩
-    refine ⟨⟨_, hg.strictMono (f d).2⟩, ?_, hc'.le.trans (hg.monotone hd)⟩
+    refine ⟨⟨_, hg.strictMono (f d).property⟩, ?_, hc'.le.trans (hg.monotone hd)⟩
     simp
 
 end IsFundamentalSeq

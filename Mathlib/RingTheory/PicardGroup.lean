@@ -175,10 +175,10 @@ private theorem finite_projective : Module.Finite R M ∧ Projective R M := by
   let N := Dual R M
   let e : M ⊗[R] N ≃ₗ[R] R := TensorProduct.comm .. ≪≫ₗ linearEquiv R M
   have ⟨S, hS⟩ := TensorProduct.exists_finset (e.symm 1)
-  let f : (S →₀ N) →ₗ[R] R := Finsupp.lsum R fun i ↦ e.toLinearMap ∘ₗ TensorProduct.mk R M N i.1.1
+  let f : (S →₀ N) →ₗ[R] R := Finsupp.lsum R fun i ↦ e.toLinearMap ∘ₗ TensorProduct.mk R M N i.val.1
   have : Function.Surjective f := by
     rw [← LinearMap.range_eq_top, Ideal.eq_top_iff_one]
-    use Finsupp.equivFunOnFinite.symm fun i ↦ i.1.2
+    use Finsupp.equivFunOnFinite.symm fun i ↦ i.val.2
     simp_rw [f, Finsupp.coe_lsum]
     rw [Finsupp.sum_fintype _ _ fun _ ↦ map_zero _]
     rwa [e.symm_apply_eq, map_sum, ← Finset.sum_coe_sort, eq_comm] at hS
@@ -667,7 +667,7 @@ private theorem projective_units_and_mul'_comp_lTensor_bijective (I : (Submodule
   rw [← Set.image2_mul, ← Finset.coe_image₂, mem_span_finset] at one_mem
   set S := T.image₂ (· * ·) T'
   obtain ⟨r, hr⟩ := one_mem
-  choose a ha b hb eq using fun i : S ↦ Finset.mem_image₂.mp i.2
+  choose a ha b hb eq using fun i : S ↦ Finset.mem_image₂.mp i.property
   let f : I →ₗ[R] S → R := .pi fun i ↦ (LinearEquiv.ofInjective
       (Algebra.linearMap R A) (FaithfulSMul.algebraMap_injective R A)).symm.comp <|
     restrict (mulRight R (r i • a i)) fun x hx ↦ by
@@ -745,10 +745,10 @@ theorem ker_unitsToPic :
     have h := eq_span_singleton_of_surjective e.surjective
     have h' := eq_span_singleton_of_surjective e'.surjective
     refine ⟨(isUnit_iff_exists_and_exists.mpr ⟨?_, ?_⟩).unit, Units.ext h.symm⟩
-    · have : span R {(e 1).1 * e' 1} = 1 := by simpa [span_mul_span] using congr($h * $h').symm
+    · have : span R {(e 1).val * e' 1} = 1 := by simpa [span_mul_span] using congr($h * $h').symm
       have ⟨r, hr⟩ := span_singleton_eq_one_iff.mp this
       exact ⟨e' 1 * algebraMap R A r.inv, by simp [← mul_assoc, hr, ← map_mul]⟩
-    · have : span R {(e' 1).1 * e 1} = 1 := by simpa [span_mul_span] using congr($h' * $h).symm
+    · have : span R {(e' 1).val * e 1} = 1 := by simpa [span_mul_span] using congr($h' * $h).symm
       have ⟨r, hr⟩ := span_singleton_eq_one_iff.mp this
       exact ⟨algebraMap R A r.inv * e' 1, by simp [mul_assoc, hr, ← map_mul]⟩
   · obtain ⟨x, rfl⟩ := h
@@ -927,6 +927,6 @@ theorem Ideal.eq_top_of_mk_tensor_eq_one [IsFractionRing R R] (I J : Ideal R)
     convert! Subtype.val_injective.comp e.injective using 2
     rw [← smul_eq_mul, ← Submodule.coe_smul, ← map_smul, smul_eq_mul, mul_one, Function.comp_apply]
   constructor <;> refine eq_top_of_isUnit_mem _ ?_ this
-  exacts [mul_le_left (e 1).2, mul_le_right (e 1).2]
+  exacts [mul_le_left (e 1).property, mul_le_right (e 1).property]
 
 end Ideal

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.LocalRing.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Maximal ideal of local rings
 

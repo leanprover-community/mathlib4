@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-! # Interactions of the continuous functional calculus with the real and imaginary part -/
 
 public section
@@ -43,7 +46,7 @@ lemma quasispectrum_realPart (a : A) (ha : IsStarNormal a := by cfc_tac) :
 -- fails to find `IsScalarTower ℝ ℂ A`.
 lemma quasispectrum_realPart' (a : A) (ha : IsStarNormal a := by cfc_tac) :
     quasispectrum ℝ (ℜ a : A) = re '' (quasispectrum ℂ a) := by
-  simp [← (ℜ a).2.quasispectrumRestricts.image, quasispectrum_realPart a, Set.image_image]
+  simp [← (ℜ a).property.quasispectrumRestricts.image, quasispectrum_realPart a, Set.image_image]
 
 lemma quasispectrum_imaginaryPart (a : A) (ha : IsStarNormal a := by cfc_tac) :
     quasispectrum ℂ (ℑ a : A) = (fun x ↦ (im x : ℂ)) '' (quasispectrum ℂ a) := by
@@ -52,7 +55,8 @@ lemma quasispectrum_imaginaryPart (a : A) (ha : IsStarNormal a := by cfc_tac) :
 -- fails to find `IsScalarTower ℝ ℂ A`.
 lemma quasispectrum_imaginaryPart' (a : A) (ha : IsStarNormal a := by cfc_tac) :
     quasispectrum ℝ (ℑ a : A) = im '' (quasispectrum ℂ a) := by
-  simp [← (ℑ a).2.quasispectrumRestricts.image, quasispectrum_imaginaryPart a, Set.image_image]
+  simp [← (ℑ a).property.quasispectrumRestricts.image, quasispectrum_imaginaryPart a,
+    Set.image_image]
 
 variable [ContinuousMapZero.UniqueHom ℂ A]
 
@@ -123,7 +127,7 @@ lemma spectrum_realPart (a : A) (ha : IsStarNormal a := by cfc_tac) :
 
 lemma spectrum_realPart' (a : A) (ha : IsStarNormal a := by cfc_tac) :
     spectrum ℝ (ℜ a : A) = re '' (spectrum ℂ a) := by
-  simp [← (ℜ a).2.spectrumRestricts.image, spectrum_realPart a, Set.image_image]
+  simp [← (ℜ a).property.spectrumRestricts.image, spectrum_realPart a, Set.image_image]
 
 lemma spectrum_imaginaryPart (a : A) (ha : IsStarNormal a := by cfc_tac) :
     spectrum ℂ (ℑ a : A) = (fun x ↦ (im x : ℂ)) '' (spectrum ℂ a) := by
@@ -131,7 +135,7 @@ lemma spectrum_imaginaryPart (a : A) (ha : IsStarNormal a := by cfc_tac) :
 
 lemma spectrum_imaginaryPart' (a : A) (ha : IsStarNormal a := by cfc_tac) :
     spectrum ℝ (ℑ a : A) = im '' (spectrum ℂ a) := by
-  simp [← (ℑ a).2.spectrumRestricts.image, spectrum_imaginaryPart a, Set.image_image]
+  simp [← (ℑ a).property.spectrumRestricts.image, spectrum_imaginaryPart a, Set.image_image]
 
 variable [ContinuousMap.UniqueHom ℂ A]
 

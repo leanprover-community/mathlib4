@@ -14,7 +14,7 @@ public import Mathlib.LinearAlgebra.RootSystem.Reduced
 In this file we gather basic lemmas necessary for the classification of finite crystallographic
 root pairings.
 
-## Main results:
+## Main results
 
 * `RootPairing.coxeterWeightIn_mem_set_of_isCrystallographic`: the Coxeter weights of a finite
   crystallographic root pairing belong to the set `{0, 1, 2, 3, 4}`.
@@ -288,7 +288,8 @@ lemma exists_pos_pairingIn {s : Finset ι} (h₀ : LinearIndepOn ℤ P.root s)
   obtain ⟨j, hj, hij⟩ := B.posForm.exists_pos_and_pos_apply_sum_smul
     (v := fun k : s ↦ P.rootSpanMem ℤ k) (fun _ ↦ P.posRootForm_posForm_pos_of_ne_zero ℤ)
     (.of_comp (P.rootSpan ℤ).subtype h₀.linearIndependent)
-    (fun k l hkl ↦ (B.posForm_apply_root_root_le_zero_iff k l).mpr <| h₁ k.2 l.2 (by simpa)) hc₀
+    (fun k l hkl ↦ (B.posForm_apply_root_root_le_zero_iff k l).mpr <|
+      h₁ k.property l.property (by simpa)) hc₀
   rw [show ∑ k, c k • P.rootSpanMem ℤ k = P.rootSpanMem ℤ i by aesop] at hij
   exact ⟨j, hj, (B.zero_lt_apply_root_root_iff i j).mp hij⟩
 

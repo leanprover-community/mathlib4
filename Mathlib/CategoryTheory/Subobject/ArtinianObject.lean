@@ -11,6 +11,9 @@ public import Mathlib.CategoryTheory.Simple
 
 import Mathlib.Order.OrderIsoNat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Artinian objects
 
@@ -20,7 +23,7 @@ satisfies the descending chain condition. The corresponding property of
 objects `isArtinianObject : ObjectProperty C` is always
 closed under subobjects.
 
-## Future work
+## TODO
 
 * when `C` is an abelian category, relate `IsArtinianObject` in `C`
   with `IsNoetherianObject` in `Cᵒᵖ`.

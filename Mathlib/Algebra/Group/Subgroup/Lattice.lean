@@ -41,6 +41,7 @@ Subgroup inclusion is denoted `≤` rather than `⊆`, although `∈` is defined
 membership of a subgroup's underlying set.
 
 ## Tags
+
 subgroup, subgroups
 -/
 
@@ -153,7 +154,7 @@ theorem coe_bot : ((⊥ : Subgroup G) : Set G) = {1} :=
 
 @[to_additive]
 instance : Unique (⊥ : Subgroup G) :=
-  ⟨⟨1⟩, fun g => Subtype.ext g.2⟩
+  ⟨⟨1⟩, fun g => Subtype.ext g.property⟩
 
 @[to_additive (attr := simp)]
 theorem top_toSubmonoid : (⊤ : Subgroup G).toSubmonoid = ⊤ :=
@@ -666,7 +667,7 @@ theorem mem_closure_pair {x y z : C} :
 
 @[to_additive]
 theorem disjoint_def {H₁ H₂ : Subgroup G} : Disjoint H₁ H₂ ↔ ∀ {x : G}, x ∈ H₁ → x ∈ H₂ → x = 1 :=
-  disjoint_iff_inf_le.trans <| by simp only [IsConcreteLE.le_iff, mem_inf, mem_bot, and_imp]
+  disjoint_iff_inf_le.trans <| by simp only [le_iff_mem_imp_mem, mem_inf, mem_bot, and_imp]
 
 @[to_additive]
 theorem disjoint_def' {H₁ H₂ : Subgroup G} :

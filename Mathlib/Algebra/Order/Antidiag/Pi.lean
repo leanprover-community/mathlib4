@@ -6,10 +6,11 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Eric Wieser, 
 -/
 module
 
-public import Mathlib.Algebra.Group.Pi.Torsion
 public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 public import Mathlib.Data.Fin.Tuple.NatAntidiagonal
 public import Mathlib.Data.Finset.Sym
+
+import Mathlib.Algebra.Group.Pi.Torsion
 
 /-!
 # Antidiagonal of functions as finsets
@@ -71,7 +72,7 @@ def finAntidiagonal.aux (d : ℕ) (n : μ) : {s : Finset (Fin d → μ) // ∀ f
       ⟨∅, by simp [Ne.symm h]⟩
   | d + 1 =>
     { val := (antidiagonal n).disjiUnion
-        (fun ab => (aux d ab.2).1.map {
+        (fun ab => (aux d ab.2).val.map {
             toFun := Fin.cons (ab.1)
             inj' := Fin.cons_right_injective _ }) <| by
         intro i _ j _ hij
@@ -241,7 +242,7 @@ lemma map_nsmul_piAntidiag_univ [Fintype ι] (m : ℕ) {n : ℕ} (hn : n ≠ 0) 
 end Nat
 
 lemma map_sym_eq_piAntidiag [DecidableEq ι] (s : Finset ι) (n : ℕ) :
-    (s.sym n).map ⟨fun m a ↦ m.1.count a, Multiset.count_injective.comp Sym.coe_injective⟩ =
+    (s.sym n).map ⟨fun m a ↦ m.val.count a, Multiset.count_injective.comp Sym.coe_injective⟩ =
       piAntidiag s n := by
   ext f
   simp only [Sym.val_eq_coe, mem_map, mem_sym_iff, Embedding.coeFn_mk, funext_iff, Sym.exists,

@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.Coalgebra.Equiv
 public import Mathlib.RingTheory.Flat.Domain
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Group-like elements in a coalgebra
 
@@ -87,7 +90,7 @@ lemma val_injective : Injective (val : GroupLike R A → A) := by rintro ⟨a, h
 @[simps]
 def valEquiv : GroupLike R A ≃ Subtype (IsGroupLikeElem R : A → Prop) where
   toFun a := ⟨a.val, a.isGroupLikeElem_val⟩
-  invFun a := ⟨a.1, a.2⟩
+  invFun a := ⟨a.val, a.property⟩
   left_inv _ := rfl
   right_inv _ := rfl
 

@@ -14,6 +14,9 @@ public import Mathlib.CategoryTheory.MorphismProperty.Retract
 import Mathlib.CategoryTheory.Abelian.CommSq
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Kernels
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The class of isomorphisms modulo a Serre class
 

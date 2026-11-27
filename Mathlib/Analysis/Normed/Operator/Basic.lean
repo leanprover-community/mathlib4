@@ -27,6 +27,7 @@ Note that most of statements that apply to semilinear maps only hold when the ri
 is isometric, as expressed by the typeclass `[RingHomIsometric σ]`.
 
 ## Main Results
+
 * `ball_subset_range_iff_surjective` (and its variants) shows that a semi-linear map between normed
   spaces is surjective if and only if it contains a ball.
 -/
@@ -334,7 +335,7 @@ theorem opNorm_smul_le {𝕜' : Type*} [DistribSMul 𝕜' F] [SMulCommClass 𝕜
 theorem opNorm_le_iff_lipschitzWith {f : E →SL[σ₁₂] F} {K : ℝ≥0} :
     ‖f‖ ≤ K ↔ LipschitzWith K f :=
   ⟨fun h ↦ by simpa using AddMonoidHomClass.lipschitz_of_bound f K <| le_of_opNorm_le f h,
-    fun hf ↦ f.opNorm_le_bound K.2 <| hf.norm_le_mul (map_zero f)⟩
+    fun hf ↦ f.opNorm_le_bound K.property <| hf.norm_le_mul (map_zero f)⟩
 
 alias ⟨lipschitzWith_of_opNorm_le, opNorm_le_of_lipschitzWith⟩ := opNorm_le_iff_lipschitzWith
 

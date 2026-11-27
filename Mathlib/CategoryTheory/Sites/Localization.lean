@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Localization.Bousfield
 public import Mathlib.CategoryTheory.Sites.Sheafification
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The sheaf category as a localized category
 

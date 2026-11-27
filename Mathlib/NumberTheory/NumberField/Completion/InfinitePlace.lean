@@ -23,6 +23,7 @@ number field at an infinite place is then derived in this file, as `InfinitePlac
 `AbsoluteValue`.
 
 ## Main definitions
+
 - `NumberField.InfinitePlace.Completion` : the completion of a number field `K` at an infinite
   place, obtained by completing `K` with respect to the absolute value associated to the infinite
   place.
@@ -39,6 +40,7 @@ number field at an infinite place is then derived in this file, as `InfinitePlac
   `extensionEmbedding`.
 
 ## Main results
+
 - `NumberField.Completion.locallyCompactSpace` : the completion of a number field at
   an infinite place is locally compact.
 - `NumberField.Completion.isometry_extensionEmbedding` : the embedding `v.Completion →+* ℂ` is
@@ -50,6 +52,7 @@ number field at an infinite place is then derived in this file, as `InfinitePlac
   when `v` is real.
 
 ## Tags
+
 number field, embeddings, infinite places, completion, absolute value
 -/
 
@@ -62,55 +65,55 @@ open NumberField.ComplexEmbedding AbsoluteValue.Completion
 
 variable {K : Type*} [Field K] (v : InfinitePlace K)
 
-theorem isometry_embedding : Isometry (v.embedding.comp (WithAbs.equiv v.1).toRingHom) :=
+theorem isometry_embedding : Isometry (v.embedding.comp (WithAbs.equiv v.val).toRingHom) :=
   AddMonoidHomClass.isometry_of_norm _ fun x ↦ by
-    simpa using! v.norm_embedding_eq (WithAbs.equiv v.1 x)
+    simpa using! v.norm_embedding_eq (WithAbs.equiv v.val x)
 
 theorem isometry_embedding_of_isReal (hv : v.IsReal) :
-    Isometry ((v.embedding_of_isReal hv).comp (WithAbs.equiv v.1).toRingHom) :=
+    Isometry ((v.embedding_of_isReal hv).comp (WithAbs.equiv v.val).toRingHom) :=
   AddMonoidHomClass.isometry_of_norm _ fun x ↦ by
-    simpa using! v.norm_embedding_of_isReal hv (WithAbs.equiv v.1 x)
+    simpa using! v.norm_embedding_of_isReal hv (WithAbs.equiv v.val x)
 
-instance : CompletableTopField (WithAbs v.1) :=
+instance : CompletableTopField (WithAbs v.val) :=
   v.isometry_embedding.isUniformInducing.completableTopField
 
 /-- The completion of a number field at an infinite place. -/
-abbrev Completion : Type _ := v.1.Completion
+abbrev Completion : Type _ := v.val.Completion
 
 namespace Completion
 
 /-- Coercion of an element of `K` into the completion. -/
 instance : Coe K v.Completion where
-  coe k := (WithAbs.toAbs v.1 k : v.1.Completion)
+  coe k := (WithAbs.toAbs v.val k : v.val.Completion)
 
 /-- The identity map `v.1.Completion → v.Completion`. -/
 @[deprecated "`v.Completion` is now an abbreviation for `v.1.Completion`" (since := "2026-10-30")]
-def ofCompletion {v : InfinitePlace K} (x : v.1.Completion) : v.Completion := x
+def ofCompletion {v : InfinitePlace K} (x : v.val.Completion) : v.Completion := x
 
 /-- The identity map `v.Completion → v.1.Completion`. -/
 @[deprecated "`v.Completion` is now an abbreviation for `v.1.Completion`" (since := "2026-10-30")]
-def toCompletion {v : InfinitePlace K} (x : v.Completion) : v.1.Completion := x
+def toCompletion {v : InfinitePlace K} (x : v.Completion) : v.val.Completion := x
 
 /-- The identity equivalence `v.Completion ≃ v.1.Completion`. -/
 @[deprecated "`v.Completion` is now an abbreviation for `v.1.Completion`" (since := "2026-10-30")]
-def equivCompletion : v.Completion ≃ v.1.Completion := Equiv.refl _
+def equivCompletion : v.Completion ≃ v.val.Completion := Equiv.refl _
 
 @[deprecated "`v.Completion` is now an abbreviation for `v.1.Completion`" (since := "2026-10-30")]
 theorem equivCompletion_apply (x : v.Completion) : equivCompletion v x = toCompletion x := rfl
 
 @[deprecated "`v.Completion` is now an abbreviation for `v.1.Completion`" (since := "2026-10-30")]
-theorem equivCompletion_symm_apply_toCompletion (x : v.1.Completion) :
+theorem equivCompletion_symm_apply_toCompletion (x : v.val.Completion) :
     ((equivCompletion v).symm x).toCompletion = x := rfl
 
 /-- The identity ring isomorphism `v.Completion ≃+* v.1.Completion`. -/
 @[deprecated "`v.Completion` is now an abbreviation for `v.1.Completion`" (since := "2026-10-30")]
-def equiv : v.Completion ≃+* v.1.Completion := RingEquiv.refl _
+def equiv : v.Completion ≃+* v.val.Completion := RingEquiv.refl _
 
 @[deprecated "`v.Completion` is now an abbreviation for `v.1.Completion`" (since := "2026-10-30")]
 theorem equiv_apply (x : v.Completion) : equiv v x = toCompletion x := rfl
 
 @[deprecated "`v.Completion` is now an abbreviation for `v.1.Completion`" (since := "2026-10-30")]
-theorem toCompletion_ofCompletion (x : v.1.Completion) :
+theorem toCompletion_ofCompletion (x : v.val.Completion) :
     toCompletion (ofCompletion x : v.Completion) = x := rfl
 
 @[deprecated "`v.Completion` is now an abbreviation for `v.1.Completion`" (since := "2026-10-30")]
@@ -150,14 +153,14 @@ theorem ofCompletion_surjective : Function.Surjective (ofCompletion (v := v)) :=
 theorem norm_toCompletion (x : v.Completion) : ‖toCompletion x‖ = ‖x‖ := rfl
 
 @[deprecated "`v.Completion` is now an abbreviation for `v.1.Completion`" (since := "2026-10-30")]
-theorem norm_ofCompletion (x : v.1.Completion) : ‖(ofCompletion x : v.Completion)‖ = ‖x‖ := rfl
+theorem norm_ofCompletion (x : v.val.Completion) : ‖(ofCompletion x : v.Completion)‖ = ‖x‖ := rfl
 
 @[deprecated "`v.Completion` is now an abbreviation for `v.1.Completion`" (since := "2026-10-30")]
 theorem isometry_toCompletion : Isometry (toCompletion (v := v)) := isometry_id
 
 /-- The identity isometry equivalence `v.Completion ≃ᵢ v.1.Completion`. -/
 @[deprecated "`v.Completion` is now an abbreviation for `v.1.Completion`" (since := "2026-10-30")]
-def isometryEquivCompletion : v.Completion ≃ᵢ v.1.Completion := IsometryEquiv.refl _
+def isometryEquivCompletion : v.Completion ≃ᵢ v.val.Completion := IsometryEquiv.refl _
 
 @[deprecated "`v.Completion` is now an abbreviation for `v.1.Completion`" (since := "2026-10-30")]
 theorem continuous_toCompletion : Continuous (toCompletion (v := v)) := continuous_id
@@ -166,8 +169,8 @@ theorem continuous_toCompletion : Continuous (toCompletion (v := v)) := continuo
 theorem continuous_ofCompletion : Continuous (ofCompletion (v := v)) := continuous_id
 
 @[deprecated "`v.Completion` is now an abbreviation for `v.1.Completion`" (since := "2026-10-30")]
-theorem coe_toCompletion (x : WithAbs v.1) :
-    toCompletion (x : v.Completion) = (x : v.1.Completion) := rfl
+theorem coe_toCompletion (x : WithAbs v.val) :
+    toCompletion (x : v.Completion) = (x : v.val.Completion) := rfl
 
 @[deprecated AbsoluteValue.Completion.coe_zero +typeChanged (since := "2026-10-30")]
 theorem coe_zero : ((0 : K) : v.Completion) = 0 := by simp
@@ -182,23 +185,23 @@ theorem coe_add (x y : K) : ((x + y : K) : v.Completion) = ↑x + ↑y := by sim
 theorem coe_mul (x y : K) : ((x * y : K) : v.Completion) = ↑x * ↑y := by simp
 
 @[deprecated AbsoluteValue.Completion.continuous_coe +typeChanged (since := "2026-10-30")]
-theorem continuous_coe : Continuous ((↑) : WithAbs v.1 → v.Completion) :=
-  AbsoluteValue.Completion.continuous_coe v.1
+theorem continuous_coe : Continuous ((↑) : WithAbs v.val → v.Completion) :=
+  AbsoluteValue.Completion.continuous_coe v.val
 
 @[deprecated AbsoluteValue.Completion.denseRange_coe +typeChanged (since := "2026-10-30")]
-theorem denseRange_coe : DenseRange ((↑) : WithAbs v.1 → v.Completion) :=
-  AbsoluteValue.Completion.denseRange_coe v.1
+theorem denseRange_coe : DenseRange ((↑) : WithAbs v.val → v.Completion) :=
+  AbsoluteValue.Completion.denseRange_coe v.val
 
 @[elab_as_elim, deprecated AbsoluteValue.Completion.induction_on +typeChanged
   (since := "2026-10-30")]
 theorem induction_on {p : v.Completion → Prop} (x : v.Completion) (hp : IsClosed {x | p x})
-    (ih : ∀ a : WithAbs v.1, p a) : p x :=
+    (ih : ∀ a : WithAbs v.val, p a) : p x :=
   AbsoluteValue.Completion.induction_on x hp ih
 
 @[deprecated "`v.Completion` is now an abbreviation for `v.1.Completion`" (since := "2026-10-30")]
-theorem algebraMap_toCompletion (R : Type*) [CommSemiring R] [Algebra R (WithAbs v.1)]
-    [UniformContinuousConstSMul R (WithAbs v.1)] (r : R) :
-    toCompletion (algebraMap R v.Completion r) = algebraMap R v.1.Completion r := rfl
+theorem algebraMap_toCompletion (R : Type*) [CommSemiring R] [Algebra R (WithAbs v.val)]
+    [UniformContinuousConstSMul R (WithAbs v.val)] (r : R) :
+    toCompletion (algebraMap R v.Completion r) = algebraMap R v.val.Completion r := rfl
 
 @[deprecated AbsoluteValue.Completion.algebraMap_def +typeChanged (since := "2026-10-30")]
 theorem algebraMap_apply (k : K) :
@@ -207,7 +210,7 @@ theorem algebraMap_apply (k : K) :
     Algebra.algebraMap_self_apply]
 
 @[deprecated AbsoluteValue.Completion.norm_coe +typeChanged (since := "2026-10-30")]
-theorem norm_coe (x : WithAbs v.1) : ‖(x : v.Completion)‖ = v (WithAbs.equiv v.1 x) :=
+theorem norm_coe (x : WithAbs v.val) : ‖(x : v.Completion)‖ = v (WithAbs.equiv v.val x) :=
   AbsoluteValue.Completion.norm_coe x
 
 example : NormedField v.Completion := inferInstance
@@ -215,14 +218,14 @@ example : Algebra K v.Completion := inferInstance
 example : IsTopologicalRing v.Completion := inferInstance
 
 /-- The coercion from the rationals to its completion along an infinite place is `Rat.cast`. -/
-lemma WithAbs.ratCast_equiv (v : InfinitePlace ℚ) (x : WithAbs v.1) :
+lemma WithAbs.ratCast_equiv (v : InfinitePlace ℚ) (x : WithAbs v.val) :
     Rat.cast (WithAbs.equiv _ x) = (x : v.Completion) :=
   (eq_ratCast (algebraMap ℚ v.Completion) _).symm.trans <|
     AbsoluteValue.Completion.algebraMap_def _ _
 
 lemma Rat.norm_infinitePlace_completion (v : InfinitePlace ℚ) (x : ℚ) :
     ‖(x : v.Completion)‖ = |x| := by
-  rw [← (WithAbs.equiv v.1).apply_symm_apply x, WithAbs.ratCast_equiv,
+  rw [← (WithAbs.equiv v.val).apply_symm_apply x, WithAbs.ratCast_equiv,
     AbsoluteValue.Completion.norm_coe]
   exact Rat.infinitePlace_apply v x
 
@@ -241,25 +244,25 @@ def extensionEmbeddingOfIsReal {v : InfinitePlace K} (hv : IsReal v) : v.Complet
     AbsoluteValue.Completion.toCompletion
 
 @[simp]
-theorem extensionEmbedding_coe (x : WithAbs v.1) :
-    extensionEmbedding v x = v.embedding (WithAbs.equiv v.1 x) := by
+theorem extensionEmbedding_coe (x : WithAbs v.val) :
+    extensionEmbedding v x = v.embedding (WithAbs.equiv v.val x) := by
   simp [extensionEmbedding, UniformSpace.Completion.extensionHom_coe]
 
 @[simp]
-theorem extensionEmbeddingOfIsReal_coe {v : InfinitePlace K} (hv : IsReal v) (x : WithAbs v.1) :
-    extensionEmbeddingOfIsReal hv x = embedding_of_isReal hv (WithAbs.equiv v.1 x) := by
+theorem extensionEmbeddingOfIsReal_coe {v : InfinitePlace K} (hv : IsReal v) (x : WithAbs v.val) :
+    extensionEmbeddingOfIsReal hv x = embedding_of_isReal hv (WithAbs.equiv v.val x) := by
   simp [extensionEmbeddingOfIsReal, UniformSpace.Completion.extensionHom_coe]
 
 /-- The embedding `v.Completion →+* ℂ` is an isometry. -/
 theorem isometry_extensionEmbedding : Isometry (extensionEmbedding v) :=
   v.isometry_embedding.completion_extension.comp
-    (AbsoluteValue.Completion.isometry_toCompletion v.1)
+    (AbsoluteValue.Completion.isometry_toCompletion v.val)
 
 /-- The embedding `v.Completion →+* ℝ` at a real infinite place is an isometry. -/
 theorem isometry_extensionEmbeddingOfIsReal {v : InfinitePlace K} (hv : IsReal v) :
     Isometry (extensionEmbeddingOfIsReal hv) :=
   (v.isometry_embedding_of_isReal hv).completion_extension.comp
-    (AbsoluteValue.Completion.isometry_toCompletion v.1)
+    (AbsoluteValue.Completion.isometry_toCompletion v.val)
 
 @[simp]
 theorem extensionEmbeddingOfIsReal_apply {v : InfinitePlace K} (hv : IsReal v) (x : v.Completion) :
@@ -342,18 +345,18 @@ def isometryEquivRealOfIsReal {v : InfinitePlace K} (hv : IsReal v) : v.Completi
 
 variable {L : Type*} [Field L] [Algebra K L] (w : InfinitePlace L) {v}
 
-theorem algebraMap_eq_coe (x : WithAbs v.1) :
-    algebraMap (WithAbs v.1) w.Completion x = (algebraMap (WithAbs v.1) (WithAbs w.1) x) := by
+theorem algebraMap_eq_coe (x : WithAbs v.val) :
+    algebraMap (WithAbs v.val) w.Completion x = (algebraMap (WithAbs v.val) (WithAbs w.val) x) := by
   rw [WithAbs.algebraMap_left_apply, AbsoluteValue.Completion.algebraMap_def,
     WithAbs.algebraMap_left_apply]
 
 variable [Algebra v.Completion w.Completion] [IsScalarTower K v.Completion w.Completion]
 
 @[simp]
-theorem algebraMap_coe (x : WithAbs v.1) :
-    algebraMap v.Completion w.Completion x = algebraMap (WithAbs v.1) (WithAbs w.1) x :=
+theorem algebraMap_coe (x : WithAbs v.val) :
+    algebraMap v.Completion w.Completion x = algebraMap (WithAbs v.val) (WithAbs w.val) x :=
   (congrArg _ (algebraMap_eq_coe v x)).symm.trans <|
-    (IsScalarTower.algebraMap_apply (WithAbs v.1) v.Completion w.Completion x).symm.trans
+    (IsScalarTower.algebraMap_apply (WithAbs v.val) v.Completion w.Completion x).symm.trans
       (algebraMap_eq_coe w x)
 
 end Completion
@@ -411,10 +414,10 @@ open Completion
 
 variable [w.LiesOver v]
 
-theorem isometry_algebraMap : Isometry (algebraMap (WithAbs v.1) (WithAbs w.1)) :=
+theorem isometry_algebraMap : Isometry (algebraMap (WithAbs v.val) (WithAbs w.val)) :=
   AddMonoidHomClass.isometry_of_norm _ fun x ↦ by
     simpa [WithAbs.norm_eq_apply_ofAbs] using
-      WithAbs.ofAbs_algebraMap v.1 w.1 x ▸ comp_of_comap_eq (comap_eq w v) x.ofAbs
+      WithAbs.ofAbs_algebraMap v.val w.val x ▸ comp_of_comap_eq (comap_eq w v) x.ofAbs
 
 variable {v}
 

@@ -7,9 +7,13 @@ module
 
 public import Mathlib.Algebra.Category.Ring.Small
 public import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
-public import Mathlib.RingTheory.RingHom.EssFiniteType
 public import Mathlib.RingTheory.RingHom.FiniteType
 public import Mathlib.RingTheory.Spectrum.Prime.Jacobson
+
+import Mathlib.RingTheory.RingHom.EssFiniteType
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Morphisms of finite type
@@ -172,7 +176,8 @@ lemma essentiallySmall_costructuredArrow_Spec
       exact fun q ↦ ⟨_, hf q, ⟨(IsLocalization.algEquiv (.powers (f q)) _
         ((Spec.structureSheaf _).obj.obj (op _))).toRingEquiv.toCommRingCatIso⟩⟩
   · intro R
-    refine ⟨.ofObj fun f : { f : Spec R.unop ⟶ X // P f } ↦ .mk _ f.1 f.2, inferInstance, ?_⟩
+    refine ⟨.ofObj fun f : { f : Spec R.unop ⟶ X // P f } ↦ .mk _ f.val f.property,
+      inferInstance, ?_⟩
     refine fun S ⟨e⟩ ↦ ⟨_, .mk ⟨Spec.map e.inv.unop ≫ S.hom, ?_⟩,
       ⟨MorphismProperty.CostructuredArrow.isoMk e trivial trivial ?_⟩⟩
     · simp [← Spec.map_comp_assoc, F]

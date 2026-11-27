@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Complex.CauchyIntegral
 
 import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Various complex special functions are analytic
 

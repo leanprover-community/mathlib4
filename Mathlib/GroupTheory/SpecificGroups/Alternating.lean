@@ -23,6 +23,7 @@ consisting of the even permutations.
 * `alternatingGroup α` is the alternating group on `α`, defined as a `Subgroup (Perm α)`.
 
 ## Main results
+
 * `alternatingGroup.index_eq_two` shows that the index of the alternating group is two.
 
 * `two_mul_card_alternatingGroup` shows that the alternating group is half as large as
@@ -49,10 +50,12 @@ consisting of the even permutations.
 * The alternating group is a characteristic subgroup of the permutation group.
 
 ## Tags
+
 alternating group permutation simple characteristic index
 
 
 ## TODO
+
 * Show that `alternatingGroup α` is simple if and only if `Fintype.card α ≠ 4`.
 -/
 
@@ -380,7 +383,7 @@ theorem ofSubtype_inj {s : Finset α} {g h : alternatingGroup s} :
   ofSubtype_injective.eq_iff
 
 theorem coe_ofSubtype (s : Finset α) (k : alternatingGroup s) :
-    (ofSubtype s k : Equiv.Perm α) = Equiv.Perm.ofSubtype k.1 := by
+    (ofSubtype s k : Equiv.Perm α) = Equiv.Perm.ofSubtype k.val := by
   rfl
 
 theorem map_ofSubtype (s : Finset α) :

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Int.Defs
 public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Algebra.Homology.ComplexShape
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Complex shapes with no loop
 

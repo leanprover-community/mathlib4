@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.ShortComplex.QuasiIso
 public import Mathlib.CategoryTheory.MorphismProperty.Retract
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Quasi-isomorphisms of short complexes are stable under retracts
 -/
