@@ -39,7 +39,7 @@ tactic so that finiteness goals are discharged automatically in `Set.ncard` theo
 * `toFinite_tac` is a tactic that tries to synthesize a `Set.Finite s` argument with
   `Set.toFinite`. This will work for `s : Set α` where there is a `Finite α` instance.
 
-## Implementation Notes
+## Implementation notes
 
 The theorems in this file are very similar to those in `Mathlib/Data/Finset/Card.lean`, but with
 `Set` operations instead of `Finset`. We first prove all the theorems for `Set.encard`, and then

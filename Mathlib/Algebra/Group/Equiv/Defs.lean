@@ -15,6 +15,7 @@ In this file we define two extensions of `Equiv` called `AddEquiv` and `MulEquiv
 datatypes representing isomorphisms of `AddMonoid`s/`AddGroup`s and `Monoid`s/`Group`s.
 
 ## Main definitions
+
 * `≃*` (`MulEquiv`), `≃+` (`AddEquiv`): bundled equivalences that preserve multiplication/addition
   (and are therefore monoid and group isomorphisms).
 * `MulEquivClass`, `AddEquivClass`: classes for types containing bundled equivalences that
@@ -168,6 +169,10 @@ instance : CoeFun (M ≃* N) fun _ ↦ M → N where
 @[to_additive]
 instance : MulEquivClass (M ≃* N) M N where
   map_mul f := f.map_mul'
+
+@[to_additive (attr := simp)]
+theorem coe_toMulEquiv [EquivLike F M N] [MulEquivClass F M N] (f : F) :
+    ⇑(f : M ≃* N) = f := rfl
 
 /-- Two multiplicative isomorphisms agree if they are defined by the
 same underlying function. -/

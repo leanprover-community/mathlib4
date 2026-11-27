@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.KanComplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.RelativeMorphism
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pointed simplices
 

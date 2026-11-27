@@ -9,6 +9,9 @@ public import Mathlib.Order.Bounds.Image
 
 import Mathlib.Order.Hom.Set
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Order isomorphisms and bounds.
 -/

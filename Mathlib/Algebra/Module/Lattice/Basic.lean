@@ -35,7 +35,7 @@ We do not require a lattice to be full. See `Submodule.IsFullLattice` for full l
 - `Submodule.IsLattice.inf_left`, `Submodule.IsLattice.inf_right`: over a
   Noetherian ring, the intersection of a lattice with a submodule is a lattice.
 
-## Future work
+## TODO
 
 In the fraction field setting with `V = ι → K` for finite `ι`, scaling a lattice by a unit of `K`
 again gives a lattice, which yields a homothety relation. For `R` a DVR and `ι = Fin 2`, the
@@ -79,6 +79,11 @@ section CommRing
 variable (A : Type*) [CommRing A] [Algebra R A]
 variable {V : Type*} [AddCommGroup V] [Module R V] [Module A V] [IsScalarTower R A V]
 variable (M : Submodule R V)
+
+@[nontriviality]
+theorem of_subsingleton [Nontrivial A] [Subsingleton R] : IsLattice A M :=
+  have : Nontrivial R := (algebraMap R A).domain_nontrivial
+  (not_subsingleton R inferInstance).elim
 
 /-- Any `R`-independent family of vectors in a lattice is `A`-linearly independent. -/
 theorem linearIndependent [IsLattice A M] {ι : Type*} {v : ι → V}
@@ -150,12 +155,57 @@ This is the finrank version of `rank_span_eq_rank`. -/
 theorem finrank_span_eq_finrank [IsLattice K M] : finrank K (span K (M : Set V)) = finrank R M :=
   congr(Cardinal.toNat $(rank_span_eq_rank K M))
 
+/-- If the `R`-span of `s` is a lattice, then the `K`-rank of `s` equals its `R`-rank. -/
+theorem _root_.Set.finrank_eq_of_isLattice (s : Set V) (hs : IsLattice K (span R s)) :
+    Set.finrank K s = Set.finrank R s := by
+  rw [Set.finrank, Set.finrank, ← span_span_of_tower R K s]
+  exact finrank_span_eq_finrank K _
+
 /-- An `R`-module `M` is a lattice in an ambient `K`-module `V` if and only if `M`
 is finitely generated, and its `R`-rank equals the `K`-dimension of its `K`-span. -/
 theorem iff_fg_and_finrank_span_eq_finrank :
     IsLattice K M ↔ M.FG ∧ finrank K (span K (M : Set V)) = finrank R M := by
   have : Nontrivial R := (algebraMap R K).domain_nontrivial
   simp +contextual [isLattice_iff, finrank_span_eq_finrank_iff]
+
+/-- The `R`-span of a finite `K`-linearly independent family is a lattice. -/
+theorem span_of_linearIndependent {ι : Type*} [Finite ι] {v : ι → V}
+    (hv : LinearIndependent K v) : IsLattice K (span R (Set.range v)) := by
+  nontriviality R
+  have := Fintype.ofFinite ι
+  refine (iff_fg_and_finrank_span_eq_finrank _ _).mpr ⟨fg_span (Set.finite_range v), ?_⟩
+  rw [span_span_of_tower, finrank_span_eq_card hv, finrank_span_eq_card (hv.restrict_scalars' R)]
+
+/-- Any lattice is contained in the `R`-span of a finite `K`-linearly independent set with the
+same `K`-span. In particular, every lattice is contained in a free lattice with the same `K`-span.
+
+Note that if `R` is a PID, every lattice is free (`IsLattice.free`), so this holds trivially. -/
+theorem exists_finite_linearIndepOn_le_span [IsLattice K M] :
+    ∃ s : Set V, s.Finite ∧ LinearIndepOn K id s ∧ M ≤ span R s ∧
+      span K s = span K (M : Set V) := by
+  have := IsDomain.of_faithfulSMul R K
+  have := finite K M
+  obtain ⟨n, g, hg⟩ := Finite.exists_fin (R := R) (M := M)
+  obtain ⟨I, hI, a, ha, haM⟩ := exists_linearIndepOn_smul_mem_span hg
+  have ha' : algebraMap R K a ≠ 0 :=
+    (map_ne_zero_iff _ (FaithfulSMul.algebraMap_injective R K)).mpr ha
+  let φ : V →ₗ[R] V := (LinearMap.lsmul K V (algebraMap R K a)⁻¹).restrictScalars R
+  have hM : M ≤ span R ((fun i ↦ φ (g i)) '' I) := fun m hm ↦ by
+    simpa [map_span, ← Set.image_comp, Function.comp_def, φ, -algebraMap_smul,
+      ← algebraMap_smul K a m, smul_smul, mul_inv_cancel₀ ha'] using
+      mem_map_of_mem (f := φ ∘ₗ M.subtype) (haM ⟨m, hm⟩)
+  refine ⟨_, I.toFinite.image _, ?_, hM, le_antisymm ?_ ?_⟩
+  · exact .id_image <|
+      (linearIndependent K M (fun i : I ↦ (g i).prop) (hI.map' M.subtype M.ker_subtype)).units_smul
+        fun _ ↦ Units.mk0 _ (inv_ne_zero ha')
+  · exact span_le.mpr <| Set.image_subset_iff.mpr fun i _ ↦ smul_mem _ _ (subset_span (g i).prop)
+  · exact span_le.mpr <| hM.trans (span_le_restrictScalars R K _)
+
+/-- The `K`-span of a lattice is finite-dimensional. -/
+instance finiteDimensional_span [IsLattice K M] : FiniteDimensional K (span K (M : Set V)) := by
+  obtain ⟨s, rfl⟩ := fg K (M := M)
+  rw [span_span_of_tower]
+  exact FiniteDimensional.span_finset K s
 
 section IsPrincipalIdealRing
 

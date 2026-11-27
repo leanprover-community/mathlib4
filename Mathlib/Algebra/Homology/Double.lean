@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.HasNoLoop
 public import Mathlib.Algebra.Homology.Single
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # A homological complex lying in two degrees
 

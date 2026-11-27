@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Yoneda preserves certain colimits
 

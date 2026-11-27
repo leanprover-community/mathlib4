@@ -10,6 +10,9 @@ public import Mathlib.FieldTheory.IsAlgClosed.Classification
 public import Mathlib.ModelTheory.Algebra.Field.CharP
 public import Mathlib.ModelTheory.Satisfiability
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The First-Order Theory of Algebraically Closed Fields
 
@@ -24,7 +27,7 @@ as proving completeness of the theory and the Lefschetz Principle.
   `p` is complete whenever `p` is prime or zero.
 * `FirstOrder.Field.ACF_zero_realize_iff_infinite_ACF_prime_realize` : the Lefschetz principle.
 
-## Implementation details
+## Implementation notes
 
 To apply a theorem about the model theory of algebraically closed fields to a specific
 algebraically closed field `K` which does not have a `Language.ring.Structure` instance,

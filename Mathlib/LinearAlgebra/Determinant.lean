@@ -216,8 +216,12 @@ theorem det_toLin (b : Basis ι R M) (f : Matrix ι ι R) :
   rw [← LinearMap.det_toMatrix b, LinearMap.toMatrix_toLin]
 
 @[simp]
+theorem _root_.Matrix.det_mulVecLin (f : Matrix ι ι R) : f.mulVecLin.det = Matrix.det f := by
+  simp only [← f.toLin'_apply', ← toLin_eq_toLin', det_toLin]
+
+@[deprecated Matrix.det_mulVecLin +typeChanged (since := "2026-11-25")]
 theorem det_toLin' (f : Matrix ι ι R) : LinearMap.det (Matrix.toLin' f) = Matrix.det f := by
-  simp only [← toLin_eq_toLin', det_toLin]
+  simp
 
 /-- To show `P (LinearMap.det f)` it suffices to consider `P (Matrix.det (toMatrix _ _ f))` and
 `P 1`. -/
@@ -577,7 +581,7 @@ theorem LinearMap.associated_det_comp_equiv {N : Type*} [AddCommGroup N] [Module
     Associated (LinearMap.det (f ∘ₗ ↑e)) (LinearMap.det (f ∘ₗ ↑e')) := by
   refine LinearMap.associated_det_of_eq_comp (e.trans e'.symm) _ _ ?_
   intro x
-  simp only [LinearMap.comp_apply, LinearEquiv.coe_coe, LinearEquiv.trans_apply,
+  simp only [LinearMap.comp_apply, LinearEquiv.coe_toLinearMap, LinearEquiv.trans_apply,
     LinearEquiv.apply_symm_apply]
 
 namespace Module.Basis

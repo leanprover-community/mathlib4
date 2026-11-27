@@ -32,6 +32,7 @@ The prototypical example, proved in `CategoryTheory.Limits.FilteredColimitCommut
 is that when `C = Type`, filtered colimits commute with finite limits.
 
 ## References
+
 * [F. Borceux, *Handbook of Categorical Algebra 1*][borceux-vol1], Section 2.13
 * [Stacks: Filtered colimits](https://stacks.math.columbia.edu/tag/002W)
 -/

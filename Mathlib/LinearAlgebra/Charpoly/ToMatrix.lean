@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.Charpoly.Basic
 public import Mathlib.RingTheory.Finiteness.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Characteristic polynomial
 
@@ -61,7 +64,7 @@ lemma charpoly_prodMap (f₁ : M₁ →ₗ[R] M₁) (f₂ : M₂ →ₗ[R] M₂)
   let b₂ := chooseBasis R M₂
   let b := b₁.prod b₂
   rw [← charpoly_toMatrix f₁ b₁, ← charpoly_toMatrix f₂ b₂, ← charpoly_toMatrix (f₁.prodMap f₂) b,
-    toMatrix_prodMap b₁ b₂ f₁ f₂, Matrix.charpoly_fromBlocks_zero₁₂]
+    toMatrix_prodMap b₁ b₂ b₁ b₂ f₁ f₂, Matrix.charpoly_fromBlocks_zero₁₂]
 
 end Basic
 
@@ -86,11 +89,11 @@ theorem charpoly_toLin (A : Matrix n n R) (b : Basis n R M) :
   simp [← LinearMap.charpoly_toMatrix (A.toLin b b) b]
 
 @[simp]
-theorem charpoly_toLin' (A : Matrix n n R) : A.toLin'.charpoly = A.charpoly := by
-  rw [← Matrix.toLin_eq_toLin', charpoly_toLin]
-
-@[simp]
 theorem charpoly_mulVecLin (A : Matrix n n R) : A.mulVecLin.charpoly = A.charpoly :=
-  charpoly_toLin' A
+  charpoly_toLin A (Pi.basisFun R n)
+
+@[deprecated charpoly_mulVecLin +typeChanged (since := "2026-11-25")]
+theorem charpoly_toLin' (A : Matrix n n R) : A.toLin'.charpoly = A.charpoly :=
+  charpoly_mulVecLin A
 
 end Matrix

@@ -9,6 +9,9 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.HomotopyInvarianc
 public import Mathlib.AlgebraicTopology.SingularHomology.Basic
 public import Mathlib.Topology.Homotopy.TopCat.ToSSet
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Homotopy invariance of singular homology
 
