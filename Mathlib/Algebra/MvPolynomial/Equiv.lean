@@ -611,16 +611,14 @@ theorem finSuccEquiv_eq :
       eval₂Hom (Polynomial.C.comp (C : R →+* MvPolynomial (Fin n) R)) fun i : Fin (n + 1) =>
         Fin.cases Polynomial.X (fun k => Polynomial.C (X k)) i := by
   ext i : 2
-  · simp only [finSuccEquiv, optionEquivLeft_apply, aeval_C, AlgEquiv.coe_trans, RingHom.coe_coe,
-      coe_eval₂Hom, comp_apply, renameEquiv_apply, eval₂_C, RingHom.coe_comp, rename_C]
-    rfl
+  · simp [finSuccEquiv]
   · refine Fin.cases ?_ ?_ i <;> simp [optionEquivLeft_apply, finSuccEquiv]
 
 theorem finSuccEquiv_apply (p : MvPolynomial (Fin (n + 1)) R) :
     finSuccEquiv R n p =
       eval₂Hom (Polynomial.C.comp (C : R →+* MvPolynomial (Fin n) R))
         (fun i : Fin (n + 1) => Fin.cases Polynomial.X (fun k => Polynomial.C (X k)) i) p := by
-  rw [← finSuccEquiv_eq, RingHom.coe_coe]
+  simp [← finSuccEquiv_eq]
 
 theorem finSuccEquiv_comp_C_eq_C {R : Type u} [CommSemiring R] (n : ℕ) :
     (↑(MvPolynomial.finSuccEquiv R n).symm : Polynomial (MvPolynomial (Fin n) R) →+* _).comp
