@@ -36,7 +36,7 @@ variable {𝕜 E F : Type*} [CommSemiring 𝕜] [TopologicalSpace 𝕜] [Continu
   [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
   [AddCommMonoid F] [Module 𝕜 F]
 
-/-- A linear topology on `E` is compatible with the bilinear form `B` if every
+/-- A topology on `E` is compatible with the bilinear form `B` if every
 continuous linear functional on `E` has the form `B.flip f` for exactly one `f : F`. -/
 class IsCompatibleDual (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) : Prop where
   range_flip : range B.flip = range (topDualPairing 𝕜 E)
