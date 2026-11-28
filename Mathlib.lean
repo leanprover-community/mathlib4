@@ -2208,6 +2208,7 @@ public import Mathlib.Analysis.Meromorphic.Basic
 public import Mathlib.Analysis.Meromorphic.Complex
 public import Mathlib.Analysis.Meromorphic.Divisor
 public import Mathlib.Analysis.Meromorphic.FactorizedRational
+public import Mathlib.Analysis.Meromorphic.FunctionField
 public import Mathlib.Analysis.Meromorphic.IsolatedZeros
 public import Mathlib.Analysis.Meromorphic.LogDeriv
 public import Mathlib.Analysis.Meromorphic.NormalForm
@@ -6381,6 +6382,7 @@ public import Mathlib.Order.Filter.EventuallyConst
 public import Mathlib.Order.Filter.Extr
 public import Mathlib.Order.Filter.FilterProduct
 public import Mathlib.Order.Filter.Finite
+public import Mathlib.Order.Filter.Germ.Algebra
 public import Mathlib.Order.Filter.Germ.Basic
 public import Mathlib.Order.Filter.Germ.OrderedMonoid
 public import Mathlib.Order.Filter.IndicatorFunction

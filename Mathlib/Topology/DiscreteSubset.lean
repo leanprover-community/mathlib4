@@ -497,6 +497,18 @@ lemma mem_codiscrete_subtype_iff_mem_codiscreteWithin {S : Set X} {U : Set S} :
 theorem codiscreteWithin_eq_bot_iff {S : Set X} : codiscreteWithin S = ⊥ ↔ IsDiscrete S := by
   simp [isDiscrete_iff_nhdsNE, codiscreteWithin, ← nhdsWithin_inter', Set.sdiff_eq, inter_comm]
 
+/-- The filter `codiscreteWithin S` is nontrivial iff `S` is not discrete. -/
+theorem codiscreteWithin_neBot_iff {S : Set X} : (codiscreteWithin S).NeBot ↔ ¬ IsDiscrete S := by
+  rw [neBot_iff, not_iff_not, codiscreteWithin_eq_bot_iff]
+
+/--
+The filter `codiscreteWithin S` is nontrivial if some point of `S` is an accumulation point of `S`.
+-/
+theorem AccPt.codiscreteWithin_neBot {S : Set X} {x : X} (hx : x ∈ S) (h : AccPt x (𝓟 S)) :
+    (codiscreteWithin S).NeBot := by
+  have := accPt_principal_iff_nhdsWithin.1 h
+  exact neBot_of_le (nhdsWithin_le_codiscreteWithin hx)
+
 section T1Space
 
 variable [T1Space X]

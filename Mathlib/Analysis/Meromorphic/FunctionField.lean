@@ -1,0 +1,256 @@
+/-
+Copyright (c) 2026 Stefan Kebekus. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Stefan Kebekus
+-/
+module
+
+public import Mathlib.Analysis.Meromorphic.Order
+public import Mathlib.Order.Filter.Germ.Algebra
+public import Mathlib.Topology.Perfect
+
+/-!
+# The Function Field of Meromorphic Functions on a Preconnected Set
+
+Functions meromorphic on a set `U` with values in a normed field `𝕜'` form a subalgebra
+`MeromorphicOn.subalgebra 𝕜 𝕜' U` of the algebra of all functions `𝕜 → 𝕜'`. This algebra is
+never a field: functions supported on discrete sets are zero divisors. Classically, meromorphic
+functions that agree outside a discrete set are identified. We realize this identification by
+passing to germs along the filter `Filter.codiscreteWithin U`: the image of the subalgebra in the
+algebra of germs is the ring `MeromorphicOn.functionRing 𝕜 𝕜' U` of meromorphic functions modulo
+equality along `codiscreteWithin U`. This ring carries a natural pointwise inverse. If `U` is
+preconnected with at least two points, it is a field, the function field of `U`, with instance
+`MeromorphicOn.FunctionRing.instField` available under `Fact` assumptions on `U`.
+
+The key input is the identity theorem for meromorphic functions, in the form of
+`MeromorphicOn.mul_inv_eventuallyEq`: on a preconnected set, a meromorphic function `f` that does
+not vanish along `codiscreteWithin U` satisfies `f * f⁻¹ =ᶠ[codiscreteWithin U] 1`, so that the
+pointwise inverse is a genuine inverse.
+-/
+
+@[expose] public section
+
+open Filter Set Topology
+
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {𝕜' : Type*} [NontriviallyNormedField 𝕜']
+  [NormedAlgebra 𝕜 𝕜'] {U : Set 𝕜} {f : 𝕜 → 𝕜'}
+
+namespace MeromorphicOn
+
+/-!
+## The Algebra of Meromorphic Functions
+-/
+
+variable (𝕜 𝕜' U) in
+/-- Functions meromorphic on `U`, as a subalgebra of the algebra of all functions `𝕜 → 𝕜'`. -/
+def subalgebra : Subalgebra 𝕜 (𝕜 → 𝕜') where
+  carrier := {f | MeromorphicOn f U}
+  zero_mem' := const 0
+  one_mem' := const 1
+  add_mem' hf hg := hf.add hg
+  mul_mem' hf hg := hf.mul hg
+  algebraMap_mem' c := const (algebraMap 𝕜 𝕜' c)
+
+@[simp]
+theorem mem_subalgebra_iff : f ∈ subalgebra 𝕜 𝕜' U ↔ MeromorphicOn f U := Iff.rfl
+
+/-!
+## The Ring of Meromorphic Functions Modulo Equality Along `codiscreteWithin U`
+-/
+
+variable (𝕜 𝕜' U) in
+/--
+The ring of meromorphic functions modulo equality along `codiscreteWithin U`: functions meromorphic
+on `U`, modulo equality along the filter `codiscreteWithin U`, realized as a subalgebra of the
+algebra of germs along that filter. If `U` is preconnected with at least two points, this ring is a
+field, the function field of `U`, see `MeromorphicOn.FunctionRing.instField`.
+-/
+def functionRing : Subalgebra 𝕜 (Germ (codiscreteWithin U) 𝕜') :=
+  (subalgebra 𝕜 𝕜' U).map (Germ.coeAlgHom 𝕜 _)
+
+/--
+A germ belongs to the ring of meromorphic functions modulo equality along `codiscreteWithin U` iff
+it has a representative that is meromorphic on `U`.
+-/
+theorem mem_functionRing_iff {γ : Germ (codiscreteWithin U) 𝕜'} :
+    γ ∈ functionRing 𝕜 𝕜' U ↔
+      ∃ f : 𝕜 → 𝕜', MeromorphicOn f U ∧ (f : Germ (codiscreteWithin U) 𝕜') = γ :=
+  Subalgebra.mem_map
+
+/--
+The germ of a function meromorphic on `U` belongs to the ring of meromorphic functions modulo
+equality along `codiscreteWithin U`.
+-/
+theorem coe_mem_functionRing (hf : MeromorphicOn f U) :
+    (f : Germ (codiscreteWithin U) 𝕜') ∈ functionRing 𝕜 𝕜' U :=
+  mem_functionRing_iff.2 ⟨f, hf, rfl⟩
+
+/--
+The surjective algebra homomorphism mapping a function meromorphic on `U` to the element that it
+represents in the ring of meromorphic functions modulo equality along `codiscreteWithin U`.
+-/
+@[simps!]
+def toFunctionRingAlgHom : subalgebra 𝕜 𝕜' U →ₐ[𝕜] functionRing 𝕜 𝕜' U :=
+  ((Germ.coeAlgHom 𝕜 _).comp (subalgebra 𝕜 𝕜' U).val).codRestrict _
+    fun f ↦ coe_mem_functionRing f.property
+
+/--
+Every element of the ring of meromorphic functions modulo equality along `codiscreteWithin U` is
+represented by a function meromorphic on `U`.
+-/
+theorem toFunctionRingAlgHom_surjective :
+    Function.Surjective (toFunctionRingAlgHom (𝕜 := 𝕜) (𝕜' := 𝕜') (U := U)) := by
+  rintro ⟨γ, hγ⟩
+  obtain ⟨f, hf, rfl⟩ := mem_functionRing_iff.1 hγ
+  exact ⟨⟨f, hf⟩, rfl⟩
+
+namespace FunctionRing
+
+/-!
+### Inverses, Quotients and Integer Powers
+
+The ring of meromorphic functions modulo equality along `codiscreteWithin U` inherits the pointwise
+inverse of germs, using the junk-value convention `(0 : 𝕜')⁻¹ = 0`: the inverse of a function
+meromorphic on `U` is meromorphic on `U`, so the subalgebra is closed under `Inv` without any
+hypotheses on `U`. The same holds for quotients and integer powers.
+-/
+
+noncomputable instance : Inv (functionRing 𝕜 𝕜' U) where
+  inv a := ⟨(a : Germ (codiscreteWithin U) 𝕜')⁻¹, by
+    obtain ⟨f, hf, hfa⟩ := mem_functionRing_iff.1 a.property
+    exact mem_functionRing_iff.2 ⟨f⁻¹, hf.inv, by rw [Germ.coe_inv, hfa]⟩⟩
+
+@[simp, norm_cast]
+theorem coe_inv (a : functionRing 𝕜 𝕜' U) :
+    ((a⁻¹ : functionRing 𝕜 𝕜' U) : Germ (codiscreteWithin U) 𝕜') =
+      (a : Germ (codiscreteWithin U) 𝕜')⁻¹ := rfl
+
+noncomputable instance : Div (functionRing 𝕜 𝕜' U) where
+  div a b := a * b⁻¹
+
+protected theorem div_eq_mul_inv (a b : functionRing 𝕜 𝕜' U) : a / b = a * b⁻¹ := rfl
+
+@[simp, norm_cast]
+theorem coe_div (a b : functionRing 𝕜 𝕜' U) :
+    ((a / b : functionRing 𝕜 𝕜' U) : Germ (codiscreteWithin U) 𝕜') =
+      (a : Germ (codiscreteWithin U) 𝕜') / (b : Germ (codiscreteWithin U) 𝕜') :=
+  (div_eq_mul_inv _ _).symm
+
+protected theorem inv_zero : (0 : functionRing 𝕜 𝕜' U)⁻¹ = 0 :=
+  Subtype.ext (congrArg Germ.ofFun (funext fun _ ↦ inv_zero))
+
+/--
+The ring of meromorphic functions modulo equality along `codiscreteWithin U` is a `DivInvMonoid`,
+without any hypotheses on `U`. Integer powers are defined pointwise on representatives, so that they
+agree definitionally with integer powers of germs.
+-/
+noncomputable instance instDivInvMonoid : DivInvMonoid (functionRing 𝕜 𝕜' U) where
+  zpow n a := ⟨(a : Germ (codiscreteWithin U) 𝕜') ^ n, by
+    obtain ⟨f, hf, hfa⟩ := mem_functionRing_iff.1 a.property
+    exact mem_functionRing_iff.2 ⟨f ^ n, hf.zpow n, by rw [← hfa]; rfl⟩⟩
+  zpow_zero' a := Subtype.ext (DivInvMonoid.zpow_zero' (a : Germ (codiscreteWithin U) 𝕜'))
+  zpow_succ' n a := Subtype.ext (DivInvMonoid.zpow_succ' n (a : Germ (codiscreteWithin U) 𝕜'))
+  zpow_neg' n a := Subtype.ext (DivInvMonoid.zpow_neg' n (a : Germ (codiscreteWithin U) 𝕜'))
+
+@[simp, norm_cast]
+theorem coe_zpow (a : functionRing 𝕜 𝕜' U) (n : ℤ) :
+    ((a ^ n : functionRing 𝕜 𝕜' U) : Germ (codiscreteWithin U) 𝕜') =
+      (a : Germ (codiscreteWithin U) 𝕜') ^ n := rfl
+
+/-!
+### Nontriviality
+-/
+
+/--
+The ring of meromorphic functions modulo equality along `codiscreteWithin U` is nontrivial whenever
+`codiscreteWithin U` is nontrivial.
+-/
+theorem nontrivial (h : (codiscreteWithin U).NeBot) : Nontrivial (functionRing 𝕜 𝕜' U) :=
+  ⟨0, 1, fun hcon ↦ zero_ne_one (α := 𝕜') (Germ.const_inj.1 (congrArg Subtype.val hcon))⟩
+
+/--
+If `U` is preconnected with at least two points, then the ring of meromorphic functions modulo
+equality along `codiscreteWithin U` is nontrivial.
+-/
+instance [h₁U : Fact (IsPreconnected U)] [h₂U : Fact U.Nontrivial] :
+    Nontrivial (functionRing 𝕜 𝕜' U) :=
+  nontrivial (h₁U.out.codiscreteWithin_neBot h₂U.out)
+
+/-!
+## The Function Field
+
+If `U` is preconnected with at least two points, then the ring of meromorphic functions modulo
+equality along `codiscreteWithin U` is a field, the function field of `U`.
+-/
+
+/--
+If `U` is preconnected, then every nonzero element of the ring of meromorphic functions modulo
+equality along `codiscreteWithin U` is invertible, with the pointwise inverse as its inverse.
+-/
+protected theorem mul_inv_cancel (hU : IsPreconnected U) {a : functionRing 𝕜 𝕜' U} (ha : a ≠ 0) :
+    a * a⁻¹ = 1 := by
+  obtain ⟨f, hf, hfa⟩ := mem_functionRing_iff.1 a.property
+  have h0 : ¬ f =ᶠ[codiscreteWithin U] 0 := fun h ↦ ha (Subtype.ext (hfa ▸ Germ.coe_eq.2 h))
+  apply Subtype.ext
+  push_cast
+  rw [← hfa, ← Germ.coe_inv, ← Germ.coe_mul]
+  exact Germ.coe_eq.2 (hf.mul_inv_eventuallyEq hU h0)
+
+/--
+If `U` is preconnected with at least two points, then the ring of meromorphic functions modulo
+equality along `codiscreteWithin U` is a field.
+-/
+theorem isField (h₁U : IsPreconnected U) (h₂U : U.Nontrivial) : IsField (functionRing 𝕜 𝕜' U) where
+  exists_pair_ne := (nontrivial (h₁U.codiscreteWithin_neBot h₂U)).exists_pair_ne
+  mul_comm := mul_comm
+  mul_inv_cancel ha := ⟨_, FunctionRing.mul_inv_cancel h₁U ha⟩
+
+/--
+The function field of a preconnected set `U` with at least two points: field instance for the ring
+of meromorphic functions modulo equality along `codiscreteWithin U`, with the pointwise inverse.
+
+The rational casts and the scalar multiplications by rational numbers are defined pointwise on
+representatives. This ensures that they agree definitionally with the structures that
+`functionRing 𝕜 𝕜' U` inherits from the algebra of germs.
+-/
+noncomputable instance instField [h₁U : Fact (IsPreconnected U)] [h₂U : Fact U.Nontrivial] :
+    Field (functionRing 𝕜 𝕜' U) where
+  mul_inv_cancel _ ha := FunctionRing.mul_inv_cancel h₁U.out ha
+  inv_zero := FunctionRing.inv_zero
+  nnratCast q := ⟨((fun _ ↦ (q : 𝕜') : 𝕜 → 𝕜') : Germ (codiscreteWithin U) 𝕜'),
+    coe_mem_functionRing (const _)⟩
+  nnratCast_def q := Subtype.ext <| congrArg Germ.ofFun <| funext fun _ ↦
+    (NNRat.cast_def q).trans (div_eq_mul_inv _ _)
+  nnqsmul q a := ⟨q • (a : Germ (codiscreteWithin U) 𝕜'), by
+    obtain ⟨f, hf, hfa⟩ := mem_functionRing_iff.1 a.property
+    refine mem_functionRing_iff.2 ⟨fun z ↦ (q : 𝕜') * f z, (const _).mul hf, ?_⟩
+    rw [← hfa]
+    exact congrArg Germ.ofFun (funext fun z ↦ (NNRat.smul_def q (f z)).symm)⟩
+  nnqsmul_def q a := by
+    obtain ⟨a, ha⟩ := a
+    induction a using Germ.inductionOn with | _ f =>
+    exact Subtype.ext (congrArg Germ.ofFun (funext fun z ↦ NNRat.smul_def q (f z)))
+  ratCast q := ⟨((fun _ ↦ (q : 𝕜') : 𝕜 → 𝕜') : Germ (codiscreteWithin U) 𝕜'),
+    coe_mem_functionRing (const _)⟩
+  ratCast_def q := Subtype.ext <| congrArg Germ.ofFun <| funext fun _ ↦
+    (Rat.cast_def q).trans (div_eq_mul_inv _ _)
+  qsmul q a := ⟨q • (a : Germ (codiscreteWithin U) 𝕜'), by
+    obtain ⟨f, hf, hfa⟩ := mem_functionRing_iff.1 a.property
+    refine mem_functionRing_iff.2 ⟨fun z ↦ (q : 𝕜') * f z, (const _).mul hf, ?_⟩
+    rw [← hfa]
+    exact congrArg Germ.ofFun (funext fun z ↦ (Rat.smul_def q (f z)).symm)⟩
+  qsmul_def q a := by
+    obtain ⟨a, ha⟩ := a
+    induction a using Germ.inductionOn with | _ f =>
+    exact Subtype.ext (congrArg Germ.ofFun (funext fun z ↦ Rat.smul_def q (f z)))
+
+/--
+If `U` is preconnected with at least two points, then the ring of meromorphic functions modulo
+equality along `codiscreteWithin U` is a domain.
+-/
+theorem isDomain (h₁U : IsPreconnected U) (h₂U : U.Nontrivial) : IsDomain (functionRing 𝕜 𝕜' U) :=
+  (isField h₁U h₂U).isDomain
+
+end FunctionRing
+
+end MeromorphicOn
