@@ -3,9 +3,10 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-module
+module -- shake: keep-all
 
-public import Mathlib.Algebra.Module.ZLattice.Basic
+public import Mathlib.Algebra.Module.Lattice.Summable
+public import Mathlib.Algebra.Module.ZLattice.Basic -- deprecated_module: ignore
 
 import Mathlib.Analysis.PSeries
 import Mathlib.LinearAlgebra.Dual.Lemmas
@@ -24,6 +25,8 @@ We show that `∑ z ∈ L, ‖z - x‖ʳ` is convergent for `r < -d`.
   `∑ z ∈ L, ‖z‖ʳ ≤ Aʳ * ∑ k : ℕ, kᵈ⁺ʳ⁻¹` for some `A > 0` depending only on `L`.
 -/
 
+deprecated_module "Use Mathlib.Algebra.Module.Lattice.Summable" (since := "2026-11-23")
+
 @[expose] public section
 
 noncomputable section
@@ -36,6 +39,8 @@ variable {ι : Type*} (b : Basis ι ℤ L)
 
 namespace ZLattice
 
+@[deprecated Submodule.IsLattice.exists_forall_abs_repr_le_norm +typeChanged
+  (since := "2026-11-23")]
 lemma exists_forall_abs_repr_le_norm :
     ∃ (ε : ℝ), 0 < ε ∧ ∀ (x : L), ∀ i, ε * |b.repr x i| ≤ ‖x‖ := by
   wlog H : IsZLattice ℝ L
@@ -72,32 +77,39 @@ Given a basis of a (possibly not full rank) `ℤ`-lattice, there exists a `ε > 
 `|b.repr x i| < n` for all `‖x‖ < n * ε` (i.e. `b.repr x i = O(x)` depending only on `b`).
 This is an arbitrary choice of such an `ε`.
 -/
+@[deprecated Submodule.IsLattice.normBound +typeChanged (since := "2026-11-23")]
 def normBound {ι : Type*} (b : Basis ι ℤ L) : ℝ :=
   (exists_forall_abs_repr_le_norm b).choose
 
+@[deprecated Submodule.IsLattice.normBound_pos +typeChanged (since := "2026-11-23")]
 lemma normBound_pos {ι : Type*} (b : Basis ι ℤ L) : 0 < normBound b :=
   (exists_forall_abs_repr_le_norm b).choose_spec.1
 
+@[deprecated Submodule.IsLattice.normBound_spec +typeChanged (since := "2026-11-23")]
 lemma normBound_spec {ι : Type*} (b : Basis ι ℤ L) (x : L) (i : ι) :
     normBound b * |b.repr x i| ≤ ‖x‖ :=
   (exists_forall_abs_repr_le_norm b).choose_spec.2 x i
 
+@[deprecated Submodule.IsLattice.abs_repr_le +typeChanged (since := "2026-11-23")]
 lemma abs_repr_le {ι : Type*} (b : Basis ι ℤ L) (x : L) (i : ι) :
     |b.repr x i| ≤ (normBound b)⁻¹ * ‖x‖ := by
   rw [le_inv_mul_iff₀ (normBound_pos b)]
   exact normBound_spec b x i
 
+@[deprecated Submodule.IsLattice.abs_repr_lt_of_norm_lt +typeChanged (since := "2026-11-23")]
 lemma abs_repr_lt_of_norm_lt {ι : Type*} (b : Basis ι ℤ L) (x : L) (n : ℕ)
     (hxn : ‖x‖ < normBound b * n) (i : ι) : |b.repr x i| < n := by
   refine Int.cast_lt.mp ((abs_repr_le b x i).trans_lt ?_)
   rwa [inv_mul_lt_iff₀ (normBound_pos b)]
 
+@[deprecated Submodule.IsLattice.le_norm_of_le_abs_repr +typeChanged (since := "2026-11-23")]
 lemma le_norm_of_le_abs_repr {ι : Type*} (b : Basis ι ℤ L) (x : L) (n : ℕ) (i : ι)
     (hi : n ≤ |b.repr x i|) : normBound b * n ≤ ‖x‖ := by
   contrapose! hi
   exact abs_repr_lt_of_norm_lt b x n hi i
 
 open Finset in
+@[deprecated Submodule.IsLattice.sum_piFinset_Icc_rpow_le +typeChanged (since := "2026-11-23")]
 lemma sum_piFinset_Icc_rpow_le {ι : Type*} [Fintype ι] [DecidableEq ι]
     (b : Basis ι ℤ L) {d : ℕ} (hd : d = Fintype.card ι)
     (n : ℕ) (r : ℝ) (hr : r < -d) :
@@ -157,6 +169,8 @@ lemma sum_piFinset_Icc_rpow_le {ι : Type*} [Fintype ι] [DecidableEq ι]
 
 variable (L)
 
+@[deprecated Submodule.IsLattice.exists_finsetSum_norm_rpow_le_tsum +typeChanged
+  (since := "2026-11-23")]
 lemma exists_finsetSum_norm_rpow_le_tsum :
     ∃ A > (0 : ℝ), ∀ r < (-Module.finrank ℤ L : ℝ), ∀ s : Finset L,
       ∑ z ∈ s, ‖z‖ ^ r ≤ A ^ r * ∑' k : ℕ, (k : ℝ) ^ (Module.finrank ℤ L - 1 + r) := by
@@ -212,29 +226,35 @@ Let `L` be a lattice with (possibly non-full) rank `d`, and `r : ℝ` such that 
 Then `∑ z ∈ L, ‖z‖⁻ʳ ≤ A⁻ʳ * ∑ k : ℕ, kᵈ⁻ʳ⁻¹` for some `A > 0` depending only on `L`.
 This is an arbitrary choice of `A`. See `ZLattice.tsum_norm_rpow_le`.
 -/
+@[deprecated Submodule.IsLattice.tsumNormRPowBound +typeChanged (since := "2026-11-23")]
 def tsumNormRPowBound : ℝ :=
   (exists_finsetSum_norm_rpow_le_tsum L).choose
 
+@[deprecated Submodule.IsLattice.tsumNormRPowBound_pos +typeChanged (since := "2026-11-23")]
 lemma tsumNormRPowBound_pos : 0 < tsumNormRPowBound L :=
   (exists_finsetSum_norm_rpow_le_tsum L).choose_spec.1
 
+@[deprecated Submodule.IsLattice.tsumNormRPowBound_spec +typeChanged (since := "2026-11-23")]
 lemma tsumNormRPowBound_spec (r : ℝ) (h : r < -Module.finrank ℤ L) (s : Finset L) :
     ∑ z ∈ s, ‖z‖ ^ r ≤
       tsumNormRPowBound L ^ r * ∑' k : ℕ, (k : ℝ) ^ (Module.finrank ℤ L - 1 + r) :=
   (exists_finsetSum_norm_rpow_le_tsum L).choose_spec.2 r h s
 
 /-- If `L` is a `ℤ`-lattice with rank `d` in `E`, then `∑ z ∈ L, ‖z‖ʳ` converges when `r < -d`. -/
+@[deprecated Submodule.IsLattice.summable_norm_rpow +typeChanged (since := "2026-11-23")]
 lemma summable_norm_rpow (r : ℝ) (hr : r < -Module.finrank ℤ L) :
     Summable fun z : L ↦ ‖z‖ ^ r :=
   summable_of_sum_le (fun _ ↦ by positivity) (tsumNormRPowBound_spec L r hr)
 
 /-- `∑ z ∈ L, ‖z‖⁻ʳ ≤ A⁻ʳ * ∑ k : ℕ, kᵈ⁻ʳ⁻¹` for some `A > 0` depending only on `L`. -/
+@[deprecated Submodule.IsLattice.tsum_norm_rpow_le +typeChanged (since := "2026-11-23")]
 lemma tsum_norm_rpow_le (r : ℝ) (hr : r < -Module.finrank ℤ L) :
     ∑' z : L, ‖z‖ ^ r ≤
       tsumNormRPowBound L ^ r * ∑' k : ℕ, (k : ℝ) ^ (Module.finrank ℤ L - 1 + r) :=
   Summable.tsum_le_of_sum_le (summable_norm_rpow L r hr) (tsumNormRPowBound_spec L r hr)
 
 set_option backward.isDefEq.respectTransparency false in
+@[deprecated Submodule.IsLattice.summable_norm_sub_rpow +typeChanged (since := "2026-11-23")]
 lemma summable_norm_sub_rpow (r : ℝ) (hr : r < -Module.finrank ℤ L) (x : E) :
     Summable fun z : L ↦ ‖z - x‖ ^ r := by
   cases subsingleton_or_nontrivial L
@@ -258,18 +278,22 @@ lemma summable_norm_sub_rpow (r : ℝ) (hr : r < -Module.finrank ℤ L) (x : E) 
   rw [sub_lt_iff_lt_add, ← sub_lt_iff_lt_add', AddSubgroupClass.coe_norm] at this
   simpa using show ‖t.val‖ ≤ 2 * ‖x‖ by linarith
 
+@[deprecated Submodule.IsLattice.summable_norm_sub_zpow +typeChanged (since := "2026-11-23")]
 lemma summable_norm_sub_zpow (n : ℤ) (hn : n < -Module.finrank ℤ L) (x : E) :
     Summable fun z : L ↦ ‖z - x‖ ^ n :=
   mod_cast summable_norm_sub_rpow L n (mod_cast hn) x
 
+@[deprecated Submodule.IsLattice.summable_norm_zpow +typeChanged (since := "2026-11-23")]
 lemma summable_norm_zpow (n : ℤ) (hn : n < -Module.finrank ℤ L) :
     Summable fun z : L ↦ ‖z‖ ^ n := by
   simpa using summable_norm_sub_zpow L n hn 0
 
+@[deprecated Submodule.IsLattice.summable_norm_sub_inv_pow +typeChanged (since := "2026-11-23")]
 lemma summable_norm_sub_inv_pow (n : ℕ) (hn : Module.finrank ℤ L < n) (x : E) :
     Summable fun z : L ↦ ‖z - x‖⁻¹ ^ n := by
   simpa using summable_norm_sub_zpow L (-n) (by gcongr) x
 
+@[deprecated Submodule.IsLattice.summable_norm_pow_inv +typeChanged (since := "2026-11-23")]
 lemma summable_norm_pow_inv (n : ℕ) (hn : Module.finrank ℤ L < n) :
     Summable fun z : L ↦ ‖z‖⁻¹ ^ n := by
   simpa using summable_norm_sub_inv_pow L n hn 0

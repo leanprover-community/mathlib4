@@ -41,11 +41,6 @@ In the fraction field setting with `V = ι → K` for finite `ι`, scaling a lat
 again gives a lattice, which yields a homothety relation. For `R` a DVR and `ι = Fin 2`, the
 quotient by it is the vertex set of the Bruhat-Tits tree of `GL 2 K`.
 
-For `R = ℤ` and `K` a normed field, `IsZLattice K L` instead asks that `L` be discrete and span
-`K`, making it the topological analogue of `Submodule.IsFullLattice`; it is used for instance for
-complex tori. The two notions agree in common cases, e.g. when `K = ℝ` and `V` is
-finite-dimensional, but API relating them is still missing.
-
 ## References
 
 * [S. Viguié, *Index-modules and applications*][viguie2011]
@@ -62,10 +57,7 @@ namespace Submodule
 /-- An `R`-submodule `M` of an `A`-module `V` is a lattice if it is finitely generated and every
 `R`-linearly independent subset of `M` is `A`-linearly independent. If `A is a field, this is
 equivalent to the `R`-rank of `M` being equal to the `A`-rank of its `A`-span, see
-`Submodule.IsLattice.iff_fg_and_finrank_span_eq_finrank`.
-
-Note: for `R = ℤ` and `A` a normed field there is also `IsZLattice`, the analogue of
-`Submodule.IsFullLattice` with discreteness in place of the two conditions here. -/
+`Submodule.IsLattice.iff_fg_and_finrank_span_eq_finrank`. -/
 @[mk_iff]
 class IsLattice (A : Type*) [CommRing A] [Algebra R A] {V : Type*} [AddCommGroup V]
     [Module R V] [Module A V] [IsScalarTower R A V] (M : Submodule R V) : Prop where
@@ -135,6 +127,62 @@ instance smul [IsLattice A M] (a : Aˣ) : IsLattice A (a • M : Submodule R V) 
     rw [coe_pointwise_smul, Set.subset_smul_set_iff] at hsM
     rw [← linearIndepOn_id_smul_set_iff a⁻¹] at hs ⊢
     exact linearIndepOn _ hsM hs
+
+section map
+
+variable {W : Type*} [AddCommGroup W] [Module R W] [Module A W] [IsScalarTower R A W]
+
+theorem map [IsLattice A M] {f : V →ₗ[A] W} (hf : Set.InjOn f (span A (M : Set V))) :
+    IsLattice A (M.map (f.restrictScalars R)) where
+  fg := (fg A M).map _
+  linearIndepOn s hs hli := by
+    obtain ⟨t, ht, rfl⟩ := Set.subset_image_iff.mp hs
+    refine (linearIndepOn t ht ?_).id_imageₛ (hf.mono (span_mono ht))
+    exact (linearIndepOn_id_imageₛ_iff (hf.mono fun _ hx ↦ subset_span (span_le.mpr ht hx))).mp hli
+
+theorem of_map {f : V →ₗ[A] W} (hf : Set.InjOn f M) [IsLattice A (M.map (f.restrictScalars R))] :
+    IsLattice A M where
+  fg := by
+    apply fg_of_fg_map_of_fg_inf_ker (f.restrictScalars R) (fg A _)
+    suffices M ⊓ (f.restrictScalars R).ker = ⊥ from this ▸ fg_bot
+    exact eq_bot_iff.mpr fun x ⟨hxM, hxf⟩ ↦ hf hxM (zero_mem M) (by simpa using hxf)
+  linearIndepOn t ht hli := by
+    refine .of_comp f ((linearIndepOn_iff_image (hf.mono ht)).mpr ?_)
+    apply linearIndepOn (M := M.map (f.restrictScalars R))
+    · rintro _ ⟨x, hx, rfl⟩
+      exact mem_map_of_mem (ht hx)
+    · exact hli.id_imageₛ (f := f.restrictScalars R) (hf.mono (span_le.mpr ht))
+
+theorem map_iff {f : V →ₗ[A] W} (hf : Set.InjOn f (span A (M : Set V))) :
+    IsLattice A (M.map (f.restrictScalars R)) ↔ IsLattice A M :=
+  ⟨fun _ ↦ of_map A M (hf.mono subset_span), fun _ ↦ map A M hf⟩
+
+theorem comap [IsLattice A M] {f : W →ₗ[A] V} (hf : Function.Injective f)
+    (hM : (M : Set V) ⊆ Set.range f) : IsLattice A (M.comap (f.restrictScalars R)) :=
+  have : IsLattice A ((M.comap (f.restrictScalars R)).map (f.restrictScalars R)) := by
+    rwa [map_comap_eq_of_le hM]
+  of_map A _ hf.injOn
+
+theorem of_comap {f : W →ₗ[A] V} (hf : Function.Injective f) (hM : (M : Set V) ⊆ Set.range f)
+    [IsLattice A (M.comap (f.restrictScalars R))] : IsLattice A M := by
+  have := map A (M.comap (f.restrictScalars R)) hf.injOn
+  rwa [map_comap_eq_of_le hM] at this
+
+theorem comap_iff {f : W →ₗ[A] V} (hf : Function.Injective f) (hM : (M : Set V) ⊆ Set.range f) :
+    IsLattice A (M.comap (f.restrictScalars R)) ↔ IsLattice A M :=
+  ⟨fun _ ↦ of_comap A M hf hM, fun _ ↦ comap A M hf hM⟩
+
+/-- The image of a lattice under an `A`-linear equivalence is a lattice. -/
+instance [IsLattice A M] (e : V ≃ₗ[A] W) :
+    IsLattice A (M.map (e.restrictScalars R).toLinearMap) :=
+  map A M e.injective.injOn
+
+/-- The preimage of a lattice under an `A`-linear equivalence is a lattice. -/
+instance [IsLattice A M] (e : W ≃ₗ[A] V) :
+    IsLattice A (M.comap (e.restrictScalars R).toLinearMap) :=
+  comap A M e.injective fun x _ ↦ e.surjective x
+
+end map
 
 end CommRing
 
