@@ -63,7 +63,7 @@ lemma setOfPred_root_add_zsmul_eq_Icc_of_linearIndependent
   have hki_notMem : P.root k + P.root i ∉ range P.root := by
     replace hk : P.root k + P.root i = P.root j + (r + 1) • P.root i := by rw [hk]; module
     replace contra : r + 1 ∉ S := hrs.notMem_of_mem_left <| by simp [contra]
-    simpa only [hk, S_def, mem_ofPred_eq, S] using contra
+    simpa only [hk, S_def, mem_ofPred, S] using contra
   have hki_ne : P.root k ≠ -P.root i := by
     rw [hk]
     contrapose! h
@@ -72,7 +72,7 @@ lemma setOfPred_root_add_zsmul_eq_Icc_of_linearIndependent
   have hli_notMem : P.root l - P.root i ∉ range P.root := by
     replace hl : P.root l - P.root i = P.root j + (s - 1) • P.root i := by rw [hl]; module
     replace contra : s - 1 ∉ S := hrs.notMem_of_mem_left <| by simp [lt_sub_right_of_add_lt contra]
-    simpa only [hl, S_def, mem_ofPred_eq, S] using contra
+    simpa only [hl, S_def, mem_ofPred, S] using contra
   have hli_ne : P.root l ≠ P.root i := by
     rw [hl]
     contrapose! h
@@ -139,7 +139,7 @@ lemma root_add_nsmul_mem_range_iff_le_chainTopCoeff {n : ℕ} :
     P.root j + n • P.root i ∈ range P.root ↔ n ≤ P.chainTopCoeff i j := by
   set S : Set ℤ := {z | P.root j + z • P.root i ∈ range P.root} with S_def
   suffices (n : ℤ) ∈ S ↔ n ≤ P.chainTopCoeff i j by
-    simpa only [S_def, mem_ofPred_eq, natCast_zsmul] using this
+    simpa only [S_def, mem_ofPred, natCast_zsmul] using this
   have aux : P.chainTopCoeff i j =
       (P.setOfPred_root_add_zsmul_eq_Icc_of_linearIndependent h).choose_spec.2.choose.toNat := by
     simp [chainTopCoeff, h]
@@ -153,7 +153,7 @@ lemma root_sub_nsmul_mem_range_iff_le_chainBotCoeff {n : ℕ} :
     P.root j - n • P.root i ∈ range P.root ↔ n ≤ P.chainBotCoeff i j := by
   set S : Set ℤ := {z | P.root j + z • P.root i ∈ range P.root} with S_def
   suffices -(n : ℤ) ∈ S ↔ n ≤ P.chainBotCoeff i j by
-    simpa only [S_def, mem_ofPred_eq, neg_smul, natCast_zsmul, ← sub_eq_add_neg] using this
+    simpa only [S_def, mem_ofPred, neg_smul, natCast_zsmul, ← sub_eq_add_neg] using this
   have aux : P.chainBotCoeff i j =
       (-(P.setOfPred_root_add_zsmul_eq_Icc_of_linearIndependent h).choose).toNat := by
     simp [chainBotCoeff, h]
@@ -207,7 +207,7 @@ alias setOf_root_add_zsmul_mem_eq_Icc := setOfPred_root_add_zsmul_mem_eq_Icc
 lemma setOfPred_root_sub_zsmul_mem_eq_Icc :
     {k : ℤ | P.root j - k • P.root i ∈ range P.root} =
       Icc (-P.chainTopCoeff i j : ℤ) (P.chainBotCoeff i j) := by
-  ext; rw [← root_sub_zsmul_mem_range_iff h, mem_ofPred_eq]
+  ext; rw [← root_sub_zsmul_mem_range_iff h, mem_ofPred]
 
 @[deprecated (since := "2026-07-09")]
 alias setOf_root_sub_zsmul_mem_eq_Icc := setOfPred_root_sub_zsmul_mem_eq_Icc
@@ -314,7 +314,7 @@ lemma chainBotCoeff_eq_zero_iff :
   have : P.chainBotCoeff i j = 0 ↔ Iic (P.chainBotCoeff i j) = {0} := by
     simpa [Set.ext_iff, mem_Iic, mem_singleton_iff] using ⟨fun h ↦ by simp [h], fun h ↦ by rw [← h]⟩
   simp only [h, not_true_eq_false, false_or, this, Iic_chainBotCoeff_eq h, Set.ext_iff,
-    mem_ofPred_eq, mem_singleton_iff]
+    mem_ofPred, mem_singleton_iff]
   refine ⟨fun h' ↦ by simpa using h' 1, fun h' n ↦ ⟨fun h'' ↦ ?_, fun h'' ↦ by simp [h'']⟩⟩
   replace h' : 1 ∉ {k | P.root j - k • P.root i ∈ range P.root} := by simpa using h'
   rw [← Iic_chainBotCoeff_eq h, mem_Iic, not_le, Nat.lt_one_iff] at h'
@@ -443,10 +443,10 @@ lemma chainCoeff_chainTopIdx_aux :
   have hS₁₂ : S₂ = (fun z ↦ (-P.chainTopCoeff i j : ℤ) + z) '' S₁ := by
     ext; simp [S₁_def, S₂_def, root_chainTopIdx, add_smul, add_assoc, natCast_zsmul]
   have hS₁ : S₁ = Icc (-P.chainBotCoeff i j : ℤ) (P.chainTopCoeff i j) := by
-    ext; rw [S₁_def, mem_ofPred_eq, root_add_zsmul_mem_range_iff h]
+    ext; rw [S₁_def, mem_ofPred, root_add_zsmul_mem_range_iff h]
   have hS₂ : S₂ = Icc (-P.chainBotCoeff i (P.chainTopIdx i j) : ℤ)
       (P.chainTopCoeff i (P.chainTopIdx i j)) := by
-    ext; rw [S₂_def, mem_ofPred_eq, root_add_zsmul_mem_range_iff h']
+    ext; rw [S₂_def, mem_ofPred, root_add_zsmul_mem_range_iff h']
   rw [hS₁, hS₂, image_const_add_Icc, neg_add_cancel, Icc_eq_Icc_iff (by simp), neg_eq_iff_eq_neg,
     neg_add_rev, neg_neg, neg_neg] at hS₁₂
   norm_cast at hS₁₂

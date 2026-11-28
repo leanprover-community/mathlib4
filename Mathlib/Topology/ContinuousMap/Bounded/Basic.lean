@@ -216,7 +216,7 @@ instance instMetricSpace {β} [MetricSpace β] : MetricSpace (α →ᵇ β) wher
 theorem nnDist_eq : nnDist f g = sInf { C | ∀ x : α, nnDist (f x) (g x) ≤ C } :=
   Subtype.ext <| dist_eq.trans <| by
     rw [val_eq_coe, coe_sInf, coe_image]
-    simp_rw [mem_ofPred_eq, ← NNReal.coe_le_coe, NNReal.coe_mk, exists_prop, coe_nnDist]
+    simp_rw [mem_ofPred, ← NNReal.coe_le_coe, NNReal.coe_mk, exists_prop, coe_nnDist]
 
 @[deprecated (since := "2026-11-07")] alias nndist_eq := nnDist_eq
 
