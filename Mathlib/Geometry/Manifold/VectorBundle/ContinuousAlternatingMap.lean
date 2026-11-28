@@ -109,14 +109,14 @@ theorem mdifferentiableWithinAt_continuousAlternatingMap_bundle
         MDiffAt[s]
           (fun x ↦
             inCoordinates F₁ F₂ (f x₀).proj (f x).proj (f x₀).proj (f x).proj (f x).snd) x₀ :=
-  mdifferentiableWithinAt_totalSpace IB ..
+  mdifferentiableWithinAt_totalSpace_iff IB ..
 
 theorem mdifferentiableAt_continuousAlternatingMap_bundle (f : M → AE₁E₂) {x₀ : M} :
     MDiffAt f x₀ ↔
       MDiffAt (fun x ↦ (f x).proj) x₀ ∧
         MDiffAt (fun x ↦
           inCoordinates F₁ F₂ (f x₀).proj (f x).proj (f x₀).proj (f x).proj (f x).snd) x₀ :=
-  mdifferentiableAt_totalSpace ..
+  mdifferentiableAt_totalSpace_iff ..
 
 end
 
@@ -275,7 +275,7 @@ lemma MDifferentiableWithinAt.continuousAlternatingMap_apply_of_inCoordinates
   /- The version in vector spaces is `DifferentiableWithinAt.continuousAlternatingMap_apply`.
   To apply this version, we need to write down the expressions in coordinates of the various
   objects that show up in the formula. -/
-  simp_rw [mdifferentiableWithinAt_totalSpace] at hv ⊢
+  simp_rw [mdifferentiableWithinAt_totalSpace_iff] at hv ⊢
   refine ⟨hb₂, ?_⟩
   apply (MDifferentiableWithinAt.continuousAlternatingMap_apply hϕ
     (fun i ↦ (hv i).2)).congr_of_eventuallyEq_insert ?_
