@@ -61,7 +61,7 @@ section SubgroupClass
 
 variable {S : Type*} {H : S}
 
-variable [SetLike S G] [SubgroupClass S G]
+variable [SetLike S G] [SubgroupClass S]
 
 @[to_additive]
 theorem div_mem_comm_iff {a b : G} : a / b ∈ H ↔ b / a ∈ H :=

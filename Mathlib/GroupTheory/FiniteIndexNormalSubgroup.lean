@@ -58,7 +58,7 @@ instance : SetLike (FiniteIndexNormalSubgroup G) G where
 instance : PartialOrder (FiniteIndexNormalSubgroup G) := .ofSetLike (FiniteIndexNormalSubgroup G)
 
 @[to_additive]
-instance : SubgroupClass (FiniteIndexNormalSubgroup G) G where
+instance : SubgroupClass (FiniteIndexNormalSubgroup G) where
   mul_mem := Subsemigroup.mul_mem' _
   one_mem U := U.one_mem'
   inv_mem := Subgroup.inv_mem' _

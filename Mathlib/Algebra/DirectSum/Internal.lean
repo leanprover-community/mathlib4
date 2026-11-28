@@ -74,7 +74,7 @@ theorem SetLike.natCast_mem_graded [Zero ι] [AddMonoidWithOne R] [SetLike σ R]
     exact add_mem n_ih (SetLike.one_mem_graded _)
 
 theorem SetLike.intCast_mem_graded [Zero ι] [AddGroupWithOne R] [SetLike σ R]
-    [AddSubgroupClass σ R] (A : ι → σ) [SetLike.GradedOne A] (z : ℤ) : (z : R) ∈ A 0 := by
+    [AddSubgroupClass σ] (A : ι → σ) [SetLike.GradedOne A] (z : ℤ) : (z : R) ∈ A 0 := by
   cases z
   · rw [Int.ofNat_eq_natCast, Int.cast_natCast]
     exact SetLike.natCast_mem_graded _ _
@@ -112,14 +112,14 @@ instance gcommSemiring [AddCommMonoid ι] [CommSemiring R] [SetLike σ R] [AddSu
     (A : ι → σ) [SetLike.GradedMonoid A] : DirectSum.GCommSemiring fun i => A i where
 
 /-- Build a `DirectSum.GRing` instance for a collection of additive subgroups. -/
-instance gring [AddMonoid ι] [Ring R] [SetLike σ R] [AddSubgroupClass σ R] (A : ι → σ)
+instance gring [AddMonoid ι] [Ring R] [SetLike σ R] [AddSubgroupClass σ] (A : ι → σ)
     [SetLike.GradedMonoid A] : DirectSum.GRing fun i => A i where
   intCast z := ⟨z, SetLike.intCast_mem_graded _ _⟩
   intCast_ofNat n := Subtype.ext <| Int.cast_natCast n
   intCast_negSucc_ofNat n := Subtype.ext <| Int.cast_negSucc n
 
 /-- Build a `DirectSum.GCommRing` instance for a collection of additive submonoids. -/
-instance gcommRing [AddCommMonoid ι] [CommRing R] [SetLike σ R] [AddSubgroupClass σ R] (A : ι → σ)
+instance gcommRing [AddCommMonoid ι] [CommRing R] [SetLike σ R] [AddSubgroupClass σ] (A : ι → σ)
     [SetLike.GradedMonoid A] : DirectSum.GCommRing fun i => A i where
 
 end SetLike
@@ -364,7 +364,7 @@ instance : Algebra (A 0) R :=
 end CommSemiring
 
 section Ring
-variable [Ring R] [AddMonoid ι] [SetLike σ R] [AddSubgroupClass σ R]
+variable [Ring R] [AddMonoid ι] [SetLike σ R] [AddSubgroupClass σ]
 variable (A : ι → σ) [SetLike.GradedMonoid A]
 
 /-- The subring `A 0` of `R`. -/
@@ -381,7 +381,7 @@ theorem coe_intCast (z : ℤ) : (z : A 0) = (z : R) := rfl
 end Ring
 
 section CommRing
-variable [CommRing R] [AddCommMonoid ι] [SetLike σ R] [AddSubgroupClass σ R]
+variable [CommRing R] [AddCommMonoid ι] [SetLike σ R] [AddSubgroupClass σ]
 variable (A : ι → σ) [SetLike.GradedMonoid A]
 
 -- TODO: it might be expensive to unify `A` in this instance in practice

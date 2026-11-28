@@ -66,7 +66,7 @@ instance : SetLike (ClosedSubgroup G) G where
 @[to_additive] instance : PartialOrder (ClosedSubgroup G) := .ofSetLike (ClosedSubgroup G)
 
 @[to_additive]
-instance : SubgroupClass (ClosedSubgroup G) G where
+instance : SubgroupClass (ClosedSubgroup G) where
   mul_mem := Subsemigroup.mul_mem' _
   one_mem U := U.one_mem'
   inv_mem := Subgroup.inv_mem' _

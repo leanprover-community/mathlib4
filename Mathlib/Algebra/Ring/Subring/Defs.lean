@@ -77,11 +77,11 @@ section SubringClass
 /-- `SubringClass S R` states that `S` is a type of subsets `s ⊆ R` that
 are both a multiplicative submonoid and an additive subgroup. -/
 class SubringClass (S : Type*) (R : outParam (Type u)) [NonAssocRing R] [SetLike S R] : Prop
-    extends SubsemiringClass S R, NegMemClass S R
+    extends SubsemiringClass S R, NegMemClass S
 
 -- See note [lower instance priority]
 instance (priority := 100) SubringClass.addSubgroupClass (S : Type*) (R : Type u)
-    [SetLike S R] [NonAssocRing R] [h : SubringClass S R] : AddSubgroupClass S R :=
+    [SetLike S R] [NonAssocRing R] [h : SubringClass S R] : AddSubgroupClass S :=
   { h with }
 
 instance (priority := 100) SubringClass.nonUnitalSubringClass (S : Type*) (R : Type u)

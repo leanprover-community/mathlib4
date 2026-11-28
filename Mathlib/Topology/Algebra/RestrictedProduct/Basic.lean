@@ -204,11 +204,11 @@ lemma one_apply [Π i, One (R i)] [∀ i, OneMemClass (S i) (R i)] (i : ι) :
   rfl
 
 @[to_additive]
-instance [Π i, Inv (R i)] [∀ i, InvMemClass (S i) (R i)] : Inv (Πʳ i, [R i, B i]_[𝓕]) where
+instance [Π i, Inv (R i)] [∀ i, InvMemClass (S i)] : Inv (Πʳ i, [R i, B i]_[𝓕]) where
   inv x := ⟨fun i ↦ (x i)⁻¹, x.property.mono fun _ ↦ inv_mem⟩
 
 @[to_additive (attr := simp)]
-lemma inv_apply [Π i, Inv (R i)] [∀ i, InvMemClass (S i) (R i)]
+lemma inv_apply [Π i, Inv (R i)] [∀ i, InvMemClass (S i)]
     (x : Πʳ i, [R i, B i]_[𝓕]) (i : ι) : (x⁻¹) i = (x i)⁻¹ :=
   rfl
 
@@ -232,12 +232,12 @@ lemma smul_apply {G : Type*} [Π i, SMul G (R i)] [∀ i, SMulMemClass (S i) G (
   rfl
 
 @[to_additive]
-instance [Π i, DivInvMonoid (R i)] [∀ i, SubgroupClass (S i) (R i)] :
+instance [Π i, DivInvMonoid (R i)] [∀ i, SubgroupClass (S i)] :
     Div (Πʳ i, [R i, B i]_[𝓕]) where
   div x y := ⟨fun i ↦ x i / y i, y.property.mp (x.property.mono fun _ ↦ div_mem)⟩
 
 @[to_additive (attr := simp)]
-lemma div_apply [Π i, DivInvMonoid (R i)] [∀ i, SubgroupClass (S i) (R i)]
+lemma div_apply [Π i, DivInvMonoid (R i)] [∀ i, SubgroupClass (S i)]
     (x y : Πʳ i, [R i, B i]_[𝓕]) (i : ι) : (x / y) i = x i / y i :=
   rfl
 
@@ -262,12 +262,12 @@ instance [Π i, CommMonoid (R i)] [∀ i, SubmonoidClass (S i) (R i)] :
   DFunLike.coe_injective.commMonoid _ rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 @[to_additive]
-instance instZPow [Π i, DivInvMonoid (R i)] [∀ i, SubgroupClass (S i) (R i)] :
+instance instZPow [Π i, DivInvMonoid (R i)] [∀ i, SubgroupClass (S i)] :
     Pow (Πʳ i, [R i, B i]_[𝓕]) ℤ where
   pow x n := ⟨fun i ↦ x i ^ n, x.property.mono fun _ hi ↦ zpow_mem hi n⟩
 
 @[to_additive]
-lemma zpow_apply [Π i, DivInvMonoid (R i)] [∀ i, SubgroupClass (S i) (R i)]
+lemma zpow_apply [Π i, DivInvMonoid (R i)] [∀ i, SubgroupClass (S i)]
     (x : Πʳ i, [R i, B i]_[𝓕]) (n : ℤ) (i : ι) : (x ^ n) i = x i ^ n :=
   rfl
 
@@ -276,13 +276,13 @@ instance [Π i, AddMonoidWithOne (R i)] [∀ i, AddSubmonoidWithOneClass (S i) (
   natCast n := ⟨fun _ ↦ n, .of_forall fun _ ↦ natCast_mem _ n⟩
 
 @[to_additive]
-instance [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)] :
+instance [Π i, Group (R i)] [∀ i, SubgroupClass (S i)] :
     Group (Πʳ i, [R i, B i]_[𝓕]) :=
   DFunLike.coe_injective.group _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
     (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 @[to_additive]
-instance [Π i, CommGroup (R i)] [∀ i, SubgroupClass (S i) (R i)] :
+instance [Π i, CommGroup (R i)] [∀ i, SubgroupClass (S i)] :
     CommGroup (Πʳ i, [R i, B i]_[𝓕]) :=
   DFunLike.coe_injective.commGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
     (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
@@ -545,13 +545,13 @@ lemma single_mul [∀ i, MulZeroClass (G i)] [∀ i, ZeroMemClass (S i) (G i)]
   simp [single_eq_of_ne' A _ hne]
 
 @[to_additive]
-lemma mulSingle_inv [∀ i, Group (G i)] [∀ i, SubgroupClass (S i) (G i)]
+lemma mulSingle_inv [∀ i, Group (G i)] [∀ i, SubgroupClass (S i)]
     (i : ι) (r : G i) :
     mulSingle A i r⁻¹ = (mulSingle A i r)⁻¹ := by
   ext; simp [Pi.mulSingle_inv]
 
 @[to_additive]
-lemma mulSingle_div [∀ i, Group (G i)] [∀ i, SubgroupClass (S i) (G i)]
+lemma mulSingle_div [∀ i, Group (G i)] [∀ i, SubgroupClass (S i)]
     (i : ι) (r s : G i) :
     mulSingle A i (r / s) = mulSingle A i r / mulSingle A i s := by
   ext; simp [Pi.mulSingle_div]
@@ -563,7 +563,7 @@ lemma mulSingle_pow [∀ i, Monoid (G i)] [∀ i, SubmonoidClass (S i) (G i)]
   ext; simp [Pi.mulSingle_pow, RestrictedProduct.pow_apply]
 
 @[to_additive]
-lemma mulSingle_zpow [∀ i, Group (G i)] [∀ i, SubgroupClass (S i) (G i)]
+lemma mulSingle_zpow [∀ i, Group (G i)] [∀ i, SubgroupClass (S i)]
     (i : ι) (r : G i) (n : ℤ) :
     mulSingle A i (r ^ n) = mulSingle A i r ^ n := by
   ext; simp [Pi.mulSingle_zpow, RestrictedProduct.zpow_apply]

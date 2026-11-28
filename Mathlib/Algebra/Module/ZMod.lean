@@ -56,7 +56,7 @@ abbrev QuotientAddGroup.zmodModule {G : Type*} [AddCommGroup G] {H : AddSubgroup
 
 variable {F S : Type*} [AddCommGroup M] [AddCommGroup M₁] [FunLike F M M₁]
   [AddMonoidHomClass F M M₁] [Module (ZMod n) M] [Module (ZMod n) M₁] [SetLike S M]
-  [AddSubgroupClass S M] {x : M} {K : S}
+  [AddSubgroupClass S] {x : M} {K : S}
 
 namespace ZMod
 

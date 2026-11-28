@@ -71,7 +71,7 @@ instance : SetLike (LieSubalgebra R L) L where
 
 instance : PartialOrder (LieSubalgebra R L) := .ofSetLike (LieSubalgebra R L)
 
-instance : AddSubgroupClass (LieSubalgebra R L) L where
+instance : AddSubgroupClass (LieSubalgebra R L) where
   add_mem := Submodule.add_mem _
   zero_mem L' := L'.zero_mem'
   neg_mem {L'} x hx := show -x ∈ (L' : Submodule R L) from neg_mem hx

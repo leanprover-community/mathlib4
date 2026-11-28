@@ -175,7 +175,7 @@ instance ClosedSubmodule.normedSpace {𝕜 R : Type*} [SMul 𝕜 R] [NormedField
   norm_smul_le c x := norm_smul_le c (x : E)
 
 variable {S 𝕜 R E : Type*} [SMul 𝕜 R] [NormedField 𝕜] [Ring R] [SeminormedAddCommGroup E]
-variable [NormedSpace 𝕜 E] [Module R E] [IsScalarTower 𝕜 R E] [SetLike S E] [AddSubgroupClass S E]
+variable [NormedSpace 𝕜 E] [Module R E] [IsScalarTower 𝕜 R E] [SetLike S E] [AddSubgroupClass S]
 variable [SMulMemClass S R E] (s : S)
 
 instance (priority := 75) SubmoduleClass.toNormedSpace : NormedSpace 𝕜 s where

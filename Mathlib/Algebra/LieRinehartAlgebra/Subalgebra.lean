@@ -73,7 +73,7 @@ theorem coe_eq_univ (L' : LieRinehartSubalgebra A L) : (L' : Set L) = Set.univ �
 
 @[simp] lemma mem_top {x : L} : x ∈ (⊤ : LieRinehartSubalgebra A L) := trivial
 
-instance : AddSubgroupClass (LieRinehartSubalgebra A L) L where
+instance : AddSubgroupClass (LieRinehartSubalgebra A L) where
   add_mem := Submodule.add_mem _
   zero_mem L' := L'.zero_mem'
   neg_mem {L'} x hx := show -x ∈ L'.toSubmodule from neg_mem hx
