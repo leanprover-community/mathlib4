@@ -238,7 +238,7 @@ protected theorem uniformContinuous (f : NormedAddGroupHom V₁ V₂) : UniformC
 protected theorem continuous (f : NormedAddGroupHom V₁ V₂) : Continuous f :=
   f.uniformContinuous.continuous
 
-instance : ContinuousMapClass (NormedAddGroupHom V₁ V₂) V₁ V₂ where
+instance : ContinuousMapClass (NormedAddGroupHom V₁ V₂) where
   map_continuous := fun f => f.continuous
 
 section toContinuousAddMonoidHom

@@ -112,7 +112,7 @@ theorem contDiffAt (f : 𝓢(E, F)) (n : ℕ∞) {x : E} : ContDiffAt ℝ n f x 
 protected theorem continuous (f : 𝓢(E, F)) : Continuous f :=
   (f.smooth 0).continuous
 
-instance instContinuousMapClass : ContinuousMapClass 𝓢(E, F) E F where
+instance instContinuousMapClass : ContinuousMapClass 𝓢(E, F) where
   map_continuous := SchwartzMap.continuous
 
 /-- Every Schwartz function is differentiable. -/

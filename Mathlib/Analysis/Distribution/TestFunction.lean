@@ -99,7 +99,7 @@ instance (B : Type*)
     {E : outParam Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (Ω : outParam <| Opens E)
     (F : outParam Type*) [NormedAddCommGroup F] [NormedSpace ℝ F]
     (n : outParam ℕ∞) [FunLike B E F] [TestFunctionClass B Ω F n] :
-    ContinuousMapClass B E F where
+    ContinuousMapClass B where
   map_continuous f := (map_contDiff f).continuous
 
 instance (B : Type*)

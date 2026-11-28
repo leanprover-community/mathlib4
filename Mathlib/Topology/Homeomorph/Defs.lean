@@ -523,7 +523,7 @@ theorem ofClass_injective [HomeomorphClass F α β] : Function.Injective (ofClas
 @[deprecated (since := "2026-10-16")]
 alias _root_.HomeomorphClass.toHomeomorph_injective := ofClass_injective
 
-instance [HomeomorphClass F α β] : ContinuousMapClass F α β where
+instance [HomeomorphClass F α β] : ContinuousMapClass F where
   map_continuous f := HomeomorphClass.map_continuous f
 
 instance : HomeomorphClass (α ≃ₜ β) α β where

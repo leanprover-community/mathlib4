@@ -172,7 +172,7 @@ theorem coe_mk' (f : A →ₐ[R] B) (h) : (mk f h : A → B) = f := rfl
 @[simp, norm_cast]
 theorem coe_coe (f : A →A[R] B) : ⇑(f : A →ₐ[R] B) = f := rfl
 
-instance : ContinuousMapClass (A →A[R] B) A B where
+instance : ContinuousMapClass (A →A[R] B) where
   map_continuous f := f.cont
 
 @[fun_prop]

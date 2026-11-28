@@ -62,7 +62,7 @@ vanish at infinity.
 
 You should also extend this typeclass when you extend `ZeroAtInftyContinuousMap`. -/
 class ZeroAtInftyContinuousMapClass (F : Type*) (α β : outParam Type*) [TopologicalSpace α]
-    [Zero β] [TopologicalSpace β] [FunLike F α β] : Prop extends ContinuousMapClass F α β where
+    [Zero β] [TopologicalSpace β] [FunLike F α β] : Prop extends ContinuousMapClass F where
   /-- Each member of the class tends to zero along the `cocompact` filter. -/
   zero_at_infty (f : F) : Tendsto f (cocompact α) (𝓝 0)
 
@@ -149,7 +149,7 @@ lemma ContinuousMap.liftZeroAtInfty_symm_apply_apply [CompactSpace α] (f : C₀
 /-- A continuous function on a compact space is automatically a continuous function vanishing at
 infinity. This is not an instance to avoid type class loops. -/
 lemma zeroAtInftyContinuousMapClass.ofCompact {G : Type*} [FunLike G α β]
-    [ContinuousMapClass G α β] [CompactSpace α] : ZeroAtInftyContinuousMapClass G α β where
+    [ContinuousMapClass G] [CompactSpace α] : ZeroAtInftyContinuousMapClass G α β where
   map_continuous := map_continuous
   zero_at_infty := by simp
 

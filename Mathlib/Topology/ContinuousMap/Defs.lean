@@ -26,7 +26,7 @@ open scoped Topology
 /-- The type of continuous maps from `X` to `Y`.
 
 When possible, instead of parametrizing results over `(f : C(X, Y))`,
-you should parametrize over `{F : Type*} [ContinuousMapClass F X Y] (f : F)`.
+you should parametrize over `{F : Type*} [ContinuousMapClass F] (f : F)`.
 
 When you extend this structure, make sure to extend `ContinuousMapClass`. -/
 structure ContinuousMap (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y] where
@@ -40,10 +40,10 @@ notation "C(" X ", " Y ")" => ContinuousMap X Y
 
 section
 
-/-- `ContinuousMapClass F X Y` states that `F` is a type of continuous maps.
+/-- `ContinuousMapClass F` states that `F` is a type of continuous maps.
 
 You should extend this class when you extend `ContinuousMap`. -/
-class ContinuousMapClass (F : Type*) (X Y : outParam Type*)
+class ContinuousMapClass (F : Type*) {X Y : outParam Type*}
     [TopologicalSpace X] [TopologicalSpace Y] [FunLike F X Y] : Prop where
   /-- Continuity -/
   map_continuous (f : F) : Continuous f
@@ -57,7 +57,7 @@ attribute [continuity, fun_prop] map_continuous
 section ContinuousMapClass
 
 variable {F X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [FunLike F X Y]
-variable [ContinuousMapClass F X Y]
+variable [ContinuousMapClass F]
 
 /-- Coerce a bundled morphism with a `ContinuousMapClass` instance to a `ContinuousMap`. -/
 def ContinuousMap.ofClass (f : F) : C(X, Y) := ⟨f, map_continuous f⟩
@@ -77,7 +77,7 @@ instance instFunLike : FunLike C(X, Y) X Y where
   coe := ContinuousMap.toFun
   coe_injective f g h := by cases f; cases g; congr
 
-instance instContinuousMapClass : ContinuousMapClass C(X, Y) X Y where
+instance instContinuousMapClass : ContinuousMapClass C(X, Y) where
   map_continuous := ContinuousMap.continuous_toFun
 
 @[simp]
@@ -93,14 +93,14 @@ def Simps.apply (f : C(X, Y)) : X → Y := f
 initialize_simps_projections ContinuousMap (toFun → apply)
 
 @[simp]
-protected theorem coe_ofClass {F : Type*} [FunLike F X Y] [ContinuousMapClass F X Y] (f : F) :
+protected theorem coe_ofClass {F : Type*} [FunLike F X Y] [ContinuousMapClass F] (f : F) :
     ⇑(ofClass f) = f :=
   rfl
 
 @[deprecated (since := "2026-10-15")] protected alias coe_coe := ContinuousMap.coe_ofClass
 
 @[deprecated ContinuousMap.coe_ofClass +typeChanged (since := "2026-11-24")]
-protected theorem coe_apply {F : Type*} [FunLike F X Y] [ContinuousMapClass F X Y] (f : F) (x : X) :
+protected theorem coe_apply {F : Type*} [FunLike F X Y] [ContinuousMapClass F] (f : F) (x : X) :
     (ofClass f : C(X, Y)) x = f x :=
   rfl
 
@@ -109,7 +109,7 @@ protected theorem coe_apply {F : Type*} [FunLike F X Y] [ContinuousMapClass F X 
 The unprimed version `ContinuousMap.coe_injective`
 is used for the coercion from `C(X, Y)` to `X → Y`. -/
 protected theorem injective_ofClass
-    {F : Type*} [FunLike F X Y] [ContinuousMapClass F X Y] :
+    {F : Type*} [FunLike F X Y] [ContinuousMapClass F] :
     Injective (ContinuousMap.ofClass : F → C(X, Y)) :=
   .of_comp (f := DFunLike.coe) DFunLike.coe_injective
 

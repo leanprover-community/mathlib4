@@ -422,11 +422,11 @@ lemma continuous_iff_forall_continuousMap_continuous_integral :
 
 variable [CompactSpace X] [MeasurableSpace X] [OpensMeasurableSpace X] {F : Type*}
 
-lemma continuous_lintegral_continuousMap [FunLike F X ℝ≥0] [ContinuousMapClass F X ℝ≥0] (f : F) :
+lemma continuous_lintegral_continuousMap [FunLike F X ℝ≥0] [ContinuousMapClass F] (f : F) :
     Continuous fun μ : ProbabilityMeasure X ↦ ∫⁻ x, f x ∂μ :=
   continuous_iff_forall_continuousMap_continuous_lintegral.1 continuous_id ⟨f, map_continuous f⟩
 
-lemma continuous_integral_continuousMap [FunLike F X ℝ] [ContinuousMapClass F X ℝ] (f : F) :
+lemma continuous_integral_continuousMap [FunLike F X ℝ] [ContinuousMapClass F] (f : F) :
     Continuous fun μ : ProbabilityMeasure X ↦ ∫ x, f x ∂μ :=
   continuous_iff_forall_continuousMap_continuous_integral.1 continuous_id ⟨f, map_continuous f⟩
 

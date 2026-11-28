@@ -59,7 +59,7 @@ compact support.
 You should also extend this typeclass when you extend `CompactlySupportedContinuousMap`. -/
 class CompactlySupportedContinuousMapClass (F : Type*) (α β : outParam Type*)
     [TopologicalSpace α] [Zero β] [TopologicalSpace β] [FunLike F α β] : Prop
-    extends ContinuousMapClass F α β where
+    extends ContinuousMapClass F where
   /-- Each member of the class has compact support. -/
   hasCompactSupport (f : F) : HasCompactSupport f
 
@@ -215,21 +215,21 @@ theorem coe_mul [MulZeroClass β] [ContinuousMul β] (f g : C_c(α, β)) : ⇑(f
 theorem mul_apply [MulZeroClass β] [ContinuousMul β] (f g : C_c(α, β)) : (f * g) x = f x * g x :=
   rfl
 
-/-- the product of `f : F` assuming `ContinuousMapClass F α γ` and `ContinuousSMul γ β` and
+/-- the product of `f : F` assuming `ContinuousMapClass F` and `ContinuousSMul γ β` and
 `g : C_c(α, β)` is in `C_c(α, β)` -/
 instance [Zero β] [TopologicalSpace γ] [SMulZeroClass γ β] [ContinuousSMul γ β]
-    {F : Type*} [FunLike F α γ] [ContinuousMapClass F α γ] : SMul F C_c(α, β) where
+    {F : Type*} [FunLike F α γ] [ContinuousMapClass F] : SMul F C_c(α, β) where
   smul f g :=
     ⟨⟨fun x ↦ f x • g x, (map_continuous f).smul (map_continuous g)⟩, g.hasCompactSupport.smul_left⟩
 
 @[simp]
 theorem coe_smulc [Zero β] [TopologicalSpace γ] [SMulZeroClass γ β] [ContinuousSMul γ β]
-    {F : Type*} [FunLike F α γ] [ContinuousMapClass F α γ] (f : F) (g : C_c(α, β)) :
+    {F : Type*} [FunLike F α γ] [ContinuousMapClass F] (f : F) (g : C_c(α, β)) :
     ⇑(f • g) = fun x => f x • g x :=
   rfl
 
 theorem smulc_apply [Zero β] [TopologicalSpace γ] [SMulZeroClass γ β] [ContinuousSMul γ β]
-    {F : Type*} [FunLike F α γ] [ContinuousMapClass F α γ] (f : F) (g : C_c(α, β)) (x : α) :
+    {F : Type*} [FunLike F α γ] [ContinuousMapClass F] (f : F) (g : C_c(α, β)) (x : α) :
     (f • g) x = f x • g x :=
   rfl
 
@@ -648,7 +648,7 @@ variable [Zero β] [TopologicalSpace β] [FunLike F α β] [CompactlySupportedCo
 /-- A continuous function on a compact space has automatically compact support. This is not an
 instance to avoid type class loops. -/
 lemma of_compactSpace (G : Type*) [FunLike G α β]
-    [ContinuousMapClass G α β] [CompactSpace α] : CompactlySupportedContinuousMapClass G α β where
+    [ContinuousMapClass G] [CompactSpace α] : CompactlySupportedContinuousMapClass G α β where
   map_continuous := map_continuous
   hasCompactSupport := by
     intro f

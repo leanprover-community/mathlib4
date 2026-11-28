@@ -61,7 +61,7 @@ instance : FunLike (P →ᴬ[R] Q) P Q where
   coe f := f.toAffineMap
   coe_injective _ _ h := toAffineMap_injective <| DFunLike.coe_injective h
 
-instance : ContinuousMapClass (P →ᴬ[R] Q) P Q where
+instance : ContinuousMapClass (P →ᴬ[R] Q) where
   map_continuous := cont
 
 theorem toFun_eq_coe (f : P →ᴬ[R] Q) : f.toFun = ⇑f := rfl
