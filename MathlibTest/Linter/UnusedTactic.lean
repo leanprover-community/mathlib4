@@ -1,5 +1,6 @@
 module
 import Batteries.Tactic.PermuteGoals
+import Batteries.Tactic.SeqFocus
 import Mathlib.Tactic.Linter.UnusedTactic
 import Mathlib.Tactic.AdaptationNote
 
@@ -281,6 +282,29 @@ example : True ∧ True := by
   try
     any_goals rfl
   all_goals trivial
+
+-- Lint subtactics in `t <;> [t1, ...]`, ignore padding `skip`s
+/--
+warning: Unused tactic linter: `all_goals` can be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+-/
+#guard_msgs in
+example : True ∧ True := by
+  constructor <;> [skip; all_goals trivial]
+  trivial
+
+-- The linter is not affected by `set option ... in`
+/--
+warning: Unused tactic linter: `change 1 = 1` does not change the goal.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+-/
+#guard_msgs in
+set_option maxHeartbeats 1000 in
+example : 1 = 1 := by
+  change 1 = 1
+  rfl
 
 section allowing_more_unused_tactics
 

@@ -39,22 +39,15 @@ Possible reason for whitelisting are
   If there are no goals, then these could in principle not be redundant,
   but we lint against such cases as well.
   We also warn if `any_goals` can be replaced with `all_goals`, or with `on_goal n =>`.
+- `t <;> [t1; t2; ...]`: each subtactic is linted individually.
+  A padding `skip` (to match the number of goals) is never reported as unused.
 
 ## Notable exclusions
-
-* The linter does not enter a "sequence tactic": upon finding `tac <;> [tac1, tac2, ...]`
-  the linter assumes that the tactic is doing something and does not recurse into each
-  `tac1, tac2, ...`.
-  This is just for lack of an implementation: it may not be hard to do this.
 
 * The tactic does not check the discharger for `linear_combination`,
   but checks `linear_combination` itself.
   The main reason is that `skip` is a common discharger tactic and the linter would
   then always fail whenever the user explicitly chose to pass `skip` as a discharger tactic.
-
-## TODO
-
-* The linter seems to be silenced by `set_option ... in`: maybe it should enter `in`s?
 
 ## Implementation notes
 
@@ -203,7 +196,6 @@ initialize ignoreTacticKindsRef : IO.Ref NameHashSet ←
     ``Lean.Parser.Command.mixfix,
     ``Lean.Parser.Tactic.discharger,
     ``Lean.Parser.Command.registerTryTactic,
-    `Batteries.Tactic.seq_focus,
     `Mathlib.Tactic.Hint.registerHintStx,
     `Mathlib.Tactic.LinearCombination.linearCombination,
     `Aesop.Frontend.Parser.addRules,
@@ -282,7 +274,7 @@ def eraseUsedTactics (exceptions : Std.HashSet SyntaxNodeKind)
       | [] => return withMsg m!"`<;>` can be removed"
       | [_] => return withMsg m!"`<;>` can be replaced with `;`"
       | _ => return ranges.erase r
-    | .node _ kind _ =>
+    | .node _ kind args =>
       unless tactics.contains kind || convs.contains kind do return ranges
       -- if the tactic is allowed to not change the goals
       if exceptions.contains kind then
@@ -315,6 +307,17 @@ def eraseUsedTactics (exceptions : Std.HashSet SyntaxNodeKind)
         -- `swap_var` is used if it changes the username of a free variable.
         if getNames i.mctxBefore == getNames i.mctxAfter then
           return withMsg m!"`swap_var` does not change the variable names in the goal"
+      | `Batteries.Tactic.seq_focus =>
+        -- In `t <;> [t1; t2; ...]`, lint each subtactic individually, except padding `skip`s.
+        -- A padding `skip` is always a direct element of the bracketed list,
+        -- which is the fourth child of the `seq_focus` node.
+        let ranges := ranges.erase r
+        let some list := args[3]? | return ranges
+        let .node _ _ elems := list | return ranges
+        return elems.foldl (fun ranges el =>
+          if el.getKind == ``Lean.Parser.Tactic.skip then
+            if let some r' := el.getRange? true then ranges.erase r' else ranges
+          else ranges) ranges
       | _ =>
         -- The tactic is unused if the goals stay the same.
         if i.goalsAfter == i.goalsBefore then
