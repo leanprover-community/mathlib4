@@ -182,10 +182,10 @@ theorem irreducible_X_pow_two_pow_sub_C
         Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.cons_val_fin_one] at basrs'
       rw [← bas1, ← bas.repr.symm_apply_apply c, basrs, add_sq, mul_pow, root_X_pow_sub_C_pow,
         ← map_pow, ← map_pow (of _), ← map_mul, add_right_comm, ← map_add,
-        ← mul_assoc (2 * _), mul_assoc 2, ← map_mul, ← map_ofNat (of (X ^ 2 - C a)) (nat_lit 2),
-        ← map_mul, ← basrs', bas.repr.symm_apply_eq, bas.repr_self] at hc
-      have hu0 := congrFun (congrArg DFunLike.coe hc) 0
-      have hu1 := congrArg (· ^ 2) <| congrFun (congrArg DFunLike.coe hc) 1
+        ← mul_assoc, ← map_ofNat (of (X ^ 2 - C a)) (nat_lit 2), ← map_mul, ← map_mul,
+        ← basrs', bas.repr.symm_apply_eq, bas.repr_self] at hc
+      have hu0 := congr($hc 0)
+      have hu1 := congr($hc 1 ^ 2)
       simp only [Finsupp.equivFunOnFinite_symm_apply_apply,
         Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.cons_val_fin_one,
         Finsupp.single_eq_same, Finsupp.single_eq_of_ne Fin.zero_ne_one'] at hu0 hu1
