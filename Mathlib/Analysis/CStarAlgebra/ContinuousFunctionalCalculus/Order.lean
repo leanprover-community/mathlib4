@@ -599,7 +599,7 @@ lemma nnrpow_le_nnrpow_of_nonneg_of_norm_le_one {e : A} (he0 : 0 ≤ e) (he1 : �
   rw [CFC.nnrpow_eq_cfcₙ_real e, CFC.nnrpow_eq_cfcₙ_real e]
   refine cfcₙ_mono fun x hx ↦ ?_
   have hx1 : x ≤ 1 := by grw [Real.le_norm_self x, quasispectrum.norm_le_norm_of_mem hx, he1]
-  exact Real.rpow_le_rpow_of_exponent_ge' (quasispectrum_nonneg_of_nonneg _ he0 _ hx) hx1
+  exact Real.rpow_le_rpow_right_of_le_one' (quasispectrum_nonneg_of_nonneg _ he0 _ hx) hx1
     m.coe_nonneg (mod_cast hmn)
 
 lemma nnrpow_le_self_of_nonneg_of_norm_le_one {e : A} (he0 : 0 ≤ e) (he1 : ‖e‖ ≤ 1)

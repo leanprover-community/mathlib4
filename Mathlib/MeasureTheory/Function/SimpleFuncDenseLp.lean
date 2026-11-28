@@ -106,7 +106,7 @@ theorem tendsto_approxOn_Lp_eLpNorm' [OpensMeasurableSpace E] {p : ℝ} {f : β 
   -- bounded, at any given point, by `fun x => ‖f x - y₀‖ ^ p.toReal`
   have h_bound n :
     (fun x ↦ ‖approxOn f hf s y₀ h₀ n x - f x‖ₑ ^ p) ≤ᵐ[μ] (‖f · - y₀‖ₑ ^ p) :=
-    .of_forall fun x => rpow_le_rpow (coe_mono (nnNorm_approxOn_le hf h₀ x n)) hp.le
+    .of_forall fun x => rpow_le_rpow_left (coe_mono (nnNorm_approxOn_le hf h₀ x n)) hp.le
   -- (3) The bounding function `fun x => ‖f x - y₀‖ ^ p.toReal` has finite integral
   have h_fin : (∫⁻ a : β, ‖f a - y₀‖ₑ ^ p ∂μ) ≠ ⊤ :=
     (lintegral_rpow_eNorm_lt_top_of_eLpNorm'_lt_top hp hi).ne

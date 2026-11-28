@@ -442,7 +442,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_one {u : E → F} (hu : ContDiff ℝ 1 u) (h2u
     eLpNorm u p μ ≤ eLpNormLESNormFDerivOneConst μ p * eLpNorm (fderiv ℝ u) 1 μ := by
   have h0p : 0 < (p : ℝ) := hp.coe.symm.pos
   rw [eLpNorm_one_eq_lintegral_eNorm (hu.continuous_fderiv one_ne_zero).aestronglyMeasurable,
-    ← ENNReal.rpow_le_rpow_iff h0p, ENNReal.mul_rpow_of_nonneg _ _ h0p.le,
+    ← ENNReal.rpow_le_rpow_iff_left h0p, ENNReal.mul_rpow_of_nonneg _ _ h0p.le,
     ← ENNReal.coe_rpow_of_nonneg _ h0p.le, eLpNormLESNormFDerivOneConst, ← NNReal.rpow_mul,
     eLpNorm_nnreal_pow_eq_lintegral hp.symm.pos.ne' hu.continuous.aestronglyMeasurable,
     inv_mul_cancel₀ h0p.ne', NNReal.rpow_one]

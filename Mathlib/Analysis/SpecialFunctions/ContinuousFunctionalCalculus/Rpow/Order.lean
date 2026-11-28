@@ -144,7 +144,7 @@ lemma monotone_rpow {p : ℝ} (hp : p ∈ Icc 0 1) : Monotone (fun a : A => a ^ 
     exact monotone_nnrpow hp
 
 @[gcongr]
-lemma rpow_le_rpow {p : ℝ} (hp : p ∈ Icc 0 1) {a b : A} (hab : a ≤ b) :
+lemma rpow_le_rpow_left {p : ℝ} (hp : p ∈ Icc 0 1) {a b : A} (hab : a ≤ b) :
     a ^ p ≤ b ^ p := monotone_rpow hp hab
 
 /-- `a ↦ a ^ p` is operator concave for `p ∈ [0,1]`. -/

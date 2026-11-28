@@ -724,7 +724,7 @@ theorem frobenius_nnNorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B�
   simp_rw [frobenius_nnNorm_def, Matrix.mul_apply]
   rw [← NNReal.mul_rpow, @Finset.sum_comm _ _ m, Finset.sum_mul_sum]
   gcongr with i _ j
-  rw [← NNReal.rpow_le_rpow_iff one_half_pos, ← NNReal.rpow_mul,
+  rw [← NNReal.rpow_le_rpow_iff_left one_half_pos, ← NNReal.rpow_mul,
     mul_div_cancel₀ (1 : ℝ) two_ne_zero, NNReal.rpow_one, NNReal.mul_rpow]
   simpa only [PiLp.toLp_apply, PiLp.inner_apply, RCLike.inner_apply', starRingEnd_apply,
     Pi.nnNorm_def, PiLp.nnNorm_eq_of_L2, star_star, nnNorm_star, NNReal.sqrt_eq_rpow,
