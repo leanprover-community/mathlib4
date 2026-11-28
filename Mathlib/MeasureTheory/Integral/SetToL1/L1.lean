@@ -168,7 +168,7 @@ theorem setToL1_simpleFunc_indicatorConst (hT : DominatedFinMeasAdditive μ T C)
 
 theorem setToL1_indicatorConstLp (hT : DominatedFinMeasAdditive μ T C) {s : Set α}
     (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : E) :
-    setToL1 hT (indicatorConstLp 1 hs hμs x) = T s x := by
+    setToL1 hT (indicatorConstLp 1 hs.nullMeasurableSet hμs x) = T s x := by
   rw [← Lp.simpleFunc.coe_indicatorConst hs hμs x]
   exact setToL1_simpleFunc_indicatorConst hT hs hμs.lt_top x
 

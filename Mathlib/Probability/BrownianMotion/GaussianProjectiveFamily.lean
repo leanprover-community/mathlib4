@@ -69,7 +69,7 @@ lemma posSemidef_covMatrix (I : Finset ℝ≥0) :
   have : covMatrix I = .of fun s t ↦ volume.real ((Icc 0 s.val.val) ∩ (Icc 0 t.val.val)) := by
     ext; simp [Icc_inter_Icc]
   rw [this]
-  exact posSemidef_matrix_measure_inter (fun _ ↦ measurableSet_Icc)
+  exact posSemidef_matrix_measure_inter (fun _ ↦ measurableSet_Icc.nullMeasurableSet)
     (fun _ ↦ isCompact_Icc.measure_ne_top)
 
 /-- Each `projectiveFamily I` is the centered Gaussian measure with covariance matrix given
