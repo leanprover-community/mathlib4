@@ -5,11 +5,13 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Flat.Stability
+public import Mathlib.RingTheory.Flat.Basic
 public import Mathlib.RingTheory.Unramified.Basic
 
 import Mathlib.LinearAlgebra.TensorProduct.Projective
+import Mathlib.RingTheory.Flat.Stability
 import Mathlib.RingTheory.Ideal.IdempotentFG
+import Mathlib.Tactic.LinearCombination
 
 /-!
 # Various results about unramified algebras
