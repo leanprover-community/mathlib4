@@ -18,6 +18,8 @@ This file defines the affine subspace orthogonal to the radius vector at a point
 * `EuclideanGeometry.Sphere.orthRadius`: the affine subspace orthogonal to the radius vector at
   a point (the tangent space, if that point lies in the sphere; more generally, the polar of the
   inversion of that point in the sphere).
+* `EuclideanGeometry.Sphere.lineOrOrthRadius`: the line through two distinct points, or the
+  affine subspace orthogonal to the radius vector when the points coincide.
 -/
 
 @[expose] public section
@@ -381,6 +383,58 @@ lemma ncard_inter_orthRadius_le_two [hf2 : Fact (Module.finrank ℝ V = 2)]
   · exact (ncard_inter_orthRadius_eq_two_of_dist_lt_radius h hpc).le
   · simp [inter_orthRadius_eq_singleton_of_dist_eq_radius h]
   · simp [inter_orthRadius_eq_empty_of_radius_lt_dist h]
+
+open Classical in
+/-- The line through `p` and `q`, or `s.orthRadius p` if `p = q`.
+
+This is typically used with `p` and `q` on `s` to represent the line containing a chord, with the
+tangent space at `p` as the limiting case when the two points coincide. -/
+noncomputable def lineOrOrthRadius (s : Sphere P) (p q : P) : AffineSubspace ℝ P :=
+  if p = q then s.orthRadius p else line[ℝ, p, q]
+
+variable {s : Sphere P} {p q : P}
+
+@[simp] lemma lineOrOrthRadius_self (s : Sphere P) (p : P) :
+    s.lineOrOrthRadius p p = s.orthRadius p := ite_eq_left rfl
+
+@[simp] lemma lineOrOrthRadius_of_ne (h : p ≠ q) :
+    s.lineOrOrthRadius p q = line[ℝ, p, q] := ite_eq_right h
+
+@[simp] lemma left_mem_lineOrOrthRadius : p ∈ s.lineOrOrthRadius p q := by
+  by_cases h : p = q <;> simp [h, left_mem_affineSpan_pair]
+
+@[simp] lemma right_mem_lineOrOrthRadius : q ∈ s.lineOrOrthRadius p q := by
+  by_cases h : p = q <;> simp [h, right_mem_affineSpan_pair]
+
+lemma lineOrOrthRadius_comm : s.lineOrOrthRadius p q = s.lineOrOrthRadius q p := by
+  rcases eq_or_ne p q with rfl | h
+  · rfl
+  · rw [lineOrOrthRadius_of_ne h, lineOrOrthRadius_of_ne h.symm, affineSpan_pair_comm]
+
+/-- A point of the sphere distinct from both `A` and `C` does not lie on
+`s.lineOrOrthRadius A C`. -/
+lemma notMem_lineOrOrthRadius_of_mem_sphere {A B C : P}
+    (hA : A ∈ s) (hB : B ∈ s) (hC : C ∈ s) (hBA : B ≠ A) (hBC : B ≠ C) :
+    B ∉ s.lineOrOrthRadius A C := by
+  rcases eq_or_ne A C with rfl | hAC
+  · intro h
+    have hmem : B ∈ (s ∩ s.orthRadius A : Set P) := ⟨hB, by simpa using h⟩
+    rw [inter_orthRadius_eq_singleton_of_dist_eq_radius (mem_sphere.mp hA)] at hmem
+    exact hBA (Set.mem_singleton_iff.mp hmem)
+  · rw [lineOrOrthRadius_of_ne hAC]
+    intro hB_mem
+    exact (affineIndependent_iff_not_collinear_set.mp
+      (s.cospherical.affineIndependent_of_mem_of_ne hB hA hC hBA hBC hAC))
+      (collinear_insert_of_mem_affineSpan_pair hB_mem)
+
+/-- A point of the sphere lies on `s.lineOrOrthRadius A C` if and only if it is one of the
+endpoints `A` or `C`. -/
+lemma mem_lineOrOrthRadius_iff_of_mem_sphere {A B C : P}
+    (hA : A ∈ s) (hB : B ∈ s) (hC : C ∈ s) :
+    B ∈ s.lineOrOrthRadius A C ↔ B = A ∨ B = C := by
+  refine ⟨fun h ↦ ?_, by rintro (rfl | rfl) <;> simp⟩
+  by_contra! hne
+  exact notMem_lineOrOrthRadius_of_mem_sphere hA hB hC hne.1 hne.2 h
 
 end Sphere
 
