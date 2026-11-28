@@ -207,7 +207,6 @@ set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 instance {X : Scheme.{u}} (𝒰 : X.Cover (precoverage P)) (𝒱 : ∀ x, (𝒰.X x).Cover (precoverage P))
     [X.Over S] [𝒰.Over S] [∀ x, (𝒱 x).Over S] : Cover.Over S (𝒰.bind 𝒱) where
-  over := fun ⟨i, j⟩ ↦ inferInstanceAs <| ((𝒱 i).X j).Over S
   isOver_map := fun ⟨i, j⟩ ↦ { comp_over := by simp; rfl }
 
 end AlgebraicGeometry.Scheme

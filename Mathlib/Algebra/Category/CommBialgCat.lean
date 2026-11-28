@@ -215,7 +215,7 @@ instance (A : (CommAlgCat R)ᵒᵖ) [MonObj A] : Bialgebra R A.unop :=
 variable (R) in
 /-- Commutative bialgebras over a commutative ring `R` are the same thing as comonoid
 `R`-algebras. -/
-@[simps! functor_obj_unop_X inverse_obj unitIso_hom_app
+@[implicit_reducible, simps! functor_obj_unop_X inverse_obj unitIso_hom_app
   unitIso_inv_app counitIso_hom_app counitIso_inv_app]
 def commBialgCatEquivComonCommAlgCat : CommBialgCat R ≌ (Mon (CommAlgCat R)ᵒᵖ)ᵒᵖ where
   functor.obj A := .op <| .mk <| .op <| .of R A

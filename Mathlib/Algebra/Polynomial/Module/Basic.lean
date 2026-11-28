@@ -54,7 +54,6 @@ variable {x y : PolynomialModule R M} {r : R} {m m₁ m₂ : M}
 lemma coeff_ofCoeff (x : ℕ →₀ M) : (ofCoeff R x).coeff = x := rfl
 lemma ofCoeff_coeff (x : PolynomialModule R M) : ofCoeff R x.coeff = x := rfl
 
-variable (R) in
 /-- `PolynomialModule.coeff` as an equiv. -/
 @[simps! apply symm_apply]
 def coeffEquiv : PolynomialModule R M ≃ (ℕ →₀ M) where
@@ -64,16 +63,16 @@ def coeffEquiv : PolynomialModule R M ≃ (ℕ →₀ M) where
   right_inv _ := rfl
 
 lemma «forall» {P : PolynomialModule R M → Prop} : (∀ p, P p) ↔ ∀ q, P (ofCoeff R q) :=
-  (coeffEquiv R).forall_congr_left
+  coeffEquiv.forall_congr_left
 
 lemma «exists» {P : PolynomialModule R M → Prop} : (∃ p, P p) ↔ ∃ q, P (ofCoeff R q) :=
-  (coeffEquiv R).exists_congr_left
+  coeffEquiv.exists_congr_left
 
 lemma coeff_injective : (coeff : PolynomialModule R M → ℕ →₀ M).Injective :=
-  (coeffEquiv R).injective
+  coeffEquiv.injective
 
 lemma ofCoeff_injective : (ofCoeff R : (ℕ →₀ M) → PolynomialModule R M).Injective :=
-  (coeffEquiv R).symm.injective
+  coeffEquiv.symm.injective
 
 @[simp]
 lemma coeff_inj : x.coeff = y.coeff ↔ x = y := coeff_injective.eq_iff
@@ -82,23 +81,25 @@ lemma ofCoeff_inj {x y : ℕ →₀ M} : ofCoeff R x = ofCoeff R y ↔ x = y := 
 
 @[ext] alias ⟨ext, _⟩ := coeff_inj
 
-instance instInhabited : Inhabited (PolynomialModule R M) := fast_instance% (coeffEquiv R).inhabited
+instance instInhabited : Inhabited (PolynomialModule R M) := fast_instance% coeffEquiv.inhabited
 
 instance instNontrivial [Nontrivial M] : Nontrivial (PolynomialModule R M) :=
-  (coeffEquiv R).nontrivial
+  coeffEquiv.nontrivial
 
 instance instUnique [Subsingleton M] : Unique (PolynomialModule R M) := fast_instance%
-  (coeffEquiv R).unique
+  coeffEquiv.unique
 
 instance instDecidableEq [DecidableEq M] : DecidableEq (PolynomialModule R M) :=
-  (coeffEquiv R).decidableEq
+  coeffEquiv.decidableEq
+
+instance : SMul S (PolynomialModule R M) := fast_instance% coeffEquiv.smul _
 
 instance instAddCommGroup : AddCommGroup (PolynomialModule R M) := fast_instance%
-  (coeffEquiv R).addCommGroup
+  coeffEquiv.addCommGroup
 
 /-- `PolynomialModule.coeff` as an `AddEquiv`. -/
 @[simps! apply symm_apply]
-def coeffAddEquiv : PolynomialModule R M ≃+ (ℕ →₀ M) := (coeffEquiv R).addEquiv
+def coeffAddEquiv : PolynomialModule R M ≃+ (ℕ →₀ M) := coeffEquiv.addEquiv
 
 @[simp] lemma coeff_zero : coeff (0 : PolynomialModule R M) = 0 := rfl
 @[simp] lemma ofCoeff_zero : (ofCoeff R 0 : PolynomialModule R M) = 0 := rfl
@@ -142,7 +143,7 @@ lemma single_add (n : ℕ) (m₁ m₂ : M) :
     single R n (m₁ + m₂) = single R n m₁ + single R n m₂ := by ext; simp
 
 /-- This is required to have the `IsScalarTower S R M` instance to avoid diamonds. -/
-instance : Module S (PolynomialModule R M) := coeffAddEquiv.module _
+instance : Module S (PolynomialModule R M) := fast_instance% coeffAddEquiv.module _
 
 instance (M : Type u) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower S R M] :
     IsScalarTower S R (PolynomialModule R M) := coeffAddEquiv.isScalarTower _ _
