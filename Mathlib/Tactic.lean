@@ -311,6 +311,7 @@ public import Mathlib.Tactic.NormNum.Prime
 public import Mathlib.Tactic.NormNum.RealSqrt
 public import Mathlib.Tactic.NormNum.Result
 public import Mathlib.Tactic.NormRank
+public import Mathlib.Tactic.NormRealRootCount
 public import Mathlib.Tactic.NthRewrite
 public import Mathlib.Tactic.Observe
 public import Mathlib.Tactic.OfNat
@@ -340,6 +341,7 @@ public import Mathlib.Tactic.Push
 public import Mathlib.Tactic.Push.Attr
 public import Mathlib.Tactic.Qify
 public import Mathlib.Tactic.RSuffices
+public import Mathlib.Tactic.RealRootCount.Reflection
 public import Mathlib.Tactic.RealRootCount.SturmCertificate
 public import Mathlib.Tactic.Recover
 public import Mathlib.Tactic.ReduceModChar
