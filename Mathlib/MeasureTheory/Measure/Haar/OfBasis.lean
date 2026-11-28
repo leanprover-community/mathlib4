@@ -263,10 +263,10 @@ instance (b : Basis ι ℝ E) : SigmaFinite b.addHaar :=
   have : FiniteDimensional ℝ E := b.finiteDimensional_of_finite
   sigmaFinite_addHaarMeasure
 
-/-- Let `μ` be a σ-finite left invariant measure on `E`. Then `μ` is equal to the Haar measure
+/-- Let `μ` be an s-finite left invariant measure on `E`. Then `μ` is equal to the Haar measure
 defined by `b` iff the parallelepiped defined by `b` has measure `1` for `μ`. -/
 theorem addHaar_eq_iff [SecondCountableTopology E] (b : Basis ι ℝ E) (μ : Measure E)
-    [SigmaFinite μ] [IsAddLeftInvariant μ] :
+    [SFinite μ] [IsAddLeftInvariant μ] :
     b.addHaar = μ ↔ μ b.parallelepiped = 1 :=
   addHaarMeasure_eq_iff b.parallelepiped μ
 

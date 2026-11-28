@@ -1186,15 +1186,15 @@ instance (priority := 100) Regular.of_sigmaCompactSpace_of_isLocallyFiniteMeasur
   let A : PseudoMetricSpace X := TopologicalSpace.pseudoMetrizableSpacePseudoMetric X
   exact ⟨(InnerRegularWRT.isCompact_isClosed μ).trans (InnerRegularWRT.of_pseudoMetrizableSpace μ)⟩
 
-/-- Any sigma finite measure on a `σ`-compact pseudometrizable space is inner regular. -/
+/-- Any s-finite measure on a `σ`-compact pseudometrizable space is inner regular. -/
 instance (priority := 100) {X : Type*}
     [TopologicalSpace X] [PseudoMetrizableSpace X] [SigmaCompactSpace X] [MeasurableSpace X]
-    [BorelSpace X] (μ : Measure X) [SigmaFinite μ] : InnerRegular μ := by
-  refine ⟨(InnerRegularWRT.isCompact_isClosed μ).trans ?_⟩
-  refine InnerRegularWRT.of_restrict (fun n ↦ ?_) (iUnion_spanningSets μ).superset
-    (monotone_spanningSets μ)
-  have : Fact (μ (spanningSets μ n) < ∞) := ⟨measure_spanningSets_lt_top μ n⟩
-  exact WeaklyRegular.innerRegular_measurable.trans InnerRegularWRT.of_sigmaFinite
+    [BorelSpace X] (μ : Measure X) [SFinite μ] : InnerRegular μ := by
+  have (ν : Measure X) [IsFiniteMeasure ν] : InnerRegular ν :=
+    ⟨(InnerRegularWRT.isCompact_isClosed ν).trans
+      (WeaklyRegular.innerRegular_measurable.trans InnerRegularWRT.of_sigmaFinite)⟩
+  rw [← sum_sfiniteSeq μ]
+  infer_instance
 
 end Measure
 
