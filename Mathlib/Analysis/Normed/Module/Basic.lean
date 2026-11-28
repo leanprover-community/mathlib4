@@ -106,6 +106,9 @@ instance NormedSpace.discreteTopology_zmultiples
       Int.norm_eq_abs, mul_lt_iff_lt_one_left (norm_pos_iff.mpr he), ← @Int.cast_one ℝ _,
       ← Int.cast_abs, Int.cast_lt, Int.abs_lt_one_iff, smul_eq_zero, or_iff_left he]
 
+instance NormedSpace.orderDual {𝕜 E : Type*} [NormedField 𝕜] [SeminormedAddCommGroup E]
+    [NormedSpace 𝕜 E] : NormedSpace 𝕜 Eᵒᵈ := inferInstanceAs (NormedSpace 𝕜 E)
+
 section Real
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [Nontrivial E]
 

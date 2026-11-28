@@ -53,8 +53,6 @@ for specific types.
 
 open Set Filter TopologicalSpace Topology Function
 
-open OrderDual (toDual ofDual)
-
 universe u v w
 
 variable {α : Type u} {β : Type v} {γ : Type w}

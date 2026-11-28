@@ -450,6 +450,8 @@ theorem IsClosed.isComplete [CompleteSpace α] {s : Set α} (h : IsClosed s) : I
   let ⟨x, hx⟩ := CompleteSpace.complete cf
   ⟨x, isClosed_iff_clusterPt.mp h x (cf.left.mono (le_inf hx fs)), hx⟩
 
+instance CompleteSpace.orderDual {E : Type*} [UniformSpace E] [CompleteSpace E] :
+    CompleteSpace Eᵒᵈ := inferInstanceAs (CompleteSpace E)
 namespace DiscreteUniformity
 
 variable [DiscreteUniformity α]
