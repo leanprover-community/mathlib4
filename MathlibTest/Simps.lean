@@ -357,7 +357,7 @@ run_cmd liftTermElabM do
   guard <| env.find? `specify.specify5_snd |>.isSome
   guard <| simpsAttr.getParam? env `specify.specify1 == #[`specify.specify1_fst]
   guard <| simpsAttr.getParam? env `specify.specify4 ==
-    #[`specify.specify4_snd_snd, `specify.specify4_snd]
+    #[`specify.specify4_snd, `specify.specify4_snd_snd]
   guard <| simpsAttr.getParam? env `specify.specify5 ==
     #[`specify.specify5_fst, `specify.specify5_snd]
 
@@ -426,7 +426,6 @@ example (n : ℕ) : myNatEquiv.toFun (myNatEquiv.toFun <| myNatEquiv.invFun n) =
 
 @[simps +simpRhs] def succeed_without_simplification_possible : ℕ ≃ ℕ :=
   ⟨fun n ↦ n, fun n ↦ n, by intro n; rfl, by intro n; rfl⟩
-
 
 /- test that we don't recursively take projections of `prod` and `PProd` -/
 @[simps] def pprodEquivProd2 : PProd ℕ ℕ ≃ ℕ × ℕ :=
@@ -1399,3 +1398,28 @@ example (b₁ b₂ : Bool) : b₁ • b₂ = b₂ := by simp
 example (b₁ b₂ : Bool) : b₁ +ᵥ b₂ = b₁ := by simp
 
 end SMul
+
+namespace WarningError
+
+/-
+Claude identified a case where `@[simps]` would error when it would try to add a lemma twice.
+This would only happen when the `simpsNoConstructor` warning would also trigger.
+-/
+
+structure Inner where
+  a : Nat
+  b : Nat
+
+structure Outer where
+  inner : Inner
+
+def i : Inner := ⟨1, 2⟩
+
+/- check that this doesn't error (the linter does flag this, so we turn it off) -/
+
+set_option linter.simpsNoConstructor false in
+#guard_msgs in
+@[simps inner inner_a]
+def foo : Outer := ⟨i⟩
+
+end WarningError
