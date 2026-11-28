@@ -21,10 +21,6 @@ A set `s` in an ordered type `α` is cofinal when for every `a : α` there exist
 greater or equal to it. This file provides a basic API for the `IsCofinal` predicate.
 
 For the cofinality of a set as a cardinal, see `Mathlib/SetTheory/Cardinal/Cofinality/Basic.lean`.
-
-## TODO
-
-- Deprecate `Order.Cofinal` in favor of this predicate.
 -/
 
 public section
