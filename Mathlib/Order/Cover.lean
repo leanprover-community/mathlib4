@@ -127,7 +127,7 @@ theorem Set.OrdConnected.apply_wcovBy_apply_iff (f : α ↪o β) (h : (range f).
 @[simp, to_dual self]
 theorem apply_wcovBy_apply_iff {E : Type*} [EquivLike E α β] [OrderIsoClass E α β] (e : E) :
     e a ⩿ e b ↔ a ⩿ b :=
-  (ordConnected_range (e : α ≃o β)).apply_wcovBy_apply_iff ((e : α ≃o β) : α ↪o β)
+  (ordConnected_range (.ofClass e : α ≃o β)).apply_wcovBy_apply_iff ((.ofClass e : α ≃o β) : α ↪o β)
 
 @[simp, to_dual self]
 theorem toDual_wcovBy_toDual_iff : toDual b ⩿ toDual a ↔ a ⩿ b :=
@@ -348,7 +348,7 @@ theorem Set.OrdConnected.apply_covBy_apply_iff (f : α ↪o β) (h : (range f).O
 @[to_dual self, simp]
 theorem apply_covBy_apply_iff {E : Type*} [EquivLike E α β] [OrderIsoClass E α β] (e : E) :
     e a ⋖ e b ↔ a ⋖ b :=
-  (ordConnected_range (e : α ≃o β)).apply_covBy_apply_iff ((e : α ≃o β) : α ↪o β)
+  (ordConnected_range (.ofClass e : α ≃o β)).apply_covBy_apply_iff ((.ofClass e : α ≃o β) : α ↪o β)
 
 @[to_dual none]
 theorem covBy_of_eq_or_eq (hab : a < b) (h : ∀ c, a ≤ c → c ≤ b → c = a ∨ c = b) : a ⋖ b :=

@@ -134,9 +134,9 @@ lemma toMonoidHom_coe (f : α →*₀ β) : f.toMonoidHom.toFun = f := rfl
 
 end Coes
 
-/-- Copy of a `MonoidHom` with a new `toFun` equal to the old one. Useful to fix
+/-- Copy of a `MonoidWithZeroHom` with a new `toFun` equal to the old one. Useful to fix
 definitional equalities. -/
-protected def copy (f : α →*₀ β) (f' : α → β) (h : f' = f) : α →* β :=
+protected def copy (f : α →*₀ β) (f' : α → β) (h : f' = f) : α →*₀ β :=
   { f.toZeroHom.copy f' h, f.toMonoidHom.copy f' h with }
 
 @[simp]
