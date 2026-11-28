@@ -37,13 +37,13 @@ noncomputable section
 
 open ENNReal Set Filter
 
-variable {α β : Type*}
+variable {α β γ : Type*}
 
 namespace MeasureTheory
 
 namespace Measure
 
-variable {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
+variable {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
 
 /-- Measurability structure on `Measure`: Measures are measurable w.r.t. all projections -/
 instance instMeasurableSpace : MeasurableSpace (Measure α) :=
@@ -289,6 +289,11 @@ theorem aemeasurable_map {g : α → β} {m : Measure (Measure α)} (hg : AEMeas
     AEMeasurable (map g ·) m :=
   let ⟨g', hg'm, hg'⟩ := hg
   ⟨(map g' ·), measurable_map g' hg'm, (ae_ae_of_ae_join hg').mono fun _ ↦ map_congr⟩
+
+@[fun_prop]
+theorem aemesaurable_map_map {f : α → Measure β} {g : β → γ} {m : Measure α}
+    (hg : AEMeasurable g (m.bind f)) : AEMeasurable (map g ·) (m.map f) :=
+  aemeasurable_map hg
 
 @[fun_prop]
 theorem aemeasurable_bind {g : α → Measure β} {m : Measure (Measure α)}

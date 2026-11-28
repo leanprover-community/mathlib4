@@ -791,6 +791,8 @@ theorem mconv_withDensity_eq_mlconvolution₀ {f g : G → ℝ≥0∞}
     (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     μ.withDensity f ∗ₘ μ.withDensity g = μ.withDensity (f ⋆ₘₗ[μ] g) := by
   refine ext_of_lintegral _ fun φ hφ ↦ ?_
+  have := quasiMeasurePreserving_inv_mul μ μ
+  have := quasiMeasurePreserving_mul μ μ
   rw [lintegral_mconv_eq_lintegral_prod hφ, prod_withDensity₀ hf hg,
     lintegral_withDensity_eq_lintegral_mul₀,
     lintegral_withDensity_eq_lintegral_mul₀, lintegral_prod,

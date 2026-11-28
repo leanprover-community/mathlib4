@@ -261,9 +261,11 @@ instance : Deterministic (α_ X Y Z).hom :=
   deterministic_deterministic ((X ⊗ Y) ⊗ Z)
     (X ⊗ Y ⊗ Z) (Kernel.deterministic MeasurableEquiv.prodAssoc (MeasurableEquiv.measurable _))
 
+set_option fun_prop.reducibleApply false in
 instance : Deterministic (λ_ X ).hom :=
   deterministic_id_map (𝟙_ SFinKer ⊗ X) X Prod.snd (by fun_prop)
 
+set_option fun_prop.reducibleApply false in
 instance : Deterministic (ρ_ X ).hom :=
   deterministic_id_map (X ⊗ 𝟙_ SFinKer) X Prod.fst (by fun_prop)
 

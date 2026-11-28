@@ -83,6 +83,7 @@ compact Hausdorff spaces.
 def stoneCechObj (X : TopCat) : CompHaus :=
   ↧(StoneCech X)
 
+set_option fun_prop.reducibleApply false in
 set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation) The bijection of homsets to establish the reflective adjunction of compact
 Hausdorff spaces in topological spaces.

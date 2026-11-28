@@ -5,6 +5,7 @@ Authors: Tomáš Skřivan
 -/
 module
 
+public meta import Lean.Meta.Reduce
 public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Initialize
 public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Lookup
 public meta import Mathlib.Tactic.FunProp.Decl
@@ -149,21 +150,15 @@ theorem Continuous_add (hf : Continuous f) (hg : Continuous g) : Continuous (fun
 ```
 -/
 inductive TheoremForm where
-  | uncurried | comp
+  | uncurried (args : Nat) | comp
   deriving Inhabited, BEq, Repr
 
 /-- TheoremForm to string -/
 instance : ToString TheoremForm :=
-  ⟨fun x => match x with | .uncurried => "simple" | .comp => "compositional"⟩
-
-/-- Gives the theorem form using the result of `FunctionData.decomposition`.
-
-Note that this returns `TheoremForm.comp` even when the decomposition failed (usually due to
-dependent types). This means that the theorem will be applied directly without trying to write the
-goal as a composition. -/
-def DecompositionResult.toTheoremForm : DecompositionResult → TheoremForm
-| .uncurried => .uncurried
-| _ => .comp
+  ⟨fun
+   | .uncurried 1 => "simple"
+   | .uncurried n => s!"simple ({n} arguments)"
+   | .comp => "compositional"⟩
 
 /-- theorem about specific function (either declared constant or free variable) -/
 structure FunctionTheorem where
@@ -197,6 +192,29 @@ def FunctionTheorem.getProof (thm : FunctionTheorem) : MetaM Expr := do
   match thm.thmOrigin with
   | .decl name => mkConstWithFreshMVarLevels name
   | .fvar id => return .fvar id
+
+/-- Given a theorem `thm` in uncurried form, returns a tuple `(xs, p, f, g)`, where `xy` is an array
+of metavariables corresponding to the theorem's arguments and `p` is an expression
+containing metavariables that should be unified with the goal. If this unification is successful,
+then the goal is of the form `f ∘ g`, where `f` is an instantiation of `thm`. -/
+def FunctionTheorem.mkPattern (thm : FunctionTheorem) :
+    MetaM (Array Expr × Expr × Expr × Expr) := do
+  let .uncurried argCount := thm.form
+  | throwError "fun_prop bug: mkPattern can only be used with uncurried form"
+  let type ← instantiateMVars <| ← inferType <| ← thm.thmOrigin.getValue
+  let (xs, _, type) ← withReducible <| forallMetaTelescopeReducing type
+  let .some f ← getFunPropFun? type
+    | throwError "fun_prop bug: mkPattern called with invalid theorem"
+  let .forallE _ xType _ _ ← instantiateMVars (← inferType f)
+    | throwError m!"fun_prop bug: function expected, got `{f} : {← inferType f}, \
+                    type ctor {(← inferType f).ctorName}"
+  let xTypes ← getProdNTypes xType argCount
+  let yType ← mkFreshExprMVar none
+  withLocalDeclD .anonymous yType fun y => do
+  let gBody ← mkProdElem <| ← xTypes.mapM fun t => mkFreshExprMVar <| some t
+  let g ← mkLambdaFVars #[y] gBody
+  let p ← mkLambdaFVars #[y] <| f.beta #[gBody]
+  return (xs, p, f, g)
 
 set_option linter.style.docString.empty false in
 /-- -/
@@ -318,6 +336,69 @@ inductive Theorem where
   | mor        (thm : GeneralTheorem)
   | transition (thm : GeneralTheorem)
 
+/-- Decide whether `f` is in compositional form. This is done by checking whether
+there is an application where the head is in the array `fvars`, and at least one argument of
+this application contains the function variable. -/
+partial def isCompositional (fvars : Array Expr) (f : Expr) : MetaM Bool := do
+  -- Reduce everything to handle `Function.comp`, etc.
+  let f ← withReducible <| reduce (explicitOnly := false) (skipTypes := false) f
+  let .lam xn xt f xbi := f | return false
+  withLocalDecl xn xbi xt fun x => do
+  let f := f.instantiate1 x
+  let fvars : FVarIdSet := .ofArray <| fvars.map (·.fvarId!)
+  let rec go fvarApp
+  | y@(.fvar _) => fvarApp && y == x
+  | e@(.app ..) =>
+    let fn := e.getAppFn
+    let args := e.getAppArgs
+    if fn.fvarId?.any fvars.contains then
+      args.any (go true)
+    else
+      go fvarApp fn || args.any (go fvarApp)
+  | .lam _ _ f _ => go fvarApp f
+  | .letE _ _ e f _ => go fvarApp e || go fvarApp f
+  | .forallE _ e f _ => go fvarApp e || go fvarApp f
+  | .proj _ _ e => go fvarApp e
+  | _ => false
+  return go false f
+
+/-- Counts the number of arguments of a theorem in uncurried form. This is the least `n` such that
+if `x` is the function variable, then the `n` expressions `x.1`, `x.2.1`, …, `x.2…2.1` and `x.2…2`
+all appear in the function. -/
+partial def countUncurriedArgs (f : Expr) : MetaM Nat := do
+  -- Reduce everything to handle `Function.comp`, etc.
+  let f ← withReducible <| reduce (explicitOnly := false) (skipTypes := false) f
+  let .lam xn xt f xbi := f | return 1
+  withLocalDecl xn xbi xt fun x => do
+  let f := f.instantiate1 x
+  let ((), fsts, maxSnds) ← f.forEach (go x) |>.run (0, 0)
+  let mut count := 0
+  while count < maxSnds && fsts.testBit count do
+    count := count + 1
+  return count + 1
+where
+  go x e : StateT (Nat × Nat) MetaM Unit := do
+    let mut (e, isFst) := (e, false)
+    -- We must check for `.proj` because of the call to `reduce`
+    if let .proj `Prod 0 e' := e then
+      e := e'
+      isFst := true
+    let mut snds := 0
+    while let .proj `Prod 1 e' := e do
+      e := e'
+      snds := snds + 1
+    if e != x then return
+    if isFst then
+      modify (fun (fsts, maxSnds) => (fsts ||| 1 <<< snds, maxSnds))
+    else
+      modify (fun (fsts, maxSnds) => (fsts, max maxSnds snds))
+
+/-- Given an array `fvars` obtained from `forallTelescope`, returns the theorem form of `f`. -/
+partial def getTheoremForm (fvars : Array Expr) (f : Expr) : MetaM TheoremForm := do
+  if ← isCompositional fvars f then
+    return .comp
+  else
+    return .uncurried <| ← countUncurriedArgs f
 
 /-- For a theorem declaration `declName` return `fun_prop` theorem. It correctly detects which
 type of theorem it is. -/
@@ -341,9 +422,6 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
 
     match fData.fn with
     | .const funName _ =>
-
-      let dec ← fData.decomposition
-
       return .function {
 -- funPropName funName fData.mainArgs fData.args.size thmForm
         funPropName := funPropName
@@ -352,7 +430,7 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
         mainArgs := fData.mainArgs
         appliedArgs := fData.args.size
         priority := prio
-        form := dec.toTheoremForm
+        form := ← withCanUnfoldPred unfoldPred <| getTheoremForm xs f
       }
     | .fvar .. =>
       let (_,_,b') ← forallMetaTelescope info.type
@@ -395,7 +473,7 @@ function property: {thm.funPropName}
 function name: {thm.funOrigin.name}
 main arguments: {thm.mainArgs}
 applied arguments: {thm.appliedArgs}
-form: {toString thm.form} form"
+form: {toString thm.form}"
     functionTheoremsExt.add thm attrKind
   | .mor thm =>
     trace[Meta.Tactic.fun_prop.attr] "\

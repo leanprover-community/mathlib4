@@ -266,42 +266,6 @@ def FunctionData.decomposition (fData : FunctionData) : MetaM DecompositionResul
 
     return .comp f g
 
-
-/-- Decompose function `fun x ↦ f y₁ ... yₙ` over specified argument indices `#[i, j, ...]`.
-
-The result is:
-```
-(fun (yᵢ',yⱼ',...) ↦ f y₁ .. yᵢ' .. yⱼ' .. yₙ) ∘ (fun x ↦ (yᵢ, yⱼ, ...))
-```
-
-This is not possible if `yₗ` for `l ∉ #[i,j,...]` still contains `x`.
-In such case `none` is returned.
--/
-def FunctionData.decompositionOverArgs (fData : FunctionData) (args : Array Nat) :
-    MetaM (Option (Expr × Expr)) := do
-
-  unless isOrderedSubsetOf fData.mainArgs args do return none
-  unless ¬(fData.fn.containsFVar fData.mainVar.fvarId!) do return none
-
-  withLCtx fData.lctx fData.insts do
-
-  let gxs := args.map (fun i => fData.args[i]!.expr)
-
-  try
-    let gx ← mkProdElem gxs -- this can crash if we have dependent types
-    let g ← withLCtx fData.lctx fData.insts <| mkLambdaFVars #[fData.mainVar] gx
-
-    withLocalDeclD `y (← inferType gx) fun y => do
-
-      let ys ← mkProdSplitElem y gxs.size
-      let args' := (args.zip ys).foldl (init := fData.args)
-          (fun args' (i,y) => args'.set! i { expr := y, coe := args'[i]!.coe })
-
-      let f ← mkLambdaFVars #[y] (Mor.mkAppN fData.fn args')
-      return (f,g)
-  catch _ =>
-    return none
-
 end Meta.FunProp
 
 end Mathlib

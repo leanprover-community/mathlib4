@@ -156,6 +156,18 @@ def headBetaThroughLet (e : Expr) : Expr :=
   let f := e.getAppFn
   if f.isHeadBetaTargetFn true then betaThroughLet f e.getAppArgs else e
 
+/-- Splits the type `α₁ × … × αₙ` into its components. -/
+def getProdNTypes (t : Expr) (n : Nat) : MetaM (Array Expr) := do
+  if n == 0 then
+    throwError "getProdNTypes: positive number expected"
+  let mut arr := #[]
+  let mut t := t
+  for _ in 0 ... n - 1 do
+    let some (t1, t2) := (← whnfR t).prod?
+      | throwError "getProdNTypes: not enough components"
+    arr := arr.push t1
+    t := t2
+  return arr.push t
 
 end Meta.FunProp
 

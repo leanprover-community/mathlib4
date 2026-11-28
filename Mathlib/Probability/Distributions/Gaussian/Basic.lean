@@ -52,8 +52,7 @@ instance IsGaussian.toIsProbabilityMeasure {E : Type*} [TopologicalSpace E] [Add
   measure_univ := by
     have : μ.map (0 : StrongDual ℝ E) Set.univ = 1 := by
       simp [-FunLike.coe_zero, IsGaussian.map_eq_gaussianReal]
-    simpa [-FunLike.coe_zero,
-      Measure.map_apply (by fun_prop : Measurable (0 : StrongDual ℝ E)) .univ] using this
+    simpa [Measure.map_apply measurable_zero .univ] using this
 
 /-- A real Gaussian measure is Gaussian. -/
 instance isGaussian_gaussianReal (m : ℝ) (v : ℝ≥0) : IsGaussian (gaussianReal m v) where
