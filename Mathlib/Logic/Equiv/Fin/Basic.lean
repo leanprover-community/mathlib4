@@ -328,43 +328,26 @@ theorem finAddFlip_apply_mk_right {k : ℕ} (h₁ : m ≤ k) (h₂ : k < m + n) 
 /-- Equivalence between `Fin m × Fin n` and `Fin (m * n)` -/
 @[simps]
 def finProdFinEquiv : Fin m × Fin n ≃ Fin (m * n) where
-  toFun x :=
-    ⟨x.2 + n * x.1,
-      calc
-        x.2.val + n * x.1.val + 1 = x.1.val * n + x.2.val + 1 := by ac_rfl
-        _ ≤ x.1.val * n + n := Nat.add_le_add_left x.2.isLt _
-        _ = (x.1.val + 1) * n := Eq.symm <| Nat.succ_mul _ _
-        _ ≤ m * n := Nat.mul_le_mul_right _ x.1.isLt
-        ⟩
-  invFun x := (x.divNat, x.modNat)
-  left_inv := fun ⟨x, y⟩ =>
-    have H : 0 < n := Nat.pos_of_ne_zero fun H => Nat.not_lt_zero y.val <| H ▸ y.isLt
-    Prod.ext
-      (Fin.eq_of_val_eq <|
-        calc
-          (y.val + n * x.val) / n = y.val / n + x.val := Nat.add_mul_div_left _ _ H
-          _ = 0 + x.val := by rw [Nat.div_eq_of_lt y.isLt]
-          _ = x.val := Nat.zero_add x.val)
-      (Fin.eq_of_val_eq <|
-        calc
-          (y.val + n * x.val) % n = y.val % n := Nat.add_mul_mod_self_left _ _ _
-          _ = y.val := Nat.mod_eq_of_lt y.isLt)
-  right_inv _ := Fin.eq_of_val_eq <| Nat.mod_add_div _ _
+  toFun p := p.1.mkDivMod p.2
+  invFun k := (k.divNat, k.modNat)
+  left_inv _ := by simp
+  right_inv k := by simp
+
+/-- Equivalence between `ℕ × Fin n` and `ℕ` for nonzero `n`, sending `(q, r)` to the natural number
+`n * q + r` with quotient `q` and remainder `r` modulo `n`.
+This is like `finProdFinEquiv` but with `m` infinite; its inverse is `Nat.divModEquiv`. -/
+@[simps]
+def natProdFinEquiv (n : ℕ) [NeZero n] : ℕ × Fin n ≃ ℕ where
+  toFun p := p.1.mkDivMod p.2
+  invFun k := (k / n, (Fin.ofNat n k))
+  left_inv _ := by simp
+  right_inv k := by simp
 
 /-- The equivalence induced by `a ↦ (a / n, a % n)` for nonzero `n`.
-This is like `finProdFinEquiv.symm` but with `m` infinite.
+This is the inverse of `natProdFinEquiv`, and is like `finProdFinEquiv.symm` but with `m` infinite.
 See `Nat.div_mod_unique` for a similar propositional statement. -/
-@[simps]
-def Nat.divModEquiv (n : ℕ) [NeZero n] : ℕ ≃ ℕ × Fin n where
-  toFun a := (a / n, Fin.ofNat n a)
-  invFun p := p.1 * n + ↑p.2
-  -- TODO: is there a canonical order of `*` and `+` here?
-  left_inv _ := Nat.div_add_mod' _ _
-  right_inv p := by
-    refine Prod.ext ?_ (Fin.ext <| Nat.mul_add_mod_of_lt p.2.is_lt)
-    dsimp only
-    rw [Nat.add_comm, Nat.add_mul_div_right _ _ n.pos_of_neZero, Nat.div_eq_of_lt p.2.is_lt,
-      Nat.zero_add]
+@[simps!]
+def Nat.divModEquiv (n : ℕ) [NeZero n] : ℕ ≃ ℕ × Fin n := (natProdFinEquiv n).symm
 
 /-- The equivalence induced by `a ↦ (a / n, a % n)` for nonzero `n`.
 See `Int.ediv_emod_unique` for a similar propositional statement. -/
