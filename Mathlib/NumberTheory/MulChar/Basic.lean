@@ -223,6 +223,15 @@ theorem apply_eq_zero_iff [Nontrivial R'] {χ : MulChar R R'} {a : R} :
 instance [Nontrivial R'] (χ : MulChar R R') : IsLocalHom χ where
   map_nonunit _ h := apply_ne_zero_iff.mp h.ne_zero
 
+/-- Composing a `MulChar` with a local homomorphism gives another `MulChar`. -/
+@[simps]
+def compLocalHom {S F : Type*} [CommMonoid S] [FunLike F S R] [MonoidHomClass F S R]
+    (χ : MulChar R R') (f : F) [IsLocalHom f] : MulChar S R' where
+  toFun m' := χ (f m')
+  map_one' := by simp
+  map_mul' := by simp
+  map_nonunit' m' hm' := map_nonunit χ (isUnit_map_iff f m' |>.not.mpr hm')
+
 /-!
 ### Commutative group structure on multiplicative characters
 
