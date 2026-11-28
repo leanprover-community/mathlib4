@@ -221,7 +221,8 @@ lemma analyticOrderAt_cuspFunction_ne_top (hh : 0 < h) (hfper : Periodic (f ∘ 
     analyticOrderAt (cuspFunction h f) 0 ≠ ⊤ := by
   refine fun htop ↦ hfne <| (qExpansion_eq_zero_iff hh hfper hfhol hfbdd).mp ?_
   ext m
-  simp [qExpansion_coeff, Filter.EventuallyEq.iteratedDeriv_eq m (analyticOrderAt_eq_top.mp htop)]
+  simp [qExpansion_coeff,
+    Filter.EventuallyEq.iteratedDeriv_eq m (analyticOrderAt_eq_top_iff.mp htop)]
 
 /-- The asymptotic behaviour of a nonzero periodic function holomorphic on `ℍ ∪ ∞` is determined
 by the order of vanishing of its cusp function at zero. -/

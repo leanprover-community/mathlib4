@@ -529,7 +529,7 @@ theorem AnalyticOnNhd.circleAverage_log_norm {c : ℂ} {R : ℝ} {f : ℂ → �
   rcases eq_or_ne R 0 with rfl | hR
   · simp
   rw [h₁f.meromorphicOn.circleAverage_log_norm hR, h₁f.divisor_apply (by simp),
-    (h₁f c (by simp)).analyticOrderAt_eq_zero.mpr h₂f,
+    (h₁f c (by simp)).analyticOrderAt_eq_zero_iff.mpr h₂f,
     (h₁f c (by simp)).meromorphicTrailingCoeffAt_of_ne_zero h₂f]
   simp
 
@@ -575,7 +575,7 @@ theorem AnalyticOnNhd.sum_divisor_le {c : ℂ} {r R M : ℝ} {f : ℂ → ℂ} (
           simp only [(h₁f.mono (closedBall_subset_closedBall r_lt_R.le)), h2,
             AnalyticOnNhd.divisor_apply, h₁f, h1]
           by_cases! h3 : u = c --Need to use the divisor is 0 at c rather than comparing the logs
-          · rw [h3, (h₁f c (by simp)).analyticOrderAt_eq_zero.mpr h₂f]
+          · rw [h3, (h₁f c (by simp)).analyticOrderAt_eq_zero_iff.mpr h₂f]
             simp
           simp +singlePass only [← log_abs]
           gcongr 2

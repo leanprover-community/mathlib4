@@ -79,12 +79,12 @@ theorem meromorphicNFAt_iff_analyticAt_or :
           zero_zpow n hn.ne]
   · rintro (h | ⟨h₁, h₂, h₃⟩)
     · by_cases h₂f : analyticOrderAt f x = ⊤
-      · rw [analyticOrderAt_eq_top] at h₂f
+      · rw [analyticOrderAt_eq_top_iff] at h₂f
         tauto
       · right
         use analyticOrderNatAt f x
         have : analyticOrderAt f x ≠ ⊤ := h₂f
-        rw [← ENat.natCast_toNat_eq_self, eq_comm, h.analyticOrderAt_eq_natCast] at this
+        rw [← ENat.natCast_toNat_eq_self, eq_comm, h.analyticOrderAt_eq_natCast_iff] at this
         obtain ⟨g, h₁g, h₂g, h₃g⟩ := this
         use g, h₁g, h₂g
         simpa
@@ -179,7 +179,7 @@ theorem MeromorphicNFAt.meromorphicOrderAt_eq_zero_iff (hf : MeromorphicNFAt f x
   constructor
   · intro h₁f
     have h₂f := hf.meromorphicOrderAt_nonneg_iff_analyticAt.1 (le_of_eq h₁f.symm)
-    rw [← h₂f.analyticOrderAt_eq_zero, ← ENat.map_natCast_eq_zero (α := ℤ)]
+    rw [← h₂f.analyticOrderAt_eq_zero_iff, ← ENat.map_natCast_eq_zero (α := ℤ)]
     rwa [h₂f.meromorphicOrderAt_eq] at h₁f
   · intro h
     rcases id hf with h₁ | ⟨n, g, h₁g, h₂g, h₃g⟩
@@ -427,7 +427,7 @@ theorem MeromorphicNFAt.comp_analyticAt (hf : MeromorphicNFAt f (g x)) (hg : Ana
   rcases hf with hf | ⟨n, q, hq_an, hq_ne, hf⟩
   · exact Or.inl (hg.continuousAt.tendsto.eventually hf)
   by_cases hord : analyticOrderAt (g · - g x) x = ⊤
-  · rw [analyticOrderAt_eq_top] at hord
+  · rw [analyticOrderAt_eq_top_iff] at hord
     by_cases h : f (g x) = 0
     · apply Or.inl
       filter_upwards [hord, hg.continuousAt.preimage_mem_nhds (hf.filter_mono (by simp))]
@@ -436,7 +436,7 @@ theorem MeromorphicNFAt.comp_analyticAt (hf : MeromorphicNFAt f (g x)) (hg : Ana
       filter_upwards [hord, hg.continuousAt.preimage_mem_nhds (hf.filter_mono (by simp))]
         using by simp_all [sub_eq_zero]
   lift analyticOrderAt (g · - g x) x to ℕ using hord with m hm
-  obtain ⟨p, h₁p, h₂p, h₃p⟩ := (AnalyticAt.analyticOrderAt_eq_natCast (by fun_prop)).1 hm.symm
+  obtain ⟨p, h₁p, h₂p, h₃p⟩ := (AnalyticAt.analyticOrderAt_eq_natCast_iff (by fun_prop)).1 hm.symm
   refine Or.inr ⟨n * m, fun z ↦ (p z) ^ n • q (g z), (h₁p.zpow h₂p).smul (by fun_prop), ?_⟩
   simp_all only [ne_eq, smul_eq_mul, isUnit_iff_ne_zero, zpow_ne_zero n h₂p, not_false_eq_true,
     IsUnit.smul_eq_zero, true_and]
