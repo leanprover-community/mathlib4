@@ -6,6 +6,7 @@ Authors: Hampus Nyberg, Yaël Dillies
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Completion
+public import Mathlib.Analysis.InnerProductSpace.GramMatrix
 public import Mathlib.Analysis.InnerProductSpace.Positive
 public import Mathlib.Analysis.Normed.Operator.Extend
 
@@ -23,6 +24,7 @@ positive semidefinite matrices.
 - `RKHS.kerFun`: the kernel functions of a RKHS.
 - `RKHS.kernel`: the kernel of a RKHS as a matrix.
 - `RKHS.OfKernel`: RKHS constructed from a positive semidefinite matrix.
+- `RKHS.scalarKernel`: the kernel of a scalar-valued RKHS as a matrix with entries in `𝕜`.
 - `RKHS.outerKernel`: the kernel generated from a function `f : X → V` with the rank-one operators
   `⟪f y, ·⟫ • f x` as its entries.
 
@@ -46,6 +48,9 @@ positive semidefinite matrices.
 ## TODO
 
 - Privatize `RKHS.H₀`
+- Add `OfScalarKernel k := OfKernel (k.map (toSpanSingletonLIE 𝕜 𝕜))` once CFC for `𝕜 →L[𝕜] 𝕜`
+  works. The proof can be done by construction `toSpanSingletonStarAlgEquiv` and proving a
+  `Matrix.PosSemidef.map` theorem.
 
 ## References
 
@@ -120,6 +125,7 @@ lemma coe_smul (f : H) (c : 𝕜) : ⇑(c • f) = c • f := (coeCLM 𝕜).map_
 
 variable (H) in
 /-- Point evaluation `fun f ↦ f x`. -/
+@[expose]
 def eval (x : X) : H →L[𝕜] V := .proj x ∘L coeCLM 𝕜
 
 lemma eval_def (x : X) : eval H x = .proj x ∘L coeCLM 𝕜 := by rfl
@@ -550,6 +556,50 @@ theorem coe_equiv (h : kernel H = kernel H') (f : H) : ⇑(equiv h f) = f := by
   simp_rw [← kerFun_inner, ← LinearIsometryEquiv.inner_map_map (equiv h), equiv_kerFun]
 
 end Equiv
+
+/-!
+## Scalar-valued RKHS
+
+For a scalar-valued RKHS (`V = 𝕜`) the kernel `kernel H` has entries in `𝕜 →L[𝕜] 𝕜`. We identify
+these entries with scalars via `toSpanSingletonLIE 𝕜 𝕜 : 𝕜 ≃ₗᵢ[𝕜] (𝕜 →L[𝕜] 𝕜)`.
+-/
+
+section scalarKernel
+
+variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace 𝕜 H] [CompleteSpace H]
+variable [RKHS 𝕜 H X 𝕜]
+variable {H' : Type*} [NormedAddCommGroup H'] [InnerProductSpace 𝕜 H'] [CompleteSpace H']
+variable [RKHS 𝕜 H' X 𝕜]
+
+variable (H) in
+/-- The kernel of a scalar-valued RKHS as a matrix with entries in `𝕜`. -/
+@[expose]
+def scalarKernel : Matrix X X 𝕜 := (kernel H).map (toSpanSingletonLIE 𝕜 𝕜).symm
+
+@[simp]
+lemma scalarKernel_apply (x y : X) : scalarKernel H x y = kernel H x y 1 := rfl
+
+lemma map_scalarKernel : (scalarKernel H).map (toSpanSingletonLIE 𝕜 𝕜) = kernel H :=
+  Matrix.ext fun _ _ ↦ (toSpanSingletonLIE 𝕜 𝕜).apply_symm_apply _
+
+lemma scalarKernel_eq_iff : scalarKernel H = scalarKernel H' ↔ kernel H = kernel H' := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rw [← map_scalarKernel (H := H), ← map_scalarKernel (H := H'), h]
+  · rw [scalarKernel, scalarKernel, h]
+
+/-- The scalar kernel is the Gram matrix of the kernel functions `kerFun H x 1`. -/
+lemma scalarKernel_eq_gram : scalarKernel H = .gram 𝕜 fun x ↦ kerFun H x 1 := by
+  ext x y
+  rw [Matrix.gram_apply, kerFun_inner, kerFun_apply]
+  simp
+
+open scoped ComplexOrder in
+/-- The scalar kernel of a scalar-valued RKHS is positive semidefinite. -/
+theorem posSemidef_scalarKernel : (scalarKernel H).PosSemidef := by
+  rw [scalarKernel_eq_gram]
+  exact Matrix.posSemidef_gram 𝕜 _
+
+end scalarKernel
 
 section RKHSSubmodule
 
