@@ -112,6 +112,22 @@ theorem LinearMap.rank_comap (f : M →ₗ[R] M₁) (p : Submodule R M₁) :
     Module.rank R (comap f p) = Module.rank R (f.range ⊓ p :) + Module.rank R f.ker := by
   simpa using lift_rank_comap f p
 
+/-- **Frobenius rank inequality** for linear maps, `Module.rank` version:
+`rank (f g) + rank (g h) ≤ rank g + rank (f g h)`. -/
+theorem LinearMap.rank_range_comp_add_rank_range_comp_le {N N' : Type*} [AddCommGroup N]
+    [Module R N] [AddCommGroup N'] [Module R N'] (f : M →ₗ[R] M₁) (g : N →ₗ[R] M)
+    (h : N' →ₗ[R] N) :
+    Module.rank R (LinearMap.range (f ∘ₗ g)) + Module.rank R (LinearMap.range (g ∘ₗ h)) ≤
+      Module.rank R (LinearMap.range g) + Module.rank R (LinearMap.range (f ∘ₗ g ∘ₗ h)) := by
+  have h₁ := f.rank_map_add_rank_inf_ker (LinearMap.range g)
+  have h₂ := f.rank_map_add_rank_inf_ker (LinearMap.range (g ∘ₗ h))
+  have hle : Module.rank R (LinearMap.range (g ∘ₗ h) ⊓ f.ker :) ≤
+      Module.rank R (LinearMap.range g ⊓ f.ker :) :=
+    Submodule.rank_mono (inf_le_inf_right _ (LinearMap.range_comp_le_range h g))
+  rw [LinearMap.range_comp g f, LinearMap.range_comp (g ∘ₗ h) f, ← h₁, ← h₂,
+    add_comm (Module.rank R (map f (LinearMap.range (g ∘ₗ h)))), ← add_assoc]
+  gcongr
+
 theorem LinearMap.lift_rank_comap_le {f : M →ₗ[R] M'} (p : Submodule R M') :
     lift.{v} (Module.rank R (comap f p)) ≤
       lift.{u} (Module.rank R p) + lift.{v} (Module.rank R f.ker) := by

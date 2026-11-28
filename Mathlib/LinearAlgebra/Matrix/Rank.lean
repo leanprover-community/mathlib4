@@ -499,6 +499,23 @@ theorem eRank_diagonal [DecidableEq m] (w : m → R) :
     (diagonal w).eRank = {i | (w i) ≠ 0}.encard := by
   simp [← toENat_cRank, cRank_diagonal, encard_ofPred]
 
+/-- **Frobenius rank inequality**: `rank (A * B) + rank (B * C) ≤ rank B + rank (A * B * C)`.
+
+Taking `B = 1` recovers Sylvester's rank inequality `Matrix.rank_mul_ge`. -/
+theorem rank_mul_add_rank_mul_le [Fintype m] [Fintype n] [Finite o]
+    (A : Matrix l m R) (B : Matrix m n R) (C : Matrix n o R) :
+    (A * B).rank + (B * C).rank ≤ B.rank + (A * B * C).rank := by
+  have := Fintype.ofFinite o
+  have hAB : (A * B).mulVecLin = A.mulVecLin ∘ₗ B.mulVecLin :=
+    LinearMap.ext fun v => by simp [Matrix.mulVec_mulVec]
+  have hBC : (B * C).mulVecLin = B.mulVecLin ∘ₗ C.mulVecLin :=
+    LinearMap.ext fun v => by simp [Matrix.mulVec_mulVec]
+  have hABC : (A * B * C).mulVecLin = A.mulVecLin ∘ₗ B.mulVecLin ∘ₗ C.mulVecLin :=
+    LinearMap.ext fun v => by simp [Matrix.mulVec_mulVec, Matrix.mul_assoc]
+  rw [← finrank_range_mulVecLin (A * B), ← finrank_range_mulVecLin (B * C),
+    ← finrank_range_mulVecLin B, ← finrank_range_mulVecLin (A * B * C), hAB, hBC, hABC]
+  exact LinearMap.finrank_range_comp_add_finrank_range_comp_le _ _ _
+
 end Field
 
 /-! ### Lemmas about transpose and conjugate transpose
