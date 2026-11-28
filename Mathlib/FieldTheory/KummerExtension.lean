@@ -121,7 +121,7 @@ theorem norm_root_X_pow_sub_C {n : ℕ} {a : K} (hn : n ≠ 0) :
 theorem irreducible_X_pow_two_pow_sub_C_of_isSquare_neg_one
     (n : ℕ) {a : K} (hi : IsSquare (-1 : K)) (ha : ¬IsSquare a) :
     Irreducible (X ^ 2 ^ n - C a) := by
-  simp_rw [isSquare_iff_exists_sq, not_exists] at ha
+  rw [not_isSquare_iff_forall_sq_ne] at ha
   obtain ⟨i, hi⟩ := hi
   induction n with
   | zero => simp [irreducible_X_sub_C]
@@ -139,12 +139,12 @@ theorem irreducible_X_pow_two_pow_sub_C_of_isSquare_neg_one
 theorem irreducible_X_pow_two_pow_sub_C
     (n : ℕ) {a : K} (ha : ¬IsSquare a) (h4 : ∀ b : K, -4 * b ^ 4 ≠ a) :
     Irreducible (X ^ 2 ^ n - C a) := by
-  rw [isSquare_iff_exists_sq, not_exists] at ha
+  rw [not_isSquare_iff_forall_sq_ne] at ha
   induction n with
   | zero => simp [irreducible_X_sub_C]
   | succ n ih =>
     have irred : Irreducible (X ^ 2 - C a) :=
-      irreducible_X_pow_sub_C_of_prime Nat.prime_two fun b hb => ha b hb.symm
+      irreducible_X_pow_sub_C_of_prime Nat.prime_two ha
     cases n with
     | zero => simpa using irred
     | succ k =>
@@ -164,8 +164,8 @@ theorem irreducible_X_pow_two_pow_sub_C
         rw [← pow_two, div_pow, ← map_pow, ← map_pow, hb,
           norm_root_X_pow_sub_C (Nat.two_pow_pos _).ne', Nat.pow_add_one, pow_mul',
           neg_one_sq, one_pow, one_mul, root_X_pow_sub_C_pow, map_neg, neg_div,
-          ← map_div₀, div_self (by simpa using ha 0), map_one]
-      rw [isSquare_iff_exists_sq, not_exists]
+          ← map_div₀, div_self (by simpa using (ha 0).symm), map_one]
+      rw [not_isSquare_iff_forall_sq_ne]
       intro c hc
       let bas : Module.Basis (Fin 2) K (AdjoinRoot (X ^ 2 - C a)) :=
         (AdjoinRoot.powerBasis (X_pow_sub_C_ne_zero Nat.two_pos a)).basis.reindex
@@ -183,7 +183,7 @@ theorem irreducible_X_pow_two_pow_sub_C
       rw [← bas1, ← bas.repr.symm_apply_apply c, basrs, add_sq, mul_pow, root_X_pow_sub_C_pow,
         ← map_pow, ← map_pow (of _), ← map_mul, add_right_comm, ← map_add,
         ← mul_assoc (2 * _), mul_assoc 2, ← map_mul, ← map_ofNat (of (X ^ 2 - C a)) (nat_lit 2),
-        ← map_mul, ← basrs', eq_comm, bas.repr.symm_apply_eq, bas.repr_self] at hc
+        ← map_mul, ← basrs', bas.repr.symm_apply_eq, bas.repr_self] at hc
       have hu0 := congrFun (congrArg DFunLike.coe hc) 0
       have hu1 := congrArg (· ^ 2) <| congrFun (congrArg DFunLike.coe hc) 1
       simp only [Finsupp.equivFunOnFinite_symm_apply_apply,
@@ -217,10 +217,9 @@ theorem irreducible_X_pow_sub_C
       | succ k =>
         rw [pow_succ, pow_succ] at ha h4
         rw [mul_assoc, two_mul, two_add_two_eq_four] at h4
-        refine irreducible_X_pow_two_pow_sub_C _ ?_ (h4 (dvd_mul_left _ _))
-        intro ⟨b, hb⟩
-        apply ha 2 Nat.prime_two (dvd_mul_left _ _) b
-        rw [hb, sq]
+        exact irreducible_X_pow_two_pow_sub_C _
+          (not_isSquare_iff_forall_sq_ne.2 <| ha 2 Nat.prime_two (dvd_mul_left _ _))
+          (h4 (dvd_mul_left _ _))
   | prime_mul p m hp ih =>
     rw [mul_left_comm] at ha h4 ⊢
     have irred := ih (Nat.odd_mul.1 hm).2
