@@ -3834,6 +3834,7 @@ public import Mathlib.Combinatorics.SetFamily.AhlswedeZhang
 public import Mathlib.Combinatorics.SetFamily.Compression.Down
 public import Mathlib.Combinatorics.SetFamily.Compression.UV
 public import Mathlib.Combinatorics.SetFamily.DualVC
+public import Mathlib.Combinatorics.SetFamily.FishburnShepp
 public import Mathlib.Combinatorics.SetFamily.FourFunctions
 public import Mathlib.Combinatorics.SetFamily.HarrisKleitman
 public import Mathlib.Combinatorics.SetFamily.Intersecting
@@ -6483,6 +6484,7 @@ public import Mathlib.Order.KrullDimension
 public import Mathlib.Order.Lattice
 public import Mathlib.Order.Lattice.Congruence
 public import Mathlib.Order.Lattice.Nat
+public import Mathlib.Order.Lattice.PentagonDiamond
 public import Mathlib.Order.LatticeIntervals
 public import Mathlib.Order.Lex
 public import Mathlib.Order.LiminfLimsup
