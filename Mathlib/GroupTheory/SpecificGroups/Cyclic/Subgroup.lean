@@ -301,7 +301,7 @@ section
 variable [Fintype α]
 
 @[to_additive]
-theorem IsCyclic.unique_zpow_zmod (ha : ∀ x : α, x ∈ zpowers a) (x : α) :
+theorem IsCyclic.unique_npow_zmod (ha : ∀ x : α, x ∈ zpowers a) (x : α) :
     ∃! n : ZMod (Fintype.card α), x = a ^ n.val := by
   obtain ⟨n, rfl⟩ := ha x
   refine ⟨n, (?_ : a ^ n = _), fun y (hy : a ^ n = _) ↦ ?_⟩
@@ -310,6 +310,10 @@ theorem IsCyclic.unique_zpow_zmod (ha : ∀ x : α, x ∈ zpowers a) (x : α) :
   · rw [← zpow_natCast, zpow_eq_zpow_iff_modEq, orderOf_eq_card_of_forall_mem_zpowers ha,
       Nat.card_eq_fintype_card, ← ZMod.intCast_eq_intCast_iff] at hy
     simp [hy]
+
+@[deprecated (since := "2026-11-27")] alias IsCyclic.unique_zpow_zmod := IsCyclic.unique_npow_zmod
+@[deprecated (since := "2026-11-27")]
+alias IsAddCyclic.unique_zsmul_zmod := IsAddCyclic.unique_nsmul_zmod
 
 variable [DecidableEq α]
 
