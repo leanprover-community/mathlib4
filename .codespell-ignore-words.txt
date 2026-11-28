@@ -18,6 +18,7 @@ calle
 cant
 categor
 claus
+co-ordinate
 co-ordinates
 commmon
 comon
@@ -56,6 +57,7 @@ ibrary
 ihs
 ine
 ines
+inferrable
 intensional
 isses
 ist
@@ -84,6 +86,7 @@ pplications
 pres
 prevend
 prinf
+re-use
 reduct
 relm
 reord
@@ -101,6 +104,7 @@ topologie
 toword
 tru
 ue
+unparseable
 unter
 waring
 widder

@@ -259,7 +259,7 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
   -- Read the `nolints` file, with manual exceptions for the linter.
   -- NB. We pass these lints to `lintModules` explicitly to prevent cache invalidation bugs:
   -- if the text-based linter read the file itself, replaying a cached build of that
-  -- file could reuse an outdated version of the nolints file.
+  -- file could re-use an outdated version of the nolints file.
   -- (For syntax linters, such a bug actually occurred in mathlib.)
   -- This script is re-run each time, hence is immune to such issues.
   let filename : System.FilePath := ("scripts" / "nolints-style.txt")

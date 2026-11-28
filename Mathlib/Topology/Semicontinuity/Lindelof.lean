@@ -24,7 +24,7 @@ Of course we also provide the dual statements for lower semicontinuous functions
 ## Implementation notes
 
 There is currently no way to state the hypothesis "`E` admits a countable order-dense subset"
-which would be inferable by typeclass inference. Instead, we assume
+which would be inferrable by typeclass inference. Instead, we assume
 `[TopologicalSpace E] [OrderClosedTopology E] [DenselyOrdered E] [SeparableSpace E]`, and
 use `Dense.exists_between` to show that a chosen countable dense subset is order-dense.
 

@@ -262,7 +262,7 @@ open Command
 /--
 The deriving handler for the `Countable` class.
 Handles non-nested non-reflexive inductive types.
-They can be mutual too — in that case, there is an optimization to reuse all the generated
+They can be mutual too — in that case, there is an optimization to re-use all the generated
 functions and proofs.
 -/
 def mkCountableInstance (declNames : Array Name) : CommandElabM Bool := do

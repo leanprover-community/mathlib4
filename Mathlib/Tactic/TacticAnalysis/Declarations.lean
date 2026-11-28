@@ -671,7 +671,7 @@ def Mathlib.TacticAnalysis.verifyTryThisSuggestions
             let suggestedTac ← try
               parseSuggestionToTactic s
             catch e =>
-              logWarningAt i.tacI.stx m!"`{label}` produced unparsable suggestion: {e.toMessageData}"
+              logWarningAt i.tacI.stx m!"`{label}` produced unparseable suggestion: {e.toMessageData}"
               continue
 
             -- Skip empty interactive mode suggestions (just `grind => {}` with no body).

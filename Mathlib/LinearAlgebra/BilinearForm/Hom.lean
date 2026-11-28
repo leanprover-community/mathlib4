@@ -78,7 +78,7 @@ theorem sum_apply {α} (t : Finset α) (B : α → BilinForm R M) (v w : M) :
 
 variable {B}
 
-/-- The linear map obtained from a `BilinForm` by fixing the right coordinate and evaluating in
+/-- The linear map obtained from a `BilinForm` by fixing the right co-ordinate and evaluating in
 the left. -/
 def toLinHomFlip : BilinForm R M →ₗ[R] M →ₗ[R] M →ₗ[R] R :=
   flipHom.toLinearMap

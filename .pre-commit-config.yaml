@@ -17,4 +17,4 @@ repos:
     rev: v2.4.3
     hooks:
       - id: codespell
-        args: [--ignore-words=.codespell-whitelist-words.txt]
+        args: [--ignore-words=.codespell-ignore-words.txt]

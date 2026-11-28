@@ -83,7 +83,7 @@ For a finite dependent product `Π i : ι, A i` of sigma-finite measure spaces, 
 indices from `ι`, and a (later assumed nonnegative) real number `p`, this operation acts on a
 function `f` from `Π i, A i` into the extended nonnegative reals.  The operation is to partially
 integrate, in the `s` co-ordinates, the function whose value at `x : Π i, A i` is obtained by
-multiplying a certain power of `f` with the product, for each coordinate `i` in `s`, of a certain
+multiplying a certain power of `f` with the product, for each co-ordinate `i` in `s`, of a certain
 power of the integral of `f` along the "grid line" in the `i` direction through `x`.
 
 We are most interested in this operation when the set `s` is the universe in `ι`, but as a proxy for
@@ -109,7 +109,7 @@ variable {p : ℝ}
 /-- The main inductive step in the grid-lines lemma for the Gagliardo-Nirenberg-Sobolev inequality.
 
 The grid-lines operation `GridLines.T` on a nonnegative function on a finitary product type is
-less than or equal to the grid-lines operation of its partial integral in one coordinate
+less than or equal to the grid-lines operation of its partial integral in one co-ordinate
 (the latter intuitively considered as a function on a space "one dimension down"). -/
 theorem T_insert_le_T_lmarginal_singleton [∀ i, SigmaFinite (μ i)] (hp₀ : 0 ≤ p) (s : Finset ι)
     (hp : (s.card : ℝ) * p ≤ 1)
@@ -252,7 +252,7 @@ nonnegative real number `p` such that `(#ι - 1) * p ≤ 1`, for any function `f
 the extended nonnegative reals, we consider an associated "grid-lines quantity", the integral of an
 associated function from `Π i, A i` into the extended nonnegative reals.  The value of this function
 at `x : Π i, A i` is obtained by multiplying a certain power of `f` with the product, for each
-coordinate `i`, of a certain power of the integral of `f` along the "grid line" in the `i`
+co-ordinate `i`, of a certain power of the integral of `f` along the "grid line" in the `i`
 direction through `x`.
 
 This lemma bounds the Lebesgue integral of the grid-lines quantity by a power of the Lebesgue

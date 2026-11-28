@@ -34,7 +34,7 @@ variable {A B C : ZFClass.{u}} {x y : ZFSet.{u}}
 /-- Membership of classes. `A ᶜ∈ B` if `A` is a ZFC set which satisfies `B`.
 
 Note that the `A ∈ B` notation is already taken for the case where `A : ZFSet` instead
-(the `OutParam` in `Mem` forces the type of `A` to be uniquely inferable from the type of `B`). -/
+(the `OutParam` in `Mem` forces the type of `A` to be uniquely inferrable from the type of `B`). -/
 protected def CMem (A B : ZFClass.{u}) : Prop :=
   ∃ x : ZFSet, ↑x = A ∧ x ∈ B
 

@@ -145,10 +145,10 @@ theorem mulAntidiagonal_congr (hp : p ∈ mulAntidiagonal n) (hq : q ∈ mulAnti
   rw [mem_mulAntidiagonal] at hp hq
   rw [hq, ← h, hp]
 
-/-- A point in the mulAntidiagonal is determined by its first coordinate (subtype version of
+/-- A point in the mulAntidiagonal is determined by its first co-ordinate (subtype version of
 `Finset.mulAntidiagonal_congr`). This lemma is used by the `ext` tactic. -/
 @[to_additive (attr := ext)
-/-- A point in the antidiagonal is determined by its first coordinate (subtype version of
+/-- A point in the antidiagonal is determined by its first co-ordinate (subtype version of
 `Finset.antidiagonal_congr`). This lemma is used by the `ext` tactic. -/]
 theorem mulAntidiagonal_subtype_ext {p q : mulAntidiagonal n} (h : p.val.1 = q.val.1) : p = q :=
   Subtype.ext ((mulAntidiagonal_congr p.prop q.prop).mpr h)
