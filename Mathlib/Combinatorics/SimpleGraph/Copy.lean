@@ -211,6 +211,21 @@ end Copy
 /-- A `Subgraph G` gives rise to a copy from the coercion to `G`. -/
 def Subgraph.coeCopy (G' : G.Subgraph) : Copy G'.coe G := G'.hom.toCopy hom_injective
 
+set_option warn.sorry false in
+/-- #43819 -/
+def Copy.deleteEdges (f : Copy G H) (s : Set (Sym2 V)) (t : Set (Sym2 W))
+    (h : Sym2.map f ⁻¹' t ⊆ s) : Copy (G.deleteEdges s) (H.deleteEdges t) where
+  toHom.toFun := f.toHom
+  toHom.map_rel' := sorry
+  injective' := f.injective
+
+set_option warn.sorry false in
+/-- #43819 -/
+def Iso.deleteEdges {W} {G' : SimpleGraph W} (f : G ≃g G') (s : Set (Sym2 V)) (t : Set (Sym2 W))
+    (h : Sym2.map f ⁻¹' t = s) : G.deleteEdges s ≃g G'.deleteEdges t where
+  __ := f
+  map_rel_iff' := sorry
+
 end Copy
 
 /-!
