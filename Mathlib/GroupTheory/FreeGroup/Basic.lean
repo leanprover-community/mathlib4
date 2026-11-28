@@ -194,10 +194,11 @@ respectively. This is also known as Newman's diamond lemma. -/
   to `w2` and `w3` respectively, then there is a word `w4` such that `w2` and `w3` reduce to `w4`
   respectively. This is also known as Newman's diamond lemma. -/]
 theorem church_rosser : Red L₁ L₂ → Red L₁ L₃ → Join Red L₂ L₃ :=
-  Relation.church_rosser fun _ b c hab hac =>
-    match b, c, Red.Step.diamond hab hac rfl with
-    | b, _, Or.inl rfl => ⟨b, by rfl, by rfl⟩
-    | _, _, Or.inr ⟨d, hbd, hcd⟩ => ⟨d, ReflGen.single hbd, hcd.to_red⟩
+  have : IsStronglyConfluent (@Step α) := ⟨fun _ b _ hab hac ↦
+    match Step.diamond hab hac rfl with
+    | .inl rfl => ⟨b, .refl, .refl⟩
+    | .inr ⟨d, hbd, hcd⟩ => ⟨d, .single hbd, hcd.to_red⟩⟩
+  (IsStronglyConfluent.isConfluent.join_of_rel_of_rel · ·)
 
 @[to_additive]
 theorem cons_cons {p} : Red L₁ L₂ → Red (p :: L₁) (p :: L₂) :=
@@ -344,10 +345,7 @@ end Red
 
 @[to_additive]
 theorem equivalence_join_red : Equivalence (Join (@Red α)) :=
-  equivalence_join_reflTransGen fun _ b c hab hac =>
-    match b, c, Red.Step.diamond hab hac rfl with
-    | b, _, Or.inl rfl => ⟨b, by rfl, by rfl⟩
-    | _, _, Or.inr ⟨d, hbd, hcd⟩ => ⟨d, ReflGen.single hbd, ReflTransGen.single hcd⟩
+  @equivalence_join_reflTransGen _ Red.Step ⟨@Red.church_rosser α⟩
 
 @[to_additive]
 theorem join_red_of_step (h : Red.Step L₁ L₂) : Join Red L₁ L₂ := by
