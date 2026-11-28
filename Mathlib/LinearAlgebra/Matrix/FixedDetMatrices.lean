@@ -32,6 +32,24 @@ namespace FixedDetMatrices
 open Matrix hiding mul_smul
 open ModularGroup SpecialLinearGroup MatrixGroups
 
+variable {n R} in
+/-- Make a `A : FixedDetMatrix n R m` from `A : Matrix n n R ` such that `det A = m`.
+
+Use this definition instead of `(⟨A, h⟩ : FixedDetMatrix n R m)`. -/
+def _root_.FixedDetMatrix.mk {m : R} (A : Matrix n n R) (h : det A = m) : FixedDetMatrix n R m :=
+    ⟨A, h⟩
+
+@[simp]
+lemma coe_mk {m : R} (A : Matrix n n R) (h : det A = m) :
+    (FixedDetMatrix.mk A h).val = A := rfl
+
+@[simp]
+theorem mk_inj {m : R} {A B : Matrix n n R} (hA : det A = m) (hB : det B = m) :
+    FixedDetMatrix.mk A hA = .mk B hB ↔ A = B :=
+  Subtype.mk_eq_mk
+
+lemma mk_coe {m : R} (A : FixedDetMatrix n R m) : .mk (A.val) (A.property) = A := rfl
+
 /-- Extensionality theorem for `FixedDetMatrix` with respect to the underlying matrix, not
 entrywise. -/
 lemma ext' {m : R} {A B : FixedDetMatrix n R m} (h : A.val = B.val) : A = B := by
@@ -45,20 +63,19 @@ lemma ext {m : R} {A B : FixedDetMatrix n R m} (h : ∀ i j, A.val i j = B.val i
   apply h
 
 instance (m : R) : SMul (SpecialLinearGroup n R) (FixedDetMatrix n R m) where
-  smul g A := ⟨g * A.val, by simp only [det_mul, SpecialLinearGroup.det_coe, A.property, one_mul]⟩
+  smul g A := .mk (g * A.val) (by simp [A.property])
 
 lemma smul_def (m : R) (g : SpecialLinearGroup n R) (A : (FixedDetMatrix n R m)) :
-    g • A = ⟨g * A.val, by simp only [det_mul, SpecialLinearGroup.det_coe, A.property, one_mul]⟩ :=
+    g • A = .mk ((g : Matrix n n R) * A.val) (by simp [A.property]) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 instance (m : R) : MulAction (SpecialLinearGroup n R) (FixedDetMatrix n R m) where
-  one_smul b := by rw [smul_def]; simp only [coe_one, one_mul, Subtype.coe_eta]
-  mul_smul x y b := by simp_rw [smul_def, ← mul_assoc, coe_mul]
+  one_smul b := by simp [smul_def, mk_coe]
+  mul_smul x y b := by simp [smul_def, ← mul_assoc]
 
 lemma smul_coe (m : R) (g : SpecialLinearGroup n R) (A : FixedDetMatrix n R m) :
     (g • A).val = g * A.val := by
-  rw [smul_def]
+  simp [smul_def]
 
 section IntegralFixedDetMatrices
 
@@ -78,8 +95,8 @@ private lemma reduce_aux {A : Δ m} (h : (A.val 1 0) ≠ 0) :
   suffices ((reduceStep A).val 1 0) = A.val 0 0 % A.val 1 0 by
     rw [this, abs_eq_self.mpr (Int.emod_nonneg (A.val 0 0) h)]
     exact Int.emod_lt_abs (A.val 0 0) h
-  simp_rw [Int.emod_def, sub_eq_add_neg, reduceStep, smul_coe, coe_T_zpow, S]
-  simp [vecMul, vecHead, vecTail, mul_comm]
+  simp [Int.emod_def, sub_eq_add_neg, reduceStep, smul_coe, coe_T_zpow,
+    vecMul, vecHead, vecTail, mul_comm]
 
 /-- Reduction lemma for integral FixedDetMatrices. -/
 @[elab_as_elim]
@@ -111,15 +128,11 @@ def reduce : Δ m → Δ m := fun A ↦
 
 lemma reduce_of_pos {A : Δ m} (hc : (A.val 1 0) = 0) (ha : 0 < A.val 0 0) :
     reduce A = (T ^ (-(A.val 0 1 / A.val 1 1))) • A := by
-  rw [reduce]
-  simp only [zpow_neg, Int.ediv_neg, neg_neg] at *
-  simp_rw [ite_eq_left hc, ite_eq_left ha]
+  simp_all [reduce]
 
 lemma reduce_of_not_pos {A : Δ m} (hc : (A.val 1 0) = 0) (ha : ¬ 0 < A.val 0 0) :
     reduce A = (T ^ (-(-A.val 0 1 / -A.val 1 1))) • (S • (S • A)) := by
-  rw [reduce]
-  simp only [zpow_neg, Int.ediv_neg, neg_neg] at *
-  simp_rw [ite_eq_left hc, ite_eq_right ha]
+  simp_all [reduce]
 
 @[simp]
 lemma reduce_reduceStep {A : Δ m} (hc : (A.val 1 0) ≠ 0) :
@@ -174,7 +187,6 @@ lemma S_smul_four (A : Δ m) : S • S • S • S • A = A := by
 lemma T_S_rel_smul (A : Δ m) : S • S • S • T • S • T • S • A = T⁻¹ • A := by
   simp_rw [← T_S_rel, ← smul_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma reduce_mem_reps {m : ℤ} (hm : m ≠ 0) (A : Δ m) : reduce A ∈ reps m := by
   induction A using reduce_rec with
   | step A h1 h2 => simpa only [reduce_reduceStep h1] using h2
@@ -208,7 +220,7 @@ variable {C : Δ m → Prop}
 private lemma prop_red_S (hS : ∀ B, C B → C (S • B)) (B) : C (S • B) ↔ C B := by
   refine ⟨?_, hS _⟩
   intro ih
-  rw [← (S_smul_four B)]
+  rw [← S_smul_four B]
   solve_by_elim
 
 private lemma prop_red_T (hS : ∀ B, C B → C (S • B)) (hT : ∀ B, C B → C (T • B)) (B) :
@@ -216,7 +228,7 @@ private lemma prop_red_T (hS : ∀ B, C B → C (S • B)) (hT : ∀ B, C B → 
   refine ⟨?_, hT _⟩
   intro ih
   rw [show B = T⁻¹ • T • B by simp, ← T_S_rel_smul]
-  solve_by_elim (maxDepth := 10)
+  grind
 
 private lemma prop_red_T_pow (hS : ∀ B, C B → C (S • B)) (hT : ∀ B, C B → C (T • B)) :
      ∀ B (n : ℤ), C (T ^ n • B) ↔ C B := by
