@@ -1274,9 +1274,10 @@ namespace Set
 
 section One
 
--- Redeclaring an instance for better keys
 @[to_additive]
-instance instFintypeOne [One α] : Fintype (1 : Set α) := Set.fintypeSingleton _
+instance instUniqueOne [One α] : Unique (1 : Set α) := inferInstanceAs <| Unique ({1} : Set α)
+
+example [One α] : Fintype (1 : Set α) := inferInstance
 
 variable [One α]
 
