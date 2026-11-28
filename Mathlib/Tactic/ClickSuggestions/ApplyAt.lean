@@ -97,7 +97,7 @@ def ApplyAtLemma.try (lem : ApplyAtLemma) (assignableMVars : Array Expr) :
   let unfiltered ← mkSuggestion tactic "apply" (.element "div" #[] htmls) (solves := false)
   let pattern ← do
     let (xs, _, _) ← forallMetaTelescopeReducing (← lem.name.getType)
-    exprToHtml (← inferType xs.back!)
+    exprToHtml (← inferType xs.back!).consumeTypeAnnotations
   return { filtered, unfiltered, key, pattern }
 
 end Mathlib.Tactic.ClickSuggestions
