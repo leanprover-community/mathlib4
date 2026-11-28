@@ -22,12 +22,9 @@ supplied for true `εNFA`'s.
 
 @[expose] public section
 
-
 open Set
 
 open scoped Computability
-
--- "ε_NFA"
 
 universe u v
 
@@ -177,11 +174,10 @@ theorem eval_singleton (a : α) : M.eval [a] = M.stepSet (M.εClosure M.start) a
 
 @[simp]
 theorem eval_append_singleton (x : List α) (a : α) : M.eval (x ++ [a]) = M.stepSet (M.eval x) a :=
-  evalFrom_append_singleton _ _ _ _
+  evalFrom_append_singleton ..
 
 /-- `M.accepts` is the language of `x` such that there is an accept state in `M.eval x`. -/
-def accepts : Language α :=
-  { x | ∃ S ∈ M.accept, S ∈ M.eval x }
+def accepts : Language α := .ofSetList {x | ∃ S ∈ M.accept, S ∈ M.eval x}
 
 /-- `M.IsPath` represents a traversal in `M` from a start state to an end state by following a list
 of transitions in order. -/

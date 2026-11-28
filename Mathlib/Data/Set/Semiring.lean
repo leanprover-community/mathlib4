@@ -80,6 +80,11 @@ lemma add_def (s t : SetSemiring α) : s + t = ofSet (s.toSet ∪ t.toSet) := rf
 @[simp] lemma toSet_add (s t : SetSemiring α) : (s + t).toSet = s.toSet ∪ t.toSet := rfl
 @[simp] lemma ofSet_union (s t : Set α) : ofSet (s ∪ t) = ofSet s + ofSet t := rfl
 
+@[simp] lemma toSet_eq_empty_iff {s : SetSemiring α} : s.toSet = ∅ ↔ s = 0 := by
+  rw [SetSemiring.ext_iff]; rfl
+@[simp] lemma ofSet_eq_zero_iff {s : Set α} : ofSet s = 0 ↔ s = ∅ := by
+  rw [SetSemiring.ext_iff]; rfl
+
 instance : AddCommMonoid (SetSemiring α) where
   add_assoc _ _ _ := SetSemiring.ext (union_assoc ..)
   zero_add _ := SetSemiring.ext (empty_union _)
@@ -104,6 +109,12 @@ instance : One (SetSemiring α) where one := ofSet 1
 lemma one_def : (1 : SetSemiring α) = ofSet 1 := rfl
 @[simp] lemma toSet_one : (1 : SetSemiring α).toSet = 1 := rfl
 @[simp] lemma ofSet_one : ofSet (1 : Set α) = 1 := rfl
+@[simp] lemma singleton_one : ({1} : SetSemiring α) = 1 := rfl
+
+@[simp] lemma toSet_eq_singleton_one_iff {s : SetSemiring α} : s.toSet = {1} ↔ s = 1 := by
+  rw [SetSemiring.ext_iff]; rfl
+@[simp] lemma ofSet_eq_one_iff {s : Set α} : ofSet s = 1 ↔ s = {1} := by
+  rw [SetSemiring.ext_iff]; rfl
 
 end One
 
@@ -116,9 +127,11 @@ instance : Mul (SetSemiring α) where mul s t := ofSet (s.toSet * t.toSet)
 lemma mul_def (s t : SetSemiring α) : s * t = ofSet (s.toSet * t.toSet) := rfl
 @[simp] lemma toSet_mul (s t : SetSemiring α) : (s * t).toSet = s.toSet * t.toSet := rfl
 @[simp] lemma ofSet_mul (s t : Set α) : ofSet (s * t) = ofSet s * ofSet t := rfl
+@[simp] lemma singleton_mul_singleton (a b : α) : ({a} * {b} : SetSemiring α) = {a * b} := by
+  ext; simp
 
 instance : NoZeroDivisors (SetSemiring α) where
-  eq_zero_or_eq_zero_of_mul_eq_zero := by simp [SetSemiring.ext_iff]
+  eq_zero_or_eq_zero_of_mul_eq_zero := by simp [← toSet_eq_empty_iff]
 
 instance : MulLeftMono (SetSemiring α) where
   elim _ _ _ := mul_subset_mul_left
@@ -144,6 +157,9 @@ instance [CommSemigroup α] : CommSemigroup (SetSemiring α) :=
   fast_instance% toSetEquiv.commSemigroup
 
 instance [Monoid α] : Monoid (SetSemiring α) := fast_instance% toSetEquiv.monoid
+
+@[simp] lemma singleton_pow [Monoid α] (a : α) (n : ℕ) : ({a} ^ n : SetSemiring α) = {a ^ n} := by
+  ext; simp
 
 instance [CommMonoid α] : CommMonoid (SetSemiring α) := fast_instance% toSetEquiv.commMonoid
 
@@ -180,7 +196,7 @@ with respect to the pointwise operations on sets. -/
 def imageHom : SetSemiring α →+* SetSemiring β where
   toFun s := ofSet (f '' s.toSet)
   map_zero' := SetSemiring.ext (image_empty _)
-  map_one' := by rw [toSet_one, image_one, map_one, singleton_one, ofSet_one]
+  map_one' := by simp
   map_add' _ _ := SetSemiring.ext (image_union ..)
   map_mul' _ _ := SetSemiring.ext (image_mul f)
 
@@ -191,6 +207,8 @@ def imageHom : SetSemiring α →+* SetSemiring β where
 
 lemma imageHom_comp (g : β →* γ) : imageHom (g.comp f) = (imageHom g).comp (imageHom f) := by
   ext; simp
+
+lemma imageHom_singleton (a : α) : imageHom f {a} = {f a} := by simp
 
 end ImageHom
 
