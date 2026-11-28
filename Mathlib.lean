@@ -19,6 +19,7 @@ public import Mathlib.Algebra.Algebra.Field
 public import Mathlib.Algebra.Algebra.Hom
 public import Mathlib.Algebra.Algebra.Hom.Rat
 public import Mathlib.Algebra.Algebra.IsSimpleRing
+public import Mathlib.Algebra.Algebra.Leibniz.Basic
 public import Mathlib.Algebra.Algebra.NonUnitalHom
 public import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
 public import Mathlib.Algebra.Algebra.Operations
