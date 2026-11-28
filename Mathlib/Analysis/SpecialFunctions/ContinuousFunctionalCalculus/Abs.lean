@@ -58,6 +58,11 @@ lemma abs_star (a : A) (ha : IsStarNormal a := by cfc_tac) : abs (star a) = abs 
 lemma abs_zero : abs (0 : A) = 0 := by
   simp [abs]
 
+/-- The function `a ↦ 2⁻¹ • (abs a + a)`. On self-adjoint elements it coincides with `a⁺`
+(see `CFC.halfAbsAddSelf_eq_posPart`), but unlike `a ↦ a⁺` it is continuous on all of `A`
+(see `CFC.continuous_halfAbsAddSelf`). -/
+noncomputable def halfAbsAddSelf (a : A) : A := (2 : ℝ)⁻¹ • (abs a + a)
+
 variable [IsTopologicalRing A] [T2Space A]
 
 lemma abs_mul_abs (a : A) : abs a * abs a = star a * a :=
@@ -140,6 +145,12 @@ lemma abs_sub_self (a : A) (ha : IsSelfAdjoint a := by cfc_tac) : abs a - a = 2 
 lemma abs_add_self (a : A) (ha : IsSelfAdjoint a := by cfc_tac) : abs a + a = 2 • a⁺ := by
   simpa [two_smul] using
     congr($(CFC.posPart_add_negPart a) + $(CFC.posPart_sub_negPart a)).symm
+
+@[grind =]
+lemma halfAbsAddSelf_eq_posPart (a : A) (ha : IsSelfAdjoint a := by cfc_tac) :
+    halfAbsAddSelf a = a⁺ := by
+  rw [halfAbsAddSelf, abs_add_self a, ← ofNat_smul_eq_nsmul ℝ, smul_smul]
+  norm_num
 
 @[simp, grind =]
 lemma cfcAbs_cfcAbs (a : A) : abs (abs a) = abs a := abs_of_nonneg ..
@@ -290,8 +301,14 @@ variable [NonUnitalNormedRing A] [StarRing A] [ContinuousStar A]
   [NonUnitalIsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
   [PartialOrder A] [StarOrderedRing A] [CompleteSpace A]
 
+@[fun_prop]
 protected lemma continuous_abs : Continuous (CFC.abs : A → A) :=
   continuousOn_sqrt.comp_continuous (by fun_prop) (by cfc_tac)
+
+@[fun_prop]
+lemma continuous_halfAbsAddSelf : Continuous (halfAbsAddSelf : A → A) := by
+  unfold halfAbsAddSelf
+  fun_prop
 
 end Isometric
 
