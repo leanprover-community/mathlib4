@@ -354,7 +354,7 @@ along `uliftYoneda : C ⥤ Cᵒᵖ ⥤ Type max w v₁ v₂`. -/
 noncomputable def natTrans : F.op.lan ⟶ G :=
   Functor.descOfIsLeftKanExtension _ (compULiftYonedaIsoULiftYonedaCompLan.{w} F).hom _ φ
 
-@[deprecated "No replacemenet" (since := "2026-08-23")]
+@[deprecated "No replacement" (since := "2026-08-23")]
 lemma natTrans_app_uliftYoneda_obj (X : C) :
     (natTrans.{w} φ).app (uliftYoneda.{max w v₂}.obj X) =
       (compULiftYonedaIsoULiftYonedaCompLan.{w} F).inv.app X ≫ φ.app X := by

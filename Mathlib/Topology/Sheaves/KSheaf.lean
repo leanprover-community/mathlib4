@@ -12,7 +12,7 @@ public import Mathlib.Topology.Sheaves.KPresheaf
 
 We define K-sheaves on `X` a T2 topological space with value in an arbitrary category `A`.
 
-This coresponds to the presheaves `F : KPresheaf A X` such that:
+This corresponds to the presheaves `F : KPresheaf A X` such that:
 - `F.obj (∅)` is terminal.
 - For any two compacts subsets `K₁` and `K₂` of `X`, `F.obj (K₁ ∪ K₂)` is the pullback
   of `F.obj K₁` and `F.obj K₂` over `F.obj (K₁ ∩ K₂)`.

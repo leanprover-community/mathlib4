@@ -12,7 +12,7 @@ public import Mathlib.Analysis.InnerProductSpace.Reproducing
 # Operations on RKHS
 
 This file implements the maps that show how RKHSs created from kernels formed by applying operations
-to a set of kernels relate to the RKHSs of the constituant kernels.
+to a set of kernels relate to the RKHSs of the constituent kernels.
 
 ## main definitions
  - `generator`: the operator `(f, g) ↦ ⇑f + ⇑g` inducing the RKHS `H + H'`.

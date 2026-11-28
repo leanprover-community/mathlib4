@@ -287,7 +287,7 @@ section withoutProofIrrelevance
 
 /-! Demonstrate that disabling proof irrelevance can be useful for `setm` --/
 
-/- This test fails due to the current interaction of metavariable assigment and proof irrelevance,
+/- This test fails due to the current interaction of metavariable assignment and proof irrelevance,
 and perhaps is due to a bug.
 
 See https://github.com/leanprover/lean4/issues/9612 -/

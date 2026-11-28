@@ -41,7 +41,7 @@ but the proof is independent of the Fuglede–Putnam–Rosenblum theorem.
 ## Main results
 
 + `fuglede_putnam_rosenblum`: If `a` and `b` are normal elements in a C⋆-algebra `A` which
-  are interwined by `x` (i.e., `SemiconjBy x a b`, that is, `x * a = b * x`), then `star a` and
+  are intertwined by `x` (i.e., `SemiconjBy x a b`, that is, `x * a = b * x`), then `star a` and
   `star b` are also intertwined by `x`.
 + `isStarNormal_iff_forall_exp_mul_exp_mem_unitary`: A characterization of normal elements in a
   C⋆-algebra in terms of exponentials.
@@ -162,7 +162,7 @@ section NonUnital
 variable [NonUnitalCStarAlgebra A] {a b x : A}
 
 /-- **Fuglede–Putnam–Rosenblum**: If `a` and `b` are normal elements in a C⋆-algebra `A` which
-are interwined by `x`, then `star a` and `star b` are also intertwined by `x`. -/
+are intertwined by `x`, then `star a` and `star b` are also intertwined by `x`. -/
 public lemma SemiconjBy.star_right (ha : IsStarNormal a) (hb : IsStarNormal b)
     (h : SemiconjBy x a b) : SemiconjBy x (star a) (star b) := by
   apply Unitization.inr_injective (R := ℂ)
