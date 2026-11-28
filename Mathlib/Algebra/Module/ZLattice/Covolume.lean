@@ -309,7 +309,7 @@ private theorem frontier_equivFun {E : Type*} [AddCommGroup E] [Module ℝ E] {�
     (b : Basis ι ℝ E) (s : Set E) :
     frontier (b.equivFun '' s) = b.equivFun '' (frontier s) := by
   rw [LinearEquiv.image_eq_preimage_symm, LinearEquiv.image_eq_preimage_symm]
-  exact (Homeomorph.preimage_frontier b.equivFunL.toHomeomorph.symm s).symm
+  exact (b.equivFunL.symm.preimage_frontier s).symm
 
 variable {ι : Type*} [Fintype ι]
 variable (L : Submodule ℤ (ι → ℝ)) [DiscreteTopology L] [IsZLattice ℝ L]
