@@ -932,26 +932,50 @@ theorem comap_center_le_center {f : A →ₐ[R] B} (hf : Function.Injective f) :
 theorem map_center_eq (f : A ≃ₐ[R] B) : map f (center R A) = center R B :=
   SetLike.coe_injective (Set.image_center_eq f)
 
-/-- An isomorphism of `R`-algebras induces an `R`-algebra isomorphism between their centers. -/
-@[simps! apply_coe]
-def centerCongr (e : A ≃ₐ[R] B) :
-    center R A ≃ₐ[R] center R B where
-  toRingEquiv := Subsemiring.centerCongr e.toRingEquiv
-  map_smul' _ _ := Subtype.ext <| e.map_smul' _ _
+instance : Algebra R (Center A) := inferInstanceAs <| Algebra R (center R A)
 
-@[simp] lemma toRingEquiv_centerCongr (e : A ≃ₐ[R] B) :
-    (centerCongr e).toRingEquiv = Subsemiring.centerCongr e.toRingEquiv := rfl
+@[simp]
+lemma _root_.Center.coe_smul_self (r : R) (z : Center A) :
+    (r • z).val = r • z.val := rfl
 
-@[simp] lemma symm_centerCongr (e : A ≃ₐ[R] B) : (centerCongr e).symm = centerCongr e.symm := rfl
+@[simp]
+lemma _root_.Center.coe_algebraMap (r : R) :
+    (algebraMap R (Center A) r).val = algebraMap R A r := rfl
 
-@[simp] lemma centerCongr_refl : centerCongr (.refl (R := R) (A₁ := A)) = .refl := rfl
+/-- An isomorphism morphism between `R`-algebras induces an `R`-algebra isomorphism between their
+centers. -/
+@[simps!]
+def _root_.AlgEquiv.toCenter (e : A ≃ₐ[R] B) :
+    Center A ≃ₐ[R] Center B where
+  toRingEquiv := e.toRingEquiv.toCenter
+  commutes' := by simp
 
-@[simp] lemma centerCongr_trans_centerCongr {C : Type*} [Semiring C] [Algebra R C]
-    (e : A ≃ₐ[R] B) (f : B ≃ₐ[R] C) :
-    (centerCongr e).trans (centerCongr f) = centerCongr (e.trans f) := rfl
+variable (R A) in
+/-- The inclusion of `Center R` into `R` as a `R`-algebra homomorphism. -/
+@[simps!]
+def _root_.Center.algHom :
+    Center A →ₐ[R] A where
+  toRingHom := Center.ringHom A
+  commutes' := by simp
 
-@[simp] lemma centerCongr_symm_apply_coe (e : A ≃ₐ[R] B) (a : center R B) :
-    centerCongr e.symm a = e.symm a := rfl
+instance : Algebra R (Center Aᵐᵒᵖ) where
+  smul r z := Center.mk (MulOpposite.op ((algebraMap R A) r) * z)
+    (MulOpposite.op_mem_center_iff.mpr (Semigroup.mem_center_iff.mpr (fun a => by
+      simp_rw [← mul_assoc, MulOpposite.unop_op, ← Algebra.commutes, mul_assoc,
+        (Center.mk (z.val.unop) (MulOpposite.unop_mem_center_iff.mpr z.prop)).comm])))
+  algebraMap := { toFun r := Center.toMulOpposite (algebraMap R (Center A) r)
+                  map_one' := by simp
+                  map_mul' := by simp
+                  map_zero' := by simp
+                  map_add' := by simp }
+  commutes' a z := by simp [z.comm]
+  smul_def' r z := rfl
+
+/-- The center of an `R`-algera is isomorphic to the center of its opposite. -/
+@[simps!]
+def _root_.Center.toMulOppositeAlgEquiv : Center A ≃ₐ[R] Center Aᵐᵒᵖ where
+  toRingEquiv := Center.toMulOppositeRingEquiv
+  commutes' _ := rfl
 
 end Center
 
