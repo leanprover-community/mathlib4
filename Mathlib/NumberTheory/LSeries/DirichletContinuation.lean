@@ -8,6 +8,8 @@ module
 public import Mathlib.NumberTheory.EulerProduct.DirichletLSeries
 public import Mathlib.NumberTheory.LSeries.ZMod
 
+import Mathlib.Analysis.Analytic.Uniqueness
+
 /-!
 # Analytic continuation of Dirichlet L-functions
 

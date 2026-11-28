@@ -8,6 +8,7 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.RegularizedHypergeometric
 
+import Mathlib.Analysis.Analytic.IsolatedZeros
 import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
 
 /-!

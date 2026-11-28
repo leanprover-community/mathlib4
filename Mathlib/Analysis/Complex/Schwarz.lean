@@ -5,8 +5,10 @@ Authors: Yury Kudryashov
 -/
 module
 
+public import Mathlib.Analysis.Calculus.DSlope
 public import Mathlib.Analysis.Complex.AbsMax
 
+import Mathlib.Analysis.Calculus.FDeriv.Pow
 import Mathlib.Analysis.Complex.RemovableSingularity
 import Mathlib.Analysis.Normed.Module.HahnBanach
 

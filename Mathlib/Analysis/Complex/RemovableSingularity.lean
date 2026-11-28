@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
+public import Mathlib.Analysis.Calculus.DSlope
 public import Mathlib.Analysis.Complex.CauchyIntegral
 
 import Mathlib.Analysis.Asymptotics.SpecificAsymptotics

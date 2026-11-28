@@ -10,6 +10,8 @@ public import Mathlib.Analysis.Complex.CauchyIntegral
 import Mathlib.Analysis.Polynomial.Basic
 import Mathlib.Logic.Function.Const
 
+import Mathlib.Analysis.Calculus.DSlope
+
 set_option doc.verso true
 set_option doc.verso.suggestions false
 

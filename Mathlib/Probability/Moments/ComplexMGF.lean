@@ -9,6 +9,7 @@ public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
 public import Mathlib.Probability.Moments.Basic
 public import Mathlib.Probability.Moments.IntegrableExpMul
 
+import Mathlib.Analysis.Analytic.IsolatedZeros
 import Mathlib.Analysis.Calculus.ParametricIntegral
 import Mathlib.Analysis.Complex.CauchyIntegral
 
