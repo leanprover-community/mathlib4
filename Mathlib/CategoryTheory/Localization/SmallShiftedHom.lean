@@ -206,28 +206,24 @@ lemma equiv_shift' {a : M} [HasSmallLocalizedShiftedHom.{w} W M X Y]
     L.commShiftIso_add' h, Functor.CommShift.isoAdd'_inv_app, Iso.inv_hom_id_app_assoc,
     ← Functor.map_comp_assoc, Iso.hom_inv_id_app, Functor.comp_obj, comp_id]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma equiv_shift {a : M} [HasSmallLocalizedShiftedHom.{w} W M X Y]
     [HasSmallLocalizedShiftedHom.{w} W M Y Y]
     (f : SmallShiftedHom.{w} W X Y a) (n a' : M) (h : a + n = a') :
     equiv W L (f.shift n a' h) = (L.commShiftIso n).hom.app X ≫ (equiv W L f)⟦n⟧' ≫
       (shiftFunctorAdd' D a n a' h).inv.app (L.obj Y) := by
   dsimp [equiv]
-  erw [equiv_shift']
+  rw [equiv_shift']
   simp only [Functor.comp_obj, assoc, Iso.inv_hom_id_app, comp_id, Functor.map_comp]
-  rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma equiv_comp [HasSmallLocalizedShiftedHom.{w} W M X Y]
     [HasSmallLocalizedShiftedHom.{w} W M Y Z] [HasSmallLocalizedShiftedHom.{w} W M X Z]
     [HasSmallLocalizedShiftedHom.{w} W M Z Z] {a b c : M}
     (f : SmallShiftedHom.{w} W X Y a) (g : SmallShiftedHom.{w} W Y Z b) (h : b + a = c) :
     equiv W L (f.comp g h) = (equiv W L f).comp (equiv W L g) h := by
   dsimp [comp, equiv, ShiftedHom.comp]
-  erw [SmallHom.equiv_comp]
+  rw [SmallHom.equiv_comp]
   simp only [equiv_shift', Functor.comp_obj, assoc, Iso.inv_hom_id_app,
     comp_id, Functor.map_comp]
-  rfl
 
 end
 

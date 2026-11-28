@@ -52,13 +52,13 @@ variable {W₁ W₂} in
 /-- Constructor for localizer morphisms given by a functor `F : C₁ ⥤ C₂`
 under the stronger assumption that the classes of morphisms `W₁` and `W₂`
 satisfy `W₁ = W₂.inverseImage F`. -/
-@[simps]
+@[simps, implicit_reducible]
 def ofEq {F : C₁ ⥤ C₂} (hW : W₁ = W₂.inverseImage F) : LocalizerMorphism W₁ W₂ where
   functor := F
   map := by rw [hW]
 
 /-- The identity functor as a morphism of localizers. -/
-@[simps]
+@[simps, implicit_reducible]
 def id : LocalizerMorphism W₁ W₁ where
   functor := 𝟭 C₁
   map _ _ _ hf := hf
@@ -69,7 +69,7 @@ instance : (id W₁).functor.IsEquivalence :=
 variable {W₁ W₂ W₃}
 
 /-- The composition of two localizers morphisms. -/
-@[simps]
+@[simps, implicit_reducible]
 def comp (Φ : LocalizerMorphism W₁ W₂) (Ψ : LocalizerMorphism W₂ W₃) :
     LocalizerMorphism W₁ W₃ where
   functor := Φ.functor ⋙ Ψ.functor
@@ -397,7 +397,7 @@ attribute [local simp] Functor.asEquivalence_counitIso_hom_app
 /-- The inverse of a localizer morphism `Φ : LocalizerMorphism W₁ W₂`,
 when `Φ.functor` is an equivalence, `W₁` is induced by `W₂`
 and `W₂` respects isomorphisms. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def inv : LocalizerMorphism W₂ W₁ where
   functor := Φ.functor.inv
   map := by
@@ -407,12 +407,10 @@ noncomputable def inv : LocalizerMorphism W₂ W₁ where
       (Arrow.isoMk (Φ.functor.asEquivalence.counitIso.app _)
         (Φ.functor.asEquivalence.counitIso.app _))).2 hf
 
-set_option backward.defeqAttrib.useBackward true in
 instance : Φ.inv.functor.IsEquivalence := by
   dsimp
   infer_instance
 
-set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] Functor.asEquivalence_inverse
   Functor.asEquivalence_counitIso_hom_app Functor.asEquivalence_counitIso_inv_app in
 instance : Φ.inv.IsInduced where

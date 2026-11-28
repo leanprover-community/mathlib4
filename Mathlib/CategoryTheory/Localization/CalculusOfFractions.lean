@@ -54,14 +54,14 @@ namespace LeftFraction
 variable (W : MorphismProperty C) {X Y : C}
 
 /-- The left fraction from `X` to `Y` given by a morphism `f : X ⟶ Y`. -/
-@[simps]
+@[simps, implicit_reducible]
 def ofHom (f : X ⟶ Y) [W.ContainsIdentities] :
     W.LeftFraction X Y := mk f (𝟙 Y) (W.id_mem Y)
 
 variable {W}
 
 /-- The left fraction from `X` to `Y` given by a morphism `s : Y ⟶ X` such that `W s`. -/
-@[simps]
+@[simps, implicit_reducible]
 def ofInv (s : Y ⟶ X) (hs : W s) :
     W.LeftFraction X Y := mk (𝟙 X) s hs
 
@@ -84,19 +84,16 @@ lemma map_comp_map_s (φ : W.LeftFraction X Y) (L : C ⥤ D) (hL : W.IsInvertedB
 
 variable (W)
 
-set_option backward.defeqAttrib.useBackward true in
 lemma map_ofHom (f : X ⟶ Y) (L : C ⥤ D) (hL : W.IsInvertedBy L) [W.ContainsIdentities] :
     (ofHom W f).map L hL = L.map f := by
   simp [map]
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma map_ofInv_hom_id (s : Y ⟶ X) (hs : W s) (L : C ⥤ D) (hL : W.IsInvertedBy L) :
     (ofInv s hs).map L hL ≫ L.map s = 𝟙 _ := by
   let := hL _ hs
   simp [map]
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma map_hom_ofInv_id (s : Y ⟶ X) (hs : W s) (L : C ⥤ D) (hL : W.IsInvertedBy L) :
     L.map s ≫ (ofInv s hs).map L hL = 𝟙 _ := by
@@ -129,14 +126,14 @@ variable (W : MorphismProperty C)
 variable {X Y : C}
 
 /-- The right fraction from `X` to `Y` given by a morphism `f : X ⟶ Y`. -/
-@[simps]
+@[simps, implicit_reducible]
 def ofHom (f : X ⟶ Y) [W.ContainsIdentities] :
     W.RightFraction X Y := mk (𝟙 X) (W.id_mem X) f
 
 variable {W}
 
 /-- The right fraction from `X` to `Y` given by a morphism `s : Y ⟶ X` such that `W s`. -/
-@[simps]
+@[simps, implicit_reducible]
 def ofInv (s : Y ⟶ X) (hs : W s) :
     W.RightFraction X Y := mk s hs (𝟙 Y)
 
@@ -159,20 +156,17 @@ lemma map_s_comp_map (φ : W.RightFraction X Y) (L : C ⥤ D) (hL : W.IsInverted
 
 variable (W)
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma map_ofHom (f : X ⟶ Y) (L : C ⥤ D) (hL : W.IsInvertedBy L) [W.ContainsIdentities] :
     (ofHom W f).map L hL = L.map f := by
   simp [map]
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma map_ofInv_hom_id (s : Y ⟶ X) (hs : W s) (L : C ⥤ D) (hL : W.IsInvertedBy L) :
     (ofInv s hs).map L hL ≫ L.map s = 𝟙 _ := by
   let := hL _ hs
   simp [map]
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma map_hom_ofInv_id (s : Y ⟶ X) (hs : W s) (L : C ⥤ D) (hL : W.IsInvertedBy L) :
     L.map s ≫ (ofInv s hs).map L hL = 𝟙 _ := by
@@ -322,6 +316,7 @@ lemma comp₀_rel [W.HasLeftCalculusOfFractions]
 variable (W) in
 /-- The morphisms in the constructed localized category for a morphism property `W`
 that has left calculus of fractions are equivalence classes of left fractions. -/
+@[implicit_reducible]
 def Localization.Hom (X Y : C) :=
   Quot (LeftFractionRel : W.LeftFraction X Y → W.LeftFraction X Y → Prop)
 
@@ -445,7 +440,6 @@ def Localization (_ : MorphismProperty C) := C
 
 namespace Localization
 
-set_option backward.defeqAttrib.useBackward true in
 noncomputable instance : Category (Localization W) where
   Hom X Y := Localization.Hom W X Y
   id _ := Localization.Hom.mk (ofHom W (𝟙 _))
@@ -480,11 +474,10 @@ noncomputable instance : Category (Localization W) where
         (by dsimp; rw [assoc, ← reassoc_of% fac₁₂, fac])]
     simp
 
-set_option backward.defeqAttrib.useBackward true in
 variable (W) in
 /-- The localization functor to the constructed localized category for a morphism property
 that has left calculus of fractions. -/
-@[simps obj]
+@[simps obj, implicit_reducible]
 noncomputable def Q : C ⥤ Localization W where
   obj X := X
   map f := Hom.mk (ofHom W f)
@@ -506,7 +499,6 @@ lemma Q_map {X Y : C} (f : X ⟶ Y) : (Q W).map f = homMk (ofHom W f) := rfl
 
 variable {W}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma homMk_comp_homMk {X Y Z : C} (z₁ : W.LeftFraction X Y) (z₂ : W.LeftFraction Y Z)
     (z₃ : W.LeftFraction z₁.Y' z₂.Y') (h₃ : z₂.f ≫ z₃.s = z₁.s ≫ z₃.f) :
     homMk z₁ ≫ homMk z₂ = homMk (z₁.comp₀ z₂ z₃) := by
@@ -527,15 +519,12 @@ which belongs to `W`. -/
 noncomputable def Qinv {X Y : C} (s : X ⟶ Y) (hs : W s) : (Q W).obj Y ⟶ (Q W).obj X :=
   homMk (ofInv s hs)
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 lemma Q_map_comp_Qinv {X Y Y' : C} (f : X ⟶ Y') (s : Y ⟶ Y') (hs : W s) :
     (Q W).map f ≫ Qinv s hs = homMk (mk f s hs) := by
   dsimp only [Q_map, Qinv]
   rw [homMk_comp_homMk (ofHom W f) (ofInv s hs) (ofHom W (𝟙 _)) (by simp)]
   simp
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The isomorphism in `Localization W` that is induced by a morphism in `W`. -/
 @[simps]
 noncomputable def Qiso {X Y : C} (s : X ⟶ Y) (hs : W s) : (Q W).obj X ≅ (Q W).obj Y where
@@ -589,9 +578,9 @@ lemma inverts : W.IsInvertedBy (Q W) := fun _ _ s hs =>
 
 variable {W}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor `Localization W ⥤ E` that is induced by a functor `C ⥤ E` which inverts `W`,
 when `W` has a left calculus of fractions. -/
+@[implicit_reducible]
 noncomputable def lift (F : C ⥤ E) (hF : W.IsInvertedBy F) :
     Localization W ⥤ E where
   obj X := F.obj X
@@ -617,32 +606,30 @@ noncomputable def lift (F : C ⥤ E) (hF : W.IsInvertedBy F) :
     dsimp
     rw [F.map_comp, F.map_comp, map_comp_map_s_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma fac (F : C ⥤ E) (hF : W.IsInvertedBy F) : Q W ⋙ lift F hF = F :=
   Functor.ext (fun _ => rfl) (fun X Y f => by
     dsimp [lift]
     rw [Q_map, Hom.map_mk, id_comp, comp_id, map_ofHom])
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma uniq (F₁ F₂ : Localization W ⥤ E) (h : Q W ⋙ F₁ = Q W ⋙ F₂) : F₁ = F₂ :=
   Functor.ext (fun X => Functor.congr_obj h X) (by
     rintro (X Y : C) f
     obtain ⟨f, rfl⟩ := Hom.mk_surjective f
     rw [show Hom.mk f = homMk (mk f.f f.s f.hs) by rfl,
-      ← Q_map_comp_Qinv f.f f.s f.hs, F₁.map_comp, F₂.map_comp, assoc]
-    erw [Functor.congr_hom h f.f]
-    rw [assoc, assoc]
+      ← Q_map_comp_Qinv f.f f.s f.hs,
+      F₁.map_comp ((Q W).map f.f) (Qinv f.s f.hs),
+      F₂.map_comp_assoc ((Q W).map f.f) (Qinv f.s f.hs),
+      dsimp% Functor.congr_hom h f.f, assoc, assoc]
     congr 2
     have := inverts W _ f.hs
     rw [← cancel_epi (F₂.map ((Q W).map f.s)), ← F₂.map_comp_assoc,
-      Qiso_hom_inv_id, Functor.map_id, id_comp]
-    erw [Functor.congr_hom h.symm f.s]
-    dsimp
-    rw [assoc, assoc, eqToHom_trans_assoc, eqToHom_refl, id_comp, ← F₁.map_comp,
+      Qiso_hom_inv_id, Functor.map_id, id_comp,
+      dsimp% Functor.congr_hom h.symm f.s,
+      assoc, assoc, eqToHom_trans_assoc, eqToHom_refl, id_comp,
+      ← F₁.map_comp ((Q W).map f.s) (Qinv f.s f.hs),
       Qiso_hom_inv_id]
     dsimp
-    rw [F₁.map_id, comp_id])
+    rw [F₁.map_id Y, comp_id])
 
 end StrictUniversalPropertyFixedTarget
 
@@ -738,7 +725,6 @@ section
 
 variable [W.HasLeftCalculusOfFractions]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Localization.exists_leftFraction {X Y : C} (f : L.obj X ⟶ L.obj Y) :
     ∃ (φ : W.LeftFraction X Y), f = φ.map L (Localization.inverts L W) := by
   let E := Localization.uniq (MorphismProperty.LeftFraction.Localization.Q W) L W
@@ -766,7 +752,6 @@ lemma MorphismProperty.LeftFraction.map_eq_iff
     congr 1
     exact Quot.sound h
 
-set_option backward.defeqAttrib.useBackward true in
 lemma MorphismProperty.map_eq_iff_postcomp {X Y : C} (f₁ f₂ : X ⟶ Y) :
     L.map f₁ = L.map f₂ ↔ ∃ (Z : C) (s : Y ⟶ Z) (_ : W s), f₁ ≫ s = f₂ ≫ s := by
   constructor
@@ -781,7 +766,6 @@ lemma MorphismProperty.map_eq_iff_postcomp {X Y : C} (f₁ f₂ : X ⟶ Y) :
     simp only [← cancel_mono (Localization.isoOfHom L W s hs).hom,
       Localization.isoOfHom_hom, ← L.map_comp, fac]
 
-set_option backward.defeqAttrib.useBackward true in
 include W in
 lemma Localization.essSurj_mapArrow :
     L.mapArrow.EssSurj where
@@ -794,9 +778,7 @@ lemma Localization.essSurj_mapArrow :
     obtain ⟨φ, hφ⟩ := Localization.exists_leftFraction L W (eX.hom ≫ f.hom ≫ eY.inv)
     refine ⟨Arrow.mk φ.f, ⟨Iso.symm ?_⟩⟩
     refine Arrow.isoMk eX.symm (eY.symm ≪≫ Localization.isoOfHom L W φ.s φ.hs) ?_
-    dsimp
-    simp only [← cancel_epi eX.hom, Iso.hom_inv_id_assoc, reassoc_of% hφ,
-      MorphismProperty.LeftFraction.map_comp_map_s]
+    simp [← cancel_epi eX.hom, reassoc_of% hφ]
 
 end
 
@@ -806,7 +788,7 @@ namespace MorphismProperty
 variable {W}
 
 /-- The right fraction in the opposite category corresponding to a left fraction. -/
-@[simps]
+@[simps, implicit_reducible]
 def LeftFraction.op {X Y : C} (φ : W.LeftFraction X Y) :
     W.op.RightFraction (Opposite.op Y) (Opposite.op X) where
   X' := Opposite.op φ.Y'
@@ -815,7 +797,7 @@ def LeftFraction.op {X Y : C} (φ : W.LeftFraction X Y) :
   f := φ.f.op
 
 /-- The left fraction in the opposite category corresponding to a right fraction. -/
-@[simps]
+@[simps, implicit_reducible]
 def RightFraction.op {X Y : C} (φ : W.RightFraction X Y) :
     W.op.LeftFraction (Opposite.op Y) (Opposite.op X) where
   Y' := Opposite.op φ.X'
@@ -824,7 +806,7 @@ def RightFraction.op {X Y : C} (φ : W.RightFraction X Y) :
   f := φ.f.op
 
 /-- The right fraction corresponding to a left fraction in the opposite category. -/
-@[simps]
+@[simps, implicit_reducible]
 def LeftFraction.unop {W : MorphismProperty Cᵒᵖ}
     {X Y : Cᵒᵖ} (φ : W.LeftFraction X Y) :
     W.unop.RightFraction (Opposite.unop Y) (Opposite.unop X) where
@@ -834,7 +816,7 @@ def LeftFraction.unop {W : MorphismProperty Cᵒᵖ}
   f := φ.f.unop
 
 /-- The left fraction corresponding to a right fraction in the opposite category. -/
-@[simps]
+@[simps, implicit_reducible]
 def RightFraction.unop {W : MorphismProperty Cᵒᵖ}
     {X Y : Cᵒᵖ} (φ : W.RightFraction X Y) :
     W.unop.LeftFraction (Opposite.unop Y) (Opposite.unop X) where
@@ -843,14 +825,12 @@ def RightFraction.unop {W : MorphismProperty Cᵒᵖ}
   hs := φ.hs
   f := φ.f.unop
 
-set_option backward.defeqAttrib.useBackward true in
 lemma RightFraction.op_map
     {X Y : C} (φ : W.RightFraction X Y) (L : C ⥤ D) (hL : W.IsInvertedBy L) :
     (φ.map L hL).op = φ.op.map L.op hL.op := by
   dsimp [map, LeftFraction.map]
   rw [op_inv]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma LeftFraction.op_map
     {X Y : C} (φ : W.LeftFraction X Y) (L : C ⥤ D) (hL : W.IsInvertedBy L) :
     (φ.map L hL).op = φ.op.map L.op hL.op := by
@@ -961,7 +941,6 @@ section
 
 variable [W.HasRightCalculusOfFractions]
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma Localization.exists_rightFraction {X Y : C} (f : L.obj X ⟶ L.obj Y) :
     ∃ (φ : W.RightFraction X Y), f = φ.map L (Localization.inverts L W) := by
   obtain ⟨φ, eq⟩ := Localization.exists_leftFraction L.op W.op f.op
@@ -979,7 +958,6 @@ lemma MorphismProperty.RightFraction.map_eq_iff
   · apply Quiver.Hom.unop_inj
   · apply Quiver.Hom.op_inj
 
-set_option backward.defeqAttrib.useBackward true in
 lemma MorphismProperty.map_eq_iff_precomp {Y Z : C} (f₁ f₂ : Y ⟶ Z) :
     L.map f₁ = L.map f₂ ↔ ∃ (X : C) (s : X ⟶ Y) (_ : W s), s ≫ f₁ = s ≫ f₂ := by
   constructor

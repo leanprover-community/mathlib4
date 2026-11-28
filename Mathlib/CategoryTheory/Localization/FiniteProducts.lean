@@ -80,12 +80,12 @@ lemma adj_counit_app (F : Discrete J ⥤ C) :
         whiskerRight (constLimAdj.counit.app F) L := by
   apply constLimAdj.localization_counit_app
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `Localization.preservesProductsOfShape`. -/
 noncomputable def isLimitMapCone (F : Discrete J ⥤ C) :
     IsLimit (L.mapCone (limit.cone F)) :=
   IsLimit.ofIsoLimit (isLimitConeOfAdj (adj L W J) (F ⋙ L))
-    (Cone.ext ((compLimitFunctorIso L W J).app F) (by simp [adj_counit_app, constLimAdj]))
+    (Cone.ext ((compLimitFunctorIso L W J).app F) (fun _ ↦ by
+      simp [adj_counit_app, constLimAdj]; rfl))
 
 end HasProductsOfShapeAux
 

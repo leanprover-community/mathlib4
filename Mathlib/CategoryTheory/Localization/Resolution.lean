@@ -205,7 +205,7 @@ instance (Φ' : LocalizerMorphism W₁' W₂') [Φ.HasLeftResolutions] [Φ'.HasL
 variable {Φ}
 
 /-- The canonical map `Φ.LeftResolution X₂ → Φ.op.RightResolution (Opposite.op X₂)`. -/
-@[simps]
+@[simps, implicit_reducible]
 def LeftResolution.op {X₂ : C₂} (L : Φ.LeftResolution X₂) :
     Φ.op.RightResolution (Opposite.op X₂) where
   X₁ := Opposite.op L.X₁
@@ -213,7 +213,7 @@ def LeftResolution.op {X₂ : C₂} (L : Φ.LeftResolution X₂) :
   hw := L.hw
 
 /-- The canonical map `Φ.op.LeftResolution X₂ → Φ.RightResolution X₂`. -/
-@[simps]
+@[simps, implicit_reducible]
 def LeftResolution.unop {X₂ : C₂ᵒᵖ} (L : Φ.op.LeftResolution X₂) :
     Φ.RightResolution X₂.unop where
   X₁ := Opposite.unop L.X₁
@@ -221,7 +221,7 @@ def LeftResolution.unop {X₂ : C₂ᵒᵖ} (L : Φ.op.LeftResolution X₂) :
   hw := L.hw
 
 /-- The canonical map `Φ.RightResolution X₂ → Φ.op.LeftResolution (Opposite.op X₂)`. -/
-@[simps]
+@[simps, implicit_reducible]
 def RightResolution.op {X₂ : C₂} (L : Φ.RightResolution X₂) :
     Φ.op.LeftResolution (Opposite.op X₂) where
   X₁ := Opposite.op L.X₁
@@ -229,7 +229,7 @@ def RightResolution.op {X₂ : C₂} (L : Φ.RightResolution X₂) :
   hw := L.hw
 
 /-- The canonical map `Φ.op.RightResolution X₂ → Φ.LeftResolution X₂`. -/
-@[simps]
+@[simps, implicit_reducible]
 def RightResolution.unop {X₂ : C₂ᵒᵖ} (L : Φ.op.RightResolution X₂) :
     Φ.LeftResolution X₂.unop where
   X₁ := Opposite.unop L.X₁
@@ -265,7 +265,7 @@ instance [Φ.HasLeftResolutions] : Φ.op.HasRightResolutions := by
   rwa [← hasLeftResolutions_iff_op]
 
 /-- The functor `(Φ.LeftResolution X₂)ᵒᵖ ⥤ Φ.op.RightResolution (Opposite.op X₂)`. -/
-@[simps]
+@[simps, implicit_reducible]
 def LeftResolution.opFunctor (X₂ : C₂) :
     (Φ.LeftResolution X₂)ᵒᵖ ⥤ Φ.op.RightResolution (Opposite.op X₂) where
   obj L := L.unop.op
@@ -274,7 +274,7 @@ def LeftResolution.opFunctor (X₂ : C₂) :
       comm := Quiver.Hom.unop_inj φ.unop.comm }
 
 /-- The functor `(Φ.op.RightResolution X₂)ᵒᵖ ⥤ Φ.LeftResolution X₂.unop`. -/
-@[simps]
+@[simps, implicit_reducible]
 def RightResolution.unopFunctor (X₂ : C₂ᵒᵖ) :
     (Φ.op.RightResolution X₂)ᵒᵖ ⥤ Φ.LeftResolution X₂.unop where
   obj R := R.unop.unop
@@ -282,11 +282,9 @@ def RightResolution.unopFunctor (X₂ : C₂ᵒᵖ) :
     { f := φ.unop.f.unop
       comm := Quiver.Hom.op_inj φ.unop.comm }
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence of categories
 `(Φ.LeftResolution X₂)ᵒᵖ ≌ Φ.op.RightResolution (Opposite.op X₂)`. -/
-@[simps]
+@[simps, implicit_reducible]
 def LeftResolution.opEquivalence (X₂ : C₂) :
     (Φ.LeftResolution X₂)ᵒᵖ ≌ Φ.op.RightResolution (Opposite.op X₂) where
   functor := LeftResolution.opFunctor Φ X₂

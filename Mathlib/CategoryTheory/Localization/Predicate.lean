@@ -166,7 +166,7 @@ lemma isoOfHom_id_inv (X : C) (hX : W (𝟙 X)) :
 variable {W}
 
 lemma Construction.wIso_eq_isoOfHom {X Y : C} (f : X ⟶ Y) (hf : W f) :
-    Construction.wIso f hf = isoOfHom W.Q W f hf := by ext; rfl
+    Construction.wIso f hf = isoOfHom W.Q W f hf := by cat_disch
 
 lemma Construction.wInv_eq_isoOfHom_inv {X Y : C} (f : X ⟶ Y) (hf : W f) :
     Construction.wInv f hf = (isoOfHom W.Q W f hf).inv :=
@@ -180,6 +180,7 @@ variable (W)
 /-- A chosen equivalence of categories `W.Localization ≅ D` for a functor
 `L : C ⥤ D` which satisfies `L.IsLocalization W`. This shall be used in
 order to deduce properties of `L` from properties of `W.Q`. -/
+@[local implicit_reducible]
 def equivalenceFromModel : W.Localization ≌ D :=
   (Localization.Construction.lift L (inverts L W)).asEquivalence
 
@@ -199,41 +200,41 @@ def compEquivalenceFromModelInverseIso : L ⋙ (equivalenceFromModel L W).invers
     _ ≅ W.Q ⋙ 𝟭 _ := isoWhiskerLeft _ (equivalenceFromModel L W).unitIso.symm
     _ ≅ W.Q := rightUnitor _
 
-theorem essSurj (W) [L.IsLocalization W] : L.EssSurj :=
-  ⟨fun X =>
-    ⟨(Construction.objEquiv W).invFun ((equivalenceFromModel L W).inverse.obj X),
-      Nonempty.intro
-        ((qCompEquivalenceFromModelFunctorIso L W).symm.app _ ≪≫
-          (equivalenceFromModel L W).counitIso.app X)⟩⟩
+theorem essSurj (W) [L.IsLocalization W] : L.EssSurj where
+  mem_essImage X :=
+    ⟨(Construction.objEquiv W).symm ((equivalenceFromModel L W).inverse.obj X),
+      ⟨(qCompEquivalenceFromModelFunctorIso L W).symm.app _ ≪≫
+        eqToIso (by simp [Construction.objEquiv_apply_symm_apply]) ≪≫
+      (equivalenceFromModel L W).counitIso.app X⟩⟩
 
 /-- The functor `(D ⥤ E) ⥤ W.functors_inverting E` induced by the composition
 with a localization functor `L : C ⥤ D` with respect to `W : MorphismProperty C`. -/
+@[implicit_reducible]
 def whiskeringLeftFunctor : (D ⥤ E) ⥤ W.FunctorsInverting E :=
   ObjectProperty.lift _ ((whiskeringLeft _ _ E).obj L)
     (MorphismProperty.IsInvertedBy.of_comp W L (inverts L W))
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance : (whiskeringLeftFunctor L W E).IsEquivalence := by
   let iso : (whiskeringLeft (MorphismProperty.Localization W) D E).obj
     (equivalenceFromModel L W).functor ⋙
       (Construction.whiskeringLeftEquivalence W E).functor ≅ whiskeringLeftFunctor L W E :=
-    NatIso.ofComponents (fun F => eqToIso (by
-      ext
-      change (W.Q ⋙ Localization.Construction.lift L (inverts L W)) ⋙ F = L ⋙ F
-      rw [Construction.fac])) (fun τ => by
+    NatIso.ofComponents
+      (fun F ↦ eqToIso (by
         ext
+        change W.Q ⋙ Localization.Construction.lift L (inverts L W) ⋙ F = L ⋙ F
+        rw [← Functor.assoc, Construction.fac]))
+      (fun τ ↦ by
         dsimp [Construction.whiskeringLeftEquivalence, equivalenceFromModel, whiskerLeft]
-        rw [ObjectProperty.eqToHom_hom, ObjectProperty.eqToHom_hom, eqToHom_app, eqToHom_app,
-          eqToHom_refl, eqToHom_refl]
-        dsimp
-        rw [comp_id, id_comp]
-        rfl)
+        ext X
+        symm
+        simpa [comp_obj, eqToHom_map] using! τ.naturality
+          (eqToHom (Functor.congr_obj (Construction.fac L _) X)))
   exact Functor.isEquivalence_of_iso iso
 
 /-- The equivalence of categories `(D ⥤ E) ≌ (W.FunctorsInverting E)` induced by
 the composition with a localization functor `L : C ⥤ D` with respect to
 `W : MorphismProperty C`. -/
+@[implicit_reducible]
 def functorEquivalence : D ⥤ E ≌ W.FunctorsInverting E :=
   (whiskeringLeftFunctor L W E).asEquivalence
 

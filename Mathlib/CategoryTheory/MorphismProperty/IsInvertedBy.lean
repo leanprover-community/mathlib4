@@ -103,7 +103,7 @@ lemma pi {J : Type w} {C : J → Type u} {D : J → Type u'}
 end IsInvertedBy
 
 /-- The full subcategory of `C ⥤ D` consisting of functors inverting morphisms in `W` -/
-def FunctorsInverting (W : MorphismProperty C) (D : Type*) [Category* D] :=
+abbrev FunctorsInverting (W : MorphismProperty C) (D : Type*) [Category* D] :=
   ObjectProperty.FullSubcategory fun F : C ⥤ D => W.IsInvertedBy F
 
 @[ext]

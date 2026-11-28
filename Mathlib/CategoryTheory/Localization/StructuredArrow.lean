@@ -71,19 +71,11 @@ private lemma induction_structuredArrow'
     (hP₂ : ∀ ⦃Y₁ Y₂ : C⦄ (w : Y₁ ⟶ Y₂) (hw : W w) (φ : W.Q.obj X ⟶ W.Q.obj Y₂),
       P (StructuredArrow.mk φ) → P (StructuredArrow.mk (φ ≫ (isoOfHom W.Q W w hw).inv)))
     (g : StructuredArrow (W.Q.obj X) W.Q) : P g := by
-  let X₀ : Paths (LocQuiver W) := ⟨X⟩
-  suffices ∀ ⦃Y₀ : Paths (LocQuiver W)⦄ (f : X₀ ⟶ Y₀),
-      P (StructuredArrow.mk ((Quotient.functor (relations W)).map f)) by
-    obtain ⟨Y, g, rfl⟩ := g.mk_surjective
-    obtain ⟨g, rfl⟩ := (Quotient.functor (relations W)).map_surjective g
-    exact this g
-  intro Y₀ f
-  induction f with
-  | nil => exact hP₀
-  | cons f g hf =>
-      obtain (g | ⟨w, hw⟩) := g
-      · exact hP₁ g _ hf
-      · simpa only [← Construction.wInv_eq_isoOfHom_inv w hw] using! hP₂ w hw _ hf
+  obtain ⟨Y, f, rfl⟩ := g.mk_surjective
+  induction f using hom_induction_fixed_source with
+  | id => exact hP₀
+  | comp_map _ _ h => exact hP₁ _ _ h
+  | comp_wInv w hw f h => simpa [wInv_eq_isoOfHom_inv] using hP₂ w hw f h
 
 end
 
@@ -91,7 +83,6 @@ section
 
 variable (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W] {X : C}
   (P : StructuredArrow (L.obj X) L → Prop)
-
 
 @[elab_as_elim]
 lemma induction_structuredArrow
