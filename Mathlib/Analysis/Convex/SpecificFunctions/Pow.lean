@@ -22,10 +22,6 @@ require calculus, and as such this file has only moderate dependencies.
 
 Note that convexity for `p > 1` can be found in `Analysis.Convex.SpecificFunctions.Basic`, which
 requires slightly less imports.
-
-## TODO
-
-* Prove convexity for negative powers.
 -/
 
 public section
