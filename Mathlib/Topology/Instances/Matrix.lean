@@ -144,6 +144,15 @@ theorem Continuous.matrix_diagonal [Zero R] [DecidableEq n] {A : X → n → R} 
     Continuous fun x => diagonal (A x) :=
   continuous_matrix fun i _ => ((continuous_apply i).comp hA).if_const _ continuous_zero
 
+variable (R) in
+@[fun_prop]
+theorem continuous_matrix_single [DecidableEq m] [DecidableEq n] [Zero R] (i : m) (j : n) :
+    Continuous (Matrix.single i j (α := R)) := by
+  refine continuous_matrix (fun i' j' ↦ ?_)
+  by_cases h : i = i' ∧ j = j'
+  · simpa [h] using continuous_id'
+  · simpa [h] using continuous_const
+
 @[continuity, fun_prop]
 protected theorem Continuous.dotProduct [Fintype n] [Mul R] [AddCommMonoid R] [ContinuousAdd R]
     [ContinuousMul R] {A : X → n → R} {B : X → n → R} (hA : Continuous A) (hB : Continuous B) :
