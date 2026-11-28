@@ -13,7 +13,7 @@ import Mathlib.Algebra.Group.FunLike
 In this file we define various instances related to modules for `FunLike` types.
 
 Note that currently, these are not registered as instances, but only `abbrev`s to avoid long
-typeclass searches.
+typeclass searches. See note [IsApply classes].
 -/
 
 public section
