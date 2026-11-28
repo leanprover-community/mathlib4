@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 public import Mathlib.Data.Set.NAry
 
 import Mathlib.Algebra.Group.Equiv.Basic
+import Mathlib.Logic.Function.Const
 
 /-!
 # Pointwise operations of sets
@@ -207,20 +208,26 @@ variable [InvolutiveInv α] {s t : Set α} {a : α}
 theorem inv_mem_inv : a⁻¹ ∈ s⁻¹ ↔ a ∈ s := by simp only [mem_inv, inv_inv]
 
 @[to_additive (attr := simp)]
-theorem nonempty_inv : s⁻¹.Nonempty ↔ s.Nonempty :=
-  inv_involutive.surjective.nonempty_preimage
-
-@[to_additive]
-theorem Nonempty.inv (h : s.Nonempty) : s⁻¹.Nonempty :=
-  nonempty_inv.2 h
-
-@[to_additive (attr := simp)]
 theorem image_inv_eq_inv : (·⁻¹) '' s = s⁻¹ :=
   congr($(image_eq_preimage_of_inverse inv_involutive.leftInverse inv_involutive.rightInverse) _)
 
 @[to_additive (attr := simp)]
+theorem nonempty_inv : s⁻¹.Nonempty ↔ s.Nonempty :=
+  inv_involutive.surjective.nonempty_preimage
+
+@[to_additive] alias ⟨_, Nonempty.inv⟩ := nonempty_inv
+
+@[to_additive (attr := simp)]
 theorem inv_eq_empty : s⁻¹ = ∅ ↔ s = ∅ := by
   rw [← image_inv_eq_inv, image_eq_empty]
+
+@[to_additive (attr := simp)]
+theorem subsingleton_inv : s⁻¹.Subsingleton ↔ s.Subsingleton := by
+  rw [← image_inv_eq_inv, subsingleton_image_iff]
+  refine Set.InjOn.isConstOn_iff fun y hy ↦ ?_
+  simp
+
+@[to_additive] alias ⟨_, Subsingleton.inv⟩ := subsingleton_inv
 
 /-- Pointwise inversion of sets is involutive in scope `Pointwise`. -/
 @[to_additive (attr := simp, instance_reducible)
