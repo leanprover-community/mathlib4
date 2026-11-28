@@ -514,6 +514,24 @@ theorem lift_comp_map (h : (Π i, t i) →ₘₛₗ[σ₂₃] N₃) :
   simp only [LinearMap.compMultilinearMap_apply, LinearMap.coe_comp, Function.comp_apply,
     map_tprod, lift.tprod, MultilinearMap.compLinearMap_apply]
 
+lemma range_map_mono {R' : Type*} [CommSemiring R'] {σ₁₂' : R' →+* R₂}
+    [RingHomSurjective σ₁₂] [RingHomSurjective σ₁₂']
+    {s' : ι → Type*} [∀ i, AddCommMonoid (s' i)] [∀ i, Module R' (s' i)]
+    {f : Π i, s i →ₛₗ[σ₁₂] t i} {g : Π i, s' i →ₛₗ[σ₁₂'] t i}
+    (h : ∀ i, (f i).range ≤ (g i).range) :
+    LinearMap.range (map f) ≤ LinearMap.range (map g) := by
+  rintro x ⟨y, rfl⟩
+  induction y using PiTensorProduct.induction_on with
+  | smul_tprod r u =>
+    choose v hv using fun i ↦ h i ⟨u i, rfl⟩
+    obtain ⟨r', hr⟩ := σ₁₂'.surjective (σ₁₂ r)
+    exact ⟨r' • tprod R' v, by simp [hv, hr]⟩
+  | add z w hz hw => exact map_add (map f) z w ▸ add_mem hz hw
+
+lemma range_mapIncl_mono {p q : Π i, Submodule R (s i)} (h : ∀ i, p i ≤ q i) :
+    LinearMap.range (mapIncl p) ≤ LinearMap.range (mapIncl q) :=
+  range_map_mono (by simp [h])
+
 attribute [local ext high] ext
 
 @[simp]
