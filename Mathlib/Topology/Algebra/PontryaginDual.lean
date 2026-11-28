@@ -23,6 +23,8 @@ isomorphic to its double dual.
 ## Main definitions
 
 * `PontryaginDual A`: The group of continuous homomorphisms `A →* Circle`.
+
+See `Mathlib.Topology.Algebra.PontryaginDual.Examples` for concrete duality isomorphisms.
 -/
 
 @[expose] public section
@@ -68,7 +70,7 @@ instance : CommGroup (PontryaginDual A) := inferInstanceAs (CommGroup (A →ₜ*
 
 deriving instance
   T2Space, IsTopologicalGroup,
-  Inhabited, FunLike, ContinuousMapClass, MonoidHomClass,
+  Inhabited, FunLike, ContinuousMapClass, MonoidHomClass, ContinuousEvalConst,
   [DiscreteTopology A] → CompactSpace _
 for PontryaginDual A
 
