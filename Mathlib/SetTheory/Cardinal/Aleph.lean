@@ -662,7 +662,8 @@ theorem isStrongPrelimit_preBeth {o : Ordinal} :
 
 @[simp]
 theorem isStrongLimit_preBeth {o : Ordinal} : IsStrongLimit (preBeth o) ↔ IsSuccLimit o := by
-  rw [isStrongLimit_iff, isSuccLimit_iff, preBeth_eq_zero.ne, isStrongPrelimit_preBeth]
+  rw [isStrongLimit_iff, isSuccLimit_iff_ne_zero_and_isSuccPrelimit, preBeth_eq_zero.ne,
+    isStrongPrelimit_preBeth]
 
 @[simp]
 theorem lift_preBeth (o : Ordinal) : lift.{v} (preBeth o) = preBeth (Ordinal.lift.{v} o) := by
