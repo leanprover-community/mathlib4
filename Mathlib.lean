@@ -102,6 +102,7 @@ public import Mathlib.Algebra.Category.AlgCat.Monoidal
 public import Mathlib.Algebra.Category.AlgCat.Symmetric
 public import Mathlib.Algebra.Category.AlgCat.TensorAlgebra
 public import Mathlib.Algebra.Category.BialgCat.Basic
+public import Mathlib.Algebra.Category.BialgCat.BimonEquivalence
 public import Mathlib.Algebra.Category.BialgCat.Monoidal
 public import Mathlib.Algebra.Category.BoolRing
 public import Mathlib.Algebra.Category.CoalgCat.Basic
@@ -146,6 +147,7 @@ public import Mathlib.Algebra.Category.Grp.ZModuleEquivalence
 public import Mathlib.Algebra.Category.Grp.Zero
 public import Mathlib.Algebra.Category.GrpWithZero
 public import Mathlib.Algebra.Category.HopfAlgCat.Basic
+public import Mathlib.Algebra.Category.HopfAlgCat.HopfEquivalence
 public import Mathlib.Algebra.Category.HopfAlgCat.Monoidal
 public import Mathlib.Algebra.Category.ModuleCat.AB
 public import Mathlib.Algebra.Category.ModuleCat.Abelian
