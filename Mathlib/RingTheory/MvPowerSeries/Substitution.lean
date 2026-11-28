@@ -474,15 +474,20 @@ theorem IsNilpotent_substAlgHom (ha : HasSubst a)
     IsNilpotent (constantCoeff (substAlgHom ha f)) := by
   simpa using IsNilpotent_subst ha hf
 
-theorem HasSubst.comp (ha : HasSubst a) (hb : HasSubst b) :
-    HasSubst (fun s ↦ substAlgHom hb (a s)) where
-  const_coeff s := IsNilpotent_substAlgHom hb (ha.const_coeff s)
+theorem HasSubst.subst (ha : HasSubst a) (hb : HasSubst b) :
+    HasSubst (fun s ↦ subst b (a s)) where
+  const_coeff s := IsNilpotent_subst hb (ha.const_coeff s)
   coeff_zero := by
     let : UniformSpace S := ⊥
     let : UniformSpace T := ⊥
     rw [← coeff_zero_iff]
     apply Filter.Tendsto.comp _ (ha.hasEval.tendsto_zero)
     simpa [← map_zero (substAlgHom (R := S) hb)] using! (continuous_subst hb).continuousAt
+
+theorem HasSubst.comp (ha : HasSubst a) (hb : HasSubst b) :
+    HasSubst (fun s ↦ substAlgHom hb (a s)) where
+  const_coeff s := IsNilpotent_substAlgHom hb (ha.const_coeff s)
+  coeff_zero := by simpa [substAlgHom_apply] using (ha.subst hb).coeff_zero
 
 theorem substAlgHom_comp_substAlgHom (ha : HasSubst a) (hb : HasSubst b) :
     ((substAlgHom hb).restrictScalars R).comp (substAlgHom ha) = substAlgHom (ha.comp hb) := by
@@ -507,7 +512,7 @@ theorem subst_comp_subst_apply (ha : HasSubst a) (hb : HasSubst b) (f : MvPowerS
 
 section
 
-variable (w : τ → ℕ)
+variable (w : τ → ℕ) {n k : ℕ∞} {S : Type*} [CommRing S] [Algebra R S] {a b : σ → MvPowerSeries τ S}
 
 theorem le_weightedOrder_subst (ha : HasSubst a) (f : MvPowerSeries σ R) :
     ⨅ (d : σ →₀ ℕ) (_ : coeff d f ≠ 0), d.weight (weightedOrder w ∘ a) ≤
@@ -543,6 +548,56 @@ theorem le_order_subst (ha : HasSubst a) (f : MvPowerSeries σ R) :
       Nat.cast_sum, Finset.mul_sum, Finsupp.weight_apply, nsmul_eq_mul]
     exact Finset.sum_le_sum fun j hj => by
       simp [mul_comm, mul_le_mul_right (iInf_le_iff.mpr fun _ a ↦ a j)]
+
+variable (f : MvPowerSeries σ R) (ha : HasSubst a) (hb : HasSubst b)
+
+include ha hb
+
+/-- Substituting families that agree up to weighted order `n` and have weighted order at least `k`
+gives series that agree up to weighted order `n + k`, if no linear term of `f` interferes. -/
+theorem add_le_weightedOrder_subst_sub_subst (hak : ∀ s, k ≤ (a s).weightedOrder w)
+    (hbk : ∀ s, k ≤ (b s).weightedOrder w) (h : ∀ s, n ≤ (a s - b s).weightedOrder w)
+    (hf : ∀ s, coeff (Finsupp.single s 1) f = 0 ∨ n + k ≤ (a s - b s).weightedOrder w) :
+    n + k ≤ (f.subst a - f.subst b).weightedOrder w := by
+  refine le_weightedOrder w fun e he ↦ ?_
+  rw [map_sub, sub_eq_zero, coeff_subst ha, coeff_subst hb]
+  refine finsum_congr fun d ↦ ?_
+  obtain hd | hd | hd : d.degree = 0 ∨ d.degree = 1 ∨ 2 ≤ d.degree := by lia
+  · simp [d.degree_eq_zero_iff.mp hd]
+  · obtain ⟨s, rfl⟩ := (Finsupp.sum_eq_one_iff d).mp hd
+    rcases hf s with hs | hs
+    · simp [hs]
+    · simp [coeff_eq_of_lt_weightedOrder_sub w (he.trans_le hs)]
+  · congr 1
+    -- one factor `c s` for each of the `d s` occurrences of the variable `s`
+    have hprod (c : σ → MvPowerSeries τ S) :
+        d.prod (fun s k ↦ c s ^ k) = ∏ x ∈ d.support.sigma fun s ↦ Finset.range (d s), c x.1 := by
+      simp [Finsupp.prod, Finset.prod_sigma]
+    have hd : 2 ≤ (d.support.sigma fun s ↦ Finset.range (d s)).card := by
+      simpa [Finset.card_sigma, Finsupp.degree_apply] using hd
+    rw [hprod, hprod]
+    refine coeff_eq_of_lt_weightedOrder_sub w (he.trans_le (le_trans ?_
+      (add_nsmul_le_weightedOrder_prod_sub_prod w (fun x _ ↦ hak x.1) (fun x _ ↦ hbk x.1)
+        fun x _ ↦ h x.1)))
+    gcongr
+    exact le_self_nsmul zero_le (by lia)
+
+/-- If `a s - b s` has weighted order at least `n` for all `s`, then so does
+`f.subst a - f.subst b`. -/
+theorem le_weightedOrder_subst_sub_subst (h : ∀ s, n ≤ (a s - b s).weightedOrder w) :
+    n ≤ (f.subst a - f.subst b).weightedOrder w := by
+  simpa using add_le_weightedOrder_subst_sub_subst w (k := 0) (f := f) ha hb (by simp) (by simp) h
+    fun s ↦ .inr (by simpa using h s)
+
+theorem add_le_order_subst_sub_subst (hak : ∀ s, k ≤ (a s).order) (hbk : ∀ s, k ≤ (b s).order)
+    (h : ∀ s, n ≤ (a s - b s).order)
+    (hf : ∀ s, coeff (Finsupp.single s 1) f = 0 ∨ n + k ≤ (a s - b s).order) :
+    n + k ≤ (f.subst a - f.subst b).order :=
+  add_le_weightedOrder_subst_sub_subst _ _ ha hb hak hbk h hf
+
+theorem le_order_subst_sub_subst (h : ∀ s, n ≤ (a s - b s).order) :
+    n ≤ (f.subst a - f.subst b).order :=
+  le_weightedOrder_subst_sub_subst _ _ ha hb h
 
 end
 
