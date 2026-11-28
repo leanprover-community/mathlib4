@@ -83,8 +83,6 @@ variable (μ : Measure E := by volume_tac) [Measure.IsAddHaarMeasure μ]
 set_option backward.privateInPublic true in
 theorem covolume_eq_measure_fundamentalDomain {F : Set E} (h : IsAddFundamentalDomain L F μ) :
     covolume L μ = μ.real F := by
-  have : MeasurableVAdd L E := (inferInstance : MeasurableVAdd L.toAddSubgroup E)
-  have : VAddInvariantMeasure L E μ := (inferInstance : VAddInvariantMeasure L.toAddSubgroup E μ)
   congrm $(h.covolume_eq_volume μ).toReal
 
 set_option backward.privateInPublic true in
@@ -309,7 +307,7 @@ private theorem frontier_equivFun {E : Type*} [AddCommGroup E] [Module ℝ E] {�
     (b : Basis ι ℝ E) (s : Set E) :
     frontier (b.equivFun '' s) = b.equivFun '' (frontier s) := by
   rw [LinearEquiv.image_eq_preimage_symm, LinearEquiv.image_eq_preimage_symm]
-  exact (Homeomorph.preimage_frontier b.equivFunL.toHomeomorph.symm s).symm
+  exact (b.equivFunL.symm.preimage_frontier s).symm
 
 variable {ι : Type*} [Fintype ι]
 variable (L : Submodule ℤ (ι → ℝ)) [DiscreteTopology L] [IsZLattice ℝ L]
