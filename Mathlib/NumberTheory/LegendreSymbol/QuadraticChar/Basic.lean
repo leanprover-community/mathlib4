@@ -15,6 +15,12 @@ public import Mathlib.NumberTheory.LegendreSymbol.ZModChar
 This file defines the quadratic character on a finite field `F` and proves
 some basic statements about it.
 
+## Main definitions
+
+* `quadraticCharFun`: the quadratic character as an auxiliary function on a monoid with zero `α`.
+* `quadraticChar`: the quadratic character on a finite field `F` as a multiplicative character
+  of type `MulChar F ℤ`.
+
 ## Tags
 
 quadratic character
