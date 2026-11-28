@@ -146,8 +146,8 @@ lemma isEmbedding_pullback {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [Sur
     ⟨{ P | P.1 ∈ ((𝒱 ijk.1).f ijk.2.1 ≫ (𝒰.pullback₁ f).f ijk.1).opensRange ∧
           P.2 ∈ ((𝒲 ijk.1).f ijk.2.2 ≫ (𝒰.pullback₁ g).f ijk.1).opensRange },
       (continuous_fst.isOpen_preimage _ ((𝒱 ijk.1).f ijk.2.1 ≫
-      (𝒰.pullback₁ f).f ijk.1).opensRange.is_open').inter (continuous_snd.isOpen_preimage _
-      ((𝒲 ijk.1).f ijk.2.2 ≫ (𝒰.pullback₁ g).f ijk.1).opensRange.is_open')⟩
+      (𝒰.pullback₁ f).f ijk.1).opensRange.isOpen).inter (continuous_snd.isOpen_preimage _
+      ((𝒲 ijk.1).f ijk.2.2 ≫ (𝒰.pullback₁ g).f ijk.1).opensRange.isOpen)⟩
   have : Set.range L ⊆ (iSup U :) := by
     simp only [Precoverage.ZeroHypercover.pullback₁_toPreZeroHypercover,
       PreZeroHypercover.pullback₁_I₀, PreZeroHypercover.pullback₁_X, Set.range_subset_iff]

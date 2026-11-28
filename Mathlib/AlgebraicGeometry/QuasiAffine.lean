@@ -61,7 +61,7 @@ lemma IsQuasiAffine.isBasis_basicOpen (X : Scheme.{u}) [IsQuasiAffine X] :
   refine Opens.isBasis_iff_nbhd.mpr fun {U x} hxU ↦ ?_
   obtain ⟨_, ⟨_, ⟨r, rfl⟩, rfl⟩, hxr, hrU⟩ := (PrimeSpectrum.isBasis_basic_opens
     (R := Γ(X, ⊤))).exists_subset_of_mem_open (Set.mem_image_of_mem _ hxU)
-    (X.toSpecΓ ''ᵁ U).is_open'
+    (X.toSpecΓ ''ᵁ U).isOpen
   simp_rw [← toSpecΓ_preimage_basicOpen]
   refine ⟨_, ⟨r, ?_, rfl⟩, hxr, (Set.preimage_mono hrU).trans_eq
     (Set.preimage_image_eq _ X.toSpecΓ.isEmbedding.injective)⟩

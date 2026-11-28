@@ -141,7 +141,7 @@ theorem coe_inclusion' {X : TopCat.{u}} {U : Opens X} :
     (inclusion' U : U → X) = Subtype.val := rfl
 
 theorem isOpenEmbedding {X : TopCat.{u}} (U : Opens X) : IsOpenEmbedding (inclusion' U) :=
-  U.is_open'.isOpenEmbedding_subtypeVal
+  U.isOpen.isOpenEmbedding_subtypeVal
 
 /-- The inclusion of the top open subset (i.e. the whole space) is an isomorphism.
 -/
@@ -343,8 +343,8 @@ def IsOpenMap.functorMap {X Y : TopCat.{u}} {f : X ⟶ Y} {U V : Opens X}
 -/
 @[simps obj_coe]
 def IsOpenMap.functor {X Y : TopCat.{u}} {f : X ⟶ Y} (hf : IsOpenMap f) : Opens X ⥤ Opens Y where
-  obj U := ⟨f '' (U : Set X), hf (U : Set X) U.is_open'⟩
-  map {U V} h := IsOpenMap.functorMap (hf _ U.is_open') (hf _ V.is_open') h.down.down
+  obj U := ⟨f '' (U : Set X), hf (U : Set X) U.isOpen⟩
+  map {U V} h := IsOpenMap.functorMap (hf _ U.isOpen) (hf _ V.isOpen) h.down.down
 
 /-- An open map `f : X ⟶ Y` induces an adjunction between `Opens X` and `Opens Y`.
 -/
@@ -414,7 +414,7 @@ lemma le_functorObj_iff {X Y : TopCat.{u}} {f : X ⟶ Y} (hf : IsInducing f) {U 
   constructor
   · exact fun i x hx ↦ (hf.mem_functorObj_iff ((Opens.map f).obj ⟨t, ht⟩)).mp (i hx)
   · intro h x hx
-    refine Opens.mem_sSup.mpr ⟨⟨_, V.is_open'.union ht⟩, Opens.ext ?_, Set.mem_union_left t hx⟩
+    refine Opens.mem_sSup.mpr ⟨⟨_, V.isOpen.union ht⟩, Opens.ext ?_, Set.mem_union_left t hx⟩
     dsimp
     rwa [Set.union_eq_right]
 

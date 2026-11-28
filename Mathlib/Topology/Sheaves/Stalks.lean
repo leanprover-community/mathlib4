@@ -349,14 +349,14 @@ noncomputable def stalkSpecializes (F : X.Presheaf C) {x y : X} (h : x ⤳ y) :
   · exact
       colimit.ι ((OpenNhds.inclusion x).op ⋙ F)
         (op ⟨(unop U).val,
-          (specializes_iff_forall_open.mp h _ (unop U).val.is_open' (unop U).property :)⟩)
+          (specializes_iff_forall_open.mp h _ (unop U).val.isOpen (unop U).property :)⟩)
   · intro U V i
     dsimp
     rw [Category.comp_id]
     let U' : OpenNhds x :=
-      ⟨_, (specializes_iff_forall_open.mp h _ (unop U).val.is_open' (unop U).property :)⟩
+      ⟨_, (specializes_iff_forall_open.mp h _ (unop U).val.isOpen (unop U).property :)⟩
     let V' : OpenNhds x :=
-      ⟨_, (specializes_iff_forall_open.mp h _ (unop V).val.is_open' (unop V).property :)⟩
+      ⟨_, (specializes_iff_forall_open.mp h _ (unop V).val.isOpen (unop V).property :)⟩
     exact colimit.w ((OpenNhds.inclusion x).op ⋙ F) (show V' ⟶ U' from i.unop).op
 
 @[reassoc (attr := simp), elementwise nosimp]
@@ -475,7 +475,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 lemma exists_mem_germ_eq_of_isBasis (F : X.Presheaf C) (x : X) (t : ToType (F.stalk x)) :
     ∃ (U : Opens X) (m : x ∈ U) (_ : U ∈ B) (s : ToType (F.obj (op U))), F.germ _ x m s = t := by
   obtain ⟨U, hxU, s, rfl⟩ := F.exists_germ_eq t
-  obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ := hB.exists_subset_of_mem_open hxU U.is_open'
+  obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ := hB.exists_subset_of_mem_open hxU U.isOpen
   exact ⟨V, hxV, hV, F.map (homOfLE hVU).op s, by rw [← ConcreteCategory.comp_apply, F.germ_res']⟩
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -485,7 +485,7 @@ lemma germ_eq_of_isBasis (F : X.Presheaf C) {U V : Opens X} (x : X) (mU : x ∈ 
     ∃ (W : Opens X) (_ : x ∈ W) (_ : W ∈ B) (hWU : W ≤ U) (hWV : W ≤ V),
       F.map (homOfLE hWU).op s = F.map (homOfLE hWV).op t := by
   obtain ⟨W, hxW, hWU, hWV, e⟩ := F.germ_eq x mU mV _ _ h
-  obtain ⟨_, ⟨W', hW', rfl⟩, hxW', hW'W⟩ := hB.exists_subset_of_mem_open hxW W.is_open'
+  obtain ⟨_, ⟨W', hW', rfl⟩, hxW', hW'W⟩ := hB.exists_subset_of_mem_open hxW W.isOpen
   refine ⟨W', hxW', hW', hW'W.trans hWU.le, hW'W.trans hWV.le, ?_⟩
   simpa only [← ConcreteCategory.comp_apply, ← F.map_comp] using!
     congr(ConcreteCategory.hom (F.map (homOfLE hW'W).op) $e)

@@ -45,10 +45,10 @@ lemma eq_top_of_sigmaSpec_subset_of_isCompact
     (hV : ↑(sigmaSpec R).opensRange ⊆ V)
     (hV' : IsCompact (X := Spec (.of <| Π i, R i)) V)
     (hVU : V ⊆ U) : U = ⊤ := by
-  obtain ⟨s, hs⟩ := (PrimeSpectrum.isOpen_iff _).mp U.is_open'
+  obtain ⟨s, hs⟩ := (PrimeSpectrum.isOpen_iff _).mp U.isOpen
   obtain ⟨t, hts, ht, ht'⟩ : ∃ t ⊆ s, t.Finite ∧ V ⊆ ⋃ i ∈ t, (basicOpen i).carrier := by
     obtain ⟨t, ht⟩ := hV'.elim_finite_subcover
-      (fun i : s ↦ (basicOpen i.val).carrier) (fun _ ↦ (basicOpen _).is_open')
+      (fun i : s ↦ (basicOpen i.val).carrier) (fun _ ↦ (basicOpen _).isOpen)
       (by simpa [← Set.compl_iInter, ← zeroLocus_iUnion₂ (κ := (· ∈ s)), ← hs])
     exact ⟨t.map (Function.Embedding.subtype _), by simp, Finset.finite_toSet _, by simpa using ht⟩
   replace ht' : V ⊆ (zeroLocus t)ᶜ := by
@@ -124,7 +124,7 @@ lemma pointsPi_surjective [CompactSpace X] [∀ i, IsLocalRing (R i)] :
     refine ⟨𝒰.idx ((f i) (IsLocalRing.closedPoint (R i))), ?_⟩
     rintro _ ⟨x, rfl⟩
     exact ((IsLocalRing.specializes_closedPoint x).map (f i).continuous).mem_open
-      (𝒰.f _).opensRange.is_open' (𝒰.covers _)
+      (𝒰.f _).opensRange.isOpen (𝒰.covers _)
   choose j hj using this
   have (j₀ : _) := pointsPi_surjective_of_isAffine (ι := { i // j i = j₀ }) (R ·) (𝒰.X j₀)
     (fun i ↦ IsOpenImmersion.lift (𝒰.f j₀) (f i.val) (by rcases i with ⟨i, rfl⟩; exact hj i))

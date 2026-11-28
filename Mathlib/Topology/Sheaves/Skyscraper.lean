@@ -144,11 +144,11 @@ def skyscraperPresheafCoconeOfSpecializes {y : X} (h : p₀ ⤳ y) :
     Cocone ((OpenNhds.inclusion y).op ⋙ skyscraperPresheaf p₀ A) where
   pt := A
   ι :=
-    { app := fun U => eqToHom <| ite_eq_left <| h.mem_open U.unop.val.is_open' U.unop.property
+    { app := fun U => eqToHom <| ite_eq_left <| h.mem_open U.unop.val.isOpen U.unop.property
       naturality := fun U V inc => by
         change dite _ _ _ ≫ _ = _; rw [dite_eq_left]
         swap
-        · exact h.mem_open V.unop.val.is_open' V.unop.property
+        · exact h.mem_open V.unop.val.isOpen V.unop.property
         · simp }
 
 set_option backward.defeqAttrib.useBackward true in
@@ -167,7 +167,7 @@ noncomputable def skyscraperPresheafCoconeIsColimitOfSpecializes {y : X} (h : p�
     rw [dite_eq_left]
     · simp only [eqToHom_trans_assoc,
         eqToHom_refl, Category.id_comp, op_unop]
-    · exact h.mem_open U.unop.val.is_open' U.unop.property
+    · exact h.mem_open U.unop.val.isOpen U.unop.property
   uniq c f h := by
     dsimp
     rw [← h, skyscraperPresheafCoconeOfSpecializes_ι_app, eqToHom_trans_assoc, eqToHom_refl,
@@ -183,7 +183,7 @@ noncomputable def skyscraperPresheafStalkOfSpecializes [HasColimits C] {y : X} (
 lemma germ_skyscraperPresheafStalkOfSpecializes_hom [HasColimits C] {y : X} (h : p₀ ⤳ y) (U hU) :
     (skyscraperPresheaf p₀ A).germ U y hU ≫
       (skyscraperPresheafStalkOfSpecializes p₀ A h).hom =
-        eqToHom (ite_eq_left (h.mem_open U.is_open' hU)) :=
+        eqToHom (ite_eq_left (h.mem_open U.isOpen hU)) :=
   colimit.isoColimitCocone_ι_hom _ _
 
 /-- The cocone at `*` for the stalk functor of `skyscraperPresheaf p₀ A` when `y ∉ closure {p₀}`

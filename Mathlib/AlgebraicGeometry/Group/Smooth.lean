@@ -43,9 +43,9 @@ private lemma smooth_of_grpObj_of_isAlgClosed [IsReduced G] [IsAlgClosed K] : Sm
     ← not_ne_iff, ← Set.nonempty_compl]
   intro H
   obtain ⟨x, hx, hxc⟩ :=
-    nonempty_inter_closedPoints H f.smoothLocus.is_open'.isClosed_compl.isLocallyClosed
+    nonempty_inter_closedPoints H f.smoothLocus.isOpen.isClosed_compl.isLocallyClosed
   obtain ⟨y, hy : y ∈ f.smoothLocus, hyc⟩ := nonempty_inter_closedPoints
-    f.dense_smoothLocus_of_perfectField.nonempty f.smoothLocus.is_open'.isLocallyClosed
+    f.dense_smoothLocus_of_perfectField.nonempty f.smoothLocus.isOpen.isLocallyClosed
   let x' : 𝟙_ _ ⟶ Over.mk f := Over.homMk _ ((pointEquivClosedPoint f).symm ⟨x, hxc⟩).property
   let y' : 𝟙_ _ ⟶ Over.mk f := Over.homMk _ ((pointEquivClosedPoint f).symm ⟨y, hyc⟩).property
   let α := (GrpObj.mulRight (A := Over.mk f) x').symm ≪≫

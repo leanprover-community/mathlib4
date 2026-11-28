@@ -60,7 +60,7 @@ def SpecModulesToSheafFullyFaithful : (modulesSpecToSheaf (R := R)).FullyFaithfu
     apply TopCat.Presheaf.IsSheaf.section_ext (modulesSpecToSheaf.obj N).property
     intro x hxU
     obtain ⟨a, ⟨_, ⟨r, rfl⟩, rfl⟩, hxr, hrU : basicOpen _ ≤ _⟩ :=
-      PrimeSpectrum.isBasis_basic_opens.exists_subset_of_mem_open hxU U.unop.is_open'
+      PrimeSpectrum.isBasis_basic_opens.exists_subset_of_mem_open hxU U.unop.isOpen
     refine ⟨_, hrU, hxr, ?_⟩
     refine Eq.trans ?_ (N.val.map_smul (homOfLE hrU).op t _).symm
     change N.val.map (homOfLE hrU).op (f.hom.app _ _) =

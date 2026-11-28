@@ -1021,7 +1021,7 @@ lemma iSup_basicOpen_of_span_eq_top {X : Scheme} (U) (s : Set Γ(X, U))
     exact fun i _ ↦ X.basicOpen_le i
   · intro x hx
     obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ :=
-      X.isBasis_affineOpens.exists_subset_of_mem_open hx U.is_open'
+      X.isBasis_affineOpens.exists_subset_of_mem_open hx U.isOpen
     refine SetLike.mem_of_subset ?_ hxV
     rw [← (hV.iSup_basicOpen_eq_self_iff (s := X.presheaf.map (homOfLE hVU).op '' s)).mpr
       (by rw [← Ideal.map_span, hs, Ideal.map_top])]

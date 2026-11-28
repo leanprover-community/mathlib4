@@ -113,7 +113,7 @@ theorem isOpen_iff_inter :
 theorem isOpen_iff_coe_preimage :
     IsOpen s ↔ ∀ i, IsOpen ((↑) ⁻¹' s : Set (U i)) := by
   simp [hU.isOpen_iff_inter (s := s),
-    (U _).is_open'.isOpenEmbedding_subtypeVal.isOpen_iff_image_isOpen,
+    (U _).isOpenEmbedding'.isOpen_iff_image_isOpen,
     image_preimage_eq_inter_range]
 
 theorem isClosed_iff_coe_preimage {s : Set β} :
@@ -155,8 +155,8 @@ theorem isInducing_iff_restrictPreimage (h : Continuous f) :
     rw [Function.comp_apply, ← H, ← IsInducing.subtypeVal.nhds_eq_comap]
   · intro H x
     obtain ⟨i, hi⟩ := Opens.mem_iSup.mp (show f x ∈ iSup U by simp [hU.iSup_eq_top])
-    simpa [← ((h.isOpen_preimage _ (U i).is_open').isOpenEmbedding_subtypeVal).map_nhds_eq ⟨x, hi⟩,
-      H i ⟨x, hi⟩, subtypeVal_map_comap] using preimage_mem_comap ((U i).is_open'.mem_nhds hi)
+    simpa [← ((h.isOpen_preimage _ (U i).isOpen).isOpenEmbedding_subtypeVal).map_nhds_eq ⟨x, hi⟩,
+      H i ⟨x, hi⟩, subtypeVal_map_comap] using preimage_mem_comap ((U i).isOpen.mem_nhds hi)
 
 theorem isEmbedding_iff_restrictPreimage (h : Continuous f) :
     IsEmbedding f ↔ ∀ i, IsEmbedding ((U i).carrier.restrictPreimage f) := by
@@ -189,7 +189,7 @@ omit [TopologicalSpace α] in
 theorem denseRange_iff_restrictPreimage :
     DenseRange f ↔ ∀ i, DenseRange ((U i).carrier.restrictPreimage f) := by
   simp_rw [denseRange_iff_closure_range, Set.range_restrictPreimage,
-    ← (U _).is_open'.isOpenEmbedding_subtypeVal.isOpenMap.preimage_closure_eq_closure_preimage
+    ← (U _).isOpen.isOpenEmbedding_subtypeVal.isOpenMap.preimage_closure_eq_closure_preimage
       continuous_subtypeVal]
   simp only [Opens.carrier_eq_coe, SetLike.coe_sort_coe, preimage_eq_univ_iff,
     Subtype.range_coe_subtype, SetLike.mem_coe]
@@ -201,7 +201,7 @@ lemma generalizingMap_iff_restrictPreimage :
     GeneralizingMap f ↔ ∀ i, GeneralizingMap ((U i).carrier.restrictPreimage f) := by
   refine ⟨fun hf ↦ fun i ↦ hf.restrictPreimage _, fun hf ↦ fun x y h ↦ ?_⟩
   obtain ⟨i, hx⟩ := hU.exists_mem (f x)
-  have h : (⟨y, (U i).is_open'.stableUnderGeneralization h hx⟩ : U i) ⤳
+  have h : (⟨y, (U i).isOpen.stableUnderGeneralization h hx⟩ : U i) ⤳
     (U i).carrier.restrictPreimage f ⟨x, hx⟩ := by rwa [subtype_specializes_iff]
   obtain ⟨a, ha, heq⟩ := hf i h
   refine ⟨a, ?_, congr(($heq).val)⟩

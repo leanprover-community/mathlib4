@@ -75,7 +75,7 @@ theorem smoothSheafCommRing.isUnit_stalk_iff {x : M}
       f.property.continuous.continuousAt.eventually_ne hf'
     rw [eventually_nhds_iff] at H
     obtain ⟨V₀, hV₀f, hV₀, hxV₀⟩ := H
-    let V : Opens M := ⟨Subtype.val '' V₀, U.is_open'.isOpenMap_subtypeVal V₀ hV₀⟩
+    let V : Opens M := ⟨Subtype.val '' V₀, U.isOpen.isOpenMap_subtypeVal V₀ hV₀⟩
     have hUV : V ≤ U := Subtype.coe_image_subset (U : Set M) V₀
     have hV : V₀ = .range (Set.inclusion hUV) := by rw [Set.range_inclusion hUV]; simp [V]
     clear_value V

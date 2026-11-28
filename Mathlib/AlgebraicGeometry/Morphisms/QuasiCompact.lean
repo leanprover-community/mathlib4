@@ -54,7 +54,7 @@ theorem Scheme.Hom.isSpectralMap [QuasiCompact f] : IsSpectralMap f := by
 
 lemma Scheme.Hom.isCompact_preimage [QuasiCompact f] {U : Opens Y}
     (hU : IsCompact (U : Set Y)) : IsCompact (f ⁻¹ᵁ U : Set X) :=
-  f.isSpectralMap.isCompact_preimage_of_isOpen U.is_open' hU
+  f.isSpectralMap.isCompact_preimage_of_isOpen U.isOpen hU
 
 instance (priority := 900) quasiCompact_of_isIso {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
     QuasiCompact f := by
@@ -262,7 +262,7 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme
     (H : x |_ (X.basicOpen f) = 0) :
     ∃ n : ℕ, f ^ n * x = 0 := by
   obtain ⟨s, hs, e⟩ :=
-    isCompact_and_isOpen_iff_finite_and_eq_biUnion_affineOpens.mp ⟨hU, U.is_open'⟩
+    isCompact_and_isOpen_iff_finite_and_eq_biUnion_affineOpens.mp ⟨hU, U.isOpen⟩
   replace e : U = iSup fun i : s => (i : X.Opens) := by
     ext1; simpa using e
   have h₁ (i : s) : i.val.val ≤ U := by

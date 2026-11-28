@@ -214,7 +214,7 @@ theorem imageBasicOpen_image_open :
   rw [PreservesCoequalizer.iso_hom, ι_comp_coequalizerComparison]
   dsimp only [SheafedSpace.forget]
   rw [imageBasicOpen_image_preimage]
-  exact (imageBasicOpen f g U s).is_open'
+  exact (imageBasicOpen f g U s).isOpen
 
 set_option backward.isDefEq.respectTransparency false in
 @[instance]
@@ -229,7 +229,7 @@ theorem coequalizer_π_stalk_isLocalHom (x : Y) :
       ((coequalizer.π f.toShHom g.toShHom).hom.base '' V.carrier) = V.carrier :=
     imageBasicOpen_image_preimage f g U s
   have hV' : V = ⟨(coequalizer.π f.toShHom g.toShHom).hom.base ⁻¹'
-      ((coequalizer.π f.toShHom g.toShHom).hom.base '' V.carrier), hV.symm ▸ V.is_open'⟩ :=
+      ((coequalizer.π f.toShHom g.toShHom).hom.base '' V.carrier), hV.symm ▸ V.isOpen⟩ :=
     SetLike.ext' hV.symm
   have V_open : IsOpen ((coequalizer.π f.toShHom g.toShHom).hom.base '' V.carrier) :=
     imageBasicOpen_image_open f g U s

@@ -1020,7 +1020,7 @@ lemma zeroLocus_eq_basicOpen_of_mul_add (e f : R) (mul : e * f = 0) (add : e + f
 
 lemma isClopen_basicOpen_of_mul_add (e f : R) (mul : e * f = 0) (add : e + f = 1) :
     IsClopen (basicOpen e : Set (PrimeSpectrum R)) :=
-  ⟨basicOpen_eq_zeroLocus_of_mul_add e f mul add ▸ isClosed_zeroLocus _, (basicOpen e).is_open'⟩
+  ⟨basicOpen_eq_zeroLocus_of_mul_add e f mul add ▸ isClosed_zeroLocus _, (basicOpen e).isOpen⟩
 
 lemma basicOpen_injOn_isIdempotentElem :
     {e : R | IsIdempotentElem e}.InjOn basicOpen := fun x hx y hy eq ↦ by
@@ -1141,7 +1141,7 @@ lemma isRetrocompact_basicOpen {f : R} :
 
 lemma isConstructible_basicOpen {f : R} :
     IsConstructible (basicOpen f : Set (PrimeSpectrum R)) :=
-  isRetrocompact_basicOpen.isConstructible (basicOpen f).is_open'
+  isRetrocompact_basicOpen.isConstructible (basicOpen f).isOpen
 
 section IsIntegral
 
@@ -1331,13 +1331,13 @@ theorem closedPoint_mem_iff (U : TopologicalSpace.Opens <| PrimeSpectrum R) :
     closedPoint R ∈ U ↔ U = ⊤ := by
   constructor
   · rw [eq_top_iff]
-    exact fun h x _ => (specializes_closedPoint x).mem_open U.is_open' h
+    exact fun h x _ => (specializes_closedPoint x).mem_open U.isOpen h
   · rintro rfl
     exact TopologicalSpace.Opens.mem_top _
 
 lemma closed_point_mem_iff {U : TopologicalSpace.Opens (PrimeSpectrum R)} :
     closedPoint R ∈ U ↔ U = ⊤ :=
-  ⟨(eq_top_iff.mpr fun x _ ↦ (specializes_closedPoint x).mem_open U.is_open' ·), (· ▸ trivial)⟩
+  ⟨(eq_top_iff.mpr fun x _ ↦ (specializes_closedPoint x).mem_open U.isOpen ·), (· ▸ trivial)⟩
 
 @[simp]
 theorem PrimeSpectrum.comap_residue (T : Type u) [CommRing T] [IsLocalRing T]
@@ -1388,7 +1388,7 @@ lemma isClopen_iff {s : Set (PrimeSpectrum R)} :
     IsClopen s ↔ ∃ e : R, IsIdempotentElem e ∧ s = basicOpen e := by
   refine ⟨exists_idempotent_basicOpen_eq_of_isClopen, ?_⟩
   rintro ⟨e, he, rfl⟩
-  refine ⟨?_, (basicOpen e).is_open'⟩
+  refine ⟨?_, (basicOpen e).isOpen⟩
   rw [PrimeSpectrum.basicOpen_eq_zeroLocus_of_isIdempotentElem e he]
   exact isClosed_zeroLocus _
 

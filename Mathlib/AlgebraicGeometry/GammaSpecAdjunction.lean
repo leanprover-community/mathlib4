@@ -92,7 +92,7 @@ theorem toΓSpec_continuous : Continuous X.toΓSpecFun := by
   rw [isTopologicalBasis_basic_opens.continuous_iff]
   rintro _ ⟨r, rfl⟩
   rw [X.toΓSpec_preimage_basicOpen_eq r]
-  exact (X.toRingedSpace.basicOpen r).is_open'
+  exact (X.toRingedSpace.basicOpen r).isOpen
 
 /-- The canonical (bundled) continuous map from the underlying topological
 space of `X` to the prime spectrum of its global sections. -/

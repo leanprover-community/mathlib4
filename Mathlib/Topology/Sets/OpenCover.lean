@@ -64,12 +64,12 @@ lemma iUnion_inter (hu : IsOpenCover u) (s : Set X) :
 lemma isTopologicalBasis (hu : IsOpenCover u)
     {B : ∀ i, Set (Set (u i))} (hB : ∀ i, IsTopologicalBasis (B i)) :
     IsTopologicalBasis (⋃ i, (Subtype.val '' ·) '' B i) :=
-  isTopologicalBasis_of_cover (fun i ↦ (u i).is_open') hu.iSup_set_eq_univ hB
+  isTopologicalBasis_of_cover (fun i ↦ (u i).isOpen) hu.iSup_set_eq_univ hB
 
 lemma exists_finite_of_compactSpace (hu : IsOpenCover u) [CompactSpace X] :
     ∃ (s : Finset ι), IsOpenCover (fun i : s ↦ u i.val) := by
   rw [IsOpenCover, eq_top_iff, ← SetLike.coe_subset_coe] at hu
-  obtain ⟨s, hs⟩ := IsCompact.elim_finite_subcover isCompact_univ _ (fun i ↦ (u i).is_open')
+  obtain ⟨s, hs⟩ := IsCompact.elim_finite_subcover isCompact_univ _ (fun i ↦ (u i).isOpen)
     (by simpa using hu)
   use s
   simpa [IsOpenCover, eq_top_iff, ← SetLike.coe_subset_coe, Set.iUnion_subtype] using hs
@@ -88,7 +88,7 @@ lemma Opens.IsBasis.isOpenCover_mem_and_le {S : Set (Opens X)} (hS : Opens.IsBas
     IsOpenCover (fun V : { x : Opens X × ι // x.1 ∈ S ∧ x.1 ≤ U x.2 } ↦ V.val.1) := by
   refine top_le_iff.mp fun x _ ↦ ?_
   obtain ⟨i, hxi⟩ := hU.exists_mem x
-  obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ := hS.exists_subset_of_mem_open hxi (U i).is_open'
+  obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ := hS.exists_subset_of_mem_open hxi (U i).isOpen
   simp only [Opens.iSup_mk, Opens.carrier_eq_coe, Opens.mem_mk, Set.mem_iUnion, SetLike.mem_coe]
   exact ⟨⟨(V, i), hV, hVU⟩, hxV⟩
 

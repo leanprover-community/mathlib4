@@ -461,7 +461,7 @@ lemma isIso_pushoutSection_of_isQuasiSeparated_of_flat_right [Flat f]
     (by rwa [iSup_subtype, eq_comm])
     (fun i ↦ isIso_pushoutSection_of_isAffineOpen _ _ _ _ hUS hUT i.val.property)
     (fun i j ↦ mono_pushoutSection_of_isCompact_of_flat_right _ _ _ _ hUS hUT
-      (hUX' _ _ (hIUX _) i.val.val.is_open' i.val.property.isCompact (hIUX _) j.val.val.is_open'
+      (hUX' _ _ (hIUX _) i.val.val.isOpen i.val.property.isCompact (hIUX _) j.val.val.isOpen
         j.val.property.isCompact))
     (f.flat_appLE hUS hUT _)
 
@@ -505,7 +505,7 @@ lemma isIso_pushoutSection_of_isCompact_of_flat_right_of_ringHomFlat [Flat f]
     (fun i ↦ isIso_pushoutSection_of_isQuasiSeparated_of_flat_left _ _ _ _ hUS i.val.property
       hUX hUX')
     (fun i j ↦ mono_pushoutSection_of_isCompact_of_flat_left_of_ringHomFlat _ _ _ _ hUS hUX
-      (hUT' _ _ (hIUT _) i.val.val.is_open' i.val.property.isCompact (hIUT _) j.val.val.is_open'
+      (hUT' _ _ (hIUT _) i.val.val.isOpen i.val.property.isCompact (hIUT _) j.val.val.isOpen
         j.val.property.isCompact)
       hiX) hiX
 

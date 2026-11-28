@@ -368,7 +368,7 @@ theorem isLocalizedModule_toPushforwardStalkAlgHom_aux (y) :
   obtain ⟨U, hp, s, e⟩ := TopCat.Presheaf.exists_germ_eq _ y
   obtain ⟨_, ⟨r, rfl⟩, hpr : p ∈ PrimeSpectrum.basicOpen r, hrU : PrimeSpectrum.basicOpen r ≤ U⟩ :=
     PrimeSpectrum.isTopologicalBasis_basic_opens.exists_subset_of_mem_open (show p ∈ U from hp)
-      U.is_open'
+      U.isOpen
   change PrimeSpectrum.basicOpen r ≤ U at hrU
   replace e :=
     ((Spec.topMap (CommRingCat.ofHom (algebraMap R S)) _* (structureSheaf S).obj).germ_res_apply
@@ -413,7 +413,7 @@ instance isLocalizedModule_toPushforwardStalkAlgHom :
     obtain ⟨U, hpU, i₁, i₂, e⟩ := TopCat.Presheaf.germ_eq (C := CommRingCat) _ _ _ _ _ _ hx
     obtain ⟨_, ⟨r, rfl⟩, hpr, hrU⟩ :=
       PrimeSpectrum.isTopologicalBasis_basic_opens.exists_subset_of_mem_open
-        (show p ∈ U.carrier from hpU) U.is_open'
+        (show p ∈ U.carrier from hpU) U.isOpen
     apply_fun (Spec.topMap (CommRingCat.ofHom (algebraMap R S)) _* (structureSheaf S).obj).map
         (homOfLE hrU).op at e
     have : algebraMap S ((structureSheaf S).presheaf.obj _) x = 0 := e

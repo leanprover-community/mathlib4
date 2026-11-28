@@ -238,7 +238,7 @@ variable [R1Space G]
 
 theorem outerMeasure_opens (U : Opens G) : μ.outerMeasure U = μ.innerContent U :=
   inducedOuterMeasure_eq' (fun _ => isOpen_iUnion) μ.innerContent_iUnion_nat μ.innerContent_mono
-    U.is_open'
+    U.isOpen
 
 theorem outerMeasure_of_isOpen (U : Set G) (hU : IsOpen U) :
     μ.outerMeasure U = μ.innerContent ⟨U, hU⟩ :=
@@ -335,10 +335,10 @@ theorem borel_le_caratheodory : S ≤ μ.outerMeasure.caratheodory := by
   simp only [subset_inter_iff] at hL
   have hL'U : (L' : Set G) ⊆ U := IsCompact.closure_subset_of_isOpen L.isCompact' hU hL.2
   have hL'U' : (L' : Set G) ⊆ (U' : Set G) :=
-    IsCompact.closure_subset_of_isOpen L.isCompact' U'.is_open' hL.1
+    IsCompact.closure_subset_of_isOpen L.isCompact' U'.isOpen hL.1
   have : ↑U' \ U ⊆ U' \ L' := sdiff_subset_sdiff_right hL'U
   grw [this]
-  rw [μ.outerMeasure_of_isOpen (↑U' \ L') (IsOpen.sdiff U'.is_open' isClosed_closure)]
+  rw [μ.outerMeasure_of_isOpen (↑U' \ L') (IsOpen.sdiff U'.isOpen isClosed_closure)]
   simp only [innerContent, iSup_subtype']
   rw [Opens.coe_mk]
   have : Nonempty { M : Compacts G // (M : Set G) ⊆ ↑U' \ closure L } := ⟨⟨⊥, empty_subset _⟩⟩
@@ -349,11 +349,11 @@ theorem borel_le_caratheodory : S ≤ μ.outerMeasure.caratheodory := by
   dsimp
   grw [show μ M ≤ μ M' from μ.mono _ _ subset_closure]
   have hM' : (M' : Set G) ⊆ U' \ L' :=
-    IsCompact.closure_subset_of_isOpen M.isCompact' (IsOpen.sdiff U'.is_open' isClosed_closure) hM
+    IsCompact.closure_subset_of_isOpen M.isCompact' (IsOpen.sdiff U'.isOpen isClosed_closure) hM
   have : (↑(L' ⊔ M') : Set G) ⊆ U' := by
     simp only [Compacts.coe_sup, union_subset_iff, hL'U', true_and]
     exact hM'.trans sdiff_subset
-  rw [μ.outerMeasure_of_isOpen (↑U') U'.is_open']
+  rw [μ.outerMeasure_of_isOpen (↑U') U'.isOpen]
   refine le_trans (ge_of_eq ?_) (μ.le_innerContent _ _ this)
   exact μ.sup_disjoint L' M' (subset_sdiff.1 hM').2.symm isClosed_closure isClosed_closure
 
