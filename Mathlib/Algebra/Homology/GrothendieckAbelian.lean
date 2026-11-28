@@ -9,6 +9,11 @@ public import Mathlib.Algebra.Homology.HomologicalComplexAbelian
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
 public import Mathlib.CategoryTheory.Generator.HomologicalComplex
 
+import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Homological complexes in a Grothendieck abelian category
 
@@ -16,7 +21,6 @@ Let `c : ComplexShape ι` be a complex shape with no loop, and
 such that `Small.{w} ι`. Then, if `C` is a Grothendieck abelian
 category (with `IsGrothendieckAbelian.{w} C`), the category
 `HomologicalComplex C c` is Grothendieck abelian.
-
 -/
 
 public section
@@ -53,7 +57,7 @@ instance hasExactColimitsOfShape (J : Type w) [Category.{w'} J] [HasFiniteLimits
   preservesFiniteLimits :=
     ⟨fun K _ _ ↦ ⟨fun {F} ↦ ⟨fun hc ↦ ⟨isLimitOfEval _ _ (fun i ↦ by
       let e := preservesColimitNatIso (J := J) (eval C c i)
-      exact (IsLimit.postcomposeHomEquiv (Functor.isoWhiskerLeft F e) _).1
+      exact (IsLimit.postcomposeHomEquiv (Functor.isoWhiskerLeft F e) _).toFun
         (IsLimit.ofIsoLimit
           (isLimitOfPreserves ((Functor.whiskeringRight J _ _).obj (eval C c i) ⋙ colim) hc)
           (Cone.ext (e.symm.app _) (fun k ↦ (NatIso.naturality_2 e.symm _).symm))))⟩⟩⟩⟩

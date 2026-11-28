@@ -9,6 +9,9 @@ public import Mathlib.LinearAlgebra.Dimension.Finite
 
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite and free modules using matrices
 

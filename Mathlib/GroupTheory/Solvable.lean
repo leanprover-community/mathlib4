@@ -6,11 +6,11 @@ Authors: Jordan Brown, Thomas Browning, Patrick Lutz
 module
 
 public import Mathlib.GroupTheory.Abelianization.Defs
-public import Mathlib.GroupTheory.Perm.ViaEmbedding
 public import Mathlib.GroupTheory.Subgroup.Simple
 public import Mathlib.SetTheory.Cardinal.Order
 
 import Mathlib.Data.Fin.VecNotation
+import Mathlib.GroupTheory.Perm.ViaEmbedding
 
 /-!
 # Solvable Groups
@@ -154,7 +154,7 @@ alias _root_.isSolvable_def := Group.isSolvable_def
 
 @[to_additive]
 instance (priority := 100) {G : Type*} [Group G] [IsMulCommutative G] : IsSolvable G :=
-  ⟨⟨1, le_bot_iff.mp (Abelianization.commutator_le_ker (MonoidHom.id G))⟩⟩
+  ⟨⟨1, le_bot_iff.mp (Group.Abelianization.commutator_le_ker (MonoidHom.id G))⟩⟩
 
 @[to_additive]
 theorem isSolvable_of_comm {G : Type*} [hG : Group G] (h : ∀ a b : G, a * b = b * a) :
@@ -316,9 +316,10 @@ theorem IsSimpleGroup.comm_iff_isSolvable : (∀ a b : G, a * b = b * a) ↔ Gro
   ⟨Group.isSolvable_of_comm, fun ⟨⟨n, hn⟩⟩ => by
     cases n
     · intro a b
-      refine (mem_bot.1 ?_).trans (mem_bot.1 ?_).symm <;>
-        · rw [← hn]
-          exact mem_top _
+      refine (mem_bot.1 ?_).trans (mem_bot.1 ?_).symm
+      all_goals
+        rw [← hn]
+        exact mem_top _
     · rw [IsSimpleGroup.derivedSeries_succ] at hn
       intro a b
       rw [← mul_inv_eq_one, mul_inv_rev, ← mul_assoc, ← mem_bot, ← hn, commutator_eq_closure]

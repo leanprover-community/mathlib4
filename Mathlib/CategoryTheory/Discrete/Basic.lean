@@ -174,7 +174,6 @@ abbrev eqToIso' {a b : α} (h : a = b) : Discrete.mk a ≅ Discrete.mk b :=
 theorem id_def (X : Discrete α) : Discrete.Hom.mk (Eq.refl X.as) = 𝟙 X :=
   rfl
 
-@[simp]
 theorem id_def' (X : α) : Discrete.Hom.mk (Eq.refl X) = 𝟙 (⟨X⟩ : Discrete α) :=
   rfl
 
@@ -196,7 +195,6 @@ def functor {I : Type u₁} (F : I → C) : Discrete I ⥤ C where
     rcases f with ⟨h⟩
     exact eqToHom (congrArg _ h)
 
-@[simp]
 theorem functor_obj {I : Type u₁} (F : I → C) (i : I) :
     (Discrete.functor F).obj (Discrete.mk i) = F i :=
   rfl
@@ -294,8 +292,8 @@ def equivalence {I : Type u₁} {J : Type u₂} (e : I ≃ J) : Discrete I ≌ D
 def equivOfEquivalence {α : Type u₁} {β : Type u₂} (h : Discrete α ≌ Discrete β) : α ≃ β where
   toFun := Discrete.as ∘ h.functor.obj ∘ Discrete.mk
   invFun := Discrete.as ∘ h.inverse.obj ∘ Discrete.mk
-  left_inv a := by simpa using eq_of_hom (h.unitIso.app (Discrete.mk a)).2
-  right_inv a := by simpa using eq_of_hom (h.counitIso.app (Discrete.mk a)).1
+  left_inv a := by simpa using eq_of_hom (h.unitIso.app (Discrete.mk a)).inv
+  right_inv a := by simpa using eq_of_hom (h.counitIso.app (Discrete.mk a)).hom
 
 end Discrete
 

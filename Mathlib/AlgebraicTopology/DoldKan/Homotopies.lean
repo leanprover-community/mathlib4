@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Homology.Homotopy
 public import Mathlib.AlgebraicTopology.DoldKan.Notations
 
 /-!
-
 # Construction of homotopies for the Dold-Kan correspondence
 
 (The general strategy of proof of the Dold-Kan correspondence is explained
@@ -52,9 +51,9 @@ In this file `Homotopies.lean`, we define the null homotopic maps
 compatible with the application of additive functors (see `map_Hσ`).
 
 ## References
+
 * [Albrecht Dold, *Homology of Symmetric Products and Other Functors of Complexes*][dold1958]
 * [Paul G. Goerss, John F. Jardine, *Simplicial Homotopy Theory*][goerss-jardine-2009]
-
 -/
 
 @[expose] public section
@@ -84,7 +83,6 @@ e.g. `c_mk n (n+1) rfl` -/
 theorem c_mk (i j : ℕ) (h : j + 1 = i) : c.Rel i j :=
   ComplexShape.down_mk i j h
 
-set_option backward.defeqAttrib.useBackward true in
 /-- This lemma is meant to be used with `nullHomotopicMap'_f_of_not_rel_left` -/
 theorem cs_down_0_not_rel_left (j : ℕ) : ¬c.Rel 0 j := by
   intro hj

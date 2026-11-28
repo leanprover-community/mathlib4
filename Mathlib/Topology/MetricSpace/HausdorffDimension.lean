@@ -483,7 +483,7 @@ theorem Convex.dimH_eq_finrank_vectorSpan {s : Set E} (hcvx : Convex ℝ s) (hne
     (⟨hne.some, subset_affineSpan ℝ s hne.some_mem⟩ : affineSpan ℝ s)
   have hs_eq : s = (↑) '' ((↑) ⁻¹' s : Set (affineSpan ℝ s)) :=
     (image_preimage_eq_of_subset <| (subset_affineSpan ℝ s).trans Subtype.range_coe.superset).symm
-  rw [hs_eq, isometry_subtype_coe.dimH_image, ← φ.isometry.dimH_image,
+  rw [hs_eq, isometry_subtypeVal.dimH_image, ← φ.isometry.dimH_image,
       Real.dimH_of_nonempty_interior, direction_affineSpan ℝ s, ← hs_eq]
   simp_rw [← AffineIsometryEquiv.coe_toHomeomorph, ← φ.toHomeomorph.image_interior, image_nonempty]
   simpa [intrinsicInterior] using (intrinsicInterior_nonempty hcvx).mpr hne
@@ -526,7 +526,7 @@ end Real
 theorem dense_compl_of_dimH_lt_finrank {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     {s : Set E} (hs : dimH s < finrank ℝ E) : Dense sᶜ := by
   have : FiniteDimensional ℝ E := .of_finrank_pos <| by simpa using zero_le.trans_lt hs
-  refine fun x => mem_closure_iff_nhds.2 fun t ht => nonempty_iff_ne_empty.2 fun he => hs.not_ge ?_
+  refine fun x => mem_closure_iff_nhds.2 fun t ht => ne_empty_iff_nonempty.1 fun he => hs.not_ge ?_
   rw [← sdiff_eq, sdiff_eq_empty] at he
   rw [← Real.dimH_of_mem_nhds ht]
   exact dimH_mono he
@@ -580,7 +580,7 @@ theorem DifferentiableOn.hausdorffMeasure_image_eq_zero [MeasurableSpace E] [Bor
 theorem DifferentiableOn.dimH_image_le (hf : DifferentiableOn 𝕜 f t) :
     dimH (f '' t) ≤ dimH t := by
   borelize E F
-  simpa [dimH_eq_iInf] using biInf_mono (fun r ↦ hf.hausdorffMeasure_image_eq_zero r.2)
+  simpa [dimH_eq_iInf] using biInf_mono (fun r ↦ hf.hausdorffMeasure_image_eq_zero r.property)
 
 variable [NormedSpace ℝ E] [NormedSpace ℝ F]
 
@@ -626,14 +626,14 @@ theorem ContDiff.dimH_range_le (h : ContDiff ℝ 1 f) : dimH (range f) ≤ finra
 
 @[deprecated DifferentiableOn.dense_compl_image_of_dimH_lt_finrank +typeChanged
   (since := "2026-08-03")]
-theorem ContDiffOn.dense_compl_image_of_dimH_lt_finrank [FiniteDimensional ℝ F]
+theorem ContDiffOn.dense_compl_image_of_dimH_lt_finrank
     (h : ContDiffOn ℝ 1 f s) (hc : Convex ℝ s) (ht : t ⊆ s)
     (htF : dimH t < finrank ℝ F) : Dense (f '' t)ᶜ :=
   dense_compl_of_dimH_lt_finrank <| (h.dimH_image_le hc ht).trans_lt htF
 
 @[deprecated Differentiable.dense_compl_range_of_finrank_lt_finrank +typeChanged
   (since := "2026-08-03")]
-theorem ContDiff.dense_compl_range_of_finrank_lt_finrank [FiniteDimensional ℝ F]
+theorem ContDiff.dense_compl_range_of_finrank_lt_finrank
     (h : ContDiff ℝ 1 f) (hEF : finrank ℝ E < finrank ℝ F) : Dense (range f)ᶜ :=
   dense_compl_of_dimH_lt_finrank <| h.dimH_range_le.trans_lt <| Nat.cast_lt.2 hEF
 

@@ -8,10 +8,11 @@ module
 public import Mathlib.Algebra.BigOperators.Intervals
 public import Mathlib.Algebra.BigOperators.Ring.List
 public import Mathlib.Data.Int.ModEq
-public import Mathlib.Data.List.Indexes
 public import Mathlib.Data.Nat.Digits.Defs
 public import Mathlib.Data.Nat.Log
 public import Mathlib.Tactic.IntervalCases
+
+import Mathlib.Data.List.Indexes
 
 /-!
 # Digits of a natural number
@@ -286,18 +287,16 @@ theorem ofDigits_zmod (b : ℤ) (k : ℕ) (L : List ℕ) : ofDigits b L % k = of
 theorem modEq_digits_sum (b b' : ℕ) (h : b' % b = 1) (n : ℕ) : n ≡ (digits b' n).sum [MOD b] := by
   rw [← ofDigits_one]
   conv =>
-    congr
-    · skip
-    · rw [← ofDigits_digits b' n]
+    enter [2]
+    rw [← ofDigits_digits b' n]
   convert ofDigits_modEq b' b (digits b' n)
   exact h.symm
 
 theorem zmodeq_ofDigits_digits (b b' : ℕ) (c : ℤ) (h : b' ≡ c [ZMOD b]) (n : ℕ) :
     n ≡ ofDigits c (digits b' n) [ZMOD b] := by
   conv =>
-    congr
-    · skip
-    · rw [← ofDigits_digits b' n]
+    enter [2]
+    rw [← ofDigits_digits b' n]
   rw [coe_ofDigits]
   apply ofDigits_zmodeq' _ _ _ h
 

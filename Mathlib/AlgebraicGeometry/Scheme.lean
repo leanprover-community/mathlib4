@@ -15,7 +15,6 @@ where there is an isomorphism of presheaves between the restriction to that open
 and the structure sheaf of `Spec R`, for some commutative ring `R`.
 
 A morphism of schemes is just a morphism of the underlying locally ringed spaces.
-
 -/
 
 @[expose] public section
@@ -144,7 +143,7 @@ instance {X : Scheme.{u}} : Subsingleton Γ(X, ⊥) :=
   CommRingCat.subsingleton_of_isTerminal X.sheaf.isTerminalOfEmpty
 
 @[continuity, fun_prop]
-lemma Hom.continuous {X Y : Scheme} (f : X ⟶ Y) : Continuous f := f.base.hom.2
+lemma Hom.continuous {X Y : Scheme} (f : X ⟶ Y) : Continuous f := by fun_prop
 
 /-- The structure sheaf of a scheme. -/
 protected abbrev sheaf (X : Scheme) :=
@@ -254,7 +253,7 @@ lemma coe_preimage {U : Opens Y} : f ⁻¹ᵁ U = f ⁻¹' U := rfl
 
 lemma preimage_sup {U V : Opens Y} : f ⁻¹ᵁ (U ⊔ V) = f ⁻¹ᵁ U ⊔ f ⁻¹ᵁ V := rfl
 lemma preimage_inf {U V : Opens Y} : f ⁻¹ᵁ (U ⊓ V) = f ⁻¹ᵁ U ⊓ f ⁻¹ᵁ V := rfl
-@[simp] lemma preimage_top : f ⁻¹ᵁ ⊤ = ⊤ := rfl
+lemma preimage_top : f ⁻¹ᵁ ⊤ = ⊤ := rfl
 @[simp] lemma preimage_bot : f ⁻¹ᵁ ⊥ = ⊥ := rfl
 
 lemma preimage_iSup {ι} (U : ι → Opens Y) : f ⁻¹ᵁ iSup U = ⨆ i, f ⁻¹ᵁ U i :=
@@ -270,7 +269,6 @@ lemma preimage_mono {U U' : Y.Opens} (hUU' : U ≤ U') :
 
 lemma id_preimage (U : X.Opens) : (𝟙 X) ⁻¹ᵁ U = U := rfl
 
-@[simp]
 lemma comp_preimage {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
     (f ≫ g) ⁻¹ᵁ U = f ⁻¹ᵁ g ⁻¹ᵁ U := rfl
 
@@ -307,7 +305,6 @@ noncomputable def homeoOfIso {X Y : Scheme.{u}} (e : X ≅ Y) : X ≃ₜ Y :=
 lemma coe_homeoOfIso {X Y : Scheme.{u}} (e : X ≅ Y) :
     ⇑(homeoOfIso e) = e.hom := rfl
 
-@[simp]
 lemma coe_homeoOfIso_symm {X Y : Scheme.{u}} (e : X ≅ Y) :
     ⇑(homeoOfIso e.symm) = e.inv := rfl
 
@@ -360,7 +357,6 @@ theorem id_base (X : Scheme) : (𝟙 X :).base = 𝟙 _ :=
 theorem id_app {X : Scheme} (U : X.Opens) :
     (𝟙 X :).app U = 𝟙 _ := rfl
 
-@[simp]
 theorem id_appTop {X : Scheme} :
     (𝟙 X :).appTop = 𝟙 _ :=
   rfl
@@ -384,7 +380,7 @@ theorem comp_app {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
     (f ≫ g).app U = g.app U ≫ f.app _ :=
   rfl
 
-@[simp, reassoc] -- reassoc lemma does not need `simp`
+@[reassoc]
 theorem comp_appTop {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).appTop = g.appTop ≫ f.appTop :=
   rfl
@@ -443,7 +439,7 @@ theorem inv_appTop {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
 
 /-- Copies a morphism with a different underlying map -/
 def copyBase {X Y : Scheme} (f : X.Hom Y) (g : X → Y) (h : f.base = g) : X ⟶ Y where
-  base := TopCat.ofHom ⟨g, h ▸ f.base.1.2⟩
+  base := TopCat.ofHom ⟨g, by rw [← h]; fun_prop⟩
   c := f.c ≫ (TopCat.Presheaf.pushforwardEq (by subst h; rfl) _).hom
   prop x := by
     subst h
@@ -532,7 +528,7 @@ variable {R S : CommRingCat.{u}} (f : R ⟶ S)
 -- The lemmas below are not tagged simp to respect the abstraction.
 lemma Spec_carrier (R : CommRingCat.{u}) : (Spec R).carrier = PrimeSpectrum R := rfl
 lemma Spec_sheaf (R : CommRingCat.{u}) : (Spec R).sheaf = Spec.structureSheaf R := rfl
-lemma Spec_presheaf (R : CommRingCat.{u}) : (Spec R).presheaf = (Spec.structureSheaf R).1 := rfl
+lemma Spec_presheaf (R : CommRingCat.{u}) : (Spec R).presheaf = (Spec.structureSheaf R).obj := rfl
 lemma Spec.map_base : (Spec.map f).base = ofHom ⟨_, PrimeSpectrum.continuous_comap f.hom⟩ := rfl
 lemma Spec.map_apply (x : Spec S) : Spec.map f x = PrimeSpectrum.comap f.hom x := rfl
 
@@ -643,7 +639,7 @@ theorem mem_basicOpen (x : X) (hx : x ∈ U) :
 
 /-- A variant of `mem_basicOpen` for bundled `x : U`. -/
 @[simp]
-theorem mem_basicOpen' (x : U) : ↑x ∈ X.basicOpen f ↔ IsUnit (X.presheaf.germ U x x.2 f) :=
+theorem mem_basicOpen' (x : U) : ↑x ∈ X.basicOpen f ↔ IsUnit (X.presheaf.germ U x x.property f) :=
   RingedSpace.mem_basicOpen _ _ _ _
 
 /-- A variant of `mem_basicOpen` without the `x ∈ U` assumption. -/
@@ -778,7 +774,7 @@ open scoped Pointwise in
 lemma zeroLocus_setMul {U : X.Opens} (s t : Set Γ(X, U)) :
     X.zeroLocus (s * t) = X.zeroLocus s ∪ X.zeroLocus t := by
   simp only [← Set.image2_mul, zeroLocus_def, Set.biInter_image2]
-  simp [Set.compl_inter, ← Set.union_iInter₂, ← Set.iInter₂_union]
+  simp [← Set.union_iInter₂, ← Set.iInter₂_union]
 
 open scoped Pointwise in
 lemma zeroLocus_mul {U : X.Opens} (I J : Ideal Γ(X, U)) :
@@ -859,9 +855,10 @@ theorem Scheme.SpecMap_presheaf_map_eqToHom {X : Scheme} {U V : X.Opens} (h : U 
   simp [eqToHom_map]
 
 lemma germ_eq_zero_of_pow_mul_eq_zero {X : Scheme.{u}} {U : Opens X} (x : U) {f s : Γ(X, U)}
-    (hx : x.val ∈ X.basicOpen s) {n : ℕ} (hf : s ^ n * f = 0) : X.presheaf.germ U x x.2 f = 0 := by
-  rw [Scheme.mem_basicOpen X s x x.2] at hx
-  have hu : IsUnit (X.presheaf.germ _ x x.2 (s ^ n)) := by
+    (hx : x.val ∈ X.basicOpen s) {n : ℕ} (hf : s ^ n * f = 0) :
+    X.presheaf.germ U x x.property f = 0 := by
+  rw [Scheme.mem_basicOpen X s x x.property] at hx
+  have hu : IsUnit (X.presheaf.germ _ x x.property (s ^ n)) := by
     rw [map_pow]
     exact IsUnit.pow n hx
   rw [← hu.mul_right_eq_zero, ← map_mul, hf, map_zero]

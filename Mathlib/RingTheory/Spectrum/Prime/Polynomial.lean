@@ -5,18 +5,19 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.LinearAlgebra.Charpoly.BaseChange
 public import Mathlib.LinearAlgebra.Eigenspace.Zero
 public import Mathlib.RingTheory.AdjoinRoot
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
-/-!
+import Mathlib.LinearAlgebra.Charpoly.BaseChange
 
+/-!
 # Prime spectrum of (multivariate) polynomials
 
 Also see `AlgebraicGeometry/AffineSpace` for the affine space over arbitrary schemes.
 
 ## Main results
+
 - `isNilpotent_tensor_residueField_iff`:
   If `A` is a finite free `R`-algebra, then `f : A` is nilpotent on `κ(𝔭) ⊗ A` for some
   prime `𝔭 ◃ R` if and only if every non-leading coefficient of `charpoly(f)` is in `𝔭`.
@@ -25,7 +26,6 @@ Also see `AlgebraicGeometry/AffineSpace` for the affine space over arbitrary sch
 - `Polynomial.isOpenMap_comap_C`: The structure map `Spec R[X] → Spec R` is an open map.
 - `MvPolynomial.isOpenMap_comap_C`:
   The structure map `Spec (MvPolynomial σ R) → Spec R` is an open map.
-
 -/
 
 public section
@@ -144,7 +144,7 @@ lemma mem_image_comap_C_basicOpen (f : R[X]) (x : PrimeSpectrum R) :
       (Algebra.TensorProduct.comm R _ _).trans (polyEquivTensor R x.asIdeal.ResidueField).symm
     rw [← IsNilpotent.map_iff e.injective, isNilpotent_iff_eq_zero]
     simp [e]
-  · simp [Polynomial.ext_iff]
+  · simp [AddMonoidAlgebra.ext_iff, Finsupp.ext_iff]
 
 lemma image_comap_C_basicOpen (f : R[X]) :
     comap C '' basicOpen f = (zeroLocus (Set.range f.coeff))ᶜ := by

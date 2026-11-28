@@ -61,7 +61,6 @@ the polynomial being represented.
 ## Tags
 
 polynomial, multivariate polynomial, multivariable polynomial
-
 -/
 
 @[expose] public section
@@ -537,10 +536,10 @@ theorem ext (p q : MvPolynomial σ R) : (∀ m, p.coeff m = q.coeff m) → p = q
 protected theorem coeff_add (m : σ →₀ ℕ) (p q : MvPolynomial σ R) :
     coeff (p + q) m = coeff p m + coeff q m := by simp
 
-@[simp]
+@[deprecated coeff_smul +typeChanged (since := "2026-10-06")]
+protected
 theorem coeff_smul {S₁ : Type*} [SMulZeroClass S₁ R] (m : σ →₀ ℕ) (C : S₁) (p : MvPolynomial σ R) :
-    coeff (C • p) m = C • coeff p m :=
-  AddMonoidAlgebra.coeff_smul_apply ..
+    coeff (C • p) m = C • coeff p m := by simp
 
 @[deprecated coeff_zero +typeChanged (since := "2026-07-06")]
 protected lemma coeff_zero : (0 : MvPolynomial σ R).coeff = 0 := rfl
@@ -549,8 +548,8 @@ protected lemma coeff_zero : (0 : MvPolynomial σ R).coeff = 0 := rfl
 theorem coeff_zero_X (i : σ) : (X i : MvPolynomial σ R).coeff 0 = 0 :=
   single_eq_of_ne' fun h => by cases Finsupp.single_eq_zero.1 h
 
--- TODO: Remove once its use in the Witt vector API has been removed.
-@[simp]
+@[deprecated "AddMonoidAlgebra.coeff_map and Finsupp.mapRange_apply" +typeChanged
+  (since := "2026-11-26")]
 lemma coeff_addMonoidAlgebraMap (g : S₁ →+ R) (φ : MvPolynomial σ S₁) (m) :
     (φ.map g).coeff m = g (φ.coeff m) := rfl
 
@@ -567,7 +566,7 @@ variable (R) in
 def lcoeff (m : σ →₀ ℕ) : MvPolynomial σ R →ₗ[R] R where
   toFun := (coeff · m)
   map_add' := fun _ _ ↦ by simp
-  map_smul' := coeff_smul m
+  map_smul' := by simp
 
 theorem coeff_sum {X : Type*} (s : Finset X) (f : X → MvPolynomial σ R) (m : σ →₀ ℕ) :
     (∑ x ∈ s, f x).coeff m = ∑ x ∈ s, (f x).coeff m :=
@@ -709,7 +708,7 @@ theorem support_sdiff_support_subset_support_add [DecidableEq σ] (p q : MvPolyn
 open scoped symmDiff in
 theorem support_symmDiff_support_subset_support_add [DecidableEq σ] (p q : MvPolynomial σ R) :
     p.support ∆ q.support ⊆ (p + q).support := by
-  rw [symmDiff_def, Finset.sup_eq_union]
+  rw [symmDiff_def]
   apply Finset.union_subset
   · exact support_sdiff_support_subset_support_add p q
   · rw [add_comm]
@@ -766,7 +765,7 @@ theorem support_eq_empty {p : MvPolynomial σ R} : p.support = ∅ ↔ p = 0 := 
 
 @[simp]
 lemma support_nonempty {p : MvPolynomial σ R} : p.support.Nonempty ↔ p ≠ 0 := by
-  rw [Finset.nonempty_iff_ne_empty, ne_eq, support_eq_empty]
+  simp [← Finset.ne_empty_iff_nonempty]
 
 theorem exists_coeff_ne_zero {p : MvPolynomial σ R} (h : p ≠ 0) : ∃ d, p.coeff d ≠ 0 :=
   ne_zero_iff.mp h
@@ -1030,8 +1029,7 @@ lemma coeffsIn_eq_span_monomial : coeffsIn σ M = .span R {monomial i m | (m ∈
 
 lemma coeffsIn_le {N : Submodule R (MvPolynomial σ S)} :
     coeffsIn σ M ≤ N ↔ ∀ m ∈ M, ∀ i, monomial i m ∈ N := by
-  simp [coeffsIn_eq_span_monomial, Submodule.span_le, Set.subset_def,
-    forall_comm (α := MvPolynomial σ S)]
+  simp [coeffsIn_eq_span_monomial, Submodule.span_le, Set.subset_def, forall_comm (α := σ →₀ ℕ)]
 
 lemma mem_coeffsIn_iff_coeffs_subset : p ∈ coeffsIn σ M ↔ (p.coeffs : Set S) ⊆ M := by
   simp only [mem_coeffsIn, coeffs, Finset.coe_image, image_subset_iff]

@@ -12,6 +12,9 @@ public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 import Mathlib.Algebra.Order.Interval.Set.Group
 import Mathlib.Tactic.Bound
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Betweenness in affine spaces
 
@@ -22,7 +25,6 @@ This file defines notions of a point in an affine space being between two given 
 * `affineSegment R x y`: The segment of points weakly between `x` and `y`.
 * `Wbtw R x y z`: The point `y` is weakly between `x` and `z`.
 * `Sbtw R x y z`: The point `y` is strictly between `x` and `z`.
-
 -/
 
 @[expose] public section
@@ -109,11 +111,12 @@ theorem affineSegment_eq_segment (x y : V) : affineSegment R x y = segment R x y
 
 theorem affineSegment_comm (x y : P) : affineSegment R x y = affineSegment R y x := by
   refine Set.ext fun z => ?_
-  constructor <;>
-    · rintro ⟨t, ht, hxy⟩
-      refine ⟨1 - t, ?_, ?_⟩
-      · rwa [Set.sub_mem_Icc_iff_right, sub_self, sub_zero]
-      · rwa [lineMap_apply_one_sub]
+  constructor
+  all_goals
+    rintro ⟨t, ht, hxy⟩
+    refine ⟨1 - t, ?_, ?_⟩
+    · rwa [Set.sub_mem_Icc_iff_right, sub_self, sub_zero]
+    · rwa [lineMap_apply_one_sub]
 
 theorem left_mem_affineSegment (x y : P) : x ∈ affineSegment R x y :=
   ⟨0, Set.left_mem_Icc.2 zero_le_one, lineMap_apply_zero _ _⟩
@@ -787,10 +790,10 @@ theorem sbtw_of_sbtw_of_sbtw_of_mem_affineSpan_pair [IsTorsionFree R V]
   rcases eq_affineCombination_of_mem_affineSpan_of_fintype hp with ⟨w, hw, rfl⟩
   have h₁s :=
     sign_eq_of_affineCombination_mem_affineSpan_single_lineMap t.independent hw (Finset.mem_univ _)
-      (Finset.mem_univ _) (Finset.mem_univ _) h₁₂ h₁₃ h₂₃ hr₁0 hr₁1 h₁'
+      (Finset.mem_univ _) (Finset.mem_univ _) h₁₂ h₁₃ hr₁0 hr₁1 h₁'
   have h₂s :=
     sign_eq_of_affineCombination_mem_affineSpan_single_lineMap t.independent hw (Finset.mem_univ _)
-      (Finset.mem_univ _) (Finset.mem_univ _) h₁₂.symm h₂₃ h₁₃ hr₂0 hr₂1 h₂'
+      (Finset.mem_univ _) (Finset.mem_univ _) h₁₂.symm h₂₃ hr₂0 hr₂1 h₂'
   rw [← Finset.univ.affineCombination_piSingle R t.points
       (Finset.mem_univ i₁),
     ← Finset.univ.affineCombination_affineCombinationLineMapWeights t.points (Finset.mem_univ _)

@@ -10,13 +10,15 @@ public import Mathlib.Algebra.Category.ModuleCat.Colimits
 public import Mathlib.RepresentationTheory.Action
 public import Mathlib.RepresentationTheory.Equiv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Rep k G` is the category of `k`-linear representations of `G`.
 
 Given a `G`-representation `ρ` on a module `V`, you can construct the bundled representation as
 `Rep.of ρ`. Conversely, given a bundled representation `A : Rep k G`, you can get the underlying
 module as `A.V` and the representation on it as `A.ρ`.
-
 -/
 
 @[expose] public section
@@ -117,7 +119,7 @@ variable {A B} in
 
 variable {A B} in
 lemma hom_comm_apply (f : A ⟶ B) (g : G) (a : A) : f.hom (A.ρ g a) = B.ρ g (f.hom a) := by
-  simpa using congr($(f.hom.2 g) a)
+  simpa using congr($(f.hom.isIntertwining' g) a)
 
 variable {Z : Type w} [AddCommGroup Z] [Module k Z] {τ : Representation k G Z}
 
@@ -149,11 +151,9 @@ def mkIso (e : ρ.Equiv σ) : of ρ ≅ of σ where
   hom := ofHom e.toIntertwiningMap
   inv := ofHom e.symm.toIntertwiningMap
 
-@[simp]
 lemma mkIso_hom_hom_apply (e : ρ.Equiv σ) (x : X) :
     (mkIso e).hom.hom x = e.toLinearMap x := rfl
 
-@[simp]
 lemma mkIso_hom_hom_toLinearMap (e : ρ.Equiv σ) :
     (mkIso e).hom.hom.toLinearMap = e.toLinearMap := rfl
 
@@ -293,7 +293,6 @@ lemma trivial_V {V : Type w} [AddCommGroup V] [Module k V] : (trivial k G V).V =
 lemma trivial_ρ {V : Type w} [AddCommGroup V] [Module k V] (g : G) :
     (trivial k G V).ρ g = LinearMap.id := rfl
 
-@[simp]
 lemma trivial_ρ_apply {V : Type w} [AddCommGroup V] [Module k V] (g : G) (v : V) :
     (trivial k G V).ρ g v = v := rfl
 
@@ -482,7 +481,7 @@ variable (k G)
 def RepToAction : Rep.{w} k G ⥤ Action (ModuleCat.{w} k) G where
   obj X := ⟨.of k X, (ModuleCat.endRingEquiv (.of k X)).symm.toMonoidHom.comp X.ρ⟩
   map f := ⟨f.toModuleCatHom, fun g ↦ ModuleCat.hom_ext <| by
-    simp [ModuleCat.endRingEquiv, f.hom.2]⟩
+    simp [ModuleCat.endRingEquiv, f.hom.isIntertwining']⟩
 
 lemma RepToAction_obj (X : Rep.{w} k G) : (RepToAction k G).obj X =
   ⟨.of k X, (ModuleCat.endRingEquiv (.of k X)).symm.toMonoidHom.comp X.ρ⟩ := rfl
@@ -935,8 +934,8 @@ abbrev freeLiftLEquiv :
   homLinearEquiv _ _ ≪≫ₗ Representation.freeLiftLEquiv A.ρ α
 
 lemma free_ext (f g : free k G α ⟶ A)
-    (h : ∀ i : α, f.hom (single i (.single 1 1)) = g.hom (single i (.single 1 1))) : f = g := by
-  exact (freeLiftLEquiv k G α A).injective (funext_iff.2 h)
+    (h : ∀ i : α, f.hom (single i (.single 1 1)) = g.hom (single i (.single 1 1))) : f = g :=
+  (freeLiftLEquiv k G α A).injective (funext_iff.2 h)
 
 variable {A}
 section
@@ -970,7 +969,7 @@ end Finsupp
 
 /-- The monoidal functor sending a type `H` with a `G`-action to the induced `k`-linear
 `G`-representation on `k[H].` -/
-@[simps]
+@[simps map]
 abbrev linearization : Action (Type w) G ⥤ Rep.{max w u} k G where
   obj X := .of <| .linearize k G X
   map f := Rep.ofHom <| Representation.linearizeMap f

@@ -37,7 +37,6 @@ this resolution to compute the group cohomology of representations of finite cyc
 ## TODO
 
 * Use this to analyse the group homology of representations of finite cyclic groups.
-
 -/
 
 @[expose] public section
@@ -125,7 +124,6 @@ lemma range_applyAsHom_sub_eq_ker_norm (hg : ∀ x, x ∈ Subgroup.zpowers g) :
 
 end leftRegular
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a finite group `G` and `g : G`, this is the functor `Rep k G ⥤ ChainComplex (Rep k G) ℕ`
 sending `A : Rep k G` to the periodic chain complex in `Rep k G` given by
 `... ⟶ A --N--> A --(ρ(g) - 𝟙)--> A --N--> A --(ρ(g) - 𝟙)--> A ⟶ 0`

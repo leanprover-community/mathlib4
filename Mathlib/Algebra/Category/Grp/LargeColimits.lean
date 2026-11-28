@@ -9,13 +9,15 @@ public import Mathlib.Algebra.Category.Grp.Colimits
 
 import Mathlib.Algebra.Module.CharacterModule
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Existence of "big" colimits in the category of additive commutative groups
 
 If `F : J ⥤ AddCommGrpCat.{w}` is a functor, we show that `F` admits a colimit if and only
 if `Colimits.Quot F` (the quotient of the direct sum of the commutative groups `F.obj j`
 by the relations given by the morphisms in the diagram) is `w`-small.
-
 -/
 
 public section

@@ -5,12 +5,12 @@ Authors: Charlie Conneen, Pablo Donato, Klaus Gy
 -/
 module
 
-public import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 public import Mathlib.CategoryTheory.Subobject.Presheaf
 
-/-!
+import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 
+/-!
 # Subobject Classifier
 
 We define a structure containing the data of a subobject classifier in a category `C` as
@@ -50,7 +50,6 @@ Let `C` refer to a category with a terminal object.
 ## References
 
 * [S. MacLane and I. Moerdijk, *Sheaves in Geometry and Logic*][MM92]
-
 -/
 
 @[expose] public section

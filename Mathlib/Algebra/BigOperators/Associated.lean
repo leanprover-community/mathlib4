@@ -15,7 +15,6 @@ import Mathlib.Algebra.Group.Submonoid.Membership
 
 This file contains some theorems relating definitions in `Algebra.Associated`
 and products of multisets, finsets, and finsupps.
-
 -/
 
 public section
@@ -173,8 +172,7 @@ theorem rel_associated_iff_map_eq_map {p q : Multiset M} :
 
 theorem prod_eq_one_iff {p : Multiset (Associates M)} :
     p.prod = 1 ↔ ∀ a ∈ p, (a : Associates M) = 1 :=
-  Multiset.induction_on p (by simp)
-    (by simp +contextual [mul_eq_one, or_imp, forall_and])
+  Multiset.induction_on p (by simp) (by simp [or_imp, forall_and])
 
 theorem prod_le_prod {p q : Multiset (Associates M)} (h : p ≤ q) : p.prod ≤ q.prod := by
   have := Classical.decEq (Associates M)
@@ -222,8 +220,8 @@ theorem Prime.dvd_finsetProd_iff {S : Finset M₀} {p : M} (pp : Prime p) (g : M
   ⟨pp.exists_mem_finset_dvd, fun ⟨_, ha1, ha2⟩ => dvd_trans ha2 (dvd_prod_of_mem g ha1)⟩
 
 theorem Prime.not_dvd_finsetProd {S : Finset M₀} {p : M} (pp : Prime p) {g : M₀ → M}
-    (hS : ∀ a ∈ S, ¬p ∣ g a) : ¬p ∣ S.prod g := by
-  exact mt (Prime.dvd_finsetProd_iff pp _).1 <| not_exists.2 fun a => not_and.2 (hS a)
+    (hS : ∀ a ∈ S, ¬p ∣ g a) : ¬p ∣ S.prod g :=
+  mt (Prime.dvd_finsetProd_iff pp _).1 <| not_exists.2 fun a => not_and.2 (hS a)
 
 theorem Prime.dvd_finsuppProd_iff {f : M₀ →₀ M} {g : M₀ → M → ℕ} {p : ℕ} (pp : Prime p) :
     p ∣ f.prod g ↔ ∃ a ∈ f.support, p ∣ g a (f a) :=

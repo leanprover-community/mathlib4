@@ -351,8 +351,9 @@ lemma LinearOrderedAddCommGroup.wellFoundedOn_setOfPred_le_lt_iff_nonempty_discr
     Set.WellFoundedOn {x : G | g ≤ x} (· < ·) ↔ Nonempty (G ≃+o ℤ) := by
   suffices Set.WellFoundedOn {x : G | 0 ≤ x} (· < ·) ↔ Nonempty (G ≃+o ℤ) by
     rw [← this]
-    refine ⟨fun h ↦ (h.mapsTo (· + g) ?_).mono' ?_, fun h ↦ (h.mapsTo (· - g) ?_).mono' ?_⟩ <;>
-    · intro
+    refine ⟨fun h ↦ (h.mapsTo (· + g) ?_).mono' ?_, fun h ↦ (h.mapsTo (· - g) ?_).mono' ?_⟩
+    all_goals
+      intro
       simp [Function.onFun]
   constructor
   · intro h
@@ -388,8 +389,9 @@ lemma LinearOrderedAddCommGroup.wellFoundedOn_setOfPred_ge_gt_iff_nonempty_discr
     {G : Type*} [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] [Nontrivial G] (g : G) :
     Set.WellFoundedOn {x : G | x ≤ g} (· > ·) ↔ Nonempty (G ≃+o ℤ) := by
   rw [← wellFoundedOn_setOfPred_le_lt_iff_nonempty_discrete (g := -g)]
-  refine ⟨fun h ↦ (h.mapsTo (- ·) ?_).mono' ?_, fun h ↦ (h.mapsTo (- ·) ?_).mono' ?_⟩ <;>
-  · intro
+  refine ⟨fun h ↦ (h.mapsTo (- ·) ?_).mono' ?_, fun h ↦ (h.mapsTo (- ·) ?_).mono' ?_⟩
+  all_goals
+    intro
     simp [Function.onFun, neg_le]
 
 @[deprecated (since := "2026-07-09")]
@@ -415,8 +417,9 @@ lemma LinearOrderedCommGroup.wellFoundedOn_setOfPred_ge_gt_iff_nonempty_discrete
     {G : Type*} [CommGroup G] [LinearOrder G] [IsOrderedMonoid G] [Nontrivial G] (g : G) :
     Set.WellFoundedOn {x : G | x ≤ g} (· > ·) ↔ Nonempty (G ≃*o Multiplicative ℤ) := by
   rw [← wellFoundedOn_setOfPred_le_lt_iff_nonempty_discrete (g := g⁻¹)]
-  refine ⟨fun h ↦ (h.mapsTo (·⁻¹) ?_).mono' ?_, fun h ↦ (h.mapsTo (·⁻¹) ?_).mono' ?_⟩ <;>
-  · intro
+  refine ⟨fun h ↦ (h.mapsTo (·⁻¹) ?_).mono' ?_, fun h ↦ (h.mapsTo (·⁻¹) ?_).mono' ?_⟩
+  all_goals
+    intro
     simp [Function.onFun, inv_le']
 
 @[deprecated (since := "2026-07-09")]
@@ -470,22 +473,21 @@ lemma LinearOrderedCommGroupWithZero.wellFoundedOn_setOfPred_ge_gt_iff_nonempty_
     simp only [mem_ofPred_eq, mem_sdiff, mem_singleton_iff, inv_eq_zero, hx, not_false_eq_true,
       and_true]
     refine (inv_le_comm₀ ?_ ?_).mp <;>
-    simp [zero_lt_iff, hg, hx]
+    simp [pos_iff_ne_zero, hg, hx]
   · simp only [mem_ofPred_eq, Function.onFun, gt_iff_lt]
     intro a ha b _
     refine inv_strictAnti₀ ?_
     contrapose! ha
-    simp only [le_zero_iff] at ha
-    simp [zero_lt_iff, ha, hg]
+    simp [pos_iff_ne_zero, ha.eq_zero, hg]
   · intro x
     simp only [mem_sdiff, mem_ofPred_eq, mem_singleton_iff, and_imp]
     intro hxg hx
     refine inv_anti₀ ?_ hxg
-    simp [zero_lt_iff, hx]
+    simp [pos_iff_ne_zero, hx]
   · simp only [mem_sdiff, mem_ofPred_eq, mem_singleton_iff, gt_iff_lt, Function.onFun, and_imp]
     intro a _ _ b _ hb0
     refine inv_strictAnti₀ ?_
-    simp [zero_lt_iff, hb0]
+    simp [pos_iff_ne_zero, hb0]
 
 @[deprecated (since := "2026-07-09")]
 alias LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_ge_gt_iff_nonempty_discrete_of_ne_zero :=

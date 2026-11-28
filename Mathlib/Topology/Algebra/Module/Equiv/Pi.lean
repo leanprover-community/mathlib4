@@ -5,21 +5,22 @@ Authors: Kevin Buzzard
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
-public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Restrict
 public import Mathlib.Topology.Algebra.Module.Equiv.Basic
+
+import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
+import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Restrict
 
 /-!
 # Continuous linear equivalences on (dependent) product types
 
 ## Main Definitions
+
 * `sumPiEquivProdPi`: `Equiv.sumPiEquivProdPi` as a continuous linear equivalence.
 * `piUnique`: `Equiv.piUnique` as a continuous linear equivalence.
 * `piCongrLeft`: `Equiv.piCongrLeft` as a continuous linear equivalence.
 * `piCongrRight`: `Equiv.piCongrRight` as a continuous linear equivalence.
 * `Fin.consEquivL`: `Fin.consEquiv` as a continuous linear equivalence.
 * `ContinuousLinearMap.finCons`: `Fin.cons` in the codomain of continuous linear maps.
-
 -/
 
 @[expose] public section
@@ -40,7 +41,7 @@ def iInfKerProjEquiv {I J : Set ι} [DecidablePred fun i => i ∈ I] (hd : Disjo
   toLinearEquiv := LinearMap.iInfKerProjEquiv R φ hd hu
   continuous_toFun :=
     continuous_pi fun i =>
-      Continuous.comp (continuous_apply (A := φ) i) continuous_subtype_val
+      Continuous.comp (continuous_apply (A := φ) i) continuous_subtypeVal
   continuous_invFun :=
     Continuous.subtype_mk
       (continuous_pi fun i => by

@@ -816,7 +816,7 @@ variable
   {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [Module R M] [ContinuousSMul R M]
 
 instance instSMul' : SMul C(α, R) C(α, M) :=
-  ⟨fun f g => ⟨fun x => f x • g x, Continuous.smul f.2 g.2⟩⟩
+  ⟨fun f g => ⟨fun x => f x • g x, by fun_prop⟩⟩
 
 /-- Coercion to a function for a scalar-valued continuous map multiplying a vector-valued one
 (as opposed to `ContinuousMap.coe_smul` which is multiplication by a constant scalar). -/
@@ -886,13 +886,13 @@ lemma curry_inv_apply [Inv Z] [ContinuousInv Z] (f : C(X × Y, Z)) (x : X) :
     (f⁻¹).curry x = (f.curry x)⁻¹ :=
   rfl
 
-@[to_additive (attr := simp)]
+@[to_additive, simp]
 lemma curry_pow_apply [Monoid Z] [ContinuousMul Z]
     (f : C(X × Y, Z)) (n : ℕ) (x : X) :
     (f ^ n).curry x = (f.curry x) ^ n :=
   rfl
 
-@[to_additive (attr := simp)]
+@[to_additive, simp]
 lemma curry_zpow_apply [Group Z] [IsTopologicalGroup Z]
     (f : C(X × Y, Z)) (n : ℤ) (x : X) :
     (f ^ n).curry x = (f.curry x) ^ n :=

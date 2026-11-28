@@ -8,7 +8,8 @@ module
 public import Mathlib.Basic.Finite.Sum
 public import Mathlib.GroupTheory.OrderOfElement
 public import Mathlib.GroupTheory.Perm.Support
-public import Mathlib.Logic.Equiv.Fintype
+
+import Mathlib.Logic.Equiv.Fintype
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
@@ -90,9 +91,9 @@ abbrev subtypePermOfFintype (f : Perm α) {p : α → Prop} [Finite { x // p x }
     (h : ∀ x, p x → p (f x)) : Perm { x // p x } :=
   f.subtypePerm fun x => ⟨fun h₂ => f.symm_apply_apply x ▸ perm_symm_on_of_perm_on_finite h h₂, h x⟩
 
-@[simp]
 theorem subtypePermOfFintype_apply (f : Perm α) {p : α → Prop} [Finite { x // p x }]
-    (h : ∀ x, p x → p (f x)) (x : { x // p x }) : subtypePermOfFintype f h x = ⟨f x, h x x.2⟩ :=
+    (h : ∀ x, p x → p (f x)) (x : { x // p x }) :
+    subtypePermOfFintype f h x = ⟨f x, h x x.property⟩ :=
   rfl
 
 theorem subtypePermOfFintype_one (p : α → Prop) [Finite { x // p x }]
@@ -153,9 +154,10 @@ theorem Disjoint.extendDomain {p : β → Prop} [DecidablePred p] (f : α ≃ Su
     {σ τ : Perm α} (h : Disjoint σ τ) : Disjoint (σ.extendDomain f) (τ.extendDomain f) := by
   intro b
   by_cases pb : p b
-  · refine (h (f.symm ⟨b, pb⟩)).imp ?_ ?_ <;>
-      · intro h
-        rw [extendDomain_apply_subtype _ _ pb, h, apply_symm_apply, Subtype.coe_mk]
+  · refine (h (f.symm ⟨b, pb⟩)).imp ?_ ?_
+    all_goals
+      intro h
+      rw [extendDomain_apply_subtype _ _ pb, h, apply_symm_apply, Subtype.coe_mk]
   · left
     rw [extendDomain_apply_not_subtype _ _ pb]
 
@@ -257,7 +259,7 @@ lemma support_closure_subset_union (S : Set (Perm α)) :
   · simp
   · intro a b ha hb hc hd
     refine (Finset.coe_subset.mpr (support_mul_le a b)).trans ?_
-    rw [Finset.sup_eq_union, Finset.coe_union, Set.union_subset_iff]
+    rw [Finset.coe_union, Set.union_subset_iff]
     exact ⟨hc, hd⟩
   · simp only [support_inv, imp_self, implies_true]
 

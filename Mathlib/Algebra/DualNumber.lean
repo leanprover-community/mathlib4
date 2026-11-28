@@ -71,7 +71,6 @@ theorem snd_eps [Zero R] [One R] : snd ε = (1 : R) :=
   rfl
 
 /-- A version of `TrivSqZeroExt.snd_mul` with `*` instead of `•`. -/
-@[simp]
 theorem snd_mul [Semiring R] (x y : R[ε]) : snd (x * y) = fst x * snd y + snd x * fst y :=
   rfl
 
@@ -219,7 +218,7 @@ theorem range_inlAlgHom_sup_adjoin_eps :
 @[simp]
 theorem range_lift
     (fe : {fe : (A →ₐ[R] B) × B // fe.2 * fe.2 = 0 ∧ ∀ a, Commute fe.2 (fe.1 a)}) :
-    (lift fe).range = fe.1.1.range ⊔ R[fe.1.2] := by
+    (lift fe).range = fe.val.1.range ⊔ R[fe.val.2] := by
   simp_rw [← Algebra.map_top, ← range_inlAlgHom_sup_adjoin_eps, Algebra.map_sup,
     AlgHom.map_adjoin, ← AlgHom.range_comp, Set.image_singleton, lift_apply_eps, lift_comp_inlHom,
     Algebra.map_top]

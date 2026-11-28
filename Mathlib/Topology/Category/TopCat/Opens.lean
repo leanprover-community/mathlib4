@@ -58,7 +58,7 @@ instance opensHom.instFunLike : FunLike (U ⟶ V) U V where
   coe f := Set.inclusion f.le
   coe_injective := by rintro ⟨⟨_⟩⟩ _ _; congr!
 
-lemma apply_def (f : U ⟶ V) (x : U) : f x = ⟨x, f.le x.2⟩ := rfl
+lemma apply_def (f : U ⟶ V) (x : U) : f x = ⟨x, f.le x.property⟩ := rfl
 
 @[simp] lemma apply_mk (f : U ⟶ V) (x : X) (hx) : f ⟨x, hx⟩ = ⟨x, f.le hx⟩ := rfl
 
@@ -104,15 +104,13 @@ noncomputable def leTop (U : Opens X) : U ⟶ ⊤ :=
 -- We do not mark this as a simp lemma because it breaks open `x`.
 -- Nevertheless, it is useful in `SheafOfFunctions`.
 theorem infLELeft_apply (U V : Opens X) (x) :
-    (infLELeft U V) x = ⟨x.1, (@inf_le_left _ _ U V : _ ≤ _) x.2⟩ :=
+    (infLELeft U V) x = ⟨x.val, (@inf_le_left _ _ U V : _ ≤ _) x.property⟩ :=
   rfl
 
-@[simp]
 theorem infLELeft_apply_mk (U V : Opens X) (x) (m) :
     (infLELeft U V) ⟨x, m⟩ = ⟨x, (@inf_le_left _ _ U V : _ ≤ _) m⟩ :=
   rfl
 
-@[simp]
 theorem leSupr_apply_mk {ι : Type*} (U : ι → Opens X) (i : ι) (x) (m) :
     (leSupr U i) ⟨x, m⟩ = ⟨x, (le_iSup U i :) m⟩ :=
   rfl
@@ -122,7 +120,7 @@ realising each open set as a topological space itself.
 -/
 def toTopCat (X : TopCat.{u}) : Opens X ⥤ TopCat where
   obj U := ↧U
-  map i := TopCat.ofHom ⟨fun x ↦ ⟨x.1, i.le x.2⟩,
+  map i := TopCat.ofHom ⟨fun x ↦ ⟨x.val, i.le x.property⟩,
     IsEmbedding.subtypeVal.continuous_iff.2 continuous_induced_dom⟩
 
 @[simp]
@@ -136,14 +134,14 @@ theorem toTopCat_map (X : TopCat.{u}) {U V : Opens X} {f : U ⟶ V} {x} {h} :
 def inclusion' {X : TopCat.{u}} (U : Opens X) : (toTopCat X).obj U ⟶ X :=
   TopCat.ofHom
   { toFun := _
-    continuous_toFun := continuous_subtype_val }
+    continuous_toFun := continuous_subtypeVal }
 
 @[simp]
 theorem coe_inclusion' {X : TopCat.{u}} {U : Opens X} :
     (inclusion' U : U → X) = Subtype.val := rfl
 
 theorem isOpenEmbedding {X : TopCat.{u}} (U : Opens X) : IsOpenEmbedding (inclusion' U) :=
-  U.2.isOpenEmbedding_subtypeVal
+  U.is_open'.isOpenEmbedding_subtypeVal
 
 /-- The inclusion of the top open subset (i.e. the whole space) is an isomorphism.
 -/
@@ -191,7 +189,6 @@ theorem map_id_obj (U : Opens X) : (map (𝟙 X)).obj U = U :=
   let ⟨_, _⟩ := U
   rfl
 
-@[simp]
 theorem map_id_obj' (U) (p) : (map (𝟙 X)).obj ⟨U, p⟩ = ⟨U, p⟩ :=
   rfl
 
@@ -213,7 +210,6 @@ theorem map_comp_obj (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
     (map (f ≫ g)).obj U = (map f).obj ((map g).obj U) :=
   rfl
 
-@[simp]
 theorem map_comp_obj' (f : X ⟶ Y) (g : Y ⟶ Z) (U) (p) :
     (map (f ≫ g)).obj ⟨U, p⟩ = (map f).obj ((map g).obj ⟨U, p⟩) :=
   rfl
@@ -223,12 +219,10 @@ theorem map_comp_map (f : X ⟶ Y) (g : Y ⟶ Z) {U V} (i : U ⟶ V) :
     (map (f ≫ g)).map i = (map f).map ((map g).map i) :=
   rfl
 
-@[simp]
 theorem map_comp_obj_unop (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
     (map (f ≫ g)).obj (unop U) = (map f).obj ((map g).obj (unop U)) :=
   rfl
 
-@[simp]
 theorem op_map_comp_obj (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
     (map (f ≫ g)).op.obj U = (map f).op.obj ((map g).op.obj U) :=
   rfl
@@ -349,8 +343,8 @@ def IsOpenMap.functorMap {X Y : TopCat.{u}} {f : X ⟶ Y} {U V : Opens X}
 -/
 @[simps obj_coe]
 def IsOpenMap.functor {X Y : TopCat.{u}} {f : X ⟶ Y} (hf : IsOpenMap f) : Opens X ⥤ Opens Y where
-  obj U := ⟨f '' (U : Set X), hf (U : Set X) U.2⟩
-  map {U V} h := IsOpenMap.functorMap (hf _ U.2) (hf _ V.2) h.down.down
+  obj U := ⟨f '' (U : Set X), hf (U : Set X) U.is_open'⟩
+  map {U V} h := IsOpenMap.functorMap (hf _ U.is_open') (hf _ V.is_open') h.down.down
 
 /-- An open map `f : X ⟶ Y` induces an adjunction between `Opens X` and `Opens Y`.
 -/
@@ -420,7 +414,7 @@ lemma le_functorObj_iff {X Y : TopCat.{u}} {f : X ⟶ Y} (hf : IsInducing f) {U 
   constructor
   · exact fun i x hx ↦ (hf.mem_functorObj_iff ((Opens.map f).obj ⟨t, ht⟩)).mp (i hx)
   · intro h x hx
-    refine Opens.mem_sSup.mpr ⟨⟨_, V.2.union ht⟩, Opens.ext ?_, Set.mem_union_left t hx⟩
+    refine Opens.mem_sSup.mpr ⟨⟨_, V.is_open'.union ht⟩, Opens.ext ?_, Set.mem_union_left t hx⟩
     dsimp
     rwa [Set.union_eq_right]
 
@@ -485,7 +479,7 @@ lemma set_range_inclusion' {X : TopCat.{u}} (U : Opens X) :
   ext x
   constructor
   · rintro ⟨x, rfl⟩
-    exact x.2
+    exact x.property
   · intro h
     exact ⟨⟨x, h⟩, rfl⟩
 
@@ -519,7 +513,7 @@ instance {X Y : TopCat.{u}} (f : X ⟶ Y) (hf : Topology.IsOpenEmbedding f) {ι 
   intro g
   refine preservesLimit_of_preserves_limit_cone (Preorder.isLimitIInf g) ?_
   refine (Limits.Fan.isLimitMapConeEquiv _ _ _).symm (Preorder.isLimitOfIsGLB _ _ ?_)
-  simp only [Discrete.range_functor, homOfLE_leOfHom, Fan.mk_pt, hf.functor_obj_iInf]
+  simp only [Discrete.range_functor, Fan.mk_pt, hf.functor_obj_iInf]
   apply isGLB_iInf
 
 end TopologicalSpace.Opens

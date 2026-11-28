@@ -10,6 +10,9 @@ public import Mathlib.Analysis.SpecialFunctions.Arsinh
 
 import Mathlib.Geometry.Euclidean.Inversion.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Metric on the upper half-plane
 
@@ -22,7 +25,6 @@ definitionally equal to the induced topological space structure.
 
 We also prove that a metric ball/closed ball/sphere in Poincaré metric is a Euclidean ball/closed
 ball/sphere with another center and radius.
-
 -/
 
 @[expose] public section
@@ -88,7 +90,7 @@ theorem dist_le_iff_le_sinh :
 
 theorem dist_eq_iff_eq_sinh :
     dist z w = r ↔ dist (z : ℂ) w / (2 * √(z.im * w.im)) = sinh (r / 2) := by
-  rw [← div_left_inj' (two_ne_zero' ℝ), ← sinh_inj, sinh_half_dist]
+  rw [← div_left_inj₀ (two_ne_zero' ℝ), ← sinh_inj, sinh_half_dist]
 
 theorem dist_eq_iff_eq_sq_sinh (hr : 0 ≤ r) :
     dist z w = r ↔ dist (z : ℂ) w ^ 2 / (4 * z.im * w.im) = sinh (r / 2) ^ 2 := by
@@ -323,7 +325,7 @@ theorem isometry_pos_mul (a : { x : ℝ // 0 < x }) : Isometry (a • · : ℍ �
   simp only [dist_eq, coe_pos_real_smul, pos_real_im]; congr 2
   rw [dist_smul₀, mul_mul_mul_comm, Real.sqrt_mul (mul_self_nonneg _), Real.sqrt_mul_self_eq_abs,
     Real.norm_eq_abs, mul_left_comm]
-  exact mul_div_mul_left _ _ (mt _root_.abs_eq_zero.1 a.2.ne')
+  exact mul_div_mul_left _ _ (mt _root_.abs_eq_zero.1 a.property.ne')
 
 /-- `SL(2, ℝ)` acts on the upper half plane as an isometry. -/
 instance : IsIsometricSMul SL(2, ℝ) ℍ :=

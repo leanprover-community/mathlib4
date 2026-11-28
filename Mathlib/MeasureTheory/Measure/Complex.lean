@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Complex.Basic
 public import Mathlib.MeasureTheory.VectorMeasure.Relations
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Complex measure
 
@@ -113,7 +116,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem absolutelyContinuous_ennreal_iff (c : ComplexMeasure α) (μ : VectorMeasure α ℝ≥0∞) :
     c ≪ᵥ μ ↔ ComplexMeasure.re c ≪ᵥ μ ∧ ComplexMeasure.im c ≪ᵥ μ := by
   constructor <;> intro h
-  · constructor <;> · intro i hi; simp [h hi]
+  · constructor <;> intro i hi <;> simp [h hi]
   · intro i hi
     rw [← Complex.re_add_im (c i), (_ : (c i).re = 0), (_ : (c i).im = 0)]
     exacts [by simp, h.2 hi, h.1 hi]

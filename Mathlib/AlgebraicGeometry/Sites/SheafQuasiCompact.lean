@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicGeometry.Sites.QuasiCompact
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sheaves for the quasi-compact topology
 

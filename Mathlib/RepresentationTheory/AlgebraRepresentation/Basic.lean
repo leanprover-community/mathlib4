@@ -6,7 +6,11 @@ Authors: Stepan Nesterov
 module
 
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
-public import Mathlib.RingTheory.SimpleModule.Basic
+
+import Mathlib.RingTheory.SimpleModule.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Basic facts about algebra representations
@@ -14,17 +18,15 @@ public import Mathlib.RingTheory.SimpleModule.Basic
 This file collects basic general facts about algebra representations. The purpose of this file is
 to have general results so that when we prove a corresponding fact about group representations
 (or Lie algebra representations etc), we can deduce them as special cases of facts from this file.
-
 -/
 
 public section
 
 variable {A V : Type*} (k : Type*) [Field k] [Ring A] [Algebra k A] [AddCommGroup V] [Module k V]
-  [Module A V] [IsScalarTower k A V]
-  [IsSimpleModule A V] [FiniteDimensional k V] [IsAlgClosed k]
+  [Module A V] [IsScalarTower k A V] [IsSimpleModule A V] [FiniteDimensional k V] [IsAlgClosed k]
 
-/-- Schur's Lemma: If `V` is a representation of an algebra `A` over an algebraically closed field
-`k`, then any endomorphism of `V` is scalar. -/
+/-- Schur's Lemma: If `V` is a finite dimensional simple module of a `k`-algebra `A` where `k` is an
+algebraically closed field, then any `A`-endomorphism of `V` is a scalar. -/
 theorem IsSimpleModule.algebraMap_end_bijective_of_isAlgClosed :
     Function.Bijective (algebraMap k (Module.End A V)) := by
   have : Module.Finite k (Module.End A V) := .of_injective (LinearMap.restrictScalarsₗ k A V V k) <|
@@ -35,8 +37,17 @@ variable (V) in
 theorem IsSimpleModule.smul_eq_smul_of_mem_center {z : A} (hz : z ∈ Set.center A) :
     ∃ r : k, ∀ v : V, z • v = r • v := by
   let z' : Module.End A V := DistribSMul.toLinearMap A V (⟨z, hz⟩ : Subring.center A)
-  obtain ⟨r,hr⟩ := (IsSimpleModule.algebraMap_end_bijective_of_isAlgClosed k).surjective z'
+  obtain ⟨r, hr⟩ := (IsSimpleModule.algebraMap_end_bijective_of_isAlgClosed k).surjective z'
   exact ⟨r, fun _ ↦ congr($hr.symm _)⟩
+
+/-- Burnside's theorem: If `V` is a simple module of a `k`-algebra `A` where `k` is an algebraically
+closed field, then the algebra map `A → Endₖ(V)` is surjective. -/
+theorem IsSimpleModule.lsmul_surjective_of_isAlgClosed :
+    Function.Surjective (Algebra.lsmul k k V : A →ₐ[k] Module.End k V) := fun f ↦ by
+  have : Module.Finite (Module.End A V) V := Module.Finite.of_restrictScalars_finite k _ V
+  obtain ⟨a, ha⟩ := Module.Finite.toModuleEnd_moduleEnd_surjective (R := A) <|
+    LinearMap.extendScalarsOfSurjective (algebraMap_end_bijective_of_isAlgClosed k).surjective f
+  exact ⟨a, LinearMap.ext fun m => congrArg (fun f => f m) ha⟩
 
 variable (A V)
 

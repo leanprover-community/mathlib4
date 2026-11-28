@@ -38,7 +38,6 @@ images of different morphisms commute, we obtain a canonical morphism
   of the `ϕ` are independent.
 * `Subgroup.independent_of_coprime_order`: If commuting normal subgroups `H i` have coprime orders,
   they are independent.
-
 -/
 
 @[expose] public section
@@ -145,7 +144,7 @@ and it is given by `AddMonoidHom.noncommPiCoprod`. -/]
 def noncommPiCoprodEquiv [DecidableEq ι] :
     { ϕ : ∀ i, N i →* M // Pairwise fun i j => ∀ x y, Commute (ϕ i x) (ϕ j y) } ≃
       ((∀ i, N i) →* M) where
-  toFun ϕ := noncommPiCoprod ϕ.1 ϕ.2
+  toFun ϕ := noncommPiCoprod ϕ.val ϕ.property
   invFun f :=
     ⟨fun i => f.comp (MonoidHom.mulSingle N i), fun _ _ hij x y =>
       Commute.map (Pi.mulSingle_commute hij x y) f⟩

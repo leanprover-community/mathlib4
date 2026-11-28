@@ -6,8 +6,9 @@ Authors: Simon Hudon, Patrick Massot, Eric Wieser
 module
 
 public import Mathlib.Algebra.Notation.Defs
-public import Mathlib.Logic.Function.Defs
 public import Mathlib.Tactic.Push.Attr
+
+import Mathlib.Logic.Function.Defs
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
@@ -29,15 +30,6 @@ open Function
 variable {ι α β : Type*} {G M R : ι → Type*}
 
 namespace Pi
-
-@[deprecated (since := "2026-04-21")]
-alias prod := Function.prod
-
-@[deprecated (since := "2026-04-21")]
-alias prod_fst_snd := Function.prod_fst_snd
-
-@[deprecated (since := "2026-04-21")]
-alias prod_snd_fst := Function.prod_snd_fst
 
 /-! `1`, `0`, `+`, `*`, `+ᵥ`, `•`, `^`, `-`, `⁻¹`, and `/` are defined pointwise. -/
 

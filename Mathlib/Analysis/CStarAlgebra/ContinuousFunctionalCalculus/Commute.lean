@@ -25,7 +25,6 @@ The proof of `Commute.cfcHom` and `Commute.cfcₙHom` could be made simpler by a
 facts about double commutants, but doing so would require extra type class assumptions so that we
 can talk about topological star algebras. Instead, we avoid this to minimize the work Lean must do
 to call these lemmas, and give a straightforward proof by induction.
-
 -/
 
 public section
@@ -105,7 +104,7 @@ protected theorem Commute.cfc_real {a b : A} (hb : Commute a b) (f : ℝ → ℝ
     rw [← cfc_apply ..]
     exact hb.cfc (ha.star_eq.symm ▸ hb) _
 
-variable [PartialOrder A] [NonnegSpectrumClass ℝ A] [StarOrderedRing A]
+variable [PartialOrder A] [StarOrderedRing A]
 
 /-- A version of `Commute.cfc` or `IsSelfAdjoint.commute_cfc` which does not require any interaction
 with `star` when the base ring is `ℝ≥0`. -/
@@ -192,7 +191,7 @@ protected theorem Commute.cfcₙ_real {a b : A} (hb : Commute a b) (f : ℝ → 
       rw [← cfcₙ_apply ..]
       exact hb.cfcₙ (ha.star_eq.symm ▸ hb) _
 
-variable [PartialOrder A] [NonnegSpectrumClass ℝ A] [StarOrderedRing A]
+variable [PartialOrder A] [StarOrderedRing A]
 
 /-- A version of `Commute.cfcₙ` or `IsSelfAdjoint.commute_cfcₙ` which does not require any
 interaction with `star` when the base ring is `ℝ≥0`. -/
