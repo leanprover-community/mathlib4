@@ -258,16 +258,6 @@ protected theorem DirSupClosedOn.Iic (a : α) : DirSupClosedOn D (Iic a) :=
 
 @[deprecated (since := "2026-10-16")] alias dirSupClosedOn_Iic := DirSupClosedOn.Iic
 
-protected theorem DirSupInacc.Iic (a : α) : DirSupInacc (Iic a) :=
-  (IsLowerSet.Iic a).dirSupInacc
-
-@[deprecated (since := "2026-10-16")] alias dirSupInacc_Iic := DirSupInacc.Iic
-
-protected theorem DirSupInaccOn.Iic (a : α) : DirSupInaccOn D (Iic a) :=
-  (IsLowerSet.Iic a).dirSupInaccOn
-
-@[deprecated (since := "2026-10-16")] alias dirSupInaccOn_Iic := DirSupInaccOn.Iic
-
 protected lemma DirSupClosed.Ioi (a : α) : DirSupClosed (Ioi a) :=
   IsUpperSet.Ioi a |>.dirSupClosed
 
@@ -279,6 +269,34 @@ protected lemma DirSupClosed.Ici (a : α) : DirSupClosed (Ici a) :=
 
 protected lemma DirSupClosedOn.Ici (a : α) : DirSupClosedOn D (Ici a) :=
   (DirSupClosed.Ici a).dirSupClosedOn
+
+protected theorem DirSupClosed.Ioc (a b : α) : DirSupClosed (Ioc a b) :=
+  .inter (.Ioi a) (.Iic b)
+
+protected theorem DirSupClosedOn.Ioc (a b : α) : DirSupClosedOn D (Ioc a b) :=
+  DirSupClosed.Ioc a b |>.dirSupClosedOn
+
+protected theorem DirSupClosed.Icc (a b : α) : DirSupClosed (Icc a b) :=
+  .inter (.Ici a) (.Iic b)
+
+protected theorem DirSupClosedOn.Icc (a b : α) : DirSupClosedOn D (Icc a b) :=
+  DirSupClosed.Icc a b |>.dirSupClosedOn
+
+protected theorem DirSupInacc.Iio (a : α) : DirSupInacc (Iio a) :=
+  fun _ ⟨b, hb⟩ _ _ hlub hlt ↦ ⟨b, hb, hlub.left hb |>.trans_lt hlt⟩
+
+protected theorem DirSupInaccOn.Iio (a : α) : DirSupInaccOn D (Iio a) :=
+  DirSupInacc.Iio a |>.dirSupInaccOn
+
+protected theorem DirSupInacc.Iic (a : α) : DirSupInacc (Iic a) :=
+  (IsLowerSet.Iic a).dirSupInacc
+
+@[deprecated (since := "2026-10-16")] alias dirSupInacc_Iic := DirSupInacc.Iic
+
+protected theorem DirSupInaccOn.Iic (a : α) : DirSupInaccOn D (Iic a) :=
+  (IsLowerSet.Iic a).dirSupInaccOn
+
+@[deprecated (since := "2026-10-16")] alias dirSupInaccOn_Iic := DirSupInaccOn.Iic
 
 end Preorder
 
@@ -321,6 +339,18 @@ protected lemma DirSupInacc.Ioi (a : α) : DirSupInacc (Ioi a) := by
 
 protected lemma DirSupInaccOn.Ioi (a : α) : DirSupInaccOn D (Ioi a) :=
   DirSupInacc.Ioi a |>.dirSupInaccOn
+
+protected theorem DirSupInacc.Ioo (a b : α) : DirSupInacc (Ioo a b) :=
+  .inter (.Ioi a) (.Iio b)
+
+protected theorem DirSupInaccOn.Ioo (a b : α) : DirSupInaccOn D (Ioo a b) :=
+  DirSupInacc.Ioo a b |>.dirSupInaccOn
+
+protected theorem DirSupInacc.Ioc (a b : α) : DirSupInacc (Ioc a b) :=
+  .inter (.Ioi a) (.Iic b)
+
+protected theorem DirSupInaccOn.Ioc (a b : α) : DirSupInaccOn D (Ioc a b) :=
+  DirSupInacc.Ioc a b |>.dirSupInaccOn
 
 end LinearOrder
 
