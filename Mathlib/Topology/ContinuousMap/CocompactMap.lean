@@ -48,26 +48,19 @@ class CocompactMapClass (F : Type*) (α β : outParam Type*) [TopologicalSpace �
   /-- The cocompact filter on `α` tends to the cocompact filter on `β` under the function -/
   cocompact_tendsto (f : F) : Tendsto f (cocompact α) (cocompact β)
 
-end
+export CocompactMapClass (cocompact_tendsto)
 
-namespace CocompactMapClass
-
-variable {F α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
-variable [FunLike F α β] [CocompactMapClass F α β]
-
-/-- Turn an element of a type `F` satisfying `CocompactMapClass F α β` into an actual
-`CocompactMap`. This is declared as the default coercion from `F` to `CocompactMap α β`. -/
-@[coe]
-def toCocompactMap (f : F) : CocompactMap α β :=
-  { (f : C(α, β)) with
+/-- Turn a bundled morphism with a `CocompactMapClass` instance into a `CocompactMap`. -/
+def CocompactMap.ofClass {F α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
+    [FunLike F α β] [CocompactMapClass F α β] (f : F) :
+    CocompactMap α β :=
+  { ContinuousMap.ofClass f with
     cocompact_tendsto' := cocompact_tendsto f }
 
-instance : CoeTC F (CocompactMap α β) :=
-  ⟨toCocompactMap⟩
+@[deprecated (since := "2026-11-25")] alias CocompactMapClass.toCocompactMap :=
+  CocompactMap.ofClass
 
-end CocompactMapClass
-
-export CocompactMapClass (cocompact_tendsto)
+end
 
 namespace CocompactMap
 
@@ -87,6 +80,10 @@ instance : FunLike (CocompactMap α β) α β where
 instance : CocompactMapClass (CocompactMap α β) α β where
   map_continuous f := f.continuous_toFun
   cocompact_tendsto f := f.cocompact_tendsto'
+
+@[simp]
+protected theorem coe_ofClass {F : Type*} [FunLike F α β] [CocompactMapClass F α β] (f : F) :
+    ⇑(ofClass f) = f := rfl
 
 @[simp]
 theorem coe_toContinuousMap {f : CocompactMap α β} : (f.toContinuousMap : α → β) = f :=
@@ -138,7 +135,7 @@ instance : Inhabited (CocompactMap α α) :=
 
 /-- The composition of cocompact continuous maps, as a cocompact continuous map. -/
 def comp (f : CocompactMap β γ) (g : CocompactMap α β) : CocompactMap α γ :=
-  ⟨f.toContinuousMap.comp g, (cocompact_tendsto f).comp (cocompact_tendsto g)⟩
+  ⟨f.toContinuousMap.comp g.toContinuousMap, (cocompact_tendsto f).comp (cocompact_tendsto g)⟩
 
 @[simp]
 theorem coe_comp (f : CocompactMap β γ) (g : CocompactMap α β) : ⇑(comp f g) = f ∘ g :=

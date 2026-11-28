@@ -83,7 +83,8 @@ data-structure linearly, since copies of the data structure must regularly be st
 environment. For `fun_prop` this is not a serious problem since it doesn't have that many
 different lemmas anyways.
 
-#### Future work:
+### Future work
+
 Make a version of `RefinedDiscrTree` that is optimal for tactics like `simp` and
 `fun_prop`. This would mean using a persistent data structure, and possibly a non-lazy structure.
 
@@ -96,7 +97,8 @@ Most applications use matching, and the only common use case where unification i
 type class search. Since the intended applications of the `RefinedDiscrTree` currently use
 matching, the lookup algorithm is most optimized for matching.
 
-#### Future work:
+### Future work
+
 Improve the unification lookup.
 -/
 

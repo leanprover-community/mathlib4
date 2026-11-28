@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Module.Prod
 
 import Mathlib.Tactic.Abel
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Addition and subtraction are linear maps from the product space
 

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.RingHomProperties
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-! # Meta properties of injective ring homomorphisms -/
 
 public section

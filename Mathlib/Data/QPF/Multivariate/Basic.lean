@@ -75,7 +75,7 @@ each proves that some operations on functors preserve the QPF structure
 
 set_option linter.style.longLine false in
 /-!
-## Reference
+## References
 
 [Jeremy Avigad, Mario M. Carneiro and Simon Hudon, *Data Types as Quotients of Polynomial Functors*][avigad-carneiro-hudon2019]
 -/

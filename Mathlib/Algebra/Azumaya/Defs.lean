@@ -20,7 +20,7 @@ TODO : Add the three more definitions and prove they are equivalent:
 · `Aᵐᵒᵖ ⊗[R] A` is Morita equivalent to `R`;
 · The center of `A` is `R` and `A` is a separable algebra.
 
-## Reference
+## References
 
 * [Benson Farb, R. Keith Dennis, *Noncommutative Algebra*][bensonfarb1993]
 

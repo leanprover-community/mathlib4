@@ -27,7 +27,7 @@ A lax functor `F` between bicategories `B` and `C` consists of
 * `CategoryTheory.LaxFunctor.PseudoCore` : a structure on a lax functor that promotes a
   lax functor to a pseudofunctor
 
-## Future work
+## TODO
 
 Some constructions in the bicategory library have only been done in terms of oplax functors,
 since lax functors had not yet been added (e.g `FunctorBicategory.lean`). A possible project would

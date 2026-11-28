@@ -19,7 +19,8 @@ day convolutions and the data of the canonical morphisms to the aforementioned
 ends can be organised as data that exhibit `F` as monoidal closed in `C ⥤ V` for
 the Day convolution monoidal structure.
 
-## TODOs
+## TODO
+
 * When `LawfulDayConvolutionMonoidalStruct` (https://github.com/leanprover-community/mathlib4/issues/26820) lands, transport the
   constructions here to produce actual `CategoryTheory.MonoidalClosed` instances.
 -/

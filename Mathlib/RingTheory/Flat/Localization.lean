@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.Flat.Stability
 public import Mathlib.RingTheory.LocalProperties.Exactness
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Flatness and localization
 

@@ -21,7 +21,7 @@ from dimension 1 to a domain in higher dimension.
 Add theorems about `deriv`s and `fderiv`s of `ContinuousAffineMap`s once they will be ported to
 Mathlib 4.
 
-## Keywords
+## Tags
 
 affine map, derivative, differentiability
 -/

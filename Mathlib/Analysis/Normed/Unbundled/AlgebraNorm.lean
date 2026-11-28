@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Normed.Module.Seminorm.Basic
 public import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Algebra norms
 

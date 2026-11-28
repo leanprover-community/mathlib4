@@ -20,7 +20,7 @@ When `T` is discrete, this is the constant sheaf associated to `T` (TODO).
 - `AlgebraicGeometry.continuousMapPresheafAb`: For a topological abelian group `A`, this is
   `continuousMapPresheaf A` viewed as a sheaf of abelian groups.
 
-## TODOs
+## TODO
 
 - Show that `continuousMapPresheaf` is a sheaf for the fpqc topology (@chrisflav).
 -/

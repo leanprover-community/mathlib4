@@ -14,7 +14,7 @@ public import Mathlib.Probability.ProductMeasure
 In this file we provide several results about independence of arbitrary families of random
 variables, relying on `Measure.infinitePi`.
 
-## Implementation note
+## Implementation notes
 
 There are several possible measurability assumptions:
 * The map `ω ↦ (Xᵢ(ω))ᵢ` is measurable.

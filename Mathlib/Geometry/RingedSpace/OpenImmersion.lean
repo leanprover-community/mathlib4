@@ -225,8 +225,7 @@ theorem app_inv_app' (U : Opens Y) (hU : (U : Set Y) ⊆ Set.range f.base) :
             (le_antisymm (Set.image_preimage_subset f.base U.carrier) <|
               (Set.image_preimage_eq_inter_range (f := f.base) (t := U.carrier)).symm ▸
                 Set.subset_inter_iff.mpr ⟨fun _ h => h, hU⟩)).op := by
-  simp only [app_invApp, Opens.carrier_eq_coe,
-    homOfLE_leOfHom, eqToHom_op]
+  simp only [app_invApp, Opens.carrier_eq_coe, eqToHom_op]
   tauto
 
 /-- An isomorphism is an open immersion. -/
@@ -346,8 +345,8 @@ theorem pullback_cone_of_left_condition : pullbackConeOfLeftFst f g ≫ f = Y.of
       pullbackConeOfLeftFst, app_invApp_assoc, eqToHom_app, Category.assoc,
       NatTrans.naturality_assoc, restrict_carrier, comp_base, ofRestrict_base, restrict_presheaf,
       Functor.comp_obj, Functor.op_obj, Opens.map_comp_obj, TopCat.Presheaf.pushforward_obj_obj,
-      Opens.carrier_eq_coe, homOfLE_leOfHom, TopCat.Presheaf.pushforward_obj_map, Functor.comp_map,
-      Functor.op_map, eqToHom_unop, ofRestrict_c_app, Functor.id_obj]
+      Opens.carrier_eq_coe, TopCat.Presheaf.pushforward_obj_map, Functor.comp_map, Functor.op_map,
+      eqToHom_unop, ofRestrict_c_app, Functor.id_obj]
     rw [← Y.presheaf.map_comp, ← Y.presheaf.map_comp]
     congr 1
 

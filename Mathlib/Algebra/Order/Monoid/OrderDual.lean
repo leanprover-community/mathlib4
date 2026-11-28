@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-! # Ordered monoid structures on the order dual. -/
 
 public section

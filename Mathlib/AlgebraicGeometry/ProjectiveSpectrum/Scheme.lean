@@ -88,7 +88,8 @@ Finally,
 * `AlgebraicGeometry.Proj`: for any `ℕ`-graded ring `A`, `Proj A` is locally affine, hence is a
   scheme.
 
-## Reference
+## References
+
 * [Robin Hartshorne, *Algebraic Geometry*][har77]: Chapter II.2 Proposition 2.5
 -/
 

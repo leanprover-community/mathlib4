@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Analytic.ConvergenceRadius
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Scalar series
 

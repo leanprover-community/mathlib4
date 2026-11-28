@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
 
 import Mathlib.Algebra.Homology.DerivedCategory.TStructure
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Morphisms between bounded complexes are small
 

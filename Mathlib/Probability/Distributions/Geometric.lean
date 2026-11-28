@@ -27,7 +27,7 @@ follows a geometric distribution with parameter `p`.
 * `geometricMeasure p`: a geometric measure on `ℕ`,
   parametrized by its success probability `p`.
 
-## Implementation note
+## Implementation notes
 
 To avoid having to carry around a hypothesis `p ≠ 0`, we define
 `geometricMeasure 0 := Measure.dirac 0`. That way `IsProbabilityMeasure (geometricMeasure p)`

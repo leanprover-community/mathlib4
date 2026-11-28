@@ -260,14 +260,14 @@ congruence relation. -/
 @[to_additive (attr := elab_as_elim) /-- The inductive principle used to prove propositions about
 the elements of a quotient by an additive congruence relation. -/]
 protected theorem induction_on {C : c.Quotient → Prop} (q : c.Quotient) (H : ∀ x : M, C x) : C q :=
-  Quotient.inductionOn' q H
+  Quotient.inductionOn q H
 
 /-- A version of `Con.induction_on` for predicates which takes two arguments. -/
 @[to_additive (attr := elab_as_elim)
 /-- A version of `AddCon.induction_on` for predicates which takes two arguments. -/]
 protected theorem induction_on₂ {d : Con N} {C : c.Quotient → d.Quotient → Prop} (p : c.Quotient)
     (q : d.Quotient) (H : ∀ (x : M) (y : N), C x y) : C p q :=
-  Quotient.inductionOn₂' p q H
+  Quotient.inductionOn₂ p q H
 
 variable (c)
 
@@ -574,8 +574,8 @@ variable [MulOneClass M] (c : Con M)
 @[to_additive /-- The quotient of an `AddMonoid` by an additive congruence relation is
 an `AddMonoid`. -/]
 instance mulOneClass : MulOneClass c.Quotient where
-  mul_one x := Quotient.inductionOn' x fun _ => congr_arg ((↑) : M → c.Quotient) <| mul_one _
-  one_mul x := Quotient.inductionOn' x fun _ => congr_arg ((↑) : M → c.Quotient) <| one_mul _
+  mul_one x := Quotient.inductionOn x fun _ => congr_arg ((↑) : M → c.Quotient) <| mul_one _
+  one_mul x := Quotient.inductionOn x fun _ => congr_arg ((↑) : M → c.Quotient) <| one_mul _
 
 end MulOneClass
 

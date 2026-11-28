@@ -13,6 +13,9 @@ import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
 import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
 import Mathlib.CategoryTheory.WithTerminal.Cone
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-! # Functors equifibered over a fixed functor is closed under limits -/
 
 public section

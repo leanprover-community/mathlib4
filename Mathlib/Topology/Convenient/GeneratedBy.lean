@@ -19,6 +19,7 @@ all continuous maps `X i → Y`. When the bijection
 we say that `Y` is `X`-generated (typeclass `IsGeneratedBy X Y`).
 
 ## TODO (@joelriou)
+
 * Redefine compactly generated spaces and delta generated spaces using
   these definitions
 * Define the category of `X`-generated spaces and show that it is coreflective in `TopCat`

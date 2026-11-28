@@ -10,6 +10,9 @@ public import Mathlib.Data.Finsupp.Multiset
 
 import Mathlib.Data.Sym.Card
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equivalence between `Finset.finsuppAntidiag` and `Sym`
 

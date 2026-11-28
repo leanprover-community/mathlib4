@@ -20,7 +20,7 @@ maps, by reusing API about continuous multilinear maps and alternating maps.
 `M [⋀^ι]→L[R] N`: notation for `R`-linear continuous alternating maps from `M` to `N`; the arguments
 are indexed by `i : ι`.
 
-## Keywords
+## Tags
 
 multilinear map, alternating map, continuous
 -/

@@ -122,12 +122,6 @@ def gi : GaloisInsertion (span : Set (ℙ K V) → Subspace K V) SetLike.coe whe
 theorem span_coe (W : Subspace K V) : span ↑W = W :=
   GaloisInsertion.l_u_eq gi W
 
-/-- The infimum of two subspaces exists. -/
-instance instInf : Min (Subspace K V) :=
-  ⟨fun A B =>
-    ⟨A ⊓ B, fun _v _w hv hw _hvw h1 h2 =>
-      ⟨A.mem_add _ _ hv hw _ h1.1 h2.1, B.mem_add _ _ hv hw _ h1.2 h2.2⟩⟩⟩
-
 /-- Infimums of arbitrary collections of subspaces exist. -/
 instance instInfSet : InfSet (Subspace K V) :=
   ⟨fun A =>
@@ -136,15 +130,21 @@ instance instInfSet : InfSet (Subspace K V) :=
       exact s.mem_add v w hv hw _ (h1 s ⟨s, hs, rfl⟩) (h2 s ⟨s, hs, rfl⟩)⟩⟩
 
 /-- The subspaces of a projective space form a complete lattice. -/
-instance : CompleteLattice (Subspace K V) :=
-  { __ := completeLatticeOfInf (Subspace K V)
-      (by
-        refine fun s => ⟨fun a ha x hx => hx _ ⟨a, ha, rfl⟩, fun a ha x hx E => ?_⟩
-        rintro ⟨E, hE, rfl⟩
-        exact ha hE hx)
-    inf_le_left := fun A B _ hx => (@inf_le_left _ _ A B) hx
-    inf_le_right := fun A B _ hx => (@inf_le_right _ _ A B) hx
-    le_inf := fun _ _ _ h1 h2 _ hx => (le_inf h1 h2) hx }
+instance : CompleteLattice (Subspace K V) where
+  __ := completeLatticeOfInf (Subspace K V)
+    (by
+      refine fun s => ⟨fun a ha x hx => hx _ ⟨a, ha, rfl⟩, fun a ha x hx E => ?_⟩
+      rintro ⟨E, hE, rfl⟩
+      exact ha hE hx)
+  bot := ⟨∅, fun _ _ _ _ _ h _ => h.elim⟩
+  bot_le _ := Set.empty_subset _
+  top := ⟨Set.univ, fun _ _ _ _ _ _ _ => trivial⟩
+  le_top _ := Set.subset_univ _
+  inf A B := ⟨A ∩ B, fun _v _w hv hw _hvw h1 h2 =>
+    ⟨A.mem_add _ _ hv hw _ h1.1 h2.1, B.mem_add _ _ hv hw _ h1.2 h2.2⟩⟩
+  inf_le_left _ _ := Set.inter_subset_left
+  inf_le_right _ _ := Set.inter_subset_right
+  le_inf _ _ _ := Set.subset_inter
 
 instance subspaceInhabited : Inhabited (Subspace K V) where default := ⊤
 
@@ -264,11 +264,8 @@ theorem mem_submodule_iff (s : Projectivization.Subspace K V) {v : V} (hv : v �
   ⟨fun h => h hv, fun h _ => h⟩
 
 @[simp]
-lemma bot_coe : ((⊥ : Subspace K V) : Set (Projectivization K V)) = ∅ := by
-  ext x
-  simp only [SetLike.mem_coe, Set.mem_empty_iff_false, iff_false]
-  induction x using ind with | h v hv =>
-  rwa [← Subspace.mem_submodule_iff _ hv, Subspace.submodule.map_bot, Submodule.mem_bot]
+lemma bot_coe : ((⊥ : Subspace K V) : Set (Projectivization K V)) = ∅ :=
+  rfl
 
 end Subspace
 

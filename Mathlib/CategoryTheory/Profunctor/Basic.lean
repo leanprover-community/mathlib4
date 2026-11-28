@@ -19,7 +19,7 @@ as the Yoneda bifunctor, the opposite of a profunctor, the `ulift` of a profunct
 of a profunctor with functors, and the profunctors in both directions corresponding to a functor
 `C ⥤ D` (see `Functor.toProfunctor` and `Functor.toProfunctorFlip`).
 
-## Future work
+## TODO
 
 - Use profunctor composition to define the bicategory of categories and profunctors.
 -/

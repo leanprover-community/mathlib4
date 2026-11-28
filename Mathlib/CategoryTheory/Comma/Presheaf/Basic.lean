@@ -54,7 +54,8 @@ leads to manageable goals containing only a small number of correction terms. Ge
 the form `F.map (eqToHom _)` for these correction terms and try to push them as far outside as
 possible.
 
-## Future work
+## TODO
+
 * If needed, it should be possible to show that the equivalence is natural in `A`.
 
 ## References

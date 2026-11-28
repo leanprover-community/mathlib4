@@ -9,6 +9,9 @@ public import Mathlib.LinearAlgebra.Projectivization.Subspace
 
 import Mathlib.LinearAlgebra.Projectivization.Independence
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Collinearity in Projective Space
 

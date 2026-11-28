@@ -9,6 +9,9 @@ public import Mathlib.Algebra.BigOperators.Ring.List
 public import Mathlib.Data.Multiset.Antidiagonal
 public import Mathlib.Data.Multiset.Sections
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-! # Lemmas about `Multiset.sum` and `Multiset.prod` requiring extra algebra imports -/
 
 public section

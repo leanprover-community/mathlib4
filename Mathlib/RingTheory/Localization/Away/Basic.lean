@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.Localization.Basic
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Localizations away from an element
 

@@ -147,15 +147,19 @@ def C (n : ℕ) : Matrix (Fin n) (Fin n) ℤ :=
       if i.val = n - 1 then -2 else -1
     else 0
 
-/-- The Cartan matrix of type Dₙ (rank n, corresponding to so(2n)). -/
+/-- The Cartan matrix of type Dₙ (rank n, corresponding to so(2n)).
+
+Note that rows are columns have the opposite ordering to Bourbaki. Thus the first three nodes in the
+corresponding Dynkin diagram are the non-linear part of the diagram. See `CartanMatrix.D_three` and
+`CartanMatrix.D_four`. -/
 def D (n : ℕ) : Matrix (Fin n) (Fin n) ℤ :=
   Matrix.of fun i j =>
     if i = j then 2
     else if n ≤ 2 then 0
-    else if i.val + 1 = j.val ∧ j.val + 2 < n then -1
-    else if j.val + 1 = i.val ∧ i.val + 2 < n then -1
-    else if i.val + 3 = n ∧ (j.val + 2 = n ∨ j.val + 1 = n) then -1
-    else if j.val + 3 = n ∧ (i.val + 2 = n ∨ i.val + 1 = n) then -1
+    else if i.val = 2 ∧ j.val < 2 then -1
+    else if j.val = 2 ∧ i.val < 2 then -1
+    else if i.val + 1 = j.val ∧ i.val ≥ 2 then -1
+    else if j.val + 1 = i.val ∧ j.val ≥ 2 then -1
     else 0
 
 /-! ### Properties -/
@@ -225,16 +229,16 @@ theorem B_two : B 2 = !![ 2, -2;
 theorem C_two : C 2 = !![ 2, -1;
                          -2,  2] := by decide
 
-theorem D_three : D 3 = !![ 2, -1, -1;
-                           -1,  2,  0;
-                           -1,  0,  2] := by decide
+theorem D_three : D 3 = !![ 2,  0, -1;
+                            0,  2, -1;
+                           -1, -1,  2] := by decide
 
-theorem D_three' : (D 3).reindex c[0, 1] c[0, 1] = A 3 := by decide
+theorem D_three' : (D 3).reindex c[1, 2] c[1, 2] = A 3 := by decide
 
-theorem D_four : D 4 = !![ 2, -1,  0,  0;
-                          -1,  2, -1, -1;
-                           0, -1,  2,  0;
-                           0, -1,  0,  2] := by decide
+theorem D_four : D 4 = !![ 2,  0, -1,  0;
+                           0,  2, -1,  0;
+                          -1, -1,  2, -1;
+                           0,  0, -1,  2] := by decide
 
 
 

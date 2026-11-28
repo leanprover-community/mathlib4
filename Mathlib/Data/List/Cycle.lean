@@ -460,7 +460,7 @@ instance : Inhabited (Cycle α) :=
 @[elab_as_elim, induction_eliminator]
 theorem induction_on {motive : Cycle α → Prop} (s : Cycle α) (nil : motive nil)
     (cons : ∀ (a) (l : List α), motive ↑l → motive ↑(a :: l)) : motive s :=
-  Quotient.inductionOn' s fun l => by
+  Quotient.inductionOn s fun l => by
     refine List.recOn l ?_ ?_ <;> simp only [mk''_eq_coe, coe_nil]
     assumption'
 
@@ -480,10 +480,10 @@ theorem notMem_nil (a : α) : a ∉ nil :=
   List.not_mem_nil
 
 instance [DecidableEq α] : DecidableEq (Cycle α) := fun s₁ s₂ =>
-  Quotient.recOnSubsingleton₂' s₁ s₂ fun _ _ => decidable_of_iff' _ Quotient.eq''
+  Quotient.recOnSubsingleton₂ s₁ s₂ fun _ _ => decidable_of_iff' _ Quotient.eq''
 
 instance [DecidableEq α] (x : α) (s : Cycle α) : Decidable (x ∈ s) :=
-  Quotient.recOnSubsingleton' s fun l => show Decidable (x ∈ l) from inferInstance
+  Quotient.recOnSubsingleton s fun l => show Decidable (x ∈ l) from inferInstance
 
 /-- Reverse a `s : Cycle α` by reversing the underlying `List`. -/
 nonrec def reverse (s : Cycle α) : Cycle α :=
@@ -596,7 +596,7 @@ theorem Subsingleton.nodup {s : Cycle α} (h : Subsingleton s) : Nodup s := by
 
 theorem Nodup.nontrivial_iff {s : Cycle α} (h : Nodup s) : Nontrivial s ↔ ¬Subsingleton s := by
   rw [length_subsingleton_iff]
-  induction s using Quotient.inductionOn'
+  induction s using Quotient.inductionOn
   simp only [mk''_eq_coe, nodup_coe_iff] at h
   simp [h, Nat.succ_le_iff]
 
@@ -615,11 +615,11 @@ theorem nil_toMultiset : nil.toMultiset = (0 : Multiset α) :=
 
 @[simp]
 theorem card_toMultiset (s : Cycle α) : Multiset.card s.toMultiset = s.length :=
-  Quotient.inductionOn' s (by simp)
+  Quotient.inductionOn s (by simp)
 
 @[simp]
 theorem toMultiset_eq_nil {s : Cycle α} : s.toMultiset = 0 ↔ s = Cycle.nil :=
-  Quotient.inductionOn' s (by simp)
+  Quotient.inductionOn s (by simp)
 
 /-- The lift of `list.map`. -/
 def map {β : Type*} (f : α → β) : Cycle α → Cycle β :=
@@ -635,12 +635,12 @@ theorem map_coe {β : Type*} (f : α → β) (l : List α) : map f ↑l = List.m
 
 @[simp]
 theorem map_eq_nil {β : Type*} (f : α → β) (s : Cycle α) : map f s = nil ↔ s = nil :=
-  Quotient.inductionOn' s (by simp)
+  Quotient.inductionOn s (by simp)
 
 @[simp]
 theorem mem_map {β : Type*} {f : α → β} {b : β} {s : Cycle α} :
     b ∈ s.map f ↔ ∃ a, a ∈ s ∧ f a = b :=
-  Quotient.inductionOn' s (by simp)
+  Quotient.inductionOn s (by simp)
 
 /-- The `Multiset` of lists that can make the cycle. -/
 def lists (s : Cycle α) : Multiset (List α) :=
@@ -654,7 +654,7 @@ theorem lists_coe (l : List α) : lists (l : Cycle α) = ↑l.cyclicPermutations
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mem_lists_iff_coe_eq {s : Cycle α} {l : List α} : l ∈ s.lists ↔ (l : Cycle α) = s :=
-  Quotient.inductionOn' s fun l => by
+  Quotient.inductionOn s fun l => by
     rw [lists, Quotient.liftOn'_mk'']
     simp
 
@@ -686,7 +686,7 @@ instance {s : Cycle α} : Decidable (Nodup s) :=
 instance fintypeNodupCycle [Fintype α] : Fintype { s : Cycle α // s.Nodup } :=
   Fintype.ofSurjective (fun l : { l : List α // l.Nodup } => ⟨l.val, by simpa using l.prop⟩)
     fun ⟨s, hs⟩ => by
-    induction s using Quotient.inductionOn' with | _ hs
+    induction s using Quotient.inductionOn with | _ hs
     exact ⟨⟨_, hs⟩, by simp⟩
 
 instance fintypeNodupNontrivialCycle [Fintype α] :
@@ -714,7 +714,7 @@ theorem nil_toFinset : (@nil α).toFinset = ∅ :=
 
 @[simp]
 theorem toFinset_eq_nil {s : Cycle α} : s.toFinset = ∅ ↔ s = Cycle.nil :=
-  Quotient.inductionOn' s (by simp)
+  Quotient.inductionOn s (by simp)
 
 /-- Given a `s : Cycle α` such that `Nodup s`, retrieve the next element after `x ∈ s`. -/
 nonrec def next : ∀ (s : Cycle α) (_hs : Nodup s) (x : α) (_hx : x ∈ s), α := fun s =>
@@ -739,7 +739,7 @@ nonrec def prev : ∀ (s : Cycle α) (_hs : Nodup s) (x : α) (_hx : x ∈ s), �
 -- `simp` cannot infer the proofs: see `prev_reverse_eq_next'` for `@[simp]` lemma.
 nonrec theorem prev_reverse_eq_next (s : Cycle α) : ∀ (hs : Nodup s) (x : α) (hx : x ∈ s),
     s.reverse.prev (nodup_reverse_iff.mpr hs) x (mem_reverse_iff.mpr hx) = s.next hs x hx :=
-  Quotient.inductionOn' s prev_reverse_eq_next
+  Quotient.inductionOn s prev_reverse_eq_next
 
 @[simp]
 nonrec theorem prev_reverse_eq_next' (s : Cycle α) (hs : Nodup s.reverse) (x : α)
@@ -769,12 +769,12 @@ theorem prev_mem (s : Cycle α) (hs : Nodup s) (x : α) (hx : x ∈ s) : s.prev 
 @[simp]
 nonrec theorem prev_next (s : Cycle α) : ∀ (hs : Nodup s) (x : α) (hx : x ∈ s),
     s.prev hs (s.next hs x hx) (next_mem s hs x hx) = x :=
-  Quotient.inductionOn' s prev_next
+  Quotient.inductionOn s prev_next
 
 @[simp]
 nonrec theorem next_prev (s : Cycle α) : ∀ (hs : Nodup s) (x : α) (hx : x ∈ s),
     s.next hs (s.prev hs x hx) (prev_mem s hs x hx) = x :=
-  Quotient.inductionOn' s next_prev
+  Quotient.inductionOn s next_prev
 
 end Decidable
 

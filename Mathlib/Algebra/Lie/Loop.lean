@@ -13,6 +13,9 @@ public import Mathlib.Algebra.MonoidAlgebra.Grading
 public import Mathlib.Algebra.Polynomial.Laurent
 public import Mathlib.LinearAlgebra.TensorProduct.Decomposition
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Loop Lie algebras and their central extensions
 

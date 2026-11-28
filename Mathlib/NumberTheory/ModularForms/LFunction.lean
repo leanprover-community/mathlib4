@@ -20,9 +20,8 @@ set_option doc.verso.suggestions false
 
 @[expose] public section
 
-open UpperHalfPlane hiding I
+open UpperHalfPlane Filter Complex Asymptotics
 open scoped Real Topology
-open Filter Complex Asymptotics
 
 variable {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.IsArithmetic]
   {k : ℤ} (hk : 0 < k) {F : Type*} [FunLike F ℍ ℂ] (f : F) {s : ℂ}

@@ -66,7 +66,7 @@ postfix:1024 "ˣ" => Units
 
 An element of an `AddMonoid` is a unit if it has a two-sided additive inverse.
 This version bundles the inverse element so that it can be computed.
-For a predicate see `isAddUnit`. -/
+For a predicate see `IsAddUnit`. -/
 structure AddUnits (α : Type u) [AddMonoid α] where
   /-- The underlying value in the base `AddMonoid`. -/
   val : α
@@ -131,7 +131,7 @@ instance [DecidableEq α] : DecidableEq αˣ := fun _ _ => decidable_of_iff' _ U
 theorem mk_val (u : αˣ) (y h₁ h₂) : mk (u : α) y h₁ h₂ = u :=
   ext rfl
 
-/-- Copy a unit, adjusting definition equalities. -/
+/-- Copy a unit, adjusting definitional equalities. -/
 @[to_additive (attr := simps) /-- Copy an `AddUnit`, adjusting definitional equalities. -/]
 def copy (u : αˣ) (val : α) (hv : val = u) (inv : α) (hi : inv = ↑u⁻¹) : αˣ :=
   { val, inv, inv_val := hv.symm ▸ hi.symm ▸ u.inv_val, val_inv := hv.symm ▸ hi.symm ▸ u.val_inv }
@@ -487,11 +487,11 @@ section Monoid
 
 variable [Monoid M] {a b : M}
 
-/-- The element of the group of units, corresponding to an element of a monoid which is a unit. When
-`α` is a `DivisionMonoid`, use `IsUnit.unit'` instead. -/
+/-- The element of the group of units, corresponding to an element of a monoid which is a unit.
+When the monoid is a `DivisionMonoid`, use `IsUnit.unit'` instead. -/
 @[to_additive /-- The element of the additive group of additive units, corresponding to an element
-of an additive monoid which is an additive unit. When `α` is a `SubtractionMonoid`, use
-`IsAddUnit.addUnit'` instead. -/]
+of an additive monoid which is an additive unit. When the additive monoid is a `SubtractionMonoid`,
+use `IsAddUnit.addUnit'` instead. -/]
 protected noncomputable def unit (h : IsUnit a) : Mˣ :=
   (Classical.choose h).copy a (Classical.choose_spec h).symm _ rfl
 

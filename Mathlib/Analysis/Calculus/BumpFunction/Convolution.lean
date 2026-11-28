@@ -30,7 +30,7 @@ We also provide estimates in the case if `g x` is close to `g x₀` on this ball
   integrable function. Then the convolution of `g` with a family of bump functions with
   support tending to `0` converges almost everywhere to `g`.
 
-## Keywords
+## Tags
 
 convolution, smooth function, bump function
 -/

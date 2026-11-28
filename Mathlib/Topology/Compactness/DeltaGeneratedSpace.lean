@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 public import Mathlib.Topology.Convenient.GeneratedBy
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Delta-generated topological spaces
 

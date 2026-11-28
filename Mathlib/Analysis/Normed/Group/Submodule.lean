@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Normed.Group.Basic
 public import Mathlib.Topology.Algebra.Module.ClosedSubmodule
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-! # Submodules of normed groups -/
 
 public section

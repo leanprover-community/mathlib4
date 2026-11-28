@@ -5,10 +5,10 @@ Authors: Floris van Doorn
 -/
 module
 
--- This module imports all of `Batteries.Tactic.Lint`, not just `Batteries.Tactic.Lint.Basic`.
+-- This module imports all of `Batteries.Linter`, not just `Batteries.Linter.Basic`.
 -- It is responsible for making `#lint` available through `Mathlib.Init`.
 -- TODO: consider removing `-- shake: keep` after batteries#1613
-public meta import Batteries.Tactic.Lint -- shake: keep
+public meta import Batteries.Linter -- shake: keep
 public meta import Lean.Linter.Deprecated
 public import Mathlib.Tactic.DeclarationNames
 
@@ -23,7 +23,7 @@ Perhaps these should be moved to Batteries in the future.
 
 meta section
 
-namespace Batteries.Tactic.Lint
+namespace Batteries.Linter
 open Lean Meta
 
 /--
@@ -55,7 +55,7 @@ Linter that checks whether a structure should be in Prop.
     | some _ => return none -- TODO: enforce `YYYY-MM-DD` format
     | none => return m!"`deprecated` attribute without `since` date"
 
-end Batteries.Tactic.Lint
+end Batteries.Linter
 
 namespace Mathlib.Linter
 

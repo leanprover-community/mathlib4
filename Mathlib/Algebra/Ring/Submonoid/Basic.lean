@@ -9,6 +9,9 @@ module
 public import Mathlib.Algebra.Group.Submonoid.Basic
 public import Mathlib.Algebra.Ring.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-! # Lemmas about additive closures of `Subsemigroup`. -/
 
 public section

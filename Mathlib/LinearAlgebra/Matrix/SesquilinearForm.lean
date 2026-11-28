@@ -281,21 +281,21 @@ theorem LinearMap.toMatrix₂'_compl₂ (B : (n → R) →ₗ[R] (m → R) →�
 
 theorem LinearMap.mul_toMatrix₂'_mul (B : (n → R) →ₗ[R] (m → R) →ₗ[R] R) (M : Matrix n' n R)
     (N : Matrix m m' R) :
-    M * toMatrix₂' R B * N = toMatrix₂' R (B.compl₁₂ (toLin' Mᵀ) (toLin' N)) := by
+    M * toMatrix₂' R B * N = toMatrix₂' R (B.compl₁₂ Mᵀ.mulVecLin N.mulVecLin) := by
   simp
 
 theorem LinearMap.mul_toMatrix' (B : (n → R) →ₗ[R] (m → R) →ₗ[R] R) (M : Matrix n' n R) :
-    M * toMatrix₂' R B = toMatrix₂' R (B.comp <| toLin' Mᵀ) := by
-  simp only [B.toMatrix₂'_comp, transpose_transpose, toMatrix'_toLin']
+    M * toMatrix₂' R B = toMatrix₂' R (B ∘ₗ Mᵀ.mulVecLin) := by
+  simp only [B.toMatrix₂'_comp, transpose_transpose, Matrix.toMatrix'_mulVecLin]
 
 theorem LinearMap.toMatrix₂'_mul (B : (n → R) →ₗ[R] (m → R) →ₗ[R] R) (M : Matrix m m' R) :
-    toMatrix₂' R B * M = toMatrix₂' R (B.compl₂ <| toLin' M) := by
-  simp only [B.toMatrix₂'_compl₂, toMatrix'_toLin']
+    toMatrix₂' R B * M = toMatrix₂' R (B.compl₂ M.mulVecLin) := by
+  simp only [B.toMatrix₂'_compl₂, M.toMatrix'_mulVecLin]
 
 theorem Matrix.toLinearMap₂'_comp (M : Matrix n m R) (P : Matrix n n' R) (Q : Matrix m m' R) :
-    LinearMap.compl₁₂ (Matrix.toLinearMap₂' R M) (toLin' P) (toLin' Q) =
+    LinearMap.compl₁₂ (Matrix.toLinearMap₂' R M) P.mulVecLin Q.mulVecLin =
       toLinearMap₂' R (Pᵀ * M * Q) :=
-  (LinearMap.toMatrix₂' R).injective (by simp)
+  (LinearMap.toMatrix₂' R).injective <| by simp
 
 end CommToMatrix'
 
@@ -560,7 +560,7 @@ variable [DecidableEq n] [DecidableEq n']
 @[simp]
 theorem isAdjointPair_toLinearMap₂' :
     LinearMap.IsAdjointPair (Matrix.toLinearMap₂' R J) (Matrix.toLinearMap₂' R J')
-        (Matrix.toLin' A) (Matrix.toLin' A') ↔
+        A.mulVecLin A'.mulVecLin ↔
       Matrix.IsAdjointPair J J' A A' := by
   rw [isAdjointPair_iff_comp_eq_compl₂]
   have h :
@@ -571,8 +571,7 @@ theorem isAdjointPair_toLinearMap₂' :
     · rw [h]
     · exact (LinearMap.toMatrix₂' R).injective h
   simp_rw [h, LinearMap.toMatrix₂'_comp, LinearMap.toMatrix₂'_compl₂,
-    LinearMap.toMatrix'_toLin', LinearMap.toMatrix'_toLinearMap₂']
-  rfl
+    Matrix.toMatrix'_mulVecLin, LinearMap.toMatrix'_toLinearMap₂', Matrix.IsAdjointPair]
 
 @[simp]
 theorem isAdjointPair_toLinearMap₂ :

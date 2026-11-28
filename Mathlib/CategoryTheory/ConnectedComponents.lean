@@ -100,7 +100,7 @@ abbrev ConnectedComponents.mk (j : J) : ConnectedComponents J :=
 
 /-- Each connected component of the category is nonempty. -/
 instance (j : ConnectedComponents J) : Nonempty j.Component := by
-  induction j using Quotient.inductionOn'
+  induction j using Quotient.inductionOn
   exact ⟨⟨_, rfl⟩⟩
 
 instance (j : ConnectedComponents J) : Inhabited j.Component :=

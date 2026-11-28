@@ -215,7 +215,7 @@ lemma exists_basicOpen_le_appLE_of_appLE_of_isAffine
   have heq : f.appLE (Y.basicOpen r') (X.basicOpen s') (hBrr' ▸ hBss' ▸ ers) =
       f.appLE (Y.basicOpen r') (X.basicOpen (f.appLE U₂ V₂ e₂ r')) (by simp [Scheme.Hom.appLE]) ≫
         CommRingCat.ofHom (algebraMap _ _) := by
-    simp only [Scheme.Hom.appLE, homOfLE_leOfHom, Category.assoc]
+    simp only [Scheme.Hom.appLE, Category.assoc]
     congr
     apply X.presheaf.map_comp
   refine ⟨r, s, hBx, ers, ?_⟩
@@ -638,7 +638,7 @@ lemma iff_exists_appLE_locally
     exact hfs r hr _
   · obtain ⟨U, V, hxV, e, hf⟩ := hf x
     use U, V, hxV, e
-    simp only [iff_of_isAffine (P := P), Scheme.Hom.appLE, homOfLE_leOfHom] at hf ⊢
+    simp only [iff_of_isAffine (P := P), Scheme.Hom.appLE] at hf ⊢
     have : (toMorphismProperty (Locally Q)).RespectsIso := toMorphismProperty_respectsIso_iff.mp
       (isLocal_ringHomProperty P).respectsIso
     exact (MorphismProperty.arrow_mk_iso_iff (toMorphismProperty (Locally Q))

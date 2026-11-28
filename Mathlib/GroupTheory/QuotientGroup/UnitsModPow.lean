@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Pi.Units
 public import Mathlib.GroupTheory.QuotientGroup.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Units modulo `n`-th powers
 

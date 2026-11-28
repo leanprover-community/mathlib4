@@ -25,7 +25,7 @@ The relations to these other notions are given as
 `CategoryTheory.Functor.IsRepresentable.iff_exists_isRepresentedBy` and
 `CategoryTheory.Functor.IsRepresentedBy.iff_exists_representableBy`.
 
-## TODOs
+## TODO
 
 - Dualize to `IsCorepresentedBy`.
 -/

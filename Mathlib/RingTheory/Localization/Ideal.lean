@@ -13,6 +13,9 @@ public import Mathlib.RingTheory.Spectrum.Prime.Defs
 
 import Mathlib.RingTheory.Localization.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ideals in localizations of commutative rings
 

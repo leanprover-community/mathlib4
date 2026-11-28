@@ -9,6 +9,9 @@ public import Mathlib.Analysis.SpecialFunctions.Complex.Arctan
 
 import Mathlib.Analysis.Complex.AbelLimit
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-! # Leibniz's series for `π` -/
 
 public section

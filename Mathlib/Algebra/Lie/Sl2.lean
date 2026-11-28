@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Lie.Weights.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Lie algebra `sl₂` and its representations
 

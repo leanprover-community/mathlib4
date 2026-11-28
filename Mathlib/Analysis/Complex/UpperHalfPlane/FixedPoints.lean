@@ -169,12 +169,12 @@ theorem gl_smul_eq_self_iff_eq_fixedPt (hpos : 0 < g.val.det) (hell : g.IsEllipt
     simp [Complex.div_im, div_nonpos_iff, hc.le, mul_nonneg]
 
 theorem gl_smul_I_eq_I_iff_of_pos {g : GL (Fin 2) ℝ} (hg : 0 < g.det.val) :
-    g • I = I ↔ g 0 0 = g 1 1 ∧ g 0 1 = -g 1 0 := by
+    (g • .I : ℍ) = .I ↔ g 0 0 = g 1 1 ∧ g 0 1 = -g 1 0 := by
   rw [gl_smul_eq_iff_num_eq, σ, ite_eq_left hg]
   simp [Complex.ext_iff, num, denom, and_comm]
 
 theorem gl_smul_I_eq_I_iff_of_neg {g : GL (Fin 2) ℝ} (hg : g.det.val < 0) :
-    g • I = I ↔ g 0 0 = -g 1 1 ∧ g 0 1 = g 1 0 := by
+    (g • .I : ℍ) = .I ↔ g 0 0 = -g 1 1 ∧ g 0 1 = g 1 0 := by
   rw [gl_smul_eq_iff_num_eq, σ, ite_eq_right (not_lt_of_gt hg)]
   simp [num, denom, Complex.ext_iff, and_comm]
 

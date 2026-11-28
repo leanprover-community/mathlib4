@@ -47,7 +47,8 @@ so that `m` factors through the `m'` in any other such factorisation.
 * When `C` has equalizers, the morphism `e` appearing in an image factorisation is an epimorphism.
 * When `C` has strong epi images, then these images admit image maps.
 
-## Future work
+## TODO
+
 * TODO: coimages, and abelian categories.
 * TODO: connect this with existing work in the group theory and ring theory libraries.
 -/

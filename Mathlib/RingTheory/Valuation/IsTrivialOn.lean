@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.Algebraic.Basic
 public import Mathlib.RingTheory.Valuation.Basic
 
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic lemmas on valuations that are trivial over a base ring
 

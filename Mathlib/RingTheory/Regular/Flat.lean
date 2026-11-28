@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 public import Mathlib.RingTheory.Flat.Localization
 public import Mathlib.RingTheory.Regular.RegularSequence
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `RingTheory.Sequence.IsWeaklyRegular` is stable under flat base change
 

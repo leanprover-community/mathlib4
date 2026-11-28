@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Normed.Group.Int
 public import Mathlib.Topology.Instances.Rat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-! # ℚ as a normed group -/
 
 public section

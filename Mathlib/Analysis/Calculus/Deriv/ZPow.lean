@@ -18,7 +18,7 @@ In this file we prove theorems about (iterated) derivatives of `x ^ m`, `m : ℤ
 For a more detailed overview of one-dimensional derivatives in mathlib, see the module docstring of
 `Mathlib/Analysis/Calculus/Deriv/Basic.lean`.
 
-## Keywords
+## Tags
 
 derivative, power
 -/

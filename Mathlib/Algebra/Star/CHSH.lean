@@ -58,7 +58,7 @@ There's a nice proof of both bounds in this setting at
 https://en.wikipedia.org/wiki/Tsirelson%27s_bound
 The proof given here is purely algebraic.
 
-## Future work
+## TODO
 
 One can show that Tsirelson's inequality is tight.
 In the \*-ring of n-by-n complex matrices, if `A ≤ λ I` for some `λ : ℝ`,

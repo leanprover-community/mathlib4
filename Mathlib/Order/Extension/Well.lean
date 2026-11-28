@@ -23,7 +23,7 @@ We can map our order into two well-orders:
 
 Then their lexicographic product is a well-founded linear order which our original order injects in.
 
-## Implementation note
+## Implementation notes
 
 The definition in `mathlib` 3 used an auxiliary well-founded order on `α` lifted from `Cardinal`,
 instead of using `Cardinal` directly. The new definition is definitionally equal

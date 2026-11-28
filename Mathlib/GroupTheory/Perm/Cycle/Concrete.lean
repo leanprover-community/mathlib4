@@ -178,7 +178,7 @@ nonrec theorem formPerm_eq_formPerm_iff {α : Type*} [DecidableEq α] {s s' : Cy
     {hs' : s'.Nodup} :
     s.formPerm hs = s'.formPerm hs' ↔ s = s' ∨ s.Subsingleton ∧ s'.Subsingleton := by
   rw [Cycle.length_subsingleton_iff, Cycle.length_subsingleton_iff]
-  induction s, s' using Quotient.inductionOn₂'
+  induction s, s' using Quotient.inductionOn₂
   simpa using formPerm_eq_formPerm_iff hs hs'
 
 end Cycle

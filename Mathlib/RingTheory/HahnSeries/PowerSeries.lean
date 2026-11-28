@@ -24,7 +24,8 @@ we get the more familiar semiring of formal power series with coefficients in `R
 * `toPowerSeries` the isomorphism from `R⟦ℕ⟧` to `PowerSeries R`.
 * `ofPowerSeries` the inverse, casting a `PowerSeries R` to a `R⟦ℕ⟧`.
 
-## Instances
+## Main statements
+
 * For `Finite σ`, the instance `NoZeroDivisors R⟦σ →₀ ℕ⟧`,
   deduced from the case of `MvPowerSeries`
   The case of `R⟦ℕ⟧` is taken care of by `instNoZeroDivisors`.

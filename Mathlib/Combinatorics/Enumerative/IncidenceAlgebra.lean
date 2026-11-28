@@ -47,7 +47,7 @@ One has to define `mu` as either the left or right inverse of `zeta`. We define 
 inverse, and prove it is also a right inverse by defining `mu'` as the right inverse and using that
 left and right inverses agree if they exist.
 
-## TODOs
+## TODO
 
 Here are some additions to this file that could be made in the future:
 - Generalize the construction of `mu` to invert any element of the incidence algebra `f` which has

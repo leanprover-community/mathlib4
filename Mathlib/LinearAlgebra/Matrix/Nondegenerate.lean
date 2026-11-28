@@ -214,33 +214,113 @@ theorem nondegenerate_submatrix_iff (hr : Function.Bijective r) (hc : Function.B
     (M.submatrix r c).Nondegenerate ↔ M.Nondegenerate :=
   ⟨.of_submatrix hr.surjective hc.surjective, .submatrix hr hc⟩
 
+section SMul
+variable {α : Type*} [DistribSMul α R] [SMulCommClass α R R] [IsScalarTower α R R] {t : α}
+
+theorem SeparatingRight.of_smul (h : (t • M).SeparatingRight) : M.SeparatingRight := by
+  have := Fintype.ofFinite m
+  have := Fintype.ofFinite n
+  rw [separatingRight_def] at h ⊢
+  exact fun w hw ↦ h w fun v ↦ by simp [smul_mulVec, hw]
+
+theorem SeparatingRight.smul (ht : IsSMulRegular R t) (h : M.SeparatingRight) :
+    (t • M).SeparatingRight := by
+  have := Fintype.ofFinite m; have := Fintype.ofFinite n
+  rw [separatingRight_def] at h ⊢
+  exact fun w hw ↦ h w fun v ↦ ht <| by simpa [smul_mulVec] using hw v
+
+theorem separatingRight_smul_iff (ht : IsSMulRegular R t) :
+    (t • M).SeparatingRight ↔ M.SeparatingRight :=
+  ⟨.of_smul, .smul ht⟩
+
+theorem SeparatingLeft.of_smul (h : (t • M).SeparatingLeft) : M.SeparatingLeft := by
+  have := Fintype.ofFinite m; have := Fintype.ofFinite n
+  rw [separatingLeft_def] at h ⊢
+  exact fun v hv ↦ h v fun w ↦ by simp [smul_mulVec, hv]
+
+theorem SeparatingLeft.smul (ht : IsSMulRegular R t) (h : M.SeparatingLeft) :
+    (t • M).SeparatingLeft := by
+  have := Fintype.ofFinite m; have := Fintype.ofFinite n
+  rw [separatingLeft_def] at h ⊢
+  exact fun v hv ↦ h v fun w ↦ ht <| by simpa [smul_mulVec] using hv w
+
+theorem separatingLeft_smul_iff (ht : IsSMulRegular R t) :
+    (t • M).SeparatingLeft ↔ M.SeparatingLeft :=
+  ⟨.of_smul, .smul ht⟩
+
+theorem Nondegenerate.of_smul (h : (t • M).Nondegenerate) : M.Nondegenerate :=
+  ⟨h.separatingLeft.of_smul, h.separatingRight.of_smul⟩
+
+theorem Nondegenerate.smul (ht : IsSMulRegular R t) (h : M.Nondegenerate) :
+    (t • M).Nondegenerate :=
+  ⟨h.separatingLeft.smul ht, h.separatingRight.smul ht⟩
+
+theorem nondegenerate_smul_iff (ht : IsSMulRegular R t) :
+    (t • M).Nondegenerate ↔ M.Nondegenerate :=
+  ⟨.of_smul, .smul ht⟩
+
+end SMul
+
 end Finite
-
-end NonUnitalSemiring
-
-section Semiring
-variable {m n R : Type*} [Semiring R] {M : Matrix m n R}
 
 theorem separatingLeft_iff_forall_vecMul_eq_zero [Fintype m] [Finite n] :
     M.SeparatingLeft ↔ ∀ v, v ᵥ* M = 0 → v = 0 := by
+  classical
   have := Fintype.ofFinite n
-  refine ⟨fun h _ ↦ h.eq_zero_of_vecMul_eq_zero, fun h ↦ separatingLeft_def.2 fun w hw ↦ h w ?_⟩
-  ext i
-  classical simpa using! hw <| Pi.single i 1
+  refine ⟨fun h _ ↦ h.eq_zero_of_vecMul_eq_zero, fun h ↦ separatingLeft_def.2 fun v hv ↦ ?_⟩
+  simp_rw [dotProduct_mulVec] at hv
+  refine funext fun i₀ ↦ congr($(h v ?_) i₀)
+  ext j
+  refine Pi.single_eq_zero_iff.1 (h (Pi.single i₀ _) ?_)
+  ext k
+  simpa using hv (Pi.single j (M i₀ k))
 
 theorem separatingRight_iff_forall_mulVec_eq_zero [Finite m] [Fintype n] :
     M.SeparatingRight ↔ ∀ v, M *ᵥ v = 0 → v = 0 := by
+  classical
   have := Fintype.ofFinite m
-  refine ⟨fun h _ ↦ h.eq_zero_of_mulVec_eq_zero, fun h ↦ separatingRight_def.2 fun w hw ↦ h w ?_⟩
+  refine ⟨fun h _ ↦ h.eq_zero_of_mulVec_eq_zero, fun h ↦ separatingRight_def.2 fun w hw ↦ ?_⟩
+  refine funext fun j₀ ↦ congr($(h w ?_) j₀)
   ext i
-  classical simpa using hw <| Pi.single i 1
+  refine Pi.single_eq_zero_iff.1 (h (Pi.single j₀ _) ?_)
+  ext k
+  simpa using hw (Pi.single i (M k j₀))
 
 theorem nondegenerate_iff_forall_vecMul_and_mulVec_eq_zero [Fintype m] [Fintype n] :
     M.Nondegenerate ↔ (∀ v, v ᵥ* M = 0 → v = 0) ∧ (∀ v, M *ᵥ v = 0 → v = 0) := by
   rw [nondegenerate_iff, separatingLeft_iff_forall_vecMul_eq_zero,
     separatingRight_iff_forall_mulVec_eq_zero]
 
-end Semiring
+theorem SeparatingLeft.of_vecMul_injective [Fintype m] [Finite n]
+    (hM : Function.Injective M.vecMul) : M.SeparatingLeft :=
+  separatingLeft_iff_forall_vecMul_eq_zero.2 fun v hv ↦ hM <| by simpa using hv
+
+theorem SeparatingRight.of_mulVec_injective [Finite m] [Fintype n]
+    (hM : Function.Injective M.mulVec) : M.SeparatingRight :=
+  separatingRight_iff_forall_mulVec_eq_zero.2 fun v hv ↦ hM <| by simpa using hv
+
+end NonUnitalSemiring
+
+section NonUnitalRing
+variable {m n R : Type*} [NonUnitalRing R] {M : Matrix m n R}
+
+theorem SeparatingLeft.vecMul_injective [Fintype m] [Finite n] (hM : M.SeparatingLeft) :
+    Function.Injective M.vecMul := fun _ _ h ↦
+  sub_eq_zero.1 <| hM.eq_zero_of_vecMul_eq_zero <| (sub_vecMul ..).trans (sub_eq_zero.2 h)
+
+theorem SeparatingRight.mulVec_injective [Finite m] [Fintype n] (hM : M.SeparatingRight) :
+    Function.Injective M.mulVec := fun _ _ h ↦
+  sub_eq_zero.1 <| hM.eq_zero_of_mulVec_eq_zero <| (mulVec_sub ..).trans (sub_eq_zero.2 h)
+
+theorem separatingLeft_iff_vecMul_injective [Fintype m] [Finite n] :
+    M.SeparatingLeft ↔ Function.Injective M.vecMul :=
+  ⟨(·.vecMul_injective), .of_vecMul_injective⟩
+
+theorem separatingRight_iff_mulVec_injective [Finite m] [Fintype n] :
+    M.SeparatingRight ↔ Function.Injective M.mulVec :=
+  ⟨(·.mulVec_injective), .of_mulVec_injective⟩
+
+end NonUnitalRing
 
 section NonUnitalCommSemiring
 variable {m n R : Type*} [NonUnitalCommSemiring R] {M : Matrix m n R}
@@ -312,8 +392,7 @@ theorem eq_zero_of_mulVec_eq_zero [NoZeroDivisors R] (hM : M.det ≠ 0) {v : m �
 /-- See also `Matrix.mulVec_injective_iff_isUnit` when working over a field. -/
 theorem mulVec_injective_of_det_mem_nonZeroDivisors (hM : M.det ∈ R⁰) :
     Function.Injective M.mulVec :=
-  fun _ _ hxy => sub_eq_zero.mp
-    (eq_zero_of_det_mem_nonZeroDivisors_of_mulVec_eq_zero hM (by rw [mulVec_sub, hxy, sub_self]))
+  (Nondegenerate.of_det_mem_nonZeroDivisors hM).separatingRight.mulVec_injective
 
 theorem mulVec_injective_of_det_ne_zero [NoZeroDivisors R] (hM : M.det ≠ 0) :
     Function.Injective M.mulVec :=

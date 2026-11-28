@@ -162,16 +162,17 @@ theorem eq_adjoint_iff (A : E →L[𝕜] F) (B : F →L[𝕜] E) : A = B† ↔ 
   ext x
   exact ext_inner_right 𝕜 fun y => by simp only [adjoint_inner_left, h x y]
 
-@[simp]
 theorem _root_.LinearMap.IsSymmetric.clm_adjoint_eq {A : E →L[𝕜] E} (hA : A.IsSymmetric) :
     A† = A := by
   rwa [eq_comm, eq_adjoint_iff A A]
 
-set_option backward.isDefEq.respectTransparency.types false in
-lemma adjoint_id : (.id 𝕜 E)† = .id 𝕜 E := by simp
+@[simp]
+lemma adjoint_id : (.id 𝕜 E)† = .id 𝕜 E :=
+  LinearMap.IsSymmetric.clm_adjoint_eq (by simp)
 
-set_option backward.isDefEq.respectTransparency.types false in
-lemma adjoint_one : (1 : E →L[𝕜] E)† = 1 := by simp
+@[simp]
+lemma adjoint_one : (1 : E →L[𝕜] E)† = 1 :=
+  LinearMap.IsSymmetric.clm_adjoint_eq (by simp)
 
 theorem _root_.Submodule.adjoint_subtypeL (U : Submodule 𝕜 E) [CompleteSpace U] :
     U.subtypeL† = U.orthogonalProjectionOnto := by
@@ -222,7 +223,7 @@ theorem ker_le_ker_iff_range_le_range [FiniteDimensional 𝕜 E] {T U : E →L[�
     U.ker ≤ T.ker ↔ T.range ≤ U.range := by
   refine ⟨fun h ↦ ?_, LinearMap.ker_le_ker_of_range hT hU⟩
   have := FiniteDimensional.completeSpace 𝕜 E
-  simpa [orthogonal_ker, hT, hU] using Submodule.orthogonal_le h
+  simpa [orthogonal_ker, hT.clm_adjoint_eq, hU.clm_adjoint_eq] using Submodule.orthogonal_le h
 
 /-- Infinite-dimensional version of 7.64(b) in [axler2024]. -/
 theorem ker_adjoint_comp_self (T : E →L[𝕜] F) : (T† ∘L T).ker = T.ker := by
@@ -439,7 +440,6 @@ but with stronger type class assumptions (i.e., `CompleteSpace`). -/
 theorem IsStarNormal.orthogonal_range (hT : IsStarNormal T) : T.rangeᗮ = T.ker :=
   T.orthogonal_range ▸ hT.ker_adjoint_eq_ker
 
-set_option backward.isDefEq.respectTransparency false in
 /- TODO: As we have a more general result of this for elements in non-unital C⋆-algebras
 (see `Mathlib/Analysis/CStarAlgebra/Projection.lean`), we will want to simplify the proof
 by using the complexification of an inner product space over `𝕜`. -/
@@ -924,7 +924,6 @@ theorem conjStarAlgEquiv_trans {G : Type*} [NormedAddCommGroup G] [InnerProductS
     [CompleteSpace G] (e : H ≃ₗᵢ[𝕜] K) (f : K ≃ₗᵢ[𝕜] G) :
     (e.trans f).conjStarAlgEquiv = e.conjStarAlgEquiv.trans f.conjStarAlgEquiv := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 open ContinuousLinearEquiv ContinuousLinearMap in
 theorem conjStarAlgEquiv_ext_iff (f g : H ≃ₗᵢ[𝕜] K) :
     f.conjStarAlgEquiv = g.conjStarAlgEquiv ↔ ∃ α : unitary 𝕜, f = α • g := by

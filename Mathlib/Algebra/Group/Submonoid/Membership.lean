@@ -17,6 +17,9 @@ public import Mathlib.Data.Fintype.EquivFin
 
 import Mathlib.Data.Int.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Submonoids: membership criteria
 

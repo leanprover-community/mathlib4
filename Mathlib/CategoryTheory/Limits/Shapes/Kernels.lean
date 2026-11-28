@@ -34,7 +34,8 @@ Besides the definition and lifts, we prove
 
 and the corresponding dual statements.
 
-## Future work
+## TODO
+
 * TODO: connect this with existing work in the group theory and ring theory libraries.
 
 ## Implementation notes

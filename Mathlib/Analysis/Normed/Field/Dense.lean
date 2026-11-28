@@ -32,7 +32,8 @@ algebraically closed.
 2 and 3 will be easy to implement once we establish the result that every polynomial can be
 approximated by a *separable* polynomial.
 
-## Reference
+## References
+
 [Notes](https://math.stanford.edu/%7Econrad/248APage/handouts/algclosurecomp.pdf) by Brian Conrad.
 
 ## Tags

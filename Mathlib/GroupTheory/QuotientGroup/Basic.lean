@@ -78,8 +78,8 @@ def prodEquiv (A : Subgroup G) (B : Subgroup H) : (G × H) ⧸ (A.prod B) ≃ (G
       (by simp [QuotientGroup.leftRel_apply, Subgroup.mem_prod, QuotientGroup.eq])
   invFun q := q.1.liftOn₂' q.2 (fun g h ↦ (g, h))
     (by simp [QuotientGroup.leftRel_apply, Subgroup.mem_prod, QuotientGroup.eq, ← and_imp])
-  left_inv q := q.inductionOn' (by simp)
-  right_inv := fun (q₁, q₂) ↦ Quotient.inductionOn₂' q₁ q₂ (by simp)
+  left_inv q := q.inductionOn (by simp)
+  right_inv := fun (q₁, q₂) ↦ Quotient.inductionOn₂ q₁ q₂ (by simp)
 
 /-- `(G × H) / (A × B)` is isomorphic to `G / A × H / B`. -/
 @[to_additive (attr := simps!) QuotientAddGroup.prodAddEquiv
@@ -87,7 +87,7 @@ def prodEquiv (A : Subgroup G) (B : Subgroup H) : (G × H) ⧸ (A.prod B) ≃ (G
 def prodMulEquiv (A : Subgroup G) (B : Subgroup H) [A.Normal] [B.Normal] :
     (G × H) ⧸ (A.prod B) ≃* (G ⧸ A) × H ⧸ B where
   __ := prodEquiv A B
-  map_mul' q₁ q₂ := Quotient.inductionOn₂' q₁ q₂ (fun _ _ ↦ rfl)
+  map_mul' q₁ q₂ := Quotient.inductionOn₂ q₁ q₂ (fun _ _ ↦ rfl)
 
 variable (φ : G →* H)
 
@@ -104,7 +104,7 @@ theorem kerLift_mk (g : G) : (kerLift φ) g = φ g :=
 
 @[to_additive]
 theorem kerLift_injective : Injective (kerLift φ) := fun a b =>
-  Quotient.inductionOn₂' a b fun a b (h : φ a = φ b) =>
+  Quotient.inductionOn₂ a b fun a b (h : φ a = φ b) =>
     Quotient.sound' <| by rw [leftRel_apply, mem_ker, φ.map_mul, ← h, φ.map_inv, inv_mul_cancel]
 
 -- Note that `ker φ` isn't definitionally `ker (φ.rangeRestrict)`
@@ -116,7 +116,7 @@ def rangeKerLift : G ⧸ ker φ →* φ.range :=
 
 @[to_additive]
 theorem rangeKerLift_injective : Injective (rangeKerLift φ) := fun a b =>
-  Quotient.inductionOn₂' a b fun a b (h : φ.rangeRestrict a = φ.rangeRestrict b) =>
+  Quotient.inductionOn₂ a b fun a b (h : φ.rangeRestrict a = φ.rangeRestrict b) =>
     Quotient.sound' <| by
       rw [leftRel_apply, ← ker_rangeRestrict, mem_ker, φ.rangeRestrict.map_mul, ← h,
         φ.rangeRestrict.map_inv, inv_mul_cancel]
@@ -165,7 +165,7 @@ isomorphic. -/
 isomorphic. -/]
 def quotientMulEquivOfEq {M N : Subgroup G} [M.Normal] [N.Normal] (h : M = N) : G ⧸ M ≃* G ⧸ N :=
   { Subgroup.quotientEquivOfEq h with
-    map_mul' := fun q r => Quotient.inductionOn₂' q r fun _g _h => rfl }
+    map_mul' := fun q r => Quotient.inductionOn₂ q r fun _g _h => rfl }
 
 @[to_additive (attr := simp)]
 theorem quotientMulEquivOfEq_mk {M N : Subgroup G} [M.Normal] [N.Normal] (h : M = N) (x : G) :
@@ -287,7 +287,7 @@ noncomputable def quotientInfEquivProdNormalizerQuotient (H N : Subgroup G)
   let φ : H →* _ ⧸ N.subgroupOf (H ⊔ N) :=
     (mk' <| N.subgroupOf (H ⊔ N)).comp (inclusion le_sup_left)
   have φ_surjective : Surjective φ := fun x =>
-    x.inductionOn' <| by
+    x.inductionOn <| by
       rintro ⟨y, hy : y ∈ (H ⊔ N)⟩
       rw [← SetLike.mem_coe] at hy
       rw [coe_mul_of_left_le_normalizer_right H N hLE] at hy

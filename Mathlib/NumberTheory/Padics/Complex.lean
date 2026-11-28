@@ -11,6 +11,9 @@ public import Mathlib.NumberTheory.Padics.PadicNumbers
 public import Mathlib.Topology.Algebra.Valued.NormedValued
 public import Mathlib.Topology.Algebra.Valued.ValuedField
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The field `ℂ_[p]` of `p`-adic complex numbers.
 

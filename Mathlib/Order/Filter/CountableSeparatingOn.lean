@@ -67,7 +67,7 @@ We formalize several versions of this theorem in
 `Filter.of_eventually_mem_of_forall_separating_preimage`, and
 `Filter.of_forall_separating_preimage`.
 
-## Keywords
+## Tags
 
 filter, countable
 -/

@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Order.Hom.Monoid
 import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
 import Mathlib.Algebra.Order.Module.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Embedding of archimedean groups into reals
 

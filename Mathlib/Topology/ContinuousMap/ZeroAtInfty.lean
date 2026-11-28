@@ -70,6 +70,13 @@ end
 
 export ZeroAtInftyContinuousMapClass (zero_at_infty)
 
+/-- Turn a bundled morphism with a `ZeroAtInftyContinuousMapClass` instance into a
+`ZeroAtInftyContinuousMap`. -/
+def ZeroAtInftyContinuousMap.ofClass [Zero β] [TopologicalSpace β] [FunLike F α β]
+    [ZeroAtInftyContinuousMapClass F α β] (f : F) : α →C₀ β :=
+  { ContinuousMap.ofClass f with
+    zero_at_infty' := zero_at_infty f }
+
 namespace ZeroAtInftyContinuousMap
 
 section Basics
@@ -88,11 +95,8 @@ instance instZeroAtInftyContinuousMapClass : ZeroAtInftyContinuousMapClass C₀(
   map_continuous f := f.continuous_toFun
   zero_at_infty f := f.zero_at_infty'
 
-instance instCoeTC : CoeTC F C₀(α, β) :=
-  ⟨fun f =>
-    { toFun := f
-      continuous_toFun := map_continuous f
-      zero_at_infty' := zero_at_infty f }⟩
+@[simp]
+protected theorem coe_ofClass (f : F) : ⇑(ofClass f) = f := rfl
 
 @[simp]
 theorem coe_toContinuousMap (f : C₀(α, β)) : (f.toContinuousMap : α → β) = f :=

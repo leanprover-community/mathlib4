@@ -241,6 +241,17 @@ protected theorem continuous (f : NormedAddGroupHom V₁ V₂) : Continuous f :=
 instance : ContinuousMapClass (NormedAddGroupHom V₁ V₂) V₁ V₂ where
   map_continuous := fun f => f.continuous
 
+section toContinuousAddMonoidHom
+
+/-- Reinterpret a `NormedAddGroupHom V₁ V₂` as
+a continuous morphism of additive monoids `V₁ →ₜ+ V₂`. -/
+def toContinuousAddMonoidHom : V₁ →ₜ+ V₂ := .ofClass f
+
+@[simp]
+lemma coe_toContinuousAddMonoidHom : ⇑f.toContinuousAddMonoidHom = f := rfl
+
+end toContinuousAddMonoidHom
+
 theorem ratio_le_opNorm (x : V₁) : ‖f x‖ / ‖x‖ ≤ ‖f‖ :=
   div_le_of_le_mul₀ (norm_nonneg _) f.opNorm_nonneg (le_opNorm _ _)
 

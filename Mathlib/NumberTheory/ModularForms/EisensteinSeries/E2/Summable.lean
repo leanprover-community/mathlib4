@@ -38,7 +38,7 @@ The difference `-2πi/z` between these two orderings is precisely the correction
    As `n → ±∞` in symmetric intervals, these sums contribute `-2πi/z`.
 -/
 
-open UpperHalfPlane hiding I σ
+open UpperHalfPlane hiding σ
 
 open Filter Complex Finset SummationFilter
 

@@ -287,7 +287,7 @@ binder_predicate (priority := high) x " ⊃ " y:term => `($x ⊃ $y)
 /-- A temporary linter to help adapt to `@[set_notation_for_order]`.
 It gives a warning when a lemma is in the wrong namespace for dot-notation. -/
 @[env_linter]
-public def subsetDotNotationLinter : Batteries.Tactic.Lint.Linter where
+public def subsetDotNotationLinter : Batteries.Linter where
   noErrorsFound := "all names are correct"
   errorsFound := "SOME DECLARATIONS USE THE WRONG NAMESPACE"
   test declName := do

@@ -22,7 +22,7 @@ We also prove some estimates on the upper/lower limits of the slope in terms of 
 For a more detailed overview of one-dimensional derivatives in mathlib, see the module docstring of
 `Mathlib/Analysis/Calculus/Deriv/Basic.lean`.
 
-## Keywords
+## Tags
 
 derivative, slope
 -/

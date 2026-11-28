@@ -29,7 +29,7 @@ In this file we define `IsUltraUniformity`, a Prop mixin typeclass.
 As in the `Mathlib/Topology/UniformSpace/Defs.lean` file, we do not reuse `Mathlib/Basic/Rel.lean`
 but rather extend the relation properties as needed.
 
-## TODOs
+## TODO
 
 * Prove that `IsUltraUniformity` iff metrizable by `IsUltrametricDist` on a `PseudoMetricSpace`
   under a countable system/basis condition

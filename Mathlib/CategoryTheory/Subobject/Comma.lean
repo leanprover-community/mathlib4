@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Comma.LocallySmall
 public import Mathlib.CategoryTheory.Limits.Comma
 public import Mathlib.CategoryTheory.Subobject.WellPowered
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subobjects in the category of structured arrows
 

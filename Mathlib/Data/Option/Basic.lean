@@ -12,7 +12,7 @@ public import Mathlib.Data.Option.Defs
 public import Mathlib.Logic.Function.Basic
 public import Mathlib.Logic.Relator
 
-import Batteries.Tactic.Lint.Simp
+import Batteries.Linter.Simp
 
 /-!
 # Option of a type

@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Group.Equiv.Opposite
 public import Mathlib.Algebra.GroupWithZero.Opposite
 public import Mathlib.Algebra.Ring.Hom.Defs
 public import Mathlib.Data.Int.Cast.Basic
+public import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
@@ -214,6 +215,12 @@ instance instIsDomain [Ring R] [IsDomain R] : IsDomain Rᵃᵒᵖ :=
   NoZeroDivisors.to_isDomain _
 
 end AddOpposite
+
+run_cmd
+  for n in [``NonAssocSemiring, ``NonUnitalSemiring, ``Semiring, ``Ring, ``CommRing
+      ].map Lean.mkIdent do
+    Lean.Elab.Command.elabCommand (← `(instance [$n R] : $n Rᵈᵐᵃ := inferInstanceAs <| $n Rᵐᵒᵖ))
+    Lean.Elab.Command.elabCommand (← `(instance [$n R] : $n Rᵈᵃᵃ := inferInstanceAs <| $n Rᵃᵒᵖ))
 
 open MulOpposite
 

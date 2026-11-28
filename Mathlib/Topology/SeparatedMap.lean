@@ -31,7 +31,7 @@ agree on a point, then they agree on the whole connected component.
 The analogue of separated maps and locally injective maps in algebraic geometry are
 separated morphisms and unramified morphisms, respectively.
 
-## Reference
+## References
 
 https://stacks.math.columbia.edu/tag/0CY0
 -/

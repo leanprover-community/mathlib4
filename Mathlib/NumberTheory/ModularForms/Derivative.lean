@@ -25,8 +25,7 @@ and (Ramanujan-)Serre derivative $\partial_k := D - \frac{k}{12} E_2$ of modular
   `SL(2, ℤ)` it maps a weight `k` level `Γ` modular form to a weight `k + 2` level `Γ` modular form.
 -/
 
-open UpperHalfPlane hiding I
-open Real Complex
+open UpperHalfPlane Real Complex
 open scoped Manifold MatrixGroups ModularForm Topology
 
 namespace Derivative

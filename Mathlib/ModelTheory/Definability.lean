@@ -267,7 +267,7 @@ theorem Definable.image_comp {s : Set (β → M)} (h : A.Definable L s) (f : α 
       · ext
         simp [Set.apply_rangeSplitting f]
       · rw [Function.comp_apply, Function.comp_apply, apply_rangeSplitting f,
-          rangeFactorization_coe]
+          subtypeVal_rangeFactorization]
 
 /-- Finite existential quantifiers preserve definablity. -/
 lemma Definable.exists_of_finite [Finite β] {S : Set ((α ⊕ β) → M)}

@@ -135,8 +135,8 @@ lemma isPullback_toSpecΓ_toSpecΓ (f : X ⟶ Y) [IsAffineHom f] [Y.IsQuasiAffin
     (.refl _) ?_ ?_ (by simp) (by simp)
   · simp only [Iso.symm_hom, Iso.eq_inv_comp, ← Category.assoc, Iso.comp_inv_eq]
     dsimp [e, Scheme.Cover.pullbackHom, IsAffineOpen.isoSpec_hom, Scheme.Hom.appLE]
-    simp only [homOfLE_leOfHom, Spec.map_comp, Category.assoc,
-      Scheme.Opens.toSpecΓ_SpecMap_presheaf_map_assoc, Scheme.Opens.toSpecΓ_naturality]
+    simp only [Spec.map_comp, Category.assoc, Scheme.Opens.toSpecΓ_SpecMap_presheaf_map_assoc,
+      Scheme.Opens.toSpecΓ_naturality]
     simp_rw [← Category.assoc]
     congr 1
     rw [← cancel_mono (Scheme.Opens.ι _)]

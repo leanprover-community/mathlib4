@@ -21,7 +21,7 @@ where the result is instead `∑ i ∈ Finset.range n, f x ^ (n.pred - i) * f' *
 For a more detailed overview of one-dimensional derivatives in mathlib, see the module docstring of
 `Mathlib/Analysis/Calculus/Deriv/Basic.lean`.
 
-## Keywords
+## Tags
 
 derivative, power
 -/

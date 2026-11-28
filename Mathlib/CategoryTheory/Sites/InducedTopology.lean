@@ -19,7 +19,7 @@ In this file we study various topologies induced by a functor. Let `F : C ⥤ D`
   all sieves whose image generate a covering sieve of `K`. In general, this does not make `F` cover
   preserving.
 
-## TODOs
+## TODO
 
 - Define the finest topology on the codomain making a functor cocontinuous
   (@chrisflav).

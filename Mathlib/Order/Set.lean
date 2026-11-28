@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Set.Image
 public import Mathlib.Order.TypeTags
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-! # `Set.range` on `WithBot` and `WithTop` -/
 
 public section

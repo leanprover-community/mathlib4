@@ -10,6 +10,9 @@ public import Mathlib.SetTheory.Cardinal.Finite
 
 import Mathlib.LinearAlgebra.Dual.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Unions of `Submodule`s
 

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.BigOperators.Finsupp.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-! # Connection between `Submonoid.closure` and `Finsupp.prod` -/
 
 public section

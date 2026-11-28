@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Submonoid.DistribMulAction
 public import Mathlib.GroupTheory.Subgroup.Center
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Actions by `Subgroup`s
 

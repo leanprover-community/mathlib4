@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Probability.ProbabilityMassFunction.Constructions
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Uniform distributions and probability mass functions
 

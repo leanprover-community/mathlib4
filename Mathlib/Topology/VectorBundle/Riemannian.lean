@@ -34,7 +34,8 @@ The general theory should be built assuming `[IsContinuousRiemannianBundle F E]`
 the tangent bundle. As instances related to Riemannian bundles are both costly and quite specific,
 they are scoped to the `Bundle` namespace.
 
-## Keywords
+## Tags
+
 Vector bundle, Riemannian metric
 -/
 

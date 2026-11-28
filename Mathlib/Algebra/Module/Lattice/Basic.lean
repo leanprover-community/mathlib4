@@ -35,7 +35,7 @@ We do not require a lattice to be full. See `Submodule.IsFullLattice` for full l
 - `Submodule.IsLattice.inf_left`, `Submodule.IsLattice.inf_right`: over a
   Noetherian ring, the intersection of a lattice with a submodule is a lattice.
 
-## Future work
+## TODO
 
 In the fraction field setting with `V = ι → K` for finite `ι`, scaling a lattice by a unit of `K`
 again gives a lattice, which yields a homothety relation. For `R` a DVR and `ι = Fin 2`, the

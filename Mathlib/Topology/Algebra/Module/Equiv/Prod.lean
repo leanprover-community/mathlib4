@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuous linear equivalences on products of topological modules
 

@@ -11,6 +11,9 @@ public import Mathlib.NumberTheory.ArithmeticFunction.Misc
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Tactic.FinCases
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sets of tuples with a fixed product
 

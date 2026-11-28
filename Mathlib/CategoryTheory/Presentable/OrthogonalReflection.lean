@@ -431,7 +431,7 @@ lemma isLocal_reflectionObj :
       (f ≫ g₁) (f ≫ g₂) (by simpa)
     have hg := iteration_map_succ_injectivity f hf
       (g₁ ≫ H.F.map u) (g₂ ≫ H.F.map u) (by simpa using hk)
-    simp only [homOfLE_leOfHom, Category.assoc] at hg
+    simp only [Category.assoc] at hg
     have := H.incl.naturality (u ≫ homOfLE (Order.le_succ k))
     simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.comp_id] at this
     simp only [← this, Functor.map_comp, Category.assoc]

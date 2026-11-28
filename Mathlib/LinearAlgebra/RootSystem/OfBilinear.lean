@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.RootSystem.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Root pairings made from bilinear forms
 

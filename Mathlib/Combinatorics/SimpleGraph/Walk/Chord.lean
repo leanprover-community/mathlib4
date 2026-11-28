@@ -8,6 +8,9 @@ module
 public import Mathlib.Combinatorics.SimpleGraph.Copy
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Maps
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Chords of walks
 

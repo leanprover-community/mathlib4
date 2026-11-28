@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PushforwardContinuous
 public import Mathlib.Topology.Sheaves.Over
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-! # Specialized results for sheaves of modules over topological spaces -/
 
 @[expose] public section

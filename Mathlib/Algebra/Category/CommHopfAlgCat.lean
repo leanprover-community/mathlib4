@@ -138,8 +138,8 @@ def ofIsoSelf (A : CommHopfAlgCat.{v} R) : of R A ≅ A where
 @[expose, simps]
 def isoMk {X Y : Type v} {_ : CommRing X} {_ : CommRing Y} {_ : HopfAlgebra R X}
     {_ : HopfAlgebra R Y} (e : X ≃ₐc[R] Y) : of R X ≅ of R Y where
-  hom := ofHom (e : X →ₐc[R] Y)
-  inv := ofHom (e.symm : Y →ₐc[R] X)
+  hom := ofHom e.toBialgHom
+  inv := ofHom e.symm.toBialgHom
 
 /-- Build a `BialgEquiv` from an isomorphism in the category `CommHopfAlgCat R`. -/
 -- TODO: Make `BialgEquiv.toCoalgEquiv` the simp normal form so that this can be simp

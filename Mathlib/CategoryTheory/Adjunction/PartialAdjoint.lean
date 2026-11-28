@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Limits.HasLimits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Domain of definition of the partial left adjoint
 

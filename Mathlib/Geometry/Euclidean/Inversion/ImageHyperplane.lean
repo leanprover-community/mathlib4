@@ -24,7 +24,7 @@ the center to itself, not to a point at infinity.
 
 We also prove that the inversion sends an affine subspace passing through the center to itself.
 
-## Keywords
+## Tags
 
 inversion
 -/

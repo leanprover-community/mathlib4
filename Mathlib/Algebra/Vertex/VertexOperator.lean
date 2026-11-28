@@ -13,7 +13,8 @@ public import Mathlib.Data.Int.Interval
 
 In this file we introduce vertex operators as linear maps to Laurent series.
 
-## Definitions
+## Main definitions
+
 * `VertexOperator` is an `R`-linear map from an `R`-module `V` to `LaurentSeries V`.
 * `VertexOperator.ncoeff` is the coefficient of a vertex operator under normalized indexing.
 

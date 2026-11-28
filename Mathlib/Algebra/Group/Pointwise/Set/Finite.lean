@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 public import Mathlib.Basic.Finite.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-! # Finiteness lemmas for pointwise operations on sets -/
 
 public section

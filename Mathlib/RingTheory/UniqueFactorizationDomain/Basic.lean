@@ -12,6 +12,9 @@ public import Mathlib.Tactic.Bound.Init
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Data.ENat.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic results on unique factorization monoids
 

@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Order.Group.Synonym
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 public import Mathlib.Order.Prod.Lex.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-! # Products of ordered monoids -/
 
 public section

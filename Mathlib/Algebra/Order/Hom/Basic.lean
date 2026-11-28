@@ -24,7 +24,7 @@ Basic typeclasses
 * `MulLEAddHomClass`: `∀ f a b, f (a * b) ≤ f a + f b`
 * `NonarchimedeanHomClass`: `∀ a b, f (a + b) ≤ max (f a) (f b)`
 
-## Notes
+## Implementation notes
 
 Typeclasses for seminorms are defined here while types of seminorms are defined in
 `Analysis.Normed.Group.Seminorm` and `Analysis.Normed.Ring.Seminorm` because absolute values are

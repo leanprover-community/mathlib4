@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Normed.Group.Ultra
 public import Mathlib.RingTheory.Valuation.RankOne
 public import Mathlib.Topology.Algebra.Valued.ValuationTopology
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Correspondence between nontrivial nonarchimedean norms and rank one valuations
 

@@ -77,7 +77,8 @@ section Mul
 
 variable [Mul M₀] [Zero M₀] [NoZeroDivisors M₀] {a b : M₀}
 
-theorem eq_zero_of_mul_self_eq_zero (h : a * a = 0) : a = 0 :=
+/-- `eq_zero_of_mul_self_eq_zero` needs a `MonoidWithZero` instance -/
+protected theorem NoZeroDivisors.eq_zero_of_mul_self_eq_zero (h : a * a = 0) : a = 0 :=
   (eq_zero_or_eq_zero_of_mul_eq_zero h).elim id id
 
 theorem mul_ne_zero (ha : a ≠ 0) (hb : b ≠ 0) : a * b ≠ 0 :=
@@ -259,6 +260,11 @@ lemma pow_ne_zero (n : ℕ) (h : a ≠ 0) : a ^ n ≠ 0 := mt eq_zero_of_pow_eq_
 instance NeZero.pow [NeZero a] : NeZero (a ^ n) := ⟨pow_ne_zero n NeZero.out⟩
 
 lemma sq_eq_zero_iff : a ^ 2 = 0 ↔ a = 0 := pow_eq_zero_iff two_ne_zero
+
+@[simp] lemma mul_self_eq_zero_iff : a * a = 0 ↔ a = 0 := (pow_two a) ▸ sq_eq_zero_iff
+
+/-- `NoZeroDivisors.eq_zero_of_mul_self_eq_zero` requires the monoid to have no zero divisors -/
+alias ⟨eq_zero_of_mul_self_eq_zero, _⟩ := mul_self_eq_zero_iff
 
 /-- A variant of `pow_eq_zero_iff` assuming `M₀` is not trivial. -/
 @[simp] lemma pow_eq_zero_iff' [Nontrivial M₀] : a ^ n = 0 ↔ a = 0 ∧ n ≠ 0 := by

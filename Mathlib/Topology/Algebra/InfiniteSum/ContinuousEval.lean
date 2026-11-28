@@ -26,15 +26,15 @@ variable {α β γ F : Type*} [TopologicalSpace β] [CommMonoid β]
 /-- See also `Pi.hasProd` for bare pi type. -/
 @[to_additive /-- See also `Pi.hasSum` for bare pi type. -/]
 theorem hasProd_apply (hf : HasProd f g L) (x : α) : HasProd (f · x) (g x) L :=
-  hf.map ((Pi.evalMonoidHom _ x).comp (FunLike.coeMonoidHom F α β)) (continuous_eval_const x)
+  hf.map ((Pi.evalMonoidHom _ x).comp (FunLike.coeMonoidHom F α _)) (continuous_eval_const x)
 
 /-- See also `Pi.multipliable` for bare pi type. -/
 @[to_additive /-- See also `Pi.summable` for bare pi type. -/]
 theorem multipliable_apply (hf : Multipliable f L) (x : α) : Multipliable (f · x) L :=
-  hf.map ((Pi.evalMonoidHom _ x).comp (FunLike.coeMonoidHom F α β)) (continuous_eval_const x)
+  hf.map ((Pi.evalMonoidHom _ x).comp (FunLike.coeMonoidHom F α _)) (continuous_eval_const x)
 
 /-- See also `Pi.tprod_apply` for bare pi type. -/
 @[to_additive /-- See also `Pi.tsum_apply` for bare pi type. -/]
 theorem tprod_apply [T2Space β] [L.NeBot] (hf : Multipliable f L) (x : α) :
     (∏'[L] n, f n) x = ∏'[L] n, f n x :=
-  hf.map_tprod ((Pi.evalMonoidHom _ x).comp (FunLike.coeMonoidHom F α β)) (continuous_eval_const x)
+  hf.map_tprod ((Pi.evalMonoidHom _ x).comp (FunLike.coeMonoidHom F α _)) (continuous_eval_const x)

@@ -9,6 +9,9 @@ public import Batteries.Data.List.Basic
 
 import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-! # `List.modifyLast` -/
 
 public section

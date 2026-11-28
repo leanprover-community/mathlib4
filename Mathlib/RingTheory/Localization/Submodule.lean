@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.Localization.Ideal
 
 import Mathlib.RingTheory.Localization.FractionRing
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Submodules in localizations of commutative rings
 

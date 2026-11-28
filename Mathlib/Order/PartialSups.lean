@@ -29,7 +29,7 @@ and `partialSups_eq_sup'_range`.
 We show this construction gives a Galois insertion between functions `ι → α` and monotone functions
 `ι →o α`, see `partialSups.gi`.
 
-## Notes
+## Implementation notes
 
 One might dispute whether this sequence should start at `f 0` or `⊥`. We choose the former because:
 * Starting at `⊥` requires... having a bottom element.

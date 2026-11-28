@@ -6,6 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
+public import Mathlib.Order.Hom.CompleteLattice
+public import Mathlib.Order.Hom.Lattice
 
 import Mathlib.Data.Finset.Attr
 import Mathlib.Tactic.SetLike
@@ -33,7 +35,7 @@ in the category of types.
 
 @[expose] public section
 
-universe u
+universe u v
 
 open CategoryTheory Limits
 
@@ -68,6 +70,11 @@ lemma le₃₄ : x₃ ≤ x₄ := by grind
 /-- The commutative square associated to a bi-Cartesian square in a lattice. -/
 lemma commSq : CommSq (homOfLE sq.le₁₂) (homOfLE sq.le₁₃)
     (homOfLE sq.le₂₄) (homOfLE sq.le₃₄) := ⟨rfl⟩
+
+lemma map {S : Type v} [Lattice S] (f : LatticeHom T S) :
+    BicartSq (f x₁) (f x₂) (f x₃) (f x₄) where
+  sup_eq := by rw [← map_sup, sq.sup_eq]
+  inf_eq := by rw [← map_inf, sq.inf_eq]
 
 end BicartSq
 
@@ -109,6 +116,12 @@ of the obvious functor `Set X ⥤ Type _`.) -/
 def multicofork : Multicofork d.multispanIndex :=
   Multicofork.ofπ _ x (fun i ↦ homOfLE (by grind [multispanIndex_right, le_iSup_iff]))
     (fun _ ↦ rfl)
+
+include d in
+lemma map {S : Type v} [CompleteLattice S] (f : CompleteLatticeHom T S) :
+    MulticoequalizerDiagram (f x) (fun i ↦ f (u i)) (fun i j ↦ f (v i j)) where
+  iSup_eq := by rw [← d.iSup_eq,map_iSup]
+  eq_inf i j := by rw [d.eq_inf,map_inf]
 
 end MulticoequalizerDiagram
 

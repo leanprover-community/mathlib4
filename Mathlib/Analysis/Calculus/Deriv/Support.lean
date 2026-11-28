@@ -14,7 +14,7 @@ In this file we prove that the (topological) support of a function includes the 
 derivative. As a corollary, we show that the derivative of a function with compact support has
 compact support.
 
-## Keywords
+## Tags
 
 derivative, support
 -/

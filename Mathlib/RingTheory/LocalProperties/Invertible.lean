@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.PicardGroup
 import Mathlib.RingTheory.Flat.Localization
 import Mathlib.RingTheory.LocalProperties.FinitePresentation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Module.Invertible` is a local property
 

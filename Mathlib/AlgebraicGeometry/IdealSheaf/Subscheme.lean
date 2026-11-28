@@ -10,6 +10,9 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Preimmersion
 
 import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subscheme associated to an ideal sheaf
 
@@ -169,8 +172,8 @@ lemma ideal_le_ker_glueDataObjι (U V : X.affineOpens) :
   apply ((ConcreteCategory.isIso_iff_bijective _).mp this).1
   simp only [map_zero, ← RingHom.comp_apply,
     ← CommRingCat.hom_comp, Category.assoc]
-  simp only [Scheme.Hom.app_eq_appLE, homOfLE_leOfHom, Scheme.Hom.map_appLE,
-    Scheme.Hom.appLE_comp_appLE, Category.assoc, glueDataObjMap_glueDataObjι_assoc]
+  simp only [Scheme.Hom.app_eq_appLE, Scheme.Hom.map_appLE, Scheme.Hom.appLE_comp_appLE,
+    Category.assoc, glueDataObjMap_glueDataObjι_assoc]
   rw [Scheme.Hom.appLE]
   have H : (X.homOfLE (X.basicOpen_le f) ≫ U.val.ι) ⁻¹ᵁ V.val = ⊤ := by
     simp only [Scheme.homOfLE_ι, ← top_le_iff]
@@ -181,7 +184,7 @@ lemma ideal_le_ker_glueDataObjι (U V : X.affineOpens) :
   convert RingHom.map_zero _
   rw [← RingHom.mem_ker, ker_glueDataObjι_appTop, ← Ideal.mem_comap, Ideal.comap_comap,
     ← CommRingCat.hom_comp]
-  simp only [homOfLE_leOfHom, Scheme.Hom.comp_base,
+  simp only [Scheme.Hom.comp_base,
     TopologicalSpace.Opens.map_comp_obj, eqToHom_op, eqToHom_unop, ← Functor.map_comp,
     Scheme.Opens.topIso_hom, Category.assoc]
   exact I.ideal_le_comap_ideal (U := X.affineBasicOpen f) (V := V)
@@ -201,19 +204,18 @@ noncomputable def glueDataT (U V : X.affineOpens) :
     V.property.isoSpec.hom).liftQuotient _ ?_) (F ≫ X.homOfLE (by simp)) ?_
   · intro x hx
     simp only [Hom.comp_app, Hom.comp_base, TopologicalSpace.Opens.map_comp_obj,
-      TopologicalSpace.Opens.map_top, homOfLE_app, homOfLE_leOfHom, Category.assoc, RingHom.mem_ker]
+      TopologicalSpace.Opens.map_top, homOfLE_app, Category.assoc, RingHom.mem_ker]
     convert_to (U.val.ι.app V.val ≫ (F ≫ X.homOfLE inf_le_left).appLE (U.val.ι ⁻¹ᵁ V.val) ⊤
       (by rw [← Scheme.Hom.comp_preimage, Category.assoc, X.homOfLE_ι]
           exact fun x _ ↦ by simpa using (F x).property.2)).hom x = 0 using 3
-    · simp only [homOfLE_leOfHom, Opens.ι_app, Hom.comp_appLE, homOfLE_app]
+    · simp only [Opens.ι_app, Hom.comp_appLE, homOfLE_app]
       have H : ⊤ ≤ X.homOfLE (inf_le_left (b := V.val)) ⁻¹ᵁ U.val.ι ⁻¹ᵁ V.val := by
         rw [← Scheme.Hom.comp_preimage, X.homOfLE_ι]; exact fun x _ ↦ by simpa using x.property.2
       rw [← F.map_appLE (show ⊤ ≤ F ⁻¹ᵁ ⊤ from le_rfl) (homOfLE H).op]
-      simp only [homOfLE_leOfHom, Opens.toScheme_presheaf_map, Quiver.Hom.unop_op,
-        Hom.opensFunctor_map_homOfLE, ← Functor.map_comp_assoc, IsAffineOpen.isoSpec_hom_appTop,
-        Opens.topIso_inv, eqToHom_op, homOfLE_leOfHom, Category.assoc,
-        Iso.inv_hom_id_assoc, F.app_eq_appLE]
-      rfl
+      simp only [Opens.toScheme_presheaf_map, Quiver.Hom.unop_op, Hom.opensFunctor_map_homOfLE,
+        ← Functor.map_comp_assoc, IsAffineOpen.isoSpec_hom_appTop, Opens.topIso_inv,
+        Category.assoc, Iso.inv_hom_id_assoc, F.app_eq_appLE, ← op_comp, homOfLE_comp_eqToHom,
+        homOfLE_comp, Scheme.Hom.preimage_top]
     · have : (U.val.ι.app V.val ≫ (I.glueDataObjι U).app (U.val.ι ⁻¹ᵁ V.val)).hom x = 0 :=
         I.ideal_le_ker_glueDataObjι U V hx
       simp_rw [F, ← pullback.condition]
@@ -547,9 +549,8 @@ lemma subschemeι_app (U : X.affineOpens) : I.subschemeι.app U =
   simp only [← this, ← Functor.map_inv, inv_eqToHom, Category.assoc, eqToHom_unop,
     ← Functor.map_comp, IsIso.Iso.inv_inv, subschemeObjIso, Iso.trans_inv, Functor.mapIso_inv,
     Iso.op_inv, eqToIso.inv, eqToHom_op, Iso.hom_inv_id_assoc, Hom.appIso_inv_naturality_assoc,
-      Functor.op_map, unop_comp, unop_inv, Quiver.Hom.unop_op,
-    Hom.app_appIso_inv_assoc, TopologicalSpace.Opens.carrier_eq_coe, TopologicalSpace.Opens.map_coe,
-    homOfLE_leOfHom]
+    Functor.op_map, unop_comp, unop_inv, Quiver.Hom.unop_op, Hom.app_appIso_inv_assoc,
+    TopologicalSpace.Opens.carrier_eq_coe, TopologicalSpace.Opens.map_coe]
   convert (Category.comp_id _).symm
   exact CategoryTheory.Functor.map_id _ _
 

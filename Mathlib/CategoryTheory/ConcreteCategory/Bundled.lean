@@ -5,7 +5,7 @@ Authors: Kim Morrison, Johannes Hölzl, Reid Barton, Sean Leather
 -/
 module
 
-import Batteries.Tactic.Lint.Misc
+import Batteries.Linter.Misc
 import Mathlib.Init
 
 set_option doc.verso true

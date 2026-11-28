@@ -8,6 +8,9 @@ module
 public meta import Batteries.Data.Nat.Basic
 public import Mathlib.Tactic.NormNum.GCD
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `norm_num` extension for `IsSquare`
 

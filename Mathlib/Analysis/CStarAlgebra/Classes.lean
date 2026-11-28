@@ -15,7 +15,7 @@ This file defines classes for complex C⋆-algebras. These are (unital or non-un
 noncommutative) Banach algebra over `ℂ` with an antimultiplicative conjugate-linear involution
 (`star`) satisfying the C⋆-identity `∥star x * x∥ = ∥x∥ ^ 2`.
 
-## Notes
+## Implementation notes
 
 These classes are not defined in `Mathlib/Analysis/CStarAlgebra/Basic.lean` because they require
 heavier imports.

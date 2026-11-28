@@ -32,7 +32,7 @@ localize `M` by `S`. This gives us a `Localization S`-module.
   by `S`.
 * `LocalizedModule.isModule` : `LocalizedModule M S` is a `Localization S`-module.
 
-## Future work
+## TODO
 
 * Redefine `Localization` for monoids and rings to coincide with `LocalizedModule`.
 -/

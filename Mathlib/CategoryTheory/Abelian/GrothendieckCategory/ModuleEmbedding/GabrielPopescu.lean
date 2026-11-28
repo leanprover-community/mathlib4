@@ -23,7 +23,7 @@ We prove the following Gabriel-Popescu theorem: if `C` is a Grothendieck abelian
 
 We closely follow the elementary proof given by Barry Mitchell.
 
-## Future work
+## TODO
 
 The left adjoint `tensorObj G` actually exists as soon as `C` is cocomplete and additive, so the
 construction could be generalized.

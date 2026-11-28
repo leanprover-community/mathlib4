@@ -21,7 +21,7 @@ it is a standard open immersion.
 
 We show that local isomorphisms are local, stable under composition and base change.
 
-## Implementation note
+## Implementation notes
 
 Most results in this file follow purely formally from the corresponding property of
 standard open immersion. We could use the `RingHom.Locally` API to obtain them, but

@@ -13,6 +13,9 @@ import Mathlib.Data.PNat.Prime
 import Mathlib.RingTheory.Norm.Transitivity
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Primitive roots in cyclotomic fields
 

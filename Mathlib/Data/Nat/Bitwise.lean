@@ -32,12 +32,12 @@ bitwise properties. In the second half of this file, we show properties of the b
   `n` is zero, the `i`-th bit of `m` is one, and all more significant bits are equal, then
   `n < m`.
 
-## Future work
+## TODO
 
 There is another way to express bitwise properties of natural number: `digits 2`. The two ways
 should be connected.
 
-## Keywords
+## Tags
 
 bitwise, and, or, xor
 -/

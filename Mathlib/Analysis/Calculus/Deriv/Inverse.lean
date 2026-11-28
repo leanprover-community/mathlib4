@@ -23,7 +23,7 @@ easy half of the inverse function theorem: the harder half states that `g` exist
 For a more detailed overview of one-dimensional derivatives in mathlib, see the module docstring of
 `Analysis/Calculus/Deriv/Basic`.
 
-## Keywords
+## Tags
 
 derivative, inverse function
 -/

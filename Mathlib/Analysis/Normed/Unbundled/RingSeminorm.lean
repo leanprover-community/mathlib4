@@ -27,7 +27,7 @@ For a ring `R`:
   `MulRingNorm R` is essentially the same as `AbsoluteValue R ℝ`, and it is recommended to
   use the latter instead to avoid duplicating results.
 
-## Notes
+## Implementation notes
 
 The corresponding hom classes are defined in `Mathlib/Algebra/Order/Hom/Basic.lean` to be used by
 absolute values; see `Mathlib/Algebra/Order/AbsoluteValue/Basic.lean` for the bundled version.

@@ -24,7 +24,7 @@ We say that
 - `P` is local at the source if for every `f : X ⟶ Y`, `P` holds for `f` if and only if it holds
   for the restrictions of `f` to `Uᵢ` for a `K`-cover `{Uᵢ}` of `X`.
 
-## TODOs
+## TODO
 
 - Define source and target local closure of a morphism property.
 -/

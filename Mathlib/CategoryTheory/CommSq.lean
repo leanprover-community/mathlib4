@@ -19,7 +19,7 @@ The structure `CommSq` is extended in
 `Mathlib/CategoryTheory/Limits/Shapes/Pullback/IsPullback/Defs.lean`
 as `IsPullback` and `IsPushout` in order to define pullback and pushout squares.
 
-## Future work
+## TODO
 
 Refactor `LiftStruct` from `Arrow.lean` and lifting properties using `CommSq.lean`.
 -/

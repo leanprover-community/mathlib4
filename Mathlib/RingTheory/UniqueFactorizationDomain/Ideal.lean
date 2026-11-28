@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.Ideal.Operations
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Unique factorization and ascending chain condition on ideals
 

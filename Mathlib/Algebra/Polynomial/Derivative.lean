@@ -12,6 +12,9 @@ public import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.Algebra.Polynomial.Degree.Domain
 import Mathlib.Algebra.Polynomial.Degree.Support
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The derivative map on polynomials
 

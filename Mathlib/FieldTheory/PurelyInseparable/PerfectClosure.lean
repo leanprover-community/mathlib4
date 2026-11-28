@@ -345,13 +345,13 @@ family of elements of `E` which is `F`-linearly independent, then `{ u_i ^ (q ^ 
 theorem LinearIndependent.map_pow_expChar_pow_of_isSeparable [Algebra.IsSeparable F E]
     (h : LinearIndependent F v) : LinearIndependent F (v · ^ q ^ n) := by
   classical
-  rw [linearIndependent_iff_finset_linearIndependent] at h ⊢
+  rw [linearIndependent_iff_linearIndepOn_finset] at h ⊢
   intro s
   let E' := adjoin F (s.image v : Set E)
   have : FiniteDimensional F E' := finiteDimensional_adjoin
     fun x _ ↦ Algebra.IsIntegral.isIntegral x
   let v' (i : s) : E' := ⟨v i.val, subset_adjoin F _ (Finset.mem_image.2 ⟨i.val, i.property, rfl⟩)⟩
-  have h' : LinearIndependent F v' := (h s).of_comp E'.val.toLinearMap
+  have h' : LinearIndependent F v' := .of_comp E'.val.toLinearMap (h s)
   exact (h'.map_pow_expChar_pow_of_fd_isSeparable q n).map'
     E'.val.toLinearMap (LinearMap.ker_eq_bot_of_injective E'.val.injective)
 

@@ -917,7 +917,7 @@ def arrowStalkMapIso (f : X ⟶ Y) {x : X} (U : Y.Opens)
     simp only [IsLocalization.map_eq, RingHom.id_apply, Localization.localRingHom_to_map,
       RingHomCompTriple.comp_apply]
     simp only [RingHom.algebraMap_toAlgebra, Scheme.Hom.germ_stalkMap_apply, Scheme.Hom.appLE,
-      homOfLE_leOfHom, CommRingCat.hom_comp, RingHom.coe_comp, Function.comp_apply,
+      CommRingCat.hom_comp, RingHom.coe_comp, Function.comp_apply,
       X.presheaf.germ_res_apply]
 
 /-- The basic open set of a section `f` on an affine open as an `X.affineOpens`. -/
@@ -1143,7 +1143,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma Opens.toSpecΓ_preimage_basicOpen {X : Scheme.{u}} (U : X.Opens) (r : Γ(X, U)) :
     U.toSpecΓ ⁻¹ᵁ PrimeSpectrum.basicOpen r = U.ι ⁻¹ᵁ X.basicOpen r := by
   dsimp [toSpecΓ]
-  simp only [Scheme.toSpecΓ_preimage_basicOpen, preimage_basicOpen, ι_app, homOfLE_leOfHom]
+  simp only [Scheme.toSpecΓ_preimage_basicOpen, preimage_basicOpen, ι_app]
   rw [← Scheme.basicOpen_res_eq _ _ (eqToHom U.ι_preimage_self.symm).op,
     ← ConcreteCategory.comp_apply]
   congr 3

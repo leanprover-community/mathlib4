@@ -23,7 +23,7 @@ and finally small. In this way, `CostructuredArrow yoneda A` can be thought of t
 indexing category for the representation of `A` as a small filtered colimit of representable
 presheaves.
 
-## Future work
+## TODO
 
 There are various useful ways to understand natural transformations between ind-objects in terms
 of their presentations.

@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Metrizable.Basic
 public import Mathlib.Topology.Separation.GDelta
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Gδ` sets and metrizable spaces
 

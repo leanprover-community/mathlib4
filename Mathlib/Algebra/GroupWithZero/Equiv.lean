@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.GroupWithZero.Hom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-! # Isomorphisms of monoids with zero -/
 
 @[expose] public section

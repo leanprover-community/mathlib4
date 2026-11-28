@@ -23,7 +23,7 @@ constructions to be continuous; descriptions of the open sets, neighborhood filt
 and generators of these constructions; and their behavior with respect to embeddings
 and other specific classes of maps.
 
-## Implementation note
+## Implementation notes
 
 The constructed topologies are defined using induced and coinduced topologies
 along with the complete lattice structure on topologies. Their universal properties

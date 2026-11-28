@@ -34,7 +34,7 @@ the initial object in the 2-category of categories under `C` which have biproduc
 
 As a consequence, when `C` already has finite biproducts we have `Mat_ C ≌ C`.
 
-## Future work
+## TODO
 
 We should provide a more convenient `Mat R`, when `R` is a ring,
 as a category with objects `n : FinType`,

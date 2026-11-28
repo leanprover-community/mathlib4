@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicGeometry.Properties
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Function field of integral schemes
 

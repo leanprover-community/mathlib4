@@ -24,7 +24,7 @@ field extension `K⟮X⟯/K⟮f⟯` equals the maximum of the degrees of `p` and
 see `finrank_eq_max_natDegree`. Since `finrank` is defined to be zero when the
 extension is infinite, this holds even when `f` is constant.
 
-References:
+## References
 
 - https://github.com/leanprover-community/mathlib4/pull/7788#issuecomment-1788132019
 - [P. M. Cohn, *Basic Algebra: Groups, Rings and Fields*][cohn_2003], Theorem 11.3.4

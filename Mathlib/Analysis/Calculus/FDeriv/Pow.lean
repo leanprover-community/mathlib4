@@ -21,7 +21,7 @@ where the result is instead `∑ i ∈ Finset.range n, f x ^ (n.pred - i) •> f
 For detailed documentation of the Fréchet derivative,
 see the module docstring of `Mathlib/Analysis/Calculus/FDeriv/Basic.lean`.
 
-## Keywords
+## Tags
 
 derivative, power
 -/

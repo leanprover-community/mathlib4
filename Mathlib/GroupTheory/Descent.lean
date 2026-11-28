@@ -45,7 +45,7 @@ This last version is one of the main ingredients of the standard proof of the
 
 We also provide versions that prove that the torsion subgroup is finite under weaker assumptions.
 
-### Implementation note
+### Implementation notes
 
 Replacing `ℝ` by an ordered field (`{R : Type*} [LinearOrder R] [Field R] [IsOrderedRing R]`)
 works, but makes the type check quite slow (and `to_additive` needs some  help...).

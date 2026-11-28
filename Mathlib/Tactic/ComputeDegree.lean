@@ -30,7 +30,7 @@ Lean to try harder to close the goal.
 
 See the doc-strings for more details.
 
-## Future work
+## TODO
 
 * Currently, `compute_degree` does not deal correctly with some edge cases.  For instance,
   ```lean

@@ -70,7 +70,7 @@ For associativity to hold, there should be an instance of
 For example, in the context of $\mathbb{F}_q$-linear polynomials, this can be the
 $q$-th Frobenius endomorphism - so $\varphi(a) = a^q$.
 
-## Reference
+## References
 
 The definition is inspired by Chapter 3 of [Papikian2023].
 

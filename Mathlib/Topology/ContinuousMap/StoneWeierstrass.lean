@@ -42,7 +42,7 @@ We then prove the complex version for star subalgebras `A`, by separately approx
 the real and imaginary parts using the real subalgebra of real-valued functions in `A`
 (which still separates points, by taking the norm-square of a separating function).
 
-## Future work
+## TODO
 
 Extend to cover the case of subalgebras of the continuous functions vanishing at infinity,
 on non-compact spaces.

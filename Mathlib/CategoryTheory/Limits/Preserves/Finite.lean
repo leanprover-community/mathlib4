@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Preservation of finite (co)limits.
 
@@ -15,6 +18,7 @@ These functors are also known as left exact (flat) or right exact functors when 
 involved are abelian, or more generally, finitely (co)complete.
 
 ## Related results
+
 * `CategoryTheory.Limits.preservesFiniteLimitsOfPreservesEqualizersAndFiniteProducts` :
   see `Mathlib/CategoryTheory/Limits/Constructions/LimitsOfProductsAndEqualizers.lean`.
   Also provides the dual version.

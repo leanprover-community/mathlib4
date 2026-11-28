@@ -34,7 +34,7 @@ For now, all theorems assume that we deal with (a generalization of) a module ov
 Some lemmas have multiplicative versions for `MulDistribMulAction`s.
 They can be added later when someone needs them.
 
-## Keywords
+## Tags
 
 absorbs, absorbent
 -/

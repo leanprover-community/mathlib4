@@ -30,7 +30,7 @@ coefficient, or vice versa, with any number of zero coefficients in between.
   statement in terms of a (noncommutative) `Ring`, but `Polynomial.roots` is only defined for
   commutative rings.
 
-## Reference
+## References
 
 [Wikipedia: Descartes' Rule of Signs](https://en.wikipedia.org/wiki/Descartes%27_rule_of_signs)
 -/

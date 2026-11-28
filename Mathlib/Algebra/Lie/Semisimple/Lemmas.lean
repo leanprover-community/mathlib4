@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Lie.LieTheorem
 public import Mathlib.Algebra.Lie.Semisimple.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about semisimple Lie algebras
 

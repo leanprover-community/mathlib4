@@ -20,7 +20,7 @@ We define `AffineSubspace.perpBisector p₁ p₂` to be the perpendicular bisect
 bisector if and only if it is equidistant from `p₁` and `p₂`, as well as a few linear equations that
 define this subspace.
 
-## Keywords
+## Tags
 
 euclidean geometry, perpendicular, perpendicular bisector, line segment bisector, equidistant
 -/

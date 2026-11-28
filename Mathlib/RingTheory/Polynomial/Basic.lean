@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.Noetherian.Basic
 
 import Mathlib.Algebra.Ring.GeomSum
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ring-theoretic supplement of Algebra.Polynomial.
 

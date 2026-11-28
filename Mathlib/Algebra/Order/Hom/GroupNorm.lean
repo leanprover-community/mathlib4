@@ -22,7 +22,7 @@ Group norms
 * `AddGroupNormClass`: Homs are seminorms such that `f x = 0 → x = 0` for all `x`.
 * `GroupNormClass`: Homs are seminorms such that `f x = 0 → x = 1` for all `x`.
 
-## Notes
+## Implementation notes
 
 Typeclasses for seminorms are defined here while types of seminorms are defined in
 `Analysis.Normed.Group.Seminorm` and `Analysis.Normed.Ring.Seminorm` because absolute values are

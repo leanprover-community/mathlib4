@@ -39,7 +39,7 @@ is normed) that `‖f x‖` is bounded by a multiple of `‖x‖`. Hence the "bo
   set of continuous linear maps between a pair of Banach spaces.  Placed in this file because its
   proof uses `IsBoundedBilinearMap.continuous`.
 
-## Notes
+## Implementation notes
 
 The main use of this file is `IsBoundedBilinearMap`.
 The file `Mathlib/Analysis/NormedSpace/Multilinear/Basic.lean`

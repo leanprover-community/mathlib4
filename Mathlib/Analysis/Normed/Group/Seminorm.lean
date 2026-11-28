@@ -30,7 +30,7 @@ is positive-semidefinite and subadditive. A norm further only maps zero to zero.
 * `NonarchAddGroupNorm`: A nonarchimedean seminorm `f` such that `f x = 0 → x = 0` for all `x`.
 * `GroupNorm`: A seminorm `f` such that `f x = 0 → x = 1` for all `x`.
 
-## Notes
+## Implementation notes
 
 The corresponding hom classes are defined in `Analysis.Order.Hom.Basic` to be used by absolute
 values.

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Homology.Embedding.Boundary
 public import Mathlib.Algebra.Homology.Embedding.Extend
 public import Mathlib.Algebra.Homology.Embedding.Restriction
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Relations between `extend` and `restriction`
 

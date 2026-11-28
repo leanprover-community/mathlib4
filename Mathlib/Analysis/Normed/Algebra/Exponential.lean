@@ -61,7 +61,7 @@ We prove most result for an arbitrary field `𝕂`, and then specialize to `𝕂
 - `NormedSpace.exp_zsmul` : repeated addition in the domain corresponds to
   repeated multiplication in the codomain.
 
-### Notes
+## Implementation notes
 
 We put nearly all the statements in this file in the `NormedSpace` namespace,
 to avoid collisions with the `Real` or `Complex` namespaces.

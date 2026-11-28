@@ -32,7 +32,7 @@ hypothesis is not needed and the right assumption is then `IsCompletelyMetrizabl
   complete. To endow such a space with a compatible distance, use
   `letI := upgradeIsCompletelyMetrizable X`.
 
-## Implementation note
+## Implementation notes
 
 Given a `IsCompletely(Pseudo)MetrizableSpace X` instance, one may want to endow `X` with a complete
 (pseudo)metric. This can be done by writing `letI := upgradeIsCompletely(Pseudo)Metrizable X`,

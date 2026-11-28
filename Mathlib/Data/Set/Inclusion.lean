@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Set.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-! # Lemmas about `inclusion`, the injection of subtypes induced by `⊆` -/
 
 public section

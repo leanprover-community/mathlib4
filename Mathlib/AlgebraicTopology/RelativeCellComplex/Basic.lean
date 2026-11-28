@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.RelativeCellComplex.AttachCells
 public import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Relative cell complexes
 

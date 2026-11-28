@@ -9,6 +9,9 @@ module
 public import Mathlib.Algebra.Group.TransferInstance
 public import Mathlib.Algebra.Lie.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Transfer Lie brackets along AddEquiv, LinearEquiv and Equiv
 

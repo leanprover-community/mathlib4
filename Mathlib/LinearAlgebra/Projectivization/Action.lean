@@ -202,7 +202,7 @@ lemma SL_mulAction_ker :
       · simpa [LinearIndependent.pair_iff' hv, mk_eq_mk_iff'] using! hm (.mk K v hv)
     have hscalar : m.val = Matrix.scalar ι a := calc
       m.val = LinearMap.toMatrix' f := by
-        rw [hf, Matrix.SpecialLinearGroup.toLin'_to_linearMap, LinearMap.toMatrix'_toLin']
+        rw [hf, Matrix.SpecialLinearGroup.toLin'_to_linearMap, Matrix.toMatrix'_mulVecLin]
       _ = (algebraMap K (Module.End K (ι → K)) a).toMatrix' := congrArg LinearMap.toMatrix' ha
       _ = Matrix.scalar ι a := LinearMap.toMatrix'_algebraMap a
     exact ⟨a, by simpa [hscalar] using m.property, hscalar.symm⟩

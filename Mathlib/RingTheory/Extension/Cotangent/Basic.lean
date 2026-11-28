@@ -31,7 +31,8 @@ defined by `I`), we may define the (naive) cotangent complex `I/I² → ⨁ᵢ S
 - `Algebra.H1Cotangent`: `H¹(L_{S/R})`,
   the first homology of the (naive) cotangent complex of `S` over `R`.
 
-## Implementation detail
+## Implementation notes
+
 We actually develop these material for general extensions (i.e. surjection `P → S`) so that we can
 apply them to infinitesimal smooth (or versal) extensions later.
 -/

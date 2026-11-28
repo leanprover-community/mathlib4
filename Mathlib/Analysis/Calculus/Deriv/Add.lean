@@ -17,7 +17,7 @@ functions from the base field to a normed space over this field.
 For a more detailed overview of one-dimensional derivatives in mathlib, see the module docstring of
 `Analysis/Calculus/Deriv/Basic`.
 
-## Keywords
+## Tags
 
 derivative
 -/

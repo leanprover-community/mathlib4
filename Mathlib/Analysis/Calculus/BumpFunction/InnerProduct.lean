@@ -18,7 +18,7 @@ set_option doc.verso.suggestions false
 In this file we prove that a real inner product space has smooth bump functions,
 see `hasContDiffBump_of_innerProductSpace`.
 
-## Keywords
+## Tags
 
 smooth function, bump function, inner product space
 -/

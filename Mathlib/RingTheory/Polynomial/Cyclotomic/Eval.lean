@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 import Mathlib.NumberTheory.Padics.PadicVal.Basic
 import Mathlib.Topology.Algebra.Polynomial
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Evaluating cyclotomic polynomials
 

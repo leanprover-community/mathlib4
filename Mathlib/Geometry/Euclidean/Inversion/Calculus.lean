@@ -24,7 +24,7 @@ In this file we prove a formula for the derivative of `EuclideanGeometry.inversi
 Since `fderiv` and related definitions do not work for affine spaces, we deal with an inner product
 space in this file.
 
-## Keywords
+## Tags
 
 inversion, derivative
 -/

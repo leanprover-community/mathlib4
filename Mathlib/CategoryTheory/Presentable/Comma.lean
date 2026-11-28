@@ -279,7 +279,9 @@ private lemma J.exists_hom {j j' : J κ f} (g₁ : j.fst ⟶ j'.fst) (g₂ : j.s
       g₂.left.hom ≫ b.left.hom.right = a.left.hom.right := by
   obtain ⟨j₂, a, ha⟩ := J.exists_hom' g₁ g₂
   exact ⟨J.mk j'.fst j₂ (j'.left.obj.hom ≫ F₂.map a.left.hom)
-    (by simp [← dsimp% (CostructuredArrow.w a)]), J.homMk g₁ (g₂ ≫ a) (by simpa),
+    (by simp [← dsimp% (CostructuredArrow.w a),
+      -ObjectProperty.CostructuredArrow.left_hom_comp_hom]),
+    J.homMk g₁ (g₂ ≫ a) (by simpa),
     J.homMk (𝟙 _) a (by simp), by simp⟩
 
 private lemma exists_of_j₁_of_j₂' (j₁ : J₁ κ f) (j₂ : J₂ κ f) :

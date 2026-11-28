@@ -14,6 +14,9 @@ public import Mathlib.Tactic.Positivity
 
 import Mathlib.Basic.Real.Embedding
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Rank one valuations
 

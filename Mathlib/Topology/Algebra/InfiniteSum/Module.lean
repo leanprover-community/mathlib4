@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-! # Infinite sums in topological vector spaces -/
 
 @[expose] public section

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Ring.Parity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-! # A recursion principle based on even and odd numbers. -/
 
 @[expose] public section

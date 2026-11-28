@@ -33,7 +33,7 @@ the group theory library.
 
 periodic group, aperiodic group, torsion subgroup, torsion abelian group
 
-## Future work
+## TODO
 
 * generalize to π-torsion(-free) groups for a set of primes π
 * free, free solvable and free abelian groups are torsion free

@@ -13,6 +13,9 @@ public import Mathlib.Data.Set.Operations
 import Mathlib.Algebra.Group.Units.Basic
 import Mathlib.Data.Set.Insert
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Relation between the free semigroup and the free monoid
 

@@ -39,7 +39,7 @@ In the following, we write `D k` for the `k`-th Hasse derivative `hasse_deriv k`
 For the identity principle, see `Polynomial.eq_zero_of_hasseDeriv_eq_zero`
 in `Mathlib/Algebra/Polynomial/Taylor.lean`.
 
-## Reference
+## References
 
 https://math.fontein.de/2009/08/12/the-hasse-derivative/
 -/

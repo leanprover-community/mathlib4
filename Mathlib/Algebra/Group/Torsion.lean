@@ -161,7 +161,7 @@ end IsMulTorsionFree
 
 section HasUniqueRoots
 
-variable [HasUniqueRoots G] {n : ℤ} {a b : G}
+variable [HasUniqueRoots G] {n m : ℤ} {a b : G}
 
 @[to_additive zsmul_right_injective]
 lemma zpow_left_injective (hn : n ≠ 0) : Injective fun a : G ↦ a ^ n := by
@@ -176,6 +176,29 @@ lemma zpow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b :=
   (zpow_left_injective hn).eq_iff
 
 @[to_additive (attr := deprecated (since := "2026-09-30"))] alias zpow_eq_zpow_iff' := zpow_left_inj
+
+@[to_additive]
+theorem Commute.of_zpow_right (h : Commute a (b ^ n)) (hn : n ≠ 0) : Commute a b := by
+  have h : (a * b * a⁻¹) ^ n = b ^ n := by
+    apply mul_right_cancel (b := a)
+    rw [← ((SemiconjBy.conj_mk a b).zpow_right n).eq, h.eq]
+  have h' : a * b * a⁻¹ = b := zpow_left_injective hn h
+  simpa [Commute, SemiconjBy, mul_assoc] using congrArg (· * a) h'
+
+@[to_additive]
+theorem Commute.of_zpow_left (h : Commute (a ^ n) b) (hn : n ≠ 0) : Commute a b :=
+  (Commute.of_zpow_right (a := b) (b := a) h.symm hn).symm
+
+@[to_additive]
+theorem Commute.of_zpow_zpow (h : Commute (a ^ m) (b ^ n)) (hm : m ≠ 0) (hn : n ≠ 0) :
+    Commute a b :=
+  Commute.of_zpow_left (Commute.of_zpow_right h hn) hm
+
+/-- Elements with a common nonzero power in a group with unique roots commute: if `a ^ m = b ^ n`
+and `n ≠ 0`, then `a` and `b` commute. -/
+@[to_additive]
+theorem Commute.of_zpow_eq (h : a ^ m = b ^ n) (hn : n ≠ 0) : Commute a b :=
+  Commute.of_zpow_right (by simp [← h]) hn
 
 end HasUniqueRoots
 

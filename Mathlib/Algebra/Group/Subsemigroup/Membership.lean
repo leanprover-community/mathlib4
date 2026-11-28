@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Group.Subsemigroup.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subsemigroups: membership criteria
 

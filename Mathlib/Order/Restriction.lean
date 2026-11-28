@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Finset.Update
 public import Mathlib.Order.Interval.Finset.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Restriction of a function indexed by a preorder
 

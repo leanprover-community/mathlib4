@@ -9,6 +9,9 @@ public import Mathlib.NumberTheory.NumberField.Basic
 public import Mathlib.RingTheory.Localization.NormTrace
 public import Mathlib.RingTheory.Norm.Transitivity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Norm in number fields
 

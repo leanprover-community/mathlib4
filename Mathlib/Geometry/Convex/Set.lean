@@ -181,12 +181,13 @@ protected lemma IsConvexSet.pi {X : ι → Type*} [∀ i, ConvexSpace R (X i)] {
 
 end Semiring
 
-section Field
-variable [Field K] [LinearOrder K] [IsStrictOrderedRing K] [ConvexSpace K X] {w : StdSimplex K X}
-  {s t : Set X} {x y : X}
+section DivisionSemiring
+variable [DivisionSemiring K] [LinearOrder K] [IsStrictOrderedRing K] [ConvexSpace K X]
+  {w : StdSimplex K X} {s t : Set X} {x y : X}
 
 set_option backward.isDefEq.respectTransparency.types false in
-/-- Convexity of a set can be checked via binary combinations if the scalars form a field. -/
+/-- Convexity of a set can be checked via binary combinations if the scalars form a division
+semiring. -/
 lemma IsConvexSet.of_convexCombPair_mem
     (hs : ∀ a b : K, ∀ ha hb hab, ∀ x ∈ s, ∀ y ∈ s, convexCombPair a b ha hb hab x y ∈ s) :
     IsConvexSet K s := by
@@ -208,5 +209,5 @@ lemma IsConvexSet.of_convexCombPair_mem
   exact hs _ _ _ _ _ _ (hw <| by simp) _ <| ih (by grw [← hw, ← Finset.subset_cons])
     (by simp [← hsw]; grind)
 
-end Field
+end DivisionSemiring
 end Convexity

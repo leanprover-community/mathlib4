@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.Localization.AtPrime.Basic
 
 import Mathlib.RingTheory.Localization.FractionRing
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Localizations of localizations
 
