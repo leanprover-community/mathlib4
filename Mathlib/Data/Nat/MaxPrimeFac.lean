@@ -143,6 +143,6 @@ lemma maxPrimeFac_eq_sSup (hn_one : n ≠ 1) :
     maxPrimeFac n = sSup {p : ℕ | p.Prime ∧ p ∣ n} := by
   obtain rfl | hn : n = 0 ∨ 1 < n := by lia
   · simpa using (Set.Infinite.Nat.sSup_eq_zero infinite_setOfPred_prime).symm
-  · exact ((isLUB_maxPrimeFac hn).csSup_eq ⟨_, (isGreatest_maxPrimeFac hn).1⟩).symm
+  · exact (isLUB_maxPrimeFac hn).sSup_eq.symm
 
 end Nat

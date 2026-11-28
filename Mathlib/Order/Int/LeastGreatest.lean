@@ -44,6 +44,10 @@ integer numbers, least element, greatest element
 
 namespace Int
 
+-- shortcut instances
+instance : NoMinOrder ℤ := ⟨fun x ↦ ⟨x.pred, Int.pred_self_lt _⟩⟩
+instance : NoMaxOrder ℤ := ⟨fun x ↦ ⟨x.succ, Int.lt_succ_self _⟩⟩
+
 /-- A computable version of `exists_least_of_bdd`: given a decidable predicate on the
 integers, with an explicit lower bound and a proof that it is somewhere true, return
 the least value for which the predicate is true. -/

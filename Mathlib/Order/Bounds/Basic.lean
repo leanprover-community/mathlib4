@@ -737,6 +737,11 @@ theorem exists_isLUB_iff_isLUB_sSup [OrderSupSet α] {s : Set α} :
     (∃ a, IsLUB s a) ↔ IsLUB s (sSup s) :=
   ⟨fun ⟨_, h⟩ ↦ h.isLUB_sSup, fun h ↦ ⟨_, h⟩⟩
 
+@[to_dual]
+theorem exists_isBot_iff_isBot_sSup_empty [OrderSupSet α] :
+    (∃ a : α, IsBot a) ↔ IsBot (sSup (∅ : Set α)) := by
+  simpa only [isLUB_empty_iff] using exists_isLUB_iff_isLUB_sSup (s := ∅)
+
 /-- Constructs an `OrderInfSet` from an `OrderSupSet` by defining the infimum of a set as the
 supremum of its lower bounds. -/
 @[to_dual
@@ -900,6 +905,11 @@ theorem IsLUB.sSup_eq {s : Set α} {a : α} (h : IsLUB s a) :
 theorem IsLUB.iSup_eq {f : ι → α} {a : α} (h : IsLUB (.range f) a) :
     iSup f = a :=
   h.sSup_eq
+
+@[to_dual]
+theorem IsLUB.iSup_set_eq {s : Set β} {f : β → α} (H : IsLUB (f '' s) a) :
+    ⨆ i : s, f i = a :=
+  (image_eq_range f s ▸ H).sSup_eq
 
 @[to_dual (attr := simp)]
 theorem sSup_singleton {a : α} : sSup {a} = a :=

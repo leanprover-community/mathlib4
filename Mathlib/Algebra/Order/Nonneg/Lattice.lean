@@ -59,7 +59,6 @@ definitions, so type-class inference won't see this. -/
 protected noncomputable abbrev conditionallyCompleteLinearOrderBot
     [ConditionallyCompleteLinearOrder α] (a : α) :
     ConditionallyCompleteLinearOrderBot { x : α // a ≤ x } :=
-  { Nonneg.orderBot, Nonneg.conditionallyCompleteLinearOrder with
-    csSup_empty := @IsLUB.sSup_eq _ _ (.chooseBot _) _ _ isLUB_empty }
+  { Nonneg.orderBot, Nonneg.conditionallyCompleteLinearOrder with }
 
 end Nonneg

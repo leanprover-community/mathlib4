@@ -401,7 +401,7 @@ def pseudoEmetricAux : PseudoEMetricSpace (PiLp p β) where
     rcases p.dichotomy with (rfl | hp)
     · simp only [edist_eq_iSup]
       cases isEmpty_or_nonempty ι
-      · simp only [ciSup_of_empty, ENNReal.bot_eq_zero, add_zero, nonpos_iff_eq_zero]
+      · simp only [iSup_of_empty, ENNReal.bot_eq_zero, add_zero, nonpos_iff_eq_zero]
       -- Porting note: `le_iSup` needed some help
       refine
         iSup_le fun i => (edist_triangle _ (g i) _).trans <| add_le_add

@@ -194,8 +194,7 @@ theorem iSup_eq_of_forall_le_of_tendsto {ι : Type*} {F : Filter ι} [Filter.NeB
     [ConditionallyCompleteLattice α] [TopologicalSpace α] [ClosedIicTopology α]
     {a : α} {f : ι → α} (hle : ∀ i, f i ≤ a) (hlim : Filter.Tendsto f F (𝓝 a)) :
     ⨆ i, f i = a :=
-  have := F.nonempty_of_neBot
-  (IsLUB.range_of_tendsto hle hlim).ciSup_eq
+  (IsLUB.range_of_tendsto hle hlim).iSup_eq
 
 @[to_dual]
 theorem iUnion_Iic_eq_Iio_of_lt_of_tendsto {ι : Type*} {F : Filter ι} [F.NeBot]

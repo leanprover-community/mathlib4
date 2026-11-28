@@ -284,8 +284,8 @@ gives a conditionally complete lattice -/
 gives a conditionally complete lattice -/]
 instance WithTop.conditionallyCompleteLattice {α : Type*}
     [ConditionallyCompleteLattice α] : ConditionallyCompleteLattice (WithTop α) where
-  isLUB_csSup _ hS _ := WithTop.isLUB_sSup' hS
-  isGLB_csInf _ _ hS := WithTop.isGLB_sInf' hS
+  exists_isLUB_cond _ hS _ := ⟨_, WithTop.isLUB_sSup' hS⟩
+  exists_isGLB_cond _ _ hS := ⟨_, WithTop.isGLB_sInf' hS⟩
 
 @[to_dual]
 instance [CompleteLattice α] : CompleteLattice (WithTop α) where
@@ -316,7 +316,6 @@ instance [ConditionallyCompleteLinearOrder α] :
   toDecidableLT := inferInstance
   csSup_of_not_bddAbove s h := by simp [h]
   csInf_of_not_bddBelow s := absurd <| OrderBot.bddBelow s
-  csSup_empty := WithBot.sSup_empty
 
 open scoped Classical in
 @[to_dual WithBot.WithTop.completeLattice]

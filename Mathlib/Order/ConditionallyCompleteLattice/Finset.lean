@@ -26,8 +26,9 @@ variable [ConditionallyCompleteLattice α]
 
 /-- Supremum of `a i`, `i : ι`, is equal to the supremum over finite suprema of `a`. -/
 @[to_dual /-- Infimum of `a i`, `i : ι`, is equal to the infimum over finite infima of `a`. -/]
-theorem ciSup_eq_ciSup_finset [OrderBot α] [Nonempty ι] {a : ι → α} (ha : BddAbove (range a)) :
+theorem ciSup_eq_ciSup_finset [OrderBot α] {a : ι → α} (ha : BddAbove (range a)) :
     ⨆ i, a i = ⨆ F : Finset ι, F.sup a := by
+  cases isEmpty_or_nonempty ι; · simp
   refine le_antisymm ?_ ?_
   · exact ciSup_le fun i => (Finset.le_sup (by simp)).trans (le_ciSup ha.range_finsetSup {i})
   · exact ciSup_le fun F => Finset.sup_le fun i _ => le_ciSup ha i

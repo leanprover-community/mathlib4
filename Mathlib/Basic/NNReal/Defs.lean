@@ -504,7 +504,7 @@ theorem coe_sSup (s : Set ℝ≥0) : (↑(sSup s) : ℝ) = sSup (((↑) : ℝ≥
   · simp
   by_cases H : BddAbove s
   · exact @Set.OrdConnected.coe_sSup ℝ (Set.Ici 0) _ (_) _ s hs H
-  · simp only [csSup_of_not_bddAbove H, csSup_empty, bot_eq_zero', NNReal.coe_zero]
+  · simp only [csSup_of_not_bddAbove H, sSup_empty, bot_eq_zero', NNReal.coe_zero]
     apply (Real.sSup_of_not_bddAbove ?_).symm
     contrapose H
     exact bddAbove_coe.1 H
@@ -882,12 +882,12 @@ theorem le_toNNReal_of_coe_le {x : ℝ≥0} {y : ℝ} (h : ↑x ≤ y) : x ≤ y
   (le_toNNReal_iff_coe_le <| x.property.trans h).2 h
 
 nonrec theorem sSup_of_not_bddAbove {s : Set ℝ≥0} (hs : ¬BddAbove s) : SupSet.sSup s = 0 := by
-  grind [csSup_of_not_bddAbove, csSup_empty, bot_eq_zero']
+  grind [csSup_of_not_bddAbove, _root_.sSup_empty, bot_eq_zero']
 
 theorem iSup_of_not_bddAbove (hf : ¬BddAbove (range f)) : ⨆ i, f i = 0 :=
   sSup_of_not_bddAbove hf
 
-theorem iSup_empty [IsEmpty ι] (f : ι → ℝ≥0) : ⨆ i, f i = 0 := ciSup_of_empty f
+theorem iSup_empty [IsEmpty ι] (f : ι → ℝ≥0) : ⨆ i, f i = 0 := iSup_of_empty f
 
 theorem iInf_empty [IsEmpty ι] (f : ι → ℝ≥0) : ⨅ i, f i = 0 := by
   rw [_root_.iInf_of_isEmpty, sInf_empty]
