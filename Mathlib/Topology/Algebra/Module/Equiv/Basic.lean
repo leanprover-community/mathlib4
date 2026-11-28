@@ -203,6 +203,13 @@ theorem image_closure (e : M₁ ≃SL[σ₁₂] M₂) (s : Set M₁) : e '' clos
 theorem preimage_closure (e : M₁ ≃SL[σ₁₂] M₂) (s : Set M₂) : e ⁻¹' closure s = closure (e ⁻¹' s) :=
   e.toHomeomorph.preimage_closure s
 
+theorem image_frontier (e : M₁ ≃SL[σ₁₂] M₂) (s : Set M₁) : e '' frontier s = frontier (e '' s) :=
+  e.toHomeomorph.image_frontier s
+
+theorem preimage_frontier (e : M₁ ≃SL[σ₁₂] M₂) (s : Set M₂) :
+    e ⁻¹' frontier s = frontier (e ⁻¹' s) :=
+  e.toHomeomorph.preimage_frontier s
+
 @[simp]
 theorem isClosed_image (e : M₁ ≃SL[σ₁₂] M₂) {s : Set M₁} : IsClosed (e '' s) ↔ IsClosed s :=
   e.toHomeomorph.isClosed_image

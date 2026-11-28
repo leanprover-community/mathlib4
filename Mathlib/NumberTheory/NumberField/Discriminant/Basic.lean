@@ -5,7 +5,7 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.Algebra.Module.ZLattice.Covolume
+public import Mathlib.Algebra.Module.Lattice.Covolume
 public import Mathlib.Analysis.Real.Pi.Bounds
 public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
 public import Mathlib.NumberTheory.NumberField.Discriminant.Defs
@@ -125,9 +125,9 @@ theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis 
 
 open scoped Classical in
 theorem _root_.NumberField.mixedEmbedding.covolume_integerLattice :
-    ZLattice.covolume (mixedEmbedding.integerLattice K) =
+    (mixedEmbedding.integerLattice K).covolume =
       (2⁻¹) ^ nrComplexPlaces K * √|discr K| := by
-  rw [ZLattice.covolume_eq_measure_fundamentalDomain _ _ (fundamentalDomain_integerLattice K),
+  rw [Submodule.covolume_eq_measure_fundamentalDomain _ _ (fundamentalDomain_integerLattice K),
     measureReal_def,
     volume_fundamentalDomain_latticeBasis, ENNReal.toReal_mul, ENNReal.toReal_pow,
     ENNReal.toReal_inv, toReal_ofNat, ENNReal.coe_toReal, Real.coe_sqrt, coe_nnNorm,
@@ -135,10 +135,10 @@ theorem _root_.NumberField.mixedEmbedding.covolume_integerLattice :
 
 open scoped Classical in
 theorem _root_.NumberField.mixedEmbedding.covolume_idealLattice (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
-    ZLattice.covolume (mixedEmbedding.idealLattice K I) =
+    (mixedEmbedding.idealLattice K I).covolume =
       (FractionalIdeal.absNorm (I : FractionalIdeal (𝓞 K)⁰ K)) *
         (2⁻¹) ^ nrComplexPlaces K * √|discr K| := by
-  rw [ZLattice.covolume_eq_measure_fundamentalDomain _ _ (fundamentalDomain_idealLattice K I),
+  rw [Submodule.covolume_eq_measure_fundamentalDomain _ _ (fundamentalDomain_idealLattice K I),
     measureReal_def,
     volume_fundamentalDomain_fractionalIdealLatticeBasis, volume_fundamentalDomain_latticeBasis,
     ENNReal.toReal_mul, ENNReal.toReal_mul, ENNReal.toReal_pow, ENNReal.toReal_inv, toReal_ofNat,
