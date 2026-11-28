@@ -5,7 +5,7 @@ Authors: Leo Diedering
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.NullMeasurable
+public import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
 
 /-!
 # Measures without atoms
@@ -37,6 +37,7 @@ public section
 namespace MeasureTheory
 
 open Set Measure
+open scoped ENNReal
 
 variable {α : Type*} {m0 : MeasurableSpace α} {μ : Measure α} {s : Set α}
 
@@ -80,6 +81,16 @@ theorem measure_ne_zero (h : μ.IsAtom s) : μ s ≠ 0 :=
 
 theorem nonempty (h : μ.IsAtom s) : s.Nonempty :=
   nonempty_of_measure_ne_zero h.measure_ne_zero
+
+/-- Atoms of σ-finite measures have finite measure. -/
+theorem measure_ne_top [SigmaFinite μ] (h : μ.IsAtom s) : μ s ≠ ∞ := by
+  obtain ⟨n, hn⟩ : ∃ n, μ (s ∩ spanningSets μ n) ≠ 0 := by
+    by_contra! h'
+    apply h.measure_ne_zero
+    rw [← inter_univ s, ← iUnion_spanningSets μ, inter_iUnion]
+    exact measure_iUnion_null h'
+  rw [← (h.measure_eq_zero_or_eq inter_subset_left).resolve_left hn]
+  exact (measure_mono inter_subset_right).trans_lt (measure_spanningSets_lt_top μ n) |>.ne
 
 end IsAtom
 
