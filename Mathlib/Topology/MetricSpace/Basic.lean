@@ -302,17 +302,14 @@ PseudoEMetric, PseudoMetric and Metric spaces. -/
 -- See note [forgetful inheritance]
 -- See note [reducible non-instances]
 noncomputable abbrev replaceEDist : EMetricSpace X where
-  edist := d
-  edist_self := by simp [hd]
-  edist_comm := by simp [hd, edist_comm]
-  edist_triangle := by simp [hd, edist_triangle]
-  eq_of_edist_eq_zero := by simp [hd]
+  toPseudoEMetricSpace := m.toPseudoEMetricSpace.replaceEDist d hd
+  eq_of_edist_eq_zero := by simp +instances [hd]
 
 lemma replaceEDist_eq : m.replaceEDist d hd = m := by ext : 2; exact hd
 
 -- Check uniformity is unchanged
 example : (replaceEDist m d hd).toUniformSpace = m.toUniformSpace := by
-  simp +instances [replaceEDist_eq]
+  dsimp +instances [replaceEDist, PseudoEMetricSpace.replaceEDist]
 
 end EMetricSpace
 
@@ -325,20 +322,17 @@ PseudoEMetric, PseudoMatric and EMetric spaces. -/
 -- See note [forgetful inheritance]
 -- See note [reducible non-instances]
 abbrev replaceDist : MetricSpace X where
-  dist := d
-  dist_self := by simp [hd]
-  dist_comm := by simp [hd, dist_comm]
-  dist_triangle := by simp [hd, dist_triangle]
-  eq_of_dist_eq_zero := by simp [hd]
+  toPseudoMetricSpace := m.toPseudoMetricSpace.replaceDist d hd
+  eq_of_dist_eq_zero := by simp +instances [hd]
 
 lemma replaceDist_eq : m.replaceDist d hd = m := by ext : 2; exact hd
 
 -- Check uniformity is unchanged
 example : (replaceDist m d hd).toUniformSpace = m.toUniformSpace := by
-  simp +instances [replaceDist_eq]
+  dsimp +instances [replaceDist, PseudoMetricSpace.replaceDist]
 
 -- Check Bornology is unchanged
 example : (replaceDist m d hd).toBornology = m.toBornology := by
-  simp +instances [replaceDist_eq]
+  dsimp +instances [replaceDist, PseudoMetricSpace.replaceDist]
 
 end MetricSpace
