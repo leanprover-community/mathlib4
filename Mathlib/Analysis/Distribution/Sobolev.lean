@@ -163,38 +163,33 @@ theorem MemSobolev.add {s : ℝ} {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] {f g : �
   obtain ⟨f', hf⟩ := hf
   obtain ⟨g', hg⟩ := hg
   use f' + g'
-  rw [← Lp.toTemperedDistributionCLM_apply]
-  simp [map_add, hf, hg]
+  simp [← Lp.toTemperedDistributionCLM_apply, hf, hg]
 
 theorem MemSobolev.sub {s : ℝ} {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] {f g : 𝓢'(E, F)}
     (hf : MemSobolev s p f) (hg : MemSobolev s p g) : MemSobolev s p (f - g) := by
   obtain ⟨f', hf⟩ := hf
   obtain ⟨g', hg⟩ := hg
   use f' - g'
-  rw [← Lp.toTemperedDistributionCLM_apply]
-  simp [map_sub, hf, hg]
+  simp [← Lp.toTemperedDistributionCLM_apply, hf, hg]
 
 theorem MemSobolev.neg {s : ℝ} {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] {f : 𝓢'(E, F)}
     (hf : MemSobolev s p f) : MemSobolev s p (-f) := by
   obtain ⟨f', hf⟩ := hf
   use -f'
-  rw [← Lp.toTemperedDistributionCLM_apply]
-  simp [map_neg, hf]
+  simp [← Lp.toTemperedDistributionCLM_apply, hf]
 
 theorem MemSobolev.smul {s : ℝ} {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (c : ℂ) {f : 𝓢'(E, F)}
     (hf : MemSobolev s p f) : MemSobolev s p (c • f) := by
   obtain ⟨f', hf⟩ := hf
   use c • f'
-  rw [← Lp.toTemperedDistributionCLM_apply]
-  simp [hf]
+  simp [← Lp.toTemperedDistributionCLM_apply, hf]
 
 variable (E F) in
 @[simp]
 theorem memSobolev_fun_zero (s : ℝ) (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] :
     MemSobolev s p (0 : 𝓢'(E, F)) := by
   use 0
-  rw [← Lp.toTemperedDistributionCLM_apply]
-  simp only [map_zero]
+  simp [← Lp.toTemperedDistributionCLM_apply]
 
 @[simp]
 theorem memSobolev_besselPotential_iff {s r : ℝ} {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] {f : 𝓢'(E, F)} :
@@ -225,14 +220,12 @@ theorem memSobolev_iff_exists_smulLeftCLM_fourier {s : ℝ} {f : 𝓢'(E, F)} :
   constructor
   · intro ⟨f', hf'⟩
     use 𝓕 f'
-    apply_fun 𝓕 at hf'
-    rw [fourier_besselPotential_eq_smulLeftCLM_fourier_apply] at hf'
-    rw [hf', Lp.fourier_toTemperedDistribution_eq f']
+    grind [Lp.fourier_toTemperedDistribution_eq,
+      fourier_besselPotential_eq_smulLeftCLM_fourier_apply]
   · intro ⟨f', hf'⟩
     use 𝓕⁻ f'
-    rw [besselPotential, TemperedDistribution.fourierMultiplierCLM_apply]
-    apply_fun 𝓕⁻ at hf'
-    rw [hf', Lp.fourierInv_toTemperedDistribution_eq f']
+    grind [besselPotential, TemperedDistribution.fourierMultiplierCLM_apply,
+      Lp.fourierInv_toTemperedDistribution_eq]
 
 theorem memSobolev_zero_iff_exists_fourier {f : 𝓢'(E, F)} :
     MemSobolev 0 2 f ↔ ∃ (f' : Lp F 2 (volume : Measure E)), 𝓕 f = f' := by
@@ -275,8 +268,7 @@ theorem MemSobolev.fourier_memL1 {s : ℝ} (hs : Module.finrank ℝ E < 2 * s) {
       rw [Pi.mul_apply]
       norm_cast
       rw [← Real.rpow_add (by positivity)]
-      ring_nf
-      simp
+      grind [Real.rpow_zero]
   · fun_prop
 
 open scoped BoundedContinuousFunction
@@ -325,24 +317,19 @@ theorem MemSobolev.lineDerivOp {s : ℝ} {f : 𝓢'(E, F)} (hf : MemSobolev s 2 
   use ‖m‖
   intro x
   apply le_of_sq_le_sq _ (by positivity)
-  simp only [Complex.ofReal_mul, Complex.norm_mul, Complex.norm_real, Real.norm_eq_abs, mul_pow]
-  have h₁ : |(1 + ‖x‖ ^ 2) ^ (-1 / 2 : ℝ)| ^ 2 = (1 + ‖x‖ ^ 2)⁻¹ := by
-    field_simp
-    norm_cast
-    rw [Real.rpow_neg (by positivity), sq_abs, inv_pow]
-    field_simp
-    calc
-      _ = ((1 + ‖x‖ ^ 2) ^ (1 / 2 : ℝ)) ^ (2 : ℝ) := by
-        rw [← Real.rpow_mul (by positivity)]; simp
-      _ = _ := by simp
-  have h₂ : |inner ℝ x m| ^ 2 ≤ ‖m‖ ^ 2 * (1 + ‖x‖ ^ 2) := by
-    grw [abs_real_inner_le_norm]
-    rw [mul_pow, mul_comm]
-    gcongr
-    simp
-  grw [h₁, h₂]
-  apply le_of_eq
-  field_simp
+  calc
+    _ = inner ℝ x m ^ 2 * ((1 + ‖x‖ ^ 2) ^ (-(1 : ℝ) / 2)) ^ 2 := by
+      simp [mul_pow]
+    _ = |inner ℝ x m| ^ 2 * (1 + ‖x‖ ^ 2)⁻¹ := by
+      congr 1
+      · simp
+      · rw [← Real.rpow_two ((1 + ‖x‖ ^ 2) ^ (-1 / 2)), ← Real.rpow_mul (by positivity),
+          ← Real.rpow_neg_one]
+        ring_nf
+    _ ≤ _ := by
+      grw [mul_inv_le_iff₀ (by positivity), abs_real_inner_le_norm, mul_pow, mul_comm]
+      gcongr
+      simp
 
 /-- The Laplacian maps `H ^ s` to `H ^ {s - 2}`. -/
 theorem MemSobolev.laplacian {s : ℝ} {f : 𝓢'(E, F)} (hf : MemSobolev s 2 f) :
@@ -352,10 +339,9 @@ theorem MemSobolev.laplacian {s : ℝ} {f : 𝓢'(E, F)} (hf : MemSobolev s 2 f)
   apply (hf.fourierMultiplierCLM_of_bounded (by fun_prop) ?_).smul
   use 1
   intro x
-  rw [Real.rpow_neg (by positivity)]
-  norm_cast
-  simp only [norm_mul, norm_pow, abs_norm, norm_inv, Real.norm_eq_abs]
-  rw [abs_of_nonneg (by positivity), mul_inv_le_iff₀ (by positivity)]
+  simp only [Complex.norm_real, norm_mul, norm_pow, abs_norm, Real.norm_eq_abs]
+  rw [Real.abs_rpow_of_nonneg (by positivity), abs_of_nonneg (by positivity),
+    Real.rpow_neg (by positivity), Real.rpow_one, mul_inv_le_iff₀ (by positivity)]
   grind
 
 end LineDeriv
