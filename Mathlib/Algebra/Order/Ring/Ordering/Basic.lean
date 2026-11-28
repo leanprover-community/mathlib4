@@ -33,6 +33,10 @@ variable {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S)
 
 namespace IsPreordering
 
+@[gcongr]
+theorem mono (hP : P.IsPreordering) {Q : Subsemiring R} (hPQ : P ≤ Q) (hQ : -1 ∉ Q) :
+    Q.IsPreordering where
+
 theorem unitsInv_mem (hP : P.IsPreordering) {a : Rˣ} (ha : ↑a ∈ P) : ↑a⁻¹ ∈ P := by
   simpa using show (a * (a⁻¹ * a⁻¹) : R) ∈ P by membership
 
@@ -70,6 +74,20 @@ theorem mul_mem_support_of_left (hP : P.IsPreordering) (h : IsUnit (2 : R))
   (mul_comm _ x) ▸ hP.mul_mem_support_of_right h _ ha
 
 end IsPreordering
+
+theorem IsPreordering.of_sumSq_le_of_isPointed [Nontrivial R]
+    (h : .sumSq R ≤ P) (hP : P.IsPointed) : P.IsPreordering :=
+  .of_sumSq_le h <| by grind [membership, isPointed_def, one_ne_zero]
+
+theorem IsPreordering.of_isPointed_of_isSpanning [Nontrivial R]
+    (hP₁ : P.IsPointed) (hP₂ : P.IsSpanning) : P.IsPreordering :=
+  .of_sumSq_le_of_isPointed hP₂.sumSq_le hP₁
+
+theorem IsOrdering.of_isPointed_of_isSpanning [IsDomain R]
+    (hP₁ : P.IsPointed) (hP₂ : P.IsSpanning) : P.IsOrdering where
+  isSpanning := hP₂
+  support_ne_top := by simp [hP₁]
+  mem_support_or_mem_support := by simp [hP₁]
 
 end CommRing
 
