@@ -64,10 +64,11 @@ theorem ArithmeticFunction.vonMangoldt.tendsto_sum_residueClass_div_atTop {q : �
     {a : ZMod q} (ha : IsUnit a) :
     Tendsto (fun x : ℝ ↦ (∑ n ∈ Icc 0 ⌊x⌋₊, residueClass a n) / x) atTop (𝓝 (φ q)⁻¹) :=
   WienerIkehara.tendsto_sum_div (C := log 4 + 4) (G := LFunctionResidueClassAux a)
-    (fun N ↦ (sum_le_sum fun i _ ↦ residueClass_le a i).trans (sum_range_vonMangoldt_le N))
-    (continuousOn_LFunctionResidueClassAux a)
-    (fun s hs ↦ by rw [eqOn_LFunctionResidueClassAux ha hs]; push_cast; ring)
-    (residueClass_nonneg a)
+    { nonneg := residueClass_nonneg a
+      sum_range_le N :=
+        (sum_le_sum fun i _ ↦ residueClass_le a i).trans (sum_range_vonMangoldt_le N)
+      continuousOn := continuousOn_LFunctionResidueClassAux a
+      eqOn s hs := by rw [eqOn_LFunctionResidueClassAux ha hs]; push_cast; ring }
 
 /-- **The prime number theorem in arithmetic progressions**, von Mangoldt form.  For `a` coprime
 to `q`, the von Mangoldt function summed over `n ≤ x` with `n ≡ a [MOD q]` grows like
