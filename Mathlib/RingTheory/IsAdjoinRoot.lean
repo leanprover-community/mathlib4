@@ -132,6 +132,11 @@ theorem adjoin_root_eq_top : Algebra.adjoin R {h.root} = ⊤ := by
   rw [Algebra.adjoin_singleton_eq_range_aeval, AlgHom.range_eq_top, aeval_root_eq_map]
   exact h.map_surjective
 
+include h in
+theorem isReduced_iff_isRadical : IsReduced S ↔ IsRadical f := by
+  rw [isRadical_iff_span_singleton, ← h.ker_map]
+  exact (RingHom.ker_isRadical_iff_reduced_of_surjective h.map_surjective).symm
+
 /-- Extensionality of the `IsAdjoinRoot` structure itself. See `IsAdjoinRootMonic.ext_elem`
 for extensionality of the ring elements. -/
 theorem ext_map (h' : IsAdjoinRoot S f) (eq : ∀ x, h.map x = h'.map x) : h = h' := by
