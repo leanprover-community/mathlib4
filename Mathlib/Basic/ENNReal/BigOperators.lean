@@ -68,7 +68,7 @@ theorem iInf_sum {ι α : Type*} {f : ι → α → ℝ≥0∞} {s : Finset α} 
     (h : ∀ (t : Finset α) (i j : ι), ∃ k, ∀ a ∈ t, f k a ≤ f i a ∧ f k a ≤ f j a) :
     ⨅ i, ∑ a ∈ s, f i a = ∑ a ∈ s, ⨅ i, f i a := by
   induction s using Finset.cons_induction_on with
-  | empty => simp only [Finset.sum_empty, ciInf_const]
+  | empty => simp
   | cons a s ha ih =>
     simp only [Finset.sum_cons, ← ih]
     refine (iInf_add_iInf fun i j => ?_).symm
@@ -161,7 +161,7 @@ lemma prod_inv_distrib (hf : (s : Set ι).Pairwise fun i j ↦ f i ≠ 0 ∨ f j
 
 lemma prod_div_distrib (hg : (s : Set ι).Pairwise fun i j ↦ g i ≠ 0 ∨ g j ≠ ∞) :
     (∏ i ∈ s, f i / g i) = (∏ i ∈ s, f i) / (∏ i ∈ s, g i) := by
-  simp only [div_eq_mul_inv, prod_inv_distrib hg, ← Finset.prod_mul_distrib]
+  simp [div_eq_mul_inv, prod_inv_distrib hg, ← Finset.prod_mul_distrib]
 
 lemma prod_div_distrib_of_ne_top (hg : ∀ i ∈ s, g i ≠ ∞) :
     (∏ i ∈ s, f i / g i) = (∏ i ∈ s, f i) / (∏ i ∈ s, g i) :=

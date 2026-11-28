@@ -74,7 +74,7 @@ instance : FunLike (α ≃. β) α (Option β) :=
     coe_injective := by
       rintro ⟨f₁, f₂, hf⟩ ⟨g₁, g₂, hg⟩ (rfl : f₁ = g₁)
       congr with y x
-      simp only [hf, hg] }
+      simp [hf, hg] }
 
 @[simp] theorem coe_mk (f₁ : α → Option β) (f₂ h) : (mk f₁ f₂ h : α → Option β) = f₁ :=
   rfl
@@ -233,7 +233,7 @@ theorem ofSet_eq_refl {s : Set α} [DecidablePred (· ∈ s)] :
     rw [Set.eq_univ_iff_forall]
     intro
     rw [← mem_ofSet_self_iff, h]
-    exact rfl, fun h => by simp only [← ofSet_univ, h]⟩
+    exact rfl, fun h => by simp [← ofSet_univ, h]⟩
 
 end OfSet
 

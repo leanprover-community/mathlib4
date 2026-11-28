@@ -32,11 +32,11 @@ theorem not_isEmpty_iff : ¬IsEmpty α ↔ Nonempty α :=
 
 @[simp]
 theorem isEmpty_Prop {p : Prop} : IsEmpty p ↔ ¬p := by
-  simp only [← not_nonempty_iff, nonempty_prop]
+  simp [← not_nonempty_iff]
 
 @[simp]
 theorem isEmpty_pi {π : α → Sort*} : IsEmpty (∀ a, π a) ↔ ∃ a, IsEmpty (π a) := by
-  simp only [← not_nonempty_iff, Classical.nonempty_pi, not_forall]
+  simp [← not_nonempty_iff, Classical.nonempty_pi]
 
 theorem isEmpty_fun : IsEmpty (α → β) ↔ Nonempty α ∧ IsEmpty β := by
   rw [isEmpty_pi, ← exists_true_iff_nonempty, ← exists_and_right, true_and]
@@ -47,14 +47,14 @@ theorem nonempty_fun : Nonempty (α → β) ↔ IsEmpty α ∨ Nonempty β :=
 
 @[simp]
 theorem isEmpty_sigma {α} {E : α → Type*} : IsEmpty (Sigma E) ↔ ∀ a, IsEmpty (E a) := by
-  simp only [← not_nonempty_iff, nonempty_sigma, not_exists]
+  simp [← not_nonempty_iff]
 
 @[simp]
 theorem isEmpty_psigma {α} {E : α → Sort*} : IsEmpty (PSigma E) ↔ ∀ a, IsEmpty (E a) := by
-  simp only [← not_nonempty_iff, nonempty_psigma, not_exists]
+  simp [← not_nonempty_iff]
 
 theorem isEmpty_subtype (p : α → Prop) : IsEmpty (Subtype p) ↔ ∀ x, ¬p x := by
-  simp only [← not_nonempty_iff, nonempty_subtype, not_exists]
+  simp [← not_nonempty_iff]
 
 @[simp]
 theorem isEmpty_prod {α β : Type*} : IsEmpty (α × β) ↔ IsEmpty α ∨ IsEmpty β := by
@@ -66,19 +66,19 @@ theorem isEmpty_pprod : IsEmpty (PProd α β) ↔ IsEmpty α ∨ IsEmpty β := b
 
 @[simp]
 theorem isEmpty_sum {α β} : IsEmpty (α ⊕ β) ↔ IsEmpty α ∧ IsEmpty β := by
-  simp only [← not_nonempty_iff, nonempty_sum, not_or]
+  simp [← not_nonempty_iff]
 
 @[simp]
 theorem isEmpty_psum {α β} : IsEmpty (α ⊕' β) ↔ IsEmpty α ∧ IsEmpty β := by
-  simp only [← not_nonempty_iff, nonempty_psum, not_or]
+  simp [← not_nonempty_iff]
 
 @[simp]
 theorem isEmpty_ulift {α} : IsEmpty (ULift α) ↔ IsEmpty α := by
-  simp only [← not_nonempty_iff, nonempty_ulift]
+  simp [← not_nonempty_iff]
 
 @[simp]
 theorem isEmpty_plift {α} : IsEmpty (PLift α) ↔ IsEmpty α := by
-  simp only [← not_nonempty_iff, nonempty_plift]
+  simp [← not_nonempty_iff]
 
 theorem wellFounded_of_isEmpty {α} [IsEmpty α] (r : α → α → Prop) : WellFounded r :=
   ⟨isEmptyElim⟩
@@ -104,27 +104,27 @@ variable (R : α → β → Prop)
 
 @[simp]
 theorem leftTotal_empty [IsEmpty α] : LeftTotal R := by
-  simp only [LeftTotal, IsEmpty.forall_iff]
+  simp [LeftTotal]
 
 theorem leftTotal_iff_isEmpty_left [IsEmpty β] : LeftTotal R ↔ IsEmpty α := by
-  simp only [LeftTotal, IsEmpty.exists_iff, isEmpty_iff]
+  simp [LeftTotal, isEmpty_iff]
 
 @[simp]
 theorem rightTotal_empty [IsEmpty β] : RightTotal R := by
-  simp only [RightTotal, IsEmpty.forall_iff]
+  simp [RightTotal]
 
 theorem rightTotal_iff_isEmpty_right [IsEmpty α] : RightTotal R ↔ IsEmpty β := by
-  simp only [RightTotal, IsEmpty.exists_iff, isEmpty_iff]
+  simp [RightTotal, isEmpty_iff]
 
 @[simp]
 theorem biTotal_empty [IsEmpty α] [IsEmpty β] : BiTotal R :=
   ⟨leftTotal_empty R, rightTotal_empty R⟩
 
 theorem biTotal_iff_isEmpty_right [IsEmpty α] : BiTotal R ↔ IsEmpty β := by
-  simp only [BiTotal, leftTotal_empty, rightTotal_iff_isEmpty_right, true_and]
+  simp [BiTotal, rightTotal_iff_isEmpty_right]
 
 theorem biTotal_iff_isEmpty_left [IsEmpty β] : BiTotal R ↔ IsEmpty α := by
-  simp only [BiTotal, leftTotal_iff_isEmpty_left, rightTotal_empty, and_true]
+  simp [BiTotal, leftTotal_iff_isEmpty_left]
 
 theorem Function.Surjective.of_isEmpty [IsEmpty β] (f : α → β) : f.Surjective := IsEmpty.elim ‹_›
 

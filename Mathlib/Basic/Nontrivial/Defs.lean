@@ -101,7 +101,7 @@ theorem subsingleton_iff : Subsingleton α ↔ ∀ x y : α, x = y :=
 
 @[push]
 theorem not_nontrivial_iff_subsingleton : ¬Nontrivial α ↔ Subsingleton α := by
-  simp only [nontrivial_iff, subsingleton_iff, not_exists, Classical.not_not]
+  simp [nontrivial_iff, subsingleton_iff]
 
 theorem not_nontrivial (α) [Subsingleton α] : ¬Nontrivial α :=
   fun ⟨⟨x, y, h⟩⟩ ↦ h <| Subsingleton.elim x y

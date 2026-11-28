@@ -44,9 +44,9 @@ theorem toReal_add (ha : a ≠ ∞) (hb : b ≠ ∞) : (a + b).toReal = a.toReal
   rfl
 
 theorem toReal_add_le : (a + b).toReal ≤ a.toReal + b.toReal :=
-  if ha : a = ∞ then by simp only [ha, top_add, toReal_top, zero_add, toReal_nonneg]
+  if ha : a = ∞ then by simp [ha]
   else
-    if hb : b = ∞ then by simp only [hb, add_top, toReal_top, add_zero, toReal_nonneg]
+    if hb : b = ∞ then by simp [hb]
     else le_of_eq (toReal_add ha hb)
 
 theorem ofReal_add {p q : ℝ} (hp : 0 ≤ p) (hq : 0 ≤ q) :
@@ -109,13 +109,13 @@ theorem toNNReal_lt_of_lt_coe (h : a < p) : a.toNNReal < p :=
 theorem toReal_max (hr : a ≠ ∞) (hp : b ≠ ∞) :
     ENNReal.toReal (max a b) = max (ENNReal.toReal a) (ENNReal.toReal b) :=
   (le_total a b).elim
-    (fun h => by simp only [h, ENNReal.toReal_mono hp h, max_eq_right]) fun h => by
-    simp only [h, ENNReal.toReal_mono hr h, max_eq_left]
+    (fun h => by simp [h, ENNReal.toReal_mono hp h]) fun h => by
+    simp [h, ENNReal.toReal_mono hr h]
 
 theorem toReal_min {a b : ℝ≥0∞} (hr : a ≠ ∞) (hp : b ≠ ∞) :
     ENNReal.toReal (min a b) = min (ENNReal.toReal a) (ENNReal.toReal b) :=
-  (le_total a b).elim (fun h => by simp only [h, ENNReal.toReal_mono hp h, min_eq_left])
-    fun h => by simp only [h, ENNReal.toReal_mono hr h, min_eq_right]
+  (le_total a b).elim (fun h => by simp [h, ENNReal.toReal_mono hp h])
+    fun h => by simp [h, ENNReal.toReal_mono hr h]
 
 theorem toReal_sup {a b : ℝ≥0∞} : a ≠ ∞ → b ≠ ∞ → (a ⊔ b).toReal = a.toReal ⊔ b.toReal :=
   toReal_max
@@ -212,7 +212,7 @@ lemma ofReal_lt_ofNat {p : ℝ} {n : ℕ} [n.AtLeastTwo] :
 
 @[simp]
 lemma natCast_le_ofReal {n : ℕ} {p : ℝ} (hn : n ≠ 0) : n ≤ ENNReal.ofReal p ↔ n ≤ p := by
-  simp only [← not_lt, ofReal_lt_natCast hn]
+  simp [← not_lt, ofReal_lt_natCast hn]
 
 @[simp]
 lemma one_le_ofReal {p : ℝ} : 1 ≤ ENNReal.ofReal p ↔ 1 ≤ p :=
@@ -298,7 +298,7 @@ theorem toReal_lt_of_lt_ofReal {b : ℝ} (h : a < ENNReal.ofReal b) : ENNReal.to
 @[simp]
 theorem ofReal_mul {p q : ℝ} (hp : 0 ≤ p) :
     ENNReal.ofReal (p * q) = ENNReal.ofReal p * ENNReal.ofReal q := by
-  simp only [ENNReal.ofReal, ← coe_mul, Real.toNNReal_mul hp]
+  simp [ENNReal.ofReal, ← coe_mul, Real.toNNReal_mul hp]
 
 theorem ofReal_mul' {p q : ℝ} (hq : 0 ≤ q) :
     ENNReal.ofReal (p * q) = ENNReal.ofReal p * ENNReal.ofReal q := by

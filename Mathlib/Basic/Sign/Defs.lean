@@ -223,7 +223,7 @@ instance (s : SignType) : CoeDep SignType s α :=
 lemma map_cast' {β : Type*} [One β] [Neg β] [Zero β]
     (f : α → β) (h₁ : f 1 = 1) (h₂ : f 0 = 0) (h₃ : f (-1) = -1) (s : SignType) :
     f s = s := by
-  cases s <;> simp only [SignType.cast, h₁, h₂, h₃]
+  cases s <;> simp [SignType.cast, h₁, h₂, h₃]
 
 /-- Casting out of `SignType` respects composition with suitable bundled homomorphism types. -/
 lemma map_cast {α β F : Type*} [AddGroupWithOne α] [One β] [SubtractionMonoid β]

@@ -97,7 +97,7 @@ section OrderedRing
 lemma sign_intCast {α : Type*} [Ring α] [PartialOrder α] [IsOrderedRing α]
     [Nontrivial α] [DecidableLT α] (n : ℤ) :
     sign (n : α) = sign n := by
-  simp only [sign_apply, Int.cast_pos, Int.cast_lt_zero]
+  simp [sign_apply]
 
 end OrderedRing
 

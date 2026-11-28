@@ -165,16 +165,16 @@ instance commRing : CommRing ℝ where
   zsmul := @zsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩ ⟨@Neg.neg ℝ _⟩ (@nsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩)
   add_zero a := by apply ext_cauchy; simp [cauchy_add, cauchy_zero]
   zero_add a := by apply ext_cauchy; simp [cauchy_add, cauchy_zero]
-  add_comm a b := by apply ext_cauchy; simp only [cauchy_add, add_comm]
-  add_assoc a b c := by apply ext_cauchy; simp only [cauchy_add, add_assoc]
+  add_comm a b := by apply ext_cauchy; simp [cauchy_add, add_comm]
+  add_assoc a b c := by apply ext_cauchy; simp [cauchy_add, add_assoc]
   mul_zero a := by apply ext_cauchy; simp [cauchy_mul, cauchy_zero]
   zero_mul a := by apply ext_cauchy; simp [cauchy_mul, cauchy_zero]
   mul_one a := by apply ext_cauchy; simp [cauchy_mul, cauchy_one]
   one_mul a := by apply ext_cauchy; simp [cauchy_mul, cauchy_one]
-  mul_comm a b := by apply ext_cauchy; simp only [cauchy_mul, mul_comm]
-  mul_assoc a b c := by apply ext_cauchy; simp only [cauchy_mul, mul_assoc]
-  left_distrib a b c := by apply ext_cauchy; simp only [cauchy_add, cauchy_mul, mul_add]
-  right_distrib a b c := by apply ext_cauchy; simp only [cauchy_add, cauchy_mul, add_mul]
+  mul_comm a b := by apply ext_cauchy; simp [cauchy_mul, mul_comm]
+  mul_assoc a b c := by apply ext_cauchy; simp [cauchy_mul, mul_assoc]
+  left_distrib a b c := by apply ext_cauchy; simp [cauchy_add, cauchy_mul, mul_add]
+  right_distrib a b c := by apply ext_cauchy; simp [cauchy_add, cauchy_mul, add_mul]
   neg_add_cancel a := by apply ext_cauchy; simp [cauchy_add, cauchy_neg, cauchy_zero]
   natCast_zero := by apply ext_cauchy; simp [cauchy_zero]
   natCast_succ n := by apply ext_cauchy; simp [cauchy_one, cauchy_add]
@@ -328,7 +328,7 @@ instance instIsOrderedAddMonoid : IsOrderedAddMonoid ℝ where
   add_le_add_left := by
     simp only [le_iff_eq_or_lt]
     rintro a b ⟨rfl, h⟩
-    · simp only [lt_self_iff_false, or_false, forall_const]
+    · simp
     · refine fun c => Or.inr ?_
       induction a using Real.ind_mk with | _ a =>
       induction b using Real.ind_mk with | _ b =>
