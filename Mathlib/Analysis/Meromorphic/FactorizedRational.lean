@@ -186,7 +186,7 @@ The order of the factorized rational function `factorizedRational d` at `z` equa
 theorem meromorphicOrderAt_eq {z : 𝕜} (d : 𝕜 → ℤ) (h₁d : d.HasFiniteSupport) :
     meromorphicOrderAt (factorizedRational d) z = d z := by
   classical
-  rw [meromorphicOrderAt_eq_int_iff ((meromorphicNFOn_univ d).meromorphicOn _ (mem_univ _))]
+  rw [((meromorphicNFOn_univ d).meromorphicOn _ (mem_univ _)).meromorphicOrderAt_eq_intCast_iff]
   use factorizedRational (update d z 0)
   simp only [update_self, le_refl, analyticAt, ne_eq, ne_zero, not_false_eq_true, smul_eq_mul,
     true_and]

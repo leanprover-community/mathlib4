@@ -435,7 +435,7 @@ theorem MeromorphicOn.log_norm_meromorphicTrailingCoeffAt (h₁w : w ∈ ball c 
       simp only [add_sub_cancel_right, divisor_ball_fun_comp_sub_const_eq_divisor_ball]
   · simpa [mem_ball_zero_iff] using mem_ball_iff_norm.1 h₁w
   · change meromorphicOrderAt (fun z ↦ f (z + c)) (w - c) = 0
-    rwa [meromorphicOrderAt_fun_comp_add_const_eq_meromorphicOrderAt, sub_add_cancel]
+    rwa [meromorphicOrderAt_fun_comp_add_const, sub_add_cancel]
   · rwa [← meromorphicOn_closedBall_fun_comp_sub_const_iff_meromorphicOn_closedBall (c := c),
       ← hfg]
 

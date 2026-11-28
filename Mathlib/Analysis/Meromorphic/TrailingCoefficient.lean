@@ -39,7 +39,7 @@ noncomputable def meromorphicTrailingCoeffAt : E := by
   by_cases h₁ : MeromorphicAt f x
   · by_cases h₂ : meromorphicOrderAt f x = ⊤
     · exact 0
-    · exact ((meromorphicOrderAt_ne_top_iff h₁).1 h₂).choose x
+    · exact (h₁.meromorphicOrderAt_ne_top_iff.1 h₂).choose x
   · exact 0
 
 /--
@@ -77,7 +77,7 @@ lemma AnalyticAt.meromorphicTrailingCoeffAt_of_eq_nhdsNE (h₁g : AnalyticAt �
     apply (h.symm.trans (meromorphicOrderAt_eq_top_iff.1 h₃)).symm
   · unfold meromorphicTrailingCoeffAt
     simp only [h₁f, reduceDIte, h₃, ne_eq]
-    obtain ⟨h'₁, h'₂, h'₃⟩ := ((meromorphicOrderAt_ne_top_iff h₁f).1 h₃).choose_spec
+    obtain ⟨h'₁, h'₂, h'₃⟩ := (h₁f.meromorphicOrderAt_ne_top_iff.1 h₃).choose_spec
     apply Filter.EventuallyEq.eq_of_nhds
     rw [← h'₁.continuousAt.eventuallyEq_nhds_iff_eventuallyEq_nhdsNE h₁g.continuousAt]
     filter_upwards [h, h'₃, self_mem_nhdsWithin] with y h₁y h₂y h₃y
@@ -96,7 +96,7 @@ lemma AnalyticAt.meromorphicTrailingCoeffAt_of_ne_zero_of_eq_nhdsNE {n : ℤ} (h
     rw [MeromorphicAt.meromorphicAt_congr h]
     fun_prop
   have : meromorphicOrderAt f x = n := by
-    simp only [meromorphicOrderAt_eq_int_iff h₄, ne_eq]
+    simp only [h₄.meromorphicOrderAt_eq_intCast_iff, ne_eq]
     use g, h₁g, h₂g
     exact h
   simp_all [meromorphicTrailingCoeffAt_of_eq_nhdsNE h₁g]
@@ -125,7 +125,7 @@ lemma MeromorphicAt.tendsto_nhds_meromorphicTrailingCoeffAt (h : MeromorphicAt f
     · filter_upwards [meromorphicOrderAt_eq_top_iff.1 h₂] with y hy
       simp_all
     · apply Tendsto.congr' (f₁ := 0) (by rfl) continuousWithinAt_const.tendsto
-  obtain ⟨g, h₁g, h₂g, h₃g⟩ := (meromorphicOrderAt_ne_top_iff h).1 h₂
+  obtain ⟨g, h₁g, h₂g, h₃g⟩ := h.meromorphicOrderAt_ne_top_iff.1 h₂
   apply Tendsto.congr' (f₁ := g)
   · filter_upwards [h₃g, self_mem_nhdsWithin] with y h₁y h₂y
     rw [zpow_neg, Pi.smul_apply', Pi.inv_apply, Pi.pow_apply, h₁y, ← smul_assoc, smul_eq_mul,
@@ -145,7 +145,7 @@ If `f` is meromorphic of finite order at `x`, then the trailing coefficient is n
 lemma MeromorphicAt.meromorphicTrailingCoeffAt_ne_zero (h₁ : MeromorphicAt f x)
     (h₂ : meromorphicOrderAt f x ≠ ⊤) :
     meromorphicTrailingCoeffAt f x ≠ 0 := by
-  obtain ⟨g, h₁g, h₂g, h₃g⟩ := (meromorphicOrderAt_ne_top_iff h₁).1 h₂
+  obtain ⟨g, h₁g, h₂g, h₃g⟩ := h₁.meromorphicOrderAt_ne_top_iff.1 h₂
   simpa [h₁g.meromorphicTrailingCoeffAt_of_ne_zero_of_eq_nhdsNE h₂g h₃g] using h₂g
 
 /--
@@ -190,7 +190,7 @@ lemma meromorphicTrailingCoeffAt_congr_nhdsNE {f₁ f₂ : 𝕜 → E} (h : f₁
   rw [not_not] at h₁
   by_cases h₂ : meromorphicOrderAt f₁ x = ⊤
   · simp_all [meromorphicOrderAt_congr h]
-  obtain ⟨g, h₁g, h₂g, h₃g⟩ := (meromorphicOrderAt_ne_top_iff h₁).1 h₂
+  obtain ⟨g, h₁g, h₂g, h₃g⟩ := h₁.meromorphicOrderAt_ne_top_iff.1 h₂
   rw [h₁g.meromorphicTrailingCoeffAt_of_ne_zero_of_eq_nhdsNE h₂g h₃g,
     h₁g.meromorphicTrailingCoeffAt_of_ne_zero_of_eq_nhdsNE h₂g (h.symm.trans h₃g)]
 
@@ -207,14 +207,14 @@ theorem meromorphicTrailingCoeffAt_neg {f : 𝕜 → E} :
   · aesop
   rw [not_not] at h₁
   by_cases h₂ : meromorphicOrderAt f x = ⊤
-  · simp_all [← meromorphicOrderAt_neg]
-  obtain ⟨g, h₁g, h₂g, h₃g⟩ := (meromorphicOrderAt_ne_top_iff h₁).1 h₂
+  · simp_all
+  obtain ⟨g, h₁g, h₂g, h₃g⟩ := h₁.meromorphicOrderAt_ne_top_iff.1 h₂
   rw [h₁g.meromorphicTrailingCoeffAt_of_ne_zero_of_eq_nhdsNE h₂g h₃g]
   rw [AnalyticAt.meromorphicTrailingCoeffAt_of_eq_nhdsNE (g := -g)]
   · simp
   · fun_prop
   · filter_upwards [h₃g] with a ha
-    simp [ha, ← meromorphicOrderAt_neg]
+    simp [ha]
 
 /--
 Taking the negative commutes with taking `meromorphicTrailingCoeffAt`.
@@ -242,9 +242,9 @@ theorem MeromorphicAt.meromorphicTrailingCoeffAt_add_eq_left_of_lt {f₁ f₂ : 
     simp
   -- General case
   lift meromorphicOrderAt f₂ x to ℤ using h₁f₂ with n₂ hn₂
-  obtain ⟨g₂, h₁g₂, h₂g₂, h₃g₂⟩ := (meromorphicOrderAt_eq_int_iff hf₂).1 hn₂.symm
+  obtain ⟨g₂, h₁g₂, h₂g₂, h₃g₂⟩ := hf₂.meromorphicOrderAt_eq_intCast_iff.1 hn₂.symm
   lift meromorphicOrderAt f₁ x to ℤ using (by aesop) with n₁ hn₁
-  obtain ⟨g₁, h₁g₁, h₂g₁, h₃g₁⟩ := (meromorphicOrderAt_eq_int_iff hf₁).1 hn₁.symm
+  obtain ⟨g₁, h₁g₁, h₂g₁, h₃g₁⟩ := hf₁.meromorphicOrderAt_eq_intCast_iff.1 hn₁.symm
   rw [WithTop.coe_lt_coe] at h
   have τ₀ : ∀ᶠ z in 𝓝[≠] x, (f₁ + f₂) z = (z - x) ^ n₁ • (g₁ + (z - x) ^ (n₂ - n₁) • g₂) z := by
     filter_upwards [h₃g₁, h₃g₂, self_mem_nhdsWithin] with z h₁z h₂z h₃z
@@ -280,7 +280,7 @@ theorem MeromorphicAt.meromorphicTrailingCoeffAt_sub_eq_left_of_lt {f₁ f₂ : 
     meromorphicTrailingCoeffAt (f₁ - f₂) x = meromorphicTrailingCoeffAt f₁ x := by
   rw [sub_eq_add_neg]
   apply MeromorphicAt.meromorphicTrailingCoeffAt_add_eq_left_of_lt (by fun_prop)
-  rwa [← meromorphicOrderAt_neg]
+  rwa [meromorphicOrderAt_neg]
 
 /--
 If `f₁` and `f₂` have unequal order at `x`, then the trailing coefficient of `f₁ - f₂` at `x` is the
@@ -309,9 +309,9 @@ theorem MeromorphicAt.meromorphicTrailingCoeffAt_add_eq_add {f₁ f₂ : 𝕜 �
     simp
   -- General case
   lift meromorphicOrderAt f₁ x to ℤ using (by lia) with n₁ hn₁
-  obtain ⟨g₁, h₁g₁, h₂g₁, h₃g₁⟩ := (meromorphicOrderAt_eq_int_iff hf₁).1 hn₁.symm
+  obtain ⟨g₁, h₁g₁, h₂g₁, h₃g₁⟩ := hf₁.meromorphicOrderAt_eq_intCast_iff.1 hn₁.symm
   lift meromorphicOrderAt f₂ x to ℤ using (by lia) with n₂ hn₂
-  obtain ⟨g₂, h₁g₂, h₂g₂, h₃g₂⟩ := (meromorphicOrderAt_eq_int_iff hf₂).1 hn₂.symm
+  obtain ⟨g₂, h₁g₂, h₂g₂, h₃g₂⟩ := hf₂.meromorphicOrderAt_eq_intCast_iff.1 hn₂.symm
   rw [WithTop.coe_eq_coe, h₁g₁.meromorphicTrailingCoeffAt_of_ne_zero_of_eq_nhdsNE h₂g₁ h₃g₁,
     h₁g₂.meromorphicTrailingCoeffAt_of_ne_zero_of_eq_nhdsNE h₂g₂ h₃g₂] at *
   have τ₀ : ∀ᶠ z in 𝓝[≠] x, (f₁ + f₂) z = (z - x) ^ n₁ • (g₁ + g₂) z := by
@@ -344,7 +344,7 @@ theorem MeromorphicAt.meromorphicTrailingCoeffAt_sub_eq_sub {f₁ f₂ : 𝕜 �
       = meromorphicTrailingCoeffAt f₁ x - meromorphicTrailingCoeffAt f₂ x := by
   rw [sub_eq_add_neg, hf₁.meromorphicTrailingCoeffAt_add_eq_add (by fun_prop)]
   · rw [meromorphicTrailingCoeffAt_neg, sub_eq_add_neg]
-  · rwa [← meromorphicOrderAt_neg]
+  · rwa [meromorphicOrderAt_neg]
   · rwa [meromorphicTrailingCoeffAt_neg, ← sub_eq_add_neg]
 
 /--
@@ -370,8 +370,8 @@ lemma MeromorphicAt.meromorphicTrailingCoeffAt_smul {f₁ : 𝕜 → 𝕜} {f₂
   · simp_all [meromorphicOrderAt_smul hf₁ hf₂]
   by_cases h₁f₂ : meromorphicOrderAt f₂ x = ⊤
   · simp_all [meromorphicOrderAt_smul hf₁ hf₂]
-  obtain ⟨g₁, h₁g₁, h₂g₁, h₃g₁⟩ := (meromorphicOrderAt_ne_top_iff hf₁).1 h₁f₁
-  obtain ⟨g₂, h₁g₂, h₂g₂, h₃g₂⟩ := (meromorphicOrderAt_ne_top_iff hf₂).1 h₁f₂
+  obtain ⟨g₁, h₁g₁, h₂g₁, h₃g₁⟩ := hf₁.meromorphicOrderAt_ne_top_iff.1 h₁f₁
+  obtain ⟨g₂, h₁g₂, h₂g₂, h₃g₂⟩ := hf₂.meromorphicOrderAt_ne_top_iff.1 h₁f₂
   have : f₁ • f₂ =ᶠ[𝓝[≠] x]
       fun z ↦ (z - x) ^ (meromorphicOrderAt (f₁ • f₂) x).untop₀ • (g₁ • g₂) z := by
     filter_upwards [h₃g₁, h₃g₂, self_mem_nhdsWithin] with y h₁y h₂y h₃y
@@ -446,7 +446,7 @@ lemma meromorphicTrailingCoeffAt_inv {f : 𝕜 → 𝕜} :
   · by_cases h₂ : meromorphicOrderAt f x = ⊤
     · simp_all [meromorphicOrderAt_inv (f := f) (x := x)]
     have : f⁻¹ * f =ᶠ[𝓝[≠] x] 1 := by
-      filter_upwards [(meromorphicOrderAt_ne_top_iff_eventually_ne_zero h₁).1 h₂]
+      filter_upwards [h₁.meromorphicOrderAt_ne_top_iff_eventually_ne_zero.1 h₂]
       simp_all
     rw [← mul_eq_one_iff_eq_inv₀ (h₁.meromorphicTrailingCoeffAt_ne_zero h₂),
       ← h₁.inv.meromorphicTrailingCoeffAt_mul h₁, meromorphicTrailingCoeffAt_congr_nhdsNE this,
@@ -473,7 +473,7 @@ lemma MeromorphicAt.meromorphicTrailingCoeffAt_zpow {n : ℤ} {f : 𝕜 → 𝕜
     · simp only [h₃, zpow_zero]
       apply analyticAt_const.meromorphicTrailingCoeffAt_of_ne_zero (ne_zero_of_eq_one rfl)
     · simp_all [meromorphicOrderAt_zpow h₁, zero_zpow n h₃]
-  · obtain ⟨g, h₁g, h₂g, h₃g⟩ := (meromorphicOrderAt_ne_top_iff h₁).1 h₂
+  · obtain ⟨g, h₁g, h₂g, h₃g⟩ := h₁.meromorphicOrderAt_ne_top_iff.1 h₂
     rw [h₁g.meromorphicTrailingCoeffAt_of_ne_zero_of_eq_nhdsNE
         (n := (meromorphicOrderAt f x).untop₀) h₂g h₃g,
       (h₁g.zpow h₂g (n := n)).meromorphicTrailingCoeffAt_of_ne_zero_of_eq_nhdsNE
@@ -527,7 +527,7 @@ theorem MeromorphicAt.meromorphicTrailingCoeffAt_comp {g : 𝕜 → 𝕜} (hf : 
       exact (hg.map_nhdsNE hg_nc) h
     aesop
   · set r := (meromorphicOrderAt f (g x)).untop₀
-    obtain ⟨F, h₁F, h₂F, h₃F⟩ := (meromorphicOrderAt_ne_top_iff hf).1 h
+    obtain ⟨F, h₁F, h₂F, h₃F⟩ := hf.meromorphicOrderAt_ne_top_iff.1 h
     have h₁ : meromorphicTrailingCoeffAt (f ∘ g) x
         = meromorphicTrailingCoeffAt ((g · - g x) ^ r • (F ∘ g)) x := by
       apply meromorphicTrailingCoeffAt_congr_nhdsNE
