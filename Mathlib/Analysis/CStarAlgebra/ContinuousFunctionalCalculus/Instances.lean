@@ -12,6 +12,7 @@ public import Mathlib.Analysis.Complex.Spectrum
 public import Mathlib.Analysis.Normed.Algebra.Spectrum
 public import Mathlib.Analysis.RCLike.Lemmas
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Basic
+public import Mathlib.Topology.ContinuousMap.ContinuousMapZero.Unitization
 
 /-! # Instances of the continuous functional calculus
 
@@ -25,13 +26,17 @@ public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Pos
   elements in an `ℝ`-algebra with a continuous functional calculus for selfadjoint elements,
   where every element has compact spectrum, and where nonnegative elements have nonnegative
   spectrum. In particular, this includes unital C⋆-algebras over `ℝ`.
+* `RCLike.nonUnitalContinuousFunctionalCalculus`: the non-unital continuous functional calculus
+  on `A` obtained from a unital one on `Unitization 𝕜 A`.
+* `Unitization.continuousFunctionalCalculus`: conversely, the (unital) continuous functional
+  calculus on `Unitization 𝕜 A` obtained from a non-unital one on `A`.
 
 ## Tags
 
 continuous functional calculus, normal, selfadjoint
 -/
 
-@[expose] public section
+public section
 
 open Topology
 
@@ -73,7 +78,7 @@ This range of this map is contained in the range of `(↑) : A → A⁺¹` (see 
 and so we may restrict it to `A` to get the necessary homomorphism for the non-unital continuous
 functional calculus.
 -/
-noncomputable def cfcₙAux : C(σₙ 𝕜 a, 𝕜)₀ →⋆ₙₐ[𝕜] A⁺¹ :=
+@[expose] def cfcₙAux : C(σₙ 𝕜 a, 𝕜)₀ →⋆ₙₐ[𝕜] A⁺¹ :=
   (cfcHom (R := 𝕜) (hp₁.mpr ha)).toNonUnitalStarAlgHom |>.comp
       (Homeomorph.compStarAlgEquiv' 𝕜 𝕜 <| .setCongr
         (quasispectrum_eq_spectrum_inr' 𝕜 𝕜 a).symm).toNonUnitalStarAlgHom
@@ -178,6 +183,148 @@ theorem RCLike.nonUnitalContinuousFunctionalCalculusIsClosedEmbedding :
     congrm (⇑$(inrNonUnitalStarAlgHom_comp_cfcₙHom_eq_cfcₙAux hp₁ a ha))
 
 end RCLike
+
+section Translate
+
+variable {R A : Type*} [CommRing R] [TopologicalSpace R] [IsTopologicalAddGroup R]
+variable [NonUnitalRing A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
+
+namespace Unitization
+
+variable (x : Unitization R A)
+
+/-- For `x : Unitization R A`, the map `fun r : R ↦ r + x.fst` is a homemorphism between the
+sets `quasispectrum R x.snd` and `spectrum R x`. -/
+@[expose] def quasispectrumHomeomorphSpectrum : σₙ R x.snd ≃ₜ σ R x :=
+  (Homeomorph.addRight x.fst).subtype fun _ ↦ by simp [Unitization.mem_spectrum_iff]
+
+@[simp]
+lemma coe_quasispectrumHomeomorphSpectrum_apply (y : σₙ R x.snd) :
+    (quasispectrumHomeomorphSpectrum x y : R) = y + x.fst :=
+  rfl
+
+@[simp]
+lemma coe_symm_quasispectrumHomeomorphSpectrum_apply (z : σ R x) :
+    ((quasispectrumHomeomorphSpectrum x).symm z : R) = z - x.fst :=
+  (sub_eq_add_neg _ _).symm
+
+lemma compactSpace_spectrum [CompactSpace (σₙ R x.snd)] : CompactSpace (σ R x) :=
+  (quasispectrumHomeomorphSpectrum x).compactSpace
+
+variable [Nontrivial R]
+
+@[simp]
+lemma quasispectrumHomeomorphSpectrum_zero :
+    quasispectrumHomeomorphSpectrum x 0 = ⟨x.fst, fst_mem_spectrum x⟩ :=
+  Subtype.ext (by simp)
+
+end Unitization
+
+end Translate
+
+section RCLikeUnitization
+
+open ContinuousMapZero Unitization
+
+variable {𝕜 A : Type*} [RCLike 𝕜] [NonUnitalNormedRing A] [StarRing A]
+variable [NormedSpace 𝕜 A] [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A]
+variable [StarModule 𝕜 A] {p : A → Prop} {p₁ : Unitization 𝕜 A → Prop}
+variable [NonUnitalContinuousFunctionalCalculus 𝕜 A p]
+
+namespace Unitization
+
+variable (x : Unitization 𝕜 A) (hx : p x.snd)
+
+/--
+This is an auxiliary definition used for constructing an instance of the unital continuous
+functional calculus on `Unitization 𝕜 A` given an instance of the non-unital one on `A`.
+
+This is the natural star homomorphism obtained from the chain
+```lean
+calc
+  C(σ 𝕜 x, 𝕜) ≃⋆ₐ[𝕜] C(σₙ 𝕜 x.snd, 𝕜) := Homeomorph.compStarAlgEquiv'
+  _           ≃⋆ₐ[𝕜] Unitization 𝕜 C(σₙ 𝕜 x.snd, 𝕜)₀ :=
+      (ContinuousMapZero.unitizationStarAlgEquiv ..).symm
+  _           →⋆ₐ[𝕜] Unitization 𝕜 A := Unitization.starMap (cfcₙHom hx)
+```
+Concretely, it sends `f` to `algebraMap 𝕜 _ (f x.fst) + ↑(cfcₙHom hx g)`, where
+`g : C(σₙ 𝕜 x.snd, 𝕜)₀` is the function `y ↦ f (y + x.fst) - f x.fst`.
+-/
+private def cfcAux : C(σ 𝕜 x, 𝕜) →⋆ₐ[𝕜] Unitization 𝕜 A :=
+  (starMap (cfcₙHom hx)).comp <|
+    (unitizationStarAlgEquiv (σₙ 𝕜 x.snd) 𝕜).symm.toStarAlgHom.comp
+      (Homeomorph.compStarAlgEquiv' 𝕜 𝕜 (quasispectrumHomeomorphSpectrum x)).toStarAlgHom
+
+private lemma toProd_cfcAux (f : C(σ 𝕜 x, 𝕜)) :
+    (cfcAux x hx f).toProd =
+      (f ⟨x.fst, fst_mem_spectrum x⟩,
+        cfcₙHom hx
+          (f.comp (quasispectrumHomeomorphSpectrum x).toContinuousMap).toContinuousMapZero) :=
+  Prod.ext (by simp [cfcAux]) (by simp [cfcAux])
+
+private lemma continuous_cfcAux : Continuous (cfcAux x hx) := by
+  simp only [Unitization.continuous_iff, toProd_cfcAux]
+  exact ⟨by fun_prop, (cfcₙHom_continuous hx).comp (by fun_prop)⟩
+
+private lemma cfcAux_injective : Function.Injective (cfcAux x hx) :=
+  starMap_injective (cfcₙHom_injective hx) |>.comp <|
+    (unitizationStarAlgEquiv _ 𝕜).symm.injective.comp (Homeomorph.compStarAlgEquiv' 𝕜 𝕜 _).injective
+
+private lemma cfcAux_id : cfcAux x hx ((ContinuousMap.id 𝕜).restrict (σ 𝕜 x)) = x := by
+  refine Unitization.ext (by simp [toProd_cfcAux]) ?_
+  rw [toProd_cfcAux]
+  convert cfcₙHom_id hx using 2
+  ext
+  simp
+
+private lemma spectrum_cfcAux (f : C(σ 𝕜 x, 𝕜)) : σ 𝕜 (cfcAux x hx f) = Set.range f := by
+  rw [Unitization.spectrum_eq_vadd_quasispectrum, toProd_cfcAux, cfcₙHom_map_quasispectrum,
+    Set.vadd_set_range]
+  convert (quasispectrumHomeomorphSpectrum x).surjective.range_comp f using 3
+  simp
+
+open scoped NonUnitalContinuousFunctionalCalculus in
+theorem continuousFunctionalCalculus (hp₁ : ∀ y : Unitization 𝕜 A, p₁ y ↔ p y.snd) :
+    ContinuousFunctionalCalculus 𝕜 (Unitization 𝕜 A) p₁ where
+  predicate_zero := (hp₁ 0).mpr <| by simpa using cfcₙ_predicate_zero 𝕜
+  compactSpace_spectrum y := Unitization.compactSpace_spectrum y
+  spectrum_nonempty y _ := ⟨y.fst, fst_mem_spectrum y⟩
+  exists_cfc_of_predicate y hy := by
+    refine ⟨cfcAux y ((hp₁ y).mp hy), continuous_cfcAux .., cfcAux_injective .., cfcAux_id ..,
+      fun f ↦ spectrum_cfcAux .., fun f ↦ (hp₁ _).mpr ?_⟩
+    rw [toProd_cfcAux]
+    exact cfcₙHom_predicate _ _
+
+lemma toProd_cfcHom [ContinuousFunctionalCalculus 𝕜 (Unitization 𝕜 A) p₁]
+    (hx' : p₁ x) (f : C(σ 𝕜 x, 𝕜)) :
+    (cfcHom hx' f).toProd =
+      (f ⟨x.fst, fst_mem_spectrum x⟩,
+        cfcₙHom hx
+          (f.comp (quasispectrumHomeomorphSpectrum x).toContinuousMap).toContinuousMapZero) := by
+  rw [cfcHom_eq_of_continuous_of_map_id _ _ (continuous_cfcAux x hx) (cfcAux_id x hx),
+    toProd_cfcAux]
+
+end Unitization
+
+section StandardInstances
+
+variable {A : Type*} [NonUnitalNormedRing A] [StarRing A]
+
+instance Unitization.instContinuousFunctionalCalculusIsStarNormal [NormedSpace ℂ A]
+    [IsScalarTower ℂ A A] [SMulCommClass ℂ A A] [StarModule ℂ A]
+    [NonUnitalContinuousFunctionalCalculus ℂ A IsStarNormal] :
+    ContinuousFunctionalCalculus ℂ (Unitization ℂ A) IsStarNormal :=
+  continuousFunctionalCalculus fun _ ↦ isStarNormal_iff_snd
+
+instance Unitization.instContinuousFunctionalCalculusIsSelfAdjoint [NormedSpace ℝ A]
+    [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] [StarModule ℝ A]
+    [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint] :
+    ContinuousFunctionalCalculus ℝ (Unitization ℝ A) IsSelfAdjoint :=
+  continuousFunctionalCalculus fun _ ↦ isSelfAdjoint_iff_snd
+
+end StandardInstances
+
+end RCLikeUnitization
 
 /-!
 ### Continuous functional calculus for selfadjoint elements
