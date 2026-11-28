@@ -392,6 +392,10 @@ variable (S)
 theorem coeIdeal_top : ((⊤ : Ideal R) : FractionalIdeal S P) = 1 :=
   rfl
 
+@[norm_cast]
+theorem coeIdeal_one : ((1 : Ideal R) : FractionalIdeal S P) = 1 := by
+  rw [Ideal.one_eq_top, coeIdeal_top]
+
 @[simp]
 theorem mem_one_iff {x : P} : x ∈ (1 : FractionalIdeal S P) ↔ ∃ x' : R, algebraMap R P x' = x :=
   Iff.intro (fun ⟨x', _, h⟩ => ⟨x', h⟩) fun ⟨x', h⟩ => ⟨x', ⟨⟩, h⟩
