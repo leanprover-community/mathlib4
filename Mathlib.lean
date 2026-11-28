@@ -6550,6 +6550,8 @@ public import Mathlib.Order.Sigma.Lex
 public import Mathlib.Order.Std
 public import Mathlib.Order.Sublattice
 public import Mathlib.Order.Sublocale
+public import Mathlib.Order.Submodular.Basic
+public import Mathlib.Order.Submodular.Defs
 public import Mathlib.Order.SuccPred.Archimedean
 public import Mathlib.Order.SuccPred.Basic
 public import Mathlib.Order.SuccPred.CompleteLinearOrder
