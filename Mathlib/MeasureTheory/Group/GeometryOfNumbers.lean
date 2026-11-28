@@ -65,8 +65,9 @@ is large enough compared to the covolume of a lattice `L` of `E`, then it contai
 lattice point of `L`. -/
 theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure [NormedAddCommGroup E]
     [NormedSpace ℝ E] [BorelSpace E] [FiniteDimensional ℝ E] [IsAddHaarMeasure μ]
-    {L : AddSubgroup E} [Countable L] (fund : IsAddFundamentalDomain L F μ)
-    (h_symm : ∀ x ∈ s, -x ∈ s) (h_conv : Convex ℝ s) (h : μ F * 2 ^ finrank ℝ E < μ s) :
+    {S : Type*} [SetLike S E] [AddSubgroupClass S E] {L : S} [Countable L]
+    (fund : IsAddFundamentalDomain L F μ) (h_symm : ∀ x ∈ s, -x ∈ s) (h_conv : Convex ℝ s)
+    (h : μ F * 2 ^ finrank ℝ E < μ s) :
     ∃ x ≠ 0, ((x : L) : E) ∈ s := by
   have h_vol : μ F < μ ((2⁻¹ : ℝ) • s) := by
     rw [addHaar_smul_of_nonneg μ (by simp : 0 ≤ (2 : ℝ)⁻¹) s,
@@ -75,11 +76,10 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure [NormedAddC
     simpa [← mul_pow, ENNReal.inv_mul_cancel two_ne_zero ofNat_ne_top]
   obtain ⟨x, y, hxy, h⟩ :=
     exists_pair_mem_lattice_not_disjoint_vadd fund ((h_conv.smul _).nullMeasurableSet _) h_vol
-  obtain ⟨_, ⟨v, hv, rfl⟩, w, hw, hvw⟩ := Set.not_disjoint_iff.mp h
+  obtain ⟨_, ⟨v, hv, rfl⟩, w, hw, hvw : y.val + w = x.val + v⟩ := Set.not_disjoint_iff.mp h
   refine ⟨x - y, sub_ne_zero.2 hxy, ?_⟩
   rw [Set.mem_inv_smul_set_iff₀ (two_ne_zero' ℝ)] at hv hw
-  simp_rw [AddSubgroup.vadd_def, vadd_eq_add, add_comm _ w, ← sub_eq_sub_iff_add_eq_add, ←
-    AddSubgroup.coe_sub] at hvw
+  simp_rw [add_comm _ w, ← sub_eq_sub_iff_add_eq_add, ← AddSubgroupClass.coe_sub] at hvw
   rw [← hvw, ← inv_smul_smul₀ (two_ne_zero' ℝ) (_ - _), smul_sub, sub_eq_add_neg, smul_add]
   refine h_conv hw (h_symm _ hv) ?_ ?_ ?_ <;> norm_num
 
@@ -91,7 +91,8 @@ that `s` is compact and `L` is discrete but provides a weaker inequality rather 
 inequality. -/
 theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_le_measure [NormedAddCommGroup E]
     [NormedSpace ℝ E] [BorelSpace E] [FiniteDimensional ℝ E] [Nontrivial E] [IsAddHaarMeasure μ]
-    {L : AddSubgroup E} [Countable L] [DiscreteTopology L] (fund : IsAddFundamentalDomain L F μ)
+    {S : Type*} [SetLike S E] [AddSubgroupClass S E] {L : S} [Countable L] [DiscreteTopology L]
+    (fund : IsAddFundamentalDomain L F μ)
     (h_symm : ∀ x ∈ s, -x ∈ s) (h_conv : Convex ℝ s) (h_cpt : IsCompact s)
     (h : μ F * 2 ^ finrank ℝ E ≤ μ s) :
     ∃ x ≠ 0, ((x : L) : E) ∈ s := by
@@ -111,12 +112,13 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_le_measure [NormedAddC
       NNReal.coe_one] at this
     rw [K.iInter_smul_eq_self h_zero] at this
     · obtain ⟨x, hx⟩ := this
-      exact ⟨⟨x, by simp_all⟩, by aesop⟩
+      exact ⟨⟨x, hx.2.1⟩, fun h ↦ hx.2.2 congr($(h).val), hx.1⟩
     · exact (exists_seq_strictAnti_tendsto (0 : ℝ≥0)).choose_spec.2.2
   have h_clos : IsClosed ((L : Set E) \ {0}) := by
     rsuffices ⟨U, hU⟩ : ∃ U : Set E, IsOpen U ∧ U ∩ L = {0}
     · rw [sdiff_eq_sdiff_iff_inf_eq_inf (z := U).mpr (by simp [Set.inter_comm .. ▸ hU.2, zero_mem])]
-      exact AddSubgroup.isClosed_of_discreteTopology.sdiff hU.1
+      exact ((AddSubgroup.ofClass L).isClosed_of_isDiscrete
+        (isDiscrete_iff_discreteTopology.mpr ‹DiscreteTopology L›)).sdiff hU.1
     exact isOpen_inter_eq_singleton_of_mem_discrete ⟨inferInstance⟩ (zero_mem L)
   refine IsCompact.nonempty_iInter_of_sequence_nonempty_isCompact_isClosed Z (fun n => ?_)
     (fun n => ?_) ((S 0).isCompact.inter_right h_clos) (fun n => (S n).isClosed.inter h_clos)
