@@ -224,7 +224,7 @@ def aevalAevalEquiv : A × A ≃ (R[X][Y] →ₐ[R] A) where
     let := Polynomial.algebra; aeval (R := R[X]) (C xy.snd) |>.restrictScalars R
   invFun f := ⟨f <| C X, f Y⟩
   left_inv f := by simp
-  right_inv f := algHom_ext' (by ext; simp) (by simp)
+  right_inv f := by aesop
 
 /-- Given valuations `x` and `y` of the variables in an `R`-algebra `A`, `aevalAeval x y` is
 the unique `R`-algebra homomorphism from `R[X][Y]` to `A` sending `X` to `x` and `Y` to `y`. -/
@@ -378,7 +378,8 @@ open Polynomial
 
 namespace AdjoinRoot
 
-variable {R : Type*} [CommRing R] {x y : R} {p : R[X][Y]} (h : p.evalEval x y = 0)
+variable {R A : Type*} [CommRing R] [CommSemiring A] [Algebra R A] {x y : R} {p : R[X][Y]}
+  (h : p.evalEval x y = 0)
 
 /-- If the evaluation (`evalEval`) of a bivariate polynomial `p : R[X][Y]` at a point (x,y)
 is zero, then `Polynomial.evalEval x y` factors through `AdjoinRoot.evalEval`, a ring homomorphism
@@ -388,5 +389,32 @@ from `AdjoinRoot p` to `R`. -/
 
 lemma evalEval_mk (g : R[X][Y]) : evalEval h (mk p g) = g.evalEval x y := by
   rw [evalEval, lift_mk, eval₂_evalRingHom]
+
+variable (p) in
+/-- The bijection between elements `(x, y) : A × A` with `p(x, y) = 0` for some polynomial
+`p : R[X, Y]` and algebra homomorphisms `R[X, Y]/p →ₐ[R] A`. -/
+noncomputable def equivAevalAeval :
+    {xy : A × A // p.aevalAeval xy.fst xy.snd = 0} ≃ (AdjoinRoot p →ₐ[R] A) :=
+  Equiv.subtypeEquiv (aevalAevalEquiv R A) (fun _ ↦ Iff.rfl) |>.trans <| equivAlgHom p
+
+@[simp]
+lemma equivAevalAeval_apply_mk (xy : {xy : A × A // p.aevalAeval xy.fst xy.snd = 0}) (f : R[X][Y]) :
+    equivAevalAeval p xy (mk p f) = f.aevalAeval xy.val.fst xy.val.snd :=
+  rfl
+
+@[simp]
+lemma equivAevalAeval_apply_of (xy : {xy : A × A // p.aevalAeval xy.fst xy.snd = 0}) (f : R[X]) :
+    equivAevalAeval p xy (of p f) = f.aeval xy.val.fst := by
+  rw [← mk_C, equivAevalAeval_apply_mk, aevalAeval_C]
+
+@[simp]
+lemma equivAevalAeval_apply_root (xy : {xy : A × A // p.aevalAeval xy.fst xy.snd = 0}) :
+    equivAevalAeval p xy (root p) = xy.val.snd := by
+  rw [← mk_X, equivAevalAeval_apply_mk, aevalAeval_Y]
+
+@[simp]
+lemma equivAevalAeval_symm_apply (f : AdjoinRoot p →ₐ[R] A) :
+    (equivAevalAeval p).symm f = (f <| of p X, f <| root p) :=
+  rfl
 
 end AdjoinRoot

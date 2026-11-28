@@ -926,6 +926,67 @@ def equiv (f : F[X]) (hf : f ≠ 0) :
 
 end Field
 
+section AlgHom
+
+variable [CommSemiring R] [CommRing S] [Algebra R S] [Semiring T] [Algebra R T] (p : S[X])
+
+/-- The bijection between algebra homomorphisms `φ : S[X] →ₐ[R] T` with `φ(p) = 0` for some
+polynomial `p : S[X]` and algebra homomorphisms `S[X]/p →ₐ[R] T`. -/
+noncomputable def equivAlgHom : {φ : S[X] →ₐ[R] T // φ p = 0} ≃ (AdjoinRoot p →ₐ[R] T) :=
+  Equiv.subtypeEquivRight (fun _ ↦ span_singleton_le_iff_mem _ |>.symm) |>.trans <|
+    Quotient.liftₐEquiv _
+
+@[simp]
+lemma equivAlgHom_apply_mk (φ : {φ : S[X] →ₐ[R] T // φ p = 0}) (f : S[X]) :
+    equivAlgHom p φ (mk p f) = φ.val f :=
+  rfl
+
+@[simp]
+lemma equivAlgHom_apply_of (φ : {φ : S[X] →ₐ[R] T // φ p = 0}) (s : S) :
+    equivAlgHom p φ (of p s) = φ.val (C s) :=
+  rfl
+
+@[simp]
+lemma equivAlgHom_apply_root (φ : {φ : S[X] →ₐ[R] T // φ p = 0}) :
+    equivAlgHom p φ (root p) = φ.val X :=
+  rfl
+
+@[simp]
+lemma equivAlgHom_symm_apply (g : AdjoinRoot p →ₐ[R] T) (f : S[X]) :
+    (equivAlgHom p |>.symm g).val f = g (mk p f) :=
+  rfl
+
+end AlgHom
+
+section Aeval
+
+variable [CommRing R] [Semiring S] [Algebra R S] (p : R[X])
+
+/-- The bijection between elements `x : S` with `p(x) = 0` for some polynomial `p : R[X]` and
+algebra homomorphisms `R[X]/p →ₐ[R] S`. -/
+noncomputable def equivAeval : {x : S // aeval x p = 0} ≃ (AdjoinRoot p →ₐ[R] S) :=
+  Equiv.subtypeEquiv (aevalEquiv R S) (fun _ ↦ Iff.rfl) |>.trans <| equivAlgHom p
+
+@[simp]
+lemma equivAeval_apply_mk (x : {x : S // aeval x p = 0}) (f : R[X]) :
+    equivAeval p x (mk p f) = aeval x.val f :=
+  rfl
+
+@[simp]
+lemma equivAeval_apply_of (x : {x : S // aeval x p = 0}) (r : R) :
+    equivAeval p x (of p r) = algebraMap R S r := by
+  simp [← mk_C]
+
+@[simp]
+lemma equivAeval_apply_root (x : {x : S // aeval x p = 0}) : equivAeval p x (root p) = x := by
+  simp [← mk_X]
+
+@[simp]
+lemma equivAeval_symm_apply (f : AdjoinRoot p →ₐ[R] S) : (equivAeval p).symm f = f (root p) :=
+  rfl
+
+end Aeval
+
 end Equiv
 
 -- TODO: consider splitting the file here.  In the current mathlib3, the only result

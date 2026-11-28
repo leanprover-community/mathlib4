@@ -279,6 +279,14 @@ theorem ker_lift (φ : G →* M) (HN : N ≤ φ.ker) :
   rw [← congrArg MonoidHom.ker (lift_comp_mk' N φ HN), ← MonoidHom.comap_ker,
     Subgroup.map_comap_eq_self_of_surjective (mk'_surjective N)]
 
+/-- The bijection between group homomorphisms `φ : G →* M` with normal subgroup `N ≤ ker(φ)` and
+group homomorphisms `G/N →* M`. -/
+@[to_additive (attr := simps) /-- The bijection between `AddGroup` homomorphisms `φ : G →+ M` with
+normal `AddSubgroup` `N ≤ ker(φ)` and `AddGroup` homomorphisms `G/N →+ M`. -/]
+def liftHomEquiv : {φ : G →* M // N ≤ φ.ker} ≃ (G ⧸ N →* M) where
+  toFun f := lift _ _ f.prop
+  invFun f := ⟨f.comp <| mk' N, fun _ h ↦ by simp [eq_one_iff _ |>.mpr h]⟩
+
 @[to_additive]
 lemma injective_lift_iff (φ : G →* M) (HN : N ≤ φ.ker) :
     Function.Injective (QuotientGroup.lift N φ HN) ↔ N = φ.ker := by
