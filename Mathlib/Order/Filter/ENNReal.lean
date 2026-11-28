@@ -231,10 +231,15 @@ theorem limsup_mul_le [CountableInterFilter f] (u v : α → ℝ≥0∞) :
       filter_upwards [@eventually_le_limsup _ f _ u] with x hx using mul_le_mul' hx le_rfl
     _ = f.limsup u * f.limsup v := limsup_const_mul
 
-theorem limsup_add_le [CountableInterFilter f] (u v : α → ℝ≥0∞) :
-    f.limsup (u + v) ≤ f.limsup u + f.limsup v :=
-  sInf_le ((eventually_le_limsup u).mp
-    ((eventually_le_limsup v).mono fun _ hxg hxf => add_le_add hxf hxg))
+theorem limsup_add_le (u v : α → ℝ≥0∞) : f.limsup (u + v) ≤ f.limsup u + f.limsup v := by
+  rw [limsup_eq (u := u), limsup_eq (u := v), sInf_eq_iInf, sInf_eq_iInf]
+  refine le_iInf₂_add_iInf₂ fun _ ha _ hb ↦ ?_
+  exact limsup_le_of_le (h := ha.mp <| hb.mono fun _ hb' ha' ↦ add_le_add ha' hb')
+
+theorem le_liminf_add (u v : α → ℝ≥0∞) : f.liminf u + f.liminf v ≤ f.liminf (u + v) := by
+  rw [liminf_eq (u := u), liminf_eq (u := v), sSup_eq_iSup, sSup_eq_iSup]
+  refine biSup_add_biSup_le' ⟨0, by simp⟩ ⟨0, by simp⟩ fun _ ha _ hb ↦ ?_
+  exact le_liminf_of_le (h := ha.mp <| hb.mono fun _ hb' ha' ↦ add_le_add ha' hb')
 
 theorem limsup_liminf_le_liminf_limsup {β} [Countable β] {f : Filter α} [CountableInterFilter f]
     {g : Filter β} (u : α → β → ℝ≥0∞) :
