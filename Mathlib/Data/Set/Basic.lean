@@ -631,6 +631,9 @@ alias exists_mem_of_nonempty := exists_mem_univ_of_nonempty
 theorem ne_univ_iff_exists_notMem {α : Type*} (s : Set α) : s ≠ univ ↔ ∃ a, a ∉ s := by
   rw [← not_forall, ← eq_univ_iff_forall]
 
+lemma ne_univ_of_notMem {α : Type*} {s : Set α} {a : α} (ha : a ∉ s) : s ≠ univ :=
+  ne_univ_iff_exists_notMem s |>.mpr ⟨a, ha⟩
+
 theorem not_subset_iff_exists_mem_notMem {α : Type*} {s t : Set α} :
     ¬s ⊆ t ↔ ∃ x, x ∈ s ∧ x ∉ t := by simp [subset_def]
 
