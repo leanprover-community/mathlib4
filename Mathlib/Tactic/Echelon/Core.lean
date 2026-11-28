@@ -58,7 +58,7 @@ initialize registerTraceClass `Tactic.evalRank
 
 namespace Mathlib.Tactic.Echelon
 
-/-- Arithmetics on values of `V`. -/
+/-- Arithmetic on values of `V`. -/
 structure RingOps (V : Type) where
   /-- The zero value. -/
   zero : V

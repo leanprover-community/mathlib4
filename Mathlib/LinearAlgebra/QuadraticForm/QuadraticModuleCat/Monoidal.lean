@@ -50,7 +50,7 @@ abbrev tensorObj (X Y : QuadraticModuleCat.{u} R) : QuadraticModuleCat.{u} R :=
 
 /-- Auxiliary definition used to build `QuadraticModuleCat.instMonoidalCategory`.
 
-We want this up front so that we can re-use it to define `whiskerLeft` and `whiskerRight`. -/
+We want this up front so that we can reuse it to define `whiskerLeft` and `whiskerRight`. -/
 abbrev tensorHom {W X Y Z : QuadraticModuleCat.{u} R} (f : W ⟶ X) (g : Y ⟶ Z) :
     tensorObj W Y ⟶ tensorObj X Z :=
   ⟨f.toIsometry.tmul g.toIsometry⟩

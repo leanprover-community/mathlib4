@@ -95,7 +95,7 @@ noncomputable abbrev filteredColimitsModule : Module (RingCat.FilteredColimits.c
       (rightToMax V₁ V₂ ≫ rightToMax U (max V₁ V₂))
     refine Functor.ιColimitType_eq_of_map_eq_map _ _ _ β α ?_
     dsimp
-    -- We use this pattern instead of a single `simp` to avoid heatbeat modifications
+    -- We use this pattern instead of a single `simp` to avoid heartbeat modifications
     rw [H, H, H]
     simp only [← ConcreteCategory.comp_apply, ← Functor.map_comp]
     simp only [map_add, ← ConcreteCategory.comp_apply, ← Functor.map_comp, h₁, h₂, h₃, h₄, H]

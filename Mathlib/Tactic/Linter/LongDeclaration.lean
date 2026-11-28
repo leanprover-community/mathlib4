@@ -20,7 +20,7 @@ The `linter.longDeclaration` linter warns when a command contains more than 200 
 
 There is a general consensus that long proofs are bad style, and are better refactored into multiple
 smaller lemmas (making proofs easier to understand for human readers, faster to compile, and more
-likely to be re-usable elsewhere).
+likely to be reusable elsewhere).
 
 Blank lines and lines consisting entirely of comments are excluded (in order to avoid incentivizing
 authors not to comment their code). Multiline tokens, such as string literals, contribute all their

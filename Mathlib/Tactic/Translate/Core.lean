@@ -751,7 +751,7 @@ succeeds. -/
 def insertTranslationsChecked (t : TranslateData) (srcs tgts : Array Name) (cfg : Config)
     (allowDuplicate := false) :
     CoreM Unit := do
-  if srcs.size != tgts.size then throwError "{srcs} and {tgts} should be of equal lenght"
+  if srcs.size != tgts.size then throwError "{srcs} and {tgts} should be of equal length"
   let mut tgts := tgts
   for src in srcs do
     let result : Except MessageData Nat ← id do

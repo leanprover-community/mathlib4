@@ -92,7 +92,7 @@ fi
 
 # If we're refactoring mathlib, don't get the cache.
 # If not, mathlib may be a dependency, in which case it will live in `SideSkimmer/.lake/packages`.
-# TODO: duplicating the oleans is not ideal. Can we re-use the packages already available locally?
+# TODO: duplicating the oleans is not ideal. Can we reuse the packages already available locally?
 # Setting `packagesDir` does not seem to work.
 if [[ "${target_pkg}" == "mathlib" ]]; then
   export MATHLIB_NO_CACHE_ON_UPDATE=1

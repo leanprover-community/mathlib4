@@ -742,7 +742,7 @@ protected noncomputable def mkCLM (A : 𝓓^{n₁}_{K₁}(E, F) → E → F')
       · exact ⟨∅, 0, fun f ↦ by
           simp [ContDiffMapSupportedIn.seminorm_eq_bot_of_gt 𝕜 (not_le.1 hi)]⟩ }
 
-/-- Define a continous `𝕜`-linear map fom `𝓓^{n}_{K}(E, F)` to a normed space. -/
+/-- Define a continuous `𝕜`-linear map from `𝓓^{n}_{K}(E, F)` to a normed space. -/
 protected noncomputable def mkCLMtoNormedSpace {G : Type*} [NormedAddCommGroup G]
     [NormedSpace 𝕜 G] (A : 𝓓^{n}_{K}(E, F) → G)
     (hadd : ∀ f g, A (f + g) = A f + A g)

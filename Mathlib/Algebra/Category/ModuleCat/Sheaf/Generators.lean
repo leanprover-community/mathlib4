@@ -157,7 +157,7 @@ variable {M : SheafOfModules.{u} R} (G : M.GeneratingSections)
   (η : unit S ≅ F.obj (unit R))
 
 -- `preservesColimitsOfSize_shrink` is not a global instance because it loops indefinitely.
--- But here it is fine as an instance since the universe `u` is inferrable from the type of `F`.
+-- But here it is fine as an instance since the universe `u` is inferable from the type of `F`.
 local instance : PreservesColimitsOfSize.{0, 0} F := preservesColimitsOfSize_shrink _
 
 /-- Let `F` be a functor from sheaf of `R`-module to sheaf of `S`-module, if `F` preserves

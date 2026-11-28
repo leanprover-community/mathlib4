@@ -148,7 +148,7 @@ public def validateTitle (title : String) : Array String := Id.run do
       errors := errors.push
         "error: the PR title contains a tab; please use single spaces instead"
     -- Check for unicode characters which are not allowed: we don't want direction-changing
-    -- characters, invisible spaces or so (for example). We re-use the code in the Unicode linter.
+    -- characters, invisible spaces or so (for example). We reuse the code in the Unicode linter.
     let badChars := title.chars.filter (fun c ↦ !UnicodeLinter.isAllowedCharacter c && c != '\t')
     if !badChars.isEmpty then
       let err := ", ".intercalate <| badChars.map

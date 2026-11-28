@@ -314,7 +314,7 @@ section ExtractRepoFromUrl
 /-- Parses `owner/name` from a git remote URL. The result selects the per-repo
 read chain, so misreading a fork as the canonical repo would read the wrong
 chain; these cases cover every URL shape git emits via `git remote get-url` or a
-direct remote (e.g. `gh pr checkout`). Unparseable input returns `none`, and the
+direct remote (e.g. `gh pr checkout`). Unparsable input returns `none`, and the
 caller falls back to `MATHLIBREPO`. -/
 def test_extractRepoFromUrl : IO Unit := do
   IO.println "extractRepoFromUrl:"

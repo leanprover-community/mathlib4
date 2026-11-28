@@ -42,7 +42,7 @@ pretty-printing a lean command.
 The main intent is to convert `s` to a reasonable candidate for a desirable source code format.
 The function first replaces consecutive whitespace sequences into a single space (` `), in an
 attempt to side-step line-break differences.
-After that, it applies some pre-emptive changes:
+After that, it applies some preemptive changes:
 * doc-module beginnings tend to have some whitespace following them, so we add a space back in;
 * name quotations such as ``` ``Nat``` get pretty-printed as ``` `` Nat```, so we remove a space
   after double back-ticks, but take care of adding one more for triple (or more) back-ticks;

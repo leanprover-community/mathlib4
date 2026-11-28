@@ -35,7 +35,7 @@ universe u v w u₁ v₁ u₂ u₃
 By defining this in terms of the scalar action instead of `algebraMap`, we avoid the need
 for an `Algebra` structure on the types, thereby allowing this to pertain to non-unital algebras
 as well.
-In certain contexts where the `Algebra` structure is avaiable it is easier to define an `AlgEquiv`
+In certain contexts where the `Algebra` structure is available it is easier to define an `AlgEquiv`
 by providing the `AlgHom.commutes'` field. For this reason a convenience constructor
 `AlgEquiv.ofCommutes` is provided to the user. -/
 structure AlgEquiv (R : Type u) (A : Type v) (B : Type w) [Add A] [Add B]

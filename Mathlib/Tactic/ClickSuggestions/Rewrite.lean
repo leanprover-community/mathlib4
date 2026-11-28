@@ -89,7 +89,7 @@ def RwLemma.try (i : RwInfo) (lem : RwLemma) (assignableMVars : Array Expr) :
     ClickSuggestionsM (Result RwKey) := do
   let e := i.subExpr
   let (proof, mvars, binderInfos, eqn) ← lem.name.forallMetaTelescopeReducing
-  let mkApp2 _ lhs rhs ← whnf eqn | throwError "Exected an equality or iff, not {eqn}"
+  let mkApp2 _ lhs rhs ← whnf eqn | throwError "Expected an equality or iff, not {eqn}"
   let (lhs, rhs) := if lem.symm then (rhs, lhs) else (lhs, rhs)
   let lhsOrig := lhs; let mctxOrig ← getMCtx
   unless ← isDefEq lhs e do throwError "{lhs} does not unify with {e}"
