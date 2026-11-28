@@ -10,6 +10,7 @@ public meta import Mathlib.Lean.Linter -- linter utilities; will be transitively
 public meta import Mathlib.Tactic.AdaptationNote -- make #adaptation_note available everywhere
 public meta import Mathlib.Tactic.Lemma
 public meta import Mathlib.Tactic.Linter.DeclType
+public meta import Mathlib.Tactic.Linter.DefeqAbuse
 public meta import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
 public meta import Mathlib.Tactic.Linter.DirectoryDependency
 public meta import Mathlib.Tactic.Linter.DocPrime
@@ -92,6 +93,7 @@ register_linter_set linter.mathlibStandardSet :=
   linter.hashCommand
   linter.longDeclaration
   linter.oldObtain
+  linter.defeqAbuse
   linter.privateModule
   linter.style.cases
   linter.style.induction
