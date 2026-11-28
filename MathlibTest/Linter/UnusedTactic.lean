@@ -310,7 +310,9 @@ example : True := by
 
 end allowing_more_unused_tactics
 
-section ignore_tactic_kind
+
+-- Allowing subtactics has the desired effect of silencing the linter
+section unused_subtactics_inside
 
 syntax (name := doEmitWarningStx) "doEmitWarning" tactic : command
 macro_rules
@@ -321,7 +323,7 @@ macro_rules
   | `(command| doNotEmitWarning $tac) => `(command| example : True := by $tac ; constructor)
 
 -- `#eval` instead of `initialize` so that the effect can be tested in this file
-#eval Mathlib.Linter.UnusedTactic.addIgnoreTacticKind ``doNotEmitWarningStx
+allow_unused_subtactics_inside doNotEmitWarningStx
 
 /--
 warning: Unused tactic linter: `congr` does not change the goal.
@@ -332,4 +334,4 @@ Note: This linter can be disabled with `set_option linter.unusedTactic false`
 
 #guard_msgs in doNotEmitWarning congr
 
-end ignore_tactic_kind
+end unused_subtactics_inside
