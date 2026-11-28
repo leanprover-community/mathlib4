@@ -62,11 +62,8 @@ theorem toAddHom_coeRingHom : (coeRingHom F : F →ₙ+ (a : α) → β a) = coe
 
 variable (F) in
 /-- Evaluation as a ring homomorphism. -/
-@[expose]
-def evalRingHom (x : α) : F →+* β x := (Pi.evalRingHom _ x).comp (coeRingHom F)
-
-@[simp]
-theorem evalRingHom_apply (x : α) (f : F) : evalRingHom F x f = f x := rfl
+@[expose, simps!]
+def evalRingHom (x : α) : F →+* β := (Pi.evalRingHom _ x).comp (coeRingHom F)
 
 @[simp, norm_cast]
 theorem toMonoidHom_evalRingHom (x : α) : (evalRingHom F x : F →* β x) = evalMonoidHom F x := rfl

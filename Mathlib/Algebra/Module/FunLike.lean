@@ -52,11 +52,8 @@ theorem toAddHom_coeLinearMap : (coeLinearMap R F : F →ₙ+ (a : α) → β a)
 
 variable (R F) in
 /-- Evaluation as a linear map. -/
-@[expose]
-def evalLinearMap (x : α) : F →ₗ[R] β x := (LinearMap.proj x).comp (coeLinearMap R F)
-
-@[simp]
-theorem evalLinearMap_apply (x : α) (f : F) : evalLinearMap R F x f = f x := rfl
+@[expose, simps!]
+def evalLinearMap (x : α) : F →ₗ[R] β := (LinearMap.proj x).comp (coeLinearMap R F)
 
 @[simp, norm_cast]
 theorem toAddMonoidHom_evalLinearMap [IsZeroApply F] (x : α) :

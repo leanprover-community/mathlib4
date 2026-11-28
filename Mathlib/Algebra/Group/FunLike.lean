@@ -92,12 +92,9 @@ theorem coeMonoidHom_injective : Function.Injective (coeMonoidHom F α β) := by
 
 variable (F) in
 /-- Evaluation as a monoid homomorphism. -/
-@[to_additive
+@[to_additive (attr := simps!)
 /-- Evaluation as an additive monoid homomorphism. -/]
-def evalMonoidHom (x : α) : F →* β x := (Pi.evalMonoidHom _ x).comp (coeMonoidHom F α β)
-
-@[to_additive (attr := simp)]
-theorem evalMonoidHom_apply (x : α) (f : F) : evalMonoidHom F x f = f x := rfl
+def evalMonoidHom (x : α) : F →* β := (Pi.evalMonoidHom _ x).comp (coeMonoidHom F α β)
 
 @[to_additive (attr := simp)]
 theorem toMulHom_evalMonoidHom (x : α) : (evalMonoidHom F x : F →ₙ* β x) = evalMulHom F x := rfl
