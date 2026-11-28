@@ -168,7 +168,7 @@ private lemma summable_F'' : Summable F'' := by
     conv => enter [1, p]; rw [tsum_mul_right, tsum_geometric_of_lt_one (hp₀ p).le (hp₁ p)]
     refine (summable_rpow.mpr (by norm_num : -(3 / 2 : ℝ) < -1)).mul_left 2
       |>.of_nonneg_of_le (fun p ↦ ?_) (fun p ↦ ?_)
-    · positivity [sub_pos.mpr (hp₁ p)]
+    · positivity [hp₁ p]
     · rw [Real.inv_rpow p.val.cast_nonneg, Real.rpow_neg p.val.cast_nonneg]
       gcongr
       rw [inv_le_comm₀ (sub_pos.mpr (hp₁ p)) zero_lt_two, le_sub_comm,

@@ -10,6 +10,7 @@ public import Mathlib.RingTheory.PowerSeries.Inverse
 
 import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Data.Nat.Cast.Field
+import Mathlib.Tactic.Field
 
 /-!
 # Exponential Power Series
@@ -76,7 +77,7 @@ theorem derivative_exp (A : Type*) [CommRing A] [Algebra ℚ A] :
     rw [map_add, map_natCast, map_one]
   rw [key, ← map_mul, factorial_succ, Nat.cast_mul, Nat.cast_add_one]
   congr 1
-  field_simp
+  field
 
 /-! ### Uniqueness characterization -/
 
