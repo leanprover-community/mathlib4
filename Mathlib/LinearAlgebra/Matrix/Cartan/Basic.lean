@@ -21,7 +21,9 @@ This file defines Cartan matrices for simple Lie algebras, both the exceptional 
 (E₆, E₇, E₈, F₄, G₂) and the classical infinite families (A, B, C, D), as well as the
 generalized Eₙ family obtained by continuing the E-type Dynkin diagram.
 
-It also defines the predicate that a matrix is a finite-type Cartan matrix `Matrix.IsFiniteCartan`.
+It also defines the predicate that a matrix is a finite-type Cartan matrix `Matrix.IsFiniteCartan`,
+and `CartanMatrix.bonds`, the five possible pairs `(Mᵢⱼ, Mⱼᵢ)` of non-zero entries
+(`Matrix.IsFiniteCartan.apply_cases`), with the predicate `CartanMatrix.IsBond`.
 
 ## Main definitions
 
@@ -202,6 +204,32 @@ theorem A_isSymm : (A n).IsSymm := A_transpose n
   ext; simp only [D, transpose_apply, of_apply]; grind
 
 theorem D_isSymm : (D n).IsSymm := D_transpose n
+
+/-! ### Symmetries -/
+
+/-- Reversing the order of the indices is a symmetry of the path `Aₙ`. -/
+theorem A_submatrix_revPerm :
+    (A n).submatrix Fin.revPerm Fin.revPerm = A n := by
+  ext i j
+  simp [A, Fin.ext_iff]
+  lia
+
+/-- Swapping the two short arms `0` and `1` is a symmetry of `Dₙ`: a permutation that exchanges
+`0` and `1` and fixes every other index preserves `D n`. -/
+theorem D_submatrix_swap [n.AtLeastTwo] (e : Equiv.Perm (Fin n)) (he₀ : e 0 = 1) (he₁ : e 1 = 0)
+    (he : ∀ i, 2 ≤ i.val → e i = i) :
+    (D n).submatrix e e = D n := by
+  have h1 : 1 % n = 1 := Nat.mod_eq_of_lt Nat.AtLeastTwo.one_lt
+  have key (i : Fin n) : (i : ℕ) < 2 ∧ (e i : ℕ) = 1 - i ∨ 2 ≤ (i : ℕ) ∧ e i = i := by
+    obtain rfl | rfl | h : i = 0 ∨ i = 1 ∨ 2 ≤ i.val := by grind
+    · simp [he₀, h1]
+    · simp [he₁, h1]
+    · exact .inr ⟨h, he i h⟩
+  ext i j
+  have := key i
+  have := key j
+  simp only [D, submatrix_apply, of_apply, Fin.ext_iff]
+  split_ifs <;> lia
 
 /-! ### Small cases -/
 
@@ -491,6 +519,42 @@ structure Matrix.IsFiniteCartan {ι : Type*} [Fintype ι] [DecidableEq ι] (M : 
     extends IsGeneralizedCartan M where
   exists_posDef' : ∃ d : ι → ℤ, (∀ i, 0 < d i) ∧ ∀ x ≠ 0, 0 < x ⬝ᵥ ((diagonal d * M) *ᵥ x)
 
+namespace CartanMatrix
+
+/-- The five pairs `(Mᵢⱼ, Mⱼᵢ)` that can occur between two distinct joined indices of a finite
+Cartan matrix (see `Matrix.IsFiniteCartan.apply_cases`): a simple bond, a double bond in either
+direction, or a triple bond in either direction. -/
+def bonds : Finset (ℤ × ℤ) := {(-1, -1), (-1, -2), (-2, -1), (-1, -3), (-3, -1)}
+
+/-- `IsBond a b` says that `(a, b)` is one of the five `CartanMatrix.bonds`. -/
+def IsBond (a b : ℤ) : Prop := (a, b) ∈ bonds
+
+instance : DecidableRel IsBond := fun a b ↦ inferInstanceAs (Decidable ((a, b) ∈ bonds))
+
+/-- A bond is a pair of entries one of which is `-1` and the other `-1`, `-2` or `-3`. -/
+lemma isBond_iff {a b : ℤ} :
+    IsBond a b ↔ a = -1 ∧ b ∈ Set.Icc (-3) (-1) ∨ b = -1 ∧ a ∈ Set.Icc (-3) (-1) := by
+  simp only [IsBond, bonds, Finset.mem_insert, Finset.mem_singleton, Prod.mk.injEq, Set.mem_Icc]
+  lia
+
+namespace IsBond
+
+variable {a b : ℤ}
+
+lemma swap (h : IsBond a b) : IsBond b a := by
+  rw [isBond_iff] at *; tauto
+
+lemma one_le_mul (h : IsBond a b) : 1 ≤ a * b :=
+  (by decide : ∀ p ∈ bonds, 1 ≤ p.1 * p.2) _ h
+
+/-- A bond is either simple or has at least two bonds. -/
+lemma eq_neg_one_or_two_le_mul (h : IsBond a b) : a = -1 ∧ b = -1 ∨ 2 ≤ a * b := by
+  simpa using (by decide : ∀ p ∈ bonds, p = (-1, -1) ∨ 2 ≤ p.1 * p.2) _ h
+
+end IsBond
+
+end CartanMatrix
+
 variable {ι : Type*} [Fintype ι] [DecidableEq ι] {M : Matrix ι ι ℤ}
 
 namespace Matrix.IsFiniteCartan
@@ -692,6 +756,48 @@ omit hM in
 @[simp] protected lemma transpose_iff :
     Mᵀ.IsFiniteCartan ↔ M.IsFiniteCartan :=
   ⟨fun h ↦ by simpa using h.transpose, IsFiniteCartan.transpose⟩
+
+section Submatrix
+
+variable {κ : Type*} [Fintype κ] [DecidableEq κ]
+
+/-- A relabelling of a finite Cartan matrix is a finite Cartan matrix. -/
+protected lemma reindex (e : ι ≃ κ) : (M.reindex e e).IsFiniteCartan :=
+  hM.submatrix e.symm.injective
+
+omit hM in
+@[simp] lemma submatrix_equiv_iff {σ : κ ≃ ι} :
+    (M.submatrix σ σ).IsFiniteCartan ↔ M.IsFiniteCartan := by
+  refine ⟨fun h ↦ ?_, fun h ↦ h.submatrix σ.injective⟩
+  simpa using h.submatrix σ.symm.injective
+
+end Submatrix
+
+/-- Two distinct indices are joined by at most three bonds: the `2 × 2` principal minor
+`4 - Mᵢⱼ Mⱼᵢ` is positive. -/
+lemma mul_lt_four {i j : ι} (hij : i ≠ j) : M i j * M j i < 4 := by
+  have h := (hM.submatrix (injective_pair_iff_ne.mpr hij)).det_pos
+  rw [det_fin_two] at h
+  simp [hM.diag] at h
+  linarith
+
+lemma mul_nonneg_of_ne {i j : ι} (hij : i ≠ j) : 0 ≤ M i j * M j i :=
+  mul_nonneg_of_nonpos_of_nonpos (hM.offDiag_nonpos i j hij) (hM.offDiag_nonpos j i hij.symm)
+
+/-- Two distinct indices are either not joined, or joined by one of the five bonds. -/
+lemma apply_cases {i j : ι} (hij : i ≠ j) :
+    M i j = 0 ∧ M j i = 0 ∨ CartanMatrix.IsBond (M i j) (M j i) := by
+  have h₁ := hM.offDiag_nonpos i j hij
+  have h₂ := hM.offDiag_nonpos j i hij.symm
+  have h₃ := hM.mul_lt_four hij
+  obtain h | h := eq_or_ne (M i j) 0
+  · exact .inl ⟨h, (hM.zero_comm i j).mp h⟩
+  have h' : M j i ≠ 0 := by simpa [hM.zero_comm] using h
+  have : -3 ≤ M i j := by nlinarith [show M j i ≤ -1 by lia]
+  have : -3 ≤ M j i := by nlinarith [show M i j ≤ -1 by lia]
+  right
+  rw [CartanMatrix.isBond_iff, Set.mem_Icc, Set.mem_Icc]
+  interval_cases M i j <;> interval_cases M j i <;> lia
 
 end Matrix.IsFiniteCartan
 
