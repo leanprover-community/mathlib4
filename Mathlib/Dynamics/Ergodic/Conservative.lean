@@ -186,9 +186,9 @@ theorem ae_forall_image_mem_imp_frequently_image_mem (hf : Conservative f μ)
 /-- If `f` is a conservative self-map and `s` is a measurable set of positive measure, then
 `ae μ`-frequently we have `x ∈ s` and `s` returns to `s` under infinitely many iterations of `f`. -/
 theorem frequently_ae_mem_and_frequently_image_mem (hf : Conservative f μ)
-    (hs : NullMeasurableSet s μ) (h0 : μ s ≠ 0) : ∃ᵐ x ∂μ, x ∈ s ∧ ∃ᶠ n in atTop, f^[n] x ∈ s :=
-  ((frequently_ae_mem_iff.2 h0).and_eventually (hf.ae_mem_imp_frequently_image_mem hs)).mono
-    fun _ hx => ⟨hx.1, hx.2 hx.1⟩
+    (hs : NullMeasurableSet s μ) (h0 : μ s ≠ 0) : ∃ᵐ x ∂μ, x ∈ s ∧ ∃ᶠ n in atTop, f^[n] x ∈ s := by
+  apply (frequently_ae_mem_iff.2 h0).mp
+  filter_upwards [hf.ae_mem_imp_frequently_image_mem hs] with x hx hxs using ⟨hxs, hx hxs⟩
 
 /-- Poincaré recurrence theorem. Let `f : α → α` be a conservative dynamical system on a topological
 space with second countable topology and measurable open sets. Then almost every point `x : α`

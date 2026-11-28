@@ -337,8 +337,8 @@ lemma isCoboundedUnder_ge_mul_of_nonneg [LinearOrder α] [Mul α] [Zero α] [Pos
   obtain ⟨U, hU⟩ := h₂.eventually_le
   obtain ⟨V, hV⟩ := h₄.frequently_le
   refine IsCoboundedUnder.of_frequently_le (a := U * V) ?_
-  apply (hV.and_eventually (hU.and (h₁.and h₃))).mono
-  intro x ⟨x_V, x_U, u_0, v_0⟩
+  apply hV.mp
+  filter_upwards [hU, h₁, h₃] with x x_U u_0 v_0 x_V
   exact (mul_le_mul_of_nonneg_right x_U v_0).trans (mul_le_mul_of_nonneg_left x_V (u_0.trans x_U))
 
 end mul
