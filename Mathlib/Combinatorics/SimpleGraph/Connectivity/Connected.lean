@@ -779,6 +779,23 @@ theorem maximal_connected_induce_iff (s : Set V) :
 end ConnectedComponent
 
 variable (G) in
+/-- The graphs induced on the connected components of `G`, viewed on the original
+vertex set, have supremum `G`. -/
+theorem iSup_connectedComponent_spanningCoe :
+    (⨆ c : G.ConnectedComponent, c.toSimpleGraph.spanningCoe) = G := by
+  ext x y
+  simp only [iSup_adj, ConnectedComponent.adj_spanningCoe_toSimpleGraph,
+    ConnectedComponent.mem_supp_iff, exists_eq_left']
+
+variable (G) in
+/-- Joining distinct reachable vertices gives the union of the complete graphs on the
+connected components of `G`. -/
+theorem fromRel_reachable_eq_iSup_connectedComponent_top :
+    fromRel G.Reachable = ⨆ c : G.ConnectedComponent, (⊤ : SimpleGraph c).spanningCoe := by
+  ext
+  simp [SetLike.coe, map_adj', reachable_comm]
+
+variable (G) in
 /-- The vertices of a graph are partitioned among its connected components. -/
 @[simps!]
 def verticesEquivSigmaConnectedComponent : V ≃ Σ c : G.ConnectedComponent, c :=
@@ -790,14 +807,6 @@ variable (G) in
 def edgeSetEquivSigmaConnectedComponent :
     G.edgeSet ≃ Σ c : G.ConnectedComponent, c.toSimpleGraph.edgeSet :=
   .sigmaQuotFromRel G.symm <| .ofLE fun _ _ ↦ Adj.reachable
-
-variable (G) in
-/-- Joining distinct reachable vertices gives the union of the complete graphs on the
-connected components of `G`. -/
-theorem fromRel_reachable_eq_iSup_completeGraph :
-    fromRel G.Reachable = ⨆ c : G.ConnectedComponent, (completeGraph c.supp).spanningCoe := by
-  ext x y
-  simp [iSup_adj, spanningCoe, map_adj', Subtype.exists, ← ConnectedComponent.eq, eq_comm]
 
 variable (G) in
 theorem sum_connectedComponent_ncard_supp [Finite V] [Fintype G.ConnectedComponent] :
