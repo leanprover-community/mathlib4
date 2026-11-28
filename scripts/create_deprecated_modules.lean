@@ -5,9 +5,12 @@ Authors: Damiano Testa
 -/
 
 --import Mathlib.Init
-import Std.Time.Format
-import Std.Time.Zoned
-import Lean.Meta.Tactic.TryThis
+module
+
+meta import Std.Time.Format
+meta import Std.Time.Zoned
+public meta import Lean.Meta.Tactic.TryThis
+public meta import Lean.Elab.Command
 -- a comment here to test `keepTrailing
 
 /-!
@@ -15,6 +18,8 @@ import Lean.Meta.Tactic.TryThis
 
 This file defines the lean script for creating a deprecated module.
 -/
+
+meta section
 
 open Lean Elab Command
 
@@ -388,9 +393,12 @@ the deprecations later on.
 #find_deleted_files 500 10%
 
 /--
-info: import Std.Time.Format
-import Std.Time.Zoned
-import Lean.Meta.Tactic.TryThis
+info: module -- shake: keep-all
+
+meta import Std.Time.Format
+meta import Std.Time.Zoned
+public meta import Lean.Meta.Tactic.TryThis
+public meta import Lean.Elab.Command
 -/
 #guard_msgs in
 run_cmd
@@ -399,9 +407,12 @@ run_cmd
   logInfo head
 
 /--
-info: import Std.Time.Format
-import Std.Time.Zoned
-import Lean.Meta.Tactic.TryThis
+info: module -- shake: keep-all
+
+meta import Std.Time.Format
+meta import Std.Time.Zoned
+public meta import Lean.Meta.Tactic.TryThis
+public meta import Lean.Elab.Command
 -- a comment here to test `keepTrailing
 -/
 #guard_msgs in
