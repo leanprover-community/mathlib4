@@ -6,8 +6,8 @@ Authors: Mario Carneiro, Johannes Hölzl, Patrick Massot
 module
 
 public import Mathlib.Data.Set.Image
-public import Mathlib.Data.SProd
-public import Mathlib.Data.Sum.Basic
+
+import Mathlib.Data.Sum.Basic
 
 /-!
 # Sets in product and pi types
@@ -266,7 +266,7 @@ theorem image_prodMk_subset_prod_left (hb : b ∈ t) : (fun a => (a, b)) '' s �
 theorem image_prodMk_subset_prod_right (ha : a ∈ s) : Prod.mk a '' t ⊆ s ×ˢ t := by grind
 
 theorem prod_subset_preimage_fst (s : Set α) (t : Set β) : s ×ˢ t ⊆ Prod.fst ⁻¹' s :=
-  inter_subset_left
+  inter_subset_left (s := Prod.fst ⁻¹' s) (t := Prod.snd ⁻¹' t)
 
 theorem fst_image_prod_subset (s : Set α) (t : Set β) : Prod.fst '' s ×ˢ t ⊆ s :=
   image_subset_iff.2 <| prod_subset_preimage_fst s t
@@ -280,7 +280,7 @@ lemma mapsTo_fst_prod {s : Set α} {t : Set β} : MapsTo Prod.fst (s ×ˢ t) s :
   fun _ hx ↦ (mem_prod.1 hx).1
 
 theorem prod_subset_preimage_snd (s : Set α) (t : Set β) : s ×ˢ t ⊆ Prod.snd ⁻¹' t :=
-  inter_subset_right
+  inter_subset_right (s := Prod.fst ⁻¹' s) (t := Prod.snd ⁻¹' t)
 
 theorem snd_image_prod_subset (s : Set α) (t : Set β) : Prod.snd '' s ×ˢ t ⊆ t :=
   image_subset_iff.2 <| prod_subset_preimage_snd s t
@@ -346,7 +346,7 @@ theorem prod_eq_prod_iff :
     rintro ⟨rfl, rfl⟩
     exact prod_eq_empty_iff.mp h
   rw [prod_eq_prod_iff_of_nonempty h]
-  rw [nonempty_iff_ne_empty, Ne, prod_eq_empty_iff] at h
+  rw [← ne_empty_iff_nonempty, Ne, prod_eq_empty_iff] at h
   simp_rw [h, false_and, or_false]
 
 @[simp]
@@ -487,7 +487,7 @@ def Function.Pullback.snd {f : X → Y} {g : Z → Y} (p : f.Pullback g) : Z := 
 
 open Function.Pullback in
 lemma Function.pullback_comm_sq (f : X → Y) (g : Z → Y) :
-    f ∘ @fst X Y Z f g = g ∘ @snd X Y Z f g := funext fun p ↦ p.2
+    f ∘ @fst X Y Z f g = g ∘ @snd X Y Z f g := funext fun p ↦ p.property
 
 /-- The diagonal map $\Delta: X \to X \times_Y X$. -/
 @[simps]
@@ -504,7 +504,7 @@ def Function.mapPullback {X₁ X₂ Y₁ Y₂ Z₁ Z₂}
     (commX : f₂ ∘ mapX = mapY ∘ f₁) (commZ : g₂ ∘ mapZ = mapY ∘ g₁)
     (p : f₁.Pullback g₁) : f₂.Pullback g₂ :=
   ⟨(mapX p.fst, mapZ p.snd),
-    (congr_fun commX _).trans <| (congr_arg mapY p.2).trans <| congr_fun commZ.symm _⟩
+    (congr_fun commX _).trans <| (congr_arg mapY p.property).trans <| congr_fun commZ.symm _⟩
 
 open Function.Pullback in
 /-- The projection $(X \times_Y Z) \times_Z (X \times_Y Z) \to X \times_Y X$. -/
@@ -683,6 +683,14 @@ theorem uniqueElim_preimage [Unique ι] (t : ∀ i, Set (α i)) :
 
 section Nonempty
 
+lemma pi_image_pi_of_subset {C : (i : ι) → Set (Set (α i))} (hC : ∀ i, (C i).Nonempty)
+    (hs : s₁ ⊆ s₂) : s₁.pi '' s₁.pi C = s₁.pi '' s₂.pi C := by
+  ext
+  choose C_mem _ using hC
+  classical
+  exact ⟨fun ⟨x, _⟩ ↦ ⟨fun i ↦ if i ∈ s₁ then x i else C_mem i, by grind⟩,
+    fun ⟨w, _⟩ ↦ ⟨w, by grind⟩⟩
+
 variable [∀ i, Nonempty (α i)]
 
 theorem pi_eq_empty_iff' : s.pi t = ∅ ↔ ∃ i ∈ s, t i = ∅ := by simp [pi_eq_empty_iff]
@@ -715,9 +723,10 @@ theorem pi_if {p : ι → Prop} [h : DecidablePred p] (s : Set ι) (t₁ t₂ : 
       pi ({ i ∈ s | p i }) t₁ ∩ pi ({ i ∈ s | ¬p i }) t₂ := by
   ext f
   refine ⟨fun h => ?_, ?_⟩
-  · constructor <;>
-      · rintro i ⟨his, hpi⟩
-        simpa [*] using h i
+  · constructor
+    all_goals
+      rintro i ⟨his, hpi⟩
+      simpa [*] using h i
   · rintro ⟨ht₁, ht₂⟩ i his
     by_cases p i <;> simp_all
 
@@ -836,7 +845,7 @@ theorem univ_pi_eq_singleton_iff {a} : pi univ t = {a} ↔ ∀ i, t i = {a i} :=
 theorem pi_subset_pi_iff : pi s t₁ ⊆ pi s t₂ ↔ (∀ i ∈ s, t₁ i ⊆ t₂ i) ∨ pi s t₁ = ∅ := by
   refine
     ⟨fun h => or_iff_not_imp_right.2 ?_, fun h => h.elim pi_mono fun h' => h'.symm ▸ empty_subset _⟩
-  rw [← Ne, ← nonempty_iff_ne_empty]
+  rw [← Ne, ne_empty_iff_nonempty]
   intro hne i hi
   simpa only [eval_image_pi hi hne, eval_image_pi hi (hne.mono h)] using
     image_mono (f := fun f : ∀ i, α i => f i) h
@@ -858,7 +867,7 @@ theorem update_preimage_pi [DecidableEq ι] {f : ∀ i, α i} (hi : i ∈ s)
     (hf : ∀ j ∈ s, j ≠ i → f j ∈ t j) : update f i ⁻¹' s.pi t = t i := by
   ext x
   refine ⟨fun h => ?_, fun hx j hj => ?_⟩
-  · convert! h i hi
+  · convert h i hi
     simp
   · obtain rfl | h := eq_or_ne j i
     · simpa
@@ -1018,9 +1027,11 @@ lemma exists_equiv_range_eq_graphOn_univ {f : α → β × γ} (hf₁ : Surjecti
 
 Let `s : Set (β × γ)` be a set in a product. Assume that `s` maps bijectively to the first factor.
 Then `s` is the graph of some function `f : β → γ`. -/
-lemma exists_eq_mgraphOn_univ {s : Set (β × γ)}
+lemma exists_eq_graphOn_univ {s : Set (β × γ)}
     (hs₁ : Bijective (Prod.fst ∘ (Subtype.val : s → β × γ))) : ∃ f : β → γ, s = univ.graphOn f := by
   simpa using exists_range_eq_graphOn_univ hs₁.surjective
     fun a b h ↦ congr_arg (Prod.snd ∘ (Subtype.val : s → β × γ)) (hs₁.injective h)
+
+@[deprecated (since := "2026-09-17")] alias exists_eq_mgraphOn_univ := exists_eq_graphOn_univ
 
 end Set

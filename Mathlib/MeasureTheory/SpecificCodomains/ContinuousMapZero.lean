@@ -5,8 +5,11 @@ Authors: Anatole Dedecker
 -/
 module
 
-public import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 public import Mathlib.MeasureTheory.SpecificCodomains.ContinuousMap
+public import Mathlib.Topology.ContinuousMap.ContinuousMapZero
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Specific results about `ContinuousMapZero`-valued integration
@@ -18,7 +21,6 @@ and `E` is a normed group.
 The structure of this file is largely similar to that of
 `Mathlib.MeasureTheory.SpecificCodomains.ContinuousMap`, which contains a more detailed
 module docstring.
-
 -/
 
 public section
@@ -78,7 +80,7 @@ lemma aeStronglyMeasurable_mkD_of_uncurry [CompactSpace Y] [Zero Y] [Topological
     AEStronglyMeasurable (fun x ↦ mkD (f x) g) μ := by
   rw [← ContinuousMapZero.isEmbedding_toContinuousMap.aestronglyMeasurable_comp_iff]
   refine aestronglyMeasurable_congr ?_ |>.mp <|
-    ContinuousMap.aeStronglyMeasurable_mkD_of_uncurry f g f_cont
+    ContinuousMap.aeStronglyMeasurable_mkD_of_uncurry f g.toContinuousMap f_cont
   filter_upwards [f_zero] with x zero_x
   rw [mkD_eq_mkD_of_map_zero _ _ zero_x]
 
@@ -91,7 +93,7 @@ lemma aeStronglyMeasurable_restrict_mkD_of_uncurry [CompactSpace Y] [Zero Y] {s 
     AEStronglyMeasurable (fun x ↦ mkD (f x) g) (μ.restrict s) := by
   rw [← ContinuousMapZero.isEmbedding_toContinuousMap.aestronglyMeasurable_comp_iff]
   refine aestronglyMeasurable_congr ?_ |>.mp <|
-    ContinuousMap.aeStronglyMeasurable_restrict_mkD_of_uncurry hs f g f_cont
+    ContinuousMap.aeStronglyMeasurable_restrict_mkD_of_uncurry hs f g.toContinuousMap f_cont
   filter_upwards [f_zero] with x zero_x
   rw [mkD_eq_mkD_of_map_zero _ _ zero_x]
 
@@ -103,7 +105,7 @@ lemma aeStronglyMeasurable_mkD_restrict_of_uncurry {t : Set Y} [CompactSpace t] 
     AEStronglyMeasurable (fun x ↦ mkD (t.domRestrict (f x)) g) μ := by
   rw [← ContinuousMapZero.isEmbedding_toContinuousMap.aestronglyMeasurable_comp_iff]
   refine aestronglyMeasurable_congr ?_ |>.mp <|
-    ContinuousMap.aeStronglyMeasurable_mkD_restrict_of_uncurry f g f_cont
+    ContinuousMap.aeStronglyMeasurable_mkD_restrict_of_uncurry f g.toContinuousMap f_cont
   filter_upwards [f_zero] with x zero_x
   rw [mkD_eq_mkD_of_map_zero _ _ zero_x]
 
@@ -117,7 +119,8 @@ lemma aeStronglyMeasurable_restrict_mkD_restrict_of_uncurry {s : Set X} {t : Set
     AEStronglyMeasurable (fun x ↦ mkD (t.domRestrict (f x)) g) (μ.restrict s) := by
   rw [← ContinuousMapZero.isEmbedding_toContinuousMap.aestronglyMeasurable_comp_iff]
   refine aestronglyMeasurable_congr ?_ |>.mp <|
-    ContinuousMap.aeStronglyMeasurable_restrict_mkD_restrict_of_uncurry hs f g f_cont
+    ContinuousMap.aeStronglyMeasurable_restrict_mkD_restrict_of_uncurry hs f g.toContinuousMap
+      f_cont
   filter_upwards [f_zero] with x zero_x
   rw [mkD_eq_mkD_of_map_zero _ _ zero_x]
 

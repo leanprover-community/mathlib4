@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Fintype.Option
 public import Mathlib.Order.TypeTags
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fintype instances for `WithTop α` and `WithBot α`
 -/

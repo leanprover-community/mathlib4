@@ -5,8 +5,8 @@ Authors: Kenny Lau, Mario Carneiro
 -/
 module
 
-public import Mathlib.LinearAlgebra.TensorProduct.Defs
 public import Mathlib.Algebra.Module.Equiv.Basic
+public import Mathlib.LinearAlgebra.TensorProduct.Defs
 public import Mathlib.Tactic.Abel
 
 /-!
@@ -96,7 +96,7 @@ set_option backward.defeqAttrib.useBackward true in
 with the property that its composition with the canonical bilinear map `M → N → M ⊗ N` is
 the given bilinear map `M → N → P`. -/
 def liftAux : M ⊗[R] N →+ P₂ :=
-  liftAddHom (LinearMap.toAddMonoidHom'.comp <| f'.toAddMonoidHom)
+  liftAddHom (LinearMap.toAddMonoidHom'.comp f'.toAddMonoidHom)
     fun r m n => by dsimp; rw [LinearMap.map_smulₛₗ₂, map_smulₛₗ]
 
 theorem liftAux_tmul (m n) : liftAux f' (m ⊗ₜ n) = f' m n :=
@@ -127,7 +127,7 @@ theorem lift.tmul (x y) : lift f' (x ⊗ₜ y) = f' x y :=
   rfl
 
 @[simp]
-theorem lift.tmul' (x y) : (lift f').1 (x ⊗ₜ y) = f' x y :=
+theorem lift.tmul' (x y) : (lift f').toAddHom (x ⊗ₜ y) = f' x y :=
   rfl
 
 theorem ext' {g h : M ⊗[R] N →ₛₗ[σ₁₂] P₂} (H : ∀ x y, g (x ⊗ₜ y) = h (x ⊗ₜ y)) : g = h :=

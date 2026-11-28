@@ -6,10 +6,13 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Order.Interval.Basic
-public import Mathlib.Data.Prod.Lex
-public import Mathlib.Tactic.FastInstance
+public import Mathlib.Order.Prod.Lex.Basic
+
 meta import Mathlib.Order.Interval.Basic  -- shake: keep (for `#eval` testing)
 meta import Mathlib.Order.Lex  -- shake: keep (for `#eval` testing)
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The lexicographic order on intervals

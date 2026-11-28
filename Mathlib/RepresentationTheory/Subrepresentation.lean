@@ -6,13 +6,14 @@ Authors: FLT Project
 module
 
 public import Mathlib.RepresentationTheory.Basic
-public import Mathlib.LinearAlgebra.Span.Defs
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Subrepresentations
 
 This file defines subrepresentations of a monoid representation.
-
 -/
 
 @[expose] public section
@@ -49,7 +50,7 @@ instance : SetLike (Subrepresentation ρ) W where
   coe ρ' := ρ'.toSubmodule
   coe_injective := SetLike.coe_injective.comp toSubmodule_injective
 
-instance : PartialOrder (Subrepresentation ρ) := .ofSetLike (Subrepresentation ρ) W
+instance : PartialOrder (Subrepresentation ρ) := .ofSetLike (Subrepresentation ρ)
 
 /-- A subrepresentation is a representation. -/
 def toRepresentation (ρ' : Subrepresentation ρ) : Representation A G ρ'.toSubmodule where
@@ -64,7 +65,7 @@ lemma toRepresentation_apply_mk {ρ' : Subrepresentation ρ} {g : G} {v w : W} {
   rw [Subtype.ext_iff]; rfl
 
 lemma toRepresentation_apply_coe {ρ' : Subrepresentation ρ} {g : G} {v w : ρ'.toSubmodule} :
-    ρ'.toRepresentation g v = w ↔ ρ g v.1 = w.1 := by
+    ρ'.toRepresentation g v = w ↔ ρ g v.val = w.val := by
   rw [Subtype.ext_iff]; rfl
 
 instance : Max (Subrepresentation ρ) where

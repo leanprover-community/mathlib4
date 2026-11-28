@@ -5,15 +5,18 @@ Authors: David Ledvinka
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.Support
-
-import Mathlib.Analysis.Normed.Algebra.GelfandFormula
-import Mathlib.Analysis.Complex.CauchyIntegral
 public import Mathlib.Analysis.Analytic.Basic
 public import Mathlib.Analysis.Calculus.Deriv.Basic
 public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
-public import Mathlib.Tactic.Positivity
+public import Mathlib.MeasureTheory.Measure.Support
+
+import Mathlib.Analysis.Complex.CauchyIntegral
+import Mathlib.Analysis.Normed.Algebra.GelfandFormula
+import Mathlib.Tactic.Positivity
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Resolvent Transform of a Measure
@@ -71,7 +74,7 @@ theorem measurable_resolvent {a : A} [OpensMeasurableSpace 𝕜] [NormedRing A] 
     rw [continuousOn_iff_continuous_domRestrict]
     convert continuous_const (y := (0 : A)) with x
     simp
-  have h3 : MeasurableSet (resolventSet 𝕜 a) := (isOpen_resolventSet a).measurableSet
+  have h3 : MeasurableSet (resolventSet 𝕜 a) := (isOpen_resolventSet 𝕜 a).measurableSet
   simpa using h1.measurable_piecewise h2 h3
 
 variable [CompleteSpace 𝕜] [NormedDivisionRing A] [NormedAlgebra 𝕜 A]
@@ -168,7 +171,7 @@ theorem hasDerivAt_resolventTransform [RCLike A] [NormedAlgebra 𝕜 A] {μ : Me
     filter_upwards [support_mem_ae] with x hx w hw
     apply hasDerivAt_resolvent_const_right
     replace hw := hs_μ hw
-    contrapose! hw
+    contrapose hw
     rw [Set.notMem_compl_iff]
     use x, hx
     simpa [resolventSet, sub_eq_zero] using hw

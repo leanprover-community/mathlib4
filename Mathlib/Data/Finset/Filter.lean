@@ -19,7 +19,6 @@ public import Mathlib.Data.Multiset.Filter
 ## Tags
 
 finite sets, finset
-
 -/
 
 @[expose] public section
@@ -50,7 +49,7 @@ variable (p : α → Prop) [DecidablePred p] {s t : Finset α}
 For example, one can use `s.filter (· ∈ t)` to get the intersection of `s` with `t : Set α`
 as a `Finset α` (when a `DecidablePred (· ∈ t)` instance is available). -/
 def filter (s : Finset α) : Finset α :=
-  ⟨_, s.2.filter p⟩
+  ⟨_, s.nodup.filter p⟩
 
 end Finset.Filter
 
@@ -114,7 +113,7 @@ section Filter
 variable (p q : α → Prop) [DecidablePred p] [DecidablePred q] {s t : Finset α}
 
 @[simp]
-theorem filter_val (s : Finset α) : (filter p s).1 = s.1.filter p :=
+theorem filter_val (s : Finset α) : (filter p s).val = s.val.filter p :=
   rfl
 
 @[simp]
@@ -159,8 +158,7 @@ lemma filter_eq_self : s.filter p = s ↔ ∀ x ∈ s, p x := by simp [Finset.ex
 theorem filter_eq_empty_iff : s.filter p = ∅ ↔ ∀ ⦃x⦄, x ∈ s → ¬p x := by simp [Finset.ext_iff]
 
 theorem filter_nonempty_iff : (s.filter p).Nonempty ↔ ∃ a ∈ s, p a := by
-  simp only [nonempty_iff_ne_empty, Ne, filter_eq_empty_iff, Classical.not_not, not_forall,
-    exists_prop]
+  simp [← ne_empty_iff_nonempty]
 
 /-- If all elements of a `Finset` satisfy the predicate `p`, `s.filter p` is `s`. -/
 theorem filter_true_of_mem (h : ∀ x ∈ s, p x) : s.filter p = s := filter_eq_self.2 h
@@ -172,9 +170,13 @@ theorem filter_false_of_mem (h : ∀ x ∈ s, ¬p x) : s.filter p = ∅ := filte
 theorem filter_const (p : Prop) [Decidable p] (s : Finset α) :
     (s.filter fun _a => p) = if p then s else ∅ := by split_ifs <;> simp [*]
 
-@[congr]
 theorem filter_congr {s : Finset α} (H : ∀ x ∈ s, p x ↔ q x) : filter p s = filter q s :=
-  eq_of_veq <| Multiset.filter_congr H
+  (eq_of_veq <| Multiset.filter_congr H)
+
+@[congr]
+theorem filter_congr' {s t : Finset α} (h : s = t) (H : ∀ x ∈ s, p x ↔ q x) :
+    filter p s = filter q t :=
+  h ▸ filter_congr H
 
 variable (p q)
 

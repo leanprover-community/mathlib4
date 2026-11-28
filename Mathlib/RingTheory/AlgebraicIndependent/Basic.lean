@@ -13,6 +13,9 @@ public import Mathlib.RingTheory.AlgebraicIndependent.Defs
 public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.MvPolynomial.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Algebraic Independence
 
@@ -23,8 +26,8 @@ This file contains basic results on algebraic independence of a family of elemen
 * [Stacks: Transcendence](https://stacks.math.columbia.edu/tag/030D)
 
 ## Tags
-transcendence basis, transcendence degree, transcendence
 
+transcendence basis, transcendence degree, transcendence
 -/
 
 @[expose] public section
@@ -43,7 +46,7 @@ variable (R A) in
 /-- The transcendence degree of a commutative algebra `A` over a commutative ring `R` is
 defined to be the maximal cardinality of an `R`-algebraically independent set in `A`. -/
 @[stacks 030G] def Algebra.trdeg : Cardinal.{v} :=
-  ⨆ ι : { s : Set A // AlgebraicIndepOn R _root_.id s }, Cardinal.mk ι.1
+  ⨆ ι : { s : Set A // AlgebraicIndepOn R _root_.id s }, Cardinal.mk ι.val
 
 theorem algebraicIndependent_iff_ker_eq_bot :
     AlgebraicIndependent R x ↔
@@ -109,7 +112,7 @@ theorem aeval_of_algebraicIndependent
     AlgebraicIndependent R fun i ↦ aeval x (f i) := by
   rw [algebraicIndependent_iff] at hx hf ⊢
   intro p hp
-  exact hf _ (hx _ (by rwa [← aeval_comp_bind₁, AlgHom.comp_apply] at hp))
+  exact hf _ (hx _ (by rwa [← comp_aeval_apply] at hp))
 
 omit hx in
 /-- If `{f_i(x) | i : ι}` is algebraically independent over `R`, then
@@ -121,13 +124,13 @@ theorem of_aeval {f : ι → MvPolynomial ι R}
     AlgebraicIndependent R f := by
   rw [algebraicIndependent_iff] at H ⊢
   intro p hp
-  exact H p (by rw [← aeval_comp_bind₁, AlgHom.comp_apply, bind₁, hp, map_zero])
+  exact H p (by rw [← comp_aeval_apply, hp, map_zero])
 
 end AlgebraicIndependent
 
 theorem isEmpty_algebraicIndependent (h : ¬ Injective (algebraMap R A)) :
     IsEmpty { s : Set A // AlgebraicIndepOn R id s } where
-  false s := h s.2.algebraMap_injective
+  false s := h s.property.algebraMap_injective
 
 theorem trdeg_eq_zero_of_not_injective (h : ¬ Injective (algebraMap R A)) : trdeg R A = 0 := by
   have := isEmpty_algebraicIndependent h
@@ -236,7 +239,7 @@ theorem algebraicIndependent_finset_map_embedding_subtype (s : Set A)
     (li : AlgebraicIndependent R ((↑) : s → A)) (t : Finset s) :
     AlgebraicIndependent R ((↑) : Finset.map (Embedding.subtype (· ∈ s)) t → A) := by
   let f : t.map (Embedding.subtype (· ∈ s)) → s := fun x =>
-    ⟨x.1, by
+    ⟨x.val, by
       obtain ⟨x, h⟩ := x
       rw [Finset.mem_map] at h
       obtain ⟨a, _, rfl⟩ := h
@@ -311,11 +314,11 @@ lemma IsTranscendenceBasis.of_comp_algebraMap [Algebra A A'] [IsScalarTower R A 
 for the composition with an algebraic extension. -/
 theorem AlgEquiv.isTranscendenceBasis (e : A ≃ₐ[R] A') (hx : IsTranscendenceBasis R x) :
     IsTranscendenceBasis R (e ∘ x) :=
-  .of_comp e.symm.toAlgHom e.symm.injective (by convert! hx; ext; simp)
+  .of_comp e.symm.toAlgHom e.symm.injective (by convert hx; ext; simp)
 
 theorem AlgEquiv.isTranscendenceBasis_iff (e : A ≃ₐ[R] A') :
     IsTranscendenceBasis R (e ∘ x) ↔ IsTranscendenceBasis R x :=
-  ⟨fun hx ↦ by convert! e.symm.isTranscendenceBasis hx; ext; simp, e.isTranscendenceBasis⟩
+  ⟨fun hx ↦ by convert e.symm.isTranscendenceBasis hx; ext; simp, e.isTranscendenceBasis⟩
 
 section trdeg
 
@@ -334,7 +337,7 @@ theorem lift_trdeg_le_of_injective (f : A →ₐ[R] A') (hf : Injective f) :
     lift.{v'} (trdeg R A) ≤ lift.{v} (trdeg R A') := by
   nontriviality R
   rw [trdeg, lift_iSup bddAbove_of_small]
-  exact ciSup_le' fun i ↦ (i.2.map' hf).lift_cardinalMk_le_trdeg
+  exact ciSup_le' fun i ↦ (i.property.map' hf).lift_cardinalMk_le_trdeg
 
 theorem trdeg_le_of_injective {A' : Type v} [CommRing A'] [Algebra R A'] (f : A →ₐ[R] A')
     (hf : Injective f) : trdeg R A ≤ trdeg R A' := by
@@ -344,9 +347,9 @@ theorem lift_trdeg_le_of_surjective (f : A →ₐ[R] A') (hf : Surjective f) :
     lift.{v} (trdeg R A') ≤ lift.{v'} (trdeg R A) := by
   nontriviality R
   rw [trdeg, lift_iSup bddAbove_of_small]
-  refine ciSup_le' fun i ↦ (lift_cardinalMk_le_trdeg (x := fun a : i.1 ↦ (⇑f).invFun a) <|
+  refine ciSup_le' fun i ↦ (lift_cardinalMk_le_trdeg (x := fun a : i.val ↦ (⇑f).invFun a) <|
     of_comp f ?_)
-  convert! i.2; simp [invFun_eq (hf _)]
+  convert! i.property; simp [invFun_eq (hf _)]
 
 theorem trdeg_le_of_surjective {A' : Type v} [CommRing A'] [Algebra R A'] (f : A →ₐ[R] A')
     (hf : Surjective f) : trdeg R A' ≤ trdeg R A := by

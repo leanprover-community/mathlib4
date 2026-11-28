@@ -97,7 +97,7 @@ See note [partially-applied ext lemmas]. -/
 @[ext 1100]
 theorem ringHom_ext [NonAssocSemiring S] ⦃f g : R ⧸ I →+* S⦄ (h : f.comp (mk I) = g.comp (mk I)) :
     f = g :=
-  RingHom.ext fun x => Quotient.inductionOn' x <| (RingHom.congr_fun h :)
+  RingHom.ext fun x => Quotient.inductionOn x (RingHom.congr_fun h :)
 
 instance : Nonempty (R ⧸ I) :=
   ⟨mk I 37⟩
@@ -122,7 +122,7 @@ theorem mk_out (x : R ⧸ I) : Ideal.Quotient.mk I (Quotient.out x) = x :=
   Quotient.out_eq x
 
 theorem mk_surjective : Function.Surjective (mk I) := fun y =>
-  Quotient.inductionOn' y fun x => Exists.intro x rfl
+  Quotient.inductionOn y fun x => Exists.intro x rfl
 
 instance : RingHomSurjective (mk I) :=
   ⟨mk_surjective⟩
@@ -130,7 +130,7 @@ instance : RingHomSurjective (mk I) :=
 /-- If `I` is an ideal of a commutative ring `R`, if `q : R → R/I` is the quotient map, and if
 `s ⊆ R` is a subset, then `q⁻¹(q(s)) = ⋃ᵢ(i + s)`, the union running over all `i ∈ I`. -/
 theorem quotient_ring_saturate (s : Set R) :
-    mk I ⁻¹' mk I '' s = ⋃ x : I, (fun y => x.1 + y) '' s := by
+    mk I ⁻¹' mk I '' s = ⋃ x : I, (fun y => x.val + y) '' s := by
   ext x
   simp only [mem_preimage, mem_image, mem_iUnion, Ideal.Quotient.eq]
   exact
@@ -144,7 +144,7 @@ lift it to the quotient by this ideal. -/
 def lift (f : R →+* S) (H : ∀ a : R, a ∈ I → f a = 0) : R ⧸ I →+* S :=
   { QuotientAddGroup.lift I.toAddSubgroup f.toAddMonoidHom H with
     map_one' := f.map_one
-    map_mul' := fun a₁ a₂ => Quotient.inductionOn₂' a₁ a₂ f.map_mul }
+    map_mul' := fun a₁ a₂ => Quotient.inductionOn₂ a₁ a₂ f.map_mul }
 
 @[simp]
 theorem lift_mk (f : R →+* S) (H : ∀ a : R, a ∈ I → f a = 0) :

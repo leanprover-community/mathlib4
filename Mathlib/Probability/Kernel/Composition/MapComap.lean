@@ -25,7 +25,6 @@ Kernels built from other kernels:
 
 * `lintegral_map`, `lintegral_comap`: Lebesgue integral of a function against the map or comap of
   a kernel.
-
 -/
 
 @[expose] public section
@@ -274,12 +273,12 @@ lemma prodMkRight_add (κ η : Kernel α β) :
 lemma sum_prodMkLeft {ι : Type*} [Countable ι] {κ : ι → Kernel α β} :
     Kernel.sum (fun i ↦ Kernel.prodMkLeft γ (κ i)) = Kernel.prodMkLeft γ (Kernel.sum κ) := by
   ext
-  simp_rw [sum_apply, prodMkLeft_apply, sum_apply]
+  simp_rw [Kernel.sum_apply, prodMkLeft_apply, Kernel.sum_apply]
 
 lemma sum_prodMkRight {ι : Type*} [Countable ι] {κ : ι → Kernel α β} :
     Kernel.sum (fun i ↦ Kernel.prodMkRight γ (κ i)) = Kernel.prodMkRight γ (Kernel.sum κ) := by
   ext
-  simp_rw [sum_apply, prodMkRight_apply, sum_apply]
+  simp_rw [Kernel.sum_apply, prodMkRight_apply, Kernel.sum_apply]
 
 theorem lintegral_prodMkLeft (κ : Kernel α β) (ca : γ × α) (g : β → ℝ≥0∞) :
     ∫⁻ b, g b ∂prodMkLeft γ κ ca = ∫⁻ b, g b ∂κ ca.snd := rfl
@@ -588,7 +587,6 @@ lemma comap_sectL (κ : Kernel (α × β) γ) (b : β) {f : δ → α} (hf : Mea
   ext d s
   rw [comap_apply, sectL_apply, comap_apply]
 
-@[simp]
 lemma sectL_prodMkLeft (α : Type*) [MeasurableSpace α] (κ : Kernel β γ) (a : α) {b : β} :
     sectL (prodMkLeft α κ) b a = κ b := rfl
 
@@ -636,7 +634,6 @@ lemma comap_sectR (κ : Kernel (α × β) γ) (a : α) {f : δ → β} (hf : Mea
 lemma sectR_prodMkLeft (α : Type*) [MeasurableSpace α] (κ : Kernel β γ) (a : α) :
     sectR (prodMkLeft α κ) a = κ := rfl
 
-@[simp]
 lemma sectR_prodMkRight (β : Type*) [MeasurableSpace β] (κ : Kernel α γ) (b : β) {a : α} :
     sectR (prodMkRight β κ) a b = κ a := rfl
 

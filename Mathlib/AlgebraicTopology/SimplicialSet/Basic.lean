@@ -6,9 +6,9 @@ Authors: Johan Commelin, Kim Morrison, Adam Topaz
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
-public import Mathlib.CategoryTheory.Limits.Types.Colimits
-public import Mathlib.CategoryTheory.Yoneda
-public import Mathlib.Tactic.FinCases
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Simplicial sets
@@ -19,7 +19,6 @@ i.e. a `Type`-valued presheaf on the simplex category.
 (One might be tempted to call these "simplicial types" when working in type-theoretic foundations,
 but this would be unnecessarily confusing given the existing notion of a simplicial type in
 homotopy type theory.)
-
 -/
 
 @[expose] public section
@@ -42,11 +41,10 @@ namespace SSet
 lemma hom_ext {X Y : SSet} {f g : X ⟶ Y} (w : ∀ n, f.app n = g.app n) : f = g :=
   SimplicialObject.hom_ext _ _ w
 
-@[simp]
 lemma id_app (X : SSet) (n : SimplexCategoryᵒᵖ) :
     NatTrans.app (𝟙 X) n = 𝟙 _ := rfl
 
-@[simp, reassoc]
+@[reassoc]
 lemma comp_app {X Y Z : SSet} (f : X ⟶ Y) (g : Y ⟶ Z) (n : SimplexCategoryᵒᵖ) :
     (f ≫ g).app n = f.app n ≫ g.app n := rfl
 
@@ -98,12 +96,11 @@ abbrev trunc (n m : ℕ) (h : m ≤ n := by lia) :
     SSet.Truncated n ⥤ SSet.Truncated m :=
   SimplicialObject.Truncated.trunc (Type u) n m
 
-@[simp]
 lemma id_app {n : ℕ} (X : Truncated n) (d : (SimplexCategory.Truncated n)ᵒᵖ) :
     NatTrans.app (𝟙 X) d = 𝟙 _ :=
   rfl
 
-@[simp, reassoc]
+@[reassoc]
 lemma comp_app {n : ℕ} {X Y Z : Truncated n} (f : X ⟶ Y) (g : Y ⟶ Z)
     (d : (SimplexCategory.Truncated n)ᵒᵖ) :
     (f ≫ g).app d = f.app d ≫ g.app d :=
@@ -191,6 +188,13 @@ end adjunctions
 augmented simplicial objects. -/
 abbrev Augmented :=
   SimplicialObject.Augmented (Type u)
+
+/-- Given `X : SSet`, this is the augmented simplicial set given by
+the natural transformation from `X` to the constant functor with value `PUnit`. -/
+abbrev toAugmented (X : SSet.{u}) : Augmented.{u} where
+  left := X
+  right := PUnit
+  hom.app _ := ↾fun _ ↦ .unit
 
 section applications
 variable {S : SSet}

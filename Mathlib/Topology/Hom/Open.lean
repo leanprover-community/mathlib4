@@ -47,14 +47,16 @@ class ContinuousOpenMapClass (F : Type*) (α β : outParam Type*) [TopologicalSp
   [TopologicalSpace β] [FunLike F α β] : Prop extends ContinuousMapClass F α β where
   map_open (f : F) : IsOpenMap f
 
-end
-
 export ContinuousOpenMapClass (map_open)
 
-instance [TopologicalSpace α] [TopologicalSpace β] [FunLike F α β]
-    [ContinuousOpenMapClass F α β] :
-    CoeTC F (α →CO β) :=
-  ⟨fun f => ⟨f, map_open f⟩⟩
+/-- Turn a bundled morphism with a `ContinuousOpenMapClass` instance
+into a `ContinuousOpenMap`. -/
+def ContinuousOpenMap.ofClass [TopologicalSpace α] [TopologicalSpace β] [FunLike F α β]
+    [ContinuousOpenMapClass F α β] (f : F) : α →CO β :=
+  { ContinuousMap.ofClass f with
+    map_open' := map_open f }
+
+end
 
 /-! ### Continuous open maps -/
 
@@ -75,6 +77,10 @@ instance : ContinuousOpenMapClass (α →CO β) α β where
   map_continuous f := f.continuous_toFun
   map_open f := f.map_open'
 
+@[simp]
+protected theorem coe_ofClass [FunLike F α β] [ContinuousOpenMapClass F α β] (f : F) :
+    ⇑(ofClass f) = f := rfl
+
 theorem toFun_eq_coe {f : α →CO β} : f.toFun = (f : α → β) :=
   rfl
 
@@ -89,7 +95,7 @@ theorem ext {f g : α →CO β} (h : ∀ a, f a = g a) : f = g :=
 /-- Copy of a `ContinuousOpenMap` with a new `ContinuousMap` equal to the old one. Useful to fix
 definitional equalities. -/
 protected def copy (f : α →CO β) (f' : α → β) (h : f' = f) : α →CO β :=
-  ⟨f.toContinuousMap.copy f' <| h, h.symm.subst f.map_open'⟩
+  ⟨f.toContinuousMap.copy f' h, h.symm.subst f.map_open'⟩
 
 @[simp]
 theorem coe_copy (f : α →CO β) (f' : α → β) (h : f' = f) : ⇑(f.copy f' h) = f' :=

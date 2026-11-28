@@ -122,13 +122,12 @@ lemma QuadraticMap.Equivalent.sigPos_eq (h : Equivalent Q Q') : sigPos Q = sigPo
   obtain ⟨e⟩ := h
   unfold sigPos
   congr! with j
+  · exact e.toLinearEquiv.finrank_eq
   · apply (Submodule.orderIsoMapComap e.toLinearEquiv).exists_congr
     intro V
     refine .and ?_ (IsometryEquiv.map_posDef_iff _).symm
-    revert j
-    rw [eq_iff_eq_cancel_right]
-    exact (e.finrank_map_eq _).symm
-  · exact e.toLinearEquiv.finrank_eq
+    rw [← (e.finrank_map_eq _)]
+    rfl
 
 lemma QuadraticMap.Equivalent.sigNeg_eq (h : Equivalent Q Q') : sigNeg Q = sigNeg Q' :=
   sigPos_eq <| match h with | ⟨e⟩ => ⟨e, by simp⟩
@@ -193,7 +192,7 @@ lemma sigPos_weightedSumSquares :
   let m : Set ι := {i | w i ≤ 0}
   convert_to sigPos _ = p.ncard
   have : p.ncard + m.ncard = Nat.card ι := by
-    convert! Set.ncard_add_ncard_compl p
+    convert Set.ncard_add_ncard_compl p
     ext
     grind
   have : p.ncard ≤ sigPos (weightedSumSquares 𝕜 w) :=
@@ -205,7 +204,7 @@ lemma sigPos_weightedSumSquares :
 lemma sigNeg_weightedSumSquares :
     sigNeg (weightedSumSquares 𝕜 w) = {i | w i < 0}.ncard := by
   simp only [sigNeg]
-  convert! sigPos_weightedSumSquares (w := -w) using 2
+  convert sigPos_weightedSumSquares (w := -w) using 2
   · ext; simp
   · simp
 
@@ -234,7 +233,7 @@ lemma sigPos_add_sigNeg_add_radical [FiniteDimensional 𝕜 M] :
   have : Invertible (2 : 𝕜) := invertibleOfNonzero (NeZero.ne _)
   obtain ⟨w, e⟩ := Q.equivalent_weightedSumSquares
   rw [e.sigPos_eq, e.sigNeg_eq, e.rank_radical_eq]
-  convert! QuadraticForm.sigPos_add_sigNeg_add_radical₁ (w := w)
+  convert QuadraticForm.sigPos_add_sigNeg_add_radical₁ (w := w)
   exact Eq.symm (Nat.card_fin (Module.finrank 𝕜 M))
 
 /-- Uniqueness part of **Sylvester's law of inertia** (positive part):

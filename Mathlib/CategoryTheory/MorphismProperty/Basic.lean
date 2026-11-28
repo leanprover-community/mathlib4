@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Comma.Arrow
 public import Mathlib.Order.CompleteBooleanAlgebra
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of morphisms
 
@@ -19,7 +22,6 @@ The following meta-property is defined
 * `RespectsRight P Q`: `P` respects the property `Q` on the right if `P f → P (f ≫ i)` where
   `i` satisfies `Q`.
 * `Respects`: `P` respects `Q` if `P` respects `Q` both on the left and on the right.
-
 -/
 
 @[expose] public section
@@ -301,9 +303,9 @@ lemma toSet_max (W₁ W₂ : MorphismProperty C) :
 
 /-- The family of morphisms indexed by `P.toSet` which corresponds
 to `P : MorphismProperty C`, see `MorphismProperty.ofHoms_homFamily`. -/
-def homFamily (f : P.toSet) : f.1.left ⟶ f.1.right := f.1.hom
+def homFamily (f : P.toSet) : f.val.left ⟶ f.val.right := f.val.hom
 
-lemma homFamily_apply (f : P.toSet) : P.homFamily f = f.1.hom := rfl
+lemma homFamily_apply (f : P.toSet) : P.homFamily f = f.val.hom := rfl
 
 @[simp]
 lemma homFamily_arrow_mk {X Y : C} (f : X ⟶ Y) (hf : P f) :
@@ -693,25 +695,28 @@ theorem epimorphisms.infer_property [hf : Epi f] : (epimorphisms C) f :=
 end
 
 instance RespectsIso.monomorphisms : RespectsIso (monomorphisms C) := by
-  apply RespectsIso.mk <;>
-    · intro X Y Z e f
-      simp only [monomorphisms.iff]
-      intro
-      apply mono_comp
+  apply RespectsIso.mk
+  all_goals
+    intro X Y Z e f
+    simp only [monomorphisms.iff]
+    intro
+    apply mono_comp
 
 instance RespectsIso.epimorphisms : RespectsIso (epimorphisms C) := by
-  apply RespectsIso.mk <;>
-    · intro X Y Z e f
-      simp only [epimorphisms.iff]
-      intro
-      apply epi_comp
+  apply RespectsIso.mk
+  all_goals
+    intro X Y Z e f
+    simp only [epimorphisms.iff]
+    intro
+    apply epi_comp
 
 instance RespectsIso.isomorphisms : RespectsIso (isomorphisms C) := by
-  apply RespectsIso.mk <;>
-    · intro X Y Z e f
-      simp only [isomorphisms.iff]
-      intro
-      exact IsIso.comp_isIso
+  apply RespectsIso.mk
+  all_goals
+    intro X Y Z e f
+    simp only [isomorphisms.iff]
+    intro
+    exact IsIso.comp_isIso
 
 end
 
@@ -754,7 +759,6 @@ namespace NatTrans
 
 variable {C : Type u} [Category.{v} C] {D : Type*} [Category* D]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isIso_app_iff_of_iso {F G : C ⥤ D} (α : F ⟶ G) {X Y : C} (e : X ≅ Y) :
     IsIso (α.app X) ↔ IsIso (α.app Y) :=
   (MorphismProperty.isomorphisms D).arrow_mk_iso_iff

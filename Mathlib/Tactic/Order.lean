@@ -22,7 +22,7 @@ public import Mathlib.Util.ElabWithoutMVars
 This module defines the `order` tactic, a decision procedure for the theories of `Preorder`,
 `PartialOrder`, `LinearOrder`, and `Lattice`. It also supports `⊤` and `⊥`.
 
-## Implementation Details
+## Implementation notes
 
 Below, we describe the algorithm for each type of order. All algorithms begin with two steps:
 1. Negate the goal so that our goal now is to derive `False`.
@@ -315,7 +315,10 @@ This tactic fails if it cannot prove the main goal.
 -/
 macro "order" args:orderArgs : tactic => `(tactic|
   · intros
-    by_contra! _order_neg_goal
+    -- If the `push Not` step does nothing, there should be no warning: hence, manually write it
+    -- instead of using `by_contra!` (which prints a warning if `push Not` makes no progress).
+    by_contra _order_neg_goal
+    try push Not at _order_neg_goal
     order_core $args _order_neg_goal
 )
 

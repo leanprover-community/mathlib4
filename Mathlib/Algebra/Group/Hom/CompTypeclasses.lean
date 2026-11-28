@@ -5,8 +5,8 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Logic.Function.CompTypeclasses
 public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Logic.Function.CompTypeclasses
 
 /-!
 # Propositional typeclasses on several monoid homs
@@ -31,7 +31,6 @@ TODO :
 * probably rename MonoidHom.CompTriple as MonoidHomCompTriple
   (or, on the opposite, rename RingHomCompTriple as RingHom.CompTriple)
 * does one need AddHom.CompTriple ?
-
 -/
 
 public section
@@ -99,8 +98,9 @@ theorem comp_assoc {Q : Type*} [Monoid Q]
     {φ₃ : P →* Q} {φ₂₃ : N →* Q} (κ' : CompTriple φ₂ φ₃ φ₂₃)
     {φ₁₂₃ : M →* Q} :
     CompTriple φ₁ φ₂₃ φ₁₂₃ ↔ CompTriple φ₁₂ φ₃ φ₁₂₃ := by
-  constructor <;>
-  · rintro ⟨h⟩
+  constructor
+  all_goals
+    rintro ⟨h⟩
     exact ⟨by simp only [← κ.comp_eq, ← h, ← κ'.comp_eq, MonoidHom.comp_assoc]⟩
 
 end MonoidHom.CompTriple

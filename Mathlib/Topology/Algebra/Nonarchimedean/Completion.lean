@@ -6,8 +6,10 @@ Authors: Mitchell Lee
 module
 
 public import Mathlib.Topology.Algebra.Nonarchimedean.Basic
-public import Mathlib.Topology.Algebra.GroupCompletion
 public import Mathlib.Topology.Algebra.UniformRing
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The completion of a nonarchimedean additive group

@@ -5,11 +5,12 @@ Authors: Kim Morrison, Hanting Zhang
 -/
 module
 
-public meta import Mathlib.Tactic.Core
 public meta import Mathlib.Lean.Expr.Basic
-public import Mathlib.Data.Finset.Attr
-public import Mathlib.Data.Fintype.Defs
+public meta import Mathlib.Tactic.Core
 public meta import Mathlib.Tactic.ToDual
+public import Mathlib.Data.Fintype.Defs
+
+import Mathlib.Data.Finset.Attr
 
 /-!
 # The `fin_cases` tactic.
@@ -32,7 +33,7 @@ return `some α`, otherwise `none`. -/
 def getMemType {m : Type → Type} [Monad m] [MonadError m] (e : Expr) : m (Option Expr) := do
   match e.getAppFnArgs with
   | (``Membership.mem, #[_, type, _, _, _]) =>
-    match type.getAppFnArgs with
+    match type.cleanupAnnotations.getAppFnArgs with
     | (``List, #[α])     => return α
     | (``Multiset, #[α]) => return α
     | (``Finset, #[α])   => return α

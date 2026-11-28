@@ -6,8 +6,11 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Calculus.ContDiff.Operations
-public import Mathlib.Analysis.Calculus.ContDiff.CPolynomial
-public import Mathlib.Data.Fintype.Perm
+
+import Mathlib.Analysis.Calculus.ContDiff.CPolynomial
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The iterated derivative of an analytic function

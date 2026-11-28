@@ -5,8 +5,10 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.EqToHom
 public import Mathlib.CategoryTheory.Products.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Curry and uncurry, as functors.
@@ -38,12 +40,7 @@ variable {B : Type u₁} [Category.{v₁} B] {C : Type u₂} [Category.{v₂} C]
 def uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E where
   obj F :=
     { obj := fun X => (F.obj X.1).obj X.2
-      map := fun {X} {Y} f => (F.map f.1).app X.2 ≫ (F.obj Y.1).map f.2
-      map_comp := fun f g => by
-        simp only [prod_comp_fst, prod_comp_snd, Functor.map_comp, NatTrans.comp_app,
-          Category.assoc]
-        slice_lhs 2 3 => rw [← NatTrans.naturality]
-        rw [Category.assoc] }
+      map := fun {X} {Y} f => (F.map f.1).app X.2 ≫ (F.obj Y.1).map f.2 }
   map T :=
     { app := fun X => (T.app X.1).app X.2
       naturality := fun X Y f => by
@@ -51,6 +48,8 @@ def uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E where
         slice_lhs 2 3 => rw [NatTrans.naturality]
         slice_lhs 1 2 => rw [← NatTrans.comp_app, NatTrans.naturality, NatTrans.comp_app]
         rw [Category.assoc] }
+
+to_dual_for uncurry_obj_map := by simp
 
 /-- The object level part of the currying functor. (See `curry` for the functorial version.)
 -/
@@ -233,6 +232,31 @@ def curryingEquiv : C ⥤ D ⥤ E ≃ C × D ⥤ E where
 @[implicit_reducible, simps!]
 def curryingFlipEquiv : D ⥤ C ⥤ E ≃ C × D ⥤ E :=
   flippingEquiv.trans curryingEquiv
+
+/-- If `L₁ : C₁ ⥤ D₁` and `L₂ : C₂ ⥤ D₂` are functors, and `F : D₁ ⥤ D₂ ⥤ E`
+and `G : C₁ ⥤ C₂ ⥤ E` are bifunctors, this is the bijection between
+the natural transformations `(((whiskeringLeft₂ E).obj L₁).obj L₂).obj F ⟶ G` of
+bifunctors, and the natural transformations of functors
+`L₁.prod L₂ ⋙ uncurry.obj F ⟶ uncurry.obj G`. -/
+@[implicit_reducible, simps!]
+def whiskeringLeft₂HomEquiv {C₁ C₂ D₁ D₂ : Type*} [Category* C₁] [Category* C₂]
+    [Category* D₁] [Category* D₂] {F : D₁ ⥤ D₂ ⥤ E} {G : C₁ ⥤ C₂ ⥤ E}
+    {L₁ : C₁ ⥤ D₁} {L₂ : C₂ ⥤ D₂} :
+    ((((whiskeringLeft₂ E).obj L₁).obj L₂).obj F ⟶ G) ≃
+      (L₁.prod L₂ ⋙ uncurry.obj F ⟶ uncurry.obj G) where
+  toFun α :=
+    { app := fun ⟨X₁, X₂⟩ ↦ (α.app X₁).app X₂
+      naturality X Y f := by
+        simp [dsimp% (α.app Y.1).naturality f.2,
+          reassoc_of% dsimp% congr($(α.naturality f.1).app X.2)] }
+  invFun β :=
+    { app X₁ :=
+        { app X₂ := β.app (X₁, X₂)
+          naturality {X₂ Y₂} f₂ := by
+            simpa using β.naturality ((𝟙 X₁, f₂) : (X₁, X₂) ⟶ (X₁, Y₂)) }
+      naturality {X₁ Y₁} f₁ := by
+        ext X₂
+        simpa using β.naturality ((f₁, 𝟙 X₂) : (X₁, X₂) ⟶ (Y₁, X₂)) }
 
 end Functor
 

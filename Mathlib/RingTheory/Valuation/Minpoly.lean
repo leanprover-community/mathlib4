@@ -5,9 +5,13 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 module
 
-public import Mathlib.FieldTheory.Minpoly.Field
 public import Mathlib.FieldTheory.Minpoly.Finite
 public import Mathlib.RingTheory.Valuation.Basic
+
+import Mathlib.FieldTheory.Minpoly.Field
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Minimal polynomials.

@@ -6,8 +6,6 @@ Authors: Michael Stoll
 module
 
 public import Mathlib.Basic.Real.Basic
-public import Mathlib.GroupTheory.Finiteness
-public import Mathlib.GroupTheory.Index
 public import Mathlib.GroupTheory.Torsion
 public import Mathlib.Order.Northcott
 
@@ -47,7 +45,7 @@ This last version is one of the main ingredients of the standard proof of the
 
 We also provide versions that prove that the torsion subgroup is finite under weaker assumptions.
 
-### Implementation note
+### Implementation notes
 
 Replacing `ℝ` by an ordered field (`{R : Type*} [LinearOrder R] [Field R] [IsOrderedRing R]`)
 works, but makes the type check quite slow (and `to_additive` needs some  help...).
@@ -152,7 +150,7 @@ theorem CommGroup.fg_of_descent' {G : Type*} [CommGroup G] {h : G → ℝ} {C : 
     Group.FG G := by
   have H₃' x : 4 * h x - (h 1 + C) ≤ h (x ^ 2) := by grind [pow_two, div_self']
   have H₂' g x : h x ≤ 2 * h (g * x) + (2 * h g⁻¹ + C) := by grind [mul_inv_cancel_comm]
-  exact fg_of_descent (b := 4) (by norm_num) (by norm_num) H₁ H₂' H₃'
+  exact fg_of_descent (b := 4) (by simp) (by norm_num) H₁ H₂' H₃'
 
 /--
 If `M` is a monoid and `n : ℕ`, `h : M → ℝ` satisfy
@@ -213,6 +211,6 @@ theorem CommGroup.finite_torsion_of_descent' {G : Type*} [CommGroup G] {h : G �
     (H : ∀ x y, |h (x * y) + h (x / y) - 2 * (h x + h y)| ≤ C) [Northcott h] :
     Finite (torsion G) := by
   have H' x : 4 * h x - (h 1 + C) ≤ h (x ^ 2) := by grind [pow_two, div_self']
-  exact finite_torsion_of_descent (b := 4) (by norm_num) H'
+  exact finite_torsion_of_descent (b := 4) (by simp) H'
 
 end

@@ -150,7 +150,7 @@ theorem Disjoint.map [OrderBot α] [OrderBot β] [BotHomClass F α β] [InfHomCl
 
 theorem IsCompl.map [BoundedOrder α] [BoundedOrder β] [BoundedLatticeHomClass F α β] {a b : α}
     (f : F) (h : IsCompl a b) : IsCompl (f a) (f b) :=
-  ⟨h.1.map _, h.2.map _⟩
+  ⟨h.disjoint.map _, h.codisjoint.map _⟩
 
 end BoundedLattice
 
@@ -373,10 +373,10 @@ instance instBoundedLatticeHomClass : BoundedLatticeHomClass (BoundedLatticeHom 
   map_top f := f.map_top'
   map_bot f := f.map_bot'
 
-@[simp] lemma toFun_eq_coe (f : BoundedLatticeHom α β) : f.toFun = f := rfl
+lemma toFun_eq_coe (f : BoundedLatticeHom α β) : f.toFun = f := rfl
 
 @[simp] lemma coe_toLatticeHom (f : BoundedLatticeHom α β) : ⇑f.toLatticeHom = f := rfl
-@[to_dual (attr := simp)]
+@[to_dual]
 lemma coe_toSupBotHom (f : BoundedLatticeHom α β) : ⇑f.toSupBotHom = f := rfl
 @[simp] lemma coe_toBoundedOrderHom (f : BoundedLatticeHom α β) : ⇑f.toBoundedOrderHom = f := rfl
 @[simp] lemma coe_mk (f : LatticeHom α β) (hf hf') : ⇑(mk f hf hf') = f := rfl

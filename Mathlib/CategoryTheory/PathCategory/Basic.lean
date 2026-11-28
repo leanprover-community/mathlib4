@@ -7,12 +7,16 @@ module
 
 public import Mathlib.CategoryTheory.Quotient
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category paths on a quiver.
 
 When `C` is a quiver, `paths C` is the category of paths.
 
 ## When the quiver is itself a category
+
 We provide `path_composition : paths C ⥤ C`.
 
 We check that the quotient of the path category of a category by the canonical relation
@@ -176,7 +180,7 @@ theorem lift_unique {C} [Category* C] (φ : V ⥤q C) (Φ : Paths V ⥤ C)
 @[ext (iff := false)]
 theorem ext_functor {C} [Category* C] {F G : Paths V ⥤ C} (h_obj : F.obj = G.obj)
     (h : ∀ (a b : V) (e : a ⟶ b), F.map e.toPath =
-        eqToHom (congr_fun h_obj a) ≫ G.map e.toPath ≫ eqToHom (congr_fun h_obj.symm b)) :
+        eqToHom congr($h_obj a) ≫ G.map e.toPath ≫ eqToHom congr($h_obj.symm b)) :
     F = G := by
   fapply Functor.ext
   · intro X

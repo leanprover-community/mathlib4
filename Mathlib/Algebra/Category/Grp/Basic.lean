@@ -123,10 +123,10 @@ initialize_simps_projections AddGrpCat.Hom (hom' → hom)
 The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
 -/
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma coe_id {X : GrpCat} : (𝟙 X : X → X) = id := rfl
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma coe_comp {X Y Z : GrpCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
 @[to_additive (attr := ext)]
@@ -224,10 +224,16 @@ lemma ofHom_injective {X Y : Type u} [Group X] [Group Y] :
   apply ConcreteCategory.congr_hom h
 
 /-- The forgetful functor from groups to monoids is fully faithful. -/
-@[to_additive fullyFaihtfulForget₂ToAddMonCat
+@[to_additive fullyFaithfulForget₂ToAddMonCat
   /-- The forgetful functor from additive groups to additive monoids is fully faithful. -/]
 def fullyFaithfulForget₂ToMonCat : (forget₂ GrpCat.{u} MonCat).FullyFaithful where
   preimage f := ofHom f.hom
+
+/-- Deprecated alias for `AddGrpCat.fullyFaithfulForget₂ToAddMonCat`. -/
+@[deprecated AddGrpCat.fullyFaithfulForget₂ToAddMonCat (since := "2026-10-13")]
+abbrev _root_.AddGrpCat.fullyFaihtfulForget₂ToAddMonCat :
+    (forget₂ AddGrpCat.{u} AddMonCat).FullyFaithful :=
+  AddGrpCat.fullyFaithfulForget₂ToAddMonCat
 
 @[to_additive]
 instance : (forget₂ GrpCat.{u} MonCat).Full :=
@@ -347,10 +353,10 @@ initialize_simps_projections AddCommGrpCat.Hom (hom' → hom)
 The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
 -/
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma coe_id {X : CommGrpCat} : (𝟙 X : X → X) = id := rfl
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma coe_comp {X Y Z : CommGrpCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
 @[to_additive (attr := ext)]
@@ -433,10 +439,16 @@ instance hasForgetToGroup : HasForget₂ CommGrpCat GrpCat where
 instance : Coe CommGrpCat.{u} GrpCat.{u} where coe := (forget₂ CommGrpCat GrpCat).obj
 
 /-- The forgetful functor from commutative groups to groups is fully faithful. -/
-@[to_additive fullyFaihtfulForget₂ToAddGrp
+@[to_additive
 /-- The forgetful functor from additive commutative groups to additive groups is fully faithful. -/]
 def fullyFaithfulForget₂ToGrp : (forget₂ CommGrpCat.{u} GrpCat).FullyFaithful where
   preimage f := ofHom f.hom
+
+/-- Deprecated alias for `AddCommGrpCat.fullyFaithfulForget₂ToAddGrp`. -/
+@[deprecated AddCommGrpCat.fullyFaithfulForget₂ToAddGrp (since := "2026-10-13")]
+abbrev _root_.AddCommGrpCat.fullyFaihtfulForget₂ToAddGrp :
+    (forget₂ AddCommGrpCat.{u} AddGrpCat).FullyFaithful :=
+  AddCommGrpCat.fullyFaithfulForget₂ToAddGrp
 
 @[to_additive]
 instance : (forget₂ CommGrpCat.{u} GrpCat).Full :=
@@ -458,7 +470,7 @@ instance : Coe CommGrpCat.{u} CommMonCat.{u} where coe := (forget₂ CommGrpCat 
 instance (G H : CommGrpCat) : One (G ⟶ H) where
   one := ofHom 1
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem one_apply (G H : CommGrpCat) (g : G) : ((1 : G ⟶ H) : G → H) g = 1 :=
   rfl
 
@@ -497,7 +509,7 @@ def asHom {G : AddCommGrpCat.{0}} (g : G) : ↧ℤ ⟶ G :=
   ofHom (zmultiplesHom G g)
 
 theorem asHom_injective {G : AddCommGrpCat.{0}} : Function.Injective (@asHom G) := fun h k w => by
-  simpa using CategoryTheory.congr_fun w 1
+  simpa using congr($w 1)
 
 @[ext]
 theorem int_hom_ext {G : AddCommGrpCat.{0}} (f g : ↧ℤ ⟶ G)
@@ -582,11 +594,11 @@ namespace CategoryTheory.Aut
 of permutations. -/
 def isoPerm {α : Type u} : GrpCat.of (Aut α) ≅ GrpCat.of (Equiv.Perm α) where
   hom := GrpCat.ofHom
-    { toFun := fun g => g.toEquiv
+    { toFun g := g.asIso.toEquiv
       map_one' := by aesop
       map_mul' := by aesop }
   inv := GrpCat.ofHom
-    { toFun := fun g => g.toIso
+    { toFun g := .of g.toIso
       map_one' := by aesop
       map_mul' := by aesop }
 

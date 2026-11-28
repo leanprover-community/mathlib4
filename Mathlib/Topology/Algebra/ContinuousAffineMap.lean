@@ -5,9 +5,11 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.LinearAlgebra.AffineSpace.AffineMap
-public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
 public import Mathlib.Topology.Algebra.Affine
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Continuous affine maps.
@@ -72,28 +74,34 @@ theorem ext {f g : P →ᴬ[R] Q} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext _ _ h
 
 theorem congr_fun {f g : P →ᴬ[R] Q} (h : f = g) (x : P) : f x = g x :=
-  DFunLike.congr_fun h _
+  congr($h _)
 
 /-- Forgetting its algebraic properties, a continuous affine map is a continuous map. -/
+@[coe]
 def toContinuousMap (f : P →ᴬ[R] Q) : C(P, Q) :=
   ⟨f, f.cont⟩
 
 instance : CoeHead (P →ᴬ[R] Q) C(P, Q) :=
   ⟨toContinuousMap⟩
 
-@[simp]
+@[deprecated "Syntactic tautology" (since := "2026-11-25"), nolint synTaut]
 theorem toContinuousMap_coe (f : P →ᴬ[R] Q) : f.toContinuousMap = ↑f := rfl
 
 @[simp, norm_cast]
 theorem coe_toAffineMap (f : P →ᴬ[R] Q) : ((f : P →ᵃ[R] Q) : P → Q) = f := rfl
 
 @[simp, norm_cast]
+theorem coe_toContinuousMap (f : P →ᴬ[R] Q) : ⇑f.toContinuousMap = f := rfl
+
+@[deprecated ContinuousMap.coe_ofClass +typeChanged (since := "2026-11-27")]
 theorem coe_to_continuousMap (f : P →ᴬ[R] Q) : ((f : C(P, Q)) : P → Q) = f := rfl
 
-theorem to_continuousMap_injective {f g : P →ᴬ[R] Q} (h : (f : C(P, Q)) = (g : C(P, Q))) :
+theorem toContinuousMap_injective {f g : P →ᴬ[R] Q} (h : (f : C(P, Q)) = (g : C(P, Q))) :
     f = g := by
   ext a
-  exact ContinuousMap.congr_fun h a
+  congrm $h a
+
+@[deprecated (since := "2026-11-27")] alias to_continuousMap_injective := toContinuousMap_injective
 
 @[norm_cast]
 theorem coe_toAffineMap_mk (f : P →ᵃ[R] Q) (h) : ((⟨f, h⟩ : P →ᴬ[R] Q) : P →ᵃ[R] Q) = f := rfl
@@ -110,7 +118,7 @@ theorem mk_coe (f : P →ᴬ[R] Q) (h) : (⟨(f : P →ᵃ[R] Q), h⟩ : P →�
   rfl
 
 @[continuity]
-protected theorem continuous (f : P →ᴬ[R] Q) : Continuous f := f.2
+protected theorem continuous (f : P →ᴬ[R] Q) : Continuous f := f.cont
 
 variable (R P)
 
@@ -199,7 +207,6 @@ theorem coe_contLinear_eq_linear (f : P →ᴬ[R] Q) :
     (f.contLinear : V →ₗ[R] W) = (f : P →ᵃ[R] Q).linear :=
   rfl
 
-@[simp]
 theorem coe_mk_contLinear_eq_linear (f : P →ᵃ[R] Q) (h) :
     ((⟨f, h⟩ : P →ᴬ[R] Q).contLinear : V → W) = f.linear :=
   rfl
@@ -218,8 +225,11 @@ theorem map_vadd (f : P →ᴬ[R] Q) (p : P) (v : V) : f (v +ᵥ p) = f.contLine
   f.map_vadd' p v
 
 @[simp]
-theorem contLinear_map_vsub (f : P →ᴬ[R] Q) (p₁ p₂ : P) : f.contLinear (p₁ -ᵥ p₂) = f p₁ -ᵥ f p₂ :=
-  f.toAffineMap.linearMap_vsub p₁ p₂
+theorem contLinear_apply_vsub (f : P →ᴬ[R] Q) (p₁ p₂ : P) :
+    f.contLinear (p₁ -ᵥ p₂) = f p₁ -ᵥ f p₂ :=
+  f.toAffineMap.linear_apply_vsub p₁ p₂
+
+@[deprecated (since := "2026-09-22")] alias contLinear_map_vsub := contLinear_apply_vsub
 
 @[simp]
 theorem const_contLinear (q : Q) : (const R P q).contLinear = 0 :=

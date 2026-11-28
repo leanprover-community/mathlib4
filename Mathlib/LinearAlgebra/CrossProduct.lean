@@ -6,11 +6,8 @@ Authors: Martin Dvorak, Kyle Miller, Eric Wieser
 module
 
 public import Mathlib.Algebra.Lie.Basic
-public import Mathlib.LinearAlgebra.BilinearMap
-public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
-public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
-public import Mathlib.LinearAlgebra.Matrix.Notation
 public import Mathlib.GroupTheory.GroupAction.Ring
+public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 
 /-!
 # Cross products
@@ -177,8 +174,9 @@ theorem cross_cross_eq_smul_sub_smul (u v w : Fin 3 → R) :
     u ⨯₃ v ⨯₃ w = (u ⬝ᵥ w) • v - (v ⬝ᵥ w) • u := by
   simp_rw [cross_apply, vec3_dotProduct]
   ext i
-  fin_cases i <;>
-  · simp only [Fin.isValue, Nat.succ_eq_add_one, Nat.reduceAdd, Fin.reduceFinMk, cons_val,
+  fin_cases i
+  all_goals
+    simp only [Fin.isValue, Nat.succ_eq_add_one, Nat.reduceAdd, Fin.reduceFinMk, cons_val,
       Pi.sub_apply, Pi.smul_apply, smul_eq_mul]
     ring
 
@@ -187,7 +185,8 @@ theorem cross_cross_eq_smul_sub_smul' (u v w : Fin 3 → R) :
     u ⨯₃ (v ⨯₃ w) = (u ⬝ᵥ w) • v - (v ⬝ᵥ u) • w := by
   simp_rw [cross_apply, vec3_dotProduct]
   ext i
-  fin_cases i <;>
-  · simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, cons_val, cons_val_one,
+  fin_cases i
+  all_goals
+    simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, cons_val, cons_val_one,
       cons_val_zero, Fin.reduceFinMk, Pi.sub_apply, Pi.smul_apply, smul_eq_mul]
     ring

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Constructions
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bundled morphisms with continuous evaluation at a point
 
@@ -14,7 +17,7 @@ In this file we define a typeclass
 saying that `F` is a type of bundled morphisms (in the sense of `DFunLike`)
 with a topology on `F` such that evaluation at a point is continuous in `f : F`.
 
-## Implementation Notes
+## Implementation notes
 
 For now, we define the typeclass for non-dependent bundled functions only.
 Whenever we add a type of bundled dependent functions with a topology having this property,

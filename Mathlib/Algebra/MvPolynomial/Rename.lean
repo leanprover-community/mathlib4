@@ -34,7 +34,6 @@ As in other polynomial files, we typically use the notation:
 + `i : σ`, with corresponding monomial `X i`, often denoted `X_i` by mathematicians
 
 + `p : MvPolynomial σ α`
-
 -/
 
 @[expose] public section
@@ -141,7 +140,7 @@ theorem killCompl_comp_rename : (killCompl hf).comp (rename f) = AlgHom.id R _ :
 
 @[simp]
 theorem killCompl_rename_app (p : MvPolynomial σ R) : killCompl hf (rename f p) = p :=
-  AlgHom.congr_fun (killCompl_comp_rename hf) p
+  congr($(killCompl_comp_rename hf) p)
 
 lemma killCompl_map (φ : R →+* S) (p : MvPolynomial τ R) :
     (p.map φ).killCompl hf = (p.killCompl hf).map φ := by
@@ -192,7 +191,7 @@ lemma coeff_killCompl {s} :
     · simp only [coeff_zero, Finsupp.zero_apply, coeff_monomial, right_eq_ite_iff]
       intro rfl
       contrapose! h
-      apply subset_trans <| SetLike.coe_subset_coe.mpr <| Finsupp.mapDomain_support
+      apply subset_trans <| SetLike.coe_subset_coe.mpr Finsupp.mapDomain_support
       simp
   · simp_intro ..
 
@@ -237,9 +236,10 @@ section
 variable (f : R →+* S) (k : σ → τ) (g : τ → S) (p : MvPolynomial σ R)
 
 theorem eval₂_rename : (rename k p).eval₂ f g = p.eval₂ f (g ∘ k) := by
-  apply MvPolynomial.induction_on p <;>
-    · intros
-      simp [*]
+  apply MvPolynomial.induction_on p
+  all_goals
+    intros
+    simp [*]
 
 theorem eval_rename (g : τ → R) (p : MvPolynomial σ R) : eval g (rename k p) = eval (g ∘ k) p :=
   eval₂_rename _ _ _ _
@@ -256,21 +256,24 @@ lemma aeval_comp_rename [Algebra R S] :
 
 theorem rename_eval₂ (g : τ → MvPolynomial σ R) :
     rename k (p.eval₂ C (g ∘ k)) = (rename k p).eval₂ C (rename k ∘ g) := by
-  apply MvPolynomial.induction_on p <;>
-    · intros
-      simp [*]
+  apply MvPolynomial.induction_on p
+  all_goals
+    intros
+    simp [*]
 
 theorem rename_prod_mk_eval₂ (j : τ) (g : σ → MvPolynomial σ R) :
     rename (Prod.mk j) (p.eval₂ C g) = p.eval₂ C fun x => rename (Prod.mk j) (g x) := by
-  apply MvPolynomial.induction_on p <;>
-    · intros
-      simp [*]
+  apply MvPolynomial.induction_on p
+  all_goals
+    intros
+    simp [*]
 
 theorem eval₂_rename_prod_mk (g : σ × τ → S) (i : σ) (p : MvPolynomial τ R) :
     (rename (Prod.mk i) p).eval₂ f g = eval₂ f (fun j => g (i, j)) p := by
-  apply MvPolynomial.induction_on p <;>
-    · intros
-      simp [*]
+  apply MvPolynomial.induction_on p
+  all_goals
+    intros
+    simp [*]
 
 theorem eval_rename_prod_mk (g : σ × τ → R) (i : σ) (p : MvPolynomial τ R) :
     eval g (rename (Prod.mk i) p) = eval (fun j => g (i, j)) p :=
@@ -309,8 +312,8 @@ theorem exists_finset_rename₂ (p₁ p₂ : MvPolynomial σ R) :
   obtain ⟨s₂, q₂, rfl⟩ := exists_finset_rename p₂
   classical
     use s₁ ∪ s₂
-    use rename (fun x ↦ ⟨x, Finset.subset_union_left x.2⟩) q₁
-    use rename (fun x ↦ ⟨x, Finset.subset_union_right x.2⟩) q₂
+    use rename (fun x ↦ ⟨x, Finset.subset_union_left x.property⟩) q₁
+    use rename (fun x ↦ ⟨x, Finset.subset_union_right x.property⟩) q₂
     constructor <;> simp [Function.comp_def]
 
 /-- Every polynomial is a polynomial in finitely many variables. -/
@@ -322,6 +325,71 @@ theorem exists_fin_rename (p : MvPolynomial σ R) :
   refine ⟨n, (↑) ∘ e.symm, Subtype.val_injective.comp e.symm.injective, rename e q, ?_⟩
   rw [← rename_rename, rename_rename e]
   simp only [Function.comp_def, Equiv.symm_apply_apply, rename_rename]
+
+/-- Every polynomial in `σ ⊕ τ` is a polynomial in all of the variables from `σ` and finitely
+many of the variables from `τ`.
+
+Unlike `exists_finset_rename`, which compacts the whole variable type, the variables from `σ`
+are left untouched. -/
+theorem exists_finset_right_rename (p : MvPolynomial (σ ⊕ τ) R) :
+    ∃ (t : Finset τ) (q : MvPolynomial (σ ⊕ t) R), p = q.rename (Sum.map id (↑)) := by
+  obtain ⟨s, q, rfl⟩ := p.exists_finset_rename
+  use s.toRight
+  let f : s → σ ⊕ s.toRight
+    | ⟨.inl a, _⟩ => .inl a
+    | ⟨.inr b, h⟩ => .inr ⟨b, by simpa⟩
+  refine ⟨q.rename f, ?_⟩
+  rw [rename_rename]
+  congr
+  aesop
+
+/-- Every polynomial in `σ ⊕ τ` is a polynomial in finitely many of the variables from `σ` and
+all of the variables from `τ`.
+
+Unlike `exists_finset_rename`, which compacts the whole variable type, the variables from `τ`
+are left untouched. -/
+theorem exists_finset_left_rename (p : MvPolynomial (σ ⊕ τ) R) :
+    ∃ (t : Finset σ) (q : MvPolynomial (t ⊕ τ) R), p = q.rename (Sum.map (↑) id) := by
+  obtain ⟨t, q, hq⟩ := (p.rename <| Equiv.sumComm σ τ).exists_finset_right_rename
+  refine ⟨t, q.rename (Equiv.sumComm _ _), ?_⟩
+  apply rename_injective _ (Equiv.sumComm σ τ).injective
+  rw [hq, rename_rename, rename_rename]
+  congr
+  aesop
+
+/-- Every polynomial in `σ ⊕ τ` is a polynomial in all of the variables from `σ` and finitely
+many of the variables from `τ`.
+
+Unlike `exists_fin_rename`, which reindexes the whole variable type along an injection
+`Fin n → σ ⊕ τ`, the variables from `σ` are left untouched: only the right summand is
+compacted. -/
+theorem exists_fin_right_rename (p : MvPolynomial (σ ⊕ τ) R) :
+    ∃ (n : ℕ) (f : Fin n → τ) (_hf : Injective f) (q : MvPolynomial (σ ⊕ Fin n) R),
+      p = q.rename (Sum.map id f) := by
+  obtain ⟨t, q, rfl⟩ := exists_finset_right_rename p
+  let e := Fintype.equivFin t
+  refine ⟨Fintype.card t, (↑) ∘ e.symm, Subtype.val_injective.comp e.symm.injective,
+    q.rename (Sum.map id e), ?_⟩
+  rw [rename_rename]
+  congr
+  aesop
+
+/-- Every polynomial in `σ ⊕ τ` is a polynomial in finitely many of the variables from `σ` and
+all of the variables from `τ`.
+
+Unlike `exists_fin_rename`, which reindexes the whole variable type along an injection
+`Fin n → σ ⊕ τ`, the variables from `τ` are left untouched: only the left summand is
+compacted. -/
+theorem exists_fin_left_rename (p : MvPolynomial (σ ⊕ τ) R) :
+    ∃ (n : ℕ) (f : Fin n → σ) (_hf : Injective f) (q : MvPolynomial (Fin n ⊕ τ) R),
+      p = q.rename (Sum.map f id) := by
+  obtain ⟨t, q, rfl⟩ := exists_finset_left_rename p
+  let e := Fintype.equivFin t
+  refine ⟨Fintype.card t, (↑) ∘ e.symm, Subtype.val_injective.comp e.symm.injective,
+    q.rename (Sum.map e id), ?_⟩
+  rw [rename_rename]
+  congr
+  aesop
 
 end Rename
 

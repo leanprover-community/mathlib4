@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
 module
 
-public import Aesop
+public meta import Aesop
 public import Mathlib.Algebra.Group.Defs
 public import Mathlib.Algebra.Notation.Defs
 public import Mathlib.Data.Int.Init

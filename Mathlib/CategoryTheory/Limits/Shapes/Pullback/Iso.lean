@@ -7,11 +7,13 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The pullback of an isomorphism
 
 This file provides some basic results about the pullback (and pushout) of an isomorphism.
-
 -/
 
 @[expose] public section
@@ -61,7 +63,6 @@ theorem hasPullback_of_left_iso : HasPullback f g :=
 
 attribute [local instance] hasPullback_of_left_iso
 
-set_option backward.isDefEq.respectTransparency false in
 instance pullback_snd_iso_of_left_iso : IsIso (pullback.snd f g) := by
   refine ⟨⟨pullback.lift (g ≫ inv f) (𝟙 _) (by simp), ?_, by simp⟩⟩
   ext
@@ -111,7 +112,6 @@ theorem hasPullback_of_right_iso : HasPullback f g :=
 
 attribute [local instance] hasPullback_of_right_iso
 
-set_option backward.isDefEq.respectTransparency false in
 instance pullback_fst_iso_of_right_iso : IsIso (pullback.fst f g) := by
   refine ⟨⟨pullback.lift (𝟙 _) (f ≫ inv g) (by simp), ?_, by simp⟩⟩
   ext
@@ -147,11 +147,9 @@ theorem pushoutCoconeOfLeftIso_inr : (pushoutCoconeOfLeftIso f g).inr = 𝟙 _ :
 theorem pushoutCoconeOfLeftIso_ι_app_none : (pushoutCoconeOfLeftIso f g).ι.app none = g := by
   simp
 
-@[simp]
 theorem pushoutCoconeOfLeftIso_ι_app_left : (pushoutCoconeOfLeftIso f g).ι.app left = inv f ≫ g :=
   rfl
 
-@[simp]
 theorem pushoutCoconeOfLeftIso_ι_app_right : (pushoutCoconeOfLeftIso f g).ι.app right = 𝟙 _ := rfl
 
 /-- Verify that the constructed cocone is indeed a colimit. -/
@@ -163,7 +161,6 @@ theorem hasPushout_of_left_iso : HasPushout f g :=
 
 attribute [local instance] hasPushout_of_left_iso
 
-set_option backward.isDefEq.respectTransparency false in
 instance pushout_inr_iso_of_left_iso : IsIso (pushout.inr f g) := by
   refine ⟨⟨pushout.desc (inv f ≫ g) (𝟙 _) (by simp), by simp, ?_⟩⟩
   ext
@@ -199,10 +196,8 @@ theorem pushoutCoconeOfRightIso_inr : (pushoutCoconeOfRightIso f g).inr = inv g 
 theorem pushoutCoconeOfRightIso_ι_app_none : (pushoutCoconeOfRightIso f g).ι.app none = f := by
   simp
 
-@[simp]
 theorem pushoutCoconeOfRightIso_ι_app_left : (pushoutCoconeOfRightIso f g).ι.app left = 𝟙 _ := rfl
 
-@[simp]
 theorem pushoutCoconeOfRightIso_ι_app_right :
     (pushoutCoconeOfRightIso f g).ι.app right = inv g ≫ f := rfl
 
@@ -215,7 +210,6 @@ theorem hasPushout_of_right_iso : HasPushout f g :=
 
 attribute [local instance] hasPushout_of_right_iso
 
-set_option backward.isDefEq.respectTransparency false in
 instance pushout_inl_iso_of_right_iso : IsIso (pushout.inl _ _ : _ ⟶ pushout f g) := by
   refine ⟨⟨pushout.desc (𝟙 _) (inv g ≫ f) (by simp), by simp, ?_⟩⟩
   ext

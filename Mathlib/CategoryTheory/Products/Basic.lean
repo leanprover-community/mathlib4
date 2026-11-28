@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.EqToHom
 public import Mathlib.CategoryTheory.Functor.Const
-public import Mathlib.CategoryTheory.Opposites
 public import Mathlib.Data.Prod.Basic
 
 /-!
@@ -41,7 +40,7 @@ section
 variable (C : Type u₁) [CategoryStruct.{v₁} C] (D : Type u₂) [CategoryStruct.{v₂} D]
 
 /-- `CategoryStruct.prod C D` gives the Cartesian product of two `CategoryStruct`'s. -/
-@[simps id_fst id_snd comp_fst comp_snd Hom]
+@[simps id_fst id_snd Hom]
 instance prod : CategoryStruct.{max v₁ v₂} (C × D) where
   Hom X Y := (X.1 ⟶ Y.1) × (X.2 ⟶ Y.2)
   id X := ⟨𝟙 X.1, 𝟙 X.2⟩
@@ -58,6 +57,7 @@ lemma hom_ext {X Y : C × D} {f g : X ⟶ Y} (h₁ : f.1 = g.1) (h₂ : f.2 = g.
 /-- Construct a morphism in a product category by giving its constituent components.
 This constructor should be preferred over `Prod.mk`, because Lean infers better the
 source and target of the resulting morphism. -/
+@[to_dual self]
 abbrev mkHom {X₁ X₂ : C} {Y₁ Y₂ : D} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) : (X₁, Y₁) ⟶ (X₂, Y₂) :=
   ⟨f, g⟩
 
@@ -85,6 +85,16 @@ theorem prod_id' (X : C) (Y : D) : 𝟙 (X, Y) = (𝟙 X, 𝟙 Y) :=
 @[simp]
 theorem prod_comp {P Q R : C} {S T U : D} (f : (P, S) ⟶ (Q, T)) (g : (Q, T) ⟶ (R, U)) :
     f ≫ g = f.1 ≫ g.1 ×ₘ f.2 ≫ g.2 :=
+  rfl
+
+@[deprecated prod_comp +typeChanged (since := "2026-11-24")]
+theorem prod_comp_fst {P Q R : C} {S T U : D} (f : (P, S) ⟶ (Q, T)) (g : (Q, T) ⟶ (R, U)) :
+    (f ≫ g).1 = f.1 ≫ g.1 :=
+  rfl
+
+@[deprecated prod_comp +typeChanged (since := "2026-11-24")]
+theorem prod_comp_snd {P Q R : C} {S T U : D} (f : (P, S) ⟶ (Q, T)) (g : (Q, T) ⟶ (R, U)) :
+    (f ≫ g).2 = f.2 ≫ g.2 :=
   rfl
 
 /-! Two `eqToHom` lemmas about projections. -/
@@ -212,13 +222,10 @@ variable {C D}
 
 /-- Any morphism in a product factors as a morphism whose left component is an identity
 followed by a morphism whose right component is an identity. -/
-@[reassoc]
-lemma fac {x y : C × D} (f : x ⟶ y) : f = (𝟙 x.1 ×ₘ f.2) ≫ (f.1 ×ₘ (𝟙 y.2)) := by cat_disch
-
+@[to_dual (attr := reassoc) fac'
 /-- Any morphism in a product factors as a morphism whose right component is an identity
-followed by a morphism whose left component is an identity. -/
-@[reassoc]
-lemma fac' {x y : C × D} (f : x ⟶ y) : f = (f.1 ×ₘ 𝟙 x.2) ≫ ((𝟙 y.1) ×ₘ f.2) := by cat_disch
+followed by a morphism whose left component is an identity. -/]
+lemma fac {x y : C × D} (f : x ⟶ y) : f = (𝟙 x.1 ×ₘ f.2) ≫ (f.1 ×ₘ (𝟙 y.2)) := by cat_disch
 
 end Prod
 
@@ -426,6 +433,7 @@ section Opposite
 
 open Opposite
 
+variable (D) in
 /-- The equivalence between the opposite of a product and the product of the opposites. -/
 @[implicit_reducible, simps!]
 def prodOpEquiv : (C × D)ᵒᵖ ≌ Cᵒᵖ × Dᵒᵖ where

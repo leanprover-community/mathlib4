@@ -5,12 +5,12 @@ Authors: Yury Kudryashov, Sébastien Gouëzel, Rémy Degenne, Jireh Loreaux
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Expect
 public import Mathlib.Algebra.BigOperators.Field
-public import Mathlib.Analysis.Convex.Jensen
 public import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 public import Mathlib.Basic.Real.ConjExponents
+
+import Mathlib.Analysis.Convex.Jensen
 
 /-!
 # Mean value inequalities
@@ -32,9 +32,10 @@ $$
 $$
 The classical version is a special case of this inequality for $w_i=\frac{1}{n}$.
 
-We prove a few versions of this inequality. Each of the following lemmas comes in two versions:
-a version for real-valued non-negative functions is in the `Real` namespace, and a version for
-`NNReal`-valued functions is in the `NNReal` namespace.
+We prove a few versions of this inequality. Each of the following lemmas comes in three versions:
+a version for real-valued non-negative functions is in the `Real` namespace, a version for
+`NNReal`-valued functions is in the `NNReal` namespace, and a version for `ENNReal`-valued functions
+is in the `ENNReal` namespace.
 
 - `geom_mean_le_arith_mean_weighted` : weighted version for functions on `Finset`s;
 - `geom_mean_le_arith_mean2_weighted` : weighted version for two numbers;
@@ -82,6 +83,9 @@ There are at least two short proofs of this inequality. In our proof we prenorma
 then apply Young's inequality to each $a_ib_i$. Another possible proof would be to deduce this
 inequality from the generalized mean inequality for well-chosen vectors and weights.
 
+As a consequence, we prove Lyapunov's inequality (`NNReal.lyapunov_inequality`): the weighted
+moments $t \mapsto \sum_{i\in s} w_i f_i^t$ are log-convex on $[0, \infty)$.
+
 ### Minkowski's inequality
 
 The inequality says that for `p ≥ 1` the function
@@ -103,7 +107,6 @@ less than or equal to the sum of the maximum values of the summands.
   is to define `StrictConvexOn` functions.
 - generalized mean inequality with any `p ≤ q`, including negative numbers;
 - prove that the power mean tends to the geometric mean as the exponent tends to zero.
-
 -/
 
 public section
@@ -113,8 +116,6 @@ universe u v
 
 open Finset NNReal
 open scoped BigOperators
-
-noncomputable section
 
 variable {ι : Type u} (s : Finset ι)
 
@@ -141,7 +142,7 @@ theorem geom_mean_le_arith_mean_weighted (w z : ι → ℝ) (hw : ∀ i ∈ s, 0
   -- for `exp` and numbers `log (z i)` with weights `w i`.
   · have := convexOn_exp.map_sum_le hw hw' fun i _ => Set.mem_univ <| log (z i)
     simp only [exp_sum, smul_eq_mul, mul_comm (w _) (log _)] at this
-    convert! this using 1 <;> [apply prod_congr rfl; apply sum_congr rfl] <;> intro i hi
+    convert this using 1 <;> [apply prod_congr rfl; apply sum_congr rfl] <;> intro i hi
     · rcases eq_or_lt_of_le (hz i hi) with hz | hz
       · simp [A i hi hz.symm]
       · exact rpow_def_of_pos hz _
@@ -215,14 +216,14 @@ theorem geom_mean_eq_arith_mean_weighted_iff_of_pos' (w z : ι → ℝ) (hw : �
         apply (sum_eq_zero_iff_of_nonneg ?_).mp h.symm j hj
         exact fun i hi => (mul_nonneg_iff_of_pos_left (hw i hi)).mpr (hz i hi)
       · intro h
-        convert! h i his
+        convert h i his
         exact hzi.symm
     · rw [hzi]
       exact zero_rpow hwi
   · have hz' := fun i h => lt_of_le_of_ne (hz i h) (fun a => (ne_of_gt (hw i h)) (A i h a.symm))
     have := strictConvexOn_exp.map_sum_eq_iff hw hw' fun i _ => Set.mem_univ <| log (z i)
     simp only [exp_sum, smul_eq_mul, mul_comm (w _) (log _)] at this
-    convert! this using 1
+    convert this using 1
     · apply Eq.congr <;>
       [apply prod_congr rfl; apply sum_congr rfl] <;>
       intro i hi <;>
@@ -438,6 +439,47 @@ theorem geom_mean_lt_arith_mean2_weighted_iff_of_nonneg {w₁ w₂ p₁ p₂ : �
 
 end Real
 
+namespace ENNReal
+
+/-- **AM-GM inequality**: The geometric mean is less than or equal to the arithmetic mean, weighted
+version for `NNReal`-valued weights and `ENNReal`-valued elements. -/
+theorem geom_mean_le_arith_mean_weighted (w : ι → ℝ≥0) (z : ι → ℝ≥0∞) (hw : ∑ i ∈ s, w i = 1) :
+    ∏ i ∈ s, z i ^ (w i : ℝ) ≤ ∑ i ∈ s, w i * z i := by
+  by_cases! h : ∃ i ∈ s, w i ≠ 0 ∧ z i = ∞
+  · obtain ⟨i, his, hwi, hzi⟩ := h
+    rw [sum_eq_top.mpr ⟨i, his, by simp [hwi, hzi]⟩]
+    exact le_top
+  rw [← prod_filter_of_ne (p := (w · ≠ 0)) (by aesop)]
+  rw [← sum_filter_of_ne (p := (w · ≠ 0)) (by aesop)] at ⊢ hw
+  convert coe_le_coe.mpr (NNReal.geom_mean_le_arith_mean_weighted _ w (fun i ↦ (z i).toNNReal) hw)
+  · rw [ofNNReal_finsetProd]
+    congr! with i hi
+    simp [coe_rpow_of_nonneg, h i (Finset.mem_filter.mp hi).1 (Finset.mem_filter.mp hi).2]
+  · rw [ofNNReal_finsetSum]
+    congr! with i hi
+    simp [h i (Finset.mem_filter.mp hi).1 (Finset.mem_filter.mp hi).2]
+
+/-- **AM-GM inequality**: The geometric mean is less than or equal to the arithmetic mean, weighted
+version for two `ENNReal` numbers. -/
+theorem geom_mean_le_arith_mean2_weighted (w₁ w₂ : ℝ≥0) (p₁ p₂ : ℝ≥0∞) :
+    w₁ + w₂ = 1 → p₁ ^ (w₁ : ℝ) * p₂ ^ (w₂ : ℝ) ≤ w₁ * p₁ + w₂ * p₂ := by
+  simpa using geom_mean_le_arith_mean_weighted univ ![w₁, w₂] ![p₁, p₂]
+
+theorem geom_mean_le_arith_mean3_weighted (w₁ w₂ w₃ : ℝ≥0) (p₁ p₂ p₃ : ℝ≥0∞) :
+    w₁ + w₂ + w₃ = 1 →
+      p₁ ^ (w₁ : ℝ) * p₂ ^ (w₂ : ℝ) * p₃ ^ (w₃ : ℝ) ≤ w₁ * p₁ + w₂ * p₂ + w₃ * p₃ := by
+  simpa [Fin.prod_univ_succ, Fin.sum_univ_succ, add_assoc, mul_assoc]
+    using geom_mean_le_arith_mean_weighted univ ![w₁, w₂, w₃] ![p₁, p₂, p₃]
+
+theorem geom_mean_le_arith_mean4_weighted (w₁ w₂ w₃ w₄ : ℝ≥0) (p₁ p₂ p₃ p₄ : ℝ≥0∞) :
+    w₁ + w₂ + w₃ + w₄ = 1 →
+      p₁ ^ (w₁ : ℝ) * p₂ ^ (w₂ : ℝ) * p₃ ^ (w₃ : ℝ) * p₄ ^ (w₄ : ℝ) ≤
+        w₁ * p₁ + w₂ * p₂ + w₃ * p₃ + w₄ * p₄ := by
+  simpa [Fin.prod_univ_succ, Fin.sum_univ_succ, add_assoc, mul_assoc]
+    using geom_mean_le_arith_mean_weighted univ ![w₁, w₂, w₃, w₄] ![p₁, p₂, p₃, p₄]
+
+end ENNReal
+
 end GeomMeanLEArithMean
 
 section HarmMeanLEGeomMean
@@ -448,9 +490,10 @@ namespace Real
 
 /-- **HM-GM inequality**: The harmonic mean is less than or equal to the geometric mean, weighted
 version for real-valued nonnegative functions. -/
-theorem harm_mean_le_geom_mean_weighted (w z : ι → ℝ) (hs : s.Nonempty) (hw : ∀ i ∈ s, 0 < w i)
+theorem harm_mean_le_geom_mean_weighted (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 < w i)
     (hw' : ∑ i ∈ s, w i = 1) (hz : ∀ i ∈ s, 0 < z i) :
     (∑ i ∈ s, w i / z i)⁻¹ ≤ ∏ i ∈ s, z i ^ w i := by
+  have hs : s.Nonempty := Finset.nonempty_of_sum_ne_zero (by rw [hw']; exact one_ne_zero)
   have : ∏ i ∈ s, (1 / z) i ^ w i ≤ ∑ i ∈ s, w i * (1 / z) i :=
     geom_mean_le_arith_mean_weighted s w (1 / z) (fun i hi ↦ le_of_lt (hw i hi)) hw'
     (fun i hi ↦ one_div_nonneg.2 (le_of_lt (hz i hi)))
@@ -469,14 +512,14 @@ theorem harm_mean_le_geom_mean_weighted (w z : ι → ℝ) (hs : s.Nonempty) (hw
 
 
 /-- **HM-GM inequality**: The harmonic mean is less than or equal to the geometric mean. -/
-theorem harm_mean_le_geom_mean {ι : Type*} (s : Finset ι) (hs : s.Nonempty) (w : ι → ℝ)
+theorem harm_mean_le_geom_mean {ι : Type*} (s : Finset ι) (w : ι → ℝ)
     (z : ι → ℝ) (hw : ∀ i ∈ s, 0 < w i) (hw' : 0 < ∑ i ∈ s, w i) (hz : ∀ i ∈ s, 0 < z i) :
     (∑ i ∈ s, w i) / (∑ i ∈ s, w i / z i) ≤ (∏ i ∈ s, z i ^ w i) ^ (∑ i ∈ s, w i)⁻¹ := by
-  have := harm_mean_le_geom_mean_weighted s (fun i => (w i) / ∑ i ∈ s, w i) z hs ?_ ?_ hz
+  have := harm_mean_le_geom_mean_weighted s (fun i => (w i) / ∑ i ∈ s, w i) z ?_ ?_ hz
   · set n := ∑ i ∈ s, w i
     nth_rw 1 [div_eq_mul_inv, (show n = (n⁻¹)⁻¹ by simp), ← mul_inv, Finset.mul_sum _ _ n⁻¹]
     simp_rw [inv_mul_eq_div n ((w _) / (z _)), div_right_comm _ _ n]
-    convert! this
+    convert this
     rw [← Real.finsetProd_rpow s _ (fun i hi ↦ by positivity [hz i hi])]
     refine Finset.prod_congr rfl (fun i hi => ?_)
     rw [← Real.rpow_mul (le_of_lt <| hz i hi) (w _) n⁻¹, div_eq_mul_inv (w _) n]
@@ -603,7 +646,7 @@ private theorem inner_le_Lp_mul_Lp_of_norm_eq_zero (f g : ι → ℝ≥0) {p q :
     (hpq : p.HolderConjugate q) (hf : ∑ i ∈ s, f i ^ p = 0) :
     ∑ i ∈ s, f i * g i ≤ (∑ i ∈ s, f i ^ p) ^ (1 / p) * (∑ i ∈ s, g i ^ q) ^ (1 / q) := by
   simp only [hf, hpq.ne_zero, one_div, sum_eq_zero_iff, zero_rpow, zero_mul,
-    inv_eq_zero, Ne, not_false_iff, le_zero_iff, mul_eq_zero]
+    inv_eq_zero, Ne, not_false_iff, nonpos_iff_eq_zero, mul_eq_zero]
   intro i his
   left
   rw [sum_eq_zero_iff] at hf
@@ -674,6 +717,25 @@ lemma inner_le_weight_mul_Lp (s : Finset ι) {p : ℝ} (hp : 1 ≤ p) (w f : ι 
     have hp₁ : 1 - p⁻¹ ≠ 0 := by simp [sub_eq_zero, hp.ne']
     simp [mul_rpow, div_inv_eq_mul, one_mul, one_div, hp₀, hp₁]
 
+/-- **Lyapunov's inequality**, in its log-convexity form: the weighted moments
+`t ↦ ∑ i ∈ s, w i * f i ^ t` are log-convex on `[0, ∞)`. Version for sums over finite sets, with
+`ℝ≥0`-valued functions. -/
+theorem lyapunov_inequality (w f : ι → ℝ≥0) {p q θ : ℝ} (hp : 0 ≤ p) (hq : 0 ≤ q) (hθ₀ : 0 ≤ θ)
+    (hθ₁ : θ ≤ 1) :
+    ∑ i ∈ s, w i * f i ^ (θ * p + (1 - θ) * q) ≤
+      (∑ i ∈ s, w i * f i ^ p) ^ θ * (∑ i ∈ s, w i * f i ^ q) ^ (1 - θ) := by
+  obtain rfl | hθ₀ := hθ₀.eq_or_lt
+  · simp
+  obtain rfl | hθ₁ := hθ₁.eq_or_lt
+  · simp
+  have hθ₁' := sub_pos.2 hθ₁
+  convert inner_le_Lp_mul_Lq s (fun i ↦ (w i * f i ^ p) ^ θ) (fun i ↦ (w i * f i ^ q) ^ (1 - θ))
+    (.inv_one_sub_inv hθ₀ hθ₁) using 2 with i
+  · rw [mul_rpow, mul_rpow, ← rpow_mul, ← rpow_mul, mul_mul_mul_comm,
+      ← rpow_add_of_nonneg _ hθ₀.le hθ₁'.le, add_sub_cancel, rpow_one,
+      ← rpow_add_of_nonneg _ (by positivity) (by positivity), mul_comm p, mul_comm q]
+  all_goals simp [← rpow_mul, hθ₀.ne', hθ₁'.ne']
+
 /-- **Hölder inequality**: The (`r`-power of the) `L^r` norm of the product of two functions is
 bounded by the product of (the `r`-powers of) their `L^p` and `L^q` norms when `p`, `q`, and `r`
 form a `Real.HolderTriple`. A version for `NNReal`-valued functions. For an alternative version,
@@ -726,7 +788,7 @@ theorem Lr_rpow_le_Lp_mul_Lq_tsum {f g : ι → ℝ≥0} {p q r : ℝ} (hpqr : p
 theorem Lr_le_Lp_mul_Lq_tsum {f g : ι → ℝ≥0} {p q r : ℝ} (hpqr : p.HolderTriple q r)
     (hf : Summable fun i => f i ^ p) (hg : Summable fun i => g i ^ q) :
     (∑' i, (f i * g i) ^ r) ^ (1 / r) ≤ (∑' i, f i ^ p) ^ (1 / p) * (∑' i, g i ^ q) ^ (1 / q) := by
-  convert!
+  convert
     rpow_le_rpow_iff (inv_eq_one_div r ▸ inv_pos.mpr hpqr.pos') |>.mpr <|
       Lr_rpow_le_Lp_mul_Lq_tsum hpqr hf hg
   have hr := hpqr.pos'.ne'
@@ -893,7 +955,7 @@ theorem rpow_sum_le_const_mul_sum_rpow (hp : 1 ≤ p) :
   push_cast at this
   exact this
 
--- for some reason `exact_mod_cast` can't replace this argument
+-- for some reason `exact mod_cast` can't replace this argument
 /-- **Minkowski inequality**: the `L_p` seminorm of the sum of two vectors is less than or equal
 to the sum of the `L_p`-seminorms of the summands. A version for `Real`-valued functions. -/
 theorem Lp_add_le (hp : 1 ≤ p) :
@@ -914,7 +976,7 @@ with real-valued nonnegative functions. -/
 theorem inner_le_Lp_mul_Lq_of_nonneg (hpq : HolderConjugate p q) (hf : ∀ i ∈ s, 0 ≤ f i)
     (hg : ∀ i ∈ s, 0 ≤ g i) :
     ∑ i ∈ s, f i * g i ≤ (∑ i ∈ s, f i ^ p) ^ (1 / p) * (∑ i ∈ s, g i ^ q) ^ (1 / q) := by
-  convert! inner_le_Lp_mul_Lq s f g hpq using 3 <;> apply sum_congr rfl <;> intro i hi <;>
+  convert inner_le_Lp_mul_Lq s f g hpq using 3 <;> apply sum_congr rfl <;> intro i hi <;>
     simp only [abs_of_nonneg, hf i hi, hg i hi]
 
 /-- **Hölder inequality**: the sum of (the `r`-power of) the product of two functions is bounded
@@ -937,6 +999,17 @@ lemma inner_le_weight_mul_Lp_of_nonneg (s : Finset ι) {p : ℝ} (hp : 1 ≤ p) 
   beta_reduce at *
   norm_cast at *
   exact NNReal.inner_le_weight_mul_Lp _ hp _ _
+
+/-- **Lyapunov's inequality**, in its log-convexity form: the weighted moments
+`t ↦ ∑ i ∈ s, w i * f i ^ t` are log-convex on `[0, ∞)`. Version for sums over finite sets, with
+nonnegative real-valued functions. See `NNReal.lyapunov_inequality` for the `ℝ≥0`-valued
+version. -/
+theorem lyapunov_inequality_of_nonneg {w : ι → ℝ} {θ : ℝ} (hw : ∀ i ∈ s, 0 ≤ w i)
+    (hf : ∀ i ∈ s, 0 ≤ f i) (hp : 0 ≤ p) (hq : 0 ≤ q) (hθ₀ : 0 ≤ θ) (hθ₁ : θ ≤ 1) :
+    ∑ i ∈ s, w i * f i ^ (θ * p + (1 - θ) * q) ≤
+      (∑ i ∈ s, w i * f i ^ p) ^ θ * (∑ i ∈ s, w i * f i ^ q) ^ (1 - θ) := by
+  simpa +contextual [hw, hf, ← NNReal.coe_le_coe] using
+    NNReal.lyapunov_inequality s (fun i ↦ (w i).toNNReal) (fun i ↦ (f i).toNNReal) hp hq hθ₀ hθ₁
 
 /-- **Weighted Hölder inequality** in terms of `Finset.expect`. -/
 lemma compact_inner_le_weight_mul_Lp_of_nonneg (s : Finset ι) {p : ℝ} (hp : 1 ≤ p) {w f : ι → ℝ}
@@ -1034,7 +1107,7 @@ sum of the `p`-th powers of `f i`. Version for sums over finite sets, with nonne
 functions. -/
 theorem rpow_sum_le_const_mul_sum_rpow_of_nonneg (hp : 1 ≤ p) (hf : ∀ i ∈ s, 0 ≤ f i) :
     (∑ i ∈ s, f i) ^ p ≤ (#s : ℝ) ^ (p - 1) * ∑ i ∈ s, f i ^ p := by
-  convert! rpow_sum_le_const_mul_sum_rpow s f hp using 2 <;> apply sum_congr rfl <;> intro i hi <;>
+  convert rpow_sum_le_const_mul_sum_rpow s f hp using 2 <;> apply sum_congr rfl <;> intro i hi <;>
     simp only [abs_of_nonneg, hf i hi]
 
 /-- **Minkowski inequality**: the `L_p` seminorm of the sum of two vectors is less than or equal
@@ -1043,7 +1116,7 @@ functions. -/
 theorem Lp_add_le_of_nonneg (hp : 1 ≤ p) (hf : ∀ i ∈ s, 0 ≤ f i) (hg : ∀ i ∈ s, 0 ≤ g i) :
     (∑ i ∈ s, (f i + g i) ^ p) ^ (1 / p) ≤
       (∑ i ∈ s, f i ^ p) ^ (1 / p) + (∑ i ∈ s, g i ^ p) ^ (1 / p) := by
-  convert! Lp_add_le s f g hp using 2 <;> [skip; congr 1; congr 1] <;> apply sum_congr rfl <;>
+  convert Lp_add_le s f g hp using 2 <;> [skip; congr 1; congr 1] <;> apply sum_congr rfl <;>
       intro i hi <;>
     simp only [abs_of_nonneg, hf i hi, hg i hi, add_nonneg]
 
@@ -1122,8 +1195,9 @@ theorem inner_le_Lp_mul_Lq (hpq : p.HolderConjugate q) :
   simp_rw [coe_mul, one_div, coe_rpow_of_nonneg _ (inv_nonneg.mpr hpq.pos.le),
     coe_rpow_of_nonneg _ (inv_nonneg.mpr hpq.symm.pos.le), ofNNReal_finsetSum,
     coe_rpow_of_nonneg _ hpq.pos.le, coe_rpow_of_nonneg _ hpq.symm.pos.le] at this
-  convert! this using 1 <;> [skip; congr 2] <;> [skip; skip; simp; skip; simp] <;>
-  · refine Finset.sum_congr rfl fun i hi ↦ ?_
+  convert this using 1 <;> [skip; congr 2] <;> [skip; skip; simp; skip; simp]
+  all_goals
+    refine Finset.sum_congr rfl fun i hi ↦ ?_
     simp [H'.1 i hi, H'.2 i hi, -WithZero.coe_mul]
 
 /-- **Weighted Hölder inequality**. -/

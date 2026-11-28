@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.RingTheory.Coalgebra.Equiv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of coalgebras over a commutative ring
 
@@ -15,7 +18,6 @@ We introduce the bundled category `CoalgCat` of coalgebras over a fixed commutat
 along with the forgetful functor to `ModuleCat`.
 
 This file mimics `Mathlib/LinearAlgebra/QuadraticForm/QuadraticModuleCat.lean`.
-
 -/
 
 @[expose] public section
@@ -41,7 +43,7 @@ open Coalgebra
 instance : CoeSort (CoalgCat.{v} R) (Type v) :=
   ⟨(·.carrier)⟩
 
-@[simp] theorem moduleCat_of_toModuleCat (X : CoalgCat.{v} R) :
+theorem moduleCat_of_toModuleCat (X : CoalgCat.{v} R) :
     ↧X.toModuleCat = X.toModuleCat :=
   rfl
 
@@ -57,11 +59,9 @@ open Lean.PrettyPrinter.Delaborator in
 @[app_delab CoalgCat.of]
 meta def delabOf : Delab := CategoryTheory.delabOf
 
-@[simp]
 lemma of_comul {X : Type v} [AddCommGroup X] [Module R X] [Coalgebra R X] :
     Coalgebra.comul (A := of R X) = Coalgebra.comul (R := R) (A := X) := rfl
 
-@[simp]
 lemma of_counit {X : Type v} [AddCommGroup X] [Module R X] [Coalgebra R X] :
     Coalgebra.counit (A := of R X) = Coalgebra.counit (R := R) (A := X) := rfl
 
@@ -137,8 +137,8 @@ variable [Coalgebra R X] [Coalgebra R Y] [Coalgebra R Z]
 `CoalgEquiv`. -/
 @[simps]
 def toCoalgIso (e : X ≃ₗc[R] Y) : CoalgCat.of R X ≅ CoalgCat.of R Y where
-  hom := CoalgCat.ofHom e
-  inv := CoalgCat.ofHom e.symm
+  hom := CoalgCat.ofHom e.toCoalgHom
+  inv := CoalgCat.ofHom e.symm.toCoalgHom
   hom_inv_id := Hom.ext <| DFunLike.ext _ _ e.left_inv
   inv_hom_id := Hom.ext <| DFunLike.ext _ _ e.right_inv
 
@@ -167,11 +167,11 @@ variable {X Y Z : CoalgCat.{v} R}
 def toCoalgEquiv (i : X ≅ Y) : X ≃ₗc[R] Y :=
   { i.hom.toCoalgHom with
     invFun := i.inv.toCoalgHom
-    left_inv := fun x => CoalgHom.congr_fun (congr_arg CoalgCat.Hom.toCoalgHom i.3) x
-    right_inv := fun x => CoalgHom.congr_fun (congr_arg CoalgCat.Hom.toCoalgHom i.4) x }
+    left_inv := fun x => congr($(i.hom_inv_id).toCoalgHom x)
+    right_inv := fun x => congr($(i.inv_hom_id).toCoalgHom x) }
 
 @[simp] theorem toCoalgEquiv_toCoalgHom (i : X ≅ Y) :
-    i.toCoalgEquiv = i.hom.toCoalgHom := rfl
+    i.toCoalgEquiv.toCoalgHom = i.hom.toCoalgHom := rfl
 
 @[simp] theorem toCoalgEquiv_refl : toCoalgEquiv (.refl X) = .refl _ _ :=
   rfl
@@ -191,4 +191,4 @@ instance CoalgCat.forget_reflects_isos :
   reflects {X Y} f _ := by
     let i := asIso ((forget (CoalgCat.{v} R)).map f)
     let e : X ≃ₗc[R] Y := { f.toCoalgHom, i.toEquiv with }
-    exact ⟨e.toCoalgIso.isIso_hom.1⟩
+    exact ⟨e.toCoalgIso.isIso_hom.out⟩

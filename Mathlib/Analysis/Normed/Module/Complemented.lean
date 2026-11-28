@@ -7,11 +7,12 @@ module
 
 public import Mathlib.Analysis.Normed.Operator.Banach
 public import Mathlib.Topology.Algebra.Module.Complement
-public import Mathlib.Algebra.Order.Field.Power
-public import Mathlib.Data.Nat.Totient
-public import Mathlib.Data.Sym.Sym2
-public import Mathlib.Tactic.ContinuousFunctionalCalculus
-public import Mathlib.Tactic.NormNum.GCD
+
+import Mathlib.Algebra.Order.Field.Power
+import Mathlib.Data.Nat.Totient
+import Mathlib.Data.Sym.Sym2
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.NormNum.GCD
 
 /-!
 # Complemented subspaces of Banach spaces
@@ -61,7 +62,6 @@ nonrec def equivProdOfSurjectiveOfIsCompl (f : E →L[𝕜] F) (g : E →L[𝕜]
   (f.equivProdOfSurjectiveOfIsCompl (g : E →ₗ[𝕜] G) hf hg hfg).toContinuousLinearEquivOfContinuous
     (f.continuous.prodMk g.continuous)
 
-@[simp]
 theorem coe_equivProdOfSurjectiveOfIsCompl {f : E →L[𝕜] F} {g : E →L[𝕜] G} (hf : f.range = ⊤)
     (hg : g.range = ⊤) (hfg : IsCompl f.ker g.ker) :
     (equivProdOfSurjectiveOfIsCompl f g hf hg hfg : E →ₗ[𝕜] F × G) = f.prod g := rfl

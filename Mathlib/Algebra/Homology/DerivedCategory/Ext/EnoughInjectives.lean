@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExactSequences
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Smallness of Ext-groups from the existence of enough injectives
 
@@ -22,7 +25,6 @@ to specify the universe explicitly almost everywhere, which would be an inconven
 Then, we must be very selective regarding `HasExt` instances.
 
 Note: this file dualizes the results in `HasEnoughProjectives.lean`.
-
 -/
 
 public section
@@ -37,7 +39,6 @@ namespace CochainComplex
 
 open HomologicalComplex
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isSplitMono_from_singleFunctor_obj_of_injective
     {I : C} [Injective I] {L : CochainComplex C ℤ} {i : ℤ}
     (ι : (CochainComplex.singleFunctor C i).obj I ⟶ L) [L.IsStrictlyGE i] [QuasiIsoAt ι i] :
@@ -48,7 +49,8 @@ lemma isSplitMono_from_singleFunctor_obj_of_injective
   have : ι.f i = (singleObjXSelf (ComplexShape.up ℤ) i I).hom ≫ α := by
     rw [← cancel_mono e.hom]
     dsimp [α, e]
-    rw [assoc, assoc, assoc, assoc, pOpcyclesIso_inv_hom_id, comp_id, homologyι_naturality]
+    rw [pOpcyclesIso_hom, assoc, assoc, assoc, assoc, pOpcyclesIso_inv_hom_id, comp_id,
+      homologyι_naturality]
     dsimp [singleFunctor, singleFunctors]
     rw [singleObjHomologySelfIso_inv_homologyι_assoc,
       ← pOpcycles_singleObjOpcyclesSelfIso_inv_assoc, Iso.inv_hom_id_assoc, p_opcyclesMap]

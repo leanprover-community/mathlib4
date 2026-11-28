@@ -5,15 +5,8 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.Block
-public import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
-public import Mathlib.RingTheory.Norm.Defs
-public import Mathlib.RingTheory.PolynomialAlgebra
-public import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
-public import Mathlib.FieldTheory.IntermediateField.Algebraic
-public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
-public import Mathlib.RingTheory.Norm.Basic
 public import Mathlib.FieldTheory.Galois.Basic
+public import Mathlib.RingTheory.Norm.Basic
 
 /-!
 # Transitivity of algebra norm
@@ -25,7 +18,6 @@ about the roots of the minimal polynomial of `s` over `R`.
 ## References
 
 * [silvester2000] Silvester, *Determinants of Block Matrices*, The Mathematical Gazette (2000).
-
 -/
 
 @[expose] public section
@@ -55,13 +47,13 @@ lemma auxMat_blockTriangular : (auxMat M k).BlockTriangular (· ≠ k) :=
 
 lemma auxMat_toSquareBlock_ne : (auxMat M k).toSquareBlock (· ≠ k) True = M k k • 1 := by
   ext i j
-  simp [auxMat, toSquareBlock_def, ite_eq_right (of_eq_true i.2), ite_eq_right (of_eq_true j.2),
+  simp [auxMat, ite_eq_right (of_eq_true i.property), ite_eq_right (of_eq_true j.property),
     Matrix.one_apply, Subtype.ext_iff]
 
 lemma auxMat_toSquareBlock_eq : (auxMat M k).toSquareBlock (· ≠ k) False = 1 := by
   ext ⟨i, hi⟩ ⟨j, hj⟩
   rw [eq_iff_iff, iff_false, not_not] at hi hj
-  simp [auxMat, toSquareBlock_def, ite_eq_left hi, ite_eq_left hj, Matrix.one_apply,
+  simp [auxMat, ite_eq_left hi, ite_eq_left hj, Matrix.one_apply,
     ite_eq_left (hj ▸ hi)]
 
 variable [Fintype m]
@@ -83,7 +75,7 @@ lemma mul_auxMat_toSquareBlock_eq :
     (M * auxMat M k).toSquareBlock (· = k) True = M k k • 1 := by
   ext ⟨i, hi⟩ ⟨j, hj⟩
   rw [eq_iff_iff, iff_true] at hi hj
-  simp [toSquareBlock_def, hi, hj, mul_auxMat_corner]
+  simp [hi, hj, mul_auxMat_corner]
 
 set_option quotPrecheck false in
 /-- The upper-left block of `M * aux M k`. -/
@@ -93,14 +85,12 @@ lemma det_mul_corner_pow :
     M.det * M k k ^ (Fintype.card m - 1) = M k k * (mulAuxMatBlock).det := by
   let := Prop.linearOrder
   trans (M * auxMat M k).det
-  · simp [det_mul, (auxMat_blockTriangular M k).det_fintype,
+  · rw [det_mul, (auxMat_blockTriangular M k).det_fintype, Fintype.prod_Prop,
       auxMat_toSquareBlock_ne, auxMat_toSquareBlock_eq]
-  rw [(mul_auxMat_blockTriangular M k).det_fintype, Fintype.prod_Prop, mul_auxMat_toSquareBlock_eq]
-  simp_rw [det_smul_of_tower, eq_iff_iff, iff_true, Fintype.card_unique,
-    pow_one, det_one, smul_eq_mul, mul_one]
-  -- `Decidable (P = Q)` diamond induced by `Prop.linearOrder`, which is classical, when `P` and `Q`
-  -- are themselves decidable.
-  convert! rfl
+    simp
+  · rw [(mul_auxMat_blockTriangular M k).det_fintype, Fintype.prod_Prop,
+      mul_auxMat_toSquareBlock_eq]
+    simp
 
 /-- A matrix with X added to the corner. -/
 noncomputable def cornerAddX : Matrix m m S[X] :=
@@ -178,7 +168,7 @@ theorem Matrix.det_det [Fintype m] [Fintype n] (f : S →+* Matrix n n R) :
           grind [Fintype.card_subtype_compl, Fintype.card_unique])
       rw [polyToMatrix_cornerAddX, ← charpoly]
       exact (Matrix.charpoly_monic _).mem_nonZeroDivisors
-    rw [← eval_zero_det_det, congr_arg (eval 0) this, eval_zero_comp_det]
+    rw [← eval_zero_det_det, congr(eval 0 $this), eval_zero_comp_det]
 
 variable [Algebra R S] [Module.Free R S]
 

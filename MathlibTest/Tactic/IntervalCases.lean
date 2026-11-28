@@ -3,9 +3,10 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
+module
 
-import Mathlib.Tactic.IntervalCases
-import Mathlib.Tactic.Set
+public import Mathlib.Tactic.IntervalCases
+public import Mathlib.Tactic.Set
 
 set_option linter.unusedVariables false in
 example (n : ℕ) : True := by
@@ -84,8 +85,8 @@ example (n : ℕ) (h1 : 4 < n) (h2 : n ≤ 6) : n < 20 := by
 
 example (n : ℕ) (w₁ : n % 3 < 1) : n % 3 = 0 := by
   interval_cases h : n % 3
-  · guard_hyp h : n % 3 = 0
-    rfl
+  guard_hyp h : n % 3 = 0
+  rfl
 
 example (n : ℕ) (w₁ : n % 3 < 1) : n % 3 = 0 := by
   interval_cases n % 3

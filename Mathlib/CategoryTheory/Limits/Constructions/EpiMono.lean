@@ -7,13 +7,15 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Relating monomorphisms and epimorphisms to limits and colimits
 
 If `F` preserves (resp. reflects) pullbacks, then it preserves (resp. reflects) monomorphisms.
 
 We also provide the dual version for epimorphisms.
-
 -/
 
 public section

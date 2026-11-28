@@ -5,10 +5,13 @@ Authors: Yuma Mizuno
 -/
 module
 
-public import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
-public import Mathlib.CategoryTheory.Bicategory.FunctorBicategory.Oplax
 public import Mathlib.CategoryTheory.Bicategory.End
+public import Mathlib.CategoryTheory.Bicategory.FunctorBicategory.Oplax
+public import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 public import Mathlib.CategoryTheory.Monoidal.Comon_
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Comonads in a bicategory
@@ -72,7 +75,6 @@ theorem comul_assoc_flip : Δ ≫ Δ ▷ t = Δ ≫ t ◁ Δ ≫ (α_ t t t).inv
 
 end
 
-@[simps! counit]
 instance {a : B} : Comonad (𝟙 a) :=
   ComonObj.instTensorUnit (a ⟶ a)
 
@@ -138,7 +140,7 @@ def hom (m : ComonadBicat B) : m.obj ⟶ m.obj :=
   m.toOplax.map (𝟙 (⟨⟨PUnit.unit⟩⟩ : LocallyDiscrete (Discrete PUnit)))
 
 instance (m : ComonadBicat B) : Comonad m.hom :=
-  Comonad.ofOplaxFromUnit <| m.toOplax
+  Comonad.ofOplaxFromUnit m.toOplax
 
 /-- Construct a comonad as an object in `ComonadBicat B`. -/
 def mkOfComonad {a : B} (t : a ⟶ a) [Comonad t] : ComonadBicat B :=

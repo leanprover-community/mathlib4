@@ -5,9 +5,10 @@ Authors: Edison Xie, David Kurniadi Angdinata
 -/
 module
 
-public import Mathlib.FieldTheory.IsSepClosed
 public import Mathlib.FieldTheory.AbsoluteGaloisGroup
 public import Mathlib.RepresentationTheory.Homological.ContCohomology.Functoriality
+
+import Mathlib.FieldTheory.IsSepClosed
 
 /-!
 # The Tate–Shafarevich group of a Galois module
@@ -21,7 +22,7 @@ the intersection of the kernels of the maps `Hⁿ(G_K, A) → Hⁿ(G_Kᵥ, A)`, 
 
 * `ContinuousCohomology.tateShafarevich`: the Tate–Shafarevich group of a Galois module.
 
-## TODOs
+## TODO
 
 * Add a notation for `ContinuousCohomology.tateShafarevich`.
 * Prove that `ContinuousCohomology.tateShafarevich` of a discrete Galois module is torsion.

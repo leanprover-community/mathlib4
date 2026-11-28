@@ -5,8 +5,8 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.Elab.Tactic.Conv.Pattern
+public import Mathlib.Init
 
 /-!
 # `casesm`, `cases_type`, `constructorm` tactics
@@ -65,7 +65,7 @@ where
 def casesType (heads : Array Name) (recursive := false) (allowSplit := true) :
     MVarId → MetaM (List MVarId) :=
   let matcher ty := pure <|
-    if let .const n .. := ty.headBeta.getAppFn then heads.contains n else false
+    if let .const n .. := ty.cleanupAnnotations.headBeta.getAppFn then heads.contains n else false
   casesMatching matcher recursive allowSplit
 
 end Lean.MVarId
