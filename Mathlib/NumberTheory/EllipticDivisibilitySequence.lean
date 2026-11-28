@@ -65,7 +65,8 @@ Some examples of EDSs include
 * `IsEllipticDvdSequence`: a sequence indexed by `ℤ` is an EDS.
 * `preNormEDS'`: the auxiliary sequence for a normalised EDS indexed by `ℕ`.
 * `preNormEDS`: the auxiliary sequence for a normalised EDS indexed by `ℤ`.
-* `complEDS₂`: the 2-complement sequence for a normalised EDS indexed by `ℕ`.
+* `preComplEDS₂`: the auxiliary sequence for the 2-complement sequence indexed by `ℤ`.
+* `complEDS₂`: the 2-complement sequence for a normalised EDS indexed by `ℤ`.
 * `normEDS`: the canonical example of a normalised EDS indexed by `ℤ`.
 * `complEDS'`: the complement sequence for a normalised EDS indexed by `ℕ`.
 * `complEDS`: the complement sequence for a normalised EDS indexed by `ℤ`.
@@ -585,13 +586,44 @@ lemma preNormEDS_odd (m : ℤ) : preNormEDS b c d (2 * m + 1) =
       show -(m + 1 : ℤ) + 1 = -m by ring1, preNormEDS_neg, even_neg, Int.even_add_one, ite_not, ih]
     ring1
 
+/-- The auxiliary sequence for the 2-complement sequence `Wᶜ₂ : ℤ → R` for a normalised EDS
+`W : ℤ → R`, with initial values `W(0) = 0`, `W(1) = 1`, `W(2) = b`, `W(3) = c`, and `W(4) = d * b`.
+
+This is defined in terms of `preNormEDS`. -/
+def preComplEDS₂ (k : ℤ) : R :=
+  preNormEDS (b ^ 4) c d (k - 1) ^ 2 * preNormEDS (b ^ 4) c d (k + 2) * if Even k then 1 else b
+
+@[simp]
+lemma preComplEDS₂_zero : preComplEDS₂ b c d 0 = 1 := by
+  simp [preComplEDS₂]
+
+@[simp]
+lemma preComplEDS₂_one : preComplEDS₂ b c d 1 = 0 := by
+  simp [preComplEDS₂]
+
+@[simp]
+lemma preComplEDS₂_two : preComplEDS₂ b c d 2 = d := by
+  simp [preComplEDS₂]
+
+@[simp]
+lemma preComplEDS₂_three : preComplEDS₂ b c d 3 = preNormEDS (b ^ 4) c d 5 * b := by
+  simp [preComplEDS₂, Int.odd_iff]
+
+@[simp]
+lemma preComplEDS₂_four : preComplEDS₂ b c d 4 = c ^ 2 * preNormEDS (b ^ 4) c d 6 := by
+  simp [preComplEDS₂, Int.odd_iff]
+
+@[simp]
+lemma preComplEDS₂_neg (k : ℤ) : preComplEDS₂ b c d (-k) = -(preNormEDS (b ^ 4) c d (k + 1) ^ 2 *
+    preNormEDS (b ^ 4) c d (k - 2) * if Even k then 1 else b) := by
+  grind [preComplEDS₂, preNormEDS_neg (b ^ 4) c d <| k + 1, preNormEDS_neg (b ^ 4) c d <| k - 2]
+
 /-- The 2-complement sequence `Wᶜ₂ : ℤ → R` for a normalised EDS `W : ℤ → R` that witnesses
 `W(k) ∣ W(2 * k)`. In other words, `W(k) * Wᶜ₂(k) = W(2 * k)` for all `k ∈ ℤ`.
 
-This is defined in terms of `preNormEDS`. -/
+This is defined in terms of `preComplEDS₂`. -/
 def complEDS₂ (k : ℤ) : R :=
-  (preNormEDS (b ^ 4) c d (k - 1) ^ 2 * preNormEDS (b ^ 4) c d (k + 2) -
-    preNormEDS (b ^ 4) c d (k - 2) * preNormEDS (b ^ 4) c d (k + 1) ^ 2) * if Even k then 1 else b
+  preComplEDS₂ b c d k + preComplEDS₂ b c d (-k)
 
 @[simp]
 lemma complEDS₂_zero : complEDS₂ b c d 0 = 2 := by
@@ -607,22 +639,20 @@ lemma complEDS₂_two : complEDS₂ b c d 2 = d := by
 
 @[simp]
 lemma complEDS₂_three : complEDS₂ b c d 3 = preNormEDS (b ^ 4) c d 5 * b - d ^ 2 * b := by
-  simp [complEDS₂, ite_eq_right (by decide : ¬Even (3 : ℤ)), sub_mul]
+  simp [complEDS₂, sub_eq_add_neg, Int.odd_iff]
 
 @[simp]
 lemma complEDS₂_four : complEDS₂ b c d 4 =
     c ^ 2 * preNormEDS (b ^ 4) c d 6 - preNormEDS (b ^ 4) c d 5 ^ 2 := by
-  simp [complEDS₂, ite_eq_left (by decide : Even (4 : ℤ))]
+  simp [complEDS₂, sub_eq_add_neg, Int.odd_iff]
 
 @[simp]
 lemma complEDS₂_neg (k : ℤ) : complEDS₂ b c d (-k) = complEDS₂ b c d k := by
-  simp_rw [complEDS₂, ← neg_add', ← sub_neg_eq_add, ← neg_sub', preNormEDS_neg, even_neg]
-  ring1
+  simp [complEDS₂, add_comm]
 
 lemma preNormEDS_mul_complEDS₂ (k : ℤ) : preNormEDS (b ^ 4) c d k * complEDS₂ b c d k =
     preNormEDS (b ^ 4) c d (2 * k) * if Even k then 1 else b := by
-  rw [complEDS₂, preNormEDS_even]
-  ring1
+  grind only [complEDS₂, preComplEDS₂, preComplEDS₂_neg, preNormEDS_even]
 
 end PreNormEDS
 
@@ -654,11 +684,11 @@ lemma normEDS_two : normEDS b c d 2 = b := by
 
 @[simp]
 lemma normEDS_three : normEDS b c d 3 = c := by
-  simp [normEDS, show ¬Even (3 : ℤ) by decide]
+  simp [normEDS, Int.odd_iff]
 
 @[simp]
 lemma normEDS_four : normEDS b c d 4 = d * b := by
-  simp [normEDS, show ¬Odd (4 : ℤ) by decide]
+  simp [normEDS, Int.odd_iff]
 
 @[simp]
 lemma normEDS_neg (n : ℤ) : normEDS b c d (-n) = -normEDS b c d n := by
@@ -672,25 +702,24 @@ lemma normEDS_mul_complEDS₂ (k : ℤ) :
 lemma normEDS_dvd_normEDS_two_mul (k : ℤ) : normEDS b c d k ∣ normEDS b c d (2 * k) :=
   ⟨complEDS₂ .., (normEDS_mul_complEDS₂ ..).symm⟩
 
+lemma preComplEDS₂_mul_b (k : ℤ) :
+    preComplEDS₂ b c d k * b = normEDS b c d (k - 1) ^ 2 * normEDS b c d (k + 2) := by
+  grind [preComplEDS₂, normEDS]
+
 lemma complEDS₂_mul_b (k : ℤ) : complEDS₂ b c d k * b =
     normEDS b c d (k - 1) ^ 2 * normEDS b c d (k + 2) -
       normEDS b c d (k - 2) * normEDS b c d (k + 1) ^ 2 := by
-  simp_rw [complEDS₂, normEDS, Int.even_add, Int.even_sub, even_two, iff_true, Int.not_even_one,
-    iff_false]
-  split_ifs <;> ring1
+  grind [complEDS₂, preComplEDS₂_mul_b, normEDS_neg b c d <| k + 1, normEDS_neg b c d <| k - 2]
 
 lemma normEDS_even (m : ℤ) : normEDS b c d (2 * m) * b =
     normEDS b c d (m - 1) ^ 2 * normEDS b c d m * normEDS b c d (m + 2) -
       normEDS b c d (m - 2) * normEDS b c d m * normEDS b c d (m + 1) ^ 2 := by
-  rw [← normEDS_mul_complEDS₂, mul_assoc, complEDS₂_mul_b]
-  ring1
+  grind [normEDS, preNormEDS_even]
 
 lemma normEDS_odd (m : ℤ) : normEDS b c d (2 * m + 1) =
     normEDS b c d (m + 2) * normEDS b c d m ^ 3 -
       normEDS b c d (m - 1) * normEDS b c d (m + 1) ^ 3 := by
-  simp_rw [normEDS, preNormEDS_odd, ite_eq_right m.not_even_two_mul_add_one, Int.even_add,
-    Int.even_sub, even_two, iff_true, Int.not_even_one, iff_false]
-  split_ifs <;> ring1
+  grind [normEDS, preNormEDS_odd]
 
 lemma normEDS_atomRel_even (m : ℤ) :
     IsEllipticNet.atomRel (normEDS b c d) (2 * m + 2) (2 * m - 2) 2 0 = 0 := by
@@ -878,6 +907,10 @@ lemma map_preNormEDS' (n : ℕ) : f (preNormEDS' b c d n) = preNormEDS' (f b) (f
 @[simp]
 lemma map_preNormEDS (n : ℤ) : f (preNormEDS b c d n) = preNormEDS (f b) (f c) (f d) n := by
   simp [preNormEDS]
+
+@[simp]
+lemma map_preComplEDS₂ (n : ℤ) : f (preComplEDS₂ b c d n) = preComplEDS₂ (f b) (f c) (f d) n := by
+  simp [preComplEDS₂, apply_ite f]
 
 @[simp]
 lemma map_complEDS₂ (n : ℤ) : f (complEDS₂ b c d n) = complEDS₂ (f b) (f c) (f d) n := by
