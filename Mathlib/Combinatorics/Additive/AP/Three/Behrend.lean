@@ -38,7 +38,8 @@ integer points on that sphere and map them onto `ℕ` in a way that preserves ar
 
 * [Bryan Gillespie, *Behrend’s Construction*]
   (http://www.epsilonsmall.com/resources/behrends-construction/behrend.pdf)
-* Behrend, F. A., "On sets of integers which contain no three terms in arithmetical progression"
+* [F. A. Behrend, *On sets of integers which contain no three terms in arithmetical
+  progression*][behrend1946]
 * [Wikipedia, *Salem-Spencer set*](https://en.wikipedia.org/wiki/Salem–Spencer_set)
 
 ## Tags
