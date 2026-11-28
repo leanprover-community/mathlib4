@@ -68,14 +68,47 @@ namespace Hopf
 variable {C}
 
 /-- A Hopf monoid is a bimonoid. -/
-def toBimon (A : Hopf C) : Bimon C := .mk' A.X
+abbrev toBimon (A : Hopf C) : Bimon C := .mk A.X
 
 /--
 Morphisms of Hopf monoids are just morphisms of the underlying bimonoids.
 In fact they automatically intertwine the antipodes, proved below.
 -/
 instance : Category (Hopf C) :=
-  inferInstanceAs <| Category (InducedCategory (Bimon C) Hopf.toBimon)
+  inferInstanceAs <| Category (InducedCategory (Bimon C) toBimon)
+
+@[ext] lemma ext {A B : Hopf C} {f g : A ⟶ B} (w : f.hom = g.hom) : f = g :=
+  InducedCategory.Hom.ext w
+
+@[simp] theorem id_hom' (A : Hopf C) : (𝟙 A : A ⟶ A).hom = 𝟙 A.toBimon := rfl
+
+@[simp]
+theorem comp_hom' {A₁ A₂ A₃ : Hopf C} (f : A₁ ⟶ A₂) (g : A₂ ⟶ A₃) :
+    (f ≫ g).hom = f.hom ≫ g.hom := rfl
+
+/-- The forgetful functor from Hopf monoids to bimonoid objects. -/
+abbrev toBimonFunctor : Hopf C ⥤ Bimon C := inducedFunctor _
+
+/-- Construct a morphism `Hopf.mk X ⟶ Hopf.mk Y` from a  map `f : X ⟶ Y` and a `IsBimonHom f`
+instance. -/
+@[simps!]
+def ofHom {X Y : C} [HopfObj X] [HopfObj Y] (f : X ⟶ Y) [IsBimonHom f] :
+    Hopf.mk X ⟶ Hopf.mk Y := InducedCategory.homMk (Bimon.Hom.mk f)
+
+
+/-- Construct a morphism `A ⟶ B` of `Hopf C` from a map `f : A.X ⟶ B.X` and `IsMonHom f` and
+`IsComonHom f` instances. -/
+@[simps!]
+def homMk {A B : Hopf C} (f : A.X ⟶ B.X) [IsMonHom f] [IsComonHom f] : A ⟶ B :=
+  InducedCategory.homMk (Bimon.homMk f)
+
+/-- Construct an isomorphism of Hopf monoids by giving an isomorphism between the underlying
+objects and checking compatibility only in the forward direction. -/
+@[simps! -isSimp]
+abbrev mkIso {A B : Hopf C} (e : A.X ≅ B.X) [IsMonHom e.hom] [IsComonHom e.hom] :
+    A ≅ B where
+  hom := homMk e.hom
+  inv := homMk e.inv
 
 end Hopf
 
