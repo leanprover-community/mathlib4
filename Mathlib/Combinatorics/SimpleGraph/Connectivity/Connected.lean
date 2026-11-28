@@ -844,6 +844,19 @@ lemma Preconnected.exists_adj_of_nontrivial [Nontrivial V] {G : SimpleGraph V} (
   have ⟨w⟩ := h v u
   exact ⟨_, w.adj_snd <| w.not_nil_of_ne huv.symm⟩
 
+/-- After inserting `edge s t`, two vertices are reachable if and only if they were already
+reachable or old paths join them across the new edge in either direction. -/
+theorem reachable_sup_edge_iff (G : SimpleGraph V) {s t u v : V} :
+    (G ⊔ edge s t).Reachable u v ↔ G.Reachable u v ∨
+      G.Reachable u s ∧ G.Reachable t v ∨ G.Reachable u t ∧ G.Reachable s v := by
+  constructor
+  · rintro ⟨w⟩
+    induction w with
+      grind only [sup_adj, edge_adj, Reachable.rfl, → Adj.reachable, → Reachable.trans]
+  · have hst : s = t ∨ (G ⊔ edge s t).Adj s t := (edge_le_iff _).mp le_sup_right
+    have hle : G ≤ G ⊔ edge s t := le_sup_left
+    grind only [→ Reachable.mono, → Reachable.trans, → Reachable.symm, → Adj.reachable]
+
 /-! ### Bridge edges -/
 
 section BridgeEdges
@@ -957,12 +970,11 @@ alias isBridge_iff_mem_and_forall_cycle_notMem := isBridge_iff_forall_cycle_notM
 /-- Deleting a non-bridge edge preserves reachability. -/
 theorem Reachable.reachable_deleteEdges_of_not_isBridge (he : ¬G.IsBridge e) (h : G.Reachable u v) :
     (G.deleteEdges {e}).Reachable u v := by
-  have ⟨p⟩ := h
-  induction p with | nil => simp | @cons u v w hadj p ih
-  refine .trans ?_ <| ih ⟨p⟩
-  rcases eq_or_ne s(u, v) e with rfl | hne
-  · exact isBridge_iff.not_left.mp he
-  · exact deleteEdges_adj.mpr ⟨hadj, hne⟩ |>.reachable
+  obtain ⟨a, b⟩ := e
+  have bypass := isBridge_iff.not_left.mp he
+  have ways := ((G.deleteEdges {s(a, b)}).reachable_sup_edge_iff (s := a) (t := b)).mp
+    (h.mono le_sdiff_sup)
+  grind only [→ Reachable.trans, → Reachable.symm]
 
 /-- Deleting a non-bridge edge from a connected graph preserves connectedness. -/
 theorem Preconnected.connected_deleteEdges_of_not_isBridge (hG : G.Preconnected)
