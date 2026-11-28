@@ -5,10 +5,9 @@ Authors: Johan Commelin, Robert Y. Lewis
 -/
 module
 
-public import Mathlib.FieldTheory.Finite.Polynomial
 public import Mathlib.RingTheory.WittVector.WittPolynomial
 
-import Mathlib.NumberTheory.Basic
+import Mathlib.FieldTheory.Finite.Polynomial
 
 /-!
 # Witt structure polynomials
