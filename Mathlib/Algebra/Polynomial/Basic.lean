@@ -510,7 +510,7 @@ theorem coeff_monomial_of_ne {m n : ℕ} (c : R) (h : m ≠ n) : (monomial n c).
 theorem coeff_zero (n : ℕ) : coeff (0 : R[X]) n = 0 :=
   rfl
 
-@[aesop simp]
+@[simp]
 theorem coeff_one {n : ℕ} : coeff (1 : R[X]) n = if n = 0 then 1 else 0 := by
   simp [eq_comm, one_def, Finsupp.single_apply]
 
@@ -522,7 +522,7 @@ protected theorem coeff_one_zero : coeff (1 : R[X]) 0 = 1 := by simp
 
 theorem coeff_monomial_succ : coeff (monomial (n + 1) a) 0 = 0 := by simp
 
-@[aesop simp]
+@[simp]
 theorem coeff_X : coeff (X : R[X]) n = if 1 = n then 1 else 0 := by simp [X, Finsupp.single_apply]
 
 theorem coeff_X_of_ne_one {n : ℕ} (hn : n ≠ 1) : coeff (X : R[X]) n = 0 := by
@@ -535,7 +535,7 @@ theorem mem_support_iff : n ∈ p.support ↔ p.coeff n ≠ 0 := by
 
 theorem notMem_support_iff : n ∉ p.support ↔ p.coeff n = 0 := by simp
 
-@[aesop simp]
+@[simp]
 theorem coeff_C : coeff (C a) n = ite (n = 0) a 0 := by
   simp [C, monomial, Finsupp.single_apply, eq_comm]
 
