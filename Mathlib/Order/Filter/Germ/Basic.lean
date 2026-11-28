@@ -391,16 +391,14 @@ theorem coe_smul [SMul M G] (n : M) (f : α → G) : ↑(n • f) = n • (f : G
   rfl
 
 @[to_additive (attr := simp, norm_cast)]
-theorem const_smul [SMul M G] (n : M) (a : G) : (↑(n • a) : Germ l G) = n • (↑a : Germ l G) :=
-  rfl
-
-@[to_additive (attr := simp, norm_cast)]
 theorem coe_pow [Pow G M] (f : α → G) (n : M) : ↑(f ^ n) = (f : Germ l G) ^ n :=
   rfl
 
-@[to_additive (attr := simp, norm_cast)]
+@[to_additive (attr := simp, norm_cast, to_additive) const_smul]
 theorem const_pow [Pow G M] (a : G) (n : M) : (↑(a ^ n) : Germ l G) = (↑a : Germ l G) ^ n :=
   rfl
+
+@[deprecated (since := "2026-11-16")] alias const_nsmul := const_smul
 
 -- TODO: https://github.com/leanprover-community/mathlib4/pull/7432
 @[to_additive]

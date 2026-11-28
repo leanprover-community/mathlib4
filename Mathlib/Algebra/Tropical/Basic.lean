@@ -275,7 +275,7 @@ theorem untrop_add (x y : MinTropical R) : untrop (x + y) = min (untrop x) (untr
 theorem trop_min (x y : R) : trop (min x y) = trop x + trop y :=
   rfl
 
-@[to_dual (attr := simp)]
+@[to_dual (attr := deprecated trop_min (since := "2026-11-16"))]
 theorem trop_inf (x y : R) : trop (x ⊓ y) = trop x + trop y :=
   rfl
 
@@ -309,18 +309,18 @@ instance _root_.MaxTropical.instLinearOrder : LinearOrder (MaxTropical R) where
     simp only [MaxTropical.untrop_add, max_def, MaxTropical.untrop_le_iff]; split_ifs <;> simp)
 
 @[to_dual (attr := simp)]
-theorem untrop_sup (x y : MinTropical R) : untrop (x ⊔ y) = untrop x ⊔ untrop y :=
+theorem untrop_max (x y : MinTropical R) : untrop (max x y) = max (untrop x) (untrop y) :=
   rfl
 
-@[to_dual (attr := simp)]
-theorem untrop_max (x y : MinTropical R) : untrop (max x y) = max (untrop x) (untrop y) :=
+@[to_dual (attr := deprecated untrop_max (since := "2026-11-16"))]
+theorem untrop_sup (x y : MinTropical R) : untrop (x ⊔ y) = untrop x ⊔ untrop y :=
   rfl
 
 @[to_dual (attr := simp)]
 theorem min_eq_add : (min : MinTropical R → MinTropical R → MinTropical R) = (· + ·) :=
   rfl
 
-@[to_dual (attr := simp)]
+@[to_dual (attr := deprecated min_eq_add (since := "2026-11-16"))]
 theorem inf_eq_add : ((· ⊓ ·) : MinTropical R → MinTropical R → MinTropical R) = (· + ·) :=
   rfl
 
@@ -328,7 +328,7 @@ theorem inf_eq_add : ((· ⊓ ·) : MinTropical R → MinTropical R → MinTropi
 theorem trop_max_def (x y : MinTropical R) : max x y = trop (max (untrop x) (untrop y)) :=
   rfl
 
-@[to_dual]
+@[to_dual (attr := deprecated trop_max_def (since := "2026-11-16"))]
 theorem trop_sup_def (x y : MinTropical R) : x ⊔ y = trop (untrop x ⊔ untrop y) :=
   rfl
 

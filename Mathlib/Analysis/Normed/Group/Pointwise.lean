@@ -308,7 +308,7 @@ theorem IsCompact.closedBall_mul (hs : IsCompact s) (hδ : 0 ≤ δ) (x : E) :
 
 @[to_additive]
 theorem IsCompact.closedBall_div (hs : IsCompact s) (hδ : 0 ≤ δ) (x : E) :
-    closedBall x δ * s = x • cthickening δ s := by
-  simp [hs.closedBall_mul hδ]
+    closedBall x δ / s = x • cthickening δ s⁻¹ := by
+  rw [← smul_closedBall_one, smul_div_assoc, hs.closedBall_one_div hδ]
 
 end SeminormedCommGroup
