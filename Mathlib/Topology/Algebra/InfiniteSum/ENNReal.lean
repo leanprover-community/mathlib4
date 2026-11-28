@@ -315,7 +315,7 @@ protected theorem tsum_eq_add_tsum_ite {f : β → ℝ≥0∞} (b : β) :
 
 theorem tsum_add_one_eq_top {f : ℕ → ℝ≥0∞} (hf : ∑' n, f n = ∞) (hf0 : f 0 ≠ ∞) :
     ∑' n, f (n + 1) = ∞ := by
-  rw [tsum_eq_zero_add' CompleteLattice.summable, add_eq_top] at hf
+  rw [tsum_eq_zero_add CompleteLattice.summable, add_eq_top] at hf
   exact hf.resolve_left hf0
 
 /-- A sum of extended nonnegative reals which is finite can have only finitely many terms

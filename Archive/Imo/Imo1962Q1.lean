@@ -43,7 +43,7 @@ lemma without_digits {n : ℕ} (hn : ProblemPredicate n) : ∃ c : ℕ, ProblemP
   rcases n with - | n
   · have hpp : ¬ProblemPredicate 0 := by simp [ProblemPredicate]
     contradiction
-  · rw [ProblemPredicate, digits_def' (by decide : 2 ≤ 10) n.succ_pos, List.headI, List.tail_cons,
+  · rw [ProblemPredicate, digits_def (by decide : 2 ≤ 10) n.succ_pos, List.headI, List.tail_cons,
       List.concat_eq_append] at hn
     constructor
     · rw [← hn.left, div_add_mod (n + 1) 10]

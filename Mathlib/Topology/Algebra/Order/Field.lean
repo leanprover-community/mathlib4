@@ -44,9 +44,6 @@ theorem Filter.Tendsto.atTop_mul_pos {C : 𝕜} (hC : 0 < C) (hf : Tendsto f l a
   filter_upwards [hg.eventually (lt_mem_nhds (half_lt_self hC)), hf.eventually_ge_atTop 0] with x hg
     hf using mul_le_mul_of_nonneg_left hg.le hf
 
--- TODO: after removing this deprecated alias,
--- rename `Filter.Tendsto.atTop_mul'` to `Filter.Tendsto.atTop_mul`.
--- Same for the other 3 similar aliases below.
 /-- In a linearly ordered semifield with the order topology, if `f` tends to a positive constant `C`
 and `g` tends to `Filter.atTop` then `f * g` tends to `Filter.atTop`. -/
 theorem Filter.Tendsto.pos_mul_atTop {C : 𝕜} (hC : 0 < C) (hf : Tendsto f l (𝓝 C))

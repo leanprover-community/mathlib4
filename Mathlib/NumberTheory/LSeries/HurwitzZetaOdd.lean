@@ -72,7 +72,7 @@ lemma jacobiTheta₂''_add_left (z τ : ℂ) : jacobiTheta₂'' (z + 1) τ = jac
   generalize jacobiTheta₂ (z * τ) τ = J
   generalize jacobiTheta₂' (z * τ) τ = J'
   -- clear denominator
-  simp_rw [div_add' _ _ _ two_pi_I_ne_zero, ← mul_div_assoc]
+  simp_rw [div_add _ _ _ two_pi_I_ne_zero, ← mul_div_assoc]
   congrm ?_ / (2 * π * I)
   -- get all exponential terms to left
   rw [mul_left_comm _ (cexp _), ← mul_add, mul_assoc (cexp _), ← mul_add, ← mul_assoc (cexp _),
@@ -96,7 +96,7 @@ lemma jacobiTheta₂'_functional_equation' (z τ : ℂ) :
     (by norm_num : (1 / 2 + 1 : ℂ) = 3 / 2), mul_assoc (1 / _), mul_assoc (1 / _),
     ← mul_one_div (-2 * π : ℂ), mul_comm _ (1 / _), mul_assoc (1 / _)]
   congr 1
-  rw [jacobiTheta₂'', div_add' _ _ _ two_pi_I_ne_zero, ← mul_div_assoc, ← mul_div_assoc,
+  rw [jacobiTheta₂'', div_add _ _ _ two_pi_I_ne_zero, ← mul_div_assoc, ← mul_div_assoc,
     ← div_mul_eq_mul_div (-2 * π : ℂ), mul_assoc, aux1, mul_div z (-1), mul_neg_one, neg_div τ z,
     jacobiTheta₂_neg_left, jacobiTheta₂'_neg_left, neg_mul, ← mul_neg, ← mul_neg,
     mul_div, mul_neg_one, neg_div, neg_mul, neg_mul, neg_div]

@@ -251,9 +251,11 @@ theorem condExpInd_empty : condExpInd G hm μ ∅ = (0 : G →L[ℝ] α →₁[�
   grw [condExpInd_ae_eq_condExpIndSMul hm MeasurableSet.empty (by simp), condExpIndSMul_empty,
     zero_apply, Lp.coeFn_zero, Lp.coeFn_zero]
 
-theorem condExpInd_smul' [NormedSpace ℝ F] (c : 𝕜) (x : F) :
+theorem condExpInd_smul [NormedSpace ℝ F] (c : 𝕜) (x : F) :
     condExpInd F hm μ s (c • x) = c • condExpInd F hm μ s x :=
   condExpIndL1_smul' c x
+
+@[deprecated (since := "2026-11-23")] alias condExpInd_smul' := MeasureTheory.condExpInd_smul
 
 theorem norm_condExpInd_apply_le (x : G) : ‖condExpInd G hm μ s x‖ ≤ μ.real s * ‖x‖ :=
   norm_condExpIndL1_le x
@@ -329,7 +331,7 @@ variable [CompleteSpace F']
 theorem condExpL1CLM_smul (c : 𝕜) (f : α →₁[μ] F') :
     condExpL1CLM F' hm μ (c • f) = c • condExpL1CLM F' hm μ f := by
   refine L1.setToL1_smul (dominatedFinMeasAdditive_condExpInd F' hm μ) ?_ c f
-  exact fun c s x => condExpInd_smul' c x
+  exact fun c s x => condExpInd_smul c x
 
 theorem condExpL1CLM_indicatorConstLp (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : F') :
     (condExpL1CLM F' hm μ) (indicatorConstLp 1 hs hμs x) = condExpInd F' hm μ s x :=
@@ -438,9 +440,12 @@ theorem condExpL1CLM_lpMeas (f : lpMeas F' ℝ m 1 μ) :
     · refine continuous_induced_dom.comp ?_
       exact LinearIsometryEquiv.continuous _
 
-theorem condExpL1CLM_of_aestronglyMeasurable' (f : α →₁[μ] F') (hfm : AEStronglyMeasurable[m] f μ) :
+theorem condExpL1CLM_of_aestronglyMeasurable (f : α →₁[μ] F') (hfm : AEStronglyMeasurable[m] f μ) :
     condExpL1CLM F' hm μ f = f :=
   condExpL1CLM_lpMeas (⟨f, hfm⟩ : lpMeas F' ℝ m 1 μ)
+
+@[deprecated (since := "2026-11-23")]
+alias condExpL1CLM_of_aestronglyMeasurable' := MeasureTheory.condExpL1CLM_of_aestronglyMeasurable
 
 end CondExpL1CLM
 
@@ -513,18 +518,21 @@ theorem condExpL1_neg (f : α → F') : condExpL1 hm μ (-f) = -condExpL1 hm μ 
 
 theorem condExpL1_smul (c : 𝕜) (f : α → F') : condExpL1 hm μ (c • f) = c • condExpL1 hm μ f := by
   refine setToFun_smul _ ?_ c f
-  exact fun c _ x => condExpInd_smul' c x
+  exact fun c _ x => condExpInd_smul c x
 
 theorem condExpL1_sub (hf : Integrable f μ) (hg : Integrable g μ) :
     condExpL1 hm μ (f - g) = condExpL1 hm μ f - condExpL1 hm μ g :=
   setToFun_sub _ hf hg
 
-theorem condExpL1_of_aestronglyMeasurable' [CompleteSpace F'] (hfm : AEStronglyMeasurable[m] f μ)
+theorem condExpL1_of_aestronglyMeasurable [CompleteSpace F'] (hfm : AEStronglyMeasurable[m] f μ)
     (hfi : Integrable f μ) : condExpL1 hm μ f =ᵐ[μ] f := by
   rw [condExpL1_eq hfi]
   refine EventuallyEq.trans ?_ (Integrable.coeFn_toL1 hfi)
-  rw [condExpL1CLM_of_aestronglyMeasurable']
+  rw [condExpL1CLM_of_aestronglyMeasurable]
   exact hfm.congr hfi.coeFn_toL1.symm
+
+@[deprecated (since := "2026-11-23")]
+alias condExpL1_of_aestronglyMeasurable' := MeasureTheory.condExpL1_of_aestronglyMeasurable
 
 theorem condExpL1_mono {E}
     [NormedAddCommGroup E] [PartialOrder E] [ClosedIciTopology E] [IsOrderedAddMonoid E]

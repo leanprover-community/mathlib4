@@ -246,7 +246,7 @@ theorem cauchyIndex_div_mod [IsStrictOrderedRing K] (p q : K[X]) (a b : K) :
   rcases eq_or_ne p 0 with rfl | hp
   · simp
   conv_rhs => rw [← cauchyIndex_add_algebraMap _ (q / p)]
-  rw [div_add' _ _ _ (algebraMap_ne_zero hp), ← map_mul, ← map_add, EuclideanDomain.mod_add_div']
+  rw [div_add _ _ _ (algebraMap_ne_zero hp), ← map_mul, ← map_add, EuclideanDomain.mod_add_div']
 
 /-- Scaling by a constant `c` scales the Cauchy index by `sign c`. -/
 theorem cauchyIndex_smul [IsStrictOrderedRing K] (c : K) (f : K⟮X⟯) (a b : K) :

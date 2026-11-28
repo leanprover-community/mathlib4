@@ -609,9 +609,12 @@ theorem countable_setOfPred_covBy_right [SecondCountableTopology α] :
 
 /-- The set of points which are isolated on the left is countable when the space is
 second-countable. -/
-theorem countable_of_isolated_left' [SecondCountableTopology α] :
+theorem countable_of_isolated_left [SecondCountableTopology α] :
     Set.Countable { x : α | ∃ y, y < x ∧ Ioo y x = ∅ } := by
   simpa only [← covBy_iff_Ioo_eq] using countable_setOfPred_covBy_left
+
+@[deprecated (since := "2026-11-23")]
+alias countable_of_isolated_left' := countable_of_isolated_left
 
 /-- Consider a disjoint family of intervals `(x, y)` with `x < y` in a second-countable space.
 Then the family is countable.

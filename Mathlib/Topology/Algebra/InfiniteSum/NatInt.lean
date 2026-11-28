@@ -190,10 +190,13 @@ protected theorem Multipliable.prod_mul_tprod_nat_mul'
   h.hasProd.prod_range_mul.tprod_eq.symm
 
 @[to_additive]
-theorem tprod_eq_zero_mul'
+theorem tprod_eq_zero_mul
     {f : ℕ → M} (hf : Multipliable (fun n ↦ f (n + 1))) :
     ∏' b, f b = f 0 * ∏' b, f (b + 1) := by
   simpa only [prod_range_one] using hf.prod_mul_tprod_nat_mul'.symm
+
+@[to_additive (attr := deprecated (since := "2026-11-23"))]
+alias tprod_eq_zero_mul' := tprod_eq_zero_mul
 
 @[to_additive]
 theorem tprod_even_mul_odd {f : ℕ → M} (he : Multipliable fun k ↦ f (2 * k))
@@ -237,7 +240,7 @@ protected theorem Multipliable.prod_mul_tprod_nat_add [T2Space G] {f : ℕ → G
 @[to_additive]
 protected theorem Multipliable.tprod_eq_zero_mul [T2Space G] {f : ℕ → G} (hf : Multipliable f) :
     ∏' b, f b = f 0 * ∏' b, f (b + 1) :=
-  tprod_eq_zero_mul' <| (multipliable_nat_add_iff 1).2 hf
+  tprod_eq_zero_mul <| (multipliable_nat_add_iff 1).2 hf
 
 /-- For `f : ℕ → G`, the product `∏' k, f (k + i)` tends to one. This does not require a
 multipliability assumption on `f`, as otherwise all such products are one. -/

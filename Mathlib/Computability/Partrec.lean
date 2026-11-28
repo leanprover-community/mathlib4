@@ -428,7 +428,7 @@ nonrec theorem comp {f : β →. σ} {g : α → β} (hf : Partrec f) (hg : Comp
     simp only [PFun.coe_val, map_some, bind_eq_bind]
     rcases e : decode (α := α) n with - | a <;> simp [encodek]
 
-theorem nat_iff {f : ℕ →. ℕ} : Partrec f ↔ Nat.Partrec f := by simp [Partrec, map_id']
+theorem nat_iff {f : ℕ →. ℕ} : Partrec f ↔ Nat.Partrec f := by simp [Partrec, map_id]
 
 theorem map_encode_iff {f : α →. σ} : (Partrec fun a => (f a).map encode) ↔ Partrec f :=
   Iff.rfl
@@ -500,7 +500,7 @@ theorem rfind {p : α → ℕ →. Bool} (hp : Partrec₂ p) : Partrec fun a => 
   (Nat.Partrec.rfind <|
         hp.map ((Primrec.dom_bool fun b => cond b 0 1).comp Primrec.snd).to₂.to_comp).of_eq
     fun n => by
-    rcases e : decode (α := α) n <;> simp [e, Nat.rfind_zero_none, map_map, map_id']
+    rcases e : decode (α := α) n <;> simp [e, Nat.rfind_zero_none, map_map, map_id]
 
 theorem rfindOpt {f : α → ℕ → Option σ} (hf : Computable₂ f) :
     Partrec fun a => Nat.rfindOpt (f a) :=

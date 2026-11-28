@@ -135,14 +135,16 @@ or avoid mentioning a basis at all using `LinearMap.det`.
 
 See also `detAux_def''` which allows you to vary the basis.
 -/
-theorem detAux_def' (b : Basis ι A M) (f : M →ₗ[A] M) :
+theorem detAux_def (b : Basis ι A M) (f : M →ₗ[A] M) :
     LinearMap.detAux (Trunc.mk b) f = Matrix.det (LinearMap.toMatrix b b f) := (rfl)
+
+@[deprecated (since := "2026-11-23")] alias detAux_def' := LinearMap.detAux_def
 
 theorem detAux_def'' {ι' : Type*} [Fintype ι'] [DecidableEq ι'] (tb : Trunc <| Basis ι A M)
     (b' : Basis ι' A M) (f : M →ₗ[A] M) :
     LinearMap.detAux tb f = Matrix.det (LinearMap.toMatrix b' b' f) := by
   induction tb using Trunc.induction_on with
-  | h b => rw [detAux_def', det_toMatrix_eq_det_toMatrix b b']
+  | h b => rw [detAux_def, det_toMatrix_eq_det_toMatrix b b']
 
 @[simp]
 theorem detAux_id (b : Trunc <| Basis ι A M) : LinearMap.detAux b LinearMap.id = 1 :=

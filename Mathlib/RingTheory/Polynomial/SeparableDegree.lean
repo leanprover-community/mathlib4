@@ -69,14 +69,17 @@ theorem HasSeparableContraction.isSeparableContraction :
     IsSeparableContraction q f hf.contraction := Classical.choose_spec hf
 
 /-- The separable degree divides the degree, in function of the exponential characteristic of F. -/
-theorem IsSeparableContraction.dvd_degree' {g} (hf : IsSeparableContraction q f g) :
+theorem IsSeparableContraction.dvd_degree {g} (hf : IsSeparableContraction q f g) :
     ∃ m : ℕ, g.natDegree * q ^ m = f.natDegree := by
   obtain ⟨m, rfl⟩ := hf.2
   use m
   rw [natDegree_expand]
 
+@[deprecated (since := "2026-11-23")]
+alias IsSeparableContraction.dvd_degree' := Polynomial.IsSeparableContraction.dvd_degree
+
 theorem HasSeparableContraction.dvd_degree' : ∃ m : ℕ, hf.degree * q ^ m = f.natDegree :=
-  (Classical.choose_spec hf).dvd_degree'
+  (Classical.choose_spec hf).dvd_degree
 
 /-- The separable degree divides the degree. -/
 theorem HasSeparableContraction.dvd_degree : hf.degree ∣ f.natDegree :=

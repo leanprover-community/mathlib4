@@ -36,9 +36,12 @@ open scoped MeasureTheory NNReal ENNReal
 -/
 
 @[fun_prop]
-protected theorem AddCircle.measurable_mk' {a : ℝ} :
+protected theorem AddCircle.measurable_mk {a : ℝ} :
     Measurable (β := AddCircle a) ((↑) : ℝ → AddCircle a) :=
   Continuous.measurable <| AddCircle.continuous_mk' a
+
+@[deprecated (since := "2026-11-23")]
+protected alias AddCircle.measurable_mk' := AddCircle.measurable_mk
 
 theorem isAddFundamentalDomain_Ioc {T : ℝ} (hT : 0 < T) (t : ℝ)
     (μ : Measure ℝ := by volume_tac) :
@@ -134,7 +137,7 @@ noncomputable def measurableEquivIoc (a : ℝ) : AddCircle T ≃ᵐ Ioc a (a + T
   measurable_toFun := measurable_of_measurable_on_compl_singleton _
     (continuousOn_iff_continuous_domRestrict.mp <| continuousOn_of_forall_continuousAt fun _x hx =>
       continuousAt_equivIoc T a hx).measurable
-  measurable_invFun := AddCircle.measurable_mk'.comp measurable_subtypeVal
+  measurable_invFun := AddCircle.measurable_mk.comp measurable_subtypeVal
 
 /-- The isomorphism `AddCircle T ≃ Ico a (a + T)` whose inverse is the natural quotient map,
   as an equivalence of measurable spaces. -/
@@ -143,7 +146,7 @@ noncomputable def measurableEquivIco (a : ℝ) : AddCircle T ≃ᵐ Ico a (a + T
   measurable_toFun := measurable_of_measurable_on_compl_singleton _
     (continuousOn_iff_continuous_domRestrict.mp <| continuousOn_of_forall_continuousAt fun _x hx =>
       continuousAt_equivIco T a hx).measurable
-  measurable_invFun := AddCircle.measurable_mk'.comp measurable_subtypeVal
+  measurable_invFun := AddCircle.measurable_mk.comp measurable_subtypeVal
 
 /-- The equivalence `equivIoc` is measure preserving with respect to the natural volume measures. -/
 lemma measurePreserving_equivIoc {a : ℝ} :
@@ -178,7 +181,7 @@ protected theorem lintegral_preimage (t : ℝ) (f : AddCircle T → ℝ≥0∞) 
     have : ((↑) : Ioc t (t + T) → AddCircle T) = ((↑) : ℝ → AddCircle T) ∘ ((↑) : _ → ℝ) := by
       ext1 x; rfl
     simp_rw [this]
-    rw [← map_map AddCircle.measurable_mk' measurable_subtypeVal, ← map_comap_subtypeVal m]
+    rw [← map_map AddCircle.measurable_mk measurable_subtypeVal, ← map_comap_subtypeVal m]
     rfl
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -196,7 +199,7 @@ protected theorem integral_preimage (t : ℝ) (f : AddCircle T → E) :
   have : ((↑) : Ioc t (t + T) → AddCircle T) = ((↑) : ℝ → AddCircle T) ∘ ((↑) : _ → ℝ) := by
     ext1 x; rfl
   simp_rw [this]
-  rw [← map_map AddCircle.measurable_mk' measurable_subtypeVal, ← map_comap_subtypeVal m]
+  rw [← map_map AddCircle.measurable_mk measurable_subtypeVal, ← map_comap_subtypeVal m]
   rfl
 
 /-- The integral of an almost-everywhere strongly measurable function over `AddCircle T` is equal

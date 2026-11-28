@@ -68,11 +68,14 @@ theorem antidiagonal_succ' {n : ℕ} :
     antidiagonal (n + 1) = (antidiagonal n).map (Prod.map id Nat.succ) ++ [(n + 1, 0)] := by
   simp +contextual [antidiagonal, range_succ, Nat.le_of_lt, Nat.sub_add_comm]
 
-theorem antidiagonal_succ_succ' {n : ℕ} :
+theorem antidiagonal_succ_succ {n : ℕ} :
     antidiagonal (n + 2) =
       (0, n + 2) :: (antidiagonal n).map (Prod.map Nat.succ Nat.succ) ++ [(n + 2, 0)] := by
   rw [antidiagonal_succ', antidiagonal_succ]
   simp
+
+@[deprecated (since := "2026-11-23")]
+alias antidiagonal_succ_succ' := List.Nat.antidiagonal_succ_succ
 
 theorem map_swap_antidiagonal {n : ℕ} :
     (antidiagonal n).map Prod.swap = (antidiagonal n).reverse := by

@@ -35,7 +35,9 @@ namespace MeasureTheory.Measure
 def count : Measure α :=
   sum dirac
 
-@[simp] lemma count_ne_zero'' [Nonempty α] : (count : Measure α) ≠ 0 := by simp [count]
+@[simp] lemma count_ne_zero' [Nonempty α] : (count : Measure α) ≠ 0 := by simp [count]
+
+@[deprecated (since := "2026-11-23")] alias count_ne_zero'' := MeasureTheory.Measure.count_ne_zero'
 
 theorem le_count_apply : ∑' _ : s, (1 : ℝ≥0∞) ≤ count s :=
   calc

@@ -670,8 +670,10 @@ theorem add_eq_max_of_ne' {q r : ℚ_[p]} :
   Quotient.inductionOn₂ q r fun _ _ ↦ PadicSeq.add_eq_max_of_ne
 
 @[simp]
-theorem eq_padic_norm' (q : ℚ) : padicNormE (q : ℚ_[p]) = padicNorm p q :=
+theorem eq_padic_norm (q : ℚ) : padicNormE (q : ℚ_[p]) = padicNorm p q :=
   norm_const _
+
+@[deprecated (since := "2026-11-23")] alias eq_padic_norm' := padicNormE.eq_padic_norm
 
 protected theorem image' {q : ℚ_[p]} : q ≠ 0 → ∃ n : ℤ, padicNormE q = (p : ℚ) ^ (-n) :=
   Quotient.inductionOn q fun f hf ↦
@@ -735,7 +737,7 @@ theorem isCauSeq_padicNorm_limSeq : IsCauSeq (padicNorm p) (limSeq f) := fun ε 
   suffices
     padicNormE (limSeq f j - f (max N N2) + (f (max N N2) - limSeq f (max N N2)) : ℚ_[p]) < ε by
     ring_nf at this
-    rw [← padicNormE.eq_padic_norm']
+    rw [← padicNormE.eq_padic_norm]
     exact mod_cast this
   apply lt_of_le_of_lt
   · apply padicNormE.add_le
@@ -860,7 +862,7 @@ theorem add_eq_max_of_ne {q r : ℚ_[p]} (h : ‖q‖ ≠ ‖r‖) : ‖q + r‖
 @[simp]
 theorem eq_padicNorm (q : ℚ) : ‖(q : ℚ_[p])‖ = padicNorm p q := by
   dsimp [norm]
-  rw [← padicNormE.eq_padic_norm']
+  rw [← padicNormE.eq_padic_norm]
 
 @[simp]
 theorem norm_p : ‖(p : ℚ_[p])‖ = (p : ℝ)⁻¹ := by

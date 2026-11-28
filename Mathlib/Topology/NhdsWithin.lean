@@ -136,12 +136,15 @@ alias nhdsWithin_eq_iff_eventuallyEq := nhdsWithin_eq_iff_eventuallyEqSet
 theorem nhdsWithin_le_iff {s t : Set α} {x : α} : 𝓝[s] x ≤ 𝓝[t] x ↔ t ∈ 𝓝[s] x :=
   eventuallySubset_iff_inf_principal_le.symm.trans eventuallySubset_iff_mem_inf_principal
 
-theorem preimage_nhdsWithin_coinduced' {X : α → β} {s : Set β} {t : Set α} {a : α} (h : a ∈ t)
+theorem preimage_nhdsWithin_coinduced {X : α → β} {s : Set β} {t : Set α} {a : α} (h : a ∈ t)
     (hs : s ∈ @nhds β (.coinduced (fun x : t => X x) inferInstance) (X a)) :
     X ⁻¹' s ∈ 𝓝[t] a := by
   lift a to t using h
   replace hs : (fun x : t => X x) ⁻¹' s ∈ 𝓝 a := preimage_nhds_coinduced hs
   rwa [← map_nhds_subtypeVal, mem_map]
+
+@[deprecated (since := "2026-11-23")]
+alias preimage_nhdsWithin_coinduced' := preimage_nhdsWithin_coinduced
 
 theorem mem_nhdsWithin_of_mem_nhds {s t : Set α} {a : α} (h : s ∈ 𝓝 a) : s ∈ 𝓝[t] a :=
   mem_inf_of_left h
@@ -210,7 +213,7 @@ theorem preimage_nhds_within_coinduced {X : α → β} {s : Set β} {t : Set α}
     (hs : s ∈ @nhds β (.coinduced (fun x : t => X x) inferInstance) (X a)) :
     X ⁻¹' s ∈ 𝓝 a := by
   rw [← ht.nhdsWithin_eq h]
-  exact preimage_nhdsWithin_coinduced' h hs
+  exact preimage_nhdsWithin_coinduced h hs
 
 @[simp]
 theorem nhdsWithin_empty (a : α) : 𝓝[∅] a = ⊥ := by rw [nhdsWithin, principal_empty, inf_bot_eq]

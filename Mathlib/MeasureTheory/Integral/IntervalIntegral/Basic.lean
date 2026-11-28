@@ -88,8 +88,10 @@ theorem intervalIntegrable_iff : IntervalIntegrable f μ a b ↔ IntegrableOn f 
 
 /-- If a function is interval integrable with respect to a given measure `μ` on `a..b` then
   it is integrable on `uIoc a b` with respect to `μ`. -/
-theorem IntervalIntegrable.def' (h : IntervalIntegrable f μ a b) : IntegrableOn f (Ι a b) μ :=
+theorem IntervalIntegrable.def (h : IntervalIntegrable f μ a b) : IntegrableOn f (Ι a b) μ :=
   intervalIntegrable_iff.mp h
+
+@[deprecated (since := "2026-11-23")] alias IntervalIntegrable.def' := IntervalIntegrable.def
 
 theorem intervalIntegrable_congr_ae {g : ℝ → ε} (h : f =ᵐ[μ.restrict (Ι a b)] g) :
     IntervalIntegrable f μ a b ↔ IntervalIntegrable g μ a b := by
@@ -260,7 +262,7 @@ theorem abs {f : ℝ → ℝ} (h : IntervalIntegrable f μ a b) :
 
 theorem mono (hf : IntervalIntegrable f ν a b) (h1 : [[c, d]] ⊆ [[a, b]]) (h2 : μ ≤ ν) :
     IntervalIntegrable f μ c d :=
-  intervalIntegrable_iff.mpr <| hf.def'.mono (uIoc_subset_uIoc_of_uIcc_subset_uIcc h1) h2
+  intervalIntegrable_iff.mpr <| hf.def.mono (uIoc_subset_uIoc_of_uIcc_subset_uIcc h1) h2
 
 theorem mono_measure (hf : IntervalIntegrable f ν a b) (h : μ ≤ ν) : IntervalIntegrable f μ a b :=
   hf.mono Subset.rfl h
@@ -271,7 +273,7 @@ theorem mono_set (hf : IntervalIntegrable f μ a b) (h : [[c, d]] ⊆ [[a, b]]) 
 
 theorem mono_set_ae (hf : IntervalIntegrable f μ a b) (h : Ι c d ≤ᵐ[μ] Ι a b) :
     IntervalIntegrable f μ c d :=
-  intervalIntegrable_iff.mpr <| hf.def'.mono_set_ae h
+  intervalIntegrable_iff.mpr <| hf.def.mono_set_ae h
 
 theorem mono_set' (hf : IntervalIntegrable f μ a b) (hsub : Ι c d ⊆ Ι a b) :
     IntervalIntegrable f μ c d :=
@@ -280,27 +282,27 @@ theorem mono_set' (hf : IntervalIntegrable f μ a b) (hsub : Ι c d ⊆ Ι a b) 
 theorem mono_fun_eNorm [PseudoMetrizableSpace ε'] {g : ℝ → ε'}
     (hf : IntervalIntegrable f μ a b) (hgm : AEStronglyMeasurable g (μ.restrict (Ι a b)))
     (hle : (‖g ·‖ₑ) ≤ᵐ[μ.restrict (Ι a b)] (‖f ·‖ₑ)) : IntervalIntegrable g μ a b :=
-  intervalIntegrable_iff.2 <| hf.def'.integrable.mono_eNorm hgm hle
+  intervalIntegrable_iff.2 <| hf.def.integrable.mono_eNorm hgm hle
 
 @[deprecated (since := "2026-11-06")] alias mono_fun_enorm := mono_fun_eNorm
 
 theorem mono_fun {f : ℝ → E} [NormedAddCommGroup F] {g : ℝ → F} (hf : IntervalIntegrable f μ a b)
     (hgm : AEStronglyMeasurable g (μ.restrict (Ι a b)))
     (hle : (fun x => ‖g x‖) ≤ᵐ[μ.restrict (Ι a b)] fun x => ‖f x‖) : IntervalIntegrable g μ a b :=
-  intervalIntegrable_iff.2 <| hf.def'.integrable.mono hgm hle
+  intervalIntegrable_iff.2 <| hf.def.integrable.mono hgm hle
 
 -- XXX: the best spelling of this lemma may look slightly different (e.gl, with different domain)
 theorem mono_fun_eNorm' {f : ℝ → ε} {g : ℝ → ℝ≥0∞} (hg : IntervalIntegrable g μ a b)
     (hfm : AEStronglyMeasurable f (μ.restrict (Ι a b)))
     (hle : (fun x => ‖f x‖ₑ) ≤ᵐ[μ.restrict (Ι a b)] g) : IntervalIntegrable f μ a b :=
-  intervalIntegrable_iff.2 <| hg.def'.integrable.mono_eNorm hfm hle
+  intervalIntegrable_iff.2 <| hg.def.integrable.mono_eNorm hfm hle
 
 @[deprecated (since := "2026-11-06")] alias mono_fun_enorm' := mono_fun_eNorm'
 
 theorem mono_fun' {f : ℝ → E} {g : ℝ → ℝ} (hg : IntervalIntegrable g μ a b)
     (hfm : AEStronglyMeasurable f (μ.restrict (Ι a b)))
     (hle : (fun x => ‖f x‖) ≤ᵐ[μ.restrict (Ι a b)] g) : IntervalIntegrable f μ a b :=
-  intervalIntegrable_iff.2 <| hg.def'.integrable.mono' hfm hle
+  intervalIntegrable_iff.2 <| hg.def.integrable.mono' hfm hle
 
 omit [PseudoMetrizableSpace ε] in
 protected theorem aestronglyMeasurable (h : IntervalIntegrable f μ a b) :
@@ -758,7 +760,7 @@ theorem norm_integral_le_integral_norm (h : a ≤ b) :
 theorem norm_integral_le_abs_of_norm_le {g : ℝ → ℝ} (h : ∀ᵐ t ∂μ.restrict <| Ι a b, ‖f t‖ ≤ g t)
     (hbound : IntervalIntegrable g μ a b) : ‖∫ t in a..b, f t ∂μ‖ ≤ |∫ t in a..b, g t ∂μ| := by
   rw [norm_intervalIntegral_eq, abs_intervalIntegral_eq]
-  exact (norm_integral_le_of_norm_le hbound.def' h).trans (le_abs_self _)
+  exact (norm_integral_le_of_norm_le hbound.def h).trans (le_abs_self _)
 
 theorem norm_integral_le_of_norm_le {g : ℝ → ℝ} (hab : a ≤ b)
     (h : ∀ᵐ t ∂μ, t ∈ Set.Ioc a b → ‖f t‖ ≤ g t) (hbound : IntervalIntegrable g μ a b) :
@@ -780,12 +782,12 @@ theorem norm_integral_le_of_norm_le_const {a b C : ℝ} {f : ℝ → E} (h : ∀
 @[simp]
 nonrec theorem integral_add (hf : IntervalIntegrable f μ a b) (hg : IntervalIntegrable g μ a b) :
     ∫ x in a..b, f x + g x ∂μ = (∫ x in a..b, f x ∂μ) + ∫ x in a..b, g x ∂μ := by
-  simp only [intervalIntegral_eq_integral_uIoc, integral_add hf.def' hg.def', smul_add]
+  simp only [intervalIntegral_eq_integral_uIoc, integral_add hf.def hg.def, smul_add]
 
 nonrec theorem integral_finsetSum {ι} {s : Finset ι} {f : ι → ℝ → E}
     (h : ∀ i ∈ s, IntervalIntegrable (f i) μ a b) :
     ∫ x in a..b, ∑ i ∈ s, f i x ∂μ = ∑ i ∈ s, ∫ x in a..b, f i x ∂μ := by
-  simp only [intervalIntegral_eq_integral_uIoc, integral_finsetSum s fun i hi => (h i hi).def',
+  simp only [intervalIntegral_eq_integral_uIoc, integral_finsetSum s fun i hi => (h i hi).def,
     Finset.smul_sum]
 
 @[simp]
@@ -868,7 +870,7 @@ open ContinuousLinearMap
 theorem _root_.ContinuousLinearMap.intervalIntegral_apply {a b : ℝ} {φ : ℝ → F →L[𝕜] E}
     (hφ : IntervalIntegrable φ μ a b) (v : F) :
     (∫ x in a..b, φ x ∂μ) v = ∫ x in a..b, φ x v ∂μ := by
-  simp_rw [intervalIntegral_eq_integral_uIoc, ← integral_apply hφ.def' v, smul_apply]
+  simp_rw [intervalIntegral_eq_integral_uIoc, ← integral_apply hφ.def v, smul_apply]
 
 variable [NormedSpace ℝ F] [CompleteSpace F]
 
@@ -1417,7 +1419,7 @@ theorem abs_integral_mono_interval {c d} (h : Ι a b ⊆ Ι c d) (hf : 0 ≤ᵐ[
   calc
     |∫ x in a..b, f x ∂μ| = |∫ x in Ι a b, f x ∂μ| := abs_integral_eq_abs_integral_uIoc f
     _ = ∫ x in Ι a b, f x ∂μ := abs_of_nonneg (MeasureTheory.integral_nonneg_of_ae hf')
-    _ ≤ ∫ x in Ι c d, f x ∂μ := setIntegral_mono_set hfi.def' hf h.eventuallySubset
+    _ ≤ ∫ x in Ι c d, f x ∂μ := setIntegral_mono_set hfi.def hf h.eventuallySubset
     _ ≤ |∫ x in Ι c d, f x ∂μ| := le_abs_self _
     _ = |∫ x in c..d, f x ∂μ| := (abs_integral_eq_abs_integral_uIoc f).symm
 

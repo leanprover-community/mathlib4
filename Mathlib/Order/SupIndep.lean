@@ -221,7 +221,7 @@ protected theorem SupIndep.disjoint_sup_sup {s : Finset ι} {f : ι → α} {u v
     · unfold SupIndep at hs
       grind
 
-theorem supIndep_sigma_iff' {β : ι → Type*} {s : Finset ι} {g : ∀ i, Finset (β i)}
+theorem supIndep_sigma_iff {β : ι → Type*} {s : Finset ι} {g : ∀ i, Finset (β i)}
     {f : Sigma β → α} : (s.sigma g).SupIndep f ↔ (s.SupIndep fun i => (g i).sup fun b => f ⟨i, b⟩)
       ∧ ∀ i ∈ s, (g i).SupIndep fun b => f ⟨i, b⟩ := by
   classical
@@ -232,6 +232,8 @@ theorem supIndep_sigma_iff' {β : ι → Type*} {s : Finset ι} {g : ∀ i, Fins
     apply SupIndep.disjoint_sup_sup h <;> grind [disjoint_left]
   · suffices Disjoint (f ⟨i, j⟩) ((t.image fun b ↦ ⟨i, b⟩).sup f) by simpa only [sup_image]
     grind [= SupIndep]
+
+@[deprecated (since := "2026-11-23")] alias supIndep_sigma_iff' := Finset.supIndep_sigma_iff
 
 theorem supIndep_product_iff {s : Finset ι} {t : Finset ι'} {f : ι × ι' → α} :
     (s.product t).SupIndep f ↔ (s.SupIndep fun i => t.sup fun i' => f (i, i'))

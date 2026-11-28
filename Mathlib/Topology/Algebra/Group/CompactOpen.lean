@@ -94,7 +94,7 @@ theorem continuous_of_continuous_uncurry {A : Type*} [TopologicalSpace A]
 theorem continuous_comp [LocallyCompactSpace B] :
     Continuous fun f : ContinuousMonoidHom A B × ContinuousMonoidHom B C => f.2.comp f.1 :=
   (isInducing_toContinuousMap A C).continuous_iff.2 <|
-    ContinuousMap.continuous_comp'.comp
+    ContinuousMap.continuous_comp.comp
       ((isInducing_toContinuousMap A B).prodMap (isInducing_toContinuousMap B C)).continuous
 
 @[to_additive]

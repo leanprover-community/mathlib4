@@ -25,7 +25,7 @@ In this file we present a proof of Hadamard's three-lines Theorem.
   This can be seen to be equivalent to the statement
   that `log M(re z)` is a convex function on `[0, 1]`.
 
-- `norm_le_interp_of_mem_verticalClosedStrip'` :
+- `norm_le_interp_of_mem_verticalClosedStrip` :
   Variant of the above lemma in simpler terms. In particular, it makes no mention of the helper
   functions defined in this file.
 
@@ -480,7 +480,7 @@ bounded function, continuous on the closed strip `re ⁻¹' [0, 1]` and differen
 `re ⁻¹' (0, 1)`. If, for all `z.re = 0`, `‖f z‖ ≤ a` for some `a ∈ ℝ` and, similarly, for all
 `z.re = 1`, `‖f z‖ ≤ b` for some `b ∈ ℝ` then for all `z` in the closed strip
 `re ⁻¹' [0, 1]` the inequality `‖f(z)‖ ≤ a ^ (1 - z.re) * b ^ z.re` holds. -/
-lemma norm_le_interp_of_mem_verticalClosedStrip₀₁' (f : ℂ → E) {z : ℂ} {a b : ℝ}
+lemma norm_le_interp_of_mem_verticalClosedStrip₀₁ (f : ℂ → E) {z : ℂ} {a b : ℝ}
     (hz : z ∈ verticalClosedStrip 0 1) (hd : DiffContOnCl ℂ f (verticalStrip 0 1))
     (hB : BddAbove ((norm ∘ f) '' verticalClosedStrip 0 1))
     (ha : ∀ z ∈ re ⁻¹' {0}, ‖f z‖ ≤ a) (hb : ∀ z ∈ re ⁻¹' {1}, ‖f z‖ ≤ b) :
@@ -520,6 +520,10 @@ lemma norm_le_interp_of_mem_verticalClosedStrip₀₁' (f : ℂ → E) {z : ℂ}
     · simpa [comp_apply, mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂] using hb
     · use ‖(f 1)‖, 1
       simp
+
+@[deprecated (since := "2026-11-23")]
+alias norm_le_interp_of_mem_verticalClosedStrip₀₁' :=
+  Complex.HadamardThreeLines.norm_le_interp_of_mem_verticalClosedStrip₀₁
 
 /-- The transformation on ℂ that is used for `scale` maps the strip ``re ⁻¹' (l, u)``
   to the strip ``re ⁻¹' (0, 1)``. -/
@@ -608,17 +612,21 @@ bounded function, continuous on the closed strip `re ⁻¹' [l, u]` and differen
 `re ⁻¹' [l, u]` the inequality
 `‖f(z)‖ ≤ a ^ (1 - (z.re - l) / (u - l)) * b ^ ((z.re - l) / (u - l))`
 holds. -/
-lemma norm_le_interp_of_mem_verticalClosedStrip' {f : ℂ → E} {z : ℂ} {a b l u : ℝ}
+lemma norm_le_interp_of_mem_verticalClosedStrip {f : ℂ → E} {z : ℂ} {a b l u : ℝ}
     (hul : l < u) (hz : z ∈ verticalClosedStrip l u) (hd : DiffContOnCl ℂ f (verticalStrip l u))
     (hB : BddAbove ((norm ∘ f) '' verticalClosedStrip l u))
     (ha : ∀ z ∈ re ⁻¹' {l}, ‖f z‖ ≤ a) (hb : ∀ z ∈ re ⁻¹' {u}, ‖f z‖ ≤ b) :
     ‖f z‖ ≤ a ^ (1 - (z.re - l) / (u - l)) * b ^ ((z.re - l) / (u - l)) := by
-  have hgoal := norm_le_interp_of_mem_verticalClosedStrip₀₁' (scale f l u)
+  have hgoal := norm_le_interp_of_mem_verticalClosedStrip₀₁ (scale f l u)
     (mem_verticalClosedStrip_of_scale_id_mem_verticalClosedStrip hul hz) (scale_diffContOnCl hul hd)
     (scale_bddAbove hul hB) (scale_bound_left ha) (scale_bound_right hb)
   simp only [scale, smul_eq_mul, sub_re] at hgoal
   rw [fun_arg_eq hul, bound_exp_eq hul] at hgoal
   exact hgoal
+
+@[deprecated (since := "2026-11-23")]
+alias norm_le_interp_of_mem_verticalClosedStrip' :=
+  Complex.HadamardThreeLines.norm_le_interp_of_mem_verticalClosedStrip
 
 end HadamardThreeLines
 end Complex

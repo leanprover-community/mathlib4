@@ -307,7 +307,7 @@ instance instExtremallyDisconnected {ι : Type*} {X : ι → Type*} [∀ i, Topo
     intro j
     by_cases ij : i = j
     · rwa [← ij, sigma_mk_preimage_image_eq_self]
-    · rw [sigma_mk_preimage_image' ij]
+    · rw [sigma_mk_preimage_image ij]
       exact isOpen_empty
   · fun_prop
 

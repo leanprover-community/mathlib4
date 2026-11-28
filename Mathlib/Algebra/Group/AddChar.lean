@@ -472,13 +472,15 @@ theorem inv_mulShift (ψ : AddChar R M) : ψ⁻¹ = mulShift ψ (-1) := by
   rw [inv_apply, mulShift_apply, neg_mul, one_mul]
 
 /-- If `n` is a natural number, then `mulShift ψ n x = (ψ x) ^ n`. -/
-theorem mulShift_spec' (ψ : AddChar R M) (n : ℕ) (x : R) : mulShift ψ n x = ψ x ^ n := by
+theorem mulShift_spec (ψ : AddChar R M) (n : ℕ) (x : R) : mulShift ψ n x = ψ x ^ n := by
   rw [mulShift_apply, ← nsmul_eq_mul, map_nsmul_eq_pow]
+
+@[deprecated (since := "2026-11-23")] alias mulShift_spec' := AddChar.mulShift_spec
 
 /-- If `n` is a natural number, then `ψ ^ n = mulShift ψ n`. -/
 theorem pow_mulShift (ψ : AddChar R M) (n : ℕ) : ψ ^ n = mulShift ψ n := by
   ext x
-  rw [pow_apply, ← mulShift_spec']
+  rw [pow_apply, ← mulShift_spec]
 
 /-- The product of `mulShift ψ r` and `mulShift ψ s` is `mulShift ψ (r + s)`. -/
 theorem mulShift_mul (ψ : AddChar R M) (r s : R) :

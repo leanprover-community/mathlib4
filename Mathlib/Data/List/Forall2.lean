@@ -116,22 +116,26 @@ theorem forall₂_map_right_iff {f : γ → β} :
   | _, [] => by simp only [map, forall₂_nil_right_iff]
   | _, b :: u => by simp only [map, forall₂_cons_right_iff, forall₂_map_right_iff]
 
-theorem left_unique_forall₂' (hr : LeftUnique R) : ∀ {a b c}, Forall₂ R a c → Forall₂ R b c → a = b
+theorem left_unique_forall₂ (hr : LeftUnique R) : ∀ {a b c}, Forall₂ R a c → Forall₂ R b c → a = b
   | _, _, _, Forall₂.nil, Forall₂.nil => rfl
   | _, _, _, Forall₂.cons ha₀ h₀, Forall₂.cons ha₁ h₁ =>
-    hr ha₀ ha₁ ▸ left_unique_forall₂' hr h₀ h₁ ▸ rfl
+    hr ha₀ ha₁ ▸ left_unique_forall₂ hr h₀ h₁ ▸ rfl
+
+@[deprecated (since := "2026-11-23")] alias left_unique_forall₂' := List.left_unique_forall₂
 
 theorem _root_.Relator.LeftUnique.forall₂ (hr : LeftUnique R) : LeftUnique (Forall₂ R) :=
-  @left_unique_forall₂' _ _ _ hr
+  @left_unique_forall₂ _ _ _ hr
 
-theorem right_unique_forall₂' (hr : RightUnique R) :
+theorem right_unique_forall₂ (hr : RightUnique R) :
     ∀ {a b c}, Forall₂ R a b → Forall₂ R a c → b = c
   | _, _, _, Forall₂.nil, Forall₂.nil => rfl
   | _, _, _, Forall₂.cons ha₀ h₀, Forall₂.cons ha₁ h₁ =>
-    hr ha₀ ha₁ ▸ right_unique_forall₂' hr h₀ h₁ ▸ rfl
+    hr ha₀ ha₁ ▸ right_unique_forall₂ hr h₀ h₁ ▸ rfl
+
+@[deprecated (since := "2026-11-23")] alias right_unique_forall₂' := List.right_unique_forall₂
 
 theorem _root_.Relator.RightUnique.forall₂ (hr : RightUnique R) : RightUnique (Forall₂ R) :=
-  @right_unique_forall₂' _ _ _ hr
+  @right_unique_forall₂ _ _ _ hr
 
 theorem _root_.Relator.BiUnique.forall₂ (hr : BiUnique R) : BiUnique (Forall₂ R) :=
   ⟨hr.left.forall₂, hr.right.forall₂⟩

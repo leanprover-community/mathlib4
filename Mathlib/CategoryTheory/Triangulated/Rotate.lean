@@ -73,7 +73,7 @@ def Triangle.invRotate (T : Triangle C) : Triangle C :=
 
 end
 
-attribute [local simp] shift_shift_neg' shift_neg_shift'
+attribute [local simp] shift_shift_neg shift_neg_shift
   shift_shiftFunctorCompIsoId_add_neg_cancel_inv_app
   shift_shiftFunctorCompIsoId_add_neg_cancel_hom_app
 

@@ -117,7 +117,7 @@ theorem arzela_ascoli [T2Space β] (s : Set β) (hs : IsCompact s) (A : Set (α 
   addition to being closed, still satisfies the properties of compact range and equicontinuity. -/
   arzela_ascoli₂ s hs (closure A) isClosed_closure
     (fun _ x hf =>
-      (mem_of_closed' hs.isClosed).2 fun ε ε0 =>
+      (mem_of_closed hs.isClosed).2 fun ε ε0 =>
         let ⟨g, gA, dist_fg⟩ := Metric.mem_closure_iff.1 hf ε ε0
         ⟨g x, in_s g x gA, lt_of_le_of_lt (dist_coe_le_dist _) dist_fg⟩)
     (H.closure' continuous_coe)

@@ -130,11 +130,15 @@ lemma HasLimitProcess.mul [Mul E] [ContinuousMul E] (hX : HasLimitProcess X 𝓕
     HasLimitProcess (X * Y) 𝓕 P :=
   hX.comp₂ hY continuous_mul
 
-@[to_additive sub]
-lemma HasLimitProcess.div' [Div E] [ContinuousDiv E] (hX : HasLimitProcess X 𝓕 P)
+@[to_additive]
+lemma HasLimitProcess.div [Div E] [ContinuousDiv E] (hX : HasLimitProcess X 𝓕 P)
     (hY : HasLimitProcess Y 𝓕 P) :
     HasLimitProcess (X / Y) 𝓕 P :=
   hX.comp₂ hY continuous_div'
+
+@[deprecated (since := "2026-11-23"),
+  to_additive existing _root_.MeasureTheory.Filtration.HasLimitProcess.sub]
+alias HasLimitProcess.div' := MeasureTheory.Filtration.HasLimitProcess.div
 
 lemma HasLimitProcess.prodMk (hX : HasLimitProcess X 𝓕 P) (hZ : HasLimitProcess Z 𝓕 P) :
     HasLimitProcess (fun t ω ↦ (X t ω, Z t ω)) 𝓕 P :=
@@ -280,12 +284,16 @@ lemma limitProcess_mul [Zero E] [Mul E] [ContinuousMul E]
   hX.limitProcess_comp₂ continuous_mul hY
 
 @[to_fun limitProcess_fun_div']
-lemma limitProcess_div' [Zero E] [Div E] [ContinuousDiv E]
+lemma limitProcess_div [Zero E] [Div E] [ContinuousDiv E]
     (hX : HasLimitProcess X 𝓕 P) (hY : HasLimitProcess Y 𝓕 P) :
     𝓕.limitProcess (X / Y) P =ᵐ[P] 𝓕.limitProcess X P / 𝓕.limitProcess Y P :=
   hX.limitProcess_comp₂ continuous_div' hY
 
-attribute [to_additive limitProcess_sub] limitProcess_div'
+attribute [to_additive] limitProcess_div
+
+@[deprecated (since := "2026-11-23"),
+  to_additive existing _root_.MeasureTheory.Filtration.limitProcess_sub]
+alias limitProcess_div' := MeasureTheory.Filtration.limitProcess_div
 attribute [to_additive limitProcess_fun_sub] limitProcess_fun_div'
 
 lemma limitProcess_prodMk [Zero E] (hX : HasLimitProcess X 𝓕 P) (hY : HasLimitProcess Y 𝓕 P) :

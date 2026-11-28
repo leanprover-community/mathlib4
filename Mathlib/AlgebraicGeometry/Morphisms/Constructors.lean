@@ -234,12 +234,12 @@ lemma universally_isZariskiLocalAtSource (P : MorphismProperty Scheme)
   refine .mk_of_iff_of_zeroHypercover ?_
   intro X Y f 𝒰
   refine ⟨fun hf i ↦ ?_, fun hf ↦ ?_⟩
-  · apply MorphismProperty.universally_mk'
+  · apply MorphismProperty.universally_mk
     intro T g _
     rw [← P.cancel_left_of_respectsIso (pullbackLeftPullbackSndIso g f _).hom,
       pullbackLeftPullbackSndIso_hom_fst]
     exact IsZariskiLocalAtSource.comp (hf _ _ _ (IsPullback.of_hasPullback ..)) _
-  · apply MorphismProperty.universally_mk'
+  · apply MorphismProperty.universally_mk
     intro T g _
     rw [IsZariskiLocalAtSource.iff_of_openCover (P := P) (𝒰.pullback₁ <| pullback.snd g f)]
     intro i

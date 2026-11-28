@@ -411,7 +411,7 @@ lemma exists_eval_ne_zero_of_coeff_finSuccEquiv_ne_zero_aux
     simp only [map_zero]
     rw [← Nat.sub_ne_zero_iff_lt] at hi
     exact hi.symm
-  simp_rw [eval_eq_eval_mv_eval', eval_one_map, Polynomial.eval_eq_sum_range' hdeg,
+  simp_rw [eval_eq_eval_mv_eval, eval_one_map, Polynomial.eval_eq_sum_range' hdeg,
     eval_zero, one_pow, mul_one, map_sum, Finset.sum_range_succ, Finset.sum_eq_zero aux, zero_add]
   contrapose hFn
   ext d
@@ -474,7 +474,7 @@ lemma exists_eval_ne_zero_of_totalDegree_le_card_aux {N : ℕ} {F : MvPolynomial
     obtain ⟨r₀, hr₀⟩ : ∃ r₀, Polynomial.eval r₀ φ ≠ 0 :=
       φ.exists_eval_ne_zero_of_natDegree_lt_card hφ₀ hφR
     use Fin.cons r₀ r
-    rwa [eval_eq_eval_mv_eval']
+    rwa [eval_eq_eval_mv_eval]
 
 /-- See `MvPolynomial.IsHomogeneous.eq_zero_of_forall_eval_eq_zero`
 for a version that assumes `Infinite R`. -/

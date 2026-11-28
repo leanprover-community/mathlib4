@@ -320,7 +320,7 @@ instance [Preorder ι] [∀ i, LT (β i)] [∀ i, DenselyOrdered (β i)] :
   inferInstanceAs (DenselyOrdered (Lex (∀ i : ιᵒᵈ, β (OrderDual.toDual i))))
 
 set_option backward.isDefEq.respectTransparency.types false in
-theorem Lex.noMaxOrder' [Preorder ι] [∀ i, LT (β i)] (i : ι) [NoMaxOrder (β i)] :
+theorem Lex.noMaxOrder [Preorder ι] [∀ i, LT (β i)] (i : ι) [NoMaxOrder (β i)] :
     NoMaxOrder (Lex (∀ i, β i)) :=
   ⟨fun a => by
     let ⟨b, hb⟩ := exists_gt (a i)
@@ -328,10 +328,14 @@ theorem Lex.noMaxOrder' [Preorder ι] [∀ i, LT (β i)] (i : ι) [NoMaxOrder (�
     exact ⟨Function.update a i b, i, fun j hj =>
       (Function.update_of_ne hj.ne b a).symm, by rwa [Function.update_self i b]⟩⟩
 
+@[deprecated (since := "2026-11-23")] alias Lex.noMaxOrder' := Pi.Lex.noMaxOrder
+
 set_option backward.isDefEq.respectTransparency.types false in
-theorem Colex.noMaxOrder' [Preorder ι] [∀ i, LT (β i)] (i : ι) [NoMaxOrder (β i)] :
+theorem Colex.noMaxOrder [Preorder ι] [∀ i, LT (β i)] (i : ι) [NoMaxOrder (β i)] :
     NoMaxOrder (Colex (∀ i, β i)) :=
-  Lex.noMaxOrder' (ι := ιᵒᵈ) i
+  Lex.noMaxOrder (ι := ιᵒᵈ) i
+
+@[deprecated (since := "2026-11-23")] alias Colex.noMaxOrder' := Pi.Colex.noMaxOrder
 
 instance [LinearOrder ι] [WellFoundedLT ι] [Nonempty ι] [∀ i, PartialOrder (β i)]
     [∀ i, NoMaxOrder (β i)] : NoMaxOrder (Lex (∀ i, β i)) :=

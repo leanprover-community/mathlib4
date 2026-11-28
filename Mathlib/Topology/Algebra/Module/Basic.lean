@@ -73,7 +73,7 @@ variable {R : Type*} {M : Type*} [Ring R] [TopologicalSpace R] [TopologicalSpace
 /-- If `M` is a topological module over `R` and `0` is a limit of invertible elements of `R`, then
 `⊤` is the only submodule of `M` with a nonempty interior.
 This is the case, e.g., if `R` is a nontrivially normed field. -/
-theorem Submodule.eq_top_of_nonempty_interior' [NeBot (𝓝[{ x : R | IsUnit x }] 0)]
+theorem Submodule.eq_top_of_nonempty_interior [NeBot (𝓝[{ x : R | IsUnit x }] 0)]
     (s : Submodule R M) (hs : (interior (s : Set M)).Nonempty) : s = ⊤ := by
   rcases hs with ⟨y, hy⟩
   refine Submodule.eq_top_iff'.2 fun x => ?_
@@ -85,6 +85,9 @@ theorem Submodule.eq_top_of_nonempty_interior' [NeBot (𝓝[{ x : R | IsUnit x }
     nonempty_of_mem (inter_mem (Filter.mem_map.1 (this hy)) self_mem_nhdsWithin)
   have hy' : y ∈ ↑s := mem_of_mem_nhds hy
   rwa [s.add_mem_iff_right hy', ← Units.smul_def, s.smul_mem_iff' u] at hu
+
+@[deprecated (since := "2026-11-23")]
+alias Submodule.eq_top_of_nonempty_interior' := Submodule.eq_top_of_nonempty_interior
 
 variable (R M) [IsDomain R]
 

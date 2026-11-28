@@ -44,7 +44,10 @@ variable {R : Type*} [CommMonoidWithZero R] {n : ℕ} (χ : DirichletCharacter R
 
 namespace DirichletCharacter
 
-lemma toUnitHom_eq_char' {a : ZMod n} (ha : IsUnit a) : χ a = χ.toUnitHom ha.unit := by simp
+lemma toUnitHom_eq_char {a : ZMod n} (ha : IsUnit a) : χ a = χ.toUnitHom ha.unit := by simp
+
+@[deprecated (since := "2026-11-23")]
+alias toUnitHom_eq_char' := DirichletCharacter.toUnitHom_eq_char
 
 lemma toUnitHom_inj (ψ : DirichletCharacter R n) : toUnitHom χ = toUnitHom ψ ↔ χ = ψ := by simp
 

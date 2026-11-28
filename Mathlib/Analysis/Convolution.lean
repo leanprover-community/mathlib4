@@ -272,7 +272,7 @@ theorem Integrable.convolution_integrand (hf : Integrable f ν) (hg : Integrable
   have h_meas : AEStronglyMeasurable (fun p : G × G => L (f p.2) (g (p.1 - p.2))) (μ.prod ν) :=
     hf.aestronglyMeasurable.convolution_integrand L hg.aestronglyMeasurable
   have h2_meas : AEStronglyMeasurable (fun y : G => ∫ x : G, ‖L (f y) (g (x - y))‖ ∂μ) ν :=
-    h_meas.prod_swap.norm.integral_prod_right'
+    h_meas.prod_swap.norm.integral_prod_right
   simp_rw [integrable_prod_iff' h_meas]
   refine ⟨Eventually.of_forall fun t => (L (f t)).integrable_comp (hg.comp_sub_right t), ?_⟩
   refine Integrable.mono' ?_ h2_meas
@@ -520,7 +520,7 @@ variable [MeasurableAdd₂ G] [MeasurableNeg G] [SFinite μ] [IsAddRightInvarian
 protected theorem AEStronglyMeasurable.convolution (hf : AEStronglyMeasurable f μ)
     (hg : AEStronglyMeasurable g μ) : AEStronglyMeasurable (f ⋆[L, μ] g) μ := by
   suffices AEStronglyMeasurable (fun ⟨x, t⟩ ↦ g (x - t)) (μ.prod μ) from
-    (L.aestronglyMeasurable_comp₂ hf.comp_snd this).integral_prod_right'
+    (L.aestronglyMeasurable_comp₂ hf.comp_snd this).integral_prod_right
   exact hg.comp_quasiMeasurePreserving (quasiMeasurePreserving_sub_of_right_invariant μ μ)
 
 theorem Integrable.integrable_convolution (hf : Integrable f μ)
@@ -947,7 +947,7 @@ theorem convolution_assoc (hL : ∀ (x : E) (y : E') (z : E''), L₂ (L x y) z =
     exact quasiMeasurePreserving_sub_left_of_right_invariant μ _
   have h2_meas :
       AEStronglyMeasurable (fun y => ∫ x, ‖L₃ (f y) (L₄ (g x) (k (x₀ - y - x)))‖ ∂μ) ν :=
-    h_meas.prod_swap.norm.integral_prod_right'
+    h_meas.prod_swap.norm.integral_prod_right
   have h3 : map (fun z : G × G => (z.1 - z.2, z.2)) (μ.prod ν) = μ.prod ν :=
     (measurePreserving_sub_prod μ ν).map_eq
   suffices Integrable (uncurry fun x y => L₃ (f y) (L₄ (g x) (k (x₀ - y - x)))) (μ.prod ν) by

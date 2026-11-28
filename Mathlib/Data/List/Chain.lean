@@ -496,7 +496,7 @@ variable {r}
 
 /-- If an `r`-decreasing chain `l` is empty or its head is accessible by `r`, then
   `l` is accessible by the lexicographic order `List.Lex r`. -/
-theorem Acc.list_chain' {l : List.chains r} (acc : ∀ a ∈ l.val.head?, Acc r a) :
+theorem Acc.list_chain {l : List.chains r} (acc : ∀ a ∈ l.val.head?, Acc r a) :
     Acc (List.lex_chains r) l := by
   obtain ⟨_ | ⟨a, l⟩, hl⟩ := l
   · apply Acc.intro; rintro ⟨_⟩ ⟨_⟩
@@ -526,6 +526,8 @@ theorem Acc.list_chain' {l : List.chains r} (acc : ∀ a ∈ l.val.head?, Acc r 
       · apply ih b hr
       · apply ihl ⟨m, (List.isChain_cons.1 hm).2⟩ hr
 
+@[deprecated (since := "2026-11-23")] alias Acc.list_chain' := Acc.list_chain
+
 /-- If `r` is well-founded, the lexicographic order on `r`-decreasing chains is also. -/
 instance WellFounded.list_chain' [WellFounded r] : WellFounded (List.lex_chains r) :=
-  ⟨fun _ ↦ Acc.list_chain' (fun _ _ => ‹WellFounded r›.apply _)⟩
+  ⟨fun _ ↦ Acc.list_chain (fun _ _ => ‹WellFounded r›.apply _)⟩

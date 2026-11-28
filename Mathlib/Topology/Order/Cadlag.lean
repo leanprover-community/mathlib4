@@ -270,10 +270,13 @@ lemma IsCadlag.mul [Mul Y] [ContinuousMul Y] (hf : IsCadlag f) (hg : IsCadlag g)
     IsCadlag (f * g) :=
   hf.continuous_comp₂ hg continuous_mul
 
-@[to_additive (attr := to_fun (attr := to_dual)) sub]
-lemma IsCadlag.div' [Div Y] [ContinuousDiv Y] (hf : IsCadlag f) (hg : IsCadlag g) :
+@[to_additive (attr := to_fun (attr := to_dual))]
+lemma IsCadlag.div [Div Y] [ContinuousDiv Y] (hf : IsCadlag f) (hg : IsCadlag g) :
     IsCadlag (f / g) :=
   hf.continuous_comp₂ hg continuous_div'
+
+@[deprecated (since := "2026-11-23"), to_additive existing _root_.IsCadlag.sub]
+alias IsCadlag.div' := IsCadlag.div
 
 @[to_fun (attr := to_dual (attr := to_additive))]
 lemma IsCadlag.const_smul {R : Type*} [SMul R Y] [ContinuousConstSMul R Y] (c : R)

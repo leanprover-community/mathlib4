@@ -32,12 +32,14 @@ end
 
 /-- If `ringChar R = 2`, where `R` is a finite reduced commutative ring,
 then every `a : R` is a square. -/
-theorem isSquare_of_charTwo' {R : Type*} [Finite R] [CommRing R] [IsReduced R] [CharP R 2]
+theorem isSquare_of_charTwo {R : Type*} [Finite R] [CommRing R] [IsReduced R] [CharP R 2]
     (a : R) : IsSquare a := by
   cases nonempty_fintype R
   exact
     Exists.imp (fun b h => pow_two b ▸ Eq.symm h)
       (((Fintype.bijective_iff_injective_and_card _).mpr ⟨frobenius_inj R 2, rfl⟩).surjective a)
+
+@[deprecated (since := "2026-11-23")] alias isSquare_of_charTwo' := isSquare_of_charTwo
 
 variable {R : Type*} [CommRing R] [IsReduced R]
 

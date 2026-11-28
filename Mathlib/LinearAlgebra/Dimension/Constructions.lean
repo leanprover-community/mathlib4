@@ -130,7 +130,7 @@ theorem rank_add_rank_le_rank_prod [Nontrivial R] :
   conv_lhs => simp only [Module.rank_def]
   rw [Cardinal.ciSup_add_ciSup _ bddAbove_of_small _ bddAbove_of_small]
   exact ciSup_le fun ⟨s, hs⟩ ↦ ciSup_le fun ⟨t, ht⟩ ↦
-    (linearIndependent_inl_union_inr' hs ht).cardinal_le_rank
+    (linearIndependent_inl_union_inr hs ht).cardinal_le_rank
 
 theorem lift_rank_add_lift_rank_le_rank_prod [Nontrivial R] :
     lift.{v'} (Module.rank R M) + lift.{v} (Module.rank R M') ≤ Module.rank R (M × M') := by

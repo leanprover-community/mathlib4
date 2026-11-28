@@ -230,21 +230,27 @@ noncomputable instance instStructureDirectLimit : L.Structure (DirectLimit G f) 
   inferInstanceAs <| L.Structure (Quotient (DirectLimit.setoid G f))
 
 @[simp]
-theorem funMap_quotient_mk'_sigma_mk' {n : ℕ} {F : L.Functions n} {i : ι} {x : Fin n → G i} :
+theorem funMap_quotient_mk'_sigma_mk {n : ℕ} {F : L.Functions n} {i : ι} {x : Fin n → G i} :
     funMap F (fun a => (⟦.mk f i (x a)⟧ : DirectLimit G f)) = ⟦.mk f i (funMap F x)⟧ := by
-  simp only [funMap_quotient_mk', Quotient.eq]
+  simp only [funMap_quotient_mk, Quotient.eq]
   obtain ⟨k, ik, jk⟩ :=
     directed_of (· ≤ ·) i (Classical.choose (Finite.bddAbove_range fun _ : Fin n => i))
   refine ⟨k, jk, ik, ?_⟩
   simp only [Embedding.map_fun, comp_unify]
   rfl
 
+@[deprecated (since := "2026-11-23")]
+alias funMap_quotient_mk'_sigma_mk' := FirstOrder.Language.DirectLimit.funMap_quotient_mk'_sigma_mk
+
 @[simp]
-theorem relMap_quotient_mk'_sigma_mk' {n : ℕ} {R : L.Relations n} {i : ι} {x : Fin n → G i} :
+theorem relMap_quotient_mk'_sigma_mk {n : ℕ} {R : L.Relations n} {i : ι} {x : Fin n → G i} :
     RelMap R (fun a => (⟦.mk f i (x a)⟧ : DirectLimit G f)) = RelMap R x := by
-  rw [relMap_quotient_mk']
+  rw [relMap_quotient_mk]
   rw [relMap_equiv_unify G f R (fun a => .mk f i (x a)) i (fun _ ⟨_, hj⟩ => le_of_eq hj.symm)]
   rw [unify_sigma_mk_self]
+
+@[deprecated (since := "2026-11-23")]
+alias relMap_quotient_mk'_sigma_mk' := FirstOrder.Language.DirectLimit.relMap_quotient_mk'_sigma_mk
 
 set_option backward.isDefEq.respectTransparency false in
 theorem exists_quotient_mk'_sigma_mk'_eq {α : Type*} [Finite α] (x : α → DirectLimit G f) :
@@ -272,12 +278,12 @@ noncomputable def of (i : ι) : G i ↪[L] DirectLimit G f where
     obtain ⟨j, h1, _, h3⟩ := h
     exact (f i j h1).injective h3
   map_fun' F x := by
-    rw [← funMap_quotient_mk'_sigma_mk']
+    rw [← funMap_quotient_mk'_sigma_mk]
     rfl
   map_rel' := by
     intro n R x
     change RelMap R (fun a => (⟦.mk f i (x a)⟧ : DirectLimit G f)) ↔ _
-    simp only [relMap_quotient_mk'_sigma_mk']
+    simp only [relMap_quotient_mk'_sigma_mk]
 
 
 
@@ -348,22 +354,25 @@ noncomputable def lift (g : ∀ i, G i ↪[L] P) (Hg : ∀ i j hij x, g j (f i j
   map_fun' F x := by
     obtain ⟨i, y, rfl⟩ := exists_quotient_mk'_sigma_mk'_eq G f x
     change _ = funMap F (Quotient.lift _ _ ∘ Quotient.mk _ ∘ Structure.Sigma.mk f i ∘ y)
-    rw [funMap_quotient_mk'_sigma_mk', ← Function.comp_assoc, Quotient.lift_comp_mk]
+    rw [funMap_quotient_mk'_sigma_mk, ← Function.comp_assoc, Quotient.lift_comp_mk]
     simp only [Quotient.lift_mk, Embedding.map_fun]
     rfl
   map_rel' R x := by
     obtain ⟨i, y, rfl⟩ := exists_quotient_mk'_sigma_mk'_eq G f x
     change RelMap R (Quotient.lift _ _ ∘ Quotient.mk _ ∘ Structure.Sigma.mk f i ∘ y) ↔ _
-    rw [relMap_quotient_mk'_sigma_mk' G f, ← (g i).map_rel R y, ← Function.comp_assoc,
+    rw [relMap_quotient_mk'_sigma_mk G f, ← (g i).map_rel R y, ← Function.comp_assoc,
       Quotient.lift_comp_mk]
     rfl
 
 variable (g : ∀ i, G i ↪[L] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
 
 @[simp]
-theorem lift_quotient_mk'_sigma_mk' {i} (x : G i) : lift L ι G f g Hg ⟦.mk f i x⟧ = (g i) x := by
+theorem lift_quotient_mk'_sigma_mk {i} (x : G i) : lift L ι G f g Hg ⟦.mk f i x⟧ = (g i) x := by
   change (lift L ι G f g Hg).toFun ⟦.mk f i x⟧ = _
   simp only [lift, Quotient.lift_mk]
+
+@[deprecated (since := "2026-11-23")]
+alias lift_quotient_mk'_sigma_mk' := FirstOrder.Language.DirectLimit.lift_quotient_mk'_sigma_mk
 
 theorem lift_of {i} (x : G i) : lift L ι G f g Hg (of L ι G f i x) = g i x := by simp
 

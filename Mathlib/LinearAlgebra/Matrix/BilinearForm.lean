@@ -497,9 +497,13 @@ theorem nondegenerate_toBilin'_iff_det_ne_zero {M : Matrix ι ι A} :
     M.toBilin'.Nondegenerate ↔ M.det ≠ 0 := by
   rw [Matrix.nondegenerate_toBilin'_iff, Matrix.nondegenerate_iff_det_ne_zero]
 
-theorem nondegenerate_toBilin'_of_det_ne_zero' (M : Matrix ι ι A) (h : M.det ≠ 0) :
+theorem nondegenerate_toBilin'_of_det_ne_zero (M : Matrix ι ι A) (h : M.det ≠ 0) :
     M.toBilin'.Nondegenerate :=
   nondegenerate_toBilin'_iff_det_ne_zero.mpr h
+
+@[deprecated (since := "2026-11-23")]
+alias nondegenerate_toBilin'_of_det_ne_zero' :=
+  LinearMap.BilinForm.nondegenerate_toBilin'_of_det_ne_zero
 
 theorem nondegenerate_iff_det_ne_zero {B : BilinForm A M₂} (b : Basis ι A M₂) :
     B.Nondegenerate ↔ (BilinForm.toMatrix b B).det ≠ 0 := by

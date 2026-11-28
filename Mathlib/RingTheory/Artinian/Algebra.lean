@@ -47,9 +47,13 @@ theorem isUnit_iff_nonZeroDivisor_of_isIntegral {a : A}
 
 /-- In an `R`-algebra over an Artinian ring `R`, if an element is integral and
 is not a zero divisor, then it is a unit. -/
-theorem isUnit_of_nonZeroDivisor_of_isIntegral' [Algebra.IsIntegral R A] {a : A}
+theorem isUnit_of_nonZeroDivisor_of_isIntegral [Algebra.IsIntegral R A] {a : A}
     (ha : a ∈ A⁰) : IsUnit a :=
   isUnit_of_isIntegral_of_nonZeroDivisor (R := R) (Algebra.IsIntegral.isIntegral a) ha
+
+@[deprecated (since := "2026-11-23")]
+alias isUnit_of_nonZeroDivisor_of_isIntegral' :=
+  IsArtinianRing.isUnit_of_nonZeroDivisor_of_isIntegral
 
 /-- Integral element of an algebra over Artinian ring `R` is either a zero divisor or a unit. -/
 theorem isUnit_iff_nonZeroDivisor_of_isIntegral' [Algebra.IsIntegral R A] {a : A} :

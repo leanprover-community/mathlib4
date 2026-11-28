@@ -37,8 +37,11 @@ theorem Applicative.map_seq_map (f : α → β → γ) (g : σ → β) (x : F α
     f <$> x <*> g <$> y = ((· ∘ g) ∘ f) <$> x <*> y := by
   simp [functor_norm, Function.comp_def]
 
-theorem Applicative.pure_seq_eq_map' (f : α → β) : ((pure f : F (α → β)) <*> ·) = (f <$> ·) := by
+theorem Applicative.pure_seq_eq_map (f : α → β) : ((pure f : F (α → β)) <*> ·) = (f <$> ·) := by
   simp [functor_norm]
+
+@[deprecated (since := "2026-11-23")]
+alias Applicative.pure_seq_eq_map' := Applicative.pure_seq_eq_map
 
 set_option linter.overlappingInstances false in
 theorem Applicative.ext {F} :

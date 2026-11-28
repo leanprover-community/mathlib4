@@ -48,7 +48,7 @@ variable {α β γ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β
 /-- Composition of two kernels. -/
 noncomputable def comp (η : Kernel β γ) (κ : Kernel α β) : Kernel α γ where
   toFun a := (κ a).bind η
-  measurable' := (Measure.measurable_bind' η.measurable).comp κ.measurable
+  measurable' := (Measure.measurable_bind η.measurable).comp κ.measurable
 
 @[inherit_doc]
 scoped[ProbabilityTheory] infixl:100 " ∘ₖ " => ProbabilityTheory.Kernel.comp

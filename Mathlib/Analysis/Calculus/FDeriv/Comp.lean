@@ -117,9 +117,11 @@ theorem DifferentiableWithinAt.comp' {g : F → G} {t : Set F}
   hg.comp x (hf.mono inter_subset_left) inter_subset_right
 
 @[fun_prop]
-theorem DifferentiableAt.fun_comp' {f : E → F} {g : F → G} (hg : DifferentiableAt 𝕜 g (f x))
+theorem DifferentiableAt.fun_comp {f : E → F} {g : F → G} (hg : DifferentiableAt 𝕜 g (f x))
     (hf : DifferentiableAt 𝕜 f x) : DifferentiableAt 𝕜 (fun x ↦ g (f x)) x :=
   (hg.hasFDerivAt.comp x hf.hasFDerivAt).differentiableAt
+
+@[deprecated (since := "2026-11-23")] alias DifferentiableAt.fun_comp' := DifferentiableAt.fun_comp
 
 @[fun_prop]
 theorem DifferentiableAt.comp {g : F → G} (hg : DifferentiableAt 𝕜 g (f x))

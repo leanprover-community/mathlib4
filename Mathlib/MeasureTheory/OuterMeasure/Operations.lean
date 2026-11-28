@@ -188,9 +188,11 @@ theorem smul_iSup {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ �
 end Supremum
 
 @[mono, gcongr]
-theorem mono'' {m₁ m₂ : OuterMeasure α} {s₁ s₂ : Set α} (hm : m₁ ≤ m₂) (hs : s₁ ⊆ s₂) :
+theorem mono' {m₁ m₂ : OuterMeasure α} {s₁ s₂ : Set α} (hm : m₁ ≤ m₂) (hs : s₁ ⊆ s₂) :
     m₁ s₁ ≤ m₂ s₂ :=
   (hm s₁).trans (m₂.mono hs)
+
+@[deprecated (since := "2026-11-23")] alias mono'' := MeasureTheory.OuterMeasure.mono'
 
 /-- The pushforward of `m` along `f`. The outer measure on `s` is defined to be `m (f ⁻¹' s)`. -/
 def map {β} (f : α → β) : OuterMeasure α →ₗ[ℝ≥0∞] OuterMeasure β where

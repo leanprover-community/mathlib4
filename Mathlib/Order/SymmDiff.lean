@@ -339,8 +339,10 @@ theorem symmDiff_symmDiff_cancel_left : a ∆ (a ∆ b) = b := by simp [← symm
 theorem symmDiff_symmDiff_cancel_right : b ∆ a ∆ a = b := by simp [symmDiff_assoc]
 
 @[simp]
-theorem symmDiff_symmDiff_self' : a ∆ b ∆ a = b := by
+theorem symmDiff_symmDiff_self : a ∆ b ∆ a = b := by
   rw [symmDiff_comm, symmDiff_symmDiff_cancel_left]
+
+@[deprecated (since := "2026-11-23")] alias symmDiff_symmDiff_self' := symmDiff_symmDiff_self
 
 theorem symmDiff_left_involutive (a : α) : Involutive (· ∆ a) :=
   symmDiff_symmDiff_cancel_right _

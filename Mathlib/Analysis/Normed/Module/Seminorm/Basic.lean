@@ -641,13 +641,17 @@ theorem closedBall_eq_biInter_ball (x r) : closedBall p x r = ⋂ ρ > r, ball p
   ext y; simp_rw [mem_closedBall, mem_iInter₂, mem_ball, ← forall_gt_iff_le]
 
 @[simp]
-theorem ball_zero' (x : E) (hr : 0 < r) : ball (0 : Seminorm 𝕜 E) x r = Set.univ := by
+theorem ball_zero (x : E) (hr : 0 < r) : ball (0 : Seminorm 𝕜 E) x r = Set.univ := by
   rw [Set.eq_univ_iff_forall, ball]
   simp [hr]
 
+@[deprecated (since := "2026-11-23")] alias ball_zero' := Seminorm.ball_zero
+
 @[simp]
-theorem closedBall_zero' (x : E) (hr : 0 < r) : closedBall (0 : Seminorm 𝕜 E) x r = Set.univ :=
-  eq_univ_of_subset (ball_subset_closedBall _ _ _) (ball_zero' x hr)
+theorem closedBall_zero (x : E) (hr : 0 < r) : closedBall (0 : Seminorm 𝕜 E) x r = Set.univ :=
+  eq_univ_of_subset (ball_subset_closedBall _ _ _) (ball_zero x hr)
+
+@[deprecated (since := "2026-11-23")] alias closedBall_zero' := Seminorm.closedBall_zero
 
 theorem ball_smul (p : Seminorm 𝕜 E) {c : NNReal} (hc : 0 < c) (r : ℝ) (x : E) :
     (c • p).ball x r = p.ball x (r / c) := by
@@ -778,12 +782,12 @@ theorem closedBall_zero_eq_preimage_closedBall {r : ℝ} :
 
 @[simp]
 theorem ball_bot {r : ℝ} (x : E) (hr : 0 < r) : ball (⊥ : Seminorm 𝕜 E) x r = Set.univ :=
-  ball_zero' x hr
+  ball_zero x hr
 
 @[simp]
 theorem closedBall_bot {r : ℝ} (x : E) (hr : 0 < r) :
     closedBall (⊥ : Seminorm 𝕜 E) x r = Set.univ :=
-  closedBall_zero' x hr
+  closedBall_zero x hr
 
 /-- Seminorm-balls at the origin are balanced. -/
 theorem balanced_ball_zero (r : ℝ) : Balanced 𝕜 (ball p 0 r) := by

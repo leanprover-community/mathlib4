@@ -276,7 +276,7 @@ theorem sum_bernoulli (n : ℕ) :
       zero_add, choose_one_right, cast_succ, bernoulli'_one]
     ring
 
-theorem bernoulli_spec' (n : ℕ) :
+theorem bernoulli_spec (n : ℕ) :
     (∑ k ∈ antidiagonal n, ((k.1 + k.2).choose k.2 : ℚ) / (k.2 + 1) * bernoulli k.1) =
       if n = 0 then 1 else 0 := by
   cases n with | zero => simp | succ n =>
@@ -297,6 +297,8 @@ theorem bernoulli_spec' (n : ℕ) :
   · simp [field, h₃]
     norm_num
 
+@[deprecated (since := "2026-11-23")] alias bernoulli_spec' := bernoulli_spec
+
 /-- The exponential generating function for the Bernoulli numbers `bernoulli n`. -/
 def bernoulliPowerSeries :=
   mk fun n => algebraMap ℚ A (bernoulli n / n !)
@@ -313,7 +315,7 @@ theorem bernoulliPowerSeries_mul_exp_sub_one : bernoulliPowerSeries A * (exp A -
   have hfact : ∀ m, (m ! : ℚ) ≠ 0 := fun m => mod_cast factorial_ne_zero m
   have hite2 : ite (n.succ = 0) 1 0 = (0 : ℚ) := ite_eq_right n.succ_ne_zero
   simp only [CharP.cast_eq_zero, zero_add, inv_one, map_one, sub_self, mul_zero]
-  rw [← map_zero (algebraMap ℚ A), ← zero_div (n.succ ! : ℚ), ← hite2, ← bernoulli_spec', sum_div]
+  rw [← map_zero (algebraMap ℚ A), ← zero_div (n.succ ! : ℚ), ← hite2, ← bernoulli_spec, sum_div]
   refine congr_arg (algebraMap ℚ A) (sum_congr rfl fun x h => eq_div_of_mul_eq (hfact n.succ) ?_)
   rw [mem_antidiagonal] at h
   rw [← h, add_choose, cast_div_charZero (factorial_mul_factorial_dvd_factorial_add _ _)]

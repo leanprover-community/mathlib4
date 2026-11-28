@@ -244,7 +244,7 @@ alias fib_dvd := isDvdSequence_fib
 theorem fib_succ_eq_sum_choose :
     ∀ n : ℕ, fib (n + 1) = ∑ p ∈ Finset.antidiagonal n, choose p.1 p.2 :=
   twoStepInduction rfl rfl fun n h1 h2 => by
-    rw [fib_add_two, h1, h2, Finset.Nat.antidiagonal_succ_succ', Finset.Nat.antidiagonal_succ']
+    rw [fib_add_two, h1, h2, Finset.Nat.antidiagonal_succ_succ, Finset.Nat.antidiagonal_succ']
     simp [choose_succ_succ, Finset.sum_add_distrib, add_left_comm]
 
 theorem fib_succ_eq_succ_sum (n : ℕ) : fib (n + 1) = (∑ k ∈ Finset.range n, fib k) + 1 := by

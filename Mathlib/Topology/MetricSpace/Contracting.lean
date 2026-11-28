@@ -261,13 +261,17 @@ theorem fixedPoint_unique' {x y} (hx : IsFixedPt f x) (hy : IsFixedPt f y) : x =
 
 /-- Let `f` be a contracting map with constant `K`; let `g` be another map uniformly
 `C`-close to `f`. If `x` and `y` are their fixed points, then `dist x y ≤ C / (1 - K)`. -/
-theorem dist_fixedPoint_fixedPoint_of_dist_le' (g : α → α) {x y} (hx : IsFixedPt f x)
+theorem dist_fixedPoint_fixedPoint_of_dist_le (g : α → α) {x y} (hx : IsFixedPt f x)
     (hy : IsFixedPt g y) {C} (hfg : ∀ z, dist (f z) (g z) ≤ C) : dist x y ≤ C / (1 - K) :=
   calc
     dist x y = dist y x := dist_comm x y
     _ ≤ dist y (f y) / (1 - K) := hf.dist_le_of_fixedPoint y hx
     _ = dist (f y) (g y) / (1 - K) := by rw [hy.eq, dist_comm]
     _ ≤ C / (1 - K) := (div_le_div_iff_of_pos_right hf.one_sub_K_pos).2 (hfg y)
+
+@[deprecated (since := "2026-11-23")]
+alias dist_fixedPoint_fixedPoint_of_dist_le' :=
+  ContractingWith.dist_fixedPoint_fixedPoint_of_dist_le
 
 variable [Nonempty α] [CompleteSpace α]
 
@@ -307,7 +311,7 @@ theorem tendsto_iterate_fixedPoint (x) :
 
 theorem fixedPoint_lipschitz_in_map {g : α → α} (hg : ContractingWith K g) {C}
     (hfg : ∀ z, dist (f z) (g z) ≤ C) : dist (fixedPoint f hf) (fixedPoint g hg) ≤ C / (1 - K) :=
-  hf.dist_fixedPoint_fixedPoint_of_dist_le' g hf.fixedPoint_isFixedPt hg.fixedPoint_isFixedPt hfg
+  hf.dist_fixedPoint_fixedPoint_of_dist_le g hf.fixedPoint_isFixedPt hg.fixedPoint_isFixedPt hfg
 
 end
 

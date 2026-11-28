@@ -230,7 +230,7 @@ lemma mul_scaleRoots_of_noZeroDivisors (p q : R[X]) (r : R) [NoZeroDivisors R] :
   apply mul_scaleRoots'
   simp only [ne_eq, mul_eq_zero, leadingCoeff_eq_zero, hp, hq, or_self, not_false_eq_true]
 
-lemma pow_scaleRoots' (p : R[X]) (r : R) (n : ℕ)
+lemma pow_scaleRoots (p : R[X]) (r : R) (n : ℕ)
     (hp : p.leadingCoeff ^ n ≠ 0) :
     (p ^ n).scaleRoots r = p.scaleRoots r ^ n := by
   induction n with
@@ -240,13 +240,15 @@ lemma pow_scaleRoots' (p : R[X]) (r : R) (n : ℕ)
     · refine mt (by simp +contextual [pow_succ]) hp
     · rwa [leadingCoeff_pow' (mt (by simp +contextual [pow_succ]) hp), ← pow_succ]
 
+@[deprecated (since := "2026-11-23")] alias pow_scaleRoots' := Polynomial.pow_scaleRoots
+
 lemma pow_scaleRoots_of_isReduced [IsReduced R] (p : R[X]) (r : R) (n : ℕ) :
     (p ^ n).scaleRoots r = p.scaleRoots r ^ n := by
   by_cases hp : p = 0
   · simp [hp, zero_pow_eq, apply_ite (scaleRoots · r)]
   by_cases hn : n = 0
   · simp [hn]
-  exact pow_scaleRoots' _ _ _ (by simp_all)
+  exact pow_scaleRoots _ _ _ (by simp_all)
 
 lemma add_scaleRoots_of_natDegree_eq (p q : R[X]) (r : R) (h : natDegree p = natDegree q) :
     r ^ (natDegree p - natDegree (p + q)) • (p + q).scaleRoots r =
@@ -342,7 +344,7 @@ lemma rootMultiplicity_scaleRoots (p : R[X]) {r a : R} (hr : IsLeftRegular r) :
   obtain ⟨q, e, hq⟩ := exists_eq_pow_rootMultiplicity_mul_and_not_dvd p hp a
   have hq0 : q ≠ 0 := by contrapose hp; simp_all
   conv_lhs => rw [e]
-  rw [mul_scaleRoots', pow_scaleRoots', X_sub_C_scaleRoots, mul_comm, mul_comm _ (q.scaleRoots r),
+  rw [mul_scaleRoots', pow_scaleRoots, X_sub_C_scaleRoots, mul_comm, mul_comm _ (q.scaleRoots r),
     rootMultiplicity_mul_X_sub_C_pow (q.scaleRoots_ne_zero hq0 _)]
   · rw [dvd_iff_isRoot, IsRoot.def] at hq
     simp only [Nat.add_eq_right, rootMultiplicity_eq_zero_iff, IsRoot.def]

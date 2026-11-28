@@ -334,7 +334,7 @@ if for any continuous map `f : X → Y`, a point `x : X`, and a neighbourhood `s
 there exists a compact neighbourhood `K ∈ 𝓝 x` such that `f` maps `K` to `s`.
 
 This is a technical assumption that appears in several theorems,
-most notably in `ContinuousMap.continuous_comp'` and `ContinuousMap.continuous_eval`.
+most notably in `ContinuousMap.continuous_comp` and `ContinuousMap.continuous_eval`.
 It is satisfied in two cases:
 
 - if `X` is a locally compact topological space, for obvious reasons;

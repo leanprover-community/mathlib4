@@ -116,6 +116,8 @@ theorem div_smul_div_comm [Group G] [GroupWithZero G₀] [MulAction G G₀]
   rw [eq_div_iff_mul_eq this, smul_mul_smul_comm]
   simp [hb]
 
-@[simp] theorem smul_zpow₀' [Group G] [GroupWithZero G₀] [MulDistribMulAction G G₀]
+@[simp] theorem smul_zpow₀ [Group G] [GroupWithZero G₀] [MulDistribMulAction G G₀]
     (g : G) (x : G₀) (n : ℤ) : g • (x ^ n) = (g • x) ^ n := by
   cases n <;> simp
+
+@[deprecated (since := "2026-11-23")] alias smul_zpow₀' := smul_zpow₀

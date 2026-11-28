@@ -686,7 +686,7 @@ lemma IsPurelyInseparable.exists_pow_pow_mem_range_tensorProduct_of_expChar
       rw [← IsScalarTower.algebraMap_apply, Algebra.TensorProduct.algebraMap_apply,
         Algebra.TensorProduct.tmul_one_eq_one_tmul, ha]
   · subst hq
-    have : CharZero k := charZero_of_expChar_one' k
+    have : CharZero k := charZero_of_expChar_one k
     exact ⟨0, (Algebra.TensorProduct.includeLeft_surjective R _ <|
       IsPurelyInseparable.surjective_algebraMap_of_isSeparable k K) _⟩
 

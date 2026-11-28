@@ -51,7 +51,7 @@ instance descendsAlong_universallyClosed_surjective_inf_flat_inf_quasicompact :
   refine IsZariskiLocalAtTarget.descendsAlong_inf_quasiCompact _ _ ?_ ?_
   · rw [inf_comm]
     exact inf_le_inf le_rfl (IsLocalIso.le_of_isZariskiLocalAtSource _)
-  refine fun {R} S Y φ g ⟨_, _⟩ hfst ↦ ⟨universally_mk' _ _ fun {T} f _ s hs ↦ ?_⟩
+  refine fun {R} S Y φ g ⟨_, _⟩ hfst ↦ ⟨universally_mk _ _ fun {T} f _ s hs ↦ ?_⟩
   let p := pullback.fst (pullback.fst (Spec.map φ) f) (pullback.fst (Spec.map φ) g)
   let r : pullback (pullback.fst (Spec.map φ) f) (pullback.fst (Spec.map φ) g) ⟶ pullback f g :=
     pullback.map _ _ _ _ (pullback.snd _ _) (pullback.snd _ _) (Spec.map φ) (pullback.condition ..)
@@ -70,7 +70,7 @@ instance descendsAlong_universallyOpen_surjective_inf_flat_inf_quasicompact :
   refine IsZariskiLocalAtTarget.descendsAlong_inf_quasiCompact _ _ ?_ ?_
   · rw [inf_comm]
     exact inf_le_inf le_rfl (IsLocalIso.le_of_isZariskiLocalAtSource _)
-  refine fun {R} S Y φ g ⟨_, _⟩ hfst ↦ ⟨universally_mk' _ _ fun {T} f _ s hs ↦ ?_⟩
+  refine fun {R} S Y φ g ⟨_, _⟩ hfst ↦ ⟨universally_mk _ _ fun {T} f _ s hs ↦ ?_⟩
   let p := pullback.fst (pullback.fst (Spec.map φ) f) (pullback.fst (Spec.map φ) g)
   let r : pullback (pullback.fst (Spec.map φ) f) (pullback.fst (Spec.map φ) g) ⟶ pullback f g :=
     pullback.map _ _ _ _ (pullback.snd _ _) (pullback.snd _ _) (Spec.map φ) (pullback.condition ..)

@@ -46,9 +46,12 @@ theorem norm_add_sq_eq_norm_sq_add_norm_sq_iff_angle_eq_pi_div_two (x y : V) :
   exact inner_eq_zero_iff_angle_eq_pi_div_two x y
 
 /-- Pythagorean theorem, vector angle form. -/
-theorem norm_add_sq_eq_norm_sq_add_norm_sq' (x y : V) (h : angle x y = π / 2) :
+theorem norm_add_sq_eq_norm_sq_add_norm_sq (x y : V) (h : angle x y = π / 2) :
     ‖x + y‖ * ‖x + y‖ = ‖x‖ * ‖x‖ + ‖y‖ * ‖y‖ :=
   (norm_add_sq_eq_norm_sq_add_norm_sq_iff_angle_eq_pi_div_two x y).2 h
+
+@[deprecated (since := "2026-11-23")]
+alias norm_add_sq_eq_norm_sq_add_norm_sq' := InnerProductGeometry.norm_add_sq_eq_norm_sq_add_norm_sq
 
 /-- Pythagorean theorem, subtracting vectors, if-and-only-if vector angle form. -/
 theorem norm_sub_sq_eq_norm_sq_add_norm_sq_iff_angle_eq_pi_div_two (x y : V) :
@@ -57,9 +60,12 @@ theorem norm_sub_sq_eq_norm_sq_add_norm_sq_iff_angle_eq_pi_div_two (x y : V) :
   exact inner_eq_zero_iff_angle_eq_pi_div_two x y
 
 /-- Pythagorean theorem, subtracting vectors, vector angle form. -/
-theorem norm_sub_sq_eq_norm_sq_add_norm_sq' (x y : V) (h : angle x y = π / 2) :
+theorem norm_sub_sq_eq_norm_sq_add_norm_sq (x y : V) (h : angle x y = π / 2) :
     ‖x - y‖ * ‖x - y‖ = ‖x‖ * ‖x‖ + ‖y‖ * ‖y‖ :=
   (norm_sub_sq_eq_norm_sq_add_norm_sq_iff_angle_eq_pi_div_two x y).2 h
+
+@[deprecated (since := "2026-11-23")]
+alias norm_sub_sq_eq_norm_sq_add_norm_sq' := InnerProductGeometry.norm_sub_sq_eq_norm_sq_add_norm_sq
 
 /-- An angle in a right-angled triangle expressed using `arccos`. -/
 theorem angle_add_eq_arccos_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) :

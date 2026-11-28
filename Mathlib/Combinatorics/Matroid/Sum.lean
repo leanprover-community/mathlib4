@@ -128,7 +128,7 @@ protected def sigma (M : (i : ι) → Matroid (α i)) : Matroid ((i : ι) × α 
     intro j
     obtain (rfl | hij) := eq_or_ne i j
     · rwa [sigma_mk_preimage_image_eq_self, union_eq_self_of_subset_left hII₀]
-    rw [sigma_mk_preimage_image' hij, union_empty]
+    rw [sigma_mk_preimage_image hij, union_empty]
     apply hI
   · exact fun i ↦ by simpa using preimage_mono (f := Sigma.mk i) h'
   · exact fun ⟨i, x⟩ hx ↦ by simpa using hIX i hx

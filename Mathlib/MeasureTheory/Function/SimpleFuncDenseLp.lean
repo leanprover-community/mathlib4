@@ -419,8 +419,10 @@ section Instances
 
 
 
-protected theorem eq' {f g : Lp.simpleFunc E p μ} : (f : α →ₘ[μ] E) = (g : α →ₘ[μ] E) → f = g :=
+protected theorem eq {f g : Lp.simpleFunc E p μ} : (f : α →ₘ[μ] E) = (g : α →ₘ[μ] E) → f = g :=
   Subtype.ext ∘ Subtype.ext
+
+@[deprecated (since := "2026-11-23")] protected alias eq' := MeasureTheory.Lp.simpleFunc.eq
 
 /-! Implementation note:  If `Lp.simpleFunc E p μ` were defined as a `𝕜`-submodule of `Lp E p μ`,
 then the next few lemmas, putting a normed `𝕜`-group structure on `Lp.simpleFunc E p μ`, would be
@@ -557,7 +559,7 @@ protected theorem memLp (f : Lp.simpleFunc E p μ) : MemLp (toSimpleFunc f) p μ
 
 theorem toLp_toSimpleFunc (f : Lp.simpleFunc E p μ) :
     toLp (toSimpleFunc f) (simpleFunc.memLp f) = f :=
-  simpleFunc.eq' (Classical.choose_spec f.property)
+  simpleFunc.eq (Classical.choose_spec f.property)
 
 theorem toSimpleFunc_toLp (f : α →ₛ E) (hfi : MemLp f p μ) : toSimpleFunc (toLp f hfi) =ᵐ[μ] f := by
   rw [← AEEqFun.mk_eq_mk]; exact Classical.choose_spec (toLp f hfi).property

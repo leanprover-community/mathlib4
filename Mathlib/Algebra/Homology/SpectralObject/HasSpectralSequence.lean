@@ -127,12 +127,15 @@ lemma le₂₃' (r : ℤ) (hr : r₀ ≤ r) (pq' : κ)
     i₂ ≤ i₃ := by
   simpa only [hi₂, hi₃] using data.le₂₃ r pq'
 
-lemma le₃₃' {r r' : ℤ} (hrr' : r + 1 = r') (hr : r₀ ≤ r) (pq' : κ)
+lemma le₃₃ {r r' : ℤ} (hrr' : r + 1 = r') (hr : r₀ ≤ r) (pq' : κ)
     {i₃ i₃' : ι}
     (hi₃ : i₃ = data.i₃ r pq')
     (hi₃' : i₃' = data.i₃ r' pq') :
     i₃ ≤ i₃' := by
   simpa only [hi₃, hi₃'] using data.monotone_i₃ r r' pq'
+
+@[deprecated (since := "2026-11-23")]
+alias le₃₃' := CategoryTheory.Abelian.SpectralObject.SpectralSequenceDataCore.le₃₃
 
 end SpectralSequenceDataCore
 

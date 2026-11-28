@@ -42,7 +42,7 @@ theorem smul_sum [Zero β] [AddCommMonoid M] [DistribSMul R M] {v : α →₀ β
   Finset.smul_sum
 
 @[simp]
-theorem sum_smul_index_semilinearMap' [Semiring R] [Semiring R₂] [AddCommMonoid M] [Module R M]
+theorem sum_smul_index_semilinearMap [Semiring R] [Semiring R₂] [AddCommMonoid M] [Module R M]
     [AddCommMonoid M₂] [Module R₂ M₂] {σ : R →+* R₂} {v : α →₀ M} {c : R} {h : α → M →ₛₗ[σ] M₂} :
     ((c • v).sum fun a => h a) = σ c • v.sum fun a => h a := by
   rw [Finsupp.sum_smul_index', Finsupp.smul_sum]
@@ -50,10 +50,16 @@ theorem sum_smul_index_semilinearMap' [Semiring R] [Semiring R₂] [AddCommMonoi
   · intro i
     exact (h i).map_zero
 
-theorem sum_smul_index_linearMap' [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid M₂]
+@[deprecated (since := "2026-11-23")]
+alias sum_smul_index_semilinearMap' := Finsupp.sum_smul_index_semilinearMap
+
+theorem sum_smul_index_linearMap [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid M₂]
     [Module R M₂] {v : α →₀ M} {c : R} {h : α → M →ₗ[R] M₂} :
     ((c • v).sum fun a => h a) = c • v.sum fun a => h a :=
-  sum_smul_index_semilinearMap'
+  sum_smul_index_semilinearMap
+
+@[deprecated (since := "2026-11-23")]
+alias sum_smul_index_linearMap' := Finsupp.sum_smul_index_linearMap
 
 end SMul
 

@@ -453,7 +453,7 @@ open Algebra
 
 variable (pb : PowerBasis K L)
 
-theorem det_traceMatrix_ne_zero' [Algebra.IsSeparable K L] : det (traceMatrix K pb.basis) ≠ 0 := by
+theorem det_traceMatrix_ne_zero [Algebra.IsSeparable K L] : det (traceMatrix K pb.basis) ≠ 0 := by
   suffices algebraMap K (AlgebraicClosure L) (det (traceMatrix K pb.basis)) ≠ 0 by
     refine mt (fun ht => ?_) this
     rw [ht, map_zero]
@@ -467,6 +467,8 @@ theorem det_traceMatrix_ne_zero' [Algebra.IsSeparable K L] : det (traceMatrix K 
     rintro i ⟨_, j, hij, h⟩
     exact (Finset.mem_Ioi.mp hij).ne' (e.injective <| pb.algHom_ext h)
   · rw [AlgHom.card, pb.finrank]
+
+@[deprecated (since := "2026-11-23")] alias det_traceMatrix_ne_zero' := det_traceMatrix_ne_zero
 
 theorem det_traceForm_ne_zero [Algebra.IsSeparable K L] [Fintype ι] [DecidableEq ι]
     (b : Basis ι K L) :
@@ -488,7 +490,7 @@ theorem det_traceForm_ne_zero [Algebra.IsSeparable K L] [Fintype ι] [DecidableE
       _ = 1 := by
         simp only [Basis.toMatrix_mul_toMatrix_flip, Matrix.transpose_one, Matrix.mul_one,
           Matrix.det_one]
-  simpa only [traceMatrix_of_basis] using det_traceMatrix_ne_zero' pb
+  simpa only [traceMatrix_of_basis] using det_traceMatrix_ne_zero pb
 
 variable (K L)
 

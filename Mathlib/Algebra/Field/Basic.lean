@@ -56,8 +56,10 @@ theorem add_div_eq_mul_add_div (a b : K) (hc : c ≠ 0) : a + b / c = (a * c + b
 theorem add_div' (a b c : K) (hc : c ≠ 0) : b + a / c = (b * c + a) / c := by
   rw [add_div, mul_div_cancel_right₀ _ hc]
 
-theorem div_add' (a b c : K) (hc : c ≠ 0) : a / c + b = (a + b * c) / c := by
+theorem div_add (a b c : K) (hc : c ≠ 0) : a / c + b = (a + b * c) / c := by
   rwa [add_comm, add_div', add_comm]
+
+@[deprecated (since := "2026-11-23")] alias div_add' := div_add
 
 protected theorem Commute.div_add_div (hbc : Commute b c) (hbd : Commute b d) (hb : b ≠ 0)
     (hd : d ≠ 0) : a / b + c / d = (a * d + b * c) / (b * d) := by
@@ -189,8 +191,10 @@ theorem inv_sub_inv {a b : K} (ha : a ≠ 0) (hb : b ≠ 0) : a⁻¹ - b⁻¹ = 
 theorem sub_div' {a b c : K} (hc : c ≠ 0) : b - a / c = (b * c - a) / c := by
   simpa using div_sub_div b a one_ne_zero hc
 
-theorem div_sub' {a b c : K} (hc : c ≠ 0) : a / c - b = (a - c * b) / c := by
+theorem div_sub {a b c : K} (hc : c ≠ 0) : a / c - b = (a - c * b) / c := by
   simpa using div_sub_div a b hc one_ne_zero
+
+@[deprecated (since := "2026-11-23")] alias div_sub' := div_sub
 
 -- see Note [lower instance priority]
 instance (priority := 100) Field.isDomain : IsDomain K :=

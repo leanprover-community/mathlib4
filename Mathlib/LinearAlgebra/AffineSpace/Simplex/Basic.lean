@@ -210,7 +210,7 @@ lemma affineCombination_mem_affineSpan_faceOpposite_iff {n : ℕ} [NeZero n] {s 
 def map {n : ℕ} (s : Affine.Simplex k P n) (f : P →ᵃ[k] P₂) (hf : Function.Injective f) :
     Affine.Simplex k P₂ n where
   points := f ∘ s.points
-  independent := s.independent.map' f hf
+  independent := s.independent.map f hf
 
 @[simp]
 theorem map_id {n : ℕ} (s : Affine.Simplex k P n) :

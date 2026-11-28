@@ -45,7 +45,7 @@ theorem abs_re_le_norm (z : ℂ) : |z.re| ≤ ‖z‖ := by
 theorem re_le_norm (z : ℂ) : z.re ≤ ‖z‖ :=
   (abs_le.1 (abs_re_le_norm _)).2
 
-protected theorem norm_add_le' (z w : ℂ) : ‖z + w‖ ≤ ‖z‖ + ‖w‖ :=
+protected theorem norm_add_le (z w : ℂ) : ‖z + w‖ ≤ ‖z‖ + ‖w‖ :=
   (mul_self_le_mul_self_iff (Complex.norm_nonneg (z + w)) (add_nonneg (Complex.norm_nonneg z)
     (Complex.norm_nonneg w))).2 <| by
     rw [norm_mul_self_eq_normSq, add_mul_self_eq, norm_mul_self_eq_normSq, norm_mul_self_eq_normSq,
@@ -54,21 +54,27 @@ protected theorem norm_add_le' (z w : ℂ) : ‖z + w‖ ≤ ‖z‖ + ‖w‖ :
     gcongr
     exact re_le_norm (z * conj w)
 
+@[deprecated (since := "2026-11-23")] protected alias norm_add_le' := Complex.norm_add_le
+
 protected theorem norm_eq_zero_iff {z : ℂ} : ‖z‖ = 0 ↔ z = 0 :=
   (Real.sqrt_eq_zero <| normSq_nonneg _).trans normSq_eq_zero
 
-protected theorem norm_map_zero' : ‖(0 : ℂ)‖ = 0 :=
+protected theorem norm_map_zero : ‖(0 : ℂ)‖ = 0 :=
   Complex.norm_eq_zero_iff.mpr rfl
 
-protected theorem norm_neg' (z : ℂ) : ‖-z‖ = ‖z‖ := by
+@[deprecated (since := "2026-11-23")] protected alias norm_map_zero' := Complex.norm_map_zero
+
+protected theorem norm_neg (z : ℂ) : ‖-z‖ = ‖z‖ := by
   rw [Complex.norm_def, norm_def, normSq_neg]
+
+@[deprecated (since := "2026-11-23")] protected alias norm_neg' := Complex.norm_neg
 
 instance instNormedAddCommGroup : NormedAddCommGroup ℂ :=
   AddGroupNorm.toNormedAddCommGroup
   { toFun := norm
-    map_zero' := Complex.norm_map_zero'
-    add_le' := Complex.norm_add_le'
-    neg' := Complex.norm_neg'
+    map_zero' := Complex.norm_map_zero
+    add_le' := Complex.norm_add_le
+    neg' := Complex.norm_neg
     eq_zero_of_map_eq_zero' := fun _ ↦ Complex.norm_eq_zero_iff.mp }
 
 @[simp 1100]

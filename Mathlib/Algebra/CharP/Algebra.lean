@@ -120,9 +120,12 @@ lemma expChar_of_injective_algebraMap [CommSemiring R] [Semiring A] [Algebra R A
   expChar_of_injective_ringHom h q
 
 variable (R) in
-theorem ExpChar.of_injective_algebraMap' [CommRing R] [CommRing A]
+theorem ExpChar.of_injective_algebraMap [CommRing R] [CommRing A]
     [Algebra R A] [FaithfulSMul R A] (q : ℕ) [ExpChar R q] : ExpChar A q :=
   expChar_of_injective_ringHom (FaithfulSMul.algebraMap_injective R A) q
+
+@[deprecated (since := "2026-11-23")]
+alias ExpChar.of_injective_algebraMap' := ExpChar.of_injective_algebraMap
 
 namespace Subfield
 

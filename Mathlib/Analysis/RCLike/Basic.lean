@@ -423,8 +423,10 @@ theorem normSq_apply (z : K) : normSq z = re z * re z + im z * im z :=
 theorem norm_sq_eq_def {z : K} : ‖z‖ ^ 2 = re z * re z + im z * im z :=
   norm_sq_eq_def_ax z
 
-theorem normSq_eq_def' (z : K) : normSq z = ‖z‖ ^ 2 :=
+theorem normSq_eq_def (z : K) : normSq z = ‖z‖ ^ 2 :=
   norm_sq_eq_def.symm
+
+@[deprecated (since := "2026-11-23")] alias normSq_eq_def' := RCLike.normSq_eq_def
 
 @[rclike_simps]
 theorem normSq_zero : normSq (0 : K) = 0 :=
@@ -447,7 +449,7 @@ theorem normSq_pos {z : K} : 0 < normSq z ↔ z ≠ 0 := by
   rw [lt_iff_le_and_ne, Ne, eq_comm]; simp [normSq_nonneg]
 
 @[simp, rclike_simps]
-theorem normSq_neg (z : K) : normSq (-z) = normSq z := by simp only [normSq_eq_def', norm_neg]
+theorem normSq_neg (z : K) : normSq (-z) = normSq z := by simp only [normSq_eq_def, norm_neg]
 
 @[simp, rclike_simps]
 theorem normSq_conj (z : K) : normSq (conj z) = normSq z := by
@@ -480,7 +482,7 @@ theorem normSq_sub (z w : K) : normSq (z - w) = normSq z + normSq w - 2 * re (z 
   simp only [normSq_add, sub_eq_add_neg, map_neg, mul_neg, normSq_neg, map_neg]
 
 theorem sqrt_normSq_eq_norm {z : K} : √(normSq z) = ‖z‖ := by
-  rw [normSq_eq_def', Real.sqrt_sq (norm_nonneg _)]
+  rw [normSq_eq_def, Real.sqrt_sq (norm_nonneg _)]
 
 /-! ### Inversion -/
 
@@ -497,11 +499,11 @@ theorem inv_def (z : K) : z⁻¹ = conj z * ((‖z‖ ^ 2)⁻¹ : ℝ) := by
 
 @[simp, rclike_simps]
 theorem inv_re (z : K) : re z⁻¹ = re z / normSq z := by
-  rw [inv_def, normSq_eq_def', mul_comm, re_ofReal_mul, conj_re, div_eq_inv_mul]
+  rw [inv_def, normSq_eq_def, mul_comm, re_ofReal_mul, conj_re, div_eq_inv_mul]
 
 @[simp, rclike_simps]
 theorem inv_im (z : K) : im z⁻¹ = -im z / normSq z := by
-  rw [inv_def, normSq_eq_def', mul_comm, im_ofReal_mul, conj_im, div_eq_inv_mul]
+  rw [inv_def, normSq_eq_def, mul_comm, im_ofReal_mul, conj_im, div_eq_inv_mul]
 
 theorem div_re (z w : K) : re (z / w) = re z * re w / normSq w + im z * im w / normSq w := by
   simp only [div_eq_mul_inv, mul_assoc, sub_eq_add_neg, neg_mul, mul_neg, neg_neg,
@@ -705,7 +707,7 @@ lemma nnNorm_nsmul [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) :
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_nsmul := nnNorm_nsmul
 
-theorem mul_self_norm (z : K) : ‖z‖ * ‖z‖ = normSq z := by rw [normSq_eq_def', sq]
+theorem mul_self_norm (z : K) : ‖z‖ * ‖z‖ = normSq z := by rw [normSq_eq_def, sq]
 
 attribute [rclike_simps] norm_zero norm_one norm_eq_zero abs_norm norm_inv norm_div
 
@@ -1569,6 +1571,6 @@ namespace Function
 
 @[fun_prop]
 lemma isRadial_normSq {𝕜 : Type*} [RCLike 𝕜] : IsRadial (RCLike.normSq (K := 𝕜)) := by
-  simp [isRadial_def, RCLike.normSq_eq_def']
+  simp [isRadial_def, RCLike.normSq_eq_def]
 
 end Function

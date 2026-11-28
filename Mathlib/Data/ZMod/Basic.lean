@@ -77,8 +77,10 @@ theorem val_one' : (1 : ZMod 0).val = 1 :=
   rfl
 
 @[simp]
-theorem val_neg' {n : ZMod 0} : (-n).val = n.val :=
+theorem val_neg {n : ZMod 0} : (-n).val = n.val :=
   Int.natAbs_neg n
+
+@[deprecated (since := "2026-11-23")] alias val_neg' := ZMod.val_neg
 
 @[simp]
 theorem val_mul' {m n : ZMod 0} : (m * n).val = m.val * n.val :=
@@ -100,12 +102,14 @@ lemma val_ofNat_of_lt {n a : ℕ} [a.AtLeastTwo] (han : a < n) : (ofNat(a) : ZMo
   val_natCast_of_lt han
 
 set_option backward.isDefEq.respectTransparency false in
-theorem val_unit' {n : ZMod 0} : IsUnit n ↔ n.val = 1 := by
+theorem val_unit {n : ZMod 0} : IsUnit n ↔ n.val = 1 := by
   simp only [val]
   rw [Int.isUnit_iff, Int.natAbs_eq_iff, Nat.cast_one]
 
+@[deprecated (since := "2026-11-23")] alias val_unit' := ZMod.val_unit
+
 lemma eq_one_of_isUnit_natCast {n : ℕ} (h : IsUnit (n : ZMod 0)) : n = 1 := by
-  rw [← Nat.mod_zero n, ← val_natCast, val_unit'.mp h]
+  rw [← Nat.mod_zero n, ← val_natCast, val_unit.mp h]
 
 instance charP (n : ℕ) : CharP (ZMod n) n where
   cast_eq_zero_iff := by

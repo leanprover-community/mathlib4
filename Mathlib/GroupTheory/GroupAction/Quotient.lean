@@ -100,7 +100,7 @@ theorem Quotient.smul_coe [QuotientAction X H] (b : X) (g : G) :
 
 @[to_additive (attr := simp)]
 theorem Quotient.mk_smul_out [QuotientAction X H] (b : X) (q : G ⧸ H) :
-    QuotientGroup.mk (b • q.out) = b • q := by rw [← Quotient.smul_mk, QuotientGroup.out_eq']
+    QuotientGroup.mk (b • q.out) = b • q := by rw [← Quotient.smul_mk, QuotientGroup.out_eq]
 
 @[to_additive]
 theorem Quotient.coe_smul_out [QuotientAction X H] (b : X) (q : G ⧸ H) : ↑(b • q.out) = b • q := by
@@ -108,7 +108,7 @@ theorem Quotient.coe_smul_out [QuotientAction X H] (b : X) (q : G ⧸ H) : ↑(b
 
 theorem _root_.QuotientGroup.out_conj_pow_minimalPeriod_mem (g : G) (q : G ⧸ H) :
     q.out⁻¹ * g ^ Function.minimalPeriod (g • ·) q * q.out ∈ H := by
-  rw [mul_assoc, ← QuotientGroup.eq, QuotientGroup.out_eq', ← smul_eq_mul, Quotient.mk_smul_out,
+  rw [mul_assoc, ← QuotientGroup.eq, QuotientGroup.out_eq, ← smul_eq_mul, Quotient.mk_smul_out,
     eq_comm, pow_smul_eq_iff_minimalPeriod_dvd]
 
 end QuotientAction
@@ -460,7 +460,7 @@ theorem quotientCentralizerEmbedding_apply (g : G) (x : G) :
 of commutators. -/
 noncomputable def quotientCenterEmbedding {S : Set G} (hS : closure S = ⊤) :
     G ⧸ center G ↪ S → commutatorSet G :=
-  (quotientEquivOfEq (center_eq_infi' hS)).toEmbedding.trans
+  (quotientEquivOfEq (center_eq_infi hS)).toEmbedding.trans
     ((quotientiInfEmbedding _).trans
       (Function.Embedding.piCongrRight fun g => quotientCentralizerEmbedding (g : G)))
 

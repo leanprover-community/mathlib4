@@ -533,7 +533,7 @@ theorem eraseIdx_insertIdx_self {v : Vector α n} {i : Fin (n + 1)} :
   Subtype.ext (List.eraseIdx_insertIdx_self ..)
 
 /-- Erasing an element after inserting an element, at different indices. -/
-theorem eraseIdx_insertIdx' {v : Vector α (n + 1)} :
+theorem eraseIdx_insertIdx {v : Vector α (n + 1)} :
     ∀ {i : Fin (n + 1)} {j : Fin (n + 2)},
       eraseIdx (j.succAbove i) (insertIdx a j v) = insertIdx a (i.predAbove j) (eraseIdx i v)
   | ⟨i, hi⟩, ⟨j, hj⟩ => by
@@ -551,6 +551,8 @@ theorem eraseIdx_insertIdx' {v : Vector α (n + 1)} :
       · rfl
       · simpa
       · simpa [not_lt] using hij
+
+@[deprecated (since := "2026-11-23")] alias eraseIdx_insertIdx' := List.Vector.eraseIdx_insertIdx
 
 theorem insertIdx_comm (a b : α) (i j : Fin (n + 1)) (h : i ≤ j) :
     ∀ v : Vector α n,

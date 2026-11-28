@@ -67,7 +67,7 @@ lemma ConvexOn.lipschitzOnWith_of_abs_le (hf : ConvexOn ℝ (ball x₀ r) f) (h�
         gcongr
         · exact (le_abs_self _).trans <| hM _ hz
         · exact (neg_le_abs _).trans <| hM _ hx'
-  refine .of_dist_le' fun x hx y hy ↦ ?_
+  refine .of_dist_le fun x hx y hy ↦ ?_
   simp_rw [dist_eq_norm_sub, Real.norm_eq_abs, abs_sub_le_iff]
   exact ⟨oneside hx hy, norm_sub_rev x _ ▸ oneside hy hx⟩
 

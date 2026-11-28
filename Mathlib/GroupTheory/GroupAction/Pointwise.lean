@@ -18,7 +18,7 @@ import Mathlib.Data.Set.Function
 - `image_smul_setₛₗ` : under a `σ`-equivariant map,
   one has `f '' (c • s) = (σ c) • f '' s`.
 
-- `preimage_smul_setₛₗ'` is a general version of the equality
+- `preimage_smul_setₛₗ` is a general version of the equality
   `f ⁻¹' (σ c • s) = c • f⁻¹' s`.
   It requires that `c` acts surjectively and `σ c` acts injectively and
   is provided with specific versions:
@@ -63,7 +63,7 @@ while the scalar multiplication by `σ c` is injective. -/
 @[to_additive /-- General version of `preimage_vadd_setₛₗ`.
 This version assumes that the vector addition of `c` is surjective
 while the vector addition of `σ c` is injective. -/]
-theorem preimage_smul_setₛₗ' {c : M}
+theorem preimage_smul_setₛₗ {c : M}
     (hc : Function.Surjective (fun (m : α) ↦ c • m))
     (hc' : Function.Injective (fun (n : β) ↦ σ c • n)) :
     f ⁻¹' (σ c • t) = c • f ⁻¹' t := by
@@ -73,6 +73,9 @@ theorem preimage_smul_setₛₗ' {c : M}
   rw [map_smulₛₗ, hc'.eq_iff] at hxy
   subst y
   exact smul_mem_smul_set hy
+
+@[to_additive (attr := deprecated (since := "2026-11-23"))]
+alias preimage_smul_setₛₗ' := preimage_smul_setₛₗ
 
 end SMul
 
@@ -86,7 +89,7 @@ variable {M N F : Type*} {α β : Type*} {σ : M → N} [Monoid M] [Monoid N]
 @[to_additive]
 theorem preimage_smul_setₛₗ_of_isUnit_isUnit (f : F)
     (hc : IsUnit c) (hc' : IsUnit (σ c)) (t : Set β) : f ⁻¹' (σ c • t) = c • f ⁻¹' t :=
-  preimage_smul_setₛₗ' hc.smul_bijective.surjective hc'.smul_bijective.injective
+  preimage_smul_setₛₗ hc.smul_bijective.surjective hc'.smul_bijective.injective
 
 /-- `preimage_smul_setₛₗ` when `c` is a unit and `σ` is a monoid homomorphism. -/
 @[to_additive]

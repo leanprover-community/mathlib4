@@ -278,7 +278,7 @@ theorem ext_rat_on_pnat (same_on_neg_one : f (-1) = g (-1))
       show
         (.ofClass f : ℚ →*₀ M₀).comp (Int.castRingHom ℚ) =
           (.ofClass g : ℚ →*₀ M₀).comp (Int.castRingHom ℚ)
-        from ext_int' (by simpa) (by simpa)
+        from ext_int (by simpa) (by simpa)
 
 end Rat
 end MonoidWithZeroHomClass

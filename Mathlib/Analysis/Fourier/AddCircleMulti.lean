@@ -179,7 +179,7 @@ lemma measurePreserving_equivPiIoc :
     MeasurePreserving (measurableEquivPiIoc a).symm _ _).symm
   have := Measure.map_map (μ := volume.comap Subtype.val) (.of_eval
     (f := fun (x : d → ℝ) => (fun i => x i : UnitAddTorus d))
-    (fun i => AddCircle.measurable_mk'.comp (measurable_pi_apply i)))
+    (fun i => AddCircle.measurable_mk.comp (measurable_pi_apply i)))
     measurable_subtypeVal (α := {x : d → ℝ // ∀ i, x i ∈ Ioc (a i) (a i + 1)})
   simp only [Function.comp_def] at this
   simp_rw [coe_symm_measurableEquivPiIoc, ← this]

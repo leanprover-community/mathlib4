@@ -254,13 +254,15 @@ theorem ext_int {f g : ℤ →*₀ M} (h_neg_one : f (-1) = g (-1))
 end MonoidWithZeroHom
 
 /-- If two `MonoidWithZeroHom`s agree on `-1` and the _positive_ naturals then they are equal. -/
-theorem ext_int' [MonoidWithZero α] [FunLike F ℤ α] [MonoidWithZeroHomClass F ℤ α] {f g : F}
+theorem ext_int [MonoidWithZero α] [FunLike F ℤ α] [MonoidWithZeroHomClass F ℤ α] {f g : F}
     (h_neg_one : f (-1) = g (-1)) (h_pos : ∀ n : ℕ, 0 < n → f n = g n) : f = g :=
   (DFunLike.ext _ _) fun n =>
     haveI :=
       congr($(@MonoidWithZeroHom.ext_int _ _ (.ofClass f) (.ofClass g) h_neg_one <|
           MonoidWithZeroHom.ext_nat (h_pos _)) n)
     this
+
+@[deprecated (since := "2026-11-23")] alias ext_int' := ext_int
 
 section Group
 variable (α) [Group α] (β) [AddGroup β]

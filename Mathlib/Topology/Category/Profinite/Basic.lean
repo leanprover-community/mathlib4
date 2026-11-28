@@ -125,9 +125,11 @@ left adjoint to the inclusion functor.
 def CompHaus.toProfinite : CompHaus ⥤ Profinite :=
   Adjunction.leftAdjointOfEquiv Profinite.toCompHausEquivalence fun _ _ _ _ _ => rfl
 
-theorem CompHaus.toProfinite_obj' (X : CompHaus) :
+theorem CompHaus.toProfinite_obj (X : CompHaus) :
     ↥(CompHaus.toProfinite.obj X) = ConnectedComponents X :=
   rfl
+
+@[deprecated (since := "2026-11-23")] alias CompHaus.toProfinite_obj' := CompHaus.toProfinite_obj
 
 /-- Finite types are given the discrete topology. -/
 @[instance_reducible]

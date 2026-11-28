@@ -55,8 +55,8 @@ theorem toTensorAlgebra_gMul {i j} (a : (⨂[R]^i) M) (b : (⨂[R]^j) M) :
     TensorAlgebra.tprod_apply, LinearMap.comp_apply, LinearMap.compl₂_apply]
   refine Eq.trans ?_ List.prod_append
   congr
-  rw [List.ofFn_comp' _ (TensorAlgebra.ι R), List.ofFn_comp' _ (TensorAlgebra.ι R),
-    List.ofFn_comp' _ (TensorAlgebra.ι R), ← List.map_append, List.ofFn_fin_append]
+  rw [List.ofFn_comp _ (TensorAlgebra.ι R), List.ofFn_comp _ (TensorAlgebra.ι R),
+    List.ofFn_comp _ (TensorAlgebra.ι R), ← List.map_append, List.ofFn_fin_append]
 
 @[simp]
 theorem toTensorAlgebra_galgebra_toFun (r : R) :

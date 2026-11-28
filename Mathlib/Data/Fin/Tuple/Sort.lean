@@ -70,8 +70,10 @@ def graphEquiv₁ (f : Fin n → α) : Fin n ≃ graph f where
     simpa [graph, eq_comm, eqComm] using h
 
 @[simp]
-theorem proj_equiv₁' (f : Fin n → α) : graph.proj ∘ graphEquiv₁ f = f :=
+theorem proj_equiv₁ (f : Fin n → α) : graph.proj ∘ graphEquiv₁ f = f :=
   rfl
+
+@[deprecated (since := "2026-11-23")] alias proj_equiv₁' := Tuple.proj_equiv₁
 
 /-- `graphEquiv₂ f` is an equivalence between `Fin n` and `graph f` that respects the order.
 -/

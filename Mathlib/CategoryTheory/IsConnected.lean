@@ -37,7 +37,7 @@ We give some equivalent definitions:
   See `connected_zigzag` and `zigzag_connected`.
 - A nonempty category for which for any two objects there is a sequence of
   morphisms (some reversed) from one to the other.
-  See `exists_zigzag'` and `connected_of_zigzag`.
+  See `exists_zigzag` and `connected_of_zigzag`.
 
 We also prove the result that the functor given by `(X × -)` preserves any
 connected limit. That is, any limit of shape `J` where `J` is a connected
@@ -436,14 +436,16 @@ theorem zigzag_isPreconnected (h : ∀ j₁ j₂ : J, Zigzag j₁ j₂) : IsPrec
 theorem zigzag_isConnected [Nonempty J] (h : ∀ j₁ j₂ : J, Zigzag j₁ j₂) : IsConnected J :=
   { zigzag_isPreconnected h with }
 
-theorem exists_zigzag' [IsConnected J] (j₁ j₂ : J) :
+theorem exists_zigzag [IsConnected J] (j₁ j₂ : J) :
     ∃ l, List.IsChain Zag (j₁ :: l) ∧ List.getLast (j₁ :: l) (List.cons_ne_nil _ _) = j₂ :=
   List.exists_isChain_cons_of_relationReflTransGen (isPreconnected_zigzag _ _)
+
+@[deprecated (since := "2026-11-23")] alias exists_zigzag' := CategoryTheory.exists_zigzag
 
 /-- If any two objects in a nonempty category are linked by a sequence of (potentially reversed)
 morphisms, then J is connected.
 
-The converse of `exists_zigzag'`.
+The converse of `exists_zigzag`.
 -/
 theorem isPreconnected_of_zigzag (h : ∀ j₁ j₂ : J, ∃ l,
     List.IsChain Zag (j₁ :: l) ∧ List.getLast (j₁ :: l) (List.cons_ne_nil _ _) = j₂) :
@@ -456,7 +458,7 @@ theorem isPreconnected_of_zigzag (h : ∀ j₁ j₂ : J, ∃ l,
 /-- If any two objects in a nonempty category are linked by a sequence of (potentially reversed)
 morphisms, then J is connected.
 
-The converse of `exists_zigzag'`.
+The converse of `exists_zigzag`.
 -/
 theorem isConnected_of_zigzag [Nonempty J] (h : ∀ j₁ j₂ : J, ∃ l,
     List.IsChain Zag (j₁ :: l) ∧ List.getLast (j₁ :: l) (List.cons_ne_nil _ _) = j₂) :

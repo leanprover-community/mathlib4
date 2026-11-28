@@ -446,8 +446,12 @@ instance : TopologicalSpace (WithScott α) :=
 
 instance : IsScott (WithScott α) univ := ⟨rfl⟩
 
-lemma isOpen_iff_isUpperSet_and_scottHausdorff_open' {u : Set α} :
+lemma isOpen_iff_isUpperSet_and_scottHausdorff_open {u : Set α} :
     IsOpen (WithScott.ofScott ⁻¹' u) ↔ IsUpperSet u ∧ (scottHausdorff α univ).IsOpen u := Iff.rfl
+
+@[deprecated (since := "2026-11-23")]
+alias isOpen_iff_isUpperSet_and_scottHausdorff_open' :=
+  Topology.WithScott.isOpen_iff_isUpperSet_and_scottHausdorff_open
 
 end WithScott
 end Scott

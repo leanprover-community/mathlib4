@@ -455,7 +455,7 @@ public theorem minimax' : (⨅ x ∈ X, ⨆ y ∈ Y, f x y) = ⨆ y ∈ Y, ⨅ x
 include ne_X ne_Y cX cY kX kY hfx hfx' hfy hfy' in
 /-- The Sion-von Neumann minimax theorem (saddle point form),
 case of complete linear orders. -/
-public theorem exists_saddlePointOn' :
+public theorem exists_saddlePointOn :
     ∃ a ∈ X, ∃ b ∈ Y, IsSaddlePointOn X Y f a b := by
   have hlsc : LowerSemicontinuousOn (fun x => ⨆ y ∈ Y, f x y) X := fun x hx ↦ by
     apply lowerSemicontinuousWithinAt_iSup
@@ -473,6 +473,8 @@ public theorem exists_saddlePointOn' :
   refine le_trans (le_iInf₂ ha') ?_
   refine le_trans ?_ (iSup₂_le_iff.mpr hb')
   rw [minimax' ne_X cX kX hfy hfy' cY hfx hfx']
+
+@[deprecated (since := "2026-11-23")] alias exists_saddlePointOn' := Sion.exists_saddlePointOn
 
 end CompleteLinearOrder
 

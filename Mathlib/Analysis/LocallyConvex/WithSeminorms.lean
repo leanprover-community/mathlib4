@@ -101,7 +101,7 @@ theorem basisSets_singleton_mem (i : ι) {r : ℝ} (hr : 0 < r) : (p i).ball 0 r
 
 theorem basisSets_univ_mem : univ ∈ p.basisSets :=
   (basisSets_iff _).mpr ⟨∅, _, one_pos, by
-    rw [Finset.sup_empty, Seminorm.bot_eq_zero, ball_zero' _ one_pos]⟩
+    rw [Finset.sup_empty, Seminorm.bot_eq_zero, ball_zero _ one_pos]⟩
 
 theorem basisSets_nonempty : p.basisSets.Nonempty := by
   refine nonempty_def.mpr ⟨univ, basisSets_univ_mem _⟩

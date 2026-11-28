@@ -207,8 +207,10 @@ variable [Monoid M] [Group A] [MulDistribMulAction M A]
 @[simp] lemma smul_inv' (r : M) (x : A) : r • x⁻¹ = (r • x)⁻¹ :=
   (MulDistribMulAction.toMonoidHom A r).map_inv x
 
-lemma smul_div' (r : M) (x y : A) : r • (x / y) = r • x / r • y :=
+lemma smul_div (r : M) (x y : A) : r • (x / y) = r • x / r • y :=
   map_div (MulDistribMulAction.toMonoidHom A r) x y
+
+@[deprecated (since := "2026-11-23")] alias smul_div' := smul_div
 
 lemma smul_zpow' (r : M) (x : A) (z : ℤ) : r • (x ^ z) = (r • x) ^ z :=
   map_zpow (MulDistribMulAction.toMonoidHom A r) x z

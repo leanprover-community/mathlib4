@@ -321,11 +321,14 @@ variable {m m0 : MeasurableSpace α} {μ : Measure α}
 /-- We do not get `ae_fin_strongly_measurable f (μ.trim hm)`, since we don't have
 `f =ᵐ[μ.trim hm] Lp_meas_to_Lp_trim F 𝕜 p μ hm f` but only the weaker
 `f =ᵐ[μ] Lp_meas_to_Lp_trim F 𝕜 p μ hm f`. -/
-theorem lpMeas.ae_fin_strongly_measurable' (hm : m ≤ m0) (f : lpMeas F 𝕜 m p μ) (hp_ne_zero : p ≠ 0)
+theorem lpMeas.ae_fin_strongly_measurable (hm : m ≤ m0) (f : lpMeas F 𝕜 m p μ) (hp_ne_zero : p ≠ 0)
     (hp_ne_top : p ≠ ∞) :
     ∃ g, FinStronglyMeasurable g (μ.trim hm) ∧ f.val =ᵐ[μ] g :=
   ⟨lpMeasSubgroupToLpTrim F p μ hm f, Lp.finStronglyMeasurable _ hp_ne_zero hp_ne_top,
     (lpMeasSubgroupToLpTrim_ae_eq hm f).symm⟩
+
+@[deprecated (since := "2026-11-23")]
+alias lpMeas.ae_fin_strongly_measurable' := MeasureTheory.lpMeas.ae_fin_strongly_measurable
 
 /-- When applying the inverse of `lpMeasToLpTrimLie` (which takes a function in the Lp space of
 the sub-sigma algebra and returns its version in the larger Lp space) to an indicator of the

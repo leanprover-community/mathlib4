@@ -132,8 +132,10 @@ lemma hom_ext {M N : Bimod A B} (f g : M ⟶ N) (h : f.hom = g.hom) : f = g :=
   Hom.ext h
 
 @[simp]
-theorem id_hom' (M : Bimod A B) : (𝟙 M : Hom M M).hom = 𝟙 M.X :=
+theorem id_hom (M : Bimod A B) : (𝟙 M : Hom M M).hom = 𝟙 M.X :=
   rfl
+
+@[deprecated (since := "2026-11-23")] alias id_hom' := Bimod.id_hom
 
 @[simp]
 theorem comp_hom' {M N K : Bimod A B} (f : M ⟶ N) (g : N ⟶ K) :
@@ -222,7 +224,7 @@ theorem whiskerLeft_π_actLeft :
   erw [map_π_preserves_coequalizer_inv_colimMap (tensorLeft _)]
   simp only [Category.assoc]
 
-theorem one_act_left' : (η ▷ _) ≫ actLeft P Q = (λ_ _).hom := by
+theorem one_act_left : (η ▷ _) ≫ actLeft P Q = (λ_ _).hom := by
   refine (cancel_epi ((tensorLeft _).map (coequalizer.π _ _))).1 ?_
   dsimp [X]
   slice_lhs 1 2 => rw [whisker_exchange]
@@ -231,6 +233,8 @@ theorem one_act_left' : (η ▷ _) ≫ actLeft P Q = (λ_ _).hom := by
   slice_lhs 2 3 => rw [← comp_whiskerRight, one_actLeft]
   slice_rhs 1 2 => rw [leftUnitor_naturality]
   monoidal
+
+@[deprecated (since := "2026-11-23")] alias one_act_left' := Bimod.TensorBimod.one_act_left
 
 theorem left_assoc' :
     (μ ▷ _) ≫ actLeft P Q = (α_ R.X R.X _).hom ≫ (R.X ◁ actLeft P Q) ≫ actLeft P Q := by
@@ -343,7 +347,7 @@ noncomputable def tensorBimod {X Y Z : Mon C} (M : Bimod X Y) (N : Bimod Y Z) : 
   X := TensorBimod.X M N
   actLeft := TensorBimod.actLeft M N
   actRight := TensorBimod.actRight M N
-  one_actLeft := TensorBimod.one_act_left' M N
+  one_actLeft := TensorBimod.one_act_left M N
   actRight_one := TensorBimod.actRight_one' M N
   left_assoc := TensorBimod.left_assoc' M N
   right_assoc := TensorBimod.right_assoc' M N
@@ -460,7 +464,7 @@ noncomputable def hom :
       simp)
 
 set_option backward.isDefEq.respectTransparency false in
-theorem hom_left_act_hom' :
+theorem hom_left_act_hom :
     ((P.tensorBimod Q).tensorBimod L).actLeft ≫ hom P Q L =
       (R.X ◁ hom P Q L) ≫ (P.tensorBimod (Q.tensorBimod L)).actLeft := by
   dsimp; dsimp [hom, homAux]
@@ -485,8 +489,11 @@ theorem hom_left_act_hom' :
   slice_rhs 3 4 => erw [whisker_exchange]
   monoidal
 
+@[deprecated (since := "2026-11-23")]
+alias hom_left_act_hom' := Bimod.AssociatorBimod.hom_left_act_hom
+
 set_option backward.isDefEq.respectTransparency false in
-theorem hom_right_act_hom' :
+theorem hom_right_act_hom :
     ((P.tensorBimod Q).tensorBimod L).actRight ≫ hom P Q L =
       (hom P Q L ▷ U.X) ≫ (P.tensorBimod (Q.tensorBimod L)).actRight := by
   dsimp; dsimp [hom, homAux]
@@ -510,6 +517,9 @@ theorem hom_right_act_hom' :
   slice_rhs 3 4 =>
     rw [← whiskerLeft_comp, TensorBimod.π_tensor_id_actRight, whiskerLeft_comp, whiskerLeft_comp]
   monoidal
+
+@[deprecated (since := "2026-11-23")]
+alias hom_right_act_hom' := Bimod.AssociatorBimod.hom_right_act_hom
 
 /-- An auxiliary morphism for the definition of the underlying morphism of the inverse component of
 the associator isomorphism. -/
@@ -621,7 +631,7 @@ variable [∀ X : C, PreservesColimitsOfSize.{0, 0} (tensorLeft X)]
 variable [∀ X : C, PreservesColimitsOfSize.{0, 0} (tensorRight X)]
 
 set_option backward.isDefEq.respectTransparency false in
-theorem hom_left_act_hom' :
+theorem hom_left_act_hom :
     ((regular R).tensorBimod P).actLeft ≫ hom P = (R.X ◁ hom P) ≫ P.actLeft := by
   dsimp; dsimp [hom, TensorBimod.actLeft, regular]
   refine (cancel_epi ((tensorLeft _).map (coequalizer.π _ _))).1 ?_
@@ -631,8 +641,11 @@ theorem hom_left_act_hom' :
   slice_rhs 1 2 => rw [← whiskerLeft_comp, coequalizer.π_desc]
   rw [Iso.inv_hom_id_assoc]
 
+@[deprecated (since := "2026-11-23")]
+alias hom_left_act_hom' := Bimod.LeftUnitorBimod.hom_left_act_hom
+
 set_option backward.isDefEq.respectTransparency false in
-theorem hom_right_act_hom' :
+theorem hom_right_act_hom :
     ((regular R).tensorBimod P).actRight ≫ hom P = (hom P ▷ S.X) ≫ P.actRight := by
   dsimp; dsimp [hom, TensorBimod.actRight, regular]
   refine (cancel_epi ((tensorRight _).map (coequalizer.π _ _))).1 ?_
@@ -641,6 +654,9 @@ theorem hom_right_act_hom' :
   slice_rhs 1 2 => rw [← comp_whiskerRight, coequalizer.π_desc]
   slice_rhs 1 2 => rw [middle_assoc]
   simp only [Category.assoc]
+
+@[deprecated (since := "2026-11-23")]
+alias hom_right_act_hom' := Bimod.LeftUnitorBimod.hom_right_act_hom
 
 end LeftUnitorBimod
 
@@ -681,7 +697,7 @@ variable [∀ X : C, PreservesColimitsOfSize.{0, 0} (tensorLeft X)]
 variable [∀ X : C, PreservesColimitsOfSize.{0, 0} (tensorRight X)]
 
 set_option backward.isDefEq.respectTransparency false in
-theorem hom_left_act_hom' :
+theorem hom_left_act_hom :
     (P.tensorBimod (regular S)).actLeft ≫ hom P = (R.X ◁ hom P) ≫ P.actLeft := by
   dsimp; dsimp [hom, TensorBimod.actLeft, regular]
   refine (cancel_epi ((tensorLeft _).map (coequalizer.π _ _))).1 ?_
@@ -691,8 +707,11 @@ theorem hom_left_act_hom' :
   slice_rhs 1 2 => rw [← whiskerLeft_comp, coequalizer.π_desc]
   rw [Iso.inv_hom_id_assoc]
 
+@[deprecated (since := "2026-11-23")]
+alias hom_left_act_hom' := Bimod.RightUnitorBimod.hom_left_act_hom
+
 set_option backward.isDefEq.respectTransparency false in
-theorem hom_right_act_hom' :
+theorem hom_right_act_hom :
     (P.tensorBimod (regular S)).actRight ≫ hom P = (hom P ▷ S.X) ≫ P.actRight := by
   dsimp; dsimp [hom, TensorBimod.actRight, regular]
   refine (cancel_epi ((tensorRight _).map (coequalizer.π _ _))).1 ?_
@@ -701,6 +720,9 @@ theorem hom_right_act_hom' :
   slice_lhs 2 3 => rw [right_assoc]
   slice_rhs 1 2 => rw [← comp_whiskerRight, coequalizer.π_desc]
   rw [Iso.hom_inv_id_assoc]
+
+@[deprecated (since := "2026-11-23")]
+alias hom_right_act_hom' := Bimod.RightUnitorBimod.hom_right_act_hom
 
 end RightUnitorBimod
 
@@ -714,8 +736,8 @@ noncomputable def associatorBimod {W X Y Z : Mon C} (L : Bimod W X) (M : Bimod X
     { hom := AssociatorBimod.hom L M N
       inv := AssociatorBimod.inv L M N
       hom_inv_id := AssociatorBimod.hom_inv_id L M N
-      inv_hom_id := AssociatorBimod.inv_hom_id L M N } (AssociatorBimod.hom_left_act_hom' L M N)
-    (AssociatorBimod.hom_right_act_hom' L M N)
+      inv_hom_id := AssociatorBimod.inv_hom_id L M N } (AssociatorBimod.hom_left_act_hom L M N)
+    (AssociatorBimod.hom_right_act_hom L M N)
 
 /-- The left unitor as a bimodule isomorphism. -/
 noncomputable def leftUnitorBimod {X Y : Mon C} (M : Bimod X Y) : (regular X).tensorBimod M ≅ M :=
@@ -723,8 +745,8 @@ noncomputable def leftUnitorBimod {X Y : Mon C} (M : Bimod X Y) : (regular X).te
     { hom := LeftUnitorBimod.hom M
       inv := LeftUnitorBimod.inv M
       hom_inv_id := LeftUnitorBimod.hom_inv_id M
-      inv_hom_id := LeftUnitorBimod.inv_hom_id M } (LeftUnitorBimod.hom_left_act_hom' M)
-    (LeftUnitorBimod.hom_right_act_hom' M)
+      inv_hom_id := LeftUnitorBimod.inv_hom_id M } (LeftUnitorBimod.hom_left_act_hom M)
+    (LeftUnitorBimod.hom_right_act_hom M)
 
 /-- The right unitor as a bimodule isomorphism. -/
 noncomputable def rightUnitorBimod {X Y : Mon C} (M : Bimod X Y) : M.tensorBimod (regular Y) ≅ M :=
@@ -732,8 +754,8 @@ noncomputable def rightUnitorBimod {X Y : Mon C} (M : Bimod X Y) : M.tensorBimod
     { hom := RightUnitorBimod.hom M
       inv := RightUnitorBimod.inv M
       hom_inv_id := RightUnitorBimod.hom_inv_id M
-      inv_hom_id := RightUnitorBimod.inv_hom_id M } (RightUnitorBimod.hom_left_act_hom' M)
-    (RightUnitorBimod.hom_right_act_hom' M)
+      inv_hom_id := RightUnitorBimod.inv_hom_id M } (RightUnitorBimod.hom_left_act_hom M)
+    (RightUnitorBimod.hom_right_act_hom M)
 
 theorem whiskerLeft_id_bimod {X Y Z : Mon C} {M : Bimod X Y} {N : Bimod Y Z} :
     whiskerLeft M (𝟙 N) = 𝟙 (M.tensorBimod N) := by
