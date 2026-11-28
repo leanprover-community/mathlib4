@@ -206,6 +206,15 @@ theorem coe_iSup [SupSet α] (f : ι → α) (h : BddAbove (Set.range f)) :
 
 end Preorder
 
+@[to_dual WithBot.coe_csSup_le]
+lemma le_coe_csInf [ConditionallyCompleteLattice α] {s : Set α}
+    {a : WithTop α} (hs : s.Nonempty) (h : ∀ b ∈ s, a ≤ (b : WithTop α)) :
+    a ≤ (sInf s : α) := by
+  obtain ⟨b, hb⟩ := hs
+  obtain ⟨a, rfl, _⟩ := WithTop.le_coe_iff.mp (h b hb)
+  simp only [WithTop.coe_le_coe] at h ⊢
+  exact le_csInf ⟨b, hb⟩ h
+
 variable [ConditionallyCompleteLinearOrderBot α]
 
 /-- The `sSup` of a non-empty set is its least upper bound for a conditionally
