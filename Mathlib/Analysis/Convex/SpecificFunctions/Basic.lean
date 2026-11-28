@@ -183,10 +183,9 @@ theorem strictConvexOn_rpow {p : ℝ} (hp : 1 < p) : StrictConvexOn ℝ (Ici 0) 
   trans p * y ^ (p - 1)
   · have q : 0 < y - x := by rwa [sub_pos]
     rw [div_lt_iff₀ q, ← div_lt_div_iff_of_pos_right hy', _root_.sub_div, div_self hy'.ne',
-      ← div_rpow hx hy.le, sub_lt_comm, ← add_sub_cancel_right (x / y) 1, add_comm, add_sub_assoc,
-      ← div_mul_eq_mul_div, mul_div_assoc, ← rpow_sub hy, sub_sub_cancel_left, rpow_neg_one,
-      mul_assoc, ← div_eq_inv_mul, sub_eq_add_neg, ← mul_neg, ← neg_div, neg_sub, _root_.sub_div,
-      div_self hy.ne']
+      ← div_rpow hx hy.le, sub_lt_comm, ← add_sub_cancel 1 (x / y), ← div_mul_eq_mul_div,
+      mul_div_assoc, ← rpow_sub hy, sub_sub_cancel_left, rpow_neg_one, mul_assoc, ← div_eq_inv_mul,
+      sub_eq_add_neg, ← mul_neg, ← neg_div, neg_sub, _root_.sub_div, div_self hy.ne']
     apply one_add_mul_self_lt_rpow_one_add _ _ hp
     · rw [le_sub_iff_add_le, neg_add_cancel, div_nonneg_iff]
       exact Or.inl ⟨hx, hy.le⟩
@@ -194,9 +193,9 @@ theorem strictConvexOn_rpow {p : ℝ} (hp : 1 < p) : StrictConvexOn ℝ (Ici 0) 
       exact ((div_lt_one hy).mpr hxy).ne
   · have q : 0 < z - y := by rwa [sub_pos]
     rw [lt_div_iff₀ q, ← div_lt_div_iff_of_pos_right hy', _root_.sub_div, div_self hy'.ne',
-      ← div_rpow hz hy.le, lt_sub_iff_add_lt', ← add_sub_cancel_right (z / y) 1, add_comm _ 1,
-      add_sub_assoc, ← div_mul_eq_mul_div, mul_div_assoc, ← rpow_sub hy, sub_sub_cancel_left,
-      rpow_neg_one, mul_assoc, ← div_eq_inv_mul, _root_.sub_div, div_self hy.ne']
+      ← div_rpow hz hy.le, lt_sub_iff_add_lt', ← add_sub_cancel 1 (z / y), ← div_mul_eq_mul_div,
+      mul_div_assoc, ← rpow_sub hy, sub_sub_cancel_left, rpow_neg_one, mul_assoc, ← div_eq_inv_mul,
+      _root_.sub_div, div_self hy.ne']
     apply one_add_mul_self_lt_rpow_one_add _ _ hp
     · rw [le_sub_iff_add_le, neg_add_cancel, div_nonneg_iff]
       exact Or.inl ⟨hz, hy.le⟩
@@ -207,6 +206,34 @@ theorem convexOn_rpow {p : ℝ} (hp : 1 ≤ p) : ConvexOn ℝ (Ici 0) fun x : �
   rcases eq_or_lt_of_le hp with (rfl | hp)
   · simpa using! convexOn_id (convex_Ici _)
   exact (strictConvexOn_rpow hp).convexOn
+
+theorem strictConvexOn_rpow_of_neg {p : ℝ} (hp : p < 0) :
+    StrictConvexOn ℝ (Set.Ioi 0) fun x : ℝ ↦ x ^ p := by
+  apply strictConvexOn_of_slope_strict_mono_adjacent (convex_Ioi 0)
+  intro x y z (hx : 0 < x) (hz : 0 < z) hxy hyz
+  have hy := hx.trans hxy
+  have h1p : 1 < 1 - p := by rwa [lt_sub_comm, sub_self]
+  trans p * y ^ (p - 1)
+  · have hyx : 0 < y - x := by rwa [sub_pos]
+    rw [← add_sub_cancel 1 p, rpow_add hy, rpow_one, rpow_add hx, rpow_one, div_lt_iff₀ hyx]
+    have := one_add_mul_self_lt_rpow_one_add (s := y / x - 1) (by field_simp; grind)
+      (sub_ne_zero_of_ne (div_ne_one_of_ne hxy.ne')) h1p
+    rw [add_sub_cancel, ← inv_div, ← rpow_neg_eq_inv_rpow, div_rpow hx.le hy.le, neg_sub] at this
+    field_simp at this
+    grind
+  · have hzy : 0 < z - y := by rwa [sub_pos]
+    rw [← add_sub_cancel 1 p, rpow_add hy, rpow_one, rpow_add hz, rpow_one, lt_div_iff₀ hzy]
+    have := one_add_mul_self_lt_rpow_one_add (s := y / z - 1) (by field_simp; grind)
+      (sub_ne_zero_of_ne (div_ne_one_of_ne hyz.ne)) h1p
+    rw [add_sub_cancel, ← inv_div, ← rpow_neg_eq_inv_rpow, div_rpow hz.le hy.le, neg_sub] at this
+    field_simp at this
+    grind
+
+theorem convexOn_rpow_of_neg {p : ℝ} (hp : p ≤ 0) :
+    ConvexOn ℝ (Set.Ioi 0) fun x : ℝ ↦ x ^ p := by
+  rcases eq_or_lt_of_le hp with (rfl | hp)
+  · simpa using! convexOn_const 1 (convex_Ioi 0)
+  exact (strictConvexOn_rpow_of_neg hp).convexOn
 
 theorem convexOn_rpow_left {b : ℝ} (hb : 0 < b) : ConvexOn ℝ Set.univ (fun (x : ℝ) => b ^ x) := by
   convert! convexOn_exp.comp_linearMap (LinearMap.mul ℝ ℝ (Real.log b)) using 1
