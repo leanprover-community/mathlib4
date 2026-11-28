@@ -171,7 +171,7 @@ theorem le_inducedOuterMeasure {μ : OuterMeasure α} :
 `μ (s ∪ t) = μ s + μ t`, where `μ = inducedOuterMeasure m P0 m0`.
 
 E.g., if `α` is an (e)metric space and `P u = diam u < r`, then this lemma implies that
-`μ (s ∪ t) = μ s + μ t` on any two sets such that `r ≤ edist x y` for all `x ∈ s` and `y ∈ t`. -/
+`μ (s ∪ t) = μ s + μ t` on any two sets such that `r ≤ eDist x y` for all `x ∈ s` and `y ∈ t`. -/
 theorem inducedOuterMeasure_union_of_false_of_nonempty_inter {s t : Set α}
     (h : ∀ u, (s ∩ u).Nonempty → (t ∩ u).Nonempty → ¬P u) :
     inducedOuterMeasure m P0 m0 (s ∪ t) =

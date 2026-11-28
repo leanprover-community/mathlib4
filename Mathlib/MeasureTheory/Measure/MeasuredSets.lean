@@ -14,7 +14,7 @@ import Mathlib.Topology.MetricSpace.Lipschitz
 # Measured sets
 
 Consider a measure `μ` on a measurable space. One can define an extended distance on the space
-of measurable sets, by `edist s t := μ (s ∆ t)`. In this file, we introduce this definition
+of measurable sets, by `eDist s t := μ (s ∆ t)`. In this file, we introduce this definition
 on the type synonym `MeasuredSets μ`, and we prove that `μ` is a continuous function on this space.
 
 We also give a density criterion for this distance,
@@ -37,7 +37,7 @@ variable {α : Type*} [mα : MeasurableSpace α] {μ : Measure α}
 
 set_option linter.unusedVariables false in
 /-- The subtype of all measurable sets. We denote it as `MeasuredSets μ`, with an explicit but
-unused parameter `μ`, to be able to define a distance on it given by `edist s t = μ (s ∆ t)` -/
+unused parameter `μ`, to be able to define a distance on it given by `eDist s t = μ (s ∆ t)` -/
 @[nolint unusedArguments]
 def MeasuredSets (μ : Measure α) : Type _ := {s : Set α // MeasurableSet s}
 
@@ -46,36 +46,40 @@ instance : SetLike (MeasuredSets μ) α where
   coe_injective := Subtype.coe_injective
 
 noncomputable instance : PseudoEMetricSpace (MeasuredSets μ) where
-  edist s t := μ ((s : Set α) ∆ t)
-  edist_self := by simp
-  edist_comm := by grind
-  edist_triangle s t u := measure_symmDiff_le _ _ _
+  eDist s t := μ ((s : Set α) ∆ t)
+  eDist_self := by simp
+  eDist_comm := by grind
+  eDist_triangle s t u := measure_symmDiff_le _ _ _
 
-lemma MeasuredSets.edist_def (s t : MeasuredSets μ) : edist s t = μ ((s : Set α) ∆ t) := rfl
+lemma MeasuredSets.eDist_def (s t : MeasuredSets μ) : eDist s t = μ ((s : Set α) ∆ t) := rfl
+
+@[deprecated (since := "2026-11-27")] alias MeasuredSets.edist_def := MeasuredSets.eDist_def
 
 /-- Measure on `MeasuredSets` is a 1-lipschitz function.
 
 We cannot state this in terms of `LipschitzWith`, because `ℝ≥0∞` is not a `PseudoEMetricSpace`. -/
-lemma MeasuredSets.sub_le_edist (s t : MeasuredSets μ) : μ s - μ t ≤ edist s t :=
+lemma MeasuredSets.sub_le_eDist (s t : MeasuredSets μ) : μ s - μ t ≤ eDist s t :=
   le_measure_sdiff.trans <| measure_mono subset_union_left
 
+@[deprecated (since := "2026-11-27")] alias MeasuredSets.sub_le_edist := MeasuredSets.sub_le_eDist
+
 lemma MeasuredSets.continuous_measure : Continuous (fun (s : MeasuredSets μ) ↦ μ s) := by
-  refine continuous_of_le_add_edist 1 ENNReal.one_ne_top fun s t ↦ ?_
+  refine continuous_of_le_add_eDist 1 ENNReal.one_ne_top fun s t ↦ ?_
   rw [one_mul, ← tsub_le_iff_left]
-  exact sub_le_edist s t
+  exact sub_le_eDist s t
 
 noncomputable instance [IsFiniteMeasure μ] : PseudoMetricSpace (MeasuredSets μ) :=
   PseudoEMetricSpace.toPseudoMetricSpaceOfDist
     (fun s t ↦ μ.real ((s : Set α) ∆ t)) (fun s t ↦ ENNReal.toReal_nonneg)
-    (fun s t ↦ by simp [Measure.real, MeasuredSets.edist_def])
+    (fun s t ↦ by simp [Measure.real, MeasuredSets.eDist_def])
 
 lemma MeasuredSets.dist_def [IsFiniteMeasure μ] (s t : MeasuredSets μ) :
     dist s t = μ.real ((s : Set α) ∆ t) := rfl
 
 lemma MeasuredSets.real_sub_real_le_dist [IsFiniteMeasure μ] (s t : MeasuredSets μ) :
     μ.real s - μ.real t ≤ dist s t := by
-  grw [dist_edist, ← sub_le_edist]
-  exacts [ENNReal.le_toReal_sub (measure_ne_top _ _), edist_ne_top _ _]
+  grw [dist_eDist, ← sub_le_eDist]
+  exacts [ENNReal.le_toReal_sub (measure_ne_top _ _), eDist_ne_top _ _]
 
 lemma MeasuredSets.lipschitzWith_measureReal [IsFiniteMeasure μ] :
     LipschitzWith 1 (fun s : MeasuredSets μ ↦ μ.real s) :=
@@ -189,7 +193,7 @@ lemma dense_of_generateFrom_isSetRing [IsFiniteMeasure μ]
     ⟨t, tC, ht⟩
   have t_meas : MeasurableSet t := by rw [h]; exact measurableSet_generateFrom tC
   refine ⟨⟨t, t_meas⟩, ?_, tC⟩
-  simpa [MeasuredSets.edist_def] using! ht
+  simpa [MeasuredSets.eDist_def] using! ht
 
 /-- Given a semiring of sets `C` covering the space modulo `0` and generating the measurable space
 structure, finite unions of elements of `C` are dense among measurable sets. -/
@@ -201,7 +205,7 @@ lemma dense_of_generateFrom_isSetSemiring [IsFiniteMeasure μ]
   rintro s ε εpos
   rcases exists_measure_symmDiff_lt_of_generateFrom_isSetSemiring hC h'C h s.property εpos
     with ⟨t, tC, ht⟩
-  refine ⟨⟨t, ?_⟩, by simpa [MeasuredSets.edist_def] using! ht, tC⟩
+  refine ⟨⟨t, ?_⟩, by simpa [MeasuredSets.eDist_def] using! ht, tC⟩
   rw [h]
   exact measurableSet_generateFrom_of_mem_supClosure tC
 

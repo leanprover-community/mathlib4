@@ -94,17 +94,20 @@ protected theorem sub_left {f : α → E} {s : Set α} (hf : LocallyBoundedVaria
   rw [← variationOnFromTo.add hf ha hc hb, add_sub_cancel_right]
 
 variable {f s} in
-protected theorem edist_zero_of_eq_zero (hf : LocallyBoundedVariationOn f s)
+protected theorem eDist_zero_of_eq_zero (hf : LocallyBoundedVariationOn f s)
     {a b : α} (ha : a ∈ s) (hb : b ∈ s) (h : variationOnFromTo f s a b = 0) :
-    edist (f a) (f b) = 0 := by
+    eDist (f a) (f b) = 0 := by
   wlog h' : a ≤ b
-  · rw [edist_comm]
+  · rw [eDist_comm]
     apply this hf hb ha _ (le_of_not_ge h')
     rw [variationOnFromTo.eq_neg_swap, h, neg_zero]
   · rw [← nonpos_iff_eq_zero, ← ENNReal.ofReal_zero, ← h, variationOnFromTo.eq_of_le f s h',
       ENNReal.ofReal_toReal (hf a b ha hb)]
-    apply eVariationOn.edist_le
+    apply eVariationOn.eDist_le
     exacts [⟨ha, ⟨le_rfl, h'⟩⟩, ⟨hb, ⟨h', le_rfl⟩⟩]
+
+@[deprecated (since := "2026-11-27")]
+protected alias edist_zero_of_eq_zero := variationOnFromTo.eDist_zero_of_eq_zero
 
 protected theorem eq_left_iff {f : α → E} {s : Set α} (hf : LocallyBoundedVariationOn f s)
     {a b c : α} (ha : a ∈ s) (hb : b ∈ s) (hc : c ∈ s) :
@@ -114,21 +117,21 @@ protected theorem eq_left_iff {f : α → E} {s : Set α} (hf : LocallyBoundedVa
 protected theorem eq_zero_iff_of_le {f : α → E} {s : Set α} (hf : LocallyBoundedVariationOn f s)
     {a b : α} (ha : a ∈ s) (hb : b ∈ s) (ab : a ≤ b) :
     variationOnFromTo f s a b = 0 ↔
-      ∀ ⦃x⦄ (_hx : x ∈ s ∩ Icc a b) ⦃y⦄ (_hy : y ∈ s ∩ Icc a b), edist (f x) (f y) = 0 := by
+      ∀ ⦃x⦄ (_hx : x ∈ s ∩ Icc a b) ⦃y⦄ (_hy : y ∈ s ∩ Icc a b), eDist (f x) (f y) = 0 := by
   rw [variationOnFromTo.eq_of_le _ _ ab, ENNReal.toReal_eq_zero_iff, or_iff_left (hf a b ha hb),
     eVariationOn.eq_zero_iff]
 
 protected theorem eq_zero_iff_of_ge {f : α → E} {s : Set α} (hf : LocallyBoundedVariationOn f s)
     {a b : α} (ha : a ∈ s) (hb : b ∈ s) (ba : b ≤ a) :
     variationOnFromTo f s a b = 0 ↔
-      ∀ ⦃x⦄ (_hx : x ∈ s ∩ Icc b a) ⦃y⦄ (_hy : y ∈ s ∩ Icc b a), edist (f x) (f y) = 0 := by
+      ∀ ⦃x⦄ (_hx : x ∈ s ∩ Icc b a) ⦃y⦄ (_hy : y ∈ s ∩ Icc b a), eDist (f x) (f y) = 0 := by
   rw [variationOnFromTo.eq_of_ge _ _ ba, neg_eq_zero, ENNReal.toReal_eq_zero_iff,
     or_iff_left (hf b a hb ha), eVariationOn.eq_zero_iff]
 
 protected theorem eq_zero_iff {f : α → E} {s : Set α} (hf : LocallyBoundedVariationOn f s) {a b : α}
     (ha : a ∈ s) (hb : b ∈ s) :
     variationOnFromTo f s a b = 0 ↔
-      ∀ ⦃x⦄ (_hx : x ∈ s ∩ uIcc a b) ⦃y⦄ (_hy : y ∈ s ∩ uIcc a b), edist (f x) (f y) = 0 := by
+      ∀ ⦃x⦄ (_hx : x ∈ s ∩ uIcc a b) ⦃y⦄ (_hy : y ∈ s ∩ uIcc a b), eDist (f x) (f y) = 0 := by
   rcases le_total a b with (ab | ba)
   · rw [uIcc_of_le ab]
     exact variationOnFromTo.eq_zero_iff_of_le hf ha hb ab
@@ -155,9 +158,9 @@ lemma abs_sub_le_sub_of_le {f : α → ℝ} {s : Set α} (hf : LocallyBoundedVar
     |f c - f b| ≤ variationOnFromTo f s a c - variationOnFromTo f s a b := calc
   _ = dist (f b) (f c) := by rw [dist_comm, Real.dist_eq]
   _ ≤ variationOnFromTo f s b c := by
-    rw [variationOnFromTo.eq_of_le f s bc, dist_edist]
+    rw [variationOnFromTo.eq_of_le f s bc, dist_eDist]
     apply ENNReal.toReal_mono (hf b c bs cs)
-    apply eVariationOn.edist_le f
+    apply eVariationOn.eDist_le f
     exacts [⟨bs, le_rfl, bc⟩, ⟨cs, bc, le_rfl⟩]
   _ = variationOnFromTo f s a c - variationOnFromTo f s a b := by
     rw [← variationOnFromTo.add hf as bs cs, add_sub_cancel_left]
@@ -204,7 +207,7 @@ theorem tendsto_left {E : Type*} [PseudoMetricSpace E] [TopologicalSpace α] [Or
       (𝓝 (dist (f b) l)) by
     apply Tendsto.congr' _ H
     filter_upwards [self_mem_nhdsWithin] with x hx using by simp [variationOnFromTo, hx.2.le]
-  rw [dist_edist]
+  rw [dist_eDist]
   exact (ENNReal.tendsto_toReal (by simp)).comp (hf.tendsto_eVariationOn_Icc_left h'f hb)
 
 /-- The jump of `variationOnFromTo` on the right of a point is given by the distance between the
@@ -224,7 +227,7 @@ theorem tendsto_right {E : Type*} [PseudoMetricSpace E] [TopologicalSpace α] [O
       (𝓝 (dist (f b) l)) by
     apply Tendsto.congr' _ H
     filter_upwards [self_mem_nhdsWithin] with x hx using by simp [variationOnFromTo, hx.2.le]
-  rw [dist_edist]
+  rw [dist_eDist]
   exact (ENNReal.tendsto_toReal (by simp)).comp (hf.tendsto_eVariationOn_Icc_right h'f hb)
 
 /-- The jump of `variationOnFromTo` on the left of a point is given by the distance between the
@@ -286,12 +289,12 @@ theorem continuousWithinAt_variationOnFromTo_inter_Ici_iff (hg : BoundedVariatio
     ContinuousWithinAt (variationOnFromTo g s a) (s ∩ Ici x) x ↔
       ContinuousWithinAt g (s ∩ Ici x) x := by
   refine ⟨fun h ↦ ?_, fun h ↦ hg.continuousWithinAt_variationOnFromTo_inter_Ici as xs h⟩
-  simp only [ContinuousWithinAt, tendsto_iff_edist_tendsto_0] at h ⊢
+  simp only [ContinuousWithinAt, tendsto_iff_eDist_tendsto_0] at h ⊢
   apply tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds h (by simp)
   filter_upwards [self_mem_nhdsWithin] with y hy
   grw [eDist_eq_eNorm_sub, variationOnFromTo.sub_right hg.locallyBoundedVariationOn as hy.1 xs,
     variationOnFromTo.eq_of_le _ _ hy.2,
-    eVariationOn.edist_le (s := s ∩ Icc x y) _ (by grind) (by grind)]
+    eVariationOn.eDist_le (s := s ∩ Icc x y) _ (by grind) (by grind)]
   have : eVariationOn g (s ∩ Icc x y) ≠ ∞ := hg.mono inter_subset_left
   simp [this]
 
@@ -328,12 +331,12 @@ theorem continuousWithinAt_variationOnFromTo_inter_Iic_iff (hg : BoundedVariatio
     ContinuousWithinAt (variationOnFromTo g s a) (s ∩ Iic x) x ↔
       ContinuousWithinAt g (s ∩ Iic x) x := by
   refine ⟨fun h ↦ ?_, fun h ↦ hg.continuousWithinAt_variationOnFromTo_inter_Iic as xs h⟩
-  simp only [ContinuousWithinAt, tendsto_iff_edist_tendsto_0] at h ⊢
+  simp only [ContinuousWithinAt, tendsto_iff_eDist_tendsto_0] at h ⊢
   apply tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds h (by simp)
   filter_upwards [self_mem_nhdsWithin] with y hy
   grw [eDist_eq_eNorm_sub, variationOnFromTo.sub_right hg.locallyBoundedVariationOn as hy.1 xs,
     variationOnFromTo.eq_of_ge _ _ hy.2, eNorm_neg,
-    eVariationOn.edist_le (s := s ∩ Icc y x) _ (by grind) (by grind)]
+    eVariationOn.eDist_le (s := s ∩ Icc y x) _ (by grind) (by grind)]
   have : eVariationOn g (s ∩ Icc y x) ≠ ∞ := hg.mono inter_subset_left
   simp [this]
 

@@ -40,41 +40,46 @@ variable [PseudoEMetricSpace P₃] [PseudoEMetricSpace P₄]
 /-- A congruence between indexed sets of vertices v₁ and v₂.
 Use `open scoped Congruent` to access the `v₁ ≅ v₂` notation. -/
 def Congruent (v₁ : ι → P₁) (v₂ : ι → P₂) : Prop :=
-  ∀ i₁ i₂, edist (v₁ i₁) (v₁ i₂) = edist (v₂ i₁) (v₂ i₂)
+  ∀ i₁ i₂, eDist (v₁ i₁) (v₁ i₂) = eDist (v₂ i₁) (v₂ i₂)
 
 @[inherit_doc]
 scoped[Congruent] infixl:25 " ≅ " => Congruent
 
 /-- Congruence holds if and only if all extended distances are the same. -/
-lemma congruent_iff_edist_eq :
-    Congruent v₁ v₂ ↔ ∀ i₁ i₂, edist (v₁ i₁) (v₁ i₂) = edist (v₂ i₁) (v₂ i₂) :=
+lemma congruent_iff_eDist_eq :
+    Congruent v₁ v₂ ↔ ∀ i₁ i₂, eDist (v₁ i₁) (v₁ i₂) = eDist (v₂ i₁) (v₂ i₂) :=
   Iff.rfl
+
+@[deprecated (since := "2026-11-27")] alias congruent_iff_edist_eq := congruent_iff_eDist_eq
 
 /-- Congruence holds if and only if all extended distances between points with different
 indices are the same. -/
-lemma congruent_iff_pairwise_edist_eq :
-    Congruent v₁ v₂ ↔ Pairwise fun i₁ i₂ ↦ edist (v₁ i₁) (v₁ i₂) = edist (v₂ i₁) (v₂ i₂) := by
+lemma congruent_iff_pairwise_eDist_eq :
+    Congruent v₁ v₂ ↔ Pairwise fun i₁ i₂ ↦ eDist (v₁ i₁) (v₁ i₂) = eDist (v₂ i₁) (v₂ i₂) := by
   refine ⟨fun h ↦ fun _ _ _ ↦ h _ _, fun h ↦ fun i₁ i₂ ↦ ?_⟩
   by_cases hi : i₁ = i₂
   · simp [hi]
   · exact h hi
 
+@[deprecated (since := "2026-11-27")]
+alias congruent_iff_pairwise_edist_eq := congruent_iff_pairwise_eDist_eq
+
 namespace Congruent
 
-/-- A congruence preserves extended distance. Forward direction of `congruent_iff_edist_eq`. -/
-alias ⟨edist_eq, _⟩ := congruent_iff_edist_eq
+/-- A congruence preserves extended distance. Forward direction of `congruent_iff_eDist_eq`. -/
+alias ⟨eDist_eq, _⟩ := congruent_iff_eDist_eq
 
 /-- Congruence follows from preserved extended distance. Backward direction of
-`congruent_iff_edist_eq`. -/
-alias ⟨_, of_edist_eq⟩ := congruent_iff_edist_eq
+`congruent_iff_eDist_eq`. -/
+alias ⟨_, of_eDist_eq⟩ := congruent_iff_eDist_eq
 
 /-- A congruence pairwise preserves extended distance. Forward direction of
-`congruent_iff_pairwise_edist_eq`. -/
-alias ⟨pairwise_edist_eq, _⟩ := congruent_iff_pairwise_edist_eq
+`congruent_iff_pairwise_eDist_eq`. -/
+alias ⟨pairwise_eDist_eq, _⟩ := congruent_iff_pairwise_eDist_eq
 
 /-- Congruence follows from pairwise preserved extended distance. Backward direction of
-`congruent_iff_pairwise_edist_eq`. -/
-alias ⟨_, of_pairwise_edist_eq⟩ := congruent_iff_pairwise_edist_eq
+`congruent_iff_pairwise_eDist_eq`. -/
+alias ⟨_, of_pairwise_eDist_eq⟩ := congruent_iff_pairwise_eDist_eq
 
 @[refl] protected lemma refl (v₁ : ι → P₁) : v₁ ≅ v₁ := fun _ _ ↦ rfl
 
@@ -88,14 +93,14 @@ lemma _root_.congruent_comm : v₁ ≅ v₂ ↔ v₂ ≅ v₁ :=
 
 /-- Change the index set ι to an index ι' that maps to ι. -/
 lemma index_map (h : v₁ ≅ v₂) (f : ι' → ι) : (v₁ ∘ f) ≅ (v₂ ∘ f) :=
-  fun i₁ i₂ ↦ edist_eq h (f i₁) (f i₂)
+  fun i₁ i₂ ↦ eDist_eq h (f i₁) (f i₂)
 
 /-- Change between equivalent index sets ι and ι'. -/
 @[simp] lemma index_equiv {E : Type*} [EquivLike E ι' ι] (f : E) (v₁ : ι → P₁) (v₂ : ι → P₂) :
     v₁ ∘ f ≅ v₂ ∘ f ↔ v₁ ≅ v₂ := by
   refine ⟨fun h i₁ i₂ ↦ ?_, fun h ↦ index_map h f⟩
   simpa [(EquivLike.toEquiv f).right_inv i₁, (EquivLike.toEquiv f).right_inv i₂]
-    using edist_eq h ((EquivLike.toEquiv f).symm i₁) ((EquivLike.toEquiv f).symm i₂)
+    using eDist_eq h ((EquivLike.toEquiv f).symm i₁) ((EquivLike.toEquiv f).symm i₂)
 
 /-- Families with at most a single point are always congruent. -/
 @[nontriviality, simp]
@@ -142,7 +147,7 @@ lemma congruent_iff_nnDist_eq :
 indices are the same. -/
 lemma congruent_iff_pairwise_nnDist_eq :
     Congruent v₁ v₂ ↔ Pairwise fun i₁ i₂ ↦ nnDist (v₁ i₁) (v₁ i₂) = nnDist (v₂ i₁) (v₂ i₂) := by
-  simp_rw [congruent_iff_pairwise_edist_eq, eDist_nnDist]
+  simp_rw [congruent_iff_pairwise_eDist_eq, eDist_nnDist]
   exact mod_cast Iff.rfl
 
 @[deprecated (since := "2026-11-07")]

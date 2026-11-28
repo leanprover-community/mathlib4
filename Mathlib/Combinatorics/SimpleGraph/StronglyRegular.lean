@@ -73,7 +73,7 @@ theorem IsSRGWith.ediam_eq_two [Nontrivial V] (h : G.IsSRGWith n k ℓ μ) (ht :
   · rw [ediam_le_iff]
     intro u v
     by_contra! hc
-    obtain ⟨hn, ha, he⟩ := two_lt_edist_iff.mp hc
+    obtain ⟨hn, ha, he⟩ := two_lt_eDist_iff.mp hc
     have h := h.of_not_adj hn ha
     simp_all
   · by_contra

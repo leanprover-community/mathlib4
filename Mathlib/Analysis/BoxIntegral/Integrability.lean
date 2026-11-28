@@ -220,7 +220,7 @@ theorem IntegrableOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} {
     intro x m n hmn
     rw [← dist_eq_norm, ← dist_eq_norm, dist_nnDist, dist_nnDist, NNReal.coe_le_coe, ←
       ENNReal.coe_le_coe, ← eDist_nnDist, ← eDist_nnDist]
-    exact SimpleFunc.edist_approxOn_mono hg.measurable _ x hmn
+    exact SimpleFunc.eDist_approxOn_mono hg.measurable _ x hmn
   /- Now consider `ε > 0`. We need to find `r` such that for any tagged partition subordinate
     to `r`, the integral sum is `(μ I + 1 + 1) * ε`-close to the Bochner integral. -/
   refine HasIntegral.of_mul (μ.real I + 1 + 1) fun ε ε0 => ?_

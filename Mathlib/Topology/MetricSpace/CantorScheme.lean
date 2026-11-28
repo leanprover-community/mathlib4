@@ -128,8 +128,8 @@ theorem VanishingDiam.dist_lt (hA : VanishingDiam A) (ε : ℝ) (ε_pos : 0 < ε
     simp only [gt_iff_lt, ENNReal.ofReal_pos]; linarith)
   use n
   intro y hy z hz
-  rw [← ENNReal.ofReal_lt_ofReal_iff ε_pos, ← edist_dist]
-  apply lt_of_le_of_lt (Metric.edist_le_ediam_of_mem hy hz)
+  rw [← ENNReal.ofReal_lt_ofReal_iff ε_pos, ← eDist_dist]
+  apply lt_of_le_of_lt (Metric.eDist_le_ediam_of_mem hy hz)
   apply lt_of_le_of_lt (hn _ (le_refl _))
   rw [ENNReal.ofReal_lt_ofReal_iff ε_pos]
   linarith

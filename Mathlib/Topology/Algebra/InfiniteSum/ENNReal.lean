@@ -603,8 +603,8 @@ variable [PseudoEMetricSpace α]
 
 /-- If the extended distance between consecutive points of a sequence is estimated
 by a summable series of `NNReal`s, then the original sequence is a Cauchy sequence. -/
-theorem cauchySeq_of_edist_le_of_summable {f : ℕ → α} (d : ℕ → ℝ≥0)
-    (hf : ∀ n, edist (f n) (f n.succ) ≤ d n) (hd : Summable d) : CauchySeq f := by
+theorem cauchySeq_of_eDist_le_of_summable {f : ℕ → α} (d : ℕ → ℝ≥0)
+    (hf : ∀ n, eDist (f n) (f n.succ) ≤ d n) (hd : Summable d) : CauchySeq f := by
   refine EMetric.cauchySeq_iff_NNReal.2 fun ε εpos ↦ ?_
   -- Actually we need partial sums of `d` to be a Cauchy sequence.
   replace hd : CauchySeq fun n : ℕ ↦ ∑ x ∈ Finset.range n, d x :=
@@ -616,33 +616,45 @@ theorem cauchySeq_of_edist_le_of_summable {f : ℕ → α} (d : ℕ → ℝ≥0)
   -- We simplify the known inequality.
   rw [dist_nnDist, NNReal.nnDist_eq, ← Finset.sum_range_add_sum_Ico _ hn, add_tsub_cancel_left,
     NNReal.coe_lt_coe, max_lt_iff] at hN
-  rw [edist_comm]
+  rw [eDist_comm]
   -- Then use `hf` to simplify the goal to the same form.
-  refine lt_of_le_of_lt (edist_le_Ico_sum_of_edist_le hn fun _ _ ↦ hf _) ?_
+  refine lt_of_le_of_lt (eDist_le_Ico_sum_of_eDist_le hn fun _ _ ↦ hf _) ?_
   exact mod_cast hN.1
 
-theorem cauchySeq_of_edist_le_of_tsum_ne_top {f : ℕ → α} (d : ℕ → ℝ≥0∞)
-    (hf : ∀ n, edist (f n) (f n.succ) ≤ d n) (hd : tsum d ≠ ∞) : CauchySeq f := by
+@[deprecated (since := "2026-11-27")]
+alias cauchySeq_of_edist_le_of_summable := cauchySeq_of_eDist_le_of_summable
+
+theorem cauchySeq_of_eDist_le_of_tsum_ne_top {f : ℕ → α} (d : ℕ → ℝ≥0∞)
+    (hf : ∀ n, eDist (f n) (f n.succ) ≤ d n) (hd : tsum d ≠ ∞) : CauchySeq f := by
   lift d to ℕ → NNReal using fun i => ne_top_of_tsum_ne_top hd i
   rw [ENNReal.tsum_coe_ne_top_iff_summable] at hd
-  exact cauchySeq_of_edist_le_of_summable d hf hd
+  exact cauchySeq_of_eDist_le_of_summable d hf hd
 
-/-- If `edist (f n) (f (n+1))` is bounded above by a function `d : ℕ → ℝ≥0∞`,
+@[deprecated (since := "2026-11-27")]
+alias cauchySeq_of_edist_le_of_tsum_ne_top := cauchySeq_of_eDist_le_of_tsum_ne_top
+
+/-- If `eDist (f n) (f (n+1))` is bounded above by a function `d : ℕ → ℝ≥0∞`,
 then the distance from `f n` to the limit is bounded by `∑'_{k=n}^∞ d k`. -/
-theorem edist_le_tsum_of_edist_le_of_tendsto {f : ℕ → α} (d : ℕ → ℝ≥0∞)
-    (hf : ∀ n, edist (f n) (f n.succ) ≤ d n) {a : α} (ha : Tendsto f atTop (𝓝 a)) (n : ℕ) :
-    edist (f n) a ≤ ∑' m, d (n + m) := by
-  refine le_of_tendsto (tendsto_const_nhds.edist ha) (mem_atTop_sets.2 ⟨n, fun m hnm => ?_⟩)
-  change edist _ _ ≤ _
-  refine le_trans (edist_le_Ico_sum_of_edist_le hnm fun _ _ => hf _) ?_
+theorem eDist_le_tsum_of_eDist_le_of_tendsto {f : ℕ → α} (d : ℕ → ℝ≥0∞)
+    (hf : ∀ n, eDist (f n) (f n.succ) ≤ d n) {a : α} (ha : Tendsto f atTop (𝓝 a)) (n : ℕ) :
+    eDist (f n) a ≤ ∑' m, d (n + m) := by
+  refine le_of_tendsto (tendsto_const_nhds.eDist ha) (mem_atTop_sets.2 ⟨n, fun m hnm => ?_⟩)
+  change eDist _ _ ≤ _
+  refine le_trans (eDist_le_Ico_sum_of_eDist_le hnm fun _ _ => hf _) ?_
   rw [Finset.sum_Ico_eq_sum_range]
   exact CompleteLattice.summable.sum_le_tsum _ (fun _ _ => zero_le)
 
-/-- If `edist (f n) (f (n+1))` is bounded above by a function `d : ℕ → ℝ≥0∞`,
+@[deprecated (since := "2026-11-27")]
+alias edist_le_tsum_of_edist_le_of_tendsto := eDist_le_tsum_of_eDist_le_of_tendsto
+
+/-- If `eDist (f n) (f (n+1))` is bounded above by a function `d : ℕ → ℝ≥0∞`,
 then the distance from `f 0` to the limit is bounded by `∑'_{k=0}^∞ d k`. -/
-theorem edist_le_tsum_of_edist_le_of_tendsto₀ {f : ℕ → α} (d : ℕ → ℝ≥0∞)
-    (hf : ∀ n, edist (f n) (f n.succ) ≤ d n) {a : α} (ha : Tendsto f atTop (𝓝 a)) :
-    edist (f 0) a ≤ ∑' m, d m := by simpa using edist_le_tsum_of_edist_le_of_tendsto d hf ha 0
+theorem eDist_le_tsum_of_eDist_le_of_tendsto₀ {f : ℕ → α} (d : ℕ → ℝ≥0∞)
+    (hf : ∀ n, eDist (f n) (f n.succ) ≤ d n) {a : α} (ha : Tendsto f atTop (𝓝 a)) :
+    eDist (f 0) a ≤ ∑' m, d m := by simpa using eDist_le_tsum_of_eDist_le_of_tendsto d hf ha 0
+
+@[deprecated (since := "2026-11-27")]
+alias edist_le_tsum_of_edist_le_of_tendsto₀ := eDist_le_tsum_of_eDist_le_of_tendsto₀
 
 
 namespace ENNReal

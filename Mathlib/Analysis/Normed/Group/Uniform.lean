@@ -306,11 +306,14 @@ theorem nnDist_mul_mul_le (a₁ a₂ b₁ b₂ : E) :
 alias nndist_mul_mul_le := nnDist_mul_mul_le
 
 @[to_additive]
-theorem edist_mul_mul_le (a₁ a₂ b₁ b₂ : E) :
-    edist (a₁ * a₂) (b₁ * b₂) ≤ edist a₁ b₁ + edist a₂ b₂ := by
+theorem eDist_mul_mul_le (a₁ a₂ b₁ b₂ : E) :
+    eDist (a₁ * a₂) (b₁ * b₂) ≤ eDist a₁ b₁ + eDist a₂ b₂ := by
   simp only [eDist_nnDist]
   norm_cast
   apply nnDist_mul_mul_le
+
+@[to_additive (attr := deprecated (since := "2026-11-27"))]
+alias edist_mul_mul_le := eDist_mul_mul_le
 
 section PseudoEMetricSpace
 variable {α E : Type*} [SeminormedCommGroup E] [PseudoEMetricSpace α] {K Kf Kg : ℝ≥0}
@@ -346,10 +349,10 @@ alias ⟨LocallyLipschitzOn.of_inv, LocallyLipschitzOn.inv⟩ := locallyLipschit
 lemma LipschitzOnWith.mul (hf : LipschitzOnWith Kf f s) (hg : LipschitzOnWith Kg g s) :
     LipschitzOnWith (Kf + Kg) (fun x ↦ f x * g x) s := fun x hx y hy ↦
   calc
-    edist (f x * g x) (f y * g y) ≤ edist (f x) (f y) + edist (g x) (g y) :=
-      edist_mul_mul_le _ _ _ _
-    _ ≤ Kf * edist x y + Kg * edist x y := add_le_add (hf hx hy) (hg hx hy)
-    _ = (Kf + Kg) * edist x y := (add_mul _ _ _).symm
+    eDist (f x * g x) (f y * g y) ≤ eDist (f x) (f y) + eDist (g x) (g y) :=
+      eDist_mul_mul_le _ _ _ _
+    _ ≤ Kf * eDist x y + Kg * eDist x y := add_le_add (hf hx hy) (hg hx hy)
+    _ = (Kf + Kg) * eDist x y := (add_mul _ _ _).symm
 
 @[to_additive]
 lemma LipschitzWith.mul (hf : LipschitzWith Kf f) (hg : LipschitzWith Kg g) :
@@ -394,7 +397,7 @@ namespace AntilipschitzWith
 @[to_additive]
 theorem mul_lipschitzWith (hf : AntilipschitzWith Kf f) (hg : LipschitzWith Kg g) (hK : Kg < Kf⁻¹) :
     AntilipschitzWith (Kf⁻¹ - Kg)⁻¹ fun x => f x * g x := by
-  let : PseudoMetricSpace α := PseudoEMetricSpace.toPseudoMetricSpace hf.edist_ne_top
+  let : PseudoMetricSpace α := PseudoEMetricSpace.toPseudoMetricSpace hf.eDist_ne_top
   refine AntilipschitzWith.of_le_mul_dist fun x y => ?_
   rw [NNReal.coe_inv, ← _root_.div_eq_inv_mul]
   rw [le_div_iff₀ (NNReal.coe_pos.2 <| tsub_pos_iff_lt.2 hK)]

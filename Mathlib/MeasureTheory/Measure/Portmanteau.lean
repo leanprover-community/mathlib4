@@ -521,7 +521,7 @@ lemma integral_le_liminf_integral_of_forall_isOpen_measure_le_liminf_measure
     let g := BoundedContinuousFunction.comp _ Real.lipschitzWith_toNNReal f
     have bound : ∀ i, ∫⁻ x, ENNReal.ofReal (f x) ∂(μs i) ≤ nnDist 0 g := fun i ↦ by
       simpa only [coe_nnreal_ennreal_nnDist, measure_univ, mul_one, ge_iff_le] using!
-            BoundedContinuousFunction.lintegral_le_edist_mul (μ := μs i) g
+            BoundedContinuousFunction.lintegral_le_eDist_mul (μ := μs i) g
     apply ENNReal.liminf_toReal_eq ENNReal.coe_ne_top (Eventually.of_forall bound)
   · apply ne_of_lt
     have obs := fun (i : ℕ) ↦ @BoundedContinuousFunction.lintegral_nnNorm_le Ω _ _ (μs i) ℝ _ f

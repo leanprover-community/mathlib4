@@ -423,12 +423,14 @@ theorem MeasurePreserving.integrable_comp_emb {f : α → δ} {ν} (h₁ : Measu
     (h₂ : MeasurableEmbedding f) {g : δ → ε} : Integrable (g ∘ f) μ ↔ Integrable g ν :=
   h₁.map_eq ▸ Iff.symm h₂.integrable_map_iff
 
-theorem lintegral_edist_lt_top {f g : α → β} (hf : Integrable f μ) (hg : Integrable g μ) :
-    (∫⁻ a, edist (f a) (g a) ∂μ) < ∞ :=
-  lt_of_le_of_lt (lintegral_edist_triangle hf.aestronglyMeasurable aestronglyMeasurable_zero)
+theorem lintegral_eDist_lt_top {f g : α → β} (hf : Integrable f μ) (hg : Integrable g μ) :
+    (∫⁻ a, eDist (f a) (g a) ∂μ) < ∞ :=
+  lt_of_le_of_lt (lintegral_eDist_triangle hf.aestronglyMeasurable aestronglyMeasurable_zero)
     (ENNReal.add_lt_top.2 <| by
-      simp_rw [Pi.zero_apply, ← hasFiniteIntegral_iff_edist]
+      simp_rw [Pi.zero_apply, ← hasFiniteIntegral_iff_eDist]
       exact ⟨hf.hasFiniteIntegral, hg.hasFiniteIntegral⟩)
+
+@[deprecated (since := "2026-11-27")] alias lintegral_edist_lt_top := lintegral_eDist_lt_top
 
 section ESeminormedAddMonoid
 

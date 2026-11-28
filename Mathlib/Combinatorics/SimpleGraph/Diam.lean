@@ -38,33 +38,38 @@ section eccent
 
 /-- The eccentricity of a vertex is the greatest distance between it and any other vertex. -/
 noncomputable def eccent (G : SimpleGraph α) (u : α) : ℕ∞ :=
-  ⨆ v, G.edist u v
+  ⨆ v, G.eDist u v
 
-lemma eccent_def : G.eccent = fun u ↦ ⨆ v, G.edist u v := rfl
+lemma eccent_def : G.eccent = fun u ↦ ⨆ v, G.eDist u v := rfl
 
-lemma edist_le_eccent {u v : α} : G.edist u v ≤ G.eccent u :=
-  le_iSup (G.edist u) v
+lemma eDist_le_eccent {u v : α} : G.eDist u v ≤ G.eccent u :=
+  le_iSup (G.eDist u) v
 
-lemma exists_edist_eq_eccent_of_finite [Finite α] (u : α) :
-    ∃ v, G.edist u v = G.eccent u :=
+@[deprecated (since := "2026-11-27")] alias edist_le_eccent := eDist_le_eccent
+
+lemma exists_eDist_eq_eccent_of_finite [Finite α] (u : α) :
+    ∃ v, G.eDist u v = G.eccent u :=
   have : Nonempty α := Nonempty.intro u
   exists_eq_ciSup_of_finite
+
+@[deprecated (since := "2026-11-27")]
+alias exists_edist_eq_eccent_of_finite := exists_eDist_eq_eccent_of_finite
 
 lemma eccent_eq_top_of_not_connected (h : ¬ G.Connected) (u : α) :
     G.eccent u = ⊤ := by
   rw [connected_iff_exists_forall_reachable] at h
   push Not at h
   obtain ⟨v, h⟩ := h u
-  rw [eq_top_iff, ← edist_eq_top_of_not_reachable h]
-  exact le_iSup (G.edist u) v
+  rw [eq_top_iff, ← eDist_eq_top_of_not_reachable h]
+  exact le_iSup (G.eDist u) v
 
 lemma eccent_eq_zero_of_subsingleton [Subsingleton α] (u : α) : G.eccent u = 0 := by
-  simpa [eccent, edist_eq_zero_iff] using subsingleton_iff.mp ‹_› u
+  simpa [eccent, eDist_eq_zero_iff] using subsingleton_iff.mp ‹_› u
 
 lemma eccent_ne_zero [Nontrivial α] (u : α) : G.eccent u ≠ 0 := by
   obtain ⟨v, huv⟩ := exists_ne ‹_›
   contrapose huv
-  simp only [eccent, ENat.iSup_eq_zero, edist_eq_zero_iff] at huv
+  simp only [eccent, ENat.iSup_eq_zero, eDist_eq_zero_iff] at huv
   exact (huv v).symm
 
 lemma eccent_eq_zero_iff (u : α) : G.eccent u = 0 ↔ Subsingleton α := by
@@ -84,31 +89,31 @@ lemma eccent_top [Nontrivial α] (u : α) : (⊤ : SimpleGraph α).eccent u = 1 
   apply le_antisymm ?_ <| Order.one_le_iff_pos.mpr <| pos_iff_ne_zero.mpr <| eccent_ne_zero u
   rw [eccent, iSup_le_iff]
   intro v
-  cases eq_or_ne u v <;> simp_all [edist_top_of_ne]
+  cases eq_or_ne u v <;> simp_all [eDist_top_of_ne]
 
 lemma eq_top_iff_forall_eccent_eq_one [Nontrivial α] :
     G = ⊤ ↔ ∀ u, G.eccent u = 1 := by
   refine ⟨fun h ↦ h ▸ eccent_top, fun h ↦ ?_⟩
   ext u v
   refine ⟨Adj.ne, fun huv ↦ ?_⟩
-  rw [← edist_eq_one_iff_adj]
-  apply le_antisymm ((h u).symm ▸ edist_le_eccent)
-  rw [Order.one_le_iff_pos, pos_iff_ne_zero, edist_eq_zero_iff.ne]
+  rw [← eDist_eq_one_iff_adj]
+  apply le_antisymm ((h u).symm ▸ eDist_le_eccent)
+  rw [Order.one_le_iff_pos, pos_iff_ne_zero, eDist_eq_zero_iff.ne]
   exact huv.ne
 
-lemma eccent_le_iff (u : α) (k : ℕ∞) : G.eccent u ≤ k ↔ ∀ v, G.edist u v ≤ k :=
+lemma eccent_le_iff (u : α) (k : ℕ∞) : G.eccent u ≤ k ↔ ∀ v, G.eDist u v ≤ k :=
   iSup_le_iff
 
 lemma eccent_le_one_iff (u : α) : G.eccent u ≤ 1 ↔ ∀ v, u ≠ v → G.Adj u v := by
   constructor
   · intro h v huv
-    have hd : G.edist u v ≤ 1 := edist_le_eccent.trans h
-    have hd' : 1 ≤ G.edist u v := Order.one_le_iff_pos.mpr (G.edist_pos_of_ne huv)
-    exact edist_eq_one_iff_adj.mp (le_antisymm (hd') hd).symm
+    have hd : G.eDist u v ≤ 1 := eDist_le_eccent.trans h
+    have hd' : 1 ≤ G.eDist u v := Order.one_le_iff_pos.mpr (G.eDist_pos_of_ne huv)
+    exact eDist_eq_one_iff_adj.mp (le_antisymm (hd') hd).symm
   · intro hall
     rw [eccent_le_iff]
     intro v
-    rw [edist_le_one_iff_adj_or_eq]
+    rw [eDist_le_one_iff_adj_or_eq]
     exact or_iff_not_imp_right.mpr (hall v)
 
 lemma eccent_eq_one_iff [Nontrivial α] (u : α) :
@@ -128,25 +133,31 @@ case the distances are not bounded above, or the graph is not connected.
 noncomputable def ediam (G : SimpleGraph α) : ℕ∞ :=
   ⨆ u, G.eccent u
 
-lemma ediam_eq_iSup_iSup_edist : G.ediam = ⨆ u, ⨆ v, G.edist u v :=
+lemma ediam_eq_iSup_iSup_eDist : G.ediam = ⨆ u, ⨆ v, G.eDist u v :=
   rfl
 
-lemma ediam_def : G.ediam = ⨆ p : α × α, G.edist p.1 p.2 := by
+@[deprecated (since := "2026-11-27")] alias ediam_eq_iSup_iSup_edist := ediam_eq_iSup_iSup_eDist
+
+lemma ediam_def : G.ediam = ⨆ p : α × α, G.eDist p.1 p.2 := by
   rw [ediam, eccent_def, iSup_prod]
 
 lemma eccent_le_ediam {u : α} : G.eccent u ≤ G.ediam :=
   le_iSup G.eccent u
 
-lemma edist_le_ediam {u v : α} : G.edist u v ≤ G.ediam :=
-  le_iSup₂ (f := G.edist) u v
+lemma eDist_le_ediam {u v : α} : G.eDist u v ≤ G.ediam :=
+  le_iSup₂ (f := G.eDist) u v
 
-lemma ediam_le_of_edist_le {k : ℕ∞} (h : ∀ u v, G.edist u v ≤ k) : G.ediam ≤ k :=
+@[deprecated (since := "2026-11-27")] alias edist_le_ediam := eDist_le_ediam
+
+lemma ediam_le_of_eDist_le {k : ℕ∞} (h : ∀ u v, G.eDist u v ≤ k) : G.ediam ≤ k :=
   iSup₂_le h
 
-lemma ediam_le_iff {k : ℕ∞} : G.ediam ≤ k ↔ ∀ u v, G.edist u v ≤ k :=
+@[deprecated (since := "2026-11-27")] alias ediam_le_of_edist_le := ediam_le_of_eDist_le
+
+lemma ediam_le_iff {k : ℕ∞} : G.ediam ≤ k ↔ ∀ u v, G.eDist u v ≤ k :=
   iSup₂_le_iff
 
-lemma ediam_eq_top : G.ediam = ⊤ ↔ ∀ b < ⊤, ∃ u v, b < G.edist u v := by
+lemma ediam_eq_top : G.ediam = ⊤ ↔ ∀ b < ⊤, ∃ u v, b < G.eDist u v := by
   simp only [ediam, eccent, iSup_eq_top, lt_iSup_iff]
 
 lemma ediam_eq_zero_of_subsingleton [Subsingleton α] : G.ediam = 0 := by
@@ -159,7 +170,7 @@ lemma nontrivial_of_ediam_ne_zero (h : G.ediam ≠ 0) : Nontrivial α := by
 lemma ediam_ne_zero [Nontrivial α] : G.ediam ≠ 0 := by
   obtain ⟨u, v, huv⟩ := exists_pair_ne ‹_›
   contrapose huv
-  simp only [ediam, eccent, ENat.iSup_eq_zero, edist_eq_zero_iff] at huv
+  simp only [ediam, eccent, ENat.iSup_eq_zero, eDist_eq_zero_iff] at huv
   exact huv u v
 
 lemma subsingleton_of_ediam_eq_zero (h : G.ediam = 0) : Subsingleton α := by
@@ -179,8 +190,8 @@ lemma ediam_eq_top_of_not_connected [Nonempty α] (h : ¬ G.Connected) : G.ediam
   rw [connected_iff_exists_forall_reachable] at h
   push Not at h
   obtain ⟨_, hw⟩ := h Classical.ofNonempty
-  rw [eq_top_iff, ← edist_eq_top_of_not_reachable hw]
-  exact edist_le_ediam
+  rw [eq_top_iff, ← eDist_eq_top_of_not_reachable hw]
+  exact eDist_le_ediam
 
 lemma ediam_eq_top_of_not_preconnected (h : ¬ G.Preconnected) : G.ediam = ⊤ := by
   cases isEmpty_or_nonempty α
@@ -205,27 +216,33 @@ lemma exists_eccent_eq_ediam_of_finite [Nonempty α] [Finite α] :
     ∃ u, G.eccent u = G.ediam :=
   exists_eq_ciSup_of_finite
 
-lemma exists_edist_eq_ediam_of_ne_top [Nonempty α] (h : G.ediam ≠ ⊤) :
-    ∃ u v, G.edist u v = G.ediam :=
+lemma exists_eDist_eq_ediam_of_ne_top [Nonempty α] (h : G.ediam ≠ ⊤) :
+    ∃ u v, G.eDist u v = G.ediam :=
   ENat.exists_eq_iSup₂_of_lt_top h.lt_top
 
+@[deprecated (since := "2026-11-27")]
+alias exists_edist_eq_ediam_of_ne_top := exists_eDist_eq_ediam_of_ne_top
+
 -- Note: Neither `Finite α` nor `G.ediam ≠ ⊤` implies the other.
-lemma exists_edist_eq_ediam_of_finite [Nonempty α] [Finite α] :
-    ∃ u v, G.edist u v = G.ediam :=
+lemma exists_eDist_eq_ediam_of_finite [Nonempty α] [Finite α] :
+    ∃ u v, G.eDist u v = G.ediam :=
   Prod.exists'.mp <| ediam_def ▸ exists_eq_ciSup_of_finite
+
+@[deprecated (since := "2026-11-27")]
+alias exists_edist_eq_ediam_of_finite := exists_eDist_eq_ediam_of_finite
 
 /-- In a finite graph with nontrivial vertex set, the graph is connected
 if and only if the extended diameter is not `⊤`.
 See `connected_of_ediam_ne_top` for one of the implications without
 the finiteness assumptions -/
 lemma connected_iff_ediam_ne_top [Nonempty α] [Finite α] : G.Connected ↔ G.ediam ≠ ⊤ :=
-  have ⟨u, v, huv⟩ := G.exists_edist_eq_ediam_of_finite
-  ⟨fun h ↦ huv ▸ edist_ne_top_iff_reachable.mpr (h u v),
+  have ⟨u, v, huv⟩ := G.exists_eDist_eq_ediam_of_finite
+  ⟨fun h ↦ huv ▸ eDist_ne_top_iff_reachable.mpr (h u v),
    fun h ↦ G.connected_of_ediam_ne_top h⟩
 
 @[gcongr]
 lemma ediam_anti (h : G ≤ G') : G'.ediam ≤ G.ediam :=
-  iSup₂_mono fun _ _ ↦ edist_anti h
+  iSup₂_mono fun _ _ ↦ eDist_anti h
 
 @[simp]
 lemma ediam_bot [Nontrivial α] : (⊥ : SimpleGraph α).ediam = ⊤ :=
@@ -245,12 +262,12 @@ lemma ediam_eq_one [Nontrivial α] : G.ediam = 1 ↔ G = ⊤ := by
   exact eccent_ne_zero u
 
 lemma ediam_le_two_mul_eccent (u : α) : G.ediam ≤ 2 * G.eccent u := by
-  refine ediam_le_of_edist_le fun v w ↦ ?_
+  refine ediam_le_of_eDist_le fun v w ↦ ?_
   calc
-    G.edist v w
-      ≤ G.edist v u + G.edist u w := G.edist_triangle
-    _ = G.edist u v + G.edist u w := by rw [edist_comm]
-    _ ≤ G.eccent u + G.eccent u := add_le_add edist_le_eccent edist_le_eccent
+    G.eDist v w
+      ≤ G.eDist v u + G.eDist u w := G.eDist_triangle
+    _ = G.eDist u v + G.eDist u w := by rw [eDist_comm]
+    _ ≤ G.eccent u + G.eccent u := add_le_add eDist_le_eccent eDist_le_eccent
     _ = 2 * G.eccent u := (two_mul _).symm
 
 end ediam
@@ -264,11 +281,11 @@ case the distances are not bounded above, or the graph is not connected.
 noncomputable def diam (G : SimpleGraph α) :=
   G.ediam.toNat
 
-lemma diam_def : G.diam = (⨆ p : α × α, G.edist p.1 p.2).toNat := by
+lemma diam_def : G.diam = (⨆ p : α × α, G.eDist p.1 p.2).toNat := by
   rw [diam, ediam_def]
 
 lemma dist_le_diam (h : G.ediam ≠ ⊤) {u v : α} : G.dist u v ≤ G.diam :=
-  ENat.toNat_le_toNat edist_le_ediam h
+  ENat.toNat_le_toNat eDist_le_ediam h
 
 lemma nontrivial_of_diam_ne_zero (h : G.diam ≠ 0) : Nontrivial α := by
   contrapose! h
@@ -289,7 +306,7 @@ lemma exists_dist_eq_diam [Nonempty α] :
     ∃ u v, G.dist u v = G.diam := by
   by_cases h : G.diam = 0
   · simp [h]
-  · obtain ⟨u, v, huv⟩ := exists_edist_eq_ediam_of_ne_top <| ediam_ne_top_of_diam_ne_zero h
+  · obtain ⟨u, v, huv⟩ := exists_eDist_eq_ediam_of_ne_top <| ediam_ne_top_of_diam_ne_zero h
     use u, v
     rw [diam, dist, congrArg ENat.toNat huv]
 
@@ -341,8 +358,10 @@ section radius
 noncomputable def radius (G : SimpleGraph α) : ℕ∞ :=
   ⨅ u, G.eccent u
 
-lemma radius_eq_iInf_iSup_edist : G.radius = ⨅ u, ⨆ v, G.edist u v :=
+lemma radius_eq_iInf_iSup_eDist : G.radius = ⨅ u, ⨆ v, G.eDist u v :=
   rfl
+
+@[deprecated (since := "2026-11-27")] alias radius_eq_iInf_iSup_edist := radius_eq_iInf_iSup_eDist
 
 lemma radius_le_eccent {u : α} : G.radius ≤ G.eccent u :=
   iInf_le G.eccent u
@@ -350,12 +369,15 @@ lemma radius_le_eccent {u : α} : G.radius ≤ G.eccent u :=
 lemma exists_eccent_eq_radius [Nonempty α] : ∃ u, G.eccent u = G.radius :=
   ENat.exists_eq_iInf G.eccent
 
-lemma exists_edist_eq_radius_of_finite [Nonempty α] [Finite α] :
-    ∃ u v, G.edist u v = G.radius := by
+lemma exists_eDist_eq_radius_of_finite [Nonempty α] [Finite α] :
+    ∃ u v, G.eDist u v = G.radius := by
   obtain ⟨w, hw⟩ := G.exists_eccent_eq_radius
-  obtain ⟨v, hv⟩ := G.exists_edist_eq_eccent_of_finite w
+  obtain ⟨v, hv⟩ := G.exists_eDist_eq_eccent_of_finite w
   use w, v
   rw [hv, hw]
+
+@[deprecated (since := "2026-11-27")]
+alias exists_edist_eq_radius_of_finite := exists_eDist_eq_radius_of_finite
 
 lemma radius_eq_top_of_not_connected (h : ¬ G.Connected) : G.radius = ⊤ := by
   simp [radius, eccent_eq_top_of_not_connected h]
@@ -365,8 +387,8 @@ lemma radius_eq_top_of_isEmpty [IsEmpty α] : G.radius = ⊤ :=
 
 lemma radius_ne_top_iff [Nonempty α] [Finite α] : G.radius ≠ ⊤ ↔ G.Connected := by
   refine ⟨Not.imp_symm radius_eq_top_of_not_connected, fun h ↦ ?_⟩
-  obtain ⟨u, v, huv⟩ := G.exists_edist_eq_radius_of_finite
-  rw [← huv, edist_ne_top_iff_reachable]
+  obtain ⟨u, v, huv⟩ := G.exists_eDist_eq_radius_of_finite
+  rw [← huv, eDist_ne_top_iff_reachable]
   exact h u v
 
 lemma radius_ne_zero_of_nontrivial [Nontrivial α] : G.radius ≠ 0 := by
@@ -403,10 +425,10 @@ lemma ediam_le_two_mul_radius : G.ediam ≤ 2 * G.radius := by
   · by_cases hdiam : G.ediam = ⊤
     · simp [hdiam, ediam_eq_top_iff_radius_eq_top.mp hdiam]
     · obtain ⟨w, hw⟩ := G.exists_eccent_eq_radius
-      obtain ⟨_, _, h⟩ := G.exists_edist_eq_ediam_of_ne_top hdiam
-      apply le_trans (h ▸ G.edist_triangle (v := w))
+      obtain ⟨_, _, h⟩ := G.exists_eDist_eq_ediam_of_ne_top hdiam
+      apply le_trans (h ▸ G.eDist_triangle (v := w))
       rw [two_mul]
-      exact hw ▸ add_le_add (G.edist_comm ▸ G.edist_le_eccent) G.edist_le_eccent
+      exact hw ▸ add_le_add (G.eDist_comm ▸ G.eDist_le_eccent) G.eDist_le_eccent
 
 lemma radius_eq_ediam_iff [Nonempty α] :
     G.radius = G.ediam ↔ ∃ e, ∀ u, G.eccent u = e := by

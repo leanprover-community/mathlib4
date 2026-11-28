@@ -652,18 +652,24 @@ theorem eNorm_integral_le_lintegral_eNorm_transpose :
 @[deprecated (since := "2026-11-06")]
 alias enorm_integral_le_lintegral_enorm_transpose := eNorm_integral_le_lintegral_eNorm_transpose
 
-theorem dist_integral_le_lintegral_edist (hf : μ.Integrable f) (hg : μ.Integrable g) :
+theorem dist_integral_le_lintegral_eDist (hf : μ.Integrable f) (hg : μ.Integrable g) :
     dist (∫ᵛ a, f a ∂[B; μ]) (∫ᵛ a, g a ∂[B; μ]) ≤
-      ‖B‖ * (∫⁻ a, edist (f a) (g a) ∂μ.variation).toReal := by
+      ‖B‖ * (∫⁻ a, eDist (f a) (g a) ∂μ.variation).toReal := by
   grw [dist_eq_norm, ← integral_sub hf hg, norm_integral_le_lintegral_norm]
   simp [eDist_eq_eNorm_sub]
 
-theorem edist_integral_le_lintegral_edist (hf : μ.Integrable f) (hg : μ.Integrable g) :
-    edist (∫ᵛ a, f a ∂[B; μ]) (∫ᵛ a, g a ∂[B; μ]) ≤
-      ‖B‖ₑ * ∫⁻ a, edist (f a) (g a) ∂μ.variation := by
-  rw [edist_dist]
+@[deprecated (since := "2026-11-27")]
+alias dist_integral_le_lintegral_edist := dist_integral_le_lintegral_eDist
+
+theorem eDist_integral_le_lintegral_eDist (hf : μ.Integrable f) (hg : μ.Integrable g) :
+    eDist (∫ᵛ a, f a ∂[B; μ]) (∫ᵛ a, g a ∂[B; μ]) ≤
+      ‖B‖ₑ * ∫⁻ a, eDist (f a) (g a) ∂μ.variation := by
+  rw [eDist_dist]
   apply ENNReal.ofReal_le_of_le_toReal
-  grw [dist_integral_le_lintegral_edist hf hg, ENNReal.toReal_mul, toReal_eNorm]
+  grw [dist_integral_le_lintegral_eDist hf hg, ENNReal.toReal_mul, toReal_eNorm]
+
+@[deprecated (since := "2026-11-27")]
+alias edist_integral_le_lintegral_edist := eDist_integral_le_lintegral_eDist
 
 theorem frequently_ae_ne_zero_of_integral_ne_zero
     (h : ∫ᵛ a, f a ∂[B; μ] ≠ 0) : ∃ᶠ a in ae μ.variation, f a ≠ 0 :=

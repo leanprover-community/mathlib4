@@ -59,10 +59,10 @@ points `e 0`, ..., `e N`. If more than one point are at the same distance from `
 noncomputable def nearestPtInd (e : ℕ → α) : ℕ → α →ₛ ℕ
   | 0 => const α 0
   | N + 1 =>
-    piecewise (⋂ k ≤ N, { x | edist (e (N + 1)) x < edist (e k) x })
+    piecewise (⋂ k ≤ N, { x | eDist (e (N + 1)) x < eDist (e k) x })
       (MeasurableSet.iInter fun _ =>
         MeasurableSet.iInter fun _ =>
-          measurableSet_lt measurable_edist_right measurable_edist_right)
+          measurableSet_lt measurable_eDist_right measurable_eDist_right)
       (const α <| N + 1) (nearestPtInd e N)
 
 /-- `nearestPt e N x` is the nearest point to `x` among the points `e 0`, ..., `e N`. If more than
@@ -81,7 +81,7 @@ theorem nearestPt_zero (e : ℕ → α) : nearestPt e 0 = const α (e 0) :=
 
 theorem nearestPtInd_succ (e : ℕ → α) (N : ℕ) (x : α) :
     nearestPtInd e (N + 1) x =
-      if ∀ k ≤ N, edist (e (N + 1)) x < edist (e k) x then N + 1 else nearestPtInd e N x := by
+      if ∀ k ≤ N, eDist (e (N + 1)) x < eDist (e k) x then N + 1 else nearestPtInd e N x := by
   simp only [nearestPtInd, coe_piecewise, Set.piecewise]
   congr
   simp
@@ -94,8 +94,8 @@ theorem nearestPtInd_le (e : ℕ → α) (N : ℕ) (x : α) : nearestPtInd e N x
     split_ifs
     exacts [le_rfl, ihN.trans N.le_succ]
 
-theorem edist_nearestPt_le (e : ℕ → α) (x : α) {k N : ℕ} (hk : k ≤ N) :
-    edist (nearestPt e N x) x ≤ edist (e k) x := by
+theorem eDist_nearestPt_le (e : ℕ → α) (x : α) {k N : ℕ} (hk : k ≤ N) :
+    eDist (nearestPt e N x) x ≤ eDist (e k) x := by
   induction N generalizing k with
   | zero => simp [nonpos_iff_eq_zero.1 hk]
   | succ N ihN =>
@@ -108,12 +108,14 @@ theorem edist_nearestPt_le (e : ℕ → α) (x : α) {k N : ℕ} (hk : k ≤ N) 
       rcases hk.eq_or_lt with (rfl | hk)
       exacts [(ihN hlN).trans hxl, ihN (Nat.lt_succ_iff.1 hk)]
 
+@[deprecated (since := "2026-11-27")] alias edist_nearestPt_le := eDist_nearestPt_le
+
 theorem tendsto_nearestPt {e : ℕ → α} {x : α} (hx : x ∈ closure (range e)) :
     Tendsto (fun N => nearestPt e N x) atTop (𝓝 x) := by
   refine (atTop_basis.tendsto_iff nhds_basis_eball).2 fun ε hε => ?_
   rcases EMetric.mem_closure_iff.1 hx ε hε with ⟨_, ⟨N, rfl⟩, hN⟩
-  rw [edist_comm] at hN
-  exact ⟨N, trivial, fun n hn => (edist_nearestPt_le e x hn).trans_lt hN⟩
+  rw [eDist_comm] at hN
+  exact ⟨N, trivial, fun n hn => (eDist_nearestPt_le e x hn).trans_lt hN⟩
 
 variable [MeasurableSpace β] {f : β → α}
 
@@ -163,24 +165,30 @@ theorem tendsto_approxOn {f : β → α} (hf : Measurable f) {s : Set α} {y₀ 
     Subset.trans (image_closure_subset_closure_image continuous_subtypeVal)
       subset_union_right
 
-theorem edist_approxOn_mono {f : β → α} (hf : Measurable f) {s : Set α} {y₀ : α} (h₀ : y₀ ∈ s)
+theorem eDist_approxOn_mono {f : β → α} (hf : Measurable f) {s : Set α} {y₀ : α} (h₀ : y₀ ∈ s)
     [SeparableSpace s] (x : β) {m n : ℕ} (h : m ≤ n) :
-    edist (approxOn f hf s y₀ h₀ n x) (f x) ≤ edist (approxOn f hf s y₀ h₀ m x) (f x) := by
+    eDist (approxOn f hf s y₀ h₀ n x) (f x) ≤ eDist (approxOn f hf s y₀ h₀ m x) (f x) := by
   dsimp only [approxOn, coe_comp, Function.comp_def]
-  exact edist_nearestPt_le _ _ ((nearestPtInd_le _ _ _).trans h)
+  exact eDist_nearestPt_le _ _ ((nearestPtInd_le _ _ _).trans h)
 
-theorem edist_approxOn_le {f : β → α} (hf : Measurable f) {s : Set α} {y₀ : α} (h₀ : y₀ ∈ s)
-    [SeparableSpace s] (x : β) (n : ℕ) : edist (approxOn f hf s y₀ h₀ n x) (f x) ≤ edist y₀ (f x) :=
-  edist_approxOn_mono hf h₀ x zero_le
+@[deprecated (since := "2026-11-27")] alias edist_approxOn_mono := eDist_approxOn_mono
 
-theorem edist_approxOn_y0_le {f : β → α} (hf : Measurable f) {s : Set α} {y₀ : α} (h₀ : y₀ ∈ s)
+theorem eDist_approxOn_le {f : β → α} (hf : Measurable f) {s : Set α} {y₀ : α} (h₀ : y₀ ∈ s)
+    [SeparableSpace s] (x : β) (n : ℕ) : eDist (approxOn f hf s y₀ h₀ n x) (f x) ≤ eDist y₀ (f x) :=
+  eDist_approxOn_mono hf h₀ x zero_le
+
+@[deprecated (since := "2026-11-27")] alias edist_approxOn_le := eDist_approxOn_le
+
+theorem eDist_approxOn_y0_le {f : β → α} (hf : Measurable f) {s : Set α} {y₀ : α} (h₀ : y₀ ∈ s)
     [SeparableSpace s] (x : β) (n : ℕ) :
-    edist y₀ (approxOn f hf s y₀ h₀ n x) ≤ edist y₀ (f x) + edist y₀ (f x) :=
+    eDist y₀ (approxOn f hf s y₀ h₀ n x) ≤ eDist y₀ (f x) + eDist y₀ (f x) :=
   calc
-    edist y₀ (approxOn f hf s y₀ h₀ n x) ≤
-        edist y₀ (f x) + edist (approxOn f hf s y₀ h₀ n x) (f x) :=
-      edist_triangle_right _ _ _
-    _ ≤ edist y₀ (f x) + edist y₀ (f x) := by grw [edist_approxOn_le hf h₀ x n]
+    eDist y₀ (approxOn f hf s y₀ h₀ n x) ≤
+        eDist y₀ (f x) + eDist (approxOn f hf s y₀ h₀ n x) (f x) :=
+      eDist_triangle_right _ _ _
+    _ ≤ eDist y₀ (f x) + eDist y₀ (f x) := by grw [eDist_approxOn_le hf h₀ x n]
+
+@[deprecated (since := "2026-11-27")] alias edist_approxOn_y0_le := eDist_approxOn_y0_le
 
 end SimpleFunc
 

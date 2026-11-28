@@ -89,7 +89,7 @@ private theorem MonotoneOn.eventually_le_two_mul' {S : ℝ → ℝ} {a : ℝ}
   have hdiam (n : ℕ) : Metric.ediam (En n) ≤ ENNReal.ofReal ((2 ^ n * S a)⁻¹) := by
     apply Metric.ediam_le
     intro x hx y hy
-    rw [edist_le_ofReal (by positivity)]
+    rw [eDist_le_ofReal (by positivity)]
     rcases le_total x y with h | h
     · rw [Real.dist_eq, abs_of_nonpos (by linarith), neg_sub]
       exact hkey hx hy

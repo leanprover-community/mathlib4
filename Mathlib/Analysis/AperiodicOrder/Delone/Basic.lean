@@ -120,13 +120,13 @@ lemma packingRadius_lt_dist_of_mem_ne (D : DeloneSet X) {x y : X}
     (hx : x ∈ D) (hy : y ∈ D) (hne : x ≠ y) :
     D.packingRadius < dist x y := by
   have hsep : ENNReal.ofReal D.packingRadius < ENNReal.ofReal (dist x y) := by
-    simpa [edist_dist] using D.isSeparated_packingRadius hx hy hne
+    simpa [eDist_dist] using D.isSeparated_packingRadius hx hy hne
   exact (ENNReal.ofReal_lt_ofReal_iff (h := dist_pos.mpr hne)).1 hsep
 
 lemma exists_dist_le_coveringRadius (D : DeloneSet X) (x : X) :
     ∃ y ∈ D, dist x y ≤ D.coveringRadius := by
   obtain ⟨y, hy, hdist⟩ := D.isCover_coveringRadius (x := x) (by trivial)
-  exact ⟨y, hy, by simpa [edist_dist] using hdist⟩
+  exact ⟨y, hy, by simpa [eDist_dist] using hdist⟩
 
 lemma eq_of_mem_ball (D : DeloneSet X) {r : ℝ≥0} (hr : r ≤ D.packingRadius / 2)
     {x y z : X} (hx : x ∈ D) (hy : y ∈ D) (hxz : x ∈ ball z r) (hyz : y ∈ ball z r) :

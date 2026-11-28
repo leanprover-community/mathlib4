@@ -259,8 +259,8 @@ lemma lipschitzWith_thickenedIndicator {δ : ℝ} (δ_pos : 0 < δ) (E : Set α)
   intro x y
   wlog h : infEDist x E ≤ infEDist y E generalizing x y
   · specialize this y x (le_of_not_ge h)
-    rwa [edist_comm, edist_comm x]
-  simp_rw [edist_dist, NNReal.dist_eq, thickenedIndicator_apply, coe_toNNReal_eq_toReal]
+    rwa [eDist_comm, eDist_comm x]
+  simp_rw [eDist_dist, NNReal.dist_eq, thickenedIndicator_apply, coe_toNNReal_eq_toReal]
   rw [← ENNReal.toReal_sub_of_le (thickenedIndicatorAux_mono_infEDist _ h) (by finiteness)]
   simp only [thickenedIndicatorAux, abs_toReal, ne_eq, sub_eq_top_iff, one_ne_top, false_and,
     not_false_eq_true, and_true, ofReal_toReal]
@@ -269,19 +269,19 @@ lemma lipschitzWith_thickenedIndicator {δ : ℝ} (δ_pos : 0 < δ) (E : Set α)
   · calc 1 - infEDist x E * (↑δ.toNNReal)⁻¹ - (1 - infEDist y E * (↑δ.toNNReal)⁻¹)
     _ ≤ infEDist y E * (↑δ.toNNReal)⁻¹ - infEDist x E * (↑δ.toNNReal)⁻¹ := by
       rw [ENNReal.sub_sub_sub_cancel_left (by finiteness) h_le]
-    _ ≤ (↑δ.toNNReal)⁻¹ * edist x y := by
-      rw [← ENNReal.sub_mul (by simp [δ_pos]), mul_comm, edist_comm]
+    _ ≤ (↑δ.toNNReal)⁻¹ * eDist x y := by
+      rw [← ENNReal.sub_mul (by simp [δ_pos]), mul_comm, eDist_comm]
       gcongr
       simp only [tsub_le_iff_right]
-      exact infEDist_le_edist_add_infEDist
+      exact infEDist_le_eDist_add_infEDist
   · simp only [tsub_le_iff_right]
     rw [tsub_eq_zero_of_le (not_le.mp h_le).le, add_zero, mul_comm]
     calc 1
     _ ≤ infEDist y E * (↑δ.toNNReal)⁻¹ := (not_le.mp h_le).le
-    _ ≤ edist x y * (↑δ.toNNReal)⁻¹ + infEDist x E * (↑δ.toNNReal)⁻¹ := by
-      rw [← add_mul, edist_comm]
+    _ ≤ eDist x y * (↑δ.toNNReal)⁻¹ + infEDist x E * (↑δ.toNNReal)⁻¹ := by
+      rw [← add_mul, eDist_comm]
       gcongr
-      exact infEDist_le_edist_add_infEDist
+      exact infEDist_le_eDist_add_infEDist
 
 end thickenedIndicator
 

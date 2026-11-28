@@ -11,7 +11,7 @@ public import Mathlib.Topology.MetricSpace.Dilation
 # Dilation equivalence
 
 In this file we define `DilationEquiv X Y`, a type of bundled equivalences between `X` and `Y` such
-that `edist (f x) (f y) = r * edist x y` for some `r : ℝ≥0`, `r ≠ 0`.
+that `eDist (f x) (f y) = r * eDist x y` for some `r : ℝ≥0`, `r ≠ 0`.
 
 We also develop basic API about these equivalences.
 
@@ -25,7 +25,7 @@ We also develop basic API about these equivalences.
 
 open scoped NNReal ENNReal
 open Function Filter Bornology
-open Dilation (ratio ratio_ne_zero ratio_pos edist_eq)
+open Dilation (ratio ratio_ne_zero ratio_pos eDist_eq)
 
 section Class
 
@@ -34,14 +34,14 @@ variable (F : Type*) (X Y : outParam Type*) [PseudoEMetricSpace X] [PseudoEMetri
 /-- Typeclass saying that `F` is a type of bundled equivalences such that all `e : F` are
 dilations. -/
 class DilationEquivClass [EquivLike F X Y] : Prop where
-  edist_eq' : ∀ f : F, ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ x y : X, edist (f x) (f y) = r * edist x y
+  eDist_eq' : ∀ f : F, ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ x y : X, eDist (f x) (f y) = r * eDist x y
 
 instance (priority := 100) [EquivLike F X Y] [DilationEquivClass F X Y] : DilationClass F X Y :=
   { (inferInstance : FunLike F X Y), ‹DilationEquivClass F X Y› with }
 
 end Class
 
-/-- Type of equivalences `X ≃ Y` such that `∀ x y, edist (f x) (f y) = r * edist x y` for some
+/-- Type of equivalences `X ≃ Y` such that `∀ x y, eDist (f x) (f y) = r * eDist x y` for some
 `r : ℝ≥0`, `r ≠ 0`. -/
 structure DilationEquiv (X Y : Type*) [PseudoEMetricSpace X] [PseudoEMetricSpace Y]
     extends X ≃ Y, Dilation X Y
@@ -63,7 +63,7 @@ instance : EquivLike (X ≃ᵈ Y) X Y where
   coe_injective' := by rintro ⟨⟩ ⟨⟩ h -; congr; exact DFunLike.ext' h
 
 instance : DilationEquivClass (X ≃ᵈ Y) X Y where
-  edist_eq' f := f.edist_eq'
+  eDist_eq' f := f.eDist_eq'
 
 @[simp] theorem coe_toEquiv (e : X ≃ᵈ Y) : ⇑e.toEquiv = e := rfl
 
@@ -74,9 +74,9 @@ protected theorem ext {e e' : X ≃ᵈ Y} (h : ∀ x, e x = e' x) : e = e' :=
 /-- Inverse `DilationEquiv`. -/
 def symm (e : X ≃ᵈ Y) : Y ≃ᵈ X where
   toEquiv := e.toEquiv.symm
-  edist_eq' := by
+  eDist_eq' := by
     refine ⟨(ratio e)⁻¹, inv_ne_zero <| ratio_ne_zero e, e.surjective.forall₂.2 fun x y ↦ ?_⟩
-    simp_rw [Equiv.toFun_as_coe, Equiv.symm_apply_apply, coe_toEquiv, edist_eq]
+    simp_rw [Equiv.toFun_as_coe, Equiv.symm_apply_apply, coe_toEquiv, eDist_eq]
     rw [← mul_assoc, ← ENNReal.coe_mul, inv_mul_cancel₀ (ratio_ne_zero e),
       ENNReal.coe_one, one_mul]
 
@@ -105,7 +105,7 @@ lemma ratio_toDilation (e : X ≃ᵈ Y) : ratio e.toDilation = ratio e := rfl
 @[simps! -fullyApplied apply]
 def refl (X : Type*) [PseudoEMetricSpace X] : X ≃ᵈ X where
   toEquiv := .refl X
-  edist_eq' := ⟨1, one_ne_zero, fun _ _ ↦ by simp⟩
+  eDist_eq' := ⟨1, one_ne_zero, fun _ _ ↦ by simp⟩
 
 @[simp] theorem refl_symm : (refl X).symm = refl X := rfl
 @[simp] theorem ratio_refl : ratio (refl X) = 1 := Dilation.ratio_id
@@ -132,8 +132,8 @@ protected theorem injective (e : X ≃ᵈ Y) : Injective e := e.toEquiv.injectiv
 @[simp]
 theorem ratio_trans (e : X ≃ᵈ Y) (e' : Y ≃ᵈ Z) : ratio (e.trans e') = ratio e * ratio e' := by
   -- If `X` is trivial, then so is `Y`, otherwise we apply `Dilation.ratio_comp'`
-  by_cases! hX : ∀ x y : X, edist x y = 0 ∨ edist x y = ∞
-  · have hY : ∀ x y : Y, edist x y = 0 ∨ edist x y = ∞ := e.surjective.forall₂.2 fun x y ↦ by
+  by_cases! hX : ∀ x y : X, eDist x y = 0 ∨ eDist x y = ∞
+  · have hY : ∀ x y : Y, eDist x y = 0 ∨ eDist x y = ∞ := e.surjective.forall₂.2 fun x y ↦ by
       refine (hX x y).imp (fun h ↦ ?_) fun h ↦ ?_ <;> simp [*, Dilation.ratio_ne_zero]
     simp [Dilation.ratio_of_trivial, *]
   exact (Dilation.ratio_comp' (g := e'.toDilation) (f := e.toDilation) hX).trans (mul_comm _ _)
@@ -191,7 +191,7 @@ theorem coe_pow (e : X ≃ᵈ X) (n : ℕ) : ⇑(e ^ n) = e^[n] := by
 -- of `DilationEquivClass` assuming `IsometryEquivClass`.
 /-- Every isometry equivalence is a dilation equivalence of ratio `1`. -/
 def _root_.IsometryEquiv.toDilationEquiv (e : X ≃ᵢ Y) : X ≃ᵈ Y where
-  edist_eq' := ⟨1, one_ne_zero, by simpa using! e.isometry⟩
+  eDist_eq' := ⟨1, one_ne_zero, by simpa using! e.isometry⟩
   __ := e.toEquiv
 
 @[simp]

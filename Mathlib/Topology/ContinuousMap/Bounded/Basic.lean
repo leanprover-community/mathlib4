@@ -245,11 +245,13 @@ theorem nnDist_eq_iSup : nnDist f g = ⨆ x : α, nnDist (f x) (g x) :=
 
 @[deprecated (since := "2026-11-07")] alias nndist_eq_iSup := nnDist_eq_iSup
 
-theorem edist_eq_iSup : edist f g = ⨆ x, edist (f x) (g x) := by
+theorem eDist_eq_iSup : eDist f g = ⨆ x, eDist (f x) (g x) := by
   simp_rw [eDist_nnDist, nnDist_eq_iSup]
   refine ENNReal.coe_iSup ⟨nnDist f g, ?_⟩
   rintro - ⟨x, hx, rfl⟩
   exact nnDist_coe_le_nnDist x
+
+@[deprecated (since := "2026-11-27")] alias edist_eq_iSup := eDist_eq_iSup
 
 theorem tendsto_iff_tendstoUniformly {ι : Type*} {F : ι → α →ᵇ β} {f : α →ᵇ β} {l : Filter ι} :
     Tendsto F l (𝓝 f) ↔ TendstoUniformly (fun i => F i) f l :=

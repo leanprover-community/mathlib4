@@ -97,7 +97,7 @@ lemma exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]
     ∃ m' : VectorMeasure α E, (∀ s ∈ C, m' s = m s) ∧ ∀ s, ‖m' s‖ₑ ≤ μ s := by
   /- We will extend by continuity the function `m` from the class `C` to all measurable sets,
   thanks to the fact that `C` is dense. To implement this properly, we work in the space
-  `MeasuredSets μ` with the distance `edist s t = μ (s ∆ t)`. The assumptions guarantee that
+  `MeasuredSets μ` with the distance `eDist s t = μ (s ∆ t)`. The assumptions guarantee that
   `m` is Lipschitz on `C` there, and therefore extends to a Lipschitz function. We check that
   the extension is still finitely additive by approximating disjoint measurable sets by disjoint
   measurable sets in `C`. Moreover, the extension is still dominated by `μ`.
@@ -113,7 +113,7 @@ lemma exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]
     intro x ε εpos
     rcases h'C x ε x.property εpos with ⟨s, sC, hs⟩
     refine ⟨⟨s, hCmeas s sC⟩, ⟨s, sC, rfl⟩, ?_⟩
-    rw [edist_comm]
+    rw [eDist_comm]
     exact hs
   /- Let `m₀` be the function `m` expressed on the subtype of `MeasuredSets μ` made of
   elements of `C`. -/
@@ -121,8 +121,8 @@ lemma exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]
   -- It is Lipschitz continuous
   have lip : LipschitzWith 1 m₀ := by
     intro s t
-    have : edist s t = edist (s : MeasuredSets μ) t := rfl
-    simp only [ENNReal.coe_one, one_mul, this, MeasuredSets.edist_def, m₀, eDist_eq_eNorm_sub]
+    have : eDist s t = eDist (s : MeasuredSets μ) t := rfl
+    simp only [ENNReal.coe_one, one_mul, this, MeasuredSets.eDist_def, m₀, eDist_eq_eNorm_sub]
     rw [measure_symmDiff_eq (by exact s.val.property.nullMeasurableSet)
       (by exact t.val.property.nullMeasurableSet)]
     have Is : ((s : Set α) ∩ t) ∪ (s \ t) = (s : Set α) := Set.inter_union_sdiff _ _
@@ -171,7 +171,7 @@ lemma exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]
         C'_dense.extend_eq lip.continuous ⟨⟨t', hCmeas _ t'C⟩, ⟨t', t'C, rfl⟩⟩
       rw [← this, ← eDist_eq_eNorm_sub]
       apply (m₁_lip _ _).trans_lt
-      simp only [ENNReal.coe_one, MeasuredSets.edist_def, one_mul]
+      simp only [ENNReal.coe_one, MeasuredSets.eDist_def, one_mul]
       exact ht'
     -- `s'` and `t'` have no reason to be disjoint, but their intersection has small measure
     have hμ' : μ (s' ∩ t') < 2 * δ := calc
@@ -195,7 +195,7 @@ lemma exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]
         C'_dense.extend_eq lip.continuous ⟨⟨s'', hCmeas _ s''C⟩, ⟨s'', s''C, rfl⟩⟩
       rw [← this, ← eDist_eq_eNorm_sub]
       apply (m₁_lip _ _).trans_lt
-      simp only [ENNReal.coe_one, MeasuredSets.edist_def, one_mul]
+      simp only [ENNReal.coe_one, MeasuredSets.eDist_def, one_mul]
       exact hs''
     -- `s'' ∪ t'` also approximates well `s ∪ t`.
     have Ist : ‖m (s'' ∪ t') - m₁ ⟨s ∪ t, s.property.union t.property⟩‖ₑ < 4 * δ := by
@@ -204,7 +204,7 @@ lemma exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]
         C'_dense.extend_eq lip.continuous ⟨⟨s'' ∪ t', hCmeas _ s''t'C⟩, ⟨s'' ∪ t', s''t'C, rfl⟩⟩
       rw [← this, ← eDist_eq_eNorm_sub]
       apply (m₁_lip _ _).trans_lt
-      simp only [ENNReal.coe_one, MeasuredSets.edist_def, one_mul]
+      simp only [ENNReal.coe_one, MeasuredSets.eDist_def, one_mul]
       change μ ((s'' ∪ t') ∆ (s ∪ t)) < 4 * δ
       calc μ ((s'' ∪ t') ∆ (s ∪ t))
       _ ≤ μ (s'' ∆ s ∪ t' ∆ t) := measure_mono (Set.union_symmDiff_union_subset ..)

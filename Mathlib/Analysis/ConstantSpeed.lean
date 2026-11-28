@@ -31,7 +31,7 @@ as a composite `φ ∘ (variationOnFromTo f s a)`, where `φ` has unit speed and
 * `unique_unit_speed_on_Icc_zero` proves that if `f` and `f ∘ φ` are both naturally
   parameterized on closed intervals starting at `0`, then `φ` must be the identity on
   those intervals.
-* `edist_naturalParameterization_eq_zero` proves that if `f` has locally bounded variation, then
+* `eDist_naturalParameterization_eq_zero` proves that if `f` has locally bounded variation, then
   precomposing `naturalParameterization f s a` with `variationOnFromTo f s a` yields a function
   at distance zero from `f` on `s`.
 * `has_unit_speed_naturalParameterization` proves that if `f` has locally bounded
@@ -152,7 +152,7 @@ theorem HasConstantSpeedOnWith.Icc_Icc {x y z : ℝ} (hfs : HasConstantSpeedOnWi
       inf_of_le_right vz]
 
 theorem hasConstantSpeedOnWith_zero_iff :
-    HasConstantSpeedOnWith f s 0 ↔ ∀ x ∈ s, ∀ y ∈ s, edist (f x) (f y) = 0 := by
+    HasConstantSpeedOnWith f s 0 ↔ ∀ x ∈ s, ∀ y ∈ s, eDist (f x) (f y) = 0 := by
   dsimp [HasConstantSpeedOnWith]
   simp only [zero_mul, ENNReal.ofReal_zero, ← eVariationOn.eq_zero_iff]
   constructor
@@ -162,7 +162,7 @@ theorem hasConstantSpeedOnWith_zero_iff :
     obtain ⟨x, xs, y, ys, hxy⟩ := hfs
     rcases le_total x y with (xy | yx)
     · exact hxy (h xs ys x ⟨xs, le_rfl, xy⟩ y ⟨ys, xy, le_rfl⟩)
-    · rw [edist_comm] at hxy
+    · rw [eDist_comm] at hxy
       exact hxy (h ys xs y ⟨ys, le_rfl, yx⟩ x ⟨xs, yx, le_rfl⟩)
   · rintro h x _ y _
     simpa [h] using eVariationOn.mono (s := s) f inter_subset_left
@@ -230,19 +230,22 @@ theorem unique_unit_speed_on_Icc_zero {s t : ℝ} (hs : 0 ≤ s) {φ : ℝ → �
 /-- The natural parameterization of `f` on `s`, which, if `f` has locally bounded variation on `s`,
 * has unit speed on `s` (by `has_unit_speed_naturalParameterization`).
 * composed with `variationOnFromTo f s a`, is at distance zero from `f`
-  (by `edist_naturalParameterization_eq_zero`).
+  (by `eDist_naturalParameterization_eq_zero`).
 -/
 noncomputable def naturalParameterization (f : α → E) (s : Set α) (a : α) : ℝ → E :=
   f ∘ @Function.invFunOn _ _ ⟨a⟩ (variationOnFromTo f s a) s
 
-theorem edist_naturalParameterization_eq_zero {f : α → E} {s : Set α}
+theorem eDist_naturalParameterization_eq_zero {f : α → E} {s : Set α}
     (hf : LocallyBoundedVariationOn f s) {a : α} (as : a ∈ s) {b : α} (bs : b ∈ s) :
-    edist (naturalParameterization f s a (variationOnFromTo f s a b)) (f b) = 0 := by
+    eDist (naturalParameterization f s a (variationOnFromTo f s a b)) (f b) = 0 := by
   dsimp only [naturalParameterization]
   have : Nonempty α := ⟨a⟩
   obtain ⟨cs, hc⟩ := Function.invFunOn_pos (b := variationOnFromTo f s a b) ⟨b, bs, rfl⟩
   rw [variationOnFromTo.eq_left_iff hf as cs bs] at hc
-  apply variationOnFromTo.edist_zero_of_eq_zero hf cs bs hc
+  apply variationOnFromTo.eDist_zero_of_eq_zero hf cs bs hc
+
+@[deprecated (since := "2026-11-27")]
+alias edist_naturalParameterization_eq_zero := eDist_naturalParameterization_eq_zero
 
 theorem has_unit_speed_naturalParameterization (f : α → E) {s : Set α}
     (hf : LocallyBoundedVariationOn f s) {a : α} (as : a ∈ s) :
@@ -259,7 +262,7 @@ theorem has_unit_speed_naturalParameterization (f : α → E) {s : Set α}
     rw [←
       eVariationOn.comp_inter_Icc_eq_of_monotoneOn (naturalParameterization f s a) _
         (variationOnFromTo.monotoneOn hf as) bs cs]
-    rw [eVariationOn.eq_of_edist_zero_on (f' := f)]
+    rw [eVariationOn.eq_of_eDist_zero_on (f' := f)]
     · rw [variationOnFromTo.eq_of_le _ _ bc, ENNReal.ofReal_toReal (hf b c bs cs)]
     · rintro x ⟨xs, _, _⟩
-      exact edist_naturalParameterization_eq_zero hf as xs
+      exact eDist_naturalParameterization_eq_zero hf as xs

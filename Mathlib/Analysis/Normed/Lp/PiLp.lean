@@ -237,9 +237,9 @@ section DistNorm
 variable [Fintype ι]
 
 /-!
-### Definition of `edist`, `dist` and `norm` on `PiLp`
+### Definition of `eDist`, `dist` and `norm` on `PiLp`
 
-In this section we define the `edist`, `dist` and `norm` functions on `PiLp p α` without assuming
+In this section we define the `eDist`, `dist` and `norm` functions on `PiLp p α` without assuming
 `[Fact (1 ≤ p)]` or metric properties of the spaces `α i`. This allows us to provide the rewrite
 lemmas for each of three cases `p = 0`, `p = ∞` and `0 < p.to_real`.
 -/
@@ -257,23 +257,29 @@ Registering this separately allows for a future emetric-like structure on `PiLp 
 satisfying a relaxed triangle inequality. The terminology for this varies throughout the
 literature, but it is sometimes called a *quasi-metric* or *semi-metric*. -/
 instance : EDist (PiLp p β) where
-  edist f g :=
-    if p = 0 then {i | edist (f i) (g i) ≠ 0}.toFinite.toFinset.card
+  eDist f g :=
+    if p = 0 then {i | eDist (f i) (g i) ≠ 0}.toFinite.toFinset.card
     else
-      if p = ∞ then ⨆ i, edist (f i) (g i) else (∑ i, edist (f i) (g i) ^ p.toReal) ^ (1 / p.toReal)
+      if p = ∞ then ⨆ i, eDist (f i) (g i) else (∑ i, eDist (f i) (g i) ^ p.toReal) ^ (1 / p.toReal)
 
 variable {β}
 
-theorem edist_eq_card (f g : PiLp 0 β) :
-    edist f g = {i | edist (f i) (g i) ≠ 0}.toFinite.toFinset.card :=
+theorem eDist_eq_card (f g : PiLp 0 β) :
+    eDist f g = {i | eDist (f i) (g i) ≠ 0}.toFinite.toFinset.card :=
   ite_eq_left rfl
 
-theorem edist_eq_sum {p : ℝ≥0∞} (hp : 0 < p.toReal) (f g : PiLp p β) :
-    edist f g = (∑ i, edist (f i) (g i) ^ p.toReal) ^ (1 / p.toReal) :=
+@[deprecated (since := "2026-11-27")] alias edist_eq_card := eDist_eq_card
+
+theorem eDist_eq_sum {p : ℝ≥0∞} (hp : 0 < p.toReal) (f g : PiLp p β) :
+    eDist f g = (∑ i, eDist (f i) (g i) ^ p.toReal) ^ (1 / p.toReal) :=
   let hp' := ENNReal.toReal_pos_iff.mp hp
   (ite_eq_right hp'.1.ne').trans (ite_eq_right hp'.2.ne)
 
-theorem edist_eq_iSup (f g : PiLp ∞ β) : edist f g = ⨆ i, edist (f i) (g i) := rfl
+@[deprecated (since := "2026-11-27")] alias edist_eq_sum := eDist_eq_sum
+
+theorem eDist_eq_iSup (f g : PiLp ∞ β) : eDist f g = ⨆ i, eDist (f i) (g i) := rfl
+
+@[deprecated (since := "2026-11-27")] alias edist_eq_iSup := eDist_eq_iSup
 
 end EDist
 
@@ -284,19 +290,23 @@ variable [∀ i, PseudoEMetricSpace (β i)]
 
 /-- This holds independent of `p` and does not require `[Fact (1 ≤ p)]`. We keep it separate
 from `pi_Lp.pseudo_emetric_space` so it can be used also for `p < 1`. -/
-protected theorem edist_self (f : PiLp p β) : edist f f = 0 := by
+protected theorem eDist_self (f : PiLp p β) : eDist f f = 0 := by
   rcases p.trichotomy with (rfl | rfl | h)
-  · simp [edist_eq_card]
-  · simp [edist_eq_iSup]
-  · simp [edist_eq_sum h, ENNReal.zero_rpow_of_pos h, ENNReal.zero_rpow_of_pos (inv_pos.2 h)]
+  · simp [eDist_eq_card]
+  · simp [eDist_eq_iSup]
+  · simp [eDist_eq_sum h, ENNReal.zero_rpow_of_pos h, ENNReal.zero_rpow_of_pos (inv_pos.2 h)]
+
+@[deprecated (since := "2026-11-27")] protected alias edist_self := PiLp.eDist_self
 
 /-- This holds independent of `p` and does not require `[Fact (1 ≤ p)]`. We keep it separate
 from `pi_Lp.pseudo_emetric_space` so it can be used also for `p < 1`. -/
-protected theorem edist_comm (f g : PiLp p β) : edist f g = edist g f := by
+protected theorem eDist_comm (f g : PiLp p β) : eDist f g = eDist g f := by
   rcases p.trichotomy with (rfl | rfl | h)
-  · simp only [edist_eq_card, edist_comm]
-  · simp only [edist_eq_iSup, edist_comm]
-  · simp only [edist_eq_sum h, edist_comm]
+  · simp only [eDist_eq_card, eDist_comm]
+  · simp only [eDist_eq_iSup, eDist_comm]
+  · simp only [eDist_eq_sum h, eDist_comm]
+
+@[deprecated (since := "2026-11-27")] protected alias edist_comm := PiLp.eDist_comm
 
 end EDistProp
 
@@ -395,26 +405,26 @@ the product one, and then register an instance in which we replace the uniform s
 product one using this pseudoemetric space and `PseudoEMetricSpace.replaceUniformity`. -/
 @[instance_reducible]
 def pseudoEmetricAux : PseudoEMetricSpace (PiLp p β) where
-  edist_self := PiLp.edist_self p
-  edist_comm := PiLp.edist_comm p
-  edist_triangle f g h := by
+  eDist_self := PiLp.eDist_self p
+  eDist_comm := PiLp.eDist_comm p
+  eDist_triangle f g h := by
     rcases p.dichotomy with (rfl | hp)
-    · simp only [edist_eq_iSup]
+    · simp only [eDist_eq_iSup]
       cases isEmpty_or_nonempty ι
       · simp only [ciSup_of_empty, ENNReal.bot_eq_zero, add_zero, nonpos_iff_eq_zero]
       -- Porting note: `le_iSup` needed some help
       refine
-        iSup_le fun i => (edist_triangle _ (g i) _).trans <| add_le_add
-            (le_iSup (fun k => edist (f k) (g k)) i) (le_iSup (fun k => edist (g k) (h k)) i)
-    · simp only [edist_eq_sum (zero_lt_one.trans_le hp)]
+        iSup_le fun i => (eDist_triangle _ (g i) _).trans <| add_le_add
+            (le_iSup (fun k => eDist (f k) (g k)) i) (le_iSup (fun k => eDist (g k) (h k)) i)
+    · simp only [eDist_eq_sum (zero_lt_one.trans_le hp)]
       calc
-        (∑ i, edist (f i) (h i) ^ p.toReal) ^ (1 / p.toReal) ≤
-            (∑ i, (edist (f i) (g i) + edist (g i) (h i)) ^ p.toReal) ^ (1 / p.toReal) := by
+        (∑ i, eDist (f i) (h i) ^ p.toReal) ^ (1 / p.toReal) ≤
+            (∑ i, (eDist (f i) (g i) + eDist (g i) (h i)) ^ p.toReal) ^ (1 / p.toReal) := by
           gcongr
-          apply edist_triangle
+          apply eDist_triangle
         _ ≤
-            (∑ i, edist (f i) (g i) ^ p.toReal) ^ (1 / p.toReal) +
-              (∑ i, edist (g i) (h i) ^ p.toReal) ^ (1 / p.toReal) :=
+            (∑ i, eDist (f i) (g i) ^ p.toReal) ^ (1 / p.toReal) +
+              (∑ i, eDist (g i) (h i) ^ p.toReal) ^ (1 / p.toReal) :=
           ENNReal.Lp_add_le _ _ _ hp
 
 attribute [local instance] PiLp.pseudoEmetricAux
@@ -422,13 +432,15 @@ attribute [local instance] PiLp.pseudoEmetricAux
 set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary lemma used twice in the proof of `PiLp.pseudoMetricAux` below. Not intended for
 use outside this file. -/
-theorem iSup_edist_ne_top_aux {ι : Type*} [Finite ι] {α : ι → Type*}
-    [∀ i, PseudoMetricSpace (α i)] (f g : PiLp ∞ α) : (⨆ i, edist (f i) (g i)) ≠ ⊤ := by
+theorem iSup_eDist_ne_top_aux {ι : Type*} [Finite ι] {α : ι → Type*}
+    [∀ i, PseudoMetricSpace (α i)] (f g : PiLp ∞ α) : (⨆ i, eDist (f i) (g i)) ≠ ⊤ := by
   cases nonempty_fintype ι
   obtain ⟨M, hM⟩ := Finite.exists_le fun i => (⟨dist (f i) (g i), dist_nonneg⟩ : ℝ≥0)
   refine ne_of_lt ((iSup_le fun i => ?_).trans_lt (@ENNReal.coe_lt_top M))
-  simp only [edist, PseudoMetricSpace.edist_dist, ENNReal.ofReal_eq_coe_nnreal dist_nonneg]
+  simp only [eDist, PseudoMetricSpace.eDist_dist, ENNReal.ofReal_eq_coe_nnreal dist_nonneg]
   exact mod_cast hM i
+
+@[deprecated (since := "2026-11-27")] alias iSup_edist_ne_top_aux := iSup_eDist_ne_top_aux
 
 /-- Endowing the space `PiLp p α` with the `L^p` pseudometric structure. This definition is not
 satisfactory, as it does not register the fact that the topology, the uniform structure, and the
@@ -452,58 +464,58 @@ abbrev pseudoMetricAux : PseudoMetricSpace (PiLp p α) :=
         · exact rpow_nonneg (Fintype.sum_nonneg fun i ↦ by positivity) (1 / p.toReal))
     fun f g => by
     rcases p.dichotomy with (rfl | h)
-    · rw [edist_eq_iSup, dist_eq_iSup]
+    · rw [eDist_eq_iSup, dist_eq_iSup]
       cases isEmpty_or_nonempty ι
       · simp
       · refine ENNReal.eq_of_forall_le_nnreal_iff fun r ↦ ?_
         have : BddAbove <| .range fun i ↦ dist (f i) (g i) := Finite.bddAbove_range _
         simp [ciSup_le_iff this]
     · have : 0 < p.toReal := by rw [ENNReal.toReal_pos_iff_ne_top]; rintro rfl; norm_num at h
-      simp only [edist_eq_sum, edist_dist, dist_eq_sum, this]
+      simp only [eDist_eq_sum, eDist_dist, dist_eq_sum, this]
       rw [← ENNReal.ofReal_rpow_of_nonneg (by simp [Finset.sum_nonneg, Real.rpow_nonneg]) (by simp)]
       simp [Real.rpow_nonneg, ENNReal.ofReal_sum_of_nonneg, ← ENNReal.ofReal_rpow_of_nonneg]
 
 attribute [local instance] PiLp.pseudoMetricAux
 
 variable {p β} in
-private theorem edist_apply_le_edist_aux (x y : PiLp p β) (i : ι) :
-    edist (x i) (y i) ≤ edist x y := by
+private theorem eDist_apply_le_eDist_aux (x y : PiLp p β) (i : ι) :
+    eDist (x i) (y i) ≤ eDist x y := by
   rcases p.dichotomy with (rfl | h)
-  · simpa only [edist_eq_iSup] using le_iSup (fun i => edist (x i) (y i)) i
+  · simpa only [eDist_eq_iSup] using le_iSup (fun i => eDist (x i) (y i)) i
   · have cancel : p.toReal * (1 / p.toReal) = 1 := mul_div_cancel₀ 1 (zero_lt_one.trans_le h).ne'
-    rw [edist_eq_sum (zero_lt_one.trans_le h)]
+    rw [eDist_eq_sum (zero_lt_one.trans_le h)]
     calc
-      edist (x i) (y i) = (edist (x i) (y i) ^ p.toReal) ^ (1 / p.toReal) := by
+      eDist (x i) (y i) = (eDist (x i) (y i) ^ p.toReal) ^ (1 / p.toReal) := by
         simp [← ENNReal.rpow_mul, cancel, -one_div]
-      _ ≤ (∑ i, edist (x i) (y i) ^ p.toReal) ^ (1 / p.toReal) := by
+      _ ≤ (∑ i, eDist (x i) (y i) ^ p.toReal) ^ (1 / p.toReal) := by
         grw [← Finset.single_le_sum (fun i _ => (bot_le : (0 : ℝ≥0∞) ≤ _)) (Finset.mem_univ i)]
 
 private lemma lipschitzWith_ofLp_aux : LipschitzWith 1 (@ofLp p (∀ i, β i)) :=
-  .of_edist_le fun x y => by
-    simp_rw [edist_pi_def, Finset.sup_le_iff, Finset.mem_univ, forall_true_left]
-    exact edist_apply_le_edist_aux _ _
+  .of_eDist_le fun x y => by
+    simp_rw [eDist_pi_def, Finset.sup_le_iff, Finset.mem_univ, forall_true_left]
+    exact eDist_apply_le_eDist_aux _ _
 
 private lemma antilipschitzWith_ofLp_aux :
     AntilipschitzWith ((Fintype.card ι : ℝ≥0) ^ (1 / p).toReal) (@ofLp p (∀ i, β i)) := by
   intro x y
   rcases p.dichotomy with (rfl | h)
-  · simp only [edist_eq_iSup, ENNReal.div_top, ENNReal.toReal_zero, NNReal.rpow_zero,
+  · simp only [eDist_eq_iSup, ENNReal.div_top, ENNReal.toReal_zero, NNReal.rpow_zero,
       ENNReal.coe_one, one_mul, iSup_le_iff]
     -- Porting note: `Finset.le_sup` needed some help
-    exact fun i => Finset.le_sup (f := fun i => edist (x i) (y i)) (Finset.mem_univ i)
+    exact fun i => Finset.le_sup (f := fun i => eDist (x i) (y i)) (Finset.mem_univ i)
   · have pos : 0 < p.toReal := zero_lt_one.trans_le h
     have nonneg : 0 ≤ 1 / p.toReal := one_div_nonneg.2 (le_of_lt pos)
     have cancel : p.toReal * (1 / p.toReal) = 1 := mul_div_cancel₀ 1 (ne_of_gt pos)
-    rw [edist_eq_sum pos, ENNReal.toReal_div 1 p]
-    simp only [edist, ENNReal.toReal_one]
+    rw [eDist_eq_sum pos, ENNReal.toReal_div 1 p]
+    simp only [eDist, ENNReal.toReal_one]
     calc
-      (∑ i, edist (x i) (y i) ^ p.toReal) ^ (1 / p.toReal) ≤
-          (∑ _i, edist (ofLp x) (ofLp y) ^ p.toReal) ^ (1 / p.toReal) := by
+      (∑ i, eDist (x i) (y i) ^ p.toReal) ^ (1 / p.toReal) ≤
+          (∑ _i, eDist (ofLp x) (ofLp y) ^ p.toReal) ^ (1 / p.toReal) := by
         gcongr with i
-        exact Finset.le_sup (f := fun i => edist (x i) (y i)) (Finset.mem_univ i)
+        exact Finset.le_sup (f := fun i => eDist (x i) (y i)) (Finset.mem_univ i)
       _ =
           ((Fintype.card ι : ℝ≥0) ^ (1 / p.toReal) : ℝ≥0) *
-            edist (ofLp x) (ofLp y) := by
+            eDist (ofLp x) (ofLp y) := by
         simp only [nsmul_eq_mul, Finset.card_univ, ENNReal.rpow_one, Finset.sum_const,
           ENNReal.mul_rpow_of_nonneg _ _ nonneg, ← ENNReal.rpow_mul, cancel]
         have : (Fintype.card ι : ℝ≥0∞) = (Fintype.card ι : ℝ≥0) :=
@@ -645,13 +657,15 @@ theorem nnDist_eq_iSup {β : ι → Type*} [∀ i, PseudoMetricSpace (β i)] (x 
 section
 variable {β p}
 
-theorem edist_apply_le [∀ i, PseudoEMetricSpace (β i)] (x y : PiLp p β) (i : ι) :
-    edist (x i) (y i) ≤ edist x y :=
-  edist_apply_le_edist_aux x y i
+theorem eDist_apply_le [∀ i, PseudoEMetricSpace (β i)] (x y : PiLp p β) (i : ι) :
+    eDist (x i) (y i) ≤ eDist x y :=
+  eDist_apply_le_eDist_aux x y i
+
+@[deprecated (since := "2026-11-27")] alias edist_apply_le := eDist_apply_le
 
 theorem nnDist_apply_le [∀ i, PseudoMetricSpace (β i)] (x y : PiLp p β) (i : ι) :
     nnDist (x i) (y i) ≤ nnDist x y := by
-  simpa [← coe_nnreal_ennreal_nnDist] using edist_apply_le x y i
+  simpa [← coe_nnreal_ennreal_nnDist] using eDist_apply_le x y i
 
 @[deprecated (since := "2026-11-07")] alias nndist_apply_le := nnDist_apply_le
 
@@ -710,7 +724,7 @@ variable {β p}
 
 theorem eNorm_apply_le [∀ i, SeminormedAddCommGroup (β i)] (x : PiLp p β) (i : ι) :
     ‖x i‖ₑ ≤ ‖x‖ₑ := by
-  simpa using edist_apply_le x 0 i
+  simpa using eDist_apply_le x 0 i
 
 @[deprecated (since := "2026-11-06")] alias enorm_apply_le := eNorm_apply_le
 
@@ -791,8 +805,10 @@ theorem nnDist_eq_of_L1 (x y : PiLp 1 β) : nnDist x y = ∑ i, nnDist (x i) (y 
 @[deprecated (since := "2026-11-07")] alias nndist_eq_of_L1 := nnDist_eq_of_L1
 
 set_option backward.isDefEq.respectTransparency false in
-theorem edist_eq_of_L1 (x y : PiLp 1 β) : edist x y = ∑ i, edist (x i) (y i) := by
-  simp [PiLp.edist_eq_sum]
+theorem eDist_eq_of_L1 (x y : PiLp 1 β) : eDist x y = ∑ i, eDist (x i) (y i) := by
+  simp [PiLp.eDist_eq_sum]
+
+@[deprecated (since := "2026-11-27")] alias edist_eq_of_L1 := eDist_eq_of_L1
 
 end L1
 
@@ -835,8 +851,10 @@ theorem nnDist_eq_of_L2 (x y : PiLp 2 β) :
 
 @[deprecated (since := "2026-11-07")] alias nndist_eq_of_L2 := nnDist_eq_of_L2
 
-theorem edist_eq_of_L2 (x y : PiLp 2 β) :
-    edist x y = (∑ i, edist (x i) (y i) ^ 2) ^ (1 / 2 : ℝ) := by simp [PiLp.edist_eq_sum]
+theorem eDist_eq_of_L2 (x y : PiLp 2 β) :
+    eDist x y = (∑ i, eDist (x i) (y i) ^ 2) ^ (1 / 2 : ℝ) := by simp [PiLp.eDist_eq_sum]
+
+@[deprecated (since := "2026-11-27")] alias edist_eq_of_L2 := eDist_eq_of_L2
 
 end L2
 
@@ -1115,9 +1133,11 @@ lemma dist_single_same (i : ι) (b₁ b₂ : β i) :
   congr($(nnDist_single_same p β i b₁ b₂))
 
 @[simp]
-lemma edist_single_same (i : ι) (b₁ b₂ : β i) :
-    edist (single p i b₁) (single p i b₂) = edist b₁ b₂ := by
+lemma eDist_single_same (i : ι) (b₁ b₂ : β i) :
+    eDist (single p i b₁) (single p i b₂) = eDist b₁ b₂ := by
   simp only [eDist_nnDist, nnDist_single_same p β i b₁ b₂]
+
+@[deprecated (since := "2026-11-27")] alias edist_single_same := eDist_single_same
 
 end Single
 

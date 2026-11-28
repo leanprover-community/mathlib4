@@ -150,7 +150,7 @@ theorem ofFunction_eq_sSup : OuterMeasure.ofFunction m m_empty = sSup { μ | ∀
 `μ (s ∪ t) = μ s + μ t`, where `μ = MeasureTheory.OuterMeasure.ofFunction m m_empty`.
 
 E.g., if `α` is an (e)metric space and `m u = ∞` on any set of diameter `≥ r`, then this lemma
-implies that `μ (s ∪ t) = μ s + μ t` on any two sets such that `r ≤ edist x y` for all `x ∈ s`
+implies that `μ (s ∪ t) = μ s + μ t` on any two sets such that `r ≤ eDist x y` for all `x ∈ s`
 and `y ∈ t`. -/
 theorem ofFunction_union_of_top_of_nonempty_inter {s t : Set α}
     (h : ∀ u, (s ∩ u).Nonempty → (t ∩ u).Nonempty → m u = ∞) :
@@ -308,7 +308,7 @@ theorem comap_boundedBy {β} (f : β → α)
 `μ (s ∪ t) = μ s + μ t`, where `μ = MeasureTheory.OuterMeasure.boundedBy m`.
 
 E.g., if `α` is an (e)metric space and `m u = ∞` on any set of diameter `≥ r`, then this lemma
-implies that `μ (s ∪ t) = μ s + μ t` on any two sets such that `r ≤ edist x y` for all `x ∈ s`
+implies that `μ (s ∪ t) = μ s + μ t` on any two sets such that `r ≤ eDist x y` for all `x ∈ s`
 and `y ∈ t`. -/
 theorem boundedBy_union_of_top_of_nonempty_inter {s t : Set α}
     (h : ∀ u, (s ∩ u).Nonempty → (t ∩ u).Nonempty → m u = ∞) :

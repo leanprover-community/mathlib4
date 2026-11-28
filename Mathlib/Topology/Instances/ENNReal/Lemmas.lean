@@ -560,19 +560,21 @@ variable [EMetricSpace β]
 open ENNReal Filter
 
 /-- In an emetric ball, the distance between points is everywhere finite -/
-theorem edist_ne_top_of_mem_ball {a : β} {r : ℝ≥0∞} (x y : eball a r) : edist x.val y.val ≠ ∞ :=
+theorem eDist_ne_top_of_mem_ball {a : β} {r : ℝ≥0∞} (x y : eball a r) : eDist x.val y.val ≠ ∞ :=
   ne_of_lt <|
     calc
-      edist x y ≤ edist a x + edist a y := edist_triangle_left x.val y.val a
+      eDist x y ≤ eDist a x + eDist a y := eDist_triangle_left x.val y.val a
       _ < r + r := by
-        rw [edist_comm a x, edist_comm a y]; exact ENNReal.add_lt_add x.property y.property
+        rw [eDist_comm a x, eDist_comm a y]; exact ENNReal.add_lt_add x.property y.property
       _ ≤ ∞ := le_top
 
-/-- Each ball in an extended metric space gives us a metric space, as the edist
+@[deprecated (since := "2026-11-27")] alias edist_ne_top_of_mem_ball := eDist_ne_top_of_mem_ball
+
+/-- Each ball in an extended metric space gives us a metric space, as the eDist
 is everywhere finite. -/
 @[instance_reducible]
 def metricSpaceEMetricBall (a : β) (r : ℝ≥0∞) : MetricSpace (eball a r) :=
-  EMetricSpace.toMetricSpace edist_ne_top_of_mem_ball
+  EMetricSpace.toMetricSpace eDist_ne_top_of_mem_ball
 
 theorem nhds_eq_nhds_emetric_ball (a x : β) (r : ℝ≥0∞) (h : x ∈ eball a r) :
     𝓝 x = map ((↑) : eball a r → β) (𝓝 ⟨x, h⟩) :=
@@ -586,22 +588,25 @@ variable [PseudoEMetricSpace α]
 
 open EMetric
 
-theorem tendsto_iff_edist_tendsto_0 {l : Filter β} {f : β → α} {y : α} :
-    Tendsto f l (𝓝 y) ↔ Tendsto (fun x => edist (f x) y) l (𝓝 0) := by
+theorem tendsto_iff_eDist_tendsto_0 {l : Filter β} {f : β → α} {y : α} :
+    Tendsto f l (𝓝 y) ↔ Tendsto (fun x => eDist (f x) y) l (𝓝 0) := by
   simp only [Metric.nhds_basis_eball.tendsto_right_iff, Metric.mem_eball,
     @tendsto_order ℝ≥0∞ β _ _, forall_prop_of_false ENNReal.not_lt_zero, forall_const, true_and]
+
+@[deprecated (since := "2026-11-27")]
+alias tendsto_iff_edist_tendsto_0 := tendsto_iff_eDist_tendsto_0
 
 /-- Yet another metric characterization of Cauchy sequences on integers. This one is often the
 most efficient. -/
 theorem EMetric.cauchySeq_iff_le_tendsto_0 [Nonempty β] [SemilatticeSup β] {s : β → α} :
-    CauchySeq s ↔ ∃ b : β → ℝ≥0∞, (∀ n m N : β, N ≤ n → N ≤ m → edist (s n) (s m) ≤ b N) ∧
+    CauchySeq s ↔ ∃ b : β → ℝ≥0∞, (∀ n m N : β, N ≤ n → N ≤ m → eDist (s n) (s m) ≤ b N) ∧
       Tendsto b atTop (𝓝 0) := EMetric.cauchySeq_iff.trans <| by
   constructor
   · intro hs
     /- `s` is Cauchy sequence. Let `b n` be the diameter of the set `s '' Set.Ici n`. -/
     refine ⟨fun N => Metric.ediam (s '' Ici N), fun n m N hn hm => ?_, ?_⟩
     -- Prove that it bounds the distances of points in the Cauchy sequence
-    · exact Metric.edist_le_ediam_of_mem (mem_image_of_mem _ hn) (mem_image_of_mem _ hm)
+    · exact Metric.eDist_le_ediam_of_mem (mem_image_of_mem _ hn) (mem_image_of_mem _ hm)
     -- Prove that it tends to `0`, by using the Cauchy property of `s`
     · refine ENNReal.tendsto_nhds_zero.2 fun ε ε0 => ?_
       rcases hs ε ε0 with ⟨N, hN⟩
@@ -612,11 +617,11 @@ theorem EMetric.cauchySeq_iff_le_tendsto_0 [Nonempty β] [SemilatticeSup β] {s 
     have : ∀ᶠ n in atTop, b n < ε := b_lim.eventually (gt_mem_nhds εpos)
     rcases this.exists with ⟨N, hN⟩
     refine ⟨N, fun m hm n hn => ?_⟩
-    calc edist (s m) (s n) ≤ b N := b_bound m n N hm hn
+    calc eDist (s m) (s n) ≤ b N := b_bound m n N hm hn
     _ < ε := hN
 
-theorem continuous_of_le_add_edist {f : α → ℝ≥0∞} (C : ℝ≥0∞) (hC : C ≠ ∞)
-    (h : ∀ x y, f x ≤ f y + C * edist x y) : Continuous f := by
+theorem continuous_of_le_add_eDist {f : α → ℝ≥0∞} (C : ℝ≥0∞) (hC : C ≠ ∞)
+    (h : ∀ x y, f x ≤ f y + C * eDist x y) : Continuous f := by
   refine continuous_iff_continuousAt.2 fun x => ENNReal.tendsto_nhds_of_Icc fun ε ε0 => ?_
   rcases ENNReal.exists_nnreal_pos_mul_lt hC ε0.ne' with ⟨δ, δ0, hδ⟩
   rw [mul_comm] at hδ
@@ -624,24 +629,32 @@ theorem continuous_of_le_add_edist {f : α → ℝ≥0∞} (C : ℝ≥0∞) (hC 
   refine ⟨tsub_le_iff_right.2 <| (h x y).trans ?_, (h y x).trans ?_⟩ <;> grw [← hδ.le] <;> gcongr
   exacts [Metric.mem_closedEBall'.1 hy, Metric.mem_closedEBall.1 hy]
 
-theorem continuous_edist : Continuous fun p : α × α => edist p.1 p.2 := by
-  apply continuous_of_le_add_edist 2 (by decide)
+@[deprecated (since := "2026-11-27")] alias continuous_of_le_add_edist := continuous_of_le_add_eDist
+
+theorem continuous_eDist : Continuous fun p : α × α => eDist p.1 p.2 := by
+  apply continuous_of_le_add_eDist 2 (by decide)
   rintro ⟨x, y⟩ ⟨x', y'⟩
   calc
-    edist x y ≤ edist x x' + edist x' y' + edist y' y := edist_triangle4 _ _ _ _
-    _ = edist x' y' + (edist x x' + edist y y') := by rw [edist_comm y y']; abel
-    _ ≤ edist x' y' + (edist (x, y) (x', y') + edist (x, y) (x', y')) := by
+    eDist x y ≤ eDist x x' + eDist x' y' + eDist y' y := eDist_triangle4 _ _ _ _
+    _ = eDist x' y' + (eDist x x' + eDist y y') := by rw [eDist_comm y y']; abel
+    _ ≤ eDist x' y' + (eDist (x, y) (x', y') + eDist (x, y) (x', y')) := by
       gcongr <;> apply_rules [le_max_left, le_max_right]
-    _ = edist x' y' + 2 * edist (x, y) (x', y') := by rw [← mul_two, mul_comm]
+    _ = eDist x' y' + 2 * eDist (x, y) (x', y') := by rw [← mul_two, mul_comm]
+
+@[deprecated (since := "2026-11-27")] alias continuous_edist := continuous_eDist
 
 @[continuity, fun_prop]
-theorem Continuous.edist [TopologicalSpace β] {f g : β → α} (hf : Continuous f)
-    (hg : Continuous g) : Continuous fun b => edist (f b) (g b) :=
-  continuous_edist.comp (hf.prodMk hg :)
+theorem Continuous.eDist [TopologicalSpace β] {f g : β → α} (hf : Continuous f)
+    (hg : Continuous g) : Continuous fun b => eDist (f b) (g b) :=
+  continuous_eDist.comp (hf.prodMk hg :)
 
-theorem Filter.Tendsto.edist {f g : β → α} {x : Filter β} {a b : α} (hf : Tendsto f x (𝓝 a))
-    (hg : Tendsto g x (𝓝 b)) : Tendsto (fun x => edist (f x) (g x)) x (𝓝 (edist a b)) :=
-  (continuous_edist.tendsto (a, b)).comp (hf.prodMk_nhds hg)
+@[deprecated (since := "2026-11-27")] alias Continuous.edist := Continuous.eDist
+
+theorem Filter.Tendsto.eDist {f g : β → α} {x : Filter β} {a b : α} (hf : Tendsto f x (𝓝 a))
+    (hg : Tendsto g x (𝓝 b)) : Tendsto (fun x => eDist (f x) (g x)) x (𝓝 (eDist a b)) :=
+  (continuous_eDist.tendsto (a, b)).comp (hf.prodMk_nhds hg)
+
+@[deprecated (since := "2026-11-27")] alias Filter.Tendsto.edist := Filter.Tendsto.eDist
 
 theorem Metric.isClosed_closedEBall {a : α} {r : ℝ≥0∞} : IsClosed (closedEBall a r) :=
   isClosed_le (by fun_prop) continuous_const
@@ -649,8 +662,8 @@ theorem Metric.isClosed_closedEBall {a : α} {r : ℝ≥0∞} : IsClosed (closed
 @[simp]
 theorem Metric.ediam_closure (s : Set α) : ediam (closure s) = ediam s := by
   refine le_antisymm (ediam_le fun x hx y hy => ?_) (ediam_mono subset_closure)
-  have : edist x y ∈ closure (Iic (ediam s)) :=
-    map_mem_closure₂ continuous_edist hx hy fun x hx y hy => edist_le_ediam_of_mem hx hy
+  have : eDist x y ∈ closure (Iic (ediam s)) :=
+    map_mem_closure₂ continuous_eDist hx hy fun x hx y hy => eDist_le_ediam_of_mem hx hy
   rwa [closure_Iic] at this
 
 @[simp]
@@ -662,7 +675,7 @@ theorem isClosed_setOfPred_lipschitzOnWith {α β} [PseudoEMetricSpace α] [Pseu
     (s : Set α) : IsClosed { f : α → β | LipschitzOnWith K f s } := by
   simp only [LipschitzOnWith, ofPred_forall]
   refine isClosed_biInter fun x _ => isClosed_biInter fun y _ => isClosed_le ?_ ?_
-  exacts [.edist (continuous_apply x) (continuous_apply y), continuous_const]
+  exacts [.eDist (continuous_apply x) (continuous_apply y), continuous_const]
 
 @[deprecated (since := "2026-07-09")]
 alias isClosed_setOf_lipschitzOnWith := isClosed_setOfPred_lipschitzOnWith
@@ -924,11 +937,11 @@ lemma Dense.lipschitzWith_extend {α β : Type*}
     [PseudoEMetricSpace α] [EMetricSpace β] [CompleteSpace β]
     {s : Set α} (hs : Dense s) {f : s → β} {K : ℝ≥0} (hf : LipschitzWith K f) :
     LipschitzWith K (hs.extend f) := by
-  have : IsClosed {p : α × α | edist (hs.extend f p.1) (hs.extend f p.2) ≤ K * edist p.1 p.2} := by
+  have : IsClosed {p : α × α | eDist (hs.extend f p.1) (hs.extend f p.2) ≤ K * eDist p.1 p.2} := by
     have : Continuous (hs.extend f) := (hs.uniformContinuous_extend hf.uniformContinuous).continuous
     apply isClosed_le (by fun_prop)
     exact (ENNReal.continuous_const_mul (by simp)).comp (by fun_prop)
-  have : Dense {p : α × α | edist (hs.extend f p.1) (hs.extend f p.2) ≤ K * edist p.1 p.2} := by
+  have : Dense {p : α × α | eDist (hs.extend f p.1) (hs.extend f p.2) ≤ K * eDist p.1 p.2} := by
     apply (hs.prod hs).mono
     rintro ⟨x, y⟩ ⟨hx, hy⟩
     have Ax : hs.extend f x = f ⟨x, hx⟩ := hs.extend_eq hf.continuous ⟨x, hx⟩

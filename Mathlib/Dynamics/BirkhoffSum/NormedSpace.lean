@@ -133,9 +133,9 @@ is a uniformly equicontinuous family of functions. -/
 theorem uniformEquicontinuous_birkhoffAverage (hf : LipschitzWith 1 f) (hg : UniformContinuous g) :
     UniformEquicontinuous (birkhoffAverage 𝕜 f g) := by
   refine Metric.uniformity_basis_dist_le.uniformEquicontinuous_iff_right.2 fun ε hε ↦ ?_
-  rcases (uniformity_basis_edist_le.uniformContinuous_iff Metric.uniformity_basis_dist_le).1 hg ε hε
+  rcases (uniformity_basis_eDist_le.uniformContinuous_iff Metric.uniformity_basis_dist_le).1 hg ε hε
     with ⟨δ, hδ₀, hδε⟩
-  refine mem_uniformity_edist.2 ⟨δ, hδ₀, fun {x y} h n ↦ ?_⟩
+  refine mem_uniformity_eDist.2 ⟨δ, hδ₀, fun {x y} h n ↦ ?_⟩
   calc
     dist (birkhoffAverage 𝕜 f g n x) (birkhoffAverage 𝕜 f g n y)
       ≤ (∑ k ∈ Finset.range n, dist (g (f^[k] x)) (g (f^[k] y))) / n :=
@@ -143,7 +143,7 @@ theorem uniformEquicontinuous_birkhoffAverage (hf : LipschitzWith 1 f) (hg : Uni
     _ ≤ (∑ _k ∈ Finset.range n, ε) / n := by
       gcongr
       refine hδε _ _ ?_
-      simpa using (hf.iterate _).edist_le_mul_of_le h.le
+      simpa using (hf.iterate _).eDist_le_mul_of_le h.le
     _ = n * ε / n := by simp
     _ ≤ ε := by
       rcases eq_or_ne n 0 with hn | hn <;> simp [hn, hε.le, mul_div_cancel_left₀]

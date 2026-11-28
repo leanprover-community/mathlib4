@@ -57,8 +57,10 @@ theorem nnDist_smul_le (s : α) (x y : β) : nnDist (s • x) (s • y) ≤ ‖s
 theorem lipschitzWith_smul (s : α) : LipschitzWith ‖s‖₊ (s • · : β → β) :=
   lipschitzWith_iff_dist_le_mul.2 <| dist_smul_le _
 
-theorem edist_smul_le (s : α) (x y : β) : edist (s • x) (s • y) ≤ ‖s‖₊ • edist x y :=
+theorem eDist_smul_le (s : α) (x y : β) : eDist (s • x) (s • y) ≤ ‖s‖₊ • eDist x y :=
   lipschitzWith_smul s x y
+
+@[deprecated (since := "2026-11-27")] alias edist_smul_le := eDist_smul_le
 
 end SeminormedAddGroup
 
@@ -180,8 +182,10 @@ theorem nnDist_smul₀ (s : α) (x y : β) : nnDist (s • x) (s • y) = ‖s�
 
 @[deprecated (since := "2026-11-07")] alias nndist_smul₀ := nnDist_smul₀
 
-theorem edist_smul₀ (s : α) (x y : β) : edist (s • x) (s • y) = ‖s‖₊ • edist x y := by
+theorem eDist_smul₀ (s : α) (x y : β) : eDist (s • x) (s • y) = ‖s‖₊ • eDist x y := by
   simp only [eDist_nnDist, nnDist_smul₀, ENNReal.coe_mul, ENNReal.smul_def, smul_eq_mul]
+
+@[deprecated (since := "2026-11-27")] alias edist_smul₀ := eDist_smul₀
 
 instance NormSMulClass.toIsBoundedSMul : IsBoundedSMul α β :=
   .of_norm_smul_le fun r x ↦ (norm_smul r x).le

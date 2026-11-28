@@ -90,7 +90,7 @@ theorem eq_zero_iff_continuousWithinAt [TopologicalSpace E] (f : E → F) {D : S
   simp_rw [← hf, oscillationWithin, iInf_lt_iff] at ε0
   obtain ⟨S, hS, Sε⟩ := ε0
   refine Filter.mem_of_superset hS (fun y hy ↦ lt_of_le_of_lt ?_ Sε)
-  exact edist_le_ediam_of_mem (mem_preimage.1 hy) <| mem_preimage.1 (mem_of_mem_nhdsWithin xD hS)
+  exact eDist_le_ediam_of_mem (mem_preimage.1 hy) <| mem_preimage.1 (mem_of_mem_nhdsWithin xD hS)
 
 end OscillationWithin
 
@@ -120,7 +120,7 @@ theorem uniform_oscillationWithin (comp : IsCompact K) (hK : ∀ x ∈ K, oscill
       ⟨ENNReal.ofReal ((a - r) / 2), by simp [ar], ?_⟩
     refine fun y hy ↦ ⟨a - (a - r) / 2, by linarith,
       le_trans (ediam_mono (image_mono fun z hz ↦ ?_)) ha⟩
-    refine ⟨lt_of_le_of_lt (edist_triangle z y x) (lt_of_lt_of_eq (ENNReal.add_lt_add hz.1 hy) ?_),
+    refine ⟨lt_of_le_of_lt (eDist_triangle z y x) (lt_of_lt_of_eq (ENNReal.add_lt_add hz.1 hy) ?_),
       hz.2⟩
     rw [← ofReal_add (by linarith) (by linarith), sub_add_cancel]
   have S_cover : K ⊆ ⋃ r > 0, S r := by

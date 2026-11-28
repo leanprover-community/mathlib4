@@ -18,7 +18,7 @@ import Mathlib.Tactic.Basify.Attr
 
 We define `ENNReal = ℝ≥0∞ := WithTop ℝ≥0` to be the type of extended nonnegative real numbers,
 i.e., the interval `[0, +∞]`. This type is used as the codomain of a `MeasureTheory.Measure`,
-and of the extended distance `edist` in an `EMetricSpace`.
+and of the extended distance `eDist` in an `EMetricSpace`.
 
 In this file we set up many of the instances on `ℝ≥0∞`, and provide relationships between `ℝ≥0∞` and
 `ℝ≥0`, and between `ℝ≥0∞` and `ℝ`. In particular, we provide a coercion from `ℝ≥0` to `ℝ≥0∞` as well

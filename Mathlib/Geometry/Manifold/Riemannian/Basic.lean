@@ -78,7 +78,7 @@ This is a `Prop`-valued typeclass, on top of existing data.
 If you need to *construct* a distance using a Riemannian structure,
 see `EMetricSpace.ofRiemannianMetric`. -/
 class IsRiemannianManifold : Prop where
-  out (x y : M) : edist x y = riemannianEDist I x y
+  out (x y : M) : eDist x y = riemannianEDist I x y
 
 end
 
@@ -146,17 +146,20 @@ alias enorm_tangentSpace_vectorSpace := eNorm_tangentSpace_vectorSpace
 
 open MeasureTheory
 
-lemma lintegral_fderiv_lineMap_eq_edist {x y : E} :
+lemma lintegral_fderiv_lineMap_eq_eDist {x y : E} :
     ∫⁻ t in Icc 0 1, ‖fderivWithin ℝ (ContinuousAffineMap.lineMap (R := ℝ) x y) (Icc 0 1) t 1‖ₑ
-      = edist x y := by
-  have : edist x y = ∫⁻ t in Icc (0 : ℝ) 1, ‖y - x‖ₑ := by
-    simp [edist_comm x y, eDist_eq_eNorm_sub]
+      = eDist x y := by
+  have : eDist x y = ∫⁻ t in Icc (0 : ℝ) 1, ‖y - x‖ₑ := by
+    simp [eDist_comm x y, eDist_eq_eNorm_sub]
   rw [this]
   apply setLIntegral_congr_fun measurableSet_Icc (fun z hz ↦ ?_)
   rw [show y - x = fderiv ℝ (ContinuousAffineMap.lineMap (R := ℝ) x y) z 1 by simp]
   congr
   exact fderivWithin_eq_fderiv (uniqueDiffOn_Icc zero_lt_one _ hz)
     (ContinuousAffineMap.differentiableAt _)
+
+@[deprecated (since := "2026-11-27")]
+alias lintegral_fderiv_lineMap_eq_edist := lintegral_fderiv_lineMap_eq_eDist
 
 /-- An inner product vector space is a Riemannian manifold, i.e., the distance between two points
 is the infimum of the lengths of paths between these points. -/
@@ -171,7 +174,7 @@ instance : IsRiemannianManifold 𝓘(ℝ, F) F := by
       pathELength_eq_lintegral_mfderivWithin_Icc]
     simp only [mfderivWithin_eq_fderivWithin, eNorm_tangentSpace_vectorSpace]
     conv_lhs =>
-      rw [edist_comm, eDist_eq_eNorm_sub, show x = e 0 by simp [e], show y = e 1 by simp [e]]
+      rw [eDist_comm, eDist_eq_eNorm_sub, show x = e 0 by simp [e], show y = e 1 by simp [e]]
     exact (eNorm_sub_le_lintegral_derivWithin_Icc_of_contDiffOn_Icc D zero_le_one).trans_eq rfl
   · let γ := ContinuousAffineMap.lineMap (R := ℝ) x y
     have : riemannianEDist 𝓘(ℝ, F) x y ≤ pathELength 𝓘(ℝ, F) γ 0 1 := by
@@ -182,7 +185,7 @@ instance : IsRiemannianManifold 𝓘(ℝ, F) F := by
     apply this.trans_eq
     rw [pathELength_eq_lintegral_mfderivWithin_Icc]
     simp only [mfderivWithin_eq_fderivWithin, eNorm_tangentSpace_vectorSpace]
-    exact lintegral_fderiv_lineMap_eq_edist
+    exact lintegral_fderiv_lineMap_eq_eDist
 
 end
 
@@ -315,9 +318,9 @@ alias eventually_enorm_mfderivWithin_symm_extChartAt_lt :=
 set_option backward.isDefEq.respectTransparency false in
 /-- Around any point `x`, the Riemannian distance between two points is controlled by the distance
 in the extended chart. In other words, the extended chart is locally Lipschitz. -/
-lemma eventually_riemannianEDist_le_edist_extChartAt (x : M) :
+lemma eventually_riemannianEDist_le_eDist_extChartAt (x : M) :
     ∃ C > (0 : ℝ≥0), ∀ᶠ y in 𝓝 x,
-    riemannianEDist I x y ≤ C * edist (extChartAt I x x) (extChartAt I x y) := by
+    riemannianEDist I x y ≤ C * eDist (extChartAt I x x) (extChartAt I x y) := by
   /- To construct a path with controlled distance from `x` to `y`, we consider the segment from
   `extChartAt x x` to `extChartAt x y` in the chart, and we push it by `(extChartAt x).symm`. As
   the derivative of the latter is locally bounded, this only multiplies the length by a bounded
@@ -362,7 +365,7 @@ lemma eventually_riemannianEDist_le_edist_extChartAt (x : M) :
   apply this.trans
   -- Finally, we control the length of `γ` thanks to the boundedness of the derivative of
   -- `(extChartAt x).symm` on the whole controlled set.
-  rw [← lintegral_fderiv_lineMap_eq_edist, pathELength_eq_lintegral_mfderivWithin_Icc,
+  rw [← lintegral_fderiv_lineMap_eq_eDist, pathELength_eq_lintegral_mfderivWithin_Icc,
     ← lintegral_const_mul' _ _ ENNReal.coe_ne_top]
   apply setLIntegral_mono' measurableSet_Icc (fun t ht ↦ ?_)
   have : mfderiv[Icc 0 1] γ t =
@@ -382,16 +385,20 @@ lemma eventually_riemannianEDist_le_edist_extChartAt (x : M) :
   · simp only [mfderivWithin_eq_fderivWithin]
     exact le_of_eq rfl
 
+@[deprecated (since := "2026-11-27")]
+alias eventually_riemannianEDist_le_edist_extChartAt :=
+  eventually_riemannianEDist_le_eDist_extChartAt
+
 /-- If points are close for the topology, then their Riemannian distance is small. -/
 lemma eventually_riemannianEDist_lt (x : M) {c : ℝ≥0∞} (hc : 0 < c) :
     ∀ᶠ y in 𝓝 x, riemannianEDist I x y < c := by
-  rcases eventually_riemannianEDist_le_edist_extChartAt I x with ⟨C, C_pos, hC⟩
+  rcases eventually_riemannianEDist_le_eDist_extChartAt I x with ⟨C, C_pos, hC⟩
   have : (extChartAt I x) ⁻¹' (Metric.eball (extChartAt I x x) (c / C)) ∈ 𝓝 x := by
     apply (continuousAt_extChartAt x).preimage_mem_nhds
     exact Metric.eball_mem_nhds _ (ENNReal.div_pos hc.ne' (by simp))
   filter_upwards [this, hC] with y hy h'y
   apply h'y.trans_lt
-  have : edist (extChartAt I x x) (extChartAt I x y) < c / C := by
+  have : eDist (extChartAt I x x) (extChartAt I x y) < c / C := by
     simpa only [mem_preimage, Metric.mem_eball'] using hy
   rwa [ENNReal.lt_div_iff_mul_lt, mul_comm] at this
   · exact Or.inl (mod_cast C_pos.ne')

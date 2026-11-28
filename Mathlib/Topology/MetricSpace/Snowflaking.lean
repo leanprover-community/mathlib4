@@ -263,7 +263,7 @@ end UniformSpace
 ### Extended distance and a (pseudo) extended metric space structure
 
 Th extended distance on `Snowflaking X α hα₀ hα₁`
-is given by `edist x y = (edist x.ofSnowflaking y.ofSnowflaking) ^ α`.
+is given by `eDist x y = (eDist x.ofSnowflaking y.ofSnowflaking) ^ α`.
 
 If the original space is a (pseudo) extended metric space, then so is `Snowflaking X α hα₀ hα₁`.
 -/
@@ -273,21 +273,29 @@ section EDist
 variable [EDist X]
 
 instance : EDist (Snowflaking X α hα₀ hα₁) where
-  edist x y := edist x.ofSnowflaking y.ofSnowflaking ^ α
+  eDist x y := eDist x.ofSnowflaking y.ofSnowflaking ^ α
 
-theorem edist_def (x y : Snowflaking X α hα₀ hα₁) :
-    edist x y = edist x.ofSnowflaking y.ofSnowflaking ^ α :=
+theorem eDist_def (x y : Snowflaking X α hα₀ hα₁) :
+    eDist x y = eDist x.ofSnowflaking y.ofSnowflaking ^ α :=
   rfl
 
-@[simp]
-theorem edist_toSnowflaking_toSnowflaking (x y : X) :
-    edist (toSnowflaking x : Snowflaking X α hα₀ hα₁) (toSnowflaking y) = edist x y ^ α :=
-  rfl
+@[deprecated (since := "2026-11-27")] alias edist_def := eDist_def
 
 @[simp]
-theorem edist_ofSnowflaking_ofSnowflaking (x y : Snowflaking X α hα₀ hα₁) :
-    edist x.ofSnowflaking y.ofSnowflaking = edist x y ^ α⁻¹ := by
-  rw [edist_def, ENNReal.rpow_rpow_inv hα₀.ne']
+theorem eDist_toSnowflaking_toSnowflaking (x y : X) :
+    eDist (toSnowflaking x : Snowflaking X α hα₀ hα₁) (toSnowflaking y) = eDist x y ^ α :=
+  rfl
+
+@[deprecated (since := "2026-11-27")]
+alias edist_toSnowflaking_toSnowflaking := eDist_toSnowflaking_toSnowflaking
+
+@[simp]
+theorem eDist_ofSnowflaking_ofSnowflaking (x y : Snowflaking X α hα₀ hα₁) :
+    eDist x.ofSnowflaking y.ofSnowflaking = eDist x y ^ α⁻¹ := by
+  rw [eDist_def, ENNReal.rpow_rpow_inv hα₀.ne']
+
+@[deprecated (since := "2026-11-27")]
+alias edist_ofSnowflaking_ofSnowflaking := eDist_ofSnowflaking_ofSnowflaking
 
 end EDist
 
@@ -296,15 +304,15 @@ section PseudoEMetricSpace
 variable [PseudoEMetricSpace X]
 
 instance : PseudoEMetricSpace (Snowflaking X α hα₀ hα₁) where
-  edist_self x := by simp [edist_def, hα₀]
-  edist_comm x y := by rw [edist_def, edist_def, edist_comm]
-  edist_triangle x y z := by
-    simp only [edist_def]
-    grw [edist_triangle x.ofSnowflaking y.ofSnowflaking z.ofSnowflaking,
+  eDist_self x := by simp [eDist_def, hα₀]
+  eDist_comm x y := by rw [eDist_def, eDist_def, eDist_comm]
+  eDist_triangle x y z := by
+    simp only [eDist_def]
+    grw [eDist_triangle x.ofSnowflaking y.ofSnowflaking z.ofSnowflaking,
       ENNReal.rpow_add_le_add_rpow _ _ hα₀.le hα₁]
   toUniformSpace := inferInstance
-  uniformity_edist := by
-    have H : (𝓤 X).HasBasis (0 < ·) fun x => {p | edist p.1 p.2 < x ^ (α⁻¹)} := by
+  uniformity_eDist := by
+    have H : (𝓤 X).HasBasis (0 < ·) fun x => {p | eDist p.1 p.2 < x ^ (α⁻¹)} := by
       refine EMetric.mk_uniformity_basis (fun _ _ ↦ by positivity) fun ε hε ↦
         ⟨ε ^ α, by positivity, ?_⟩
       rw [ENNReal.rpow_rpow_inv hα₀.ne']
@@ -364,7 +372,7 @@ theorem ediam_image_ofSnowflaking (s : Set (Snowflaking X α hα₀ hα₁)) :
     ediam (ofSnowflaking '' s) = ediam s ^ α⁻¹ := by
   refine eq_of_forall_ge_iff fun c ↦ ?_
   simp only [ENNReal.rpow_inv_le_iff hα₀, ediam_le_iff, Set.forall_mem_image,
-    edist_ofSnowflaking_ofSnowflaking]
+    eDist_ofSnowflaking_ofSnowflaking]
 
 @[simp]
 theorem ediam_preimage_toSnowflaking (s : Set (Snowflaking X α hα₀ hα₁)) :
@@ -414,8 +422,8 @@ instance : PseudoMetricSpace (Snowflaking X α hα₀ hα₁) :=
       (by intro x y; cases x; cases y; rw [dist_toSnowflaking_toSnowflaking]; positivity)
       (by
         intro x y; cases x; cases y
-        rw [edist_toSnowflaking_toSnowflaking, dist_toSnowflaking_toSnowflaking,
-          ← ENNReal.ofReal_rpow_of_nonneg, ← edist_dist] <;> positivity)
+        rw [eDist_toSnowflaking_toSnowflaking, dist_toSnowflaking_toSnowflaking,
+          ← ENNReal.ofReal_rpow_of_nonneg, ← eDist_dist] <;> positivity)
   aux.replaceBornology fun s ↦ by
     rw [← isBounded_preimage_toSnowflaking_iff, Metric.isBounded_iff, Metric.isBounded_iff]
     constructor

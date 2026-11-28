@@ -30,7 +30,7 @@ then the original sequence is a Cauchy sequence. -/
 theorem cauchySeq_of_dist_le_of_summable (d : ℕ → ℝ) (hf : ∀ n, dist (f n) (f n.succ) ≤ d n)
     (hd : Summable d) : CauchySeq f := by
   lift d to ℕ → ℝ≥0 using fun n ↦ dist_nonneg.trans (hf n)
-  apply cauchySeq_of_edist_le_of_summable d (α := α) (f := f)
+  apply cauchySeq_of_eDist_le_of_summable d (α := α) (f := f)
   · exact mod_cast hf
   · exact mod_cast hd
 

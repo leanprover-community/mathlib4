@@ -28,7 +28,7 @@ public import Mathlib.Topology.GDelta.MetrizableSpace
 * `Continuous.measurable2` : if `f : α → β` and `g : α → γ` are measurable and `op : β × γ → δ`
   is continuous, then `fun x => op (f x, g x)` is measurable;
 * `Measurable.add` etc. : dot notation for arithmetic operations on `Measurable` predicates,
-  and similarly for `dist` and `edist`;
+  and similarly for `dist` and `eDist`;
 * `AEMeasurable.add` : similar dot notation for almost everywhere measurable functions;
 -/
 

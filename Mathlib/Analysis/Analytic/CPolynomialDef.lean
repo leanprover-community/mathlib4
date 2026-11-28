@@ -256,7 +256,7 @@ theorem HasFiniteFPowerSeriesOnBall.bound_zero_of_eq_zero (hf : ∀ y ∈ Metric
     · convert! hasSum_zero
       rw [hp, zero_apply]
     · rwa [Metric.mem_eball, eDist_eq_eNorm_sub, add_comm, add_sub_cancel_right,
-        ← edist_zero_right, ← Metric.mem_eball]
+        ← eDist_zero_right, ← Metric.mem_eball]
 
 /-- If `f` has a formal power series at `x` bounded by `0`, then `f` is equal to `0` in a
 neighborhood of `x`. -/
@@ -271,7 +271,7 @@ theorem HasFiniteFPowerSeriesOnBall.eq_const_of_bound_one
     (hf : HasFiniteFPowerSeriesOnBall f pf x 1 r) : ∀ y ∈ Metric.eball x r, f y = f x := by
   intro y hy
   rw [hf.eq_partialSum' y hy 1 le_rfl, hf.eq_partialSum' x
-    (by rw [Metric.mem_eball, edist_self]; exact hf.r_pos) 1 le_rfl]
+    (by rw [Metric.mem_eball, eDist_self]; exact hf.r_pos) 1 le_rfl]
   simp only [FormalMultilinearSeries.partialSum, Finset.range_one, Finset.sum_singleton]
   congr
   apply funext

@@ -536,16 +536,18 @@ protected theorem eNorm {β : Type*} [TopologicalSpace β] [ContinuousENorm β] 
 
 @[deprecated (since := "2026-11-06")] protected alias enorm := AEStronglyMeasurable.eNorm
 
-/-- Given a.e. strongly measurable functions `f` and `g`, `edist f g` is measurable.
+/-- Given a.e. strongly measurable functions `f` and `g`, `eDist f g` is measurable.
 
 Note that this lemma proves a.e. measurability, **not** a.e. strong measurability.
 This is an intentional decision: for functions taking values in ℝ≥0∞,
 a.e. measurability is much more useful than a.e. strong measurability. -/
 @[fun_prop]
-protected theorem edist {β : Type*} [PseudoEMetricSpace β] {f g : α → β}
+protected theorem eDist {β : Type*} [PseudoEMetricSpace β] {f g : α → β}
     (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) :
-    AEMeasurable (fun a => edist (f a) (g a)) μ :=
-  (continuous_edist.comp_aestronglyMeasurable (hf.prodMk hg)).aemeasurable
+    AEMeasurable (fun a => eDist (f a) (g a)) μ :=
+  (continuous_eDist.comp_aestronglyMeasurable (hf.prodMk hg)).aemeasurable
+
+@[deprecated (since := "2026-11-27")] protected alias edist := AEStronglyMeasurable.eDist
 
 @[fun_prop]
 protected theorem real_toNNReal {f : α → ℝ} (hf : AEStronglyMeasurable f μ) :

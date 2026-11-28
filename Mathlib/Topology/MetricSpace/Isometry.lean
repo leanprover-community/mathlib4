@@ -37,7 +37,7 @@ open scoped Topology ENNReal
 /-- An isometry (also known as isometric embedding) is a map preserving the edistance
 between pseudoemetric spaces, or equivalently the distance between pseudometric space. -/
 def Isometry [PseudoEMetricSpace α] [PseudoEMetricSpace β] (f : α → β) : Prop :=
-  ∀ x1 x2 : α, edist (f x1) (f x2) = edist x1 x2
+  ∀ x1 x2 : α, eDist (f x1) (f x2) = eDist x1 x2
 
 /-- On pseudometric spaces, a map is an isometry if and only if it preserves nonnegative
 distances. -/
@@ -76,11 +76,13 @@ variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ]
 variable {f : α → β} {x : α}
 
 /-- An isometry preserves edistances. -/
-theorem edist_eq (hf : Isometry f) (x y : α) : edist (f x) (f y) = edist x y :=
+theorem eDist_eq (hf : Isometry f) (x y : α) : eDist (f x) (f y) = eDist x y :=
   hf x y
 
+@[deprecated (since := "2026-11-27")] alias edist_eq := eDist_eq
+
 theorem lipschitzWith (h : Isometry f) : LipschitzWith 1 f :=
-  LipschitzWith.of_edist_le fun x y => (h x y).le
+  LipschitzWith.of_eDist_le fun x y => (h x y).le
 
 @[deprecated (since := "2026-08-16")] alias lipschitz := lipschitzWith
 
@@ -99,18 +101,18 @@ theorem _root_.isometry_id : Isometry (id : α → α) := fun _ _ => rfl
 
 theorem prodMap {δ} [PseudoEMetricSpace δ] {f : α → β} {g : γ → δ} (hf : Isometry f)
     (hg : Isometry g) : Isometry (Prod.map f g) := fun x y => by
-  simp only [Prod.edist_eq, Prod.map_fst, hf.edist_eq, Prod.map_snd, hg.edist_eq]
+  simp only [Prod.eDist_eq, Prod.map_fst, hf.eDist_eq, Prod.map_snd, hg.eDist_eq]
 
 protected theorem piMap {ι} [Fintype ι] {α β : ι → Type*} [∀ i, PseudoEMetricSpace (α i)]
     [∀ i, PseudoEMetricSpace (β i)] (f : ∀ i, α i → β i) (hf : ∀ i, Isometry (f i)) :
     Isometry (Pi.map f) := fun x y => by
-  simp only [edist_pi_def, (hf _).edist_eq, Pi.map_apply]
+  simp only [eDist_pi_def, (hf _).eDist_eq, Pi.map_apply]
 
 protected lemma single [Fintype ι] [DecidableEq ι] {E : ι → Type*} [∀ i, PseudoEMetricSpace (E i)]
     [∀ i, Zero (E i)] (i : ι) :
     Isometry (Pi.single (M := E) i) := by
   intro x y
-  rw [edist_pi_def]
+  rw [eDist_pi_def]
   refine le_antisymm (Finset.sup_le fun j ↦ ?_) (Finset.le_sup_of_le (Finset.mem_univ i) (by simp))
   obtain rfl | h := eq_or_ne i j
   · simp
@@ -118,12 +120,12 @@ protected lemma single [Fintype ι] [DecidableEq ι] {E : ι → Type*} [∀ i, 
 
 protected lemma inl [AddZeroClass α] [AddZeroClass β] : Isometry (AddMonoidHom.inl α β) := by
   intro x y
-  rw [Prod.edist_eq]
+  rw [Prod.eDist_eq]
   simp
 
 protected lemma inr [AddZeroClass α] [AddZeroClass β] : Isometry (AddMonoidHom.inr α β) := by
   intro x y
-  rw [Prod.edist_eq]
+  rw [Prod.eDist_eq]
   simp
 
 /-- The composition of isometries is an isometry. -/
@@ -132,7 +134,7 @@ theorem comp {g : β → γ} {f : α → β} (hg : Isometry g) (hf : Isometry f)
 
 omit [PseudoEMetricSpace α] in
 lemma postcomp_pi [Fintype α] {g : β → γ} (hg : Isometry g) : Isometry (fun f : α → β ↦ g ∘ f) :=
-  fun _ _ ↦ by simp [edist_pi_def, hg.edist_eq]
+  fun _ _ ↦ by simp [eDist_pi_def, hg.eDist_eq]
 
 /-- An isometry from a metric space is a uniform continuous map -/
 protected theorem uniformContinuous (hf : Isometry f) : UniformContinuous f :=
@@ -157,16 +159,16 @@ theorem right_inv {f : α → β} {g : β → α} (h : Isometry f) (hg : RightIn
 theorem preimage_closedEBall (h : Isometry f) (x : α) (r : ℝ≥0∞) :
     f ⁻¹' Metric.closedEBall (f x) r = Metric.closedEBall x r := by
   ext y
-  simp [h.edist_eq]
+  simp [h.eDist_eq]
 
 theorem preimage_eball (h : Isometry f) (x : α) (r : ℝ≥0∞) :
     f ⁻¹' Metric.eball (f x) r = Metric.eball x r := by
   ext y
-  simp [h.edist_eq]
+  simp [h.eDist_eq]
 
 /-- Isometries preserve the diameter in pseudoemetric spaces. -/
 theorem ediam_image (hf : Isometry f) (s : Set α) : Metric.ediam (f '' s) = Metric.ediam s :=
-  eq_of_forall_ge_iff fun d => by simp only [Metric.ediam_le_iff, forall_mem_image, hf.edist_eq]
+  eq_of_forall_ge_iff fun d => by simp only [Metric.ediam_le_iff, forall_mem_image, hf.eDist_eq]
 
 theorem ediam_range (hf : Isometry f) : Metric.ediam (range f) = Metric.ediam (univ : Set α) := by
   rw [← image_univ]
@@ -309,8 +311,10 @@ variable [PseudoEMetricSpace α] [PseudoEMetricSpace β]
 section
 variable [FunLike F α β] [IsometryClass F α β] (f : F)
 
-protected theorem edist_eq (x y : α) : edist (f x) (f y) = edist x y :=
-  (IsometryClass.isometry f).edist_eq x y
+protected theorem eDist_eq (x y : α) : eDist (f x) (f y) = eDist x y :=
+  (IsometryClass.isometry f).eDist_eq x y
+
+@[deprecated (since := "2026-11-27")] protected alias edist_eq := IsometryClass.eDist_eq
 
 protected theorem continuous : Continuous f :=
   (IsometryClass.isometry f).continuous
@@ -415,8 +419,10 @@ protected theorem injective (h : α ≃ᵢ β) : Injective h :=
 protected theorem surjective (h : α ≃ᵢ β) : Surjective h :=
   h.toEquiv.surjective
 
-protected theorem edist_eq (h : α ≃ᵢ β) (x y : α) : edist (h x) (h y) = edist x y :=
-  h.isometry.edist_eq x y
+protected theorem eDist_eq (h : α ≃ᵢ β) (x y : α) : eDist (h x) (h y) = eDist x y :=
+  h.isometry.eDist_eq x y
+
+@[deprecated (since := "2026-11-27")] protected alias edist_eq := IsometryEquiv.eDist_eq
 
 protected theorem dist_eq {α β : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β] (h : α ≃ᵢ β)
     (x y : α) : dist (h x) (h y) = dist x y :=
@@ -608,8 +614,8 @@ def piCongrLeft' {ι' : Type*} [Fintype ι] [Fintype ι'] {Y : ι → Type*}
     [∀ j, PseudoEMetricSpace (Y j)] (e : ι ≃ ι') : (∀ i, Y i) ≃ᵢ ∀ j, Y (e.symm j) where
   toEquiv := Equiv.piCongrLeft' _ e
   isometry_toFun x1 x2 := by
-    simp_rw [edist_pi_def, Finset.sup_univ_eq_iSup]
-    exact (Equiv.iSup_comp (g := fun b ↦ edist (x1 b) (x2 b)) e.symm)
+    simp_rw [eDist_pi_def, Finset.sup_univ_eq_iSup]
+    exact (Equiv.iSup_comp (g := fun b ↦ eDist (x1 b) (x2 b)) e.symm)
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
@@ -627,7 +633,7 @@ fintypes `α ⊕ β` and the pairs of functions on the types `α` and `β`.
 @[simps!]
 def sumArrowIsometryEquivProdArrow [Fintype α] [Fintype β] : (α ⊕ β → γ) ≃ᵢ (α → γ) × (β → γ) where
   toEquiv := Equiv.sumArrowEquivProdArrow _ _ _
-  isometry_toFun _ _ := by simp [Prod.edist_eq, edist_pi_def, Finset.sup_univ_eq_iSup, iSup_sum]
+  isometry_toFun _ _ := by simp [Prod.eDist_eq, eDist_pi_def, Finset.sup_univ_eq_iSup, iSup_sum]
 
 @[simp]
 theorem sumArrowIsometryEquivProdArrow_toHomeomorph {α β : Type*} [Fintype α] [Fintype β] :
@@ -635,17 +641,20 @@ theorem sumArrowIsometryEquivProdArrow_toHomeomorph {α β : Type*} [Fintype α]
     = Homeomorph.sumArrowHomeomorphProdArrow (ι := α) (ι' := β) (X := γ) :=
   rfl
 
-theorem _root_.Fin.edist_append_eq_max_edist (m n : ℕ) {x x2 : Fin m → α} {y y2 : Fin n → α} :
-    edist (Fin.append x y) (Fin.append x2 y2) = max (edist x x2) (edist y y2) := by
-  simp [edist_pi_def, Finset.sup_univ_eq_iSup, ← Equiv.iSup_comp (e := finSumFinEquiv),
+theorem _root_.Fin.eDist_append_eq_max_eDist (m n : ℕ) {x x2 : Fin m → α} {y y2 : Fin n → α} :
+    eDist (Fin.append x y) (Fin.append x2 y2) = max (eDist x x2) (eDist y y2) := by
+  simp [eDist_pi_def, Finset.sup_univ_eq_iSup, ← Equiv.iSup_comp (e := finSumFinEquiv),
     iSup_sum]
+
+@[deprecated (since := "2026-11-27")]
+alias _root_.Fin.edist_append_eq_max_edist := _root_.Fin.eDist_append_eq_max_eDist
 
 /-- The natural `IsometryEquiv` between `(Fin m → α) × (Fin n → α)` and `Fin (m + n) → α`.
 `Fin.appendEquiv` as an `IsometryEquiv`. -/
 @[simps!]
 def _root_.Fin.appendIsometry (m n : ℕ) : (Fin m → α) × (Fin n → α) ≃ᵢ (Fin (m + n) → α) where
   toEquiv := Fin.appendEquiv _ _
-  isometry_toFun _ _ := by simp_rw [Fin.appendEquiv, Fin.edist_append_eq_max_edist, Prod.edist_eq]
+  isometry_toFun _ _ := by simp_rw [Fin.appendEquiv, Fin.eDist_append_eq_max_eDist, Prod.eDist_eq]
 
 @[simp]
 theorem _root_.Fin.appendIsometry_toHomeomorph (m n : ℕ) :
@@ -667,13 +676,13 @@ variable (ι α)
 @[simps!]
 def funUnique [Unique ι] [Fintype ι] : (ι → α) ≃ᵢ α where
   toEquiv := Equiv.funUnique ι α
-  isometry_toFun x hx := by simp [edist_pi_def, Finset.univ_unique, Finset.sup_singleton]
+  isometry_toFun x hx := by simp [eDist_pi_def, Finset.univ_unique, Finset.sup_singleton]
 
 /-- `piFinTwoEquiv` as an `IsometryEquiv`. -/
 @[simps!]
 def piFinTwo (α : Fin 2 → Type*) [∀ i, PseudoEMetricSpace (α i)] : (∀ i, α i) ≃ᵢ α 0 × α 1 where
   toEquiv := piFinTwoEquiv α
-  isometry_toFun x hx := by simp [edist_pi_def, Fin.univ_succ, Prod.edist_eq]
+  isometry_toFun x hx := by simp [eDist_pi_def, Fin.univ_succ, Prod.eDist_eq]
 
 end PseudoEMetricSpace
 
@@ -739,7 +748,7 @@ open NNReal in
 lemma Isometry.lipschitzWith_iff {α β γ : Type*} [PseudoEMetricSpace α] [PseudoEMetricSpace β]
     [PseudoEMetricSpace γ] {f : α → β} {g : β → γ} (K : ℝ≥0) (h : Isometry g) :
     LipschitzWith K (g ∘ f) ↔ LipschitzWith K f := by
-  simp [LipschitzWith, h.edist_eq]
+  simp [LipschitzWith, h.eDist_eq]
 
 /-- If `f` is locally Lipschitz on `s` after precomposition with an isometry `g`, then `f` is
 locally Lipschitz on `g '' s`. -/
@@ -752,7 +761,7 @@ lemma Isometry.locallyLipschitzOn_image {α β γ : Type*} [EMetricSpace α] [Ps
   · rw [← hg.isEmbedding.map_nhdsWithin_eq]
     exact Filter.image_mem_map ht
   · rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩
-    simpa [hg.edist_eq] using hK ha hb
+    simpa [hg.eDist_eq] using hK ha hb
 
 namespace IsometryClass
 

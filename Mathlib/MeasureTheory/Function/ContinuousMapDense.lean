@@ -333,7 +333,7 @@ theorem boundedContinuousFunction_dense [SecondCountableTopologyEither α E] [Fa
       ∃ g : α →ᵇ E, eLpNorm ((f : α → E) - (g : α → E)) p μ ≤ ε ∧ MemLp g p μ :=
     (Lp.memLp f).exists_boundedContinuous_eLpNorm_sub_le hp hε.ne'
   refine ⟨g_mem.toLp _, ⟨g, rfl⟩, ?_⟩
-  rwa [Metric.mem_closedEBall', ← Lp.toLp_coeFn f (Lp.memLp f), Lp.edist_toLp_toLp]
+  rwa [Metric.mem_closedEBall', ← Lp.toLp_coeFn f (Lp.memLp f), Lp.eDist_toLp_toLp]
 
 /-- The closure of the subgroup of bounded continuous functions is all of `Lp`. -/
 theorem boundedContinuousFunction_topologicalClosure [SecondCountableTopologyEither α E]

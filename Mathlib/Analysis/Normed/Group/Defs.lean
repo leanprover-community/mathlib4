@@ -180,7 +180,7 @@ eNorm.
 
 We don't have `ESeminormedAddCommMonoid` extend `EMetricSpace`, since the canonical instance `ℝ≥0∞`
 is not an `EMetricSpace`. This is because `ℝ≥0∞` carries the order topology, which is distinct from
-the topology coming from `edist`. -/
+the topology coming from `eDist`. -/
 class ESeminormedAddCommMonoid (E : Type*) [TopologicalSpace E]
   extends ESeminormedAddMonoid E, AddCommMonoid E where
 
@@ -192,7 +192,7 @@ endowed with a continuous eNorm which is positive definite.
 
 We don't have `ENormedAddCommMonoid` extend `EMetricSpace`, since the canonical instance `ℝ≥0∞`
 is not an `EMetricSpace`. This is because `ℝ≥0∞` carries the order topology, which is distinct from
-the topology coming from `edist`. -/
+the topology coming from `eDist`. -/
 class ENormedAddCommMonoid (E : Type*) [TopologicalSpace E]
   extends ESeminormedAddCommMonoid E, ENormedAddMonoid E where
 

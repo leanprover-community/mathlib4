@@ -161,10 +161,10 @@ theorem convexHull_exists_dist_ge2 {s t : Set E} {x y : E} (hx : x ∈ convexHul
 theorem convexHull_ediam (s : Set E) : ediam (convexHull ℝ s) = ediam s := by
   refine (ediam_le fun x hx y hy => ?_).antisymm (ediam_mono <| subset_convexHull ℝ s)
   rcases convexHull_exists_dist_ge2 hx hy with ⟨x', hx', y', hy', H⟩
-  rw [edist_dist]
+  rw [eDist_dist]
   apply le_trans (ENNReal.ofReal_le_ofReal H)
-  rw [← edist_dist]
-  exact edist_le_ediam_of_mem hx' hy'
+  rw [← eDist_dist]
+  exact eDist_le_ediam_of_mem hx' hy'
 
 /-- Diameter of the convex hull of a set `s` equals the emetric diameter of `s`. -/
 @[simp]

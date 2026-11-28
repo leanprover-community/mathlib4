@@ -50,31 +50,39 @@ section
 namespace Option
 
 /-- Given some (extended) distance function on `α`, it can be extended to a distance function on
-`Option α` by defining `edist none a = 0` if `a = none` and `∞` otherwise. -/
+`Option α` by defining `eDist none a = 0` if `a = none` and `∞` otherwise. -/
 instance (priority := low) toEDist {α : Type u} [EDist α] : EDist (Option α) where
-  edist
+  eDist
   | none, (x : α) => ∞
   | none, none => 0
   | (x : α), none => ∞
-  | (x : α), (y : α) => edist x y
+  | (x : α), (y : α) => eDist x y
 
 variable [m : WeakPseudoEMetricSpace α]
 
 @[simp]
-theorem edist_none_none : edist (self := Option.toEDist (α := α))
+theorem eDist_none_none : eDist (self := Option.toEDist (α := α))
     none none = 0 := rfl
 
-@[simp]
-theorem edist_none_some {a : α} :
-    edist (self := Option.toEDist (α := α)) none a = ⊤ := rfl
+@[deprecated (since := "2026-11-27")] alias edist_none_none := eDist_none_none
 
 @[simp]
-theorem edist_some_none {a : α} :
-    edist (self := Option.toEDist (α := α)) a none = ⊤ := rfl
+theorem eDist_none_some {a : α} :
+    eDist (self := Option.toEDist (α := α)) none a = ⊤ := rfl
+
+@[deprecated (since := "2026-11-27")] alias edist_none_some := eDist_none_some
 
 @[simp]
-theorem edist_some_some {a b : α} :
-    edist (self := Option.toEDist (α := α)) a b = edist a b := rfl
+theorem eDist_some_none {a : α} :
+    eDist (self := Option.toEDist (α := α)) a none = ⊤ := rfl
+
+@[deprecated (since := "2026-11-27")] alias edist_some_none := eDist_some_none
+
+@[simp]
+theorem eDist_some_some {a b : α} :
+    eDist (self := Option.toEDist (α := α)) a b = eDist a b := rfl
+
+@[deprecated (since := "2026-11-27")] alias edist_some_some := eDist_some_some
 
 theorem some_eball (a : α) (r : ENNReal) :
     Option.some '' Metric.eball a r = Metric.eball (α := Option α) a r := by
@@ -88,21 +96,25 @@ theorem some_eball (a : α) (r : ENNReal) :
   | (y : α) =>
     exact ⟨y, h, rfl⟩
 
-lemma edist_self' {α : Type u} [TopologicalSpace α] (m : WeakPseudoEMetricSpace α) :
-    ∀ x : Option α, edist x x = 0
+lemma eDist_self' {α : Type u} [TopologicalSpace α] (m : WeakPseudoEMetricSpace α) :
+    ∀ x : Option α, eDist x x = 0
   | (_ : α) => by simp
   | none => rfl
 
-lemma edist_comm' {α : Type u} [TopologicalSpace α] (m : WeakPseudoEMetricSpace α) :
-    ∀ x y : Option α, edist x y = edist y x
-  | (_ : α), (_ : α) => by simp [m.edist_comm]
+@[deprecated (since := "2026-11-27")] alias edist_self' := eDist_self'
+
+lemma eDist_comm' {α : Type u} [TopologicalSpace α] (m : WeakPseudoEMetricSpace α) :
+    ∀ x y : Option α, eDist x y = eDist y x
+  | (_ : α), (_ : α) => by simp [m.eDist_comm]
   | (_ : α), none => by simp
   | none, (_ : α) => by simp
   | none, none => by simp
 
-lemma edist_triangle' {α : Type u} [TopologicalSpace α] (m : WeakPseudoEMetricSpace α) :
-    ∀ x y z : Option α, edist x z ≤ edist x y + edist y z
-  | (_ : α), (_ : α), (_ : α) => by simp [m.edist_triangle]
+@[deprecated (since := "2026-11-27")] alias edist_comm' := eDist_comm'
+
+lemma eDist_triangle' {α : Type u} [TopologicalSpace α] (m : WeakPseudoEMetricSpace α) :
+    ∀ x y z : Option α, eDist x z ≤ eDist x y + eDist y z
+  | (_ : α), (_ : α), (_ : α) => by simp [m.eDist_triangle]
   | none, (_ : α), (_ : α) => by simp
   | (_ : α), none, (_ : α) => by simp
   | none, none, (_ : α) => by simp
@@ -110,6 +122,8 @@ lemma edist_triangle' {α : Type u} [TopologicalSpace α] (m : WeakPseudoEMetric
   | none, (_ : α), none => by simp
   | (_ : α), none, none => by simp
   | none, none, none => by simp
+
+@[deprecated (since := "2026-11-27")] alias edist_triangle' := eDist_triangle'
 
 theorem ball_infty_of_pos {r : ENNReal} (hr : 0 < r) :
     Metric.eball (none : Option α) r = {none} := by
@@ -123,28 +137,28 @@ theorem ball_infty_of_pos {r : ENNReal} (hr : 0 < r) :
 structure, the structure extends naturally to `Option α`. -/
 abbrev WeakPseudoEMetricSpace.OfIsOpenEmbedding {α : Type u} [t : TopologicalSpace α]
     [TopologicalSpace (Option α)] [m : WeakPseudoEMetricSpace α] [inst : EDist (Option α)]
-    (h_edist : inst = Option.toEDist) (h : IsOpenEmbedding (some (α := α))) :
+    (h_eDist : inst = Option.toEDist) (h : IsOpenEmbedding (some (α := α))) :
     WeakPseudoEMetricSpace (Option α) where
-  edist := edist
-  edist_self := h_edist ▸ edist_self' m
-  edist_comm := h_edist ▸ edist_comm' m
-  edist_triangle := h_edist ▸ edist_triangle' m
+  eDist := eDist
+  eDist_self := h_eDist ▸ eDist_self' m
+  eDist_comm := h_eDist ▸ eDist_comm' m
+  eDist_triangle := h_eDist ▸ eDist_triangle' m
   topology_le s so := by
-    apply (@EMetric.isOpen_iff (Option α) _ (PseudoEMetricSpace.ofEDist edist
-      (h_edist ▸ edist_self' m) (h_edist ▸ edist_comm' m) (h_edist ▸ edist_triangle' m))).mpr
+    apply (@EMetric.isOpen_iff (Option α) _ (PseudoEMetricSpace.ofEDist eDist
+      (h_eDist ▸ eDist_self' m) (h_eDist ▸ eDist_comm' m) (h_eDist ▸ eDist_triangle' m))).mpr
     intro x xs
-    suffices ∃ ε > 0, @Metric.eball (Option α) Option.toEDist x ε ⊆ s by rwa [← h_edist] at this
+    suffices ∃ ε > 0, @Metric.eball (Option α) Option.toEDist x ε ⊆ s by rwa [← h_eDist] at this
     match x with
     | none =>
       exact ⟨1, by norm_num, by simpa [ball_infty_of_pos]⟩
     | (x : α) =>
-      obtain ⟨ε, εp, εt⟩ := (@EMetric.isOpen_iff α _ (PseudoEMetricSpace.ofEDist edist
-        m.edist_self m.edist_comm m.edist_triangle)).mp
+      obtain ⟨ε, εp, εt⟩ := (@EMetric.isOpen_iff α _ (PseudoEMetricSpace.ofEDist eDist
+        m.eDist_self m.eDist_comm m.eDist_triangle)).mp
           (m.topology_le _ <| h.continuous.isOpen_preimage s so) x (mem_preimage.mpr xs)
       exact ⟨ε, εp, some_eball x ε ▸ image_subset_iff.mpr εt⟩
   topology_eq_on_restrict := by
     intro x r
-    rw [h_edist]
+    rw [h_eDist]
     match x with
     | (x : α) =>
       obtain ⟨s', s'o, s's⟩ := m.topology_eq_on_restrict x r
@@ -168,16 +182,16 @@ abbrev WeakPseudoEMetricSpace.OfIsOpenEmbedding {α : Type u} [t : TopologicalSp
 structure, the structure extends naturally to `Option α`. -/
 abbrev WeakEMetricSpace.OfIsOpenEmbedding {α : Type u} [t : TopologicalSpace α]
     [TopologicalSpace (Option α)] [m : WeakEMetricSpace α] [inst : EDist (Option α)]
-    (h_edist : inst = Option.toEDist) (h : IsOpenEmbedding (some (α := α))) :
+    (h_eDist : inst = Option.toEDist) (h : IsOpenEmbedding (some (α := α))) :
     WeakEMetricSpace (Option α) :=
-  { toWeakPseudoEMetricSpace := WeakPseudoEMetricSpace.OfIsOpenEmbedding h_edist h,
-    eq_of_edist_eq_zero {x y} xy := by
-      rw [congr(@edist _ $h_edist x y)] at xy
+  { toWeakPseudoEMetricSpace := WeakPseudoEMetricSpace.OfIsOpenEmbedding h_eDist h,
+    eq_of_eDist_eq_zero {x y} xy := by
+      rw [congr(@eDist _ $h_eDist x y)] at xy
       cases x <;> cases y
       · rfl
       · simp at xy
       · simp at xy
-      rw [m.eq_of_edist_eq_zero xy]
+      rw [m.eq_of_eDist_eq_zero xy]
     }
 
 end Option
@@ -193,11 +207,11 @@ theorem WithTop.isOpenEmbedding_some : IsOpenEmbedding (some (α := α)) :=
 
 @[to_dual]
 instance [EDist α] : EDist (WithTop α) where
-  edist
+  eDist
   | ⊤, (x : α) => ∞
   | ⊤, ⊤ => 0
   | (x : α), ⊤ => ∞
-  | (x : α), (y : α) => edist x y
+  | (x : α), (y : α) => eDist x y
 
 /-- If `α` has a topology induced by a linear order and is a weak pseudo extended metric space,
 so is `WithTop α` -/
@@ -221,11 +235,11 @@ instance instWeakEMetricSpaceWithTop [m : WeakEMetricSpace α] : WeakEMetricSpac
 
 open scoped OnePoint in
 instance [EDist α] : EDist (OnePoint α) where
-  edist
+  eDist
   | ∞, (x : α) => none
   | ∞, ∞ => 0
   | (x : α), ∞ => none
-  | (x : α), (y : α) => edist x y
+  | (x : α), (y : α) => eDist x y
 
 /-- The one point compactification of a weak pseudo extended metric space is again a weak pseudo
 extended metric space. -/
@@ -260,66 +274,94 @@ noncomputable instance instWeakEMetricSpaceENat : WeakEMetricSpace ℕ∞ :=
 namespace ENNReal
 
 @[simp]
-theorem edist_top_coe (a : ℝ≥0) : edist ∞ ↑a = ∞ :=
+theorem eDist_top_coe (a : ℝ≥0) : eDist ∞ ↑a = ∞ :=
   rfl
 
+@[deprecated (since := "2026-11-27")] alias edist_top_coe := eDist_top_coe
+
 @[simp]
-theorem edist_coe_top (a : ℝ≥0) : edist ↑a ∞ = ∞ :=
+theorem eDist_coe_top (a : ℝ≥0) : eDist ↑a ∞ = ∞ :=
   rfl
+
+@[deprecated (since := "2026-11-27")] alias edist_coe_top := eDist_coe_top
 
 @[simp, norm_cast]
-theorem edist_coe (a b : ℝ≥0) : edist (a : ℝ≥0∞) b = edist a b :=
+theorem eDist_coe (a b : ℝ≥0) : eDist (a : ℝ≥0∞) b = eDist a b :=
   rfl
 
+@[deprecated (since := "2026-11-27")] alias edist_coe := eDist_coe
+
 @[simp]
-theorem edist_eq_top_iff (a b : ℝ≥0∞) : edist a b = ∞ ↔ a ≠ b ∧ (a = ∞ ∨ b = ∞) := by
+theorem eDist_eq_top_iff (a b : ℝ≥0∞) : eDist a b = ∞ ↔ a ≠ b ∧ (a = ∞ ∨ b = ∞) := by
   cases a <;> cases b <;> simp
 
-theorem edist_eq_max (a b : ℝ≥0∞) : edist a b = max (a - b) (b - a) := by
+@[deprecated (since := "2026-11-27")] alias edist_eq_top_iff := eDist_eq_top_iff
+
+theorem eDist_eq_max (a b : ℝ≥0∞) : eDist a b = max (a - b) (b - a) := by
   cases a <;> cases b
   case coe.coe =>
-    rw [edist_coe, ← coe_nnreal_ennreal_nnDist, NNReal.nnDist_eq]
+    rw [eDist_coe, ← coe_nnreal_ennreal_nnDist, NNReal.nnDist_eq]
     norm_cast
   all_goals simp
 
-theorem edist_le_iff_le_add_left (a b c : ℝ≥0∞) : edist a b ≤ c ↔ a ≤ c + b ∧ b ≤ c + a := by
-  simp [edist_eq_max]
+@[deprecated (since := "2026-11-27")] alias edist_eq_max := eDist_eq_max
 
-theorem edist_le_iff_le_add_right (a b c : ℝ≥0∞) : edist a b ≤ c ↔ a ≤ b + c ∧ b ≤ a + c := by
-  simp only [edist_le_iff_le_add_left, add_comm]
+theorem eDist_le_iff_le_add_left (a b c : ℝ≥0∞) : eDist a b ≤ c ↔ a ≤ c + b ∧ b ≤ c + a := by
+  simp [eDist_eq_max]
 
-theorem sub_le_dist (a b : ℝ≥0∞) : a - b ≤ edist a b := by
-  grw [edist_eq_max, ← le_max_left]
+@[deprecated (since := "2026-11-27")] alias edist_le_iff_le_add_left := eDist_le_iff_le_add_left
 
-theorem le_add_edist (a b : ℝ≥0∞) : a ≤ b + edist a b := by
+theorem eDist_le_iff_le_add_right (a b c : ℝ≥0∞) : eDist a b ≤ c ↔ a ≤ b + c ∧ b ≤ a + c := by
+  simp only [eDist_le_iff_le_add_left, add_comm]
+
+@[deprecated (since := "2026-11-27")] alias edist_le_iff_le_add_right := eDist_le_iff_le_add_right
+
+theorem sub_le_dist (a b : ℝ≥0∞) : a - b ≤ eDist a b := by
+  grw [eDist_eq_max, ← le_max_left]
+
+theorem le_add_eDist (a b : ℝ≥0∞) : a ≤ b + eDist a b := by
   grw [← sub_le_dist, ← le_add_tsub]
 
-@[simp]
-theorem edist_zero_left (a : ℝ≥0∞) : edist 0 a = a := by
-  simp [edist_eq_max]
+@[deprecated (since := "2026-11-27")] alias le_add_edist := le_add_eDist
 
 @[simp]
-theorem edist_zero_right (a : ℝ≥0∞) : edist a 0 = a := by
-  simp [edist_eq_max]
+theorem eDist_zero_left (a : ℝ≥0∞) : eDist 0 a = a := by
+  simp [eDist_eq_max]
+
+@[deprecated (since := "2026-11-27")] alias edist_zero_left := eDist_zero_left
 
 @[simp]
-theorem edist_add_left (a b : ℝ≥0∞) {c : ℝ≥0∞} (hc : c ≠ ∞) :
-    edist (c + a) (c + b) = edist a b := by
-  simp only [edist_eq_max, add_sub_add_eq_sub_left hc]
+theorem eDist_zero_right (a : ℝ≥0∞) : eDist a 0 = a := by
+  simp [eDist_eq_max]
+
+@[deprecated (since := "2026-11-27")] alias edist_zero_right := eDist_zero_right
 
 @[simp]
-theorem edist_add_right (a b : ℝ≥0∞) {c : ℝ≥0∞} (hc : c ≠ ∞) :
-    edist (a + c) (b + c) = edist a b := by
-  simp only [edist_eq_max, add_sub_add_eq_sub_right hc]
+theorem eDist_add_left (a b : ℝ≥0∞) {c : ℝ≥0∞} (hc : c ≠ ∞) :
+    eDist (c + a) (c + b) = eDist a b := by
+  simp only [eDist_eq_max, add_sub_add_eq_sub_left hc]
 
-theorem edist_mul_left (a b : ℝ≥0∞) {c : ℝ≥0∞} (hc : c ≠ ∞) :
-    edist (c * a) (c * b) = c * edist a b := by
-  simp_rw [edist_eq_max, mul_max, ENNReal.mul_sub fun _ _ => hc]
+@[deprecated (since := "2026-11-27")] alias edist_add_left := eDist_add_left
 
-theorem edist_mul_right (a b : ℝ≥0∞) {c : ℝ≥0∞} (hc : c ≠ ∞) :
-    edist (a * c) (b * c) = edist a b * c := by
-  simp_rw [edist_eq_max, max_mul, ENNReal.sub_mul fun _ _ => hc]
+@[simp]
+theorem eDist_add_right (a b : ℝ≥0∞) {c : ℝ≥0∞} (hc : c ≠ ∞) :
+    eDist (a + c) (b + c) = eDist a b := by
+  simp only [eDist_eq_max, add_sub_add_eq_sub_right hc]
+
+@[deprecated (since := "2026-11-27")] alias edist_add_right := eDist_add_right
+
+theorem eDist_mul_left (a b : ℝ≥0∞) {c : ℝ≥0∞} (hc : c ≠ ∞) :
+    eDist (c * a) (c * b) = c * eDist a b := by
+  simp_rw [eDist_eq_max, mul_max, ENNReal.mul_sub fun _ _ => hc]
+
+@[deprecated (since := "2026-11-27")] alias edist_mul_left := eDist_mul_left
+
+theorem eDist_mul_right (a b : ℝ≥0∞) {c : ℝ≥0∞} (hc : c ≠ ∞) :
+    eDist (a * c) (b * c) = eDist a b * c := by
+  simp_rw [eDist_eq_max, max_mul, ENNReal.sub_mul fun _ _ => hc]
+
+@[deprecated (since := "2026-11-27")] alias edist_mul_right := eDist_mul_right
 
 end ENNReal
 
---TODO: Add lemmas about `edist` on `ℕ∞` etc.
+--TODO: Add lemmas about `eDist` on `ℕ∞` etc.

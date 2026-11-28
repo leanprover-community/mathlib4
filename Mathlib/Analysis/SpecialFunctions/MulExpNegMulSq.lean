@@ -144,7 +144,7 @@ theorem dist_mulExpNegMulSq_le_two_mul_sqrt (hε : 0 < ε) (x y : ℝ) :
 theorem dist_mulExpNegMulSq_le_dist (hε : 0 < ε) {x y : ℝ} :
     dist (mulExpNegMulSq ε x) (mulExpNegMulSq ε y) ≤ dist x y := by
   have h := lipschitzWith_one_mulExpNegMulSq hε x y
-  rwa [ENNReal.coe_one, one_mul, ← (toReal_le_toReal (edist_ne_top _ _) (edist_ne_top _ _))] at h
+  rwa [ENNReal.coe_one, one_mul, ← (toReal_le_toReal (eDist_ne_top _ _) (eDist_ne_top _ _))] at h
 
 /-- For fixed `x : ℝ`, the mapping `mulExpNegMulSq ε x` converges pointwise to `x` as `ε → 0` -/
 theorem tendsto_mulExpNegMulSq {x : ℝ} :

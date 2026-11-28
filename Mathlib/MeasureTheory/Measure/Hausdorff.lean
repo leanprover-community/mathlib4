@@ -41,7 +41,7 @@ applied to `MeasureTheory.extend m`.
 
 We also define a predicate `MeasureTheory.OuterMeasure.IsMetric` which says that an outer measure
 is additive on metric separated pairs of sets: `μ (s ∪ t) = μ s + μ t` provided that
-`⨅ (x ∈ s) (y ∈ t), edist x y ≠ 0`. This is the property required for Carathéodory's theorem
+`⨅ (x ∈ s) (y ∈ t), eDist x y ≠ 0`. This is the property required for Carathéodory's theorem
 `MeasureTheory.OuterMeasure.IsMetric.borel_le_caratheodory`, so we prove this theorem for any
 metric outer measure, then prove that outer measures constructed using `mkMetric'` are metric outer
 measures.
@@ -165,7 +165,7 @@ theorem borel_le_caratheodory (hm : IsMetric μ) : borel X ≤ μ.caratheodory :
   set S : ℕ → Set X := fun n => {x ∈ s | (↑n)⁻¹ ≤ infEDist x t}
   have Ssep (n) : Metric.AreSeparated (S n) t :=
     ⟨n⁻¹, ENNReal.inv_ne_zero.2 (ENNReal.natCast_ne_top _),
-      fun x hx y hy ↦ hx.2.trans <| infEDist_le_edist_of_mem hy⟩
+      fun x hx y hy ↦ hx.2.trans <| infEDist_le_eDist_of_mem hy⟩
   have Ssep' : ∀ n, Metric.AreSeparated (S n) (s ∩ t) := fun n =>
     (Ssep n).mono Subset.rfl inter_subset_right
   have S_sub (n) : S n ⊆ s \ t := fun x hx ↦ ⟨hx.1, (Ssep n).subset_compl_right hx⟩
@@ -220,9 +220,9 @@ theorem borel_le_caratheodory (hm : IsMetric μ) : borel X ≤ μ.caratheodory :
     fun x hx y hy => ?_⟩
   have : infEDist y t < (↑(2 * j + r))⁻¹ := not_le.1 fun hle => hy.2 ⟨hy.1, hle⟩
   rcases infEDist_lt_iff.mp this with ⟨z, hzt, hyz⟩
-  have hxz : (↑(2 * i + 1 + r))⁻¹ ≤ edist x z := le_infEDist.1 hx.2 _ hzt
+  have hxz : (↑(2 * i + 1 + r))⁻¹ ≤ eDist x z := le_infEDist.1 hx.2 _ hzt
   apply ENNReal.le_of_add_le_add_right hyz.ne_top
-  refine le_trans ?_ (edist_triangle _ _ _)
+  refine le_trans ?_ (eDist_triangle _ _ _)
   refine (add_le_add le_rfl hyz.le).trans (Eq.trans_le ?_ hxz)
   rw [tsub_add_cancel_of_le A.le]
 
@@ -315,7 +315,7 @@ theorem mkMetric'_isMetric (m : Set X → ℝ≥0∞) : (mkMetric' m).IsMetric :
   rintro ε ⟨_, εr⟩
   refine boundedBy_union_of_top_of_nonempty_inter ?_
   rintro u ⟨x, hxs, hxu⟩ ⟨y, hyt, hyu⟩
-  have : ε < ediam u := εr.trans_le ((hr x hxs y hyt).trans <| edist_le_ediam_of_mem hxu hyu)
+  have : ε < ediam u := εr.trans_le ((hr x hxs y hyt).trans <| eDist_le_ediam_of_mem hxu hyu)
   exact iInf_eq_top.2 fun h => (this.not_ge h).elim
 
 /-- If `c ∉ {0, ∞}` and `m₁ d ≤ c * m₂ d` for `d < ε` for some `ε > 0`
@@ -608,7 +608,7 @@ theorem isSeparable_of_hausdorffMeasure_ne_top {d : ℝ} {s : Set X} (h : μH[d]
     refine ⟨range fun m : {n // (t n).Nonempty} ↦ m.property.some, countable_range _, fun x hx ↦ ?_⟩
     obtain ⟨n, hn⟩ := mem_iUnion.1 (hst hx)
     exact mem_biUnion (mem_range_self ⟨n, x, hn⟩)
-      (mem_closedEBall.2 ((edist_le_ediam_of_mem hn (Nonempty.some_mem _)).trans (htd n)))
+      (mem_closedEBall.2 ((eDist_le_ediam_of_mem hn (Nonempty.some_mem _)).trans (htd n)))
   exact ⟨c, hcc, hsc⟩
 
 variable (X) in
@@ -1100,7 +1100,7 @@ theorem hausdorffMeasure_lineMap_image (x y : P) (s : Set ℝ) :
 
 /-- The measure of a segment is the distance between its endpoints. -/
 @[simp]
-theorem hausdorffMeasure_affineSegment (x y : P) : μH[1] (affineSegment ℝ x y) = edist x y := by
+theorem hausdorffMeasure_affineSegment (x y : P) : μH[1] (affineSegment ℝ x y) = eDist x y := by
   rw [affineSegment, hausdorffMeasure_lineMap_image, hausdorffMeasure_real, Real.volume_Icc,
     sub_zero, ENNReal.ofReal_one, ← Algebra.algebraMap_eq_smul_one]
   exact (eDist_nnDist _ _).symm
@@ -1110,7 +1110,7 @@ end RealAffine
 /-- The measure of a segment is the distance between its endpoints. -/
 @[simp]
 theorem hausdorffMeasure_segment {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [MeasurableSpace E] [BorelSpace E] (x y : E) : μH[1] (segment ℝ x y) = edist x y := by
+    [MeasurableSpace E] [BorelSpace E] (x y : E) : μH[1] (segment ℝ x y) = eDist x y := by
   rw [← affineSegment_eq_segment, hausdorffMeasure_affineSegment]
 
 /--

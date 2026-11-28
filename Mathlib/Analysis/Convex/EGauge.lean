@@ -132,7 +132,7 @@ lemma mem_of_egauge_lt_one (hs : Balanced 𝕜 s) (hx : egauge 𝕜 s x < 1) : x
 
 lemma egauge_eq_zero_iff : egauge 𝕜 s x = 0 ↔ ∃ᶠ c : 𝕜 in 𝓝 0, x ∈ c • s := by
   refine (iInf₂_eq_bot _).trans ?_
-  rw [(nhds_basis_uniformity uniformity_basis_edist).frequently_iff]
+  rw [(nhds_basis_uniformity uniformity_basis_eDist).frequently_iff]
   simp [and_comm]
 
 @[simp]

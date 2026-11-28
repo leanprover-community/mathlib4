@@ -190,17 +190,21 @@ theorem nnDist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
 
 @[deprecated (since := "2026-11-07")] alias nndist_vsub_vsub_le := nnDist_vsub_vsub_le
 
-theorem edist_vadd_vadd_le (v v' : V) (p p' : P) :
-    edist (v +ᵥ p) (v' +ᵥ p') ≤ edist v v' + edist p p' := by
+theorem eDist_vadd_vadd_le (v v' : V) (p p' : P) :
+    eDist (v +ᵥ p) (v' +ᵥ p') ≤ eDist v v' + eDist p p' := by
   simp only [eDist_nnDist]
   norm_cast
   apply dist_vadd_vadd_le
 
-theorem edist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
-    edist (p₁ -ᵥ p₂) (p₃ -ᵥ p₄) ≤ edist p₁ p₃ + edist p₂ p₄ := by
+@[deprecated (since := "2026-11-27")] alias edist_vadd_vadd_le := eDist_vadd_vadd_le
+
+theorem eDist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
+    eDist (p₁ -ᵥ p₂) (p₃ -ᵥ p₄) ≤ eDist p₁ p₃ + eDist p₂ p₄ := by
   simp only [eDist_nnDist]
   norm_cast
   apply dist_vsub_vsub_le
+
+@[deprecated (since := "2026-11-27")] alias edist_vsub_vsub_le := eDist_vsub_vsub_le
 
 /-- The pseudodistance defines a pseudometric space structure on the torsor. This
 is not an instance because it depends on `V` to define a `MetricSpace P`. -/
@@ -231,19 +235,19 @@ theorem LipschitzWith.vadd [PseudoEMetricSpace α] {f : α → V} {g : α → P}
     (hf : LipschitzWith Kf f) (hg : LipschitzWith Kg g) : LipschitzWith (Kf + Kg) (f +ᵥ g) :=
   fun x y =>
   calc
-    edist (f x +ᵥ g x) (f y +ᵥ g y) ≤ edist (f x) (f y) + edist (g x) (g y) :=
-      edist_vadd_vadd_le _ _ _ _
-    _ ≤ Kf * edist x y + Kg * edist x y := add_le_add (hf x y) (hg x y)
-    _ = (Kf + Kg) * edist x y := (add_mul _ _ _).symm
+    eDist (f x +ᵥ g x) (f y +ᵥ g y) ≤ eDist (f x) (f y) + eDist (g x) (g y) :=
+      eDist_vadd_vadd_le _ _ _ _
+    _ ≤ Kf * eDist x y + Kg * eDist x y := add_le_add (hf x y) (hg x y)
+    _ = (Kf + Kg) * eDist x y := (add_mul _ _ _).symm
 
 theorem LipschitzWith.vsub [PseudoEMetricSpace α] {f g : α → P} {Kf Kg : ℝ≥0}
     (hf : LipschitzWith Kf f) (hg : LipschitzWith Kg g) : LipschitzWith (Kf + Kg) (f -ᵥ g) :=
   fun x y =>
   calc
-    edist (f x -ᵥ g x) (f y -ᵥ g y) ≤ edist (f x) (f y) + edist (g x) (g y) :=
-      edist_vsub_vsub_le _ _ _ _
-    _ ≤ Kf * edist x y + Kg * edist x y := add_le_add (hf x y) (hg x y)
-    _ = (Kf + Kg) * edist x y := (add_mul _ _ _).symm
+    eDist (f x -ᵥ g x) (f y -ᵥ g y) ≤ eDist (f x) (f y) + eDist (g x) (g y) :=
+      eDist_vsub_vsub_le _ _ _ _
+    _ ≤ Kf * eDist x y + Kg * eDist x y := add_le_add (hf x y) (hg x y)
+    _ = (Kf + Kg) * eDist x y := (add_mul _ _ _).symm
 
 @[fun_prop]
 theorem uniformContinuous_vadd : UniformContinuous fun x : V × P => x.1 +ᵥ x.2 :=

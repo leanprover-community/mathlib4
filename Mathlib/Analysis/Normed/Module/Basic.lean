@@ -614,7 +614,7 @@ abbrev PseudoMetricSpace.ofSeminormedSpaceCore {ùïú E : Type*} [NormedField ùï
     have : -x + z = (-x + y) + (-y + z) := by abel
     rw [this]
     exact core.norm_triangle _ _
-  edist_dist x y := by exact (ENNReal.ofReal_eq_coe_nnreal _).symm
+  eDist_dist x y := by exact (ENNReal.ofReal_eq_coe_nnreal _).symm
 
 /-- Produces a `PseudoEMetricSpace E` instance from a `SeminormedSpace.Core`. Note that
 if this is used to define an instance on a type, it also provides a new uniformity and

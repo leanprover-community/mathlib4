@@ -792,7 +792,7 @@ theorem ae_tendsto_lintegral_eNorm_sub_div'_of_integrable {f : α → E} (hf : I
   calc
     (∫⁻ y in a, ‖f y - f x‖ₑ ∂μ) ≤ ∫⁻ y in a, ‖f y - c‖ₑ + ‖f x - c‖ₑ ∂μ := by
       apply lintegral_mono fun x => ?_
-      simpa only [← eDist_eq_eNorm_sub] using edist_triangle_right _ _ _
+      simpa only [← eDist_eq_eNorm_sub] using eDist_triangle_right _ _ _
     _ = (∫⁻ y in a, ‖f y - c‖ₑ ∂μ) + ∫⁻ _ in a, ‖f x - c‖ₑ ∂μ :=
       (lintegral_add_right _ measurable_const)
     _ ≤ ε / 2 * μ a + ε / 2 * μ a := by

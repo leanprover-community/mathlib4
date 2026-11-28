@@ -140,19 +140,19 @@ lemma MemHolder.of_le {X : Type*} [PseudoMetricSpace X] [hX : BoundedSpace X]
     {f : X → Y} {s : ℝ≥0} (hf : MemHolder r f) (hs : s ≤ r) :
     MemHolder s f := by
   obtain ⟨C, hf⟩ := hf
-  obtain ⟨C', hC'⟩ := Metric.boundedSpace_iff_edist.1 hX
+  obtain ⟨C', hC'⟩ := Metric.boundedSpace_iff_eDist.1 hX
   exact ⟨C * C' ^ (r - s : ℝ),
     holderOnWith_univ.1 <| (holderOnWith_univ.2 hf).of_le (fun x _ y _ ↦ hC' x y) hs⟩
 
 /-- If a function is `r`-Hölder over a bounded space, then it is also `s`-Hölder when `s ≤ r`.
 See `MemHolder.of_le` for the version in a pseudometric space. -/
 lemma MemHolder.of_le' {s : ℝ≥0} (hf : MemHolder r f) (hs : s ≤ r)
-    (hX : ∃ C : ℝ≥0, ∀ x y : X, edist x y ≤ C) :
+    (hX : ∃ C : ℝ≥0, ∀ x y : X, eDist x y ≤ C) :
     MemHolder s f := by
   obtain ⟨C, hX⟩ := hX
   let := PseudoEMetricSpace.toPseudoMetricSpace
     fun x y ↦ ne_top_of_le_ne_top ENNReal.coe_ne_top (hX x y)
-  have := Metric.boundedSpace_iff_edist.2 ⟨C, hX⟩
+  have := Metric.boundedSpace_iff_eDist.2 ⟨C, hX⟩
   exact hf.of_le hs
 
 /-- If a function is `r`-Hölder over a bounded set, then it is also `s`-Hölder over this set
@@ -170,12 +170,12 @@ then it is also `s`-Hölder over this set when `s ≤ r`. See `HolderOnWith.exis
 for the version in a pseudometric space. -/
 lemma HolderOnWith.exists_holderOnWith_of_le' {D s : ℝ≥0} {A : Set X}
     (hf : ∃ C, HolderOnWith C r f A) (hs : s ≤ r)
-    (hA : ∀ ⦃x⦄, x ∈ A → ∀ ⦃y⦄, y ∈ A → edist x y ≤ D) :
+    (hA : ∀ ⦃x⦄, x ∈ A → ∀ ⦃y⦄, y ∈ A → eDist x y ≤ D) :
     ∃ C, HolderOnWith C s f A := by
   simp_rw [← HolderWith.restrict_iff] at *
   let := PseudoEMetricSpace.toPseudoMetricSpace
     fun x y : A ↦ ne_top_of_le_ne_top ENNReal.coe_ne_top (hA x.property y.property)
-  have : BoundedSpace A := Metric.boundedSpace_iff_edist.2 ⟨D, fun x y ↦ hA x.property y.property⟩
+  have : BoundedSpace A := Metric.boundedSpace_iff_eDist.2 ⟨D, fun x y ↦ hA x.property y.property⟩
   exact MemHolder.of_le hf hs
 
 /-- If a function is locally `r`-Hölder and locally `t`-Hölder,
@@ -208,11 +208,11 @@ lemma eHolderNorm_eq_zero {r : ℝ≥0} {f : X → Y} :
     by_cases hx : x₁ = x₂
     · rw [hx]
     · rw [eHolderNorm, ← ENNReal.bot_eq_zero, iInf₂_eq_bot] at h
-      rw [← edist_eq_zero, ← nonpos_iff_eq_zero]
+      rw [← eDist_eq_zero, ← nonpos_iff_eq_zero]
       refine le_of_forall_gt fun b hb => ?_
-      obtain ⟨C, hC, hC'⟩ := h (b / edist x₁ x₂ ^ (r : ℝ))
+      obtain ⟨C, hC, hC'⟩ := h (b / eDist x₁ x₂ ^ (r : ℝ))
         (ENNReal.div_pos hb.ne.symm (ENNReal.rpow_lt_top_of_nonneg zero_le_coe
-          (edist_lt_top x₁ x₂).ne).ne)
+          (eDist_lt_top x₁ x₂).ne).ne)
       exact lt_of_le_of_lt (hC x₁ x₂) <| ENNReal.mul_lt_of_lt_div hC'
   · intro h
     rcases isEmpty_or_nonempty X with hX | hX
@@ -225,13 +225,13 @@ lemma MemHolder.holderWith {r : ℝ≥0} {f : X → Y} (hf : MemHolder r f) :
     HolderWith (nnHolderNorm r f) r f := by
   intro x₁ x₂
   by_cases hx : x₁ = x₂
-  · simp only [hx, edist_self, zero_le]
+  · simp only [hx, eDist_self, zero_le]
   rw [nnHolderNorm, eHolderNorm, coe_toNNReal]
   on_goal 2 => exact hf.eHolderNorm_lt_top.ne
-  have h₁ : edist x₁ x₂ ^ (r : ℝ) ≠ 0 :=
-    (Ne.symm <| ne_of_lt <| ENNReal.rpow_pos (edist_pos.2 hx) (edist_lt_top x₁ x₂).ne)
-  have h₂ : edist x₁ x₂ ^ (r : ℝ) ≠ ∞ := by
-    simp [(edist_lt_top x₁ x₂).ne]
+  have h₁ : eDist x₁ x₂ ^ (r : ℝ) ≠ 0 :=
+    (Ne.symm <| ne_of_lt <| ENNReal.rpow_pos (eDist_pos.2 hx) (eDist_lt_top x₁ x₂).ne)
+  have h₂ : eDist x₁ x₂ ^ (r : ℝ) ≠ ∞ := by
+    simp [(eDist_lt_top x₁ x₂).ne]
   rw [← ENNReal.div_le_iff h₁ h₂]
   refine le_iInf₂ fun C hC => ?_
   rw [ENNReal.div_le_iff h₁ h₂]
@@ -311,7 +311,7 @@ lemma eHolderNorm_smul {α} [NormedRing α] [Module α Y] [NormSMulClass α Y] (
       refine HolderWith.eHolderNorm_le fun x₁ x₂ => ?_
       rw [coe_div hc, ← ENNReal.mul_div_right_comm,
         ENNReal.le_div_iff_mul_le (Or.inl <| coe_ne_zero.2 hc) <| Or.inl coe_ne_top,
-        mul_comm, ← smul_eq_mul, ← ENNReal.smul_def, ← edist_smul₀, ← Pi.smul_apply,
+        mul_comm, ← smul_eq_mul, ← ENNReal.smul_def, ← eDist_smul₀, ← Pi.smul_apply,
         ← Pi.smul_apply]
       exact hf.smul.holderWith x₁ x₂
   · rw [← eHolderNorm_eq_top] at hf

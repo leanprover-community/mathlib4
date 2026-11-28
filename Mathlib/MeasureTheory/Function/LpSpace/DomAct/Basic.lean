@@ -117,13 +117,15 @@ theorem dist_smul_Lp (c : Mᵈᵐᵃ) (f g : Lp E p μ) : dist (c • f) (c • 
   simp only [dist, ← smul_Lp_neg, ← smul_Lp_add, norm_smul_Lp]
 
 @[to_additive (attr := simp)]
-theorem edist_smul_Lp (c : Mᵈᵐᵃ) (f g : Lp E p μ) : edist (c • f) (c • g) = edist f g := by
-  simp only [Lp.edist_dist, dist_smul_Lp]
+theorem eDist_smul_Lp (c : Mᵈᵐᵃ) (f g : Lp E p μ) : eDist (c • f) (c • g) = eDist f g := by
+  simp only [Lp.eDist_dist, dist_smul_Lp]
+
+@[deprecated (since := "2026-11-27")] alias edist_smul_Lp := eDist_smul_Lp
 
 variable [Fact (1 ≤ p)]
 
 @[to_additive]
-instance : IsIsometricSMul Mᵈᵐᵃ (Lp E p μ) := ⟨edist_smul_Lp⟩
+instance : IsIsometricSMul Mᵈᵐᵃ (Lp E p μ) := ⟨eDist_smul_Lp⟩
 
 end SMul
 

@@ -123,7 +123,7 @@ its Taylor series at any point `c`. -/
 lemma hasSum_taylorSeries_of_entire :
     HasSum (fun n : ℕ ↦ (n ! : ℂ)⁻¹ • (z - c) ^ n • iteratedDeriv n f c) (f z) :=
   hasSum_taylorSeries_on_eball hf.differentiableOn <| Metric.mem_eball.mpr <|
-    edist_lt_top ..
+    eDist_lt_top ..
 
 include hf in
 /-- A function that is complex differentiable on the complex plane is given by evaluating

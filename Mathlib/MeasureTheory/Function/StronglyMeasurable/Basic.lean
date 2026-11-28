@@ -982,10 +982,12 @@ protected theorem dist {_ : MeasurableSpace α} {β : Type*} [PseudoMetricSpace 
   continuous_dist.comp_stronglyMeasurable (hf.prodMk hg)
 
 @[fun_prop]
-protected theorem edist {_ : MeasurableSpace α} {β : Type*} [PseudoEMetricSpace β] {f g : α → β}
+protected theorem eDist {_ : MeasurableSpace α} {β : Type*} [PseudoEMetricSpace β] {f g : α → β}
     (hf : StronglyMeasurable f) (hg : StronglyMeasurable g) :
-    StronglyMeasurable fun x => edist (f x) (g x) :=
-  continuous_edist.comp_stronglyMeasurable (hf.prodMk hg)
+    StronglyMeasurable fun x => eDist (f x) (g x) :=
+  continuous_eDist.comp_stronglyMeasurable (hf.prodMk hg)
+
+@[deprecated (since := "2026-11-27")] alias edist := StronglyMeasurable.eDist
 
 @[fun_prop]
 protected theorem norm {_ : MeasurableSpace α} {β : Type*} [SeminormedAddCommGroup β] {f : α → β}

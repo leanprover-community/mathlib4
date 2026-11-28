@@ -42,7 +42,7 @@ instance (priority := 100) BaireSpace.of_completelyPseudoMetrizable : BaireSpace
     intro n x δ δpos
     have : x ∈ closure (f n) := hd n x
     rcases EMetric.mem_closure_iff.1 this (δ / 2) (ENNReal.half_pos δpos) with ⟨y, ys, xy⟩
-    rw [edist_comm] at xy
+    rw [eDist_comm] at xy
     obtain ⟨r, rpos, hr⟩ : ∃ r > 0, closedEBall y r ⊆ f n :=
       nhds_basis_closedEBall.mem_iff.1 (isOpen_iff_mem_nhds.1 (ho n) y ys)
     refine ⟨y, min (min (δ / 2) r) (B (n + 1)), ?_, ?_, fun z hz => ⟨?_, ?_⟩⟩
@@ -52,13 +52,13 @@ instance (priority := 100) BaireSpace.of_completelyPseudoMetrizable : BaireSpace
       exact min_le_right _ _
     · show z ∈ closedEBall x δ
       calc
-        edist z x ≤ edist z y + edist y x := edist_triangle _ _ _
+        eDist z x ≤ eDist z y + eDist y x := eDist_triangle _ _ _
         _ ≤ min (min (δ / 2) r) (B (n + 1)) + δ / 2 := add_le_add hz (le_of_lt xy)
         _ ≤ δ / 2 + δ / 2 := (add_le_add (le_trans (min_le_left _ _) (min_le_left _ _)) le_rfl)
         _ = δ := ENNReal.add_halves δ
     show z ∈ f n
     exact hr (calc
-      edist z y ≤ min (min (δ / 2) r) (B (n + 1)) := hz
+      eDist z y ≤ min (min (δ / 2) r) (B (n + 1)) := hz
       _ ≤ r := le_trans (min_le_left _ _) (min_le_right _ _))
   choose! center radius Hpos HB Hball using this
   refine fun x => (mem_closure_iff_nhds_basis nhds_basis_closedEBall).2 fun ε εpos => ?_
@@ -84,9 +84,9 @@ instance (priority := 100) BaireSpace.of_completelyPseudoMetrizable : BaireSpace
     | succ n => exact HB n (c n) (r n) (r0 n)
   have incl : ∀ n, closedEBall (c (n + 1)) (r (n + 1)) ⊆ closedEBall (c n) (r n) ∩ f n :=
     fun n => Hball n (c n) (r n) (r0 n)
-  have cdist : ∀ n, edist (c n) (c (n + 1)) ≤ B n := by
+  have cdist : ∀ n, eDist (c n) (c (n + 1)) ≤ B n := by
     intro n
-    rw [edist_comm]
+    rw [eDist_comm]
     have A : c (n + 1) ∈ closedEBall (c (n + 1)) (r (n + 1)) := mem_closedEBall_self
     have I :=
       calc
@@ -94,7 +94,7 @@ instance (priority := 100) BaireSpace.of_completelyPseudoMetrizable : BaireSpace
           Subset.trans (incl n) inter_subset_left
         _ ⊆ closedEBall (c n) (B n) := closedEBall_subset_closedEBall (rB n)
     exact I A
-  have : CauchySeq c := cauchySeq_of_edist_le_geometric_two _ ENNReal.one_ne_top cdist
+  have : CauchySeq c := cauchySeq_of_eDist_le_geometric_two _ ENNReal.one_ne_top cdist
   -- as the sequence `c n` is Cauchy in a complete space, it converges to a limit `y`.
   rcases cauchySeq_tendsto_of_complete this with ⟨y, ylim⟩
   -- this point `y` will be the desired point. We will check that it belongs to all
@@ -117,5 +117,5 @@ instance (priority := 100) BaireSpace.of_completelyPseudoMetrizable : BaireSpace
     have : closedEBall (c (n + 1)) (r (n + 1)) ⊆ f n :=
       Subset.trans (incl n) inter_subset_right
     exact this (yball (n + 1))
-  change edist y x ≤ ε
+  change eDist y x ≤ ε
   exact le_trans (yball 0) (min_le_left _ _)

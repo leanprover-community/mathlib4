@@ -95,9 +95,12 @@ an increasing function of the subset `E`. -/
 theorem thickening_subset_of_subset (δ : ℝ) {E₁ E₂ : Set α} (h : E₁ ⊆ E₂) :
     thickening δ E₁ ⊆ thickening δ E₂ := fun _ hx => lt_of_le_of_lt (infEDist_anti h) hx
 
-theorem mem_thickening_iff_exists_edist_lt {δ : ℝ} (E : Set α) (x : α) :
-    x ∈ thickening δ E ↔ ∃ z ∈ E, edist x z < ENNReal.ofReal δ :=
+theorem mem_thickening_iff_exists_eDist_lt {δ : ℝ} (E : Set α) (x : α) :
+    x ∈ thickening δ E ↔ ∃ z ∈ E, eDist x z < ENNReal.ofReal δ :=
   infEDist_lt_iff
+
+@[deprecated (since := "2026-11-27")]
+alias mem_thickening_iff_exists_edist_lt := mem_thickening_iff_exists_eDist_lt
 
 /-- The frontier of the (open) thickening of a set is contained in an `Metric.infEDist` level
 set. -/
@@ -124,7 +127,7 @@ lemma subset_compl_thickening_compl_thickening_self (δ : ℝ) (E : Set α) :
   simp only [thickening, mem_compl_iff, mem_ofPred_eq, not_lt]
   apply le_infEDist.mpr fun y hy ↦ ?_
   simp only [mem_compl_iff, mem_ofPred_eq, not_lt] at hy
-  simpa only [edist_comm] using le_trans hy <| Metric.infEDist_le_edist_of_mem x_in_E
+  simpa only [eDist_comm] using le_trans hy <| Metric.infEDist_le_eDist_of_mem x_in_E
 
 /-- The δ-thickening of the complement of the δ-thickening of a set is contained in the complement
 of the set. -/
@@ -142,9 +145,9 @@ theorem mem_thickening_iff_infDist_lt {E : Set X} {x : X} (h : E.Nonempty) :
 /-- A point in a metric space belongs to the (open) `δ`-thickening of a subset `E` if and only if
 it is at distance less than `δ` from some point of `E`. -/
 theorem mem_thickening_iff {E : Set X} {x : X} : x ∈ thickening δ E ↔ ∃ z ∈ E, dist x z < δ := by
-  have key_iff : ∀ z : X, edist x z < ENNReal.ofReal δ ↔ dist x z < δ := fun z ↦ by
-    rw [dist_edist, lt_ofReal_iff_toReal_lt (edist_ne_top _ _)]
-  simp_rw [mem_thickening_iff_exists_edist_lt, key_iff]
+  have key_iff : ∀ z : X, eDist x z < ENNReal.ofReal δ ↔ dist x z < δ := fun z ↦ by
+    rw [dist_eDist, lt_ofReal_iff_toReal_lt (eDist_ne_top _ _)]
+  simp_rw [mem_thickening_iff_exists_eDist_lt, key_iff]
 
 @[simp]
 theorem thickening_singleton (δ : ℝ) (x : X) : thickening δ ({x} : Set X) = ball x δ := by
@@ -195,14 +198,17 @@ lemma eventually_notMem_cthickening_of_infEDist_pos {E : Set α} {x : α} (h : x
   simp only [cthickening, mem_ofPred_eq, not_le]
   exact ((ofReal_lt_ofReal_iff ε_pos).mpr hδ).trans ε_lt
 
-theorem mem_cthickening_of_edist_le (x y : α) (δ : ℝ) (E : Set α) (h : y ∈ E)
-    (h' : edist x y ≤ ENNReal.ofReal δ) : x ∈ cthickening δ E :=
-  (infEDist_le_edist_of_mem h).trans h'
+theorem mem_cthickening_of_eDist_le (x y : α) (δ : ℝ) (E : Set α) (h : y ∈ E)
+    (h' : eDist x y ≤ ENNReal.ofReal δ) : x ∈ cthickening δ E :=
+  (infEDist_le_eDist_of_mem h).trans h'
+
+@[deprecated (since := "2026-11-27")]
+alias mem_cthickening_of_edist_le := mem_cthickening_of_eDist_le
 
 theorem mem_cthickening_of_dist_le {α : Type*} [PseudoMetricSpace α] (x y : α) (δ : ℝ) (E : Set α)
     (h : y ∈ E) (h' : dist x y ≤ δ) : x ∈ cthickening δ E := by
-  apply mem_cthickening_of_edist_le x y δ E h
-  rw [edist_dist]
+  apply mem_cthickening_of_eDist_le x y δ E h
+  rw [eDist_dist]
   exact ENNReal.ofReal_le_ofReal h'
 
 theorem cthickening_eq_preimage_infEDist (δ : ℝ) (E : Set α) :
@@ -240,7 +246,7 @@ theorem cthickening_mono {δ₁ δ₂ : ℝ} (hle : δ₁ ≤ δ₂) (E : Set α
 theorem cthickening_singleton {α : Type*} [PseudoMetricSpace α] (x : α) {δ : ℝ} (hδ : 0 ≤ δ) :
     cthickening δ ({x} : Set α) = closedBall x δ := by
   ext y
-  simp [cthickening, edist_dist, ENNReal.ofReal_le_ofReal_iff hδ]
+  simp [cthickening, eDist_dist, ENNReal.ofReal_le_ofReal_iff hδ]
 
 theorem closedBall_subset_cthickening_singleton {α : Type*} [PseudoMetricSpace α] (x : α) (δ : ℝ) :
     closedBall x δ ⊆ cthickening δ ({x} : Set α) := by
@@ -346,9 +352,9 @@ theorem ediam_cthickening_le (ε : ℝ≥0) :
   replace hx := hx.trans_lt hε
   obtain ⟨x', hx', hxx'⟩ := infEDist_lt_iff.mp hx
   calc
-    edist x y ≤ edist x x' + edist y x' := edist_triangle_right _ _ _
+    eDist x y ≤ eDist x x' + eDist y x' := eDist_triangle_right _ _ _
     _ ≤ ε + δ + (infEDist y s + ediam s) :=
-      add_le_add hxx'.le (edist_le_infEDist_add_ediam hx')
+      add_le_add hxx'.le (eDist_le_infEDist_add_ediam hx')
     _ ≤ ε + δ + (ε + ediam s) := by grw [hy]
     _ = _ := by rw [two_mul]; ac_rfl
 
@@ -402,17 +408,17 @@ open ENNReal
 theorem _root_.Disjoint.exists_thickenings (hst : Disjoint s t) (hs : IsCompact s)
     (ht : IsClosed t) :
     ∃ δ, 0 < δ ∧ Disjoint (thickening δ s) (thickening δ t) := by
-  obtain ⟨r, hr, h⟩ := exists_pos_forall_lt_edist hs ht hst
+  obtain ⟨r, hr, h⟩ := exists_pos_forall_lt_eDist hs ht hst
   refine ⟨r / 2, half_pos (NNReal.coe_pos.2 hr), ?_⟩
   rw [disjoint_iff_inf_le]
   rintro z ⟨hzs, hzt⟩
-  rw [mem_thickening_iff_exists_edist_lt] at hzs hzt
+  rw [mem_thickening_iff_exists_eDist_lt] at hzs hzt
   rw [← NNReal.coe_two, ← NNReal.coe_div, ENNReal.ofReal_coe_nnreal] at hzs hzt
   obtain ⟨x, hx, hzx⟩ := hzs
   obtain ⟨y, hy, hzy⟩ := hzt
   refine (h x hx y hy).not_ge ?_
   calc
-    edist x y ≤ edist z x + edist z y := edist_triangle_left _ _ _
+    eDist x y ≤ eDist z x + eDist z y := eDist_triangle_left _ _ _
     _ ≤ ↑(r / 2) + ↑(r / 2) := add_le_add hzx.le hzy.le
     _ = r := by rw [← ENNReal.coe_add, add_halves]
 
@@ -557,10 +563,10 @@ theorem _root_.IsCompact.cthickening_eq_biUnion_closedBall {α : Type*} [PseudoM
   · simp only [cthickening_empty, biUnion_empty]
   refine Subset.antisymm (fun x hx ↦ ?_)
     (iUnion₂_subset fun x hx ↦ closedBall_subset_cthickening hx _)
-  obtain ⟨y, yE, hy⟩ : ∃ y ∈ E, infEDist x E = edist x y := hE.exists_infEDist_eq_edist hne _
-  have D1 : edist x y ≤ ENNReal.ofReal δ := (le_of_eq hy.symm).trans hx
+  obtain ⟨y, yE, hy⟩ : ∃ y ∈ E, infEDist x E = eDist x y := hE.exists_infEDist_eq_eDist hne _
+  have D1 : eDist x y ≤ ENNReal.ofReal δ := (le_of_eq hy.symm).trans hx
   have D2 : dist x y ≤ δ := by
-    rw [edist_dist] at D1
+    rw [eDist_dist] at D1
     exact (ENNReal.ofReal_le_ofReal_iff hδ).1 D1
   exact mem_biUnion yE D2
 
@@ -589,7 +595,7 @@ theorem infEDist_le_infEDist_cthickening_add :
   refine le_of_forall_gt fun r h => ?_
   simp_rw [← lt_tsub_iff_right, infEDist_lt_iff, mem_cthickening_iff] at h
   obtain ⟨y, hy, hxy⟩ := h
-  exact infEDist_le_edist_add_infEDist.trans_lt
+  exact infEDist_le_eDist_add_infEDist.trans_lt
     ((ENNReal.add_lt_add_of_lt_of_le (hy.trans_lt ENNReal.ofReal_lt_top).ne hxy hy).trans_eq
       (tsub_add_cancel_of_le <| le_self_add.trans (lt_tsub_iff_left.1 hxy).le))
 
@@ -607,9 +613,9 @@ theorem thickening_thickening_subset (ε δ : ℝ) (s : Set α) :
   obtain hδ | hδ := le_total δ 0
   · simp only [thickening_of_nonpos hδ, thickening_empty, empty_subset]
   intro x
-  simp_rw [mem_thickening_iff_exists_edist_lt, ENNReal.ofReal_add hε hδ]
+  simp_rw [mem_thickening_iff_exists_eDist_lt, ENNReal.ofReal_add hε hδ]
   exact fun ⟨y, ⟨z, hz, hy⟩, hx⟩ =>
-    ⟨z, hz, (edist_triangle _ _ _).trans_lt <| ENNReal.add_lt_add hx hy⟩
+    ⟨z, hz, (eDist_triangle _ _ _).trans_lt <| ENNReal.add_lt_add hx hy⟩
 
 /-- For the equality, see `thickening_cthickening`. -/
 @[simp]
@@ -618,10 +624,10 @@ theorem thickening_cthickening_subset (ε : ℝ) (hδ : 0 ≤ δ) (s : Set α) :
   obtain hε | hε := le_total ε 0
   · simp only [thickening_of_nonpos hε, empty_subset]
   intro x
-  simp_rw [mem_thickening_iff_exists_edist_lt, mem_cthickening_iff, ← infEDist_lt_iff,
+  simp_rw [mem_thickening_iff_exists_eDist_lt, mem_cthickening_iff, ← infEDist_lt_iff,
     ENNReal.ofReal_add hε hδ]
   rintro ⟨y, hy, hxy⟩
-  exact infEDist_le_edist_add_infEDist.trans_lt
+  exact infEDist_le_eDist_add_infEDist.trans_lt
     (ENNReal.add_lt_add_of_lt_of_le (hy.trans_lt ENNReal.ofReal_lt_top).ne hxy hy)
 
 /-- For the equality, see `cthickening_thickening`. -/

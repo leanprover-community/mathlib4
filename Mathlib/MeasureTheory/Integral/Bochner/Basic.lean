@@ -334,17 +334,23 @@ theorem eNorm_integral_le_lintegral_eNorm (f : α → G) : ‖∫ a, f a ∂μ�
 @[deprecated (since := "2026-11-06")]
 alias enorm_integral_le_lintegral_enorm := eNorm_integral_le_lintegral_eNorm
 
-theorem dist_integral_le_lintegral_edist
+theorem dist_integral_le_lintegral_eDist
     {f g : α → G} (hf : Integrable f μ) (hg : Integrable g μ) :
-    dist (∫ a, f a ∂μ) (∫ a, g a ∂μ) ≤ (∫⁻ a, edist (f a) (g a) ∂μ).toReal := by
+    dist (∫ a, f a ∂μ) (∫ a, g a ∂μ) ≤ (∫⁻ a, eDist (f a) (g a) ∂μ).toReal := by
   grw [dist_eq_norm, ← integral_sub hf hg, norm_integral_le_lintegral_norm]
   simp [eDist_eq_eNorm_sub]
 
-theorem edist_integral_le_lintegral_edist
+@[deprecated (since := "2026-11-27")]
+alias dist_integral_le_lintegral_edist := dist_integral_le_lintegral_eDist
+
+theorem eDist_integral_le_lintegral_eDist
     {f g : α → G} (hf : Integrable f μ) (hg : Integrable g μ) :
-    edist (∫ a, f a ∂μ) (∫ a, g a ∂μ) ≤ ∫⁻ a, edist (f a) (g a) ∂μ := by
-  rw [edist_dist]
-  exact ENNReal.ofReal_le_of_le_toReal (dist_integral_le_lintegral_edist hf hg)
+    eDist (∫ a, f a ∂μ) (∫ a, g a ∂μ) ≤ ∫⁻ a, eDist (f a) (g a) ∂μ := by
+  rw [eDist_dist]
+  exact ENNReal.ofReal_le_of_le_toReal (dist_integral_le_lintegral_eDist hf hg)
+
+@[deprecated (since := "2026-11-27")]
+alias edist_integral_le_lintegral_edist := eDist_integral_le_lintegral_eDist
 
 theorem integral_eq_zero_of_ae {f : α → G} (hf : f =ᵐ[μ] 0) : ∫ a, f a ∂μ = 0 := by
   simp [integral_congr_ae hf, integral_zero]

@@ -92,8 +92,10 @@ open scoped Pointwise
 @[simp] lemma dist_star_star (x y : E) : dist (star x) (star y) = dist x y :=
   star_isometry.dist_eq x y
 
-@[simp] lemma edist_star_star (x y : E) : edist (star x) (star y) = edist x y :=
-  star_isometry.edist_eq x y
+@[simp] lemma eDist_star_star (x y : E) : eDist (star x) (star y) = eDist x y :=
+  star_isometry.eDist_eq x y
+
+@[deprecated (since := "2026-11-27")] alias edist_star_star := eDist_star_star
 
 @[simp] lemma nnDist_star_star (x y : E) : nnDist (star x) (star y) = nnDist x y :=
   star_isometry.nnDist_eq x y

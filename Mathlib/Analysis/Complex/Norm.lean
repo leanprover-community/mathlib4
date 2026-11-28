@@ -262,8 +262,10 @@ theorem nnDist_of_re_eq {z w : ℂ} (h : z.re = w.re) : nnDist z w = nnDist z.im
 
 @[deprecated (since := "2026-11-07")] alias nndist_of_re_eq := nnDist_of_re_eq
 
-theorem edist_of_re_eq {z w : ℂ} (h : z.re = w.re) : edist z w = edist z.im w.im := by
+theorem eDist_of_re_eq {z w : ℂ} (h : z.re = w.re) : eDist z w = eDist z.im w.im := by
   rw [eDist_nnDist, eDist_nnDist, nnDist_of_re_eq h]
+
+@[deprecated (since := "2026-11-27")] alias edist_of_re_eq := eDist_of_re_eq
 
 theorem dist_of_im_eq {z w : ℂ} (h : z.im = w.im) : dist z w = dist z.re w.re := by
   rw [dist_eq_re_im, h, sub_self, zero_pow two_ne_zero, add_zero, Real.sqrt_sq_eq_abs, Real.dist_eq]
@@ -273,8 +275,10 @@ theorem nnDist_of_im_eq {z w : ℂ} (h : z.im = w.im) : nnDist z w = nnDist z.re
 
 @[deprecated (since := "2026-11-07")] alias nndist_of_im_eq := nnDist_of_im_eq
 
-theorem edist_of_im_eq {z w : ℂ} (h : z.im = w.im) : edist z w = edist z.re w.re := by
+theorem eDist_of_im_eq {z w : ℂ} (h : z.im = w.im) : eDist z w = eDist z.re w.re := by
   rw [eDist_nnDist, eDist_nnDist, nnDist_of_im_eq h]
+
+@[deprecated (since := "2026-11-27")] alias edist_of_im_eq := eDist_of_im_eq
 
 theorem dist_conj_self (z : ℂ) : dist (conj z) z = 2 * |z.im| := by
   rw [dist_of_re_eq (conj_re z), conj_im, dist_comm, Real.dist_eq, sub_neg_eq_add, ← two_mul,
