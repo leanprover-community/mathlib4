@@ -69,6 +69,16 @@ instance smul (M : Submodule R V) [IsFullLattice A M] (a : Aˣ) :
     IsFullLattice A (a • M : Submodule R V) where
   span_eq_top := by rw [Submodule.coe_pointwise_smul, span_smul, span_eq_top, smul_top]
 
+/-- The `R`-rank of a full lattice equals the `A`-rank of the ambient module. -/
+theorem rank_eq [IsDomain R] [FaithfulSMul R A] (M : Submodule R V) [IsFullLattice A M] :
+    Module.rank R M = Module.rank A V := by
+  rw [← IsLattice.rank_span_eq_rank A M, span_eq_top, rank_top]
+
+/-- The `R`-finrank of a full lattice equals the `A`-finrank of the ambient module. -/
+theorem finrank_eq [IsDomain R] [FaithfulSMul R A] (M : Submodule R V) [IsFullLattice A M] :
+    finrank R M = finrank A V :=
+  congr(Cardinal.toNat $(rank_eq A M))
+
 end CommRing
 
 section Field
@@ -91,19 +101,12 @@ instance span_range_basis {ι : Type*} [Finite ι] (b : Basis ι K V) :
   toIsLattice := IsLattice.span_of_linearIndependent K b.linearIndependent
   span_eq_top := by rw [span_span_of_tower, b.span_eq]
 
-/-- The `R`-rank of a full lattice equals the `K`-rank of the ambient module. -/
-theorem rank_eq [IsFullLattice K M] : Module.rank R M = Module.rank K V := by
-  rw [← IsLattice.rank_span_eq_rank K M, span_eq_top, rank_top]
-
-/-- The `R`-finrank of a full lattice equals the `K`-finrank of the ambient module. -/
-theorem finrank_eq [IsFullLattice K M] : finrank R M = finrank K V :=
-  congr(Cardinal.toNat $(rank_eq K M))
-
 /-- A lattice whose `R`-finrank is at least the `K`-finrank of a finite-dimensional ambient module
 is full. -/
 theorem of_finrank_le [Module.Finite K V] [IsLattice K M]
     (hr : Module.finrank K V ≤ Module.finrank R M) : IsFullLattice K M where
   span_eq_top := eq_of_le_of_finrank_le le_top <| by
+    have := IsDomain.of_faithfulSMul R K
     rwa [finrank_top, IsLattice.finrank_span_eq_finrank]
 
 /-- A lattice whose `R`-rank is at least the `K`-rank of a finite-dimensional ambient module
@@ -164,6 +167,7 @@ alias IsLattice.rank' := IsFullLattice.rank_eq
 theorem IsLattice.rank_of_pi (K : Type*) [Field K] [Algebra R K] [FaithfulSMul R K] {ι : Type*}
     [Fintype ι] (M : Submodule R (ι → K)) [IsFullLattice K M] :
     Module.rank R M = Fintype.card ι := by
+  have := IsDomain.of_faithfulSMul R K
   rw [IsFullLattice.rank_eq K M, rank_fun']
 
 @[deprecated "Use `IsFullLattice.finrank` and `Module.finrank_fintype_fun_eq_card`."
@@ -171,6 +175,7 @@ theorem IsLattice.rank_of_pi (K : Type*) [Field K] [Algebra R K] [FaithfulSMul R
 theorem IsLattice.finrank_of_pi (K : Type*) [Field K] [Algebra R K] [FaithfulSMul R K]
     {ι : Type*} [Fintype ι] (M : Submodule R (ι → K)) [IsFullLattice K M] :
     finrank R M = Fintype.card ι := by
+  have := IsDomain.of_faithfulSMul R K
   rw [IsFullLattice.finrank_eq K M, finrank_fintype_fun_eq_card]
 
 @[deprecated (since := "2026-10-27")]

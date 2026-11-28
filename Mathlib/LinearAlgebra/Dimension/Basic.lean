@@ -473,6 +473,16 @@ lemma rank_le_of_isSMulRegular {S : Type*} [CommSemiring S] [Algebra S R] [Modul
   ((Algebra.lsmul S R M s).restrict h).rank_le_of_injective <|
     fun _ _ h ↦ by simpa using hr (Subtype.ext_iff.mp h)
 
+lemma rank_le_of_isRightRegular (L L' : Submodule R M) {r : R} (hc : IsRightRegular r)
+    (h : ∀ x ∈ L, r • x ∈ L') :
+    Module.rank R L ≤ Module.rank R L' := by
+  nontriviality R
+  rw [Module.rank_def]
+  refine ciSup_le' fun ⟨t, ht⟩ ↦ ?_
+  apply LinearIndependent.cardinal_le_rank (v := fun x ↦ (⟨r • x.val, h _ x.val.property⟩ : L'))
+  refine .of_comp L'.subtype <| .smul_of_isRightRegular ?_ (w := fun _ ↦ r) fun _ ↦ hc
+  exact ht.linearIndependent.map_injOn L.subtype L.injective_subtype.injOn
+
 variable (R R' M) in
 lemma Module.rank_top_le_rank_of_isScalarTower [Module R' M]
     [SMulWithZero R R'] [IsScalarTower R R' M] [FaithfulSMul R R'] [IsScalarTower R R' R'] :
@@ -494,6 +504,21 @@ lemma Module.rank_bot_le_rank_of_isScalarTower (T : Type u') [Module R R'] [NonA
     [Module R T] [Module R' T] [IsScalarTower R' T T] [FaithfulSMul R' T] [IsScalarTower R R' T] :
     Module.rank R R' ≤ Module.rank R T := by
   simpa using Module.lift_rank_bot_le_lift_rank_of_isScalarTower R R' T
+
+/-- If every `R`-linearly independent subset of `N` is `R'`-linearly independent, then the
+`R`-rank of `N` is at most the `R'`-rank of its `R'`-span. -/
+theorem Submodule.rank_le_rank_span_of_linearIndepOn [Nontrivial R] [Nontrivial R'] [Module R' M]
+    (N : Submodule R M) (H : ∀ s ⊆ (N : Set M), LinearIndepOn R id s → LinearIndepOn R' id s) :
+    Module.rank R N ≤ Module.rank R' (span R' (N : Set M)) := by
+  rw [Module.rank_def]
+  apply ciSup_le'
+  intro ⟨s, hs⟩
+  dsimp only
+  apply LinearIndependent.cardinal_le_rank (v := fun x ↦ ⟨x.val, subset_span x.val.property⟩)
+  apply LinearIndependent.of_comp (span R' (N : Set M)).subtype
+  have hli := hs.linearIndependent.map_injOn N.subtype N.injective_subtype.injOn
+  exact (linearIndepOn_id_range_iff hli.injective).mp
+    (H _ (Set.range_subset_iff.mpr fun x ↦ x.val.property) hli.linearIndepOn_id)
 
 end
 

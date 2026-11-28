@@ -536,11 +536,12 @@ theorem LinearIndependent.of_pairwise_dual_eq_zero_one (v : ι → M) (f : ι �
 
 end Module
 
-/-- A finite generating family `v` of `M` has a linearly independent subfamily whose span contains
-`a • M` for some `a ≠ 0`. -/
-theorem exists_linearIndepOn_smul_mem_span [CommRing R] [IsDomain R] [AddCommGroup M]
-    [Module R M] [Finite ι] {v : ι → M} (hs : Submodule.span R (Set.range v) = ⊤) :
-    ∃ s : Set ι, LinearIndepOn R v s ∧ ∃ a : R, a ≠ 0 ∧ ∀ m, a • m ∈ span R (v '' s) := by
+/-- A finite family `v` has a linearly independent subfamily whose span contains `a • m` for some
+`a ≠ 0` and all `m` in the span of `v`. -/
+theorem exists_linearIndepOn_smul_mem_span' [CommRing R] [IsDomain R] [AddCommGroup M]
+    [Module R M] [Finite ι] (v : ι → M) :
+    ∃ s : Set ι, LinearIndepOn R v s ∧ ∃ a : R, a ≠ 0 ∧
+      ∀ m ∈ span R (Set.range v), a • m ∈ span R (v '' s) := by
   classical
   have := Fintype.ofFinite ι
   obtain ⟨I, hI, h⟩ := exists_maximal_linearIndepOn R v
@@ -548,14 +549,22 @@ theorem exists_linearIndepOn_smul_mem_span [CommRing R] [IsDomain R] [AddCommGro
     if hi : i ∈ I then ⟨1, one_ne_zero, smul_mem _ 1 (subset_span (mem_image_of_mem v hi))⟩
     else h i hi
   choose a ha ha' using this
-  refine ⟨I, hI, ∏ i, a i, Finset.prod_ne_zero_iff.mpr fun i _ ↦ ha i, fun m ↦ ?_⟩
+  refine ⟨I, hI, ∏ i, a i, Finset.prod_ne_zero_iff.mpr fun i _ ↦ ha i, fun m hm ↦ ?_⟩
   suffices span R (Set.range v) ≤ (span R (v '' I)).comap (LinearMap.lsmul R M (∏ i, a i)) from
-    this (hs ▸ mem_top)
+    this hm
   rw [span_le]
   rintro _ ⟨i, rfl⟩
   rw [comap_coe, mem_preimage, LinearMap.lsmul_apply, SetLike.mem_coe,
     ← Finset.prod_erase_mul _ _ (Finset.mem_univ i), mul_smul]
   exact smul_mem _ _ (ha' i)
+
+/-- A finite generating family `v` of `M` has a linearly independent subfamily whose span contains
+`a • M` for some `a ≠ 0`. -/
+theorem exists_linearIndepOn_smul_mem_span [CommRing R] [IsDomain R] [AddCommGroup M]
+    [Module R M] [Finite ι] {v : ι → M} (hs : Submodule.span R (Set.range v) = ⊤) :
+    ∃ s : Set ι, LinearIndepOn R v s ∧ ∃ a : R, a ≠ 0 ∧ ∀ m, a • m ∈ span R (v '' s) :=
+  have ⟨s, hs', a, ha, h⟩ := exists_linearIndepOn_smul_mem_span' v
+  ⟨s, hs', a, ha, fun m ↦ h m (hs ▸ mem_top)⟩
 
 open Finsupp in
 /-- A linearly independent family of vectors `f` remains linearly independent when we substitute one

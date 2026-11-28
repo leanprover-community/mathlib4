@@ -139,15 +139,8 @@ theorem finrank_span_le_finrank_span {s : Set V} (hs : s.Finite) :
 `K`-rank of the `K`-span of `M` equals the `R`-rank of `M`. -/
 theorem rank_span_eq_rank_of_linearIndepOn
     (H : ∀ s ⊆ (M : Set V), LinearIndepOn R id s → LinearIndepOn K id s) :
-    Module.rank K (span K (M : Set V)) = Module.rank R M := by
-  apply le_antisymm (rank_span_le_rank M)
-  rw [Module.rank_def]
-  refine ciSup_le' fun s ↦ ?_
-  apply LinearIndependent.cardinal_le_rank (v := fun x ↦ ⟨(x.val : V), subset_span x.val.property⟩)
-  apply LinearIndependent.of_comp (span K (M : Set V)).subtype
-  have hli := s.property.map' M.subtype (ker_subtype _)
-  exact (linearIndepOn_id_range_iff hli.injective).mp
-    (H _ (Set.range_subset_iff.mpr fun x ↦ (x : M).property) hli.linearIndepOn_id)
+    Module.rank K (span K (M : Set V)) = Module.rank R M :=
+  le_antisymm (rank_span_le_rank M) (M.rank_le_rank_span_of_linearIndepOn H)
 
 /-- If every `R`-linearly independent subset of `M` is `K`-linearly independent, then the
 `K`-rank of the `K`-span of `M` equals the `R`-rank of `M`.
