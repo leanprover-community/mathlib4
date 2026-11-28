@@ -904,9 +904,11 @@ def toAddMonoidHom' : (M →ₛₗ[σ₁₂] M₂) →+ M →+ M₂ where
   map_add' := by intros; ext; rfl
 
 /-- If `M` is the zero module, then the identity map of `M` is the zero map. -/
-@[simp]
-theorem identityMapOfZeroModuleIsZero [Subsingleton M] : id (R := R₁) (M := M) = 0 :=
+theorem id_eq_zero_of_subsingleton [Subsingleton M] : id (R := R₁) (M := M) = 0 :=
   Subsingleton.eq_zero id
+
+@[deprecated (since := "2026-11-27")] alias identityMapOfZeroModuleIsZero :=
+  id_eq_zero_of_subsingleton
 
 end Arithmetic
 
