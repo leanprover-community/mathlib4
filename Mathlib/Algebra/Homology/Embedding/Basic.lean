@@ -63,7 +63,7 @@ namespace ComplexShape
 /-- An embedding of a complex shape `c : ComplexShape ι` into a complex shape
 `c' : ComplexShape ι'` consists of an injective map `f : ι → ι'` which satisfies
 a compatibility with respect to the relations `c.Rel` and `c'.Rel`. -/
-@[ext]
+@[ext, to_dual self (relevant_arg := _)]
 structure Embedding where
   /-- the map between the underlying types of indices -/
   f : ι → ι'
@@ -84,9 +84,11 @@ def op : Embedding c.symm c'.symm where
 
 /-- An embedding of complex shapes `e` satisfies `e.IsRelIff` if the implication
 `e.rel` is an equivalence. -/
+@[to_dual self (relevant_arg := _)]
 class IsRelIff : Prop where
   rel' (i₁ i₂ : ι) (h : c'.Rel (e.f i₁) (e.f i₂)) : c.Rel i₁ i₂
 
+@[to_dual self]
 lemma rel_iff [e.IsRelIff] (i₁ i₂ : ι) : c'.Rel (e.f i₁) (e.f i₂) ↔ c.Rel i₁ i₂ := by
   constructor
   · apply IsRelIff.rel'
@@ -103,16 +105,19 @@ variable (f : ι → ι') (hf : Function.Injective f)
 
 /-- Constructor for embeddings between complex shapes when we have an equivalence
 `∀ (i₁ i₂ : ι), c.Rel i₁ i₂ ↔ c'.Rel (f i₁) (f i₂)`. -/
-@[simps, implicit_reducible]
+@[simps, implicit_reducible, to_dual self]
 def mk' : Embedding c c' where
   f := f
   injective_f := hf
   rel h := (iff _ _).1 h
 
+@[to_dual self]
 instance IsRelIff.mk' : (mk' c c' f hf iff).IsRelIff where
   rel' _ _ h := (iff _ _).2 h
 
 end
+
+to_dual_name_hint LE GE, Up Down
 
 /-- The condition that the image of the map `e.f` of an embedding of
 complex shapes `e : Embedding c c'` is stable by `c'.next`. -/
@@ -120,23 +125,20 @@ class IsTruncGE : Prop extends e.IsRelIff where
   mem_next {j : ι} {k' : ι'} (h : c'.Rel (e.f j) k') :
     ∃ k, e.f k = k'
 
-lemma mem_next [e.IsTruncGE] {j : ι} {k' : ι'} (h : c'.Rel (e.f j) k') : ∃ k, e.f k = k' :=
-  IsTruncGE.mem_next h
-
 /-- The condition that the image of the map `e.f` of an embedding of
 complex shapes `e : Embedding c c'` is stable by `c'.prev`. -/
+@[to_dual (relevant_arg := _)]
 class IsTruncLE : Prop extends e.IsRelIff where
   mem_prev {i' : ι'} {j : ι} (h : c'.Rel i' (e.f j)) :
     ∃ i, e.f i = i'
 
-lemma mem_prev [e.IsTruncLE] {i' : ι'} {j : ι} (h : c'.Rel i' (e.f j)) : ∃ i, e.f i = i' :=
-  IsTruncLE.mem_prev h
+@[to_dual (rename := k' → i')]
+lemma mem_next [e.IsTruncGE] {j : ι} {k' : ι'} (h : c'.Rel (e.f j) k') : ∃ k, e.f k = k' :=
+  IsTruncGE.mem_next h
 
+@[to_dual]
 instance [e.IsTruncGE] : e.op.IsTruncLE where
   mem_prev h := e.mem_next h
-
-instance [e.IsTruncLE] : e.op.IsTruncGE where
-  mem_next h := e.mem_prev h
 
 open scoped Classical in
 /-- The map `ι' → Option ι` which sends `e.f i` to `some i` and the other elements to `none`. -/
@@ -176,28 +178,19 @@ section
 variable {A : Type*} [AddCommSemigroup A] [IsRightCancelAdd A] [One A]
 
 /-- The embedding from `up' a` to itself via (· + b). -/
-@[simps!, implicit_reducible]
+@[to_dual (attr := simps!, implicit_reducible)
+/-- The embedding from `down' a` to itself via (· + b). -/]
 def embeddingUp'Add (a b : A) : Embedding (up' a) (up' a) :=
   Embedding.mk' _ _ (· + b)
     (fun _ _ h => by simpa using h)
     (by dsimp; simp_rw [add_right_comm _ b a, add_right_cancel_iff, implies_true])
 
+@[to_dual]
 instance (a b : A) : (embeddingUp'Add a b).IsRelIff := .mk' ..
 
+@[to_dual]
 instance (a b : A) : (embeddingUp'Add a b).IsTruncGE where
   mem_next {j _} h := ⟨j + a, (add_right_comm _ _ _).trans h⟩
-
-/-- The embedding from `down' a` to itself via (· + b). -/
-@[simps!, implicit_reducible]
-def embeddingDown'Add (a b : A) : Embedding (down' a) (down' a) :=
-  Embedding.mk' _ _ (· + b)
-    (fun _ _ h => by simpa using h)
-    (by dsimp; simp_rw [add_right_comm _ b a, add_right_cancel_iff, implies_true])
-
-instance (a b : A) : (embeddingDown'Add a b).IsRelIff := .mk' ..
-
-instance (a b : A) : (embeddingDown'Add a b).IsTruncLE where
-  mem_prev {_ x} h := ⟨x + a, (add_right_comm _ _ _).trans h⟩
 
 end
 
