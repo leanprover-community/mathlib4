@@ -279,6 +279,10 @@ variable {A B : Type*} [Membership B A]
 theorem not_le_iff_exists_mem_notMem [LE A] [IsMemLE A B] {p q : A} :
     ¬p ≤ q ↔ ∃ x ∈ p, x ∉ q := by simp [le_iff_mem_imp_mem]
 
+-- Intended to fire on goals of the form `p ≤ q`.
+-- `grind` moves the goal to the set of false statements.
+grind_pattern [membership] not_le_iff_exists_mem_notMem => p ≤ q where guard ¬p ≤ q
+
 theorem lt_iff_le_and_exists_mem_notMem [Preorder A] [IsMemLE A B] {p q : A} :
     p < q ↔ p ≤ q ∧ ∃ x ∈ q, x ∉ p := by rw [lt_iff_le_not_ge, not_le_iff_exists_mem_notMem]
 
