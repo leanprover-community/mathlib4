@@ -310,6 +310,10 @@ theorem coe_toSubmodule (S : Subalgebra R A) : (toSubmodule S : Set A) = S := rf
 theorem toSubmodule_injective : Function.Injective (toSubmodule : Subalgebra R A → Submodule R A) :=
   fun _S₁ _S₂ h => SetLike.ext (SetLike.ext_iff.mp h :)
 
+-- Not `@[simp]` since `simp` can prove it via `EmbeddingLike.apply_eq_iff_eq`.
+theorem toSubmodule_inj {S U : Subalgebra R A} : toSubmodule S = toSubmodule U ↔ S = U :=
+  toSubmodule_injective.eq_iff
+
 section
 
 /-! `Subalgebra`s inherit structure from their `Submodule` coercions. -/

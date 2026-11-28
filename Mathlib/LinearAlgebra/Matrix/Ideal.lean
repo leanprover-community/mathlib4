@@ -51,12 +51,19 @@ theorem mem_matrix (I : Ideal R) (M : Matrix n n R) :
 theorem matrix_monotone : Monotone (matrix (R := R) n) :=
   fun _ _ IJ _ MI i j => IJ (MI i j)
 
-theorem matrix_strictMono_of_nonempty [Nonempty n] :
-    StrictMono (matrix (R := R) n) :=
-  matrix_monotone n |>.strictMono_of_injective <| fun I J eq => by
+theorem matrix_injective [Nonempty n] : Function.Injective (matrix (R := R) n) :=
+  fun I J eq => by
     ext x
     have : (∀ _ _, x ∈ I) ↔ (∀ _ _, x ∈ J) := congr((Matrix.of fun _ _ => x) ∈ $eq)
     simpa only [forall_const] using this
+
+theorem matrix_strictMono_of_nonempty [Nonempty n] :
+    StrictMono (matrix (R := R) n) :=
+  matrix_monotone n |>.strictMono_of_injective <| matrix_injective n
+
+@[simp]
+theorem matrix_inj [Nonempty n] {I J : Ideal R} : I.matrix n = J.matrix n ↔ I = J :=
+  (matrix_injective n).eq_iff
 
 @[simp]
 theorem matrix_bot : (⊥ : Ideal R).matrix n = ⊥ := by
@@ -69,6 +76,14 @@ theorem matrix_bot : (⊥ : Ideal R).matrix n = ⊥ := by
 @[simp]
 theorem matrix_top : (⊤ : Ideal R).matrix n = ⊤ := by
   ext; simp
+
+@[simp]
+theorem matrix_eq_bot [Nonempty n] {I : Ideal R} : I.matrix n = ⊥ ↔ I = ⊥ := by
+  rw [← matrix_bot n, matrix_inj]
+
+@[simp]
+theorem matrix_eq_top [Nonempty n] {I : Ideal R} : I.matrix n = ⊤ ↔ I = ⊤ := by
+  rw [← matrix_top n, matrix_inj]
 
 end Ideal
 
@@ -166,6 +181,18 @@ theorem matrix_bot : (⊥ : RingCon R).matrix n = ⊥ :=
 theorem matrix_top : (⊤ : RingCon R).matrix n = ⊤ :=
   eq_top_iff.2 fun _ _ _ _ _ ↦ by simp
 
+@[simp]
+theorem matrix_inj [Nonempty n] {c d : RingCon R} : c.matrix n = d.matrix n ↔ c = d :=
+  (matrix_injective n).eq_iff
+
+@[simp]
+theorem matrix_eq_bot [Nonempty n] {c : RingCon R} : c.matrix n = ⊥ ↔ c = ⊥ := by
+  rw [← matrix_bot n, matrix_inj]
+
+@[simp]
+theorem matrix_eq_top [Nonempty n] {c : RingCon R} : c.matrix n = ⊤ ↔ c = ⊤ := by
+  rw [← matrix_top n, matrix_inj]
+
 open Matrix
 
 variable {n}
@@ -254,10 +281,16 @@ lemma mem_matrix (I : TwoSidedIdeal R) (M : Matrix n n R) :
 theorem matrix_monotone : Monotone (matrix (R := R) n) :=
   fun _ _ IJ _ MI i j => IJ (MI i j)
 
-theorem matrix_strictMono_of_nonempty [h : Nonempty n] :
+theorem matrix_injective [Nonempty n] : Function.Injective (matrix (R := R) n) :=
+  ofRingCon_injective.comp <| (RingCon.matrix_injective n).comp ringCon_injective
+
+theorem matrix_strictMono_of_nonempty [Nonempty n] :
     StrictMono (matrix (R := R) n) :=
-  matrix_monotone n |>.strictMono_of_injective <|
-    .comp (fun _ _ => ofRingCon.inj) <| (RingCon.matrix_injective n).comp ringCon_injective
+  matrix_monotone n |>.strictMono_of_injective <| matrix_injective n
+
+@[simp]
+theorem matrix_inj [Nonempty n] {I J : TwoSidedIdeal R} : I.matrix n = J.matrix n ↔ I = J :=
+  (matrix_injective n).eq_iff
 
 @[simp]
 theorem matrix_bot : (⊥ : TwoSidedIdeal R).matrix n = ⊥ :=
@@ -266,6 +299,14 @@ theorem matrix_bot : (⊥ : TwoSidedIdeal R).matrix n = ⊥ :=
 @[simp]
 theorem matrix_top : (⊤ : TwoSidedIdeal R).matrix n = ⊤ :=
   ringCon_injective <| RingCon.matrix_top _
+
+@[simp]
+theorem matrix_eq_bot [Nonempty n] {I : TwoSidedIdeal R} : I.matrix n = ⊥ ↔ I = ⊥ := by
+  rw [← matrix_bot n, matrix_inj]
+
+@[simp]
+theorem matrix_eq_top [Nonempty n] {I : TwoSidedIdeal R} : I.matrix n = ⊤ ↔ I = ⊤ := by
+  rw [← matrix_top n, matrix_inj]
 
 end NonUnitalNonAssocRing
 

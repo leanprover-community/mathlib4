@@ -58,6 +58,11 @@ theorem toSubgroup_injective : Function.Injective
   ext
   rw [h]
 
+variable {G} in
+@[to_additive (attr := simp)]
+theorem toSubgroup_inj {H K : ClosedSubgroup G} : H.toSubgroup = K.toSubgroup ↔ H = K :=
+  toSubgroup_injective.eq_iff
+
 @[to_additive]
 instance : SetLike (ClosedSubgroup G) G where
   coe U := U.toSubgroup

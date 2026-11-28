@@ -66,6 +66,15 @@ theorem bot_toAddSubmonoid : (⊥ : Submodule R M).toAddSubmonoid = ⊥ :=
 lemma bot_toAddSubgroup {R M} [Ring R] [AddCommGroup M] [Module R M] :
     (⊥ : Submodule R M).toAddSubgroup = ⊥ := rfl
 
+@[simp]
+lemma toAddSubmonoid_eq_bot {p : Submodule R M} : p.toAddSubmonoid = ⊥ ↔ p = ⊥ :=
+  toAddSubmonoid_injective.eq_iff' bot_toAddSubmonoid
+
+@[simp]
+lemma toAddSubgroup_eq_bot {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
+    {p : Submodule R M} : p.toAddSubgroup = ⊥ ↔ p = ⊥ :=
+  toAddSubgroup_injective.eq_iff' bot_toAddSubgroup
+
 variable (R) in
 @[simp]
 theorem mem_bot {x : M} : x ∈ (⊥ : Submodule R M) ↔ x = 0 :=
@@ -146,6 +155,10 @@ theorem top_toAddSubmonoid : (⊤ : Submodule R M).toAddSubmonoid = ⊤ :=
 @[simp]
 lemma top_toAddSubgroup {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] :
     (⊤ : Submodule R M).toAddSubgroup = ⊤ := rfl
+
+@[simp]
+lemma toAddSubmonoid_eq_top {p : Submodule R M} : p.toAddSubmonoid = ⊤ ↔ p = ⊤ :=
+  toAddSubmonoid_injective.eq_iff' top_toAddSubmonoid
 
 @[simp]
 lemma toAddSubgroup_eq_top {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]

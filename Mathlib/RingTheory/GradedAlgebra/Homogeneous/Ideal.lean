@@ -80,6 +80,11 @@ theorem HomogeneousIdeal.toIdeal_injective :
     Function.Injective (HomogeneousIdeal.toIdeal : HomogeneousIdeal 𝒜 → Ideal A) :=
   HomogeneousSubmodule.toSubmodule_injective 𝒜 𝒜
 
+-- Not `@[simp]` since `simp` can prove it via `HomogeneousSubmodule.toSubmodule_inj`.
+theorem HomogeneousIdeal.toIdeal_inj {I J : HomogeneousIdeal 𝒜} :
+    I.toIdeal = J.toIdeal ↔ I = J :=
+  HomogeneousIdeal.toIdeal_injective.eq_iff
+
 @[simp] lemma toIdeal_le_toIdeal_iff {I J : HomogeneousIdeal 𝒜} :
     I.toIdeal ≤ J.toIdeal ↔ I ≤ J := Iff.rfl
 
@@ -331,6 +336,14 @@ theorem toIdeal_bot : (⊥ : HomogeneousIdeal 𝒜).toIdeal = (⊥ : Ideal A) :=
   rfl
 
 @[simp]
+theorem toIdeal_eq_top {I : HomogeneousIdeal 𝒜} : I.toIdeal = ⊤ ↔ I = ⊤ :=
+  toIdeal_injective.eq_iff' toIdeal_top
+
+@[simp]
+theorem toIdeal_eq_bot {I : HomogeneousIdeal 𝒜} : I.toIdeal = ⊥ ↔ I = ⊥ :=
+  toIdeal_injective.eq_iff' toIdeal_bot
+
+@[simp]
 theorem toIdeal_sup (I J : HomogeneousIdeal 𝒜) : (I ⊔ J).toIdeal = I.toIdeal ⊔ J.toIdeal :=
   rfl
 
@@ -364,11 +377,11 @@ theorem toIdeal_iInf₂ {κ : Sort*} {κ' : κ → Sort*} (s : ∀ i, κ' i → 
     (⨅ (i) (j), s i j).toIdeal = ⨅ (i) (j), (s i j).toIdeal := by
   simp_rw [toIdeal_iInf]
 
-@[simp]
+@[deprecated toIdeal_eq_top +typeChanged (since := "2026-11-23")]
 theorem eq_top_iff (I : HomogeneousIdeal 𝒜) : I = ⊤ ↔ I.toIdeal = ⊤ :=
   toIdeal_injective.eq_iff.symm
 
-@[simp]
+@[deprecated toIdeal_eq_bot +typeChanged (since := "2026-11-23")]
 theorem eq_bot_iff (I : HomogeneousIdeal 𝒜) : I = ⊥ ↔ I.toIdeal = ⊥ :=
   toIdeal_injective.eq_iff.symm
 

@@ -71,6 +71,10 @@ instance hasCoeSubgroup : CoeTC (OpenSubgroup G) (Subgroup G) :=
 theorem toSubgroup_injective : Injective ((↑) : OpenSubgroup G → Subgroup G)
   | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
 
+@[to_additive (attr := simp, norm_cast)]
+theorem toSubgroup_inj {U V : OpenSubgroup G} : (U : Subgroup G) = V ↔ U = V :=
+  toSubgroup_injective.eq_iff
+
 @[to_additive]
 instance : SetLike (OpenSubgroup G) G where
   coe U := U.toSubgroup
@@ -133,6 +137,10 @@ theorem coe_top : ((⊤ : OpenSubgroup G) : Set G) = Set.univ :=
 @[to_additive (attr := simp, norm_cast)]
 theorem toSubgroup_top : ((⊤ : OpenSubgroup G) : Subgroup G) = ⊤ :=
   rfl
+
+@[to_additive (attr := simp, norm_cast)]
+theorem toSubgroup_eq_top {U : OpenSubgroup G} : (U : Subgroup G) = ⊤ ↔ U = ⊤ :=
+  toSubgroup_injective.eq_iff' toSubgroup_top
 
 @[to_additive (attr := simp, norm_cast)]
 theorem toOpens_top : ((⊤ : OpenSubgroup G) : Opens G) = ⊤ :=
@@ -483,18 +491,26 @@ attribute [to_additive] OpenNormalSubgroup
 
 namespace OpenNormalSubgroup
 
-variable {G : Type u} [Group G] [TopologicalSpace G]
+variable {G : Type u} [Group G] [TopologicalSpace G] {H K : OpenNormalSubgroup G}
 
 @[to_additive]
 instance (H : OpenNormalSubgroup G) : H.toSubgroup.Normal := H.isNormal'
 
 @[to_additive]
-theorem toSubgroup_injective : Function.Injective
-    (fun H ↦ H.toOpenSubgroup.toSubgroup : OpenNormalSubgroup G → Subgroup G) :=
-  fun A B h ↦ by
-  ext
-  dsimp at h
-  rw [h]
+lemma toOpenSubgroup_injective : Injective (toOpenSubgroup : OpenNormalSubgroup G → OpenSubgroup G)
+  | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
+
+@[to_additive (attr := simp)]
+lemma toOpenSubgroup_inj : H.toOpenSubgroup = K.toOpenSubgroup ↔ H = K :=
+  toOpenSubgroup_injective.eq_iff
+
+@[to_additive]
+lemma toSubgroup_injective : (fun H ↦ H.toSubgroup : OpenNormalSubgroup G → Subgroup G).Injective :=
+  OpenSubgroup.toSubgroup_injective.comp toOpenSubgroup_injective
+
+-- Not `@[simp]` since `simp` already proves it.
+@[to_additive]
+theorem toSubgroup_inj : H.toSubgroup = K.toSubgroup ↔ H = K := by simp
 
 @[to_additive]
 instance : SetLike (OpenNormalSubgroup G) G where

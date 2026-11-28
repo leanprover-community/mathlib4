@@ -251,9 +251,19 @@ instance : CompleteLattice (Subsemiring R) :=
 theorem eq_top_iff' (A : Subsemiring R) : A = ⊤ ↔ ∀ x : R, x ∈ A :=
   eq_top_iff.trans ⟨fun h m => h <| mem_top m, fun h m _ => h m⟩
 
+@[simp, norm_cast]
+theorem coe_eq_univ {S : Subsemiring R} : (S : Set R) = Set.univ ↔ S = ⊤ :=
+  (SetLike.ext'_iff.trans (by rfl)).symm
+
 @[simp] theorem toSubmonoid_top : (⊤ : Subsemiring R).toSubmonoid = ⊤ := rfl
 
 @[simp] theorem toAddSubmonoid_top : (⊤ : Subsemiring R).toAddSubmonoid = ⊤ := rfl
+
+@[simp] theorem toSubmonoid_eq_top {S : Subsemiring R} : S.toSubmonoid = ⊤ ↔ S = ⊤ := by
+  rw [← toSubmonoid_top, toSubmonoid_inj]
+
+-- Not `@[simp]` since `simp` can already prove it.
+theorem toAddSubmonoid_eq_top {S : Subsemiring R} : S.toAddSubmonoid = ⊤ ↔ S = ⊤ := by simp
 
 section NonAssocSemiring
 
