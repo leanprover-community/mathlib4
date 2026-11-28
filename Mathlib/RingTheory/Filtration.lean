@@ -236,7 +236,8 @@ open PolynomialModule
 variable (F F')
 
 /-- The `R[IX]`-submodule of `M[X]` associated with an `I`-filtration. -/
-protected noncomputable def submodule : Submodule (reesAlgebra I) (PolynomialModule R M) where
+protected noncomputable def submodule :
+    Submodule (reesAlgebra I.toGradedMonoid) (PolynomialModule R M) where
   carrier := { f | ∀ i, f.coeff i ∈ F.N i }
   add_mem' hf hg i := Submodule.add_mem _ (hf i) (hg i)
   zero_mem' _ := Submodule.zero_mem _
@@ -260,7 +261,7 @@ variable (I M)
 
 /-- `Ideal.Filtration.submodule` as an `InfHom`. -/
 noncomputable def submoduleInfHom :
-    InfHom (I.Filtration M) (Submodule (reesAlgebra I) (PolynomialModule R M)) where
+    InfHom (I.Filtration M) (Submodule (reesAlgebra I.toGradedMonoid) (PolynomialModule R M)) where
   toFun := Ideal.Filtration.submodule
   map_inf' := inf_submodule
 
@@ -282,7 +283,8 @@ theorem submodule_closure_single :
     exact AddSubmonoid.subset_closure (Set.subset_iUnion _ c <| Set.mem_image_of_mem _ (hf c))
 
 theorem submodule_span_single :
-    Submodule.span (reesAlgebra I) (⋃ i, single R i '' (F.N i : Set M)) = F.submodule := by
+    Submodule.span (reesAlgebra I.toGradedMonoid) (⋃ i, single R i '' (F.N i : Set M)) =
+      F.submodule := by
   rw [← Submodule.span_closure, submodule_closure_single, Submodule.coe_toAddSubmonoid]
   exact Submodule.span_eq (Filtration.submodule F)
 
@@ -308,7 +310,8 @@ theorem submodule_eq_span_le_iff_stable_ge (n₀ : ℕ) :
     have := F.pow_smul_le_pow_smul (n - n') n' 1
     rw [tsub_add_cancel_of_le e, pow_one, add_comm _ 1, ← add_tsub_assoc_of_le e, add_comm] at this
     exact this (Submodule.smul_mem_smul ((l _).property <| n + 1 - n') hm)
-  · let F' := Submodule.span (reesAlgebra I) (⋃ i ≤ n₀, single R i '' (F.N i : Set M))
+  · let F' :=
+      Submodule.span (reesAlgebra I.toGradedMonoid) (⋃ i ≤ n₀, single R i '' (F.N i : Set M))
     intro hF i
     have : ∀ i ≤ n₀, single R i '' (F.N i : Set M) ⊆ F' := fun i hi =>
       -- Porting note: need to add hint for `s`
@@ -355,8 +358,8 @@ theorem submodule_fg_iff_stable (hF' : ∀ i, (F.N i).FG) : F.submodule.FG ↔ F
     apply Submodule.fg_iSup
     rintro ⟨i, hi⟩
     obtain ⟨s, hs⟩ := hF' i
-    have : Submodule.span (reesAlgebra I) (s.image (lsingle R i) : Set (PolynomialModule R M)) =
-        Submodule.span _ (single R i '' (F.N i : Set M)) := by
+    have : Submodule.span (reesAlgebra I.toGradedMonoid) (s.image (lsingle R i) :
+        Set (PolynomialModule R M)) = Submodule.span _ (single R i '' (F.N i : Set M)) := by
       rw [Finset.coe_image, ← Submodule.span_span_of_tower R, ← Submodule.map_span, hs]; rfl
     rw [Subtype.coe_mk, ← this]
     exact ⟨_, rfl⟩
