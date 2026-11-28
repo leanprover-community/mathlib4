@@ -462,8 +462,8 @@ lemma himp_le_iff : a ⇨ b ≤ c ↔ ∀ d, d ⊓ a ≤ b → d ≤ c := by sim
 
 -- see Note [lower instance priority]
 @[to_dual]
-instance (priority := 100) Order.Frame.toDistribLattice : DistribLattice α :=
-  DistribLattice.ofInfSupLe fun a b c => by
+instance (priority := 100) Order.Frame.toDistribLattice : DistribLattice α where
+  inf_sup_le a b c := by
     rw [← sSup_pair, ← sSup_pair, inf_sSup_eq, ← sSup_image, image_pair]
 
 instance Prod.instFrame [Frame β] : Frame (α × β) where
