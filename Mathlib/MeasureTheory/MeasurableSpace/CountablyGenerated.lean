@@ -464,6 +464,28 @@ theorem measurableSingletonClass_of_countablySeparated
   rw [← finj.preimage_image {x}, image_singleton]
   exact fmeas <| MeasurableSet.singleton _
 
+/-- A measurable function into a countably separated space has a measurable graph. -/
+@[measurability]
+theorem _root_.Measurable.measurableSet_graph
+    [MeasurableSpace α]
+    [MeasurableSpace β] [cs : CountablySeparated β]
+    {f : α → β} (measf : Measurable f) :
+    MeasurableSet { p : α × β | p.2 = f p.1 } := by
+  let ⟨V, Vctbl, Vmeas, Vsep⟩ := cs.countably_separated
+  let A : Set (Set (α × β)) := (fun v => { p : α × β | p.1 ∈ f ⁻¹' v ↔ p.2 ∈ v }) '' V
+  have : { p : α × β | p.2 = f p.1 } = ⋂₀ A := by
+    ext x
+    have := Vsep (f x.1) (Set.mem_univ _) x.2 (Set.mem_univ _)
+    simp [A]; grind
+  rw [this]
+  apply MeasurableSet.sInter (Vctbl.image _)
+  simp only [Set.mem_preimage, Set.mem_image, forall_exists_index, and_imp,
+    forall_apply_eq_imp_iff₂, measurableSet_setOfPred]
+  fun_prop (disch := measurability)
+
+instance [MeasurableSpace β] [CountablySeparated β] : MeasurableEq β :=
+⟨measurable_swap measurable_id.measurableSet_graph⟩
+
 end SeparatesPoints
 
 section MeasurableMemPartition
