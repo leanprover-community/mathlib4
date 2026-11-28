@@ -547,6 +547,10 @@ theorem coheight_pow_maximalIdeal (n : ℕ) : Order.coheight (maximalIdeal R ^ n
   simpa only [Order.coheight_toDual, Order.height_enat] using!
     Order.coheight_orderIso (idealOrderIsoENat R).symm (.toDual n)
 
+theorem coheight_bot : Order.coheight (⊥ : Ideal R) = ⊤ := by
+  simpa only [Order.coheight_toDual, Order.height_enat] using!
+    Order.coheight_orderIso (idealOrderIsoENat R).symm (.toDual ⊤)
+
 theorem length_quotient_pow_maximalIdeal (n : ℕ) :
     Module.length R (R ⧸ maximalIdeal R ^ n) = n := by
   rw [Module.length_quotient, coheight_pow_maximalIdeal]
