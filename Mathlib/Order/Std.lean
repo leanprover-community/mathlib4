@@ -101,7 +101,7 @@ If no `LE` instance exists, it can be generated from `Ord` and `Std.TransOrd` in
 
 If an `LT` instance exists, an `Std.LawfulOrderLT` instance must exist also; otherwise, a suitable
 `LT` instance will be generated. -/
-@[expose, implicit_reducible]
+@[expose, instance_reducible]
 def Preorder.ofStd (α : Type*) (args : OfStdArgs α := by exact {}) : Preorder α where
   toLE := args.le
   toLT := args.lt
@@ -133,7 +133,7 @@ instances.
 
 If an `LT` instance exists, an `Std.LawfulOrderLT` instance must exist also; otherwise, a suitable
 `LT` instance will be generated. -/
-@[expose, implicit_reducible]
+@[expose, instance_reducible]
 def PartialOrder.ofStd (α : Type*) (args : OfStdArgs α := by exact {}) : PartialOrder α where
   toPreorder := .ofStd α args.toPreorderArgs
   le_antisymm := args.isPartialOrder.le_antisymm
@@ -253,7 +253,7 @@ will be generated.
 
 If an `Ord` instance exists, it will be used, in which case the user must provide an
 `Std.LawfulOrderOrd` instance. Otherwise, it will be generated. -/
-@[expose, implicit_reducible]
+@[expose, instance_reducible]
 def LinearOrder.ofStd (α : Type*) (args : OfStdArgs α := by exact {}) : LinearOrder α :=
   let := args.le
   let := args.lt

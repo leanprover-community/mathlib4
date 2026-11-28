@@ -8,10 +8,11 @@ module
 public import Mathlib.Basic.Nontrivial.Defs
 public import Mathlib.Data.Nat.Init
 public import Mathlib.Data.Set.Defs
-public import Mathlib.Order.Defs.LinearOrder
+public import Mathlib.Order.Std
 public import Mathlib.Tactic.GCongr
 
 import Mathlib.Basic.Logic.Basic
+import Mathlib.Tactic.FastInstance
 
 /-!
 # Basic operations on the natural numbers
@@ -33,17 +34,7 @@ namespace Nat
 variable {a b c m n k : ℕ}
 
 -- TODO: Move the `LinearOrder ℕ` instance to `Order.Nat` (https://github.com/leanprover-community/mathlib4/pull/13092).
-instance instLinearOrder : LinearOrder ℕ where
-  le := Nat.le
-  le_refl := @Nat.le_refl
-  le_trans := @Nat.le_trans
-  le_antisymm := @Nat.le_antisymm
-  le_total := @Nat.le_total
-  lt := Nat.lt
-  lt_iff_le_not_ge := @Nat.lt_iff_le_and_not_ge
-  toDecidableLT := inferInstance
-  toDecidableLE := inferInstance
-  toDecidableEq := inferInstance
+instance instLinearOrder : LinearOrder ℕ := fast_instance% .ofStd ℕ
 
 -- Shortcut instances
 instance : Preorder ℕ := inferInstance

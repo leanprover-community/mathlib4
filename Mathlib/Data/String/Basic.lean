@@ -132,22 +132,7 @@ private theorem le_iff_not_lt {s₁ s₂ : String} : s₁ ≤ s₂ ↔ ¬ s₂ <
 theorem le_iff_toList_le {s₁ s₂ : String} : s₁ ≤ s₂ ↔ s₁.toList ≤ s₂.toList := by
   rw [String.le_iff_not_lt, lt_iff_toList_lt, not_lt]
 
-instance : LinearOrder String where
-  le_refl _ := Std.le_refl _
-  le_trans a b c := Std.le_trans
-  lt_iff_le_not_ge a b := Std.lt_iff_le_and_not_ge
-  le_antisymm a b := Std.le_antisymm
-  le_total a b := Std.le_total
-  toDecidableLE := inferInstance
-  toDecidableEq := inferInstance
-  toDecidableLT := String.decidableLT
-  compare_eq_compareOfLessAndEq a b := Std.LawfulLTCmp.eq_compareOfLessAndEq a b
-  min_def a b := Std.min_eq_ite
-  max_def a b := by
-    obtain h | rfl | h := Std.lt_trichotomy a b
-    · simp [Std.le_of_lt h, Std.max_eq_ite, Std.not_le.2 h]
-    · simp [Std.max_eq_ite]
-    · simp [Std.not_le.2 h, Std.max_eq_ite, Std.le_of_lt h]
+instance : LinearOrder String := fast_instance% .ofStd String
 
 theorem ofList_eq {l : List Char} {s : String} : ofList l = s ↔ l = s.toList := by
   simp [← toList_inj]
