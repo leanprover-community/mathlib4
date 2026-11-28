@@ -171,6 +171,11 @@ noncomputable section BirkhoffSup
 def birkhoffSumSup (f : α → α) (g : α → ℝ) (x : α) : EReal :=
   ⨆ n, ↑(birkhoffSum f g n x)
 
+@[fun_prop]
+lemma measurable_birkhoffSumSup [MeasurableSpace α] (hf : Measurable f) (hg : Measurable g) :
+    Measurable (birkhoffSumSup f g) := by
+  fun_prop [birkhoffSumSup]
+
 lemma birkhoffSumSup_eq_iSup_birkhoffMax :
     birkhoffSumSup f g x = ⨆ n, ↑(birkhoffMax f g n x) := by
   simp [birkhoffMax, birkhoffSumSup, Pi.partialSups_apply, ← EReal.coe_orderEmbedding,

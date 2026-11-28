@@ -197,6 +197,20 @@ theorem congr_right (h : g =ᵐ[μ] g') (h_tendsto : TendstoInMeasure μ f l g) 
 
 end TendstoInMeasure
 
+section AETendsto
+
+variable [PseudoMetricSpace E] {f : ℕ → α → E} {g : α → E}
+
+/-- `f n x` tends to `g x` for almost every `x` if and only if, for every `ε > 0`, the set of
+points `x` with `ε ≤ dist (f n x) (g x)` for infinitely many `n` is a null set. -/
+theorem ae_tendsto_iff_forall_measure_frequently_eq_zero :
+    (∀ᵐ x ∂μ, Tendsto (fun n ↦ f n x) atTop (𝓝 (g x))) ↔
+      ∀ ε : ℝ, 0 < ε → μ {x | ∃ᶠ n in atTop, ε ≤ dist (f n x) (g x)} = 0 := by
+  simp_rw [Uniform.tendsto_nhds_left, Metric.uniformity_basis_dist.eventually_tendsto_right_iff,
+    measure_eq_zero_iff_ae_notMem, Set.mem_ofPred_eq, not_frequently, not_le]
+
+end AETendsto
+
 section ExistsSeqTendstoAe
 
 variable [PseudoEMetricSpace E]

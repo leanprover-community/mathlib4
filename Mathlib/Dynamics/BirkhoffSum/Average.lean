@@ -6,6 +6,7 @@ Authors: Yury Kudryashov, Lua Viana Reis, Oliver Butterley
 module
 
 public import Mathlib.Algebra.Module.Basic
+public import Mathlib.Algebra.Module.BigOperators
 public import Mathlib.Dynamics.BirkhoffSum.Basic
 public import Mathlib.Tactic.Positivity
 
@@ -106,9 +107,17 @@ lemma birkhoffAverage_add_apply {f : α → α} {g g' : α → M} (n : ℕ) (x :
 
 @[deprecated (since := "2026-08-19")] alias birkhoffSum_add' := birkhoffSum_add_apply
 
+@[to_fun]
 lemma birkhoffAverage_add {f : α → α} {g g' : α → M} :
     birkhoffAverage R f (g + g') = birkhoffAverage R f g + birkhoffAverage R f g' :=
   funext₂ <| birkhoffAverage_add_apply R
+
+/-- A Birkhoff average of scalar multiples of a constant vector is the scalar Birkhoff average
+times that vector. -/
+@[simp]
+lemma birkhoffAverage_smul_const {f : α → α} (g : α → R) (c : M) (n : ℕ) (x : α) :
+    birkhoffAverage R f (fun y ↦ g y • c) n x = birkhoffAverage R f g n x • c := by
+  simp only [birkhoffAverage, birkhoffSum, ← Finset.sum_smul, smul_assoc]
 
 /-- If a function `g` is invariant under a function `f` (i.e., `g ∘ f = g`), then the Birkhoff
 average of `g` over `f` for `n` iterations is equal to `g x` at every point `x`.
@@ -147,6 +156,7 @@ lemma birkhoffAverage_sub_apply {f : α → α} {g g' : α → M} (n : ℕ) (x :
     birkhoffAverage R f (g - g') n x = birkhoffAverage R f g n x - birkhoffAverage R f g' n x := by
   simp [birkhoffAverage, birkhoffSum, smul_sub]
 
+@[to_fun]
 lemma birkhoffAverage_sub {f : α → α} {g g' : α → M} :
     birkhoffAverage R f (g - g') = birkhoffAverage R f g - birkhoffAverage R f g' :=
   funext₂ birkhoffAverage_sub_apply

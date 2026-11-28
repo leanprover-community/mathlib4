@@ -92,6 +92,12 @@ theorem map_measureReal_apply [MeasurableSpace β] {f : α → β} (hf : Measura
     μ.real s₁ ≤ μ.real s₂ :=
   ENNReal.toReal_mono h₂ (measure_mono h)
 
+theorem measureReal_mono_ae (h : s₁ ≤ᵐ[μ] s₂) (h₂ : μ s₂ ≠ ∞ := by finiteness) :
+    μ.real s₁ ≤ μ.real s₂ :=
+  ENNReal.toReal_mono h₂ (measure_mono_ae h)
+
+alias _root_.Filter.EventuallySubset.measureReal_le := measureReal_mono_ae
+
 theorem measureReal_eq_measureReal_iff {m : MeasurableSpace β} {ν : Measure β} {t : Set β}
     (h₁ : μ s ≠ ∞ := by finiteness) (h₂ : ν t ≠ ∞ := by finiteness) :
     μ.real s = ν.real t ↔ μ s = ν t := by

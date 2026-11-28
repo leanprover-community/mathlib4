@@ -370,6 +370,12 @@ theorem _root_.ContinuousLinearMap.comp_condExp_comm {F : Type*} [NormedAddCommG
     · simp [condExp_of_not_sigmaFinite hm hμ]
   · simp [condExp_of_not_le hm]
 
+theorem condExp_smul_const {f : α → ℝ} (hf_int : Integrable f μ) (c : E) :
+    μ[fun x ↦ f x • c | m] =ᵐ[μ] fun x ↦ μ[f | m] x • c := by
+  have h := (ContinuousLinearMap.toSpanSingleton ℝ c).comp_condExp_comm (m := m) hf_int
+  simp only [Function.comp_def, ContinuousLinearMap.toSpanSingleton_apply] at h
+  exact h.symm
+
 /-- Conditional expectation commutes with affine functions. Note that `IsFiniteMeasure μ` is a
 necessary assumption because we want constant functions to be integrable. -/
 theorem _root_.ContinuousLinearMap.comp_condExp_add_const_comm {F : Type*} [NormedAddCommGroup F]

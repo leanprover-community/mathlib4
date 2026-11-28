@@ -566,6 +566,33 @@ lemma _root_.ENNReal.toEReal_sub {x y : ℝ≥0∞} (hy_top : y ≠ ∞) (h_le :
   | coe x =>
     simp only [coe_nnreal_eq_coe_real, ← ENNReal.coe_sub, NNReal.coe_sub (mod_cast h_le), coe_sub]
 
+section iSupInf
+
+variable {ι : Sort*} {a : EReal}
+
+lemma iSup_add (u : ι → EReal) : (⨆ i, u i) + a = ⨆ i, u i + a := by
+  refine le_antisymm (add_le_of_forall_lt fun b hb c hc ↦ ?_) (iSup_le fun i ↦ by grw [← le_iSup])
+  obtain ⟨i, hi⟩ := lt_iSup_iff.1 hb
+  exact le_iSup_of_le i (by grw [hi.le, hc.le])
+
+lemma add_iSup (u : ι → EReal) : a + ⨆ i, u i = ⨆ i, a + u i := by
+  simp only [add_comm a, iSup_add]
+
+lemma iInf_add [Nonempty ι] (ha : a ≠ ⊤) (u : ι → EReal) :
+    (⨅ i, u i) + a = ⨅ i, u i + a := by
+  obtain rfl | ha' := eq_or_ne a ⊥
+  · simp
+  refine le_antisymm (le_iInf fun i ↦ by grw [iInf_le]) ?_
+  refine le_add_of_forall_gt (.inr ha) (.inr ha') fun b hb c hc ↦ ?_
+  obtain ⟨i, hi⟩ := iInf_lt_iff.1 hb
+  exact iInf_le_of_le i (by grw [hi.le, hc.le])
+
+lemma add_iInf [Nonempty ι] (ha : a ≠ ⊤) (u : ι → EReal) :
+    a + ⨅ i, u i = ⨅ i, a + u i := by
+  simp only [add_comm a, iInf_add ha]
+
+end iSupInf
+
 /-! ### Multiplication -/
 
 @[simp] lemma top_mul_top : (⊤ : EReal) * ⊤ = ⊤ := rfl
