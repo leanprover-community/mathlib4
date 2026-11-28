@@ -18,7 +18,6 @@ set_option doc.verso.suggestions false
 This file provides a `norm_num` extension to prove that natural numbers are prime and compute
 its minimal factor. Todo: compute the list of all factors.
 
-
 ## Implementation notes
 
 For numbers larger than 25 bits, the primality proof produced by `norm_num` is an expression

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.FieldTheory.SeparablyGenerated
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Transcendental separable extensions
 
@@ -17,7 +20,6 @@ transcendental separable field extensions.
 
 * `Algebra.IsSeparablyGenerated` : A field extension is separably generated if there exists
   a transcendence basis such that the extension above it is separable.
-
 * `Algebra.IsTranscendentalSeparable` : A field extension is transcendental separable if
   every finitely generated subextension is separably generated.
 -/

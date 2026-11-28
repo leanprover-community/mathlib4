@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.AffineSpace.Combination
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Centroid of a Finite Set of Points in Affine Space
 
@@ -17,7 +20,6 @@ ring.
 
 * `centroidWeights`: A constant weight function assigning to each index in a `Finset` the same
   weight, equal to the reciprocal of the number of elements.
-
 * `centroid`: the centroid of a `Finset` of points, defined as the affine combination using
   `centroidWeights`.
 -/

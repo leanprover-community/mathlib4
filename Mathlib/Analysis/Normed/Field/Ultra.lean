@@ -10,6 +10,9 @@ public import Mathlib.Analysis.Normed.Ring.Ultra
 
 import Mathlib.Data.Nat.Choose.Sum
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Conditions to have an ultrametric norm on a division ring
 
@@ -20,7 +23,6 @@ facts about the existing norm.
 
 * `isUltrametricDist_of_forall_norm_natCast_le_one`: a norm in a division ring is ultrametric
   if the norm of the image of a natural is less than or equal to one
-
 * `isUltrametricDist_iff_forall_norm_natCast_le_one`: a norm in a division ring is ultrametric
   if and only if the norm of the image of a natural is less than or equal to one
 

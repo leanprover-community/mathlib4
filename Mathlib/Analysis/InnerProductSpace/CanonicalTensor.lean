@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Canonical tensors in real inner product spaces
 
@@ -14,7 +17,6 @@ Given an `InnerProductSpace ℝ E`, this file defines two canonical tensors.
 
 * `InnerProductSpace.canonicalContravariantTensor E : E ⊗[ℝ] E →ₗ[ℝ] ℝ`. This is the element
   corresponding to the inner product.
-
 * If `E` is finite-dimensional, then `E ⊗[ℝ] E` is canonically isomorphic to its dual. Accordingly,
   there exists an element `InnerProductSpace.canonicalCovariantTensor E : E ⊗[ℝ] E` that
   corresponds to `InnerProductSpace.canonicalContravariantTensor E` under this identification.

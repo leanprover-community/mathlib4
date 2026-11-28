@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.MetricSpace.Pseudo.Pi
 public import Mathlib.Topology.MetricSpace.Ultra.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ultrametric distances on pi types
 
@@ -16,7 +19,6 @@ This file contains results on the behavior of ultrametrics in products of ultram
 ## Main results
 
 * `Pi.instIsUltrametricDist`: a product of ultrametric spaces is ultrametric.
-
 
 ultrametric, nonarchimedean
 -/
