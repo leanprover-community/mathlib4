@@ -851,23 +851,11 @@ theorem reachable_sup_edge_iff (G : SimpleGraph V) {s t u v : V} :
       G.Reachable u s ∧ G.Reachable t v ∨ G.Reachable u t ∧ G.Reachable s v := by
   constructor
   · rintro ⟨w⟩
-    simp only [← ConnectedComponent.eq]
     induction w with
-    | nil => exact Or.inl rfl
-    | cons h _ ih =>
-      rcases h with h | h
-      · have := ConnectedComponent.connectedComponentMk_eq_of_adj h
-        grind only
-      · have := (edge_adj ..).mp h
-        grind only
-  · have across : (G ⊔ edge s t).Reachable s t := by
-      obtain rfl | h := eq_or_ne s t
-      · exact .rfl
-      · exact (show (G ⊔ edge s t).Adj s t from by simp [edge, h]).reachable
-    rintro (h | ⟨ha, hb⟩ | ⟨ha, hb⟩)
-    · exact h.mono le_sup_left
-    · exact (ha.mono le_sup_left).trans (across.trans (hb.mono le_sup_left))
-    · exact (ha.mono le_sup_left).trans (across.symm.trans (hb.mono le_sup_left))
+      grind only [sup_adj, edge_adj, Reachable.rfl, → Adj.reachable, → Reachable.trans]
+  · have hst : s = t ∨ (G ⊔ edge s t).Adj s t := (edge_le_iff _).mp le_sup_right
+    have hle : G ≤ G ⊔ edge s t := le_sup_left
+    grind only [→ Reachable.mono, → Reachable.trans, → Reachable.symm, → Adj.reachable]
 
 /-! ### Bridge edges -/
 
