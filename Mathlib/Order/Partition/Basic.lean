@@ -54,7 +54,6 @@ proved separately.
 
 ## TODO
 
-* Link this to `Finpartition`.
 * Show that when `α` is a frame `Partition α` also has finite joins, i.e. that it is a lattice.
 -/
 
