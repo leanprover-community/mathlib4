@@ -149,7 +149,7 @@ theorem bernoulliMeasure_self_eq_dirac (x : X) (p : I) :
   simp [bernoulliMeasure_def, ← add_smul]
 
 @[simp]
-theorem map_bernoulliMeasure [MeasurableSingletonClass X] [MeasurableSingletonClass Y]
+theorem map_bernoulliMeasure [MeasurableSingletonClass X]
     (x y : X) (f : X → Y) (p : I) :
     Ber(x, y, p).map f = bernoulliMeasure (f x) (f y) p := by
   have hf (x : X) : AEMeasurable f (dirac x) := by fun_prop
