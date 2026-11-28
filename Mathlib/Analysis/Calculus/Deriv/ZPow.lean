@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Calculus.Deriv.Inv
 public import Mathlib.Analysis.Calculus.Deriv.Shift
 
 import Mathlib.Analysis.Calculus.Deriv.Pow
+import Mathlib.Data.Nat.Factorial.BigOperators
 
 /-!
 # Derivatives of `x ^ m`, `m : ℤ`
@@ -125,6 +126,11 @@ theorem iter_deriv_pow' (n k : ℕ) :
     (deriv^[k] fun x : 𝕜 => x ^ n) =
       fun x => (∏ i ∈ Finset.range k, ((n : 𝕜) - i)) * x ^ (n - k) :=
   funext fun x => iter_deriv_pow n x k
+
+/-- The iterated derivative of a negative integer power, expressed using an ascending factorial. -/
+theorem iter_deriv_zpow_neg_natCast (m k : ℕ) (x : 𝕜) :
+    deriv^[k] (· ^ (-(m : ℤ))) x = (-1) ^ k * (m.ascFactorial k : 𝕜) * x ^ (-(m : ℤ) - k) := by
+  grind [iter_deriv_zpow, Nat.ascFactorial_eq_prod_range, Nat.cast_prod, Finset.prod_neg]
 
 theorem iter_deriv_inv (k : ℕ) (x : 𝕜) :
     deriv^[k] Inv.inv x = (-1) ^ k * k ! * x ^ (-1 - k : ℤ) := calc
