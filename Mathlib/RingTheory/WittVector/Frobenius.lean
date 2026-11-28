@@ -6,6 +6,8 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.RingTheory.WittVector.IsPoly
+public import Mathlib.Tactic.LinearCombination
+public import Mathlib.Tactic.TermCongr
 
 import Mathlib.Algebra.Algebra.ZMod
 
