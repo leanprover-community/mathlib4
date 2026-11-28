@@ -2018,6 +2018,7 @@ public import Mathlib.Analysis.Complex.ValueDistribution.SecondMainTheorem
 public import Mathlib.Analysis.ConstantSpeed
 public import Mathlib.Analysis.Convex.AmpleSet
 public import Mathlib.Analysis.Convex.Approximation
+public import Mathlib.Analysis.Convex.Asplund
 public import Mathlib.Analysis.Convex.Basic
 public import Mathlib.Analysis.Convex.Between
 public import Mathlib.Analysis.Convex.BetweenList
@@ -2025,6 +2026,7 @@ public import Mathlib.Analysis.Convex.Birkhoff
 public import Mathlib.Analysis.Convex.Body
 public import Mathlib.Analysis.Convex.Caratheodory
 public import Mathlib.Analysis.Convex.Combination
+public import Mathlib.Analysis.Convex.Compact
 public import Mathlib.Analysis.Convex.Cone.Basic
 public import Mathlib.Analysis.Convex.Cone.Closure
 public import Mathlib.Analysis.Convex.Cone.Dual
@@ -2040,6 +2042,7 @@ public import Mathlib.Analysis.Convex.EGauge
 public import Mathlib.Analysis.Convex.Exposed
 public import Mathlib.Analysis.Convex.Extrema
 public import Mathlib.Analysis.Convex.Extreme
+public import Mathlib.Analysis.Convex.Extreme.Intrinsic
 public import Mathlib.Analysis.Convex.Function
 public import Mathlib.Analysis.Convex.FunctionTopology
 public import Mathlib.Analysis.Convex.Gauge
@@ -2072,7 +2075,9 @@ public import Mathlib.Analysis.Convex.SpecificFunctions.Pow
 public import Mathlib.Analysis.Convex.Star
 public import Mathlib.Analysis.Convex.StdSimplex
 public import Mathlib.Analysis.Convex.StoneSeparation
+public import Mathlib.Analysis.Convex.Straszewicz
 public import Mathlib.Analysis.Convex.Strict
+public import Mathlib.Analysis.Convex.Strict.Exposed
 public import Mathlib.Analysis.Convex.Strict.Extreme
 public import Mathlib.Analysis.Convex.StrictCombination
 public import Mathlib.Analysis.Convex.StrictConvexBetween

@@ -33,11 +33,14 @@ The main results are:
   `AffineIsometry.intrinsicClosure_image`: Intrinsic interiors/frontiers/closures commute with
   taking the image under an affine isometry.
 * `Set.Nonempty.intrinsicInterior`: The intrinsic interior of a nonempty convex set is nonempty.
+* `Convex.mem_intrinsicInterior_iff`: In finite dimensions, a point `p` of a convex set `s` lies in
+  its intrinsic interior iff every segment from a point of `s` to `p` extends beyond `p` in `s`.
 
 ## References
 
 * Chapter 8 of [Barry Simon, *Convexity*][simon2011]
 * Chapter 1 of [Rolf Schneider, *Convex Bodies: The Brunn-Minkowski theory*][schneider2014].
+* Section 6 of [R. T. Rockafellar, *Convex Analysis*][rockafellar1970]
 
 ## TODO
 
@@ -467,14 +470,47 @@ theorem Convex.openSegment_intrinsicInterior_intrinsicClosure_subset_intrinsicIn
 
 end IntrinsicClosure
 
+section Module
+
+variable [Ring 𝕜] [TopologicalSpace 𝕜] [AddCommGroup V] [Module 𝕜 V] [TopologicalSpace V]
+  [ContinuousAdd V] [ContinuousSMul 𝕜 V] {s : Set V} {x v : V}
+
+/-- If `x` lies in the intrinsic interior of `s` and `v ∈ vectorSpan 𝕜 s`, then `x + t • v ∈ s`
+for all `t` sufficiently close to `0`. -/
+theorem eventually_add_smul_mem_of_mem_intrinsicInterior (hx : x ∈ intrinsicInterior 𝕜 s)
+    (hv : v ∈ vectorSpan 𝕜 s) : ∀ᶠ t in 𝓝 (0 : 𝕜), x + t • v ∈ s := by
+  obtain ⟨y, hy, rfl⟩ := hx
+  rw [← direction_affineSpan] at hv
+  refine (tendsto_nhdsWithin_iff.mpr ⟨Continuous.tendsto' (by fun_prop) _ _ (by simp),
+    .of_forall fun t ↦ ?_⟩).eventually_mem
+    (preimage_coe_mem_nhds_subtype.mp (mem_interior_iff_mem_nhds.mp hy))
+  simpa [add_comm] using vadd_mem_of_mem_direction (Submodule.smul_mem _ t hv) y.property
+
+end Module
+
+section LinearOrderedField
+
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜]
+  [AddCommGroup V] [Module 𝕜 V] [TopologicalSpace V] [ContinuousAdd V] [ContinuousSMul 𝕜 V]
+  {s : Set V} {x y : V}
+
+/-- If `x` lies in the intrinsic interior of `s`, then every segment from a point `y` of the affine
+span of `s` to `x` extends beyond `x` inside `s`. -/
+theorem exists_pos_add_smul_sub_mem_of_mem_intrinsicInterior (hx : x ∈ intrinsicInterior 𝕜 s)
+    (hy : y ∈ affineSpan 𝕜 s) : ∃ t : 𝕜, 0 < t ∧ x + t • (x - y) ∈ s :=
+  (eventually_add_smul_mem_of_mem_intrinsicInterior hx <|
+    vsub_mem_vectorSpan_of_mem_affineSpan_of_mem_affineSpan
+      (subset_affineSpan 𝕜 s (intrinsicInterior_subset hx)) hy).exists_gt
+
+end LinearOrderedField
+
 private theorem aux {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] (φ : α ≃ₜ β)
     (s : Set β) : (interior s).Nonempty ↔ (interior (φ ⁻¹' s)).Nonempty := by
   rw [← φ.image_symm, ← φ.symm.image_interior, image_nonempty]
 
-variable [NormedAddCommGroup V] [NormedSpace ℝ V] [FiniteDimensional ℝ V] {s : Set V}
-
-/-- The intrinsic interior of a nonempty convex set is nonempty. -/
-protected theorem Set.Nonempty.intrinsicInterior (hscv : Convex ℝ s) (hsne : s.Nonempty) :
+/-- Auxiliary lemma for `Set.Nonempty.intrinsicInterior`: the case of a normed space. -/
+private theorem intrinsicInterior_nonempty_of_normedSpace [NormedAddCommGroup V] [NormedSpace ℝ V]
+    [FiniteDimensional ℝ V] {s : Set V} (hscv : Convex ℝ s) (hsne : s.Nonempty) :
     (intrinsicInterior ℝ s).Nonempty := by
   have := hsne.coe_sort
   obtain ⟨p, hp⟩ := hsne
@@ -487,7 +523,37 @@ protected theorem Set.Nonempty.intrinsicInterior (hscv : Convex ℝ s) (hsne : s
     ((_root_.affineSpan ℝ s).subtype.comp
       (AffineIsometryEquiv.constVSub ℝ p').symm.toAffineEquiv.toAffineMap)
 
+variable [AddCommGroup V] [Module ℝ V] [TopologicalSpace V] [IsTopologicalAddGroup V]
+  [ContinuousSMul ℝ V] [T2Space V] [FiniteDimensional ℝ V] {s : Set V}
+
+/-- In a finite-dimensional Hausdorff real topological vector space, the intrinsic interior of a
+nonempty convex set is nonempty. -/
+protected theorem Set.Nonempty.intrinsicInterior (hscv : Convex ℝ s) (hsne : s.Nonempty) :
+    (intrinsicInterior ℝ s).Nonempty := by
+  let e : V ≃L[ℝ] (Fin (Module.finrank ℝ V) → ℝ) :=
+    ContinuousLinearEquiv.ofFinrankEq (Module.finrank_fin_fun (R := ℝ)).symm
+  let φ : V ≃ᴬ[ℝ] (Fin (Module.finrank ℝ V) → ℝ) :=
+    ⟨e.toLinearEquiv.toAffineEquiv, e.continuous, e.symm.continuous⟩
+  have h : (intrinsicInterior ℝ (φ '' s)).Nonempty :=
+    intrinsicInterior_nonempty_of_normedSpace (hscv.linear_image e.toLinearMap) (hsne.image φ)
+  rw [φ.intrinsicInterior_image] at h
+  exact h.of_image
+
 theorem intrinsicInterior_nonempty (hs : Convex ℝ s) :
     (intrinsicInterior ℝ s).Nonempty ↔ s.Nonempty :=
   ⟨by contrapose!; rintro rfl; exact intrinsicInterior_empty,
     Set.Nonempty.intrinsicInterior hs⟩
+
+/-- In finite dimensions, a point `p` of a convex set `s` lies in its intrinsic interior if and
+only if every segment from a point of `s` to `p` extends beyond `p` inside `s`. -/
+theorem Convex.mem_intrinsicInterior_iff (hs : Convex ℝ s) {p : V} :
+    p ∈ intrinsicInterior ℝ s ↔ p ∈ s ∧ ∀ y ∈ s, ∃ t : ℝ, 0 < t ∧ p + t • (p - y) ∈ s := by
+  refine ⟨fun hp ↦ ⟨intrinsicInterior_subset hp, fun y hy ↦
+    exists_pos_add_smul_sub_mem_of_mem_intrinsicInterior hp (subset_affineSpan ℝ s hy)⟩, ?_⟩
+  rintro ⟨hp, h⟩
+  obtain ⟨q, hq⟩ := Set.Nonempty.intrinsicInterior hs ⟨p, hp⟩
+  obtain ⟨t, ht, hz⟩ := h q (intrinsicInterior_subset hq)
+  refine hs.openSegment_intrinsicInterior_intrinsicClosure_subset_intrinsicInterior hq
+    (subset_intrinsicClosure hz) ((mem_openSegment_translate ℝ (-p)).mp
+      (mem_openSegment_iff_div.mpr ⟨t, 1, ht, one_pos, ?_⟩))
+  module
