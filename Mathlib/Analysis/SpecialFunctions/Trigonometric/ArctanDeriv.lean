@@ -171,7 +171,7 @@ theorem DifferentiableWithinAt.arctan (hf : DifferentiableWithinAt ℝ f s x) :
     DifferentiableWithinAt ℝ (fun x => Real.arctan (f x)) s x :=
   hf.hasFDerivWithinAt.arctan.differentiableWithinAt
 
-@[simp]
+@[simp, fun_prop]
 theorem DifferentiableAt.arctan (hc : DifferentiableAt ℝ f x) :
     DifferentiableAt ℝ (fun x => arctan (f x)) x :=
   hc.hasFDerivAt.arctan.differentiableAt
@@ -179,7 +179,7 @@ theorem DifferentiableAt.arctan (hc : DifferentiableAt ℝ f x) :
 theorem DifferentiableOn.arctan (hc : DifferentiableOn ℝ f s) :
     DifferentiableOn ℝ (fun x => arctan (f x)) s := fun x h => (hc x h).arctan
 
-@[simp]
+@[simp, fun_prop]
 theorem Differentiable.arctan (hc : Differentiable ℝ f) : Differentiable ℝ fun x => arctan (f x) :=
   fun x => (hc x).arctan
 
