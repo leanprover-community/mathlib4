@@ -25,6 +25,10 @@ open Function OrderDual Set
 
 variable {α β γ : Type*} {ι : Sort*} {κ : ι → Sort*}
 
+@[to_dual]
+lemma ciSup_range [SupSet β] (f : ι → α) (g : α → β) : ⨆ a : Set.range f, g a = ⨆ k, g (f k) := by
+  simp [iSup, iSup, range]
+
 section ConditionallyCompleteLattice
 
 variable [ConditionallyCompleteLattice α] {a b : α}

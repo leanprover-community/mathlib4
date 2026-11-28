@@ -643,6 +643,10 @@ theorem bddAbove_empty [Nonempty α] : BddAbove (∅ : Set α) := by
 theorem isGLB_empty [OrderTop α] : IsGLB ∅ (⊤ : α) :=
   isGLB_empty_iff.2 isTop_top
 
+@[to_dual (attr := nontriviality)]
+lemma IsLUB.of_subsingleton [Subsingleton α] : IsLUB s a :=
+  ⟨fun _ _ ↦ (Subsingleton.elim _ _).le, fun _ _ ↦ (Subsingleton.elim _ _).le⟩
+
 @[to_dual]
 theorem IsLUB.nonempty [NoBotOrder α] (hs : IsLUB s a) : s.Nonempty :=
   ne_empty_iff_nonempty.1 fun h =>

@@ -21,7 +21,7 @@ In this file we define `MonoidWithZero`, `GroupWithZero`, etc... instances for `
 
 @[expose] public section
 
-assert_not_exists DenselyOrdered Ring
+assert_not_exists Ring
 
 variable {M₀ N₀ : Type*}
 
