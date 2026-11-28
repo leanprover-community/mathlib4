@@ -170,7 +170,7 @@ def linearIsometryEquivTuple : ℍ ≃ₗᵢ[ℝ] EuclideanSpace ℝ (Fin 4) :=
     norm_map' := norm_toLp_equivTuple }
 
 @[continuity]
-theorem continuous_coe : Continuous (coe : ℝ → ℍ) :=
+theorem continuous_coe : Continuous ((↑) : ℝ → ℍ) :=
   continuous_algebraMap ℝ ℍ
 
 @[continuity]
