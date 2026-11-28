@@ -139,6 +139,12 @@ theorem alternatizeUncurryFin_apply (f : E →L[𝕜] E [⋀^Fin n]→L[𝕜] F)
   rw [alternatizeUncurryFin, alternatizeUncurryFinCLM]
   apply alternatizeUncurryFinCLM.aux_apply
 
+@[simp]
+lemma alternatizeUncurryFin_zero :
+    alternatizeUncurryFin (0 : E →L[𝕜] E [⋀^Fin n]→L[𝕜] F) = 0 := by
+  ext v
+  simp [alternatizeUncurryFin_apply]
+
 lemma toAlternatingMap_alternatizeUncurryFin (f : E →L[𝕜] E [⋀^Fin n]→L[𝕜] F) :
     (alternatizeUncurryFin f).toAlternatingMap =
       .alternatizeUncurryFin (toAlternatingMapLinear ∘ₗ (f : E →ₗ[𝕜] E [⋀^Fin n]→L[𝕜] F)) := by
@@ -149,6 +155,11 @@ lemma toAlternatingMap_alternatizeUncurryFin (f : E →L[𝕜] E [⋀^Fin n]→L
 theorem alternatizeUncurryFin_add (f g : E →L[𝕜] E [⋀^Fin n]→L[𝕜] F) :
     alternatizeUncurryFin (f + g) = alternatizeUncurryFin f + alternatizeUncurryFin g :=
   map_add (alternatizeUncurryFinCLM 𝕜 E F) f g
+
+@[simp]
+theorem alternatizeUncurryFin_neg (f : E →L[𝕜] E [⋀^Fin n]→L[𝕜] F) :
+    alternatizeUncurryFin (-f) = -alternatizeUncurryFin f :=
+  map_neg (alternatizeUncurryFinCLM 𝕜 E F) f
 
 @[simp]
 lemma alternatizeUncurryFin_curryLeft (f : E [⋀^Fin (n + 1)]→L[𝕜] F) :
