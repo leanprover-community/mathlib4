@@ -82,6 +82,12 @@ instance (K₁ K₂ : IntermediateField F E) : Algebra ↥(K₁ ⊓ K₂) K₁ :
 instance (K₁ K₂ : IntermediateField F E) : Algebra ↥(K₁ ⊓ K₂) K₂ :=
   inferInstanceAs <| Algebra ↑(K₁.toSubalgebra ⊓ K₂.toSubalgebra) K₂.toSubalgebra
 
+instance (K₁ K₂ : IntermediateField F E) : IsScalarTower F ↥(K₁ ⊓ K₂) K₁ :=
+  inferInstanceAs <| IsScalarTower F ↑(K₁.toSubalgebra ⊓ K₂.toSubalgebra) K₁.toSubalgebra
+
+instance (K₁ K₂ : IntermediateField F E) : IsScalarTower F ↥(K₁ ⊓ K₂) K₂ :=
+  inferInstanceAs <| IsScalarTower F ↑(K₁.toSubalgebra ⊓ K₂.toSubalgebra) K₂.toSubalgebra
+
 theorem sup_def (S T : IntermediateField F E) : S ⊔ T = adjoin F (S ∪ T : Set E) := rfl
 
 theorem sSup_def (S : Set (IntermediateField F E)) :
@@ -459,6 +465,10 @@ theorem extendScalars_adjoin {K : IntermediateField F E} {S : Set E} (h : K ≤ 
 theorem restrictScalars_adjoin_eq_sup (K : IntermediateField F E) (S : Set E) :
     restrictScalars F (adjoin K S) = K ⊔ adjoin F S := by
   rw [restrictScalars_adjoin, adjoin_union, adjoin_self]
+
+theorem restrictScalars_adjoin_intermediateField (K L : IntermediateField F E) :
+    restrictScalars F (adjoin K (L : Set E)) = L ⊔ K := by
+  rw [restrictScalars_adjoin_eq_sup, adjoin_self, sup_comm]
 
 theorem adjoin_iUnion {ι} (f : ι → Set E) : adjoin F (⋃ i, f i) = ⨆ i, adjoin F (f i) :=
   gc.l_iSup
