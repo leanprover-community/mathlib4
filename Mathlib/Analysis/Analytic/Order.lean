@@ -162,8 +162,8 @@ lemma apply_eq_zero_of_analyticOrderNatAt_ne_zero (hf : analyticOrderNatAt f z�
     f z₀ = 0 := by
   by_cases hf' : AnalyticAt 𝕜 f z₀ <;> simp_all [analyticOrderNatAt, analyticOrderAt_eq_zero]
 
-/-- Characterization of which natural numbers are `≤ hf.order`. Useful for avoiding case splits,
-since it applies whether or not the order is `∞`. -/
+/-- Characterization of which natural numbers are `≤ analyticOrderAt f z₀`. Useful for avoiding
+case splits, since it applies whether or not the order is `∞`. -/
 lemma natCast_le_analyticOrderAt (hf : AnalyticAt 𝕜 f z₀) {n : ℕ} :
     n ≤ analyticOrderAt f z₀ ↔
       ∃ g, AnalyticAt 𝕜 g z₀ ∧ ∀ᶠ z in 𝓝 z₀, f z = (z - z₀) ^ n • g z := by
@@ -381,18 +381,15 @@ lemma natCast_le_analyticOrderAt_iff_iteratedDeriv_eq_zero [CharZero 𝕜] [Comp
     simp [← this, IH hf.deriv, iteratedDeriv_succ',
       -Order.lt_add_one_iff, Nat.forall_lt_succ_left, hfz]
 
-lemma analyticOrderAt_deriv_of_pos {𝕜 : Type*} {E : Type*} [NontriviallyNormedField 𝕜] [CharZero 𝕜]
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E] {f : 𝕜 → E} {z₀ : 𝕜}
-    (hf : AnalyticAt 𝕜 f z₀) {n : ℕ} (horder : analyticOrderAt f z₀ = n + 1) :
+lemma analyticOrderAt_deriv_of_pos [CharZero 𝕜] [CompleteSpace E] (hf : AnalyticAt 𝕜 f z₀) {n : ℕ}
+    (horder : analyticOrderAt f z₀ = n + 1) :
     analyticOrderAt (deriv f) z₀ = n := by
   have ⟨g, hg, hg₀, hfg⟩ := (AnalyticAt.analyticOrderAt_eq_natCast hf).1 horder
   have hz₀ : f z₀ = 0 := by
     simpa [sub_self, zero_pow, zero_smul] using Filter.Eventually.self_of_nhds hfg
   simpa [hz₀, sub_zero, horder] using hf.analyticOrderAt_deriv_add_one
 
-lemma analyticOrderAt_iterated_deriv {𝕜 : Type*} {E : Type*} [NontriviallyNormedField 𝕜]
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E] {f : 𝕜 → E} {z₀ : 𝕜}
-    {k n : ℕ} [CharZero 𝕜] :
+lemma analyticOrderAt_iterated_deriv [CharZero 𝕜] [CompleteSpace E] {k n : ℕ} :
     n = analyticOrderAt f z₀ → k ≤ n → analyticOrderAt (deriv^[k] f) z₀ = (n - k : ℕ) := by
   induction k generalizing n with
   | zero => exact fun Hn Hk ↦ Hn.symm
@@ -693,7 +690,7 @@ theorem isClopen_setOfPred_analyticOrderAt_eq_top (hf : AnalyticOnNhd 𝕜 f U) 
 @[deprecated (since := "2026-07-09")]
 alias isClopen_setOf_analyticOrderAt_eq_top := isClopen_setOfPred_analyticOrderAt_eq_top
 
-/-- On a connected set, there exists a point where a meromorphic function `f` has finite order iff
+/-- On a connected set, there exists a point where an analytic function `f` has finite order iff
 `f` has finite order at every point. -/
 theorem exists_analyticOrderAt_ne_top_iff_forall (hf : AnalyticOnNhd 𝕜 f U) (hU : IsConnected U) :
     (∃ u : U, analyticOrderAt f u ≠ ⊤) ↔ (∀ u : U, analyticOrderAt f u ≠ ⊤) := by
@@ -703,7 +700,7 @@ theorem exists_analyticOrderAt_ne_top_iff_forall (hf : AnalyticOnNhd 𝕜 f U) (
   simpa [Set.eq_empty_iff_forall_notMem, Set.eq_univ_iff_forall] using
       isClopen_iff.1 hf.isClopen_setOfPred_analyticOrderAt_eq_top
 
-/-- On a preconnected set, a meromorphic function has finite order at one point if it has finite
+/-- On a preconnected set, an analytic function has finite order at one point if it has finite
 order at another point. -/
 theorem analyticOrderAt_ne_top_of_isPreconnected {x y : 𝕜} (hf : AnalyticOnNhd 𝕜 f U)
     (hU : IsPreconnected U) (h₁x : x ∈ U) (hy : y ∈ U) (h₂x : analyticOrderAt f x ≠ ⊤) :
