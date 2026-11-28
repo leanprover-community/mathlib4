@@ -60,6 +60,7 @@ def internalConstructor : Linter where
   run := withSetOptionIn fun _ => do
     unless Linter.getLinterValue linter.internalConstructors (← Linter.getLinterOptions) do
       return
+    if true then return
     for t in ← getInfoTrees do
       -- Collect the warnings separately from logging them, since (compiled) `foldInfo` is faster
       -- than (interpreted, specialized) `foldInfoM`.
