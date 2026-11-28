@@ -194,6 +194,7 @@ end setOption
 
 section cdotLinter
 set_option linter.style.cdot true
+set_option linter.style.terminalCDot false
 
 -- After https://github.com/leanprover/lean4/pull/12263,
 -- we need to add `instance_reducible` before we can add `instance` to `Int.add` in the tests below.
