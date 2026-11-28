@@ -119,7 +119,6 @@ instance [∀ i, Preorder (α i)] [∀ i, DenselyOrdered (α i)] : DenselyOrdere
 
 /-! ### Lexicographical order on `Sigma` -/
 
-
 namespace Lex
 /-- The notation `Σₗ i, α i` refers to a sigma type equipped with the lexicographic order. -/
 notation3 "Σₗ " (...) ", " r:(scoped p => _root_.Lex (Sigma p)) => r
@@ -139,6 +138,11 @@ theorem le_def [LT ι] [∀ i, LE (α i)] {a b : Σₗ i, α i} :
 theorem lt_def [LT ι] [∀ i, LT (α i)] {a b : Σₗ i, α i} :
     a < b ↔ a.1 < b.1 ∨ ∃ h : a.1 = b.1, h.rec a.2 < b.2 :=
   Sigma.lex_iff
+
+open Function in
+theorem swap_lex (r : ι → ι → Prop) (s : (i : ι) → α i → α i → Prop) :
+    swap (Lex r s) = Lex (swap r) fun i ↦ swap (s i) := by
+  grind [Sigma.lex_iff]
 
 /-- The lexicographical preorder on a sigma type. -/
 instance preorder [Preorder ι] [∀ i, Preorder (α i)] : Preorder (Σₗ i, α i) :=
@@ -161,8 +165,6 @@ instance partialOrder [Preorder ι] [∀ i, PartialOrder (α i)] :
     PartialOrder (Σₗ i, α i) :=
   { Lex.preorder with
     le_antisymm := fun _ _ => antisymm_of ((Lex (· < ·)) fun _ => (· ≤ ·)) }
-
-
 
 /-- The lexicographical linear order on a sigma type. -/
 instance linearOrder [LinearOrder ι] [∀ i, LinearOrder (α i)] :
@@ -193,8 +195,7 @@ instance orderTop [PartialOrder ι] [OrderTop ι] [∀ i, Preorder (α i)] [Orde
 
 /-- The lexicographical linear order on a sigma type. -/
 instance boundedOrder [PartialOrder ι] [BoundedOrder ι] [∀ i, Preorder (α i)] [OrderBot (α ⊥)]
-    [OrderTop (α ⊤)] : BoundedOrder (Σₗ i, α i) :=
-  { Lex.orderBot, Lex.orderTop with }
+    [OrderTop (α ⊤)] : BoundedOrder (Σₗ i, α i) where
 
 instance denselyOrdered [Preorder ι] [DenselyOrdered ι] [∀ i, Nonempty (α i)] [∀ i, Preorder (α i)]
     [∀ i, DenselyOrdered (α i)] : DenselyOrdered (Σₗ i, α i) where
@@ -255,6 +256,26 @@ instance noMinOrder [Preorder ι] [∀ i, Preorder (α i)] [∀ i, NoMinOrder (�
     rintro ⟨i, a⟩
     obtain ⟨b, h⟩ := exists_lt a
     exact ⟨⟨i, b⟩, right _ _ h⟩
+
+instance wellFounded {ι : Type*} {α : ι → Type*} {r : ι → ι → Prop} {s : ∀ i, α i → α i → Prop}
+    [WellFounded r] [∀ i, WellFounded (s i)] : WellFounded (Lex r s) := by
+  constructor
+  rw [Sigma.forall]
+  refine WellFounded.fix' r fun i IH a ↦ WellFounded.fix' (s i)
+    (motive := fun a ↦ Acc (Lex r s) ⟨i, a⟩) (fun a IHa ↦ .intro _ fun ⟨j, b⟩ h ↦ ?_) a
+  cases h with
+  | left _ _ hji => exact IH j hji b
+  | right _ _ hba => exact IHa b hba
+
+instance wellFoundedLT [LT ι] [WellFoundedLT ι] [∀ i, LT (α i)] [∀ i, WellFoundedLT (α i)] :
+    WellFoundedLT (Σₗ i, α i) :=
+  wellFounded
+
+instance wellFoundedGT [LT ι] [WellFoundedGT ι] [∀ i, LT (α i)] [∀ i, WellFoundedGT (α i)] :
+    WellFoundedGT (Σₗ i, α i) := by
+  change WellFounded (Function.swap <| Lex (· < ·) fun _ ↦ (· < ·))
+  rw [swap_lex]
+  exact wellFounded
 
 end Lex
 

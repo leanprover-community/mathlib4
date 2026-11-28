@@ -60,6 +60,11 @@ instance le [LT ι] [∀ i, LE (α i)] : LE (Σₗ' i, α i) :=
 instance lt [LT ι] [∀ i, LT (α i)] : LT (Σₗ' i, α i) :=
   ⟨Lex (· < ·) fun _ => (· < ·)⟩
 
+open Function in
+theorem swap_lex (r : ι → ι → Prop) (s : (i : ι) → α i → α i → Prop) :
+    swap (Lex r s) = Lex (swap r) fun i ↦ swap (s i) := by
+  grind [PSigma.lex_iff]
+
 instance preorder [Preorder ι] [∀ i, Preorder (α i)] : Preorder (Σₗ' i, α i) :=
   { Lex.le, Lex.lt with
     le_refl := fun ⟨_, _⟩ => Lex.right _ le_rfl,
@@ -190,6 +195,26 @@ instance noMinOrder [Preorder ι] [∀ i, Preorder (α i)] [∀ i, NoMinOrder (�
     rintro ⟨i, a⟩
     obtain ⟨b, h⟩ := exists_lt a
     exact ⟨⟨i, b⟩, right _ h⟩⟩
+
+instance wellFounded {ι : Type*} {α : ι → Type*} {r : ι → ι → Prop} {s : ∀ i, α i → α i → Prop}
+    [WellFounded r] [∀ i, WellFounded (s i)] : WellFounded (Lex r s) := by
+  constructor
+  rw [PSigma.forall]
+  refine WellFounded.fix' r fun i IH a ↦ WellFounded.fix' (s i)
+    (motive := fun a ↦ Acc (Lex r s) ⟨i, a⟩) (fun a IHa ↦ .intro _ fun ⟨j, b⟩ h ↦ ?_) a
+  cases h with
+  | left _ _ hji => exact IH j hji b
+  | right _ hba => exact IHa b hba
+
+instance wellFoundedLT [LT ι] [WellFoundedLT ι] [∀ i, LT (α i)] [∀ i, WellFoundedLT (α i)] :
+    WellFoundedLT (Σₗ' i, α i) :=
+  wellFounded
+
+instance wellFoundedGT [LT ι] [WellFoundedGT ι] [∀ i, LT (α i)] [∀ i, WellFoundedGT (α i)] :
+    WellFoundedGT (Σₗ' i, α i) := by
+  change WellFounded (Function.swap <| Lex (· < ·) fun _ ↦ (· < ·))
+  rw [swap_lex]
+  exact wellFounded
 
 end Lex
 
