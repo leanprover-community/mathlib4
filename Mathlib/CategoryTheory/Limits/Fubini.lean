@@ -79,7 +79,7 @@ variable {F}
 /-- Extract the functor `J ⥤ C` consisting of the cone points and the maps between them,
 from a `DiagramOfCones`.
 -/
-@[to_dual (attr := simps)
+@[to_dual (attr := simps, implicit_reducible)
 /-- Extract the functor `J ⥤ C` consisting of the cocone points and the maps between them,
 from a `DiagramOfCocones`.
 -/]
@@ -89,11 +89,10 @@ def DiagramOfCones.conePoints (D : DiagramOfCones F) : J ⥤ C where
   map_id j := D.id j
   map_comp f g := D.comp f g
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a diagram `D` of limit cones over the `F.obj j`, and a cone over `uncurry.obj F`,
 we can construct a cone over the diagram consisting of the cone points from `D`.
 -/
-@[to_dual (attr := simps)
+@[to_dual (attr := simps, implicit_reducible)
 /-- Given a diagram `D` of colimit cocones over the `F.obj j`, and a cocone over `uncurry.obj F`,
 we can construct a cocone over the diagram consisting of the cocone points from `D`.
 -/]
@@ -117,11 +116,10 @@ def coneOfConeUncurry {D : DiagramOfCones F} (Q : ∀ j, IsLimit (D.obj j))
             simpa [(uncurry_obj_map), -uncurry_obj_map]
               using @NatTrans.naturality _ _ _ _ _ _ c.π (j, k) (j', k) (f, 𝟙 k)) }
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a diagram `D` of limit cones over the `curry.obj G j`, and a cone over `G`,
 we can construct a cone over the diagram consisting of the cone points from `D`.
 -/
-@[to_dual (attr := simps)
+@[to_dual (attr := simps, implicit_reducible)
 /-- Given a diagram `D` of colimit cocones under the `curry.obj G j`, and a cocone under `G`,
 we can construct a cocone under the diagram consisting of the cocone points from `D`.
 -/]
@@ -134,8 +132,6 @@ def coneOfConeCurry {D : DiagramOfCones (curry.obj G)} (Q : ∀ j, IsLimit (D.ob
           π := { app k := c.π.app (j, k) } }
       naturality {_ j'} _ := (Q j').hom_ext (by simp) }
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- `coneOfConeUncurry Q c` is a limit cone when `c` is a limit cone.
 -/
 @[to_dual
@@ -180,8 +176,6 @@ def coneOfConeUncurryIsLimit {D : DiagramOfCones F} (Q : ∀ j, IsLimit (D.obj j
     rw [← w j]
     simp
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- If `coneOfConeUncurry Q c` is a limit cone then `c` is in fact a limit cone.
 -/
 @[to_dual ofCoconeUncurry
@@ -208,18 +202,10 @@ def IsLimit.ofConeOfConeUncurry {D : DiagramOfCones F} (Q : ∀ j, IsLimit (D.ob
     fac s p := by
       have h1 := (Q p.1).fac ((Cone.postcompose (E p.1).hom).obj <|
         s.whisker (Prod.sectR p.1 K)) p.2
+      dsimp at h1
       simp only [Functor.comp_obj, Prod.sectR_obj, uncurry_obj_obj,
-        Cone.postcompose_obj_pt, Cone.whisker_pt, Cone.postcompose_obj_π,
-        Cone.whisker_π, NatTrans.comp_app, Functor.const_obj_obj, whiskerLeft_app,
         NatIso.ofComponents_hom_app, Iso.refl_hom, Category.comp_id, E] at h1
-      have h2 := (P.fac (S s) p.1)
-      dsimp only [Functor.comp_obj, Prod.sectR_obj, uncurry_obj_obj, NatTrans.id_app,
-        Functor.const_obj_obj, DiagramOfCones.conePoints_obj, DiagramOfCones.conePoints_map,
-        Functor.const_obj_map, id_eq, Cone.postcompose_obj_pt, Cone.whisker_pt,
-        Cone.postcompose_obj_π, Cone.whisker_π, NatTrans.comp_app, whiskerLeft_app,
-        NatIso.ofComponents_hom_app, Iso.refl_hom, Prod.sectL_obj, Prod.sectL_map, eq_mp_eq_cast,
-        eq_mpr_eq_cast, coneOfConeUncurry_pt, coneOfConeUncurry_π_app, S, E] at h2 ⊢
-      simp [← h1, ← h2]
+      simp [S, E, ← h1, ← dsimp% [S, E] (P.fac (S s) p.1)]
     uniq s f hf := P.uniq (s := S s) _ <|
       fun j ↦ (Q j).hom_ext <| fun k ↦ by simpa [S, E] using hf (j, k) }
 
@@ -232,7 +218,7 @@ variable [HasLimitsOfShape K C]
 we can construct a diagram consisting of the limit cone over each functor `F.obj j`,
 and the universal cone morphisms between these.
 -/
-@[to_dual (attr := simps)
+@[to_dual (attr := simps, implicit_reducible)
 /-- Given a functor `F : J ⥤ K ⥤ C`, with all needed colimits,
 we can construct a diagram consisting of the colimit cocone over each functor `F.obj j`,
 and the universal cocone morphisms between these.
@@ -255,7 +241,6 @@ section
 
 variable [HasLimit (curry.obj G ⋙ lim)]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a functor `G : J × K ⥤ C` such that `(curry.obj G ⋙ lim)` makes sense and has a limit,
 we can construct a cone over `G` with `limit (curry.obj G ⋙ lim)` as a cone point -/
 @[to_dual
@@ -274,8 +259,6 @@ noncomputable def coneOfHasLimitCurryCompLim : Cone G :=
         simp only [Category.assoc, Category.id_comp, Prod.fac (f₁, f₂),
           G.map_comp, limMap_π, curry_obj_map_app, reassoc_of% this] } }
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The cone `coneOfHasLimitCurryCompLim` is in fact a limit cone.
 -/
 @[to_dual
@@ -323,19 +306,16 @@ noncomputable def limitUncurryIsoLimitCompLim : limit (uncurry.obj F) ≅ limit 
   have Q'' := limit.isLimit (F ⋙ lim)
   exact IsLimit.conePointUniqueUpToIso Q' Q''
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_dual none, simp, reassoc]
 theorem limitUncurryIsoLimitCompLim_hom_π_π {j} {k} :
     (limitUncurryIsoLimitCompLim F).hom ≫ limit.π _ j ≫ limit.π _ k = limit.π _ (j, k) := by
-  dsimp [limitUncurryIsoLimitCompLim, IsLimit.conePointUniqueUpToIso, IsLimit.uniqueUpToIso]
-  simp
+  simp [limitUncurryIsoLimitCompLim, IsLimit.conePointUniqueUpToIso, IsLimit.uniqueUpToIso]
 
 @[to_dual (attr := simp, reassoc) colimitUncurryIsoColimitCompColim_ι_hom]
 theorem limitUncurryIsoLimitCompLim_inv_π {j} {k} :
     (limitUncurryIsoLimitCompLim F).inv ≫ limit.π _ (j, k) =
       (limit.π _ j ≫ limit.π _ k) := by
-  rw [← cancel_epi (limitUncurryIsoLimitCompLim F).hom]
-  simp
+  simp [← cancel_epi (limitUncurryIsoLimitCompLim F).hom]
 
 end
 
@@ -344,7 +324,6 @@ section
 variable (F)
 variable [HasColimitsOfShape K C] [HasColimit (uncurry.obj F)] [HasColimit (F ⋙ colim)]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc]
 theorem colimitUncurryIsoColimitCompColim_ι_ι_inv {j} {k} :
     colimit.ι (F.obj j) k ≫ colimit.ι (F ⋙ colim) j ≫ (colimitUncurryIsoColimitCompColim F).inv =
@@ -447,7 +426,6 @@ section
 
 variable [HasColimitsOfShape K C] [HasColimit (curry.obj G ⋙ colim)]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc]
 theorem colimitIsoColimitCurryCompColim_ι_ι_inv {j} {k} :
     colimit.ι ((curry.obj G).obj j) k ≫ colimit.ι (curry.obj G ⋙ colim) j ≫

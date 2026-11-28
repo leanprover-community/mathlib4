@@ -100,7 +100,7 @@ variable (J : Type v₁) [SmallCategory J]
 
 /-- Given a diagram `F : J ⥤ C` and two `Cone F`s, we can join them into a diagram `Bicone J ⥤ C`.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def biconeMk {C : Type u₁} [Category.{v₁} C] {F : J ⥤ C} (c₁ c₂ : Cone F) : Bicone J ⥤ C where
   obj X := Bicone.casesOn X c₁.pt c₂.pt fun j => F.obj j
   map f := by

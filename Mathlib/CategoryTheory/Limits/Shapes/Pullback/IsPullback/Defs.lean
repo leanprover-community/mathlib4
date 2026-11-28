@@ -86,6 +86,7 @@ variable {P X Y Z : C} {fst : P ⟶ X} {snd : P ⟶ Y} {f : X ⟶ Z} {g : Y ⟶ 
 /-- The (limiting) `PullbackCone f g` implicit in the statement
 that we have an `IsPullback fst snd f g`.
 -/
+@[implicit_reducible]
 def cone (h : IsPullback fst snd f g) : PullbackCone f g :=
   h.toCommSq.cone
 
@@ -222,6 +223,7 @@ variable {Z X Y P : C} {f : Z ⟶ X} {g : Z ⟶ Y} {inl : X ⟶ P} {inr : Y ⟶ 
 /-- The (colimiting) `PushoutCocone f g` implicit in the statement
 that we have an `IsPushout f g inl inr`.
 -/
+@[implicit_reducible]
 def cocone (h : IsPushout f g inl inr) : PushoutCocone f g :=
   h.toCommSq.cocone
 

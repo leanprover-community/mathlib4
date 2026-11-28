@@ -308,7 +308,7 @@ def Pi.eqToEquivalenceFunctorIso (f : J → I) {i' j' : J} (h : i' = j') :
 attribute [local simp] eqToHom_map
 
 /-- Reindexing a family of categories gives equivalent `Pi` categories. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def Pi.equivalenceOfEquiv (e : J ≃ I) :
     (∀ j, C (e j)) ≌ (∀ i, C i) where
   functor := pi' (fun i => Pi.eval _ (e.symm i) ⋙
@@ -325,7 +325,7 @@ noncomputable def Pi.equivalenceOfEquiv (e : J ≃ I) :
     (leftUnitor _).symm)
 
 /-- A product of categories indexed by `Option J` identifies to a binary product. -/
-@[simps]
+@[simps, implicit_reducible]
 def Pi.optionEquivalence (C' : Option J → Type u₁) [∀ i, Category.{v₁} (C' i)] :
     (∀ i, C' i) ≌ C' none × (∀ (j : J), C' (some j)) where
   functor := Functor.prod' (Pi.eval C' none)
@@ -345,7 +345,7 @@ variable {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
 
 /-- Assemble an `I`-indexed family of equivalences of categories
 into a single equivalence. -/
-@[simps]
+@[simps, implicit_reducible]
 def pi (E : ∀ i, C i ≌ D i) : (∀ i, C i) ≌ (∀ i, D i) where
   functor := Functor.pi (fun i => (E i).functor)
   inverse := Functor.pi (fun i => (E i).inverse)

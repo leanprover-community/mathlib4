@@ -117,12 +117,10 @@ include hc hc₁ hc₂
 /-- Given a family of objects `X : I₁ ⊕ I₂ → C`, a cofan of `X`, and two colimit cofans
 of `X ∘ Sum.inl` and `X ∘ Sum.inr`, this is a cofan for `c₁.pt` and `c₂.pt` whose
 point is `c.pt`. -/
-@[simp]
-def binaryCofanSum : BinaryCofan c₁.pt c₂.pt :=
+abbrev binaryCofanSum : BinaryCofan c₁.pt c₂.pt :=
   BinaryCofan.mk (Cofan.IsColimit.desc hc₁ (fun i₁ => c.inj (Sum.inl i₁)))
     (Cofan.IsColimit.desc hc₂ (fun i₂ => c.inj (Sum.inr i₂)))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The binary cofan `binaryCofanSum c c₁ c₂ hc₁ hc₂` is colimit. -/
 def isColimitBinaryCofanSum : IsColimit (binaryCofanSum c c₁ c₂ hc₁ hc₂) :=
   BinaryCofan.IsColimit.mk _ (fun f₁ f₂ => Cofan.IsColimit.desc hc (fun i => match i with
@@ -164,8 +162,6 @@ section
 
 variable [MonoCoprod C] {I J : Type*} (X : I → C) (ι : J → I)
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma mono_of_injective_aux (hι : Function.Injective ι) (c : Cofan X) (c₁ : Cofan (X ∘ ι))
     (hc : IsColimit c) (hc₁ : IsColimit c₁)
     (c₂ : Cofan (fun (k : ((Set.range ι)ᶜ : Set I)) => X k.val))
@@ -173,9 +169,10 @@ lemma mono_of_injective_aux (hι : Function.Injective ι) (c : Cofan X) (c₁ : 
   classical
   let e := ((Equiv.ofInjective ι hι).sumCongr (Equiv.refl _)).trans (Equiv.Set.sumCompl _)
   refine mono_binaryCofanSum_inl' (Cofan.mk c.pt (fun i' => c.inj (e i'))) _ _ ?_
-    hc₁ hc₂ _ (by simp [e])
+    hc₁ hc₂ _ (fun j ↦ Cofan.IsColimit.fac hc₁ _ j)
   exact IsColimit.ofIsoColimit ((IsColimit.ofCoconeEquiv (Cocone.equivalenceOfReindexing
-    (Discrete.equivalence e) (Iso.refl _))).symm hc) (Cocone.ext (Iso.refl _))
+    (Discrete.equivalence e) (Iso.refl _))).symm hc) (Cocone.ext (Iso.refl _) (fun j ↦ by
+      simp [Cofan.inj]))
 
 variable (hι : Function.Injective ι) (c : Cofan X) (c₁ : Cofan (X ∘ ι))
   (hc : IsColimit c) (hc₁ : IsColimit c₁)

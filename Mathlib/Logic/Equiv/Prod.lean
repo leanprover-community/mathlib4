@@ -152,7 +152,7 @@ def punitProd (α) : PUnit × α ≃ α :=
     _ ≃ α := prodPUnit _
 
 /-- `PUnit` is a right identity for dependent type product up to an equivalence. -/
-@[simps (attr := grind =)]
+@[simps (attr := grind =), implicit_reducible]
 def sigmaPUnit (α) : (_ : α) × PUnit ≃ α where
   toFun := fun p => p.1
   invFun := fun a => ⟨a, PUnit.unit⟩

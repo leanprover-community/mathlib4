@@ -84,7 +84,7 @@ variable (J C)
 /-- Functorially associated to each functor `J ⥤ C`, we have the `C`-presheaf consisting of
 cones with a given cone point.
 -/
-@[simps! obj_obj obj_map map_app]
+@[simps! obj_obj obj_map map_app, implicit_reducible]
 def cones : (J ⥤ C) ⥤ Cᵒᵖ ⥤ Type (max u₁ v₃) where
   obj := Functor.cones
   map f := whiskerLeft (const J).op (yoneda.map f)
@@ -92,7 +92,7 @@ def cones : (J ⥤ C) ⥤ Cᵒᵖ ⥤ Type (max u₁ v₃) where
 /-- Contravariantly associated to each functor `J ⥤ C`, we have the `C`-copresheaf consisting of
 cocones with a given cocone point.
 -/
-@[simps! obj_obj obj_map map_app]
+@[simps! obj_obj obj_map map_app, implicit_reducible]
 def cocones : (J ⥤ C)ᵒᵖ ⥤ C ⥤ Type (max u₁ v₃) where
   obj F := Functor.cocones (unop F)
   map f := whiskerLeft (const J) (coyoneda.map f)
@@ -174,7 +174,7 @@ variable {F : J ⥤ C}
 namespace Cone
 
 /-- The isomorphism between a cone on `F` and an element of the functor `F.cones`. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def equiv (F : J ⥤ C) : dsimp% Cone F ≅ Σ X, F.cones.obj X where
   hom := ↾fun c ↦ ⟨op c.pt, c.π⟩
   inv := ↾fun c ↦
@@ -209,6 +209,7 @@ end Cone
 namespace Cocone
 
 /-- The isomorphism between a cocone on `F` and an element of the functor `F.cocones`. -/
+@[simps! +dsimpLhs, implicit_reducible]
 def equiv (F : J ⥤ C) : Cocone F ≅ Σ X, F.cocones.obj X where
   hom := ↾fun c ↦ ⟨c.pt, c.ι⟩
   inv := ↾fun c ↦
@@ -409,7 +410,7 @@ def whiskering (E : K ⥤ J) : Cone F ⥤ Cone (E ⋙ F) where
 
 /-- Whiskering by an equivalence gives an equivalence between categories of cones.
 -/
-@[to_dual (attr := simps)
+@[to_dual (attr := simps, implicit_reducible)
 /-- Whiskering by an equivalence gives an equivalence between categories of cones.
 -/]
 def whiskeringEquivalence (e : K ≌ J) : Cone F ≌ Cone (e.functor ⋙ F) where
@@ -427,7 +428,7 @@ def whiskeringEquivalence (e : K ≌ J) : Cone F ≌ Cone (e.functor ⋙ F) wher
 /-- The categories of cones over `F` and `G` are equivalent if `F` and `G` are naturally isomorphic
 (possibly after changing the indexing category by an equivalence).
 -/
-@[to_dual (attr := simps! functor inverse unitIso counitIso)
+@[to_dual (attr := simps! functor inverse unitIso counitIso, implicit_reducible)
 /-- The categories of cocones over `F` and `G` are equivalent if `F` and `G` are naturally
 isomorphic (possibly after changing the indexing category by an equivalence).
 -/]
@@ -439,7 +440,8 @@ section
 variable (F)
 
 /-- Forget the cone structure and obtain just the cone point. -/
-@[to_dual (attr := simps) /-- Forget the cocone structure and obtain just the cocone point. -/]
+@[to_dual (attr := simps, implicit_reducible)
+  /-- Forget the cocone structure and obtain just the cocone point. -/]
 def forget : Cone F ⥤ C where
   obj t := t.pt
   map f := f.hom
@@ -479,7 +481,7 @@ instance functoriality_faithful [G.Faithful] : (functoriality F G).Faithful wher
 /-- If `e : C ≌ D` is an equivalence of categories, then `functoriality F e.functor` induces an
 equivalence between cones over `F` and cones over `F ⋙ e.functor`.
 -/
-@[to_dual (attr := simps)
+@[to_dual (attr := simps, implicit_reducible)
 /-- If `e : C ≌ D` is an equivalence of categories, then `functoriality F e.functor` induces an
 equivalence between cocones over `F` and cocones over `F ⋙ e.functor`.
 -/]
@@ -632,7 +634,7 @@ variable (F)
 /-- The category of cocones on `F` is equivalent to the opposite category of
 the category of cones on the opposite of `F`.
 -/
-@[to_dual (attr := simp)
+@[to_dual (attr := simps, implicit_reducible)
 /-- The category of cones on `F` is equivalent to the opposite category of
 the category of cocones on the opposite of `F`.
 -/]
@@ -658,7 +660,7 @@ def coconeEquivalenceOpConeOp : Cocone F ≌ (Cone F.op)ᵒᵖ where
   counitIso := Iso.refl _
 
 /-- Cones on `F : J ⥤ C` are equivalent to cocones on `F.op : Jᵒᵖ ⥤ Cᵒᵖ`. -/
-@[to_dual (attr := simps)
+@[to_dual (attr := simps, implicit_reducible)
 /-- Cocones on `F : J ⥤ C` are equivalent to cones on `F.op : Jᵒᵖ ⥤ Cᵒᵖ`. -/]
 def coneOpEquiv {F : J ⥤ C} : (Cone F)ᵒᵖ ≌ Cocone F.op where
   functor.obj c := c.unop.op
@@ -689,7 +691,7 @@ def coconeLeftOpOfCone (c : Cone F) : Cocone F.leftOp where
   ι := NatTrans.leftOp c.π
 
 /-- Cones on `F : J ⥤ Cᵒᵖ` are equivalent to cocones on `F.leftOp : Jᵒᵖ ⥤ C`. -/
-@[to_dual (attr := simps)
+@[to_dual (attr := simps, implicit_reducible)
 /-- Cocones on `F : J ⥤ Cᵒᵖ` are equivalent to cones on `F.leftOp : Jᵒᵖ ⥤ C`. -/]
 def coconeLeftOpOfConeEquiv {F : J ⥤ Cᵒᵖ} : (Cone F)ᵒᵖ ≌ Cocone F.leftOp where
   functor.obj c := coconeLeftOpOfCone c.unop
@@ -720,7 +722,7 @@ def coconeRightOpOfCone (c : Cone F) : Cocone F.rightOp where
   ι := NatTrans.rightOp c.π
 
 /-- Cones on `F : Jᵒᵖ ⥤ C` are equivalent to cocones on `F.rightOp : J ⥤ Cᵒᵖ`. -/
-@[to_dual (attr := simps)
+@[to_dual (attr := simps, implicit_reducible)
 /-- Cocones on `F : Jᵒᵖ ⥤ C` are equivalent to cones on `F.rightOp : J ⥤ Cᵒᵖ`. -/]
 def coconeRightOpOfConeEquiv {F : Jᵒᵖ ⥤ C} : (Cone F)ᵒᵖ ≌ Cocone F.rightOp where
   functor.obj c := coconeRightOpOfCone c.unop
@@ -751,7 +753,7 @@ def coconeUnopOfCone (c : Cone F) : Cocone F.unop where
   ι := NatTrans.unop c.π
 
 /-- Cones on `F : Jᵒᵖ ⥤ Cᵒᵖ` are equivalent to cocones on `F.unop : J ⥤ C`. -/
-@[to_dual (attr := simps)
+@[to_dual (attr := simps, implicit_reducible)
 /-- Cocones on `F : Jᵒᵖ ⥤ Cᵒᵖ` are equivalent to cones on `F.unop : J ⥤ C`. -/]
 def coconeUnopOfConeEquiv {F : Jᵒᵖ ⥤ Cᵒᵖ} : (Cone F)ᵒᵖ ≌ Cocone F.unop where
   functor.obj c := coconeUnopOfCone c.unop

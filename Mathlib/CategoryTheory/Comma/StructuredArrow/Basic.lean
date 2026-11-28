@@ -703,7 +703,7 @@ the obvious triangles involving all `F.map (G.map g)` commute.
 
 This is of course the same as providing a cone over `F ⋙ G` with cone point `X`, see
 `Functor.toStructuredArrowIsoToStructuredArrow`. -/
-@[to_dual (attr := simps) (reorder := X F)
+@[to_dual (attr := simps, implicit_reducible) (reorder := X F)
 /-- Given `F : C ⥤ D` and `X : D`, to upgrade a functor `G : E ⥤ C` to a functor
 `E ⥤ CostructuredArrow F X`, it suffices to provide maps `F.obj (G.obj Y) ⟶ X` for all `Y`
 making the obvious triangles involving all `F.map (G.map g)` commute.

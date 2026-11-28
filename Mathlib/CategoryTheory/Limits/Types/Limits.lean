@@ -27,6 +27,7 @@ variable {J : Type v} [Category.{w} J] {F : J ⥤ Type u}
 
 /-- Given a section of a functor F into `Type*`,
   construct a cone over F with `PUnit` as the cone point. -/
+@[implicit_reducible]
 def coneOfSection {s} (hs : s ∈ F.sections) : Cone F where
   pt := PUnit
   π := { app j := ↾fun _ ↦ s j, naturality _ _ f := by ext; exact (hs f).symm }
@@ -104,19 +105,17 @@ variable [Small.{u} F.sections]
 /-- (internal implementation) the limit cone of a functor,
 implemented as flat sections of a pi type
 -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def limitCone : Cone F where
   pt := Shrink F.sections
   π :=
     { app j := ↾fun u => ((equivShrink F.sections).symm u).val j }
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[ext]
 lemma limitCone_pt_ext {x y : (limitCone F).pt}
     (w : (equivShrink F.sections).symm x = (equivShrink F.sections).symm y) : x = y := by
   simp_all
 
-set_option backward.defeqAttrib.useBackward true in
 /-- (internal implementation) the fact that the proposed limit cone is the limit -/
 @[simps]
 noncomputable def limitConeIsLimit : IsLimit (limitCone.{v, u} F) where
