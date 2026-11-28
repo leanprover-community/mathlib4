@@ -19,7 +19,7 @@ with cofinal range. We can generalize this notion to arbitrary ordinals by setti
 - `Ordinal.exists_isFundamentalSeq`: every ordinal has a fundamental sequence.
 -/
 
-@[expose] public section
+public section
 
 universe u
 
@@ -45,14 +45,10 @@ namespace IsFundamentalSeq
 variable {f : Iio a → Iio o} {g : Iio b → Iio a}
 
 theorem iSup_add_one_eq (hf : IsFundamentalSeq f) : ⨆ i, (f i).val + 1 = o := by
-  apply le_antisymm
-  · simp_rw [Ordinal.iSup_le_iff, add_one_le_iff]
-    exact fun i ↦ (f i).property
-  · refine le_of_forall_lt fun b hb ↦ ?_
-    obtain ⟨_, ⟨c, rfl⟩, hc : b ≤ _⟩ := hf.isCofinal_range ⟨b, hb⟩
-    apply hc.trans_lt
-    rw [← add_one_le_iff]
-    apply Ordinal.le_iSup
+  refine (iSup_add_one_le fun i ↦ (f i).property).antisymm (le_of_forall_lt fun b hb ↦ ?_)
+  obtain ⟨_, ⟨c, rfl⟩, hc : b ≤ _⟩ := hf.isCofinal_range ⟨b, hb⟩
+  grw [hc, ← add_one_le_iff]
+  apply Ordinal.le_iSup
 
 theorem ord_cof (hf : IsFundamentalSeq f) : o.cof.ord = a := by
   apply hf.le_ord_cof.antisymm'
@@ -79,7 +75,7 @@ protected theorem zero (f : Iio 0 → Iio 0) : IsFundamentalSeq f where
 
 /-- The length one sequence `(o)` is a fundamental sequence for `o + 1`. -/
 protected theorem add_one (o : Ordinal) :
-    @IsFundamentalSeq 1 (o + 1) fun _ ↦ ⟨o, mem_Iio.2 <| lt_add_one o⟩ where
+    @IsFundamentalSeq 1 (o + 1) fun _ ↦ ⟨o, lt_add_one o⟩ where
   strictMono _ := by simp
   le_ord_cof := by simp
   isCofinal_range := by simp [IsTop]
@@ -96,8 +92,7 @@ protected theorem comp (hf : IsFundamentalSeq f) (hg : IsFundamentalSeq g) :
 fundamental sequence for `g o`. -/
 theorem comp_isNormal {g : Ordinal → Ordinal}
     (hg : IsNormal g) (hf : IsFundamentalSeq f) (ho : IsSuccLimit o) :
-    IsFundamentalSeq fun i ↦
-      ⟨g (f i), mem_Iio.2 <| hg.strictMono.imp <| mem_Iio.1 (f i).property⟩ where
+    IsFundamentalSeq fun i ↦ ⟨g (f i), hg.strictMono.imp (f i).property⟩ where
   strictMono := hg.strictMono.comp hf.strictMono
   le_ord_cof := by rw [cof_map_of_isNormal hg ho, hf.ord_cof]
   isCofinal_range := by
@@ -118,7 +113,7 @@ theorem exists_isFundamentalSeq (ha : o.cof.ord = a) : ∃ f : Iio a → Iio o, 
   let g := (Set.orderIsoOfEq _ _ (congrArg _ hs'.symm)).trans <|
     .ofRelIsoLT (enum (α := s) (· < ·))
   refine ⟨fun i ↦ g i, le_rfl, fun _ ↦ by simp, ?_⟩
-  rw [range_comp', OrderIso.map_isCofinal_iff, range_comp', g.range_eq]
+  rw [range_comp', OrderIso.map_isCofinal_iff, range_comp']
   simpa
 
 end Ordinal
