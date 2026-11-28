@@ -21,7 +21,7 @@ This agrees with the mathematical definition when `b` is odd.
 The prime factors are obtained via `Nat.factors`. Since `Nat.factors 0 = []`,
 this implies in particular that `jacobiSym a 0 = 1` for all `a`.
 
-## Main statements
+## Main results
 
 We prove the main properties of the Jacobi symbol, including the following.
 
