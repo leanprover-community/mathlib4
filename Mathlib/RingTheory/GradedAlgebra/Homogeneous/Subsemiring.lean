@@ -25,7 +25,7 @@ This file defines homogeneous subsemirings of a graded semiring, as well as oper
 open DirectSum Set SetLike
 
 variable {ι σ A : Type*} [AddMonoid ι] [Semiring A]
-variable [SetLike σ A] [AddSubmonoidClass σ A]
+variable [SetLike σ A] [AddSubmonoidClass σ]
 variable (𝒜 : ι → σ) [DecidableEq ι] [GradedRing 𝒜]
 variable (R : Subsemiring A)
 

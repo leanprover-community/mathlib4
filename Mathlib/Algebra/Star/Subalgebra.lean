@@ -598,7 +598,7 @@ theorem isMulCommutative_adjoin {s : Set A} (hnormal : ∀ x ∈ s, IsStarNormal
   exact Set.centralizer_centralizer_comm_of_comm
     (Set.Pairwise.commute_union_star_self_iff.mpr ⟨hcomm, hcomm_star, hnormal⟩) _ h₁ _ h₂
 
-instance instIsMulCommutative_adjoin {S : Type*} [SetLike S A] [MulMemClass S A] [StarMemClass S A]
+instance instIsMulCommutative_adjoin {S : Type*} [SetLike S A] [MulMemClass S] [StarMemClass S A]
     (s : S) [IsMulCommutative s] : IsMulCommutative (adjoin R (s : Set A)) :=
   isMulCommutative_adjoin R
     (fun _ h ↦ ⟨setLike_mul_comm (star_mem h) h⟩)

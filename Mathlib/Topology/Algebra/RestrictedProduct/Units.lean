@@ -38,7 +38,7 @@ namespace RestrictedProduct
 
 variable {ι : Type*}
 variable {R : ι → Type*} [∀ i, Monoid (R i)]
-variable {S : ι → Type*} [Π i, SetLike (S i) (R i)] [∀ (i : ι), SubmonoidClass (S i) (R i)]
+variable {S : ι → Type*} [Π i, SetLike (S i) (R i)] [∀ (i : ι), SubmonoidClass (S i)]
 variable {B : Π i, S i}
 variable {𝓕 : Filter ι}
 

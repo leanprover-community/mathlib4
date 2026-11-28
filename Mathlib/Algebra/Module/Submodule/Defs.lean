@@ -61,7 +61,7 @@ initialize_simps_projections Submodule (carrier → coe, as_prefix coe)
 /-- The actual `Submodule` obtained from an element of a `SMulMemClass` and `AddSubmonoidClass`. -/
 @[simps]
 def ofClass {S R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [SetLike S M]
-    [AddSubmonoidClass S M] [SMulMemClass S R M] (s : S) : Submodule R M where
+    [AddSubmonoidClass S] [SMulMemClass S R M] (s : S) : Submodule R M where
   carrier := s
   add_mem' := add_mem
   zero_mem' := zero_mem _
@@ -89,7 +89,7 @@ instance (priority := 100) : CanLift (Set M) (Submodule R M) (↑)
         smul_mem' := h.2.2 },
       rfl ⟩
 
-instance addSubmonoidClass : AddSubmonoidClass (Submodule R M) M where
+instance addSubmonoidClass : AddSubmonoidClass (Submodule R M) where
   zero_mem _ := AddSubmonoid.zero_mem' _
   add_mem := AddSubsemigroup.add_mem' _
 
@@ -167,7 +167,7 @@ end Submodule
 namespace SMulMemClass
 
 variable [Semiring R] [AddCommMonoid M] [Module R M] {A : Type*} [SetLike A M]
-  [AddSubmonoidClass A M] [SMulMemClass A R M] (S' : A)
+  [AddSubmonoidClass A] [SMulMemClass A R M] (S' : A)
 
 -- Prefer subclasses of `Module` over `SMulMemClass`.
 /-- A submodule of a `Module` is a `Module`. -/
@@ -179,7 +179,7 @@ this to manually derive `Module` on specific types. -/
 @[instance_reducible]
 def toModule' (S R' R A : Type*) [Semiring R] [NonUnitalNonAssocSemiring A]
     [Module R A] [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A]
-    [SetLike S A] [AddSubmonoidClass S A] [SMulMemClass S R A] (s : S) :
+    [SetLike S A] [AddSubmonoidClass S] [SMulMemClass S R A] (s : S) :
     Module R' s :=
   haveI : SMulMemClass S R' A := SMulMemClass.ofIsScalarTower S R' R A
   SMulMemClass.toModule s
@@ -366,7 +366,7 @@ end Submodule
 namespace SubmoduleClass
 
 instance (priority := 75) module' {T : Type*} [Semiring R] [AddCommMonoid M] [Semiring S]
-    [Module R M] [SMul S R] [Module S M] [IsScalarTower S R M] [SetLike T M] [AddSubmonoidClass T M]
+    [Module R M] [SMul S R] [Module S M] [IsScalarTower S R M] [SetLike T M] [AddSubmonoidClass T]
     [SMulMemClass T R M] (t : T) : Module S t where
   one_smul _ := by ext; simp
   mul_smul _ _ _ := by ext; simp [mul_smul]
@@ -376,7 +376,7 @@ instance (priority := 75) module' {T : Type*} [Semiring R] [AddCommMonoid M] [Se
   smul_add _ _ _ := by ext; simp [smul_add]
 
 instance (priority := 75) module [Semiring R] [AddCommMonoid M] [Module R M] [SetLike S M]
-    [AddSubmonoidClass S M] [SMulMemClass S R M] (s : S) : Module R s :=
+    [AddSubmonoidClass S] [SMulMemClass S R M] (s : S) : Module R s :=
   module' s
 
 end SubmoduleClass

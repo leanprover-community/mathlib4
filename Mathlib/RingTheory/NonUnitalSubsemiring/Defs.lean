@@ -27,7 +27,7 @@ universe u v w
 
 section neg_mul
 
-variable {R S : Type*} [Mul R] [HasDistribNeg R] [SetLike S R] [MulMemClass S R] {s : S}
+variable {R S : Type*} [Mul R] [HasDistribNeg R] [SetLike S R] [MulMemClass S] {s : S}
 
 /-- This lemma exists for `aesop`, as `aesop` simplifies `-x * y` to `-(x * y)` before applying
 unsafe rules like `mul_mem`, leading to a dead end in cases where `neg_mem` does not hold. -/
@@ -53,13 +53,13 @@ variable {R : Type u} {S : Type v} {T : Type w} [NonUnitalNonAssocSemiring R]
 are both an additive submonoid and also a multiplicative subsemigroup. -/
 class NonUnitalSubsemiringClass (S : Type*) (R : outParam (Type u)) [NonUnitalNonAssocSemiring R]
     [SetLike S R] : Prop
-  extends AddSubmonoidClass S R where
+  extends AddSubmonoidClass S where
   mul_mem : ∀ {s : S} {a b : R}, a ∈ s → b ∈ s → a * b ∈ s
 
 -- See note [lower instance priority]
 instance (priority := 100) NonUnitalSubsemiringClass.mulMemClass (S : Type*) (R : Type u)
     [NonUnitalNonAssocSemiring R] [SetLike S R] [h : NonUnitalSubsemiringClass S R] :
-    MulMemClass S R :=
+    MulMemClass S :=
   { h with }
 
 namespace NonUnitalSubsemiringClass

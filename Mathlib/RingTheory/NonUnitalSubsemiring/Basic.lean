@@ -387,7 +387,7 @@ theorem isMulCommutative_closure {R : Type*} [NonUnitalSemiring R] {s : Set R}
     Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂)
 
 instance instIsMulCommutative_closure {S R : Type*} [NonUnitalSemiring R]
-    [SetLike S R] [MulMemClass S R] (s : S) [IsMulCommutative s] :
+    [SetLike S R] [MulMemClass S] (s : S) [IsMulCommutative s] :
     IsMulCommutative (closure (s : Set R)) :=
   isMulCommutative_closure fun _ h₁ _ h₂ _ => setLike_mul_comm h₁ h₂
 

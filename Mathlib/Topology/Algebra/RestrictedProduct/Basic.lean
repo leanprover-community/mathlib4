@@ -195,11 +195,11 @@ variable [Π i, SetLike (S i) (R i)]
 variable {B : Π i, S i}
 
 @[to_additive]
-instance [Π i, One (R i)] [∀ i, OneMemClass (S i) (R i)] : One (Πʳ i, [R i, B i]_[𝓕]) where
+instance [Π i, One (R i)] [∀ i, OneMemClass (S i)] : One (Πʳ i, [R i, B i]_[𝓕]) where
   one := ⟨fun _ ↦ 1, .of_forall fun _ ↦ one_mem _⟩
 
 @[to_additive (attr := simp)]
-lemma one_apply [Π i, One (R i)] [∀ i, OneMemClass (S i) (R i)] (i : ι) :
+lemma one_apply [Π i, One (R i)] [∀ i, OneMemClass (S i)] (i : ι) :
     (1 : Πʳ i, [R i, B i]_[𝓕]) i = 1 :=
   rfl
 
@@ -213,11 +213,11 @@ lemma inv_apply [Π i, Inv (R i)] [∀ i, InvMemClass (S i) (R i)]
   rfl
 
 @[to_additive]
-instance [Π i, Mul (R i)] [∀ i, MulMemClass (S i) (R i)] : Mul (Πʳ i, [R i, B i]_[𝓕]) where
+instance [Π i, Mul (R i)] [∀ i, MulMemClass (S i)] : Mul (Πʳ i, [R i, B i]_[𝓕]) where
   mul x y := ⟨fun i ↦ x i * y i, y.property.mp (x.property.mono fun _ ↦ mul_mem)⟩
 
 @[to_additive (attr := simp)]
-lemma mul_apply [Π i, Mul (R i)] [∀ i, MulMemClass (S i) (R i)]
+lemma mul_apply [Π i, Mul (R i)] [∀ i, MulMemClass (S i)]
     (x y : Πʳ i, [R i, B i]_[𝓕]) (i : ι) : (x * y) i = x i * y i :=
   rfl
 
@@ -242,22 +242,22 @@ lemma div_apply [Π i, DivInvMonoid (R i)] [∀ i, SubgroupClass (S i) (R i)]
   rfl
 
 @[to_additive]
-instance instPow [Π i, Monoid (R i)] [∀ i, SubmonoidClass (S i) (R i)] :
+instance instPow [Π i, Monoid (R i)] [∀ i, SubmonoidClass (S i)] :
     Pow (Πʳ i, [R i, B i]_[𝓕]) ℕ where
   pow x n := ⟨fun i ↦ x i ^ n, x.property.mono fun _ hi ↦ pow_mem hi n⟩
 
 @[to_additive]
-lemma pow_apply [Π i, Monoid (R i)] [∀ i, SubmonoidClass (S i) (R i)]
+lemma pow_apply [Π i, Monoid (R i)] [∀ i, SubmonoidClass (S i)]
     (x : Πʳ i, [R i, B i]_[𝓕]) (n : ℕ) (i : ι) : (x ^ n) i = x i ^ n :=
   rfl
 
 @[to_additive]
-instance [Π i, Monoid (R i)] [∀ i, SubmonoidClass (S i) (R i)] :
+instance [Π i, Monoid (R i)] [∀ i, SubmonoidClass (S i)] :
     Monoid (Πʳ i, [R i, B i]_[𝓕]) :=
   DFunLike.coe_injective.monoid _ rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 @[to_additive]
-instance [Π i, CommMonoid (R i)] [∀ i, SubmonoidClass (S i) (R i)] :
+instance [Π i, CommMonoid (R i)] [∀ i, SubmonoidClass (S i)] :
     CommMonoid (Πʳ i, [R i, B i]_[𝓕]) :=
   DFunLike.coe_injective.commMonoid _ rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
@@ -305,14 +305,14 @@ variable {R} in
 is a monoid homomorphism. -/
 @[to_additive /-- The coercion from the restricted product of additive monoids `A i` to the
 (normal) product is an additive monoid homomorphism. -/]
-def coeMonoidHom [∀ i, Monoid (R i)] [∀ i, SubmonoidClass (S i) (R i)] :
+def coeMonoidHom [∀ i, Monoid (R i)] [∀ i, SubmonoidClass (S i)] :
     Πʳ i, [R i, B i]_[𝓕] →* Π i, R i where
   toFun := (↑)
   map_one' := rfl
   map_mul' _ _ := rfl
 
 instance {R₀ : Type*} [Semiring R₀] [Π i, AddCommMonoid (R i)] [Π i, Module R₀ (R i)]
-    [∀ i, AddSubmonoidClass (S i) (R i)] [∀ i, SMulMemClass (S i) R₀ (R i)] :
+    [∀ i, AddSubmonoidClass (S i)] [∀ i, SMulMemClass (S i) R₀ (R i)] :
   Module R₀ (Πʳ i, [R i, B i]_[𝓕]) :=
   DFunLike.coe_injective.module R₀ (M := Π i, R i) coeAddMonoidHom (fun _ _ ↦ rfl)
 
@@ -329,14 +329,14 @@ product `Πʳ i, [R i, B i]_[𝓕]` to the component `R j`.
 -/
 @[to_additive /-- `RestrictedProduct.evalAddMonoidHom j` is the monoid homomorphism from the
 restricted product `Πʳ i, [R i, B i]_[𝓕]` to the component `R j`. -/]
-def evalMonoidHom (j : ι) [Π i, Monoid (R i)] [∀ i, SubmonoidClass (S i) (R i)] :
+def evalMonoidHom (j : ι) [Π i, Monoid (R i)] [∀ i, SubmonoidClass (S i)] :
     (Πʳ i, [R i, B i]_[𝓕]) →* R j where
   toFun x := x j
   map_one' := rfl
   map_mul' _ _ := rfl
 
 @[simp]
-lemma evalMonoidHom_apply [Π i, Monoid (R i)] [∀ i, SubmonoidClass (S i) (R i)]
+lemma evalMonoidHom_apply [Π i, Monoid (R i)] [∀ i, SubmonoidClass (S i)]
     (x : Πʳ i, [R i, B i]_[𝓕]) (j : ι) : evalMonoidHom R j x = x j :=
   rfl
 
@@ -410,8 +410,8 @@ end set
 
 section monoid
 
-variable [Π i, Monoid (R₁ i)] [Π i, Monoid (R₂ i)] [∀ i, SubmonoidClass (S₁ i) (R₁ i)]
-    [∀ i, SubmonoidClass (S₂ i) (R₂ i)] (φ : ∀ j, R₁ (f j) →* R₂ j)
+variable [Π i, Monoid (R₁ i)] [Π i, Monoid (R₂ i)] [∀ i, SubmonoidClass (S₁ i)]
+    [∀ i, SubmonoidClass (S₂ i)] (φ : ∀ j, R₁ (f j) →* R₂ j)
     (hφ : ∀ᶠ j in 𝓕₂, MapsTo (φ j) (B₁ (f j)) (B₂ j))
 
 /--
@@ -475,7 +475,7 @@ variable {S : ι → Type*} {G : ι → Type*} [Π i, SetLike (S i) (G i)] (A : 
 
 section one
 
-variable [∀ i, One (G i)] [∀ i, OneMemClass (S i) (G i)] (i : ι)
+variable [∀ i, One (G i)] [∀ i, OneMemClass (S i)] (i : ι)
 
 /-- The function supported at `i`, with value `x` there, and `1` elsewhere. -/
 @[to_additive
@@ -523,22 +523,22 @@ lemma mulSingle_ne_one_iff {x : G i} : mulSingle A i x ≠ 1 ↔ x ≠ 1 :=
 end one
 
 @[to_additive]
-lemma mulSingle_mul [∀ i, MulOneClass (G i)] [∀ i, OneMemClass (S i) (G i)]
-    [∀ i, MulMemClass (S i) (G i)] (i : ι) (r s : G i) :
+lemma mulSingle_mul [∀ i, MulOneClass (G i)] [∀ i, OneMemClass (S i)]
+    [∀ i, MulMemClass (S i)] (i : ι) (r s : G i) :
     mulSingle A i (r * s) = mulSingle A i r * mulSingle A i s := by
   ext; simp [Pi.mulSingle_mul]
 
 @[simp]
-lemma mul_single [∀ i, MulZeroClass (G i)] [∀ i, ZeroMemClass (S i) (G i)]
-    [∀ i, MulMemClass (S i) (G i)] (i : ι) (r : G i) (x : Πʳ i, [G i, A i]) :
+lemma mul_single [∀ i, MulZeroClass (G i)] [∀ i, ZeroMemClass (S i)]
+    [∀ i, MulMemClass (S i)] (i : ι) (r : G i) (x : Πʳ i, [G i, A i]) :
     single A i (x i * r) = x * single A i r := by
   ext j
   rcases eq_or_ne i j with rfl | hne; · simp
   simp [single_eq_of_ne' A _ hne]
 
 @[simp]
-lemma single_mul [∀ i, MulZeroClass (G i)] [∀ i, ZeroMemClass (S i) (G i)]
-    [∀ i, MulMemClass (S i) (G i)] (i : ι) (r : G i) (x : Πʳ i, [G i, A i]) :
+lemma single_mul [∀ i, MulZeroClass (G i)] [∀ i, ZeroMemClass (S i)]
+    [∀ i, MulMemClass (S i)] (i : ι) (r : G i) (x : Πʳ i, [G i, A i]) :
     single A i (r * x i) = single A i r * x := by
   ext j
   rcases eq_or_ne i j with rfl | hne; · simp
@@ -557,7 +557,7 @@ lemma mulSingle_div [∀ i, Group (G i)] [∀ i, SubgroupClass (S i) (G i)]
   ext; simp [Pi.mulSingle_div]
 
 @[to_additive]
-lemma mulSingle_pow [∀ i, Monoid (G i)] [∀ i, SubmonoidClass (S i) (G i)]
+lemma mulSingle_pow [∀ i, Monoid (G i)] [∀ i, SubmonoidClass (S i)]
     (i : ι) (r : G i) (n : ℕ) :
     mulSingle A i (r ^ n) = mulSingle A i r ^ n := by
   ext; simp [Pi.mulSingle_pow, RestrictedProduct.pow_apply]
@@ -572,7 +572,7 @@ lemma mulSingle_zpow [∀ i, Group (G i)] [∀ i, SubgroupClass (S i) (G i)]
 to be 1. -/
 @[to_additive (attr := simps) /-- The map from a single factor to the restricted product given by
 setting the rest of the entries to be 0. -/]
-def mulSingleMonoidHom [∀ i, Monoid (G i)] [∀ i, SubmonoidClass (S i) (G i)] (i : ι) :
+def mulSingleMonoidHom [∀ i, Monoid (G i)] [∀ i, SubmonoidClass (S i)] (i : ι) :
     (G i) →* Πʳ (i : ι), [G i, A i] where
   toFun := mulSingle A i
   map_one' := mulSingle_one A i

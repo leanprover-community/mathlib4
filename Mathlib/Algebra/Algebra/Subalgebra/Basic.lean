@@ -130,7 +130,7 @@ instance instSMulMemClass : SMulMemClass (Subalgebra R A) R A where
 
 @[simp, aesop safe (rule_sets := [SetLike]), membership .]
 theorem _root_.algebraMap_mem {S R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
-    [SetLike S A] [OneMemClass S A] [SMulMemClass S R A] (s : S) (r : R) :
+    [SetLike S A] [OneMemClass S] [SMulMemClass S R A] (s : S) (r : R) :
     algebraMap R A r ∈ s :=
   Algebra.algebraMap_eq_smul_one (A := A) r ▸ SMulMemClass.smul_mem r (one_mem s)
 

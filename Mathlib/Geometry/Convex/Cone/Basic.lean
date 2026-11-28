@@ -95,7 +95,7 @@ protected lemma smul_mem (hc : 0 < c) (hx : x ∈ C) : c • x ∈ C := C.smul_m
 variable (C) in
 protected lemma add_mem ⦃x⦄ (hx : x ∈ C) ⦃y⦄ (hy : y ∈ C) : x + y ∈ C := C.add_mem' hx hy
 
-instance : AddMemClass (ConvexCone R M) M where add_mem ha hb := add_mem' _ ha hb
+instance : AddMemClass (ConvexCone R M) where add_mem ha hb := add_mem' _ ha hb
 
 /-- Copy of a convex cone with a new `carrier` equal to the old one. Useful to fix definitional
 equalities. -/

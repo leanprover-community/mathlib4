@@ -30,7 +30,7 @@ variable {M G R : Type*}
 variable [Monoid M] [Group G] [Semiring R]
 
 instance (priority := low) [MulSemiringAction M R] {S : Type*} [SetLike S M] (s : S)
-    [SubmonoidClass S M] : MulSemiringAction s R :=
+    [SubmonoidClass S] : MulSemiringAction s R :=
   { (inferInstance : DistribMulAction s R), (inferInstance : MulDistribMulAction s R) with }
 
 /-- A stronger version of `Submonoid.distribMulAction`. -/

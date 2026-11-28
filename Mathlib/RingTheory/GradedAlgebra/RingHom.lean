@@ -259,14 +259,14 @@ theorem cancel_left {g : ℬ →+*ᵍ 𝒞} {f₁ f₂ : 𝒜 →+*ᵍ ℬ} (hg 
 
 -- Note: if `GradedAddHom` is added later, then the assumptions can be relaxed.
 /-- A graded ring homomorphism descends to an additive homomorphism on each indexed component. -/
-@[simps!] def gradedAddHom [AddSubmonoidClass σ A] [AddSubmonoidClass τ B]
+@[simps!] def gradedAddHom [AddSubmonoidClass σ] [AddSubmonoidClass τ]
     (f : 𝒜 →+*ᵍ ℬ) (i : ι) : 𝒜 i →+ ℬ i where
   toFun x := ⟨f x, map_mem f x.property⟩
   map_zero' := by ext; simp
   map_add' x y := by ext; simp
 
 /-- A graded ring homomorphism descends to a ring homomorphism on the zeroth component. -/
-@[simps!] def gradedZeroRingHom [AddSubmonoidClass σ A] [AddSubmonoidClass τ B] [AddMonoid ι]
+@[simps!] def gradedZeroRingHom [AddSubmonoidClass σ] [AddSubmonoidClass τ] [AddMonoid ι]
     [SetLike.GradedMonoid 𝒜] [SetLike.GradedMonoid ℬ] (f : 𝒜 →+*ᵍ ℬ) : 𝒜 0 →+* ℬ 0 where
   __ := f.gradedAddHom 0
   map_one' := Subtype.ext <| map_one _
@@ -277,7 +277,7 @@ end GradedRingHom
 end SetLike
 
 section GradedRing
-variable [DecidableEq ι] [AddMonoid ι] [AddSubmonoidClass σ A] [AddSubmonoidClass τ B]
+variable [DecidableEq ι] [AddMonoid ι] [AddSubmonoidClass σ] [AddSubmonoidClass τ]
 variable (𝒜 : ι → σ) (ℬ : ι → τ) [GradedRing 𝒜] [GradedRing ℬ]
 variable {F : Type*} [FunLike F A B] [GradedFunLike F 𝒜 ℬ] [RingHomClass F A B]
 

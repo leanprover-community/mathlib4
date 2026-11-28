@@ -62,15 +62,15 @@ section NonAssoc
 
 variable [Mul M] {s : Set M}
 
-/-- `MulMemClass S M` says `S` is a type of sets `s : Set M` that are closed under `(*)` -/
-class MulMemClass (S : Type*) (M : outParam Type*) [Mul M] [SetLike S M] : Prop where
+/-- `MulMemClass S` says `S` is a type of sets `s : Set M` that are closed under `(*)` -/
+class MulMemClass (S : Type*) {M : outParam Type*} [Mul M] [SetLike S M] : Prop where
   /-- A substructure satisfying `MulMemClass` is closed under multiplication. -/
   mul_mem : ∀ {s : S} {a b : M}, a ∈ s → b ∈ s → a * b ∈ s
 
 export MulMemClass (mul_mem)
 
-/-- `AddMemClass S M` says `S` is a type of sets `s : Set M` that are closed under `(+)` -/
-class AddMemClass (S : Type*) (M : outParam Type*) [Add M] [SetLike S M] : Prop where
+/-- `AddMemClass S` says `S` is a type of sets `s : Set M` that are closed under `(+)` -/
+class AddMemClass (S : Type*) {M : outParam Type*} [Add M] [SetLike S M] : Prop where
   /-- A substructure satisfying `AddMemClass` is closed under addition. -/
   add_mem : ∀ {s : S} {a b : M}, a ∈ s → b ∈ s → a + b ∈ s
 
@@ -110,7 +110,7 @@ initialize_simps_projections AddSubsemigroup (carrier → coe, as_prefix coe)
 /-- The actual `Subsemigroup` obtained from an element of a `MulMemClass`. -/
 @[to_additive (attr := simps) /-- The actual `AddSubsemigroup` obtained from an element of a
 `AddMemClass` -/]
-def ofClass {S M : Type*} [Mul M] [SetLike S M] [MulMemClass S M] (s : S) : Subsemigroup M :=
+def ofClass {S M : Type*} [Mul M] [SetLike S M] [MulMemClass S] (s : S) : Subsemigroup M :=
   ⟨s, MulMemClass.mul_mem⟩
 
 @[to_additive]
@@ -119,7 +119,7 @@ instance (priority := 100) : CanLift (Set M) (Subsemigroup M) (↑)
   prf s h := ⟨{ carrier := s, mul_mem' := h }, rfl⟩
 
 @[to_additive]
-instance : MulMemClass (Subsemigroup M) M where mul_mem := fun {_ _ _} => Subsemigroup.mul_mem' _
+instance : MulMemClass (Subsemigroup M) where mul_mem := fun {_ _ _} => Subsemigroup.mul_mem' _
 
 @[to_additive (attr := simp)]
 theorem mem_carrier {s : Subsemigroup M} {x : M} : x ∈ s.carrier ↔ x ∈ s :=
@@ -262,7 +262,7 @@ end NonAssoc
 
 namespace MulMemClass
 
-variable {A : Type*} [Mul M] [SetLike A M] [hA : MulMemClass A M] (S' : A)
+variable {A : Type*} [Mul M] [SetLike A M] [hA : MulMemClass A] (S' : A)
 
 -- lower priority so other instances are found first
 /-- A submagma of a magma inherits a multiplication. -/
@@ -288,13 +288,13 @@ theorem mul_def (x y : S') : x * y = ⟨x * y, mul_mem x.property y.property⟩ 
 /-- A subsemigroup of a semigroup inherits a semigroup structure. -/
 @[to_additive
 /-- An `AddSubsemigroup` of an `AddSemigroup` inherits an `AddSemigroup` structure. -/]
-instance toSemigroup {M : Type*} [Semigroup M] {A : Type*} [SetLike A M] [MulMemClass A M]
+instance toSemigroup {M : Type*} [Semigroup M] {A : Type*} [SetLike A M] [MulMemClass A]
     (S : A) : Semigroup S := fast_instance%
   Subtype.coe_injective.semigroup Subtype.val fun _ _ => rfl
 
 /-- A subsemigroup of a `CommSemigroup` is a `CommSemigroup`. -/
 @[to_additive /-- An `AddSubsemigroup` of an `AddCommSemigroup` is an `AddCommSemigroup`. -/]
-instance toCommSemigroup {M} [CommSemigroup M] {A : Type*} [SetLike A M] [MulMemClass A M]
+instance toCommSemigroup {M} [CommSemigroup M] {A : Type*} [SetLike A M] [MulMemClass A]
     (S : A) : CommSemigroup S := fast_instance%
   Subtype.coe_injective.commSemigroup Subtype.val fun _ _ => rfl
 
@@ -338,7 +338,7 @@ end MulMemClass
 
 section IsMulCommutative
 
-variable {S : Type*} [SetLike S M] [Mul M] [MulMemClass S M]
+variable {S : Type*} [SetLike S M] [Mul M] [MulMemClass S]
 
 @[to_additive]
 lemma isMulCommutative_iff_of_setLike

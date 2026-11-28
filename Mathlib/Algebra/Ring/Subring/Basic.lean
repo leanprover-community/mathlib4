@@ -602,7 +602,7 @@ theorem isMulCommutative_closure {R} [Ring R] {s : Set R}
   .of_setLike_mul_comm fun _ h₁ _ h₂ ↦
     Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂)
 
-instance instIsMulCommutative_closure {S R : Type*} [Ring R] [SetLike S R] [MulMemClass S R] (s : S)
+instance instIsMulCommutative_closure {S R : Type*} [Ring R] [SetLike S R] [MulMemClass S] (s : S)
     [IsMulCommutative s] : IsMulCommutative (closure (s : Set R)) :=
   isMulCommutative_closure fun _ h₁ _ h₂ _ => setLike_mul_comm h₁ h₂
 

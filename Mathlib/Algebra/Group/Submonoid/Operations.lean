@@ -709,12 +709,12 @@ theorem mclosure_range (f : F) : closure (Set.range f) = mrange f := by
 
 /-- Restriction of a `MonoidHom` to a `Submonoid` of the domain. -/
 @[to_additive /-- Restriction of an `AddMonoidHom` to an `AddSubmonoid` of the domain. -/]
-def domRestrict {N S : Type*} [MulOneClass N] [SetLike S M] [SubmonoidClass S M] (f : M →* N)
+def domRestrict {N S : Type*} [MulOneClass N] [SetLike S M] [SubmonoidClass S] (f : M →* N)
     (s : S) : s →* N :=
   f.comp (SubmonoidClass.subtype _)
 
 @[to_additive (attr := simp)]
-theorem domRestrict_apply {N S : Type*} [MulOneClass N] [SetLike S M] [SubmonoidClass S M]
+theorem domRestrict_apply {N S : Type*} [MulOneClass N] [SetLike S M] [SubmonoidClass S]
     (f : M →* N) (s : S) (x : s) : f.domRestrict s x = f x :=
   rfl
 
@@ -724,7 +724,7 @@ alias _root_.AddMonoidHom.restrict_apply := _root_.AddMonoidHom.domRestrict_appl
 
 @[to_additive (attr := simp)]
 theorem domRestrict_eq_one_iff {N S : Type*} [MulOneClass N] {f : M →* N} [SetLike S M]
-    [SubmonoidClass S M] {s : S} :
+    [SubmonoidClass S] {s : S} :
     f.domRestrict s = 1 ↔ ∀ x ∈ s, f x = 1 := by
   simp [MonoidHom.ext_iff]
 
@@ -743,7 +743,7 @@ alias _root_.AddMonoidHom.restrict_mrange := _root_.AddMonoidHom.domRestrict_mra
 /-- A version of `MonoidHom.domRestrict` as a homomorphism. -/
 @[to_additive (attr := simps apply)
   /-- A version of `AddMonoidHom.domRestrict` as a homomorphism. -/]
-def domRestrictHom {S : Type*} [SetLike S M] [SubmonoidClass S M] (M' : S) (A : Type*)
+def domRestrictHom {S : Type*} [SetLike S M] [SubmonoidClass S] (M' : S) (A : Type*)
     [CommMonoid A] : (M →* A) →* (M' →* A) where
   toFun f := f.domRestrict M'
   map_one' := by ext; simp
@@ -759,14 +759,14 @@ alias _root_.AddMonoidHom.restrictHom_apply := _root_.AddMonoidHom.domRestrictHo
 /-- Restriction of a `MonoidHom` to a `Submonoid` of the codomain. -/
 @[to_additive (attr := simps apply)
   /-- Restriction of an `AddMonoidHom` to an `AddSubmonoid` of the codomain. -/]
-def codRestrict {S} [SetLike S N] [SubmonoidClass S N] (f : M →* N) (s : S) (h : ∀ x, f x ∈ s) :
+def codRestrict {S} [SetLike S N] [SubmonoidClass S] (f : M →* N) (s : S) (h : ∀ x, f x ∈ s) :
     M →* s where
   toFun n := ⟨f n, h n⟩
   map_one' := Subtype.ext f.map_one
   map_mul' x y := Subtype.ext (f.map_mul x y)
 
 @[to_additive (attr := simp)]
-lemma injective_codRestrict {S} [SetLike S N] [SubmonoidClass S N] (f : M →* N) (s : S)
+lemma injective_codRestrict {S} [SetLike S N] [SubmonoidClass S] (f : M →* N) (s : S)
     (h : ∀ x, f x ∈ s) : Function.Injective (f.codRestrict s h) ↔ Function.Injective f :=
   ⟨fun H _ _ hxy ↦ H <| Subtype.ext hxy, fun H _ _ hxy ↦ H congr($(hxy).val)⟩
 

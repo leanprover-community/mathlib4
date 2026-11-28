@@ -153,7 +153,7 @@ theorem isMulCommutative_closure {k : Set G} (hcomm : k.Pairwise Commute) :
     Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂)
 
 @[to_additive]
-instance instIsMulCommutative_closure {S : Type*} [SetLike S G] [MulMemClass S G] (s : S)
+instance instIsMulCommutative_closure {S : Type*} [SetLike S G] [MulMemClass S] (s : S)
     [IsMulCommutative s] : IsMulCommutative (closure (s : Set G)) :=
   isMulCommutative_closure fun _ h₁ _ h₂ _ => setLike_mul_comm h₁ h₂
 

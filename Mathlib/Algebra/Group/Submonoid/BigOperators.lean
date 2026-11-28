@@ -36,7 +36,7 @@ assert_not_exists IsOrderedRing
 variable {M B : Type*}
 
 section SubmonoidClass
-variable [Monoid M] [SetLike B M] [SubmonoidClass B M] {x : M} {S : B}
+variable [Monoid M] [SetLike B M] [SubmonoidClass B] {x : M} {S : B}
 
 namespace SubmonoidClass
 
@@ -45,12 +45,12 @@ theorem coe_list_prod (l : List S) : (l.prod : M) = (l.map (↑)).prod :=
   map_list_prod (SubmonoidClass.subtype S : _ →* M) l
 
 @[to_additive (attr := norm_cast, simp)]
-theorem coe_multiset_prod {M} [CommMonoid M] [SetLike B M] [SubmonoidClass B M] (m : Multiset S) :
+theorem coe_multiset_prod {M} [CommMonoid M] [SetLike B M] [SubmonoidClass B] (m : Multiset S) :
     (m.prod : M) = (m.map (↑)).prod :=
   (SubmonoidClass.subtype S : _ →* M).map_multiset_prod m
 
 @[to_additive (attr := norm_cast, simp)]
-theorem coe_finsetProd {ι M} [CommMonoid M] [SetLike B M] [SubmonoidClass B M] (f : ι → S)
+theorem coe_finsetProd {ι M} [CommMonoid M] [SetLike B M] [SubmonoidClass B] (f : ι → S)
     (s : Finset ι) : ↑(∏ i ∈ s, f i) = (∏ i ∈ s, f i : M) :=
   map_prod (SubmonoidClass.subtype S) f s
 
@@ -69,7 +69,7 @@ theorem list_prod_mem {l : List M} (hl : ∀ x ∈ l, x ∈ S) : l.prod ∈ S :=
 @[to_additive
       /-- Sum of a multiset of elements in an `AddSubmonoid` of an `AddCommMonoid` is
       in the `AddSubmonoid`. -/]
-theorem multiset_prod_mem {M} [CommMonoid M] [SetLike B M] [SubmonoidClass B M] (m : Multiset M)
+theorem multiset_prod_mem {M} [CommMonoid M] [SetLike B M] [SubmonoidClass B] (m : Multiset M)
     (hm : ∀ a ∈ m, a ∈ S) : m.prod ∈ S := by
   lift m to Multiset S using hm
   rw [← coe_multiset_prod]
@@ -80,7 +80,7 @@ submonoid. -/
 @[to_additive
       /-- Sum of elements in an `AddSubmonoid` of an `AddCommMonoid` indexed by a `Finset`
       is in the `AddSubmonoid`. -/]
-theorem prod_mem {M : Type*} [CommMonoid M] [SetLike B M] [SubmonoidClass B M] {ι : Type*}
+theorem prod_mem {M : Type*} [CommMonoid M] [SetLike B M] [SubmonoidClass B] {ι : Type*}
     {t : Finset ι} {f : ι → M} (h : ∀ c ∈ t, f c ∈ S) : (∏ c ∈ t, f c) ∈ S :=
   multiset_prod_mem (t.val.map f) fun _x hx =>
     let ⟨i, hi, hix⟩ := Multiset.mem_map.1 hx

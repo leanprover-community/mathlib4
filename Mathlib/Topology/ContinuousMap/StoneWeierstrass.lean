@@ -592,7 +592,7 @@ lemma ker_evalStarAlgHom_inter_adjoin_id (s : Set 𝕜) (h0 : 0 ∈ s) :
 open RingHom Filter Topology in
 theorem AlgHom.closure_ker_inter {F S K A : Type*} [CommRing K] [Ring A] [Algebra K A]
     [TopologicalSpace K] [T1Space K] [TopologicalSpace A] [ContinuousSub A] [ContinuousSMul K A]
-    [FunLike F A K] [AlgHomClass F K A K] [SetLike S A] [OneMemClass S A] [AddSubgroupClass S A]
+    [FunLike F A K] [AlgHomClass F K A K] [SetLike S A] [OneMemClass S] [AddSubgroupClass S A]
     [SMulMemClass S K A] (φ : F) (hφ : Continuous φ) (s : S) :
     closure (s ∩ RingHom.ker φ) = closure s ∩ (ker φ : Set A) := by
   refine subset_antisymm ?_ ?_

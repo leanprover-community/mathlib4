@@ -319,7 +319,7 @@ lemma isMulFreimanIso_empty : IsMulFreimanIso n (∅ : Set α) (∅ : Set β) f 
     rw [← map_multiset_prod, ← map_multiset_prod, EquivLike.apply_eq_iff_eq]
 
 @[to_additive]
-lemma IsMulFreimanHom.subtypeVal {S : Type*} [SetLike S α] [SubmonoidClass S α] {s : S} :
+lemma IsMulFreimanHom.subtypeVal {S : Type*} [SetLike S α] [SubmonoidClass S] {s : S} :
     IsMulFreimanHom n (univ : Set s) univ Subtype.val :=
   MulHomClass.isMulFreimanHom (SubmonoidClass.subtype s) (mapsTo_univ ..)
 

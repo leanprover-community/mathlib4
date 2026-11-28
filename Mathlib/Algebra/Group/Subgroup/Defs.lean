@@ -109,12 +109,12 @@ end HasMemOrInvMem
 
 /-- `SubgroupClass S G` states `S` is a type of subsets `s ⊆ G` that are subgroups of `G`. -/
 class SubgroupClass (S : Type*) (G : outParam Type*) [DivInvMonoid G] [SetLike S G] : Prop
-    extends SubmonoidClass S G, InvMemClass S G
+    extends SubmonoidClass S, InvMemClass S G
 
 /-- `AddSubgroupClass S G` states `S` is a type of subsets `s ⊆ G` that are
 additive subgroups of `G`. -/
 class AddSubgroupClass (S : Type*) (G : outParam Type*) [SubNegMonoid G] [SetLike S G] : Prop
-    extends AddSubmonoidClass S G, NegMemClass S G
+    extends AddSubmonoidClass S, NegMemClass S G
 
 attribute [to_additive] InvMemClass SubgroupClass
 
@@ -707,7 +707,7 @@ end Subgroup
 @[to_additive]
 theorem Set.injOn_iff_map_eq_one {F G H S : Type*} [Group G] [Group H]
     [FunLike F G H] [MonoidHomClass F G H] (f : F)
-    [SetLike S G] [OneMemClass S G] [MulMemClass S G] [InvMemClass S G] (s : S) :
+    [SetLike S G] [OneMemClass S] [MulMemClass S] [InvMemClass S G] (s : S) :
     Set.InjOn f s ↔ ∀ a ∈ s, f a = 1 → a = 1 where
   mp h a ha ha' := by
     refine h ha (one_mem s) ?_

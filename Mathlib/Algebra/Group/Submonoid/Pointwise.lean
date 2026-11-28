@@ -45,7 +45,7 @@ variable {α G M S : Type*}
 variable [Monoid M]
 
 @[to_additive (attr := simp, norm_cast)]
-lemma coe_mul_coe [SetLike S M] [SubmonoidClass S M] (H : S) : H * H = (H : Set M) := by
+lemma coe_mul_coe [SetLike S M] [SubmonoidClass S] (H : S) : H * H = (H : Set M) := by
   aesop (add simp mem_mul)
 
 @[to_additive]
@@ -54,7 +54,7 @@ lemma Set.subtype_smul_set {S α β : Type*} [SMul α β] [SetLike S α] {s : S}
   rfl
 
 @[to_additive (attr := simp)]
-lemma coe_set_pow [SetLike S M] [SubmonoidClass S M] :
+lemma coe_set_pow [SetLike S M] [SubmonoidClass S] :
     ∀ {n} (_ : n ≠ 0) (H : S), (H ^ n : Set M) = H
   | 1, _, H => by simp
   | n + 2, _, H => by rw [pow_succ, coe_set_pow n.succ_ne_zero, coe_mul_coe]

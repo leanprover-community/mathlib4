@@ -68,7 +68,7 @@ attribute [aesop 90% (rule_sets := [SetLike]), membership .]
 
 /-- Not registered as an instance because `R` is an `outParam` in `SMulMemClass S R M`. -/
 lemma AddSubmonoidClass.nsmulMemClass {S M : Type*} [AddMonoid M] [SetLike S M]
-    [AddSubmonoidClass S M] : SMulMemClass S ℕ M where
+    [AddSubmonoidClass S] : SMulMemClass S ℕ M where
   smul_mem n _x hx := nsmul_mem hx n
 
 /-- Not registered as an instance because `R` is an `outParam` in `SMulMemClass S R M`. -/
@@ -107,11 +107,11 @@ this to manually derive `SMulMemClass` on specific types. -/
     SMulMemClass S M α :=
   { smul_mem := fun m a ha => smul_one_smul N m a ▸ SMulMemClass.smul_mem _ ha }
 
-instance instIsScalarTower [Mul M] [MulMemClass S M] [IsScalarTower R M M]
+instance instIsScalarTower [Mul M] [MulMemClass S] [IsScalarTower R M M]
     (s : S) : IsScalarTower R s s where
   smul_assoc r x y := Subtype.ext <| smul_assoc r (x : M) (y : M)
 
-instance instSMulCommClass [Mul M] [MulMemClass S M] [SMulCommClass R M M]
+instance instSMulCommClass [Mul M] [MulMemClass S] [SMulCommClass R M M]
     (s : S) : SMulCommClass R s s where
   smul_comm r x y := Subtype.ext <| smul_comm r (x : M) (y : M)
 

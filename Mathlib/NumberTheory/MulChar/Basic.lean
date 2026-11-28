@@ -383,7 +383,7 @@ noncomputable def mulEquivToUnitHom : MulChar R R' ≃* (Rˣ →* R'ˣ) :=
 The restriction of a `MulChar` to a submonoid.
 -/
 @[simps! apply]
-noncomputable def domRestrict {S : Type*} [SetLike S R] [SubmonoidClass S R] (T : S)
+noncomputable def domRestrict {S : Type*} [SetLike S R] [SubmonoidClass S] (T : S)
     (χ : MulChar R R') : MulChar T R' :=
   ofUnitHom <| χ.toUnitHom.comp <| Units.map (SubmonoidClass.subtype T)
 
@@ -394,7 +394,7 @@ noncomputable def domRestrict {S : Type*} [SetLike S R] [SubmonoidClass S R] (T 
 The restriction of a `MulChar` to a submonoid as an homomorphism.
 -/
 @[simps]
-noncomputable def domRestrictHom {S : Type*} [SetLike S R] [SubmonoidClass S R] (T : S)
+noncomputable def domRestrictHom {S : Type*} [SetLike S R] [SubmonoidClass S] (T : S)
     (R'' : Type*) [CommMonoidWithZero R''] :
     (MulChar R R'') →* MulChar T R'' where
   toFun := domRestrict T
@@ -430,7 +430,7 @@ lemma eq_one_iff {χ : MulChar R R'} : χ = 1 ↔ ∀ a : Rˣ, χ a = 1 := by
 lemma ne_one_iff {χ : MulChar R R'} : χ ≠ 1 ↔ ∃ a : Rˣ, χ a ≠ 1 := by
   simp only [Ne, eq_one_iff, not_forall]
 
-theorem domRestrict_eq_one_iff {S : Type*} [SetLike S R] [SubmonoidClass S R] {T : S}
+theorem domRestrict_eq_one_iff {S : Type*} [SetLike S R] [SubmonoidClass S] {T : S}
     {χ : MulChar R R'} : χ.domRestrict T = 1 ↔ ∀ x : Tˣ, χ x = 1 := by
   simp [eq_one_iff]
 

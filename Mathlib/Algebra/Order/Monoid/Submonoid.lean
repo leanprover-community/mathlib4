@@ -27,7 +27,7 @@ variable {M S : Type*} [SetLike S M]
 /-- A submonoid of an ordered monoid is an ordered monoid. -/
 @[to_additive /-- An `AddSubmonoid` of an ordered additive monoid is an ordered additive monoid. -/]
 instance (priority := 75) toIsOrderedMonoid [CommMonoid M] [Preorder M] [IsOrderedMonoid M]
-    [SubmonoidClass S M] (s : S) : IsOrderedMonoid s :=
+    [SubmonoidClass S] (s : S) : IsOrderedMonoid s :=
   Function.Injective.isOrderedMonoid Subtype.val (fun _ _ => rfl) .rfl
 
 -- Prefer subclasses of `Monoid` over subclasses of `SubmonoidClass`.
@@ -37,7 +37,7 @@ instance (priority := 75) toIsOrderedMonoid [CommMonoid M] [Preorder M] [IsOrder
       additive monoid. -/]
 instance (priority := 75) toIsOrderedCancelMonoid
     [CommMonoid M] [Preorder M] [IsOrderedCancelMonoid M]
-    [SubmonoidClass S M] (s : S) : IsOrderedCancelMonoid s :=
+    [SubmonoidClass S] (s : S) : IsOrderedCancelMonoid s :=
   Function.Injective.isOrderedCancelMonoid Subtype.val (fun _ _ => rfl) .rfl
 
 

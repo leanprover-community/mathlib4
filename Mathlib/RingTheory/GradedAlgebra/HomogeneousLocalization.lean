@@ -153,7 +153,7 @@ theorem den_smul (c : NumDenSameDeg 𝒜 x) (m : α) : ((m • c).den : A) = c.d
 
 end SMul
 
-variable [AddSubmonoidClass σ A] {𝒜 : ι → σ} (x : Submonoid A)
+variable [AddSubmonoidClass σ] {𝒜 : ι → σ} (x : Submonoid A)
 variable [AddCommMonoid ι] [DecidableEq ι] [GradedRing 𝒜]
 
 open GradedOne in
@@ -336,7 +336,7 @@ theorem val_smul (n : α) : ∀ y : HomogeneousLocalization 𝒜 x, (n • y).va
 end SMul
 
 section nsmul
-variable [AddSubmonoidClass σ A] {𝒜 : ι → σ} (x : Submonoid A)
+variable [AddSubmonoidClass σ] {𝒜 : ι → σ} (x : Submonoid A)
 
 instance : SMul ℕ (HomogeneousLocalization 𝒜 x) :=
   haveI := AddSubmonoidClass.nsmulMemClass (S := σ) (M := A)

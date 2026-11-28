@@ -128,7 +128,7 @@ lemma ext' {s₁ s₂ : SaturatedSubmonoid M} (h : ∀ x, x ∈ s₁ ↔ x ∈ s
 
 variable (M) in
 @[to_additive]
-instance : SubmonoidClass (SaturatedSubmonoid M) M where
+instance : SubmonoidClass (SaturatedSubmonoid M) where
   mul_mem {s} := s.mul_mem
   one_mem {s} := s.one_mem
 

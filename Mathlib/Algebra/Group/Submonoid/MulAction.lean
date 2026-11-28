@@ -64,7 +64,7 @@ instance (priority := low) [SMul α β] [SMul M' α] [SMul M' β] [IsScalarTower
 
 end MulOneClass
 
-variable [Monoid M'] [SubmonoidClass S' M']
+variable [Monoid M'] [SubmonoidClass S']
 
 @[to_additive]
 instance (priority := low) [MulAction M' α] : MulAction s α where

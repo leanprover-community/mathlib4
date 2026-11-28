@@ -69,7 +69,7 @@ theorem Equiv.Perm.IsSwap.finite_compl_fixedBy {σ : Perm α} (h : σ.IsSwap) :
 
 -- this result cannot be moved to Perm/Basic since Perm/Basic is not allowed to import Submonoid
 theorem SubmonoidClass.swap_mem_trans {a b c : α} {C} [SetLike C (Perm α)]
-    [SubmonoidClass C (Perm α)] (M : C) (hab : Equiv.swap a b ∈ M)
+    [SubmonoidClass C] (M : C) (hab : Equiv.swap a b ∈ M)
     (hbc : Equiv.swap b c ∈ M) : Equiv.swap a c ∈ M := by
   obtain rfl | hab' := eq_or_ne a b
   · exact hbc

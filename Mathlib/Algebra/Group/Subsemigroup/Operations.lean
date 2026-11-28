@@ -595,12 +595,12 @@ theorem map_mclosure (f : M →ₙ* N) (s : Set M) : (closure s).map f = closure
 
 /-- Restriction of a semigroup hom to a subsemigroup of the domain. -/
 @[to_additive /-- Restriction of an AddSemigroup hom to an `AddSubsemigroup` of the domain. -/]
-def domRestrict {N : Type*} [Mul N] [SetLike σ M] [MulMemClass σ M] (f : M →ₙ* N)
+def domRestrict {N : Type*} [Mul N] [SetLike σ M] [MulMemClass σ] (f : M →ₙ* N)
     (S : σ) : S →ₙ* N :=
   f.comp (MulMemClass.subtype S)
 
 @[to_additive (attr := simp)]
-theorem domRestrict_apply {N : Type*} [Mul N] [SetLike σ M] [MulMemClass σ M]
+theorem domRestrict_apply {N : Type*} [Mul N] [SetLike σ M] [MulMemClass σ]
     (f : M →ₙ* N) {S : σ} (x : S) : f.domRestrict S x = f x :=
   rfl
 
@@ -613,7 +613,7 @@ alias _root_.AddHom.restrict_apply := _root_.AddHom.domRestrict_apply
 /-- Restriction of a semigroup hom to a subsemigroup of the codomain. -/
 @[to_additive (attr := simps)
   /-- Restriction of an `AddSemigroup` hom to an `AddSubsemigroup` of the codomain. -/]
-def codRestrict [SetLike σ N] [MulMemClass σ N] (f : M →ₙ* N) (S : σ) (h : ∀ x, f x ∈ S) :
+def codRestrict [SetLike σ N] [MulMemClass σ] (f : M →ₙ* N) (S : σ) (h : ∀ x, f x ∈ S) :
     M →ₙ* S where
   toFun n := ⟨f n, h n⟩
   map_mul' x y := Subtype.ext (map_mul f x y)

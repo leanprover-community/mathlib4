@@ -41,7 +41,7 @@ namespace DirectSum
 section AddCommMonoid
 
 variable [DecidableEq ι] [AddCommMonoid M]
-variable [SetLike σ M] [AddSubmonoidClass σ M] (ℳ : ι → σ)
+variable [SetLike σ M] [AddSubmonoidClass σ] (ℳ : ι → σ)
 
 /-- A decomposition is an equivalence between an additive monoid `M` and a direct sum of additive
 submonoids `ℳ i` of that `M`, such that the "recomposition" is canonical. This definition also
@@ -95,7 +95,7 @@ def decompose : M ≃ ⨁ i, ℳ i where
   left_inv := Decomposition.left_inv
   right_inv := Decomposition.right_inv
 
-omit [AddSubmonoidClass σ M] in
+omit [AddSubmonoidClass σ] in
 /-- A substructure `p ⊆ M` is homogeneous if for every `m ∈ p`, all homogeneous components
   of `m` are in `p`. -/
 def SetLike.IsHomogeneous {P : Type*} [SetLike P M] (p : P) : Prop :=
@@ -194,7 +194,7 @@ theorem sum_support_decompose [∀ (i) (x : ℳ i), Decidable (x ≠ 0)] (r : M)
   simp_rw [decompose_symm_of]
 
 theorem AddSubmonoidClass.IsHomogeneous.mem_iff
-    {P : Type*} [SetLike P M] [AddSubmonoidClass P M] (p : P)
+    {P : Type*} [SetLike P M] [AddSubmonoidClass P] (p : P)
     (hp : SetLike.IsHomogeneous ℳ p) {x} :
     x ∈ p ↔ ∀ i, (decompose ℳ x i : M) ∈ p := by
   classical
@@ -203,7 +203,7 @@ theorem AddSubmonoidClass.IsHomogeneous.mem_iff
   exact sum_mem (fun i _ ↦ hx i)
 
 theorem AddSubmonoidClass.IsHomogeneous.ext
-    {ℳ : ι → σ} [Decomposition ℳ] {P : Type*} [SetLike P M] [AddSubmonoidClass P M]
+    {ℳ : ι → σ} [Decomposition ℳ] {P : Type*} [SetLike P M] [AddSubmonoidClass P]
     {p q : P} (hp : SetLike.IsHomogeneous ℳ p) (hq : SetLike.IsHomogeneous ℳ q)
     (hpq : ∀ i, ∀ m ∈ ℳ i, m ∈ p ↔ m ∈ q) :
     p = q := by

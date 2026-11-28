@@ -50,27 +50,27 @@ An `A`-submodule `p ⊆ M` is homogeneous if for every `m ∈ p`, all homogeneou
 in `p`.
 -/
 def Submodule.IsHomogeneous (p : Submodule A M) (ℳ : ιM → σM)
-    [DecidableEq ιM] [SetLike σM M] [AddSubmonoidClass σM M] [Decomposition ℳ] : Prop :=
+    [DecidableEq ιM] [SetLike σM M] [AddSubmonoidClass σM] [Decomposition ℳ] : Prop :=
   SetLike.IsHomogeneous ℳ p
 
 theorem Submodule.IsHomogeneous.mem_iff {p : Submodule A M}
     (ℳ : ιM → σM)
-    [DecidableEq ιM] [SetLike σM M] [AddSubmonoidClass σM M] [Decomposition ℳ]
+    [DecidableEq ιM] [SetLike σM M] [AddSubmonoidClass σM] [Decomposition ℳ]
     (hp : p.IsHomogeneous ℳ) {x} :
     x ∈ p ↔ ∀ i, (decompose ℳ x i : M) ∈ p :=
   AddSubmonoidClass.IsHomogeneous.mem_iff ℳ _ hp
 
 /-- For any `Semiring A`, we collect the homogeneous submodule of `A`-modules into a type. -/
 structure HomogeneousSubmodule (𝒜 : ιA → σA) (ℳ : ιM → σM)
-    [DecidableEq ιA] [AddMonoid ιA] [SetLike σA A] [AddSubmonoidClass σA A] [GradedRing 𝒜]
-    [DecidableEq ιM] [SetLike σM M] [AddSubmonoidClass σM M] [Decomposition ℳ]
+    [DecidableEq ιA] [AddMonoid ιA] [SetLike σA A] [AddSubmonoidClass σA] [GradedRing 𝒜]
+    [DecidableEq ιM] [SetLike σM M] [AddSubmonoidClass σM] [Decomposition ℳ]
     [VAdd ιA ιM] [GradedSMul 𝒜 ℳ]
     extends Submodule A M where
   is_homogeneous' : toSubmodule.IsHomogeneous ℳ
 
 variable (𝒜 : ιA → σA) (ℳ : ιM → σM)
-variable [DecidableEq ιA] [AddMonoid ιA] [SetLike σA A] [AddSubmonoidClass σA A] [GradedRing 𝒜]
-variable [DecidableEq ιM] [SetLike σM M] [AddSubmonoidClass σM M] [Decomposition ℳ]
+variable [DecidableEq ιA] [AddMonoid ιA] [SetLike σA A] [AddSubmonoidClass σA] [GradedRing 𝒜]
+variable [DecidableEq ιM] [SetLike σM M] [AddSubmonoidClass σM] [Decomposition ℳ]
 variable [VAdd ιA ιM] [GradedSMul 𝒜 ℳ]
 
 instance : SetLike (HomogeneousSubmodule 𝒜 ℳ) M where
@@ -81,7 +81,7 @@ instance : SetLike (HomogeneousSubmodule 𝒜 ℳ) M where
 
 instance : PartialOrder (HomogeneousSubmodule 𝒜 ℳ) := .ofSetLike (HomogeneousSubmodule 𝒜 ℳ)
 
-instance : AddSubmonoidClass (HomogeneousSubmodule 𝒜 ℳ) M where
+instance : AddSubmonoidClass (HomogeneousSubmodule 𝒜 ℳ) where
   zero_mem p := p.toSubmodule.zero_mem
   add_mem hx hy := Submodule.add_mem _ hx hy
 

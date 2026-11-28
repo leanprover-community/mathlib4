@@ -64,7 +64,7 @@ theorem SetLike.algebraMap_mem_graded [Zero ι] [CommSemiring S] [Semiring R] [A
   exact (A 0).smul_mem s <| SetLike.one_mem_graded _
 
 theorem SetLike.natCast_mem_graded [Zero ι] [AddMonoidWithOne R] [SetLike σ R]
-    [AddSubmonoidClass σ R] (A : ι → σ) [SetLike.GradedOne A] (n : ℕ) : (n : R) ∈ A 0 := by
+    [AddSubmonoidClass σ] (A : ι → σ) [SetLike.GradedOne A] (n : ℕ) : (n : R) ∈ A 0 := by
   induction n with
   | zero =>
     rw [Nat.cast_zero]
@@ -93,7 +93,7 @@ namespace SetLike
 /-- Build a `DirectSum.GNonUnitalNonAssocSemiring` instance for a collection of additive
 submonoids. -/
 instance gnonUnitalNonAssocSemiring [Add ι] [NonUnitalNonAssocSemiring R] [SetLike σ R]
-    [AddSubmonoidClass σ R] (A : ι → σ) [SetLike.GradedMul A] :
+    [AddSubmonoidClass σ] (A : ι → σ) [SetLike.GradedMul A] :
     DirectSum.GNonUnitalNonAssocSemiring fun i => A i where
   mul_zero _ := Subtype.ext (mul_zero _)
   zero_mul _ := Subtype.ext (zero_mul _)
@@ -101,14 +101,14 @@ instance gnonUnitalNonAssocSemiring [Add ι] [NonUnitalNonAssocSemiring R] [SetL
   add_mul _ _ _ := Subtype.ext (add_mul _ _ _)
 
 /-- Build a `DirectSum.GSemiring` instance for a collection of additive submonoids. -/
-instance gsemiring [AddMonoid ι] [Semiring R] [SetLike σ R] [AddSubmonoidClass σ R] (A : ι → σ)
+instance gsemiring [AddMonoid ι] [Semiring R] [SetLike σ R] [AddSubmonoidClass σ] (A : ι → σ)
     [SetLike.GradedMonoid A] : DirectSum.GSemiring fun i => A i where
   natCast n := ⟨n, SetLike.natCast_mem_graded _ _⟩
   natCast_zero := Subtype.ext Nat.cast_zero
   natCast_succ n := Subtype.ext (Nat.cast_succ n)
 
 /-- Build a `DirectSum.GCommSemiring` instance for a collection of additive submonoids. -/
-instance gcommSemiring [AddCommMonoid ι] [CommSemiring R] [SetLike σ R] [AddSubmonoidClass σ R]
+instance gcommSemiring [AddCommMonoid ι] [CommSemiring R] [SetLike σ R] [AddSubmonoidClass σ]
     (A : ι → σ) [SetLike.GradedMonoid A] : DirectSum.GCommSemiring fun i => A i where
 
 /-- Build a `DirectSum.GRing` instance for a collection of additive subgroups. -/
@@ -128,7 +128,7 @@ namespace DirectSum
 
 section coe
 
-variable [Semiring R] [SetLike σ R] [AddSubmonoidClass σ R] (A : ι → σ)
+variable [Semiring R] [SetLike σ R] [AddSubmonoidClass σ] (A : ι → σ)
 
 /-- The canonical ring isomorphism between `⨁ i, A i` and `R` -/
 def coeRingHom [AddMonoid ι] [SetLike.GradedMonoid A] : (⨁ i, A i) →+* R :=
@@ -218,7 +218,7 @@ end coe
 
 section CanonicallyOrderedAddCommMonoid
 
-variable [Semiring R] [SetLike σ R] [AddSubmonoidClass σ R] (A : ι → σ)
+variable [Semiring R] [SetLike σ R] [AddSubmonoidClass σ] (A : ι → σ)
 variable [AddCommMonoid ι] [PartialOrder ι] [CanonicallyOrderedAdd ι] [SetLike.GradedMonoid A]
 
 theorem coe_of_mul_apply_of_not_le {i : ι} (r : A i) (r' : ⨁ i, A i) (n : ι) (h : ¬i ≤ n) :
@@ -327,7 +327,7 @@ end DirectSum
 namespace SetLike.GradeZero
 
 section Semiring
-variable [Semiring R] [AddMonoid ι] [SetLike σ R] [AddSubmonoidClass σ R]
+variable [Semiring R] [AddMonoid ι] [SetLike σ R] [AddSubmonoidClass σ]
 variable (A : ι → σ) [SetLike.GradedMonoid A]
 
 /-- The subsemiring `A 0` of `R`. -/
@@ -348,7 +348,7 @@ instance instSemiring : Semiring (A 0) := inferInstanceAs <| Semiring (subsemiri
 end Semiring
 
 section CommSemiring
-variable [CommSemiring R] [AddMonoid ι] [SetLike σ R] [AddSubmonoidClass σ R]
+variable [CommSemiring R] [AddMonoid ι] [SetLike σ R] [AddSubmonoidClass σ]
 variable (A : ι → σ) [SetLike.GradedMonoid A]
 
 -- TODO: it might be expensive to unify `A` in this instance in practice
@@ -431,7 +431,7 @@ variable [AddCommMonoid ι] [LinearOrder ι] [IsOrderedAddMonoid ι] [DecidableE
 
 section Semiring
 
-variable [Semiring R] [SetLike σ R] [AddSubmonoidClass σ R]
+variable [Semiring R] [SetLike σ R] [AddSubmonoidClass σ]
 variable {A : ι → σ} [SetLike.GradedMonoid A]
 
 theorem mul_apply_eq_zero {r r' : ⨁ i, A i} {m n : ι}
@@ -477,7 +477,7 @@ variable [CanonicallyOrderedAdd ι]
 
 section CommSemiring
 
-variable [CommSemiring R] [SetLike σ R] [AddSubmonoidClass σ R]
+variable [CommSemiring R] [SetLike σ R] [AddSubmonoidClass σ]
 variable {A : ι → σ} [SetLike.GradedMonoid A]
 
 /-- The difference with `DirectSum.multisetProd_apply_eq_zero` is that the indices at which

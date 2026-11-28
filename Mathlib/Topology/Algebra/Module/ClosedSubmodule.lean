@@ -61,7 +61,7 @@ instance : PartialOrder (ClosedSubmodule R M) := .ofSetLike (ClosedSubmodule R M
 lemma toCloseds_injective : Injective (toCloseds : ClosedSubmodule R M → Closeds M) :=
   fun _s _t h ↦ SetLike.coe_injective congr(($h : Set M))
 
-instance : AddSubmonoidClass (ClosedSubmodule R M) M where
+instance : AddSubmonoidClass (ClosedSubmodule R M) where
   zero_mem s := s.zero_mem
   add_mem {s} := s.add_mem
 

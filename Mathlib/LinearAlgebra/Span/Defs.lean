@@ -99,7 +99,7 @@ theorem span_eq_span (hs : s ⊆ span R t) (ht : t ⊆ span R s) : span R s = sp
 /-- A version of `Submodule.span_eq` for subobjects closed under addition and scalar multiplication
 and containing zero. In general, this should not be used directly, but can be used to quickly
 generate proofs for specific types of subobjects. -/
-lemma coe_span_eq_self [SetLike S M] [AddSubmonoidClass S M] [SMulMemClass S R M] (s : S) :
+lemma coe_span_eq_self [SetLike S M] [AddSubmonoidClass S] [SMulMemClass S R M] (s : S) :
     (span R (s : Set M) : Set M) = s := by
   refine le_antisymm ?_ subset_span
   let s' : Submodule R M :=

@@ -47,7 +47,7 @@ open Set Function
 
 namespace Subsemigroup
 
--- TODO: this section can be generalized to `[MulMemClass B M] [CompleteLattice B]`
+-- TODO: this section can be generalized to `[MulMemClass B] [CompleteLattice B]`
 -- such that `CompleteLattice.LE` coincides with `SetLike.LE`
 
 @[to_additive]

@@ -652,7 +652,7 @@ theorem isSelfAdjoint_smul_of_mem_skewAdjoint [Ring R] [AddCommGroup A] [Module 
 
 @[simp]
 protected lemma Subtype.isStarNormal_iff {S R : Type*} [Star R] [Mul R] [SetLike S R]
-    [StarMemClass S R] [MulMemClass S R] {s : S} {x : s} :
+    [StarMemClass S R] [MulMemClass S] {s : S} {x : s} :
     IsStarNormal (x : R) ↔ IsStarNormal x := by
   simp [isStarNormal_iff, commute_iff_eq, Subtype.ext_iff]
 

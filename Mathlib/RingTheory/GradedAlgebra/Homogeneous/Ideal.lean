@@ -50,7 +50,7 @@ variable {ι σ A : Type*}
 section HomogeneousDef
 
 variable [Semiring A]
-variable [SetLike σ A] [AddSubmonoidClass σ A] (𝒜 : ι → σ)
+variable [SetLike σ A] [AddSubmonoidClass σ] (𝒜 : ι → σ)
 variable [DecidableEq ι] [AddMonoid ι] [GradedRing 𝒜]
 variable (I : Ideal A)
 
@@ -123,7 +123,7 @@ end HomogeneousCore
 section IsHomogeneousIdealDefs
 
 variable [Semiring A]
-variable [SetLike σ A] [AddSubmonoidClass σ A] (𝒜 : ι → σ)
+variable [SetLike σ A] [AddSubmonoidClass σ] (𝒜 : ι → σ)
 variable [DecidableEq ι] [AddMonoid ι] [GradedRing 𝒜]
 variable (I : Ideal A)
 
@@ -224,7 +224,7 @@ section Operations
 section Semiring
 
 variable [Semiring A] [DecidableEq ι] [AddMonoid ι]
-variable [SetLike σ A] [AddSubmonoidClass σ A] (𝒜 : ι → σ) [GradedRing 𝒜]
+variable [SetLike σ A] [AddSubmonoidClass σ] (𝒜 : ι → σ) [GradedRing 𝒜]
 
 namespace Ideal.IsHomogeneous
 
@@ -393,7 +393,7 @@ section CommSemiring
 
 variable [CommSemiring A]
 variable [DecidableEq ι] [AddMonoid ι]
-variable [SetLike σ A] [AddSubmonoidClass σ A] {𝒜 : ι → σ} [GradedRing 𝒜]
+variable [SetLike σ A] [AddSubmonoidClass σ] {𝒜 : ι → σ} [GradedRing 𝒜]
 variable (I : Ideal A)
 
 theorem Ideal.IsHomogeneous.mul {I J : Ideal A} (HI : I.IsHomogeneous 𝒜) (HJ : J.IsHomogeneous 𝒜) :
@@ -426,7 +426,7 @@ section homogeneousCore
 open HomogeneousIdeal
 
 variable [Semiring A] [DecidableEq ι] [AddMonoid ι]
-variable [SetLike σ A] [AddSubmonoidClass σ A] (𝒜 : ι → σ) [GradedRing 𝒜]
+variable [SetLike σ A] [AddSubmonoidClass σ] (𝒜 : ι → σ) [GradedRing 𝒜]
 variable (I : Ideal A)
 
 theorem Ideal.homogeneousCore.gc : GaloisConnection toIdeal (Ideal.homogeneousCore 𝒜) := fun I _ =>
@@ -468,7 +468,7 @@ section HomogeneousHull
 open HomogeneousIdeal
 
 variable [Semiring A] [DecidableEq ι] [AddMonoid ι]
-variable [SetLike σ A] [AddSubmonoidClass σ A] (𝒜 : ι → σ) [GradedRing 𝒜]
+variable [SetLike σ A] [AddSubmonoidClass σ] (𝒜 : ι → σ) [GradedRing 𝒜]
 variable (I : Ideal A)
 
 /-- For any `I : Ideal A`, not necessarily homogeneous, `I.homogeneousHull 𝒜` is
@@ -533,7 +533,7 @@ section GaloisConnection
 open HomogeneousIdeal
 
 variable [Semiring A] [DecidableEq ι] [AddMonoid ι]
-variable [SetLike σ A] [AddSubmonoidClass σ A] (𝒜 : ι → σ) [GradedRing 𝒜]
+variable [SetLike σ A] [AddSubmonoidClass σ] (𝒜 : ι → σ) [GradedRing 𝒜]
 
 theorem Ideal.homogeneousHull.gc : GaloisConnection (Ideal.homogeneousHull 𝒜) toIdeal := fun _ J =>
   ⟨le_trans (Ideal.le_toIdeal_homogeneousHull _ _),
@@ -560,7 +560,7 @@ namespace HomogeneousIdeal
 variable [Semiring A]
 variable [DecidableEq ι]
 variable [AddCommMonoid ι] [PartialOrder ι] [CanonicallyOrderedAdd ι]
-variable [SetLike σ A] [AddSubmonoidClass σ A] (𝒜 : ι → σ) [GradedRing 𝒜]
+variable [SetLike σ A] [AddSubmonoidClass σ] (𝒜 : ι → σ) [GradedRing 𝒜]
 
 open GradedRing SetLike.GradedMonoid DirectSum
 

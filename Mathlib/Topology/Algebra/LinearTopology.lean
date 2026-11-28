@@ -118,7 +118,7 @@ variable (R) in
 /-- A variant of `IsLinearTopology.mk_of_hasBasis` asking for an explicit proof that `S`
 is a class of submodules instead of relying on (fragile) typeclass inference of `SMulCommClass`. -/
 lemma mk_of_hasBasis' {ι : Sort*} {S : Type*} [SetLike S M]
-    [AddSubmonoidClass S M]
+    [AddSubmonoidClass S]
     {p : ι → Prop} {s : ι → S}
     (h : (𝓝 0).HasBasis p (fun i ↦ (s i : Set M)))
     (hsmul : ∀ s : S, ∀ r : R, ∀ m ∈ s, r • m ∈ s) :
@@ -140,7 +140,7 @@ Note: for technical reasons detailed in the module docstring, Lean sometimes str
 right `SMulMemClass` instance. See `IsLinearTopology.mk_of_hasBasis'` for a more
 explicit variant. -/
 lemma mk_of_hasBasis {ι : Sort*} {S : Type*} [SetLike S M]
-    [SMulMemClass S R M] [AddSubmonoidClass S M]
+    [SMulMemClass S R M] [AddSubmonoidClass S]
     {p : ι → Prop} {s : ι → S}
     (h : (𝓝 0).HasBasis p (fun i ↦ (s i : Set M))) :
     IsLinearTopology R M :=

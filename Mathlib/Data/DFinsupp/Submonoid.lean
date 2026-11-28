@@ -40,13 +40,13 @@ variable [DecidableEq ι]
 
 @[to_additive]
 theorem dfinsuppProd_mem [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
-    [CommMonoid γ] {S : Type*} [SetLike S γ] [SubmonoidClass S γ]
+    [CommMonoid γ] {S : Type*} [SetLike S γ] [SubmonoidClass S]
     (s : S) (f : Π₀ i, β i) (g : ∀ i, β i → γ)
     (h : ∀ c, f c ≠ 0 → g c (f c) ∈ s) : f.prod g ∈ s :=
   prod_mem fun _ hi => h _ <| mem_support_iff.1 hi
 
 theorem dfinsuppSumAddHom_mem [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] {S : Type*}
-    [SetLike S γ] [AddSubmonoidClass S γ] (s : S) (f : Π₀ i, β i) (g : ∀ i, β i →+ γ)
+    [SetLike S γ] [AddSubmonoidClass S] (s : S) (f : Π₀ i, β i) (g : ∀ i, β i →+ γ)
     (h : ∀ c, f c ≠ 0 → g c (f c) ∈ s) : DFinsupp.sumAddHom g f ∈ s := by
   classical
     rw [DFinsupp.sumAddHom_apply]
