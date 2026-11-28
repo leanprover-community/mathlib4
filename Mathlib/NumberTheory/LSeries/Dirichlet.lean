@@ -322,6 +322,13 @@ open scoped Moebius in -- access notation `μ`
 lemma LSeries_one_mul_Lseries_moebius {s : ℂ} (hs : 1 < s.re) : L 1 s * L ↗μ s = 1 :=
   LSeries_zeta_eq ▸ LSeries_zeta_mul_Lseries_moebius hs
 
+open scoped Moebius in -- access notation `μ`
+/-- The L-series of the Möbius function is the reciprocal of the Riemann zeta function on
+`re s > 1`. -/
+lemma LSeries_moebius_eq_inv_riemannZeta {s : ℂ} (hs : 1 < s.re) :
+    L ↗μ s = (riemannZeta s)⁻¹ :=
+  eq_inv_of_mul_eq_one_right <| LSeries_one_eq_riemannZeta hs ▸ LSeries_one_mul_Lseries_moebius hs
+
 /-- The L-series of the constant sequence `1` does not vanish on the right half-plane
 `re s > 1`. -/
 lemma LSeries_one_ne_zero_of_one_lt_re {s : ℂ} (hs : 1 < s.re) : L 1 s ≠ 0 :=
