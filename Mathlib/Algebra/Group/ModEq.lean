@@ -129,6 +129,9 @@ protected theorem nsmul {n : ℕ} (h : a ≡ b [PMOD p]) : n • a ≡ n • b [
   use k, l
   rw [← mul_nsmul, mul_nsmul', ← nsmul_add, h, nsmul_add, ← mul_nsmul, mul_nsmul']
 
+protected theorem nsmul' {n : ℕ} (h : a ≡ b [PMOD p]) : n • a ≡ n • b [PMOD p] :=
+  h.nsmul.of_nsmul
+
 protected theorem add_nsmul (n : ℕ) : a ≡ b [PMOD p] → a + n • p ≡ b [PMOD p] :=
   (add_nsmul_modEq _).trans
 
@@ -261,6 +264,9 @@ protected theorem zsmul (h : a ≡ b [PMOD p]) : z • a ≡ z • b [PMOD z •
   rcases h with ⟨m, h⟩
   use m
   rw [← zsmul_sub, ← h, ← mul_zsmul, ← mul_zsmul']
+
+protected theorem zsmul' (h : a ≡ b [PMOD p]) : z • a ≡ z • b [PMOD p] :=
+  h.zsmul.of_zsmul
 
 end ModEq
 
