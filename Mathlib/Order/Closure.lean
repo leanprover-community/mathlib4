@@ -86,7 +86,7 @@ between `α` and `β` then `e ∘ c ∘ e⁻¹` is a closure operator on `β`. -
 @[simps apply]
 def conjBy {α β} [Preorder α] [Preorder β] (c : ClosureOperator α)
     (e : α ≃o β) : ClosureOperator β where
-  toFun := e.conj c
+  toFun := e.conj c.toOrderHom
   IsClosed b := c.IsClosed (e.symm b)
   monotone' _ _ h :=
     (map_le_map_iff e).mpr <| c.monotone <| (map_le_map_iff e.symm).mpr h

@@ -141,18 +141,12 @@ export OrderIsoClass (map_le_map_iff)
 
 attribute [simp] map_le_map_iff
 
-/-- Turn an element of a type `F` satisfying `OrderIsoClass F α β` into an actual
-`OrderIso`. This is declared as the default coercion from `F` to `α ≃o β`. -/
-@[coe]
+/-- Turn an element of a type `F` satisfying `OrderIsoClass F α β` into an actual `OrderIso`. -/
 def OrderIso.ofClass [LE α] [LE β] [EquivLike F α β] [OrderIsoClass F α β] (f : F) :
     α ≃o β :=
   { EquivLike.toEquiv f with map_rel_iff' := map_le_map_iff f }
 
 @[deprecated (since := "2026-09-02")] alias OrderIsoClass.toOrderIso := OrderIso.ofClass
-
-/-- Any type satisfying `OrderIsoClass` can be cast into `OrderIso` via `OrderIso.ofClass`. -/
-instance [LE α] [LE β] [EquivLike F α β] [OrderIsoClass F α β] : CoeTC F (α ≃o β) :=
-  ⟨.ofClass⟩
 
 -- See note [lower instance priority]
 instance (priority := 100) OrderIsoClass.toOrderHomClass [LE α] [LE β]
@@ -169,16 +163,10 @@ protected theorem monotone (f : F) : Monotone f := fun _ _ => map_rel f
 @[gcongr]
 protected theorem mono (f : F) : Monotone f := fun _ _ => map_rel f
 
-/-- Turn an element of a type `F` satisfying `OrderHomClass F α β` into an actual
-`OrderHom`. This is declared as the default coercion from `F` to `α →o β`. -/
-@[coe]
+/-- Turn an element of a type `F` satisfying `OrderHomClass F α β` into an actual `OrderHom`. -/
 def _root_.OrderHom.ofClass (f : F) : α →o β where
   toFun := f
   monotone' := OrderHomClass.monotone f
-
-/-- Any type satisfying `OrderHomClass` can be cast into `OrderHom` via `OrderHom.ofClass`. -/
-instance : CoeTC F (α →o β) :=
-  ⟨.ofClass⟩
 
 @[deprecated (since := "2026-09-02")] alias toOrderHom := OrderHom.ofClass
 
@@ -232,6 +220,10 @@ instance : FunLike (α →o β) α β where
 instance : OrderHomClass (α →o β) α β where
   map_rel f _ _ h := f.monotone' h
 
+@[simp]
+protected theorem coe_ofClass [FunLike F α β] [OrderHomClass F α β] (f : F) :
+    ⇑(ofClass f) = f := rfl
+
 @[simp] theorem coe_mk (f : α → β) (hf : Monotone f) : ⇑(mk f hf) = f := rfl
 
 protected theorem monotone (f : α →o β) : Monotone f :=
@@ -257,9 +249,7 @@ theorem ext (f g : α →o β) (h : (f : α → β) = g) : f = g :=
 
 @[simp] theorem coe_eq (f : α →o β) : .ofClass f = f := rfl
 
-@[simp] theorem _root_.OrderHomClass.coe_coe {F} [FunLike F α β] [OrderHomClass F α β] (f : F) :
-    ⇑(f : α →o β) = f :=
-  rfl
+@[deprecated (since := "2026-11-27")] alias _root_.OrderHomClass.coe_coe := OrderHom.coe_ofClass
 
 /-- One can lift an unbundled monotone function to a bundled one. -/
 protected instance canLift : CanLift (α → β) (α →o β) (↑) Monotone where
@@ -782,6 +772,11 @@ instance : EquivLike (α ≃o β) α β :=
 instance : OrderIsoClass (α ≃o β) α β where
   map_le_map_iff f _ _ := f.map_rel_iff'
 
+@[simp]
+protected theorem coe_ofClass [EquivLike F α β] [OrderIsoClass F α β] (f : F) :
+    ⇑(ofClass f) = f := rfl
+
+@[simp]
 theorem toFun_eq_coe {f : α ≃o β} : f.toFun = f :=
   rfl
 
@@ -811,6 +806,19 @@ lemma ofBijective_apply_symm_apply (f : α → β) (hf hf') (x : β) :
 lemma ofBijective_symm_apply_apply (f : α → β) (hf hf') (x : α) :
     (ofBijective f hf hf').symm (f x) = x :=
   (ofBijective f hf hf').symm_apply_apply x
+
+section toOrderHom
+
+variable {α β : Type*} [Preorder α] [Preorder β]
+
+/-- Reinterpret an order isomorphism as an order embedding. -/
+def toOrderHom (e : α ≃o β) : α →o β := .ofClass e
+
+@[simp]
+theorem coe_toOrderHom (e : α ≃o β) : ⇑e.toOrderHom = e :=
+  rfl
+
+end toOrderHom
 
 /-- Reinterpret an order isomorphism as an order embedding. -/
 def toOrderEmbedding (e : α ≃o β) : α ↪o β :=
@@ -947,8 +955,8 @@ order homomorphisms gives an order isomorphism between the two function prosets.
 @[simps apply symm_apply]
 def arrowCongr {α β γ δ} [Preorder α] [Preorder β] [Preorder γ] [Preorder δ]
     (f : α ≃o γ) (g : β ≃o δ) : (α →o β) ≃o (γ →o δ) where
-  toFun p := .comp g <| .comp p f.symm
-  invFun p := .comp g.symm <| .comp p f
+  toFun p := .comp g.toOrderHom <| .comp p f.symm.toOrderHom
+  invFun p := .comp g.symm.toOrderHom <| .comp p f.toOrderHom
   left_inv p := DFunLike.coe_injective <| by
     change (g.symm ∘ g) ∘ p ∘ (f.symm ∘ f) = p
     simp only [← OrderIso.coe_trans, Function.id_comp,
@@ -958,8 +966,8 @@ def arrowCongr {α β γ δ} [Preorder α] [Preorder β] [Preorder γ] [Preorder
     simp only [← OrderIso.coe_trans, Function.id_comp,
                OrderIso.symm_trans_self, OrderIso.coe_refl, Function.comp_id]
   map_rel_iff' {p q} := by
-    simp only [Equiv.coe_fn_mk, OrderHom.le_def, OrderHom.comp_coe,
-               OrderHomClass.coe_coe, Function.comp_apply, map_le_map_iff]
+    simp only [Equiv.coe_fn_mk, ge_iff_le, OrderHom.le_def, OrderHom.comp_coe, coe_toOrderHom,
+      Function.comp_apply, map_le_map_iff]
     exact Iff.symm f.forall_congr_left
 
 @[simp] lemma arrowCongr_refl {α β : Type*} [Preorder α] [Preorder β] :

@@ -124,21 +124,16 @@ infixr:25 " →*o " => OrderMonoidHom
 variable [Preorder α] [Preorder β] [MulOneClass α] [MulOneClass β] [FunLike F α β]
 
 /-- Turn an element of a type `F` satisfying `OrderHomClass F α β` and `MonoidHomClass F α β`
-into an actual `OrderMonoidHom`. This is declared as the default coercion from `F` to `α →*o β`. -/
-@[to_additive (attr := coe)
+into an actual `OrderMonoidHom`. -/
+@[to_additive
   /-- Turn an element of a type `F` satisfying `OrderHomClass F α β` and `AddMonoidHomClass F α β`
-  into an actual `OrderAddMonoidHom`.
-  This is declared as the default coercion from `F` to `α →+o β`. -/]
-def OrderMonoidHomClass.toOrderMonoidHom [OrderHomClass F α β] [MonoidHomClass F α β] (f : F) :
+  into an actual `OrderAddMonoidHom`. -/]
+def OrderMonoidHom.ofClass [OrderHomClass F α β] [MonoidHomClass F α β] (f : F) :
     α →*o β :=
   { (f : α →* β) with monotone' := OrderHomClass.monotone f }
 
-/-- Any type satisfying `OrderMonoidHomClass` can be cast into `OrderMonoidHom` via
-  `OrderMonoidHomClass.toOrderMonoidHom`. -/
-@[to_additive /-- Any type satisfying `OrderAddMonoidHomClass` can be cast into `OrderAddMonoidHom`
-  via `OrderAddMonoidHomClass.toOrderAddMonoidHom`. -/]
-instance [OrderHomClass F α β] [MonoidHomClass F α β] : CoeTC F (α →*o β) :=
-  ⟨OrderMonoidHomClass.toOrderMonoidHom⟩
+@[to_additive (attr := deprecated (since := "2026-11-26"))]
+alias OrderMonoidHomClass.toOrderMonoidHom := OrderMonoidHom.ofClass
 
 /-- `α ≃*o β` is the type of isomorphisms `α ≃ β` that preserve the ordered monoid structure.
 
@@ -283,6 +278,10 @@ instance : MonoidHomClass (α →*o β) α β where
   map_mul f := f.map_mul'
   map_one f := f.map_one'
 
+@[to_additive (attr := simp)]
+protected theorem coe_ofClass [FunLike F α β] [OrderHomClass F α β] [MonoidHomClass F α β]
+    (f : F) : ⇑(ofClass f) = f := rfl
+
 -- Other lemmas should be accessed through the `FunLike` API
 @[to_additive (attr := ext)]
 theorem ext (h : ∀ a, f a = g a) : f = g :=
@@ -314,9 +313,11 @@ theorem coe_toMonoidHom (f : α →*o β) : ((f : α →* β) : α → β) = f :
 @[to_additive (attr := deprecated (since := "2026-09-15"))]
 alias coe_monoidHom := coe_toMonoidHom
 
--- `nolint` needed while this uses `OrderHom.ofClass`
-@[to_additive (attr := simp, nolint simpNF)]
-theorem coe_orderHom (f : α →*o β) : ((f : α →o β) : α → β) = f :=
+@[to_additive (attr := simp)]
+theorem coe_toOrderHom (f : α →*o β) : ⇑f.toOrderHom = f := rfl
+
+@[to_additive (attr := deprecated OrderHom.coe_ofClass +typeChanged (since := "2026-11-27"))]
+theorem coe_orderHom (f : α →*o β) : ((.ofClass f : α →o β) : α → β) = f :=
   rfl
 
 @[to_additive]
@@ -362,7 +363,7 @@ variable {α}
 /-- Composition of `OrderMonoidHom`s as an `OrderMonoidHom`. -/
 @[to_additive /-- Composition of `OrderAddMonoidHom`s as an `OrderAddMonoidHom` -/]
 def comp (f : β →*o γ) (g : α →*o β) : α →*o γ :=
-  { f.toMonoidHom.comp (g : α →* β), f.toOrderHom.comp (g : α →o β) with }
+  { f.toMonoidHom.comp (g : α →* β), f.toOrderHom.comp g.toOrderHom with }
 
 @[to_additive (attr := simp)]
 theorem coe_comp (f : β →*o γ) (g : α →*o β) : (f.comp g : α → γ) = f ∘ g :=
@@ -382,7 +383,7 @@ alias coe_comp_monoidHom := toMonoidHom_comp
 
 @[to_additive]
 theorem coe_comp_orderHom (f : β →*o γ) (g : α →*o β) :
-    (f.comp g : α →o γ) = (f : β →o γ).comp g :=
+    (f.comp g).toOrderHom = f.toOrderHom.comp g.toOrderHom :=
   rfl
 
 @[to_additive (attr := simp)]
@@ -472,9 +473,12 @@ variable {_ : Preorder α} {_ : Preorder β} {_ : MulOneClass α} {_ : MulOneCla
 theorem toMonoidHom_eq_coe (f : α →*o β) : f.toMonoidHom = f :=
   rfl
 
-@[to_additive (attr := simp)]
-theorem toOrderHom_eq_coe (f : α →*o β) : f.toOrderHom = f :=
+@[to_additive]
+theorem toOrderHom_eq_ofClass (f : α →*o β) : f.toOrderHom = .ofClass f :=
   rfl
+
+@[to_additive (attr := deprecated (since := "2026-11-27"))] alias toOrderHom_eq_coe :=
+  toOrderHom_eq_ofClass
 
 end OrderedCommMonoid
 
@@ -550,9 +554,11 @@ def toOrderIso (f : α ≃*o β) : α ≃o β :=
 theorem coe_mulEquiv (f : α ≃*o β) : ((f : α ≃* β) : α → β) = f :=
   rfl
 
--- `nolint` needed while this uses `OrderHom.ofClass`
-@[to_additive (attr := simp, nolint simpNF)]
-theorem coe_orderIso (f : α ≃*o β) : ((f : α →o β) : α → β) = f :=
+@[simp]
+theorem coe_toOrderIso (f : α ≃*o β) : ⇑f.toOrderIso = f := rfl
+
+@[to_additive (attr := deprecated OrderIso.coe_ofClass +typeChanged (since := "2026-11-27"))]
+theorem coe_orderIso (f : α ≃*o β) : ((.ofClass f : α ≃o β) : α → β) = f :=
   rfl
 
 @[to_additive]
@@ -600,7 +606,7 @@ theorem coe_trans_mulEquiv (f : α ≃*o β) (g : β ≃*o γ) :
 
 @[to_additive]
 theorem coe_trans_orderIso (f : α ≃*o β) (g : β ≃*o γ) :
-    (f.trans g : α ≃o γ) = (f : α ≃o β).trans g :=
+    (f.trans g).toOrderIso = f.toOrderIso.trans g.toOrderIso :=
   rfl
 
 @[to_additive (attr := simp)]
@@ -630,9 +636,12 @@ theorem cancel_left {g : α ≃*o β} {f₁ f₂ : β ≃*o γ} (hg : Function.S
 theorem toMulEquiv_eq_coe (f : α ≃*o β) : f.toMulEquiv = f :=
   rfl
 
-@[to_additive (attr := simp)]
-theorem toOrderIso_eq_coe (f : α ≃*o β) : f.toOrderIso = f :=
+@[to_additive]
+theorem toOrderIso_eq_ofClass (f : α ≃*o β) : f.toOrderIso = .ofClass f :=
   rfl
+
+@[to_additive (attr := deprecated (since := "2026-11-26"))] alias toOrderIso_eq_coe :=
+  toOrderIso_eq_ofClass
 
 /-- The inverse of an isomorphism is an isomorphism. -/
 @[to_additive (attr := symm) /-- The inverse of an order isomorphism is an order isomorphism. -/]
