@@ -278,6 +278,38 @@ theorem symm_trans_apply (e₁ : B ≃A[R] A) (e₂ : C ≃A[R] B) (a : A) :
     (e₂.trans e₁).symm a = e₂.symm (e₁.symm a) :=
   rfl
 
+section ProdCongr
+
+variable {D : Type*} [Semiring D] [TopologicalSpace D] [Algebra R D]
+
+/-- The product of two continuous algebra equivalences, as a continuous algebra
+equivalence on the product. The map comes from `AlgEquiv.prodCongr`. -/
+def prodCongr (e : A ≃A[R] B) (e' : C ≃A[R] D) : (A × C) ≃A[R] (B × D) where
+  __ := AlgEquiv.prodCongr e.toAlgEquiv e'.toAlgEquiv
+  __ := Homeomorph.prodCongr e.toHomeomorph e'.toHomeomorph
+
+@[simp]
+theorem prodCongr_toAlgEquiv (e : A ≃A[R] B) (e' : C ≃A[R] D) :
+    (e.prodCongr e').toAlgEquiv = e.toAlgEquiv.prodCongr e'.toAlgEquiv :=
+  rfl
+
+@[simp]
+theorem prodCongr_toHomeomorph (e : A ≃A[R] B) (e' : C ≃A[R] D) :
+    (e.prodCongr e').toHomeomorph = e.toHomeomorph.prodCongr e'.toHomeomorph :=
+  rfl
+
+@[simp]
+theorem prodCongr_apply (e : A ≃A[R] B) (e' : C ≃A[R] D) (x : A × C) :
+    e.prodCongr e' x = (e x.1, e' x.2) :=
+  rfl
+
+@[simp]
+theorem prodCongr_symm (e : A ≃A[R] B) (e' : C ≃A[R] D) :
+    (e.prodCongr e').symm = e.symm.prodCongr e'.symm :=
+  rfl
+
+end ProdCongr
+
 theorem comp_coe (e₁ : A ≃A[R] B) (e₂ : B ≃A[R] C) :
     e₂.toAlgHom.comp e₁.toAlgHom = e₁.trans e₂ := by
   rfl
