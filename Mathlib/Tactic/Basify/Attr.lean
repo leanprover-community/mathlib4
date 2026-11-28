@@ -155,7 +155,7 @@ is an atom: `basify` generalizes it and case splits on it rather than descending
 The lemma is also added to `basify_simp`, reversed if `←` is given, so that what `basify` looks
 inside of it can also rewrite through. That rules out a lemma unusable as a rewrite:
 `ENNReal.coe_ofNat` has a `no_index`ed right-hand side that would match everything when reversed,
-so `Mathlib/Tactic/Basify/ENNReal.lean` restates it. -/
+so `Mathlib/Basic/ENNReal/Basic.lean` restates it. -/
 syntax (name := basifyOp) "basify_op" (" ←")? : attr
 
 initialize registerBuiltinAttribute {

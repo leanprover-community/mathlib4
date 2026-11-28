@@ -80,7 +80,7 @@ Three attributes drive the tactic, so that a new construction needs no change to
 * `@[basify_simp]` is the simp set described above, for everything that is not an operation:
   relations such as `ENNReal.coe_inj`, and the lemmas that clear away infinities.
 
-`Mathlib/Tactic/Basify/ENNReal.lean` is a worked example using all three.
+The lemmas in `Mathlib/Basic/ENNReal/Basic.lean` are a worked example using all three.
 -/
 
 public meta section

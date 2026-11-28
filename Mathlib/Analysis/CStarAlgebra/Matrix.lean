@@ -14,7 +14,7 @@ public import Mathlib.Topology.UniformSpace.Matrix
 # Analytic properties of the `star` operation on matrices
 
 This transports the operator norm on `EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 m` to
-`Matrix m n 𝕜`. See the file `Mathlib/Analysis/Matrix.lean` for many other matrix norms.
+`Matrix m n 𝕜`. See the file `Mathlib/Analysis/Matrix/Normed.lean` for many other matrix norms.
 
 ## Main definitions
 
