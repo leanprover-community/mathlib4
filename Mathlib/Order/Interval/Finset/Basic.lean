@@ -188,8 +188,6 @@ theorem Icc_subset_Ico_iff (h₁ : a₁ ≤ b₁) : Icc a₁ b₁ ⊆ Ico a₂ b
 theorem Icc_subset_Ioc_iff (h₁ : a₁ ≤ b₁) : Icc a₁ b₁ ⊆ Ioc a₂ b₂ ↔ a₂ < a₁ ∧ b₁ ≤ b₂ :=
   (Icc_subset_Ico_iff h₁.dual).trans and_comm
 
---TODO: `Ico_subset_Ioo_iff`, `Ioc_subset_Ioo_iff`
-
 @[to_dual (rename := a₁ ↔ b₁, a₂ ↔ b₂, ha ↔ hb) (reorder := ha hb) Icc_ssubset_Icc_right]
 theorem Icc_ssubset_Icc_left (hI : a₂ ≤ b₂) (ha : a₂ < a₁) (hb : b₁ ≤ b₂) :
     Icc a₁ b₁ ⊂ Icc a₂ b₂ := by
@@ -700,6 +698,14 @@ variable [LocallyFiniteOrder α]
 theorem Ico_subset_Ico_iff {a₁ b₁ a₂ b₂ : α} (h : a₁ < b₁) :
     Ico a₁ b₁ ⊆ Ico a₂ b₂ ↔ a₂ ≤ a₁ ∧ b₁ ≤ b₂ := by
   rw [← coe_subset, coe_Ico, coe_Ico, Set.Ico_subset_Ico_iff h]
+
+theorem Ico_subset_Ioo_iff {a₁ b₁ a₂ b₂ : α} (h : a₁ < b₁) :
+    Ico a₁ b₁ ⊆ Ioo a₂ b₂ ↔ a₂ < a₁ ∧ b₁ ≤ b₂ := by
+  rw [← coe_subset, coe_Ico, coe_Ioo, Set.Ico_subset_Ioo_iff h]
+
+theorem Ioc_subset_Ioo_iff {a₁ b₁ a₂ b₂ : α} (h : a₁ < b₁) :
+    Ioc a₁ b₁ ⊆ Ioo a₂ b₂ ↔ b₁ < b₂ ∧ a₂ ≤ a₁ := by
+  rw [← coe_subset, coe_Ioc, coe_Ioo, Set.Ioc_subset_Ioo_iff h]
 
 theorem Ico_union_Ico_eq_Ico {a b c : α} (hab : a ≤ b) (hbc : b ≤ c) :
     Ico a b ∪ Ico b c = Ico a c := by
