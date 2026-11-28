@@ -1,6 +1,7 @@
 module
 
 public import Mathlib.Analysis.Complex.Trigonometric
+public import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
 public import Mathlib.Analysis.Normed.Group.Basic
 public import Mathlib.Analysis.Real.Sqrt
 public import Mathlib.Analysis.SpecialFunctions.Log.Basic
@@ -561,6 +562,10 @@ example {r : ℝ≥0∞} (hr : 0 < r) : (0 : EReal) < r := by positivity
 --     0 ≤ ((n ^ 2 : ℤ) : R) := by positivity
 example {r : ℝ≥0} : 0 ≤ ((r : ℝ) : EReal) := by positivity
 example {r : ℝ≥0} : 0 < ((r + 1 : ℝ) : EReal) := by positivity
+
+example {x : ℝ} (hx : x ≠ 0) : (x : ℂ) ≠ 0 := by positivity
+example : (Real.pi : ℂ) ≠ 0 := by positivity
+example (z : UpperHalfPlane) : (z : ℂ) ≠ 0 := by positivity
 
 end Coercions
 
