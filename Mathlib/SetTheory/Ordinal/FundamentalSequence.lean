@@ -7,6 +7,8 @@ module
 
 public import Mathlib.SetTheory.Cardinal.Cofinality.Ordinal
 
+import Mathlib.Order.Bounds.OrderIso
+
 /-!
 # Fundamental sequences
 
@@ -118,7 +120,7 @@ theorem exists_isFundamentalSeq (ha : o.cof.ord = a) : ∃ f : Iio a → Iio o, 
   let g := (Set.orderIsoOfEq _ _ (congrArg _ hs'.symm)).trans <|
     .ofRelIsoLT (enum (α := s) (· < ·))
   refine ⟨fun i ↦ g i, le_rfl, fun _ ↦ by simp, ?_⟩
-  rw [range_comp', OrderIso.map_isCofinal_iff, range_comp', g.range_eq]
+  rw [range_comp', OrderIso.map_isCofinal_iff, range_comp']
   simpa
 
 end Ordinal

@@ -136,7 +136,7 @@ theorem enum_eq_iff {f : α → α} : Subtype.val ∘ enum s hs = f ↔ StrictMo
     rfl
 
 theorem enum_range {f : α → α} (hf : StrictMono f) :
-    enum (range f) (isCofinal_range_of_strictMono hf) = hf.orderIso := by
+    enum (range f) hf.isCofinal_range_of_wellFoundedLT = hf.orderIso := by
   ext x
   apply congrFun (enum_eq_iff.2 ⟨?_, ?_⟩)
   · exact (Subtype.strictMono_coe _).comp (OrderIso.strictMono _)
