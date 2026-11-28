@@ -81,6 +81,18 @@ lemma prod_eq_one (h : ∀ x ∈ s, x = (1 : M)) : s.prod = 1 := by
   induction s using Quotient.inductionOn; simp [List.prod_eq_one h]
 
 @[to_additive]
+theorem ne_zero_of_prod_ne_one (h : s.prod ≠ 1) : s ≠ 0 :=
+  fun h' ↦ h (h' ▸ prod_zero)
+
+@[to_additive]
+theorem card_pos_of_prod_ne_one (h : s.prod ≠ 1) : 0 < s.card :=
+  card_pos.mpr <| ne_zero_of_prod_ne_one h
+
+@[to_additive]
+theorem exists_ne_one_of_prod_ne_one (h : s.prod ≠ 1) : ∃ a ∈ s, a ≠ 1 := by
+  simpa only [not_forall, exists_prop] using mt prod_eq_one h
+
+@[to_additive]
 theorem prod_hom_ne_zero {s : Multiset M} (hs : s ≠ 0) {F : Type*} [FunLike F M N]
     [MulHomClass F M N] (f : F) :
     (s.map f).prod = f s.prod := by
