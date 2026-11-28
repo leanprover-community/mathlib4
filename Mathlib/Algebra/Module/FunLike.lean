@@ -18,10 +18,54 @@ typeclass searches.
 
 public section
 
+variable {R M M' F α : Type*} {β : α → Type*} [i : DFunLike F α β]
+
 namespace FunLike
 
-variable {M F α : Type*} {β : α → Type*} [DFunLike F α β]
-  [Semiring M] [∀ a, AddCommMonoid (β a)] [∀ a, Module M (β a)] [AddCommMonoid F]
+section LinearMap
+
+variable [Semiring R] [AddCommMonoid F] [∀ a, AddCommMonoid (β a)] [IsAddApply F] [Module R F]
+  [∀ a, Module R (β a)] [IsSMulApply R F]
+
+variable (R F) in
+/-- Coercion as a linear map. -/
+@[expose]
+def coeLinearMap : F →ₗ[R] (a : α) → β a where
+  toFun f := f
+  map_add' := by simp
+  map_smul' := by simp
+
+@[simp]
+theorem coeLinearMap_apply (f : F) : coeLinearMap R F f = f := rfl
+
+@[norm_cast]
+theorem coe_coeLinearMap : (coeLinearMap R F : F → (a : α) → β a) = DFunLike.coe := rfl
+
+@[simp, norm_cast]
+theorem toAddMonoidHom_coeLinearMap [IsZeroApply F] :
+    (coeLinearMap R F : F →+ (a : α) → β a) = coeAddMonoidHom F α β :=
+  rfl
+
+@[simp, norm_cast]
+theorem toAddHom_coeLinearMap : (coeLinearMap R F : F →ₙ+ (a : α) → β a) = coeAddHom F α β :=
+  rfl
+
+variable (R F) in
+/-- Evaluation as a linear map. -/
+@[expose, simps!]
+def evalLinearMap (x : α) : F →ₗ[R] β := (LinearMap.proj x).comp (coeLinearMap R F)
+
+@[simp, norm_cast]
+theorem toAddMonoidHom_evalLinearMap [IsZeroApply F] (x : α) :
+    (evalLinearMap R F x : F →+ β x) = evalAddMonoidHom F x := rfl
+
+@[simp, norm_cast]
+theorem toAddHom_evalLinearMap (x : α) : (evalLinearMap R F x : F →ₙ+ β x) = evalAddHom F x :=
+  rfl
+
+end LinearMap
+
+variable [Semiring M] [∀ a, AddCommMonoid (β a)] [∀ a, Module M (β a)] [AddCommMonoid F]
 
 /-- A `FunLike` type is a `Module` if `β` is a `Module`. -/
 protected abbrev module [IsZeroApply F] [IsAddApply F] [SMul M F] [IsSMulApply M F] :

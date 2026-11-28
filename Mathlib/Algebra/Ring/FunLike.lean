@@ -26,6 +26,60 @@ variable {F α R : Type*} {β : α → Type*}
 
 namespace FunLike
 
+section RingHom
+
+variable [DFunLike F α β] [NonAssocSemiring F] [∀ a, NonAssocSemiring (β a)]
+  [IsZeroApply F] [IsOneApply F] [IsAddApply F] [IsMulApply F]
+
+variable (F) in
+/-- Coercion as a ring homomorphism. -/
+@[expose]
+def coeRingHom : F →+* (a : α) → β a where
+  toFun f := f
+  map_zero' := by simp
+  map_one' := by simp
+  map_add' := by simp
+  map_mul' := by simp
+
+@[simp]
+theorem coeRingHom_apply (f : F) : coeRingHom F f = f := rfl
+
+@[norm_cast]
+theorem coe_coeRingHom : (coeRingHom F : F → (a : α) → β a) = DFunLike.coe := rfl
+
+@[simp, norm_cast]
+theorem toMonoidHom_coeRingHom : (coeRingHom F : F →* (a : α) → β a) = coeMonoidHom F α β := rfl
+
+@[simp, norm_cast]
+theorem toAddMonoidHom_coeRingHom : (coeRingHom F : F →+ (a : α) → β a) = coeAddMonoidHom F α β :=
+  rfl
+
+@[simp, norm_cast]
+theorem toMulHom_coeRingHom : (coeRingHom F : F →ₙ* (a : α) → β a) = coeMulHom F α β := rfl
+
+@[simp, norm_cast]
+theorem toAddHom_coeRingHom : (coeRingHom F : F →ₙ+ (a : α) → β a) = coeAddHom F α β := rfl
+
+variable (F) in
+/-- Evaluation as a ring homomorphism. -/
+@[expose, simps!]
+def evalRingHom (x : α) : F →+* β := (Pi.evalRingHom _ x).comp (coeRingHom F)
+
+@[simp, norm_cast]
+theorem toMonoidHom_evalRingHom (x : α) : (evalRingHom F x : F →* β x) = evalMonoidHom F x := rfl
+
+@[simp, norm_cast]
+theorem toAddMonoidHom_evalRingHom (x : α) : (evalRingHom F x : F →+ β x) = evalAddMonoidHom F x :=
+  rfl
+
+@[simp, norm_cast]
+theorem toMulHom_evalRingHom (x : α) : (evalRingHom F x : F →ₙ* β x) = evalMulHom F x := rfl
+
+@[simp, norm_cast]
+theorem toAddHom_evalRingHom (x : α) : (evalRingHom F x : F →ₙ+ β x) = evalAddHom F x := rfl
+
+end RingHom
+
 section Comp
 
 section Semiring

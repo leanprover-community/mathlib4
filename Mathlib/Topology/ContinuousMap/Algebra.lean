@@ -734,7 +734,8 @@ theorem Subalgebra.separatesPoints_monotone :
   exact ⟨_, ⟨f, ⟨r m, rfl⟩⟩, w⟩
 
 @[simp]
-theorem algebraMap_apply (k : R) (a : α) : algebraMap R C(α, A) k a = k • (1 : A) := by
+protected theorem ContinuousMap.algebraMap_apply (k : R) (a : α) :
+    algebraMap R C(α, A) k a = k • (1 : A) := by
   rw [Algebra.algebraMap_eq_smul_one]
   rfl
 
@@ -792,7 +793,7 @@ instance ContinuousMap.subsingleton_subalgebra (α : Type*) [TopologicalSpace α
       ext f
       have h : f = algebraMap R C(α, R) (f default) := by
         ext x'
-        simp only [mul_one, smul_eq_mul, algebraMap_apply]
+        simp only [mul_one, smul_eq_mul, ContinuousMap.algebraMap_apply]
         congr
         simp [eq_iff_true_of_subsingleton]
       rw [h]
