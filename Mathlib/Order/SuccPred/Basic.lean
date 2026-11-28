@@ -121,6 +121,10 @@ noncomputable def SuccOrder.ofLinearWellFoundedLT [WellFoundedLT α] : SuccOrder
       exact ⟨WellFoundedLT.min_le (s := Ioi _), lt_of_lt_of_le (wellFounded_lt.prop_min ha)⟩)
     fun _ ha ↦ dite_eq_right (not_not_intro ha <| not_isMax_iff.mpr ·)
 
+@[no_expose]
+noncomputable instance {r : α → α → Prop} [IsWellOrder α r] : SuccOrder (WithLT α r) :=
+  .ofLinearWellFoundedLT _
+
 end LinearOrder
 
 /-! ### Successor and predecessor orders -/
